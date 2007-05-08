@@ -1,0 +1,8 @@
+STRINGTABLE DISCARDABLE
+BEGIN
+  1							"Current file"
+  2							"Open files"
+  3							"Selected project file"
+  4							"All project files"
+  5							"Refresh"
+END
