@@ -396,7 +396,7 @@ Sub IsStructList()
 
 End Sub
 
-Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
+Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal nType As Integer)
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260
@@ -420,7 +420,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
 					ls=Len(subdir)
 					lstrcat(@subdir,@wfd.cFileName)
 					subdir=subdir & "/"
-					UpdateIncludeList(buffer,@subdir)
+					UpdateIncludeList(buffer,@subdir,nType)
 					buffer=Left(buffer,l) & "*.*"
 					subdir=Left(subdir,ls)
 				EndIf
@@ -435,7 +435,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
 					lstrcpyn(@sItem,@s,lstrlen(@buff)+1)
 					If lstrcmpi(@sItem,@buff)=0 Or lstrlen(@sItem)=0 Then
 						lstrcpy(ccpos,@s)
-						SendMessage(ah.hcc,CCM_ADDITEM,0,Cast(LPARAM,ccpos))
+						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 						ccpos=ccpos+lstrlen(ccpos)+1
 					EndIf
 				EndIf
@@ -455,7 +455,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
 
 End Sub
 
-Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
+Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal nType As Integer)
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260
@@ -479,7 +479,7 @@ Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
 					ls=Len(subdir)
 					lstrcat(@subdir,@wfd.cFileName)
 					subdir=subdir & "/"
-					UpdateInclibList(buffer,@subdir)
+					UpdateInclibList(buffer,@subdir,nType)
 					buffer=Left(buffer,l) & "*.*"
 					subdir=Left(subdir,ls)
 				EndIf
@@ -494,7 +494,7 @@ Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr)
 					lstrcpyn(@sItem,@s,lstrlen(@buff)+1)
 					If lstrcmpi(@sItem,@buff)=0 Or lstrlen(@sItem)=0 Then
 						lstrcpy(ccpos,@s)
-						SendMessage(ah.hcc,CCM_ADDITEM,0,Cast(LPARAM,ccpos))
+						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 						ccpos=ccpos+lstrlen(ccpos)+1
 					EndIf
 				EndIf
