@@ -1,0 +1,502 @@
+Whats new:
+----------
+1.0.5.3
+o Added checkmarks to some Format menu items.
+o Added code complete to #Include and #Inclib
+o Fixed expand (Ctrl+E) bug in RAEdit.
+o Fixed bug when parsing compiler errors in output window.
+o Fixed bug where quick run did not always delete the executable.
+1.0.5.2
+o Added XP Manifest to resource editor.
+o Added RCData to resource editor.
+o Made font in output window fixed.
+o Fixed a minor template bug.
+o Fixed bugs with dialog editor checkboxes.
+o Fixed bug where code complete list did not auto hide when resource file
+  was selected.
+1.0.5.1
+o Added option to auto load last project on startup.
+o Line number bar now autoadjusts its width.
+o Properties now has a context menu.
+o F6 now shows / hides output window.
+o Properties Variables now shows data type.
+o Included picture viewer custom control.
+o Fixed bug if [x] was pushed on Save dialog.
+o Fixed a UDT in a namespace bug.
+o Fixed resource editor bug. Chaning class in an UDC did not work.
+o Fixed resource editor bug. Image control ID / Name / Type mixup.
+o Fixed parser bug on locals.
+1.0.5.0
+o Made improvements on compiler error lookup (click on bookmark in output).
+o Uses voodooattac's splash image.
+o Shift+Ctrl+Space while in a sub or function will show a code complete list
+  containing parameters and locals.
+o The save selection dialog's position is now saved to ini.
+o Save As now defaults to .bas extention. Use quotes if you need to save
+  without extention or with unknown extention.
+o Included denise_amiga's show vars addin.
+o Added a pointer to WINPOS in ADDINDATA.
+o Fixed bug where new unsaved file would be saved as (Untitled).bas on make.
+o Fixed bug when reporting compiler errors in include files.
+o Fixed a code property bug when parsing UDT's
+o Fixed a bug with collapseable blocks.
+o Fixed a bug in RAEdit that could cause empty lines to be inserted when
+  loading the file.
+o Fixed a bug where toolbar buttons did not show if FbEdit was maximized.
+1.0.4.9
+o Added option to show save selection dialog on make.
+o Made it possible to add toolbar buttons.
+o Added AIM_GETTOOLTIP addin message. Gets a toolbar button tooltip.
+o Fixed indent formatting bug.
+o Fixed find bug introduced in 1.0.4.8
+1.0.4.8
+o Add existing project file / module now has multiselect.
+o Added splash screen with the image from the forum.
+o Expanded the horizontal thumb track in RAEdit control.
+o Fixed a find bug. Region searched did not always appear.
+o Changed behaviour on Shift+LeftClick on selection bar.
+o Fixed selection bug on comment / uncomment.
+o Fixed make bug where some compiler errors was not shown.
+1.0.4.7
+o Included several new windows api constants (winConst.api file).
+o Fixed bug where FbEdit would hang on code complete on UDT's in an array.
+o Fixed with block bug.
+1.0.4.6
+o Added Var declarations to Variables code property.
+o Fixed brace match bug in RAEdit.
+o Fixed bug with quick run on new and unsaved file.
+o Fixed with block bug.
+1.0.4.5b
+o Resource editor toolbox autosizes to 3 buttons wide if needed.
+1.0.4.5
+o During build warnings are bookmarked.
+o Clicking on error or warning bookmark in output window will jump to code line.
+o Did some more work on FbEdit help file.
+o Fixed a bug with REM_ISLINE message in RAEdit.
+1.0.4.4
+o Replace now copies selection to Find what box and reports number of replacements.
+o Added Import button to project build options.
+o Added Ctrl+F12. Case converts current open file.
+o Added hidden setting to Case convert. See FbEdit.txt for more info.
+o Added Format / Indent Shift+Ctrl+F12. Formats indent and trims trailing spaces for
+  the current open file.
+o Added AIM_MAKEBEGIN and AIM_MAKEDONE addin messages.
+o Fixed bug in RAProperty.dll that caused FbEdit to crash if no api files are assigned
+  to the project.
+o Fixed bug when opening a project from explorer.
+1.0.4.3b
+o Fixed bug where deleting first character in a file would crash FbEdit.
+1.0.4.3
+o Added api files for fbgfx.
+o Moved OpenGL api's from windows api to it's own api files.
+o Moved Gdi+ api's from windows api to it's own api files.
+o Added option for Code Complete.
+o Added options for Case Convert(None, Mixed Case, Lower Case and Upper Case).
+o Added FbEdit.chm help file.
+1.0.4.2
+o Added code complete to Cast.
+o Added macros, constructors, destructors, properties and operators to code properties.
+o Classes now has code complete and code tooltip. Supports 'this' keyword.
+o Project Options now allows for selecting api files.
+o With Project Options you can now choose to not add main files to build command.
+  - This is useful when you need control over link process or when an external
+    tool (like make) is used to do the build.
+1.0.4.1
+o It is now possible to set Italic and Bold on Comments, Strings, Operators and
+  Numbers & hex.
+o Dialog editor: User defined controls can now have a caption.
+o Added Operator to syntax hiliter, case convert, collapseable blocks, block complete
+  and smart indent.
+o Collapseable blocks now support names starting with a dot.
+o Added Edit/Block/Trim Trailing Spaces.
+o Added option if a project sub folder should be created when creating a new project.
+o Fixed bug in error parser that could cause hang when compiling.
+o Fixed bug that could cause hang on Win9x and Me if window was resized.
+o Fixed undo/redo bug. Failed when replacing a selection with nothing.
+o Fixed a bug where line separator was not added on sub's.
+o Fixed parser bugs.
+1.0.4.0
+o Improved code parser.
+o Improved collapseabe blocks.
+o Improved auto block complete.
+  It now uses collapseabe blocks to determine if block ending should be added or not.
+  Got rid of section [CodeMacro] in FbEdit.ini. Uses section [Block] instead.
+o Added Auto Formatting option. Formats indent on code blocks.
+o Dialog editor.
+  Holding Alt key while sizeing / moving a control inverts the Snap to Grid setting.
+1.0.3.9
+o Added project option for Resource Name Export File.
+  If file is added to project, code properties will be updated.
+  If the file is opened it will be readonly but refreshed on every resource save.
+o Added more collapseable blocks.
+o Added Edit / Expand/Collapse (Ctrl+E). Can be used to expand or collapse
+  individual parts in a if..elseif..else or select case block.
+1.0.3.8
+o Added Block Complete option.
+o Fixed bug with block complete on blocks that can be nested (If...Then EndIf).
+1.0.3.7
+o Added option for auto case convert while typing (endif --> EndIf).
+  Words that are converted can be found in fbCase.api file.
+  Also converted are subs, functions, api calls and windows constants.
+o Added Format / Case Convert. Converts current selection.
+o Added auto block complete (If .. Then adds EndIf).
+1.0.3.6
+o Added support for with blocks.
+o Included porfirio's File Association addin.
+o Fixed bug where code complete list could be shown while editing strings or comments.
+o Fixed a problem using custom controls created in FreeBASIC on win9x.
+1.0.3.5
+o Added Options / Addin Manager to activate / deactivate addins.
+o Added Format / Auto Renumber ID's. Renumbers selected controls on a dialog.
+o Added COMMON and STATIC to parser.
+o The resource script in a project no longer needs to have the same
+  file name as the main source file.
+o Included a Custom Control tutorial.
+o Fixed a bug when parsing UDT's
+1.0.3.4
+o Statusbar now shows INS when editor is in insert mode.
+o Added Advanced Edit commands addin.
+o Added simple gdi game, Alien Invaders. Have fun.
+o Fixed a parser bug when parsing variables of type pointer.
+1.0.3.3
+o Added project option to choose file grouping method. Default is grouping by folder.
+o Added project option to have module files added to compile command as .bas files (default).
+o It is now possible to drop files on the project tab and have them added to current project.
+  If you hold down Ctrl key while dropping, the files will be added as modules (.bas files only).
+  This makes it very easy to create a project from existing sources.
+o Fixed a file tab paint bug.
+1.0.3.2
+o Added project grouping by folder.
+o Changed the way switch tab (F12) works.
+o Fixed a paint bug in RAEdit.
+1.0.3.1
+o Updated krcko's FileTabStyle addin. It can now show a files modified state.
+o Added menu check marks to Beautify addin.
+o Subclassed the code complete list so it handles tab, enter, escape and doubleclicks.
+o Fixed bug with changing tooltip colors.
+1.0.3.0
+o Added option to set code complete list and code tip colors.
+  NOTE: Themes updated.
+  If you created your own themes, here is how to manually update:
+  1. Move the 18 first color values to the end.
+  2.Append 2 new code complete list (back and text) and
+    4 new code tip (back,text,api and selected) color values.
+o The size of the code complete list are now saved to FbEdit.ini.
+o Added images to the tab select.
+o Current sub or function is shown in statusbar.
+o Added AIM_FILESTATE addin message. Reports when a files changed state is changed.
+o Added krcko's FileTabStyle addin.
+o Fixed bug when adding file without extention to project.
+o Fixed problems with Ctrl+left click on filename to open a file.
+1.0.2.9
+o Added Ctrl+left click to open include file.
+o Added F12 to toggle to previously opend tab.
+o Added KaraK's BlueFB theme.
+o Added krcko's fbCall.api and fbType.api files.
+o Fixed a case sensivity problem with code complete tooltip.
+1.0.2.8
+o Added Enums and Namespaces properties.
+o Added options for brace matching and auto brace.
+o Added voodooattacks Breeze theme.
+o Fixed parser bug that could duplicate properties.
+o Fixed parser bug that omitted arrays in types.
+o Fixed code complete bug with dim.
+1.0.2.7
+o Improved bracket matching.
+o Added some support for OOP
+1.0.2.6
+o Added single instance option (Options / Code Editor).
+o Added bracket matching while typing. Matches (),[] and {}
+o Added 'open #include file'. Set caret on filename and hit Ctrl+O
+o Fixed bug with Find Declare (F2)
+1.0.2.5
+o Added mru filelist.
+o Improved QuickRun.
+o Added collapseable comment block /' -- '/ and user defined block '{ -- '}
+o Updated beautify addin.
+o Added imagelists to ADDINHANDLES
+o Fixed bug with debug run (filename not quoted).
+o Fixed bug when parsing variables.
+1.0.2.4
+o Added beautify addin. Makes FbEdit look a lot nicer.
+o Added AIM_ADDINSLOADED and AIM_MENUREFRESH addin messages.
+o Fixed bug with updating collapse bookmarks.
+1.0.2.3
+o Added Tollbar addin. Helps creating toolbars. See ToolbarTest project.
+o Exposed ShowOutput sub to addins.
+o Fixed a minor focus problem.
+o Fixed bug with loading file state from project.
+1.0.2.2
+o Added AIM_FILEOPEN and AIM_FILECLOSE addin messages.
+o Exposed more FbEdit subs ,functions and data to addins.
+o Fixed bug with creating a new project from template.
+1.0.2.1
+o Find now copies selection or word under caret into find textbox.
+o Updated Code Sniplet addin. It now has an accelerator, F11, and saves pos & size to ini.
+o Added AIM_PROJECTOPEN and AIM_PROJECTCLOSE addin messages.
+o Exposed some FbEdit subs and functions to addins.
+o Fixed code complete bug on UDT's declared in a sub or function in a project file.
+1.0.2.0
+o Exposed more handles and data to addins.
+o Added Code Sniplet addin. A browser for your sniplet collection.
+o Updated Convert project.
+o Fixed serious bug with calls to addins. The bug caused Win9x to be unstable.
+o Fixed parser bug when parsing function or sub parameters.
+o Fixed bug where unchecking 'All Project Files' in find dialog did not work.
+1.0.1.9
+o In a template it is now possible to have files renamed. You do this by
+  manually editing the template file, replacing file names you want renamed
+  with [*PRONAME*]. See the included templates for examples.
+o Added support for addins.
+o Added Help addin. Pressing F1 will now open fb.chm or Win32.hlp files.
+1.0.1.8
+o FbEdit is now used to develop FbEdit.
+o Added 'Project / Create Template'. Creates a template from current project.
+o 'File / New Project' now has 'File' and 'Template' tabs. Lets you create a
+  project using a template.
+1.0.1.7
+o Option to set extentions for code files.
+o Position of find and goto dialogs are now saved.
+o Block definition for collapseable blocks have been moved to FbEdit.ini
+  You can change or add new definitions by manually editing the ini file.
+  There can be max 16 block definitions.
+1.0.1.6
+o Added project option to set compiler output filename.
+o Added project option to set run command line parameters.
+o Added option to select debugger.
+o Added 'Run With Debug' to Make menu.
+o Added 'Split Screen' to view menu. Allows editing same file in two panes.
+o Added 'Full Screen' to view menu. Allows using entire screen for editing.
+o Added MRU projects to file menu.
+o Hex numbers are syntax hilited.
+o Fixed bug where multiple find and goto dialogs could be shown.
+o Fixed bugs where FbEdit was unstable on Win9x platform.
+1.0.1.5
+o Added Block / Convert / Indent to Spaces, Indent to Tabs, Uppercase and Lowercase.
+o Clicking middle mouse button on a file tab closes the file.
+o Fixed bug with unindenting single line.
+1.0.1.4
+o Added 'Find Declare' (F2) with a 16 level return stack (Ctrl+F2).
+1.0.1.3f
+o Fixed bug where 'Quick Run' did not clear previous compiler error bookmarks.
+o Fixed a minor sizeing bug where property window could loose its bottom boarder.
+1.0.1.3e
+o Fixed bug where 'Auto Export When Saved' option on dialogs did not work.
+o Fixed bug where compiler errors on 'Quick Run' opened and bookmarked temporary file.
+1.0.1.3d
+o Got rid of all warnings when compiling FbEdit sources with 017b.
+o If a project is closed with the resource script in text mode it will be opened in text mode next time the project is loaded.
+o Fixed bug where Property on 'Current file' did not work if a project was open.
+o Fixed bug where code complete on udt's did not work if declared in the scope of a sub or function and a project was open.
+o Fixed bug where canceling 'Save As' when compiling still would attemt a compile.
+o Fixed bug where the error parser would hang on filenames like '(Untitled).bas'
+1.0.1.3c
+o Compiled with 017b CVS. Hopefully without creating any bugs.
+o Fixed bug where code complete did not work on an array of udt's.
+o Fixed bug where make options were blank on creating a new project.
+1.0.1.3b
+o Fixed code complete bug on types.
+1.0.1.3
+o Added find / replace direction 'All'.
+o Added find / replace in 'All Project Files'.
+o When creating new project you will be given warnings if folder or project file exists.
+o Code folding now supports private and public.
+o Fixed indent / outdent bugs.
+o Fixed bug where a new file did not get status as a codefile.
+o Make detects a few more build errors, including 017b CVS.
+o Fixed bug where output would be hidden after build.
+1.0.1.2c
+o Fixed bug that prevented deleting the last opened project.
+o Added code folding to types, unions and namespaces.
+o Quick Run are no longer disabled when a project is opened.
+  Be aware that the current projects build command is used.
+1.0.1.2b
+o Fixed bug where comment block identifiers was wrong to the parser.
+  This could cause crashes when parsing certain sources.
+o Fixed bug where dot names was not implemented.
+o Fixed bug where view menu was not checked.
+o Fixed bug where RichEdit was not loaded.
+1.0.1.2
+o Quick select make option (combobox on toolbar).
+o Project will be automaticaly updated to version 2 when opened. In version 2 project
+  make options has its own section [Make]
+o Projects can now have more than one make command.
+o Compileer errors now opens the file with the error and bookmarks it.
+o Added to menu "Edit/Error/Next error" and "Edit/Error/Clear errors"
+o Fixed bug where preview dialog did not work with WS_EX_LAYERED or WS_EX_TRANSPARENT extended styles.
+o Fixed bug where sizing or moving a control by using keyboard did not update changes when saved.
+1.0.1.1f
+o Fixed bug where code complete could be triggered in comments, commentblocks and strings.
+o Fixed bug where code complete could be triggered in non code files.
+o Fixed bug where project file info was not set when opening a file after project load.
+o Fixed bug where filenames was not quoted in compile commands.
+1.0.1.1e
+o Fixed bug where selecting an open resource skript by using the project browser did not enable resource menu.
+o Fixed bug where remove from project did not delete the file from project.
+1.0.1.1d
+o Fixed bug where a module could be added as module.bas.o when building.
+1.0.1.1c
+o Internal filebrowser now supports selecting drive.
+o Internal filebrowser initialy uses Default Project Path.
+1.0.1.1b
+o The file dialog 'Add New / Existing File / Module' to project initialy uses project path. 
+o Fixed bug where adding more than one file to project did not work. 
+o Fixed bug where compiler path was lost when setting make options.
+1.0.1.1
+o Added option to show linenumbers in code edit window.
+o Added option to create n backup copies of saved files. There must be
+  an open project and a Bak folder must exist in the project folder.
+o When a project file is closed caret position and collapsed states are saved to project.
+o When a project is closed current open files will be opened next time project is loaded.
+o When compiling without an open project the filename with extention is used.
+o 'New Project' now has the option to create some subfolders.
+o In previous versions tha main source file had to be in the same directory as the project file.
+o Splitt / Close Splitt has been added to tab contextmenu.
+o Quick Run has been added to Make menu.
+o Fixed bug where changing compiler path did not take place until restart.
+o Project will be automaticaly updated to version 1 when opened. In version 1 project
+  files have its own section [Files]
+1.0.1.0
+o Added several context menus.
+o Added Tools / Export properties. Helps creating api files from bi files.
+o Included the project 'Convert'. Helps creating api files from bi files.
+o Included fbCall.api. Contains only a few FreeBASIC functions.
+o Fixed bug where a projects initial module build command was wrong.
+o Fixed bug where removing a project file did not update code properties.
+o Fixed bug where modules not in project path would have the filename truncated to .o in the build command.
+o Fixed bug where editing a project file did not refresh code properties until file was saved.
+o Fixed bug where editing while a project was open could be very slow.
+1.0.0.9
+o Added Path Options to set compiler and project paths.
+o On Project options there is an option checkbox to recompile modules on every build.
+o Project options textboxes now has auto horizontal scroll to allow more text to be entered.
+o Make commands no longer contains path to compiler. The path to fbc must be set with Path Options
+o You can now choose which api files to load by manually editing FbEdit.ini section [Api]
+o Included wxCall.api file. This enables Code Complete and tooltips on wx function calls.
+o Fixed bug where dialog editor option 'Styles as hex' did not work.
+o On successfull make output window is hidden.
+o Compiler errors are bookmarked in output window.
+1.0.0.8
+o Add new / existing module implemented.
+o Rename Selected project file implemented.
+o Project options implemented.
+o Compile Modules implemented.
+o Included a multimodule project.
+o Fixed bug where double clicking on project description in project browser would attemt to open a file.
+o Added Dr_D's icon.
+o Added support for external files.
+o Moved api files to a sub directory.
+1.0.0.7
+o Overwrite prompt when adding new file to project and file alredy exists.
+o More meaningful open / save file dialog titles.
+o Fixed bug where setting code editor options without an open and selected code window did not work.
+o Added Ctrl+Tab (Next tab) and Ctrl+Shift+Tab (Previous tab).
+o Remove Selected project file is now implemented.
+1.0.0.6
+o Activated browse button when setting make options.
+o Made it possible to close all files.
+o Bare minimum project support. You must edit FbEdit.ini to set default project path.
+o Updated RAPropert.dll to support clering all properties.
+o Included DialogApp, the very first FbEdit project.
+1.0.0.5
+o Made Output and Project / Property windows sizeable.
+o Made Project and Property windows hideable.
+o Added tabs for selecting File or Project browser.
+o Added toolbar buttons for make commands.
+o Added toolbar buttons for Show / Hide Project and Property.
+o If drive letter is missing from make command it is copied from application path.
+o If drive letter is missing from help or tools command it is copied from application path.
+o Auto 'Save All' on make.
+o Up to 20 make commands can be created. Currently selected is shown in statusbar.
+o Added close button to close a tab.
+1.0.0.4
+o Added color themes. Up to 15 themes can be defined.
+o Fixed bug where hiliting active line did not work.
+o Data types (from fbType.api file) now has its own color.
+1.0.0.3
+o Code complete on types and unions.
+o Block Mode (vertical) editing with insert.
+o Added accelerator keys to all edit commands.
+o The initial (Untitled).bas file is auto closed when first file is opened.
+o Fixed a font selection bug (fontnames longer than 11 chars did not work).
+o Fixed bug in RAResEd.dll (resource editor) where dialogs with a grid would not show.
+
+Licence
+-------
+FbEdit and all sources are free to use in any way you see fit.
+Sources for the custom controls used by FbEdit can be found at:
+www.radasm.com
+
+FbEdit user manual
+------------------
+
+Help files:
+- The first help file on the help menu can be opened with F1 (Win32.hlp Windows api reference)
+- The second help file on the help menu can be opened with Ctrl+F1 (fb.chm FreeBASIC help file)
+
+Project limitations:
+- The main source file must be file number 1 in the project.
+    [Files]
+    1=MyMainSource.bas
+
+Resource scripts:
+- Resource scripts can be opened in text edit mode by holding Ctrl key while opening the file.
+
+Creating a new color theme:
+  1. Select Options / Code Editor
+  2. From the Color Theme combobox select a theme close to what you want.
+  3. From the Color Theme combobox select New Theme.
+  4. Give it a proper name and click Add New.
+  5. Change the colors you want and click OK.
+
+Templates:
+- Template files are plain text and can be edited using a text editor.
+- A template can contain multiple build options.
+- FbEdit.ini section [Template] specifies file types recognized by 'Create Template'.
+- If you want file renaming then replace filename with [*PRONAME*]
+  Example: #include "[*PRONAME*].bi"
+
+Block Complete:
+  If you prefere using End If instead of EndIf then change the following in
+  FbEdit.ini section [Block]
+	[Block]
+	 .
+	 .
+	13=if $$ then,EndIf|End If,elseif,else,0
+	Change it to:
+	[Block]
+	 .
+	 .
+	13=if $$ then,End If|EndIf,elseif,else,0
+
+Case convert hidden setting.
+
+	Case convert uses the internal word list. The word list comes from the
+	currently loaded api files and from parsing your sources. Each word belongs
+	to a word group. The word groups are as follows:
+	  From api file:
+		A	From xxxConst.api
+		C	From xxxCase.api
+		P	From xxxCall.api
+		S	From xxxStruct.api
+		T	From xxxType.api
+		W	From xxxWord.api
+	  Parsed from sources:
+		c	Constant
+		d	Variable
+		e	Enum
+		m	Macro
+		n	Namespace
+		o	Operator
+		p	Sub or Function
+		s	UDT
+		x	Constructor
+		y	Destructor
+		z	Property
+
+	Case convert groups:
+	FbEdit.ini section [Edit]
+	[Edit]
+	CaseConvert=CWPp
+
+KetilO

@@ -1,0 +1,31 @@
+Imortis
+I run FBEdit from my thumbdrive. If I open a file from the File Menu, the next time I open FbEdit on a different Computer (with different drive letters), It will give me several File Read errors.
+It is trying to read the recently used file list. If I open the file from the browser box on the right side of the screen, I don't have this problem. It only happens when I go in through the file menu.
+
+Philippe
+1-It seem that FBEdit don't make any difference between structure and pointer to structure in the code completion.
+If i use Dim xxx as ITEMIDLIST i can access members with xxx.mkid or xxx->mkid.
+2-If i declare Dim xxx as LPITEMIDLIST i cannot acces members with code completion, but if i declare Dim xxx as ITEMIDLIST ptr then i can access members (with '.' or '->')
+3-To be able to access members with code completion (as in 1 & 2), i must drop/add the .bi to the project. The #include is not enought
+Anyway FreeBasic is great and FBEdit is the best IDE for it !!!
+
+KetilO
+o Parsing class typees:
+  - Private and Public ignored.
+o Functions with different signatures:
+  - Not supported in code tooltip.
+  - Creates duplicates in code complete list.
+o Using not supported.
+? Expanding macros while parsing.
+
+denise_amiga
+type the next code:
+Code:
+if a then print
+go back to "print" and press return
+Code:
+If a Then 
+
+EndIfprint
+insert the line after "endif"
+
