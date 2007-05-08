@@ -1,0 +1,19 @@
+#define IDB_TOOLBOX						32100
+#define IDB_MNUARROW					32101
+#define IDB_DLG							32102
+#define IDB_TBX							32103
+#define IDB_PRP							32104
+#define IDB_PRJ							32105
+#define IDB_CUSTCTL						32106
+#define IDB_BOOKMARK					32108
+#define IDB_PROTRV						32107
+IDB_TOOLBOX				BITMAP    DISCARDABLE "Res/ToolBox.bmp"
+IDB_MNUARROW			BITMAP    DISCARDABLE "Res/MnuArrow.bmp"
+IDB_DLG					BITMAP    DISCARDABLE "Res/dlg.bmp"
+IDB_TBX					BITMAP    DISCARDABLE "Res/tbx.bmp"
+IDB_PRP					BITMAP    DISCARDABLE "Res/prp.bmp"
+IDB_PRJ					BITMAP    DISCARDABLE "Res/prj.bmp"
+IDB_CUSTCTL				BITMAP    DISCARDABLE "Res/Button.bmp"
+IDB_BOOKMARK			BITMAP    DISCARDABLE "Res/Bookmark.bmp"
+IDB_PROTRV				BITMAP    DISCARDABLE "Res/ProTrv.bmp"
+32106					ICON      DISCARDABLE "Res/ResEd.ico"
