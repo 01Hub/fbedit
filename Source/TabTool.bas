@@ -645,12 +645,13 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						fChangeNotification=-1
 						lstrcpy(@buff,lpTABMEM->filename)
 						buff=buff & CR & "File changed outside editor!" & CR & "Reopen the file?"
-						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
-							' Reload file
-							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
-							lstrcpy(@buff,lpTABMEM->filename)
-							SetFileInfo(lpTABMEM->hedit,buff)
-						EndIf
+' Still some bugs
+'						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
+'							' Reload file
+'							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
+'							lstrcpy(@buff,lpTABMEM->filename)
+'							SetFileInfo(lpTABMEM->hedit,buff)
+'						EndIf
 						lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
 						lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
 						fChangeNotification=10
