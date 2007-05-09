@@ -298,11 +298,13 @@ Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As Z
 					' Get indent
 					szIndent=Chr(255) & Chr(1)
 					lx=SendMessage(hWin,EM_GETLINE,lx,Cast(LPARAM,@szIndent))
-					Mid(szIndent,lx+1)=szNULL
+					'Mid(szIndent,lx+1)=szNULL
+					szIndent[lx]=NULL
 					lz=1
 					While lz<lx
 						If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
-							Mid(szIndent,lz,1)=szNULL
+							'Mid(szIndent,lz,1)=szNULL
+							szIndent[lz-1]=NULL
 							Poke Integer,lpErr,0
 							Exit While
 						EndIf
@@ -328,11 +330,13 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 	' Get indent
 	szIndent=Chr(255) & Chr(1)
 	lx=SendMessage(hWin,EM_GETLINE,ln,Cast(LPARAM,@szIndent))
-	Mid(szIndent,lx+1)=szNULL
+	'Mid(szIndent,lx+1)=szNULL
+	szIndent[lx]=NULL
 	lz=1
 	While lz<=lx
 		If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
-			Mid(szIndent,lz,1)=szNULL
+			'Mid(szIndent,lz,1)=szNULL
+			szIndent[lz-1]=NULL
 			Exit While
 		EndIf
 		lz=lz+1
@@ -548,7 +552,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lret,0)
 					buff=Chr(255) & Chr(1)
 					p=Cast(ZString ptr,SendMessage(hPar,EM_GETLINE,lret,Cast(LPARAM,@buff)))
-					Mid(buff,Cast(Integer,p)+1,1)=szNULL
+					'Mid(buff,Cast(Integer,p)+1,1)=szNULL
+					buff[Cast(Integer,p)]=NULL
 					SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					chrg.cpMin=chrg.cpMax-lstrlen(@buff)
 					p=Cast(ZString ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
@@ -557,7 +562,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						lstrcpy(@buff,p)
 						lret=InStr(buff,":")
 						If lret Then
-							Mid(buff,lret,1)=szNULL
+							'Mid(buff,lret,1)=szNULL
+							buff[lret-1]=NULL
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
@@ -575,7 +581,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
+						'Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
+						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
@@ -656,7 +663,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
+						'Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
+						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hpr,PRM_GETTOOLTIP,0,Cast(LPARAM,@tt))
@@ -695,7 +703,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
-							Mid(buff,lret+1,1)=szNULL
+							'Mid(buff,lret+1,1)=szNULL
+							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
 							SendMessage(ah.hcc,CCM_CLEAR,0,0)
@@ -709,7 +718,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
-							Mid(buff,lret+1,1)=szNULL
+							'Mid(buff,lret+1,1)=szNULL
+							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
 							SendMessage(ah.hcc,CCM_CLEAR,0,0)
@@ -817,11 +827,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									' Get indent
 									buff=Chr(255) & Chr(1)
 									lp=SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@buff))
-									Mid(buff,lp+1)=szNULL
+									'Mid(buff,lp+1)=szNULL
+									buff[lp]=NULL
 									lz=1
 									While lz<lp
 										If Asc(buff,lz)<>VK_SPACE And Asc(buff,lz)<>VK_TAB Then
-											Mid(buff,lz,1)=szNULL
+											'Mid(buff,lz,1)=szNULL
+											buff[lz-1]=NULL
 											Exit While
 										EndIf
 										lz=lz+1
@@ -1742,7 +1754,8 @@ Function OpenInclude() As String
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,x,0)
 			buff=Chr(255) & Chr(1)
 			x=SendMessage(ah.hred,EM_GETLINE,x,Cast(LPARAM,@buff))
-			Mid(buff,x+1,1)=szNULL
+			'Mid(buff,x+1,1)=szNULL
+			buff[x]=NULL
 			x=chrg.cpMax-chrg.cpMin+1
 			While x
 				If Asc(buff,x-1)=34 Then
