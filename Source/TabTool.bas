@@ -626,13 +626,13 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				If x<>(lpTABMEM->filestate And 1) Then
 					lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
 					lpTABMEM->filestate=lpTABMEM->filestate Or x
-					If x Then
-						hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
-						If hFile<>INVALID_HANDLE_VALUE Then
-							GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
-							CloseHandle(hFile)
-						EndIf
-					EndIf
+'					If x Then
+'						hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+'						If hFile<>INVALID_HANDLE_VALUE Then
+'							GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
+'							CloseHandle(hFile)
+'						EndIf
+'					EndIf
 					CallAddins(ah.hwnd,AIM_FILESTATE,i,Cast(Integer,lpTABMEM),HOOK_FILESTATE)
 				EndIf
 			ElseIf nType=5 Then
@@ -645,13 +645,12 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						fChangeNotification=-1
 						lstrcpy(@buff,lpTABMEM->filename)
 						buff=buff & CR & "File changed outside editor!" & CR & "Reopen the file?"
-' Still some bugs
-'						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
-'							' Reload file
-'							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
-'							lstrcpy(@buff,lpTABMEM->filename)
-'							SetFileInfo(lpTABMEM->hedit,buff)
-'						EndIf
+						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
+							' Reload file
+							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
+							lstrcpy(@buff,lpTABMEM->filename)
+							SetFileInfo(lpTABMEM->hedit,buff)
+						EndIf
 						lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
 						lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
 						fChangeNotification=10

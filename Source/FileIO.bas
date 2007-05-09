@@ -185,6 +185,9 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	Dim lpRESMEM As RESMEM ptr
 	Dim tpe As Integer
 	Dim hREd As HWND
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM ptr
+	Dim i As Integer
 
 	If fProject=TRUE And edtopt.backup<>0 Then
 		BackupFile(szFileName,1)
@@ -197,6 +200,20 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
 			nSize=lstrlen(Cast(ZString ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
+			tci.mask=TCIF_PARAM
+			i=0
+			Do While TRUE
+				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					If hWin=lpTABMEM->hedit Then
+						GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
+						Exit Do
+					EndIf
+				Else
+					Exit Do
+				EndIf
+				i=i+1
+			Loop
 			CloseHandle(hFile)
 			SendMessage(lpRESMEM->hProject,PRO_SETMODIFY,FALSE,0)
 			GlobalFree(hMem)
@@ -228,6 +245,20 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			editstream.dwCookie=Cast(Integer,hFile)
 			editstream.pfnCallback=Cast(Any ptr,@StreamOut)
 			SendMessage(hWin,EM_STREAMOUT,SF_TEXT,Cast(Integer,@editstream))
+			tci.mask=TCIF_PARAM
+			i=0
+			Do While TRUE
+				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					If hWin=lpTABMEM->hedit Then
+						GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
+						Exit Do
+					EndIf
+				Else
+					Exit Do
+				EndIf
+				i=i+1
+			Loop
 			CloseHandle(hFile)
 			If tpe=1 Then
 				SetWindowLong(hWin,GWL_ID,IDC_CODEED)
