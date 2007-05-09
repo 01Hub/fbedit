@@ -1547,19 +1547,19 @@ Sub EnableMenu()
 
 End Sub
 
-Sub SetWinCaption(ByVal hWin As HWND)
+Sub SetWinCaption()
 
 	If ah.hred Then
 		If fProject Then
-			SetWindowText(hWin,"FreeBASIC editor - " & ProjectDescription & " - ["& ad.filename & "]")
+			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ProjectDescription & " - ["& ad.filename & "]")
 		Else
-			SetWindowText(hWin,"FreeBASIC editor - " & ad.filename)
+			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ad.filename)
 		EndIf
 	Else
 		If fProject Then
-			SetWindowText(hWin,"FreeBASIC editor - " & ProjectDescription)
+			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ProjectDescription)
 		Else
-			SetWindowText(hWin,"FreeBASIC editor")
+			SetWindowText(ah.hwnd,"FreeBASIC editor")
 		EndIf
 	EndIf
 

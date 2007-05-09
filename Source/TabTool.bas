@@ -52,7 +52,7 @@ Sub DelTab(ByVal hWin As HWND)
 				DestroyWindow(ah.hfullscreen)
 			EndIf
 		EndIf
-		SetWinCaption(hWin)
+		SetWinCaption
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 
@@ -141,7 +141,7 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 					ad.filename=lpTABMEM->filename
 					SendMessage(hWin,WM_SIZE,0,0)
 					ShowWindow(ah.hred,SW_SHOW)
-					SetWinCaption(hWin)
+					SetWinCaption
 					ShowWindow(hOld,SW_HIDE)
 					ShowWindow(ah.htt,SW_HIDE)
 					HideList
@@ -221,7 +221,7 @@ Function CreateEdit(ByVal hWin As HWND) As HWND
 			If WantToSave(ah.hred)=FALSE Then
 				ReadTheFile(ah.hred,ad.filename)
 				UpdateTab
-				SetWinCaption(hWin)
+				SetWinCaption
 			EndIf
 			Return 0
 		Else
@@ -257,7 +257,7 @@ Function CreateEdit(ByVal hWin As HWND) As HWND
 		ShowWindow(hCtl,SW_HIDE)
 	EndIf
 	SetFocus(ah.hred)
-	SetWinCaption(hWin)
+	SetWinCaption
 	SetFullScreen(ah.hred)
 	CreateEdit=ah.hred
 
@@ -395,7 +395,7 @@ Function SaveFileAs(ByVal hWin As HWND) As Boolean
 		ad.filename=buff
 		WriteTheFile(ah.hred,ad.filename)
 		UpdateTab
-		SetWinCaption(ah.hwnd)
+		SetWinCaption
 		Return TRUE
 	EndIf
 	Return FALSE
@@ -441,7 +441,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Bool
 				SendMessage(hWin,WM_SIZE,0,0)
 				ShowWindow(ah.hred,SW_SHOW)
 				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-				SetWinCaption(hWin)
+				SetWinCaption
 				If WantToSave(hWin) Then
 					Return TRUE
 				EndIf
@@ -486,7 +486,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Bool
 		DestroyWindow(ah.hfullscreen)
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
-	SetWinCaption(hWin)
+	SetWinCaption
 	Return FALSE
 
 End Function
@@ -548,7 +548,7 @@ Function SaveAllFiles(ByVal hWin As HWND) As Integer
 						ShowWindow(hOld,SW_HIDE)
 					EndIf
 					SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-					SetWinCaption(hWin)
+					SetWinCaption
 					If SaveFileAs(hWin)=FALSE Then
 						nNotSaved+=1
 					EndIf
@@ -785,7 +785,7 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 									ShowWindow(hOld,SW_HIDE)
 								EndIf
 								SendMessage(ah.htabtool,TCM_SETCURSEL,id,0)
-								SetWinCaption(ah.hwnd)
+								SetWinCaption
 								If SaveFileAs(hWin)=FALSE Then
 									EndDialog(hWin,1)
 									Return TRUE

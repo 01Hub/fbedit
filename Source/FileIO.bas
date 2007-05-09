@@ -312,7 +312,7 @@ Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean
 						ShowWindow(hOld,SW_HIDE)
 					EndIf
 					SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-					SetWinCaption(hWin)
+					SetWinCaption
 					SetFocus(ah.hred)
 				EndIf
 				Return lpTABMEM->hedit

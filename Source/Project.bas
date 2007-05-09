@@ -561,7 +561,7 @@ Function OpenProject() As Integer
 	SendMessage(ah.hprj,TVM_SORTCHILDRENCB,0,Cast(LPARAM,@tvs))
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	GetMakeOption
-	SetWinCaption(ah.hwnd)
+	SetWinCaption
 	SendMessage(ah.hwnd,WM_COMMAND,IDM_NEXTTAB,0)
 	AddMruProject
 	CallAddins(ah.hwnd,AIM_PROJECTOPEN,0,0,HOOK_PROJECTOPEN)
@@ -584,7 +584,7 @@ Function CloseProject() As Integer
 		LoadApiFiles
 		SetHiliteWordsFromApi(ah.hwnd)
 		SetCurrentDirectory(@ad.AppPath)
-		SetWinCaption(ah.hwnd)
+		SetWinCaption
 		GetMakeOption
 		CallAddins(ah.hwnd,AIM_PROJECTCLOSE,0,0,HOOK_PROJECTCLOSE)
 		Return TRUE
@@ -1583,7 +1583,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),@ad.resexport,@ad.ProjectFile)
 					RefreshProjectTree
 					GetMakeOption
-					SetWinCaption(ah.hwnd)
+					SetWinCaption
 					AddMruProject
 					SetHiliteWords(ah.hwnd)
 					' Add api files

@@ -514,7 +514,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetToolMenu(hWin)
 			SetHelpMenu(hWin)
 			SetTimer(hWin,200,200,Cast(Any ptr,@MyTimerProc))
-			SetWinCaption(hWin)
+			SetWinCaption
 			hVCur=LoadCursor(hInstance,Cast(ZString ptr,IDC_VSPLIT))
 			hHCur=LoadCursor(hInstance,Cast(ZString ptr,IDC_HSPLIT))
 			OpenMruProjects
@@ -609,7 +609,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							ShowWindow(ah.hred,SW_HIDE)
 							ah.hred=ah.hres
 							AddTab(hWin,ah.hred,ad.filename)
-							SetWinCaption(hWin)
+							SetWinCaption
 							ShowWindow(ah.hred,SW_SHOW)
 							SendMessage(hWin,WM_SIZE,0,0)
 							SetFocus(ah.hred)
@@ -1547,7 +1547,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				ShowWindow(ah.hred,SW_SHOW)
 				ShowWindow(hCtl,SW_HIDE)
 				SetFocus(ah.hred)
-				SetWinCaption(hWin)
+				SetWinCaption
 				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 					UpdateFileProperty
 				EndIf
@@ -1606,7 +1606,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					If IsFileOpen(hWin,sEditFileName,TRUE) Then
 						ad.filename=MakeProjectFileName(sItem)
 						UpdateTab
-						SetWinCaption(hWin)
+						SetWinCaption
 					EndIf
 					RefreshProjectTree
 				EndIf
