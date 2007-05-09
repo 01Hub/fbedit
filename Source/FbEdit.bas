@@ -1761,10 +1761,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 			EndIf
 			'
+			Return DefWindowProc(hWin,uMsg,wParam,lParam)
 		Case WM_SETFOCUS
 			If ah.hred Then
+				' Hack to solve a caret problem
 				SetFocus(ah.hred)
-				Return FALSE
+				SetFocus(ah.hout)
+				SetFocus(ah.hred)
 			EndIf
 			'
 		Case AIM_GETHANDLES
