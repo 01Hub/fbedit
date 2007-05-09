@@ -1,0 +1,191 @@
+Abs,number
+Acos,number As Double
+Allocate,count As Integer
+Assert,expression
+AssertWarn,expression
+Asc,string, [position]
+Asin,number
+Atan2,y As Double, x As Double
+Atn,number
+Bin,expression, [digits As Integer]
+Bit,value, bit_number
+BitReset,value, bit_number
+BitSet,value, bit_number
+BLoad,filename As String, [addr As Any Ptr], [pal As Any Ptr]
+BSave,filename As String, [addr As Any Ptr], [size As Integer], [pal As Any Ptr]
+CAllocate,num_elements As Integer, [size As Integer]
+Cast,DataType, expression
+CByte,expression
+CDbl,expression
+Chain,exename As String
+ChDir,path As String
+Chr,expression, [...]
+CInt,expression
+CLng,expression
+CLngInt,expression
+Cls,[mode As Integer]
+Color,foreground As Integer, background As Integer
+Command,[index As Integer]
+CondBroadcast,handle As Any Ptr
+CondDestroy,handle As Any Ptr
+CondSignal,handle As Any Ptr
+CondWait,handle As Any Ptr
+Cos,number As Double
+CPtr,DataType Ptr, expression
+CShort,expression
+CSign,expression
+CSng,expression
+CUByte,expression
+CUInt,expression
+CULngInt,expression
+CUnsgn,expression
+CUShort,expression
+CVD,str As String
+CVI,str As String
+CVL,str As String
+CVLongInt,str As String
+CVS,str As String
+CVShort,str As String
+DateAdd,interval As String, number As Double, date_serial As Double
+DateDiff,interval As String, serial1 As Double, serial2 As Double, [firstdayofweek As Integer], [firstdayofyeer As Integer]
+DatePart,interval As String, date_serial As Double, [firstdayofweek As Integer], [firstdayofyeer As Integer]
+DateSerial,year As Integer, month As Integer, day As Integer
+DateValue,stringdate As String
+Day,date_serial As Double
+Deallocate,pointer As Any Ptr
+defined,symbol_name
+Dir,[file_spec As String], [attrib_mask As Integer], [out_attrib As Integer Ptr]
+DyLibFree,library As Any Ptr
+DyLibLoad,filename As String
+DyLibSymbol,library As Any Ptr, symbol As String
+SetEnviron,varname As String
+Environ,varname As String
+EOF,filenum As Integer
+Error,errno As Integer
+Exec,program As String, arguments As String
+Exp,number As Double
+FileAttr,handle As Integer, [returntype As Integer]
+FileCopy,source As String, destination As String
+FileDateTime,filename As ZString Ptr
+FileExists,filename As ZString Ptr
+FileLen,filename As String
+Fix,number As Double
+Flip,[frompage As Integer], [topage As Integer]
+Format,numerical_expression As Double, [formatting_expression As String]
+GetJoystick,id As Integer, [buttons As Integer], [x As Single], [y As Single], [z As Single], [r As Single], [u As Single], [v As Single], [a7 As Single], [a8 As Single]
+GetMouse,x As Integer, y As Integer, [wheel As Integer], [buttons As Integer]
+Hex,number
+HiByte,expression
+HiWord,expression
+Hour,date_serial As Double
+Iif,condition, expr_if_true, expr_if_false
+ImageConvertRow,src As Any Ptr, src_bpp As Integer, dst As Any Ptr, dst_bpp As Integer, width As Integer, [isrgb As Integer]
+ImageCreate,width As Integer, height As Integer, [color As UInteger], [depth As Integer]
+ImageDestroy,pointer As Any Ptr
+Inp,port As UShort
+Input,num As Integer, [filenum As Integer]
+InStr,[start As Integer], string As String, [any] substring As String
+Int,number As Double
+IsDate,stringdate As String
+Kill,filename As String
+LBound,array, [dimension]
+LCase,expression As String
+Left,expression As String, characters As Integer
+Len,variable
+LoByte,expression
+LOC,filenum As Integer
+LOF,filenum As Integer
+Log,number As Double
+LoWord,expression
+Lpos,printer As Integer
+LTrim,expression As String, [[any] trimset As String]
+Mid,text As String, start As Integer, [length As Integer]
+Minute,date_serial As Double
+MKD,number As String
+MkDir,folder As String
+MKI,number As String
+MKL,number As String
+MKLongInt,number As String
+MKS,number As String
+MKShort,number As String
+Month,date_serial As Double
+MonthName,month As Integer, [abbreviate As Integer]
+MultiKey,scancode As Integer
+MutexDestroy,id As Any Ptr
+MutexLock,id As Any Ptr
+MutexUnlock,id As Any Ptr
+Name,oldname As String, newname As String
+Oct,number
+OffsetOf,typename, fieldname
+Out,port As UShort, data As UByte
+PCopy,source As Integer, destination As Integer
+Peek,[DataType], address
+Point,coord_x, coord_y, [buffer]
+ProcPtr,proc_name
+Randomize,[seed As Double]
+Reallocate,pointer As Any Ptr, count As Integer
+RGB,red, green, blue
+RGBA,red, green, blue, alpha
+Right,expression As String, characters As Integer
+RmDir,folder As String
+Rnd,[number As Double]
+RSet,src As String, dst As String
+RTrim,expression As String, [[any] trimset As String]
+Run,program As String, [arguments As String]
+SAdd,string As String
+Screen,row, column, [color_flag]
+ScreenCopy,[frompage As Integer], [topage As Integer]
+ScreenControl,what As Integer, [param1 As Integer], [param2 As Integer], [param3 As Integer], [param4 As Integer]
+ScreenEvent,[event As Any Ptr]
+ScreenInfo,[w As Integer], [h As Integer], [depth As Integer], [bpp As Integer], [pitch As Integer], [rate As Integer], [driver As String]
+ScreenList,depth As Integer
+ScreenSet,[work_page As Integer], [visible_page As Integer]
+ScreenUnlock,[startline As Integer], [endline As Integer]
+Second,date_serial As Double
+Seek,filenum As Integer
+SetDate,newdate As String
+SetMouse,[x As Integer], [y As Integer], [visibility As Integer]
+SetTime,newtime As String
+Sgn,number As Double
+Shell,command As String
+Sin,number As Double
+SizeOf,variable
+Sleep,[msecs As Integer], [kind As Integer]
+Space,count As Integer
+Spc,columns
+Sqr,number As Double
+Stop,[retval As Integer]
+Str,number
+STring,count As Integer, ch As String
+StrPtr,variable As String
+System,[retval As Integer]
+Tab,column
+Tan,number As Double
+ThreadCreate,proc As Sub(As Integer), [param As Integer]
+ThreadWait,id As Any Ptr
+TimeSerial,hour As Integer, minute As Integer, second As Integer
+TimeValue,timestring As String
+Trim,expression As String, [[any] trimset As String]
+UBound,array, [dimension]
+UCase,expression As String
+va_arg,argument_list, DataType
+va_next,argument_list, DataType
+Val,str As String
+ValLng,str As String
+ValInt,str As String
+ValUInt,str As String
+ValULng,str As String
+VarPtr,variable
+Wait,port As UShort, and_mask As Integer, [xor_mask As Integer]
+WBin,number
+WChr,expression, [...]
+Weekday,serial As Double, [firstdayofweek As Integer]
+WeekdayName,weekday As Integer, [abbreviate As Integer], [firstdayofweek As Integer]
+WHex,number
+WindowTitle,title As String
+WInput,num As Integer, [filenum As Integer]
+WOct,number
+WSpace,count As Integer
+Wstr,expression
+WSTring,count As Integer, ch As String
+Year,date_serial As Double
