@@ -524,7 +524,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ShowWindow(ah.htabtool,SW_HIDE)
 			hSplashBmp=LoadBitmap(hInstance,Cast(ZString ptr,103))
 			lpOldSplashProc=Cast(Any ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
-			Return FALSE
+			Return Cast( Integer, hWin )
 			'
 		Case WM_CLOSE
 			If CloseAllTabs(hWin,fProject)=FALSE Then
