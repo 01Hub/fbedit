@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.5.3
+o Added skip commented line to find dialog.
 o Added file changed outside editor notification.
 o Added checkmarks to some Format menu items.
 o Added code complete to #Include and #Inclib

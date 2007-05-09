@@ -8,6 +8,7 @@
 #Define IDC_CHK_WHOLEWORD					2007
 #Define IDC_CHK_MATCHCASE					2003
 #Define IDC_CHK_PROJECTFILES				2012
+#Define IDC_CHK_SKIPCOMMENTS				2013
 #Define IDC_RBN_ALL							2004
 #Define IDC_RBN_DOWN							2005
 #Define IDC_RBN_UP							2006
@@ -22,6 +23,7 @@ Dim Shared fr As Long=FR_DOWN
 Dim Shared fres As Long
 Dim Shared ft As FINDTEXTEX
 Dim Shared nReplaceCount As Integer
+Dim Shared fSkipCommentLine As Long
 
 Function Find(hWin As HWND,frType As Long) As Long
 	Dim chrg As CHARRANGE
@@ -29,13 +31,15 @@ Function Find(hWin As HWND,frType As Long) As Long
 	Dim hMem As HGLOBAL
 	Dim ms As MEMSEARCH
 	Dim tmp As Integer
+	Dim nLine As Integer
+	Dim lLine As Integer
 
 TryAgain:
 	If fPro=1 Then
 		fres=0
 		While fres=0
 			sFile=GetProjectFileName(fProFileNo)
-			If sFile<>"" Then
+			If Len(sFile) Then
 				If FileType(sFile)=1 Then
 					hMem=GetFileMem(sFile)
 					ms.lpMem=hMem
@@ -88,7 +92,7 @@ TryAgain:
 	ft.chrg.cpMin=chrg.cpMin
 	If frType And FR_DOWN Then
 		If fres<>-1 Then
-			ft.chrg.cpMin=chrg.cpMin+lstrlen(@findbuff)
+			ft.chrg.cpMin=chrg.cpMin+Len(findbuff)
 		EndIf
 	Else
 		ft.chrg.cpMax=0
@@ -97,10 +101,18 @@ TryAgain:
 TryFind:
 	' Do the find
 	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@ft))
-	If  ft.chrg.cpMin>(ft.chrg.cpMax And &H7FFFFFFF) And fDir=0 Then
+	If ft.chrg.cpMin>(ft.chrg.cpMax And &H7FFFFFFF) And fDir=0 Then
 		fres=-1
 	EndIf
 	If fres<>-1 Then
+		nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,ft.chrgText.cpMin)
+		buff=Chr(255) & Chr(1)
+		lLine=SendMessage(ah.hred,EM_GETLINE,nLine,Cast(LPARAM,@buff))
+		buff[lLine]=0
+		If (Asc(LTrim(buff, Any Chr(32,9)))=Asc("'")) And fSkipCommentLine Then
+			ft.chrg.cpMin+=1
+			GoTo TryFind
+		EndIf
 		' Mark the foud text
 		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrgText))
 		SendMessage(ah.hred,REM_VCENTER,0,0)
@@ -180,6 +192,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				fPro=0
 				EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),FALSE)
 			EndIf
+			If fSkipCommentLine Then
+				CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,BST_CHECKED)
+			EndIf
 			fPos=ft.chrg.cpMin
 			ft.chrg.cpMax=-1
 			fProFileNo=1
@@ -258,11 +273,15 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						fProFileNo=1
 						'
 					Case IDC_CHK_PROJECTFILES
-						If fPro Then
-							fPro=0
-						Else
-							fPro=1
-						EndIf
+						fPro=fPro Xor 1
+						fres=-1
+						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
+						fPos=ft.chrg.cpMin
+						ft.chrg.cpMax=-1
+						fProFileNo=1
+						'
+					Case IDC_CHK_SKIPCOMMENTS
+						fSkipCommentLine=fSkipCommentLine Xor 1
 						fres=-1
 						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
 						fPos=ft.chrg.cpMin
