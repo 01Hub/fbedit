@@ -8,9 +8,8 @@ Sub SaveToIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal sz
 	Dim p As ZString ptr
 
 	For i=1 To Len(szTypes)
-		tmp=Mid(szTypes,i,1)
 		v=0
-		Select Case Val(tmp)
+		Select Case Asc(szTypes,i)-48
 			Case 0
 				' String
 				RtlMoveMemory(@p,lpDta+ofs,4)
@@ -59,9 +58,8 @@ Function LoadFromIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,B
 	EndIf
 	If GetPrivateProfileString(lpszApp,lpszKey,@szNULL,@szDta,4096,@tmp) Then
 		For i=1 To Len(szTypes)
-			tmp=Mid(szTypes,i,1)
 			v=0
-			Select Case Val(tmp)
+			Select Case Asc(szTypes,i)-48
 				Case 0
 					' String
 					RtlMoveMemory(@p,lpDta+ofs,4)

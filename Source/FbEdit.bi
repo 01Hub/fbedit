@@ -269,8 +269,11 @@ Type THEME
 End Type
 
 '#define TTN_NEEDTEXTA			-520
+'included in freebasic 0.17 cvs
+#Ifndef TVN_BEGINLABELEDITA
 #Define TVN_BEGINLABELEDITA	TVN_FIRST-10
 #Define TVN_ENDLABELEDITA		TVN_FIRST-11
+#EndIf
 
 Type NAMEEXPORT
 	nType				As Integer

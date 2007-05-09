@@ -140,10 +140,14 @@ Sub CmdLine
 	s=String(16384,szNULL)
 	buff=String(16384,szNULL)
 	lstrcpyn(@s,CommandLine,8192)
-	Do While Left(s,1)=" "
+	''' skip whites space
+	''' test ltrim for speed 
+	Do While (Asc(s)=Asc(" ")) Or (Asc(s)=9)
+		''' avoid mid
+		''' better use a index
 		s=Mid(s,2)
 	Loop
-	If lstrlen(s) Then
+	If Len(s) Then
 		s=s & " "
 	ElseIf edtopt.autoload Then
 		' Load last project
@@ -151,16 +155,16 @@ Sub CmdLine
 		s=""
 	EndIf
 	x=1
-	Do While Mid(s,x,1)<>szNULL
-		If Mid(s,x,1)=Chr(34) Then
+	Do While Asc(s,x)<>0 ''' szNULL
+		If Asc(s,x)=34 Then
 			x=x+1
-			Do While Mid(s,x,1)<>Chr(34)
+			Do While Asc(s,x)<>34
 				x=x+1
 			Loop
 		EndIf
-		If Mid(s,x,1)=" " Then
+		If Asc(s,x)=Asc(" ") Then
 			lstrcpyn(@ad.filename,@s,x)
-			If Left(ad.filename,1)=Chr(34) Then
+			If Asc(ad.filename)=34 Then
 				ad.filename=Mid(ad.filename,2,InStr(2,ad.filename,Chr(34))-2)
 			EndIf
 			' Open single file
@@ -436,10 +440,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hpr,PRM_SELECTPROPERTY,Asc("p")+256,0)
 			' Set button 'Open files'
 			SendMessage(ah.hpr,PRM_SETSELBUTTON,2,0)
- 			' Code complete list
+			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
 			lpOldCCProc=Cast(Any ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
-
 			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
@@ -468,7 +471,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Add api files
 			LoadApiFiles
 			SetHiliteWordsFromApi(ah.hwnd)
-
 			ah.hmnuiml=ImageList_Create(16,16,ILC_COLOR4 Or ILC_MASK,4,0)
 			hBmp=LoadBitmap(hInstance,Cast(ZString ptr,IDB_MNUARROW))
 			ImageList_AddMasked(ah.hmnuiml,hBmp,&HC0C0C0)
@@ -1518,9 +1520,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 				'
 			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA Then
- 				' ToolBar tooltip
+				' ToolBar tooltip
 				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT ptr,lParam)
- 				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
+				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
 				If lret Then
 					lpTOOLTIPTEXT->lpszText=Cast(ZString ptr,lret)
 				Else
@@ -1849,7 +1851,11 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	CreateDialogParam(hInst,Cast(ZString ptr,IDD_MAIN),NULL,@DlgProc,NULL)
 	If wpos.fMax Then
 		ShowWindow(ah.hwnd,SW_MAXIMIZE)
-		PostMessage(ah.hwnd,WM_SIZE,0,0)
+		''' i suggest change next line to sendmessage because
+		''' postmessage interferes/asynchronizes in the load of addins and 
+		''' first refresh/update of main window can fails.
+		SendMessage(ah.hwnd,WM_SIZE,0,0)
+		'PostMessage(ah.hwnd,WM_SIZE,0,0)
 	Else
 		ShowWindow(ah.hwnd,SW_SHOWNORMAL)
 	EndIf

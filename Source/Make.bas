@@ -220,18 +220,18 @@ Function GetErrLine(ByVal buff As String,ByVal fQuickRun As Boolean) As Integer
 			Else
 				Mid(buffer,x,1)=szNULL
 				If fProject Then
-					If Mid(buffer,2,1)<>":" Then
+					If Asc(buffer,2)<>Asc(":") Then
 						buffer=ad.ProjectPath & "\" & buffer
 					EndIf
 				Else
-					If Mid(buffer,2,1)<>":" Then
+					If Asc(buffer,2)<>Asc(":") Then
 						GetCurrentDirectory(260,@sItem)
 						buffer=sItem & "\" & buffer
 					EndIf
 				EndIf
 			EndIf
 			For x=1 To Len(buffer)
-				If Mid(buffer,x,1)="/" Then
+				If Asc(buffer,x)=Asc("/") Then
 					buffer=Left(buffer,x-1) & "\" & Mid(buffer,x+1)
 				EndIf
 			Next x

@@ -119,9 +119,9 @@ End Sub
 Sub GetFilePath(ByVal sFile As String)
 	Dim x As Integer
 
-	x=lstrlen(@sFile)
+	x=Len(sFile)
 	While x
-		If Mid(sFile,x,1)="\" Then
+		If Asc(sFile,x)=Asc("\") Then
 			sFile=Left(sFile,x-1)
 			Exit While
 		EndIf
@@ -135,7 +135,7 @@ Function GetFileExt(ByVal sFile As String) As String
 
 	x=Len(sFile)
 	While x
-		If Mid(sFile,x,1)="." Then
+		If Asc(sFile,x)=Asc(".") Then
 			Exit While
 		EndIf
 		x=x-1
@@ -149,7 +149,7 @@ Function RemoveFileExt(ByVal sFile As String) As String
 
 	x=Len(sFile)
 	While x
-		If Mid(sFile,x,1)="." Then
+		If Asc(sFile,x)=Asc(".") Then
 			Exit While
 		EndIf
 		x=x-1
@@ -164,18 +164,18 @@ Function GetFileName(ByVal sFile As String,ByVal fExt As Boolean) As String
 
 	sItem=sFile
 	If fExt=FALSE Then
-		x=lstrlen(@sItem)
+		x=Len(sItem)
 		While x
-			If Mid(sItem,x,1)="." Then
+			If Asc(sItem,x)=Asc(".") Then
 				sItem=Left(sItem,x-1)
 				Exit While
 			EndIf
 			x=x-1
 		Wend
 	EndIf
-	x=lstrlen(@sItem)
+	x=Len(sItem)
 	While x
-		If Mid(sItem,x,1)="\" Then
+		If Asc(sItem,x)=Asc("\") Then
 			Exit While
 		EndIf
 		x=x-1
@@ -301,7 +301,7 @@ Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As Z
 					Mid(szIndent,lx+1)=szNULL
 					lz=1
 					While lz<lx
-						If Mid(szIndent,lz,1)<>Chr(VK_SPACE) And Mid(szIndent,lz,1)<>Chr(VK_TAB) Then
+						If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
 							Mid(szIndent,lz,1)=szNULL
 							Poke Integer,lpErr,0
 							Exit While
@@ -331,7 +331,7 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 	Mid(szIndent,lx+1)=szNULL
 	lz=1
 	While lz<=lx
-		If Mid(szIndent,lz,1)<>Chr(VK_SPACE) And Mid(szIndent,lz,1)<>Chr(VK_TAB) Then
+		If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
 			Mid(szIndent,lz,1)=szNULL
 			Exit While
 		EndIf
@@ -820,7 +820,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									Mid(buff,lp+1)=szNULL
 									lz=1
 									While lz<lp
-										If Mid(buff,lz,1)<>Chr(VK_SPACE) And Mid(buff,lz,1)<>Chr(VK_TAB) Then
+										If Asc(buff,lz)<>VK_SPACE And Asc(buff,lz)<>VK_TAB Then
 											Mid(buff,lz,1)=szNULL
 											Exit While
 										EndIf
@@ -1745,7 +1745,7 @@ Function OpenInclude() As String
 			Mid(buff,x+1,1)=szNULL
 			x=chrg.cpMax-chrg.cpMin+1
 			While x
-				If Mid(buff,x-1,1)="""" Then
+				If Asc(buff,x-1)=34 Then
 					Exit While
 				EndIf
 				x=x-1
