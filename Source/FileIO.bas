@@ -95,8 +95,9 @@ Sub ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
 
 End Sub
 
-Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal sFilename As String)
+Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZString ptr)
 	Dim editstream As EDITSTREAM
+	Dim szItem As ZString*260
 	
 	SendMessage(hWin,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
 	editstream.dwCookie=Cast(Integer,hFile)
@@ -104,13 +105,14 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal sFilename As Str
 	SendMessage(hWin,EM_STREAMIN,SF_TEXT,Cast(Integer,@editstream))
 	SendMessage(hWin,REM_SETBLOCKS,0,0)
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
-	If FileType(sFileName)=1 Then
+	lstrcpy(@szItem,lpFilename)
+	If FileType(szItem)=1 Then
 		' Set comment block definition
 		SendMessage(ah.hred,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
 		UpdateAllTabs(3)
 		If fProject<>FALSE And lstrlen(@ad.resexport) Then
 			buff=MakeProjectFileName(ad.resexport)
-			If lstrcmpi(@buff,@sFileName)=0 Then
+			If lstrcmpi(@buff,lpFileName)=0 Then
 				SetWindowLong(hWin,GWL_STYLE,GetWindowLong(hWin,GWL_STYLE) Or STYLE_READONLY)
 			EndIf
 		EndIf
@@ -118,24 +120,24 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal sFilename As Str
 
 End Sub
 
-Sub ReadTheFile(ByVal hWin As HWND)
+Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString ptr)
 	Dim hFile As HANDLE
 	Dim nSize As Integer
 	Dim dwRead As Integer
 	Dim hMem As HGLOBAL
 	Dim lpRESMEM As RESMEM ptr
 
-	hFile=CreateFile(ad.filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	hFile=CreateFile(lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
-		If ah.hred=ah.hres Then
+		If hWin=ah.hres Then
 			nSize=GetFileSize(hFile,NULL)
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nSize+1)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
-			SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
+			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
-			ReadTextFile(ah.hred,hFile,ad.filename)
+			ReadTextFile(hWin,hFile,lpFile)
 			nLastLine=0
 			CloseHandle(hFile)
 		EndIf

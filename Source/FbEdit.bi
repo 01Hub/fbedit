@@ -210,6 +210,7 @@ Type TABMEM
 	filename			As ZString*260
 	profileinx		As Integer
 	filestate		As Integer
+	ft					As FILETIME
 End Type
 
 Type RESMEM
@@ -301,7 +302,7 @@ Type PFI
 End Type
 
 Declare Sub ReadProjectFileInfo(ByVal nInx As Integer,ByVal lpPFI As PFI ptr)
-Declare Sub SetProjectFileInfo(ByVal lpPFI As PFI ptr)
+Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI ptr)
 
 #Define VIEW_OUTPUT		1
 #Define VIEW_PROJECT		2
@@ -508,6 +509,7 @@ Dim Shared hhaklink As HH_AKLINK
 Const szResClassName="RESEDCLASS"
 Const szFullScreenClassName="FULLSCREENCLASS"
 Dim Shared fTimer As Integer
+Dim Shared fChangeNotification As Integer
 Dim Shared fParse As Integer
 Dim Shared nSize As Integer
 Dim Shared fBuildErr As Integer

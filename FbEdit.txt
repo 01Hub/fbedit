@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.5.3
+o Added file changed outside editor notification.
 o Added checkmarks to some Format menu items.
 o Added code complete to #Include and #Inclib
 o Fixed expand (Ctrl+E) bug in RAEdit.

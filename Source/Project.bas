@@ -303,21 +303,21 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString ptr,ByVal nIm
 
 End Function
 
-Sub SetProjectFileInfo(ByVal lpPFI As PFI ptr)
+Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI ptr)
 	Dim chrg As CHARRANGE
 	Dim As Integer i,b,nLine
 
-	nLine=SendMessage(ah.hred,EM_GETLINECOUNT,0,0)
+	nLine=SendMessage(hWin,EM_GETLINECOUNT,0,0)
 	i=0
 	While i<16
 		b=1
 		While b
-			nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLine,1)
+			nLine=SendMessage(hWin,REM_PRVBOOKMARK,nLine,1)
 			If nLine=-1 Then
 				Exit While
 			EndIf
 			If lpPFI->nColl(i) And b Then
-				SendMessage(ah.hred,REM_COLLAPSE,nLine,0)
+				SendMessage(hWin,REM_COLLAPSE,nLine,0)
 			EndIf
 			b=b Shl 1
 		Wend
@@ -326,11 +326,11 @@ Sub SetProjectFileInfo(ByVal lpPFI As PFI ptr)
 		EndIf
 		i=i+1
 	Wend
-	chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lpPFI->nPos,0)
+	chrg.cpMin=SendMessage(hWin,EM_LINEINDEX,lpPFI->nPos,0)
 	chrg.cpMax=chrg.cpMin
-	SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-	SendMessage(ah.hred,REM_VCENTER,0,0)
-	SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+	SendMessage(hWin,EM_EXSETSEL,0,Cast(Integer,@chrg))
+	SendMessage(hWin,REM_VCENTER,0,0)
+	SendMessage(hWin,EM_SCROLLCARET,0,0)
 
 End Sub
 

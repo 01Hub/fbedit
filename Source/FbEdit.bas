@@ -115,6 +115,12 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			DeleteObject(hSplashBmp)
 		EndIf
 	EndIf
+	If fChangeNotification=0 Then
+		UpdateAllTabs(5)
+		fChangeNotification=10
+	Else
+		fChangeNotification-=1
+	EndIf
 	Return 0
 
 End Function

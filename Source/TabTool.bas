@@ -63,6 +63,7 @@ Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
 	Dim x As Integer
+	Dim hFile As HANDLE
 
 	i=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
 	buff=lpFileName
@@ -76,6 +77,12 @@ Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
 		lpTABMEM->profileinx=IsProjectFile(lpFileName)
 	Else
 		lpTABMEM->profileinx=0
+	EndIf
+	' Set file time
+	hFile=CreateFile(lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+	If hFile<>INVALID_HANDLE_VALUE Then
+		GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
+		CloseHandle(hFile)
 	EndIf
 	tci.mask=TCIF_TEXT Or TCIF_PARAM Or TCIF_IMAGE
 	tci.pszText=@buff
@@ -212,7 +219,7 @@ Function CreateEdit(ByVal hWin As HWND) As HWND
 		If hTmp Then
 			SelectTab(hWin,hTmp,0)
 			If WantToSave(ah.hred)=FALSE Then
-				ReadTheFile(hWin)
+				ReadTheFile(ah.hred,ad.filename)
 				UpdateTab
 				SetWinCaption(hWin)
 			EndIf
@@ -256,14 +263,14 @@ Function CreateEdit(ByVal hWin As HWND) As HWND
 
 End Function
 
-Sub SetFileInfo(ByVal sFile As String)
+Sub SetFileInfo(ByVal hWin As HWND,ByVal sFile As String)
 	Dim nInx As Integer
 	Dim pfi As PFI
 
 	If fProject Then
 		nInx=IsProjectFile(sFile)
 		ReadProjectFileInfo(nInx,@pfi)
-		SetProjectFileInfo(@pfi)
+		SetProjectFileInfo(hWin,@pfi)
 	EndIf
 
 End Sub
@@ -321,8 +328,8 @@ Sub OpenTheFile(ByVal sFile As String)
 		' Open the file
 		If CreateEdit(ah.hwnd) Then
 			AddTab(ah.hwnd,ah.hred,ad.filename)
-			ReadTheFile(ah.hwnd)
-			SetFileInfo(ad.filename)
+			ReadTheFile(ah.hred,ad.filename)
+			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
 		EndIf
 	EndIf
@@ -358,7 +365,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 				ad.filename=pth & "\" & s
 				CreateEdit(hWin)
 				AddTab(hWin,ah.hred,ad.filename)
-				ReadTheFile(hWin)
+				ReadTheFile(ah.hred,ad.filename)
 				i=i+lstrlen(@s)+1
 				lstrcpy(@s,Cast(ZString ptr,hMem+i))
 			Loop
@@ -586,6 +593,8 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 	Dim i As Integer
 	Dim x As Integer
 	Dim p As Integer
+	Dim hFile As HANDLE
+	Dim ft As FILETIME
 
 	tci.mask=TCIF_PARAM
 	i=0
@@ -617,7 +626,35 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				If x<>(lpTABMEM->filestate And 1) Then
 					lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
 					lpTABMEM->filestate=lpTABMEM->filestate Or x
+					If x Then
+						hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+						If hFile<>INVALID_HANDLE_VALUE Then
+							GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
+							CloseHandle(hFile)
+						EndIf
+					EndIf
 					CallAddins(ah.hwnd,AIM_FILESTATE,i,Cast(Integer,lpTABMEM),HOOK_FILESTATE)
+				EndIf
+			ElseIf nType=5 Then
+				hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+				If hFile<>INVALID_HANDLE_VALUE Then
+					GetFileTime(hFile,NULL,NULL,@ft)
+					CloseHandle(hFile)
+					If ft.dwLowDateTime<>lpTABMEM->ft.dwLowDateTime Then
+						' File changed outside editor
+						fChangeNotification=-1
+						lstrcpy(@buff,lpTABMEM->filename)
+						buff=buff & CR & "File changed outside editor!" & CR & "Reopen the file?"
+						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
+							' Reload file
+							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
+							lstrcpy(@buff,lpTABMEM->filename)
+							SetFileInfo(lpTABMEM->hedit,buff)
+						EndIf
+						lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
+						lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
+						fChangeNotification=10
+					EndIf
 				EndIf
 			EndIf
 		Else
