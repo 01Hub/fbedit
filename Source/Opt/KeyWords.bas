@@ -224,7 +224,6 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 			pop	edi
 			pop	esi
 		End Asm
-TextToOutput(s)
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C14,Cast(Integer,@s))
 '''***
 		lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
