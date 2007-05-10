@@ -189,7 +189,6 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 			mov	al,&H5e
 			mov	[edi],al
 			Inc	edi
-		NextChar:
 			mov	ax,[esi]
 			add	esi,2
 			cmp	ax,&H2c30
@@ -202,6 +201,10 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 			je		NextChar
 			cmp	ax,&H2c34
 			je		NextChar
+			Sub	esi,2
+		NextChar:
+			mov	ax,[esi]
+			add	esi,2
 			cmp	ax,&H34
 			je		NextChar
 			dec	esi
@@ -221,6 +224,7 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 			pop	edi
 			pop	esi
 		End Asm
+TextToOutput(s)
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C14,Cast(Integer,@s))
 '''***
 		lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
