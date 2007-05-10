@@ -118,7 +118,7 @@ TryFind:
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 	Else
-		If fDir=0 And fPos<>0 Then
+		If fDir=0 And fPos<>0 Then 
 			ft.chrg.cpMin=0
 			ft.chrg.cpMax=fPos
 			fPos=0
@@ -138,10 +138,11 @@ TryFind:
 				Else
 					MessageBox(hWin,StrPtr("Region searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
 				EndIf
-				SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
+				ft.chrg.cpMax=ft.chrg.cpMin
+				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
 				fPos=ft.chrg.cpMin
 				fres=-1
-				ft.chrg.cpMax=-1
+				ft.chrg.cpMax=-1 
 				fProFileNo=1
 			EndIf
 		EndIf
@@ -354,4 +355,3 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Return TRUE
 
 End Function
-
