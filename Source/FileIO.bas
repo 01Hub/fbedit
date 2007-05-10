@@ -192,6 +192,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	If fProject=TRUE And edtopt.backup<>0 Then
 		BackupFile(szFileName,1)
 	EndIf
+	fChangeNotification=10
 	hFile=CreateFile(szFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
 		If hWin=ah.hres Then
@@ -200,6 +201,8 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
 			nSize=lstrlen(Cast(ZString ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
+			CloseHandle(hFile)
+			hFile=CreateFile(szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 			tci.mask=TCIF_PARAM
 			i=0
 			Do While TRUE
@@ -245,6 +248,8 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			editstream.dwCookie=Cast(Integer,hFile)
 			editstream.pfnCallback=Cast(Any ptr,@StreamOut)
 			SendMessage(hWin,EM_STREAMOUT,SF_TEXT,Cast(Integer,@editstream))
+			CloseHandle(hFile)
+			hFile=CreateFile(szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 			tci.mask=TCIF_PARAM
 			i=0
 			Do While TRUE
