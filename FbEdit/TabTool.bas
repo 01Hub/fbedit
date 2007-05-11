@@ -144,7 +144,7 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 					SetWinCaption
 					ShowWindow(hOld,SW_HIDE)
 					ShowWindow(ah.htt,SW_HIDE)
-					HideList
+					HideList( HL_ALL )
 				EndIf
 				Exit Do
 			EndIf

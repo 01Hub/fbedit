@@ -524,7 +524,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ShowWindow(ah.htabtool,SW_HIDE)
 			hSplashBmp=LoadBitmap(hInstance,Cast(ZString ptr,103))
 			lpOldSplashProc=Cast(Any ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
-			Return Cast( Integer, hWin )
+			SetFocus(hWin)
+			Return FALSE
 			'
 		Case WM_CLOSE
 			If CloseAllTabs(hWin,fProject)=FALSE Then
@@ -1417,7 +1418,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			EndIf
 		Case WM_MOVE
 			ShowWindow(ah.htt,SW_HIDE)
-			HideList
+			HideList( HL_ALL )
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE ptr,lParam)
@@ -1440,7 +1441,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						EndIf
 						If lpRASELCHANGE->Line<>nLastLine Then
 							ShowWindow(ah.htt,SW_HIDE)
-							HideList
+							HideList( HL_ALL )
 							If GetWindowLong(ah.hred,GWL_USERDATA)=1 Then
 								' Must be parsed
 								SetWindowLong(ah.hred,GWL_USERDATA,2)
@@ -1552,7 +1553,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					UpdateFileProperty
 				EndIf
 				ShowWindow(ah.htt,SW_HIDE)
-				HideList
+				HideList( HL_ALL )
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
 				' Project tab

@@ -567,14 +567,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
-					HideList
+					HideList( HL_ALL And Not HL_CONST )
 					Return 0
 				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=8 And IsWindowVisible(ah.htt)) Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
 					TestCaseConvert(hPar,wParam)
-					HideList
+					HideList( HL_ALL )
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
@@ -587,7 +587,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
 						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt)) Then
-						  ShowTT:
+						ShowTT:
 							If edtopt.codecomplete Then
 								fconstlist=UpdateConstList(tt.lpszApi,tt.nPos+1)
 							EndIf
@@ -638,7 +638,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
 					' Hide list and tooltip
 					ShowWindow(ah.htt,SW_HIDE)
-					HideList
+					HideList( HL_ALL )
 					If wParam=VK_ESCAPE Then
 						Return 0
 					EndIf
@@ -689,13 +689,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								UpdateTypeList
 							EndIf
 							If ftypelist=FALSE Then
-								HideList
+								HideList( HL_ALL )
 								Return lret
 							EndIf
 						ElseIf fstructlist Then
 							UpdateStructList(p)
 							If fstructlist=FALSE Then
-								HideList
+								HideList( HL_ALL )
 								Return lret
 							EndIf
 						ElseIf fincludelist Then
@@ -792,7 +792,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateInclibList(ad.ProjectPath,NULL,7)
 						EndIf
 					ElseIf IsWindowVisible(ah.hcc) Then
-						HideList
+						HideList( HL_ALL )
 					EndIf
 				ElseIf wParam=VK_RETURN Then
 					' Block Complete

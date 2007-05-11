@@ -308,6 +308,14 @@ Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI ptr)
 #Define VIEW_PROJECT		2
 #Define VIEW_PROPERTY	4
 
+#Define HL_TYPE			1
+#Define HL_CONST			2
+#Define HL_STRUCT			4  
+#Define HL_LOCAL			8
+#Define HL_INCLUDE		16
+#Define HL_INCLIB			32
+#Define HL_ALL				( HL_TYPE Or HL_CONST Or HL_STRUCT Or HL_LOCAL Or HL_INCLUDE Or HL_INCLIB )
+
 Const szNULL=!"\0"
 Const CRLF=Chr(13) & Chr(10)
 Const CR=Chr(13)
