@@ -2,7 +2,7 @@
 #include once "win/commctrl.bi"
 #include once "win/commdlg.bi"
 
-#include "..\..\..\Inc\Addins.bi"
+#include "..\..\FbEdit\Inc\Addins.bi"
 
 #include "Toolbar.bi"
 

@@ -2,9 +2,9 @@
 #include once "win/richedit.bi"
 #include once "win/commctrl.bi"
 
-#include "..\..\..\Inc\RAFile.bi"
-#include "..\..\..\Inc\RAEdit.bi"
-#include "..\..\..\Inc\Addins.bi"
+#include "..\..\FbEdit\Inc\RAFile.bi"
+#include "..\..\FbEdit\Inc\RAEdit.bi"
+#include "..\..\FbEdit\Inc\Addins.bi"
 
 #include "SnipletAddin.bi"
 

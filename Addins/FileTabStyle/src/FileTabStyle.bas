@@ -11,7 +11,7 @@
 #include once "windows.bi"
 #include once "win/commctrl.bi"
 
-#include "..\..\..\..\Inc\Addins.bi"
+#include "..\..\..\FbEdit\Inc\Addins.bi"
 
 Type TABMEM
 	hedit			As HWND

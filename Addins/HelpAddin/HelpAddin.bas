@@ -1,7 +1,7 @@
 #include once "windows.bi"
 #include once "win/commctrl.bi"
 
-#include "..\..\..\Inc\Addins.bi"
+#include "..\..\FbEdit\Inc\Addins.bi"
 
 #include "HelpAddin.bi"
 

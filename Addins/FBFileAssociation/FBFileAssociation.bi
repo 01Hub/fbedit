@@ -1,7 +1,7 @@
 #include once "windows.bi"
 #include once "win/commctrl.bi"
 #include once "win/winreg.bi"
-#include once "..\..\..\Inc\Addins.bi"
+#include once "..\..\FbEdit\Inc\Addins.bi"
 #include once "RegLib.bas"
 
 #include once "rsrc.bi"

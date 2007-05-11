@@ -2,8 +2,8 @@
 #Include Once "win/richedit.bi"
 #Include Once "win/commctrl.bi"
 
-#Include "..\..\..\Inc\RAEdit.bi"
-#Include "..\..\..\Inc\Addins.bi"
+#Include "..\..\FbEdit\Inc\Addins.bi"
+#Include "..\..\FbEdit\Inc\RAEdit.bi"
 
 #Include "AdvEdit.bi"
 
