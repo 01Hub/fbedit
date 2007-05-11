@@ -45,7 +45,8 @@ TryAgain:
 					ms.lpMem=hMem
 					ms.lpFind=@findbuff
 					ms.lpCharTab=ad.lpCharTab
-					ms.fr=fr
+					' Memory search down is faster
+					ms.fr=fr Or FR_DOWN
 					fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
 					GlobalFree(hMem)
 					If fres Then

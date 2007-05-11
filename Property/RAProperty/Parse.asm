@@ -1,7 +1,7 @@
 
 .code
 
-SearchMem proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWWord:DWORD,lpCharTab:DWORD
+SearchMemDown proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWWord:DWORD,lpCharTab:DWORD
 
 	mov		cl,byte ptr fWWord
 	mov		ch,byte ptr fMCase
@@ -53,7 +53,68 @@ SearchMem proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWW
 	.endif
 	ret
 
-SearchMem endp
+SearchMemDown endp
+
+SearchMemUp proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWWord:DWORD,lpCharTab:DWORD
+
+	mov		cl,byte ptr fWWord
+	mov		ch,byte ptr fMCase
+	mov		edi,hMem
+	.while byte ptr [edi]
+		inc		edi
+	.endw
+	mov		esi,lpFind
+  Nx:
+	xor		edx,edx
+	dec		edi
+	dec		edx
+	.if edi<hMem
+		; Not found
+		xor		eax,eax
+		ret
+	.endif
+  Mr:
+	inc		edx
+	mov		al,[edi+edx]
+	mov		ah,[esi+edx]
+	.if ah && al
+		cmp		al,ah
+		je		Mr
+		.if !ch
+			;Try other case (upper/lower)
+			movzx	ebx,ah
+			add		ebx,lpCharTab
+			cmp		al,[ebx+256]
+			je		Mr
+		.endif
+		jmp		Nx					;Test next char
+	.else
+		.if !ah
+			or		cl,cl
+			je		@f				;Found
+			;Whole word
+			movzx	eax,al
+			add		eax,lpCharTab
+			mov		al,[eax]
+			dec		al
+			je		Nx				;Not found yet
+			lea		eax,[edi-1]
+			.if eax>=hMem
+				movzx	eax,byte ptr [eax]
+				add		eax,lpCharTab
+				mov		al,[eax]
+				dec		al
+				je		Nx			;Not found yet
+			.endif
+		  @@:
+			mov		eax,edi			;Found, return pos in eax
+		.else
+			xor		eax,eax			;Not found
+		.endif
+	.endif
+	ret
+
+SearchMemUp endp
 
 DestroyToEol proc lpMem:DWORD
 
@@ -108,7 +169,7 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 			mov		fbyte,eax
 		.endif
 	  @@:
-		invoke SearchMem,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+		invoke SearchMemDown,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
 		.if eax
 			mov		esi,eax
 			mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
@@ -156,7 +217,7 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 				.endif
 				jmp		@b
 			.else
-				invoke SearchMem,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+				invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
 				.if eax
 					mov		edx,eax
 					.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]

@@ -1077,7 +1077,12 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !ZERO?
 			inc		edx
 		.endif
-		invoke SearchMem,[ebx].MEMSEARCH.lpMem,[ebx].MEMSEARCH.lpFind,ecx,edx,[ebx].MEMSEARCH.lpCharTab
+		test	eax,FR_DOWN
+		.if !ZERO?
+			invoke SearchMemDown,[ebx].MEMSEARCH.lpMem,[ebx].MEMSEARCH.lpFind,ecx,edx,[ebx].MEMSEARCH.lpCharTab
+		.else
+			invoke SearchMemUp,[ebx].MEMSEARCH.lpMem,[ebx].MEMSEARCH.lpFind,ecx,edx,[ebx].MEMSEARCH.lpCharTab
+		.endif
 		jmp		Ex
 	.elseif eax==PRM_FINDGETOWNER
 		invoke GetWindowLong,hWin,0
