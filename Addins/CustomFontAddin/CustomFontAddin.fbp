@@ -1,0 +1,22 @@
+[Project]
+Version=2
+Description=Adds a custom font to the system.
+Api=fb (FreeBASIC),win (Windows)
+Grouping=1
+AddMainFiles=1
+ResExport=
+[Make]
+Current=1
+1=Windows dll,fbc -s gui -dll -export
+Recompile=2
+Module=Module Build,fbc -c
+Output=
+Run=
+[File]
+1=CustomFontAddin.bas
+2=..\..\..\Inc\Addins.bi
+3=CustomFontAddin.txt
+[FileInfo]
+2=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1=0,34,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,5,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

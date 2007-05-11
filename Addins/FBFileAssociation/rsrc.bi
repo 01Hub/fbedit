@@ -1,0 +1,13 @@
+#define IDD_DLG1                1000
+#define IDC_GRP1                1001
+#define baBAS                   1002
+#define baBI                    1003
+#define baFBP                   1004
+#define baRC                    1005
+#define baDOIT                  1006
+#define baCLOSE                 1007
+#define ICO_BAS                 1
+#define ICO_BI                  2
+#define ICO_FBP                 3
+#define ICO_RC                  4
+#define IDR_VERSION             1

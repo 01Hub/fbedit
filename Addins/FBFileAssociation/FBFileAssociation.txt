@@ -1,0 +1,1 @@
+With this addin you can Associate bas etc files to FBedit
