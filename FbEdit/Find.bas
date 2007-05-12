@@ -278,7 +278,13 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						fProFileNo=1
 						'
 					Case IDC_CHK_PROJECTFILES
-						fPro=fPro Xor 1
+						' fPro=fPro xor 1
+						''' sorry i think that was a simple flag (only 2 values) 
+						If fPro Then
+							fPro=0
+						Else
+							fPro=1
+						EndIf
 						fres=-1
 						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
 						fPos=ft.chrg.cpMin
