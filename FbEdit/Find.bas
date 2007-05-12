@@ -106,15 +106,6 @@ TryFind:
 		fres=-1
 	EndIf
 	If fres<>-1 Then
-		'nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,ft.chrgText.cpMin)
-		'buff=Chr(255) & Chr(1)
-		'lLine=SendMessage(ah.hred,EM_GETLINE,nLine,Cast(LPARAM,@buff))
-		'buff[lLine]=0
-		'If (Asc(LTrim(buff, Any Chr(32,9)))=Asc("'")) And fSkipCommentLine Then
-		'	ft.chrg.cpMin+=1		' This hangs if direction is up.
-		'	GoTo TryFind
-		'EndIf
-		' Use REM_ISCHARPOS instead. It will also work on comment blocks.
 		If fSkipCommentLine Then
 			tmp=SendMessage(ah.hred,REM_ISCHARPOS,ft.chrgText.cpMin,0)
 			If tmp=1 Or tmp=2 Then

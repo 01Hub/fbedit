@@ -1,4 +1,16 @@
 
+'Sub HideList()
+'
+'	ShowWindow(ah.hcc,SW_HIDE)
+'	ftypelist=FALSE
+'	fconstlist=FALSE
+'	fstructlist=FALSE
+'	flocallist=FALSE
+'	fincludelist=FALSE
+'	fincliblist=FALSE
+'
+'End Sub
+
 Sub HideList( ByVal flags As Integer )
 
 	ShowWindow(ah.hcc,SW_HIDE)

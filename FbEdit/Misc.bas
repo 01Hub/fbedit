@@ -567,7 +567,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
-					HideList( HL_ALL And Not HL_CONST )
+					''' fixed autocomplete chaining 
+					'ShowWindow(ah.hcc,SW_HIDE)
+					HideList( HL_ALL And ( Not HL_CONST ) )
+					''' still there a bug in VK_BACK process with ah.hcc visible
+					''' test sendmessage(1, and press VK_BACK several times
+					''' ah.hcc don't close on api name
 					Return 0
 				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=8 And IsWindowVisible(ah.htt)) Then
 					If lret=12345 Then
