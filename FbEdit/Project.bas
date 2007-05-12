@@ -1228,7 +1228,6 @@ Function NewProjectTab1Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 				GetPrivateProfileString(StrPtr("Make"),@sItem,@szNULL,@buff,260,@ad.IniFile)
 				If lstrlen(@buff) Then
 					x=InStr(buff,",")
-					'Mid(buff,x,1)=szNULL
 					buff[x-1]=NULL
 					SendDlgItemMessage(hWin,IDC_CBOPROJECTTYPE,CB_ADDSTRING,0,Cast(Integer,@buff))
 				EndIf

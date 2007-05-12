@@ -99,7 +99,6 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
 		lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(Integer,@buff))
-		'Mid(buff,lret+1,1)=szNULL
 		buff[lret]=NULL
 		SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
 		If flocallist=FALSE Then
@@ -179,7 +178,6 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		buff=STring(1024,0)
 		buff=Chr(x and 255) & Chr(x\256)
 		lret=Cast(ZString ptr,SendMessage(ah.hred,EM_GETLINE,nline,Cast(Integer,@buff)))
-		'Mid(buff,Cast(Integer,lret)+1,1)=szNULL
 		buff[Cast(Integer,lret)]=NULL
 		lstrcpy(@sLine,@buff)
 		nowner=Cast(Integer,ah.hred)
@@ -256,7 +254,6 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 '				lret=lret+InStr(sItem,".")
 				lstrcpy(@sItem,lret)
 				If InStr(sItem," ") Then
-					'Mid(sItem,InStr(sItem," "))=szNull
 					sItem[InStr(sItem," ")-1]=NULL
 					lret=@sItem
 				EndIf
@@ -310,7 +307,6 @@ Sub UpdateTypeList()
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
 		lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(Integer,@buff))
-		'Mid(buff,lret+1,1)=szNULL
 		buff[lret]=NULL
 		SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
 		lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("SsTe")),Cast(Integer,@buff))
@@ -357,7 +353,6 @@ Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolea
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
 			buff=Chr(255) & Chr(1)
 			ln=SendMessage(ah.hred,EM_GETLINE,ln,Cast(Integer,@buff))
-			'Mid(buff,ln+1,1)=szNULL
 			buff[ln]=NULL
 			SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
 			lstrcpy(@s,lret)

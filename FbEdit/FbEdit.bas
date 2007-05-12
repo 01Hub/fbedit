@@ -1508,7 +1508,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					x=SendMessage(ah.hout,EM_LINELENGTH,y,0)
 					buff=Chr(x And 255) & Chr(x\256)
 					x=SendMessage(ah.hout,EM_GETLINE,y,Cast(LPARAM,@buff))
-					Mid(buff,x+1,1)=szNULL
+					buff[x]=NULL
 					y=GetErrLine(buff,fQR)
 					If y>=0 Then
 						If ah.hred<>ah.hres Then

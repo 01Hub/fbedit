@@ -298,12 +298,10 @@ Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As Z
 					' Get indent
 					szIndent=Chr(255) & Chr(1)
 					lx=SendMessage(hWin,EM_GETLINE,lx,Cast(LPARAM,@szIndent))
-					'Mid(szIndent,lx+1)=szNULL
 					szIndent[lx]=NULL
 					lz=1
 					While lz<lx
 						If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
-							'Mid(szIndent,lz,1)=szNULL
 							szIndent[lz-1]=NULL
 							Poke Integer,lpErr,0
 							Exit While
@@ -330,12 +328,10 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 	' Get indent
 	szIndent=Chr(255) & Chr(1)
 	lx=SendMessage(hWin,EM_GETLINE,ln,Cast(LPARAM,@szIndent))
-	'Mid(szIndent,lx+1)=szNULL
 	szIndent[lx]=NULL
 	lz=1
 	While lz<=lx
 		If Asc(szIndent,lz)<>VK_SPACE And Asc(szIndent,lz)<>VK_TAB Then
-			'Mid(szIndent,lz,1)=szNULL
 			szIndent[lz-1]=NULL
 			Exit While
 		EndIf
@@ -552,7 +548,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lret,0)
 					buff=Chr(255) & Chr(1)
 					p=Cast(ZString ptr,SendMessage(hPar,EM_GETLINE,lret,Cast(LPARAM,@buff)))
-					'Mid(buff,Cast(Integer,p)+1,1)=szNULL
 					buff[Cast(Integer,p)]=NULL
 					SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					chrg.cpMin=chrg.cpMax-lstrlen(@buff)
@@ -562,20 +557,31 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						lstrcpy(@buff,p)
 						lret=InStr(buff,":")
 						If lret Then
-							'Mid(buff,lret,1)=szNULL
 							buff[lret-1]=NULL
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
-					''' fixed autocomplete chaining 
-					'ShowWindow(ah.hcc,SW_HIDE)
 					'HideList( HL_ALL And ( Not HL_CONST ) )
-					HideList()
-					'fconstlist=TRUE
+					'HideList()
+					''' fixed autocomplete chaining 
+					ShowWindow(ah.hcc,SW_HIDE)
 					''' still there a bug in VK_BACK process with ah.hcc visible
 					''' test sendmessage(1, and press VK_BACK several times
 					''' ah.hcc don't close on api name
 					Return 0
+				''' fixed close window on api name
+				ElseIf wParam=VK_BACK And IsWindowVisible(ah.hcc) Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
+						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
+						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
+						buff=Chr(255) & Chr(1)
+						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
+						buff[chrg.cpMax-chrg.cpMin]=NULL
+						If lp=InStr(buff,"(") Then
+							HideList()
+						EndIf
+					EndIf
 				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And IsWindowVisible(ah.htt)) Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
@@ -589,7 +595,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						'Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
 						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
@@ -672,7 +677,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						'Mid(buff,chrg.cpMax-chrg.cpMin+1,1)=szNULL
 						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
@@ -714,7 +718,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
-							'Mid(buff,lret+1,1)=szNULL
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
@@ -729,7 +732,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
-							'Mid(buff,lret+1,1)=szNULL
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
@@ -839,12 +841,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									' Get indent
 									buff=Chr(255) & Chr(1)
 									lp=SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@buff))
-									'Mid(buff,lp+1)=szNULL
 									buff[lp]=NULL
 									lz=1
 									While lz<lp
 										If Asc(buff,lz)<>VK_SPACE And Asc(buff,lz)<>VK_TAB Then
-											'Mid(buff,lz,1)=szNULL
 											buff[lz-1]=NULL
 											Exit While
 										EndIf
@@ -1766,7 +1766,6 @@ Function OpenInclude() As String
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,x,0)
 			buff=Chr(255) & Chr(1)
 			x=SendMessage(ah.hred,EM_GETLINE,x,Cast(LPARAM,@buff))
-			'Mid(buff,x+1,1)=szNULL
 			buff[x]=NULL
 			x=chrg.cpMax-chrg.cpMin+1
 			While x

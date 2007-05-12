@@ -218,7 +218,6 @@ Function GetErrLine(ByVal buff As String,ByVal fQuickRun As Boolean) As Integer
 			If fQuickRun Then
 				buffer=ad.filename
 			Else
-				'Mid(buffer,x,1)=szNULL
 				buffer[x-1]=NULL
 				If fProject Then
 					If Asc(buffer,2)<>Asc(":") Then
@@ -283,7 +282,6 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 					x=InStr(x+1,sItem,".")
 				Wend
 				If y Then
-					'Mid(sItem,y,1)=szNULL
 					sItem[y-1]=NULL
 				EndIf
 			EndIf
@@ -314,7 +312,6 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 						x=InStr(x+1,sItem,".")
 					Wend
 					If y Then
-						'Mid(sItem,y,1)=szNULL
 						sItem[y-1]=NULL
 					EndIf
 					If fRecompile=2 Then
@@ -380,7 +377,6 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			x=SendMessage(ah.hout,EM_LINELENGTH,cPos,0)
 			buffer=Chr(x And 255) & Chr(x\256)
 			x=SendMessage(ah.hout,EM_GETLINE,nLine,Cast(Integer,@buffer))
-			'Mid(buffer,x+1,1)=szNULL
 			buffer[x]=NULL
 			If InStr(buffer," : error ") Or InStr(buffer,") error ") Or InStr(buffer,") warning ") Then
 				If InStr(buffer,") warning ") Then
