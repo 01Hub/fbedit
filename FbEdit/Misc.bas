@@ -569,17 +569,20 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					EndIf
 					''' fixed autocomplete chaining 
 					'ShowWindow(ah.hcc,SW_HIDE)
-					HideList( HL_ALL And ( Not HL_CONST ) )
+					'HideList( HL_ALL And ( Not HL_CONST ) )
+					HideList()
+					'fconstlist=TRUE
 					''' still there a bug in VK_BACK process with ah.hcc visible
 					''' test sendmessage(1, and press VK_BACK several times
 					''' ah.hcc don't close on api name
 					Return 0
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=8 And IsWindowVisible(ah.htt)) Then
+				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And IsWindowVisible(ah.htt)) Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
 					TestCaseConvert(hPar,wParam)
-					HideList( HL_ALL )
+					'HideList( HL_ALL )
+					HideList()
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
@@ -643,7 +646,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
 					' Hide list and tooltip
 					ShowWindow(ah.htt,SW_HIDE)
-					HideList( HL_ALL )
+					'HideList( HL_ALL )
+					HideList()
 					If wParam=VK_ESCAPE Then
 						Return 0
 					EndIf
@@ -694,13 +698,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								UpdateTypeList
 							EndIf
 							If ftypelist=FALSE Then
-								HideList( HL_ALL )
+								'HideList( HL_ALL )
+								HideList()
 								Return lret
 							EndIf
 						ElseIf fstructlist Then
 							UpdateStructList(p)
 							If fstructlist=FALSE Then
-								HideList( HL_ALL )
+								'HideList( HL_ALL )
+								HideList()
 								Return lret
 							EndIf
 						ElseIf fincludelist Then
@@ -797,7 +803,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateInclibList(ad.ProjectPath,NULL,7)
 						EndIf
 					ElseIf IsWindowVisible(ah.hcc) Then
-						HideList( HL_ALL )
+						'HideList( HL_ALL )
+						HideList()
 					EndIf
 				ElseIf wParam=VK_RETURN Then
 					' Block Complete

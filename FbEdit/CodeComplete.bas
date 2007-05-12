@@ -1,27 +1,27 @@
 
-'Sub HideList()
-'
-'	ShowWindow(ah.hcc,SW_HIDE)
-'	ftypelist=FALSE
-'	fconstlist=FALSE
-'	fstructlist=FALSE
-'	flocallist=FALSE
-'	fincludelist=FALSE
-'	fincliblist=FALSE
-'
-'End Sub
-
-Sub HideList( ByVal flags As Integer )
+Sub HideList()
 
 	ShowWindow(ah.hcc,SW_HIDE)
-	If flags And HL_TYPE    = HL_TYPE    Then ftypelist=FALSE
-	If flags And HL_CONST   = HL_CONST   Then fconstlist=FALSE
-	If flags And HL_STRUCT  = HL_STRUCT  Then fstructlist=FALSE
-	If flags And HL_LOCAL   = HL_LOCAL   Then flocallist=FALSE
-	If flags And HL_INCLUDE = HL_INCLUDE Then fincludelist=FALSE
-	If flags And HL_INCLIB  = HL_INCLIB  Then fincliblist=FALSE
+	ftypelist=FALSE
+	fconstlist=FALSE
+	fstructlist=FALSE
+	flocallist=FALSE
+	fincludelist=FALSE
+	fincliblist=FALSE
 
 End Sub
+
+'Sub HideList( ByVal flags As Integer )
+'
+'	ShowWindow(ah.hcc,SW_HIDE)
+'	If flags And HL_TYPE    = HL_TYPE    Then ftypelist=FALSE
+'	If flags And HL_CONST   = HL_CONST   Then fconstlist=FALSE
+'	If flags And HL_STRUCT  = HL_STRUCT  Then fstructlist=FALSE
+'	If flags And HL_LOCAL   = HL_LOCAL   Then flocallist=FALSE
+'	If flags And HL_INCLUDE = HL_INCLUDE Then fincludelist=FALSE
+'	If flags And HL_INCLIB  = HL_INCLIB  Then fincliblist=FALSE
+'
+'End Sub
 
 Sub MoveList()
 	Dim pt As Point

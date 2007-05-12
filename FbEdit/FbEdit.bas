@@ -1418,7 +1418,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			EndIf
 		Case WM_MOVE
 			ShowWindow(ah.htt,SW_HIDE)
-			HideList( HL_ALL )
+			'HideList( HL_ALL )
+			HideList()
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE ptr,lParam)
@@ -1441,7 +1442,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						EndIf
 						If lpRASELCHANGE->Line<>nLastLine Then
 							ShowWindow(ah.htt,SW_HIDE)
-							HideList( HL_ALL )
+							'HideList( HL_ALL )
+							HideList()
 							If GetWindowLong(ah.hred,GWL_USERDATA)=1 Then
 								' Must be parsed
 								SetWindowLong(ah.hred,GWL_USERDATA,2)
@@ -1553,7 +1555,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					UpdateFileProperty
 				EndIf
 				ShowWindow(ah.htt,SW_HIDE)
-				HideList( HL_ALL )
+				'HideList( HL_ALL )
+				HideList()
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
 				' Project tab

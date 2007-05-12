@@ -55,7 +55,8 @@ Sub DelTab(ByVal hWin As HWND)
 		SetWinCaption
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
-	HideList( HL_ALL )
+	'HideList( HL_ALL )
+	HideList()
 
 End Sub
 
@@ -145,7 +146,8 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 					SetWinCaption
 					ShowWindow(hOld,SW_HIDE)
 					ShowWindow(ah.htt,SW_HIDE)
-					HideList( HL_ALL )
+					'HideList( HL_ALL )
+					HideList()
 				EndIf
 				Exit Do
 			EndIf
@@ -488,7 +490,8 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Bool
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	SetWinCaption
-	HideList( HL_ALL )
+	'HideList( HL_ALL )
+	HideList()
 	Return FALSE
 
 End Function
