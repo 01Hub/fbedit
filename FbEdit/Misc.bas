@@ -86,7 +86,7 @@ End Sub
 Function MyGlobalAlloc(ByVal nType As Integer,ByVal nSize As Integer) As HGLOBAL
 	Dim hMem As HGLOBAL
 
- Retry:
+Retry:
 
 	hMem=GlobalAlloc(nType,nSize)
 	If hMem=0 Then
@@ -561,33 +561,20 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
-					'HideList( HL_ALL And ( Not HL_CONST ) )
 					'HideList()
 					''' fixed autocomplete chaining 
 					ShowWindow(ah.hcc,SW_HIDE)
-					''' still there a bug in VK_BACK process with ah.hcc visible
+					''' still there a bug processing VK_BACK with ah.hcc visible
 					''' test sendmessage(1, and press VK_BACK several times
 					''' ah.hcc don't close on api name
 					Return 0
 				''' fixed close window on api name
-				ElseIf wParam=VK_BACK And IsWindowVisible(ah.hcc) Then
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
-						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
-						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
-						buff=Chr(255) & Chr(1)
-						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						buff[chrg.cpMax-chrg.cpMin]=NULL
-						If lp=InStr(buff,"(") Then
-							HideList()
-						EndIf
-					EndIf
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And IsWindowVisible(ah.htt)) Then
+				''' improved processing backspace on codecomplete
+				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And (IsWindowVisible(ah.htt) Or IsWindowVisible(ah.hcc))) Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
 					TestCaseConvert(hPar,wParam)
-					'HideList( HL_ALL )
 					HideList()
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
@@ -596,6 +583,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
 						buff[chrg.cpMax-chrg.cpMin]=NULL
+						If wParam=VK_BACK Then
+							If lp=InStr(buff,"(") Then
+								ShowWindow(ah.htt,SW_HIDE)
+								HideList()
+								Return lret
+							EndIf
+						EndIf
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
@@ -651,7 +645,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
 					' Hide list and tooltip
 					ShowWindow(ah.htt,SW_HIDE)
-					'HideList( HL_ALL )
 					HideList()
 					If wParam=VK_ESCAPE Then
 						Return 0
@@ -702,14 +695,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								UpdateTypeList
 							EndIf
 							If ftypelist=FALSE Then
-								'HideList( HL_ALL )
 								HideList()
 								Return lret
 							EndIf
 						ElseIf fstructlist Then
 							UpdateStructList(p)
 							If fstructlist=FALSE Then
-								'HideList( HL_ALL )
 								HideList()
 								Return lret
 							EndIf
@@ -747,7 +738,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					EndIf
 					' Move code complete list
 					MoveList
-				ElseIf wParam=&H2E And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
+				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
 						IsStructList
@@ -805,7 +796,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateInclibList(ad.ProjectPath,NULL,7)
 						EndIf
 					ElseIf IsWindowVisible(ah.hcc) Then
-						'HideList( HL_ALL )
 						HideList()
 					EndIf
 				ElseIf wParam=VK_RETURN Then
