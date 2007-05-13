@@ -561,21 +561,32 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 					EndIf
-					'HideList()
-					''' fixed autocomplete chaining 
-					ShowWindow(ah.hcc,SW_HIDE)
-					''' still there a bug processing VK_BACK with ah.hcc visible
-					''' test sendmessage(1, and press VK_BACK several times
-					''' ah.hcc don't close on api name
+					If fconstlist=FALSE Then
+						HideList()
+					Else
+						ShowWindow(ah.hcc,SW_HIDE)
+					EndIf
 					Return 0
-				''' fixed close window on api name
-				''' improved processing backspace on codecomplete
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And (IsWindowVisible(ah.htt) Or IsWindowVisible(ah.hcc))) Then
+				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And fstructlist=FALSE And ftypelist=FALSE And flocallist=FALSE And fincludelist=FALSE And fincliblist=FALSE) Then
+					buff=""
+					If wParam=VK_BACK Then
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+						If trng.chrg.cpMin>0 And trng.chrg.cpMin=trng.chrg.cpMax Then
+							' Get the deleted character
+							trng.chrg.cpMin-=1
+							trng.lpstrText=@buff
+							SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						EndIf
+					EndIf
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
-					TestCaseConvert(hPar,wParam)
-					HideList()
+					ShowWindow(ah.htt,SW_HIDE)
+					If wParam=VK_BACK And (buff="," Or buff="(") Then
+						HideList()
+					ElseIf wParam=Asc(",") Or wParam=Asc("(") Then
+						TestCaseConvert(hPar,wParam)
+					EndIf
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
@@ -583,13 +594,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
 						buff[chrg.cpMax-chrg.cpMin]=NULL
-						If wParam=VK_BACK Then
-							If lp=InStr(buff,"(") Then
-								ShowWindow(ah.htt,SW_HIDE)
-								HideList()
-								Return lret
-							EndIf
-						EndIf
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
@@ -605,6 +609,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								MoveList
 							Else
 								' Show tooltip
+								HideList()
 								tti.lpszApi=tt.lpszApi
 								tti.lpszParam=tt.lpszParam
 								tti.nitem=tt.nPos
@@ -753,7 +758,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							IsStructList
 						EndIf
 					EndIf
-				ElseIf wParam=VK_TAB Or wParam=VK_SPACE And edtopt.codecomplete<>0 Then
+				ElseIf (wParam=VK_TAB Or wParam=VK_SPACE) And edtopt.codecomplete<>0 Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
 						chrg.cpMin=chrg.cpMin-1
