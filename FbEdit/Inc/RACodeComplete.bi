@@ -18,6 +18,7 @@
 #Define CCM_GETCOLOR			WM_USER+13			' wParam=0, lParam=lpCC_COLOR, Returns nothing
 #Define CCM_SETCOLOR			WM_USER+14			' wParam=0, lParam=lpCC_COLOR, Returns nothing
 #Define CCM_ADDLIST			WM_USER+15			' wParam=0, lParam=lpCC_ADDLIST, Returns nothing
+#Define CCM_GETMAXWIDTH		WM_USER+16			' wParam=0, lParam=0, Returns length of longest Item
 
 Type CC_COLOR
 	back As Integer

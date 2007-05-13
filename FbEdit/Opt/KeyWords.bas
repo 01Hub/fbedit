@@ -41,6 +41,7 @@
 #Define IDC_CHKCODECOMPLETE				4039
 #Define IDC_CHKSAVE							4034
 #Define IDC_CHKAUTOLOAD						4044
+#Define IDC_CHKAUTOWIDTH					4045
 #Define IDC_RBNCASENONE						4040
 #Define IDC_RBNCASEMIXED					4041
 #Define IDC_RBNCASELOWER					4042
@@ -365,7 +366,8 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	edtopt.codecomplete=IsDlgButtonChecked(hWin,IDC_CHKCODECOMPLETE)
 	edtopt.autosave=IsDlgButtonChecked(hWin,IDC_CHKSAVE)
 	edtopt.autoload=IsDlgButtonChecked(hWin,IDC_CHKAUTOLOAD)
-	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"444444444444444",@edtopt,FALSE)
+	edtopt.autowidth=IsDlgButtonChecked(hWin,IDC_CHKAUTOWIDTH)
+	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444",@edtopt,FALSE)
 	SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"444444444444444",@wpos,FALSE)
 	' Save theme
 	sItem=String(32,0)
@@ -558,10 +560,10 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
-
+			'
 			SendDlgItemMessage(hWin,IDC_SPNBACKUP,UDM_SETRANGE,0,&H00000009)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNBACKUP,UDM_SETPOS,0,edtopt.backup)	' Set default value
-
+			'
 			CheckDlgButton(hWin,IDC_CHKEXPAND,edtopt.expand)
 			CheckDlgButton(hWin,IDC_CHKAUTOINDENT,edtopt.autoindent)
 			CheckDlgButton(hWin,IDC_CHKHILITELINE,edtopt.hiliteline)
@@ -576,6 +578,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			CheckDlgButton(hWin,IDC_CHKCODECOMPLETE,edtopt.codecomplete)
 			CheckDlgButton(hWin,IDC_CHKSAVE,edtopt.autosave)
 			CheckDlgButton(hWin,IDC_CHKAUTOLOAD,edtopt.autoload)
+			CheckDlgButton(hWin,IDC_CHKAUTOWIDTH,edtopt.autowidth)
 			' Fonts
 			GetObject(ah.rafnt.hFont,SizeOf(LOGFONT),@lfnt)
 			hCFont=CreateFontIndirect(@lfnt)
@@ -769,6 +772,9 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKAUTOLOAD
+							EnableWindow(hBtnApply,TRUE)
+							'
+						Case IDC_CHKAUTOWIDTH
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKCOLORBOLD
@@ -970,8 +976,6 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Draw the text
 			SendMessage(lpDRAWITEMSTRUCT->hwndItem,LB_GETTEXT,lpDRAWITEMSTRUCT->itemID,Cast(Integer,@sItem))
 			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+30,lpDRAWITEMSTRUCT->rcItem.top,@sItem,lstrlen(@sItem))
-
-
 			If lpDRAWITEMSTRUCT->hwndItem=GetFocus() Then
 				' Let windows draw the focus rectangle
 				Return FALSE

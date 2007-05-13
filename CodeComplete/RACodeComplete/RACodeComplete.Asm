@@ -308,6 +308,25 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		mov		eax,[ebx].RACC.count
+	.elseif eax==CCM_GETMAXWIDTH
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		push		esi
+		push		edi
+		xor		esi,esi
+		xor		edi,edi
+		.while esi<[ebx].RACC.count
+			mov		edx,[ebx].RACC.lpmem
+			mov		eax,[edx+esi*8]
+			invoke		lstrlen,eax
+			.if eax>edi
+				mov		edi,eax
+			.endif
+			inc		esi
+		.endw
+		mov		eax,edi
+		pop		edi
+		pop		esi		
 	.elseif eax==CCM_CLEAR
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

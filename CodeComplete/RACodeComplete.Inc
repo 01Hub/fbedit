@@ -18,6 +18,7 @@ CCM_SORT			equ WM_USER+12			;wParam=Descending (TRUE/FALSE), lParam=0, Returns n
 CCM_GETCOLOR		equ WM_USER+13			;wParam=0, lParam=lpCC_COLOR, Returns nothing
 CCM_SETCOLOR		equ WM_USER+14			;wParam=0, lParam=lpCC_COLOR, Returns nothing
 CCM_ADDLIST			equ WM_USER+15			;wParam=0, lParam=lpCC_ADDLIST, Returns nothing
+CCM_GETMAXWIDTH		equ WM_USER+16			;wParam=0, lParam=0, Returns length of longest Item
 
 CC_COLOR struct
 	back	dd ?

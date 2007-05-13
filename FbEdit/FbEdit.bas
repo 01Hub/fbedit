@@ -282,7 +282,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
 			lpOldOutputProc=Cast(Any ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
-			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"444444444444444",@edtopt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444",@edtopt,FALSE)
 			' Create fonts
 			LoadFromIni(StrPtr("Edit"),StrPtr("EditFont"),"440",@edtfnt,FALSE)
 			lfnt.lfHeight=edtfnt.size
@@ -450,6 +450,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
 			lpOldCCProc=Cast(Any ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
 			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+			''' test with fixed font
+			'SendMessage(ah.hcc,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
 			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,hDlgFnt),0)

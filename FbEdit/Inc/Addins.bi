@@ -54,8 +54,8 @@ Type WINPOS
 	ptfind			As Point							' Find dialog position
 	ptgoto			As Point							' Goto dialog position
 	singleinstance	As Integer						' Single instance
-	ptcclist			As Point							' Code complete position
-	ptsavelist		As POINT							' Save list position
+	ptcclist			As Point							' Code complete size
+	ptsavelist		As Point							' Save list position
 End Type
 
 Type ADDINHOOKS

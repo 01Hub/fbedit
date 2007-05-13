@@ -14,18 +14,32 @@ End Sub
 Sub MoveList()
 	Dim pt As Point
 	Dim rect As RECT
-	Dim rect1 As RECT
+'	Dim rect1 As RECT
 
 	GetCaretPos(@pt)
-	GetWindowRect(ah.hcc,@rect1)
+'	GetWindowRect(ah.hcc,@rect1)
+''' this is not necessary
+''' ah.hcc was created with size wpos.ptcclist(x,y)
 	SendMessage(ah.hred,EM_GETRECT,0,Cast(Integer,@rect))
 	ClientToScreen(ah.hred,Cast(Point ptr,@rect))
 	rect.top=rect.top+pt.y+18
-	If rect.top+rect1.bottom-rect1.top+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
-		rect.top=rect.top-rect1.bottom+rect1.top-22
+'	If rect.top+rect1.bottom-rect1.top+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
+'		rect.top=rect.top-rect1.bottom+rect1.top-22
+	If rect.top+wpos.ptcclist.y+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
+		rect.top=rect.top-wpos.ptcclist.y-22
 	EndIf
-	SetWindowPos(ah.hcc,HWND_TOP,rect.left+pt.x+5,rect.top,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+	''' need to improved 
+	If edtopt.autowidth Then
+		rect.right=12*SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)
+	Else
+		rect.right=wpos.ptcclist.x
+	EndIf
+	rect.bottom=wpos.ptcclist.y
+'	SetWindowPos(ah.hcc,HWND_TOP,rect.left+pt.x+5,rect.top,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+	SetWindowPos(ah.hcc,HWND_TOP,rect.left+pt.x+5,rect.top,rect.right,rect.bottom,SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 	ShowWindow(ah.htt,SW_HIDE)
+''' to verify correct work
+'	MessageBox(0,Str(SendMessage(ah.hcc,ccm_getmaxwidth,0,0)),0,0)
 
 End Sub
 
@@ -260,7 +274,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 					EndIf
 				EndIf
 			Else
-			  TestNext1:
+			TestNext1:
 				lret=FindExact(StrPtr("s"),p,TRUE)
 				If lret Then
 					lret=lret+lstrlen(lret)+1
@@ -413,7 +427,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVa
 		While TRUE
 			If wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY Then
 				lstrcpy(@s,@wfd.cFileName)
-				If Left(s,1)<>"." Then
+				If Asc(s)<>Asc(".") Then
 					buffer=Left(buffer,Len(buffer)-3)
 					l=Len(buffer)
 					lstrcat(@buffer,@wfd.cFileName)
@@ -472,7 +486,7 @@ Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal
 		While TRUE
 			If wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY Then
 				lstrcpy(@s,@wfd.cFileName)
-				If Left(s,1)<>"." Then
+				If Asc(s)<>Asc(".") Then
 					buffer=Left(buffer,Len(buffer)-3)
 					l=Len(buffer)
 					lstrcat(@buffer,@wfd.cFileName)
