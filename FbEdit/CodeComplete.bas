@@ -292,7 +292,9 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 			EndIf
 		EndIf
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-		fstructlist=SendMessage(ah.hcc,CCM_GETCOUNT,0,0)
+		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+			fstructlist=TRUE
+		EndIf
 	EndIf
 
 End Sub
@@ -327,10 +329,10 @@ Sub UpdateTypeList()
 			SendMessage(ah.hcc,CCM_ADDITEM,ntype,lret)
 			lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
 		Loop
-		ftypelist=SendMessage(ah.hcc,CCM_GETCOUNT,0,0)
-		If ftypelist Then
-			SendMessage(ah.hcc,CCM_SORT,0,0)
-			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+		SendMessage(ah.hcc,CCM_SORT,0,0)
+		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+			ftypelist=TRUE
 		EndIf
 	EndIf
 

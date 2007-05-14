@@ -485,7 +485,7 @@ End Function
 Sub TestCaseConvert(ByVal hWin As HWND,ByVal wParam As Integer)
 	Dim chrg As CHARRANGE
 
-	If edtopt.autocase Then
+	If edtopt.autocase<>0 And wParam<>VK_BACK Then
 		If Peek(Byte,ad.lpCharTab+wParam)<>1 Then
 			If prechrg.cpMin=prechrg.cpMax Then
 				SendMessage(hWin,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -541,6 +541,19 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						Return lret
 					EndIf
 				EndIf
+				If wParam=VK_BACK Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If trng.chrg.cpMin>0 And trng.chrg.cpMin=trng.chrg.cpMax Then
+						' Get the deleted character
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If buff="," Or buff="(" Or buff="." Then
+							HideList
+							ShowWindow(ah.htt,SW_HIDE)
+						EndIf
+					EndIf
+				EndIf
 				If (wParam=VK_TAB Or wParam=VK_RETURN) And IsWindowVisible(ah.hcc) Then
 					' Update edit from code complete list
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(Integer,@chrg))
@@ -567,28 +580,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ShowWindow(ah.hcc,SW_HIDE)
 					EndIf
 					Return 0
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or (wParam=VK_BACK And fstructlist=FALSE And ftypelist=FALSE And flocallist=FALSE And fincludelist=FALSE And fincliblist=FALSE) Then
-					buff=""
-					If wParam=VK_BACK Then
-						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
-						If trng.chrg.cpMin>0 And trng.chrg.cpMin=trng.chrg.cpMax Then
-							' Get the deleted character
-							trng.chrg.cpMin-=1
-							trng.lpstrText=@buff
-							SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						EndIf
-					EndIf
+				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
 					ShowWindow(ah.htt,SW_HIDE)
-					If wParam=VK_BACK And (buff="," Or buff="(") Then
-						HideList()
-					ElseIf wParam=Asc(",") Or wParam=Asc("(") Then
-						TestCaseConvert(hPar,wParam)
-					EndIf
+					TestCaseConvert(hPar,wParam)
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
+						RtlZeroMemory(@buff,SizeOf(buff))
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
@@ -597,19 +597,17 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
-						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt)) Then
+						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And InStr(buff,"(")<>0 Then
 						ShowTT:
 							If edtopt.codecomplete Then
 								fconstlist=UpdateConstList(tt.lpszApi,tt.nPos+1)
 							EndIf
 							If fconstlist Then
-								' Show api constants
-								ShowWindow(ah.htt,SW_HIDE)
 								' Move code complete list
 								MoveList
 							Else
 								' Show tooltip
-								HideList()
+								HideList
 								tti.lpszApi=tt.lpszApi
 								tti.lpszParam=tt.lpszParam
 								tti.nitem=tt.nPos
@@ -650,7 +648,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
 					' Hide list and tooltip
 					ShowWindow(ah.htt,SW_HIDE)
-					HideList()
+					HideList
 					If wParam=VK_ESCAPE Then
 						Return 0
 					EndIf
@@ -695,20 +693,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						p=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
 						If ftypelist Then
 							If wParam=VK_SPACE Or wParam=VK_TAB Then
-								ftypelist=FALSE
+								HideList
 							Else
 								UpdateTypeList
 							EndIf
-							If ftypelist=FALSE Then
-								HideList()
-								Return lret
-							EndIf
 						ElseIf fstructlist Then
 							UpdateStructList(p)
-							If fstructlist=FALSE Then
-								HideList()
-								Return lret
-							EndIf
 						ElseIf fincludelist Then
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
@@ -801,7 +791,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateInclibList(ad.ProjectPath,NULL,7)
 						EndIf
 					ElseIf IsWindowVisible(ah.hcc) Then
-						HideList()
+						HideList
 					EndIf
 				ElseIf wParam=VK_RETURN Then
 					' Block Complete
@@ -904,11 +894,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				fTimer=1
 			ElseIf wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
 				' Show code complete list
-				ftypelist=FALSE
-				fconstlist=FALSE
-				fstructlist=FALSE
-				flocallist=FALSE
 				ShowWindow(ah.htt,SW_HIDE)
+				HideList
 				hPar=GetParent(hWin)
 				SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 				isinp.nLine=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
