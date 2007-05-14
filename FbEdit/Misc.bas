@@ -638,6 +638,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										GoTo ShowTT
 									EndIf								
 								EndIf
+							Else
+								GoTo	TestUpdate
 							EndIf
 						EndIf
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)
@@ -666,6 +668,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 				lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 				TestCaseConvert(hPar,wParam)
+			TestUpdate:
 				If IsWindowVisible(ah.hcc) Or fconstlist Then
 					If fconstlist Then
 						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))

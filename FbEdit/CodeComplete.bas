@@ -14,35 +14,27 @@ End Sub
 Sub MoveList()
 	Dim pt As Point
 	Dim rect As RECT
-'	Dim rect1 As RECT
+	Dim rect1 As RECT
 
 	GetCaretPos(@pt)
-'	GetWindowRect(ah.hcc,@rect1)
-''' this is not necessary
-''' ah.hcc was created with size wpos.ptcclist(x,y)
+	GetWindowRect(ah.hcc,@rect1)
 	SendMessage(ah.hred,EM_GETRECT,0,Cast(Integer,@rect))
 	ClientToScreen(ah.hred,Cast(Point ptr,@rect))
 	rect.top=rect.top+pt.y+18
-'	If rect.top+rect1.bottom-rect1.top+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
-'		rect.top=rect.top-rect1.bottom+rect1.top-22
-	If rect.top+wpos.ptcclist.y+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
-		rect.top=rect.top-wpos.ptcclist.y-22
+	If rect.top+rect1.bottom-rect1.top+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
+		rect.top=rect.top-rect1.bottom+rect1.top-22
 	EndIf
-	''' need to improved 
 	If edtopt.autowidth Then
 		rect.right=SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)
 		If rect.right<100 Then
 			rect.right=100
 		EndIf
 	Else
-		rect.right=wpos.ptcclist.x
+		rect.right=rect1.right-rect1.left
 	EndIf
 	rect.bottom=wpos.ptcclist.y
-'	SetWindowPos(ah.hcc,HWND_TOP,rect.left+pt.x+5,rect.top,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 	SetWindowPos(ah.hcc,HWND_TOP,rect.left+pt.x+5,rect.top,rect.right,rect.bottom,SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 	ShowWindow(ah.htt,SW_HIDE)
-''' to verify correct work
-'	MessageBox(0,Str(SendMessage(ah.hcc,ccm_getmaxwidth,0,0)),0,0)
 
 End Sub
 
