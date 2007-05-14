@@ -30,7 +30,10 @@ Sub MoveList()
 	EndIf
 	''' need to improved 
 	If edtopt.autowidth Then
-		rect.right=12*SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)
+		rect.right=SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)
+		If rect.right<100 Then
+			rect.right=100
+		EndIf
 	Else
 		rect.right=wpos.ptcclist.x
 	EndIf

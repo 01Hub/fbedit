@@ -94,7 +94,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=1
 MilestoneOnDateTimeDate=6
@@ -127,7 +127,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,6572
+1=0,0,0,0,8073
 3=0,0,0,0,53
 2=0,0,0,0,1221
 4=0,0,0,0,0
@@ -160,7 +160,7 @@ ProductVer4Range=0
 10="WINPOS"
 [Collapse]
 2=
-1=,,
+1=,,,
 6=
 7=
 8=

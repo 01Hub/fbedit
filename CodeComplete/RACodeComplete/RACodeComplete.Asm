@@ -313,17 +313,39 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		push		esi
 		push		edi
+		invoke GetDC,hWin
+		mov		ps.hdc,eax
+		invoke SelectObject,ps.hdc,[ebx].RACC.hfont
+		push	eax
+		call	SetScroll
+		invoke GetScrollRange,hWin,SB_VERT,addr rect.top,addr rect.bottom
+		mov		ninx,0
+		mov		eax,rect.bottom
+		dec		eax
+		.if eax!=rect.top
+			mov		ninx,21
+		.endif
 		xor		esi,esi
 		xor		edi,edi
+		mov		rect.left,esi
+		mov		rect.top,esi
 		.while esi<[ebx].RACC.count
 			mov		edx,[ebx].RACC.lpmem
-			mov		eax,[edx+esi*8]
-			invoke		lstrlen,eax
+			mov		edx,[edx+esi*8]
+			invoke DrawText,ps.hdc,edx,-1,addr rect,DT_SINGLELINE or DT_CALCRECT
+			mov		eax,rect.right
+			add		eax,ninx
+			test	[ebx].RACC.style,STYLE_USEIMAGELIST
+			.if !ZERO?
+				add		eax,19
+			.endif
 			.if eax>edi
 				mov		edi,eax
 			.endif
 			inc		esi
 		.endw
+		pop		eax
+		invoke SelectObject,ps.hdc,eax
 		mov		eax,edi
 		pop		edi
 		pop		esi		
