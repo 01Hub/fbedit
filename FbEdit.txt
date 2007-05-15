@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.5.3
+o Added option to autosize code complete list.
 o Added skip commented line to find dialog.
 o Added file changed outside editor notification.
 o Added checkmarks to some Format menu items.
