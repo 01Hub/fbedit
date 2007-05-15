@@ -5730,7 +5730,8 @@ SaveStyle proc uses esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 			call	WriteStyles
 		.elseif eax==19
 			;StatusBar
-			mov		dword ptr buffer2,'_SBS'
+			mov		dword ptr buffer2,'RABS'
+			mov		dword ptr buffer3,'_SCC'
 			call	TestTypeMask
 			call	WriteStyles
 		.elseif eax==20

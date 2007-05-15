@@ -133,10 +133,10 @@ Options=52
 5=0,0,0,0
 3=0,0,0,0,429
 4=0,0,0,0,8
-1=0,0,0,0,10794
+1=0,0,0,0,81
 7=0,0,0,0,41029
 6=0,0,0,0,539
-9=0,0,0,0,122590
+9=0,0,0,0,124818
 2=0,0,584,498,6111
 8=0,0,0,0,3786
 10=0,0,0,0,6724
@@ -144,7 +144,7 @@ Options=52
 15=0,0,0,0
 17=0,0,0,0,16183
 18=0,0,0,0,18497
-21=0,0,0,0,1
+21=0,0,0,0,8049
 23=0,0,0,0
 24=0,0,0,0,4436
 26=0,0,0,0,8306
@@ -163,7 +163,7 @@ Options=52
 37=0,0,0,0,708
 38=0,0,0,0
 39=0,0,0,0,13864
-40=0,0,0,0,9120
+40=0,0,0,0,16258
 41=0,0,0,0
 42=0,0,0,0
 43=0,0,0,0,6452
@@ -172,43 +172,43 @@ Options=52
 
 
 [Find]
-1="TPE_XPMANIFEST"
-2="szProjectPath"
-3="TPE_USERDATA"
-4="Userdata"
-5="USERDATAMEM"
-6="ParseRCMem"
-7="ExportLanguage"
-8="BS_P"
-9="IDC_RBNEXPOPT4"
-10="GlobalAlloc"
+1="SBARS_"
+2="SBARS_SIZEGRIP"
+3="TPE_XPMANIFEST"
+4="szProjectPath"
+5="TPE_USERDATA"
+6="Userdata"
+7="USERDATAMEM"
+8="ParseRCMem"
+9="ExportLanguage"
+10="BS_P"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.134
-PV=1.0.8.134
+FV=1.0.8.135
+PV=1.0.8.135
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.134
+ProductVersion=1.0.8.135
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2005
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.134
+FileVersion=1.0.8.135
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=6
+MilestoneEveryCurrent=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -229,7 +229,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -313,7 +313,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 43=
 44=
 [PTimer]
-PTimer=80057669
+PTimer=81988263
 
 [Exports]
 1=ResEdInstall
