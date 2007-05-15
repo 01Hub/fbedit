@@ -318,12 +318,14 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,ps.hdc,[ebx].RACC.hfont
 		push	eax
 		call	SetScroll
-		invoke GetScrollRange,hWin,SB_VERT,addr rect.top,addr rect.bottom
+		mov		sinf.cbSize,sizeof sinf
+		mov		sinf.fMask,SIF_PAGE or SIF_RANGE
+		invoke GetScrollInfo,hWin,SB_VERT,addr sinf
 		mov		ninx,0
-		mov		eax,rect.bottom
-		dec		eax
-		.if eax!=rect.top
-			mov		ninx,21
+		mov		eax,sinf.nMax
+		.if eax>=sinf.nPage
+			invoke GetSystemMetrics,SM_CXVSCROLL
+			mov		ninx,eax
 		.endif
 		xor		esi,esi
 		xor		edi,edi

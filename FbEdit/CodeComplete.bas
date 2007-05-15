@@ -25,7 +25,7 @@ Sub MoveList()
 		rect.top=rect.top-rect1.bottom+rect1.top-22
 	EndIf
 	If edtopt.autowidth Then
-		rect.right=SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)
+		rect.right=SendMessage(ah.hcc,CCM_GETMAXWIDTH,0,0)+8
 		If rect.right<100 Then
 			rect.right=100
 		EndIf
