@@ -639,6 +639,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									EndIf								
 								EndIf
 							Else
+								SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)
 								GoTo	TestUpdate
 							EndIf
 						EndIf
