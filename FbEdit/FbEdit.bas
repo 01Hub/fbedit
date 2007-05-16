@@ -249,11 +249,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,Cast(Integer,LoadBitmap(hInstance,Cast(ZString ptr,101))))
 			' Get from ini
 			GetPrivateProfileString(StrPtr("Project"),StrPtr("Path"),StrPtr("\"),@ad.DefProjectPath,SizeOf(ad.DefProjectPath),@ad.IniFile)
-			If Left(ad.DefProjectPath,1)="\" Then
+			If Asc(ad.DefProjectPath)=Asc("\") Then
 				ad.DefProjectPath=Left(ad.AppPath,2) & ad.DefProjectPath
 			EndIf
 			GetPrivateProfileString(StrPtr("Make"),StrPtr("fbcPath"),@szNULL,@ad.fbcPath,SizeOf(ad.fbcPath),@ad.IniFile)
-			If Left(ad.fbcPath,1)="\" Then
+			If Asc(ad.fbcPath)=Asc("\") Then
 				ad.fbcPath=Left(ad.AppPath,2) & ad.fbcPath
 			EndIf
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
@@ -1233,7 +1233,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GetPrivateProfileString(StrPtr("Help"),Str(1),@szNULL,@buff,260,@ad.IniFile)
 							If lstrlen(@buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
-								If Left(buff,1)="\" Then
+								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
 								EndIf
 								SendMessage(ah.hred,REM_GETWORD,SizeOf(s),Cast(Integer,@s))
@@ -1251,7 +1251,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GetPrivateProfileString(StrPtr("Help"),Str(2),@szNULL,@buff,256,@ad.IniFile)
 							If lstrlen(@buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
-								If Left(buff,1)="\" Then
+								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
 								EndIf
 								SendMessage(ah.hred,REM_GETWORD,SizeOf(s),Cast(Integer,@s))
@@ -1335,13 +1335,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								GetPrivateProfileString(StrPtr("Tools"),Str(id-10999),@szNULL,@buff,260,@ad.IniFile)
 								If lstrlen(@buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
-									If Left(buff,1)="\" Then
+									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf
 									If InStr(buff," $" & szNULL) Then
-										Mid(buff,lstrlen(@buff)-1)=szNULL
+										buff[lstrlen(@buff)-2]=NULL
 										ShellExecute(hWin,NULL,@buff,@ad.filename,NULL,SW_SHOWNORMAL)
-									ElseIf Left(buff,1)="$" Then
+									ElseIf Asc(buff)=Asc("$") Then
 										GetCurrentDirectory(260,@buff)
 										lstrcat(@buff,StrPtr("\"))
 										ShellExecute(hWin,StrPtr("explore"),@buff,NULL,NULL,SW_SHOWNORMAL)
@@ -1354,7 +1354,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								GetPrivateProfileString(StrPtr("Help"),Str(id-11999),@szNULL,@buff,256,@ad.IniFile)
 								If lstrlen(@buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
-									If Left(buff,1)="\" Then
+									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf
 									ShellExecute(hWin,NULL,@buff,NULL,NULL,SW_SHOWNORMAL)

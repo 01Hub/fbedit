@@ -443,7 +443,7 @@ Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal n
 	Dim sTest As ZString*256
 
 	sItem=buff
-	If Left(sItem,1)="." Then
+	If Asc(sItem)=Asc(".") Then
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nOwner,nLine))
 		If lret Then
 			lstrcpy(@sTest,lret)

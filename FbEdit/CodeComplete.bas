@@ -140,12 +140,12 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 			'ccpos=@ccstring
 			lpProc=lpProc+lstrlen(lpProc)+1
 			lstrcpy(@s,lpProc)
-			If Left(s,1)<>szNULL Then
+			If Asc(s)<>NULL Then
 				GetItems(8)
 			EndIf
 			lpProc=lpProc+lstrlen(lpProc)+1
 			lstrcpy(@s,lpProc)
-			If Left(s,1)<>szNULL Then
+			If Asc(s)<>NULL Then
 				GetItems(9)
 			EndIf
 		EndIf
@@ -182,7 +182,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 			nowner=IsProjectFile(ad.filename)
 		EndIf
 		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,lstrlen(@sLine),Cast(LPARAM,@sLine))
-		If Left(sLine,1)="." Then
+		If Asc(sLine)=Asc(".") Then
 			lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
 			If lret Then
 				lstrcpy(@s,lret)
@@ -234,7 +234,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 					EndIf
 					ccpos=@ccstring
 					lstrcpy(@s,lret)
-					If Left(s,1)<>szNULL Then
+					If Asc(s)<>NULL Then
 						GetItems(15)
 					EndIf
 				EndIf
@@ -264,7 +264,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 					EndIf
 					ccpos=@ccstring
 					lstrcpy(@s,lret)
-					If Left(s,1)<>szNULL Then
+					If Asc(s)<>NULL Then
 						GetItems(15)
 					EndIf
 				EndIf
@@ -280,7 +280,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 					EndIf
 					ccpos=@ccstring
 					lstrcpy(@s,lret)
-					If Left(s,1)<>szNULL Then
+					If Asc(s)<>NULL Then
 						GetItems(15)
 					EndIf
 				EndIf

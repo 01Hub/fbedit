@@ -23,12 +23,12 @@ Function PathOptDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As 
 				Case IDOK
 					GetDlgItemText(hWin,IDC_EDTOPTPROJECTPATH,@ad.DefProjectPath,260)
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("Path"),@ad.DefProjectPath,@ad.IniFile)
-					If Left(ad.DefProjectPath,1)="\" Then
+					If Asc(ad.DefProjectPath)=Asc("\") Then
 						ad.DefProjectPath=Left(ad.AppPath,2) & ad.DefProjectPath
 					EndIf
 					GetDlgItemText(hWin,IDC_EDTOPTCOMPILERPATH,@ad.fbcPath,260)
 					WritePrivateProfileString(StrPtr("Make"),StrPtr("fbcPath"),@ad.fbcPath,@ad.IniFile)
-					If Left(ad.fbcPath,1)="\" Then
+					If Asc(ad.fbcPath)=Asc("\") Then
 						ad.fbcPath=Left(ad.AppPath,2) & ad.fbcPath
 					EndIf
 					GetMakeOption
