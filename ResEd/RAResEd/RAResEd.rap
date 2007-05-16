@@ -133,11 +133,11 @@ Options=52
 5=0,0,0,0
 3=0,0,0,0,429
 4=0,0,0,0,8
-1=0,0,0,0,81
-7=0,0,0,0,41029
+1=0,0,0,0,12565
+7=0,0,0,0,67610
 6=0,0,0,0,539
-9=0,0,0,0,124818
-2=0,0,584,498,6111
+9=0,0,0,0,138174
+2=0,0,584,498,7502
 8=0,0,0,0,3786
 10=0,0,0,0,6724
 16=0,0,0,0,26940
@@ -172,43 +172,43 @@ Options=52
 
 
 [Find]
-1="SBARS_"
-2="SBARS_SIZEGRIP"
-3="TPE_XPMANIFEST"
-4="szProjectPath"
-5="TPE_USERDATA"
-6="Userdata"
-7="USERDATAMEM"
-8="ParseRCMem"
-9="ExportLanguage"
-10="BS_P"
+1="fStyleHex"
+2="DES_STYLEHEX"
+3="DES_TOOLTIP"
+4="DES_SNAPTOGRID"
+5="DES_GRID"
+6="PRP_STR_FONT"
+7="SBARS_"
+8="SBARS_SIZEGRIP"
+9="TPE_XPMANIFEST"
+10="szProjectPath"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.135
-PV=1.0.8.135
+FV=1.0.8.136
+PV=1.0.8.136
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.135
+ProductVersion=1.0.8.136
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2005
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.135
+FileVersion=1.0.8.136
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -229,7 +229,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -300,7 +300,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 21=
 7=,,,,,
 6=
-9=,,,,,,,,,,,,,,,,,
+9=,,,,,,,,,,,,,,,,,,
 37=
 34=,
 29=,
@@ -313,7 +313,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 43=
 44=
 [PTimer]
-PTimer=81988263
+PTimer=86495983
 
 [Exports]
 1=ResEdInstall

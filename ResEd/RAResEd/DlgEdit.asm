@@ -834,6 +834,7 @@ fRSnapToGrid		dd ?
 fSnapToGrid			dd ?
 fShowSizePos		dd ?
 fStyleHex			dd ?
+fSizeToFont			dd ?
 hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
 fNoMouseUp			dd ?
@@ -6176,6 +6177,97 @@ VerifyTebIndex proc uses esi,hMem:DWORD
 	ret
 
 VerifyTebIndex endp
+
+DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:DWORD,nNewSize:DWORD
+	LOCAL	hDlg:HWND
+
+	mov		eax,nOldSize
+	mov		dlgps,ax
+	mov		esi,lpOldFont
+	mov		edi,offset dlgfn
+	xor		eax,eax
+	mov		ecx,32
+  @@:
+	lodsb
+	stosw
+	loop	@b
+	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	push	fntwt
+	pop		dfntwt
+	push	fntht
+	pop		dfntht
+	mov		eax,nNewSize
+	mov		dlgps,ax
+	mov		esi,lpNewFont
+	mov		edi,offset dlgfn
+	xor		eax,eax
+	mov		ecx,32
+  @@:
+	lodsb
+	stosw
+	loop	@b
+	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	mov		esi,hMem
+	add		esi,sizeof DLGHEAD
+	mov		edi,[esi].DIALOG.hwnd
+	.while [esi].DIALOG.hwnd
+		.if [esi].DIALOG.hwnd!=-1
+			; Dont move dialog
+			.if edi!=[esi].DIALOG.hwnd
+				mov		eax,[esi].DIALOG.x
+				imul	fntwt
+				xor		edx,edx
+				idiv	dfntwt
+				.if fSnapToGrid
+					xor		edx,edx
+					idiv	Gridcx
+					imul	Gridcx
+				.endif
+				mov		[esi].DIALOG.x,eax
+				mov		eax,[esi].DIALOG.y
+				imul	fntht
+				xor		edx,edx
+				idiv	dfntht
+				.if fSnapToGrid
+					xor		edx,edx
+					idiv	Gridcy
+					imul	Gridcy
+				.endif
+				mov		[esi].DIALOG.y,eax
+			.endif
+			mov		eax,[esi].DIALOG.ccx
+			imul	fntwt
+			xor		edx,edx
+			idiv	dfntwt
+			.if fSnapToGrid
+				xor		edx,edx
+				idiv	Gridcx
+				imul	Gridcx
+				inc		eax
+			.endif
+			mov		[esi].DIALOG.ccx,eax
+			mov		eax,[esi].DIALOG.ccy
+			imul	fntht
+			xor		edx,edx
+			idiv	dfntht
+			.if fSnapToGrid
+				xor		edx,edx
+				idiv	Gridcy
+				imul	Gridcy
+				inc		eax
+			.endif
+			mov		[esi].DIALOG.ccy,eax
+			.if edi!=[esi].DIALOG.hwnd
+				invoke MoveWindow,[esi].DIALOG.hwnd,[esi].DIALOG.x,[esi].DIALOG.y,[esi].DIALOG.ccx,[esi].DIALOG.ccy,TRUE
+			.else
+				invoke MoveWindow,[esi].DIALOG.hwnd,10,10,[esi].DIALOG.ccx,[esi].DIALOG.ccy,TRUE
+			.endif
+		.endif
+		add		esi,sizeof DIALOG
+	.endw
+	ret
+
+DlgResize endp
 
 ExportDialog proc uses esi edi,hRdMem:DWORD
 	LOCAL	hWrMem:DWORD

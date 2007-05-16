@@ -87,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,1102
+1=0,0,0,0,11209
 6=
-2=0,0,0,0,4613
-7=0,0,699,490,6111
+2=0,0,0,0,5005
+7=0,0,699,490,7502
 9=
 8=
 3=0,0,0,0,1384
 10=0,0,0,0
 11=0,0,0,0,299
-13=0,0,0,0,23
+13=0,0,0,0,11773
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -104,7 +104,7 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,73
+21=0,0,0,0,440
 
 [BookMark]
 0=
@@ -122,22 +122,22 @@ Options=52
 0=
 
 [Find]
-1="PRO_ADDITEM"
-2="IDC_RBNEXPOPT4"
-3="GlobalAlloc"
-4="szDlgEditDummyClass"
-5="DEM_SHOWTABINDEX"
-6="DEM_SHOWDIALOG"
-7="exstyledef"
-8="RATYPES"
-9="TYPES"
-10="HexToBin"
+1="DES_STYLEHEX"
+2="GRIDSIZE"
+3="PRO_ADDITEM"
+4="IDC_RBNEXPOPT4"
+5="GlobalAlloc"
+6="szDlgEditDummyClass"
+7="DEM_SHOWTABINDEX"
+8="DEM_SHOWDIALOG"
+9="exstyledef"
+10="RATYPES"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=3
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -158,7 +158,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -241,6 +241,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=81044009
+PTimer=82734274
 [AutoLoad]
 1=1

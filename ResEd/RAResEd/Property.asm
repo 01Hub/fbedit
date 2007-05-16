@@ -2329,6 +2329,14 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						pop		eax
 						.if eax
 							invoke ResetSize,esi
+							.if fSizeToFont
+								mov		eax,cf.iPointSize
+								mov		ecx,10
+								xor		edx,edx
+								div		ecx
+								invoke DlgResize,esi,addr (DLGHEAD ptr [esi]).font,(DLGHEAD ptr [esi]).fontsize,addr lf.lfFaceName,eax
+								invoke SizeingRect,hCtl,FALSE
+							.endif
 							mov		eax,lf.lfHeight
 							mov		(DLGHEAD ptr [esi]).fontht,eax
 							mov		al,lf.lfItalic

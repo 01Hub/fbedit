@@ -133,6 +133,7 @@ GRIDSIZE struct
 	color		dd ?
 	line		dd ?
 	stylehex	dd ?
+	sizetofont	dd ?
 GRIDSIZE ends
 
 .const
@@ -182,7 +183,7 @@ szWinPos			db 'WinPos',0
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
-grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE>
+grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE>
 col					COLOR <0FFFFFFh,0>
 
 .data?

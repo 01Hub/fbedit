@@ -440,6 +440,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.stylehex
 			or		edx,DES_STYLEHEX
 		.endif
+		.if grdsize.sizetofont
+			or		edx,DES_SIZETOFONT
+		.endif
 		invoke CreateWindowEx,200h,addr szDlgEditClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
 		mov		hResEd,eax
 		invoke SendMessage,eax,WM_SETFONT,hFont,0
