@@ -6,6 +6,7 @@ o Added skip commented line to find dialog.
 o Added file changed outside editor notification.
 o Added checkmarks to some Format menu items.
 o Added code complete to #Include and #Inclib
+o Fixed bug with statusbar control in resource editor.
 o Fixed expand (Ctrl+E) bug in RAEdit.
 o Fixed bug when parsing compiler errors in output window.
 o Fixed bug where quick run did not always delete the executable.
