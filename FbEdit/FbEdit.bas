@@ -528,7 +528,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
-			If CloseAllTabs(hWin,fProject)=FALSE Then
+			If CloseAllTabs(hWin,fProject,0)=FALSE Then
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0
 				EndIf
@@ -662,7 +662,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_FILE_CLOSEALL
 							If ah.hred Then
-								If CloseAllTabs(hWin,FALSE)=FALSE Then
+								If CloseAllTabs(hWin,FALSE,0)=FALSE Then
 									'
 								EndIf
 								If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
@@ -1320,6 +1320,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								EndIf
 							EndIf
 							'
+						Case IDM_WINDOW_ALL_BUT_CURRENT
+							If ah.hred Then
+								If CloseAllTabs(hWin,FALSE,ah.hred)=FALSE Then
+									'
+								EndIf
+								If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
+									UpdateFileProperty
+								EndIf
+								fTimer=1
+							EndIf
+							'
 						Case IDC_CBOBUILD
 							id=SendMessage(ah.hcbobuild,CB_GETCURSEL,0,0)
 							If fProject Then
@@ -1368,7 +1379,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 											Return TRUE
 										EndIf
 									Else
-										If CloseAllTabs(hWin,FALSE)=TRUE Then
+										If CloseAllTabs(hWin,FALSE,0)=TRUE Then
 											Return TRUE
 										EndIf
 									EndIf

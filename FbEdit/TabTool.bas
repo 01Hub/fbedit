@@ -425,10 +425,11 @@ Function WantToSave(ByVal hWin As HWND) As Boolean
 
 End Function
 
-Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Boolean
+Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
+	Dim x As Integer
 
 	tci.mask=TCIF_PARAM
 	i=0
@@ -436,15 +437,17 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Bool
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
-				ShowWindow(ah.hred,SW_HIDE)
-				ah.hred=lpTABMEM->hedit
-				ad.filename=lpTABMEM->filename
-				SendMessage(hWin,WM_SIZE,0,0)
-				ShowWindow(ah.hred,SW_SHOW)
-				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-				SetWinCaption
-				If WantToSave(hWin) Then
-					Return TRUE
+				If lpTABMEM->hedit<>hWinDontClose Then
+					ShowWindow(ah.hred,SW_HIDE)
+					ah.hred=lpTABMEM->hedit
+					ad.filename=lpTABMEM->filename
+					SendMessage(hWin,WM_SIZE,0,0)
+					ShowWindow(ah.hred,SW_SHOW)
+					SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
+					SetWinCaption
+					If WantToSave(hWin) Then
+						Return TRUE
+					EndIf
 				EndIf
 			EndIf
 		Else
@@ -452,39 +455,48 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean) As Bool
 		EndIf
 		i=i+1
 	Loop
-	ShowWindow(ah.htabtool,SW_HIDE)
+	i=0
 	Do While TRUE
-		If SendMessage(ah.htabtool,TCM_GETITEM,0,Cast(Integer,@tci)) Then
+		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
-			If lpTABMEM->profileinx Then
-				WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,fProjectClose)
-			EndIf
-			SendMessage(ah.hpr,PRM_DELPROPERTY,Cast(Integer,lpTABMEM->hedit),0)
-			If lpTABMEM->hedit<>ah.hres Then
-				i=0
-				While i<16
-					If fdc(i).hwnd=lpTABMEM->hedit Then
-						fdc(i).hwnd=Cast(HWND,-1)
-					EndIf
-					i=i+1
-				Wend
-				DestroyWindow(lpTABMEM->hedit)
+			If lpTABMEM->hedit<>hWinDontClose Then
+				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
+				If lpTABMEM->profileinx Then
+					WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,fProjectClose)
+				EndIf
+				SendMessage(ah.hpr,PRM_DELPROPERTY,Cast(Integer,lpTABMEM->hedit),0)
+				If lpTABMEM->hedit<>ah.hres Then
+					x=0
+					While x<16
+						If fdc(x).hwnd=lpTABMEM->hedit Then
+							fdc(x).hwnd=Cast(HWND,-1)
+						EndIf
+						x=x+1
+					Wend
+					DestroyWindow(lpTABMEM->hedit)
+				Else
+					ShowWindow(lpTABMEM->hedit,SW_HIDE)
+				EndIf
+				GlobalFree(lpTABMEM)
+				SendMessage(ah.htabtool,TCM_DELETEITEM,i,0)
 			Else
-				ShowWindow(lpTABMEM->hedit,SW_HIDE)
+				i=1
 			EndIf
-			GlobalFree(lpTABMEM)
-			SendMessage(ah.htabtool,TCM_DELETEITEM,0,0)
 		Else
 			Exit Do
 		EndIf
 	Loop
-	curtab=-1
-	prevtab=-1
-	ah.hred=0
-	ShowWindow(ah.hshp,SW_SHOWNA)
-	If ah.hfullscreen Then
-		DestroyWindow(ah.hfullscreen)
+	If hWinDontClose Then
+		SelectTab(ah.hwnd,hWinDontClose,0)
+	Else
+		ShowWindow(ah.htabtool,SW_HIDE)
+		curtab=-1
+		prevtab=-1
+		ah.hred=0
+		ShowWindow(ah.hshp,SW_SHOWNA)
+		If ah.hfullscreen Then
+			DestroyWindow(ah.hfullscreen)
+		EndIf
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	SetWinCaption
@@ -513,7 +525,7 @@ Function OpenAProject(ByVal hWin As HWND) As Boolean
 				Return FALSE
 			EndIf
 		Else
-			If CloseAllTabs(hWin,FALSE)=TRUE Then
+			If CloseAllTabs(hWin,FALSE,0)=TRUE Then
 				Return FALSE
 			EndIf
 		EndIf

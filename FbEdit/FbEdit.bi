@@ -188,6 +188,7 @@ Declare Function GetTextItem(ByRef sText As String) As String
 #define IDM_PROPERTY_COPY					20006
 
 #Define IDM_WINDOW_SPLITT					20001
+#Define IDM_WINDOW_ALL_BUT_CURRENT		20007
 
 #Define IDB_MNUARROW							200
 #Define IDC_HSPLIT							100

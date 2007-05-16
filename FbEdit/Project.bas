@@ -571,7 +571,7 @@ End Function
 
 Function CloseProject() As Integer
 
-	If CloseAllTabs(ah.hwnd,TRUE)=FALSE Then
+	If CloseAllTabs(ah.hwnd,TRUE,0)=FALSE Then
 		SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,TVI_ROOT))
 		SendMessage(ah.htab,TCM_SETCURSEL,0,0)
 		ShowWindow(ah.hfib,SW_SHOWNA)
