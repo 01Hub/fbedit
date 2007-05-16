@@ -348,6 +348,7 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		pop		eax
 		invoke SelectObject,ps.hdc,eax
+		invoke ReleaseDC,hWin,ps.hdc
 		mov		eax,edi
 		pop		edi
 		pop		esi		
