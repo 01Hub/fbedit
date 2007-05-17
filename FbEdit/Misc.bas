@@ -669,9 +669,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 				lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 				TestCaseConvert(hPar,wParam)
+				If (wParam=Asc(".") Or wParam=Asc(">")) And fconstlist=TRUE Then
+					HideList
+				EndIf
 			TestUpdate:
-				If IsWindowVisible(ah.hcc) Or fconstlist Then
-					If fconstlist Then
+				If (IsWindowVisible(ah.hcc) Or fconstlist) And wParam<>Asc(".") Then
+					If fconstlist=TRUE Then
 						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
@@ -740,6 +743,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						fconstlist=FALSE
 						IsStructList
 					EndIf
 				ElseIf wParam=Asc(">") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
@@ -749,6 +753,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						trng.lpstrText=@s
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
 						If s="->" Then
+							fconstlist=FALSE
 							IsStructList
 						EndIf
 					EndIf

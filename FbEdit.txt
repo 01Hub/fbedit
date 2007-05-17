@@ -1,12 +1,14 @@
 Whats new:
 ----------
 1.0.5.3
+o Added dialog editor option to size dialog to font.
 o Added Close All But Current to tab context menu.
 o Added option to autosize code complete list.
 o Added skip commented line to find dialog.
 o Added file changed outside editor notification.
 o Added checkmarks to some Format menu items.
 o Added code complete to #Include and #Inclib
+o Fixed a problem with api constant / UDT code complete.
 o Fixed bug with statusbar control in resource editor.
 o Fixed expand (Ctrl+E) bug in RAEdit.
 o Fixed bug when parsing compiler errors in output window.

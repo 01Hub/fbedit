@@ -294,6 +294,7 @@ Type GRIDSIZE
 	Color				As Integer
 	Line				As Integer
 	stylehex			As Integer
+	sizetofont		As Integer
 End Type
 
 Type PFI
@@ -442,7 +443,7 @@ Dim Shared lnrfnt As EDITFONT=(-6,0,@sf2)
 Dim Shared edtopt As EDITOPTION=(3,0,0,1,0,0,3,1,1,1,1,1,1,0,0,0)
 Const sn = !"rsrc.bi\0                        "
 Dim Shared nmeexp As NAMEEXPORT=(1,2,0,@sn)
-Dim Shared grdsize As GRIDSIZE=(3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE)
+Dim Shared grdsize As GRIDSIZE=(3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE)
 
 ' Code properties
 Const szCode = "Functions"

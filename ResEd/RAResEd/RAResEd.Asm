@@ -950,6 +950,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,edx
 			and		eax,1
 			mov		fStyleHex,eax
+			shr		edx,1
+			mov		eax,edx
+			and		eax,1
+			mov		fSizeToFont,eax
 			invoke GetWindowLong,hWin,DEWM_DIALOG
 			.if eax
 				invoke InvalidateRect,eax,NULL,TRUE

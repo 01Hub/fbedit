@@ -261,6 +261,7 @@ End Type
 #Define DES_SNAPTOGRID		2
 #Define DES_TOOLTIP			4
 #Define DES_STYLEHEX			8
+#Define DES_SIZETOFONT		16
 
 ' Dialog edit window memory
 #Define DEWM_DIALOG			0
