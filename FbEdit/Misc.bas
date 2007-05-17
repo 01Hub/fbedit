@@ -548,7 +548,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						trng.chrg.cpMin-=1
 						trng.lpstrText=@buff
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						If buff="," Or buff="(" Or buff="." Then
+						If Asc(buff)=Asc(",") Or Asc(buff)=Asc("(") Or Asc(buff)=Asc(".") Then
 							HideList
 							ShowWindow(ah.htt,SW_HIDE)
 						EndIf
@@ -580,6 +580,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ShowWindow(ah.hcc,SW_HIDE)
 					EndIf
 					Return 0
+				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc) Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc(".") Then
+							Return 0
+						EndIf
 				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
