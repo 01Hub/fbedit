@@ -585,7 +585,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						trng.chrg.cpMin-=1
 						trng.lpstrText=@buff
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						If Asc(buff)=Asc(".") Then
+						If SendMessage(ah.hcc,CCM_GETCOUNT,0,0)<=1 Then
+							HideList
+						ElseIf Asc(buff)=Asc(".") Then
 							Return 0
 						EndIf
 				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Then
@@ -681,7 +683,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					HideList
 				EndIf
 			TestUpdate:
-				If (IsWindowVisible(ah.hcc) Or fconstlist) And wParam<>Asc(".") Then
+				If (IsWindowVisible(ah.hcc) Or fconstlist) Then
 					If fconstlist=TRUE Then
 						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
