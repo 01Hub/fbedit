@@ -163,7 +163,7 @@ Options=52
 37=0,0,0,0,708
 38=0,0,0,0
 39=0,0,0,0,13864
-40=0,0,0,0,16258
+40=0,0,0,0,27898
 41=0,0,0,0
 42=0,0,0,0
 43=0,0,0,0,6452
@@ -172,6 +172,18 @@ Options=52
 
 
 [Find]
+<<<<<<< .mine
+1="RSM_SETSTYLEVAL"
+2="SBARS_"
+3="SBARS_SIZEGRIP"
+4="TPE_XPMANIFEST"
+5="szProjectPath"
+6="TPE_USERDATA"
+7="Userdata"
+8="USERDATAMEM"
+9="ParseRCMem"
+10="ExportLanguage"
+=======
 1="fStyleHex"
 2="DES_STYLEHEX"
 3="DES_TOOLTIP"
@@ -182,6 +194,7 @@ Options=52
 8="SBARS_SIZEGRIP"
 9="TPE_XPMANIFEST"
 10="szProjectPath"
+>>>>>>> .r57
 
 [AutoLoad]
 1=1
