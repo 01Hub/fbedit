@@ -377,7 +377,7 @@ BEGIN
   CONTROL "Cancel",IDCANCEL,"Button",0x50010000,220,147,48,15
 END
 IDD_DLGABOUT DIALOGEX 6,6,146,91
-CAPTION "FreeBASIC editor 1.0.5.3"
+CAPTION "FreeBASIC editor 1.0.5.4"
 FONT 8,"MS Sans Serif",0,0
 STYLE 0x10C80880
 EXSTYLE 0x00000001
@@ -799,8 +799,8 @@ IDC_MAINICON ICON DISCARDABLE "Res/icon.ico"
 IDB_SPLASH BITMAP DISCARDABLE "Res/FbEdit.bmp"
 IDR_XPMANIFEST MANIFEST "Res/xptheme.xml"
 VERINF1 VERSIONINFO
-FILEVERSION 1,0,5,3
-PRODUCTVERSION 1,0,5,3
+FILEVERSION 1,0,5,4
+PRODUCTVERSION 1,0,5,4
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -808,12 +808,12 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.0.5.3\0"
+      VALUE "FileVersion", "1.0.5.4\0"
       VALUE "FileDescription", "FreeBASIC code editor\0"
       VALUE "InternalName", "FbEdit\0"
       VALUE "LegalCopyright", "KetilO (C) 2006\0"
       VALUE "OriginalFilename", "FbEdit.exe\0"
-      VALUE "ProductVersion", "1.0.5.3\0"
+      VALUE "ProductVersion", "1.0.5.4\0"
     END
   END
   BLOCK "VarFileInfo"
