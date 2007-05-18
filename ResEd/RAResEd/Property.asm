@@ -188,7 +188,9 @@ TimeAni				dd -1 xor ACS_TIMER,0
 WeekMvi				dd -1 xor MCS_WEEKNUMBERS,0
 					dd -1 xor MCS_WEEKNUMBERS,MCS_WEEKNUMBERS
 ToolTbr				dd -1 xor TBSTYLE_TOOLTIPS,0
-					dd -1 xor TBSTYLE_TOOLTIPS,TBSTYLE_TOOLTIPS
+					dd -1 xor TBSTYLE_TOOLTIPS,SBARS_TOOLTIPS
+ToolSbr				dd -1 xor SBARS_TOOLTIPS,0
+					dd -1 xor SBARS_TOOLTIPS,SBARS_TOOLTIPS
 ToolTab				dd -1 xor TCS_TOOLTIPS,0
 					dd -1 xor TCS_TOOLTIPS,TCS_TOOLTIPS
 WrapTbr				dd -1 xor TBSTYLE_WRAPABLE,0
@@ -1189,8 +1191,10 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 	.elseif eax==PRP_BOOL_TOOLTIP
 		.if nType==11
 			invoke TxtLstFalseTrue,[esi].style,addr ToolTab
-		.else
+		.elseif nType==18
 			invoke TxtLstFalseTrue,[esi].style,addr ToolTbr
+		.else
+			invoke TxtLstFalseTrue,[esi].style,addr ToolSbr
 		.endif
 	.elseif eax==PRP_BOOL_WRAP
 		invoke TxtLstFalseTrue,[esi].style,addr WrapTbr
@@ -2116,8 +2120,10 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				mov		lbid,PRP_BOOL_TOOLTIP
 				.if eax==11
 					invoke ListFalseTrue,[esi].style,addr ToolTab,edi
-				.else
+				.elseif eax==18
 					invoke ListFalseTrue,[esi].style,addr ToolTbr,edi
+				.elseif eax==19
+					invoke ListFalseTrue,[esi].style,addr ToolSbr,edi
 				.endif
 			.elseif edx==61
 				;Wrap
