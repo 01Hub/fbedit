@@ -548,10 +548,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						trng.chrg.cpMin-=1
 						trng.lpstrText=@buff
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						If Asc(buff)=Asc(",") Or Asc(buff)=Asc("(") Or Asc(buff)=Asc(".") Then
-							HideList
-							ShowWindow(ah.htt,SW_HIDE)
-						EndIf
+						Select Case As Const Asc(buff)
+							Case Asc(","),Asc("("),Asc("."),34
+								HideList
+								ShowWindow(ah.htt,SW_HIDE)
+						End Select
 					EndIf
 				EndIf
 				If (wParam=VK_TAB Or wParam=VK_RETURN) And IsWindowVisible(ah.hcc) Then
@@ -562,7 +563,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					buff=Chr(255) & Chr(1)
 					p=Cast(ZString ptr,SendMessage(hPar,EM_GETLINE,lret,Cast(LPARAM,@buff)))
 					buff[Cast(Integer,p)]=NULL
-					SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
+					If fincliblist Or fincludelist Then
+						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_CHAR)
+						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
+						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_HICHAR)
+					Else
+						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
+					EndIf
 					chrg.cpMin=chrg.cpMax-lstrlen(@buff)
 					p=Cast(ZString ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
 					If p Then
@@ -992,9 +999,12 @@ Function CCProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByV
 				Return 0
 			ElseIf wParam=VK_ESCAPE Then
 				ShowWindow(hWin,SW_HIDE)
-				fconstlist=0
-				fstructlist=0
-				ftypelist=0
+				ftypelist=FALSE
+				fconstlist=FALSE
+				fstructlist=FALSE
+				flocallist=FALSE
+				fincludelist=FALSE
+				fincliblist=FALSE
 				Return 0
 			EndIf
 			'
