@@ -566,7 +566,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If fincliblist Or fincludelist Then
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_CHAR)
 						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
-						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_HICHAR)
+						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_CMNTINITCHAR)
 					Else
 						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					EndIf
