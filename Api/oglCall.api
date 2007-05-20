@@ -393,3 +393,118 @@ gluTessProperty,tess:GLUtesselator,which:GLenum,data:GLdouble
 gluTessVertex,tess:GLUtesselator,location:GLdouble,data:GLvoid
 gluUnProject,winX:GLdouble,winY:GLdouble,winZ:GLdouble,model:GLdouble,proj:GLdouble,view:GLint,objX:GLdouble,objY:GLdouble,objZ:GLdouble
 gluUnProject4,winX:GLdouble,winY:GLdouble,winZ:GLdouble,clipW:GLdouble,model:GLdouble,proj:GLdouble,view:GLint,nearVal:GLdouble,farVal:GLdouble,objX:GLdouble,objY:GLdouble,objZ:GLdouble,objW:GLdouble
+
+glutInit,ByRef argcp:Integer,ByRef argv:Byte ptr
+glutInitDisplayMode,ByVal mode:UInteger
+glutInitDisplayString,ByVal string:ZString ptr
+glutInitWindowPosition,ByVal x:Integer,ByVal y:Integer
+glutInitWindowSize,ByVal width:Integer,ByVal height:Integer
+glutMainLoop
+glutCreateWindow,ByVal title:ZString ptr) As Integer
+glutCreateSubWindow,ByVal win:Integer,ByVal x:Integer,ByVal y:Integer,ByVal width:Integer,ByVal height:Integer) As Integer
+glutDestroyWindow,ByVal win:Integer
+glutPostRedisplay
+glutPostWindowRedisplay,ByVal win:Integer
+glutSwapBuffers
+glutGetWindow,As Integer
+glutSetWindow,ByVal win:Integer
+glutSetWindowTitle,ByVal title:ZString ptr
+glutSetIconTitle,ByVal title:ZString ptr
+glutPositionWindow,ByVal x:Integer,ByVal y:Integer
+glutReshapeWindow,ByVal width:Integer,ByVal height:Integer
+glutPopWindow
+glutPushWindow
+glutIconifyWindow
+glutShowWindow
+glutHideWindow
+glutFullScreen
+glutSetCursor,ByVal cursor:Integer
+glutWarpPointer,ByVal x:Integer,ByVal y:Integer
+glutEstablishOverlay
+glutRemoveOverlay
+glutUseLayer,ByVal layer:GLenum
+glutPostOverlayRedisplay
+glutPostWindowOverlayRedisplay,ByVal win:Integer
+glutShowOverlay
+glutHideOverlay
+glutCreateMenu,ByVal func:Sub(ByVal:Integer)) As Integer
+glutDestroyMenu,ByVal menu:Integer
+glutGetMenu,) As Integer
+glutSetMenu,ByVal menu:Integer
+glutAddMenuEntry,ByVal label:ZString ptr,ByVal value:Integer
+glutAddSubMenu,ByVal label:ZString ptr,ByVal submenu:Integer
+glutChangeToMenuEntry,ByVal item:Integer,ByVal label:ZString ptr,ByVal value:Integer
+glutChangeToSubMenu,ByVal item:Integer,ByVal label:ZString ptr,ByVal submenu:Integer
+glutRemoveMenuItem,ByVal item:Integer
+glutAttachMenu,ByVal button:Integer
+glutDetachMenu,ByVal button:Integer
+glutDisplayFunc,ByVal func:Sub cdecl()
+glutReshapeFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutKeyboardFunc,ByVal func:Sub cdecl(ByVal:UByte,ByVal:Integer,ByVal:Integer)
+glutMouseFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutMotionFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutPassiveMotionFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutEntryFunc,ByVal func:Sub(ByVal:Integer)
+glutVisibilityFunc,ByVal func:Sub cdecl(ByVal:Integer)
+glutIdleFunc,ByVal func:Sub cdecl()
+glutTimerFunc,ByVal millis:UInteger,ByVal func:Sub cdecl(ByVal:Integer),ByVal value:Integer
+glutMenuStateFunc,ByVal func:Sub cdecl(ByVal:Integer)
+glutSpecialFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutSpaceballMotionFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutSpaceballRotateFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutSpaceballButtonFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutButtonBoxFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutDialsFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutTabletMotionFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer)
+glutTabletButtonFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutMenuStatusFunc,ByVal func:Sub(ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutOverlayDisplayFunc,ByVal func:Sub cdecl()
+glutWindowStatusFunc,ByVal func:Sub cdecl(ByVal:Integer)
+glutKeyboardUpFunc,ByVal func:Sub cdecl(ByVal:UByte,ByVal:Integer,ByVal:Integer)
+glutSpecialUpFunc,ByVal func:Sub cdecl(ByVal:Integer,ByVal:Integer,ByVal:Integer)
+glutJoystickFunc,ByVal func:Sub cdecl(ByVal:UInteger,ByVal:Integer,ByVal:Integer,ByVal:Integer),ByVal pollInterval:Integer
+glutSetColor,ByVal:Integer,ByVal red:GLfloat,ByVal green:GLfloat,ByVal blue:GLfloat
+glutGetColor,ByVal ndx:Integer,ByVal component:Integer) As GLfloat
+glutCopyColormap,ByVal win:Integer
+glutGet,ByVal type:GLenum) As Integer
+glutDeviceGet,ByVal type:GLenum) As Integer
+glutExtensionSupported,ByVal name:ZString ptr) As Integer
+glutGetModifiers,) As Integer
+glutLayerGet,ByVal type:GLenum) As Integer
+glutBitmapCharacter,ByVal font:Any ptr,ByVal character:Integer
+glutBitmapWidth,ByVal font:Any ptr,ByVal character:Integer) As Integer
+glutStrokeCharacter,ByVal font:Any ptr,ByVal character:Integer)
+glutStrokeWidth,ByVal font:Any ptr,ByVal character:Integer) As Integer
+glutBitmapLength,ByVal font:Any ptr,ByVal string:UByte ptr) As Integer
+glutStrokeLength,ByVal font:Any ptr,ByVal string:UByte ptr) As Integer
+glutWireSphere,ByVal radius:GLdouble,ByVal slices:GLint,ByVal stacks:GLint
+glutSolidSphere,ByVal radius:GLdouble,ByVal slices:GLint,ByVal stacks:GLint
+glutWireCone,ByVal base:GLdouble,ByVal height:GLdouble,ByVal slices:GLint,ByVal stacks:GLint
+glutSolidCone,ByVal base:GLdouble,ByVal height:GLdouble,ByVal slices:GLint,ByVal stacks:GLint
+glutWireCube,ByVal size:GLdouble
+glutSolidCube,ByVal size:GLdouble
+glutWireTorus,ByVal innerRadius:GLdouble,ByVal outerRadius:GLdouble,ByVal sides:GLint,ByVal rings:GLint
+glutSolidTorus,ByVal innerRadius:GLdouble,ByVal outerRadius:GLdouble,ByVal sides:GLint,ByVal rings:GLint
+glutWireDodecahedron
+glutSolidDodecahedron
+glutWireTeapot,ByVal size:GLdouble
+glutSolidTeapot,ByVal size:GLdouble
+glutWireOctahedron
+glutSolidOctahedron
+glutWireTetrahedron
+glutSolidTetrahedron
+glutWireIcosahedron
+glutSolidIcosahedron
+glutVideoResizeGet,ByVal param:GLenum) As Integer
+glutSetupVideoResizing
+glutStopVideoResizing
+glutVideoResize,ByVal x:Integer,ByVal y:Integer,ByVal width:Integer,ByVal height:Integer
+glutVideoPan,ByVal x:Integer,ByVal y:Integer,ByVal width:Integer,ByVal height:Integer
+glutReportErrors
+glutIgnoreKeyRepeat,ByVal ignore:Integer
+glutSetKeyRepeat,ByVal repeatMode:Integer
+glutForceJoystickFunc
+glutGameModeString,ByVal string:ZString ptr
+glutEnterGameMode,) As Integer
+glutLeaveGameMode
+glutGameModeGet,ByVal mode:GLenum) As Integer
