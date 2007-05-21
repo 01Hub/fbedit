@@ -555,8 +555,6 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			sKeyWords(14)=buff
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C15"),@C15,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(15)=buff
-			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C15,@buff,SizeOf(buff),@ad.IniFile)
-			sKeyWords(16)=buff
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
