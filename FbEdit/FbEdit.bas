@@ -259,10 +259,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444",@kwcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444",@custcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"44444444444444444",@kwcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"44444444444444444",@custcol,FALSE)
 			' Get handle of build combobox
 			ah.hcbobuild=GetDlgItem(hWin,IDC_CBOBUILD)
+			' Get handle of find in page edit
+			ah.hfindinpage=GetDlgItem(hWin,IDC_FINDINPAGE)
 			' Get make option from ini
 			GetMakeOption
 			' Get CodeFiles from ini
@@ -578,6 +580,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			EndIf
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
+				Case EN_CHANGE
+					If id=IDC_FINDINPAGE Then
+						SetHiliteWordFindInPage(ah.hwnd)
+					EndIf
 				Case BN_CLICKED,1
 					Select Case id
 						Case IDM_FILE_NEWPROJECT
@@ -1655,6 +1661,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					rect1.right=ad.tbwt
 					MoveWindow(ah.htoolbar,0,3,rect1.right,rect1.bottom,TRUE)
 					MoveWindow(ah.hcbobuild,ad.tbwt,3,150,200,TRUE)
+					MoveWindow(ah.hfindinpage,ad.tbwt+152,3,100,21,TRUE)
 				EndIf
 				' Size the divider
 				hCtl=GetDlgItem(hWin,IDC_DIVIDER)

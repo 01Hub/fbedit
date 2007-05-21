@@ -89,6 +89,7 @@ Type ADDINHANDLES
 	himl				As HIMAGELIST					' Project treeview imagelist
 	hmnuiml			As HIMAGELIST					' Menu arrows imagelist
 	hcbobuild		As HWND							' Handle of build option combobox
+	hfindinpage		As HWND							' Handle of find in page edit
 	hOutFont			As HFONT							' Output window font
 End Type
 

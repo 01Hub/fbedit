@@ -123,6 +123,8 @@ Sub SetHiliteWords(ByVal hWin As HWND)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C14,Cast(Integer,@buff))
 	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C15"),@C15,@buff,SizeOf(buff),@ad.IniFile)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C15,Cast(Integer,@buff))
+	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C16,@buff,SizeOf(buff),@ad.IniFile)
+	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(Integer,@buff))
 
 End Sub
 
@@ -241,6 +243,20 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 
 End Sub
 
+Sub SetHiliteWordFindInPage(ByVal hWin As HWND)
+	If ah.hred<>ah.hres Then
+		SendMessage(ah.hfindinpage,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
+		If Len(buff) Then
+			SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(LPARAM,@buff))
+			SendMessage(ah.hred,REM_REPAINT,0,TRUE)
+		Else
+			SetHiliteWords(ah.hwnd)
+			SetHiliteWordsFromApi(ah.hwnd)
+			UpdateAllTabs(1)
+		EndIf
+	EndIf
+End Sub
+
 Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim ofs As Any ptr
 	Dim col As Integer
@@ -307,18 +323,18 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	' Keyword colors
 	ofs=@kwcol
 	nInx=0
-	Do While nInx<16
+	Do While nInx<17
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
 		ofs=ofs+4
 		nInx=nInx+1
 	Loop
-	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444",@kwcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"44444444444444444",@kwcol,FALSE)
 	' Custom colors
-	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444",@custcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"44444444444444444",@custcol,FALSE)
 	' KeyWords
 	nInx=0
-	Do While nInx<17
+	Do While nInx<18
 		buff=Chr(34) & sKeyWords(nInx) & Chr(34)
 		WritePrivateProfileString("Edit","C" & Str(nInx),@buff,@ad.IniFile)
 		nInx=nInx+1
@@ -460,7 +476,7 @@ Sub GetHold(ByVal hWin As HWND)
 		buff=buff & sItem & " "
 		nInx=nInx+1
 	Loop
-	sKeyWords(16)=buff
+	sKeyWords(17)=buff
 
 End Sub
 
@@ -469,7 +485,7 @@ Sub FillHold(ByVal hWin As HWND)
 	Dim sItem As ZString*256
 	Dim x As Integer
 
-	buff=sKeyWords(16)
+	buff=sKeyWords(17)
 	Do While lstrlen(@buff)
 		x=InStr(buff," ")
 		If x=0 Then
@@ -555,8 +571,10 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			sKeyWords(14)=buff
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C15"),@C15,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(15)=buff
-			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C16,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(16)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(17)=buff
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
@@ -606,7 +624,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Keyword colors
 			ofs=@kwcol
 			nInx=0
-			Do While nInx<16
+			Do While nInx<17
 				If nInx<12 Then
 					sItem="C" & Str(nInx)
 				ElseIf nInx=12 Then
@@ -617,6 +635,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 					sItem="Api const"
 				ElseIf nInx=15 Then
 					sItem="Api calls"
+				ElseIf nInx=16 Then
+					sItem="Page Find"
 				EndIf
 				RtlMoveMemory(@col,ofs,4)
 				SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_ADDSTRING,0,Cast(Integer,@sItem))
