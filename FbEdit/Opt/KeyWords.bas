@@ -318,7 +318,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444",@custcol,FALSE)
 	' KeyWords
 	nInx=0
-	Do While nInx<16
+	Do While nInx<17
 		buff=Chr(34) & sKeyWords(nInx) & Chr(34)
 		WritePrivateProfileString("Edit","C" & Str(nInx),@buff,@ad.IniFile)
 		nInx=nInx+1
@@ -555,6 +555,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			sKeyWords(14)=buff
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C15"),@C15,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(15)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(16)=buff
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
