@@ -79,6 +79,8 @@ TryAgain:
 				Else
 					MessageBox(hWin,StrPtr("Project Files searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
 				EndIf
+				ft.chrg.cpMax=ft.chrg.cpMin
+				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
 				fres=-1
 				fProFileNo=1
 				Return fres

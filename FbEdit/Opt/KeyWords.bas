@@ -318,7 +318,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444",@custcol,FALSE)
 	' KeyWords
 	nInx=0
-	Do While nInx<17
+	Do While nInx<16
 		buff=Chr(34) & sKeyWords(nInx) & Chr(34)
 		WritePrivateProfileString("Edit","C" & Str(nInx),@buff,@ad.IniFile)
 		nInx=nInx+1
