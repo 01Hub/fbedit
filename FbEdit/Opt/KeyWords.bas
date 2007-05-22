@@ -244,12 +244,31 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 End Sub
 
 Sub SetHiliteWordFindInPage(ByVal hWin As HWND)
+	Dim As COLORREF tempcolor,oldcmntcolor,oldstrcolor,oldoprcolor,oldnumcolor
+
 	If ah.hred<>ah.hres Then
 		SendMessage(ah.hfindinpage,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
 		If Len(buff) Then
+			tempcolor=fbcol.racol.txtcol
+			oldcmntcolor=fbcol.racol.cmntcol
+			oldstrcolor=fbcol.racol.strcol
+			oldoprcolor=fbcol.racol.oprcol
+			oldnumcolor=fbcol.racol.numcol
+			fbcol.racol.cmntcol=tempcolor
+			fbcol.racol.strcol=tempcolor
+			fbcol.racol.oprcol=tempcolor
+			fbcol.racol.numcol=tempcolor
+			SetToolsColors(ah.hwnd)
+			SendMessage(ah.hout,REM_SETHILITEWORDS,0,0)
 			SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(LPARAM,@buff))
-			SendMessage(ah.hred,REM_REPAINT,0,TRUE)
+'			SendMessage(ah.hred,REM_REPAINT,0,TRUE)
+			UpdateAllTabs(1)
+			fbcol.racol.cmntcol=oldcmntcolor
+			fbcol.racol.strcol=oldstrcolor
+			fbcol.racol.oprcol=oldoprcolor
+			fbcol.racol.numcol=oldnumcolor
 		Else
+			SetToolsColors(ah.hwnd)
 			SetHiliteWords(ah.hwnd)
 			SetHiliteWordsFromApi(ah.hwnd)
 			UpdateAllTabs(1)
