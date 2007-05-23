@@ -140,6 +140,7 @@ Type TOOLTIP
 	lpszApi As ZString ptr
 	lpszParam As ZString ptr
 	nPos As Integer
+	lpszRetType As ZString ptr
 End Type
 
 Type MEMSEARCH

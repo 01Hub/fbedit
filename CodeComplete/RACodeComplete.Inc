@@ -49,6 +49,7 @@ TTITEM struct
 	lpszApi		dd ?						;Pointer to api string
 	lpszParam	dd ?						;Pointer to comma separated parameters string
 	nitem		dd ?						;Item to hilite
+	lpszRetType	dd ?						;Pointer to return type string
 TTITEM ends
 
 .const

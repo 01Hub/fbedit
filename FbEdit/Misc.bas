@@ -53,12 +53,12 @@ End Sub
 Sub LoadApiFiles
 
 	SendMessage(ah.hpr,PRM_CLEARWORDLIST,0,0)
-	AddApiFile("Case",Asc("C"))
-	AddApiFile("Call",Asc("P"))
-	AddApiFile("Const",Asc("A"))
-	AddApiFile("Struct",Asc("S"))
-	AddApiFile("Word",Asc("W"))
-	AddApiFile("Type",Asc("T"))
+	AddApiFile("Case",Asc("C")+2*256)
+	AddApiFile("Call",Asc("P")+3*256)
+	AddApiFile("Const",Asc("A")+2*256)
+	AddApiFile("Struct",Asc("S")+2*256)
+	AddApiFile("Word",Asc("W")+2*256)
+	AddApiFile("Type",Asc("T")+2*256)
 
 End Sub
 
@@ -627,6 +627,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								HideList
 								tti.lpszApi=tt.lpszApi
 								tti.lpszParam=tt.lpszParam
+								tti.lpszRetType=tt.lpszRetType
 								tti.nitem=tt.nPos
 								GetCaretPos(@pt)
 								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
@@ -704,6 +705,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						' Show tooltip
 						tti.lpszApi=tt.lpszApi
 						tti.lpszParam=tt.lpszParam
+						tti.lpszRetType=tt.lpszRetType
 						tti.nitem=tt.nPos
 						UpdateConstList(tti.lpszApi,tti.nitem+1)
 					Else

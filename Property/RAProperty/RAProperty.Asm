@@ -347,12 +347,18 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 			.endif
 		.endw
 	.endif
-	mov		edx,lParam
 	.if edi
 		lea		edi,[edi+sizeof PROPERTIES]
+		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszApi,edi
 		invoke lstrlen,edi
 		lea		edi,[edi+eax+1]
+		mov		edx,lParam
+		mov		[edx].TOOLTIP.lpszParam,edi
+		invoke lstrlen,edi
+		lea		edi,[edi+eax+1]
+		mov		edx,lParam
+		mov		[edx].TOOLTIP.lpszRetType,edi
 		xor		ecx,ecx
 		mov		eax,npos
 		.while byte ptr [eax]
@@ -377,14 +383,15 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 			inc		eax
 		.endw
 		mov		edx,lParam
-		mov		[edx].TOOLTIP.lpszParam,edi
 		mov		[edx].TOOLTIP.nPos,ecx
 		xor		eax,eax
 		inc		eax
 	.else
 		xor		eax,eax
+		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszApi,eax
 		mov		[edx].TOOLTIP.lpszParam,eax
+		mov		[edx].TOOLTIP.lpszRetType,eax
 		mov		[edx].TOOLTIP.nPos,eax
 	.endif
 	ret
@@ -724,7 +731,13 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRM_ADDPROPERTYFILE
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		invoke AddFileToWordList,wParam,lParam,2
+		mov		eax,wParam
+		movzx	edx,al
+		shr		eax,8
+		.if !eax
+			mov		eax,2
+		.endif
+		invoke AddFileToWordList,edx,lParam,eax
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==PRM_SETGENDEF

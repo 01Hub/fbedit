@@ -75,7 +75,8 @@ DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hCtl,PRM_ADDDEFTYPE,0,addr deftypeconst
 		invoke SendMessage,hCtl,PRM_ADDDEFTYPE,0,addr deftypelocal
 		;Add files
-		invoke SendMessage,hCtl,PRM_ADDPROPERTYFILE,'P',addr szApiFile
+		mov		edx,2 shl 8 or 'P'
+		invoke SendMessage,hCtl,PRM_ADDPROPERTYFILE,edx,addr szApiFile
 		;Set default selection
 		invoke SendMessage,hCtl,PRM_SELECTPROPERTY,'p',0
 		invoke SendMessage,hCtl,PRM_SETSELBUTTON,2,0

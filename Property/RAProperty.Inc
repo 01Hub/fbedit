@@ -144,6 +144,7 @@ TOOLTIP struct
 	lpszApi		dd ?
 	lpszParam	dd ?
 	nPos		dd ?
+	lpszRetType	dd ?
 TOOLTIP ends
 
 MEMSEARCH struct

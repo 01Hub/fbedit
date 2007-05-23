@@ -83,9 +83,9 @@ AddWordToWordList proc uses	esi	edi,nType:DWORD,nOwner:DWORD,nLine:DWORD,nEnd:DW
 		mov		[edi].PROPERTIES.nSize,0
 		sub		edi,[ebx].RAPROPERTY.lpmem
 		mov		[ebx].RAPROPERTY.rpfree,edi
-		dec		ecx
 	.endif
-	mov		eax,ecx
+	sub		esi,lpszStr
+	mov		eax,esi
 	ret
 
 AddWordToWordList endp
@@ -120,6 +120,10 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		.if	al
 			.if	nParts>1
 				call	ZeroTerminateParts
+;invoke lstrlen,esi
+;.if eax<50
+;PrintStringByAddr esi
+;.endif
 			.endif
 			invoke AddWordToWordList,nType,0,0,0,esi,nParts
 			add		esi,eax
@@ -159,7 +163,25 @@ ZeroTerminateParts:
 	jne		@b
 	xor		al,al
 	mov		[esi],al
+	inc		esi
   @@:
+	.if nParts>2
+		dec		esi
+	  @@:
+		inc		esi
+		mov		al,[esi]
+		or		al,al
+		je		@f
+		cmp		al,0Dh
+		je		@f
+		cmp		al,0Ah
+		je		@f
+		cmp		al,'|'
+		jne		@b
+		xor		al,al
+		mov		[esi],al
+	  @@:
+	.endif
 	pop		esi
 	retn
 

@@ -501,6 +501,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	rpwithblock[4]:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	fPtr:DWORD
+	LOCAL	fRetType:DWORD
 
 	mov		npos,0
 	mov		rpnmespc,-1
@@ -513,6 +514,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		eax,npos
 		mov		nline,eax
 		mov		fPtr,0
+		mov		fRetType,0
 	  Nxtwrd:
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -594,7 +596,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 					.if eax
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,3
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_MACRO
 					call	ParseMacro
@@ -608,28 +610,28 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 					.if eax
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,3
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_DESTRUCTOR
 					call	ParseDestructor
 					.if eax
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,3
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_PROPERTY
 					call	ParseProperty
 					.if eax
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,3
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_OPERATOR
 					call	ParseOperator
 					.if eax
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,3
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_DATA
 					call	ParseData
@@ -928,38 +930,7 @@ ParseMacro:
 ParseConstructor:
 	call	AddNamespace
 	call	SaveName
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		@b
-		.endif
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	inc		edi
+	call	SaveParam
 	.while byte ptr [esi]
 		invoke SkipLine,esi,addr npos
 		inc		npos
@@ -982,38 +953,7 @@ ParseConstructor:
 ParseDestructor:
 	call	AddNamespace
 	call	SaveName
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		@b
-		.endif
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	inc		edi
+	call	SaveParam
 	.while byte ptr [esi]
 		invoke SkipLine,esi,addr npos
 		inc		npos
@@ -1036,38 +976,7 @@ ParseDestructor:
 ParseProperty:
 	call	AddNamespace
 	call	SaveName
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		@b
-		.endif
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	inc		edi
+	call	SaveParam
 	.while byte ptr [esi]
 		invoke SkipLine,esi,addr npos
 		inc		npos
@@ -1114,38 +1023,7 @@ ParseOperator:
 		inc		edi
 		mov		esi,edx
 	.endif
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		@b
-		.endif
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	inc		edi
+	call	SaveParam
 	.while byte ptr [esi]
 		invoke SkipLine,esi,addr npos
 		inc		npos
@@ -1168,38 +1046,7 @@ ParseOperator:
 ParseProc:
 	call	AddNamespace
 	call	SaveName
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		@b
-		.endif
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	inc		edi
+	call	SaveParam
 	.while byte ptr [esi]
 		mov		fPtr,0
 		invoke SkipLine,esi,addr npos
@@ -1315,6 +1162,70 @@ NxtWordProc:
 		jmp		NxtWordProc
 	.endif
 	xor		eax,eax
+	retn
+
+SaveParam:
+  @@:
+	invoke GetWord,esi,addr npos
+	mov		esi,edx
+	.if !ecx
+		.if byte ptr [esi]==',' || byte ptr [esi]=='('
+			inc		esi
+			jmp		@b
+		.endif
+	.else
+		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
+		.if eax
+			lea		esi,[esi+ecx]
+			jmp		@b
+		.endif
+		mov		lpword1,esi
+		mov		len1,ecx
+		lea		esi,[esi+ecx]
+		mov		eax,TYPE_NAMEFIRST
+		call	ParseParamData
+		mov		byte ptr [edi],','
+		inc		edi
+		call	SkipSpc
+		.if byte ptr [esi]==')'
+			inc		esi
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			.if ecx
+				invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
+				.if eax
+					lea		esi,[esi+ecx]
+				.endif
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				.if ecx
+					dec		edi
+					mov		word ptr [edi],0
+					inc		edi
+					mov		edx,edi
+					lea		edi,[edi+ecx]
+					inc		ecx
+					invoke lstrcpyn,edx,esi,ecx
+					inc		fRetType
+				.endif
+			.endif
+		.else
+			call	SkipToComma
+			.if byte ptr [esi]==','
+				inc		esi
+				jmp		@b
+			.endif
+		.endif
+	.endif
+	.if byte ptr [edi-1]==','
+		dec		edi
+	.endif
+	.if !fRetType
+		mov		word ptr [edi],0
+		inc		edi
+	.endif
+	mov		word ptr [edi],0
+	inc		edi
 	retn
 
 ParseData:

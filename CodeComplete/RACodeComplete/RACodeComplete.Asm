@@ -848,17 +848,28 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke TextOut,ps.hdc,rect.right,0,edx,[ebx].RATT.nlen
 				.endif
 			.endif
+			mov		eax,rgt
+			mov		rect.left,eax
 			test	style,STYLE_USEPARANTESES
 			.if !ZERO?
 				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
-				mov		eax,rgt
-				mov		rect.left,eax
 				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
 				mov		eax,rect.right
 				mov		rect.left,eax
 				mov		rgt,')'
 				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
 				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_SINGLELINE or DT_LEFT
+				mov		eax,rect.right
+				mov		rect.left,eax
+			.endif
+			mov		eax,[ebx].RATT.tti.lpszRetType
+			.if eax
+				.if byte ptr [eax]
+					add		rect.left,5
+					invoke SetTextColor,ps.hdc,[ebx].RATT.apicolor
+					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_SINGLELINE or DT_LEFT
+				.endif
 			.endif
 		.endif
 		pop		eax
@@ -897,6 +908,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RATT.tti.lpszApi,eax
 		mov		eax,[edx].TTITEM.lpszParam
 		mov		[ebx].RATT.tti.lpszParam,eax
+		mov		eax,[edx].TTITEM.lpszRetType
+		mov		[ebx].RATT.tti.lpszRetType,eax
 		mov		eax,[edx].TTITEM.nitem
 		mov		[ebx].RATT.tti.nitem,eax
 		mov		edx,[ebx].RATT.tti.lpszParam
@@ -961,18 +974,27 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rgt,eax
 		.if [ebx].RATT.tti.lpszParam
 			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			mov		eax,rect.right
+			mov		rect.left,eax
 			test	style,STYLE_USEPARANTESES
 			.if !ZERO?
 				push	rgt
-				mov		eax,rect.right
-				mov		rect.left,eax
 				mov		rgt,')'
 				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				mov		eax,rect.right
+				mov		rect.left,eax
 				pop		rgt
 			.endif
-			add		rect.right,4
-			add		rect.bottom,3
 		.endif
+		mov		eax,[ebx].RATT.tti.lpszRetType
+		.if eax
+			.if byte ptr [eax]
+				add		rect.left,5
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			.endif
+		.endif
+		add		rect.right,4
+		add		rect.bottom,3
 		pop		eax
 		invoke SelectObject,ps.hdc,eax
 		invoke ReleaseDC,hWin,ps.hdc

@@ -22,6 +22,11 @@ Sub ExportFunctions()
 		If Len(lret[0]) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+			lret=lret+lstrlen(lret)+1
+			If lstrlen(lret) Then
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+			EndIf
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))

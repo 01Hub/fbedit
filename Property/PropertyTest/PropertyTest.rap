@@ -66,7 +66,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -113,9 +113,9 @@ ProductVer4Range=0
 0=
 [Size]
 4=0,0,0,0
-1=0,0,0,0,980
-2=0,0,728,518,3185
-5=0,0,728,518,1746
+1=0,0,0,0,2679
+2=0,0,728,518,578
+5=0,0,728,518,139
 [Collapse]
 1=
 2=
@@ -123,15 +123,15 @@ ProductVer4Range=0
 [PTimer]
 PTimer=2020204
 [Find]
-1="casetab"
-2="ccmntblocks"
-3="'*'"
-4="REM_SETHILITEWORDS"
-5="'.'"
-6="CharTab"
-7="SetBlocks"
-8="BD_NONESTING"
-9="REM_ADDBLOCKDEF"
-10="EM_FORMAT"
+1="PRM_ADDPROPERTYFILE"
+2="PRM_MEMSEARCH"
+3="FR_DOWN"
+4="BS_T"
+5="PRM_GETSTRUCTSTART"
+6="UpdateList"
+7="NxtWordProc"
+8="call "
+9="PRM_GETSTRUCTWORD"
+10="PRM_CLEARWORDLIST"
 [AutoLoad]
 1=1

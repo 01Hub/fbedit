@@ -49,6 +49,7 @@ Type TTITEM
 	lpszApi As ZString ptr							' Pointer to api string
 	lpszParam As ZString ptr						' Pointer to comma separated parameters string
 	nitem As Integer									' Item to hilite
+	lpszRetType As ZString ptr						' Pointer to return type string
 End Type
 
 Const szCCLBClassName = "RACodeComplete"
