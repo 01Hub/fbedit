@@ -414,7 +414,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	WritePrivateProfileString(StrPtr("Theme"),StrPtr("Current"),@sItem,@ad.IniFile)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
-		If Len(thme(nInx).sztheme) Then
+		If lstrlen(thme(nInx).sztheme) Then
 			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
@@ -544,7 +544,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 				sItem=Str(col)
 				thme(col).sztheme=String(32,0)
 				LoadFromIni(StrPtr("Theme"),@sItem,"044444444444444444444444444444444444444444",@thme(col),FALSE)
-				If Len(thme(col).sztheme) Then
+				If lstrlen(thme(col).sztheme) Then
 					sItem=String(32,0)
 					lstrcpy(@sItem,thme(col).sztheme)
 					nInx=SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,@sItem))
