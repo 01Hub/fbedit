@@ -219,6 +219,8 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 			If Len(sItem)=0 Then
 				' Skip parameters list
 				lpProc=lpProc+Len(lpProc[0])+1
+				' Skip return type
+				lpProc=lpProc+Len(lpProc[0])+1
 				' Get local data list
 			TestNext:
 				lstrcpy(@sItem,p)
