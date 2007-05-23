@@ -35,21 +35,21 @@ Sub AddTemplateFile(ByVal lpFile As ZString ptr,ByVal hFile As HANDLE)
 			buff=szBTXT & CRLF
 			lstrcat(@buff,lpFile)
 			buff=buff & CRLF
-			WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+			WriteFile(hFile,@buff,Len(buff),@n,NULL)
 			p=hMem
-			p=p+lstrlen(p)
+			p=p+Len(p[0])
 			If lstrcmp(p-2,@CRLF) Then
 				lstrcpy(p,@CRLF)
 				nSize=nSize+2
 			EndIf
 			WriteFile(hFile,hMem,nSize,@n,NULL)
 			buff=szETXT & CRLF
-			WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+			WriteFile(hFile,@buff,Len(buff),@n,NULL)
 		ElseIf InStr(UCase(szBin),UCase(szExt)) Then
 			buff=szBBIN & CRLF
 			lstrcat(@buff,lpFile)
 			buff=buff & CRLF
-			WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+			WriteFile(hFile,@buff,Len(buff),@n,NULL)
 			buff=""
 			n=0
 			i=0
@@ -60,19 +60,19 @@ Sub AddTemplateFile(ByVal lpFile As ZString ptr,ByVal hFile As HANDLE)
 				i=i+1
 				If i=32 Then
 					buff=buff & CRLF
-					WriteFile(hFile,@buff,lstrlen(@buff),@i,NULL)
+					WriteFile(hFile,@buff,Len(buff),@i,NULL)
 					i=0
 					buff=""
 				EndIf
 			Wend
 			If i Then
 				buff=buff & CRLF
-				WriteFile(hFile,@buff,lstrlen(@buff),@i,NULL)
+				WriteFile(hFile,@buff,Len(buff),@i,NULL)
 				i=0
 				buff=""
 			EndIf
 			buff=szEBIN & CRLF
-			WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+			WriteFile(hFile,@buff,Len(buff),@n,NULL)
 		Else
 			buff="Unknown filetype:" & CRLF
 			lstrcat(@buff,lpFile)
@@ -97,50 +97,50 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 			Select Case LoWord(wParam)
 				Case IDOK
 					GetDlgItemText(hWin,IDC_EDTTPLFILENAME,@buff,260)
-					If lstrlen(@buff) Then
+					If Len(buff) Then
 						hFile=CreateFile(@buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 						If hFile<>INVALID_HANDLE_VALUE Then
 							buff=ad.ProjectFile
 							buff=GetFileName(buff,FALSE) & CRLF
 							p=@buff
-							p=p+lstrlen(p)
+							p=p+Len(p[0])
 							GetDlgItemText(hWin,IDC_EDTTPLDESCRIPTION,p,1024)
-							p=p+lstrlen(p)
+							p=p+Len(p[0])
 							If lstrcmp(p-2,@CRLF) Then
 								lstrcpy(p,@CRLF)
 								p=p+2
 							EndIf
-							WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+							WriteFile(hFile,@buff,Len(buff),@n,NULL)
 							buff=szBPRO & CRLF
 							buff=buff & szBDEF & CRLF
 							buff=buff & "[Project]" & CRLF
 							GetPrivateProfileSection(StrPtr("Project"),@s,4096,@ad.ProjectFile)
 							p=@s
-							While lstrlen(p)
+							While Len(p[0])
 								lstrcat(@buff,p)
 								lstrcat(@buff,@CRLF)
-								p=p+lstrlen(p)+1
+								p=p+Len(p[0])+1
 							Wend
 							buff=buff & "[Make]" & CRLF
 							GetPrivateProfileSection(StrPtr("Make"),@s,4096,@ad.ProjectFile)
 							p=@s
-							While lstrlen(p)
+							While Len(p[0])
 								lstrcat(@buff,p)
 								lstrcat(@buff,@CRLF)
-								p=p+lstrlen(p)+1
+								p=p+Len(p[0])+1
 							Wend
 							buff=buff & szEDEF & CRLF
-							WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+							WriteFile(hFile,@buff,Len(buff),@n,NULL)
 							n=1
 							While n<256
 								szBuff=GetProjectFile(n)
-								If lstrlen(@szBuff) Then
+								If Len(szBuff) Then
 									AddTemplateFile(@szBuff,hFile)
 								EndIf
 								n=n+1
 							Wend
 							buff=szEPRO & CRLF
-							WriteFile(hFile,@buff,lstrlen(@buff),@n,NULL)
+							WriteFile(hFile,@buff,Len(buff),@n,NULL)
 							n=0
 							While TRUE
 								If SendDlgItemMessage(hWin,IDC_LSTTPLFILES,LB_GETTEXT,n,Cast(LPARAM,@szBuff))<>LB_ERR Then

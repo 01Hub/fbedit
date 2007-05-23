@@ -27,7 +27,7 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			x=0
 			While nInx<=32
 				GetPrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@szNULL,@buff,260,@ad.IniFile)
-				If lstrlen(@buff) Then
+				If Len(buff) Then
 					hDll=Cast(HMODULE,SendMessage(lpRESMEM->hResEd,DEM_ADDCONTROL,0,Cast(Integer,@buff)))
 					If hDll Then
 						hCustDll(x)=hDll

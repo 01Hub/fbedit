@@ -135,7 +135,7 @@ Function AddinManagerProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM
 			DrawFrameControl(lpDRAWITEMSTRUCT->hdc,@rect,DFC_BUTTON,nInx)
 			' Draw the text
 			SendMessage(lpDRAWITEMSTRUCT->hwndItem,LB_GETTEXT,lpDRAWITEMSTRUCT->itemID,Cast(Integer,@sItem))
-			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+18,lpDRAWITEMSTRUCT->rcItem.top,@sItem,lstrlen(@sItem))
+			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+18,lpDRAWITEMSTRUCT->rcItem.top,@sItem,Len(sItem))
 			If lpDRAWITEMSTRUCT->hwndItem=GetFocus() Then
 				' Let windows draw the focus rectangle
 				Return FALSE

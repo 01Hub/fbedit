@@ -313,7 +313,7 @@ Sub OpenTheFile(ByVal sFile As String)
 		nInx=1
 		Do While TRUE
 			GetPrivateProfileString(StrPtr("Open"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.IniFile)
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				If InStr(sItem,sType) Then
 					sItem=Mid(sItem,InStr(sItem,",")+1)
 					buff="""" & sFile & """"
@@ -355,7 +355,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,Cast(ZString ptr,hMem))
-		i=lstrlen(@pth)+1
+		i=Len(pth)+1
 		lstrcpy(@s,Cast(ZString ptr,hMem+i))
 		If Asc(s)=0 Then
 			' Open single file
@@ -367,7 +367,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 				CreateEdit(hWin)
 				AddTab(hWin,ah.hred,ad.filename)
 				ReadTheFile(ah.hred,ad.filename)
-				i=i+lstrlen(@s)+1
+				i=i+Len(s)+1
 				lstrcpy(@s,Cast(ZString ptr,hMem+i))
 			Loop
 		EndIf

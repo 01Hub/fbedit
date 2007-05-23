@@ -8,7 +8,7 @@ Sub GetMakeOption()
 		' Get make option from ini
 		nInx=1
 		While GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@buff,SizeOf(ad.smake),@ad.ProjectFile)
-			If lstrlen(@buff) Then
+			If Len(buff) Then
 				buff=Left(buff,InStr(buff,",")-1)
 				SendMessage(ah.hcbobuild,CB_ADDSTRING,0,Cast(Integer,@buff))
 			EndIf
@@ -17,14 +17,14 @@ Sub GetMakeOption()
 		nInx=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.ProjectFile)
 		SendMessage(ah.hcbobuild,CB_SETCURSEL,nInx-1,0)
 		GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@ad.smake,SizeOf(ad.smake),@ad.ProjectFile)
-		If lstrlen(@ad.smake) Then
+		If Len(ad.smake) Then
 			nInx=InStr(ad.smake,",")
 			sText=Left(ad.smake,nInx-1)
 			SendMessage(ah.hsbr,SB_SETTEXT,2,Cast(Integer,@sText))
 			ad.smake=Mid(ad.smake,nInx+1)
 		EndIf
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@ad.smakemodule,SizeOf(ad.smakemodule),@ad.ProjectFile)
-		If lstrlen(@ad.smakemodule) Then
+		If Len(ad.smakemodule) Then
 			nInx=InStr(ad.smakemodule,",")
 			ad.smakemodule=Mid(ad.smakemodule,nInx+1)
 		EndIf
@@ -35,7 +35,7 @@ Sub GetMakeOption()
 		' Get make option from ini
 		nInx=1
 		While GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@buff,SizeOf(ad.smake),@ad.IniFile)
-			If lstrlen(@buff) Then
+			If Len(buff) Then
 				buff=Left(buff,InStr(buff,",")-1)
 				SendMessage(ah.hcbobuild,CB_ADDSTRING,0,Cast(Integer,@buff))
 			EndIf
@@ -44,14 +44,14 @@ Sub GetMakeOption()
 		nInx=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.IniFile)
 		SendMessage(ah.hcbobuild,CB_SETCURSEL,nInx-1,0)
 		GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@ad.smake,SizeOf(ad.smake),@ad.IniFile)
-		If lstrlen(@ad.smake) Then
+		If Len(ad.smake) Then
 			nInx=InStr(ad.smake,",")
 			sText=Left(ad.smake,nInx-1)
 			SendMessage(ah.hsbr,SB_SETTEXT,2,Cast(Integer,@sText))
 			ad.smake=Mid(ad.smake,nInx+1)
 		EndIf
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@ad.smakemodule,SizeOf(ad.smakemodule),@ad.IniFile)
-		If lstrlen(@ad.smakemodule) Then
+		If Len(ad.smakemodule) Then
 			nInx=InStr(ad.smakemodule,",")
 			ad.smakemodule=Mid(ad.smakemodule,nInx+1)
 		EndIf
@@ -59,7 +59,7 @@ Sub GetMakeOption()
 		ad.smakeoutput=""
 		ad.smakerun=""
 	EndIf
-	If lstrlen(@ad.fbcPath) Then
+	If Len(ad.fbcPath) Then
 		ad.smake=ad.fbcPath & "\" & ad.smake
 		ad.smakemodule=ad.fbcPath & "\" & ad.smakemodule
 	EndIf
@@ -133,7 +133,7 @@ Function MakeRun(ByVal sFile As String,ByVal fDebug As Boolean) As Integer
 	If fDebug Then
 		buff=ad.smakerundebug & " " & """" & buff & """"
 	EndIf
-	If lstrlen(ad.smakerun) Then
+	If Len(ad.smakerun) Then
 		buff=buff & " " & ad.smakerun
 	EndIf
 	MakeRun=WinExec(@buff,SW_SHOWNORMAL)
@@ -304,7 +304,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			Do While lret<1256
 				sItem=String(260,szNULL)
 				GetPrivateProfileString(StrPtr("File"),Str(lret),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-				If lstrlen(sItem) Then
+				If Len(sItem) Then
 					x=InStr(sItem,".")
 					y=x
 					While x
@@ -322,7 +322,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 				EndIf
 				lret=lret+1
 			Loop
-			If lstrlen(@ad.smakeoutput)<>0 And fQuickRun=FALSE Then
+			If Len(ad.smakeoutput)<>0 And fQuickRun=FALSE Then
 				buff=buff & " -x """ & ad.smakeoutput & """"
 			EndIf
 		EndIf

@@ -110,7 +110,7 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 		' Set comment block definition
 		SendMessage(ah.hred,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
 		UpdateAllTabs(3)
-		If fProject<>FALSE And lstrlen(@ad.resexport) Then
+		If fProject<>FALSE And Len(ad.resexport) Then
 			buff=MakeProjectFileName(ad.resexport)
 			If lstrcmpi(@buff,lpFileName)=0 Then
 				SetWindowLong(hWin,GWL_STYLE,GetWindowLong(hWin,GWL_STYLE) Or STYLE_READONLY)
@@ -220,7 +220,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			CloseHandle(hFile)
 			SendMessage(lpRESMEM->hProject,PRO_SETMODIFY,FALSE,0)
 			GlobalFree(hMem)
-			If fProject<>FALSE And lstrlen(ad.resexport)>0 Then
+			If fProject<>FALSE And Len(ad.resexport)>0 Then
 				SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(0 Shl 16)+nmeexp.nType,Cast(LPARAM,@ad.resexport))
 				SendMessage(lpRESMEM->hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
 				SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(LPARAM,@nmeexp.szFileName))

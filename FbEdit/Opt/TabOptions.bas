@@ -76,7 +76,7 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			nInx=1
 			While nInx<=32
 				GetPrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@szNULL,@buff,260,@ad.IniFile)
-				If lstrlen(@buff) Then
+				If Len(buff) Then
 					SendDlgItemMessage(hWin,IDC_LSTCUST,LB_ADDSTRING,0,Cast(Integer,@buff))
 				EndIf
 				nInx=nInx+1

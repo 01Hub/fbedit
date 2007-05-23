@@ -20,7 +20,7 @@ Sub AddApiFile(ByVal sFile As String,ByVal nType As Integer)
 	Dim sApiItem As String
 
 	GetPrivateProfileString(StrPtr("Api"),@sFile,@szNULL,@sItem,SizeOf(sItem),@ad.IniFile)
-	Do While lstrlen(sItem)
+	Do While Len(sItem)
 		x=InStr(sItem,",")
 		If x Then
 			buff=Left(sItem,x-1)
@@ -454,11 +454,11 @@ Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal n
 	s=sItem
 	sItem=Left(buff,InStr(buff,".")-1)
 	If lpProc Then
-		lpProc=lpProc+lstrlen(lpProc)+1
+		lpProc=lpProc+Len(lpProc[0])+1
 		sTest=sItem
 		SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(Integer,@sTest),Cast(Integer,lpProc))
 		If sTest="" Then
-			lpProc=lpProc+lstrlen(lpProc)+1
+			lpProc=lpProc+Len(lpProc[0])+1
 			sTest=sItem
 			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(Integer,@sTest),Cast(Integer,lpProc))
 		EndIf
@@ -471,7 +471,7 @@ Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal n
 	EndIf
 	lret=FindExact(StrPtr("d"),@sItem,TRUE)
 	If lret Then
-		lret=lret+lstrlen(lret)+1
+		lret=lret+Len(lret[0])+1
 		lstrcpy(@sItem,lret)
 		If FindExact(StrPtr("s"),@sItem,TRUE) Then
 			buff=sTest & Mid(buff,InStr(buff,"."))
@@ -570,7 +570,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					Else
 						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					EndIf
-					chrg.cpMin=chrg.cpMax-lstrlen(@buff)
+					chrg.cpMin=chrg.cpMax-Len(buff)
 					p=Cast(ZString ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
 					If p Then
 						SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
@@ -957,7 +957,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 		Case WM_LBUTTONUP
 			If mdn Then
 				buff=OpenInclude
-				If lstrlen(buff) Then
+				If Len(buff) Then
 					OpenTheFile(buff)
 				EndIf
 			EndIf
@@ -1800,7 +1800,7 @@ Function OpenInclude() As String
 				GetFullPathName(@buff,260,@buff,@p)
 				Return buff
 			Else
-				If lstrlen(ad.fbcPath) Then
+				If Len(ad.fbcPath) Then
 					buff=ad.fbcPath & "\inc\" & buff
 				Else
 					buff=ad.AppPath & "\inc\" & buff

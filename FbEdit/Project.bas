@@ -118,7 +118,7 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 	Do While nInx<256 And nMiss<10
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			nMiss=0
 			sItem=MakeProjectFileName(sItem)
 			If lstrcmpi(@sItem,@sFile)=0 Then
@@ -134,7 +134,7 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 	Do While nInx<1256 And nMiss<10
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			nMiss=0
 			sItem=MakeProjectFileName(sItem)
 			If lstrcmpi(@sItem,@sFile)=0 Then
@@ -358,7 +358,7 @@ Sub RefreshProjectTree
 	nInx=1
 	Do While nInx<256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 		EndIf
 		nInx=nInx+1
@@ -366,7 +366,7 @@ Sub RefreshProjectTree
 	nInx=1001
 	Do While nInx<1256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 		EndIf
 		nInx=nInx+1
@@ -392,7 +392,7 @@ Sub ReparseProject
 	nInx=1
 	Do While nInx<256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			tpe=FileType(sItem)
 			If tpe=1 Then
 				sItem=MakeProjectFileName(sItem)
@@ -404,7 +404,7 @@ Sub ReparseProject
 	nInx=1001
 	Do While nInx<1256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			tpe=FileType(sItem)
 			If tpe=1 Then
 				sItem=MakeProjectFileName(sItem)
@@ -434,29 +434,29 @@ Function OpenProject() As Integer
 		p=@buff
 		sItem="Version=1"
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		sItem="Description=" & ProjectDescription
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Make"),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Make=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Module=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Recompile"),"0",@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Recompile=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		sItem=szNULL
 		lstrcpy(p,@sItem)
 		nInx=1
 		x=1
 		Do While nInx<256
 			GetPrivateProfileString(StrPtr("Project"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				WritePrivateProfileString(StrPtr("File"),Str(x),@sItem,@ad.ProjectFile)
 				x=x+1
 			EndIf
@@ -466,7 +466,7 @@ Function OpenProject() As Integer
 		x=1001
 		Do While nInx<1256
 			GetPrivateProfileString(StrPtr("Project"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				WritePrivateProfileString(StrPtr("File"),Str(x),@sItem,@ad.ProjectFile)
 				x=x+1
 			EndIf
@@ -487,10 +487,10 @@ Function OpenProject() As Integer
 		p=@buff
 		sItem="Version=2"
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		sItem="Description=" & ProjectDescription
 		lstrcpy(p,@sItem)
-		p=p+lstrlen(p)+1
+		p=p+Len(p[0])+1
 		sItem=szNULL
 		lstrcpy(p,@sItem)
 		WritePrivateProfileSection(StrPtr("Project"),@buff,@ad.ProjectFile)
@@ -519,7 +519,7 @@ Function OpenProject() As Integer
 	nInx=1
 	Do While nInx<256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			tpe=FileType(sItem)
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 			sItem=MakeProjectFileName(sItem)
@@ -540,7 +540,7 @@ Function OpenProject() As Integer
 	nInx=1001
 	Do While nInx<1256
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(@sItem) Then
+		If Len(sItem) Then
 			tpe=FileType(sItem)
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 			sItem=MakeProjectFileName(sItem)
@@ -657,7 +657,7 @@ Sub AddProjectFile(ByVal sFile As String,ByVal fModule As Boolean)
 	While TRUE
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrlen(sItem) Then
+		If Len(sItem) Then
 			nInx=nInx+1
 		Else
 			Exit While
@@ -729,7 +729,7 @@ Sub AddExistingProjectFile()
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
-		i=lstrlen(@pth)+1
+		i=Len(pth)+1
 		x=Cast(Integer,@buff)
 		lstrcpy(@s,Cast(ZString ptr,x+i))
 		If Asc(s)=0 Then
@@ -740,7 +740,7 @@ Sub AddExistingProjectFile()
 			Do While Asc(s)<>0
 				sFile=pth & "\" & s
 				AddAProjectFile(sFile,FALSE,FALSE)
-				i=i+lstrlen(@s)+1
+				i=i+Len(s)+1
 				lstrcpy(@s,Cast(ZString ptr,x+i))
 			Loop
 		EndIf
@@ -791,7 +791,7 @@ Sub AddExistingProjectModule()
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
-		i=lstrlen(@pth)+1
+		i=Len(pth)+1
 		x=Cast(Integer,@buff)
 		lstrcpy(@s,Cast(ZString ptr,x+i))
 		If Asc(s)=0 Then
@@ -802,7 +802,7 @@ Sub AddExistingProjectModule()
 			Do While Asc(s)<>0
 				sFile=pth & "\" & s
 				AddAProjectFile(sFile,TRUE,FALSE)
-				i=i+lstrlen(@s)+1
+				i=i+Len(s)+1
 				lstrcpy(@s,Cast(ZString ptr,x+i))
 			Loop
 		EndIf
@@ -867,7 +867,7 @@ Function GetProjectFileName(ByVal nInx As Integer) As String
 	Dim sFile As ZString*260
 
 	GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sFile,SizeOf(sFile),@ad.ProjectFile)
-	If lstrlen(sFile) Then
+	If Len(sFile) Then
 		sFile=MakeProjectFileName(sFile)
 		Return sFile
 	EndIf
@@ -1021,7 +1021,7 @@ Sub UseTemplate(ByVal sTemplateFile As String,ByVal sProName As String)
 					n=1
 				Else
 					buff=sLine & CRLF
-					nlen=lstrlen(@buff)
+					nlen=Len(buff)
 					WriteFile(hTxtFile,@buff,nlen,@nlen,NULL)
 				EndIf
 			Case 3
@@ -1226,7 +1226,7 @@ Function NewProjectTab1Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 			Do While nInx<20
 				sItem=Str(nInx)
 				GetPrivateProfileString(StrPtr("Make"),@sItem,@szNULL,@buff,260,@ad.IniFile)
-				If lstrlen(@buff) Then
+				If Len(buff) Then
 					x=InStr(buff,",")
 					buff[x-1]=NULL
 					SendDlgItemMessage(hWin,IDC_CBOPROJECTTYPE,CB_ADDSTRING,0,Cast(Integer,@buff))
@@ -1344,9 +1344,9 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 					'
 				Case EN_CHANGE
 					GetDlgItemText(hWin,IDC_EDTPROJECTNAME,@sItem,SizeOf(sItem))
-					If lstrlen(@sItem) Then
+					If Len(sItem) Then
 						GetDlgItemText(hWin,IDC_EDTPROJECTDESCRIPTION,@sItem,SizeOf(sItem))
-						If lstrlen(@sItem) Then
+						If Len(sItem) Then
 							EnableWindow(GetDlgItem(hWin,IDOK),TRUE)
 							Return TRUE
 						EndIf
@@ -1445,7 +1445,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 								EndIf
 								x=SendDlgItemMessage(hWin,IDC_LSTAPIFILES,LB_GETITEMDATA,nInx,0)
 								If x Then
-									If lstrlen(buff) Then
+									If Len(buff) Then
 										buff=buff & ","
 									EndIf
 									buff=buff & sItem
@@ -1483,7 +1483,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 			DrawFrameControl(lpDRAWITEMSTRUCT->hdc,@rect,DFC_BUTTON,nInx)
 			' Draw the text
 			SendMessage(lpDRAWITEMSTRUCT->hwndItem,LB_GETTEXT,lpDRAWITEMSTRUCT->itemID,Cast(Integer,@sItem))
-			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+18,lpDRAWITEMSTRUCT->rcItem.top,@sItem,lstrlen(@sItem))
+			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+18,lpDRAWITEMSTRUCT->rcItem.top,@sItem,Len(sItem))
 			If lpDRAWITEMSTRUCT->hwndItem=GetFocus() Then
 				' Let windows draw the focus rectangle
 				Return FALSE
@@ -1513,7 +1513,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 			SetDlgItemText(hWin,IDC_EDTPODESCRIPTION,@ProjectDescription)
 			x=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.ProjectFile)
 			GetPrivateProfileString(StrPtr("Make"),Str(x),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				x=InStr(sItem,",")
 				sText=Left(sItem,x-1)
 				SetDlgItemText(hWin,IDC_EDTPOTYPE,@sText)
@@ -1521,7 +1521,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 				SetDlgItemText(hWin,IDC_EDTPOBUILD,@sItem)
 			EndIf
 			GetPrivateProfileString(StrPtr("Make"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				x=InStr(sItem,",")
 				sItem=Mid(sItem,x+1)
 				SetDlgItemText(hWin,IDC_EDTPOMODULE,@sItem)
@@ -1599,7 +1599,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,4)
 					x=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.ProjectFile)
 					GetPrivateProfileString(StrPtr("Make"),Str(x),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-					If lstrlen(@sItem) Then
+					If Len(sItem) Then
 						x=InStr(sItem,",")
 						sText=Left(sItem,x-1)
 						SetDlgItemText(hWin,IDC_EDTPOTYPE,@sText)

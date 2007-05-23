@@ -327,16 +327,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				blk.lpszNot1=@szNot1
 				blk.lpszNot2=@szNot2
 				If LoadFromIni(StrPtr("Block"),Str(i),"00004",@blk,FALSE) Then
-					If lstrlen(@szSt(i)) Then
+					If Len(szSt(i)) Then
 						BD(i).lpszStart=@szSt(i)
 					EndIf
-					If lstrlen(@szEn(i)) Then
+					If Len(szEn(i)) Then
 						BD(i).lpszEnd=@szEn(i)
 					EndIf
-					If lstrlen(@szNot1) Then
+					If Len(szNot1) Then
 						BD(i).lpszNot1=@szNot1
 					EndIf
-					If lstrlen(@szNot2) Then
+					If Len(szNot2) Then
 						BD(i).lpszNot2=@szNot2
 					EndIf
 					BD(i).flag=blk.flag
@@ -623,7 +623,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_FILE_OPEN
 							buff=OpenInclude
-							If lstrlen(buff) Then
+							If Len(buff) Then
 								OpenTheFile(buff)
 							Else
 								OpenAFile(hWin)
@@ -717,7 +717,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Else
 								SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 							EndIf
-							If lstrlen(@buff) Then
+							If Len(buff) Then
 								findbuff=buff
 							EndIf
 							If findvisible Then
@@ -740,7 +740,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Else
 								SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 							EndIf
-							If lstrlen(@buff) Then
+							If Len(buff) Then
 								findbuff=buff
 							EndIf
 							If findvisible Then
@@ -1141,7 +1141,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								Else
 									sFile=ad.filename
 								EndIf
-								If lstrlen(@ad.smakeoutput) Then
+								If Len(ad.smakeoutput) Then
 									sFile=ad.ProjectPath & "\" & ad.smakeoutput
 								EndIf
 								MakeRun(sFile,FALSE)
@@ -1154,7 +1154,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Else
 								sFile=ad.filename
 							EndIf
-							If lstrlen(@ad.smakeoutput) Then
+							If Len(ad.smakeoutput) Then
 								sFile=ad.ProjectPath & "\" & ad.smakeoutput
 							EndIf
 							MakeRun(sFile,FALSE)
@@ -1166,7 +1166,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Else
 								sFile=ad.filename
 							EndIf
-							If lstrlen(ad.smakeoutput) Then
+							If Len(ad.smakeoutput) Then
 								MakeRun(ad.smakeoutput,TRUE)
 							Else
 								MakeRun(sFile,TRUE)
@@ -1237,7 +1237,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_HELPF1
 							GetPrivateProfileString(StrPtr("Help"),Str(1),@szNULL,@buff,260,@ad.IniFile)
-							If lstrlen(@buff) Then
+							If Len(buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
 								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
@@ -1255,7 +1255,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_HELPCTRLF1
 							GetPrivateProfileString(StrPtr("Help"),Str(2),@szNULL,@buff,256,@ad.IniFile)
-							If lstrlen(@buff) Then
+							If Len(buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
 								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
@@ -1350,13 +1350,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If id>=11000 And id<=11019 Then
 								' Tools menu
 								GetPrivateProfileString(StrPtr("Tools"),Str(id-10999),@szNULL,@buff,260,@ad.IniFile)
-								If lstrlen(@buff) Then
+								If Len(buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
 									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf
 									If InStr(buff," $" & szNULL) Then
-										buff[lstrlen(@buff)-2]=NULL
+										buff[Len(buff)-2]=NULL
 										ShellExecute(hWin,NULL,@buff,@ad.filename,NULL,SW_SHOWNORMAL)
 									ElseIf Asc(buff)=Asc("$") Then
 										GetCurrentDirectory(260,@buff)
@@ -1369,7 +1369,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							ElseIf id>=12000 And id<=12019 Then
 								' Help menu
 								GetPrivateProfileString(StrPtr("Help"),Str(id-11999),@szNULL,@buff,256,@ad.IniFile)
-								If lstrlen(@buff) Then
+								If Len(buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
 									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
@@ -1834,9 +1834,9 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	GetFilePath(ad.AppPath)
 	' Get inifilename
 	GetModuleFileName(NULL,@ad.IniFile,260)
-	Mid(ad.IniFile,lstrlen(ad.IniFile)-2,3)="ini"
+	Mid(ad.IniFile,Len(ad.IniFile)-2,3)="ini"
 	GetPrivateProfileString(StrPtr("Win"),StrPtr("AppPath"),@szNULL,@buff,260,@ad.IniFile)
-	If lstrlen(@buff) Then
+	If Len(buff) Then
 		' FbEdit development, use main ini file
 		ad.AppPath=buff
 		ad.IniFile=buff & "\FbEdit.ini"
@@ -1853,10 +1853,10 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 				ShowWindow(ah.hwnd,SW_RESTORE)
 			EndIf
 			' Get command line filename
-			If lstrlen(CommandLine) Then
+			If Len(CommandLine[0]) Then
 				cpd.dwData=0
 				cpd.lpData=CommandLine
-				cpd.cbData=lstrlen(CommandLine)+1
+				cpd.cbData=Len(CommandLine[0])+1
 				SendMessage(ah.hwnd,WM_COPYDATA,0,Cast(LPARAM,@cpd))
 			EndIf
 			Return 0

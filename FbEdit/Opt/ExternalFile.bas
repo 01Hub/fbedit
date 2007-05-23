@@ -20,7 +20,7 @@ Sub SaveExternalFile(ByVal hWin As HWND)
 		If SendDlgItemMessage(hWin,IDC_LSTFILETYPE,LB_GETTEXT,nInx,Cast(Integer,@buff))=LB_ERR Then
 			Exit Do
 		Else
-			If lstrlen(@buff) Then
+			If Len(buff) Then
 				WritePrivateProfileString(StrPtr("Open"),Str(x),@buff,@ad.IniFile)
 				x=x+1
 			EndIf
@@ -41,7 +41,7 @@ Function ExternalFileDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPara
 			nInx=1
 			Do While TRUE
 				GetPrivateProfileString(StrPtr("Open"),Str(nInx),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
-				If lstrlen(@buff) Then
+				If Len(buff) Then
 					SendDlgItemMessage(hWin,IDC_LSTFILETYPE,LB_ADDSTRING,0,Cast(Integer,@buff))
 				Else
 					Exit Do

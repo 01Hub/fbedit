@@ -414,7 +414,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	WritePrivateProfileString(StrPtr("Theme"),StrPtr("Current"),@sItem,@ad.IniFile)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
-		If lstrlen(thme(nInx).sztheme) Then
+		If Len(thme(nInx).sztheme) Then
 			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
@@ -470,10 +470,10 @@ Sub FillList(ByVal hWin As HWND)
 	SendDlgItemMessage(hWin,IDC_LSTKWACTIVE,LB_RESETCONTENT,0,0)
 	nInx=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETCURSEL,0,0)
 	buff=sKeyWords(nInx) & szNULL
-	Do While lstrlen(@buff)
+	Do While Len(buff)
 		x=InStr(buff," ")
 		If x=0 Then
-			x=lstrlen(@buff)+1
+			x=Len(buff)+1
 		EndIf
 		sItem=Left(buff,x-1)
 		SendDlgItemMessage(hWin,IDC_LSTKWACTIVE,LB_ADDSTRING,0,Cast(Integer,@sItem))
@@ -507,10 +507,10 @@ Sub FillHold(ByVal hWin As HWND)
 	Dim x As Integer
 
 	buff=sKeyWords(17)
-	Do While lstrlen(@buff)
+	Do While Len(buff)
 		x=InStr(buff," ")
 		If x=0 Then
-			x=lstrlen(@buff)+1
+			x=Len(buff)+1
 		EndIf
 		sItem=Left(buff,x-1)
 		SendDlgItemMessage(hWin,IDC_LSTKWHOLD,LB_ADDSTRING,0,Cast(Integer,@sItem))
@@ -544,7 +544,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 				sItem=Str(col)
 				thme(col).sztheme=String(32,0)
 				LoadFromIni(StrPtr("Theme"),@sItem,"044444444444444444444444444444444444444444",@thme(col),FALSE)
-				If lstrlen(thme(col).sztheme) Then
+				If Len(thme(col).sztheme) Then
 					sItem=String(32,0)
 					lstrcpy(@sItem,thme(col).sztheme)
 					nInx=SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,@sItem))
@@ -629,10 +629,10 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Colors
 			buff=sColors
 			ofs=@fbcol
-			Do While lstrlen(@buff)
+			Do While Len(buff)
 				nInx=InStr(buff,",")
 				If nInx=0 Then
-					nInx=lstrlen(@buff)+1
+					nInx=Len(buff)+1
 				EndIf
 				sItem=Left(buff,nInx-1)
 				buff=Mid(buff,nInx+1)
@@ -1016,7 +1016,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			FrameRect(lpDRAWITEMSTRUCT->hdc,@rect,GetStockObject(BLACK_BRUSH))
 			' Draw the text
 			SendMessage(lpDRAWITEMSTRUCT->hwndItem,LB_GETTEXT,lpDRAWITEMSTRUCT->itemID,Cast(Integer,@sItem))
-			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+30,lpDRAWITEMSTRUCT->rcItem.top,@sItem,lstrlen(@sItem))
+			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+30,lpDRAWITEMSTRUCT->rcItem.top,@sItem,Len(sItem))
 			If lpDRAWITEMSTRUCT->hwndItem=GetFocus() Then
 				' Let windows draw the focus rectangle
 				Return FALSE

@@ -72,21 +72,21 @@ Function LoadFromIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,B
 					ofs=ofs+4
 				Case 1
 					' Byte
-					If lstrlen(szDta) Then
+					If Len(szDta) Then
 						v=Val(szDta)
 						RtlMoveMemory(lpDta+ofs,@v,1)
 					EndIf
 					ofs=ofs+1
 				Case 2
 					' Word
-					If lstrlen(szDta) Then
+					If Len(szDta) Then
 						v=Val(szDta)
 						RtlMoveMemory(lpDta+ofs,@v,2)
 					EndIf
 					ofs=ofs+2
 				Case 4
 					' DWord
-					If lstrlen(szDta) Then
+					If Len(szDta) Then
 						v=Val(szDta)
 						RtlMoveMemory(lpDta+ofs,@v,4)
 					EndIf

@@ -247,7 +247,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@replacebuff))
 								If fr And FR_DOWN Then
-									chrg.cpMin=chrg.cpMin+lstrlen(@replacebuff)-lstrlen(@findbuff)
+									chrg.cpMin=chrg.cpMin+Len(replacebuff)-Len(findbuff)
 									chrg.cpMax=chrg.cpMin
 								EndIf
 								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))

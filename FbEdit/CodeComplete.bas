@@ -61,7 +61,6 @@ End Function
 Sub GetItems(ByVal ntype As Integer)
 	Dim x As Integer
 	Dim sItem As ZString*256
-	Dim lps As ZString ptr
 
 	x=1
 	Do While x
@@ -72,11 +71,11 @@ Sub GetItems(ByVal ntype As Integer)
 		Else
 			lstrcpy(ccpos,@s)
 		EndIf
-		If lstrlen(ccpos) Then
-			lstrcpyn(@sItem,ccpos,lstrlen(@buff)+1)
+		If Len(ccpos[0]) Then
+			lstrcpyn(@sItem,ccpos,Len(buff)+1)
 			If lstrcmpi(@sItem,@buff)=0 Then
 				SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,ccpos))
-				ccpos=ccpos+lstrlen(ccpos)+1
+				ccpos=ccpos+Len(ccpos[0])+1
 			EndIf
 		EndIf
 	Loop
@@ -102,7 +101,7 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 			lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("PpWcSsdTne")),Cast(Integer,@buff))
 			Do While lret
 				ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
-				Select Case ntype
+				Select Case As Const ntype
 					Case Asc("P")
 						ntype=0
 					Case Asc("p")
@@ -123,7 +122,7 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 						lret=lret+lstrlen(Cast(ZString ptr,lret))+1
 						lstrcat(ccpos,Cast(ZString ptr,lret))
 						lret=Cast(Integer,ccpos)
-						ccpos=ccpos+lstrlen(ccpos)+1
+						ccpos=ccpos+Len(ccpos[0])+1
 						ntype=14
 					Case Asc("T")
 						ntype=10
@@ -138,12 +137,12 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 		EndIf
 		If lpProc Then
 			'ccpos=@ccstring
-			lpProc=lpProc+lstrlen(lpProc)+1
+			lpProc=lpProc+Len(lpProc[0])+1
 			lstrcpy(@s,lpProc)
 			If Asc(s)<>NULL Then
 				GetItems(8)
 			EndIf
-			lpProc=lpProc+lstrlen(lpProc)+1
+			lpProc=lpProc+Len(lpProc[0])+1
 			lstrcpy(@s,lpProc)
 			If Asc(s)<>NULL Then
 				GetItems(9)
@@ -181,7 +180,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		If fProject Then
 			nowner=IsProjectFile(ad.filename)
 		EndIf
-		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,lstrlen(@sLine),Cast(LPARAM,@sLine))
+		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
 		If Asc(sLine)=Asc(".") Then
 			lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
 			If lret Then
@@ -195,7 +194,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		While InStr(buff,".")
 			buff=Mid(buff,InStr(buff,".")+1)
 		Wend
-		x=lstrlen(sLine)
+		x=Len(sLine)
 		SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
 		p=@sLine
 		If lpProc Then
@@ -204,31 +203,31 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 				x=InStr(sLine,".")
 				x=InStr(x+1,sLine,".")
 				If x=0 Then
-					x=lstrlen(@sLine)+1
+					x=Len(sLine)+1
 				EndIf
 				sLine=sLine & "  "
 				Mid(sLine,x,2)=szNULL & szNULL
 				GoTo TestNext1
 			EndIf
 			' Skip proc name
-			lpProc=lpProc+lstrlen(lpProc)+1
+			lpProc=lpProc+Len(lpProc[0])+1
 			' Get parameters list
 			lstrcpy(@sItem,p)
 			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
-			If lstrlen(@sItem)=0 Then
+			If Len(sItem)=0 Then
 				' Skip parameters list
-				lpProc=lpProc+lstrlen(lpProc)+1
+				lpProc=lpProc+Len(lpProc[0])+1
 				' Get local data list
 			TestNext:
 				lstrcpy(@sItem,p)
 				SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
 			EndIf
-			If lstrlen(@sItem) Then
+			If Len(sItem) Then
 				lret=FindExact(StrPtr("Ss"),@sItem,FALSE)
 				If lret Then
-					lret=lret+lstrlen(lret)+1
-					p=p+lstrlen(p)+1
-					If lstrlen(p) Then
+					lret=lret+Len(lret[0])+1
+					p=p+Len(p[0])+1
+					If Len(p[0]) Then
 						lpProc=lret
 						GoTo TestNext
 					EndIf
@@ -245,7 +244,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		If lpProc=0 Then
 			lret=FindExact(StrPtr("d"),p,FALSE)
 			If lret Then
-				lret=lret+lstrlen(lret)+1
+				lret=lret+Len(lret[0])+1
 				'Remove namespace from type
 '				lstrcpy(@sItem,lret)
 '				lret=lret+InStr(sItem,".")
@@ -256,9 +255,9 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 				EndIf
 				lret=FindExact(StrPtr("Ss"),lret,FALSE)
 				If lret Then
-					lret=lret+lstrlen(lret)+1
-					p=p+lstrlen(p)+1
-					If lstrlen(p) Then
+					lret=lret+Len(lret[0])+1
+					p=p+Len(p[0])+1
+					If Len(p[0]) Then
 						lpProc=lret
 						GoTo TestNext
 					EndIf
@@ -272,9 +271,9 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 			TestNext1:
 				lret=FindExact(StrPtr("s"),p,TRUE)
 				If lret Then
-					lret=lret+lstrlen(lret)+1
-					p=p+lstrlen(p)+1
-					If lstrlen(p) Then
+					lret=lret+Len(lret[0])+1
+					p=p+Len(p[0])+1
+					If Len(p[0]) Then
 						lpProc=lret
 						GoTo TestNext
 					EndIf
@@ -311,7 +310,7 @@ Sub UpdateTypeList()
 		lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("SsTe")),Cast(Integer,@buff))
 		Do While lret
 			ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
-			Select Case ntype
+			Select Case As Const ntype
 				Case Asc("S")
 					ntype=4
 				Case Asc("s")
@@ -347,7 +346,7 @@ Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolea
 		SendMessage(ah.hcc,CCM_CLEAR,0,0)
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 		If chrg.cpMin=chrg.cpMax Then
-			lret=lret+lstrlen(@buff)+1
+			lret=lret+Len(buff)+1
 			ln=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
 			buff=Chr(255) & Chr(1)
@@ -358,12 +357,13 @@ Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolea
 			ccal.lpszList=@s
 			ccal.lpszFilter=@buff
 			ccal.nType=2
-			If lstrlen(@s) Then
+			If Len(s) Then
 				SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
 			Else
 				lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTe")),Cast(LPARAM,@buff)))
 				Do While lret
-					Select Case SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+					ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+					Select Case As Const ntype
 						Case Asc("S")
 							ntype=4
 						Case Asc("s")
@@ -443,11 +443,11 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVa
 				EndIf
 				lstrcat(@s,@wfd.cFileName)
 				If UCase(Right(s,3))=".BI" Then
-					lstrcpyn(@sItem,@s,lstrlen(@buff)+1)
-					If lstrcmpi(@sItem,@buff)=0 Or lstrlen(@sItem)=0 Then
+					lstrcpyn(@sItem,@s,Len(buff)+1)
+					If lstrcmpi(@sItem,@buff)=0 Or Len(sItem)=0 Then
 						lstrcpy(ccpos,@s)
 						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
-						ccpos=ccpos+lstrlen(ccpos)+1
+						ccpos=ccpos+Len(ccpos[0])+1
 					EndIf
 				EndIf
 				fincludelist=TRUE
@@ -502,11 +502,11 @@ Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal
 				EndIf
 				lstrcat(@s,@wfd.cFileName)
 				If UCase(Right(s,2))=".A" Then
-					lstrcpyn(@sItem,@s,lstrlen(@buff)+1)
-					If lstrcmpi(@sItem,@buff)=0 Or lstrlen(@sItem)=0 Then
+					lstrcpyn(@sItem,@s,Len(buff)+1)
+					If lstrcmpi(@sItem,@buff)=0 Or Len(sItem)=0 Then
 						lstrcpy(ccpos,@s)
 						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
-						ccpos=ccpos+lstrlen(ccpos)+1
+						ccpos=ccpos+Len(ccpos[0])+1
 					EndIf
 				EndIf
 				fincliblist=TRUE

@@ -35,7 +35,7 @@ Sub SetToolMenu(ByVal hWin As HWND)
 	nInx=1
 	Do While nInx<20
 		GetPrivateProfileString(StrPtr("Tools"),Str(nInx),@szNULL,@buff,260,@ad.IniFile)
-		If lstrlen(@buff) Then
+		If Len(buff) Then
 			x=InStr(buff,",")
 			buff=Left(buff,x-1)
 			AppendMenu(hSubMnu,MF_STRING,nID,@buff)
@@ -59,7 +59,7 @@ Sub SetHelpMenu(ByVal hWin As HWND)
 	nInx=1
 	Do While nInx<20
 		GetPrivateProfileString(StrPtr("Help"),Str(nInx),@szNULL,@buff,256,@ad.IniFile)
-		If lstrlen(@buff) Then
+		If Len(buff) Then
 			x=InStr(buff,",")
 			buff=Left(buff,x-1)
 			AppendMenu(hSubMnu,MF_STRING,nID,@buff)
@@ -137,7 +137,7 @@ Sub MenuOptionSave(ByVal hWin As HWND)
 	nInx=0
 	nID=1
 	Do While SendDlgItemMessage(hWin,IDC_LSTME,LB_GETTEXT,nInx,Cast(Integer,@buff))<>LB_ERR
-		If lstrlen(@buff) Then
+		If Len(buff) Then
 			x=InStr(buff,Chr(9))
 			buff[x-1]=Asc(",")
 			If nType=1 Then
@@ -217,7 +217,7 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 				ElseIf nType=5 Then
 					GetPrivateProfileString(StrPtr("Make"),@sItem,@szNULL,@buff,260,@ad.IniFile)
 				EndIf
-				If lstrlen(@buff) Then
+				If Len(buff) Then
 					x=InStr(buff,",")
 					buff[x-1]=9
 					SendDlgItemMessage(hWin,IDC_LSTME,LB_ADDSTRING,0,Cast(Integer,@buff))
