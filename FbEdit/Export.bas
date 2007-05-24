@@ -199,6 +199,8 @@ Function ExportDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPA
 				Case IDOK
 					ShowOutput(TRUE)
 					SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
+					nLinesOut=0
+					UpdateAllTabs(6)
 					If IsDlgButtonChecked(hWin,IDC_CHKFUN) Then
 						ExportFunctions
 					EndIf

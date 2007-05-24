@@ -1294,6 +1294,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_OUTPUT_CLEAR
 							SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
+							nLinesOut=0
+							UpdateAllTabs(6)
 							'
 						Case IDM_OUTPUT_SELECTALL
 							chrg.cpMin=0
@@ -1518,28 +1520,55 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.hwndFrom=ah.hout Then
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
-					SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					y=SendMessage(ah.hout,EM_LINEFROMCHAR,chrg.cpMin,0)
-					x=SendMessage(ah.hout,EM_LINELENGTH,y,0)
-					buff=Chr(x And 255) & Chr(x\256)
-					x=SendMessage(ah.hout,EM_GETLINE,y,Cast(LPARAM,@buff))
-					buff[x]=NULL
-					y=GetErrLine(buff,fQR)
-					If y>=0 Then
-						If ah.hred<>ah.hres Then
-							x=SendMessage(ah.hout,REM_GETBMID,lpRASELCHANGE->Line,0)
-							If x Then
-								x=SendMessage(ah.hred,REM_FINDBOOKMARK,x,0)
-								If x>=0 Then
-									y=x
-								EndIf
+					bm=SendMessage(ah.hout,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
+					If bm=3 Then
+						x=lpRASELCHANGE->Line
+						While bm=3
+							x-=1
+							bm=SendMessage(ah.hout,REM_GETBOOKMARK,x,0)
+						Wend
+						buff=Chr(255) & Chr(1)
+						x=SendMessage(ah.hout,EM_GETLINE,x,Cast(LPARAM,@buff))
+						buff[x]=NULL
+						OpenTheFile(buff)
+						x=SendMessage(ah.hout,REM_GETBMID,lpRASELCHANGE->Line,0)
+						If x Then
+							x=SendMessage(ah.hred,REM_FINDBOOKMARK,x,0)
+							If x>=0 Then
+								y=x
 							EndIf
-							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,y,0)
-							chrg.cpMax=chrg.cpMin
-							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-							SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 						EndIf
+						chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,y,0)
+						chrg.cpMax=chrg.cpMin
+						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+						SendMessage(ah.hred,REM_VCENTER,0,0)
+						SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 						SetFocus(ah.hred)
+					Else
+						SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+						y=SendMessage(ah.hout,EM_LINEFROMCHAR,chrg.cpMin,0)
+						x=SendMessage(ah.hout,EM_LINELENGTH,y,0)
+						buff=Chr(x And 255) & Chr(x\256)
+						x=SendMessage(ah.hout,EM_GETLINE,y,Cast(LPARAM,@buff))
+						buff[x]=NULL
+						y=GetErrLine(buff,fQR)
+						If y>=0 Then
+							If ah.hred<>ah.hres Then
+								x=SendMessage(ah.hout,REM_GETBMID,lpRASELCHANGE->Line,0)
+								If x Then
+									x=SendMessage(ah.hred,REM_FINDBOOKMARK,x,0)
+									If x>=0 Then
+										y=x
+									EndIf
+								EndIf
+								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,y,0)
+								chrg.cpMax=chrg.cpMin
+								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+								SendMessage(ah.hred,REM_VCENTER,0,0)
+								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+							EndIf
+							SetFocus(ah.hred)
+						EndIf
 					EndIf
 				EndIf
 				'

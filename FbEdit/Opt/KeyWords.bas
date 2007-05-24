@@ -248,7 +248,7 @@ End Sub
 Sub SetHiliteWordFindInPage(ByVal hWin As HWND)
 	Dim As COLORREF tempcolor,oldcmntcolor,oldstrcolor,oldoprcolor,oldnumcolor
 
-	If ah.hred<>ah.hres Then
+	If ah.hred<>0 And ah.hred<>ah.hres Then
 		SendMessage(ah.hfindinpage,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
 		If Len(buff) Then
 			tempcolor=fbcol.racol.txtcol

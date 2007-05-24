@@ -264,6 +264,8 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	nErr=0
 	If fNoClear=FALSE Then
 		SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
+		nLinesOut=0
+		UpdateAllTabs(6)
 	EndIf
 	ShowOutput(TRUE)
 	If fProject Then
@@ -449,6 +451,8 @@ Function CompileModules(ByVal sMake As String) As Integer
 		fBuildErr=0
 		If fProject Then
 			SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
+			nLinesOut=0
+			UpdateAllTabs(6)
 			id=1001
 			Do While id<1256
 				sFile=GetProjectFile(id)

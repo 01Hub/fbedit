@@ -12,6 +12,8 @@
 #Define IDC_RBN_ALL							2004
 #Define IDC_RBN_DOWN							2005
 #Define IDC_RBN_UP							2006
+#Define IDC_CHK_LOGFIND						2014
+#Define IDC_BTN_FINDALL						2015
 
 Dim Shared findbuff As ZString*260
 Dim Shared replacebuff As ZString*260
@@ -24,6 +26,9 @@ Dim Shared fres As Long
 Dim Shared ft As FINDTEXTEX
 Dim Shared nReplaceCount As Integer
 Dim Shared fSkipCommentLine As Long
+Dim Shared fLogFind As Long
+Dim Shared fLogFindClear As Long
+Dim shared fOnlyOneTime As Long
 
 Function Find(hWin As HWND,frType As Long) As Long
 	Dim chrg As CHARRANGE
@@ -32,7 +37,7 @@ Function Find(hWin As HWND,frType As Long) As Long
 	Dim ms As MEMSEARCH
 	Dim tmp As Integer
 	Dim nLine As Integer
-	Dim lLine As Integer
+	Dim x As Integer
 
 TryAgain:
 	If fPro=1 Then
@@ -50,6 +55,9 @@ TryAgain:
 					fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
 					GlobalFree(hMem)
 					If fres Then
+						ft.chrg.cpMin-=1
+						ft.chrg.cpMax=ft.chrg.cpMin
+						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
 						tmp=fProFileNo
 						OpenProjectFile(fProFileNo)
 						SetFocus(ah.hfind)
@@ -62,6 +70,7 @@ TryAgain:
 							chrg.cpMax=0
 						EndIf
 						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+						fOnlyOneTime=0
 						fPos=0
 						fPro=2
 						fres=-1
@@ -119,6 +128,30 @@ TryFind:
 				GoTo TryFind
 			EndIf
 		EndIf
+		If fLogFind Then
+			If fOnlyOneTime=0 Then
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,StrPtr(CR)))
+				fOnlyOneTime=1
+				nLinesOut+=1
+			EndIf
+			buff=Chr(255) & Chr(1)
+			nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,fres)
+			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+			chrg.cpMax=SendMessage(ah.hred,EM_GETLINE,nLine,Cast(LPARAM,@buff))
+			buff[chrg.cpMax]=NULL
+			lstrcpy(@s," (")
+			lstrcat(@s,Str(nLine+1))
+			lstrcat(@s,") ")
+			lstrcat(@s,@buff)
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@s))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+			SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,3)
+			SendMessage(ah.hred,REM_SETBOOKMARK,nLine,3)
+			x=SendMessage(ah.hout,REM_GETBMID,nLinesOut,0)
+			SendMessage(ah.hred,REM_SETBMID,nLine,x)
+			nLinesOut+=1
+		EndIf
 		' Mark the foud text
 		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrgText))
 		SendMessage(ah.hred,REM_VCENTER,0,0)
@@ -156,6 +189,20 @@ TryFind:
 	Return fres
 
 End Function
+
+Sub ResetFind
+	fres=-1
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
+	fPos=ft.chrg.cpMin
+	ft.chrg.cpMax=-1
+	fProFileNo=1
+	fOnlyOneTime=0
+	If fLogFindClear Then
+		SendMessage(ah.hout,WM_SETTEXT,0,Cast(LPARAM,StrPtr("")))
+		nLinesOut=0
+		UpdateAllTabs(6)
+	EndIf
+End Sub
 
 Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id,Event,lret
@@ -202,6 +249,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If fSkipCommentLine Then
 				CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,BST_CHECKED)
 			EndIf
+			If fLogFind Then
+				CheckDlgButton(hWin,IDC_CHK_LOGFIND,BST_CHECKED)
+			EndIf
+			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
 			fPos=ft.chrg.cpMin
 			ft.chrg.cpMax=-1
 			fProFileNo=1
@@ -212,11 +263,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If wParam<>WA_INACTIVE Then
 				ah.hfind=hWin
 			EndIf
-			fres=-1
-			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-			fPos=ft.chrg.cpMin
-			ft.chrg.cpMax=-1
-			fProFileNo=1
+			ResetFind
 			'
 		Case WM_COMMAND
 			id=LoWord(wParam)
@@ -255,6 +302,14 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							Find(hWin,fr)
 						EndIf
 						'
+					Case IDC_BTN_FINDALL
+						If fres=-1 Then
+							Find(hWin,fr)
+						EndIf
+						Do While fres<>-1
+							SendMessage(hWin,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
+						Loop
+						'
 					Case IDC_BTN_REPLACEALL
 						If fres=-1 Then
 							Find(hWin,fr)
@@ -265,68 +320,43 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						'
 					Case IDC_CHK_MATCHCASE
 						fr=fr Xor FR_MATCHCASE
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 					Case IDC_CHK_WHOLEWORD
 						fr=fr Xor FR_WHOLEWORD
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 					Case IDC_CHK_PROJECTFILES
-						' fPro=fPro xor 1
-						''' sorry i think that was a simple flag (only 2 values) 
 						If fPro Then
 							fPro=0
 						Else
 							fPro=1
 						EndIf
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 					Case IDC_CHK_SKIPCOMMENTS
 						fSkipCommentLine=fSkipCommentLine Xor 1
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
+						'
+					Case IDC_CHK_LOGFIND
+						fLogFind=fLogFind Xor 1
+						EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
+						ResetFind
 						'
 					Case IDC_RBN_ALL
 						fDir=0
 						fr=fr Or FR_DOWN
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 					Case IDC_RBN_DOWN
 						fDir=1
 						fr=fr Or FR_DOWN
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 					Case IDC_RBN_UP
 						fDir=2
 						fr=fr And (-1 Xor FR_DOWN)
-						fres=-1
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-						fPos=ft.chrg.cpMin
-						ft.chrg.cpMax=-1
-						fProFileNo=1
+						ResetFind
 						'
 				End Select
 				'
@@ -334,18 +364,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				' Update text buffers
 				If id=IDC_FINDTEXT Then
 					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@findbuff))
-					fres=-1
-					SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-					fPos=ft.chrg.cpMin
-					ft.chrg.cpMax=-1
-					fProFileNo=1
+					ResetFind
 				ElseIf id=IDC_REPLACETEXT Then
 					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@replacebuff))
-					fres=-1
-					SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-					fPos=ft.chrg.cpMin
-					ft.chrg.cpMax=-1
-					fProFileNo=1
+					ResetFind
 				EndIf
 			EndIf
 			'

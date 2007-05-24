@@ -670,6 +670,11 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						fChangeNotification=10
 					EndIf
 				EndIf
+			ElseIf nType=6 Then
+				' Clear find
+				If lpTABMEM->hedit<>ah.hres Then
+					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,3)
+				EndIf
 			EndIf
 		Else
 			Exit Do
