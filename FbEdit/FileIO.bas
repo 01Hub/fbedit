@@ -132,6 +132,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString ptr)
 		If hWin=ah.hres Then
 			nSize=GetFileSize(hFile,NULL)
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nSize+1)
+			GlobalLock(hMem)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
 			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))

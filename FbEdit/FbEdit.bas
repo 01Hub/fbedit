@@ -195,6 +195,7 @@ Function SplashProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM
 			mDC=CreateCompatibleDC(ps.hdc)
 			SelectObject(mDC,hSplashBmp)
 			StretchBlt(ps.hdc,0,0,rect.right,rect.bottom,mDC,0,0,340,188,SRCCOPY)
+			DeleteDC(mDC)
 			FrameRect(ps.hdc,@rect,GetStockObject(BLACK_BRUSH))
 			EndPaint(hWin,@ps)
 			Return 0
