@@ -52,6 +52,7 @@ UpdateList proc uses esi,dwType:DWORD
 			lea		esi,[esi+eax+sizeof PROPERTIES]
 		.endw
 	.endif
+	invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_SETCURSEL,0,0
 	xor		eax,eax
 	dec		eax
 	mov		rapn.nid,eax
@@ -518,66 +519,72 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		esi,lParam
 		assume esi:ptr DRAWITEMSTRUCT
 		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr szname
-		invoke lstrlen,addr szname
-		mov		len,eax
-		test	[esi].itemState,ODS_SELECTED
-		.if ZERO?
-			push	1
-			push	[ebx].RAPROPERTY.backcolor
-			mov		eax,[ebx].RAPROPERTY.textcolor
-		.else
-			push	0
-			invoke GetSysColor,COLOR_HIGHLIGHT
-			push	eax
-			invoke GetSysColor,COLOR_HIGHLIGHTTEXT
-		.endif
-		invoke SetTextColor,[esi].hdc,eax
-		pop		eax
-		invoke SetBkColor,[esi].hdc,eax
-		invoke ExtTextOut,[esi].hdc,0,0,ETO_OPAQUE,addr [esi].rcItem,NULL,0,NULL
-		pop		eax
-		push	[esi].rcItem.left
-		add		[esi].rcItem.left,3
-		.if eax
-			push	edi
-			mov		edi,offset szname
-			xor		ecx,ecx
-			.while byte ptr [edi]
+		.if eax!=LB_ERR
+			invoke lstrlen,addr szname
+			mov		len,eax
+			test	[esi].itemState,ODS_SELECTED
+			.if ZERO?
+				push	1
+				push	[ebx].RAPROPERTY.backcolor
+				mov		eax,[ebx].RAPROPERTY.textcolor
+			.else
+				push	0
+				invoke GetSysColor,COLOR_HIGHLIGHT
+				push	eax
+				invoke GetSysColor,COLOR_HIGHLIGHTTEXT
+			.endif
+			invoke SetTextColor,[esi].hdc,eax
+			pop		eax
+			invoke SetBkColor,[esi].hdc,eax
+			invoke ExtTextOut,[esi].hdc,0,0,ETO_OPAQUE,addr [esi].rcItem,NULL,0,NULL
+			pop		eax
+			push	[esi].rcItem.left
+			add		[esi].rcItem.left,3
+			.if eax
+				push	edi
+				mov		edi,offset szname
 				xor		ecx,ecx
-				.while byte ptr [edi+ecx]!='(' && byte ptr [edi+ecx]!=')' && byte ptr [edi+ecx]!=',' && byte ptr [edi+ecx]!=':' && byte ptr [edi+ecx]!=0
-					inc		ecx
+				.while byte ptr [edi]
+					xor		ecx,ecx
+					.while byte ptr [edi+ecx]!='(' && byte ptr [edi+ecx]!=')' && byte ptr [edi+ecx]!=',' && byte ptr [edi+ecx]!=':' && byte ptr [edi+ecx]!=0
+						inc		ecx
+					.endw
+					.if ecx
+						push	ecx
+						push	ecx
+						mov		rect.left,0
+						mov		rect.top,0
+						invoke DrawText,[esi].hdc,edi,ecx,addr rect,DT_CALCRECT or DT_SINGLELINE
+						pop		ecx
+						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,ecx
+						mov		eax,rect.right
+						add		[esi].rcItem.left,eax
+						pop		ecx
+						lea		edi,[edi+ecx]
+					.elseif byte ptr [edi]
+						mov		rect.left,0
+						mov		rect.top,0
+						invoke DrawText,[esi].hdc,edi,1,addr rect,DT_CALCRECT or DT_SINGLELINE
+						invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.oprcolor
+						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,1
+						invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.textcolor
+						mov		eax,rect.right
+						add		[esi].rcItem.left,eax
+						inc		edi
+					.endif
 				.endw
-				.if ecx
-					push	ecx
-					push	ecx
-					mov		rect.left,0
-					mov		rect.top,0
-					invoke DrawText,[esi].hdc,edi,ecx,addr rect,DT_CALCRECT or DT_SINGLELINE
-					pop		ecx
-					invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,ecx
-					mov		eax,rect.right
-					add		[esi].rcItem.left,eax
-					pop		ecx
-					lea		edi,[edi+ecx]
-				.elseif byte ptr [edi]
-					mov		rect.left,0
-					mov		rect.top,0
-					invoke DrawText,[esi].hdc,edi,1,addr rect,DT_CALCRECT or DT_SINGLELINE
-					invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.oprcolor
-					invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,1
-					invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.textcolor
-					mov		eax,rect.right
-					add		[esi].rcItem.left,eax
-					inc		edi
-				.endif
-			.endw
-			pop		edi
+				pop		edi
+			.else
+				invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,offset szname,len
+			.endif
+			pop		[esi].rcItem.left
+			assume esi:nothing
+			pop		esi
 		.else
-			invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,offset szname,len
+			pop		esi
+			xor		eax,eax
+			jmp		Ex
 		.endif
-		pop		[esi].rcItem.left
-		assume esi:nothing
-		pop		esi
 	.elseif eax==WM_COMMAND
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

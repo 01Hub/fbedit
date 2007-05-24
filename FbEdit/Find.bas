@@ -29,7 +29,6 @@ Dim Shared fSkipCommentLine As Long
 Dim Shared fLogFind As Long
 Dim Shared fLogFindClear As Long
 Dim shared fOnlyOneTime As Long
-Dim Shared pLast As Integer
 
 Function Find(hWin As HWND,frType As Long) As Long
 	Dim chrg As CHARRANGE
@@ -114,7 +113,7 @@ TryAgain:
 TryFind:
 	' Do the find
 	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@ft))
-	If ft.chrg.cpMin>(ft.chrg.cpMax And &H7FFFFFFF) And fDir=0 Then
+	If ft.chrgText.cpMin>=(ft.chrg.cpMax And &H7FFFFFFF) And fDir=0 Then
 		fres=-1
 	EndIf
 	If fres<>-1 Then
@@ -157,9 +156,8 @@ TryFind:
 		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrgText))
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-		pLast=ft.chrgText.cpMin
 	Else
-		If fDir=0 And fPos<>0 And pLast<>ft.chrgText.cpMin Then 
+		If fDir=0 And fPos<>0 Then 
 			ft.chrg.cpMin=0
 			ft.chrg.cpMax=fPos
 			fPos=0
@@ -187,7 +185,6 @@ TryFind:
 				fProFileNo=1
 			EndIf
 		EndIf
-		pLast=-2
 	EndIf
 	Return fres
 
@@ -267,7 +264,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				ah.hfind=hWin
 			EndIf
 			ResetFind
-			pLast=-2
 			'
 		Case WM_COMMAND
 			id=LoWord(wParam)
