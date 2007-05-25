@@ -1524,7 +1524,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					bm=SendMessage(ah.hout,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
 					If bm=3 Then
 						x=lpRASELCHANGE->Line
-						While bm=3
+						While bm<>6
 							x-=1
 							bm=SendMessage(ah.hout,REM_GETBOOKMARK,x,0)
 						Wend
@@ -1545,7 +1545,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendMessage(ah.hred,REM_VCENTER,0,0)
 						SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 						SetFocus(ah.hred)
-					ElseIf bm=4 Then
+					ElseIf bm=4 Or bm=6 Then
 						Return 0
 					Else
 						SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))

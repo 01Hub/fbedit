@@ -144,6 +144,7 @@ Function MakeProc(ByVal Param As Integer) As Integer
 	Dim sat As SECURITY_ATTRIBUTES
 	Dim startupinfo As STARTUPINFO
 	Dim pinfo As PROCESS_INFORMATION
+	Dim chrg As CHARRANGE
 	Dim hrd As HANDLE
 	Dim hwr As HANDLE
 	Dim bytesRead As Integer
@@ -151,6 +152,9 @@ Function MakeProc(ByVal Param As Integer) As Integer
 	Dim buffer As ZString*4096
 	Dim rd As ZString*32
 
+	chrg.cpMin=-1
+	chrg.cpMax=-1
+	SendMessage(ah.hout,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 	sat.nLength=SizeOf(SECURITY_ATTRIBUTES)
 	sat.lpSecurityDescriptor=NULL
 	sat.bInheritHandle=TRUE
@@ -177,8 +181,8 @@ Function MakeProc(ByVal Param As Integer) As Integer
 		Else
 			CloseHandle(hwr)
 			SetFocus(ah.hout)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@buff))
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
 			SendMessage(ah.hout,REM_REPAINT,0,TRUE)
 			buffer=""
 			While TRUE
@@ -186,7 +190,7 @@ Function MakeProc(ByVal Param As Integer) As Integer
 				If lret=0 Then
 					Exit While
 				ElseIf Asc(rd)=10 Then
-					SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@buffer))
+					SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buffer))
 					buffer=""
 				Else
 					buffer=buffer & rd
@@ -195,7 +199,7 @@ Function MakeProc(ByVal Param As Integer) As Integer
 			CloseHandle(pinfo.hProcess)
 			CloseHandle(pinfo.hThread)
 			CloseHandle(hrd)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@buffer))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buffer))
 			Return 0
 		EndIf
 	EndIf
@@ -366,7 +370,8 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 '	EndIf
 	x=MakeProc(0)
 	If x<>-1 Then
-		nLine=1
+		SetFocus(ah.hout)
+		nLine=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)-1
 		lret=-1
 		While TRUE
 			cPos=SendMessage(ah.hout,EM_LINEINDEX,nLine,0)

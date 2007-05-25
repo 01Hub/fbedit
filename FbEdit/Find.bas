@@ -140,6 +140,8 @@ TryFind:
 			If fOnlyOneTime=0 Then
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,6)
+				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
 				fOnlyOneTime=1
 				nFiles+=1
 				nLinesOut+=1
@@ -163,7 +165,7 @@ TryFind:
 				SendMessage(ah.hred,REM_SETBMID,nLine,x)
 			Else
 				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,4)
-				SendMessage(ah.hout,REM_SETBMID,nLine,0)
+				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
 			EndIf
 			nLinesOut+=1
 		EndIf

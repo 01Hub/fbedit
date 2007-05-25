@@ -674,7 +674,6 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				' Clear find
 				If lpTABMEM->hedit<>ah.hres Then
 					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,3)
-					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,4)
 				EndIf
 			EndIf
 		Else
