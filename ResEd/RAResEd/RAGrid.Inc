@@ -124,9 +124,5 @@ ODT_GRID			equ 6
 
 .const
 
-IFDEF DLL
-	szRAGridClass	db 'RAGrid',0
-ELSE
-	szRAGridClass	db 'MyRAGrid',0
-ENDIF
+szRAGridClass	db 'RAGrid',0
 
