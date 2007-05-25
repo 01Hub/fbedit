@@ -144,7 +144,7 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 			EndIf
 			lpProc=lpProc+Len(lpProc[0])+1
 			' Skip return type
-			lpProc=lpProc+lstrlen(lpProc)+1
+			lpProc=lpProc+Len(lpProc[0])+1
 			lstrcpy(@s,lpProc)
 			If Asc(s)<>NULL Then
 				GetItems(9)

@@ -104,7 +104,7 @@ TryAgain:
 	ft.chrg.cpMin=chrg.cpMin
 	If frType And FR_DOWN Then
 		If fres<>-1 Then
-			ft.chrg.cpMin=chrg.cpMin+Len(findbuff)
+			ft.chrg.cpMin+=1
 		EndIf
 	Else
 		ft.chrg.cpMax=0
@@ -113,7 +113,7 @@ TryAgain:
 TryFind:
 	' Do the find
 	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@ft))
-	If ft.chrgText.cpMin>=(ft.chrg.cpMax And &H7FFFFFFF) And fDir=0 Then
+	If ft.chrgText.cpMin>=(ft.chrg.cpMax And &h7FFFFFFF) And fDir=0 Then
 		fres=-1
 	EndIf
 	If fres<>-1 Then
