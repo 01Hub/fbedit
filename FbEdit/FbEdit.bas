@@ -859,7 +859,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_EDIT_ERRORCLEAR
 							UpdateAllTabs(2)
-							fTimer=1
 							'
 						Case IDM_EDIT_ERRORNEXT
 							nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,7)
@@ -1295,6 +1294,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_OUTPUT_CLEAR
 							SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
+							nFiles=0
 							nLinesOut=0
 							UpdateAllTabs(6)
 							'
@@ -1545,6 +1545,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendMessage(ah.hred,REM_VCENTER,0,0)
 						SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 						SetFocus(ah.hred)
+					ElseIf bm=4 Then
+						Return 0
 					Else
 						SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						y=SendMessage(ah.hout,EM_LINEFROMCHAR,chrg.cpMin,0)

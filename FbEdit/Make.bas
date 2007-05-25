@@ -263,9 +263,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	CallAddins(ah.hwnd,AIM_MAKEBEGIN,Cast(WPARAM,@sFile),Cast(LPARAM,@sMakeOpt),HOOK_MAKEBEGIN)
 	nErr=0
 	If fNoClear=FALSE Then
-		SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
-		nLinesOut=0
-		UpdateAllTabs(6)
+		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
 	ShowOutput(TRUE)
 	If fProject Then
@@ -450,9 +448,7 @@ Function CompileModules(ByVal sMake As String) As Integer
 		UpdateAllTabs(2)
 		fBuildErr=0
 		If fProject Then
-			SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
-			nLinesOut=0
-			UpdateAllTabs(6)
+			SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 			id=1001
 			Do While id<1256
 				sFile=GetProjectFile(id)

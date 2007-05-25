@@ -674,6 +674,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				' Clear find
 				If lpTABMEM->hedit<>ah.hres Then
 					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,3)
+					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,4)
 				EndIf
 			EndIf
 		Else
@@ -685,6 +686,9 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 		SendMessage(ah.hpr,WM_SETREDRAW,FALSE,0)
 		SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 		SendMessage(ah.hpr,WM_SETREDRAW,TRUE,0)
+	EndIf
+	If nType=2 Or nType=6 Then
+		fTimer=1
 	EndIf
 
 End Sub

@@ -86,7 +86,12 @@ TryAgain:
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 					nReplaceCount=0
 				Else
-					MessageBox(hWin,StrPtr("Project Files searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
+					If fLogFind Then
+						buff="Project Files searched" & CR & CR & "Files: " & Str(nFiles) & CR & "Founds: " & Str(nLinesOut-nFiles)
+						MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
+					Else
+						MessageBox(hWin,StrPtr("Project Files searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
+					EndIf
 				EndIf
 				ft.chrg.cpMax=ft.chrg.cpMin
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
@@ -129,10 +134,14 @@ TryFind:
 			EndIf
 		EndIf
 		If fLogFind Then
+			chrg.cpMin=-1
+			chrg.cpMax=-1
+			SendMessage(ah.hout,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 			If fOnlyOneTime=0 Then
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,StrPtr(CR)))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
 				fOnlyOneTime=1
+				nFiles+=1
 				nLinesOut+=1
 			EndIf
 			buff=Chr(255) & Chr(1)
@@ -146,10 +155,16 @@ TryFind:
 			lstrcat(@s,@buff)
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@s))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
-			SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,3)
-			SendMessage(ah.hred,REM_SETBOOKMARK,nLine,3)
-			x=SendMessage(ah.hout,REM_GETBMID,nLinesOut,0)
-			SendMessage(ah.hred,REM_SETBMID,nLine,x)
+			x=SendMessage(ah.hred,REM_GETBOOKMARK,nLine,0)
+			If x<>3 Then
+				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,3)
+				SendMessage(ah.hred,REM_SETBOOKMARK,nLine,3)
+				x=SendMessage(ah.hout,REM_GETBMID,nLinesOut,0)
+				SendMessage(ah.hred,REM_SETBMID,nLine,x)
+			Else
+				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,4)
+				SendMessage(ah.hout,REM_SETBMID,nLine,0)
+			EndIf
 			nLinesOut+=1
 		EndIf
 		' Mark the foud text
@@ -175,7 +190,12 @@ TryFind:
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 					nReplaceCount=0
 				Else
-					MessageBox(hWin,StrPtr("Region searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
+					If fLogFind Then
+						buff="Region searched" & CR & CR & "Founds: " & Str(nLinesOut-nFiles)
+						MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
+					Else
+						MessageBox(hWin,StrPtr("Region searched"),@szAppName,MB_OK Or MB_ICONINFORMATION)
+					EndIf
 				EndIf
 				ft.chrg.cpMax=ft.chrg.cpMin
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
@@ -198,9 +218,7 @@ Sub ResetFind
 	fProFileNo=1
 	fOnlyOneTime=0
 	If fLogFindClear Then
-		SendMessage(ah.hout,WM_SETTEXT,0,Cast(LPARAM,StrPtr("")))
-		nLinesOut=0
-		UpdateAllTabs(6)
+		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
 End Sub
 

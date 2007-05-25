@@ -357,6 +357,7 @@ Dim Shared CommandLine As ZString ptr
 Dim Shared ApiFiles As ZString*260
 Dim Shared DefApiFiles As ZString*260
 Dim Shared nLinesOut As Integer
+Dim Shared nFiles As Integer
 
 ' Project
 Dim Shared fProject As Boolean
