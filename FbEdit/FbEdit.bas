@@ -1294,8 +1294,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_OUTPUT_CLEAR
 							SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
-							nFiles=0
-							nLinesOut=0
 							UpdateAllTabs(6)
 							'
 						Case IDM_OUTPUT_SELECTALL
@@ -1524,7 +1522,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					bm=SendMessage(ah.hout,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
 					If bm=3 Then
 						x=lpRASELCHANGE->Line
-						While bm<>6
+						While bm<>5
 							x-=1
 							bm=SendMessage(ah.hout,REM_GETBOOKMARK,x,0)
 						Wend
@@ -1545,9 +1543,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendMessage(ah.hred,REM_VCENTER,0,0)
 						SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 						SetFocus(ah.hred)
-					ElseIf bm=4 Or bm=6 Then
-						Return 0
-					Else
+					ElseIf bm=6 Or bm=7 Then 
 						SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						y=SendMessage(ah.hout,EM_LINEFROMCHAR,chrg.cpMin,0)
 						x=SendMessage(ah.hout,EM_LINELENGTH,y,0)
@@ -1572,6 +1568,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							SetFocus(ah.hred)
 						EndIf
+					Else
+						Return 0
 					EndIf
 				EndIf
 				'

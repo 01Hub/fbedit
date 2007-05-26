@@ -183,6 +183,9 @@ Function MakeProc(ByVal Param As Integer) As Integer
 			SetFocus(ah.hout)
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+			lret=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)-1
+			SendMessage(ah.hout,REM_SETBOOKMARK,lret,8)
+			SendMessage(ah.hout,REM_SETBMID,lret,0)
 			SendMessage(ah.hout,REM_REPAINT,0,TRUE)
 			buffer=""
 			While TRUE
@@ -263,6 +266,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	Dim As Integer x,y
 	Dim chrg As CHARRANGE
 	Dim msg As MSG
+	Dim bm As Integer
 
 	CallAddins(ah.hwnd,AIM_MAKEBEGIN,Cast(WPARAM,@sFile),Cast(LPARAM,@sMakeOpt),HOOK_MAKEBEGIN)
 	nErr=0
@@ -371,7 +375,12 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	x=MakeProc(0)
 	If x<>-1 Then
 		SetFocus(ah.hout)
-		nLine=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)-1
+		nLine=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
+		bm=SendMessage(ah.hout,REM_GETBOOKMARK,nLine,0)
+		While bm<>8
+			nLine-=1
+			bm=SendMessage(ah.hout,REM_GETBOOKMARK,nLine,0)
+		Wend
 		lret=-1
 		While TRUE
 			cPos=SendMessage(ah.hout,EM_LINEINDEX,nLine,0)
