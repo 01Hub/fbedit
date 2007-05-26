@@ -52,6 +52,8 @@ PropertyLineNbr			dd -1 xor STYLE_NOLINENUMBER,STYLE_NOLINENUMBER
 						dd -1 xor STYLE_NOLINENUMBER,0
 PropertyCollapse		dd -1 xor STYLE_NOCOLLAPSE,STYLE_NOCOLLAPSE
 						dd -1 xor STYLE_NOCOLLAPSE,0
+PropertyLock			dd -1 xor STYLE_NOLOCK,STYLE_NOLOCK
+						dd -1 xor STYLE_NOLOCK,0
 PropertyScrollBar		db 'None,Horizontal,Vertical,Both',0
 						dd -1 xor (STYLE_NOHSCROLL or STYLE_NOVSCROLL),STYLE_NOHSCROLL or STYLE_NOVSCROLL
 						dd -1,0
@@ -72,6 +74,7 @@ PropertyAutoLineNbrWt	dd -1 xor STYLE_AUTOSIZELINENUM,0
 Methods					dd PROP_STYLETRUEFALSE,offset PropertySplitBar
 						dd PROP_STYLETRUEFALSE,offset PropertyLineNbr
 						dd PROP_STYLETRUEFALSE,offset PropertyCollapse
+						dd PROP_STYLETRUEFALSE,offset PropertyLock
 						dd PROP_STYLEMULTI,offset PropertyScrollBar
 						dd PROP_STYLETRUEFALSE,offset PropertyHilite
 						dd PROP_STYLETRUEFALSE,offset PropertyScrollTip
@@ -80,7 +83,7 @@ Methods					dd PROP_STYLETRUEFALSE,offset PropertySplitBar
 
 .data
 
-szProperty				db 'SplitBar,LineNbr,Collapse,ScrollBar,HighLight,ScrollTip,HighCmnt,AutoLineNbrWt',0
+szProperty				db 'SplitBar,LineNbr,Collapse,Lock,ScrollBar,HighLight,ScrollTip,HighCmnt,AutoLineNbrWt',0
 ;Create an inited struct
 ccdef					CCDEF <260,offset szToolTip,0,offset szCap,offset szName,offset szRAEditClass,STYLE,EXSTYLE,11111101000111000000000001000000b,00010000000000011000000000000000b,1>
 ccdefex					CCDEFEX <260,offset szToolTip,0,offset szCap,offset szName,offset szRAEditClass,STYLE,EXSTYLE,11111101000111000000000001000000b,00010000000000011000000000000000b,00000000000000000000000000000000b,00000000000000000000000000000000b,offset szProperty,offset Methods>

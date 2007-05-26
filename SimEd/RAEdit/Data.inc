@@ -105,6 +105,7 @@ EDIT struct
 	hlin		dd ?		;Handle of linenumber button
 	hexp		dd ?		;Handle of expand button
 	hcol		dd ?		;Handle of collapse button
+	hlock		dd ?		;Handle of lock button
 	hsta		dd ?		;Handle of state window
 	htt			dd ?		;Handle of tooltip
 	fresize		dd ?		;Resize in action flag
@@ -161,6 +162,7 @@ EDIT struct
 	cpbrst		dd ?
 	cpbren		dd ?
 	cpselbar	dd ?
+	fLock		dd ?
 EDIT ends
 
 IDB_RAEDITBUTTON		equ 100
@@ -170,6 +172,7 @@ IDC_SELECTCUR			equ 103
 IDB_LINENUMBER			equ 104
 IDB_EXPAND				equ 105
 IDB_COLLAPSE			equ 106
+IDB_LOCK			equ 107
 
 .const
 
@@ -183,6 +186,7 @@ szSplitterBar			db 'Splitter Bar',0
 szLineNumber			db 'Show/Hide Linenumbers',0
 szExpand				db 'Expand all',0
 szCollapse				db 'Collapse all',0
+szLock					db 'Lock/Unlock',0
 szChanged				db 'Changed state',0
 
 szX						db 'X',0
@@ -250,6 +254,7 @@ hInstance				dd ?
 hBmpLnr					dd ?
 hBmpExp					dd ?
 hBmpCol					dd ?
+hBmpLck					dd ?
 hHSCur					dd ?
 hSelCur					dd ?
 hIml					dd ?

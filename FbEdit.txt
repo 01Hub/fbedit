@@ -1,8 +1,9 @@
 Whats new:
 ----------
 1.0.5.4
-o Added log find.
-o Added find all.
+o Added Lock button (new raedit.dll is needed).
+o Added Log Find.
+o Added Find All.
 1.0.5.3
 o Added dialog editor option to size dialog to font.
 o Added Close All But Current to tab context menu.

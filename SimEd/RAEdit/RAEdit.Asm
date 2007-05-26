@@ -20,10 +20,10 @@ includelib gdi32.lib
 includelib ole32.lib
 
 ;include \RadASM\Masm\Inc\RADbg.inc
-include masm32.inc
-include \RadASM\Masm\Inc\Debug.Inc
-includelib masm32.lib
-includelib \RadASM\Masm\Lib\Debug.lib
+;include masm32.inc
+;include \RadASM\Masm\Inc\Debug.Inc
+;includelib masm32.lib
+;includelib \RadASM\Masm\Lib\Debug.lib
 
 include ..\RAEdit.inc
 include Data.inc
@@ -113,6 +113,8 @@ ENDIF
 	mov		hBmpExp,eax
 	invoke LoadBitmap,hInstance,IDB_COLLAPSE
 	mov		hBmpCol,eax
+	invoke LoadBitmap,hInstance,IDB_LOCK
+	mov		hBmpLck,eax
 	invoke GetSysColor,COLOR_INFOBK
 	invoke CreateSolidBrush,eax
 	mov		hBrTlt,eax
@@ -161,6 +163,7 @@ UnInstallRAEdit proc public
 	invoke DeleteObject,hBmpLnr
 	invoke DeleteObject,hBmpCol
 	invoke DeleteObject,hBmpExp
+	invoke DeleteObject,hBmpLck
 	invoke DeleteObject,hBrTlt
 	invoke GetProcessHeap
 	invoke HeapFree,eax,0,hWrdMem
@@ -1555,7 +1558,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	SetScroll
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_KEYDOWN
 		invoke GetKeyState,VK_MENU
 		and		eax,80h
@@ -1656,7 +1660,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExDef
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_CHAR
 		mov		[ebx].EDIT.cpselbar,-1
 		.if [ebx].EDIT.cpbrst!=-1 || [ebx].EDIT.cpbren!=-1
@@ -1919,7 +1924,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_MOUSEMOVE
 		mov		eax,wParam
 		and		eax,MK_SHIFT
@@ -2263,7 +2269,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursor,hCur
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONDOWN
 		.if !fOnSel
 			mov		eax,wParam
@@ -2411,7 +2418,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursor,eax
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONUP
 		.if fOnBM
 			invoke LoadCursor,0,IDC_ARROW
@@ -2428,7 +2436,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		inc		nUndoid
 		xor		eax,eax
 		mov		fSelState,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONDBLCLK
 		mov		eax,[ebx].EDIT.fstyle
 		and		eax,STYLE_NODBLCLICK
@@ -2481,7 +2490,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		inc		nUndoid
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_RBUTTONDOWN
 		mov		eax,[ebx].EDIT.cpMin
 		.if eax==[ebx].EDIT.cpMax
@@ -2489,7 +2499,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,WM_LBUTTONUP,wParam,lParam
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_MOUSEWHEEL
 		mov		eax,wParam
 		and		eax,MK_CONTROL or MK_SHIFT
@@ -2547,7 +2558,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_VSCROLL
 		push	[esi].RAEDT.cpy
 		mov		sinf.cbSize,sizeof sinf
@@ -2642,11 +2654,13 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_HSCROLL
 		invoke PostMessage,[ebx].EDIT.hwnd,uMsg,wParam,lParam
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_SETFOCUS
 		mov		eax,hWin
 		mov		[ebx].EDIT.focus,eax
@@ -2703,13 +2717,16 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCaret,ebx,[esi].RAEDT.cpy
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_GETDLGCODE
  		mov		eax,DLGC_WANTCHARS or DLGC_WANTALLKEYS
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_SETCURSOR
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.endif
   ExDef:
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
@@ -2758,7 +2775,8 @@ SetBlock:
 ErrBeep:
 	invoke MessageBeep,MB_ICONHAND
 	xor		eax,eax
-	jmp		Ex
+;	jmp		Ex
+	ret
 
 SetScroll:
 	mov		sinf.cbSize,sizeof sinf
@@ -2934,7 +2952,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;lParam=lpszWords
 			invoke SetHiliteWords,wParam,lParam
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETFONT
 			;wParam=nLineSpacing
 			;lParam=lpRAFONT
@@ -2984,7 +3003,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetFocus,hWin
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETFONT
 			;wParam=0
 			;lParam=lpRAFONT
@@ -2996,7 +3016,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].EDIT.fnt.hLnrFont
 			mov		[edx].RAFONT.hLnrFont,eax
 			mov		eax,[ebx].EDIT.fntinfo.linespace
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETCOLOR
 			;wParam=0
 			;lParam=lpRACOLOR
@@ -3037,7 +3058,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,FALSE
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETCOLOR
 			;wParam=0
 			;lParam=lpRACOLOR
@@ -3071,7 +3093,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].EDIT.clr.numcol
 			mov		[edx].RACOLOR.numcol,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETHILITELINE
 			;wParam=Line
 			;lParam=nColor
@@ -3089,7 +3112,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETHILITELINE
 			;wParam=Line
 			;lParam=0
@@ -3104,7 +3128,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,[edx].CHARS.state
 				and		eax,STATE_HILITEMASK
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETBOOKMARK
 			;wParam=Line
 			;lParam=nType
@@ -3113,12 +3138,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
 			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
 			pop		eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETBOOKMARK
 			;wParam=Line
 			;lParam=0
 			invoke GetBookMark,ebx,wParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_CLRBOOKMARKS
 			;wParam=0
 			;lParam=nType
@@ -3126,17 +3153,20 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_NXTBOOKMARK
 			;wParam=Line
 			;lParam=nType
 			invoke NextBookMark,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_PRVBOOKMARK
 			;wParam=Line
 			;lParam=nType
 			invoke PreviousBookMark,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_FINDBOOKMARK
 			;wParam=BmID
 			;lParam=0
@@ -3156,7 +3186,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				add		edi,sizeof LINE
 			.endw
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETBLOCKS
 			;wParam=[lpLINERANGE]
 			;lParam=0
@@ -3184,12 +3215,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 			invoke SetCursor,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ISLINE
 			;wParam=Line
 			;lParam=lpszDef
 			invoke IsLine,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETWORD
 			;wParam=BuffSize
 			;lParam=lpBuff
@@ -3215,14 +3248,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,ecx
 			rep movsb
 			mov		byte ptr [edi],0
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_COLLAPSE
 			;wParam=Line
 			;lParam=0
 			invoke Collapse,ebx,wParam
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_COLLAPSEALL
 			;wParam=0
 			;lParam=0
@@ -3249,7 +3284,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		edi
 				invoke SendMessage,hWin,REM_VCENTER,0,0
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_EXPAND
 			;wParam=Line
 			;lParam=0
@@ -3258,7 +3294,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			pop		eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_EXPANDALL
 			;wParam=0
 			;lParam=0
@@ -3266,12 +3303,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke SendMessage,hWin,REM_VCENTER,0,0
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_LOCKLINE
 			;wParam=Line
 			;lParam=TRUE/FALSE
 			invoke LockLine,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ISLINELOCKED
 			;wParam=Line
 			;lParam=0
@@ -3279,7 +3318,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				mov		eax,TRUE
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_HIDELINE
 			;wParam=Line
 			;lParam=TRUE/FALSE
@@ -3288,7 +3328,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			pop		eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ISLINEHIDDEN
 			;wParam=Line
 			;lParam=0
@@ -3296,13 +3337,15 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				mov		eax,TRUE
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_AUTOINDENT
 			;wParam=0
 			;lParam=TRUE/FALSE
 			mov		eax,lParam
 			mov		[ebx].EDIT.fIndent,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_TABWIDTH
 			;wParam=nChars
 			;lParam=0
@@ -3314,7 +3357,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SELBARWIDTH
 			;wParam=nWidth
 			;lParam=0
@@ -3323,7 +3367,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_LINENUMBERWIDTH
 			;wParam=nWidth
 			;lParam=0
@@ -3335,19 +3380,22 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_MOUSEWHEEL
 			;wParam=nLines
 			;lParam=0
 			mov		eax,wParam
 			mov		[ebx].EDIT.nScroll,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SUBCLASS
 			;wParam=0
 			;lParam=lpWndProc
 			invoke SetWindowLong,[ebx].EDIT.edta.hwnd,GWL_WNDPROC,lParam
 			invoke SetWindowLong,[ebx].EDIT.edtb.hwnd,GWL_WNDPROC,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETSPLIT
 			;wParam=nSplit
 			;lParam=0
@@ -3357,12 +3405,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	SizeIt
 			invoke SetFocus,[ebx].EDIT.edtb.hwnd
 			invoke SetCaretVisible,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETSPLIT
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.fsplitt
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_VCENTER
 			;wParam=0
 			;lParam=0
@@ -3384,7 +3434,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
 			invoke InvalidateEdit,ebx,[esi].RAEDT.hwnd
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_REPAINT
 			;wParam=0
 			;lParam=TRUE/FALSE (Paint Now)
@@ -3399,19 +3450,22 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateRect,[ebx].EDIT.hlin,NULL,TRUE
 			invoke InvalidateRect,[ebx].EDIT.hexp,NULL,TRUE
 			invoke InvalidateRect,[ebx].EDIT.hcol,NULL,TRUE
+			invoke InvalidateRect,[ebx].EDIT.hlock,NULL,TRUE
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
 			.if lParam
 				invoke UpdateWindow,[ebx].EDIT.edta.hwnd
 				invoke UpdateWindow,[ebx].EDIT.edtb.hwnd
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_BMCALLBACK
 			;wParam=0
 			;lParam=lpBmProc
 			mov		eax,lParam
 			mov		[ebx].EDIT.lpBmCB,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_READONLY
 			;wParam=0
 			;lParam=TRUE/FALSE
@@ -3425,14 +3479,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowLong,hWin,GWL_STYLE,eax
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_INVALIDATELINE
 			;wParam=nLine
 			;lParam=0
 			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
 			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETPAGESIZE
 			;wParam=nLines
 			;lParam=0
@@ -3441,19 +3497,22 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETPAGESIZE
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.nPageBreak
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETCHARTAB
 			;wParam=nChar
 			;lParam=0
 			mov		edx,wParam
 			and		edx,0FFh
 			movzx	eax,byte ptr [edx+offset CharTab]
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETCHARTAB
 			;wParam=nChar
 			;lParam=nType
@@ -3461,24 +3520,28 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			and		edx,0FFh
 			mov		eax,lParam
 			mov		byte ptr [edx+offset CharTab],al
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETCOMMENTBLOCKS
 			;wParam=lpStart
 			;lParam=lpEnd
 			invoke SetCommentBlocks,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETWORDGROUP
 			;wParam=0
 			;lParam=nGroup (0-15)
 			mov		eax,lParam
 			and		eax,0Fh
 			mov		[ebx].EDIT.nWordGroup,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETWORDGROUP
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.nWordGroup
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETBMID
 			;wParam=nLine
 			;lParam=nBmID
@@ -3491,7 +3554,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,lParam
 				mov		[edx].CHARS.bmid,eax
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETBMID
 			;wParam=nLine
 			;lParam=0
@@ -3504,12 +3568,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		edx,[ebx].EDIT.hChars
 				mov		eax,[edx].CHARS.bmid
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ISCHARPOS
 			;wParam=CP
 			;lParam=0
 			invoke IsCharPos,ebx,wParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_HIDELINES
 			;wParam=nLine
 			;lParam=nLines
@@ -3581,7 +3647,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					xor		eax,eax
 				.endif
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETDIVIDERLINE
 			;wParam=nLine
 			;lParam=TRUE/FALSE
@@ -3600,12 +3667,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ISINBLOCK
 			;wParam=nLine
 			;lParam=lpRABLOCKDEF
 			invoke IsInBlock,ebx,wParam,lParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_TRIMSPACE
 			;wParam=nLine
 			;lParam=fLeft
@@ -3615,7 +3684,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SelChange,ebx,SEL_TEXT
 				pop		eax
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SAVESEL
 			;wParam=0
 			;lParam=0
@@ -3624,7 +3694,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].EDIT.cpMax
 			mov		[ebx].EDIT.savesel.cpMax,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_RESTORESEL
 			;wParam=0
 			;lParam=0
@@ -3651,7 +3722,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke SelChange,ebx,SEL_TEXT
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETCURSORWORD
 			;wParam=BuffSize
 			;lParam=lpBuff
@@ -3688,7 +3760,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,ecx
 			rep movsb
 			mov		byte ptr [edi],0
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETSEGMENTBLOCK
 			;wParam=nLine
 			;lParam=TRUE/FALSE
@@ -3705,7 +3778,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETMODE
 			;wParam=0
 			;lParam=0
@@ -3713,7 +3787,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if [ebx].EDIT.fOvr
 				or		eax,MODE_OVERWRITE
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETMODE
 			;wParam=nMode
 			;lParam=0
@@ -3764,7 +3839,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SelChange,ebx,SEL_TEXT
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETBLOCK
 			;wParam=0
 			;lParam=lpBLOCKRANGE
@@ -3778,7 +3854,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[ebx].EDIT.blrg.clMax
 			mov		[edx].BLOCKRANGE.clMax,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_SETBLOCK
 			;wParam=0
 			;lParam=lpBLOCKRANGE
@@ -3803,7 +3880,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SelChange,ebx,SEL_TEXT
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_BLOCKINSERT
 			test	[ebx].EDIT.nMode,MODE_BLOCK
 			.if !ZERO?
@@ -3854,7 +3932,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_LOCKUNDOID
 			.if wParam
 				mov		eax,nUndoid
@@ -3866,11 +3945,13 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		[ebx].EDIT.lockundoid,0
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_ADDBLOCKDEF
 			invoke SetBlockDef,lParam
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_CONVERT
 			test	[ebx].EDIT.nMode,MODE_BLOCK
 			.if ZERO?
@@ -3887,7 +3968,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetCaret,ebx,[esi].RAEDT.cpy
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_BRACKETMATCH
 			.if lParam
 				mov		edx,lParam
@@ -3929,7 +4011,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_COMMAND
 			invoke GetFocus
 			.if eax==[ebx].EDIT.edta.hwnd || eax==[ebx].EDIT.edtb.hwnd
@@ -3953,7 +4036,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke EditFunc,eax,ecx,fAlt,fShift,fControl
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_CASEWORD
 			;wParam=0
 			;lParam=lpBuff
@@ -3971,12 +4055,31 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		esi
 			.endw
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==REM_GETBLOCKEND
 			;wParam=nLine
 			;lParam=0
 			invoke CollapseGetEnd,ebx,wParam
-			jmp		Ex
+;			jmp		Ex
+			ret
+		.elseif eax==REM_SETLOCK
+			;wParam=TRUE/FALSE
+			;lParam=0
+			.if wParam
+				mov		eax,TRUE
+			.else
+				xor		eax,eax
+			.endif
+			mov		[ebx].EDIT.fLock,eax
+			invoke CheckDlgButton,hWin,-5,eax
+			xor		eax,eax
+			ret
+		.elseif eax==REM_GETLOCK
+			;wParam=0
+			;lParam=0
+			mov		eax,[ebx].EDIT.fLock
+			ret
 		.endif
 	.endif
 	.if eax>=EM_CANPASTE && eax<=EM_SETZOOM
@@ -3985,7 +4088,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;lParam=cp
 			invoke GetCharPtr,ebx,lParam
 			mov		eax,edx
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_EXSETSEL
 			;wParam=0
 			;lParam=lpCHARRANGE
@@ -4016,7 +4120,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SelChange,ebx,SEL_TEXT
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_EXGETSEL
 			;wParam=0
 			;lParam=lpCHARRANGE
@@ -4029,7 +4134,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[edx].CHARRANGE.cpMin,eax
 			mov		[edx].CHARRANGE.cpMax,ecx
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_FINDTEXTEX
 			;wParam=Flags
 			;lParam=lpFINDTEXTEX
@@ -4040,13 +4146,15 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		eax,eax
 				dec		eax
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETTEXTRANGE
 			;wParam=0
 			;lParam=lpTEXTRANGE
 			mov		edx,lParam
 			invoke GetText,ebx,[edx].TEXTRANGE.chrg.cpMin,[edx].TEXTRANGE.chrg.cpMax,[edx].TEXTRANGE.lpstrText,FALSE
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_FINDWORDBREAK
 			;wParam=uFlags
 			;lParam=cp
@@ -4058,7 +4166,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		eax,lParam
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_CANREDO
 			;wParam=0
 			;lParam=0
@@ -4072,30 +4181,35 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,TRUE
 				.endif
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_REDO
 			;wParam=0
 			;lParam=0
 			inc		nUndoid
 			invoke Redo,ebx,[esi].RAEDT.hwnd
 			inc		nUndoid
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_HIDESELECTION
 			;wParam=TRUE/FALSE
 			;lParam=0
 			mov		eax,wParam
 			mov		[ebx].EDIT.fHideSel,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETSELTEXT
 			;wParam=0
 			;lParam=lpBuff
 			invoke GetText,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax,lParam,FALSE
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_CANPASTE
 			;wParam=CF_TEXT
 			;lParam=0
 			invoke IsClipboardFormatAvailable,wParam
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_STREAMIN
 			;wParam=SF_TEXT
 			;lParam=lpStream
@@ -4135,7 +4249,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursor,eax
 			inc		nUndoid
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_STREAMOUT
 			;wParam=SF_TEXT
 			;lParam=lpStream
@@ -4147,7 +4262,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 			invoke SetCursor,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_FORMATRANGE
 			mov		edi,lParam
 			.if edi
@@ -4237,7 +4353,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DeleteObject,eax
 				invoke SendMessage,hWin,EM_LINEINDEX,nLine,0
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.endif
 	.endif
 	.if eax>=EM_GETSEL && eax<=EM_GETIMESTATUS
@@ -4246,7 +4363,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;lParam=lpPoint
 			mov		edx,lParam
 			invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,[edx].POINT.x,[edx].POINT.y
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_POSFROMCHAR
 			;wParam=lpPoint
 			;lParam=cp
@@ -4257,7 +4375,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[esi].RAEDT.cpy
 			sub		[edx].POINT.y,eax
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_LINEFROMCHAR
 			;wParam=cp
 			;lParam=0
@@ -4267,7 +4386,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke GetCharPtr,ebx,eax
 			mov		eax,edx
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_LINEINDEX
 			;wParam=line
 			;lParam=0
@@ -4276,7 +4396,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,[ebx].EDIT.line
 			.endif
 			invoke GetCpFromLine,ebx,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETLINE
 			;wParam=line
 			;lParam=lpBuff
@@ -4301,7 +4422,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				xor		eax,eax
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_LINELENGTH
 			;wParam=cp
 			;lParam=0
@@ -4317,12 +4439,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					dec		eax
 				.endif
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETFIRSTVISIBLELINE
 			;wParam=0
 			;lParam=0
 			mov		eax,[esi].RAEDT.topln
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_LINESCROLL
 			;wParam=cxScroll
 			;lParam=cyScroll
@@ -4352,14 +4476,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		[esi].RAEDT.cpy,eax
 			invoke InvalidateEdit,ebx,[esi].RAEDT.hwnd
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_SCROLLCARET
 			;wParam=0
 			;lParam=0
 			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
 			invoke SetCaret,ebx,[esi].RAEDT.cpy
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_SETSEL
 			;wParam=cpMin
 			;lParam=cpMax
@@ -4389,7 +4515,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SelChange,ebx,SEL_TEXT
 			.endif
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETSEL
 			;wParam=lpcpMin
 			;lParam=lpcpMax
@@ -4409,19 +4536,22 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			and		eax,0FFFFh
 			shl		ecx,16
 			or		eax,ecx
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETMODIFY
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.fChanged
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_SETMODIFY
 			;wParam=TRUE/FALSE
 			;lParam=0
 			mov		eax,wParam
 			mov		[ebx].EDIT.fChanged,eax
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_REPLACESEL
 			;wParam=TRUE/FALSE
 			;lParam=lpText
@@ -4452,14 +4582,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SelChange,ebx,SEL_TEXT
 			inc		nUndoid
 			xor		eax,eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETLINECOUNT
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.rpLineFree
 			shr		eax,2
 			dec		eax
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_GETRECT
 			;wParam=0
 			;lParam=lpRECT
@@ -4479,7 +4611,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		[edx].RECT.top,eax
 				add		[edx].RECT.bottom,eax
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_CANUNDO
 			;wParam=0
 			;lParam=0
@@ -4491,14 +4624,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,TRUE
 				.endif
 			.endif
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_UNDO
 			;wParam=0
 			;lParam=0
 			inc		nUndoid
 			invoke Undo,ebx,[esi].RAEDT.hwnd
 			inc		nUndoid
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.elseif eax==EM_EMPTYUNDOBUFFER
 			;wParam=0
 			;lParam=0
@@ -4508,7 +4643,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[ebx].EDIT.rpUndo,eax
 			rep stosb
 			inc		nUndoid
-			jmp		Ex
+;			jmp		Ex
+			ret
 		.endif
 	.endif
 	.if eax==WM_COPY
@@ -4516,14 +4652,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;lParam=0
 		invoke Copy,ebx
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_CUT
 		;wParam=0
 		;lParam=0
 		inc		nUndoid
 		invoke Cut,ebx,[esi].RAEDT.hwnd
 		inc		nUndoid
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_PASTE
 		;wParam=0
 		;lParam=0
@@ -4534,7 +4672,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke Paste,ebx,[esi].RAEDT.hwnd,NULL
 		inc		nUndoid
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_CLEAR
 		;wParam=0
 		;lParam=0
@@ -4579,7 +4718,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_SETTEXT
 		;wParam=0
 		;lParam=lpszText
@@ -4615,7 +4755,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_GETTEXT
 		;wParam=cbBuff
 		;lParam=lpBuff
@@ -4654,7 +4795,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,chrg.cpMax
 			sub		eax,chrg.cpMin
 		.endif
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_GETTEXTLENGTH
 		;wParam=0
 		;lParam=0
@@ -4671,7 +4813,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,[ecx].CHARS.len
 			add		edx,sizeof LINE
 		.endw
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_MOUSEMOVE
 		;Get mouse position
 		mov		eax,lParam
@@ -4705,10 +4848,12 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateWindow,[ebx].EDIT.edtb.hwnd
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONDOWN
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONUP
 		.if [ebx].EDIT.fresize
 			mov		[ebx].EDIT.fresize,0
@@ -4719,10 +4864,12 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_LBUTTONDBLCLK
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_CREATE
 		invoke GetSystemMetrics,SM_CXVSCROLL
 		mov		SBWT,eax
@@ -4830,6 +4977,12 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	SetToolTip
 		invoke SendMessage,[ebx].EDIT.hcol,BM_SETIMAGE,IMAGE_BITMAP,hBmpCol
 
+		invoke CreateWindowEx,NULL,addr szButton,NULL,BS_BITMAP or BS_PUSHLIKE or BS_AUTOCHECKBOX or WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,-5,hInstance,0
+		mov		[ebx].EDIT.hlock,eax
+		mov		edx,offset szLock
+		call	SetToolTip
+		invoke SendMessage,[ebx].EDIT.hlock,BM_SETIMAGE,IMAGE_BITMAP,hBmpLck
+
 		invoke SetWindowPos,[ebx].EDIT.hsta,HWND_TOP,0,0,0,0,SWP_NOSIZE or SWP_NOSIZE;SWP_NOREPOSITION
 		invoke SetWindowPos,[ebx].EDIT.hsbtn,HWND_TOP,0,0,0,0,SWP_NOSIZE or SWP_NOSIZE;SWP_NOREPOSITION
 		test	[ebx].EDIT.fstyle,STYLE_DRAGDROP
@@ -4837,6 +4990,12 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke RegisterDragDrop,[ebx].EDIT.edta.hwnd,offset pIDropTarget
 			invoke RegisterDragDrop,[ebx].EDIT.edtb.hwnd,offset pIDropTarget
 		.endif
+;	.elseif eax==WM_CLOSE
+;		test	[ebx].EDIT.fLock,TRUE
+;		.if ZERO?
+;			xor	eax,eax
+;			ret
+;		.endif
 	.elseif eax==WM_DESTROY
 		test	[ebx].EDIT.fstyle,STYLE_DRAGDROP
 		.if !ZERO?
@@ -4856,6 +5015,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,[ebx].EDIT.hlin
 		invoke DestroyWindow,[ebx].EDIT.hexp
 		invoke DestroyWindow,[ebx].EDIT.hcol
+		invoke DestroyWindow,[ebx].EDIT.hlock
 		invoke DestroyWindow,[ebx].EDIT.edta.hwnd
 		invoke DestroyWindow,[ebx].EDIT.edtb.hwnd
 		invoke DestroyBrushes,ebx
@@ -4870,10 +5030,12 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetFocus,eax
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_KEYDOWN || eax==WM_CHAR || eax==WM_KEYUP
 		invoke SendMessage,[ebx].EDIT.focus,eax,wParam,lParam
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		and		eax,0FFFFh
@@ -4901,6 +5063,15 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			or		eax,ecx
 			invoke SendMessage,[ebx].EDIT.hpar,WM_COMMAND,eax,[ebx].EDIT.hcol
 			invoke SetFocus,[ebx].EDIT.focus
+		.elseif ax==-5
+			mov		ecx,[ebx].EDIT.fLock
+			xor		ecx,1
+			mov		[ebx].EDIT.fLock,ecx
+			mov		ecx,BN_CLICKED
+			shl		ecx,16
+			or		eax,ecx
+			invoke SendMessage,[ebx].EDIT.hpar,WM_COMMAND,eax,[ebx].EDIT.hlock
+			invoke SetFocus,[ebx].EDIT.focus
 		.endif
 	.elseif eax==WM_SIZE
 		push	edi
@@ -4908,8 +5079,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].EDIT.fstyle,eax
 		invoke GetClientRect,hWin,addr [ebx].EDIT.rc
 		mov		eax,[ebx].EDIT.fstyle
-		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
-		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
+		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
+		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
 			mov		eax,SBWT
 			sub		[ebx].EDIT.rc.bottom,eax
 		.endif
@@ -4932,9 +5103,16 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,[ebx].EDIT.hexp,0,0,0,0,TRUE
 			invoke MoveWindow,[ebx].EDIT.hcol,0,0,0,0,TRUE
 		.endif
+		test	[ebx].EDIT.fstyle,STYLE_NOLOCK
+		.if ZERO?
+			invoke MoveWindow,[ebx].EDIT.hlock,edi,[ebx].EDIT.rc.bottom,BTNWT,SBWT,TRUE
+			add		edi,BTNWT
+		.else
+			invoke MoveWindow,[ebx].EDIT.hlock,0,0,0,0,TRUE
+		.endif
 		mov		eax,[ebx].EDIT.fstyle
-		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
-		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
+		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
+		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
 			mov		ecx,[ebx].EDIT.rc.right
 			sub		ecx,edi
 			mov		eax,[ebx].EDIT.fstyle
@@ -4982,7 +5160,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
 		pop		edi
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_HSCROLL
 		push	[ebx].EDIT.cpx
 		mov		sinf.cbSize,sizeof sinf
@@ -5024,7 +5203,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetFont,ebx,addr [ebx].EDIT.fnt
 	.elseif eax==WM_GETFONT
 		mov		eax,[ebx].EDIT.fnt.hFont
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.elseif eax==WM_STYLECHANGED
 		invoke GetWindowLong,hWin,GWL_STYLE
 		mov		[ebx].EDIT.fstyle,eax
@@ -5038,7 +5218,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;to let the custom control fill in default design time values.
 		invoke SendMessage,hWin,WM_SETTEXT,0,offset szToolTip
 		xor		eax,eax
-		jmp		Ex
+;		jmp		Ex
+		ret
 	.endif
   ExDef:
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
@@ -5048,7 +5229,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ErrBeep:
 	invoke MessageBeep,MB_ICONHAND
 	xor		eax,eax
-	jmp		Ex
+;	jmp		Ex
+	ret
 
 SetToolTip:
 	mov		ti.cbSize,sizeof TOOLINFO
@@ -5154,6 +5336,8 @@ AllocMem:
 	mov		[ebx].EDIT.cpbrst,-1
 	mov		[ebx].EDIT.cpbren,-1
 	mov		[ebx].EDIT.cpselbar,-1
+	mov		[ebx].EDIT.fLock,FALSE
+
 	retn
 
 RelMem:
