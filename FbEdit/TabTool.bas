@@ -433,33 +433,20 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 
 	tci.mask=TCIF_PARAM
 	i=0
-	Do While TRUE
+	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
-				If lpTABMEM->hedit<>hWinDontClose Then
-					ShowWindow(ah.hred,SW_HIDE)
-					ah.hred=lpTABMEM->hedit
-					ad.filename=lpTABMEM->filename
-					SendMessage(hWin,WM_SIZE,0,0)
-					ShowWindow(ah.hred,SW_SHOW)
-					SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-					SetWinCaption
-					If WantToSave(hWin) Then
-						Return TRUE
-					EndIf
+			If lpTABMEM->hedit<>hWinDontClose And SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Then
+				ShowWindow(ah.hred,SW_HIDE)
+				ah.hred=lpTABMEM->hedit
+				ad.filename=lpTABMEM->filename
+				SendMessage(hWin,WM_SIZE,0,0)
+				ShowWindow(ah.hred,SW_SHOW)
+				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
+				SetWinCaption
+				If WantToSave(hWin) Then
+					Return TRUE
 				EndIf
-			EndIf
-		Else
-			Exit Do
-		EndIf
-		i=i+1
-	Loop
-	i=0
-	Do While TRUE
-		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If lpTABMEM->hedit<>hWinDontClose Then
 				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
 				If lpTABMEM->profileinx Then
 					WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,fProjectClose)
@@ -479,15 +466,20 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 				EndIf
 				GlobalFree(lpTABMEM)
 				SendMessage(ah.htabtool,TCM_DELETEITEM,i,0)
-			Else
-				i=1
+				i=i-1
 			EndIf
 		Else
-			Exit Do
+			Exit While
 		EndIf
-	Loop
+		i=i+1
+	Wend
 	If hWinDontClose Then
 		SelectTab(ah.hwnd,hWinDontClose,0)
+	ElseIf SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0) Then
+		SendMessage(ah.htabtool,TCM_GETITEM,0,Cast(Integer,@tci))
+		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+		SetFocus(ah.hred)
 	Else
 		ShowWindow(ah.htabtool,SW_HIDE)
 		curtab=-1

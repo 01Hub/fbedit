@@ -657,7 +657,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FILE_CLOSE
-							If ah.hred Then
+							If ah.hred<>0 And SendMessage(ah.hred,REM_GETLOCK,0,0)<>1 Then
 								If WantToSave(hWin)=FALSE Then
 									DelTab(hWin)
 								EndIf
