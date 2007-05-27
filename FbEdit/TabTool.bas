@@ -127,15 +127,13 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
 
-	i=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
 	tci.mask=TCIF_PARAM
 	i=0
-	Do While TRUE
+	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			If (lpTABMEM->hedit=hEdit And hEdit<>0) Or (lpTABMEM->profileinx=nInx And nInx<>0) Then
 				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 				If ah.hred<>lpTABMEM->hedit Then
 					hOld=ah.hred
 					ah.hred=lpTABMEM->hedit
@@ -147,16 +145,17 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 					ShowWindow(ah.htt,SW_HIDE)
 					HideList()
 				EndIf
-				Exit Do
+				SetFocus(lpTABMEM->hedit)
+				Exit While
 			EndIf
 		Else
 			If nInx Then
 				OpenProjectFile(nInx)
 			EndIf
-			Exit Do
+			Exit While
 		EndIf
 		i=i+1
-	Loop
+	Wend
 End Sub
 
 Sub NextTab(ByVal fPrev As Boolean)
@@ -183,7 +182,6 @@ Sub NextTab(ByVal fPrev As Boolean)
 		SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
-		SetFocus(ah.hred)
 	EndIf
 
 End Sub
@@ -201,7 +199,6 @@ Sub SwitchTab()
 		If SendMessage(ah.htabtool,TCM_GETITEM,prevtab,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
-			SetFocus(ah.hred)
 		EndIf
 	EndIf
 
@@ -260,7 +257,7 @@ Function CreateEdit(ByVal hWin As HWND) As HWND
 	SetFocus(ah.hred)
 	SetWinCaption
 	SetFullScreen(ah.hred)
-	CreateEdit=ah.hred
+	Return ah.hred
 
 End Function
 
@@ -479,7 +476,8 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		SendMessage(ah.htabtool,TCM_GETITEM,0,Cast(Integer,@tci))
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
-		SetFocus(ah.hred)
+		' don't close project
+		Return TRUE
 	Else
 		ShowWindow(ah.htabtool,SW_HIDE)
 		curtab=-1
