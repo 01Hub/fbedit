@@ -31,7 +31,7 @@ STYLE_NOSTATE			equ 00800h			;No state indicator
 STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
 STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
 STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
-STYLE_AUTOSIZELINENUM		equ 08000h			;Line number column autosizes
+STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
 STYLE_NOLOCK			equ 10000h			;No lock button
 
 ;Edit modes
