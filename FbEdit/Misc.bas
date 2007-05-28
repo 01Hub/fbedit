@@ -1095,33 +1095,18 @@ End Sub
 
 Sub EnableDisable(ByVal bm As Long,ByVal id As Long)
 	Dim hMnu As HMENU
-	Dim tmp As Long
 
 	hMnu=GetMenu(ah.hwnd)
-	If bm Then
-		tmp=MF_BYCOMMAND Or MF_ENABLED
-	Else
-		tmp=MF_BYCOMMAND Or MF_GRAYED
-	EndIf
-	EnableMenuItem(hMnu,id,tmp)
-	If bm Then
-		bm=TRUE
-	EndIf
-	SendMessage(ah.htoolbar,TB_ENABLEBUTTON,id,bm)
+	EnableMenuItem(hMnu,id,IIf(bm,MF_ENABLED,MF_GRAYED))
+	SendMessage(ah.htoolbar,TB_ENABLEBUTTON,id,IIf(bm,TRUE,FALSE))
 	
 End Sub
 
 Sub EnableDisableContext(ByVal bm As Long,ByVal id As Long)
 	Dim hMnu As HMENU
-	Dim tmp As Long
 
 	hMnu=GetMenu(ah.hwnd)
-	If bm Then
-		tmp=MF_BYCOMMAND Or MF_ENABLED
-	Else
-		tmp=MF_BYCOMMAND Or MF_GRAYED
-	EndIf
-	EnableMenuItem(ah.hcontextmenu,id,tmp)
+	EnableMenuItem(ah.hcontextmenu,id,IIf(bm,MF_ENABLED,MF_GRAYED))
 	
 End Sub
 
@@ -1246,44 +1231,17 @@ End Sub
 
 Sub CheckMenu()
 	Dim hMnu As HMENU
-	Dim chk As Integer
 	Dim lpRESMEM As RESMEM ptr
 
 	hMnu=GetMenu(ah.hwnd)
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If wpos.fview And VIEW_OUTPUT Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_VIEW_OUTPUT,chk)
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If wpos.fview And VIEW_PROJECT Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_VIEW_PROJECT,chk)
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If wpos.fview And VIEW_PROPERTY Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_VIEW_PROPERTY,chk)
+	CheckMenuItem(hMnu,IDM_VIEW_OUTPUT,IIf(wpos.fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(hMnu,IDM_VIEW_PROJECT,IIf(wpos.fview And VIEW_PROJECT,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(hMnu,IDM_VIEW_PROPERTY,IIf(wpos.fview And VIEW_PROPERTY,MF_CHECKED,MF_UNCHECKED))
 
 	lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0) Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_FORMAT_LOCK,chk)
-
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_FORMAT_GRID,chk)
-
-	chk=MF_BYCOMMAND Or MF_UNCHECKED
-	If GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID Then
-		chk=MF_BYCOMMAND Or MF_CHECKED
-	EndIf
-	CheckMenuItem(hMnu,IDM_FORMAT_SNAP,chk)
+	CheckMenuItem(hMnu,IDM_FORMAT_LOCK,IIf(SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(hMnu,IDM_FORMAT_GRID,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(hMnu,IDM_FORMAT_SNAP,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
 
 End Sub
 
