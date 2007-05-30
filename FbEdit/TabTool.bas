@@ -51,6 +51,7 @@ Sub DelTab(ByVal hWin As HWND)
 			If ah.hfullscreen Then
 				DestroyWindow(ah.hfullscreen)
 			EndIf
+			ad.filename=""
 		EndIf
 		SetWinCaption
 	EndIf
@@ -487,6 +488,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		If ah.hfullscreen Then
 			DestroyWindow(ah.hfullscreen)
 		EndIf
+		ad.filename=""
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	SetWinCaption
