@@ -54,6 +54,7 @@ RAPROPERTY struct
 	hbrback			dd ?
 	topindex		dd ?
 	selindex		dd ?
+	htooltip		dd ?
 RAPROPERTY ends
 
 IDB_TRV					equ 101
@@ -73,13 +74,17 @@ btnsnopro				TBBUTTON <0,1,TBSTATE_ENABLED or TBSTATE_CHECKED,TBSTYLE_BUTTON or 
 						TBBUTTON <4,5,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 szComboBox				db 'ComboBox',0
 szListBox				db 'ListBox',0
+szToolTipClass			db 'tooltips_class32',0
 szLpa					db '(',0
 szRpa					db ')',0
+szSpc					db ' ',0
 szPtr					db ' Ptr',0
 szColon					db ':',0
 
 .data?
 
 hInstance				dd ?
+OldListBoxProc			dd ?
+OldItem					dd ?
 szname					db 32768 dup(?)
 

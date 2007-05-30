@@ -34,6 +34,56 @@ CreateClass endp
 
 ;--------------------------------------------------------------------------------
 
+CreateToolTip proc hWin:HWND
+	LOCAL	ti:TOOLINFO
+
+	invoke CreateWindowEx,0,OFFSET szToolTipClass,OFFSET szToolTipClass,TTS_NOPREFIX,0,0,0,0,hWin,0,hInstance,0
+	mov		[ebx].RAPROPERTY.htooltip,eax
+
+	invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,TRUE,0
+	invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_SETDELAYTIME,TTDT_AUTOMATIC,500
+	invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_SETMAXTIPWIDTH,0,800
+
+	mov		ti.cbSize,SIZEOF TOOLINFO
+	mov		ti.uFlags,TTF_IDISHWND or TTF_SUBCLASS
+	mov		eax,hWin
+	mov		ti.hWnd,eax
+	mov		ti.uId,eax
+	mov		eax,hInstance
+	mov		ti.hInst,eax
+	mov		ti.lpszText,LPSTR_TEXTCALLBACK
+	invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ADDTOOL,0,addr ti
+	ret
+
+CreateToolTip endp
+
+ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	.if uMsg==WM_NOTIFY
+		mov		ebx,lParam
+		.if [ebx].NMHDR.code==TTN_NEEDTEXT
+			mov		szname,0
+			invoke SendMessage,hWin,LB_GETTEXT,OldItem,offset szname
+			mov		[ebx].TOOLTIPTEXT.lpszText,OFFSET szname
+		.endif
+	.elseif uMsg==WM_MOUSEMOVE
+		invoke SendMessage,hWin,LB_ITEMFROMPOINT,0,lParam
+		.IF eax!=OldItem
+			mov		OldItem,eax
+			invoke GetParent,hWin
+			invoke GetWindowLong,eax,0
+			mov		ebx,eax
+			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,FALSE,0
+			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,TRUE,0
+		.endif
+	.endif
+	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
+	RET
+
+ListBoxProc endp
+
+;--------------------------------------------------------------------------------
+
 UpdateList proc uses esi,dwType:DWORD
 	LOCAL	rapn:RAPNOTIFY
 
@@ -75,8 +125,14 @@ AddItem:
 		invoke lstrlen,esi
 		lea		esi,[esi+eax+1]
 		invoke lstrcat,addr szname,esi
-		pop		esi
 		invoke lstrcat,addr szname,addr szRpa
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		.if byte ptr [esi]
+			invoke lstrcat,addr szname,addr szSpc
+			invoke lstrcat,addr szname,esi
+		.endif
+		pop		esi
 		invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_ADDSTRING,0,addr szname
 	.elseif ah==2
 		; Data
@@ -505,6 +561,8 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create ListBox
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,1003,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hlst,eax
+		invoke SetWindowLong,[ebx].RAPROPERTY.hlst,GWL_WNDPROC,offset ListBoxProc
+		mov		OldListBoxProc,eax
 		;Current open files
 		mov		[ebx].RAPROPERTY.nButton,1
 		mov		[ebx].RAPROPERTY.backcolor,0FFFFFFh
@@ -512,6 +570,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RAPROPERTY.oprcolor,0FFh
 		invoke GetStockObject,WHITE_BRUSH
 		mov		[ebx].RAPROPERTY.hbrback,eax
+		invoke CreateToolTip,[ebx].RAPROPERTY.hlst
 	.elseif eax==WM_DRAWITEM
 		push	esi
 		invoke GetWindowLong,hWin,0
