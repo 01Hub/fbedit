@@ -97,8 +97,7 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				pt.x=lParam And &HFFFF
 				pt.y=lParam Shr 16
 			EndIf
-			hMnu=GetMenu(ah.hwnd)
-			hMnu=GetSubMenu(hMnu,2)
+			hMnu=GetSubMenu(ah.hcontextmenu,4)
 			TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			Return 0
 		Case WM_SHOWWINDOW
