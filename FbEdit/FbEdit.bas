@@ -1883,10 +1883,10 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 				ShowWindow(ah.hwnd,SW_RESTORE)
 			EndIf
 			' Get command line filename
-			If Len(CommandLine[0]) Then
+			If Len(*CommandLine) Then
 				cpd.dwData=0
 				cpd.lpData=CommandLine
-				cpd.cbData=Len(CommandLine[0])+1
+				cpd.cbData=Len(*CommandLine)+1
 				SendMessage(ah.hwnd,WM_COPYDATA,0,Cast(LPARAM,@cpd))
 			EndIf
 			Return 0

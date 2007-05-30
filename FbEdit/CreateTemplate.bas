@@ -37,7 +37,7 @@ Sub AddTemplateFile(ByVal lpFile As ZString ptr,ByVal hFile As HANDLE)
 			buff=buff & CRLF
 			WriteFile(hFile,@buff,Len(buff),@n,NULL)
 			p=hMem
-			p=p+Len(p[0])
+			p=p+Len(*p)
 			If lstrcmp(p-2,@CRLF) Then
 				lstrcpy(p,@CRLF)
 				nSize=nSize+2
@@ -103,9 +103,9 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 							buff=ad.ProjectFile
 							buff=GetFileName(buff,FALSE) & CRLF
 							p=@buff
-							p=p+Len(p[0])
+							p=p+Len(*p)
 							GetDlgItemText(hWin,IDC_EDTTPLDESCRIPTION,p,1024)
-							p=p+Len(p[0])
+							p=p+Len(*p)
 							If lstrcmp(p-2,@CRLF) Then
 								lstrcpy(p,@CRLF)
 								p=p+2
@@ -116,18 +116,18 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 							buff=buff & "[Project]" & CRLF
 							GetPrivateProfileSection(StrPtr("Project"),@s,4096,@ad.ProjectFile)
 							p=@s
-							While Len(p[0])
+							While Len(*p)
 								lstrcat(@buff,p)
 								lstrcat(@buff,@CRLF)
-								p=p+Len(p[0])+1
+								p=p+Len(*p)+1
 							Wend
 							buff=buff & "[Make]" & CRLF
 							GetPrivateProfileSection(StrPtr("Make"),@s,4096,@ad.ProjectFile)
 							p=@s
-							While Len(p[0])
+							While Len(*p)
 								lstrcat(@buff,p)
 								lstrcat(@buff,@CRLF)
-								p=p+Len(p[0])+1
+								p=p+Len(*p)+1
 							Wend
 							buff=buff & szEDEF & CRLF
 							WriteFile(hFile,@buff,Len(buff),@n,NULL)

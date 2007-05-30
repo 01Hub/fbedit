@@ -434,22 +434,22 @@ Function OpenProject() As Integer
 		p=@buff
 		sItem="Version=1"
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		sItem="Description=" & ProjectDescription
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Make"),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Make=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Module=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Recompile"),"0",@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sItem="Recompile=" & sItem
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		sItem=szNULL
 		lstrcpy(p,@sItem)
 		nInx=1
@@ -487,10 +487,10 @@ Function OpenProject() As Integer
 		p=@buff
 		sItem="Version=2"
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		sItem="Description=" & ProjectDescription
 		lstrcpy(p,@sItem)
-		p=p+Len(p[0])+1
+		p=p+Len(*p)+1
 		sItem=szNULL
 		lstrcpy(p,@sItem)
 		WritePrivateProfileSection(StrPtr("Project"),@buff,@ad.ProjectFile)
@@ -1313,7 +1313,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			SendMessage(hNPTab,TCM_INSERTITEM,1,Cast(LPARAM,@ts))
 			'Create the tab dialogs
 			hTabNewProject1=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT1),hNPTab,@NewProjectTab1Proc,0)
-		 	hTabNewProject2=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT2),hNPTab,@NewProjectTab2Proc,0)
+			hTabNewProject2=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT2),hNPTab,@NewProjectTab2Proc,0)
 			SetDlgItemText(hWin,IDC_EDTPROJECTPATH,@ad.DefProjectPath)
 			SendDlgItemMessage(hWin,IDC_EDTPROJECTNAME,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPROJECTDESCRIPTION,EM_LIMITTEXT,64,0)

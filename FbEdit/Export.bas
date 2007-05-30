@@ -18,12 +18,12 @@ Sub ExportFunctions()
 	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-		lret=lret+Len(lret[0])+1
-		If Len(lret[0]) Then
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-			lret=lret+Len(lret[0])+1
-			If Len(lret[0]) Then
+			lret=lret+Len(*lret)+1
+			If Len(*lret) Then
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 			EndIf
@@ -53,7 +53,7 @@ Sub ExportData()
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
-		lret=lret+Len(lret[0])+1
+		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
@@ -68,7 +68,7 @@ Sub ExportUDTs()
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
-		lret=lret+Len(lret[0])+1
+		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
@@ -83,7 +83,7 @@ Sub ExportEnums()
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
-		lret=lret+Len(lret[0])+1
+		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
@@ -110,7 +110,7 @@ Sub ExportMacros()
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
-		lret=lret+Len(lret[0])+1
+		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
@@ -124,8 +124,8 @@ Sub ExportConstructors()
 	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("x")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-		lret=lret+Len(lret[0])+1
-		If Len(lret[0]) Then
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
@@ -141,8 +141,8 @@ Sub ExportDestructors()
 	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("y")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-		lret=lret+Len(lret[0])+1
-		If Len(lret[0]) Then
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
@@ -158,8 +158,8 @@ Sub ExportProperties()
 	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("z")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-		lret=lret+Len(lret[0])+1
-		If Len(lret[0]) Then
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
@@ -175,8 +175,8 @@ Sub ExportOperators()
 	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("o")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
-		lret=lret+Len(lret[0])+1
-		If Len(lret[0]) Then
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf

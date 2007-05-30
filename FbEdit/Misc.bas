@@ -454,15 +454,15 @@ Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal n
 	s=sItem
 	sItem=Left(buff,InStr(buff,".")-1)
 	If lpProc Then
-		lpProc=lpProc+Len(lpProc[0])+1
+		lpProc=lpProc+Len(*lpProc)+1
 		sTest=sItem
 		SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(Integer,@sTest),Cast(Integer,lpProc))
-		If sTest="" Then
-			lpProc=lpProc+Len(lpProc[0])+1
+		If Len(sTest)=0 Then
+			lpProc=lpProc+Len(*lpProc)+1
 			sTest=sItem
 			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(Integer,@sTest),Cast(Integer,lpProc))
 		EndIf
-		If sTest<>"" Then
+		If Len(sTest) Then
 			If FindExact(StrPtr("s"),@sTest,TRUE) Then
 				buff=sTest & Mid(buff,InStr(buff,"."))
 				Return TRUE
@@ -471,7 +471,7 @@ Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal n
 	EndIf
 	lret=FindExact(StrPtr("d"),@sItem,TRUE)
 	If lret Then
-		lret=lret+Len(lret[0])+1
+		lret=lret+Len(*lret)+1
 		lstrcpy(@sItem,lret)
 		If FindExact(StrPtr("s"),@sItem,TRUE) Then
 			buff=sTest & Mid(buff,InStr(buff,"."))
