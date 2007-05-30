@@ -80,7 +80,9 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 					nLn=nLn+lstrlen(Cast(ZString ptr,nLn))+1
 					lstrcat(@buffer,StrPtr("("))
 					lstrcat(@buffer,Cast(ZString ptr,nLn))
-					lstrcat(@buffer,StrPtr(")"))
+					lstrcat(@buffer,StrPtr(") "))
+					nLn=nLn+lstrlen(Cast(ZString ptr,nLn))+1
+					lstrcat(@buffer,Cast(ZString ptr,nLn))
 				Else
 					buffer=""
 				EndIf
