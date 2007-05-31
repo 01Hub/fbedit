@@ -21,6 +21,7 @@ Declare Function GetProjectResource() As String
 Declare Function MakeProjectFileName(ByVal sFile As String) As String
 Declare Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean) As HWND
 Declare Function GetTextItem(ByRef sText As String) As String
+Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 
 ' Main dialog
 #Define IDD_MAIN 								1000
@@ -124,6 +125,7 @@ Declare Function GetTextItem(ByRef sText As String) As String
 #Define IDM_VIEW_DIALOG						10082
 #Define IDM_VIEW_SPLITSCREEN				10117
 #Define IDM_VIEW_FULLSCREEN				10116
+#Define IDM_VIEW_TWOPANES					10130
 #Define IDM_PROJECT							10089
 #Define IDM_PROJECT_ADDNEW					10090
 #Define IDM_PROJECT_ADDNEWFILE			10093

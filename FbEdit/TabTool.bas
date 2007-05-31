@@ -29,6 +29,10 @@ Sub DelTab(ByVal hWin As HWND)
 		Else
 			ShowWindow(lpTABMEM->hedit,SW_HIDE)
 		EndIf
+		ah.hpane(1)=0
+		If lpTABMEM->hedit=ah.hpane(0) Then
+			ah.hpane(0)=0
+		EndIf
 		GlobalFree(lpTABMEM)
 		SendMessage(ah.htabtool,TCM_DELETEITEM,i,0)
 		If SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0) Then
@@ -39,11 +43,7 @@ Sub DelTab(ByVal hWin As HWND)
 			tci.mask=TCIF_PARAM
 			SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			ah.hred=lpTABMEM->hedit
-			ad.filename=lpTABMEM->filename
-			SendMessage(hWin,WM_SIZE,0,0)
-			ShowWindow(ah.hred,SW_SHOW)
-			SetFocus(ah.hred)
+			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		Else
 			ShowWindow(ah.htabtool,SW_HIDE)
 			ShowWindow(ah.hshp,SW_SHOWNA)
@@ -52,8 +52,11 @@ Sub DelTab(ByVal hWin As HWND)
 				DestroyWindow(ah.hfullscreen)
 			EndIf
 			ad.filename=""
+			ah.hpane(0)=0
+			ah.hpane(1)=0
+			SetWinCaption
 		EndIf
-		SetWinCaption
+		SendMessage(ah.hwnd,WM_SIZE,0,0)
 	EndIf
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	HideList()
@@ -73,7 +76,7 @@ Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
 		buff=Mid(buff,InStr(buff,"\")+1)
 	Loop
 	lpTABMEM=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,SizeOf(TABMEM))
-	lpTABMEM->hedit=ah.hred
+	lpTABMEM->hedit=hEdt
 	lpTABMEM->filename=lpFileName
 	If fProject Then
 		lpTABMEM->profileinx=IsProjectFile(lpFileName)
@@ -95,9 +98,13 @@ Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
 	EndIf
 	tci.lParam=Cast(LPARAM,lpTABMEM)
 	x=SendMessage(ah.htabtool,TCM_INSERTITEM,999,Cast(Integer,@tci))
-	ShowWindow(ah.hshp,SW_HIDE)
-	SendMessage(ah.htabtool,TCM_SETCURSEL,x,0)
 	ShowWindow(ah.htabtool,SW_SHOWNA)
+	If ah.hpane(0)=0 Then
+		ShowWindow(ah.hshp,SW_HIDE)
+	Else
+		ah.hpane(1)=ah.hred
+	EndIf
+	SelectTab(ah.hwnd,hEdt,0)
 	fTimer=1
 
 End Sub
@@ -140,11 +147,20 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 					ah.hred=lpTABMEM->hedit
 					ad.filename=lpTABMEM->filename
 					SendMessage(hWin,WM_SIZE,0,0)
-					ShowWindow(ah.hred,SW_SHOW)
+					ShowWindow(ah.hred,SW_SHOWNA)
 					SetWinCaption
-					ShowWindow(hOld,SW_HIDE)
+					If hOld<>ah.hpane(0) And ah.hred<>ah.hpane(0) Then
+						ShowWindow(hOld,SW_HIDE)
+					EndIf
 					ShowWindow(ah.htt,SW_HIDE)
 					HideList()
+					If ah.hpane(0)<>0 And ah.hred<>ah.hpane(0) Then
+						If ah.hred<>ah.hpane(1) Then
+							ShowWindow(ah.hpane(1),SW_HIDE)
+						EndIf
+						ah.hpane(1)=ah.hred
+					EndIf
+					SendMessage(ah.hwnd,WM_SIZE,0,0)
 				EndIf
 				SetFocus(lpTABMEM->hedit)
 				Exit While

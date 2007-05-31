@@ -613,10 +613,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							ShowWindow(ah.hred,SW_HIDE)
 							ah.hred=ah.hres
 							AddTab(hWin,ah.hred,ad.filename)
-							SetWinCaption
-							ShowWindow(ah.hred,SW_SHOW)
-							SendMessage(hWin,WM_SIZE,0,0)
-							SetFocus(ah.hred)
+							'SetWinCaption
+							'ShowWindow(ah.hred,SW_SHOW)
+							'SendMessage(hWin,WM_SIZE,0,0)
+							'SetFocus(ah.hred)
 							'
 						Case IDM_FILE_OPEN
 							buff=OpenInclude
@@ -1040,6 +1040,23 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								 ah.hfullscreen=CreateWindowEx(NULL,@szFullScreenClassName,NULL,WS_POPUP Or WS_VISIBLE Or WS_MAXIMIZE,0,0,0,0,hWin,NULL,hInstance,NULL)
 								SetFullScreen(ah.hred)
 							EndIf
+							'
+						Case IDM_VIEW_TWOPANES
+							If ah.hpane(0) Then
+								If ah.hpane(1) Then
+									ShowWindow(ah.hpane(1),SW_HIDE)
+								Else
+									ShowWindow(ah.hshp,SW_HIDE)
+								EndIf
+								ah.hred=ah.hpane(0)
+								ah.hpane(0)=0
+								ah.hpane(1)=0
+								SelectTab(ah.hwnd,ah.hred,0)
+							Else
+								ah.hpane(0)=ah.hred
+								ah.hpane(1)=0
+							EndIf
+							SendMessage(hWin,WM_SIZE,0,0)
 							'
 						Case IDM_PROJECT_ADDNEWFILE
 							AddNewProjectFile()
@@ -1585,18 +1602,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				tci.mask=TCIF_PARAM
 				SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETITEM,SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
 				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-				ah.hred=lpTABMEM->hedit
-				ad.filename=lpTABMEM->filename
-				SendMessage(hWin,WM_SIZE,0,0)
-				ShowWindow(ah.hred,SW_SHOW)
-				ShowWindow(hCtl,SW_HIDE)
-				SetFocus(ah.hred)
-				SetWinCaption
-				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
-					UpdateFileProperty
-				EndIf
-				ShowWindow(ah.htt,SW_HIDE)
-				HideList()
+				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
 				' Project tab
@@ -1724,10 +1730,24 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				MoveWindow(ah.hprj,rect.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
 				' Size the property
 				MoveWindow(ah.hpr,rect.right-twt+2,tbhgt+prjht,twt-2,prht,TRUE)
-				' Size the shape
-				MoveWindow(ah.hshp,0,hgt,rect.right-twt,rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT),TRUE)
-				' Size the edit control
-				MoveWindow(ah.hred,0,hgt,rect.right-twt,rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT),TRUE)
+				If ah.hpane(0) Then
+					' Two panes
+					y=rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT)
+					MoveWindow(ah.hpane(0),0,hgt,rect.right-twt,y-y/2,TRUE)
+					If ah.hpane(1) Then
+						ShowWindow(ah.hshp,SW_HIDE)
+						MoveWindow(ah.hpane(1),0,hgt+y/2,rect.right-twt,y/2,TRUE)
+					Else
+						ShowWindow(ah.hshp,SW_SHOWNA)
+						MoveWindow(ah.hshp,0,hgt+y/2,rect.right-twt,y/2,TRUE)
+					EndIf
+				ElseIf ah.hred Then
+					' Size the edit control
+					MoveWindow(ah.hred,0,hgt,rect.right-twt,rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT),TRUE)
+				Else
+					' Size the shape
+					MoveWindow(ah.hshp,0,hgt,rect.right-twt,rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT),TRUE)
+				EndIf
 				' Size the Output
 				MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
 				' Size the splash

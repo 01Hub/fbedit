@@ -518,6 +518,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim tp As Integer
 	Dim lz As Integer
 	Dim isinp As ISINPROC
+	Static fInProgress As Integer
 
 	Select Case uMsg
 		Case WM_CHAR
@@ -965,6 +966,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			EndIf
 		Case WM_KILLFOCUS
 			ShowWindow(ah.hTT,SW_HIDE)
+		Case WM_SETFOCUS
+			If fInProgress=0 Then
+				fInprogress=1
+				If ah.hred<>ah.hpane(0) Then
+					ah.hpane(1)=ah.hred
+				EndIf
+				SelectTab(ah.hwnd,GetParent(hWin),0)
+				fInprogress=0
+			EndIf
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 

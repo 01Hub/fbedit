@@ -305,21 +305,7 @@ Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			If lstrcmpi(fn,lpTABMEM->filename)=0 Then
 				If fShow Then
-					hOld=ah.hred
-					ah.hred=lpTABMEM->hedit
-					ad.filename=lpTABMEM->filename
-					SendMessage(hWin,WM_SIZE,0,0)
-					If hOld<>ah.hred Then
-						If ah.hfullscreen Then
-							SetFullScreen(ah.hred)
-						Else
-							ShowWindow(ah.hred,SW_SHOW)
-						EndIf
-						ShowWindow(hOld,SW_HIDE)
-					EndIf
-					SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-					SetWinCaption
-					SetFocus(ah.hred)
+					SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				EndIf
 				Return lpTABMEM->hedit
 			EndIf

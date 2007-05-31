@@ -90,6 +90,7 @@ Type ADDINHANDLES
 	hmnuiml			As HIMAGELIST					' Menu arrows imagelist
 	hcbobuild		As HWND							' Handle of build option combobox
 	hOutFont			As HFONT							' Output window font
+	hpane(1)			As HWND							' Handle of text or resource edit window in 2'nd pane
 End Type
 
 Type ADDINDATA
