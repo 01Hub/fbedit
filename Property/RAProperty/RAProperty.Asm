@@ -58,13 +58,30 @@ CreateToolTip proc hWin:HWND
 CreateToolTip endp
 
 ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	hDC:HDC
+	LOCAL	rect:RECT
 
 	.if uMsg==WM_NOTIFY
 		mov		ebx,lParam
 		.if [ebx].NMHDR.code==TTN_NEEDTEXT
 			mov		szname,0
 			invoke SendMessage,hWin,LB_GETTEXT,OldItem,offset szname
-			mov		[ebx].TOOLTIPTEXT.lpszText,OFFSET szname
+			invoke GetClientRect,hWin,addr rect
+			push	rect.right
+			invoke GetDC,hWin
+			mov		hDC,eax
+			invoke SendMessage,hWin,WM_GETFONT,0,0
+			invoke SelectObject,hDC,eax
+			push	eax
+			invoke DrawText,hDC,offset szname,-1,addr rect,DT_LEFT or DT_TOP or DT_SINGLELINE or DT_CALCRECT
+			pop		eax
+			invoke SelectObject,hDC,eax
+			invoke ReleaseDC,hWin,hDC
+			pop		eax
+			sub		eax,2
+			.if eax<rect.right
+				mov		[ebx].TOOLTIPTEXT.lpszText,offset szname
+			.endif
 		.endif
 	.elseif uMsg==WM_MOUSEMOVE
 		invoke SendMessage,hWin,LB_ITEMFROMPOINT,0,lParam
