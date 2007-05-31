@@ -1,7 +1,5 @@
 	align 4 
 	_PRM_SELECTPROPERTY:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		ninx,0
 		.while TRUE
 			invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETITEMDATA,ninx,0
@@ -17,16 +15,12 @@
 		ret
 	align 4 
 	_PRM_ADDPROPERTYTYPE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_ADDSTRING,0,lParam
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_SETITEMDATA,eax,wParam
 		xor		eax,eax
 		ret
 	align 4 
 	_PRM_ADDPROPERTYFILE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,wParam
 		movzx	edx,al
 		shr		eax,8
@@ -38,8 +32,6 @@
 		ret
 	align 4 
 	_PRM_SETGENDEF:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		push	esi
 		mov		esi,lParam
 		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt,addr [esi].DEFGEN.szCmntBlockSt
@@ -62,8 +54,6 @@
 		ret
 	align 4 
 	_PRM_ADDIGNORE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		.if ![ebx].RAPROPERTY.lpignore
 			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024
 			mov		[ebx].RAPROPERTY.lpignore,eax
@@ -74,7 +64,7 @@
 		mov		eax,wParam
 		mov		[esi],al
 		inc		esi
-		invoke lstrlen,lParam
+		invoke strlen,lParam
 		push	eax
 		mov		[esi],al
 		inc		esi
@@ -87,8 +77,6 @@
 		ret
 	align 4 
 	_PRM_ADDDEFTYPE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		.if ![ebx].RAPROPERTY.lpdeftype
 			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
 			mov		[ebx].RAPROPERTY.lpdeftype,eax
@@ -101,32 +89,24 @@
 		ret
 	align 4 
 	_PRM_PARSEFILE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke PreParse,lParam
 		invoke ParseFile,wParam,lParam
 		xor		eax,eax
 		ret
 	align 4 
 	_PRM_SETCHARTAB:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,lParam
 		mov		[ebx].RAPROPERTY.lpchartab,eax
 		xor		eax,eax
 		ret
 	align 4 
 	_PRM_DELPROPERTY:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke DeleteProperties,wParam
 		invoke CompactProperties
 		xor		eax,eax
 		ret
 	align 4 
 	_PRM_REFRESHLIST:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETCURSEL,0,0
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETITEMDATA,eax,0
 		invoke UpdateList,eax
@@ -134,8 +114,6 @@
 		ret
 	align 4 
 	_PRM_SELOWNER:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,wParam
 		mov		[ebx].RAPROPERTY.nOwner,eax
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETCURSEL,0,0
@@ -145,14 +123,10 @@
 		ret
 	align 4 
 	_PRM_GETSELBUTTON:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.nButton
 		ret
 	align 4 
 	_PRM_SETSELBUTTON:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke SendMessage,[ebx].RAPROPERTY.htbr,TB_CHECKBUTTON,[ebx].RAPROPERTY.nButton,FALSE
 		mov		eax,wParam
 		mov		[ebx].RAPROPERTY.nButton,eax
@@ -164,8 +138,6 @@
 		ret
 	align 4 
 	_PRM_FINDFIRST:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke lstrcpyn,addr [ebx].RAPROPERTY.szFindTypes,wParam,sizeof RAPROPERTY.szFindTypes
 		invoke lstrcpyn,addr [ebx].RAPROPERTY.szFindText,lParam,sizeof RAPROPERTY.szFindText
 		mov		[ebx].RAPROPERTY.rpFindPos,0
@@ -176,8 +148,6 @@
 		ret
 	align 4 
 	_PRM_FINDNEXT:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke Find
 		.if eax
 			lea		eax,[eax+sizeof PROPERTIES]
@@ -185,14 +155,10 @@
 		ret
 	align 4 
 	_PRM_FINDGETTYPE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.nfindtype
 		ret
 	align 4 
 	_PRM_GETWORD:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		edx,lParam
 		mov		ecx,wParam
 		push	esi
@@ -217,8 +183,6 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTWORD:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke DestroyCommentsStrings,lParam
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -319,14 +283,10 @@
 		ret
 	align 4 
 	_PRM_GETTOOLTIP:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke GetToolTip,lParam,wParam
 		ret
 	align 4 
 	_PRM_SETBACKCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke DeleteObject,[ebx].RAPROPERTY.hbrback
 		mov		eax,lParam
 		mov		[ebx].RAPROPERTY.backcolor,eax
@@ -337,14 +297,10 @@
 		ret
 	align 4 
 	_PRM_GETBACKCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.backcolor
 		ret
 	align 4 
 	_PRM_SETTEXTCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,lParam
 		mov		[ebx].RAPROPERTY.textcolor,eax
 		invoke InvalidateRect,[ebx].RAPROPERTY.hcbo,NULL,TRUE
@@ -352,14 +308,10 @@
 		ret
 	align 4 
 	_PRM_GETTEXTCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.textcolor
 		ret
 	align 4 
 	_PRM_SETOPRCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,lParam
 		mov		[ebx].RAPROPERTY.oprcolor,eax
 		invoke InvalidateRect,[ebx].RAPROPERTY.hcbo,NULL,TRUE
@@ -367,14 +319,10 @@
 		ret
 	align 4 
 	_PRM_GETOPRCOLOR:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.oprcolor
 		ret
 	align 4 
 	_PRM_ISINPROC:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		edx,[ebx].RAPROPERTY.lpmem
 		add		edx,[ebx].RAPROPERTY.rpproject
 		mov		ecx,lParam
@@ -420,26 +368,18 @@
 		ret
 	align 4 
 	_PRM_FINDGETOWNER:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.nfindowner
 		ret
 	align 4 
 	_PRM_FINDGETLINE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.nfindline
 		ret
 	align 4 
 	_PRM_FINDGETENDLINE:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		eax,[ebx].RAPROPERTY.nfindendline
 		ret
 	align 4 
 	_PRM_ISINWITHBLOCK:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		mov		edx,[ebx].RAPROPERTY.lpdeftype
 		mov		ecx,[ebx].RAPROPERTY.rpfreedeftype
 		lea		ecx,[ecx+edx]
@@ -469,8 +409,6 @@
 		ret
 	align 4 
 	_PRM_ADDISWORD:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		.if ![ebx].RAPROPERTY.lpisword
 			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024
 			mov		[ebx].RAPROPERTY.lpisword,eax
@@ -481,7 +419,7 @@
 		mov		eax,wParam
 		mov		[esi],al
 		inc		esi
-		invoke lstrlen,lParam
+		invoke strlen,lParam
 		push	eax
 		mov		[esi],al
 		inc		esi
@@ -494,8 +432,6 @@
 		ret
 	align 4 
 	_PRM_CLEARWORDLIST:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		.if [ebx].RAPROPERTY.hmem
 			invoke GlobalFree,[ebx].RAPROPERTY.hmem
 		.endif
@@ -508,8 +444,6 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTSTART:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke DestroyCommentsStrings,lParam
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -550,14 +484,10 @@
 		ret
 	align 4 
 	_PRM_GETCURSEL:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETCURSEL,0,0
 		ret
 	align 4 
 	_PRM_GETSELTEXT:
-;		invoke GetWindowLong,hWin,0
-;		mov		ebx,eax
 		invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETCURSEL,0,0
 		.if eax!=LB_ERR
 			invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETTEXT,eax,lParam

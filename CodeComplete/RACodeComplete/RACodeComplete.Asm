@@ -61,6 +61,47 @@ InstallRACodeComplete endp
 
 ;--------------------------------------------------------------------------------
 
+strlen proc lpSource:DWORD
+
+	mov	eax,lpSource
+	sub	eax,4
+align 4
+@@:
+	add	eax, 4
+	movzx	edx,word ptr [eax]
+	test	dl,dl
+	je	@lb1
+	
+	test	dh, dh
+	je	@lb2
+	
+	movzx	edx,word ptr [eax+2]
+	test	dl, dl
+	je	@lb3
+
+	test	dh, dh
+	jne	@B
+	
+	sub	eax,lpSource
+	add	eax,3
+	ret
+
+@lb3:
+	sub	eax,lpSource
+	add	eax,2
+	ret
+
+@lb2:
+	sub	eax,lpSource
+	add	eax,1
+	ret
+
+@lb1:
+	sub	eax,lpSource
+	ret
+
+strlen endp
+
 CompareStr proc lpStr1:DWORD,lpStr2:DWORD
 
 	mov		ecx,lpStr1
@@ -93,6 +134,15 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ninx:DWORD
 
 	mov		eax,uMsg
+	.if eax>=CCM_ADDITEM && eax<=CCM_GETMAXWIDTH
+		push		eax
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		pop		eax
+		sub		eax,CCM_ADDITEM
+		jmp 		DWORD PTR [offset _RACODECOMPLETE_BASE+eax*4]
+		include RACodeComplete_Msg_JumpTable.asm
+	.endif
 	.if eax==WM_PAINT
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -153,7 +203,7 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				pop		edx
 				push	edx
-				invoke lstrlen,edx
+				invoke strlen,edx
 				pop		edx
 				test	[ebx].RACC.style,STYLE_USEIMAGELIST
 				.if ZERO?
@@ -211,296 +261,6 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_Destroy,[ebx].RACC.himl
 		invoke GetProcessHeap
 		invoke HeapFree,eax,0,ebx
-		xor		eax,eax
-	.elseif eax==CCM_ADDITEM
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		ecx,[ebx].RACC.count
-		lea		eax,[ecx*8]
-		.if eax>=[ebx].RACC.cbsize
-			invoke GlobalUnlock,[ebx].RACC.hmem
-			add		[ebx].RACC.cbsize,1024*32
-			invoke GlobalReAlloc,[ebx].RACC.hmem,[ebx].RACC.cbsize,GMEM_MOVEABLE
-			mov		[ebx].RACC.hmem,eax
-			invoke GlobalLock,[ebx].RACC.hmem
-			mov		[ebx].RACC.lpmem,eax
-			mov		ecx,[ebx].RACC.count
-		.endif
-		mov		edx,[ebx].RACC.lpmem
-		mov		eax,lParam
-		mov		[edx+ecx*8],eax
-		mov		eax,wParam
-		mov		[edx+ecx*8+4],eax
-		inc		ecx
-		mov		[ebx].RACC.count,ecx
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_ADDLIST
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		push	esi
-		push	edi
-		mov		edx,lParam
-		mov		esi,[edx].CC_ADDLIST.lpszList
-	  @@:
-		mov		edi,esi
-		.while byte ptr [esi]!=',' && byte ptr [esi]
-			inc		esi
-		.endw
-		.if byte ptr [esi]==','
-			mov		byte ptr [esi],0
-			inc		esi
-			mov		edx,lParam
-			invoke CompareStr,[edx].CC_ADDLIST.lpszFilter,edi
-			.if !eax
-				mov		edx,lParam
-				invoke SendMessage,hWin,CCM_ADDITEM,[edx].CC_ADDLIST.nType,edi
-			.endif
-			jmp		@b
-		.endif
-		invoke lstrlen,edi
-		.if eax
-			mov		edx,lParam
-			invoke CompareStr,[edx].CC_ADDLIST.lpszFilter,edi
-			.if !eax
-				mov		edx,lParam
-				invoke SendMessage,hWin,CCM_ADDITEM,[edx].CC_ADDLIST.nType,edi
-			.endif
-		.endif
-		pop		edi
-		pop		esi
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_DELITEM
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,wParam
-		.if eax<[ebx].RACC.count
-			mov		edx,[ebx].RACC.lpmem
-			.while eax<[ebx].RACC.count
-				mov		ecx,[edx+eax*8+8]
-				mov		[edx+eax*8],ecx
-				mov		ecx,[edx+eax*8+8+4]
-				mov		[edx+eax*8+4],ecx
-				inc		eax
-			.endw
-			dec		[ebx].RACC.count
-			.if [ebx].RACC.fredraw
-				invoke InvalidateRect,hWin,NULL,TRUE
-			.endif
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_GETITEM
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,wParam
-		.if eax<[ebx].RACC.count
-			mov		edx,[ebx].RACC.lpmem
-			mov		eax,[edx+eax*8]
-		.else
-			xor		eax,eax
-		.endif
-	.elseif eax==CCM_GETCOUNT
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,[ebx].RACC.count
-	.elseif eax==CCM_GETMAXWIDTH
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		push		esi
-		push		edi
-		invoke GetDC,hWin
-		mov		ps.hdc,eax
-		invoke SelectObject,ps.hdc,[ebx].RACC.hfont
-		push	eax
-		call	SetScroll
-		mov		sinf.cbSize,sizeof sinf
-		mov		sinf.fMask,SIF_PAGE or SIF_RANGE
-		invoke GetScrollInfo,hWin,SB_VERT,addr sinf
-		mov		ninx,0
-		mov		eax,sinf.nMax
-		.if eax>=sinf.nPage
-			invoke GetSystemMetrics,SM_CXVSCROLL
-			mov		ninx,eax
-		.endif
-		xor		esi,esi
-		xor		edi,edi
-		mov		rect.left,esi
-		mov		rect.top,esi
-		.while esi<[ebx].RACC.count
-			mov		edx,[ebx].RACC.lpmem
-			mov		edx,[edx+esi*8]
-			invoke DrawText,ps.hdc,edx,-1,addr rect,DT_SINGLELINE or DT_CALCRECT
-			mov		eax,rect.right
-			add		eax,ninx
-			test	[ebx].RACC.style,STYLE_USEIMAGELIST
-			.if !ZERO?
-				add		eax,19
-			.endif
-			.if eax>edi
-				mov		edi,eax
-			.endif
-			inc		esi
-		.endw
-		pop		eax
-		invoke SelectObject,ps.hdc,eax
-		invoke ReleaseDC,hWin,ps.hdc
-		mov		eax,edi
-		pop		edi
-		pop		esi		
-	.elseif eax==CCM_CLEAR
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		xor		eax,eax
-		mov		[ebx].RACC.count,eax
-		mov		[ebx].RACC.topindex,eax
-		dec		eax
-		mov		[ebx].RACC.cursel,eax
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_SETCURSEL
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		.if [ebx].RACC.fredraw
-			invoke SendMessage,hWin,CCM_GETITEMRECT,[ebx].RACC.cursel,addr ps.rcPaint
-			invoke InvalidateRect,hWin,addr ps.rcPaint,TRUE
-		.endif
-		mov		eax,wParam
-		.if eax<[ebx].RACC.count
-			mov		[ebx].RACC.cursel,eax
-			.if [ebx].RACC.fredraw
-				invoke SendMessage,hWin,CCM_GETITEMRECT,[ebx].RACC.cursel,addr ps.rcPaint
-				invoke InvalidateRect,hWin,addr ps.rcPaint,TRUE
-			.endif
-		.else
-			mov		[ebx].RACC.cursel,-1
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_GETCURSEL
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,[ebx].RACC.cursel
-	.elseif eax==CCM_GETTOPINDEX
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,[ebx].RACC.topindex
-	.elseif eax==CCM_SETTOPINDEX
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,wParam
-		.if eax>=[ebx].RACC.count
-			mov		eax,[ebx].RACC.count
-			.if eax
-				dec		eax
-			.endif
-		.endif
-		mov		[ebx].RACC.topindex,eax
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_GETITEMRECT
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		invoke GetClientRect,hWin,addr rect
-		mov		edx,lParam
-		mov		[edx].RECT.left,0
-		mov		eax,rect.right
-		mov		[edx].RECT.right,eax
-		mov		eax,wParam
-		sub		eax,[ebx].RACC.topindex
-		mov		ecx,[ebx].RACC.itemheight
-		mul		ecx
-		mov		edx,lParam
-		mov		[edx].RECT.top,eax
-		add		eax,ecx
-		mov		[edx].RECT.bottom,eax
-		xor		eax,eax
-	.elseif eax==CCM_SETVISIBLE
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		invoke SendMessage,hWin,CCM_GETITEMRECT,[ebx].RACC.cursel,addr ps.rcPaint
-		invoke GetClientRect,hWin,addr rect
-		mov		eax,ps.rcPaint.top
-		mov		edx,ps.rcPaint.bottom
-		.if sdword ptr eax<0
-			mov		eax,[ebx].RACC.cursel
-			.if eax<[ebx].RACC.count
-				mov		[ebx].RACC.topindex,eax
-			.endif
-		.elseif edx>rect.bottom
-			mov		eax,rect.bottom
-			mov		ecx,[ebx].RACC.itemheight
-			xor		edx,edx
-			div		ecx
-			dec		eax
-			mov		edx,[ebx].RACC.cursel
-			sub		edx,eax
-			.if CARRY?
-				xor		edx,edx
-			.endif
-			mov		[ebx].RACC.topindex,edx
-		.endif
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_FINDSTRING
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		ecx,wParam
-		inc		ecx
-		.while ecx<[ebx].RACC.count
-			push	ecx
-			mov		edx,[ebx].RACC.lpmem
-			mov		edx,[edx+ecx*8]
-			invoke CompareStr,lParam,edx
-			pop		ecx
-			or		eax,eax
-			je		@f
-			inc		ecx
-		.endw
-		mov		ecx,-1
-	  @@:
-		mov		eax,ecx
-	.elseif eax==CCM_SORT
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		eax,[ebx].RACC.count
-		.if eax
-			dec		eax
-			invoke QuickSort,[ebx].RACC.lpmem,0,eax,wParam
-			.if [ebx].RACC.fredraw
-				invoke InvalidateRect,hWin,NULL,TRUE
-			.endif
-		.endif
-		xor		eax,eax
-	.elseif eax==CCM_GETCOLOR
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		edx,lParam
-		mov		eax,[ebx].RACC.backcolor
-		mov		[edx].CC_COLOR.back,eax
-		mov		eax,[ebx].RACC.textcolor
-		mov		[edx].CC_COLOR.text,eax
-		xor		eax,eax
-	.elseif eax==CCM_SETCOLOR
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		mov		edx,lParam
-		mov		eax,[edx].CC_COLOR.back
-		mov		[ebx].RACC.backcolor,eax
-		mov		eax,[edx].CC_COLOR.text
-		mov		[ebx].RACC.textcolor,eax
-		.if [ebx].RACC.fredraw
-			invoke InvalidateRect,hWin,NULL,TRUE
-		.endif
 		xor		eax,eax
 	.elseif eax==WM_SETFONT
 		invoke GetWindowLong,hWin,0
@@ -675,7 +435,7 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax>1000
 			xor		eax,eax
 		.else
-			invoke lstrlen,offset findbuff
+			invoke strlen,offset findbuff
 		.endif
 		mov		edx,wParam
 		mov		word ptr findbuff[eax],dx
@@ -684,7 +444,7 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,CCM_SETCURSEL,eax,0
 			invoke SendMessage,hWin,CCM_SETVISIBLE,0,0
 		.else
-			invoke lstrlen,offset findbuff
+			invoke strlen,offset findbuff
 			.if eax==2
 				mov		ax,word ptr findbuff
 				.if al==ah

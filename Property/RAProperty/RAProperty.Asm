@@ -122,11 +122,11 @@ AddItem:
 		invoke lstrcat,addr szname,addr szLpa
 		push	esi
 		lea		esi,[esi+sizeof PROPERTIES]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		invoke lstrcat,addr szname,esi
 		invoke lstrcat,addr szname,addr szRpa
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		.if byte ptr [esi]
 			invoke lstrcat,addr szname,addr szSpc
@@ -140,7 +140,7 @@ AddItem:
 		invoke lstrcat,addr szname,addr szColon
 		push	esi
 		lea		esi,[esi+sizeof PROPERTIES]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		invoke lstrcat,addr szname,esi
 		pop		esi
@@ -306,7 +306,7 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 	test	fNoCase,TT_PARANTESES
 	.if !ZERO?
 		mov		edx,lParam
-		invoke lstrlen,[edx].TOOLTIP.lpszLine
+		invoke strlen,[edx].TOOLTIP.lpszLine
 		mov		edx,lParam
 		mov		edx,[edx].TOOLTIP.lpszLine
 		dec		eax
@@ -408,11 +408,11 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		lea		edi,[edi+sizeof PROPERTIES]
 		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszApi,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax+1]
 		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszParam,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax+1]
 		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszRetType,edi
@@ -588,7 +588,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		assume esi:ptr DRAWITEMSTRUCT
 		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr szname
 		.if eax!=LB_ERR
-			invoke lstrlen,addr szname
+			invoke strlen,addr szname
 			mov		len,eax
 			test	[esi].itemState,ODS_SELECTED
 			.if ZERO?

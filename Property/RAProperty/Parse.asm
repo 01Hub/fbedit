@@ -157,7 +157,7 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 	mov		fbyte,0
 	mov		esi,lpMem
 	invoke lstrcpy,addr buffer,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt
-	invoke lstrlen,addr buffer
+	invoke strlen,addr buffer
 	.if eax
 		dec		eax
 		.if byte ptr buffer[eax]=='+'
@@ -741,7 +741,7 @@ AddNamespace:
 		mov		edx,[ebx].RAPROPERTY.lpmem
 		add		edx,rpnmespc
 		invoke lstrcpy,edi,addr [edx+sizeof PROPERTIES]
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		word ptr [edi],'.'
 		inc		edi

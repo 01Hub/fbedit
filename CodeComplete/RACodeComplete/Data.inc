@@ -9,10 +9,10 @@ includelib gdi32.lib
 includelib comctl32.lib
 
 ;VKim Debug
-include masm32.inc
-include \RadASM\masm\inc\debug.inc
-includelib masm32.lib
-includelib \RadASM\masm\lib\debug.lib
+;include masm32.inc
+;include \RadASM\masm\inc\debug.inc
+;includelib masm32.lib
+;includelib \RadASM\masm\lib\debug.lib
 
 RACC struct
 	style		dd ?

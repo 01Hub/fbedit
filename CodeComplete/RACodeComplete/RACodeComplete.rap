@@ -18,6 +18,7 @@ Res.rc=1
 7=RACodeCompleteDll.Asm
 8=Sort.asm
 9=Res\Types.bmp
+10=RACodeComplete_Msg_JumpTable.Asm
 [MakeFiles]
 0=RACodeComplete.rap
 1=RACodeComplete.rc
@@ -58,20 +59,20 @@ Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.0.1
-PV=1.0.0.1
+FV=1.0.0.2
+PV=1.0.0.2
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.0.1
+ProductVersion=1.0.0.2
 ProductName=
 OriginalFilename=RACodeComplete.dll
 LegalTrademarks=
-LegalCopyright=KetilO (C) 2005
+LegalCopyright=KetilO (C) 2007
 InternalName=
 FileDescription=RadASM code complete custom control
-FileVersion=1.0.0.1
+FileVersion=1.0.0.2
 CompanyName=
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
@@ -84,6 +85,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 7=2
 8=2
 9=4
+10=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -127,13 +129,14 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,21487
+1=0,0,0,0,2430
 3=0,0,0,0,53
-2=0,0,0,0,1605
+2=0,0,0,0,84
 4=0,0,0,0,0
 7=0,0,0,0,1965
-6=0,0,0,0,505
+6=0,0,0,0,184
 8=0,0,0,0,2967
+10=0,0,0,0,7443
 [BookMark]
 0=
 1=
@@ -160,11 +163,12 @@ ProductVer4Range=0
 10="PRO_SETEXPORT"
 [Collapse]
 2=
-1=,,,
+1=,,
 6=
 7=
 8=
 3=
+10=,
 [PTimer]
 PTimer=6305015
 [Exports]
