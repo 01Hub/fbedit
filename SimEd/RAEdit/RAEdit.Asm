@@ -1498,7 +1498,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 ErrBeep:
 	invoke MessageBeep,MB_ICONHAND
 	xor		eax,eax
-	jmp		Ex
+	ret
 
 EditFunc endp
 
@@ -1558,7 +1558,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	SetScroll
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_KEYDOWN
 		invoke GetKeyState,VK_MENU
@@ -1660,7 +1659,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExDef
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_CHAR
 		mov		[ebx].EDIT.cpselbar,-1
@@ -1924,7 +1922,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_MOUSEMOVE
 		mov		eax,wParam
@@ -2269,7 +2266,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursor,hCur
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONDOWN
 		.if !fOnSel
@@ -2418,7 +2414,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursor,eax
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONUP
 		.if fOnBM
@@ -2436,7 +2431,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		inc		nUndoid
 		xor		eax,eax
 		mov		fSelState,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONDBLCLK
 		mov		eax,[ebx].EDIT.fstyle
@@ -2490,7 +2484,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		inc		nUndoid
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_RBUTTONDOWN
 		mov		eax,[ebx].EDIT.cpMin
@@ -2499,7 +2492,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,WM_LBUTTONUP,wParam,lParam
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_MOUSEWHEEL
 		mov		eax,wParam
@@ -2558,7 +2550,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_VSCROLL
 		push	[esi].RAEDT.cpy
@@ -2654,12 +2645,10 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_HSCROLL
 		invoke PostMessage,[ebx].EDIT.hwnd,uMsg,wParam,lParam
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_SETFOCUS
 		mov		eax,hWin
@@ -2717,15 +2706,12 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCaret,ebx,[esi].RAEDT.cpy
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_GETDLGCODE
  		mov		eax,DLGC_WANTCHARS or DLGC_WANTALLKEYS
-;		jmp		Ex
 		ret
 	.elseif eax==WM_SETCURSOR
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.endif
   ExDef:
@@ -2775,7 +2761,6 @@ SetBlock:
 ErrBeep:
 	invoke MessageBeep,MB_ICONHAND
 	xor		eax,eax
-;	jmp		Ex
 	ret
 
 SetScroll:
@@ -2946,1713 +2931,31 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	mov		eax,uMsg
-	.if eax>=REM_BASE
-		.if eax==REM_SETHILITEWORDS
-			;wParam=Color
-			;lParam=lpszWords
-			invoke SetHiliteWords,wParam,lParam
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETFONT
-			;wParam=nLineSpacing
-			;lParam=lpRAFONT
-			mov		ecx,[ebx].EDIT.fntinfo.fntht
-			.if ecx
-				mov		eax,[ebx].EDIT.edta.cpy
-				xor		edx,edx
-				div		ecx
-				push	eax
-				mov		eax,[ebx].EDIT.edtb.cpy
-				xor		edx,edx
-				div		ecx
-				push	eax
-			.else
-				push	0
-				push	0
-			.endif
-			mov		eax,wParam
-			mov		[ebx].EDIT.fntinfo.linespace,eax
-			invoke SetFont,ebx,lParam
-			mov		ecx,[ebx].EDIT.fntinfo.fntht
-			pop		eax
-			mul		ecx
-			mov		[ebx].EDIT.edtb.cpy,eax
-			pop		eax
-			mul		ecx
-			mov		[ebx].EDIT.edta.cpy,eax
-			xor		eax,eax
-			mov		[ebx].EDIT.edta.topyp,eax
-			mov		[ebx].EDIT.edta.topln,eax
-			mov		[ebx].EDIT.edta.topcp,eax
-			mov		[ebx].EDIT.edtb.topyp,eax
-			mov		[ebx].EDIT.edtb.topln,eax
-			mov		[ebx].EDIT.edtb.topcp,eax
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			.if ![ebx].EDIT.fntinfo.monospace
-				mov		eax,[ebx].EDIT.nMode
-				test	eax,MODE_BLOCK
-				.if !ZERO?
-					xor		eax,MODE_BLOCK
-					invoke SendMessage,hWin,REM_SETMODE,eax,0
-				.endif
-			.endif
-			invoke GetFocus
-			.if eax==[ebx].EDIT.focus && eax
-				invoke SetFocus,hWin
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETFONT
-			;wParam=0
-			;lParam=lpRAFONT
-			mov		edx,lParam
-			mov		eax,[ebx].EDIT.fnt.hFont
-			mov		[edx].RAFONT.hFont,eax
-			mov		eax,[ebx].EDIT.fnt.hIFont
-			mov		[edx].RAFONT.hIFont,eax
-			mov		eax,[ebx].EDIT.fnt.hLnrFont
-			mov		[edx].RAFONT.hLnrFont,eax
-			mov		eax,[ebx].EDIT.fntinfo.linespace
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETCOLOR
-			;wParam=0
-			;lParam=lpRACOLOR
-			mov		edx,lParam
-			mov		eax,[edx].RACOLOR.bckcol
-			mov		[ebx].EDIT.clr.bckcol,eax
-			mov		eax,[edx].RACOLOR.txtcol
-			mov		[ebx].EDIT.clr.txtcol,eax
-			mov		eax,[edx].RACOLOR.selbckcol
-			.if eax==[edx].RACOLOR.bckcol
-				xor		eax,03F3F3Fh
-			.endif
-			mov		[ebx].EDIT.clr.selbckcol,eax
-			mov		eax,[edx].RACOLOR.seltxtcol
-			mov		[ebx].EDIT.clr.seltxtcol,eax
-			mov		eax,[edx].RACOLOR.cmntcol
-			mov		[ebx].EDIT.clr.cmntcol,eax
-			mov		eax,[edx].RACOLOR.strcol
-			mov		[ebx].EDIT.clr.strcol,eax
-			mov		eax,[edx].RACOLOR.oprcol
-			mov		[ebx].EDIT.clr.oprcol,eax
-			mov		eax,[edx].RACOLOR.hicol1
-			mov		[ebx].EDIT.clr.hicol1,eax
-			mov		eax,[edx].RACOLOR.hicol2
-			mov		[ebx].EDIT.clr.hicol2,eax
-			mov		eax,[edx].RACOLOR.hicol3
-			mov		[ebx].EDIT.clr.hicol3,eax
-			mov		eax,[edx].RACOLOR.selbarbck
-			mov		[ebx].EDIT.clr.selbarbck,eax
-			mov		eax,[edx].RACOLOR.selbarpen
-			mov		[ebx].EDIT.clr.selbarpen,eax
-			mov		eax,[edx].RACOLOR.lnrcol
-			mov		[ebx].EDIT.clr.lnrcol,eax
-			mov		eax,[edx].RACOLOR.numcol
-			mov		[ebx].EDIT.clr.numcol,eax
-			invoke CreateBrushes,ebx
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,FALSE
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETCOLOR
-			;wParam=0
-			;lParam=lpRACOLOR
-			mov		edx,lParam
-			mov		eax,[ebx].EDIT.clr.bckcol
-			mov		[edx].RACOLOR.bckcol,eax
-			mov		eax,[ebx].EDIT.clr.txtcol
-			mov		[edx].RACOLOR.txtcol,eax
-			mov		eax,[ebx].EDIT.clr.selbckcol
-			mov		[edx].RACOLOR.selbckcol,eax
-			mov		eax,[ebx].EDIT.clr.seltxtcol
-			mov		[edx].RACOLOR.seltxtcol,eax
-			mov		eax,[ebx].EDIT.clr.cmntcol
-			mov		[edx].RACOLOR.cmntcol,eax
-			mov		eax,[ebx].EDIT.clr.strcol
-			mov		[edx].RACOLOR.strcol,eax
-			mov		eax,[ebx].EDIT.clr.oprcol
-			mov		[edx].RACOLOR.oprcol,eax
-			mov		eax,[ebx].EDIT.clr.hicol1
-			mov		[edx].RACOLOR.hicol1,eax
-			mov		eax,[ebx].EDIT.clr.hicol2
-			mov		[edx].RACOLOR.hicol2,eax
-			mov		eax,[ebx].EDIT.clr.hicol3
-			mov		[edx].RACOLOR.hicol3,eax
-			mov		eax,[ebx].EDIT.clr.selbarbck
-			mov		[edx].RACOLOR.selbarbck,eax
-			mov		eax,[ebx].EDIT.clr.selbarpen
-			mov		[edx].RACOLOR.selbarpen,eax
-			mov		eax,[ebx].EDIT.clr.lnrcol
-			mov		[edx].RACOLOR.lnrcol,eax
-			mov		eax,[ebx].EDIT.clr.numcol
-			mov		[edx].RACOLOR.numcol,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETHILITELINE
-			;wParam=Line
-			;lParam=nColor
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				and		[edx].CHARS.state,-1 xor STATE_HILITEMASK
-				mov		eax,lParam
-				and		eax,STATE_HILITEMASK
-				or		[edx].CHARS.state,eax
-				invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
-				invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETHILITELINE
-			;wParam=Line
-			;lParam=0
-			xor		eax,eax
-			dec		eax
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				mov		eax,[edx].CHARS.state
-				and		eax,STATE_HILITEMASK
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETBOOKMARK
-			;wParam=Line
-			;lParam=nType
-			invoke SetBookMark,ebx,wParam,lParam
-			push	eax
-			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
-			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
-			pop		eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETBOOKMARK
-			;wParam=Line
-			;lParam=0
-			invoke GetBookMark,ebx,wParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_CLRBOOKMARKS
-			;wParam=0
-			;lParam=nType
-			invoke ClearBookMarks,ebx,lParam
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_NXTBOOKMARK
-			;wParam=Line
-			;lParam=nType
-			invoke NextBookMark,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_PRVBOOKMARK
-			;wParam=Line
-			;lParam=nType
-			invoke PreviousBookMark,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_FINDBOOKMARK
-			;wParam=BmID
-			;lParam=0
-			xor		eax,eax
-			dec		eax
-			mov		ecx,wParam
-			xor		edi,edi
-			.while edi<[ebx].EDIT.rpLineFree
-				mov		edx,edi
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				.if ecx==[edx].CHARS.bmid
-					mov		eax,edi
-					shr		eax,2
-					.break
-				.endif
-				add		edi,sizeof LINE
-			.endw
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETBLOCKS
-			;wParam=[lpLINERANGE]
-			;lParam=0
-			invoke GetCursor
-			push	eax
-			push	nBmid
-			invoke LoadCursor,0,IDC_WAIT
-			invoke SetCursor,eax
-			mov		esi,offset blockdefs
-			lea		edi,[esi+32*4]
-			.while dword ptr [esi]
-				mov		eax,[edi].RABLOCKDEF.flag
-				shr		eax,16
-				.if eax==[ebx].EDIT.nWordGroup
-					invoke SetBlocks,ebx,wParam,edi
-				.endif
-				mov		edi,[esi]
-				add		esi,4
-			.endw
-			pop		eax
-			.if eax!=nBmid
-				invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
-				invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
-			.endif
-			pop		eax
-			invoke SetCursor,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ISLINE
-			;wParam=Line
-			;lParam=lpszDef
-			invoke IsLine,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETWORD
-			;wParam=BuffSize
-			;lParam=lpBuff
-			invoke GetWordStart,ebx,[ebx].EDIT.cpMin
-			mov		esi,[ebx].EDIT.rpChars
-			mov		ecx,eax
-			sub		ecx,[ebx].EDIT.cpLine
-			push	ecx
-			push	eax
-			invoke GetWordEnd,ebx,eax
-			pop		ecx
-			pop		edx
-			sub		eax,ecx
-			mov		ecx,eax
-			mov		edi,lParam
-			.if ecx>=wParam
-				mov		ecx,wParam
-				dec		ecx
-			.endif
-			add		esi,[ebx].EDIT.hChars
-			add		esi,edx
-			add		esi,sizeof CHARS
-			mov		eax,ecx
-			rep movsb
-			mov		byte ptr [edi],0
-;			jmp		Ex
-			ret
-		.elseif eax==REM_COLLAPSE
-			;wParam=Line
-			;lParam=0
-			invoke Collapse,ebx,wParam
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-;			jmp		Ex
-			ret
-		.elseif eax==REM_COLLAPSEALL
-			;wParam=0
-			;lParam=0
-			invoke CollapseAll,ebx
-			.if eax
-				push	esi
-				push	edi
-				invoke GetLineFromCp,ebx,[ebx].EDIT.cpMin
-				mov		esi,eax
-				mov		edi,eax
-			  @@:
-				invoke IsLineHidden,ebx,esi
-				.if eax
-					dec		esi
-					jmp		@b
-				.endif
-				.if esi!=edi
-					invoke GetCpFromLine,ebx,esi
-					mov		chrg.cpMin,eax
-					mov		chrg.cpMax,eax
-					invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
-				.endif
-				pop		esi
-				pop		edi
-				invoke SendMessage,hWin,REM_VCENTER,0,0
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_EXPAND
-			;wParam=Line
-			;lParam=0
-			invoke Expand,ebx,wParam
-			push	eax
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			pop		eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_EXPANDALL
-			;wParam=0
-			;lParam=0
-			invoke ExpandAll,ebx
-			.if eax
-				invoke SendMessage,hWin,REM_VCENTER,0,0
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_LOCKLINE
-			;wParam=Line
-			;lParam=TRUE/FALSE
-			invoke LockLine,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ISLINELOCKED
-			;wParam=Line
-			;lParam=0
-			invoke IsLineLocked,ebx,wParam
-			.if eax
-				mov		eax,TRUE
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_HIDELINE
-			;wParam=Line
-			;lParam=TRUE/FALSE
-			invoke HideLine,ebx,wParam,lParam
-			push	eax
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			pop		eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ISLINEHIDDEN
-			;wParam=Line
-			;lParam=0
-			invoke IsLineHidden,ebx,wParam
-			.if eax
-				mov		eax,TRUE
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_AUTOINDENT
-			;wParam=0
-			;lParam=TRUE/FALSE
-			mov		eax,lParam
-			mov		[ebx].EDIT.fIndent,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_TABWIDTH
-			;wParam=nChars
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.nTab,eax
-			mov		eax,lParam
-			mov		[ebx].EDIT.fExpandTab,eax
-			invoke SetFont,ebx,addr [ebx].EDIT.fnt
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SELBARWIDTH
-			;wParam=nWidth
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.selbarwt,eax
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_LINENUMBERWIDTH
-			;wParam=nWidth
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.nlinenrwt,eax
-			.if [ebx].EDIT.linenrwt
-				mov		[ebx].EDIT.linenrwt,eax
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_MOUSEWHEEL
-			;wParam=nLines
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.nScroll,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SUBCLASS
-			;wParam=0
-			;lParam=lpWndProc
-			invoke SetWindowLong,[ebx].EDIT.edta.hwnd,GWL_WNDPROC,lParam
-			invoke SetWindowLong,[ebx].EDIT.edtb.hwnd,GWL_WNDPROC,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETSPLIT
-			;wParam=nSplit
-			;lParam=0
-			mov		eax,wParam
-			and		eax,1FFh
-			mov		[ebx].EDIT.fsplitt,eax
-			call	SizeIt
-			invoke SetFocus,[ebx].EDIT.edtb.hwnd
-			invoke SetCaretVisible,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETSPLIT
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.fsplitt
-;			jmp		Ex
-			ret
-		.elseif eax==REM_VCENTER
-			;wParam=0
-			;lParam=0
-			mov		eax,[esi].RAEDT.rc.bottom
-			shr		eax,1
-			mov		ecx,[ebx].EDIT.fntinfo.fntht
-			xor		edx,edx
-			div		ecx
-			mul		ecx
-			push	eax
-			invoke GetLineFromCp,ebx,[ebx].EDIT.cpMin
-			invoke GetYpFromLine,ebx,eax
-			pop		edx
-			sub		eax,edx
-			jnb		@f
-			xor		eax,eax
-		  @@:
-			mov		[esi].RAEDT.cpy,eax
-			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
-			invoke InvalidateEdit,ebx,[esi].RAEDT.hwnd
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_REPAINT
-			;wParam=0
-			;lParam=TRUE/FALSE (Paint Now)
-			invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
-			invoke InvalidateRect,[ebx].EDIT.edta.hvscroll,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
-			invoke InvalidateRect,[ebx].EDIT.edtb.hvscroll,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hhscroll,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hgrip,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hnogrip,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hsbtn,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hlin,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hexp,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hcol,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hlock,NULL,TRUE
-			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
-			.if lParam
-				invoke UpdateWindow,[ebx].EDIT.edta.hwnd
-				invoke UpdateWindow,[ebx].EDIT.edtb.hwnd
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_BMCALLBACK
-			;wParam=0
-			;lParam=lpBmProc
-			mov		eax,lParam
-			mov		[ebx].EDIT.lpBmCB,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_READONLY
-			;wParam=0
-			;lParam=TRUE/FALSE
-			invoke GetWindowLong,hWin,GWL_STYLE
-			.if lParam
-				or		eax,STYLE_READONLY
-			.else
-				and		eax,-1 xor STYLE_READONLY
-			.endif
-			mov		[ebx].EDIT.fstyle,eax
-			invoke SetWindowLong,hWin,GWL_STYLE,eax
-			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_INVALIDATELINE
-			;wParam=nLine
-			;lParam=0
-			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
-			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETPAGESIZE
-			;wParam=nLines
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.nPageBreak,eax
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETPAGESIZE
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.nPageBreak
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETCHARTAB
-			;wParam=nChar
-			;lParam=0
-			mov		edx,wParam
-			and		edx,0FFh
-			movzx	eax,byte ptr [edx+offset CharTab]
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETCHARTAB
-			;wParam=nChar
-			;lParam=nType
-			mov		edx,wParam
-			and		edx,0FFh
-			mov		eax,lParam
-			mov		byte ptr [edx+offset CharTab],al
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETCOMMENTBLOCKS
-			;wParam=lpStart
-			;lParam=lpEnd
-			invoke SetCommentBlocks,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETWORDGROUP
-			;wParam=0
-			;lParam=nGroup (0-15)
-			mov		eax,lParam
-			and		eax,0Fh
-			mov		[ebx].EDIT.nWordGroup,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETWORDGROUP
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.nWordGroup
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETBMID
-			;wParam=nLine
-			;lParam=nBmID
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				mov		eax,lParam
-				mov		[edx].CHARS.bmid,eax
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETBMID
-			;wParam=nLine
-			;lParam=0
-			xor		eax,eax
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				mov		eax,[edx].CHARS.bmid
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ISCHARPOS
-			;wParam=CP
-			;lParam=0
-			invoke IsCharPos,ebx,wParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_HIDELINES
-			;wParam=nLine
-			;lParam=nLines
-			xor		eax,eax
-			.if lParam>1
-				invoke GetBookMark,ebx,wParam
-				.if !eax
-					push	[ebx].EDIT.nHidden
-					mov		ecx,lParam
-					mov		edx,wParam
-					dec		ecx
-					.while ecx
-						inc		edx
-						push	ecx
-						push	edx
-						invoke HideLine,ebx,edx,TRUE
-						.if eax
-							pop		edx
-							push	edx
-							shl		edx,2
-							.if edx<[ebx].EDIT.rpLineFree
-								add		edx,[ebx].EDIT.hLine
-								mov		edx,[edx].LINE.rpChars
-								add		edx,[ebx].EDIT.hChars
-								mov		eax,nBmid
-								inc		eax
-								mov		[edx].CHARS.bmid,eax
-							.endif
-						.endif
-						pop		edx
-						pop		ecx
-						dec		ecx
-					.endw
-					pop		edx
-					mov		eax,[ebx].EDIT.nHidden
-					sub		eax,edx
-					.if eax
-						push	eax
-						invoke SetBookMark,ebx,wParam,8
-						mov		eax,[ebx].EDIT.cpMin
-						.if eax>[ebx].EDIT.cpMax
-							mov		eax,[ebx].EDIT.cpMax
-						.endif
-						mov		[ebx].EDIT.cpMin,eax
-						mov		[ebx].EDIT.cpMax,eax
-						mov		eax,[ebx].EDIT.rpLineFree
-						shr		eax,2
-						sub		eax,[ebx].EDIT.nHidden
-						mov		ecx,[ebx].EDIT.fntinfo.fntht
-						mul		ecx
-						xor		ecx,ecx
-						.if eax<[ebx].EDIT.edta.cpy
-							mov		[ebx].EDIT.edta.cpy,eax
-							mov		[ebx].EDIT.edta.topyp,ecx
-							mov		[ebx].EDIT.edta.topln,ecx
-							mov		[ebx].EDIT.edta.topcp,ecx
-						.endif
-						.if eax<[ebx].EDIT.edtb.cpy
-							mov		[ebx].EDIT.edtb.cpy,eax
-							mov		[ebx].EDIT.edtb.topyp,ecx
-							mov		[ebx].EDIT.edtb.topln,ecx
-							mov		[ebx].EDIT.edtb.topcp,ecx
-						.endif
-						invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-						invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-						pop		eax
-					.endif
-				.else
-					xor		eax,eax
-				.endif
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETDIVIDERLINE
-			;wParam=nLine
-			;lParam=TRUE/FALSE
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				.if lParam
-					or		[edx].CHARS.state,STATE_DIVIDERLINE
-				.else
-					and		[edx].CHARS.state,-1 xor STATE_DIVIDERLINE
-				.endif
-				invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
-				invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ISINBLOCK
-			;wParam=nLine
-			;lParam=lpRABLOCKDEF
-			invoke IsInBlock,ebx,wParam,lParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_TRIMSPACE
-			;wParam=nLine
-			;lParam=fLeft
-			invoke TrimSpace,ebx,wParam,lParam
-			.if eax
-				push	eax
-				invoke SelChange,ebx,SEL_TEXT
-				pop		eax
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SAVESEL
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.cpMin
-			mov		[ebx].EDIT.savesel.cpMin,eax
-			mov		eax,[ebx].EDIT.cpMax
-			mov		[ebx].EDIT.savesel.cpMax,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_RESTORESEL
-			;wParam=0
-			;lParam=0
-			.if ![ebx].EDIT.fHideSel
-				mov		eax,[ebx].EDIT.cpMin
-				.if eax!=[ebx].EDIT.cpMax
-					invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-					invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-				.endif
-			.endif
-			invoke GetCharPtr,ebx,[ebx].EDIT.savesel.cpMax
-			mov		[ebx].EDIT.cpMax,ecx
-			invoke GetCharPtr,ebx,[ebx].EDIT.savesel.cpMin
-			mov		[ebx].EDIT.cpMin,ecx
-			.if ![ebx].EDIT.fHideSel
-				invoke TestExpand,ebx,[ebx].EDIT.line
-				mov		eax,[ebx].EDIT.cpMin
-				.if eax!=[ebx].EDIT.cpMax
-					invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-					invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-					invoke SetCaret,ebx,[esi].RAEDT.cpy
-					invoke SetCpxMax,ebx,[esi].RAEDT.hwnd
-				.endif
-			.endif
-			invoke SelChange,ebx,SEL_TEXT
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETCURSORWORD
-			;wParam=BuffSize
-			;lParam=lpBuff
-			invoke GetCursorPos,addr pt
-			invoke ScreenToClient,hWin,addr pt
-			invoke ChildWindowFromPoint,hWin,pt.x,pt.y
-			.if eax==[ebx].EDIT.edta.hwnd
-				lea		esi,[ebx].EDIT.edta
-			.else
-				lea		esi,[ebx].EDIT.edtb
-			.endif
-			invoke ClientToScreen,hWin,addr pt
-			invoke ScreenToClient,[esi].RAEDT.hwnd,addr pt
-			invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,pt.x,pt.y
-			invoke GetWordStart,ebx,eax
-			mov		esi,[ebx].EDIT.rpChars
-			mov		ecx,eax
-			sub		ecx,[ebx].EDIT.cpLine
-			push	ecx
-			push	eax
-			invoke GetWordEnd,ebx,eax
-			pop		ecx
-			pop		edx
-			sub		eax,ecx
-			mov		ecx,eax
-			mov		edi,lParam
-			.if ecx>=wParam
-				mov		ecx,wParam
-				dec		ecx
-			.endif
-			add		esi,[ebx].EDIT.hChars
-			add		esi,edx
-			add		esi,sizeof CHARS
-			mov		eax,ecx
-			rep movsb
-			mov		byte ptr [edi],0
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETSEGMENTBLOCK
-			;wParam=nLine
-			;lParam=TRUE/FALSE
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				.if lParam
-					or		[edx].CHARS.state,STATE_SEGMENTBLOCK
-				.else
-					and		[edx].CHARS.state,-1 xor STATE_SEGMENTBLOCK
-				.endif
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETMODE
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.nMode
-			.if [ebx].EDIT.fOvr
-				or		eax,MODE_OVERWRITE
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETMODE
-			;wParam=nMode
-			;lParam=0
-			mov		eax,wParam
-			test	eax,MODE_OVERWRITE
-			.if ZERO?
-				mov		[ebx].EDIT.fOvr,FALSE
-			.else
-				mov		[ebx].EDIT.fOvr,TRUE
-			.endif
-			.if ![ebx].EDIT.fntinfo.monospace
-				and		eax,-1 xor MODE_BLOCK
-			.endif
-			mov		edx,[ebx].EDIT.nMode
-			mov		[ebx].EDIT.nMode,eax
-			xor		eax,edx
-			test	eax,MODE_BLOCK
-			.if !ZERO?
-				.if ![ebx].EDIT.fntinfo.monospace
-					and		[ebx].EDIT.nMode,-1 xor MODE_BLOCK
-				.endif
-				test	[ebx].EDIT.nMode,MODE_BLOCK
-				.if ZERO?
-					mov		eax,2
-				.else
-					mov		eax,3
-				.endif
-				mov		edx,[ebx].EDIT.fntinfo.fntht
-				invoke CreateCaret,[ebx].EDIT.focus,NULL,eax,edx
-				invoke GetCaretPos,addr pt
-				invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,pt.x,pt.y
-				mov		[ebx].EDIT.cpMin,eax
-				mov		[ebx].EDIT.cpMax,eax
-				test	[ebx].EDIT.nMode,MODE_BLOCK
-				.if ZERO?
-					xor		eax,eax
-					mov		[ebx].EDIT.blrg.lnMin,eax
-					mov		[ebx].EDIT.blrg.clMin,eax
-					mov		[ebx].EDIT.blrg.lnMax,eax
-					mov		[ebx].EDIT.blrg.clMax,eax
-				.else
-					invoke SetBlockFromCp,ebx,[ebx].EDIT.cpMin,FALSE
-				.endif
-				invoke SetCaretVisible,hWin,[esi].RAEDT.cpy
-				invoke SetCaret,ebx,[esi].RAEDT.cpy
-				invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,TRUE
-				invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,TRUE
-				invoke SelChange,ebx,SEL_TEXT
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETBLOCK
-			;wParam=0
-			;lParam=lpBLOCKRANGE
-			mov		edx,lParam
-			mov		eax,[ebx].EDIT.blrg.lnMin
-			mov		[edx].BLOCKRANGE.lnMin,eax
-			mov		eax,[ebx].EDIT.blrg.clMin
-			mov		[edx].BLOCKRANGE.clMin,eax
-			mov		eax,[ebx].EDIT.blrg.lnMax
-			mov		[edx].BLOCKRANGE.lnMax,eax
-			mov		eax,[ebx].EDIT.blrg.clMax
-			mov		[edx].BLOCKRANGE.clMax,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETBLOCK
-			;wParam=0
-			;lParam=lpBLOCKRANGE
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if !ZERO?
-				invoke GetBlockRects,ebx,addr oldrects
-				mov		edx,lParam
-				mov		eax,[edx].BLOCKRANGE.lnMin
-				mov		[ebx].EDIT.blrg.lnMin,eax
-				mov		eax,[edx].BLOCKRANGE.clMin
-				mov		[ebx].EDIT.blrg.clMin,eax
-				mov		eax,[edx].BLOCKRANGE.lnMax
-				mov		[ebx].EDIT.blrg.lnMax,eax
-				mov		eax,[edx].BLOCKRANGE.clMax
-				mov		[ebx].EDIT.blrg.clMax,eax
-				invoke GetBlockCp,ebx,[ebx].EDIT.blrg.lnMin,[ebx].EDIT.blrg.clMin
-				mov		[ebx].EDIT.cpMin,eax
-				mov		[ebx].EDIT.cpMax,eax
-				invoke InvalidateBlock,ebx,addr oldrects
-				invoke SetCaretVisible,hWin,[esi].RAEDT.cpy
-				invoke SetCaret,ebx,[esi].RAEDT.cpy
-				invoke SelChange,ebx,SEL_TEXT
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_BLOCKINSERT
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if !ZERO?
-				invoke IsSelectionLocked,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-				or		eax,eax
-				jne		ErrBeep
-				inc		nUndoid
-				mov		eax,[ebx].EDIT.blrg.lnMin
-				mov		edx,[ebx].EDIT.blrg.lnMax
-				.if eax<edx
-					xchg	eax,edx
-				.endif
-				sub		eax,edx
-				inc		eax
-				mov		edi,eax
-				invoke strlen,lParam
-				mov		esi,eax
-				add		eax,2
-				mul		edi
-				inc		eax
-				invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-				push	eax
-				mov		edx,eax
-				.while edi
-					push	esi
-					mov		ecx,lParam
-					.while esi
-						mov		al,[ecx]
-						mov		[edx],al
-						inc		ecx
-						inc		edx
-						dec		esi
-					.endw
-					mov		byte ptr [edx],0Dh
-					inc		edx
-					mov		byte ptr [edx],0Ah
-					inc		edx
-					pop		esi
-					dec		edi
-				.endw
-				pop		eax
-				push	eax
-				invoke Paste,ebx,[ebx].EDIT.focus,eax
-				pop		eax
-				invoke GlobalFree,eax
-				inc		nUndoid
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_LOCKUNDOID
-			.if wParam
-				mov		eax,nUndoid
-				inc		eax
-				mov		[ebx].EDIT.lockundoid,eax
-				inc		eax
-				mov		nUndoid,eax
-			.else
-				mov		[ebx].EDIT.lockundoid,0
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_ADDBLOCKDEF
-			invoke SetBlockDef,lParam
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_CONVERT
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				invoke IsSelectionLocked,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-				or		eax,eax
-				jne		ErrBeep
-				.if wParam==CONVERT_TABTOSPACE || wParam==CONVERT_SPACETOTAB
-					invoke ConvertIndent,ebx,wParam
-				.else
-					invoke ConvertCase,ebx,wParam
-				.endif
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-				invoke SetCaret,ebx,[esi].RAEDT.cpy
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_BRACKETMATCH
-			.if lParam
-				mov		edx,lParam
-				mov		ecx,offset bracketstart
-				.while byte ptr [edx] && byte ptr [edx]!=','
-					mov		al,[edx]
-					mov		[ecx],al
-					inc		edx
-					inc		ecx
-				.endw
-				mov		byte ptr [ecx],0
-				mov		ecx,offset bracketend
-				.if byte ptr [edx]==','
-					inc		edx
-					.while byte ptr [edx] && byte ptr [edx]!=','
-						mov		al,[edx]
-						mov		[ecx],al
-						inc		edx
-						inc		ecx
-					.endw
-				.endif
-				mov		byte ptr [ecx],0
-				mov		ecx,offset bracketcont
-				.if byte ptr [edx]==','
-					inc		edx
-					.while byte ptr [edx]
-						mov		al,[edx]
-						mov		[ecx],al
-						inc		edx
-						inc		ecx
-					.endw
-				.endif
-				mov		byte ptr [ecx],0FFh
-			.else
-				mov		eax,[ebx].EDIT.cpMin
-				.if eax==[ebx].EDIT.cpMax
-					invoke GetChar,ebx,[ebx].EDIT.cpMin
-					invoke BracketMatch,ebx,eax,[ebx].EDIT.cpMin
-				.endif
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_COMMAND
-			invoke GetFocus
-			.if eax==[ebx].EDIT.edta.hwnd || eax==[ebx].EDIT.edtb.hwnd
-				mov		ecx,wParam
-				mov		fAlt,0
-				mov		fControl,0
-				mov		fShift,0
-				test	ecx,CMD_ALT
-				.if !ZERO?
-					mov		fAlt,TRUE
-				.endif
-				test	ecx,CMD_CTRL
-				.if !ZERO?
-					mov		fControl,TRUE
-				.endif
-				test	ecx,CMD_SHIFT
-				.if !ZERO?
-					mov		fShift,TRUE
-				.endif
-				movzx	ecx,cl
-				invoke EditFunc,eax,ecx,fAlt,fShift,fControl
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_CASEWORD
-			;wParam=0
-			;lParam=lpBuff
-			invoke GetWordStart,ebx,[ebx].EDIT.cpMin
-			mov		esi,[ebx].EDIT.rpChars
-			sub		eax,[ebx].EDIT.cpLine
-			add		esi,[ebx].EDIT.hChars
-			add		esi,eax
-			add		esi,sizeof CHARS
-			mov		edi,lParam
-			.while byte ptr [edi]
-				mov		al,[edi]
-				mov		[esi],al
-				inc		edi
-				inc		esi
-			.endw
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==REM_GETBLOCKEND
-			;wParam=nLine
-			;lParam=0
-			invoke CollapseGetEnd,ebx,wParam
-;			jmp		Ex
-			ret
-		.elseif eax==REM_SETLOCK
-			;wParam=TRUE/FALSE
-			;lParam=0
-			.if wParam
-				mov		eax,TRUE
-			.else
-				xor		eax,eax
-			.endif
-			mov		[ebx].EDIT.fLock,eax
-			invoke CheckDlgButton,hWin,-5,eax
-			xor		eax,eax
-			ret
-		.elseif eax==REM_GETLOCK
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.fLock
-			ret
-		.endif
+	.if eax>=REM_BASE && eax<=REM_GETLOCK
+		sub		eax,REM_BASE
+		jmp 		DWORD PTR [offset _REM_BASE+eax*4]
+		include RAEdit_REM_Msg_JumpTable.asm
 	.endif
 	.if eax>=EM_CANPASTE && eax<=EM_SETZOOM
-		.if eax==EM_EXLINEFROMCHAR
-			;wParam=0
-			;lParam=cp
-			invoke GetCharPtr,ebx,lParam
-			mov		eax,edx
-;			jmp		Ex
-			ret
-		.elseif eax==EM_EXSETSEL
-			;wParam=0
-			;lParam=lpCHARRANGE
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				.if ![ebx].EDIT.fHideSel
-					mov		eax,[ebx].EDIT.cpMin
-					.if eax!=[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-					.endif
-				.endif
-				mov		edi,lParam
-				invoke GetCharPtr,ebx,[edi].CHARRANGE.cpMax
-				mov		[ebx].EDIT.cpMax,ecx
-				invoke GetCharPtr,ebx,[edi].CHARRANGE.cpMin
-				mov		[ebx].EDIT.cpMin,ecx
-				.if ![ebx].EDIT.fHideSel
-					invoke TestExpand,ebx,[ebx].EDIT.line
-					mov		eax,[ebx].EDIT.cpMin
-					.if eax!=[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke SetCaret,ebx,[esi].RAEDT.cpy
-						invoke SetCpxMax,ebx,[esi].RAEDT.hwnd
-					.endif
-				.endif
-				invoke SelChange,ebx,SEL_TEXT
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_EXGETSEL
-			;wParam=0
-			;lParam=lpCHARRANGE
-			mov		edx,lParam
-			mov		eax,[ebx].EDIT.cpMin
-			mov		ecx,[ebx].EDIT.cpMax
-			.if eax>ecx
-				xchg	eax,ecx
-			.endif
-			mov		[edx].CHARRANGE.cpMin,eax
-			mov		[edx].CHARRANGE.cpMax,ecx
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_FINDTEXTEX
-			;wParam=Flags
-			;lParam=lpFINDTEXTEX
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				invoke FindTextEx,ebx,wParam,lParam
-			.else
-				xor		eax,eax
-				dec		eax
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETTEXTRANGE
-			;wParam=0
-			;lParam=lpTEXTRANGE
-			mov		edx,lParam
-			invoke GetText,ebx,[edx].TEXTRANGE.chrg.cpMin,[edx].TEXTRANGE.chrg.cpMax,[edx].TEXTRANGE.lpstrText,FALSE
-;			jmp		Ex
-			ret
-		.elseif eax==EM_FINDWORDBREAK
-			;wParam=uFlags
-			;lParam=cp
-			mov		eax,wParam
-			.if eax==WB_MOVEWORDLEFT
-				invoke GetWordStart,ebx,lParam
-			.elseif eax==WB_MOVEWORDRIGHT
-				invoke GetWordEnd,ebx,lParam
-			.else
-				mov		eax,lParam
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_CANREDO
-			;wParam=0
-			;lParam=0
-			xor		eax,eax
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				mov		edx,[ebx].EDIT.hUndo
-				add		edx,[ebx].EDIT.rpUndo
-				mov		eax,[edx].RAUNDO.cb
-				.if eax
-					mov		eax,TRUE
-				.endif
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_REDO
-			;wParam=0
-			;lParam=0
-			inc		nUndoid
-			invoke Redo,ebx,[esi].RAEDT.hwnd
-			inc		nUndoid
-;			jmp		Ex
-			ret
-		.elseif eax==EM_HIDESELECTION
-			;wParam=TRUE/FALSE
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.fHideSel,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETSELTEXT
-			;wParam=0
-			;lParam=lpBuff
-			invoke GetText,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax,lParam,FALSE
-;			jmp		Ex
-			ret
-		.elseif eax==EM_CANPASTE
-			;wParam=CF_TEXT
-			;lParam=0
-			invoke IsClipboardFormatAvailable,wParam
-;			jmp		Ex
-			ret
-		.elseif eax==EM_STREAMIN
-			;wParam=SF_TEXT
-			;lParam=lpStream
-			invoke GetCursor
-			push	eax
-			invoke LoadCursor,0,IDC_WAIT
-			invoke SetCursor,eax
-			invoke StreamIn,ebx,lParam
-			xor		eax,eax
-			mov		[ebx].EDIT.edta.cpy,eax
-			mov		[ebx].EDIT.edta.cpxmax,eax
-			mov		[ebx].EDIT.edta.topyp,eax
-			mov		[ebx].EDIT.edta.topln,eax
-			mov		[ebx].EDIT.edta.topcp,eax
-			mov		[ebx].EDIT.edtb.cpy,eax
-			mov		[ebx].EDIT.edtb.cpxmax,eax
-			mov		[ebx].EDIT.edtb.topyp,eax
-			mov		[ebx].EDIT.edtb.topln,eax
-			mov		[ebx].EDIT.edtb.topcp,eax
-			mov		[ebx].EDIT.cpMin,eax
-			mov		[ebx].EDIT.cpMax,eax
-			mov		[ebx].EDIT.blrg.lnMin,eax
-			mov		[ebx].EDIT.blrg.clMin,eax
-			mov		[ebx].EDIT.blrg.lnMax,eax
-			mov		[ebx].EDIT.blrg.clMax,eax
-			mov		[ebx].EDIT.line,eax
-			mov		[ebx].EDIT.cpx,eax
-			mov		[ebx].EDIT.cpLine,eax
-			mov		[ebx].EDIT.rpLine,eax
-			mov		[ebx].EDIT.rpChars,eax
-			invoke GetCharPtr,ebx,0
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			invoke SetCaret,ebx,0
-			invoke SelChange,ebx,SEL_TEXT
-			pop		eax
-			invoke SetCursor,eax
-			inc		nUndoid
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_STREAMOUT
-			;wParam=SF_TEXT
-			;lParam=lpStream
-			invoke GetCursor
-			push	eax
-			invoke LoadCursor,0,IDC_WAIT
-			invoke SetCursor,eax
-			invoke StreamOut,ebx,lParam
-			pop		eax
-			invoke SetCursor,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_FORMATRANGE
-			mov		edi,lParam
-			.if edi
-				invoke GetStockObject,SYSTEM_FONT
-				invoke SelectObject,[edi].FORMATRANGE.hdc,eax
-				push	eax
-				mov		edx,eax
-				invoke GetObject,edx,sizeof lf,addr lf
-				pop		eax
-				invoke SelectObject,[edi].FORMATRANGE.hdc,eax
-				invoke GetDeviceCaps,[edi].FORMATRANGE.hdc,LOGPIXELSY
-				push	eax
-				invoke GetDeviceCaps,[edi].FORMATRANGE.hdcTarget,LOGPIXELSY
-				mov		ecx,eax
-				mov		eax,lf.lfHeight
-				.if sdword ptr eax<0
-					neg		eax
-				.endif
-				mul		ecx
-				pop		ecx
-				xor		edx,edx
-				div		ecx
-				;neg		eax
-				mov		lf.lfHeight,eax
-
-				invoke GetDeviceCaps,[edi].FORMATRANGE.hdc,LOGPIXELSX
-				push	eax
-				invoke GetDeviceCaps,[edi].FORMATRANGE.hdcTarget,LOGPIXELSX
-				mov		ecx,eax
-				mov		eax,lf.lfWidth
-				mul		ecx
-				pop		ecx
-				xor		edx,edx
-				div		ecx
-				mov		lf.lfWidth,eax
-				invoke CreateFontIndirect,addr lf
-				invoke SelectObject,[edi].FORMATRANGE.hdcTarget,eax
-				push	eax
-				;Get tab width
-				mov		eax,'WWWW'
-				mov		pt.x,eax
-				invoke GetTextExtentPoint32,[edi].FORMATRANGE.hdcTarget,addr pt.x,4,addr pt
-				mov		eax,pt.x
-				shr		eax,2
-				mov		ecx,[ebx].EDIT.nTab
-				mul		ecx
-				mov		tabWt,eax
-				invoke xGlobalAlloc,GMEM_FIXED,16384
-				mov		esi,eax
-				invoke ConvTwipsToPixels,[edi].FORMATRANGE.hdcTarget,TRUE,[edi].FORMATRANGE.rc.left
-				mov		rect.left,eax
-				invoke ConvTwipsToPixels,[edi].FORMATRANGE.hdcTarget,FALSE,[edi].FORMATRANGE.rc.top
-				mov		rect.top,eax
-				invoke ConvTwipsToPixels,[edi].FORMATRANGE.hdcTarget,TRUE,[edi].FORMATRANGE.rc.right
-				mov		rect.right,eax
-				invoke ConvTwipsToPixels,[edi].FORMATRANGE.hdcTarget,FALSE,[edi].FORMATRANGE.rc.bottom
-				mov		rect.bottom,eax
-				invoke CreateRectRgn,rect.left,rect.top,rect.right,rect.bottom
-				invoke SelectObject,[edi].FORMATRANGE.hdcTarget,eax
-				push	eax
-				invoke SendMessage,hWin,EM_LINEFROMCHAR,[edi].FORMATRANGE.chrg.cpMin,0
-				mov		nLine,eax
-			  @@:
-				mov		word ptr [esi],16383
-				invoke SendMessage,hWin,EM_GETLINE,nLine,esi
-				mov		len,eax
-				mov		eax,rect.top
-				add		eax,pt.y
-				.if eax<rect.bottom
-					.if wParam
-						invoke TabbedTextOut,[edi].FORMATRANGE.hdcTarget,rect.left,rect.top,esi,len,1,addr tabWt,rect.left
-					.endif
-					mov		eax,pt.y
-					add		rect.top,eax
-					inc		nLine
-					invoke SendMessage,hWin,EM_LINEINDEX,nLine,0
-					.if eax<[edi].FORMATRANGE.chrg.cpMax
-						jmp		@b
-					.endif
-				.endif
-				invoke GlobalFree,esi
-				pop		eax
-				invoke SelectObject,[edi].FORMATRANGE.hdcTarget,eax
-				invoke DeleteObject,eax
-				pop		eax
-				invoke SelectObject,[edi].FORMATRANGE.hdcTarget,eax
-				invoke DeleteObject,eax
-				invoke SendMessage,hWin,EM_LINEINDEX,nLine,0
-			.endif
-;			jmp		Ex
+		sub		eax,EM_CANPASTE
+		.if eax<=35
+			jmp		DWORD PTR [offset _RICHEDIT_MSG+eax*4]
+		.else
+			invoke DefWindowProc,hWin,uMsg,wParam,lParam
 			ret
 		.endif
+		include RAEdit_Richedit_Msg_JumpTable.asm
 	.endif
 	.if eax>=EM_GETSEL && eax<=EM_GETIMESTATUS
-		.if eax==EM_CHARFROMPOS
-			;wParam=0
-			;lParam=lpPoint
-			mov		edx,lParam
-			invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,[edx].POINT.x,[edx].POINT.y
-;			jmp		Ex
-			ret
-		.elseif eax==EM_POSFROMCHAR
-			;wParam=lpPoint
-			;lParam=cp
-			invoke GetPosFromChar,ebx,lParam,wParam
-			mov		edx,wParam
-			mov		eax,[ebx].EDIT.cpx
-			sub		[edx].POINT.x,eax
-			mov		eax,[esi].RAEDT.cpy
-			sub		[edx].POINT.y,eax
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_LINEFROMCHAR
-			;wParam=cp
-			;lParam=0
-			mov		eax,wParam
-			.if eax==-1
-				mov		eax,[ebx].EDIT.cpMin
-			.endif
-			invoke GetCharPtr,ebx,eax
-			mov		eax,edx
-;			jmp		Ex
-			ret
-		.elseif eax==EM_LINEINDEX
-			;wParam=line
-			;lParam=0
-			mov		eax,wParam
-			.if eax==-1
-				mov		eax,[ebx].EDIT.line
-			.endif
-			invoke GetCpFromLine,ebx,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETLINE
-			;wParam=line
-			;lParam=lpBuff
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				mov		ecx,[edx].CHARS.len
-				.if byte ptr [edx+ecx+sizeof CHARS-1]==VK_RETURN && ecx
-					dec		ecx
-				.endif
-				mov		edi,lParam
-				.if cx>word ptr [edi]
-					movzx	ecx,word ptr [edi]
-				.endif
-				push	ecx
-				lea		esi,[edx+sizeof CHARS]
-				rep movsb
-				pop		eax
-			.else
-				xor		eax,eax
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_LINELENGTH
-			;wParam=cp
-			;lParam=0
-			invoke GetLineFromCp,ebx,wParam
-			mov		edx,eax
-			shl		edx,2
-			add		edx,[ebx].EDIT.hLine
-			mov		edx,[edx].LINE.rpChars
-			add		edx,[ebx].EDIT.hChars
-			mov		eax,[edx].CHARS.len
-			.if eax
-				.if byte ptr [edx+eax+sizeof CHARS-1]==0Dh
-					dec		eax
-				.endif
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETFIRSTVISIBLELINE
-			;wParam=0
-			;lParam=0
-			mov		eax,[esi].RAEDT.topln
-;			jmp		Ex
-			ret
-		.elseif eax==EM_LINESCROLL
-			;wParam=cxScroll
-			;lParam=cyScroll
-			mov		eax,wParam
-			mov		edx,[ebx].EDIT.fntinfo.fntwt
-			.if sdword ptr eax<0
-				neg		eax
-				mul		edx
-				neg		eax
-			.else
-				mul		edx
-			.endif
-			add		eax,[ebx].EDIT.cpx
-			mov		[ebx].EDIT.cpx,eax
-			mov		eax,lParam
-			mov		edx,[ebx].EDIT.fntinfo.fntht
-			.if sdword ptr eax<0
-				neg		eax
-				mul		edx
-				neg		eax
-			.else
-				mul		edx
-			.endif
-			add		eax,[esi].RAEDT.cpy
-			.if sdword ptr eax<0
-				xor		eax,eax
-			.endif
-			mov		[esi].RAEDT.cpy,eax
-			invoke InvalidateEdit,ebx,[esi].RAEDT.hwnd
-;			jmp		Ex
-			ret
-		.elseif eax==EM_SCROLLCARET
-			;wParam=0
-			;lParam=0
-			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
-			invoke SetCaret,ebx,[esi].RAEDT.cpy
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_SETSEL
-			;wParam=cpMin
-			;lParam=cpMax
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				.if ![ebx].EDIT.fHideSel
-					mov		eax,[ebx].EDIT.cpMin
-					.if eax!=[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-					.endif
-				.endif
-				invoke GetCharPtr,ebx,lParam
-				mov		[ebx].EDIT.cpMax,ecx
-				invoke GetCharPtr,ebx,wParam
-				mov		[ebx].EDIT.cpMin,ecx
-				.if ![ebx].EDIT.fHideSel
-					invoke TestExpand,ebx,[ebx].EDIT.line
-					mov		eax,[ebx].EDIT.cpMin
-					.if eax!=[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-						invoke SetCaret,ebx,[esi].RAEDT.cpy
-						invoke SetCpxMax,ebx,[esi].RAEDT.hwnd
-					.endif
-				.endif
-				invoke SelChange,ebx,SEL_TEXT
-			.endif
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETSEL
-			;wParam=lpcpMin
-			;lParam=lpcpMax
-			mov		eax,[ebx].EDIT.cpMin
-			mov		ecx,[ebx].EDIT.cpMax
-			.if eax>ecx
-				xchg	eax,ecx
-			.endif
-			mov		edx,wParam
-			.if edx
-				mov		[edx],eax
-			.endif
-			mov		edx,lParam
-			.if edx
-				mov		[edx],ecx
-			.endif
-			and		eax,0FFFFh
-			shl		ecx,16
-			or		eax,ecx
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETMODIFY
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.fChanged
-;			jmp		Ex
-			ret
-		.elseif eax==EM_SETMODIFY
-			;wParam=TRUE/FALSE
-			;lParam=0
-			mov		eax,wParam
-			mov		[ebx].EDIT.fChanged,eax
-			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
-;			jmp		Ex
-			ret
-		.elseif eax==EM_REPLACESEL
-			;wParam=TRUE/FALSE
-			;lParam=lpText
-			invoke IsSelectionLocked,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-			or		eax,eax
-			jne		ErrBeep
-			inc		nUndoid
-			invoke DeleteSelection,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
-			mov		[ebx].EDIT.cpMin,eax
-			mov		[ebx].EDIT.cpMax,eax
-			push	eax
-			push	[ebx].EDIT.fOvr
-			mov		[ebx].EDIT.fOvr,0
-			invoke EditInsert,ebx,[ebx].EDIT.cpMin,lParam
-			pop		[ebx].EDIT.fOvr
-			pop		ecx
-			add		[ebx].EDIT.cpMin,eax
-			add		[ebx].EDIT.cpMax,eax
-			.if wParam && eax
-				invoke SaveUndo,ebx,UNDO_INSERTBLOCK,ecx,lParam,eax
-			.endif
-			invoke GetCharPtr,ebx,[ebx].EDIT.cpMin
-			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
-			invoke SetCaret,ebx,[esi].RAEDT.cpy
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
-			invoke SetCpxMax,ebx,[esi].RAEDT.hwnd
-			invoke SelChange,ebx,SEL_TEXT
-			inc		nUndoid
-			xor		eax,eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETLINECOUNT
-			;wParam=0
-			;lParam=0
-			mov		eax,[ebx].EDIT.rpLineFree
-			shr		eax,2
-			dec		eax
-;			jmp		Ex
-			ret
-		.elseif eax==EM_GETRECT
-			;wParam=0
-			;lParam=lpRECT
-			mov		edx,lParam
-			mov		eax,[esi].RAEDT.rc.left
-			mov		[edx].RECT.left,eax
-			mov		eax,[esi].RAEDT.rc.top
-			mov		[edx].RECT.top,eax
-			mov		eax,[esi].RAEDT.rc.right
-			mov		[edx].RECT.right,eax
-			mov		eax,[esi].RAEDT.rc.bottom
-			mov		[edx].RECT.bottom,eax
-			mov		eax,[ebx].EDIT.focus
-			.if eax==[ebx].EDIT.edtb.hwnd && [ebx].EDIT.nsplitt
-				mov		eax,[ebx].EDIT.nsplitt
-				add		eax,BTNHT
-				add		[edx].RECT.top,eax
-				add		[edx].RECT.bottom,eax
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_CANUNDO
-			;wParam=0
-			;lParam=0
-			xor		eax,eax
-			test	[ebx].EDIT.nMode,MODE_BLOCK
-			.if ZERO?
-				mov		eax,[ebx].EDIT.rpUndo
-				.if eax
-					mov		eax,TRUE
-				.endif
-			.endif
-;			jmp		Ex
-			ret
-		.elseif eax==EM_UNDO
-			;wParam=0
-			;lParam=0
-			inc		nUndoid
-			invoke Undo,ebx,[esi].RAEDT.hwnd
-			inc		nUndoid
-;			jmp		Ex
-			ret
-		.elseif eax==EM_EMPTYUNDOBUFFER
-			;wParam=0
-			;lParam=0
-			mov		edi,[ebx].EDIT.hUndo
-			mov		ecx,[ebx].EDIT.cbUndo
-			xor		eax,eax
-			mov		[ebx].EDIT.rpUndo,eax
-			rep stosb
-			inc		nUndoid
-;			jmp		Ex
-			ret
-		.endif
+		sub		eax,EM_GETSEL
+		jmp		DWORD PTR [offset _EDIT_MSG+eax*4]
+		include RAEdit_Edit_Msg_JumpTable.asm
 	.endif
 	.if eax==WM_COPY
 		;wParam=0
 		;lParam=0
 		invoke Copy,ebx
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_CUT
 		;wParam=0
@@ -4660,7 +2963,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		inc		nUndoid
 		invoke Cut,ebx,[esi].RAEDT.hwnd
 		inc		nUndoid
-;		jmp		Ex
 		ret
 	.elseif eax==WM_PASTE
 		;wParam=0
@@ -4672,7 +2974,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke Paste,ebx,[esi].RAEDT.hwnd,NULL
 		inc		nUndoid
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_CLEAR
 		;wParam=0
@@ -4718,7 +3019,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_SETTEXT
 		;wParam=0
@@ -4755,7 +3055,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_GETTEXT
 		;wParam=cbBuff
@@ -4795,7 +3094,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,chrg.cpMax
 			sub		eax,chrg.cpMin
 		.endif
-;		jmp		Ex
 		ret
 	.elseif eax==WM_GETTEXTLENGTH
 		;wParam=0
@@ -4813,7 +3111,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,[ecx].CHARS.len
 			add		edx,sizeof LINE
 		.endw
-;		jmp		Ex
 		ret
 	.elseif eax==WM_MOUSEMOVE
 		;Get mouse position
@@ -4848,11 +3145,9 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateWindow,[ebx].EDIT.edtb.hwnd
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONDOWN
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONUP
 		.if [ebx].EDIT.fresize
@@ -4864,11 +3159,9 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_LBUTTONDBLCLK
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_CREATE
 		invoke GetSystemMetrics,SM_CXVSCROLL
@@ -5030,11 +3323,9 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetFocus,eax
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_KEYDOWN || eax==WM_CHAR || eax==WM_KEYUP
 		invoke SendMessage,[ebx].EDIT.focus,eax,wParam,lParam
-;		jmp		Ex
 		ret
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
@@ -5160,7 +3451,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
 		pop		edi
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.elseif eax==WM_HSCROLL
 		push	[ebx].EDIT.cpx
@@ -5203,7 +3493,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetFont,ebx,addr [ebx].EDIT.fnt
 	.elseif eax==WM_GETFONT
 		mov		eax,[ebx].EDIT.fnt.hFont
-;		jmp		Ex
 		ret
 	.elseif eax==WM_STYLECHANGED
 		invoke GetWindowLong,hWin,GWL_STYLE
@@ -5218,7 +3507,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;to let the custom control fill in default design time values.
 		invoke SendMessage,hWin,WM_SETTEXT,0,offset szToolTip
 		xor		eax,eax
-;		jmp		Ex
 		ret
 	.endif
   ExDef:
@@ -5229,7 +3517,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ErrBeep:
 	invoke MessageBeep,MB_ICONHAND
 	xor		eax,eax
-;	jmp		Ex
 	ret
 
 SetToolTip:

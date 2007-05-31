@@ -245,39 +245,6 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 
 End Sub
 
-Sub SetHiliteWordFindInPage(ByVal hWin As HWND)
-	Dim As COLORREF tempcolor,oldcmntcolor,oldstrcolor,oldoprcolor,oldnumcolor
-
-	If ah.hred<>0 And ah.hred<>ah.hres Then
-		SendMessage(ah.hfindinpage,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
-		If Len(buff) Then
-			tempcolor=fbcol.racol.txtcol
-			oldcmntcolor=fbcol.racol.cmntcol
-			oldstrcolor=fbcol.racol.strcol
-			oldoprcolor=fbcol.racol.oprcol
-			oldnumcolor=fbcol.racol.numcol
-			fbcol.racol.cmntcol=tempcolor
-			fbcol.racol.strcol=tempcolor
-			fbcol.racol.oprcol=tempcolor
-			fbcol.racol.numcol=tempcolor
-			SetToolsColors(ah.hwnd)
-			SendMessage(ah.hout,REM_SETHILITEWORDS,0,0)
-			SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(LPARAM,@buff))
-'			SendMessage(ah.hred,REM_REPAINT,0,TRUE)
-			UpdateAllTabs(1)
-			fbcol.racol.cmntcol=oldcmntcolor
-			fbcol.racol.strcol=oldstrcolor
-			fbcol.racol.oprcol=oldoprcolor
-			fbcol.racol.numcol=oldnumcolor
-		Else
-			SetToolsColors(ah.hwnd)
-			SetHiliteWords(ah.hwnd)
-			SetHiliteWordsFromApi(ah.hwnd)
-			UpdateAllTabs(1)
-		EndIf
-	EndIf
-End Sub
-
 Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim ofs As Any ptr
 	Dim col As Integer
@@ -657,7 +624,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 				ElseIf nInx=15 Then
 					sItem="Api calls"
 				ElseIf nInx=16 Then
-					sItem="Page Find"
+					sItem="User" 		'please don't delete, i'll use it
 				EndIf
 				RtlMoveMemory(@col,ofs,4)
 				SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_ADDSTRING,0,Cast(Integer,@sItem))
@@ -935,16 +902,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 								EnableWindow(GetDlgItem(hWin,IDC_CHKCOLORITALIC),FALSE)
 							EndIf
 							col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
-							x=BST_UNCHECKED
-							If col And 2^24 Then
-								x=BST_CHECKED
-							EndIf
-							CheckDlgButton(hWin,IDC_CHKCOLORBOLD,x)
-							x=BST_UNCHECKED
-							If col And 2^25 Then
-								x=BST_CHECKED
-							EndIf
-							CheckDlgButton(hWin,IDC_CHKCOLORITALIC,x)
+							CheckDlgButton(hWin,IDC_CHKCOLORBOLD,IIf(col And 2^24,BST_CHECKED,BST_UNCHECKED))
+							CheckDlgButton(hWin,IDC_CHKCOLORITALIC,IIf(col And 2^25,BST_CHECKED,BST_UNCHECKED))
 							'
 					End Select
 					'

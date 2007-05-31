@@ -172,7 +172,7 @@ IDC_SELECTCUR			equ 103
 IDB_LINENUMBER			equ 104
 IDB_EXPAND				equ 105
 IDB_COLLAPSE			equ 106
-IDB_LOCK				equ 107
+IDB_LOCK			equ 107
 
 .const
 
@@ -186,7 +186,7 @@ szSplitterBar			db 'Splitter Bar',0
 szLineNumber			db 'Show/Hide Linenumbers',0
 szExpand				db 'Expand all',0
 szCollapse				db 'Collapse all',0
-szLock					db 'Lock tab/Unlock tab',0
+szLock					db 'Lock/Unlock Tab',0
 szChanged				db 'Changed state',0
 
 szX						db 'X',0

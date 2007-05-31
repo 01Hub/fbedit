@@ -268,12 +268,8 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendDlgItemMessage(hWin,IDC_REPLACETEXT,EM_LIMITTEXT,255,0)
 			SendDlgItemMessage(hWin,IDC_REPLACETEXT,WM_SETTEXT,0,Cast(Integer,@replacebuff))
 			' Set check boxes
-			If fr And FR_MATCHCASE Then
-				CheckDlgButton(hWin,IDC_CHK_MATCHCASE,BST_CHECKED)
-			EndIf
-			If fr And FR_WHOLEWORD Then
-				CheckDlgButton(hWin,IDC_CHK_WHOLEWORD,BST_CHECKED)
-			EndIf
+			CheckDlgButton(hWin,IDC_CHK_MATCHCASE,IIf(fr And FR_MATCHCASE,BST_CHECKED,BST_UNCHECKED))
+			CheckDlgButton(hWin,IDC_CHK_WHOLEWORD,IIf(fr And FR_WHOLEWORD,BST_CHECKED,BST_UNCHECKED))
 			' Set find direction
 			If fDir=0 Then
 				id=IDC_RBN_ALL
@@ -284,20 +280,13 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			EndIf
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-			If fProject Then
-				If fPro Then
-					CheckDlgButton(hWin,IDC_CHK_PROJECTFILES,BST_CHECKED)
-				EndIf
-			Else
+			If fProject=0 Then
 				fPro=0
-				EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),FALSE)
 			EndIf
-			If fSkipCommentLine Then
-				CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,BST_CHECKED)
-			EndIf
-			If fLogFind Then
-				CheckDlgButton(hWin,IDC_CHK_LOGFIND,BST_CHECKED)
-			EndIf
+			CheckDlgButton(hWin,IDC_CHK_PROJECTFILES,IIf(fPro,BST_CHECKED,BST_UNCHECKED))
+			EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),fProject)
+			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(fSkipCommentLine,BST_CHECKED,BST_UNCHECKED))
+			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(fLogFind,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
 			fPos=ft.chrg.cpMin
 			ft.chrg.cpMax=-1
@@ -309,6 +298,12 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If wParam<>WA_INACTIVE Then
 				ah.hfind=hWin
 			EndIf
+			If fProject=0 Then
+				fPro=0
+			EndIf
+			CheckDlgButton(hWin,IDC_CHK_PROJECTFILES,IIf(fPro,BST_CHECKED,BST_UNCHECKED))
+			EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),fProject)
+			SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 			ResetFind
 			'
 		Case WM_COMMAND
@@ -317,6 +312,12 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDOK
+						If fDir=2 Then
+							buff="Previous"
+						Else
+							buff="Next"
+						EndIf
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
 						Find(hWin,fr)
 						'
 					Case IDCANCEL
@@ -366,10 +367,12 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						'
 					Case IDC_CHK_MATCHCASE
 						fr=fr Xor FR_MATCHCASE
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_WHOLEWORD
 						fr=fr Xor FR_WHOLEWORD
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_PROJECTFILES
@@ -378,30 +381,36 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						Else
 							fPro=1
 						EndIf
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_SKIPCOMMENTS
 						fSkipCommentLine=fSkipCommentLine Xor 1
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_LOGFIND
 						fLogFind=fLogFind Xor 1
 						EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_ALL
 						fDir=0
 						fr=fr Or FR_DOWN
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_DOWN
 						fDir=1
 						fr=fr Or FR_DOWN
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_UP
 						fDir=2
 						fr=fr And (-1 Xor FR_DOWN)
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 				End Select
@@ -410,9 +419,11 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				' Update text buffers
 				If id=IDC_FINDTEXT Then
 					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@findbuff))
+					SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 					ResetFind
 				ElseIf id=IDC_REPLACETEXT Then
 					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@replacebuff))
+					SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 					ResetFind
 				EndIf
 			EndIf
