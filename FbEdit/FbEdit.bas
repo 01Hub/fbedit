@@ -232,7 +232,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim sbParts(3) As Integer
 	Dim sFile As String
 	Dim pt As Point
-	Dim hMnu As HMENU
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -598,7 +597,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_FILE_NEW
 							ad.filename="(Untitled).bas"
-							ah.hred=CreateEdit(hWin)
+							ah.hred=CreateEdit(ad.filename)
 							AddTab(hWin,ah.hred,ad.filename)
 							If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 								UpdateFileProperty
@@ -610,13 +609,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,4096)
 							GlobalLock(hMem)
 							SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
-							ShowWindow(ah.hred,SW_HIDE)
 							ah.hred=ah.hres
 							AddTab(hWin,ah.hred,ad.filename)
-							'SetWinCaption
-							'ShowWindow(ah.hred,SW_SHOW)
-							'SendMessage(hWin,WM_SIZE,0,0)
-							'SetFocus(ah.hred)
 							'
 						Case IDM_FILE_OPEN
 							buff=OpenInclude
@@ -1041,7 +1035,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SetFullScreen(ah.hred)
 							EndIf
 							'
-						Case IDM_VIEW_TWOPANES
+						Case IDM_VIEW_DUALPANE
 							If ah.hpane(0) Then
 								If ah.hpane(1) Then
 									ShowWindow(ah.hpane(1),SW_HIDE)
@@ -1432,20 +1426,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			hCtl=Cast(HWND,wParam)
 			If hCtl=ah.hprj Then
 				' Project
-				hMnu=GetSubMenu(ah.hcontextmenu,1)
-				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
+				TrackPopupMenu(GetSubMenu(ah.hcontextmenu,1),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			ElseIf hCtl=ah.hpr Then
 				' Property
-				hMnu=GetSubMenu(ah.hcontextmenu,3)
-				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
+				TrackPopupMenu(GetSubMenu(ah.hcontextmenu,3),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			ElseIf hCtl=hWin Then
 				' Main window
-				hMnu=GetSubMenu(GetMenu(ah.hwnd),0)
-				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
+				TrackPopupMenu(GetSubMenu(ah.hmenu,0),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			ElseIf hCtl=ah.htabtool Then
 				' Tab select
-				hMnu=GetSubMenu(ah.hcontextmenu,0)
-				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
+				TrackPopupMenu(GetSubMenu(ah.hcontextmenu,0),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			EndIf
 		Case WM_MOVE
 			ShowWindow(ah.htt,SW_HIDE)

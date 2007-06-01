@@ -8,7 +8,6 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim hDll As HMODULE
 	Dim nBtn As Integer
 	Dim tbxwt As Integer
-	Static fInProgress As Integer
 
 	Select Case uMsg
 		Case WM_CREATE
@@ -114,15 +113,6 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				EndIf
 				fInUse=FALSE
-			EndIf
-		Case WM_SETFOCUS
-			If fInProgress=0 Then
-				fInprogress=1
-				If ah.hred<>ah.hpane(0) Then
-					ah.hpane(1)=ah.hred
-				EndIf
-				SelectTab(ah.hwnd,hWin,0)
-				fInprogress=0
 			EndIf
 	End Select
 	Return DefWindowProc(hWin,uMsg,wParam,lParam)

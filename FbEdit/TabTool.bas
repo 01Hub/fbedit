@@ -102,7 +102,7 @@ Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
 	If ah.hpane(0)=0 Then
 		ShowWindow(ah.hshp,SW_HIDE)
 	Else
-		ah.hpane(1)=ah.hred
+		ah.hpane(1)=hEdt
 	EndIf
 	SelectTab(ah.hwnd,hEdt,0)
 	fTimer=1
@@ -221,60 +221,52 @@ Sub SwitchTab()
 
 End Sub
 
-Function CreateEdit(ByVal hWin As HWND) As HWND
+Function CreateEdit(ByVal sFile As String) As HWND
 	Dim hCtl As HWND
 	Dim hTmp As HWND
 	Dim st As Integer
 	Dim tpe As Integer
 
 	hCtl=ah.hred
-	tpe=FileType(ad.filename)
+	tpe=FileType(sFile)
 	If tpe=2 And (GetKeyState(VK_CONTROL) And &H80)=0 And fNoResMode=FALSE Then
 		hTmp=IsResOpen
 		If hTmp Then
-			SelectTab(hWin,hTmp,0)
+			SelectTab(ah.hwnd,hTmp,0)
 			If WantToSave(ah.hred)=FALSE Then
-				ReadTheFile(ah.hred,ad.filename)
+				ReadTheFile(ah.hred,sFile)
 				UpdateTab
 				SetWinCaption
 			EndIf
 			Return 0
 		Else
-			ah.hred=ah.hres
-			ShowWindow(ah.hred,SW_SHOW)
+			hTmp=ah.hres
 		EndIf
 	Else
-		st=WS_CHILD Or WS_VISIBLE Or WS_CLIPCHILDREN Or WS_CLIPSIBLINGS Or STYLE_SCROLLTIP Or STYLE_DRAGDROP Or STYLE_AUTOSIZELINENUM
+		st=WS_CHILD Or WS_VISIBLE Or WS_CLIPCHILDREN Or WS_CLIPSIBLINGS Or STYLE_SCROLLTIP Or STYLE_DRAGDROP Or STYLE_AUTOSIZELINENUM' Or STYLE_NOBACKBUFFER
 		If tpe=0 Then
 			st=st Or STYLE_NOHILITE
 		EndIf
-		ah.hred=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,hWin,Cast(Any ptr,IDC_RAEDIT),hInstance,0)
-		UpdateEditOption(ah.hred)
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any ptr,IDC_RAEDIT),hInstance,0)
+		UpdateEditOption(hTmp)
 		If tpe=2 Then
-			SendMessage(ah.hred,REM_SETWORDGROUP,0,1)
+			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
 		ElseIf tpe=1 Then
-			SetWindowLong(ah.hred,GWL_ID,IDC_CODEED)
-			SetWindowLong(ah.hred,GWL_USERDATA,2)
+			SetWindowLong(hTmp,GWL_ID,IDC_CODEED)
+			SetWindowLong(hTmp,GWL_USERDATA,2)
 		Else
-			SendMessage(ah.hred,REM_SETWORDGROUP,0,15)
+			SendMessage(hTmp,REM_SETWORDGROUP,0,15)
 		EndIf
-		SendMessage(ah.hred,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
-		SendMessage(ah.hred,EM_SETMODIFY,FALSE,0)
-		lpOldParEditProc=Cast(Any ptr,SetWindowLong(ah.hred,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
-		lpOldEditProc=Cast(Any ptr,SendMessage(ah.hred,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
+		SendMessage(hTmp,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
+		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
+		lpOldParEditProc=Cast(Any ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
+		lpOldEditProc=Cast(Any ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
 	EndIf
 	If edtopt.linenumbers Then
-		CheckDlgButton(ah.hred,-2,TRUE)
-		SendMessage(ah.hred,WM_COMMAND,-2,0)
+		CheckDlgButton(hTmp,-2,TRUE)
+		SendMessage(hTmp,WM_COMMAND,-2,0)
 	EndIf
-	SendMessage(hWin,WM_SIZE,0,0)
-	If hCtl Then
-		ShowWindow(hCtl,SW_HIDE)
-	EndIf
-	SetFocus(ah.hred)
-	SetWinCaption
-	SetFullScreen(ah.hred)
-	Return ah.hred
+	Return hTmp
 
 End Function
 
@@ -295,6 +287,7 @@ Sub OpenTheFile(ByVal sFile As String)
 	Dim sItem As ZString*260
 	Dim x As Integer
 	Dim nInx As Integer
+	Dim hTmp As HWND
 
 	If FileType(sFile)=5 Then
 		If fProject Then
@@ -339,10 +332,11 @@ Sub OpenTheFile(ByVal sFile As String)
 			EndIf
 			nInx=nInx+1
 		Loop
-		ad.filename=sFile
 		' Open the file
-		If CreateEdit(ah.hwnd) Then
-			AddTab(ah.hwnd,ah.hred,ad.filename)
+		hTmp=CreateEdit(sFile)
+		If hTmp Then
+			ad.filename=sFile
+			AddTab(ah.hwnd,hTmp,ad.filename)
 			ReadTheFile(ah.hred,ad.filename)
 			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
@@ -362,7 +356,6 @@ Sub OpenAFile(ByVal hWin As HWND)
 	ofn.lStructSize=SizeOf(OPENFILENAME)
 	ofn.hwndOwner=GetOwner
 	ofn.hInstance=hInstance
-	'buff=string(260,0)
 	ofn.lpstrFile=Cast(ZString ptr,hMem)
 	ofn.nMaxFile=32*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
@@ -378,7 +371,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 			' Open multiple files
 			Do While Asc(s)<>0
 				ad.filename=pth & "\" & s
-				CreateEdit(hWin)
+				CreateEdit(ad.filename)
 				AddTab(hWin,ah.hred,ad.filename)
 				ReadTheFile(ah.hred,ad.filename)
 				i=i+Len(s)+1
@@ -648,13 +641,6 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				If x<>(lpTABMEM->filestate And 1) Then
 					lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
 					lpTABMEM->filestate=lpTABMEM->filestate Or x
-'					If x Then
-'						hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
-'						If hFile<>INVALID_HANDLE_VALUE Then
-'							GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
-'							CloseHandle(hFile)
-'						EndIf
-'					EndIf
 					CallAddins(ah.hwnd,AIM_FILESTATE,i,Cast(Integer,lpTABMEM),HOOK_FILESTATE)
 				EndIf
 			ElseIf nType=5 Then
