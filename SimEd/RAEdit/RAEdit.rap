@@ -98,13 +98,14 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,75847
+1=0,0,0,0,385
 16=0,0,0,0,0
 22=0,0,0,0,0
-23=0,0,0,0,0
-24=0,0,0,0,0
+23=0,0,0,0,20643
+24=0,0,0,0,601
 19=0,0,0,0,4984
 2=0,0,0,0,9186
+9=0,0,0,0,14051
 
 [BookMark]
 0=
@@ -122,16 +123,16 @@ CompanyName=
 0=
 
 [Find]
-1="wm_close"
-2="wm_destroy"
-3="[ebx].EDIT.edtb.topyp"
-4="[ebx].EDIT.edta.topyp"
-5="SetCaret"
-6="REM_ISLINE"
-7="SetScrollInfo"
-8="EM_REPL"
-9="CharTab"
-10="'*/'"
+1="printhex"
+2="wm_close"
+3="wm_destroy"
+4="[ebx].EDIT.edtb.topyp"
+5="[ebx].EDIT.edta.topyp"
+6="SetCaret"
+7="REM_ISLINE"
+8="SetScrollInfo"
+9="EM_REPL"
+10="CharTab"
 
 [AutoLoad]
 1=1
@@ -178,7 +179,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -223,6 +224,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 24=
 19=
 2=
+9=,,
 
 [PTimer]
 PTimer=114582838

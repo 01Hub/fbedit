@@ -2402,6 +2402,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ScreenToClient,hWin,addr pt
 					call	SetBlock
 					invoke SetCapture,hWin
+					invoke SetFocus,hWin
 				.endif
 				invoke SetCpxMax,ebx,hWin
 				invoke SelChange,ebx,SEL_TEXT
@@ -3574,6 +3575,7 @@ SizeIt:
 		.if ZERO?
 			invoke MoveWindow,[ebx].EDIT.hsta,0,0,4,4,TRUE
 		.else
+
 			invoke MoveWindow,[ebx].EDIT.hsta,0,0,0,0,TRUE
 		.endif
 	.endif
