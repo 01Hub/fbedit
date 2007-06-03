@@ -142,26 +142,24 @@ Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			If (lpTABMEM->hedit=hEdit And hEdit<>0) Or (lpTABMEM->profileinx=nInx And nInx<>0) Then
 				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
-				If ah.hred<>lpTABMEM->hedit Then
-					hOld=ah.hred
-					ah.hred=lpTABMEM->hedit
-					ad.filename=lpTABMEM->filename
-					SendMessage(hWin,WM_SIZE,0,0)
-					ShowWindow(ah.hred,SW_SHOWNA)
-					SetWinCaption
-					If hOld<>ah.hpane(0) And ah.hred<>ah.hpane(0) Then
-						ShowWindow(hOld,SW_HIDE)
-					EndIf
-					ShowWindow(ah.htt,SW_HIDE)
-					HideList()
-					If ah.hpane(0)<>0 And ah.hred<>ah.hpane(0) Then
-						If ah.hred<>ah.hpane(1) Then
-							ShowWindow(ah.hpane(1),SW_HIDE)
-						EndIf
-						ah.hpane(1)=ah.hred
-					EndIf
-					SendMessage(ah.hwnd,WM_SIZE,0,0)
+				hOld=ah.hred
+				ah.hred=lpTABMEM->hedit
+				ad.filename=lpTABMEM->filename
+				SendMessage(hWin,WM_SIZE,0,0)
+				ShowWindow(ah.hred,SW_SHOWNA)
+				SetWinCaption
+				If hOld<>ah.hpane(0) And ah.hred<>ah.hpane(0) And hOld<>ah.hred Then
+					ShowWindow(hOld,SW_HIDE)
 				EndIf
+				ShowWindow(ah.htt,SW_HIDE)
+				HideList()
+				If ah.hpane(0)<>0 And ah.hred<>ah.hpane(0) Then
+					If ah.hred<>ah.hpane(1) Then
+						ShowWindow(ah.hpane(1),SW_HIDE)
+					EndIf
+					ah.hpane(1)=ah.hred
+				EndIf
+				SendMessage(ah.hwnd,WM_SIZE,0,0)
 				SetFocus(lpTABMEM->hedit)
 				Exit While
 			EndIf

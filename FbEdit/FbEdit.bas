@@ -1622,13 +1622,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If ah.hpane(0) Then
 					' Two panes
 					y=rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT)
-					MoveWindow(ah.hpane(0),0,hgt,rect.right-twt,y-y/2,TRUE)
+					MoveWindow(ah.hpane(0),0,hgt,rect.right-twt,y\2,TRUE)
 					If ah.hpane(1) Then
 						ShowWindow(ah.hshp,SW_HIDE)
-						MoveWindow(ah.hpane(1),0,hgt+y/2,rect.right-twt,y/2,TRUE)
+						MoveWindow(ah.hpane(1),0,hgt+y\2,rect.right-twt,y-y\2,TRUE)
+						MoveWindow(ah.hshp,0,hgt+y/2,rect.right-twt,y-y\2,TRUE)
 					Else
 						ShowWindow(ah.hshp,SW_SHOWNA)
-						MoveWindow(ah.hshp,0,hgt+y/2,rect.right-twt,y/2,TRUE)
+						MoveWindow(ah.hshp,0,hgt+y\2,rect.right-twt,y-y\2,TRUE)
 					EndIf
 				ElseIf ah.hred Then
 					' Size the edit control
