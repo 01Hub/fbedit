@@ -796,13 +796,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							ftypelist=TRUE
 						EndIf
 					EndIf
-				ElseIf wParam=34 Then
-					buff=""
-					s=String(8192,Chr(0))
+				ElseIf wParam=34 And edtopt.autoinclude Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					ln=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 					s=Chr(255) & Chr(1)
-					SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@s))
+					ln=SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@s))
+					s[ln]=NULL
 					s=UCase(s)
 					lret=InStr(s,Chr(34))
 					lret=InStr(lret+1,s,Chr(34))

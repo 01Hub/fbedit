@@ -562,7 +562,7 @@ Function OpenProject() As Integer
 	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 	GetMakeOption
 	SetWinCaption
-	SendMessage(ah.hwnd,WM_COMMAND,IDM_NEXTTAB,0)
+	NextTab(FALSE)
 	AddMruProject
 	CallAddins(ah.hwnd,AIM_PROJECTOPEN,0,0,HOOK_PROJECTOPEN)
 	Return 0

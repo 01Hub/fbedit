@@ -11,20 +11,6 @@
 
 '/
 
-#Include Once "windows.bi"
-#Include Once "win/commctrl.bi"
-#Include Once "win/commdlg.bi"
-#Include Once "win/richedit.bi"
-#Include Once "win/shellapi.bi"
-#Include Once "win/shlwapi.bi"
-#Include Once "win/ole2.bi"
-
-#Include "Inc\RAEdit.bi"
-#Include "Inc\RAFile.bi"
-#Include "Inc\RAProperty.bi"
-#Include "Inc\RACodeComplete.bi"
-#Include "Inc\RAResEd.bi"
-#Include "Inc\Addins.bi"
 #Include "FbEdit.bi"
 
 #Include "IniFile.bas"
@@ -284,7 +270,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
 			lpOldOutputProc=Cast(Any ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
-			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444",@edtopt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"44444444444444444",@edtopt,FALSE)
+			' Get find history
+			LoadFindHistory
 			' Create fonts
 			LoadFromIni(StrPtr("Edit"),StrPtr("EditFont"),"440",@edtfnt,FALSE)
 			lfnt.lfHeight=edtfnt.size
@@ -383,71 +371,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hfib,FBM_SETFILTER,TRUE,TRUE)
 			' Property definitions
 			ah.hpr=GetDlgItem(hWin,IDC_PROPERTY)
-			SendMessage(ah.hpr,PRM_SETCHARTAB,0,Cast(LPARAM,ad.lpCharTab))
-			SendMessage(ah.hpr,PRM_SETGENDEF,0,Cast(Integer,@defgen))
-			' Lines to skip
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_LINEFIRSTWORD,Cast(Integer,StrPtr("declare")))
-			' Words to skip
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_FIRSTWORD,Cast(Integer,StrPtr("private")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_FIRSTWORD,Cast(Integer,StrPtr("public")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_SECONDWORD,Cast(Integer,StrPtr("shared")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_DATATYPEINIT,Cast(Integer,StrPtr("as")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PROCPARAM,Cast(Integer,StrPtr("byval")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PROCPARAM,Cast(Integer,StrPtr("byref")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PROCPARAM,Cast(Integer,StrPtr("alias")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PROCPARAM,Cast(Integer,StrPtr("cdecl")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTITEMFIRSTWORD,Cast(Integer,StrPtr("as")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTITEMSECONDWORD,Cast(Integer,StrPtr("as")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTTHIRDWORD,Cast(Integer,StrPtr("as")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTITEMINIT,Cast(Integer,StrPtr("declare")))
-			SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PTR,Cast(Integer,StrPtr("ptr")))
-			' Property types
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("p")+256,Cast(Integer,StrPtr(szCode)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("c"),Cast(Integer,StrPtr(szConst)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("d")+512,Cast(Integer,StrPtr(szData)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("s"),Cast(Integer,StrPtr(szStruct)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("e"),Cast(Integer,StrPtr(szEnum)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("n"),Cast(Integer,StrPtr(szNamespace)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("m"),Cast(Integer,StrPtr(szMacro)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("x")+256,Cast(Integer,StrPtr(szConstructor)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("y")+256,Cast(Integer,StrPtr(szDestructor)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("z")+256,Cast(Integer,StrPtr(szProperty)))
-			SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("o")+256,Cast(Integer,StrPtr(szOperator)))
-			' Parse defs
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypesub))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendsub))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypefun))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendfun))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypedata))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypecommon))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypestatic))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypevar))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeconst))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeconst2))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypestruct))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendstruct))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeunion))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendunion))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeenum))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendenum))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypenamespace))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendnamespace))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypewithblock))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendwithblock))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypemacro))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendmacro))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeconstructor))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendconstructor))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypedestructor))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeenddestructor))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeproperty))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendproperty))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeoperator))
-			SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendoperator))
-			' Set cbo selection
-			SendMessage(ah.hpr,PRM_SELECTPROPERTY,Asc("p")+256,0)
-			' Set button 'Open files'
-			SendMessage(ah.hpr,PRM_SETSELBUTTON,2,0)
+			SetupProperty
 			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
 			lpOldCCProc=Cast(Any ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
@@ -570,6 +494,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ImageList_Destroy(ah.hmnuiml)
 			ImageList_Destroy(ah.himl)
 			DestroyMenu(ah.hcontextmenu)
+			SaveFindHistory
 			SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"4444444444444444444",@wpos,FALSE)
 			DefWindowProc(hWin,uMsg,wParam,lParam)
 			PostQuitMessage(NULL)
@@ -581,7 +506,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
 				Case BN_CLICKED,1
-					Select Case id
+					lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
+					Select Case As Const id
 						Case IDM_FILE_NEWPROJECT
 							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT),GetOwner,@NewProjectDlgProc,NULL)
 							fTimer=1
@@ -888,81 +814,63 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FORMAT_LOCK
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							x=SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0) Xor TRUE
 							SendMessage(lpRESMEM->hResEd,DEM_LOCKCONTROLS,0,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_BACK
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_SENDTOBACK,0,0)
 							'
 						Case IDM_FORMAT_FRONT
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_BRINGTOFRONT,0,0)
 							'
 						Case IDM_FORMAT_GRID
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							x=GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) Xor DES_GRID
 							SetWindowLong(lpRESMEM->hResEd,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_SNAP
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							x=GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) Xor DES_SNAPTOGRID
 							SetWindowLong(lpRESMEM->hResEd,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_ALIGN_LEFT
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT)
 							'
 						Case IDM_FORMAT_ALIGN_CENTER
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER)
 							'
 						Case IDM_FORMAT_ALIGN_RIGHT
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT)
 							'
 						Case IDM_FORMAT_ALIGN_TOP
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP)
 							'
 						Case IDM_FORMAT_ALIGN_MIDDLE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE)
 							'
 						Case IDM_FORMAT_ALIGN_BOTTOM
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM)
 							'
 						Case IDM_FORMAT_SIZE_WIDTH
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH)
 							'
 						Case IDM_FORMAT_SIZE_HEIGHT
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT)
 							'
 						Case IDM_FORMAT_SIZE_BOTH
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH)
 							'
 						Case IDM_FORMAT_CENTER_HOR
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER)
 							'
 						Case IDM_FORMAT_CENTER_VER
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER)
 							'
 						Case IDM_FORMAT_TAB
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_SHOWTABINDEX,0,0)
 							'
 						Case IDM_FORMAT_RENUM
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_AUTOID,0,0)
 							'
 						Case IDM_FORMAT_CASECONVERT
@@ -974,15 +882,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_VIEW_OUTPUT
 							wpos.fview=wpos.fview Xor VIEW_OUTPUT
 							SendMessage(hWin,WM_SIZE,0,0)
-							If wpos.fview And VIEW_OUTPUT Then
-								ShowWindow(ah.hout,SW_SHOW)
-								SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,TRUE)
-							Else
-								ShowWindow(ah.hout,SW_HIDE)
-								SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,FALSE)
-								If ah.hred Then
-									SetFocus(ah.hred)
-								EndIf
+							ShowWindow(ah.hout,IIf(wpos.fview And VIEW_OUTPUT,SW_SHOW,SW_HIDE))
+							SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,wpos.fview And VIEW_OUTPUT)
+							If ah.hred Then
+								SetFocus(ah.hred)
 							EndIf
 							fTimer=1
 							'
@@ -1014,7 +917,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							fTimer=1
 							'
 						Case IDM_VIEW_DIALOG
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hResEd,DEM_SHOWDIALOG,0,0)
 							'
 						Case IDM_VIEW_SPLITSCREEN
@@ -1081,59 +983,45 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_CREATETEMPLATE),hWin,@CreateTemplateDlgProc,NULL)
 							'
 						Case IDM_RESOURCE_DIALOG
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_DIALOG,TRUE)
 							'
 						Case IDM_RESOURCE_MENU
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_MENU,TRUE)
 							'
 						Case IDM_RESOURCE_ACCEL
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_ACCEL,TRUE)
 							'
 						Case IDM_RESOURCE_STRINGTABLE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_STRING,TRUE)
 							'
 						Case IDM_RESOURCE_VERSION
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_VERSION,TRUE)
 							'
 						Case IDM_RESOURCE_XPMANIFEST
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_XPMANIFEST,TRUE)
 							'
 						Case IDM_RESOURCE_RCDATA
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_RCDATA,TRUE)
 							'
 						Case IDM_RESOURCE_LANGUAGE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_LANGUAGE,TRUE)
 							'
 						Case IDM_RESOURCE_INCLUDE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_INCLUDE,TRUE)
 							'
 						Case IDM_RESOURCE_RES
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_RESOURCE,TRUE)
 							'
 						Case IDM_RESOURCE_NAMES
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_SHOWNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_EXPORT
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_EXPORTNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_REMOVE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_DELITEM,0,0)
 							'
 						Case IDM_RESOURCE_UNDO
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
 							SendMessage(lpRESMEM->hProject,PRO_UNDODELETED,0,0)
 							'
 						Case IDM_MAKE_COMPILE
@@ -1278,26 +1166,45 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								EndIf
 							EndIf
 							'
-						Case &HFFFD
-							' Expand button clicked
-							SendMessage(ah.hred,REM_EXPANDALL,0,0)
-							SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-							SendMessage(ah.hred,REM_REPAINT,0,0)
-							'
-						Case &HFFFC
-							' Collapse button clicked
-							SendMessage(ah.hred,REM_COLLAPSEALL,0,0)
-							SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-							SendMessage(ah.hred,REM_REPAINT,0,0)
-							'
-						Case IDM_NEXTTAB
+						Case IDM_WINDOW_NEXTTAB
 							NextTab(FALSE)
 							'
-						Case IDM_PREVIOUSTAB
+						Case IDM_WINDOW_PREVIOUSTAB
 							NextTab(TRUE)
 							'
-						Case IDM_SWITCHTAB
+						Case IDM_WINDOW_SWITCHTAB
 							SwitchTab()
+							'
+						Case IDM_WINDOW_SPLITT
+							If ah.hred<>ah.hres Then
+								If SendMessage(ah.hred,REM_GETSPLIT,0,0) Then
+									SendMessage(ah.hred,REM_SETSPLIT,0,0)
+								Else
+									SendMessage(ah.hred,REM_SETSPLIT,500,0)
+								EndIf
+							EndIf
+							'
+						Case IDM_WINDOW_ALL_BUT_CURRENT
+							If ah.hred Then
+								If CloseAllTabs(hWin,FALSE,ah.hred)=FALSE Then
+									'
+								EndIf
+								If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
+									UpdateFileProperty
+								EndIf
+								fTimer=1
+							EndIf
+							'
+						Case IDM_WINDOW_LOCK
+							If ah.hred Then
+								'SendMessage(ah.hred,WM_COMMAND,(BN_CLICKED Shl 16) Or -5,0)
+								''' it is works but does not refresh button
+								''' need review raedit.dll (WM_COMMAND -5)
+								SendMessage(ah.hred,REM_SETLOCK,SendMessage(ah.hred,REM_GETLOCK,0,0) Xor 1,0)
+							EndIf
+							'
+						Case IDM_WINDOW_UNLOCKALL
+							UnlockAllTabs()
 							'
 						Case IDM_OUTPUT_CLEAR
 							SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
@@ -1325,37 +1232,29 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SetFocus(ah.hred)
 							EndIf
 							'
-						Case IDM_WINDOW_SPLITT
-							If ah.hred<>ah.hres Then
-								If SendMessage(ah.hred,REM_GETSPLIT,0,0) Then
-									SendMessage(ah.hred,REM_SETSPLIT,0,0)
-								Else
-									SendMessage(ah.hred,REM_SETSPLIT,500,0)
-								EndIf
-							EndIf
-							'
-						Case IDM_WINDOW_ALL_BUT_CURRENT
-							If ah.hred Then
-								If CloseAllTabs(hWin,FALSE,ah.hred)=FALSE Then
-									'
-								EndIf
-								If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
-									UpdateFileProperty
-								EndIf
-								fTimer=1
-							EndIf
-							'
-						Case IDC_CBOBUILD
-							id=SendMessage(ah.hcbobuild,CB_GETCURSEL,0,0)
-							If fProject Then
-								WritePrivateProfileString(StrPtr("Make"),StrPtr("Current"),Str(id+1),@ad.ProjectFile)
-							Else
-								WritePrivateProfileString(StrPtr("Make"),StrPtr("Current"),Str(id+1),@ad.IniFile)
-							EndIf
-							GetMakeOption
-							'
 						Case Else
-							If id>=11000 And id<=11019 Then
+							If id=IDC_CBOBUILD Then
+								id=SendMessage(ah.hcbobuild,CB_GETCURSEL,0,0)
+								If fProject Then
+									WritePrivateProfileString(StrPtr("Make"),StrPtr("Current"),Str(id+1),@ad.ProjectFile)
+								Else
+									WritePrivateProfileString(StrPtr("Make"),StrPtr("Current"),Str(id+1),@ad.IniFile)
+								EndIf
+								GetMakeOption
+								'
+							ElseIf id=&HFFFD then
+								' Expand button clicked
+								SendMessage(ah.hred,REM_EXPANDALL,0,0)
+								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+								SendMessage(ah.hred,REM_REPAINT,0,0)
+								'
+							ElseIf id=&HFFFC then
+								' Collapse button clicked
+								SendMessage(ah.hred,REM_COLLAPSEALL,0,0)
+								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+								SendMessage(ah.hred,REM_REPAINT,0,0)
+								'
+							elseif id>=11000 And id<=11019 Then
 								' Tools menu
 								GetPrivateProfileString(StrPtr("Tools"),Str(id-10999),@szNULL,@buff,260,@ad.IniFile)
 								If Len(buff) Then

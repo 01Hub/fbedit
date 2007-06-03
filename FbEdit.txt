@@ -1,9 +1,16 @@
 Whats new:
 ----------
 1.0.5.4
-o Added Lock button (new raedit.dll is needed).
+o Added Option for Auto complete Include/Inclib.
+o Added Find History.
+o Added Dual Pane.
+o Added Menu for basic Lock Tab operations.
+o Added Lock Tab button (new RAEdit.dll is needed).
 o Added Log Find.
 o Added Find All.
+o Fixed various find bugs.
+o Fixed a Replace All bug.
+o Fixed a refresh block mode bug in RAEdit.dll.
 1.0.5.3
 o Added dialog editor option to size dialog to font.
 o Added Close All But Current to tab context menu.

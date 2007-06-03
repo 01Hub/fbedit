@@ -1,17 +1,17 @@
 
 #Define IDD_FINDDLG							2500
 #Define IDC_FINDTEXT							2001
-#Define IDC_BTN_REPLACE						2010
 #Define IDC_REPLACETEXT						2002
-#Define IDC_REPLACESTATIC					2009
-#Define IDC_BTN_REPLACEALL					2008
-#Define IDC_CHK_WHOLEWORD					2007
 #Define IDC_CHK_MATCHCASE					2003
-#Define IDC_CHK_PROJECTFILES				2012
-#Define IDC_CHK_SKIPCOMMENTS				2013
 #Define IDC_RBN_ALL							2004
 #Define IDC_RBN_DOWN							2005
 #Define IDC_RBN_UP							2006
+#Define IDC_CHK_WHOLEWORD					2007
+#Define IDC_BTN_REPLACEALL					2008
+#Define IDC_REPLACESTATIC					2009
+#Define IDC_BTN_REPLACE						2010
+#Define IDC_CHK_PROJECTFILES				2012
+#Define IDC_CHK_SKIPCOMMENTS				2013
 #Define IDC_CHK_LOGFIND						2014
 #Define IDC_BTN_FINDALL						2015
 
@@ -248,6 +248,41 @@ Sub ResetFind
 	If fLogFindClear Then
 		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
+	SendMessage(GetDlgItem(findvisible,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
+	
+End Sub
+
+Sub LoadFindHistory()
+	Dim As Integer i
+	Dim As ZString*260 sItem
+	
+	For i=1 To 9
+		If GetPrivateProfileString(StrPtr("Find"),Str(i),@szNULL,@sItem,SizeOf(sItem),@ad.IniFile) Then
+			FindHistory(i-1)=sItem
+		Else
+			Exit for
+		EndIf
+	Next
+	
+End Sub
+
+Sub SaveFindHistory()
+	Dim As Integer i
+	
+	For i=1 To 9
+		WritePrivateProfileString(StrPtr("Find"),Str(i),@FindHistory(i-1),@ad.IniFile)
+	Next
+	
+End Sub
+
+Sub UpdateFindHistory(ByVal hWin As HWND)
+	
+	SendMessage(hWin,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
+
+	If Len(findbuff) And SendMessage(hWin,CB_FINDSTRINGEXACT,-1,Cast(LPARAM,@findbuff))=CB_ERR Then
+		SendMessage(hWin,CB_INSERTSTRING,0,Cast(LPARAM,@findbuff))
+	EndIf
+
 End Sub
 
 Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
@@ -262,6 +297,13 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If lParam Then
 				PostMessage(hWin,WM_COMMAND,(BN_CLICKED Shl 16) Or IDC_BTN_REPLACE,0)
 			EndIf
+			' Fill ComboBox
+			hCtl=GetDlgItem(hWin,IDC_FINDTEXT)
+			For id=0 To 8
+				If Len(FindHistory(id)) Then
+					SendMessage(hCtl,CB_ADDSTRING,0,Cast(LPARAM,@FindHistory(id)))
+				EndIf
+			Next
 			' Put text in edit boxes
 			SendDlgItemMessage(hWin,IDC_FINDTEXT,EM_LIMITTEXT,255,0)
 			SendDlgItemMessage(hWin,IDC_FINDTEXT,WM_SETTEXT,0,Cast(Integer,@findbuff))
@@ -303,7 +345,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			EndIf
 			CheckDlgButton(hWin,IDC_CHK_PROJECTFILES,IIf(fPro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),fProject)
-			SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 			ResetFind
 			'
 		Case WM_COMMAND
@@ -318,6 +359,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							buff="Next"
 						EndIf
 						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
+						UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
 						Find(hWin,fr)
 						'
 					Case IDCANCEL
@@ -340,21 +382,21 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 								nReplaceCount=nReplaceCount+1
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@replacebuff))
-								If fr And FR_DOWN Then
-									chrg.cpMin=chrg.cpMin+Len(replacebuff)-Len(findbuff)
-									chrg.cpMax=chrg.cpMin
+								'update real end
+								If fPos=0 Then
+									ft.chrg.cpMax=ft.chrg.cpMax+(Len(replacebuff)-Len(findbuff))
 								EndIf
-								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 							EndIf
 							Find(hWin,fr)
 						EndIf
 						'
 					Case IDC_BTN_FINDALL
+						UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
 						If fres=-1 Then
 							Find(hWin,fr)
 						EndIf
 						Do While fres<>-1
-							SendMessage(hWin,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
+							Find(hWin,fr)
 						Loop
 						'
 					Case IDC_BTN_REPLACEALL
@@ -367,12 +409,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						'
 					Case IDC_CHK_MATCHCASE
 						fr=fr Xor FR_MATCHCASE
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_WHOLEWORD
 						fr=fr Xor FR_WHOLEWORD
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_PROJECTFILES
@@ -381,51 +421,44 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						Else
 							fPro=1
 						EndIf
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_SKIPCOMMENTS
 						fSkipCommentLine=fSkipCommentLine Xor 1
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_CHK_LOGFIND
 						fLogFind=fLogFind Xor 1
 						EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_ALL
 						fDir=0
 						fr=fr Or FR_DOWN
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_DOWN
 						fDir=1
 						fr=fr Or FR_DOWN
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 					Case IDC_RBN_UP
 						fDir=2
 						fr=fr And (-1 Xor FR_DOWN)
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
 						ResetFind
 						'
 				End Select
 				'
+			ElseIf Event=CBN_EDITCHANGE Then
+				ResetFind
+				'
+			ElseIf Event=CBN_SELCHANGE Then
+				ResetFind
+				'
 			ElseIf Event=EN_CHANGE Then
 				' Update text buffers
-				If id=IDC_FINDTEXT Then
-					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@findbuff))
-					SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
-					ResetFind
-				ElseIf id=IDC_REPLACETEXT Then
-					SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(Integer,@replacebuff))
-					SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,StrPtr("Find")))
-					ResetFind
-				EndIf
+				SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(LPARAM,@replacebuff))
+				ResetFind
 			EndIf
 			'
 		Case WM_CLOSE
@@ -433,6 +466,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SetFocus(ah.hred)
 			'
 		Case WM_DESTROY
+			hCtl=GetDlgItem(hWin,IDC_FINDTEXT)
+			For id=0 To 8
+				SendMessage(hCtl,CB_GETLBTEXT,id,Cast(LPARAM,@FindHistory(id)))
+			Next
 			GetWindowRect(hWin,@rect)
 			wpos.ptfind.x=rect.left
 			wpos.ptfind.y=rect.top

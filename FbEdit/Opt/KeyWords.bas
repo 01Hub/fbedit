@@ -42,6 +42,7 @@
 #Define IDC_CHKSAVE							4034
 #Define IDC_CHKAUTOLOAD						4044
 #Define IDC_CHKAUTOWIDTH					4045
+#Define IDC_CHKAUTOINCLUDE					4046
 #Define IDC_RBNCASENONE						4040
 #Define IDC_RBNCASEMIXED					4041
 #Define IDC_RBNCASELOWER					4042
@@ -371,7 +372,8 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	edtopt.autosave=IsDlgButtonChecked(hWin,IDC_CHKSAVE)
 	edtopt.autoload=IsDlgButtonChecked(hWin,IDC_CHKAUTOLOAD)
 	edtopt.autowidth=IsDlgButtonChecked(hWin,IDC_CHKAUTOWIDTH)
-	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444",@edtopt,FALSE)
+	edtopt.autoinclude=IsDlgButtonChecked(hWin,IDC_CHKAUTOINCLUDE)
+	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"44444444444444444",@edtopt,FALSE)
 	SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"444444444444444",@wpos,FALSE)
 	' Save theme
 	sItem=String(32,0)
@@ -585,6 +587,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			CheckDlgButton(hWin,IDC_CHKSAVE,edtopt.autosave)
 			CheckDlgButton(hWin,IDC_CHKAUTOLOAD,edtopt.autoload)
 			CheckDlgButton(hWin,IDC_CHKAUTOWIDTH,edtopt.autowidth)
+			CheckDlgButton(hWin,IDC_CHKAUTOINCLUDE,edtopt.autoinclude)
 			' Fonts
 			GetObject(ah.rafnt.hFont,SizeOf(LOGFONT),@lfnt)
 			hCFont=CreateFontIndirect(@lfnt)
@@ -783,6 +786,9 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKAUTOWIDTH
+							EnableWindow(hBtnApply,TRUE)
+							'
+						Case IDC_CHKAUTOINCLUDE
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKCOLORBOLD

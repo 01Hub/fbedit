@@ -432,6 +432,25 @@ Function WantToSave(ByVal hWin As HWND) As Boolean
 
 End Function
 
+Sub UnlockAllTabs()
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM ptr
+	Dim i As Integer
+	
+	tci.mask=TCIF_PARAM
+	i=0
+	While TRUE
+		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			SendMessage(lpTABMEM->hedit,REM_SETLOCK,FALSE,0)
+		Else
+			Exit while
+		EndIf
+		i+=1
+	Wend
+	
+End Sub
+
 Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
@@ -693,6 +712,19 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim lpTABMEM As TABMEM ptr
 
 	Select Case uMsg
+		Case WM_LBUTTONDBLCLK
+			ht.pt.x=LoWord(lParam)
+			ht.pt.y=HiWord(lParam)
+			lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
+			If lret<>-1 Then
+				tci.mask=TCIF_PARAM
+				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
+				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+				SendMessage(lpTABMEM->hedit,REM_SETLOCK,SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0) Xor 1,0)
+				Return 0
+			EndIf
+			'
 		Case WM_RBUTTONDOWN
 			ht.pt.x=LoWord(lParam)
 			ht.pt.y=HiWord(lParam)
