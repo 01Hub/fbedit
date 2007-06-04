@@ -72,6 +72,8 @@ Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integ
 #Define IDM_FILE_SAVEAS						10011
 #Define IDM_FILE_CLOSE						10012
 #Define IDM_FILE_CLOSEALL					10013
+#Define IDM_FILE_PAGESETUP					10015
+#Define IDM_FILE_PRINT						10016
 #Define IDM_FILE_EXIT						10014
 
 #Define IDM_EDIT								10021
@@ -592,6 +594,12 @@ Type ADDIN
 	hooks As ADDINHOOKS
 End Type
 
+Type PRNPAGE
+	inch As Integer
+	page As POINT
+	margin As RECT
+End Type
+
 Dim Shared addins(31) As ADDIN
 Dim Shared mnuid As Integer=21000
 Dim Shared curtab As Integer=-1
@@ -601,3 +609,6 @@ Dim Shared fQR As Boolean
 Dim Shared nSplash As Integer=10
 Dim Shared hSplashBmp As HBITMAP
 Dim Shared wpos As WINPOS=(0,10,10,780,580,0,(0,0),120,160,(10,10),(10,10),0,(150,150),(10,10))
+Dim Shared ppage As PRNPAGE=(0,(21000,29700),(1000,1000,1000,1000))
+Dim Shared psd As PAGESETUPDLG
+Dim Shared pd As PRINTDLG

@@ -1834,3 +1834,150 @@ Function GetTextItem(ByRef sText As String) As String
 	Return sItem
 
 End Function
+
+Function ConvToTwips(ByVal lSize As Integer) As Integer
+
+	If ppage.inch Then
+		'Inches
+		Return (lSize*1440)\1000
+	endif
+	'millimeters
+	Return (lSize*567)\1000
+
+End Function
+
+Sub PrintDoc
+	Dim doci As DOCINFO
+	Dim pX As Integer
+	Dim pY As Integer
+	Dim pML As Integer
+	Dim pMT As Integer
+	Dim pMR As Integer
+	Dim pMB As Integer
+	Dim chrg As CHARRANGE
+	Dim rect As RECT
+	Dim buffer As ZString*32
+	Dim lf As LOGFONT
+	Dim hPrFont As Integer
+	Dim nLine As Integer
+	Dim nPageno As Integer
+	Dim nMLine As Integer
+	Dim ptY As Integer
+	Dim fmr As FORMATRANGE
+
+'	invoke GetPrnCaps
+'	invoke GetDeviceCaps,pd.hDC,LOGPIXELSX
+'	mov		ebx,eax
+'	invoke ConvToPix,ebx,psd.ptPaperSize.x
+'	mov		pX,eax
+'	mov		rcPrnPage.right,eax
+'	mov		rcPrn.right,eax
+'	invoke ConvToPix,ebx,psd.rtMargin.left
+'	mov		pML,eax
+'	mov		rcPrnPage.left,0
+'	mov		rcPrn.left,eax
+'	invoke ConvToPix,ebx,psd.rtMargin.right
+'	mov		pMR,eax
+'	sub		rcPrn.right,eax
+'	invoke GetDeviceCaps,pd.hDC,LOGPIXELSY
+'	mov		ebx,eax
+'	invoke ConvToPix,ebx,psd.ptPaperSize.y
+'	mov		pY,eax
+'	mov		rcPrnPage.bottom,eax
+'	mov		rcPrn.bottom,eax
+'	invoke ConvToPix,ebx,psd.rtMargin.top
+'	mov		pMT,eax
+'	mov		rcPrnPage.top,0
+'	mov		rcPrn.top,eax
+'	invoke ConvToPix,ebx,psd.rtMargin.bottom
+'	mov		pMB,eax
+'	sub		rcPrn.bottom,eax
+
+	pX=ConvToTwips(psd.ptPaperSize.x)
+	pML=ConvToTwips(psd.rtMargin.left)
+	pMR=ConvToTwips(psd.rtMargin.right)
+	pY=ConvToTwips(psd.ptPaperSize.y)
+	pMT=ConvToTwips(psd.rtMargin.top)
+	pMB=ConvToTwips(psd.rtMargin.bottom)
+	fmr.rcPage.left=0
+	fmr.rc.left=pML
+	fmr.rcPage.right=pX
+	fmr.rc.right=pX-pMR
+	fmr.rcPage.top=0
+	fmr.rc.top=pMT
+	fmr.rcPage.bottom=pY
+	fmr.rc.bottom=pY-pMB
+	fmr.hdc=GetDC(ah.hred)
+'	invoke SelectObject,fmr.hdc,hFont
+'	push	eax
+	fmr.hdcTarget=pd.hDC
+
+	doci.cbSize=SizeOf(doci)
+	doci.lpszDocName=StrPtr("FbEdit")
+'	test	pd.Flags,PD_PRINTTOFILE
+'	.if !ZERO?
+'		mov		eax,'ELIF'
+'		mov		dword ptr buffer,eax
+'		mov		eax,':'
+'		mov		dword ptr buffer+4,eax
+'		lea		eax,buffer
+'		mov		doci.lpszOutput,eax
+'	.else
+'		mov		doci.lpszOutput,NULL
+'	.endif
+	doci.lpszDatatype=NULL
+	doci.fwType=NULL
+	StartDoc(pd.hDC,@doci)
+'	test	pd.Flags,PD_SELECTION
+'	.if !ZERO?
+'		invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+'		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+'		mov		nLine,eax
+'		mov		ecx,ppos.nlinespage
+'		xor		edx,edx
+'		div		ecx
+'		mov		nPageno,eax
+'		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMax
+'		mov		nMLine,eax
+'		mov		pd.nToPage,-1
+'		mov		eax,chrg.cpMin
+'		mov		fmr.chrg.cpMin,eax
+'		mov		eax,chrg.cpMax
+'		mov		fmr.chrg.cpMax,eax
+'	.else
+'		movzx	eax,pd.nFromPage
+'		dec		eax
+'		mov		nPageno,eax
+'		mov		edx,ppos.nlinespage
+'		mul		edx
+'		mov		nLine,eax
+'		invoke SendMessage,hREd,EM_GETLINECOUNT,0,0
+'		or		eax,eax
+'		je		Ed
+'		mov		nMLine,eax
+'		invoke SendMessage,hREd,EM_LINEINDEX,nLine,0
+'		mov		fmr.chrg.cpMin,eax
+'		mov		fmr.chrg.cpMax,-1
+'	.endif
+TextToOutput(Str(pd.nToPage))
+	While nPageno<pd.nToPage
+TextToOutput(Str(nPageno))
+		nPageno+=1
+		StartPage(pd.hDC)
+		ptY=pMT
+		fmr.chrg.cpMin=SendMessage(ah.hred,EM_FORMATRANGE,TRUE,@fmr)
+		If EndPage(pd.hDC)>0 Then
+			Exit While
+		EndIf
+		SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,fmr.chrg.cpMin)
+'		.if eax<nMLine
+'			jmp		NxtPage
+'		.endif
+	Wend
+	EndDoc(pd.hDC)
+	DeleteDC(pd.hDC)
+	'pop		eax
+	'invoke SelectObject,fmr.hdc,eax
+	ReleaseDC(ah.hred,fmr.hdc)
+
+End Sub

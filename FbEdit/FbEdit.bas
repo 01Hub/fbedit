@@ -379,6 +379,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
 			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+			' Printer
+			LoadFromIni(StrPtr("Printer"),StrPtr("Page"),"4444444",@ppage,FALSE)
+			GetLocaleInfo(GetUserDefaultLCID,LOCALE_IMEASURE,@buff,SizeOf(buff))
+			If Left(buff,1)="1" Then
+				ppage.inch=1
+			Else
+				ppage.inch=0
+			EndIf
 			' Position and size main window
 			SetWindowPos(hWin,NULL,wpos.x,wpos.y,wpos.wt,wpos.ht,SWP_NOZORDER)
 			If wpos.fmax Then
@@ -591,6 +599,55 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									UpdateFileProperty
 								EndIf
 								fTimer=1
+							EndIf
+							'
+						Case IDM_FILE_PAGESETUP
+							psd.lStructSize=SizeOf(psd)
+							psd.hwndOwner=hWin
+							psd.hInstance=hInstance
+							If ppage.inch Then
+								psd.Flags=PSD_MARGINS or PSD_INTHOUSANDTHSOFINCHES
+							Else
+								psd.Flags=PSD_MARGINS or PSD_INHUNDREDTHSOFMILLIMETERS
+							EndIf
+							psd.ptPaperSize.x=ppage.page.x
+							psd.ptPaperSize.y=ppage.page.y
+							psd.rtMargin.left=ppage.margin.left
+							psd.rtMargin.top=ppage.margin.top
+							psd.rtMargin.right=ppage.margin.right
+							psd.rtMargin.bottom=ppage.margin.bottom
+							If PageSetupDlg(@psd) Then
+								ppage.page.x=psd.ptPaperSize.x
+								ppage.page.y=psd.ptPaperSize.y
+								ppage.margin.left=psd.rtMargin.left
+								ppage.margin.top=psd.rtMargin.top
+								ppage.margin.right=psd.rtMargin.right
+								ppage.margin.bottom=psd.rtMargin.bottom
+								SaveToIni(StrPtr("Printer"),StrPtr("Page"),"4444444",@ppage,FALSE)
+							EndIf
+							'
+						Case IDM_FILE_PRINT
+							pd.lStructSize=SizeOf(pd)
+							pd.hwndOwner=hWin
+							pd.hInstance=hInstance
+							i=SendMessage(ah.hred,EM_GETLINECOUNT,0,0)
+							id=i\66
+							If i/66>id Then
+								id+=1
+							EndIf
+							pd.nMinPage=1
+							pd.nMaxPage=id
+							pd.nFromPage=1
+							pd.nToPage=id
+							SendMessage(ah.hred,EM_EXGETSEL,0,@chrg)
+							If chrg.cpMin<>chrg.cpMax Then
+								pd.Flags=PD_RETURNDC or PD_SELECTION
+							Else
+								pd.Flags=PD_RETURNDC or PD_NOSELECTION or PD_PAGENUMS
+							EndIf
+							If PrintDlg(@pd) Then
+								PrintDoc
+								'
 							EndIf
 							'
 						Case IDM_FILE_EXIT
