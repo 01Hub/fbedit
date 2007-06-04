@@ -522,9 +522,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							fTimer=1
 							'
 						Case IDM_FILE_NEW
-							ad.filename="(Untitled).bas"
-							ah.hred=CreateEdit(ad.filename)
-							AddTab(hWin,ah.hred,ad.filename)
+							hCtl=CreateEdit("(Untitled).bas")
+							AddTab(hCtl,"(Untitled).bas")
 							If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 								UpdateFileProperty
 							EndIf
@@ -536,7 +535,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GlobalLock(hMem)
 							SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
 							ah.hred=ah.hres
-							AddTab(hWin,ah.hred,ad.filename)
+							AddTab(ah.hred,ad.filename)
 							'
 						Case IDM_FILE_OPEN
 							buff=OpenInclude

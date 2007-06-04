@@ -52,7 +52,7 @@ Function GetFileMem(ByVal sFile As String) As HGLOBAL
 
 End Function
 
-Sub ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
+Function ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String) As Integer
 	Dim nlen As Integer
 	Dim hMem As HGLOBAL
 	Dim fParse As Boolean
@@ -90,10 +90,12 @@ Sub ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
 			SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
 			SendMessage(ah.hpr,PRM_PARSEFILE,nInx,Cast(Integer,hMem))
 			GlobalFree(hMem)
+			Return 1
 		EndIf
 	EndIf
+	Return 0
 
-End Sub
+End Function
 
 Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZString ptr)
 	Dim editstream As EDITSTREAM

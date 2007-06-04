@@ -63,7 +63,7 @@ Sub DelTab(ByVal hWin As HWND)
 
 End Sub
 
-Sub AddTab(ByVal hWin As HWND,hEdt As HWND,ByVal lpFileName As String)
+Sub AddTab(hEdt As HWND,ByVal lpFileName As String)
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
@@ -334,7 +334,7 @@ Sub OpenTheFile(ByVal sFile As String)
 		hTmp=CreateEdit(sFile)
 		If hTmp Then
 			ad.filename=sFile
-			AddTab(ah.hwnd,hTmp,ad.filename)
+			AddTab(hTmp,ad.filename)
 			ReadTheFile(ah.hred,ad.filename)
 			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
@@ -348,7 +348,9 @@ Sub OpenAFile(ByVal hWin As HWND)
 	Dim hMem As HGLOBAL
 	Dim i As Integer
 	Dim pth As ZString*260
+	Dim sFile As ZString*260
 	Dim s As ZString*260
+	Dim hTmp As HWND
 
 	hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,32*1024)
 	ofn.lStructSize=SizeOf(OPENFILENAME)
@@ -368,10 +370,10 @@ Sub OpenAFile(ByVal hWin As HWND)
 		Else
 			' Open multiple files
 			Do While Asc(s)<>0
-				ad.filename=pth & "\" & s
-				CreateEdit(ad.filename)
-				AddTab(hWin,ah.hred,ad.filename)
-				ReadTheFile(ah.hred,ad.filename)
+				sFile=pth & "\" & s
+				hTmp=CreateEdit(sFile)
+				AddTab(hTmp,sFile)
+				ReadTheFile(hTmp,sFile)
 				i=i+Len(s)+1
 				lstrcpy(@s,Cast(ZString ptr,hMem+i))
 			Loop
@@ -649,8 +651,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 					x=GetWindowLong(lpTABMEM->hedit,GWL_USERDATA)
 					If x=2 Or (x=1 And lpTABMEM->hedit<>ah.hred) Then
 						' Update properties
-						ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
-						p=p+1
+						p=p+ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
 					EndIf
 				EndIf
 			ElseIf nType=4 Then
