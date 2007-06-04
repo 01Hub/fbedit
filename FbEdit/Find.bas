@@ -277,8 +277,6 @@ End Sub
 
 Sub UpdateFindHistory(ByVal hWin As HWND)
 	
-	SendMessage(hWin,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
-
 	If Len(findbuff) And SendMessage(hWin,CB_FINDSTRINGEXACT,-1,Cast(LPARAM,@findbuff))=CB_ERR Then
 		SendMessage(hWin,CB_INSERTSTRING,0,Cast(LPARAM,@findbuff))
 	EndIf
@@ -450,9 +448,15 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				End Select
 				'
 			ElseIf Event=CBN_EDITCHANGE Then
+				SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
+				SendDlgItemMessage(hWin,IDC_REPLACETEXT,WM_GETTEXT,255,Cast(LPARAM,@replacebuff))
 				ResetFind
 				'
 			ElseIf Event=CBN_SELCHANGE Then
+				id=SendDlgItemMessage(hWin,id,CB_GETCURSEL,0,0)
+				SendDlgItemMessage(hWin,IDC_FINDTEXT,CB_SETCURSEL,id,0)
+				SendDlgItemMessage(hWin,IDC_FINDTEXT,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
+				SendDlgItemMessage(hWin,IDC_REPLACETEXT,WM_GETTEXT,255,Cast(LPARAM,@replacebuff))
 				ResetFind
 				'
 			ElseIf Event=EN_CHANGE Then
