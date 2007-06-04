@@ -450,9 +450,11 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				End Select
 				'
 			ElseIf Event=CBN_EDITCHANGE Then
+				SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
 				ResetFind
 				'
 			ElseIf Event=CBN_SELCHANGE Then
+				SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(LPARAM,@findbuff))
 				ResetFind
 				'
 			ElseIf Event=EN_CHANGE Then
