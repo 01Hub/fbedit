@@ -387,6 +387,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Else
 				ppage.inch=0
 			EndIf
+			psd.ptPaperSize.x=ppage.page.x
+			psd.ptPaperSize.y=ppage.page.y
+			psd.rtMargin.left=ppage.margin.left
+			psd.rtMargin.top=ppage.margin.top
+			psd.rtMargin.right=ppage.margin.right
+			psd.rtMargin.bottom=ppage.margin.bottom
 			' Position and size main window
 			SetWindowPos(hWin,NULL,wpos.x,wpos.y,wpos.wt,wpos.ht,SWP_NOZORDER)
 			If wpos.fmax Then
@@ -610,12 +616,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Else
 								psd.Flags=PSD_MARGINS or PSD_INHUNDREDTHSOFMILLIMETERS
 							EndIf
-							psd.ptPaperSize.x=ppage.page.x
-							psd.ptPaperSize.y=ppage.page.y
-							psd.rtMargin.left=ppage.margin.left
-							psd.rtMargin.top=ppage.margin.top
-							psd.rtMargin.right=ppage.margin.right
-							psd.rtMargin.bottom=ppage.margin.bottom
 							If PageSetupDlg(@psd) Then
 								ppage.page.x=psd.ptPaperSize.x
 								ppage.page.y=psd.ptPaperSize.y
