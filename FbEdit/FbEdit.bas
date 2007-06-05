@@ -639,7 +639,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							pd.nMaxPage=id
 							pd.nFromPage=1
 							pd.nToPage=id
-							SendMessage(ah.hred,EM_EXGETSEL,0,@chrg)
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 							If chrg.cpMin<>chrg.cpMax Then
 								pd.Flags=PD_RETURNDC or PD_SELECTION
 							Else

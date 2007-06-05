@@ -595,9 +595,10 @@ Type ADDIN
 End Type
 
 Type PRNPAGE
-	inch As Integer
-	page As POINT
-	margin As RECT
+	Page		As POINT
+	margin	As RECT
+	pagelen	As Integer
+	inch		As Integer
 End Type
 
 Dim Shared addins(31) As ADDIN
@@ -609,6 +610,6 @@ Dim Shared fQR As Boolean
 Dim Shared nSplash As Integer=10
 Dim Shared hSplashBmp As HBITMAP
 Dim Shared wpos As WINPOS=(0,10,10,780,580,0,(0,0),120,160,(10,10),(10,10),0,(150,150),(10,10))
-Dim Shared ppage As PRNPAGE=(0,(21000,29700),(1000,1000,1000,1000))
+Dim Shared ppage As PRNPAGE=((21000,29700),(1000,1000,1000,1000),66,0)
 Dim Shared psd As PAGESETUPDLG
 Dim Shared pd As PRINTDLG
