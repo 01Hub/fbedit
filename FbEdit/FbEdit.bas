@@ -1326,7 +1326,15 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										lstrcat(@buff,StrPtr("\"))
 										ShellExecute(hWin,StrPtr("explore"),@buff,NULL,NULL,SW_SHOWNORMAL)
 									Else
-										ShellExecute(hWin,NULL,@buff,NULL,NULL,SW_SHOWNORMAL)
+										If InStr(buff,"""") Then
+											s=Mid(buff,InStr(buff,""""))
+											s=Mid(s,2)
+											s=Left(s,Len(s)-1)
+											buff=Trim(Left(buff,InStr(buff,"""")-1))
+											ShellExecute(hWin,NULL,@buff,@s,NULL,SW_SHOWNORMAL)
+										Else
+											ShellExecute(hWin,NULL,@buff,NULL,NULL,SW_SHOWNORMAL)
+										EndIf
 									EndIf
 								EndIf
 							ElseIf id>=12000 And id<=12019 Then
