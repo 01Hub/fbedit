@@ -142,7 +142,11 @@ Sub GetItems(ByVal ntype As Integer)
 		If Len(*ccpos) Then
 			lstrcpyn(@sItem,ccpos,Len(buff)+1)
 			If lstrcmpi(@sItem,@buff)=0 Then
-				SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,ccpos))
+				If InStr(UCase(*ccpos),":SUB") Or InStr(UCase(*ccpos),":FUNCTION") Then
+					SendMessage(ah.hcc,CCM_ADDITEM,1,Cast(Integer,ccpos))
+				ElseIf InStr(UCase(*ccpos),":CONSTRUCTOR")=0 And InStr(UCase(*ccpos),":DESTRUCTOR")=0 Then
+					SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,ccpos))
+				EndIf
 				ccpos=ccpos+Len(*ccpos)+1
 			EndIf
 		EndIf
