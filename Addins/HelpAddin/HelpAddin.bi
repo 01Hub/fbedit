@@ -1,7 +1,7 @@
 
 ' FbEdit menu id's
-#define IDM_HELPF1							13000
-#define IDM_HELPCTRLF1						13001
+#define IDM_HELPF1							10231
+#define IDM_HELPCTRLF1						10232
 
 ' RAEdit commands
 #define REM_BASE								WM_USER+1000

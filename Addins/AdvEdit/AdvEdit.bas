@@ -118,7 +118,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	AddToMenu(IdDeleteLine,"Delete Line")
 
 /'	' Change accelerator for an existing command
-	#define IDM_EDIT_REDO						10011
+	#define IDM_EDIT_REDO						10023
 	' Update the accelerator
 	AddAccelerator(FVIRTKEY or FNOINVERT or FSHIFT or FCONTROL,Asc("Z"),IDM_EDIT_REDO)
 	' Update the menu
