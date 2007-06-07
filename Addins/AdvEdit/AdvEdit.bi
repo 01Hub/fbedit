@@ -1,5 +1,5 @@
 
-#Define IDM_MAKE_QUICKRUN					10143
+#Define IDM_MAKE_QUICKRUN					10147
 #Define IDB_QUICKRUN							100
 
 Dim Shared hInstance As HINSTANCE
