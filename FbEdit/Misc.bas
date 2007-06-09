@@ -607,12 +607,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					TestCaseConvert(hPar,wParam)
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
-						RtlZeroMemory(@buff,SizeOf(buff))
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						buff[chrg.cpMax-chrg.cpMin]=NULL
+						buff[lp]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
@@ -700,7 +699,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						buff[chrg.cpMax-chrg.cpMin]=NULL
+						buff[lp]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hpr,PRM_GETTOOLTIP,0,Cast(LPARAM,@tt))
@@ -759,8 +758,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateList(p)
 						EndIf
 					EndIf
-					' Move code complete list
-					MoveList
+'					If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+						' Move code complete list
+						MoveList
+'					Else
+'						' Only close
+'						ShowWindow(ah.hcc,SW_HIDE)
+'					EndIf
 				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
