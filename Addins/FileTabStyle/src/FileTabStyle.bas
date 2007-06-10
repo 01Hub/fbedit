@@ -14,10 +14,11 @@
 #include "..\..\..\FbEdit\Inc\Addins.bi"
 
 Type TABMEM
-	hedit			As HWND
-	filename		As ZString * 260
+	hedit				As HWND
+	filename			As ZString * 260
 	profileinx		As Integer
 	filestate		As Integer
+	ft					As FILETIME
 End Type
 
 #define IDB_TABICONS 100
@@ -114,7 +115,7 @@ Function GetTabInfo(index As Integer, ByRef image As Integer, remAsterisk As Byt
 	item.pszText = StrPtr(buffer)
 	item.cchTextMax = 100
 	
-	SendMessage lpHandles->htabtool, TCM_GETITEM, index, VarPtr(item)
+	SendMessage lpHandles->htabtool, TCM_GETITEM, index, Cast(LPARAM,VarPtr(item))
 	
   	buffer = Left(buffer, InStr(buffer, !"\0") - 1)
 	
@@ -161,7 +162,7 @@ Sub ClearIndicators
 		
 		End If
 		
-		SendMessage lpHandles->htabtool, TCM_SETITEM, TabIndex, VarPtr(TabItem)
+		SendMessage lpHandles->htabtool, TCM_SETITEM, TabIndex, Cast(LPARAM,VarPtr(TabItem))
 		
 	Next
 	
@@ -203,7 +204,7 @@ Sub UpdateTab(ByRef theTab As TABMEM, index As Integer)
 		
 		End If
 		
-		SendMessage lpHandles->htabtool, TCM_SETITEM, index, VarPtr(item)
+		SendMessage lpHandles->htabtool, TCM_SETITEM, index, Cast(LPARAM,VarPtr(item))
 	
 	End If
 
@@ -239,7 +240,7 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	' get View menu
 	mnuView = GetSubMenu(lpHandles->hmenu, 3)
 	' add menu item to View menu
-	AppendMenu mnuView, MF_STRING Or MF_POPUP, mnuTabStyle, StrPtr("File tab style")
+	AppendMenu mnuView, MF_STRING Or MF_POPUP, Cast(Integer,mnuTabStyle), StrPtr("File tab style")
 	' get menu ids
 	mnuDefault = SendMessage(hWin, AIM_GETMENUID, 0, 0)
 	mnuButtons = SendMessage(hWin, AIM_GETMENUID, 0, 0)
@@ -253,9 +254,9 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	AppendMenu mnuTabStyle, MF_STRING, mnuButtons, StrPtr("Buttons")
 	AppendMenu mnuTabStyle, MF_STRING, mnuFlat, StrPtr("Flat")
 	AppendMenu mnuTabStyle, MF_SEPARATOR, 0, 0
-	AppendMenu mnuTabStyle, MF_STRING Or MF_POPUP, mnuModType, StrPtr("Modified state indicator")
+	AppendMenu mnuTabStyle, MF_STRING Or MF_POPUP, Cast(Integer,mnuModType), StrPtr("Modified state indicator")
 	AppendMenu mnuTabStyle, MF_STRING, mnuFixed, StrPtr("Fixed width")
-	AppendMenu mnuModType, MF_STRING, mnuModPic, StrPtr("Hillite icon")
+	AppendMenu mnuModType, MF_STRING, mnuModPic, StrPtr("Highlight icon")
 	AppendMenu mnuModType, MF_STRING, mnuModTxt, StrPtr("Asterisk character")
 	AppendMenu mnuModType, MF_STRING, mnuModOff, StrPtr("No indicator")
 	
