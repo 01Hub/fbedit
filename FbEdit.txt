@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.5.4
+o Added Print and Page Setup.
 o Added Option for Auto complete Include/Inclib.
 o Added Find History.
 o Added Dual Pane.
