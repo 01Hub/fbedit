@@ -631,8 +631,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							pd.hwndOwner=hWin
 							pd.hInstance=hInstance
 							i=SendMessage(ah.hred,EM_GETLINECOUNT,0,0)
-							id=i\66
-							If i/66>id Then
+							id=i\ppage.pagelen
+							If i/ppage.pagelen>id Then
 								id+=1
 							EndIf
 							pd.nMinPage=1

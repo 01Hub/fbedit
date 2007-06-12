@@ -1906,14 +1906,14 @@ Sub PrintDoc
 	If pd.Flags And PD_SELECTION Then
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 		nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
-		nPageno=nLine\66
+		nPageno=nLine\ppage.pagelen
 		nMLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		pd.nToPage=9999
 		fmr.chrg.cpMin=chrg.cpMin
 		fmr.chrg.cpMax=chrg.cpMax
 	Else
 		nPageno=pd.nFromPage-1
-		nLine=nPageno*66
+		nLine=nPageno*ppage.pagelen
 		nMLine=SendMessage(ah.hred,EM_GETLINECOUNT,0,0)
 		fmr.chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
 		fmr.chrg.cpMax=-1
