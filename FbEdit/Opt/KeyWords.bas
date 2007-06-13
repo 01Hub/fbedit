@@ -126,6 +126,10 @@ Sub SetHiliteWords(ByVal hWin As HWND)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C15,Cast(Integer,@buff))
 	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C16,@buff,SizeOf(buff),@ad.IniFile)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(Integer,@buff))
+	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@C17,@buff,SizeOf(buff),@ad.IniFile)
+	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C17,Cast(Integer,@buff))
+	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@C18,@buff,SizeOf(buff),@ad.IniFile)
+	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C18,Cast(Integer,@buff))
 
 End Sub
 
@@ -246,13 +250,69 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 
 End Sub
 
+Sub HLUDT()
+	Dim lret As ZString ptr
+	Dim sItem As ZString*256
+	
+	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("s")),Cast(Integer,StrPtr(""))))
+	Do While lret
+		sItem= "^"
+		lstrcat(@sItem,lret)
+		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(Integer,@sItem))
+		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+	Loop
+
+End Sub
+
+Sub HLConstants()
+	Dim lret As ZString ptr
+	Dim sItem As ZString*256
+	
+	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("c")),Cast(Integer,StrPtr(""))))
+	Do While lret
+		sItem= "^"
+		lstrcat(@sItem,lret)
+		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C17,Cast(Integer,@sItem))
+		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+	Loop
+
+End Sub
+
+Sub HLFunction()
+	Dim lret As ZString ptr
+	Dim sItem As ZString*256
+	
+	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
+	Do While lret
+		sItem= "^"
+		lstrcat(@sItem,lret)
+		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C18,Cast(Integer,@sItem))
+		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+	Loop
+
+End Sub
+
+Sub PropertyHL(ByVal bUpdate As Integer)
+
+	If bUpdate Then
+		HLUDT()
+		HLConstants()
+		HLFunction()
+	Else
+		SetHiliteWords(ah.hwnd)
+		SetHiliteWordsFromApi(ah.hwnd)
+	EndIf
+	SendMessage(ah.hred,REM_REPAINT,0,TRUE)
+	
+End Sub
+
 Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim ofs As Any ptr
 	Dim col As Integer
 
 	ofs=@thme(nInx)
 	nInx=0
-	Do While nInx<16
+	Do While nInx<18
 		ofs=ofs+4
 		RtlMoveMemory(@col,ofs,4)
 		SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,nInx,col)
@@ -276,7 +336,7 @@ Sub PutTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 
 	ofs=@thme(nInx)
 	nInx=0
-	Do While nInx<16
+	Do While nInx<18
 		ofs=ofs+4
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
@@ -312,18 +372,18 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	' Keyword colors
 	ofs=@kwcol
 	nInx=0
-	Do While nInx<17
+	Do While nInx<19
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
 		ofs=ofs+4
 		nInx=nInx+1
 	Loop
-	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"44444444444444444",@kwcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444444",@kwcol,FALSE)
 	' Custom colors
-	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"44444444444444444",@custcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444444",@custcol,FALSE)
 	' KeyWords
 	nInx=0
-	Do While nInx<18
+	Do While nInx<20
 		buff=Chr(34) & sKeyWords(nInx) & Chr(34)
 		WritePrivateProfileString("Edit","C" & Str(nInx),@buff,@ad.IniFile)
 		nInx=nInx+1
@@ -466,7 +526,7 @@ Sub GetHold(ByVal hWin As HWND)
 		buff=buff & sItem & " "
 		nInx=nInx+1
 	Loop
-	sKeyWords(17)=buff
+	sKeyWords(19)=buff
 
 End Sub
 
@@ -475,7 +535,7 @@ Sub FillHold(ByVal hWin As HWND)
 	Dim sItem As ZString*256
 	Dim x As Integer
 
-	buff=sKeyWords(17)
+	buff=sKeyWords(19)
 	Do While Len(buff)
 		x=InStr(buff," ")
 		If x=0 Then
@@ -563,8 +623,12 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			sKeyWords(15)=buff
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@C16,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(16)=buff
-			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@C17,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(17)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@C18,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(18)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(19)=buff
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
@@ -615,7 +679,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Keyword colors
 			ofs=@kwcol
 			nInx=0
-			Do While nInx<17
+			Do While nInx<19
 				If nInx<12 Then
 					sItem="C" & Str(nInx)
 				ElseIf nInx=12 Then
@@ -627,7 +691,11 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 				ElseIf nInx=15 Then
 					sItem="Api calls"
 				ElseIf nInx=16 Then
-					sItem="User" 		'please don't delete, i'll use it
+					sItem="Custom1" 		'struct's project
+				ElseIf nInx=17 Then
+					sItem="Custom2" 		'const's project
+				ElseIf nInx=18 Then
+					sItem="Custom3" 		'sub/function's project
 				EndIf
 				RtlMoveMemory(@col,ofs,4)
 				SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_ADDSTRING,0,Cast(Integer,@sItem))

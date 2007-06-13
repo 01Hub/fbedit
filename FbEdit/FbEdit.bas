@@ -247,8 +247,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"44444444444444444",@kwcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"44444444444444444",@custcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444444",@kwcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444444",@custcol,FALSE)
 			' Get handle of build combobox
 			ah.hcbobuild=GetDlgItem(hWin,IDC_CBOBUILD)
 			' Get make option from ini
@@ -612,9 +612,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							psd.hwndOwner=hWin
 							psd.hInstance=hInstance
 							If ppage.inch Then
-								psd.Flags=PSD_MARGINS or PSD_INTHOUSANDTHSOFINCHES
+								psd.Flags=PSD_MARGINS Or PSD_INTHOUSANDTHSOFINCHES
 							Else
-								psd.Flags=PSD_MARGINS or PSD_INHUNDREDTHSOFMILLIMETERS
+								psd.Flags=PSD_MARGINS Or PSD_INHUNDREDTHSOFMILLIMETERS
 							EndIf
 							If PageSetupDlg(@psd) Then
 								ppage.page.x=psd.ptPaperSize.x
@@ -641,9 +641,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							pd.nToPage=id
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 							If chrg.cpMin<>chrg.cpMax Then
-								pd.Flags=PD_RETURNDC or PD_SELECTION
+								pd.Flags=PD_RETURNDC Or PD_SELECTION
 							Else
-								pd.Flags=PD_RETURNDC or PD_NOSELECTION or PD_PAGENUMS
+								pd.Flags=PD_RETURNDC Or PD_NOSELECTION Or PD_PAGENUMS
 							EndIf
 							If PrintDlg(@pd) Then
 								PrintDoc
@@ -1288,6 +1288,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SetFocus(ah.hred)
 							EndIf
 							'
+						Case IDM_PROPERTY_HILIGHT_RESET
+							PropertyHL(FALSE)
+							'
+						Case IDM_PROPERTY_HILIGHT_UPDATE
+							PropertyHL(TRUE)
+							'
 						Case Else
 							If id=IDC_CBOBUILD Then
 								id=SendMessage(ah.hcbobuild,CB_GETCURSEL,0,0)
@@ -1298,19 +1304,19 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								EndIf
 								GetMakeOption
 								'
-							ElseIf id=&HFFFD then
+							ElseIf id=&HFFFD Then
 								' Expand button clicked
 								SendMessage(ah.hred,REM_EXPANDALL,0,0)
 								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								SendMessage(ah.hred,REM_REPAINT,0,0)
 								'
-							ElseIf id=&HFFFC then
+							ElseIf id=&HFFFC Then
 								' Collapse button clicked
 								SendMessage(ah.hred,REM_COLLAPSEALL,0,0)
 								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								SendMessage(ah.hred,REM_REPAINT,0,0)
 								'
-							elseif id>=11000 And id<=11019 Then
+							ElseIf id>=11000 And id<=11019 Then
 								' Tools menu
 								GetPrivateProfileString(StrPtr("Tools"),Str(id-10999),@szNULL,@buff,260,@ad.IniFile)
 								If Len(buff) Then
@@ -1708,7 +1714,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
 				' Size the splash
 				GetWindowRect(ah.hshp,@rect1)
-				ScreenToClient(hWin,Cast(POINT ptr,@rect1.right))
+				ScreenToClient(hWin,Cast(Point ptr,@rect1.right))
 				MoveWindow(GetDlgItem(hWin,IDC_IMGSPLASH),(rect1.right-340)/2,(rect1.bottom-188)/2+25,340,188,TRUE)
 			EndIf
 			'
