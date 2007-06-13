@@ -4,7 +4,7 @@ Description=FBEdit File Association
 Api=fb (FreeBASIC),win (Windows)
 Grouping=1
 AddMainFiles=1
-ResExport=
+ResExport=rsrc.bi
 [Make]
 Module=Module Build,fbc -c
 Recompile=0
@@ -15,15 +15,16 @@ Run=
 [File]
 1=FBFileAssociation.bas
 2=FBFileAssociation.bi
-3=FBFileAssociation.txt
-4=FBFileAssociation.rc
-5=..\..\FbEdit\Inc\Addins.bi
-6=RegLib.bas
-7=rsrc.bi
+3=FBFileAssociation.rc
+4=RegLib.bas
+5=rsrc.bi
+6=..\..\FbEdit\Inc\Addins.bi
+
 [FileInfo]
-4=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-1=0,163,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-2=0,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
 5=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-6=0,98,0,2046,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-7=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,29,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
