@@ -19,11 +19,11 @@ includelib kernel32.lib
 includelib gdi32.lib
 includelib ole32.lib
 
-;include \RadASM\Masm\Inc\RADbg.inc
-;include masm32.inc
-;include \RadASM\Masm\Inc\Debug.Inc
-;includelib masm32.lib
-;includelib \RadASM\Masm\Lib\Debug.lib
+include \RadASM\Masm\Inc\RADbg.inc
+include masm32.inc
+include \RadASM\Masm\Inc\Debug.Inc
+includelib masm32.lib
+includelib \RadASM\Masm\Lib\Debug.lib
 
 include ..\RAEdit.inc
 include Data.inc

@@ -382,14 +382,12 @@ GetBlockRects proc uses ebx esi edi,hMem:DWORD,lpRects:DWORD
 	ret
 
 GetRect:
-	mov		ecx,[ebx].EDIT.fntinfo.fntht
-	mov		eax,blrg.lnMin
-	mul		ecx
+	invoke GetYpFromLine,ebx,blrg.lnMin
 	sub		eax,[esi].RAEDT.cpy
 	mov		[edi].RECT.top,eax
 	mov		eax,blrg.lnMax
 	inc		eax
-	mul		ecx
+	invoke GetYpFromLine,ebx,eax
 	sub		eax,[esi].RAEDT.cpy
 	mov		[edi].RECT.bottom,eax
 	mov		ecx,[ebx].EDIT.fntinfo.fntwt
@@ -424,8 +422,12 @@ InvalidateBlock proc uses ebx esi edi,hMem:DWORD,lpOldRects:DWORD
 	mov		esi,lpOldRects
 	lea		edi,newrects
 	invoke GetBlockRects,ebx,edi
-	mov		eax,[ebx].EDIT.edta.hwnd
-	call	DoRect
+	mov		eax,[ebx].EDIT.edta.rc.bottom
+	sub		eax,[ebx].EDIT.edta.rc.top
+	.if eax
+		mov		eax,[ebx].EDIT.edta.hwnd
+		call	DoRect
+	.endif
 	add		esi,sizeof RECT
 	add		edi,sizeof RECT
 	mov		eax,[ebx].EDIT.edtb.hwnd
@@ -462,6 +464,7 @@ DoRect:
 		mov		rect.bottom,eax
 		inc		rect.right
 		invoke InvalidateRect,ebx,addr rect,TRUE
+		invoke UpdateWindow,ebx
 	.endif
 	;Right part
 	mov		eax,[esi].RECT.right
@@ -495,6 +498,7 @@ DoRect:
 		.endif
 		mov		rect.bottom,eax
 		invoke InvalidateRect,ebx,addr rect,TRUE
+		invoke UpdateWindow,ebx
 	.endif
 	;Top part
 	mov		eax,[esi].RECT.top
@@ -522,6 +526,7 @@ DoRect:
 		.endif
 		mov		rect.right,eax
 		invoke InvalidateRect,ebx,addr rect,TRUE
+		invoke UpdateWindow,ebx
 	.endif
 	;Bottom part
 	mov		eax,[esi].RECT.bottom
@@ -549,6 +554,7 @@ DoRect:
 		.endif
 		mov		rect.right,eax
 		invoke InvalidateRect,ebx,addr rect,TRUE
+		invoke UpdateWindow,ebx
 	.endif
 	pop		ebx
 	retn
