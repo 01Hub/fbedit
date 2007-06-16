@@ -334,6 +334,8 @@
 				.endif
 				pop		esi
 				pop		edi
+				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
+				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 				invoke SendMessage,hWin,REM_VCENTER,0,0
 			.endif
 			ret
@@ -353,6 +355,8 @@
 			;lParam=0
 			invoke ExpandAll,ebx
 			.if eax
+				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
+				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 				invoke SendMessage,hWin,REM_VCENTER,0,0
 			.endif
 			ret

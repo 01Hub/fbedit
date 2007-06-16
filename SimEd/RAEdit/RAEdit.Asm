@@ -3545,10 +3545,10 @@ SizeIt:
 		add		ecx,BTNHT
 		mov		eax,[ebx].EDIT.rc.bottom
 		sub		eax,ecx
-		push	eax
-		push	ecx
-		pop		ecx
-		pop		eax
+;		push	eax
+;		push	ecx
+;		pop		ecx
+;		pop		eax
 		invoke MoveWindow,[ebx].EDIT.edtb.hwnd,0,ecx,[ebx].EDIT.rc.right,eax,TRUE
 		invoke MoveWindow,[ebx].EDIT.hsbtn,0,[ebx].EDIT.nsplitt,[ebx].EDIT.rc.right,BTNHT,TRUE
 	.else
