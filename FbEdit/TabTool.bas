@@ -44,6 +44,7 @@ Sub DelTab(ByVal hWin As HWND)
 			SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+			SetFocus(ah.hred)
 		Else
 			ShowWindow(ah.htabtool,SW_HIDE)
 			ShowWindow(ah.hshp,SW_SHOWNA)
@@ -105,6 +106,7 @@ Sub AddTab(hEdt As HWND,ByVal lpFileName As String)
 		ah.hpane(1)=hEdt
 	EndIf
 	SelectTab(ah.hwnd,hEdt,0)
+	SetFocus(ah.hred)
 	fTimer=1
 
 End Sub
@@ -197,6 +199,7 @@ Sub NextTab(ByVal fPrev As Boolean)
 		SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+		SetFocus(ah.hred)
 	EndIf
 
 End Sub
@@ -214,6 +217,7 @@ Sub SwitchTab()
 		If SendMessage(ah.htabtool,TCM_GETITEM,prevtab,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+			SetFocus(ah.hred)
 		EndIf
 	EndIf
 
@@ -501,10 +505,12 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	Wend
 	If hWinDontClose Then
 		SelectTab(ah.hwnd,hWinDontClose,0)
+		SetFocus(ah.hred)
 	ElseIf SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0) Then
 		SendMessage(ah.htabtool,TCM_GETITEM,0,Cast(Integer,@tci))
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+		SetFocus(ah.hred)
 		' don't close project
 		Return TRUE
 	Else
@@ -721,6 +727,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SendMessage(lpTABMEM->hedit,REM_SETLOCK,SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0) Xor 1,0)
+				SetFocus(ah.hred)
 				Return 0
 			EndIf
 			'
@@ -733,6 +740,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
 				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+				SetFocus(ah.hred)
 				Return 0
 			EndIf
 			'
@@ -745,6 +753,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
 				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+				SetFocus(ah.hred)
 				Return 0
 			EndIf
 			'
