@@ -969,6 +969,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 			EndIf
 		Case WM_KILLFOCUS
+			'temp fix split focus bug
+			If ah.hpane(0)=0 Then
+				Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+			EndIf
 			ShowWindow(ah.hTT,SW_HIDE)
 			hPar=GetParent(Cast(HWND,wParam))
 			While hPar
@@ -987,6 +991,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				hPar=GetParent(hPar)
 			Wend
 		Case WM_SETFOCUS
+			'temp fix split focus bug
+			If ah.hpane(0)=0 Then
+				Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+			EndIf
 			If fInProgress=0 Then
 				fInprogress=1
 				If ah.hred<>ah.hpane(0) Then
