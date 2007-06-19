@@ -1958,7 +1958,7 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==TYPE_COMBOBOX
 				mov		eax,[esi].COLUMN.himl
 				mov		[edi].COLUMN.himl,eax
-				invoke CreateWindowEx,0,offset szListBoxClass,NULL,WS_CHILD or WS_BORDER or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_HASSTRINGS or LBS_SORT or LBS_OWNERDRAWFIXED,0,0,0,0,[ebx].GRID.hlst,NULL,hInstance,0
+				invoke CreateWindowEx,WS_EX_TOOLWINDOW,offset szListBoxClass,NULL,WS_CHILD or WS_BORDER or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_HASSTRINGS or LBS_SORT or LBS_OWNERDRAWFIXED,0,0,0,0,[ebx].GRID.hlst,NULL,hInstance,0
 				mov		[edi].COLUMN.edthwnd,eax
 				invoke SetWindowLong,eax,GWL_WNDPROC,offset LstProc
 				mov		lplstproc,eax
