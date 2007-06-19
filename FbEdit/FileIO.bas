@@ -308,6 +308,7 @@ Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean
 			If lstrcmpi(fn,lpTABMEM->filename)=0 Then
 				If fShow Then
 					SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+					SetFocus(ah.hred)
 				EndIf
 				Return lpTABMEM->hedit
 			EndIf

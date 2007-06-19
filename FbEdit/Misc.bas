@@ -518,7 +518,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim tp As Integer
 	Dim lz As Integer
 	Dim isinp As ISINPROC
-	Static fInProgress As Integer
 	Dim lpRESMEM As RESMEM ptr
 
 	Select Case uMsg
@@ -977,15 +976,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			hPar=GetParent(Cast(HWND,wParam))
 			While hPar
 				If hPar=ah.hres Then
-					If fInProgress=0 Then
-						fInprogress=1
-						If ah.hred<>ah.hpane(0) Then
-							ah.hpane(1)=ah.hred
-						EndIf
-						SelectTab(ah.hwnd,ah.hres,0)
-						SetFocus(Cast(HWND,wParam))
-						fInprogress=0
+					If ah.hred<>ah.hpane(0) Then
+						ah.hpane(1)=ah.hred
 					EndIf
+					SelectTab(ah.hwnd,ah.hres,0)
 					Exit While
 				EndIf
 				hPar=GetParent(hPar)
@@ -995,13 +989,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			If ah.hpane(0)=0 Then
 				Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 			EndIf
-			If fInProgress=0 Then
-				fInprogress=1
+			If ah.hred<>GetParent(hWin) Then
 				If ah.hred<>ah.hpane(0) Then
 					ah.hpane(1)=ah.hred
 				EndIf
 				SelectTab(ah.hwnd,GetParent(hWin),0)
-				fInprogress=0
 			EndIf
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)

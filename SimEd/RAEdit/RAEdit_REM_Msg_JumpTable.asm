@@ -462,6 +462,15 @@
 			mov		eax,wParam
 			and		eax,1FFh
 			mov		[ebx].EDIT.fsplitt,eax
+			.if !eax
+				mov		eax,[ebx].EDIT.focus
+				.if eax==[ebx].EDIT.edta.hwnd
+					mov		eax,[ebx].EDIT.edta.cpxmax
+					mov		[ebx].EDIT.edtb.cpxmax,eax
+					mov		eax,[ebx].EDIT.edta.cpy
+					mov		[ebx].EDIT.edtb.cpy,eax
+				.endif
+			.endif
 			call	SizeIt
 			invoke SetFocus,[ebx].EDIT.edtb.hwnd
 			invoke SetCaretVisible,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy

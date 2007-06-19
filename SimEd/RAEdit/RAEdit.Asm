@@ -483,16 +483,12 @@ SplittBtnProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke GetWindowLong,eax,0
 		mov		ebx,eax
+		mov		eax,511
 		.if [ebx].EDIT.fsplitt
-			mov		[ebx].EDIT.fsplitt,0
-		.else
-			mov		[ebx].EDIT.fsplitt,512
+			mov		eax,0
 		.endif
-		pop		eax
-		invoke SendMessage,eax,WM_SIZE,0,0
-		.if [ebx].EDIT.fsplitt==0
-			invoke SetFocus,[ebx].EDIT.edtb.hwnd
-		.endif
+		pop		edx
+		invoke SendMessage,edx,REM_SETSPLIT,eax,0
 		xor		eax,eax
 		ret
 	.endif
@@ -1233,18 +1229,11 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 		.if fAlt
 			.if fControl && !fShift
 				;End, split
+				mov		eax,1ffH
 				.if [ebx].EDIT.fsplitt
-					mov		[ebx].EDIT.fsplitt,0
-				.else
-					mov		[ebx].EDIT.fsplitt,512
+					xor		eax,eax
 				.endif
-				invoke SendMessage,[ebx].EDIT.hwnd,WM_SIZE,0,0
-				mov		eax,[ebx].EDIT.edtb.cp
-				mov		[ebx].EDIT.cpMin,eax
-				mov		[ebx].EDIT.cpMax,eax
-				invoke SetFocus,[ebx].EDIT.edtb.hwnd
-				invoke SetCaretVisible,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
-				inc		nUndoid
+				invoke SendMessage,[ebx].EDIT.hwnd,REM_SETSPLIT,eax,0
 			.endif
 		.else
 			test	[ebx].EDIT.nMode,MODE_BLOCK
@@ -1279,8 +1268,6 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 				invoke SetCaretVisible,hWin,[esi].RAEDT.cpy
 				invoke SetCaret,ebx,[esi].RAEDT.cpy
 				invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
-
-
 				invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
 				invoke SetCpxMax,ebx,hWin
 			.else

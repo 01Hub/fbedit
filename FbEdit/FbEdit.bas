@@ -734,6 +734,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									OpenProjectFile(lret)
 								Else
 									SelectTab(hWin,Cast(HWND,lret),0)
+									SetFocus(ah.hred)
 								EndIf
 								lret=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
 								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
@@ -983,6 +984,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								x=500
 							EndIf
 							SendMessage(ah.hred,REM_SETSPLIT,x,0)
+							SetFocus(ah.hwnd)
+							SetFocus(ah.hred)
 							'
 						Case IDM_VIEW_FULLSCREEN
 							If ah.hfullscreen Then
@@ -1004,6 +1007,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								ah.hpane(0)=0
 								ah.hpane(1)=0
 								SelectTab(ah.hwnd,ah.hred,0)
+								SetFocus(ah.hred)
 							Else
 								ah.hpane(0)=ah.hred
 								ah.hpane(1)=0
@@ -1562,6 +1566,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETITEM,SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
 				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+				SetFocus(ah.hred)
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
 				' Project tab
