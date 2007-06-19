@@ -59,9 +59,17 @@ Sub GetMakeOption()
 		ad.smakeoutput=""
 		ad.smakerun=""
 	EndIf
-	If Len(ad.fbcPath) Then
+	If Len(ad.fbcPath)>0 And Mid(ad.smake,2,2)<>":\" And Left(ad.smake,1)<>"$" Then
 		ad.smake=ad.fbcPath & "\" & ad.smake
+	EndIf
+	If Len(ad.fbcPath)>0 And Mid(ad.smakemodule,2,2)<>":\" And Left(ad.smakemodule,1)<>"$" Then
 		ad.smakemodule=ad.fbcPath & "\" & ad.smakemodule
+	EndIf
+	If Left(ad.smake,1)="$" Then
+		ad.smake=Mid(ad.smake,2)
+	EndIf
+	If Left(ad.smakemodule,1)="$" Then
+		ad.smakemodule=Mid(ad.smakemodule,2)
 	EndIf
 
 End Sub
