@@ -154,6 +154,12 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 	  Nx:
 		inc		esi
 		mov		al,[esi]
+		.if al==';'
+			.while al!=0Ah
+				inc		esi
+				mov		al,[esi]
+			.endw
+		.endif
 		cmp		al,0Dh
 		je		Nx
 		cmp		al,0Ah

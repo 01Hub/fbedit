@@ -419,7 +419,6 @@ glMultTransposeMatrixd,m:GLdouble ptr
 glMultTransposeMatrixf,m:GLfloat ptr
 glSampleCoverage,value:GLclampf,invert:GLboolean
 glSamplePass,pass:GLenum
-
 gluBeginCurve,nurb:GLUnurbs ptr
 gluBeginPolygon,tess:GLUtesselator ptr
 gluBeginSurface,nurb:GLUnurbs ptr
@@ -479,7 +478,6 @@ gluTessProperty,tess:GLUtesselator ptr,which:GLenum,data:GLdouble
 gluTessVertex,tess:GLUtesselator ptr,location:GLdouble ptr,data:GLvoid ptr
 gluUnProject,winX:GLdouble,winY:GLdouble,winZ:GLdouble,model:GLdouble ptr,proj:GLdouble ptr,view:GLint ptr,objX:GLdouble ptr,objY:GLdouble ptr,objZ:GLdouble ptr|GLint
 gluUnProject4,winX:GLdouble,winY:GLdouble,winZ:GLdouble,clipW:GLdouble,model:GLdouble ptr,proj:GLdouble ptr,view:GLint ptr,nearVal:GLdouble,farVal:GLdouble,objX:GLdouble ptr,objY:GLdouble ptr,objZ:GLdouble ptr,objW:GLdouble ptr|GLint
-
 glutInit,ByRef argcp:Integer,ByRef argv:Byte ptr
 glutInitDisplayMode,mode:UInteger
 glutInitDisplayString,string:ZString ptr

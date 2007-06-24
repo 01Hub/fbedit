@@ -128,9 +128,9 @@ ProductVer4Range=0
 10=,,,,,,
 11=,
 [Size]
-2=0,0,699,490,11
+2=0,0,699,490,139
 <<<<<<< .mine
-1=0,0,699,490,2143
+1=0,0,699,490,6621
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -138,9 +138,9 @@ ProductVer4Range=0
 3=0,0,0,0,0
 8=0,0,0,0,1641
 7=0,0,0,0,231
-9=0,0,0,0,2968
+9=0,0,0,0,2844
 10=0,0,589,494,15485
-11=0,0,0,0,11152
+11=0,0,0,0,645
 [BookMark]
 0=
 1=
@@ -159,15 +159,15 @@ ProductVer4Range=0
 [PTimer]
 PTimer=97790076
 [Find]
-1="align 4"
-2="PRM_SELECTPROPERTY"
-3="AddItem"
-4="LB_ADD"
-5="PRM_GETTOOLTIP"
-6="glutReshapeWindow"
-7="glutSolidTorus"
-8="glPushAttrib"
-9="acmGetVersion"
-10="PRM_MEMSEARCH"
+1=".while"
+2="PRM_ADDPROPERTYFILE"
+3="align 4"
+4="PRM_SELECTPROPERTY"
+5="AddItem"
+6="LB_ADD"
+7="PRM_GETTOOLTIP"
+8="glutReshapeWindow"
+9="glutSolidTorus"
+10="glPushAttrib"
 [Exports]
 1=GetDefEx
