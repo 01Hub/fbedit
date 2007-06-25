@@ -25,6 +25,12 @@ OffsetOf( typename, fieldname
 RGB( r, g, b
 ;#define RGBA( r, g, b, a ) ( ( CUInt( r ) Shl 16 ) Or ( CUInt( g ) Shl 8 ) Or CUInt( b ) Or ( CUInt( a ) Shl 24 ) )
 RGBA( r, g, b, a
+;pointer_variable = va_first( )
+va_first(
+;variable = va_arg( argument_list, datatype )
+va_arg( argument_list, datatype
+;Argument_Pointer = va_next( Argument_List, datatype )
+va_next( Argument_List, datatype
 ;
 ; operators
 ;
@@ -60,6 +66,10 @@ StrPtr( ByRef lhs As String |As ZString Ptr
 ;StrPtr( ByRef lhs As WString |As ZString Ptr
 VarPtr( ByRef lhs As T |As T Ptr
 ProcPtr( ByRef lhs As T |As T Ptr
+New( size As UInteger |As Any Ptr
+;new[]( size As UInteger |As Any Ptr
+Delete( buf As Any Ptr
+;delete[]( buf As Any Ptr
 ;
 ; "api"
 ;
@@ -102,6 +112,7 @@ CondDestroy( ByVal handle As Any Ptr
 CondSignal( ByVal handle As Any Ptr
 CondWait( ByVal handle As Any Ptr
 Cos( ByVal number As Double |As Double
+CPtr( DataType Ptr, expression
 CShort( ByVal expression As datatype |As Short
 CSng( ByVal expression As datatype |As Single
 CsrLin( |As Integer
@@ -166,6 +177,7 @@ Hour( ByVal date_serial As Double |As Integer
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any ptr |As UInteger
 ImageConvertRow( ByVal src As Any Ptr, ByVal src_bpp As Integer, ByVal dst As Any Ptr, ByVal dst_bpp As Integer, ByVal width As Integer, ByVal isrgb As Integer = 1
+ImageCreate( width As Integer, height As Integer [, [ color As UInteger ] [, depth As Integer ]] ) As Any Ptr
 ImageDestroy( pointer As Any Ptr
 Inkey( |As String
 Inp( ByVal port As UShort |As Integer
@@ -230,6 +242,7 @@ PCopy( ByVal source As Integer, ByVal destination As Integer
 ;Peek( ByVal address As Any Ptr |As UByte
 Peek( datatype, ByVal address As Any Ptr |As datatype
 PMap( ByVal coord As Single, ByVal func As Integer |As Single
+Point( coord_x, coord_y [,buffer]
 ;Poke( ByVal address As Any Ptr, ByRef value As UByte
 Poke( datatype, ByVal address As Any Ptr, ByRef value As datatype
 ;Pos( |As Integer
@@ -302,6 +315,7 @@ TimeSerial( ByVal hour As Integer, ByVal minute As Integer, ByVal second As Inte
 TimeValue( ByRef timestring As String |As Double
 Trim( ByRef str As String, [ Any ] ByRef trimset As String = " " |As String
 ;Trim( ByRef str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
+TypeOf( variable / datatype
 UBound( array As Any, ByVal dimension As Integer = 1 |As Integer
 UCase( ByRef str As String |As String
 ;UCase( ByRef str As WString |As WString
@@ -335,6 +349,7 @@ WHex( ByVal number As Integer, ByVal digits As Integer |As WString
 ;WHex( ByVal number As LongInt, ByVal digits As Integer |As WString
 ;WHex( ByVal number As Short |As WString
 ;WHex( ByVal number As Short, ByVal digits As Integer |As WString
+Width(
 WindowTitle( ByRef title As String
 ;WInput( ByVal num As Integer |As WString
 WInput( ByVal num As Integer, ByVal filenum As Integer = 0 |As WString
