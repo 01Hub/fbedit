@@ -1,3 +1,68 @@
+;
+; macros
+;
+;#define Assert( expression ) If ( expression ) = 0 Then : fb_Assert( __FILE__, __LINE__, __FUNCTION__, #expression ) : End If
+Assert( expression
+;#define AssertWarn( expression ) If ( expression ) = 0 Then : fb_AssertWarn( __FILE__, __LINE__, __FUNCTION__, #expression ) : End If
+AssertWarn( expression
+;#define Bit( value, bit_number ) ( ( ( value ) And ( Cast( TypeOf( Value ), 1 ) Shl ( bit_number ) ) ) <> 0)
+Bit( value, bit_number
+;#define BitReset( value, bit_number ) ( ( value ) And Not ( Cast( TypeOf( Value ), 1 ) Shl (bit_number ) ) )
+BitReset( value, bit_number
+;#define BitSet( value, bit_number ) ( ( value ) Or ( Cast( TypeOf( Value ), 1 ) Shl ( bit_number ) ) )
+BitSet( value, bit_number
+;#define HiByte( x ) ( ( CUInt( x ) And &h0000FF00 ) Shr 8 )
+HiByte( x
+;#define HiWord( x ) ( CUInt( x ) Shr 16 )
+HiWord( x
+;#define LoByte( x ) ( CUInt( x ) And &h000000FF )
+LoByte( x
+;#define LoWord( x ) ( CUInt( x ) And &h0000FFFF )
+LoWord( x
+;#define OffsetOf( typename, fieldname ) CInt( @Cast( typename Ptr, 0 )->fieldname )
+OffsetOf( typename, fieldname	
+;#define RGB( r, g, b ) ( ( CUInt( r ) Shl 16 ) Or ( CUInt( g ) Shl 8 ) Or CUInt( b ) Or &hFF000000 )
+RGB( r, g, b
+;#define RGBA( r, g, b, a ) ( ( CUInt( r ) Shl 16 ) Or ( CUInt( g ) Shl 8 ) Or CUInt( b ) Or ( CUInt( a ) Shl 24 ) )
+RGBA( r, g, b, a
+;
+; operators
+;
+Mod( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
+;Mod=( ByRef lhs As Integer, ByRef rhs As Integer
+And( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+;And=( ByRef lhs As T1, ByRef rhs As T2
+Eqv( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+;Eqv=( ByRef lhs As T1, ByRef rhs As T2
+Imp( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+;Imp=( ByRef lhs As T1, ByRef rhs As T2
+Or( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+;Or=( ByRef lhs As T1, ByRef rhs As T2
+Xor( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+;Xor=( ByRef lhs As T1, ByRef rhs As T2
+Shl( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
+;Shl( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
+;Shl( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
+;Shl( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+;Shl=( ByRef lhs As Integer, ByRef rhs As Integer
+;Shl=( ByRef lhs As LongInt, ByRef rhs As LongInt
+;Shl=( ByRef lhs As UInteger, ByRef rhs As UInteger
+;Shl=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
+Shr( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
+;Shr( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
+;Shr( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
+;Shr( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+;Shr=( ByRef lhs As Integer, ByRef rhs As Integer
+;Shr=( ByRef lhs As LongInt, ByRef rhs As LongInt
+;Shr=( ByRef lhs As UInteger, ByRef rhs As UInteger
+;Shr=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
+StrPtr( ByRef lhs As String |As ZString Ptr
+;StrPtr( ByRef lhs As WString |As ZString Ptr
+VarPtr( ByRef lhs As T |As T Ptr
+ProcPtr( ByRef lhs As T |As T Ptr
+;
+; "api"
+;
 ;Abs( ByVal number As Double |As Double
 Abs( ByVal number As Integer |As Integer
 ;Abs( ByVal number As LongInt |As LongInt
