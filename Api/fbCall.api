@@ -1,3 +1,4 @@
+; extract from "FB-manual-chm-10.jun.2007"
 ;
 ; macros
 ;
@@ -46,6 +47,11 @@ Or( ByRef lhs As T1, ByRef rhs As T2 |As Ret
 ;Or=( ByRef lhs As T1, ByRef rhs As T2
 Xor( ByRef lhs As T1, ByRef rhs As T2 |As Ret
 ;Xor=( ByRef lhs As T1, ByRef rhs As T2
+;Not( ByRef rhs As Byte |As Integer
+;Not( ByRef rhs As UByte |As Integer
+;Not( ByRef rhs As Single |As Integer
+;Not( ByRef rhs As Double |As Integer
+Not( ByRef rhs As T |As T
 Shl( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
 ;Shl( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
 ;Shl( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
@@ -93,6 +99,7 @@ Bin( ByVal number As Integer, ByVal digits As Integer |As String
 ;Bin( ByVal number As Short |As String
 BLoad( ByRef filename As String, ByVal addr As Any Ptr = 0, ByVal pal As Any Ptr = 0 |As Integer
 BSave( ByRef filename As String, ByVal addr As Any Ptr, ByVal size As Integer = 0, ByVal pal As Any Ptr = 0 |As Integer
+Cast( datatype, expression
 CAllocate( ByVal num_elements As Integer, ByVal size As Integer = 1 |As Any Ptr
 CByte( ByVal expression As datatype |As Byte
 CDbl( ByVal expression As datatype |As Double
@@ -114,12 +121,14 @@ CondWait( ByVal handle As Any Ptr
 Cos( ByVal number As Double |As Double
 CPtr( DataType Ptr, expression
 CShort( ByVal expression As datatype |As Short
+CSign( expression
 CSng( ByVal expression As datatype |As Single
 CsrLin( |As Integer
 CUByte( ByVal expression As datatype |As UByte
 CUInt( ByVal expression As datatype |As UInteger
 CULng( ByVal expression As datatype |As Ulong
 CULngInt( ByVal expression As datatype |As ULongInt
+CUnsg( expression
 CurDir( |As String
 CUShort( ByVal expression As datatype |As UShort
 CVD( ByRef str As String |As Double
@@ -151,6 +160,7 @@ Erl( |As Integer
 Ermn( |As ZString Ptr
 Err( |As Integer
 Error( errno As Integer
+Exec( ByRef program As String, ByRef arguments As String |As Integer
 ExePath( |As String
 Exp( ByVal number As Double |As Double
 FileAttr( ByVal filenum As Integer, ByVal returntype As Integer = 1 |As Integer
@@ -260,6 +270,7 @@ RSet( ByRef dst As String , ByRef src As String
 ;RSet( ByVal dst As WString Ptr , ByVal src As WString Ptr
 RTrim( ByRef str As String, [ Any ] ByRef trimset As String = " " |As String
 ;RTrim( ByRef str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
+Run( ByRef program As String, ByRef arguments As String = "" |As Integer
 SAdd( ByRef str As String |As Any Ptr
 ;SAdd( ByRef str As WString |As Any Ptr
 ;SAdd( ByRef str As ZString |As Any Ptr
@@ -273,6 +284,7 @@ ScreenInfo( ByRef w As Integer = 0, ByRef h As Integer = 0, ByRef depth As Integ
 ScreenList( ByVal depth As Integer = 0 |As Integer
 ScreenLock(
 ScreenPtr( |As Any Ptr
+ScreenRes( width As Integer, height As Integer, depth As Integer = 8, num_pages As Integer = 1, flags As Integer = 0, refresh_rate As Integer = 0
 ScreenSet( ByVal work_page As Integer = -1, ByVal visible_page As Integer = -1
 ScreenSync( |As Integer
 ScreenUnlock( ByVal startline As Integer = -1, ByVal endline As Integer = -1
@@ -288,12 +300,13 @@ Sin( ByVal number As Double |As Double
 Sleep( ByVal msecs As Integer , ByVal kind As Integer |As Integer
 ;Sleep( ByVal msecs As Integer = -1 |As Integer
 Space( count As Integer |As String
+Spc( columns
 Sqr( ByVal number As Double |As Double
 Stop( ByVal retval As Integer = 0
-Str( ByRef str As String |As String
+;Str( ByRef str As String |As String
 ;Str( ByVal n As Byte |As String
 ;Str( ByVal n As Double |As String
-;Str( ByVal n As Integer |As String
+Str( ByVal n As Integer |As String
 ;Str( ByVal n As LongInt |As String
 ;Str( ByVal n As Short |As String
 ;Str( ByVal n As Single |As String
@@ -306,6 +319,7 @@ String( count As Integer, ch As String |As String
 ;String( count As Integer, ch_code As Integer |As String
 Swap( ByRef a As Any, ByRef b As Any
 System( ByVal retval As Integer = 0
+Tab( column
 Tan( ByVal number As Double |As Double
 ThreadCreate( ByVal proc As Sub( ByVal As Any Ptr ), ByVal param As Any Ptr = 0 |As Any Ptr
 ThreadWait( ByVal id As Any Ptr
@@ -362,10 +376,10 @@ WOct( ByVal number As Integer, ByVal digits As Integer |As WString
 ;WOct( ByVal number As Short |As WString
 ;WOct( ByVal number As Short, ByVal digits As Integer |As WString
 WSpace( count As Integer |As WString
-WStr( ByRef str As String |As WString
+;WStr( ByRef str As String |As WString
 ;WStr( ByVal n As Byte |As WString
 ;WStr( ByVal n As Double |As WString
-;WStr( ByVal n As Integer |As WString
+WStr( ByVal n As Integer |As WString
 ;WStr( ByVal n As LongInt |As WString
 ;WStr( ByVal n As Short |As WString
 ;WStr( ByVal n As Single |As WString

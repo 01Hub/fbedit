@@ -381,8 +381,8 @@ ScreenGLProc
 ScreenInfo
 ScreenList
 ScreenLock
-Screenptr
-Screenres
+ScreenPtr
+ScreenRes
 ScreenSet
 ScreenSync
 ScreenUnLock
