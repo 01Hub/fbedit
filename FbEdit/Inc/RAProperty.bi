@@ -37,6 +37,8 @@
 #Define PRM_GETSTRUCTSTART		WM_USER+34		' wParam=pos, lParam=lpszLine
 #Define PRM_GETCURSEL			WM_USER+35		' wParam=0, lParam=0
 #Define PRM_GETSELTEXT			WM_USER+36		' wParam=0, lParam=lpBuff
+#Define PRM_GETSORTEDLIST		WM_USER+37		' wParam=lpTypes, lParam=lpCount
+#Define PRM_FINDINSORTEDLIST	WM_USER+38		' wParam=nCount, lParam=lpMEMSEARCH
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR	1

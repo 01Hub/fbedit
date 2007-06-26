@@ -242,14 +242,45 @@ Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
 
 End Sub
 
+Sub CaseConvertWordFromList(ByVal hWin As HWND,ByVal cp As Integer,ByVal hMem As HGLOBAL,ByVal nCount As Integer)
+	Dim lret As ZString ptr
+	Dim lp As Integer
+	Dim chrg As CHARRANGE
+	Dim ms As MEMSEARCH
+
+	If SendMessage(hWin,REM_ISCHARPOS,cp,0)=0 Then
+		If SendMessage(hWin,REM_GETWORD,260,Cast(LPARAM,@buff)) Then
+			ms.lpMem=hMem
+			ms.lpFind=@buff
+			lp=SendMessage(ah.hpr,PRM_FINDINSORTEDLIST,nCount,Cast(LPARAM,@ms))
+			If lp>0 Then
+				lp=Cast(Integer,hMem)+lp*4
+				lret=Cast(ZString Ptr,Peek(Integer,lp))
+				lstrcpy(@buff,lret)
+				If edtopt.autocase=2 Then
+					buff=LCase(buff)
+				ElseIf edtopt.autocase=3 Then
+					buff=UCase(buff)
+				EndIf
+				SendMessage(hWin,REM_CASEWORD,0,Cast(LPARAM,@buff))
+			EndIf
+		EndIf
+	EndIf
+
+End Sub
+
 Sub CaseConvert(ByVal hWin As HWND)
 	Dim chrg As CHARRANGE
 	Dim tmpchrg As CHARRANGE
 	Dim lp As Integer
 	Dim hCur As HCURSOR
+	Dim hMem As HGLOBAL
+	Dim nCount As Integer
 
 	hCur=GetCursor
 	SetCursor(LoadCursor(0,IDC_WAIT))
+	SendMessage(hWin,REM_SETCHARTAB,Asc("."),CT_CHAR)
+	hMem=Cast(HGLOBAL,SendMessage(ah.hpr,PRM_GETSORTEDLIST,Cast(WPARAM,@szCaseConvert),Cast(LPARAM,@nCount)))
 	SendMessage(hWin,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
 		tmpchrg.cpMin=0
@@ -257,7 +288,7 @@ Sub CaseConvert(ByVal hWin As HWND)
 		While tmpchrg.cpMin<10000000 And tmpchrg.cpMin<>tmpchrg.cpMax
 			tmpchrg.cpMax=tmpchrg.cpMin
 			SendMessage(hWin,EM_EXSETSEL,0,Cast(LPARAM,@tmpchrg))
-			CaseConvertWord(hWin,tmpchrg.cpMin)
+			CaseConvertWordFromList(hWin,tmpchrg.cpMin,hMem,nCount)
 			tmpchrg.cpMin=SendMessage(hWin,EM_FINDWORDBREAK,WB_MOVEWORDRIGHT,tmpchrg.cpMin+1)
 		Wend
 	Else
@@ -266,11 +297,13 @@ Sub CaseConvert(ByVal hWin As HWND)
 		While tmpchrg.cpMin<=chrg.cpMax And tmpchrg.cpMin<>tmpchrg.cpMax
 			tmpchrg.cpMax=tmpchrg.cpMin
 			SendMessage(hWin,EM_EXSETSEL,0,Cast(LPARAM,@tmpchrg))
-			CaseConvertWord(hWin,tmpchrg.cpMin)
+			CaseConvertWordFromList(hWin,tmpchrg.cpMin,hMem,nCount)
 			tmpchrg.cpMin=SendMessage(hWin,EM_FINDWORDBREAK,WB_MOVEWORDRIGHT,tmpchrg.cpMin+1)
 		Wend
 	EndIf
+	SendMessage(hWin,REM_SETCHARTAB,Asc("."),CT_HICHAR)
 	SendMessage(hWin,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+	GlobalFree(hMem)
 	SendMessage(hWin,EM_SETMODIFY,TRUE,0)
 	SetCursor(hCur)
 
