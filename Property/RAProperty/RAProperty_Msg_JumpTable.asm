@@ -493,6 +493,17 @@
 			invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETTEXT,eax,lParam
 		.endif
 		ret
+	align 4 
+	_PRM_GETSORTEDLIST:
+		invoke MakeSortedList,wParam
+		mov		edx,lParam
+		mov		[edx],ecx
+		ret
+	align 4 
+	_PRM_FINDINSORTEDLIST:
+		mov		edx,lParam
+		invoke FindWord,[edx].MEMSEARCH.lpFind,[edx].MEMSEARCH.lpMem,wParam
+		ret
 
 .data
 align 4
@@ -534,6 +545,8 @@ _RAPROPERTY_BASE \
 	dd _PRM_GETSTRUCTSTART			;equ WM_USER+34		;wParam=pos, lParam=lpszLine
 	dd _PRM_GETCURSEL			;equ WM_USER+35		;wParam=0, lParam=0
 	dd _PRM_GETSELTEXT			;equ WM_USER+36		;wParam=0, lParam=lpBuff
+	dd _PRM_GETSORTEDLIST		;equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
+	dd _PRM_FINDINSORTEDLIST	;equ WM_USER+38		;wParam=0, lParam=lpWord
 
 .code
 align 4

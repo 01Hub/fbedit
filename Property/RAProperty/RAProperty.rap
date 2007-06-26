@@ -18,6 +18,7 @@ Res.rc=1
 9=WordList.asm
 10=Parse.asm
 11=RAProperty_Msg_JumpTable.asm
+12=Sort.asm
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -75,6 +76,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 9=2
 10=2
 11=2
+12=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -85,7 +87,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -127,20 +129,22 @@ ProductVer4Range=0
 9=
 10=,,,,,,
 11=,
+12=
 [Size]
-2=0,0,699,490,139
+2=0,0,699,490,2379
 <<<<<<< .mine
-1=0,0,699,490,6621
+1=0,0,699,490,7299
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1641
-7=0,0,0,0,231
+7=0,0,0,0,307
 9=0,0,0,0,2844
 10=0,0,589,494,15485
-11=0,0,0,0,645
+11=0,0,746,498,11256
+12=0,0,0,0,2850
 [BookMark]
 0=
 1=
@@ -159,15 +163,15 @@ ProductVer4Range=0
 [PTimer]
 PTimer=97790076
 [Find]
-1=".while"
-2="PRM_ADDPROPERTYFILE"
-3="align 4"
-4="PRM_SELECTPROPERTY"
-5="AddItem"
-6="LB_ADD"
-7="PRM_GETTOOLTIP"
-8="glutReshapeWindow"
-9="glutSolidTorus"
-10="glPushAttrib"
+1="QuickSort"
+2="TTM_SETITEM"
+3="CCM_GETMAXWIDTH"
+4="CCM_ADDLIST"
+5="CompareStr"
+6="hCCLB"
+7="150h"
+8="ApiListBox"
+9="UpdateApiCallList"
+10="CCM_ADD"
 [Exports]
 1=GetDefEx

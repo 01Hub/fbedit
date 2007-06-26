@@ -5,6 +5,7 @@ option casemap:none
 include Data.inc
 include WordList.asm
 include Parse.asm
+include Sort.asm
 
 .code
 
@@ -244,6 +245,124 @@ TestText:
 	retn
 
 Find endp
+
+MakeSortedList proc uses esi edi,lpTypes:DWORD
+
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+	mov		edi,eax
+	push	edi
+	xor		ecx,ecx
+	mov		esi,[ebx].RAPROPERTY.lpmem
+	.if esi
+		.while [esi].PROPERTIES.nSize
+			call	TestType
+			.if eax
+				lea		eax,[esi+sizeof PROPERTIES]
+				mov		[edi],eax
+				lea		edi,[edi+4]
+				inc		ecx
+			.endif
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+	.endif
+	pop		edi
+	push	ecx
+	.if ecx
+		dec		ecx
+		invoke QuickSort,edi,0,ecx,FALSE
+	.endif
+	pop		ecx
+	mov		eax,edi
+	ret
+
+TestType:
+	mov		edx,lpTypes
+	mov		al,[esi].PROPERTIES.nType
+	.while byte ptr [edx]
+		.if al==byte ptr [edx]
+			retn
+		.endif
+		inc		edx
+	.endw
+	xor		eax,eax
+	retn
+
+MakeSortedList endp
+
+;Find the word using successive approximation
+FindWord proc uses ebx esi edi,lpWord:DWORD,lpMem:DWORD,nCount:DWORD
+	LOCAL	nLU:DWORD
+	LOCAL	nLD:DWORD
+	LOCAL	nScans:DWORD
+
+	xor		eax,eax
+	mov		nScans,eax
+	mov		nLD,eax
+	mov		ebx,lpMem
+	mov		ecx,nCount
+	dec		ecx
+	mov		nLU,ecx
+	shr		ecx,1
+	mov		esi,lpWord
+  Nxt:
+	inc		nScans
+	mov		edi,[ebx+ecx*4]
+	xor		edx,edx
+  @@:
+	mov		al,[edi+edx]
+	mov		ah,[esi+edx]
+	.if al>='a' && al<='z'
+		and		al,5Fh
+	.endif
+	.if ah>='a' && ah<='z'
+		and		ah,5Fh
+	.endif
+	cmp		al,ah
+	jne		@f
+	inc		edx
+	or		al,al
+	jne		@b
+	;Word found, return index
+	mov		eax,ecx
+	jmp		Ex
+  @@:
+	jnc		Dn
+	;Up
+	mov		eax,nLU
+	sub		eax,ecx
+	shr		eax,1
+	.if !eax
+		cmp		ecx,nLD
+		je		Nf
+		inc		eax
+	.endif
+	mov		nLD,ecx
+	add		ecx,eax
+	cmp		ecx,nCount
+	jc		Nxt
+	jmp		Nf
+  Dn:
+	;Down
+	mov		eax,ecx
+	sub		eax,nLD
+	shr		eax,1
+	.if !eax
+		cmp		ecx,nLU
+		je		Nf
+		inc		eax
+	.endif
+	mov		nLU,ecx
+	sub		ecx,eax
+	jnc		Nxt
+  Nf:
+	;Word not found, return -1
+	xor		eax,eax
+	dec		eax
+  Ex:
+	ret
+
+FindWord endp
 
 IsType proc uses edx,lpszTypes:DWORD,nType:DWORD
 
@@ -527,7 +646,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_GETSELTEXT
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_FINDINSORTEDLIST
 		push		eax
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

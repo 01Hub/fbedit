@@ -37,6 +37,8 @@ PRM_CLEARWORDLIST		equ WM_USER+33		;wParam=0, lParam=0
 PRM_GETSTRUCTSTART		equ WM_USER+34		;wParam=pos, lParam=lpszLine
 PRM_GETCURSEL			equ WM_USER+35		;wParam=0, lParam=0
 PRM_GETSELTEXT			equ WM_USER+36		;wParam=0, lParam=lpBuff
+PRM_GETSORTEDLIST		equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
+PRM_FINDINSORTEDLIST	equ WM_USER+38		;wParam=nCount, lParam=lpMEMSEARCH
 
 ;Styles
 PRSTYLE_FLATTOOLBAR		equ 1

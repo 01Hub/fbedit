@@ -23,6 +23,8 @@ DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hMem:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nBytes:DWORD
+	LOCAL	nCount:DWORD
+	LOCAL	ms:MEMSEARCH
 
 	mov		eax,uMsg
 	.if	eax==WM_INITDIALOG
@@ -105,20 +107,39 @@ DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==1003
 				push	ebx
+				invoke SendDlgItemMessage,hWin,1004,EM_SETLIMITTEXT,1024*256,0
 				invoke GetDlgItem,hWin,1001
 				mov		hCtl,eax
-				invoke SendMessage,hCtl,PRM_FINDFIRST,addr szp,addr szNULL
-				.while eax
+				invoke SendMessage,hCtl,PRM_GETSORTEDLIST,addr szp,addr nCount
+				.if eax
+					push	eax
 					mov		ebx,eax
-					PrintStringByAddr ebx
-					invoke lstrlen,ebx
-					lea		ebx,[ebx+eax+1]
-					PrintStringByAddr ebx
-					invoke lstrlen,ebx
-					lea		ebx,[ebx+eax+1]
-					PrintStringByAddr ebx
-					invoke SendMessage,hCtl,PRM_FINDNEXT,0,0
-				.endw
+					mov		ms.lpMem,ebx
+					.while dword ptr [ebx]
+						mov		edx,[ebx]
+						mov		ms.lpFind,edx
+;invoke SendDlgItemMessage,hWin,1004,EM_REPLACESEL,FALSE,edx
+;invoke SendDlgItemMessage,hWin,1004,EM_REPLACESEL,FALSE,addr crlf
+						invoke SendMessage,hCtl,PRM_FINDINSORTEDLIST,nCount,addr ms
+PrintDec eax
+						lea		ebx,[ebx+4]
+					.endw
+					pop		eax
+					invoke GlobalFree,eax
+				.endif
+;				invoke SendMessage,hCtl,PRM_FINDFIRST,addr szp,addr szNULL
+;				.while eax
+;					mov		ebx,eax
+;PrintHex eax
+;					PrintStringByAddr ebx
+;					invoke lstrlen,ebx
+;					lea		ebx,[ebx+eax+1]
+;					PrintStringByAddr ebx
+;					invoke lstrlen,ebx
+;					lea		ebx,[ebx+eax+1]
+;					PrintStringByAddr ebx
+;					invoke SendMessage,hCtl,PRM_FINDNEXT,0,0
+;				.endw
 				pop		ebx
 			.endif
 		.endif

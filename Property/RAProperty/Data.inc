@@ -12,10 +12,10 @@ includelib gdi32.lib
 include ..\RAProperty.inc
 
 ;VKim Debug
-;include masm32.inc
-;include \RadASM\masm\inc\debug.inc
-;includelib masm32.lib
-;includelib \RadASM\masm\lib\debug.lib
+include masm32.inc
+include \RadASM\masm\inc\debug.inc
+includelib masm32.lib
+includelib \RadASM\masm\lib\debug.lib
 
 RAPROPERTY struct
 	hwnd			HWND ?

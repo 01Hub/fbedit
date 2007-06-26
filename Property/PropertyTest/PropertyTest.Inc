@@ -56,8 +56,9 @@ deftypelocal	DEFTYPE <TYPE_NAMESECOND,DEFTYPE_LOCALDATA,'l',5,'local'>
 
 .data
 
-szp				db 'p',0
+szp				db 'Pp',0
 szNULL			db 0
+crlf			db 13,10,0
 
 CharTab			db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0		;00
 				db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0		;10
