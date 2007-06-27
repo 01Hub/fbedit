@@ -2,6 +2,8 @@ Whats new:
 ----------
 1.0.5.5
 o Added Properties Hilight.
+o Speed optimized case convert.
+o Added item description to code tooltip. Needs xxDesc.api files.
 1.0.5.4
 o Added Print and Page Setup.
 o Added Option for Auto complete Include/Inclib.

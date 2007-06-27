@@ -28,6 +28,7 @@ ApiFile				db 'Words.txt',0
 szTestApi			db 'GdiComment',0
 szTestParam			db 'hdc,cbSize,lpData',0
 szTestRetType		db ':Dword',0
+szTestDesc			db 'This is a test description',0
 
 ;#########################################################################
 

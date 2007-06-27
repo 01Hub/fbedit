@@ -1,0 +1,5 @@
+hDlg,Handle to a dialog.
+hwnd,Handle to a window.
+hdc,Handle to device context.
+hDestDC,Handle to destination device context.
+hSrcDC,Handle to source device context.

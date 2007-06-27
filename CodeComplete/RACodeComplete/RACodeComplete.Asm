@@ -631,6 +631,15 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_SINGLELINE or DT_LEFT
 				.endif
 			.endif
+			.if [ebx].RATT.tti.lpszDesc
+				mov		rect.left,1
+				mov		eax,rect.bottom
+				mov		rect.top,eax
+				mov		rect.bottom,99
+				mov		rect.right,512
+				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect,DT_SINGLELINE or DT_LEFT
+			.endif
 		.endif
 		pop		eax
 		invoke SelectObject,ps.hdc,eax
@@ -670,6 +679,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RATT.tti.lpszParam,eax
 		mov		eax,[edx].TTITEM.lpszRetType
 		mov		[ebx].RATT.tti.lpszRetType,eax
+		mov		eax,[edx].TTITEM.lpszDesc
+		mov		[ebx].RATT.tti.lpszDesc,eax
 		mov		eax,[edx].TTITEM.nitem
 		mov		[ebx].RATT.tti.nitem,eax
 		mov		edx,[ebx].RATT.tti.lpszParam
@@ -754,6 +765,10 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		add		rect.right,4
+		mov		edx,lParam
+		.if [edx].TTITEM.lpszDesc
+			shl		rect.bottom,1
+		.endif
 		add		rect.bottom,3
 		pop		eax
 		invoke SelectObject,ps.hdc,eax
@@ -787,6 +802,47 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RATT.hilitecolor,eax
 		invoke InvalidateRect,hWin,NULL,TRUE
 		xor		eax,eax
+	.elseif eax==TTM_GETITEMNAME
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		edx,lParam
+		push	esi
+		mov		esi,[edx].TTITEM.lpszParam
+		mov		ecx,[edx].TTITEM.nitem
+		.while ecx
+			.while byte ptr [esi]!=',' && byte ptr [esi]
+				inc		esi
+			.endw
+			.if byte ptr [esi]==','
+				inc		esi
+			.endif
+			dec		ecx
+			.break .if !byte ptr [esi]
+		.endw
+		.while byte ptr [esi]==' '
+			inc		esi
+		.endw
+		invoke lstrcmpi,esi,offset szByVal
+		.if eax
+			invoke lstrcmpi,esi,offset szByRef
+		.endif
+		.if !eax
+			add		esi,6
+		.endif
+		.while byte ptr [esi]==' '
+			inc		esi
+		.endw
+		mov		ecx,offset itembuff
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.break .if al==',' || al==':' || al==' '
+			mov		[ecx],al
+			inc		esi
+			inc		ecx
+		.endw
+		mov		byte ptr [ecx],0
+		mov		eax,offset itembuff
+		pop		esi
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif

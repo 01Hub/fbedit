@@ -9,10 +9,10 @@ includelib gdi32.lib
 includelib comctl32.lib
 
 ;VKim Debug
-;include masm32.inc
-;include \RadASM\masm\inc\debug.inc
-;includelib masm32.lib
-;includelib \RadASM\masm\lib\debug.lib
+include masm32.inc
+include \RadASM\masm\inc\debug.inc
+includelib masm32.lib
+includelib \RadASM\masm\lib\debug.lib
 
 RACC struct
 	style		dd ?
@@ -42,9 +42,14 @@ RATT struct
 RATT ends
 
 DLGC_CODE			equ DLGC_WANTCHARS or DLGC_WANTARROWS;DLGC_WANTALLKEYS
+.const
+
+szByVal				db 'byval ',0
+szByRef				db 'byref ',0
 
 .data?
 
 hInstance			dd ?
 findbuff			db 64 dup(?)
 findtime			dd ?
+itembuff			db 256 dup(?)

@@ -96,7 +96,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=1
 MilestoneOnDateTimeDate=6
@@ -129,12 +129,12 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,2430
+1=0,0,0,0,21012
 3=0,0,0,0,53
-2=0,0,0,0,84
+2=0,0,0,0,1825
 4=0,0,0,0,0
 7=0,0,0,0,1965
-6=0,0,0,0,184
+6=0,0,0,0,778
 8=0,0,0,0,2967
 10=0,0,0,0,7443
 [BookMark]

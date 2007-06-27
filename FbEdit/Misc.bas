@@ -59,6 +59,7 @@ Sub LoadApiFiles
 	AddApiFile("Struct",Asc("S")+2*256)
 	AddApiFile("Word",Asc("W")+2*256)
 	AddApiFile("Type",Asc("T")+2*256)
+	AddApiFile("Desc",Asc("D")+2*256)
 
 End Sub
 
@@ -660,6 +661,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								tti.lpszParam=tt.lpszParam
 								tti.lpszRetType=tt.lpszRetType
 								tti.nitem=tt.nPos
+								wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
+								tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
+								If tti.lpszDesc Then
+									tti.lpszDesc=tti.lpszDesc+lstrlen(tti.lpszDesc)+1
+								EndIf
 								GetCaretPos(@pt)
 								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
 								SendMessage(hPar,EM_GETRECT,0,Cast(LPARAM,@rect))
