@@ -1110,18 +1110,21 @@
 		_REM_CASEWORD:
 			;wParam=0
 			;lParam=lpBuff
-			invoke GetWordStart,ebx,[ebx].EDIT.cpMin
+			invoke GetWordStart,ebx,wParam
 			mov		esi,[ebx].EDIT.rpChars
 			sub		eax,[ebx].EDIT.cpLine
 			add		esi,[ebx].EDIT.hChars
+			mov		ecx,[esi].CHARS.len
 			add		esi,eax
+			sub		ecx,eax
 			add		esi,sizeof CHARS
 			mov		edi,lParam
-			.while byte ptr [edi]
+			.while byte ptr [edi] && sdword ptr ecx>=0
 				mov		al,[edi]
 				mov		[esi],al
 				inc		edi
 				inc		esi
+				dec		ecx
 			.endw
 			xor		eax,eax
 			ret
@@ -1149,6 +1152,29 @@
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.fLock
+			ret
+		align 4
+		_REM_GETWORDFROMPOS:
+			;wParam=cp
+			;lParam=lpBuff
+			invoke GetWordStart,ebx,wParam
+			mov		esi,[ebx].EDIT.rpChars
+			mov		ecx,eax
+			sub		ecx,[ebx].EDIT.cpLine
+			push	ecx
+			push	eax
+			invoke GetWordEnd,ebx,eax
+			pop		ecx
+			pop		edx
+			sub		eax,ecx
+			mov		ecx,eax
+			mov		edi,lParam
+			add		esi,[ebx].EDIT.hChars
+			add		esi,edx
+			add		esi,sizeof CHARS
+			mov		eax,ecx
+			rep movsb
+			mov		byte ptr [edi],0
 			ret
 
 .data
@@ -1217,12 +1243,12 @@ _REM_BASE \
 	dd _REM_LOCKUNDOID		;equ REM_BASE+60
 	dd _REM_ADDBLOCKDEF		;equ REM_BASE+61
 	dd _REM_CONVERT			;equ REM_BASE+62
-	dd _REM_BRACKETMATCH		;equ REM_BASE+63
+	dd _REM_BRACKETMATCH	;equ REM_BASE+63
 	dd _REM_COMMAND			;equ REM_BASE+64
 	dd _REM_CASEWORD		;equ REM_BASE+65
 	dd _REM_GETBLOCKEND		;equ REM_BASE+66
 	dd _REM_SETLOCK			;equ REM_BASE+67
 	dd _REM_GETLOCK			;equ REM_BASE+68
-
+	dd _REM_GETWORDFROMPOS	;equ REM_BASE+69
 .code
 align 4

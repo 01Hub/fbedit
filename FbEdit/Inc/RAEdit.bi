@@ -1,4 +1,3 @@
-'
 ' RAEdit control definitions
 '
 
@@ -121,10 +120,11 @@
 #Define REM_CONVERT							REM_BASE+62		' wParam=nType, lParam=0
 #Define REM_BRACKETMATCH					REM_BASE+63		' wParam=0, lParam=lpszBracketMatch
 #Define REM_COMMAND							REM_BASE+64		' wParam=nCommand, lParam=0
-#Define REM_CASEWORD							REM_BASE+65		' wParam=0, lParam=lpWord
+#Define REM_CASEWORD							REM_BASE+65		' wParam=cp, lParam=lpWord
 #Define REM_GETBLOCKEND						REM_BASE+66		' wParam=Line, lParam=0
 #Define REM_SETLOCK							REM_BASE+67		' wParam=TRUE/FALSE, lParam=0
 #Define REM_GETLOCK							REM_BASE+68		' wParam=0, lParam=0
+#Define REM_GETWORDFROMPOS					REM_BASE+69		' wParam=cp, lParam=lpBuff
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

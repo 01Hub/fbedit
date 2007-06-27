@@ -98,14 +98,14 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,31186
-16=0,0,0,0,0
+1=0,0,0,0,75030
+16=0,0,0,0,46314
 22=0,0,0,0,0
-23=0,0,0,0,10720
+23=0,0,0,0,26209
 24=0,0,0,0,601
 19=0,0,0,0,2740
-2=0,0,0,0,3757
-9=0,0,0,0,4681
+2=0,0,0,0,4722
+9=0,0,0,0,3033
 10=0,0,0,0,25961
 11=0,0,0,0,11357
 
@@ -125,16 +125,16 @@ CompanyName=
 0=
 
 [Find]
-1="SizeIt"
-2="REM_SETSPLIT"
-3="printhex"
-4="wm_close"
-5="wm_destroy"
-6="[ebx].EDIT.edtb.topyp"
-7="[ebx].EDIT.edta.topyp"
-8="SetCaret"
-9="REM_ISLINE"
-10="SetScrollInfo"
+1="REM_ISCHARPOS"
+2="SizeIt"
+3="REM_SETSPLIT"
+4="printhex"
+5="wm_close"
+6="wm_destroy"
+7="[ebx].EDIT.edtb.topyp"
+8="[ebx].EDIT.edta.topyp"
+9="SetCaret"
+10="REM_ISLINE"
 
 [AutoLoad]
 1=1
@@ -181,7 +181,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

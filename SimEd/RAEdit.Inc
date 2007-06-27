@@ -57,11 +57,11 @@ CMD_CTRL			equ 512
 CMD_SHIFT			equ 1024
 
 ;Private edit messages
-REM_RAINIT			equ WM_USER+9999	;wParam=0, lParam=pointer to controls DIALOG struct
-REM_BASE			equ WM_USER+1000
+REM_RAINIT				equ WM_USER+9999	;wParam=0, lParam=pointer to controls DIALOG struct
+REM_BASE				equ WM_USER+1000
 REM_SETHILITEWORDS		equ REM_BASE+0		;wParam=Color, lParam=lpszWords
-REM_SETFONT			equ REM_BASE+1		;wParam=nLineSpacing, lParam=lpRAFONT
-REM_GETFONT			equ REM_BASE+2		;wParam=0, lParam=lpRAFONT
+REM_SETFONT				equ REM_BASE+1		;wParam=nLineSpacing, lParam=lpRAFONT
+REM_GETFONT				equ REM_BASE+2		;wParam=0, lParam=lpRAFONT
 REM_SETCOLOR			equ REM_BASE+3		;wParam=0, lParam=lpRACOLOR
 REM_GETCOLOR			equ REM_BASE+4		;wParam=0, lParam=lpRACOLOR
 REM_SETHILITELINE		equ REM_BASE+5		;wParam=Line, lParam=Color
@@ -73,11 +73,11 @@ REM_NXTBOOKMARK			equ REM_BASE+10		;wParam=Line, lParam=Type
 REM_PRVBOOKMARK			equ REM_BASE+11		;wParam=Line, lParam=Type
 REM_FINDBOOKMARK		equ REM_BASE+12		;wParam=BmID, lParam=0
 REM_SETBLOCKS			equ REM_BASE+13		;wParam=[lpLINERANGE], lParam=0
-REM_ISLINE			equ REM_BASE+14		;wParam=Line, lParam=lpszDef
-REM_GETWORD			equ REM_BASE+15		;wParam=BuffSize, lParam=lpBuff
+REM_ISLINE				equ REM_BASE+14		;wParam=Line, lParam=lpszDef
+REM_GETWORD				equ REM_BASE+15		;wParam=BuffSize, lParam=lpBuff
 REM_COLLAPSE			equ REM_BASE+16		;wParam=Line, lParam=0
 REM_COLLAPSEALL			equ REM_BASE+17		;wParam=0, lParam=0
-REM_EXPAND			equ REM_BASE+18		;wParam=Line, lParam=0
+REM_EXPAND				equ REM_BASE+18		;wParam=Line, lParam=0
 REM_EXPANDALL			equ REM_BASE+19		;wParam=0, lParam=0
 REM_LOCKLINE			equ REM_BASE+20		;wParam=Line, lParam=TRUE/FALSE
 REM_ISLINELOCKED		equ REM_BASE+21		;wParam=Line, lParam=0
@@ -91,8 +91,8 @@ REM_MOUSEWHEEL			equ REM_BASE+28		;wParam=nLines, lParam=0
 REM_SUBCLASS			equ REM_BASE+29		;wParam=0, lParam=lpWndProc
 REM_SETSPLIT			equ REM_BASE+30		;wParam=nSplit, lParam=0
 REM_GETSPLIT			equ REM_BASE+31		;wParam=0, lParam=0
-REM_VCENTER			equ REM_BASE+32		;wParam=0, lParam=0
-REM_REPAINT			equ REM_BASE+33		;wParam=0, lParam=TRUE/FALSE (Paint Now)
+REM_VCENTER				equ REM_BASE+32		;wParam=0, lParam=0
+REM_REPAINT				equ REM_BASE+33		;wParam=0, lParam=TRUE/FALSE (Paint Now)
 REM_BMCALLBACK			equ REM_BASE+34		;wParam=0, lParam=lpBmProc
 REM_READONLY			equ REM_BASE+35		;wParam=0, lParam=TRUE/FALSE
 REM_INVALIDATELINE		equ REM_BASE+36		;wParam=Line, lParam=0
@@ -100,34 +100,35 @@ REM_SETPAGESIZE			equ REM_BASE+37		;wParam=nLines, lParam=0
 REM_GETPAGESIZE			equ REM_BASE+38		;wParam=0, lParam=0
 REM_GETCHARTAB			equ REM_BASE+39		;wParam=nChar, lParam=0
 REM_SETCHARTAB			equ REM_BASE+40		;wParam=nChar, lParam=nValue
-REM_SETCOMMENTBLOCKS		equ REM_BASE+41		;wParam=lpStart, lParam=lpEnd
+REM_SETCOMMENTBLOCKS	equ REM_BASE+41		;wParam=lpStart, lParam=lpEnd
 REM_SETWORDGROUP		equ REM_BASE+42		;wParam=0, lParam=nGroup (0-15)
 REM_GETWORDGROUP		equ REM_BASE+43		;wParam=0, lParam=0
-REM_SETBMID			equ REM_BASE+44		;wParam=nLine, lParam=nBmID
-REM_GETBMID			equ REM_BASE+45		;wParam=nLine, lParam=0
+REM_SETBMID				equ REM_BASE+44		;wParam=nLine, lParam=nBmID
+REM_GETBMID				equ REM_BASE+45		;wParam=nLine, lParam=0
 REM_ISCHARPOS			equ REM_BASE+46		;wParam=CP, lParam=0, returns 1 if comment block, 2 if comment, 3 if string
 REM_HIDELINES			equ REM_BASE+47		;wParam=nLine, lParam=nLines
 REM_SETDIVIDERLINE		equ REM_BASE+48		;wParam=nLine, lParam=TRUE/FALSE
 REM_ISINBLOCK			equ REM_BASE+49		;wParam=nLine, lParam=lpRABLOCKDEF
 REM_TRIMSPACE			equ REM_BASE+50		;wParam=nLine, lParam=fLeft
-REM_SAVESEL			equ REM_BASE+51		;wParam=0, lParam=0
+REM_SAVESEL				equ REM_BASE+51		;wParam=0, lParam=0
 REM_RESTORESEL			equ REM_BASE+52		;wParam=0, lParam=0
 REM_GETCURSORWORD		equ REM_BASE+53		;wParam=BuffSize, lParam=lpBuff
 REM_SETSEGMENTBLOCK		equ REM_BASE+54		;wParam=nLine, lParam=TRUE/FALSE
-REM_GETMODE			equ REM_BASE+55		;wParam=0, lParam=0
-REM_SETMODE			equ REM_BASE+56		;wParam=nMode, lParam=0
+REM_GETMODE				equ REM_BASE+55		;wParam=0, lParam=0
+REM_SETMODE				equ REM_BASE+56		;wParam=nMode, lParam=0
 REM_GETBLOCK			equ REM_BASE+57		;wParam=0, lParam=lpBLOCKRANGE
 REM_SETBLOCK			equ REM_BASE+58		;wParam=0, lParam=lpBLOCKRANGE
 REM_BLOCKINSERT			equ REM_BASE+59		;wParam=0, lParam=lpText
 REM_LOCKUNDOID			equ REM_BASE+60		;wParam=TRUE/FALSE, lParam=0
 REM_ADDBLOCKDEF			equ REM_BASE+61		;wParam=0, lParam=lpRABLOCKDEF
-REM_CONVERT			equ REM_BASE+62		;wParam=nType, lParam=0
+REM_CONVERT				equ REM_BASE+62		;wParam=nType, lParam=0
 REM_BRACKETMATCH		equ REM_BASE+63		;wParam=0, lParam=lpDef {[(,}]),_
-REM_COMMAND			equ REM_BASE+64		;wParam=nCommand, lParam=0
-REM_CASEWORD			equ REM_BASE+65		;wParam=0, lParam=lpWord
+REM_COMMAND				equ REM_BASE+64		;wParam=nCommand, lParam=0
+REM_CASEWORD			equ REM_BASE+65		;wParam=cp, lParam=lpWord
 REM_GETBLOCKEND			equ REM_BASE+66		;wParam=Line, lParam=0
-REM_SETLOCK			equ REM_BASE+67		;wParam=TRUE/FALSE, lParam=0
-REM_GETLOCK			equ REM_BASE+68		;wParam=0, lParam=0
+REM_SETLOCK				equ REM_BASE+67		;wParam=TRUE/FALSE, lParam=0
+REM_GETLOCK				equ REM_BASE+68		;wParam=0, lParam=0
+REM_GETWORDFROMPOS		equ REM_BASE+69		;wParam=cp, lParam=lpBuff
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

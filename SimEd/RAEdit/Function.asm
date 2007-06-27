@@ -2490,15 +2490,9 @@ IsCharPos proc uses ebx esi,hMem:DWORD,cp:DWORD
 	LOCAL	nMax:DWORD
 
 	mov		ebx,hMem
-	invoke GetLineFromCp,ebx,cp
-	mov		esi,eax
-	invoke GetCpFromLine,ebx,esi
-	sub		eax,cp
-	neg		eax
+	invoke GetCharPtr,ebx,cp
 	mov		nMax,eax
-	shl		esi,2
-	add		esi,[ebx].EDIT.hLine
-	mov		esi,[esi].LINE.rpChars
+	mov		esi,[ebx].EDIT.rpChars
 	add		esi,[ebx].EDIT.hChars
 	mov		eax,[esi].CHARS.state
 	test	eax,STATE_COMMENT
