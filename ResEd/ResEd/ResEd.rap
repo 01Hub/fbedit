@@ -87,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,306
+1=0,0,0,0,3580
 6=
-2=0,0,0,0,385
-7=0,0,699,490,7502
+2=0,0,0,0,5033
+7=0,0,699,490,7522
 9=
 8=
 3=0,0,0,0,1384
 10=0,0,0,0
 11=0,0,0,0,299
-13=0,0,0,0,11773
+13=0,0,0,0,12017
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -104,7 +104,7 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,7
+21=0,0,0,0,82
 
 [BookMark]
 0=
@@ -122,22 +122,22 @@ Options=52
 0=
 
 [Find]
-1="DES_STYLEHEX"
-2="GRIDSIZE"
-3="PRO_ADDITEM"
-4="IDC_RBNEXPOPT4"
-5="GlobalAlloc"
-6="szDlgEditDummyClass"
-7="DEM_SHOWTABINDEX"
-8="DEM_SHOWDIALOG"
-9="exstyledef"
-10="RATYPES"
+1="DES_SIZETOFONT"
+2="DES_STYLEHEX"
+3="GRIDSIZE"
+4="PRO_ADDITEM"
+5="IDC_RBNEXPOPT4"
+6="GlobalAlloc"
+7="szDlgEditDummyClass"
+8="DEM_SHOWTABINDEX"
+9="DEM_SHOWDIALOG"
+10="exstyledef"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=9
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -158,7 +158,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -167,10 +167,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=1.1.4.0
-FileVersion=1.1.4.0
-PV=1.1.4.0
-ProductVersion=1.1.4.0
+FV=1.1.4.1
+FileVersion=1.1.4.1
+PV=1.1.4.1
+ProductVersion=1.1.4.1
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -231,7 +231,7 @@ ID=105
 9="IDM_VIEW_OUTPUT,0,Show / Hide Output"
 10="IDM_VIEW_PREVIEW,0,Preview Dialog"
 [Collapse]
-1=,,,
+1=,,8,
 12=
 2=
 7=

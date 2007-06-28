@@ -835,6 +835,7 @@ fSnapToGrid			dd ?
 fShowSizePos		dd ?
 fStyleHex			dd ?
 fSizeToFont			dd ?
+fNoDefines			dd ?
 hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
 fNoMouseUp			dd ?

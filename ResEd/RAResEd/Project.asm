@@ -318,7 +318,7 @@ CloseProject proc uses esi,hProMem:DWORD
 
 CloseProject endp
 
-ExportProject proc lpRCMem:DWORD,lpProMem:DWORD
+ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 	LOCAL	hMem:DWORD
 
 	;Names
@@ -410,6 +410,11 @@ ExportProject proc lpRCMem:DWORD,lpProMem:DWORD
 		.endif
 		add		esi,sizeof PROJECT
 	.endw
+	.if fNoDefines
+		invoke lstrcpy,lpDEFMem,lpRCMem
+		mov		eax,lpRCMem
+		mov		dword ptr [eax],0
+	.endif
 	;Include
 	mov		esi,lpProMem
 	.while [esi].PROJECT.hmem
@@ -427,6 +432,9 @@ ExportProject proc lpRCMem:DWORD,lpProMem:DWORD
 		.endif
 		add		esi,sizeof PROJECT
 	.endw
+	.if !fResourceh && fNoDefines
+		invoke lstrcat,lpRCMem,offset szIncludeDefines
+	.endif
 	;Language
 	mov		esi,lpProMem
 	.while [esi].PROJECT.hmem

@@ -134,6 +134,7 @@ GRIDSIZE struct
 	line		dd ?
 	stylehex	dd ?
 	sizetofont	dd ?
+	nodefines	dd ?
 GRIDSIZE ends
 
 .const
@@ -178,12 +179,13 @@ szTab				db VK_TAB,0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
+szDefines			db 'resource.h',0
 
 .data
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
-grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE>
+grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE,FALSE>
 col					COLOR <0FFFFFFh,0>
 
 .data?

@@ -9,12 +9,17 @@ IDC_BTNINCDEL		equ 1003
 
 ExportInclude proc uses esi edi,hMem:DWORD
 
+	mov		fResourceh,FALSE
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 	mov		edi,eax
 	invoke GlobalLock,edi
 	push	edi
 	mov		esi,hMem
 	.while byte ptr [esi].INCLUDEMEM.szfile
+		invoke lstrcmpi,offset szResourceh,addr [esi].INCLUDEMEM.szfile
+		.if !eax
+			mov		fResourceh,TRUE
+		.endif
 		invoke SaveStr,edi,offset szINCLUDE
 		add		edi,eax
 		mov		al,' '

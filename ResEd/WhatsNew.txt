@@ -1,5 +1,10 @@
 ResEd
 
+1.1.4.1 - 2007.06.28
+---------------------
+o Added option to save #defines to resource.h file.
+o Fixed bug where grid combobox would show in taskbar.
+
 1.1.4.0 - 2007.05.16
 ---------------------
 o Added option to size dialog to font

@@ -426,7 +426,7 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_EXPORT
 		invoke GetWindowLong,hWin,0
 		.if eax
-			invoke ExportProject,lParam,eax
+			invoke ExportProject,lParam,wParam,eax
 		.endif
 		jmp		Ex
 	.elseif eax==PRO_GETMODIFY
@@ -557,6 +557,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,edx
 		and		eax,1
 		mov		fSizeToFont,eax
+		shr		edx,1
+		mov		eax,edx
+		and		eax,1
+		mov		fNoDefines,eax
 		;Fake tooltip
 		invoke CreateWindowEx,0,addr szStaticClass,0,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or SS_OWNERDRAW,0,0,0,0,hWin,0,hInstance,0
 		mov		hTlt,eax
@@ -954,6 +958,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,edx
 			and		eax,1
 			mov		fSizeToFont,eax
+			shr		edx,1
+			mov		eax,edx
+			and		eax,1
+			mov		fNoDefines,eax
 			invoke GetWindowLong,hWin,DEWM_DIALOG
 			.if eax
 				invoke InvalidateRect,eax,NULL,TRUE
@@ -1521,8 +1529,6 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke TextOut,[esi].hdc,ecx,[esi].rcItem.top,edx,eax
 				invoke CreatePen,PS_SOLID,0,0C0C0C0h
 				invoke SelectObject,[esi].hdc,eax
-
-
 				push	eax
 				mov		edx,[esi].rcItem.bottom
 				dec		edx

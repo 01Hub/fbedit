@@ -83,23 +83,46 @@ SetWinCaption endp
 LoadProjectFile proc lpFileName:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
+	LOCAL	hMemRes:DWORD
 	LOCAL	dwRead:DWORD
+	LOCAL	buff[MAX_PATH]:BYTE
 
 	;Open the file
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
+		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+		mov     hMem,eax
+		invoke GlobalLock,hMem
 		invoke GetFileSize,hFile,NULL
 		push	eax
 		inc		eax
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-		mov     hMem,eax
-		invoke GlobalLock,hMem
+		mov     hMemRes,eax
 		pop		edx
-		invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+		invoke ReadFile,hFile,hMemRes,edx,addr dwRead,NULL
 		invoke CloseHandle,hFile
 		;Copy buffer to ProjectFileName
 		invoke lstrcpy,offset ProjectFileName,lpFileName
+		.if grdsize.nodefines
+			invoke lstrcpy,addr buff,lpFileName
+			invoke lstrlen,addr buff
+			.while byte ptr buff[eax-1]!='\' && eax
+				dec		eax
+			.endw
+			mov		byte ptr buff[eax],0
+			invoke lstrcat,addr buff,offset szDefines
+			invoke CreateFile,addr buff,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+			.if eax!=INVALID_HANDLE_VALUE
+				mov		hFile,eax
+				invoke GetFileSize,hFile,NULL
+				mov		edx,eax
+				invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+				invoke CloseHandle,hFile
+			.endif
+		.endif
+		invoke lstrcat,hMem,hMemRes
+		invoke GlobalFree,hMemRes
 		invoke SendMessage,hProject,PRO_OPEN,offset ProjectFileName,hMem
 		invoke SetWinCaption,offset ProjectFileName
 	.else
@@ -213,20 +236,41 @@ OpenProject endp
 
 SaveProject proc lpFileName:DWORD
 	LOCAL	hMem:DWORD
+	LOCAL	hMemDef:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nSize:DWORD
+	LOCAL	buff[MAX_PATH]:BYTE
 
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hMem,eax
-	invoke SendMessage,hProject,PRO_EXPORT,0,hMem
-	invoke lstrlen,hMem
-	mov		nSize,eax
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	mov		hMemDef,eax
+	invoke SendMessage,hProject,PRO_EXPORT,hMemDef,hMem
 	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
+		invoke lstrlen,hMem
+		mov		nSize,eax
 		invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
 		invoke CloseHandle,hFile
 		invoke SendMessage,hProject,PRO_SETMODIFY,FALSE,0
+		.if grdsize.nodefines
+			invoke lstrcpy,addr buff,lpFileName
+			invoke lstrlen,addr buff
+			.while byte ptr buff[eax-1]!='\'
+				dec		eax
+			.endw
+			mov		byte ptr buff[eax],0
+			invoke lstrcat,addr buff,offset szDefines
+			invoke CreateFile,addr buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+			.if eax!=INVALID_HANDLE_VALUE
+				mov		hFile,eax
+				invoke lstrlen,hMemDef
+				mov		nSize,eax
+				invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
+				invoke CloseHandle,hFile
+			.endif
+		.endif
 		.if nmeexp.fAuto
 			invoke SendMessage,hProject,PRO_EXPORTNAMES,1,hOut
 		.endif
@@ -234,6 +278,7 @@ SaveProject proc lpFileName:DWORD
 	.endif
 	push	eax
 	invoke GlobalFree,hMem
+	invoke GlobalFree,hMemDef
 	pop		eax
 	ret
 
@@ -442,6 +487,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		.if grdsize.sizetofont
 			or		edx,DES_SIZETOFONT
+		.endif
+		.if grdsize.nodefines
+			or		edx,DES_NODEFINES
 		.endif
 		invoke CreateWindowEx,200h,addr szDlgEditClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
 		mov		hResEd,eax
