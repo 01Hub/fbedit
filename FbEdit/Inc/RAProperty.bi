@@ -136,13 +136,20 @@ End Type
 #Define TT_NOMATCHCASE			1
 #Define TT_PARANTESES			2
 
+Type OVERRIDE
+	lpszParam As ZString ptr
+	lpszRetType As ZString ptr
+End Type
+
 Type TOOLTIP
 	lpszType As ZString ptr
 	lpszLine As ZString ptr
 	lpszApi As ZString ptr
-	lpszParam As ZString ptr
+'	lpszParam As ZString ptr
 	nPos As Integer
-	lpszRetType As ZString ptr
+'	lpszRetType As ZString ptr
+	novr As Integer
+	ovr(32) As OVERRIDE
 End Type
 
 Type MEMSEARCH

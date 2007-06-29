@@ -620,3 +620,6 @@ Dim Shared wpos As WINPOS=(0,10,10,780,580,0,(0,0),120,160,(10,10),(10,10),0,(15
 Dim Shared ppage As PRNPAGE=((21000,29700),(1000,1000,1000,1000),66,0)
 Dim Shared psd As PAGESETUPDLG
 Dim Shared pd As PRINTDLG
+Dim Shared szApi As ZString*260
+Dim Shared novr As Integer
+Dim Shared nsel As Integer

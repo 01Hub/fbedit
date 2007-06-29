@@ -52,6 +52,8 @@ TTITEM struct
 	nitem		dd ?						;Item to hilite
 	lpszRetType	dd ?						;Pointer to return type string
 	lpszDesc	dd ?						;Pointer to item description
+	novr		dd ?
+	nsel		dd ?
 TTITEM ends
 
 .const

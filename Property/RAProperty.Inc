@@ -108,11 +108,11 @@ DEFTYPE_DESTRUCTOR		equ 26
 DEFTYPE_ENDDESTRUCTOR	equ 27
 
 DEFTYPE struct
-	nType			db ?
-	nDefType		db ?
-	Def				db ?
-	len				db ?
-	szWord			db 32 dup(?)
+	nType		db ?
+	nDefType	db ?
+	Def			db ?
+	len			db ?
+	szWord		db 32 dup(?)
 DEFTYPE ends
 
 ;Character table types
@@ -126,27 +126,34 @@ CT_CMNTDBLCHAR			equ 6
 CT_CMNTINITCHAR			equ 7
 
 RAPNOTIFY struct
-	nmhdr			NMHDR <?>
-	nid				dd ?
-	nline			dd ?
+	nmhdr		NMHDR <?>
+	nid			dd ?
+	nline		dd ?
 RAPNOTIFY ends
 
 ISINPROC struct
-	nLine			dd ?
-	nOwner			dd ?
-	lpszType		dd ?
+	nLine		dd ?
+	nOwner		dd ?
+	lpszType	dd ?
 ISINPROC ends
 
 TT_NOMATCHCASE			equ 1
 TT_PARANTESES			equ 2
 
+OVERRIDE struct
+	lpszParam	dd ?
+	lpszRetType	dd ?
+OVERRIDE ends
+
 TOOLTIP struct
 	lpszType	dd ?
 	lpszLine	dd ?
 	lpszApi		dd ?
-	lpszParam	dd ?
+;	lpszParam	dd ?
 	nPos		dd ?
-	lpszRetType	dd ?
+;	lpszRetType	dd ?
+	novr		dd ?
+	ovr			OVERRIDE 32 dup(<>)
 TOOLTIP ends
 
 MEMSEARCH struct

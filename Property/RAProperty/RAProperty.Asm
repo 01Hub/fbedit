@@ -379,9 +379,12 @@ IsType proc uses edx,lpszTypes:DWORD,nType:DWORD
 
 IsType endp
 
-IsWordType proc uses esi,lpszTypes:DWORD,lpszWord:DWORD,fNoCase:DWORD
+IsWordType proc uses esi,lpszTypes:DWORD,lpszWord:DWORD,fNoCase:DWORD,lpStart:DWORD
 
 	mov		esi,[ebx].RAPROPERTY.lpmem
+	.if lpStart
+		mov		esi,lpStart
+	.endif
 	.while [esi].PROPERTIES.nSize
 		movzx	eax,[esi].PROPERTIES.nType
 		invoke IsType,lpszTypes,eax
@@ -472,7 +475,7 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		mov		eax,lParam
 		mov		edx,fNoCase
 		and		edx,TT_NOMATCHCASE
-		invoke IsWordType,[eax].TOOLTIP.lpszType,[eax].TOOLTIP.lpszLine,edx
+		invoke IsWordType,[eax].TOOLTIP.lpszType,[eax].TOOLTIP.lpszLine,edx,0
 		.if eax
 			mov		edi,eax
 			mov		edx,lParam
@@ -521,7 +524,7 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 				push	ecx
 				mov		edx,fNoCase
 				and		edx,TT_NOMATCHCASE
-				invoke IsWordType,[eax].TOOLTIP.lpszType,ecx,edx
+				invoke IsWordType,[eax].TOOLTIP.lpszType,ecx,edx,0
 				pop		ecx
 				.if eax
 					mov		edi,eax
@@ -541,17 +544,19 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		.endw
 	.endif
 	.if edi
-		lea		edi,[edi+sizeof PROPERTIES]
 		mov		edx,lParam
-		mov		[edx].TOOLTIP.lpszApi,edi
-		invoke strlen,edi
-		lea		edi,[edi+eax+1]
-		mov		edx,lParam
-		mov		[edx].TOOLTIP.lpszParam,edi
-		invoke strlen,edi
-		lea		edi,[edi+eax+1]
-		mov		edx,lParam
-		mov		[edx].TOOLTIP.lpszRetType,edi
+		mov		[edx].TOOLTIP.novr,0
+		.while edi
+			call	GetTT
+			mov		eax,[edi].PROPERTIES.nSize
+			lea		edi,[edi+eax+sizeof PROPERTIES]
+			mov		eax,lParam
+			mov		edx,fNoCase
+			and		edx,TT_NOMATCHCASE
+			invoke IsWordType,[eax].TOOLTIP.lpszType,[eax].TOOLTIP.lpszApi,edx,edi
+			mov		edi,eax
+		.endw
+
 		xor		ecx,ecx
 		mov		eax,npos
 		.while byte ptr [eax]
@@ -583,11 +588,33 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		xor		eax,eax
 		mov		edx,lParam
 		mov		[edx].TOOLTIP.lpszApi,eax
-		mov		[edx].TOOLTIP.lpszParam,eax
-		mov		[edx].TOOLTIP.lpszRetType,eax
 		mov		[edx].TOOLTIP.nPos,eax
+		mov		[edx].TOOLTIP.novr,eax
+		mov		[edx].TOOLTIP.ovr.lpszParam,eax
+		mov		[edx].TOOLTIP.ovr.lpszRetType,eax
 	.endif
 	ret
+
+GetTT:
+	push	esi
+	push	edi
+	mov		edx,lParam
+	mov		esi,[edx].TOOLTIP.novr
+	lea		edi,[edi+sizeof PROPERTIES]
+	mov		edx,lParam
+	mov		[edx].TOOLTIP.lpszApi,edi
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	mov		edx,lParam
+	mov		[edx].TOOLTIP.ovr.lpszParam[esi*sizeof OVERRIDE],edi
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	mov		edx,lParam
+	mov		[edx].TOOLTIP.ovr.lpszRetType[esi*sizeof OVERRIDE],edi
+	inc		[edx].TOOLTIP.novr
+	pop		edi
+	pop		esi
+	retn
 
 SkipSpc:
 	.while byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB

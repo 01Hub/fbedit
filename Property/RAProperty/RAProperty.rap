@@ -87,7 +87,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -131,9 +131,9 @@ ProductVer4Range=0
 11=,
 12=
 [Size]
-2=0,0,699,490,2379
+2=0,0,699,490,4532
 <<<<<<< .mine
-1=0,0,699,490,7299
+1=0,0,699,490,8074
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101

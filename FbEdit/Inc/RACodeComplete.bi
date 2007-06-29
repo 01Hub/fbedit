@@ -52,6 +52,8 @@ Type TTITEM
 	nitem As Integer									' Item to hilite
 	lpszRetType As ZString ptr						' Pointer to return type string
 	lpszDesc As ZString ptr							' Pointer to item description
+	novr As Integer
+	nsel As Integer
 End Type
 
 Const szCCLBClassName = "RACodeComplete"

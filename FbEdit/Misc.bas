@@ -634,6 +634,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
+TT:
 					ShowWindow(ah.htt,SW_HIDE)
 					TestCaseConvert(hPar,wParam)
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -657,15 +658,22 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							Else
 								' Show tooltip
 								HideList
+								If lstrcmp(@szApi,tt.lpszApi) Then
+									lstrcpy(@szApi,tt.lpszApi)
+									nsel=0
+									novr=tt.novr
+								EndIf
+								tti.nsel=nsel
 								tti.lpszApi=tt.lpszApi
-								tti.lpszParam=tt.lpszParam
-								tti.lpszRetType=tt.lpszRetType
+								tti.lpszParam=tt.ovr(nsel).lpszParam
+								tti.lpszRetType=tt.ovr(nsel).lpszRetType
 								tti.nitem=tt.nPos
 								wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
 								tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
 								If tti.lpszDesc Then
 									tti.lpszDesc=tti.lpszDesc+lstrlen(tti.lpszDesc)+1
 								EndIf
+								tti.novr=tt.novr
 								GetCaretPos(@pt)
 								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
 								SendMessage(hPar,EM_GETRECT,0,Cast(LPARAM,@rect))
@@ -741,8 +749,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						SendMessage(ah.hpr,PRM_GETTOOLTIP,0,Cast(LPARAM,@tt))
 						' Show tooltip
 						tti.lpszApi=tt.lpszApi
-						tti.lpszParam=tt.lpszParam
-						tti.lpszRetType=tt.lpszRetType
+						tti.lpszParam=tt.ovr(0).lpszParam
+						tti.lpszRetType=tt.ovr(0).lpszRetType
 						tti.nitem=tt.nPos
 						UpdateConstList(tti.lpszApi,tti.nitem+1)
 					Else
@@ -956,6 +964,26 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					' Down / Up /PgUp / PgDn
 					' Relay event to the code complete list
 					PostMessage(ah.hcc,uMsg,wParam,lParam)
+					Return 0
+				EndIf
+			ElseIf IsWindowVisible(ah.htt)<>0 And novr>1 Then
+				lp=(lParam Shr 16) And &H3FF
+				wp=wParam
+				If wp=&H28 And (lp=&H150 Or lp=&H50) Then
+					' Down
+					If nsel<novr-1 Then
+						nsel+=1
+						hPar=GetParent(hWin)
+						GoTo TT
+					EndIf
+					Return 0
+				ElseIf wp=&H26 And (lp=&H148 Or lp=&H48) Then
+					' Up
+					If nsel Then
+						nsel-=1
+						hPar=GetParent(hWin)
+						GoTo TT
+					EndIf
 					Return 0
 				EndIf
 			EndIf

@@ -42,10 +42,12 @@ RATT struct
 RATT ends
 
 DLGC_CODE			equ DLGC_WANTCHARS or DLGC_WANTARROWS;DLGC_WANTALLKEYS
+
 .const
 
 szByVal				db 'byval ',0
 szByRef				db 'byref ',0
+szFmt				db '%d of %d',0
 
 .data?
 

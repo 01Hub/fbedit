@@ -575,6 +575,34 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.right,eax
 		mov		rect.bottom,eax
 		.if [ebx].RATT.tti.lpszApi
+			.if [ebx].RATT.tti.novr>1
+				push	esi
+				mov		esi,esp
+				mov		eax,[ebx].RATT.tti.nsel
+				inc		eax
+				invoke wsprintf,offset findbuff,offset szFmt,eax,[ebx].RATT.tti.novr
+				mov		esp,esi
+				pop		esi
+				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				add		rect.right,24
+				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
+				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_SINGLELINE or DT_CENTER
+				push	rect.right
+				mov		eax,rect.left
+				add		eax,9
+				mov		rect.right,eax
+				invoke DrawFrameControl,ps.hdc,addr rect,DFC_SCROLL,DFCS_SCROLLUP or DFCS_FLAT
+				pop		rect.right
+				push	rect.left
+				mov		eax,rect.right
+				sub		eax,9
+				mov		rect.left,eax
+				invoke DrawFrameControl,ps.hdc,addr rect,DFC_SCROLL,DFCS_SCROLLDOWN or DFCS_FLAT
+				pop		rect.left
+				mov		eax,rect.right
+				inc		eax
+				mov		rect.left,eax
+			.endif
 			invoke SetTextColor,ps.hdc,[ebx].RATT.apicolor
 			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
 			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_SINGLELINE or DT_LEFT
@@ -684,6 +712,10 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RATT.tti.lpszDesc,eax
 		mov		eax,[edx].TTITEM.nitem
 		mov		[ebx].RATT.tti.nitem,eax
+		mov		eax,[edx].TTITEM.novr
+		mov		[ebx].RATT.tti.novr,eax
+		mov		eax,[edx].TTITEM.nsel
+		mov		[ebx].RATT.tti.nsel,eax
 		mov		edx,[ebx].RATT.tti.lpszParam
 		mov		ecx,[ebx].RATT.tti.nitem
 		.if !ecx
@@ -725,6 +757,19 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect.top,eax
 		mov		rect.right,eax
 		mov		rect.bottom,eax
+		.if [ebx].RATT.tti.novr>1
+			push	esi
+			mov		esi,esp
+			mov		eax,[ebx].RATT.tti.nsel
+			inc		eax
+			invoke wsprintf,offset findbuff,offset szFmt,eax,[ebx].RATT.tti.novr
+			mov		esp,esi
+			pop		esi
+			invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			mov		eax,rect.right
+			add		eax,25
+			mov		rect.left,eax
+		.endif
 		.if [ebx].RATT.tti.lpszApi
 			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
 			mov		eax,rect.right

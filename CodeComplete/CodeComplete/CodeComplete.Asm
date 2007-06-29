@@ -47,6 +47,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tti.lpszRetType,offset szTestRetType
 		mov		tti.lpszDesc,offset szTestDesc
 		mov		tti.nitem,1
+		mov		tti.novr,3
+		mov		tti.nsel,1
 		invoke SendDlgItemMessage,hWin,1005,TTM_SETITEM,0,addr tti
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam

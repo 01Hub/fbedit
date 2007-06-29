@@ -79,9 +79,9 @@ Delete( buf As Any Ptr
 ;
 ; "api"
 ;
-;Abs( ByVal number As Double |As Double
+Abs( ByVal number As Double |As Double
 Abs( ByVal number As Integer |As Integer
-;Abs( ByVal number As LongInt |As LongInt
+Abs( ByVal number As LongInt |As LongInt
 Acos( ByVal number As Double |As Double
 Allocate( count As Integer |As Any Ptr
 Asc( ByRef str As String, ByVal position As Integer = 1 |As UInteger
