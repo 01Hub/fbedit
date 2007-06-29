@@ -550,6 +550,7 @@ CodeCompleteProc endp
 ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
 	LOCAL	rgt:DWORD
 	LOCAL	style:DWORD
 
@@ -767,6 +768,13 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		rect.right,4
 		mov		edx,lParam
 		.if [edx].TTITEM.lpszDesc
+			mov		rect1.left,4
+			mov		rect1.top,0
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect1,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			mov		eax,rect1.right
+			.if eax>rect.right
+				mov		rect.right,eax
+			.endif
 			shl		rect.bottom,1
 		.endif
 		add		rect.bottom,3
