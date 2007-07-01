@@ -38,6 +38,7 @@ TTM_SETITEM			equ WM_USER+0			;wParam=0, lParam=lpTTITEM, Returns x-offset
 TTM_GETCOLOR		equ WM_USER+1			;wParam=0, lParam=lpTT_COLOR, Returns nothing
 TTM_SETCOLOR		equ WM_USER+2			;wParam=0, lParam=lpTT_COLOR, Returns nothing
 TTM_GETITEMNAME		equ WM_USER+3			;wParam=0, lParam=lpTTITEM, Returns pointer to string
+TTM_SCREENFITS		equ WM_USER+4			;wParam=0, lParam=lpPOINT, Returns nothing
 
 TT_COLOR struct
 	back	dd ?
@@ -52,8 +53,9 @@ TTITEM struct
 	nitem		dd ?						;Item to hilite
 	lpszRetType	dd ?						;Pointer to return type string
 	lpszDesc	dd ?						;Pointer to item description
-	novr		dd ?
-	nsel		dd ?
+	novr		dd ?						;Totals of functions
+	nsel		dd ?						;Actual function
+	nwidth		dd ?						;Width of tooltip
 TTITEM ends
 
 .const

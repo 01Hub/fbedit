@@ -634,7 +634,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
-TT:
+					TT:
 					ShowWindow(ah.htt,SW_HIDE)
 					TestCaseConvert(hPar,wParam)
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -679,7 +679,8 @@ TT:
 								SendMessage(hPar,EM_GETRECT,0,Cast(LPARAM,@rect))
 								ClientToScreen(hPar,Cast(Point ptr,@rect))
 								pt.x=pt.x-wp
-								SetWindowPos(ah.htt,HWND_TOP,rect.Left+pt.x,rect.top+pt.y+18,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+								SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
+								SetWindowPos(ah.htt,HWND_TOP,rect.left+pt.x,rect.top+pt.y+18,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 								InvalidateRect(ah.htt,NULL,TRUE)
 							EndIf
 						Else

@@ -38,6 +38,7 @@ End Type
 #Define TTM_GETCOLOR			WM_USER+1			' wParam=0, lParam=lpTT_COLOR, Returns nothing
 #Define TTM_SETCOLOR			WM_USER+2			' wParam=0, lParam=lpTT_COLOR, Returns nothing
 #Define TTM_GETITEMNAME		WM_USER+3			' wParam=0, lParam=lpTTITEM, Returns pointer to item string
+#Define TTM_SCREENFITS		WM_USER+4			' wParam=0, lParam=lpPOINT, Returns nothing
 
 Type TT_COLOR
 	back As Integer
@@ -52,8 +53,9 @@ Type TTITEM
 	nitem As Integer									' Item to hilite
 	lpszRetType As ZString ptr						' Pointer to return type string
 	lpszDesc As ZString ptr							' Pointer to item description
-	novr As Integer
-	nsel As Integer
+	novr As Integer									' Totals of functions
+	nsel As Integer									' Actual function
+	nwidth As Integer									' Width of tooltip
 End Type
 
 Const szCCLBClassName = "RACodeComplete"

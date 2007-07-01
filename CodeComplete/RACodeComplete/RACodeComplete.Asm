@@ -719,6 +719,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RATT.tti.novr,eax
 		mov		eax,[edx].TTITEM.nsel
 		mov		[ebx].RATT.tti.nsel,eax
+		mov		eax,[edx].TTITEM.nwidth
+		mov		[ebx].RATT.tti.nwidth,eax
 		mov		edx,[ebx].RATT.tti.lpszParam
 		mov		ecx,[ebx].RATT.tti.nitem
 		.if !ecx
@@ -831,6 +833,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,ps.hdc,eax
 		invoke ReleaseDC,hWin,ps.hdc
 		invoke SetWindowPos,hWin,0,0,0,rect.right,rect.bottom,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOZORDER
+		mov		eax,rect.right
+		mov		[ebx].RATT.tti.nwidth,eax
 		mov		eax,rgt
 	.elseif eax==TTM_GETCOLOR
 		invoke GetWindowLong,hWin,0
@@ -900,6 +904,23 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		byte ptr [ecx],0
 		mov		eax,offset itembuff
 		pop		esi
+	.elseif eax==TTM_SCREENFITS
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke GetSystemMetrics,SM_CXFULLSCREEN
+		mov		ecx,eax
+		mov		edx,lParam
+		mov		eax,[edx] ;pt.x
+		.if sdword ptr eax<0
+			xor		eax,eax
+			mov		[edx],eax
+		.endif
+		add		eax,[ebx].RATT.tti.nwidth
+		.if eax>ecx
+			sub		ecx,[ebx].RATT.tti.nwidth
+			mov		[edx],ecx
+		.endif
+		xor		eax,eax
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
