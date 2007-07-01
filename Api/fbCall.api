@@ -47,60 +47,60 @@ Or( ByRef lhs As T1, ByRef rhs As T2 |As Ret
 ;Or=( ByRef lhs As T1, ByRef rhs As T2
 Xor( ByRef lhs As T1, ByRef rhs As T2 |As Ret
 ;Xor=( ByRef lhs As T1, ByRef rhs As T2
-;Not( ByRef rhs As Byte |As Integer
-;Not( ByRef rhs As UByte |As Integer
-;Not( ByRef rhs As Single |As Integer
-;Not( ByRef rhs As Double |As Integer
 Not( ByRef rhs As T |As T
+Not( ByRef rhs As Byte |As Integer
+Not( ByRef rhs As UByte |As Integer
+Not( ByRef rhs As Single |As Integer
+Not( ByRef rhs As Double |As Integer
 Shl( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
-;Shl( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
-;Shl( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
-;Shl( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+Shl( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
+Shl( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
+Shl( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
 ;Shl=( ByRef lhs As Integer, ByRef rhs As Integer
 ;Shl=( ByRef lhs As LongInt, ByRef rhs As LongInt
 ;Shl=( ByRef lhs As UInteger, ByRef rhs As UInteger
 ;Shl=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
 Shr( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
-;Shr( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
-;Shr( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
-;Shr( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+Shr( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
+Shr( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
+Shr( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
 ;Shr=( ByRef lhs As Integer, ByRef rhs As Integer
 ;Shr=( ByRef lhs As LongInt, ByRef rhs As LongInt
 ;Shr=( ByRef lhs As UInteger, ByRef rhs As UInteger
 ;Shr=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
 StrPtr( ByRef lhs As String |As ZString Ptr
-;StrPtr( ByRef lhs As WString |As ZString Ptr
+StrPtr( ByRef lhs As WString |As ZString Ptr
 VarPtr( ByRef lhs As T |As T Ptr
 ProcPtr( ByRef lhs As T |As T Ptr
 New( size As UInteger |As Any Ptr
-;new[]( size As UInteger |As Any Ptr
+;New[]( size As UInteger |As Any Ptr
 Delete( buf As Any Ptr
-;delete[]( buf As Any Ptr
+;Delete[]( buf As Any Ptr
 ;
 ; "api"
 ;
-Abs( ByVal number As Double |As Double
 Abs( ByVal number As Integer |As Integer
+Abs( ByVal number As Double |As Double
 Abs( ByVal number As LongInt |As LongInt
 Acos( ByVal number As Double |As Double
 Allocate( count As Integer |As Any Ptr
-Asc( ByRef str As String, ByVal position As Integer = 1 |As UInteger
-;Asc( ByVal str As WString Ptr, ByVal position As Integer = 1 |As UInteger
-;Asc( ByVal str As ZString Ptr, ByVal position As Integer = 1 |As UInteger
+Asc( ByRef Str As String, ByVal position As Integer = 1 |As UInteger
+Asc( ByVal Str As WString Ptr, ByVal position As Integer = 1 |As UInteger
+Asc( ByVal Str As ZString Ptr, ByVal position As Integer = 1 |As UInteger
 Asin( ByVal number As Double |As Double
 Atan2( ByVal y As Double, ByVal x As Double |As Double
 Atn( ByVal number As Double |As Double
 Beep(
-;Bin( ByVal number As Byte |As String
-;Bin( ByVal number As Integer |As String
+Bin( ByVal number As Integer |As String
 Bin( ByVal number As Integer, ByVal digits As Integer |As String
-;Bin( ByVal number As LongInt |As String
-;Bin( ByVal number As LongInt, ByVal digits As Integer |As String
-;Bin( ByVal number As Short |As String
+Bin( ByVal number As Byte |As String
+Bin( ByVal number As LongInt |As String
+Bin( ByVal number As LongInt, ByVal digits As Integer |As String
+Bin( ByVal number As Short |As String
 BLoad( ByRef filename As String, ByVal addr As Any Ptr = 0, ByVal pal As Any Ptr = 0 |As Integer
 BSave( ByRef filename As String, ByVal addr As Any Ptr, ByVal size As Integer = 0, ByVal pal As Any Ptr = 0 |As Integer
 Cast( datatype, expression
-CAllocate( ByVal num_elements As Integer, ByVal size As Integer = 1 |As Any Ptr
+Callocate( ByVal num_elements As Integer, ByVal size As Integer = 1 |As Any Ptr
 CByte( ByVal expression As datatype |As Byte
 CDbl( ByVal expression As datatype |As Double
 Chain( ByRef program As String |As Integer
@@ -109,11 +109,11 @@ Chr( ByVal ch As Integer [, ... ] |As String
 CInt( ByVal expression As datatype |As Integer
 Clear( ByRef dst As Any, ByVal value As Integer = 0, ByVal bytes As Integer
 CLng( ByVal expression As datatype |As Long
-CLngInt( ByVal expression As datatype |As LongInt
+clngint( ByVal expression As datatype |As LongInt
 Cls( ByVal mode As Integer = -65536
-Color( ByVal foreground As Integer , ByVal background As Integer |As Integer
+Color( ByVal foreground As Integer, ByVal background As Integer |As Integer
 Command( ByVal index As Integer = -1 |As String
-CondBroadcast( ByVal handle As Any Ptr
+Condbroadcast( ByVal handle As Any Ptr
 CondCreate( |As Any Ptr
 CondDestroy( ByVal handle As Any Ptr
 CondSignal( ByVal handle As Any Ptr
@@ -126,31 +126,31 @@ CSng( ByVal expression As datatype |As Single
 CsrLin( |As Integer
 CUByte( ByVal expression As datatype |As UByte
 CUInt( ByVal expression As datatype |As UInteger
-CULng( ByVal expression As datatype |As Ulong
+CULng( ByVal expression As datatype |As ULong
 CULngInt( ByVal expression As datatype |As ULongInt
 CUnsg( expression
 CurDir( |As String
 CUShort( ByVal expression As datatype |As UShort
-CVD( ByRef str As String |As Double
-CVI( ByRef str As String |As Integer
-CVL( ByRef str As String |As Integer
-CVLongInt( ByRef str As String |As LongInt
-CVS( ByRef str As String |As Single
-CVShort( ByRef str As String |As Short
+Cvd( ByRef Str As String |As Double
+CVI( ByRef Str As String |As Integer
+Cvl( ByRef Str As String |As Integer
+CVLongInt( ByRef Str As String |As LongInt
+CVS( ByRef Str As String |As Single
+CVShort( ByRef Str As String |As Short
 Date( |As String
 DateAdd( interval As String, ByVal number As Double, ByVal date_serial As Double |As Double
 DateDiff( interval As String, ByVal serial1 As Double, ByVal serial2 As Double, ByVal firstdayofweek As Integer = fbUseSystem, ByVal firstdayofyear As Integer = fbUseSystem |As Integer
 DatePart( interval As String, ByVal date_serial As Double, ByVal firstdayofweek As Integer = fbUseSystem, ByVal firstdayofyear As Integer = fbUseSystem |As Integer
-DateSerial( ByVal year As Integer, ByVal month As Integer, ByVal day As Integer |As Integer
+DateSerial( ByVal Year As Integer, ByVal Month As Integer, ByVal Day As Integer |As Integer
 DateValue( ByRef date_string As String |As Double
 Day( ByVal date_serial As Double |As Integer
-Deallocate( pointer As Any Ptr
+DeAllocate( Pointer As Any Ptr
 Dir( ByRef file_spec As String = "", ByVal attrib_mask As Integer = &h21,  ByVal out_attrib As Integer Ptr = 0 |As String
-;Dir( ByVal out_attrib As Integer Ptr = 0 |As String
+Dir( ByVal out_attrib As Integer Ptr = 0 |As String
 DyLibFree( ByVal library As Any Pointer
-DyLibLoad( ByRef filename As String |As Any Pointer
+DylibLoad( ByRef filename As String |As Any Pointer
 DyLibSymbol( ByVal library As Any Ptr, ByRef symbol As String |As Any Ptr
-;DyLibSymbol( ByVal library As Any Ptr, ByVal symbol As Short |As Any Ptr
+DyLibSymbol( ByVal library As Any Ptr, ByVal symbol As Short |As Any Ptr
 End( ByVal retval As Integer = 0
 Environ( ByRef varname As String |As String
 EOF( ByVal filenum As Integer |As Integer
@@ -177,60 +177,60 @@ FreeFile( |As Integer
 GetJoystick( ByVal id As Integer, ByRef buttons As Integer = 0, ByRef a1 As Single = 0, ByRef a2 As Single = 0, ByRef a3 As Single = 0, ByRef a4 As Single = 0, ByRef a5 As Single = 0, ByRef a6 As Single = 0, ByRef a7 As Single = 0, ByRef a8 As Single = 0 |As Integer
 GetKey( |As Integer
 GetMouse( ByRef x As Integer, ByRef y As Integer, ByRef wheel As Integer = 0, ByRef buttons As Integer = 0, ByRef clip As Integer = 0 |As Integer
-;Hex( ByVal number As Byte |As String
-;Hex( ByVal number As Integer |As String
+Hex( ByVal number As Integer |As String
 Hex( ByVal number As Integer, ByVal digits As Integer |As String
-;Hex( ByVal number As LongInt |As String
-;Hex( ByVal number As LongInt, ByVal digits As Integer |As String
-;Hex( ByVal number As Short |As String
+Hex( ByVal number As Byte |As String
+Hex( ByVal number As LongInt |As String
+Hex( ByVal number As LongInt, ByVal digits As Integer |As String
+Hex( ByVal number As Short |As String
 Hour( ByVal date_serial As Double |As Integer
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
-;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any ptr |As UInteger
-ImageConvertRow( ByVal src As Any Ptr, ByVal src_bpp As Integer, ByVal dst As Any Ptr, ByVal dst_bpp As Integer, ByVal width As Integer, ByVal isrgb As Integer = 1
-ImageCreate( width As Integer, height As Integer [, [ color As UInteger ] [, depth As Integer ]] ) As Any Ptr
-ImageDestroy( pointer As Any Ptr
+;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
+ImageConvertRow( ByVal src As Any Ptr, ByVal src_bpp As Integer, ByVal dst As Any Ptr, ByVal dst_bpp As Integer, ByVal Width As Integer, ByVal isrgb As Integer = 1
+ImageCreate( Width As Integer, height As Integer [, [ Color As UInteger ] [, depth As Integer ]] ) As Any Ptr
+ImageDestroy( Pointer As Any Ptr
 Inkey( |As String
 Inp( ByVal port As UShort |As Integer
-;Input( n As Integer |As String
+Input( n As Integer |As String
 Input( n As Integer, filenum As Integer |As String
-;InStr( ByRef str As String,  [ Any ] ByRef substring As String |As Integer
-;InStr( ByRef str As WString, [ Any ] ByRef substring As WString |As Integer
-InStr( ByVal start As Integer, ByRef str As String, [ Any ] ByRef substring As String |As Integer
-;InStr( ByVal start As Integer, ByRef str As WString, [ Any ] ByRef substring As WString |As Integer
+InStr( ByVal Start As Integer, ByRef Str As String, [ Any ] ByRef substring As String |As Integer
+InStr( ByVal Start As Integer, ByRef Str As WString, [ Any ] ByRef substring As WString |As Integer
+InStr( ByRef Str As String,  [ Any ] ByRef substring As String |As Integer
+InStr( ByRef Str As WString, [ Any ] ByRef substring As WString |As Integer
 Int( ByVal number As Double |As Double
 IsDate( stringdate As String |As Integer
 Kill( ByRef filename As String |As Integer
 LBound( array As Any, ByVal dimension As Integer = 1 |As Integer
-LCase( ByRef str As String |As String
-;LCase( ByRef str As WString |As WString
-Left( ByRef str As String, ByVal n As Integer |As String
-;Left( ByRef str As WString, ByVal n As Integer |As WString
+LCase( ByRef Str As String |As String
+LCase( ByRef Str As WString |As WString
+Left( ByRef Str As String, ByVal n As Integer |As String
+Left( ByRef Str As WString, ByVal n As Integer |As WString
 Len( ByRef variable As Any |As Integer
-;Len( datatype |As Integer
-LOC( ByVal filenum As Integer |As LongInt
-LOF( ByVal filenum As Integer |As UInteger
+Len( datatype |As Integer
+Loc( ByVal filenum As Integer |As LongInt
+Lof( ByVal filenum As Integer |As UInteger
 Log( ByVal number As Double |As Double
-Lpos( ByVal printer As Integer |As Integer
+LPos( ByVal printer As Integer |As Integer
 LSet( ByRef dst As String, ByRef src As String
-;LSet( ByVal dst As WString Ptr, ByVal src As WString Ptr
-LTrim( ByRef str As String, [ Any ] ByRef trimset As String = " " |As String
-;LTrim( ByRef str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
-;Mid( ByRef str as String, ByVal start as integer |As String
-Mid( ByRef str as String, ByVal start as integer, ByVal n as integer |As String
-;Mid( ByRef text As String, ByVal start As Integer, ByVal length As Integer, ByRef expression As String
-;Mid( ByVal str as WString Ptr, ByVal start as integer |As WString
-;Mid( ByVal str as WString Ptr, ByVal start as integer, ByVal n as integer |As WString
-;Mid( ByVal text As WString Ptr, ByVal start As Integer, ByVal length As Integer, ByVal As Integer, ByVal expression As WString Ptr
+LSet( ByVal dst As WString Ptr, ByVal src As WString Ptr
+LTrim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
+LTrim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
+Mid( ByRef Str As String, ByVal Start As Integer |As String
+Mid( ByRef Str As String, ByVal Start As Integer, ByVal n As Integer |As String
+Mid( ByRef text As String, ByVal Start As Integer, ByVal length As Integer, ByRef expression As String
+Mid( ByVal Str As WString Ptr, ByVal Start As Integer |As WString
+Mid( ByVal Str As WString Ptr, ByVal Start As Integer, ByVal n As Integer |As WString
+Mid( ByVal text As WString Ptr, ByVal Start As Integer, ByVal length As Integer, ByVal As Integer, ByVal expression As WString Ptr
 Minute( ByVal date_serial As Double |As Integer
-MKD( ByVal number As Double |As String
+Mkd( ByVal number As Double |As String
 MkDir( ByRef folder As String |As Integer
-MKI( ByVal number As Integer |As String
+Mki( ByVal number As Integer |As String
 MKL( ByVal number As Integer |As String
 MKLongInt( ByVal number As LongInt |As String
 MKS( ByVal number As Single |As String
-MKShort( ByVal number As Short |As String
+MkShort( ByVal number As Short |As String
 Month( ByVal date_serial As Double |As Integer
-MonthName( ByVal month As Integer, ByVal abbreviate As Integer = 0 |As String
+MonthName( ByVal Month As Integer, ByVal abbreviate As Integer = 0 |As String
 MultiKey( ByVal scancode As Integer |As Integer
 MutexCreate( |As Any Ptr
 MutexDestroy( ByVal id As Any Ptr
@@ -238,53 +238,53 @@ MutexLock( ByVal id As Any Ptr
 MutexUnlock( ByVal id As Any Ptr
 Name( ByRef oldname As String, ByRef newname As String |As Integer
 Now( |As Double
-;Oct( ByVal number As Byte |As String
-;Oct( ByVal number As Byte, ByVal digits As Integer |As String
-;Oct( ByVal number As Integer |As String
+Oct( ByVal number As Integer |As String
 Oct( ByVal number As Integer, ByVal digits As Integer |As String
-;Oct( ByVal number As LongInt |As String
-;Oct( ByVal number As LongInt, ByVal digits As Integer |As String
-;Oct( ByVal number As Short |As String
-;Oct( ByVal number As Short, ByVal digits As Integer |As String
-;Open Com( byref options As String, As filenum As Integer |As Integer
-Out( ByVal port As UShort , ByVal data As UByte |As Integer
+Oct( ByVal number As Byte |As String
+Oct( ByVal number As Byte, ByVal digits As Integer |As String
+Oct( ByVal number As LongInt |As String
+Oct( ByVal number As LongInt, ByVal digits As Integer |As String
+Oct( ByVal number As Short |As String
+Oct( ByVal number As Short, ByVal digits As Integer |As String
+;Open Com( ByRef options As String, As filenum As Integer |As Integer
+Out( ByVal port As UShort, ByVal Data As UByte |As Integer
 PCopy( ByVal source As Integer, ByVal destination As Integer
-;Peek( ByVal address As Any Ptr |As UByte
+Peek( ByVal address As Any Ptr |As UByte
 Peek( datatype, ByVal address As Any Ptr |As datatype
 PMap( ByVal coord As Single, ByVal func As Integer |As Single
 Point( coord_x, coord_y [,buffer]
-;Poke( ByVal address As Any Ptr, ByRef value As UByte
+Poke( ByVal address As Any Ptr, ByRef value As UByte
 Poke( datatype, ByVal address As Any Ptr, ByRef value As datatype
-;Pos( |As Integer
+Pos( |As Integer
 Pos( ByVal dummy As Integer |As Integer
 ;proc_name( [ argumentlist ]
 ;proc_name( argumentlist |As datatype
 Randomize( ByVal seed As Double = -1,  ByVal algorithm As Integer = 0
-Reallocate( pointer As Any Ptr, count As Integer |As Any Ptr
+ReAllocate( Pointer As Any Ptr, count As Integer |As Any Ptr
 Reset(
-Right( ByRef str As String, ByVal n As Integer |As String
-;Right( ByRef str As WString, ByVal n As Integer |As WString
+Right( ByRef Str As String, ByVal n As Integer |As String
+Right( ByRef Str As WString, ByVal n As Integer |As WString
 RmDir( ByRef folder As String |As Integer
 Rnd( ByVal number As Integer = 1 |As Double
-RSet( ByRef dst As String , ByRef src As String
-;RSet( ByVal dst As WString Ptr , ByVal src As WString Ptr
-RTrim( ByRef str As String, [ Any ] ByRef trimset As String = " " |As String
-;RTrim( ByRef str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
+RSet( ByRef dst As String, ByRef src As String
+RSet( ByVal dst As WString Ptr, ByVal src As WString Ptr
+RTrim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
+RTrim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
 Run( ByRef program As String, ByRef arguments As String = "" |As Integer
-SAdd( ByRef str As String |As Any Ptr
-;SAdd( ByRef str As WString |As Any Ptr
-;SAdd( ByRef str As ZString |As Any Ptr
+SAdd( ByRef Str As String |As Any Ptr
+SAdd( ByRef Str As WString |As Any Ptr
+SAdd( ByRef Str As ZString |As Any Ptr
 Screen( ByVal row As Integer, ByVal column As Integer, ByVal colorflag As Integer = 0 |As Integer
-;ScreenControl( ByVal what As Integer [, ByRef param As String]
+ScreenControl( ByVal what As Integer [, ByRef param As String]
 ScreenControl( ByVal what As Integer [, ByRef param1 As Integer [, ByRef param2 As Integer [, ByRef param3 As Integer [, ByRef param4 As Integer]]]]
 ScreenCopy( ByVal frompage As Integer = -1, ByVal topage As Integer = -1
-ScreenEvent( ByVal event As Any Ptr = 0 |As Integer
+ScreenEvent( ByVal Event As Any Ptr = 0 |As Integer
 ScreenGLProc( ByVal procname As String |As Any Ptr
 ScreenInfo( ByRef w As Integer = 0, ByRef h As Integer = 0, ByRef depth As Integer = 0, ByRef bpp As Integer = 0, ByRef pitch As Integer = 0, ByRef rate As Integer = 0, ByRef driver As String = ""
 ScreenList( ByVal depth As Integer = 0 |As Integer
 ScreenLock(
 ScreenPtr( |As Any Ptr
-ScreenRes( width As Integer, height As Integer, depth As Integer = 8, num_pages As Integer = 1, flags As Integer = 0, refresh_rate As Integer = 0
+ScreenRes( Width As Integer, height As Integer, depth As Integer = 8, num_pages As Integer = 1, flags As Integer = 0, refresh_rate As Integer = 0
 ScreenSet( ByVal work_page As Integer = -1, ByVal visible_page As Integer = -1
 ScreenSync( |As Integer
 ScreenUnlock( ByVal startline As Integer = -1, ByVal endline As Integer = -1
@@ -295,28 +295,28 @@ SetEnviron( ByRef varname As String |As Integer
 SetMouse( ByVal x As Integer = -1, ByVal y As Integer = -1, ByVal visibility As Integer = -1, ByVal clip As Integer = -1 |As Integer
 SetTime( ByRef newtime As String |As Integer
 Sgn( ByVal number As Double |As Double
-Shell( command As String
+Shell( Command As String
 Sin( ByVal number As Double |As Double
-Sleep( ByVal msecs As Integer , ByVal kind As Integer |As Integer
-;Sleep( ByVal msecs As Integer = -1 |As Integer
+Sleep( ByVal msecs As Integer, ByVal kind As Integer |As Integer
+Sleep( ByVal msecs As Integer = -1 |As Integer
 Space( count As Integer |As String
 Spc( columns
 Sqr( ByVal number As Double |As Double
 Stop( ByVal retval As Integer = 0
-;Str( ByRef str As String |As String
-;Str( ByVal n As Byte |As String
-;Str( ByVal n As Double |As String
 Str( ByVal n As Integer |As String
-;Str( ByVal n As LongInt |As String
-;Str( ByVal n As Short |As String
-;Str( ByVal n As Single |As String
-;Str( ByVal n As UByte |As String
-;Str( ByVal n As UInteger |As String
-;Str( ByVal n As ULongInt |As String
-;Str( ByVal n As UShort |As String
-;Str( ByVal str As WString Ptr |As String
+Str( ByVal n As Byte |As String
+Str( ByVal n As Double |As String
+Str( ByVal n As LongInt |As String
+Str( ByVal n As Short |As String
+Str( ByVal n As Single |As String
+Str( ByVal n As UByte |As String
+Str( ByVal n As UInteger |As String
+Str( ByVal n As ULongInt |As String
+Str( ByVal n As UShort |As String
+Str( ByRef Str As String |As String
+Str( ByVal Str As WString Ptr |As String
 String( count As Integer, ch As String |As String
-;String( count As Integer, ch_code As Integer |As String
+String( count As Integer, ch_code As Integer |As String
 Swap( ByRef a As Any, ByRef b As Any
 System( ByVal retval As Integer = 0
 Tab( column
@@ -325,69 +325,69 @@ ThreadCreate( ByVal proc As Sub( ByVal As Any Ptr ), ByVal param As Any Ptr = 0 
 ThreadWait( ByVal id As Any Ptr
 Time( |As String
 Timer( |As Double
-TimeSerial( ByVal hour As Integer, ByVal minute As Integer, ByVal second As Integer |As Double
+TimeSerial( ByVal Hour As Integer, ByVal Minute As Integer, ByVal Second As Integer |As Double
 TimeValue( ByRef timestring As String |As Double
-Trim( ByRef str As String, [ Any ] ByRef trimset As String = " " |As String
-;Trim( ByRef str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
+Trim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
+Trim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
 TypeOf( variable / datatype
 UBound( array As Any, ByVal dimension As Integer = 1 |As Integer
-UCase( ByRef str As String |As String
-;UCase( ByRef str As WString |As WString
-Val( ByRef str As String |As Double
-;Val( ByRef str As WString |As Double
-ValInt( ByRef strnum As String |As Integer
-;valInt( ByVal strnum As WString Ptr |As Integer
+UCase( ByRef Str As String |As String
+UCase( ByRef Str As WString |As WString
+Val( ByRef Str As String |As Double
+Val( ByRef Str As WString |As Double
+valInt( ByRef strnum As String |As Integer
+valInt( ByVal strnum As WString Ptr |As Integer
 ValLng( ByRef strnum As String |As LongInt
-;ValLng( ByRef strnum As WString |As LongInt
+ValLng( ByRef strnum As WString |As LongInt
 ValUInt( ByRef strnum As String |As UInteger
-;ValUInt( ByRef strnum As WString |As UInteger
+ValUInt( ByRef strnum As WString |As UInteger
 ValULng( ByRef strnum As String |As ULongInt
-;ValULng( ByRef strnum As WString |As ULongInt
-Wait( ByVal port As UShort , ByVal and_mask As Integer , ByVal xor_mask As Integer = 0 |As Integer
-;WBin( ByVal number As Byte |As WString
-;WBin( ByVal number As Byte, ByVal digits As Integer |As WString
-;WBin( ByVal number As Integer |As WString
+ValULng( ByRef strnum As WString |As ULongInt
+Wait( ByVal port As UShort, ByVal and_mask As Integer, ByVal xor_mask As Integer = 0 |As Integer
+WBin( ByVal number As Integer |As WString
 WBin( ByVal number As Integer, ByVal digits As Integer |As WString
-;WBin( ByVal number As LongInt |As WString
-;WBin( ByVal number As LongInt, ByVal digits As Integer |As WString
-;WBin( ByVal number As Short |As WString
-;WBin( ByVal number As Short, ByVal digits As Integer |As WString
+WBin( ByVal number As Byte |As WString
+WBin( ByVal number As Byte, ByVal digits As Integer |As WString
+WBin( ByVal number As LongInt |As WString
+WBin( ByVal number As LongInt, ByVal digits As Integer |As WString
+WBin( ByVal number As Short |As WString
+WBin( ByVal number As Short, ByVal digits As Integer |As WString
 Wchr( ByVal ch As Integer [, ... ] |As WString
-Weekday( ByVal serial As Double , ByVal firstdayofweek As Integer = fbusesystem |As Integer
-WeekdayName( ByVal weekday As Integer, ByVal abbreviate As Integer = 0, ByVal firstdayofweek As Integer = fbUseSystem |As String
-;WHex( ByVal number As Byte |As WString
-;WHex( ByVal number As Byte, ByVal digits As Integer |As WString
-;WHex( ByVal number As Integer |As WString
+Weekday( ByVal serial As Double, ByVal firstdayofweek As Integer = fbusesystem |As Integer
+WeekdayName( ByVal Weekday As Integer, ByVal abbreviate As Integer = 0, ByVal firstdayofweek As Integer = fbUseSystem |As String
+WHex( ByVal number As Integer |As WString
 WHex( ByVal number As Integer, ByVal digits As Integer |As WString
-;WHex( ByVal number As LongInt |As WString
-;WHex( ByVal number As LongInt, ByVal digits As Integer |As WString
-;WHex( ByVal number As Short |As WString
-;WHex( ByVal number As Short, ByVal digits As Integer |As WString
+WHex( ByVal number As Byte |As WString
+WHex( ByVal number As Byte, ByVal digits As Integer |As WString
+WHex( ByVal number As LongInt |As WString
+WHex( ByVal number As LongInt, ByVal digits As Integer |As WString
+WHex( ByVal number As Short |As WString
+WHex( ByVal number As Short, ByVal digits As Integer |As WString
 Width(
-WindowTitle( ByRef title As String
-;WInput( ByVal num As Integer |As WString
+WindowTitle( ByRef Title As String
+WInput( ByVal num As Integer |As WString
 WInput( ByVal num As Integer, ByVal filenum As Integer = 0 |As WString
-;WOct( ByVal number As Byte |As WString
-;WOct( ByVal number As Byte, ByVal digits As Integer |As WString
-;WOct( ByVal number As Integer |As WString
+WOct( ByVal number As Integer |As WString
 WOct( ByVal number As Integer, ByVal digits As Integer |As WString
-;WOct( ByVal number As LongInt |As WString
-;WOct( ByVal number As LongInt, ByVal digits As Integer |As WString
-;WOct( ByVal number As Short |As WString
-;WOct( ByVal number As Short, ByVal digits As Integer |As WString
+WOct( ByVal number As Byte |As WString
+WOct( ByVal number As Byte, ByVal digits As Integer |As WString
+WOct( ByVal number As LongInt |As WString
+WOct( ByVal number As LongInt, ByVal digits As Integer |As WString
+WOct( ByVal number As Short |As WString
+WOct( ByVal number As Short, ByVal digits As Integer |As WString
 WSpace( count As Integer |As WString
-;WStr( ByRef str As String |As WString
-;WStr( ByVal n As Byte |As WString
-;WStr( ByVal n As Double |As WString
 WStr( ByVal n As Integer |As WString
-;WStr( ByVal n As LongInt |As WString
-;WStr( ByVal n As Short |As WString
-;WStr( ByVal n As Single |As WString
-;WStr( ByVal n As UByte |As WString
-;WStr( ByVal n As UInteger |As WString
-;WStr( ByVal n As ULongInt |As WString
-;WStr( ByVal n As UShort |As WString
-;WStr( ByVal str As WString Ptr |As WString
+WStr( ByVal n As Byte |As WString
+WStr( ByVal n As Double |As WString
+WStr( ByVal n As LongInt |As WString
+WStr( ByVal n As Short |As WString
+WStr( ByVal n As Single |As WString
+WStr( ByVal n As UByte |As WString
+WStr( ByVal n As UInteger |As WString
+WStr( ByVal n As ULongInt |As WString
+WStr( ByVal n As UShort |As WString
+WStr( ByRef Str As String |As WString
+WStr( ByVal Str As WString Ptr |As WString
 WString( count As Integer, ch As WString |As WString
-;WString( count As Integer, ch_code As Integer |As WString
+WString( count As Integer, ch_code As Integer |As WString
 Year( ByVal date_serial As Double |As Integer
