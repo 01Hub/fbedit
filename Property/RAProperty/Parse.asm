@@ -1172,6 +1172,10 @@ SaveParam:
 		.if byte ptr [esi]==',' || byte ptr [esi]=='('
 			inc		esi
 			jmp		@b
+		.elseif byte ptr [esi]==')'
+			mov		byte ptr [edi],0
+			inc		edi
+			jmp		RetType
 		.endif
 	.else
 		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
@@ -1188,6 +1192,7 @@ SaveParam:
 		inc		edi
 		call	SkipSpc
 		.if byte ptr [esi]==')'
+		  RetType:
 			inc		esi
 			invoke GetWord,esi,addr npos
 			mov		esi,edx
@@ -1204,9 +1209,21 @@ SaveParam:
 					inc		edi
 					mov		edx,edi
 					lea		edi,[edi+ecx]
+					mov		eax,esi
+					lea		esi,[esi+ecx]
 					inc		ecx
-					invoke lstrcpyn,edx,esi,ecx
+					invoke lstrcpyn,edx,eax,ecx
 					inc		fRetType
+				  @@:
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+					invoke IsIgnore,IGNORE_PTR,ecx,esi
+					.if eax
+						lea		esi,[esi+ecx]
+						invoke lstrcpyn,edi,addr szPtr,5
+						lea		edi,[edi+4]
+						jmp		@b
+					.endif
 				.endif
 			.endif
 		.else
@@ -1379,6 +1396,7 @@ ParseStruct:
 				invoke IsIgnore,IGNORE_PTR,ecx,esi
 				.if eax
 					; ptr
+					inc		fPtr
 					lea		esi,[esi+ecx]
 					jmp		@b
 				.endif
@@ -1434,6 +1452,16 @@ ParseStruct:
 					mov		lpword2,esi
 					mov		len2,ecx
 					lea		esi,[esi+ecx]
+				  @@:
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+					invoke IsIgnore,IGNORE_PTR,ecx,esi
+					.if eax
+						; ptr
+						inc		fPtr
+						lea		esi,[esi+ecx]
+						jmp		@b
+					.endif
 					jmp		ParseStruct3
 				.endif
 			.endif
@@ -1467,6 +1495,13 @@ ParseStruct:
 				inc		eax
 				invoke lstrcpyn,edi,lpword2,eax
 				add		edi,len2
+				.if fPtr
+				  @@:
+					invoke lstrcpyn,edi,addr szPtr,5
+					lea		edi,[edi+4]
+					dec		fPtr
+					jne		@b
+				.endif
 				mov		word ptr [edi],','
 				call	SkipToComma
 				.if byte ptr [esi]==','
