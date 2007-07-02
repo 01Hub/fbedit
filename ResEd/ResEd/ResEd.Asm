@@ -107,11 +107,11 @@ LoadProjectFile proc lpFileName:DWORD
 		.if grdsize.nodefines
 			invoke lstrcpy,addr buff,lpFileName
 			invoke lstrlen,addr buff
-			.while byte ptr buff[eax-1]!='\' && eax
+			.while byte ptr buff[eax-1]!='.' && eax
 				dec		eax
 			.endw
-			mov		byte ptr buff[eax],0
-			invoke lstrcat,addr buff,offset szDefines
+			mov		word ptr buff[eax],'h'
+			;invoke lstrcat,addr buff,offset szDefines
 			invoke CreateFile,addr buff,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 			.if eax!=INVALID_HANDLE_VALUE
 				mov		hFile,eax
@@ -257,11 +257,11 @@ SaveProject proc lpFileName:DWORD
 		.if grdsize.nodefines
 			invoke lstrcpy,addr buff,lpFileName
 			invoke lstrlen,addr buff
-			.while byte ptr buff[eax-1]!='\'
+			.while byte ptr buff[eax-1]!='.' && eax
 				dec		eax
 			.endw
-			mov		byte ptr buff[eax],0
-			invoke lstrcat,addr buff,offset szDefines
+			mov		word ptr buff[eax],'h'
+			;invoke lstrcat,addr buff,offset szDefines
 			invoke CreateFile,addr buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 			.if eax!=INVALID_HANDLE_VALUE
 				mov		hFile,eax

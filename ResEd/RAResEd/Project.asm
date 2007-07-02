@@ -209,6 +209,18 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	invoke GlobalUnlock,hRCMem
 	invoke GlobalFree,hRCMem
 	pop		edx
+	push	edx
+	mov		ecx,offset szResourceh
+  @@:
+	mov		al,[edx]
+	.if al!='.' && al
+		mov		[ecx],al
+		inc		edx
+		inc		ecx
+		jmp		@b
+	.endif
+	mov		dword ptr [ecx],'h.'
+	pop		edx
 	mov		esi,hProMem
 	invoke Do_TreeViewAddNode,hPrjTrv,TVI_ROOT,TVI_FIRST,edx,0,0,esi
 	mov		hRoot,eax
@@ -320,6 +332,7 @@ CloseProject endp
 
 ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 	LOCAL	hMem:DWORD
+	LOCAL	buff[32]:BYTE
 
 	;Names
 	mov		esi,lpProMem
@@ -433,7 +446,14 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 		add		esi,sizeof PROJECT
 	.endw
 	.if !fResourceh && fNoDefines
-		invoke lstrcat,lpRCMem,offset szIncludeDefines
+		invoke lstrcat,lpRCMem,offset szINCLUDE
+		mov		dword ptr buff,'" '
+		invoke lstrcat,lpRCMem,addr buff
+		invoke lstrcat,lpRCMem,addr szResourceh
+		mov		dword ptr buff,'"'
+		invoke lstrcat,lpRCMem,addr buff
+		mov		dword ptr buff,0A0Dh
+		invoke lstrcat,lpRCMem,addr buff
 	.endif
 	;Language
 	mov		esi,lpProMem

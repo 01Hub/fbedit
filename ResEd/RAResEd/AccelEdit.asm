@@ -419,13 +419,15 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_EDTACLNAME,EM_LIMITTEXT,MaxName-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTACLID,EM_LIMITTEXT,5,0
 	.elseif eax==WM_COMMAND
-		invoke GetDlgItem,hWin,IDC_GRDACL
-		mov		hGrd,eax
-		invoke SetFocus,hGrd
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
+			push	eax
+			invoke GetDlgItem,hWin,IDC_GRDACL
+			mov		hGrd,eax
+			invoke SetFocus,hGrd
+			pop		eax
 			.if eax==IDOK
 				invoke SaveAccelEdit,hWin
 				invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0

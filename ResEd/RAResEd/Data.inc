@@ -374,10 +374,6 @@ szAclKeys			db 01h,'.Ascii',0
 					db 69h,'NUMPAD9',0
 					db 0
 
-szIncludeDefines	db '#include "resource.h"',0Dh,0Ah,0
-
-szResourceh			db 'resource.h',0
-
 szGetDef			db 'GetDef',0
 szGetDefEx			db 'GetDefEx',0
 
@@ -424,3 +420,4 @@ hTabSet				dd ?
 nTabSet				dd ?
 lfntht				dd ?
 fResourceh			dd ?
+szResourceh			db 128 dup(?)

@@ -179,7 +179,6 @@ szTab				db VK_TAB,0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
-szDefines			db 'resource.h',0
 
 .data
 
