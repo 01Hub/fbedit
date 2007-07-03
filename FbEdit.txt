@@ -4,6 +4,12 @@ Whats new:
 o Added Properties Hilight.
 o Speed optimized case convert.
 o Added item description to code tooltip. Needs xxDesc.api files.
+o Added support for overloads in code tooltip.
+o Added support to use a batch file to build.
+o Fixed bugs in code parser. Did not include ptr on UDT items and
+  function return types.
+o Fixed bug in resource editor. Could not change name or ID on
+  accelerator tables.
 1.0.5.4
 o Added Print and Page Setup.
 o Added Option for Auto complete Include/Inclib.
