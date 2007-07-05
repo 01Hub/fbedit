@@ -1064,6 +1064,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						pop		esi
 					.endif
 				.elseif wParam==VK_LEFT || wParam==VK_UP
+				  SelPrev:
 					invoke GetWindowLong,hReSize,GWL_USERDATA
 					.if eax
 						push	esi
@@ -1181,6 +1182,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif edx && !eax
 				; Size control
+				mov		eax,wParam
+				.if eax==VK_TAB
+					jmp		SelPrev
+				.endif
 				invoke GetWindowLong,hReSize,GWL_USERDATA
 				.if eax
 					push	esi
