@@ -2,392 +2,394 @@
 ;
 ; macros
 ;
-;#define Assert( expression ) If ( expression ) = 0 Then : fb_Assert( __FILE__, __LINE__, __FUNCTION__, #expression ) : End If
-Assert( expression
+;#define Assert ( expression ) If ( expression ) = 0 Then : fb_Assert( __FILE__, __LINE__, __FUNCTION__, #expression ) : End If
+Assert,expression
 ;#define AssertWarn( expression ) If ( expression ) = 0 Then : fb_AssertWarn( __FILE__, __LINE__, __FUNCTION__, #expression ) : End If
-AssertWarn( expression
+AssertWarn,expression
 ;#define Bit( value, bit_number ) ( ( ( value ) And ( Cast( TypeOf( Value ), 1 ) Shl ( bit_number ) ) ) <> 0)
-Bit( value, bit_number
+Bit,value:Any,bit_number:Any
 ;#define BitReset( value, bit_number ) ( ( value ) And Not ( Cast( TypeOf( Value ), 1 ) Shl (bit_number ) ) )
-BitReset( value, bit_number
+BitReset,value:Any,bit_number:Any
 ;#define BitSet( value, bit_number ) ( ( value ) Or ( Cast( TypeOf( Value ), 1 ) Shl ( bit_number ) ) )
-BitSet( value, bit_number
+BitSet,value:Any,bit_number:Any
 ;#define HiByte( x ) ( ( CUInt( x ) And &h0000FF00 ) Shr 8 )
-HiByte( x
+HiByte,x:UInteger
 ;#define HiWord( x ) ( CUInt( x ) Shr 16 )
-HiWord( x
+HiWord,x:UInteger
 ;#define LoByte( x ) ( CUInt( x ) And &h000000FF )
-LoByte( x
+LoByte,x:UInteger
 ;#define LoWord( x ) ( CUInt( x ) And &h0000FFFF )
-LoWord( x
+LoWord,x:UInteger
 ;#define OffsetOf( typename, fieldname ) CInt( @Cast( typename Ptr, 0 )->fieldname )
-OffsetOf( typename, fieldname	
+OffsetOf,typename,fieldname
 ;#define RGB( r, g, b ) ( ( CUInt( r ) Shl 16 ) Or ( CUInt( g ) Shl 8 ) Or CUInt( b ) Or &hFF000000 )
-RGB( r, g, b
+RGB,r:UInteger,g:UInteger,b:UInteger
 ;#define RGBA( r, g, b, a ) ( ( CUInt( r ) Shl 16 ) Or ( CUInt( g ) Shl 8 ) Or CUInt( b ) Or ( CUInt( a ) Shl 24 ) )
-RGBA( r, g, b, a
+RGBA,r:UInteger,g:UInteger,b:UInteger,a:UInteger
 ;pointer_variable = va_first( )
-va_first(
+va_first|Ptr
 ;variable = va_arg( argument_list, datatype )
-va_arg( argument_list, datatype
+va_arg,argument_list:va_first / va_next,datatype
 ;Argument_Pointer = va_next( Argument_List, datatype )
-va_next( Argument_List, datatype
+;Argument_Pointer = va_next( Argument_List, UInteger )
+va_next,Argument_List:(va_first),datatype
 ;
 ; operators
 ;
-Mod( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
+Mod,ByRef lhs:Integer,ByRef rhs:Integer|Integer
 ;Mod=( ByRef lhs As Integer, ByRef rhs As Integer
-And( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+And,ByRef lhs:Any,ByRef rhs:Any|Any
 ;And=( ByRef lhs As T1, ByRef rhs As T2
-Eqv( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+Eqv,ByRef lhs:Any,ByRef rhs:Any|Any
 ;Eqv=( ByRef lhs As T1, ByRef rhs As T2
-Imp( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+Imp,ByRef lhs:Any,ByRef rhs:Any|Any
 ;Imp=( ByRef lhs As T1, ByRef rhs As T2
-Or( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+Or,ByRef lhs:Any,ByRef rhs:Any|Any
 ;Or=( ByRef lhs As T1, ByRef rhs As T2
-Xor( ByRef lhs As T1, ByRef rhs As T2 |As Ret
+Xor,ByRef lhs:Any,ByRef rhs:Any|Any
 ;Xor=( ByRef lhs As T1, ByRef rhs As T2
-Not( ByRef rhs As T |As T
-Not( ByRef rhs As Byte |As Integer
-Not( ByRef rhs As UByte |As Integer
-Not( ByRef rhs As Single |As Integer
-Not( ByRef rhs As Double |As Integer
-Shl( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
-Shl( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
-Shl( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
-Shl( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+Not,ByRef rhs:Any|Any
+Not,ByRef rhs:Byte|Integer
+Not,ByRef rhs:UByte|Integer
+Not,ByRef rhs:Single|Integer
+Not,ByRef rhs:Double|Integer
+Shl,ByRef lhs:Integer,ByRef rhs:Integer|Integer
+Shl,ByRef lhs:LongInt,ByRef rhs:LongInt|LongInt
+Shl,ByRef lhs:UInteger,ByRef rhs:UInteger|UInteger
+Shl,ByRef lhs:ULongInt,ByRef rhs:ULongInt|ULongInt
 ;Shl=( ByRef lhs As Integer, ByRef rhs As Integer
 ;Shl=( ByRef lhs As LongInt, ByRef rhs As LongInt
 ;Shl=( ByRef lhs As UInteger, ByRef rhs As UInteger
 ;Shl=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
-Shr( ByRef lhs As Integer, ByRef rhs As Integer |As Integer
-Shr( ByRef lhs As LongInt, ByRef rhs As LongInt |As LongInt
-Shr( ByRef lhs As UInteger, ByRef rhs As UInteger |As UInteger
-Shr( ByRef lhs As ULongInt, ByRef rhs As ULongInt |As ULongInt
+Shr,ByRef lhs:Integer,ByRef rhs:Integer|Integer
+Shr,ByRef lhs:LongInt,ByRef rhs:LongInt|LongInt
+Shr,ByRef lhs:UInteger,ByRef rhs:UInteger|UInteger
+Shr,ByRef lhs:ULongInt,ByRef rhs:ULongInt|ULongInt
 ;Shr=( ByRef lhs As Integer, ByRef rhs As Integer
 ;Shr=( ByRef lhs As LongInt, ByRef rhs As LongInt
 ;Shr=( ByRef lhs As UInteger, ByRef rhs As UInteger
 ;Shr=( ByRef lhs As ULongInt, ByRef rhs As ULongInt
-StrPtr( ByRef lhs As String |As ZString Ptr
-StrPtr( ByRef lhs As WString |As ZString Ptr
-VarPtr( ByRef lhs As T |As T Ptr
-ProcPtr( ByRef lhs As T |As T Ptr
-New( size As UInteger |As Any Ptr
+StrPtr,ByRef lhs:String|ZString Ptr
+StrPtr,ByRef lhs:WString|ZString Ptr
+VarPtr,ByRef lhs:Any|Any Ptr
+ProcPtr,ByRef lhs:Any|Any Ptr
+New,size:UInteger|Any Ptr
 ;New[]( size As UInteger |As Any Ptr
-Delete( buf As Any Ptr
+Delete,buf:Any Ptr
 ;Delete[]( buf As Any Ptr
 ;
 ; "api"
 ;
-Abs( ByVal number As Integer |As Integer
-Abs( ByVal number As Double |As Double
-Abs( ByVal number As LongInt |As LongInt
-Acos( ByVal number As Double |As Double
-Allocate( count As Integer |As Any Ptr
-Asc( ByRef Str As String, ByVal position As Integer = 1 |As UInteger
-Asc( ByVal Str As WString Ptr, ByVal position As Integer = 1 |As UInteger
-Asc( ByVal Str As ZString Ptr, ByVal position As Integer = 1 |As UInteger
-Asin( ByVal number As Double |As Double
-Atan2( ByVal y As Double, ByVal x As Double |As Double
-Atn( ByVal number As Double |As Double
-Beep(
-Bin( ByVal number As Integer |As String
-Bin( ByVal number As Integer, ByVal digits As Integer |As String
-Bin( ByVal number As Byte |As String
-Bin( ByVal number As LongInt |As String
-Bin( ByVal number As LongInt, ByVal digits As Integer |As String
-Bin( ByVal number As Short |As String
-BLoad( ByRef filename As String, ByVal addr As Any Ptr = 0, ByVal pal As Any Ptr = 0 |As Integer
-BSave( ByRef filename As String, ByVal addr As Any Ptr, ByVal size As Integer = 0, ByVal pal As Any Ptr = 0 |As Integer
-Cast( datatype, expression
-Callocate( ByVal num_elements As Integer, ByVal size As Integer = 1 |As Any Ptr
-CByte( ByVal expression As datatype |As Byte
-CDbl( ByVal expression As datatype |As Double
-Chain( ByRef program As String |As Integer
-ChDir( ByRef path As String |As Integer
-Chr( ByVal ch As Integer [, ... ] |As String
-CInt( ByVal expression As datatype |As Integer
-Clear( ByRef dst As Any, ByVal value As Integer = 0, ByVal bytes As Integer
-CLng( ByVal expression As datatype |As Long
-clngint( ByVal expression As datatype |As LongInt
-Cls( ByVal mode As Integer = -65536
-Color( ByVal foreground As Integer, ByVal background As Integer |As Integer
-Command( ByVal index As Integer = -1 |As String
-Condbroadcast( ByVal handle As Any Ptr
-CondCreate( |As Any Ptr
-CondDestroy( ByVal handle As Any Ptr
-CondSignal( ByVal handle As Any Ptr
-CondWait( ByVal handle As Any Ptr
-Cos( ByVal number As Double |As Double
-CPtr( DataType Ptr, expression
-CShort( ByVal expression As datatype |As Short
-CSign( expression
-CSng( ByVal expression As datatype |As Single
-CsrLin( |As Integer
-CUByte( ByVal expression As datatype |As UByte
-CUInt( ByVal expression As datatype |As UInteger
-CULng( ByVal expression As datatype |As ULong
-CULngInt( ByVal expression As datatype |As ULongInt
-CUnsg( expression
-CurDir( |As String
-CUShort( ByVal expression As datatype |As UShort
-Cvd( ByRef Str As String |As Double
-CVI( ByRef Str As String |As Integer
-Cvl( ByRef Str As String |As Integer
-CVLongInt( ByRef Str As String |As LongInt
-CVS( ByRef Str As String |As Single
-CVShort( ByRef Str As String |As Short
-Date( |As String
-DateAdd( interval As String, ByVal number As Double, ByVal date_serial As Double |As Double
-DateDiff( interval As String, ByVal serial1 As Double, ByVal serial2 As Double, ByVal firstdayofweek As Integer = fbUseSystem, ByVal firstdayofyear As Integer = fbUseSystem |As Integer
-DatePart( interval As String, ByVal date_serial As Double, ByVal firstdayofweek As Integer = fbUseSystem, ByVal firstdayofyear As Integer = fbUseSystem |As Integer
-DateSerial( ByVal Year As Integer, ByVal Month As Integer, ByVal Day As Integer |As Integer
-DateValue( ByRef date_string As String |As Double
-Day( ByVal date_serial As Double |As Integer
-DeAllocate( Pointer As Any Ptr
-Dir( ByRef file_spec As String = "", ByVal attrib_mask As Integer = &h21,  ByVal out_attrib As Integer Ptr = 0 |As String
-Dir( ByVal out_attrib As Integer Ptr = 0 |As String
-DyLibFree( ByVal library As Any Pointer
-DylibLoad( ByRef filename As String |As Any Pointer
-DyLibSymbol( ByVal library As Any Ptr, ByRef symbol As String |As Any Ptr
-DyLibSymbol( ByVal library As Any Ptr, ByVal symbol As Short |As Any Ptr
-End( ByVal retval As Integer = 0
-Environ( ByRef varname As String |As String
-EOF( ByVal filenum As Integer |As Integer
-Erase( array As Any [, ... ]
-Erfn( |As ZString Ptr
-Erl( |As Integer
-Ermn( |As ZString Ptr
-Err( |As Integer
-Error( errno As Integer
-Exec( ByRef program As String, ByRef arguments As String |As Integer
-ExePath( |As String
-Exp( ByVal number As Double |As Double
-FileAttr( ByVal filenum As Integer, ByVal returntype As Integer = 1 |As Integer
-FileCopy( source As String, destination As String |As Integer
-FileDateTime( ByVal filename As ZString Ptr |As Double
-FileExists( ByVal filename As ZString Ptr |As Integer
-FileLen( filename As String |As LongInt
-Fix( ByVal number As Double |As Double
-Flip( ByVal frompage As Integer = -1, ByVal topage As Integer = -1
-Format( ByVal numerical_expression As Double, formatting_expression As String = "" |As String
-Frac( ByVal number As Double |As Double
-Fre( ByVal value As Integer = 0 |As UInteger
-FreeFile( |As Integer
-GetJoystick( ByVal id As Integer, ByRef buttons As Integer = 0, ByRef a1 As Single = 0, ByRef a2 As Single = 0, ByRef a3 As Single = 0, ByRef a4 As Single = 0, ByRef a5 As Single = 0, ByRef a6 As Single = 0, ByRef a7 As Single = 0, ByRef a8 As Single = 0 |As Integer
-GetKey( |As Integer
-GetMouse( ByRef x As Integer, ByRef y As Integer, ByRef wheel As Integer = 0, ByRef buttons As Integer = 0, ByRef clip As Integer = 0 |As Integer
-Hex( ByVal number As Integer |As String
-Hex( ByVal number As Integer, ByVal digits As Integer |As String
-Hex( ByVal number As Byte |As String
-Hex( ByVal number As LongInt |As String
-Hex( ByVal number As LongInt, ByVal digits As Integer |As String
-Hex( ByVal number As Short |As String
-Hour( ByVal date_serial As Double |As Integer
+Abs,number:Integer|Integer
+Abs,number:Double|Double
+Abs,number:LongInt|LongInt
+Acos,number:Double|Double
+Allocate,count:Integer|Any Ptr
+Asc,ByRef Str:String,position:Integer=1|UInteger
+Asc,Str:WString Ptr,position:Integer=1|UInteger
+Asc,Str:ZString Ptr,position:Integer=1|UInteger
+Asin,number:Double|Double
+Atan2,y:Double,x:Double|Double
+Atn,number:Double|Double
+Beep
+Bin,number:Integer|String
+Bin,number:Integer,digits:Integer|String
+Bin,number:Byte|String
+Bin,number:LongInt|String
+Bin,number:LongInt,digits:Integer|String
+Bin,number:Short|String
+BLoad,ByRef filename:String,addr:Any Ptr=0,pal:Any Ptr=0|Integer
+BSave,ByRef filename:String,addr:Any Ptr,size:Integer=0,pal:Any Ptr=0|Integer
+Cast,datatype,expression
+Callocate,num_elements:Integer,size:Integer=1|Any Ptr
+CByte,expression:datatype|Byte
+CDbl,expression:datatype|Double
+Chain,ByRef program:String|Integer
+ChDir,ByRef path:String|Integer
+Chr,ch:Integer,[...]|String
+CInt,expression:datatype|Integer
+Clear,ByRef dst:Any,value:Integer=0,bytes:Integer
+CLng,expression:datatype|Long
+CLngInt,expression:datatype|LongInt
+Cls,mode:Integer=-65536
+Color,foreground:Integer,background:Integer|Integer
+Command,index:Integer=-1|String
+Condbroadcast,handle As Any Ptr
+CondCreate|Any Ptr
+CondDestroy,handle:Any Ptr
+CondSignal,handle:Any Ptr
+CondWait,handle:Any Ptr
+Cos,number:Double|Double
+CPtr,DataType Ptr, expression
+CShort,expression:datatype|Short
+CSign,expression
+CSng,expression:datatype|Single
+CsrLin,|Integer
+CUByte,expression:datatype|UByte
+CUInt,expression:datatype|UInteger
+CULng,expression:datatype|ULong
+CULngInt,expression:datatype|ULongInt
+CUnsg,expression
+CurDir|String
+CUShort,expression:datatype|UShort
+Cvd,ByRef Str:String|Double
+CVI,ByRef Str:String|Integer
+Cvl,ByRef Str:String|Integer
+CVLongInt,ByRef Str:String|LongInt
+CVS,ByRef Str:String|Single
+CVShort,ByRef Str:String|Short
+Date|String
+DateAdd,interval:String,number:Double,date_serial:Double|Double
+DateDiff,interval:String,serial1:Double,serial2:Double,firstdayofweek:Integer=fbUseSystem,firstdayofyear:Integer=fbUseSystem|Integer
+DatePart,interval:String,date_serial:Double,firstdayofweek:Integer=fbUseSystem,firstdayofyear:Integer=fbUseSystem|Integer
+DateSerial,Year:Integer,Month:Integer,Day:Integer|Integer
+DateValue,ByRef date_string:String|Double
+Day,date_serial:Double|Integer
+DeAllocate,Pointer:Any Ptr
+Dir,ByRef file_spec:String="",attrib_mask:Integer=&h21,out_attrib:Integer Ptr=0|String
+Dir,out_attrib:Integer Ptr=0|String
+DyLibFree,library:Any Ptr
+DylibLoad,ByRef filename:String|Any Ptr
+DyLibSymbol,library:Any Ptr,ByRef symbol:String|Any Ptr
+DyLibSymbol,library:Any Ptr,symbol:Short|Any Ptr
+End,retval:Integer=0
+Environ,ByRef varname:String|String
+EOF,filenum:Integer|Integer
+Erase,array:Any,[...]
+Erfn|ZString Ptr
+Erl|Integer
+Ermn|ZString Ptr
+Err|Integer
+Error,errno:Integer
+Exec,ByRef program:String,ByRef arguments:String|Integer
+ExePath|String
+Exp,number:Double|Double
+FileAttr,filenum:Integer,returntype:Integer=1|Integer
+FileCopy,source:String,destination:String|Integer
+FileDateTime,filename:ZString Ptr|Double
+FileExists,filename:ZString Ptr|Integer
+FileLen,filename:String|LongInt
+Fix,number:Double|Double
+Flip,frompage:Integer=-1,topage:Integer=-1
+Format,numerical_expression:Double,formatting_expression:String=""|String
+Frac,number:Double|Double
+Fre,value:Integer=0|UInteger
+FreeFile|Integer
+GetJoystick,id:Integer,ByRef buttons:Integer=0,ByRef a1:Single=0,ByRef a2:Single=0,ByRef a3:Single=0,ByRef a4:Single=0,ByRef a5:Single=0,ByRef a6:Single=0,ByRef a7:Single=0,ByRef a8:Single=0|Integer
+GetKey|Integer
+GetMouse,ByRef x:Integer,ByRef y:Integer,ByRef wheel:Integer=0,ByRef buttons:Integer=0,ByRef clip:Integer=0|Integer
+Hex,number:Integer|String
+Hex,number:Integer,digits:Integer|String
+Hex,number:Byte|String
+Hex,number:LongInt|String
+Hex,number:LongInt, digits:Integer|String
+Hex,number:Short|String
+Hour,date_serial:Double|Integer
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
-ImageConvertRow( ByVal src As Any Ptr, ByVal src_bpp As Integer, ByVal dst As Any Ptr, ByVal dst_bpp As Integer, ByVal Width As Integer, ByVal isrgb As Integer = 1
-ImageCreate( Width As Integer, height As Integer [, [ Color As UInteger ] [, depth As Integer ]] ) As Any Ptr
-ImageDestroy( Pointer As Any Ptr
-Inkey( |As String
-Inp( ByVal port As UShort |As Integer
-Input( n As Integer |As String
-Input( n As Integer, filenum As Integer |As String
-InStr( ByVal Start As Integer, ByRef Str As String, [ Any ] ByRef substring As String |As Integer
-InStr( ByVal Start As Integer, ByRef Str As WString, [ Any ] ByRef substring As WString |As Integer
-InStr( ByRef Str As String,  [ Any ] ByRef substring As String |As Integer
-InStr( ByRef Str As WString, [ Any ] ByRef substring As WString |As Integer
-Int( ByVal number As Double |As Double
-IsDate( stringdate As String |As Integer
-Kill( ByRef filename As String |As Integer
-LBound( array As Any, ByVal dimension As Integer = 1 |As Integer
-LCase( ByRef Str As String |As String
-LCase( ByRef Str As WString |As WString
-Left( ByRef Str As String, ByVal n As Integer |As String
-Left( ByRef Str As WString, ByVal n As Integer |As WString
-Len( ByRef variable As Any |As Integer
-Len( datatype |As Integer
-Loc( ByVal filenum As Integer |As LongInt
-Lof( ByVal filenum As Integer |As UInteger
-Log( ByVal number As Double |As Double
-LPos( ByVal printer As Integer |As Integer
-LSet( ByRef dst As String, ByRef src As String
-LSet( ByVal dst As WString Ptr, ByVal src As WString Ptr
-LTrim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
-LTrim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
-Mid( ByRef Str As String, ByVal Start As Integer |As String
-Mid( ByRef Str As String, ByVal Start As Integer, ByVal n As Integer |As String
-Mid( ByRef text As String, ByVal Start As Integer, ByVal length As Integer, ByRef expression As String
-Mid( ByVal Str As WString Ptr, ByVal Start As Integer |As WString
-Mid( ByVal Str As WString Ptr, ByVal Start As Integer, ByVal n As Integer |As WString
-Mid( ByVal text As WString Ptr, ByVal Start As Integer, ByVal length As Integer, ByVal As Integer, ByVal expression As WString Ptr
-Minute( ByVal date_serial As Double |As Integer
-Mkd( ByVal number As Double |As String
-MkDir( ByRef folder As String |As Integer
-Mki( ByVal number As Integer |As String
-MKL( ByVal number As Integer |As String
-MKLongInt( ByVal number As LongInt |As String
-MKS( ByVal number As Single |As String
-MkShort( ByVal number As Short |As String
-Month( ByVal date_serial As Double |As Integer
-MonthName( ByVal Month As Integer, ByVal abbreviate As Integer = 0 |As String
-MultiKey( ByVal scancode As Integer |As Integer
-MutexCreate( |As Any Ptr
-MutexDestroy( ByVal id As Any Ptr
-MutexLock( ByVal id As Any Ptr
-MutexUnlock( ByVal id As Any Ptr
-Name( ByRef oldname As String, ByRef newname As String |As Integer
-Now( |As Double
-Oct( ByVal number As Integer |As String
-Oct( ByVal number As Integer, ByVal digits As Integer |As String
-Oct( ByVal number As Byte |As String
-Oct( ByVal number As Byte, ByVal digits As Integer |As String
-Oct( ByVal number As LongInt |As String
-Oct( ByVal number As LongInt, ByVal digits As Integer |As String
-Oct( ByVal number As Short |As String
-Oct( ByVal number As Short, ByVal digits As Integer |As String
+ImageConvertRow,src:Any Ptr,src_bpp:Integer,dst:Any Ptr,dst_bpp:Integer,Width:Integer,isrgb:Integer=1
+ImageCreate,Width:Integer,height:Integer,[Color:UInteger],[depth:Integer]|Any Ptr
+ImageDestroy,Pointer:Any Ptr
+Inkey|As String
+Inp,port:UShort|Integer
+Input,n:Integer|String
+Input,n:Integer,filenum:Integer|String
+InStr,Start:Integer,ByRef Str:String,[Any] ByRef substring:String|Integer
+InStr,Start:Integer,ByRef Str:WString,[Any] ByRef substring:WString|Integer
+InStr,ByRef Str:String,[Any] ByRef substring:String|Integer
+InStr,ByRef Str:WString,[Any] ByRef substring:WString|Integer
+Int,number:Double|Double
+IsDate,stringdate:String|Integer
+Kill,ByRef filename:String|Integer
+LBound,array:Any,dimension:Integer=1|Integer
+LCase,ByRef Str:String|String
+LCase,ByRef Str:WString|WString
+Left,ByRef Str:String,n:Integer|String
+Left,ByRef Str:WString,n:Integer|WString
+Len,ByRef variable:Any|Integer
+Len,datatype|Integer
+Loc,filenum:Integer|LongInt
+Lof,filenum:Integer|UInteger
+Log,number:Double|Double
+LPos,printer:Integer|Integer
+LSet,ByRef dst:String,ByRef src:String
+LSet,dst:WString Ptr, src:WString Ptr
+LTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
+LTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
+Mid,ByRef Str:String,Start:Integer|String
+Mid,ByRef Str:String,Start:Integer,n:Integer|String
+Mid,ByRef text:String,Start:Integer,length:Integer,ByRef expression:String
+Mid,Str As WString Ptr,Start:Integer|WString
+Mid,Str As WString Ptr,Start:Integer,n:Integer|WString
+Mid,text:WString Ptr,Start:Integer,length:Integer,:Integer,expression:WString Ptr
+Minute,date_serial:Double|Integer
+Mkd,number:Double|String
+MkDir,ByRef folder:String|Integer
+Mki,number:Integer|String
+MKL,number:Integer|String
+MKLongInt,number:LongInt|String
+MKS,number:Single|String
+MkShort,number:Short|String
+Month,date_serial:Double|Integer
+MonthName,Month:Integer,abbreviate:Integer=0|String
+MultiKey,scancode:Integer|Integer
+MutexCreate|Any Ptr
+MutexDestroy,id:Any Ptr
+MutexLock,id:Any Ptr
+MutexUnlock,id:Any Ptr
+Name,ByRef oldname:String,ByRef newname:String|Integer
+Now|Double
+Oct,number:Integer|String
+Oct,number:Integer,digits:Integer|String
+Oct,number:Byte|String
+Oct,number:Byte,digits:Integer|String
+Oct,number:LongInt|String
+Oct,number:LongInt,digits:Integer|String
+Oct,number:Short|String
+Oct,number:Short,digits:Integer|String
 ;Open Com( ByRef options As String, As filenum As Integer |As Integer
-Out( ByVal port As UShort, ByVal Data As UByte |As Integer
-PCopy( ByVal source As Integer, ByVal destination As Integer
-Peek( ByVal address As Any Ptr |As UByte
-Peek( datatype, ByVal address As Any Ptr |As datatype
-PMap( ByVal coord As Single, ByVal func As Integer |As Single
-Point( coord_x, coord_y [,buffer]
-Poke( ByVal address As Any Ptr, ByRef value As UByte
-Poke( datatype, ByVal address As Any Ptr, ByRef value As datatype
-Pos( |As Integer
-Pos( ByVal dummy As Integer |As Integer
+Out,port:UShort,Data:UByte|Integer
+PCopy,source:Integer,destination:Integer
+Peek,address:Any Ptr|UByte
+Peek,datatype,address:Any Ptr|datatype
+PMap,coord:Single,func:Integer|Single
+Point,coord_x,coord_y,[buffer]
+Poke,address:Any Ptr,ByRef value:UByte
+Poke,datatype,address:Any Ptr,ByRef value:datatype
+Pos|Integer
+Pos,dummy:Integer|Integer
 ;proc_name( [ argumentlist ]
-;proc_name( argumentlist |As datatype
-Randomize( ByVal seed As Double = -1,  ByVal algorithm As Integer = 0
-ReAllocate( Pointer As Any Ptr, count As Integer |As Any Ptr
-Reset(
-Right( ByRef Str As String, ByVal n As Integer |As String
-Right( ByRef Str As WString, ByVal n As Integer |As WString
-RmDir( ByRef folder As String |As Integer
-Rnd( ByVal number As Integer = 1 |As Double
-RSet( ByRef dst As String, ByRef src As String
-RSet( ByVal dst As WString Ptr, ByVal src As WString Ptr
-RTrim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
-RTrim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
-Run( ByRef program As String, ByRef arguments As String = "" |As Integer
-SAdd( ByRef Str As String |As Any Ptr
-SAdd( ByRef Str As WString |As Any Ptr
-SAdd( ByRef Str As ZString |As Any Ptr
-Screen( ByVal row As Integer, ByVal column As Integer, ByVal colorflag As Integer = 0 |As Integer
-ScreenControl( ByVal what As Integer [, ByRef param As String]
-ScreenControl( ByVal what As Integer [, ByRef param1 As Integer [, ByRef param2 As Integer [, ByRef param3 As Integer [, ByRef param4 As Integer]]]]
-ScreenCopy( ByVal frompage As Integer = -1, ByVal topage As Integer = -1
-ScreenEvent( ByVal Event As Any Ptr = 0 |As Integer
-ScreenGLProc( ByVal procname As String |As Any Ptr
-ScreenInfo( ByRef w As Integer = 0, ByRef h As Integer = 0, ByRef depth As Integer = 0, ByRef bpp As Integer = 0, ByRef pitch As Integer = 0, ByRef rate As Integer = 0, ByRef driver As String = ""
-ScreenList( ByVal depth As Integer = 0 |As Integer
-ScreenLock(
-ScreenPtr( |As Any Ptr
-ScreenRes( Width As Integer, height As Integer, depth As Integer = 8, num_pages As Integer = 1, flags As Integer = 0, refresh_rate As Integer = 0
-ScreenSet( ByVal work_page As Integer = -1, ByVal visible_page As Integer = -1
-ScreenSync( |As Integer
-ScreenUnlock( ByVal startline As Integer = -1, ByVal endline As Integer = -1
-Second( ByVal date_serial As Double |As Integer
-Seek( ByVal filenum As Integer |As LongInt
-SetDate( ByRef newdate As String |As Integer
-SetEnviron( ByRef varname As String |As Integer
-SetMouse( ByVal x As Integer = -1, ByVal y As Integer = -1, ByVal visibility As Integer = -1, ByVal clip As Integer = -1 |As Integer
-SetTime( ByRef newtime As String |As Integer
-Sgn( ByVal number As Double |As Double
-Shell( Command As String
-Sin( ByVal number As Double |As Double
-Sleep( ByVal msecs As Integer, ByVal kind As Integer |As Integer
-Sleep( ByVal msecs As Integer = -1 |As Integer
-Space( count As Integer |As String
-Spc( columns
-Sqr( ByVal number As Double |As Double
-Stop( ByVal retval As Integer = 0
-Str( ByVal n As Integer |As String
-Str( ByVal n As Byte |As String
-Str( ByVal n As Double |As String
-Str( ByVal n As LongInt |As String
-Str( ByVal n As Short |As String
-Str( ByVal n As Single |As String
-Str( ByVal n As UByte |As String
-Str( ByVal n As UInteger |As String
-Str( ByVal n As ULongInt |As String
-Str( ByVal n As UShort |As String
-Str( ByRef Str As String |As String
-Str( ByVal Str As WString Ptr |As String
-String( count As Integer, ch As String |As String
-String( count As Integer, ch_code As Integer |As String
-Swap( ByRef a As Any, ByRef b As Any
-System( ByVal retval As Integer = 0
-Tab( column
-Tan( ByVal number As Double |As Double
-ThreadCreate( ByVal proc As Sub( ByVal As Any Ptr ), ByVal param As Any Ptr = 0 |As Any Ptr
-ThreadWait( ByVal id As Any Ptr
-Time( |As String
-Timer( |As Double
-TimeSerial( ByVal Hour As Integer, ByVal Minute As Integer, ByVal Second As Integer |As Double
-TimeValue( ByRef timestring As String |As Double
-Trim( ByRef Str As String, [ Any ] ByRef trimset As String = " " |As String
-Trim( ByRef Str As WString, [ Any ] ByRef trimset As WString = WStr(" ") |As WString
-TypeOf( variable / datatype
-UBound( array As Any, ByVal dimension As Integer = 1 |As Integer
-UCase( ByRef Str As String |As String
-UCase( ByRef Str As WString |As WString
-Val( ByRef Str As String |As Double
-Val( ByRef Str As WString |As Double
-valInt( ByRef strnum As String |As Integer
-valInt( ByVal strnum As WString Ptr |As Integer
-ValLng( ByRef strnum As String |As LongInt
-ValLng( ByRef strnum As WString |As LongInt
-ValUInt( ByRef strnum As String |As UInteger
-ValUInt( ByRef strnum As WString |As UInteger
-ValULng( ByRef strnum As String |As ULongInt
-ValULng( ByRef strnum As WString |As ULongInt
-Wait( ByVal port As UShort, ByVal and_mask As Integer, ByVal xor_mask As Integer = 0 |As Integer
-WBin( ByVal number As Integer |As WString
-WBin( ByVal number As Integer, ByVal digits As Integer |As WString
-WBin( ByVal number As Byte |As WString
-WBin( ByVal number As Byte, ByVal digits As Integer |As WString
-WBin( ByVal number As LongInt |As WString
-WBin( ByVal number As LongInt, ByVal digits As Integer |As WString
-WBin( ByVal number As Short |As WString
-WBin( ByVal number As Short, ByVal digits As Integer |As WString
-Wchr( ByVal ch As Integer [, ... ] |As WString
-Weekday( ByVal serial As Double, ByVal firstdayofweek As Integer = fbusesystem |As Integer
-WeekdayName( ByVal Weekday As Integer, ByVal abbreviate As Integer = 0, ByVal firstdayofweek As Integer = fbUseSystem |As String
-WHex( ByVal number As Integer |As WString
-WHex( ByVal number As Integer, ByVal digits As Integer |As WString
-WHex( ByVal number As Byte |As WString
-WHex( ByVal number As Byte, ByVal digits As Integer |As WString
-WHex( ByVal number As LongInt |As WString
-WHex( ByVal number As LongInt, ByVal digits As Integer |As WString
-WHex( ByVal number As Short |As WString
-WHex( ByVal number As Short, ByVal digits As Integer |As WString
-Width(
-WindowTitle( ByRef Title As String
-WInput( ByVal num As Integer |As WString
-WInput( ByVal num As Integer, ByVal filenum As Integer = 0 |As WString
-WOct( ByVal number As Integer |As WString
-WOct( ByVal number As Integer, ByVal digits As Integer |As WString
-WOct( ByVal number As Byte |As WString
-WOct( ByVal number As Byte, ByVal digits As Integer |As WString
-WOct( ByVal number As LongInt |As WString
-WOct( ByVal number As LongInt, ByVal digits As Integer |As WString
-WOct( ByVal number As Short |As WString
-WOct( ByVal number As Short, ByVal digits As Integer |As WString
-WSpace( count As Integer |As WString
-WStr( ByVal n As Integer |As WString
-WStr( ByVal n As Byte |As WString
-WStr( ByVal n As Double |As WString
-WStr( ByVal n As LongInt |As WString
-WStr( ByVal n As Short |As WString
-WStr( ByVal n As Single |As WString
-WStr( ByVal n As UByte |As WString
-WStr( ByVal n As UInteger |As WString
-WStr( ByVal n As ULongInt |As WString
-WStr( ByVal n As UShort |As WString
-WStr( ByRef Str As String |As WString
-WStr( ByVal Str As WString Ptr |As WString
-WString( count As Integer, ch As WString |As WString
-WString( count As Integer, ch_code As Integer |As WString
-Year( ByVal date_serial As Double |As Integer
+;proc_name( argumentlist|datatype
+Randomize,seed:Double=-1,algorithm:Integer=0
+ReAllocate,Pointer:Any Ptr,count:Integer|Any Ptr
+;Closes All disk files
+Reset
+Right,ByRef Str:String,n:Integer|String
+Right,ByRef Str:WString,n:Integer|WString
+RmDir,ByRef folder:String|Integer
+Rnd,number:Integer=1|Double
+RSet,ByRef dst:String,ByRef src:String
+RSet,dst:WString Ptr,src:WString Ptr
+RTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
+RTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
+Run,ByRef program:String,ByRef arguments:String=""|Integer
+SAdd,ByRef Str:String|Any Ptr
+SAdd,ByRef Str:WString|Any Ptr
+SAdd,ByRef Str:ZString|Any Ptr
+Screen,row:Integer,column:Integer,colorflag:Integer=0|Integer
+ScreenControl,what:Integer,[ByRef param:String]
+ScreenControl,what:Integer,[ByRef param1:Integer],[ByRef param2:Integer],[ByRef param3:Integer],[ByRef param4:Integer]
+ScreenCopy,frompage:Integer=-1,topage:Integer=-1
+ScreenEvent,Event:Any Ptr=0|Integer
+ScreenGLProc,procname:String|Any Ptr
+ScreenInfo,ByRef w:Integer=0,ByRef h:Integer=0,ByRef depth:Integer=0,ByRef bpp:Integer=0,ByRef pitch:Integer=0,ByRef rate:Integer=0,ByRef driver:String=""
+ScreenList,depth:Integer=0|Integer
+ScreenLock
+ScreenPtr|Any Ptr
+ScreenRes,Width:Integer,height:Integer,depth:Integer=8,num_pages:Integer=1,flags:Integer=0,refresh_rate:Integer=0
+ScreenSet,work_page:Integer=-1,visible_page:Integer=-1
+ScreenSync|Integer
+ScreenUnlock,startline:Integer=-1,endline:Integer=-1
+Second,date_serial:Double|Integer
+Seek,filenum:Integer|LongInt
+SetDate,ByRef newdate:String|Integer
+SetEnviron,ByRef varname:String|Integer
+SetMouse,x:Integer=-1,y:Integer=-1,visibility:Integer=-1,clip:Integer=-1|Integer
+SetTime,ByRef newtime:String|Integer
+Sgn,number:Double|Double
+Shell,Command:String
+Sin,number:Double|Double
+Sleep,msecs:Integer,kind:Integer|Integer
+Sleep,msecs:Integer=-1|Integer
+Space,count:Integer|String
+Spc,columns
+Sqr,number:Double|Double
+Stop,retval:Integer=0
+Str,n:Integer|String
+Str,n:Byte|String
+Str,n:Double|String
+Str,n:LongInt|String
+Str,n:Short|String
+Str,n:Single|String
+Str,n:UByte|String
+Str,n:UInteger|String
+Str,n:ULongInt|String
+Str,n:UShort|String
+Str,ByRef Str:String|String
+Str,Str:WString Ptr|String
+String,count:Integer,ch:String|String
+String,count:Integer,ch_code:Integer|String
+Swap,ByRef a:Any,ByRef b:Any
+System,retval:Integer=0
+Tab,column
+Tan,number:Double|Double
+ThreadCreate,proc:Sub(Any Ptr),param:Any Ptr=0|Any Ptr
+ThreadWait,id:Any Ptr
+Time|String
+Timer|Double
+TimeSerial,Hour:Integer,Minute:Integer,Second:Integer|Double
+TimeValue,ByRef timestring:String|Double
+Trim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
+Trim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
+TypeOf,variable / datatype
+UBound,array:Any,dimension:Integer=1|Integer
+UCase,ByRef Str:String|String
+UCase,ByRef Str:WString|WString
+Val,ByRef Str:String|Double
+Val,ByRef Str:WString|Double
+valInt,ByRef strnum:String|Integer
+valInt,strnum:WString Ptr|Integer
+ValLng,ByRef strnum:String|LongInt
+ValLng,ByRef strnum:WString|LongInt
+ValUInt,ByRef strnum:String|UInteger
+ValUInt,ByRef strnum:WString|UInteger
+ValULng,ByRef strnum:String|ULongInt
+ValULng,ByRef strnum:WString|ULongInt
+Wait,port:UShort,and_mask:Integer,xor_mask:Integer=0|Integer
+WBin,number:Integer|WString
+WBin,number:Integer, digits:Integer|WString
+WBin,number:Byte|WString
+WBin,number:Byte,digits:Integer|WString
+WBin,number:LongInt|WString
+WBin,number:LongInt,digits:Integer|WString
+WBin,number:Short|WString
+WBin,number:Short,digits:Integer|WString
+Wchr,ch:Integer,[...]|WString
+Weekday,serial:Double,firstdayofweek:Integer=fbusesystem|Integer
+WeekdayName,Weekday:Integer,abbreviate:Integer=0,firstdayofweek:Integer=fbUseSystem|String
+WHex,number:Integer|WString
+WHex,number:Integer,digits:Integer|WString
+WHex,number:Byte|WString
+WHex,number:Byte,digits:Integer|WString
+WHex,number:LongInt|WString
+WHex,number:LongInt,digits:Integer|WString
+WHex,number:Short|WString
+WHex,number:Short,digits:Integer|WString
+Width,[columns],[rows]|Integer
+WindowTitle,ByRef Title:String
+WInput,num:Integer|WString
+WInput,num:Integer,filenum:Integer=0|WString
+WOct,number:Integer|WString
+WOct,number:Integer,digits:Integer|WString
+WOct,number:Byte|WString
+WOct,number:Byte,digits:Integer|WString
+WOct,number:LongInt|WString
+WOct,number:LongInt,digits:Integer|WString
+WOct,number:Short|WString
+WOct,number:Short,digits:Integer|WString
+WSpace,count:Integer|WString
+WStr,n:Integer|WString
+WStr,n:Byte|WString
+WStr,n:Double|WString
+WS,r,n:LongInt|WString
+WStr,n:Short|WString
+WStr,n:Single|WString
+WStr,n:UByte|WString
+WStr,n:UInteger|WString
+WStr,n:ULongInt|WString
+WStr,n:UShort|WString
+WStr,ByRef Str:String|WString
+WStr,Str:WString Ptr|WString
+WString,count:Integer,ch:WString|WString
+WString,count:Integer,ch_code:Integer|WString
+Year,date_serial:Double|Integer

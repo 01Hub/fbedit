@@ -1,8 +1,6 @@
 Boolean
 Byte
 UByte
-Word
-Dword
 Short
 UShort
 Integer
@@ -16,5 +14,7 @@ Double
 String
 ZString
 WString
+Word
+Dword
 Pointer
-ptr
+Ptr

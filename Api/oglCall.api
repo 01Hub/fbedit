@@ -34,7 +34,7 @@ glGetIntegerv,pname:GLenum,params:GLint ptr
 glPushAttrib,mask:GLbitfield
 glPopAttrib
 glPushClientAttrib,mask:GLbitfield
-glPopClientAttrib,
+glPopClientAttrib
 glRenderMode,mode:GLenum|GLint
 glGetError|GLenum
 glGetString,name:GLenum|zstring ptr
