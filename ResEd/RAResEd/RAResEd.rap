@@ -142,7 +142,7 @@ Options=52
 10=0,0,0,0,9592
 16=0,0,0,0,26940
 15=0,0,0,0
-17=0,0,0,0,16183
+17=0,0,0,0,9932
 18=0,0,0,0,12270
 21=0,0,0,0,8049
 23=0,0,0,0
@@ -189,27 +189,27 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.147
-PV=1.0.8.147
+FV=1.0.8.148
+PV=1.0.8.148
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.147
+ProductVersion=1.0.8.148
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2005
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.147
+FileVersion=1.0.8.148
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=6
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -230,7 +230,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -314,7 +314,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 43=
 44=
 [PTimer]
-PTimer=87273248
+PTimer=87437607
 
 [Exports]
 1=ResEdInstall

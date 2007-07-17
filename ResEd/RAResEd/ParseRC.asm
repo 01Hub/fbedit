@@ -574,7 +574,7 @@ ConvertSize endp
 ConvNum proc lpProMem:DWORD,lpBuff:DWORD
 
 	mov		eax,lpBuff
-	.if word ptr [eax]=='x0'
+	.if word ptr [eax]=='x0' || word ptr [eax]=='X0'
 		add		eax,2
 		invoke HexToBin,eax
 	.elseif (byte ptr [eax]>='0' && byte ptr [eax]<='9') || byte ptr [eax]=='-'
