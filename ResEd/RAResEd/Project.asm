@@ -974,3 +974,102 @@ ProjectUndoDeleted proc uses ebx esi
 	ret
 
 ProjectUndoDeleted endp
+
+GetFreeProjectitemID proc uses esi edi,nType:DWORD
+
+	invoke GetWindowLong,hPrj,0
+	.if eax
+		mov		esi,eax
+		sub		eax,sizeof PROJECT
+		mov		edi,eax
+		mov		eax,nType
+		.if eax==TPE_DIALOG
+			mov		eax,initid.dlg.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_DIALOG
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						add		edx,sizeof DLGHEAD
+						.if eax==[edx].DIALOG.id
+							add		eax,initid.dlg.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.elseif eax==TPE_MENU
+			mov		eax,initid.mnu.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_MENU
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].MNUHEAD.menuid
+							add		eax,initid.mnu.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.elseif eax==TPE_ACCEL
+			mov		eax,initid.acl.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_ACCEL
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].ACCELMEM.value
+							add		eax,initid.acl.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.elseif eax==TPE_VERSION
+			mov		eax,initid.ver.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_VERSION
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].VERSIONMEM.value
+							add		eax,initid.ver.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.elseif eax==TPE_XPMANIFEST
+			mov		eax,initid.man.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_XPMANIFEST
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].XPMANIFESTMEM.value
+							add		eax,initid.man.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.elseif eax==TPE_RCDATA
+			mov		eax,initid.rcd.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_RCDATA
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].RCDATAMEM.value
+							add		eax,initid.rcd.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
+		.endif
+	.endif
+	ret
+
+GetFreeProjectitemID endp

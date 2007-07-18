@@ -3656,6 +3656,7 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		invoke lstrcpyn,addr (DIALOG ptr [edi]).caption,(TYPES ptr [esi]).lpcaption,MaxCap
 		.if !nType
 			mov		eax,DlgIDN
+			invoke GetFreeProjectitemID,TPE_DIALOG
 			mov		(DIALOG ptr [edi]).id,eax
 			;Set default DLGHEAD info
 			mov		esi,edi

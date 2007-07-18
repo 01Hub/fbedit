@@ -17,16 +17,17 @@ include \RadASM\Masm\Inc\Debug.Inc
 includelib masm32.lib
 includelib \RadASM\Masm\Lib\Debug.lib
 
-PropertyList		PROTO	:HWND
-ToolBoxReset		PROTO
-PropListSetPos		PROTO
+PropertyList			PROTO	:HWND
+ToolBoxReset			PROTO
+PropListSetPos			PROTO
 
-DrawingRect			PROTO	:DWORD,:DWORD,:DWORD
-UpdateCtl			PROTO	:DWORD
-SetProjectItemName	PROTO	:DWORD,:DWORD
-GetProjectItemName	PROTO	:DWORD,:DWORD
-Do_TreeViewAddNode	PROTO	:HWND,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:LPARAM
-MnuSaveAccel		PROTO	:DWORD,:DWORD
+DrawingRect				PROTO	:DWORD,:DWORD,:DWORD
+UpdateCtl				PROTO	:DWORD
+SetProjectItemName		PROTO	:DWORD,:DWORD
+GetProjectItemName		PROTO	:DWORD,:DWORD
+Do_TreeViewAddNode		PROTO	:HWND,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:LPARAM
+MnuSaveAccel			PROTO	:DWORD,:DWORD
+GetFreeProjectitemID	PROTO	:DWORD
 
 m2m MACRO M1, M2
 	push M2
@@ -389,6 +390,8 @@ ccdef1				CCDEF <271,offset szToolTip1,0,offset szCap1,offset szName1,offset szD
 ccdef2				CCDEF <272,offset szToolTip2,0,offset szCap2,offset szName2,offset szToolBoxClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
 ccdef3				CCDEF <273,offset szToolTip3,0,offset szCap3,offset szName3,offset szPropertyClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
 ccdef4				CCDEF <274,offset szToolTip4,0,offset szCap4,offset szName4,offset szProjectClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
+
+initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 
 .data?
 

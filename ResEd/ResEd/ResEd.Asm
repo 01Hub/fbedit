@@ -53,6 +53,8 @@ start:
 		invoke RegQueryValueEx,hReg,addr szGrid,0,addr lpType,addr grdsize,addr lpcbData
 		mov		lpcbData,sizeof col
 		invoke RegQueryValueEx,hReg,addr szColor,0,addr lpType,addr col,addr lpcbData
+		mov		lpcbData,sizeof initid
+		invoke RegQueryValueEx,hReg,addr szInitID,0,addr lpType,addr initid,addr lpcbData
 	.endif
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
@@ -502,6 +504,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		edx,nmeexp.nType
 		invoke SendMessage,hProject,PRO_SETEXPORT,edx,addr nmeexp.szFileName
 		invoke SendMessage,hProject,PRO_SETSTYLEPOS,0,addr wpos.left
+		invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
 		invoke CreateWindowEx,0h,addr szPropertyClass,0,56000000h,0,0,0,0,hWin,IDC_PROPERTY,hInstance,0
 		invoke SendMessage,eax,WM_SETFONT,hFont,0
 		invoke CreateWindowEx,0h,addr szToolBoxClass,0,56000000h,0,0,0,0,hWin,IDC_TOOLBOX,hInstance,0

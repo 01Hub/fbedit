@@ -1,5 +1,11 @@
 ResEd
 
+1.1.4.2 - 2007.07.18
+---------------------
+o Added option to set dialog and menu default start ID and increment.
+o When adding a new resource like dialog, menu or rcdata it now finds an unused ID.
+o Fixed bug where parser did not accept hex numbers with uppercase X.
+
 1.1.4.1 - 2007.07.02
 ---------------------
 o Added option to save #defines to [Project].h file.

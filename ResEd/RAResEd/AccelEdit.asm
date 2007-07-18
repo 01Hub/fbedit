@@ -379,7 +379,9 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if esi
 			mov		esi,[esi].PROJECT.hmem
 		.else
+			invoke GetFreeProjectitemID,TPE_ACCEL
 			mov		esi,offset defacl
+			mov		[esi].ACCELMEM.value,eax
 		.endif
 		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname
 		invoke SetDlgItemInt,hWin,IDC_EDTACLID,[esi].ACCELMEM.value,FALSE

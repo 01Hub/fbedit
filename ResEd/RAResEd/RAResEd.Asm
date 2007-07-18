@@ -508,6 +508,17 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		top,eax
 		xor		eax,eax
 		jmp		Ex
+	.elseif eax==PRO_SETINITID
+		push	esi
+		push	edi
+		mov		esi,lParam
+		mov		edi,offset initid
+		mov		ecx,sizeof INITID
+		rep		movsb
+		pop		edi
+		pop		esi
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.right

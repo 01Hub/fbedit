@@ -106,7 +106,9 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if [esi].PROJECT.hmem
 			mov		edi,[esi].PROJECT.hmem
 		.else
+			invoke GetFreeProjectitemID,TPE_RCDATA
 			mov		edi,offset defrcdata
+			mov		[edi].RCDATAMEM.value,eax
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		invoke SendDlgItemMessage,hWin,IDC_EDTRCDNAME,EM_LIMITTEXT,MaxName-1,0

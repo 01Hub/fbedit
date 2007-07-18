@@ -1,5 +1,5 @@
 
-IDD_TABOPTIONS		equ 2400
+IDD_TABOPTIONS		equ 2410
 IDC_TABOPT			equ 2001
 
 IDD_TABOPT1			equ 2100
@@ -39,6 +39,12 @@ IDC_CHKSTYLEHEX		equ 4010
 IDC_CHKSIZETOFONT	equ 4012
 IDC_CHKNODEFINE		equ 4014
 
+IDD_TABOPT4			equ 2400
+IDC_EDTDLGSTART		equ 1001
+IDC_EDTDLGINC		equ 1002
+IDC_EDTMNUSTART		equ 1003
+IDC_EDTMNUINC		equ 1004
+
 .const
 
 szNmeExp			db 'NmeExp',0
@@ -46,15 +52,17 @@ szCust				db 'Cust#',0
 szFilterDLL			db 'Dll (*.dll)',0,'*.dll',0,0
 szGrid				db 'Grid',0
 szColor				db 'Color',0
+szInitID			db 'InitID',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
 TabTitle3			db 'Behaviour',0
+TabTitle4			db "Resource ID's",0
 
 .data?
 
 hTab				dd ?
-hTabDlg				dd 3 dup(?)
+hTabDlg				dd 4 dup(?)
 SelTab				dd ?
 gridcolor			dd ?
 backcolor			dd ?
@@ -292,6 +300,23 @@ GetColor:
 
 TabOpt3Proc endp
 
+TabOpt4Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SetDlgItemInt,hWin,IDC_EDTDLGSTART,initid.dlg.startid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTDLGINC,initid.dlg.incid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTMNUSTART,initid.mnu.startid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTMNUINC,initid.mnu.incid,FALSE
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabOpt4Proc endp
+
 TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TCITEM
 	LOCAL	nInx:DWORD
@@ -401,6 +426,16 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		hBrBackColor,0
 				.endif
 				invoke InvalidateRect,hOut,NULL,TRUE
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTDLGSTART,NULL,FALSE
+				mov		initid.dlg.startid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTDLGINC,NULL,FALSE
+				mov		initid.dlg.incid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTMNUSTART,NULL,FALSE
+				mov		initid.mnu.startid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTMNUINC,NULL,FALSE
+				mov		initid.mnu.incid,eax
+				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
+				invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
 				invoke GetWindowLong,hResEd,GWL_STYLE
 				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES)
 				.if grdsize.show
@@ -470,6 +505,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ts.pszText,offset TabTitle3
 		mov		ts.cchTextMax,sizeof TabTitle3
 		invoke SendMessage,hTab,TCM_INSERTITEM,2,addr ts
+		mov		ts.pszText,offset TabTitle4
+		mov		ts.cchTextMax,sizeof TabTitle4
+		invoke SendMessage,hTab,TCM_INSERTITEM,3,addr ts
 		;Create the tab dialogs
 		invoke CreateDialogParam,hInstance,IDD_TABOPT1,hTab,addr TabOpt1Proc,0
 		mov		hTabDlg,eax
@@ -477,6 +515,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTabDlg[4],eax
 		invoke CreateDialogParam,hInstance,IDD_TABOPT3,hTab,addr TabOpt3Proc,0
 		mov		hTabDlg[8],eax
+		invoke CreateDialogParam,hInstance,IDD_TABOPT4,hTab,addr TabOpt4Proc,0
+		mov		hTabDlg[12],eax
 		mov		SelTab,0
 	.elseif eax==WM_CLOSE
 		invoke DeleteObject,hBrGrid
@@ -485,6 +525,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,hTabDlg
 		invoke DestroyWindow,hTabDlg[4]
 		invoke DestroyWindow,hTabDlg[8]
+		invoke DestroyWindow,hTabDlg[12]
 		invoke EndDialog,hWin,NULL
 	.else
 		mov		eax,FALSE

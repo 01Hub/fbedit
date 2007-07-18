@@ -687,7 +687,9 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if esi
 			mov		esi,[esi].PROJECT.hmem
 		.else
+			invoke GetFreeProjectitemID,TPE_VERSION
 			mov		esi,offset defver
+			mov		[esi].VERSIONMEM.value,eax
 		.endif
 		invoke RtlZeroMemory,offset szVersionTxt,sizeof szVersionTxt
 		invoke SendDlgItemMessage,hWin,IDC_EDTVERNAME,EM_LIMITTEXT,MaxName-1,0

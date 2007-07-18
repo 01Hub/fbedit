@@ -171,7 +171,9 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.if [esi].PROJECT.hmem
 			mov		edi,[esi].PROJECT.hmem
 		.else
+			invoke GetFreeProjectitemID,TPE_XPMANIFEST
 			mov		edi,offset defxpmanifest
+			mov		[edi].XPMANIFESTMEM.value,eax
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		invoke SendDlgItemMessage,hWin,IDC_EDTXPNAME,EM_LIMITTEXT,MaxName-1,0

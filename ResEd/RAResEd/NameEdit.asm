@@ -377,8 +377,8 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ConvertDpiSize,18
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,NULL
-		mov		col.halign,GA_ALIGN_RIGHT
-		mov		col.calign,GA_ALIGN_RIGHT
+		mov		col.halign,GA_ALIGN_CENTER
+		mov		col.calign,GA_ALIGN_CENTER
 		mov		col.ctype,TYPE_IMAGE
 		mov		col.ctextmax,0
 		mov		col.lpszformat,0
@@ -442,7 +442,6 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ebx,[esi].PROJECT.hmem
 				lea		ebx,[ebx+sizeof DLGHEAD]
 				;Image
-				mov		row[8],1
 				.while [ebx].DIALOG.hwnd
 					.if [ebx].DIALOG.hwnd!=-1
 						;lpName
@@ -454,8 +453,24 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		row[4],eax
 						mov		eax,[eax]
 						mov		row[16],eax
+						mov		eax,[ebx].DIALOG.ntype
+						.if !eax
+							;Dialog
+							mov		row[8],1
+						.elseif eax==1
+							;Edit
+							mov		row[8],8
+						.elseif eax==2
+							;Static
+							mov		row[8],9
+						.elseif eax==4
+							;Button
+							mov		row[8],10
+						.else
+							;Edit
+							mov		row[8],11
+						.endif
 						invoke SendMessage,hGrd,GM_ADDROW,0,addr row
-						mov		row[8],8
 					.endif
 					add		ebx,sizeof DIALOG
 				.endw

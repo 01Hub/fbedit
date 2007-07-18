@@ -105,6 +105,20 @@ COLOR struct
 	text			dd ?
 COLOR ends
 
+RESID struct
+	startid			dd ?
+	incid			dd ?
+RESID ends
+
+INITID struct
+	dlg				RESID <>
+	mnu				RESID <>
+	acl				RESID <>
+	ver				RESID <>
+	man				RESID <>
+	rcd				RESID <>
+INITID ends
+
 ;Dialog editor messages
 DEM_BASE			equ WM_USER+2000
 DEM_OPEN			equ DEM_BASE+1		;wParam=0, lParam=Handle of memory or NULL
@@ -173,6 +187,7 @@ PRO_SETEXPORT		equ PRO_BASE+13		;wParam=nType, lParam=lpszDefaultFileName
 PRO_EXPORTNAMES		equ PRO_BASE+14		;wParam=0, lParam=Handle output window
 PRO_GETSTYLEPOS		equ PRO_BASE+15		;wParam=0, lParam=lpPOINT
 PRO_SETSTYLEPOS		equ PRO_BASE+16		;wParam=0, lParam=lpPOINT
+PRO_SETINITID		equ PRO_BASE+17		;wParam=0, lParam=lpINITID
 
 ;Project item types
 TPE_NAME			equ 1

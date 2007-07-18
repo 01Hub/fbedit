@@ -63,6 +63,8 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 19=About.dlg
 20=..\RAResEd\Res\ProTrv.bmp
 21=..\WhatsNew.txt
+22=Opt\TabOpt4.dlg
+23=..\RAResEd\Res\ToolBox.bmp
 
 
 [Resource]
@@ -87,16 +89,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,3398
+1=0,0,0,0,14623
 6=
-2=0,0,0,0,4904
-7=0,0,699,490,7522
+2=0,0,0,0,5119
+7=0,0,699,490,6164
 9=
 8=
 3=0,0,0,0,1384
 10=0,0,0,0
 11=0,0,0,0,299
-13=0,0,0,0,12017
+13=0,0,0,0,12609
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -104,7 +106,8 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,82
+21=0,0,0,0,120
+22=0,0,0,0
 
 [BookMark]
 0=
@@ -137,7 +140,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=4
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -158,7 +161,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -167,10 +170,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=1.1.4.1
-FileVersion=1.1.4.1
-PV=1.1.4.1
-ProductVersion=1.1.4.1
+FV=1.1.4.2
+FileVersion=1.1.4.2
+PV=1.1.4.2
+ProductVersion=1.1.4.2
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -208,6 +211,8 @@ Group=Added files,Assembly,Resources,Misc,Include
 19=3
 20=4
 21=4
+22=3
+23=1
 [CodeMake]
 4=0,C:\RadASM\Masm\Templates\DlgToWin.rad,,WndProc
 [Accel]
@@ -231,7 +236,7 @@ ID=105
 9="IDM_VIEW_OUTPUT,0,Show / Hide Output"
 10="IDM_VIEW_PREVIEW,0,Preview Dialog"
 [Collapse]
-1=,,8,
+1=,,,
 12=
 2=
 7=
