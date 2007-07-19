@@ -1095,7 +1095,7 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 				lea		esi,[esi+sizeof DLGHEAD]
 				.while [esi].DIALOG.hwnd
 					.if [esi].DIALOG.hwnd!=-1
-						invoke lstrcmp,addr buffer1,addr [esi].DIALOG.idname
+						invoke lstrcmpi,addr buffer1,addr [esi].DIALOG.idname
 						.if !eax
 							jmp		@b
 						.endif
@@ -1103,14 +1103,14 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 					lea		esi,[esi+sizeof DIALOG]
 				.endw
 			.elseif eax==TPE_MENU
-				invoke lstrcmp,addr buffer1,addr [esi].MNUHEAD.menuname
+				invoke lstrcmpi,addr buffer1,addr [esi].MNUHEAD.menuname
 				.if !eax
 					jmp		@b
 				.endif
 				add		esi,sizeof MNUHEAD
 				.while [esi].MNUITEM.itemflag
 					.if [esi].MNUITEM.itemname
-						invoke lstrcmp,addr buffer1,addr [esi].MNUITEM.itemname
+						invoke lstrcmpi,addr buffer1,addr [esi].MNUITEM.itemname
 						.if !eax
 							jmp		@b
 						.endif
@@ -1120,7 +1120,7 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 			.elseif eax==TPE_ACCEL
 				.while [esi].ACCELMEM.szname || [esi].ACCELMEM.value
 					.if [esi].ACCELMEM.szname
-						invoke lstrcmp,addr buffer1,addr [esi].ACCELMEM.szname
+						invoke lstrcmpi,addr buffer1,addr [esi].ACCELMEM.szname
 						.if !eax
 							jmp		@b
 						.endif
@@ -1128,24 +1128,24 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 					add		esi,sizeof ACCELMEM
 				.endw
 			.elseif eax==TPE_VERSION
-				invoke lstrcmp,addr buffer1,addr [esi].VERSIONMEM.szname
+				invoke lstrcmpi,addr buffer1,addr [esi].VERSIONMEM.szname
 				.if !eax
 					jmp		@b
 				.endif
 			.elseif eax==TPE_XPMANIFEST
-				invoke lstrcmp,addr buffer1,addr [esi].XPMANIFESTMEM.szname
+				invoke lstrcmpi,addr buffer1,addr [esi].XPMANIFESTMEM.szname
 				.if !eax
 					jmp		@b
 				.endif
 			.elseif eax==TPE_RCDATA
-				invoke lstrcmp,addr buffer1,addr [esi].RCDATAMEM.szname
+				invoke lstrcmpi,addr buffer1,addr [esi].RCDATAMEM.szname
 				.if !eax
 					jmp		@b
 				.endif
 			.elseif eax==TPE_NAME
 				.while [esi].NAMEMEM.szname
 					.if ![esi].NAMEMEM.delete
-						invoke lstrcmp,addr buffer1,addr [esi].NAMEMEM.szname
+						invoke lstrcmpi,addr buffer1,addr [esi].NAMEMEM.szname
 						.if !eax
 							jmp		@b
 						.endif
@@ -1160,4 +1160,96 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 	ret
 
 GetUnikeName endp
+
+NameExists proc uses ebx esi,lpName:DWORD,lpItem:DWORD
+
+	invoke lstrlen,lpName
+	.if eax
+		invoke GetWindowLong,hPrj,0
+		mov		ebx,eax
+		.while [ebx].PROJECT.hmem
+			.if ![ebx].PROJECT.delete
+				mov		eax,[ebx].PROJECT.ntype
+				mov		esi,[ebx].PROJECT.hmem
+				.if eax==TPE_DIALOG
+					lea		esi,[esi+sizeof DLGHEAD]
+					.while [esi].DIALOG.hwnd
+						.if [esi].DIALOG.hwnd!=-1 && esi!=lpItem
+							invoke lstrcmpi,lpName,addr [esi].DIALOG.idname
+							.if !eax
+								jmp		Exist
+							.endif
+						.endif
+						lea		esi,[esi+sizeof DIALOG]
+					.endw
+				.elseif eax==TPE_MENU
+					.if esi!=lpItem
+						invoke lstrcmpi,lpName,addr [esi].MNUHEAD.menuname
+						.if !eax
+							jmp		Exist
+						.endif
+					.endif
+					add		esi,sizeof MNUHEAD
+					.while [esi].MNUITEM.itemflag
+						.if [esi].MNUITEM.itemname && esi!=lpItem
+							invoke lstrcmpi,lpName,addr [esi].MNUITEM.itemname
+							.if !eax
+								jmp		Exist
+							.endif
+						.endif
+						add		esi,sizeof MNUITEM
+					.endw
+				.elseif eax==TPE_ACCEL
+					.while [esi].ACCELMEM.szname || [esi].ACCELMEM.value
+						.if [esi].ACCELMEM.szname && esi!=lpItem
+							invoke lstrcmpi,lpName,addr [esi].ACCELMEM.szname
+							.if !eax
+								jmp		Exist
+							.endif
+						.endif
+						add		esi,sizeof ACCELMEM
+					.endw
+				.elseif eax==TPE_VERSION
+					.if esi!=lpItem
+						invoke lstrcmpi,lpName,addr [esi].VERSIONMEM.szname
+						.if !eax
+							jmp		Exist
+						.endif
+					.endif
+				.elseif eax==TPE_XPMANIFEST
+					.if esi!=lpItem
+						invoke lstrcmpi,lpName,addr [esi].XPMANIFESTMEM.szname
+						.if !eax
+							jmp		Exist
+						.endif
+					.endif
+				.elseif eax==TPE_RCDATA
+					.if esi!=lpItem
+						invoke lstrcmpi,lpName,addr [esi].RCDATAMEM.szname
+						.if !eax
+							jmp		Exist
+						.endif
+					.endif
+				.elseif eax==TPE_NAME
+					.while [esi].NAMEMEM.szname
+						.if ![esi].NAMEMEM.delete && esi!=lpItem
+							invoke lstrcmpi,lpName,addr [esi].NAMEMEM.szname
+							.if !eax
+								jmp		Exist
+							.endif
+						.endif
+						add		esi,sizeof NAMEMEM
+					.endw
+				.endif
+			.endif
+			lea		ebx,[ebx+sizeof PROJECT]
+		.endw
+	.endif
+	xor		eax,eax
+	ret
+  Exist:
+	mov		eax,TRUE
+	ret
+
+NameExists endp
 

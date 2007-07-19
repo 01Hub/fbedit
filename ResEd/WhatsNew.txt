@@ -2,6 +2,7 @@ ResEd
 
 1.1.4.2 - 2007.07.19
 ---------------------
+o Dialog editor now checks if the controls name exist.
 o Added option to set dialog ,menu and rcdata default start ID and increment.
 o When adding a new resource like dialog, menu or rcdata an unique ID for the resource is generated.
 o When adding a new resource like menu or rcdata an unique name for the resource is generated.

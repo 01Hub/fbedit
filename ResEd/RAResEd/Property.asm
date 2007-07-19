@@ -87,6 +87,8 @@ IDC_STCTXT			equ 3306
 
 .data
 
+szNameExist			db 'Name already exist.',0Dh,0Ah,0Dh,0Ah,0
+
 szStyle				db 'Style',0
 szExStyle			db 'ExStyle',0
 
@@ -1484,14 +1486,21 @@ PropEditUpdList proc uses esi edi,lpPtr:DWORD
 				;What is changed
 				mov		eax,lbid
 				.if eax==PRP_STR_NAME
-					invoke lstrcpy,addr [esi].idname,addr buffer1
-					.if ![esi].ntype
-						invoke GetWindowLong,hDEd,DEWM_PROJECT
-						mov		edx,eax
-						push	edx
-						invoke GetProjectItemName,edx,addr buffer1
-						pop		edx
-						invoke SetProjectItemName,edx,addr buffer1
+					invoke NameExists,addr buffer1,esi
+					.if eax
+						invoke lstrcpy,addr buffer,addr szNameExist
+						invoke lstrcat,addr buffer,addr buffer1
+						invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+					.else
+						invoke lstrcpy,addr [esi].idname,addr buffer1
+						.if ![esi].ntype
+							invoke GetWindowLong,hDEd,DEWM_PROJECT
+							mov		edx,eax
+							push	edx
+							invoke GetProjectItemName,edx,addr buffer1
+							pop		edx
+							invoke SetProjectItemName,edx,addr buffer1
+						.endif
 					.endif
 				.elseif eax==PRP_NUM_ID
 					push	val
