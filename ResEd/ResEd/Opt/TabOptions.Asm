@@ -44,6 +44,8 @@ IDC_EDTDLGSTART		equ 1001
 IDC_EDTDLGINC		equ 1002
 IDC_EDTMNUSTART		equ 1003
 IDC_EDTMNUINC		equ 1004
+IDC_EDTRCDSTART		equ 1006
+IDC_EDTRCDINC		equ 1005
 
 .const
 
@@ -308,6 +310,8 @@ TabOpt4Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetDlgItemInt,hWin,IDC_EDTDLGINC,initid.dlg.incid,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTMNUSTART,initid.mnu.startid,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTMNUINC,initid.mnu.incid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTRCDSTART,initid.rcd.startid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTRCDINC,initid.rcd.incid,FALSE
 	.else
 		mov		eax,FALSE
 		ret
@@ -434,6 +438,10 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		initid.mnu.startid,eax
 				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTMNUINC,NULL,FALSE
 				mov		initid.mnu.incid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRCDSTART,NULL,FALSE
+				mov		initid.rcd.startid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRCDINC,NULL,FALSE
+				mov		initid.rcd.incid,eax
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
 				invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
 				invoke GetWindowLong,hResEd,GWL_STYLE

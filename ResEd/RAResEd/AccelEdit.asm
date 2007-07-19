@@ -10,7 +10,8 @@ IDC_BTNACLLANG		equ 1006
 
 .data
 
-defacl				ACCELMEM <"IDR_ACCEL",1,0,0,0,0,0>
+szAccelName			db 'IDR_ACCEL',0
+defacl				ACCELMEM <,1,0,0,0,0,0>
 					ACCELMEM <>
 .data?
 
@@ -382,6 +383,8 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetFreeProjectitemID,TPE_ACCEL
 			mov		esi,offset defacl
 			mov		[esi].ACCELMEM.value,eax
+			invoke lstrcpy,addr [esi].ACCELMEM.szname,addr szAccelName
+			invoke GetUnikeName,addr [esi].ACCELMEM.szname
 		.endif
 		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname
 		invoke SetDlgItemInt,hWin,IDC_EDTACLID,[esi].ACCELMEM.value,FALSE

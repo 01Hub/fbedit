@@ -5,7 +5,8 @@ IDC_EDTRCDNAME					equ 1001
 
 .data
 
-defrcdata			RCDATAMEM	<"IDR_RCDATA",1>
+szRcdataName		db 'IDR_RCDATA',0
+defrcdata			RCDATAMEM	<,1>
 					db 0
 
 .code
@@ -109,6 +110,8 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetFreeProjectitemID,TPE_RCDATA
 			mov		edi,offset defrcdata
 			mov		[edi].RCDATAMEM.value,eax
+			invoke lstrcpy,addr [edi].RCDATAMEM.szname,addr szRcdataName
+			invoke GetUnikeName,addr [edi].RCDATAMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		invoke SendDlgItemMessage,hWin,IDC_EDTRCDNAME,EM_LIMITTEXT,MaxName-1,0

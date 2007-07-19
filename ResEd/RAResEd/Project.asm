@@ -1073,3 +1073,91 @@ GetFreeProjectitemID proc uses esi edi,nType:DWORD
 	ret
 
 GetFreeProjectitemID endp
+
+GetUnikeName proc uses ebx esi,lpName:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	buffer1[MaxName]:BYTE
+	LOCAL	buffer2[16]:BYTE
+
+	mov		nInx,0
+  @@:
+	inc		nInx
+	invoke lstrcpy,addr buffer1,lpName
+	invoke ResEdBinToDec,nInx,addr buffer2
+	invoke lstrcat,addr buffer1,addr buffer2
+	invoke GetWindowLong,hPrj,0
+	mov		ebx,eax
+	.while [ebx].PROJECT.hmem
+		.if ![ebx].PROJECT.delete
+			mov		eax,[ebx].PROJECT.ntype
+			mov		esi,[ebx].PROJECT.hmem
+			.if eax==TPE_DIALOG
+				lea		esi,[esi+sizeof DLGHEAD]
+				.while [esi].DIALOG.hwnd
+					.if [esi].DIALOG.hwnd!=-1
+						invoke lstrcmp,addr buffer1,addr [esi].DIALOG.idname
+						.if !eax
+							jmp		@b
+						.endif
+					.endif
+					lea		esi,[esi+sizeof DIALOG]
+				.endw
+			.elseif eax==TPE_MENU
+				invoke lstrcmp,addr buffer1,addr [esi].MNUHEAD.menuname
+				.if !eax
+					jmp		@b
+				.endif
+				add		esi,sizeof MNUHEAD
+				.while [esi].MNUITEM.itemflag
+					.if [esi].MNUITEM.itemname
+						invoke lstrcmp,addr buffer1,addr [esi].MNUITEM.itemname
+						.if !eax
+							jmp		@b
+						.endif
+					.endif
+					add		esi,sizeof MNUITEM
+				.endw
+			.elseif eax==TPE_ACCEL
+				.while [esi].ACCELMEM.szname || [esi].ACCELMEM.value
+					.if [esi].ACCELMEM.szname
+						invoke lstrcmp,addr buffer1,addr [esi].ACCELMEM.szname
+						.if !eax
+							jmp		@b
+						.endif
+					.endif
+					add		esi,sizeof ACCELMEM
+				.endw
+			.elseif eax==TPE_VERSION
+				invoke lstrcmp,addr buffer1,addr [esi].VERSIONMEM.szname
+				.if !eax
+					jmp		@b
+				.endif
+			.elseif eax==TPE_XPMANIFEST
+				invoke lstrcmp,addr buffer1,addr [esi].XPMANIFESTMEM.szname
+				.if !eax
+					jmp		@b
+				.endif
+			.elseif eax==TPE_RCDATA
+				invoke lstrcmp,addr buffer1,addr [esi].RCDATAMEM.szname
+				.if !eax
+					jmp		@b
+				.endif
+			.elseif eax==TPE_NAME
+				.while [esi].NAMEMEM.szname
+					.if ![esi].NAMEMEM.delete
+						invoke lstrcmp,addr buffer1,addr [esi].NAMEMEM.szname
+						.if !eax
+							jmp		@b
+						.endif
+					.endif
+					add		esi,sizeof NAMEMEM
+				.endw
+			.endif
+		.endif
+		lea		ebx,[ebx+sizeof PROJECT]
+	.endw
+	invoke lstrcpy,lpName,addr buffer1
+	ret
+
+GetUnikeName endp
+

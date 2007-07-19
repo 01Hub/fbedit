@@ -1,9 +1,10 @@
 ResEd
 
-1.1.4.2 - 2007.07.18
+1.1.4.2 - 2007.07.19
 ---------------------
-o Added option to set dialog and menu default start ID and increment.
-o When adding a new resource like dialog, menu or rcdata it now finds an unused ID.
+o Added option to set dialog ,menu and rcdata default start ID and increment.
+o When adding a new resource like dialog, menu or rcdata an unique ID for the resource is generated.
+o When adding a new resource like menu or rcdata an unique name for the resource is generated.
 o Fixed bug where parser did not accept hex numbers with uppercase X.
 
 1.1.4.1 - 2007.07.02

@@ -3582,40 +3582,6 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 
 CreateCtl endp
 
-GetUnikeName proc uses ebx esi,lpName:DWORD
-	LOCAL	nInx:DWORD
-	LOCAL	buffer1[MaxName]:BYTE
-	LOCAL	buffer2[16]:BYTE
-
-	mov		nInx,0
-  @@:
-	inc		nInx
-	invoke lstrcpy,addr buffer1,lpName
-	invoke ResEdBinToDec,nInx,addr buffer2
-	invoke lstrcat,addr buffer1,addr buffer2
-	invoke GetWindowLong,hPrj,0
-	mov		ebx,eax
-	.while [ebx].PROJECT.hmem
-		.if ![ebx].PROJECT.delete && [ebx].PROJECT.ntype==TPE_DIALOG
-			mov		esi,[ebx].PROJECT.hmem
-			lea		esi,[esi+sizeof DLGHEAD]
-			.while [esi].DIALOG.hwnd
-				.if [esi].DIALOG.hwnd!=-1
-					invoke lstrcmp,addr buffer1,addr [esi].DIALOG.idname
-					.if !eax
-						jmp		@b
-					.endif
-				.endif
-				lea		esi,[esi+sizeof DIALOG]
-			.endw
-		.endif
-		lea		ebx,[ebx+sizeof PROJECT]
-	.endw
-	invoke lstrcpy,lpName,addr buffer1
-	ret
-
-GetUnikeName endp
-
 CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWORD,ccy:DWORD
 	LOCAL	buffer[MaxName]:BYTE
 

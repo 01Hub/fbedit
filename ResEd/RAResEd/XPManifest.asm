@@ -8,7 +8,8 @@ IDC_BTNXPFILE					equ 1004
 
 .data
 
-defxpmanifest		XPMANIFESTMEM	<"IDR_XPMANIFEST",1,"xpmanifest.xml">
+szManifestName		db 'IDR_XPMANIFEST',0
+defxpmanifest		XPMANIFESTMEM	<,1,"xpmanifest.xml">
 					db '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',0Dh,0Ah
 					db '<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">',0Dh,0Ah
 					db '<assemblyIdentity',0Dh,0Ah
@@ -174,6 +175,8 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke GetFreeProjectitemID,TPE_XPMANIFEST
 			mov		edi,offset defxpmanifest
 			mov		[edi].XPMANIFESTMEM.value,eax
+			invoke lstrcpy,addr [edi].XPMANIFESTMEM.szname,addr szManifestName
+			invoke GetUnikeName,addr [edi].XPMANIFESTMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		invoke SendDlgItemMessage,hWin,IDC_EDTXPNAME,EM_LIMITTEXT,MaxName-1,0

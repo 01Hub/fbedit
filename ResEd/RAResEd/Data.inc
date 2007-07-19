@@ -28,6 +28,7 @@ GetProjectItemName		PROTO	:DWORD,:DWORD
 Do_TreeViewAddNode		PROTO	:HWND,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:LPARAM
 MnuSaveAccel			PROTO	:DWORD,:DWORD
 GetFreeProjectitemID	PROTO	:DWORD
+GetUnikeName			PROTO	:DWORD
 
 m2m MACRO M1, M2
 	push M2

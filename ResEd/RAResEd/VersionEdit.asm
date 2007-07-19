@@ -200,7 +200,8 @@ szTranslation		db 'Translation',0
 
 .data
 
-defver				VERSIONMEM <"IDR_VERSION",1,1,0,0,0,1,0,0,0,4,0,409h,4B0h>
+szVersionName		db 'IDR_VERSION',0
+defver				VERSIONMEM <,1,1,0,0,0,1,0,0,0,4,0,409h,4B0h>
 					VERSIONITEM <"FileVersion","1.0.0.0">
 					VERSIONITEM <"ProductVersion","1.0.0.0">
 					VERSIONITEM 30 dup(<>)
@@ -690,6 +691,8 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetFreeProjectitemID,TPE_VERSION
 			mov		esi,offset defver
 			mov		[esi].VERSIONMEM.value,eax
+			invoke lstrcpy,addr [esi].VERSIONMEM.szname,addr szVersionName
+			invoke GetUnikeName,addr [esi].VERSIONMEM.szname
 		.endif
 		invoke RtlZeroMemory,offset szVersionTxt,sizeof szVersionTxt
 		invoke SendDlgItemMessage,hWin,IDC_EDTVERNAME,EM_LIMITTEXT,MaxName-1,0

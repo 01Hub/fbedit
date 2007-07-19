@@ -1046,6 +1046,7 @@ CreateMnu proc uses ebx esi edi,hWin:HWND,lpProItemMem:DWORD
 		invoke GlobalLock,hMem
 		mov		esi,hMem
 		invoke lstrcpy,addr (MNUHEAD ptr [esi]).menuname,addr szMnuName
+		invoke GetUnikeName,addr (MNUHEAD ptr [esi]).menuname
 		invoke GetFreeProjectitemID,TPE_MENU
 		mov		(MNUHEAD ptr [esi]).menuid,eax
 		push	MnuItemID
