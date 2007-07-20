@@ -1945,7 +1945,6 @@ MultiSelRect proc uses ebx,hWin:HWND,fLocked:DWORD
 	shr		eax,1
 	add		eax,rect.left
 	mov		pt.x,eax
-
 	mov		eax,rect.bottom
 	sub		eax,rect.top
 	shr		eax,1
@@ -2769,6 +2768,8 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if nInx==1 && hMultiSel
 							invoke GetParent,hMultiSel
 							invoke SizeingRect,eax,FALSE
+						.elseif hMultiSel
+							invoke PropertyList,-1
 						.endif
 						invoke NotifyParent
 					.endif

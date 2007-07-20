@@ -134,9 +134,9 @@ Options=52
 3=0,0,0,0,429
 4=0,0,0,0,8
 1=0,0,0,0,10753
-7=0,0,0,0,43983
+7=0,0,0,0,44969
 6=0,0,0,0,539
-9=0,0,0,0,59598
+9=0,0,0,0,63178
 2=0,0,584,498,6916
 8=0,0,0,0,3786
 10=0,0,0,0,375
@@ -172,16 +172,16 @@ Options=52
 
 
 [Find]
-1="-1"
-2="lParam"
-3="@b"
-4="PropertyList"
-5="PropEditUpdList"
-6="SetProjectItemName"
-7="Exsist"
-8="MessageBox"
-9="PRP_STR_NAME"
-10="PRO_ADDITEM"
+1="WM_LBUTTONUP"
+2="-1"
+3="lParam"
+4="@b"
+5="PropertyList"
+6="PropEditUpdList"
+7="SetProjectItemName"
+8="Exsist"
+9="MessageBox"
+10="PRP_STR_NAME"
 >>>>>>> .r57
 
 [AutoLoad]
@@ -189,27 +189,27 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.157
-PV=1.0.8.157
+FV=1.0.8.158
+PV=1.0.8.158
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.157
+ProductVersion=1.0.8.158
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2005
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.157
+FileVersion=1.0.8.158
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
