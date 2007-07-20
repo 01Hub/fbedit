@@ -2019,7 +2019,6 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	shr		eax,1
 	add		eax,rect.left
 	mov		pt.x,eax
-
 	mov		eax,rect.bottom
 	sub		eax,rect.top
 	shr		eax,1
@@ -2615,6 +2614,9 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								.if (eax==18 && !edx) || (eax==19 && !edx)
 								.else
 									invoke CtlMultiSelect,hWin,lParam
+									.if hMultiSel
+										invoke PropertyList,-1
+									.endif
 								.endif
 							.endif
 						.endif
@@ -4343,7 +4345,6 @@ UpdateCtl proc uses esi,hCtl:DWORD
 		sub		edx,sizeof DLGHEAD
 		mov		eax,[esi].ccy
 		.if [edx].DLGHEAD.menuid
-
 			;Adjust for menu
 			add		eax,19
 		.endif
@@ -4351,7 +4352,9 @@ UpdateCtl proc uses esi,hCtl:DWORD
 	.endif
 	invoke UpdateWindow,hCtl
 	.if !fSizeing
-		invoke SizeingRect,hCtl,FALSE
+		.if !hMultiSel
+			invoke SizeingRect,hCtl,FALSE
+		.endif
 	.else
 		m2m		hReSize,hCtl
 	.endif

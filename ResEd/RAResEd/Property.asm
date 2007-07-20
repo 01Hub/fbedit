@@ -1434,7 +1434,7 @@ PropEditChkVal proc uses esi,lpTxt:DWORD,nTpe:DWORD,lpfErr:DWORD
 
 PropEditChkVal endp
 
-PropEditUpdList proc uses esi edi,lpPtr:DWORD
+PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	buffer1[512]:BYTE
@@ -1443,11 +1443,15 @@ PropEditUpdList proc uses esi edi,lpPtr:DWORD
 	LOCAL	fErr:DWORD
 	LOCAL	lbid:DWORD
 	LOCAL	val:DWORD
+	LOCAL	hMem:DWORD
 
 	mov		fErr,FALSE
 	invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
 	.if eax!=LB_ERR
 		mov		nInx,eax
+		;Get type
+		invoke SendMessage,hPrpLstDlg,LB_GETITEMDATA,nInx,0
+		mov		lbid,eax
 		invoke SendMessage,hPrpLstDlg,LB_SETCURSEL,-1,0
 		invoke ShowWindow,hPrpEdtDlgCld,SW_HIDE
 		invoke ShowWindow,hPrpBtnDlgCld,SW_HIDE
@@ -1465,17 +1469,14 @@ PropEditUpdList proc uses esi edi,lpPtr:DWORD
 		mov		lpTxt,esi
 		;Text changed ?
 		invoke lstrcmp,lpTxt,addr buffer1
+		.if hMultiSel && (lbid==PRP_STR_NAME || lbid==PRP_STR_CAPTION)
+			mov		eax,1
+		.endif
 		.if eax
 			;Get controls hwnd
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
-			;and ptr data
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			mov		esi,eax
-			assume esi:ptr DIALOG
-			;Get type
-			invoke SendMessage,hPrpLstDlg,LB_GETITEMDATA,nInx,0
-			mov		lbid,eax
+			mov		eax,lbid
 			;Pos, Size, ID or HelpID
 			.if eax>=PRP_NUM_ID && eax<=PRP_NUM_HELPID
 				;Test valid num
@@ -1483,153 +1484,203 @@ PropEditUpdList proc uses esi edi,lpPtr:DWORD
 				mov		val,eax
 			.endif
 			.if !fErr
-				;What is changed
-				mov		eax,lbid
-				.if eax==PRP_STR_NAME
-					invoke NameExists,addr buffer1,esi
-					.if eax
-						invoke lstrcpy,addr buffer,addr szNameExist
-						invoke lstrcat,addr buffer,addr buffer1
-						invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
-					.else
-						invoke lstrcpy,addr [esi].idname,addr buffer1
-						.if ![esi].ntype
-							invoke GetWindowLong,hDEd,DEWM_PROJECT
-							mov		edx,eax
-							push	edx
-							invoke GetProjectItemName,edx,addr buffer1
-							pop		edx
-							invoke SetProjectItemName,edx,addr buffer1
-						.endif
-					.endif
-				.elseif eax==PRP_NUM_ID
-					push	val
-					pop		[esi].id
-					.if ![esi].ntype
-						invoke GetWindowLong,hDEd,DEWM_PROJECT
+				.if hMultiSel
+					push	0
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
 						mov		edx,eax
+						pop		eax
 						push	edx
-						invoke GetProjectItemName,edx,addr buffer1
-						pop		edx
-						invoke SetProjectItemName,edx,addr buffer1
-					.endif
-				.elseif eax==PRP_NUM_POSL
-					mov		eax,val
-					mov		[esi].x,eax
-					xor		eax,eax
-					mov		[esi].dux,eax
-					mov		[esi].duy,eax
-					mov		[esi].duccx,eax
-					mov		[esi].duccy,eax
-				.elseif eax==PRP_NUM_POST
-					mov		eax,val
-					mov		[esi].y,eax
-					xor		eax,eax
-					mov		[esi].dux,eax
-					mov		[esi].duy,eax
-					mov		[esi].duccx,eax
-					mov		[esi].duccy,eax
-				.elseif eax==PRP_NUM_SIZEW
-					mov		eax,val
-					mov		[esi].ccx,eax
-					xor		eax,eax
-					mov		[esi].dux,eax
-					mov		[esi].duy,eax
-					mov		[esi].duccx,eax
-					mov		[esi].duccy,eax
-				.elseif eax==PRP_NUM_SIZEH
-					mov		eax,val
-					mov		[esi].ccy,eax
-					xor		eax,eax
-					mov		[esi].dux,eax
-					mov		[esi].duy,eax
-					mov		[esi].duccx,eax
-					mov		[esi].duccy,eax
-				.elseif eax==PRP_NUM_STARTID
-					sub		esi,sizeof DLGHEAD
-					push	val
-					pop		(DLGHEAD ptr [esi]).ctlid
-					add		esi,sizeof DLGHEAD
-				.elseif eax==PRP_NUM_TAB
-					invoke SetNewTab,hCtl,val
-				.elseif eax==PRP_NUM_HELPID
-					mov		eax,val
-					mov		[esi].helpid,eax
-				.elseif eax==PRP_STR_CAPTION
-					invoke lstrcpy,addr [esi].caption,addr buffer1
-				.elseif eax==PRP_STR_IMAGE
-					invoke lstrcpy,addr [esi].caption,addr buffer1
-				.elseif eax==PRP_STR_AVI
-					invoke lstrcpy,addr [esi].caption,addr buffer1
-				.elseif eax==PRP_STR_FONT
-					mov		edx,esi
-					sub		edx,sizeof DLGHEAD
-					invoke lstrcpy,addr (DLGHEAD ptr [edx]).font,addr buffer1
-				.elseif eax==PRP_STR_CLASS
-					mov		eax,[esi].ntype
-					.if eax==0
-						mov		edx,esi
-						sub		edx,sizeof DLGHEAD
-						invoke lstrcpy,addr (DLGHEAD ptr [edx]).class,addr buffer1
-					.elseif eax==23
-						invoke lstrcpy,addr [esi].class,addr buffer1
-					.endif
-				.elseif eax==PRP_STR_MENU
-					mov		edx,esi
-					sub		edx,sizeof DLGHEAD
-					invoke lstrcpy,addr (DLGHEAD ptr [edx]).menuid,addr buffer1
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+					.while hMultiSel
+						invoke DestroyMultiSel,hMultiSel
+						mov		hMultiSel,eax
+					.endw
+					invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
+					mov		ebx,eax
+					mov		hMem,eax
+					pop		eax
+					.while eax
+						mov		hCtl,eax
+						call SetCtrlData
+						invoke UpdateCtl,hCtl
+						mov		[ebx],eax
+						add		ebx,4
+						pop		eax
+					.endw
+					mov		ebx,hMem
+					.while dword ptr [ebx]
+						mov		eax,[ebx]
+						invoke CtlMultiSelect,eax,0
+						add		ebx,4
+					.endw
+					invoke PropertyList,-1
+				.else
+					call SetCtrlData
+					invoke UpdateCtl,hCtl
 				.endif
-				mov		eax,lbid
-				;Is True/False Style or Multi Style changed
-				mov		edi,lpPtr
-				.if eax>=PRP_BOOL_SYSMENU && eax<=499
-					.if eax==223
-						mov		eax,[esi].exstyle
-						and		eax,[edi]
-						or		eax,[edi+4]
-						mov		[esi].exstyle,eax
-					.else
-						mov		eax,[esi].style
-						and		eax,[edi]
-						or		eax,[edi+4]
-						mov		[esi].style,eax
-					.endif
-					;Is Multi Style changed
-					mov		eax,lbid
-					.if eax>=PRP_MULTI_CLIP
-						mov		eax,[esi].exstyle
-						and		eax,[edi+8]
-						or		eax,[edi+12]
-						mov		[esi].exstyle,eax
-					.endif
-				.elseif eax>65535
-					.if dword ptr [eax]==1
-						mov		eax,[esi].style
-						and		eax,[edi]
-						or		eax,[edi+4]
-						mov		[esi].style,eax
-					.elseif dword ptr [eax]==2
-						mov		eax,[esi].exstyle
-						and		eax,[edi]
-						or		eax,[edi+4]
-						mov		[esi].exstyle,eax
-					.elseif dword ptr [eax]==3
-						mov		eax,[esi].style
-						and		eax,[edi]
-						or		eax,[edi+4]
-						mov		[esi].style,eax
-						mov		eax,[esi].exstyle
-						and		eax,[edi+8]
-						or		eax,[edi+12]
-						mov		[esi].exstyle,eax
-					.endif
-				.endif
-				invoke UpdateCtl,hCtl
-				assume esi:nothing
 			.endif
 		.endif
 	.endif
 	ret
+
+SetCtrlData:
+	;Get ptr data
+	invoke GetWindowLong,hCtl,GWL_USERDATA
+	mov		esi,eax
+	assume esi:ptr DIALOG
+	;What is changed
+	mov		eax,lbid
+	.if eax==PRP_STR_NAME
+		invoke NameExists,addr buffer1,esi
+		.if eax
+			invoke lstrcpy,addr buffer,addr szNameExist
+			invoke lstrcat,addr buffer,addr buffer1
+			invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+		.else
+			invoke lstrcpy,addr [esi].idname,addr buffer1
+			.if ![esi].ntype
+				invoke GetWindowLong,hDEd,DEWM_PROJECT
+				mov		edx,eax
+				push	edx
+				invoke GetProjectItemName,edx,addr buffer1
+				pop		edx
+				invoke SetProjectItemName,edx,addr buffer1
+			.endif
+		.endif
+	.elseif eax==PRP_NUM_ID
+		push	val
+		pop		[esi].id
+		.if ![esi].ntype
+			invoke GetWindowLong,hDEd,DEWM_PROJECT
+			mov		edx,eax
+			push	edx
+			invoke GetProjectItemName,edx,addr buffer1
+			pop		edx
+			invoke SetProjectItemName,edx,addr buffer1
+		.endif
+	.elseif eax==PRP_NUM_POSL
+		mov		eax,val
+		mov		[esi].x,eax
+		xor		eax,eax
+		mov		[esi].dux,eax
+		mov		[esi].duy,eax
+		mov		[esi].duccx,eax
+		mov		[esi].duccy,eax
+	.elseif eax==PRP_NUM_POST
+		mov		eax,val
+		mov		[esi].y,eax
+		xor		eax,eax
+		mov		[esi].dux,eax
+		mov		[esi].duy,eax
+		mov		[esi].duccx,eax
+		mov		[esi].duccy,eax
+	.elseif eax==PRP_NUM_SIZEW
+		mov		eax,val
+		mov		[esi].ccx,eax
+		xor		eax,eax
+		mov		[esi].dux,eax
+		mov		[esi].duy,eax
+		mov		[esi].duccx,eax
+		mov		[esi].duccy,eax
+	.elseif eax==PRP_NUM_SIZEH
+		mov		eax,val
+		mov		[esi].ccy,eax
+		xor		eax,eax
+		mov		[esi].dux,eax
+		mov		[esi].duy,eax
+		mov		[esi].duccx,eax
+		mov		[esi].duccy,eax
+	.elseif eax==PRP_NUM_STARTID
+		sub		esi,sizeof DLGHEAD
+		push	val
+		pop		(DLGHEAD ptr [esi]).ctlid
+		add		esi,sizeof DLGHEAD
+	.elseif eax==PRP_NUM_TAB
+		invoke SetNewTab,hCtl,val
+	.elseif eax==PRP_NUM_HELPID
+		mov		eax,val
+		mov		[esi].helpid,eax
+	.elseif eax==PRP_STR_CAPTION
+		invoke lstrcpy,addr [esi].caption,addr buffer1
+	.elseif eax==PRP_STR_IMAGE
+		invoke lstrcpy,addr [esi].caption,addr buffer1
+	.elseif eax==PRP_STR_AVI
+		invoke lstrcpy,addr [esi].caption,addr buffer1
+	.elseif eax==PRP_STR_FONT
+		mov		edx,esi
+		sub		edx,sizeof DLGHEAD
+		invoke lstrcpy,addr (DLGHEAD ptr [edx]).font,addr buffer1
+	.elseif eax==PRP_STR_CLASS
+		mov		eax,[esi].ntype
+		.if eax==0
+			mov		edx,esi
+			sub		edx,sizeof DLGHEAD
+			invoke lstrcpy,addr (DLGHEAD ptr [edx]).class,addr buffer1
+		.elseif eax==23
+			invoke lstrcpy,addr [esi].class,addr buffer1
+		.endif
+	.elseif eax==PRP_STR_MENU
+		mov		edx,esi
+		sub		edx,sizeof DLGHEAD
+		invoke lstrcpy,addr (DLGHEAD ptr [edx]).menuid,addr buffer1
+	.endif
+	mov		eax,lbid
+	;Is True/False Style or Multi Style changed
+	mov		edi,lpPtr
+	.if eax>=PRP_BOOL_SYSMENU && eax<=499
+		.if eax==223
+			mov		eax,[esi].exstyle
+			and		eax,[edi]
+			or		eax,[edi+4]
+			mov		[esi].exstyle,eax
+		.else
+			mov		eax,[esi].style
+			and		eax,[edi]
+			or		eax,[edi+4]
+			mov		[esi].style,eax
+		.endif
+		;Is Multi Style changed
+		mov		eax,lbid
+		.if eax>=PRP_MULTI_CLIP
+			mov		eax,[esi].exstyle
+			and		eax,[edi+8]
+			or		eax,[edi+12]
+			mov		[esi].exstyle,eax
+		.endif
+	.elseif eax>65535
+		.if dword ptr [eax]==1
+			mov		eax,[esi].style
+			and		eax,[edi]
+			or		eax,[edi+4]
+			mov		[esi].style,eax
+		.elseif dword ptr [eax]==2
+			mov		eax,[esi].exstyle
+			and		eax,[edi]
+			or		eax,[edi+4]
+			mov		[esi].exstyle,eax
+		.elseif dword ptr [eax]==3
+			mov		eax,[esi].style
+			and		eax,[edi]
+			or		eax,[edi+4]
+			mov		[esi].style,eax
+			mov		eax,[esi].exstyle
+			and		eax,[edi+8]
+			or		eax,[edi+12]
+			mov		[esi].exstyle,eax
+		.endif
+	.endif
+	assume esi:nothing
+	retn
 
 PropEditUpdList endp
 
@@ -1692,7 +1743,7 @@ GetCustProp proc nType:DWORD,nProp:DWORD
 
 GetCustProp endp
 
-PropertyList proc uses esi edi,hCtl:DWORD
+PropertyList proc uses ebx esi edi,hCtl:DWORD
 	LOCAL	buffer[1024]:BYTE
 	LOCAL	buffer1[512]:BYTE
 	LOCAL	nType:DWORD
@@ -1714,20 +1765,66 @@ PropertyList proc uses esi edi,hCtl:DWORD
 	invoke SendMessage,hPrpLstDlg,LB_RESETCONTENT,0,0
 	invoke SetWindowLong,hPrpLstDlg,GWL_USERDATA,hCtl
 	.if hCtl
-		invoke GetWindowLong,hCtl,GWL_USERDATA
-		mov		esi,eax
-		assume esi:ptr DIALOG
-		mov		eax,[esi].ntype
-		mov		nType,eax
-		invoke GetTypePtr,nType
-		push	(TYPES ptr [eax]).flist
-		pop		fList1
-		push	(TYPES ptr [eax]).flist+4
-		pop		fList2
-		push	(TYPES ptr [eax]).flist+8
-		pop		fList3
-		push	(TYPES ptr [eax]).flist+12
-		pop		fList4
+		.if hCtl==-1
+			xor		eax,eax
+			dec		eax
+			mov		fList1,11111110100111000000000001000000b
+						;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00001000000000000000000000000000b
+						;  SELHH
+			mov		fList4,00000000000000000000000000000000b
+						;
+			invoke GetParent,hMultiSel
+			mov		hCtl,eax
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		esi,eax
+			invoke SetWindowLong,hPrpLstDlg,GWL_USERDATA,hCtl
+			mov		eax,hMultiSel
+		  @@:
+			push	eax
+			invoke GetParent,eax
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		edi,eax
+			mov		eax,[edi].DIALOG.ntype
+			mov		nType,eax
+			invoke GetTypePtr,nType
+			mov		edi,eax
+			mov		eax,(TYPES ptr [edi]).flist
+			and		fList1,eax
+			mov		eax,(TYPES ptr [edi]).flist+4
+			and		fList2,eax
+			mov		eax,(TYPES ptr [edi]).flist+8
+			and		fList3,eax
+			mov		eax,(TYPES ptr [edi]).flist+12
+			and		fList4,eax
+			mov		ecx,8
+			pop		eax
+			.while ecx
+				push	ecx
+				invoke GetWindowLong,eax,GWL_USERDATA
+				pop		ecx
+				dec		ecx
+			.endw
+			or		eax,eax
+			jne		@b
+		.else
+			invoke GetWindowLong,hCtl,GWL_USERDATA
+			mov		esi,eax
+			assume esi:ptr DIALOG
+			mov		eax,[esi].ntype
+			mov		nType,eax
+			invoke GetTypePtr,nType
+			push	(TYPES ptr [eax]).flist
+			pop		fList1
+			push	(TYPES ptr [eax]).flist+4
+			pop		fList2
+			push	(TYPES ptr [eax]).flist+8
+			pop		fList3
+			push	(TYPES ptr [eax]).flist+12
+			pop		fList4
+		.endif
 		invoke lstrcpy,addr buffer,addr PrAll
 		mov		nInx,0
 	  @@:
@@ -1753,30 +1850,182 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				;(Name)
 				mov		lbid,PRP_STR_NAME
 				invoke lstrcpy,edi,addr [esi].idname
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						invoke lstrcmp,addr [esi].idname,addr [ebx].DIALOG.idname
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==1
 				;(ID)
 				mov		lbid,PRP_NUM_ID
 				invoke ResEdBinToDec,[esi].id,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].id
+						sub		eax,[ebx].DIALOG.id
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==2
 				;Left
 				mov		lbid,PRP_NUM_POSL
 				invoke ResEdBinToDec,[esi].x,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].x
+						sub		eax,[ebx].DIALOG.x
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==3
 				;Top
 				mov		lbid,PRP_NUM_POST
 				invoke ResEdBinToDec,[esi].y,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].y
+						sub		eax,[ebx].DIALOG.y
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==4
 				;Width
 				mov		lbid,PRP_NUM_SIZEW
 				invoke ResEdBinToDec,[esi].ccx,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].ccx
+						sub		eax,[ebx].DIALOG.ccx
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==5
 				;Height
 				mov		lbid,PRP_NUM_SIZEH
 				invoke ResEdBinToDec,[esi].ccy,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].ccy
+						sub		eax,[ebx].DIALOG.ccy
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==6
 				;Caption
 				mov		lbid,PRP_STR_CAPTION
 				invoke lstrcpy,edi,addr [esi].caption
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						invoke lstrcmp,addr [esi].caption,addr [ebx].DIALOG.caption
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==7
 				;Border
 				mov		lbid,PRP_MULTI_BORDER
@@ -1805,14 +2054,89 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				;Enabled
 				mov		lbid,PRP_BOOL_ENABLED
 				invoke ListFalseTrue,[esi].style,addr EnabAll,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].style
+						and		eax,WS_DISABLED
+						mov		edx,[ebx].DIALOG.style
+						and		edx,WS_DISABLED
+						sub		eax,edx
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==12
 				;Visible
 				mov		lbid,PRP_BOOL_VISIBLE
 				invoke ListFalseTrue,[esi].style,addr VisiAll,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].style
+						and		eax,WS_VISIBLE
+						mov		edx,[ebx].DIALOG.style
+						and		edx,WS_VISIBLE
+						sub		eax,edx
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==13
 				;Clipping
 				mov		lbid,PRP_MULTI_CLIP
 				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr ClipAll,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].style
+						and		eax,WS_CLIPCHILDREN or WS_CLIPSIBLINGS
+						mov		edx,[ebx].DIALOG.style
+						and		edx,WS_CLIPCHILDREN or WS_CLIPSIBLINGS
+						sub		eax,edx
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==14
 				;ScrollBar
 				mov		lbid,PRP_MULTI_SCROLL
@@ -1911,6 +2235,31 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				;TabStop
 				mov		lbid,PRP_BOOL_TABSTOP
 				invoke ListFalseTrue,[esi].style,addr TabSAll,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].style
+						and		eax,WS_TABSTOP
+						mov		edx,[ebx].DIALOG.style
+						and		edx,WS_TABSTOP
+						sub		eax,edx
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==26
 				;Font
 				mov		lbid,PRP_STR_FONT
@@ -2179,6 +2528,28 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				;HelpID
 				mov		lbid,PRP_NUM_HELPID
 				invoke ResEdBinToDec,[esi].helpid,edi
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].helpid
+						sub		eax,[ebx].DIALOG.helpid
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif eax>=NoOfButtons
 				;Custom properties
 				invoke GetCustProp,eax,edx
@@ -2196,6 +2567,7 @@ PropertyList proc uses esi edi,hCtl:DWORD
 			invoke SendMessage,hPrpLstDlg,LB_ADDSTRING,0,addr buffer1
 			invoke SendMessage,hPrpLstDlg,LB_SETITEMDATA,eax,lbid
 		.endif
+	  Nxt:
 		inc		nInx
 		jmp		@b
 	  @@:

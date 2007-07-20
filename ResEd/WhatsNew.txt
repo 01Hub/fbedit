@@ -1,5 +1,9 @@
 ResEd
 
+1.1.4.3 - 2007.07.20
+---------------------
+o Added multiselected controls propery.
+
 1.1.4.2b - 2007.07.20
 ---------------------
 o Fixed bugs when creating a new project and Save #defines to [Project].h file was enabled.
