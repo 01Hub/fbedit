@@ -310,18 +310,18 @@ SaveProjectFileAs proc lpFileName:DWORD
 		;Show save as dialog
 		invoke GetSaveFileName,addr ofn
 		.if eax
-			invoke SaveProject,addr buffer
+			invoke lstrcpy,offset ProjectFileName,addr buffer
+			invoke SetWinCaption,offset ProjectFileName
+			invoke lstrlen,offset ProjectFileName
+			lea		edx,buffer
+			.while byte ptr [edx+eax]!='\' && eax
+				dec		eax
+			.endw
+			mov		byte ptr [edx+eax],0
+			lea		edx,[edx+eax+1]
+			invoke SendMessage,hProject,PRO_SETNAME,edx,addr buffer
+			invoke SaveProject,offset ProjectFileName
 			.if !eax
-				invoke lstrcpy,offset ProjectFileName,addr buffer
-				invoke SetWinCaption,offset ProjectFileName
-				invoke lstrlen,offset ProjectFileName
-				lea		edx,buffer
-				.while byte ptr [edx+eax]!='\' && eax
-					dec		eax
-				.endw
-				mov		byte ptr [edx+eax],0
-				lea		edx,[edx+eax+1]
-				invoke SendMessage,hProject,PRO_SETNAME,edx,addr buffer
 				xor		eax,eax
 				inc		eax
 			.else
@@ -881,6 +881,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetDlgItem,hWin,IDC_PROJECT
 					invoke SendMessage,eax,PRO_CLOSE,0,0
 					invoke SetWinCaption,NULL
+				.else
+					invoke GetDlgItem,hWin,IDC_PROJECT
+					invoke SendMessage,eax,PRO_CLOSE,0,0
+					invoke LoadProjectFile,offset ProjectFileName
 				.endif
 			.endif
 		.elseif eax==IDM_FILE_OPEN_PROJECT

@@ -461,6 +461,17 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==PRO_SETNAME
 		invoke SetProjectItemName,NULL,wParam
+		mov		edx,wParam
+		mov		ecx,offset szResourceh
+	  @@:
+		mov		al,[edx]
+		.if al!='.' && al
+			mov		[ecx],al
+			inc		edx
+			inc		ecx
+			jmp		@b
+		.endif
+		mov		dword ptr [ecx],'h.'
 		.if lParam
 			invoke lstrcpy,offset szProjectPath,lParam
 			invoke SetCurrentDirectory,offset szProjectPath

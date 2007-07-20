@@ -1,5 +1,9 @@
 ResEd
 
+1.1.4.2b - 2007.07.20
+---------------------
+o Fixed bugs when creating a new project and Save #defines to [Project].h file was enabled.
+
 1.1.4.2 - 2007.07.19
 ---------------------
 o Dialog editor now checks if the controls name exist.
