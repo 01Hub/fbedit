@@ -6,7 +6,6 @@
 #include "Res/AccelEditDlg.rc"
 #include "Res/NameEditDlg.rc"
 #include "Res/MenuEditDlg.rc"
-#include "Res/PropertyDlg.rc"
 #include "Res/VersionEditDlg.rc"
 #include "Res/LanguageEditDlg.rc"
 #include "Res/StyleManaDlg.rc"

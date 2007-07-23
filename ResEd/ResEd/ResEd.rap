@@ -89,16 +89,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,28379
+1=0,0,0,0,12798
 6=
-2=0,0,0,0,4646
-7=0,0,699,490,6164
+2=0,0,0,0,3109
+7=0,0,699,490,5911
 9=
 8=
-3=0,0,0,0,1384
+3=0,0,0,0,881
 10=0,0,0,0
 11=0,0,0,0,299
-13=0,0,0,0,12967
+13=0,0,0,0,13809
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -106,7 +106,7 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,29
+21=0,0,0,0,330
 22=0,0,0,0
 
 [BookMark]
@@ -125,22 +125,22 @@ Options=52
 0=
 
 [Find]
-1="DES_SIZETOFONT"
-2="DES_STYLEHEX"
-3="GRIDSIZE"
-4="PRO_ADDITEM"
-5="IDC_RBNEXPOPT4"
-6="GlobalAlloc"
-7="szDlgEditDummyClass"
-8="DEM_SHOWTABINDEX"
-9="DEM_SHOWDIALOG"
-10="exstyledef"
+1="PRO_EXPORTNAMES"
+2="DES_SIZETOFONT"
+3="DES_STYLEHEX"
+4="GRIDSIZE"
+5="PRO_ADDITEM"
+6="IDC_RBNEXPOPT4"
+7="GlobalAlloc"
+8="szDlgEditDummyClass"
+9="DEM_SHOWTABINDEX"
+10="DEM_SHOWDIALOG"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -161,7 +161,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -212,7 +212,7 @@ Group=Added files,Assembly,Resources,Misc,Include
 20=4
 21=4
 22=3
-23=1
+23=4
 [CodeMake]
 4=0,C:\RadASM\Masm\Templates\DlgToWin.rad,,WndProc
 [Accel]

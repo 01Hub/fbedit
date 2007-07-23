@@ -154,6 +154,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 	LOCAL	hGrd:HWND
 	LOCAL	nRows:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	tmpbuffer[MAX_PATH]:BYTE
 	LOCAL	fnbuffer[MAX_PATH]:BYTE
 	LOCAL	val:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -173,7 +174,8 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			mov		ofn.lpstrTitle,offset szExportAs
 			mov		ofn.lpstrInitialDir,offset szProjectPath
 			mov		ofn.lpstrFileTitle,offset szExportFileName
-			invoke lstrcpy,addr fnbuffer,offset szExportFileName
+;			invoke lstrcpy,addr fnbuffer,offset szExportFileName
+			call	GetFileName
 			lea		eax,fnbuffer
 			mov		ofn.lpstrFile,eax
 			mov		ofn.nMaxFile,sizeof fnbuffer
@@ -182,9 +184,10 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			;Show the Save dialog
 			invoke GetSaveFileName,addr ofn
 		.else
+			call	GetFileName
 			invoke lstrcpy,addr fnbuffer,addr szProjectPath
 			invoke lstrcat,addr fnbuffer,addr szBS
-			invoke lstrcat,addr fnbuffer,addr szExportFileName
+			invoke lstrcat,addr fnbuffer,addr tmpbuffer
 			xor		eax,eax
 			inc		eax
 		.endif
@@ -328,6 +331,26 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 		invoke GlobalFree,edi
 	.endif
 	ret
+
+GetFileName:
+	invoke lstrcpyn,addr tmpbuffer,offset szExportFileName,10
+	invoke lstrcmpi,addr tmpbuffer,offset szProject
+	.if !eax
+		lea		edx,tmpbuffer
+		mov		ecx,offset szResourceh
+		.while byte ptr [ecx]!='.'
+			mov		al,[ecx]
+			mov		[edx],al
+			inc		ecx
+			inc		edx
+		.endw
+		mov		eax,offset szExportFileName+9
+		invoke lstrcpy,edx,eax
+		invoke lstrcpy,addr fnbuffer,addr tmpbuffer
+	.else
+		invoke lstrcpy,addr fnbuffer,offset szExportFileName
+	.endif
+	retn
 
 SaveNamesToFile endp
 

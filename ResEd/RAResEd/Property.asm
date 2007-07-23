@@ -504,23 +504,7 @@ ElliStc				db 'None,EndEllipsis,PathEllipsis,WordEllipsis',0
 					dd -1,0
 
 szPropErr			db 'Invalid property value.',0
-szStyleWarn			db 'WARNING!!',0Dh,'Some styles can make dialog editor unstable. Save before use.',0
 StyleEx				dd 0
-StyleOfs			dd 0
-StyleTxt			dd 0
-StylePos			dd 0
-szStyleExTxt		db ',,,,'
-					db ',,,,'
-					db ',,,,'
-					db 'WS_EX_LAYERED,WS_EX_APPWINDOW,WS_EX_STATICEDGE,WS_EX_CONTROLPARENT,'
-					db ',WS_EX_LEFTSCROLLBAR,WS_EX_RTLREADING,WS_EX_RIGHT,'
-					db ',WS_EX_CONTEXTHELP,WS_EX_CLIENTEDGE,WS_EX_WINDOWEDGE,'
-					db 'WS_EX_TOOLWINDOW,WS_EX_MDICHILD,WS_EX_TRANSPARENT,WS_EX_ACCEPTFILES,'
-					db 'WS_EX_TOPMOST,WS_EX_NOPARENTNOTIFY,,WS_EX_DLGMODALFRAME',0
-szStyleTxt			db 'WS_POPUP,WS_CHILD,WS_MINIMIZE,WS_VISIBLE,'
-					db 'WS_DISABLED,WS_CLIPSIBLINGS,WS_CLIPCHILDREN,WS_MAXIMIZE,'
-					db 'WS_BORDER,WS_DLGFRAME,WS_VSCROLL,WS_HSCROLL,'
-					db 'WS_SYSMENU,WS_THICKFRAME,WS_GROUP,WS_TABSTOP',0
 szMaxWt				db 'QwnerDraw',0
 
 .data?
@@ -541,304 +525,6 @@ tempbuff			db 256 dup(?)
 fBtnClick			dd ?
 
 .code
-
-AddStyle proc uses esi,lpBuff:DWORD,nStyle:DWORD,lpStyle1:DWORD,lpStyle2:DWORD
-
-	invoke lstrcat,lpBuff,addr szComma
-	mov		esi,offset styledef
-	.while byte ptr [esi+4]
-		mov		eax,nStyle
-		mov		edx,[esi]
-		add		esi,4
-		.if eax==edx
-			mov		edx,lpStyle1
-			call	TestStr
-			.if !eax
-				call	AddStr
-				jmp		@f
-			.else
-				mov		edx,lpStyle2
-				call	TestStr
-				.if !eax
-					call	AddStr
-					jmp		@f
-				.endif
-			.endif
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-  @@:
-	ret
-
-AddStr:
-	invoke lstrcat,lpBuff,esi
-	retn
-
-TestStr:
-	xor		ecx,ecx
-	xor		eax,eax
-	inc		eax
-	.while byte ptr [edx+ecx]
-		mov		al,[edx+ecx]
-		sub		al,[esi+ecx]
-		jne		@f
-		inc		ecx
-	.endw
-  @@:
-	retn
-
-AddStyle endp
-
-PropertyStyleTxt proc uses ebx,hWin:HWND,lpBuff:DWORD
-	LOCAL	buffer[1024]:BYTE
-	LOCAL	buffer1[64]:BYTE
-
-	mov		ebx,StyleOfs
-	.if StyleEx
-		invoke lstrcpy,addr buffer,addr szStyleExTxt
-		mov		eax,(DIALOG ptr [ebx]).exstyle
-	.else
-		invoke lstrcpy,addr buffer,addr szStyleTxt
-		xor		eax,eax
-		mov		dword ptr buffer1,eax
-		mov		dword ptr buffer1[4],eax
-		mov		dword ptr buffer1[8],eax
-		mov		dword ptr buffer1[12],eax
-		mov		eax,(DIALOG ptr [ebx]).ntype
-		.if !eax
-			;Dialog
-			mov		dword ptr buffer1,'_SD'
-		.elseif eax==1
-			;Edit
-			mov		dword ptr buffer1,'_SE'
-		.elseif eax==2
-			;Static
-			mov		dword ptr buffer1,'_SS'
-		.elseif eax==3
-			;Groupbox
-			mov		dword ptr buffer1,'_SB'
-		.elseif eax==4
-			;Button
-			mov		dword ptr buffer1,'_SB'
-		.elseif eax==5
-			;CheckBox
-			mov		dword ptr buffer1,'_SB'
-		.elseif eax==6
-			;RadioButton
-			mov		dword ptr buffer1,'_SB'
-		.elseif eax==7
-			;ComboBox
-			mov		dword ptr buffer1,'_SBC'
-		.elseif eax==8
-			;ListBox
-			mov		dword ptr buffer1,'_SBL'
-		.elseif eax==9
-			;H-ScrollBar
-			mov		dword ptr buffer1,'_SBS'
-		.elseif eax==10
-			;V-ScrollBar
-			mov		dword ptr buffer1,'_SBS'
-		.elseif eax==11
-			;TabControl
-			mov		dword ptr buffer1,'_SCT'
-		.elseif eax==12
-			;ProgressBar
-			mov		dword ptr buffer1,'_SBP'
-		.elseif eax==13
-			;TreeView
-			mov		dword ptr buffer1,'_SVT'
-		.elseif eax==14
-			;ListView
-			mov		dword ptr buffer1,'_SVL'
-		.elseif eax==15
-			;TrackBar
-			mov		dword ptr buffer1,'_SBT'
-		.elseif eax==16
-			;UpDown
-			mov		dword ptr buffer1,'_SDU'
-		.elseif eax==17
-			;Image
-		.elseif eax==18
-			;ToolBar
-			mov		dword ptr buffer1,'TSBT'
-			mov		dword ptr buffer1[8],'_SCC'
-		.elseif eax==19
-			;Statusbar
-			mov		dword ptr buffer1,'RABS'
-			mov		dword ptr buffer1[8],'_SCC'
-		.elseif eax==20
-			;DateTime
-			mov		dword ptr buffer1,'_STD'
-		.elseif eax==21
-			;MonthView
-			mov		dword ptr buffer1,'_SCM'
-		.elseif eax==22
-			;RichEdit
-		.elseif eax==23
-			;UserControl
-		.elseif eax==24
-			;ComboBoxEx
-		.elseif eax==25
-			;Shape
-		.elseif eax==26
-			;IPAddress
-		.elseif eax==27
-			;AnimateControl
-			mov		dword ptr buffer1,'_SCA'
-		.elseif eax==28
-			;HotTrack
-		.elseif eax==29
-			;H-Pager
-			mov		dword ptr buffer1,'_SGP'
-		.elseif eax==30
-			;V-Pager
-			mov		dword ptr buffer1,'_SGP'
-		.elseif eax==31
-			;ReBar
-			mov		dword ptr buffer1,'_SBR'
-		.elseif eax==32
-			;Header
-			mov		dword ptr buffer1,'_SDH'
-		.endif
-		mov		edx,8000h
-		.while edx
-			push	edx
-			invoke AddStyle,addr buffer,edx,addr buffer1,addr buffer1[8]
-			pop		edx
-			shr		edx,1
-		.endw
-		mov		eax,(DIALOG ptr [ebx]).style
-	.endif
-	mov		ecx,32
-	mov		edx,lpBuff
-	.while ecx
-		mov		byte ptr [edx],'0'
-		shl		eax,1
-		jnc		@f
-		mov		byte ptr [edx],'1'
-	  @@:
-		inc		edx
-		dec		ecx
-	.endw
-	mov		byte ptr [edx],0
-	invoke SetDlgItemText,hWin,IDC_EDTSTYLE,lpBuff
-	mov		eax,StylePos
-	inc		eax
-	invoke SendDlgItemMessage,hWin,IDC_EDTSTYLE,EM_SETSEL,StylePos,eax
-	mov		eax,StylePos
-	inc		eax
-	.while eax
-		push	eax
-		invoke GetStrItem,addr buffer,addr buffer1
-		pop		eax
-		dec		eax
-	.endw
-	invoke SetDlgItemText,hWin,IDC_STCTXT,addr buffer1
-	ret
-
-PropertyStyleTxt endp
-
-PropertyDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	buffer[33]:BYTE
-	LOCAL	hCtl:HWND
-	LOCAL	rect:RECT
-	LOCAL	prect:RECT
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		mov		StylePos,0
-		invoke GetWindowRect,hPrpLstDlg,addr prect
-		invoke GetWindowRect,hWin,addr rect
-		;width
-		mov		eax,rect.left
-		sub		rect.right,eax
-		;height
-		mov		eax,rect.top
-		sub		rect.bottom,eax
-		;left
-		mov		eax,prect.right
-		sub		eax,rect.right		;width
-		jnc		@f
-		xor		eax,eax
-	  @@:
-		mov		rect.left,eax
-		;Top
-		mov		eax,rect.top
-		sub		eax,95
-		jnc		@f
-		xor		eax,eax
-	  @@:
-		mov		rect.top,eax
-		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
-		invoke SendMessage,hWin,WM_SETTEXT,0,StyleTxt
-		invoke SetDlgItemText,hWin,IDC_STCWARN,addr szStyleWarn
-		invoke PropertyStyleTxt,hWin,addr buffer
-		invoke GetDlgItem,hWin,IDC_BTNLEFT
-		mov		hCtl,eax
-		invoke ImageList_GetIcon,hMnuIml,0,ILD_NORMAL
-		invoke SendMessage,hCtl,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke GetDlgItem,hWin,IDC_BTNRIGHT
-		mov		hCtl,eax
-		invoke ImageList_GetIcon,hMnuIml,1,ILD_NORMAL
-		invoke SendMessage,hCtl,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke GetDlgItem,hWin,IDC_BTNSET
-		mov		hCtl,eax
-		invoke ImageList_GetIcon,hMnuIml,2,ILD_NORMAL
-		invoke SendMessage,hCtl,BM_SETIMAGE,IMAGE_ICON,eax
-	.elseif eax==WM_COMMAND
-		mov		eax,wParam
-		mov		edx,eax
-		shr		edx,16
-		and		eax,0FFFFh
-		.if edx==BN_CLICKED
-			.if eax==IDCANCEL
-				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNLEFT
-				dec		StylePos
-				and		StylePos,31
-				mov		eax,StylePos
-				inc		eax
-				invoke SendDlgItemMessage,hWin,IDC_EDTSTYLE,EM_SETSEL,StylePos,eax
-				invoke PropertyStyleTxt,hWin,addr buffer
-			.elseif eax==IDC_BTNRIGHT
-				inc		StylePos
-				and		StylePos,31
-				mov		eax,StylePos
-				inc		eax
-				invoke SendDlgItemMessage,hWin,IDC_EDTSTYLE,EM_SETSEL,StylePos,eax
-				invoke PropertyStyleTxt,hWin,addr buffer
-			.elseif eax==IDC_BTNSET
-				mov		ecx,StylePos
-				mov		eax,80000000h
-				shr		eax,cl
-				mov		ecx,StyleOfs
-				.if StyleEx
-;					and		eax,000777FDh
-					and		eax,0FFFFFFFFh
-					xor		(DIALOG ptr [ecx]).exstyle,eax
-				.else
-					and		eax,0FFFFFFFFh
-					xor		(DIALOG ptr [ecx]).style,eax
-				.endif
-				.if eax
-					invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
-					mov		hCtl,eax
-					invoke UpdateCtl,hCtl
-					invoke PropertyStyleTxt,hWin,addr buffer
-				.endif
-			.endif
-		.endif
-	.elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,NULL
-	.else
-		mov eax,FALSE
-		ret
-	.endif
-	mov  eax,TRUE
-	ret
-
-PropertyDlgProc endp
 
 UpdateCbo proc uses esi,lpData:DWORD
 	LOCAL	nInx:DWORD
@@ -1523,6 +1209,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 						invoke CtlMultiSelect,eax,0
 						add		ebx,4
 					.endw
+					invoke GlobalFree,hMem
 					invoke PropertyList,-1
 				.else
 					call SetCtrlData
@@ -1766,8 +1453,6 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 	invoke SetWindowLong,hPrpLstDlg,GWL_USERDATA,hCtl
 	.if hCtl
 		.if hCtl==-1
-			xor		eax,eax
-			dec		eax
 			mov		fList1,11111110100111000000000001000000b
 						;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1780,6 +1465,32 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		hCtl,eax
 			invoke GetWindowLong,eax,GWL_USERDATA
 			mov		esi,eax
+			mov		eax,[esi].DIALOG.ntype
+			mov		nType,eax
+			mov		eax,hMultiSel
+		  @@:
+			push	eax
+			invoke GetParent,eax
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		eax,[eax].DIALOG.ntype
+			.if eax!=nType
+				mov		nType,-1
+			.endif
+			mov		ecx,8
+			pop		eax
+			.while ecx
+				push	ecx
+				invoke GetWindowLong,eax,GWL_USERDATA
+				pop		ecx
+				dec		ecx
+			.endw
+			or		eax,eax
+			jne		@b
+			.if nType!=-1
+				; Enable Style and ExStyle
+				or		fList2,00000000000000011000000000000000b
+							;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			.endif
 			invoke SetWindowLong,hPrpLstDlg,GWL_USERDATA,hCtl
 			mov		eax,hMultiSel
 		  @@:
@@ -1824,6 +1535,16 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			pop		fList3
 			push	(TYPES ptr [eax]).flist+12
 			pop		fList4
+			.if fSimpleProperty
+				and		fList1,11111110000110000000000001001000b
+							;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+				and		fList2,00110000000000011000000000000000b
+							;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+				and		fList3,00001000000000000000000000000000b
+							;  SELHH
+				and		fList4,00000000000000000000000000000000b
+							;
+			.endif
 		.endif
 		invoke lstrcpy,addr buffer,addr PrAll
 		mov		nInx,0
@@ -2404,12 +2125,56 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				mov		eax,[esi].exstyle
 				invoke hexEax
 				invoke lstrcpy,edi,addr strHex
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].exstyle
+						sub		eax,[ebx].DIALOG.exstyle
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==48
 				;xStyle
 				mov		lbid,PRP_FUN_EXSTYLE
 				mov		eax,[esi].style
 				invoke hexEax
 				invoke lstrcpy,edi,addr strHex
+				.if hMultiSel
+					mov		eax,hMultiSel
+					.while eax
+						push	eax
+						invoke GetParent,eax
+						invoke GetWindowLong,eax,GWL_USERDATA
+						mov		ebx,eax
+						mov		eax,[esi].style
+						sub		eax,[ebx].DIALOG.style
+						.if eax
+							mov		byte ptr [edi],0
+						.endif
+						pop		eax
+						mov		ecx,8
+						.while ecx
+							push	ecx
+							invoke GetWindowLong,eax,GWL_USERDATA
+							pop		ecx
+							dec		ecx
+						.endw
+					.endw
+				.endif
 			.elseif edx==49
 				;IntegralHgt
 				mov		lbid,PRP_BOOL_INTEGRAL
@@ -2754,24 +2519,14 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SetTxtLstPos,addr rect
 					.elseif eax==1003
 						;xExStyle
-						invoke GetWindowLong,hCtl,GWL_USERDATA
-						mov		StyleOfs,eax
-						mov		StyleTxt,offset szExStyle
 						mov		StyleEx,TRUE
-;						invoke DialogBoxParam,hInstance,IDD_PROPERTY,hWin,addr PropertyDlgProc,0
 						invoke GetWindowLong,hCtl,GWL_USERDATA
 						invoke DialogBoxParam,hInstance,IDD_DLGSTYLEMANA,hWin,addr StyleManaDialogProc,eax
-						invoke SendMessage,hWin,LB_SETCURSEL,nInx,0
 					.elseif eax==1004
-						;;xStyle
-						invoke GetWindowLong,hCtl,GWL_USERDATA
-						mov		StyleOfs,eax
-						mov		StyleTxt,offset szStyle
+						;xStyle
 						mov		StyleEx,FALSE
-;						invoke DialogBoxParam,hInstance,IDD_PROPERTY,hWin,addr PropertyDlgProc,0
 						invoke GetWindowLong,hCtl,GWL_USERDATA
 						invoke DialogBoxParam,hInstance,IDD_DLGSTYLEMANA,hWin,addr StyleManaDialogProc,eax
-						invoke SendMessage,hWin,LB_SETCURSEL,nInx,0
 					.elseif eax==PRP_STR_IMAGE
 						;Image
 						invoke SendMessage,hWin,LB_GETITEMRECT,nInx,addr rect

@@ -32,6 +32,7 @@ RASTYLE struct
 	cbsize		dd ?
 	lpdialog	dd ?
 	ntype		dd ?
+	ntypeid		dd ?
 	styleval	dd ?
 	G1Visible	dd ?
 	G2Visible	dd ?
@@ -43,6 +44,7 @@ RS_COLOR struct
 RS_COLOR ends
 
 RSTYPES struct
+	ctlid		dd ?
 	style1		db 8 dup(?)
 	style2		db 8 dup(?)
 	style3		db 8 dup(?)
@@ -61,76 +63,78 @@ szWindowStyles		db 'Window styles',0
 szExWindowStyles	db 'Extended Window styles',0
 szControlStyles		db 'Control styles',0
 
-types				RSTYPES <'WS_','DS_',>				;Dialog	
-					RSTYPES <'WS_','ES_',>				;Edit
-					RSTYPES <'WS_','SS_',>				;Static
-					RSTYPES <'WS_','BS_',>				;GroupBox
-					RSTYPES <'WS_','BS_',>				;Button
-					RSTYPES <'WS_','BS_',>				;CheckBox
-					RSTYPES <'WS_','BS_',>				;RadioButton
-					RSTYPES <'WS_','CBS_',>				;ComboBox
-					RSTYPES <'WS_','LBS_',>				;ListBox
-					RSTYPES <'WS_','SBS_',>				;H-ScrollBar
-					RSTYPES <'WS_','SBS_',>				;V-ScrollBar
-					RSTYPES <'WS_','TCS_',>				;Tab control
-					RSTYPES <'WS_','PBS_',>				;Progress bar
-					RSTYPES <'WS_','TVS_',>				;Tree view
-					RSTYPES <'WS_','LVS_',>				;List view
-					RSTYPES <'WS_','TBS_',>				;Track bar
-					RSTYPES <'WS_','UDS_',>				;UpDown
-					RSTYPES <'WS_','SS_',>				;Image
-					RSTYPES <'WS_','TBSTYLE','CCS_'>	;ToolBar
-					RSTYPES <'WS_','SBARS_','CCS_'>		;Status bar
-					RSTYPES <'WS_','DTS_',>				;DateTimp picker
-					RSTYPES <'WS_','MCS_',>				;Month view
-					RSTYPES <'WS_','ES_',>				;Rich edit
-					RSTYPES <'WS_',,>					;User defined
-					RSTYPES <'WS_',,>					;ComboBoxEx
-					RSTYPES <'WS_','SS_',>				;Shape
-					RSTYPES <'WS_',,>					;IPAddress
-					RSTYPES <'WS_','ACS_',>				;Animate
-					RSTYPES <'WS_',,>					;Hotkey
-					RSTYPES <'WS_','PGS_',>				;H-Pager
-					RSTYPES <'WS_','PGS_',>				;V-Pager
-					RSTYPES <'WS_','RBS_',>				;ReBar
-					RSTYPES <'WS_','HDS_',>				;Header
-					RSTYPES <'WS_',,>					;Custom controls
-					RSTYPES <,,>
+types				RSTYPES <0,'WS_','DS_',>				;Dialog	
+					RSTYPES <1,'WS_','ES_',>				;Edit
+					RSTYPES <2,'WS_','SS_',>				;Static
+					RSTYPES <3,'WS_','BS_',>				;GroupBox
+					RSTYPES <4,'WS_','BS_',>				;Button
+					RSTYPES <5,'WS_','BS_',>				;CheckBox
+					RSTYPES <6,'WS_','BS_',>				;RadioButton
+					RSTYPES <7,'WS_','CBS_',>				;ComboBox
+					RSTYPES <8,'WS_','LBS_',>				;ListBox
+					RSTYPES <9,'WS_','SBS_',>				;H-ScrollBar
+					RSTYPES <10,'WS_','SBS_',>				;V-ScrollBar
+					RSTYPES <11,'WS_','TCS_',>				;Tab control
+					RSTYPES <12,'WS_','PBS_',>				;Progress bar
+					RSTYPES <13,'WS_','TVS_',>				;Tree view
+					RSTYPES <14,'WS_','LVS_',>				;List view
+					RSTYPES <15,'WS_','TBS_',>				;Track bar
+					RSTYPES <16,'WS_','UDS_',>				;UpDown
+					RSTYPES <17,'WS_','SS_',>				;Image
+					RSTYPES <18,'WS_','TBSTYLE','CCS_'>		;ToolBar
+					RSTYPES <19,'WS_','SBARS_','CCS_'>		;Status bar
+					RSTYPES <20,'WS_','DTS_',>				;DateTimp picker
+					RSTYPES <21,'WS_','MCS_',>				;Month view
+					RSTYPES <22,'WS_','ES_',>				;Rich edit
+					RSTYPES <23,'WS_',,>					;User defined
+					RSTYPES <24,'WS_',,>					;ComboBoxEx
+					RSTYPES <25,'WS_','SS_',>				;Shape
+					RSTYPES <26,'WS_',,>					;IPAddress
+					RSTYPES <27,'WS_','ACS_',>				;Animate
+					RSTYPES <28,'WS_',,>					;Hotkey
+					RSTYPES <29,'WS_','PGS_',>				;H-Pager
+					RSTYPES <30,'WS_','PGS_',>				;V-Pager
+					RSTYPES <31,'WS_','RBS_',>				;ReBar
+					RSTYPES <32,'WS_','HDS_',>				;Header
+					RSTYPES <260,'WS_','RAES_',>			;RAEdit
+					RSTYPES <280,'WS_','RAGS_',>			;RAGrid
+					RSTYPES <256,'WS_','SPS_',>				;SpreadSheet
+					RSTYPES <-1,'WS_',>
 
-extypes				RSTYPES <'WS_',,>					;Dialog	
-					RSTYPES <'WS_',,>					;Edit
-					RSTYPES <'WS_',,>					;Static
-					RSTYPES <'WS_',,>					;GroupBox
-					RSTYPES <'WS_',,>					;Button
-					RSTYPES <'WS_',,>					;CheckBox
-					RSTYPES <'WS_',,>					;RadioButton
-					RSTYPES <'WS_',,>					;ComboBox
-					RSTYPES <'WS_',,>					;ListBox
-					RSTYPES <'WS_',,>					;H-ScrollBar
-					RSTYPES <'WS_',,>					;V-ScrollBar
-					RSTYPES <'WS_',,>					;Tab control
-					RSTYPES <'WS_',,>					;Progress bar
-					RSTYPES <'WS_',,>					;Tree view
-					RSTYPES <'WS_',,>					;List view
-					RSTYPES <'WS_',,>					;Track bar
-					RSTYPES <'WS_',,>					;UpDown
-					RSTYPES <'WS_',,>					;Image
-					RSTYPES <'WS_',,>					;ToolBar
-					RSTYPES <'WS_',,>					;Status bar
-					RSTYPES <'WS_',,>					;DateTimp picker
-					RSTYPES <'WS_',,>					;Month view
-					RSTYPES <'WS_',,>					;Rich edit
-					RSTYPES <'WS_',,>					;User defined
-					RSTYPES <'WS_',,>					;ComboBoxEx
-					RSTYPES <'WS_',,>					;Shape
-					RSTYPES <'WS_',,>					;IPAddress
-					RSTYPES <'WS_',,>					;Animate
-					RSTYPES <'WS_',,>					;Hotkey
-					RSTYPES <'WS_',,>					;H-Pager
-					RSTYPES <'WS_',,>					;V-Pager
-					RSTYPES <'WS_',,>					;ReBar
-					RSTYPES <'WS_',,>					;Header
-					RSTYPES <'WS_',,>					;Custom controls
+extypes				RSTYPES <'WS_',,>						;Dialog	
+					RSTYPES <'WS_',,>						;Edit
+					RSTYPES <'WS_',,>						;Static
+					RSTYPES <'WS_',,>						;GroupBox
+					RSTYPES <'WS_',,>						;Button
+					RSTYPES <'WS_',,>						;CheckBox
+					RSTYPES <'WS_',,>						;RadioButton
+					RSTYPES <'WS_',,>						;ComboBox
+					RSTYPES <'WS_',,>						;ListBox
+					RSTYPES <'WS_',,>						;H-ScrollBar
+					RSTYPES <'WS_',,>						;V-ScrollBar
+					RSTYPES <'WS_',,>						;Tab control
+					RSTYPES <'WS_',,>						;Progress bar
+					RSTYPES <'WS_',,>						;Tree view
+					RSTYPES <'WS_',,>						;List view
+					RSTYPES <'WS_',,>						;Track bar
+					RSTYPES <'WS_',,>						;UpDown
+					RSTYPES <'WS_',,>						;Image
+					RSTYPES <'WS_',,>						;ToolBar
+					RSTYPES <'WS_',,>						;Status bar
+					RSTYPES <'WS_',,>						;DateTimp picker
+					RSTYPES <'WS_',,>						;Month view
+					RSTYPES <'WS_',,>						;Rich edit
+					RSTYPES <'WS_',,>						;User defined
+					RSTYPES <'WS_',,>						;ComboBoxEx
+					RSTYPES <'WS_',,>						;Shape
+					RSTYPES <'WS_',,>						;IPAddress
+					RSTYPES <'WS_',,>						;Animate
+					RSTYPES <'WS_',,>						;Hotkey
+					RSTYPES <'WS_',,>						;H-Pager
+					RSTYPES <'WS_',,>						;V-Pager
+					RSTYPES <'WS_',,>						;ReBar
+					RSTYPES <'WS_',,>						;Header
+					RSTYPES <'WS_',,>						;Custom controls
 					RSTYPES <,,>
 
 rsstyledefdlg	dd DS_3DLOOK
@@ -1042,6 +1046,111 @@ rsstyledef		dd ACS_CENTER
 				dd WS_VSCROLL
 				dd WS_VSCROLL
 				db 'WS_VSCROLL',0
+;RAEdit
+				dd 00001h			;No splitt button
+				dd 00001h
+				db 'RAES_NOSPLITT',0
+				dd 00002h			;No linenumber button
+				dd 00002h
+				db 'RAES_NOLINENUMBER',0
+				dd 00004h			;No expand/collapse buttons
+				dd 00004h
+				db 'RAES_NOCOLLAPSE',0
+				dd 00008h			;No horizontal scrollbar
+				dd 00008h
+				db 'RAES_NOHSCROLL',0
+				dd 00010h			;No vertical scrollbar
+				dd 00010h
+				db 'RAES_NOVSCROLL',0
+				dd 00020h			;No color hiliting
+				dd 00020h
+				db 'RAES_NOHILITE',0
+				dd 00040h			;No size grip
+				dd 00040h
+				db 'RAES_NOSIZEGRIP',0
+				dd 00080h			;No action on double clicks
+				dd 00080h
+				db 'RAES_NODBLCLICK',0
+				dd 00100h			;Text is locked
+				dd 00100h
+				db 'RAES_READONLY',0
+				dd 00200h			;Blocks are not divided by line
+				dd 00200h
+				db 'RAES_NODIVIDERLINE',0
+				dd 00400h			;Drawing directly to screen DC
+				dd 00400h
+				db 'RAES_NOBACKBUFFER',0
+				dd 00800h			;No state indicator
+				dd 00800h
+				db 'RAES_NOSTATE',0
+				dd 01000h			;Drag & Drop support, app must load ole
+				dd 01000h
+				db 'RAES_DRAGDROP',0
+				dd 02000h			;Scrollbar tooltip
+				dd 02000h
+				db 'RAES_SCROLLTIP',0
+				dd 04000h			;Comments are hilited
+				dd 04000h
+				db 'RAES_HILITECOMMENT',0
+				dd 08000h			;Line number column autosizes
+				dd 08000h
+				db 'RAES_AUTOSIZELINENUM',0
+				dd 10000h			;No lock button
+				dd 10000h
+				db 'RAES_NOLOCK',0
+;RAGrid
+				dd 01h
+				dd 01h
+				db 'RAGS_NOSEL',0
+				dd 02h
+				dd 02h
+				db 'RAGS_NOFOCUS',0
+				dd 04h
+				dd 04h
+				db 'RAGS_HGRIDLINES',0
+				dd 08h
+				dd 08h
+				db 'RAGS_VGRIDLINES',0
+				dd 10h
+				dd 10h
+				db 'RAGS_GRIDFRAME',0
+				dd 20h
+				dd 20h
+				db 'RAGS_NOCOLSIZE',0
+;SpreadSheet
+				dd 0001h			;Vertical scrollbar
+				dd 0001h
+				db 'SPS_VSCROLL',0
+				dd 0002h			;Horizontal scrollbar
+				dd 0002h
+				db 'SPS_HSCROLL',0
+				dd 0004h			;Show status window
+				dd 0004h
+				db 'SPS_STATUS',0
+				dd 0008h			;Show grid lines
+				dd 0008h
+				db 'SPS_GRIDLINES',0
+				dd 0010h			;Selection by row
+				dd 0010h
+				db 'SPS_ROWSELECT',0
+				dd 0020h			;Cell editing
+				dd 0020h
+				db 'SPS_CELLEDIT',0
+				dd 0040h			;Inserting and deleting row/col adjusts max row/col
+				dd 0040h
+				db 'SPS_GRIDMODE',0
+				dd 0080h			;Allow col widt sizeing by mouse
+				dd 0080h
+				db 'SPS_COLSIZE',0
+				dd 0100h			;Allow row height sizeing by mouse
+				dd 0100h
+				db 'SPS_ROWSIZE',0
+				dd 0200h			;Allow splitt window sizeing by mouse
+				dd 0200h
+				db 'SPS_WINSIZE',0
+				dd 0400h			;Allow multiselect
+				dd 0400h
+				db 'SPS_MULTISELECT',0
 				dd 0,0
 				db 0
 
@@ -1157,10 +1266,12 @@ ShowStyles proc uses ebx esi edi,hWin:HWND
 	invoke SendMessage,hWin,RSM_GETTOPINDEX,0,0
 	push	eax
 	invoke SendMessage,hWin,RSM_CLEAR,0,0
-	mov		eax,[ebx].RASTYLE.ntype
-	mov		ecx,sizeof RSTYPES
-	mul		ecx
-	lea		esi,types[eax]
+	mov		eax,[ebx].RASTYLE.ntypeid
+	mov		esi,offset types
+	.while dword ptr [esi].RSTYPES.ctlid!=-1
+		.break .if eax==[esi].RSTYPES.ctlid
+		lea		esi,[esi+sizeof RSTYPES]
+	.endw
 	.if !StyleEx
 		lea		eax,[esi].RSTYPES.style2
 		.if byte ptr [eax]
@@ -1262,6 +1373,10 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	sinf:SCROLLINFO
 	LOCAL	lf:LOGFONT
 	LOCAL	buffer[64]:BYTE
+	LOCAL	style:DWORD
+	LOCAL	exstyle:DWORD
+	LOCAL	hCtl:HWND
+	LOCAL	hMem:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -1597,6 +1712,8 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RASTYLE.lpdialog,edx
 		mov		eax,[edx].DIALOG.ntype
 		mov		[ebx].RASTYLE.ntype,eax
+		mov		eax,[edx].DIALOG.ntypeid
+		mov		[ebx].RASTYLE.ntypeid,eax
 		.if StyleEx
 			mov		eax,[edx].DIALOG.exstyle
 		.else
@@ -1615,15 +1732,16 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,[ebx].RASTYLE.lpdialog
 		mov		eax,wParam
 		.if StyleEx
-			mov		[edx].DIALOG.exstyle,eax
+			mov		exstyle,eax
 		.else
-			mov		[edx].DIALOG.style,eax
+			mov		style,eax
 		.endif
 		mov		[ebx].RASTYLE.styleval,eax
 		push	[edx].DIALOG.hwnd
 		invoke ShowStyles,hWin
 		pop		eax
-		invoke UpdateCtl,eax
+		mov		hCtl,eax
+		call	UpdateStyle
 	.elseif eax==RSM_GETCOLOR
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -2014,12 +2132,78 @@ FlipStyle:
 			mov		edx,[ebx].RASTYLE.lpdialog
 			mov		eax,[ebx].RASTYLE.styleval
 			.if StyleEx
+				mov		exstyle,eax
+			.else
+				mov		style,eax
+			.endif
+			call	UpdateStyle
+		.endif
+	.endif
+	retn
+
+UpdateStyle:
+	.if hMultiSel
+		push	0
+		mov		eax,hMultiSel
+		.while eax
+			push	eax
+			invoke GetParent,eax
+			mov		edx,eax
+			pop		eax
+			push	edx
+			mov		ecx,8
+			.while ecx
+				push	ecx
+				invoke GetWindowLong,eax,GWL_USERDATA
+				pop		ecx
+				dec		ecx
+			.endw
+		.endw
+		.while hMultiSel
+			invoke DestroyMultiSel,hMultiSel
+			mov		hMultiSel,eax
+		.endw
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
+		mov		ebx,eax
+		mov		hMem,eax
+		pop		eax
+		.while eax
+			mov		hCtl,eax
+			invoke GetWindowLong,hCtl,GWL_USERDATA
+			mov		edx,eax
+			.if StyleEx
+				mov		eax,exstyle
 				mov		[edx].DIALOG.exstyle,eax
 			.else
+				mov		eax,style
 				mov		[edx].DIALOG.style,eax
 			.endif
-			invoke UpdateCtl,[edx].DIALOG.hwnd
+			invoke UpdateCtl,hCtl
+			mov		[ebx],eax
+			add		ebx,4
+			pop		eax
+		.endw
+		mov		ebx,hMem
+		.while dword ptr [ebx]
+			mov		eax,[ebx]
+			invoke CtlMultiSelect,eax,0
+			add		ebx,4
+		.endw
+		invoke PropertyList,-1
+	.else
+		mov		eax,[ebx].RASTYLE.lpdialog
+		mov		eax,[eax].DIALOG.hwnd
+		mov		hCtl,eax
+		invoke GetWindowLong,hCtl,GWL_USERDATA
+		mov		edx,eax
+		.if StyleEx
+			mov		eax,exstyle
+			mov		[edx].DIALOG.exstyle,eax
+		.else
+			mov		eax,style
+			mov		[edx].DIALOG.style,eax
 		.endif
+		invoke UpdateCtl,hCtl
 	.endif
 	retn
 

@@ -263,7 +263,6 @@ SaveProject proc lpFileName:DWORD
 				dec		eax
 			.endw
 			mov		word ptr buff[eax],'h'
-			;invoke lstrcat,addr buff,offset szDefines
 			invoke CreateFile,addr buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 			.if eax!=INVALID_HANDLE_VALUE
 				mov		hFile,eax
@@ -492,6 +491,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		.if grdsize.nodefines
 			or		edx,DES_NODEFINES
+		.endif
+		.if grdsize.simple
+			or		edx,DES_SIMPLEPROPERTY
 		.endif
 		invoke CreateWindowEx,200h,addr szDlgEditClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
 		mov		hResEd,eax

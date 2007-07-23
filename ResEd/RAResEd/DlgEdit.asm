@@ -836,6 +836,7 @@ fShowSizePos		dd ?
 fStyleHex			dd ?
 fSizeToFont			dd ?
 fNoDefines			dd ?
+fSimpleProperty		dd ?
 hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
 fNoMouseUp			dd ?

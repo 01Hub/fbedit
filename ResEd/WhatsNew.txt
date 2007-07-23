@@ -1,8 +1,12 @@
 ResEd
 
-1.1.4.3 - 2007.07.20
+1.1.4.3 - 2007.07.23
 ---------------------
 o Added multiselected controls propery.
+o It is now possible to set default export filename to [Project].xxx.
+  - [Project] will be replaced by project filename.
+o Added option to set Simple Properties.
+o Style manager now supports RAEdit, RAGrid and SpreadSheet custom controls.
 
 1.1.4.2b - 2007.07.20
 ---------------------

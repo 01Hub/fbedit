@@ -293,6 +293,7 @@ DES_TOOLTIP			equ 4
 DES_STYLEHEX		equ 8
 DES_SIZETOFONT		equ 16
 DES_NODEFINES		equ 32
+DES_SIMPLEPROPERTY	equ 64
 
 ;Dialog edit window memory
 DEWM_DIALOG			equ 0

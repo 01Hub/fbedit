@@ -130,6 +130,7 @@ RADIALOG ends
 
 .const
 
+szProject			db '[PROJECT]',0
 szToolTip1			db 'Dialog edit',0
 szCap1				db 0
 szName1				db 'IDC_DLE',0
