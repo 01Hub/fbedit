@@ -2127,6 +2127,7 @@ ParseMenuEx endp
 ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	LOCAL	lang:DWORD
 	LOCAL	sublang:DWORD
+	LOCAL	ascii:DWORD
 
 	mov		lang,0
 	mov		sublang,0
@@ -2202,10 +2203,16 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			.if al=='"'
 				invoke UnQuoteWord,offset wordbuff
 				movzx	eax,wordbuff
+				mov		ascii,eax
+				.if eax>='a' && eax<='z'
+					and		eax,5Fh
+				.endif
 			.elseif ax=='x0'
 				invoke HexToBin,offset wordbuff+2
+				mov		ascii,eax
 			.elseif al>='0' && al<='9'
 				invoke ResEdDecToBin,offset wordbuff
+				mov		ascii,eax
 			.elseif eax=='_KV'
 				push	esi
 				mov		esi,offset szAclKeys
@@ -2221,9 +2228,11 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				.endw
 				mov		eax,41h
 			  @@:
+				mov		ascii,eax
 				pop		esi
 			.else
 				mov		eax,41h
+				mov		ascii,eax
 			.endif
 			mov		ebx,eax
 			push	esi
@@ -2253,7 +2262,7 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				.endif
 				invoke lstrcmpi,offset wordbuff,offset szASCII
 				.if !eax
-					mov		eax,[edi].ACCELMEM.nkey
+					mov		eax,ascii;[edi].ACCELMEM.nkey
 					mov		[edi].ACCELMEM.nascii,eax
 					mov		[edi].ACCELMEM.nkey,0
 					jmp		@f

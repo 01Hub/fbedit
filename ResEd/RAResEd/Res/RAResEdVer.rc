@@ -1,7 +1,7 @@
 #define VERINF1 1
 VERINF1 VERSIONINFO
-FILEVERSION 1,0,8,159
-PRODUCTVERSION 1,0,8,159
+FILEVERSION 1,0,8,161
+PRODUCTVERSION 1,0,8,161
 FILEOS 0x00000004
 FILETYPE 0x00000002
 BEGIN
@@ -9,12 +9,12 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.0.8.159\0"
+      VALUE "FileVersion", "1.0.8.161\0"
       VALUE "FileDescription", "Resource editor custom control\0"
       VALUE "InternalName", "RAResEd\0"
       VALUE "LegalCopyright", "KetilO (C) 2003-2005\0"
       VALUE "OriginalFilename", "RAResEd.dll\0"
-      VALUE "ProductVersion", "1.0.8.159\0"
+      VALUE "ProductVersion", "1.0.8.161\0"
     END
   END
   BLOCK "VarFileInfo"
