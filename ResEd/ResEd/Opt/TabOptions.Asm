@@ -449,7 +449,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
 				invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
 				invoke GetWindowLong,hResEd,GWL_STYLE
-				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES)
+				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES or DES_SIMPLEPROPERTY)
 				.if grdsize.show
 					or		eax,DES_GRID
 				.endif
