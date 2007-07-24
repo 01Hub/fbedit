@@ -96,8 +96,23 @@
 'MNUITEM ends
 '
 Type RARESEDCOLOR
-	back As Integer
-	text As Integer
+	back		As Integer
+	text		As Integer
+End Type
+
+' Resource ID's
+Type RESID
+	startid	As Integer
+	incid		As Integer
+End Type
+
+Type INITID
+	dlg		As RESID
+	mnu		As RESID
+	acl		As RESID
+	ver		As RESID
+	man		As RESID
+	rcd		As RESID
 End Type
 
 ' Dialog editor messages
@@ -168,6 +183,7 @@ End Type
 #Define PRO_EXPORTNAMES			PRO_BASE+14		' wParam=0, lParam=Handle output window
 #Define PRO_GETSTYLEPOS			PRO_BASE+15		' wParam=0, lParam=lpPOINT
 #Define PRO_SETSTYLEPOS			PRO_BASE+16		' wParam=0, lParam=lpPOINT
+#Define PRO_SETINITID			PRO_BASE+17		' wParam=0, lParam=lpINITID
 
 ' Project item types
 #Define TPE_NAME					1
@@ -262,6 +278,8 @@ End Type
 #Define DES_TOOLTIP			4
 #Define DES_STYLEHEX			8
 #Define DES_SIZETOFONT		16
+#Define DES_NODEFINES		32
+#Define DES_SIMPLEPROPERTY	64
 
 ' Dialog edit window memory
 #Define DEWM_DIALOG			0

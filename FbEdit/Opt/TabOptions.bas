@@ -38,6 +38,7 @@
 #Define IDC_CHKGRIDLINE						4009
 #Define IDC_CHKSTYLEHEX						4010
 #Define IDC_CHKSIZETOFONT					4011
+#Define IDC_CHKSIMPLEPROPERTY				4012
 
 Dim Shared hTabOpt As HWND
 Dim Shared hTabDlg(3) As HWND
@@ -174,6 +175,7 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			CheckDlgButton(hWin,IDC_CHKGRIDLINE,grdsize.line)
 			CheckDlgButton(hWin,IDC_CHKSTYLEHEX,grdsize.stylehex)
 			CheckDlgButton(hWin,IDC_CHKSIZETOFONT,grdsize.sizetofont)
+			CheckDlgButton(hWin,IDC_CHKSIMPLEPROPERTY,grdsize.simple)
 			'
 		Case WM_DRAWITEM
 			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
@@ -214,7 +216,7 @@ Sub SetDialogOptions(ByVal hWin As HWND)
 	SendMessage(lpRESMEM->hProject,PRO_SETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
 	SendMessage(lpRESMEM->hResEd,DEM_SETGRIDSIZE,(grdsize.y Shl 16) +grdsize.x,(grdsize.line Shl 24)+grdsize.color)
 	st=GetWindowLong(lpRESMEM->hResEd,GWL_STYLE)
-	st=st And (-1 Xor (DES_GRID Or DES_SNAPTOGRID Or DES_TOOLTIP Or DES_STYLEHEX Or DES_SIZETOFONT))
+	st=st And (-1 Xor (DES_GRID Or DES_SNAPTOGRID Or DES_TOOLTIP Or DES_STYLEHEX Or DES_SIZETOFONT Or DES_NODEFINES Or DES_SIMPLEPROPERTY))
 	If grdsize.show Then
 		st=st Or DES_GRID
 	EndIf
@@ -229,6 +231,12 @@ Sub SetDialogOptions(ByVal hWin As HWND)
 	EndIf
 	If grdsize.sizetofont Then
 		st=st Or DES_SIZETOFONT
+	EndIf
+	If grdsize.nodefines Then
+		st=st Or DES_NODEFINES
+	EndIf
+	If grdsize.simple Then
+		st=st Or DES_SIMPLEPROPERTY
 	EndIf
 	SetWindowLong(lpRESMEM->hResEd,GWL_STYLE,st)
 
@@ -311,8 +319,9 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 					grdsize.line=IsDlgButtonChecked(hTabDlg(2),IDC_CHKGRIDLINE)
 					grdsize.stylehex=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSTYLEHEX)
 					grdsize.sizetofont=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSIZETOFONT)
+					grdsize.simple=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSIMPLEPROPERTY)
 					grdsize.color=grdcol
-					SaveToIni(StrPtr("Resource"),StrPtr("Grid"),"444444444",@grdsize,FALSE)
+					SaveToIni(StrPtr("Resource"),StrPtr("Grid"),"44444444444",@grdsize,FALSE)
 					SetDialogOptions(ah.hres)
 					buff=String(32,0)
 					WritePrivateProfileSection(StrPtr("CustCtrl"),@buff,@ad.IniFile)
