@@ -35,6 +35,7 @@
 #Include "Opt\DebugOpt.bas"
 #Include "CreateTemplate.bas"
 #Include "Addins.bas"
+#Include "Opt\Language.bas"
 
 Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim buffer As ZString*260
@@ -347,6 +348,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Menus
 			ah.hmenu=GetMenu(hWin)
 			ah.hcontextmenu=LoadMenu(hInstance,Cast(ZString ptr,IDR_CONTEXTMENU))
+			GetPrivateProfileString(StrPtr("Language"),StrPtr("Language"),@szNULL,@Language,SizeOf(Language),@ad.IniFile)
+			If Language<>"" Then
+				GetLanguageFile
+			EndIf
 			' Project tab
 			ah.htab=GetDlgItem(hWin,IDC_TAB)
 			tci.mask=TCIF_TEXT
@@ -497,6 +502,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_DESTROY
 			KillTimer(hWin,200)
+			If hLangMem Then
+				GlobalFree(hLangMem)
+				hLangMem=0
+			EndIf
 			DeleteObject(Cast(HBITMAP,SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,0)))
 			DeleteObject(ah.rafnt.hFont)
 			DeleteObject(ah.rafnt.hIFont)
@@ -1157,7 +1166,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_TOOLS_EXPORT
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGEXPORT),hWin,@ExportDlgProc,0)
+						Case IDM_OPTIONS_LANGUAGE
+							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGLANGUAGE),hWin,@LanguageDlgProc,0)
 							'
 						Case IDM_OPTIONS_CODE
 							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGKEYWORDS),hWin,@KeyWordsDlgProc,0)

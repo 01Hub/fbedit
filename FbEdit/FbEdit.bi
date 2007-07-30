@@ -59,6 +59,7 @@ Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integ
 #Define IDC_IMGSPLASH						1017
 
 ' Menu and toolbar
+#Define IDR_MENU								10000
 #Define IDM_FILE								10001
 #Define IDM_FILE_NEWPROJECT				10002
 #Define IDM_FILE_OPENPROJECT				10003
@@ -188,6 +189,7 @@ Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integ
 #Define IDM_TOOLS_EXPORT					10152
 
 #Define IDM_OPTIONS							10161
+#Define IDM_OPTIONS_LANGUAGE				10017
 #Define IDM_OPTIONS_CODE					10162
 #Define IDM_OPTIONS_DIALOG					10163
 #Define IDM_OPTIONS_PATH					10164
@@ -625,3 +627,5 @@ Dim Shared pd As PRINTDLG
 Dim Shared szApi As ZString*260
 Dim Shared novr As Integer
 Dim Shared nsel As Integer
+Dim Shared Language As ZString*260
+Dim Shared hLangMem As HGLOBAL

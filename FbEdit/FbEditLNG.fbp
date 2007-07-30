@@ -1,0 +1,27 @@
+[Project]
+Version=2
+Api=fb (FreeBASIC),win (Windows)
+Description=FbEdit language translator
+Grouping=1
+AddMainFiles=1
+ResExport=
+[Make]
+Recompile=0
+Module=Module Build,fbc -c
+Current=1
+1=Windows GUI,fbc -s gui
+2=Windows GUI (Debug),fbc -s gui -g
+Output=..\Language\FbEditLNG.exe
+Run=
+[File]
+1=FbEditLNG.Bas
+2=FbEditLNG.Bi
+3=FbEditLNG.Rc
+4=MenuLNG.bas
+5=MiscLNG.bas
+[FileInfo]
+1=0,32,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,9,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,19,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,78,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5=0,21,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
