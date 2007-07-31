@@ -473,7 +473,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
-			If CloseAllTabs(hWin,fProject,0)=FALSE Then
+			If CloseAllTabs(hWin,fProject,0,TRUE)=FALSE Then
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0
 				EndIf
@@ -1166,6 +1166,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_TOOLS_EXPORT
+							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGEXPORT),hWin,@ExportDlgProc,0)
+							'
 						Case IDM_OPTIONS_LANGUAGE
 							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGLANGUAGE),hWin,@LanguageDlgProc,0)
 							'
@@ -1901,11 +1903,7 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	CreateDialogParam(hInst,Cast(ZString ptr,IDD_MAIN),NULL,@DlgProc,NULL)
 	If wpos.fMax Then
 		ShowWindow(ah.hwnd,SW_MAXIMIZE)
-		''' i suggest change next line to sendmessage because
-		''' postmessage interferes/asynchronizes in the load of addins and 
-		''' first refresh/update of main window can fails.
 		SendMessage(ah.hwnd,WM_SIZE,0,0)
-		'PostMessage(ah.hwnd,WM_SIZE,0,0)
 	Else
 		ShowWindow(ah.hwnd,SW_SHOWNORMAL)
 	EndIf

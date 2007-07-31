@@ -1165,13 +1165,12 @@ NxtWordProc:
 	retn
 
 SaveParam:
-  @@:
 	invoke GetWord,esi,addr npos
 	mov		esi,edx
 	.if !ecx
 		.if byte ptr [esi]==',' || byte ptr [esi]=='('
 			inc		esi
-			jmp		@b
+			jmp		SaveParam
 		.elseif byte ptr [esi]==')'
 			mov		byte ptr [edi],0
 			inc		edi
@@ -1181,7 +1180,7 @@ SaveParam:
 		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
 		.if eax
 			lea		esi,[esi+ecx]
-			jmp		@b
+			jmp		SaveParam
 		.endif
 		mov		lpword1,esi
 		mov		len1,ecx
@@ -1230,7 +1229,7 @@ SaveParam:
 			call	SkipToComma
 			.if byte ptr [esi]==','
 				inc		esi
-				jmp		@b
+				jmp		SaveParam
 			.endif
 		.endif
 	.endif

@@ -455,7 +455,7 @@ Sub UnlockAllTabs()
 	
 End Sub
 
-Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND) As Boolean
+Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND,ByVal fIgnoreLocks As Boolean=FALSE) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
@@ -466,7 +466,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If lpTABMEM->hedit<>hWinDontClose And SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Then
+			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Or fIgnoreLocks=TRUE) Then
 				ShowWindow(ah.hred,SW_HIDE)
 				ah.hred=lpTABMEM->hedit
 				ad.filename=lpTABMEM->filename

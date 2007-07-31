@@ -6,6 +6,7 @@ Backup=$P\Bak\
 Group=1
 GroupExpand=1
 Res.rc=1
+Debug=0
 [Files]
 1=RAProperty.Asm
 2=..\RAProperty.Inc
@@ -87,7 +88,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -142,7 +143,7 @@ ProductVer4Range=0
 8=0,0,0,0,1641
 7=0,0,0,0,307
 9=0,0,0,0,2844
-10=0,0,589,494,23626
+10=0,0,589,494,23118
 11=0,0,746,498,11256
 12=0,0,0,0,2850
 [BookMark]
@@ -161,7 +162,7 @@ ProductVer4Range=0
 [AutoLoad]
 1=1
 [PTimer]
-PTimer=97790076
+PTimer=98112560
 [Find]
 1="QuickSort"
 2="TTM_SETITEM"
