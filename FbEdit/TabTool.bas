@@ -455,7 +455,7 @@ Sub UnlockAllTabs()
 	
 End Sub
 
-Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND) As Boolean
+Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND,ByVal fCloseLocked As Boolean=FALSE) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
@@ -466,7 +466,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1) Then
+			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Or fCloseLocked=TRUE) Then
 				ShowWindow(ah.hred,SW_HIDE)
 				ah.hred=lpTABMEM->hedit
 				ad.filename=lpTABMEM->filename
@@ -511,8 +511,10 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		SetFocus(ah.hred)
+		' This will not work well if an unsaved file is locked FbEdit will still exit.
 		' close program if config is set
-		Return edtopt.closeonlocks Xor 1
+		'Return edtopt.closeonlocks Xor 1
+		Return TRUE
 	Else
 		ShowWindow(ah.htabtool,SW_HIDE)
 		curtab=-1
