@@ -15,6 +15,7 @@ Nxt:
 	mii.cch=SizeOf(szBuff)
 	If GetMenuItemInfo(hMnu,nPos,TRUE,@mii) Then
 		If mii.wID<>0 And szBuff<>"(Empty)" Then
+			ConvertTo(@szBuff)
 			szID=Str(mii.wID)
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@"="))

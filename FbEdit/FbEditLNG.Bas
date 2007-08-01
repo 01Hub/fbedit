@@ -8,6 +8,8 @@
 #Include "FbEditLNG.bi"
 #Include "MiscLNG.bas"
 #Include "MenuLNG.bas"
+#Include "DialogLNG.bas"
+#Include "StringLNG.bas"
 
 Function OpenProject(ByVal hWin As HWND) As Boolean
 	Dim ofn As OPENFILENAME
@@ -111,12 +113,11 @@ Sub UpdateList(ByVal hWin As HWND)
 End Sub
 
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim As Long id, Event, x, y
-	Dim hBtn As HWND
-	Dim rect As RECT
+	Dim As Long id, Event
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			hWnd=hWin
 			hEdt=GetDlgItem(hWin,IDC_EDTLNGLANG)
 			UpdateList(hWin)
 			'
@@ -136,8 +137,15 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szNew))
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
+								id=1
+								While id<30000
+									DialogBoxParam(hInstance,id,hWin,@DumpDlgProc,id)
+									id+=1
+								Wend
+
 								DumpMenu(10000)
 								DumpMenu(20000)
+								DumpStrings
 							EndIf
 						Case IDC_BTNFILE
 							If WantToSave(hWin) Then
@@ -152,6 +160,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					Select Case id
 						Case 10000,20000
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGMENU),hWin,@DlgMenuProc,id)
+						Case 99999
+						Case Else
+							'CreateDialogParam(hInstance,Cast(ZString Ptr,id),hWin,@TestDlgProc,id)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,id),hWin,@TestDlgProc,id)
 					End Select
 			End Select
 		Case Else
