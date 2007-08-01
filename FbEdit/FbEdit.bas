@@ -271,7 +271,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
 			lpOldOutputProc=Cast(Any ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
-			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"44444444444444444",@edtopt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"444444444444444444",@edtopt,FALSE)
 			' Get find history
 			LoadFindHistory
 			' Create fonts
@@ -473,7 +473,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
-			If CloseAllTabs(hWin,fProject,0,TRUE)=FALSE Then
+			If CloseAllTabs(hWin,fProject,0)=FALSE Then
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0
 				EndIf

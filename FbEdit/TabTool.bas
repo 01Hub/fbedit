@@ -455,7 +455,7 @@ Sub UnlockAllTabs()
 	
 End Sub
 
-Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND,ByVal fIgnoreLocks As Boolean=FALSE) As Boolean
+Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM ptr
 	Dim i As Integer
@@ -466,7 +466,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Or fIgnoreLocks=TRUE) Then
+			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1) Then
 				ShowWindow(ah.hred,SW_HIDE)
 				ah.hred=lpTABMEM->hedit
 				ad.filename=lpTABMEM->filename
@@ -511,8 +511,8 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		SetFocus(ah.hred)
-		' don't close project
-		Return TRUE
+		' close program if config is set
+		Return edtopt.closeonlocks Xor 1
 	Else
 		ShowWindow(ah.htabtool,SW_HIDE)
 		curtab=-1
