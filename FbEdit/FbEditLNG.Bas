@@ -139,10 +139,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
 								id=1
 								While id<30000
-									DialogBoxParam(hInstance,id,hWin,@DumpDlgProc,id)
+									DialogBoxParam(hInstance,Cast(ZString Ptr,id),hWin,@DumpDlgProc,id)
 									id+=1
 								Wend
-
 								DumpMenu(10000)
 								DumpMenu(20000)
 								DumpStrings

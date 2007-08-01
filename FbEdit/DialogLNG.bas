@@ -29,8 +29,7 @@ Function DumpDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
-
-			szID=Str(lParam)
+'			szID=Str(lParam)
 '			SendMessage(hWin,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
 '			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("[")))
 '			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
@@ -49,7 +48,7 @@ Function DumpDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
 				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
 			EndIf
-			EnumChildWindows(hWin,@DumpEnumProc,Cast(LPARAM,hWin))
+			EnumChildWindows(hWin,Cast(ENUMWINDOWSPROC,@DumpEnumProc),Cast(LPARAM,hWin))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
 			SendMessage(hWin,WM_CLOSE,NULL,NULL)
 		Case WM_CLOSE
