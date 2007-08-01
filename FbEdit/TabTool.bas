@@ -511,9 +511,6 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		SetFocus(ah.hred)
-		' This will not work well if an unsaved file is locked FbEdit will still exit.
-		' close program if config is set
-		'Return edtopt.closeonlocks Xor 1
 		Return TRUE
 	Else
 		ShowWindow(ah.htabtool,SW_HIDE)
