@@ -1,6 +1,6 @@
 ;--------------------------------------------------------------------------
 [Lang]
-Lang=Spanish (Spain), by Denise Amiga
+Lang=Spanish (Spain), By Denise Amiga
 ;--------------------------------------------------------------------------
 [10000]
 10001=Fichero
@@ -36,8 +36,8 @@ Lang=Spanish (Spain), by Denise Amiga
 10035=Volver	Ctrl+F2
 10036=Expandir / Contraer	Ctrl+E
 10037=Bloque
-10038=Tabular	Pestaña
-10039=Destabular	Shift+Pestaña
+10038=Tabular	Tab
+10039=Destabular	Shift+Tab
 10040=Comentar	F9
 10041=Descomentar	Ctrl+F9
 10042=Recortar Espacios Finales
@@ -93,8 +93,8 @@ Lang=Spanish (Spain), by Denise Amiga
 10103=Fichero
 10104=Modulo
 10105=Añadir Existente
-10106=Ficheros
-10107=Modulos
+10106=Fichero
+10107=Modulo
 10108=Eliminar Seleccionado
 10109=Renombrar Seleccionado
 10110=Opciones de Proyecto
