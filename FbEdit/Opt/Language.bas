@@ -1,6 +1,33 @@
 #Define IDD_DLGLANGUAGE		1200
 #Define IDC_LSTLANGUAGE		1003
 
+Sub ConvertFrom(ByVal buff As ZString ptr)
+	Dim x As Integer
+
+	x=1
+	While x
+		x=InStr(*buff,"\t")
+		If x Then
+			*buff=Left(*buff,x-1) & !"\9" & Mid(*buff,x+2)
+		EndIf
+	Wend	
+	x=1
+	While x
+		x=InStr(*buff,"\r")
+		If x Then
+			*buff=Left(*buff,x-1) & !"\13" & Mid(*buff,x+2)
+		EndIf
+	Wend	
+	x=1
+	While x
+		x=InStr(*buff,"\n")
+		If x Then
+			*buff=Left(*buff,x-1) & !"\10" & Mid(*buff,x+2)
+		EndIf
+	Wend	
+
+End Sub
+
 Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 	Dim buff As ZString*512
 	Dim As Integer x,y
@@ -22,6 +49,7 @@ Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As S
 	Else
 		buff=""
 	EndIf
+	ConvertFrom(@buff)
 	Return buff
 
 End Function
