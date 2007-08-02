@@ -1,5 +1,7 @@
 #Define IDD_DLGLANGUAGE		1200
 #Define IDC_LSTLANGUAGE		1003
+#Define BMPMARGIN				3
+#Define TEXTMARGIN			26
 
 Dim Shared hLngDlg As HWND
 
@@ -144,11 +146,15 @@ End Sub
 Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As integer
 	Dim id As Integer
 	Dim buff As ZString*MAX_PATH
+	Dim buff2 As ZString*MAX_PATH
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim hMem As HGLOBAL
 	Dim hFile As HANDLE
 	Dim nSize As Integer
+	Dim hBmp As HANDLE
+	Dim lpdis AS DRAWITEMSTRUCT Ptr
+	Dim rc As RECT
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -156,13 +162,17 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			id=256
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETTABSTOPS,1,Cast(LPARAM,@id))
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_ADDSTRING,0,Cast(LPARAM,StrPtr("(None)")))
+			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETITEMDATA,0,0)
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETCURSEL,0,0)
 			buff=ad.AppPath & "\Language\*lng"
 			hwfd=FindFirstFile(@buff,@wfd)
 			If hwfd<>INVALID_HANDLE_VALUE Then
 				while id
+					hBmp=0
 					buff=ad.AppPath & "\Language\"
 					lstrcat(@buff,@wfd.cFileName)
+					lstrcpyn(@buff2,@buff,Len(buff)-2)
+					lstrcat(@buff2,"bmp")
 					hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
 					hFile=CreateFile(buff,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 					If hFile<>INVALID_HANDLE_VALUE Then
@@ -172,17 +182,62 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 						buff=buff & Chr(9)
 						lstrcat(@buff,@wfd.cFileName)
 						CloseHandle(hFile)
+						hBmp=LoadImage(0,@buff2,IMAGE_BITMAP,0,0,LR_LOADFROMFILE)
 					EndIf
 					GlobalFree(hMem)
 					id=SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_ADDSTRING,0,Cast(LPARAM,@buff))
+					SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETITEMDATA,id,Cast(LPARAM,hBmp))
 					If lstrcmpi(@Language,@wfd.cFileName)=0 Then
 						SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETCURSEL,id,0)
 					EndIf
-					
 					id=FindNextFile(hwfd,@wfd)
 				Wend
 			EndIf
 			FindClose(hwfd)
+			'
+		Case WM_DESTROY
+			For id=0 To SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_GETCOUNT,0,0)-1
+				hBmp=Cast(HANDLE,SendDlgItemMessage(hwin,IDC_LSTLANGUAGE,LB_GETITEMDATA,id,0))
+				If hBmp Then
+					DeleteObject(hBmp)
+				EndIf
+			Next
+			'
+		Case WM_DRAWITEM
+			If wParam=IDC_LSTLANGUAGE Then
+				lpdis=Cast(DRAWITEMSTRUCT Ptr,lParam)
+				If lpdis->itemID=-1 Then
+					Exit function
+				EndIf
+				rc=lpdis->rcItem
+				Select Case lpdis->itemAction
+					Case ODA_DRAWENTIRE,ODA_SELECT
+						If (lpdis->itemState And ODS_SELECTED)=0 Then
+							FillRect(lpdis->hdc,@rc,GetSysColorBrush(COLOR_WINDOW))
+							SetBkColor(lpdis->hdc,GetSysColor(COLOR_WINDOW))
+							SetTextColor(lpdis->hdc,GetSysColor(COLOR_WINDOWTEXT))
+						Else
+							rc.right=TEXTMARGIN-2
+							FillRect(lpdis->hdc,@rc,GetSysColorBrush(COLOR_3DFACE))
+							rc.left=TEXTMARGIN-2
+							rc.right=lpdis->rcItem.right
+							FillRect(lpdis->hdc,@rc,GetSysColorBrush(COLOR_HIGHLIGHT))
+							SetBkColor(lpdis->hdc,GetSysColor(COLOR_HIGHLIGHT))
+							SetTextColor(lpdis->hdc,GetSysColor(COLOR_HIGHLIGHTTEXT))
+						EndIf
+						SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_GETTEXT,lpdis->itemID,Cast(LPARAM,@buff))
+						id=InStr(buff,!"\9")-1
+						buff[id]=0
+						rc.top+=1
+						rc.left=TEXTMARGIN
+						DrawText(lpdis->hdc,@buff,Len(buff),@rc,DT_SINGLELINE Or DT_LEFT Or DT_VCENTER)
+						hBmp=Cast(HANDLE,SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_GETITEMDATA,lpdis->itemID,0))
+						If hBmp Then
+							DrawState(lpdis->hdc,0,0,Cast(LPARAM,hBmp),0,BMPMARGIN,rc.top+2,0,0,DST_BITMAP)
+						EndIf
+						Return TRUE
+				End Select
+			EndIf
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
