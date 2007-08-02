@@ -16,73 +16,73 @@ Lang=Norwegian, By KetilO
 1002=Endringene vil finne sted nåt FbEdit restartes.
 ;--------------------------------------------------------------------------
 [2000]
-2000=Options
+2000=Opsjoner
 1=OK
-2=Cancel
+2=Avbryt
 ;--------------------------------------------------------------------------
 [2100]
-2115=Name Export Format
+2115=Navn Eksport Format
 2101=Assembly equ's
 2102=C defines
 2103=hla
 2104=PureBasic
-2116=Name Export Output
-2110=File
+2116=Navn Eksport Output
+2110=Fil
 2111=Clip Board
 2112=Output
-2117=Default Export Filename:
-2114=Auto export when saved
+2117=Default Eksport Filnavn:
+2114=Auto eksport ved lagring
 ;--------------------------------------------------------------------------
 [2200]
-2204=Add
-2205=Delete
+2204=Legg til
+2205=Slett
 ;--------------------------------------------------------------------------
 [2300]
 4020=Grid X-Size
 4021=Grid Y-Size
-4022=Grid color
-4003=Show Grid
-4002=Snap To Grid
-4001=Show Size/Pos
-4009=Grid as lines
-4010=Styles as hex
-4011=Size Dialog to Font
-4012=Simple Property
+4022=Grid farge
+4003=Vis Grid
+4002=Lås Til Grid
+4001=Vis Size/Pos
+4009=Grid som linjer
+4010=Styles som hex
+4011=Size Dialog til Font
+4012=Enkel Property
 ;--------------------------------------------------------------------------
 [2500]
-2500=Find ...
-2216=Find what:
-2009=Replace:
+2500=Finn ...
+2216=Finn hva:
+2009=Erstatt:
 2003=Match Case
-2007=Whole Word
-2012=All Project Files
+2007=Hele Ord
+2012=Alle Prosjekt Filer
 2013=Skip Comment Line
 2014=Log operation
-2217=Direction
-2004=All
-2006=Up
-2005=Down
-1=Find
-2010=Replace
-2015=Find All
-2008=Replace All
-2=Cancel
+2217=Retning
+2004=Alle
+2006=Opp
+2005=Ned
+1=Finn
+2010=Erstatt
+2015=Finn Alle
+2008=Erstatt Alle
+2=Avbryt
 ;--------------------------------------------------------------------------
 [3000]
 1=OK
 ;--------------------------------------------------------------------------
 [3200]
 1=OK
-2=Cancel
+2=Avbryt
 3209=Import
-3205=Insert
-3206=Delete
-3209=Menu item:
-3210=Command:
+3205=Sett inn
+3206=Slett
+3209=Meny item:
+3210=Kommando:
 ;--------------------------------------------------------------------------
 [4000]
-4000=Code Editor Options
-4050=Color Theme
+4000=Kode Editor Opsjoner
+4050=Farge Tema
 4016=Add New
 4051=Colors
 4052=Colors:
@@ -132,34 +132,34 @@ Lang=Norwegian, By KetilO
 4043=Upper Case
 4002=Apply
 1=OK
-2=Cancel
+2=Avbryt
 ;--------------------------------------------------------------------------
 [4100]
 4100=External Files Option
 4107=Filetype:
 1=OK
-2=Cancel
+2=Avbryt
 4102=Add
 4103=Delete
 4108=Command:
 ;--------------------------------------------------------------------------
 [5000]
 5000=Save Files
-2=Cancel
+2=Avbryt
 1=OK
 1003=Deselect all
 1002=Select all
 ;--------------------------------------------------------------------------
 [5100]
 5100=Debug Option
-2=Cancel
+2=Avbryt
 1=OK
 1002=Debugger:
 ;--------------------------------------------------------------------------
 [5200]
 5200=Block Insert
 1=OK
-2=Cancel
+2=Avbryt
 5202=Enter text to be inserted at every line in selected block.
 ;--------------------------------------------------------------------------
 [5300]
@@ -174,7 +174,7 @@ Lang=Norwegian, By KetilO
 1011=Res
 1013=Inc
 1=OK
-2=Cancel
+2=Avbryt
 ;--------------------------------------------------------------------------
 [5360]
 1010=Project Type:
@@ -192,7 +192,7 @@ Lang=Norwegian, By KetilO
 1009=Default Project Path:
 1010=Compiler Path:
 1=OK
-2=Cancel
+2=Avbryt
 ;--------------------------------------------------------------------------
 [5500]
 5500=Project Options
@@ -214,12 +214,12 @@ Lang=Norwegian, By KetilO
 5502=By Folder
 5503=By Type
 1=OK
-2=Cancel
+2=Avbryt
 ;--------------------------------------------------------------------------
 [5600]
 5600=Export properties to output
 1=OK
-2=Cancel
+2=Avbryt
 1001=Functions
 1002=Constants
 1003=Variables
@@ -239,19 +239,19 @@ Lang=Norwegian, By KetilO
 1002=Add
 1003=Remove
 1008=Template Filename:
-2=Cancel
+2=Avbryt
 1=OK
 ;--------------------------------------------------------------------------
 [6100]
 6100=Addin Manager
 1=OK
-2=Cancel
+2=Avbryt
 1002=Help
 1003=Changes will take place when FbEdit is restarted.
 ;--------------------------------------------------------------------------
 [6200]
 6200=Project Api files
-2=Cancel
+2=Avbryt
 1=OK
 ;--------------------------------------------------------------------------
 [10000]
