@@ -70,21 +70,26 @@ End Sub
 Function FindString(ByVal szApp As String,ByVal szKey As String) As String
 	Dim hMem As HGLOBAL
 	Dim buff As ZString*512
-	Dim As Integer x,y
+	Dim As Integer x,y,z
 	Dim lp As ZString Ptr
 
-	hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
-	SendMessage(hEdt,WM_GETTEXT,256*1024,Cast(LPARAM,hMem))
-	buff="[" & szApp & "]"
+	hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,64*1024)
+	SendMessage(hEdt,WM_GETTEXT,64*1024,Cast(LPARAM,hMem))
+	buff=!"\13\10[" & szApp & !"]\13\10"
 	lp=hMem
 	x=InStr(*lp,buff)
 	If x Then
-		buff=szKey & "="
+		z=InStr(x+1,*lp,!"\13\10[")
+		If z=0 Then
+			z=65535
+		EndIf
+		buff=!"\13\10" & szKey & "="
 		x=InStr(x,*lp,buff)
-		If x Then
+		If x<>0 And x<z Then
 			x=x+Len(buff)
 			y=InStr(x,*lp,!"\13")
 			buff=Mid(*lp,x,y-x)
+			ConvertFrom(@buff)
 		Else
 			buff=""
 		EndIf
@@ -92,7 +97,6 @@ Function FindString(ByVal szApp As String,ByVal szKey As String) As String
 		buff=""
 	EndIf
 	GlobalFree(hMem)
-	ConvertFrom(@buff)
 	Return buff
 
 End Function

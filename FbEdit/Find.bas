@@ -291,6 +291,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_FINDDLG)
 			findvisible=hWin
 			If lParam Then
 				PostMessage(hWin,WM_COMMAND,(BN_CLICKED Shl 16) Or IDC_BTN_REPLACE,0)

@@ -1,6 +1,8 @@
 #Define IDD_DLGLANGUAGE		1200
 #Define IDC_LSTLANGUAGE		1003
 
+Dim Shared hLngDlg As HWND
+
 Sub ConvertFrom(ByVal buff As ZString ptr)
 	Dim x As Integer
 
@@ -30,26 +32,34 @@ End Sub
 
 Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 	Dim buff As ZString*512
-	Dim As Integer x,y
+	Dim As Integer x,y,z
 	Dim lp As ZString Ptr
 
-	buff="[" & szApp & "]"
-	lp=hMem
-	x=InStr(*lp,buff)
-	If x Then
-		buff=szKey & "="
-		x=InStr(x,*lp,buff)
+	If hMem Then
+		buff=!"\13\10[" & szApp & !"]\13\10"
+		lp=hMem
+		x=InStr(*lp,buff)
 		If x Then
-			x=x+Len(buff)
-			y=InStr(x,*lp,!"\13")
-			buff=Mid(*lp,x,y-x)
+			z=InStr(x+1,*lp,!"\13\10[")
+			If z=0 Then
+				z=65535
+			EndIf
+			buff=!"\13\10" & szKey & "="
+			x=InStr(x,*lp,buff)
+			If x<>0 And x<z Then
+				x=x+Len(buff)
+				y=InStr(x,*lp,!"\13")
+				buff=Mid(*lp,x,y-x)
+				ConvertFrom(@buff)
+			Else
+				buff=""
+			EndIf
 		Else
 			buff=""
 		EndIf
 	Else
 		buff=""
 	EndIf
-	ConvertFrom(@buff)
 	Return buff
 
 End Function
@@ -86,6 +96,33 @@ Nxt:
 
 End Sub
 
+Function DlgTranslateProc(ByVal hWin As HWND,ByVal lParam As LPARAM) As Boolean
+	Dim buff As ZString*256
+	Dim id As Integer
+
+	If GetParent(hWin)=hLngDlg Then
+		id=GetWindowLong(hWin,GWL_ID)
+		buff=FindString(hLangMem,Str(lParam),Str(id))
+		If buff<>"" Then
+			SendMessage(hWin,WM_SETTEXT,0,Cast(LPARAM,@buff))
+		EndIf
+	EndIf
+	Return TRUE
+
+End Function
+
+Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
+	Dim buff As ZString*256
+
+	hLngDlg=hWin
+	buff=FindString(hLangMem,Str(id),Str(id))
+	If buff<>"" Then
+		SendMessage(hWin,WM_SETTEXT,0,Cast(LPARAM,@buff))
+	EndIf
+	EnumChildWindows(hWin,Cast(Any Ptr,@DlgTranslateProc),id)
+
+End Sub
+
 Sub GetLanguageFile
 	Dim buff As ZString*260
 	Dim hFile As HANDLE
@@ -115,6 +152,7 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGLANGUAGE)
 			id=256
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETTABSTOPS,1,Cast(LPARAM,@id))
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_ADDSTRING,0,Cast(LPARAM,StrPtr("(None)")))

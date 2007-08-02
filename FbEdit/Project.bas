@@ -1305,6 +1305,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_NEWPROJECT)
 			hNPTab=GetDlgItem(hWin,IDC_TABNEWPROJECT)
 			ts.mask=TCIF_TEXT
 			ts.pszText=StrPtr("Files")
@@ -1504,6 +1505,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGPROJECTOPTION)
 			SendDlgItemMessage(hWin,IDC_EDTPODESCRIPTION,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPOTYPE,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPOBUILD,EM_LIMITTEXT,128,0)

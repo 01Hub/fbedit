@@ -50,6 +50,7 @@ Function TabOpt1Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPT1)
 			CheckRadioButton(hWin,IDC_RBNEXPOPT1,IDC_RBNEXPOPT4,IDC_RBNEXPOPT1+nmeexp.nType)
 			CheckRadioButton(hWin,IDC_RBNEXPORTFILE,IDC_RBNEXPORTOUT,IDC_RBNEXPORTFILE+nmeexp.nOutput)
 			SendDlgItemMessage(hWin,IDC_EDTEXPOPT,EM_LIMITTEXT,MAX_PATH,0)
@@ -71,6 +72,7 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPT2)
 			SendDlgItemMessage(hWin,IDC_BTNCUSTUP,BM_SETIMAGE,IMAGE_ICON,Cast(Integer,ImageList_GetIcon(ah.hmnuiml,2,ILD_NORMAL)))
 			SendDlgItemMessage(hWin,IDC_BTNCUSTDN,BM_SETIMAGE,IMAGE_ICON,Cast(Integer,ImageList_GetIcon(ah.hmnuiml,3,ILD_NORMAL)))
 			SendDlgItemMessage(hWin,IDC_EDTCUST,EM_LIMITTEXT,MAX_PATH-1,0)
@@ -165,6 +167,7 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPT3)
 			SendDlgItemMessage(hWin,IDC_UDNX,UDM_SETRANGE,0,&H00020014)	' Set range
 			SendDlgItemMessage(hWin,IDC_UDNX,UDM_SETPOS,0,grdsize.x)		' Set default value
 			SendDlgItemMessage(hWin,IDC_UDNY,UDM_SETRANGE,0,&H00020014)	' Set range
@@ -250,6 +253,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPTIONS)
 			grdcol=grdsize.color
 			hGrdBr=CreateSolidBrush(grdcol)
 			' Create the tabs

@@ -568,6 +568,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGKEYWORDS)
 			' Themes
 			SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,StrPtr("New Theme")))
 			nInx=0

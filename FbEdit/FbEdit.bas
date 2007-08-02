@@ -1568,7 +1568,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If lret Then
 					lpTOOLTIPTEXT->lpszText=Cast(ZString ptr,lret)
 				Else
-					LoadString(hInstance,lpTOOLTIPTEXT->hdr.idFrom,@buff,256)
+					buff=FindString(hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
+					If buff="" Then
+						LoadString(hInstance,lpTOOLTIPTEXT->hdr.idFrom,@buff,256)
+					EndIf
 					lpTOOLTIPTEXT->lpszText=@buff
 				EndIf
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TABSELECT Then

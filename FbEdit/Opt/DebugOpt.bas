@@ -9,6 +9,7 @@ Function DebugOptDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGDEBUGOPT)
 			SetDlgItemText(hWin,IDC_EDTDEBUGOPT,@ad.smakerundebug)
 			'
 		Case WM_CLOSE

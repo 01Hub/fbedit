@@ -190,6 +190,7 @@ Function ExportDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGEXPORT)
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)

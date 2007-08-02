@@ -6,6 +6,9 @@
 Function BlockDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
 
 	Select Case uMsg
+		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_BLOCKDLG)
+			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
 			'

@@ -134,6 +134,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					Select Case id
 						Case IDC_BTNLNGNEW
 							If WantToSave(hWin) Then
+								SendMessage(hEdt,WM_SETTEXT,0,0)
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szNew))
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))

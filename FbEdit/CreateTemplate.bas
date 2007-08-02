@@ -92,6 +92,7 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_CREATETEMPLATE)
 			'
 		Case WM_COMMAND
 			Select Case LoWord(wParam)

@@ -10,6 +10,7 @@ Function PathOptDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As 
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGPATHOPTION)
 			GetPrivateProfileString(StrPtr("Project"),StrPtr("Path"),@szNULL,@buff,260,@ad.IniFile)
 			SetDlgItemText(hWin,IDC_EDTOPTPROJECTPATH,@buff)
 			GetPrivateProfileString(StrPtr("Make"),StrPtr("fbcPath"),@szNULL,@buff,260,@ad.IniFile)

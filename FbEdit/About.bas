@@ -55,6 +55,7 @@ Function AboutDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPAR
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGABOUT)
 			' Subclass the control
 			OldUrlProc=Cast(Any ptr,SetWindowLong(GetDlgItem(hWin,IDC_URL1),GWL_WNDPROC,Cast(Integer,@UrlProc)))
 			SetWindowLong(GetDlgItem(hWin,IDC_URL2),GWL_WNDPROC,Cast(Integer,@UrlProc))

@@ -1,3 +1,4 @@
+Dim Shared hLngDlg As HWND
 
 Function DumpEnumProc(ByVal hWin As HWND,ByVal lParam As LPARAM) As Boolean
 	Dim buff As ZString*256
@@ -60,14 +61,31 @@ Function DumpDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 End Function
 
+Function DlgTranslateProc(ByVal hWin As HWND,ByVal lParam As LPARAM) As Boolean
+	Dim buff As ZString*256
+	Dim id As Integer
+
+	If GetParent(hWin)=hLngDlg Then
+		id=GetWindowLong(hWin,GWL_ID)
+		buff=FindString(Str(lParam),Str(id))
+		If buff<>"" Then
+			SendMessage(hWin,WM_SETTEXT,0,Cast(LPARAM,@buff))
+		EndIf
+	EndIf
+	Return TRUE
+
+End Function
+
 Function ChildDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim buff As ZString*256
 	Dim szID As ZString*256
-	Dim st As Integer
+	Dim id As Integer
 
 	Select Case uMsg
 		Case WM_INITDIALOG
 			ShowWindow(hWin,TRUE)
+			id=GetWindowLong(hWin,GWL_ID)
+			EnumChildWindows(hWin,Cast(Any Ptr,@DlgTranslateProc),id)
 		Case WM_LBUTTONDOWN
 			EndDialog(GetParent(hWin),NULL)
 		Case Else
@@ -95,9 +113,7 @@ End Function
 
 Function TestDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim buff As ZString*256
-	Dim szID As ZString*256
 	Dim st As Integer
-	Dim id As Integer
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -105,6 +121,13 @@ Function TestDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If st And WS_CHILD Then
 				DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGTEST),hWnd,@TestContainerDlgProc,lParam)
 				EndDialog(hWin,NULL)
+			Else
+				hLngDlg=hWin
+				buff=FindString(Str(lParam),Str(lParam))
+				If buff<>"" Then
+					SendMessage(hWin,WM_SETTEXT,0,Cast(LPARAM,@buff))
+				EndIf
+				EnumChildWindows(hWin,Cast(Any Ptr,@DlgTranslateProc),lParam)
 			EndIf
 			Return FALSE
 		Case WM_CLOSE

@@ -2,6 +2,258 @@
 [Lang]
 Lang=Norwegian, By KetilO
 ;--------------------------------------------------------------------------
+[1100]
+1100=Gå Til Linje
+1002=Linje:
+1=OK
+2=Avbryt
+;--------------------------------------------------------------------------
+[1200]
+1200=Språk
+1004=Språk:
+1=OK
+2=Avbryt
+1002=Endringene vil finne sted nåt FbEdit restartes.
+;--------------------------------------------------------------------------
+[2000]
+2000=Options
+1=OK
+2=Cancel
+;--------------------------------------------------------------------------
+[2100]
+2115=Name Export Format
+2101=Assembly equ's
+2102=C defines
+2103=hla
+2104=PureBasic
+2116=Name Export Output
+2110=File
+2111=Clip Board
+2112=Output
+2117=Default Export Filename:
+2114=Auto export when saved
+;--------------------------------------------------------------------------
+[2200]
+2204=Add
+2205=Delete
+;--------------------------------------------------------------------------
+[2300]
+4020=Grid X-Size
+4021=Grid Y-Size
+4022=Grid color
+4003=Show Grid
+4002=Snap To Grid
+4001=Show Size/Pos
+4009=Grid as lines
+4010=Styles as hex
+4011=Size Dialog to Font
+4012=Simple Property
+;--------------------------------------------------------------------------
+[2500]
+2500=Find ...
+2216=Find what:
+2009=Replace:
+2003=Match Case
+2007=Whole Word
+2012=All Project Files
+2013=Skip Comment Line
+2014=Log operation
+2217=Direction
+2004=All
+2006=Up
+2005=Down
+1=Find
+2010=Replace
+2015=Find All
+2008=Replace All
+2=Cancel
+;--------------------------------------------------------------------------
+[3000]
+1=OK
+;--------------------------------------------------------------------------
+[3200]
+1=OK
+2=Cancel
+3209=Import
+3205=Insert
+3206=Delete
+3209=Menu item:
+3210=Command:
+;--------------------------------------------------------------------------
+[4000]
+4000=Code Editor Options
+4050=Color Theme
+4016=Add New
+4051=Colors
+4052=Colors:
+4038=Bold
+4037=Italic
+4053=Syntax
+4054=Group:
+4055=Active:
+4009=>
+4008=<
+4056=On Hold:
+4011=Add
+4010=Delete
+4004=Bold
+4003=Italic
+4005=RC file
+4057=Code Files (.bas.bi.):
+4058=Misc
+4059=Tab Size
+4060=Backups
+4006=Line Numbers
+4019=Expand tabs
+4031=Single instance
+4035=Block Complete
+4034=Save on make
+4044=Autoload project
+4020=Auto Indent
+4036=Smart Indent
+4033=Auto Brace
+4032=Brace Matching
+4021=Highlight active line
+4026=Highlight comments
+4047=Close on Locks
+4061=Fonts
+4024=Code
+4022=AaBbCc
+4025=Line Number
+4023=12345
+4062=Code Complete
+4039=Active
+4046=Include/Inclib
+4045=Auto Size
+4063=Case Convert
+4040=None
+4041=Mixed Case
+4042=Lower Case
+4043=Upper Case
+4002=Apply
+1=OK
+2=Cancel
+;--------------------------------------------------------------------------
+[4100]
+4100=External Files Option
+4107=Filetype:
+1=OK
+2=Cancel
+4102=Add
+4103=Delete
+4108=Command:
+;--------------------------------------------------------------------------
+[5000]
+5000=Save Files
+2=Cancel
+1=OK
+1003=Deselect all
+1002=Select all
+;--------------------------------------------------------------------------
+[5100]
+5100=Debug Option
+2=Cancel
+1=OK
+1002=Debugger:
+;--------------------------------------------------------------------------
+[5200]
+5200=Block Insert
+1=OK
+2=Cancel
+5202=Enter text to be inserted at every line in selected block.
+;--------------------------------------------------------------------------
+[5300]
+5300=New Project
+1015=Project Name:
+1016=Project Description:
+1017=Project Path:
+1018=Folder creation
+1014=Project sub folder
+1012=Bak
+1010=Mod
+1011=Res
+1013=Inc
+1=OK
+2=Cancel
+;--------------------------------------------------------------------------
+[5360]
+1010=Project Type:
+1009=Text file (.txt)
+1008=Resource file (.rc)
+1007=Include file (.bi)
+1006=Code file (.bas)
+1011=File creation
+1012=Settings on this tab is overridden if a template is selected.
+;--------------------------------------------------------------------------
+[5380]
+;--------------------------------------------------------------------------
+[5400]
+5400=Path Options
+1009=Default Project Path:
+1010=Compiler Path:
+1=OK
+2=Cancel
+;--------------------------------------------------------------------------
+[5500]
+5500=Project Options
+5511=Project Description:
+5512=Project Type:
+5513=Build Command:
+5510=Add main files to Build Command
+5514=Api files:
+5515=Module Handling
+5516=Module Build Command:
+5504=Manual build
+5505=Recompile
+5506=Command line
+5517=Output filename:
+5518=Run Command line parameter:
+5519=Resource Name Export File:
+5520=Project File Grouping
+5501=None
+5502=By Folder
+5503=By Type
+1=OK
+2=Cancel
+;--------------------------------------------------------------------------
+[5600]
+5600=Export properties to output
+1=OK
+2=Cancel
+1001=Functions
+1002=Constants
+1003=Variables
+1004=UDT's
+1005=Enums
+1006=Namespaces
+1007=Macros
+1008=Constructors
+1009=Destructors
+1010=Properties
+1011=Operators
+;--------------------------------------------------------------------------
+[6000]
+6000=Create Template
+1006=Description:
+1007=Additional Files:
+1002=Add
+1003=Remove
+1008=Template Filename:
+2=Cancel
+1=OK
+;--------------------------------------------------------------------------
+[6100]
+6100=Addin Manager
+1=OK
+2=Cancel
+1002=Help
+1003=Changes will take place when FbEdit is restarted.
+;--------------------------------------------------------------------------
+[6200]
+6200=Project Api files
+2=Cancel
+1=OK
+;--------------------------------------------------------------------------
 [10000]
 10001=&Fil
 10002=Nytt Prosjekt\tShift+Ctrl+N
@@ -197,4 +449,32 @@ Lang=Norwegian, By KetilO
 10080=&Vertical
 10081=Set Tabindex
 10082=Auto Renumber ID's
+;--------------------------------------------------------------------------
+[Strings]
+10005=Ny fil
+10007=Åpne fil
+10009=Lagre fil
+10010=Lagre Alle filer
+10022=Undo
+10023=Redo
+10024=Klipp ut
+10025=Kopier
+10026=Lim inn
+10027=Slett
+10030=Finn
+10033=Erstatt
+10038=Indenter
+10039=Fjern indent
+10040=Kommenter
+10041=Fjern kommentar
+10051=Toggle bokmerke
+10052=Neste bokmerke
+10053=Forrige bokmerke
+10054=Slett alle bokmerker
+10092=Vis / Skjul Output vindu
+10093=Vis / Skjul Project
+10094=Vis / Skjul Properties
+10142=Kompiler
+10143=Kjør program
+10144=Kompiler og kjør
 ;--------------------------------------------------------------------------
