@@ -69,7 +69,12 @@ Lang=English (default), By FbEdit team
 2=Cancel
 ;--------------------------------------------------------------------------
 [3000]
+3000=FreeBASIC editor 1.0.5.6
 1=OK
+1001=FreeBASIC editor (C) KetilO 2007\r\n\r\nradasmide@hotmail.com
+1002=http://www.radasm.com/fbedit/
+1003=http://www.assembler.ca/radasm/fbedit/
+1004=http://fbedit.freebasic.net/
 ;--------------------------------------------------------------------------
 [3200]
 1=OK
@@ -478,4 +483,16 @@ Lang=English (default), By FbEdit team
 10142=Compile
 10143=Run
 10144=Go
+;--------------------------------------------------------------------------
+[Internal]
+1=Could not find
+1000=Find
+1001=Next
+1002=Previous
+1003=Replace...
+1004=Region searched
+1005=Replacements done.
+1006=Project Files searched
+1007=Region searched%c%cFind%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
+1008=Project Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
 ;--------------------------------------------------------------------------

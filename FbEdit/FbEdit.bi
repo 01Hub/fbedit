@@ -40,6 +40,7 @@ Declare Function GetTextItem(ByRef sText As String) As String
 Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 Declare Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 Declare Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
+Declare Function GetInternalString(ByVal id As Integer) As String
 
 ' Main dialog
 #Define IDD_MAIN 								1000

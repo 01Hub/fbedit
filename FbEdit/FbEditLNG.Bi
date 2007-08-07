@@ -31,20 +31,20 @@ Const szNew As String=!"[Lang]\13\10Lang=English (default), By FbEdit team\13\10
 Const szList As String=!"[1100] Goto Line\0" _
 							  !"[1200] Language\0" _
 							  !"[2000] Options\0" _
-							  !"[2100] \0" _
-							  !"[2200] \0" _
-							  !"[2300] \0" _
+							  !"[2100] Dialog Options Page#1\0" _
+							  !"[2200] Dialog Options Page#2\0" _
+							  !"[2300] Dialog Options Page#3\0" _
 							  !"[2500] Find ...\0" _
 							  !"[3000] FreeBASIC editor 1.0.5.6\0" _
-							  !"[3200] \0" _
+							  !"[3200] Menu Options\0" _
 							  !"[4000] Code Editor Options\0" _
 							  !"[4100] External Files Option\0" _
 							  !"[5000] Save Files\0" _
 							  !"[5100] Debug Option\0" _
 							  !"[5200] Block Insert\0" _
 							  !"[5300] New Project\0" _
-							  !"[5360] \0" _
-							  !"[5380] \0" _
+							  !"[5360] New Project Options tab\0" _
+							  !"[5380] New Project Template tab\0" _
 							  !"[5400] Path Options\0" _
 							  !"[5500] Project Options\0" _
 							  !"[5600] Export properties to output\0" _

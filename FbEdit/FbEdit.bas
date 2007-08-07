@@ -13,6 +13,7 @@
 
 #Include "FbEdit.bi"
 
+#Include "Language.bi"
 #Include "IniFile.bas"
 #Include "CodeComplete.bas"
 #Include "Misc.bas"
@@ -1952,28 +1953,28 @@ Dim CharTab As Function() As Any ptr
 							WinMain(hInstance,NULL,NULL,NULL)
 							OleUninitialize
 						Else
-							MessageBox(NULL,StrPtr("Could not find RAGrid.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+							MessageBox(NULL,GetInternalString(1) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
 						EndIf
 						FreeLibrary(hRAResEdDll)
 					Else
-						MessageBox(NULL,StrPtr("Could not find RAResEd.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+						MessageBox(NULL,GetInternalString(1) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 					EndIf
 					FreeLibrary(hRACodeCompleteDll)
 				Else
-					MessageBox(NULL,StrPtr("Could not find RACodeComplete.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+					MessageBox(NULL,GetInternalString(1) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
 				EndIf
 				FreeLibrary(hRAPropertyDll)
 			Else
-				MessageBox(NULL,StrPtr("Could not find RAProperty.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+				MessageBox(NULL,GetInternalString(1) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
 			EndIf
 			FreeLibrary(hRAFileDll)
 		Else
-			MessageBox(NULL,StrPtr("Could not find RAFile.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+			MessageBox(NULL,GetInternalString(1) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
 		EndIf
 		FreeLibrary(hRAEditDll)
 		FreeLibrary(hRichEditDll)
 	Else
-		MessageBox(NULL,StrPtr("Could not find RAEdit.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+		MessageBox(NULL,GetInternalString(1) & " RAEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
 	''
 	'' Program has ended

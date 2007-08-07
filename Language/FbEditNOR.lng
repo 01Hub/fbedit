@@ -46,7 +46,7 @@ Lang=Norwegian, By KetilO
 4001=Vis Size/Pos
 4009=Grid som linjer
 4010=Styles som hex
-4011=Size Dialog til Font
+4011=Juster Dialog til Font
 4012=Enkel Property
 ;--------------------------------------------------------------------------
 [2500]
@@ -56,8 +56,8 @@ Lang=Norwegian, By KetilO
 2003=Match Case
 2007=Hele Ord
 2012=Alle Prosjekt Filer
-2013=Skip Comment Line
-2014=Log operation
+2013=Ignorer Kommenterte Linjer
+2014=Logg endringer
 2217=Retning
 2004=Alle
 2006=Opp
@@ -83,92 +83,92 @@ Lang=Norwegian, By KetilO
 [4000]
 4000=Kode Editor Opsjoner
 4050=Farge Tema
-4016=Add New
-4051=Colors
-4052=Colors:
-4038=Bold
+4016=Legg til Nytt
+4051=Farger
+4052=Farger:
+4038=Fet
 4037=Italic
-4053=Syntax
-4054=Group:
-4055=Active:
+4053=Syntaks
+4054=Gruppe:
+4055=Aktive:
 4009=>
 4008=<
-4056=On Hold:
-4011=Add
-4010=Delete
-4004=Bold
+4056=På Vent:
+4011=Legg til
+4010=Slett
+4004=Fet
 4003=Italic
-4005=RC file
-4057=Code Files (.bas.bi.):
-4058=Misc
-4059=Tab Size
+4005=RC fil
+4057=Kode Filer (.bas.bi.):
+4058=Diverse
+4059=Tab Størrelse
 4060=Backups
-4006=Line Numbers
-4019=Expand tabs
-4031=Single instance
-4035=Block Complete
-4034=Save on make
-4044=Autoload project
-4020=Auto Indent
+4006=Linje Nummer
+4019=Tab som mellomrom
+4031=Kun en instans
+4035=Blokk Fullfør
+4034=Lagre ved make
+4044=Auto last prosjekt
+4020=Auto Indenter
 4036=Smart Indent
-4033=Auto Brace
-4032=Brace Matching
-4021=Highlight active line
-4026=Highlight comments
-4047=Close on Locks
-4061=Fonts
-4024=Code
+4033=Auto Parantes
+4032=Parantes paring
+4021=Marker aktiv linje
+4026=Marker kommentarer
+4047=Lukk vad Låser
+4061=Fonter
+4024=Kode
 4022=AaBbCc
-4025=Line Number
+4025=Linje Nummer
 4023=12345
-4062=Code Complete
-4039=Active
+4062=Kode Fullfør
+4039=Aktiv
 4046=Include/Inclib
-4045=Auto Size
-4063=Case Convert
-4040=None
-4041=Mixed Case
-4042=Lower Case
-4043=Upper Case
-4002=Apply
+4045=Auto Størrelse
+4063=Case Konverter
+4040=Ingen
+4041=Mikset Case
+4042=Små bokstaver
+4043=Store bokstaver
+4002=Legg inn
 1=OK
 2=Avbryt
 ;--------------------------------------------------------------------------
 [4100]
-4100=External Files Option
-4107=Filetype:
+4100=Eksterne Filer Opsjoner
+4107=Filtype:
 1=OK
 2=Avbryt
-4102=Add
-4103=Delete
-4108=Command:
+4102=Legg til
+4103=Slett
+4108=Kommando:
 ;--------------------------------------------------------------------------
 [5000]
-5000=Save Files
+5000=Lagre Filer
 2=Avbryt
 1=OK
-1003=Deselect all
-1002=Select all
+1003=Velg ingen
+1002=Velg alle
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Option
+5100=Debug Opsjoner
 2=Avbryt
 1=OK
 1002=Debugger:
 ;--------------------------------------------------------------------------
 [5200]
-5200=Block Insert
+5200=Blokk Innstt
 1=OK
 2=Avbryt
-5202=Enter text to be inserted at every line in selected block.
+5202=Legg inn tekst som skal settes inn ved hver linje i valgt blokk.
 ;--------------------------------------------------------------------------
 [5300]
-5300=New Project
-1015=Project Name:
-1016=Project Description:
-1017=Project Path:
-1018=Folder creation
-1014=Project sub folder
+5300=Nytt Prosjekt
+1015=Prosjekt Navn:
+1016=Prosjekt Beskrivelse:
+1017=Prosjekt Sti:
+1018=Mappe opprettelse
+1014=Prosjekt mappe
 1012=Bak
 1010=Mod
 1011=Res
@@ -177,47 +177,47 @@ Lang=Norwegian, By KetilO
 2=Avbryt
 ;--------------------------------------------------------------------------
 [5360]
-1010=Project Type:
-1009=Text file (.txt)
-1008=Resource file (.rc)
-1007=Include file (.bi)
-1006=Code file (.bas)
-1011=File creation
-1012=Settings on this tab is overridden if a template is selected.
+1010=Prosjekt Type:
+1009=Tekst fil (.txt)
+1008=Resurs fil (.rc)
+1007=Include fil (.bi)
+1006=Kode fil (.bas)
+1011=Fil Opprettelse
+1012=Valg på denne taben overskrives hvis en template er valgt.
 ;--------------------------------------------------------------------------
 [5380]
 ;--------------------------------------------------------------------------
 [5400]
-5400=Path Options
-1009=Default Project Path:
-1010=Compiler Path:
+5400=Sti Opsjoner
+1009=Forvalgt Prosjekt Sti:
+1010=Kompiler Sti:
 1=OK
 2=Avbryt
 ;--------------------------------------------------------------------------
 [5500]
-5500=Project Options
-5511=Project Description:
-5512=Project Type:
-5513=Build Command:
-5510=Add main files to Build Command
-5514=Api files:
-5515=Module Handling
-5516=Module Build Command:
-5504=Manual build
-5505=Recompile
-5506=Command line
-5517=Output filename:
-5518=Run Command line parameter:
-5519=Resource Name Export File:
-5520=Project File Grouping
-5501=None
-5502=By Folder
-5503=By Type
+5500=Prosjekt Opsjoner
+5511=Prosjekt Beskrivelse:
+5512=Prosjekt Type:
+5513=Build Kommando:
+5510=Legg til hovedfiler til Build Kommando
+5514=Api filer:
+5515=Modul Behandling
+5516=Modul Build Kommando:
+5504=Manuell build
+5505=Rekompiler
+5506=Kommando linje
+5517=Output filenavn:
+5518=Run kommando linje parameter:
+5519=Resurs Navn Eksport Fil:
+5520=Prosjekt Fil Gruppering
+5501=Ingen
+5502=Ved Sti
+5503=Ved Type
 1=OK
 2=Avbryt
 ;--------------------------------------------------------------------------
 [5600]
-5600=Export properties to output
+5600=Eksport properties til output
 1=OK
 2=Avbryt
 1001=Functions
@@ -233,12 +233,12 @@ Lang=Norwegian, By KetilO
 1011=Operators
 ;--------------------------------------------------------------------------
 [6000]
-6000=Create Template
-1006=Description:
-1007=Additional Files:
-1002=Add
-1003=Remove
-1008=Template Filename:
+6000=Lag Template
+1006=Beskrivelse:
+1007=Tilleggs Filer:
+1002=Legg til
+1003=Fjern
+1008=Template Filenavn:
 2=Avbryt
 1=OK
 ;--------------------------------------------------------------------------
@@ -246,11 +246,11 @@ Lang=Norwegian, By KetilO
 6100=Addin Manager
 1=OK
 2=Avbryt
-1002=Help
-1003=Changes will take place when FbEdit is restarted.
+1002=Hjelp
+1003=Endringene vil finne sted nåt FbEdit restartes.
 ;--------------------------------------------------------------------------
 [6200]
-6200=Project Api files
+6200=Prosjekt Api filer
 2=Avbryt
 1=OK
 ;--------------------------------------------------------------------------
@@ -477,4 +477,16 @@ Lang=Norwegian, By KetilO
 10142=Kompiler
 10143=Kjør program
 10144=Kompiler og kjør
+;--------------------------------------------------------------------------
+[Internal]
+1=Could not find
+1000=Find
+1001=Next
+1002=Previous
+1003=Replace...
+1004=Region searched
+1005=Replacements done.
+1006=Project Files searched
+1007=Region searched%c%cFind%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
+1008=Project Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
 ;--------------------------------------------------------------------------

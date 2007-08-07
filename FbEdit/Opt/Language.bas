@@ -125,6 +125,20 @@ Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
 
 End Sub
 
+Function GetInternalString(ByVal id As Integer) As String
+	Dim buff As ZString*512
+
+	If hLangMem Then
+		buff=FindString(hLangMem,"Internsl",Str(id))
+		If buff<>"" Then
+			Return buff
+		EndIf
+	EndIf
+	buff=FindString(@InternalStrings,"Internal",Str(id))
+	Return buff
+	
+End Function
+
 Sub GetLanguageFile
 	Dim buff As ZString*260
 	Dim hFile As HANDLE

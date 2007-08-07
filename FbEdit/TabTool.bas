@@ -780,6 +780,7 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGSAVESELECTION)
 			tci.mask=TCIF_PARAM
 			i=0
 			n=0
