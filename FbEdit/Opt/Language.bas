@@ -129,7 +129,7 @@ Function GetInternalString(ByVal id As Integer) As String
 	Dim buff As ZString*512
 
 	If hLangMem Then
-		buff=FindString(hLangMem,"Internsl",Str(id))
+		buff=FindString(hLangMem,"Internal",Str(id))
 		If buff<>"" Then
 			Return buff
 		EndIf

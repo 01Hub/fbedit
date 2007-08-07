@@ -3,22 +3,22 @@
 Lang=Spanish (Spain), By Denise Amiga
 ;--------------------------------------------------------------------------
 [1100]
-1100=Goto Line
-1002=Line:
 1=OK
-2=Cancel
+2=Cancelar
+1100=Ir a Linea
+1002=Linea:
 ;--------------------------------------------------------------------------
 [1200]
-1200=Language
-1004=Language:
 1=OK
-2=Cancel
-1002=Changes will take place when FbEdit is restarted.
+2=Cancelar
+1200=Lenguaje
+1004=Lenguaje:
+1002=Los cambios tendran efecto cuando FbEdit sea reiniciado.
 ;--------------------------------------------------------------------------
 [2000]
-2000=Options
 1=OK
-2=Cancel
+2=Cancelar
+2000=Opciones
 ;--------------------------------------------------------------------------
 [2100]
 2115=Name Export Format
@@ -27,232 +27,237 @@ Lang=Spanish (Spain), By Denise Amiga
 2103=hla
 2104=PureBasic
 2116=Name Export Output
-2110=File
-2111=Clip Board
-2112=Output
+2110=Fichero
+2111=Porta Papeles
+2112=Salida
 2117=Default Export Filename:
 2114=Auto export when saved
 ;--------------------------------------------------------------------------
 [2200]
-2204=Add
-2205=Delete
+2204=Añadir
+2205=Borrar
 ;--------------------------------------------------------------------------
 [2300]
-4020=Grid X-Size
-4021=Grid Y-Size
-4022=Grid color
-4003=Show Grid
-4002=Snap To Grid
-4001=Show Size/Pos
-4009=Grid as lines
-4010=Styles as hex
-4011=Size Dialog to Font
-4012=Simple Property
+4020=Rejilla Tamaño-X
+4021=Rejilla Tamaño-Y
+4022=Rejilla Color
+4003=Mostrar Rejilla
+4002=Pegar a Rejilla
+4001=Mostrar Tamaño/Posicion
+4009=Rejilla como Lineas
+4010=Estilos en Hex
+4011=Ajustar Dialogo a la Fuente
+4012=Propiedades Basicas
 ;--------------------------------------------------------------------------
 [2500]
-2500=Find ...
-2216=Find what:
-2009=Replace:
-2003=Match Case
-2007=Whole Word
-2012=All Project Files
-2013=Skip Comment Line
-2014=Log operation
-2217=Direction
-2004=All
-2006=Up
-2005=Down
-1=Find
-2010=Replace
-2015=Find All
-2008=Replace All
-2=Cancel
+1=Buscar
+2=Cancelar
+2500=Buscar ...
+2216=Buscar que:
+2009=Reemplazar:
+2003=Sensible May./Min.
+2007=Palabras Completas
+2012=Ficheros del Proyecto
+2013=Saltar commentarios
+2014=Logear la Operacion
+2217=Direccion
+2004=Todo
+2006=Arriba
+2005=Abajo
+2010=Reemplazar
+2015=Buscar Todo
+2008=Reemplazar Todo
 ;--------------------------------------------------------------------------
 [3000]
 1=OK
+3000=FreeBASIC editor 1.0.5.6
+1001=FreeBASIC editor (C) KetilO 2007\r\n\r\nradasmide@hotmail.com
+1002=http://www.radasm.com/fbedit/
+1003=http://www.assembler.ca/radasm/fbedit/
+1004=http://fbedit.freebasic.net/
 ;--------------------------------------------------------------------------
 [3200]
 1=OK
-2=Cancel
-3209=Import
-3205=Insert
-3206=Delete
-3209=Menu item:
-3210=Command:
+2=Cancelar
+3209=Importar
+3205=Insertar
+3206=Borrar
+3209=Menu Item:
+3210=Comando:
 ;--------------------------------------------------------------------------
 [4000]
-4000=Code Editor Options
-4050=Color Theme
-4016=Add New
-4051=Colors
-4052=Colors:
-4038=Bold
-4037=Italic
-4053=Syntax
-4054=Group:
-4055=Active:
+1=OK
+2=Cancelar
+4000=Opciones del Editor de Codigo
+4050=Tema de Color
+4016=Añadir Nuevo
+4051=Colores
+4052=Colores:
+4038=Negrita
+4037=Italica
+4053=Sintaxis
+4054=Grupo:
+4055=Activo:
 4009=>
 4008=<
-4056=On Hold:
-4011=Add
-4010=Delete
-4004=Bold
-4003=Italic
-4005=RC file
-4057=Code Files (.bas.bi.):
+4056=En Reserva:
+4011=Añadir
+4010=Borrar
+4004=Negrita
+4003=Italica
+4005=Fichero RC
+4057=Ficheros de Codigo (.bas.bi.):
 4058=Misc
-4059=Tab Size
-4060=Backups
-4006=Line Numbers
-4019=Expand tabs
-4031=Single instance
-4035=Block Complete
-4034=Save on make
-4044=Autoload project
-4020=Auto Indent
-4036=Smart Indent
-4033=Auto Brace
-4032=Brace Matching
-4021=Highlight active line
-4026=Highlight comments
-4047=Close on Locks
-4061=Fonts
-4024=Code
+4059=Tamaño Tabulador
+4060=Copias de Seguridad
+4006=Numeros de Linea
+4019=Expandir Tabs
+4031=Solo una Instancia
+4035=Completa Bloque
+4034=Grabar al Construir
+4044=Autocargar Proyecto
+4020=Auto Tabular
+4036=Tabular Inteligente
+4033=Parentesis Automaticos
+4032=Resaltar Pareja
+4021=Resaltar Linea Activa
+4026=Resaltar Comentarios
+4047=Cerrar con Bloqueos
+4061=Fuentes
+4024=Codigo
 4022=AaBbCc
-4025=Line Number
+4025=Numeros de Linea
 4023=12345
-4062=Code Complete
-4039=Active
+4062=Complear Codigo
+4039=Activo
 4046=Include/Inclib
-4045=Auto Size
-4063=Case Convert
-4040=None
-4041=Mixed Case
-4042=Lower Case
-4043=Upper Case
-4002=Apply
-1=OK
-2=Cancel
+4045=Auto Tamaño
+4063=Conversion May./Min.
+4040=Ninguna
+4041=Mezclada
+4042=Minusculas
+4043=Mayusculas
+4002=Aplicar
 ;--------------------------------------------------------------------------
 [4100]
-4100=External Files Option
-4107=Filetype:
 1=OK
-2=Cancel
-4102=Add
-4103=Delete
-4108=Command:
+2=Cancelar
+4100=Opciones de Ficheros Externos
+4107=Tipo de Fichero:
+4102=Añadir
+4103=Borrar
+4108=Comando:
 ;--------------------------------------------------------------------------
 [5000]
-5000=Save Files
-2=Cancel
 1=OK
-1003=Deselect all
-1002=Select all
+2=Cancelar
+5000=Grabar Ficheros
+1003=Deseleccionar Todo
+1002=Seleccionar Todo
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Option
-2=Cancel
 1=OK
-1002=Debugger:
+2=Cancelar
+5100=Opciones de Debug
+;1002=Debugger:
 ;--------------------------------------------------------------------------
 [5200]
-5200=Block Insert
 1=OK
-2=Cancel
-5202=Enter text to be inserted at every line in selected block.
+2=Cancelar
+5200=Insertar Bloque
+5202=Introduce el texto que sera insertado en cada linea del bloque.
 ;--------------------------------------------------------------------------
 [5300]
-5300=New Project
-1015=Project Name:
-1016=Project Description:
-1017=Project Path:
-1018=Folder creation
-1014=Project sub folder
+1=OK
+2=Cancelar
+5300=Nuevo Proyecto
+1015=Nombre del Proyecto:
+1016=Descripcion del Proyecto:
+1017=Ruta del Proyecto:
+1018=Crear Carpeta
+1014=Subcarpetas del Proyecto
 1012=Bak
 1010=Mod
 1011=Res
 1013=Inc
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [5360]
 1010=Project Type:
-1009=Text file (.txt)
-1008=Resource file (.rc)
-1007=Include file (.bi)
-1006=Code file (.bas)
-1011=File creation
-1012=Settings on this tab is overridden if a template is selected.
+1009=Fichero de Texto (.txt)
+1008=Fichero de Recursos (.rc)
+1007=Fichero de Declaraciones (.bi)
+1006=Fichero de Codigo (.bas)
+1011=Crear Fichero
+1012=La Configuracion de esta Pestaña es nula si es seleccionada una plantilla.
 ;--------------------------------------------------------------------------
 [5380]
 ;--------------------------------------------------------------------------
 [5400]
-5400=Path Options
-1009=Default Project Path:
-1010=Compiler Path:
 1=OK
-2=Cancel
+2=Cancelar
+5400=Opciones de Rutas
+1009=Ruta por defecto del Proyecto:
+1010=Ruta del Compilador:
 ;--------------------------------------------------------------------------
 [5500]
-5500=Project Options
-5511=Project Description:
-5512=Project Type:
-5513=Build Command:
-5510=Add main files to Build Command
-5514=Api files:
-5515=Module Handling
-5516=Module Build Command:
-5504=Manual build
-5505=Recompile
-5506=Command line
-5517=Output filename:
-5518=Run Command line parameter:
-5519=Resource Name Export File:
-5520=Project File Grouping
-5501=None
-5502=By Folder
-5503=By Type
 1=OK
-2=Cancel
+2=Cancelar
+5500=Opciones de Proyecto
+5511=Descripcion del Proyecto:
+5512=Tipo de Proyecto:
+5513=Comando para Construir:
+5510=Añadir Ficheros al Comando de Construir
+5514=Ficheros Api:
+5515=Manejo de Modulos
+5516=Comando para Construir Modulos:
+5504=Construccion Manual
+5505=Recompilar
+5506=Linea de Comandos
+5517=Fichero de Salida:
+5518=Parametros para Correr:
+5519=Exportar Nombre del fichero de Recursos:
+5520=Agrupar Ficheros del Proyecto
+5501=Ninguno
+5502=Por Carpetas
+5503=Por Tipo
 ;--------------------------------------------------------------------------
 [5600]
-5600=Export properties to output
 1=OK
-2=Cancel
-1001=Functions
-1002=Constants
+2=Cancelar
+5600=Exportar Propiedades a la Salida
+1001=Funciones
+1002=Constantes
 1003=Variables
 1004=UDT's
-1005=Enums
+1005=Enumeraciones
 1006=Namespaces
 1007=Macros
-1008=Constructors
-1009=Destructors
-1010=Properties
-1011=Operators
+1008=Constructores
+1009=Destructores
+1010=Propiedades
+1011=Operadores
 ;--------------------------------------------------------------------------
 [6000]
-6000=Create Template
-1006=Description:
-1007=Additional Files:
-1002=Add
-1003=Remove
-1008=Template Filename:
-2=Cancel
 1=OK
+2=Cancelar
+6000=Crear Plantilla
+1006=Descripcion:
+1007=Ficheros Adicionales:
+1002=Añadir
+1003=Quitar
+1008=Nombre de la Plantilla:
 ;--------------------------------------------------------------------------
 [6100]
-6100=Addin Manager
 1=OK
-2=Cancel
-1002=Help
-1003=Changes will take place when FbEdit is restarted.
+2=Cancelar
+6100=Addin Manager
+1002=Ayuda
+1003=Los cambios tendran efecto cuando FbEdit sea reiniciado.
 ;--------------------------------------------------------------------------
 [6200]
-6200=Project Api files
-2=Cancel
 1=OK
+2=Cancelar
+6200=Project Api files
 ;--------------------------------------------------------------------------
 [10000]
 10001=Fichero
@@ -452,42 +457,49 @@ Lang=Spanish (Spain), By Denise Amiga
 10082=AutoRenumerar ID's
 ;--------------------------------------------------------------------------
 [Strings]
-10005=New file
-10007=Open file
-10009=Save file
-10010=Save All files
-10022=Undo
-10023=Redo
-10024=Cut
-10025=Copy
-10026=Paste
-10027=Delete
-10030=Find
-10033=Replace
-10038=Indent
-10039=Outdent
-10040=Comment
-10041=Uncomment
-10051=Toggle bookmark
-10052=Next bookmark
-10053=Previous bookmark
-10054=Delete all bookmarks
-10092=Show / Hide Output window
-10093=Show / Hide Project
-10094=Show / Hide Properties
-10142=Compile
-10143=Run
-10144=Go
+10005=Nuevo Fichero
+10007=Abrir Fichero
+10009=Grabar Fichero
+10010=Grabar Todos los Ficheros
+10022=Deshacer
+10023=Rehacer
+10024=Cortar
+10025=Copiar
+10026=Pegar
+10027=Borrar
+10030=Buscar
+10033=Reemplazar
+10038=Tabular
+10039=Destabular
+10040=Comentar
+10041=Descomentar
+10051=Cambiar Marcador
+10052=Siguiente Marcador
+10053=Anterior Marcador
+10054=Borrar Todos los Marcadores
+10092=Mostrar / Ocultar Ventana de Salida
+10093=Mostrar / Ocultar Ventana de Proyecto
+10094=Mostrar / Ocultar Ventana de Propiedades
+10142=Compilar
+10143=Correr
+10144=Ejecutar
 ;--------------------------------------------------------------------------
 [Internal]
-1=Could not find
-1000=Find
-1001=Next
-1002=Previous
-1003=Replace...
-1004=Region searched
-1005=Replacements done.
-1006=Project Files searched
-1007=Region searched%c%cFind%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
-1008=Project Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
+1=No pude encontrar
+100=Fichero
+101=Proyecto
+1000=Buscar
+1001=Siguiente
+1002=Anterior
+1003=Reemplazar...
+1004=Region buscada
+1005=Reemplazamientos hechos.
+1006=Ficheros de Proyecto buscados
+1007=Region buscada%c%cBuscar%c  Encontrados: %d%c  Repetidos: %d%c%cConstruciones%c  Errores: %d%c  Alertas: %d
+1008=Ficheros de Proyecto buscados%c%cBuscar%c  Ficheros: %d%c  Encontrados: %d%c  Repetidos: %d%c%cConstrucciones%c  Errores: %d%c  Alertas: %d
+1100=Opciones del Menu de Herramientas
+1101=Opciones del Menu de Ayuda
+1102=Opciones de Construir
+1103=Opciones de Construir Proyecto
+1104=Opciones de Construir Importaciones
 ;--------------------------------------------------------------------------
