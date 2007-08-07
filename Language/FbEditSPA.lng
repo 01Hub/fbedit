@@ -40,9 +40,9 @@ Lang=Spanish (Spain), By Denise Amiga
 [2300]
 4020=Rejilla Tamaño-X
 4021=Rejilla Tamaño-Y
-4022=Rejilla Color
+4022=Color de la Rejilla
 4003=Mostrar Rejilla
-4002=Pegar a Rejilla
+4002=Ajustar a Rejilla
 4001=Mostrar Tamaño/Posicion
 4009=Rejilla como Lineas
 4010=Estilos en Hex
@@ -56,10 +56,10 @@ Lang=Spanish (Spain), By Denise Amiga
 2216=Buscar que:
 2009=Reemplazar:
 2003=Sensible May./Min.
-2007=Palabras Completas
+2007=Solo Palabras Completas
 2012=Ficheros del Proyecto
 2013=Saltar commentarios
-2014=Logear la Operacion
+2014=Logear Operacion
 2217=Direccion
 2004=Todo
 2006=Arriba
@@ -113,7 +113,7 @@ Lang=Spanish (Spain), By Denise Amiga
 4006=Numeros de Linea
 4019=Expandir Tabs
 4031=Solo una Instancia
-4035=Completa Bloque
+4035=Completar Bloque
 4034=Grabar al Construir
 4044=Autocargar Proyecto
 4020=Auto Tabular
@@ -128,7 +128,7 @@ Lang=Spanish (Spain), By Denise Amiga
 4022=AaBbCc
 4025=Numeros de Linea
 4023=12345
-4062=Complear Codigo
+4062=Completar Codigo
 4039=Activo
 4046=Include/Inclib
 4045=Auto Tamaño
@@ -182,13 +182,13 @@ Lang=Spanish (Spain), By Denise Amiga
 1013=Inc
 ;--------------------------------------------------------------------------
 [5360]
-1010=Project Type:
+1010=Tipo de Proyecto:
 1009=Fichero de Texto (.txt)
 1008=Fichero de Recursos (.rc)
 1007=Fichero de Declaraciones (.bi)
 1006=Fichero de Codigo (.bas)
 1011=Crear Fichero
-1012=La Configuracion de esta Pestaña es nula si es seleccionada una plantilla.
+1012=La Configuracion de esta Pestaña sera nula si es seleccionada una plantilla.
 ;--------------------------------------------------------------------------
 [5380]
 ;--------------------------------------------------------------------------
@@ -196,13 +196,13 @@ Lang=Spanish (Spain), By Denise Amiga
 1=OK
 2=Cancelar
 5400=Opciones de Rutas
-1009=Ruta por defecto del Proyecto:
+1009=Ruta por defecto de los Proyectos:
 1010=Ruta del Compilador:
 ;--------------------------------------------------------------------------
 [5500]
 1=OK
 2=Cancelar
-5500=Opciones de Proyecto
+5500=Opciones del Proyecto
 5511=Descripcion del Proyecto:
 5512=Tipo de Proyecto:
 5513=Comando para Construir:
@@ -250,14 +250,14 @@ Lang=Spanish (Spain), By Denise Amiga
 [6100]
 1=OK
 2=Cancelar
-6100=Addin Manager
+6100=Administrador de Añadidos
 1002=Ayuda
 1003=Los cambios tendran efecto cuando FbEdit sea reiniciado.
 ;--------------------------------------------------------------------------
 [6200]
 1=OK
 2=Cancelar
-6200=Project Api files
+6200=Ficheros Api del Proyecto
 ;--------------------------------------------------------------------------
 [10000]
 10001=Fichero
@@ -501,5 +501,5 @@ Lang=Spanish (Spain), By Denise Amiga
 1101=Opciones del Menu de Ayuda
 1102=Opciones de Construir
 1103=Opciones de Construir Proyecto
-1104=Opciones de Construir Importaciones
+1104=Opciones de Construir Librerias
 ;--------------------------------------------------------------------------
