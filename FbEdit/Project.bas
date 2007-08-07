@@ -1415,6 +1415,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGPROJECTOPTIONAPI)
 			hLst=GetDlgItem(hWin,IDC_LSTAPIFILES)
 			lpOldApiListProc=Cast(Any ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@ApiListProc)))
 			s=ApiFiles

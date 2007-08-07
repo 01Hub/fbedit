@@ -356,9 +356,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Project tab
 			ah.htab=GetDlgItem(hWin,IDC_TAB)
 			tci.mask=TCIF_TEXT
-			tci.pszText=StrPtr("File")
+			buff=GetInternalString(100)
+			tci.pszText=@buff
 			SendMessage(ah.htab,TCM_INSERTITEM,999,Cast(Integer,@tci))
-			tci.pszText=StrPtr("Project")
+			buff=GetInternalString(101)
+			tci.pszText=@buff
 			SendMessage(ah.htab,TCM_INSERTITEM,999,Cast(Integer,@tci))
 			' Project browser
 			ah.hprj=GetDlgItem(hWin,IDC_TRVPRJ)

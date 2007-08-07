@@ -185,16 +185,16 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			SendDlgItemMessage(hWin,IDC_BTNMED,BM_SETIMAGE,IMAGE_ICON,Cast(Integer,ImageList_GetIcon(ah.hmnuiml,3,ILD_NORMAL)))
 			nType=lParam
 			If nType=1 Then
-				buff="Tools Menu Option"
+				buff=GetInternalString(1100)
 			ElseIf nType=2 Then
-				buff="Help Menu Option"
+				buff=GetInternalString(1101)
 			ElseIf nType=3 Then
-				buff="Build Options"
+				buff=GetInternalString(1102)
 			ElseIf nType=4 Then
-				buff="Project Build Options"
+				buff=GetInternalString(1103)
 				ShowWindow(GetDlgItem(hWin,IDC_BTNIMPORT),SW_SHOW)
 			ElseIf nType=5 Then
-				buff="Import Build Option"
+				buff=GetInternalString(1104)
 				ShowWindow(GetDlgItem(hWin,IDC_BTNMEADD),SW_HIDE)
 				ShowWindow(GetDlgItem(hWin,IDC_BTNMEDEL),SW_HIDE)
 				ShowWindow(GetDlgItem(hWin,IDC_BTNMED),SW_HIDE)
