@@ -1038,6 +1038,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_PROJECT_ADDEXISTINGMODULE
 							AddExistingProjectModule
 							'
+						Case IDM_PROJECT_SETMAIN
+							SetAsMainProjectFile
+							'
 						Case IDM_PROJECT_REMOVE
 							RemoveProjectFile
 							'

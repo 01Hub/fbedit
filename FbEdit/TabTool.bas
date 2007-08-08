@@ -533,6 +533,7 @@ End Function
 Function OpenAProject(ByVal hWin As HWND) As Boolean
 	Dim ofn As OPENFILENAME
 	Dim sFile As ZString*260
+	Dim s As ZString*260
 
 	ofn.lStructSize=SizeOf(OPENFILENAME)
 	ofn.hwndOwner=GetOwner
@@ -542,7 +543,8 @@ Function OpenAProject(ByVal hWin As HWND) As Boolean
 	ofn.lpstrFile=@sFile
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(PRJFilterString)
-	ofn.lpstrTitle=StrPtr("Open Project")
+	s=GetInternalString(2004)
+	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
 		If fProject Then

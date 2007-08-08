@@ -499,6 +499,7 @@ End Function
 
 Function Compile(ByVal sMake As String) As Integer
 	Dim bm As Integer
+	Dim nMain As Integer
 	Dim sFile As String
 
 	If edtopt.autosave Then
@@ -511,14 +512,15 @@ Function Compile(ByVal sMake As String) As Integer
 		' Clear errors
 		UpdateAllTabs(2)
 		If fProject Then
+			nMain=GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,ad.ProjectFile)
 			If fRecompile=1 Then
 				If CompileModules(ad.smakemodule)=0 Then
 					nHideOut=0
-					sFile=GetProjectFile(1)
+					sFile=GetProjectFile(nMain)
 					fBuildErr=Make(sMake,sFile,FALSE,TRUE,FALSE)
 				EndIf
 			Else
-				sFile=GetProjectFile(1)
+				sFile=GetProjectFile(nMain)
 				fBuildErr=Make(sMake,sFile,FALSE,FALSE,FALSE)
 			EndIf
 		Else

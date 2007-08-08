@@ -27,7 +27,6 @@
 #Define IDC_EDTPOTYPE						1003
 #Define IDC_EDTPOBUILD						1005
 #Define IDC_EDTPOMODULE						1007
-'#define IDC_CHKPORECOMPILE					1002
 #Define IDC_EDTOUTFILE						1006
 #Define IDC_EDTRUN							1008
 #Define IDC_BTNMAKEOPT						1004
@@ -54,7 +53,7 @@ Function BrowseCallbackProc(ByVal hwnd As HWND,ByVal uMsg As UINT,ByVal lParam A
 
 	If uMsg=BFFM_INITIALIZED Then
 		PostMessage(hwnd,BFFM_SETSELECTION,TRUE,lpData)
-		PostMessage(hwnd,BFFM_SETSTATUSTEXT,0,Cast(Integer,StrPtr("Browse For Folder")))
+		PostMessage(hwnd,BFFM_SETSTATUSTEXT,0,Cast(Integer,GetInternalString(1202)))
 	EndIf
 	Return 0
 
@@ -250,13 +249,13 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString ptr,ByVal nIm
 		EndIf
 		Select Case x
 			Case 1
-				sPath="Basic Source"
+				sPath=GetInternalString(1300)
 			Case 2
-				sPath="Include"
+				sPath=GetInternalString(1301)
 			Case 3
-				sPath="Resource"
+				sPath=GetInternalString(1302)
 			Case Else
-				sPath="Misc"
+				sPath=GetInternalString(1303)
 		End Select
 		hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CHILD,Cast(LPARAM,hPar)))
 		While hCld
@@ -688,19 +687,19 @@ Sub AddAProjectFile(ByVal sFile As String,ByVal fModule As Boolean,ByVal fCreate
 End Sub
 
 Sub AddNewProjectFile()
-	Dim sFile As String
+	Dim sFile As ZString*MAX_PATH
 	Dim ofn As OPENFILENAME
 
 	ofn.lStructSize=SizeOf(OPENFILENAME)
 	ofn.hwndOwner=GetOwner
 	ofn.hInstance=hInstance
 	ofn.lpstrInitialDir=@ad.ProjectPath
-'	ofn.lpstrDefExt=StrPtr("bas")
 	buff=String(260,0)
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	ofn.lpstrTitle=StrPtr("Add New File")
+	sFile=GetInternalString(2000)
+	ofn.lpstrTitle=@sFile
 	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	If GetSaveFileName(@ofn) Then
 		sFile=buff
@@ -725,7 +724,8 @@ Sub AddExistingProjectFile()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=16*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	ofn.lpstrTitle=StrPtr("Add Existing File")
+	s=GetInternalString(2001)
+	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
@@ -756,12 +756,12 @@ Sub AddNewProjectModule()
 	ofn.hwndOwner=GetOwner
 	ofn.hInstance=hInstance
 	ofn.lpstrInitialDir=@ad.ProjectPath
-'	ofn.lpstrDefExt=StrPtr("bas")
 	buff=String(260,0)
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(MODFilterString)
-	ofn.lpstrTitle=StrPtr("Add New Module")
+	sFile=GetInternalString(2002)
+	ofn.lpstrTitle=@sFile
 	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	ofn.lpstrDefExt=StrPtr("bas")
 	If GetSaveFileName(@ofn) Then
@@ -787,7 +787,8 @@ Sub AddExistingProjectModule()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=16*1024
 	ofn.lpstrFilter=StrPtr(MODFilterString)
-	ofn.lpstrTitle=StrPtr("Add Existing Module")
+	s=GetInternalString(2003)
+	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
@@ -806,6 +807,41 @@ Sub AddExistingProjectModule()
 				lstrcpy(@s,Cast(ZString ptr,x+i))
 			Loop
 		EndIf
+	EndIf
+
+End Sub
+
+Sub SetAsMainProjectFile
+	Dim tvi As TV_ITEM
+	Dim nInx As Integer
+	Dim sItem As ZString*260
+
+	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	If tvi.hItem Then
+		tvi.Mask=TVIF_TEXT
+		tvi.pszText=@buff
+		tvi.cchTextMax=260
+		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		nInx=1
+		Do While nInx<256
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+			If lstrcmpi(@buff,@sItem)=0 Then
+				WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+				Exit Sub
+			EndIf
+			nInx=nInx+1
+		Loop
+		nInx=1001
+		Do While nInx<1256
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+			If lstrcmpi(@buff,@sItem)=0 Then
+				WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+				Exit Sub
+			EndIf
+			nInx=nInx+1
+		Loop
 	EndIf
 
 End Sub
@@ -1222,6 +1258,7 @@ Function NewProjectTab1Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_NEWPROJECT1)
 			nInx=1
 			Do While nInx<20
 				sItem=Str(nInx)
@@ -1252,6 +1289,7 @@ Function NewProjectTab2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_NEWPROJECT2)
 			SendDlgItemMessage(hWin,IDC_LSTNEWPROJECTTPL,LB_ADDSTRING,0,Cast(LPARAM,StrPtr("(None)")))
 			buff=ad.AppPath & "\Templates\*.tpl"
 			hwfd=FindFirstFile(@buff,@wfd)
@@ -1308,9 +1346,11 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			TranslateDialog(hWin,IDD_NEWPROJECT)
 			hNPTab=GetDlgItem(hWin,IDC_TABNEWPROJECT)
 			ts.mask=TCIF_TEXT
-			ts.pszText=StrPtr("Files")
+			sItem=GetInternalString(1200)
+			ts.pszText=@sItem
 			SendMessage(hNPTab,TCM_INSERTITEM,0,Cast(LPARAM,@ts))
-			ts.pszText=StrPtr("Template")
+			sItem=GetInternalString(1201)
+			ts.pszText=@sItem
 			SendMessage(hNPTab,TCM_INSERTITEM,1,Cast(LPARAM,@ts))
 			'Create the tab dialogs
 			hTabNewProject1=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT1),hNPTab,@NewProjectTab1Proc,0)
