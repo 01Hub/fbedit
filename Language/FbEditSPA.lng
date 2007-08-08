@@ -183,10 +183,10 @@ Lang=Spanish (Spain), By Denise Amiga
 ;--------------------------------------------------------------------------
 [5360]
 1010=Tipo de Proyecto:
-1009=Fichero de Texto (.txt)
-1008=Fichero de Recursos (.rc)
-1007=Fichero de Declaraciones (.bi)
-1006=Fichero de Codigo (.bas)
+1009=De Texto (.txt)
+1008=De Recursos (.rc)
+1007=De Declaraciones (.bi)
+1006=De Codigo (.bas)
 1011=Crear Fichero
 1012=La Configuracion de esta Pestaña sera nula si es seleccionada una plantilla.
 ;--------------------------------------------------------------------------
