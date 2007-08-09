@@ -483,6 +483,8 @@ Lang=Norwegian, By KetilO
 ;--------------------------------------------------------------------------
 [Internal]
 1=Kunne ikke finne
+100=Fil
+101=Prosjekt
 1000=Finn
 1001=Neste
 1002=Forrige
