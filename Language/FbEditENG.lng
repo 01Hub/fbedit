@@ -526,3 +526,9 @@ Lang=English (default), By FbEdit team
 3007=File changed outside editor!
 3008=Reopen the file?
 ;--------------------------------------------------------------------------
+[SnipletAddin]
+SnipletAddin=Code Sniplets
+1=Copy to Code
+2=Close
+10000=Code &Sniplets\tF11
+;--------------------------------------------------------------------------

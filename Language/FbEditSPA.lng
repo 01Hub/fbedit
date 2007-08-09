@@ -526,3 +526,9 @@ Lang=Spanish (Spain), By Denise Amiga
 3007=El Fichero ha cambiado!
 3008=Reabrir el Fichero?
 ;--------------------------------------------------------------------------
+[SnipletAddin]
+SnipletAddin=Code Sniplets
+1=Copy to Code
+2=Close
+10000=Code &Sniplets\tF11
+;--------------------------------------------------------------------------

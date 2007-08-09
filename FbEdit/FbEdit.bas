@@ -505,9 +505,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_DESTROY
 			KillTimer(hWin,200)
-			If hLangMem Then
-				GlobalFree(hLangMem)
-				hLangMem=0
+			If ad.hLangMem Then
+				GlobalFree(ad.hLangMem)
+				ad.hLangMem=0
 			EndIf
 			DeleteObject(Cast(HBITMAP,SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,0)))
 			DeleteObject(ah.rafnt.hFont)
@@ -1574,7 +1574,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If lret Then
 					lpTOOLTIPTEXT->lpszText=Cast(ZString ptr,lret)
 				Else
-					buff=FindString(hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
+					buff=FindString(ad.hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
 					If buff="" Then
 						LoadString(hInstance,lpTOOLTIPTEXT->hdr.idFrom,@buff,256)
 					EndIf

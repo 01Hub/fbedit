@@ -116,6 +116,9 @@ End Sub
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id, Event
 	Dim lp As ZString Ptr
+	Dim hMem As HGLOBAL
+	Dim hFile As HANDLE
+	Dim szFile As ZString*260
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -151,6 +154,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								lp=@InternalStrings+2
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,lp))
 								SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
+								szFile=szAppPath & "\Addins.txt"
+								hFile=CreateFile(@szFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+								If hFile<>INVALID_HANDLE_VALUE Then
+									hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,64*1024)
+									ReadFile(hFile,hMem,65535,@id,NULL)
+									SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,hMem))
+									GlobalFree(hMem)
+									CloseHandle(hFile)
+									SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
+								EndIf
 							EndIf
 							SetFocus(hEdt)
 						Case IDC_BTNFILE

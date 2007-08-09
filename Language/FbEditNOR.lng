@@ -521,3 +521,9 @@ Lang=Norwegian, By KetilO
 3007=Filen endret utenfor editoren!
 3008=Gjenåpne filen?
 ;--------------------------------------------------------------------------
+[SnipletAddin]
+SnipletAddin=Kode biter
+1=Kopier til kode
+2=Lukk
+10000=Kode Biter\tF11
+;--------------------------------------------------------------------------

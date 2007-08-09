@@ -10,11 +10,16 @@
 
 sub AddToMenu(byval id as integer)
 	dim hMnu as HMENU
-	
+	Dim buff As ZString*256
+
 	' Get handle to 'Tools' popup
 	hMnu=GetSubMenu(lpHANDLES->hmenu,7)
 	' Add our menu item to Tools menu
-	AppendMenu(hMnu,MF_STRING,id,StrPtr("Code &Sniplets	F11"))
+	buff=lpFunctions->FindString(lpData->hLangMem,"SnipletAddin","10000")
+	If buff="" Then
+		buff="Code &Sniplets	F11"
+	EndIf
+	AppendMenu(hMnu,MF_STRING,id,@buff)
 
 end sub
 
@@ -51,6 +56,7 @@ function SnipletProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARA
 
 	select case uMsg
 		case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hWin,"SnipletAddin")
 			' Restore pos & size
 			MoveWindow(hWin,winsize.left,winsize.top,winsize.right-winsize.left,winsize.bottom-winsize.top,FALSE)
 			' Setup file browser

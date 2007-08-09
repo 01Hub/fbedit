@@ -41,6 +41,7 @@ Declare Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integ
 Declare Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 Declare Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
 Declare Function GetInternalString(ByVal id As Integer) As String
+Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 
 ' Main dialog
 #Define IDD_MAIN 								1000
@@ -378,7 +379,7 @@ Dim hRACodeCompleteDll As HMODULE
 ' Addins
 Dim Shared ah As ADDINHANDLES
 Dim Shared ad As ADDINDATA=(1056)
-Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput)
+Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString)
 
 ' Custom controls
 Dim Shared hCustDll(32) As HMODULE
@@ -633,4 +634,4 @@ Dim Shared szApi As ZString*260
 Dim Shared novr As Integer
 Dim Shared nsel As Integer
 Dim Shared Language As ZString*260
-Dim Shared hLangMem As HGLOBAL
+'Dim Shared hLangMem As HGLOBAL

@@ -1,0 +1,5 @@
+[SnipletAddin]
+SnipletAddin=Code Sniplets
+1=Copy to Code
+2=Close
+10000=Code &Sniplets\tF11

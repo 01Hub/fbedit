@@ -112,6 +112,7 @@ Type ADDINDATA
 	tbwt				As Integer						' Width of toolbar
 	lpWINPOS			As WINPOS ptr					' Window positions and sizes
 	lpCharTab		As Any ptr						' Pointer to RAEdit character table
+	hLangMem			As HGLOBAL						' Language translation
 End Type
 
 Type ADDINFUNCTIONS
@@ -121,6 +122,8 @@ Type ADDINFUNCTIONS
 	OpenTheFile As Sub(ByVal sFile As String)
 	Compile As Function(ByVal sMake As String) As Integer
 	ShowOutput As Sub(ByVal bShow As Boolean)
+	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)
+	FindString As Function(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 End Type
 
 ' Addin messages you can send to FbEdit main window
