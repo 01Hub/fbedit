@@ -2,12 +2,12 @@
 
 	1-			Critical messages
 	100-		Main window
-	1000-		Find dialog
+	1000-		Find dialog / messages
 	1100-		Menu options dialog
 	1200-		New project dialog
 	1300-		Project tab main window
 	2000-		File open / save dialogs
-
+	3000-		Messageboxes
 '/
 
 
@@ -41,5 +41,15 @@ Const InternalStrings=	!"\13\10" & _
 								!"2001=Add Existing File\13\10" & _
 								!"2002=Add New Module\13\10" & _
 								!"2003=Add Existing Module\13\10" & _
-								!"2004=Open Project\13\10"
+								!"2004=Open Project\13\10" & _
+								!"3000=File exists in project.\13\10" & _
+								!"3001=Remove file from project?\13\10" & _
+								!"3002=Failed to create the folder:\13\10" & _
+								!"3003=Folder exists. Create project anyway?\13\10" & _
+								!"3004=Project file exists. Create project anyway?\13\10" & _
+								!"3005=Failed to create the file:\13\10" & _
+								!"3006=Want to save changes?\13\10" & _
+								!"3007=File changed outside editor!\13\10" & _
+								!"3008=Reopen the file?\13\10"
+								
 								

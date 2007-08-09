@@ -82,7 +82,7 @@ Lang=Spanish (Spain), By Denise Amiga
 3209=Importar
 3205=Insertar
 3206=Borrar
-3209=Menu Item:
+3211=Menu Item:
 3210=Comando:
 ;--------------------------------------------------------------------------
 [4000]
@@ -516,4 +516,13 @@ Lang=Spanish (Spain), By Denise Amiga
 2002=Añadir Nuevo Modulo
 2003=Añadir Modulo Existente
 2004=Abrir Proyecto
+3000=File exists in project.
+3001=Remove file from project?
+3002=Failed to create the folder:
+3003=Folder exists. Create project anyway?
+3004=Project file exists. Create project anyway?
+3005=Failed to create the file:
+3006=Want to save changes?
+3007=File changed outside editor!
+3008=Reopen the file?
 ;--------------------------------------------------------------------------

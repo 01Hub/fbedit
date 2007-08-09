@@ -13,7 +13,7 @@ Lang=Norwegian, By KetilO
 1004=Språk:
 1=OK
 2=Avbryt
-1002=Endringene vil finne sted nåt FbEdit restartes.
+1002=Endringene vil finne sted når FbEdit restartes.
 ;--------------------------------------------------------------------------
 [2000]
 2000=Opsjoner
@@ -28,10 +28,10 @@ Lang=Norwegian, By KetilO
 2104=PureBasic
 2116=Navn Eksport Output
 2110=Fil
-2111=Clip Board
+2111=Utklipps tavle
 2112=Output
 2117=Default Eksport Filnavn:
-2114=Auto eksport ved lagring
+2114=Auto eksporter ved lagring
 ;--------------------------------------------------------------------------
 [2200]
 2204=Legg til
@@ -77,7 +77,7 @@ Lang=Norwegian, By KetilO
 3209=Import
 3205=Sett inn
 3206=Slett
-3209=Meny item:
+3211=Meny item:
 3210=Kommando:
 ;--------------------------------------------------------------------------
 [4000]
@@ -511,4 +511,13 @@ Lang=Norwegian, By KetilO
 2002=Legg til Ny Modul
 2003=Legg til Eksisterende Modul
 2004=Åpne Prosjekt
+3000=Fil eksisterer i prosjektet.
+3001=Fjern filen fra prosjektet?
+3002=Kunne ikke opprette mappen:
+3003=Mappen eksisterer. Lag prosjektet likevel?
+3004=Prosjekt filen eksisterer. Lag prosjektet likevel?
+3005=Kunne ikke lage filen:
+3006=Lagre endringene?
+3007=Filen endret utenfor editoren!
+3008=Gjenåpne filen?
 ;--------------------------------------------------------------------------

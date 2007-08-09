@@ -673,9 +673,11 @@ End Sub
 
 Sub AddAProjectFile(ByVal sFile As String,ByVal fModule As Boolean,ByVal fCreate As Boolean)
 	Dim hFile As HANDLE
+	Dim buff As ZString*256
 	
 	If IsProjectFile(sFile) Then
-		MessageBox(ah.hwnd,"File exists in project." & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
+		buff=GetInternalString(3000)
+		MessageBox(ah.hwnd,buff & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
 	Else
 		If fCreate Then
 			hFile=CreateFile(@sFile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
@@ -850,6 +852,7 @@ Sub RemoveProjectFile
 	Dim tvi As TV_ITEM
 	Dim nInx As Integer
 	Dim sItem As ZString*260
+	Dim buff As ZString*260
 
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
 	If tvi.hItem Then
@@ -862,7 +865,8 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				If MessageBox(ah.hwnd,"Remove file from project?" & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
+				buff=GetInternalString(3001)
+				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
 					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
@@ -877,7 +881,8 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				If MessageBox(ah.hwnd,"Remove file from project?" & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
+				buff=GetInternalString(3001)
+				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
 					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
@@ -1131,11 +1136,13 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 	lret=GetFileAttributes(@buff)
 	If lret=-1 Then
 		If CreateDirectory(@buff,NULL)=0 Then
-			MessageBox(hWin,"Failed to create the folder:" & CRLF & CRLF & buff,@szAppName,MB_OK Or MB_ICONERROR)
+			sFile=GetInternalString(3002)
+			MessageBox(hWin,sFile & CRLF & CRLF & buff,@szAppName,MB_OK Or MB_ICONERROR)
 			Return FALSE
 		EndIf
 	Else
-		If MessageBox(hWin,buff & CRLF & CRLF & "Folder exists. Create project anyway?",@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
+		sFile=GetInternalString(3003)
+		If MessageBox(hWin,buff & CRLF & CRLF & sFile,@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
 			Return FALSE
 		EndIf
 	EndIf
@@ -1146,7 +1153,8 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 	sItem=buff
 	lstrcat(@sItem,StrPtr(".fbp"))
 	If GetFileAttributes(@sItem)<>-1 Then
-		If MessageBox(hWin,sItem & CRLF & CRLF & "Project file exists. Create project anyway?",@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
+		sFile=GetInternalString(3004)
+		If MessageBox(hWin,sItem & CRLF & CRLF & sFile,@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
 			Return FALSE
 		EndIf
 	EndIf
@@ -1245,7 +1253,8 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 		EndIf
 		Return TRUE
 	Else
-		MessageBox(hWin,"Failed to create the file:" & CRLF & CRLF & sItem,@szAppName,MB_OK Or MB_ICONERROR)
+		sFile=GetInternalString(3005)
+		MessageBox(hWin,sFile & CRLF & CRLF & sItem,@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
 	Return FALSE
 
