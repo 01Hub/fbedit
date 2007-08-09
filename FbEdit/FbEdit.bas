@@ -356,10 +356,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Project tab
 			ah.htab=GetDlgItem(hWin,IDC_TAB)
 			tci.mask=TCIF_TEXT
-			buff=GetInternalString(100)
+			buff=GetInternalString(IS_FILE)
 			tci.pszText=@buff
 			SendMessage(ah.htab,TCM_INSERTITEM,999,Cast(Integer,@tci))
-			buff=GetInternalString(101)
+			buff=GetInternalString(IS_PROJECT)
 			tci.pszText=@buff
 			SendMessage(ah.htab,TCM_INSERTITEM,999,Cast(Integer,@tci))
 			' Project browser
@@ -1958,28 +1958,28 @@ Dim CharTab As Function() As Any ptr
 							WinMain(hInstance,NULL,NULL,NULL)
 							OleUninitialize
 						Else
-							MessageBox(NULL,GetInternalString(1) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
+							MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
 						EndIf
 						FreeLibrary(hRAResEdDll)
 					Else
-						MessageBox(NULL,GetInternalString(1) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
+						MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 					EndIf
 					FreeLibrary(hRACodeCompleteDll)
 				Else
-					MessageBox(NULL,GetInternalString(1) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
+					MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
 				EndIf
 				FreeLibrary(hRAPropertyDll)
 			Else
-				MessageBox(NULL,GetInternalString(1) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
 			EndIf
 			FreeLibrary(hRAFileDll)
 		Else
-			MessageBox(NULL,GetInternalString(1) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
+			MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
 		EndIf
 		FreeLibrary(hRAEditDll)
 		FreeLibrary(hRichEditDll)
 	Else
-		MessageBox(NULL,GetInternalString(1) & " RAEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
+		MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
 	''
 	'' Program has ended

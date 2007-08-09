@@ -152,8 +152,8 @@ Lang=Spanish (Spain), By Denise Amiga
 1=OK
 2=Cancelar
 5000=Grabar Ficheros
-1003=Deseleccionar Todo
-1002=Seleccionar Todo
+1002=Sel. Todo
+1003=Desel. Todo
 ;--------------------------------------------------------------------------
 [5100]
 1=OK
@@ -516,13 +516,13 @@ Lang=Spanish (Spain), By Denise Amiga
 2002=Añadir Nuevo Modulo
 2003=Añadir Modulo Existente
 2004=Abrir Proyecto
-3000=File exists in project.
-3001=Remove file from project?
-3002=Failed to create the folder:
-3003=Folder exists. Create project anyway?
-3004=Project file exists. Create project anyway?
-3005=Failed to create the file:
-3006=Want to save changes?
-3007=File changed outside editor!
-3008=Reopen the file?
+3000=El Fichero existe en el Proyecto.
+3001=Eliminar el Fichero del Proyecto?
+3002=Error al crear la Carpeta:
+3003=La Carpeta existe. Crear Proyecto de todas maneras?
+3004=El Proyecto existe. Crear Proyecto de todas maneras?
+3005=Error al crear el Fichero:
+3006=Quieres grabar los cambios?
+3007=El Fichero ha cambiado!
+3008=Reabrir el Fichero?
 ;--------------------------------------------------------------------------

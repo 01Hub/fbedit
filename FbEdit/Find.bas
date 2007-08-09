@@ -51,9 +51,9 @@ Sub ShowStat(ByVal fOneFile As Long)
 		i-=1
 	Wend
 	If fOneFile Then
-		wsprintf(@buff,GetInternalString(1007),10,10,10,nFounds,10,nRepeats,10,10,10,nErrors,10,nWarnings)
+		wsprintf(@buff,GetInternalString(IS_REGION_SEARCHED_INFO),10,10,10,nFounds,10,nRepeats,10,10,10,nErrors,10,nWarnings)
 	Else
-		wsprintf(@buff,GetInternalString(1008),10,10,10,nFiles,10,nFounds,10,nRepeats,10,10,10,nErrors,10,nWarnings)
+		wsprintf(@buff,GetInternalString(IS_PROJECT_FILES_SEARCHED_INFO),10,10,10,nFiles,10,nFounds,10,nRepeats,10,10,10,nErrors,10,nWarnings)
 	EndIf
 	MessageBox(ah.hwnd,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 
@@ -114,14 +114,14 @@ TryAgain:
 			If fProFileNo>1256 Then
 				' Project Files searched
 				If nReplaceCount Then
-					buff=GetInternalString(1006) & CR & Str(nReplaceCount) & " " & GetInternalString(1005)
+					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 					nReplaceCount=0
 				Else
 					If fLogFind Then
 						ShowStat(FALSE)
 					Else
-						MessageBox(hWin,GetInternalString(1006),@szAppName,MB_OK Or MB_ICONINFORMATION)
+						MessageBox(hWin,GetInternalString(IS_PROJECT_FILES_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
 					EndIf
 				EndIf
 				ft.chrg.cpMax=ft.chrg.cpMin
@@ -215,14 +215,14 @@ TryFind:
 			Else
 				' Region searched
 				If nReplaceCount then
-					buff=GetInternalString(1004) & CR & Str(nReplaceCount) & " " & GetInternalString(1005)
+					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 					nReplaceCount=0
 				Else
 					If fLogFind Then
 						ShowStat(TRUE)
 					Else
-						MessageBox(hWin,GetInternalString(1004),@szAppName,MB_OK Or MB_ICONINFORMATION)
+						MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
 					EndIf
 				EndIf
 				ft.chrg.cpMax=ft.chrg.cpMin
@@ -248,7 +248,7 @@ Sub ResetFind
 	If fLogFindClear Then
 		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
-	SetDlgItemText(findvisible,IDOK,GetInternalString(1000))
+	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
 
 End Sub
 
@@ -353,9 +353,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				Select Case id
 					Case IDOK
 						If fDir=2 Then
-							buff=GetInternalString(1002)
+							buff=GetInternalString(IS_PREVIOUS)
 						Else
-							buff=GetInternalString(1001)
+							buff=GetInternalString(IS_NEXT)
 						EndIf
 						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
 						UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
@@ -370,7 +370,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							' Enable Replace all button
 							EnableWindow(hCtl,TRUE)
 							' Set caption to Replace...
-							SetWindowText(hWin,GetInternalString(1003))
+							SetWindowText(hWin,GetInternalString(IS_REPLACE))
 							' Show replace
 							hCtl=GetDlgItem(hWin,IDC_REPLACESTATIC)
 							ShowWindow(hCtl,SW_SHOWNA)

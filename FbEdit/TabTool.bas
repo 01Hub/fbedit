@@ -418,7 +418,7 @@ Function WantToSave(ByVal hWin As HWND) As Boolean
 
 	If ah.hred Then
 		If SendMessage(ah.hred,EM_GETMODIFY,0,0) Then
-			Select Case  MessageBox(hWin,GetInternalString(3006),@szAppName,MB_YESNOCANCEL + MB_ICONQUESTION)
+			Select Case  MessageBox(hWin,GetInternalString(IS_WANT_TO_SAVE_CHANGES),@szAppName,MB_YESNOCANCEL + MB_ICONQUESTION)
 				Case IDYES
 					If Left(ad.filename,10)="(Untitled)" Then
 						Return SaveFileAs(hWin) Xor TRUE
@@ -543,7 +543,7 @@ Function OpenAProject(ByVal hWin As HWND) As Boolean
 	ofn.lpstrFile=@sFile
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(PRJFilterString)
-	s=GetInternalString(2004)
+	s=GetInternalString(IS_OPEN_PROJECT)
 	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
@@ -677,7 +677,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						' File changed outside editor
 						fChangeNotification=-1
 						lstrcpy(@buff,lpTABMEM->filename)
-						buff=buff & CR & GetInternalString(3007) & CR & GetInternalString(3008)
+						buff=buff & CR & GetInternalString(IS_FILE_CHANGED_OUTSIDE_EDITOR) & CR & GetInternalString(IS_REOPEN_THE_FILE)
 						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
 							' Reload file
 							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)

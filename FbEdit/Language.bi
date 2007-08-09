@@ -8,8 +8,47 @@
 	1300-		Project tab main window
 	2000-		File open / save dialogs
 	3000-		Messageboxes
+
 '/
 
+#DEFINE IS_COULD_NOT_FIND               1
+#DEFINE IS_FILE                         100
+#DEFINE IS_PROJECT                      101
+#DEFINE IS_FIND                         1000
+#DEFINE IS_NEXT                         1001
+#DEFINE IS_PREVIOUS                     1002
+#DEFINE IS_REPLACE                      1003
+#DEFINE IS_REGION_SEARCHED              1004
+#DEFINE IS_REPLACEMENTS_DONE            1005
+#DEFINE IS_PROJECT_FILES_SEARCHED       1006
+#DEFINE IS_REGION_SEARCHED_INFO         1007
+#DEFINE IS_PROJECT_FILES_SEARCHED_INFO  1008
+#DEFINE IS_TOOLS_MENU_OPTION            1100
+#DEFINE IS_HELP_MENU_OPTION             1101
+#DEFINE IS_BUILD_OPTIONS                1102
+#DEFINE IS_PROJECT_BUILD_OPTIONS        1103
+#DEFINE IS_IMPORT_BUILD_OPTION          1104
+#DEFINE IS_FILES                        1200
+#DEFINE IS_TEMPLATE                     1201
+#DEFINE IS_BROWSE_FOR_FOLDER            1202
+#DEFINE IS_BASIC_SOURCE                 1300
+#DEFINE IS_INCLUDE                      1301
+#DEFINE IS_RESOURCE                     1302
+#DEFINE IS_MISC                         1303
+#DEFINE IS_ADD_NEW_FILE                 2000
+#DEFINE IS_ADD_EXISTING_FILE            2001
+#DEFINE IS_ADD_NEW_MODULE               2002
+#DEFINE IS_ADD_EXISTING_MODULE          2003
+#DEFINE IS_OPEN_PROJECT                 2004
+#DEFINE IS_FILE_EXISTS_IN_PROJECT       3000
+#DEFINE IS_REMOVE_FILE_FROM_PROJECT     3001
+#DEFINE IS_FAILED_TO_CREATE_THE_FOLDER  3002
+#DEFINE IS_FOLDER_EXISTS                3003
+#DEFINE IS_PROJECT_FILE_EXISTS          3004
+#DEFINE IS_FAILED_TO_CREATE_THE_FILE    3005
+#DEFINE IS_WANT_TO_SAVE_CHANGES         3006
+#DEFINE IS_FILE_CHANGED_OUTSIDE_EDITOR  3007
+#DEFINE IS_REOPEN_THE_FILE              3008
 
 Const InternalStrings=	!"\13\10" & _
 								!"[Internal]\13\10" & _
@@ -51,5 +90,3 @@ Const InternalStrings=	!"\13\10" & _
 								!"3006=Want to save changes?\13\10" & _
 								!"3007=File changed outside editor!\13\10" & _
 								!"3008=Reopen the file?\13\10"
-								
-								

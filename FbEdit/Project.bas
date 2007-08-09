@@ -53,7 +53,7 @@ Function BrowseCallbackProc(ByVal hwnd As HWND,ByVal uMsg As UINT,ByVal lParam A
 
 	If uMsg=BFFM_INITIALIZED Then
 		PostMessage(hwnd,BFFM_SETSELECTION,TRUE,lpData)
-		PostMessage(hwnd,BFFM_SETSTATUSTEXT,0,Cast(Integer,GetInternalString(1202)))
+		PostMessage(hwnd,BFFM_SETSTATUSTEXT,0,Cast(Integer,GetInternalString(IS_BROWSE_FOR_FOLDER)))
 	EndIf
 	Return 0
 
@@ -249,13 +249,13 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString ptr,ByVal nIm
 		EndIf
 		Select Case x
 			Case 1
-				sPath=GetInternalString(1300)
+				sPath=GetInternalString(IS_BASIC_SOURCE)
 			Case 2
-				sPath=GetInternalString(1301)
+				sPath=GetInternalString(IS_INCLUDE)
 			Case 3
-				sPath=GetInternalString(1302)
+				sPath=GetInternalString(IS_RESOURCE)
 			Case Else
-				sPath=GetInternalString(1303)
+				sPath=GetInternalString(IS_MISC)
 		End Select
 		hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CHILD,Cast(LPARAM,hPar)))
 		While hCld
@@ -676,7 +676,7 @@ Sub AddAProjectFile(ByVal sFile As String,ByVal fModule As Boolean,ByVal fCreate
 	Dim buff As ZString*256
 	
 	If IsProjectFile(sFile) Then
-		buff=GetInternalString(3000)
+		buff=GetInternalString(IS_FILE_EXISTS_IN_PROJECT)
 		MessageBox(ah.hwnd,buff & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
 	Else
 		If fCreate Then
@@ -700,7 +700,7 @@ Sub AddNewProjectFile()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	sFile=GetInternalString(2000)
+	sFile=GetInternalString(IS_ADD_NEW_FILE)
 	ofn.lpstrTitle=@sFile
 	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	If GetSaveFileName(@ofn) Then
@@ -726,7 +726,7 @@ Sub AddExistingProjectFile()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=16*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	s=GetInternalString(2001)
+	s=GetInternalString(IS_ADD_EXISTING_FILE)
 	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
@@ -762,7 +762,7 @@ Sub AddNewProjectModule()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(MODFilterString)
-	sFile=GetInternalString(2002)
+	sFile=GetInternalString(IS_ADD_NEW_MODULE)
 	ofn.lpstrTitle=@sFile
 	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	ofn.lpstrDefExt=StrPtr("bas")
@@ -789,7 +789,7 @@ Sub AddExistingProjectModule()
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=16*1024
 	ofn.lpstrFilter=StrPtr(MODFilterString)
-	s=GetInternalString(2003)
+	s=GetInternalString(IS_ADD_EXISTING_MODULE)
 	ofn.lpstrTitle=@s
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
@@ -865,7 +865,7 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				buff=GetInternalString(3001)
+				buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
 				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
 					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
@@ -881,7 +881,7 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				buff=GetInternalString(3001)
+				buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
 				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
 					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
@@ -1136,12 +1136,12 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 	lret=GetFileAttributes(@buff)
 	If lret=-1 Then
 		If CreateDirectory(@buff,NULL)=0 Then
-			sFile=GetInternalString(3002)
+			sFile=GetInternalString(IS_FAILED_TO_CREATE_THE_FOLDER)
 			MessageBox(hWin,sFile & CRLF & CRLF & buff,@szAppName,MB_OK Or MB_ICONERROR)
 			Return FALSE
 		EndIf
 	Else
-		sFile=GetInternalString(3003)
+		sFile=GetInternalString(IS_FOLDER_EXISTS)
 		If MessageBox(hWin,buff & CRLF & CRLF & sFile,@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
 			Return FALSE
 		EndIf
@@ -1153,7 +1153,7 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 	sItem=buff
 	lstrcat(@sItem,StrPtr(".fbp"))
 	If GetFileAttributes(@sItem)<>-1 Then
-		sFile=GetInternalString(3004)
+		sFile=GetInternalString(IS_PROJECT_FILE_EXISTS)
 		If MessageBox(hWin,sItem & CRLF & CRLF & sFile,@szAppName,MB_YESNO Or MB_ICONWARNING)=IDNO Then
 			Return FALSE
 		EndIf
@@ -1253,7 +1253,7 @@ Function CreateNewProject(ByVal hWin As HWND,ByVal hTab1 As HWND,ByVal hTab2 As 
 		EndIf
 		Return TRUE
 	Else
-		sFile=GetInternalString(3005)
+		sFile=GetInternalString(IS_FAILED_TO_CREATE_THE_FILE)
 		MessageBox(hWin,sFile & CRLF & CRLF & sItem,@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
 	Return FALSE
@@ -1355,10 +1355,10 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			TranslateDialog(hWin,IDD_NEWPROJECT)
 			hNPTab=GetDlgItem(hWin,IDC_TABNEWPROJECT)
 			ts.mask=TCIF_TEXT
-			sItem=GetInternalString(1200)
+			sItem=GetInternalString(IS_FILES)
 			ts.pszText=@sItem
 			SendMessage(hNPTab,TCM_INSERTITEM,0,Cast(LPARAM,@ts))
-			sItem=GetInternalString(1201)
+			sItem=GetInternalString(IS_TEMPLATE)
 			ts.pszText=@sItem
 			SendMessage(hNPTab,TCM_INSERTITEM,1,Cast(LPARAM,@ts))
 			'Create the tab dialogs
