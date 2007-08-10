@@ -526,4 +526,15 @@ SnipletAddin=Kode biter
 1=Kopier til kode
 2=Lukk
 10000=Kode Biter\tF11
+[AdvEdit]
+10000=Avansert Editering
+10001=Marker Ord\tShift+Ctrl+W
+10002=Kopier Ord\tShift+Ctrl+C
+10003=Klipp ut Ord\tShift+Ctrl+X
+10004=Slett Ord
+10005=Marker Linje\tShift+Ctrl+L
+10006=Kopier Linje\tAlt+Ctrl+C
+10007=Klipp ut Linje\tAlt+Ctrl+X
+10008=Slett Linje
+10009=Hurtig kjør
 ;--------------------------------------------------------------------------

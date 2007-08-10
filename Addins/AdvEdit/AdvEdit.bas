@@ -76,8 +76,17 @@ Sub AddToolbarButton(ByVal id As Integer,ByVal idbmp As Integer)
 
 End Sub
 
+Function GetString(ByVal id As Integer) As String
+'	Dim buff As ZString*256
+
+'	buff=
+	Return lpFunctions->FindString(lpData->hLangMem,"AdvEdit",Str(id))
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS ptr Export
+	Dim buff As ZString*256
 
 	' The dll's instance
 	hInstance=hInst
@@ -89,33 +98,69 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	' Add "Advanced" sub menu to "Edit" menu.
 	hSubMnu=CreatePopupMenu
-	AppendMenu(GetSubMenu(lpHANDLES->hmenu,1),MF_STRING Or MF_POPUP,Cast(Integer,hSubMnu),StrPtr("Advanced Edit"))
+	buff=GetString(10000)
+	If buff="" Then
+		buff="Advanced Edit"
+	EndIf
+	AppendMenu(GetSubMenu(lpHANDLES->hmenu,1),MF_STRING Or MF_POPUP,Cast(Integer,hSubMnu),buff)
 
 	' Add menu items to "Advanced" sub menu
 	' Word commands
 	IdSelectWord=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdSelectWord,"Select Word	Shift+Ctrl+W")
+	buff=GetString(10001)
+	If buff="" Then
+		buff="Select Word	Shift+Ctrl+W"
+	EndIf
+	AddToMenu(IdSelectWord,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("W"),IdSelectWord)
 	IdCopyWord=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdCopyWord,"Copy Word	Shift+Ctrl+C")
+	buff=GetString(10002)
+	If buff="" Then
+		buff="Copy Word	Shift+Ctrl+C"
+	EndIf
+	AddToMenu(IdCopyWord,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("C"),IdCopyWord)
 	IdCutWord=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdCutWord,"Cut Word	Shift+Ctrl+X")
+	buff=GetString(10003)
+	If buff="" Then
+		buff="Cut Word	Shift+Ctrl+X"
+	EndIf
+	AddToMenu(IdCutWord,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("X"),IdCutWord)
 	IdDeleteWord=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdDeleteWord,"Delete Word")
+	buff=GetString(10004)
+	If buff="" Then
+		buff="Delete Word"
+	EndIf
+	AddToMenu(IdDeleteWord,buff)
 	' Line commands
 	IdSelectLine=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdSelectLine,"Select Line	Shift+Ctrl+L")
+	buff=GetString(10005)
+	If buff="" Then
+		buff="Select Line	Shift+Ctrl+L"
+	EndIf
+	AddToMenu(IdSelectLine,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("L"),IdSelectLine)
 	IdCopyLine=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdCopyLine,"Copy Line	Alt+Ctrl+C")
+	buff=GetString(10006)
+	If buff="" Then
+		buff="Copy Line	Alt+Ctrl+C"
+	EndIf
+	AddToMenu(IdCopyLine,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FALT Or FCONTROL,Asc("C"),IdCopyLine)
 	IdCutLine=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdCutLine,"Cut Line	Alt+Ctrl+X")
+	buff=GetString(10007)
+	If buff="" Then
+		buff="Cut Line	Alt+Ctrl+X"
+	EndIf
+	AddToMenu(IdCutLine,buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FALT Or FCONTROL,Asc("X"),IdCutLine)
 	IdDeleteLine=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AddToMenu(IdDeleteLine,"Delete Line")
+	buff=GetString(10008)
+	If buff="" Then
+		buff="Delete Line"
+	EndIf
+	AddToMenu(IdDeleteLine,buff)
 
 /'	' Change accelerator for an existing command
 	#define IDM_EDIT_REDO						10023
@@ -127,6 +172,11 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 
 	' Add quick run button to toolbar
 	AddToolbarButton(IDM_MAKE_QUICKRUN,100)
+	' Get toolbar button tooltip
+	szQuickRun=GetString(10009)
+	If szQuickRun="" Then
+		szQuickRun="Quick run"
+	EndIf
 
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_COMMAND Or HOOK_GETTOOLTIP

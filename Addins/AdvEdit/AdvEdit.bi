@@ -20,4 +20,5 @@ Dim Shared IdCopyLine As Integer
 Dim Shared IdCutLine As Integer
 Dim Shared IdDeleteLine As Integer
 ' Tooltip text
-Const szQuickRun="Quick run"
+'Const szQuickRun="Quick run"
+Dim Shared szQuickRun As ZString*64
