@@ -12,6 +12,7 @@ dim SHARED lpData as ADDINDATA ptr
 Declare Function DlgProc(ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
 
 function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+	Dim buff As ZString*256
 
 	' The dll's instance
 	hInstance=hInst
@@ -28,7 +29,11 @@ function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	hMnu=GetSubMenu(lpHANDLES->hmenu,8)
 	' Add our menu item to Tools menu
 	IDM_CUSTOMFONT=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AppendMenu(hMnu,MF_STRING,IDM_CUSTOMFONT,StrPtr("Custom Font"))	
+	buff=lpFunctions->FindString(lpData->hLangMem,"CustomFontAddin","10000")
+	If buff="" Then
+		buff="Custom Font"
+	EndIf
+	AppendMenu(hMnu,MF_STRING,IDM_CUSTOMFONT,StrPtr(buff))	
 	
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_ADDINSLOADED Or HOOK_CLOSE Or HOOK_COMMAND
@@ -63,6 +68,7 @@ end Function
 Function OpenFontFile(ByVal hWin As HWND) As String
 	Dim ofn As OPENFILENAME
 	Dim buff As ZString*260
+	Dim buff2 As ZString*260
 	Dim path As String = ExePath
 
 	ofn.lStructSize=SizeOf(OPENFILENAME)
@@ -73,7 +79,11 @@ Function OpenFontFile(ByVal hWin As HWND) As String
 	ofn.lpstrFile=@buff
 	ofn.nMaxFile=260
 	ofn.lpstrFilter=StrPtr(szFilter)
-	ofn.lpstrTitle=StrPtr("Add New Font")
+	buff2=lpFunctions->FindString(lpData->hLangMem,"CustomFontAddin","10001")
+	If buff2="" Then
+		buff2="Add New Font"
+	EndIf
+	ofn.lpstrTitle=StrPtr(buff2)
 	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
 		Return buff
@@ -90,6 +100,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hWin,"CustomFontAddin")
 			SetDlgItemText(hWin,IDC_EDT1,@oldFontName)
 			'
 		Case WM_CLOSE

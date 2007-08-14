@@ -537,4 +537,24 @@ SnipletAddin=Kode biter
 10007=Klipp ut Linje\tAlt+Ctrl+X
 10008=Slett Linje
 10009=Hurtig kjør
+[CustomFontAddin]
+CustomFontAddin=Egendefinert Font
+1001=Søk
+1003=OK
+1004=Avbryt
+10000=Egendefinert Font
+10001=Legg til Ny Font
+[FBFileAssociation]
+FBFileAssociation=Filtilhørighet
+1008=Info
+1009=Endre Filtilhørighet med FbEdit ved å markere filtypene du ønsker og klikk Endre Filtilhørighet\r\nTilhørigheten vil lage flotte ikon
+1001=Filer
+1002=*.bas - FreeBasic Kilde
+1003=*.bi    - FreeBasic Headers
+1005=*.rc    - Windows Resurs Skript
+1004=*.fbp  - FBEdit Prosjekt Fil
+1006=Endre Filtilhørighet
+1007=Lukk
+10000=Filtilhørighet
+10001=Filtilhørighet endret!\rFBEdit stien er:
 ;--------------------------------------------------------------------------

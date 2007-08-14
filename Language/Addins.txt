@@ -14,3 +14,23 @@ SnipletAddin=Code Sniplets
 10007=Cut Line\tAlt+Ctrl+X
 10008=Delete Line
 10009=Quick run
+[CustomFontAddin]
+CustomFontAddin=Custom Font
+1001=Browse
+1003=OK
+1004=Cancel
+10000=Custom Font
+10001=Add New Font
+[FBFileAssociation]
+FBFileAssociation=File Association
+1008=Info
+1009=Change File assiciations with FbEdit by checking the extensions you want and click Change Association\r\nIt will associate with our nice icons
+1001=Files
+1002=*.bas - FreeBasic Source
+1003=*.bi    - FreeBasic Headers
+1005=*.rc    - Windows Resource Scripts
+1004=*.fbp  - FBEdit Project File
+1006=Change Association
+1007=Close
+10000=File Association
+10001=File Association changed!\rFBEdit path is:

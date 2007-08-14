@@ -36,9 +36,11 @@ function DlgProc(byval hDlg as HWND, byval uMsg as UINT, byval wParam as WPARAM,
 	Dim biIco as String=Chr(34)+lpData->AppPath+"\Addins\FBFileAssociation.dll"+Chr(34)+",1"
 	Dim fbpIco as String=Chr(34)+lpData->AppPath+"\Addins\FBFileAssociation.dll"+Chr(34)+",2"
 	Dim rcIco as String=Chr(34)+lpData->AppPath+"\Addins\FBFileAssociation.dll"+Chr(34)+",3"
-	
+	Dim buff As ZString*256
+
 	select case uMsg
 		case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hDlg,"FBFileAssociation")
 			'.bas
 			if regBasName.exists and regBasName.default=BAS_FILE and _
 				regBasClass.exists and regBasClass.default=BAS_FILE_D and _
@@ -160,8 +162,13 @@ function DlgProc(byval hDlg as HWND, byval uMsg as UINT, byval wParam as WPARAM,
 						tmp.deleteMe()
 						regRcClass.deleteMe()
 						regRcName.deleteMe()
-					endif									
-					MessageBox(hDlg,"File Association changed!"+Chr(13)+"FBEdit path is:"+Chr(13)+lpData->AppPath,"FBEdit",MB_OK)
+					EndIf
+					buff=lpFunctions->FindString(lpData->hLangMem,"FBFileAssociation","10001")
+					If buff="" Then
+						buff="File Association changed!"+Chr(13)+"FBEdit path is:"
+					EndIf
+
+					MessageBox(hDlg,buff+Chr(13)+lpData->AppPath,"FBEdit",MB_OK)
 					EndDialog(hDlg, 0)
 			end select
 		case WM_SIZE
@@ -177,6 +184,7 @@ end function
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+	Dim buff As ZString*256
 
 	' The dll's instance
 	hInstance=hInst
@@ -192,7 +200,11 @@ function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	hMnu=GetSubMenu(lpHANDLES->hmenu,8)
 	' Add our menu item to Tools menu
 	IDM_FILEASSOC=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AppendMenu(hMnu,MF_STRING,IDM_FILEASSOC,StrPtr("File Association"))	
+	buff=lpFunctions->FindString(lpData->hLangMem,"FBFileAssociation","10000")
+	If buff="" Then
+		buff="File Association"
+	EndIf
+	AppendMenu(hMnu,MF_STRING,IDM_FILEASSOC,StrPtr(buff))
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_COMMAND
 	hooks.hook2=0
