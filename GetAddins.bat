@@ -10,4 +10,7 @@ Copy Addins\CustomFontAddin\CustomFontAddin.txt \FbEdit\Addins\Help
 Copy Addins\FBFileAssociation\FBFileAssociation.dll \FbEdit\Addins
 Copy Addins\FBFileAssociation\FBFileAssociation.txt \FbEdit\Addins\Help
 
+Copy Addins\FileTabStyle\src\FileTabStyle.dll \FbEdit\Addins
+Copy Addins\FileTabStyle\src\FileTabStyle.txt \FbEdit\Addins\Help
+
 Pause

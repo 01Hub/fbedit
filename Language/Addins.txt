@@ -34,3 +34,13 @@ FBFileAssociation=File Association
 1007=Close
 10000=File Association
 10001=File Association changed!\rFBEdit path is:
+[FileTabStyle]
+10000=File tab style
+10001=Default
+10002=Buttons
+10003=Flat
+10004=Modified state indicator
+10005=Fixed width
+10006=Highlight icon
+10007=Asterisk character
+10008=No indicator

@@ -37,6 +37,7 @@ End Type
 
 Dim Shared lpHandles	As ADDINHANDLES Pointer
 Dim Shared lpFunctions 	As ADDINFUNCTIONS Pointer
+Dim Shared lpData As ADDINDATA ptr
 
 Dim Shared CurTabStyle 	As Byte
 Dim Shared FixedWidth   As Byte
@@ -210,16 +211,26 @@ Sub UpdateTab(ByRef theTab As TABMEM, index As Integer)
 
 End Sub
 
+Function GetString(ByVal id As Integer) As String
+
+	Return lpFunctions->FindString(lpData->hLangMem,"FileTabStyle",Str(id))
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As HINSTANCE) As ADDINHOOKS Pointer Export
 	
 	Dim hooks 	As ADDINHOOKS
 	Dim mnuView	As HMENU
 	Dim hBmp	As HBITMAP
+	Dim buff As ZString*256
 
 	' Get pointer to ADDINHANDLES
 	lpHandles = Cast(ADDINHANDLES Pointer, SendMessage(hWin, AIM_GETHANDLES, 0, 0))
 	
+	' Get pointer to ADDINDATA
+	lpData=Cast(ADDINDATA ptr,SendMessage(hWin,AIM_GETDATA,0,0))
+
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions = Cast(ADDINFUNCTIONS Pointer, SendMessage(hWin, AIM_GETFUNCTIONS, 0, 0))
 	
@@ -240,7 +251,11 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	' get View menu
 	mnuView = GetSubMenu(lpHandles->hmenu, 3)
 	' add menu item to View menu
-	AppendMenu mnuView, MF_STRING Or MF_POPUP, Cast(Integer,mnuTabStyle), StrPtr("File tab style")
+	buff=GetString(10000)
+	If buff="" Then
+		buff="File tab style"
+	EndIf
+	AppendMenu mnuView, MF_STRING Or MF_POPUP, Cast(Integer,mnuTabStyle), StrPtr(buff)
 	' get menu ids
 	mnuDefault = SendMessage(hWin, AIM_GETMENUID, 0, 0)
 	mnuButtons = SendMessage(hWin, AIM_GETMENUID, 0, 0)
@@ -250,15 +265,47 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	mnuModTxt = SendMessage(hWin, AIM_GETMENUID, 0, 0)
 	mnuModOff = SendMessage(hWin, AIM_GETMENUID, 0, 0)
 	' add menu items
-	AppendMenu mnuTabStyle, MF_STRING, mnuDefault, StrPtr("Default")
-	AppendMenu mnuTabStyle, MF_STRING, mnuButtons, StrPtr("Buttons")
-	AppendMenu mnuTabStyle, MF_STRING, mnuFlat, StrPtr("Flat")
+	buff=GetString(10001)
+	If buff="" Then
+		buff="Default"
+	EndIf
+	AppendMenu mnuTabStyle, MF_STRING, mnuDefault, StrPtr(buff)
+	buff=GetString(10002)
+	If buff="" Then
+		buff="Buttons"
+	EndIf
+	AppendMenu mnuTabStyle, MF_STRING, mnuButtons, StrPtr(buff)
+	buff=GetString(10003)
+	If buff="" Then
+		buff="Flat"
+	EndIf
+	AppendMenu mnuTabStyle, MF_STRING, mnuFlat, StrPtr(buff)
 	AppendMenu mnuTabStyle, MF_SEPARATOR, 0, 0
-	AppendMenu mnuTabStyle, MF_STRING Or MF_POPUP, Cast(Integer,mnuModType), StrPtr("Modified state indicator")
-	AppendMenu mnuTabStyle, MF_STRING, mnuFixed, StrPtr("Fixed width")
-	AppendMenu mnuModType, MF_STRING, mnuModPic, StrPtr("Highlight icon")
-	AppendMenu mnuModType, MF_STRING, mnuModTxt, StrPtr("Asterisk character")
-	AppendMenu mnuModType, MF_STRING, mnuModOff, StrPtr("No indicator")
+	buff=GetString(10004)
+	If buff="" Then
+		buff="Modified state indicator"
+	EndIf
+	AppendMenu mnuTabStyle, MF_STRING Or MF_POPUP, Cast(Integer,mnuModType), StrPtr(buff)
+	buff=GetString(10005)
+	If buff="" Then
+		buff="Fixed width"
+	EndIf
+	AppendMenu mnuTabStyle, MF_STRING, mnuFixed, StrPtr(buff)
+	buff=GetString(10006)
+	If buff="" Then
+		buff="Highlight icon"
+	EndIf
+	AppendMenu mnuModType, MF_STRING, mnuModPic, StrPtr(buff)
+	buff=GetString(10007)
+	If buff="" Then
+		buff="Asterisk character"
+	EndIf
+	AppendMenu mnuModType, MF_STRING, mnuModTxt, StrPtr(buff)
+	buff=GetString(10008)
+	If buff="" Then
+		buff="No indicator"
+	EndIf
+	AppendMenu mnuModType, MF_STRING, mnuModOff, StrPtr(buff)
 	
 	UpdateMenu
 	

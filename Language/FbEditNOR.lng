@@ -557,4 +557,14 @@ FBFileAssociation=Filtilhørighet
 1007=Lukk
 10000=Filtilhørighet
 10001=Filtilhørighet endret!\rFBEdit stien er:
+[FileTabStyle]
+10000=Fil tab type
+10001=Standard
+10002=Knapper
+10003=Flat
+10004=Modifisert status indikator
+10005=Fast bredde
+10006=Fremhev ikon
+10007=Stjerne karakter
+10008=Ingen indikator
 ;--------------------------------------------------------------------------
