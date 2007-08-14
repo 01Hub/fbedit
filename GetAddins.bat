@@ -13,4 +13,10 @@ Copy Addins\FBFileAssociation\FBFileAssociation.txt \FbEdit\Addins\Help
 Copy Addins\FileTabStyle\src\FileTabStyle.dll \FbEdit\Addins
 Copy Addins\FileTabStyle\src\FileTabStyle.txt \FbEdit\Addins\Help
 
+Copy Addins\Toolbar\Toolbar.dll \FbEdit\Addins
+Copy Addins\Toolbar\Toolbar.txt \FbEdit\Addins\Help
+
+Copy Addins\TortoiseSVN\TortoiseSVN.dll \FbEdit\Addins
+Copy Addins\TortoiseSVN\TortoiseSVN.txt \FbEdit\Addins\Help
+
 Pause

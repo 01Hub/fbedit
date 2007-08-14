@@ -567,4 +567,33 @@ FBFileAssociation=Filtilhørighet
 10006=Fremhev ikon
 10007=Stjerne karakter
 10008=Ingen indikator
+[Toolbar]
+Toolbar=Toolbar Verktøy
+2000=Knapp Navn:
+2001=ID
+2002=Bitmap Fil:
+2003=Bitmap Navn:
+2004=Ant
+1008=Ny Knapp
+1009=Legg til Kn.
+1011=Ny Sep.
+1010=Legg til Sep.
+1012=Slett
+2005=Toolbar Type
+1018=Flat
+1020=Wrap
+1021=Ingen Divider
+1023=Tips
+1022=Liste
+2006=Knapp Type
+1025=Check
+1024=Gruppe
+2007=Knapp Størrelse
+1019=Eksporter
+1=Lagre
+2=Avslutt
+[TortoiseSVN]
+10000=SVN Logg
+10001=SVN Oppdater
+10002=SVN Lagre
 ;--------------------------------------------------------------------------

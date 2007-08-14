@@ -234,6 +234,7 @@ function ToolbarProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARA
 
 	select case uMsg
 		case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hWin,"Toolbar")
 			hWnd=hWin
 			' Restore pos
 			SetWindowPos(hWin,0,winsize.left,winsize.top,0,0,SWP_NOSIZE or SWP_NOZORDER)
@@ -316,8 +317,10 @@ function ToolbarProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARA
 			ImageList_Destroy(hIml)
 			NewToolbar(hWin)
 			lpTBMEM->fChanged=FALSE
-			lstrcpy(@buff,Cast(zstring ptr,lParam))
-			SetWindowText(hWin,"Toolbar Creator - " & buff)
+			GetWindowText(hWin,@buff,SizeOf(buff))
+			buff=buff & " - "
+			lstrcat(@buff,Cast(zstring ptr,lParam))
+			SetWindowText(hWin,buff)
 			'
 		case WM_CLOSE
 			hMem=Cast(HGLOBAL,GetWindowLong(hWin,GWL_USERDATA))

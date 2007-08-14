@@ -31,6 +31,12 @@ Sub EnableMenu(ByVal iEnable As Integer)
 
 End Sub
 
+Function GetString(ByVal id As Integer) As String
+
+	Return lpFunctions->FindString(lpData->hLangMem,"TortoiseSVN",Str(id))
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS ptr Export
 	Dim buff As ZString*260
@@ -56,11 +62,23 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 		szapp="""" & buff & """"
 		AddMenuSep
 		idlog=SendMessage(hWin,AIM_GETMENUID,0,0)
-		AddToMenu(idlog,StrPtr("SVN Log"))
+		buff=GetString(10000)
+		If buff="" Then
+			buff="SVN Log"
+		EndIf
+		AddToMenu(idlog,StrPtr(buff))
 		idupdate=SendMessage(hWin,AIM_GETMENUID,0,0)
-		AddToMenu(idupdate,StrPtr("SVN Update"))
+		buff=GetString(10001)
+		If buff="" Then
+			buff="SVN Update"
+		EndIf
+		AddToMenu(idupdate,StrPtr(buff))
 		idcommit=SendMessage(hWin,AIM_GETMENUID,0,0)
-		AddToMenu(idcommit,StrPtr("SVN Commit"))
+		buff=GetString(10002)
+		If buff="" Then
+			buff="SVN Commit"
+		EndIf
+		AddToMenu(idcommit,StrPtr(buff))
 		EnableMenu(MF_GRAYED Or MF_BYCOMMAND)
 		' Messages this addin will hook into
 		hooks.hook1=HOOK_COMMAND Or HOOK_PROJECTOPEN Or HOOK_PROJECTCLOSE
