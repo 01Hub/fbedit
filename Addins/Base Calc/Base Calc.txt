@@ -1,1 +1,5 @@
-"a description of the addin"
+Base Calc. Just type the number in the appropriate box, and it will tell you the equivalent in other bases.
+
+Include Binary, Octal, Decimal, and Hexadecimal.
+
+ImortisInglorian
