@@ -643,7 +643,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						buff[lp]=NULL
+						'buff[lp]=NULL
+						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
@@ -743,10 +744,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
 						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						buff[lp]=NULL
+						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
-						SendMessage(ah.hpr,PRM_GETTOOLTIP,0,Cast(LPARAM,@tt))
+						SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))
 						' Show tooltip
 						tti.lpszApi=tt.lpszApi
 						tti.lpszParam=tt.ovr(0).lpszParam
@@ -802,13 +803,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							UpdateList(p)
 						EndIf
 					EndIf
-'					If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
-						' Move code complete list
-						MoveList
-'					Else
-'						' Only close
-'						ShowWindow(ah.hcc,SW_HIDE)
-'					EndIf
+					' Move code complete list
+					MoveList
 				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then

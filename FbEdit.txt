@@ -1,7 +1,11 @@
 Whats new:
 ----------
 1.0.5.6
-o Added option Simple Property to dialog editor.
+o Added option Simple Property option to dialog editor.
+o Added multiselect properties to dialog editor.
+o Added Set Selected as Main File to project menu.
+o FbEdit is now ready for language translations.
+o Fixed code complete bugs.
 1.0.5.5
 o Added Properties Hilight.
 o Speed optimized case convert.
