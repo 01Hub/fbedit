@@ -58,6 +58,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim stringBin As zString * 260 
 	Dim stringDec As zString * 260 
 	Dim stringOct As ZString * 260
+	Dim hexHnd As HWND
+	Dim decHnd As HWND
+	Dim binHnd As HWND
+	Dim octHnd As HWND
 	
 	
 	Select Case uMsg
@@ -70,6 +74,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetDlgItemText(hWin,IDC_DEC,@stringDec)
 			SetDlgItemText(hWin,IDC_BIN,@stringBin)
 			SetDlgItemText(hWin,IDC_OCT,@stringOct)
+			hexHnd = GetDlgItem(hWin,IDC_HEX)
+			SendMessage(hexHnd,EM_SETLIMITTEXT,2,0)
+			decHnd = GetDlgItem(hWin,IDC_DEC)
+			SendMessage(decHnd,EM_SETLIMITTEXT,3,0)
+			binHnd = GetDlgItem(hWin,IDC_BIN)
+			SendMessage(binHnd,EM_SETLIMITTEXT,8,0)
+			octHnd = GetDlgItem(hWin,IDC_OCT)
+			SendMessage(octHnd,EM_SETLIMITTEXT,3,0)
 			hasChanged(0) = 1
 			hasChanged(1) = 1
 			hasChanged(2) = 1
