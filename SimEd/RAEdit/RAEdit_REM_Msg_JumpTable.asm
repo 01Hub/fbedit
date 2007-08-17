@@ -1176,6 +1176,21 @@
 			rep movsb
 			mov		byte ptr [edi],0
 			ret
+		align 4
+		_REM_SETNOBLOCKLINE:
+			;wParam=Line
+			;lParam=TRUE/FALSE
+			invoke NoBlockLine,ebx,wParam,lParam
+			ret
+		align 4
+		_REM_ISLINENOBLOCK:
+			;wParam=Line
+			;lParam=0
+			invoke IsLineNoBlock,ebx,wParam
+			.if eax
+				mov		eax,TRUE
+			.endif
+			ret
 
 .data
 align 4
@@ -1250,5 +1265,7 @@ _REM_BASE \
 	dd _REM_SETLOCK			;equ REM_BASE+67
 	dd _REM_GETLOCK			;equ REM_BASE+68
 	dd _REM_GETWORDFROMPOS	;equ REM_BASE+69
+	dd _REM_SETNOBLOCKLINE	;equ REM_BASE+70
+	dd _REM_ISLINENOBLOCK	;equ REM_BASE+71
 .code
 align 4

@@ -125,6 +125,8 @@
 #Define REM_SETLOCK							REM_BASE+67		' wParam=TRUE/FALSE, lParam=0
 #Define REM_GETLOCK							REM_BASE+68		' wParam=0, lParam=0
 #Define REM_GETWORDFROMPOS					REM_BASE+69		' wParam=cp, lParam=lpBuff
+#Define REM_SETNOBLOCKLINE					REM_BASE+70		' wParam=Line, lParam=TRUE/FALSE
+#Define REM_ISLINENOBLOCK					REM_BASE+71		' wParam=Line, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
@@ -162,6 +164,7 @@
 #Define STATE_COMMENT						&H0400
 #Define STATE_DIVIDERLINE					&H0800
 #Define STATE_SEGMENTBLOCK					&H1000
+#Define STATE_NOBLOCK						&H2000
 #Define STATE_GARBAGE						&H80000000
 
 ' Character table types
@@ -217,6 +220,7 @@ End Type
 #Define BD_LOOKAHEAD							&H08				' Look 500 lines ahead for the ending
 #Define BD_SEGMENTBLOCK						&H10				' Segment block, collapse till next segmentblock
 #Define BD_COMMENTBLOCK						&H20				' Comment block, collapse till end of commentblock
+#Define BD_NOBLOCK							&H40				' No block nesting
 
 Type RABLOCKDEF Field=1
 	lpszStart	As ZString ptr										' Block start

@@ -1492,9 +1492,25 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									EndIf
 								ElseIf bm=0 Then
 									If lret<>-1 Then
-										' Set collapse bookmark
-										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
-										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+										x=0
+										y=0
+										While x<32
+											If BD(x).lpszStart<>0 And (BD(x).flag And BD_NOBLOCK)<>0 Then
+												y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
+												If y Then
+													Exit While
+												EndIf
+											EndIf
+											x=x+1
+										Wend
+										If y=0 Then
+											' Set collapse bookmark
+											SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
+											SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+										Else
+											' Set no block flag
+											SendMessage(ah.hred,REM_SETNOBLOCKLINE,nLastLine,TRUE)
+										EndIf
 									EndIf
 								EndIf
 								bm=0

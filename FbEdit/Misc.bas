@@ -879,15 +879,17 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									lz=0
 									While lx<>-1
 										lx=SendMessage(hPar,REM_PRVBOOKMARK,lx,1)
-										lz=SendMessage(hPar,REM_GETBLOCKEND,lx,0)
-										tp=0
-										If lz=-1 Then
-											tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
-											Exit While
-										ElseIf lz>ln Then
-											tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
-											If tp=-1 Then
+										If lx<>-1 Then
+											lz=SendMessage(hPar,REM_GETBLOCKEND,lx,0)
+											tp=0
+											If lz=-1 Then
+												tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
 												Exit While
+											ElseIf lz>ln Then
+												tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
+												If tp=-1 Then
+													Exit While
+												EndIf
 											EndIf
 										EndIf
 									Wend
