@@ -848,7 +848,7 @@ Sub SetAsMainProjectFile
 
 End Sub
 
-Sub RemoveProjectFile
+Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 	Dim tvi As TV_ITEM
 	Dim nInx As Integer
 	Dim sItem As ZString*260
@@ -865,13 +865,16 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
-				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
-					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
-					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
-					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
-					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+				If fDontAsk=FALSE Then
+					buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
+					If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
+						Exit Sub
+					EndIf
 				EndIf
+				SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
+				WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
+				SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
+				SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				Exit Sub
 			EndIf
 			nInx=nInx+1
@@ -881,13 +884,16 @@ Sub RemoveProjectFile
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 			If lstrcmpi(@buff,@sItem)=0 Then
-				buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
-				If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDYES Then
-					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
-					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
-					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
-					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+				If fDontAsk=FALSE Then
+					buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
+					If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
+						Exit Sub
+					EndIf
 				EndIf
+				SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
+				WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
+				SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
+				SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				Exit Sub
 			EndIf
 			nInx=nInx+1
@@ -915,6 +921,72 @@ Function GetProjectFileName(ByVal nInx As Integer) As String
 	Return ""
 
 End Function
+
+Sub ToggleProjectFile
+	Dim tvi As TV_ITEM
+	Dim nInx As Integer
+	Dim sItem As ZString*260
+	Dim buff As ZString*260
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM ptr
+	Dim i As Integer
+
+	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	If tvi.hItem Then
+		tvi.Mask=TVIF_TEXT Or TVIF_PARAM
+		tvi.pszText=@buff
+		tvi.cchTextMax=260
+		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		If tvi.lParam Then
+			' Remove the file from project
+			RemoveProjectFile(TRUE)
+			If tvi.lParam<1000 Then
+				nInx=1001
+			Else
+				nInx=1
+			EndIf
+			' Find free project file ID
+			While TRUE
+				sItem=szNULL
+				GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+				If Len(sItem) Then
+					nInx=nInx+1
+				Else
+					Exit While
+				EndIf
+			Wend
+			' Add the file to project file
+			WritePrivateProfileString(StrPtr("File"),Str(nInx),@buff,@ad.ProjectFile)
+			RefreshProjectTree
+			' Get full file name
+			buff=GetProjectFileName(nInx)
+			' Update tab
+			tci.mask=TCIF_PARAM
+			i=0
+			Do While TRUE
+				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
+					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					If lstrcmpi(@buff,lpTABMEM->filename)=0 Then
+						lpTABMEM->profileinx=nInx
+						tci.mask=TCIF_IMAGE
+						If nInx>1000 Then
+							' Module
+							tci.iImage=6
+						Else
+							tci.iImage=GetFileImg(buff)
+						EndIf
+						SendMessage(ah.htabtool,TCM_SETITEM,i,Cast(Integer,@tci))
+						Exit Do
+					EndIf
+				Else
+					Exit Do
+				EndIf
+				i=i+1
+			Loop
+		EndIf
+	EndIf
+
+End Sub
 
 Sub OpenProjectFile(ByVal nInx As Integer)
 	Dim sFile As String*260

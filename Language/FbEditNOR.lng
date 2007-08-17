@@ -348,6 +348,7 @@ Lang=Norwegian, By KetilO
 10106=&Filer
 10107=&Moduler
 10018=Sett Valgt Som Hoved Fil
+10019=Omgjør Valgt til Modul / Fil
 10108=Fjern Valgt
 10109=Gi nytt navn
 10110=Prosjekt &Opsjoner
@@ -411,6 +412,7 @@ Lang=Norwegian, By KetilO
 10106=Filer
 10107=Moduler
 10018=Sett Valgt Som Hoved Fil
+10019=Omgjør Valgt til Modul / Fil
 10108=Fjern Valgt
 10109=Gi nytt navn
 10110=Prosjekt Opsjoner
@@ -526,6 +528,7 @@ SnipletAddin=Kode biter
 1=Kopier til kode
 2=Lukk
 10000=Kode Biter\tF11
+;--------------------------------------------------------------------------
 [AdvEdit]
 10000=Avansert Editering
 10001=Marker Ord\tShift+Ctrl+W
@@ -537,6 +540,7 @@ SnipletAddin=Kode biter
 10007=Klipp ut Linje\tAlt+Ctrl+X
 10008=Slett Linje
 10009=Hurtig kjør
+;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Egendefinert Font
 1001=Søk
@@ -544,6 +548,7 @@ CustomFontAddin=Egendefinert Font
 1004=Avbryt
 10000=Egendefinert Font
 10001=Legg til Ny Font
+;--------------------------------------------------------------------------
 [FBFileAssociation]
 FBFileAssociation=Filtilhørighet
 1008=Info
@@ -557,6 +562,7 @@ FBFileAssociation=Filtilhørighet
 1007=Lukk
 10000=Filtilhørighet
 10001=Filtilhørighet endret!\rFBEdit stien er:
+;--------------------------------------------------------------------------
 [FileTabStyle]
 10000=Fil tab type
 10001=Standard
@@ -567,6 +573,7 @@ FBFileAssociation=Filtilhørighet
 10006=Fremhev ikon
 10007=Stjerne karakter
 10008=Ingen indikator
+;--------------------------------------------------------------------------
 [Toolbar]
 Toolbar=Toolbar Verktøy
 2000=Knapp Navn:
@@ -592,6 +599,7 @@ Toolbar=Toolbar Verktøy
 1019=Eksporter
 1=Lagre
 2=Avslutt
+;--------------------------------------------------------------------------
 [TortoiseSVN]
 10000=SVN Logg
 10001=SVN Oppdater

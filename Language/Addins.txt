@@ -3,6 +3,7 @@ SnipletAddin=Code Sniplets
 1=Copy to Code
 2=Close
 10000=Code &Sniplets\tF11
+;--------------------------------------------------------------------------
 [AdvEdit]
 10000=Advanced Edit
 10001=Select Word\tShift+Ctrl+W
@@ -14,6 +15,7 @@ SnipletAddin=Code Sniplets
 10007=Cut Line\tAlt+Ctrl+X
 10008=Delete Line
 10009=Quick run
+;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Custom Font
 1001=Browse
@@ -21,6 +23,7 @@ CustomFontAddin=Custom Font
 1004=Cancel
 10000=Custom Font
 10001=Add New Font
+;--------------------------------------------------------------------------
 [FBFileAssociation]
 FBFileAssociation=File Association
 1008=Info
@@ -34,6 +37,7 @@ FBFileAssociation=File Association
 1007=Close
 10000=File Association
 10001=File Association changed!\rFBEdit path is:
+;--------------------------------------------------------------------------
 [FileTabStyle]
 10000=File tab style
 10001=Default
@@ -44,6 +48,7 @@ FBFileAssociation=File Association
 10006=Highlight icon
 10007=Asterisk character
 10008=No indicator
+;--------------------------------------------------------------------------
 [Toolbar]
 Toolbar=Toolbar Creator
 2000=Button Name:
@@ -69,6 +74,7 @@ Toolbar=Toolbar Creator
 1019=Export
 1=Save
 2=Exit
+;--------------------------------------------------------------------------
 [TortoiseSVN]
 10000=SVN Log
 10001=SVN Update
