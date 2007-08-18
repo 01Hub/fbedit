@@ -605,3 +605,35 @@ Toolbar=Toolbar Verktøy
 10001=SVN Oppdater
 10002=SVN Lagre
 ;--------------------------------------------------------------------------
+[ShowVars]
+9000=Line
+9001=Function
+9002=Path
+9003=File
+1100=Name
+1101=Signed
+1102=Unsigned
+1103=Hex
+1104=Char
+1105=Bin
+1200=Name
+1201=Result
+1300=Name
+1301=Len
+1302=Content
+1400=Name
+1401=Address
+1402=Dump
+1403=Ascii
+1500=Name
+1501=Address
+1502=Hex
+1503=Assembler
+1600=Time
+1601=Ticks
+1602=Show
+1000=Hide
+1001=Next Tab\tCtrl+F6
+1002=Prev Tab\tShift+Ctrl+F6
+1003=Clear Tab
+;--------------------------------------------------------------------------

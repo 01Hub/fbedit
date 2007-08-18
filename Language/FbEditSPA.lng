@@ -610,3 +610,35 @@ Toolbar=Toolbar Creator
 10001=SVN Update
 10002=SVN Commit
 ;--------------------------------------------------------------------------
+[ShowVars]
+9000=Linea
+9001=Funcion
+9002=Ruta
+9003=Fichero
+1100=Nombre
+1101=Con Signo
+1102=Sin Signo
+1103=Hexadecimal
+1104=Caracteres
+1105=Binario
+1200=Nombre
+1201=Resultado
+1300=Nombre
+1301=Longitud
+1302=Contenido
+1400=Nombre
+1401=Direccion
+1402=Volcado
+1403=Caracteres
+1500=Nombre
+1501=Direccion
+1502=Hexadecimal
+1503=Ensamblador
+1600=Tiempo
+1601=Ticks
+1602=Mostrar
+1000=Ocultar
+1001=Siguiente Ventana\tCtrl+F6
+1002=Anterior Ventana\tShift+Ctrl+F6
+1003=Limpiar Ventana
+;--------------------------------------------------------------------------
