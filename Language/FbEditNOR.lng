@@ -606,10 +606,10 @@ Toolbar=Toolbar Verktøy
 10002=SVN Lagre
 ;--------------------------------------------------------------------------
 [ShowVars]
-9000=Line
-9001=Function
-9002=Path
-9003=File
+1000=Hide
+1001=Next Tab\tCtrl+F6
+1002=Prev Tab\tShift+Ctrl+F6
+1003=Clear Tab
 1100=Name
 1101=Signed
 1102=Unsigned
@@ -632,8 +632,14 @@ Toolbar=Toolbar Verktøy
 1600=Time
 1601=Ticks
 1602=Show
-1000=Hide
-1001=Next Tab\tCtrl+F6
-1002=Prev Tab\tShift+Ctrl+F6
-1003=Clear Tab
+2000= Line: 
+2001=     Function: 
+2002=     File: 
+3000=Clear?
+3001=Too much register
+3002=Internal Error
+9000=Line
+9001=Function
+9002=Path
+9003=File
 ;--------------------------------------------------------------------------

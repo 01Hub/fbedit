@@ -611,10 +611,10 @@ Toolbar=Toolbar Creator
 10002=SVN Commit
 ;--------------------------------------------------------------------------
 [ShowVars]
-9000=Linea
-9001=Funcion
-9002=Ruta
-9003=Fichero
+1000=Ocultar
+1001=Siguiente Ventana\tCtrl+F6
+1002=Anterior Ventana\tShift+Ctrl+F6
+1003=Limpiar Ventana
 1100=Nombre
 1101=Con Signo
 1102=Sin Signo
@@ -637,8 +637,14 @@ Toolbar=Toolbar Creator
 1600=Tiempo
 1601=Ticks
 1602=Mostrar
-1000=Ocultar
-1001=Siguiente Ventana\tCtrl+F6
-1002=Anterior Ventana\tShift+Ctrl+F6
-1003=Limpiar Ventana
+2000= Linea: 
+2001=     Funcion: 
+2002=     Fichero: 
+3000=Borrar?
+3001=Demasiados registros
+3002=Error Interno
+9000=Linea
+9001=Funcion
+9002=Ruta
+9003=Fichero
 ;--------------------------------------------------------------------------
