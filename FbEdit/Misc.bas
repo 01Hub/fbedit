@@ -642,8 +642,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
-						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
-						'buff[lp]=NULL
+						SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
 						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
@@ -743,7 +742,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
-						lp=SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
+						SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
 						buff[chrg.cpMax-chrg.cpMin]=NULL
 						tt.lpszType=StrPtr("Pp")
 						tt.lpszLine=@buff
