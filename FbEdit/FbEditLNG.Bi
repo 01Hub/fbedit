@@ -53,5 +53,5 @@ Const szList As String=!"[1100] Goto Line\0" _
 							  !"[6200] Project Api files\0" _
 							  !"[10000] Main menu\0" _
 							  !"[20000] Context menu\0" _
-							  !"[99999] Toolbars\0" _
 							  !"\0"
+'							  !"[99999] Toolbars\0" _
