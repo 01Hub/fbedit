@@ -22,4 +22,7 @@ Copy Addins\TortoiseSVN\TortoiseSVN.txt \FbEdit\Addins\Help
 Copy "Addins\Base Calc\Base Calc.dll" \FbEdit\Addins
 Copy "Addins\Base Calc\Base Calc.txt" \FbEdit\Addins\Help
 
+COPY Addins\fbShowVars\Addins\fbShowVars.dll \FbEdit\Addins
+COPY Addins\fbShowVars\fbShowVars.txt \FbEdit\Addins\HELP
+
 Pause
