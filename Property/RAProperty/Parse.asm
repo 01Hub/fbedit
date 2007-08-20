@@ -580,6 +580,9 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 				.endif
 			.elseif byte ptr [esi]=='*'
 				inc		esi
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				lea		esi,[esi+ecx]
 				jmp		Nxtwrd1
 			.endif
 			mov		lpword2,esi
@@ -932,6 +935,7 @@ ParseConstructor:
 	call	SaveName
 	call	SaveParam
 	.while byte ptr [esi]
+		mov		fPtr,0
 		invoke SkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
@@ -955,6 +959,7 @@ ParseDestructor:
 	call	SaveName
 	call	SaveParam
 	.while byte ptr [esi]
+		mov		fPtr,0
 		invoke SkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
@@ -978,6 +983,7 @@ ParseProperty:
 	call	SaveName
 	call	SaveParam
 	.while byte ptr [esi]
+		mov		fPtr,0
 		invoke SkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
@@ -1025,6 +1031,7 @@ ParseOperator:
 	.endif
 	call	SaveParam
 	.while byte ptr [esi]
+		mov		fPtr,0
 		invoke SkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
@@ -1119,6 +1126,7 @@ NxtWordProc:
 					inc		esi
 					jmp		NxtWordProc
 				.endif
+				mov		lpdatatype,0
 			.elseif edx==DEFTYPE_WITHBLOCK
 				push	eax
 				push	edi
@@ -1284,6 +1292,9 @@ ParseData1:
 			jne		@b
 			pop		fPtr
 		.endif
+	.else
+		invoke lstrcpy,edi,addr szInteger
+		lea		edi,[edi+sizeof szInteger]
 	.endif
 	mov		byte ptr [edi],0
 	xor		eax,eax
@@ -1328,6 +1339,11 @@ ParseParamData1:
 		lea		edi,[edi+eax]
 		inc		eax
 		invoke lstrcpyn,edx,lpdatatype,eax
+	.else
+		mov		byte ptr [edi],':'
+		inc		edi
+		invoke lstrcpy,edi,addr szInteger
+		lea		edi,[edi+sizeof szInteger-1]
 	.endif
 	.if fPtr
 	  @@:
