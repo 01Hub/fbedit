@@ -11,3 +11,4 @@ dim SHARED lpFunctions as ADDINFUNCTIONS ptr
 dim SHARED lpData as ADDINDATA Ptr
 dim SHARED IDM_BASECALC as Integer
 Dim Shared hasChanged(0 To 3) As Byte
+Dim Shared As WNDPROC HexProc,OctProc,BinProc
