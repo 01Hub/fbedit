@@ -502,6 +502,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	fPtr:DWORD
 	LOCAL	fRetType:DWORD
+	LOCAL	endtype:DWORD
 
 	mov		npos,0
 	mov		rpnmespc,-1
@@ -595,6 +596,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 				movzx	eax,[eax].DEFTYPE.nType
 				mov		edi,offset szname
 				.if edx==DEFTYPE_PROC
+					mov		endtype,DEFTYPE_ENDPROC
 					call	ParseProc
 					.if eax
 						mov		edx,lpdef
@@ -609,6 +611,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 					.endif
 				.elseif edx==DEFTYPE_CONSTRUCTOR
+					mov		endtype,DEFTYPE_ENDCONSTRUCTOR
 					call	ParseConstructor
 					.if eax
 						mov		edx,lpdef
@@ -616,6 +619,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_DESTRUCTOR
+					mov		endtype,DEFTYPE_ENDDESTRUCTOR
 					call	ParseDestructor
 					.if eax
 						mov		edx,lpdef
@@ -623,6 +627,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_PROPERTY
+					mov		endtype,DEFTYPE_ENDPROPERTY
 					call	ParseProperty
 					.if eax
 						mov		edx,lpdef
@@ -630,6 +635,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
 				.elseif edx==DEFTYPE_OPERATOR
+					mov		endtype,DEFTYPE_ENDOPERATOR
 					call	ParseOperator
 					.if eax
 						mov		edx,lpdef
@@ -1089,7 +1095,7 @@ NxtWordProc:
 		invoke WhatIsIt,lpword1,len1,lpword2,len2
 		.if eax
 			movzx	edx,[eax].DEFTYPE.nDefType
-			.if edx==DEFTYPE_ENDPROC
+			.if edx==endtype
 				.if byte ptr [edi-1]==','
 					dec		edi
 				.endif
@@ -1183,6 +1189,12 @@ SaveParam:
 			mov		byte ptr [edi],0
 			inc		edi
 			jmp		RetType
+;		.elseif byte ptr  [esi]=='='
+;			inc		esi
+;			invoke GetWord,esi,addr npos
+;			mov		esi,edx
+;			lea		esi,[esi+ecx]
+;			jmp		SaveParam
 		.endif
 	.else
 		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
@@ -1237,6 +1249,12 @@ SaveParam:
 			call	SkipToComma
 			.if byte ptr [esi]==','
 				inc		esi
+				jmp		SaveParam
+			.elseif byte ptr  [esi]=='='
+				inc		esi
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				lea		esi,[esi+ecx]
 				jmp		SaveParam
 			.endif
 		.endif
