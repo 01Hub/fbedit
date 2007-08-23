@@ -1084,13 +1084,15 @@ Sub UseTemplate(ByVal sTemplateFile As String,ByVal sProName As String)
 	Dim sData As ZString*32
 	Dim hTxtFile As HANDLE
 	Dim hBinFile As HANDLE
+	Dim f As Integer
 
-	Open sTemplateFile For Input As #1
+	f=FreeFile
+	Open sTemplateFile For Input As #f
 	' Get project name
-	Line Input #1,sName
+	Line Input #f,sName
 	n=0
-	While Not Eof(1)
-		Line Input #1,sLine
+	While Not Eof(f)
+		Line Input #f,sLine
 		sLine=ConvertLine(sLine,sProName)
 		Select Case n
 			Case 0
@@ -1102,7 +1104,7 @@ Sub UseTemplate(ByVal sTemplateFile As String,ByVal sProName As String)
 			Case 1
 				' Wait for [*BEGINTXT*], [*BEGINBIN*] or [*ENDPRO*]
 				If sLine=szBTXT Then
-				   Line Input #1,sFile
+				   Line Input #f,sFile
 					sFile=ConvertLine(sFile,sProName)
 					sFile=ad.ProjectPath & "\" & sFile
 					sPath=sFile
@@ -1111,7 +1113,7 @@ Sub UseTemplate(ByVal sTemplateFile As String,ByVal sProName As String)
 					hTxtFile=CreateFile(sFile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 					n=2
 				ElseIf sLine=szBBIN Then
-				   Line Input #1,sFile
+				   Line Input #f,sFile
 					sFile=ConvertLine(sFile,sProName)
 					sFile=ad.ProjectPath & "\" & sFile
 					sPath=sFile
@@ -1185,7 +1187,7 @@ Sub UseTemplate(ByVal sTemplateFile As String,ByVal sProName As String)
 				EndIf
 		End Select
 	Wend
-	Close #1
+	Close
 
 End Sub
 
