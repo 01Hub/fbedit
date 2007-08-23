@@ -1402,6 +1402,7 @@ Function NewProjectTab2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 							buff=Mid(buff,nInx+2)
 							nInx=InStr(buff,szBPRO)
 							buff=Left(buff,nInx-1)
+							CloseHandle(hFile)
 						EndIf
 					EndIf
 					SetDlgItemText(hWin,IDC_STCNEWPROJECTTPL,@buff)
