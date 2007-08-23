@@ -1,0 +1,178 @@
+#include once "windows.bi"
+#include once "win/commctrl.bi"
+#Include Once "win/commdlg.bi"
+
+#include once "..\..\FbEdit\Inc\Addins.bi"
+
+#include "Base Calc.bi"
+
+Declare Function DlgProc(ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+
+' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
+function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+
+	' The dll's instance
+	hInstance=hInst
+	' Get pointer to ADDINHANDLES
+	lpHandles=Cast(ADDINHANDLES ptr,SendMessage(hWin,AIM_GETHANDLES,0,0))
+	' Get pointer to ADDINDATA
+	lpData=Cast(ADDINDATA ptr,SendMessage(hWin,AIM_GETDATA,0,0))
+	' Get pointer to ADDINFUNCTIONS
+	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
+	
+	dim hMnu as HMENU
+	
+	' Get handle to 'Tools' popup
+	hMnu=GetSubMenu(lpHANDLES->hmenu,7)
+	' Add our menu item to Tools menu
+	IDM_BASECALC=SendMessage(hWin,AIM_GETMENUID,0,0)
+	AppendMenu(hMnu,MF_STRING,IDM_BASECALC,StrPtr("Base Calc"))	
+	' Messages this addin will hook into
+	hooks.hook1=HOOK_COMMAND
+	hooks.hook2=0
+	hooks.hook3=0
+	hooks.hook4=0
+	return @hooks
+
+end function
+
+' FbEdit calls this function for every addin message that this addin is hooked into.
+' Returning TRUE will prevent FbEdit and other addins from processing the message.
+function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,byval lParam as LPARAM) as bool EXPORT
+
+	select case uMsg
+		case AIM_COMMAND
+			if loword(wParam)=IDM_BASECALC then
+				DialogBoxParam(hInstance,Cast(zstring ptr,FORMCALC),hWin,@DlgProc,NULL)
+			EndIf
+		case AIM_CLOSE
+			'
+	end select
+	return FALSE
+
+end function
+
+Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As integer
+	Dim As long id, Event, x, y
+	Dim stringHex As zString * 260 
+	Dim stringBin As zString * 260 
+	Dim stringDec As zString * 260 
+	Dim stringOct As ZString * 260
+	
+	
+	Select Case uMsg
+		Case WM_INITDIALOG
+			stringHex = "0"
+			stringDec = "0"
+			stringBin = "00000000"
+			stringOct = "0"
+			SetDlgItemText(hWin,IDC_HEX,@stringHex)
+			SetDlgItemText(hWin,IDC_DEC,@stringDec)
+			SetDlgItemText(hWin,IDC_BIN,@stringBin)
+			SetDlgItemText(hWin,IDC_OCT,@stringOct)
+			hasChanged(0) = 1
+			hasChanged(1) = 1
+			hasChanged(2) = 1
+			hasChanged(3) = 1
+		Case WM_CLOSE
+			EndDialog(hWin, 0)
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case id
+				Case IDC_HEX
+					If Event = EN_CHANGE Then
+						If hasChanged(0) = 0  Then
+							GetDlgItemText(hWin,IDC_HEX,@stringHex,260)
+							stringDec = Str(Val("&h" & stringHex))
+							stringBin = Bin(Val("&h" & stringHex),8)
+							stringOct = Oct(Val("&h" & stringHex))
+							SetDlgItemText(hWin,IDC_DEC,@stringDec)
+							SetDlgItemText(hWin,IDC_BIN,@stringBin)
+							SetDlgItemText(hWin,IDC_OCT,@stringOct)
+							hasChanged(1) = 1
+							hasChanged(2) = 1
+							hasChanged(3) = 1
+						Else
+							hasChanged(0) = 0
+						EndIf
+					ElseIf Event = EN_KILLFOCUS Then
+						GetDlgItemText(hWin,IDC_DEC,@stringDec,260)
+						stringHex = Hex(Val(stringDec))
+						SetDlgItemText(hWin,IDC_HEX,@stringHex)
+						hasChanged(0) = 1
+					EndIf
+				Case IDC_DEC
+					If Event = EN_CHANGE Then
+						If hasChanged(1) = 0  Then
+							GetDlgItemText(hWin,IDC_DEC,@stringDec,260)
+							stringHex = Hex(Val(stringDec))
+							stringBin = Bin(Val(stringDec),8)
+							stringOct = Oct(Val(stringDec))
+							SetDlgItemText(hWin,IDC_HEX,@stringHex)
+							SetDlgItemText(hWin,IDC_BIN,@stringBin)
+							SetDlgItemText(hWin,IDC_OCT,@stringOct)
+							hasChanged(0) = 1
+							hasChanged(2) = 1
+							hasChanged(3) = 1
+						Else
+							hasChanged(1) = 0
+						EndIf
+					ElseIf Event = EN_KILLFOCUS Then
+						GetDlgItemText(hWin,IDC_HEX,@stringHex,260)
+						stringDec = Str(Val("&h" & stringHex))
+						SetDlgItemText(hWin,IDC_DEC,@stringDec)
+						hasChanged(1) = 1
+					EndIf
+				Case IDC_BIN
+					If Event = EN_CHANGE Then
+						If hasChanged(2) = 0  Then
+							GetDlgItemText(hWin,IDC_BIN,@stringBin,260)
+							stringDec = Str(Val("&b" & stringBin))
+							stringHex = Hex(Val("&b" & stringBin))
+							stringOct = Oct(Val("&b" & stringBin))
+							SetDlgItemText(hWin,IDC_HEX,@stringHex)
+							SetDlgItemText(hWin,IDC_DEC,@stringDec)
+							SetDlgItemText(hWin,IDC_OCT,@stringOct)
+							hasChanged(0) = 1
+							hasChanged(1) = 1
+							hasChanged(3) = 1
+						Else
+							hasChanged(2) = 0
+						EndIf
+					ElseIf Event = EN_KILLFOCUS Then
+						GetDlgItemText(hWin,IDC_DEC,@stringDec,260)
+						stringBin = Bin(Val(stringDec),8)
+						SetDlgItemText(hWin,IDC_BIN,@stringBin)
+						hasChanged(2) = 1
+					EndIf
+				Case IDC_OCT
+					If Event = EN_CHANGE Then
+						If hasChanged(3) = 0  Then
+							GetDlgItemText(hWin,IDC_OCT,@stringOct,260)
+							stringDec = Str(Val("&o" & stringOct))
+							stringHex = Hex(Val("&o" & stringOct))
+							stringBin = Bin(Val("&o" & stringOct),8)
+							SetDlgItemText(hWin,IDC_HEX,@stringHex)
+							SetDlgItemText(hWin,IDC_DEC,@stringDec)
+							SetDlgItemText(hWin,IDC_BIN,@stringBin)
+							hasChanged(0) = 1
+							hasChanged(1) = 1
+							hasChanged(2) = 1
+						Else
+							hasChanged(3) = 0
+						EndIf
+					ElseIf Event = EN_KILLFOCUS Then
+						GetDlgItemText(hWin,IDC_DEC,@stringDec,260)
+						stringOct = Oct(Val(stringDec))
+						SetDlgItemText(hWin,IDC_OCT,@stringOct)
+						hasChanged(3) = 1
+					EndIf
+			End Select
+		Case Else
+			Return FALSE
+	End Select
+	Return TRUE
+
+End Function
