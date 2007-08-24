@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0044)http://members.a1.net/ranmasaotome/tut4.html -->
+<HTML><HEAD><TITLE>Tutorial 4</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.6000.16525" name=GENERATOR></HEAD>
+<BODY bgColor=#a0b7cd><BIG>
+<P></BIG>Lesson #4 we are going to take advantage of hutch`s masm32 library 
+(Thats the guy you downloaded the<BR>Microsoft Macro MASM32 package 
+from).<BR>From the &amp;File menu click &amp;New Project and choose 
+DialogAsMain.tpl as our new template. <BR>Name the project "Program"</P>
+<P><IMG height=362 alt="Wizard4.jpg (82347 Byte)" src="tut4_files/Wizard4.jpg" 
+width=441></P>
+<P>Create 2 editboxes and a button like on the screenshot. We will retrieve the 
+programs application path as well<BR>as writing a line of text into a file using 
+API WritePrivateProfileString and run an application (Notepad) by pressing <BR>a 
+button. We will also learn a new MACRO for SingleInstance only.</P>
+<P><BR>Now something very important: Click the Dialog and look at the property 
+window. There is a line called CLASS.<BR>At its property you read: DLGCLASS 
+change this into MYCLASS. This is the first time we change our programs 
+class.You should always do so to prevent collisions with other programs.<BR>Set 
+the 2 editboxes properties LOCKED to TRUE and AUTOSCROLL to HORIZONTAL. Set the 
+Dialogs border to TOOL and the SIZEBORDER property to FALSE.<BR>This will create 
+a TOOLWINDOW for us. Dont forget to implement a nice icon again. If you would 
+set SYSMENU to FALSE<BR>you will see the closing button "x" will disappear on 
+your TOOLWINDOW. So be sure you set SYSMENU to TRUE.<BR>You can still shut the 
+program down either pressing ALT+F4 or in the Taskmanager.</P>
+<P><BR>When your finished you have something like this:</P>
+<P><IMG height=199 alt="Dialog5.jpg (17091 Byte)" src="tut4_files/Dialog5.jpg" 
+width=300></P>
+<P>&nbsp;</P>
+<P>Now first open your Program.inc file. We have to insert some lines 
+there.<BR>I wont explain anything again, that was already explained in the 
+tutorials be4. OK ?<BR>To take advantage of hutch`s masm32 library we have to 
+implement it first to our project so the linker knows where<BR>to get those 
+'functions' from. </P>
+<P>add</P>
+<P><FONT color=#ff0000><STRONG>include masm32.inc&nbsp; 
+</STRONG></FONT>&nbsp;&nbsp;&nbsp; </P>
+<P>and </P>
+<P><STRONG><FONT color=#ff0000>includelib masm32.lib</FONT></STRONG></P>
+<P>Then we add our MACRO copy &amp; paste&nbsp; following to you .inc file</P>
+<P><FONT color=#ff0000><STRONG>SingleInstanceOnly MACRO 
+lpClassName<BR>&nbsp;&nbsp;&nbsp; invoke 
+FindWindow,lpClassName,NULL<BR>&nbsp;&nbsp;&nbsp; cmp eax, 
+0<BR>&nbsp;&nbsp;&nbsp; je @F<BR>&nbsp;&nbsp;&nbsp; push 
+eax<BR>&nbsp;&nbsp;&nbsp; invoke ShowWindow,eax,SW_RESTORE<BR>&nbsp;&nbsp;&nbsp; 
+pop eax<BR>&nbsp;&nbsp;&nbsp; invoke 
+SetForegroundWindow,eax<BR>&nbsp;&nbsp;&nbsp; mov eax, 0<BR>&nbsp;&nbsp;&nbsp; 
+ret<BR>@@:<BR>ENDM</STRONG></FONT></P>
+<P>in the .data section please first change the line</P>
+<P><FONT color=#ff0000><STRONG>ClassName 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db 
+'DLGCLASS',0</STRONG></FONT></P>
+<P>into </P>
+<P><FONT color=#ff0000><STRONG>ClassName 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+db'MYCLASS',0</STRONG></FONT><FONT color=#008000> <STRONG>;(like we did in the 
+dialog editor)</STRONG></FONT></P>
+<P>;then add</P>
+<P><FONT color=#ff0000><STRONG>Settings 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+db 'Settings.ini',0<BR>process 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+db 'c:\Windows\notepad.exe',0</STRONG></FONT></P>
+<P>NOTE: Please edit the path of my process so it fits to your Notepad path. Or 
+else it wont work.<BR>In the .data? section add following lines</P>
+<P><STRONG><FONT color=#ff0000>AppPath 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; db 256 dup 
+(?)</FONT></STRONG> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <FONT 
+color=#008000><STRONG>;the buffer to store our application 
+path</STRONG></FONT><BR></P>
+<P><FONT color=#008000><STRONG>;this is what we need to run other 
+programs</STRONG></FONT><BR><FONT color=#ff0000><STRONG>processinfo 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PROCESS_INFORMATION 
+&lt;?&gt;<BR>startinfo 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+STARTUPINFO &lt;?&gt;</STRONG></FONT></P>
+<P>We are done with the Program.inc file. You can close it. DONT FORGET TO ADD 
+ALL CODE FOR YOUR ICON, <BR>EDITBOX AND BUTTON.AS I SAID I DID NOT EXPLAIN IT 
+AGAIN - YOU SHOULD HAVE LEARNED THIS BY NOW. <BR>Double click the Program.asm 
+file now.<BR>First we add our Previous Instance MACRO to our WinMain proc.</P>
+<P><FONT color=#000000>The line looks like this:</FONT></P>
+<P><FONT color=#ff0000><STRONG>SingleInstanceOnly offset 
+ClassName</STRONG></FONT></P>
+<P>Place this as the first line in the WinMainproc under the LOCAL variables. 
+This MACRO will look for an already existing window with the same ClassName and 
+if it finds one it closes the application and sets focus to the existing 
+one.<BR>We are done with the WinMain proc. </P>
+<P>First we add a local variable for a textbuffer again. </P>
+<P><FONT color=#ff0000><STRONG>LOCAL buffer[256]:BYTE</STRONG></FONT></P>
+<P>Then we move to the WM_INITDIALOG<BR>ADD YOUR CODE FOR RETRIEVING THE HANDLES 
+OF YOUR EDITBOXES AND YOUR ICON.</P>
+<P><STRONG><FONT color=#ff0000>invoke GetAppPath, offset AppPath 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </FONT><FONT color=#008000>;Function 
+from the masm32 library to retrieve app.path</FONT><FONT color=#ff0000> 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <BR>invoke 
+SendMessage,hEdit1,WM_SETTEXT,0,offset AppPath&nbsp;&nbsp;&nbsp; <BR>invoke 
+lstrcat,offset AppPath,offset Settings 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT color=#008000>;we combine 2 strings with LSTRCAT API</FONT><FONT 
+color=#ff0000><BR>invoke SendMessage,hEdit2,WM_SETTEXT,0,offset 
+AppPath<BR>invoke WritePrivateProfileString,offset AppName,offset 
+ClassName,offset process,offset AppPath<BR></FONT><FONT color=#008000>;WIN API 
+to write a line of text to an *.ini file </FONT></STRONG></P>
+<P>The button code to fire up the notepad is following:</P>
+<P><FONT color=#ff0000><STRONG>invoke CreateProcess,offset 
+process,0,0,0,0,CREATE_NEW_CONSOLE,0,0,offset startinfo, offset 
+processinfo</STRONG></FONT></P>
+<P>finished:</P>
+<P><IMG height=199 alt="Dialog6.jpg (24194 Byte)" src="tut4_files/Dialog6.jpg" 
+width=300></P>
+<P>&nbsp;</P>
+<P>The files for this example can be found <A 
+href="http://members.a1.net/ranmasaotome/masm32/AppPath.zip">here.</A></P></BODY></HTML>
