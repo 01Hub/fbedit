@@ -51,6 +51,7 @@ sub SetImageList(byval hWin as HWND)
 	dim hBmp as HBITMAP
 	dim hTbr1 as HWND
 	dim hTbr2 as HWND
+	Dim tbab As TBADDBITMAP
 
 	hMem=Cast(HGLOBAL,GetWindowLong(hWin,GWL_USERDATA))
 	lpTBMEM=hMem
@@ -68,6 +69,11 @@ sub SetImageList(byval hWin as HWND)
 		hBmp=LoadImage(0,@lpTBR->szBmpFile,IMAGE_BITMAP,0,0,LR_LOADFROMFILE or LR_LOADMAP3DCOLORS)
 		ImageList_AddMasked(lpTBMEM->hIml,hBmp,&HC0C0C0)
 		DeleteObject(hBmp)
+	else
+		tbab.hInst=HINST_COMMCTRL
+		tbab.nID=IDB_STD_SMALL_COLOR
+		SendMessage(hTbr1,TB_ADDBITMAP,15,Cast(LPARAM,@tbab))
+		lpTBMEM->hIml=Cast(HIMAGELIST,SendMessage(hTbr1,TB_GETIMAGELIST,0,0))
 	endif
 	SendMessage(hTbr1,TB_SETIMAGELIST,0,Cast(LPARAM,lpTBMEM->hIml))
 	SendMessage(hTbr2,TB_SETIMAGELIST,0,Cast(LPARAM,lpTBMEM->hIml))
@@ -157,9 +163,26 @@ sub ExportToolbar(byval hWin as HWND)
 	dim n as integer
 	dim buff as zstring*32
 	dim nval as integer
+	Dim bDef As Boolean
 
 	lpFUNCTIONS->ShowOutput(TRUE)
 	SetWindowText(lpHANDLES->hout,NULL)
+	n=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCOUNT,0,0)
+	i=0
+	while i<n
+		SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETTEXT,i,Cast(LPARAM,@buff))
+		nval=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETITEMDATA,i,0) And 65535
+		if buff<>"-" And nVal<>0 Then
+			sLine="#Define " & buff & " " & Str(nval)
+			lpFUNCTIONS->TextToOutput(sLine)
+			bDef=TRUE
+		endif
+		i=i+1
+	Wend
+	If bDef Then
+		sLine=""
+		lpFUNCTIONS->TextToOutput(sLine)
+	EndIf
 	sLine="sub DoToolbar(byval hTbr as HWND,byval hInst as HINSTANCE)"
 	lpFUNCTIONS->TextToOutput(sLine)
 	sLine="	dim tbab as TBADDBITMAP"
@@ -260,8 +283,13 @@ function ToolbarProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARA
 			endif
 			SetDlgItemText(hWin,IDC_EDTTBRNAME,@lpTBR->szTbrName)
 			SetDlgItemInt(hWin,IDC_EDTTBRID,lpTBR->nTbrID,FALSE)
-			SetDlgItemText(hWin,IDC_EDTBMPNAME,@lpTBR->szBmpName)
-			SetDlgItemInt(hWin,IDC_EDTBMPNBR,lpTBR->nBmp,FALSE)
+			If lstrlen(@lpTBR->szBmpName) Then
+				SetDlgItemText(hWin,IDC_EDTBMPNAME,@lpTBR->szBmpName)
+				SetDlgItemInt(hWin,IDC_EDTBMPNBR,lpTBR->nBmp,FALSE)
+			Else
+				SetDlgItemText(hWin,IDC_EDTBMPNAME,@szSTD)
+				SetDlgItemInt(hWin,IDC_EDTBMPNBR,15,FALSE)
+			EndIf
 			if lpTBR->nBtnSize<16 then
 				lpTBR->nBtnSize=16
 			endif

@@ -1,5 +1,9 @@
 ResEd
 
+1.1.4.3b - 2007.08.24
+---------------------
+o Fixed toolbar tooltip bug.
+
 1.1.4.3 - 2007.07.23
 ---------------------
 o Added multiselected controls propery.

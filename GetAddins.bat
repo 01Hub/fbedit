@@ -25,4 +25,7 @@ Copy "Addins\Base Calc\Base Calc.txt" \FbEdit\Addins\Help
 COPY Addins\fbShowVars\Addins\fbShowVars.dll \FbEdit\Addins
 COPY Addins\fbShowVars\fbShowVars.txt \FbEdit\Addins\HELP
 
+COPY Addins\Toolbar\Toolbar.dll \FbEdit\Addins
+COPY Addins\Toolbar\Toolbar.txt \FbEdit\Addins\HELP
+
 Pause
