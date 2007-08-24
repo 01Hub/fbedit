@@ -675,11 +675,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								EndIf
 								tti.novr=tt.novr
 								GetCaretPos(@pt)
-								ClientToScreen(hPar,@pt)
+								ClientToScreen(hWin,@pt)
 								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
 								pt.x=pt.x-wp
 								SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
-								SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+18,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+								SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 								InvalidateRect(ah.htt,NULL,TRUE)
 							EndIf
 						Else
