@@ -7,14 +7,14 @@
 #Define IDC_BTNTPLFILENAME      1005
 #Define IDC_EDTTPLFILENAME      1004
 
-Sub AddTemplateFile(ByVal lpFile As ZString ptr,ByVal hFile As HANDLE)
+Sub AddTemplateFile(ByVal lpFile As ZString Ptr,ByVal hFile As HANDLE)
 	Dim hSrc As HANDLE
 	Dim nSize As Integer
 	Dim b As Byte
 	Dim n As Integer
 	Dim i As Integer
 	Dim hMem As HGLOBAL
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim szBuff As ZString*260
 	Dim szExt As ZString*260
 	Dim szTxt As ZString*260
@@ -87,7 +87,7 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 	Dim ofn As OPENFILENAME
 	Dim szBuff As ZString*260
 	Dim hFile As HANDLE
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim n As Integer
 
 	Select Case uMsg

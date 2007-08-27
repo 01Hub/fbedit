@@ -5,9 +5,9 @@
 
 Type lpDllFunction As Function(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM) As Integer
 Dim Shared DllFunction As lpDllFunction
-Type lpInstallDll As Function(ByVal hWnd As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS ptr
+Type lpInstallDll As Function(ByVal hWnd As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr
 Dim Shared InstallDll As lpInstallDll
-Dim Shared lpOldAddinListProc As Any ptr
+Dim Shared lpOldAddinListProc As Any Ptr
 
 Function AddinListProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM) As Integer
 	Dim pt As Point
@@ -39,7 +39,7 @@ Function AddinManagerProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM
 	Dim hwfd As HANDLE
 	Dim hDll As HMODULE
 	Dim nInx As Integer
-	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT ptr
+	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
 	Dim rect As RECT
 	Dim sItem As ZString*256
 	Dim hLst As HWND
@@ -49,7 +49,7 @@ Function AddinManagerProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGADDINMANAGER)
 			hLst=GetDlgItem(hWin,IDC_LSTADDINS)
-			lpOldAddinListProc=Cast(Any ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@AddinListProc)))
+			lpOldAddinListProc=Cast(Any Ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@AddinListProc)))
 			nInx=0
 			buff=ad.AppPath & "\Addins\*.dll"
 			hwfd=FindFirstFile(@buff,@wfd)
@@ -58,9 +58,9 @@ Function AddinManagerProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM
 					buff=ad.AppPath & "\Addins\" & wfd.cFileName
 					hDll=LoadLibrary(@buff)
 					If hDll Then
-						InstallDll=Cast(Any ptr,GetProcAddress(hDll,StrPtr("InstallDll")))
+						InstallDll=Cast(Any Ptr,GetProcAddress(hDll,StrPtr("InstallDll")))
 						If InstallDll Then
-							InstallDll=Cast(Any ptr,GetProcAddress(hDll,StrPtr("DllFunction")))
+							InstallDll=Cast(Any Ptr,GetProcAddress(hDll,StrPtr("DllFunction")))
 							If InstallDll Then
 								nInx=SendMessage(hLst,LB_ADDSTRING,0,Cast(LPARAM,@wfd.cFileName))
 								If GetPrivateProfileInt("Addins",@wfd.cFileName,1,ad.IniFile) Then
@@ -112,7 +112,7 @@ Function AddinManagerProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM
 			End Select
 			'
 		Case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
+			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
 			' Select back and text colors
 			If lpDRAWITEMSTRUCT->itemState And ODS_SELECTED Then
 				SetTextColor(lpDRAWITEMSTRUCT->hdc,GetSysColor(COLOR_HIGHLIGHTTEXT))
@@ -178,8 +178,8 @@ Sub LoadAddins
 	Dim hwfd As HANDLE
 	Dim hDll As HMODULE
 	Dim nInx As Integer
-	Dim x As Any ptr
-	Dim y As ADDINHOOKS ptr
+	Dim x As Any Ptr
+	Dim y As ADDINHOOKS Ptr
 	Dim hwin As HWND
 
 	nInx=0
@@ -192,7 +192,7 @@ Sub LoadAddins
 				buff=ad.AppPath & "\Addins\" & wfd.cFileName
 				hDll=LoadLibrary(@buff)
 				If hDll Then
-					InstallDll=Cast(Any ptr,GetProcAddress(hDll,StrPtr("InstallDll")))
+					InstallDll=Cast(Any Ptr,GetProcAddress(hDll,StrPtr("InstallDll")))
 					If InstallDll Then
 						y=InstallDll(hwin,hDll)
 						addins(nInx).hdll=hDll
@@ -213,4 +213,3 @@ Sub LoadAddins
 		CallAddins(ah.hwnd,AIM_ADDINSLOADED,0,0,HOOK_ADDINSLOADED)
 	EndIf
 End Sub
-

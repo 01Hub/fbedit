@@ -1,11 +1,11 @@
 
-Function StreamIn(ByVal hFile As HANDLE,ByVal pBuffer As ZString ptr,ByVal NumBytes As Long,ByVal pBytesRead As Long ptr) As Boolean
+Function StreamIn(ByVal hFile As HANDLE,ByVal pBuffer As ZString Ptr,ByVal NumBytes As Long,ByVal pBytesRead As Long Ptr) As Boolean
 
 	Return ReadFile(hFile,pBuffer,NumBytes,pBytesRead,0) Xor 1
 
 End Function
 
-Function StreamOut(ByVal hFile As HANDLE,ByVal pBuffer As ZString ptr,ByVal NumBytes As Long,ByVal pBytesWritten As Long ptr) As Boolean
+Function StreamOut(ByVal hFile As HANDLE,ByVal pBuffer As ZString Ptr,ByVal NumBytes As Long,ByVal pBytesWritten As Long Ptr) As Boolean
 
 	Return WriteFile(hFile,pBuffer,NumBytes,pBytesWritten,0) Xor 1
 
@@ -13,7 +13,7 @@ End Function
 
 Function GetFileMem(ByVal sFile As String) As HGLOBAL
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim nlen As Integer
 	Dim hMem As HGLOBAL
@@ -25,7 +25,7 @@ Function GetFileMem(ByVal sFile As String) As HGLOBAL
 	i=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If lstrcmpi(@sFile,lpTABMEM->filename)=0 Then
 				hEdit=lpTABMEM->hedit
 				Exit Do
@@ -97,13 +97,13 @@ Function ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
 
 End Function
 
-Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZString ptr)
+Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZString Ptr)
 	Dim editstream As EDITSTREAM
 	Dim szItem As ZString*260
 	
 	SendMessage(hWin,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
 	editstream.dwCookie=Cast(Integer,hFile)
-	editstream.pfnCallback=Cast(Any ptr,@StreamIn)
+	editstream.pfnCallback=Cast(Any Ptr,@StreamIn)
 	SendMessage(hWin,EM_STREAMIN,SF_TEXT,Cast(Integer,@editstream))
 	SendMessage(hWin,REM_SETBLOCKS,0,0)
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
@@ -122,12 +122,12 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 
 End Sub
 
-Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString ptr)
+Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 	Dim hFile As HANDLE
 	Dim nSize As Integer
 	Dim dwRead As Integer
 	Dim hMem As HGLOBAL
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 
 	hFile=CreateFile(lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
@@ -137,7 +137,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString ptr)
 			GlobalLock(hMem)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
 			ReadTextFile(hWin,hFile,lpFile)
@@ -185,11 +185,11 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	Dim hFile As HANDLE
 	Dim hMem As HGLOBAL
 	Dim nSize As Integer
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 	Dim tpe As Integer
 	Dim hREd As HWND
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	If fProject=TRUE And edtopt.backup<>0 Then
@@ -199,10 +199,10 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	hFile=CreateFile(szFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
 		If hWin=ah.hres Then
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hres,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
 			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
-			nSize=lstrlen(Cast(ZString ptr,hMem))
+			nSize=lstrlen(Cast(ZString Ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
 			CloseHandle(hFile)
 			hFile=CreateFile(szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
@@ -210,7 +210,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			i=0
 			Do While TRUE
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
-					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					If hWin=lpTABMEM->hedit Then
 						GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
 						Exit Do
@@ -249,7 +249,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 		Else
 			tpe=FileType(szFileName)
 			editstream.dwCookie=Cast(Integer,hFile)
-			editstream.pfnCallback=Cast(Any ptr,@StreamOut)
+			editstream.pfnCallback=Cast(Any Ptr,@StreamOut)
 			SendMessage(hWin,EM_STREAMOUT,SF_TEXT,Cast(Integer,@editstream))
 			CloseHandle(hFile)
 			hFile=CreateFile(szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
@@ -257,7 +257,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			i=0
 			Do While TRUE
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
-					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					If hWin=lpTABMEM->hedit Then
 						GetFileTime(hFile,NULL,NULL,@lpTABMEM->ft)
 						Exit Do
@@ -286,7 +286,7 @@ Sub SaveTempFile(ByVal hWin As HWND,ByVal szFileName As String)
 		hFile=CreateFile(szFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 		If hFile<>INVALID_HANDLE_VALUE Then
 			editstream.dwCookie=Cast(Integer,hFile)
-			editstream.pfnCallback=Cast(Any ptr,@StreamOut)
+			editstream.pfnCallback=Cast(Any Ptr,@StreamOut)
 			SendMessage(hWin,EM_STREAMOUT,SF_TEXT,Cast(Integer,@editstream))
 		EndIf
 		CloseHandle(hFile)
@@ -297,14 +297,14 @@ End Sub
 Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean) As HWND
 	Dim tci As TCITEM
 	Dim hOld As HWND
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	tci.mask=TCIF_PARAM
 	i=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If lstrcmpi(fn,lpTABMEM->filename)=0 Then
 				If fShow Then
 					SelectTab(ah.hwnd,lpTABMEM->hedit,0)
@@ -320,4 +320,3 @@ Function IsFileOpen(ByVal hWin As HWND,ByVal fn As String,ByVal fShow As Boolean
 	Return 0
 
 End Function
-

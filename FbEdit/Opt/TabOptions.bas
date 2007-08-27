@@ -162,8 +162,8 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 End Function
 
 Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT ptr
-	Dim cc As CHOOSECOLOR
+	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
+	Dim cc As ChooseColor
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -181,14 +181,14 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			CheckDlgButton(hWin,IDC_CHKSIMPLEPROPERTY,grdsize.simple)
 			'
 		Case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
+			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
 			FillRect(lpDRAWITEMSTRUCT->hDC,@lpDRAWITEMSTRUCT->rcItem,hGrdBr)
 		Case WM_COMMAND
 			If wParam=IDC_STCGRIDCOLOR Then
-				cc.lStructSize=SizeOf(CHOOSECOLOR)
+				cc.lStructSize=SizeOf(ChooseColor)
 				cc.hwndOwner=hWin
-				cc.hInstance=Cast(Any ptr,hInstance)
-				cc.lpCustColors=Cast(Any ptr,@custcol)
+				cc.hInstance=Cast(Any Ptr,hInstance)
+				cc.lpCustColors=Cast(Any Ptr,@custcol)
 				cc.Flags=CC_FULLOPEN Or CC_RGBINIT
 				cc.lCustData=0
 				cc.lpfnHook=0
@@ -211,9 +211,9 @@ End Function
 
 Sub SetDialogOptions(ByVal hWin As HWND)
 	Dim st As Integer
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 
-	lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 	lstrcpy(@buff,nmeexp.szFileName)
 	SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(Integer,@buff))
 	SendMessage(lpRESMEM->hProject,PRO_SETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
@@ -249,7 +249,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 	Dim As Long id, Event
 	Dim ts As TCITEM
 	Dim nInx As Integer
-	Dim lpNMHDR As NMHDR ptr
+	Dim lpNMHDR As NMHDR Ptr
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -268,13 +268,13 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 			ts.pszText=StrPtr("Behaviour")
 			SendMessage(hTabOpt,TCM_INSERTITEM,2,Cast(Integer,@ts))
 			' Create the tab dialogs
-			hTabDlg(0)=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_TABOPT1),hTabOpt,@TabOpt1Proc,0)
-			hTabDlg(1)=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_TABOPT2),hTabOpt,@TabOpt2Proc,0)
-			hTabDlg(2)=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_TABOPT3),hTabOpt,@TabOpt3Proc,0)
+			hTabDlg(0)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT1),hTabOpt,@TabOpt1Proc,0)
+			hTabDlg(1)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT2),hTabOpt,@TabOpt2Proc,0)
+			hTabDlg(2)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT3),hTabOpt,@TabOpt3Proc,0)
 			SelTab=0
 			'
 		Case WM_NOTIFY
-			lpNMHDR=Cast(NMHDR ptr,lParam)
+			lpNMHDR=Cast(NMHDR Ptr,lParam)
 			If lpNMHDR->code=TCN_SELCHANGE Then
 				' Tab selection
 				id=SendMessage(hTabOpt,TCM_GETCURSEL,0,0)

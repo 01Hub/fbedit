@@ -28,7 +28,7 @@ Dim Shared nReplaceCount As Integer
 Dim Shared fSkipCommentLine As Long
 Dim Shared fLogFind As Long
 Dim Shared fLogFindClear As Long
-Dim shared fOnlyOneTime As Long
+Dim Shared fOnlyOneTime As Long
 
 Sub ShowStat(ByVal fOneFile As Long)
 	Dim As Integer i,bm,nFiles,nFounds,nRepeats,nErrors,nWarnings
@@ -214,7 +214,7 @@ TryFind:
 				GoTo TryAgain
 			Else
 				' Region searched
-				If nReplaceCount then
+				If nReplaceCount Then
 					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 					nReplaceCount=0
@@ -260,7 +260,7 @@ Sub LoadFindHistory()
 		If GetPrivateProfileString(StrPtr("Find"),Str(i),@szNULL,@sItem,SizeOf(sItem),@ad.IniFile) Then
 			FindHistory(i-1)=sItem
 		Else
-			Exit for
+			Exit For
 		EndIf
 	Next
 	

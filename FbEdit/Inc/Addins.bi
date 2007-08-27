@@ -101,7 +101,7 @@ Type ADDINDATA
 	IniFile			As ZString*260					' FbEdit.ini
 	ProjectFile		As ZString*260					' ?.fbp
 	fbcPath			As ZString*260					' Path to compiler
-	lpFBCOLOR		As FBCOLOR ptr					' Colors
+	lpFBCOLOR		As FBCOLOR Ptr					' Colors
 	smake				As ZString*260					' Make compile command
 	smakemodule		As ZString*260					' Make compile module command
 	smakeoutput		As ZString*260					' Make output filename
@@ -110,15 +110,15 @@ Type ADDINDATA
 	filename			As ZString*260					' Current open file
 	resexport		As ZString*260					' Projectt resource export setting.
 	tbwt				As Integer						' Width of toolbar
-	lpWINPOS			As WINPOS ptr					' Window positions and sizes
-	lpCharTab		As Any ptr						' Pointer to RAEdit character table
+	lpWINPOS			As WINPOS Ptr					' Window positions and sizes
+	lpCharTab		As Any Ptr						' Pointer to RAEdit character table
 	hLangMem			As HGLOBAL						' Language translation
 End Type
 
 Type ADDINFUNCTIONS
 	TextToOutput As Sub(ByVal sText As String)
-	SaveToIni As Sub(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean)
-	LoadFromIni As Function(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean) As Boolean
+	SaveToIni As Sub(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
+	LoadFromIni As Function(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
 	OpenTheFile As Sub(ByVal sFile As String)
 	Compile As Function(ByVal sMake As String) As Integer
 	ShowOutput As Sub(ByVal bShow As Boolean)

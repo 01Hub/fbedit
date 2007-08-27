@@ -5,7 +5,7 @@
 
 Dim Shared hLngDlg As HWND
 
-Sub ConvertFrom(ByVal buff As ZString ptr)
+Sub ConvertFrom(ByVal buff As ZString Ptr)
 	Dim x As Integer
 
 	x=1
@@ -77,7 +77,7 @@ Sub UpdateMenuItems(ByVal hMenu As HMENU,ByVal szApp As String)
 	nPos=0
 Nxt:
 	mii.cbSize=SizeOf(MENUITEMINFO)
-	mii.fMask=MIIM_DATA or MIIM_ID or MIIM_SUBMENU or MIIM_TYPE
+	mii.fMask=MIIM_DATA Or MIIM_ID Or MIIM_SUBMENU Or MIIM_TYPE
 	mii.dwTypeData=@buff
 	mii.cch=SizeOf(buff)
 	If GetMenuItemInfo(hMnu,nPos,TRUE,@mii) Then
@@ -172,7 +172,7 @@ Sub GetLanguageFile
 
 End Sub
 
-Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As integer
+Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
 	Dim id As Integer
 	Dim buff As ZString*MAX_PATH
 	Dim buff2 As ZString*MAX_PATH
@@ -182,7 +182,7 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 	Dim hFile As HANDLE
 	Dim nSize As Integer
 	Dim hBmp As HANDLE
-	Dim lpdis AS DRAWITEMSTRUCT Ptr
+	Dim lpdis As DRAWITEMSTRUCT Ptr
 	Dim rc As RECT
 
 	Select Case uMsg
@@ -196,7 +196,7 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			buff=ad.AppPath & "\Language\*lng"
 			hwfd=FindFirstFile(@buff,@wfd)
 			If hwfd<>INVALID_HANDLE_VALUE Then
-				while id
+				While id
 					hBmp=0
 					buff=ad.AppPath & "\Language\"
 					lstrcat(@buff,@wfd.cFileName)
@@ -236,7 +236,7 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			If wParam=IDC_LSTLANGUAGE Then
 				lpdis=Cast(DRAWITEMSTRUCT Ptr,lParam)
 				If lpdis->itemID=-1 Then
-					Exit function
+					Exit Function
 				EndIf
 				rc=lpdis->rcItem
 				Select Case lpdis->itemAction
@@ -293,4 +293,3 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 	Return TRUE
 
 End Function
-

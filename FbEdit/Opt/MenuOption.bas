@@ -279,7 +279,7 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 							'
 						Case IDC_BTNIMPORT
 							x=nType
-							nInx=DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,5)
+							nInx=DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,5)
 							nType=x
 							If nInx Then
 								GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@buff,260,@ad.IniFile)

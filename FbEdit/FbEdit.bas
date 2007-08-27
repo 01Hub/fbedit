@@ -43,7 +43,7 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim chrg As CHARRANGE
 	Dim nLn As Integer
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim isinp As ISINPROC
 
 	If fTimer Then
@@ -59,20 +59,20 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				If fProject Then
 					tci.mask=TCIF_PARAM
 					SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
-					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					isinp.nOwner=lpTABMEM->profileinx
 				Else
 					isinp.nOwner=Cast(Integer,ah.hred)
 				EndIf
 				nLn=SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp))
 				If nLn Then
-					lstrcpy(@buffer,Cast(ZString ptr,nLn))
-					nLn=nLn+lstrlen(Cast(ZString ptr,nLn))+1
+					lstrcpy(@buffer,Cast(ZString Ptr,nLn))
+					nLn=nLn+lstrlen(Cast(ZString Ptr,nLn))+1
 					lstrcat(@buffer,StrPtr("("))
-					lstrcat(@buffer,Cast(ZString ptr,nLn))
+					lstrcat(@buffer,Cast(ZString Ptr,nLn))
 					lstrcat(@buffer,StrPtr(") "))
-					nLn=nLn+lstrlen(Cast(ZString ptr,nLn))+1
-					lstrcat(@buffer,Cast(ZString ptr,nLn))
+					nLn=nLn+lstrlen(Cast(ZString Ptr,nLn))+1
+					lstrcat(@buffer,Cast(ZString Ptr,nLn))
 				Else
 					buffer=""
 				EndIf
@@ -203,22 +203,22 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim rect As RECT
 	Dim rect1 As RECT
 	Dim chrg As CHARRANGE
-	Dim lpRASELCHANGE As RASELCHANGE ptr
-	Dim lpTOOLTIPTEXT As TOOLTIPTEXT ptr
-	Dim lpFBNOTIFY As FBNOTIFY ptr
-	Dim lpRAPNOTIFY As RAPNOTIFY ptr
-	Dim lpNMTVDISPINFO As NMTVDISPINFO ptr
+	Dim lpRASELCHANGE As RASELCHANGE Ptr
+	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
+	Dim lpFBNOTIFY As FBNOTIFY Ptr
+	Dim lpRAPNOTIFY As RAPNOTIFY Ptr
+	Dim lpNMTVDISPINFO As NMTVDISPINFO Ptr
 	Dim hCtl As HWND
 	Dim lfnt As LOGFONT
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim nLine As Integer
 	Dim hBmp As HBITMAP
 	Dim sItem As ZString*260
 	Dim wcex As WNDCLASSEXA
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 	Dim hMem As HGLOBAL
-	Dim lpCOPYDATASTRUCT As COPYDATASTRUCT ptr
+	Dim lpCOPYDATASTRUCT As COPYDATASTRUCT Ptr
 	Dim sbParts(3) As Integer
 	Dim sFile As String
 	Dim pt As Point
@@ -238,7 +238,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			sbParts(3)=-1				' last part
 			SendMessage(ah.hsbr,SB_SETPARTS,4,Cast(Integer,@sbParts(0)))
 			' Set close button image
-			SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,Cast(Integer,LoadBitmap(hInstance,Cast(ZString ptr,101))))
+			SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,Cast(Integer,LoadBitmap(hInstance,Cast(ZString Ptr,101))))
 			' Get from ini
 			GetPrivateProfileString(StrPtr("Project"),StrPtr("Path"),StrPtr("\"),@ad.DefProjectPath,SizeOf(ad.DefProjectPath),@ad.IniFile)
 			If Asc(ad.DefProjectPath)=Asc("\") Then
@@ -269,10 +269,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			DoToolbar(ah.htoolbar,hInstance)
 			' Handle of tabs
 			ah.htabtool=GetDlgItem(hWin,IDC_TABSELECT)
-			lpOldTabToolProc=Cast(Any ptr,SetWindowLong(ah.htabtool,GWL_WNDPROC,Cast(Integer,@TabToolProc)))
+			lpOldTabToolProc=Cast(Any Ptr,SetWindowLong(ah.htabtool,GWL_WNDPROC,Cast(Integer,@TabToolProc)))
 			' Handle of output window
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
-			lpOldOutputProc=Cast(Any ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
+			lpOldOutputProc=Cast(Any Ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
 			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444444",@edtopt,FALSE)
 			' Get find history
@@ -350,7 +350,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			EndIf
 			' Menus
 			ah.hmenu=GetMenu(hWin)
-			ah.hcontextmenu=LoadMenu(hInstance,Cast(ZString ptr,IDR_CONTEXTMENU))
+			ah.hcontextmenu=LoadMenu(hInstance,Cast(ZString Ptr,IDR_CONTEXTMENU))
 			GetPrivateProfileString(StrPtr("Language"),StrPtr("Language"),@szNULL,@Language,SizeOf(Language),@ad.IniFile)
 			If Language<>"" Then
 				GetLanguageFile
@@ -366,10 +366,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.htab,TCM_INSERTITEM,999,Cast(Integer,@tci))
 			' Project browser
 			ah.hprj=GetDlgItem(hWin,IDC_TRVPRJ)
-			lpOldProjectProc=Cast(Any ptr,SetWindowLong(ah.hprj,GWL_WNDPROC,Cast(Integer,@ProjectProc)))
+			lpOldProjectProc=Cast(Any Ptr,SetWindowLong(ah.hprj,GWL_WNDPROC,Cast(Integer,@ProjectProc)))
 			' Create the imagelist
 			ah.himl=ImageList_Create(16,16,ILC_MASK Or ILC_COLOR8,16,0)
-			hBmp=LoadBitmap(hInstance,Cast(ZString ptr,IDB_FILES))
+			hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_FILES))
 			ImageList_AddMasked(ah.himl,hBmp,&HFF00FF)
 			DeleteObject(hBmp)
 			SendMessage(ah.hprj,TVM_SETIMAGELIST,TVSIL_NORMAL,Cast(Integer,ah.himl))
@@ -384,7 +384,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetupProperty
 			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
-			lpOldCCProc=Cast(Any ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
+			lpOldCCProc=Cast(Any Ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
 			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
@@ -428,7 +428,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			LoadApiFiles
 			SetHiliteWordsFromApi(ah.hwnd)
 			ah.hmnuiml=ImageList_Create(16,16,ILC_COLOR4 Or ILC_MASK,4,0)
-			hBmp=LoadBitmap(hInstance,Cast(ZString ptr,IDB_MNUARROW))
+			hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_MNUARROW))
 			ImageList_AddMasked(ah.hmnuiml,hBmp,&HC0C0C0)
 			DeleteObject(hBmp)
 			' Create a class for the resource editor
@@ -463,17 +463,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetToolsColors(hWin)
 			SetToolMenu(hWin)
 			SetHelpMenu(hWin)
-			SetTimer(hWin,200,200,Cast(Any ptr,@MyTimerProc))
+			SetTimer(hWin,200,200,Cast(Any Ptr,@MyTimerProc))
 			SetWinCaption
-			hVCur=LoadCursor(hInstance,Cast(ZString ptr,IDC_VSPLIT))
-			hHCur=LoadCursor(hInstance,Cast(ZString ptr,IDC_HSPLIT))
+			hVCur=LoadCursor(hInstance,Cast(ZString Ptr,IDC_VSPLIT))
+			hHCur=LoadCursor(hInstance,Cast(ZString Ptr,IDC_HSPLIT))
 			OpenMruProjects
 			OpenMruFiles
 			fTimer=1
 			LoadAddins
 			ShowWindow(ah.htabtool,SW_HIDE)
-			hSplashBmp=LoadBitmap(hInstance,Cast(ZString ptr,103))
-			lpOldSplashProc=Cast(Any ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
+			hSplashBmp=LoadBitmap(hInstance,Cast(ZString Ptr,103))
+			lpOldSplashProc=Cast(Any Ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
 			SetFocus(hWin)
 			Return FALSE
 			'
@@ -490,7 +490,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					wpos.ht=rect.bottom-rect.top
 				EndIf
 				wpos.fmax=IsZoomed(hWin)
-				lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hres,0))
+				lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 				SendMessage(lpRESMEM->hProject,PRO_GETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
 				GetWindowRect(ah.hcc,@rect)
 				wpos.ptcclist.x=rect.right-rect.left
@@ -534,10 +534,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
 				Case BN_CLICKED,1
-					lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
+					lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,0))
 					Select Case As Const id
 						Case IDM_FILE_NEWPROJECT
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT),GetOwner,@NewProjectDlgProc,NULL)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_NEWPROJECT),GetOwner,@NewProjectDlgProc,NULL)
 							fTimer=1
 							'
 						Case IDM_FILE_OPENPROJECT
@@ -557,7 +557,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FILE_NEW_RESOURCE
-							lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hres,0))
+							lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 							ad.filename="(Untitled).rc"
 							hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,4096)
 							GlobalLock(hMem)
@@ -694,7 +694,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If gotovisible Then
 								SetFocus(gotovisible)
 							Else
-								CreateDialogParam(hInstance,Cast(ZString ptr,IDD_GOTODLG),GetOwner,@GotoDlgProc,0)
+								CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_GOTODLG),GetOwner,@GotoDlgProc,0)
 							EndIf
 							'
 						Case IDM_EDIT_FIND
@@ -711,7 +711,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
 								SetFocus(findvisible)
 							Else
-								CreateDialogParam(hInstance,Cast(ZString ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
+								CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
@@ -733,7 +733,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If findvisible Then
 								SetFocus(findvisible)
 							Else
-								CreateDialogParam(hInstance,Cast(ZString ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,TRUE)
+								CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,TRUE)
 							EndIf
 							'
 						Case IDM_EDIT_FINDDECLARE
@@ -811,7 +811,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							SendMessage(ah.hred,REM_SETMODE,bm,0)
 							'
 						Case IDM_EDIT_BLOCK_INSERT
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_BLOCKDLG),GetOwner,@BlockDlgProc,NULL)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_BLOCKDLG),GetOwner,@BlockDlgProc,NULL)
 							'
 						Case IDM_EDIT_BOOKMARKTOGGLE
 							lret=SendMessage(ah.hred,REM_GETBOOKMARK,nLastLine,0)
@@ -1057,10 +1057,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_PROJECT_OPTIONS
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGPROJECTOPTION),hWin,@ProjectOptionDlgProc,NULL)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGPROJECTOPTION),hWin,@ProjectOptionDlgProc,NULL)
 							'
 						Case IDM_PROJECT_CREATETEMPLATE
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_CREATETEMPLATE),hWin,@CreateTemplateDlgProc,NULL)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_CREATETEMPLATE),hWin,@CreateTemplateDlgProc,NULL)
 							'
 						Case IDM_RESOURCE_DIALOG
 							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_DIALOG,TRUE)
@@ -1170,47 +1170,47 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								If bm=0 Then
 									nHideOut=15
 								EndIf
-								CreateThread(NULL,NULL,Cast(Any ptr,@MakeThreadProc),Cast(ZString ptr,@"FbTemp.exe"),NORMAL_PRIORITY_CLASS,@x)
+								CreateThread(NULL,NULL,Cast(Any Ptr,@MakeThreadProc),Cast(ZString Ptr,@"FbTemp.exe"),NORMAL_PRIORITY_CLASS,@x)
 							Else
 								fQR=TRUE
 								nHideOut=0
 							EndIf
 							'
 						Case IDM_TOOLS_EXPORT
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGEXPORT),hWin,@ExportDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGEXPORT),hWin,@ExportDlgProc,0)
 							'
 						Case IDM_OPTIONS_LANGUAGE
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGLANGUAGE),hWin,@LanguageDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGLANGUAGE),hWin,@LanguageDlgProc,0)
 							'
 						Case IDM_OPTIONS_CODE
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGKEYWORDS),hWin,@KeyWordsDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGKEYWORDS),hWin,@KeyWordsDlgProc,0)
 							'
 						Case IDM_OPTIONS_DIALOG
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_TABOPTIONS),hWin,@TabOptionsProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_TABOPTIONS),hWin,@TabOptionsProc,0)
 							'
 						Case IDM_OPTIONS_PATH
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGPATHOPTION),hWin,@PathOptDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGPATHOPTION),hWin,@PathOptDlgProc,0)
 							'
 						Case IDM_OPTIONS_DEBUG
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGDEBUGOPT),hWin,@DebugOptDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGDEBUGOPT),hWin,@DebugOptDlgProc,0)
 							'
 						Case IDM_OPTIONS_MAKE
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,3)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,3)
 							'
 						Case IDM_OPTIONS_EXTERNALFILES
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGEXTERNALFILE),hWin,@ExternalFileDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGEXTERNALFILE),hWin,@ExternalFileDlgProc,0)
 							'
 						Case IDM_OPTIONS_ADDINS
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGADDINMANAGER),hWin,@AddinManagerProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGADDINMANAGER),hWin,@AddinManagerProc,0)
 							'
 						Case IDM_OPTIONS_TOOLS
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,1)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,1)
 							'
 						Case IDM_OPTIONS_HELP
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,2)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,2)
 							'
 						Case IDM_HELP_ABOUT
-							DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGABOUT),hWin,@AboutDlgProc,0)
+							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGABOUT),hWin,@AboutDlgProc,0)
 							SetFocus(ah.hred)
 							'
 						Case IDM_HELPF1
@@ -1438,7 +1438,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			HideList()
 			'
 		Case WM_NOTIFY
-			lpRASELCHANGE=Cast(RASELCHANGE ptr,lParam)
+			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred Then
 				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
@@ -1591,10 +1591,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				'
 			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA Then
 				' ToolBar tooltip
-				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT ptr,lParam)
+				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT Ptr,lParam)
 				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
 				If lret Then
-					lpTOOLTIPTEXT->lpszText=Cast(ZString ptr,lret)
+					lpTOOLTIPTEXT->lpszText=Cast(ZString Ptr,lret)
 				Else
 					buff=FindString(ad.hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
 					If buff="" Then
@@ -1607,7 +1607,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				hCtl=ah.hred
 				tci.mask=TCIF_PARAM
 				SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETITEM,SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
-				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SetFocus(ah.hred)
 				fTimer=1
@@ -1616,14 +1616,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				ShowProjectTab
 			ElseIf lpRASELCHANGE->nmhdr.code=FBN_DBLCLICK  And lpRASELCHANGE->nmhdr.idFrom=IDC_FILEBROWSER Then
 				' File dblclicked
-				lpFBNOTIFY=Cast(FBNOTIFY ptr,lParam)
+				lpFBNOTIFY=Cast(FBNOTIFY Ptr,lParam)
 				lstrcpy(@sItem,lpFBNOTIFY->lpfile)
 				OpenTheFile(sItem)
 				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 					UpdateFileProperty
 				EndIf
 			ElseIf lpRASELCHANGE->nmhdr.code=BN_CLICKED And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
-				lpRAPNOTIFY=Cast(RAPNOTIFY ptr,lParam)
+				lpRAPNOTIFY=Cast(RAPNOTIFY Ptr,lParam)
 				Select Case lpRAPNOTIFY->nid
 					Case 1
 						UpdateFileProperty
@@ -1633,7 +1633,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				End Select
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
-				lpRAPNOTIFY=Cast(RAPNOTIFY ptr,lParam)
+				lpRAPNOTIFY=Cast(RAPNOTIFY Ptr,lParam)
 				If fProject Then
 					SelectTab(hWin,0,lpRAPNOTIFY->nid)
 				Else
@@ -1647,13 +1647,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TVN_BEGINLABELEDIT Then
-				lpNMTVDISPINFO=Cast(NMTVDISPINFO ptr,lParam)
+				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
 				lstrcpy(@sEditFileName,lpNMTVDISPINFO->item.pszText)
 				If lpNMTVDISPINFO->item.lParam=0 Then
 					SendMessage(ah.hprj,TVM_ENDEDITLABELNOW,0,0)
 				EndIf
 			ElseIf lpRASELCHANGE->nmhdr.code=TVN_ENDLABELEDIT Then
-				lpNMTVDISPINFO=Cast(NMTVDISPINFO ptr,lParam)
+				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
 				lstrcpy(@sItem,lpNMTVDISPINFO->item.pszText)
 				SetCurrentDirectory(@ad.ProjectPath)
 				If MoveFile(@sEditFileName,@sItem) Then
@@ -1762,7 +1762,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
 				' Size the splash
 				GetWindowRect(ah.hshp,@rect1)
-				ScreenToClient(hWin,Cast(Point ptr,@rect1.right))
+				ScreenToClient(hWin,Cast(Point Ptr,@rect1.right))
 				MoveWindow(GetDlgItem(hWin,IDC_IMGSPLASH),(rect1.right-340)/2,(rect1.bottom-188)/2+25,340,188,TRUE)
 			EndIf
 			'
@@ -1777,7 +1777,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				y=&HFFFF0000 Or y
 			EndIf
 			GetWindowRect(ah.hshp,@rect)
-			ScreenToClient(hWin,Cast(Point ptr,@rect.right))
+			ScreenToClient(hWin,Cast(Point Ptr,@rect.right))
 			If x>=rect.right And x<rect.right+3 Then
 				SetCursor(hVCur)
 				If uMsg=WM_LBUTTONDOWN Then
@@ -1864,7 +1864,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return mnuid
 			'
 		Case WM_COPYDATA
-			lpCOPYDATASTRUCT=Cast(COPYDATASTRUCT ptr,lParam)
+			lpCOPYDATASTRUCT=Cast(COPYDATASTRUCT Ptr,lParam)
 			CommandLine=lpCOPYDATASTRUCT->lpData
 			CmdLine
 			'
@@ -1924,14 +1924,14 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	wcex.cbWndExtra=DLGWINDOWEXTRA
 	wcex.hInstance=hInst
 	wcex.hbrBackground=Cast(HBRUSH,COLOR_BTNFACE+1)
-	wcex.lpszMenuName=Cast(ZString ptr,10000)
+	wcex.lpszMenuName=Cast(ZString Ptr,10000)
 	wcex.lpszClassName=StrPtr("MAINFBEDIT")
-	hIcon=LoadIcon(hInstance,Cast(ZString ptr,IDC_MAINICON))
+	hIcon=LoadIcon(hInstance,Cast(ZString Ptr,IDC_MAINICON))
 	wcex.hIcon=hIcon
 	wcex.hIconSm=0
 	wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
 	RegisterClassEx(@wcex)
-	CreateDialogParam(hInst,Cast(ZString ptr,IDD_MAIN),NULL,@DlgProc,NULL)
+	CreateDialogParam(hInst,Cast(ZString Ptr,IDD_MAIN),NULL,@DlgProc,NULL)
 	If wpos.fMax Then
 		ShowWindow(ah.hwnd,SW_MAXIMIZE)
 		SendMessage(ah.hwnd,WM_SIZE,0,0)
@@ -1952,7 +1952,7 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 
 End Function
 
-Dim CharTab As Function() As Any ptr
+Dim CharTab As Function() As Any Ptr
 
 '{	Program start
 
@@ -1973,9 +1973,9 @@ Dim CharTab As Function() As Any ptr
 					If hRAResEdDll Then
 						hRAGridDll=LoadLibrary("RAGrid.dll")
 						If hRAGridDll Then
-							CharTab=Cast(Any ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
+							CharTab=Cast(Any Ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
 							ad.lpCharTab=CharTab()
-							ah.haccel=LoadAccelerators(hInstance,Cast(ZString ptr,IDA_ACCEL))
+							ah.haccel=LoadAccelerators(hInstance,Cast(ZString Ptr,IDA_ACCEL))
 							OleInitialize(NULL)
 							WinMain(hInstance,NULL,NULL,NULL)
 							OleUninitialize

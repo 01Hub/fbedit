@@ -1,11 +1,11 @@
 
-Sub SaveToIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean)
+Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 	Dim value As ZString*4096
 	Dim i As Integer
 	Dim ofs As Integer
 	Dim tmp As ZString*260
 	Dim v As Integer
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 
 	For i=1 To Len(szTypes)
 		v=0
@@ -43,12 +43,12 @@ Sub SaveToIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal sz
 
 End Sub
 
-Function LoadFromIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean) As Boolean
+Function LoadFromIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
 	Dim i As Integer
 	Dim ofs As Integer
 	Dim tmp As ZString*256
 	Dim v As Integer
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim szDta As ZString*4096
 
 	If fProject Then

@@ -2,7 +2,7 @@
 ' CodeCompleteListBox Styles
 #Define STYLE_USEIMAGELIST		1
 ' CodeCompleteListBox Messages
-#Define CCM_ADDITEM			WM_USER+0			' wParam=0, lParam=lpString, Returns nothing
+#Define CCM_ADDITEM			WM_USER+0			' wParam=Type, lParam=lpString, Returns nothing
 #Define CCM_DELITEM			WM_USER+1			' wParam=Index, lParam=0, Returns nothing
 #Define CCM_GETITEM			WM_USER+2			' wParam=Index, lParam=0, Returns pointer to string or NULL
 #Define CCM_GETCOUNT			WM_USER+3			' wParam=0, lParam=0, Returns count
@@ -26,8 +26,8 @@ Type CC_COLOR
 End Type
 
 Type CC_ADDLIST
-	lpszList As ZString ptr
-	lpszFilter As ZString ptr
+	lpszList As ZString Ptr
+	lpszFilter As ZString Ptr
 	nType As Integer
 End Type
 
@@ -48,11 +48,11 @@ Type TT_COLOR
 End Type
 
 Type TTITEM
-	lpszApi As ZString ptr							' Pointer to api string
-	lpszParam As ZString ptr						' Pointer to comma separated parameters string
+	lpszApi As ZString Ptr							' Pointer to api string
+	lpszParam As ZString Ptr						' Pointer to comma separated parameters string
 	nitem As Integer									' Item to hilite
-	lpszRetType As ZString ptr						' Pointer to return type string
-	lpszDesc As ZString ptr							' Pointer to item description
+	lpszRetType As ZString Ptr						' Pointer to return type string
+	lpszDesc As ZString Ptr							' Pointer to item description
 	novr As Integer									' Totals of functions
 	nsel As Integer									' Actual function
 	nwidth As Integer									' Width of tooltip

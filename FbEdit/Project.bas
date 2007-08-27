@@ -47,7 +47,7 @@
 
 Dim Shared hTabNewProject1 	As HWND
 Dim Shared hTabNewProject2 	As HWND
-Dim Shared lpOldApiListProc	As Any ptr
+Dim Shared lpOldApiListProc	As Any Ptr
 
 Function BrowseCallbackProc(ByVal hwnd As HWND,ByVal uMsg As UINT,ByVal lParam As LPARAM,ByVal lpData As Integer) As Integer
 
@@ -61,7 +61,7 @@ End Function
 
 
 Sub BrowseFolder(ByVal hWin As HWND,ByVal nID As Integer)
-	Dim pidl As Any ptr
+	Dim pidl As Any Ptr
 	Dim bri As BROWSEINFO
 
 	bri.pidlRoot=0
@@ -190,7 +190,7 @@ Function GetFileImg(ByVal sFile As String) As Integer
 
 End Function
 
-Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString ptr,ByVal nImg As Integer,ByVal lParam As Integer) As HTREEITEM
+Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nImg As Integer,ByVal lParam As Integer) As HTREEITEM
 	Dim tvins As TV_INSERTSTRUCT
 	Dim tvi As TVITEM
 	Dim hItem As HTREEITEM
@@ -302,7 +302,7 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString ptr,ByVal nIm
 
 End Function
 
-Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI ptr)
+Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 	Dim chrg As CHARRANGE
 	Dim As Integer i,b,nLine
 
@@ -383,7 +383,7 @@ Sub ReparseProject
 	Dim sItem As ZString*260
 	Dim hPar As HTREEITEM
 	Dim x As Integer
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim tpe As Integer
 	Dim pfi As PFI
 	Dim tvs As TVSORTCB
@@ -420,7 +420,7 @@ Function OpenProject() As Integer
 	Dim sItem As ZString*260
 	Dim hPar As HTREEITEM
 	Dim x As Integer
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim tpe As Integer
 	Dim pfi As PFI
 	Dim tvs As TVSORTCB
@@ -733,7 +733,7 @@ Sub AddExistingProjectFile()
 		lstrcpy(@pth,@buff)
 		i=Len(pth)+1
 		x=Cast(Integer,@buff)
-		lstrcpy(@s,Cast(ZString ptr,x+i))
+		lstrcpy(@s,Cast(ZString Ptr,x+i))
 		If Asc(s)=0 Then
 			' Add single file
 			AddAProjectFile(pth,FALSE,FALSE)
@@ -743,7 +743,7 @@ Sub AddExistingProjectFile()
 				sFile=pth & "\" & s
 				AddAProjectFile(sFile,FALSE,FALSE)
 				i=i+Len(s)+1
-				lstrcpy(@s,Cast(ZString ptr,x+i))
+				lstrcpy(@s,Cast(ZString Ptr,x+i))
 			Loop
 		EndIf
 	EndIf
@@ -796,7 +796,7 @@ Sub AddExistingProjectModule()
 		lstrcpy(@pth,@buff)
 		i=Len(pth)+1
 		x=Cast(Integer,@buff)
-		lstrcpy(@s,Cast(ZString ptr,x+i))
+		lstrcpy(@s,Cast(ZString Ptr,x+i))
 		If Asc(s)=0 Then
 			' Add single file
 			AddAProjectFile(pth,TRUE,FALSE)
@@ -806,7 +806,7 @@ Sub AddExistingProjectModule()
 				sFile=pth & "\" & s
 				AddAProjectFile(sFile,TRUE,FALSE)
 				i=i+Len(s)+1
-				lstrcpy(@s,Cast(ZString ptr,x+i))
+				lstrcpy(@s,Cast(ZString Ptr,x+i))
 			Loop
 		EndIf
 	EndIf
@@ -928,7 +928,7 @@ Sub ToggleProjectFile
 	Dim sItem As ZString*260
 	Dim buff As ZString*260
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
@@ -965,7 +965,7 @@ Sub ToggleProjectFile
 			i=0
 			Do While TRUE
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					If lstrcmpi(@buff,lpTABMEM->filename)=0 Then
 						lpTABMEM->profileinx=nInx
 						tci.mask=TCIF_IMAGE
@@ -997,7 +997,7 @@ Sub OpenProjectFile(ByVal nInx As Integer)
 
 End Sub
 
-Sub ReadProjectFileInfo(ByVal nInx As Integer,ByVal lpPFI As PFI ptr)
+Sub ReadProjectFileInfo(ByVal nInx As Integer,ByVal lpPFI As PFI Ptr)
 	Dim i As Integer
 
 	lpPFI->nGroup=0
@@ -1422,7 +1422,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 	Dim sItem As ZString*260
 	Dim x As Integer
 	Dim ts As TCITEM
-	Dim lpNMHDR As NMHDR ptr
+	Dim lpNMHDR As NMHDR Ptr
 	Dim hNPTab As HWND
 
 	Select Case uMsg
@@ -1437,8 +1437,8 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			ts.pszText=@sItem
 			SendMessage(hNPTab,TCM_INSERTITEM,1,Cast(LPARAM,@ts))
 			'Create the tab dialogs
-			hTabNewProject1=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT1),hNPTab,@NewProjectTab1Proc,0)
-			hTabNewProject2=CreateDialogParam(hInstance,Cast(ZString ptr,IDD_NEWPROJECT2),hNPTab,@NewProjectTab2Proc,0)
+			hTabNewProject1=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_NEWPROJECT1),hNPTab,@NewProjectTab1Proc,0)
+			hTabNewProject2=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_NEWPROJECT2),hNPTab,@NewProjectTab2Proc,0)
 			SetDlgItemText(hWin,IDC_EDTPROJECTPATH,@ad.DefProjectPath)
 			SendDlgItemMessage(hWin,IDC_EDTPROJECTNAME,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPROJECTDESCRIPTION,EM_LIMITTEXT,64,0)
@@ -1481,7 +1481,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 			End Select
 			'
 		Case WM_NOTIFY
-			lpNMHDR=Cast(NMHDR ptr,lParam)
+			lpNMHDR=Cast(NMHDR Ptr,lParam)
 			If lpNMHDR->code=TCN_SELCHANGE Then
 				'A tab selection is made
 				nInx=SendDlgItemMessage(hWin,IDC_TABNEWPROJECT,TCM_GETCURSEL,0,0)
@@ -1504,7 +1504,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 End Function
 
 Function ApiListProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM) As Integer
-	Dim pt As POINT
+	Dim pt As Point
 	Dim cursel As Integer
 	Dim chkval As Integer
 
@@ -1530,7 +1530,7 @@ End Function
 
 Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM) As Integer
 	Dim nInx As Integer
-	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT ptr
+	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
 	Dim rect As RECT
 	Dim sItem As ZString*256
 	Dim hLst As HWND
@@ -1541,7 +1541,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGPROJECTOPTIONAPI)
 			hLst=GetDlgItem(hWin,IDC_LSTAPIFILES)
-			lpOldApiListProc=Cast(Any ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@ApiListProc)))
+			lpOldApiListProc=Cast(Any Ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@ApiListProc)))
 			s=ApiFiles
 			While Len(s)
 				sItem=GetTextItem(s)
@@ -1585,7 +1585,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 			End Select
 			'
 		Case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
+			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
 			' Select back and text colors
 			If lpDRAWITEMSTRUCT->itemState And ODS_SELECTED Then
 				SetTextColor(lpDRAWITEMSTRUCT->hdc,GetSysColor(COLOR_HIGHLIGHTTEXT))
@@ -1723,7 +1723,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					EndDialog(hWin, 0)
 					'
 				Case IDC_BTNMAKEOPT
-					DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,4)
+					DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGOPTMNU),hWin,@MenuOptionDlgProc,4)
 					x=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.ProjectFile)
 					GetPrivateProfileString(StrPtr("Make"),Str(x),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 					If Len(sItem) Then
@@ -1735,7 +1735,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					EndIf
 					'
 				Case IDC_BTNAPIFILES
-					If DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGPROJECTOPTIONAPI),hWin,@ApiOptionProc,0) Then
+					If DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGPROJECTOPTIONAPI),hWin,@ApiOptionProc,0) Then
 						SetDlgItemText(hWin,IDC_EDTAPIFILES,@buff)
 					EndIf
 					'
@@ -1805,4 +1805,3 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Return CallWindowProc(lpOldProjectProc,hWin,uMsg,wParam,lParam)
 
 End Function
-

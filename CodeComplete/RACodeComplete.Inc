@@ -2,7 +2,7 @@
 STYLE_USEIMAGELIST	equ 1
 
 ;CodeCompleteListBox Messages
-CCM_ADDITEM			equ WM_USER+0			;wParam=0, lParam=lpString, Returns nothing
+CCM_ADDITEM			equ WM_USER+0			;wParam=Type, lParam=lpString, Returns nothing
 CCM_DELITEM			equ WM_USER+1			;wParam=Index, lParam=0, Returns nothing
 CCM_GETITEM			equ WM_USER+2			;wParam=Index, lParam=0, Returns pointer to string or NULL
 CCM_GETCOUNT		equ WM_USER+3			;wParam=0, lParam=0, Returns count

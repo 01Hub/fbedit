@@ -13,9 +13,9 @@
 #Define IDC_CHKOPR					1011
 
 Sub ExportFunctions()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
@@ -29,99 +29,99 @@ Sub ExportFunctions()
 			EndIf
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportConstants()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("c")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("c")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportData()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("d")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("d")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportUDTs()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("s")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("s")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportEnums()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("e")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("e")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportNamespaces()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("n")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("n")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportMacros()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("m")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("m")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 		lret=lret+Len(*lret)+1
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportConstructors()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("x")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("x")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
@@ -130,15 +130,15 @@ Sub ExportConstructors()
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportDestructors()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("y")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("y")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
@@ -147,15 +147,15 @@ Sub ExportDestructors()
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportProperties()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("z")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("z")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
@@ -164,15 +164,15 @@ Sub ExportProperties()
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub ExportOperators()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("o")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("o")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
@@ -181,7 +181,7 @@ Sub ExportOperators()
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub

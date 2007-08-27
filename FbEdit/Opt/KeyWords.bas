@@ -59,11 +59,11 @@ Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,
 Sub SetToolsColors(ByVal hWin As HWND)
 	Dim racol As RACOLOR
 	Dim rescol As RARESEDCOLOR
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 	Dim cccol As CC_COLOR
 	Dim ttcol As TT_COLOR
 
-	lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hres,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 	SendMessage(ah.hprj,TVM_SETBKCOLOR,0,fbcol.toolback)
 	SendMessage(ah.hprj,TVM_SETTEXTCOLOR,0,fbcol.tooltext)
 	SendMessage(ah.hfib,FBM_SETBACKCOLOR,0,fbcol.toolback)
@@ -145,7 +145,7 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 	lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("T")),Cast(Integer,StrPtr("")))
 	Do While lret
 		sItem= "^"
-		lstrcpy(@sItem,Cast(ZString ptr,lret))
+		lstrcpy(@sItem,Cast(ZString Ptr,lret))
 		If sItem=UCase(sItem) Then
 			' Case sensitive
 			sItem="^" & sItem
@@ -157,7 +157,7 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 	lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("S")),Cast(Integer,StrPtr("")))
 	Do While lret
 		sItem= "^"
-		lstrcat(@sItem,Cast(ZString ptr,lret))
+		lstrcat(@sItem,Cast(ZString Ptr,lret))
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C13,Cast(Integer,@sItem))
 		lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
 	Loop
@@ -165,15 +165,15 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 	lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("W")),Cast(Integer,StrPtr("")))
 	Do While lret
 		sItem= "^"
-		lstrcat(@sItem,Cast(ZString ptr,lret))
+		lstrcat(@sItem,Cast(ZString Ptr,lret))
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C14,Cast(Integer,@sItem))
 		lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
 	Loop
 	' Api constants
 	lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("A")),Cast(Integer,StrPtr("")))
 	Do While lret
-		lret=lret+lstrlen(Cast(ZString ptr,lret))+1
-		lstrcpy(@buff,Cast(ZString ptr,lret))
+		lret=lret+lstrlen(Cast(ZString Ptr,lret))+1
+		lstrcpy(@buff,Cast(ZString Ptr,lret))
 '''*** This is a bit slow
 '		lret=1
 '		while TRUE
@@ -245,7 +245,7 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 	Do While lret
 		'sItem= "^"
 		'lstrcat(@sItem,Cast(ZString ptr,lret))
-		lstrcpy(@sItem,Cast(ZString ptr,lret))
+		lstrcpy(@sItem,Cast(ZString Ptr,lret))
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C15,Cast(Integer,@sItem))
 		lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
 	Loop
@@ -253,43 +253,43 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 End Sub
 
 Sub HLUDT()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim sItem As ZString*256
 	
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("s")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("s")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		sItem= "^"
 		lstrcat(@sItem,lret)
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C16,Cast(Integer,@sItem))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub HLConstants()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim sItem As ZString*256
 	
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("c")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("c")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		sItem= "^"
 		lstrcat(@sItem,lret)
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C17,Cast(Integer,@sItem))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
 
 Sub HLFunction()
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim sItem As ZString*256
 	
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
 	Do While lret
 		sItem= "^"
 		lstrcat(@sItem,lret)
 		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C18,Cast(Integer,@sItem))
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 	Loop
 
 End Sub
@@ -309,7 +309,7 @@ Sub PropertyHL(ByVal bUpdate As Integer)
 End Sub
 
 Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
-	Dim ofs As Any ptr
+	Dim ofs As Any Ptr
 	Dim col As Integer
 
 	ofs=@thme(nInx)
@@ -333,7 +333,7 @@ Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 End Sub
 
 Sub PutTheme(ByVal hWin As HWND,ByVal nInx As Integer)
-	Dim ofs As Any ptr
+	Dim ofs As Any Ptr
 	Dim col As Integer
 
 	ofs=@thme(nInx)
@@ -356,7 +356,7 @@ End Sub
 
 Sub SaveEditOpt(ByVal hWin As HWND)
 	Dim nInx As Integer
-	Dim ofs As Any ptr
+	Dim ofs As Any Ptr
 	Dim col As Integer
 	Dim lfnt As LOGFONT
 	Dim sItem As ZString*256
@@ -558,12 +558,12 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 	Dim lfnt As LOGFONT
 	Dim cf As ChooseFont
 	Dim hCtl As HWND
-	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT ptr
+	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
 	Dim sItem As ZString*256
 	Dim nInx As Integer
 	Dim rect As RECT
 	Dim hBr As HBRUSH
-	Dim ofs As Any ptr
+	Dim ofs As Any Ptr
 	Dim col As Integer
 	Dim cc As ChooseColor
 	Dim x As Integer
@@ -999,8 +999,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 						Case IDC_LSTCOLORS
 							cc.lStructSize=SizeOf(ChooseColor)
 							cc.hwndOwner=hWin
-							cc.hInstance=Cast(Any ptr,hInstance)
-							cc.lpCustColors=Cast(Any ptr,@custcol)
+							cc.hInstance=Cast(Any Ptr,hInstance)
+							cc.lpCustColors=Cast(Any Ptr,@custcol)
 							cc.Flags=CC_FULLOPEN Or CC_RGBINIT
 							cc.lCustData=0
 							cc.lpfnHook=0
@@ -1018,8 +1018,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 						Case IDC_LSTKWCOLORS
 							cc.lStructSize=SizeOf(ChooseColor)
 							cc.hwndOwner=hWin
-							cc.hInstance=Cast(Any ptr,hInstance)
-							cc.lpCustColors=Cast(Any ptr,@custcol)
+							cc.hInstance=Cast(Any Ptr,hInstance)
+							cc.lpCustColors=Cast(Any Ptr,@custcol)
 							cc.Flags=CC_FULLOPEN Or CC_RGBINIT
 							cc.lCustData=0
 							cc.lpfnHook=0
@@ -1039,7 +1039,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			End Select
 			'
 		Case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
+			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
 			' Select back and text colors
 			If lpDRAWITEMSTRUCT->itemState And ODS_SELECTED Then
 				SetTextColor(lpDRAWITEMSTRUCT->hdc,GetSysColor(COLOR_HIGHLIGHTTEXT))

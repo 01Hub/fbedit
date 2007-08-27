@@ -223,10 +223,10 @@ End Type
 #Define BD_NOBLOCK							&H40				' No block nesting
 
 Type RABLOCKDEF Field=1
-	lpszStart	As ZString ptr										' Block start
-	lpszEnd		As ZString ptr									' Block end
-	lpszNot1		As ZString ptr									' Dont hide line containing this or set to NULL
-	lpszNot2		As ZString ptr										' Dont hide line containing this or set to NULL
+	lpszStart	As ZString Ptr										' Block start
+	lpszEnd		As ZString Ptr									' Block end
+	lpszNot1		As ZString Ptr									' Dont hide line containing this or set to NULL
+	lpszNot2		As ZString Ptr										' Dont hide line containing this or set to NULL
 	flag			As Long											' High word is WordGroup(0-15)
 End Type
 
@@ -241,4 +241,3 @@ Type BLOCKRANGE Field=1
 	lnMax		As Long												' Ending line
 	clMax		As Long												' Ending column
 End Type
-

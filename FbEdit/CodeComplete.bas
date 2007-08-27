@@ -87,7 +87,7 @@ Sub MoveList()
 	GetCaretPos(@pt)
 	GetWindowRect(ah.hcc,@rect1)
 	SendMessage(ah.hred,EM_GETRECT,0,Cast(Integer,@rect))
-	ClientToScreen(ah.hred,Cast(Point ptr,@rect))
+	ClientToScreen(ah.hred,Cast(Point Ptr,@rect))
 	rect.top=rect.top+pt.y+18
 	If rect.top+rect1.bottom-rect1.top+8>GetSystemMetrics(SM_CYMAXIMIZED) Then
 		rect.top=rect.top-rect1.bottom+rect1.top-22
@@ -106,10 +106,10 @@ Sub MoveList()
 
 End Sub
 
-Function FindExact(ByVal lpTypes As ZString ptr,ByVal lpFind As ZString ptr,ByVal fMatchCase As Boolean) As ZString ptr
-	Dim lret As ZString ptr
+Function FindExact(ByVal lpTypes As ZString Ptr,ByVal lpFind As ZString Ptr,ByVal fMatchCase As Boolean) As ZString Ptr
+	Dim lret As ZString Ptr
 
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,lpTypes),Cast(Integer,lpFind)))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,lpTypes),Cast(Integer,lpFind)))
 	While lret
 		If fMatchCase Then
 			If lstrcmp(lret,lpFind)=0 Then
@@ -120,7 +120,7 @@ Function FindExact(ByVal lpTypes As ZString ptr,ByVal lpFind As ZString ptr,ByVa
 				Return lret
 			EndIf
 		EndIf
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(Integer,lpTypes),Cast(Integer,lpFind)))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(Integer,lpTypes),Cast(Integer,lpFind)))
 	Wend
 	Return 0
 
@@ -154,7 +154,7 @@ Sub GetItems(ByVal ntype As Integer)
 
 End Sub
 
-Sub UpdateList(ByVal lpProc As ZString ptr)
+Sub UpdateList(ByVal lpProc As ZString Ptr)
 	Dim lret As Integer
 	Dim chrg As CHARRANGE
 	Dim ntype As Integer
@@ -189,10 +189,10 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 					Case Asc("s")
 						ntype=5
 					Case Asc("d")
-						lstrcpy(ccpos,Cast(ZString ptr,lret))
+						lstrcpy(ccpos,Cast(ZString Ptr,lret))
 						lstrcat(ccpos,@szColon)
-						lret=lret+lstrlen(Cast(ZString ptr,lret))+1
-						lstrcat(ccpos,Cast(ZString ptr,lret))
+						lret=lret+lstrlen(Cast(ZString Ptr,lret))+1
+						lstrcat(ccpos,Cast(ZString Ptr,lret))
 						lret=Cast(Integer,ccpos)
 						ccpos=ccpos+Len(*ccpos)+1
 						ntype=14
@@ -228,14 +228,14 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 
 End Sub
 
-Sub UpdateStructList(ByVal lpProc As ZString ptr)
-	Dim lret As ZString ptr
+Sub UpdateStructList(ByVal lpProc As ZString Ptr)
+	Dim lret As ZString Ptr
 	Dim chrg As CHARRANGE
 	Dim ntype As Integer
 	Dim As Integer x,y
 	Dim sLine As ZString*512
 	Dim sItem As ZString*512
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim nline As Integer
 	Dim nowner As Integer
 
@@ -245,9 +245,9 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		nline=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nline,0)
 		x=chrg.cpMax-chrg.cpMin
-		buff=STring(1024,0)
-		buff=Chr(x and 255) & Chr(x\256)
-		lret=Cast(ZString ptr,SendMessage(ah.hred,EM_GETLINE,nline,Cast(Integer,@buff)))
+		buff=String(1024,0)
+		buff=Chr(x And 255) & Chr(x\256)
+		lret=Cast(ZString Ptr,SendMessage(ah.hred,EM_GETLINE,nline,Cast(Integer,@buff)))
 		buff[Cast(Integer,lret)]=NULL
 		lstrcpy(@sLine,@buff)
 		nowner=Cast(Integer,ah.hred)
@@ -256,7 +256,7 @@ Sub UpdateStructList(ByVal lpProc As ZString ptr)
 		EndIf
 		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
 		If Asc(sLine)=Asc(".") Then
-			lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
+			lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
 			If lret Then
 				lstrcpy(@s,lret)
 				sLine=s & Mid(sLine,InStr(sLine,"."))
@@ -408,8 +408,8 @@ Sub UpdateTypeList()
 
 End Sub
 
-Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolean
-	Dim lret As ZString ptr
+Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolean
+	Dim lret As ZString Ptr
 	Dim chrg As CHARRANGE
 	Dim ln As Integer
 	Dim ccal As CC_ADDLIST
@@ -436,7 +436,7 @@ Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolea
 			If Len(s) Then
 				SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
 			Else
-				lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTe")),Cast(LPARAM,@buff)))
+				lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTe")),Cast(LPARAM,@buff)))
 				Do While lret
 					ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
 					Select Case As Const ntype
@@ -450,7 +450,7 @@ Function UpdateConstList(ByVal lpszApi As ZString ptr,npos As Integer) As Boolea
 							ntype=14
 					End Select
 					SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(LPARAM,lret))
-					lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+					lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 				Loop
 				SendMessage(ah.hcc,CCM_SORT,0,0)
 			EndIf
@@ -464,7 +464,7 @@ End Function
 
 Sub IsStructList()
 	Dim x As Integer
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim chrg As CHARRANGE
 	Dim isinp As ISINPROC
 
@@ -475,7 +475,7 @@ Sub IsStructList()
 		isinp.nOwner=GetProjectFileID(ah.hred)
 	EndIf
 	isinp.lpszType=StrPtr("pxyzo")
-	lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
 	UpdateStructList(lret)
 	If fstructlist Then
 		MoveList
@@ -483,7 +483,7 @@ Sub IsStructList()
 
 End Sub
 
-Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal nType As Integer)
+Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nType As Integer)
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260
@@ -542,7 +542,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVa
 
 End Sub
 
-Sub UpdateInclibList(ByVal lpDir As ZString ptr,ByVal lpSub As ZString ptr,ByVal nType As Integer)
+Sub UpdateInclibList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nType As Integer)
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260

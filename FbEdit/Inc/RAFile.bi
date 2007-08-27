@@ -18,7 +18,7 @@
 
 Type FBNOTIFY
 	nmhdr As NMHDR
-	lpfile As ZString ptr
+	lpfile As ZString Ptr
 End Type
 
 ' Styles

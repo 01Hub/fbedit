@@ -64,4 +64,3 @@ Function GotoDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Return TRUE
 
 End Function
-

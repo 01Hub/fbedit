@@ -23,8 +23,8 @@ Declare Sub OpenProjectFile(ByVal nInx As Integer)
 Declare Sub WriteProjectFileInfo(ByVal hWin As HWND,ByVal nInx As Integer,ByVal fProjectClose As Boolean)
 Declare Sub OpenTheFile(ByVal sFile As String)
 Declare Sub TextToOutput(ByVal sText As String)
-Declare Sub SaveToIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean)
-Declare Function LoadFromIni(ByVal lpszApp As ZString ptr,ByVal lpszKey As ZString ptr,ByVal szTypes As String,ByVal lpDta As Any ptr,ByVal fProject As Boolean) As Boolean
+Declare Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
+Declare Function LoadFromIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
 Declare Function GetProjectFileID(ByVal hWin As HWND) As Integer
 Declare Function CallAddins(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
 Declare Function GetProjectFile(ByVal nInx As Integer) As String
@@ -267,7 +267,7 @@ End Type
 Type EDITFONT
 	size				As Integer
 	charset			As Integer
-	szFont			As ZString ptr
+	szFont			As ZString Ptr
 End Type
 
 Type EDITOPTION
@@ -279,7 +279,7 @@ Type EDITOPTION
 	linenumbers		As Integer
 	backup			As Integer
 	bracematch		As Integer
-	autobrace		As Integer
+	AutoBrace		As Integer
 	autocase			As Integer
 	autoblock		As Integer
 	autoformat		As Integer
@@ -331,7 +331,7 @@ Type NAMEEXPORT
 	nType				As Integer
 	nOutput			As Integer
 	fAuto				As Integer
-	szFileName		As ZString ptr
+	szFileName		As ZString Ptr
 End Type
 
 Type GRIDSIZE
@@ -355,8 +355,8 @@ Type PFI
 	nColl(15)		As Integer
 End Type
 
-Declare Sub ReadProjectFileInfo(ByVal nInx As Integer,ByVal lpPFI As PFI ptr)
-Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI ptr)
+Declare Sub ReadProjectFileInfo(ByVal nInx As Integer,ByVal lpPFI As PFI Ptr)
+Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 
 #Define VIEW_OUTPUT		1
 #Define VIEW_PROJECT		2
@@ -393,17 +393,17 @@ Dim Shared hVCur As HCURSOR
 Dim Shared hHCur As HCURSOR
 
 ' Subclass
-Dim Shared lpOldTabToolProc As Any ptr
-Dim Shared lpOldProjectProc As Any ptr
-Dim Shared lpOldCCProc As Any ptr
-Dim Shared lpOldSplashProc As Any ptr
+Dim Shared lpOldTabToolProc As Any Ptr
+Dim Shared lpOldProjectProc As Any Ptr
+Dim Shared lpOldCCProc As Any Ptr
+Dim Shared lpOldSplashProc As Any Ptr
 
 ' Misc
 Dim Shared nLastLine As Long
 Dim Shared nCaretPos As Long
 Dim Shared buff As ZString*20*1024
 Dim Shared s As ZString*20*1024
-Dim Shared CommandLine As ZString ptr
+Dim Shared CommandLine As ZString Ptr
 Dim Shared ApiFiles As ZString*260
 Dim Shared DefApiFiles As ZString*260
 
@@ -424,7 +424,7 @@ Dim Shared flocallist As Boolean
 Dim Shared fincludelist As Boolean
 Dim Shared fincliblist As Boolean
 Dim Shared sEditFileName As ZString*260
-Dim Shared ccpos As ZString ptr
+Dim Shared ccpos As ZString Ptr
 Dim Shared ccstring As ZString*32768
 Dim Shared sCodeFiles As ZString*260
 
@@ -482,7 +482,7 @@ Dim Shared szNot2 As ZString*32
 Dim Shared BD(31) As RABLOCKDEF
 
 Type AUTOFORMAT
-	wrd	As ZString ptr
+	wrd	As ZString Ptr
 	st		As Integer
 	add1	As Integer
 	add2	As Integer
@@ -548,11 +548,11 @@ Dim Shared deftypeendoperator As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDOPERATOR,As
 Type HH_AKLINK
 	cbStruct			As Integer
 	fReserved		As Boolean
-	pszKeywords		As ZString ptr
-	pszUrl			As ZString ptr
-	pszMsgText		As ZString ptr
-	pszMsgTitle		As ZString ptr
-	pszWindow		As ZString ptr
+	pszKeywords		As ZString Ptr
+	pszUrl			As ZString Ptr
+	pszMsgText		As ZString Ptr
+	pszMsgTitle		As ZString Ptr
+	pszWindow		As ZString Ptr
 	fIndexOnFail	As Boolean
 End Type
 
@@ -560,7 +560,7 @@ End Type
 #Define HH_KEYWORD_LOOKUP  &H000D
 
 Dim Shared hHtmlOcx As HINSTANCE
-Dim Shared pHtmlHelpProc As Any ptr
+Dim Shared pHtmlHelpProc As Any Ptr
 Dim Shared hHHwin As HWND
 Dim Shared hhaklink As HH_AKLINK
 
@@ -610,12 +610,12 @@ Const szNAME = "[*PRONAME*]"
 ' Addins
 Type ADDIN
 	hdll As HMODULE
-	lpdllfunc As Any ptr
+	lpdllfunc As Any Ptr
 	hooks As ADDINHOOKS
 End Type
 
 Type PRNPAGE
-	Page		As POINT
+	Page		As Point
 	margin	As RECT
 	pagelen	As Integer
 	inch		As Integer
@@ -631,8 +631,8 @@ Dim Shared nSplash As Integer=10
 Dim Shared hSplashBmp As HBITMAP
 Dim Shared wpos As WINPOS=(0,10,10,780,580,0,(0,0),120,160,(10,10),(10,10),0,(150,150),(10,10))
 Dim Shared ppage As PRNPAGE=((21000,29700),(1000,1000,1000,1000),66,0)
-Dim Shared psd As PAGESETUPDLG
-Dim Shared pd As PRINTDLG
+Dim Shared psd As PageSetupDlg
+Dim Shared pd As PrintDlg
 Dim Shared szApi As ZString*260
 Dim Shared novr As Integer
 Dim Shared nsel As Integer

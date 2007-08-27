@@ -52,4 +52,3 @@ Sub DoToolbar(ByVal hTbr As HWND,ByVal hInst As HINSTANCE)
 	SendMessage(hTbr,TB_ADDBUTTONS,35,Cast(LPARAM,@tbrbtn1))
 
 End Sub
-

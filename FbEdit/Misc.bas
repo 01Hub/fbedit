@@ -1,6 +1,6 @@
-Dim Shared lpOldEditProc As Any ptr
-Dim Shared lpOldParEditProc As Any ptr
-Dim Shared lpOldOutputProc As Any ptr
+Dim Shared lpOldEditProc As Any Ptr
+Dim Shared lpOldParEditProc As Any Ptr
+Dim Shared lpOldOutputProc As Any Ptr
 Dim Shared mdn As Integer
 Dim Shared prechrg As CHARRANGE
 
@@ -43,7 +43,7 @@ Sub AddApiFile(ByVal sFile As String,ByVal nType As Integer)
 			If Left(buff,Len(sApiItem))=sApiItem Then
 				buff=ad.AppPath & "\Api\" & buff
 				SendMessage(ah.hpr,PRM_ADDPROPERTYFILE,nType,Cast(Integer,@buff))
-				Exit while
+				Exit While
 			EndIf
 		Wend
 	Loop
@@ -220,7 +220,7 @@ Sub AutoBrace(ByVal hWin As HWND,ByVal nchr As Integer)
 End Sub
 
 Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim lp As Integer
 	Dim chrg As CHARRANGE
 
@@ -244,7 +244,7 @@ Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
 End Sub
 
 Sub CaseConvertWordFromList(ByVal hWin As HWND,ByVal cp As Integer,ByVal hMem As HGLOBAL,ByVal nCount As Integer)
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim lp As Integer
 	Dim chrg As CHARRANGE
 	Dim ms As MEMSEARCH
@@ -308,7 +308,7 @@ Sub CaseConvert(ByVal hWin As HWND)
 
 End Sub
 
-Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As ZString ptr,ByVal lpErr As Integer ptr) As String
+Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As ZString Ptr,ByVal lpErr As Integer Ptr) As String
 	Dim lx As Integer
 	Dim lz As Integer
 	Dim szIndent As ZString*512
@@ -351,7 +351,7 @@ Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As Z
 
 End Function
 
-Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZString ptr) As Integer
+Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZString Ptr) As Integer
 	Dim szIndent As ZString*512
 	Dim lx As Integer
 	Dim lz As Integer
@@ -383,7 +383,7 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 
 End Function
 
-Function AddIndent(ByVal n As Integer,ByVal lpszIndent As ZString ptr) As String
+Function AddIndent(ByVal n As Integer,ByVal lpszIndent As ZString Ptr) As String
 	Dim szIndent As ZString*512
 
 	lstrcpy(@szIndent,lpszIndent)
@@ -467,16 +467,16 @@ Sub FormatIndent(ByVal hWin As HWND)
 
 End Sub
 
-Function ReplaceType(ByVal lpProc As ZString ptr,ByVal nOwner As Integer,ByVal nLine As Integer) As Boolean
+Function ReplaceType(ByVal lpProc As ZString Ptr,ByVal nOwner As Integer,ByVal nLine As Integer) As Boolean
 	Dim x As Integer
 	Dim y As Integer
-	Dim lret As ZString ptr
+	Dim lret As ZString Ptr
 	Dim sItem As ZString*256
 	Dim sTest As ZString*256
 
 	sItem=buff
 	If Asc(sItem)=Asc(".") Then
-		lret=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nOwner,nLine))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nOwner,nLine))
 		If lret Then
 			lstrcpy(@sTest,lret)
 		EndIf
@@ -545,12 +545,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim hMnu As HMENU
 	Dim trng As TEXTRANGE
 	Dim hPar As HWND
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 	Dim ft As FINDTEXTEX
 	Dim tp As Integer
 	Dim lz As Integer
 	Dim isinp As ISINPROC
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 
 	Select Case uMsg
 		Case WM_CHAR
@@ -594,7 +594,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					lret=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 					chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lret,0)
 					buff=Chr(255) & Chr(1)
-					p=Cast(ZString ptr,SendMessage(hPar,EM_GETLINE,lret,Cast(LPARAM,@buff)))
+					p=Cast(ZString Ptr,SendMessage(hPar,EM_GETLINE,lret,Cast(LPARAM,@buff)))
 					buff[Cast(Integer,p)]=NULL
 					If fincliblist Or fincludelist Then
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("/"),CT_CHAR)
@@ -604,7 +604,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					EndIf
 					chrg.cpMin=chrg.cpMax-Len(buff)
-					p=Cast(ZString ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
+					p=Cast(ZString Ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
 					If p Then
 						SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 						lstrcpy(@buff,p)
@@ -695,7 +695,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								EndIf
 								isinp.nOwner=lx
 								isinp.lpszType=StrPtr("pxyzo")
-								p=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+								p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
 								If ReplaceType(p,lx,lp) Then
 									If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt)) Then
 										s=Left(buff,InStr(buff,"(")-1)
@@ -763,7 +763,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							isinp.nOwner=GetProjectFileID(hPar)
 						EndIf
 						isinp.lpszType=StrPtr("pxyzo")
-						p=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+						p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
 						If ftypelist Then
 							If wParam=VK_SPACE Or wParam=VK_TAB Then
 								HideList
@@ -1000,7 +1000,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					isinp.nOwner=GetProjectFileID(hPar)
 				EndIf
 				isinp.lpszType=StrPtr("pxyzo")
-				p=Cast(ZString ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+				p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
 				If p<>0 And (GetKeyState(VK_SHIFT) And &H80)<>0 Then
 					flocallist=TRUE
 				EndIf
@@ -1324,13 +1324,13 @@ End Sub
 
 
 Sub CheckMenu()
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 
 	CheckMenuItem(ah.hmenu,IDM_VIEW_OUTPUT,IIf(wpos.fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_PROJECT,IIf(wpos.fview And VIEW_PROJECT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_PROPERTY,IIf(wpos.fview And VIEW_PROPERTY,MF_CHECKED,MF_UNCHECKED))
 
-	lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hres,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
@@ -1343,10 +1343,10 @@ End Sub
 Sub EnableMenu()
 	Dim bm As Integer
 	Dim chrg As CHARRANGE
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 
 	If ah.hred=ah.hres Then
-		lpRESMEM=Cast(RESMEM ptr,GetWindowLong(ah.hred,0))
+		lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,0))
 
 		EnableDisable(FALSE,IDM_FILE_PRINT)
 
@@ -1677,14 +1677,14 @@ End Sub
 
 Function IsResOpen() As HWND
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	tci.mask=TCIF_PARAM
 	i=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If GetWindowLong(lpTABMEM->hedit,GWL_ID)=IDC_RESED Then
 				Return lpTABMEM->hedit
 			EndIf
@@ -1855,7 +1855,7 @@ Function OpenInclude() As String
 	Dim chrg As CHARRANGE
 	Dim x As Integer
 	Dim sItem As ZString*260
-	Dim p As ZString ptr
+	Dim p As ZString Ptr
 
 	If ah.hred<>0 And ah.hred<>ah.hres Then
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -1924,7 +1924,7 @@ Function ConvToTwips(ByVal lSize As Integer) As Integer
 	If ppage.inch Then
 		'Inches
 		Return (lSize*1440)\1000
-	endif
+	EndIf
 	'millimeters
 	Return (lSize*567)\1000
 

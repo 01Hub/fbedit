@@ -1,7 +1,7 @@
 
 Sub DelTab(ByVal hWin As HWND)
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim x As Integer
 
@@ -11,7 +11,7 @@ Sub DelTab(ByVal hWin As HWND)
 		curtab=-1
 		prevtab=-1
 		SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
-		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+		lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 		CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
 		If lpTABMEM->profileinx Then
 			WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,FALSE)
@@ -42,7 +42,7 @@ Sub DelTab(ByVal hWin As HWND)
 			EndIf
 			tci.mask=TCIF_PARAM
 			SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 			SetFocus(ah.hred)
 		Else
@@ -66,7 +66,7 @@ End Sub
 
 Sub AddTab(hEdt As HWND,ByVal lpFileName As String)
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim x As Integer
 	Dim hFile As HANDLE
@@ -113,13 +113,13 @@ End Sub
 
 Sub UpdateTab()
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	i=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
 	tci.mask=TCIF_PARAM
 	SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
-	lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+	lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 	buff=ad.filename
 	Do While InStr(buff,"\")
 		buff=Mid(buff,InStr(buff,"\")+1)
@@ -134,14 +134,14 @@ End Sub
 Sub SelectTab(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal nInx As Integer)
 	Dim tci As TCITEM
 	Dim hOld As HWND
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	tci.mask=TCIF_PARAM
 	i=0
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If (lpTABMEM->hedit=hEdit And hEdit<>0) Or (lpTABMEM->profileinx=nInx And nInx<>0) Then
 				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
 				hOld=ah.hred
@@ -179,7 +179,7 @@ Sub NextTab(ByVal fPrev As Boolean)
 	Dim n As Integer
 	Dim i As Integer
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 
 	n=SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0)
 	If n>1 Then
@@ -197,7 +197,7 @@ Sub NextTab(ByVal fPrev As Boolean)
 		EndIf
 		tci.mask=TCIF_PARAM
 		SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
-		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+		lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		SetFocus(ah.hred)
 	EndIf
@@ -208,14 +208,14 @@ Sub SwitchTab()
 	Dim n As Integer
 	Dim i As Integer
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 
 	n=SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0)
 	If n>1 Then
 		i=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
 		tci.mask=TCIF_PARAM
 		If SendMessage(ah.htabtool,TCM_GETITEM,prevtab,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 			SetFocus(ah.hred)
 		EndIf
@@ -249,7 +249,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		If tpe=0 Then
 			st=st Or STYLE_NOHILITE
 		EndIf
-		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any ptr,IDC_RAEDIT),hInstance,0)
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
 		UpdateEditOption(hTmp)
 		If tpe=2 Then
 			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
@@ -261,8 +261,8 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		EndIf
 		SendMessage(hTmp,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
 		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
-		lpOldParEditProc=Cast(Any ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
-		lpOldEditProc=Cast(Any ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
+		lpOldParEditProc=Cast(Any Ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
+		lpOldEditProc=Cast(Any Ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
 	EndIf
 	If edtopt.linenumbers Then
 		CheckDlgButton(hTmp,-2,TRUE)
@@ -360,14 +360,14 @@ Sub OpenAFile(ByVal hWin As HWND)
 	ofn.lStructSize=SizeOf(OPENFILENAME)
 	ofn.hwndOwner=GetOwner
 	ofn.hInstance=hInstance
-	ofn.lpstrFile=Cast(ZString ptr,hMem)
+	ofn.lpstrFile=Cast(ZString Ptr,hMem)
 	ofn.nMaxFile=32*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
 	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
-		lstrcpy(@pth,Cast(ZString ptr,hMem))
+		lstrcpy(@pth,Cast(ZString Ptr,hMem))
 		i=Len(pth)+1
-		lstrcpy(@s,Cast(ZString ptr,hMem+i))
+		lstrcpy(@s,Cast(ZString Ptr,hMem+i))
 		If Asc(s)=0 Then
 			' Open single file
 			OpenTheFile(pth)
@@ -379,7 +379,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 				AddTab(hTmp,sFile)
 				ReadTheFile(hTmp,sFile)
 				i=i+Len(s)+1
-				lstrcpy(@s,Cast(ZString ptr,hMem+i))
+				lstrcpy(@s,Cast(ZString Ptr,hMem+i))
 			Loop
 		EndIf
 	EndIf
@@ -438,17 +438,17 @@ End Function
 
 Sub UnlockAllTabs()
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	
 	tci.mask=TCIF_PARAM
 	i=0
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			SendMessage(lpTABMEM->hedit,REM_SETLOCK,FALSE,0)
 		Else
-			Exit while
+			Exit While
 		EndIf
 		i+=1
 	Wend
@@ -457,7 +457,7 @@ End Sub
 
 Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND,ByVal fCloseLocked As Boolean=FALSE) As Boolean
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim x As Integer
 
@@ -465,7 +465,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	i=0
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If lpTABMEM->hedit<>hWinDontClose And (SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0)<>1 Or fCloseLocked=TRUE) Then
 				ShowWindow(ah.hred,SW_HIDE)
 				ah.hred=lpTABMEM->hedit
@@ -508,7 +508,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		SetFocus(ah.hred)
 	ElseIf SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0) Then
 		SendMessage(ah.htabtool,TCM_GETITEM,0,Cast(Integer,@tci))
-		lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+		lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 		SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 		SetFocus(ah.hred)
 		Return TRUE
@@ -566,7 +566,7 @@ End Function
 
 Function SaveAllFiles(ByVal hWin As HWND) As Integer
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim nNotSaved As Integer
 	Dim hOld As HWND
@@ -577,7 +577,7 @@ Function SaveAllFiles(ByVal hWin As HWND) As Integer
 	i=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
 				If Left(lpTABMEM->filename,10)="(Untitled)" Then
 					hOld=ah.hred
@@ -608,14 +608,14 @@ End Function
 
 Function GetProjectFileID(ByVal hWin As HWND) As Integer
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 
 	tci.mask=TCIF_PARAM
 	i=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If lpTABMEM->hedit=hWin Then
 				Return lpTABMEM->profileinx
 			EndIf
@@ -630,7 +630,7 @@ End Function
 
 Sub UpdateAllTabs(ByVal nType As Integer)
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim x As Integer
 	Dim p As Integer
@@ -642,7 +642,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 	p=0
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			Select Case nType
 				Case 1
 					' Update options
@@ -716,7 +716,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim lret As Integer
 	Dim ht As TCHITTESTINFO
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 
 	Select Case uMsg
 		Case WM_LBUTTONDBLCLK
@@ -726,7 +726,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If lret<>-1 Then
 				tci.mask=TCIF_PARAM
 				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
-				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SendMessage(lpTABMEM->hedit,REM_SETLOCK,SendMessage(lpTABMEM->hedit,REM_GETLOCK,0,0) Xor 1,0)
 				SetFocus(ah.hred)
@@ -740,7 +740,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If lret<>-1 Then
 				tci.mask=TCIF_PARAM
 				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
-				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SetFocus(ah.hred)
 				Return 0
@@ -753,7 +753,7 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If lret<>-1 Then
 				tci.mask=TCIF_PARAM
 				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
-				lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SetFocus(ah.hred)
 				Return 0
@@ -776,7 +776,7 @@ End Function
 Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Integer i,n,id,Event
 	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM ptr
+	Dim lpTABMEM As TABMEM Ptr
 	Dim sItem As ZString*260
 	Dim hOld As HWND
 	Dim rect As RECT
@@ -789,7 +789,7 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			n=0
 			Do While TRUE
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
 						lstrcpy(@buff,lpTABMEM->filename)
 						sItem=GetFileName(buff,TRUE)
@@ -833,7 +833,7 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						ElseIf id=TRUE Then
 							id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_GETITEMDATA,i,0)
 							SendMessage(ah.htabtool,TCM_GETITEM,id,Cast(Integer,@tci))
-							lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+							lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 							If Left(lpTABMEM->filename,10)="(Untitled)" Then
 								hOld=ah.hred
 								ah.hred=lpTABMEM->hedit
@@ -886,4 +886,3 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Return TRUE
 
 End Function
-

@@ -74,7 +74,7 @@ Sub GetMakeOption()
 
 End Sub
 
-Type MAKE
+Type Make
 	hThread	As HANDLE
 	hrd		As HANDLE
 	hwr		As HANDLE
@@ -82,8 +82,8 @@ Type MAKE
 	uExit		As Integer
 End Type
 
-Function MakeThreadProc(ByVal Param As ZString ptr) As Integer
-	Dim makeinf As MAKE
+Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
+	Dim makeinf As Make
 	Dim sat As SECURITY_ATTRIBUTES
 	Dim startupinfo As STARTUPINFO
 	Dim lret As Integer
@@ -134,7 +134,7 @@ Function MakeThreadProc(ByVal Param As ZString ptr) As Integer
 End Function
 
 Function MakeRun(ByVal sFile As String,ByVal fDebug As Boolean) As Integer
-	Dim fval As ZString ptr
+	Dim fval As ZString Ptr
 
 	GetFullPathName(@sFile,260,@buff,@fval)
 	buff=RemoveFileExt(buff) & ".exe"
@@ -251,7 +251,7 @@ Function GetErrLine(ByVal buff As String,ByVal fQuickRun As Boolean) As Integer
 				EndIf
 			Next x
 			If fQuickRun=FALSE Then
-				GetFullPathName(@buffer,SizeOf(buffer),@buffer,Cast(LPTSTR ptr,@x))
+				GetFullPathName(@buffer,SizeOf(buffer),@buffer,Cast(LPTSTR Ptr,@x))
 				OpenTheFile(buffer)
 			EndIf
 			Return y
@@ -462,7 +462,7 @@ Function CompileModules(ByVal sMake As String) As Integer
 	If edtopt.autosave Then
 		bm=SaveAllFiles(ah.hwnd)
 	Else
-		bm=DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGSAVESELECTION),ah.hwnd,@SaveAllProc,NULL)
+		bm=DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGSAVESELECTION),ah.hwnd,@SaveAllProc,NULL)
 	EndIf
 	If bm=0 Then
 		bm=wpos.fview And VIEW_OUTPUT
@@ -505,7 +505,7 @@ Function Compile(ByVal sMake As String) As Integer
 	If edtopt.autosave Then
 		bm=SaveAllFiles(ah.hwnd)
 	Else
-		bm=DialogBoxParam(hInstance,Cast(ZString ptr,IDD_DLGSAVESELECTION),ah.hwnd,@SaveAllProc,NULL)
+		bm=DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGSAVESELECTION),ah.hwnd,@SaveAllProc,NULL)
 	EndIf
 	If bm=0 Then
 		bm=wpos.fview And VIEW_OUTPUT

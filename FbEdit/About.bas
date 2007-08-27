@@ -4,7 +4,7 @@
 #Define IDC_URL2								1003
 #Define IDC_URL3								1004
 
-Dim Shared OldUrlProc As Any ptr
+Dim Shared OldUrlProc As Any Ptr
 Dim Shared fMouseOver As Boolean
 Dim Shared hUrlFont As HFONT
 Dim Shared hUrlFontU As HFONT
@@ -57,7 +57,7 @@ Function AboutDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPAR
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGABOUT)
 			' Subclass the control
-			OldUrlProc=Cast(Any ptr,SetWindowLong(GetDlgItem(hWin,IDC_URL1),GWL_WNDPROC,Cast(Integer,@UrlProc)))
+			OldUrlProc=Cast(Any Ptr,SetWindowLong(GetDlgItem(hWin,IDC_URL1),GWL_WNDPROC,Cast(Integer,@UrlProc)))
 			SetWindowLong(GetDlgItem(hWin,IDC_URL2),GWL_WNDPROC,Cast(Integer,@UrlProc))
 			SetWindowLong(GetDlgItem(hWin,IDC_URL3),GWL_WNDPROC,Cast(Integer,@UrlProc))
 			' Get dialogs font
@@ -104,4 +104,3 @@ Function AboutDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPAR
 	Return TRUE
 
 End Function
-

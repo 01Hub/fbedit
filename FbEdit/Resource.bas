@@ -1,6 +1,6 @@
 
 Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim lpRESMEM As RESMEM ptr
+	Dim lpRESMEM As RESMEM Ptr
 	Dim rect As RECT
 	Dim As Integer nInx,x,y
 	Dim pt As Point
@@ -38,11 +38,11 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Wend
 			'
 		Case WM_DESTROY
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			GlobalFree(lpRESMEM)
 			'
 		Case WM_SIZE
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			GetClientRect(hWin,@rect)
 			nBtn=SendMessage(lpRESMEM->hResEd,DEM_GETBUTTONCOUNT,0,0)
 			tbxwt=53
@@ -55,31 +55,31 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			MoveWindow(lpRESMEM->hProperty,rect.right-180,rect.bottom/2,180,rect.bottom/2,TRUE)
 			'
 		Case EM_GETMODIFY
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hProject,PRO_GETMODIFY,0,0)
 			'
 		Case EM_SETMODIFY
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hProject,PRO_SETMODIFY,wParam,0)
 			'
 		Case EM_UNDO
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hResEd,DEM_UNDO,0,0)
 			'
 		Case WM_CUT
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hResEd,DEM_CUT,0,0)
 			'
 		Case WM_COPY
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hResEd,DEM_COPY,0,0)
 			'
 		Case WM_PASTE
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hResEd,DEM_PASTE,0,0)
 			'
 		Case WM_CLEAR
-			lpRESMEM=Cast(RESMEM ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
 			Return SendMessage(lpRESMEM->hResEd,DEM_DELETECONTROLS,0,0)
 			'
 		Case WM_NOTIFY
@@ -118,4 +118,3 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Return DefWindowProc(hWin,uMsg,wParam,lParam)
 
 End Function
-
