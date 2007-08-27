@@ -67,11 +67,11 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				nLn=SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp))
 				If nLn Then
 					lstrcpy(@buffer,Cast(ZString Ptr,nLn))
-					nLn=nLn+lstrlen(Cast(ZString Ptr,nLn))+1
+					nLn=nLn+Len(*Cast(ZString Ptr,nLn))+1
 					lstrcat(@buffer,StrPtr("("))
 					lstrcat(@buffer,Cast(ZString Ptr,nLn))
 					lstrcat(@buffer,StrPtr(") "))
-					nLn=nLn+lstrlen(Cast(ZString Ptr,nLn))+1
+					nLn=nLn+Len(*Cast(ZString Ptr,nLn))+1
 					lstrcat(@buffer,Cast(ZString Ptr,nLn))
 				Else
 					buffer=""

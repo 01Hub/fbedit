@@ -129,13 +129,16 @@ End Function
 Sub GetItems(ByVal ntype As Integer)
 	Dim x As Integer
 	Dim sItem As ZString*256
+	Dim lps As ZString Ptr
 
+	lps=@s
 	x=1
 	Do While x
 		x=InStr(s,",")
 		If x Then
 			lstrcpyn(ccpos,@s,x)
-			s=Mid(s,x+1)
+			s=*(lps+x)
+'			s=Mid(s,x+1)
 		Else
 			lstrcpy(ccpos,@s)
 		EndIf
@@ -191,7 +194,7 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 					Case Asc("d")
 						lstrcpy(ccpos,Cast(ZString Ptr,lret))
 						lstrcat(ccpos,@szColon)
-						lret=lret+lstrlen(Cast(ZString Ptr,lret))+1
+						lret=lret+Len(*Cast(ZString Ptr,lret))+1
 						lstrcat(ccpos,Cast(ZString Ptr,lret))
 						lret=Cast(Integer,ccpos)
 						ccpos=ccpos+Len(*ccpos)+1

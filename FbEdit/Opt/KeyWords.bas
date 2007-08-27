@@ -172,7 +172,7 @@ Sub SetHiliteWordsFromApi(ByVal hWin As HWND)
 	' Api constants
 	lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("A")),Cast(Integer,StrPtr("")))
 	Do While lret
-		lret=lret+lstrlen(Cast(ZString Ptr,lret))+1
+		lret=lret+Len(*Cast(ZString Ptr,lret))+1
 		lstrcpy(@buff,Cast(ZString Ptr,lret))
 '''*** This is a bit slow
 '		lret=1

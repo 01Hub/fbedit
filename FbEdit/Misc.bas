@@ -671,7 +671,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
 								tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
 								If tti.lpszDesc Then
-									tti.lpszDesc=tti.lpszDesc+lstrlen(tti.lpszDesc)+1
+									tti.lpszDesc=tti.lpszDesc+Len(*tti.lpszDesc)+1
 								EndIf
 								tti.novr=tt.novr
 								GetCaretPos(@pt)

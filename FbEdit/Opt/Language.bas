@@ -84,7 +84,7 @@ Nxt:
 		If mii.wID<>0 And buff<>"(Empty)" Then
 			szID=Str(mii.wID)
 			buff=FindString(ad.hLangMem,szApp,szID)
-			If lstrlen(@buff) Then
+			If Len(buff) Then
 				mii.fType=MFT_STRING
 				SetMenuItemInfo(hMnu,nPos,TRUE,@mii)
 			EndIf
