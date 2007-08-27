@@ -43,6 +43,7 @@
 #Define IDC_CHKAUTOLOAD						4044
 #Define IDC_CHKAUTOWIDTH					4045
 #Define IDC_CHKAUTOINCLUDE					4046
+#Define IDC_CHKTOOLTIP						4048
 #define IDC_CHKCLOSEONLOCKS				4047
 #Define IDC_RBNCASENONE						4040
 #Define IDC_RBNCASEMIXED					4041
@@ -435,7 +436,8 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	edtopt.autowidth=IsDlgButtonChecked(hWin,IDC_CHKAUTOWIDTH)
 	edtopt.autoinclude=IsDlgButtonChecked(hWin,IDC_CHKAUTOINCLUDE)
 	edtopt.closeonlocks=IsDlgButtonChecked(hWin,IDC_CHKCLOSEONLOCKS)
-	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"444444444444444444",@edtopt,FALSE)
+	edtopt.tooltip=IsDlgButtonChecked(hWin,IDC_CHKTOOLTIP)
+	SaveToIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444444",@edtopt,FALSE)
 	SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"444444444444444",@wpos,FALSE)
 	' Save theme
 	sItem=String(32,0)
@@ -656,6 +658,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			CheckDlgButton(hWin,IDC_CHKAUTOWIDTH,edtopt.autowidth)
 			CheckDlgButton(hWin,IDC_CHKAUTOINCLUDE,edtopt.autoinclude)
 			CheckDlgButton(hWin,IDC_CHKCLOSEONLOCKS,edtopt.closeonlocks)
+			CheckDlgButton(hWin,IDC_CHKTOOLTIP,edtopt.tooltip)
 			' Fonts
 			GetObject(ah.rafnt.hFont,SizeOf(LOGFONT),@lfnt)
 			hCFont=CreateFontIndirect(@lfnt)
@@ -861,6 +864,9 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKAUTOINCLUDE
+							EnableWindow(hBtnApply,TRUE)
+							'
+						Case IDC_CHKTOOLTIP
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKCLOSEONLOCKS

@@ -643,62 +643,63 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM ptr,tci.lParam)
-			If nType=1 Then
-				' Update options
-				If lpTABMEM->hedit<>ah.hres Then
-					UpdateEditOption(lpTABMEM->hedit)
-				EndIf
-			ElseIf nType=2 Then
-				' Clear errors
-				If lpTABMEM->hedit<>ah.hres Then
-					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,7)
-				EndIf
-			ElseIf nType=3 Then
-				If lpTABMEM->hedit<>ah.hres Then
-					x=GetWindowLong(lpTABMEM->hedit,GWL_USERDATA)
-					If x=2 Or (x=1 And lpTABMEM->hedit<>ah.hred) Then
-						' Update properties
-						p=p+ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
+			Select Case nType
+				Case 1
+					' Update options
+					If lpTABMEM->hedit<>ah.hres Then
+						UpdateEditOption(lpTABMEM->hedit)
 					EndIf
-				EndIf
-			ElseIf nType=4 Then
-				x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
-				If x<>(lpTABMEM->filestate And 1) Then
-					lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
-					lpTABMEM->filestate=lpTABMEM->filestate Or x
-					CallAddins(ah.hwnd,AIM_FILESTATE,i,Cast(Integer,lpTABMEM),HOOK_FILESTATE)
-				EndIf
-			ElseIf nType=5 Then
-				hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
-				If hFile<>INVALID_HANDLE_VALUE Then
-					GetFileTime(hFile,NULL,NULL,@ft)
-					CloseHandle(hFile)
-					If ft.dwLowDateTime<>lpTABMEM->ft.dwLowDateTime Then
-						' File changed outside editor
-						fChangeNotification=-1
-						lstrcpy(@buff,lpTABMEM->filename)
-						buff=buff & CR & GetInternalString(IS_FILE_CHANGED_OUTSIDE_EDITOR) & CR & GetInternalString(IS_REOPEN_THE_FILE)
-						If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
-							' Reload file
-							ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
-							lstrcpy(@buff,lpTABMEM->filename)
-							SetFileInfo(lpTABMEM->hedit,buff)
+				Case 2
+					' Clear errors
+					If lpTABMEM->hedit<>ah.hres Then
+						SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,7)
+					EndIf
+				Case 3
+					If lpTABMEM->hedit<>ah.hres Then
+						x=GetWindowLong(lpTABMEM->hedit,GWL_USERDATA)
+						If x=2 Or (x=1 And lpTABMEM->hedit<>ah.hred) Then
+							' Update properties
+							p=p+ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
 						EndIf
-						lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
-						lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
-						fChangeNotification=10
 					EndIf
-				EndIf
-			ElseIf nType=6 Then
-				' Clear find
-				If lpTABMEM->hedit<>ah.hres Then
-					SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,3)
-				EndIf
-			EndIf
+				Case 4
+					x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+					If x<>(lpTABMEM->filestate And 1) Then
+						lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
+						lpTABMEM->filestate=lpTABMEM->filestate Or x
+						CallAddins(ah.hwnd,AIM_FILESTATE,i,Cast(Integer,lpTABMEM),HOOK_FILESTATE)
+					EndIf
+				Case 5
+					hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+					If hFile<>INVALID_HANDLE_VALUE Then
+						GetFileTime(hFile,NULL,NULL,@ft)
+						CloseHandle(hFile)
+						If ft.dwLowDateTime<>lpTABMEM->ft.dwLowDateTime Then
+							' File changed outside editor
+							fChangeNotification=-1
+							lstrcpy(@buff,lpTABMEM->filename)
+							buff=buff & CR & GetInternalString(IS_FILE_CHANGED_OUTSIDE_EDITOR) & CR & GetInternalString(IS_REOPEN_THE_FILE)
+							If MessageBox(ah.hwnd,@buff,@szAppName,MB_YESNO Or MB_ICONEXCLAMATION)=IDYES Then
+								' Reload file
+								ReadTheFile(lpTABMEM->hedit,lpTABMEM->filename)
+								lstrcpy(@buff,lpTABMEM->filename)
+								SetFileInfo(lpTABMEM->hedit,buff)
+							EndIf
+							lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
+							lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
+							fChangeNotification=10
+						EndIf
+					EndIf
+				Case 6
+					' Clear find
+					If lpTABMEM->hedit<>ah.hres Then
+						SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,3)
+					EndIf
+			End Select
 		Else
 			Exit Do
 		EndIf
-		i=i+1
+		i+=1
 	Loop
 	If nType=3 And p>0 Then
 		SendMessage(ah.hpr,WM_SETREDRAW,FALSE,0)

@@ -69,12 +69,7 @@ Lang=English (default), By FbEdit team
 2=Cancel
 ;--------------------------------------------------------------------------
 [3000]
-3000=FreeBASIC editor 1.0.5.6
 1=OK
-1001=FreeBASIC editor (C) KetilO 2007\r\n\r\nradasmide@hotmail.com
-1002=http://www.radasm.com/fbedit/
-1003=http://www.assembler.ca/radasm/fbedit/
-1004=http://fbedit.freebasic.net/
 ;--------------------------------------------------------------------------
 [3200]
 1=OK
@@ -130,6 +125,7 @@ Lang=English (default), By FbEdit team
 4039=Active
 4046=Include/Inclib
 4045=Auto Size
+4048=Code Tooltip
 4063=Case Convert
 4040=None
 4041=Mixed Case
@@ -353,9 +349,9 @@ Lang=English (default), By FbEdit team
 10106=&Files
 10107=&Modules
 10018=Set Selected as &Main File
+10019=Toggle Selected as Module / File
 10108=&Remove Selected
 10109=Rename Selected
-10019=Toggle Selected as Module / File
 10110=Project &Options
 10111=Create &Template
 10121=&Resource

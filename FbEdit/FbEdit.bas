@@ -42,23 +42,25 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim buffer As ZString*260
 	Dim chrg As CHARRANGE
 	Dim nLn As Integer
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM ptr
 	Dim isinp As ISINPROC
 
 	If fTimer Then
-		fTimer=fTimer-1
+		fTimer-=1
 		If fTimer=0 Then
 			EnableMenu
 			CheckMenu
 			If ah.hred<>0 And ah.hred<>ah.hres Then
-				SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
-				nLn=SendMessage(ah.hred,EM_LINEFROMCHAR,chrg.cpMax,0)
-				chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLn,0)
-				wsprintf(@buffer,@fmt,nLastLine+1,chrg.cpMax-chrg.cpMin+1)
+				wsprintf(@buffer,@fmt,nLastLine+1,nCaretPos+1)
 				SetWindowText(ah.hsbr,@buffer)
-				isinp.nLine=nLn
+				isinp.nLine=nLastLine
 				isinp.lpszType=StrPtr("p")
 				If fProject Then
-					isinp.nOwner=GetProjectFileID(ah.hred)
+					tci.mask=TCIF_PARAM
+					SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
+					lpTABMEM=Cast(TABMEM ptr,tci.lParam)
+					isinp.nOwner=lpTABMEM->profileinx
 				Else
 					isinp.nOwner=Cast(Integer,ah.hred)
 				EndIf
@@ -272,7 +274,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
 			lpOldOutputProc=Cast(Any ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
-			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"444444444444444444",@edtopt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"4444444444444444444",@edtopt,FALSE)
 			' Get find history
 			LoadFindHistory
 			' Create fonts
@@ -1438,6 +1440,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE ptr,lParam)
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred Then
+				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
 					If bm=1 Then

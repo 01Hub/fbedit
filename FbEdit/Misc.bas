@@ -679,8 +679,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
 								pt.x=pt.x-wp
 								SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
-								SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
-								InvalidateRect(ah.htt,NULL,TRUE)
+								If edtopt.tooltip Then
+									SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+									InvalidateRect(ah.htt,NULL,TRUE)
+								EndIf
 							EndIf
 						Else
 							If InStr(buff,".") And InStr(buff,".")<InStr(buff,"(") Then
