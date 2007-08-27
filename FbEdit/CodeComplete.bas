@@ -222,7 +222,7 @@ Sub UpdateList(ByVal lpProc As ZString ptr)
 				GetItems(9)
 			EndIf
 		EndIf
-		SendMessage(ah.hcc,CCM_SORT,0,0)
+		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
 	EndIf
 

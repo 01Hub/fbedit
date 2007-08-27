@@ -14,7 +14,7 @@ CCM_SETTOPINDEX		equ WM_USER+8			;wParam=TopIndex, lParam=0, Returns nothing
 CCM_GETITEMRECT		equ WM_USER+9			;wParam=Index, lParam=lpRECT, Returns nothing
 CCM_SETVISIBLE		equ WM_USER+10			;wParam=0, lParam=0, Returns nothing
 CCM_FINDSTRING		equ WM_USER+11			;wParam=Start Index, lParam=lpString, Returns Index or -1
-CCM_SORT			equ WM_USER+12			;wParam=Descending (TRUE/FALSE), lParam=0, Returns nothing
+CCM_SORT			equ WM_USER+12			;wParam=Descending (TRUE/FALSE), lParam=Delete equal (TRUE/FALSE), Returns nothing
 CCM_GETCOLOR		equ WM_USER+13			;wParam=0, lParam=lpCC_COLOR, Returns nothing
 CCM_SETCOLOR		equ WM_USER+14			;wParam=0, lParam=lpCC_COLOR, Returns nothing
 CCM_ADDLIST			equ WM_USER+15			;wParam=0, lParam=lpCC_ADDLIST, Returns nothing

@@ -126,6 +126,24 @@ CompareStr proc lpStr1:DWORD,lpStr2:DWORD
 
 CompareStr endp
 
+CompareStrMatchCase proc lpStr1:DWORD,lpStr2:DWORD
+
+	mov		ecx,lpStr1
+	mov		edx,lpStr2
+  @@:
+	mov		al,[ecx]
+	mov		ah,[edx]
+	.if al && ah
+		inc		ecx
+		inc		edx
+		sub		al,ah
+		je		@b
+	.endif
+	movzx	eax,ax
+	ret
+
+CompareStrMatchCase endp
+
 CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	pt:POINT

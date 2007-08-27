@@ -261,6 +261,28 @@
 		.if eax
 			dec		eax
 			invoke QuickSort,[ebx].RACC.lpmem,0,eax,wParam
+			.if lParam
+				push	esi
+				push	edi
+				xor		esi,esi
+				mov		edi,[ebx].RACC.count
+				dec		edi
+				.while esi<edi
+					mov		edx,[ebx].RACC.lpmem
+					mov		edx,[edx+esi*8]
+					inc		esi
+					mov		ecx,[ebx].RACC.lpmem
+					mov		ecx,[ecx+esi*8]
+					invoke CompareStrMatchCase,ecx,edx
+					.if !eax
+						invoke SendMessage,hWin,CCM_DELITEM,esi,0
+						dec		edi
+						dec		esi
+					.endif
+				.endw
+				pop		edi
+				pop		esi
+			.endif
 			.if [ebx].RACC.fredraw
 				invoke InvalidateRect,hWin,NULL,TRUE
 			.endif

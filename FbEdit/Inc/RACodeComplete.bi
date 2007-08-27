@@ -14,7 +14,7 @@
 #Define CCM_GETITEMRECT		WM_USER+9			' wParam=Index, lParam=lpRECT, Returns nothing
 #Define CCM_SETVISIBLE		WM_USER+10			' wParam=0, lParam=0, Returns nothing
 #Define CCM_FINDSTRING		WM_USER+11			' wParam=Start Index, lParam=lpString, Returns Index or -1
-#Define CCM_SORT				WM_USER+12			' wParam=Descending (TRUE/FALSE), lParam=0, Returns nothing
+#Define CCM_SORT				WM_USER+12			' wParam=Descending (TRUE/FALSE), lParam=delete equal (TRUE/FALSE), Returns nothing
 #Define CCM_GETCOLOR			WM_USER+13			' wParam=0, lParam=lpCC_COLOR, Returns nothing
 #Define CCM_SETCOLOR			WM_USER+14			' wParam=0, lParam=lpCC_COLOR, Returns nothing
 #Define CCM_ADDLIST			WM_USER+15			' wParam=0, lParam=lpCC_ADDLIST, Returns nothing
