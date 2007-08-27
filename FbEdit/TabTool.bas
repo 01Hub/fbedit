@@ -643,7 +643,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-			Select Case nType
+			Select Case As Const nType
 				Case 1
 					' Update options
 					If lpTABMEM->hedit<>ah.hres Then

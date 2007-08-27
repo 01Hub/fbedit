@@ -202,7 +202,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
 			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
-			nSize=Len(*Cast(ZString Ptr,hMem))                                       '''
+			nSize=Len(*Cast(ZString Ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
 			CloseHandle(hFile)
 			hFile=CreateFile(szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
