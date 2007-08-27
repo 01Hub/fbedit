@@ -657,7 +657,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				Case 3
 					If lpTABMEM->hedit<>ah.hres Then
 						x=GetWindowLong(lpTABMEM->hedit,GWL_USERDATA)
-						If x=2 Or (x=1 And lpTABMEM->hedit<>ah.hred) Then
+						If (x=1 And lpTABMEM->hedit<>ah.hred) Or x=2 Then
 							' Update properties
 							p=p+ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
 						EndIf
