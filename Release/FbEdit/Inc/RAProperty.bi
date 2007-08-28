@@ -130,21 +130,21 @@ End Type
 Type ISINPROC
 	nLine As Integer
 	nOwner As Integer
-	lpszType As ZString ptr
+	lpszType As ZString Ptr
 End Type
 
 #Define TT_NOMATCHCASE			1
 #Define TT_PARANTESES			2
 
 Type OVERRIDE
-	lpszParam As ZString ptr
-	lpszRetType As ZString ptr
+	lpszParam As ZString Ptr
+	lpszRetType As ZString Ptr
 End Type
 
 Type TOOLTIP
-	lpszType As ZString ptr
-	lpszLine As ZString ptr
-	lpszApi As ZString ptr
+	lpszType As ZString Ptr
+	lpszLine As ZString Ptr
+	lpszApi As ZString Ptr
 '	lpszParam As ZString ptr
 	nPos As Integer
 '	lpszRetType As ZString ptr
@@ -154,8 +154,8 @@ End Type
 
 Type MEMSEARCH
 	lpMem As HGLOBAL
-	lpFind As ZString ptr
-	lpCharTab As Any ptr
+	lpFind As ZString Ptr
+	lpCharTab As Any Ptr
 	fr As Integer
 End Type
 
