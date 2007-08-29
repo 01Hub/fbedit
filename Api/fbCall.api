@@ -120,7 +120,7 @@ CondDestroy,handle:Any Ptr
 CondSignal,handle:Any Ptr
 CondWait,handle:Any Ptr
 Cos,number:Double|Double
-CPtr,DataType Ptr, expression
+CPtr,DataType Ptr,expression
 CShort,expression:datatype|Short
 CSign,expression
 CSng,expression:datatype|Single
@@ -182,7 +182,7 @@ Hex,number:Integer|String
 Hex,number:Integer,digits:Integer|String
 Hex,number:Byte|String
 Hex,number:LongInt|String
-Hex,number:LongInt, digits:Integer|String
+Hex,number:LongInt,digits:Integer|String
 Hex,number:Short|String
 Hour,date_serial:Double|Integer
 ;identifier( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr |As UInteger
@@ -213,7 +213,7 @@ Lof,filenum:Integer|UInteger
 Log,number:Double|Double
 LPos,printer:Integer|Integer
 LSet,ByRef dst:String,ByRef src:String
-LSet,dst:WString Ptr, src:WString Ptr
+LSet,dst:WString Ptr,src:WString Ptr
 LTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
 LTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
 Mid,ByRef Str:String,Start:Integer|String
@@ -233,7 +233,7 @@ MkShort,number:Short|String
 Month,date_serial:Double|Integer
 MonthName,Month:Integer,abbreviate:Integer=0|String
 MultiKey,scancode:Integer|Integer
-MutexCreate|Any Ptr
+MutexCreate,|Any Ptr
 MutexDestroy,id:Any Ptr
 MutexLock,id:Any Ptr
 MutexUnlock,id:Any Ptr
@@ -347,7 +347,7 @@ ValULng,ByRef strnum:String|ULongInt
 ValULng,ByRef strnum:WString|ULongInt
 Wait,port:UShort,and_mask:Integer,xor_mask:Integer=0|Integer
 WBin,number:Integer|WString
-WBin,number:Integer, digits:Integer|WString
+WBin,number:Integer,digits:Integer|WString
 WBin,number:Byte|WString
 WBin,number:Byte,digits:Integer|WString
 WBin,number:LongInt|WString
