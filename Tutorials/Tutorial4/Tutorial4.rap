@@ -1,20 +1,20 @@
 [Project]
 Assembler=html
 Type=html
-Description=FbEdit Tutorial#3
+Description=FbEdit Tutorial#4
 Backup=$P\Bak\
 Group=0
 GroupExpand=1
 [MakeFiles]
-0=Tutorial3.rap
-1=Tutorial3.html
-2=Tutorial3.htm
+0=Tutorial4.rap
+1=Tutorial4.html
+2=Tutorial4.htm
 [MakeDef]
 Menu=0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 1=
 2=
 3=
-4=0,0,"\Program Files\Internet Explorer\iexplore.exe",$.html
+4=0,0,"\Program Files\Internet Explorer\iexplore.exe",$.htm
 5=
 6=
 7=
@@ -22,7 +22,7 @@ Menu=0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 Group=Added files,Assembly,Resources,Misc,Modules
 1=1
 [Files]
-1=tut3.html
+1=tut4.htm
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -68,7 +68,7 @@ ProductVer4Range=0
 [Collapse]
 1=
 [Size]
-1=0,0,0,0,6518
+1=0,0,0,0,5301
 [BookMark]
 0=
 1=
@@ -83,5 +83,3 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="&nbsp;"
-2="	"
