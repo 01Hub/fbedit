@@ -35,7 +35,7 @@ Const szList As String=!"[1100] Goto Line\0" _
 							  !"[2200] Dialog Options Page#2\0" _
 							  !"[2300] Dialog Options Page#3\0" _
 							  !"[2500] Find ...\0" _
-							  !"[3000] FreeBASIC editor 1.0.5.6\0" _
+							  !"[3000] About dialog\0" _
 							  !"[3200] Menu Options\0" _
 							  !"[4000] Code Editor Options\0" _
 							  !"[4100] External Files Option\0" _

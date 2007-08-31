@@ -1,5 +1,6 @@
 Whats new:
 ----------
+1.0.5.7
 1.0.5.6
 o Added option to show Code Tooltip.
 o Added Simple Property option to dialog editor.
@@ -7,7 +8,8 @@ o Added multiselect properties to dialog editor.
 o Added Set Selected as Main File to project menu.
 o Added Toggle Selected as Module / File to project menu.
 o FbEdit is now ready for language translations.
-o Added tutorial 1,2 and 3 to FbEdit.chm help file.
+  Included are Italian, Norwegian and Spanish translations.
+o Added tutorial 1,2,3 and 4 to FbEdit.chm help file.
 o Fixed code complete bugs.
 o Fixed bugs with asm block
 	In fbedit.ini section [Block] add '19=asm,End Asm,,,64'

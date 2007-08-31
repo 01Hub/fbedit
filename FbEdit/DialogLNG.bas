@@ -1,4 +1,5 @@
 Dim Shared hLngDlg As HWND
+Dim Shared dlgID As Integer
 
 Function DumpEnumProc(ByVal hWin As HWND,ByVal lParam As LPARAM) As Boolean
 	Dim buff As ZString*256
@@ -11,12 +12,16 @@ Function DumpEnumProc(ByVal hWin As HWND,ByVal lParam As LPARAM) As Boolean
 		if buff<>"" And buff<>"0" And buff<>"..." Then
 			nInx=GetWindowLong(hWin,GWL_ID)
 			If nInx<>-1 Then
-				ConvertTo(@buff)
-				szID=Str(nInx)
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("=")))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
+				If dlgID=3000 And nInx<>1 Then
+					' About dialog
+				Else
+					ConvertTo(@buff)
+					szID=Str(nInx)
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("=")))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
+				EndIf
 			EndIf
 		EndIf
 	EndIf
@@ -38,16 +43,20 @@ Function DumpDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 '			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
 '			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
 			szID=Str(lParam)
+			dlgID=lParam
 			SendMessage(hWin,WM_GETTEXT,SizeOf(buff),Cast(LPARAM,@buff))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("[")))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"]\13\10")))
 			If buff<>"" Then
-				ConvertTo(@buff)
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("=")))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
-				SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
+				' Dont convert about dialog
+				If dlgID<>3000 Then
+					ConvertTo(@buff)
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szID))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr("=")))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
+					SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,StrPtr(!"\13\10")))
+				EndIf
 			EndIf
 			EnumChildWindows(hWin,Cast(ENUMWINDOWSPROC,@DumpEnumProc),Cast(LPARAM,hWin))
 			SendMessage(hEdt,EM_REPLACESEL,FALSE,Cast(LPARAM,@szDivider))
