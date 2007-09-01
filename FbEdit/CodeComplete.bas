@@ -492,7 +492,6 @@ Sub BuildDirList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nTy
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260
 	Dim subdir As ZString*260
-	Dim sItem As ZString*260
 	Dim l As Integer
 	Dim ls As Integer
 
@@ -535,7 +534,7 @@ Sub BuildDirList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nTy
 End Sub
 
 Function ExtractDirFile(ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr) As Integer
-	Dim As UByte Ptr ps, pd
+	Dim As UByte Ptr ps,pd
 	
 	ps=lpsrc
 	pd=lpdst
@@ -602,4 +601,3 @@ Sub UpdateInclibList()
 	EndIf
 
 End Sub
-
