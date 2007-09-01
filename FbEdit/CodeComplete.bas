@@ -1,3 +1,4 @@
+Dim Shared As String dirlist
 
 Sub SetupProperty()
 	SendMessage(ah.hpr,PRM_SETCHARTAB,0,Cast(LPARAM,ad.lpCharTab))
@@ -486,7 +487,7 @@ Sub IsStructList()
 
 End Sub
 
-Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nType As Integer)
+Sub BuildDirList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nType As Integer)
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
 	Dim buffer As ZString*260
@@ -497,22 +498,23 @@ Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVa
 
 	lstrcpy(@buffer,lpDir)
 	lstrcpy(@subdir,lpSub)
-	buffer=buffer & "\*.*"
+	lstrcat(@buffer,"\*")
 	hwfd=FindFirstFile(@buffer,@wfd)
 	If hwfd<>INVALID_HANDLE_VALUE Then
 		While TRUE
 			If wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY Then
 				lstrcpy(@s,@wfd.cFileName)
 				If Asc(s)<>Asc(".") Then
-					buffer=Left(buffer,Len(buffer)-3)
+					buffer[Len(buffer)-1]=0
 					l=Len(buffer)
 					lstrcat(@buffer,@wfd.cFileName)
 					ls=Len(subdir)
 					lstrcat(@subdir,@wfd.cFileName)
-					subdir=subdir & "/"
-					UpdateIncludeList(buffer,@subdir,nType)
-					buffer=Left(buffer,l) & "*.*"
-					subdir=Left(subdir,ls)
+					lstrcat(@subdir,"/")
+					BuildDirList(@buffer,@subdir,nType)
+					buffer[l]=0
+					lstrcat(@buffer,"*")
+					subdir[ls]=0
 				EndIf
 			Else
 				If lpSub Then
@@ -521,15 +523,7 @@ Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVa
 					s=""
 				EndIf
 				lstrcat(@s,@wfd.cFileName)
-				If UCase(Right(s,3))=".BI" Then
-					lstrcpyn(@sItem,@s,Len(buff)+1)
-					If lstrcmpi(@sItem,@buff)=0 Or Len(sItem)=0 Then
-						lstrcpy(ccpos,@s)
-						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
-						ccpos=ccpos+Len(*ccpos)+1
-					EndIf
-				EndIf
-				fincludelist=TRUE
+				dirlist+=Str(nType)+","+LCase(s)+"#"
 			EndIf
 			If FindNextFile(hwfd,@wfd)=FALSE Then
 				Exit While
@@ -537,6 +531,44 @@ Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVa
 		Wend
 		FindClose(hwfd)
 	EndIf
+
+End Sub
+
+Function ExtractDirFile(ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr) As Integer
+	Dim As UByte Ptr ps, pd
+	
+	ps=lpsrc
+	pd=lpdst
+	
+	While *ps
+		If *ps=Asc("#") Then Exit While
+		*pd=*ps
+		ps+=1
+		pd+=1
+	Wend
+	*pd=0
+	Return valInt(*lpdst)
+	
+End Function
+
+Sub UpdateIncludeList()
+	Dim As Integer sFind,nType
+	Dim As ZString*260 buffer
+	Dim As ZString Ptr p
+	
+	p=StrPtr(dirlist)
+	
+	sFind=InStr(dirlist,","+LCase(buff))
+	While sFind
+		nType=ExtractDirFile(p+sFind-2,@buffer)
+		If Right(buffer,3)=".bi" Then
+			lstrcpy(ccpos,@buffer+2)
+			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
+			ccpos=ccpos+Len(*ccpos)+1
+		EndIf
+		sFind=InStr(sFind+1,dirlist,","+LCase(buff))
+		fincludelist=TRUE
+	Wend
 	If fincludelist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
@@ -545,57 +577,24 @@ Sub UpdateIncludeList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVa
 
 End Sub
 
-Sub UpdateInclibList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nType As Integer)
-	Dim wfd As WIN32_FIND_DATA
-	Dim hwfd As HANDLE
-	Dim buffer As ZString*260
-	Dim subdir As ZString*260
-	Dim sItem As ZString*260
-	Dim l As Integer
-	Dim ls As Integer
-
-	lstrcpy(@buffer,lpDir)
-	lstrcpy(@subdir,lpSub)
-	buffer=buffer & "\*.*"
-	hwfd=FindFirstFile(@buffer,@wfd)
-	If hwfd<>INVALID_HANDLE_VALUE Then
-		While TRUE
-			If wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY Then
-				lstrcpy(@s,@wfd.cFileName)
-				If Asc(s)<>Asc(".") Then
-					buffer=Left(buffer,Len(buffer)-3)
-					l=Len(buffer)
-					lstrcat(@buffer,@wfd.cFileName)
-					ls=Len(subdir)
-					lstrcat(@subdir,@wfd.cFileName)
-					subdir=subdir & "/"
-					UpdateInclibList(buffer,@subdir,nType)
-					buffer=Left(buffer,l) & "*.*"
-					subdir=Left(subdir,ls)
-				EndIf
-			Else
-				If lpSub Then
-					lstrcpy(@s,lpSub)
-				Else
-					s=""
-				EndIf
-				lstrcat(@s,@wfd.cFileName)
-				If UCase(Right(s,2))=".A" Then
-					lstrcpyn(@sItem,@s,Len(buff)+1)
-					If lstrcmpi(@sItem,@buff)=0 Or Len(sItem)=0 Then
-						lstrcpy(ccpos,@s)
-						SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
-						ccpos=ccpos+Len(*ccpos)+1
-					EndIf
-				EndIf
-				fincliblist=TRUE
-			EndIf
-			If FindNextFile(hwfd,@wfd)=FALSE Then
-				Exit While
-			EndIf
-		Wend
-		FindClose(hwfd)
-	EndIf
+Sub UpdateInclibList()
+	Dim As Integer sFind,nType
+	Dim As ZString*260 buffer
+	Dim As ZString Ptr p
+	
+	p=StrPtr(dirlist)
+	
+	sFind=InStr(dirlist,","+LCase(buff))
+	While sFind
+		nType=ExtractDirFile(p+sFind-2,@buffer)
+		If Right(buffer,2)=".a" Then
+			lstrcpy(ccpos,@buffer+2)
+			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
+			ccpos=ccpos+Len(*ccpos)+1
+		EndIf
+		sFind=InStr(sFind+1,dirlist,","+LCase(buff))
+		fincliblist=TRUE
+	Wend
 	If fincliblist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
@@ -603,3 +602,4 @@ Sub UpdateInclibList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal
 	EndIf
 
 End Sub
+

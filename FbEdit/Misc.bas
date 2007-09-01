@@ -782,10 +782,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							buff=Mid(buff,lret+1)
 							SendMessage(ah.hcc,CCM_CLEAR,0,0)
 							ccpos=@ccstring
-							UpdateIncludeList(ad.fbcPath & "\Inc",NULL,6)
-							If fProject Then
-								UpdateIncludeList(ad.ProjectPath,NULL,7)
-							EndIf
+							UpdateIncludeList()
 						ElseIf fincliblist Then
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
@@ -796,10 +793,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							buff=Mid(buff,lret+1)
 							SendMessage(ah.hcc,CCM_CLEAR,0,0)
 							ccpos=@ccstring
-							UpdateInclibList(ad.fbcPath & "\Lib",NULL,6)
-							If fProject Then
-								UpdateInclibList(ad.ProjectPath,NULL,7)
-							EndIf
+							UpdateInclibList()
 						Else
 							UpdateList(p)
 						EndIf
@@ -853,17 +847,23 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If InStr(s,"#INCLUDE")<>0 And lret=0 Then
 						SendMessage(ah.hcc,CCM_CLEAR,0,0)
 						ccpos=@ccstring
-						UpdateIncludeList(ad.fbcPath & "\Inc",NULL,6)
+						'reset last dir
+						dirlist=""
+						BuildDirList(ad.fbcPath & "\Inc",NULL,6)
 						If fProject Then
-							UpdateIncludeList(ad.ProjectPath,NULL,7)
+							BuildDirList(ad.ProjectPath,NULL,7)
 						EndIf
+						UpdateIncludeList()
 					ElseIf InStr(s,"#INCLIB")<>0 And lret=0 Then
 						SendMessage(ah.hcc,CCM_CLEAR,0,0)
 						ccpos=@ccstring
-						UpdateInclibList(ad.fbcPath & "\Lib",NULL,6)
+						'reset last dir
+						dirlist=""
+						BuildDirList(ad.fbcPath & "\Lib",NULL,6)
 						If fProject Then
-							UpdateInclibList(ad.ProjectPath,NULL,7)
+							BuildDirList(ad.ProjectPath,NULL,7)
 						EndIf
+						UpdateInclibList()
 					ElseIf IsWindowVisible(ah.hcc) Then
 						HideList
 					EndIf
