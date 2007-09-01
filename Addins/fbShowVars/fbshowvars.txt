@@ -1,4 +1,8 @@
 '====================================================================
+'' Version 0.51g
+''
+'' fixed: file was selected wrong. freebasic likes "/" versus "\" for paths.
+''
 '' Version 0.51f
 ''
 '' added: translation support

@@ -93,6 +93,7 @@ Declare Function DumpLine( ByVal Address As Integer, ByVal bAscii As Integer ) A
 Declare Sub Set_Dock(ByVal hDlg As HWND, ByVal bDock As Integer)
 Declare Sub myTimer()
 Declare Function GetString( ByVal id As Integer, ByRef txt As String ) As String
+Declare Sub ChangeSeparator( ByVal txt As ZString Ptr )
 
 'functions
 Declare Sub dbgInt( ByVal lpDBGINF As MYDEBUGINF ptr, ByVal bUpd As Integer )

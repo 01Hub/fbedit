@@ -376,13 +376,11 @@ Function TabProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 						txt += GetString( 2002, "     File: " ) + buff
 						SendMessage( lpHandles->hsbr,SB_SETTEXT, 3, Cast( LPARAM, @txt ) )
 					ElseIf lvnm->hdr.code = NM_DBLCLK Then
-						lvi.iSubItem = 2
-						SendMessage( lvnm->hdr.hwndFrom, LVM_GETITEMTEXT, lvnm->iItem, Cast( LPARAM, @lvi ) )
-						If Len( buff ) = 0 Then Return FALSE
-						txt = buff + "\"
 						lvi.iSubItem = 3
 						SendMessage( lvnm->hdr.hwndFrom, LVM_GETITEMTEXT, lvnm->iItem, Cast( LPARAM, @lvi ) )
-						lpFunctions->OpenTheFile(txt+buff)
+						If Len( buff ) = 0 Then Return FALSE
+						ChangeSeparator(@buff)
+						lpFunctions->OpenTheFile(buff)
 						lvi.iSubItem = 0
 						SendMessage( lvnm->hdr.hwndFrom, LVM_GETITEMTEXT, lvnm->iItem, Cast( LPARAM, @lvi ) )
 						nLine = Val( buff ) - 1

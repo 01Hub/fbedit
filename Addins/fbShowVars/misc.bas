@@ -97,3 +97,15 @@ Function GetString( ByVal id As Integer, ByRef txt As String ) As String
 	EndIf
 
 End Function
+
+Sub ChangeSeparator( ByVal txt As ZString Ptr )
+	Dim As UByte Ptr p
+	
+	p=txt
+	
+	While *p
+		If *p=Asc("/") Then *p=Asc("\")
+		p+=1
+	Wend
+	
+End Sub
