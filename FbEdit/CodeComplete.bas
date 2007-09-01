@@ -552,12 +552,13 @@ End Function
 
 Sub UpdateIncludeList()
 	Dim As Integer sFind,nType
-	Dim As ZString*260 buffer
+	Dim As ZString*260 buffer,txt
 	Dim As ZString Ptr p
 	
 	p=StrPtr(dirlist)
+	txt=","+LCase(buff)
 	
-	sFind=InStr(dirlist,","+LCase(buff))
+	sFind=InStr(dirlist,txt)
 	While sFind
 		nType=ExtractDirFile(p+sFind-2,@buffer)
 		If Right(buffer,3)=".bi" Then
@@ -565,7 +566,7 @@ Sub UpdateIncludeList()
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 			ccpos=ccpos+Len(*ccpos)+1
 		EndIf
-		sFind=InStr(sFind+1,dirlist,","+LCase(buff))
+		sFind=InStr(sFind+1,dirlist,txt)
 		fincludelist=TRUE
 	Wend
 	If fincludelist Then
@@ -578,12 +579,13 @@ End Sub
 
 Sub UpdateInclibList()
 	Dim As Integer sFind,nType
-	Dim As ZString*260 buffer
+	Dim As ZString*260 buffer,txt
 	Dim As ZString Ptr p
 	
 	p=StrPtr(dirlist)
+	txt=","+LCase(buff)
 	
-	sFind=InStr(dirlist,","+LCase(buff))
+	sFind=InStr(dirlist,txt)
 	While sFind
 		nType=ExtractDirFile(p+sFind-2,@buffer)
 		If Right(buffer,2)=".a" Then
@@ -591,7 +593,7 @@ Sub UpdateInclibList()
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 			ccpos=ccpos+Len(*ccpos)+1
 		EndIf
-		sFind=InStr(sFind+1,dirlist,","+LCase(buff))
+		sFind=InStr(sFind+1,dirlist,txt)
 		fincliblist=TRUE
 	Wend
 	If fincliblist Then
