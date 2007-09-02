@@ -379,6 +379,10 @@ Function TabProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 						lvi.iSubItem = 3
 						SendMessage( lvnm->hdr.hwndFrom, LVM_GETITEMTEXT, lvnm->iItem, Cast( LPARAM, @lvi ) )
 						If Len( buff ) = 0 Then Return FALSE
+						GetFileNamePart(@buff,@txt)
+						lvi.iSubItem = 2
+						SendMessage( lvnm->hdr.hwndFrom, LVM_GETITEMTEXT, lvnm->iItem, Cast( LPARAM, @lvi ) )
+						buff += "\" + txt
 						ChangeSeparator(@buff)
 						lpFunctions->OpenTheFile(buff)
 						lvi.iSubItem = 0

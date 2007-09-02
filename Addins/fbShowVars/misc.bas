@@ -98,6 +98,21 @@ Function GetString( ByVal id As Integer, ByRef txt As String ) As String
 
 End Function
 
+Sub GetFileNamePart( ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr )
+	Dim As UByte Ptr p
+	Dim As Integer i
+	
+	p=lpsrc
+	i=Len(*lpsrc)
+	
+	While i<>-1
+		If *(p+i)=Asc("/") Or *(p+i)=Asc("\") Then Exit While
+		i-=1
+	Wend
+	*lpdst=*(lpsrc+i+1)
+	
+End Sub
+
 Sub ChangeSeparator( ByVal txt As ZString Ptr )
 	Dim As UByte Ptr p
 	
