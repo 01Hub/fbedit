@@ -20,13 +20,36 @@ Sub ExportFunctions()
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		lret=lret+Len(*lret)+1
 		If Len(*lret) Then
+			' Parameters
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 			lret=lret+Len(*lret)+1
 			If Len(*lret) Then
+				' Return type
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+				lret=lret+Len(*lret)+1
+			Else
+				' Skip return type
+				lret=lret+1
 			EndIf
+		Else
+			' Skip parameters
+			lret=lret+1
+			If Len(*lret) Then
+				' Return type
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+				lret=lret+Len(*lret)+1
+			Else
+				' Skip return type
+				lret=lret+1
+			EndIf
+		EndIf
+		If Len(*lret) Then
+			' Locals
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(" L:")))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
 		EndIf
 		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
 		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))

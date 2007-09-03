@@ -502,6 +502,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	fPtr:DWORD
 	LOCAL	fRetType:DWORD
+	LOCAL	fParam:DWORD
 	LOCAL	endtype:DWORD
 
 	mov		npos,0
@@ -516,6 +517,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		nline,eax
 		mov		fPtr,0
 		mov		fRetType,0
+		mov		fParam,0
 	  Nxtwrd:
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -1250,7 +1252,7 @@ SaveParam:
 			.if byte ptr [esi]==','
 				inc		esi
 				jmp		SaveParam
-			.elseif byte ptr  [esi]=='='
+			.elseif byte ptr [esi]=='='
 				inc		esi
 				invoke GetWord,esi,addr npos
 				mov		esi,edx
@@ -1262,7 +1264,7 @@ SaveParam:
 	.if byte ptr [edi-1]==','
 		dec		edi
 	.endif
-	.if !fRetType
+	.if !fRetType && fParam
 		mov		word ptr [edi],0
 		inc		edi
 	.endif
@@ -1320,6 +1322,7 @@ ParseData1:
 	retn
 
 ParseParamData:
+	inc		fParam
 	call	SaveName
 	dec		edi
 ParseParamData1:
