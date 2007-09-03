@@ -780,8 +780,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
-							SendMessage(ah.hcc,CCM_CLEAR,0,0)
-							ccpos=@ccstring
 							UpdateIncludeList()
 						ElseIf fincliblist Then
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
@@ -791,8 +789,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
 							buff=Mid(buff,lret+1)
-							SendMessage(ah.hcc,CCM_CLEAR,0,0)
-							ccpos=@ccstring
 							UpdateInclibList()
 						Else
 							UpdateList(p)
@@ -845,8 +841,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					lret=InStr(s,Chr(34))
 					lret=InStr(lret+1,s,Chr(34))
 					If InStr(s,"#INCLUDE")<>0 And lret=0 Then
-						SendMessage(ah.hcc,CCM_CLEAR,0,0)
-						ccpos=@ccstring
 						'reset last dir
 						dirlist=""
 						BuildDirList(ad.fbcPath & "\Inc",NULL,6)
@@ -855,8 +849,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						UpdateIncludeList()
 					ElseIf InStr(s,"#INCLIB")<>0 And lret=0 Then
-						SendMessage(ah.hcc,CCM_CLEAR,0,0)
-						ccpos=@ccstring
 						'reset last dir
 						dirlist=""
 						BuildDirList(ad.fbcPath & "\Lib",NULL,6)
