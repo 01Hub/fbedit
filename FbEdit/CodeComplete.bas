@@ -154,7 +154,7 @@ Sub GetItems(ByVal ntype As Integer)
 				ccpos=ccpos+Len(*ccpos)+1
 			EndIf
 		EndIf
-	Loop
+	Loop 
 
 End Sub
 
@@ -167,7 +167,7 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
-		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
+'		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 		lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
@@ -229,8 +229,8 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 		EndIf
 		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-		UpdateWindow(ah.hcc)
+'		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
+'		UpdateWindow(ah.hcc)
 	EndIf
 
 End Sub
@@ -384,7 +384,7 @@ Sub UpdateTypeList()
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
-		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
+'		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 		lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
@@ -409,8 +409,8 @@ Sub UpdateTypeList()
 		Loop
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-		UpdateWindow(ah.hcc)
+'		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
+'		UpdateWindow(ah.hcc)
 		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
 			ftypelist=TRUE
 		EndIf
@@ -432,7 +432,7 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 		SendMessage(ah.hcc,CCM_CLEAR,0,0)
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 		If chrg.cpMin=chrg.cpMax Then
-			SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
+'			SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 			lret=lret+Len(buff)+1
 			ln=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
@@ -466,8 +466,8 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 				SendMessage(ah.hcc,CCM_SORT,0,0)
 			EndIf
 			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-			SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-			UpdateWindow(ah.hcc)
+'			SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
+'			UpdateWindow(ah.hcc)
 			Return TRUE
 		EndIf
 	EndIf
@@ -568,7 +568,7 @@ Sub UpdateIncludeList()
 	p=StrPtr(dirlist)
 	txt=","+LCase(buff)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
+'	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
 	While sFind
 		nType=ExtractDirFile(p+sFind-2,@buffer)
@@ -580,8 +580,8 @@ Sub UpdateIncludeList()
 		sFind=InStr(sFind+1,dirlist,txt)
 		fincludelist=TRUE
 	Wend
-	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-	UpdateWindow(ah.hcc)
+'	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
+'	UpdateWindow(ah.hcc)
 	If fincludelist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
@@ -599,7 +599,7 @@ Sub UpdateInclibList()
 	p=StrPtr(dirlist)
 	txt=","+LCase(buff)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
+'	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
 	While sFind
 		nType=ExtractDirFile(p+sFind-2,@buffer)
@@ -611,8 +611,8 @@ Sub UpdateInclibList()
 		sFind=InStr(sFind+1,dirlist,txt)
 		fincliblist=TRUE
 	Wend
-	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-	UpdateWindow(ah.hcc)
+'	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
+'	UpdateWindow(ah.hcc)
 	If fincliblist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
