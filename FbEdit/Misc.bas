@@ -1,3 +1,4 @@
+
 Dim Shared lpOldEditProc As Any Ptr
 Dim Shared lpOldParEditProc As Any Ptr
 Dim Shared lpOldOutputProc As Any Ptr
@@ -572,6 +573,67 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						TestCaseConvert(hPar,wParam)
 						AutoBrace(hPar,Asc("]"))
 						Return lret
+					EndIf
+				EndIf
+				'smart maths
+				If wParam=Asc("+") And edtopt.smartmath Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc("+") Then
+							SendMessage(hPar,EM_REPLACESEL,0,Cast(LPARAM,StrPtr("=")))
+							Return 0
+						EndIf
+					EndIf
+				EndIf
+				If wParam=Asc("-") And edtopt.smartmath Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc("-") Then
+							SendMessage(hPar,EM_REPLACESEL,0,Cast(LPARAM,StrPtr("=")))
+							Return 0
+						EndIf
+					EndIf
+				EndIf
+				If wParam=Asc("*") And edtopt.smartmath Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc("*") Then
+							SendMessage(hPar,EM_REPLACESEL,0,Cast(LPARAM,StrPtr("=")))
+							Return 0
+						EndIf
+					EndIf
+				EndIf
+				If wParam=Asc("/") And edtopt.smartmath Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc("/") Then
+							SendMessage(hPar,EM_REPLACESEL,0,Cast(LPARAM,StrPtr("=")))
+							Return 0
+						EndIf
+					EndIf
+				EndIf
+				If wParam=Asc("\") And edtopt.smartmath Then
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						trng.chrg.cpMin-=1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If Asc(buff)=Asc("\") Then
+							SendMessage(hPar,EM_REPLACESEL,0,Cast(LPARAM,StrPtr("=")))
+							Return 0
+						EndIf
 					EndIf
 				EndIf
 				If wParam=VK_BACK Then

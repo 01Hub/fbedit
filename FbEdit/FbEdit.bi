@@ -290,6 +290,7 @@ Type EDITOPTION
 	autoinclude		As Integer
 	closeonlocks	As Integer
 	tooltip			As Integer
+	smartmath		As Integer
 End Type
 
 Type KWCOLOR
@@ -495,7 +496,7 @@ Const sf1 = !"Courier New\0                    "
 Const sf2 = !"Terminal\0                       "
 Dim Shared edtfnt As EDITFONT=(-12,0,@sf1)
 Dim Shared lnrfnt As EDITFONT=(-6,0,@sf2)
-Dim Shared edtopt As EDITOPTION=(3,0,0,1,0,0,3,1,1,1,1,1,1,0,0,0,1,1,1)
+Dim Shared edtopt As EDITOPTION=(3,0,0,1,0,0,3,1,1,1,1,1,1,0,0,0,1,1,1,1)
 Const sn = !"rsrc.bi\0                        "
 Dim Shared nmeexp As NAMEEXPORT=(1,2,0,@sn)
 Dim Shared grdsize As GRIDSIZE=(3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE,FALSE,FALSE)
