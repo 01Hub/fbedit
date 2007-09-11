@@ -3,6 +3,7 @@ Whats new:
 1.0.5.7
 o Added Smart Maths.
 o Speed optimized autoinclude/autoinclib.
+o Fixed bug in RAProperty that caused crash on win98 on UDT arrays.
 1.0.5.6
 o Added option to show Code Tooltip.
 o Added Simple Property option to dialog editor.

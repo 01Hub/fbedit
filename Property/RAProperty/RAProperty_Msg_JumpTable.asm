@@ -448,6 +448,7 @@
 		mov		edx,lParam
 		mov		ecx,wParam
 		push	esi
+		push	edi
 		mov		esi,[ebx].RAPROPERTY.lpchartab
 		.while ecx
 			dec		ecx
@@ -480,6 +481,7 @@
 			inc		esi
 		.endw
 		mov		word ptr [edx+esi],0
+		pop		edi
 		pop		esi
 		ret
 	align 4 
