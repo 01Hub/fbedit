@@ -1112,7 +1112,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							fQR=FALSE
 							If Compile(ad.smake)=0 Then
 								If fProject Then
-									sFile=GetProjectFile(1)
+									sFile=GetProjectFile(GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,ad.ProjectFile))
 								Else
 									sFile=ad.filename
 								EndIf
@@ -1125,7 +1125,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_MAKE_RUN
 							fQR=FALSE
 							If fProject Then
-								sFile=GetProjectFileName(1)
+								sFile=GetProjectFileName(GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,ad.ProjectFile))
 							Else
 								sFile=ad.filename
 							EndIf
@@ -1137,7 +1137,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_MAKE_RUNDEBUG
 							fQR=FALSE
 							If fProject Then
-								sFile=GetProjectFileName(1)
+								sFile=GetProjectFileName(GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,ad.ProjectFile))
 							Else
 								sFile=ad.filename
 							EndIf
