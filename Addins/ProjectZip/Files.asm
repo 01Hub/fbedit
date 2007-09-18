@@ -12,15 +12,15 @@ SetZipFile proc uses ebx esi,lpFileName:DWORD
 	sub		ebx,4
 	mov		eax,[esi+ebx]
 	and		eax,5F5F5FFFh
-	.if eax=='PAR.'
+	.if eax=='PBF.'
 		mov		szZipFile,'\'
 		inc		ebx
 		invoke lstrcpyn,offset szZipFile+1,esi,ebx
 		lea		esi,szZipFile[ebx]
-		.if fOption&2
+;		.if fOption&2
 			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,esi,7
 			add		esi,6
-		.endif
+;		.endif
 		mov		dword ptr [esi],'piz.'
 		mov		byte ptr [esi+4],0
 	.endif
@@ -163,8 +163,8 @@ FileDir proc uses ebx esi edi,lpPth:DWORD
 	invoke SetDlgItemText,hDlg,IDC_EDTCURRENT,lpPth
 	invoke GetDlgItem,hDlg,IDC_BTNZIP
 	invoke EnableWindow,eax,FALSE
-	invoke GetDlgItem,hDlg,IDC_BTNMAIL
-	invoke EnableWindow,eax,FALSE
+;	invoke GetDlgItem,hDlg,IDC_BTNMAIL
+;	invoke EnableWindow,eax,FALSE
 	ret
 
 FileDir endp

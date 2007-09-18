@@ -37,8 +37,8 @@
 ;#########################################################################
 ;		Prototypes
 
-	DLLProc				PROTO :DWORD, :DWORD, :DWORD, :DWORD
-	InstallDLL			PROTO :DWORD, :DWORD
+;	DLLProc				PROTO :DWORD, :DWORD, :DWORD, :DWORD
+;	InstallDLL			PROTO :DWORD, :DWORD
 
 	TextOutput			PROTO :DWORD
 	clrOutput			PROTO 
@@ -49,7 +49,7 @@
 	IDC_LSTSORT			equ 1001
 	IDC_BTNEXIT			equ 2
 	IDC_BTNZIP			equ 1004
-	IDC_BTNMAIL			equ 1002
+;	IDC_BTNMAIL			equ 1002
 	IDC_LSVFILELIST		equ 1003
 	IDC_EDTFOLDER		equ 1005
 	IDC_BTNFOLDER		equ 1006
@@ -84,17 +84,17 @@
 	szCreate			db 'Creating zip ',0
 	szOverwrite			db 'Overwrite existing file?',0Dh,0
 	szError				db 'Could not create file',0Dh,0
-	szApp				db 'ProjectZip',0
-	szKeyMail			db 'mail',0
-	szKeySkip			db 'skip',0
-	szKeyFolder			db 'folder',0
-	szKeyPos			db 'pos',0
+;	szApp				db 'ProjectZip',0
+;	szKeyMail			db 'mail',0
+;	szKeySkip			db 'skip',0
+;	szKeyFolder			db 'folder',0
+;	szKeyPos			db 'pos',0
 	szNULL				db 0
 	szAdded				db 'Added to zip: ',0
 	szDone				db 0Dh,'Done.',0
 	szCr				db 0Dh,0
-	szMailto			db 'mailto:',0
-	szSubject			db '?subject=',0
+;	szMailto			db 'mailto:',0
+;	szSubject			db '?subject=',0
 	szAppName			db 'ProjectZip',0
 
 .data?
@@ -109,10 +109,10 @@
 	szDestFolder		db MAX_PATH dup(?)
 	szZipFile			db MAX_PATH dup(?)
 	szTemp				db MAX_PATH dup(?)
-	szMail				db MAX_PATH dup(?)
+;	szMail				db MAX_PATH dup(?)
 	szSkip				db MAX_PATH dup(?)
 	szCurrentFolder		db MAX_PATH dup(?)
-	fOption				dd ?
+;	fOption				dd ?
 	hDlg				dd ?
 	hIml				dd ?
 	hLV					dd ?
@@ -133,22 +133,24 @@
 	pidl				dd ?
 	bri					BROWSEINFO  <?>
 	fHook				ADDINHOOKS <?>
+
 .code
 
 ;#########################################################################
 ;		Output Window procs
 
-SelectOutput proc nWin:DWORD
+ShowOutput proc
 
    pushad
-;   push  nWin
-;   mov   eax,lpProc
-;   call  [eax].ADDINPROCS.lpOutputSelect
-
+   mov   ebx,esp
+   push  TRUE
+   mov   eax,lpProc
+   call  [eax].ADDINFUNCTIONS.ShowOutput
+   mov   esp,ebx
    popad
    ret
 
-SelectOutput endp
+ShowOutput endp
 
 TextOutput proc lpszStr
 
@@ -192,7 +194,7 @@ HexOutput endp
 CreateTheZip proc pszFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke SelectOutput,1
+	invoke ShowOutput
 	invoke clrOutput
 	invoke lstrcpy,addr buffer,offset szCreate
 	invoke lstrcat,addr buffer,pszFileName

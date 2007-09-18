@@ -418,7 +418,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if byte ptr [edx].ADDINDATA.ProjectFile
 			invoke lstrcpy,offset szSourceFolder,addr [edx].ADDINDATA.ProjectPath
 			invoke lstrlen,offset szSourceFolder
-			mov		szSourceFolder[eax-1],0
+;			mov		szSourceFolder[eax-1],0
 		.else
 			invoke lstrcpy,offset szSourceFolder,addr [edx].ADDINDATA.DefProjectPath
 		.endif
@@ -437,7 +437,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hLV,GWL_WNDPROC,offset ListViewProc
 		mov		OldListViewProc,eax
 		invoke FileDir,offset szSourceFolder
-		mov		eax,lpData
+		mov		edx,lpData
 		.if byte ptr [edx].ADDINDATA.ProjectFile
 			invoke GetDlgItem,hWin,IDC_BTNZIPPROJECT
 			invoke EnableWindow,eax,TRUE
@@ -451,12 +451,12 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DoZip,FALSE
 			.elseif eax==IDC_BTNZIPPROJECT
 				invoke DoZip,TRUE
-			.elseif eax==IDC_BTNMAIL
-				invoke DoZip,FALSE
-				invoke SendMessage,hED,WM_GETTEXT,sizeof szTemp,offset szTemp
-				invoke lstrcpy,offset szMail,offset szMailto
-				invoke lstrlen,offset szMail
-				lea		edx,szMail[eax]
+;			.elseif eax==IDC_BTNMAIL
+;				invoke DoZip,FALSE
+;				invoke SendMessage,hED,WM_GETTEXT,sizeof szTemp,offset szTemp
+;				invoke lstrcpy,offset szMail,offset szMailto
+;				invoke lstrlen,offset szMail
+;				lea		edx,szMail[eax]
 ;				mov		eax,lpData
 ;				mov		eax,[eax].ADDINDATA.lpIniFile
 ;				invoke GetPrivateProfileString,offset szApp,offset szKeyMail,offset szNULL,edx,64,eax
@@ -495,8 +495,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke GetDlgItem,hWin,IDC_BTNZIP
 				invoke EnableWindow,eax,ebx
-				invoke GetDlgItem,hWin,IDC_BTNMAIL
-				invoke EnableWindow,eax,ebx
+;				invoke GetDlgItem,hWin,IDC_BTNMAIL
+;				invoke EnableWindow,eax,ebx
 				pop		ebx
 			.endif
 		.endif
@@ -548,22 +548,23 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,rect.bottom
 		sub		edx,28-3
 		invoke MoveWindow,eax,3+85+3,edx,85,21,TRUE
-		invoke GetDlgItem,hWin,IDC_BTNMAIL
-		mov		edx,rect.bottom
-		sub		edx,28-3
-		invoke MoveWindow,eax,3+85+3+85+3,edx,85,21,TRUE
+;		invoke GetDlgItem,hWin,IDC_BTNMAIL
+;		mov		edx,rect.bottom
+;		sub		edx,28-3
+;		invoke MoveWindow,eax,3+85+3+85+3,edx,85,21,TRUE
 		invoke GetDlgItem,hWin,IDC_BTNZIPPROJECT
 		mov		edx,rect.bottom
 		sub		edx,28-3
-		invoke MoveWindow,eax,3+85+3+85+3+85+3,edx,85,21,TRUE
+		invoke MoveWindow,eax,3+85+3+85+3,edx,85,21,TRUE
+;		invoke MoveWindow,eax,3+85+3+85+3+85+3,edx,85,21,TRUE
 
 		invoke GetDlgItem,hWin,IDC_BTNEXIT
 		mov		edx,rect.bottom
 		sub		edx,28-3
 		mov		ecx,rect.right
 		sub		ecx,3+85
-		.if sdword ptr ecx<3+85+3+85+3+85+3+85+3
-			mov		ecx,3+85+3+85+3+85+3+85+3
+		.if sdword ptr ecx<3+85+3+85+3+85+3;+85+3
+			mov		ecx,3+85+3+85+3+85+3;+85+3
 		.endif
 		invoke MoveWindow,eax,ecx,edx,85,21,TRUE
 	.else
@@ -577,8 +578,8 @@ DlgProc endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 DllFunction proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
-	LOCAL	buffer[256]:BYTE
-	LOCAL	mii:MENUITEMINFO
+;	LOCAL	buffer[256]:BYTE
+;	LOCAL	mii:MENUITEMINFO
 	; This proc handles messages sent from RadASM to our dll
 	; Return TRUE to prevent RadASM and other DLL's from
 
