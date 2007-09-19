@@ -64,11 +64,12 @@
 		dwTimeHigh	dd ?
 	FILEINFO ends
 
-	ADDINOPT struct
-		lpStr		dd ?
-		nAnd		dd ?
-		nOr			dd ?
-	ADDINOPT ends
+	POS struct
+		x			dd ?
+		y			dd ?
+		wt			dd ?
+		ht			dd ?
+	POS ends
 
 .const
 
@@ -79,23 +80,24 @@
 	szSizeFmt			db '%lu',0
 	szDateFmt			db "MM'-'dd'-'yyyy' '",0
 	szTimeFmt			db "hh':'mm':'ss",0
-	szDateFmtFile		db 'yyMMdd',0
+	szDateFmtFile		db '_yyMMdd',0
+	szTimeFmtFile		db '_HHmmss',0
 	szArchive			db '\Archive',0
 	szCreate			db 'Creating zip ',0
 	szOverwrite			db 'Overwrite existing file?',0Dh,0
 	szError				db 'Could not create file',0Dh,0
-;	szApp				db 'ProjectZip',0
-;	szKeyMail			db 'mail',0
-;	szKeySkip			db 'skip',0
-;	szKeyFolder			db 'folder',0
-;	szKeyPos			db 'pos',0
+	szApp				db 'ProjectZip',0
+	szKeySkip			db 'skip',0
+	szKeyFolder			db 'folder',0
+	szKeyPos			db 'pos',0
+	szKeyOpt			db 'opt',0
 	szNULL				db 0
 	szAdded				db 'Added to zip: ',0
 	szDone				db 0Dh,'Done.',0
 	szCr				db 0Dh,0
-;	szMailto			db 'mailto:',0
-;	szSubject			db '?subject=',0
 	szAppName			db 'ProjectZip',0
+	szFile				db 'File',0
+	szPOS				db '4444',0
 
 .data?
 
@@ -109,10 +111,8 @@
 	szDestFolder		db MAX_PATH dup(?)
 	szZipFile			db MAX_PATH dup(?)
 	szTemp				db MAX_PATH dup(?)
-;	szMail				db MAX_PATH dup(?)
 	szSkip				db MAX_PATH dup(?)
 	szCurrentFolder		db MAX_PATH dup(?)
-;	fOption				dd ?
 	hDlg				dd ?
 	hIml				dd ?
 	hLV					dd ?
@@ -133,6 +133,8 @@
 	pidl				dd ?
 	bri					BROWSEINFO  <?>
 	fHook				ADDINHOOKS <?>
+	pos					POS <?>
+	fOption				dd ?
 
 .code
 

@@ -28,4 +28,7 @@ COPY Addins\fbShowVars\fbShowVars.txt \FbEdit\Addins\HELP
 COPY Addins\Toolbar\Toolbar.dll \FbEdit\Addins
 COPY Addins\Toolbar\Toolbar.txt \FbEdit\Addins\HELP
 
+COPY Addins\ProjectZip\ProjectZip.dll \FbEdit\Addins
+COPY Addins\ProjectZip\ProjectZip.txt \FbEdit\Addins\HELP
+
 Pause

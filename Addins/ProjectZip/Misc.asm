@@ -11,11 +11,11 @@ BinToDec proc dwVal:DWORD,lpAscii:DWORD
 	mov		eax,dwVal
 	mov		edi,lpAscii
 	or		eax,eax
-	jns		pos
+	jns		_pos
 	mov		byte ptr [edi],'-'
 	neg		eax
 	inc		edi
-  pos:      
+  _pos:      
 	mov		ecx,429496730
 	mov		esi,edi
   @@:

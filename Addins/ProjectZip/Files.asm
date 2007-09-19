@@ -17,10 +17,15 @@ SetZipFile proc uses ebx esi,lpFileName:DWORD
 		inc		ebx
 		invoke lstrcpyn,offset szZipFile+1,esi,ebx
 		lea		esi,szZipFile[ebx]
-;		.if fOption&2
-			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,esi,7
-			add		esi,6
-;		.endif
+		.if fOption==1
+			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,esi,8
+			add		esi,7
+		.elseif fOption==2
+			invoke GetDateFormat,NULL,NULL,NULL,offset szDateFmtFile,esi,8
+			add		esi,7
+			invoke GetTimeFormat,NULL,NULL,NULL,offset szTimeFmtFile,esi,8
+			add		esi,7
+		.endif
 		mov		dword ptr [esi],'piz.'
 		mov		byte ptr [esi+4],0
 	.endif
@@ -28,7 +33,7 @@ SetZipFile proc uses ebx esi,lpFileName:DWORD
 
 SetZipFile endp
 
-FileDir proc uses ebx esi edi,lpPth:DWORD
+FileDir proc uses ebx esi edi,lpPth:DWORD,fProject:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	hwfd:DWORD
 	LOCAL	lvi:LV_ITEM
@@ -74,7 +79,21 @@ FileDir proc uses ebx esi edi,lpPth:DWORD
 				invoke SendMessage,hLB,LB_ADDSTRING,0,addr buffer
 			.endif
 		.else
-			invoke SetZipFile,addr wfd.cFileName
+			.if fProject
+				mov		edx,lpData
+				lea		ebx,[edx].ADDINDATA.ProjectFile
+				invoke lstrlen,ebx
+				.while eax
+					.break .if byte ptr [ebx+eax-1]=='\'
+					dec		eax
+				.endw
+				invoke lstrcmpi,addr wfd.cFileName,addr [ebx+eax]
+				.if !eax
+					invoke SetZipFile,addr wfd.cFileName
+				.endif
+			.else
+				invoke SetZipFile,addr wfd.cFileName
+			.endif
 			;Add file
 			mov		buffer,'F'
 			invoke lstrcpy,addr buffer[1],addr wfd.cFileName
@@ -163,8 +182,6 @@ FileDir proc uses ebx esi edi,lpPth:DWORD
 	invoke SetDlgItemText,hDlg,IDC_EDTCURRENT,lpPth
 	invoke GetDlgItem,hDlg,IDC_BTNZIP
 	invoke EnableWindow,eax,FALSE
-;	invoke GetDlgItem,hDlg,IDC_BTNMAIL
-;	invoke EnableWindow,eax,FALSE
 	ret
 
 FileDir endp

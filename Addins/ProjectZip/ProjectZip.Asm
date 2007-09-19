@@ -17,18 +17,20 @@ include Files.asm
 ;#########################################################################
 ;		Common AddIn Procedures
 
-DllEntry proc hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
-	mov eax, hInst
-	mov hInstance, eax
-	mov eax, TRUE
+DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
+
+	mov		eax,hInst
+	mov		hInstance, eax
+	mov		eax,TRUE
 	ret
+
 DllEntry Endp
 
 AddMenu proc
 
-	mov	edx,4
+	mov		edx,4
 	;Get handle of Project popup
-	mov	eax,[lpHandles]
+	mov		eax,lpHandles
 	invoke GetSubMenu,[eax].ADDINHANDLES.hmenu,edx
 	;Add our menuitem
 	invoke AppendMenu,eax,MF_STRING,IDAddIn,addr szProjectZip
@@ -38,16 +40,14 @@ AddMenu endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallDll proc uses ebx hWin:DWORD,hInst:DWORD
-	mov	ebx,hWin
 
+	mov		ebx,hWin
 	;Get pointer to handles struct
-	invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
+	invoke SendMessage,ebx,AIM_GETHANDLES,0,0
 	mov		lpHandles,eax
-
 	;Get pointer to proc struct
 	invoke SendMessage,ebx,AIM_GETFUNCTIONS,0,0
 	mov		lpProc,eax
-
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
@@ -126,14 +126,14 @@ ListViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					inc		eax
 				.endif
 				mov		byte ptr [eax],0
-				invoke FileDir,offset szSourceFolder
+				invoke FileDir,offset szSourceFolder,FALSE
 			.elseif eax==1
 				invoke lstrlen,offset szSourceFolder
 				.if byte ptr szSourceFolder[eax-1]!='\'
 					mov		word ptr szSourceFolder[eax],'\'
 				.endif
 				invoke lstrcat,offset szSourceFolder,addr buffer
-				invoke FileDir,offset szSourceFolder
+				invoke FileDir,offset szSourceFolder,FALSE
 			.endif
 		.endif
 	.endif
@@ -300,17 +300,26 @@ DoZip proc uses ebx,fProject:DWORD
 		invoke CreateTheZip,addr buffer
 		.if eax
 			.if fProject
-;				xor		ebx,ebx
-;				.while ebx<1500
-;					inc		ebx
-;					push	ebx
-;					mov		eax,lpProc
-;					call	[eax].ADDINPROCS.lpGetFileNameFromID
-;					.if eax
-;						invoke lstrcpy,addr buffer,eax
-;						invoke AddFileToZip,addr buffer
-;					.endif
-;				.endw
+				mov		edx,lpData
+				invoke lstrcpy,addr buffer,addr [edx].ADDINDATA.ProjectFile
+				lea		ebx,buffer
+				invoke lstrlen,ebx
+				.while eax
+					.break .if byte ptr [ebx+eax-1]=='\'
+					dec		eax
+				.endw
+				invoke AddFileToZip,addr [ebx+eax]
+				xor		ebx,ebx
+				.while ebx<1500
+					inc		ebx
+					invoke BinToDec,ebx,addr buffer
+					mov		edx,lpData
+					invoke GetPrivateProfileString,addr szFile,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr [edx].ADDINDATA.ProjectFile
+					.if eax
+						invoke lstrcpy,addr buffer,eax
+						invoke AddFileToZip,addr buffer
+					.endif
+				.endw
 			.else
 				xor		ebx,ebx
 			  @@:
@@ -358,36 +367,29 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
-;		push	FALSE
-;		push	offset szAppName
-;		push	hWin
-;		mov		eax,lpProc
-;		call	[eax].ADDINPROCS.lpSetLanguage
-;		mov		eax,lpData
-;		invoke GetPrivateProfileString,offset szApp,offset szKeyPos,offset szNULL,offset szSkip,sizeof szSkip,[eax].ADDINDATA.lpIniFile
-;		.if eax
-;			invoke GetStrItem,offset szSkip,offset szTemp
-;			invoke DecToBin,offset szTemp
-;			mov		rect.left,eax
-;			invoke GetStrItem,offset szSkip,offset szTemp
-;			invoke DecToBin,offset szTemp
-;			mov		rect.top,eax
-;			invoke GetStrItem,offset szSkip,offset szTemp
-;			invoke DecToBin,offset szTemp
-;			mov		rect.right,eax
-;			invoke DecToBin,offset szSkip
-;			mov		rect.bottom,eax
-;			invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,FALSE
-;		.endif
-;		mov		eax,lpData
-;		invoke GetPrivateProfileString,offset szApp,offset szKeySkip,offset szNULL,offset szSkip,sizeof szSkip,[eax].ADDINDATA.lpIniFile
-;		mov		eax,offset szSkip
-;		.while byte ptr [eax]
-;			.if byte ptr [eax]==';'
-;				mov		byte ptr [eax],0
-;			.endif
-;			inc		eax
-;		.endw
+		push	ebx
+		mov		ebx,esp
+		push	FALSE
+		push	offset pos
+		push	offset szPOS
+		push	offset szKeyPos
+		push	offset szApp
+		mov		eax,lpProc
+		call	[eax].ADDINFUNCTIONS.LoadFromIni
+		mov		esp,ebx
+		pop		ebx
+		.if eax
+			invoke MoveWindow,hWin,pos.x,pos.y,pos.wt,pos.ht,FALSE
+		.endif
+		mov		eax,lpData
+		invoke GetPrivateProfileString,offset szApp,offset szKeySkip,offset szNULL,offset szSkip,sizeof szSkip,addr [eax].ADDINDATA.IniFile
+		mov		eax,offset szSkip
+		.while byte ptr [eax]
+			.if byte ptr [eax]==';'
+				mov		byte ptr [eax],0
+			.endif
+			inc		eax
+		.endw
 		;Create an imagelist
 		invoke ImageList_Create,16,16,ILC_COLOR8,5,5
 		mov		hIml,eax
@@ -417,18 +419,19 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lpData
 		.if byte ptr [edx].ADDINDATA.ProjectFile
 			invoke lstrcpy,offset szSourceFolder,addr [edx].ADDINDATA.ProjectPath
-			invoke lstrlen,offset szSourceFolder
-;			mov		szSourceFolder[eax-1],0
 		.else
 			invoke lstrcpy,offset szSourceFolder,addr [edx].ADDINDATA.DefProjectPath
 		.endif
-;		mov		eax,lpData
-;		invoke GetPrivateProfileString,offset szApp,offset szKeyFolder,offset szNULL,offset szDestFolder,sizeof szDestFolder,[eax].ADDINDATA.lpIniFile
-;		.if !eax
+		mov		eax,lpData
+		invoke GetPrivateProfileInt,offset szApp,offset szKeyOpt,0,addr [eax].ADDINDATA.IniFile
+		mov		fOption,eax
+		mov		eax,lpData
+		invoke GetPrivateProfileString,offset szApp,offset szKeyFolder,offset szNULL,offset szDestFolder,sizeof szDestFolder,addr [eax].ADDINDATA.IniFile
+		.if !eax
 			mov		edx,lpData
 			invoke lstrcpy,offset szDestFolder,addr [edx].ADDINDATA.DefProjectPath
 			invoke lstrcat,offset szDestFolder,offset szArchive
-;		.endif
+		.endif
 		invoke GetDlgItem,hWin,IDC_EDTFOLDER
 		mov		hED,eax
 		invoke SendMessage,hED,EM_LIMITTEXT,MAX_PATH-1,0
@@ -436,7 +439,12 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,eax,WM_SETFONT,NULL,FALSE
 		invoke SetWindowLong,hLV,GWL_WNDPROC,offset ListViewProc
 		mov		OldListViewProc,eax
-		invoke FileDir,offset szSourceFolder
+		xor		eax,eax
+		mov		edx,lpData
+		.if byte ptr [edx].ADDINDATA.ProjectFile
+			inc		eax
+		.endif
+		invoke FileDir,offset szSourceFolder,eax
 		mov		edx,lpData
 		.if byte ptr [edx].ADDINDATA.ProjectFile
 			invoke GetDlgItem,hWin,IDC_BTNZIPPROJECT
@@ -450,19 +458,11 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDC_BTNZIP
 				invoke DoZip,FALSE
 			.elseif eax==IDC_BTNZIPPROJECT
+				mov		edx,lpData
+				invoke lstrcpy,offset szSourceFolder,addr [edx].ADDINDATA.ProjectPath
+				mov		edx,lpData
+				invoke FileDir,addr [edx].ADDINDATA.ProjectPath,TRUE
 				invoke DoZip,TRUE
-;			.elseif eax==IDC_BTNMAIL
-;				invoke DoZip,FALSE
-;				invoke SendMessage,hED,WM_GETTEXT,sizeof szTemp,offset szTemp
-;				invoke lstrcpy,offset szMail,offset szMailto
-;				invoke lstrlen,offset szMail
-;				lea		edx,szMail[eax]
-;				mov		eax,lpData
-;				mov		eax,[eax].ADDINDATA.lpIniFile
-;				invoke GetPrivateProfileString,offset szApp,offset szKeyMail,offset szNULL,edx,64,eax
-;				invoke lstrcat,offset szMail,offset szSubject
-;				invoke lstrcat,offset szMail,offset szZipFile[1]
-;				invoke ShellExecute,hWin,NULL,offset szMail,NULL,NULL,SW_SHOWNORMAL
 			.elseif eax==IDC_BTNSELECTALL
 				invoke SelectAll
 			.elseif eax==IDC_BTNEXIT
@@ -495,24 +495,26 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke GetDlgItem,hWin,IDC_BTNZIP
 				invoke EnableWindow,eax,ebx
-;				invoke GetDlgItem,hWin,IDC_BTNMAIL
-;				invoke EnableWindow,eax,ebx
 				pop		ebx
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
-;		invoke GetWindowRect,hWin,addr rect
-;		mov		eax,rect.left
-;		sub		rect.right,eax
-;		mov		eax,rect.top
-;		sub		rect.bottom,eax
-;		mov		szTemp,0
-;		invoke PutIntItem,rect.left,offset szTemp,TRUE
-;		invoke PutIntItem,rect.top,offset szTemp,TRUE
-;		invoke PutIntItem,rect.right,offset szTemp,TRUE
-;		invoke PutIntItem,rect.bottom,offset szTemp,FALSE
-;		mov		eax,lpData
-;		invoke WritePrivateProfileString,offset szApp,offset szKeyPos,offset szTemp,[eax].ADDINDATA.lpIniFile
+		invoke GetWindowRect,hWin,addr pos
+		mov		eax,pos.x
+		sub		pos.wt,eax
+		mov		eax,pos.y
+		sub		pos.ht,eax
+		push	ebx
+		mov		ebx,esp
+		push	FALSE
+		push	offset pos
+		push	offset szPOS
+		push	offset szKeyPos
+		push	offset szApp
+		mov		eax,lpProc
+		call	[eax].ADDINFUNCTIONS.SaveToIni
+		mov		esp,ebx
+		pop		ebx
 		invoke ImageList_Destroy,hIml
 		invoke EndDialog,hWin,0
 	.elseif eax==WM_SIZE
@@ -548,23 +550,17 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,rect.bottom
 		sub		edx,28-3
 		invoke MoveWindow,eax,3+85+3,edx,85,21,TRUE
-;		invoke GetDlgItem,hWin,IDC_BTNMAIL
-;		mov		edx,rect.bottom
-;		sub		edx,28-3
-;		invoke MoveWindow,eax,3+85+3+85+3,edx,85,21,TRUE
 		invoke GetDlgItem,hWin,IDC_BTNZIPPROJECT
 		mov		edx,rect.bottom
 		sub		edx,28-3
 		invoke MoveWindow,eax,3+85+3+85+3,edx,85,21,TRUE
-;		invoke MoveWindow,eax,3+85+3+85+3+85+3,edx,85,21,TRUE
-
 		invoke GetDlgItem,hWin,IDC_BTNEXIT
 		mov		edx,rect.bottom
 		sub		edx,28-3
 		mov		ecx,rect.right
 		sub		ecx,3+85
-		.if sdword ptr ecx<3+85+3+85+3+85+3;+85+3
-			mov		ecx,3+85+3+85+3+85+3;+85+3
+		.if sdword ptr ecx<3+85+3+85+3+85+3
+			mov		ecx,3+85+3+85+3+85+3
 		.endif
 		invoke MoveWindow,eax,ecx,edx,85,21,TRUE
 	.else
@@ -578,56 +574,22 @@ DlgProc endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 DllFunction proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
-;	LOCAL	buffer[256]:BYTE
-;	LOCAL	mii:MENUITEMINFO
 	; This proc handles messages sent from RadASM to our dll
 	; Return TRUE to prevent RadASM and other DLL's from
 
-	mov	eax, uMsg
-	.if eax == AIM_COMMAND
-		mov edx,wParam
-		movzx eax,dx
-		shr edx, 16
-		.IF eax == IDAddIn && edx == BN_CLICKED
+	mov		eax,uMsg
+	.if eax==AIM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if eax==IDAddIn && edx==BN_CLICKED
 			; Your addin has been selected
-;			push	NULL
-;			push	offset DlgProc
-;			push	hWin
-;			push	IDD_DIALOG1
-;			push	hInstance
-;			mov		eax,lpProc
-;			call	[eax].ADDINPROCS.lpModalDialog
 			invoke DialogBoxParam,hInstance,IDD_DIALOG1,hWin,offset DlgProc,0
-		.ENDIF
-;	.elseif eax==AIM_CLOSE
-;		;Always return FALSE
-;		;Now is the time to kill timers, free memory, destroy windows, unhook, delete menuitems and delete toolbar buttons
-;		.if IDAddIn
-;			mov		eax,lpHandles
-;			mov		eax,[eax].ADDINHANDLES.hMenu
-;			invoke DeleteMenu,eax,IDAddIn,MF_BYCOMMAND
-;			mov		IDAddIn,0
-;		.endif
-;	.elseif eax==AIM_ADDINSLOADED
-;		push	sizeof buffer/2
-;		lea		eax,buffer
-;		push	eax
-;		push	2000
-;		push	offset szAppName
-;		mov		eax,lpProc
-;		call	[eax].ADDINPROCS.lpGetLangString
-;		.if eax
-;			mov		mii.cbSize,sizeof MENUITEMINFO
-;			mov		mii.fMask,MIIM_TYPE
-;			mov		mii.fType,MFT_STRING
-;			lea		eax,buffer
-;			mov		mii.dwTypeData,eax
-;			mov		edx,lpHandles
-;			invoke SetMenuItemInfoW,[edx].ADDINHANDLES.hMenu,IDAddIn,FALSE,addr mii
-;		.endif
+		.endif
 	.endif
-	mov eax,FALSE
+	mov		eax,FALSE
 	ret
+
 DllFunction Endp
 
 ;#########################################################################
