@@ -13,7 +13,7 @@ Lang=Deutsch
 1004=Sprache:
 1=OK
 2=Abbrechen
-1002=Änderungen werden nach Neustart von FbIde übernommen.
+1002=Änderungen werden nach Neustart von FbEdit übernommen.
 ;--------------------------------------------------------------------------
 [2000]
 2000=Optionen
@@ -253,7 +253,7 @@ Lang=Deutsch
 1=OK
 2=Abbrechen
 1002=Hilfe
-1003=Änderungen werden nach Neustart von FbIde übernommen.
+1003=Änderungen werden nach Neustart von FbEdit übernommen.
 ;--------------------------------------------------------------------------
 [6200]
 6200=Projekt Api Dateien
