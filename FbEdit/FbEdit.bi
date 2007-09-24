@@ -148,6 +148,9 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDM_VIEW_OUTPUT						10092
 #Define IDM_VIEW_PROJECT					10093
 #Define IDM_VIEW_PROPERTY					10094
+#Define IDM_VIEW_TOOLBAR					10020
+#Define IDM_VIEW_TABSELECT					10058
+#Define IDM_VIEW_STATUSBAR					10059
 #Define IDM_VIEW_DIALOG						10095
 #Define IDM_VIEW_SPLITSCREEN				10096
 #Define IDM_VIEW_FULLSCREEN				10097
@@ -362,6 +365,9 @@ Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 #Define VIEW_OUTPUT		1
 #Define VIEW_PROJECT		2
 #Define VIEW_PROPERTY	4
+#Define VIEW_TOOLBAR		8
+#Define VIEW_TABSELECT	16
+#Define VIEW_STATUSBAR	32
 
 Const szNULL=!"\0"
 Const CRLF=Chr(13) & Chr(10)

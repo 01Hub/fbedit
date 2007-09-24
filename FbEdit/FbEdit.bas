@@ -421,6 +421,20 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				ShowWindow(ah.hpr,SW_SHOWNA)
 				SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_PROPERTY,TRUE)
 			EndIf
+			If wpos.fview And VIEW_TOOLBAR Then
+				ShowWindow(ah.htoolbar,SW_SHOWNA)
+				ShowWindow(ah.hcbobuild,SW_SHOWNA)
+				hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
+				ShowWindow(hCtl,SW_SHOWNA)
+			EndIf
+			If wpos.fview And VIEW_TABSELECT Then
+				ShowWindow(ah.htabtool,SW_SHOWNA)
+				hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
+				ShowWindow(hCtl,SW_SHOWNA)
+			EndIf
+			If wpos.fview And VIEW_STATUSBAR Then
+				ShowWindow(ah.hsbr,SW_SHOWNA)
+			EndIf
 			GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@ApiFiles,SizeOf(ApiFiles),@ad.IniFile)
 			GetPrivateProfileString(StrPtr("Api"),StrPtr("DefApi"),@szNULL,@DefApiFiles,SizeOf(DefApiFiles),@ad.IniFile)
 			SetHiliteWords(ah.hwnd)
@@ -987,6 +1001,42 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							fTimer=1
 							'
+						Case IDM_VIEW_TOOLBAR
+							wpos.fview=wpos.fview Xor VIEW_TOOLBAR
+							SendMessage(hWin,WM_SIZE,0,0)
+							hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
+							If wpos.fview And VIEW_TOOLBAR Then
+								ShowWindow(ah.htoolbar,SW_SHOWNA)
+								ShowWindow(ah.hcbobuild,SW_SHOWNA)
+								ShowWindow(hCtl,SW_SHOWNA)
+							Else
+								ShowWindow(ah.htoolbar,SW_HIDE)
+								ShowWindow(ah.hcbobuild,SW_HIDE)
+								ShowWindow(hCtl,SW_HIDE)
+							EndIf
+							fTimer=1
+							'
+						Case IDM_VIEW_TABSELECT
+							wpos.fview=wpos.fview Xor VIEW_TABSELECT
+							SendMessage(hWin,WM_SIZE,0,0)
+							hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
+							If wpos.fview And VIEW_TABSELECT Then
+								ShowWindow(ah.htabtool,SW_SHOWNA)
+								ShowWindow(hCtl,SW_SHOWNA)
+							Else
+								ShowWindow(ah.htabtool,SW_HIDE)
+								ShowWindow(hCtl,SW_HIDE)
+							EndIf
+							fTimer=1
+						Case IDM_VIEW_STATUSBAR
+							wpos.fview=wpos.fview Xor VIEW_STATUSBAR
+							SendMessage(hWin,WM_SIZE,0,0)
+							If wpos.fview And VIEW_STATUSBAR Then
+								ShowWindow(ah.hsbr,SW_SHOWNA)
+							Else
+								ShowWindow(ah.hsbr,SW_HIDE)
+							EndIf
+							fTimer=1
 						Case IDM_VIEW_DIALOG
 							SendMessage(lpRESMEM->hResEd,DEM_SHOWDIALOG,0,0)
 							'
@@ -1690,16 +1740,18 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 				' Get dialogs client rect
 				GetClientRect(hWin,@rect)
-				' Size the divider
-				hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
-				MoveWindow(hCtl,0,0,rect.right+1,2,TRUE)
-				' Get height of toolbar
-				GetClientRect(ah.htoolbar,@rect1)
-				hgt=rect1.bottom+3
-				If rect1.right<>ad.tbwt Then
-					rect1.right=ad.tbwt
-					MoveWindow(ah.htoolbar,0,3,rect1.right,rect1.bottom,TRUE)
-					MoveWindow(ah.hcbobuild,ad.tbwt,3,150,200,TRUE)
+				If wpos.fview And VIEW_TOOLBAR Then
+					' Size the divider
+					hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
+					MoveWindow(hCtl,0,0,rect.right+1,2,TRUE)
+					' Get height of toolbar
+					GetClientRect(ah.htoolbar,@rect1)
+					hgt=rect1.bottom+3
+					If rect1.right<>ad.tbwt Then
+						rect1.right=ad.tbwt
+						MoveWindow(ah.htoolbar,0,3,rect1.right,rect1.bottom,TRUE)
+						MoveWindow(ah.hcbobuild,ad.tbwt,3,150,200,TRUE)
+					EndIf
 				EndIf
 				' Size the divider
 				hCtl=GetDlgItem(hWin,IDC_DIVIDER)
@@ -1715,10 +1767,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				MoveWindow(hCtl,rect.right-twt-15,hgt+4,15,15,TRUE)
 				' Add height of tab select
 				hgt=hgt+rect1.bottom'+1
-				' Autosize the statusbar
-				MoveWindow(ah.hsbr,0,0,0,0,TRUE)
-				' Get client rect of statusbar
-				GetClientRect(ah.hsbr,@rect1)
+				rect1.bottom=0
+				If wpos.fview And VIEW_STATUSBAR Then
+					' Autosize the statusbar
+					MoveWindow(ah.hsbr,0,0,0,0,TRUE)
+					' Get client rect of statusbar
+					GetClientRect(ah.hsbr,@rect1)
+				EndIf
 				prjht=0
 				prht=0
 				If (wpos.fview And (VIEW_PROJECT Or VIEW_PROPERTY))=(VIEW_PROJECT Or VIEW_PROPERTY) Then
