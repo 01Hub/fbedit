@@ -431,6 +431,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				ShowWindow(ah.htabtool,SW_SHOWNA)
 				hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
 				ShowWindow(hCtl,SW_SHOWNA)
+				hCtl=GetDlgItem(hWin,IDC_DIVIDER)
+				ShowWindow(hCtl,SW_SHOWNA)
 			EndIf
 			If wpos.fview And VIEW_STATUSBAR Then
 				ShowWindow(ah.hsbr,SW_SHOWNA)
@@ -1003,7 +1005,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_VIEW_TOOLBAR
 							wpos.fview=wpos.fview Xor VIEW_TOOLBAR
-							SendMessage(hWin,WM_SIZE,0,0)
 							hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
 							If wpos.fview And VIEW_TOOLBAR Then
 								ShowWindow(ah.htoolbar,SW_SHOWNA)
@@ -1014,28 +1015,34 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								ShowWindow(ah.hcbobuild,SW_HIDE)
 								ShowWindow(hCtl,SW_HIDE)
 							EndIf
+							SendMessage(hWin,WM_SIZE,0,0)
 							fTimer=1
 							'
 						Case IDM_VIEW_TABSELECT
 							wpos.fview=wpos.fview Xor VIEW_TABSELECT
-							SendMessage(hWin,WM_SIZE,0,0)
 							hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
 							If wpos.fview And VIEW_TABSELECT Then
 								ShowWindow(ah.htabtool,SW_SHOWNA)
 								ShowWindow(hCtl,SW_SHOWNA)
+								hCtl=GetDlgItem(hWin,IDC_DIVIDER)
+								ShowWindow(hCtl,SW_SHOWNA)
 							Else
 								ShowWindow(ah.htabtool,SW_HIDE)
 								ShowWindow(hCtl,SW_HIDE)
+								hCtl=GetDlgItem(hWin,IDC_DIVIDER)
+								ShowWindow(hCtl,SW_HIDE)
 							EndIf
+							SendMessage(hWin,WM_SIZE,0,0)
+							InvalidateRect(ah.hshp,NULL,TRUE)
 							fTimer=1
 						Case IDM_VIEW_STATUSBAR
 							wpos.fview=wpos.fview Xor VIEW_STATUSBAR
-							SendMessage(hWin,WM_SIZE,0,0)
 							If wpos.fview And VIEW_STATUSBAR Then
 								ShowWindow(ah.hsbr,SW_SHOWNA)
 							Else
 								ShowWindow(ah.hsbr,SW_HIDE)
 							EndIf
+							SendMessage(hWin,WM_SIZE,0,0)
 							fTimer=1
 						Case IDM_VIEW_DIALOG
 							SendMessage(lpRESMEM->hResEd,DEM_SHOWDIALOG,0,0)
@@ -1753,20 +1760,22 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						MoveWindow(ah.hcbobuild,ad.tbwt,3,150,200,TRUE)
 					EndIf
 				EndIf
-				' Size the divider
-				hCtl=GetDlgItem(hWin,IDC_DIVIDER)
-				MoveWindow(hCtl,0,hgt,rect.right+1,2,TRUE)
-				' Add height of divider
-				hgt=hgt+4
-				tbhgt=hgt
-				' Size the tab select
-				GetClientRect(ah.htabtool,@rect1)
-				MoveWindow(ah.htabtool,0,hgt,rect.right-twt-17,rect1.bottom,TRUE)
-				' Size close button
-				hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
-				MoveWindow(hCtl,rect.right-twt-15,hgt+4,15,15,TRUE)
-				' Add height of tab select
-				hgt=hgt+rect1.bottom'+1
+				If wpos.fview And VIEW_TABSELECT Then
+					' Size the divider
+					hCtl=GetDlgItem(hWin,IDC_DIVIDER)
+					MoveWindow(hCtl,0,hgt,rect.right+1,2,TRUE)
+					' Add height of divider
+					hgt=hgt+4
+					tbhgt=hgt
+					' Size the tab select
+					GetClientRect(ah.htabtool,@rect1)
+					MoveWindow(ah.htabtool,0,hgt,rect.right-twt-17,rect1.bottom,TRUE)
+					' Size close button
+					hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
+					MoveWindow(hCtl,rect.right-twt-15,hgt+4,15,15,TRUE)
+					' Add height of tab select
+					hgt=hgt+rect1.bottom'+1
+				EndIf
 				rect1.bottom=0
 				If wpos.fview And VIEW_STATUSBAR Then
 					' Autosize the statusbar
@@ -1881,7 +1890,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				ElseIf nSize=2 Then
 					GetClientRect(hWin,@rect)
-					GetClientRect(ah.hsbr,@rect1)
+					If wpos.fview And VIEW_STATUSBAR Then
+						GetClientRect(ah.hsbr,@rect1)
+					EndIf
 					y=rect.bottom-rect1.bottom-y
 					If y<50 Then
 						y=50

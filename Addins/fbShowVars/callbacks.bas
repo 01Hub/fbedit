@@ -423,86 +423,95 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				If (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=0 Then
 					twt=0
 				EndIf
-				' Get dialogs client rect
-				GetClientRect(hWin,@rc1)
-				' Size the divider
-				hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
-				MoveWindow(hCtl,0,0,rc1.right+1,2,TRUE)
-				' Get height of toolbar
-				GetClientRect(lpHandles->htoolbar,@rc2)
-				hgt=rc2.bottom+3
-				If rc2.right<>lpData->tbwt Then
-					rc2.right=lpData->tbwt
-					MoveWindow(lpHandles->htoolbar,0,3,rc2.right,rc2.bottom,TRUE)
-					MoveWindow(lpHandles->hcbobuild,lpData->tbwt,3,150,200,TRUE)
-				EndIf
-				' Size the divider
-				hCtl=GetDlgItem(hWin,IDC_DIVIDER)
-				MoveWindow(hCtl,0,hgt,rc1.right+1,2,TRUE)
-				' Add height of divider
-				hgt=hgt+4
-				tbhgt=hgt
-				' Size the tab select
-				GetClientRect(lpHandles->htabtool,@rc2)
-				MoveWindow(lpHandles->htabtool,0,hgt,rc1.right-twt-17,rc2.bottom,TRUE)
-				' Size close button
-				hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
-				MoveWindow(hCtl,rc1.right-twt-15,hgt+4,15,15,TRUE)
-				' Add height of tab select
-				hgt=hgt+rc2.bottom'+1
-				' Autosize the statusbar
-				MoveWindow(lpHandles->hsbr,0,0,0,0,TRUE)
-				' Get client rect of statusbar
-				GetClientRect(lpHandles->hsbr,@rc2)
-				prjht=0
-				prht=0
-				If (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=(VIEW_PROJECT Or VIEW_PROPERTY) Then
-					prjht=(rc1.bottom-tbhgt-rc2.bottom)/2
-					prht=rc1.bottom-tbhgt-rc2.bottom-prjht
-				ElseIf (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROJECT Then
-					prjht=(rc1.bottom-tbhgt-rc2.bottom)
-				ElseIf (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROPERTY Then
-					prht=(rc1.bottom-tbhgt-rc2.bottom)
-				EndIf
-				' Size the tab
-				MoveWindow(lpHandles->htab,rc1.right-twt+2,tbhgt,twt-2,prjht,TRUE)
-				' Size the file browser
-				MoveWindow(lpHandles->hfib,rc1.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
-				' Size the project browser
-				MoveWindow(lpHandles->hprj,rc1.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
-				' Size the property
-				MoveWindow(lpHandles->hpr,rc1.right-twt+2,tbhgt+prjht,twt-2,prht,TRUE)
-				y=rc1.bottom-hgt-rc2.bottom-(lpData->lpWINPOS->htout*(lpData->lpWINPOS->fview And VIEW_OUTPUT)*dock1.fDocked)
-				If lpHandles->hpane(0) Then
-					' Two panes
-					MoveWindow(lpHandles->hpane(0),0,hgt,rc1.right-twt,y\2,TRUE)
-					If lpHandles->hpane(1) Then
-						ShowWindow(lpHandles->hshp,SW_HIDE)
-						MoveWindow(lpHandles->hpane(1),0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
-						MoveWindow(lpHandles->hshp,0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
-					Else
-						ShowWindow(lpHandles->hshp,SW_SHOWNA)
-						MoveWindow(lpHandles->hshp,0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
-					EndIf
-				ElseIf lpHandles->hred Then
-					' Size the edit control
-					MoveWindow(lpHandles->hred,0,hgt,rc1.right-twt,y,TRUE)
-					' Adjust shape for resize works
-					MoveWindow(lpHandles->hshp,0,hgt,rc1.right-twt,y,TRUE)
-				Else
-					' Size the shape
-					MoveWindow(lpHandles->hshp,0,hgt,rc1.right-twt,y,TRUE)
-				EndIf
+'				' Get dialogs client rect
+'				GetClientRect(hWin,@rc1)
+'				' Size the divider
+'				hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
+'				MoveWindow(hCtl,0,0,rc1.right+1,2,TRUE)
+'				' Get height of toolbar
+'				GetClientRect(lpHandles->htoolbar,@rc2)
+'				hgt=rc2.bottom+3
+'				If rc2.right<>lpData->tbwt Then
+'					rc2.right=lpData->tbwt
+'					MoveWindow(lpHandles->htoolbar,0,3,rc2.right,rc2.bottom,TRUE)
+'					MoveWindow(lpHandles->hcbobuild,lpData->tbwt,3,150,200,TRUE)
+'				EndIf
+'				' Size the divider
+'				hCtl=GetDlgItem(hWin,IDC_DIVIDER)
+'				MoveWindow(hCtl,0,hgt,rc1.right+1,2,TRUE)
+'				' Add height of divider
+'				hgt=hgt+4
+'				tbhgt=hgt
+'				' Size the tab select
+'				GetClientRect(lpHandles->htabtool,@rc2)
+'				MoveWindow(lpHandles->htabtool,0,hgt,rc1.right-twt-17,rc2.bottom,TRUE)
+'				' Size close button
+'				hCtl=GetDlgItem(hWin,IDM_FILE_CLOSE)
+'				MoveWindow(hCtl,rc1.right-twt-15,hgt+4,15,15,TRUE)
+'				' Add height of tab select
+'				hgt=hgt+rc2.bottom'+1
+'				' Autosize the statusbar
+'				MoveWindow(lpHandles->hsbr,0,0,0,0,TRUE)
+'				' Get client rect of statusbar
+'				GetClientRect(lpHandles->hsbr,@rc2)
+'				prjht=0
+'				prht=0
+'				If (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=(VIEW_PROJECT Or VIEW_PROPERTY) Then
+'					prjht=(rc1.bottom-tbhgt-rc2.bottom)/2
+'					prht=rc1.bottom-tbhgt-rc2.bottom-prjht
+'				ElseIf (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROJECT Then
+'					prjht=(rc1.bottom-tbhgt-rc2.bottom)
+'				ElseIf (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROPERTY Then
+'					prht=(rc1.bottom-tbhgt-rc2.bottom)
+'				EndIf
+'				' Size the tab
+'				MoveWindow(lpHandles->htab,rc1.right-twt+2,tbhgt,twt-2,prjht,TRUE)
+'				' Size the file browser
+'				MoveWindow(lpHandles->hfib,rc1.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
+'				' Size the project browser
+'				MoveWindow(lpHandles->hprj,rc1.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
+'				' Size the property
+'				MoveWindow(lpHandles->hpr,rc1.right-twt+2,tbhgt+prjht,twt-2,prht,TRUE)
+'				y=rc1.bottom-hgt-rc2.bottom-(lpData->lpWINPOS->htout*(lpData->lpWINPOS->fview And VIEW_OUTPUT)*dock1.fDocked)
+'				If lpHandles->hpane(0) Then
+'					' Two panes
+'					MoveWindow(lpHandles->hpane(0),0,hgt,rc1.right-twt,y\2,TRUE)
+'					If lpHandles->hpane(1) Then
+'						ShowWindow(lpHandles->hshp,SW_HIDE)
+'						MoveWindow(lpHandles->hpane(1),0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
+'						MoveWindow(lpHandles->hshp,0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
+'					Else
+'						ShowWindow(lpHandles->hshp,SW_SHOWNA)
+'						MoveWindow(lpHandles->hshp,0,hgt+y\2,rc1.right-twt,y-y\2,TRUE)
+'					EndIf
+'				ElseIf lpHandles->hred Then
+'					' Size the edit control
+'					MoveWindow(lpHandles->hred,0,hgt,rc1.right-twt,y,TRUE)
+'					' Adjust shape for resize works
+'					MoveWindow(lpHandles->hshp,0,hgt,rc1.right-twt,y,TRUE)
+'				Else
+'					' Size the shape
+'					MoveWindow(lpHandles->hshp,0,hgt,rc1.right-twt,y,TRUE)
+'				EndIf
+				CallWindowProc(lpOldMain,hWin,uMsg,wParam,lParam)
 				' Size the Output
 				If lpData->lpWINPOS->fview And VIEW_OUTPUT Then
 					If dock1.fDocked = TRUE Then
-						SetWindowPos(hDbgWin,HWND_TOP,0,rc1.bottom-rc2.bottom-lpData->lpWINPOS->htout+2,rc1.right-twt,lpData->lpWINPOS->htout-2,SWP_SHOWWINDOW)
+						GetClientRect(hWin,@rc2)
+						GetWindowRect(lpHandles->hout,@rc1)
+						If GetParent(lpHandles->hout)=lpHandles->hwnd Then
+							ScreenToClient(lpHandles->hwnd,Cast(POINT Ptr,@rc1))
+						Else
+							ScreenToClient(hDbgWin,Cast(POINT Ptr,@rc1))
+						EndIf
+						SetWindowPos(hDbgWin,HWND_TOP,0,rc1.top,rc2.right-twt,lpData->lpWINPOS->htout,SWP_SHOWWINDOW)
+'						SetWindowPos(hDbgWin,HWND_TOP,0,rc1.bottom-rc2.bottom-lpData->lpWINPOS->htout+2,rc1.right-twt,lpData->lpWINPOS->htout-2,SWP_SHOWWINDOW)
 					EndIf
 					SendMessage(hDbgWin,WM_SIZE,0,0)
 				Else
 					ShowWindow(hDbgWin,SW_HIDE)
 				EndIf
-				' Size the splash
+'				' Size the splash
 				GetWindowRect(lpHandles->hshp,@rc2)
 				ScreenToClient(hWin,Cast(POINT ptr,@rc2.right))
 				MoveWindow(GetDlgItem(hWin,IDC_IMGSPLASH),(rc2.right-340)/2,(rc2.bottom-188)/2+25,340,188,TRUE)

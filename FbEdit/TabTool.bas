@@ -46,7 +46,9 @@ Sub DelTab(ByVal hWin As HWND)
 			SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 			SetFocus(ah.hred)
 		Else
-			ShowWindow(ah.htabtool,SW_HIDE)
+			If wpos.fview And VIEW_TABSELECT Then
+				ShowWindow(ah.htabtool,SW_HIDE)
+			EndIf
 			ShowWindow(ah.hshp,SW_SHOWNA)
 			ah.hred=0
 			If ah.hfullscreen Then
@@ -99,7 +101,9 @@ Sub AddTab(hEdt As HWND,ByVal lpFileName As String)
 	EndIf
 	tci.lParam=Cast(LPARAM,lpTABMEM)
 	x=SendMessage(ah.htabtool,TCM_INSERTITEM,999,Cast(Integer,@tci))
-	ShowWindow(ah.htabtool,SW_SHOWNA)
+	If wpos.fview And VIEW_TABSELECT Then
+		ShowWindow(ah.htabtool,SW_SHOWNA)
+	endif
 	If ah.hpane(0)=0 Then
 		ShowWindow(ah.hshp,SW_HIDE)
 	Else
@@ -513,7 +517,9 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		SetFocus(ah.hred)
 		Return TRUE
 	Else
-		ShowWindow(ah.htabtool,SW_HIDE)
+		If wpos.fview And VIEW_TABSELECT Then
+			ShowWindow(ah.htabtool,SW_HIDE)
+		EndIf
 		curtab=-1
 		prevtab=-1
 		ah.hred=0
