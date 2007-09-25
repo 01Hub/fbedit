@@ -62,7 +62,6 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDC_SHP								1014
 #Define IDC_CBOBUILD							1016
 #Define IDC_IMGSPLASH						1017
-#Define IDC_RAHEXED							1020
 
 ' Menu and toolbar
 #Define IDR_MENU								10000
@@ -254,6 +253,7 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDC_RESPROPERTY						1103
 #Define IDC_RESPROJECT						1106
 #Define IDC_CODEED							1200
+#Define IDC_HEXED								1300
 
 Type TABMEM
 	hedit				As HWND

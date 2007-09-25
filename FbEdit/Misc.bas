@@ -1402,6 +1402,7 @@ Sub EnableMenu()
 	Dim bm As Integer
 	Dim chrg As CHARRANGE
 	Dim lpRESMEM As RESMEM Ptr
+	Dim id As Integer
 
 	If ah.hred=ah.hres Then
 		lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,0))
@@ -1576,26 +1577,32 @@ Sub EnableMenu()
 		EnableDisableContext(FALSE,IDM_PROPERTY_JUMP)
 		EnableDisableContext(FALSE,IDM_PROPERTY_COPY)
 	Else
+		id=GetWindowLong(ah.hred,GWL_ID)
 		EnableDisable(TRUE,IDM_FILE_PRINT)
 		EnableDisable(TRUE,IDM_EDIT_GOTO)
 		EnableDisable(TRUE,IDM_EDIT_FIND)
 		EnableDisable(TRUE,IDM_EDIT_FINDNEXT)
 		EnableDisable(TRUE,IDM_EDIT_FINDPREVIOUS)
 		EnableDisable(TRUE,IDM_EDIT_REPLACE)
-		EnableDisable(TRUE,IDM_EDIT_FINDDECLARE)
 		If fdc(fdcpos).hwnd Then
 			EnableDisable(TRUE,IDM_EDIT_RETURN)
 		Else
 			EnableDisable(FALSE,IDM_EDIT_RETURN)
 		EndIf
-		EnableDisable(TRUE,IDM_EDIT_BLOCKINDENT)
-		EnableDisable(TRUE,IDM_EDIT_BLOCKOUTDENT)
-		EnableDisable(TRUE,IDM_EDIT_BLOCKCOMMENT)
-		EnableDisable(TRUE,IDM_EDIT_BLOCKUNCOMMENT)
-		EnableDisable(TRUE,IDM_EDIT_BLOCKMODE)
-		EnableDisable(TRUE,IDM_EDIT_EXPAND)
-		bm=SendMessage(ah.hred,REM_GETMODE,0,0) And MODE_BLOCK
-		EnableDisable(bm,IDM_EDIT_BLOCK_INSERT)
+		bm=0
+		If id=IDC_CODEED Then
+			bm=1
+		EndIf
+		EnableDisable(bm,IDM_EDIT_FINDDECLARE)
+		EnableDisable(bm,IDM_EDIT_BLOCKINDENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKOUTDENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKCOMMENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKUNCOMMENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKMODE)
+		EnableDisable(bm,IDM_EDIT_EXPAND)
+		EnableDisable(bm,IDM_FORMAT_CASECONVERT)
+		EnableDisable(bm,IDM_FORMAT_INDENT)
+		EnableDisable(bm,IDM_MAKE_QUICKRUN)
 		bm=SendMessage(ah.hred,EM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
 		bm=SendMessage(ah.hred,EM_CANREDO,0,0)
@@ -1605,27 +1612,41 @@ Sub EnableMenu()
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)
 		EnableDisable(bm,IDM_EDIT_DELETE)
+		If id<>IDC_CODEED Then
+			bm=0
+		EndIf
 		EnableDisable(bm,IDM_EDIT_BLOCKTRIM)
 		EnableDisable(bm,IDM_EDIT_CONVERTTAB)
 		EnableDisable(bm,IDM_EDIT_CONVERTSPACE)
 		EnableDisable(bm,IDM_EDIT_CONVERTUPPER)
 		EnableDisable(bm,IDM_EDIT_CONVERTLOWER)
-		EnableDisable(TRUE,IDM_FORMAT_CASECONVERT)
-		EnableDisable(TRUE,IDM_FORMAT_INDENT)
 		bm=SendMessage(ah.hred,EM_CANPASTE,CF_TEXT,0)
 		EnableDisable(bm,IDM_EDIT_PASTE)
 		EnableDisable(TRUE,IDM_EDIT_SELECTALL)
 		EnableDisable(TRUE,IDM_EDIT_BOOKMARKTOGGLE)
-		bm=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)+1
-		EnableDisable(bm,IDM_EDIT_BOOKMARKNEXT)
-		bm=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)+1
-		EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
-		bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,3)+1
-		EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
+		If id=IDC_CODEED Then
+			bm=SendMessage(ah.hred,REM_GETMODE,0,0) And MODE_BLOCK
+			EnableDisable(bm,IDM_EDIT_BLOCK_INSERT)
+			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)+1
+			EnableDisable(bm,IDM_EDIT_BOOKMARKNEXT)
+			bm=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)+1
+			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
+			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,3)+1
+			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
+	
+			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,7)+1
+			EnableDisable(bm,IDM_EDIT_ERRORCLEAR)
+			EnableDisable(bm,IDM_EDIT_ERRORNEXT)
+		Else
+			EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
+			bm=SendMessage(ah.hred,HEM_ANYBOOKMARKS,0,0)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKNEXT)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
 
-		bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,7)+1
-		EnableDisable(bm,IDM_EDIT_ERRORCLEAR)
-		EnableDisable(bm,IDM_EDIT_ERRORNEXT)
+			EnableDisable(FALSE,IDM_EDIT_ERRORCLEAR)
+			EnableDisable(FALSE,IDM_EDIT_ERRORNEXT)
+		EndIf
 
 		EnableDisable(FALSE,IDM_FORMAT_LOCK)
 		EnableDisable(FALSE,IDM_FORMAT_BACK)
@@ -1656,8 +1677,6 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_RESOURCE_EXPORT)
 		EnableDisable(FALSE,IDM_RESOURCE_REMOVE)
 		EnableDisable(FALSE,IDM_RESOURCE_UNDO)
-
-		EnableDisable(TRUE,IDM_MAKE_QUICKRUN)
 
 		If SendMessage(ah.hpr,PRM_GETCURSEL,0,0)=LB_ERR Then
 			EnableDisableContext(FALSE,IDM_PROPERTY_JUMP)

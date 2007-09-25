@@ -253,7 +253,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		If tpe=0 Then
 			st=st Or STYLE_NOHILITE
 		EndIf
-		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_CODEED),hInstance,0)
 		UpdateEditOption(hTmp)
 		If tpe=2 Then
 			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
@@ -300,7 +300,7 @@ Function CreateHexEdit(ByVal sFile As String) As HWND
 		EndIf
 	Else
 		st=WS_CHILD Or WS_VISIBLE Or WS_CLIPCHILDREN Or WS_CLIPSIBLINGS
-		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAHEXEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAHEXED),hInstance,0)
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAHEXEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_HEXED),hInstance,0)
 		fnt.hFont=ah.rafnt.hFont
 		fnt.hLnrFont=ah.rafnt.hLnrFont
 		SendMessage(hTmp,HEM_SETFONT,0,Cast(LPARAM,@fnt))
