@@ -66,7 +66,7 @@ Sub DelTab(ByVal hWin As HWND)
 
 End Sub
 
-Sub AddTab(hEdt As HWND,ByVal lpFileName As String)
+Sub AddTab(hEdt As HWND,ByVal lpFileName As String,ByVal fHex As Boolean)
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
@@ -281,6 +281,7 @@ Function CreateHexEdit(ByVal sFile As String) As HWND
 	Dim hTmp As HWND
 	Dim st As Integer
 	Dim tpe As Integer
+	Dim fnt As HEFONT
 
 	hCtl=ah.hred
 	tpe=FileType(sFile)
@@ -299,25 +300,13 @@ Function CreateHexEdit(ByVal sFile As String) As HWND
 		EndIf
 	Else
 		st=WS_CHILD Or WS_VISIBLE Or WS_CLIPCHILDREN Or WS_CLIPSIBLINGS
-		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAHEXEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
-'		UpdateEditOption(hTmp)
-'		If tpe=2 Then
-'			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
-'		ElseIf tpe=1 Then
-'			SetWindowLong(hTmp,GWL_ID,IDC_CODEED)
-'			SetWindowLong(hTmp,GWL_USERDATA,2)
-'		Else
-'			SendMessage(hTmp,REM_SETWORDGROUP,0,15)
-'		EndIf
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAHEXEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAHEXED),hInstance,0)
+		fnt.hFont=ah.rafnt.hFont
+		fnt.hLnrFont=ah.rafnt.hLnrFont
+		SendMessage(hTmp,HEM_SETFONT,0,Cast(LPARAM,@fnt))
 		SendMessage(hTmp,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
 		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
-'		lpOldParEditProc=Cast(Any Ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
-'		lpOldEditProc=Cast(Any Ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
 	EndIf
-'	If edtopt.linenumbers Then
-'		CheckDlgButton(hTmp,-2,TRUE)
-'		SendMessage(hTmp,WM_COMMAND,-2,0)
-'	EndIf
 	Return hTmp
 
 End Function
@@ -392,7 +381,7 @@ Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 		EndIf
 		If hTmp Then
 			ad.filename=sFile
-			AddTab(hTmp,ad.filename)
+			AddTab(hTmp,ad.filename,fHex)
 			ReadTheFile(ah.hred,ad.filename)
 			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
@@ -430,7 +419,7 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 			Do While Asc(s)<>0
 				sFile=pth & "\" & s
 				hTmp=CreateEdit(sFile)
-				AddTab(hTmp,sFile)
+				AddTab(hTmp,sFile,FALSE)
 				ReadTheFile(hTmp,sFile)
 				i=i+Len(s)+1
 				lstrcpy(@s,Cast(ZString Ptr,hMem+i))

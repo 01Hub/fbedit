@@ -567,7 +567,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_FILE_NEW
 							hCtl=CreateEdit("(Untitled).bas")
-							AddTab(hCtl,"(Untitled).bas")
+							AddTab(hCtl,"(Untitled).bas",FALSE)
 							If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 								UpdateFileProperty
 							EndIf
@@ -579,7 +579,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GlobalLock(hMem)
 							SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
 							ah.hred=ah.hres
-							AddTab(ah.hred,ad.filename)
+							AddTab(ah.hred,ad.filename,FALSE)
 							'
 						Case IDM_FILE_OPEN
 							buff=OpenInclude
@@ -1499,7 +1499,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
-			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred Then
+			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)

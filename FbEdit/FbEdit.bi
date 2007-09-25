@@ -12,6 +12,7 @@
 #Include "Inc/RAProperty.bi"
 #Include "Inc/RACodeComplete.bi"
 #Include "Inc/RAResEd.bi"
+#Include "Inc/RAHexEd.bi"
 #Include "Inc/Addins.bi"
 
 Declare Function IsResOpen() As HWND
@@ -61,6 +62,7 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDC_SHP								1014
 #Define IDC_CBOBUILD							1016
 #Define IDC_IMGSPLASH						1017
+#Define IDC_RAHEXED							1020
 
 ' Menu and toolbar
 #Define IDR_MENU								10000
