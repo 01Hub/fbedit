@@ -21,7 +21,7 @@ Declare Function CloseProject() As Integer
 Declare Function IsProjectFile(ByVal sFile As String) As Integer
 Declare Sub OpenProjectFile(ByVal nInx As Integer)
 Declare Sub WriteProjectFileInfo(ByVal hWin As HWND,ByVal nInx As Integer,ByVal fProjectClose As Boolean)
-Declare Sub OpenTheFile(ByVal sFile As String)
+Declare Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 Declare Sub TextToOutput(ByVal sText As String)
 Declare Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 Declare Function LoadFromIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
@@ -71,6 +71,7 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDM_FILE_NEW							10005
 #Define IDM_FILE_NEW_RESOURCE				10006
 #Define IDM_FILE_OPEN						10007
+#Define IDM_FILE_OPEN_HEX					10060
 #Define IDM_FILE_RECENTFILE				10008
 #Define IDM_FILE_SAVE						10009
 #Define IDM_FILE_SAVEALL					10010
@@ -379,6 +380,7 @@ Dim Shared hInstance As HINSTANCE
 ' Custom controls used by FbEdit
 Dim hRichEditDll As HMODULE
 Dim hRAEditDll As HMODULE
+Dim hRAHexEdDll As HMODULE
 Dim hRAResEdDll As HMODULE
 Dim hRAGridDll As HMODULE
 Dim hRAFileDll As HMODULE

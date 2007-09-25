@@ -530,7 +530,7 @@ Function OpenProject() As Integer
 				If pfi.nLoad=2 Then
 					fNoResMode=TRUE
 				EndIf
-				OpenTheFile(sItem)
+				OpenTheFile(sItem,FALSE)
 				fNoResMode=FALSE
 			EndIf
 		EndIf
@@ -548,7 +548,7 @@ Function OpenProject() As Integer
 			EndIf
 			ReadProjectFileInfo(nInx,@pfi)
 			If pfi.nLoad Then
-				OpenTheFile(sItem)
+				OpenTheFile(sItem,FALSE)
 			EndIf
 		EndIf
 		nInx=nInx+1
@@ -667,7 +667,7 @@ Sub AddProjectFile(ByVal sFile As String,ByVal fModule As Boolean)
 	sItem=RemoveProjectPath(sItem)
 	WritePrivateProfileString(StrPtr("File"),Str(nInx),@sItem,@ad.ProjectFile)
 	RefreshProjectTree
-	OpenTheFile(sFile)
+	OpenTheFile(sFile,FALSE)
 
 End Sub
 
@@ -993,7 +993,7 @@ Sub OpenProjectFile(ByVal nInx As Integer)
 
 	sFile=GetProjectFileName(nInx)
 	' Open single file
-	OpenTheFile(sFile)
+	OpenTheFile(sFile,FALSE)
 
 End Sub
 
@@ -1770,7 +1770,7 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				SendMessage(hWin,TVM_GETITEM,0,Cast(Integer,@tvi))
 				If tvi.lParam Then
 					sFile=MakeProjectFileName(buff)
-					OpenTheFile(sFile)
+					OpenTheFile(sFile,FALSE)
 					fTimer=1
 				EndIf
 			EndIf
@@ -1795,7 +1795,7 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						EndIf
 					Else
 						' Open single file
-						OpenTheFile(sFile)
+						OpenTheFile(sFile,FALSE)
 					EndIf
 				EndIf
 				id=id+1

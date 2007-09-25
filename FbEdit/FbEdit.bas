@@ -166,7 +166,7 @@ Sub CmdLine
 				ad.filename=Mid(ad.filename,2,InStr(2,ad.filename,Chr(34))-2)
 			EndIf
 			' Open single file
-			OpenTheFile(ad.filename)
+			OpenTheFile(ad.filename,FALSE)
 			s=Mid(s,x+1)
 			x=0
 		EndIf
@@ -584,13 +584,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_FILE_OPEN
 							buff=OpenInclude
 							If Len(buff) Then
-								OpenTheFile(buff)
+								OpenTheFile(buff,FALSE)
 							Else
-								OpenAFile(hWin)
+								OpenAFile(hWin,FALSE)
 							EndIf
 							If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 								UpdateFileProperty
 							EndIf
+							'
+						Case IDM_FILE_OPEN_HEX
+							OpenAFile(hWin,TRUE)
 							'
 						Case IDM_FILE_SAVE
 							If ah.hred Then
@@ -1457,7 +1460,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								' Mru file
 								x=InStr(MruFile(id-15001),",")
 								If x Then
-									OpenTheFile(Mid(MruFile(id-15001),x+1))
+									OpenTheFile(Mid(MruFile(id-15001),x+1),FALSE)
 								EndIf
 							EndIf
 							'
@@ -1602,7 +1605,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						buff=Chr(255) & Chr(1)
 						x=SendMessage(ah.hout,EM_GETLINE,x,Cast(LPARAM,@buff))
 						buff[x]=NULL
-						OpenTheFile(buff)
+						OpenTheFile(buff,FALSE)
 						x=SendMessage(ah.hout,REM_GETBMID,lpRASELCHANGE->Line,0)
 						If x Then
 							x=SendMessage(ah.hred,REM_FINDBOOKMARK,x,0)
@@ -1675,7 +1678,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				' File dblclicked
 				lpFBNOTIFY=Cast(FBNOTIFY Ptr,lParam)
 				lstrcpy(@sItem,lpFBNOTIFY->lpfile)
-				OpenTheFile(sItem)
+				OpenTheFile(sItem,FALSE)
 				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 					UpdateFileProperty
 				EndIf
@@ -1733,7 +1736,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				lret=DragQueryFile(Cast(HDROP,wParam),id,@sItem,SizeOf(sItem))
 				If lret Then
 					' Open single file
-					OpenTheFile(sItem)
+					OpenTheFile(sItem,FALSE)
 				EndIf
 				id=id+1
 			Loop
@@ -2029,40 +2032,45 @@ Dim CharTab As Function() As Any Ptr
 	hRichEditDll=LoadLibrary("riched20.dll")
 	hRAEditDll=LoadLibrary("RAEdit.dll")
 	If hRAEditDll Then
-		hRAFileDll=LoadLibrary("RAFile.dll")
-		If hRAFileDll Then
-			hRAPropertyDll=LoadLibrary("RAProperty.dll")
-			If hRAPropertyDll Then
-				hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
-				If hRACodeCompleteDll Then
-					hRAResEdDll=LoadLibrary("RAResEd.dll")
-					If hRAResEdDll Then
-						hRAGridDll=LoadLibrary("RAGrid.dll")
-						If hRAGridDll Then
-							CharTab=Cast(Any Ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
-							ad.lpCharTab=CharTab()
-							ah.haccel=LoadAccelerators(hInstance,Cast(ZString Ptr,IDA_ACCEL))
-							OleInitialize(NULL)
-							WinMain(hInstance,NULL,NULL,NULL)
-							OleUninitialize
+		hRAHexEdDll=LoadLibrary("RAHexEd.dll")
+		If hRAHexEdDll Then
+			hRAFileDll=LoadLibrary("RAFile.dll")
+			If hRAFileDll Then
+				hRAPropertyDll=LoadLibrary("RAProperty.dll")
+				If hRAPropertyDll Then
+					hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
+					If hRACodeCompleteDll Then
+						hRAResEdDll=LoadLibrary("RAResEd.dll")
+						If hRAResEdDll Then
+							hRAGridDll=LoadLibrary("RAGrid.dll")
+							If hRAGridDll Then
+								CharTab=Cast(Any Ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
+								ad.lpCharTab=CharTab()
+								ah.haccel=LoadAccelerators(hInstance,Cast(ZString Ptr,IDA_ACCEL))
+								OleInitialize(NULL)
+								WinMain(hInstance,NULL,NULL,NULL)
+								OleUninitialize
+							Else
+								MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
+							EndIf
+							FreeLibrary(hRAResEdDll)
 						Else
-							MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
+							MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 						EndIf
-						FreeLibrary(hRAResEdDll)
+						FreeLibrary(hRACodeCompleteDll)
 					Else
-						MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
+						MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
 					EndIf
-					FreeLibrary(hRACodeCompleteDll)
+					FreeLibrary(hRAPropertyDll)
 				Else
-					MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
+					MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
 				EndIf
-				FreeLibrary(hRAPropertyDll)
+				FreeLibrary(hRAFileDll)
 			Else
-				MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
 			EndIf
-			FreeLibrary(hRAFileDll)
 		Else
-			MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
+			MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAHexEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 		EndIf
 		FreeLibrary(hRAEditDll)
 		FreeLibrary(hRichEditDll)

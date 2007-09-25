@@ -276,6 +276,52 @@ Function CreateEdit(ByVal sFile As String) As HWND
 
 End Function
 
+Function CreateHexEdit(ByVal sFile As String) As HWND
+	Dim hCtl As HWND
+	Dim hTmp As HWND
+	Dim st As Integer
+	Dim tpe As Integer
+
+	hCtl=ah.hred
+	tpe=FileType(sFile)
+	If tpe=2 And (GetKeyState(VK_CONTROL) And &H80)=0 And fNoResMode=FALSE Then
+		hTmp=IsResOpen
+		If hTmp Then
+			SelectTab(ah.hwnd,hTmp,0)
+			If WantToSave(ah.hred)=FALSE Then
+				ReadTheFile(ah.hred,sFile)
+				UpdateTab
+				SetWinCaption
+			EndIf
+			Return 0
+		Else
+			hTmp=ah.hres
+		EndIf
+	Else
+		st=WS_CHILD Or WS_VISIBLE Or WS_CLIPCHILDREN Or WS_CLIPSIBLINGS
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAHEXEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
+'		UpdateEditOption(hTmp)
+'		If tpe=2 Then
+'			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
+'		ElseIf tpe=1 Then
+'			SetWindowLong(hTmp,GWL_ID,IDC_CODEED)
+'			SetWindowLong(hTmp,GWL_USERDATA,2)
+'		Else
+'			SendMessage(hTmp,REM_SETWORDGROUP,0,15)
+'		EndIf
+		SendMessage(hTmp,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
+		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
+'		lpOldParEditProc=Cast(Any Ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
+'		lpOldEditProc=Cast(Any Ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
+	EndIf
+'	If edtopt.linenumbers Then
+'		CheckDlgButton(hTmp,-2,TRUE)
+'		SendMessage(hTmp,WM_COMMAND,-2,0)
+'	EndIf
+	Return hTmp
+
+End Function
+
 Sub SetFileInfo(ByVal hWin As HWND,ByVal sFile As String)
 	Dim nInx As Integer
 	Dim pfi As PFI
@@ -288,7 +334,7 @@ Sub SetFileInfo(ByVal hWin As HWND,ByVal sFile As String)
 
 End Sub
 
-Sub OpenTheFile(ByVal sFile As String)
+Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 	Dim sType As String
 	Dim sItem As ZString*260
 	Dim x As Integer
@@ -339,7 +385,11 @@ Sub OpenTheFile(ByVal sFile As String)
 			nInx=nInx+1
 		Loop
 		' Open the file
-		hTmp=CreateEdit(sFile)
+		If fHex Then
+			hTmp=CreateHexEdit(sFile)
+		Else
+			hTmp=CreateEdit(sFile)
+		EndIf
 		If hTmp Then
 			ad.filename=sFile
 			AddTab(hTmp,ad.filename)
@@ -351,7 +401,7 @@ Sub OpenTheFile(ByVal sFile As String)
 
 End Sub
 
-Sub OpenAFile(ByVal hWin As HWND)
+Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 	Dim ofn As OPENFILENAME
 	Dim hMem As HGLOBAL
 	Dim i As Integer
@@ -374,7 +424,7 @@ Sub OpenAFile(ByVal hWin As HWND)
 		lstrcpy(@s,Cast(ZString Ptr,hMem+i))
 		If Asc(s)=0 Then
 			' Open single file
-			OpenTheFile(pth)
+			OpenTheFile(pth,fHex)
 		Else
 			' Open multiple files
 			Do While Asc(s)<>0

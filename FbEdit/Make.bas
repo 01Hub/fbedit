@@ -252,7 +252,7 @@ Function GetErrLine(ByVal buff As String,ByVal fQuickRun As Boolean) As Integer
 			Next x
 			If fQuickRun=FALSE Then
 				GetFullPathName(@buffer,SizeOf(buffer),@buffer,Cast(LPTSTR Ptr,@x))
-				OpenTheFile(buffer)
+				OpenTheFile(buffer,FALSE)
 			EndIf
 			Return y
 		ElseIf x Then

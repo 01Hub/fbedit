@@ -119,7 +119,7 @@ Type ADDINFUNCTIONS
 	TextToOutput As Sub(ByVal sText As String)
 	SaveToIni As Sub(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 	LoadFromIni As Function(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
-	OpenTheFile As Sub(ByVal sFile As String)
+	OpenTheFile As Sub(ByVal sFile As String,ByVal fHex As Boolean)
 	Compile As Function(ByVal sMake As String) As Integer
 	ShowOutput As Sub(ByVal bShow As Boolean)
 	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)

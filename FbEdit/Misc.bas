@@ -1082,7 +1082,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			If mdn Then
 				buff=OpenInclude
 				If Len(buff) Then
-					OpenTheFile(buff)
+					OpenTheFile(buff,FALSE)
 				EndIf
 			EndIf
 		Case WM_KILLFOCUS
