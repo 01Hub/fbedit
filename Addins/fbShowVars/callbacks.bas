@@ -411,8 +411,7 @@ End Function
 
 Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM ) As Integer
 
-	Dim As Long twt, hgt, prjht, prht, tbhgt, y
-	Dim As HWND hCtl
+	Dim As Long twt
 	Dim As RECT rc1, rc2, rc3
 
    Select Case uMsg
