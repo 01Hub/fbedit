@@ -1886,8 +1886,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					' Size the shape
 					MoveWindow(ah.hshp,0,hgt,rect.right-twt,y,TRUE)
 				EndIf
-				' Size the Output
-				MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
+				If ad.bExtOutput=0 Then
+					' Size the Output
+					MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
+				EndIf
 				' Size the splash
 				GetWindowRect(ah.hshp,@rect1)
 				ScreenToClient(hWin,Cast(Point Ptr,@rect1.right))

@@ -99,6 +99,7 @@ Function GetString( ByVal id As Integer, ByRef txt As String ) As String
 End Function
 
 Sub GetFileNamePart( ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr )
+
 	Dim As UByte Ptr p
 	Dim As Integer i
 	
@@ -114,6 +115,7 @@ Sub GetFileNamePart( ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr )
 End Sub
 
 Sub ChangeSeparator( ByVal txt As ZString Ptr )
+
 	Dim As UByte Ptr p
 	
 	p=txt
@@ -124,3 +126,27 @@ Sub ChangeSeparator( ByVal txt As ZString Ptr )
 	Wend
 	
 End Sub
+
+Sub GetViewSizes( ByVal v As VIEWS Ptr )
+	
+	Dim As RECT rc
+	
+	GetClientRect(lpHandles->htoolbar,@rc)
+	v->nToolbar=rc.bottom+3
+	GetClientRect(lpHandles->htabtool,@rc)
+	v->nTabselect=rc.bottom+4
+	GetClientRect(lpHandles->hsbr,@rc)
+	v->nStatusbar=rc.bottom
+	
+End Sub
+
+Function UpdateViewSize( ByVal v As VIEWS Ptr ) As Integer
+
+	Dim As Integer s=6
+	
+	s+=IIf(lpData->lpWINPOS->fview And VIEW_TOOLBAR,v->nToolbar,0)
+	s+=IIf(lpData->lpWINPOS->fview And VIEW_TABSELECT,v->nTabselect,0)
+	
+	Return s
+	
+End Function

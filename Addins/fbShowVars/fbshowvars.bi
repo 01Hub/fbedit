@@ -81,6 +81,12 @@ Type MYDOCKWIN
 	As Integer tDelay
 End Type
 
+Type VIEWS
+	As Integer nToolbar
+	As Integer nTabselect
+	As Integer nStatusbar
+End Type
+
 'callbacks
 Declare Function DlgProc( ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM ) As Integer
 Declare Function SelProc( ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM ) As Integer
@@ -95,6 +101,8 @@ Declare Sub myTimer()
 Declare Function GetString( ByVal id As Integer, ByRef txt As String ) As String
 Declare Sub GetFileNamePart( ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr )
 Declare Sub ChangeSeparator( ByVal txt As ZString Ptr )
+Declare Sub GetViewSizes( ByVal v As VIEWS Ptr )
+Declare Function UpdateViewSize( ByVal v As VIEWS Ptr ) As Integer
 
 'functions
 Declare Sub dbgInt( ByVal lpDBGINF As MYDEBUGINF ptr, ByVal bUpd As Integer )
@@ -125,6 +133,7 @@ Dim Shared As Integer nItems( LSV_6 )
 Dim Shared As Integer bTabSelect
 Dim Shared As Any ptr lpOldMain
 Dim Shared As MYDOCKWIN dock1 = ( 1, (10, 10, 300, 200), 0, 1, 0, 2500 )
+Dim Shared As VIEWS nSize
 
 'id for menus
 Dim Shared As Integer IDM_SHOWVARS_HIDE
@@ -136,6 +145,9 @@ Dim Shared As Integer IDM_SHOWVARS_CLEAR
 #Define VIEW_OUTPUT				1
 #Define VIEW_PROJECT				2
 #Define VIEW_PROPERTY			4
+#Define VIEW_TOOLBAR				8
+#Define VIEW_TABSELECT			16
+#Define VIEW_STATUSBAR			32
 #Define IDC_DIVIDER				1005
 #Define IDC_DIVIDER2				1015
 #Define IDC_IMGSPLASH			1017

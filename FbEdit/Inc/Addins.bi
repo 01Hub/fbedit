@@ -113,6 +113,7 @@ Type ADDINDATA
 	lpWINPOS			As WINPOS Ptr					' Window positions and sizes
 	lpCharTab		As Any Ptr						' Pointer to RAEdit character table
 	hLangMem			As HGLOBAL						' Language translation
+	bExtOutput		As Integer						' External Output
 End Type
 
 Type ADDINFUNCTIONS

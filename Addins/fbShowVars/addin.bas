@@ -52,6 +52,8 @@ Function DllFunction Cdecl Alias "DllFunction" ( ByVal hWin As HWND, ByVal uMsg 
 	Select Case uMsg
 		Case AIM_ADDINSLOADED
 			lpFunctions->LoadFromIni( "ShowVars", "Dock", "444444444", @dock1, FALSE )
+			lpData->bExtOutput=TRUE
+			GetViewSizes(@nSize)
 			hDbgWin = CreateDialogParam( hInstance, Cast( ZString ptr, IDD_DLG00 ), NULL, @DlgProc, NULL )
 			'
 		Case AIM_COMMAND
@@ -91,6 +93,7 @@ Function DllFunction Cdecl Alias "DllFunction" ( ByVal hWin As HWND, ByVal uMsg 
 				dock1.nPos.bottom = rc1.bottom - rc1.top
 			EndIf
 			lpFunctions->SaveToIni( "ShowVars", "Dock", "444444444", @dock1, FALSE )
+			lpData->bExtOutput=FALSE
 			DestroyWindow( hDbgWin )
 			DestroyMenu( hMenu )
 			'
