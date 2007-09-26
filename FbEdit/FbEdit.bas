@@ -32,6 +32,7 @@
 #Include "Opt\PathOpt.bas"
 #Include "Export.bas"
 #Include "Find.bas"
+#Include "HexFind.bas"
 #Include "Resource.bas"
 #Include "Opt\DebugOpt.bas"
 #Include "CreateTemplate.bas"
@@ -728,11 +729,20 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If Len(buff) Then
 								findbuff=buff
 							EndIf
-							If findvisible Then
-								SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
-								SetFocus(findvisible)
+							If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
+								If findvisible Then
+									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
+									SetFocus(findvisible)
+								Else
+									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
+								EndIf
 							Else
-								CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
+								If findvisible Then
+									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
+									SetFocus(findvisible)
+								Else
+									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_HEXFINDDLG),GetOwner,@HexFindDlgProc,FALSE)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
