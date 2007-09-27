@@ -136,16 +136,19 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				MoveWindow(hTabs(TAB_4),0,0,rc2.right,rc2.bottom,TRUE)
 				MoveWindow(hTabs(TAB_5),0,0,rc2.right,rc2.bottom,TRUE)
 				MoveWindow(hTabs(TAB_6),0,0,rc2.right,rc2.bottom,TRUE)
-				MoveWindow(hList(LSV_1),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(hList(LSV_2),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(hList(LSV_3),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(hList(LSV_4),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(hList(LSV_5),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(hList(LSV_6),15,0,rc2.right-13,rc2.bottom+2,TRUE)
-				MoveWindow(lpHandles->hout,15,-1,rc2.right-12,rc2.bottom+4,TRUE)
+				rc2.right-=13
+				rc2.bottom+=2
+				MoveWindow(hList(LSV_1),15,0,rc2.right,rc2.bottom,TRUE)
+				MoveWindow(hList(LSV_2),15,0,rc2.right,rc2.bottom,TRUE)
+				MoveWindow(hList(LSV_3),15,0,rc2.right,rc2.bottom,TRUE)
+				MoveWindow(hList(LSV_4),15,0,rc2.right,rc2.bottom,TRUE)
+				MoveWindow(hList(LSV_5),15,0,rc2.right,rc2.bottom,TRUE)
+				MoveWindow(hList(LSV_6),15,0,rc2.right,rc2.bottom,TRUE)
+				rc2.right+=1
+				rc2.bottom+=2
+				MoveWindow(lpHandles->hout,15,-1,rc2.right,rc2.bottom,TRUE)
 			Else
 				GetclientRect(lpHandles->hwnd,@rc1)
-				GetClientRect(lpHandles->hsbr,@rc2)
 				twt=lpData->lpWINPOS->wtpro
 				If (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=0 Then
 					twt=0
@@ -158,13 +161,15 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				MoveWindow(hTabs(TAB_4),0,0,wt,lpData->lpWINPOS->htout,TRUE)
 				MoveWindow(hTabs(TAB_5),0,0,wt,lpData->lpWINPOS->htout,TRUE)
 				MoveWindow(hTabs(TAB_6),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_1),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_2),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_3),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_4),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_5),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_6),15,0,wt-13,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(lpHandles->hout,15,-1,wt-12,lpData->lpWINPOS->htout+2,TRUE)
+				wt-=13
+				MoveWindow(hList(LSV_1),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_2),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_3),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_4),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_5),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_6),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				wt+=1
+				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout+2,TRUE)
 			EndIf
 			'
 		Case DBG_VAR
@@ -411,7 +416,7 @@ End Function
 
 Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM ) As Integer
 
-	Dim As Long twt
+	Dim As Long twt, hgt
 	Dim As RECT rc1, rc2, rc3
 
    Select Case uMsg
@@ -422,6 +427,9 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				If (lpData->lpWINPOS->fview And (VIEW_PROJECT Or VIEW_PROPERTY))=0 Then
 					twt=0
 				EndIf
+				hgt=6
+				hgt+=IIf(lpData->lpWINPOS->fview And VIEW_TOOLBAR,nSize.nToolbar,0)
+				hgt+=IIf(lpData->lpWINPOS->fview And VIEW_TABSELECT,nSize.nTabselect,0)
 				CallWindowProc(lpOldMain,hWin,uMsg,wParam,lParam)
 				' Size the Output
 				If lpData->lpWINPOS->fview And VIEW_OUTPUT Then
@@ -434,7 +442,7 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 						Else
 							ScreenToClient(hDbgWin,Cast(POINT Ptr,@rc1))
 						EndIf
-						SetWindowPos(hDbgWin,HWND_TOP,0,rc3.bottom+UpdateViewSize(@nSize),rc2.right-twt,lpData->lpWINPOS->htout,SWP_SHOWWINDOW)
+						SetWindowPos(hDbgWin,HWND_TOP,0,rc3.bottom+hgt,rc2.right-twt,lpData->lpWINPOS->htout,SWP_SHOWWINDOW)
 '						SetWindowPos(hDbgWin,HWND_TOP,0,rc1.bottom-rc2.bottom-lpData->lpWINPOS->htout+2,rc1.right-twt,lpData->lpWINPOS->htout-2,SWP_SHOWWINDOW)
 					EndIf
 					SendMessage(hDbgWin,WM_SIZE,0,0)

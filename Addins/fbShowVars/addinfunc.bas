@@ -51,11 +51,3 @@ Ex:
 	lpHandles->haccel = CreateAcceleratorTable( @acl( 0 ), nAccel )
 
 End Sub
-
-Sub CheckMenu()
-
-	CheckMenuItem(lpHandles->hmenu,IDM_VIEW_OUTPUT,IIf(lpData->lpWINPOS->fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(lpHandles->hmenu,IDM_VIEW_PROJECT,IIf(lpData->lpWINPOS->fview And VIEW_PROJECT,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(lpHandles->hmenu,IDM_VIEW_PROPERTY,IIf(lpData->lpWINPOS->fview And VIEW_PROPERTY,MF_CHECKED,MF_UNCHECKED))
-
-End Sub

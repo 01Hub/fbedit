@@ -102,7 +102,6 @@ Declare Function GetString( ByVal id As Integer, ByRef txt As String ) As String
 Declare Sub GetFileNamePart( ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr )
 Declare Sub ChangeSeparator( ByVal txt As ZString Ptr )
 Declare Sub GetViewSizes( ByVal v As VIEWS Ptr )
-Declare Function UpdateViewSize( ByVal v As VIEWS Ptr ) As Integer
 
 'functions
 Declare Sub dbgInt( ByVal lpDBGINF As MYDEBUGINF ptr, ByVal bUpd As Integer )
@@ -118,7 +117,6 @@ Declare Sub logStr( ByVal lpDBGINF As MYDEBUGINF ptr )
 Declare Sub AddToMenu( ByVal id As Integer, ByVal sMenu As String )
 Declare Sub UpdateMenu( ByVal id As Integer, ByVal sMenu As String )
 Declare Sub AddAccelerator( ByVal fvirt As Integer, ByVal akey As Integer, ByVal id As Integer )
-Declare Sub CheckMenu()
 
 Dim Shared As ADDINHOOKS hooks 
 Dim Shared As ADDINDATA ptr lpData

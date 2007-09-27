@@ -139,14 +139,3 @@ Sub GetViewSizes( ByVal v As VIEWS Ptr )
 	v->nStatusbar=rc.bottom
 	
 End Sub
-
-Function UpdateViewSize( ByVal v As VIEWS Ptr ) As Integer
-
-	Dim As Integer s=6
-	
-	s+=IIf(lpData->lpWINPOS->fview And VIEW_TOOLBAR,v->nToolbar,0)
-	s+=IIf(lpData->lpWINPOS->fview And VIEW_TABSELECT,v->nTabselect,0)
-	
-	Return s
-	
-End Function

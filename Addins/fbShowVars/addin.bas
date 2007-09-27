@@ -77,7 +77,7 @@ Function DllFunction Cdecl Alias "DllFunction" ( ByVal hWin As HWND, ByVal uMsg 
 					lpData->lpWINPOS->fview Xor= VIEW_OUTPUT
 					ShowWindow( hDbgWin, lpData->lpWINPOS->fview And VIEW_OUTPUT )
 					SendMessage(lpHandles->htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,lpData->lpWINPOS->fview And VIEW_OUTPUT)
-					CheckMenu()
+					CheckMenuItem(lpHandles->hmenu,IDM_VIEW_OUTPUT,IIf(lpData->lpWINPOS->fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
 					SendMessage(hWin,WM_SIZE,0,0)
 					If ((lpData->lpWINPOS->fview And VIEW_OUTPUT)=FALSE) And (lpHandles->hred<>0) And (lpHandles->hred<>lpHandles->hres) Then SetFocus( lpHandles->hred )
 					Return TRUE
