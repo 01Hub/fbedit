@@ -494,6 +494,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			hSplashBmp=LoadBitmap(hInstance,Cast(ZString Ptr,103))
 			lpOldSplashProc=Cast(Any Ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
 			SetFocus(hWin)
+			frhex=FR_DOWN
 			Return FALSE
 			'
 		Case WM_CLOSE
@@ -721,27 +722,36 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_EDIT_FIND
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-							If chrg.cpMin<>chrg.cpMax Then
-								SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+							If GetWindowLong(ah.hred,GWL_ID)=IDC_HEXED Then
+								buff=""
+								If chrg.cpMin<>chrg.cpMax Then
+									SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+								Else
+									'SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
+								EndIf
+								If Len(buff) Then
+									hexfindbuff=buff
+								EndIf
+								If findvisible Then
+									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@hexfindbuff))
+									SetFocus(findvisible)
+								Else
+									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_HEXFINDDLG),GetOwner,@HexFindDlgProc,FALSE)
+								EndIf
 							Else
-								SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
-							EndIf
-							If Len(buff) Then
-								findbuff=buff
-							EndIf
-							If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
+								If chrg.cpMin<>chrg.cpMax Then
+									SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+								Else
+									SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
+								EndIf
+								If Len(buff) Then
+									findbuff=buff
+								EndIf
 								If findvisible Then
 									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
 									SetFocus(findvisible)
 								Else
 									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
-								EndIf
-							Else
-								If findvisible Then
-									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
-									SetFocus(findvisible)
-								Else
-									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_HEXFINDDLG),GetOwner,@HexFindDlgProc,FALSE)
 								EndIf
 							EndIf
 							'
@@ -753,18 +763,36 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_EDIT_REPLACE
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-							If chrg.cpMin<>chrg.cpMax Then
-								SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+							If GetWindowLong(ah.hred,GWL_ID)=IDC_HEXED Then
+								buff=""
+								If chrg.cpMin<>chrg.cpMax Then
+									SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+								Else
+									'SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
+								EndIf
+								If Len(buff) Then
+									hexfindbuff=buff
+								EndIf
+								If findvisible Then
+									SendDlgItemMessage(ah.hfind,IDC_HEXFINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@hexfindbuff))
+									SetFocus(findvisible)
+								Else
+									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_HEXFINDDLG),GetOwner,@HexFindDlgProc,TRUE)
+								EndIf
 							Else
-								SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
-							EndIf
-							If Len(buff) Then
-								findbuff=buff
-							EndIf
-							If findvisible Then
-								SetFocus(findvisible)
-							Else
-								CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,TRUE)
+								If chrg.cpMin<>chrg.cpMax Then
+									SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+								Else
+									SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
+								EndIf
+								If Len(buff) Then
+									findbuff=buff
+								EndIf
+								If findvisible Then
+									SetFocus(findvisible)
+								Else
+									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,TRUE)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_FINDDECLARE
