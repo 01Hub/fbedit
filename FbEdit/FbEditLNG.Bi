@@ -51,6 +51,7 @@ Const szList As String=!"[1100] Goto Line\0" _
 							  !"[6000] Create Template\0" _
 							  !"[6100] Addin Manager\0" _
 							  !"[6200] Project Api files\0" _
+							  !"[6300] Hex Find ...\0" _
 							  !"[10000] Main menu\0" _
 							  !"[20000] Context menu\0" _
 							  !"\0"

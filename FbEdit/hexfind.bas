@@ -15,7 +15,7 @@ Dim Shared freshex As Integer
 Dim Shared hexfindbuff As ZString*260
 Dim Shared hexreplacebuff As ZString*260
 
-Function HexFind(ByVal frType As Integer) As Integer
+Sub HexFind(ByVal frType As Integer)
 	' Get current selection
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@fthex.chrg))
 	' Setup find
@@ -41,7 +41,7 @@ Function HexFind(ByVal frType As Integer) As Integer
 		' Region searched
 	EndIf
 
-End Function
+End Sub
 
 Function HexFindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Integer id,Event

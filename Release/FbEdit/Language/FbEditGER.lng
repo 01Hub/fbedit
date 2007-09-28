@@ -260,6 +260,21 @@ Lang=Deutsch
 2=Abbrechen
 1=OK
 ;--------------------------------------------------------------------------
+[6300]
+6300=Find ...
+1001=Find what:
+1003=Replace:
+1005=Type
+1006=Hex
+1007=Ascii
+1008=Direction
+1009=Down
+1010=Up
+1=Find
+1011=Replace
+1012=Replace All
+2=Cancel
+;--------------------------------------------------------------------------
 [10000]
 10001=&Datei
 10002=Neues Projekt\tShift+Strg+N
@@ -268,6 +283,7 @@ Lang=Deutsch
 10005=&Neue Code Datei\tStrg+N
 10006=Neue &Ressourcen Datei\tStrg+Alt+N
 10007=&Öffnen\tStrg+O
+10060=Open as &Hex
 10008=zuletzt verwendete Dateien
 10009=&Speichern\tStrg+S
 10010=&Alles speichern\tShift+Strg+S
@@ -342,6 +358,9 @@ Lang=Deutsch
 10092=&Ausgabe\tF6
 10093=&Projekt
 10094=Eigenschaften
+10020=Toolbar
+10058=Tabselect
+10059=Statusbar
 10095=&Dialog Vorschau
 10096=Bildschirm aufteilen
 10097=Vollbild\tStrg+W
@@ -648,4 +667,22 @@ Toolbar=Toolbar Erstellung
 9001=Funktion
 9002=Pfad
 9003=Datei
+;--------------------------------------------------------------------------
+[ProjectZip]
+ProjectZip=FbEdit project zipper
+1009=Zip To:
+1010=Current:
+1007=Select All
+1004=Zip
+1011=All Project Files
+2=Exit
+2000=Name
+2001=Size
+2002=Date
+2003=Creating zip 
+2004=Overwrite existing file?\r
+2005=Could not create file\r
+2006=Added to zip: 
+2007=Done.
+10000=Project Zipper
 ;--------------------------------------------------------------------------

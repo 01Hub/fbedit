@@ -115,6 +115,7 @@ Lang=Italiano , By Wallyfblu
 4032=Controllo parentesi
 4021=Evidenzia riga attiva
 4026=Evidenzia commenti
+4049=Smart Maths
 4047=Close on Locks
 4061=Fonts
 4024=Codice
@@ -254,6 +255,21 @@ Lang=Italiano , By Wallyfblu
 2=Cancella
 1=OK
 ;--------------------------------------------------------------------------
+[6300]
+6300=Find ...
+1001=Find what:
+1003=Replace:
+1005=Type
+1006=Hex
+1007=Ascii
+1008=Direction
+1009=Down
+1010=Up
+1=Find
+1011=Replace
+1012=Replace All
+2=Cancel
+;--------------------------------------------------------------------------
 [10000]
 10001=&File
 10002=Nuovo Progetto\tShift+Ctrl+N
@@ -262,6 +278,7 @@ Lang=Italiano , By Wallyfblu
 10005=&Nuovo File di Codice\tCtrl+N
 10006=Nuovo File di &Risorse\tCtrl+Alt+N
 10007=&Apri\tCtrl+O
+10060=Open as &Hex
 10008=Files recenti
 10009=&Salva\tCtrl+S
 10010=Salva &Tutto\tShift+Ctrl+S
@@ -336,6 +353,9 @@ Lang=Italiano , By Wallyfblu
 10092=&Output\tF6
 10093=&Progetto
 10094=Proprietà
+10020=Toolbar
+10058=Tabselect
+10059=Statusbar
 10095=Anteprima &Dialogo
 10096=Dividi schermo
 10097=Schermo pieno\tCtrl+W
@@ -642,4 +662,22 @@ Toolbar=Crazione Toolbar
 9001=Funzioni
 9002=Percorso
 9003=File
+;--------------------------------------------------------------------------
+[ProjectZip]
+ProjectZip=FbEdit project zipper
+1009=Zip To:
+1010=Current:
+1007=Select All
+1004=Zip
+1011=All Project Files
+2=Exit
+2000=Name
+2001=Size
+2002=Date
+2003=Creating zip 
+2004=Overwrite existing file?\r
+2005=Could not create file\r
+2006=Added to zip: 
+2007=Done.
+10000=Project Zipper
 ;--------------------------------------------------------------------------

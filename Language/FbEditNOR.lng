@@ -115,7 +115,7 @@ Lang=Norwegian, By KetilO
 4032=Parantes paring
 4021=Marker aktiv linje
 4026=Marker kommentarer
-4049=Smart Maths
+4049=Smart Matematikk
 4047=Lukk vad Låser
 4061=Fonter
 4024=Kode
@@ -256,6 +256,21 @@ Lang=Norwegian, By KetilO
 2=Avbryt
 1=OK
 ;--------------------------------------------------------------------------
+[6300]
+6300=Finn ...
+1001=Finn hva:
+1003=Erstatt:
+1005=Type
+1006=Hex
+1007=Ascii
+1008=Retning
+1009=Ned
+1010=Opp
+1=Finn
+1011=Erstatt
+1012=Erstatt Alle
+2=Avbryt
+;--------------------------------------------------------------------------
 [10000]
 10001=&Fil
 10002=Nytt Prosjekt\tShift+Ctrl+N
@@ -264,7 +279,7 @@ Lang=Norwegian, By KetilO
 10005=&Ny Kode Fil\tCtrl+N
 10006=Ny &Resurs Fil\tCtrl+Alt+N
 10007=&Åpne\tCtrl+O
-10060=Open as &Hex
+10060=Åpne som &Hex
 10008=Siste filer
 10009=&Lagre\tCtrl+S
 10010=Lagre &Alle\tShift+Ctrl+S
@@ -648,4 +663,22 @@ Toolbar=Toolbar Verktøy
 9001=Funksjon
 9002=Sti
 9003=Fil
+;--------------------------------------------------------------------------
+[ProjectZip]
+ProjectZip=FbEdit prosjekt zipper
+1009=Zip Til:
+1010=Nåværende:
+1007=Velg Alle
+1004=Zip
+1011=Alle Prosjekt Filer
+2=Avslutt
+2000=Navn
+2001=Størrelse
+2002=Dato
+2003=Lager zip 
+2004=Overskriv eksisterende fil?\r
+2005=Kunne ikke lage filen\r
+2006=Lagt til zip: 
+2007=Ferdig.
+10000=Prosjekt Zipper
 ;--------------------------------------------------------------------------

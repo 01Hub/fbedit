@@ -33,7 +33,10 @@ AddMenu proc
 	mov		eax,lpHandles
 	invoke GetSubMenu,[eax].ADDINHANDLES.hmenu,edx
 	;Add our menuitem
-	invoke AppendMenu,eax,MF_STRING,IDAddIn,addr szProjectZip
+	push	eax
+	invoke GetLangString,10000,offset szProjectZip
+	pop		edx
+	invoke AppendMenu,edx,MF_STRING,IDAddIn,eax
 	ret
 
 AddMenu endp
@@ -266,7 +269,8 @@ DoZip proc uses ebx,fProject:DWORD
 	.if eax!=-1
 		test	eax,FILE_ATTRIBUTE_DIRECTORY
 		.if ZERO?
-			invoke lstrcpy,offset szTemp,offset szOverwrite
+			invoke GetLangString,2004,offset szOverwrite
+			invoke lstrcpy,offset szTemp,eax 
 			invoke lstrlen,addr buffer
 			lea		edx,buffer
 			.while byte ptr [edx+eax]!='\' && eax
@@ -344,9 +348,11 @@ DoZip proc uses ebx,fProject:DWORD
 				.endif
 			.endif
 			invoke CloseTheZip
-			invoke TextOutput,offset szDone
+			invoke GetLangString,2007,offset szDone
+			invoke TextOutput,eax
 		.else
-			invoke lstrcpy,offset szTemp,offset szError
+			invoke GetLangString,2005,offset szError
+			invoke lstrcpy,offset szTemp,eax
 			invoke lstrcat,offset szTemp,addr buffer
 			invoke MessageBox,hDlg,offset szTemp,offset szProjectZip,MB_OK or MB_ICONERROR
 		.endif
@@ -369,6 +375,10 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hDlg,eax
 		push	ebx
 		mov		ebx,esp
+		push	offset szAppName
+		push	hWin
+		mov		eax,lpProc
+		call	[eax].ADDINFUNCTIONS.TranslateAddinDialog
 		push	FALSE
 		push	offset pos
 		push	offset szPOS
@@ -405,15 +415,18 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hLV,LVM_SETIMAGELIST,LVSIL_SMALL,hIml
 		mov		lvc.imask,LVCF_FMT or LVCF_TEXT or LVCF_WIDTH
 		mov		lvc.fmt,LVCFMT_LEFT
-		mov		lvc.pszText,offset szName
+		invoke GetLangString,2000,offset szName
+		mov		lvc.pszText,eax
 		mov		lvc.lx,170
 		invoke SendMessage,hLV,LVM_INSERTCOLUMN,0,addr lvc
 		mov		lvc.fmt,LVCFMT_RIGHT
-		mov		lvc.pszText,offset szSize
+		invoke GetLangString,2001,offset szSize
+		mov		lvc.pszText,eax
 		mov		lvc.lx,70
 		invoke SendMessage,hLV,LVM_INSERTCOLUMN,1,addr lvc
 		mov		lvc.fmt,LVCFMT_LEFT
-		mov		lvc.pszText,offset szDate
+		invoke GetLangString,2002,offset szDate
+		mov		lvc.pszText,eax
 		mov		lvc.lx,115
 		invoke SendMessage,hLV,LVM_INSERTCOLUMN,2,addr lvc
 		mov		edx,lpData

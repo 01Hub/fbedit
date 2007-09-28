@@ -117,6 +117,7 @@ Lang=Spanish (Spain), By Denise Amiga
 4032=Resaltar Pareja
 4021=Resaltar Linea Activa
 4026=Resaltar Comentarios
+4049=Maths Inteligente
 4047=Cerrar con Bloqueos
 4061=Fuentes
 4024=Codigo
@@ -255,6 +256,21 @@ Lang=Spanish (Spain), By Denise Amiga
 2=Cancelar
 6200=Ficheros Api del Proyecto
 ;--------------------------------------------------------------------------
+[6300]
+6300=Find ...
+1001=Find what:
+1003=Replace:
+1005=Type
+1006=Hex
+1007=Ascii
+1008=Direction
+1009=Down
+1010=Up
+1=Find
+1011=Replace
+1012=Replace All
+2=Cancel
+;--------------------------------------------------------------------------
 [10000]
 10001=Fichero
 10002=Nuevo Proyecto\tShift+Ctrl+N
@@ -263,6 +279,7 @@ Lang=Spanish (Spain), By Denise Amiga
 10005=Nuevo Fichero de Codigo\tCtrl+N
 10006=Nuevo Fichero de Recursos\tCtrl+Alt+N
 10007=Abrir\tCtrl+O
+10060=Abrir como Hex
 10008=Ficheros Recientes
 10009=Grabar\tCtrl+S
 10010=Grabar Todo\tShift+Ctrl+S
@@ -334,9 +351,12 @@ Lang=Spanish (Spain), By Denise Amiga
 10083=Corregir\tCtrl+F12
 10084=Tabular\tShift+Ctrl+F12
 10091=Ver
-10092=Salida\tF6
-10093=Proyecto
-10094=Propiedades
+10092=Ventana de Salida\tF6
+10093=Ventana de Proyecto
+10094=Ventana de Propiedades
+10020=Barra de Herramientas
+10058=Barra de Seleccion
+10059=Barra de Estado
 10095=Previsualizar Dialogo
 10096=Dividir Pantalla
 10097=Pantalla Completa\tCtrl+W
@@ -643,4 +663,22 @@ Toolbar=Toolbar Creator
 9001=Funcion
 9002=Ruta
 9003=Fichero
+;--------------------------------------------------------------------------
+[ProjectZip]
+ProjectZip=FbEdit project zipper
+1009=Zip To:
+1010=Current:
+1007=Select All
+1004=Zip
+1011=All Project Files
+2=Exit
+2000=Name
+2001=Size
+2002=Date
+2003=Creating zip 
+2004=Overwrite existing file?\r
+2005=Could not create file\r
+2006=Added to zip: 
+2007=Done.
+10000=Project Zipper
 ;--------------------------------------------------------------------------

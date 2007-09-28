@@ -141,3 +141,31 @@ PutIntItem proc uses edi,Value:DWORD,lpDest:DWORD,fComma:DWORD
 
 PutIntItem endp
 
+GetLangString proc id:DWORD,lpDef:DWORD
+	LOCAL buff[64]:BYTE
+
+	push	ebx
+	mov		ebx,esp
+	invoke BinToDec,id,addr buff
+	lea		eax,buff
+	push	eax
+	push	offset szAppName
+	mov		eax,lpData
+	mov		eax,[eax].ADDINDATA.hLangMem
+	push	eax
+	mov		eax,lpProc
+	call	[eax].ADDINFUNCTIONS.FindString
+	mov		esp,ebx
+	pop		ebx
+	mov		eax,[eax]
+	push	eax
+	invoke lstrlen,eax
+	.if !eax
+		pop		edx
+		mov		eax,lpDef
+	.else
+		pop		eax
+	.endif
+	ret
+
+GetLangString endp

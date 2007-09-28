@@ -109,6 +109,7 @@ Lang=English (default), By FbEdit team
 4035=Block Complete
 4034=Save on make
 4044=Autoload project
+4047=Close on Locks
 4020=Auto Indent
 4036=Smart Indent
 4033=Auto Brace
@@ -116,7 +117,6 @@ Lang=English (default), By FbEdit team
 4021=Highlight active line
 4026=Highlight comments
 4049=Smart Maths
-4047=Close on Locks
 4061=Fonts
 4024=Code
 4022=AaBbCc
@@ -255,6 +255,21 @@ Lang=English (default), By FbEdit team
 6200=Project Api files
 2=Cancel
 1=OK
+;--------------------------------------------------------------------------
+[6300]
+6300=Find ...
+1001=Find what:
+1003=Replace:
+1005=Type
+1006=Hex
+1007=Ascii
+1008=Direction
+1009=Down
+1010=Up
+1=Find
+1011=Replace
+1012=Replace All
+2=Cancel
 ;--------------------------------------------------------------------------
 [10000]
 10001=&File
@@ -648,4 +663,22 @@ Toolbar=Toolbar Creator
 9001=Function
 9002=Path
 9003=File
+;--------------------------------------------------------------------------
+[ProjectZip]
+ProjectZip=FbEdit project zipper
+1009=Zip To:
+1010=Current:
+1007=Select All
+1004=Zip
+1011=All Project Files
+2=Exit
+2000=Name
+2001=Size
+2002=Date
+2003=Creating zip 
+2004=Overwrite existing file?\r
+2005=Could not create file\r
+2006=Added to zip: 
+2007=Done.
+10000=Project Zipper
 ;--------------------------------------------------------------------------

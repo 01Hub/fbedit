@@ -43,6 +43,7 @@
 	TextOutput			PROTO :DWORD
 	clrOutput			PROTO 
 	HexOutput			PROTO :DWORD
+	GetLangString		PROTO :DWORD,:DWORD
 
 	IDB_FILE			equ 100
 	IDD_DIALOG1			equ 101
@@ -74,26 +75,26 @@
 .const
 
 	szProjectZip		db 'Project zipper',0
-	szName				db 'Name',0
-	szSize				db 'Size',0
-	szDate				db 'Date',0
+	szName				db 'Name',0;2000
+	szSize				db 'Size',0;2001
+	szDate				db 'Date',0;2002
 	szSizeFmt			db '%lu',0
 	szDateFmt			db "MM'-'dd'-'yyyy' '",0
 	szTimeFmt			db "hh':'mm':'ss",0
 	szDateFmtFile		db '_yyMMdd',0
 	szTimeFmtFile		db '_HHmmss',0
 	szArchive			db '\Archive',0
-	szCreate			db 'Creating zip ',0
-	szOverwrite			db 'Overwrite existing file?',0Dh,0
-	szError				db 'Could not create file',0Dh,0
+	szCreate			db 'Creating zip ',0;2003
+	szOverwrite			db 'Overwrite existing file?',0Dh,0;2004
+	szError				db 'Could not create file',0Dh,0;2005
 	szApp				db 'ProjectZip',0
 	szKeySkip			db 'skip',0
 	szKeyFolder			db 'folder',0
 	szKeyPos			db 'pos',0
 	szKeyOpt			db 'opt',0
 	szNULL				db 0
-	szAdded				db 'Added to zip: ',0
-	szDone				db 0Dh,'Done.',0
+	szAdded				db 'Added to zip: ',0;2006
+	szDone				db 0Dh,'Done.',0;2007
 	szCr				db 0Dh,0
 	szAppName			db 'ProjectZip',0
 	szFile				db 'File',0
@@ -198,7 +199,8 @@ CreateTheZip proc pszFileName:DWORD
 
 	invoke ShowOutput
 	invoke clrOutput
-	invoke lstrcpy,addr buffer,offset szCreate
+	invoke GetLangString,2003,offset szCreate
+	invoke lstrcpy,addr buffer,eax
 	invoke lstrcat,addr buffer,pszFileName
 	invoke TextOutput,addr buffer
 	invoke zipOpen,pszFileName,0
@@ -279,7 +281,8 @@ AddFileToZip proc uses ebx esi edi,pszFileName:DWORD
 			jnz		@B
 			invoke GlobalFree,gMem
 		.endif
-		invoke lstrcpy,addr buffer,offset szAdded
+		invoke GetLangString,2006,offset szAdded
+		invoke lstrcpy,addr buffer,eax
 		invoke lstrcat,addr buffer,pszFileName
 		invoke TextOutput,addr buffer
 		invoke zipCloseFileInZip,fh
