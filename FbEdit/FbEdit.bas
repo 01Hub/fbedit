@@ -1093,6 +1093,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								ShowWindow(hCtl,SW_HIDE)
 							EndIf
 							SendMessage(hWin,WM_SIZE,0,0)
+							InvalidateRect(ah.hshp,NULL,TRUE)
 							fTimer=1
 							'
 						Case IDM_VIEW_TABSELECT
