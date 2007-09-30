@@ -1,7 +1,9 @@
 The new help project has been created with the freeware Help Editor:
 
-HalpMaker
+HalpMaker (v7.3.35.0)
 
 This is the download site:
 
 http://www.vizacc.com/gen_download.php
+
+The FbEdit Team.
