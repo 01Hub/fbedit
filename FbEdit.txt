@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.5.7
+o Added Open as Hex.
 o Added Smart Maths.
 o Speed optimized autoinclude/autoinclib.
 o Fixed bug in RAProperty that caused crash on win98 on UDT arrays.

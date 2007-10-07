@@ -253,7 +253,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		If tpe=0 Then
 			st=st Or STYLE_NOHILITE
 		EndIf
-		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_CODEED),hInstance,0)
+		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
 		UpdateEditOption(hTmp)
 		If tpe=2 Then
 			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
