@@ -1,4 +1,4 @@
-Function DlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id, Event
 
 	Select Case uMsg
@@ -10,13 +10,15 @@ Function DlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM,
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDCANCEL
-						EndDialog(hWin, 0)
+						SendMessage(hWin,WM_CLOSE,0,0)
 						'
 				End Select
 			EndIf
 			'
 		Case WM_CLOSE
-			EndDialog(hWin, 0)
+			DestroyWindow(hWin)
+			'
+		Case WM_DESTROY
 			'
 		Case WM_SIZE
 			'
