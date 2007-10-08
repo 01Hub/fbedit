@@ -138,6 +138,7 @@ TryAgain:
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	' Setup find
 	ft.chrg.cpMin=chrg.cpMin
+'MessageBox(ah.hwnd,Str(fres),Str(frType),MB_OK)
 	If frType And FR_DOWN Then
 		If fres<>-1 Then
 			ft.chrg.cpMin+=1
@@ -146,6 +147,7 @@ TryAgain:
 		ft.chrg.cpMax=0
 	EndIf
 	ft.lpstrText=@findbuff
+'MessageBox(ah.hwnd,Str(ft.chrg.cpMin),Str(ft.chrg.cpMax),MB_OK)
 TryFind:
 	' Do the find
 	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@ft))
@@ -345,6 +347,20 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			CheckDlgButton(hWin,IDC_CHK_PROJECTFILES,IIf(fPro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_CHK_PROJECTFILES),fProject)
 			ResetFind
+			If ah.hred Then
+				id=GetWindowLong(ah.hred,GWL_ID)
+			EndIf
+			If id=IDC_HEXED Or id=0 Then
+				EnableWindow(GetDlgItem(hWin,IDOK),FALSE)
+				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACE),FALSE)
+'				EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),FALSE)
+'				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACEALL),FALSE)
+			Else
+				EnableWindow(GetDlgItem(hWin,IDOK),TRUE)
+				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACE),TRUE)
+'				EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),TRUE)
+'				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACEALL),TRUE)
+			EndIf
 			'
 		Case WM_COMMAND
 			id=LoWord(wParam)

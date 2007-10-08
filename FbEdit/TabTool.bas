@@ -316,9 +316,11 @@ Sub SetFileInfo(ByVal hWin As HWND,ByVal sFile As String)
 	Dim pfi As PFI
 
 	If fProject Then
-		nInx=IsProjectFile(sFile)
-		ReadProjectFileInfo(nInx,@pfi)
-		SetProjectFileInfo(hWin,@pfi)
+		If GetWindowLong(hWin,GWL_ID)<>IDC_HEXED Then
+			nInx=IsProjectFile(sFile)
+			ReadProjectFileInfo(nInx,@pfi)
+			SetProjectFileInfo(hWin,@pfi)
+		EndIf
 	EndIf
 
 End Sub

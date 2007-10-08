@@ -874,29 +874,21 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_EDIT_BOOKMARKTOGGLE
 							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_RAEDIT Then
+							If id=IDC_HEXED Then
+								SendMessage(ah.hred,HEM_TOGGLEBOOKMARK,0,0)
+							Else
 								lret=SendMessage(ah.hred,REM_GETBOOKMARK,nLastLine,0)
 								If lret=0 Then
 									SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,3)
 								ElseIf lret=3 Then
 									SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,0)
 								EndIf
-							Else
-								SendMessage(ah.hred,HEM_TOGGLEBOOKMARK,0,0)
 							EndIf
 							fTimer=1
 							'
 						Case IDM_EDIT_BOOKMARKNEXT
 							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_RAEDIT Then
-								nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)
-								If nLine<>-1 Then
-									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
-									chrg.cpMax=chrg.cpMin
-									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-								EndIf
-							Else
+							If id=IDC_HEXED Then
 								If SendMessage(ah.hred,HEM_NEXTBOOKMARK,0,Cast(LPARAM,@hebm)) Then
 									SelectTab(ah.hwnd,hebm.hWin,0)
 									chrg.cpMin=hebm.nLine Shl 5
@@ -905,19 +897,19 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								EndIf
-							EndIf
-							'
-						Case IDM_EDIT_BOOKMARKPREVIOUS
-							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_RAEDIT Then
-								nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)
+							Else
+								nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)
 								If nLine<>-1 Then
 									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
 									chrg.cpMax=chrg.cpMin
 									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								EndIf
-							Else
+							EndIf
+							'
+						Case IDM_EDIT_BOOKMARKPREVIOUS
+							id=GetWindowLong(ah.hred,GWL_ID)
+							If id=IDC_HEXED Then
 								If SendMessage(ah.hred,HEM_PREVIOUSBOOKMARK,0,Cast(LPARAM,@hebm)) Then
 									SelectTab(ah.hwnd,hebm.hWin,0)
 									chrg.cpMin=hebm.nLine Shl 5
@@ -926,14 +918,22 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								EndIf
+							Else
+								nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)
+								If nLine<>-1 Then
+									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+									chrg.cpMax=chrg.cpMin
+									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_BOOKMARKDELETE
 							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_RAEDIT Then
-								SendMessage(ah.hred,REM_CLRBOOKMARKS,0,3)
-							Else
+							If id=IDC_HEXED Then
 								SendMessage(ah.hred,HEM_CLEARBOOKMARKS,0,0)
+							Else
+								SendMessage(ah.hred,REM_CLRBOOKMARKS,0,3)
 							EndIf
 							fTimer=1
 							'
@@ -1127,15 +1127,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_VIEW_SPLITSCREEN
 							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_RAEDIT Then
-								x=SendMessage(ah.hred,REM_GETSPLIT,0,0)
-								If x Then
-									x=0
-								Else
-									x=500
-								EndIf
-								SendMessage(ah.hred,REM_SETSPLIT,x,0)
-							Else
+							If id=IDC_HEXED Then
 								x=SendMessage(ah.hred,HEM_GETSPLIT,0,0)
 								If x Then
 									x=0
@@ -1143,6 +1135,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									x=500
 								EndIf
 								SendMessage(ah.hred,HEM_SETSPLIT,x,0)
+							Else
+								x=SendMessage(ah.hred,REM_GETSPLIT,0,0)
+								If x Then
+									x=0
+								Else
+									x=500
+								EndIf
+								SendMessage(ah.hred,REM_SETSPLIT,x,0)
 							EndIf
 							SetFocus(ah.hwnd)
 							SetFocus(ah.hred)
@@ -1585,7 +1585,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
-			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_CODEED Then
+			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
@@ -1682,6 +1682,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ElseIf lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_HEXED Then
 				lpHESELCHANGE=Cast(HESELCHANGE Ptr,lParam)
 				nLastLine=lpHESELCHANGE->nline
+				nCaretPos=lpHESELCHANGE->chrg.cpMin-(lpHESELCHANGE->chrg.cpMin Shr 5)*32
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.hwndFrom=ah.hout Then
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
