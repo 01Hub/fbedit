@@ -2858,6 +2858,9 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[edi].COLUMN.lpszhdrtext
 			.if eax
 				invoke GridGetText,ebx,eax,lParam
+			.else
+				mov		eax,lParam
+				mov		byte ptr [eax],0
 			.endif
 		.else
 			xor		eax,eax
@@ -2891,6 +2894,9 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[edi].COLUMN.lpszformat
 			.if eax
 				invoke GridGetText,ebx,eax,lParam
+			.else
+				mov		eax,lParam
+				mov		byte ptr [eax],0
 			.endif
 		.else
 			xor		eax,eax

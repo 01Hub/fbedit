@@ -7,7 +7,7 @@ Group=1
 GroupExpand=1
 Ver.rc=1
 Res.rc=1
-Debug=1
+Debug=0
 [MakeDef]
 Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
@@ -78,11 +78,11 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.5
 CompanyName=
 [Size]
-2=0,0,0,0,5078
-1=0,0,0,0,49150
+2=0,0,0,0,3846
+1=0,0,0,0,80835
 3=0,0,0,0,45
 4=0,0,0,0,51
-8=0,0,0,0,8907
+8=0,0,0,0,470
 7=0,0,0,0,1380
 9=0,0,0,0,5350
 6=0,0,0,0,42
@@ -115,28 +115,28 @@ Options=52
 0=
 
 [Find]
-1="GM_ENDEDIT"
-2="GN_BUTTONCLICK"
-3="GN_AFTERUPDATE"
-4="GN_BEFOREUPDATE"
-5="ShowHide"
-6="GM_ENTEREDIT"
-7="dec^I^Ieax"
-8="..."
-9="TextOut"
-10="QuickSort"
+1="lpszformat"
+2="GM_SETHDRTEXT"
+3="GM_GETCOLDATA"
+4="GM_ENDEDIT"
+5="GN_BUTTONCLICK"
+6="GN_AFTERUPDATE"
+7="GN_BEFOREUPDATE"
+8="ShowHide"
+9="GM_ENTEREDIT"
+10="dec^I^Ieax"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=1
+MilestoneEveryCurrent=3
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=9
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
