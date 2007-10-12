@@ -4,6 +4,9 @@ Whats new:
 o Added Open as Hex.
 o Added Smart Maths.
 o Speed optimized autoinclude/autoinclib.
-o Fixed bug in RAProperty that caused crash on win98 on UDT arrays.
-o Fixed bug compiling projects, main file not always was run.
 o Included project zipper addin.
+o Included tutorials 5 and 6 in help file.
+o It is now possible to hide toolbar, statusbar and tabselect.
+o Fixed bug in RAProperty that caused crash on win98 on UDT arrays.
+o Fixed bug compiling projects, main file was not always run.
+o Fixed bug parsing subs and functions.
