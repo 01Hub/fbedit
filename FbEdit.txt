@@ -1,5 +1,6 @@
 Whats new:
 ----------
+1.0.5.8
 1.0.5.7
 o Added Open as Hex.
 o Added Smart Maths.
