@@ -14,7 +14,7 @@ Current=1
 2=Windows GUI (Debug),fbc -s gui -g
 [*ENDDEF*]
 [*BEGINTXT*]
-DialogApp.Bas
+[*PRONAME*].Bas
 /'
 	Dialog Example, by fsw
 
@@ -24,7 +24,7 @@ DialogApp.Bas
 
 #Include Once "windows.bi"
 
-#Include "DialogApp.bi"
+#Include "[*PRONAME*].bi"
 
 Declare Function DlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
 
@@ -82,14 +82,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 End Function
 [*ENDTXT*]
 [*BEGINTXT*]
-DialogApp.Bi
+[*PRONAME*].Bi
 #define IDD_DLG1 1000 
 #define IDC_BTN1 1001
 
 Dim Shared hInstance As HMODULE
 [*ENDTXT*]
 [*BEGINTXT*]
-DialogApp.Rc
+[*PRONAME*].Rc
 #define IDD_DLG1 1000
 #define IDC_BTN1 1001
 IDD_DLG1 DIALOGEX 6,5,194,107
