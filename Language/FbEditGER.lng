@@ -69,12 +69,7 @@ Lang=Deutsch
 2=Abbrechen
 ;--------------------------------------------------------------------------
 [3000]
-3000=FreeBASIC editor 1.0.5.6
 1=OK
-1001=FreeBASIC editor (C) KetilO 2007\r\n\r\nradasmide@hotmail.com
-1002=http://www.radasm.com/fbedit/
-1003=http://www.assembler.ca/radasm/fbedit/
-1004=http://fbedit.freebasic.net/
 ;--------------------------------------------------------------------------
 [3200]
 1=OK
@@ -256,24 +251,24 @@ Lang=Deutsch
 1003=Änderungen werden nach Neustart von FbEdit übernommen.
 ;--------------------------------------------------------------------------
 [6200]
-6200=Projekt Api Dateien
+6200=Projekt API Dateien
 2=Abbrechen
 1=OK
 ;--------------------------------------------------------------------------
 [6300]
-6300=Find ...
-1001=Find what:
-1003=Replace:
-1005=Type
+6300=Suche...
+1001=Suche dies:
+1003=Ersetze:
+1005=Typ
 1006=Hex
 1007=Ascii
-1008=Direction
-1009=Down
-1010=Up
-1=Find
-1011=Replace
-1012=Replace All
-2=Cancel
+1008=Richtung
+1009=Runter
+1010=Rauf
+1=Suche
+1011=Ersetze
+1012=Alles ersetzen
+2=Abbrechen
 ;--------------------------------------------------------------------------
 [10000]
 10001=&Datei
@@ -358,8 +353,8 @@ Lang=Deutsch
 10092=&Ausgabe\tF6
 10093=&Projekt
 10094=Eigenschaften
-10020=Toolbar
-10058=Tabselect
+10020=Werkzeugleiste
+10058=Tab Auswahl
 10059=Statusbar
 10095=&Dialog Vorschau
 10096=Bildschirm aufteilen
@@ -387,7 +382,7 @@ Lang=Deutsch
 10127=XP Manifest hinzufügen
 10128=RC Daten hinzufügen
 10129=Speichern
-10130=Dateien mit einschließen
+10130=Dateien miteinschließen
 10131=Ressourcen
 10132=Namen
 10133=Namen exportieren
@@ -417,7 +412,7 @@ Lang=Deutsch
 10182=&Über
 ;--------------------------------------------------------------------------
 [20000]
-20001=&TabTool
+20001=&Tab Werkzeug
 10012=Aktuellen Tab schließen\tF4
 10013=Alle Tabs schließen\tStrg+F4
 10203=Alle Tabs, außer aktuellem, schließen
@@ -669,20 +664,20 @@ Toolbar=Toolbar Erstellung
 9003=Datei
 ;--------------------------------------------------------------------------
 [ProjectZip]
-ProjectZip=FbEdit project zipper
-1009=Zip To:
-1010=Current:
-1007=Select All
+ProjectZip=FbEdit Project Zipper
+1009=Zip nach:
+1010=Aktuell:
+1007=Alles Auswählen
 1004=Zip
-1011=All Project Files
-2=Exit
+1011=Alle Projekt Dateien
+2=Beenden
 2000=Name
-2001=Size
-2002=Date
-2003=Creating zip 
-2004=Overwrite existing file?\r
-2005=Could not create file\r
-2006=Added to zip: 
-2007=Done.
-10000=Project Zipper
+2001=Größe
+2002=Datum
+2003=Erstelle Zip
+2004=Existierende Datei überschreiben?\r
+2005=Kann Datei nicht erstellen\r
+2006=Zu Zip hinzufügen: 
+2007=Fertig.
+10000=Projekt Zipper
 ;--------------------------------------------------------------------------
