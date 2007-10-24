@@ -214,6 +214,18 @@
 						.break .if ZERO?
 					.endif
 				.endw
+			.elseif byte ptr [edx+ecx]==']'
+				xor		edi,edi
+				.while ecx
+					mov		al,[edx+ecx]
+					dec		ecx
+					.if al==']'
+						inc		edi
+					.elseif al=='['
+						dec		edi
+						.break .if ZERO?
+					.endif
+				.endw
 			.elseif byte ptr [esi+eax]!=CT_CHAR
 				inc		ecx
 				.break
@@ -235,6 +247,18 @@
 					.if al=='('
 						inc		edi
 					.elseif al==')'
+						dec		edi
+						.break .if ZERO?
+					.endif
+				.endw
+				jmp		@b
+			.elseif al=='['
+				.while ecx<ebx
+					mov		al,[edx+ecx]
+					inc		ecx
+					.if al=='['
+						inc		edi
+					.elseif al==']'
 						dec		edi
 						.break .if ZERO?
 					.endif
@@ -464,6 +488,18 @@
 					.if al==')'
 						inc		edi
 					.elseif al=='('
+						dec		edi
+						.break .if ZERO?
+					.endif
+				.endw
+			.elseif byte ptr [edx+ecx]==']'
+				xor		edi,edi
+				.while ecx
+					mov		al,[edx+ecx]
+					dec		ecx
+					.if al==']'
+						inc		edi
+					.elseif al=='['
 						dec		edi
 						.break .if ZERO?
 					.endif
