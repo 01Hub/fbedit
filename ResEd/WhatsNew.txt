@@ -1,5 +1,9 @@
 ResEd
 
+1.1.4.3c - 2007.10.30
+---------------------
+o Fixed bug with caption containing double quote.
+
 1.1.4.3b - 2007.08.24
 ---------------------
 o Fixed toolbar tooltip bug.

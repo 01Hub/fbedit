@@ -5376,12 +5376,38 @@ SaveCaption proc
 		  ResFound:
 			pop		ebx
 		.else
-			invoke SaveStr,edi,addr [esi].caption
-			add		edi,eax
+			lea		edx,[esi].caption
+		  @@:
+			mov		al,[edx]
+			.if al=='"'
+				mov		[edi],al
+				inc		edi
+			.endif
+			mov		[edi],al
+			inc		edx
+			inc		edi
+			or		al,al
+			jne		@b
+			dec		edi
+			;invoke SaveStr,edi,addr [esi].caption
+			;add		edi,eax
 		.endif
 	.else
-		invoke SaveStr,edi,addr [esi].caption
-		add		edi,eax
+		lea		edx,[esi].caption
+	  @@:
+		mov		al,[edx]
+		.if al=='"'
+			mov		[edi],al
+			inc		edi
+		.endif
+		mov		[edi],al
+		inc		edx
+		inc		edi
+		or		al,al
+		jne		@b
+		dec		edi
+		;invoke SaveStr,edi,addr [esi].caption
+		;add		edi,eax
 	.endif
 	mov		al,22h
 	stosb
