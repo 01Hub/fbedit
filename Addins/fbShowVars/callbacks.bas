@@ -154,22 +154,23 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 					twt=0
 				EndIf
 				wt=rc1.right-twt
-				MoveWindow(hTabs(TAB_0),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_1),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_2),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_3),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_4),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_5),0,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hTabs(TAB_6),0,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hTabs(TAB_0),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_1),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_2),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_3),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_4),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_5),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hTabs(TAB_6),0,0,wt,lpData->lpWINPOS->htout-3,TRUE)
 				wt-=13
-				MoveWindow(hList(LSV_1),15,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_2),15,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_3),15,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_4),15,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_5),15,0,wt,lpData->lpWINPOS->htout,TRUE)
-				MoveWindow(hList(LSV_6),15,0,wt,lpData->lpWINPOS->htout,TRUE)
+				MoveWindow(hList(LSV_1),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hList(LSV_2),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hList(LSV_3),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hList(LSV_4),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hList(LSV_5),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
+				MoveWindow(hList(LSV_6),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
 				wt+=1
-				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout+2,TRUE)
+'				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout+2,TRUE)
+				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout-3,TRUE)
 			EndIf
 			'
 		Case DBG_VAR
@@ -433,7 +434,8 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				CallWindowProc(lpOldMain,hWin,uMsg,wParam,lParam)
 				' Size the Output
 				If lpData->lpWINPOS->fview And VIEW_OUTPUT Then
-					GetClientRect(lpHandles->hshp,@rc3)
+					GetWindowRect(lpHandles->hshp,@rc3)
+					ScreenToClient(hWin,Cast(Point Ptr,@rc3.right))
 					If dock1.fDocked = TRUE Then
 						GetClientRect(hWin,@rc2)
 						GetWindowRect(lpHandles->hout,@rc1)
@@ -442,7 +444,7 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 						Else
 							ScreenToClient(hDbgWin,Cast(POINT Ptr,@rc1))
 						EndIf
-						SetWindowPos(hDbgWin,HWND_TOP,0,rc3.bottom+hgt,rc2.right-twt,lpData->lpWINPOS->htout,SWP_SHOWWINDOW)
+						SetWindowPos(hDbgWin,HWND_TOP,0,rc3.bottom+3,rc2.right-twt,lpData->lpWINPOS->htout-4,SWP_SHOWWINDOW)
 '						SetWindowPos(hDbgWin,HWND_TOP,0,rc1.bottom-rc2.bottom-lpData->lpWINPOS->htout+2,rc1.right-twt,lpData->lpWINPOS->htout-2,SWP_SHOWWINDOW)
 					EndIf
 					SendMessage(hDbgWin,WM_SIZE,0,0)

@@ -270,7 +270,11 @@ Sub DuplicateLine
 	chrg.cpMax=chrg.cpMin+SendMessage(lpHandles->hred,EM_LINELENGTH,chrg.cpMin,0)+1
 	SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 	SendMessage(lpHandles->hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
-	chrg.cpMax=chrg.cpMin	
+	nLn=lstrlen(buff)
+	If buff[nLn-1]<>13 Then
+		buff[nLn]=13
+	EndIf
+	chrg.cpMax=chrg.cpMin
 	SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 	SendMessage(lpHandles->hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 

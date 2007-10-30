@@ -1,12 +1,7 @@
 Whats new:
 ----------
-1.0.5.7
-o Added Open as Hex.
-o Added Smart Maths.
-o Speed optimized autoinclude/autoinclib.
-o Included project zipper addin.
-o Included tutorials 5 and 6 in help file.
-o It is now possible to hide toolbar, statusbar and tabselect.
-o Fixed bug in RAProperty that caused crash on win98 on UDT arrays.
-o Fixed bug compiling projects, main file was not always run.
-o Fixed bug parsing subs and functions.
+1.0.5.8
+o Added Duplicate line to AdvEdit addin.
+o Changed Dual Pane accelerator to Shift+Ctrl+D.
+o Fixed bug in resource editor caption with double quote.
+o Fixed codecomplete bug 'aaa(0).c2[0].l1 = "cccc"'.
