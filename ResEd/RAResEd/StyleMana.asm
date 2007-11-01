@@ -203,9 +203,6 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_DLGFRAME
 				dd WS_CAPTION
 				db 'WS_DLGFRAME',0
-				dd WS_GROUP
-				dd WS_GROUP
-				db 'WS_GROUP',0
 				dd WS_HSCROLL
 				dd WS_HSCROLL
 				db 'WS_HSCROLL',0
@@ -215,9 +212,15 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_MAXIMIZE
 				dd WS_MAXIMIZE
 				db 'WS_MAXIMIZE',0
+				dd WS_MAXIMIZEBOX
+				dd WS_MAXIMIZEBOX
+				db 'WS_MAXIMIZEBOX',0
 				dd WS_MINIMIZE
 				dd WS_MINIMIZE
 				db 'WS_MINIMIZE',0
+				dd WS_MINIMIZEBOX
+				dd WS_MINIMIZEBOX
+				db 'WS_MINIMIZEBOX',0
 ;				dd WS_OVERLAPPED
 ;				dd WS_OVERLAPPED
 ;				db 'WS_OVERLAPPED',0
@@ -236,9 +239,6 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_SYSMENU
 				dd WS_SYSMENU
 				db 'WS_SYSMENU',0
-				dd WS_TABSTOP
-				dd WS_TABSTOP
-				db 'WS_TABSTOP',0
 				dd WS_THICKFRAME
 				dd WS_THICKFRAME
 				db 'WS_THICKFRAME',0
