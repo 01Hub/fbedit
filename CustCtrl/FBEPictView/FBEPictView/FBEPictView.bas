@@ -76,7 +76,6 @@ Dim Shared IStream As MyIStream ptr
 
 Dim Shared hInstance As HINSTANCE
 
-
 Function BitmapFromPicture(ByVal wt As Integer,ByVal ht As Integer) As HBITMAP
 	Dim tempDC As HDC
 	Dim tempBitmap As HBITMAP
@@ -276,6 +275,7 @@ Function WndProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim hBmp As HBITMAP
 	Dim As Integer x,y,st
 	Dim buff As ZString*32
+	Dim nmpvc As NMPVCLICK
 
 	Select Case uMsg
 		Case WM_CREATE
@@ -366,6 +366,23 @@ Function WndProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			EndIf
 			InvalidateRect(hWin,NULL,TRUE)
 			Return 0
+			'
+		Case WM_LBUTTONDOWN
+			SetCapture(hWin)
+			'
+		Case WM_LBUTTONUP
+			If GetCapture=hWin Then
+				ReleaseCapture
+				nmpvc.pt.x=LoWord(lParam)
+				nmpvc.pt.y=HiWord(lParam)
+				GetClientRect(hWin,@rect)
+				If nmpvc.pt.x<rect.right And nmpvc.pt.y<rect.bottom Then
+					nmpvc.nmhdr.hwndFrom=hWin
+					nmpvc.nmhdr.idFrom=GetWindowLong(hWin,GWL_ID)
+					nmpvc.nmhdr.code=PVN_CLICK
+					SendMessage(GetParent(hWin),WM_NOTIFY,nmpvc.nmhdr.idFrom,@nmpvc)
+				EndIf
+			EndIf
 			'
 		Case PVM_LOADFILE
 			SetWindowText(hWin,Cast(ZString ptr,lParam))
