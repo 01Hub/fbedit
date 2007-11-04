@@ -15,6 +15,7 @@ SnipletAddin=Code Sniplets
 10007=Cut Line\tAlt+Ctrl+X
 10008=Delete Line
 10009=Quick run
+10010=Duplicate Line\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Custom Font

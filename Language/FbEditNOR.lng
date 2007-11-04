@@ -205,6 +205,7 @@ Lang=Norwegian, By KetilO
 5514=Api filer:
 5515=Modul Behandling
 5516=Modul Build Kommando:
+5521=Kompiler bare hvis nyere
 5504=Manuell build
 5505=Rekompiler
 5506=Kommando linje
@@ -360,7 +361,7 @@ Lang=Norwegian, By KetilO
 10095=Forhåndsvis &Dialog
 10096=Splitt Skjerm
 10097=Full Skjerm\tCtrl+W
-10098=Dobbelt Panel\tCtrl+D
+10098=Dobbelt Panel\tShift+Ctrl+D
 10101=&Prosjekt
 10102=Legg til &Ny
 10103=&Fil
@@ -561,6 +562,7 @@ SnipletAddin=Kode biter
 10007=Klipp ut Linje\tAlt+Ctrl+X
 10008=Slett Linje
 10009=Hurtig kjør
+10010=Dupliser Linje\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Egendefinert Font

@@ -74,6 +74,11 @@ function DlgProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,by
 			y=rect.bottom-35
 			MoveWindow(hBtn,x,y,97,31,TRUE)
 			'
+		Case WM_NOTIFY
+			If wParam=1002 Then
+				MessageBox(hWin,"Click","FBEPictView",MB_OK)
+			EndIf
+			'
 		case else
 			return FALSE
 			'

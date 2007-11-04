@@ -40,6 +40,7 @@
 #Define IDC_EDTAPIFILES						5509
 #Define IDC_BTNAPIFILES						5508
 #Define IDC_CHKADDMAINFILES				5510
+#Define IDC_CHKCOMPILENEWER				5521
 
 ' Api select
 #Define IDD_DLGPROJECTOPTIONAPI			6200
@@ -497,6 +498,7 @@ Function OpenProject() As Integer
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),"",@ad.resexport,SizeOf(ad.resexport),@ad.ProjectFile)
 	nProjectGroup=GetPrivateProfileInt(StrPtr("Project"),StrPtr("Grouping"),1,@ad.ProjectFile)
 	fAddMainFiles=GetPrivateProfileInt(StrPtr("Project"),StrPtr("AddMainFiles"),1,@ad.ProjectFile)
+	fCompileIfNewer=GetPrivateProfileInt(StrPtr("Project"),StrPtr("CompileIfNewer"),0,@ad.ProjectFile)
 	hPar=TrvAddNode(0,@ProjectDescription,0,0)
 	SendMessage(ah.htab,TCM_SETCURSEL,1,0)
 	ShowWindow(ah.hprj,SW_SHOWNA)
@@ -1663,6 +1665,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 			SetDlgItemText(hWin,IDC_EDTRUN,@sItem)
 			CheckDlgButton(hWin,IDC_RBNGRPNONE+nProjectGroup,BST_CHECKED)
 			SetDlgItemText(hWin,IDC_EDTRESOURCEEXPORT,@ad.resexport)
+			CheckDlgButton(hWin,IDC_CHKCOMPILENEWER,fCompileIfNewer)
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
@@ -1707,6 +1710,8 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("AddMainFiles"),Str(fAddMainFiles),@ad.ProjectFile)
 					GetDlgItemText(hWin,IDC_EDTRESOURCEEXPORT,@ad.resexport,SizeOf(ad.resexport))
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),@ad.resexport,@ad.ProjectFile)
+					fCompileIfNewer=IsDlgButtonChecked(hWin,IDC_CHKCOMPILENEWER)
+					WritePrivateProfileString(StrPtr("Project"),StrPtr("CompileIfNewer"),Str(fCompileIfNewer),@ad.ProjectFile)
 					RefreshProjectTree
 					GetMakeOption
 					SetWinCaption

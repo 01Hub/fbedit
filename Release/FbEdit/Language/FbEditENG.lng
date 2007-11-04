@@ -205,6 +205,7 @@ Lang=English (default), By FbEdit team
 5514=Api files:
 5515=Module Handling
 5516=Module Build Command:
+5521=Compile only if newer
 5504=Manual build
 5505=Recompile
 5506=Command line
@@ -360,7 +361,7 @@ Lang=English (default), By FbEdit team
 10095=Preview &Dialog
 10096=Split Screen
 10097=Full Screen\tCtrl+W
-10098=Dual Pane\tCtrl+D
+10098=Dual Pane\tShift+Ctrl+D
 10101=&Project
 10102=Add &New
 10103=&File
@@ -561,6 +562,7 @@ SnipletAddin=Code Sniplets
 10007=Cut Line\tAlt+Ctrl+X
 10008=Delete Line
 10009=Quick run
+10010=Duplicate Line\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Custom Font

@@ -161,6 +161,14 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 		buff="Delete Line"
 	EndIf
 	AddToMenu(IdDeleteLine,buff)
+	IdDuplicateLine=SendMessage(hWin,AIM_GETMENUID,0,0)
+	buff=GetString(10010)
+	If buff="" Then
+		buff="Duplicate Line	Ctrl+D"
+	EndIf
+	AddToMenu(IdDuplicateLine,buff)
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FCONTROL,Asc("D"),IdDuplicateLine)
+
 
 /'	' Change accelerator for an existing command
 	#define IDM_EDIT_REDO						10023
@@ -251,6 +259,27 @@ Sub DeleteLine
 
 End Sub
 
+Sub DuplicateLine
+	Dim chrg As CHARRANGE
+	Dim nLn As Integer
+	Dim buff As ZString*8192
+
+	SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+	nLn=SendMessage(lpHandles->hred,EM_LINEFROMCHAR,chrg.cpMin,0)
+	chrg.cpMin=SendMessage(lpHandles->hred,EM_LINEINDEX,nLn,0)
+	chrg.cpMax=chrg.cpMin+SendMessage(lpHandles->hred,EM_LINELENGTH,chrg.cpMin,0)+1
+	SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+	SendMessage(lpHandles->hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
+	nLn=lstrlen(buff)
+	If buff[nLn-1]<>13 Then
+		buff[nLn]=13
+	EndIf
+	chrg.cpMax=chrg.cpMin
+	SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+	SendMessage(lpHandles->hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
+
+End Sub
+
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
 Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer Export
@@ -282,6 +311,9 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						'
 					Case IdDeleteLine
 						DeleteLine
+						'
+					Case IdDuplicateLine
+						DuplicateLine
 						'
 				End Select
 			EndIf

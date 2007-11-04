@@ -162,7 +162,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	EndIf
 	AddToMenu(IdDeleteLine,buff)
 	IdDuplicateLine=SendMessage(hWin,AIM_GETMENUID,0,0)
-	buff=GetString(10008)
+	buff=GetString(10010)
 	If buff="" Then
 		buff="Duplicate Line	Ctrl+D"
 	EndIf

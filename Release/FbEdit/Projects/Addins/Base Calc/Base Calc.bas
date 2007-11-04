@@ -7,9 +7,10 @@
 #include "Base Calc.bi"
 
 Declare Function DlgProc(ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+Declare Function HexSubclassProc( Byval hWnd As HWND, Byval uMsg As UINT, Byval wParam As WPARAM, Byval lParam As LPARAM ) As Integer
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
-function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+Function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
 
 	' The dll's instance
 	hInstance=hInst
@@ -50,7 +51,73 @@ function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as
 	end select
 	return FALSE
 
-end function
+end Function
+
+Function HexSubclassProc( Byval hWnd As HWND, Byval uMsg As UINT, Byval wParam As WPARAM, Byval lParam As LPARAM ) As Integer
+	Select Case uMsg
+		Case WM_CHAR
+			Select Case wParam
+				
+				'' Pass the WM_CHAR message to the original control (window)
+				'' procedure only if the character code is in the allowable
+				'' set. The character code for backspace is included so the
+				'' key will function normally.
+				Case &h30 To &h39, &h41 To &h46, &h61 To &h66, 8
+					Return CallWindowProc( HexProc, hWnd, uMsg, wParam, lParam )
+			End Select
+		Case WM_PASTE
+			'' This effectively disables the WM_PASTE message, preventing
+			'' the user from pasting non-allowable characters.
+		Case Else
+			'' Pass any other messages to the original control procedure.
+			Return CallWindowProc( HexProc, hWnd, uMsg, wParam, lParam )
+	End Select
+	Return 0
+End Function
+
+Function OctSubclassProc( Byval hWnd As HWND, Byval uMsg As UINT, Byval wParam As WPARAM, Byval lParam As LPARAM ) As Integer
+	Select Case uMsg
+		Case WM_CHAR
+			Select Case wParam
+				
+				'' Pass the WM_CHAR message to the original control (window)
+				'' procedure only if the character code is in the allowable
+				'' set. The character code for backspace is included so the
+				'' key will function normally.
+				Case &h30 To &h37, 8
+					Return CallWindowProc( OctProc, hWnd, uMsg, wParam, lParam )
+			End Select
+		Case WM_PASTE
+			'' This effectively disables the WM_PASTE message, preventing
+			'' the user from pasting non-allowable characters.
+		Case Else
+			'' Pass any other messages to the original control procedure.
+			Return CallWindowProc( OctProc, hWnd, uMsg, wParam, lParam )
+	End Select
+	Return 0
+End Function
+
+Function BinSubclassProc( Byval hWnd As HWND, Byval uMsg As UINT, Byval wParam As WPARAM, Byval lParam As LPARAM ) As Integer
+	Select Case uMsg
+		Case WM_CHAR
+			Select Case wParam
+				
+				'' Pass the WM_CHAR message to the original control (window)
+				'' procedure only if the character code is in the allowable
+				'' set. The character code for backspace is included so the
+				'' key will function normally.
+				Case &h30, &h31, 8
+					Return CallWindowProc( BinProc, hWnd, uMsg, wParam, lParam )
+			End Select
+		Case WM_PASTE
+			'' This effectively disables the WM_PASTE message, preventing
+			'' the user from pasting non-allowable characters.
+		Case Else
+			'' Pass any other messages to the original control procedure.
+			Return CallWindowProc( BinProc, hWnd, uMsg, wParam, lParam )
+	End Select
+	Return 0
+End Function
 
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As integer
 	Dim As long id, Event, x, y
@@ -58,6 +125,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim stringBin As zString * 260 
 	Dim stringDec As zString * 260 
 	Dim stringOct As ZString * 260
+	Dim hexHnd As HWND
+	Dim decHnd As HWND
+	Dim binHnd As HWND
+	Dim octHnd As HWND
 	
 	
 	Select Case uMsg
@@ -70,10 +141,21 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetDlgItemText(hWin,IDC_DEC,@stringDec)
 			SetDlgItemText(hWin,IDC_BIN,@stringBin)
 			SetDlgItemText(hWin,IDC_OCT,@stringOct)
+			hexHnd = GetDlgItem(hWin,IDC_HEX)
+			SendMessage(hexHnd,EM_SETLIMITTEXT,2,0)
+			decHnd = GetDlgItem(hWin,IDC_DEC)
+			SendMessage(decHnd,EM_SETLIMITTEXT,3,0)
+			binHnd = GetDlgItem(hWin,IDC_BIN)
+			SendMessage(binHnd,EM_SETLIMITTEXT,8,0)
+			octHnd = GetDlgItem(hWin,IDC_OCT)
+			SendMessage(octHnd,EM_SETLIMITTEXT,3,0)
 			hasChanged(0) = 1
 			hasChanged(1) = 1
 			hasChanged(2) = 1
 			hasChanged(3) = 1
+			HexProc = cast(WNDPROC,SetWindowLong( hexHnd, GWL_WNDPROC, cast(Long,@HexSubclassProc)))
+			OctProc = cast(WNDPROC,SetWindowLong( octHnd, GWL_WNDPROC, cast(Long,@OctSubclassProc)))
+			BinProc = cast(WNDPROC,SetWindowLong( binHnd, GWL_WNDPROC, cast(Long,@BinSubclassProc)))
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
 			'

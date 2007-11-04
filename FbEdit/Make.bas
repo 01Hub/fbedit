@@ -458,6 +458,9 @@ Function CompileModules(ByVal sMake As String) As Integer
 	Dim bm As Integer
 	Dim id As Integer
 	Dim sFile As String
+	Dim sOFile As String
+	Dim hFile As HANDLE
+	Dim As FILETIME ft1,ft2
 
 	If edtopt.autosave Then
 		bm=SaveAllFiles(ah.hwnd)
@@ -475,7 +478,27 @@ Function CompileModules(ByVal sMake As String) As Integer
 			Do While id<1256
 				sFile=GetProjectFile(id)
 				If sFile<>"" Then
-					fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
+					If fCompileIfNewer Then
+						sOFile=RemoveFileExt(sFile) & ".o"
+						hFile=CreateFile(sOFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+						If hFile=INVALID_HANDLE_VALUE Then
+							' File does not exist
+							fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
+						Else 
+							GetFileTime(hFile,NULL,NULL,@ft2)
+							CloseHandle(hFile)
+							hFile=CreateFile(sFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+							GetFileTime(hFile,NULL,NULL,@ft1)
+							CloseHandle(hFile)
+							If CompareFileTime(@ft1,@ft2)>0 Then
+								fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
+							Else
+								TextToOutput(sOFile & " is newer than " & sFile)
+							EndIf
+						EndIf
+					Else
+						fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
+					EndIf
 					If fBuildErr Then
 						Exit Do
 					EndIf

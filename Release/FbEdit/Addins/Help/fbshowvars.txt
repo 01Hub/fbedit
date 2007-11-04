@@ -1,4 +1,9 @@
 '====================================================================
+'' Version 0.51g
+''
+'' fixed: file was selected wrong. freebasic likes "/" versus "\" for paths.
+'' fixed: another paths bug. for projects like "FbEdit" the file/module waw wrong selected. 
+''
 '' Version 0.51f
 ''
 '' added: translation support
