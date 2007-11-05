@@ -3,22 +3,22 @@
 Lang=English (default), By FbEdit team
 ;--------------------------------------------------------------------------
 [1100]
+1=OK
+2=Cancel
 1100=Goto Line
 1002=Line:
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [1200]
-1200=Language
-1004=Language:
 1=OK
 2=Cancel
+1200=Language
+1004=Language:
 1002=Changes will take place when FbEdit is restarted.
 ;--------------------------------------------------------------------------
 [2000]
-2000=Options
 1=OK
 2=Cancel
+2000=Options
 ;--------------------------------------------------------------------------
 [2100]
 2115=Name Export Format
@@ -50,6 +50,8 @@ Lang=English (default), By FbEdit team
 4012=Simple Property
 ;--------------------------------------------------------------------------
 [2500]
+1=Find
+2=Cancel
 2500=Find ...
 2216=Find what:
 2009=Replace:
@@ -62,11 +64,9 @@ Lang=English (default), By FbEdit team
 2004=All
 2006=Up
 2005=Down
-1=Find
 2010=Replace
 2015=Find All
 2008=Replace All
-2=Cancel
 ;--------------------------------------------------------------------------
 [3000]
 1=OK
@@ -81,6 +81,8 @@ Lang=English (default), By FbEdit team
 3210=Command:
 ;--------------------------------------------------------------------------
 [4000]
+1=OK
+2=Cancel
 4000=Code Editor Options
 4050=Color Theme
 4016=Add New
@@ -133,38 +135,38 @@ Lang=English (default), By FbEdit team
 4042=Lower Case
 4043=Upper Case
 4002=Apply
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [4100]
-4100=External Files Option
-4107=Filetype:
 1=OK
 2=Cancel
+4100=External Files Option
+4107=Filetype:
 4102=Add
 4103=Delete
 4108=Command:
 ;--------------------------------------------------------------------------
 [5000]
-5000=Save Files
-2=Cancel
 1=OK
+2=Cancel
+5000=Save Files
 1003=Deselect all
 1002=Select all
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Option
-2=Cancel
 1=OK
+2=Cancel
+5100=Debug Option
 1002=Debugger:
 ;--------------------------------------------------------------------------
 [5200]
-5200=Block Insert
 1=OK
 2=Cancel
+5200=Block Insert
 5202=Enter text to be inserted at every line in selected block.
 ;--------------------------------------------------------------------------
 [5300]
+1=OK
+2=Cancel
 5300=New Project
 1015=Project Name:
 1016=Project Description:
@@ -175,8 +177,6 @@ Lang=English (default), By FbEdit team
 1010=Mod
 1011=Res
 1013=Inc
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [5360]
 1010=Project Type:
@@ -190,13 +190,15 @@ Lang=English (default), By FbEdit team
 [5380]
 ;--------------------------------------------------------------------------
 [5400]
+1=OK
+2=Cancel
 5400=Path Options
 1009=Default Project Path:
 1010=Compiler Path:
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [5500]
+1=OK
+2=Cancel
 5500=Project Options
 5511=Project Description:
 5512=Project Type:
@@ -216,13 +218,11 @@ Lang=English (default), By FbEdit team
 5501=None
 5502=By Folder
 5503=By Type
-1=OK
-2=Cancel
 ;--------------------------------------------------------------------------
 [5600]
-5600=Export properties to output
 1=OK
 2=Cancel
+5600=Export properties to output
 1001=Functions
 1002=Constants
 1003=Variables
@@ -236,28 +236,30 @@ Lang=English (default), By FbEdit team
 1011=Operators
 ;--------------------------------------------------------------------------
 [6000]
+1=OK
+2=Cancel
 6000=Create Template
 1006=Description:
 1007=Additional Files:
 1002=Add
 1003=Remove
 1008=Template Filename:
-2=Cancel
-1=OK
 ;--------------------------------------------------------------------------
 [6100]
-6100=Addin Manager
 1=OK
 2=Cancel
+6100=Addin Manager
 1002=Help
 1003=Changes will take place when FbEdit is restarted.
 ;--------------------------------------------------------------------------
 [6200]
-6200=Project Api files
-2=Cancel
 1=OK
+2=Cancel
+6200=Project Api files
 ;--------------------------------------------------------------------------
 [6300]
+1=Find
+2=Cancel
 6300=Find ...
 1001=Find what:
 1003=Replace:
@@ -267,10 +269,8 @@ Lang=English (default), By FbEdit team
 1008=Direction
 1009=Down
 1010=Up
-1=Find
 1011=Replace
 1012=Replace All
-2=Cancel
 ;--------------------------------------------------------------------------
 [10000]
 10001=&File

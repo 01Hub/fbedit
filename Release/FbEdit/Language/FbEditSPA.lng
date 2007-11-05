@@ -207,6 +207,7 @@ Lang=Spanish (Spain), By Denise Amiga
 5514=Ficheros Api:
 5515=Manejo de Modulos
 5516=Comando para Construir Modulos:
+5521=Compilar solo si es mas nuevo
 5504=Construccion Manual
 5505=Recompilar
 5506=Linea de Comandos
@@ -257,19 +258,19 @@ Lang=Spanish (Spain), By Denise Amiga
 6200=Ficheros Api del Proyecto
 ;--------------------------------------------------------------------------
 [6300]
-6300=Find ...
-1001=Find what:
-1003=Replace:
-1005=Type
+1=Buscar
+2=Cancelar
+6300=Buscar ...
+1001=Buscar que:
+1003=Reemplazar:
+1005=Typo
 1006=Hex
 1007=Ascii
-1008=Direction
-1009=Down
-1010=Up
-1=Find
-1011=Replace
-1012=Replace All
-2=Cancel
+1008=Direccion
+1009=Abajo
+1010=Arriba
+1011=Reemplazar
+1012=Reemplazar Todo
 ;--------------------------------------------------------------------------
 [10000]
 10001=Fichero
@@ -561,6 +562,7 @@ SnipletAddin=Code Sniplets
 10007=Cortar Linea\tAlt+Ctrl+X
 10008=Borrar Linea
 10009=Correr Rapido
+10010=Duplicar Linea\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Custom Font
