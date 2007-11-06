@@ -133,11 +133,11 @@ Options=52
 5=
 3=0,0,0,0,248
 4=0,0,0,0,8
-1=0,0,0,0,80
+1=0,0,0,0,4013
 7=0,0,0,0,6136
 6=0,0,0,0,61
-9=0,0,0,0,56133
-2=0,0,584,498,7989
+9=0,0,0,0,65819
+2=0,0,584,498,8107
 8=0,0,0,0,3434
 10=0,0,0,0,8245
 16=0,0,0,0,27090
@@ -172,16 +172,16 @@ Options=52
 
 
 [Find]
-1="NM_FIRST"
-2="NM_DBLCLK"
-3="NotifyParent"
-4="WS_MAXIMIZEBOX"
-5="SaveCaption"
-6="RSM_SETSTYLEVAL"
-7="StyleManaDialogProc"
-8="nButtons"
-9="StyleProc"
-10="fNoDefines"
+1="CTLDBLCLICK"
+2="NM_FIRST"
+3="NM_DBLCLK"
+4="NotifyParent"
+5="WS_MAXIMIZEBOX"
+6="SaveCaption"
+7="RSM_SETSTYLEVAL"
+8="StyleManaDialogProc"
+9="nButtons"
+10="StyleProc"
 >>>>>>> .r57
 
 [AutoLoad]
@@ -189,27 +189,27 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.171
-PV=1.0.8.171
+FV=1.0.8.176
+PV=1.0.8.176
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.171
+ProductVersion=1.0.8.176
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2005
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.171
+FileVersion=1.0.8.176
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

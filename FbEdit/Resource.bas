@@ -89,7 +89,9 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				fTimer=1
 			EndIf
 			If lpCTLDBLCLICK->nmhdr.code=NM_DBLCLK Then
-				TextToOutput(*lpCTLDBLCLICK->lpName)
+				TextToOutput(*lpCTLDBLCLICK->lpCtlName)
+				TextToOutput(*lpCTLDBLCLICK->lpDlgName)
+				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
 			Return 0
 			'

@@ -2499,7 +2499,20 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,(DIALOG ptr [esi]).id
 			mov		[ebx].CTLDBLCLICK.nCtlId,eax
 			lea		eax,(DIALOG ptr [esi]).idname
-			mov		[ebx].CTLDBLCLICK.lpName,eax
+			mov		[ebx].CTLDBLCLICK.lpCtlName,eax
+			mov		eax,(DIALOG ptr [esi]).ntype
+			.if !eax
+				mov		eax,esi
+			.else
+				mov		eax,(DIALOG ptr [esi]).hpar
+				invoke GetWindowLong,eax,GWL_USERDATA
+			.endif
+			mov		edx,eax
+			mov		[ebx].CTLDBLCLICK.lpDlgMem,eax
+			mov		eax,(DIALOG ptr [edx]).id
+			mov		[ebx].CTLDBLCLICK.nDlgId,eax
+			lea		eax,(DIALOG ptr [edx]).idname
+			mov		[ebx].CTLDBLCLICK.lpDlgName,eax
 			invoke GetParent,hDEd
 			pop		edx
 			invoke SendMessage,eax,WM_NOTIFY,edx,ebx

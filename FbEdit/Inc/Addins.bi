@@ -148,6 +148,7 @@ End Type
 #Define AIM_MAKEBEGIN		9						' wParam= lParam=
 #Define AIM_MAKEDONE			10						' wParam= lParam=
 #Define AIM_GETTOOLTIP		11						' wParam=id lParam=0
+#Define AIM_CTLDBLCLK		12						' wParam=0 lParam=lpCTLDBLCLICK
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -163,6 +164,7 @@ End Type
 #Define HOOK_MAKEBEGIN		&H200
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
+#Define HOOK_CTLDBLCLK	&H1000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

@@ -306,7 +306,10 @@ DEWM_PROJECT		equ 20
 CTLDBLCLICK struct
 	nmhdr			NMHDR <?>
 	nCtlId			dd ?
-	lpName			dd ?
+	lpDlgMem		dd ?
+	lpCtlName		dd ?
+	nDlgId			dd ?
+	lpDlgName		dd ?
 CTLDBLCLICK ends
 
 .const

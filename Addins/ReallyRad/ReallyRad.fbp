@@ -1,0 +1,25 @@
+[Project]
+Version=2
+Api=fb (FreeBASIC),win (Windows)
+Description=Really rad dialogproc creator
+[Make]
+Module=Module Build,fbc -c
+Recompile=0
+Current=1
+1=Windows dll,fbc -s gui -dll -export
+Output=
+Run=
+[File]
+1=ReallyRad.bas
+2=ReallyRad.bi
+3=ReallyRad.txt
+4=..\..\..\..\..\Inc\Addins.bi
+5=..\..\..\..\..\Inc\RAResEd.bi
+6=ReallyRad.rc
+[FileInfo]
+1=0,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,5,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,89,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+6=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

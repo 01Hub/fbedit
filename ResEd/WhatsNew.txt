@@ -1,5 +1,9 @@
 ResEd
 
+1.1.4.3d - 2007.11.06
+---------------------
+o Added NM_DBLCLK notification.
+
 1.1.4.3c - 2007.10.30
 ---------------------
 o Fixed bug with caption containing double quote.

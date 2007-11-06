@@ -291,8 +291,11 @@ End Type
 
 Type CTLDBLCLICK
 	nmhdr			As NMHDR
+	lpDlgMem		As Integer
 	nCtlId		As Integer
-	lpName		As ZString Ptr
+	lpCtlName	As ZString Ptr
+	nDlgId		As Integer
+	lpDlgName	As ZString Ptr
 End Type
 
 ' Window classes global

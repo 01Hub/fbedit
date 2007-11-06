@@ -177,7 +177,7 @@ ENDIF
 	invoke RegisterClassEx,addr wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
 	mov		wc.lpfnWndProc,offset EditDlgProc
 	mov		wc.cbClsExtra,0
 	mov		wc.cbWndExtra,0
