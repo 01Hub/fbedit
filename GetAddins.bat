@@ -31,4 +31,7 @@ COPY Addins\Toolbar\Toolbar.txt \FbEdit\Addins\HELP
 COPY Addins\ProjectZip\ProjectZip.dll \FbEdit\Addins
 COPY Addins\ProjectZip\ProjectZip.txt \FbEdit\Addins\HELP
 
+COPY Addins\ReallyRad\ReallyRad.dll \FbEdit\Addins
+COPY Addins\ReallyRad\ReallyRad.txt \FbEdit\Addins\HELP
+
 Pause

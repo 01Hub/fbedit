@@ -5,12 +5,57 @@
 #Include "ReallyRad.bi"
 
 #define IDD_DLGREALLYRAD        1000
+#define IDC_CBOFIL              1001
+#define IDC_CBOTEMPLATE         1002
+#define IDC_STCFILE             1003
+#define IDC_STCTEMPLATE         1004
+#define IDC_STCPROCNAME         1005
+#define IDC_EDTPROCNAME         1006
 
 Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
-	Dim As Long id, Event
+	Dim As Long id, Event, x
+	Dim buff As ZString*MAX_PATH
+	Dim wfd As WIN32_FIND_DATA
+	Dim hwfd As HANDLE
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			id=1
+			Do While id<256
+				GetPrivateProfileString(StrPtr("File"),Str(id),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+				If Len(buff) Then
+					If LCase(Right(buff,4))=".bas" Then
+						x=SendDlgItemMessage(hWin,IDC_CBOFIL,CB_ADDSTRING,0,Cast(LPARAM,@buff))
+						x=SendDlgItemMessage(hWin,IDC_CBOFIL,CB_SETITEMDATA,x,id)
+					EndIf
+				EndIf
+				id+=1
+			Loop
+			id=1001
+			Do While id<1256
+				GetPrivateProfileString(StrPtr("File"),Str(id),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+				If Len(buff) Then
+					If LCase(Right(buff,4))=".bas" Then
+						buff=buff & Str(id)
+						x=SendDlgItemMessage(hWin,IDC_CBOFIL,CB_ADDSTRING,0,Cast(LPARAM,@buff))
+						x=SendDlgItemMessage(hWin,IDC_CBOFIL,CB_SETITEMDATA,x,id)
+					EndIf
+				EndIf
+				id+=1
+			Loop
+			SendDlgItemMessage(hWin,IDC_CBOFIL,CB_SETCURSEL,0,0)
+			buff=lpData->AppPath & "\Templates\*.rad"
+			hwfd=FindFirstFile(@buff,@wfd)
+			If hwfd<>INVALID_HANDLE_VALUE Then
+				id=1
+				While id
+					id=SendDlgItemMessage(hWin,IDC_CBOTEMPLATE,CB_ADDSTRING,0,Cast(LPARAM,@wfd.cFileName))
+					id=FindNextFile(hwfd,@wfd)
+				Wend
+			EndIf
+			FindClose(hwfd)
+			SendDlgItemMessage(hWin,IDC_CBOTEMPLATE,CB_SETCURSEL,0,0)
+			SendDlgItemMessage(hWin,IDC_EDTPROCNAME,WM_SETTEXT,0,Cast(LPARAM,@szDialogProc))
 			'
 		Case WM_COMMAND
 			id=LoWord(wParam)
@@ -18,6 +63,9 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDCANCEL
+						EndDialog(hWin, 0)
+						'
+					Case IDOK
 						EndDialog(hWin, 0)
 						'
 				End Select
