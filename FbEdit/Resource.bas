@@ -8,6 +8,7 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim hDll As HMODULE
 	Dim nBtn As Integer
 	Dim tbxwt As Integer
+	Dim lpCTLDBLCLICK As CTLDBLCLICK Ptr
 
 	Select Case uMsg
 		Case WM_CREATE
@@ -83,8 +84,12 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return SendMessage(lpRESMEM->hResEd,DEM_DELETECONTROLS,0,0)
 			'
 		Case WM_NOTIFY
+			lpCTLDBLCLICK=Cast(CTLDBLCLICK Ptr,lParam)
 			If (GetKeyState(VK_LBUTTON) And &H80)=0 Then
 				fTimer=1
+			EndIf
+			If lpCTLDBLCLICK->nmhdr.code=NM_DBLCLK Then
+				TextToOutput(*lpCTLDBLCLICK->lpName)
 			EndIf
 			Return 0
 			'

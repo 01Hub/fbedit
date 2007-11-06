@@ -303,6 +303,12 @@ DEWM_SCROLLX		equ 12
 DEWM_SCROLLY		equ 16
 DEWM_PROJECT		equ 20
 
+CTLDBLCLICK struct
+	nmhdr			NMHDR <?>
+	nCtlId			dd ?
+	lpName			dd ?
+CTLDBLCLICK ends
+
 .const
 
 IFDEF DLL

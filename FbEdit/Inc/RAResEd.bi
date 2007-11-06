@@ -289,6 +289,12 @@ End Type
 #Define DEWM_SCROLLY			16
 #Define DEWM_PROJECT			20
 
+Type CTLDBLCLICK
+	nmhdr			As NMHDR
+	nCtlId		As Integer
+	lpName		As ZString Ptr
+End Type
+
 ' Window classes global
 Const szDlgEditClass="DLGEDITCLASS"
 Const szToolBoxClass="TOOLBOXCLASS"

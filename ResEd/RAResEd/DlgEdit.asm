@@ -2352,6 +2352,7 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	fShift:DWORD
 	LOCAL	fControl:DWORD
 	LOCAL	hCtl:HWND
+	LOCAL	dblclk:CTLDBLCLICK
 
 	mov		nInx,0
 	invoke GetWindowLong,hWin,GWL_USERDATA
@@ -2487,6 +2488,22 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hDEd,WM_CONTEXTMENU,hWin,lParam
 			jmp		Ex
 		.elseif eax==WM_LBUTTONDBLCLK || eax==WM_NCLBUTTONDBLCLK
+			push	ebx
+			lea		ebx,dblclk
+			mov		eax,hDEd
+			mov		[ebx].CTLDBLCLICK.nmhdr.hwndFrom,eax
+			invoke GetWindowLong,hDEd,GWL_ID
+			push	eax
+			mov		[ebx].CTLDBLCLICK.nmhdr.idFrom,eax
+			mov		[ebx].CTLDBLCLICK.nmhdr.code,NM_DBLCLK
+			mov		eax,(DIALOG ptr [esi]).id
+			mov		[ebx].CTLDBLCLICK.nCtlId,eax
+			lea		eax,(DIALOG ptr [esi]).idname
+			mov		[ebx].CTLDBLCLICK.lpName,eax
+			invoke GetParent,hDEd
+			pop		edx
+			invoke SendMessage,eax,WM_NOTIFY,edx,ebx
+			pop		ebx
 			jmp		Ex
 		.elseif eax==WM_LBUTTONDOWN || eax==WM_NCLBUTTONDOWN
 			invoke SetFocus,hDEd
