@@ -2,7 +2,9 @@
 #Include Once "win/commctrl.bi"
 
 #Include "..\..\..\..\..\Inc\Addins.bi"
+#Include "..\..\..\..\..\Inc\RAResEd.bi"
 #Include "ReallyRad.bi"
+#Include "CreateFile.bas"
 
 #define IDD_DLGREALLYRAD        1000
 #define IDC_CBOFIL              1001
@@ -17,9 +19,11 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 	Dim buff As ZString*MAX_PATH
 	Dim wfd As WIN32_FIND_DATA
 	Dim hwfd As HANDLE
+	Dim hMem As HGLOBAL
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			lpCTLDBLCLICK=Cast(CTLDBLCLICK Ptr,lParam)
 			id=1
 			Do While id<256
 				GetPrivateProfileString(StrPtr("File"),Str(id),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
@@ -55,7 +59,7 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 			EndIf
 			FindClose(hwfd)
 			SendDlgItemMessage(hWin,IDC_CBOTEMPLATE,CB_SETCURSEL,0,0)
-			SendDlgItemMessage(hWin,IDC_EDTPROCNAME,WM_SETTEXT,0,Cast(LPARAM,@szDialogProc))
+			SendDlgItemMessage(hWin,IDC_EDTPROCNAME,WM_SETTEXT,0,Cast(LPARAM,@szDefDialogProc))
 			'
 		Case WM_COMMAND
 			id=LoWord(wParam)
@@ -66,6 +70,14 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 						EndDialog(hWin, 0)
 						'
 					Case IDOK
+						lstrcpy(@buff,lpCTLDBLCLICK->lpCtlName)
+						szName=buff
+						GetDlgItemText(hWin,IDC_EDTPROCNAME,buff,SizeOf(buff))
+						szProc=buff
+						id=SendDlgItemMessage(hWin,IDC_CBOTEMPLATE,CB_GETCURSEL,0,0)
+						id=SendDlgItemMessage(hWin,IDC_CBOTEMPLATE,CB_GETLBTEXT,id,Cast(LPARAM,@buff))
+						buff=lpData->AppPath & "\Templates\" & buff
+						hMem=CreateOutputFile(buff)
 						EndDialog(hWin, 0)
 						'
 				End Select
