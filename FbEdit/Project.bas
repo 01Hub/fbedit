@@ -41,6 +41,7 @@
 #Define IDC_BTNAPIFILES						5508
 #Define IDC_CHKADDMAINFILES				5510
 #Define IDC_CHKCOMPILENEWER				5521
+#Define IDC_CHKADDMODULEFILES				5522
 
 ' Api select
 #Define IDD_DLGPROJECTOPTIONAPI			6200
@@ -498,6 +499,7 @@ Function OpenProject() As Integer
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),"",@ad.resexport,SizeOf(ad.resexport),@ad.ProjectFile)
 	nProjectGroup=GetPrivateProfileInt(StrPtr("Project"),StrPtr("Grouping"),1,@ad.ProjectFile)
 	fAddMainFiles=GetPrivateProfileInt(StrPtr("Project"),StrPtr("AddMainFiles"),1,@ad.ProjectFile)
+	fAddModuleFiles=GetPrivateProfileInt(StrPtr("Project"),StrPtr("AddModuleFiles"),1,@ad.ProjectFile)
 	fCompileIfNewer=GetPrivateProfileInt(StrPtr("Project"),StrPtr("CompileIfNewer"),0,@ad.ProjectFile)
 	hPar=TrvAddNode(0,@ProjectDescription,0,0)
 	SendMessage(ah.htab,TCM_SETCURSEL,1,0)
@@ -1666,6 +1668,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 			CheckDlgButton(hWin,IDC_RBNGRPNONE+nProjectGroup,BST_CHECKED)
 			SetDlgItemText(hWin,IDC_EDTRESOURCEEXPORT,@ad.resexport)
 			CheckDlgButton(hWin,IDC_CHKCOMPILENEWER,fCompileIfNewer)
+			CheckDlgButton(hWin,IDC_CHKADDMODULEFILES,fAddModuleFiles)
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
@@ -1708,6 +1711,8 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("Grouping"),Str(nProjectGroup),@ad.ProjectFile)
 					fAddMainFiles=IsDlgButtonChecked(hWin,IDC_CHKADDMAINFILES)
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("AddMainFiles"),Str(fAddMainFiles),@ad.ProjectFile)
+					fAddModuleFiles=IsDlgButtonChecked(hWin,IDC_CHKADDMODULEFILES)
+					WritePrivateProfileString(StrPtr("Project"),StrPtr("AddModuleFiles"),Str(fAddModuleFiles),@ad.ProjectFile)
 					GetDlgItemText(hWin,IDC_EDTRESOURCEEXPORT,@ad.resexport,SizeOf(ad.resexport))
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),@ad.resexport,@ad.ProjectFile)
 					fCompileIfNewer=IsDlgButtonChecked(hWin,IDC_CHKCOMPILENEWER)

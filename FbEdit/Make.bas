@@ -315,29 +315,31 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			Else
 				buff=sMakeOpt
 			EndIf
-			' Add module oject files
-			lret=1001
-			Do While lret<1256
-				sItem=String(260,szNULL)
-				GetPrivateProfileString(StrPtr("File"),Str(lret),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-				If Len(sItem) Then
-					x=InStr(sItem,".")
-					y=x
-					While x
+			If fAddModuleFiles Then
+				' Add module oject files
+				lret=1001
+				Do While lret<1256
+					sItem=String(260,szNULL)
+					GetPrivateProfileString(StrPtr("File"),Str(lret),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+					If Len(sItem) Then
+						x=InStr(sItem,".")
 						y=x
-						x=InStr(x+1,sItem,".")
-					Wend
-					If y Then
-						sItem[y-1]=NULL
+						While x
+							y=x
+							x=InStr(x+1,sItem,".")
+						Wend
+						If y Then
+							sItem[y-1]=NULL
+						EndIf
+						If fRecompile=2 Then
+							buff=buff & " " & """" & sItem & ".bas" & """"
+						Else
+							buff=buff & " " & """" & sItem & ".o" & """"
+						EndIf
 					EndIf
-					If fRecompile=2 Then
-						buff=buff & " " & """" & sItem & ".bas" & """"
-					Else
-						buff=buff & " " & """" & sItem & ".o" & """"
-					EndIf
-				EndIf
-				lret=lret+1
-			Loop
+					lret=lret+1
+				Loop
+			EndIf
 			If Len(ad.smakeoutput)<>0 And fQuickRun=FALSE Then
 				buff=buff & " -x """ & ad.smakeoutput & """"
 			EndIf

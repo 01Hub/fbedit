@@ -4,12 +4,25 @@ dim SHARED hooks as ADDINHOOKS
 dim SHARED lpHandles as ADDINHANDLES ptr
 dim SHARED lpFunctions as ADDINFUNCTIONS ptr
 dim SHARED lpData as ADDINDATA ptr
-Dim Shared szName As String
-Dim Shared szProc As String
+Dim Shared szName As ZString*260
+Dim Shared szTemplate As ZString*260
+Dim Shared szFile As ZString*260
+Dim Shared szProc As ZString*260
 Dim Shared lpCTLDBLCLICK As CTLDBLCLICK Ptr
 
 Const szNULL=!"\0"
-Const szDefDialogProc="DialogProc"
-
+Const szCRLF=!"\13\10"
+Const szDefProc="DialogProc"
+Const szNone="(None)"
+Const szOutput="(Output window)"
 Const szDIALOGNAME="[*DIALOGNAME*]"
 Const szDIALOGPROC="[*DIALOGPROC*]"
+Const szCONTROLNAME="[*CONTROLNAME*]"
+Const szCONTROLID="[*CONTROLID*]"
+
+Const szBEGINDEF="[*BEGINDEF*]"
+Const szENDDEF="[*ENDDEF*]"
+Const szBEGINCREATE="[*BEGINCREATE*]"
+Const szENDCREATE="[*ENDCREATE*]"
+Const szBEGINPROC="[*BEGINPROC*]"
+Const szENDPROC="[*ENDPROC*]"

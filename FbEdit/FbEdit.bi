@@ -427,6 +427,7 @@ Dim Shared fNoResMode As Boolean
 Dim Shared nProjectGroup As Integer
 Dim Shared fAddMainFiles As Boolean
 Dim Shared fCompileIfNewer As Boolean
+Dim Shared fAddModuleFiles As Boolean
 
 ' Code complete
 Dim Shared ftypelist As Boolean

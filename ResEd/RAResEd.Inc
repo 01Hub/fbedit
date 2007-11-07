@@ -305,8 +305,8 @@ DEWM_PROJECT		equ 20
 
 CTLDBLCLICK struct
 	nmhdr			NMHDR <?>
-	nCtlId			dd ?
 	lpDlgMem		dd ?
+	nCtlId			dd ?
 	lpCtlName		dd ?
 	nDlgId			dd ?
 	lpDlgName		dd ?
