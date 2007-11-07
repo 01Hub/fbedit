@@ -2,9 +2,9 @@
 #Include Once "win/commctrl.bi"
 #Include Once "win/richedit.bi"
 
-#Include "..\..\..\..\..\Inc\Addins.bi"
-#Include "..\..\..\..\..\Inc\RAResEd.bi"
-#Include "..\..\..\..\..\Inc\RAProperty.bi"
+#Include "..\..\FbEdit\Inc\Addins.bi"
+#Include "..\..\FbEdit\Inc\RAResEd.bi"
+#Include "..\..\FbEdit\Inc\RAProperty.bi"
 #Include "ReallyRad.bi"
 #Include "CreateFile.bas"
 

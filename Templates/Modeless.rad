@@ -1,0 +1,46 @@
+This template creates a dialogproc for a modeless dialog.
+
+[*BEGINDEF*]
+#Define [*CONTROLNAME*]		[*CONTROLID*]
+[*ENDDEF*]
+[*BEGINCREATE*]
+
+' Copy the following line to where you want the dialog to be shown.
+'CreateDialogParam(hInstance,Cast(ZString Ptr,[*DIALOGNAME*]),hWin,@[*DIALOGPROC*],0)
+[*ENDCREATE*]
+[*BEGINPROC*]
+
+Function [*DIALOGPROC*](ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim As Long id, nEvent
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			nEvent=HiWord(wParam)
+			Select Case nEvent
+				Case BN_CLICKED
+					Select Case id
+						Case IDCANCEL
+							EndDialog(hWin, 0)
+							'
+					End Select
+					'
+			End Select
+			'
+		Case WM_CLOSE
+			DestroyWindow(hWin)
+			'
+		Case WM_DESTROY
+			'
+		Case WM_SIZE
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+[*ENDPROC*]

@@ -51,7 +51,7 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 						EndIf
 						i=Cast(Integer,lpDIALOG)
 						i=i+SizeOf(DIALOG)
-						lpDIALOG=Cast(DIALOG Ptr,i)
+						lpDIALOG=Cast(DIALOG Ptr,Cast(Integer,lpDIALOG)+SizeOf(DIALOG))
 					Wend
 				EndIf
 				'
