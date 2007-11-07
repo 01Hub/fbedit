@@ -17,6 +17,7 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 	Dim sLine As String
 	Dim sTmp As String
 	Dim lpDIALOG As DIALOG Ptr
+	Dim i As Integer
 
 	hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,128*1024)
 	f=FreeFile
@@ -41,7 +42,6 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				Else
 					While lpDIALOG->hwnd
 						If lpDIALOG->hwnd>0 Then
-							lpFunctions->TextToOutput(Str(lpDIALOG->id))
 							If Len(lpDIALOG->idname) Then
 								sTmp=ConvertLine(sLine,szCONTROLNAME,lpDIALOG->idname)
 								sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpDIALOG->id))
@@ -49,7 +49,9 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 								lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
 							EndIf
 						EndIf
-						lpDIALOG=lpDIALOG+SizeOf(DIALOG)
+						i=Cast(Integer,lpDIALOG)
+						i=i+SizeOf(DIALOG)
+						lpDIALOG=Cast(DIALOG Ptr,i)
 					Wend
 				EndIf
 				'
