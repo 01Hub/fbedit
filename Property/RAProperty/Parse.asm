@@ -1103,23 +1103,44 @@ NxtWordProc:
 SaveParam:
 	invoke GetWord,esi,addr npos
 	mov		esi,edx
+	.if ecx
+		invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
+		.if eax
+			lea		esi,[esi+ecx]
+			jmp		SaveParam
+		.endif
+	.else
+		.if byte ptr [esi]=='"'
+			inc		esi
+			.while byte ptr [esi]!='"' && byte ptr [esi]!=VK_RETURN
+				inc		esi
+			.endw
+			.if byte ptr [esi]=='"'
+				inc		esi
+				jmp		SaveParam
+			.endif			
+		.endif
+	.endif
+SaveParam1:
+	invoke GetWord,esi,addr npos
+	mov		esi,edx
 	.if !ecx
 		.if byte ptr [esi]==',' || byte ptr [esi]=='('
 			inc		esi
 			inc		fParam
-			jmp		SaveParam
+			jmp		SaveParam1
 		.elseif byte ptr [esi]==')'
 			inc		esi
 		.elseif byte ptr [esi]!=VK_RETURN
 			inc		esi
-			jmp		SaveParam
+			jmp		SaveParam1
 		.endif
 	.else
 		.if fParam
 			invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
 			.if eax
 				lea		esi,[esi+ecx]
-				jmp		SaveParam
+				jmp		SaveParam1
 			.endif
 			mov		lpword1,esi
 			mov		len1,ecx
@@ -1135,13 +1156,13 @@ SaveParam:
 				call	SkipToComma
 				.if byte ptr [esi]==','
 					inc		esi
-					jmp		SaveParam
+					jmp		SaveParam1
 				.elseif byte ptr [esi]=='='
 					inc		esi
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
 					lea		esi,[esi+ecx]
-					jmp		SaveParam
+					jmp		SaveParam1
 				.endif
 			.endif
 		.endif
