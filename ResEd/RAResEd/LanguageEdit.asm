@@ -37,6 +37,8 @@ ExportLanguage proc uses edi,hMem:DWORD
 	push	edi
 	invoke SaveLanguage,hMem,edi
 	add		edi,eax
+	mov		ax,0A0Dh
+	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

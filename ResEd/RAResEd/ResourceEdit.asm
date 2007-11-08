@@ -32,6 +32,8 @@ ExportResourceNames proc uses esi edi,hMem:DWORD
 		.endif
 		add		esi,sizeof RESOURCEMEM
 	.endw
+	mov		ax,0A0Dh
+	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -110,6 +112,10 @@ ExportResource proc uses esi edi,hMem:DWORD
 		stosb
 		add		esi,sizeof RESOURCEMEM
 	.endw
+	mov		al,0Dh
+	stosb
+	mov		al,0Ah
+	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

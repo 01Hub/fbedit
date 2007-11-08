@@ -227,6 +227,8 @@ ExportMenuNames proc uses esi edi,hMem:DWORD
 		add		esi,sizeof MNUITEM
 		jmp		@b
 	.endif
+	mov		ax,0A0Dh
+	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -259,8 +261,6 @@ ExportMenuEx proc uses esi edi,hMem:DWORD
 	.if [esi].MNUHEAD.lang || [esi].MNUHEAD.sublang
 		invoke SaveLanguage,addr [esi].MNUHEAD.lang,edi
 		add		edi,eax
-		mov		ax,0A0Dh
-		stosw
 	.endif
 	invoke SaveStr,edi,addr szBEGIN
 	add		edi,eax
@@ -328,6 +328,7 @@ ExportMenuEx proc uses esi edi,hMem:DWORD
 	invoke SaveStr,edi,addr szEND
 	add		edi,eax
 	mov		eax,0A0Dh
+	stosw
 	stosd
 	pop		eax
 	ret
@@ -506,6 +507,7 @@ ExportMenu proc uses esi edi,hMem:DWORD
 	invoke SaveStr,edi,addr szEND
 	add		edi,eax
 	mov		eax,0A0Dh
+	stosw
 	stosd
 	pop		eax
 	ret

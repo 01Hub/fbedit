@@ -36,6 +36,8 @@ ExportRCDataNames proc uses esi edi,hMem:DWORD
 		mov		al,0Ah
 		stosb
 	.endif
+	mov		ax,0A0Dh
+	stosw
 	mov		al,0
 	stosb
 	pop		eax
@@ -88,6 +90,10 @@ ExportRCData proc uses esi edi,hMem:DWORD
 	.endif
 	invoke SaveStr,edi,addr szEND
 	add		edi,eax
+	mov		al,0Dh
+	stosb
+	mov		al,0Ah
+	stosb
 	mov		al,0Dh
 	stosb
 	mov		al,0Ah

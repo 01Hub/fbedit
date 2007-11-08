@@ -44,6 +44,8 @@ ExportInclude proc uses esi edi,hMem:DWORD
 		stosb
 		add		esi,sizeof INCLUDEMEM
 	.endw
+	mov		ax,0A0Dh
+	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

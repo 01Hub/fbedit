@@ -109,6 +109,10 @@ ExportString proc uses esi edi,hMem:DWORD
 	stosb
 	mov		al,0Ah
 	stosb
+	mov		al,0Dh
+	stosb
+	mov		al,0Ah
+	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

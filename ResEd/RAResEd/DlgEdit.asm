@@ -837,6 +837,7 @@ fStyleHex			dd ?
 fSizeToFont			dd ?
 fNoDefines			dd ?
 fSimpleProperty		dd ?
+fNoResetToolbox		dd ?
 hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
 fNoMouseUp			dd ?
@@ -4866,7 +4867,9 @@ DrawingRect proc hWin:HWND,lParam:LPARAM,nFun:DWORD
 			.if eax
 				invoke SizeingRect,eax,FALSE
 			.endif
-			invoke ToolBoxReset
+			.if !fNoResetToolbox
+				invoke ToolBoxReset
+			.endif
 			invoke NotifyParent
 		.endif
 		invoke ShowWindow,hTlt,SW_HIDE
@@ -6157,6 +6160,10 @@ ExportDialogNames proc uses esi edi,hMem:DWORD
 	mov		eax,[esi]
 	or		eax,eax
 	jne		@b
+	mov		al,0Dh
+	stosb
+	mov		al,0Ah
+	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -6357,6 +6364,7 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	invoke SaveStr,edi,addr szEND
 	add		edi,eax
 	mov		eax,0A0Dh
+	stosw
 	stosd
 	mov		eax,hWrMem
 	ret

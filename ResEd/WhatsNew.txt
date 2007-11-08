@@ -1,24 +1,16 @@
 ResEd
 
-1.1.4.3d - 2007.11.06
+1.1.4.3d - 2007.11.08
 ---------------------
-o Added NM_DBLCLK notification.
-
-1.1.4.3c - 2007.10.30
----------------------
-o Fixed bug with caption containing double quote.
-
-1.1.4.3b - 2007.08.24
----------------------
-o Fixed toolbar tooltip bug.
-
-1.1.4.3 - 2007.07.23
----------------------
+o Added NM_DBLCLK notification when double clicking on dialog or control.
 o Added multiselected controls propery.
 o It is now possible to set default export filename to [Project].xxx.
   - [Project] will be replaced by project filename.
 o Added option to set Simple Properties.
+o Added option to keep toolbox selection.
 o Style manager now supports RAEdit, RAGrid and SpreadSheet custom controls.
+o Fixed bug with caption containing double quote.
+o Fixed toolbar tooltip bug.
 
 1.1.4.2b - 2007.07.20
 ---------------------
