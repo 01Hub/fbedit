@@ -19,15 +19,22 @@ Function [*DIALOGPROC*](ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As 
 		Case WM_COMMAND
 			id=LoWord(wParam)
 			nEvent=HiWord(wParam)
+[*BEGINEVENT*]
 			Select Case nEvent
+[*BEGINBN_CLICKED*]
 				Case BN_CLICKED
+[*BEGINSELECTCASEID*]
 					Select Case id
-						Case IDCANCEL
-							EndDialog(hWin, 0)
+[*BEGINCASEID*]
+						Case [*CONTROLNAME*]
 							'
+[*ENDCASEID*]
 					End Select
+[*ENDSELECTCASEID*]
 					'
+[*ENDBN_CLICKED*]
 			End Select
+[*ENDEVENT*]
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
