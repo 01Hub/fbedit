@@ -487,6 +487,19 @@ IsWord proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
 
 IsWord endp
 
+IsFunction proc uses esi ecx,lpWord:DWORD,len:DWORD
+	
+	xor		eax,eax
+	inc		eax
+	.if len==3
+		invoke Compare,offset szSub,lpWord,len
+	.elseif len==8
+		invoke Compare,offset szFunction,lpWord,len
+	.endif
+	ret
+
+IsFunction endp
+
 ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpword1:DWORD
 	LOCAL	len1:DWORD
@@ -504,6 +517,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	fRetType:DWORD
 	LOCAL	fParam:DWORD
 	LOCAL	endtype:DWORD
+	LOCAL	fdim:DWORD
 
 	mov		npos,0
 	mov		rpnmespc,-1
@@ -518,6 +532,8 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		fPtr,0
 		mov		fRetType,0
 		mov		fParam,0
+		mov		fdim,0
+		mov		lpdatatype,0
 	  Nxtwrd:
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -591,6 +607,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
+		  dim:
 			invoke WhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
 				mov		lpdef,eax
@@ -647,14 +664,23 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 				.elseif edx==DEFTYPE_DATA
 					call	ParseData
 					.if eax
+						invoke IsFunction,lpdatatype,lendatatype
+						.if !eax
+							mov		eax,lpdatatype
+							mov		lpword1,eax
+							mov		eax,lendatatype
+							mov		len1,eax
+							inc		fdim
+							jmp		dim
+						.endif
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
-					.endif
-					call	SkipToComma
-					.if byte ptr [esi]==','
-						inc		esi
-						jmp		Nxtwrd1
+						call	SkipToComma
+						.if byte ptr [esi]==','
+							inc		esi
+							jmp		Nxtwrd1
+						.endif
 					.endif
 				.elseif edx==DEFTYPE_CONST
 					call	ParseConst
@@ -999,6 +1025,11 @@ ParseProc:
 	call	SaveName
 	call	SaveParam
 	call	SaveRetType
+	.if fdim
+		xor		eax,eax
+		inc		eax
+		retn
+	.endif
 	call	SaveLocal
 	retn
 
@@ -1236,26 +1267,28 @@ ParseData:
 	call	AddNamespace
 	call	SaveName
 ParseData1:
-	call	SkipBrace
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
-	.if eax
-		mov		fPtr,0
-		lea		esi,[esi+ecx]
+	.if !lpdatatype
+		call	SkipBrace
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
-		mov		lpdatatype,esi
-		mov		lendatatype,ecx
-		lea		esi,[esi+ecx]
-	  @@:
-		invoke GetWord,esi,addr npos
-		mov		esi,edx
-		invoke IsIgnore,IGNORE_PTR,ecx,esi
+		invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
 		.if eax
+			mov		fPtr,0
 			lea		esi,[esi+ecx]
-			inc		fPtr
-			jmp		@b
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			mov		lpdatatype,esi
+			mov		lendatatype,ecx
+			lea		esi,[esi+ecx]
+		  @@:
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			invoke IsIgnore,IGNORE_PTR,ecx,esi
+			.if eax
+				lea		esi,[esi+ecx]
+				inc		fPtr
+				jmp		@b
+			.endif
 		.endif
 	.endif
 	.if lpdatatype

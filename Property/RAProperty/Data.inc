@@ -81,6 +81,8 @@ szSpc					db ' ',0
 szPtr					db ' Ptr',0
 szInteger				db 'Integer',0
 szColon					db ':',0
+szSub					db 'SUB',0
+szFunction				db 'FUNCTION',0
 
 .data?
 

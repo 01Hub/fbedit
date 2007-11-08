@@ -789,6 +789,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						pop		ecx
 						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,ecx
 						mov		eax,rect.right
+						inc		eax
 						add		[esi].rcItem.left,eax
 						pop		ecx
 						lea		edi,[edi+ecx]
@@ -800,6 +801,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,1
 						invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.textcolor
 						mov		eax,rect.right
+						inc		eax
 						add		[esi].rcItem.left,eax
 						inc		edi
 					.endif
