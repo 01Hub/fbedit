@@ -36,6 +36,27 @@ Function FindNextCtrl(ByVal nType As Integer) As Integer
 
 End Function
 
+Function CreateIDEvents(ByVal nType As Integer, ByRef sLine As String,ByRef hMem As HGLOBAL) As Integer
+	Dim nButton As Integer
+	Dim sTmp As String
+	Dim i As Integer
+
+	nButton=FindFirstCtrl(nType)
+	While nButton
+		If lstrlen(lpDIALOG->idname) Then
+			sTmp=ConvertLine(sLine,szCONTROLNAME,lpDIALOG->idname)
+		Else
+			sTmp=ConvertLine(sLine,szCONTROLNAME,Str(lpDIALOG->id))
+		EndIf
+		lstrcat(Cast(ZString Ptr,hMem),sTmp)
+		lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+		i+=1
+		nButton=FindNextCtrl(nType)
+	Wend
+	Return i
+
+End Function
+
 Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 	Dim hMem As HGLOBAL
 	Dim f As Integer
@@ -44,9 +65,9 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 	Dim sTmp As String
 	Dim i As Integer
 	Dim lpEvent As Integer
-	Dim lpBN_CLICKED As Integer
-	Dim nButton As Integer
-	Dim nType As Integer
+	Dim lpSubEvent As Integer
+	Dim nEventType As Integer
+	Dim nEvents As Integer
 
 	hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,128*1024)
 	f=FreeFile
@@ -57,21 +78,21 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 		Line Input #f,sLine
 		Select Case nMode
 			Case 0
-				If sLine=szBEGINDEF Then
+				If InStr(sLine,szBEGINDEF) Then
 					lpDIALOG=lpCTLDBLCLICK->lpDlgMem
 					nMode=1
-				ElseIf sLine=szBEGINCREATE Then
+				ElseIf InStr(sLine,szBEGINCREATE) Then
 					nMode=2
-				ElseIf sLine=szBEGINPROC Then
+				ElseIf InStr(sLine,szBEGINPROC) Then
 					nMode=3
 				EndIf
 			Case 1
-				If sLine=szENDDEF Then
+				If InStr(sLine,szENDDEF) Then
 					nMode=0
 				Else
 					While lpDIALOG->hwnd
 						If lpDIALOG->hwnd>0 Then
-							If Len(lpDIALOG->idname) Then
+							If Len(lpDIALOG->idname) And lpDIALOG->id>0 Then
 								sTmp=ConvertLine(sLine,szCONTROLNAME,lpDIALOG->idname)
 								sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpDIALOG->id))
 								lstrcat(Cast(ZString Ptr,hMem),sTmp)
@@ -83,7 +104,7 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				EndIf
 				'
 			Case 2
-				If sLine=szENDCREATE Then
+				If InStr(sLine,szENDCREATE) Then
 					nMode=0
 				Else
 					sLine=ConvertLine(sLine,szDIALOGNAME,szName)
@@ -93,9 +114,9 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				EndIf
 				'
 			Case 3
-				If sLine=szENDPROC Then
+				If InStr(sLine,szENDPROC) Then
 					nMode=0
-				ElseIf sLine=szBEGINEVENT Then
+				ElseIf InStr(sLine,szBEGINEVENT) Then
 					lpEvent=lstrlen(hMem)
 					nMode=4
 				Else
@@ -105,11 +126,19 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				EndIf
 				'
 			Case 4
-				If sLine=szENDEVENT Then
+				If InStr(sLine,szENDEVENT) Then
 					nMode=3
-				ElseIf sLine=szBEGINBN_CLICKED Then
-					lpBN_CLICKED=lstrlen(hMem)
-					nType=4
+				ElseIf InStr(sLine,szBEGINBN_CLICKED) Then
+					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
+					nEventType=BN_CLICKED
+					nMode=5
+				ElseIf InStr(sLine,szBEGINEN_CHANGE) Then
+					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
+					nEventType=EN_CHANGE
+					nMode=5
+				ElseIf InStr(sLine,szBEGINLBN_SELCHANGE) Then
+					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
+					nEventType=LBN_SELCHANGE
 					nMode=5
 				Else
 					lstrcat(Cast(ZString Ptr,hMem),sLine)
@@ -117,10 +146,19 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				EndIf
 				'
 			Case 5
-				If sLine=szENDBN_CLICKED Then
+				If InStr(sLine,szENDBN_CLICKED) Then
 					nMode=4
-				ElseIf sLine=szBEGINSELECTCASEID Then
-					nButton=FindFirstCtrl(nType)
+				ElseIf InStr(sLine,szENDEN_CHANGE) Then
+					If nEvents=0 Then
+						Poke lpSubEvent,0
+					EndIf
+					nMode=4
+				ElseIf InStr(sLine,szENDLBN_SELCHANGE) Then
+					If nEvents=0 Then
+						Poke lpSubEvent,0
+					EndIf
+					nMode=4
+				ElseIf InStr(sLine,szBEGINSELECTCASEID) Then
 					nMode=98
 				Else
 					lstrcat(Cast(ZString Ptr,hMem),sLine)
@@ -128,24 +166,35 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				EndIf
 				'
 			Case 98
-				If sLine=szENDSELECTCASEID Then
+				If InStr(sLine,szENDSELECTCASEID) Then
 					nMode=5
-				ElseIf sLine=szBEGINCASEID Then
+				ElseIf InStr(sLine,szBEGINCASEID) Then
 					nMode=99
 				Else
 					lstrcat(Cast(ZString Ptr,hMem),sLine)
 					lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
 				EndIf
 			Case 99
-				If sLine=szENDCASEID Then
+				If InStr(sLine,szENDCASEID) Then
 					nMode=98
 				Else
-					While nButton
-						sTmp=ConvertLine(sLine,szCONTROLNAME,lpDIALOG->idname)
-						lstrcat(Cast(ZString Ptr,hMem),sTmp)
-						lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
-						nButton=FindNextCtrl(nType)
-					Wend
+					Select Case nEventType
+						Case BN_CLICKED
+							' Buttons
+							nEvents=CreateIDEvents(4,sLine,hMem)
+							' Check boxes
+							nEvents+=CreateIDEvents(5,sLine,hMem)
+							' Radio buttons
+							nEvents+=CreateIDEvents(6,sLine,hMem)
+						Case EN_CHANGE
+							' Textbox
+							nEvents=CreateIDEvents(1,sLine,hMem)
+						Case LBN_SELCHANGE
+							' Listbox
+							nEvents=CreateIDEvents(7,sLine,hMem)
+							' Combobox
+							nEvents+=CreateIDEvents(8,sLine,hMem)
+					End Select
 				EndIf
 		End Select
 	Wend

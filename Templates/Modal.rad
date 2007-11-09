@@ -5,7 +5,7 @@ This template creates a dialogproc for a modal dialog.
 [*ENDDEF*]
 [*BEGINCREATE*]
 
-' Copy the following line to where you want the dialog to be shown.
+' Copy the following line to where you want the dialog to be shown. You might need to chane the hInstance and hWin parameters.
 'DialogBoxParam(hInstance,Cast(ZString Ptr,[*DIALOGNAME*]),hWin,@[*DIALOGPROC*],0)
 [*ENDCREATE*]
 [*BEGINPROC*]
@@ -19,22 +19,43 @@ Function [*DIALOGPROC*](ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As 
 		Case WM_COMMAND
 			id=LoWord(wParam)
 			nEvent=HiWord(wParam)
-[*BEGINEVENT*]
+			[*BEGINEVENT*]
 			Select Case nEvent
-[*BEGINBN_CLICKED*]
+				[*BEGINBN_CLICKED*]
 				Case BN_CLICKED
-[*BEGINSELECTCASEID*]
+					[*BEGINSELECTCASEID*]
 					Select Case id
-[*BEGINCASEID*]
+						[*BEGINCASEID*]
 						Case [*CONTROLNAME*]
-							'
-[*ENDCASEID*]
+						[*ENDCASEID*]
 					End Select
-[*ENDSELECTCASEID*]
+					[*ENDSELECTCASEID*]
 					'
-[*ENDBN_CLICKED*]
+				[*ENDBN_CLICKED*]
+				[*BEGINEN_CHANGE*]
+				Case EN_CHANGE
+					[*BEGINSELECTCASEID*]
+					Select Case id
+						[*BEGINCASEID*]
+						Case [*CONTROLNAME*]
+						[*ENDCASEID*]
+					End Select
+					[*ENDSELECTCASEID*]
+					'
+				[*ENDEN_CHANGE*]
+				[*BEGINLBN_SELCHANGE*]
+				Case LBN_SELCHANGE,CBN_SELCHANGE
+					[*BEGINSELECTCASEID*]
+					Select Case id
+						[*BEGINCASEID*]
+						Case [*CONTROLNAME*]
+						[*ENDCASEID*]
+					End Select
+					[*ENDSELECTCASEID*]
+					'
+				[*ENDLBN_SELCHANGE*]
 			End Select
-[*ENDEVENT*]
+			[*ENDEVENT*]
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)

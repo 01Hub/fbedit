@@ -253,7 +253,11 @@ function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as
 	select case uMsg
 		case AIM_CTLDBLCLK
 			lpCTLDBLCLICK=Cast(CTLDBLCLICK Ptr,lParam)
-			lstrcpy(@szName,lpCTLDBLCLICK->lpDlgName)
+			If lstrlen(lpCTLDBLCLICK->lpDlgName) Then
+				lstrcpy(@szName,lpCTLDBLCLICK->lpDlgName)
+			Else
+				szName=Str(lpCTLDBLCLICK->nDlgId)
+			EndIf
 			szTemplate=""
 			szFile=""
 			szProc=""
@@ -270,7 +274,12 @@ function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as
 					EndIf
 				EndIf
 			EndIf
-			If lstrcmp(lpCTLDBLCLICK->lpDlgName,lpCTLDBLCLICK->lpCtlName)=0 Then
+			If lstrlen(lpCTLDBLCLICK->lpDlgName) Then
+				x=lstrcmp(lpCTLDBLCLICK->lpDlgName,lpCTLDBLCLICK->lpCtlName)
+			Else
+				x=lpCTLDBLCLICK->nCtlId-lpCTLDBLCLICK->nDlgId
+			EndIf
+			If x=0 Then
 				' Dialog dblclicked
 				DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGREALLYRAD),hWin,@ReallyRadProc,lParam)
 			Else
