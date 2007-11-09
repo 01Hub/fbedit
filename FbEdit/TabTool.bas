@@ -460,9 +460,15 @@ Function SaveFileAs(ByVal hWin As HWND) As Boolean
 End Function
 
 Function WantToSave(ByVal hWin As HWND) As Boolean
-
+	Dim x As Integer
+	
 	If ah.hred Then
-		If SendMessage(ah.hred,EM_GETMODIFY,0,0) Then
+		If ah.hred=ah.hres Then
+			x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+		Else
+			x=SendMessage(ah.hred,EM_GETMODIFY,0,0)
+		EndIf
+		If x Then
 			Select Case  MessageBox(hWin,GetInternalString(IS_WANT_TO_SAVE_CHANGES),@szAppName,MB_YESNOCANCEL + MB_ICONQUESTION)
 				Case IDYES
 					If Left(ad.filename,10)="(Untitled)" Then
@@ -617,6 +623,7 @@ Function SaveAllFiles(ByVal hWin As HWND) As Integer
 	Dim i As Integer
 	Dim nNotSaved As Integer
 	Dim hOld As HWND
+	Dim x As Integer
 
 	SetFocus(ah.hred)
 	tci.mask=TCIF_PARAM
@@ -625,7 +632,12 @@ Function SaveAllFiles(ByVal hWin As HWND) As Integer
 	Do While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-			If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
+			If lpTABMEM->hedit=ah.hres Then
+				x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+			Else
+				x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+			EndIf
+			If x Then
 				If Left(lpTABMEM->filename,10)="(Untitled)" Then
 					hOld=ah.hred
 					ah.hred=lpTABMEM->hedit
@@ -710,7 +722,11 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						EndIf
 					EndIf
 				Case 4
-					x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+					If lpTABMEM->hedit=ah.hres Then
+						x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+					Else
+						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+					EndIf
 					If x<>(lpTABMEM->filestate And 1) Then
 						lpTABMEM->filestate=lpTABMEM->filestate And (-1 Xor 1)
 						lpTABMEM->filestate=lpTABMEM->filestate Or x
@@ -821,7 +837,7 @@ End Function
 #Define IDC_BTNDESELECT				1003
 
 Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim As Integer i,n,id,Event
+	Dim As Integer i,n,id,Event,x
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim sItem As ZString*260
@@ -837,7 +853,12 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			Do While TRUE
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-					If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
+					If lpTABMEM->hedit=ah.hres Then
+						x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+					Else
+						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+					EndIf
+					If x Then
 						lstrcpy(@buff,lpTABMEM->filename)
 						sItem=GetFileName(buff,TRUE)
 						id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_ADDSTRING,0,Cast(LPARAM,@sItem))

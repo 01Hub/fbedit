@@ -60,11 +60,9 @@ Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,
 Sub SetToolsColors(ByVal hWin As HWND)
 	Dim racol As RACOLOR
 	Dim rescol As RARESEDCOLOR
-	Dim lpRESMEM As RESMEM Ptr
 	Dim cccol As CC_COLOR
 	Dim ttcol As TT_COLOR
 
-	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 	SendMessage(ah.hprj,TVM_SETBKCOLOR,0,fbcol.toolback)
 	SendMessage(ah.hprj,TVM_SETTEXTCOLOR,0,fbcol.tooltext)
 	SendMessage(ah.hfib,FBM_SETBACKCOLOR,0,fbcol.toolback)
@@ -78,7 +76,7 @@ Sub SetToolsColors(ByVal hWin As HWND)
 	SendMessage(ah.hout,REM_SETCOLOR,0,Cast(Integer,@racol))
 	rescol.back=fbcol.dialogback
 	rescol.text=fbcol.dialogtext
-	SendMessage(lpRESMEM->hResEd,DEM_SETCOLOR,0,Cast(Integer,@rescol))
+	SendMessage(ad.resmem.hResEd,DEM_SETCOLOR,0,Cast(Integer,@rescol))
 	cccol.back=fbcol.codelistback
 	cccol.text=fbcol.codelisttext
 	SendMessage(ah.hcc,CCM_SETCOLOR,0,Cast(LPARAM,@cccol))

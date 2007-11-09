@@ -218,7 +218,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim hBmp As HBITMAP
 	Dim sItem As ZString*260
 	Dim wcex As WNDCLASSEXA
-	Dim lpRESMEM As RESMEM Ptr
 	Dim hMem As HGLOBAL
 	Dim lpCOPYDATASTRUCT As COPYDATASTRUCT Ptr
 	Dim sbParts(3) As Integer
@@ -497,17 +496,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					wpos.ht=rect.bottom-rect.top
 				EndIf
 				wpos.fmax=IsZoomed(hWin)
-				lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
-				SendMessage(lpRESMEM->hProject,PRO_GETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
+				SendMessage(ad.resmem.hProject,PRO_GETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
 				GetWindowRect(ah.hcc,@rect)
 				wpos.ptcclist.x=rect.right-rect.left
 				wpos.ptcclist.y=rect.bottom-rect.top
 				DestroyWindow(ah.hcc)
 				DestroyWindow(ah.htt)
-				DestroyWindow(lpRESMEM->hResEd)
-				DestroyWindow(lpRESMEM->hProject)
-				DestroyWindow(lpRESMEM->hProperty)
-				DestroyWindow(lpRESMEM->hToolBox)
+				DestroyWindow(ad.resmem.hResEd)
+				DestroyWindow(ad.resmem.hProject)
+				DestroyWindow(ad.resmem.hProperty)
+				DestroyWindow(ad.resmem.hToolBox)
 				DestroyWindow(ah.hres)
 				Return DefWindowProc(hWin,uMsg,wParam,lParam)
 			EndIf
@@ -541,7 +539,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
 				Case BN_CLICKED,1
-					lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,GWL_USERDATA))
 					Select Case As Const id
 						Case IDM_FILE_NEWPROJECT
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_NEWPROJECT),GetOwner,@NewProjectDlgProc,NULL)
@@ -564,11 +561,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FILE_NEW_RESOURCE
-							lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 							ad.filename="(Untitled).rc"
 							hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,4096)
 							GlobalLock(hMem)
-							SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
+							SendMessage(ad.resmem.hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
 							ah.hred=ah.hres
 							AddTab(ah.hred,ad.filename,FALSE)
 							'
@@ -965,64 +961,64 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FORMAT_LOCK
-							x=SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0) Xor TRUE
-							SendMessage(lpRESMEM->hResEd,DEM_LOCKCONTROLS,0,x)
+							x=SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0) Xor TRUE
+							SendMessage(ad.resmem.hResEd,DEM_LOCKCONTROLS,0,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_BACK
-							SendMessage(lpRESMEM->hResEd,DEM_SENDTOBACK,0,0)
+							SendMessage(ad.resmem.hResEd,DEM_SENDTOBACK,0,0)
 							'
 						Case IDM_FORMAT_FRONT
-							SendMessage(lpRESMEM->hResEd,DEM_BRINGTOFRONT,0,0)
+							SendMessage(ad.resmem.hResEd,DEM_BRINGTOFRONT,0,0)
 							'
 						Case IDM_FORMAT_GRID
-							x=GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) Xor DES_GRID
-							SetWindowLong(lpRESMEM->hResEd,GWL_STYLE,x)
+							x=GetWindowLong(ad.resmem.hResEd,GWL_STYLE) Xor DES_GRID
+							SetWindowLong(ad.resmem.hResEd,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_SNAP
-							x=GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) Xor DES_SNAPTOGRID
-							SetWindowLong(lpRESMEM->hResEd,GWL_STYLE,x)
+							x=GetWindowLong(ad.resmem.hResEd,GWL_STYLE) Xor DES_SNAPTOGRID
+							SetWindowLong(ad.resmem.hResEd,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_ALIGN_LEFT
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT)
 							'
 						Case IDM_FORMAT_ALIGN_CENTER
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER)
 							'
 						Case IDM_FORMAT_ALIGN_RIGHT
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT)
 							'
 						Case IDM_FORMAT_ALIGN_TOP
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP)
 							'
 						Case IDM_FORMAT_ALIGN_MIDDLE
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE)
 							'
 						Case IDM_FORMAT_ALIGN_BOTTOM
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM)
 							'
 						Case IDM_FORMAT_SIZE_WIDTH
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH)
 							'
 						Case IDM_FORMAT_SIZE_HEIGHT
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT)
 							'
 						Case IDM_FORMAT_SIZE_BOTH
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH)
 							'
 						Case IDM_FORMAT_CENTER_HOR
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER)
 							'
 						Case IDM_FORMAT_CENTER_VER
-							SendMessage(lpRESMEM->hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER)
+							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER)
 							'
 						Case IDM_FORMAT_TAB
-							SendMessage(lpRESMEM->hResEd,DEM_SHOWTABINDEX,0,0)
+							SendMessage(ad.resmem.hResEd,DEM_SHOWTABINDEX,0,0)
 							'
 						Case IDM_FORMAT_RENUM
-							SendMessage(lpRESMEM->hResEd,DEM_AUTOID,0,0)
+							SendMessage(ad.resmem.hResEd,DEM_AUTOID,0,0)
 							'
 						Case IDM_FORMAT_CASECONVERT
 							CaseConvert(ah.hred)
@@ -1110,7 +1106,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							SendMessage(hWin,WM_SIZE,0,0)
 							fTimer=1
 						Case IDM_VIEW_DIALOG
-							SendMessage(lpRESMEM->hResEd,DEM_SHOWDIALOG,0,0)
+							SendMessage(ad.resmem.hResEd,DEM_SHOWDIALOG,0,0)
 							'
 						Case IDM_VIEW_SPLITSCREEN
 							id=GetWindowLong(ah.hred,GWL_ID)
@@ -1196,46 +1192,46 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_CREATETEMPLATE),hWin,@CreateTemplateDlgProc,NULL)
 							'
 						Case IDM_RESOURCE_DIALOG
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_DIALOG,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_DIALOG,TRUE)
 							'
 						Case IDM_RESOURCE_MENU
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_MENU,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_MENU,TRUE)
 							'
 						Case IDM_RESOURCE_ACCEL
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_ACCEL,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_ACCEL,TRUE)
 							'
 						Case IDM_RESOURCE_STRINGTABLE
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_STRING,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_STRING,TRUE)
 							'
 						Case IDM_RESOURCE_VERSION
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_VERSION,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_VERSION,TRUE)
 							'
 						Case IDM_RESOURCE_XPMANIFEST
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_XPMANIFEST,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_XPMANIFEST,TRUE)
 							'
 						Case IDM_RESOURCE_RCDATA
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_RCDATA,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_RCDATA,TRUE)
 							'
 						Case IDM_RESOURCE_LANGUAGE
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_LANGUAGE,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_LANGUAGE,TRUE)
 							'
 						Case IDM_RESOURCE_INCLUDE
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_INCLUDE,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_INCLUDE,TRUE)
 							'
 						Case IDM_RESOURCE_RES
-							SendMessage(lpRESMEM->hProject,PRO_ADDITEM,TPE_RESOURCE,TRUE)
+							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_RESOURCE,TRUE)
 							'
 						Case IDM_RESOURCE_NAMES
-							SendMessage(lpRESMEM->hProject,PRO_SHOWNAMES,0,Cast(Integer,ah.hout))
+							SendMessage(ad.resmem.hProject,PRO_SHOWNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_EXPORT
-							SendMessage(lpRESMEM->hProject,PRO_EXPORTNAMES,0,Cast(Integer,ah.hout))
+							SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_REMOVE
-							SendMessage(lpRESMEM->hProject,PRO_DELITEM,0,0)
+							SendMessage(ad.resmem.hProject,PRO_DELITEM,0,0)
 							'
 						Case IDM_RESOURCE_UNDO
-							SendMessage(lpRESMEM->hProject,PRO_UNDODELETED,0,0)
+							SendMessage(ad.resmem.hProject,PRO_UNDODELETED,0,0)
 							'
 						Case IDM_MAKE_COMPILE
 							fQR=FALSE

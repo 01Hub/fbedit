@@ -263,13 +263,6 @@ Type TABMEM
 	ft					As FILETIME
 End Type
 
-Type RESMEM
-	hResEd			As HWND
-	hProject			As HWND
-	hProperty		As HWND
-	hToolBox			As HWND
-End Type
-
 Type EDITFONT
 	size				As Integer
 	charset			As Integer

@@ -551,7 +551,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim tp As Integer
 	Dim lz As Integer
 	Dim isinp As ISINPROC
-	Dim lpRESMEM As RESMEM Ptr
 
 	Select Case uMsg
 		Case WM_CHAR
@@ -1378,7 +1377,6 @@ End Sub
 
 
 Sub CheckMenu()
-	Dim lpRESMEM As RESMEM Ptr
 
 	CheckMenuItem(ah.hmenu,IDM_VIEW_OUTPUT,IIf(wpos.fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_PROJECT,IIf(wpos.fview And VIEW_PROJECT,MF_CHECKED,MF_UNCHECKED))
@@ -1388,24 +1386,21 @@ Sub CheckMenu()
 	CheckMenuItem(ah.hmenu,IDM_VIEW_TABSELECT,IIf(wpos.fview And VIEW_TABSELECT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_STATUSBAR,IIf(wpos.fview And VIEW_STATUSBAR,MF_CHECKED,MF_UNCHECKED))
 
-	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_LOCK,IIf(SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
 
 End Sub
 
 Sub EnableMenu()
 	Dim bm As Integer
 	Dim chrg As CHARRANGE
-	Dim lpRESMEM As RESMEM Ptr
 	Dim id As Integer
 
 	If ah.hred=ah.hres Then
-		lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,GWL_USERDATA))
 
 		EnableDisable(FALSE,IDM_FILE_PRINT)
 
@@ -1430,11 +1425,11 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
 		EnableDisable(FALSE,IDM_EDIT_EXPAND)
 
-		bm=SendMessage(lpRESMEM->hResEd,DEM_CANUNDO,0,0)
+		bm=SendMessage(ad.resmem.hResEd,DEM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
 		EnableDisableContext(bm,IDM_EDIT_UNDO)
 		EnableDisable(FALSE,IDM_EDIT_REDO)
-		bm=SendMessage(lpRESMEM->hResEd,DEM_ISSELECTION,0,0)
+		bm=SendMessage(ad.resmem.hResEd,DEM_ISSELECTION,0,0)
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)
 		EnableDisable(bm,IDM_EDIT_DELETE)
@@ -1455,7 +1450,7 @@ Sub EnableMenu()
 		EnableDisableContext(bm,IDM_FORMAT_SIZE)
 		EnableDisableContext(bm,IDM_FORMAT_RENUM)
 
-		bm=SendMessage(lpRESMEM->hResEd,DEM_CANPASTE,0,0)
+		bm=SendMessage(ad.resmem.hResEd,DEM_CANPASTE,0,0)
 		EnableDisable(bm,IDM_EDIT_PASTE)
 		EnableDisableContext(bm,IDM_EDIT_PASTE)
 
@@ -1468,10 +1463,10 @@ Sub EnableMenu()
 
 		EnableDisable(TRUE,IDM_FORMAT_LOCK)
 		EnableDisableContext(TRUE,IDM_FORMAT_LOCK)
-		bm=SendMessage(lpRESMEM->hResEd,DEM_ISBACK,0,0) Xor TRUE
+		bm=SendMessage(ad.resmem.hResEd,DEM_ISBACK,0,0) Xor TRUE
 		EnableDisable(bm,IDM_FORMAT_BACK)
 		EnableDisableContext(bm,IDM_FORMAT_BACK)
-		bm=SendMessage(lpRESMEM->hResEd,DEM_ISFRONT,0,0) Xor TRUE
+		bm=SendMessage(ad.resmem.hResEd,DEM_ISFRONT,0,0) Xor TRUE
 		EnableDisable(bm,IDM_FORMAT_FRONT)
 		EnableDisableContext(bm,IDM_FORMAT_FRONT)
 		EnableDisable(TRUE,IDM_FORMAT_GRID)

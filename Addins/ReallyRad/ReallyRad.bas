@@ -17,6 +17,27 @@
 #define IDC_EDTPROCNAME         1006
 #Define IDC_STCDESCRIPTION      1007
 
+#Define IDD_DLGREALLYRADCTRL    1100
+#Define IDC_EDTPROCNAMECTRL     1102
+
+Function JumpToCode() As Boolean
+	Dim rapn As RAPNOTIFY
+
+	If Len(szProc) Then
+		If SendMessage(lpHandles->hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("p")),Cast(LPARAM,@szProc)) Then
+			rapn.nid=SendMessage(lpHandles->hpr,PRM_FINDGETOWNER,0,0)
+			rapn.nline=SendMessage(lpHandles->hpr,PRM_FINDGETLINE,0,0)
+			rapn.nmhdr.hwndFrom=lpHandles->hpr
+			rapn.nmhdr.idFrom=1008
+			rapn.nmhdr.code=LBN_DBLCLK
+			SendMessage(lpHandles->hwnd,WM_NOTIFY,rapn.nmhdr.idFrom,Cast(LPARAM,@rapn))
+			Return TRUE
+		EndIf
+	EndIf
+	Return FALSE
+
+End Function
+
 Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
 	Dim As Long id, Event, x, nSel
 	Dim buff As ZString*MAX_PATH
@@ -164,6 +185,45 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 
 End Function
 
+Function ReallyRadCtlProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+	Dim As Long id, Event
+	Dim buff As ZString*MAX_PATH
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			SetDlgItemText(hWin,IDC_EDTPROCNAMECTRL,@szProc)
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			If Event=BN_CLICKED Then
+				Select Case id
+					Case IDCANCEL
+						EndDialog(hWin, 0)
+						'
+					Case IDOK
+						GetDlgItemText(hWin,IDC_EDTPROCNAMECTRL,szProc,SizeOf(szProc))
+						buff=szTemplate & "," & szFile & "," & szProc
+						WritePrivateProfileString(StrPtr("ReallyRad"),@szName,@buff,@lpData->ProjectFile)
+						JumpToCode
+						EndDialog(hWin, 0)
+						'
+				End Select
+			EndIf
+			'
+		Case WM_CLOSE
+			EndDialog(hWin, 0)
+			'
+		Case WM_SIZE
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
 
@@ -182,14 +242,13 @@ function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	hooks.hook4=0
 	return @hooks
 
-end function
+end Function
 
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
 function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,byval lParam as LPARAM) as bool EXPORT
 	Dim buff As ZString*MAX_PATH
 	Dim As Integer x, id
-	Dim rapn As RAPNOTIFY
 
 	select case uMsg
 		case AIM_CTLDBLCLK
@@ -216,16 +275,10 @@ function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as
 				DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGREALLYRAD),hWin,@ReallyRadProc,lParam)
 			Else
 				' Control dblclicked
-				If Len(szProc) Then
-					If SendMessage(lpHandles->hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("p")),Cast(LPARAM,@szProc)) Then
-						rapn.nid=SendMessage(lpHandles->hpr,PRM_FINDGETOWNER,0,0)
-						rapn.nline=SendMessage(lpHandles->hpr,PRM_FINDGETLINE,0,0)
-						rapn.nmhdr.hwndFrom=lpHandles->hpr
-						rapn.nmhdr.idFrom=1008
-						rapn.nmhdr.code=LBN_DBLCLK
-						SendMessage(lpHandles->hwnd,WM_NOTIFY,rapn.nmhdr.idFrom,Cast(LPARAM,@rapn))
-					EndIf
+				If JumpToCode Then
+					Return FALSE
 				EndIf
+				DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGREALLYRADCTRL),hWin,@ReallyRadCtlProc,lParam)
 			EndIf
 			'
 		case AIM_CLOSE

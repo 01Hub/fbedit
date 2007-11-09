@@ -127,7 +127,6 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 	Dim nSize As Integer
 	Dim dwRead As Integer
 	Dim hMem As HGLOBAL
-	Dim lpRESMEM As RESMEM Ptr
 
 	hFile=CreateFile(lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
@@ -137,8 +136,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 			GlobalLock(hMem)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
-			SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
+			SendMessage(ad.resmem.hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
 			ReadTextFile(hWin,hFile,lpFile)
 			nLastLine=0
@@ -185,7 +183,6 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	Dim hFile As HANDLE
 	Dim hMem As HGLOBAL
 	Dim nSize As Integer
-	Dim lpRESMEM As RESMEM Ptr
 	Dim tpe As Integer
 	Dim hREd As HWND
 	Dim tci As TCITEM
@@ -199,9 +196,8 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	hFile=CreateFile(szFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
 		If hWin=ah.hres Then
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
-			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
+			SendMessage(ad.resmem.hProject,PRO_EXPORT,0,Cast(Integer,hMem))
 			nSize=Len(*Cast(ZString Ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
 			CloseHandle(hFile)
@@ -221,12 +217,12 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 				i=i+1
 			Loop
 			CloseHandle(hFile)
-			SendMessage(lpRESMEM->hProject,PRO_SETMODIFY,FALSE,0)
+			SendMessage(ad.resmem.hProject,PRO_SETMODIFY,FALSE,0)
 			GlobalFree(hMem)
 			If fProject<>FALSE And Len(ad.resexport)>0 Then
-				SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(0 Shl 16)+nmeexp.nType,Cast(LPARAM,@ad.resexport))
-				SendMessage(lpRESMEM->hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
-				SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(LPARAM,@nmeexp.szFileName))
+				SendMessage(ad.resmem.hProject,PRO_SETEXPORT,(0 Shl 16)+nmeexp.nType,Cast(LPARAM,@ad.resexport))
+				SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
+				SendMessage(ad.resmem.hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(LPARAM,@nmeexp.szFileName))
 				buff=MakeProjectFileName(ad.resexport)
 				If IsProjectFile(buff) Then
 					ParseFile(ah.hwnd,0,buff)
@@ -243,7 +239,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 				EndIf
 			Else
 				If nmeexp.fAuto Then
-					SendMessage(lpRESMEM->hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
+					SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
 				EndIf
 			EndIf
 		Else
