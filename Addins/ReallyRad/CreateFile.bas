@@ -85,6 +85,8 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 					nMode=2
 				ElseIf InStr(sLine,szBEGINPROC) Then
 					nMode=3
+				ElseIf InStr(sLine,szBEGINCODE) Then
+					nMode=6
 				EndIf
 			Case 1
 				If InStr(sLine,szENDDEF) Then
@@ -165,6 +167,15 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 					lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
 				EndIf
 				'
+			Case 6
+				If InStr(sLine,szENDCODE) Then
+					nMode=0
+				Else
+					sLine=ConvertLine(sLine,szDIALOGNAME,szName)
+					sLine=ConvertLine(sLine,szDIALOGPROC,szProc)
+					lstrcat(Cast(ZString Ptr,hMem),sLine)
+					lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+				EndIf
 			Case 98
 				If InStr(sLine,szENDSELECTCASEID) Then
 					nMode=5
