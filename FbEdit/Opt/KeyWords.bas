@@ -64,7 +64,7 @@ Sub SetToolsColors(ByVal hWin As HWND)
 	Dim cccol As CC_COLOR
 	Dim ttcol As TT_COLOR
 
-	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 	SendMessage(ah.hprj,TVM_SETBKCOLOR,0,fbcol.toolback)
 	SendMessage(ah.hprj,TVM_SETTEXTCOLOR,0,fbcol.tooltext)
 	SendMessage(ah.hfib,FBM_SETBACKCOLOR,0,fbcol.toolback)

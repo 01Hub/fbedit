@@ -137,7 +137,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 			GlobalLock(hMem)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			SendMessage(lpRESMEM->hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
 			ReadTextFile(hWin,hFile,lpFile)
@@ -199,7 +199,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	hFile=CreateFile(szFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0)
 	If hFile<>INVALID_HANDLE_VALUE Then
 		If hWin=ah.hres Then
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
 			SendMessage(lpRESMEM->hProject,PRO_EXPORT,0,Cast(Integer,hMem))
 			nSize=Len(*Cast(ZString Ptr,hMem))

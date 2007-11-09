@@ -450,20 +450,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_MNUARROW))
 			ImageList_AddMasked(ah.hmnuiml,hBmp,&HC0C0C0)
 			DeleteObject(hBmp)
-			' Create a class for the resource editor
-			wcex.cbSize=SizeOf(WNDCLASSEXA)
-			wcex.style=CS_HREDRAW Or CS_VREDRAW
-			wcex.lpfnWndProc=@ResProc
-			wcex.cbClsExtra=0
-			wcex.cbWndExtra=4
-			wcex.hInstance=hInstance
-			wcex.hbrBackground=Cast(HBRUSH,COLOR_BTNFACE+1)
-			wcex.lpszMenuName=NULL
-			wcex.lpszClassName=@szResClassName
-			wcex.hIcon=0
-			wcex.hIconSm=0
-			wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
-			RegisterClassEx(@wcex)
 			' Full screen
 			wcex.cbSize=SizeOf(WNDCLASSEXA)
 			wcex.style=CS_HREDRAW Or CS_VREDRAW
@@ -478,7 +464,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
 			wcex.hIconSm=0
 			RegisterClassEx(@wcex)
-			ah.hres=CreateWindowEx(0,@szResClassName,NULL,WS_CHILD Or WS_VISIBLE Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN,0,0,0,0,hWin,Cast(HMENU,IDC_RESED),hInstance,0)
+			' Resource editor child dialog
+			ah.hres=CreateDialogParam(hInstance,Cast(zstring ptr,IDD_DLGRESED),hWin,@ResEdProc,0)
 			SetToolsColors(hWin)
 			SetToolMenu(hWin)
 			SetHelpMenu(hWin)
@@ -510,7 +497,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					wpos.ht=rect.bottom-rect.top
 				EndIf
 				wpos.fmax=IsZoomed(hWin)
-				lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
+				lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 				SendMessage(lpRESMEM->hProject,PRO_GETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
 				GetWindowRect(ah.hcc,@rect)
 				wpos.ptcclist.x=rect.right-rect.left
@@ -554,7 +541,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
 				Case BN_CLICKED,1
-					lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,0))
+					lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,GWL_USERDATA))
 					Select Case As Const id
 						Case IDM_FILE_NEWPROJECT
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_NEWPROJECT),GetOwner,@NewProjectDlgProc,NULL)
@@ -577,7 +564,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FILE_NEW_RESOURCE
-							lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
+							lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 							ad.filename="(Untitled).rc"
 							hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,4096)
 							GlobalLock(hMem)

@@ -1,5 +1,10 @@
+#define IDD_DLGRESED            1300
+#define IDC_TBX1                1301
+#define IDC_DLE1                1302
+#define IDC_PRJ1                1303
+#define IDC_PRP1                1304
 
-Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim lpRESMEM As RESMEM Ptr
 	Dim rect As RECT
 	Dim As Integer nInx,x,y
@@ -11,17 +16,13 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim lpCTLDBLCLICK As CTLDBLCLICK Ptr
 
 	Select Case uMsg
-		Case WM_CREATE
+		Case WM_INITDIALOG
 			lpRESMEM=MyGlobalAlloc(GMEM_FIXED,SizeOf(RESMEM))
-			SetWindowLong(hWin,0,Cast(Integer,lpRESMEM))
-			lpRESMEM->hResEd=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("DLGEDITCLASS"),0,WS_CHILD Or WS_VISIBLE Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or WS_VSCROLL Or WS_HSCROLL,0,0,0,0,hWin,Cast(HMENU,IDC_RESEDIT),hInstance,0)
-			SendMessage(lpRESMEM->hResEd,WM_SETFONT,Cast(Integer,hDlgFnt),0)
-			lpRESMEM->hProject=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("PROJECTCLASS"),0,WS_CHILD Or WS_VISIBLE Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN,0,0,0,0,hWin,Cast(HMENU,IDC_RESPROJECT),hInstance,0)
-			SendMessage(lpRESMEM->hProject,WM_SETFONT,Cast(Integer,hDlgFnt),0)
-			lpRESMEM->hProperty=CreateWindowEx(0,StrPtr("PROPERTYCLASS"),0,WS_CHILD Or WS_VISIBLE Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN,0,0,0,0,hWin,Cast(HMENU,IDC_RESPROPERTY),hInstance,0)
-			SendMessage(lpRESMEM->hProperty,WM_SETFONT,Cast(Integer,hDlgFnt),0)
-			lpRESMEM->hToolBox=CreateWindowEx(0,StrPtr("TOOLBOXCLASS"),0,WS_CHILD Or WS_VISIBLE Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN,0,0,0,0,hWin,Cast(HMENU,IDC_RESTOOLBOX),hInstance,0)
-			SendMessage(lpRESMEM->hToolBox,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+			SetWindowLong(hWin,GWL_USERDATA,Cast(Integer,lpRESMEM))
+			lpRESMEM->hResEd=GetDlgItem(hWin,IDC_DLE1)
+			lpRESMEM->hProject=GetDlgItem(hWin,IDC_PRJ1)
+			lpRESMEM->hProperty=GetDlgItem(hWin,IDC_PRP1)
+			lpRESMEM->hToolBox=GetDlgItem(hWin,IDC_TBX1)
 			SetDialogOptions(hWin)
 			SendMessage(lpRESMEM->hResEd,DEM_SETPOSSTATUS,Cast(Integer,ah.hsbr),0)
 			nInx=1
@@ -38,12 +39,15 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				nInx=nInx+1
 			Wend
 			'
+		Case WM_CLOSE
+			DestroyWindow(hWin)
+			'
 		Case WM_DESTROY
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			GlobalFree(lpRESMEM)
 			'
 		Case WM_SIZE
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			GetClientRect(hWin,@rect)
 			nBtn=SendMessage(lpRESMEM->hResEd,DEM_GETBUTTONCOUNT,0,0)
 			tbxwt=53
@@ -56,31 +60,31 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			MoveWindow(lpRESMEM->hProperty,rect.right-180,rect.bottom/2,180,rect.bottom/2,TRUE)
 			'
 		Case EM_GETMODIFY
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hProject,PRO_GETMODIFY,0,0)
 			'
 		Case EM_SETMODIFY
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hProject,PRO_SETMODIFY,wParam,0)
 			'
 		Case EM_UNDO
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hResEd,DEM_UNDO,0,0)
 			'
 		Case WM_CUT
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hResEd,DEM_CUT,0,0)
 			'
 		Case WM_COPY
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hResEd,DEM_COPY,0,0)
 			'
 		Case WM_PASTE
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hResEd,DEM_PASTE,0,0)
 			'
 		Case WM_CLEAR
-			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+			lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 			Return SendMessage(lpRESMEM->hResEd,DEM_DELETECONTROLS,0,0)
 			'
 		Case WM_NOTIFY
@@ -121,7 +125,10 @@ Function ResProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 				fInUse=FALSE
 			EndIf
+		Case Else
+			Return FALSE
+			'
 	End Select
-	Return DefWindowProc(hWin,uMsg,wParam,lParam)
+	Return TRUE
 
 End Function

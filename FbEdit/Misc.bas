@@ -1388,7 +1388,7 @@ Sub CheckMenu()
 	CheckMenuItem(ah.hmenu,IDM_VIEW_TABSELECT,IIf(wpos.fview And VIEW_TABSELECT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_STATUSBAR,IIf(wpos.fview And VIEW_STATUSBAR,MF_CHECKED,MF_UNCHECKED))
 
-	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hres,GWL_USERDATA))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(lpRESMEM->hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(lpRESMEM->hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
@@ -1405,7 +1405,7 @@ Sub EnableMenu()
 	Dim id As Integer
 
 	If ah.hred=ah.hres Then
-		lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,0))
+		lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(ah.hred,GWL_USERDATA))
 
 		EnableDisable(FALSE,IDM_FILE_PRINT)
 

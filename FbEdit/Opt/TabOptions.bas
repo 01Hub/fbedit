@@ -213,7 +213,7 @@ Sub SetDialogOptions(ByVal hWin As HWND)
 	Dim st As Integer
 	Dim lpRESMEM As RESMEM Ptr
 
-	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,0))
+	lpRESMEM=Cast(RESMEM Ptr,GetWindowLong(hWin,GWL_USERDATA))
 	lstrcpy(@buff,nmeexp.szFileName)
 	SendMessage(lpRESMEM->hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(Integer,@buff))
 	SendMessage(lpRESMEM->hProject,PRO_SETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
