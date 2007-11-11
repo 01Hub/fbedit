@@ -1,11 +1,15 @@
 Whats new:
 ----------
 1.0.5.8
+o Added support for Dim foo As Function Cdecl (arg1 as Integer) as Integer
+  to code complete.
 o Added 'Duplicate line' to AdvEdit addin.
 o Changed Dual Pane accelerator to Shift+Ctrl+D.
 o Added option to add module files to build command.
 o Added option to compile modules only if newer than .o file.
 o Added NM_DBLCLK notification to dialog editor.
+o Added Really RAD addin. Can create code and jump to code
+  on control double click.
 o Fixed bug in resource editor caption with double quote.
 o Fixed codecomplete bug 'aaa(0).c2[0].l1 = "cccc"'.
 1.0.5.7

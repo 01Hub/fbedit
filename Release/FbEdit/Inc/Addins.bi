@@ -58,6 +58,13 @@ Type WINPOS
 	ptsavelist		As Point							' Save list position
 End Type
 
+Type RESMEM
+	hResEd			As HWND
+	hProject			As HWND
+	hProperty		As HWND
+	hToolBox			As HWND
+End Type
+
 Type ADDINHOOKS
 	hook1				As UINT							' Hook flags for addin message 0 - 31
 	hook2				As UINT							' Hook flags for addin message 32 - 63
@@ -113,13 +120,15 @@ Type ADDINDATA
 	lpWINPOS			As WINPOS Ptr					' Window positions and sizes
 	lpCharTab		As Any Ptr						' Pointer to RAEdit character table
 	hLangMem			As HGLOBAL						' Language translation
+	bExtOutput		As Integer						' External Output
+	resmem			As RESMEM
 End Type
 
 Type ADDINFUNCTIONS
 	TextToOutput As Sub(ByVal sText As String)
 	SaveToIni As Sub(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 	LoadFromIni As Function(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
-	OpenTheFile As Sub(ByVal sFile As String)
+	OpenTheFile As Sub(ByVal sFile As String,ByVal fHex As Boolean)
 	Compile As Function(ByVal sMake As String) As Integer
 	ShowOutput As Sub(ByVal bShow As Boolean)
 	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)
@@ -147,6 +156,7 @@ End Type
 #Define AIM_MAKEBEGIN		9						' wParam= lParam=
 #Define AIM_MAKEDONE			10						' wParam= lParam=
 #Define AIM_GETTOOLTIP		11						' wParam=id lParam=0
+#Define AIM_CTLDBLCLK		12						' wParam=0 lParam=lpCTLDBLCLICK
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -162,6 +172,7 @@ End Type
 #Define HOOK_MAKEBEGIN		&H200
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
+#Define HOOK_CTLDBLCLK	&H1000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

@@ -1,9 +1,9 @@
 
 ';Dialog memory size
 'MaxMem				equ 128*1024*3
-'MaxCap				equ 256
-'MaxName				equ 64
-'
+#Define MaxCap		256
+#Define MaxName	64
+
 ';Dialog structures
 'DLGHEAD struct
 '	changed			dd ?				;Set to FALSE
@@ -27,33 +27,34 @@
 '	weight			dw ?				;Set to NULL
 'DLGHEAD ends
 '
-'DIALOG struct
-'	hwnd			dd ?				;Set to TRUE
-'	hdmy			dd ?				;Handle of transparent window
-'	oldproc			dd ?				;Set to NULL
-'	hpar			dd ?				;Set to NULL
-'	hcld			dd ?				;Set to NULL
-'	style			dd ?				;Set to desired style
-'	exstyle			dd ?				;Set to desired ex style
-'	dux				dd ?				;X position in dialog units
-'	duy				dd ?				;Y position in dialog units
-'	duccx			dd ?				;Width in dialog units
-'	duccy			dd ?				;Height in dialog units
-'	x				dd ?				;X position in pixels
-'	y				dd ?				;Y position in pixels
-'	ccx				dd ?				;Width in pixels
-'	ccy				dd ?				;Height in pixels
-'	caption			db MaxCap dup(?)	;Caption max 255+1 char
-'	ntype			dd ?				;Follows ToolBox buttons Dialog=0, Edit=1, Static=2, GroupBox=3
-'	ntypeid			dd ?				;Set to NULL
-'	tab				dd ?				;Tab index, Dialog=0, First index=0
-'	id				dd ?				;Dialog / Controls ID
-'	idname			db MaxName dup(?)	;ID Name, max 63+1 chars
-'	helpid			dd ?				;Help ID
-'	undo			dd ?				;Set to NULL
-'	himg			dd ?				;Set to NULL
-'DIALOG ends
-'
+Type DIALOG
+	hwnd			As HWND					' Set to TRUE
+	hdmy			As HWND					' Handle of transparent window
+	oldproc		As Any Ptr				' Set to NULL
+	hpar			As HWND					' Set to NULL
+	hcld			As HWND					' Set to NULL
+	style			As Integer				' Set to desired style
+	exstyle		As Integer				' Set to desired ex style
+	dux			As Integer				' X position in dialog units
+	duy			As Integer				' Y position in dialog units
+	duccx			As Integer				' Width in dialog units
+	duccy			As Integer				' Height in dialog units
+	x				As Integer				' X position in pixels
+	y				As Integer				' Y position in pixels
+	ccx			As Integer				' Width in pixels
+	ccy			As Integer				' Height in pixels
+	caption		As ZString*MaxCap		' Caption max 255+1 char
+	class			As ZString*32			' Set to Null string
+	ntype			As Integer				' Follows ToolBox buttons Dialog=0, Edit=1, Static=2, GroupBox=3
+	ntypeid		As Integer				' Set to NULL
+	tab			As Integer				' Tab index, Dialog=0, First index=0
+	id				As Integer				' Dialog / Controls ID
+	idname		As ZString*MaxName	' ID Name, max 63+1 chars
+	helpid		As Integer				' Help ID
+	undo			As Integer				' Set to NULL
+	himg			As Integer				' Set to NULL
+End Type
+
 ';Control types
 'TYPES struct
 '	ID				dd ?
@@ -288,6 +289,15 @@ End Type
 #Define DEWM_SCROLLX			12
 #Define DEWM_SCROLLY			16
 #Define DEWM_PROJECT			20
+
+Type CTLDBLCLICK
+	nmhdr			As NMHDR
+	lpDlgMem		As DIALOG Ptr
+	nCtlId		As Integer
+	lpCtlName	As ZString Ptr
+	nDlgId		As Integer
+	lpDlgName	As ZString Ptr
+End Type
 
 ' Window classes global
 Const szDlgEditClass="DLGEDITCLASS"
