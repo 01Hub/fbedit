@@ -126,7 +126,7 @@ End Type
 
 Type ADDINFUNCTIONS
 	TextToOutput As Sub(ByVal sText As String)
-	SaveToIni As Sub(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
+	SaveToIni As Sub(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal lpszTypes As ZString Ptr,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 	LoadFromIni As Function(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
 	OpenTheFile As Sub(ByVal sFile As String,ByVal fHex As Boolean)
 	Compile As Function(ByVal sMake As String) As Integer

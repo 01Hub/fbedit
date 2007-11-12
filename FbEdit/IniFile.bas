@@ -1,5 +1,5 @@
 
-Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
+Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal lpszTypes As ZString Ptr,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 	Dim value As ZString*4096
 	Dim i As Integer
 	Dim ofs As Integer
@@ -7,9 +7,9 @@ Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal sz
 	Dim v As Integer
 	Dim p As ZString Ptr
 
-	For i=1 To Len(szTypes)
+	For i=0 To lstrlen(lpszTypes)-1
 		v=0
-		Select Case Asc(szTypes,i)-48
+		Select Case lpszTypes[i]-48
 			Case 0
 				' String
 				RtlMoveMemory(@p,lpDta+ofs,4)
@@ -40,7 +40,6 @@ Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal sz
 		tmp=ad.IniFile
 	EndIf
 	WritePrivateProfileString(lpszApp,lpszKey,@value,@tmp)
-
 End Sub
 
 Function LoadFromIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean

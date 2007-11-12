@@ -531,6 +531,52 @@ Sub TestCaseConvert(ByVal hWin As HWND,ByVal wParam As Integer)
 
 End Sub
 
+Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
+	Dim tti As TTITEM
+	Dim pt As Point
+	Dim wp As Integer
+	
+	If edtopt.codecomplete Then
+		fconstlist=UpdateConstList(lptt->lpszApi,lptt->nPos+1)
+	EndIf
+	If fconstlist Then
+		' Move code complete list
+		MoveList
+		Return TRUE
+	Else
+		' Show tooltip
+		HideList
+		If lstrcmp(@szApi,lptt->lpszApi) Then
+			lstrcpy(@szApi,lptt->lpszApi)
+			nsel=0
+			novr=lptt->novr
+		EndIf
+		tti.nsel=nsel
+		tti.lpszApi=lptt->lpszApi
+		tti.lpszParam=lptt->ovr(nsel).lpszParam
+		tti.lpszRetType=lptt->ovr(nsel).lpszRetType
+		tti.nitem=lptt->nPos
+		wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
+		tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
+		If tti.lpszDesc Then
+			tti.lpszDesc=tti.lpszDesc+Len(*tti.lpszDesc)+1
+		EndIf
+		tti.novr=lptt->novr
+		GetCaretPos(@pt)
+		ClientToScreen(hWin,@pt)
+		wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
+		pt.x=pt.x-wp
+		SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
+		If edtopt.tooltip Then
+			SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+			InvalidateRect(ah.htt,NULL,TRUE)
+			Return TRUE
+		EndIf
+	EndIf
+	Return FALSE
+
+End Function
+
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim pt As Point
 	Dim rect As RECT
@@ -709,40 +755,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
 						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And InStr(buff,"(")<>0 Then
-						ShowTT:
-							If edtopt.codecomplete Then
-								fconstlist=UpdateConstList(tt.lpszApi,tt.nPos+1)
-							EndIf
-							If fconstlist Then
-								' Move code complete list
-								MoveList
-							Else
-								' Show tooltip
-								HideList
-								If lstrcmp(@szApi,tt.lpszApi) Then
-									lstrcpy(@szApi,tt.lpszApi)
-									nsel=0
-									novr=tt.novr
-								EndIf
-								tti.nsel=nsel
-								tti.lpszApi=tt.lpszApi
-								tti.lpszParam=tt.ovr(nsel).lpszParam
-								tti.lpszRetType=tt.ovr(nsel).lpszRetType
-								tti.nitem=tt.nPos
-								wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
-								tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
-								If tti.lpszDesc Then
-									tti.lpszDesc=tti.lpszDesc+Len(*tti.lpszDesc)+1
-								EndIf
-								tti.novr=tt.novr
-								GetCaretPos(@pt)
-								ClientToScreen(hWin,@pt)
-								wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
-								pt.x=pt.x-wp
-								SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
-								If edtopt.tooltip Then
-									SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
-									InvalidateRect(ah.htt,NULL,TRUE)
+							If ShowTooltip(hWin,@tt)=FALSE Then
+								If InStr(buff,".") Then
+									buff=Mid(buff,InStr(buff,".")+1)
 								EndIf
 							EndIf
 						Else
@@ -761,8 +776,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt)) Then
 										s=Left(buff,InStr(buff,"(")-1)
 										tt.lpszApi=@s
-										GoTo ShowTT
-									EndIf								
+										ShowTooltip(hWin,@tt)
+									Else
+										' udt.sub( udt->sub(
+										SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)
+										If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt)) Then
+											ShowTooltip(hWin,@tt)
+										EndIf	
+									EndIf
 								EndIf
 							Else
 								SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)

@@ -24,7 +24,7 @@ Declare Sub OpenProjectFile(ByVal nInx As Integer)
 Declare Sub WriteProjectFileInfo(ByVal hWin As HWND,ByVal nInx As Integer,ByVal fProjectClose As Boolean)
 Declare Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 Declare Sub TextToOutput(ByVal sText As String)
-Declare Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
+Declare Sub SaveToIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal lpszTypes As ZString Ptr,ByVal lpDta As Any Ptr,ByVal fProject As Boolean)
 Declare Function LoadFromIni(ByVal lpszApp As ZString Ptr,ByVal lpszKey As ZString Ptr,ByVal szTypes As String,ByVal lpDta As Any Ptr,ByVal fProject As Boolean) As Boolean
 Declare Function GetProjectFileID(ByVal hWin As HWND) As Integer
 Declare Function CallAddins(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
@@ -635,7 +635,7 @@ Dim Shared szCaseConvert As ZString*32
 Dim Shared fQR As Boolean
 Dim Shared nSplash As Integer=10
 Dim Shared hSplashBmp As HBITMAP
-Dim Shared wpos As WINPOS=(0,10,10,780,580,0,(0,0),120,160,(10,10),(10,10),0,(150,150),(10,10))
+Dim Shared wpos As WINPOS=(0,10,10,780,580,VIEW_PROJECT Or VIEW_PROPERTY Or VIEW_TOOLBAR Or VIEW_TABSELECT Or VIEW_STATUSBAR,(0,0),120,160,(10,10),(10,10),0,(150,150),(10,10))
 Dim Shared ppage As PRNPAGE=((21000,29700),(1000,1000,1000,1000),66,0)
 Dim Shared psd As PageSetupDlg
 Dim Shared pd As PrintDlg
@@ -643,4 +643,3 @@ Dim Shared szApi As ZString*260
 Dim Shared novr As Integer
 Dim Shared nsel As Integer
 Dim Shared Language As ZString*260
-'Dim Shared hLangMem As HGLOBAL

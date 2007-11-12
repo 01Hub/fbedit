@@ -30,6 +30,9 @@
 
 	include \RadASM\masm\inc\debug.inc
 	includelib \RadASM\masm\lib\debug.lib
+	include masm32.inc
+	includelib masm32.lib
+	includelib \RadASM\Masm\Lib\Debug.lib
 
 	DBGWIN_DEBUG_ON = 1		; include debug info into the program
 	DBGWIN_EXT_INFO = 0		; include extra debug info into the program
