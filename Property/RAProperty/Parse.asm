@@ -1530,6 +1530,16 @@ ParseStruct:
 					dec		fPtr
 					jne		@b
 				.endif
+				invoke IsFunction,lpword2,len2
+				.if !eax
+					inc		fdim
+					push	edi
+					mov		eax,TYPE_NAMEFIRST
+					call	ParseProc
+					pop		edi
+					mov		edx,'p'
+					invoke AddWordToWordList,edx,nOwner,nline,npos,edi,4
+				.endif
 				mov		word ptr [edi],','
 				call	SkipToComma
 				.if byte ptr [esi]==','
