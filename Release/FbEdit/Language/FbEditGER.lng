@@ -15,6 +15,8 @@ Lang=Deutsch
 2=Abbrechen
 1002=Änderungen werden nach Neustart von FbEdit übernommen.
 ;--------------------------------------------------------------------------
+[1300]
+;--------------------------------------------------------------------------
 [2000]
 2000=Optionen
 1=OK
@@ -197,6 +199,12 @@ Lang=Deutsch
 ;--------------------------------------------------------------------------
 [5500]
 5500=Projekt Optionen
+5501=kein
+5502=nach Ordner
+5503=nach Typ
+5504=Manuell erstellen
+5505=Neu kompilieren
+5506=Befehlszeile
 5511=Projekt Beschreibung:
 5512=Projekt Typ:
 5513=Build Befehl:
@@ -204,16 +212,12 @@ Lang=Deutsch
 5514=API Dateien:
 5515=Modul Handling
 5516=Modul Build Befehl:
-5504=Manuell erstellen
-5505=Neu kompilieren
-5506=Befehlszeile
 5517=Ausgabe-Dateiname:
 5518=Befehlszeilen Parameter ausführen:
 5519=Ressourcen Export Dateiname:
 5520=Projekt Dateigruppe
-5501=kein
-5502=nach Ordner
-5503=nach Typ
+5521=Nur neue kompilieren
+5522=Modul Dateien zum Build-Befehl hinzufügen
 1=OK
 2=Abbrechen
 ;--------------------------------------------------------------------------
@@ -560,6 +564,7 @@ SnipletAddin=Code Sniplets
 10007=Zeile ausschneiden\tAlt+Ctrl+X
 10008=Zeile löschen
 10009=Schnellstart
+10010=Zeile duplizieren\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
 CustomFontAddin=Benutzerdefinierte Schriftart
