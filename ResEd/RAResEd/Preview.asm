@@ -695,8 +695,8 @@ FindCtrl:
 	mov		nInx,0
 	mov		edi,esi
 	.while [edi].DIALOG.hwnd
+		inc		nInx
 		.if [edi].DIALOG.hwnd!=-1
-			inc		nInx
 			.break .if ecx==[edi].DIALOG.tab
 		.endif
 		add		edi,sizeof DIALOG
