@@ -85,6 +85,12 @@ ToolBoxBtnProc proc	uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ToolBoxID,eax
 		invoke GetParent,hWin
 		invoke SetFocus,eax
+		test	wParam,MK_CONTROL
+		.if !ZERO?
+			mov		fNoResetToolbox,TRUE
+		.else
+			mov		fNoResetToolbox,FALSE
+		.endif
 		xor		eax,eax
 		ret
 	.elseif eax==WM_MOUSEMOVE

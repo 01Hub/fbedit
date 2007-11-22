@@ -87,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,27889
+1=0,0,0,0,13112
 6=
-2=0,0,0,0,4823
+2=0,0,0,0,4977
 7=0,0,699,490,8600
 9=
 8=
 3=0,0,0,0,19
 10=0,0,0,0
 11=0,0,0,0,8877
-13=0,0,0,0,12592
+13=0,0,0,0,13771
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="hPreview"
-2="hBrBackColor"
-3="createwindow"
-4="EDIT"
-5="PRO_SETSTYLEPOS"
-6="PRO_GETSTYLEPOS"
-7="GetWindowLong"
-8="PRO_GETMEM"
-9="PRO_GETMRM"
-10="DEWM_"
+1="gridsize.keep"
+2="hPreview"
+3="hBrBackColor"
+4="createwindow"
+5="EDIT"
+6="PRO_SETSTYLEPOS"
+7="PRO_GETSTYLEPOS"
+8="GetWindowLong"
+9="PRO_GETMEM"
+10="PRO_GETMRM"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=4
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
