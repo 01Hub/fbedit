@@ -35,16 +35,11 @@ WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
 
 IDB_TOOLBAR					equ 100
 IDB_ARROW					equ 32101
-IDC_VSPLIT					equ 102
-IDC_HSPLIT					equ 101
 IDR_ACCEL					equ 105
 IDI_ICON					equ 100
 
 IDD_DIALOG					equ 3000
-IDC_TOOLBOX					equ 1001
-IDC_DLGEDIT					equ 1002
-IDC_PROPERTY				equ 1003
-IDC_PROJECT					equ 1006
+IDC_RESED					equ 1002
 IDC_TBR1					equ 1004
 IDC_SBR1					equ 1005
 IDC_EDT1					equ 1007
@@ -114,7 +109,8 @@ WINPOS struct
 	htpro		dd ?
 	left		dd ?
 	top			dd ?
-	dummy		dd 4 dup(?)
+	wttbx		dd ?
+	dummy		dd 3 dup(?)
 WINPOS ends
 
 NAMEEXPORT struct
@@ -172,7 +168,7 @@ ntbrbtns			equ 15
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 1.1.4.3',13,10,'KetilO © 2003-2007',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.0.0.0',13,10,'KetilO © 2007',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl			db 'http://www.radasm.com/resed/',0
 szOpen				db 'Open',0
 szRichEdit			db 'riched20.dll',0
@@ -184,7 +180,7 @@ szWinPos			db 'WinPos',0
 
 .data
 
-wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100>
+wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
 grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE>
 col					COLOR <0FFFFFFh,0>
@@ -202,18 +198,13 @@ hAccel				dd ?
 hContextMenu		dd ?
 hContextMenuPopup	dd ?
 hIml				dd ?
-hHSplit				dd ?
-hVSplit				dd ?
 hResEd				dd ?
-hProject			dd ?
-hOut				dd ?
 ProjectFileName		db MAX_PATH dup(?)
 icex				INITCOMMONCONTROLSEX <?>
 hReg				dd ?
 lpdwDisp			dd ?
 lpType				dd ?
 lpcbData			dd ?
-fSize				dd ?
 hCustDll			dd 32 dup(?)
-hBrBackColor		dd ?
 hPreview			dd ?
+winsize				WINSIZE <?>

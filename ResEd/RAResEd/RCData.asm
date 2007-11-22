@@ -137,7 +137,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		esi,[eax].PROJECT.hmem
 				.endif
 				.if !esi
-					invoke SendMessage,hPrj,PRO_ADDITEM,TPE_RCDATA,FALSE
+					invoke SendMessage,hRes,PRO_ADDITEM,TPE_RCDATA,FALSE
 				.endif
 				mov		[eax].PROJECT.changed,TRUE
 				mov		esi,[eax].PROJECT.hmem

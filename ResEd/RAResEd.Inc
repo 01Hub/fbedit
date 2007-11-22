@@ -119,6 +119,14 @@ INITID struct
 	rcd				RESID <>
 INITID ends
 
+WINSIZE struct
+	htpro	dd ?
+	wtpro	dd ?
+	htout	dd ?
+	wttbx	dd ?
+	ptstyle	POINT <?>
+WINSIZE ends
+
 ;Dialog editor messages
 DEM_BASE			equ WM_USER+2000
 DEM_OPEN			equ DEM_BASE+1		;wParam=0, lParam=Handle of memory or NULL
@@ -151,6 +159,10 @@ DEM_SHOWTABINDEX	equ DEM_BASE+27		;wParam=0, lParam=0
 DEM_EXPORTDLG		equ DEM_BASE+28		;wParam=0, lParam=lpszFileName
 DEM_AUTOID			equ DEM_BASE+29		;wParam=0, lParam=0
 DEM_GETBUTTONSCOUNT	equ DEM_BASE+30		;wParam=0, lParam=0
+DEM_GETMEM			equ DEM_BASE+31		;wParam=DEWM_xxxxx, lParam=0
+DEM_SHOWOUTPUT		equ DEM_BASE+32		;wParam=TRUE/FALSE, lParam=0
+DEM_GETSIZE			equ DEM_BASE+33		;wParam=0, lParam=lpWINSIZE
+DEM_SETSIZE			equ DEM_BASE+34		;wParam=0, lParam=lpWINSIZE
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1
@@ -185,9 +197,8 @@ PRO_SETNAME			equ PRO_BASE+11		;wParam=lpszName, lParam=lpszPath
 PRO_SHOWNAMES		equ PRO_BASE+12		;wParam=0, lParam=Handle output window
 PRO_SETEXPORT		equ PRO_BASE+13		;wParam=nType, lParam=lpszDefaultFileName
 PRO_EXPORTNAMES		equ PRO_BASE+14		;wParam=0, lParam=Handle output window
-PRO_GETSTYLEPOS		equ PRO_BASE+15		;wParam=0, lParam=lpPOINT
-PRO_SETSTYLEPOS		equ PRO_BASE+16		;wParam=0, lParam=lpPOINT
 PRO_SETINITID		equ PRO_BASE+17		;wParam=0, lParam=lpINITID
+PRO_GETMEM			equ PRO_BASE+18		;wParam=0, lParam=0
 
 ;Project item types
 TPE_NAME			equ 1
@@ -317,6 +328,7 @@ CTLDBLCLICK ends
 
 IFDEF DLL
 	;Window classes global
+	szResEdClass		db 'RESEDCLASS',0
 	szDlgEditClass		db 'DLGEDITCLASS',0
 	szToolBoxClass		db 'TOOLBOXCLASS',0
 	szPropertyClass		db 'PROPERTYCLASS',0
@@ -324,6 +336,7 @@ IFDEF DLL
 	szDlgEditDummyClass	db 'DlgEditDummy',0
 ELSE
 	;Window classes local
+	szResEdClass		db 'MYRESEDCLASS',0
 	szDlgEditClass		db 'MYDLGEDITCLASS',0
 	szToolBoxClass		db 'MYTOOLBOXCLASS',0
 	szPropertyClass		db 'MYPROPERTYCLASS',0

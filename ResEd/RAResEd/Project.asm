@@ -47,9 +47,9 @@ ProjectDblClick proc hWin:HWND,lParam:LPARAM
 			.if tvi.lParam
 				mov		eax,tvi.lParam
 				.if [eax].PROJECT.ntype==TPE_DIALOG
-					invoke SendMessage,hDEd,DEM_OPEN,0,eax
+					invoke SendMessage,hRes,DEM_OPEN,0,eax
 				.elseif [eax].PROJECT.ntype==TPE_MENU
-					invoke SendMessage,hDEd,MEM_OPEN,0,eax
+					invoke SendMessage,hRes,MEM_OPEN,0,eax
 				.elseif [eax].PROJECT.ntype==TPE_VERSION
 					invoke DialogBoxParam,hInstance,IDD_DLGVERSION,hWin,offset VersionEditProc,eax
 				.elseif [eax].PROJECT.ntype==TPE_ACCEL
@@ -922,7 +922,7 @@ RemoveProjectSelected proc
 					mov		eax,nUndo
 					mov		[edx].PROJECT.delete,eax
 					invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,tvi.hItem
-					invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 				.endif
 			.endif
 		.endif
@@ -968,7 +968,7 @@ ProjectUndoDeleted proc uses ebx esi
 			invoke GetProjectItemName,ebx,addr buffer
 			mov		edx,[ebx].PROJECT.ntype
 			invoke AddProjectNode,edx,addr buffer,ebx
-			invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+			invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 		.endif
 	.endif
 	ret

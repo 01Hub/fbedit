@@ -8,6 +8,7 @@
 #include "Res/TabOpt1Dlg.rc"
 #include "Res/TabOpt2Dlg.rc"
 #include "Res/TabOpt3Dlg.rc"
+#include "Res/TabOpt4Dlg.rc"
 #include "Res/ResEdAcl.rc"
 #include "Res/ResEdStr.rc"
 #include "Res/AboutDlg.rc"
@@ -17,12 +18,18 @@
 #define IDB_PROTRV		32107
 #define IDB_CUSTCTL		32106
 #define IDB_BOOKMARK	32108
+#define IDC_HSPLIT		32109
+#define IDC_VSPLIT		32110
+
 IDB_TOOLBOX				BITMAP  DISCARDABLE "../RAResEd/Res/ToolBox.bmp"
 IDB_MNUARROW			BITMAP  DISCARDABLE "../RAResEd/Res/MnuArrow.bmp"
 IDB_PROTRV				BITMAP  DISCARDABLE "../RAResEd/Res/ProTrv.bmp"
 IDB_CUSTCTL				BITMAP  DISCARDABLE "../RAResEd/Res/Button.bmp"
 IDB_CUSTCTL				ICON	DISCARDABLE "../RAResEd/Res/ResEd.ico"
 IDB_BOOKMARK			BITMAP	DISCARDABLE "../RAResEd/Res/Bookmark.bmp"
+IDC_HSPLIT				CURSOR  DISCARDABLE "../RAResEd/Res/SplitH.cur"
+IDC_VSPLIT				CURSOR  DISCARDABLE "../RAResEd/Res/SplitV.cur"
+
 #include "../RAResEd/Res/MenuEditDlg.rc"
 #include "../RAResEd/Res/IncludeEditDlg.rc"
 #include "../RAResEd/Res/ResourceEditDlg.rc"
@@ -34,4 +41,3 @@ IDB_BOOKMARK			BITMAP	DISCARDABLE "../RAResEd/Res/Bookmark.bmp"
 #include "../RAResEd/Res/StyleManaDlg.rc"
 #include "../RAResEd/Res/XPManifestEditDlg.rc"
 #include "../RAResEd/Res/RCDataEditDlg.rc"
-#include "Res/TabOpt4Dlg.rc"

@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=Resource editor
+Description=Resource editor 20
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -62,17 +62,15 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 18=Misc.asm
 19=About.dlg
 20=..\RAResEd\Res\ProTrv.bmp
-21=..\WhatsNew.txt
+21=
 22=Opt\TabOpt4.dlg
 23=..\RAResEd\Res\ToolBox.bmp
 
 
 [Resource]
 1=IDB_TOOLBAR,100,0,Res\Toolbar.bmp
-2=IDC_HSPLIT,101,1,Res\SplitH.cur
-3=IDC_VSPLIT,102,1,Res\SplitV.cur
-4=,1,8,Res\xptheme.xml
-5=IDI_ICON,100,2,Res\ResEd.ico
+2=,1,8,Res\xptheme.xml
+3=IDI_ICON,100,2,Res\ResEd.ico
 
 [Colref]
 0=00FFFFFF
@@ -89,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,12488
+1=0,0,0,0,59
 6=
-2=0,0,0,0,5107
-7=0,0,699,490,7810
+2=0,0,0,0,421
+7=0,0,699,490,8600
 9=
 8=
-3=0,0,0,0,881
+3=0,0,0,0,19
 10=0,0,0,0
-11=0,0,0,0,299
-13=0,0,0,0,14032
+11=0,0,0,0,8877
+13=0,0,0,0,12592
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -106,7 +104,7 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,330
+21=
 22=0,0,0,0
 
 [BookMark]
@@ -125,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="DES_SIMPLEPROPERTY"
-2="PRO_EXPORTNAMES"
-3="DES_SIZETOFONT"
-4="DES_STYLEHEX"
-5="GRIDSIZE"
-6="PRO_ADDITEM"
-7="IDC_RBNEXPOPT4"
-8="GlobalAlloc"
-9="szDlgEditDummyClass"
-10="DEM_SHOWTABINDEX"
+1="hPreview"
+2="hBrBackColor"
+3="createwindow"
+4="EDIT"
+5="PRO_SETSTYLEPOS"
+6="PRO_GETSTYLEPOS"
+7="GetWindowLong"
+8="PRO_GETMEM"
+9="PRO_GETMRM"
+10="DEWM_"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -161,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -170,10 +168,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=1.1.4.3
-FileVersion=1.1.4.3
-PV=1.1.4.3
-ProductVersion=1.1.4.3
+FV=2.0.0.0
+FileVersion=2.0.0.0
+PV=2.0.0.0
+ProductVersion=2.0.0.0
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -210,7 +208,7 @@ Group=Added files,Assembly,Resources,Misc,Include
 18=2
 19=3
 20=4
-21=4
+21=
 22=3
 23=4
 [CodeMake]
@@ -246,6 +244,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=84297930
+PTimer=121262384
 [AutoLoad]
 1=1

@@ -134,7 +134,7 @@ UpdateNames proc uses ebx esi,hWin:HWND
 			.endif
 			add		esi,sizeof PROJECT
 		.endw
-		invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+		invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 		invoke GetWindowLong,hPrp,0
 		invoke GetWindowLong,eax,GWL_USERDATA
 		.if eax

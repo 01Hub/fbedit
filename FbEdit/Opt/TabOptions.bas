@@ -213,10 +213,9 @@ Sub SetDialogOptions(ByVal hWin As HWND)
 	Dim st As Integer
 
 	lstrcpy(@buff,nmeexp.szFileName)
-	SendMessage(ad.resmem.hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(Integer,@buff))
-	SendMessage(ad.resmem.hProject,PRO_SETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
-	SendMessage(ad.resmem.hResEd,DEM_SETGRIDSIZE,(grdsize.y Shl 16) +grdsize.x,(grdsize.line Shl 24)+grdsize.color)
-	st=GetWindowLong(ad.resmem.hResEd,GWL_STYLE)
+	SendMessage(ah.hraresed,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(Integer,@buff))
+	SendMessage(ah.hraresed,DEM_SETGRIDSIZE,(grdsize.y Shl 16) +grdsize.x,(grdsize.line Shl 24)+grdsize.color)
+	st=GetWindowLong(ah.hraresed,GWL_STYLE)
 	st=st And (-1 Xor (DES_GRID Or DES_SNAPTOGRID Or DES_TOOLTIP Or DES_STYLEHEX Or DES_SIZETOFONT Or DES_NODEFINES Or DES_SIMPLEPROPERTY))
 	If grdsize.show Then
 		st=st Or DES_GRID
@@ -239,7 +238,7 @@ Sub SetDialogOptions(ByVal hWin As HWND)
 	If grdsize.simple Then
 		st=st Or DES_SIMPLEPROPERTY
 	EndIf
-	SetWindowLong(ad.resmem.hResEd,GWL_STYLE,st)
+	SetWindowLong(ah.hraresed,GWL_STYLE,st)
 
 End Sub
 

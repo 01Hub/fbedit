@@ -367,7 +367,7 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 PrevDlgProc endp
 
-GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD
+GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD,fEdit:DWORD
 	LOCAL	rect:RECT
 	LOCAL	bux:DWORD
 	LOCAL	buy:DWORD
@@ -376,7 +376,18 @@ GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD
 	mov		edi,lpRECT
 	mov		eax,[esi].DIALOG.ntype
 	.if eax==0
-		invoke GetClientRect,[esi].DIALOG.hwnd,addr rect
+		.if fEdit
+			mov		rect.left,10
+			mov		rect.top,10
+			mov		eax,[esi].DIALOG.ccx
+;			add		eax,10
+			mov		rect.right,eax
+			mov		eax,[esi].DIALOG.ccy
+			sub		eax,17
+			mov		rect.bottom,eax
+		.else
+			invoke GetClientRect,[esi].DIALOG.hwnd,addr rect
+		.endif
 	.else
 		mov		eax,[esi].DIALOG.ccx
 		mov		rect.right,eax
@@ -388,7 +399,11 @@ GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD
 	mov		bux,edx
 	shr		eax,16
 	mov		buy,eax
-	mov		eax,[esi].DIALOG.x
+	.if fEdit!=0 && [esi].DIALOG.ntype==0
+		mov		eax,10
+	.else
+		mov		eax,[esi].DIALOG.x
+	.endif
 	shl		eax,2
 	mov		ebx,dfntwt
 	imul	ebx
@@ -399,7 +414,11 @@ GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD
 	mov		ebx,fntwt
 	idiv	ebx
 	mov		[edi],ax
-	mov		eax,[esi].DIALOG.y
+	.if fEdit!=0 && [esi].DIALOG.ntype==0
+		mov		eax,10
+	.else
+		mov		eax,[esi].DIALOG.y
+	.endif
 	shl		eax,3
 	mov		ebx,dfntht
 	mul		ebx
@@ -618,7 +637,7 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	.endw
 	pop		esi
 	mov		[ebx].MyDLGTEMPLATE.cdit,cx
-	invoke GetCtrlSize,esi,addr [ebx].MyDLGTEMPLATE.x
+	invoke GetCtrlSize,esi,addr [ebx].MyDLGTEMPLATE.x,FALSE
 	add		ebx,sizeof MyDLGTEMPLATE
 	;Menu
 	.if [edi].DLGHEAD.menuid
@@ -665,7 +684,7 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 		mov		[ebx].MyDLGITEMTEMPLATE.style,eax
 		mov		eax,[edi].DIALOG.exstyle
 		mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
-		invoke GetCtrlSize,edi,addr [ebx].MyDLGITEMTEMPLATE.x
+		invoke GetCtrlSize,edi,addr [ebx].MyDLGITEMTEMPLATE.x,FALSE
 ;		mov		eax,[edi].DIALOG.id
 		mov		eax,nInx
 		mov		[ebx].MyDLGITEMTEMPLATE.id,ax
@@ -695,8 +714,8 @@ FindCtrl:
 	mov		nInx,0
 	mov		edi,esi
 	.while [edi].DIALOG.hwnd
-		inc		nInx
 		.if [edi].DIALOG.hwnd!=-1
+			inc		nInx
 			.break .if ecx==[edi].DIALOG.tab
 		.endif
 		add		edi,sizeof DIALOG

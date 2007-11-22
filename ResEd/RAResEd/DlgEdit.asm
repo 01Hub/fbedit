@@ -6197,12 +6197,12 @@ VerifyTebIndex proc uses esi,hMem:DWORD
 			push	ecx
 			.if byte ptr tab[ecx]>1
 				invoke lstrcat,addr szerr,addr szDupTab
-				invoke MessageBox,hDEd,addr szerr,addr szToolTip1,MB_ICONERROR or MB_OK
+				invoke MessageBox,hDEd,addr szerr,addr szToolTip,MB_ICONERROR or MB_OK
 				pop		ecx
 				.break
 			.elseif byte ptr tab[ecx]==0
 				invoke lstrcat,addr szerr,addr szMissTab
-				invoke MessageBox,hDEd,addr szerr,addr szToolTip1,MB_ICONERROR or MB_OK
+				invoke MessageBox,hDEd,addr szerr,addr szToolTip,MB_ICONERROR or MB_OK
 				pop		ecx
 				.break
 			.endif

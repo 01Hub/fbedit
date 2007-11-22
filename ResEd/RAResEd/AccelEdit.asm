@@ -184,7 +184,7 @@ SaveAccelEdit proc uses ebx esi edi,hWin:HWND
 	mov		nRows,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax
-		invoke SendMessage,hPrj,PRO_ADDITEM,TPE_ACCEL,FALSE
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_ACCEL,FALSE
 	.endif
 	mov		ebx,eax
 	mov		edi,[eax].PROJECT.hmem
@@ -441,7 +441,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 			.if eax==IDOK
 				invoke SaveAccelEdit,hWin
-				invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 				invoke SendMessage,hWin,WM_CLOSE,TRUE,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL

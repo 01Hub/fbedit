@@ -383,7 +383,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,nmeexp.nOutput
 				shl		edx,16
 				add		edx,nmeexp.nType
-				invoke SendMessage,hProject,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+				invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
 				mov		nInx,0
 				.while nInx<=32
 					mov		buffer,0
@@ -432,12 +432,6 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		col.text,eax
 				invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
 				invoke SendMessage,hResEd,DEM_SETCOLOR,0,addr col
-				mov		eax,hBrBackColor
-				.if eax
-					invoke DeleteObject,eax
-					mov		hBrBackColor,0
-				.endif
-				invoke InvalidateRect,hOut,NULL,TRUE
 				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTDLGSTART,NULL,FALSE
 				mov		initid.dlg.startid,eax
 				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTDLGINC,NULL,FALSE
@@ -451,7 +445,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRCDINC,NULL,FALSE
 				mov		initid.rcd.incid,eax
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
-				invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
+				invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
 				invoke GetWindowLong,hResEd,GWL_STYLE
 				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES or DES_SIMPLEPROPERTY or DES_NORESETTOOLBOX)
 				.if grdsize.show

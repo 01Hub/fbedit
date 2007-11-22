@@ -1522,6 +1522,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			jne		@b
 		.else
 			invoke GetWindowLong,hCtl,GWL_USERDATA
+;invoke GetWindowLong,hDEd,DEWM_MEMORY
+;invoke FindCtlMem,eax,hCtl
 			mov		esi,eax
 			assume esi:ptr DIALOG
 			mov		eax,[esi].ntype

@@ -1,10 +1,6 @@
 #define IDB_TOOLBAR						100
-#define IDC_HSPLIT						101
-#define IDC_VSPLIT						102
 #define MANIFEST 						24
 #define IDI_ICON						100
 IDB_TOOLBAR				BITMAP    DISCARDABLE "Res/Toolbar.bmp"
-IDC_HSPLIT				CURSOR    DISCARDABLE "Res/SplitH.cur"
-IDC_VSPLIT				CURSOR    DISCARDABLE "Res/SplitV.cur"
 1						MANIFEST  DISCARDABLE "Res/xptheme.xml"
 IDI_ICON				ICON      DISCARDABLE "Res/ResEd.ico"

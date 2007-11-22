@@ -1227,8 +1227,6 @@ rsexstyledef	dd WS_EX_ACCEPTFILES
 
 hIml				dd ?
 hBr					dd ?
-left				dd ?
-top					dd ?
 lpOldHexEditProc	dd ?
 
 .code
@@ -2215,7 +2213,7 @@ StyleManaDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke SetWindowPos,hWin,0,left,top,0,0,SWP_NOREPOSITION or SWP_NOSIZE
+		invoke SetWindowPos,hWin,0,winsize.ptstyle.x,winsize.ptstyle.y,0,0,SWP_NOREPOSITION or SWP_NOSIZE
 		invoke SendDlgItemMessage,hWin,IDC_EDTDWORD,EM_LIMITTEXT,8,0
 		invoke SendDlgItemMessage,hWin,IDC_LSTSTYLEMANA,RSM_SETSTYLEVAL,0,lParam
 		invoke GetDlgItem,hWin,IDC_EDTDWORD
@@ -2241,9 +2239,9 @@ StyleManaDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,rect.left
-		mov		left,eax
+		mov		winsize.ptstyle.x,eax
 		mov		eax,rect.top
-		mov		top,eax
+		mov		winsize.ptstyle.y,eax
 		invoke EndDialog,hWin,NULL
 	.else
 		mov		eax,FALSE

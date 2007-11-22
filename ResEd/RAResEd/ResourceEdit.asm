@@ -136,7 +136,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 	mov		nRows,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax
-		invoke SendMessage,hPrj,PRO_ADDITEM,TPE_RESOURCE,FALSE
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_RESOURCE,FALSE
 	.endif
 	mov		edi,[eax].PROJECT.hmem
 	xor		esi,esi
@@ -297,7 +297,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveResourceEdit,hWin
-				invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 				invoke SendMessage,hWin,WM_CLOSE,TRUE,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL

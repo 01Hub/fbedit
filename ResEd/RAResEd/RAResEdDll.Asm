@@ -20,24 +20,6 @@ GetDef proc public nInx:DWORD
 		mov		ccdef1.hbmp,eax
 		;Return pointer to inited struct
 		mov		eax,offset ccdef1
-	.elseif eax==1
-		;Get the toolbox bitmap
-		invoke LoadBitmap,hInstance,IDB_TBX
-		mov		ccdef2.hbmp,eax
-		;Return pointer to inited struct
-		mov		eax,offset ccdef2
-	.elseif eax==2
-		;Get the toolbox bitmap
-		invoke LoadBitmap,hInstance,IDB_PRP
-		mov		ccdef3.hbmp,eax
-		;Return pointer to inited struct
-		mov		eax,offset ccdef3
-	.elseif eax==3
-		;Get the toolbox bitmap
-		invoke LoadBitmap,hInstance,IDB_PRJ
-		mov		ccdef4.hbmp,eax
-		;Return pointer to inited struct
-		mov		eax,offset ccdef4
 	.else
 		xor		eax,eax
 	.endif

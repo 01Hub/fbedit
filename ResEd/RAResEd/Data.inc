@@ -30,6 +30,7 @@ MnuSaveAccel			PROTO	:DWORD,:DWORD
 GetFreeProjectitemID	PROTO	:DWORD
 GetUnikeName			PROTO	:DWORD
 NameExists				PROTO	:DWORD,:DWORD
+ShowEditDialog			PROTO	:HWND,:DWORD
 
 m2m MACRO M1, M2
 	push M2
@@ -45,11 +46,15 @@ IDB_PRJ				equ 32105
 IDB_CUSTCTL			equ 32106
 IDB_PROTRV			equ 32107
 IDB_BOOKMARK		equ 32108
+IDC_HSPLIT			equ 32109
+IDC_VSPLIT			equ 32110
 
 RT_MESSAGETABLE		equ 11
 RT_MENUEX			equ 13
 RT_DIALOGEX			equ 18
 RT_LVIMAGE			equ 2110
+
+SIZEBAR				equ 4
 
 CCDEF struct
 	ID			dd ?	;Controls uniqe ID
@@ -131,24 +136,12 @@ RADIALOG ends
 .const
 
 szProject			db '[PROJECT]',0
-szToolTip1			db 'Dialog edit',0
-szCap1				db 0
-szName1				db 'IDC_DLE',0
+szToolTip			db 'Resource editor',0
+szCap				db 0
+szName				db 'IDC_RESED',0
 
-szToolTip2			db 'Tool box',0
-szCap2				db 0
-szName2				db 'IDC_TBX',0
-
-szToolTip3			db 'Property',0
-szCap3				db 0
-szName3				db 'IDC_PRP',0
-
-szToolTip4			db 'Project',0
-szCap4				db 0
-szName4				db 'IDC_PRJ',0
-
-STYLE				equ WS_CHILD or WS_VISIBLE
-EXSTYLE				equ 200h
+STYLE				equ WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
+EXSTYLE				equ 0
 
 szToolTipsClass		db 'Tooltips_class32',0
 szDlgChildClass		db 'RARESEDDIALOG',0
@@ -389,20 +382,19 @@ szCtlText			db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,Comb
 
 szErrorParse		db 'Errors while parsing.',0
 
-ccdef1				CCDEF <271,offset szToolTip1,0,offset szCap1,offset szName1,offset szDlgEditClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
-ccdef2				CCDEF <272,offset szToolTip2,0,offset szCap2,offset szName2,offset szToolBoxClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
-ccdef3				CCDEF <273,offset szToolTip3,0,offset szCap3,offset szName3,offset szPropertyClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
-ccdef4				CCDEF <274,offset szToolTip4,0,offset szCap4,offset szName4,offset szProjectClass,STYLE,0,11111101000111000000000000000000b,00010000000000011000000000000000b,2>
+ccdef1				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 
 .data?
 
 hInstance			dd ?
+hRes				dd ?
 hDEd				dd ?
 hTlb				dd ?
 hPrp				dd ?
 hPrj				dd ?
+hOut				dd ?
 hMnuIml				dd ?
 hPrjIml				dd ?
 hBrTlt				dd ?
@@ -427,3 +419,8 @@ nTabSet				dd ?
 lfntht				dd ?
 fResourceh			dd ?
 szResourceh			db 128 dup(?)
+fSize				dd ?
+hVSplit				dd ?
+hHSplit				dd ?
+winsize				WINSIZE <?>
+htout				dd ?

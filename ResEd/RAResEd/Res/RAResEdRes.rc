@@ -7,6 +7,8 @@
 #define IDB_CUSTCTL						32106
 #define IDB_BOOKMARK					32108
 #define IDB_PROTRV						32107
+#define IDC_HSPLIT						32109
+#define IDC_VSPLIT						32110
 IDB_TOOLBOX				BITMAP    DISCARDABLE "Res/ToolBox.bmp"
 IDB_MNUARROW			BITMAP    DISCARDABLE "Res/MnuArrow.bmp"
 IDB_DLG					BITMAP    DISCARDABLE "Res/dlg.bmp"
@@ -17,3 +19,5 @@ IDB_CUSTCTL				BITMAP    DISCARDABLE "Res/Button.bmp"
 IDB_BOOKMARK			BITMAP    DISCARDABLE "Res/Bookmark.bmp"
 IDB_PROTRV				BITMAP    DISCARDABLE "Res/ProTrv.bmp"
 32106					ICON      DISCARDABLE "Res/ResEd.ico"
+IDC_HSPLIT				CURSOR    DISCARDABLE "Res/SplitH.cur"
+IDC_VSPLIT				CURSOR    DISCARDABLE "Res/SplitV.cur"

@@ -1,7 +1,10 @@
 ResEd
 
-1.1.4.3d - 2007.11.08
----------------------
+2.0.0.0 - 2007.22.11
+o RAResEd is now a single control.
+
+1.1.4.3 - 2007.11.08
+--------------------
 o Added NM_DBLCLK notification when double clicking on dialog or control.
 o Added multiselected controls propery.
 o It is now possible to set default export filename to [Project].xxx.

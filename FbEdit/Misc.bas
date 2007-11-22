@@ -1407,12 +1407,12 @@ Sub CheckMenu()
 	CheckMenuItem(ah.hmenu,IDM_VIEW_TABSELECT,IIf(wpos.fview And VIEW_TABSELECT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_STATUSBAR,IIf(wpos.fview And VIEW_STATUSBAR,MF_CHECKED,MF_UNCHECKED))
 
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
-	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ad.resmem.hResEd,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ah.hraresed,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ah.hraresed,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ah.hraresed,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_LOCK,IIf(SendMessage(ah.hraresed,DEM_ISLOCKED,0,0),MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_GRID,IIf(GetWindowLong(ah.hraresed,GWL_STYLE) And DES_GRID,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hcontextmenu,IDM_FORMAT_SNAP,IIf(GetWindowLong(ah.hraresed,GWL_STYLE) And DES_SNAPTOGRID,MF_CHECKED,MF_UNCHECKED))
 
 End Sub
 
@@ -1446,11 +1446,11 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
 		EnableDisable(FALSE,IDM_EDIT_EXPAND)
 
-		bm=SendMessage(ad.resmem.hResEd,DEM_CANUNDO,0,0)
+		bm=SendMessage(ah.hraresed,DEM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
 		EnableDisableContext(bm,IDM_EDIT_UNDO)
 		EnableDisable(FALSE,IDM_EDIT_REDO)
-		bm=SendMessage(ad.resmem.hResEd,DEM_ISSELECTION,0,0)
+		bm=SendMessage(ah.hraresed,DEM_ISSELECTION,0,0)
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)
 		EnableDisable(bm,IDM_EDIT_DELETE)
@@ -1471,7 +1471,7 @@ Sub EnableMenu()
 		EnableDisableContext(bm,IDM_FORMAT_SIZE)
 		EnableDisableContext(bm,IDM_FORMAT_RENUM)
 
-		bm=SendMessage(ad.resmem.hResEd,DEM_CANPASTE,0,0)
+		bm=SendMessage(ah.hraresed,DEM_CANPASTE,0,0)
 		EnableDisable(bm,IDM_EDIT_PASTE)
 		EnableDisableContext(bm,IDM_EDIT_PASTE)
 
@@ -1484,10 +1484,10 @@ Sub EnableMenu()
 
 		EnableDisable(TRUE,IDM_FORMAT_LOCK)
 		EnableDisableContext(TRUE,IDM_FORMAT_LOCK)
-		bm=SendMessage(ad.resmem.hResEd,DEM_ISBACK,0,0) Xor TRUE
+		bm=SendMessage(ah.hraresed,DEM_ISBACK,0,0) Xor TRUE
 		EnableDisable(bm,IDM_FORMAT_BACK)
 		EnableDisableContext(bm,IDM_FORMAT_BACK)
-		bm=SendMessage(ad.resmem.hResEd,DEM_ISFRONT,0,0) Xor TRUE
+		bm=SendMessage(ah.hraresed,DEM_ISFRONT,0,0) Xor TRUE
 		EnableDisable(bm,IDM_FORMAT_FRONT)
 		EnableDisableContext(bm,IDM_FORMAT_FRONT)
 		EnableDisable(TRUE,IDM_FORMAT_GRID)

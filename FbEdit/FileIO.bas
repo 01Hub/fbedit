@@ -136,7 +136,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 			GlobalLock(hMem)
 			ReadFile(hFile,hMem,nSize,@dwRead,NULL)
 			CloseHandle(hFile)
-			SendMessage(ad.resmem.hProject,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
+			SendMessage(ah.hraresed,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
 			ReadTextFile(hWin,hFile,lpFile)
 			nLastLine=0
@@ -197,7 +197,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 	If hFile<>INVALID_HANDLE_VALUE Then
 		If hWin=ah.hres Then
 			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,256*1024)
-			SendMessage(ad.resmem.hProject,PRO_EXPORT,0,Cast(Integer,hMem))
+			SendMessage(ah.hraresed,PRO_EXPORT,0,Cast(Integer,hMem))
 			nSize=Len(*Cast(ZString Ptr,hMem))
 			WriteFile(hFile,hMem,nSize,@nSize,NULL)
 			CloseHandle(hFile)
@@ -217,12 +217,12 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 				i=i+1
 			Loop
 			CloseHandle(hFile)
-			SendMessage(ad.resmem.hProject,PRO_SETMODIFY,FALSE,0)
+			SendMessage(ah.hraresed,PRO_SETMODIFY,FALSE,0)
 			GlobalFree(hMem)
 			If fProject<>FALSE And Len(ad.resexport)>0 Then
-				SendMessage(ad.resmem.hProject,PRO_SETEXPORT,(0 Shl 16)+nmeexp.nType,Cast(LPARAM,@ad.resexport))
-				SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
-				SendMessage(ad.resmem.hProject,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(LPARAM,@nmeexp.szFileName))
+				SendMessage(ah.hraresed,PRO_SETEXPORT,(0 Shl 16)+nmeexp.nType,Cast(LPARAM,@ad.resexport))
+				SendMessage(ah.hraresed,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
+				SendMessage(ah.hraresed,PRO_SETEXPORT,(nmeexp.nOutput Shl 16)+nmeexp.nType,Cast(LPARAM,@nmeexp.szFileName))
 				buff=MakeProjectFileName(ad.resexport)
 				If IsProjectFile(buff) Then
 					ParseFile(ah.hwnd,0,buff)
@@ -239,7 +239,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 				EndIf
 			Else
 				If nmeexp.fAuto Then
-					SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
+					SendMessage(ah.hraresed,PRO_EXPORTNAMES,1,Cast(Integer,ah.hout))
 				EndIf
 			EndIf
 		Else

@@ -204,7 +204,7 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 					mov		esi,[eax].PROJECT.hmem
 				.endif
 				.if !esi
-					invoke SendMessage,hPrj,PRO_ADDITEM,TPE_XPMANIFEST,FALSE
+					invoke SendMessage,hRes,PRO_ADDITEM,TPE_XPMANIFEST,FALSE
 				.endif
 				mov		[eax].PROJECT.changed,TRUE
 				mov		esi,[eax].PROJECT.hmem

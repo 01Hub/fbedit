@@ -47,6 +47,21 @@ start:
 		.if wpos.htpro<5
 			mov		wpos.htpro,200
 		.endif
+		mov		eax,wpos.htout
+		mov		winsize.htout,eax
+		mov		eax,wpos.wtpro
+		mov		winsize.wtpro,eax
+		mov		eax,wpos.htpro
+		mov		winsize.htpro,eax
+		mov		eax,wpos.wttbx
+		.if !eax
+			mov		eax,52
+		.endif
+		mov		winsize.wttbx,eax
+		mov		eax,wpos.left
+		mov		winsize.ptstyle.x,eax
+		mov		eax,wpos.top
+		mov		winsize.ptstyle.y,eax
 		mov		lpcbData,sizeof nmeexp
 		invoke RegQueryValueEx,hReg,addr szNmeExp,0,addr lpType,addr nmeexp,addr lpcbData
 		mov		lpcbData,sizeof grdsize
@@ -125,7 +140,7 @@ LoadProjectFile proc lpFileName:DWORD
 		.endif
 		invoke lstrcat,hMem,hMemRes
 		invoke GlobalFree,hMemRes
-		invoke SendMessage,hProject,PRO_OPEN,offset ProjectFileName,hMem
+		invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
 		invoke SetWinCaption,offset ProjectFileName
 	.else
 		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
@@ -247,7 +262,7 @@ SaveProject proc lpFileName:DWORD
 	mov		hMem,eax
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hMemDef,eax
-	invoke SendMessage,hProject,PRO_EXPORT,hMemDef,hMem
+	invoke SendMessage,hResEd,PRO_EXPORT,hMemDef,hMem
 	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
@@ -255,7 +270,7 @@ SaveProject proc lpFileName:DWORD
 		mov		nSize,eax
 		invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
 		invoke CloseHandle,hFile
-		invoke SendMessage,hProject,PRO_SETMODIFY,FALSE,0
+		invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
 		.if grdsize.nodefines
 			invoke lstrcpy,addr buff,lpFileName
 			invoke lstrlen,addr buff
@@ -273,7 +288,7 @@ SaveProject proc lpFileName:DWORD
 			.endif
 		.endif
 		.if nmeexp.fAuto
-			invoke SendMessage,hProject,PRO_EXPORTNAMES,1,hOut
+			invoke SendMessage,hResEd,PRO_EXPORTNAMES,1,0
 		.endif
 		xor		eax,eax
 	.endif
@@ -289,7 +304,7 @@ SaveProjectFileAs proc lpFileName:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke GetWindowLong,hProject,0
+	invoke SendMessage,hResEd,PRO_GETMEM,0,0
 	.if eax
 		;Zero out the ofn struct
 		invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -318,7 +333,7 @@ SaveProjectFileAs proc lpFileName:DWORD
 			.endw
 			mov		byte ptr [edx+eax],0
 			lea		edx,[edx+eax+1]
-			invoke SendMessage,hProject,PRO_SETNAME,edx,addr buffer
+			invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
 			invoke SaveProject,offset ProjectFileName
 			.if !eax
 				xor		eax,eax
@@ -336,7 +351,7 @@ ExportDialog proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke GetWindowLong,hProject,0
+	invoke SendMessage,hResEd,PRO_GETMEM,0,0
 	.if eax
 		;Zero out the ofn struct
 		invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -356,9 +371,7 @@ ExportDialog proc
 		;Show save as dialog
 		invoke GetSaveFileName,addr ofn
 		.if eax
-			invoke GetDlgItem,hWnd,IDC_DLGEDIT
-			mov		edx,eax
-			invoke SendMessage,edx,DEM_EXPORTDLG,0,addr buffer
+			invoke SendMessage,hResEd,DEM_EXPORTDLG,0,addr buffer
 		.endif
 	.endif
 	ret
@@ -367,7 +380,7 @@ ExportDialog endp
 
 SaveProjectFile proc lpFileName:DWORD
 
-	invoke GetWindowLong,hProject,0
+	invoke SendMessage,hResEd,PRO_GETMEM,0,0
 	.if eax
 		invoke lstrcmp,offset ProjectFileName,offset szNewFile
 		.if !eax
@@ -391,7 +404,7 @@ WantToSaveProject proc lpFileName:DWORD
 	LOCAL	buffer1[2]:BYTE
 
 	invoke SetFocus,hWnd
-	invoke SendMessage,hProject,PRO_GETMODIFY,0,0
+	invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
 	.if eax
 		invoke lstrcpy,addr buffer,offset szWannaSave
 		invoke lstrcat,addr buffer,lpFileName
@@ -471,9 +484,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hContextMenuPopup,eax
 		invoke GetDlgItem,hWin,IDC_TBR1
 		invoke DoToolBar,eax
-		invoke GetDlgItem,hWin,IDC_EDT1
-		mov		hOut,eax
-		mov		edx,52300000h
+		mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 		.if grdsize.show
 			or		edx,DES_GRID
 		.endif
@@ -498,22 +509,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.keep
 			or		edx,DES_NORESETTOOLBOX
 		.endif
-		invoke CreateWindowEx,200h,addr szDlgEditClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
+		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_RESED,hInstance,0
 		mov		hResEd,eax
-		invoke SendMessage,eax,WM_SETFONT,hFont,0
-		invoke CreateWindowEx,200h,addr szProjectClass,0,56000000h,0,0,0,0,hWin,IDC_PROJECT,hInstance,0
-		mov		hProject,eax
 		invoke SendMessage,eax,WM_SETFONT,hFont,0
 		mov		edx,nmeexp.nOutput
 		shl		edx,16
 		add		edx,nmeexp.nType
-		invoke SendMessage,hProject,PRO_SETEXPORT,edx,addr nmeexp.szFileName
-		invoke SendMessage,hProject,PRO_SETSTYLEPOS,0,addr wpos.left
-		invoke SendMessage,hProject,PRO_SETINITID,0,addr initid
-		invoke CreateWindowEx,0h,addr szPropertyClass,0,56000000h,0,0,0,0,hWin,IDC_PROPERTY,hInstance,0
-		invoke SendMessage,eax,WM_SETFONT,hFont,0
-		invoke CreateWindowEx,0h,addr szToolBoxClass,0,56000000h,0,0,0,0,hWin,IDC_TOOLBOX,hInstance,0
-		invoke SendMessage,eax,WM_SETFONT,hFont,0
+		invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+		invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,hResEd,DEM_SETPOSSTATUS,eax,0
 		mov		eax,grdsize.y
@@ -531,12 +534,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_AddMasked,hIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
-		invoke LoadCursor,hInstance,IDC_HSPLIT
-		mov		hHSplit,eax
-		invoke LoadCursor,hInstance,IDC_VSPLIT
-		mov		hVSplit,eax
 		invoke GetDlgItem,hWin,IDC_TBR1
 		invoke ToolBarEnable,eax
+		invoke SendMessage,hResEd,DEM_SETSIZE,0,addr winsize
+		mov		eax,wpos.fView
+		and		eax,1
+		invoke SendMessage,hResEd,DEM_SHOWOUTPUT,eax,0
 		;Add custom controls
 		mov		nInx,1
 		mov		ebx,offset hCustDll
@@ -556,7 +559,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
-			invoke GetWindowLong,hResEd,DEWM_DIALOG
+			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 			.if eax
 				invoke SendMessage,eax,WM_NCACTIVATE,wParam,0
 			.endif
@@ -566,121 +569,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,eax,SB_SETTEXT,0,offset szNULL
 	.elseif eax==WM_MOUSEMOVE
-		invoke GetClientRect,hWin,addr rect
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,eax,SB_SETTEXT,0,offset szNULL
-		mov		eax,lParam
-		movzx	eax,ax
-		cwde
-		mov		pt.x,eax
-		mov		eax,lParam
-		shr		eax,16
-		cwde
-		mov		pt.y,eax
-		invoke GetCapture
-		.if eax==hWin
-			.if fSize==1
-				mov		eax,rect.right
-				mov		edx,eax
-				sub		edx,80+53
-				sub		eax,pt.x
-				.if sdword ptr eax<80
-					mov		eax,80
-				.elseif sdword ptr eax>edx
-					mov		eax,edx
-				.endif
-				.if eax!=wpos.wtpro
-					mov		wpos.wtpro,eax
-					mov		eax,rect.bottom
-					shl		eax,16
-					add		eax,rect.right
-					invoke SendMessage,hWin,WM_SIZE,0,eax
-				.endif
-			.elseif fSize==2
-				mov		eax,rect.bottom
-				mov		edx,eax
-				sub		edx,80+25
-				mov		eax,pt.y
-				sub		eax,25
-				.if sdword ptr eax<80-25
-					mov		eax,80-25
-				.elseif sdword ptr eax>edx
-					mov		eax,edx
-				.endif
-				.if eax!=wpos.htpro
-					mov		wpos.htpro,eax
-					mov		eax,rect.bottom
-					shl		eax,16
-					add		eax,rect.right
-					invoke SendMessage,hWin,WM_SIZE,0,eax
-				.endif
-			.elseif fSize==3
-				mov		edx,rect.bottom
-				sub		edx,80
-				mov		eax,pt.y
-				.if sdword ptr eax<80
-					mov		eax,80
-				.elseif sdword ptr eax>edx
-					mov		eax,edx
-				.endif
-				mov		edx,rect.bottom
-				sub		edx,eax
-				sub		edx,21+3
-				.if edx!=wpos.htout
-					mov		wpos.htout,edx
-					mov		eax,rect.bottom
-					shl		eax,16
-					add		eax,rect.right
-					invoke SendMessage,hWin,WM_SIZE,0,eax
-				.endif
-			.endif
-		.else
-			mov		edx,rect.right
-			sub		edx,wpos.wtpro
-			mov		ecx,edx
-			sub		edx,3
-			mov		eax,pt.x
-			.if sdword ptr eax>=edx && sdword ptr eax<=ecx
-				invoke SetCursor,hVSplit
-				mov		fSize,1
-				jmp		Ex
-			.elseif sdword ptr eax>edx
-				invoke SetCursor,hHSplit
-				mov		fSize,2
-				jmp		Ex
-			.else
-				mov		edx,rect.bottom
-				sub		edx,wpos.htout
-				sub		edx,21
-				mov		ecx,edx
-				sub		edx,3
-				mov		eax,pt.y
-				.if sdword ptr eax>=edx && sdword ptr eax<=ecx
-					invoke SetCursor,hHSplit
-					mov		fSize,3
-					jmp		Ex
-				.endif
-			.endif
-			invoke LoadCursor,0,IDC_ARROW
-			invoke SetCursor,eax
-			mov		fSize,0
-		.endif
-	.elseif eax==WM_LBUTTONDOWN
-		.if fSize==1
-			invoke SetCapture,hWin
-			invoke SetCursor,hVSplit
-		.elseif fSize==2
-			invoke SetCapture,hWin
-			invoke SetCursor,hHSplit
-		.elseif fSize==3
-			invoke SetCapture,hWin
-			invoke SetCursor,hHSplit
-		.endif
-	.elseif eax==WM_LBUTTONUP
-		.if fSize
-			invoke ReleaseCapture
-			mov		fSize,0
-		.endif
 	.elseif eax==WM_CONTEXTMENU
 		mov		eax,lParam
 		.if eax!=-1
@@ -692,7 +582,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke GetWindowRect,hWin,addr rect
 			.if hResEd
-				invoke GetWindowLong,hResEd,DEWM_DIALOG
+				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				.if eax
 					mov		edx,eax
 					invoke GetWindowRect,edx,addr rect
@@ -706,7 +596,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		pt.y,eax
 		.endif
 		mov		eax,wParam
-		.if eax==hProject
+		.if eax==hResEd
 			invoke SendMessage,hWin,WM_INITMENUPOPUP,hMnu,4
 			invoke GetSubMenu,hMnu,4
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
@@ -813,7 +703,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CheckMenuItem,wParam,IDM_VIEW_OUTPUT,eax
 		.elseif eax==4
 			;Project
-			invoke GetWindowLong,hProject,0
+			invoke SendMessage,hResEd,PRO_GETMEM,0,0
 			.if eax
 				xor		ebx,ebx
 			.else
@@ -831,20 +721,19 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableMenuItem,wParam,IDM_PROJECT_RESOURCE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_NAMES,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_EXPORT,ebx
-			invoke SendMessage,hProject,PRO_GETSELECTED,0,0
+			invoke SendMessage,hResEd,PRO_GETSELECTED,0,0
 			mov		ebx,MF_GRAYED
 			.if eax>=2
 				xor		ebx,ebx
 			.endif
 			invoke EnableMenuItem,wParam,IDM_PROJECT_REMOVE,ebx
-			invoke SendMessage,hProject,PRO_CANUNDO,0,0
+			invoke SendMessage,hResEd,PRO_CANUNDO,0,0
 			mov		ebx,MF_GRAYED
 			.if eax
 				xor		ebx,ebx
 			.endif
 			invoke EnableMenuItem,wParam,IDM_PROJECT_UNDO,ebx
-			invoke GetDlgItem,hWin,IDC_DLGEDIT
-			invoke GetWindowLong,eax,DEWM_DIALOG
+			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 			mov		ebx,MF_GRAYED
 			.if eax
 				xor		ebx,ebx
@@ -878,17 +767,14 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 				mov		hMem,eax
 				invoke GlobalLock,hMem
-				invoke GetDlgItem,hWin,IDC_PROJECT
-				invoke SendMessage,eax,PRO_OPEN,offset ProjectFileName,hMem
+				invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
 				invoke SetWinCaption,offset ProjectFileName
 				invoke SaveProjectFile,offset ProjectFileName
 				.if !eax
-					invoke GetDlgItem,hWin,IDC_PROJECT
-					invoke SendMessage,eax,PRO_CLOSE,0,0
+					invoke SendMessage,hResEd,PRO_CLOSE,0,0
 					invoke SetWinCaption,NULL
 				.else
-					invoke GetDlgItem,hWin,IDC_PROJECT
-					invoke SendMessage,eax,PRO_CLOSE,0,0
+					invoke SendMessage,hResEd,PRO_CLOSE,0,0
 					invoke LoadProjectFile,offset ProjectFileName
 				.endif
 			.endif
@@ -900,8 +786,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_FILE_CLOSE_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
-				invoke GetDlgItem,hWin,IDC_PROJECT
-				invoke SendMessage,eax,PRO_CLOSE,0,0
+				invoke SendMessage,hResEd,PRO_CLOSE,0,0
 				invoke SetWinCaption,NULL
 			.endif
 		.elseif eax==IDM_FILE_SAVE_PROJECT
@@ -922,11 +807,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hResEd,DEM_PASTE,0,0
 		.elseif eax==IDM_VIEW_OUTPUT
 			xor		wpos.fView,1
-			invoke GetClientRect,hWin,addr rect
-			mov		eax,rect.bottom
-			shl		eax,16
-			add		eax,rect.right
-			invoke SendMessage,hWin,WM_SIZE,0,eax
+			mov		eax,wpos.fView
+			and		eax,1
+			invoke SendMessage,hResEd,DEM_SHOWOUTPUT,eax,0
 			invoke GetDlgItem,hWin,IDC_TBR1
 			invoke ToolBarEnable,eax
 		.elseif eax==IDM_VIEW_PREVIEW
@@ -975,33 +858,33 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_FORMAT_AUTOID
 			invoke SendMessage,hResEd,DEM_AUTOID,0,0
 		.elseif eax==IDM_PROJECT_ADD_DIALOG
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_DIALOG,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_DIALOG,TRUE
 		.elseif eax==IDM_PROJECT_ADD_MENU
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_MENU,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_MENU,TRUE
 		.elseif eax==IDM_PROJECT_ADD_ACCELERATOR
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_ACCEL,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_ACCEL,TRUE
 		.elseif eax==IDM_PROJECT_ADD_VERSIONINFO
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_VERSION,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_VERSION,TRUE
 		.elseif eax==IDM_PROJECT_ADD_STRINGTABLE
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_STRING,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_STRING,TRUE
 		.elseif eax==IDM_PROJECT_ADD_XPMANIFEST
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
 		.elseif eax==IDM_PROJECT_ADD_RCDATA
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_RCDATA,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RCDATA,TRUE
 		.elseif eax==IDM_PROJECT_LANGUAGE
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_LANGUAGE,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_LANGUAGE,TRUE
 		.elseif eax==IDM_PROJECT_INCLUDE
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_INCLUDE,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_INCLUDE,TRUE
 		.elseif eax==IDM_PROJECT_RESOURCE
-			invoke SendMessage,hProject,PRO_ADDITEM,TPE_RESOURCE,TRUE
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RESOURCE,TRUE
 		.elseif eax==IDM_PROJECT_NAMES
-			invoke SendMessage,hProject,PRO_SHOWNAMES,0,hOut
+			invoke SendMessage,hResEd,PRO_SHOWNAMES,0,0
 		.elseif eax==IDM_PROJECT_REMOVE
-			invoke SendMessage,hProject,PRO_DELITEM,0,0
+			invoke SendMessage,hResEd,PRO_DELITEM,0,0
 		.elseif eax==IDM_PROJECT_UNDO
-			invoke SendMessage,hProject,PRO_UNDODELETED,0,0
+			invoke SendMessage,hResEd,PRO_UNDODELETED,0,0
 		.elseif eax==IDM_PROJECT_EXPORT
-			invoke SendMessage,hProject,PRO_EXPORTNAMES,0,hOut
+			invoke SendMessage,hResEd,PRO_EXPORTNAMES,0,0
 		.elseif eax==IDM_PROJECT_DLGSAVE
 			invoke ExportDialog
 		.elseif eax==IDM_OPTION_TOOLS
@@ -1060,58 +943,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;ToolBar
 		invoke GetDlgItem,hWin,IDC_TBR1
 		invoke MoveWindow,eax,0,0,pt.x,25,TRUE
-		;ToolBox
-		invoke GetDlgItem,hWin,IDC_TOOLBOX
+		mov		ecx,pt.x
 		mov		edx,pt.y
 		sub		edx,25
 		sub		edx,ebx
-		invoke MoveWindow,eax,0,25,53,edx,TRUE
-		;Dialog edit
-		invoke GetDlgItem,hWin,IDC_DLGEDIT
-		mov		ecx,pt.x
-		sub		ecx,wpos.wtpro
-		sub		ecx,3+53
-		mov		edx,pt.y
-		sub		edx,25
-		sub		edx,ebx
-		test	wpos.fView,1
-		.if !ZERO?
-			sub		edx,wpos.htout
-			sub		edx,3
-		.endif
-		invoke MoveWindow,eax,53,25,ecx,edx,TRUE
-		;Output
-		invoke GetDlgItem,hWin,IDC_EDT1
-		mov		edx,pt.y
-		sub		edx,ebx
-		sub		edx,wpos.htout
-		mov		ecx,pt.x
-		sub		ecx,3+53
-		sub		ecx,wpos.wtpro
-		test	wpos.fView,1
-		.if ZERO?
-			xor		eax,eax
-		.else
-			mov		eax,wpos.htout
-		.endif
-		invoke MoveWindow,hOut,53,edx,ecx,eax,TRUE
-		;Project
-		invoke GetDlgItem,hWin,IDC_PROJECT
-		mov		ecx,pt.x
-		sub		ecx,wpos.wtpro
-		mov		pt.x,ecx
-		invoke MoveWindow,eax,ecx,25,wpos.wtpro,wpos.htpro,TRUE
-		;Property
-		invoke GetDlgItem,hWin,IDC_PROPERTY
-		mov		ecx,pt.x
-		sub		ecx,wpos.wtpro
-		mov		ecx,wpos.htpro
-		mov		edx,pt.y
-		sub		edx,ecx
-		sub		edx,25+1
-		sub		edx,ebx
-		add		ecx,2+25
-		invoke MoveWindow,eax,pt.x,ecx,wpos.wtpro,edx,TRUE
+		invoke MoveWindow,hResEd,0,25,ecx,edx,TRUE
 	.elseif eax==WM_CLOSE
 		invoke WantToSaveProject,offset ProjectFileName
 		.if !eax
@@ -1139,19 +975,22 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DestroyWindow,hWin
 		.endif
 	.elseif eax==WM_DESTROY
-		invoke SendMessage,hProject,PRO_GETSTYLEPOS,0,addr wpos.left
-		invoke DestroyCursor,hHSplit
-		invoke DestroyCursor,hVSplit
+		invoke SendMessage,hResEd,DEM_GETSIZE,0,addr winsize
+		mov		eax,winsize.htpro
+		mov		wpos.htpro,eax
+		mov		eax,winsize.wtpro
+		mov		wpos.wtpro,eax
+		mov		eax,winsize.htout
+		mov		wpos.htout,eax
+		mov		eax,winsize.ptstyle.x
+		mov		wpos.left,eax
+		mov		eax,winsize.ptstyle.y
+		mov		wpos.top,eax
 		invoke DestroyIcon,hIcon
 		invoke ImageList_Destroy,hIml
 		invoke DestroyAcceleratorTable,hAccel
 		invoke DestroyMenu,hContextMenu
 		invoke DestroyWindow,hResEd
-		invoke DestroyWindow,hProject
-		invoke GetDlgItem,hWin,IDC_TOOLBOX
-		invoke DestroyWindow,eax
-		invoke GetDlgItem,hWin,IDC_PROPERTY
-		invoke DestroyWindow,eax
 		mov		nInx,1
 		mov		ebx,offset hCustDll
 		.while nInx<=32
@@ -1162,24 +1001,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		ebx,4
 			inc		nInx
 		.endw
-		mov		eax,hBrBackColor
-		.if eax
-			invoke DeleteObject,eax
-		.endif
 		invoke PostQuitMessage,NULL
-	.elseif eax==WM_CTLCOLOREDIT
-		xor		eax,eax
-		mov		edx,lParam
-		.if edx==hOut
-			invoke SetBkColor,wParam,col.back
-			invoke SetTextColor,wParam,col.text
-			mov		eax,hBrBackColor
-			.if !eax
-				invoke CreateSolidBrush,col.back
-				mov		hBrBackColor,eax
-			.endif
-		.endif
-		jmp		ExRet
 	.elseif eax==WM_DROPFILES
 		invoke DragQueryFile,wParam,0,addr buffer,sizeof buffer
 		invoke WantToSaveProject,offset ProjectFileName

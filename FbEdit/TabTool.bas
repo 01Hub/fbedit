@@ -464,7 +464,7 @@ Function WantToSave(ByVal hWin As HWND) As Boolean
 	
 	If ah.hred Then
 		If ah.hred=ah.hres Then
-			x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+			x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
 		Else
 			x=SendMessage(ah.hred,EM_GETMODIFY,0,0)
 		EndIf
@@ -633,7 +633,7 @@ Function SaveAllFiles(ByVal hWin As HWND) As Integer
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 			If lpTABMEM->hedit=ah.hres Then
-				x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+				x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
 			Else
 				x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
 			EndIf
@@ -723,7 +723,7 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 					EndIf
 				Case 4
 					If lpTABMEM->hedit=ah.hres Then
-						x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+						x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
 					Else
 						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
 					EndIf
@@ -854,7 +854,7 @@ Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					If lpTABMEM->hedit=ah.hres Then
-						x=SendMessage(ad.resmem.hProject,PRO_GETMODIFY,0,0)
+						x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
 					Else
 						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
 					EndIf

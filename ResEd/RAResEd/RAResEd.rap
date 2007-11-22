@@ -1,11 +1,11 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=RadASM resource editor
+Description=RadASM resource editor 20
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Res.rc=1
 Ver.rc=1
 
@@ -35,7 +35,7 @@ Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
 5=..\ResEd.exe
 6=RAResEd.def
 7=..\Dll\RAResEd.dll
-8=RAResEd.txt
+8=RAResEd20.txt
 9=..\Lib\RAResEd.lib
 10=RAResEd.mak
 11=RAResEd.hla
@@ -128,88 +128,79 @@ Options=52
 8=IDB_BOOKMARK,32108,0,Res\Bookmark.bmp
 9=IDB_PROTRV,32107,0,Res\ProTrv.bmp
 10=,32106,2,Res\ResEd.ico
+11=IDC_HSPLIT,32109,1,Res\SplitH.cur
+12=IDC_VSPLIT,32110,1,Res\SplitV.cur
 
 [Size]
 5=
-3=0,0,0,0,248
+3=0,0,0,0,178
 4=0,0,0,0,8
-1=0,0,0,0,9975
-7=0,0,0,0,45246
-6=0,0,0,0,6273
-9=0,0,0,0,140616
-2=0,0,584,498,7904
+1=0,0,0,0,44710
+7=0,0,0,0,44895
+6=0,0,0,0,5974
+9=0,0,0,0,137512
+2=0,0,584,498,6319
 8=0,0,0,0,3434
-10=0,0,0,0,402
+10=0,0,0,0,10270
 16=0,0,0,0,10645
 15=0,0,0,0
-17=0,0,0,0,49715
-18=0,0,0,0,13121
+17=0,0,0,0,20012
+18=0,0,0,0,2458
 21=0,0,0,0,7674
 23=0,0,0,0
-24=0,0,0,0,869
-26=0,0,0,0,2305
+24=0,0,0,0,3093
+26=0,0,0,0,7376
 25=0,0,0,0
 22=0,0,0,0,3062
-28=0,0,0,0,2157
+28=0,0,0,0,5820
 27=0,0,0,0
-29=0,0,0,0,3154
+29=0,0,0,0,10222
 30=0,0,0,0
-32=0,0,0,0,9888
+32=0,0,0,0,2839
 31=0,0,0,0
-34=0,0,0,0,8756
+34=0,0,0,0,14943
 33=0,0,0,0
 36=0,0,0,0,12
-35=0,0,0,0,26
-37=0,0,0,0,691
+35=0,0,0,0,456
+37=0,0,0,0,1773
 38=0,0,0,0
-39=0,0,0,0,16384
-40=0,0,0,0,6629
+39=0,0,0,0,16895
+40=0,0,0,0,53304
 41=0,0,0,0
 42=0,0,0,0
-43=0,0,0,0,3853
+43=0,0,0,0,5232
 45=0,0,0,0
-44=0,0,0,0,1705
+44=0,0,0,0,2850
 
 
 [Find]
-1="fResetToolbox"
-2="ToolBoxReset"
-3="fSimpleProperty"
-4="DES_"
-5="DES_TOOLTIP"
-6="DES_SNAPTOGRID"
-7="DES_GRID"
-8="CTLDBLCLICK"
-9="NM_FIRST"
-10="NM_DBLCLK"
->>>>>>> .r57
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.8.186
-PV=1.0.8.186
+FV=2.0.0.4
+PV=2.0.0.4
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.8.186
+ProductVersion=2.0.0.4
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
-LegalCopyright=KetilO (C) 2003-2005
+LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=1.0.8.186
+FileVersion=2.0.0.4
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=7
+MilestoneEveryCurrent=5
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -230,7 +221,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -290,7 +281,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 
 [Collapse]
 32=,,
-1=,,,,
+1=,,,,,
 2=
 8=,
 17=,,,,,,,,,,
@@ -309,12 +300,14 @@ Group=Assembly,Resources,Misc,Modules,Include
 26=
 24=
 3=
-39=,
+39=,,
 40=,,,
 43=
 44=
+4=
+35=
 [PTimer]
-PTimer=101644309
+PTimer=139017684
 
 [Exports]
 1=ResEdInstall

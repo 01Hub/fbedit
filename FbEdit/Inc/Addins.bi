@@ -58,13 +58,6 @@ Type WINPOS
 	ptsavelist		As Point							' Save list position
 End Type
 
-Type RESMEM
-	hResEd			As HWND
-	hProject			As HWND
-	hProperty		As HWND
-	hToolBox			As HWND
-End Type
-
 Type ADDINHOOKS
 	hook1				As UINT							' Hook flags for addin message 0 - 31
 	hook2				As UINT							' Hook flags for addin message 32 - 63
@@ -98,6 +91,7 @@ Type ADDINHANDLES
 	hcbobuild		As HWND							' Handle of build option combobox
 	hOutFont			As HFONT							' Output window font
 	hpane(1)			As HWND							' Handle of text or resource edit window in 2'nd pane
+	hraresed			As HWND							' Handle of RAResEd window
 End Type
 
 Type ADDINDATA
@@ -121,7 +115,6 @@ Type ADDINDATA
 	lpCharTab		As Any Ptr						' Pointer to RAEdit character table
 	hLangMem			As HGLOBAL						' Language translation
 	bExtOutput		As Integer						' External Output
-	resmem			As RESMEM
 End Type
 
 Type ADDINFUNCTIONS

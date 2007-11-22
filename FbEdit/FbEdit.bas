@@ -496,16 +496,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					wpos.ht=rect.bottom-rect.top
 				EndIf
 				wpos.fmax=IsZoomed(hWin)
-				SendMessage(ad.resmem.hProject,PRO_GETSTYLEPOS,0,Cast(Integer,@wpos.ptstyle))
 				GetWindowRect(ah.hcc,@rect)
 				wpos.ptcclist.x=rect.right-rect.left
 				wpos.ptcclist.y=rect.bottom-rect.top
 				DestroyWindow(ah.hcc)
 				DestroyWindow(ah.htt)
-				DestroyWindow(ad.resmem.hResEd)
-				DestroyWindow(ad.resmem.hProject)
-				DestroyWindow(ad.resmem.hProperty)
-				DestroyWindow(ad.resmem.hToolBox)
+				SendMessage(ah.hraresed,DEM_GETSIZE,0,Cast(LPARAM,@ressize))
 				DestroyWindow(ah.hres)
 				Return DefWindowProc(hWin,uMsg,wParam,lParam)
 			EndIf
@@ -529,6 +525,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			DestroyMenu(ah.hcontextmenu)
 			SaveFindHistory
 			SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"4444444444444444444",@wpos,FALSE)
+			SaveToIni(StrPtr("Win"),StrPtr("ressize"),"444444",@ressize,FALSE)
 			DefWindowProc(hWin,uMsg,wParam,lParam)
 			PostQuitMessage(NULL)
 			'
@@ -564,7 +561,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							ad.filename="(Untitled).rc"
 							hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,4096)
 							GlobalLock(hMem)
-							SendMessage(ad.resmem.hProject,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
+							SendMessage(ah.hraresed,PRO_OPEN,Cast(Integer,@ad.filename),Cast(Integer,hMem))
 							ah.hred=ah.hres
 							AddTab(ah.hred,ad.filename,FALSE)
 							'
@@ -961,64 +958,64 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_FORMAT_LOCK
-							x=SendMessage(ad.resmem.hResEd,DEM_ISLOCKED,0,0) Xor TRUE
-							SendMessage(ad.resmem.hResEd,DEM_LOCKCONTROLS,0,x)
+							x=SendMessage(ah.hraresed,DEM_ISLOCKED,0,0) Xor TRUE
+							SendMessage(ah.hraresed,DEM_LOCKCONTROLS,0,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_BACK
-							SendMessage(ad.resmem.hResEd,DEM_SENDTOBACK,0,0)
+							SendMessage(ah.hraresed,DEM_SENDTOBACK,0,0)
 							'
 						Case IDM_FORMAT_FRONT
-							SendMessage(ad.resmem.hResEd,DEM_BRINGTOFRONT,0,0)
+							SendMessage(ah.hraresed,DEM_BRINGTOFRONT,0,0)
 							'
 						Case IDM_FORMAT_GRID
-							x=GetWindowLong(ad.resmem.hResEd,GWL_STYLE) Xor DES_GRID
-							SetWindowLong(ad.resmem.hResEd,GWL_STYLE,x)
+							x=GetWindowLong(ah.hraresed,GWL_STYLE) Xor DES_GRID
+							SetWindowLong(ah.hraresed,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_SNAP
-							x=GetWindowLong(ad.resmem.hResEd,GWL_STYLE) Xor DES_SNAPTOGRID
-							SetWindowLong(ad.resmem.hResEd,GWL_STYLE,x)
+							x=GetWindowLong(ah.hraresed,GWL_STYLE) Xor DES_SNAPTOGRID
+							SetWindowLong(ah.hraresed,GWL_STYLE,x)
 							fTimer=1
 							'
 						Case IDM_FORMAT_ALIGN_LEFT
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_LEFT)
 							'
 						Case IDM_FORMAT_ALIGN_CENTER
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_CENTER)
 							'
 						Case IDM_FORMAT_ALIGN_RIGHT
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_RIGHT)
 							'
 						Case IDM_FORMAT_ALIGN_TOP
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_TOP)
 							'
 						Case IDM_FORMAT_ALIGN_MIDDLE
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_MIDDLE)
 							'
 						Case IDM_FORMAT_ALIGN_BOTTOM
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_BOTTOM)
 							'
 						Case IDM_FORMAT_SIZE_WIDTH
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,SIZE_WIDTH)
 							'
 						Case IDM_FORMAT_SIZE_HEIGHT
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,SIZE_HEIGHT)
 							'
 						Case IDM_FORMAT_SIZE_BOTH
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,SIZE_BOTH)
 							'
 						Case IDM_FORMAT_CENTER_HOR
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER)
 							'
 						Case IDM_FORMAT_CENTER_VER
-							SendMessage(ad.resmem.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER)
+							SendMessage(ah.hraresed,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER)
 							'
 						Case IDM_FORMAT_TAB
-							SendMessage(ad.resmem.hResEd,DEM_SHOWTABINDEX,0,0)
+							SendMessage(ah.hraresed,DEM_SHOWTABINDEX,0,0)
 							'
 						Case IDM_FORMAT_RENUM
-							SendMessage(ad.resmem.hResEd,DEM_AUTOID,0,0)
+							SendMessage(ah.hraresed,DEM_AUTOID,0,0)
 							'
 						Case IDM_FORMAT_CASECONVERT
 							CaseConvert(ah.hred)
@@ -1106,7 +1103,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							SendMessage(hWin,WM_SIZE,0,0)
 							fTimer=1
 						Case IDM_VIEW_DIALOG
-							SendMessage(ad.resmem.hResEd,DEM_SHOWDIALOG,0,0)
+							SendMessage(ah.hraresed,DEM_SHOWDIALOG,0,0)
 							'
 						Case IDM_VIEW_SPLITSCREEN
 							id=GetWindowLong(ah.hred,GWL_ID)
@@ -1192,46 +1189,46 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_CREATETEMPLATE),hWin,@CreateTemplateDlgProc,NULL)
 							'
 						Case IDM_RESOURCE_DIALOG
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_DIALOG,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_DIALOG,TRUE)
 							'
 						Case IDM_RESOURCE_MENU
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_MENU,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_MENU,TRUE)
 							'
 						Case IDM_RESOURCE_ACCEL
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_ACCEL,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_ACCEL,TRUE)
 							'
 						Case IDM_RESOURCE_STRINGTABLE
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_STRING,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_STRING,TRUE)
 							'
 						Case IDM_RESOURCE_VERSION
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_VERSION,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_VERSION,TRUE)
 							'
 						Case IDM_RESOURCE_XPMANIFEST
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_XPMANIFEST,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_XPMANIFEST,TRUE)
 							'
 						Case IDM_RESOURCE_RCDATA
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_RCDATA,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_RCDATA,TRUE)
 							'
 						Case IDM_RESOURCE_LANGUAGE
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_LANGUAGE,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_LANGUAGE,TRUE)
 							'
 						Case IDM_RESOURCE_INCLUDE
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_INCLUDE,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_INCLUDE,TRUE)
 							'
 						Case IDM_RESOURCE_RES
-							SendMessage(ad.resmem.hProject,PRO_ADDITEM,TPE_RESOURCE,TRUE)
+							SendMessage(ah.hraresed,PRO_ADDITEM,TPE_RESOURCE,TRUE)
 							'
 						Case IDM_RESOURCE_NAMES
-							SendMessage(ad.resmem.hProject,PRO_SHOWNAMES,0,Cast(Integer,ah.hout))
+							SendMessage(ah.hraresed,PRO_SHOWNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_EXPORT
-							SendMessage(ad.resmem.hProject,PRO_EXPORTNAMES,0,Cast(Integer,ah.hout))
+							SendMessage(ah.hraresed,PRO_EXPORTNAMES,0,Cast(Integer,ah.hout))
 							'
 						Case IDM_RESOURCE_REMOVE
-							SendMessage(ad.resmem.hProject,PRO_DELITEM,0,0)
+							SendMessage(ah.hraresed,PRO_DELITEM,0,0)
 							'
 						Case IDM_RESOURCE_UNDO
-							SendMessage(ad.resmem.hProject,PRO_UNDODELETED,0,0)
+							SendMessage(ah.hraresed,PRO_UNDODELETED,0,0)
 							'
 						Case IDM_MAKE_COMPILE
 							fQR=FALSE
@@ -2043,6 +2040,7 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	EndIf
 	SetCurrentDirectory(@ad.AppPath)
 	LoadFromIni(StrPtr("Win"),StrPtr("Winpos"),"4444444444444444444",@wpos,FALSE)
+	LoadFromIni(StrPtr("Win"),StrPtr("ressize"),"444444",@ressize,FALSE)
 	' Get command line filename
 	CommandLine=GetCommandLine
 	CommandLine=PathGetArgs(CommandLine)

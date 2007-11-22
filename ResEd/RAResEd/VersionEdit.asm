@@ -571,7 +571,7 @@ SaveVersion proc uses ebx esi edi,hWin:HWND
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax
-		invoke SendMessage,hPrj,PRO_ADDITEM,TPE_VERSION,FALSE
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_VERSION,FALSE
 	.endif
 	mov		ebx,eax
 	mov		esi,[eax].PROJECT.hmem
@@ -752,7 +752,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveVersion,hWin
-				invoke SendMessage,hPrj,PRO_SETMODIFY,TRUE,0
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
