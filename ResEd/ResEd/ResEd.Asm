@@ -982,6 +982,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.wtpro,eax
 		mov		eax,winsize.htout
 		mov		wpos.htout,eax
+		mov		eax,winsize.wttbx
+		mov		wpos.wttbx,eax
 		mov		eax,winsize.ptstyle.x
 		mov		wpos.left,eax
 		mov		eax,winsize.ptstyle.y

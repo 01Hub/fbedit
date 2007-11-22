@@ -40,9 +40,6 @@ ENDM
 IDB_TOOLBOX			equ	32100
 IDB_MNUARROW		equ 32101
 IDB_DLG				equ 32102
-IDB_TBX				equ 32103
-IDB_PRP				equ 32104
-IDB_PRJ				equ 32105
 IDB_CUSTCTL			equ 32106
 IDB_PROTRV			equ 32107
 IDB_BOOKMARK		equ 32108
@@ -382,7 +379,7 @@ szCtlText			db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,Comb
 
 szErrorParse		db 'Errors while parsing.',0
 
-ccdef1				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
+ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 

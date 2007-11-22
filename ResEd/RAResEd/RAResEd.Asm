@@ -397,16 +397,6 @@ ToolBoxProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		pt.x,edx
 		mov		pt.y,eax
 		invoke ToolBoxSize,pt.x
-;	.elseif eax==WM_USER+9999
-;		invoke GetClientRect,hWin,addr rect
-;		mov		eax,rect.right
-;		mov		edx,rect.bottom
-;		shl		edx,16
-;		movzx	eax,ax
-;		or		eax,edx
-;		invoke SendMessage,hWin,WM_SIZE,SIZE_RESTORED,eax
-;		xor		eax,eax
-;		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -436,16 +426,6 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		pt.x,edx
 		mov		pt.y,eax
 		invoke ProjectSize,pt.x,pt.y
-;	.elseif eax==WM_USER+9999
-;		invoke GetClientRect,hWin,addr rect
-;		mov		eax,rect.right
-;		mov		edx,rect.bottom
-;		shl		edx,16
-;		movzx	eax,ax
-;		or		eax,edx
-;		invoke SendMessage,hWin,WM_SIZE,SIZE_RESTORED,eax
-;		xor		eax,eax
-;		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -1159,16 +1139,6 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTextColor,wParam,color.text
 		mov		eax,hBrBack
 		jmp		Ex
-;	.elseif eax==WM_USER+9999
-;		invoke GetClientRect,hWin,addr rect
-;		mov		eax,rect.right
-;		mov		edx,rect.bottom
-;		shl		edx,16
-;		movzx	eax,ax
-;		or		eax,edx
-;		invoke SendMessage,hWin,WM_SIZE,SIZE_RESTORED,eax
-;		xor		eax,eax
-;		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -1227,6 +1197,7 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetCapture
 		.if eax==hWin
 			.if fSize==1
+				; Project width
 				mov		eax,rect.right
 				mov		edx,eax
 				sub		edx,80+53
@@ -1244,6 +1215,7 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hWin,WM_SIZE,0,eax
 				.endif
 			.elseif fSize==2
+				; Project height
 				mov		eax,rect.bottom
 				mov		edx,eax
 				sub		edx,80
@@ -1261,6 +1233,7 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hWin,WM_SIZE,0,eax
 				.endif
 			.elseif fSize==3
+				; Output height
 				mov		edx,rect.bottom
 				sub		edx,80
 				mov		eax,pt.y
@@ -1279,28 +1252,59 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					add		eax,rect.right
 					invoke SendMessage,hWin,WM_SIZE,0,eax
 				.endif
+			.elseif fSize==4
+				; Toolbox width
+				mov		edx,rect.right
+				sub		edx,winsize.wtpro
+				sub		edx,80
+				mov		eax,pt.x
+				.if sdword ptr eax<26
+					mov		eax,26
+				.elseif sdword ptr eax>edx
+					mov		eax,edx
+				.endif
+				.if eax!=winsize.wttbx
+					mov		winsize.wttbx,eax
+					mov		eax,rect.bottom
+					shl		eax,16
+					add		eax,rect.right
+					invoke SendMessage,hWin,WM_SIZE,0,eax
+				.endif
 			.endif
 		.else
 			mov		edx,rect.right
 			sub		edx,winsize.wtpro
 			mov		ecx,edx
-			sub		edx,3
+			sub		edx,SIZEBAR
 			mov		eax,pt.x
 			.if sdword ptr eax>=edx && sdword ptr eax<=ecx
+				; Project width
 				invoke SetCursor,hVSplit
 				mov		fSize,1
 				jmp		Ex
 			.elseif sdword ptr eax>edx
+				; Project height
 				invoke SetCursor,hHSplit
 				mov		fSize,2
 				jmp		Ex
 			.else
-				mov		edx,rect.bottom
-				sub		edx,winsize.htout
+				mov		edx,winsize.wttbx
 				mov		ecx,edx
-				sub		edx,3
+				add		ecx,SIZEBAR
+				mov		eax,pt.x
+				.if sdword ptr eax>=edx && sdword ptr eax<=ecx
+					; Toolbox width
+					invoke SetCursor,hVSplit
+					mov		fSize,4
+					jmp		Ex
+				.endif
+				mov		edx,rect.bottom
+				sub		edx,htout
+				mov		ecx,edx
+				sub		edx,SIZEBAR
 				mov		eax,pt.y
 				.if sdword ptr eax>=edx && sdword ptr eax<=ecx
+					; Output height
 					invoke SetCursor,hHSplit
 					mov		fSize,3
 					jmp		Ex
@@ -1311,7 +1315,7 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fSize,0
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
-		.if fSize==1
+		.if fSize==1 || fSize==4
 			invoke SetCapture,hWin
 			invoke SetCursor,hVSplit
 		.elseif fSize==2 || fSize==3

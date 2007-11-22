@@ -17,9 +17,9 @@ GetDef proc public nInx:DWORD
 	.if !eax
 		;Get the toolbox bitmap
 		invoke LoadBitmap,hInstance,IDB_DLG
-		mov		ccdef1.hbmp,eax
+		mov		ccdef.hbmp,eax
 		;Return pointer to inited struct
-		mov		eax,offset ccdef1
+		mov		eax,offset ccdef
 	.else
 		xor		eax,eax
 	.endif
