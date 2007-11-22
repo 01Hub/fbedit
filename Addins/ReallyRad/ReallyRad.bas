@@ -127,12 +127,12 @@ Function ReallyRadProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As W
 									lpFunctions->OpenTheFile(buff,FALSE)
 									chrg.cpMin=-1
 									chrg.cpMax=-1
-'									SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-'									SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
-'									SendMessage(lpHandles->hred,EM_REPLACESEL,TRUE,Cast(LPARAM,hMem))
-									lstrcpy(@s,Cast(ZString Ptr,hMem))
-									lpFunctions->TextToOutput(s)
-									lpFunctions->ShowOutput(TRUE)
+									SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+									SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
+									SendMessage(lpHandles->hred,EM_REPLACESEL,TRUE,Cast(LPARAM,hMem))
+'									lstrcpy(@s,Cast(ZString Ptr,hMem))
+'									lpFunctions->TextToOutput(s)
+'									lpFunctions->ShowOutput(TRUE)
 								Else
 									' To output
 									lstrcpy(@s,Cast(ZString Ptr,hMem))

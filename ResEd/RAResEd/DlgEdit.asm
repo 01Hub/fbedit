@@ -2491,9 +2491,9 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==WM_LBUTTONDBLCLK || eax==WM_NCLBUTTONDBLCLK
 			push	ebx
 			lea		ebx,dblclk
-			mov		eax,hDEd
+			mov		eax,hRes
 			mov		[ebx].CTLDBLCLICK.nmhdr.hwndFrom,eax
-			invoke GetWindowLong,hDEd,GWL_ID
+			invoke GetWindowLong,hRes,GWL_ID
 			push	eax
 			mov		[ebx].CTLDBLCLICK.nmhdr.idFrom,eax
 			mov		[ebx].CTLDBLCLICK.nmhdr.code,NM_DBLCLK
@@ -2514,7 +2514,7 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[ebx].CTLDBLCLICK.nDlgId,eax
 			lea		eax,(DIALOG ptr [edx]).idname
 			mov		[ebx].CTLDBLCLICK.lpDlgName,eax
-			invoke GetParent,hDEd
+			invoke GetParent,hRes
 			pop		edx
 			invoke SendMessage,eax,WM_NOTIFY,edx,ebx
 			pop		ebx
