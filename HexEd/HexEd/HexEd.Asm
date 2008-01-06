@@ -662,6 +662,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke SetWindowLong,hREd,GWL_STYLE,eax
 				invoke SendMessage,hREd,HEM_REPAINT,0,0
+;				invoke SendMessage,hREd,HEM_SETOFFSET,100h,0
 			.elseif eax==IDM_OPTION_FONT
 				invoke RtlZeroMemory,addr cf,sizeof cf
 				mov		cf.lStructSize,sizeof cf

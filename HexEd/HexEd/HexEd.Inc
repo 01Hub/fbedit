@@ -130,8 +130,8 @@ szRAHexEdClass			db 'RAHEXEDIT',0
 ClassName				db 'DLGCLASS',0
 
 szAppName				db 'Hex editor',0
-szAboutMsg				db 'Hex editor 1.0.1.8',13,10,'KetilO © 2003-2005',13,10,13,10,'radasm@visualassembler.com',0
-szAboutUrl				db 'http://radasm.visualassembler.com',0
+szAboutMsg				db 'Hex editor 1.0.1.9',13,10,'KetilO © 2003-2008',13,10,13,10,'radasmide@hotmail.com',0
+szAboutUrl				db 'http://www.radasm.com',0
 szOpen					db 'Open',0
 
 Replace					db 'Replace ..',0

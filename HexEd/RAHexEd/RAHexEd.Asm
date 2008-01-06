@@ -1446,6 +1446,19 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 		.endif
 		jmp		Ex
+	.elseif eax==HEM_GETOFFSET
+		;wParam=0, lParam=0
+		mov		eax,[ebx].EDIT.ofs
+		jmp		Ex
+	.elseif eax==HEM_SETOFFSET
+		;wParam=ofs, lParam=0
+		mov		eax,wParam
+		mov		[ebx].EDIT.ofs,eax
+		invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
+		invoke InvalidateRect,[ebx].EDIT.edtb.hwnd,NULL,FALSE
+		invoke SetCaret,[esi].HEEDT.hwnd
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==EM_STREAMIN
 		;wParam=SF_TEXT
 		;lParam=lpStream
@@ -1851,6 +1864,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,GWL_STYLE
 		mov		[ebx].EDIT.fstyle,eax
 		invoke SetFont,ebx,addr [ebx].EDIT.fnt
+		invoke SendMessage,[ebx].EDIT.edtb.hwnd,WM_SIZE,SIZE_RESTORED,0
+		invoke SendMessage,hWin,WM_SIZE,SIZE_RESTORED,0
 	.elseif eax==HEM_RAINIT
 		;WM_USER+9999 (=REM_RAINIT) is sendt to a custom control by RadASM (1.2.0.5)
 		;to let the custom control fill in default design time values.

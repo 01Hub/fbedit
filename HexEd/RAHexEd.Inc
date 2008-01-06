@@ -32,6 +32,8 @@ HEM_SETSPLIT			equ HEM_BASE+14		;wParam=nSplitt, lParam=0
 HEM_GETSPLIT			equ HEM_BASE+15		;wParam=0, lParam=0
 HEM_GETBYTE				equ HEM_BASE+16		;wParam=cp, lParam=0
 HEM_SETBYTE				equ HEM_BASE+16		;wParam=cp, lParam=ByteVal
+HEM_GETOFFSET			equ HEM_BASE+17		;wParam=0, lParam=0
+HEM_SETOFFSET			equ HEM_BASE+18		;wParam=ofs, lParam=0
 
 FR_HEX					equ 2
 

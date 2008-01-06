@@ -105,6 +105,7 @@ EDIT struct
 	datawt			dd ?
 	asciixp			dd ?
 	asciiwt			dd ?
+	ofs				dd ?		;Offset
 EDIT ends
 
 IDB_RAHEXEDBUTTON	equ 100

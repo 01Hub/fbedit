@@ -78,17 +78,17 @@ Options=52
 
 [Size]
 4=0,0,0,0,58
-2=0,0,0,0,2481
-1=0,0,0,0,47656
+2=0,0,0,0,1444
+1=0,0,0,0,4618
 3=0,0,0,0,46
-6=0,0,0,0,3485
-7=0,0,0,0,2729
+6=0,0,0,0,4698
+7=0,0,0,0,2613
 8=0,0,0,0,0
 9=0,0,0,0,1596
 11=0,0,0,0,428
 12=0,0,0,0,1530
-13=0,0,0,0,542
-16=0,0,0,0,3698
+13=0,0,0,0,1093
+16=0,0,0,0,1346
 15=0,0,0,0,2033
 14=0,0,0,0,7402
 17=0,0,0,0,3246
@@ -127,20 +127,20 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.1.0.0
-PV=1.1.0.0
+FV=1.1.0.1
+PV=1.1.0.1
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.1.0.0
+ProductVersion=1.1.0.1
 ProductName=
 OriginalFilename=RAHexEd.dll
 LegalTrademarks=
-LegalCopyright=KetilO (C) 2003
+LegalCopyright=KetilO (C) 2003-2008
 InternalName=RAHexEd
 FileDescription=Hex edit control
-FileVersion=1.1.0.0
+FileVersion=1.1.0.1
 CompanyName=
 
 [Group]
@@ -172,7 +172,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=19
@@ -195,9 +195,6 @@ ProductVerLength=4
 ProductVer2Range=0
 ProductVer3Range=0
 ProductVer4Range=0
-[Exports]
-1=GetDef
-2=GetDefEx
 [Resource]
 1=IDB_RAHEXEDBUTTON,100,0,Res\Button.bmp
 2=IDC_HSPLITTCUR,101,1,Res\SplitH.cur
@@ -205,9 +202,15 @@ ProductVer4Range=0
 4=IDC_SELECTCUR,103,1,Res\Select.cur
 5=IDB_LINENUMBER,104,0,Res\Linenumber.bmp
 [Collapse]
-17=0
+17=
 1=,,,,
 2=
-6=
-8=
-16=
+6=0
+8=0
+7=
+13=,
+[PTimer]
+PTimer=6006373
+[Exports]
+1=GetDef
+2=GetDefEx

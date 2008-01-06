@@ -77,7 +77,7 @@ Ascii:
 	rep stosb
 	retn
 
-HexLine proc uses ebx esi edi,lpMem:DWORD,nBytes:DWORD,nLine:DWORD,lpString:DWORD
+HexLine proc uses ebx esi edi,lpMem:DWORD,nBytes:DWORD,nLine:DWORD,nOfs:DWORD,lpString:DWORD
 
 	mov		esi,lpMem
 	mov		edi,lpString
@@ -86,6 +86,7 @@ HexLine proc uses ebx esi edi,lpMem:DWORD,nBytes:DWORD,nLine:DWORD,lpString:DWOR
 	shl		ebx,4
 	.if ebx<=nBytes
 		mov		eax,ebx
+		sub		eax,nOfs
 		call	HexAddr
 		xor		ecx,ecx
 		.while ebx<nBytes && ecx<16
@@ -213,7 +214,7 @@ HexPaint proc uses ebx esi edi,hWin:HWND
 					invoke LineTo,ps.hdc,edi,rect.bottom
 				.endif
 				pop		edi
-				invoke HexLine,lpMem,[ebx].EDIT.nbytes,edi,addr buffer
+				invoke HexLine,lpMem,[ebx].EDIT.nbytes,edi,[ebx].EDIT.ofs,addr buffer
 				mov		esi,eax
 				.if eax
 					call	DrawSelBack

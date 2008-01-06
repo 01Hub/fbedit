@@ -1,4 +1,4 @@
-LIBRARY RAHexEd.dll
+LIBRARY ..\RAHexEd.dll
 EXPORTS
 	GetDef
 	GetDefEx
