@@ -417,19 +417,19 @@ WhatIsIt proc uses esi,lpWord1:DWORD,len1:DWORD,lpWord2:DWORD,len2:DWORD
 
 WhatIsIt endp
 
-;PrintWord proc lpWord,len
-;	
-;	pushad
-;	mov		edx,lpWord
-;	mov		ecx,len
-;	mov		al,[edx+ecx]
-;	mov		byte ptr [edx+ecx],0
-;	PrintStringByAddr edx
-;	mov		[edx+ecx],al
-;	popad
-;	ret
-;
-;PrintWord endp
+PrintWord proc lpWord,len
+	
+	pushad
+	mov		edx,lpWord
+	mov		ecx,len
+	mov		al,[edx+ecx]
+	mov		byte ptr [edx+ecx],0
+	PrintStringByAddr edx
+	mov		[edx+ecx],al
+	popad
+	ret
+
+PrintWord endp
 
 IsIgnore proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
 
@@ -664,14 +664,16 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 				.elseif edx==DEFTYPE_DATA
 					call	ParseData
 					.if eax
-						invoke IsFunction,lpdatatype,lendatatype
-						.if !eax
-							mov		eax,lpdatatype
-							mov		lpword1,eax
-							mov		eax,lendatatype
-							mov		len1,eax
-							inc		fdim
-							jmp		dim
+						.if lpdatatype
+							invoke IsFunction,lpdatatype,lendatatype
+							.if !eax
+								mov		eax,lpdatatype
+								mov		lpword1,eax
+								mov		eax,lendatatype
+								mov		len1,eax
+								inc		fdim
+								jmp		dim
+							.endif
 						.endif
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
@@ -1267,7 +1269,7 @@ ParseData:
 	call	AddNamespace
 	call	SaveName
 ParseData1:
-	.if !lpdatatype
+;	.if !lpdatatype
 		call	SkipBrace
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -1290,7 +1292,7 @@ ParseData1:
 				jmp		@b
 			.endif
 		.endif
-	.endif
+;	.endif
 	.if lpdatatype
 		mov		eax,lendatatype
 		inc		eax
