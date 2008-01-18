@@ -662,7 +662,7 @@ PropListSetPos proc
 			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
 		.else
 			invoke PropListSetTxt,hPrpLstDlg
-			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI
+			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAME
 				mov		ecx,nPropHt
 				dec		ecx
 				sub		rect.right,ecx
@@ -1049,6 +1049,26 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			.endif
 			lea		edi,[edi+sizeof PROJECT]
 		.endw
+	.elseif eax==PRP_STR_NAME
+		;(Name)
+		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
+		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
+		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
+		invoke lstrcmpi,addr [esi].idname,addr szIDOK
+		.if !eax
+			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
+		.else
+			invoke lstrcmpi,addr [esi].idname,addr szIDCANCEL
+			.if !eax
+				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
+			.else
+				invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
+				.if !eax
+					invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,2,0
+				.endif
+			.endif
+		.endif
 	.elseif eax==PRP_FUN_LANG
 		;Language
 	.elseif eax>65535
@@ -1228,7 +1248,16 @@ SetCtrlData:
 	;What is changed
 	mov		eax,lbid
 	.if eax==PRP_STR_NAME
-		invoke NameExists,addr buffer1,esi
+		invoke lstrcmpi,addr buffer1,addr szIDOK
+		.if eax
+			invoke lstrcmpi,addr buffer1,addr szIDCANCEL
+			.if eax
+				invoke lstrcmpi,addr buffer1,addr szIDC_STATIC
+			.endif
+		.endif
+		.if eax
+			invoke NameExists,addr buffer1,esi
+		.endif
 		.if eax
 			invoke lstrcpy,addr buffer,addr szNameExist
 			invoke lstrcat,addr buffer,addr buffer1
@@ -2393,7 +2422,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nInx,eax
 		invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
 		mov		lbid,eax
-		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax>65535
+		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax>65535 || eax==PRP_STR_NAME
 			invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
 			invoke SendMessage,hWin,WM_COMMAND,1,0
 			invoke ShowWindow,hPrpLstDlgCld,SW_HIDE

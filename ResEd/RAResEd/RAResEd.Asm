@@ -1178,9 +1178,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr lf.lfFaceName,addr szCourierNew
 		invoke CreateFontIndirect,addr lf
 		mov		hredfont,eax
+		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
-		invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE
+		;invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE
 	.elseif	eax==WM_STYLECHANGED
 		.if wParam==GWL_STYLE
 			invoke GetWindowLong,hDEd,GWL_STYLE

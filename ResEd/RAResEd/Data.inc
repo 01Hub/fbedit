@@ -33,6 +33,7 @@ NameExists				PROTO	:DWORD,:DWORD
 ShowEditDialog			PROTO	:HWND,:DWORD
 GetWord					PROTO	:HWND,:DWORD
 ParseRCMem				PROTO	:DWORD,:DWORD
+;FindName				PROTO	:DWORD,:DWORD
 
 m2m MACRO M1, M2
 	push M2
@@ -373,6 +374,10 @@ szAclKeys			db 01h,'.Ascii',0
 szGetDef			db 'GetDef',0
 szGetDefEx			db 'GetDefEx',0
 szCourierNew		db 'Courier New',0
+
+szIDOK				db 'IDOK',0
+szIDCANCEL			db 'IDCANCEL',0
+szIDC_STATIC		db 'IDC_STATIC',0
 
 .data
 

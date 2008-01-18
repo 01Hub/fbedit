@@ -87,7 +87,7 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,25261
+1=0,0,0,0,3172
 6=
 2=0,0,0,0,1312
 7=0,0,699,490,77
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -245,6 +245,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=130256056
+PTimer=144510947
 [AutoLoad]
 1=1

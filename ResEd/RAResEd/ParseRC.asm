@@ -2719,8 +2719,6 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
   Ex:
 	invoke GetLineNo,hRCMem,esi
 	mov		[edi].PROJECT.lnend,eax
-;PrintDec [edi].PROJECT.lnstart
-;PrintDec [edi].PROJECT.lnend
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
