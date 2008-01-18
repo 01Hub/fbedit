@@ -227,13 +227,13 @@ NotifyParent proc uses ebx
 	LOCAL	nmhdr:NMHDR
 
 	lea		ebx,nmhdr
-	mov		eax,hDEd
+	mov		eax,hRes
 	mov		[ebx].NMHDR.hwndFrom,eax
-	invoke GetWindowLong,hDEd,GWL_ID
+	invoke GetWindowLong,hRes,GWL_ID
 	push	eax
 	mov		[ebx].NMHDR.idFrom,eax
 	mov		[ebx].NMHDR.code,0
-	invoke GetParent,hDEd
+	invoke GetParent,hRes
 	pop		edx
 	invoke SendMessage,eax,WM_NOTIFY,edx,ebx
 	ret
@@ -470,3 +470,33 @@ ConvertDpiSize proc nPix:DWORD
 	ret
 
 ConvertDpiSize endp
+
+StreamOutProc proc pMem:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesWritten:DWORD
+
+	mov		eax,NumBytes
+	push	eax
+	inc		eax
+	mov		edx,pMem
+	invoke lstrcpyn,[edx],pBuffer,eax
+	pop		eax
+	mov		edx,pMem
+	add		[edx],eax
+	mov		edx,pBytesWritten
+	mov		[edx],eax
+	mov		eax,0
+	ret
+
+StreamOutProc endp
+
+SaveToMem proc hWin:DWORD,hMem:DWORD
+	LOCAL	editstream:EDITSTREAM
+
+	;stream the text to the memory
+	lea		eax,hMem
+	mov		editstream.dwCookie,eax
+	mov		editstream.pfnCallback,offset StreamOutProc
+	invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+	ret
+
+SaveToMem endp
+

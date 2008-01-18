@@ -1,4 +1,5 @@
 SendToBack			PROTO :DWORD
+UpdateRAEdit		PROTO :DWORD
 
 PGM_FIRST			equ 1400h
 PGM_SETCHILD		equ PGM_FIRST+1
@@ -1458,6 +1459,8 @@ UpdateSize proc uses esi,hWin:HWND,x:DWORD,y:DWORD,ccx:DWORD,ccy:DWORD
 		mov		[esi].duccx,eax
 		mov		[esi].duccy,eax
 		invoke SetChanged,TRUE,0
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke UpdateRAEdit,eax
 	.endif
 	assume esi:nothing
 	ret
@@ -3683,6 +3686,11 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		.endif
 		assume esi:nothing
 		invoke CreateCtl,edi
+		push	eax
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke UpdateRAEdit,eax
+		invoke NotifyParent
+		pop		eax
 	.endif
 	ret
 
@@ -3833,6 +3841,9 @@ PasteCtl proc uses esi edi
 			dec		nbr
 		.endw
 	.endif
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	assume esi:nothing
 	ret
 
@@ -3926,44 +3937,47 @@ DeleteCtl proc uses esi
 		invoke SizeingRect,eax,FALSE
 	.endif
 	invoke SendMessage,hDEd,WM_LBUTTONDOWN,0,0
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 DeleteCtl endp
 
-UndoCtl proc uses esi
-	LOCAL	hCtl:HWND
-	LOCAL	nTab:DWORD
-
-	invoke GetWindowLong,hDEd,DEWM_MEMORY
-	.if eax
-		mov		esi,eax
-		mov		eax,(DLGHEAD ptr[esi]).undo
-		.if eax
-			push	(DIALOG ptr [eax]).undo
-			pop		(DLGHEAD ptr[esi]).undo
-			mov		(DIALOG ptr [eax]).undo,0
-			mov		esi,eax
-			mov		eax,(DIALOG ptr [esi]).id
-			invoke IsFreeID,eax
-			.if eax==FALSE
-				invoke GetFreeID
-				mov		(DIALOG ptr [esi]).id,eax
-			.endif
-			invoke CreateCtl,esi
-			mov		hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			mov		esi,eax
-			push	(DIALOG ptr [esi]).tab
-			pop		nTab
-			invoke InsertTab,nTab
-			push	nTab
-			pop		(DIALOG ptr [esi]).tab
-			invoke SizeingRect,hCtl,FALSE
-		.endif
-	.endif
-	ret
-
-UndoCtl endp
+;UndoCtl proc uses esi
+;	LOCAL	hCtl:HWND
+;	LOCAL	nTab:DWORD
+;
+;	invoke GetWindowLong,hDEd,DEWM_MEMORY
+;	.if eax
+;		mov		esi,eax
+;		mov		eax,(DLGHEAD ptr[esi]).undo
+;		.if eax
+;			push	(DIALOG ptr [eax]).undo
+;			pop		(DLGHEAD ptr[esi]).undo
+;			mov		(DIALOG ptr [eax]).undo,0
+;			mov		esi,eax
+;			mov		eax,(DIALOG ptr [esi]).id
+;			invoke IsFreeID,eax
+;			.if eax==FALSE
+;				invoke GetFreeID
+;				mov		(DIALOG ptr [esi]).id,eax
+;			.endif
+;			invoke CreateCtl,esi
+;			mov		hCtl,eax
+;			invoke GetWindowLong,hCtl,GWL_USERDATA
+;			mov		esi,eax
+;			push	(DIALOG ptr [esi]).tab
+;			pop		nTab
+;			invoke InsertTab,nTab
+;			push	nTab
+;			pop		(DIALOG ptr [esi]).tab
+;			invoke SizeingRect,hCtl,FALSE
+;		.endif
+;	.endif
+;	ret
+;
+;UndoCtl endp
 
 AlignSizeCtl proc uses esi ebx,nFun:DWORD
 	LOCAL	xp:DWORD
@@ -4216,6 +4230,9 @@ AlignSizeCtl proc uses esi ebx,nFun:DWORD
 			invoke SizeingRect,hCtl,FALSE
 		.endif
 	.endif
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 MoveIt:
@@ -4392,8 +4409,11 @@ UpdateCtl proc uses esi,hCtl:DWORD
 		m2m		hReSize,hCtl
 	.endif
 	invoke SetChanged,TRUE,0
-	mov		eax,hCtl
 	assume esi:nothing
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
+	mov		eax,hCtl
 	ret
 
 UpdateCtl endp
@@ -4440,6 +4460,9 @@ MoveMultiSel proc uses esi,x:DWORD,y:DWORD
 		.endw
 	.endw
 	invoke SetChanged,TRUE,0
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 MoveMultiSel endp
@@ -4535,6 +4558,9 @@ SizeMultiSel proc uses esi,x:DWORD,y:DWORD
 		.endw
 	.endw
 	invoke SetChanged,TRUE,0
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 SizeMultiSel endp
@@ -4592,6 +4618,9 @@ AutoIDMultiSel proc uses esi
 		.endw
 		invoke SetChanged,TRUE,0
 	.endif
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 GetNextTab:
@@ -4672,6 +4701,9 @@ SendToBack proc uses esi edi,hCtl:HWND
 			add		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
 		.endif
 		invoke SetChanged,TRUE,0
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke UpdateRAEdit,eax
+		invoke NotifyParent
 	.endif
 	ret
 
@@ -4711,6 +4743,9 @@ BringToFront proc uses esi edi,hCtl:HWND
 		sub		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
 	.endif
 	invoke SetChanged,TRUE,0
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	invoke UpdateRAEdit,eax
+	invoke NotifyParent
 	ret
 
 BringToFront endp
@@ -6301,6 +6336,7 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 		.endif
 		add		esi,sizeof DIALOG
 	.endw
+	invoke UpdateRAEdit,hMem
 	ret
 
 DlgResize endp
@@ -6446,6 +6482,37 @@ GetType proc uses ebx esi,lpDlg:DWORD
 
 GetType endp
 
+UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
+
+	mov		ebx,hMem
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	mov		edi,eax
+	invoke ExportDialogNames,ebx
+	mov		esi,eax
+	invoke lstrcpy,edi,esi
+	invoke GlobalUnlock,esi
+	invoke GlobalFree,esi
+	invoke ExportDialog,ebx
+	mov		esi,eax
+	invoke lstrcat,edi,esi
+	invoke GlobalUnlock,esi
+	invoke GlobalFree,esi
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	mov		esi,eax
+	invoke SaveToMem,[ebx].DLGHEAD.hred,esi
+	invoke lstrcmp,esi,edi
+	.if eax
+		invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0
+		invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,-1
+		invoke SendMessage,[ebx].DLGHEAD.hred,EM_REPLACESEL,TRUE,edi
+		invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,FALSE,0
+	.endif
+	invoke GlobalFree,esi
+	invoke GlobalFree,edi
+	ret
+
+UpdateRAEdit endp
+
 CreateDlg proc uses esi,hWin:HWND,lpProItemMem:DWORD
 	LOCAL	hDlg:HWND
 
@@ -6524,7 +6591,53 @@ CreateDlg proc uses esi,hWin:HWND,lpProItemMem:DWORD
 		invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 		mov		nTabSet,0
 	.endif
+	.if ![esi].DLGHEAD.hred
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK,0,0,0,0,hRes,0,hInstance,0
+		mov		[esi].DLGHEAD.hred,eax
+		invoke SendMessage,[esi].DLGHEAD.hred,WM_SETFONT,hredfont,0
+		invoke UpdateRAEdit,esi
+		invoke SendMessage,hRes,WM_SIZE,0,0
+		invoke SendMessage,[esi].DLGHEAD.hred,EM_EMPTYUNDOBUFFER,0,0
+	.endif
 	mov		eax,esi
 	ret
 
 CreateDlg endp
+
+UndoRedo proc uses ebx esi edi,fRedo:DWORD
+
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	.if eax
+		mov		ebx,eax
+		.if [ebx].DLGHEAD.hred
+			mov		edx,EM_UNDO
+			.if fRedo
+				mov		edx,EM_REDO
+			.endif
+			invoke SendMessage,[ebx].DLGHEAD.hred,edx,0,0
+			invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,0
+			invoke GetWindowLong,hPrj,0
+			mov		esi,eax
+			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+			mov		edi,eax
+			invoke SaveToMem,[ebx].DLGHEAD.hred,edi
+			.while ebx!=[esi].PROJECT.hmem
+				add		esi,sizeof PROJECT
+			.endw
+			mov		[esi].PROJECT.hmem,0
+			push	[ebx].DLGHEAD.hred
+			push	[ebx].DLGHEAD.ftextmode
+			invoke GetWindowLong,hPrj,0
+			invoke ParseRCMem,edi,eax
+			mov		eax,[esi].PROJECT.hmem
+			pop		[eax].DLGHEAD.ftextmode
+			pop		[eax].DLGHEAD.hred
+			invoke CreateDlg,hDEd,esi
+			invoke GlobalFree,ebx
+			invoke SetChanged,TRUE,hDEd
+		.endif
+	.endif
+	invoke NotifyParent
+	ret
+
+UndoRedo endp

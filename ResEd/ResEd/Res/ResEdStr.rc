@@ -10,4 +10,5 @@ BEGIN
   IDM_EDIT_UNDO				"Undo"
   IDM_VIEW_OUTPUT			"Show / Hide Output"
   IDM_VIEW_PREVIEW			"Preview Dialog"
+  IDM_EDIT_REDO				"Redo"
 END

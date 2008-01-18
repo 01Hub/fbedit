@@ -17,6 +17,7 @@ start:
 	invoke LoadLibrary,offset szRichEdit
 	mov		hRichEd,eax
 	invoke GridInstall,hInstance
+	invoke InstallRAEdit,hInstance
 	invoke ResEdInstall,hInstance
 	invoke GetCommandLine
 	mov		CommandLine,eax
@@ -430,6 +431,8 @@ ToolBarEnable proc uses ebx,hTbr:HWND
 	mov		ebx,hTbr
 	invoke SendMessage,hResEd,DEM_CANUNDO,0,0
 	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_UNDO,eax
+	invoke SendMessage,hResEd,DEM_CANREDO,0,0
+	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REDO,eax
 	invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
 	push	eax
 	push	eax
@@ -612,6 +615,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,MF_GRAYED
 			.endif
 			invoke EnableMenuItem,wParam,IDM_EDIT_UNDO,eax
+			invoke SendMessage,hResEd,DEM_CANREDO,0,0
+			xor		eax,1
+			.if eax
+				mov		eax,MF_GRAYED
+			.endif
+			invoke EnableMenuItem,wParam,IDM_EDIT_REDO,eax
 			invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
 			.if !eax
 				mov		ebx,MF_GRAYED
@@ -794,6 +803,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,WM_CLOSE,0,0
 		.elseif eax==IDM_EDIT_UNDO
 			invoke SendMessage,hResEd,DEM_UNDO,0,0
+		.elseif eax==IDM_EDIT_REDO
+			invoke SendMessage,hResEd,DEM_REDO,0,0
 		.elseif eax==IDM_EDIT_DELETE
 			invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
 		.elseif eax==IDM_EDIT_CUT
@@ -812,6 +823,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_VIEW_PREVIEW
 			invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
 			mov		hPreview,eax
+		.elseif eax==IDM_VIEW_TEXTMODE
+			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
+			xor		eax,1
+			invoke SendMessage,hResEd,DEM_SETTEXTMODE,eax,0
 		.elseif eax==IDM_FORMAT_LOCK
 			invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
 			xor		eax,TRUE

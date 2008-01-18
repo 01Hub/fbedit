@@ -1,7 +1,7 @@
 [Tbr]
 Tbr=,0,1
-Bmp=C:\RadASM\Masm\Projects\ResEd\ResEd\Res\Toolbar.bmp,IDB_TOOLBAR,9
-Mnu=C:\RadASM\Masm\Projects\ResEd\ResEd\ResEd.mnu
+Bmp=C:\RadASM\Masm\Projects\ResEd20\ResEd\Res\Toolbar.bmp,IDB_TOOLBAR,9
+Mnu=C:\RadASM\Masm\Projects\ResEd20\ResEd\ResEd.mnu
 Size=16
 0=-,0,0,0
 1=IDM_FILE_NEW_PROJECT,0,0,0
@@ -13,8 +13,9 @@ Size=16
 7=IDM_EDIT_PASTE,0,0,5
 8=-,0,0,0
 9=IDM_EDIT_UNDO,0,0,6
-10=IDM_EDIT_DELETE,0,0,7
-11=-,0,0,0
-12=IDM_VIEW_OUTPUT,0,1,8
-13=IDM_VIEW_PREVIEW,0,0,9
-14=-,0,0,0
+10=IDM_EDIT_REDO,0,0,7
+11=IDM_EDIT_DELETE,0,0,8
+12=-,0,0,0
+13=IDM_VIEW_OUTPUT,0,1,9
+14=IDM_VIEW_PREVIEW,0,0,10
+15=-,0,0,0

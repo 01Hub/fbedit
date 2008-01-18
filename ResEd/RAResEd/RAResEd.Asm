@@ -8,6 +8,8 @@ include ..\RAResEd.inc
 include Data.inc
 include RAGrid.inc
 includelib ..\Lib\RAGrid.lib
+include RAEdit.inc
+includelib ..\Lib\RAEdit.lib
 include Style.inc
 include Misc.asm
 include LanguageEdit.asm
@@ -604,8 +606,8 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.elseif wParam==VK_X
 					invoke CopyCtl
 					invoke DeleteCtl
-				.elseif wParam==VK_Z
-					invoke UndoCtl
+;				.elseif wParam==VK_Z
+;					invoke UndoCtl
 				.endif
 			.endif
 		.endif
@@ -1146,11 +1148,12 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 PropertyProc endp
 
-ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
 	LOCAL	hFile:HANDLE
 	LOCAL	dwbytes:DWORD
+	LOCAL	lf:LOGFONT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -1170,6 +1173,11 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_VSCROLL or WS_HSCROLL or ES_MULTILINE or ES_AUTOHSCROLL or ES_AUTOVSCROLL
 		invoke CreateWindowEx,200h,addr szEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
+		invoke RtlZeroMemory,addr lf,size lf
+		mov		lf.lfHeight,-12
+		invoke lstrcpy,addr lf.lfFaceName,addr szCourierNew
+		invoke CreateFontIndirect,addr lf
+		mov		hredfont,eax
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
 		invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE
@@ -1328,6 +1336,8 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fSize,0
 		.endif
 	.elseif	eax==WM_SIZE
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		mov		ebx,eax
 		invoke GetClientRect,hWin,addr rect
 		invoke MoveWindow,hTlb,0,0,winsize.wttbx,rect.bottom,TRUE
 		mov		eax,rect.right
@@ -1342,6 +1352,22 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,winsize.wttbx
 		add		ecx,SIZEBAR
 		invoke MoveWindow,hDEd,ecx,0,eax,edx,TRUE
+		mov		eax,rect.right
+		sub		eax,winsize.wttbx
+		sub		eax,winsize.wtpro
+		sub		eax,SIZEBAR+SIZEBAR
+		mov		edx,rect.bottom
+		.if htout
+			sub		edx,htout
+			sub		edx,SIZEBAR
+		.endif
+		mov		ecx,winsize.wttbx
+		add		ecx,SIZEBAR
+		.if ebx
+			.if [ebx].DLGHEAD.hred
+				invoke MoveWindow,[ebx].DLGHEAD.hred,ecx,0,eax,edx,TRUE
+			.endif
+		.endif
 		mov		eax,rect.right
 		sub		eax,winsize.wttbx
 		sub		eax,winsize.wtpro
@@ -1498,9 +1524,20 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==DEM_OPEN
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
-		invoke GetWindowLong,hDEd,DEWM_PROJECT
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
+			.endif
+		.endif
 		invoke CreateDlg,hDEd,lParam
 		push	eax
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		eax,[eax].DLGHEAD.ftextmode
+		.endif
+		invoke SendMessage,hWin,DEM_SETTEXTMODE,eax,0
 		invoke NotifyParent
 		pop		eax
 		jmp		Ex
@@ -1511,15 +1548,28 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==DEM_CANUNDO
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax
-			mov		eax,[eax].DLGHEAD.undo
+			mov		ebx,eax
+			mov		eax,[ebx].DLGHEAD.hred
 			.if eax
-				mov		eax,TRUE
+				invoke SendMessage,eax,EM_CANUNDO,0,0
 			.endif
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_UNDO
-		invoke UndoCtl
-		invoke NotifyParent
+		invoke UndoRedo,FALSE
+		jmp		Ex
+	.elseif eax==DEM_CANREDO
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			mov		eax,[ebx].DLGHEAD.hred
+			.if eax
+				invoke SendMessage,eax,EM_CANREDO,0,0
+			.endif
+		.endif
+		jmp		Ex
+	.elseif eax==DEM_REDO
+		invoke UndoRedo,TRUE
 		jmp		Ex
 	.elseif eax==DEM_CUT
 		invoke CopyCtl
@@ -1734,7 +1784,6 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;lParam=0
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax
-			push	ebx
 			mov		ebx,eax
 			.if hTabSet
 				invoke DestroyWindow,hTabSet
@@ -1746,7 +1795,6 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetWindowPos,eax,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 				mov		nTabSet,0
 			.endif
-			pop		ebx
 		.endif
 	.elseif eax==DEM_EXPORTDLG
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -1881,6 +1929,26 @@ ResEdProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		winsize.ptstyle.x,eax
 		mov		eax,[edx].WINSIZE.ptstyle.y
 		mov		winsize.ptstyle.y,eax
+	.elseif eax==DEM_GETTEXTMODE
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		eax,[eax].DLGHEAD.ftextmode
+		.endif
+		jmp		Ex
+	.elseif eax==DEM_SETTEXTMODE
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if wParam
+				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_SHOW
+				invoke SetWindowPos,[ebx].DLGHEAD.hred,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
+				mov		[ebx].DLGHEAD.ftextmode,TRUE
+				invoke SendMessage,hRes,WM_SIZE,0,0
+			.else
+				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
+				mov		[ebx].DLGHEAD.ftextmode,FALSE
+			.endif
+		.endif
 	.elseif eax==WM_USER+9999
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.bottom

@@ -1,4 +1,4 @@
-LIBRARY ..\Dll\RAResEd20.dll
+LIBRARY ..\Dll\RAResEd.dll
 EXPORTS
 	ResEdInstall
 	ResEdUninstall

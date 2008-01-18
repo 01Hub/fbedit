@@ -2,6 +2,7 @@
 ResEdInstall		PROTO	:DWORD
 ResEdUninstall		PROTO
 GridInstall			PROTO	:DWORD
+InstallRAEdit		PROTO	:DWORD
 
 ;Dialog memory size
 MaxMem				equ 128*1024*3
@@ -29,6 +30,8 @@ DLGHEAD struct
 	charset			db ?				;Set to NULL
 	italic			db ?				;Set to NULL
 	weight			dw ?				;Set to NULL
+	hred			dd ?				;Set to NULL
+	ftextmode		dd ?				;Set to NULL
 DLGHEAD ends
 
 DIALOG struct
@@ -163,6 +166,10 @@ DEM_GETMEM			equ DEM_BASE+31		;wParam=DEWM_xxxxx, lParam=0
 DEM_SHOWOUTPUT		equ DEM_BASE+32		;wParam=TRUE/FALSE, lParam=0
 DEM_GETSIZE			equ DEM_BASE+33		;wParam=0, lParam=lpWINSIZE
 DEM_SETSIZE			equ DEM_BASE+34		;wParam=0, lParam=lpWINSIZE
+DEM_GETTEXTMODE		equ DEM_BASE+35		;wParam=0, lParam=0
+DEM_SETTEXTMODE		equ DEM_BASE+36		;wParam=TRUE/FALSE, lParam=0
+DEM_CANREDO			equ DEM_BASE+37		;wParam=0, lParam=0, Returns TRUE or FALSE
+DEM_REDO			equ DEM_BASE+38		;wParam=0, lParam=0
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1

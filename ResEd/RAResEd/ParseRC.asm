@@ -2,7 +2,6 @@
 
 			dw ?
 wordbuff	db 16384 dup(?)
-namebuff	db 16384 dup(?)
 
 .code
 

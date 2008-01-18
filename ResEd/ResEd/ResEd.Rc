@@ -21,6 +21,7 @@
 #define IDC_HSPLIT		32109
 #define IDC_VSPLIT		32110
 
+;RAResEd
 IDB_TOOLBOX				BITMAP  DISCARDABLE "../RAResEd/Res/ToolBox.bmp"
 IDB_MNUARROW			BITMAP  DISCARDABLE "../RAResEd/Res/MnuArrow.bmp"
 IDB_PROTRV				BITMAP  DISCARDABLE "../RAResEd/Res/ProTrv.bmp"
@@ -41,3 +42,11 @@ IDC_VSPLIT				CURSOR  DISCARDABLE "../RAResEd/Res/SplitV.cur"
 #include "../RAResEd/Res/StyleManaDlg.rc"
 #include "../RAResEd/Res/XPManifestEditDlg.rc"
 #include "../RAResEd/Res/RCDataEditDlg.rc"
+
+;RAEdit
+101						CURSOR  DISCARDABLE "../RAResEd/Res/SplitH.cur"
+103						CURSOR   DISCARDABLE "../RAResEd/Res/Select.cur"
+104						BITMAP   DISCARDABLE "../RAResEd/Res/Linenumber.bmp"
+105						BITMAP   DISCARDABLE "../RAResEd/Res/Expand.bmp"
+106						BITMAP   DISCARDABLE "../RAResEd/Res/Collapse.bmp"
+

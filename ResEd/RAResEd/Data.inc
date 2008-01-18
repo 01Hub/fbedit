@@ -31,6 +31,8 @@ GetFreeProjectitemID	PROTO	:DWORD
 GetUnikeName			PROTO	:DWORD
 NameExists				PROTO	:DWORD,:DWORD
 ShowEditDialog			PROTO	:HWND,:DWORD
+GetWord					PROTO	:HWND,:DWORD
+ParseRCMem				PROTO	:DWORD,:DWORD
 
 m2m MACRO M1, M2
 	push M2
@@ -370,6 +372,7 @@ szAclKeys			db 01h,'.Ascii',0
 
 szGetDef			db 'GetDef',0
 szGetDefEx			db 'GetDefEx',0
+szCourierNew		db 'Courier New',0
 
 .data
 
@@ -388,6 +391,7 @@ initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 hInstance			dd ?
 hRes				dd ?
 hDEd				dd ?
+;hREd				dd ?
 hTlb				dd ?
 hPrp				dd ?
 hPrj				dd ?
@@ -421,3 +425,5 @@ hVSplit				dd ?
 hHSplit				dd ?
 winsize				WINSIZE <?>
 htout				dd ?
+hredfont			dd ?
+namebuff			db 16384 dup(?)
