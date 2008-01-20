@@ -170,7 +170,7 @@ ntbrbtns			equ 16
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 2.0.0.0',13,10,'KetilO © 2007',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.0.0.0',13,10,'KetilO © 2008',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl			db 'http://www.radasm.com/resed/',0
 szOpen				db 'Open',0
 szRichEdit			db 'riched20.dll',0
@@ -184,7 +184,7 @@ szWinPos			db 'WinPos',0
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
-grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE,FALSE,FALSE,FALSE>
+grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE>
 col					COLOR <0FFFFFFh,0>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 

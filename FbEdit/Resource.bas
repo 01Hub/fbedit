@@ -51,6 +51,9 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 		Case EM_UNDO
 			SendMessage(ah.hraresed,DEM_UNDO,0,0)
 			'
+		Case EM_REDO
+			SendMessage(ah.hraresed,DEM_REDO,0,0)
+			'
 		Case WM_CUT
 			SendMessage(ah.hraresed,DEM_CUT,0,0)
 			'

@@ -1,7 +1,12 @@
 ResEd
 
-2.0.0.0 - 2007.22.11
+2.0.0.0 - 2008.19.01
 o RAResEd is now a single control.
+o Added Undo / Redo to dialog editor
+o Added support for IDOK / IDCANCEL to button control.
+o Added support for IDC_STATIC to static control.
+o Added better support for multiline captions (edit, static and button controls).
+o Fixed bugs with image and animate controls (name / id problems).
 
 1.1.4.3 - 2007.11.08
 --------------------

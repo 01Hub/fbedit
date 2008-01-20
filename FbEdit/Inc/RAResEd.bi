@@ -25,6 +25,8 @@
 '	charset			db ?				;Set to NULL
 '	italic			db ?				;Set to NULL
 '	weight			dw ?				;Set to NULL
+'	hred			dd ?				;Set to NULL
+'	ftextmode		dd ?				;Set to NULL
 'DLGHEAD ends
 '
 Type DIALOG
@@ -160,6 +162,10 @@ End Type
 #Define DEM_SHOWOUTPUT			DEM_BASE+32		' wParam=TRUE/FALSE, lParam=0
 #Define DEM_GETSIZE				DEM_BASE+33		' wParam=0, lParam=lpWINSIZE
 #Define DEM_SETSIZE				DEM_BASE+34		' wParam=0, lParam=lpWINSIZE
+#Define DEM_GETTEXTMODE			DEM_BASE+35		' wParam=0, lParam=0
+#Define DEM_SETTEXTMODE			DEM_BASE+36		' wParam=TRUE/FALSE, lParam=0
+#Define DEM_CANREDO				DEM_BASE+37		' wParam=0, lParam=0, Returns TRUE or FALSE
+#Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -194,8 +200,6 @@ End Type
 #Define PRO_SHOWNAMES			PRO_BASE+12		' wParam=0, lParam=Handle output window
 #Define PRO_SETEXPORT			PRO_BASE+13		' wParam=nType, lParam=lpszDefaultFileName
 #Define PRO_EXPORTNAMES			PRO_BASE+14		' wParam=0, lParam=Handle output window
-'#Define PRO_GETSTYLEPOS			PRO_BASE+15		' wParam=0, lParam=lpPOINT
-'#Define PRO_SETSTYLEPOS			PRO_BASE+16		' wParam=0, lParam=lpPOINT
 #Define PRO_SETINITID			PRO_BASE+17		' wParam=0, lParam=lpINITID
 #Define PRO_GETMEM				PRO_BASE+18		' wParam=0, lParam=0
 

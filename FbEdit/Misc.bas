@@ -1448,8 +1448,9 @@ Sub EnableMenu()
 
 		bm=SendMessage(ah.hraresed,DEM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
-		EnableDisableContext(bm,IDM_EDIT_UNDO)
-		EnableDisable(FALSE,IDM_EDIT_REDO)
+		bm=SendMessage(ah.hraresed,DEM_CANREDO,0,0)
+		EnableDisable(bm,IDM_EDIT_REDO)
+
 		bm=SendMessage(ah.hraresed,DEM_ISSELECTION,0,0)
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)

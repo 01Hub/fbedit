@@ -11,7 +11,11 @@ PRP_NUM_TAB			equ 7
 PRP_NUM_HELPID		equ 8
 
 PRP_STR_NAME		equ 100
-PRP_STR_CAPTION		equ 101
+PRP_STR_NAMEBTN		equ 101
+PRP_STR_NAMESTC		equ 102
+PRP_STR_CAPTION		equ 103
+PRP_STR_CAPMULTI	equ 104
+
 PRP_STR_FONT		equ 1000
 PRP_STR_CLASS		equ 1001
 PRP_STR_MENU		equ 1002
@@ -517,6 +521,8 @@ hPrpLstDlg			dd ?
 OldPrpLstDlgProc	dd ?
 hPrpEdtDlgCld		dd ?
 OldPrpEdtDlgCldProc	dd ?
+hPrpEdtDlgCldMulti	dd ?
+OldPrpEdtDlgCldMultiProc	dd ?
 hPrpLstDlgCld		dd ?
 OldPrpLstDlgCldProc	dd ?
 hPrpBtnDlgCld		dd ?
@@ -611,7 +617,8 @@ PropListSetTxt proc uses esi,hWin:HWND
 		invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
 		.if eax==PRP_STR_CAPTION || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MaxCap-1,0
-		.elseif eax==PRP_STR_NAME
+			invoke SendMessage,hPrpEdtDlgCldMulti,EM_LIMITTEXT,MaxCap-1,0
+		.elseif eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MaxName-1,0
 		.else
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,31,0
@@ -628,6 +635,7 @@ PropListSetPos proc
 	LOCAL	lbid:DWORD
 
 	invoke ShowWindow,hPrpEdtDlgCld,SW_HIDE
+	invoke ShowWindow,hPrpEdtDlgCldMulti,SW_HIDE
 	invoke ShowWindow,hPrpBtnDlgCld,SW_HIDE
 	invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
 	.if eax!=LB_ERR
@@ -662,7 +670,13 @@ PropListSetPos proc
 			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
 		.else
 			invoke PropListSetTxt,hPrpLstDlg
-			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAME
+			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC
+				mov		ecx,nPropHt
+				dec		ecx
+				sub		rect.right,ecx
+				invoke SetWindowPos,hPrpBtnDlgCld,HWND_TOP,rect.right,rect.top,nPropHt,nPropHt,0
+				invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
+			.elseif lbid==PRP_STR_CAPMULTI
 				mov		ecx,nPropHt
 				dec		ecx
 				sub		rect.right,ecx
@@ -1049,12 +1063,11 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			.endif
 			lea		edi,[edi+sizeof PROJECT]
 		.endw
-	.elseif eax==PRP_STR_NAME
+	.elseif eax==PRP_STR_NAMEBTN
 		;(Name)
 		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
 		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
-		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
 		invoke lstrcmpi,addr [esi].idname,addr szIDOK
 		.if !eax
 			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
@@ -1062,12 +1075,15 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			invoke lstrcmpi,addr [esi].idname,addr szIDCANCEL
 			.if !eax
 				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
-			.else
-				invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
-				.if !eax
-					invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,2,0
-				.endif
 			.endif
+		.endif
+	.elseif eax==PRP_STR_NAMESTC
+		;(Name)
+		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
+		invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
+		.if !eax
+			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
 		.endif
 	.elseif eax==PRP_FUN_LANG
 		;Language
@@ -1160,6 +1176,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 		mov		lbid,eax
 		invoke SendMessage,hPrpLstDlg,LB_SETCURSEL,-1,0
 		invoke ShowWindow,hPrpEdtDlgCld,SW_HIDE
+		invoke ShowWindow,hPrpEdtDlgCldMulti,SW_HIDE
 		invoke ShowWindow,hPrpBtnDlgCld,SW_HIDE
 		invoke ShowWindow,hPrpLstDlgCld,SW_HIDE
 		;Get text
@@ -1247,7 +1264,7 @@ SetCtrlData:
 	assume esi:ptr DIALOG
 	;What is changed
 	mov		eax,lbid
-	.if eax==PRP_STR_NAME
+	.if eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
 		invoke lstrcmpi,addr buffer1,addr szIDOK
 		.if eax
 			invoke lstrcmpi,addr buffer1,addr szIDCANCEL
@@ -1326,7 +1343,7 @@ SetCtrlData:
 	.elseif eax==PRP_NUM_HELPID
 		mov		eax,val
 		mov		[esi].helpid,eax
-	.elseif eax==PRP_STR_CAPTION
+	.elseif eax==PRP_STR_CAPTION || eax==PRP_STR_CAPMULTI
 		invoke lstrcpy,addr [esi].caption,addr buffer1
 	.elseif eax==PRP_STR_IMAGE
 		invoke lstrcpy,addr [esi].caption,addr buffer1
@@ -1472,6 +1489,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 	LOCAL	tInx:DWORD
 
 	invoke ShowWindow,hPrpEdtDlgCld,SW_HIDE
+	invoke ShowWindow,hPrpEdtDlgCldMulti,SW_HIDE
 	invoke ShowWindow,hPrpBtnDlgCld,SW_HIDE
 	invoke ShowWindow,hPrpLstDlgCld,SW_HIDE
 	invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
@@ -1551,8 +1569,6 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			jne		@b
 		.else
 			invoke GetWindowLong,hCtl,GWL_USERDATA
-;invoke GetWindowLong,hDEd,DEWM_MEMORY
-;invoke FindCtlMem,eax,hCtl
 			mov		esi,eax
 			assume esi:ptr DIALOG
 			mov		eax,[esi].ntype
@@ -1601,7 +1617,9 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.if edx==0
 				;(Name)
 				mov		lbid,PRP_STR_NAME
+				push	eax
 				invoke lstrcpy,edi,addr [esi].idname
+				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1622,6 +1640,14 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 							dec		ecx
 						.endw
 					.endw
+				.else
+					.if eax==4
+						;Button
+						mov		lbid,PRP_STR_NAMEBTN
+					.elseif eax==2
+						;Static
+						mov		lbid,PRP_STR_NAMESTC
+					.endif
 				.endif
 			.elseif edx==1
 				;(ID)
@@ -1756,7 +1782,9 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==6
 				;Caption
 				mov		lbid,PRP_STR_CAPTION
+				push	eax
 				invoke lstrcpy,edi,addr [esi].caption
+				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1777,6 +1805,22 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 							dec		ecx
 						.endw
 					.endw
+				.else
+					.if eax==1	;Edit
+						mov		eax,[esi].style
+						test	eax,ES_MULTILINE
+						.if !ZERO?
+							mov		lbid,PRP_STR_CAPMULTI
+						.endif
+					.elseif eax==2	;Static
+						mov		lbid,PRP_STR_CAPMULTI
+					.elseif eax==4	;Button
+						mov		eax,[esi].style
+						test	eax,BS_MULTILINE
+						.if !ZERO?
+							mov		lbid,PRP_STR_CAPMULTI
+						.endif
+					.endif
 				.endif
 			.elseif edx==7
 				;Border
@@ -2422,7 +2466,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nInx,eax
 		invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
 		mov		lbid,eax
-		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax>65535 || eax==PRP_STR_NAME
+		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax>65535 || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
 			invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
 			invoke SendMessage,hWin,WM_COMMAND,1,0
 			invoke ShowWindow,hPrpLstDlgCld,SW_HIDE
@@ -2438,7 +2482,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hPrpLstDlgCld,WM_LBUTTONUP,0,0
 			invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
 			invoke SetFocus,hWin
-		.elseif eax==PRP_STR_FONT || eax==PRP_STR_MENU || eax==1003 || eax==1004 || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI || eax==PRP_FUN_LANG
+		.elseif eax==PRP_STR_FONT || eax==PRP_STR_MENU || eax==1003 || eax==1004 || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI || eax==PRP_FUN_LANG || eax==PRP_STR_CAPMULTI
 			invoke SendMessage,hWin,WM_COMMAND,1,0
 		.else
 			invoke PropListSetPos
@@ -2582,6 +2626,25 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						sub		rect.right,eax
 						invoke PropTxtLst,hCtl,lbid
 						invoke SetTxtLstPos,addr rect
+					.elseif eax==PRP_STR_CAPMULTI
+						invoke SendMessage,hWin,LB_GETITEMRECT,nInx,addr rect
+						mov		eax,nPropHt
+						add		rect.top,eax
+						mov		eax,nPropWt
+						inc		eax
+						add		rect.left,eax
+						mov		eax,rect.left
+						sub		rect.right,eax
+						invoke GetWindowLong,hCtl,GWL_USERDATA
+						mov		esi,eax
+						invoke ConvertCaption,addr lbtxtbuffer,addr (DIALOG ptr [esi]).caption
+						invoke SetWindowText,hPrpEdtDlgCldMulti,addr lbtxtbuffer
+						mov		eax,nPropHt
+						shl		eax,3
+						invoke SetWindowPos,hPrpEdtDlgCldMulti,HWND_TOP,rect.left,rect.top,rect.right,eax,0
+						invoke ShowWindow,hPrpEdtDlgCldMulti,SW_SHOWNA
+						invoke SetFocus,hPrpEdtDlgCldMulti
+						;jmp		Ex
 					.elseif eax==PRP_FUN_LANG
 						;Language
 						invoke GetWindowLong,hCtl,GWL_USERDATA
@@ -2741,6 +2804,7 @@ PrpEdtDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if dword ptr buffer=='tpaC'
 			push	esi
 			invoke GetWindowText,hWin,addr buffer,sizeof buffer
+			invoke ConvertCaption,addr buffer,addr buffer
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
 			invoke GetWindowLong,hCtl,GWL_USERDATA
@@ -2756,6 +2820,58 @@ PrpEdtDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 PrpEdtDlgCldProc endp
+
+PrpEdtDlgCldMultiProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	nInx:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
+	LOCAL	hCtl:HWND
+
+	mov		eax,uMsg
+	.if eax==WM_KILLFOCUS
+		invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
+		push	eax
+		invoke PropEditUpdList,0
+		pop		eax
+		invoke SendMessage,hPrpLstDlg,LB_SETCURSEL,eax,0
+		invoke PropListSetPos
+		invoke SetFocus,hDEd
+	.elseif eax==WM_CHAR
+		.if wParam==VK_RETURN
+			invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
+			mov		nInx,eax
+			invoke SetFocus,hRes
+			invoke SendMessage,hPrpLstDlg,LB_SETCURSEL,nInx,0
+			invoke PropListSetPos
+			invoke SetFocus,hPrpLstDlg
+			xor		eax,eax
+			ret
+		.endif
+	.elseif eax==WM_KEYUP
+		invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
+		mov		edx,eax
+		invoke SendMessage,hPrpLstDlg,LB_GETTEXT,edx,addr buffer
+		.if dword ptr buffer=='tpaC'
+			push	esi
+			invoke GetWindowText,hWin,addr buffer,sizeof buffer
+			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
+			mov		hCtl,eax
+			invoke GetWindowLong,hCtl,GWL_USERDATA
+			.if [eax].DIALOG.ntype==3
+				mov		edx,[eax].DIALOG.hcld
+				mov		hCtl,edx
+			.endif
+			invoke SetWindowText,hCtl,addr buffer
+			invoke DeConvertCaption,addr buffer1,addr buffer
+			invoke SetWindowText,hPrpEdtDlgCld,addr buffer1
+			pop		esi
+		.endif
+	.endif
+	invoke CallWindowProc,OldPrpEdtDlgCldMultiProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+PrpEdtDlgCldMultiProc endp
 
 PrpLstDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
@@ -2808,6 +2924,10 @@ Do_Property proc hWin:HWND
 	mov		hPrpEdtDlgCld,eax
 	invoke SetWindowLong,hPrpEdtDlgCld,GWL_WNDPROC,addr PrpEdtDlgCldProc
 	mov		OldPrpEdtDlgCldProc,eax
+	invoke CreateWindowEx,0,addr szEditClass,NULL,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_BORDER or ES_AUTOHSCROLL or ES_AUTOVSCROLL or ES_MULTILINE or ES_WANTRETURN,0,0,0,0,hPrpLstDlg,0,hInstance,0
+	mov		hPrpEdtDlgCldMulti,eax
+	invoke SetWindowLong,hPrpEdtDlgCldMulti,GWL_WNDPROC,addr PrpEdtDlgCldMultiProc
+	mov		OldPrpEdtDlgCldMultiProc,eax
 	invoke CreateWindowEx,0,addr szListBoxClass,NULL,WS_CHILD or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_BORDER or LBS_HASSTRINGS,0,0,0,0,hPrpLstDlg,0,hInstance,0
 	mov		hPrpLstDlgCld,eax
 	invoke SetWindowLong,hPrpLstDlgCld,GWL_WNDPROC,addr PrpLstDlgCldProc

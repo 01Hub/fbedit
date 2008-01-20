@@ -317,6 +317,12 @@ CloseProject proc uses esi,hProMem:DWORD
 	mov		esi,hProMem
 	.if esi
 		.while [esi].PROJECT.hmem
+			.if [esi].PROJECT.ntype==TPE_DIALOG
+				mov		eax,[esi].PROJECT.hmem
+				.if [eax].DLGHEAD.hred
+					invoke DestroyWindow,[eax].DLGHEAD.hred
+				.endif
+			.endif
 			invoke GlobalUnlock,[esi].PROJECT.hmem
 			invoke GlobalFree,[esi].PROJECT.hmem
 			mov		[esi].PROJECT.hmem,0

@@ -2989,6 +2989,41 @@ ConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
 ConvertCaption endp
 
+DeConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
+
+	mov		edi,lpDest
+	mov		esi,lpSource
+	xor		ecx,ecx
+	.while byte ptr [esi] && ecx<MaxCap-3
+		mov		al,[esi]
+		.if al==0Dh
+			mov		word ptr [edi],'r\'
+			add		edi,2
+			add		ecx,2
+		.elseif al==0Ah
+			mov		word ptr [edi],'n\'
+			add		edi,2
+			add		ecx,2
+		.elseif al==09h
+			mov		word ptr [edi],'t\'
+			add		edi,2
+			add		ecx,2
+		.elseif al==08h
+			mov		word ptr [edi],'a\'
+			add		edi,2
+			add		ecx,2
+		.else
+			mov		[edi],al
+			inc		edi
+			inc		ecx
+		.endif
+		inc		esi
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+DeConvertCaption endp
+
 DesignDummyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT

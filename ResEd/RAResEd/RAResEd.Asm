@@ -1029,6 +1029,7 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hPrpCboDlg,WM_SETFONT,wParam,lParam
 		invoke SendMessage,hPrpLstDlg,WM_SETFONT,wParam,lParam
 		invoke SendMessage,hPrpEdtDlgCld,WM_SETFONT,wParam,lParam
+		invoke SendMessage,hPrpEdtDlgCldMulti,WM_SETFONT,wParam,lParam
 		invoke SendMessage,hPrpLstDlgCld,WM_SETFONT,wParam,lParam
 		invoke GetDC,hWin
 		push	ebx
@@ -1418,6 +1419,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetWindowLong,hPrj,0,0
 		invoke InvalidateRect,hDEd,NULL,TRUE
+		invoke NotifyParent
 		jmp		Ex
 	.elseif eax==PRO_EXPORT
 		invoke GetWindowLong,hPrj,0
