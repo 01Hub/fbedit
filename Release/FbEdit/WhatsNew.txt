@@ -1,5 +1,18 @@
 Whats new:
 ----------
+1.0.5.9
+o RAResEd is now a single control. This makes it easier to use it in your own IDE.
+o Added Undo / Redo to dialog editor
+o Added support for IDOK / IDCANCEL to button control.
+o Added support for IDC_STATIC to static control.
+o Added better support for multiline captions (edit, static and button controls).
+  NOTE. Use Ctrl+Enter to insert a new line.
+o Fixed bugs with image and animate controls (name / id problems).
+o Fixed bug with #include <windows.h>.
+1.0.5.8b
+o Fixed bugs in code parser (RAProperty.dll)
+  - Wrong datatype in Dim x As Integer, y As String. y would be reported as Integer.
+  - Crash on files containing var declarations (var x = 1)
 1.0.5.8
 o Added support for Dim foo As Function Cdecl (arg1 as Integer) as Integer
   to code complete.

@@ -457,7 +457,7 @@ BEGIN
 END
 
 IDD_DLGABOUT DIALOGEX 6,6,146,91
-CAPTION "FreeBASIC editor 1.0.5.8"
+CAPTION "FreeBASIC editor 1.0.5.9"
 FONT 8,"MS Sans Serif",0,0
 STYLE 0x10C80880
 EXSTYLE 0x00000001
@@ -956,8 +956,8 @@ IDB_SPLASH BITMAP DISCARDABLE "Res/FbEdit.bmp"
 IDR_XPMANIFEST MANIFEST "Res/xptheme.xml"
 
 VERINF1 VERSIONINFO
-FILEVERSION 1,0,5,8
-PRODUCTVERSION 1,0,5,8
+FILEVERSION 1,0,5,9
+PRODUCTVERSION 1,0,5,9
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -965,12 +965,12 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.0.5.8\0"
+      VALUE "FileVersion", "1.0.5.9\0"
       VALUE "FileDescription", "FreeBASIC code editor\0"
       VALUE "InternalName", "FbEdit\0"
       VALUE "LegalCopyright", "KetilO (C) 2006\0"
       VALUE "OriginalFilename", "FbEdit.exe\0"
-      VALUE "ProductVersion", "1.0.5.8\0"
+      VALUE "ProductVersion", "1.0.5.9\0"
     END
   END
   BLOCK "VarFileInfo"

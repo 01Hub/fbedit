@@ -25,6 +25,8 @@
 '	charset			db ?				;Set to NULL
 '	italic			db ?				;Set to NULL
 '	weight			dw ?				;Set to NULL
+'	hred			dd ?				;Set to NULL
+'	ftextmode		dd ?				;Set to NULL
 'DLGHEAD ends
 '
 Type DIALOG
@@ -116,6 +118,14 @@ Type INITID
 	rcd		As RESID
 End Type
 
+Type WINSIZE
+	htpro		As Integer
+	wtpro		As Integer
+	htout		As Integer
+	wttbx		As Integer
+	ptstyle As POINT
+End Type
+
 ' Dialog editor messages
 #Define DEM_BASE					WM_USER+2000
 #Define DEM_OPEN					DEM_BASE+1		' wParam=0, lParam=Handle of memory or NULL
@@ -148,6 +158,14 @@ End Type
 #Define DEM_EXPORTDLG			DEM_BASE+28		' wParam=0, lParam=lpszFileName
 #Define DEM_AUTOID				DEM_BASE+29		' wParam=0, lParam=0
 #Define DEM_GETBUTTONCOUNT		DEM_BASE+30		' wParam=0, lParam=0
+#Define DEM_GETMEM				DEM_BASE+31		' wParam=DEWM_xxxxx, lParam=0
+#Define DEM_SHOWOUTPUT			DEM_BASE+32		' wParam=TRUE/FALSE, lParam=0
+#Define DEM_GETSIZE				DEM_BASE+33		' wParam=0, lParam=lpWINSIZE
+#Define DEM_SETSIZE				DEM_BASE+34		' wParam=0, lParam=lpWINSIZE
+#Define DEM_GETTEXTMODE			DEM_BASE+35		' wParam=0, lParam=0
+#Define DEM_SETTEXTMODE			DEM_BASE+36		' wParam=TRUE/FALSE, lParam=0
+#Define DEM_CANREDO				DEM_BASE+37		' wParam=0, lParam=0, Returns TRUE or FALSE
+#Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -182,9 +200,8 @@ End Type
 #Define PRO_SHOWNAMES			PRO_BASE+12		' wParam=0, lParam=Handle output window
 #Define PRO_SETEXPORT			PRO_BASE+13		' wParam=nType, lParam=lpszDefaultFileName
 #Define PRO_EXPORTNAMES			PRO_BASE+14		' wParam=0, lParam=Handle output window
-#Define PRO_GETSTYLEPOS			PRO_BASE+15		' wParam=0, lParam=lpPOINT
-#Define PRO_SETSTYLEPOS			PRO_BASE+16		' wParam=0, lParam=lpPOINT
 #Define PRO_SETINITID			PRO_BASE+17		' wParam=0, lParam=lpINITID
+#Define PRO_GETMEM				PRO_BASE+18		' wParam=0, lParam=0
 
 ' Project item types
 #Define TPE_NAME					1
