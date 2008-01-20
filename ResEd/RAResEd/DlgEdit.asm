@@ -5431,85 +5431,19 @@ SaveCaption proc
 	assume esi:ptr DIALOG
 	mov		al,22h
 	stosb
-;	mov		eax,[esi].ntype
-;	.if eax==17 || eax==27
-;		mov		al,[esi].caption
-;		.if al>='0' && al<='9'
-;			mov		al,'#'
-;			stosb
-;			invoke SaveStr,edi,addr [esi].caption
-;			add		edi,eax
-;		.elseif al!='#'
-;			push	ebx
-;			invoke GetWindowLong,hPrj,0
-;			mov		ebx,eax
-;			.while [ebx].PROJECT.hmem
-;				.if [ebx].PROJECT.ntype==TPE_RESOURCE
-;					push	ebx
-;					mov		ebx,[ebx].PROJECT.hmem
-;					.while [ebx].RESOURCEMEM.szname || [ebx].RESOURCEMEM.value
-;						mov		eax,[esi].ntype
-;						mov		edx,[ebx].RESOURCEMEM.ntype
-;						.if (eax==27 && edx==3) || (eax==17 && (edx==0 || edx==2))
-;							invoke lstrcmp,addr [esi].caption,addr [ebx].RESOURCEMEM.szname
-;							.if !eax
-;								.if [ebx].RESOURCEMEM.value
-;									mov		al,'#'
-;									stosb
-;									invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,edi
-;									invoke lstrlen,edi
-;									add		edi,eax
-;									pop		ebx
-;									jmp		ResFound
-;								.else
-;									invoke lstrcpy,edi,addr [ebx].RESOURCEMEM.szname
-;									invoke lstrlen,edi
-;									add		edi,eax
-;									pop		ebx
-;									jmp		ResFound
-;								.endif
-;							.endif
-;						.endif
-;						lea		ebx,[ebx+sizeof RESOURCEMEM]
-;					.endw
-;					pop		ebx
-;				.endif
-;				lea		ebx,[ebx+sizeof PROJECT]
-;			.endw
-;		  ResFound:
-;			pop		ebx
-;		.else
-;			lea		edx,[esi].caption
-;		  @@:
-;			mov		al,[edx]
-;			.if al=='"'
-;				mov		[edi],al
-;				inc		edi
-;			.endif
-;			mov		[edi],al
-;			inc		edx
-;			inc		edi
-;			or		al,al
-;			jne		@b
-;			dec		edi
-;			;invoke SaveStr,edi,addr [esi].caption
-;			;add		edi,eax
-;		.endif
-;	.else
-		lea		edx,[esi].caption
-	  @@:
-		mov		al,[edx]
-		.if al=='"'
-			mov		[edi],al
-			inc		edi
-		.endif
+	lea		edx,[esi].caption
+  @@:
+	mov		al,[edx]
+	.if al=='"'
 		mov		[edi],al
-		inc		edx
 		inc		edi
-		or		al,al
-		jne		@b
-		dec		edi
-;	.endif
+	.endif
+	mov		[edi],al
+	inc		edx
+	inc		edi
+	or		al,al
+	jne		@b
+	dec		edi
 	mov		al,22h
 	stosb
 	assume esi:nothing

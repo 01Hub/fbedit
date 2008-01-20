@@ -24,8 +24,10 @@ ExportInclude proc uses esi edi,hMem:DWORD
 		add		edi,eax
 		mov		al,' '
 		stosb
-		mov		al,'"'
-		stosb
+		.if [esi].INCLUDEMEM.szfile!='<'
+			mov		al,'"'
+			stosb
+		.endif
 		xor		ecx,ecx
 		.while byte ptr [esi+ecx].INCLUDEMEM.szfile
 			mov		al,[esi+ecx].INCLUDEMEM.szfile
@@ -36,8 +38,10 @@ ExportInclude proc uses esi edi,hMem:DWORD
 			inc		ecx
 			inc		edi
 		.endw
-		mov		al,'"'
-		stosb
+		.if [esi].INCLUDEMEM.szfile!='<'
+			mov		al,'"'
+			stosb
+		.endif
 		mov		al,0Dh
 		stosb
 		mov		al,0Ah

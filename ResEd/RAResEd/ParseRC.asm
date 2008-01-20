@@ -272,9 +272,9 @@ ParseFileName proc uses esi edi,lpRCMem:DWORD
 	.while TRUE
 		mov		al,[esi+ecx]
 		.if al==VK_RETURN
-			xor		al,al
+			xor		ax,ax
 		.endif
-		mov		[edi+ecx],al
+		mov		[edi+ecx],ax
 		inc		ecx
 		.break .if !al
 	.endw
@@ -288,14 +288,20 @@ ParseFileName proc uses esi edi,lpRCMem:DWORD
 		inc		esi
 	.elseif al=='<'
 		mov		nend,'>'
-		inc		esi
 	.else
 		mov		nend,' '
 	.endif
+	mov		ah,1
 	.while byte ptr [esi]
 		mov		al,[esi]
 		.if al==nend
-			xor		al,al
+			.if al=='>'
+				mov		[edi],al
+				inc		edi
+			.endif
+			xor		ax,ax
+			mov		[edi],al
+			inc		edi
 		.elseif al=='\'
 			.if byte ptr [esi+1]=='\'
 				inc		esi
@@ -303,9 +309,11 @@ ParseFileName proc uses esi edi,lpRCMem:DWORD
 		.elseif al=='/'
 			mov		al,'\'
 		.endif
-		mov		[edi],al
+		.if ah
+			mov		[edi],al
+			inc		edi
+		.endif
 		inc		esi
-		inc		edi
 	.endw
 	pop		esi
 	mov		eax,esi
