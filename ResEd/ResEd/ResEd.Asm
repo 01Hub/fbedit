@@ -722,6 +722,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableMenuItem,wParam,IDM_PROJECT_ADD_STRINGTABLE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_ADD_XPMANIFEST,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_ADD_RCDATA,ebx
+			invoke EnableMenuItem,wParam,IDM_PROJRCT_ADD_TOOLBAR,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_LANGUAGE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_INCLUDE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_RESOURCE,ebx
@@ -883,6 +884,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
 		.elseif eax==IDM_PROJECT_ADD_RCDATA
 			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RCDATA,TRUE
+		.elseif eax==IDM_PROJRCT_ADD_TOOLBAR
+			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_TOOLBAR,TRUE
 		.elseif eax==IDM_PROJECT_LANGUAGE
 			invoke SendMessage,hResEd,PRO_ADDITEM,TPE_LANGUAGE,TRUE
 		.elseif eax==IDM_PROJECT_INCLUDE

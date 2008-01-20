@@ -7,6 +7,7 @@ o Added support for IDOK / IDCANCEL to button control.
 o Added support for IDC_STATIC to static control.
 o Added better support for multiline captions (edit, static and button controls).
   NOTE. Use Ctrl+Enter to insert a new line.
+o Added TOOLBAR resource.
 o Fixed bugs with image and animate controls (name / id problems).
 o Fixed bug with #include <windows.h>.
 

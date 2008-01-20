@@ -66,6 +66,8 @@ ProjectDblClick proc hWin:HWND,lParam:LPARAM
 					invoke DialogBoxParam,hInstance,IDD_XPMANIFEST,hWin,offset XPManifestEditProc,eax
 				.elseif [eax].PROJECT.ntype==TPE_RCDATA
 					invoke DialogBoxParam,hInstance,IDD_RCDATA,hWin,offset RCDataEditProc,eax
+				.elseif [eax].PROJECT.ntype==TPE_TOOLBAR
+					invoke DialogBoxParam,hInstance,IDD_TOOLBAR,hWin,offset ToolbarEditProc,eax
 				.endif
 			.endif
 		.endif
@@ -135,13 +137,13 @@ AddProjectNode proc nType:DWORD,lpName:DWORD,lParam:DWORD
 			mov		hNodeMnu,eax
 		.endif
 		invoke Do_TreeViewAddNode,hPrjTrv,hNodeMnu,TVI_SORT,lpName,2,2,lParam
-	.elseif eax==TPE_INCLUDE || eax==TPE_ACCEL || eax==TPE_VERSION || eax==TPE_RESOURCE || eax==TPE_STRING || eax==TPE_LANGUAGE || eax==TPE_XPMANIFEST || eax==TPE_RCDATA
+	.elseif eax==TPE_INCLUDE || eax==TPE_ACCEL || eax==TPE_VERSION || eax==TPE_RESOURCE || eax==TPE_STRING || eax==TPE_LANGUAGE || eax==TPE_XPMANIFEST || eax==TPE_RCDATA || eax==TPE_TOOLBAR
 		.if !hNodeMisc
 			invoke Do_TreeViewAddNode,hPrjTrv,hRoot,TVI_SORT,offset szMisc,0,0,0
 			mov		hNodeMisc,eax
 		.endif
 		mov		eax,nType
-		.if eax==TPE_RESOURCE || eax==TPE_RCDATA
+		.if eax==TPE_RESOURCE || eax==TPE_RCDATA || eax==TPE_TOOLBAR
 			mov		eax,3
 		.elseif eax==TPE_ACCEL
 			mov		eax,4
@@ -287,6 +289,15 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 				lea		edx,buffer
 			.endif
 			invoke AddProjectNode,TPE_RCDATA,edx,esi
+		.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
+			mov		eax,[esi].PROJECT.hmem
+			lea		edx,[eax].TOOLBARMEM.szname
+			.if !byte ptr [edx]
+				lea		edx,buffer
+				invoke ResEdBinToDec,[eax].TOOLBARMEM.value,edx
+				lea		edx,buffer
+			.endif
+			invoke AddProjectNode,TPE_TOOLBAR,edx,esi
 		.endif
 		add		esi,sizeof PROJECT
 	.endw
@@ -425,6 +436,15 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
+			.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
+				mov		eax,[esi].PROJECT.hmem
+				invoke ExportToolbarNames,eax
+				.if eax
+					mov		hMem,eax
+					invoke lstrcat,lpRCMem,hMem
+					invoke GlobalUnlock,hMem
+					invoke GlobalFree,hMem
+				.endif
 			.endif
 		.endif
 		add		esi,sizeof PROJECT
@@ -552,6 +572,15 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 			.elseif [esi].PROJECT.ntype==TPE_RCDATA
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportRCData,eax
+				.if eax
+					mov		hMem,eax
+					invoke lstrcat,lpRCMem,hMem
+					invoke GlobalUnlock,hMem
+					invoke GlobalFree,hMem
+				.endif
+			.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
+				mov		eax,[esi].PROJECT.hmem
+				invoke ExportToolbar,eax
 				.if eax
 					mov		hMem,eax
 					invoke lstrcat,lpRCMem,hMem
@@ -713,6 +742,14 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke AddProjectNode,TPE_RCDATA,offset szRCDATA,esi
 			invoke ExpandProjectNodes,hNodeMisc
 		.endif
+	.elseif eax==TPE_TOOLBAR
+		.if fOpen
+			invoke DialogBoxParam,hInstance,IDD_TOOLBAR,hPrj,offset ToolbarEditProc,esi
+		.else
+			invoke AddTypeMem,lpProMem,64*1024,TPE_TOOLBAR
+			invoke AddProjectNode,TPE_TOOLBAR,offset szTOOLBAR,esi
+			invoke ExpandProjectNodes,hNodeMisc
+		.endif
 	.endif
 	mov		eax,esi
 	ret
@@ -753,6 +790,10 @@ GetProjectItemName proc uses esi,lpProItemMem:DWORD,lpBuff:DWORD
 	.elseif eax==TPE_RCDATA
 		lea		eax,[esi].RCDATAMEM.szname
 		mov		edx,[esi].RCDATAMEM.value
+		call	CopyName
+	.elseif eax==TPE_TOOLBAR
+		lea		eax,[esi].TOOLBARMEM.szname
+		mov		edx,[esi].TOOLBARMEM.value
 		call	CopyName
 	.endif
 	ret
@@ -869,6 +910,23 @@ SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 				invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
 			.endw
 		.elseif eax==TPE_RCDATA
+			mov		tvi.imask,TVIF_HANDLE or TVIF_PARAM
+			invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_CHILD,hNodeMisc
+			.while eax
+				mov		tvi.hItem,eax
+				invoke SendMessage,hPrjTrv,TVM_GETITEM,0,addr tvi
+				mov		eax,tvi.lParam
+				.if eax==lpProItemMem
+					mov		tvi.imask,TVIF_TEXT
+					mov		eax,lpName
+					mov		tvi.pszText,eax
+					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
+					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeMisc
+					jmp		Ex
+				.endif
+				invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+			.endw
+		.elseif eax==TPE_TOOLBAR
 			mov		tvi.imask,TVIF_HANDLE or TVIF_PARAM
 			invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_CHILD,hNodeMisc
 			.while eax
@@ -1074,6 +1132,20 @@ GetFreeProjectitemID proc uses esi edi,nType:DWORD
 				.endif
 				add		esi,sizeof PROJECT
 			.endw
+		.elseif eax==TPE_TOOLBAR
+			mov		eax,initid.rcd.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_TOOLBAR
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.if eax==[edx].TOOLBARMEM.value
+							add		eax,initid.rcd.incid
+							mov		esi,edi
+						.endif
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
 		.endif
 	.endif
 	ret
@@ -1145,6 +1217,11 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 				.endif
 			.elseif eax==TPE_RCDATA
 				invoke lstrcmpi,addr buffer1,addr [esi].RCDATAMEM.szname
+				.if !eax
+					jmp		@b
+				.endif
+			.elseif eax==TPE_TOOLBAR
+				invoke lstrcmpi,addr buffer1,addr [esi].TOOLBARMEM.szname
 				.if !eax
 					jmp		@b
 				.endif

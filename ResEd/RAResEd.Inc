@@ -120,6 +120,7 @@ INITID struct
 	ver				RESID <>
 	man				RESID <>
 	rcd				RESID <>
+	tbr				RESID <>
 INITID ends
 
 WINSIZE struct
@@ -219,6 +220,7 @@ TPE_STRING			equ 8
 TPE_LANGUAGE		equ 9
 TPE_XPMANIFEST		equ 10
 TPE_RCDATA			equ 11
+TPE_TOOLBAR			equ 12
 
 PROJECT struct
 	hmem			dd ?
@@ -274,6 +276,13 @@ RCDATAMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 RCDATAMEM ends
+
+TOOLBARMEM struct
+	szname			db MaxName dup(?)
+	value			dd ?
+	ccx				dd ?
+	ccy				dd ?
+TOOLBARMEM ends
 
 VERSIONMEM struct
 	szname			db MaxName dup(?)

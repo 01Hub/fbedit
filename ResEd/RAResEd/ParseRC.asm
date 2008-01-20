@@ -2486,6 +2486,75 @@ ParseLanguage proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
 ParseLanguage endp
 
+ParseToolbar proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
+	LOCAL	hMem:DWORD
+
+	invoke AddTypeMem,lpProMem,MaxMem,TPE_TOOLBAR
+	mov		hMem,eax
+	mov		edi,eax
+	;Name / ID
+	invoke GetName,lpProMem,offset namebuff,addr [edi].TOOLBARMEM.szname,addr [edi].TOOLBARMEM.value
+	mov		esi,lpRCMem
+	invoke GetLoadOptions,esi
+	add		esi,eax
+	invoke GetNum,lpProMem
+	mov		[edi].TOOLBARMEM.ccx,eax
+	invoke GetNum,lpProMem
+	mov		[edi].TOOLBARMEM.ccy,eax
+	invoke GetWord,offset wordbuff,esi
+	add		esi,eax
+	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	.if eax
+		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+	.endif
+	.if !eax
+		lea		edi,[edi+sizeof TOOLBARMEM]
+	  @@:
+		call	SkipSpace
+		.if byte ptr [esi]==0Dh
+			inc		esi
+		.endif
+		.if byte ptr [esi]==0Ah
+			inc		esi
+		.endif
+		mov		edx,offset wordbuff
+		.while byte ptr [esi] && byte ptr [esi]!=0Dh
+			mov		al,[esi]
+			mov		[edx],al
+			inc		esi
+			inc		edx
+		.endw
+		mov		byte ptr [edx],0
+		invoke lstrcmpi,offset wordbuff,offset szEND
+		.if eax
+			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+		.endif
+		.if eax
+			mov		edx,offset wordbuff
+			.while byte ptr [edx]
+				mov		al,[edx]
+				stosb
+				inc		edx
+			.endw
+			mov		al,0Dh
+			stosb
+			mov		al,0Ah
+			stosb
+			jmp		@b
+		.endif
+		.if byte ptr [edi-1]==0Ah
+			sub		edi,2
+		.endif
+		mov		al,0
+		stosb
+	.endif
+	mov		eax,esi
+	sub		eax,lpRCMem
+  Ex:
+	ret
+
+ParseToolbar endp
+
 GetLineNo proc hRCMem:DWORD,lpRCMem:DWORD
 
 	mov		edx,hRCMem
@@ -2721,6 +2790,12 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke lstrcmpi,offset wordbuff,offset szMENUEX
 	.if !eax
 		invoke ParseMenuEx,esi,lpProMem
+		add		esi,eax
+		jmp		Ex
+	.endif
+	invoke lstrcmpi,offset wordbuff,offset szTOOLBAR
+	.if !eax
+		invoke ParseToolbar,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif

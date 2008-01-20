@@ -87,13 +87,13 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,3172
+1=0,0,0,0,25511
 6=
-2=0,0,0,0,4697
+2=0,0,0,0,2272
 7=0,0,699,490,77
 9=
 8=
-3=0,0,0,0,19
+3=0,0,0,0,1606
 10=0,0,0,0
 11=0,0,0,0,8877
 13=0,0,0,0,13771
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="GridInstall"
-2="gridsize.keep"
-3="hPreview"
-4="hBrBackColor"
-5="createwindow"
-6="EDIT"
-7="PRO_SETSTYLEPOS"
-8="PRO_GETSTYLEPOS"
-9="GetWindowLong"
-10="PRO_GETMEM"
+1="10051"
+2="IDM_PROJECT_ADD_RCDATA"
+3="GridInstall"
+4="gridsize.keep"
+5="hPreview"
+6="hBrBackColor"
+7="createwindow"
+8="EDIT"
+9="PRO_SETSTYLEPOS"
+10="PRO_GETSTYLEPOS"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=1
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -245,6 +245,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=155964618
+PTimer=159129524
 [AutoLoad]
 1=1

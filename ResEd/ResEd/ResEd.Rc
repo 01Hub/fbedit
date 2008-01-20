@@ -42,6 +42,7 @@ IDC_VSPLIT				CURSOR  DISCARDABLE "../RAResEd/Res/SplitV.cur"
 #include "../RAResEd/Res/StyleManaDlg.rc"
 #include "../RAResEd/Res/XPManifestEditDlg.rc"
 #include "../RAResEd/Res/RCDataEditDlg.rc"
+#include "../RAResEd/Res/ToolbarEditDlg.rc"
 
 ;RAEdit
 101						CURSOR  DISCARDABLE "../RAResEd/Res/SplitH.cur"

@@ -11,3 +11,4 @@
 #include "Res/StyleManaDlg.rc"
 #include "Res/XPManifestEditDlg.rc"
 #include "Res/RCDataEditDlg.rc"
+#include "Res/ToolbarEditDlg.rc"

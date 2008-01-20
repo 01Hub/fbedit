@@ -22,6 +22,7 @@ include StringEdit.asm
 include AccelEdit.asm
 include XPManifest.asm
 include RCData.asm
+include Toolbar.asm
 include NameEdit.asm
 include ToolBox.asm
 include StyleMana.asm
