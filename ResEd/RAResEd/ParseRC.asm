@@ -2,6 +2,7 @@
 
 			dw ?
 wordbuff	db 16384 dup(?)
+hrcmem		dd ?
 
 .code
 
@@ -74,6 +75,11 @@ UnQuoteWord proc uses esi edi,lpWord:DWORD
 			mov		[edi],al
 			inc		edi
 			inc		esi
+		.elseif ax=='"\'
+			mov		[edi],ax
+			inc		edi
+			inc		edi
+			inc		esi
 		.elseif al!='"'
 			mov		[edi],al
 			inc		edi
@@ -105,6 +111,11 @@ GetWord proc uses esi edi,lpWord:DWORD,lpLine:DWORD
 		.while byte ptr [esi] && al!='"'
 			mov		ax,[esi]
 			.if ax=='""'
+				mov		[edi],ax
+				inc		esi
+				inc		edi
+				xor		eax,eax
+			.elseif ax=='"\'
 				mov		[edi],ax
 				inc		esi
 				inc		edi
@@ -699,6 +710,20 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD
 
 GetStyle endp
 
+GetLineNo proc hRCMem:DWORD,lpRCMem:DWORD
+
+	mov		edx,hRCMem
+	xor		eax,eax
+	.while edx<=lpRCMem
+		.if byte ptr [edx]==VK_RETURN
+			inc		eax
+		.endif
+		inc		edx
+	.endw
+	ret
+
+GetLineNo endp
+
 ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	LOCAL	nErr:DWORD
 	LOCAL	lang:DWORD
@@ -808,7 +833,12 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		.endif
 	.endif
 	.if nErr
-		invoke MessageBox,0,addr szErrorParse,addr szSTRINGTABLE,MB_OK
+		invoke lstrcpy,addr namebuff,addr szErrorParse
+		invoke GetLineNo,hrcmem,esi
+		mov		edx,eax
+		invoke ResEdBinToDec,edx,addr namebuff+100
+		invoke lstrcat,addr namebuff,addr namebuff+100
+		invoke MessageBox,0,addr namebuff,addr szSTRINGTABLE,MB_OK
 	.endif
 	mov		eax,esi
 	sub		eax,lpRCMem
@@ -2555,20 +2585,6 @@ ParseToolbar proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
 ParseToolbar endp
 
-GetLineNo proc hRCMem:DWORD,lpRCMem:DWORD
-
-	mov		edx,hRCMem
-	xor		eax,eax
-	.while edx<=lpRCMem
-		.if byte ptr [edx]==VK_RETURN
-			inc		eax
-		.endif
-		inc		edx
-	.endw
-	ret
-
-GetLineNo endp
-
 ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 
 	mov		esi,lpRCMem
@@ -2811,6 +2827,7 @@ ParseRC endp
 ParseRCMem proc uses esi,hRCMem:DWORD,lpProMem:DWORD
 
 	mov		esi,hRCMem
+	mov		hrcmem,esi
 	.while TRUE
 		invoke ParseRC,esi,hRCMem,lpProMem
 		.break .if !eax

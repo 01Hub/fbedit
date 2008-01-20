@@ -387,7 +387,7 @@ szCtlText			db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,Comb
 					db 'MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header',0
 					db 512 dup(?)
 
-szErrorParse		db 'Errors while parsing.',0
+szErrorParse		db 'Errors while parsing at line ',0
 
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
