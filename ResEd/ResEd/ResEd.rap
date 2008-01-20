@@ -87,15 +87,15 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,25511
+1=0,0,0,0,18483
 6=
-2=0,0,0,0,2272
-7=0,0,699,490,77
+2=0,0,0,0,5403
+7=0,0,699,490,5384
 9=
 8=
 3=0,0,0,0,1606
 10=0,0,0,0
-11=0,0,0,0,8877
+11=0,0,0,0,665
 13=0,0,0,0,13771
 14=0,0,0,0
 15=0,0,0,0
@@ -123,11 +123,11 @@ Options=52
 0=
 
 [Find]
-1="10051"
-2="IDM_PROJECT_ADD_RCDATA"
-3="GridInstall"
-4="gridsize.keep"
-5="hPreview"
+1="hPreview"
+2="10051"
+3="IDM_PROJECT_ADD_RCDATA"
+4="GridInstall"
+5="gridsize.keep"
 6="hBrBackColor"
 7="createwindow"
 8="EDIT"
@@ -138,7 +138,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=1
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -222,6 +222,8 @@ ID=105
 4=IDM_FILE_SAVE_PROJECT_AS,0,83,12
 5=IDM_PROJECT_EXPORT,0,69,8
 6=IDM_FILE_CLOSE_PROJECT,0,115,0
+7=IDM_EDIT_UNDO,0,90,8
+8=IDM_EDIT_REDO,0,89,8
 [StringTable]
 1="IDM_FILE_NEW_PROJECT,0,New project"
 2="IDM_FILE_OPEN_PROJECT,0,Open project"
@@ -245,6 +247,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=159129524
+PTimer=162045867
 [AutoLoad]
 1=1

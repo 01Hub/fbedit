@@ -707,6 +707,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
 			.endif
 			invoke CheckMenuItem,wParam,IDM_VIEW_OUTPUT,eax
+			.if hPreview
+				mov		eax,MF_BYCOMMAND or MF_CHECKED
+			.else
+				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+			.endif
+			invoke CheckMenuItem,wParam,IDM_VIEW_PREVIEW,eax
 		.elseif eax==4
 			;Project
 			invoke SendMessage,hResEd,PRO_GETMEM,0,0
@@ -753,6 +759,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hResEd
 			invoke GetDlgItem,hWin,IDC_TBR1
 			invoke ToolBarEnable,eax
+			invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
+			mov		hPreview,eax
 		.else
 			mov		eax,[edx].NMHDR.code
 			.if eax==TTN_NEEDTEXT
@@ -823,7 +831,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ToolBarEnable,eax
 		.elseif eax==IDM_VIEW_PREVIEW
 			invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
-			mov		hPreview,eax
 		.elseif eax==IDM_VIEW_TEXTMODE
 			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
 			xor		eax,1

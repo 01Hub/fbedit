@@ -171,6 +171,7 @@ DEM_GETTEXTMODE		equ DEM_BASE+35		;wParam=0, lParam=0
 DEM_SETTEXTMODE		equ DEM_BASE+36		;wParam=TRUE/FALSE, lParam=0
 DEM_CANREDO			equ DEM_BASE+37		;wParam=0, lParam=0, Returns TRUE or FALSE
 DEM_REDO			equ DEM_BASE+38		;wParam=0, lParam=0
+DEM_GETSHOWDIALOG	equ DEM_BASE+39		;wParam=0, lParam=0
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1

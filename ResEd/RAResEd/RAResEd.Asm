@@ -1451,6 +1451,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==PRO_DELITEM
 		invoke RemoveProjectSelected
+		invoke NotifyParent
 		jmp		Ex
 	.elseif eax==PRO_CANUNDO
 		invoke ProjectCanUndo
@@ -1782,6 +1783,14 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		hPreview,eax
 			.endif
 		.endif
+		push	eax
+		invoke NotifyParent
+		pop		eax
+		jmp		Ex
+	.elseif eax==DEM_GETSHOWDIALOG
+		;wParam=0
+		;lParam=0
+		mov		eax,hPreview
 		jmp		Ex
 	.elseif eax==DEM_SHOWTABINDEX
 		;wParam=0

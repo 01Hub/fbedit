@@ -315,6 +315,7 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke EnumChildWindows,hWin,addr DlgEnumDelProc,0
 		invoke DestroyWindow,hWin
 		mov		hPreview,0
+		invoke NotifyParent
 	.elseif eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
@@ -349,6 +350,7 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetWindowPos,hWin,0,0,0,eax,edx,SWP_NOMOVE or SWP_NOZORDER
 		.endif
 		invoke EnumChildWindows,hWin,addr DlgEnumProc,0
+		invoke NotifyParent
 ;	.elseif eax==WM_COMMAND
 ;		mov		eax,wParam
 ;		movzx	edx,ax

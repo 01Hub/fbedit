@@ -982,9 +982,24 @@ RemoveProjectSelected proc
 			.if edx
 				mov		eax,[edx].PROJECT.ntype
 				.if eax && eax!=TPE_NAME
+					invoke GetWindowLong,hDEd,DEWM_DIALOG
+					mov		ecx,eax
 					inc		nUndo
 					mov		eax,nUndo
+					mov		edx,tvi.lParam
 					mov		[edx].PROJECT.delete,eax
+					.if [edx].PROJECT.ntype==TPE_DIALOG
+						mov		eax,[edx].PROJECT.hmem
+						mov		eax,[eax+sizeof DLGHEAD].DIALOG.hwnd
+						.if eax==ecx
+							push	eax
+							invoke DestroySizeingRect
+							pop		eax
+							invoke DestroyWindow,eax
+							invoke SetWindowLong,hDEd,DEWM_DIALOG,0
+							invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+						.endif
+					.endif
 					invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,tvi.hItem
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 				.endif
