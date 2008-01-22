@@ -4736,8 +4736,8 @@ SendToBack proc uses esi edi,hCtl:HWND
 			add		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
 		.endif
 		invoke SetChanged,TRUE,0
-		invoke GetWindowLong,hDEd,DEWM_MEMORY
-		invoke UpdateRAEdit,eax
+;		invoke GetWindowLong,hDEd,DEWM_MEMORY
+;		invoke UpdateRAEdit,eax
 		invoke NotifyParent
 	.endif
 	ret
@@ -4778,8 +4778,8 @@ BringToFront proc uses esi edi,hCtl:HWND
 		sub		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
 	.endif
 	invoke SetChanged,TRUE,0
-	invoke GetWindowLong,hDEd,DEWM_MEMORY
-	invoke UpdateRAEdit,eax
+;	invoke GetWindowLong,hDEd,DEWM_MEMORY
+;	invoke UpdateRAEdit,eax
 	invoke NotifyParent
 	ret
 
