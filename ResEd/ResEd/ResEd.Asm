@@ -541,19 +541,23 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 	mov		mii.cch,sizeof buffer
 	invoke GetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
 	.if eax
+		mov		edi,offset mnubuff
+		add		edi,mnupos
+		mov		mii.dwItemData,edi
 		test	mii.fType,MFT_SEPARATOR
 		.if ZERO?
+			invoke SendMessage,hTbr,TB_COMMANDTOINDEX,mii.wID,0
+			.if sdword ptr eax>=0
+				invoke SendMessage,hTbr,TB_GETBITMAP,mii.wID,0
+				inc		eax
+				mov		[edi].MENUDATA.img,eax
+			.endif
+			mov		[edi].MENUDATA.tpe,0
 			mov		eax,mii.fType
 			and		eax,7Fh
 			.if eax==MFT_STRING
 				lea		esi,buffer
-				mov		edi,offset mnubuff
-				add		edi,mnupos
-				invoke SendMessage,hTbr,TB_GETBITMAP,mii.wID,0
-				mov		[edi],al
-				mov		mii.dwItemData,edi
-				xor		ecx,ecx
-				inc		ecx
+				mov		ecx,sizeof MENUDATA
 				xor		edx,edx
 				.while byte ptr [esi]
 					mov		al,[esi]
@@ -568,10 +572,21 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 				inc		ecx
 				inc		ecx
 				add		mnupos,ecx
+			.else
+				mov		[edi].MENUDATA.img,0
+				mov		[edi].MENUDATA.tpe,0
+				add		mnupos,sizeof MENUDATA+2
 			.endif
+		.else
+			mov		[edi].MENUDATA.img,0
+			mov		[edi].MENUDATA.tpe,1
+			add		mnupos,sizeof MENUDATA
 		.endif
 		or		mii.fType,MFT_OWNERDRAW
 		invoke SetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
+		.if mii.hSubMenu
+			invoke SetupMenu,mii.hSubMenu
+		.endif
 		inc		nPos
 		jmp		@b
 	.endif
@@ -579,7 +594,7 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 
 SetupMenu endp
 
-MakeMenuBitmap proc
+MakeMenuBitmap proc wt:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hOldBmp:HBITMAP
 	LOCAL	hDC:HDC
@@ -601,7 +616,7 @@ MakeMenuBitmap proc
 	.while ebx<8
 		xor		edi,edi
 		mov		esi,0FFCEBEh
-		.while edi<22
+		.while edi<wt
 			invoke SetPixel,mDC,edi,ebx,esi
 			sub		esi,040404h
 			inc		edi
@@ -625,15 +640,20 @@ CoolMenu proc hMenu:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hBr:HBRUSH
 
-	invoke MakeMenuBitmap
+	invoke MakeMenuBitmap,22
+	mov		hBmp,eax
+	invoke CreatePatternBrush,hBmp
+	mov		hBr,eax
+	invoke DeleteObject,hBmp
+	mov		eax,hBr
+	mov		MInfo.hbrBack,eax
+	mov		MInfo.cbSize,SizeOf MENUINFO
+	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
+	invoke MakeMenuBitmap,19
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
 	mov		hMenuBrush,eax
 	invoke DeleteObject,hBmp
-	mov		eax,hMenuBrush
-	mov		MInfo.hbrBack,eax
-	mov		MInfo.cbSize,SizeOf MENUINFO
-	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
 	mov		nInx,0
   Nxt:
 	invoke GetSubMenu,hMenu,nInx
@@ -660,6 +680,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	hBr:DWORD
 	LOCAL	hPen:DWORD
+	LOCAL	ncm:NONCLIENTMETRICS
+	LOCAL	mDC:HDC
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -758,12 +780,31 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
+		; Get menu font
+		mov		ncm.cbSize,sizeof NONCLIENTMETRICS
+		invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
+		invoke CreateFontIndirect,addr ncm.lfMenuFont
+		mov		hMnuFont,eax
+;		MnuFontHt=Abs(ncm.lfMenuFont.lfHeight)+6
+;		if MnuFontHt<18 then
+;			MnuFontHt=18
+;		endif
 		invoke CoolMenu,hMnu
 		invoke GetSubMenu,hMnu,0
 		invoke SetupMenu,eax
 		invoke GetSubMenu,hMnu,1
 		invoke SetupMenu,eax
 		invoke GetSubMenu,hMnu,2
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,3
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,4
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,5
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,6
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,7
 		invoke SetupMenu,eax
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
@@ -1243,35 +1284,42 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
 			mov		edx,[ebx].MEASUREITEMSTRUCT.itemData
 			.if edx
-				mov		mii.cbSize,sizeof MENUITEMINFO
-				mov		mii.fMask,MIIM_DATA
-				invoke GetMenuItemInfo,hMnu,[ebx].MEASUREITEMSTRUCT.itemID,FALSE,addr mii
-				mov		edx,mii.dwItemData
-				.if edx
-					push	esi
-					mov		esi,edx
-					inc		esi
+				push	esi
+				mov		esi,edx
+				.if ![esi].MENUDATA.tpe
+					lea		esi,[esi+sizeof MENUDATA]
 					invoke GetDC,NULL
+					push	eax
+					invoke CreateCompatibleDC,eax
+					mov		mDC,eax
+					pop		eax
+					invoke ReleaseDC,NULL,eax
+					invoke SelectObject,mDC,hMnuFont
 					push	eax
 					mov		rect.left,0
 					mov		rect.top,0
-					mov		edx,eax
-					invoke DrawText,edx,esi,-1,addr rect,DT_CALCRECT
+					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT
 					mov		eax,rect.right
 					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
 					invoke lstrlen,esi
 					lea		esi,[esi+eax+1]
-					pop		edx
-					invoke DrawText,edx,esi,-1,addr rect,DT_CALCRECT
+					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT
+					pop		eax
+					invoke SelectObject,mDC,eax
+					invoke DeleteDC,mDC
 					mov		eax,rect.right
-					sub		eax,20
+					add		eax,25
 					add		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
-					mov		eax,20;MnuFontHt
+					mov		eax,18
 					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
-					pop		esi
+				.else
+					mov		eax,10
+					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
 				.endif
+				pop		esi
 			.endif
-			jmp		Ex
+			mov		eax,TRUE
+			jmp		ExRet
 		.endif
 	.elseif eax==WM_DRAWITEM
 		mov		ebx,lParam
@@ -1279,53 +1327,98 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			push	esi
 			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
 			.if esi
-				invoke SetBkMode,[ebx].DRAWITEMSTRUCT.hdc,TRANSPARENT
-				test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
-				.if !ZERO?
-					invoke CreateSolidBrush,0F5BE9Fh
-					mov		hBr,eax
-					invoke FillRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hBr
-					invoke DeleteObject,hBr
-					invoke CreateSolidBrush,800000h
-					mov		hBr,eax
-					invoke FrameRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hBr
-					invoke DeleteObject,hBr
+				invoke CreateCompatibleDC,[ebx].DRAWITEMSTRUCT.hdc
+				mov		mDC,eax
+				mov		rect.left,0
+				mov		rect.top,0
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+				mov		rect.right,eax
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.top
+				mov		rect.bottom,eax
+				invoke CreateCompatibleBitmap,[ebx].DRAWITEMSTRUCT.hdc,rect.right,rect.bottom
+				invoke SelectObject,mDC,eax
+				push	eax
+				invoke SelectObject,mDC,hMnuFont
+				push	eax
+				invoke GetStockObject,WHITE_BRUSH
+				invoke FillRect,mDC,addr rect,eax
+				invoke FillRect,mDC,addr rect,hMenuBrush
+				.if ![esi].MENUDATA.tpe
+					invoke SetBkMode,mDC,TRANSPARENT
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
+					.if !ZERO?
+						invoke CreateSolidBrush,0F5BE9Fh
+						mov		hBr,eax
+						invoke FillRect,mDC,addr rect,hBr
+						invoke DeleteObject,hBr
+						invoke CreateSolidBrush,800000h
+						mov		hBr,eax
+						invoke FrameRect,mDC,addr rect,hBr
+						invoke DeleteObject,hBr
+					.endif
+					; image index
+					mov		eax,[esi].MENUDATA.img
+					lea		esi,[esi+sizeof MENUDATA]
+					.if eax
+						dec		eax
+						test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+						.if ZERO?
+							invoke ImageList_Draw,hImlTbr,eax,mDC,1,1,ILD_TRANSPARENT
+						.else
+							invoke ImageList_Draw,hImlTbrGray,eax,mDC,1,1,ILD_TRANSPARENT
+						.endif
+					.endif
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+					.if ZERO?
+						invoke GetSysColor,COLOR_MENUTEXT
+					.else
+						invoke GetSysColor,COLOR_GRAYTEXT
+					.endif
+					invoke SetTextColor,mDC,eax
+					invoke lstrlen,esi
+					push	eax
+					add		rect.left,22
+					add		rect.top,2
+					sub		rect.right,2
+					invoke DrawText,mDC,esi,-1,addr rect,DT_LEFT or DT_VCENTER
+					pop		eax
+					lea		esi,[esi+eax+1]
+					invoke DrawText,mDC,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_RIGHT or DT_VCENTER
+					sub		rect.left,22
+					sub		rect.top,2
+					add		rect.right,2
 				.else
-					invoke FillRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hMenuBrush
+					invoke CreatePen,PS_SOLID,1,0F5BE9Fh
+					invoke SelectObject,mDC,eax
+					push	eax
+					add		rect.left,21
+					add		rect.top,5
+					invoke MoveToEx,mDC,rect.left,rect.top,NULL
+					invoke LineTo,mDC,rect.right,rect.top
+					sub		rect.left,21
+					sub		rect.top,5
+					pop		eax
+					invoke SelectObject,mDC,eax
+					invoke DeleteObject,eax
 				.endif
-				; image index
-				movzx	eax,byte ptr [esi]
-				inc		esi
-				.if eax
-					mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
-					inc		edx
-					invoke ImageList_Draw,hImlTbr,eax,[ebx].DRAWITEMSTRUCT.hdc,1,edx,ILD_TRANSPARENT
-				.endif
-				invoke lstrlen,esi
-				push	eax
-				add		[ebx].DRAWITEMSTRUCT.rcItem.left,22
-				add		[ebx].DRAWITEMSTRUCT.rcItem.top,2
-				sub		[ebx].DRAWITEMSTRUCT.rcItem.right,2
-				invoke DrawText,[ebx].DRAWITEMSTRUCT.hdc,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_LEFT or DT_VCENTER
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+				mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+				sub		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
+				invoke BitBlt,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,eax,edx,mDC,0,0,SRCCOPY
 				pop		eax
-				lea		esi,[esi+eax+1]
-				invoke DrawText,[ebx].DRAWITEMSTRUCT.hdc,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_RIGHT or DT_VCENTER
-			.else
-				invoke CreatePen,PS_SOLID,1,0F5BE9Fh
-				invoke SelectObject,[ebx].DRAWITEMSTRUCT.hdc,eax
-				push	eax
-				add		[ebx].DRAWITEMSTRUCT.rcItem.left,20
-				add		[ebx].DRAWITEMSTRUCT.rcItem.top,5
-				invoke MoveToEx,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,NULL
-				invoke LineTo,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.right,[ebx].DRAWITEMSTRUCT.rcItem.top
+				invoke SelectObject,mDC,eax
 				pop		eax
-				invoke SelectObject,[ebx].DRAWITEMSTRUCT.hdc,eax
+				invoke SelectObject,mDC,eax
 				invoke DeleteObject,eax
+				invoke DeleteDC,mDC
 			.endif
 			pop		esi
+			mov		eax,TRUE
+			jmp		ExRet
 		.endif
-		mov		eax,TRUE
-		jmp		ExRet
 	.else
   ExDef:
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam

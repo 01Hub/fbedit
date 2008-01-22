@@ -147,6 +147,11 @@ MENUINFO STRUCT
 	dwMenuData		DWORD	?
 MENUINFO ends
 
+MENUDATA struct
+	img		dd ?
+	tpe		dd ?
+MENUDATA ends
+
 .const
 
 szWannaSave			db 'Want to save changes to',0Dh,0
@@ -227,3 +232,4 @@ winsize				WINSIZE <?>
 mnupos				dd ?
 mnubuff				db 8192 dup(?)
 hMenuBrush			dd ?
+hMnuFont			dd ?
