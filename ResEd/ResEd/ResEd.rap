@@ -68,7 +68,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 
 
 [Resource]
-1=IDB_TOOLBAR,100,0,Res\Toolbar.bmp
+1=IDB_TOOLBAR,100,0,Res\toolbar-new.bmp
 2=,1,8,Res\xptheme.xml
 3=IDI_ICON,100,2,Res\ResEd.ico
 
@@ -87,9 +87,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,18316
+1=0,0,0,0,15775
 6=
-2=0,0,0,0,5403
+2=0,0,0,0,5884
 7=0,0,699,490,5384
 9=
 8=
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="hPreview"
-2="10051"
-3="IDM_PROJECT_ADD_RCDATA"
-4="GridInstall"
-5="gridsize.keep"
-6="hBrBackColor"
-7="createwindow"
-8="EDIT"
-9="PRO_SETSTYLEPOS"
-10="PRO_GETSTYLEPOS"
+1="ToolBarEnable"
+2="MF_STRING"
+3="MFT_STRING"
+4="mnu"
+5="hPreview"
+6="10051"
+7="IDM_PROJECT_ADD_RCDATA"
+8="GridInstall"
+9="gridsize.keep"
+10="hBrBackColor"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=4
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

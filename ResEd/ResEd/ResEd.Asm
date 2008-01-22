@@ -1,4 +1,4 @@
-.386
+.486
 .model flat,stdcall
 option casemap:none
 
@@ -202,18 +202,94 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
+GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	hBmp:DWORD
+	LOCAL	nCount:DWORD
+	LOCAL	rect:RECT
+
+	invoke ImageList_GetImageCount,hImlTbr
+	mov		nCount,eax
+	shl		eax,4
+	mov		rect.left,0
+	mov		rect.top,0
+	mov		rect.right,eax
+	mov		rect.bottom,16
+	invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR24,nCount,10
+	mov		hImlTbrGray,eax
+	invoke GetDC,NULL
+	mov		hDC,eax
+	invoke CreateCompatibleDC,hDC
+	mov		mDC,eax
+	invoke CreateCompatibleBitmap,hDC,rect.right,16
+	mov		hBmp,eax
+	invoke ReleaseDC,NULL,hDC
+	invoke SelectObject,mDC,hBmp
+	push	eax
+	invoke CreateSolidBrush,0FF00FFh
+	push	eax
+	invoke FillRect,mDC,addr rect,eax
+	xor		ecx,ecx
+	.while ecx<nCount
+		push	ecx
+		invoke ImageList_Draw,hImlTbr,ecx,mDC,rect.left,0,ILD_TRANSPARENT
+		pop		ecx
+		add		rect.left,16
+		inc		ecx
+	.endw
+	invoke GetPixel,mDC,0,0
+	mov		ebx,eax
+	xor		esi,esi
+	.while esi<16
+		xor		edi,edi
+		.while edi<rect.right
+			invoke GetPixel,mDC,edi,esi
+			.if eax!=ebx
+				bswap	eax
+				shr		eax,8
+				movzx	ecx,al			; red
+				imul	ecx,ecx,66
+				movzx	edx,ah			; green
+				imul	edx,edx,129
+				add		edx,ecx
+				shr		eax,16			; blue
+				imul	eax,eax,25
+				add		eax,edx
+				add		eax,128
+				shr		eax,8
+				add		eax,16
+				imul	eax,eax,010101h
+				and		eax,0F0F0F0h
+				shr		eax,2
+				or		eax,808080h
+				invoke SetPixel,mDC,edi,esi,eax
+			.endif
+			inc		edi
+		.endw
+		inc		esi
+	.endw
+	pop		eax
+	invoke DeleteObject,eax
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteDC,mDC
+	invoke ImageList_AddMasked,hImlTbrGray,hBmp,ebx
+	invoke DeleteObject,hBmp
+	invoke SendMessage,hToolbar,TB_SETDISABLEDIMAGELIST,0,hImlTbrGray
+	ret
+
+GrayedImageList endp
+
 DoToolBar proc hToolBar:HWND
-	LOCAL	tbab:TBADDBITMAP
 
 	;Set toolbar struct size
 	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
-	;Set toolbar bitmap
-	push	hInstance
-	pop		tbab.hInst
-	mov		tbab.nID,IDB_TOOLBAR
-	invoke SendMessage,hToolBar,TB_ADDBITMAP,9,addr tbab
-	;Set toolbar buttons
 	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
+	invoke ImageList_LoadImage,hInstance,IDB_TOOLBAR,16,29,0FF00FFh,IMAGE_BITMAP,LR_CREATEDIBSECTION
+	mov		hImlTbr,eax
+	invoke SendMessage,hToolBar,TB_SETIMAGELIST,0,hImlTbr
+	invoke GrayedImageList,hToolBar
 	ret
 
 DoToolBar endp
@@ -426,7 +502,7 @@ WantToSaveProject proc lpFileName:DWORD
 
 WantToSaveProject endp
 
-ToolBarEnable proc uses ebx,hTbr:HWND
+ToolBarEnable proc uses ebx
 
 	mov		ebx,hTbr
 	invoke SendMessage,hResEd,DEM_CANUNDO,0,0
@@ -450,6 +526,128 @@ ToolBarEnable proc uses ebx,hTbr:HWND
 
 ToolBarEnable endp
 
+SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
+	LOCAL	nPos:DWORD
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		nPos,0
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_DATA or MIIM_ID or MIIM_SUBMENU or MIIM_TYPE
+  @@:
+	lea		eax,buffer
+	mov		word ptr [eax],0
+	mov		mii.dwTypeData,eax
+	mov		mii.cch,sizeof buffer
+	invoke GetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
+	.if eax
+		test	mii.fType,MFT_SEPARATOR
+		.if ZERO?
+			mov		eax,mii.fType
+			and		eax,7Fh
+			.if eax==MFT_STRING
+				lea		esi,buffer
+				mov		edi,offset mnubuff
+				add		edi,mnupos
+				invoke SendMessage,hTbr,TB_GETBITMAP,mii.wID,0
+				mov		[edi],al
+				mov		mii.dwItemData,edi
+				xor		ecx,ecx
+				inc		ecx
+				xor		edx,edx
+				.while byte ptr [esi]
+					mov		al,[esi]
+					.if al==VK_TAB
+						mov		al,0
+						inc		edx
+					.endif
+					mov		[edi+ecx],al
+					inc		ecx
+					inc		esi
+				.endw
+				inc		ecx
+				inc		ecx
+				add		mnupos,ecx
+			.endif
+		.endif
+		or		mii.fType,MFT_OWNERDRAW
+		invoke SetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
+		inc		nPos
+		jmp		@b
+	.endif
+	ret
+
+SetupMenu endp
+
+MakeMenuBitmap proc
+	LOCAL	hBmp:HBITMAP
+	LOCAL	hOldBmp:HBITMAP
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	hDeskTop:HWND
+
+	invoke GetDesktopWindow
+	mov		hDeskTop,eax
+	invoke GetDC,hDeskTop
+	mov		hDC,eax
+	invoke CreateCompatibleDC,hDC
+	mov		mDC,eax
+	invoke CreateCompatibleBitmap,hDC,600,8
+	mov		hBmp,eax
+	invoke ReleaseDC,hDeskTop,hDC
+	invoke SelectObject,mDC,hBmp
+	mov		hOldBmp,eax
+	xor		ebx,ebx
+	.while ebx<8
+		xor		edi,edi
+		mov		esi,0FFCEBEh
+		.while edi<22
+			invoke SetPixel,mDC,edi,ebx,esi
+			sub		esi,040404h
+			inc		edi
+		.endw
+		.while edi<600
+			invoke SetPixel,mDC,edi,ebx,0FFFFFFh
+			inc		edi
+		.endw
+		inc		ebx
+	.endw
+	invoke SelectObject,mDC,hOldBmp
+	invoke DeleteDC,mDC
+	mov		eax,hBmp
+	ret
+
+MakeMenuBitmap endp
+
+CoolMenu proc hMenu:DWORD
+	LOCAL	MInfo:MENUINFO
+	LOCAL	nInx:DWORD
+	LOCAL	hBmp:HBITMAP
+	LOCAL	hBr:HBRUSH
+
+	invoke MakeMenuBitmap
+	mov		hBmp,eax
+	invoke CreatePatternBrush,hBmp
+	mov		hMenuBrush,eax
+	invoke DeleteObject,hBmp
+	mov		eax,hMenuBrush
+	mov		MInfo.hbrBack,eax
+	mov		MInfo.cbSize,SizeOf MENUINFO
+	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
+	mov		nInx,0
+  Nxt:
+	invoke GetSubMenu,hMenu,nInx
+	.if eax
+		mov		edx,eax
+		invoke SetMenuInfo,edx,addr MInfo
+		inc		nInx
+		jmp		Nxt
+	.endif
+	ret
+
+CoolMenu endp
+
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hFont:DWORD
 	LOCAL	pt:POINT
@@ -459,6 +657,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	mnu:MENU
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	hBr:DWORD
+	LOCAL	hPen:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -486,6 +687,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetSubMenu,eax,0
 		mov		hContextMenuPopup,eax
 		invoke GetDlgItem,hWin,IDC_TBR1
+		mov		hTbr,eax
 		invoke DoToolBar,eax
 		mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 		.if grdsize.show
@@ -534,8 +736,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_AddMasked,hIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
-		invoke GetDlgItem,hWin,IDC_TBR1
-		invoke ToolBarEnable,eax
+		invoke ToolBarEnable
 		invoke SendMessage,hResEd,DEM_SETSIZE,0,addr winsize
 		mov		eax,wpos.fView
 		and		eax,1
@@ -557,6 +758,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
+		invoke CoolMenu,hMnu
+		invoke GetSubMenu,hMnu,0
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,1
+		invoke SetupMenu,eax
+		invoke GetSubMenu,hMnu,2
+		invoke SetupMenu,eax
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
@@ -757,8 +965,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hResEd
-			invoke GetDlgItem,hWin,IDC_TBR1
-			invoke ToolBarEnable,eax
+			invoke ToolBarEnable
 			invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
 			mov		hPreview,eax
 		.else
@@ -827,8 +1034,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,wpos.fView
 			and		eax,1
 			invoke SendMessage,hResEd,DEM_SHOWOUTPUT,eax,0
-			invoke GetDlgItem,hWin,IDC_TBR1
-			invoke ToolBarEnable,eax
+			invoke ToolBarEnable
 		.elseif eax==IDM_VIEW_PREVIEW
 			invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
 		.elseif eax==IDM_VIEW_TEXTMODE
@@ -1032,6 +1238,94 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !eax
 			invoke LoadProjectFile,addr buffer
 		.endif
+	.elseif eax==WM_MEASUREITEM
+		mov		ebx,lParam
+		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
+			mov		edx,[ebx].MEASUREITEMSTRUCT.itemData
+			.if edx
+				mov		mii.cbSize,sizeof MENUITEMINFO
+				mov		mii.fMask,MIIM_DATA
+				invoke GetMenuItemInfo,hMnu,[ebx].MEASUREITEMSTRUCT.itemID,FALSE,addr mii
+				mov		edx,mii.dwItemData
+				.if edx
+					push	esi
+					mov		esi,edx
+					inc		esi
+					invoke GetDC,NULL
+					push	eax
+					mov		rect.left,0
+					mov		rect.top,0
+					mov		edx,eax
+					invoke DrawText,edx,esi,-1,addr rect,DT_CALCRECT
+					mov		eax,rect.right
+					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
+					invoke lstrlen,esi
+					lea		esi,[esi+eax+1]
+					pop		edx
+					invoke DrawText,edx,esi,-1,addr rect,DT_CALCRECT
+					mov		eax,rect.right
+					sub		eax,20
+					add		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
+					mov		eax,20;MnuFontHt
+					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
+					pop		esi
+				.endif
+			.endif
+			jmp		Ex
+		.endif
+	.elseif eax==WM_DRAWITEM
+		mov		ebx,lParam
+		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
+			push	esi
+			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
+			.if esi
+				invoke SetBkMode,[ebx].DRAWITEMSTRUCT.hdc,TRANSPARENT
+				test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
+				.if !ZERO?
+					invoke CreateSolidBrush,0F5BE9Fh
+					mov		hBr,eax
+					invoke FillRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hBr
+					invoke DeleteObject,hBr
+					invoke CreateSolidBrush,800000h
+					mov		hBr,eax
+					invoke FrameRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hBr
+					invoke DeleteObject,hBr
+				.else
+					invoke FillRect,[ebx].DRAWITEMSTRUCT.hdc,addr [ebx].DRAWITEMSTRUCT.rcItem,hMenuBrush
+				.endif
+				; image index
+				movzx	eax,byte ptr [esi]
+				inc		esi
+				.if eax
+					mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
+					inc		edx
+					invoke ImageList_Draw,hImlTbr,eax,[ebx].DRAWITEMSTRUCT.hdc,1,edx,ILD_TRANSPARENT
+				.endif
+				invoke lstrlen,esi
+				push	eax
+				add		[ebx].DRAWITEMSTRUCT.rcItem.left,22
+				add		[ebx].DRAWITEMSTRUCT.rcItem.top,2
+				sub		[ebx].DRAWITEMSTRUCT.rcItem.right,2
+				invoke DrawText,[ebx].DRAWITEMSTRUCT.hdc,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_LEFT or DT_VCENTER
+				pop		eax
+				lea		esi,[esi+eax+1]
+				invoke DrawText,[ebx].DRAWITEMSTRUCT.hdc,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_RIGHT or DT_VCENTER
+			.else
+				invoke CreatePen,PS_SOLID,1,0F5BE9Fh
+				invoke SelectObject,[ebx].DRAWITEMSTRUCT.hdc,eax
+				push	eax
+				add		[ebx].DRAWITEMSTRUCT.rcItem.left,20
+				add		[ebx].DRAWITEMSTRUCT.rcItem.top,5
+				invoke MoveToEx,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,NULL
+				invoke LineTo,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.right,[ebx].DRAWITEMSTRUCT.rcItem.top
+				pop		eax
+				invoke SelectObject,[ebx].DRAWITEMSTRUCT.hdc,eax
+				invoke DeleteObject,eax
+			.endif
+			pop		esi
+		.endif
+		mov		eax,TRUE
+		jmp		ExRet
 	.else
   ExDef:
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam

@@ -137,6 +137,16 @@ GRIDSIZE struct
 	simple		dd ?
 GRIDSIZE ends
 
+MENUINFO STRUCT
+	cbSize			DWORD	?
+	fmask			DWORD	?
+	dwstyle			DWORD	?
+	cyMax			DWORD	?
+	hbrBack			DWORD	?
+	dwContextHelpID	DWORD	?
+	dwMenuData		DWORD	?
+MENUINFO ends
+
 .const
 
 szWannaSave			db 'Want to save changes to',0Dh,0
@@ -195,6 +205,9 @@ hInstance			dd ?
 hRichEd				dd ?
 CommandLine			dd ?
 hWnd				dd ?
+hTbr				dd ?
+hImlTbr				dd ?
+hImlTbrGray			dd ?
 hMnu				dd ?
 hIcon				dd ?
 hAccel				dd ?
@@ -211,3 +224,6 @@ lpcbData			dd ?
 hCustDll			dd 32 dup(?)
 hPreview			dd ?
 winsize				WINSIZE <?>
+mnupos				dd ?
+mnubuff				db 8192 dup(?)
+hMenuBrush			dd ?
