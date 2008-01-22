@@ -231,5 +231,6 @@ hPreview			dd ?
 winsize				WINSIZE <?>
 mnupos				dd ?
 mnubuff				db 8192 dup(?)
-hMenuBrush			dd ?
+hMenuBrushA			dd ?
+hMenuBrushB			dd ?
 hMnuFont			dd ?

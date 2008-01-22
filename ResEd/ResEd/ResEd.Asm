@@ -594,7 +594,7 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 
 SetupMenu endp
 
-MakeMenuBitmap proc wt:DWORD
+MakeMenuBitmap proc wt:DWORD,nColor:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hOldBmp:HBITMAP
 	LOCAL	hDC:HDC
@@ -615,7 +615,7 @@ MakeMenuBitmap proc wt:DWORD
 	xor		ebx,ebx
 	.while ebx<8
 		xor		edi,edi
-		mov		esi,0FFCEBEh
+		mov		esi,nColor
 		.while edi<wt
 			invoke SetPixel,mDC,edi,ebx,esi
 			sub		esi,040404h
@@ -640,19 +640,18 @@ CoolMenu proc hMenu:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hBr:HBRUSH
 
-	invoke MakeMenuBitmap,22
+	invoke MakeMenuBitmap,22,0FFCEBEh
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
-	mov		hBr,eax
-	invoke DeleteObject,hBmp
-	mov		eax,hBr
+	mov		hMenuBrushA,eax
 	mov		MInfo.hbrBack,eax
+	invoke DeleteObject,hBmp
 	mov		MInfo.cbSize,SizeOf MENUINFO
 	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
-	invoke MakeMenuBitmap,19
+	invoke MakeMenuBitmap,19,0FFCEBEh-080808h
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
-	mov		hMenuBrush,eax
+	mov		hMenuBrushB,eax
 	invoke DeleteObject,hBmp
 	mov		nInx,0
   Nxt:
@@ -1257,8 +1256,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.left,eax
 		mov		eax,winsize.ptstyle.y
 		mov		wpos.top,eax
+		invoke DeleteObject,hMenuBrushA
+		invoke DeleteObject,hMenuBrushB
 		invoke DestroyIcon,hIcon
 		invoke ImageList_Destroy,hIml
+		invoke ImageList_Destroy,hImlTbr
+		invoke ImageList_Destroy,hImlTbrGray
 		invoke DestroyAcceleratorTable,hAccel
 		invoke DestroyMenu,hContextMenu
 		invoke DestroyWindow,hResEd
@@ -1344,7 +1347,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	eax
 				invoke GetStockObject,WHITE_BRUSH
 				invoke FillRect,mDC,addr rect,eax
-				invoke FillRect,mDC,addr rect,hMenuBrush
+				invoke FillRect,mDC,addr rect,hMenuBrushB
 				.if ![esi].MENUDATA.tpe
 					invoke SetBkMode,mDC,TRANSPARENT
 					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
