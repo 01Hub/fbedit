@@ -1301,19 +1301,19 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					push	eax
 					mov		rect.left,0
 					mov		rect.top,0
-					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT
+					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
 					mov		eax,rect.right
 					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
 					invoke lstrlen,esi
 					lea		esi,[esi+eax+1]
-					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT
+					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
 					pop		eax
 					invoke SelectObject,mDC,eax
 					invoke DeleteDC,mDC
 					mov		eax,rect.right
 					add		eax,25
 					add		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
-					mov		eax,18
+					mov		eax,20
 					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
 				.else
 					mov		eax,10
@@ -1365,13 +1365,44 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,[esi].MENUDATA.img
 					lea		esi,[esi+sizeof MENUDATA]
 					.if eax
+						mov		edx,rect.bottom
+						sub		edx,16
+						shr		edx,1
 						dec		eax
 						test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
 						.if ZERO?
-							invoke ImageList_Draw,hImlTbr,eax,mDC,1,1,ILD_TRANSPARENT
+							invoke ImageList_Draw,hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
 						.else
-							invoke ImageList_Draw,hImlTbrGray,eax,mDC,1,1,ILD_TRANSPARENT
+							invoke ImageList_Draw,hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
 						.endif
+					.else
+						test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
+						.if !ZERO?
+							mov		edx,rect.bottom
+							sub		edx,16
+							shr		edx,1
+							invoke ImageList_Draw,hImlTbr,11,mDC,2,edx,ILD_TRANSPARENT
+						.endif
+					.endif
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
+					.if !ZERO?
+						push	rect.left
+						push	rect.right
+						push	rect.top
+						push	rect.bottom
+						mov		rect.left,1
+						mov		rect.right,19
+						mov		eax,rect.bottom
+						sub		eax,18
+						shr		eax,1
+						mov		rect.top,eax
+						add		eax,18
+						mov		rect.bottom,eax
+						invoke DrawEdge,mDC,addr rect,BDR_SUNKENINNER,BF_RECT
+						pop		rect.bottom
+						pop		rect.top
+						pop		rect.right
+						pop		rect.left
 					.endif
 					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
 					.if ZERO?
