@@ -1,6 +1,6 @@
 ResEd
 
-2.0.0.0 - 2008.19.01
+2.0.0.0 - 2008.23.01
 o RAResEd is now a single control. This makes it easier to use it in your own IDE.
 o Added nicer toolbar and menu.
 o Added Undo / Redo to dialog editor

@@ -217,6 +217,12 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				mov		esi,eax
 				invoke GetProjectItemName,esi,addr buffer
 				invoke SetProjectItemName,esi,addr buffer
+				invoke GetWindowLong,hPrj,0
+				mov		esi,eax
+				invoke FindName,esi,addr szMANIFEST
+				.if !eax
+					invoke AddName,esi,addr szMANIFEST,addr szManifestValue
+				.endif
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

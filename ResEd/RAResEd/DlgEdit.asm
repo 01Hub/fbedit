@@ -5406,19 +5406,28 @@ SaveDefine proc
 	.if eax!=-1
 		mov		al,[esi].idname
 		.if al && [esi].id
-			invoke SaveStr,edi,addr szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,addr [esi].idname
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke ResEdBinToDec,[esi].id,addr buffer
-			invoke SaveStr,edi,addr buffer
-			add		edi,eax
-			mov		ax,0A0Dh
-			stosw
+			invoke lstrcmpi,addr [esi].idname,addr szIDOK
+			.if eax
+				invoke lstrcmpi,addr [esi].idname,addr szIDCANCEL
+				.if eax
+					invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
+				.endif
+			.endif
+			.if eax
+				invoke SaveStr,edi,addr szDEFINE
+				add		edi,eax
+				mov		al,' '
+				stosb
+				invoke SaveStr,edi,addr [esi].idname
+				add		edi,eax
+				mov		al,' '
+				stosb
+				invoke ResEdBinToDec,[esi].id,addr buffer
+				invoke SaveStr,edi,addr buffer
+				add		edi,eax
+				mov		ax,0A0Dh
+				stosw
+			.endif
 		.endif
 	.endif
 	assume esi:nothing

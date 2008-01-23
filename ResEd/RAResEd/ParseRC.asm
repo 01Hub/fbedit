@@ -200,8 +200,51 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 		.if eax
 			mov		[eax].NAMEMEM.delete,TRUE
 			mov		eax,[eax].NAMEMEM.value
+			push	eax
+			invoke lstrcmpi,lpName,addr szIDOK
+			.if eax
+				invoke lstrcmpi,lpName,addr szIDCANCEL
+				.if eax
+					invoke lstrcmpi,lpName,addr szIDC_STATIC
+					.if eax
+						pop		ecx
+					.else
+						pop		ecx
+						mov		ecx,-1
+					.endif
+				.else
+					pop		ecx
+					mov		ecx,2
+				.endif
+			.else
+				pop		ecx
+				mov		ecx,1
+			.endif
 			mov		edx,lpID
-			mov		[edx],eax
+			mov		[edx],ecx
+		.else
+			push	0
+			invoke lstrcmpi,lpName,addr szIDOK
+			.if eax
+				invoke lstrcmpi,lpName,addr szIDCANCEL
+				.if eax
+					invoke lstrcmpi,lpName,addr szIDC_STATIC
+					.if eax
+						pop		ecx
+					.else
+						pop		ecx
+						mov		ecx,-1
+					.endif
+				.else
+					pop		ecx
+					mov		ecx,2
+				.endif
+			.else
+				pop		ecx
+				mov		ecx,1
+			.endif
+			mov		edx,lpID
+			mov		[edx],ecx
 		.endif
 	.endif
 	ret
