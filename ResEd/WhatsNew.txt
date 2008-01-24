@@ -1,6 +1,6 @@
 ResEd
 
-2.0.0.0 - 2008.23.01
+2.0.0.0 - 2008.24.01
 --------------------
 o RAResEd is now a single control. This makes it easier to use it in your own IDE.
 o Added nicer toolbar and menu.
@@ -9,13 +9,15 @@ o Added Undo / Redo to dialog editor
   The only way to avoid this problem is to properly set the tabindexes.
   Most important is that a GroupBox or Tab control should have a lower tabindex
   than all the controls it contain.
-o Added support for IDOK / IDCANCEL to button control.
-o Added support for IDC_STATIC to static control.
-o Added better support for multiline captions (edit, static and button controls).
-  NOTE. Use Ctrl+Enter to insert a new line.
+o Added support for IDOK / IDCANCEL to Button control.
+o Added support for IDC_STATIC to Static, Image and Shape controls.
+o Added better support for multiline captions (Edit, Static and Button controls).
+  NOTE. Use Ctrl+Enter to insert a new line in the multiline text box.
 o Added TOOLBAR resource.
-o Fixed bugs with image and animate controls (name / id problems).
+o Fixed bugs with Image and Animate controls (name / id problems).
 o Fixed bug with #include <windows.h>.
+o Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.
+  This caused the applicationt you crated to not run.
 
 1.1.4.3 - 2007.11.08
 --------------------

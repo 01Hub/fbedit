@@ -214,9 +214,9 @@ hTbr				dd ?
 hImlTbr				dd ?
 hImlTbrGray			dd ?
 hMnu				dd ?
+hContextMenu		dd ?
 hIcon				dd ?
 hAccel				dd ?
-hContextMenu		dd ?
 hContextMenuPopup	dd ?
 hIml				dd ?
 hResEd				dd ?

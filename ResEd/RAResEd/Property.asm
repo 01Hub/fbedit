@@ -1644,8 +1644,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.if eax==4
 						;Button
 						mov		lbid,PRP_STR_NAMEBTN
-					.elseif eax==2
-						;Static
+					.elseif eax==2 || eax==17 || eax==25
+						;Static, Image and Shape
 						mov		lbid,PRP_STR_NAMESTC
 					.endif
 				.endif

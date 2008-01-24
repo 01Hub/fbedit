@@ -87,10 +87,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,8634
+1=0,0,0,0,6880
 6=
-2=0,0,0,0,5470
-7=0,0,699,490,5384
+2=0,0,0,0,5606
+7=0,0,699,490,8681
 9=
 8=
 3=0,0,0,0,1606
@@ -104,7 +104,7 @@ Options=52
 18=0,0,0,0,7
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,379
+21=0,0,0,0,981
 22=0,0,0,0
 
 [BookMark]
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="ToolBarEnable"
-2="MF_STRING"
-3="MFT_STRING"
-4="mnu"
-5="hPreview"
-6="10051"
-7="IDM_PROJECT_ADD_RCDATA"
-8="GridInstall"
-9="gridsize.keep"
-10="hBrBackColor"
+1="DEM_SHOWDIALOG"
+2="ParseRCMem"
+3="szcrlf"
+4="lstrcmpi"
+5="lstrcmp"
+6="lstrcpy"
+7="szManifestValue"
+8="ExportXPManifest"
+9="szErrorParse"
+10="Errors"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

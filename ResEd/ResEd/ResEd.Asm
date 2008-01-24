@@ -260,9 +260,11 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 				shr		eax,8
 				add		eax,16
 				imul	eax,eax,010101h
-				and		eax,0F0F0F0h
-				shr		eax,2
-				or		eax,808080h
+				and		eax,0E0E0E0h
+				shr		eax,1
+				add		eax,0404040h
+;				shr		eax,2
+;				or		eax,0808080h
 				invoke SetPixel,mDC,edi,esi,eax
 			.endif
 			inc		edi
@@ -522,6 +524,13 @@ ToolBarEnable proc uses ebx
 	mov		eax,wpos.fView
 	and		eax,1
 	invoke SendMessage,ebx,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+	invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_VIEW_PREVIEW,eax
+	xor		eax,eax
+	.if hPreview
+		inc		eax
+	.endif
+	invoke SendMessage,ebx,TB_CHECKBUTTON,IDM_VIEW_PREVIEW,eax
 	ret
 
 ToolBarEnable endp
@@ -569,15 +578,20 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 					inc		ecx
 					inc		esi
 				.endw
+				mov		al,0
+				mov		[edi+ecx],al
 				inc		ecx
+				mov		[edi+ecx],al
 				inc		ecx
 				add		mnupos,ecx
 			.else
 				mov		[edi].MENUDATA.img,0
 				mov		[edi].MENUDATA.tpe,0
+				mov		word ptr [edi+sizeof MENUDATA],0
 				add		mnupos,sizeof MENUDATA+2
 			.endif
 		.else
+			; Separator
 			mov		[edi].MENUDATA.img,0
 			mov		[edi].MENUDATA.tpe,1
 			add		mnupos,sizeof MENUDATA
@@ -634,13 +648,13 @@ MakeMenuBitmap proc wt:DWORD,nColor:DWORD
 
 MakeMenuBitmap endp
 
-CoolMenu proc hMenu:DWORD
+CoolMenu proc
 	LOCAL	MInfo:MENUINFO
 	LOCAL	nInx:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hBr:HBRUSH
 
-	invoke MakeMenuBitmap,22,0FFCEBEh
+	invoke MakeMenuBitmap,23,0FFCEBEh
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
 	mov		hMenuBrushA,eax
@@ -648,19 +662,33 @@ CoolMenu proc hMenu:DWORD
 	invoke DeleteObject,hBmp
 	mov		MInfo.cbSize,SizeOf MENUINFO
 	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
-	invoke MakeMenuBitmap,19,0FFCEBEh-080808h
+	invoke MakeMenuBitmap,20,0FFCEBEh-0C0C0Ch
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
 	mov		hMenuBrushB,eax
 	invoke DeleteObject,hBmp
 	mov		nInx,0
-  Nxt:
-	invoke GetSubMenu,hMenu,nInx
+  @@:
+	invoke GetSubMenu,hMnu,nInx
 	.if eax
 		mov		edx,eax
+		push	eax
+		invoke SetupMenu,eax
+		pop		edx
 		invoke SetMenuInfo,edx,addr MInfo
 		inc		nInx
-		jmp		Nxt
+		jmp		@b
+	.endif
+	mov		nInx,0
+  @@:
+	invoke GetSubMenu,hContextMenu,nInx
+	.if eax
+		push	eax
+		invoke SetupMenu,eax
+		pop		edx
+		invoke SetMenuInfo,edx,addr MInfo
+		inc		nInx
+		jmp		@b
 	.endif
 	ret
 
@@ -788,23 +816,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;		if MnuFontHt<18 then
 ;			MnuFontHt=18
 ;		endif
-		invoke CoolMenu,hMnu
-		invoke GetSubMenu,hMnu,0
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,1
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,2
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,3
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,4
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,5
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,6
-		invoke SetupMenu,eax
-		invoke GetSubMenu,hMnu,7
-		invoke SetupMenu,eax
+		invoke CoolMenu
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
@@ -922,29 +934,42 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		ecx,wParam
 			.if ecx==hContextMenuPopup
-				mov		edx,13
+				mov		edx,14
 			.else
 				mov		edx,6
 			.endif
 			push	edx
+			; Align
 			invoke EnableMenuItem,wParam,edx,ebx
 			pop		edx
 			inc		edx
 			push	edx
+			; Same Size
 			invoke EnableMenuItem,wParam,edx,ebx
 			pop		edx
 			inc		edx
-			push	edx
-			invoke EnableMenuItem,wParam,edx,ebx
-			pop		edx
 			pop		eax
 			push	edx
-			.if eax==1
+			.if eax>=1
+				; Center in Dialog
 				invoke EnableMenuItem,wParam,edx,MF_BYPOSITION
+			.else
+				invoke EnableMenuItem,wParam,edx,MF_BYPOSITION or MF_GRAYED
+			.endif
+			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+			.if eax
+				mov		eax,MF_BYPOSITION
+			.else
+				mov		eax,MF_BYPOSITION or MF_GRAYED
 			.endif
 			pop		edx
 			inc		edx
+			push	edx
+			; Set Tabindex
+			invoke EnableMenuItem,wParam,edx,eax
+			pop		edx
 			inc		edx
+			; Auto Renumber ID's
 			invoke EnableMenuItem,wParam,edx,ebx
 		.elseif eax==3
 			;View
@@ -961,6 +986,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
 			.endif
 			invoke CheckMenuItem,wParam,IDM_VIEW_PREVIEW,eax
+			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+			.if eax
+				mov		eax,MF_BYCOMMAND
+			.else
+				mov		eax,MF_BYCOMMAND or MF_GRAYED
+			.endif
+			invoke EnableMenuItem,wParam,IDM_VIEW_PREVIEW,eax
 		.elseif eax==4
 			;Project
 			invoke SendMessage,hResEd,PRO_GETMEM,0,0
@@ -1005,9 +1037,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hResEd
-			invoke ToolBarEnable
 			invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
 			mov		hPreview,eax
+			invoke ToolBarEnable
 		.else
 			mov		eax,[edx].NMHDR.code
 			.if eax==TTN_NEEDTEXT
@@ -1363,7 +1395,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					; image index
 					mov		eax,[esi].MENUDATA.img
-					lea		esi,[esi+sizeof MENUDATA]
 					.if eax
 						mov		edx,rect.bottom
 						sub		edx,16
@@ -1411,6 +1442,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetSysColor,COLOR_GRAYTEXT
 					.endif
 					invoke SetTextColor,mDC,eax
+					lea		esi,[esi+sizeof MENUDATA]
 					invoke lstrlen,esi
 					push	eax
 					add		rect.left,22
@@ -1419,7 +1451,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DrawText,mDC,esi,-1,addr rect,DT_LEFT or DT_VCENTER
 					pop		eax
 					lea		esi,[esi+eax+1]
-					invoke DrawText,mDC,esi,-1,addr [ebx].DRAWITEMSTRUCT.rcItem,DT_RIGHT or DT_VCENTER
+					invoke DrawText,mDC,esi,-1,addr rect,DT_RIGHT or DT_VCENTER
 					sub		rect.left,22
 					sub		rect.top,2
 					add		rect.right,2
