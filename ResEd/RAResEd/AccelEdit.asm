@@ -210,7 +210,7 @@ SaveAccelEdit proc uses ebx esi edi,hWin:HWND
 		mov		ecx,esi
 		shl		ecx,16
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-		invoke lstrcpy,addr [edi].ACCELMEM.szname,addr buffer
+		invoke strcpy,addr [edi].ACCELMEM.szname,addr buffer
 		;ID
 		mov		ecx,esi
 		shl		ecx,16
@@ -389,7 +389,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetFreeProjectitemID,TPE_ACCEL
 			mov		esi,offset defacl
 			mov		[esi].ACCELMEM.value,eax
-			invoke lstrcpy,addr [esi].ACCELMEM.szname,addr szAccelName
+			invoke strcpy,addr [esi].ACCELMEM.szname,addr szAccelName
 			invoke GetUnikeName,addr [esi].ACCELMEM.szname
 		.endif
 		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname

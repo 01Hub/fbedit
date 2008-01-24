@@ -1,6 +1,87 @@
 
 .code
 
+SetupCasetab proc uses ebx
+
+	;Setup whole CaseTab
+	xor		ebx,ebx
+	.while ebx<256
+		invoke IsCharAlpha,ebx
+		.if eax
+			invoke CharUpper,ebx
+			.if eax==ebx
+				invoke CharLower,ebx
+			.endif
+			mov		Casetab[ebx],al
+		.else
+			mov		Casetab[ebx],bl
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+SetupCasetab endp
+
+strcpy proc uses ebx,lpdest:DWORD,lpsource:DWORD
+
+	mov		ebx,lpsource
+	mov		edx,lpdest
+	xor		ecx,ecx
+  @@:
+	mov		al,[ebx+ecx]
+	mov		[edx+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcpy endp
+
+strcpyn proc uses ebx,lpdest:DWORD,lpsource:DWORD,nmax:DWORD
+
+	mov		ebx,lpsource
+	mov		edx,lpdest
+	dec		nmax
+	xor		ecx,ecx
+  @@:
+	mov		al,[ebx+ecx]
+	.if ecx==nmax
+		xor		al,al
+	.endif
+	mov		[edx+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcpyn endp
+
+strcmpi proc uses esi edi,lpword1:DWORD,lpword2:DWORD
+
+	mov		esi,lpword1
+	mov		edi,lpword2
+	xor		ecx,ecx
+	dec		ecx
+	mov		eax,ecx
+	mov		edx,ecx
+  @@:
+	or		eax,edx
+	je		Found
+	inc		ecx
+	movzx	eax,byte ptr [esi+ecx]
+	movzx	edx,byte ptr [edi+ecx]
+	cmp		eax,edx
+	je		@b
+	movzx	edx,byte ptr Casetab[edx]
+	cmp		eax,edx
+	je		@b
+	movzx	edx,byte ptr Casetab[edx]
+	sub		eax,edx
+  Found:
+	ret
+
+strcmpi endp
+
 xGlobalAlloc proc fFlags:DWORD,nSize:DWORD
 
 	invoke GlobalAlloc,fFlags,nSize
@@ -282,7 +363,7 @@ SaveHexVal proc pVal:DWORD,fComma:DWORD
 	stosb
 	mov		eax,pVal
 	invoke hexEax
-	invoke lstrcpy,edi,addr strHex
+	invoke strcpy,edi,addr strHex
 	pop		edi
 	pop		esi
 	add		edi,10
@@ -300,7 +381,7 @@ SaveVal proc pVal:DWORD,fComma:DWORD
 	push	esi
 	push	edi
 	invoke ResEdBinToDec,pVal,addr buffer
-	invoke lstrcpy,edi,addr buffer
+	invoke strcpy,edi,addr buffer
 	invoke lstrlen,addr buffer
 	pop		edi
 	pop		esi
@@ -376,7 +457,7 @@ AddName proc uses esi edi,lpProMem:DWORD,lpName:DWORD,lpValue:DWORD
 	.while [esi].NAMEMEM.szname || [esi].NAMEMEM.value
 		add		esi,sizeof NAMEMEM
 	.endw
-	invoke lstrcpyn,addr [esi].NAMEMEM.szname,lpName,MaxName
+	invoke strcpyn,addr [esi].NAMEMEM.szname,lpName,MaxName
 	mov		[esi].NAMEMEM.delete,FALSE
 	mov		eax,lpValue
 	.if word ptr [eax]=='x0'
@@ -477,7 +558,7 @@ StreamOutProc proc pMem:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesWritten:DWORD
 	push	eax
 	inc		eax
 	mov		edx,pMem
-	invoke lstrcpyn,[edx],pBuffer,eax
+	invoke strcpyn,[edx],pBuffer,eax
 	pop		eax
 	mov		edx,pMem
 	add		[edx],eax

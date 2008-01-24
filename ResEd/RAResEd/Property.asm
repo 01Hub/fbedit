@@ -548,11 +548,11 @@ UpdateCbo proc uses esi,lpData:DWORD
 		.if eax!=-1
 			mov		al,[esi].idname
 			.if al
-				invoke lstrcpy,addr buffer,addr [esi].idname
+				invoke strcpy,addr buffer,addr [esi].idname
 			.else
 				invoke ResEdBinToDec,[esi].id,addr buffer
 			.endif
-			invoke lstrcpy,addr buffer1,addr szCtlText
+			invoke strcpy,addr buffer1,addr szCtlText
 			mov		eax,[esi].ntype
 			inc		eax
 			.while eax
@@ -568,7 +568,7 @@ UpdateCbo proc uses esi,lpData:DWORD
 			mov		al,' '
 			mov		[esi],al
 			inc		esi
-			invoke lstrcpy,esi,addr buffer2
+			invoke strcpy,esi,addr buffer2
 			pop		esi
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,addr buffer
 			mov		nInx,eax
@@ -730,7 +730,7 @@ TxtLstMulti proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD
 	LOCAL	nInx:DWORD
 
 	invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-	invoke lstrcpy,addr buffer,lpVal
+	invoke strcpy,addr buffer,lpVal
 	invoke lstrlen,lpVal
 	add		lpVal,eax
 	inc		lpVal
@@ -1068,11 +1068,11 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
 		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
-		invoke lstrcmpi,addr [esi].idname,addr szIDOK
+		invoke strcmpi,addr [esi].idname,addr szIDOK
 		.if !eax
 			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
 		.else
-			invoke lstrcmpi,addr [esi].idname,addr szIDCANCEL
+			invoke strcmpi,addr [esi].idname,addr szIDCANCEL
 			.if !eax
 				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
 			.endif
@@ -1081,7 +1081,7 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 		;(Name)
 		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
-		invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
+		invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
 		.if !eax
 			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
 		.endif
@@ -1265,22 +1265,22 @@ SetCtrlData:
 	;What is changed
 	mov		eax,lbid
 	.if eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
-		invoke lstrcmpi,addr buffer1,addr szIDOK
+		invoke strcmpi,addr buffer1,addr szIDOK
 		.if eax
-			invoke lstrcmpi,addr buffer1,addr szIDCANCEL
+			invoke strcmpi,addr buffer1,addr szIDCANCEL
 			.if eax
-				invoke lstrcmpi,addr buffer1,addr szIDC_STATIC
+				invoke strcmpi,addr buffer1,addr szIDC_STATIC
 			.endif
 		.endif
 		.if eax
 			invoke NameExists,addr buffer1,esi
 		.endif
 		.if eax
-			invoke lstrcpy,addr buffer,addr szNameExist
+			invoke strcpy,addr buffer,addr szNameExist
 			invoke lstrcat,addr buffer,addr buffer1
 			invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 		.else
-			invoke lstrcpy,addr [esi].idname,addr buffer1
+			invoke strcpy,addr [esi].idname,addr buffer1
 			.if ![esi].ntype
 				invoke GetWindowLong,hDEd,DEWM_PROJECT
 				mov		edx,eax
@@ -1344,28 +1344,28 @@ SetCtrlData:
 		mov		eax,val
 		mov		[esi].helpid,eax
 	.elseif eax==PRP_STR_CAPTION || eax==PRP_STR_CAPMULTI
-		invoke lstrcpy,addr [esi].caption,addr buffer1
+		invoke strcpy,addr [esi].caption,addr buffer1
 	.elseif eax==PRP_STR_IMAGE
-		invoke lstrcpy,addr [esi].caption,addr buffer1
+		invoke strcpy,addr [esi].caption,addr buffer1
 	.elseif eax==PRP_STR_AVI
-		invoke lstrcpy,addr [esi].caption,addr buffer1
+		invoke strcpy,addr [esi].caption,addr buffer1
 	.elseif eax==PRP_STR_FONT
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
-		invoke lstrcpy,addr (DLGHEAD ptr [edx]).font,addr buffer1
+		invoke strcpy,addr (DLGHEAD ptr [edx]).font,addr buffer1
 	.elseif eax==PRP_STR_CLASS
 		mov		eax,[esi].ntype
 		.if eax==0
 			mov		edx,esi
 			sub		edx,sizeof DLGHEAD
-			invoke lstrcpy,addr (DLGHEAD ptr [edx]).class,addr buffer1
+			invoke strcpy,addr (DLGHEAD ptr [edx]).class,addr buffer1
 		.elseif eax==23
-			invoke lstrcpy,addr [esi].class,addr buffer1
+			invoke strcpy,addr [esi].class,addr buffer1
 		.endif
 	.elseif eax==PRP_STR_MENU
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
-		invoke lstrcpy,addr (DLGHEAD ptr [edx]).menuid,addr buffer1
+		invoke strcpy,addr (DLGHEAD ptr [edx]).menuid,addr buffer1
 	.endif
 	mov		eax,lbid
 	;Is True/False Style or Multi Style changed
@@ -1424,9 +1424,9 @@ ListFalseTrue proc uses esi,CtlVal:DWORD,lpVal:DWORD,lpBuff:DWORD
 	xor		eax,-1
 	and		eax,CtlVal
 	.if eax==[esi+4]
-		invoke lstrcpy,lpBuff,addr szFalse
+		invoke strcpy,lpBuff,addr szFalse
 	.else
-		invoke lstrcpy,lpBuff,addr szTrue
+		invoke strcpy,lpBuff,addr szTrue
 	.endif
 	ret
 
@@ -1436,7 +1436,7 @@ ListMultiStyle proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD,lpBuff:
 	LOCAL	buffer[512]:BYTE
 	LOCAL	buffer1[64]:BYTE
 
-	invoke lstrcpy,addr buffer,lpVal
+	invoke strcpy,addr buffer,lpVal
 	invoke lstrlen,lpVal
 	add		lpVal,eax
 	inc		lpVal
@@ -1451,7 +1451,7 @@ ListMultiStyle proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD,lpBuff:
 		xor		eax,-1
 		and		eax,CtlValExSt
 		.if eax==[esi+12]
-			invoke lstrcpy,lpBuff,addr buffer1
+			invoke strcpy,lpBuff,addr buffer1
 			ret
 		.endif
 	.endif
@@ -1593,7 +1593,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 							;
 			.endif
 		.endif
-		invoke lstrcpy,addr buffer,addr PrAll
+		invoke strcpy,addr buffer,addr PrAll
 		mov		nInx,0
 	  @@:
 		invoke GetStrItem,addr buffer,addr buffer1
@@ -1618,7 +1618,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;(Name)
 				mov		lbid,PRP_STR_NAME
 				push	eax
-				invoke lstrcpy,edi,addr [esi].idname
+				invoke strcpy,edi,addr [esi].idname
 				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
@@ -1783,7 +1783,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;Caption
 				mov		lbid,PRP_STR_CAPTION
 				push	eax
-				invoke lstrcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].caption
 				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
@@ -2068,23 +2068,23 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					mov		al,','
 					stosb
 				.endif
-				invoke lstrcpy,edi,addr (DLGHEAD ptr [esi]).font
+				invoke strcpy,edi,addr (DLGHEAD ptr [esi]).font
 				add		esi,sizeof DLGHEAD
 			.elseif edx==27
 				;Menu
 				mov		lbid,PRP_STR_MENU
 				sub		esi,sizeof DLGHEAD
-				invoke lstrcpy,edi,addr (DLGHEAD ptr [esi]).menuid
+				invoke strcpy,edi,addr (DLGHEAD ptr [esi]).menuid
 				add		esi,sizeof DLGHEAD
 			.elseif edx==28
 				;Class
 				mov		lbid,PRP_STR_CLASS
 				.if eax==0
 					sub		esi,sizeof DLGHEAD
-					invoke lstrcpy,edi,addr (DLGHEAD ptr [esi]).class
+					invoke strcpy,edi,addr (DLGHEAD ptr [esi]).class
 					add		esi,sizeof DLGHEAD
 				.elseif eax==23
-					invoke lstrcpy,edi,addr (DIALOG ptr [esi]).class
+					invoke strcpy,edi,addr (DIALOG ptr [esi]).class
 				.endif
 			.elseif edx==29
 				;Notify
@@ -2199,7 +2199,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				mov		lbid,PRP_FUN_STYLE
 				mov		eax,[esi].exstyle
 				invoke hexEax
-				invoke lstrcpy,edi,addr strHex
+				invoke strcpy,edi,addr strHex
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -2227,7 +2227,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				mov		lbid,PRP_FUN_EXSTYLE
 				mov		eax,[esi].style
 				invoke hexEax
-				invoke lstrcpy,edi,addr strHex
+				invoke strcpy,edi,addr strHex
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -2261,7 +2261,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==50
 				;Image
 				mov		lbid,PRP_STR_IMAGE
-				invoke lstrcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].caption
 			.elseif edx==51
 				;Buttons
 				mov		lbid,PRP_BOOL_BUTTON
@@ -2306,7 +2306,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==58
 				;AviClip
 				mov		lbid,PRP_STR_AVI
-				invoke lstrcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].caption
 			.elseif edx==59
 				;AutoSize
 				mov		lbid,PRP_BOOL_AUTOSIZE
@@ -2521,7 +2521,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hCtl,GWL_USERDATA
 						mov		esi,eax
 						sub		esi,sizeof DLGHEAD
-						invoke lstrcpy,addr lf.lfFaceName,addr (DLGHEAD ptr [esi]).font
+						invoke strcpy,addr lf.lfFaceName,addr (DLGHEAD ptr [esi]).font
 						push	(DLGHEAD ptr [esi]).fontht
 						pop		lf.lfHeight
 						mov		al,(DLGHEAD ptr [esi]).charset
@@ -2577,7 +2577,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							xor		edx,edx
 							div		ecx
 							mov		(DLGHEAD ptr [esi]).fontsize,eax
-							invoke lstrcpy,addr (DLGHEAD ptr [esi]).font,addr lf.lfFaceName
+							invoke strcpy,addr (DLGHEAD ptr [esi]).font,addr lf.lfFaceName
 							call	UpdateFont
 						.endif
 					.elseif eax==PRP_STR_MENU

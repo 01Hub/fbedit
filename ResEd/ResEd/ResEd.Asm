@@ -335,7 +335,7 @@ SaveProject proc lpFileName:DWORD
 	LOCAL	nSize:DWORD
 	LOCAL	buff[MAX_PATH]:BYTE
 
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
 	mov		hMem,eax
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hMemDef,eax

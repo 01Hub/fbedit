@@ -143,7 +143,7 @@ SaveStringEdit proc uses esi edi,hWin:HWND
 		mov		ecx,esi
 		shl		ecx,16
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-		invoke lstrcpy,addr [edi].STRINGMEM.szname,addr buffer
+		invoke strcpy,addr [edi].STRINGMEM.szname,addr buffer
 		;ID
 		mov		ecx,esi
 		shl		ecx,16
@@ -156,7 +156,7 @@ SaveStringEdit proc uses esi edi,hWin:HWND
 		shl		ecx,16
 		add		ecx,2
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-		invoke lstrcpy,addr [edi].STRINGMEM.szstring,addr buffer
+		invoke strcpy,addr [edi].STRINGMEM.szstring,addr buffer
 		.if [edi].STRINGMEM.szname || [edi].STRINGMEM.value
 			add		edi,sizeof STRINGMEM
 		.endif

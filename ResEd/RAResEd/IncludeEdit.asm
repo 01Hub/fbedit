@@ -16,7 +16,7 @@ ExportInclude proc uses esi edi,hMem:DWORD
 	push	edi
 	mov		esi,hMem
 	.while byte ptr [esi].INCLUDEMEM.szfile
-		invoke lstrcmpi,offset szResourceh,addr [esi].INCLUDEMEM.szfile
+		invoke strcmpi,offset szResourceh,addr [esi].INCLUDEMEM.szfile
 		.if !eax
 			mov		fResourceh,TRUE
 		.endif
@@ -77,7 +77,7 @@ SaveIncludeEdit proc uses esi edi,hWin:HWND
 		shl		ecx,16
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
 		.if buffer
-			invoke lstrcpy,addr [edi].INCLUDEMEM.szfile,addr buffer
+			invoke strcpy,addr [edi].INCLUDEMEM.szfile,addr buffer
 			add		edi,sizeof INCLUDEMEM
 		.endif
 		inc		esi
@@ -178,7 +178,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Cell button clicked
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
-					invoke lstrcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
+					invoke strcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
 				.else
 					mov		buffer,0
 				.endif
@@ -202,7 +202,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke RemoveProjectPath,addr buffer
 					mov		edx,[esi].GRIDNOTIFY.lpdata
-					invoke lstrcpy,edx,eax
+					invoke strcpy,edx,eax
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE

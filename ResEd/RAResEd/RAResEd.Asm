@@ -1177,10 +1177,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hOut,eax
 		invoke RtlZeroMemory,addr lf,size lf
 		mov		lf.lfHeight,-12
-		invoke lstrcpy,addr lf.lfFaceName,addr szCourierNew
+		invoke strcpy,addr lf.lfFaceName,addr szCourierNew
 		invoke CreateFontIndirect,addr lf
 		mov		hredfont,eax
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
+		invoke SetupCasetab
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
 		;invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE
@@ -1473,7 +1474,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		mov		dword ptr [ecx],'h.'
 		.if lParam
-			invoke lstrcpy,offset szProjectPath,lParam
+			invoke strcpy,offset szProjectPath,lParam
 			invoke SetCurrentDirectory,offset szProjectPath
 		.endif
 		jmp		Ex
@@ -1492,7 +1493,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		mov		nExportType,eax
 		.if lParam
-			invoke lstrcpy,offset szExportFileName,lParam
+			invoke strcpy,offset szExportFileName,lParam
 		.endif
 		xor		eax,eax
 		jmp		Ex
@@ -1820,9 +1821,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			push	eax
 			mov		[edi].RADLGHEAD.ver,101
 			mov		[edi].RADLGHEAD.changed,FALSE
-			invoke lstrcpy,addr [edi].RADLGHEAD.class,addr [esi].DLGHEAD.class
-			invoke lstrcpy,addr [edi].RADLGHEAD.menuid,addr [esi].DLGHEAD.menuid
-			invoke lstrcpy,addr [edi].RADLGHEAD.font,addr [esi].DLGHEAD.font
+			invoke strcpy,addr [edi].RADLGHEAD.class,addr [esi].DLGHEAD.class
+			invoke strcpy,addr [edi].RADLGHEAD.menuid,addr [esi].DLGHEAD.menuid
+			invoke strcpy,addr [edi].RADLGHEAD.font,addr [esi].DLGHEAD.font
 			mov		eax,[esi].DLGHEAD.fontsize
 			mov		[edi].RADLGHEAD.fontsize,eax
 			mov		eax,[esi].DLGHEAD.fontht
@@ -1860,9 +1861,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,[esi].DIALOG.ccy
 					mov		[edi].RADIALOG.ccy,eax
 					.if [esi].DIALOG.ntype==23
-						invoke lstrcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.class,32
+						invoke strcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.class,32
 					.else
-						invoke lstrcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.caption,RAMaxCap
+						invoke strcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.caption,RAMaxCap
 					.endif
 					mov		eax,[esi].DIALOG.ntype
 					mov		[edi].RADIALOG.ntype,eax
@@ -1872,7 +1873,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[edi].RADIALOG.tab,eax
 					mov		eax,[esi].DIALOG.id
 					mov		[edi].RADIALOG.id,eax
-					invoke lstrcpyn,addr [edi].RADIALOG.idname,addr [esi].DIALOG.idname,32
+					invoke strcpyn,addr [edi].RADIALOG.idname,addr [esi].DIALOG.idname,32
 					mov		[edi].RADIALOG.undo,NULL
 					mov		[edi].RADIALOG.himg,NULL
 					add		edi,sizeof RADIALOG

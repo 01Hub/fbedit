@@ -2297,7 +2297,7 @@ GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
 							.else
 								mov		buffer1,VK_TAB
 								invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
-								invoke lstrcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
+								invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
 								.if buffer1[1]
 									invoke lstrcat,addr buffer,addr buffer1
 								.endif
@@ -2945,7 +2945,7 @@ MakeDlgFont proc uses esi,lpMem:DWORD
 	mov		lf.lfItalic,al
 	movzx	eax,[esi].DLGHEAD.charset
 	mov		lf.lfCharSet,al
-	invoke lstrcpy,addr lf.lfFaceName,addr [esi].DLGHEAD.font
+	invoke strcpy,addr lf.lfFaceName,addr [esi].DLGHEAD.font
 	invoke CreateFontIndirect,addr lf
 	mov		[esi].DLGHEAD.hfont,eax
 	ret
@@ -3298,7 +3298,7 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 								invoke lstrcmp,addr [edi].caption,addr buffer
 							.endif
 							.if !eax
-								invoke lstrcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
 								.if [ebx].RESOURCEMEM.ntype==0
 									mov		edx,IMAGE_BITMAP
 								.else
@@ -3689,10 +3689,10 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		mov		(DIALOG ptr [edi]).duy,eax
 		mov		(DIALOG ptr [edi]).duccx,eax
 		mov		(DIALOG ptr [edi]).duccy,eax
-		invoke lstrcpyn,addr buffer,(TYPES ptr [esi]).lpidname,MaxName
+		invoke strcpyn,addr buffer,(TYPES ptr [esi]).lpidname,MaxName
 		invoke GetUnikeName,addr buffer
-		invoke lstrcpyn,addr (DIALOG ptr [edi]).idname,addr buffer,MaxName
-		invoke lstrcpyn,addr (DIALOG ptr [edi]).caption,(TYPES ptr [esi]).lpcaption,MaxCap
+		invoke strcpyn,addr (DIALOG ptr [edi]).idname,addr buffer,MaxName
+		invoke strcpyn,addr (DIALOG ptr [edi]).caption,(TYPES ptr [esi]).lpcaption,MaxCap
 		.if !nType
 			mov		eax,DlgIDN
 			invoke GetFreeProjectitemID,TPE_DIALOG
@@ -3705,7 +3705,7 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 			mov		[esi].ctlid,eax
 			mov		[esi].class,0
 			mov		[esi].menuid,0
-			invoke lstrcpy,addr [esi].font,addr DlgFN
+			invoke strcpy,addr [esi].font,addr DlgFN
 			mov		eax,DlgFS
 			mov		[esi].fontsize,eax
 			mov		eax,DlgFH
@@ -3716,7 +3716,7 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 			invoke GetFreeTab
 			mov		(DIALOG ptr [edi]).tab,eax
 			.if nType==23
-				invoke lstrcpy,addr [edi].DIALOG.class,addr szUserControlClass
+				invoke strcpy,addr [edi].DIALOG.class,addr szUserControlClass
 			.endif
 		.endif
 		assume esi:nothing
@@ -3839,7 +3839,7 @@ PasteCtl proc uses esi edi
 			mov		[esi].duccx,eax
 			mov		[esi].duccy,eax
 			invoke GetTypePtr,[esi].ntype
-			invoke lstrcpyn,addr [esi].idname,(TYPES ptr [eax]).lpidname,MaxName
+			invoke strcpyn,addr [esi].idname,(TYPES ptr [eax]).lpidname,MaxName
 			invoke GetUnikeName,addr [esi].idname
 			invoke CreateCtl,esi
 			mov		hCtl,eax
@@ -4992,7 +4992,7 @@ GetMnuString proc uses ebx esi edi,lpName:DWORD,lpBuff:DWORD
 					inc		edi
 					mov		byte ptr [edi],' '
 					inc		edi
-					invoke lstrcpy,edi,addr (MNUITEM ptr [esi]).itemcaption
+					invoke strcpy,edi,addr (MNUITEM ptr [esi]).itemcaption
 					invoke lstrlen,edi
 					add		edi,eax
 					mov		byte ptr [edi],' '
@@ -5007,7 +5007,7 @@ GetMnuString proc uses ebx esi edi,lpName:DWORD,lpBuff:DWORD
 		.endif
 		pop		eax
 	.else
-		invoke lstrcpy,lpBuff,addr szMnu
+		invoke strcpy,lpBuff,addr szMnu
 		xor		eax,eax
 	.endif
 	ret
@@ -5406,11 +5406,11 @@ SaveDefine proc
 	.if eax!=-1
 		mov		al,[esi].idname
 		.if al && [esi].id
-			invoke lstrcmpi,addr [esi].idname,addr szIDOK
+			invoke strcmpi,addr [esi].idname,addr szIDOK
 			.if eax
-				invoke lstrcmpi,addr [esi].idname,addr szIDCANCEL
+				invoke strcmpi,addr [esi].idname,addr szIDCANCEL
 				.if eax
-					invoke lstrcmpi,addr [esi].idname,addr szIDC_STATIC
+					invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
 				.endif
 			.endif
 			.if eax
@@ -5854,7 +5854,7 @@ WriteStyles:
 					mov		byte ptr [edi],'|'
 					add		edi,1
 				.endif
-				invoke lstrcpy,edi,eax
+				invoke strcpy,edi,eax
 				invoke lstrlen,edi
 				lea		edi,[edi+eax]
 				inc		ncount
@@ -5895,7 +5895,7 @@ TestTypeMask1:
 					mov		dword ptr [edi],'|'
 					add		edi,1
 				.endif
-				invoke lstrcpy,edi,eax
+				invoke strcpy,edi,eax
 				invoke lstrlen,edi
 				lea		edi,[edi+eax]
 				inc		ncount
@@ -5929,7 +5929,7 @@ SaveExStyle proc uses esi,nExStyle:DWORD
 						mov		byte ptr [edi],'|'
 						add		edi,1
 					.endif
-					invoke lstrcpy,edi,eax
+					invoke strcpy,edi,eax
 					invoke lstrlen,edi
 					lea		edi,[edi+eax]
 					inc		ncount
@@ -6231,7 +6231,7 @@ VerifyTebIndex proc uses esi,hMem:DWORD
 	invoke RtlZeroMemory,addr tab,sizeof tab
 	mov		esi,hMem
 	add		esi,sizeof DLGHEAD
-	invoke lstrcpy,addr szerr,addr [esi].DIALOG.idname
+	invoke strcpy,addr szerr,addr [esi].DIALOG.idname
 	add		esi,sizeof DIALOG
 	.while [esi].DIALOG.hwnd
 		.if [esi].DIALOG.hwnd!=-1
@@ -6506,7 +6506,7 @@ UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
 	mov		edi,eax
 	invoke ExportDialogNames,ebx
 	mov		esi,eax
-	invoke lstrcpy,edi,esi
+	invoke strcpy,edi,esi
 	invoke GlobalUnlock,esi
 	invoke GlobalFree,esi
 	invoke ExportDialog,ebx

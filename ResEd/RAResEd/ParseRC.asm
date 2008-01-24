@@ -157,9 +157,9 @@ IsBegin proc lpWord:DWORD
 
 	push	ecx
 	push	edx
-	invoke lstrcmpi,lpWord,offset szBEGIN
+	invoke strcmpi,lpWord,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,lpWord,offset szBEGINSHORT
+		invoke strcmpi,lpWord,offset szBEGINSHORT
 	.endif
 	pop		edx
 	pop		ecx
@@ -171,9 +171,9 @@ IsEnd proc lpWord:DWORD
 
 	push	ecx
 	push	edx
-	invoke lstrcmpi,lpWord,offset szEND
+	invoke strcmpi,lpWord,offset szEND
 	.if eax
-		invoke lstrcmpi,lpWord,offset szENDSHORT
+		invoke strcmpi,lpWord,offset szENDSHORT
 	.endif
 	pop		edx
 	pop		ecx
@@ -194,18 +194,18 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 		mov		byte ptr [edx],0
 	.else
 		;Name
-		invoke lstrcpyn,lpName,lpBuff,MaxName
+		invoke strcpyn,lpName,lpBuff,MaxName
 		;ID
 		invoke FindName,lpProMem,lpName
 		.if eax
 			mov		[eax].NAMEMEM.delete,TRUE
 			mov		eax,[eax].NAMEMEM.value
 			push	eax
-			invoke lstrcmpi,lpName,addr szIDOK
+			invoke strcmpi,lpName,addr szIDOK
 			.if eax
-				invoke lstrcmpi,lpName,addr szIDCANCEL
+				invoke strcmpi,lpName,addr szIDCANCEL
 				.if eax
-					invoke lstrcmpi,lpName,addr szIDC_STATIC
+					invoke strcmpi,lpName,addr szIDC_STATIC
 					.if eax
 						pop		ecx
 					.else
@@ -224,11 +224,11 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 			mov		[edx],ecx
 		.else
 			push	0
-			invoke lstrcmpi,lpName,addr szIDOK
+			invoke strcmpi,lpName,addr szIDOK
 			.if eax
-				invoke lstrcmpi,lpName,addr szIDCANCEL
+				invoke strcmpi,lpName,addr szIDCANCEL
 				.if eax
-					invoke lstrcmpi,lpName,addr szIDC_STATIC
+					invoke strcmpi,lpName,addr szIDC_STATIC
 					.if eax
 						pop		ecx
 					.else
@@ -267,43 +267,43 @@ ParseDefine endp
 
 ParseDefsSkip proc
 
-	invoke lstrcmpi,offset wordbuff,offset szUNDEF
+	invoke strcmpi,offset wordbuff,offset szUNDEF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szIF
+	invoke strcmpi,offset wordbuff,offset szIF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szELIF
+	invoke strcmpi,offset wordbuff,offset szELIF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szELSE
+	invoke strcmpi,offset wordbuff,offset szELSE
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szENDIF
+	invoke strcmpi,offset wordbuff,offset szENDIF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szIFDEF
+	invoke strcmpi,offset wordbuff,offset szIFDEF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szIFNDEF
+	invoke strcmpi,offset wordbuff,offset szIFNDEF
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
@@ -384,25 +384,25 @@ GetLoadOptions proc uses ebx esi,lpRCMem:DWORD
 	add		esi,ebx
 	invoke GetWord,offset wordbuff,esi
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szPRELOAD
+	invoke strcmpi,offset wordbuff,offset szPRELOAD
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szLOADONCALL
+	invoke strcmpi,offset wordbuff,offset szLOADONCALL
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szFIXED
+	invoke strcmpi,offset wordbuff,offset szFIXED
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szMOVEABLE
+	invoke strcmpi,offset wordbuff,offset szMOVEABLE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szDISCARDABLE
+	invoke strcmpi,offset wordbuff,offset szDISCARDABLE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szPURE
+	invoke strcmpi,offset wordbuff,offset szPURE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szIMPURE
+	invoke strcmpi,offset wordbuff,offset szIMPURE
 	or		eax,eax
 	je		@b
 	mov		eax,esi
@@ -425,7 +425,7 @@ ParseInclude proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.endw
 	invoke ParseFileName,esi
 	add		esi,eax
-	invoke lstrcpy,addr [edi].INCLUDEMEM.szfile,offset wordbuff
+	invoke strcpy,addr [edi].INCLUDEMEM.szfile,offset wordbuff
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
@@ -440,33 +440,33 @@ ParseSkip proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		esi,ebx
 	invoke GetWord,offset wordbuff,esi
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szPRELOAD
+	invoke strcmpi,offset wordbuff,offset szPRELOAD
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szLOADONCALL
+	invoke strcmpi,offset wordbuff,offset szLOADONCALL
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szFIXED
+	invoke strcmpi,offset wordbuff,offset szFIXED
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szMOVEABLE
+	invoke strcmpi,offset wordbuff,offset szMOVEABLE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szDISCARDABLE
+	invoke strcmpi,offset wordbuff,offset szDISCARDABLE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szPURE
+	invoke strcmpi,offset wordbuff,offset szPURE
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szIMPURE
+	invoke strcmpi,offset wordbuff,offset szIMPURE
 	or		eax,eax
 	je		@b
 	xor		ebx,ebx
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 	  Nx:
@@ -474,14 +474,14 @@ ParseSkip proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	  @@:
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szEND
+		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
 		.endif
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szBEGIN
+			invoke strcmpi,offset wordbuff,offset szBEGIN
 			.if eax
-				invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+				invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 			.endif
 			.if !eax
 				jmp		Nx
@@ -717,7 +717,7 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD
 	mov		esi,lpRCMem
 	invoke GetWord,offset wordbuff,esi
 	push	eax
-	invoke lstrcmpi,offset wordbuff,offset szNOT
+	invoke strcmpi,offset wordbuff,offset szNOT
 	pop		ecx
 	.if !eax
 		add		esi,ecx
@@ -785,17 +785,17 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -821,9 +821,9 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 	  @@:
@@ -832,9 +832,9 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		invoke ParseDefsSkip
 		or		eax,eax
 		je		@b
-		invoke lstrcmpi,offset wordbuff,offset szEND
+		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
 		.endif
 		.if eax
 			.if byte ptr wordbuff=='"'
@@ -865,7 +865,7 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				add		esi,eax
 				invoke UnQuoteWord,offset wordbuff
 				invoke lstrcat,offset namebuff,offset wordbuff
-				invoke lstrcpyn,addr [edi].STRINGMEM.szstring,offset namebuff,sizeof STRINGMEM.szstring
+				invoke strcpyn,addr [edi].STRINGMEM.szstring,offset namebuff,sizeof STRINGMEM.szstring
 				mov		eax,lang
 				mov		[edi].STRINGMEM.lang,eax
 				mov		eax,sublang
@@ -876,7 +876,7 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		.endif
 	.endif
 	.if nErr
-		invoke lstrcpy,addr namebuff,addr szErrorParse
+		invoke strcpy,addr namebuff,addr szErrorParse
 		invoke GetLineNo,hrcmem,esi
 		mov		edx,eax
 		invoke ResEdBinToDec,edx,addr namebuff+100
@@ -894,6 +894,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke strcpy,addr buffer,offset wordbuff
 	mov		esi,lpRCMem
 	invoke GetLoadOptions,esi
 	add		esi,eax
@@ -904,8 +905,8 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 			invoke AddTypeMem,lpProMem,10*1024,TPE_XPMANIFEST
 			mov		edi,eax
 			invoke GetName,lpProMem,offset namebuff,addr [edi].XPMANIFESTMEM.szname,addr [edi].XPMANIFESTMEM.value
-			invoke lstrcpyn,addr [edi].XPMANIFESTMEM.szfilename,offset wordbuff,sizeof XPMANIFESTMEM.szfilename
-			invoke lstrcpy,addr buffer,addr szProjectPath
+			invoke strcpyn,addr [edi].XPMANIFESTMEM.szfilename,offset wordbuff,sizeof XPMANIFESTMEM.szfilename
+			invoke strcpy,addr buffer,addr szProjectPath
 			invoke lstrcat,addr buffer,addr szBS
 			invoke lstrcat,addr buffer,addr [edi].XPMANIFESTMEM.szfilename
 			invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
@@ -927,7 +928,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 			mov		eax,nType
 			mov		[edi].RESOURCEMEM.ntype,eax
 			invoke GetName,lpProMem,offset namebuff,addr [edi].RESOURCEMEM.szname,addr [edi].RESOURCEMEM.value
-			invoke lstrcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
+			invoke strcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
 		.endif
 	.else
 		.if nType==7
@@ -936,9 +937,9 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 			invoke GetName,lpProMem,offset namebuff,addr [edi].XPMANIFESTMEM.szname,addr [edi].XPMANIFESTMEM.value
 			invoke GetWord,offset wordbuff,esi
 			add		esi,eax
-			invoke lstrcmpi,offset wordbuff,offset szBEGIN
+			invoke strcmpi,offset wordbuff,offset szBEGIN
 			.if eax
-				invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+				invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 			.endif
 			.if !eax
 				lea		edi,[edi+sizeof XPMANIFESTMEM]
@@ -964,9 +965,60 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 					inc		esi
 				.endw
 				mov		byte ptr [edx],0
-				invoke lstrcmpi,offset wordbuff,offset szEND
+				invoke strcmpi,offset wordbuff,offset szEND
 				.if eax
-					invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+					invoke strcmpi,offset wordbuff,offset szENDSHORT
+				.endif
+				.if eax
+					mov		edx,offset wordbuff
+					.while byte ptr [edx]
+						mov		al,[edx]
+						stosb
+						inc		edx
+					.endw
+					mov		al,0Dh
+					stosb
+					mov		al,0Ah
+					stosb
+					jmp		@b
+				.endif
+				.if byte ptr [edi-1]==0Ah
+					sub		edi,2
+				.endif
+				mov		al,0
+				stosb
+			.endif
+		.elseif nType==4
+			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
+			mov		edi,eax
+			invoke GetName,lpProMem,offset namebuff,addr [edi].RCDATAMEM.szname,addr [edi].RCDATAMEM.value
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			invoke strcmpi,offset wordbuff,offset szBEGIN
+			.if eax
+				invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+			.endif
+			.if !eax
+				lea		edi,[edi+sizeof RCDATAMEM]
+			  @@:
+				call	SkipSpace
+				.if byte ptr [esi]==0Dh
+					inc		esi
+				.endif
+				.if byte ptr [esi]==0Ah
+					inc		esi
+				.endif
+				mov		edx,offset wordbuff
+				.while byte ptr [esi] && byte ptr [esi]!=0Dh
+					mov		al,[esi]
+					mov		[edx],al
+					inc		esi
+					inc		edx
+				.endw
+				mov		byte ptr [edx],0
+				invoke strcmpi,offset wordbuff,offset szEND
+				.if eax
+					invoke strcmpi,offset wordbuff,offset szENDSHORT
 				.endif
 				.if eax
 					mov		edx,offset wordbuff
@@ -988,55 +1040,152 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 				stosb
 			.endif
 		.else
-			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
-			mov		edi,eax
-			invoke GetName,lpProMem,offset namebuff,addr [edi].RCDATAMEM.szname,addr [edi].RCDATAMEM.value
-			invoke GetWord,offset wordbuff,esi
-			add		esi,eax
-			invoke lstrcmpi,offset wordbuff,offset szBEGIN
-			.if eax
-				invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+			invoke strcpy,addr namebuff+1024,addr szErrorParse
+			invoke GetLineNo,hrcmem,esi
+			mov		edx,eax
+			invoke ResEdBinToDec,edx,addr namebuff+1024+100
+			invoke lstrcat,addr namebuff+1024,addr namebuff+1024+100
+			invoke lstrcat,addr namebuff+1024,addr szCrLf
+			invoke lstrcat,addr namebuff+1024,addr szNotSupported
+			invoke MessageBox,0,addr namebuff+1024,addr buffer,MB_ICONERROR or MB_YESNOCANCEL
+			.if eax==IDCANCEL
+				mov		eax,-1
+				ret
 			.endif
-			.if !eax
-				lea		edi,[edi+sizeof RCDATAMEM]
-			  @@:
-				call	SkipSpace
-				.if byte ptr [esi]==0Dh
-					inc		esi
-				.endif
-				.if byte ptr [esi]==0Ah
-					inc		esi
-				.endif
-				mov		edx,offset wordbuff
-				.while byte ptr [esi] && byte ptr [esi]!=0Dh
-					mov		al,[esi]
-					mov		[edx],al
-					inc		esi
-					inc		edx
-				.endw
-				mov		byte ptr [edx],0
-				invoke lstrcmpi,offset wordbuff,offset szEND
+			.if eax==IDNO
+				invoke GetWord,offset wordbuff,esi
+				add		esi,eax
+				invoke strcmpi,offset wordbuff,offset szBEGIN
 				.if eax
-					invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 				.endif
-				.if eax
+				.if !eax
+				  @@:
+					call	SkipSpace
+					.if byte ptr [esi]==0Dh
+						inc		esi
+					.endif
+					.if byte ptr [esi]==0Ah
+						inc		esi
+					.endif
 					mov		edx,offset wordbuff
-					.while byte ptr [edx]
-						mov		al,[edx]
-						stosb
+					.while byte ptr [esi] && byte ptr [esi]!=0Dh
+						mov		al,[esi]
+						mov		[edx],al
+						inc		esi
 						inc		edx
 					.endw
-					mov		al,0Dh
-					stosb
-					mov		al,0Ah
-					stosb
-					jmp		@b
+					mov		byte ptr [edx],0
+					invoke strcmpi,offset wordbuff,offset szEND
+					.if eax
+						invoke strcmpi,offset wordbuff,offset szENDSHORT
+					.endif
+					.if eax
+						jmp		@b
+					.endif
 				.endif
-				.if byte ptr [edi-1]==0Ah
-					sub		edi,2
+			.else
+				invoke GetTypeMem,lpProMem,TPE_RESOURCE
+				mov		eax,[eax].PROJECT.hmem
+				.if !eax
+					invoke AddTypeMem,lpProMem,64*1024,TPE_RESOURCE
 				.endif
-				mov		al,0
-				stosb
+				mov		edi,eax
+				.while [edi].RESOURCEMEM.szfile
+					lea		edi,[edi+sizeof RESOURCEMEM]
+				.endw
+				mov		eax,nType
+				mov		[edi].RESOURCEMEM.ntype,eax
+				invoke strcpy,offset wordbuff,addr buffer
+				invoke lstrcat,offset wordbuff,addr namebuff+1024+100
+				invoke lstrlen,offset wordbuff
+				.if nType==0
+					mov		dword ptr wordbuff[eax],'pmb.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==1
+					mov		dword ptr wordbuff[eax],'ruc.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==2
+					mov		dword ptr wordbuff[eax],'oci.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==3
+					mov		dword ptr wordbuff[eax],'iva.'
+					mov		dword ptr wordbuff[eax+4],0
+				.else
+					mov		dword ptr wordbuff[eax],'xxx.'
+					mov		dword ptr wordbuff[eax+4],0
+				.endif
+				invoke GetName,lpProMem,offset namebuff,addr [edi].RESOURCEMEM.szname,addr [edi].RESOURCEMEM.value
+				invoke strcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
+				invoke GetWord,offset wordbuff,esi
+				add		esi,eax
+				invoke strcmpi,offset wordbuff,offset szBEGIN
+				.if eax
+					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+				.endif
+				.if !eax
+					invoke CreateFile,addr [edi].RESOURCEMEM.szfile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+					mov		hFile,eax
+				  @@:
+					call	SkipSpace
+					.if byte ptr [esi]==0Dh
+						inc		esi
+					.endif
+					.if byte ptr [esi]==0Ah
+						inc		esi
+					.endif
+					mov		edx,offset wordbuff
+					.while byte ptr [esi] && byte ptr [esi]!=0Dh
+						mov		al,[esi]
+						mov		[edx],al
+						inc		esi
+						inc		edx
+					.endw
+					mov		byte ptr [edx],0
+					invoke strcmpi,offset wordbuff,offset szEND
+					.if eax
+						invoke strcmpi,offset wordbuff,offset szENDSHORT
+					.endif
+					.if eax
+						mov		edx,offset wordbuff
+						mov		ecx,edx
+						.while byte ptr [edx]
+							mov		al,[edx]
+							.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
+								.if al>='a'
+									sub		al,'a'
+								.elseif al>='A'
+									sub		al,'A'
+								.else
+									sub		al,'0'
+								.endif
+								mov		ah,al
+								inc		edx
+								mov		al,[edx]
+								.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
+									.if al>='a'
+										sub		al,'a'-10
+									.elseif al>='A'
+										sub		al,'A'-10
+									.else
+										sub		al,'0'
+									.endif
+									shl		ah,4
+									or		ah,al
+								.endif
+								mov		[ecx],ah
+								inc		edx
+								inc		ecx
+							.else
+								inc		edx
+							.endif
+						.endw
+						sub		ecx,offset wordbuff
+						invoke WriteFile,hFile,offset wordbuff,ecx,addr nBytes,NULL
+						jmp		@b
+					.endif
+					invoke CloseHandle,hFile
+				.endif
 			.endif
 		.endif
 	.endif
@@ -1059,7 +1208,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	invoke UnQuoteWord,offset wordbuff
-	invoke lstrcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
+	invoke strcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	invoke GetName,lpProMem,offset wordbuff,addr [edi].DIALOG.idname,addr [edi].DIALOG.id
@@ -1099,13 +1248,13 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		.endif
 		mov		[edi].DIALOG.helpid,eax
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szEditClass
+	invoke strcmpi,offset namebuff,offset szEditClass
 	.if !eax
 		;Edit
 		mov		[edi].DIALOG.ntype,1
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szStaticClass
+	invoke strcmpi,offset namebuff,offset szStaticClass
 	.if !eax
 		;Static
 		mov		eax,[edi].DIALOG.style
@@ -1122,7 +1271,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		.endif
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szButtonClass
+	invoke strcmpi,offset namebuff,offset szButtonClass
 	.if !eax
 		;Button
 		mov		eax,[edi].DIALOG.style
@@ -1138,19 +1287,19 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		mov		[edi].DIALOG.ntype,edx
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szComboBoxClass
+	invoke strcmpi,offset namebuff,offset szComboBoxClass
 	.if !eax
 		;ComboBox
 		mov		[edi].DIALOG.ntype,7
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szListBoxClass
+	invoke strcmpi,offset namebuff,offset szListBoxClass
 	.if !eax
 		;ListBox
 		mov		[edi].DIALOG.ntype,8
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szScrollBarClass
+	invoke strcmpi,offset namebuff,offset szScrollBarClass
 	.if !eax
 		;ScrollBar
 		mov		edx,[edi].DIALOG.style
@@ -1159,97 +1308,97 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		mov		[edi].DIALOG.ntype,edx
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szTabControlClass
+	invoke strcmpi,offset namebuff,offset szTabControlClass
 	.if !eax
 		;TabControl
 		mov		[edi].DIALOG.ntype,11
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szProgressBarClass
+	invoke strcmpi,offset namebuff,offset szProgressBarClass
 	.if !eax
 		;ProgressBar
 		mov		[edi].DIALOG.ntype,12
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szTreeViewClass
+	invoke strcmpi,offset namebuff,offset szTreeViewClass
 	.if !eax
 		;TreeView
 		mov		[edi].DIALOG.ntype,13
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szListViewClass
+	invoke strcmpi,offset namebuff,offset szListViewClass
 	.if !eax
 		;ListView
 		mov		[edi].DIALOG.ntype,14
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szTrackBarClass
+	invoke strcmpi,offset namebuff,offset szTrackBarClass
 	.if !eax
 		;TrackBar
 		mov		[edi].DIALOG.ntype,15
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szUpDownClass
+	invoke strcmpi,offset namebuff,offset szUpDownClass
 	.if !eax
 		;UpDown
 		mov		[edi].DIALOG.ntype,16
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szToolBarClass
+	invoke strcmpi,offset namebuff,offset szToolBarClass
 	.if !eax
 		;ToolBar
 		mov		[edi].DIALOG.ntype,18
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szStatusBarClass
+	invoke strcmpi,offset namebuff,offset szStatusBarClass
 	.if !eax
 		;StatusBar
 		mov		[edi].DIALOG.ntype,19
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szDateTimeClass
+	invoke strcmpi,offset namebuff,offset szDateTimeClass
 	.if !eax
 		;DateTime
 		mov		[edi].DIALOG.ntype,20
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szMonthViewClass
+	invoke strcmpi,offset namebuff,offset szMonthViewClass
 	.if !eax
 		;MonthView
 		mov		[edi].DIALOG.ntype,21
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szRichEditClass
+	invoke strcmpi,offset namebuff,offset szRichEditClass
 	.if !eax
 		;RichEdit
 		mov		[edi].DIALOG.ntype,22
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szComboBoxExClass
+	invoke strcmpi,offset namebuff,offset szComboBoxExClass
 	.if !eax
 		;ComboBoxEx
 		mov		[edi].DIALOG.ntype,24
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szIPAddressClass
+	invoke strcmpi,offset namebuff,offset szIPAddressClass
 	.if !eax
 		;IPAddress
 		mov		[edi].DIALOG.ntype,26
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szAnimateClass
+	invoke strcmpi,offset namebuff,offset szAnimateClass
 	.if !eax
 		;AnimateControl
 		mov		[edi].DIALOG.ntype,27
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szHotKeyClass
+	invoke strcmpi,offset namebuff,offset szHotKeyClass
 	.if !eax
 		;HotKey
 		mov		[edi].DIALOG.ntype,28
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szPagerClass
+	invoke strcmpi,offset namebuff,offset szPagerClass
 	.if !eax
 		;PagerControl
 		mov		edx,[edi].DIALOG.style
@@ -1259,13 +1408,13 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		mov		[edi].DIALOG.ntype,edx
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szReBarClass
+	invoke strcmpi,offset namebuff,offset szReBarClass
 	.if !eax
 		;ReBar
 		mov		[edi].DIALOG.ntype,31
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset namebuff,offset szHeaderClass
+	invoke strcmpi,offset namebuff,offset szHeaderClass
 	.if !eax
 		;Header
 		mov		[edi].DIALOG.ntype,32
@@ -1273,7 +1422,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	.endif
 	mov		ebx,offset custtypes
 	.while [ebx].TYPES.ID
-		invoke lstrcmpi,offset namebuff,[ebx].TYPES.lpclass
+		invoke strcmpi,offset namebuff,[ebx].TYPES.lpclass
 		.if !eax
 			;Custom control
 			mov		eax,[ebx].TYPES.ID
@@ -1291,7 +1440,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	.endw
 	;UserControl
 	;Copy class
-	invoke lstrcpy,addr [edi].DIALOG.class,offset namebuff
+	invoke strcpy,addr [edi].DIALOG.class,offset namebuff
 	mov		[edi].DIALOG.ntype,23
 	jmp		Ex
   Ex:
@@ -1324,7 +1473,7 @@ ParseControlType proc uses esi edi,nType:DWORD,nStyle:DWORD,nExStyle:DWORD,lpRCM
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
+		invoke strcpyn,addr [edi].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
 	.endif
 	;Name / ID
 	invoke GetWord,offset wordbuff,esi
@@ -1392,86 +1541,86 @@ ParseControls proc lpProMem:DWORD
 	invoke ParseDefsSkip
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szCONTROL
+	invoke strcmpi,offset wordbuff,offset szCONTROL
 	.if !eax
 		invoke ParseControl,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szEDITTEXT
+	invoke strcmpi,offset wordbuff,offset szEDITTEXT
 	.if !eax
 		invoke ParseControlType,1,ES_LEFT or WS_TABSTOP,WS_EX_CLIENTEDGE,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLTEXT
+	invoke strcmpi,offset wordbuff,offset szLTEXT
 	.if !eax
 		invoke ParseControlType,2,SS_LEFT or WS_GROUP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCTEXT
+	invoke strcmpi,offset wordbuff,offset szCTEXT
 	.if !eax
 		invoke ParseControlType,2,SS_CENTER or WS_GROUP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szRTEXT
+	invoke strcmpi,offset wordbuff,offset szRTEXT
 	.if !eax
 		invoke ParseControlType,2,SS_RIGHT or WS_GROUP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szICON
+	invoke strcmpi,offset wordbuff,offset szICON
 	.if !eax
 		invoke ParseControlType,17,SS_ICON or SS_CENTERIMAGE,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szGROUPBOX
+	invoke strcmpi,offset wordbuff,offset szGROUPBOX
 	.if !eax
 		invoke ParseControlType,3,BS_GROUPBOX,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szPUSHBUTTON
+	invoke strcmpi,offset wordbuff,offset szPUSHBUTTON
 	.if !eax
 		invoke ParseControlType,4,BS_PUSHBUTTON or WS_TABSTOP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szDEFPUSHBUTTON
+	invoke strcmpi,offset wordbuff,offset szDEFPUSHBUTTON
 	.if !eax
 		invoke ParseControlType,4,BS_DEFPUSHBUTTON or WS_TABSTOP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szAUTOCHECKBOX
+	invoke strcmpi,offset wordbuff,offset szAUTOCHECKBOX
 	.if !eax
 		invoke ParseControlType,5,BS_AUTOCHECKBOX or WS_TABSTOP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szAUTORADIOBUTTON
+	invoke strcmpi,offset wordbuff,offset szAUTORADIOBUTTON
 	.if !eax
 		invoke ParseControlType,6,BS_AUTORADIOBUTTON or WS_TABSTOP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCOMBOBOX
+	invoke strcmpi,offset wordbuff,offset szCOMBOBOX
 	.if !eax
 		invoke ParseControlType,7,CBS_SIMPLE or WS_TABSTOP,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLISTBOX
+	invoke strcmpi,offset wordbuff,offset szLISTBOX
 	.if !eax
 		invoke ParseControlType,8,LBS_NOTIFY,WS_EX_CLIENTEDGE,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szSCROLLBAR
+	invoke strcmpi,offset wordbuff,offset szSCROLLBAR
 	.if !eax
 		invoke ParseControlType,9,SBS_HORZ,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-;	invoke lstrcmpi,offset wordbuff,offset sz
+;	invoke strcmpi,offset wordbuff,offset sz
 ;	.if !eax
 ;		invoke ParseControlType,,,esi,edi,nTab,lpProMem
 ;		jmp		Nxt
 ;	.endif
 
-	invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+	invoke strcmpi,offset wordbuff,offset szENDSHORT
 	or		eax,eax
 	je		Ex
-	invoke lstrcmpi,offset wordbuff,offset szEND
+	invoke strcmpi,offset wordbuff,offset szEND
 	or		eax,eax
 	jne		@b
   Ex:
@@ -1516,17 +1665,17 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -1548,15 +1697,15 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].DLGHEAD.sublang,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCAPTION
+	invoke strcmpi,offset wordbuff,offset szCAPTION
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpyn,addr [edi+sizeof DLGHEAD].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
+		invoke strcpyn,addr [edi+sizeof DLGHEAD].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFONT
+	invoke strcmpi,offset wordbuff,offset szFONT
 	.if !eax
 ;		invoke GetDC,NULL
 ;		push	eax
@@ -1576,7 +1725,7 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpy,addr [edi].DLGHEAD.font,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.font,offset wordbuff
 		.if byte ptr [esi] && byte ptr [esi]!=0Dh
 			;Weight
 			invoke GetNum,lpProMem
@@ -1615,29 +1764,29 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].DLGHEAD.fontht,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMENU
+	invoke strcmpi,offset wordbuff,offset szMENU
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcpy,addr [edi].DLGHEAD.menuid,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.menuid,offset wordbuff
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCLASS
+	invoke strcmpi,offset wordbuff,offset szCLASS
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpy,addr [edi].DLGHEAD.class,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.class,offset wordbuff
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szSTYLE
+	invoke strcmpi,offset wordbuff,offset szSTYLE
 	.if !eax
 		invoke GetStyle,esi,offset styledef
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.style,edx
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szEXSTYLE
+	invoke strcmpi,offset wordbuff,offset szEXSTYLE
 	.if !eax
 		invoke GetStyle,esi,offset exstyledef
 		add		esi,eax
@@ -1647,9 +1796,9 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke ParseDefsSkip
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 		invoke ParseControls,lpProMem
@@ -1692,17 +1841,17 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -1724,44 +1873,44 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].DLGHEAD.sublang,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCAPTION
+	invoke strcmpi,offset wordbuff,offset szCAPTION
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpyn,addr [edi+sizeof DLGHEAD].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
+		invoke strcpyn,addr [edi+sizeof DLGHEAD].DIALOG.caption,offset wordbuff,sizeof DIALOG.caption
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMENU
+	invoke strcmpi,offset wordbuff,offset szMENU
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcpy,addr [edi].DLGHEAD.menuid,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.menuid,offset wordbuff
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCLASS
+	invoke strcmpi,offset wordbuff,offset szCLASS
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpy,addr [edi].DLGHEAD.class,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.class,offset wordbuff
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szSTYLE
+	invoke strcmpi,offset wordbuff,offset szSTYLE
 	.if !eax
 		invoke GetStyle,esi,offset styledef
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.style,edx
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szEXSTYLE
+	invoke strcmpi,offset wordbuff,offset szEXSTYLE
 	.if !eax
 		invoke GetStyle,esi,offset exstyledef
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.exstyle,edx
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFONT
+	invoke strcmpi,offset wordbuff,offset szFONT
 	.if !eax
 		invoke GetDC,NULL
 		push	eax
@@ -1781,7 +1930,7 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpy,addr [edi].DLGHEAD.font,offset wordbuff
+		invoke strcpy,addr [edi].DLGHEAD.font,offset wordbuff
 		.if byte ptr [esi] && byte ptr [esi]!=0Dh
 			;Weight
 			invoke GetNum,lpProMem
@@ -1806,9 +1955,9 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke ParseDefsSkip
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 		invoke ParseControls,lpProMem
@@ -1841,17 +1990,17 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -1878,9 +2027,9 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 		inc		nNest
@@ -1889,7 +2038,7 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke ParseDefsSkip
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szPOPUP
+	invoke strcmpi,offset wordbuff,offset szPOPUP
 	.if !eax
 		mov		[edi].MNUITEM.itemflag,TRUE
 		mov		eax,nNest
@@ -1898,12 +2047,12 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
-		invoke lstrcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
+		invoke strcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
 		Call	SetOptions
 		add		edi,sizeof MNUITEM
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMENUITEM
+	invoke strcmpi,offset wordbuff,offset szMENUITEM
 	.if !eax
 		mov		[edi].MNUITEM.itemflag,TRUE
 		mov		eax,nNest
@@ -1911,9 +2060,9 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].MNUITEM.level,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szSEPARATOR
+		invoke strcmpi,offset wordbuff,offset szSEPARATOR
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szMFT_SEPARATOR
+			invoke strcmpi,offset wordbuff,offset szMFT_SEPARATOR
 		.endif
 		.if !eax
 			mov		word ptr [edi].MNUITEM.itemcaption,'-'
@@ -1957,7 +2106,7 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				mov		[edi].MNUITEM.shortcut,eax
 			.endif
 		.endif
-		invoke lstrcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
+		invoke strcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		;Name / ID
@@ -1966,9 +2115,9 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		add		edi,sizeof MNUITEM
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szEND
+	invoke strcmpi,offset wordbuff,offset szEND
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+		invoke strcmpi,offset wordbuff,offset szENDSHORT
 	.endif
 	.if !eax
 		dec		nNest
@@ -1985,24 +2134,24 @@ SetOptions:
 	.while byte ptr [esi] && byte ptr [esi]!=0Dh
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szCHECKED
+		invoke strcmpi,offset wordbuff,offset szCHECKED
 		.if !eax
 			or		ebx,MFS_CHECKED
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szGRAYED
+		invoke strcmpi,offset wordbuff,offset szGRAYED
 		.if !eax
 			or		ebx,MFS_GRAYED
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szINACTIVE
+		invoke strcmpi,offset wordbuff,offset szINACTIVE
 		.if !eax
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szMENUBARBREAK
+		invoke strcmpi,offset wordbuff,offset szMENUBARBREAK
 		.if !eax
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szMENUBREAK
+		invoke strcmpi,offset wordbuff,offset szMENUBREAK
 		.if !eax
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szHELP
+		invoke strcmpi,offset wordbuff,offset szHELP
 		.if !eax
 			or		[edi].MNUITEM.ntype,MFT_RIGHTJUSTIFY
 		.endif
@@ -2034,17 +2183,17 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -2071,9 +2220,9 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 		inc		nNest
@@ -2083,9 +2232,9 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	or		eax,eax
 	je		@b
 	mov		fPopUp,FALSE
-	invoke lstrcmpi,offset wordbuff,offset szMENUITEM
+	invoke strcmpi,offset wordbuff,offset szMENUITEM
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szPOPUP
+		invoke strcmpi,offset wordbuff,offset szPOPUP
 		.if !eax
 			mov		fPopUp,TRUE
 		.endif
@@ -2097,7 +2246,7 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].MNUITEM.level,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szMFT_SEPARATOR
+		invoke strcmpi,offset wordbuff,offset szMFT_SEPARATOR
 		.if !eax
 			mov		word ptr [edi].MNUITEM.itemcaption,'-'
 			add		edi,sizeof MNUITEM
@@ -2140,7 +2289,7 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				mov		[edi].MNUITEM.shortcut,eax
 			.endif
 		.endif
-		invoke lstrcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
+		invoke strcpyn,addr [edi].MNUITEM.itemcaption,offset wordbuff,sizeof MNUITEM.itemcaption
 		.if byte ptr [esi] && byte ptr [esi]!=0Dh
 			invoke GetWord,offset wordbuff,esi
 			mov		ecx,eax
@@ -2160,9 +2309,9 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		jmp		@b
 	.endif
   NxtEnd:
-	invoke lstrcmpi,offset wordbuff,offset szEND
+	invoke strcmpi,offset wordbuff,offset szEND
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+		invoke strcmpi,offset wordbuff,offset szENDSHORT
 	.endif
 	.if !eax
 		dec		nNest
@@ -2222,17 +2371,17 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	mov		ebx,eax
-	invoke lstrcmpi,offset wordbuff,offset szCHARACTERISTICS
+	invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSION
+	invoke strcmpi,offset wordbuff,offset szVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
@@ -2262,17 +2411,17 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		edi,sizeof ACCELMEM
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 	  Nxt:
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szEND
+		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
 		.endif
 		.if eax
 			invoke ParseDefsSkip
@@ -2336,32 +2485,32 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			.while byte ptr [esi]!=0Dh
 				invoke GetWord,offset wordbuff,esi
 				add		esi,eax
-				invoke lstrcmpi,offset wordbuff,offset szVIRTKEY
+				invoke strcmpi,offset wordbuff,offset szVIRTKEY
 				.if !eax
 					jmp		@f
 				.endif
-				invoke lstrcmpi,offset wordbuff,offset szASCII
+				invoke strcmpi,offset wordbuff,offset szASCII
 				.if !eax
 					mov		eax,ascii;[edi].ACCELMEM.nkey
 					mov		[edi].ACCELMEM.nascii,eax
 					mov		[edi].ACCELMEM.nkey,0
 					jmp		@f
 				.endif
-				invoke lstrcmpi,offset wordbuff,offset szNOINVERT
+				invoke strcmpi,offset wordbuff,offset szNOINVERT
 				.if !eax
 					jmp		@f
 				.endif
-				invoke lstrcmpi,offset wordbuff,offset szCONTROL
+				invoke strcmpi,offset wordbuff,offset szCONTROL
 				.if !eax
 					or		ebx,1
 					jmp		@f
 				.endif
-				invoke lstrcmpi,offset wordbuff,offset szSHIFT
+				invoke strcmpi,offset wordbuff,offset szSHIFT
 				.if !eax
 					or		ebx,2
 					jmp		@f
 				.endif
-				invoke lstrcmpi,offset wordbuff,offset szALT
+				invoke strcmpi,offset wordbuff,offset szALT
 				.if !eax
 					or		ebx,4
 				.endif
@@ -2394,7 +2543,7 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	invoke ParseDefsSkip
 	or		eax,eax
 	je		@b
-	invoke lstrcmpi,offset wordbuff,offset szFILEVERSION
+	invoke strcmpi,offset wordbuff,offset szFILEVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		mov		[edi].VERSIONMEM.fv[0],eax
@@ -2406,7 +2555,7 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].VERSIONMEM.fv[12],eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szPRODUCTVERSION
+	invoke strcmpi,offset wordbuff,offset szPRODUCTVERSION
 	.if !eax
 		invoke GetNum,lpProMem
 		mov		[edi].VERSIONMEM.pv[0],eax
@@ -2418,36 +2567,36 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		[edi].VERSIONMEM.pv[12],eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFILEFLAGSMASK
+	invoke strcmpi,offset wordbuff,offset szFILEFLAGSMASK
 	.if !eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFILEFLAGS
+	invoke strcmpi,offset wordbuff,offset szFILEFLAGS
 	.if !eax
 		mov		[edi].VERSIONMEM.ff,eax
 		invoke GetNum,lpProMem
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFILEOS
+	invoke strcmpi,offset wordbuff,offset szFILEOS
 	.if !eax
 		invoke GetNum,lpProMem
 		mov		[edi].VERSIONMEM.os,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFILETYPE
+	invoke strcmpi,offset wordbuff,offset szFILETYPE
 	.if !eax
 		invoke GetNum,lpProMem
 		mov		[edi].VERSIONMEM.ft,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFILESUBTYPE
+	invoke strcmpi,offset wordbuff,offset szFILESUBTYPE
 	.if !eax
 		invoke GetNum,lpProMem
 		mov		[edi].VERSIONMEM.fts,eax
 		jmp		@b
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if !eax
 		mov		ebx,edi
 		add		edi,sizeof VERSIONMEM
@@ -2455,15 +2604,15 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	  @@:
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGIN
+		invoke strcmpi,offset wordbuff,offset szBEGIN
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+			invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 		.endif
 		.if !eax
 			inc		nNest
 			jmp		@b
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szBLOCK
+		invoke strcmpi,offset wordbuff,offset szBLOCK
 		.if !eax
 			invoke GetWord,offset wordbuff,esi
 			add		esi,eax
@@ -2481,19 +2630,19 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			.endif
 			jmp		@b
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szVALUE
+		invoke strcmpi,offset wordbuff,offset szVALUE
 		.if !eax
 			invoke GetWord,offset wordbuff,esi
 			add		esi,eax
 			invoke UnQuoteWord,offset wordbuff
-			invoke lstrcmpi,offset wordbuff,offset szTranslation
+			invoke strcmpi,offset wordbuff,offset szTranslation
 			.if !eax
 				invoke GetNum,lpProMem
 				mov		[ebx].VERSIONMEM.lng,eax
 				invoke GetNum,lpProMem
 				mov		[ebx].VERSIONMEM.chs,eax
 			.else
-				invoke lstrcpyn,addr [edi].VERSIONITEM.szname,offset wordbuff,sizeof VERSIONITEM.szname
+				invoke strcpyn,addr [edi].VERSIONITEM.szname,offset wordbuff,sizeof VERSIONITEM.szname
 				invoke GetWord,offset wordbuff,esi
 				add		esi,eax
 				invoke UnQuoteWord,offset wordbuff
@@ -2501,14 +2650,14 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				.if word ptr wordbuff[eax-2]=='0\'
 					mov		byte ptr wordbuff[eax-2],0
 				.endif
-				invoke lstrcpyn,addr [edi].VERSIONITEM.szvalue,offset wordbuff,sizeof VERSIONITEM.szvalue
+				invoke strcpyn,addr [edi].VERSIONITEM.szvalue,offset wordbuff,sizeof VERSIONITEM.szvalue
 				add		edi,sizeof VERSIONITEM
 			.endif
 			jmp		@b
 		.endif
-		invoke lstrcmpi,offset wordbuff,offset szEND
+		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
 		.endif
 		.if !eax
 			dec		nNest
@@ -2576,9 +2725,9 @@ ParseToolbar proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	mov		[edi].TOOLBARMEM.ccy,eax
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szBEGIN
+	invoke strcmpi,offset wordbuff,offset szBEGIN
 	.if eax
-		invoke lstrcmpi,offset wordbuff,offset szBEGINSHORT
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 	.endif
 	.if !eax
 		lea		edi,[edi+sizeof TOOLBARMEM]
@@ -2598,9 +2747,9 @@ ParseToolbar proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			inc		edx
 		.endw
 		mov		byte ptr [edx],0
-		invoke lstrcmpi,offset wordbuff,offset szEND
+		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke lstrcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
 		.endif
 		.if eax
 			mov		edx,offset wordbuff
@@ -2639,13 +2788,13 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	add		esi,eax
 	invoke GetLineNo,hRCMem,esi
 	mov		[edi].PROJECT.lnstart,eax
-	invoke lstrcmpi,offset wordbuff,offset szDEFINE
+	invoke strcmpi,offset wordbuff,offset szDEFINE
 	.if !eax
 		invoke ParseDefine,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szINCLUDE
+	invoke strcmpi,offset wordbuff,offset szINCLUDE
 	.if !eax
 		invoke ParseInclude,esi,lpProMem
 		add		esi,eax
@@ -2662,22 +2811,22 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 			jmp		Ex
 		.endif
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szSTRINGTABLE
+	invoke strcmpi,offset wordbuff,offset szSTRINGTABLE
 	.if !eax
 		invoke ParseStringTable,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szLANGUAGE
+	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke ParseLanguage,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcpy,offset namebuff,offset wordbuff
+	invoke strcpy,offset namebuff,offset wordbuff
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
-	invoke lstrcmpi,offset wordbuff,offset szDESIGNINFO
+	invoke strcmpi,offset wordbuff,offset szDESIGNINFO
 	.if !eax
 		invoke ParseSkip,esi,lpProMem
 		add		esi,eax
@@ -2687,41 +2836,68 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		invoke ResEdDecToBin,offset wordbuff
 		.if eax==RT_BITMAP
 			invoke ParseResource,esi,lpProMem,0
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_CURSOR
 			invoke ParseResource,esi,lpProMem,1
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_ICON
 			invoke ParseResource,esi,lpProMem,2
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 ;		.elseif eax==RT_AVI
 		.elseif eax==RT_RCDATA
 			invoke ParseResource,esi,lpProMem,4
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 ;		.elseif eax==RT_WAVE
 ;		.elseif eax==RT_IMAGE
 		.elseif eax==RT_LVIMAGE
 			invoke ParseResource,esi,lpProMem,6
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_MANIFEST
 			invoke ParseResource,esi,lpProMem,7
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_ANICURSOR
 			invoke ParseResource,esi,lpProMem,8
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_FONT
 			invoke ParseResource,esi,lpProMem,9
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_MESSAGETABLE
 			invoke ParseResource,esi,lpProMem,10
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_ACCELERATOR
@@ -2750,109 +2926,142 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 			jmp		Ex
 		.endif
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szBITMAP
+	invoke strcmpi,offset wordbuff,offset szBITMAP
 	.if !eax
 		invoke ParseResource,esi,lpProMem,0
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szCURSOR
+	invoke strcmpi,offset wordbuff,offset szCURSOR
 	.if !eax
 		invoke ParseResource,esi,lpProMem,1
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szICON
+	invoke strcmpi,offset wordbuff,offset szICON
 	.if !eax
 		invoke ParseResource,esi,lpProMem,2
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szAVI
+	invoke strcmpi,offset wordbuff,offset szAVI
 	.if !eax
 		invoke ParseResource,esi,lpProMem,3
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szRCDATA
+	invoke strcmpi,offset wordbuff,offset szRCDATA
 	.if !eax
 		invoke ParseResource,esi,lpProMem,4
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szWAVE
+	invoke strcmpi,offset wordbuff,offset szWAVE
 	.if !eax
 		invoke ParseResource,esi,lpProMem,5
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szIMAGE
+	invoke strcmpi,offset wordbuff,offset szIMAGE
 	.if !eax
 		invoke ParseResource,esi,lpProMem,6
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMANIFEST
+	invoke strcmpi,offset wordbuff,offset szMANIFEST
 	.if !eax
 		invoke ParseResource,esi,lpProMem,7
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szANICURSOR
+	invoke strcmpi,offset wordbuff,offset szANICURSOR
 	.if !eax
 		invoke ParseResource,esi,lpProMem,8
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szFONT
+	invoke strcmpi,offset wordbuff,offset szFONT
 	.if !eax
 		invoke ParseResource,esi,lpProMem,9
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMESSAGETABLE
+	invoke strcmpi,offset wordbuff,offset szMESSAGETABLE
 	.if !eax
 		invoke ParseResource,esi,lpProMem,10
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szACCELERATORS
+	invoke strcmpi,offset wordbuff,offset szACCELERATORS
 	.if !eax
 		invoke ParseAccelerators,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szVERSIONINFO
+	invoke strcmpi,offset wordbuff,offset szVERSIONINFO
 	.if !eax
 		invoke ParseVersioninfo,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szDIALOGEX
+	invoke strcmpi,offset wordbuff,offset szDIALOGEX
 	.if !eax
 		invoke ParseDialogEx,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szDIALOG
+	invoke strcmpi,offset wordbuff,offset szDIALOG
 	.if !eax
 		invoke ParseDialog,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMENU
+	invoke strcmpi,offset wordbuff,offset szMENU
 	.if !eax
 		invoke ParseMenu,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szMENUEX
+	invoke strcmpi,offset wordbuff,offset szMENUEX
 	.if !eax
 		invoke ParseMenuEx,esi,lpProMem
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,offset wordbuff,offset szTOOLBAR
+	invoke strcmpi,offset wordbuff,offset szTOOLBAR
 	.if !eax
 		invoke ParseToolbar,esi,lpProMem
 		add		esi,eax
@@ -2864,6 +3073,8 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
+  ExErr:
+	ret
 
 ParseRC endp
 
@@ -2873,7 +3084,7 @@ ParseRCMem proc uses esi,hRCMem:DWORD,lpProMem:DWORD
 	mov		hrcmem,esi
 	.while TRUE
 		invoke ParseRC,esi,hRCMem,lpProMem
-		.break .if !eax
+		.break .if !eax || eax==-1
 		add		esi,eax
 	.endw
 	mov		eax,lpProMem

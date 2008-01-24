@@ -81,7 +81,7 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;Name or ID
     .if [esi].XPMANIFESTMEM.szname
-    	invoke lstrcpy,edi,addr [esi].XPMANIFESTMEM.szname
+    	invoke strcpy,edi,addr [esi].XPMANIFESTMEM.szname
 	.else
 		invoke ResEdBinToDec,[esi].XPMANIFESTMEM.value,edi
 	.endif
@@ -110,7 +110,7 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 		.endw
 		mov		al,'"'
 		stosb
-		invoke lstrcpy,addr buffer,addr szProjectPath
+		invoke strcpy,addr buffer,addr szProjectPath
 		invoke lstrcat,addr buffer,addr szBS
 		invoke lstrcat,addr buffer,addr [esi].XPMANIFESTMEM.szfilename
 		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
@@ -181,7 +181,7 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke GetFreeProjectitemID,TPE_XPMANIFEST
 			mov		edi,offset defxpmanifest
 			mov		[edi].XPMANIFESTMEM.value,eax
-			invoke lstrcpy,addr [edi].XPMANIFESTMEM.szname,addr szManifestName
+			invoke strcpy,addr [edi].XPMANIFESTMEM.szname,addr szManifestName
 			invoke GetUnikeName,addr [edi].XPMANIFESTMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi

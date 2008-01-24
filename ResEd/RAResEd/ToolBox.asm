@@ -261,7 +261,7 @@ InstallDLL:
 	invoke DeleteObject,ebx
 	invoke lstrcat,offset szCtlText,offset szComma
 	invoke lstrcat,offset szCtlText,[edi].CCDEF.lptooltip
-	invoke lstrcpy,offset szToolBoxTlt,[edi].CCDEF.lptooltip
+	invoke strcpy,offset szToolBoxTlt,[edi].CCDEF.lptooltip
 	invoke Do_ToolBoxButton,hTlb,nButtons,hBoxIml
 	inc		nButtons
 	pop		ebx

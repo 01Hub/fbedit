@@ -54,7 +54,7 @@ ExportRCData proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;Name or ID
     .if [esi].RCDATAMEM.szname
-    	invoke lstrcpy,edi,addr [esi].RCDATAMEM.szname
+    	invoke strcpy,edi,addr [esi].RCDATAMEM.szname
 	.else
 		invoke ResEdBinToDec,[esi].RCDATAMEM.value,edi
 	.endif
@@ -62,7 +62,7 @@ ExportRCData proc uses esi edi,hMem:DWORD
 	add		edi,eax
 	mov		al,' '
 	stosb
-   	invoke lstrcpy,edi,offset szRCDATA
+   	invoke strcpy,edi,offset szRCDATA
 	invoke lstrlen,edi
 	add		edi,eax
 	mov		al,0Dh
@@ -116,7 +116,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetFreeProjectitemID,TPE_RCDATA
 			mov		edi,offset defrcdata
 			mov		[edi].RCDATAMEM.value,eax
-			invoke lstrcpy,addr [edi].RCDATAMEM.szname,addr szRcdataName
+			invoke strcpy,addr [edi].RCDATAMEM.szname,addr szRcdataName
 			invoke GetUnikeName,addr [edi].RCDATAMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi

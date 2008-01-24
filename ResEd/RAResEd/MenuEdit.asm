@@ -874,7 +874,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				.if eax
 					mov		esi,eax
 					invoke GetDlgItemText,hWin,IDC_EDTITEMCAPTION,addr buffer,64
-					invoke lstrcpy,addr (MNUITEM ptr [esi]).itemcaption,addr buffer
+					invoke strcpy,addr (MNUITEM ptr [esi]).itemcaption,addr buffer
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_DELETESTRING,nMnuInx,0
 					lea		edi,buffer1
 					mov		ecx,(MNUITEM ptr [esi]).level
@@ -885,7 +885,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 						stosb
 						loop	@b
 					.endif
-					invoke lstrcpy,edi,addr buffer
+					invoke strcpy,edi,addr buffer
 					invoke SendDlgItemMessage,hWin,IDC_HOTMENU,HKM_GETHOTKEY,0,0
 					.if al
 						mov		word ptr buffer,VK_TAB
@@ -1047,7 +1047,7 @@ CreateMnu proc uses ebx esi edi,hWin:HWND,lpProItemMem:DWORD
 		mov     hMem,eax
 		invoke GlobalLock,hMem
 		mov		esi,hMem
-		invoke lstrcpy,addr (MNUHEAD ptr [esi]).menuname,addr szMnuName
+		invoke strcpy,addr (MNUHEAD ptr [esi]).menuname,addr szMnuName
 		invoke GetUnikeName,addr (MNUHEAD ptr [esi]).menuname
 		invoke GetFreeProjectitemID,TPE_MENU
 		mov		(MNUHEAD ptr [esi]).menuid,eax

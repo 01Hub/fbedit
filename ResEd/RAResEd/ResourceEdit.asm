@@ -152,7 +152,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 		shl		ecx,16
 		add		ecx,1
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-		invoke lstrcpy,addr [edi].RESOURCEMEM.szname,addr buffer
+		invoke strcpy,addr [edi].RESOURCEMEM.szname,addr buffer
 		;ID
 		mov		ecx,esi
 		shl		ecx,16
@@ -166,7 +166,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 		add		ecx,3
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
 		.if buffer
-			invoke lstrcpy,addr [edi].RESOURCEMEM.szfile,addr buffer
+			invoke strcpy,addr [edi].RESOURCEMEM.szfile,addr buffer
 			.if [edi].RESOURCEMEM.ntype==7
 				invoke FindName,lpProMem,addr szMANIFEST
 				.if !eax
@@ -376,7 +376,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lpstrFilter,eax
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
-					invoke lstrcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
+					invoke strcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
 				.else
 					mov		buffer,0
 				.endif
@@ -397,7 +397,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke RemoveProjectPath,addr buffer
 					mov		edx,[esi].GRIDNOTIFY.lpdata
-					invoke lstrcpy,edx,eax
+					invoke strcpy,edx,eax
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE

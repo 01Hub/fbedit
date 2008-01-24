@@ -256,7 +256,7 @@ ExportVersion proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;Name or ID
     .if [esi].VERSIONMEM.szname
-    	invoke lstrcpy,edi,addr [esi].VERSIONMEM.szname
+    	invoke strcpy,edi,addr [esi].VERSIONMEM.szname
 	.else
 		invoke ResEdBinToDec,[esi].VERSIONMEM.value,edi
 	.endif
@@ -347,11 +347,11 @@ ExportVersion proc uses esi edi,hMem:DWORD
 	stosb
 	mov		eax,[esi].VERSIONMEM.lng
 	invoke hexEax
-	invoke lstrcpy,edi,offset strHex+4
+	invoke strcpy,edi,offset strHex+4
 	add		edi,4
 	mov		eax,[esi].VERSIONMEM.chs
 	invoke hexEax
-	invoke lstrcpy,edi,offset strHex+4
+	invoke strcpy,edi,offset strHex+4
 	add		edi,4
 	mov		al,22h
 	stosb
@@ -485,7 +485,7 @@ ExportVersion proc uses esi edi,hMem:DWORD
 	stosb
 	mov		eax,[esi].VERSIONMEM.lng
 	invoke hexEax
-	invoke lstrcpy,edi,offset strHex+4
+	invoke strcpy,edi,offset strHex+4
 	add		edi,4
 	mov		al,','
 	stosb
@@ -497,7 +497,7 @@ ExportVersion proc uses esi edi,hMem:DWORD
 	stosb
 	mov		eax,[esi].VERSIONMEM.chs
 	invoke hexEax
-	invoke lstrcpy,edi,offset strHex+4
+	invoke strcpy,edi,offset strHex+4
 	add		edi,4
 	mov		al,0Dh
 	stosb
@@ -555,7 +555,7 @@ SaveHex:
 	mov		word ptr [edi],'x0'
 	add		edi,2
 	invoke hexEax
-	invoke lstrcpy,edi,offset strHex
+	invoke strcpy,edi,offset strHex
 	add		edi,8
 	mov		al,0Dh
 	stosb
@@ -611,7 +611,7 @@ SaveVersion proc uses ebx esi edi,hWin:HWND
 		invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_GETTEXT,nInx,addr [esi].VERSIONITEM.szname
 		.break .if eax==LB_ERR
 		invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_GETITEMDATA,nInx,0
-		invoke lstrcpy,addr [esi].VERSIONITEM.szvalue,eax
+		invoke strcpy,addr [esi].VERSIONITEM.szvalue,eax
 		lea		esi,[esi+sizeof VERSIONITEM]
 		inc		nInx
 	.endw
@@ -697,7 +697,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetFreeProjectitemID,TPE_VERSION
 			mov		esi,offset defver
 			mov		[esi].VERSIONMEM.value,eax
-			invoke lstrcpy,addr [esi].VERSIONMEM.szname,addr szVersionName
+			invoke strcpy,addr [esi].VERSIONMEM.szname,addr szVersionName
 			invoke GetUnikeName,addr [esi].VERSIONMEM.szname
 		.endif
 		invoke RtlZeroMemory,offset szVersionTxt,sizeof szVersionTxt
@@ -732,7 +732,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.while [esi].VERSIONITEM.szname
 			invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_ADDSTRING,0,addr [esi].VERSIONITEM.szname
 			invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_SETITEMDATA,eax,edi
-			invoke lstrcpy,edi,addr [esi].VERSIONITEM.szvalue
+			invoke strcpy,edi,addr [esi].VERSIONITEM.szvalue
 			add		edi,256
 			lea		esi,[esi+sizeof VERSIONITEM]
 		.endw
@@ -774,7 +774,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.while [esi].VERSIONITEM.szname
 						invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_ADDSTRING,0,addr [esi].VERSIONITEM.szname
 						invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_SETITEMDATA,eax,edi
-						invoke lstrcpy,edi,addr [esi].VERSIONITEM.szvalue
+						invoke strcpy,edi,addr [esi].VERSIONITEM.szvalue
 						inc		nInx
 						add		edi,256
 						lea		esi,[esi+sizeof VERSIONITEM]
@@ -840,11 +840,11 @@ ConvVer:
 AddTpe:
 	push	esi
 	.while [esi].VERSIONITEM.szname
-		invoke lstrcmpi,addr [esi].VERSIONITEM.szname,edi
+		invoke strcmpi,addr [esi].VERSIONITEM.szname,edi
 		.break .if !eax
 		lea		esi,[esi+sizeof VERSIONITEM]
 	.endw
-	invoke lstrcpy,addr [esi].VERSIONITEM.szname,edi
+	invoke strcpy,addr [esi].VERSIONITEM.szname,edi
 	pop		esi
 	retn
 

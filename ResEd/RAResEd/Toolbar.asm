@@ -56,7 +56,7 @@ ExportToolbar proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;Name or ID
     .if [esi].TOOLBARMEM.szname
-    	invoke lstrcpy,edi,addr [esi].TOOLBARMEM.szname
+    	invoke strcpy,edi,addr [esi].TOOLBARMEM.szname
 	.else
 		invoke ResEdBinToDec,[esi].TOOLBARMEM.value,edi
 	.endif
@@ -64,7 +64,7 @@ ExportToolbar proc uses esi edi,hMem:DWORD
 	add		edi,eax
 	mov		al,' '
 	stosb
-   	invoke lstrcpy,edi,offset szTOOLBAR
+   	invoke strcpy,edi,offset szTOOLBAR
 	invoke lstrlen,edi
 	add		edi,eax
 	mov		al,' '
@@ -128,7 +128,7 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetFreeProjectitemID,TPE_TOOLBAR
 			mov		edi,offset deftoolbar
 			mov		[edi].TOOLBARMEM.value,eax
-			invoke lstrcpy,addr [edi].TOOLBARMEM.szname,addr szToolbarName
+			invoke strcpy,addr [edi].TOOLBARMEM.szname,addr szToolbarName
 			invoke GetUnikeName,addr [edi].TOOLBARMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi

@@ -79,7 +79,7 @@ UpdateNames proc uses ebx esi,hWin:HWND
 		.if val
 			invoke lstrcmp,val,addr buffer
 			.if eax
-				invoke lstrcpy,val,addr buffer
+				invoke strcpy,val,addr buffer
 				mov		fChanged,TRUE
 			.endif
 			;ID
@@ -145,7 +145,7 @@ UpdateNames proc uses ebx esi,hWin:HWND
 
 UpdateProject:
 	.if byte ptr [edx]
-		invoke lstrcpy,addr buffer,edx
+		invoke strcpy,addr buffer,edx
 	.else
 		invoke ResEdBinToDec,ecx,addr buffer
 	.endif
@@ -178,7 +178,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			mov		ofn.lpstrTitle,offset szExportAs
 			mov		ofn.lpstrInitialDir,offset szProjectPath
 			mov		ofn.lpstrFileTitle,offset szExportFileName
-;			invoke lstrcpy,addr fnbuffer,offset szExportFileName
+;			invoke strcpy,addr fnbuffer,offset szExportFileName
 			call	GetFileName
 			lea		eax,fnbuffer
 			mov		ofn.lpstrFile,eax
@@ -189,7 +189,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			invoke GetSaveFileName,addr ofn
 		.else
 			call	GetFileName
-			invoke lstrcpy,addr fnbuffer,addr szProjectPath
+			invoke strcpy,addr fnbuffer,addr szProjectPath
 			invoke lstrcat,addr fnbuffer,addr szBS
 			invoke lstrcat,addr fnbuffer,addr tmpbuffer
 			xor		eax,eax
@@ -337,8 +337,8 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 	ret
 
 GetFileName:
-	invoke lstrcpyn,addr tmpbuffer,offset szExportFileName,10
-	invoke lstrcmpi,addr tmpbuffer,offset szProject
+	invoke strcpyn,addr tmpbuffer,offset szExportFileName,10
+	invoke strcmpi,addr tmpbuffer,offset szProject
 	.if !eax
 		lea		edx,tmpbuffer
 		mov		ecx,offset szResourceh
@@ -349,10 +349,10 @@ GetFileName:
 			inc		edx
 		.endw
 		mov		eax,offset szExportFileName+9
-		invoke lstrcpy,edx,eax
-		invoke lstrcpy,addr fnbuffer,addr tmpbuffer
+		invoke strcpy,edx,eax
+		invoke strcpy,addr fnbuffer,addr tmpbuffer
 	.else
-		invoke lstrcpy,addr fnbuffer,offset szExportFileName
+		invoke strcpy,addr fnbuffer,offset szExportFileName
 	.endif
 	retn
 
