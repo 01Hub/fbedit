@@ -6212,10 +6212,10 @@ ExportDialogNames proc uses esi edi,hMem:DWORD
 	mov		eax,[esi]
 	or		eax,eax
 	jne		@b
-	mov		al,0Dh
-	stosb
-	mov		al,0Ah
-	stosb
+;	mov		al,0Dh
+;	stosb
+;	mov		al,0Ah
+;	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

@@ -45,8 +45,8 @@ ExportAccelNames proc uses esi edi,hMem:DWORD
 		.endif
 		add		esi,sizeof ACCELMEM
 	.endw
-	mov		ax,0A0Dh
-	stosw
+;	mov		ax,0A0Dh
+;	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

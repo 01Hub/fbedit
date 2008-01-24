@@ -227,8 +227,8 @@ ExportMenuNames proc uses esi edi,hMem:DWORD
 		add		esi,sizeof MNUITEM
 		jmp		@b
 	.endif
-	mov		ax,0A0Dh
-	stosw
+;	mov		ax,0A0Dh
+;	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

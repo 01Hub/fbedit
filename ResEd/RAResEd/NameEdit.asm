@@ -42,10 +42,10 @@ ExportNamesNames proc uses esi edi,hMem:DWORD
 		.endif
 		add		esi,sizeof NAMEMEM
 	.endw
-	mov		al,0Dh
-	stosb
-	mov		al,0Ah
-	stosb
+;	mov		al,0Dh
+;	stosb
+;	mov		al,0Ah
+;	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret

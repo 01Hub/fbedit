@@ -454,6 +454,10 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 		mov		eax,lpRCMem
 		mov		dword ptr [eax],0
 	.endif
+	invoke lstrlen,lpRCMem
+	.if eax
+		invoke lstrcat,lpRCMem,offset szCrLf
+	.endif
 	;Include
 	mov		esi,lpProMem
 	.while [esi].PROJECT.hmem
