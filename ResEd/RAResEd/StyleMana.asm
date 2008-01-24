@@ -728,6 +728,9 @@ rsstyledef		dd ACS_CENTER
 				dd SS_CENTERIMAGE
 				dd SS_CENTERIMAGE
 				db 'SS_CENTERIMAGE',0
+				dd SS_ENDELLIPSIS
+				dd SS_ELLIPSISMASK
+				db 'SS_ENDELLIPSIS',0
 				dd SS_ETCHEDHORZ
 				dd 01Fh
 				db 'SS_ETCHEDHORZ',0
@@ -755,12 +758,21 @@ rsstyledef		dd ACS_CENTER
 				dd SS_NOPREFIX
 				dd SS_NOPREFIX
 				db 'SS_NOPREFIX',0
+				dd SS_NOTIFY
+				dd SS_NOTIFY
+				db 'SS_NOTIFY',0
+				dd SS_PATHELLIPSIS
+				dd SS_ELLIPSISMASK
+				db 'SS_PATHELLIPSIS',0
 				dd SS_RIGHT
 				dd 01Fh
 				db 'SS_RIGHT',0
 				dd SS_SIMPLE
 				dd 01Fh
 				db 'SS_SIMPLE',0
+				dd SS_SUNKEN
+				dd SS_SUNKEN
+				db 'SS_SUNKEN',0
 				dd SS_USERITEM
 				dd 01Fh
 				db 'SS_USERITEM',0
@@ -770,6 +782,9 @@ rsstyledef		dd ACS_CENTER
 				dd SS_WHITERECT
 				dd 01Fh
 				db 'SS_WHITERECT',0
+				dd SS_WORDELLIPSIS
+				dd SS_ELLIPSISMASK
+				db 'SS_WORDELLIPSIS',0
 				dd TBSTYLE_TOOLTIPS
 				dd TBSTYLE_TOOLTIPS
 				db 'TBSTYLE_TOOLTIPS',0

@@ -391,6 +391,8 @@ styledef		dd ACS_CENTER
 				db 'SS_CENTER',0
 				dd SS_CENTERIMAGE
 				db 'SS_CENTERIMAGE',0
+				dd SS_ENDELLIPSIS
+				db 'SS_ENDELLIPSIS',0
 				dd SS_ETCHEDHORZ
 				db 'SS_ETCHEDHORZ',0
 				dd SS_ETCHEDFRAME
@@ -409,16 +411,24 @@ styledef		dd ACS_CENTER
 				db 'SS_LEFTNOWORDWRAP',0
 				dd SS_NOPREFIX
 				db 'SS_NOPREFIX',0
+				dd SS_NOTIFY
+				db 'SS_NOTIFY',0
+				dd SS_PATHELLIPSIS
+				db 'SS_PATHELLIPSIS',0
 				dd SS_RIGHT
 				db 'SS_RIGHT',0
 				dd SS_SIMPLE
 				db 'SS_SIMPLE',0
+				dd SS_SUNKEN
+				db 'SS_SUNKEN',0
 				dd SS_USERITEM
 				db 'SS_USERITEM',0
 				dd SS_WHITEFRAME
 				db 'SS_WHITEFRAME',0
 				dd SS_WHITERECT
 				db 'SS_WHITERECT',0
+				dd SS_WORDELLIPSIS
+				db 'SS_WORDELLIPSIS',0
 				dd TBSTYLE_TOOLTIPS
 				db 'TBSTYLE_TOOLTIPS',0
 				dd TBSTYLE_WRAPABLE
