@@ -711,7 +711,26 @@ FindStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 
 FindStyle endp
 
-GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD
+FindDlgStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
+
+	mov		esi,lpStyles
+	.while byte ptr [esi+8]
+		mov		ebx,[esi]
+		invoke lstrcmp,addr [esi+8],lpWord
+		.if !eax
+			mov		eax,ebx
+			jmp		Ex
+		.endif
+		invoke lstrlen,addr [esi+8]
+		lea		esi,[esi+eax+8+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindDlgStyle endp
+
+GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 
 	xor		ebx,ebx
 	mov		esi,lpRCMem
@@ -739,7 +758,21 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD
 		.if word ptr wordbuff=='x0'
 			invoke HexToBin,offset wordbuff+2
 		.else
-			invoke FindStyle,offset wordbuff,lpStyles
+			.if fDialog
+				.if lpStyles
+					invoke FindDlgStyle,offset wordbuff,lpStyles
+				.else
+					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
+					.if !eax
+						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
+						pop		ecx
+						or		ecx,edx
+						push	ecx
+					.endif
+				.endif
+			.else
+				invoke FindStyle,offset wordbuff,lpStyles
+			.endif
 		.endif
 		or		ebx,eax
 		pop		edx
@@ -893,6 +926,8 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hBmp:DWORD
+	LOCAL	nSize:DWORD
 
 	invoke strcpy,addr buffer,offset wordbuff
 	mov		esi,lpRCMem
@@ -1096,8 +1131,12 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 				.endw
 				mov		eax,nType
 				mov		[edi].RESOURCEMEM.ntype,eax
-				invoke strcpy,offset wordbuff,addr buffer
-				invoke lstrcat,offset wordbuff,addr namebuff+1024+100
+				.if byte ptr namebuff
+					invoke strcpy,offset wordbuff,offset namebuff
+				.else
+					invoke strcpy,offset wordbuff,addr buffer
+					invoke lstrcat,offset wordbuff,addr namebuff+1024+100
+				.endif
 				invoke lstrlen,offset wordbuff
 				.if nType==0
 					mov		dword ptr wordbuff[eax],'pmb.'
@@ -1124,6 +1163,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
 				.endif
 				.if !eax
+					mov		nSize,0
 					invoke CreateFile,addr [edi].RESOURCEMEM.szfile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 					mov		hFile,eax
 				  @@:
@@ -1153,9 +1193,9 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 							mov		al,[edx]
 							.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
 								.if al>='a'
-									sub		al,'a'
+									sub		al,'a'-10
 								.elseif al>='A'
-									sub		al,'A'
+									sub		al,'A'-10
 								.else
 									sub		al,'0'
 								.endif
@@ -1181,6 +1221,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 							.endif
 						.endw
 						sub		ecx,offset wordbuff
+						add		nSize,ecx
 						invoke WriteFile,hFile,offset wordbuff,ecx,addr nBytes,NULL
 						jmp		@b
 					.endif
@@ -1217,7 +1258,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	add		esi,eax
 	invoke UnQuoteWord,offset namebuff
 	;Style
-	invoke GetStyle,esi,offset styledef
+	invoke GetStyle,esi,0,TRUE
 	add		esi,eax
 	mov		[edi].DIALOG.style,edx
 	;Pos & Size
@@ -1236,7 +1277,7 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;ExStyle
-		invoke GetStyle,esi,offset exstyledef
+		invoke GetStyle,esi,offset rsexstyledef,TRUE
 		add		esi,eax
 		mov		[edi].DIALOG.exstyle,edx
 		movzx	eax,byte ptr [esi]
@@ -1495,13 +1536,13 @@ ParseControlType proc uses esi edi,nType:DWORD,nStyle:DWORD,nExStyle:DWORD,lpRCM
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;Style
-		invoke GetStyle,esi,offset styledef
+		invoke GetStyle,esi,0,TRUE
 		add		esi,eax
 		or		[edi].DIALOG.style,edx
 		movzx	eax,byte ptr [esi]
 		.if eax!=0Dh
 			;ExStyle
-			invoke GetStyle,esi,offset exstyledef
+			invoke GetStyle,esi,offset rsexstyledef,TRUE
 			add		esi,eax
 			or		[edi].DIALOG.exstyle,edx
 		.endif
@@ -1781,14 +1822,14 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.endif
 	invoke strcmpi,offset wordbuff,offset szSTYLE
 	.if !eax
-		invoke GetStyle,esi,offset styledef
+		invoke GetStyle,esi,0,TRUE
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.style,edx
 		jmp		@b
 	.endif
 	invoke strcmpi,offset wordbuff,offset szEXSTYLE
 	.if !eax
-		invoke GetStyle,esi,offset exstyledef
+		invoke GetStyle,esi,offset rsexstyledef,TRUE
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.exstyle,edx
 		jmp		@b
@@ -1898,14 +1939,14 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.endif
 	invoke strcmpi,offset wordbuff,offset szSTYLE
 	.if !eax
-		invoke GetStyle,esi,offset styledef
+		invoke GetStyle,esi,0,TRUE
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.style,edx
 		jmp		@b
 	.endif
 	invoke strcmpi,offset wordbuff,offset szEXSTYLE
 	.if !eax
-		invoke GetStyle,esi,offset exstyledef
+		invoke GetStyle,esi,offset rsexstyledef,TRUE
 		add		esi,eax
 		mov		[edi+sizeof DLGHEAD].DIALOG.exstyle,edx
 		jmp		@b
@@ -2327,7 +2368,7 @@ SetOptions:
 	movzx	eax,byte ptr [esi]
 	.if eax && eax!=0Dh
 		;Type
-		invoke GetStyle,esi,offset menutypedef
+		invoke GetStyle,esi,offset menutypedef,FALSE
 		test	edx,MFT_SEPARATOR
 		.if !ZERO?
 			xor		edx,MFT_SEPARATOR
@@ -2339,7 +2380,7 @@ SetOptions:
 	movzx	eax,byte ptr [esi]
 	.if eax && eax!=0Dh
 		;State
-		invoke GetStyle,esi,offset menustatedef
+		invoke GetStyle,esi,offset menustatedef,FALSE
 		mov		[edi].MNUITEM.nstate,edx
 		add		esi,eax
 	.endif

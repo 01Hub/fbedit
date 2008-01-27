@@ -5583,371 +5583,526 @@ SaveDlgMenu proc
 
 SaveDlgMenu endp
 
-GetStyleStr proc uses esi,nStyle:DWORD,lpStyle1:DWORD,lpStyle2:DWORD,lpStyle3:DWORD
+;GetStyleStr proc uses esi,nStyle:DWORD,lpStyle1:DWORD,lpStyle2:DWORD,lpStyle3:DWORD
+;
+;	mov		esi,offset styledef
+;	.while byte ptr [esi+4]
+;		mov		eax,nStyle
+;		mov		edx,[esi]
+;		add		esi,4
+;		.if eax==edx
+;			mov		edx,lpStyle1
+;			call	TestStr
+;			.if !eax
+;				mov		eax,esi
+;				jmp		Ex
+;			.else
+;				mov		edx,lpStyle2
+;				call	TestStr
+;				.if !eax
+;					mov		eax,esi
+;					jmp		Ex
+;				.else
+;					mov		edx,lpStyle3
+;					call	TestStr
+;					.if !eax
+;						mov		eax,esi
+;						jmp		Ex
+;					.endif
+;				.endif
+;			.endif
+;		.endif
+;		invoke lstrlen,esi
+;		lea		esi,[esi+eax+1]
+;	.endw
+;	xor		eax,eax
+;  Ex:
+;	ret
+;
+;TestStr:
+;	xor		ecx,ecx
+;	xor		eax,eax
+;	inc		eax
+;	.while byte ptr [edx+ecx]
+;		mov		al,[edx+ecx]
+;		sub		al,[esi+ecx]
+;		jne		@f
+;		inc		ecx
+;	.endw
+;  @@:
+;	retn
+;
+;GetStyleStr endp
 
-	mov		esi,offset styledef
-	.while byte ptr [esi+4]
-		mov		eax,nStyle
-		mov		edx,[esi]
-		add		esi,4
-		.if eax==edx
-			mov		edx,lpStyle1
-			call	TestStr
-			.if !eax
-				mov		eax,esi
-				jmp		Ex
-			.else
-				mov		edx,lpStyle2
-				call	TestStr
-				.if !eax
-					mov		eax,esi
-					jmp		Ex
-				.else
-					mov		edx,lpStyle3
-					call	TestStr
-					.if !eax
-						mov		eax,esi
-						jmp		Ex
-					.endif
-				.endif
-			.endif
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	xor		eax,eax
-  Ex:
-	ret
+;GetExStyleStr proc uses esi,nExStyle:DWORD,lpStyle1:DWORD
+;
+;	mov		esi,offset exstyledef
+;	.while byte ptr [esi+4]
+;		mov		eax,nExStyle
+;		mov		edx,[esi]
+;		add		esi,4
+;		.if eax==edx
+;			mov		edx,lpStyle1
+;			call	TestStr
+;			.if !eax
+;				mov		eax,esi
+;				jmp		Ex
+;			.endif
+;		.endif
+;		invoke lstrlen,esi
+;		lea		esi,[esi+eax+1]
+;	.endw
+;	xor		eax,eax
+;  Ex:
+;	ret
+;
+;TestStr:
+;	xor		ecx,ecx
+;	xor		eax,eax
+;	inc		eax
+;	.while byte ptr [edx+ecx]
+;		mov		al,[edx+ecx]
+;		sub		al,[esi+ecx]
+;		jne		@f
+;		inc		ecx
+;	.endw
+;  @@:
+;	retn
+;
+;GetExStyleStr endp
 
-TestStr:
-	xor		ecx,ecx
-	xor		eax,eax
-	inc		eax
-	.while byte ptr [edx+ecx]
-		mov		al,[edx+ecx]
-		sub		al,[esi+ecx]
-		jne		@f
-		inc		ecx
-	.endw
-  @@:
-	retn
-
-GetStyleStr endp
-
-GetExStyleStr proc uses esi,nExStyle:DWORD,lpStyle1:DWORD
-
-	mov		esi,offset exstyledef
-	.while byte ptr [esi+4]
-		mov		eax,nExStyle
-		mov		edx,[esi]
-		add		esi,4
-		.if eax==edx
-			mov		edx,lpStyle1
-			call	TestStr
-			.if !eax
-				mov		eax,esi
-				jmp		Ex
-			.endif
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	xor		eax,eax
-  Ex:
-	ret
-
-TestStr:
-	xor		ecx,ecx
-	xor		eax,eax
-	inc		eax
-	.while byte ptr [edx+ecx]
-		mov		al,[edx+ecx]
-		sub		al,[esi+ecx]
-		jne		@f
-		inc		ecx
-	.endw
-  @@:
-	retn
-
-GetExStyleStr endp
-
-SaveStyle proc uses esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
-	LOCAL	buffer1[8]:BYTE
-	LOCAL	buffer2[8]:BYTE
-	LOCAL	buffer3[8]:BYTE
+SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
+;	LOCAL	buffer1[8]:BYTE
+;	LOCAL	buffer2[8]:BYTE
+;	LOCAL	buffer3[8]:BYTE
 	LOCAL	nst:DWORD
 	LOCAL	ncount:DWORD
+	LOCAL	npos:DWORD
 
 	.if fStyleHex
 		invoke SaveHexVal,nStyle,fComma
 	.else
-		mov		nst,80000000h
-		xor		eax,eax
-		mov		ncount,eax
-		mov		dword ptr buffer1,eax
-		mov		dword ptr buffer1[4],eax
-		mov		dword ptr buffer2,eax
-		mov		dword ptr buffer2[4],eax
-		mov		dword ptr buffer3,eax
-		mov		dword ptr buffer3[4],eax
-		mov		dword ptr buffer1,'_SW'
+		mov		nst,0
+		mov		ncount,0
+		mov		[npos],edi
+		push	edi
+		mov		dword ptr namebuff,0
+		mov		ebx,offset types
 		mov		eax,nType
-		.if eax==0
-			;Dialog
-			mov		dword ptr buffer2,'_SD'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==1
-			;Edit
-			mov		dword ptr buffer2,'_SE'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==2
-			;Static
-			mov		dword ptr buffer2,'_SS'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==3 || eax==4 || eax==5 || eax==6
-			;Button
-			mov		dword ptr buffer2,'_SB'
-			call	TestTypeMask
-			mov		eax,BS_CENTER
-			call	TestTypeMask1
-			mov		eax,BS_VCENTER
-			call	TestTypeMask1
-			call	WriteStyles
-		.elseif eax==7
-			;ComboBox
-			mov		dword ptr buffer2,'_SBC'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==8
-			;ListBox
-			mov		dword ptr buffer2,'_SBL'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==9 || eax==10
-			;ScrollBar
-			mov		dword ptr buffer2,'_SBS'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==11
-			;TabControl
-			mov		dword ptr buffer2,'_SCT'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==12
-			;ProgressBar
-			mov		dword ptr buffer2,'_SBP'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==13
-			;TreeView
-			mov		dword ptr buffer2,'_SVT'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==14
-			;ListView
-			mov		dword ptr buffer2,'_SVL'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==15
-			;TrackBar
-			mov		dword ptr buffer2,'_SBT'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==16
-			;UpDown
-			mov		dword ptr buffer2,'_SDU'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==17
-			;Image
-			mov		dword ptr buffer2,'_SS'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==18
-			;ToolBar
-			mov		dword ptr buffer2,'TSBT'
-			mov		dword ptr buffer3,'_SCC'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==19
-			;StatusBar
-			mov		dword ptr buffer2,'RABS'
-			mov		dword ptr buffer3,'_SCC'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==20
-			;DatePicker
-			mov		dword ptr buffer2,'_STD'
-
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==21
-			;MonthView
-			mov		dword ptr buffer2,'_SCM'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==22
-			;RichEdit
-			mov		dword ptr buffer2,'_SE'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==23
-			;UserDefinedControl
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==24
-			;ImageCombo
-			mov		dword ptr buffer2,'_SBC'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==25
-			;Shape
-			mov		dword ptr buffer2,'_SS'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==26
-			;IPAddress
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==27
-			;Animate
-			mov		dword ptr buffer2,'_SCA'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==28
-			;HotKey
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==29 || eax==30
-			;HPager / VPager
-			mov		dword ptr buffer2,'_SGP'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==31
-			;ReBar
-			mov		dword ptr buffer2,'_SBR'
-			call	TestTypeMask
-			call	WriteStyles
-		.elseif eax==32
-			;Header
-			mov		dword ptr buffer2,'_SDH'
-			call	TestTypeMask
-			call	WriteStyles
-		.else
-			call	TestTypeMask
-			call	WriteStyles
+		.while eax!=[ebx].RSTYPES.ctlid && [ebx].RSTYPES.ctlid!=-1
+			lea		ebx,[ebx+sizeof RSTYPES]
+		.endw
+		.if byte ptr [ebx].RSTYPES.style1
+			lea		esi,[ebx].RSTYPES.style1
+			call	AddStyles
+		.endif
+		.if byte ptr [ebx].RSTYPES.style2
+			lea		esi,[ebx].RSTYPES.style2
+			call	AddStyles
+		.endif
+		.if byte ptr [ebx].RSTYPES.style3
+			lea		esi,[ebx].RSTYPES.style3
+			call	AddStyles
+		.endif
+		pop		edi
+		invoke lstrcpy,edi,offset namebuff+1
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		eax,nst
+		.if eax!=nStyle
+			.if ncount
+				mov		byte ptr [edi],'|'
+				inc		edi
+			.endif
+			xor		eax,nStyle
+			invoke SaveHexVal,eax,fComma
+		.elseif fComma
+			mov		al,','
+			stosb
 		.endif
 	.endif
 	ret
 
-WriteStyles:
-	.while nst
-		mov		eax,nst
-		test	eax,nStyle
-		.if !ZERO?
-			invoke GetStyleStr,nst,addr buffer1,addr buffer2,addr buffer3
-			.if eax
-				.if ncount
-					mov		byte ptr [edi],'|'
-					add		edi,1
-				.endif
-				invoke strcpy,edi,eax
-				invoke lstrlen,edi
-				lea		edi,[edi+eax]
-				inc		ncount
-				mov		eax,nst
-				xor		nStyle,eax
-			.endif
-		.endif
-		shr		nst,1
+;		mov		nst,80000000h
+;		xor		eax,eax
+;		mov		ncount,eax
+;		mov		dword ptr buffer1,eax
+;		mov		dword ptr buffer1[4],eax
+;		mov		dword ptr buffer2,eax
+;		mov		dword ptr buffer2[4],eax
+;		mov		dword ptr buffer3,eax
+;		mov		dword ptr buffer3[4],eax
+;		mov		dword ptr buffer1,'_SW'
+;		mov		eax,nType
+;		.if eax==0
+;			;Dialog
+;			mov		dword ptr buffer2,'_SD'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==1
+;			;Edit
+;			mov		dword ptr buffer2,'_SE'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==2
+;			;Static
+;			mov		dword ptr buffer2,'_SS'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==3 || eax==4 || eax==5 || eax==6
+;			;Button
+;			mov		dword ptr buffer2,'_SB'
+;			call	TestTypeMask
+;			mov		eax,BS_CENTER
+;			call	TestTypeMask1
+;			mov		eax,BS_VCENTER
+;			call	TestTypeMask1
+;			call	WriteStyles
+;		.elseif eax==7
+;			;ComboBox
+;			mov		dword ptr buffer2,'_SBC'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==8
+;			;ListBox
+;			mov		dword ptr buffer2,'_SBL'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==9 || eax==10
+;			;ScrollBar
+;			mov		dword ptr buffer2,'_SBS'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==11
+;			;TabControl
+;			mov		dword ptr buffer2,'_SCT'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==12
+;			;ProgressBar
+;			mov		dword ptr buffer2,'_SBP'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==13
+;			;TreeView
+;			mov		dword ptr buffer2,'_SVT'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==14
+;			;ListView
+;			mov		dword ptr buffer2,'_SVL'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==15
+;			;TrackBar
+;			mov		dword ptr buffer2,'_SBT'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==16
+;			;UpDown
+;			mov		dword ptr buffer2,'_SDU'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==17
+;			;Image
+;			mov		dword ptr buffer2,'_SS'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==18
+;			;ToolBar
+;			mov		dword ptr buffer2,'TSBT'
+;			mov		dword ptr buffer3,'_SCC'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==19
+;			;StatusBar
+;			mov		dword ptr buffer2,'RABS'
+;			mov		dword ptr buffer3,'_SCC'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==20
+;			;DatePicker
+;			mov		dword ptr buffer2,'_STD'
+;
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==21
+;			;MonthView
+;			mov		dword ptr buffer2,'_SCM'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==22
+;			;RichEdit
+;			mov		dword ptr buffer2,'_SE'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==23
+;			;UserDefinedControl
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==24
+;			;ImageCombo
+;			mov		dword ptr buffer2,'_SBC'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==25
+;			;Shape
+;			mov		dword ptr buffer2,'_SS'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==26
+;			;IPAddress
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==27
+;			;Animate
+;			mov		dword ptr buffer2,'_SCA'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==28
+;			;HotKey
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==29 || eax==30
+;			;HPager / VPager
+;			mov		dword ptr buffer2,'_SGP'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==31
+;			;ReBar
+;			mov		dword ptr buffer2,'_SBR'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.elseif eax==32
+;			;Header
+;			mov		dword ptr buffer2,'_SDH'
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.else
+;			call	TestTypeMask
+;			call	WriteStyles
+;		.endif
+;	.endif
+;	ret
+;
+;WriteStyles:
+;	.while nst
+;		mov		eax,nst
+;		test	eax,nStyle
+;		.if !ZERO?
+;			invoke GetStyleStr,nst,addr buffer1,addr buffer2,addr buffer3
+;			.if eax
+;				.if ncount
+;					mov		byte ptr [edi],'|'
+;					add		edi,1
+;				.endif
+;				invoke strcpy,edi,eax
+;				invoke lstrlen,edi
+;				lea		edi,[edi+eax]
+;				inc		ncount
+;				mov		eax,nst
+;				xor		nStyle,eax
+;			.endif
+;		.endif
+;		shr		nst,1
+;	.endw
+;	.if nStyle
+;		.if ncount
+;			mov		byte ptr [edi],'|'
+;			add		edi,1
+;		.endif
+;		invoke SaveHexVal,nStyle,fComma
+;	.elseif fComma
+;		mov		al,','
+;		stosb
+;	.endif
+;	retn
+;
+;TestTypeMask:
+;	mov		eax,nType
+;	mov		edx,sizeof TYPES
+;	mul		edx
+;	add		eax,offset ctltypes
+;	mov		eax,[eax].TYPES.typemask
+;TestTypeMask1:
+;	.if eax
+;		mov		edx,nStyle
+;		and		edx,eax
+;		.if edx
+;			xor		eax,-1
+;			and		nStyle,eax
+;			invoke GetStyleStr,edx,addr buffer1,addr buffer2,addr buffer3
+;			.if eax
+;				.if ncount
+;					mov		dword ptr [edi],'|'
+;					add		edi,1
+;				.endif
+;				invoke strcpy,edi,eax
+;				invoke lstrlen,edi
+;				lea		edi,[edi+eax]
+;				inc		ncount
+;			.endif
+;		.endif
+;	.endif
+;	retn
+;
+Compare:
+	xor		eax,eax
+	xor		ecx,ecx
+	.while byte ptr [esi+ecx]
+		mov		al,[esi+ecx]
+		sub		al,[edi+ecx+8]
+		.break .if eax
+		inc		ecx
 	.endw
-	.if nStyle
-		.if ncount
-			mov		byte ptr [edi],'|'
-			add		edi,1
-		.endif
-		invoke SaveHexVal,nStyle,fComma
-	.elseif fComma
-		mov		al,','
-		stosb
-	.endif
 	retn
 
-TestTypeMask:
-	mov		eax,nType
-	mov		edx,sizeof TYPES
-	mul		edx
-	add		eax,offset ctltypes
-	mov		eax,[eax].TYPES.typemask
-TestTypeMask1:
-	.if eax
-		mov		edx,nStyle
-		and		edx,eax
-		.if edx
-			xor		eax,-1
-			and		nStyle,eax
-			invoke GetStyleStr,edx,addr buffer1,addr buffer2,addr buffer3
-			.if eax
-				.if ncount
-					mov		dword ptr [edi],'|'
-					add		edi,1
-				.endif
-				invoke strcpy,edi,eax
-				invoke lstrlen,edi
-				lea		edi,[edi+eax]
+AddStyles:
+	.if [ebx].RSTYPES.ctlid
+		mov		edi,offset srtstyledef
+	.else
+		mov		edi,offset srtstyledefdlg
+	.endif
+	mov		edx,nStyle
+	.while dword ptr [edi]
+		push	edi
+		mov		edi,[edi]
+		push	edx
+		call	Compare
+		pop		edx
+		.if !eax
+			mov		eax,edx
+			and		eax,[edi+4]
+			.if eax==[edi] && eax
+				or		nst,eax
 				inc		ncount
+				xor		edx,eax
+				push	edx
+				invoke lstrcat,offset namebuff,offset szOR
+				invoke lstrcat,offset namebuff,addr [edi+8]
+				pop		edx
 			.endif
 		.endif
-	.endif
+		pop		edi
+		lea		edi,[edi+4]
+	.endw
 	retn
 
 SaveStyle endp
 
-SaveExStyle proc uses esi,nExStyle:DWORD
+SaveExStyle proc uses ebx esi,nExStyle:DWORD
 	LOCAL	buffer1[8]:BYTE
 	LOCAL	nst:DWORD
 	LOCAL	ncount:DWORD
+	LOCAL	npos:DWORD
 
 	.if fStyleHex
 		invoke SaveHexVal,nExStyle,FALSE
 	.else
-		mov		nst,80000000h
-		xor		eax,eax
-		mov		ncount,eax
+		mov		nst,0
+		mov		ncount,0
+		mov		[npos],edi
 		mov		dword ptr buffer1,'E_SW'
 		mov		dword ptr buffer1[4],'_X'
-		.while nst
-			mov		eax,nst
-			test	eax,nExStyle
-			.if !ZERO?
-				invoke GetExStyleStr,nst,addr buffer1
-				.if eax
-					.if ncount
-						mov		byte ptr [edi],'|'
-						add		edi,1
-					.endif
-					invoke strcpy,edi,eax
-					invoke lstrlen,edi
-					lea		edi,[edi+eax]
-					inc		ncount
-					mov		eax,nst
-					xor		nExStyle,eax
-				.endif
-			.endif
-			shr		nst,1
-		.endw
-		.if nExStyle
+		push	edi
+		mov		dword ptr namebuff,0
+		lea		esi,buffer1
+		call	AddStyles
+		pop		edi
+		invoke lstrcpy,edi,offset namebuff+1
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		eax,nst
+		.if eax!=nExStyle
 			.if ncount
 				mov		byte ptr [edi],'|'
-				add		edi,1
+				inc		edi
 			.endif
-			invoke SaveHexVal,nExStyle,FALSE
+			xor		eax,nExStyle
+			invoke SaveHexVal,eax,FALSE
 		.endif
 	.endif
 	ret
+
+Compare:
+	xor		eax,eax
+	xor		ecx,ecx
+	.while byte ptr [esi+ecx]
+		mov		al,[esi+ecx]
+		sub		al,[edi+ecx+8]
+		.break .if eax
+		inc		ecx
+	.endw
+	retn
+
+AddStyles:
+	mov		edi,offset srtexstyledef
+	mov		edx,nExStyle
+	.while dword ptr [edi]
+		push	edi
+		mov		edi,[edi]
+		push	edx
+		call	Compare
+		pop		edx
+		.if !eax
+			mov		eax,edx
+			and		eax,[edi+4]
+			.if eax==[edi] && eax
+				or		nst,eax
+				inc		ncount
+				xor		edx,eax
+				push	edx
+				invoke lstrcat,offset namebuff,offset szOR
+				invoke lstrcat,offset namebuff,addr [edi+8]
+				pop		edx
+			.endif
+		.endif
+		pop		edi
+		lea		edi,[edi+4]
+	.endw
+	retn
+;
+;	LOCAL	buffer1[8]:BYTE
+;	LOCAL	nst:DWORD
+;	LOCAL	ncount:DWORD
+;
+;	.if fStyleHex
+;		invoke SaveHexVal,nExStyle,FALSE
+;	.else
+;		mov		nst,80000000h
+;		xor		eax,eax
+;		mov		ncount,eax
+;		mov		dword ptr buffer1,'E_SW'
+;		mov		dword ptr buffer1[4],'_X'
+;		.while nst
+;			mov		eax,nst
+;			test	eax,nExStyle
+;			.if !ZERO?
+;				invoke GetExStyleStr,nst,addr buffer1
+;				.if eax
+;					.if ncount
+;						mov		byte ptr [edi],'|'
+;						add		edi,1
+;					.endif
+;					invoke strcpy,edi,eax
+;					invoke lstrlen,edi
+;					lea		edi,[edi+eax]
+;					inc		ncount
+;					mov		eax,nst
+;					xor		nExStyle,eax
+;				.endif
+;			.endif
+;			shr		nst,1
+;		.endw
+;		.if nExStyle
+;			.if ncount
+;				mov		byte ptr [edi],'|'
+;				add		edi,1
+;			.endif
+;			invoke SaveHexVal,nExStyle,FALSE
+;		.endif
+;	.endif
+;	ret
 
 SaveExStyle endp
 

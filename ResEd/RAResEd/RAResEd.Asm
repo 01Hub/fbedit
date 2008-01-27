@@ -1182,6 +1182,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hredfont,eax
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 		invoke SetupCasetab
+		invoke SortStyles
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
 		;invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE

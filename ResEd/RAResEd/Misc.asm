@@ -581,3 +581,107 @@ SaveToMem proc hWin:DWORD,hMem:DWORD
 
 SaveToMem endp
 
+CombSort proc uses ebx esi edi,Arr:DWORD,count:DWORD
+	LOCAL	Gap:DWORD
+	LOCAL	eFlag:DWORD
+
+	mov		eax,count
+	mov		Gap,eax
+	mov		ebx,Arr
+	dec		count
+  @Loop1:
+	fild	Gap								; load integer memory operand to divide
+	fdiv	CombSort_Const					; divide number by 1.3
+	fistp	Gap								; store result back in integer memory operand
+	dec		Gap
+	jnz		@F
+	mov		Gap,1
+  @@:
+	mov		eFlag,0
+	mov		esi,count
+	sub		esi,Gap
+	xor		ecx,ecx							; low value index
+  @Loop2:
+	mov 	edx,ecx
+	add 	edx,Gap							; high value index
+	push	edx
+	mov		eax,[ebx+ecx*4]
+	mov		edx,[ebx+edx*4]
+	mov		eax,[eax]
+	sub		eax,[edx]
+	pop		edx
+	neg		eax
+	cmp		eax,0
+	jle 	@F
+	mov 	eax,[ebx+ecx*4]					; lower value
+	mov 	edi,[ebx+edx*4]					; higher value
+	mov 	[ebx+edx*4],eax
+	mov 	[ebx+ecx*4],edi
+	inc 	eFlag
+  @@:
+	inc 	ecx
+	cmp 	ecx,esi
+	jle 	@Loop2
+	cmp 	eFlag,0
+	jg		@Loop1
+	cmp 	Gap,1
+	jg		@Loop1
+	ret
+
+CombSort endp
+
+SortStyles proc uses ebx esi edi
+
+	mov		edi,offset srtstyledefdlg
+	mov		esi,offset rsstyledefdlg
+	xor		ecx,ecx
+	.while byte ptr [esi+8]
+		push	ecx
+		mov		[edi],esi
+		invoke lstrlen,addr [esi+8]
+		lea		edi,[edi+4]
+		lea		esi,[esi+eax+8+1]
+		pop		ecx
+		inc		ecx
+	.endw
+	invoke CombSort,offset srtstyledefdlg,ecx
+
+	mov		edi,offset srtstyledef
+	mov		esi,offset rsstyledef
+	xor		ecx,ecx
+	.while byte ptr [esi+8]
+		push	ecx
+		mov		[edi],esi
+		invoke lstrlen,addr [esi+8]
+		lea		edi,[edi+4]
+		lea		esi,[esi+eax+8+1]
+		pop		ecx
+		inc		ecx
+	.endw
+	invoke CombSort,offset srtstyledef,ecx
+;	PrintDec ecx
+;		mov		edi,offset srtstyledef
+;		.while dword ptr [edi]
+;			mov		eax,[edi]
+;			mov		eax,[eax]
+;	PrintDec eax
+;			add		edi,4
+;		.endw
+
+	mov		edi,offset srtexstyledef
+	mov		esi,offset rsexstyledef
+	xor		ecx,ecx
+	.while byte ptr [esi+8]
+		push	ecx
+		mov		[edi],esi
+		invoke lstrlen,addr [esi+8]
+		lea		edi,[edi+4]
+		lea		esi,[esi+eax+8+1]
+		pop		ecx
+		inc		ecx
+	.endw
+	invoke CombSort,offset srtexstyledef,ecx
+
+	ret
+
+SortStyles endp

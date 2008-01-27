@@ -172,6 +172,7 @@ szReBarClass		db 'ReBarWindow32',0
 szHeaderClass		db 'SysHeader32',0
 
 szComma				db ',',0
+szOR				db '|',0
 szNULL				db 0
 szAppName			db 'Resource editor',0
 szMemFail			db 'Memory allocation failed!',0
@@ -380,6 +381,8 @@ szCourierNew		db 'Courier New',0
 szIDOK				db 'IDOK',0
 szIDCANCEL			db 'IDCANCEL',0
 szIDC_STATIC		db 'IDC_STATIC',0
+
+CombSort_Const		REAL4 1.3
 
 .data
 
