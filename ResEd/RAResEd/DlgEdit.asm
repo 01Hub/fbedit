@@ -6106,7 +6106,7 @@ AddStyles:
 
 SaveExStyle endp
 
-SaveCtl proc uses esi edi
+SaveCtl proc uses ebx esi edi
 	LOCAL	buffer[512]:BYTE
 
 	assume esi:ptr DIALOG
@@ -6246,35 +6246,39 @@ SaveCtl proc uses esi edi
 					invoke SaveStr,edi,addr [esi].caption
 					add		edi,eax
 				.else
-					invoke GetWindowLong,hPrj,0
-					invoke GetTypeMem,eax,TPE_RESOURCE
-					.if eax
-						push	edi
-						mov		edi,[eax].PROJECT.hmem
-						.while byte ptr [edi].RESOURCEMEM.szname || [edi].RESOURCEMEM.value
-							invoke lstrcmp,addr [edi].RESOURCEMEM.szname,addr [esi].caption
-							.if !eax
-								.if [edi].RESOURCEMEM.value
-									; IDI_ICON
-									pop		edi
-									invoke SaveStr,edi,addr [esi].caption
-									add		edi,eax
-									push	edi
-								.else
-									; "IDI_ICON"
-									pop		edi
-									invoke SaveCaption
-									push	edi
+					xor		ebx,ebx
+					.if byte ptr [esi].caption
+						invoke GetWindowLong,hPrj,0
+						invoke GetTypeMem,eax,TPE_RESOURCE
+						.if eax
+							push	edi
+							mov		edi,[eax].PROJECT.hmem
+							.while byte ptr [edi].RESOURCEMEM.szname || [edi].RESOURCEMEM.value
+								invoke lstrcmp,addr [edi].RESOURCEMEM.szname,addr [esi].caption
+								.if !eax
+									.if [edi].RESOURCEMEM.value
+										; IDI_ICON
+										pop		edi
+										invoke SaveStr,edi,addr [esi].caption
+										add		edi,eax
+										push	edi
+									.else
+										; "IDI_ICON"
+										pop		edi
+										invoke SaveCaption
+										push	edi
+									.endif
+									inc		ebx
+									.break
 								.endif
-								.break
-							.endif
-							add		edi,sizeof RESOURCEMEM
-						.endw
-						pop		edi
-					.else
+								add		edi,sizeof RESOURCEMEM
+							.endw
+							pop		edi
+						.endif
+					.endif
+					.if !ebx
 						invoke SaveCaption
 					.endif
-					mov		edx,eax
 				.endif
 			.else
 				invoke SaveCaption
