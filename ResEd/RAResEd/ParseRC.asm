@@ -765,9 +765,6 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
 					.if !eax
 						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
-						pop		ecx
-						or		ecx,edx
-						push	ecx
 					.endif
 				.endif
 			.else
