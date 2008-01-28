@@ -5411,6 +5411,21 @@ SaveDefine proc
 				invoke strcmpi,addr [esi].idname,addr szIDCANCEL
 				.if eax
 					invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
+					.if !eax
+						invoke GetWindowLong,hRes,GWL_STYLE
+						test	eax,DES_DEFIDC_STATIC
+						.if !ZERO?
+							invoke GetWindowLong,hPrj,0
+							mov		edx,eax
+							push	eax
+							invoke FindName,edx,addr szIDC_STATIC
+							pop		edx
+							.if !eax
+								invoke AddName,edx,addr szIDC_STATIC,addr szIDC_STATICValue
+							.endif
+						.endif
+						xor		eax,eax
+					.endif
 				.endif
 			.endif
 			.if eax

@@ -1191,9 +1191,13 @@ SaveParam1:
 					inc		esi
 					jmp		SaveParam1
 				.elseif byte ptr [esi]=='='
+				  @@:
 					inc		esi
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
+					.if byte ptr [esi]=='-' || byte ptr [esi]=='+'
+						jmp		@b
+					.endif
 					lea		esi,[esi+ecx]
 					jmp		SaveParam1
 				.endif

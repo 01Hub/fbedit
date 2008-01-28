@@ -381,6 +381,7 @@ szCourierNew		db 'Courier New',0
 szIDOK				db 'IDOK',0
 szIDCANCEL			db 'IDCANCEL',0
 szIDC_STATIC		db 'IDC_STATIC',0
+szIDC_STATICValue	db '-1',0
 
 CombSort_Const		REAL4 1.3
 

@@ -760,6 +760,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.simple
 			or		edx,DES_SIMPLEPROPERTY
 		.endif
+		.if grdsize.defstatic
+			or		edx,DES_DEFIDC_STATIC
+		.endif
 		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_RESED,hInstance,0
 		mov		hResEd,eax
 		invoke SendMessage,eax,WM_SETFONT,hFont,0

@@ -748,6 +748,11 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 								lstrcpy(@buff,lpTABMEM->filename)
 								SetFileInfo(lpTABMEM->hedit,buff)
 							EndIf
+							hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
+							If hFile<>INVALID_HANDLE_VALUE Then
+								GetFileTime(hFile,NULL,NULL,@ft)
+								CloseHandle(hFile)
+							EndIf
 							lpTABMEM->ft.dwLowDateTime=ft.dwLowDateTime
 							lpTABMEM->ft.dwHighDateTime=ft.dwHighDateTime
 							fChangeNotification=10

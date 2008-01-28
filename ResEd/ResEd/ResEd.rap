@@ -87,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,40510
+1=0,0,0,0,58
 6=
-2=0,0,0,0,5606
-7=0,0,699,490,8681
+2=0,0,0,0,11
+7=0,0,699,490,8626
 9=
 8=
 3=0,0,0,0,1606
 10=0,0,0,0
 11=0,0,0,0,665
-13=0,0,0,0,13771
+13=0,0,0,0,6975
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="DEM_SHOWDIALOG"
-2="ParseRCMem"
-3="szcrlf"
-4="lstrcmpi"
-5="lstrcmp"
-6="lstrcpy"
-7="szManifestValue"
-8="ExportXPManifest"
-9="szErrorParse"
-10="Errors"
+1="SBARS_S"
+2="DEM_SHOWDIALOG"
+3="ParseRCMem"
+4="szcrlf"
+5="lstrcmpi"
+6="lstrcmp"
+7="lstrcpy"
+8="szManifestValue"
+9="ExportXPManifest"
+10="szErrorParse"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

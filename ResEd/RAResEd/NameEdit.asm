@@ -693,10 +693,21 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				jmp		Ex
 			.elseif eax==IDC_BTNNMEDEL
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				mov		ebx,eax
+				mov		ecx,ebx
+				shl		ecx,16
+				add		ecx,3
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
+				invoke GetWindowLong,hPrj,0
+				mov		edx,eax
 				push	eax
-				invoke SendMessage,hGrd,GM_DELROW,eax,0
-				pop		eax
-				invoke SendMessage,hGrd,GM_SETCURSEL,3,eax
+				invoke FindName,edx,addr buffer
+				pop		edx
+				.if eax
+					mov		[eax].NAMEMEM.delete,TRUE
+				.endif
+				invoke SendMessage,hGrd,GM_DELROW,ebx,0
+				invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
 				invoke SetFocus,hGrd
 				xor		eax,eax
 				jmp		Ex

@@ -135,6 +135,7 @@ GRIDSIZE struct
 	sizetofont	dd ?
 	nodefines	dd ?
 	simple		dd ?
+	defstatic	dd ?
 GRIDSIZE ends
 
 MENUINFO STRUCT
@@ -200,7 +201,7 @@ szWinPos			db 'WinPos',0
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
-grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE>
+grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE>
 col					COLOR <0FFFFFFh,0>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 
