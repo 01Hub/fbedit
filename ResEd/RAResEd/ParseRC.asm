@@ -247,6 +247,8 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 			mov		[edx],ecx
 		.endif
 	.endif
+	mov		edx,lpID
+	mov		eax,[edx]
 	ret
 
 GetName endp
@@ -1676,7 +1678,11 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	mov		[edi+sizeof DLGHEAD].DIALOG.hwnd,TRUE
 	;Name / ID
 	invoke GetName,lpProMem,offset namebuff,addr [edi+sizeof DLGHEAD].DIALOG.idname,addr [edi+sizeof DLGHEAD].DIALOG.id
-	inc		eax
+	.if eax
+		inc		eax
+	.else
+		mov		eax,1001
+	.endif
 	mov		[edi].DLGHEAD.ctlid,eax
 	mov		esi,lpRCMem
 	invoke GetLoadOptions,esi
@@ -1858,7 +1864,11 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	mov		[edi+sizeof DLGHEAD].DIALOG.hwnd,TRUE
 	;Name / ID
 	invoke GetName,lpProMem,offset namebuff,addr [edi+sizeof DLGHEAD].DIALOG.idname,addr [edi+sizeof DLGHEAD].DIALOG.id
-	inc		eax
+	.if eax
+		inc		eax
+	.else
+		mov		eax,1001
+	.endif
 	mov		[edi].DLGHEAD.ctlid,eax
 	mov		esi,lpRCMem
 	invoke GetLoadOptions,esi
