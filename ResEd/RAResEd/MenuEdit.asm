@@ -119,7 +119,7 @@ MnuSaveAccel proc uses esi edi,nAccel:DWORD,lpDest:DWORD
 		inc		edi
 		sub		eax,VK_F1-1
 		invoke ResEdBinToDec,eax,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 	.endif
 	mov		byte ptr [edi],0
@@ -891,7 +891,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 						mov		word ptr buffer,VK_TAB
 						mov		edx,eax
 						invoke MnuSaveAccel,edx,addr buffer[1]
-						invoke lstrcat,addr buffer1,addr buffer
+						invoke strcat,addr buffer1,addr buffer
 					.endif
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_INSERTSTRING,nMnuInx,addr buffer1
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETITEMDATA,nMnuInx,esi

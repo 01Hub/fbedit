@@ -3,6 +3,8 @@
 			dw ?
 wordbuff	db 16384 dup(?)
 hrcmem		dd ?
+fError		dd ?
+fModify		dd ?
 
 .code
 
@@ -699,12 +701,12 @@ FindStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 	mov		esi,lpStyles
 	.while byte ptr [esi+4]
 		mov		ebx,[esi]
-		invoke lstrcmp,addr [esi+4],lpWord
+		invoke strcmp,addr [esi+4],lpWord
 		.if !eax
 			mov		eax,ebx
 			jmp		Ex
 		.endif
-		invoke lstrlen,addr [esi+4]
+		invoke strlen,addr [esi+4]
 		lea		esi,[esi+eax+4+1]
 	.endw
 	xor		eax,eax
@@ -718,12 +720,12 @@ FindDlgStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 	mov		esi,lpStyles
 	.while byte ptr [esi+8]
 		mov		ebx,[esi]
-		invoke lstrcmp,addr [esi+8],lpWord
+		invoke strcmp,addr [esi+8],lpWord
 		.if !eax
 			mov		eax,ebx
 			jmp		Ex
 		.endif
-		invoke lstrlen,addr [esi+8]
+		invoke strlen,addr [esi+8]
 		lea		esi,[esi+eax+8+1]
 	.endw
 	xor		eax,eax
@@ -886,7 +888,7 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				.elseif byte ptr [esi+eax]=='"'
 					add		esi,eax
 					invoke UnQuoteWord,offset wordbuff
-					invoke lstrcat,offset namebuff,offset wordbuff
+					invoke strcat,offset namebuff,offset wordbuff
 					jmp		NxStr
 				.elseif byte ptr [esi+eax]!=0Dh
 					mov		[edi].STRINGMEM.szname,0
@@ -896,7 +898,7 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				.endif
 				add		esi,eax
 				invoke UnQuoteWord,offset wordbuff
-				invoke lstrcat,offset namebuff,offset wordbuff
+				invoke strcat,offset namebuff,offset wordbuff
 				invoke strcpyn,addr [edi].STRINGMEM.szstring,offset namebuff,sizeof STRINGMEM.szstring
 				mov		eax,lang
 				mov		[edi].STRINGMEM.lang,eax
@@ -912,7 +914,7 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		invoke GetLineNo,hrcmem,esi
 		mov		edx,eax
 		invoke ResEdBinToDec,edx,addr namebuff+100
-		invoke lstrcat,addr namebuff,addr namebuff+100
+		invoke strcat,addr namebuff,addr namebuff+100
 		invoke MessageBox,0,addr namebuff,addr szSTRINGTABLE,MB_OK
 	.endif
 	mov		eax,esi
@@ -941,8 +943,8 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 			invoke GetName,lpProMem,offset namebuff,addr [edi].XPMANIFESTMEM.szname,addr [edi].XPMANIFESTMEM.value
 			invoke strcpyn,addr [edi].XPMANIFESTMEM.szfilename,offset wordbuff,sizeof XPMANIFESTMEM.szfilename
 			invoke strcpy,addr buffer,addr szProjectPath
-			invoke lstrcat,addr buffer,addr szBS
-			invoke lstrcat,addr buffer,addr [edi].XPMANIFESTMEM.szfilename
+			invoke strcat,addr buffer,addr szBS
+			invoke strcat,addr buffer,addr [edi].XPMANIFESTMEM.szfilename
 			invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 			.if eax!=INVALID_HANDLE_VALUE
 				mov		hFile,eax
@@ -1074,17 +1076,25 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 				stosb
 			.endif
 		.else
-			invoke strcpy,addr namebuff+1024,addr szErrorParse
-			invoke GetLineNo,hrcmem,esi
-			mov		edx,eax
-			invoke ResEdBinToDec,edx,addr namebuff+1024+100
-			invoke lstrcat,addr namebuff+1024,addr namebuff+1024+100
-			invoke lstrcat,addr namebuff+1024,addr szCrLf
-			invoke lstrcat,addr namebuff+1024,addr szNotSupported
-			invoke MessageBox,0,addr namebuff+1024,addr buffer,MB_ICONERROR or MB_YESNOCANCEL
-			.if eax==IDCANCEL
-				mov		eax,-1
-				ret
+			mov		ecx,nType
+			mov		eax,1
+			shl		eax,cl
+			test	eax,fError
+			.if ZERO?
+				invoke strcpy,addr namebuff+1024,addr szLine
+				invoke GetLineNo,hrcmem,esi
+				mov		edx,eax
+				invoke ResEdBinToDec,edx,addr namebuff+1024+100
+				invoke strcat,addr namebuff+1024,addr namebuff+1024+100
+				invoke strcat,addr namebuff+1024,addr szCrLf
+				invoke strcat,addr namebuff+1024,addr szNotSupported
+				invoke MessageBox,0,addr namebuff+1024,addr buffer,MB_ICONEXCLAMATION or MB_YESNOCANCEL
+				.if eax==IDCANCEL
+					mov		eax,-1
+					ret
+				.endif
+			.else
+				mov		eax,IDOK
 			.endif
 			.if eax==IDNO
 				invoke GetWord,offset wordbuff,esi
@@ -1134,25 +1144,62 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 					invoke strcpy,offset wordbuff,offset namebuff
 				.else
 					invoke strcpy,offset wordbuff,addr buffer
-					invoke lstrcat,offset wordbuff,addr namebuff+1024+100
+					invoke strcat,offset wordbuff,addr namebuff+1024+100
 				.endif
-				invoke lstrlen,offset wordbuff
+				invoke strlen,offset wordbuff
 				.if nType==0
+					; BITMAP
 					mov		dword ptr wordbuff[eax],'pmb.'
 					mov		dword ptr wordbuff[eax+4],0
 				.elseif nType==1
+					; CURSOR
 					mov		dword ptr wordbuff[eax],'ruc.'
 					mov		dword ptr wordbuff[eax+4],0
 				.elseif nType==2
+					; ICON
 					mov		dword ptr wordbuff[eax],'oci.'
 					mov		dword ptr wordbuff[eax+4],0
 				.elseif nType==3
+					; AVI
 					mov		dword ptr wordbuff[eax],'iva.'
 					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==4
+					; RCDATA
+					mov		dword ptr wordbuff[eax],'tad.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==5
+					; WAVE
+					mov		dword ptr wordbuff[eax],'vaw.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==6
+					; IMAGE
+					mov		dword ptr wordbuff[eax],'gmi.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==7
+					; MANIFEST
+					mov		dword ptr wordbuff[eax],'lmx.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==8
+					; ANICURSOR
+					mov		dword ptr wordbuff[eax],'ina.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==9
+					; FONT
+					mov		dword ptr wordbuff[eax],'nof.'
+					mov		dword ptr wordbuff[eax+4],0
+				.elseif nType==10
+					; MESSAGETABLE
+					mov		dword ptr wordbuff[eax],'gsm.'
+					mov		dword ptr wordbuff[eax+4],0
 				.else
+					; Unknown
 					mov		dword ptr wordbuff[eax],'xxx.'
 					mov		dword ptr wordbuff[eax+4],0
 				.endif
+				mov		ecx,nType
+				mov		eax,1
+				shl		eax,cl
+				or		fError,eax
 				invoke GetName,lpProMem,offset namebuff,addr [edi].RESOURCEMEM.szname,addr [edi].RESOURCEMEM.value
 				invoke strcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
 				invoke GetWord,offset wordbuff,esi
@@ -1225,6 +1272,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 						jmp		@b
 					.endif
 					invoke CloseHandle,hFile
+					inc		fModify
 				.endif
 			.endif
 		.endif
@@ -2495,12 +2543,12 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				mov		esi,offset szAclKeys
 				.while byte ptr [esi]
 					lea		eax,[esi+1]
-					invoke lstrcmp,offset wordbuff+3,eax
+					invoke strcmp,offset wordbuff+3,eax
 					.if !eax
 						movzx	eax,byte ptr [esi]
 						jmp		@f
 					.endif
-					invoke lstrlen,esi
+					invoke strlen,esi
 					lea		esi,[esi+eax+1]
 				.endw
 				mov		eax,41h
@@ -2518,7 +2566,7 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			mov		esi,offset szAclKeys
 			.while byte ptr [esi]
 				.break .if bl==byte ptr [esi]
-				invoke lstrlen,esi
+				invoke strlen,esi
 				inc		edi
 				lea		esi,[esi+eax+1]
 			.endw
@@ -2694,7 +2742,7 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				invoke GetWord,offset wordbuff,esi
 				add		esi,eax
 				invoke UnQuoteWord,offset wordbuff
-				invoke lstrlen,offset wordbuff
+				invoke strlen,offset wordbuff
 				.if word ptr wordbuff[eax-2]=='0\'
 					mov		byte ptr wordbuff[eax-2],0
 				.endif
@@ -3122,12 +3170,16 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	sub		eax,lpRCMem
 	ret
   ExErr:
+	mov		fClose,eax
 	ret
 
 ParseRC endp
 
 ParseRCMem proc uses esi,hRCMem:DWORD,lpProMem:DWORD
 
+	xor		eax,eax
+	mov		fError,eax
+	mov		fModify,eax
 	mov		esi,hRCMem
 	mov		hrcmem,esi
 	.while TRUE

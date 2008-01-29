@@ -29,7 +29,7 @@ ExportRCDataNames proc uses esi edi,hMem:DWORD
 		mov		al,' '
 		stosb
 		invoke ResEdBinToDec,[esi].RCDATAMEM.value,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		al,0Dh
 		stosb
@@ -58,12 +58,12 @@ ExportRCData proc uses esi edi,hMem:DWORD
 	.else
 		invoke ResEdBinToDec,[esi].RCDATAMEM.value,edi
 	.endif
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,' '
 	stosb
    	invoke strcpy,edi,offset szRCDATA
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,0Dh
 	stosb

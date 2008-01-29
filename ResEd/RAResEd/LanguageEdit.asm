@@ -131,7 +131,7 @@ GetLang:
 	.endif
 	invoke SendDlgItemMessage,hWin,IDC_CBOLANG,CB_SETITEMDATA,eax,ebx
 	lea		esi,[esi+4]
-	invoke lstrlen,esi
+	invoke strlen,esi
 	lea		esi,[esi+eax+1]
 	.while dword ptr [esi]<10000h && byte ptr [esi+4]
 		.if ebx==nLang
@@ -145,7 +145,7 @@ GetLang:
 			invoke SendDlgItemMessage,hWin,IDC_CBOSUBLANG,CB_SETITEMDATA,eax,[esi]
 		.endif
 		lea		esi,[esi+4]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	.if byte ptr [esi+4]
@@ -227,7 +227,7 @@ GetLang:
 	.endif
 	invoke SendDlgItemMessage,hWin,IDC_CBOLANG,CB_SETITEMDATA,eax,ebx
 	lea		esi,[esi+4]
-	invoke lstrlen,esi
+	invoke strlen,esi
 	lea		esi,[esi+eax+1]
 	.while dword ptr [esi]<10000h && byte ptr [esi+4]
 		.if ebx==nLang
@@ -241,7 +241,7 @@ GetLang:
 			invoke SendDlgItemMessage,hWin,IDC_CBOSUBLANG,CB_SETITEMDATA,eax,[esi]
 		.endif
 		lea		esi,[esi+4]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	.if byte ptr [esi+4]

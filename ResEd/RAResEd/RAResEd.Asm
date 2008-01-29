@@ -1415,15 +1415,20 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_OPEN
 		invoke SendMessage,hRes,PRO_CLOSE,0,0
 		invoke OpenProject,wParam,lParam
-		invoke SetWindowLong,hPrj,0,eax
 		invoke InvalidateRect,hDEd,NULL,TRUE
+		.if fClose
+			invoke SendMessage,hWin,PRO_CLOSE,0,0
+			mov		fClose,0
+		.elseif fModify
+			invoke SendMessage,hWin,PRO_SETMODIFY,TRUE,0
+		.endif
 		jmp		Ex
 	.elseif eax==PRO_CLOSE
 		invoke GetWindowLong,hPrj,0
 		.if eax
 			invoke CloseProject,eax
+			invoke SetWindowLong,hPrj,0,0
 		.endif
-		invoke SetWindowLong,hPrj,0,0
 		invoke InvalidateRect,hDEd,NULL,TRUE
 		invoke NotifyParent
 		jmp		Ex

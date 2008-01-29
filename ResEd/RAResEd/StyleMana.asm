@@ -166,7 +166,7 @@ AddStyles:
 		.if !eax
 			invoke SendMessage,hWin,RSM_ADDITEM,0,edi
 		.endif
-		invoke lstrlen,addr [edi+8]
+		invoke strlen,addr [edi+8]
 		lea		edi,[edi+eax+8+1]
 	.endw
 	pop		esi
@@ -275,7 +275,7 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						pop		eax
 						invoke DeleteObject,eax
 					.endif
-					invoke lstrlen,addr [esi+8]
+					invoke strlen,addr [esi+8]
 					invoke TextOut,mDC,20,pt.y,addr [esi+8],eax
 					invoke HexConv,addr buffer,[esi]
 					invoke TextOut,mDC,180,pt.y,addr buffer,8
@@ -299,7 +299,7 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		rect.left,eax
 					mov		eax,ps.rcPaint.right
 					mov		rect.right,eax
-					invoke lstrlen,esi
+					invoke strlen,esi
 					invoke ExtTextOut,mDC,20,pt.y,ETO_OPAQUE,addr rect,esi,eax,NULL
 					pop		esi
 					pop		eax

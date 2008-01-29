@@ -96,7 +96,7 @@ ExportAccel proc uses esi edi,hMem:DWORD
 			mov		esi,offset szAclKeys
 			.while ecx
 				push	ecx
-				invoke lstrlen,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				pop		ecx
 				dec		ecx
@@ -330,7 +330,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.while byte ptr [esi]
 			inc		esi
 			invoke SendMessage,hGrd,GM_COMBOADDSTRING,2,esi
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
 		;Ascii

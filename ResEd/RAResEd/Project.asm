@@ -194,7 +194,8 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
 	mov     hProMem,eax
 	invoke GlobalLock,hProMem
-	invoke lstrlen,lpFileName
+	invoke SetWindowLong,hPrj,0,hProMem
+	invoke strlen,lpFileName
 	mov		edx,lpFileName
 	.while byte ptr [edx+eax]!='\' && eax
 		dec		eax
@@ -208,9 +209,14 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	invoke SetCurrentDirectory,offset szProjectPath
 	invoke AddTypeMem,hProMem,64*1024,TPE_NAME
 	invoke ParseRCMem,hRCMem,hProMem
+	push	eax
 	invoke GlobalUnlock,hRCMem
 	invoke GlobalFree,hRCMem
+	pop		eax
 	pop		edx
+	.if eax==-1
+		jmp		Ex
+	.endif
 	push	edx
 	mov		ecx,offset szResourceh
   @@:
@@ -303,6 +309,7 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	.endw
 	invoke ExpandProjectNodes,NULL
 	mov		eax,hProMem
+  Ex:
 	ret
 
 OpenProject endp
@@ -360,7 +367,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportNamesNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -369,7 +376,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportDialogNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -378,7 +385,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportMenuNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -387,7 +394,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportVersionNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -396,7 +403,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportAccelNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -405,7 +412,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportResourceNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -414,7 +421,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportStringNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -423,7 +430,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportXPManifestNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -432,7 +439,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportRCDataNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -441,7 +448,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportToolbarNames,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -454,9 +461,9 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 		mov		eax,lpRCMem
 		mov		dword ptr [eax],0
 	.endif
-	invoke lstrlen,lpRCMem
+	invoke strlen,lpRCMem
 	.if eax
-		invoke lstrcat,lpRCMem,offset szCrLf
+		invoke strcat,lpRCMem,offset szCrLf
 	.endif
 	;Include
 	mov		esi,lpProMem
@@ -467,7 +474,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportInclude,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -476,14 +483,14 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 		add		esi,sizeof PROJECT
 	.endw
 	.if !fResourceh && fNoDefines
-		invoke lstrcat,lpRCMem,offset szINCLUDE
+		invoke strcat,lpRCMem,offset szINCLUDE
 		mov		dword ptr buff,'" '
-		invoke lstrcat,lpRCMem,addr buff
-		invoke lstrcat,lpRCMem,addr szResourceh
+		invoke strcat,lpRCMem,addr buff
+		invoke strcat,lpRCMem,addr szResourceh
 		mov		dword ptr buff,'"'
-		invoke lstrcat,lpRCMem,addr buff
+		invoke strcat,lpRCMem,addr buff
 		mov		dword ptr buff,0A0Dh
-		invoke lstrcat,lpRCMem,addr buff
+		invoke strcat,lpRCMem,addr buff
 	.endif
 	;Language
 	mov		esi,lpProMem
@@ -494,7 +501,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportLanguage,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -511,7 +518,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportDialog,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -524,7 +531,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				.endif
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -533,7 +540,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportVersion,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -542,7 +549,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportAccel,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -551,7 +558,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportResource,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -560,7 +567,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportString,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -569,7 +576,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportXPManifest,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -578,7 +585,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportRCData,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -587,7 +594,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 				invoke ExportToolbar,eax
 				.if eax
 					mov		hMem,eax
-					invoke lstrcat,lpRCMem,hMem
+					invoke strcat,lpRCMem,hMem
 					invoke GlobalUnlock,hMem
 					invoke GlobalFree,hMem
 				.endif
@@ -1181,7 +1188,7 @@ GetUnikeName proc uses ebx esi,lpName:DWORD
 	inc		nInx
 	invoke strcpy,addr buffer1,lpName
 	invoke ResEdBinToDec,nInx,addr buffer2
-	invoke lstrcat,addr buffer1,addr buffer2
+	invoke strcat,addr buffer1,addr buffer2
 	invoke GetWindowLong,hPrj,0
 	mov		ebx,eax
 	.while [ebx].PROJECT.hmem
@@ -1265,7 +1272,7 @@ GetUnikeName endp
 
 NameExists proc uses ebx esi,lpName:DWORD,lpItem:DWORD
 
-	invoke lstrlen,lpName
+	invoke strlen,lpName
 	.if eax
 		invoke GetWindowLong,hPrj,0
 		mov		ebx,eax

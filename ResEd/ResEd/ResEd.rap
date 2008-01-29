@@ -87,10 +87,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,18529
+1=0,0,0,0,9146
 6=
 2=0,0,0,0,5978
-7=0,0,699,490,128
+7=0,0,699,490,6132
 9=
 8=
 3=0,0,0,0,1200
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="WM_DESTROY"
-2="InstallRAEdit"
-3="install"
-4="szMANIFEST"
-5="WS_DLGFRAME"
-6="WS_CAPTION"
-7="modal"
-8="SaveExStyle"
-9="GetStyle"
-10="GetStyleStr"
+1="PRO_SETMODIFY"
+2="OpenProject"
+3="ParseRCMem"
+4="CreateWindowEx"
+5="CreateW"
+6="WM_DESTROY"
+7="InstallRAEdit"
+8="install"
+9="szMANIFEST"
+10="WS_DLGFRAME"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=4
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

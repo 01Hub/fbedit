@@ -22,6 +22,19 @@ SetupCasetab proc uses ebx
 
 SetupCasetab endp
 
+strlen proc lpSource:DWORD
+
+	xor		eax,eax
+	dec		eax
+	mov		edx,lpSource
+  @@:
+	inc		eax
+	cmp		byte ptr [edx+eax],0
+	jne		@b
+	ret
+
+strlen endp
+
 strcpy proc uses ebx,lpdest:DWORD,lpsource:DWORD
 
 	mov		ebx,lpsource
@@ -55,6 +68,44 @@ strcpyn proc uses ebx,lpdest:DWORD,lpsource:DWORD,nmax:DWORD
 	ret
 
 strcpyn endp
+
+strcat proc uses esi edi,lpword1:DWORD,lpword2:DWORD
+
+	mov		esi,lpword1
+	mov		edi,lpword2
+	invoke strlen,esi
+	xor		ecx,ecx
+	lea		esi,[esi+eax]
+  @@:
+	mov		al,[edi+ecx]
+	mov		[esi+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcat endp
+
+strcmp proc uses esi edi,lpword1:DWORD,lpword2:DWORD
+
+	mov		esi,lpword1
+	mov		edi,lpword2
+	xor		ecx,ecx
+	dec		ecx
+	mov		eax,ecx
+	mov		edx,ecx
+  @@:
+	or		eax,edx
+	je		Found
+	inc		ecx
+	movzx	eax,byte ptr [esi+ecx]
+	movzx	edx,byte ptr [edi+ecx]
+	sub		eax,edx
+	je		@b
+  Found:
+	ret
+
+strcmp endp
 
 strcmpi proc uses esi edi,lpword1:DWORD,lpword2:DWORD
 
@@ -382,7 +433,7 @@ SaveVal proc pVal:DWORD,fComma:DWORD
 	push	edi
 	invoke ResEdBinToDec,pVal,addr buffer
 	invoke strcpy,edi,addr buffer
-	invoke lstrlen,addr buffer
+	invoke strlen,addr buffer
 	pop		edi
 	pop		esi
 	add		edi,eax
@@ -479,7 +530,7 @@ FindName proc uses esi,lpProMem:DWORD,lpName:DWORD
 		mov		esi,eax
 		.while [esi].NAMEMEM.szname || [esi].NAMEMEM.value
 			.if ![esi].NAMEMEM.delete
-				invoke lstrcmp,addr [esi].NAMEMEM.szname,lpName
+				invoke strcmp,addr [esi].NAMEMEM.szname,lpName
 				.if !eax
 					mov		eax,esi
 					jmp		Ex
@@ -638,7 +689,7 @@ SortStyles proc uses ebx esi edi
 	.while byte ptr [esi+8]
 		push	ecx
 		mov		[edi],esi
-		invoke lstrlen,addr [esi+8]
+		invoke strlen,addr [esi+8]
 		lea		edi,[edi+4]
 		lea		esi,[esi+eax+8+1]
 		pop		ecx
@@ -652,7 +703,7 @@ SortStyles proc uses ebx esi edi
 	.while byte ptr [esi+8]
 		push	ecx
 		mov		[edi],esi
-		invoke lstrlen,addr [esi+8]
+		invoke strlen,addr [esi+8]
 		lea		edi,[edi+4]
 		lea		esi,[esi+eax+8+1]
 		pop		ecx
@@ -674,7 +725,7 @@ SortStyles proc uses ebx esi edi
 	.while byte ptr [esi+8]
 		push	ecx
 		mov		[edi],esi
-		invoke lstrlen,addr [esi+8]
+		invoke strlen,addr [esi+8]
 		lea		edi,[edi+4]
 		lea		esi,[esi+eax+8+1]
 		pop		ecx

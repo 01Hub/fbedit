@@ -1509,7 +1509,7 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		mov		[esi],al
 		inc		esi
 		invoke ResEdBinToDec,ccx,esi
-		invoke lstrlen,esi
+		invoke strlen,esi
 		add		esi,eax
 		mov		al,','
 		mov		[esi],al
@@ -1518,7 +1518,7 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		mov		[esi],al
 		inc		esi
 		invoke ResEdBinToDec,ccy,esi
-		invoke lstrlen,esi
+		invoke strlen,esi
 		add		esi,eax
 		mov		eax,'  '
 		mov		[esi],eax
@@ -1527,7 +1527,7 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		invoke SendMessage,hTlt,WM_GETFONT,0,0
 		invoke SelectObject,hDC,eax
 		mov		hOldFont,eax
-		invoke lstrlen,addr buffer
+		invoke strlen,addr buffer
 		mov		len,eax
 
 		invoke GetTextExtentPoint32,hDC,addr buffer,len,addr pt
@@ -2299,7 +2299,7 @@ GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
 								invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
 								invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
 								.if buffer1[1]
-									invoke lstrcat,addr buffer,addr buffer1
+									invoke strcat,addr buffer,addr buffer1
 								.endif
 								push	esi
 								call	GetNextLevel
@@ -2466,7 +2466,7 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,(DIALOG ptr [eax]).hwnd
 					invoke ScreenToClient,edx,addr pt
 					invoke ResEdBinToDec,pt.x,offset szPos+5
-					invoke lstrlen,offset szPos
+					invoke strlen,offset szPos
 					mov		byte ptr szPos[eax],','
 					inc		eax
 					invoke ResEdBinToDec,pt.y,addr szPos[eax]
@@ -3291,11 +3291,11 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 						mov		eax,[edi].style
 						and		eax,SS_TYPEMASK
 						.if ([ebx].RESOURCEMEM.ntype==0 && eax==SS_BITMAP) || ([ebx].RESOURCEMEM.ntype==2 && eax==SS_ICON)
-							invoke lstrcmp,addr [edi].caption,addr [ebx].RESOURCEMEM.szname
+							invoke strcmp,addr [edi].caption,addr [ebx].RESOURCEMEM.szname
 							.if eax
 								mov		buffer,'#'
 								invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,addr buffer[1]
-								invoke lstrcmp,addr [edi].caption,addr buffer
+								invoke strcmp,addr [edi].caption,addr buffer
 							.endif
 							.if !eax
 								invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
@@ -3591,11 +3591,11 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 					mov		ebx,[esi].PROJECT.hmem
 					.while [ebx].RESOURCEMEM.szname || [ebx].RESOURCEMEM.value
 						.if [ebx].RESOURCEMEM.ntype==3
-							invoke lstrcmp,addr [edi].caption,addr [ebx].RESOURCEMEM.szname
+							invoke strcmp,addr [edi].caption,addr [ebx].RESOURCEMEM.szname
 							.if eax
 								mov		buffer,'#'
 								invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,addr buffer[1]
-								invoke lstrcmp,addr [edi].caption,addr buffer
+								invoke strcmp,addr [edi].caption,addr buffer
 							.endif
 							.if !eax
 								invoke SendMessage,[edi].hcld,ACM_OPEN,0,addr [ebx].RESOURCEMEM.szfile
@@ -4966,7 +4966,7 @@ GetMnuString proc uses ebx esi edi,lpName:DWORD,lpBuff:DWORD
 				cmp		ebx,[edx].MNUHEAD.menuid
 				.break .if ZERO?
 			.else
-				invoke lstrcmp,lpName,addr [edx].MNUHEAD.menuname
+				invoke strcmp,lpName,addr [edx].MNUHEAD.menuname
 				.break .if !eax
 			.endif
 		.endif
@@ -4993,7 +4993,7 @@ GetMnuString proc uses ebx esi edi,lpName:DWORD,lpBuff:DWORD
 					mov		byte ptr [edi],' '
 					inc		edi
 					invoke strcpy,edi,addr (MNUITEM ptr [esi]).itemcaption
-					invoke lstrlen,edi
+					invoke strlen,edi
 					add		edi,eax
 					mov		byte ptr [edi],' '
 					inc		edi
@@ -5203,7 +5203,7 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	jne		@b
 	pop		edi
 	lea		esi,buffer2
-	invoke lstrlen,esi
+	invoke strlen,esi
 	mov		ebx,eax
 	invoke GetTextExtentPoint32,mDC,esi,ebx,addr ptW
 	pop		esi
@@ -5242,7 +5242,7 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.endif
-	invoke lstrlen,esi
+	invoke strlen,esi
 	mov		ebx,eax
 	invoke DrawText,mDC,esi,ebx,addr rect1,DT_SINGLELINE or DT_VCENTER
 	mov		eax,ptW.x
@@ -5627,7 +5627,7 @@ SaveDlgMenu endp
 ;				.endif
 ;			.endif
 ;		.endif
-;		invoke lstrlen,esi
+;		invoke strlen,esi
 ;		lea		esi,[esi+eax+1]
 ;	.endw
 ;	xor		eax,eax
@@ -5664,7 +5664,7 @@ SaveDlgMenu endp
 ;				jmp		Ex
 ;			.endif
 ;		.endif
-;		invoke lstrlen,esi
+;		invoke strlen,esi
 ;		lea		esi,[esi+eax+1]
 ;	.endw
 ;	xor		eax,eax
@@ -5720,8 +5720,8 @@ SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 			call	AddStyles
 		.endif
 		pop		edi
-		invoke lstrcpy,edi,offset namebuff+1
-		invoke lstrlen,edi
+		invoke strcpy,edi,offset namebuff+1
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		eax,nst
 		.if eax!=nStyle
@@ -5912,7 +5912,7 @@ SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 ;					add		edi,1
 ;				.endif
 ;				invoke strcpy,edi,eax
-;				invoke lstrlen,edi
+;				invoke strlen,edi
 ;				lea		edi,[edi+eax]
 ;				inc		ncount
 ;				mov		eax,nst
@@ -5953,7 +5953,7 @@ SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 ;					add		edi,1
 ;				.endif
 ;				invoke strcpy,edi,eax
-;				invoke lstrlen,edi
+;				invoke strlen,edi
 ;				lea		edi,[edi+eax]
 ;				inc		ncount
 ;			.endif
@@ -5993,8 +5993,8 @@ AddStyles:
 				inc		ncount
 				xor		edx,eax
 				push	edx
-				invoke lstrcat,offset namebuff,offset szOR
-				invoke lstrcat,offset namebuff,addr [edi+8]
+				invoke strcat,offset namebuff,offset szOR
+				invoke strcat,offset namebuff,addr [edi+8]
 				pop		edx
 			.endif
 		.endif
@@ -6024,8 +6024,8 @@ SaveExStyle proc uses ebx esi,nExStyle:DWORD
 		lea		esi,buffer1
 		call	AddStyles
 		pop		edi
-		invoke lstrcpy,edi,offset namebuff+1
-		invoke lstrlen,edi
+		invoke strcpy,edi,offset namebuff+1
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		eax,nst
 		.if eax!=nExStyle
@@ -6067,8 +6067,8 @@ AddStyles:
 				inc		ncount
 				xor		edx,eax
 				push	edx
-				invoke lstrcat,offset namebuff,offset szOR
-				invoke lstrcat,offset namebuff,addr [edi+8]
+				invoke strcat,offset namebuff,offset szOR
+				invoke strcat,offset namebuff,addr [edi+8]
 				pop		edx
 			.endif
 		.endif
@@ -6100,7 +6100,7 @@ AddStyles:
 ;						add		edi,1
 ;					.endif
 ;					invoke strcpy,edi,eax
-;					invoke lstrlen,edi
+;					invoke strlen,edi
 ;					lea		edi,[edi+eax]
 ;					inc		ncount
 ;					mov		eax,nst
@@ -6269,7 +6269,7 @@ SaveCtl proc uses ebx esi edi
 							push	edi
 							mov		edi,[eax].PROJECT.hmem
 							.while byte ptr [edi].RESOURCEMEM.szname || [edi].RESOURCEMEM.value
-								invoke lstrcmp,addr [edi].RESOURCEMEM.szname,addr [esi].caption
+								invoke strcmp,addr [edi].RESOURCEMEM.szname,addr [esi].caption
 								.if !eax
 									.if [edi].RESOURCEMEM.value
 										; IDI_ICON
@@ -6422,12 +6422,12 @@ VerifyTebIndex proc uses esi,hMem:DWORD
 		.while ecx<=maxtab
 			push	ecx
 			.if byte ptr tab[ecx]>1
-				invoke lstrcat,addr szerr,addr szDupTab
+				invoke strcat,addr szerr,addr szDupTab
 				invoke MessageBox,hDEd,addr szerr,addr szToolTip,MB_ICONERROR or MB_OK
 				pop		ecx
 				.break
 			.elseif byte ptr tab[ecx]==0
-				invoke lstrcat,addr szerr,addr szMissTab
+				invoke strcat,addr szerr,addr szMissTab
 				invoke MessageBox,hDEd,addr szerr,addr szToolTip,MB_ICONERROR or MB_OK
 				pop		ecx
 				.break
@@ -6685,13 +6685,13 @@ UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
 	invoke GlobalFree,esi
 	invoke ExportDialog,ebx
 	mov		esi,eax
-	invoke lstrcat,edi,esi
+	invoke strcat,edi,esi
 	invoke GlobalUnlock,esi
 	invoke GlobalFree,esi
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		esi,eax
 	invoke SaveToMem,[ebx].DLGHEAD.hred,esi
-	invoke lstrcmp,esi,edi
+	invoke strcmp,esi,edi
 	.if eax
 		invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0
 		invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,-1

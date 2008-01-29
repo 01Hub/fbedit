@@ -53,7 +53,7 @@ ExportXPManifestNames proc uses esi edi,hMem:DWORD
 		mov		al,' '
 		stosb
 		invoke ResEdBinToDec,[esi].XPMANIFESTMEM.value,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		al,0Dh
 		stosb
@@ -85,7 +85,7 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 	.else
 		invoke ResEdBinToDec,[esi].XPMANIFESTMEM.value,edi
 	.endif
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,' '
 	stosb
@@ -111,12 +111,12 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 		mov		al,'"'
 		stosb
 		invoke strcpy,addr buffer,addr szProjectPath
-		invoke lstrcat,addr buffer,addr szBS
-		invoke lstrcat,addr buffer,addr [esi].XPMANIFESTMEM.szfilename
+		invoke strcat,addr buffer,addr szBS
+		invoke strcat,addr buffer,addr [esi].XPMANIFESTMEM.szfilename
 		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
-			invoke lstrlen,addr [esi+sizeof XPMANIFESTMEM]
+			invoke strlen,addr [esi+sizeof XPMANIFESTMEM]
 			mov		edx,eax
 			invoke WriteFile,hFile,addr [esi+sizeof XPMANIFESTMEM],edx,addr nBytes,NULL
 			invoke CloseHandle,hFile

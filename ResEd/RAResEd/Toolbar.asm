@@ -31,7 +31,7 @@ ExportToolbarNames proc uses esi edi,hMem:DWORD
 		mov		al,' '
 		stosb
 		invoke ResEdBinToDec,[esi].TOOLBARMEM.value,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		al,0Dh
 		stosb
@@ -60,22 +60,22 @@ ExportToolbar proc uses esi edi,hMem:DWORD
 	.else
 		invoke ResEdBinToDec,[esi].TOOLBARMEM.value,edi
 	.endif
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,' '
 	stosb
    	invoke strcpy,edi,offset szTOOLBAR
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,' '
 	stosb
 	invoke ResEdBinToDec,[esi].TOOLBARMEM.ccx,edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,','
 	stosb
 	invoke ResEdBinToDec,[esi].TOOLBARMEM.ccy,edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,0Dh
 	stosb

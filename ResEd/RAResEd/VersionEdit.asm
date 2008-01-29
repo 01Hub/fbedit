@@ -231,7 +231,7 @@ ExportVersionNames proc uses esi edi,hMem:DWORD
 		mov		al,' '
 		stosb
 		invoke ResEdBinToDec,[esi].VERSIONMEM.value,edi
-		invoke lstrlen,edi
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		al,0Dh
 		stosb
@@ -260,7 +260,7 @@ ExportVersion proc uses esi edi,hMem:DWORD
 	.else
 		invoke ResEdBinToDec,[esi].VERSIONMEM.value,edi
 	.endif
-	invoke lstrlen,edi
+	invoke strlen,edi
 	add		edi,eax
 	mov		al,' '
 	stosb
@@ -545,7 +545,7 @@ SaveVer:
 
 SaveVerItem:
 	invoke ResEdBinToDec,eax,edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	lea		edi,[edi+eax]
 	mov		al,','
 	stosb
@@ -651,7 +651,7 @@ VersionSetCbo proc uses esi,hWin:HWND,nID:DWORD,lpKey:DWORD,nVal:DWORD
 		invoke SendDlgItemMessage,hWin,nID,CB_ADDSTRING,0,esi
 		pop		edx
 		invoke SendDlgItemMessage,hWin,nID,CB_SETITEMDATA,eax,edx
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	mov		nInx,0
@@ -725,7 +725,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		edi,offset szVerTpe
 		.while byte ptr [edi]
 			call	AddTpe
-			invoke lstrlen,edi
+			invoke strlen,edi
 			lea		edi,[edi+eax+1]
 		.endw
 		mov		edi,offset szVersionTxt
@@ -820,17 +820,17 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 ConvVer:
 	lea		edi,buffer
 	invoke ResEdBinToDec,[esi],edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	lea		edi,[edi+eax]
 	mov		al,'.'
 	stosb
 	invoke ResEdBinToDec,[esi+4],edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	lea		edi,[edi+eax]
 	mov		al,'.'
 	stosb
 	invoke ResEdBinToDec,[esi+8],edi
-	invoke lstrlen,edi
+	invoke strlen,edi
 	lea		edi,[edi+eax]
 	mov		al,'.'
 	stosb

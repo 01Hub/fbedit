@@ -562,7 +562,7 @@ UpdateCbo proc uses esi,lpData:DWORD
 				dec		eax
 			.endw
 			push	esi
-			invoke lstrlen,addr buffer
+			invoke strlen,addr buffer
 			lea		esi,buffer
 			add		esi,eax
 			mov		al,' '
@@ -731,7 +731,7 @@ TxtLstMulti proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD
 
 	invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 	invoke strcpy,addr buffer,lpVal
-	invoke lstrlen,lpVal
+	invoke strlen,lpVal
 	add		lpVal,eax
 	inc		lpVal
  @@:
@@ -1145,7 +1145,7 @@ PropEditChkVal proc uses esi,lpTxt:DWORD,nTpe:DWORD,lpfErr:DWORD
 	invoke ResEdDecToBin,lpTxt
 	mov		val,eax
 	invoke ResEdBinToDec,val,addr buffer
-	invoke lstrcmp,lpTxt,addr buffer
+	invoke strcmp,lpTxt,addr buffer
 	.if eax
 		mov		eax,lpfErr
 		mov		dword ptr [eax],TRUE
@@ -1191,7 +1191,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 		jne		@b
 		mov		lpTxt,esi
 		;Text changed ?
-		invoke lstrcmp,lpTxt,addr buffer1
+		invoke strcmp,lpTxt,addr buffer1
 		.if hMultiSel && (lbid==PRP_STR_NAME || lbid==PRP_STR_CAPTION)
 			mov		eax,1
 		.endif
@@ -1277,7 +1277,7 @@ SetCtrlData:
 		.endif
 		.if eax
 			invoke strcpy,addr buffer,addr szNameExist
-			invoke lstrcat,addr buffer,addr buffer1
+			invoke strcat,addr buffer,addr buffer1
 			invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 		.else
 			invoke strcpy,addr [esi].idname,addr buffer1
@@ -1437,7 +1437,7 @@ ListMultiStyle proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD,lpBuff:
 	LOCAL	buffer1[64]:BYTE
 
 	invoke strcpy,addr buffer,lpVal
-	invoke lstrlen,lpVal
+	invoke strlen,lpVal
 	add		lpVal,eax
 	inc		lpVal
  @@:
@@ -1606,7 +1606,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		rcl		fList2,1
 		rcl		fList1,1
 		.if CARRY?
-			invoke lstrlen,addr buffer1
+			invoke strlen,addr buffer1
 			lea		edi,buffer1[eax]
 			mov		ax,09h
 			stosw
@@ -1627,7 +1627,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						invoke lstrcmp,addr [esi].idname,addr [ebx].DIALOG.idname
+						invoke strcmp,addr [esi].idname,addr [ebx].DIALOG.idname
 						.if eax
 							mov		byte ptr [edi],0
 						.endif
@@ -1792,7 +1792,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						invoke lstrcmp,addr [esi].caption,addr [ebx].DIALOG.caption
+						invoke strcmp,addr [esi].caption,addr [ebx].DIALOG.caption
 						.if eax
 							mov		byte ptr [edi],0
 						.endif
@@ -2063,7 +2063,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				.if byte ptr (DLGHEAD ptr [esi]).font
 					mov		eax,(DLGHEAD ptr [esi]).fontsize
 					invoke ResEdBinToDec,eax,edi
-					invoke lstrlen,edi
+					invoke strlen,edi
 					lea		edi,[edi+eax]
 					mov		al,','
 					stosb
@@ -2349,7 +2349,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				sub		esi,sizeof DLGHEAD
 				mov		eax,(DLGHEAD ptr [esi]).lang
 				invoke ResEdBinToDec,eax,edi
-				invoke lstrlen,edi
+				invoke strlen,edi
 				lea		edi,[edi+eax]
 				mov		byte ptr [edi],','
 				inc		edi

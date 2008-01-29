@@ -77,7 +77,7 @@ UpdateNames proc uses ebx esi,hWin:HWND
 		add		ecx,3
 		invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
 		.if val
-			invoke lstrcmp,val,addr buffer
+			invoke strcmp,val,addr buffer
 			.if eax
 				invoke strcpy,val,addr buffer
 				mov		fChanged,TRUE
@@ -190,8 +190,8 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 		.else
 			call	GetFileName
 			invoke strcpy,addr fnbuffer,addr szProjectPath
-			invoke lstrcat,addr fnbuffer,addr szBS
-			invoke lstrcat,addr fnbuffer,addr tmpbuffer
+			invoke strcat,addr fnbuffer,addr szBS
+			invoke strcat,addr fnbuffer,addr tmpbuffer
 			xor		eax,eax
 			inc		eax
 		.endif
@@ -320,13 +320,13 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			invoke CreateFile,addr fnbuffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 			.if eax!=INVALID_HANDLE_VALUE
 				mov		hFile,eax
-				invoke lstrlen,edi
+				invoke strlen,edi
 				mov		edx,eax
 				invoke WriteFile,hFile,edi,edx,addr buffer,NULL
 				invoke CloseHandle,hFile
 			.endif
 		.elseif eax==1
-			invoke lstrlen,edi
+			invoke strlen,edi
 			invoke ClipDataSet,edi,eax
 		.elseif eax==2
 			invoke SendMessage,hExportOut,WM_SETTEXT,0,edi

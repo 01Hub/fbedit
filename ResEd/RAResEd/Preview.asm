@@ -247,11 +247,11 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 						mov		ebx,[edi].PROJECT.hmem
 						.while [ebx].RESOURCEMEM.szname || [ebx].RESOURCEMEM.value
 							.if [ebx].RESOURCEMEM.ntype==3
-								invoke lstrcmp,addr [esi].DIALOG.caption,addr [ebx].RESOURCEMEM.szname
+								invoke strcmp,addr [esi].DIALOG.caption,addr [ebx].RESOURCEMEM.szname
 								.if eax
 									mov		buffer,'#'
 									invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,addr buffer[1]
-									invoke lstrcmp,addr [esi].DIALOG.caption,addr buffer
+									invoke strcmp,addr [esi].DIALOG.caption,addr buffer
 								.endif
 								.if !eax
 									invoke SendMessage,hWin,ACM_OPEN,0,addr [ebx].RESOURCEMEM.szfile
@@ -461,7 +461,7 @@ GetCtrlSize endp
 
 SaveWideChar proc lpStringA:DWORD,lpStringW:DWORD
 
-	invoke lstrlen,lpStringA
+	invoke strlen,lpStringA
 	invoke MultiByteToWideChar,CP_ACP,0,lpStringA,eax,lpStringW,256
 	lea		eax,[eax*2]
 	mov		edx,lpStringW
@@ -509,7 +509,7 @@ MakeMnuPopup proc uses ebx esi,lpDlgMem:DWORD,nInx:DWORD
 							invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
 							invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
 							.if buffer1[1]
-								invoke lstrcat,addr buffer,addr buffer1
+								invoke strcat,addr buffer,addr buffer1
 							.endif
 							push	esi
 							call	GetNextLevel

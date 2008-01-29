@@ -219,7 +219,7 @@ InstallDLL:
 			push	edx
 			mov		buffer,','
 			invoke GetStrItem,edx,addr buffer[1]
-			invoke lstrcat,offset PrAll,addr buffer
+			invoke strcat,offset PrAll,addr buffer
 			mov		ecx,nPr
 			inc		nPr
 			mov		eax,80000000h
@@ -259,8 +259,8 @@ InstallDLL:
 	invoke DeleteDC,mDC
 	invoke ImageList_AddMasked,hBoxIml,ebx,nColor  ; background colour
 	invoke DeleteObject,ebx
-	invoke lstrcat,offset szCtlText,offset szComma
-	invoke lstrcat,offset szCtlText,[edi].CCDEF.lptooltip
+	invoke strcat,offset szCtlText,offset szComma
+	invoke strcat,offset szCtlText,[edi].CCDEF.lptooltip
 	invoke strcpy,offset szToolBoxTlt,[edi].CCDEF.lptooltip
 	invoke Do_ToolBoxButton,hTlb,nButtons,hBoxIml
 	inc		nButtons
