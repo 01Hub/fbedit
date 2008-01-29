@@ -1024,6 +1024,7 @@ ParseOperator:
 
 ParseProc:
 	call	AddNamespace
+ParseProcNoNamespace:
 	call	SaveName
 	call	SaveParam
 	call	SaveRetType
@@ -1541,9 +1542,9 @@ ParseStruct:
 					inc		fdim
 					push	edi
 					mov		eax,TYPE_NAMEFIRST
-					call	ParseProc
+					call	ParseProcNoNamespace
 					pop		edi
-					mov		edx,'p'
+					mov		edx,'t'
 					invoke AddWordToWordList,edx,nOwner,nline,npos,edi,4
 				.endif
 				mov		word ptr [edi],','

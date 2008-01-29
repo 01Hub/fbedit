@@ -284,7 +284,8 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 				x=InStr(sLine,".")
 				x=InStr(x+1,sLine,".")
 				If x=0 Then
-					x=Len(sLine)+1
+					'x=Len(sLine)+1
+					x=InStr(sLine,".")
 				EndIf
 				sLine=sLine & "  "
 				Mid(sLine,x,2)=szNULL & szNULL
@@ -364,6 +365,32 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 					lstrcpy(@s,lret)
 					If Asc(s)<>NULL Then
 						GetItems(15)
+					EndIf
+				Else
+					' Namespace
+					lret=FindExact(StrPtr("n"),p,TRUE)
+					If lret Then
+						sItem=*p & "." & buff
+						lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+						While lret
+							x=InStr(*lret,".")
+							lret=lret+x
+							ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+							Select Case As Const ntype
+								Case Asc("p")
+									ntype=1
+								Case Asc("c")
+									ntype=3
+								Case Asc("s")
+									ntype=5
+								Case Asc("d")
+									ntype=14
+								Case Else
+									ntype=0
+							End Select
+							SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,lret))
+							lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+						Wend
 					EndIf
 				EndIf
 			EndIf

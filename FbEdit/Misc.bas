@@ -751,7 +751,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						buff=Chr(255) & Chr(1)
 						SendMessage(hPar,EM_GETLINE,lp,Cast(LPARAM,@buff))
 						buff[chrg.cpMax-chrg.cpMin]=NULL
-						tt.lpszType=StrPtr("Pp")
+						tt.lpszType=StrPtr("Ppt")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
 						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And InStr(buff,"(")<>0 Then
