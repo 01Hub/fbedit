@@ -449,6 +449,9 @@ TestWord:
 			call	SkipSpc
 			dec		ecx
 			jmp		@b
+		.elseif al=='('
+			dec		ecx
+			jmp		@b
 		.else
 			xor		eax,eax
 			dec		eax

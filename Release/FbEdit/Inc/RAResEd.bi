@@ -298,6 +298,8 @@ End Type
 #Define DES_SIZETOFONT		16
 #Define DES_NODEFINES		32
 #Define DES_SIMPLEPROPERTY	64
+#Define DES_SIMPLEPROPERTY	64
+#Define DES_DEFIDC_STATIC	128
 
 ' Dialog edit window memory
 #Define DEWM_DIALOG			0

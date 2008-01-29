@@ -1,5 +1,24 @@
 Whats new:
 ----------
+1.0.5.9
+o Updated resource editor.
+  - Added Undo / Redo to dialog editor.
+    NOTE! Undo / Redo resets Send to Back / Bring to Front.
+    The only way to avoid this problem is to properly set the tabindexes.
+    Most important is that a GroupBox or Tab control should have a lower tabindex
+    than all the controls it contain.
+  - Added support for IDOK / IDCANCEL to Button control.
+  - Added support for IDC_STATIC to Static, Image and Shape controls.
+  - Added option to define IDC_STATIC
+  - Added better support for multiline captions (Edit, Static and Button controls).
+    NOTE. Use Ctrl+Enter to insert a new line in the multiline text box.
+  - Fixed bugs with Image and Animate controls (name / id problems).
+  - Fixed bug with #include <windows.h>.
+  - Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.
+    This caused the applicationt you crated to not run.
+o Fixed bugs in code parser (RAProperty.dll)
+o Fixed bug with file changed outside editor. Could give more than one message.
+o Fixed block bug "If(Len(argv)=0 ) Then".
 1.0.5.8b
 o Fixed bugs in code parser (RAProperty.dll)
   - Wrong datatype in Dim x As Integer, y As String. y would be reported as Integer.

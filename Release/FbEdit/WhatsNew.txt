@@ -1,28 +1,21 @@
 Whats new:
 ----------
 1.0.5.9
-o RAResEd is now a single control. This makes it easier to use it in your own IDE.
-o Added Undo / Redo to dialog editor
-o Added support for IDOK / IDCANCEL to button control.
-o Added support for IDC_STATIC to static control.
-o Added better support for multiline captions (edit, static and button controls).
-  NOTE. Use Ctrl+Enter to insert a new line.
-o Fixed bugs with image and animate controls (name / id problems).
-o Fixed bug with #include <windows.h>.
-1.0.5.8b
+o Updated resource editor.
+  - Added Undo / Redo to dialog editor.
+    NOTE! Undo / Redo resets Send to Back / Bring to Front.
+    The only way to avoid this problem is to properly set the tabindexes.
+    Most important is that a GroupBox or Tab control should have a lower tabindex
+    than all the controls it contain.
+  - Added support for IDOK / IDCANCEL to Button control.
+  - Added support for IDC_STATIC to Static, Image and Shape controls.
+  - Added option to define IDC_STATIC
+  - Added better support for multiline captions (Edit, Static and Button controls).
+    NOTE. Use Ctrl+Enter to insert a new line in the multiline text box.
+  - Fixed bugs with Image and Animate controls (name / id problems).
+  - Fixed bug with #include <windows.h>.
+  - Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.
+    This caused the applicationt you crated to not run.
 o Fixed bugs in code parser (RAProperty.dll)
-  - Wrong datatype in Dim x As Integer, y As String. y would be reported as Integer.
-  - Crash on files containing var declarations (var x = 1)
-1.0.5.8
-o Added support for Dim foo As Function Cdecl (arg1 as Integer) as Integer
-  to code complete.
-o Added support for code tooltip when sub / function is in a type.
-o Added 'Duplicate line Ctrl+D' to AdvEdit addin.
-o Changed Dual Pane accelerator to Shift+Ctrl+D.
-o Added project option to add module files to build command.
-o Added project option to compile modules only if newer than .o file.
-o Added NM_DBLCLK notification to dialog editor.
-o Added Really RAD addin. Can create code when dialog is double clicked
-  or jump to code if a control is double clicked.
-o Fixed bug in resource editor caption with double quote.
-o Fixed codecomplete bug 'aaa(0).c2[0].l1 = "cccc"'.
+o Fixed bug with file changed outside editor. Could give more than one message.
+o Fixed block bug "If(Len(argv)=0 ) Then".

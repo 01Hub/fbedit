@@ -148,7 +148,7 @@ End Type
 
 Type FONT
 	hfont				As Integer							'Font handle
-	face				As PTSTR								'Face name
+	face				As ZString*LF_FACESIZE			'Face name
 	fsize				As Integer							'Point size
 	ht					As Integer							'Height
 	bold				As Byte								'Bold
