@@ -358,6 +358,8 @@ ResEdUninstall proc public
 	.if hBr
 		invoke DeleteObject,hBr
 	.endif
+	invoke DestroyCursor,hHSplit
+	invoke DestroyCursor,hVSplit
 	ret
 
 ResEdUninstall endp
@@ -1183,9 +1185,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 		invoke SetupCasetab
 		invoke SortStyles
+	.elseif	eax==WM_DESTROY
+		invoke DeleteObject,hredfont
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
-		;invoke SendMessage,hOut,WM_SETFONT,wParam,TRUE
 	.elseif	eax==WM_STYLECHANGED
 		.if wParam==GWL_STYLE
 			invoke GetWindowLong,hDEd,GWL_STYLE

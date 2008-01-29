@@ -127,18 +127,25 @@ Options=52
 7=IDC_HSPLIT,32109,1,Res\SplitH.cur
 8=IDC_VSPLIT,32110,1,Res\SplitV.cur
 9=IDB_TOOLBOX,32100,0,Res\ToolBox.bmp
+10=,101,1,Res\SplitH.cur
+11=,102,0,Res\RAEditBookmark.bmp
+12=,103,1,Res\Select.cur
+13=,104,0,Res\Linenumber.bmp
+14=,105,0,Res\Expand.bmp
+15=,106,0,Res\Collapse.bmp
+16=,107,0,Res\Lock.bmp
 
 [Size]
 5=0,0,0,0,5631
 3=0,0,0,0,178
 4=0,0,0,0,8
-1=0,0,0,0,81
-7=0,0,0,0,11106
-6=0,0,0,0,5816
-9=0,0,0,0,136221
-2=0,0,584,498,8643
+1=0,0,0,0,41920
+7=0,0,0,0,84247
+6=0,0,0,0,6087
+9=0,0,0,0,79515
+2=0,0,584,498,77
 8=0,0,0,0,7416
-10=0,0,0,0,9955
+10=0,0,0,0,11328
 16=0,0,0,0,4224
 15=0,0,0,0
 17=0,0,0,0,35377
@@ -158,7 +165,7 @@ Options=52
 34=0,0,0,0,4590
 33=0,0,0,0
 36=0,0,0,0,12
-35=0,0,0,0,385
+35=0,0,0,0,193
 37=0,0,0,0,1773
 38=0,0,0,0
 39=0,0,0,0,6596
@@ -173,43 +180,43 @@ Options=52
 
 
 [Find]
-1="szMANIFEST"
-2="WS_DLGFRAME"
-3="WS_CAPTION"
-4="modal"
-5="SaveExStyle"
-6="GetStyle"
-7="GetStyleStr"
-8="Print"
-9="SaveStyle"
-10="SS_S"
+1="CreateWindowEx"
+2="CreateW"
+3="WM_DESTROY"
+4="InstallRAEdit"
+5="install"
+6="szMANIFEST"
+7="WS_DLGFRAME"
+8="WS_CAPTION"
+9="modal"
+10="SaveExStyle"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.0.0.43
-PV=2.0.0.43
+FV=2.0.0.44
+PV=2.0.0.44
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.0.0.43
+ProductVersion=2.0.0.44
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.0.0.43
+FileVersion=2.0.0.44
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=9
+MilestoneEveryCurrent=3
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -230,7 +237,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -318,7 +325,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 5=
 13=
 [PTimer]
-PTimer=217828991
+PTimer=220281522
 
 [Exports]
 1=ResEdInstall

@@ -87,16 +87,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,58
+1=0,0,0,0,18529
 6=
-2=0,0,0,0,11
-7=0,0,699,490,8626
+2=0,0,0,0,5978
+7=0,0,699,490,128
 9=
 8=
-3=0,0,0,0,1606
+3=0,0,0,0,1200
 10=0,0,0,0
 11=0,0,0,0,665
-13=0,0,0,0,6975
+13=0,0,0,0,93
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="SBARS_S"
-2="DEM_SHOWDIALOG"
-3="ParseRCMem"
-4="szcrlf"
-5="lstrcmpi"
-6="lstrcmp"
-7="lstrcpy"
-8="szManifestValue"
-9="ExportXPManifest"
-10="szErrorParse"
+1="WM_DESTROY"
+2="InstallRAEdit"
+3="install"
+4="szMANIFEST"
+5="WS_DLGFRAME"
+6="WS_CAPTION"
+7="modal"
+8="SaveExStyle"
+9="GetStyle"
+10="GetStyleStr"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=4
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -247,6 +247,6 @@ ID=105
 18=
 21=
 [PTimer]
-PTimer=184479476
+PTimer=186573240
 [AutoLoad]
 1=1

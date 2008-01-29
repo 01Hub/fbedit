@@ -3,6 +3,7 @@ ResEdInstall		PROTO	:DWORD
 ResEdUninstall		PROTO
 GridInstall			PROTO	:DWORD
 InstallRAEdit		PROTO	:DWORD
+UnInstallRAEdit		PROTO
 
 ;Dialog memory size
 MaxMem				equ 128*1024*3

@@ -76,6 +76,7 @@ start:
 	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
 	invoke RegCloseKey,hReg
 	invoke ResEdUninstall
+	invoke UnInstallRAEdit
 	.if hRichEd
 		invoke FreeLibrary,hRichEd
 	.endif
@@ -1293,6 +1294,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.top,eax
 		invoke DeleteObject,hMenuBrushA
 		invoke DeleteObject,hMenuBrushB
+		invoke DeleteObject,hMnuFont
 		invoke DestroyIcon,hIcon
 		invoke ImageList_Destroy,hIml
 		invoke ImageList_Destroy,hImlTbr
