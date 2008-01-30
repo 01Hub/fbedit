@@ -2041,8 +2041,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						mov		ebx,eax
 					.endif
-					invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
-					mov		[ebx].DLGHEAD.ftextmode,FALSE
+					.if !fParseError
+						invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
+						mov		[ebx].DLGHEAD.ftextmode,FALSE
+					.endif
 				.endif
 			.endif
 		.endif

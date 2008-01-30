@@ -396,6 +396,7 @@ szCtlText			db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,Comb
 szErrorParse		db 'Errors while parsing at line ',0
 szLine				db 'Line: ',0
 szNotSupported		db 'Internal data not supported by ResEd.',0Dh,0Ah,0Dh,0Ah,'Convert this kind of data to files?',0
+szUnknownStyle		db 'Unknown style in ',0
 szCrLf				db 0Dh,0Ah,0
 
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>

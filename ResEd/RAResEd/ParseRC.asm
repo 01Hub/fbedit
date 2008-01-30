@@ -5,6 +5,7 @@ wordbuff	db 16384 dup(?)
 hrcmem		dd ?
 fError		dd ?
 fModify		dd ?
+fParseError	dd ?
 
 .code
 
@@ -704,12 +705,14 @@ FindStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 		invoke strcmp,addr [esi+4],lpWord
 		.if !eax
 			mov		eax,ebx
+			mov		edx,TRUE
 			jmp		Ex
 		.endif
 		invoke strlen,addr [esi+4]
 		lea		esi,[esi+eax+4+1]
 	.endw
 	xor		eax,eax
+	xor		edx,edx
   Ex:
 	ret
 
@@ -723,12 +726,14 @@ FindDlgStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 		invoke strcmp,addr [esi+8],lpWord
 		.if !eax
 			mov		eax,ebx
+			mov		edx,TRUE
 			jmp		Ex
 		.endif
 		invoke strlen,addr [esi+8]
 		lea		esi,[esi+eax+8+1]
 	.endw
 	xor		eax,eax
+	xor		edx,edx
   Ex:
 	ret
 
@@ -773,6 +778,13 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 				.endif
 			.else
 				invoke FindStyle,offset wordbuff,lpStyles
+			.endif
+			.if !edx
+				invoke strcpy,addr namebuff+1000,addr szUnknownStyle
+				invoke strcat,addr namebuff+1000,addr namebuff
+				invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
+				inc		fParseError
+				xor		eax,eax
 			.endif
 		.endif
 		or		ebx,eax
@@ -2887,12 +2899,18 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke strcmpi,offset wordbuff,offset szDEFINE
 	.if !eax
 		invoke ParseDefine,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szINCLUDE
 	.if !eax
 		invoke ParseInclude,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
@@ -2903,6 +2921,9 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		invoke ResEdDecToBin,offset wordbuff
 		.if eax==RT_STRING
 			invoke ParseStringTable,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.endif
@@ -2910,12 +2931,18 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke strcmpi,offset wordbuff,offset szSTRINGTABLE
 	.if !eax
 		invoke ParseStringTable,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szLANGUAGE
 	.if !eax
 		invoke ParseLanguage,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
@@ -2998,26 +3025,44 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 			jmp		Ex
 		.elseif eax==RT_ACCELERATOR
 			invoke ParseAccelerators,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_VERSION
 			invoke ParseVersioninfo,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_DIALOGEX
 			invoke ParseDialogEx,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_DIALOG
 			invoke ParseDialog,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_MENUEX
 			invoke ParseMenuEx,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.elseif eax==RT_MENU
 			invoke ParseMenu,esi,lpProMem
+			.if eax==-1
+				jmp		ExErr
+			.endif
 			add		esi,eax
 			jmp		Ex
 		.endif
@@ -3124,42 +3169,63 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke strcmpi,offset wordbuff,offset szACCELERATORS
 	.if !eax
 		invoke ParseAccelerators,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szVERSIONINFO
 	.if !eax
 		invoke ParseVersioninfo,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szDIALOGEX
 	.if !eax
 		invoke ParseDialogEx,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szDIALOG
 	.if !eax
 		invoke ParseDialog,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szMENU
 	.if !eax
 		invoke ParseMenu,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szMENUEX
 	.if !eax
 		invoke ParseMenuEx,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szTOOLBAR
 	.if !eax
 		invoke ParseToolbar,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
 		add		esi,eax
 		jmp		Ex
 	.endif
@@ -3180,11 +3246,12 @@ ParseRCMem proc uses esi,hRCMem:DWORD,lpProMem:DWORD
 	xor		eax,eax
 	mov		fError,eax
 	mov		fModify,eax
+	mov		fParseError,eax
 	mov		esi,hRCMem
 	mov		hrcmem,esi
 	.while TRUE
 		invoke ParseRC,esi,hRCMem,lpProMem
-		.break .if !eax || eax==-1
+		.break .if !eax || eax==-1 || fParseError
 		add		esi,eax
 	.endw
 	mov		eax,lpProMem
