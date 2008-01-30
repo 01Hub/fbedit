@@ -902,79 +902,96 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableMenuItem,wParam,IDM_EDIT_PASTE,eax
 		.elseif eax==2
 			;Format
-			invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
+			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
 			.if eax
-				mov		eax,MF_CHECKED
-			.endif
-			invoke CheckMenuItem,wParam,IDM_FORMAT_LOCK,eax
-			invoke GetWindowLong,hResEd,GWL_STYLE
-			and		eax,DES_GRID
-			.if eax
-				mov		eax,MF_CHECKED
-			.endif
-			invoke CheckMenuItem,wParam,IDM_FORMAT_GRID,eax
-			invoke GetWindowLong,hResEd,GWL_STYLE
-			and		eax,DES_SNAPTOGRID
-			.if eax
-				mov		eax,MF_CHECKED
-			.endif
-			invoke CheckMenuItem,wParam,IDM_FORMAT_SNAP,eax
-			invoke SendMessage,hResEd,DEM_ISBACK,0,0
-			.if eax
-				mov		eax,MF_GRAYED
-			.endif
-			invoke EnableMenuItem,wParam,IDM_FORMAT_BACK,eax
-			invoke SendMessage,hResEd,DEM_ISFRONT,0,0
-			.if eax
-				mov		eax,MF_GRAYED
-			.endif
-			invoke EnableMenuItem,wParam,IDM_FORMAT_FRONT,eax
-			invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
-			push	eax
-			.if eax==2
-				mov		ebx,MF_BYPOSITION
+				invoke EnableMenuItem,wParam,IDM_FORMAT_LOCK,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_BACK,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_FRONT,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_GRID,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_SNAP,MF_GRAYED
+				invoke EnableMenuItem,wParam,6,MF_BYPOSITION or MF_GRAYED
+				invoke EnableMenuItem,wParam,7,MF_BYPOSITION or MF_GRAYED
+				invoke EnableMenuItem,wParam,8,MF_BYPOSITION or MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_TABINDEX,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_AUTOID,MF_GRAYED
 			.else
-				mov		ebx,MF_BYPOSITION or MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_FORMAT_LOCK,0
+				invoke EnableMenuItem,wParam,IDM_FORMAT_GRID,0
+				invoke EnableMenuItem,wParam,IDM_FORMAT_SNAP,0
+				invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
+				.if eax
+					mov		eax,MF_CHECKED
+				.endif
+				invoke CheckMenuItem,wParam,IDM_FORMAT_LOCK,eax
+				invoke GetWindowLong,hResEd,GWL_STYLE
+				and		eax,DES_GRID
+				.if eax
+					mov		eax,MF_CHECKED
+				.endif
+				invoke CheckMenuItem,wParam,IDM_FORMAT_GRID,eax
+				invoke GetWindowLong,hResEd,GWL_STYLE
+				and		eax,DES_SNAPTOGRID
+				.if eax
+					mov		eax,MF_CHECKED
+				.endif
+				invoke CheckMenuItem,wParam,IDM_FORMAT_SNAP,eax
+				invoke SendMessage,hResEd,DEM_ISBACK,0,0
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_FORMAT_BACK,eax
+				invoke SendMessage,hResEd,DEM_ISFRONT,0,0
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_FORMAT_FRONT,eax
+				invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
+				push	eax
+				.if eax==2
+					mov		ebx,MF_BYPOSITION
+				.else
+					mov		ebx,MF_BYPOSITION or MF_GRAYED
+				.endif
+				mov		ecx,wParam
+				.if ecx==hContextMenuPopup
+					mov		edx,14
+				.else
+					mov		edx,6
+				.endif
+				push	edx
+				; Align
+				invoke EnableMenuItem,wParam,edx,ebx
+				pop		edx
+				inc		edx
+				push	edx
+				; Same Size
+				invoke EnableMenuItem,wParam,edx,ebx
+				pop		edx
+				inc		edx
+				pop		eax
+				push	edx
+				.if eax>=1
+					; Center in Dialog
+					invoke EnableMenuItem,wParam,edx,MF_BYPOSITION
+				.else
+					invoke EnableMenuItem,wParam,edx,MF_BYPOSITION or MF_GRAYED
+				.endif
+				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+				.if eax
+					mov		eax,MF_BYPOSITION
+				.else
+					mov		eax,MF_BYPOSITION or MF_GRAYED
+				.endif
+				pop		edx
+				inc		edx
+				push	edx
+				; Set Tabindex
+				invoke EnableMenuItem,wParam,edx,eax
+				pop		edx
+				inc		edx
+				; Auto Renumber ID's
+				invoke EnableMenuItem,wParam,edx,ebx
 			.endif
-			mov		ecx,wParam
-			.if ecx==hContextMenuPopup
-				mov		edx,14
-			.else
-				mov		edx,6
-			.endif
-			push	edx
-			; Align
-			invoke EnableMenuItem,wParam,edx,ebx
-			pop		edx
-			inc		edx
-			push	edx
-			; Same Size
-			invoke EnableMenuItem,wParam,edx,ebx
-			pop		edx
-			inc		edx
-			pop		eax
-			push	edx
-			.if eax>=1
-				; Center in Dialog
-				invoke EnableMenuItem,wParam,edx,MF_BYPOSITION
-			.else
-				invoke EnableMenuItem,wParam,edx,MF_BYPOSITION or MF_GRAYED
-			.endif
-			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
-			.if eax
-				mov		eax,MF_BYPOSITION
-			.else
-				mov		eax,MF_BYPOSITION or MF_GRAYED
-			.endif
-			pop		edx
-			inc		edx
-			push	edx
-			; Set Tabindex
-			invoke EnableMenuItem,wParam,edx,eax
-			pop		edx
-			inc		edx
-			; Auto Renumber ID's
-			invoke EnableMenuItem,wParam,edx,ebx
 		.elseif eax==3
 			;View
 			test	wpos.fView,1
@@ -996,7 +1013,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		eax,MF_BYCOMMAND or MF_GRAYED
 			.endif
+			push	eax
 			invoke EnableMenuItem,wParam,IDM_VIEW_PREVIEW,eax
+			pop		eax
+			invoke EnableMenuItem,wParam,IDM_VIEW_TEXTMODE,eax
+			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
+			.if eax
+				mov		eax,MF_BYCOMMAND or MF_CHECKED
+			.else
+				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+			.endif
+			invoke CheckMenuItem,wParam,IDM_VIEW_TEXTMODE,eax
 		.elseif eax==4
 			;Project
 			invoke SendMessage,hResEd,PRO_GETMEM,0,0

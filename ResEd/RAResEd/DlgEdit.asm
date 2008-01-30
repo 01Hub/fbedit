@@ -6704,8 +6704,9 @@ UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
 
 UpdateRAEdit endp
 
-CreateDlg proc uses esi,hWin:HWND,lpProItemMem:DWORD
+CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 	LOCAL	hDlg:HWND
+	LOCAL	racol:RACOLOR
 
 	invoke GetWindowLong,hWin,DEWM_MEMORY
 	.if eax
@@ -6783,9 +6784,36 @@ CreateDlg proc uses esi,hWin:HWND,lpProItemMem:DWORD
 		mov		nTabSet,0
 	.endif
 	.if ![esi].DLGHEAD.hred
-		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK,0,0,0,0,hRes,0,hInstance,0
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hRes,0,hInstance,0
 		mov		[esi].DLGHEAD.hred,eax
 		invoke SendMessage,[esi].DLGHEAD.hred,WM_SETFONT,hredfont,0
+		mov		edi,offset szPRELOAD
+		.while byte ptr [edi]
+			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,01C00000h,edi
+			invoke strlen,edi
+			lea		edi,[edi+eax+1]
+		.endw
+		mov		edi,offset rsstyledefdlg
+		.while byte ptr [edi+8]
+			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
+			invoke strlen,addr [edi+8]
+			lea		edi,[edi+eax+8+1]
+		.endw
+		mov		edi,offset rsstyledef
+		.while byte ptr [edi+8]
+			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
+			invoke strlen,addr [edi+8]
+			lea		edi,[edi+eax+8+1]
+		.endw
+		mov		edi,offset rsexstyledef
+		.while byte ptr [edi+8]
+			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
+			invoke strlen,addr [edi+8]
+			lea		edi,[edi+eax+8+1]
+		.endw
+		invoke SendMessage,[esi].DLGHEAD.hred,REM_GETCOLOR,0,addr racol
+		mov		racol.strcol,0
+		invoke SendMessage,[esi].DLGHEAD.hred,REM_SETCOLOR,0,addr racol
 		invoke UpdateRAEdit,esi
 		invoke SendMessage,hRes,WM_SIZE,0,0
 		invoke SendMessage,[esi].DLGHEAD.hred,EM_EMPTYUNDOBUFFER,0,0
@@ -6801,12 +6829,14 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 	.if eax
 		mov		ebx,eax
 		.if [ebx].DLGHEAD.hred
-			mov		edx,EM_UNDO
-			.if fRedo
-				mov		edx,EM_REDO
+			.if fRedo!=-1
+				mov		edx,EM_UNDO
+				.if fRedo
+					mov		edx,EM_REDO
+				.endif
+				invoke SendMessage,[ebx].DLGHEAD.hred,edx,0,0
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,0
 			.endif
-			invoke SendMessage,[ebx].DLGHEAD.hred,edx,0,0
-			invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,0
 			invoke GetWindowLong,hPrj,0
 			mov		esi,eax
 			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
@@ -6824,7 +6854,9 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 			pop		[eax].DLGHEAD.ftextmode
 			pop		[eax].DLGHEAD.hred
 			invoke CreateDlg,hDEd,esi
+			invoke GlobalUnlock,ebx
 			invoke GlobalFree,ebx
+			invoke GlobalFree,edi
 			invoke SetChanged,TRUE,hDEd
 		.endif
 	.endif

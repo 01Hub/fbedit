@@ -5,10 +5,10 @@ option proc:private
 
 include windows.inc
 include ..\RAResEd.inc
-include Data.inc
 include RAGrid.inc
-includelib ..\Lib\RAGrid.lib
 include RAEdit.inc
+include Data.inc
+includelib ..\Lib\RAGrid.lib
 includelib ..\Lib\RAEdit.lib
 include Style.inc
 include Misc.asm
@@ -1158,6 +1158,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hFile:HANDLE
 	LOCAL	dwbytes:DWORD
 	LOCAL	lf:LOGFONT
+	LOCAL	chrg:CHARRANGE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -1412,6 +1413,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,hWin
 		.endif
 		invoke SendMessage,eax,WM_CONTEXTMENU,edx,lParam
+	.elseif eax==WM_NOTIFY
+		invoke NotifyParent
 	.elseif eax==PRO_OPEN
 		invoke SendMessage,hRes,PRO_CLOSE,0,0
 		invoke OpenProject,wParam,lParam
@@ -1571,7 +1574,15 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_UNDO
-		invoke UndoRedo,FALSE
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_UNDO,0,0
+			.else
+				invoke UndoRedo,FALSE
+			.endif
+		.endif
 		jmp		Ex
 	.elseif eax==DEM_CANREDO
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -1584,30 +1595,67 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_REDO
-		invoke UndoRedo,TRUE
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_REDO,0,0
+			.else
+				invoke UndoRedo,TRUE
+			.endif
+		.endif
 		jmp		Ex
 	.elseif eax==DEM_CUT
-		invoke CopyCtl
-		invoke DeleteCtl
-		invoke NotifyParent
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,WM_CUT,0,0
+			.else
+				invoke CopyCtl
+				invoke DeleteCtl
+				invoke NotifyParent
+			.endif
+		.endif
 		jmp		Ex
 	.elseif eax==DEM_COPY
-		invoke CopyCtl
-		invoke NotifyParent
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,WM_COPY,0,0
+			.else
+				invoke CopyCtl
+				invoke NotifyParent
+			.endif
+		.endif
 		jmp		Ex
 	.elseif eax==DEM_CANPASTE
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax
-			mov		eax,offset dlgpaste
-			mov		eax,[eax].DIALOG.hwnd
-			.if eax
-				mov		eax,TRUE
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_CANPASTE,CF_TEXT,0
+			.else
+				mov		eax,offset dlgpaste
+				mov		eax,[eax].DIALOG.hwnd
+				.if eax
+					mov		eax,TRUE
+				.endif
 			.endif
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_PASTE
-		invoke PasteCtl
-		invoke NotifyParent
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,WM_PASTE,0,0
+			.else
+				invoke PasteCtl
+				invoke NotifyParent
+			.endif
+		.endif
 		jmp		Ex
 	.elseif eax==DEM_ISLOCKED
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -1699,17 +1747,30 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke NotifyParent
 		jmp		Ex
 	.elseif eax==DEM_ISSELECTION
-		xor		eax,eax
-		.if hReSize
-			invoke GetWindowLong,hReSize,GWL_USERDATA
-			.if eax
-				mov		eax,[eax].DIALOG.ntype
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_EXGETSEL,0,addr chrg
+				mov		eax,chrg.cpMax
+				sub		eax,chrg.cpMin
 				.if eax
 					mov		eax,1
+				.endif				
+			.else
+				xor		eax,eax
+				.if hReSize
+					invoke GetWindowLong,hReSize,GWL_USERDATA
+					.if eax
+						mov		eax,[eax].DIALOG.ntype
+						.if eax
+							mov		eax,1
+						.endif
+					.endif
+				.elseif hMultiSel
+					mov		eax,2
 				.endif
 			.endif
-		.elseif hMultiSel
-			mov		eax,2
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_ALIGNSIZE
@@ -1964,12 +2025,25 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ebx,eax
 			.if wParam
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_SHOW
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
+				invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0
 				invoke SetWindowPos,[ebx].DLGHEAD.hred,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 				mov		[ebx].DLGHEAD.ftextmode,TRUE
 				invoke SendMessage,hRes,WM_SIZE,0,0
+				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETSEL,0,0
+				invoke SetFocus,[ebx].DLGHEAD.hred
 			.else
-				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
-				mov		[ebx].DLGHEAD.ftextmode,FALSE
+				.if [ebx].DLGHEAD.ftextmode
+					invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,FALSE,0
+					invoke SendMessage,[ebx].DLGHEAD.hred,EM_GETMODIFY,0,0
+					.if eax
+						invoke UndoRedo,-1
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						mov		ebx,eax
+					.endif
+					invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
+					mov		[ebx].DLGHEAD.ftextmode,FALSE
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_USER+9999

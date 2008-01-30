@@ -87,10 +87,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,9146
+1=0,0,0,0,22925
 6=
-2=0,0,0,0,5978
-7=0,0,699,490,6132
+2=0,0,0,0,1369
+7=0,0,699,490,5222
 9=
 8=
 3=0,0,0,0,1200
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="PRO_SETMODIFY"
-2="OpenProject"
-3="ParseRCMem"
-4="CreateWindowEx"
-5="CreateW"
-6="WM_DESTROY"
-7="InstallRAEdit"
-8="install"
-9="szMANIFEST"
-10="WS_DLGFRAME"
+1="WM_NOTIFY"
+2="lstrcpy"
+3="lstr"
+4="lstrcat"
+5="lstrcmp"
+6="lstrlen"
+7="PRO_SETMODIFY"
+8="ParseRCMem"
+9="CreateWindowEx"
+10="CreateW"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=4
+MilestoneEveryCurrent=1
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

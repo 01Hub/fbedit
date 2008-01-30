@@ -224,9 +224,7 @@ szMENUBREAK			db 'MENUBREAK',0
 szSEPARATOR			db 'SEPARATOR',0
 szMFT_SEPARATOR		db 'MFT_SEPARATOR',0
 szBEGIN				db 'BEGIN',0
-szBEGINSHORT		db '{',0
 szEND				db 'END',0
-szENDSHORT			db '}',0
 szDEFINE			db '#define',0
 szUNDEF				db '#undef',0
 szIF				db '#if',0
@@ -236,7 +234,11 @@ szENDIF				db '#endif',0
 szIFDEF				db '#ifdef',0
 szIFNDEF			db '#ifndef',0
 szINCLUDE			db '#include',0
-szDESIGNINFO		db 'DESIGNINFO',0
+szDESIGNINFO		db 'DESIGNINFO',0,0
+
+szBEGINSHORT		db '{',0
+szENDSHORT			db '}',0
+
 szBS				db '\',0
 szDots				db '...',0
 
