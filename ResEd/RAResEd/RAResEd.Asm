@@ -365,6 +365,7 @@ ResEdUninstall proc public
 ResEdUninstall endp
 
 SetColors proc
+	LOCAL	racol:RACOLOR
 
 	.if hBrBack
 		invoke DeleteObject,hBrBack
@@ -378,6 +379,13 @@ SetColors proc
 	invoke InvalidateRect,hPrpLstDlg,NULL,TRUE
 	invoke InvalidateRect,hPrpEdtDlgCld,NULL,TRUE
 	invoke InvalidateRect,hPrpLstDlgCld,NULL,TRUE
+	invoke SendMessage,hOut,REM_GETCOLOR,0,addr racol
+	mov		eax,color.back
+	mov		racol.bckcol,eax
+	mov		eax,color.text
+	mov		racol.txtcol,eax
+	mov		racol.strcol,0
+	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
 	ret
 
 SetColors endp
@@ -1175,8 +1183,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hPrp,eax
 		invoke CreateWindowEx,0h,addr szToolBoxClass,0,56000000h,0,0,0,0,hWin,0,hInstance,0
 		mov		hTlb,eax
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_VSCROLL or WS_HSCROLL or ES_MULTILINE or ES_AUTOHSCROLL or ES_AUTOVSCROLL
-		invoke CreateWindowEx,200h,addr szEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
+		;mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_VSCROLL or WS_HSCROLL or ES_MULTILINE or ES_AUTOHSCROLL or ES_AUTOVSCROLL
+		;invoke CreateWindowEx,200h,addr szEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE or STYLE_NOLINENUMBER,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
 		invoke RtlZeroMemory,addr lf,size lf
 		mov		lf.lfHeight,-13
@@ -1574,7 +1583,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 			.endif
 		.endif
-		invoke CreateDlg,hDEd,lParam
+		invoke CreateDlg,hDEd,lParam,FALSE
 		push	eax
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax
@@ -2049,6 +2058,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			mov		ebx,eax
 			.if wParam
+				invoke DestroySizeingRect
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_SHOW
 				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
 				invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0
@@ -2069,6 +2079,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !fParseError
 						invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 						mov		[ebx].DLGHEAD.ftextmode,FALSE
+						invoke SizeingRect,[ebx+sizeof DLGHEAD].DIALOG.hwnd,FALSE
 					.endif
 				.endif
 			.endif

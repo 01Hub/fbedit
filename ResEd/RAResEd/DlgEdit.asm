@@ -1,6 +1,6 @@
-SendToBack			PROTO :DWORD
-UpdateRAEdit		PROTO :DWORD
-CreateDlg			PROTO	:HWND,:DWORD
+SendToBack			PROTO	:DWORD
+UpdateRAEdit		PROTO	:DWORD
+CreateDlg			PROTO	:HWND,:DWORD,:DWORD
 
 PGM_FIRST			equ 1400h
 PGM_SETCHILD		equ PGM_FIRST+1
@@ -6403,23 +6403,20 @@ ExportDialogNames proc uses ebx esi edi,hMem:DWORD
 				pop		eax
 				pop		eax
 			.else
-				invoke GlobalUnlock,esi
-				invoke GlobalFree,esi
 				invoke GetWindowLong,hDEd,DEWM_MEMORY
-PrintHex eax
-PrintHex esi
 				.if eax==esi
-		invoke DestroySizeingRect
-		invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
-		.if [esi].DLGHEAD.hfont
-			invoke DeleteObject,[esi].DLGHEAD.hfont
-			mov		[esi].DLGHEAD.hfont,0
-		.endif
-		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
-		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
-		invoke SetWindowLong,hDEd,DEWM_PROJECT,0
-invoke CreateDlg,hDEd,ebx
-;					invoke SetWindowLong,hDEd,DEWM_MEMORY,[ebx].PROJECT.hmem
+					invoke DestroySizeingRect
+					invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
+					.if [esi].DLGHEAD.hfont
+						invoke DeleteObject,[esi].DLGHEAD.hfont
+						mov		[esi].DLGHEAD.hfont,0
+					.endif
+					invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+					invoke SetWindowLong,hDEd,DEWM_DIALOG,0
+					invoke SetWindowLong,hDEd,DEWM_PROJECT,0
+					invoke GlobalUnlock,esi
+					invoke GlobalFree,esi
+					invoke CreateDlg,hDEd,ebx,TRUE
 				.endif
 				mov		esi,[ebx].PROJECT.hmem
 				mov		hMem,esi
@@ -6751,7 +6748,7 @@ UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
 
 UpdateRAEdit endp
 
-CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
+CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 	LOCAL	hDlg:HWND
 	LOCAL	racol:RACOLOR
 
@@ -6823,7 +6820,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
 	.if fEditMode
 		invoke EnableWindow,hDlg,FALSE
-	.else
+	.elseif !fNoSelect
 		invoke SizeingRect,hDlg,FALSE
 	.endif
 	.if hTabSet
@@ -6835,6 +6832,10 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 		mov		[esi].DLGHEAD.hred,eax
 		invoke SendMessage,[esi].DLGHEAD.hred,WM_SETFONT,hredfont,0
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_GETCOLOR,0,addr racol
+		mov		eax,color.back
+		mov		racol.bckcol,eax
+		mov		eax,color.text
+		mov		racol.txtcol,eax
 		mov		racol.strcol,0
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_SETCOLOR,0,addr racol
 		invoke UpdateRAEdit,esi
@@ -6885,7 +6886,7 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 				mov		eax,[esi].PROJECT.hmem
 				pop		[eax].DLGHEAD.ftextmode
 				pop		[eax].DLGHEAD.hred
-				invoke CreateDlg,hDEd,esi
+				invoke CreateDlg,hDEd,esi,TRUE
 				invoke GlobalUnlock,ebx
 				invoke GlobalFree,ebx
 			.endif
