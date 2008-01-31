@@ -699,20 +699,29 @@ GetNum endp
 
 FindStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 
-	mov		esi,lpStyles
-	.while byte ptr [esi+4]
-		mov		ebx,[esi]
-		invoke strcmp,addr [esi+4],lpWord
-		.if !eax
-			mov		eax,ebx
-			mov		edx,TRUE
-			jmp		Ex
-		.endif
-		invoke strlen,addr [esi+4]
-		lea		esi,[esi+eax+4+1]
-	.endw
-	xor		eax,eax
-	xor		edx,edx
+	mov		edx,lpWord
+	.if word ptr [edx]=='x0'
+		invoke HexToBin,addr [edx+2]
+		mov		edx,TRUE
+	.elseif byte ptr [edx]>='0' && byte ptr [edx]<='9'
+		invoke ResEdDecToBin,edx
+		mov		edx,TRUE
+	.else
+		mov		esi,lpStyles
+		.while byte ptr [esi+4]
+			mov		ebx,[esi]
+			invoke strcmp,addr [esi+4],lpWord
+			.if !eax
+				mov		eax,ebx
+				mov		edx,TRUE
+				jmp		Ex
+			.endif
+			invoke strlen,addr [esi+4]
+			lea		esi,[esi+eax+4+1]
+		.endw
+		xor		eax,eax
+		xor		edx,edx
+	.endif
   Ex:
 	ret
 
@@ -720,20 +729,29 @@ FindStyle endp
 
 FindDlgStyle proc uses ebx esi,lpWord:DWORD,lpStyles:DWORD
 
-	mov		esi,lpStyles
-	.while byte ptr [esi+8]
-		mov		ebx,[esi]
-		invoke strcmp,addr [esi+8],lpWord
-		.if !eax
-			mov		eax,ebx
-			mov		edx,TRUE
-			jmp		Ex
-		.endif
-		invoke strlen,addr [esi+8]
-		lea		esi,[esi+eax+8+1]
-	.endw
-	xor		eax,eax
-	xor		edx,edx
+	mov		edx,lpWord
+	.if word ptr [edx]=='x0'
+		invoke HexToBin,addr [edx+2]
+		mov		edx,TRUE
+	.elseif byte ptr [edx]>='0' && byte ptr [edx]<='9'
+		invoke ResEdDecToBin,edx
+		mov		edx,TRUE
+	.else
+		mov		esi,lpStyles
+		.while byte ptr [esi+8]
+			mov		ebx,[esi]
+			invoke strcmp,addr [esi+8],lpWord
+			.if !eax
+				mov		eax,ebx
+				mov		edx,TRUE
+				jmp		Ex
+			.endif
+			invoke strlen,addr [esi+8]
+			lea		esi,[esi+eax+8+1]
+		.endw
+		xor		eax,eax
+		xor		edx,edx
+	.endif
   Ex:
 	ret
 
@@ -741,18 +759,13 @@ FindDlgStyle endp
 
 GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 
-	xor		ebx,ebx
-	mov		esi,lpRCMem
-	invoke GetWord,offset wordbuff,esi
-	push	eax
-	invoke strcmpi,offset wordbuff,offset szNOT
-	pop		ecx
-	.if !eax
-		add		esi,ecx
-		invoke GetWord,offset wordbuff,esi
-		add		esi,eax
+	.if !lpStyles
+		mov		ebx,WS_VISIBLE
+	.else
+		xor		ebx,ebx
 	.endif
-	.while TRUE
+	mov		esi,lpRCMem
+	.while !fParseError
 		mov		edi,esi
 		invoke GetWord,offset wordbuff,esi
 		mov		ecx,eax
@@ -762,17 +775,22 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 		invoke IsEnd,offset wordbuff
 		or		eax,eax
 		jz		Ex
-		add		esi,ecx
+		push	ecx
 		push	edx
-		.if word ptr wordbuff=='x0'
-			invoke HexToBin,offset wordbuff+2
-		.else
+		invoke strcmpi,offset wordbuff,offset szNOT
+		pop		edx
+		pop		ecx
+		.if !eax
+			add		esi,ecx
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			push	edx
 			.if fDialog
 				.if lpStyles
 					invoke FindDlgStyle,offset wordbuff,lpStyles
 				.else
 					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
-					.if !eax
+					.if !edx
 						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
 					.endif
 				.endif
@@ -784,10 +802,36 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 				invoke strcat,addr namebuff+1000,addr namebuff
 				invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
 				inc		fParseError
+				mov		fClose,-1
 				xor		eax,eax
 			.endif
+			xor		eax,-1
+			and		ebx,eax
+		.else
+			add		esi,ecx
+			push	edx
+			.if fDialog
+				.if lpStyles
+					invoke FindDlgStyle,offset wordbuff,lpStyles
+				.else
+					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
+					.if !edx
+						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
+					.endif
+				.endif
+			.else
+				invoke FindStyle,offset wordbuff,lpStyles
+			.endif
+			.if !edx
+				invoke strcpy,addr namebuff+1000,addr szUnknownStyle
+				invoke strcat,addr namebuff+1000,addr namebuff
+				invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
+				inc		fParseError
+				mov		fClose,-1
+				xor		eax,eax
+			.endif
+			or		ebx,eax
 		.endif
-		or		ebx,eax
 		pop		edx
 		.break .if dl==',' || dl==0Dh
 	.endw
@@ -1100,47 +1144,47 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 				invoke strcat,addr namebuff+1024,addr namebuff+1024+100
 				invoke strcat,addr namebuff+1024,addr szCrLf
 				invoke strcat,addr namebuff+1024,addr szNotSupported
-				invoke MessageBox,0,addr namebuff+1024,addr buffer,MB_ICONEXCLAMATION or MB_YESNOCANCEL
+				invoke MessageBox,0,addr namebuff+1024,addr buffer,MB_ICONEXCLAMATION or MB_OKCANCEL
 				.if eax==IDCANCEL
 					mov		eax,-1
 					ret
 				.endif
-			.else
-				mov		eax,IDOK
+;			.else
+;				mov		eax,IDOK
 			.endif
-			.if eax==IDNO
-				invoke GetWord,offset wordbuff,esi
-				add		esi,eax
-				invoke strcmpi,offset wordbuff,offset szBEGIN
-				.if eax
-					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
-				.endif
-				.if !eax
-				  @@:
-					call	SkipSpace
-					.if byte ptr [esi]==0Dh
-						inc		esi
-					.endif
-					.if byte ptr [esi]==0Ah
-						inc		esi
-					.endif
-					mov		edx,offset wordbuff
-					.while byte ptr [esi] && byte ptr [esi]!=0Dh
-						mov		al,[esi]
-						mov		[edx],al
-						inc		esi
-						inc		edx
-					.endw
-					mov		byte ptr [edx],0
-					invoke strcmpi,offset wordbuff,offset szEND
-					.if eax
-						invoke strcmpi,offset wordbuff,offset szENDSHORT
-					.endif
-					.if eax
-						jmp		@b
-					.endif
-				.endif
-			.else
+;			.if eax==IDNO
+;				invoke GetWord,offset wordbuff,esi
+;				add		esi,eax
+;				invoke strcmpi,offset wordbuff,offset szBEGIN
+;				.if eax
+;					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+;				.endif
+;				.if !eax
+;				  @@:
+;					call	SkipSpace
+;					.if byte ptr [esi]==0Dh
+;						inc		esi
+;					.endif
+;					.if byte ptr [esi]==0Ah
+;						inc		esi
+;					.endif
+;					mov		edx,offset wordbuff
+;					.while byte ptr [esi] && byte ptr [esi]!=0Dh
+;						mov		al,[esi]
+;						mov		[edx],al
+;						inc		esi
+;						inc		edx
+;					.endw
+;					mov		byte ptr [edx],0
+;					invoke strcmpi,offset wordbuff,offset szEND
+;					.if eax
+;						invoke strcmpi,offset wordbuff,offset szENDSHORT
+;					.endif
+;					.if eax
+;						jmp		@b
+;					.endif
+;				.endif
+;			.else
 				invoke GetTypeMem,lpProMem,TPE_RESOURCE
 				mov		eax,[eax].PROJECT.hmem
 				.if !eax
@@ -1286,7 +1330,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 					invoke CloseHandle,hFile
 					inc		fModify
 				.endif
-			.endif
+;			.endif
 		.endif
 	.endif
 	mov		eax,esi
@@ -2432,25 +2476,36 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	ret
 
 SetOptions:
+	invoke SkipSpace
 	movzx	eax,byte ptr [esi]
 	.if eax && eax!=0Dh
-		;Type
-		invoke GetStyle,esi,offset menutypedef,FALSE
-		test	edx,MFT_SEPARATOR
-		.if !ZERO?
-			xor		edx,MFT_SEPARATOR
-			mov		word ptr [edi].MNUITEM.itemcaption,'-'
+		.if eax==','
+			inc		esi
+		.else
+			;Type
+			invoke GetStyle,esi,offset menutypedef,FALSE
+			test	edx,MFT_SEPARATOR
+			.if !ZERO?
+				xor		edx,MFT_SEPARATOR
+				mov		word ptr [edi].MNUITEM.itemcaption,'-'
+			.endif
+			mov		[edi].MNUITEM.ntype,edx
+			add		esi,eax
 		.endif
-		mov		[edi].MNUITEM.ntype,edx
-		add		esi,eax
 	.endif
+	invoke SkipSpace
 	movzx	eax,byte ptr [esi]
 	.if eax && eax!=0Dh
-		;State
-		invoke GetStyle,esi,offset menustatedef,FALSE
-		mov		[edi].MNUITEM.nstate,edx
-		add		esi,eax
+		.if eax==','
+			inc		esi
+		.else
+			;State
+			invoke GetStyle,esi,offset menustatedef,FALSE
+			mov		[edi].MNUITEM.nstate,edx
+			add		esi,eax
+		.endif
 	.endif
+	invoke SkipSpace
 	movzx	eax,byte ptr [esi]
 	.if eax && eax!=0Dh
 		;HelpID

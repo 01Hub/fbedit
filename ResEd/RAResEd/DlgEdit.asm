@@ -1,5 +1,6 @@
 SendToBack			PROTO :DWORD
 UpdateRAEdit		PROTO :DWORD
+CreateDlg			PROTO	:HWND,:DWORD
 
 PGM_FIRST			equ 1400h
 PGM_SETCHILD		equ PGM_FIRST+1
@@ -6372,12 +6373,62 @@ TestProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TestProc endp
 
-ExportDialogNames proc uses esi edi,hMem:DWORD
+ExportDialogNames proc uses ebx esi edi,hMem:DWORD
 
+	mov		esi,hMem
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		edi,eax
 	invoke GlobalLock,edi
 	push	edi
+	.if [esi].DLGHEAD.ftextmode
+		invoke SendMessage,[esi].DLGHEAD.hred,EM_GETMODIFY,0,0
+		.if eax
+			invoke GetWindowLong,hPrj,0
+			mov		ebx,eax
+			.while esi!=[ebx].PROJECT.hmem
+				add		ebx,sizeof PROJECT
+			.endw
+			mov		[ebx].PROJECT.hmem,0
+			push	[esi].DLGHEAD.hred
+			push	[esi].DLGHEAD.ftextmode
+			invoke SaveToMem,[esi].DLGHEAD.hred,edi
+			invoke GetWindowLong,hPrj,0
+			invoke ParseRCMem,edi,eax
+			.if fParseError
+				.if [ebx].PROJECT.hmem
+					invoke GlobalUnlock,[ebx].PROJECT.hmem
+					invoke GlobalFree,[ebx].PROJECT.hmem
+				.endif
+				mov		[ebx].PROJECT.hmem,esi
+				pop		eax
+				pop		eax
+			.else
+				invoke GlobalUnlock,esi
+				invoke GlobalFree,esi
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+PrintHex eax
+PrintHex esi
+				.if eax==esi
+		invoke DestroySizeingRect
+		invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
+		.if [esi].DLGHEAD.hfont
+			invoke DeleteObject,[esi].DLGHEAD.hfont
+			mov		[esi].DLGHEAD.hfont,0
+		.endif
+		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
+		invoke SetWindowLong,hDEd,DEWM_PROJECT,0
+invoke CreateDlg,hDEd,ebx
+;					invoke SetWindowLong,hDEd,DEWM_MEMORY,[ebx].PROJECT.hmem
+				.endif
+				mov		esi,[ebx].PROJECT.hmem
+				mov		hMem,esi
+				pop		[esi].DLGHEAD.ftextmode
+				pop		[esi].DLGHEAD.hred
+				invoke SendMessage,[esi].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
+			.endif
+		.endif
+	.endif
 	mov		esi,hMem
 	add		esi,sizeof DLGHEAD
   @@:
@@ -6386,10 +6437,6 @@ ExportDialogNames proc uses esi edi,hMem:DWORD
 	mov		eax,[esi]
 	or		eax,eax
 	jne		@b
-;	mov		al,0Dh
-;	stosb
-;	mov		al,0Ah
-;	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -6787,30 +6834,6 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hRes,0,hInstance,0
 		mov		[esi].DLGHEAD.hred,eax
 		invoke SendMessage,[esi].DLGHEAD.hred,WM_SETFONT,hredfont,0
-		mov		edi,offset szPRELOAD
-		.while byte ptr [edi]
-			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,01C00000h,edi
-			invoke strlen,edi
-			lea		edi,[edi+eax+1]
-		.endw
-		mov		edi,offset rsstyledefdlg
-		.while byte ptr [edi+8]
-			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
-			invoke strlen,addr [edi+8]
-			lea		edi,[edi+eax+8+1]
-		.endw
-		mov		edi,offset rsstyledef
-		.while byte ptr [edi+8]
-			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
-			invoke strlen,addr [edi+8]
-			lea		edi,[edi+eax+8+1]
-		.endw
-		mov		edi,offset rsexstyledef
-		.while byte ptr [edi+8]
-			invoke SendMessage,[esi].DLGHEAD.hred,REM_SETHILITEWORDS,00804000h,addr [edi+8]
-			invoke strlen,addr [edi+8]
-			lea		edi,[edi+eax+8+1]
-		.endw
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_GETCOLOR,0,addr racol
 		mov		racol.strcol,0
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_SETCOLOR,0,addr racol
@@ -6850,14 +6873,25 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 			push	[ebx].DLGHEAD.ftextmode
 			invoke GetWindowLong,hPrj,0
 			invoke ParseRCMem,edi,eax
-			mov		eax,[esi].PROJECT.hmem
-			pop		[eax].DLGHEAD.ftextmode
-			pop		[eax].DLGHEAD.hred
-			invoke CreateDlg,hDEd,esi
-			invoke GlobalUnlock,ebx
-			invoke GlobalFree,ebx
+			.if fParseError
+				.if [esi].PROJECT.hmem
+					invoke GlobalUnlock,[esi].PROJECT.hmem
+					invoke GlobalFree,[esi].PROJECT.hmem
+				.endif
+				mov		[esi].PROJECT.hmem,ebx
+				pop		eax
+				pop		eax
+			.else
+				mov		eax,[esi].PROJECT.hmem
+				pop		[eax].DLGHEAD.ftextmode
+				pop		[eax].DLGHEAD.hred
+				invoke CreateDlg,hDEd,esi
+				invoke GlobalUnlock,ebx
+				invoke GlobalFree,ebx
+			.endif
 			invoke GlobalFree,edi
 			invoke SetChanged,TRUE,hDEd
+			mov		fClose,0
 		.endif
 	.endif
 	invoke NotifyParent

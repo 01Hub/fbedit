@@ -1179,13 +1179,37 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,200h,addr szEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
 		invoke RtlZeroMemory,addr lf,size lf
-		mov		lf.lfHeight,-12
+		mov		lf.lfHeight,-13
 		invoke strcpy,addr lf.lfFaceName,addr szCourierNew
 		invoke CreateFontIndirect,addr lf
 		mov		hredfont,eax
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 		invoke SetupCasetab
 		invoke SortStyles
+		mov		ebx,offset szPRELOAD
+		.while byte ptr [ebx]
+			invoke SetHiliteWords,01C00000h,ebx
+			invoke strlen,ebx
+			lea		ebx,[ebx+eax+1]
+		.endw
+		mov		ebx,offset rsstyledefdlg
+		.while byte ptr [ebx+8]
+			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke strlen,addr [ebx+8]
+			lea		ebx,[ebx+eax+8+1]
+		.endw
+		mov		ebx,offset rsstyledef
+		.while byte ptr [ebx+8]
+			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke strlen,addr [ebx+8]
+			lea		ebx,[ebx+eax+8+1]
+		.endw
+		mov		ebx,offset rsexstyledef
+		.while byte ptr [ebx+8]
+			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke strlen,addr [ebx+8]
+			lea		ebx,[ebx+eax+8+1]
+		.endw
 	.elseif	eax==WM_DESTROY
 		invoke DeleteObject,hredfont
 	.elseif	eax==WM_SETFONT
@@ -1416,6 +1440,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_NOTIFY
 		invoke NotifyParent
 	.elseif eax==PRO_OPEN
+		mov		fClose,0
 		invoke SendMessage,hRes,PRO_CLOSE,0,0
 		invoke OpenProject,wParam,lParam
 		invoke InvalidateRect,hDEd,NULL,TRUE
