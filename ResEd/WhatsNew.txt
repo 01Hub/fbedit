@@ -1,6 +1,6 @@
 ResEd
 
-2.0.0.0 - 2008.24.01
+2.0.0.0 - 2008.01.02
 --------------------
 o RAResEd is now a single control. This makes it easier to use it in your own IDE.
 o Added nicer toolbar and menu.
@@ -11,9 +11,11 @@ o Added Undo / Redo to dialog editor
   than all the controls it contain.
 o Added support for IDOK / IDCANCEL to Button control.
 o Added support for IDC_STATIC to Static, Image and Shape controls.
+o Added option to define IDC_STATIC.
 o Added better support for multiline captions (Edit, Static and Button controls).
   NOTE. Use Ctrl+Enter to insert a new line in the multiline text box.
 o Added TOOLBAR resource.
+o Added Text node to dialog editor.
 o Fixed bugs with Image and Animate controls (name / id problems).
 o Fixed bug with #include <windows.h>.
 o Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.

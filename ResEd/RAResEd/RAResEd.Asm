@@ -1197,25 +1197,25 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SortStyles
 		mov		ebx,offset szPRELOAD
 		.while byte ptr [ebx]
-			invoke SetHiliteWords,01C00000h,ebx
+			invoke SendMessage,hOut,REM_SETHILITEWORDS,01C00000h,ebx
 			invoke strlen,ebx
 			lea		ebx,[ebx+eax+1]
 		.endw
 		mov		ebx,offset rsstyledefdlg
 		.while byte ptr [ebx+8]
-			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
 			invoke strlen,addr [ebx+8]
 			lea		ebx,[ebx+eax+8+1]
 		.endw
 		mov		ebx,offset rsstyledef
 		.while byte ptr [ebx+8]
-			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
 			invoke strlen,addr [ebx+8]
 			lea		ebx,[ebx+eax+8+1]
 		.endw
 		mov		ebx,offset rsexstyledef
 		.while byte ptr [ebx+8]
-			invoke SetHiliteWords,00804000h,addr [ebx+8]
+			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
 			invoke strlen,addr [ebx+8]
 			lea		ebx,[ebx+eax+8+1]
 		.endw

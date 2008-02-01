@@ -34,7 +34,7 @@ ShowEditDialog			PROTO	:HWND,:DWORD
 GetWord					PROTO	:HWND,:DWORD
 ParseRCMem				PROTO	:DWORD,:DWORD
 ;FindName				PROTO	:DWORD,:DWORD
-SetHiliteWords			PROTO	:DWORD,:DWORD
+;SetHiliteWords			PROTO	:DWORD,:DWORD
 
 m2m MACRO M1, M2
 	push M2
