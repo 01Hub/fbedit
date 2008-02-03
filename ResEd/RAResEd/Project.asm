@@ -980,7 +980,7 @@ GetProjectSelected proc
 
 GetProjectSelected endp
 
-RemoveProjectSelected proc
+RemoveProjectSelected proc uses esi
 	LOCAL	tvi:TV_ITEMEX
 
 	invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_CARET,NULL
@@ -1000,13 +1000,15 @@ RemoveProjectSelected proc
 					mov		edx,tvi.lParam
 					mov		[edx].PROJECT.delete,eax
 					.if [edx].PROJECT.ntype==TPE_DIALOG
-						mov		eax,[edx].PROJECT.hmem
-						mov		eax,[eax+sizeof DLGHEAD].DIALOG.hwnd
+						mov		esi,[edx].PROJECT.hmem
+						mov		eax,[esi+sizeof DLGHEAD].DIALOG.hwnd
 						.if eax==ecx
-							push	eax
-							invoke DestroySizeingRect
-							pop		eax
-							invoke DestroyWindow,eax
+							.if [esi].DLGHEAD.ftextmode
+								invoke ShowWindow,[esi].DLGHEAD.hred,SW_HIDE
+							.else
+								invoke DestroySizeingRect
+							.endif
+							invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
 							invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 							invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 						.endif

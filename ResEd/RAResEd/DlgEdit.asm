@@ -6755,7 +6755,11 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 	invoke GetWindowLong,hWin,DEWM_MEMORY
 	.if eax
 		mov		esi,eax
-		invoke DestroySizeingRect
+		.if [esi].DLGHEAD.ftextmode
+			invoke ShowWindow,[esi].DLGHEAD.hred,SW_HIDE
+		.else
+			invoke DestroySizeingRect
+		.endif
 		invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
 		.if [esi].DLGHEAD.hfont
 			invoke DeleteObject,[esi].DLGHEAD.hfont
