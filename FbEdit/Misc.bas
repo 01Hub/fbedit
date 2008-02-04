@@ -537,7 +537,8 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 	Dim pt As Point
 	Dim wp As Integer
 	
-TextToOutput(*lptt->lpszLine)
+'TextToOutput(*lptt->lpszLine)
+SendMessage(ah.hpr,PRM_ISTOOLTIPMESSAGE,Cast(WPARAM,@ttmsg),Cast(LPARAM,@tti))
 	If edtopt.codecomplete Then
 		fconstlist=UpdateConstList(lptt->lpszApi,lptt->nPos+1)
 	EndIf
@@ -559,7 +560,6 @@ TextToOutput(*lptt->lpszLine)
 		tti.lpszRetType=lptt->ovr(nsel).lpszRetType
 		tti.nitem=lptt->nPos
 		wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
-TextToOutput(*lptt->lpszLine)
 		tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
 		If tti.lpszDesc Then
 			tti.lpszDesc=tti.lpszDesc+Len(*tti.lpszDesc)+1

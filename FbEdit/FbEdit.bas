@@ -481,6 +481,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lpOldSplashProc=Cast(Any Ptr,SetWindowLong(GetDlgItem(hWin,IDC_IMGSPLASH),GWL_WNDPROC,Cast(Integer,@SplashProc)))
 			SetFocus(hWin)
 			frhex=FR_DOWN
+			ttmsg.szType="M"
+			ttmsg.lpMsgApi(0).nPos=1
+			ttmsg.lpMsgApi(0).lpszApi=@szMsg1
 			Return FALSE
 			'
 		Case WM_CLOSE

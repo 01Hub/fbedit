@@ -645,3 +645,9 @@ Dim Shared novr As Integer
 Dim Shared nsel As Integer
 Dim Shared Language As ZString*260
 Dim Shared ttpos As Integer
+
+Const szMsg1 = "SendMessage"
+
+Dim Shared ttmsg As MESSAGE
+
+

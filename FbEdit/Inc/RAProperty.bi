@@ -39,6 +39,7 @@
 #Define PRM_GETSELTEXT			WM_USER+36		' wParam=0, lParam=lpBuff
 #Define PRM_GETSORTEDLIST		WM_USER+37		' wParam=lpTypes, lParam=lpCount
 #Define PRM_FINDINSORTEDLIST	WM_USER+38		' wParam=nCount, lParam=lpMEMSEARCH
+#Define PRM_ISTOOLTIPMESSAGE	WM_USER+39		' wParam=lpMESSAGE, lParam=lpTOOLTIP
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR	1
@@ -46,54 +47,54 @@
 #Define PRSTYLE_PROJECT			4
 
 Type DEFGEN
-	szCmntBlockSt As ZString*16
-	szCmntBlockEn As ZString*16
-	szCmntChar As ZString*16
-	szString As ZString*16
-	szLineCont As ZString*16
+	szCmntBlockSt	As ZString*16
+	szCmntBlockEn	As ZString*16
+	szCmntChar		As ZString*16
+	szString			As ZString*16
+	szLineCont		As ZString*16
 End Type
 
-#Define TYPE_NAMEFIRST			1
-#Define TYPE_OPTNAMEFIRST		2
-#Define TYPE_NAMESECOND			3
-#Define TYPE_OPTNAMESECOND		4
-#Define TYPE_TWOWORDS			5
-#Define TYPE_ONEWORD				6
+#Define TYPE_NAMEFIRST				1
+#Define TYPE_OPTNAMEFIRST			2
+#Define TYPE_NAMESECOND				3
+#Define TYPE_OPTNAMESECOND			4
+#Define TYPE_TWOWORDS				5
+#Define TYPE_ONEWORD					6
 
-#Define DEFTYPE_PROC				1
-#Define DEFTYPE_ENDPROC			2
-#Define DEFTYPE_DATA				3
-'#define DEFTYPE_MULTIDATA		4
-#Define DEFTYPE_CONST			5
-#Define DEFTYPE_ENDCONST		6
-#Define DEFTYPE_STRUCT			7
-#Define DEFTYPE_ENDSTRUCT		8
-#Define DEFTYPE_TYPE				9
-#Define DEFTYPE_ENDTYPE			10
-#Define DEFTYPE_LOCALDATA		11
-#Define DEFTYPE_NAMESPACE		12
-#Define DEFTYPE_ENDNAMESPACE	13
-#Define DEFTYPE_ENUM				14
-#Define DEFTYPE_ENDENUM			15
-#Define DEFTYPE_WITHBLOCK		16
-#Define DEFTYPE_ENDWITHBLOCK	17
-#Define DEFTYPE_MACRO			18
-#Define DEFTYPE_ENDMACRO		19
-#Define DEFTYPE_PROPERTY		20
-#Define DEFTYPE_ENDPROPERTY	21
-#Define DEFTYPE_OPERATOR		22
-#Define DEFTYPE_ENDOPERATOR	23
-#Define DEFTYPE_CONSTRUCTOR	24
+#Define DEFTYPE_PROC					1
+#Define DEFTYPE_ENDPROC				2
+#Define DEFTYPE_DATA					3
+'#define DEFTYPE_MULTIDATA			4
+#Define DEFTYPE_CONST				5
+#Define DEFTYPE_ENDCONST			6
+#Define DEFTYPE_STRUCT				7
+#Define DEFTYPE_ENDSTRUCT			8
+#Define DEFTYPE_TYPE					9
+#Define DEFTYPE_ENDTYPE				10
+#Define DEFTYPE_LOCALDATA			11
+#Define DEFTYPE_NAMESPACE			12
+#Define DEFTYPE_ENDNAMESPACE		13
+#Define DEFTYPE_ENUM					14
+#Define DEFTYPE_ENDENUM				15
+#Define DEFTYPE_WITHBLOCK			16
+#Define DEFTYPE_ENDWITHBLOCK		17
+#Define DEFTYPE_MACRO				18
+#Define DEFTYPE_ENDMACRO			19
+#Define DEFTYPE_PROPERTY			20
+#Define DEFTYPE_ENDPROPERTY		21
+#Define DEFTYPE_OPERATOR			22
+#Define DEFTYPE_ENDOPERATOR		23
+#Define DEFTYPE_CONSTRUCTOR		24
 #Define DEFTYPE_ENDCONSTRUCTOR	25
-#Define DEFTYPE_DESTRUCTOR		26
-#Define DEFTYPE_ENDDESTRUCTOR	27
+#Define DEFTYPE_DESTRUCTOR			26
+#Define DEFTYPE_ENDDESTRUCTOR		27
 
 Type DEFTYPE
-	nType As UByte
-	nDefType As UByte
-	nDef As UByte
-	nlen As UByte
-	szWord As ZString*32
+	nType				As UByte
+	nDefType			As UByte
+	nDef				As UByte
+	nlen				As UByte
+	szWord			As ZString*32
 End Type
 
 ' Ignore types
@@ -122,41 +123,49 @@ End Type
 #Define CT_CMNTINITCHAR			7
 
 Type RAPNOTIFY
-	nmhdr As NMHDR
-	nid As Integer
-	nline As Integer
+	nmhdr				As NMHDR
+	nid				As Integer
+	nline				As Integer
 End Type
 
 Type ISINPROC
-	nLine As Integer
-	nOwner As Integer
-	lpszType As ZString Ptr
+	nLine				As Integer
+	nOwner			As Integer
+	lpszType			As ZString Ptr
 End Type
 
 #Define TT_NOMATCHCASE			1
 #Define TT_PARANTESES			2
 
 Type OVERRIDE
-	lpszParam As ZString Ptr
-	lpszRetType As ZString Ptr
+	lpszParam		As ZString Ptr
+	lpszRetType		As ZString Ptr
 End Type
 
 Type TOOLTIP
-	lpszType As ZString Ptr
-	lpszLine As ZString Ptr
-	lpszApi As ZString Ptr
-'	lpszParam As ZString ptr
-	nPos As Integer
-'	lpszRetType As ZString ptr
-	novr As Integer
-	ovr(32) As OVERRIDE
+	lpszType			As ZString Ptr
+	lpszLine			As ZString Ptr
+	lpszApi			As ZString Ptr
+	nPos				As Integer
+	novr				As Integer
+	ovr(32)			As OVERRIDE
+End Type
+
+Type MSGAPI
+	nPos				As Integer
+	lpszApi			As ZString Ptr
+End Type
+
+Type MESSAGE
+	szType			As ZString*4
+	lpMsgApi(32)	As MSGAPI
 End Type
 
 Type MEMSEARCH
-	lpMem As HGLOBAL
-	lpFind As ZString Ptr
-	lpCharTab As Any Ptr
-	fr As Integer
+	lpMem				As HGLOBAL
+	lpFind			As ZString Ptr
+	lpCharTab		As Any Ptr
+	fr					As Integer
 End Type
 
 ' Class

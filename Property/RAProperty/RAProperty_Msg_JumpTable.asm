@@ -542,6 +542,10 @@
 		mov		edx,lParam
 		invoke FindWord,[edx].MEMSEARCH.lpFind,[edx].MEMSEARCH.lpMem,wParam
 		ret
+	align 4 
+	_PRM_ISTOOLTIPMESSAGE:
+		invoke IsTooltipMessage,wParam,lParam
+		ret
 
 .data
 align 4
@@ -585,6 +589,7 @@ _RAPROPERTY_BASE \
 	dd _PRM_GETSELTEXT			;equ WM_USER+36		;wParam=0, lParam=lpBuff
 	dd _PRM_GETSORTEDLIST		;equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 	dd _PRM_FINDINSORTEDLIST	;equ WM_USER+38		;wParam=0, lParam=lpWord
+	dd _PRM_ISTOOLTIPMESSAGE	;equ WM_USER+38		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 
 .code
 align 4

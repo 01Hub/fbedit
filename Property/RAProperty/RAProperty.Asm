@@ -471,8 +471,6 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		lea		eax,[edx+eax]
 		mov		edx,lParam
 		mov		edx,[edx].TOOLTIP.lpszLine
-PrintStringByAddr edx
-PrintStringByAddr eax
 		invoke lstrcpy,edx,eax
 		mov		eax,lParam
 		mov		edx,fNoCase
@@ -558,7 +556,6 @@ PrintStringByAddr eax
 			invoke IsWordType,[eax].TOOLTIP.lpszType,[eax].TOOLTIP.lpszApi,edx,edi
 			mov		edi,eax
 		.endw
-
 		xor		ecx,ecx
 		mov		eax,npos
 		.while byte ptr [eax]
@@ -586,9 +583,6 @@ PrintStringByAddr eax
 		mov		[edx].TOOLTIP.nPos,ecx
 		xor		eax,eax
 		inc		eax
-mov		edx,lParam
-mov		edx,[edx].TOOLTIP.lpszLine
-PrintStringByAddr edx
 	.else
 		xor		eax,eax
 		mov		edx,lParam
@@ -668,6 +662,30 @@ SkipScopeBack:
 
 GetToolTip endp
 
+IsTooltipMessage proc uses esi edi,wParam:DWORD,lParam:DWORD
+
+	mov		esi,wParam
+	mov		edi,lParam
+	lea		esi,[esi].MESSAGE.lpMsgApi
+mov		eax,[esi].MSGAPI.lpszApi
+PrintStringByAddr eax
+mov		edx,[edi].TOOLTIP.lpszApi
+PrintStringByAddr edx
+	.while [esi].MSGAPI.lpszApi
+		mov		eax,[esi].MSGAPI.lpszApi
+		mov		edx,[edi].TOOLTIP.lpszApi
+		invoke lstrcmp,eax,edx
+		.if !eax
+mov		eax,[esi].MSGAPI.lpszApi
+PrintStringByAddr eax
+			.break
+		.endif
+		lea		esi,[esi+sizeof MSGAPI]
+	.endw
+	ret
+
+IsTooltipMessage endp
+
 ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	rect1:RECT
@@ -678,13 +696,13 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_FINDINSORTEDLIST
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ISTOOLTIPMESSAGE
 		push		eax
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		pop		eax
 		sub		eax,PRM_SELECTPROPERTY
-		jmp 		DWORD PTR [offset _RAPROPERTY_BASE+eax*4]
+		jmp 	DWORD PTR [offset _RAPROPERTY_BASE+eax*4]
 		include RAProperty_Msg_JumpTable.asm
 	.endif
 	.if eax==WM_CREATE

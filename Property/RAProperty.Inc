@@ -39,6 +39,7 @@ PRM_GETCURSEL			equ WM_USER+35		;wParam=0, lParam=0
 PRM_GETSELTEXT			equ WM_USER+36		;wParam=0, lParam=lpBuff
 PRM_GETSORTEDLIST		equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 PRM_FINDINSORTEDLIST	equ WM_USER+38		;wParam=nCount, lParam=lpMEMSEARCH
+PRM_ISTOOLTIPMESSAGE	equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 
 ;Styles
 PRSTYLE_FLATTOOLBAR		equ 1
@@ -149,12 +150,20 @@ TOOLTIP struct
 	lpszType	dd ?
 	lpszLine	dd ?
 	lpszApi		dd ?
-;	lpszParam	dd ?
 	nPos		dd ?
-;	lpszRetType	dd ?
 	novr		dd ?
 	ovr			OVERRIDE 32 dup(<>)
 TOOLTIP ends
+
+MSGAPI struct
+	nPos		dd ?
+	lpszApi		dd ?
+MSGAPI ends
+
+MESSAGE struct
+	szType		db 4 dup(?)
+	lpMsgApi	MSGAPI 32 dup(<>)
+MESSAGE ends
 
 MEMSEARCH struct
 	lpMem		dd ?
