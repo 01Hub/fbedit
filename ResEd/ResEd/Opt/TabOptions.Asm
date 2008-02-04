@@ -40,6 +40,7 @@ IDC_CHKSIZETOFONT	equ 4012
 IDC_CHKNODEFINE		equ 4014
 IDC_CHKSIMPLE		equ 4015
 IDC_CHKIDC_STATIC	equ 4016
+IDC_CHKSTANDARD		equ 4017
 
 IDD_TABOPT4			equ 2400
 IDC_EDTDLGSTART		equ 1001
@@ -232,6 +233,7 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKNODEFINE,grdsize.nodefines
 		invoke CheckDlgButton,hWin,IDC_CHKSIMPLE,grdsize.simple
 		invoke CheckDlgButton,hWin,IDC_CHKIDC_STATIC,grdsize.defstatic
+		invoke CheckDlgButton,hWin,IDC_CHKSTANDARD,grdsize.standardmnu
 	.elseif eax==WM_DRAWITEM
 		mov		eax,wParam
 		.if eax==IDC_STCGRIDCOLOR
@@ -418,6 +420,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		grdsize.simple,eax
 				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKIDC_STATIC
 				mov		grdsize.defstatic,eax
+				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKSTANDARD
+				mov		grdsize.standardmnu,eax
 				invoke RegSetValueEx,hReg,addr szGrid,0,REG_BINARY,addr grdsize,sizeof grdsize
 				mov		eax,grdsize.y
 				shl		eax,16
@@ -473,6 +477,32 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		eax,DES_DEFIDC_STATIC
 				.endif
 				invoke SetWindowLong,hResEd,GWL_STYLE,eax
+				.if grdsize.standardmnu
+					; Standard menu
+					.if hMnuFont
+						invoke DeleteObject,hMenuBrushA
+						invoke DeleteObject,hMenuBrushB
+						invoke DeleteObject,hMnuFont
+						xor		eax,eax
+						mov		hMenuBrushA,eax
+						mov		hMenuBrushB,eax
+						mov		hMnuFont,eax
+						invoke LoadMenu,hInstance,IDR_MENU
+						push	eax
+						invoke SetMenu,hWnd,eax
+						invoke DestroyMenu,hMnu
+						pop		eax
+						mov		hMnu,eax
+						invoke DestroyMenu,hContextMenu
+						invoke LoadMenu,hInstance,IDR_CONTEXT
+						mov		hContextMenu,eax
+					.endif
+				.else
+					; Cool menu
+					.if !hMnuFont
+						invoke CoolMenu
+					.endif
+				.endif
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif

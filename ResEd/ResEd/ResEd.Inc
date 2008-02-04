@@ -44,6 +44,7 @@ IDC_TBR1					equ 1004
 IDC_SBR1					equ 1005
 IDC_EDT1					equ 1007
 
+IDR_MENU					equ 10000
 IDM_FILE_NEW_PROJECT		equ 10029
 IDM_FILE_OPEN_PROJECT		equ 10028
 IDM_FILE_CLOSE_PROJECT		equ 10030
@@ -136,6 +137,7 @@ GRIDSIZE struct
 	nodefines	dd ?
 	simple		dd ?
 	defstatic	dd ?
+	standardmnu	dd ?
 GRIDSIZE ends
 
 MENUINFO STRUCT
@@ -201,7 +203,7 @@ szWinPos			db 'WinPos',0
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
 nmeexp				NAMEEXPORT <0,'rsrc.inc'>
-grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE>
+grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE>
 col					COLOR <0FFFFFFh,0>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
 

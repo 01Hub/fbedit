@@ -87,21 +87,21 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,30427
+1=0,0,0,0,38180
 6=
-2=0,0,0,0,1369
+2=0,0,0,0,5987
 7=0,0,699,490,5222
 9=
 8=
 3=0,0,0,0,1200
 10=0,0,0,0
 11=0,0,0,0,665
-13=0,0,0,0,93
+13=0,0,0,0,14554
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
 17=0,0,0,0
-18=0,0,0,0,7
+18=0,0,0,0,4693
 12=0,0,0,0,1241
 19=0,0,0,0
 21=0,0,0,0,607
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="PRO_ADDITEM"
-2="getwindowlong"
-3="WM_NOTIFY"
-4="lstrcpy"
-5="lstr"
-6="lstrcat"
-7="lstrcmp"
-8="lstrlen"
-9="PRO_SETMODIFY"
-10="ParseRCMem"
+1="ncm"
+2="hMnuFont"
+3="PRO_ADDITEM"
+4="getwindowlong"
+5="WM_NOTIFY"
+6="lstrcpy"
+7="lstr"
+8="lstrcat"
+9="lstrcmp"
+10="lstrlen"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -244,7 +244,7 @@ ID=105
 13=,
 11=,
 3=
-18=
+18=,
 21=
 [PTimer]
 PTimer=192696665

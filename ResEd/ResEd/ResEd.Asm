@@ -264,7 +264,8 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 				and		eax,0E0E0E0h
 				shr		eax,1
 				add		eax,0404040h
-;				shr		eax,2
+				shr		eax,1
+				add		eax,0404040h
 ;				or		eax,0808080h
 				invoke SetPixel,mDC,edi,esi,eax
 			.endif
@@ -536,166 +537,6 @@ ToolBarEnable proc uses ebx
 
 ToolBarEnable endp
 
-SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
-	LOCAL	nPos:DWORD
-	LOCAL	mii:MENUITEMINFO
-	LOCAL	buffer[MAX_PATH]:BYTE
-
-	mov		nPos,0
-	mov		mii.cbSize,sizeof MENUITEMINFO
-	mov		mii.fMask,MIIM_DATA or MIIM_ID or MIIM_SUBMENU or MIIM_TYPE
-  @@:
-	lea		eax,buffer
-	mov		word ptr [eax],0
-	mov		mii.dwTypeData,eax
-	mov		mii.cch,sizeof buffer
-	invoke GetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
-	.if eax
-		mov		edi,offset mnubuff
-		add		edi,mnupos
-		mov		mii.dwItemData,edi
-		test	mii.fType,MFT_SEPARATOR
-		.if ZERO?
-			invoke SendMessage,hTbr,TB_COMMANDTOINDEX,mii.wID,0
-			.if sdword ptr eax>=0
-				invoke SendMessage,hTbr,TB_GETBITMAP,mii.wID,0
-				inc		eax
-				mov		[edi].MENUDATA.img,eax
-			.endif
-			mov		[edi].MENUDATA.tpe,0
-			mov		eax,mii.fType
-			and		eax,7Fh
-			.if eax==MFT_STRING
-				lea		esi,buffer
-				mov		ecx,sizeof MENUDATA
-				xor		edx,edx
-				.while byte ptr [esi]
-					mov		al,[esi]
-					.if al==VK_TAB
-						mov		al,0
-						inc		edx
-					.endif
-					mov		[edi+ecx],al
-					inc		ecx
-					inc		esi
-				.endw
-				mov		al,0
-				mov		[edi+ecx],al
-				inc		ecx
-				mov		[edi+ecx],al
-				inc		ecx
-				add		mnupos,ecx
-			.else
-				mov		[edi].MENUDATA.img,0
-				mov		[edi].MENUDATA.tpe,0
-				mov		word ptr [edi+sizeof MENUDATA],0
-				add		mnupos,sizeof MENUDATA+2
-			.endif
-		.else
-			; Separator
-			mov		[edi].MENUDATA.img,0
-			mov		[edi].MENUDATA.tpe,1
-			add		mnupos,sizeof MENUDATA
-		.endif
-		or		mii.fType,MFT_OWNERDRAW
-		invoke SetMenuItemInfo,hSubMnu,nPos,TRUE,addr mii
-		.if mii.hSubMenu
-			invoke SetupMenu,mii.hSubMenu
-		.endif
-		inc		nPos
-		jmp		@b
-	.endif
-	ret
-
-SetupMenu endp
-
-MakeMenuBitmap proc wt:DWORD,nColor:DWORD
-	LOCAL	hBmp:HBITMAP
-	LOCAL	hOldBmp:HBITMAP
-	LOCAL	hDC:HDC
-	LOCAL	mDC:HDC
-	LOCAL	hDeskTop:HWND
-
-	invoke GetDesktopWindow
-	mov		hDeskTop,eax
-	invoke GetDC,hDeskTop
-	mov		hDC,eax
-	invoke CreateCompatibleDC,hDC
-	mov		mDC,eax
-	invoke CreateCompatibleBitmap,hDC,600,8
-	mov		hBmp,eax
-	invoke ReleaseDC,hDeskTop,hDC
-	invoke SelectObject,mDC,hBmp
-	mov		hOldBmp,eax
-	xor		ebx,ebx
-	.while ebx<8
-		xor		edi,edi
-		mov		esi,nColor
-		.while edi<wt
-			invoke SetPixel,mDC,edi,ebx,esi
-			sub		esi,040404h
-			inc		edi
-		.endw
-		.while edi<600
-			invoke SetPixel,mDC,edi,ebx,0FFFFFFh
-			inc		edi
-		.endw
-		inc		ebx
-	.endw
-	invoke SelectObject,mDC,hOldBmp
-	invoke DeleteDC,mDC
-	mov		eax,hBmp
-	ret
-
-MakeMenuBitmap endp
-
-CoolMenu proc
-	LOCAL	MInfo:MENUINFO
-	LOCAL	nInx:DWORD
-	LOCAL	hBmp:HBITMAP
-	LOCAL	hBr:HBRUSH
-
-	invoke MakeMenuBitmap,23,0FFCEBEh
-	mov		hBmp,eax
-	invoke CreatePatternBrush,hBmp
-	mov		hMenuBrushA,eax
-	mov		MInfo.hbrBack,eax
-	invoke DeleteObject,hBmp
-	mov		MInfo.cbSize,SizeOf MENUINFO
-	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
-	invoke MakeMenuBitmap,20,0FFCEBEh-0C0C0Ch
-	mov		hBmp,eax
-	invoke CreatePatternBrush,hBmp
-	mov		hMenuBrushB,eax
-	invoke DeleteObject,hBmp
-	mov		nInx,0
-  @@:
-	invoke GetSubMenu,hMnu,nInx
-	.if eax
-		mov		edx,eax
-		push	eax
-		invoke SetupMenu,eax
-		pop		edx
-		invoke SetMenuInfo,edx,addr MInfo
-		inc		nInx
-		jmp		@b
-	.endif
-	mov		nInx,0
-  @@:
-	invoke GetSubMenu,hContextMenu,nInx
-	.if eax
-		push	eax
-		invoke SetupMenu,eax
-		pop		edx
-		invoke SetMenuInfo,edx,addr MInfo
-		inc		nInx
-		jmp		@b
-	.endif
-	ret
-
-CoolMenu endp
-
-
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hFont:DWORD
 	LOCAL	pt:POINT
@@ -708,7 +549,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	hBr:DWORD
 	LOCAL	hPen:DWORD
-	LOCAL	ncm:NONCLIENTMETRICS
 	LOCAL	mDC:HDC
 
 	mov		eax,uMsg
@@ -811,16 +651,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
-		; Get menu font
-		mov		ncm.cbSize,sizeof NONCLIENTMETRICS
-		invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
-		invoke CreateFontIndirect,addr ncm.lfMenuFont
-		mov		hMnuFont,eax
-;		MnuFontHt=Abs(ncm.lfMenuFont.lfHeight)+6
-;		if MnuFontHt<18 then
-;			MnuFontHt=18
-;		endif
-		invoke CoolMenu
+		.if !grdsize.standardmnu
+			invoke CoolMenu
+		.endif
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
@@ -1319,9 +1152,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.left,eax
 		mov		eax,winsize.ptstyle.y
 		mov		wpos.top,eax
-		invoke DeleteObject,hMenuBrushA
-		invoke DeleteObject,hMenuBrushB
-		invoke DeleteObject,hMnuFont
+		.if hMnuFont
+			invoke DeleteObject,hMenuBrushA
+			invoke DeleteObject,hMenuBrushB
+			invoke DeleteObject,hMnuFont
+		.endif
 		invoke DestroyIcon,hIcon
 		invoke ImageList_Destroy,hIml
 		invoke ImageList_Destroy,hImlTbr
