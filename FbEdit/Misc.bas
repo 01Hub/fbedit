@@ -61,6 +61,7 @@ Sub LoadApiFiles
 	AddApiFile("Word",Asc("W")+2*256)
 	AddApiFile("Type",Asc("T")+2*256)
 	AddApiFile("Desc",Asc("D")+2*256)
+	AddApiFile("Msg",Asc("M")+3*256)
 
 End Sub
 
@@ -564,8 +565,8 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		tti.novr=lptt->novr
 		GetCaretPos(@pt)
 		ClientToScreen(hWin,@pt)
-		wp=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
-		pt.x=pt.x-wp
+		ttpos=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
+		pt.x=pt.x-ttpos
 		SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
 		If edtopt.tooltip Then
 			SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
@@ -1133,12 +1134,27 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 				SelectTab(ah.hwnd,GetParent(hWin),0)
 			EndIf
+		Case WM_MOUSEWHEEL,WM_VSCROLL
+			If IsWindowVisible(ah.htt) Then
+				CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+				GetCaretPos(@pt)
+				ClientToScreen(hWin,@pt)
+				pt.x=pt.x-ttpos
+				SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+				InvalidateRect(ah.htt,NULL,TRUE)
+				Return 0
+			ElseIf IsWindowVisible(ah.hcc) Then
+				CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+				MoveList
+				Return 0
+			End If
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 
 End Function
 
 Function ParEditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim pt As POINT
 
 	Select Case uMsg
 		Case WM_SHOWWINDOW
@@ -1155,6 +1171,20 @@ Function ParEditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				EndIf
 				fInUse=FALSE
 			EndIf
+		Case WM_HSCROLL
+			If IsWindowVisible(ah.htt) Then
+				CallWindowProc(lpOldParEditProc,hWin,uMsg,wParam,lParam)
+				GetCaretPos(@pt)
+				ClientToScreen(hWin,@pt)
+				pt.x=pt.x-ttpos
+				SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
+				InvalidateRect(ah.htt,NULL,TRUE)
+				Return 0
+			ElseIf IsWindowVisible(ah.hcc) Then
+				CallWindowProc(lpOldParEditProc,hWin,uMsg,wParam,lParam)
+				MoveList
+				Return 0
+			End If
 	End Select
 	Return CallWindowProc(lpOldParEditProc,hWin,uMsg,wParam,lParam)
 
