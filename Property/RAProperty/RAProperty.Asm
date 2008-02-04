@@ -471,6 +471,8 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		lea		eax,[edx+eax]
 		mov		edx,lParam
 		mov		edx,[edx].TOOLTIP.lpszLine
+PrintStringByAddr edx
+PrintStringByAddr eax
 		invoke lstrcpy,edx,eax
 		mov		eax,lParam
 		mov		edx,fNoCase
@@ -584,6 +586,9 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		mov		[edx].TOOLTIP.nPos,ecx
 		xor		eax,eax
 		inc		eax
+mov		edx,lParam
+mov		edx,[edx].TOOLTIP.lpszLine
+PrintStringByAddr edx
 	.else
 		xor		eax,eax
 		mov		edx,lParam

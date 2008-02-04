@@ -88,7 +88,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -132,9 +132,9 @@ ProductVer4Range=0
 11=,
 12=
 [Size]
-2=0,0,699,490,2065
+2=0,0,699,490,1030
 <<<<<<< .mine
-1=0,0,699,490,17671
+1=0,0,699,490,11844
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -144,7 +144,7 @@ ProductVer4Range=0
 7=0,0,0,0,2127
 9=0,0,0,0,1794
 10=0,0,589,494,30549
-11=0,0,746,498,10904
+11=0,0,746,498,6750
 12=0,0,0,0,2850
 [BookMark]
 0=
@@ -165,16 +165,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=111396965
 [Find]
-1="print"
-2="PRM_GETSTRUCTSTART"
-3="fParam"
-4="fRetType"
-5="QuickSort"
-6="TTM_SETITEM"
-7="CCM_GETMAXWIDTH"
-8="CCM_ADDLIST"
-9="CompareStr"
-10="hCCLB"
+1="PRM_GETTOOLTIP"
+2="print"
+3="PRM_GETSTRUCTSTART"
+4="fParam"
+5="fRetType"
+6="QuickSort"
+7="TTM_SETITEM"
+8="CCM_GETMAXWIDTH"
+9="CCM_ADDLIST"
+10="CompareStr"
 
 [Exports]
 1=GetDefEx
