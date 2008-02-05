@@ -87,7 +87,7 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,38180
+1=0,0,0,0,5595
 6=
 2=0,0,0,0,5987
 7=0,0,699,490,5222
@@ -101,7 +101,7 @@ Options=52
 15=0,0,0,0
 16=0,0,0,0
 17=0,0,0,0
-18=0,0,0,0,4693
+18=0,0,0,0,3956
 12=0,0,0,0,1241
 19=0,0,0,0
 21=0,0,0,0,607
@@ -138,7 +138,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -237,7 +237,7 @@ ID=105
 10="IDM_VIEW_PREVIEW,0,Preview Dialog"
 11="IDM_EDIT_REDO,0,Redo"
 [Collapse]
-1=,,,,
+1=,,,
 12=
 2=
 7=
@@ -247,6 +247,6 @@ ID=105
 18=,
 21=
 [PTimer]
-PTimer=192696665
+PTimer=195506384
 [AutoLoad]
 1=1

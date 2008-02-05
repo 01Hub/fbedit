@@ -165,6 +165,88 @@ CopyPro:
 
 ParseCmnd endp
 
+GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	hBmp:DWORD
+	LOCAL	nCount:DWORD
+	LOCAL	rect:RECT
+
+	invoke ImageList_GetImageCount,hImlTbr
+	mov		nCount,eax
+	shl		eax,4
+	mov		rect.left,0
+	mov		rect.top,0
+	mov		rect.right,eax
+	mov		rect.bottom,16
+	invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR24,nCount,10
+	mov		hImlTbrGray,eax
+	invoke GetDC,NULL
+	mov		hDC,eax
+	invoke CreateCompatibleDC,hDC
+	mov		mDC,eax
+	invoke CreateCompatibleBitmap,hDC,rect.right,16
+	mov		hBmp,eax
+	invoke ReleaseDC,NULL,hDC
+	invoke SelectObject,mDC,hBmp
+	push	eax
+	invoke CreateSolidBrush,0FF00FFh
+	push	eax
+	invoke FillRect,mDC,addr rect,eax
+	xor		ecx,ecx
+	.while ecx<nCount
+		push	ecx
+		invoke ImageList_Draw,hImlTbr,ecx,mDC,rect.left,0,ILD_TRANSPARENT
+		pop		ecx
+		add		rect.left,16
+		inc		ecx
+	.endw
+	invoke GetPixel,mDC,0,0
+	mov		ebx,eax
+	xor		esi,esi
+	.while esi<16
+		xor		edi,edi
+		.while edi<rect.right
+			invoke GetPixel,mDC,edi,esi
+			.if eax!=ebx
+				bswap	eax
+				shr		eax,8
+				movzx	ecx,al			; red
+				imul	ecx,ecx,66
+				movzx	edx,ah			; green
+				imul	edx,edx,129
+				add		edx,ecx
+				shr		eax,16			; blue
+				imul	eax,eax,25
+				add		eax,edx
+				add		eax,128
+				shr		eax,8
+				add		eax,16
+				imul	eax,eax,010101h
+				and		eax,0E0E0E0h
+				shr		eax,1
+				add		eax,0404040h
+				shr		eax,1
+				add		eax,0404040h
+;				or		eax,0808080h
+				invoke SetPixel,mDC,edi,esi,eax
+			.endif
+			inc		edi
+		.endw
+		inc		esi
+	.endw
+	pop		eax
+	invoke DeleteObject,eax
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteDC,mDC
+	invoke ImageList_AddMasked,hImlTbrGray,hBmp,ebx
+	invoke DeleteObject,hBmp
+	invoke SendMessage,hToolbar,TB_SETDISABLEDIMAGELIST,0,hImlTbrGray
+	ret
+
+GrayedImageList endp
+
 SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 	LOCAL	nPos:DWORD
 	LOCAL	mii:MENUITEMINFO

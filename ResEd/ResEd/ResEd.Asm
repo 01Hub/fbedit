@@ -203,88 +203,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
-GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
-	LOCAL	hDC:HDC
-	LOCAL	mDC:HDC
-	LOCAL	hBmp:DWORD
-	LOCAL	nCount:DWORD
-	LOCAL	rect:RECT
-
-	invoke ImageList_GetImageCount,hImlTbr
-	mov		nCount,eax
-	shl		eax,4
-	mov		rect.left,0
-	mov		rect.top,0
-	mov		rect.right,eax
-	mov		rect.bottom,16
-	invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR24,nCount,10
-	mov		hImlTbrGray,eax
-	invoke GetDC,NULL
-	mov		hDC,eax
-	invoke CreateCompatibleDC,hDC
-	mov		mDC,eax
-	invoke CreateCompatibleBitmap,hDC,rect.right,16
-	mov		hBmp,eax
-	invoke ReleaseDC,NULL,hDC
-	invoke SelectObject,mDC,hBmp
-	push	eax
-	invoke CreateSolidBrush,0FF00FFh
-	push	eax
-	invoke FillRect,mDC,addr rect,eax
-	xor		ecx,ecx
-	.while ecx<nCount
-		push	ecx
-		invoke ImageList_Draw,hImlTbr,ecx,mDC,rect.left,0,ILD_TRANSPARENT
-		pop		ecx
-		add		rect.left,16
-		inc		ecx
-	.endw
-	invoke GetPixel,mDC,0,0
-	mov		ebx,eax
-	xor		esi,esi
-	.while esi<16
-		xor		edi,edi
-		.while edi<rect.right
-			invoke GetPixel,mDC,edi,esi
-			.if eax!=ebx
-				bswap	eax
-				shr		eax,8
-				movzx	ecx,al			; red
-				imul	ecx,ecx,66
-				movzx	edx,ah			; green
-				imul	edx,edx,129
-				add		edx,ecx
-				shr		eax,16			; blue
-				imul	eax,eax,25
-				add		eax,edx
-				add		eax,128
-				shr		eax,8
-				add		eax,16
-				imul	eax,eax,010101h
-				and		eax,0E0E0E0h
-				shr		eax,1
-				add		eax,0404040h
-				shr		eax,1
-				add		eax,0404040h
-;				or		eax,0808080h
-				invoke SetPixel,mDC,edi,esi,eax
-			.endif
-			inc		edi
-		.endw
-		inc		esi
-	.endw
-	pop		eax
-	invoke DeleteObject,eax
-	pop		eax
-	invoke SelectObject,mDC,eax
-	invoke DeleteDC,mDC
-	invoke ImageList_AddMasked,hImlTbrGray,hBmp,ebx
-	invoke DeleteObject,hBmp
-	invoke SendMessage,hToolbar,TB_SETDISABLEDIMAGELIST,0,hImlTbrGray
-	ret
-
-GrayedImageList endp
-
 DoToolBar proc hToolBar:HWND
 
 	;Set toolbar struct size
@@ -1260,48 +1178,30 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke FrameRect,mDC,addr rect,hBr
 						invoke DeleteObject,hBr
 					.endif
-					; image index
-					mov		eax,[esi].MENUDATA.img
-					.if eax
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
+					.if !ZERO?
+						; Check mark
 						mov		edx,rect.bottom
 						sub		edx,16
 						shr		edx,1
-						dec		eax
-						test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
-						.if ZERO?
-							invoke ImageList_Draw,hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
-						.else
-							invoke ImageList_Draw,hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
-						.endif
+						invoke ImageList_Draw,hImlTbr,11,mDC,2,edx,ILD_TRANSPARENT
 					.else
-						test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
-						.if !ZERO?
+						; Image
+						mov		eax,[esi].MENUDATA.img
+						.if eax
 							mov		edx,rect.bottom
 							sub		edx,16
 							shr		edx,1
-							invoke ImageList_Draw,hImlTbr,11,mDC,2,edx,ILD_TRANSPARENT
+							dec		eax
+							test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+							.if ZERO?
+								invoke ImageList_Draw,hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
+							.else
+								invoke ImageList_Draw,hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
+							.endif
 						.endif
 					.endif
-					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
-					.if !ZERO?
-						push	rect.left
-						push	rect.right
-						push	rect.top
-						push	rect.bottom
-						mov		rect.left,1
-						mov		rect.right,19
-						mov		eax,rect.bottom
-						sub		eax,18
-						shr		eax,1
-						mov		rect.top,eax
-						add		eax,18
-						mov		rect.bottom,eax
-						invoke DrawEdge,mDC,addr rect,BDR_SUNKENINNER,BF_RECT
-						pop		rect.bottom
-						pop		rect.top
-						pop		rect.right
-						pop		rect.left
-					.endif
+					; Text
 					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
 					.if ZERO?
 						invoke GetSysColor,COLOR_MENUTEXT
@@ -1318,6 +1218,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DrawText,mDC,esi,-1,addr rect,DT_LEFT or DT_VCENTER
 					pop		eax
 					lea		esi,[esi+eax+1]
+					; Accelerator
 					invoke DrawText,mDC,esi,-1,addr rect,DT_RIGHT or DT_VCENTER
 					sub		rect.left,22
 					sub		rect.top,2
