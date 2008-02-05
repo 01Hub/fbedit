@@ -702,21 +702,21 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 			.while byte ptr [edi]
 				mov		al,[edi]
 				.if al=='('
+					inc		edi
 					dec		ecx
 					.break
 				.endif
 				inc		edi
 			.endw
-			.if byte ptr [edi]
-				inc		edi
-			.endif
 			.while byte ptr [edi]
+				call	SkipScope
 				mov		al,[edi]
 				.if al==','
 					dec		ecx
 					.if !ecx
 						inc		edi
 						.while byte ptr [edi]
+							call	SkipScope
 							mov		al,[edi]
 							.if al!=','
 								.if al!=' ' && al!=VK_TAB
@@ -730,8 +730,6 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 							inc		edi
 						.endw
 					.endif
-				.elseif al=='('
-					call	SkipScope
 				.endif
 				.if byte ptr [edi]
 					inc		edi
@@ -755,27 +753,28 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 				lea		edi,[edi+eax+1]
 				invoke lstrlen,offset szname
 				mov		edx,eax
-				xor		ecx,ecx
 				xor		ebx,ebx
-				.while byte ptr [edi+ecx]
-					mov		al,[edi+ecx]
+				push	edi
+				.while byte ptr [edi]
+					call	CopyScope
+					mov		al,[edi]
 					.if al==','
 						inc		ebx
 					.endif
 					.if al=='['
-						inc		ecx
+						inc		edi
 						push	edx
 						.if !ebx
 							mov		edx,2000
 						.else
 							mov		edx,3000
 						.endif
-						.while byte ptr [edi+ecx]!=']'
-							mov		al,[edi+ecx]
+						.while byte ptr [edi]!=']'
+							mov		al,[edi]
 							mov		szname[edx],al
 							inc		edx
 							mov		szname[edx],0
-							inc		ecx
+							inc		edi
 						.endw
 						pop		edx
 					.else
@@ -783,8 +782,11 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 						inc		edx
 						mov		szname[edx],0
 					.endif
-					inc		ecx
+					.if byte ptr [edi]
+						inc		edi
+					.endif
 				.endw
+				pop		edi
 				invoke lstrlen,edi
 				lea		edi,[edi+eax+1]
 				.if byte ptr [edi]
@@ -818,18 +820,43 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 	ret
 
 SkipScope:
-	push	ecx
-	xor		ecx,ecx
-	.while byte ptr [edi]
-		.if byte ptr [edi]=='('
-			inc		ecx
-		.elseif byte ptr [edi]==')'
-			dec		ecx
-			.break .if ZERO?
+	.if byte ptr [edi]=='('
+		push	ecx
+		xor		ecx,ecx
+		.while byte ptr [edi]
+			.if byte ptr [edi]=='('
+				inc		ecx
+			.elseif byte ptr [edi]==')'
+				dec		ecx
+				.break .if ZERO?
+			.endif
+			inc		edi
+		.endw
+		.if byte ptr [edi]==')'
+			inc		edi
 		.endif
-		inc		edi
-	.endw
-	pop		ecx
+		pop		ecx
+	.endif
+	retn
+
+CopyScope:
+	.if byte ptr [edi]=='('
+		push	ecx
+		xor		ecx,ecx
+		.while byte ptr [edi]
+			mov		al,[edi]
+			mov		szname[edx],al
+			inc		edi
+			inc		edx
+			.if al=='('
+				inc		ecx
+			.elseif al==')'
+				dec		ecx
+				.break .if ZERO?
+			.endif
+		.endw
+		pop		ecx
+	.endif
 	retn
 
 IsTooltipMessage endp

@@ -484,6 +484,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ttmsg.szType="M"
 			ttmsg.lpMsgApi(0).nPos=2
 			ttmsg.lpMsgApi(0).lpszApi=@szMsg1
+			ttmsg.lpMsgApi(1).nPos=2
+			ttmsg.lpMsgApi(1).lpszApi=@szMsg2
+			ttmsg.lpMsgApi(2).nPos=3
+			ttmsg.lpMsgApi(2).lpszApi=@szMsg3
+			'DefFrameProc,DefWindowProc,DefMDIChildProc,DefDlgProc
 			Return FALSE
 			'
 		Case WM_CLOSE

@@ -648,6 +648,8 @@ Dim Shared Language As ZString*260
 Dim Shared ttpos As Integer
 
 Const szMsg1 = "SendMessage"
+Const szMsg2 = "PostMessage"
+Const szMsg3 = "SendDlgItemMessage"
 
 Dim Shared ttmsg As MESSAGE
 
