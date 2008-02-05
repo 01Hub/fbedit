@@ -743,6 +743,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,[ebx].RATT.tti.nitem
 		.if !ecx
 			.while byte ptr [edx]!=',' && byte ptr [edx]
+				call	SkipScope
 				inc		edx
 			.endw
 			mov		[ebx].RATT.nleft,0
@@ -752,6 +753,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			.while ecx
 				.while byte ptr [edx]!=',' && byte ptr [edx]
+					call	SkipScope
 					inc		edx
 				.endw
 				.if byte ptr [edx]==','
@@ -764,6 +766,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,[ebx].RATT.tti.lpszParam
 			mov		[ebx].RATT.nleft,eax
 			.while byte ptr [edx]!=',' && byte ptr [edx]
+				call	SkipScope
 				inc		edx
 			.endw
 			mov		eax,edx
@@ -943,6 +946,14 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
 	ret
+
+SkipScope:
+	.if byte ptr [edx]=='('
+		.while byte ptr [edx] && byte ptr [edx]!=')'
+			inc		edx
+		.endw
+	.endif
+	retn
 
 ToolTipProc endp
 

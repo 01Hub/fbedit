@@ -534,11 +534,22 @@ End Sub
 
 Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 	Dim tti As TTITEM
-	Dim pt As Point
+	Dim pt As POINT
 	Dim wp As Integer
 	
-'TextToOutput(*lptt->lpszLine)
-SendMessage(ah.hpr,PRM_ISTOOLTIPMESSAGE,Cast(WPARAM,@ttmsg),Cast(LPARAM,@tti))
+	wp=SendMessage(ah.hpr,PRM_ISTOOLTIPMESSAGE,Cast(WPARAM,@ttmsg),Cast(LPARAM,lptt))
+	If wp Then
+		SendMessage(ah.hcc,CCM_CLEAR,0,0)
+		ccpos=@ccstring
+		s=*Cast(ZString Ptr,wp)
+		SendMessage(ah.hred,REM_GETWORD,256,@buff)
+		GetItems(0)
+		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
+		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+		fmessagelist=TRUE
+		MoveList
+		Return TRUE
+	EndIf
 	If edtopt.codecomplete Then
 		fconstlist=UpdateConstList(lptt->lpszApi,lptt->nPos+1)
 	EndIf
@@ -565,15 +576,6 @@ SendMessage(ah.hpr,PRM_ISTOOLTIPMESSAGE,Cast(WPARAM,@ttmsg),Cast(LPARAM,@tti))
 			tti.lpszDesc=tti.lpszDesc+Len(*tti.lpszDesc)+1
 		EndIf
 		tti.novr=lptt->novr
-'If szApi="SendMessage" And lptt->nPos>=2 Then
-'	tti.nitem=1
-'	wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
-'	tti.nitem=lptt->nPos
-'
-'	TextToOutput(*lptt->lpszLine)
-'	TextToOutput(*Cast(ZString Ptr,wp))
-'	TextToOutput(szApi & " " & Str(lptt->nPos))
-'EndIf
 		GetCaretPos(@pt)
 		ClientToScreen(hWin,@pt)
 		ttpos=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
@@ -749,7 +751,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ElseIf Asc(buff)=Asc(".") Then
 							Return 0
 						EndIf
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Then
+				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf

@@ -662,27 +662,175 @@ SkipScopeBack:
 
 GetToolTip endp
 
-IsTooltipMessage proc uses esi edi,wParam:DWORD,lParam:DWORD
+IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	n:DWORD
 
+	mov		buffer,0
+	mov		szname,0
+	mov		szname+1000,0
+	mov		szname+2000,0
+	mov		szname+3000,0
 	mov		esi,wParam
-	mov		edi,lParam
 	lea		esi,[esi].MESSAGE.lpMsgApi
-mov		eax,[esi].MSGAPI.lpszApi
-PrintStringByAddr eax
-mov		edx,[edi].TOOLTIP.lpszApi
-PrintStringByAddr edx
 	.while [esi].MSGAPI.lpszApi
-		mov		eax,[esi].MSGAPI.lpszApi
-		mov		edx,[edi].TOOLTIP.lpszApi
-		invoke lstrcmp,eax,edx
+		mov		edx,[esi].MSGAPI.lpszApi
+		mov		edi,lParam
+		invoke lstrcmp,edx,[edi].TOOLTIP.lpszApi
 		.if !eax
-mov		eax,[esi].MSGAPI.lpszApi
-PrintStringByAddr eax
+			mov		edi,lParam
+			mov		edi,[edi].TOOLTIP.ovr.lpszParam
+			mov		ecx,[esi].MSGAPI.nPos
+			mov		edx,offset szname
+			.while byte ptr [edi]
+				mov		al,[edi]
+				mov		[edx],al
+				inc		edi
+				inc		edx
+				.if byte ptr [edx-1]==','
+					dec		ecx
+					.break .if !ecx
+				.endif
+			.endw
+			mov		byte ptr [edx],0
+			mov		ecx,[esi].MSGAPI.nPos
+			mov		edi,lParam
+			mov		edi,[edi].TOOLTIP.lpszLine
+			mov		edx,wParam
+			lea		edx,buffer
+			mov		byte ptr [edx],0
+			.while byte ptr [edi]
+				mov		al,[edi]
+				.if al=='('
+					dec		ecx
+					.break
+				.endif
+				inc		edi
+			.endw
+			.if byte ptr [edi]
+				inc		edi
+			.endif
+			.while byte ptr [edi]
+				mov		al,[edi]
+				.if al==','
+					dec		ecx
+					.if !ecx
+						inc		edi
+						.while byte ptr [edi]
+							mov		al,[edi]
+							.if al!=','
+								.if al!=' ' && al!=VK_TAB
+									mov		[edx],al
+									inc		edx
+									mov		byte ptr [edx],0
+								.endif
+							.else
+								.break
+							.endif
+							inc		edi
+						.endw
+					.endif
+				.elseif al=='('
+					call	SkipScope
+				.endif
+				.if byte ptr [edi]
+					inc		edi
+				.endif
+			.endw
+			mov		n,ecx
 			.break
 		.endif
 		lea		esi,[esi+sizeof MSGAPI]
 	.endw
+	mov		esi,wParam
+	lea		edx,buffer
+	.if byte ptr [edx]
+		invoke SendMessage,hWin,PRM_FINDFIRST,addr [esi].MESSAGE.szType,edx
+	  @@:
+		.if eax
+			mov		edi,eax
+			invoke lstrcmp,edi,addr buffer
+			.if !eax
+				invoke lstrlen,edi
+				lea		edi,[edi+eax+1]
+				invoke lstrlen,offset szname
+				mov		edx,eax
+				xor		ecx,ecx
+				xor		ebx,ebx
+				.while byte ptr [edi+ecx]
+					mov		al,[edi+ecx]
+					.if al==','
+						inc		ebx
+					.endif
+					.if al=='['
+						inc		ecx
+						push	edx
+						.if !ebx
+							mov		edx,2000
+						.else
+							mov		edx,3000
+						.endif
+						.while byte ptr [edi+ecx]!=']'
+							mov		al,[edi+ecx]
+							mov		szname[edx],al
+							inc		edx
+							mov		szname[edx],0
+							inc		ecx
+						.endw
+						pop		edx
+					.else
+						mov		szname[edx],al
+						inc		edx
+						mov		szname[edx],0
+					.endif
+					inc		ecx
+				.endw
+				invoke lstrlen,edi
+				lea		edi,[edi+eax+1]
+				.if byte ptr [edi]
+					invoke lstrcpy,offset szname+1000,edi
+				.else
+					mov		szname+1000,0
+				.endif
+				mov		edi,lParam
+				mov		[edi].TOOLTIP.ovr.lpszParam,offset szname
+				mov		[edi].TOOLTIP.ovr.lpszRetType,offset szname+1000
+				mov		esi,wParam
+				xor		eax,eax
+				.if n==0
+					.if szname+2000
+						mov		eax,offset szname+2000
+					.endif
+				.elseif n==-1
+					.if szname+3000
+						mov		eax,offset szname+3000
+					.endif
+				.endif
+				jmp		Ex
+			.else
+				invoke SendMessage,hWin,PRM_FINDNEXT,0,0
+				jmp		@b
+			.endif
+		.endif		
+	.endif
+	xor		eax,eax
+  Ex:
 	ret
+
+SkipScope:
+	push	ecx
+	xor		ecx,ecx
+	.while byte ptr [edi]
+		.if byte ptr [edi]=='('
+			inc		ecx
+		.elseif byte ptr [edi]==')'
+			dec		ecx
+			.break .if ZERO?
+		.endif
+		inc		edi
+	.endw
+	pop		ecx
+	retn
 
 IsTooltipMessage endp
 

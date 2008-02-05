@@ -427,6 +427,7 @@ Dim Shared fAddModuleFiles As Boolean
 Dim Shared ftypelist As Boolean
 Dim Shared fconstlist As Boolean
 Dim Shared fstructlist As Boolean
+Dim Shared fmessagelist As Boolean
 Dim Shared flocallist As Boolean
 Dim Shared fincludelist As Boolean
 Dim Shared fincliblist As Boolean

@@ -482,7 +482,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SetFocus(hWin)
 			frhex=FR_DOWN
 			ttmsg.szType="M"
-			ttmsg.lpMsgApi(0).nPos=1
+			ttmsg.lpMsgApi(0).nPos=2
 			ttmsg.lpMsgApi(0).lpszApi=@szMsg1
 			Return FALSE
 			'

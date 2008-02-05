@@ -11,6 +11,7 @@
 #Define IDC_CHKDES					1009
 #Define IDC_CHKPRO					1010
 #Define IDC_CHKOPR					1011
+#Define IDC_CHKMSG					5601
 
 Sub ExportFunctions()
 	Dim lret As ZString Ptr
@@ -209,6 +210,38 @@ Sub ExportOperators()
 
 End Sub
 
+Sub ExportMessages()
+	Dim lret As ZString Ptr
+
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("M")),Cast(Integer,StrPtr(""))))
+	Do While lret
+		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+		lret=lret+Len(*lret)+1
+		If Len(*lret) Then
+			' Parameters
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(",")))
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+			lret=lret+Len(*lret)+1
+			If Len(*lret) Then
+				' Return type
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+			EndIf
+		Else
+			' Skip parameters
+			lret=lret+1
+			If Len(*lret) Then
+				' Return type
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr("|")))
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,lret))
+			EndIf
+		EndIf
+		SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+	Loop
+
+End Sub
+
 Function ExportDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 
 	Select Case uMsg
@@ -255,6 +288,9 @@ Function ExportDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPA
 					EndIf
 					If IsDlgButtonChecked(hWin,IDC_CHKOPR) Then
 						ExportOperators
+					EndIf
+					If IsDlgButtonChecked(hWin,IDC_CHKMSG) Then
+						ExportMessages
 					EndIf
 					'
 				Case IDCANCEL

@@ -122,7 +122,7 @@ ProductVer4Range=0
 7=00FFFFFF
 [Collapse]
 2=
-1=,,,
+1=,,,,
 4=
 3=
 8=
@@ -132,19 +132,19 @@ ProductVer4Range=0
 11=,
 12=
 [Size]
-2=0,0,699,490,4587
+2=0,0,699,490,865
 <<<<<<< .mine
-1=0,0,699,490,13386
+1=0,0,699,490,13320
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1641
-7=0,0,0,0,2127
+7=0,0,0,0,2213
 9=0,0,0,0,1794
 10=0,0,589,494,30549
-11=0,0,746,498,12170
+11=0,0,746,498,12141
 12=0,0,0,0,2850
 [BookMark]
 0=
@@ -165,16 +165,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=121835715
 [Find]
-1="PRM_GETTOOLTIP"
-2="print"
-3="PRM_GETSTRUCTSTART"
-4="fParam"
-5="fRetType"
-6="QuickSort"
-7="TTM_SETITEM"
-8="CCM_GETMAXWIDTH"
-9="CCM_ADDLIST"
-10="CompareStr"
+1="_PRM_FINDFIRST"
+2="STATUS_TIMEOUT"
+3="WAIT_TIMEOUT"
+4="STATUS_WAIT_0"
+5="WAIT_OBJECT_0"
+6="STATUS_ABANDONED_WAIT_0"
+7="WAIT_ABANDONED"
+8="PRM_GETTOOLTIP"
+9="print"
+10="PRM_GETSTRUCTSTART"
 
 [Exports]
 1=GetDefEx

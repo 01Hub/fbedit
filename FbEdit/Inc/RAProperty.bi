@@ -158,7 +158,7 @@ End Type
 
 Type MESSAGE
 	szType			As ZString*4
-	lpMsgApi(32)	As MSGAPI
+	lpMsgApi(31)	As MSGAPI
 End Type
 
 Type MEMSEARCH

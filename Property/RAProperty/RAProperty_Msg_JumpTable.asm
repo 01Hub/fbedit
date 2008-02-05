@@ -544,7 +544,7 @@
 		ret
 	align 4 
 	_PRM_ISTOOLTIPMESSAGE:
-		invoke IsTooltipMessage,wParam,lParam
+		invoke IsTooltipMessage,hWin,wParam,lParam
 		ret
 
 .data

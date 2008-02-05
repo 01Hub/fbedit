@@ -74,6 +74,7 @@ Sub HideList()
 	ftypelist=FALSE
 	fconstlist=FALSE
 	fstructlist=FALSE
+	fmessagelist=FALSE
 	flocallist=FALSE
 	fincludelist=FALSE
 	fincliblist=FALSE
