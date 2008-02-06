@@ -12,10 +12,13 @@ o Updated resource editor.
   - Added option to define IDC_STATIC
   - Added better support for multiline captions (Edit, Static and Button controls).
     NOTE. Use Ctrl+Enter to insert a new line in the multiline text box.
+  - Holding Ctrl while selecting a control from toolbox will keep the selection.
   - Fixed bugs with Image and Animate controls (name / id problems).
   - Fixed bug with #include <windows.h>.
   - Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.
     This caused the applicationt you crated to not run.
+o Better code complete support for SendMessage, PostMessage and SendDlgItemMessage api's.
+o Better support for namespaces.
 o Fixed bugs in code parser (RAProperty.dll)
 o Fixed bug with file changed outside editor. Could give more than one message.
 o Fixed block bug "If(Len(argv)=0 ) Then".
