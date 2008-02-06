@@ -1033,6 +1033,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke WantToSaveProject,offset ProjectFileName
 		.if !eax
+			invoke SendMessage,hResEd,PRO_CLOSE,0,0
 			invoke GetWindowLong,hWin,GWL_STYLE
 			test	eax,WS_MAXIMIZE
 			.if ZERO?

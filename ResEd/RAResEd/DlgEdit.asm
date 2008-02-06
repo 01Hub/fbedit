@@ -812,7 +812,8 @@ szNOTStyleHex		db 'NOT 0x10000000|',0
 dwNOTStyle			dd WS_VISIBLE
 
 					align 4
-dlgdata				dd WS_VISIBLE or WS_CAPTION or DS_SETFONT		;style
+;dlgdata				dd WS_VISIBLE or WS_CAPTION or DS_SETFONT		;style
+dlgdata				dd WS_CAPTION or DS_SETFONT		;style
 					dd 00000000h									;exstyle
 					dw 0000h										;cdit
 					dw 4096											;x
@@ -6361,9 +6362,11 @@ TestProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetObject,edx,sizeof LOGFONT,addr fnt
 		mov		eax,fnt.lfHeight
 		mov		lfntht,eax
+		mov		eax,FALSE
+		ret
 ;		invoke SendMessage,hWin,WM_CLOSE,0,0
 ;	.elseif eax==WM_CLOSE
-		invoke DestroyWindow,hWin
+;		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE
 		ret
@@ -6498,6 +6501,7 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 	stosw
 	loop	@b
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	invoke DestroyWindow,eax
 	push	fntwt
 	pop		dfntwt
 	push	fntht
@@ -6513,6 +6517,7 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 	stosw
 	loop	@b
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	invoke DestroyWindow,eax
 	mov		esi,hMem
 	add		esi,sizeof DLGHEAD
 	mov		edi,[esi].DIALOG.hwnd
@@ -6589,7 +6594,7 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	mov		dlgps,10
 	mov		dlgfn,0
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	;invoke DestroyWindow,eax
+	invoke DestroyWindow,eax
 	push	fntwt
 	pop		dfntwt
 	push	fntht
@@ -6607,7 +6612,7 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	loop	@b
 	popad
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	;invoke DestroyWindow,eax
+	invoke DestroyWindow,eax
 	mov		edi,hWrMem
 	mov		esi,hRdMem
 	add		esi,sizeof DLGHEAD

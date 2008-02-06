@@ -79,7 +79,7 @@ FileVersion=2.0.1.5
 CompanyName=
 [Size]
 2=0,0,0,0,3846
-1=0,0,0,0,80835
+1=0,0,0,0,41637
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,470
@@ -130,13 +130,13 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=3
+MilestoneEveryCurrent=5
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -189,7 +189,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 12=
 6=
 [PTimer]
-PTimer=5152923
+PTimer=5737219
 [Exports]
 1=GetDefEx
 2=GetDef

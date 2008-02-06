@@ -512,7 +512,7 @@ ConvertSize proc uses esi,lpMem:DWORD
 	mov		dlgps,10
 	mov		dlgfn,0
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	;invoke DestroyWindow,eax
+	invoke DestroyWindow,eax
 	push	fntwt
 	pop		dfntwt
 	push	fntht
@@ -530,7 +530,7 @@ ConvertSize proc uses esi,lpMem:DWORD
 	loop	@b
 	popad
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	;invoke DestroyWindow,eax
+	invoke DestroyWindow,eax
 	invoke GetDialogBaseUnits
 	mov		edx,eax
 	and		eax,0FFFFh
@@ -1908,6 +1908,7 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		pop		edi
 		pop		esi
 		invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+		invoke DestroyWindow,eax
 		mov		eax,lfntht
 		mov		[edi].DLGHEAD.fontht,eax
 		jmp		@b

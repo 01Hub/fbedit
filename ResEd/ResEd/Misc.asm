@@ -223,12 +223,14 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 				shr		eax,8
 				add		eax,16
 				imul	eax,eax,010101h
-				and		eax,0E0E0E0h
-				shr		eax,1
-				add		eax,0404040h
-				shr		eax,1
-				add		eax,0404040h
+;				and		eax,0E0E0E0h
+;				shr		eax,1
+;				add		eax,0404040h
+;				shr		eax,1
 ;				or		eax,0808080h
+				and		eax,0fcfcfch
+				shr		eax,2
+				add		eax,0505050h
 				invoke SetPixel,mDC,edi,esi,eax
 			.endif
 			inc		edi
@@ -344,7 +346,7 @@ MakeMenuBitmap proc wt:DWORD,nColor:DWORD
 		mov		esi,nColor
 		.while edi<wt
 			invoke SetPixel,mDC,edi,ebx,esi
-			sub		esi,040404h
+			sub		esi,030303h
 			inc		edi
 		.endw
 		.while edi<600
@@ -372,7 +374,7 @@ CoolMenu proc
 	invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
 	invoke CreateFontIndirect,addr ncm.lfMenuFont
 	mov		hMnuFont,eax
-	invoke MakeMenuBitmap,23,0FFCEBEh
+	invoke MakeMenuBitmap,23,0FFDFCFh;0FFCEBEh
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
 	mov		hMenuBrushA,eax
@@ -380,7 +382,7 @@ CoolMenu proc
 	invoke DeleteObject,hBmp
 	mov		MInfo.cbSize,SizeOf MENUINFO
 	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
-	invoke MakeMenuBitmap,20,0FFCEBEh-0C0C0Ch
+	invoke MakeMenuBitmap,20,0FFDFCFh-090909h
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
 	mov		hMenuBrushB,eax

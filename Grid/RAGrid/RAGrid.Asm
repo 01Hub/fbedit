@@ -1706,7 +1706,7 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,[ebx].GRID.hhdr
 		invoke DestroyWindow,[ebx].GRID.hlst
 		invoke DestroyCursor,[ebx].GRID.hcur
-		.if ![ebx].GRID.hbrback==COLOR_WINDOW+1
+		.if [ebx].GRID.hbrback!=COLOR_WINDOW+1
 			invoke DeleteObject,[ebx].GRID.hbrback
 		.endif
 		invoke DeleteObject,[ebx].GRID.hpengrd
@@ -2340,7 +2340,7 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==GM_SETBACKCOLOR
 		call	GetMem
-		.if ![ebx].GRID.hbrback==COLOR_WINDOW+1
+		.if [ebx].GRID.hbrback!=COLOR_WINDOW+1
 			invoke DeleteObject,[ebx].GRID.hbrback
 		.endif
 		mov		eax,wParam
