@@ -52,3 +52,5 @@ IDC_VSPLIT				CURSOR  DISCARDABLE "../RAResEd/Res/SplitV.cur"
 105						BITMAP   DISCARDABLE "../RAResEd/Res/Expand.bmp"
 106						BITMAP   DISCARDABLE "../RAResEd/Res/Collapse.bmp"
 107						BITMAP	 DISCARDABLE "../RAResEd/Res/Lock.bmp"
+;RAGrid
+102						CURSOR  DISCARDABLE "../RAResEd/Res/SplitV.cur"
