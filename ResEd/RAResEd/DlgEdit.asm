@@ -5568,14 +5568,12 @@ SaveDlgFont proc
 		invoke SaveStr,edi,addr buffer
 		add		edi,eax
 		movzx	eax,(DLGHEAD ptr [esi]).charset
-		.if eax
-			mov		val,eax
-			mov		al,','
-			stosb
-			invoke ResEdBinToDec,val,addr buffer
-			invoke SaveStr,edi,addr buffer
-			add		edi,eax
-		.endif
+		mov		val,eax
+		mov		al,','
+		stosb
+		invoke ResEdBinToDec,val,addr buffer
+		invoke SaveStr,edi,addr buffer
+		add		edi,eax
 		mov		ax,0A0Dh
 		stosw
 	.endif
@@ -6364,9 +6362,6 @@ TestProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lfntht,eax
 		mov		eax,FALSE
 		ret
-;		invoke SendMessage,hWin,WM_CLOSE,0,0
-;	.elseif eax==WM_CLOSE
-;		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE
 		ret

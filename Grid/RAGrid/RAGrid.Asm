@@ -1702,6 +1702,13 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	RelMem
 	.elseif eax==WM_DESTROY
 		call	GetMem
+		mov		esi,sizeof GRID
+		.while esi<[ebx].GRID.rpitemdata
+			.if [ebx+esi].COLUMN.edthwnd
+				invoke DestroyWindow,[ebx+esi].COLUMN.edthwnd
+			.endif
+			add		esi,sizeof COLUMN
+		.endw
 		invoke DestroyWindow,[ebx].GRID.hsize
 		invoke DestroyWindow,[ebx].GRID.hhdr
 		invoke DestroyWindow,[ebx].GRID.hlst
