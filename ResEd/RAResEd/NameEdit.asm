@@ -180,6 +180,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			mov		ofn.lpstrFileTitle,offset szExportFileName
 ;			invoke strcpy,addr fnbuffer,offset szExportFileName
 			call	GetFileName
+			invoke strcpy,addr fnbuffer,addr tmpbuffer
 			lea		eax,fnbuffer
 			mov		ofn.lpstrFile,eax
 			mov		ofn.nMaxFile,sizeof fnbuffer
@@ -350,9 +351,8 @@ GetFileName:
 		.endw
 		mov		eax,offset szExportFileName+9
 		invoke strcpy,edx,eax
-		invoke strcpy,addr fnbuffer,addr tmpbuffer
 	.else
-		invoke strcpy,addr fnbuffer,offset szExportFileName
+		invoke strcpy,addr tmpbuffer,offset szExportFileName
 	.endif
 	retn
 
