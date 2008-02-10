@@ -6181,6 +6181,17 @@ SaveCtl proc uses ebx esi edi
 			add		edi,eax
 			mov		al,' '
 			stosb
+			mov		eax,[esi].style
+			and		eax,dwNOTStyle
+			xor		eax,dwNOTStyle
+			.if eax
+				.if fStyleHex
+					invoke SaveStr,edi,addr szNOTStyleHex
+				.else
+					invoke SaveStr,edi,addr szNOTStyle
+				.endif
+				add		edi,eax
+			.endif
 			invoke SaveStyle,[esi].style,[esi].ntype,FALSE
 			mov		ax,0A0Dh
 			stosw
