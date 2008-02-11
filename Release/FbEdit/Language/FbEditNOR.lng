@@ -48,6 +48,7 @@ Lang=Norwegian, By KetilO
 4010=Styles som hex
 4011=Juster Dialog til Font
 4012=Enkel Property
+4013=Definer IDC_STATIC
 ;--------------------------------------------------------------------------
 [2500]
 2500=Finn ...
@@ -235,6 +236,7 @@ Lang=Norwegian, By KetilO
 1009=Destructors
 1010=Properties
 1011=Operators
+5601=Meldinger
 ;--------------------------------------------------------------------------
 [6000]
 6000=Lag Template
