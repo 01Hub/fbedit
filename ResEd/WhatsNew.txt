@@ -20,7 +20,7 @@ o Added Text mode to dialog editor.
 o Fixed bugs with Image and Animate controls (name / id problems).
 o Fixed bug with #include <windows.h>.
 o Fixed bug with Add XP Manifest. #define MANIFEST 24 was not included.
-  This caused the applicationt you crated to not run.
+  This prevented the newly created application from running.
 
 1.1.4.3 - 2007.11.08
 --------------------
