@@ -42,27 +42,6 @@ start:
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof wpos
 		invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
-		.if wpos.wtpro<5
-			mov		wpos.wtpro,150
-		.endif
-		.if wpos.htpro<5
-			mov		wpos.htpro,200
-		.endif
-		mov		eax,wpos.htout
-		mov		winsize.htout,eax
-		mov		eax,wpos.wtpro
-		mov		winsize.wtpro,eax
-		mov		eax,wpos.htpro
-		mov		winsize.htpro,eax
-		mov		eax,wpos.wttbx
-		.if !eax
-			mov		eax,52
-		.endif
-		mov		winsize.wttbx,eax
-		mov		eax,wpos.left
-		mov		winsize.ptstyle.x,eax
-		mov		eax,wpos.top
-		mov		winsize.ptstyle.y,eax
 		mov		lpcbData,sizeof nmeexp
 		invoke RegQueryValueEx,hReg,addr szNmeExp,0,addr lpType,addr nmeexp,addr lpcbData
 		mov		lpcbData,sizeof grdsize
@@ -72,6 +51,27 @@ start:
 		mov		lpcbData,sizeof initid
 		invoke RegQueryValueEx,hReg,addr szInitID,0,addr lpType,addr initid,addr lpcbData
 	.endif
+	.if wpos.wtpro<5
+		mov		wpos.wtpro,150
+	.endif
+	.if wpos.htpro<5
+		mov		wpos.htpro,200
+	.endif
+	mov		eax,wpos.htout
+	mov		winsize.htout,eax
+	mov		eax,wpos.wtpro
+	mov		winsize.wtpro,eax
+	mov		eax,wpos.htpro
+	mov		winsize.htpro,eax
+	mov		eax,wpos.wttbx
+	.if !eax
+		mov		eax,52
+	.endif
+	mov		winsize.wttbx,eax
+	mov		eax,wpos.left
+	mov		winsize.ptstyle.x,eax
+	mov		eax,wpos.top
+	mov		winsize.ptstyle.y,eax
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
 	invoke RegCloseKey,hReg
