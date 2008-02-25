@@ -140,9 +140,9 @@ TryAgain:
 	ft.chrg.cpMin=chrg.cpMin
 'MessageBox(ah.hwnd,Str(fres),Str(frType),MB_OK)
 	If frType And FR_DOWN Then
-		If fres<>-1 Then
-			ft.chrg.cpMin+=1
-		EndIf
+'		If fres<>-1 Then
+'			ft.chrg.cpMin+=1
+'		EndIf
 	Else
 		ft.chrg.cpMax=0
 	EndIf
@@ -398,7 +398,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@replacebuff))
 								'update real end
-								If fPos=0 Then
+								If fPos=0 And ft.chrg.cpMax<>-1 Then
 									ft.chrg.cpMax=ft.chrg.cpMax+(Len(replacebuff)-Len(findbuff))
 								EndIf
 							EndIf

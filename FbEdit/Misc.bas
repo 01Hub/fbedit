@@ -542,7 +542,7 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		SendMessage(ah.hcc,CCM_CLEAR,0,0)
 		ccpos=@ccstring
 		s=*Cast(ZString Ptr,wp)
-		SendMessage(ah.hred,REM_GETWORD,256,@buff)
+		SendMessage(ah.hred,REM_GETWORD,256,Cast(LPARAM,@buff))
 		GetItems(0)
 		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
