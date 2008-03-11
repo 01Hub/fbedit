@@ -175,6 +175,7 @@ szHeaderClass		db 'SysHeader32',0
 szComma				db ',',0
 szOR				db '|',0
 szNULL				db 0
+szSPACE				db ' ',0
 szAppName			db 'Resource editor',0
 szMemFail			db 'Memory allocation failed!',0
 
@@ -234,6 +235,7 @@ szELSE				db '#else',0
 szENDIF				db '#endif',0
 szIFDEF				db '#ifdef',0
 szIFNDEF			db '#ifndef',0
+szPRAGMA			db '#pragma',0
 szINCLUDE			db '#include',0
 szDESIGNINFO		db 'DESIGNINFO',0,0
 
@@ -400,6 +402,8 @@ szErrorParse		db 'Errors while parsing at line ',0
 szLine				db 'Line: ',0
 szNotSupported		db 'Internal data not supported by ResEd.',0Dh,0Ah,0Dh,0Ah,'Convert this kind of data to files?',0
 szUnknownStyle		db 'Unknown style in ',0
+szCustomType		db 0Dh,0Ah,0Dh,0Ah,'Custom resources not supported by ResEd.',0Dh,0Ah,0Dh,0Ah,'Convert to RCDATA?',0
+
 szCrLf				db 0Dh,0Ah,0
 
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>

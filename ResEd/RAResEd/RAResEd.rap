@@ -144,11 +144,11 @@ Options=52
 6=0,0,0,0,1695
 9=0,0,0,0,148753
 2=0,0,584,498,5877
-8=0,0,0,0,6713
-10=0,0,0,0,7555
+8=0,0,0,0,11266
+10=0,0,0,0,10717
 16=0,0,0,0,27035
 15=0,0,0,0
-17=0,0,0,0,65819
+17=0,0,0,0,72343
 18=0,0,0,0,6314
 21=0,0,0,0,41067
 23=0,0,0,0
@@ -180,16 +180,16 @@ Options=52
 
 
 [Find]
-1="printhex"
-2="SBT_"
-3="SBT_NOBORDERS"
-4="IDR_BPACTIONS"
-5="IDC_COMBO"
-6="CreateDialogIndirectParam"
-7="indirect"
-8="getwindowlong"
-9="WM_NOTIFY"
-10="lstrcpy"
+1="Print"
+2="17"
+3="SBT_"
+4="SBT_NOBORDERS"
+5="IDR_BPACTIONS"
+6="IDC_COMBO"
+7="CreateDialogIndirectParam"
+8="indirect"
+9="getwindowlong"
+10="WM_NOTIFY"
 
 [AutoLoad]
 1=1
@@ -216,7 +216,7 @@ CompanyName=
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=4
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

@@ -261,8 +261,13 @@ ParseDefine proc uses esi,lpRCMem:DWORD,lpProMem:DWORD
 	mov		esi,lpRCMem
 	invoke GetWord,offset namebuff,esi
 	add		esi,eax
-	invoke GetWord,offset wordbuff,esi
-	add		esi,eax
+	invoke SkipSpace
+	.if byte ptr [esi]==VK_RETURN
+		mov		word ptr wordbuff,'0'
+	.else
+		invoke GetWord,offset wordbuff,esi
+		add		esi,eax
+	.endif
 	invoke AddName,lpProMem,offset namebuff,offset wordbuff
 	mov		eax,esi
 	sub		eax,lpRCMem
@@ -309,6 +314,12 @@ ParseDefsSkip proc
 		jmp		Ex
 	.endif
 	invoke strcmpi,offset wordbuff,offset szIFNDEF
+	.if !eax
+		invoke SkipToEol
+		xor		eax,eax
+		jmp		Ex
+	.endif
+	invoke strcmpi,offset wordbuff,offset szPRAGMA
 	.if !eax
 		invoke SkipToEol
 		xor		eax,eax
@@ -1149,149 +1160,125 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 					mov		eax,-1
 					ret
 				.endif
-;			.else
-;				mov		eax,IDOK
 			.endif
-;			.if eax==IDNO
-;				invoke GetWord,offset wordbuff,esi
-;				add		esi,eax
-;				invoke strcmpi,offset wordbuff,offset szBEGIN
-;				.if eax
-;					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
-;				.endif
-;				.if !eax
-;				  @@:
-;					call	SkipSpace
-;					.if byte ptr [esi]==0Dh
-;						inc		esi
-;					.endif
-;					.if byte ptr [esi]==0Ah
-;						inc		esi
-;					.endif
-;					mov		edx,offset wordbuff
-;					.while byte ptr [esi] && byte ptr [esi]!=0Dh
-;						mov		al,[esi]
-;						mov		[edx],al
-;						inc		esi
-;						inc		edx
-;					.endw
-;					mov		byte ptr [edx],0
-;					invoke strcmpi,offset wordbuff,offset szEND
-;					.if eax
-;						invoke strcmpi,offset wordbuff,offset szENDSHORT
-;					.endif
-;					.if eax
-;						jmp		@b
-;					.endif
-;				.endif
-;			.else
-				invoke GetTypeMem,lpProMem,TPE_RESOURCE
-				mov		eax,[eax].PROJECT.hmem
-				.if !eax
-					invoke AddTypeMem,lpProMem,64*1024,TPE_RESOURCE
+			invoke GetTypeMem,lpProMem,TPE_RESOURCE
+			mov		eax,[eax].PROJECT.hmem
+			.if !eax
+				invoke AddTypeMem,lpProMem,64*1024,TPE_RESOURCE
+			.endif
+			mov		edi,eax
+			.while [edi].RESOURCEMEM.szfile
+				lea		edi,[edi+sizeof RESOURCEMEM]
+			.endw
+			mov		eax,nType
+			mov		[edi].RESOURCEMEM.ntype,eax
+			.if byte ptr namebuff
+				invoke strcpy,offset wordbuff,offset namebuff
+			.else
+				invoke strcpy,offset wordbuff,addr buffer
+				invoke strcat,offset wordbuff,addr namebuff+1024+100
+			.endif
+			invoke strlen,offset wordbuff
+			.if nType==0
+				; BITMAP
+				mov		dword ptr wordbuff[eax],'pmb.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==1
+				; CURSOR
+				mov		dword ptr wordbuff[eax],'ruc.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==2
+				; ICON
+				mov		dword ptr wordbuff[eax],'oci.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==3
+				; AVI
+				mov		dword ptr wordbuff[eax],'iva.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==4
+				; RCDATA
+				mov		dword ptr wordbuff[eax],'tad.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==5
+				; WAVE
+				mov		dword ptr wordbuff[eax],'vaw.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==6
+				; IMAGE
+				mov		dword ptr wordbuff[eax],'gmi.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==7
+				; MANIFEST
+				mov		dword ptr wordbuff[eax],'lmx.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==8
+				; ANICURSOR
+				mov		dword ptr wordbuff[eax],'ina.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==9
+				; FONT
+				mov		dword ptr wordbuff[eax],'nof.'
+				mov		dword ptr wordbuff[eax+4],0
+			.elseif nType==10
+				; MESSAGETABLE
+				mov		dword ptr wordbuff[eax],'gsm.'
+				mov		dword ptr wordbuff[eax+4],0
+			.else
+				; Unknown
+				mov		dword ptr wordbuff[eax],'xxx.'
+				mov		dword ptr wordbuff[eax+4],0
+			.endif
+			mov		ecx,nType
+			mov		eax,1
+			shl		eax,cl
+			or		fError,eax
+			invoke GetName,lpProMem,offset namebuff,addr [edi].RESOURCEMEM.szname,addr [edi].RESOURCEMEM.value
+			invoke strcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			invoke strcmpi,offset wordbuff,offset szBEGIN
+			.if eax
+				invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+			.endif
+			.if !eax
+				mov		nSize,0
+				invoke CreateFile,addr [edi].RESOURCEMEM.szfile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+				mov		hFile,eax
+			  @@:
+				call	SkipSpace
+				.if byte ptr [esi]==0Dh
+					inc		esi
 				.endif
-				mov		edi,eax
-				.while [edi].RESOURCEMEM.szfile
-					lea		edi,[edi+sizeof RESOURCEMEM]
+				.if byte ptr [esi]==0Ah
+					inc		esi
+				.endif
+				mov		edx,offset wordbuff
+				.while byte ptr [esi] && byte ptr [esi]!=0Dh
+					mov		al,[esi]
+					mov		[edx],al
+					inc		esi
+					inc		edx
 				.endw
-				mov		eax,nType
-				mov		[edi].RESOURCEMEM.ntype,eax
-				.if byte ptr namebuff
-					invoke strcpy,offset wordbuff,offset namebuff
-				.else
-					invoke strcpy,offset wordbuff,addr buffer
-					invoke strcat,offset wordbuff,addr namebuff+1024+100
-				.endif
-				invoke strlen,offset wordbuff
-				.if nType==0
-					; BITMAP
-					mov		dword ptr wordbuff[eax],'pmb.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==1
-					; CURSOR
-					mov		dword ptr wordbuff[eax],'ruc.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==2
-					; ICON
-					mov		dword ptr wordbuff[eax],'oci.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==3
-					; AVI
-					mov		dword ptr wordbuff[eax],'iva.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==4
-					; RCDATA
-					mov		dword ptr wordbuff[eax],'tad.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==5
-					; WAVE
-					mov		dword ptr wordbuff[eax],'vaw.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==6
-					; IMAGE
-					mov		dword ptr wordbuff[eax],'gmi.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==7
-					; MANIFEST
-					mov		dword ptr wordbuff[eax],'lmx.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==8
-					; ANICURSOR
-					mov		dword ptr wordbuff[eax],'ina.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==9
-					; FONT
-					mov		dword ptr wordbuff[eax],'nof.'
-					mov		dword ptr wordbuff[eax+4],0
-				.elseif nType==10
-					; MESSAGETABLE
-					mov		dword ptr wordbuff[eax],'gsm.'
-					mov		dword ptr wordbuff[eax+4],0
-				.else
-					; Unknown
-					mov		dword ptr wordbuff[eax],'xxx.'
-					mov		dword ptr wordbuff[eax+4],0
-				.endif
-				mov		ecx,nType
-				mov		eax,1
-				shl		eax,cl
-				or		fError,eax
-				invoke GetName,lpProMem,offset namebuff,addr [edi].RESOURCEMEM.szname,addr [edi].RESOURCEMEM.value
-				invoke strcpyn,addr [edi].RESOURCEMEM.szfile,offset wordbuff,sizeof RESOURCEMEM.szfile
-				invoke GetWord,offset wordbuff,esi
-				add		esi,eax
-				invoke strcmpi,offset wordbuff,offset szBEGIN
+				mov		byte ptr [edx],0
+				invoke strcmpi,offset wordbuff,offset szEND
 				.if eax
-					invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+					invoke strcmpi,offset wordbuff,offset szENDSHORT
 				.endif
-				.if !eax
-					mov		nSize,0
-					invoke CreateFile,addr [edi].RESOURCEMEM.szfile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-					mov		hFile,eax
-				  @@:
-					call	SkipSpace
-					.if byte ptr [esi]==0Dh
-						inc		esi
-					.endif
-					.if byte ptr [esi]==0Ah
-						inc		esi
-					.endif
+				.if eax
 					mov		edx,offset wordbuff
-					.while byte ptr [esi] && byte ptr [esi]!=0Dh
-						mov		al,[esi]
-						mov		[edx],al
-						inc		esi
-						inc		edx
-					.endw
-					mov		byte ptr [edx],0
-					invoke strcmpi,offset wordbuff,offset szEND
-					.if eax
-						invoke strcmpi,offset wordbuff,offset szENDSHORT
-					.endif
-					.if eax
-						mov		edx,offset wordbuff
-						mov		ecx,edx
-						.while byte ptr [edx]
+					mov		ecx,edx
+					.while byte ptr [edx]
+						mov		al,[edx]
+						.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
+							.if al>='a'
+								sub		al,'a'-10
+							.elseif al>='A'
+								sub		al,'A'-10
+							.else
+								sub		al,'0'
+							.endif
+							mov		ah,al
+							inc		edx
 							mov		al,[edx]
 							.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
 								.if al>='a'
@@ -1301,36 +1288,24 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 								.else
 									sub		al,'0'
 								.endif
-								mov		ah,al
-								inc		edx
-								mov		al,[edx]
-								.if (al>='0' && al<='9') || (al>='A' && al<="F") || (al>='a' && al<="f")
-									.if al>='a'
-										sub		al,'a'-10
-									.elseif al>='A'
-										sub		al,'A'-10
-									.else
-										sub		al,'0'
-									.endif
-									shl		ah,4
-									or		ah,al
-								.endif
-								mov		[ecx],ah
-								inc		edx
-								inc		ecx
-							.else
-								inc		edx
+								shl		ah,4
+								or		ah,al
 							.endif
-						.endw
-						sub		ecx,offset wordbuff
-						add		nSize,ecx
-						invoke WriteFile,hFile,offset wordbuff,ecx,addr nBytes,NULL
-						jmp		@b
-					.endif
-					invoke CloseHandle,hFile
-					inc		fModify
+							mov		[ecx],ah
+							inc		edx
+							inc		ecx
+						.else
+							inc		edx
+						.endif
+					.endw
+					sub		ecx,offset wordbuff
+					add		nSize,ecx
+					invoke WriteFile,hFile,offset wordbuff,ecx,addr nBytes,NULL
+					jmp		@b
 				.endif
-;			.endif
+				invoke CloseHandle,hFile
+				inc		fModify
+			.endif
 		.endif
 	.endif
 	mov		eax,esi
@@ -3341,6 +3316,20 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		.endif
 		add		esi,eax
 		jmp		Ex
+	.endif
+	.if byte ptr wordbuff
+		invoke strcat,offset namebuff,offset szSPACE
+		invoke strcat,offset namebuff,offset wordbuff
+		invoke strcat,offset namebuff,offset szCustomType
+		invoke MessageBox,hRes,offset namebuff,offset szAppName,MB_ICONEXCLAMATION or MB_OKCANCEL
+		.if eax==IDCANCEL
+			mov		eax,-1
+			mov		fParseError,eax
+			ret
+		.endif
+		.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+			inc		esi
+		.endw
 	.endif
   Ex:
 	invoke GetLineNo,hRCMem,esi

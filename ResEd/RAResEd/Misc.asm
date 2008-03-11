@@ -710,15 +710,6 @@ SortStyles proc uses ebx esi edi
 		inc		ecx
 	.endw
 	invoke CombSort,offset srtstyledef,ecx
-;	PrintDec ecx
-;		mov		edi,offset srtstyledef
-;		.while dword ptr [edi]
-;			mov		eax,[edi]
-;			mov		eax,[eax]
-;	PrintDec eax
-;			add		edi,4
-;		.endw
-
 	mov		edi,offset srtexstyledef
 	mov		esi,offset rsexstyledef
 	xor		ecx,ecx
