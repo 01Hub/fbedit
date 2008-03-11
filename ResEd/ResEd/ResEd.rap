@@ -87,10 +87,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=0,0,0,0,1674
+1=580,0,290,688,9134
 6=
-2=0,0,0,0,5304
-7=0,0,699,490,5222
+2=0,0,0,0,12
+7=0,0,699,490,9006
 9=
 8=
 3=0,0,0,0,2102
@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="CreateDialogIndirectParam"
-2="indirect"
-3="getwindowlong"
-4="WM_NOTIFY"
-5="lstrcpy"
-6="lstr"
-7="lstrcat"
-8="lstrcmp"
-9="lstrlen"
-10="PRO_SETMODIFY"
+1="17"
+2="SBT_"
+3="SBT_NOBORDERS"
+4="IDR_BPACTIONS"
+5="IDC_COMBO"
+6="CreateDialogIndirectParam"
+7="indirect"
+8="getwindowlong"
+9="WM_NOTIFY"
+10="lstrcpy"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=11
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -247,6 +247,6 @@ ID=105
 18=,
 21=
 [PTimer]
-PTimer=202629678
+PTimer=205389162
 [AutoLoad]
 1=1

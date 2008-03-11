@@ -6276,7 +6276,7 @@ SaveCtl proc uses ebx esi edi
 					.if byte ptr [esi].caption
 						invoke GetWindowLong,hPrj,0
 						invoke GetTypeMem,eax,TPE_RESOURCE
-						.if eax
+						.if [eax].PROJECT.hmem
 							push	edi
 							mov		edi,[eax].PROJECT.hmem
 							.while byte ptr [edi].RESOURCEMEM.szname || [edi].RESOURCEMEM.value

@@ -1,5 +1,10 @@
 ResEd
 
+2.0.0.0b - 2008.03.12
+---------------------
+o Added SS_REALSIZEIMAGE style.
+o Fixed some bugs.
+
 2.0.0.0 - 2008.02.05
 --------------------
 o RAResEd is now a single control. This makes it easier to use it in your own IDE.

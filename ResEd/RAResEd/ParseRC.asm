@@ -2941,6 +2941,45 @@ ParseToolbar proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
 ParseToolbar endp
 
+ParseTextInclude proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD
+
+	invoke GetWord,offset wordbuff,esi
+	add		esi,eax
+	invoke strcmpi,offset wordbuff,offset szBEGIN
+	.if eax
+		invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+	.endif
+	.if !eax
+	  @@:
+		call	SkipSpace
+		.if byte ptr [esi]==0Dh
+			inc		esi
+		.endif
+		.if byte ptr [esi]==0Ah
+			inc		esi
+		.endif
+		mov		edx,offset wordbuff
+		.while byte ptr [esi] && byte ptr [esi]!=0Dh
+			mov		al,[esi]
+			mov		[edx],al
+			inc		esi
+			inc		edx
+		.endw
+		mov		byte ptr [edx],0
+		invoke strcmpi,offset wordbuff,offset szEND
+		.if eax
+			invoke strcmpi,offset wordbuff,offset szENDSHORT
+		.endif
+		.if eax
+			jmp		@b
+		.endif
+	.endif
+	mov		eax,esi
+	sub		eax,lpRCMem
+	ret
+
+ParseTextInclude endp
+
 ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 
 	mov		esi,lpRCMem
@@ -3195,6 +3234,15 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		add		esi,eax
 		jmp		Ex
 	.endif
+	invoke strcmpi,offset wordbuff,offset szRT_MANIFEST
+	.if !eax
+		invoke ParseResource,esi,lpProMem,7
+		.if eax==-1
+			jmp		ExErr
+		.endif
+		add		esi,eax
+		jmp		Ex
+	.endif
 	invoke strcmpi,offset wordbuff,offset szANICURSOR
 	.if !eax
 		invoke ParseResource,esi,lpProMem,8
@@ -3279,6 +3327,15 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke strcmpi,offset wordbuff,offset szTOOLBAR
 	.if !eax
 		invoke ParseToolbar,esi,lpProMem
+		.if eax==-1
+			jmp		ExErr
+		.endif
+		add		esi,eax
+		jmp		Ex
+	.endif
+	invoke strcmpi,offset wordbuff,offset szTEXTINCLUDE
+	.if !eax
+		invoke ParseTextInclude,esi,lpProMem
 		.if eax==-1
 			jmp		ExErr
 		.endif

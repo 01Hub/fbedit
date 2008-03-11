@@ -1280,9 +1280,9 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_CHILD
 				dd WS_POPUP or WS_CHILD
 				db 'WS_CHILD',0
-;				dd WS_CHILDWINDOW
-;				dd WS_POPUP or WS_CHILD
-;				db 'WS_CHILDWINDOW',0
+				dd WS_CHILDWINDOW
+				dd WS_POPUP or WS_CHILD
+				db 'WS_CHILDWINDOW',0
 				dd WS_CLIPCHILDREN
 				dd WS_CLIPCHILDREN
 				db 'WS_CLIPCHILDREN',0
@@ -1313,18 +1313,18 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_MINIMIZEBOX
 				dd WS_MINIMIZEBOX
 				db 'WS_MINIMIZEBOX',0
-;				dd WS_OVERLAPPED
-;				dd WS_OVERLAPPED
-;				db 'WS_OVERLAPPED',0
+				dd WS_OVERLAPPED
+				dd WS_OVERLAPPED
+				db 'WS_OVERLAPPED',0
 				dd WS_OVERLAPPEDWINDOW
 				dd WS_OVERLAPPEDWINDOW
 				db 'WS_OVERLAPPEDWINDOW',0
 				dd WS_POPUP
 				dd WS_POPUP or WS_CHILD
 				db 'WS_POPUP',0
-;				dd WS_POPUPWINDOW
-;				dd WS_POPUP or WS_CHILD
-;				db 'WS_POPUPWINDOW',0
+				dd WS_POPUPWINDOW
+				dd WS_POPUP or WS_CHILD
+				db 'WS_POPUPWINDOW',0
 				dd WS_SIZEBOX
 				dd WS_SIZEBOX
 				db 'WS_SIZEBOX',0
@@ -1334,12 +1334,12 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd WS_THICKFRAME
 				dd WS_THICKFRAME
 				db 'WS_THICKFRAME',0
-;				dd WS_TILED
-;				dd WS_TILED
-;				db 'WS_TILED',0
-;				dd WS_TILEDWINDOW
-;				dd WS_TILEDWINDOW
-;				db 'WS_TILEDWINDOW',0
+				dd WS_TILED
+				dd WS_TILED
+				db 'WS_TILED',0
+				dd WS_TILEDWINDOW
+				dd WS_TILEDWINDOW
+				db 'WS_TILEDWINDOW',0
 				dd WS_VISIBLE
 				dd WS_VISIBLE
 				db 'WS_VISIBLE',0
@@ -1634,6 +1634,9 @@ rsstyledef		dd ACS_CENTER
 				dd LBS_NOREDRAW
 				dd LBS_NOREDRAW
 				db 'LBS_NOREDRAW',0
+				dd LBS_NOSEL
+				dd LBS_NOSEL
+				db 'LBS_NOSEL',0
 				dd LBS_NOTIFY
 				dd LBS_NOTIFY
 				db 'LBS_NOTIFY',0
@@ -1805,6 +1808,18 @@ rsstyledef		dd ACS_CENTER
 				dd SBS_VERT
 				dd SBS_VERT
 				db 'SBS_VERT',0
+				dd SBT_OWNERDRAW
+				dd SBT_OWNERDRAW
+				db 'SBT_OWNERDRAW',0
+				dd SBT_NOBORDERS
+				dd SBT_NOBORDERS
+				db 'SBT_NOBORDERS',0
+				dd SBT_POPOUT
+				dd SBT_POPOUT
+				db 'SBT_POPOUT',0
+				dd SBT_RTLREADING
+				dd SBT_RTLREADING
+				db 'SBT_RTLREADING',0
 				dd SS_BITMAP
 				dd 01Fh
 				db 'SS_BITMAP',0
@@ -1859,6 +1874,9 @@ rsstyledef		dd ACS_CENTER
 				dd SS_RIGHT
 				dd 01Fh
 				db 'SS_RIGHT',0
+				dd SS_REALSIZEIMAGE
+				dd SS_REALSIZEIMAGE
+				db 'SS_REALSIZEIMAGE',0
 				dd SS_SIMPLE
 				dd 01Fh
 				db 'SS_SIMPLE',0

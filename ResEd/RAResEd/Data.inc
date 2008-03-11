@@ -252,6 +252,7 @@ szWAVE				db 'WAVE',0
 szIMAGE				db 'IMAGE',0
 szMANIFEST			db 'MANIFEST',0
 szManifestValue		db '24',0
+szRT_MANIFEST		db 'RT_MANIFEST',0
 szANICURSOR			db 'ANICURSOR',0
 ;szFONT				db 'FONT',0
 szMESSAGETABLE		db 'MESSAGETABLE',0
@@ -277,6 +278,7 @@ szFILESUBTYPE		db 'FILESUBTYPE',0
 szBLOCK				db 'BLOCK',0
 szVALUE				db 'VALUE',0
 szNOT				db 'NOT',0
+szTEXTINCLUDE		db 'TEXTINCLUDE',0
 
 szHdrType			db 'Type',0
 szHdrName			db 'Name',0
