@@ -402,7 +402,8 @@ szErrorParse		db 'Errors while parsing at line ',0
 szLine				db 'Line: ',0
 szNotSupported		db 'Internal data not supported by ResEd.',0Dh,0Ah,0Dh,0Ah,'Convert this kind of data to files?',0
 szUnknownStyle		db 'Unknown style in ',0
-szCustomType		db 0Dh,0Ah,0Dh,0Ah,'Custom resources not supported by ResEd.',0Dh,0Ah,0Dh,0Ah,'Convert to RCDATA?',0
+szCustomType		db 0Dh,0Ah,0Dh,0Ah,'Custom resources not supported by ResEd.',0Dh,0Ah,'Convert to RCDATA?',0
+szUnknownType		db 0Dh,0Ah,0Dh,0Ah,'Unknown resource. Not supported by ResEd.',0
 
 szCrLf				db 0Dh,0Ah,0
 

@@ -3318,18 +3318,27 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		jmp		Ex
 	.endif
 	.if byte ptr wordbuff
-		invoke strcat,offset namebuff,offset szSPACE
-		invoke strcat,offset namebuff,offset wordbuff
-		invoke strcat,offset namebuff,offset szCustomType
-		invoke MessageBox,hRes,offset namebuff,offset szAppName,MB_ICONEXCLAMATION or MB_OKCANCEL
-		.if eax==IDCANCEL
-			mov		eax,-1
-			mov		fParseError,eax
-			ret
+		invoke strcpy,offset namebuff+1024,offset namebuff
+		invoke strcat,offset namebuff+1024,offset szSPACE
+		invoke strcat,offset namebuff+1024,offset wordbuff
+		invoke SkipSpace
+		.if byte ptr [esi]=='"'
+			invoke strcat,offset namebuff+1024,offset szCustomType
+			invoke MessageBox,hRes,offset namebuff+1024,offset szAppName,MB_ICONEXCLAMATION or MB_OKCANCEL
+			.if eax==IDCANCEL
+				mov		eax,-1
+				jmp		ExErr
+			.endif
+			invoke ParseResource,esi,lpProMem,4
+			.if eax==-1
+				jmp		ExErr
+			.endif
+			add		esi,eax
+			jmp		Ex
+		.else
+			invoke strcat,offset namebuff+1024,offset szUnknownType
+			invoke MessageBox,hRes,offset namebuff+1024,offset szAppName,MB_ICONERROR or MB_OK
 		.endif
-		.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
-			inc		esi
-		.endw
 	.endif
   Ex:
 	invoke GetLineNo,hRCMem,esi
