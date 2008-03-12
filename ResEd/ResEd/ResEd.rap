@@ -123,22 +123,22 @@ Options=52
 0=
 
 [Find]
-1="17"
-2="SBT_"
-3="SBT_NOBORDERS"
-4="IDR_BPACTIONS"
-5="IDC_COMBO"
-6="CreateDialogIndirectParam"
-7="indirect"
-8="getwindowlong"
-9="WM_NOTIFY"
-10="lstrcpy"
+1="PRP_STR_CAPTION"
+2="PRP_STR_CAPMULTI"
+3="Print"
+4="17"
+5="SBT_"
+6="SBT_NOBORDERS"
+7="IDR_BPACTIONS"
+8="IDC_COMBO"
+9="CreateDialogIndirectParam"
+10="indirect"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

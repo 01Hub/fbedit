@@ -615,7 +615,7 @@ PropListSetTxt proc uses esi,hWin:HWND
 		cmp		al,09h
 		jne		@b
 		invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
-		.if eax==PRP_STR_CAPTION || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI
+		.if eax==PRP_STR_CAPTION || eax==PRP_STR_CAPMULTI || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MaxCap-1,0
 			invoke SendMessage,hPrpEdtDlgCldMulti,EM_LIMITTEXT,MaxCap-1,0
 		.elseif eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
