@@ -88,7 +88,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=5
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -132,7 +132,7 @@ ProductVer4Range=0
 11=,
 12=
 [Size]
-2=0,0,699,490,865
+2=0,0,699,490,1709
 <<<<<<< .mine
 1=0,0,699,490,13320
 =======
@@ -142,9 +142,9 @@ ProductVer4Range=0
 3=0,0,0,0,0
 8=0,0,0,0,1641
 7=0,0,0,0,2213
-9=0,0,0,0,1794
-10=0,0,589,494,30549
-11=0,0,746,498,12141
+9=0,0,0,0,3073
+10=0,0,589,494,8947
+11=0,0,746,498,1506
 12=0,0,0,0,2850
 [BookMark]
 0=
@@ -165,16 +165,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=121835715
 [Find]
-1="_PRM_FINDFIRST"
-2="STATUS_TIMEOUT"
-3="WAIT_TIMEOUT"
-4="STATUS_WAIT_0"
-5="WAIT_OBJECT_0"
-6="STATUS_ABANDONED_WAIT_0"
-7="WAIT_ABANDONED"
-8="PRM_GETTOOLTIP"
-9="print"
-10="PRM_GETSTRUCTSTART"
+1="PrintString"
+2="Print"
+3="PRM_ISINWITHBLOCK"
+4="_PRM_FINDFIRST"
+5="STATUS_TIMEOUT"
+6="WAIT_TIMEOUT"
+7="STATUS_WAIT_0"
+8="WAIT_OBJECT_0"
+9="STATUS_ABANDONED_WAIT_0"
+10="WAIT_ABANDONED"
 
 [Exports]
 1=GetDefEx

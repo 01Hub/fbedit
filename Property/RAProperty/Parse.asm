@@ -326,6 +326,41 @@ GetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 GetWord endp
 
+GetWordSkip proc uses esi,lpMem:DWORD,lpnpos:DWORD
+
+	mov		edx,lpMem
+	movzx	ecx,byte ptr [ebx].RAPROPERTY.defgen.szLineCont
+	.while byte ptr [edx]==VK_SPACE || byte ptr [edx]==VK_TAB || (cl==byte ptr [edx] && byte ptr [edx+1]==0Dh)
+		.if cl==byte ptr [edx]
+			mov		eax,lpnpos
+			inc		dword ptr [eax]
+			.if byte ptr [edx+2]==0Ah
+				inc		edx
+			.endif
+			inc		edx
+		.endif
+		inc		edx
+	.endw
+	xor		ecx,ecx
+	mov		esi,[ebx].RAPROPERTY.lpchartab
+  @@:
+	movzx	eax,byte ptr [edx+ecx]
+	.if byte ptr [esi+eax]==CT_CHAR || eax=='.'
+		inc		ecx
+		jmp		@b
+	.elseif eax=='('
+		.while byte ptr [edx+ecx] && byte ptr [edx+ecx]!=0Dh && byte ptr [edx+ecx]!=')'
+			inc		ecx
+		.endw
+		.if byte ptr [edx+ecx]==')'
+			inc		ecx
+		.endif
+		jmp		@b
+	.endif
+	ret
+
+GetWordSkip endp
+
 Compare proc uses esi,lpWord1:DWORD,lpWord2:DWORD,len:DWORD
 
 	mov		esi,lpWord1
@@ -736,6 +771,14 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 					.endif
 				.elseif edx==DEFTYPE_WITHBLOCK
+					push	eax
+					mov		esi,lpword2
+					invoke GetWordSkip,esi,addr npos
+					mov		esi,edx
+					mov		lpword2,esi
+					mov		len2,ecx
+					lea		esi,[esi+ecx]
+					pop		eax
 					call	ParseWithBlock
 					.if eax
 						mov		eax,rpwithblock[8]

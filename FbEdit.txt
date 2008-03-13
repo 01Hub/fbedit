@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.0
+o Fixed resource editor bug. Caption lenght was limitted to 31 characters.
+o Fixed Find / Replace bug.
+o Fixed with block bug.
 1.0.5.9
 o Updated resource editor.
   - Added Undo / Redo to dialog editor.
