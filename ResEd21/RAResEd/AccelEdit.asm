@@ -188,9 +188,9 @@ SaveAccelEdit proc uses ebx esi edi,hWin:HWND
 	.endif
 	mov		ebx,eax
 	mov		edi,[eax].PROJECT.hmem
-	invoke GetDlgItemText,hWin,IDC_EDTACLNAME,addr [edi].ACCELMEM.szname,MaxName
-	invoke GetDlgItemInt,hWin,IDC_EDTACLID,NULL,FALSE
-	mov		[edi].ACCELMEM.value,eax
+;	invoke GetDlgItemText,hWin,IDC_EDTACLNAME,addr [edi].ACCELMEM.szname,MaxName
+;	invoke GetDlgItemInt,hWin,IDC_EDTACLID,NULL,FALSE
+;	mov		[edi].ACCELMEM.value,eax
 	.if [edi].ACCELMEM.szname
 		lea		eax,[edi].ACCELMEM.szname
 	.else
@@ -392,8 +392,14 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke strcpy,addr [esi].ACCELMEM.szname,addr szAccelName
 			invoke GetUnikeName,addr [esi].ACCELMEM.szname
 		.endif
-		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname
-		invoke SetDlgItemInt,hWin,IDC_EDTACLID,[esi].ACCELMEM.value,FALSE
+;		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname
+;		invoke SetDlgItemInt,hWin,IDC_EDTACLID,[esi].ACCELMEM.value,FALSE
+mov		lpResType,offset szACCELERATORS
+lea		eax,[esi].ACCELMEM.szname
+mov		lpResName,eax
+lea		eax,[esi].ACCELMEM.value
+mov		lpResID,eax
+
 		mov		eax,[esi].ACCELMEM.lang
 		mov		acllng.lang,eax
 		mov		eax,[esi].ACCELMEM.sublang
@@ -429,6 +435,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTACLNAME,EM_LIMITTEXT,MaxName-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTACLID,EM_LIMITTEXT,5,0
+		invoke PropertyList,-2
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -440,11 +447,12 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetFocus,hGrd
 			pop		eax
 			.if eax==IDOK
+				invoke SetFocus,hDEd
 				invoke SaveAccelEdit,hWin
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
-				invoke SendMessage,hWin,WM_CLOSE,TRUE,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
+				invoke PropertyList,0
 			.elseif eax==IDC_BTNACLLANG
 				invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hWin,offset LanguageEditProc2,offset acllng
 			.elseif eax==IDC_BTNACLADD

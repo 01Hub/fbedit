@@ -6777,6 +6777,10 @@ CloseDialog proc
 		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 		invoke SetWindowLong,hDEd,DEWM_PROJECT,0
+	.elseif hDialog
+		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
+		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDCANCEL,0
+		mov		hDialog,0
 	.endif
 	ret
 

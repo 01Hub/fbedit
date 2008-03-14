@@ -298,7 +298,6 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				invoke SaveResourceEdit,hWin
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
-				invoke SendMessage,hWin,WM_CLOSE,TRUE,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 			.elseif eax==IDC_BTNRESADD

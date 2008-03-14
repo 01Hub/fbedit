@@ -575,9 +575,9 @@ SaveVersion proc uses ebx esi edi,hWin:HWND
 	.endif
 	mov		ebx,eax
 	mov		esi,[eax].PROJECT.hmem
-	invoke GetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname,MaxName
-	invoke GetDlgItemInt,hWin,IDC_EDTVERID,NULL,FALSE
-	mov		[esi].VERSIONMEM.value,eax
+;	invoke GetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname,MaxName
+;	invoke GetDlgItemInt,hWin,IDC_EDTVERID,NULL,FALSE
+;	mov		[esi].VERSIONMEM.value,eax
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
 
@@ -701,10 +701,15 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetUnikeName,addr [esi].VERSIONMEM.szname
 		.endif
 		invoke RtlZeroMemory,offset szVersionTxt,sizeof szVersionTxt
-		invoke SendDlgItemMessage,hWin,IDC_EDTVERNAME,EM_LIMITTEXT,MaxName-1,0
-		invoke SetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname
-		invoke SendDlgItemMessage,hWin,IDC_EDTVERID,EM_LIMITTEXT,5,0
-		invoke SetDlgItemInt,hWin,IDC_EDTVERID,[esi].VERSIONMEM.value,TRUE
+;		invoke SendDlgItemMessage,hWin,IDC_EDTVERNAME,EM_LIMITTEXT,MaxName-1,0
+;		invoke SetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname
+;		invoke SendDlgItemMessage,hWin,IDC_EDTVERID,EM_LIMITTEXT,5,0
+;		invoke SetDlgItemInt,hWin,IDC_EDTVERID,[esi].VERSIONMEM.value,TRUE
+mov		lpResType,offset szVERSIONINFO
+lea		eax,[esi].VERSIONMEM.szname
+mov		lpResName,eax
+lea		eax,[esi].VERSIONMEM.value
+mov		lpResID,eax
 		invoke SendDlgItemMessage,hWin,IDC_EDTVERFILE,EM_LIMITTEXT,16,0
 		push	esi
 		lea		esi,[esi].VERSIONMEM.fv
@@ -744,6 +749,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		edx,eax
 		invoke SetWindowLong,edx,GWL_WNDPROC,addr EditProc
 		mov		lpOldEditProc,eax
+		invoke PropertyList,-2
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		mov		edx,eax
@@ -753,9 +759,9 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if eax==IDOK
 				invoke SaveVersion,hWin
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
-				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				invoke PropertyList,0
 			.elseif eax==IDC_BTNVERADD
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERTPE,WM_GETTEXT,sizeof buffer,addr buffer
 				.if eax

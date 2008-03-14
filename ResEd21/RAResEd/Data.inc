@@ -454,3 +454,4 @@ hredfont			dd ?
 Casetab				db 256 dup(?)
 namebuff			db 16384 dup(?)
 fClose				dd ?
+hDialog				dd ?

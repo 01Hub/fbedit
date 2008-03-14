@@ -530,6 +530,10 @@ hPrpBtnDlgCld		dd ?
 tempbuff			db 256 dup(?)
 fBtnClick			dd ?
 
+lpResType			dd ?
+lpResName			dd ?
+lpResID				dd ?
+
 .code
 
 UpdateCbo proc uses esi,lpData:DWORD
@@ -1249,8 +1253,20 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke GlobalFree,hMem
 					invoke PropertyList,-1
 				.else
-					call SetCtrlData
-					invoke UpdateCtl,hCtl
+					.if hCtl==-2
+						mov		eax,lbid
+						.if eax==PRP_STR_NAME
+							invoke strcpy,lpResName,addr buffer1
+						.elseif eax==PRP_NUM_ID
+							mov		eax,lpResID
+							push	val
+							pop		[eax]
+						.endif
+						invoke PropertyList,hCtl
+					.else
+						call SetCtrlData
+						invoke UpdateCtl,hCtl
+					.endif
 				.endif
 			.endif
 		.endif
@@ -1567,11 +1583,20 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.endw
 			or		eax,eax
 			jne		@b
+		.elseif hCtl==-2
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00000000000000000000000000000000b
+						;  SELHH
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
 		.else
 			invoke GetWindowLong,hCtl,GWL_USERDATA
 			mov		esi,eax
-			assume esi:ptr DIALOG
-			mov		eax,[esi].ntype
+			mov		eax,[esi].DIALOG.ntype
 			mov		nType,eax
 			invoke GetTypePtr,nType
 			push	(TYPES ptr [eax]).flist
@@ -1618,7 +1643,12 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;(Name)
 				mov		lbid,PRP_STR_NAME
 				push	eax
-				invoke strcpy,edi,addr [esi].idname
+				.if eax==-2
+					mov		eax,lpResName
+				.else
+					lea		eax,[esi].DIALOG.idname
+				.endif
+				invoke strcpy,edi,eax
 				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
@@ -1627,7 +1657,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						invoke strcmp,addr [esi].idname,addr [ebx].DIALOG.idname
+						invoke strcmp,addr [esi].DIALOG.idname,addr [ebx].DIALOG.idname
 						.if eax
 							mov		byte ptr [edi],0
 						.endif
@@ -1652,7 +1682,13 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==1
 				;(ID)
 				mov		lbid,PRP_NUM_ID
-				invoke ResEdBinToDec,[esi].id,edi
+				.if eax==-2
+					mov		eax,lpResID
+					mov		eax,[eax]
+				.else
+					mov		eax,[esi].DIALOG.id
+				.endif
+				invoke ResEdBinToDec,eax,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1660,7 +1696,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].id
+						mov		eax,[esi].DIALOG.id
 						sub		eax,[ebx].DIALOG.id
 						.if eax
 							mov		byte ptr [edi],0
@@ -1678,7 +1714,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==2
 				;Left
 				mov		lbid,PRP_NUM_POSL
-				invoke ResEdBinToDec,[esi].x,edi
+				invoke ResEdBinToDec,[esi].DIALOG.x,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1686,7 +1722,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].x
+						mov		eax,[esi].DIALOG.x
 						sub		eax,[ebx].DIALOG.x
 						.if eax
 							mov		byte ptr [edi],0
@@ -1704,7 +1740,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==3
 				;Top
 				mov		lbid,PRP_NUM_POST
-				invoke ResEdBinToDec,[esi].y,edi
+				invoke ResEdBinToDec,[esi].DIALOG.y,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1712,7 +1748,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].y
+						mov		eax,[esi].DIALOG.y
 						sub		eax,[ebx].DIALOG.y
 						.if eax
 							mov		byte ptr [edi],0
@@ -1730,7 +1766,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==4
 				;Width
 				mov		lbid,PRP_NUM_SIZEW
-				invoke ResEdBinToDec,[esi].ccx,edi
+				invoke ResEdBinToDec,[esi].DIALOG.ccx,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1738,7 +1774,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].ccx
+						mov		eax,[esi].DIALOG.ccx
 						sub		eax,[ebx].DIALOG.ccx
 						.if eax
 							mov		byte ptr [edi],0
@@ -1756,7 +1792,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==5
 				;Height
 				mov		lbid,PRP_NUM_SIZEH
-				invoke ResEdBinToDec,[esi].ccy,edi
+				invoke ResEdBinToDec,[esi].DIALOG.ccy,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1764,7 +1800,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].ccy
+						mov		eax,[esi].DIALOG.ccy
 						sub		eax,[ebx].DIALOG.ccy
 						.if eax
 							mov		byte ptr [edi],0
@@ -1783,7 +1819,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;Caption
 				mov		lbid,PRP_STR_CAPTION
 				push	eax
-				invoke strcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].DIALOG.caption
 				pop		eax
 				.if hMultiSel
 					mov		eax,hMultiSel
@@ -1792,7 +1828,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						invoke strcmp,addr [esi].caption,addr [ebx].DIALOG.caption
+						invoke strcmp,addr [esi].DIALOG.caption,addr [ebx].DIALOG.caption
 						.if eax
 							mov		byte ptr [edi],0
 						.endif
@@ -1807,7 +1843,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.endw
 				.else
 					.if eax==1	;Edit
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						test	eax,ES_MULTILINE
 						.if !ZERO?
 							mov		lbid,PRP_STR_CAPMULTI
@@ -1815,7 +1851,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.elseif eax==2	;Static
 						mov		lbid,PRP_STR_CAPMULTI
 					.elseif eax==4	;Button
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						test	eax,BS_MULTILINE
 						.if !ZERO?
 							mov		lbid,PRP_STR_CAPMULTI
@@ -1826,30 +1862,30 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;Border
 				mov		lbid,PRP_MULTI_BORDER
 				.if eax==0
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr BordDlg,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr BordDlg,edi
 				.elseif eax==2 || eax==17 || eax==25
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr BordStc,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr BordStc,edi
 				.elseif eax==3 || eax==4
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr BordBtn,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr BordBtn,edi
 				.else
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr BordAll,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr BordAll,edi
 				.endif
 			.elseif edx==8
 				;SysMenu
 				mov		lbid,PRP_BOOL_SYSMENU
-				invoke ListFalseTrue,[esi].style,addr SysMDlg,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr SysMDlg,edi
 			.elseif edx==9
 				;MaxButton
 				mov		lbid,PRP_BOOL_MAXBUTTON
-				invoke ListFalseTrue,[esi].style,addr MaxBDlg,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr MaxBDlg,edi
 			.elseif edx==10
 				;MinButton
 				mov		lbid,PRP_BOOL_MINBUTTON
-				invoke ListFalseTrue,[esi].style,addr MinBDlg,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr MinBDlg,edi
 			.elseif edx==11
 				;Enabled
 				mov		lbid,PRP_BOOL_ENABLED
-				invoke ListFalseTrue,[esi].style,addr EnabAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr EnabAll,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1857,7 +1893,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						and		eax,WS_DISABLED
 						mov		edx,[ebx].DIALOG.style
 						and		edx,WS_DISABLED
@@ -1878,7 +1914,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==12
 				;Visible
 				mov		lbid,PRP_BOOL_VISIBLE
-				invoke ListFalseTrue,[esi].style,addr VisiAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr VisiAll,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1886,7 +1922,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						and		eax,WS_VISIBLE
 						mov		edx,[ebx].DIALOG.style
 						and		edx,WS_VISIBLE
@@ -1907,7 +1943,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==13
 				;Clipping
 				mov		lbid,PRP_MULTI_CLIP
-				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr ClipAll,edi
+				invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr ClipAll,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -1915,7 +1951,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						and		eax,WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 						mov		edx,[ebx].DIALOG.style
 						and		edx,WS_CLIPCHILDREN or WS_CLIPSIBLINGS
@@ -1936,101 +1972,101 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==14
 				;ScrollBar
 				mov		lbid,PRP_MULTI_SCROLL
-				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr ScroAll,edi
+				invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr ScroAll,edi
 			.elseif edx==15
 				;Default
 				mov		lbid,PRP_BOOL_DEFAULT
-				invoke ListFalseTrue,[esi].style,addr DefaBtn,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr DefaBtn,edi
 			.elseif edx==16
 				;Auto
 				mov		lbid,PRP_BOOL_AUTO
 				.if eax==5
-					invoke ListFalseTrue,[esi].style,addr AutoChk,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoChk,edi
 				.elseif eax==6
-					invoke ListFalseTrue,[esi].style,addr AutoRbt,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoRbt,edi
 				.elseif eax==16
-					invoke ListFalseTrue,[esi].style,addr AutoSpn,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoSpn,edi
 				.endif
 			.elseif edx==17
 				;Alignment
 				mov		lbid,PRP_MULTI_ALIGN
 				.if eax==1
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligEdt,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligEdt,edi
 				.elseif eax==2
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligStc,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligStc,edi
 				.elseif eax==4
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligBtn,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligBtn,edi
 				.elseif eax==5 || eax==6
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligChk,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligChk,edi
 				.elseif eax==11
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligTab,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligTab,edi
 				.elseif eax==14
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligLsv,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligLsv,edi
 				.elseif eax==16
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligSpn,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligSpn,edi
 				.elseif eax==17
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligIco,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligIco,edi
 				.elseif eax==18 || eax==19
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligTbr,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligTbr,edi
 				.elseif eax==27
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AligAni,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AligAni,edi
 				.endif
 			.elseif edx==18
 				;Mnemonic
 				mov		lbid,PRP_BOOL_MNEMONIC
-				invoke ListFalseTrue,[esi].style,addr MnemStc,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr MnemStc,edi
 			.elseif edx==19
 				;WordWrap
 				mov		lbid,PRP_BOOL_WORDWRAP
-				invoke ListFalseTrue,[esi].style,addr WordStc,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr WordStc,edi
 			.elseif edx==20
 				;MultiLine
 				mov		lbid,PRP_BOOL_MULTI
 				.if eax==1 || eax==22
-					invoke ListFalseTrue,[esi].style,addr MultEdt,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr MultEdt,edi
 				.elseif eax==4 || eax==5 || eax==6
-					invoke ListFalseTrue,[esi].style,addr MultBtn,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr MultBtn,edi
 				.elseif eax==11
-					invoke ListFalseTrue,[esi].style,addr MultTab,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr MultTab,edi
 				.endif
 			.elseif edx==21
 				;Type
 				mov		lbid,PRP_MULTI_TYPE
 				.if eax==1
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeEdt,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeEdt,edi
 				.elseif eax==4
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeBtn,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeBtn,edi
 				.elseif eax==7 || eax==24
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeCbo,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeCbo,edi
 				.elseif eax==13
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeTrv,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeTrv,edi
 				.elseif eax==14
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeLsv,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeLsv,edi
 				.elseif eax==17
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeImg,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeImg,edi
 				.elseif eax==20
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeDtp,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeDtp,edi
 				.elseif eax==25
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr TypeStc,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr TypeStc,edi
 				.endif
 			.elseif edx==22
 				;Locked
 				mov		lbid,PRP_BOOL_LOCK
-				invoke ListFalseTrue,[esi].style,addr LockEdt,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr LockEdt,edi
 			.elseif edx==23
 				;Child
 				mov		lbid,PRP_BOOL_CHILD
-				invoke ListFalseTrue,[esi].style,addr ChilAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr ChilAll,edi
 			.elseif edx==24
 				;SizeBorder
 				mov		lbid,PRP_BOOL_SIZE
 				.if eax==0
-					invoke ListFalseTrue,[esi].style,addr SizeDlg,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr SizeDlg,edi
 				.endif
 			.elseif edx==25
 				;TabStop
 				mov		lbid,PRP_BOOL_TABSTOP
-				invoke ListFalseTrue,[esi].style,addr TabSAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr TabSAll,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -2038,7 +2074,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						and		eax,WS_TABSTOP
 						mov		edx,[ebx].DIALOG.style
 						and		edx,WS_TABSTOP
@@ -2090,41 +2126,41 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;Notify
 				mov		lbid,PRP_BOOL_NOTIFY
 				.if eax==2 || eax==17 || eax==25
-					invoke ListFalseTrue,[esi].style,addr NotiStc,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr NotiStc,edi
 				.elseif eax==4 || eax==5 || eax==6
-					invoke ListFalseTrue,[esi].style,addr NotiBtn,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr NotiBtn,edi
 				.elseif eax==8
-					invoke ListFalseTrue,[esi].style,addr NotiLst,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr NotiLst,edi
 				.endif
 			.elseif edx==30
 				;AutoScroll
 				.if eax==1 || eax==22
 					mov		lbid,PRP_MULTI_AUTOSCROLL
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr AutoEdt,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr AutoEdt,edi
 				.elseif eax==7
 					mov		lbid,PRP_BOOL_AUTOSCROLL
-					invoke ListFalseTrue,[esi].style,addr AutoCbo,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoCbo,edi
 				.endif
 			.elseif edx==31
 				;WantCr
 				mov		lbid,PRP_BOOL_WANTCR
-				invoke ListFalseTrue,[esi].style,addr WantEdt,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr WantEdt,edi
 ;****
 			.elseif edx==32
 				;Sort
 				mov		lbid,PRP_BOOL_SORT
 				.if eax==7
-					invoke ListFalseTrue,[esi].style,addr SortCbo,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr SortCbo,edi
 				.elseif eax==8
-					invoke ListFalseTrue,[esi].style,addr SortLst,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr SortLst,edi
 				.elseif eax==14
 					mov		lbid,PRP_MULTI_SORT
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr SortLsv,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr SortLsv,edi
 				.endif
 			.elseif edx==33
 				;Flat
 				mov		lbid,PRP_BOOL_FLAT
-				invoke ListFalseTrue,[esi].style,addr FlatTbr,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr FlatTbr,edi
 			.elseif edx==34
 				;(StartID)
 				mov		lbid,PRP_NUM_STARTID
@@ -2134,70 +2170,70 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==35
 				;TabIndex
 				mov		lbid,PRP_NUM_TAB
-				invoke ResEdBinToDec,[esi].tab,edi
+				invoke ResEdBinToDec,[esi].DIALOG.tab,edi
 			.elseif edx==36
 				;Format
 				mov		lbid,PRP_MULTI_FORMAT
-				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr FormDtp,edi
+				invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr FormDtp,edi
 			.elseif edx==37
 				;SizeGrip
 				mov		lbid,PRP_BOOL_SIZE
 				.if eax==19
-					invoke ListFalseTrue,[esi].style,addr SizeSbr,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr SizeSbr,edi
 				.endif
 			.elseif edx==38
 				;Group
 				mov		lbid,PRP_BOOL_GROUP
-				invoke ListFalseTrue,[esi].style,addr GrouAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr GrouAll,edi
 			.elseif edx==39
 				;Icon
 				mov		lbid,PRP_BOOL_ICON
 			.elseif edx==40
 				;UseTabs
 				mov		lbid,PRP_BOOL_USETAB
-				invoke ListFalseTrue,[esi].style,addr UseTLst,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr UseTLst,edi
 			.elseif edx==41
 				;StartupPos
 				mov		lbid,PRP_MULTI_STARTPOS
-				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr StarDlg,edi
+				invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr StarDlg,edi
 			.elseif edx==42
 				;Orientation
 				mov		lbid,PRP_MULTI_ORIENT
 				.if eax==12
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr OriePgb,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr OriePgb,edi
 				.elseif eax==16
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr OrieUdn,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr OrieUdn,edi
 				.endif
 			.elseif edx==43
 				;SetBuddy
 				mov		lbid,PRP_BOOL_SETBUDDY
-				invoke ListFalseTrue,[esi].style,addr SetBUdn,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr SetBUdn,edi
 			.elseif edx==44
 				;MultiSelect
 				mov		lbid,PRP_BOOL_MULTI
 				.if eax==8
-					invoke ListFalseTrue,[esi].style,addr MultLst,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr MultLst,edi
 				.elseif eax==21
-					invoke ListFalseTrue,[esi].style,addr MultMvi,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr MultMvi,edi
 				.endif
 			.elseif edx==45
 				;HideSel
 				mov		lbid,PRP_BOOL_HIDE
 				.if eax==1 || eax==22
-					invoke ListFalseTrue,[esi].style,addr HideEdt,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr HideEdt,edi
 				.elseif eax==13
-					invoke ListFalseTrue,[esi].style,addr HideTrv,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr HideTrv,edi
 				.elseif eax==14
-					invoke ListFalseTrue,[esi].style,addr HideLsv,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr HideLsv,edi
 				.endif
 			.elseif edx==46
 				;TopMost
 				mov		lbid,PRP_BOOL_TOPMOST
-				invoke ListFalseTrue,[esi].exstyle,addr TopMost,edi
+				invoke ListFalseTrue,[esi].DIALOG.exstyle,addr TopMost,edi
 			.elseif edx==47
 				;xExStyle
 				mov		lbid,PRP_FUN_STYLE
-				mov		eax,[esi].exstyle
+				mov		eax,[esi].DIALOG.exstyle
 				invoke hexEax
 				invoke strcpy,edi,addr strHex
 				.if hMultiSel
@@ -2207,7 +2243,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].exstyle
+						mov		eax,[esi].DIALOG.exstyle
 						sub		eax,[ebx].DIALOG.exstyle
 						.if eax
 							mov		byte ptr [edi],0
@@ -2225,7 +2261,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==48
 				;xStyle
 				mov		lbid,PRP_FUN_EXSTYLE
-				mov		eax,[esi].style
+				mov		eax,[esi].DIALOG.style
 				invoke hexEax
 				invoke strcpy,edi,addr strHex
 				.if hMultiSel
@@ -2235,7 +2271,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].style
+						mov		eax,[esi].DIALOG.style
 						sub		eax,[ebx].DIALOG.style
 						.if eax
 							mov		byte ptr [edi],0
@@ -2254,95 +2290,95 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;IntegralHgt
 				mov		lbid,PRP_BOOL_INTEGRAL
 				.if eax==7
-					invoke ListFalseTrue,[esi].style,addr IntHtCbo,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr IntHtCbo,edi
 				.elseif eax==8
-					invoke ListFalseTrue,[esi].style,addr IntHtLst,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr IntHtLst,edi
 				.endif
 			.elseif edx==50
 				;Image
 				mov		lbid,PRP_STR_IMAGE
-				invoke strcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].DIALOG.caption
 			.elseif edx==51
 				;Buttons
 				mov		lbid,PRP_BOOL_BUTTON
 				.if eax==11
-					invoke ListFalseTrue,[esi].style,addr ButtTab,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ButtTab,edi
 				.elseif eax==13
-					invoke ListFalseTrue,[esi].style,addr ButtTrv,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ButtTrv,edi
 				.elseif eax==32
-					invoke ListFalseTrue,[esi].style,addr ButtHdr,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ButtHdr,edi
 				.endif
 			.elseif edx==52
 				;PopUp
 				mov		lbid,PRP_BOOL_POPUP
-				invoke ListFalseTrue,[esi].style,addr PopUAll,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr PopUAll,edi
 			.elseif edx==53
 				;OwnerDraw
 				mov		lbid,PRP_BOOL_OWNERDRAW
 				.if eax==14
-					invoke ListFalseTrue,[esi].style,addr OwneLsv,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr OwneLsv,edi
 				.elseif eax==7 || eax==8
 					mov		lbid,PRP_MULTI_OWNERDRAW
-					invoke ListMultiStyle,[esi].style,[esi].exstyle,addr OwneCbo,edi
+					invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr OwneCbo,edi
 				.endif
 			.elseif edx==54
 				;Transp
 				mov		lbid,PRP_BOOL_TRANSP
-				invoke ListFalseTrue,[esi].style,addr TranAni,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr TranAni,edi
 			.elseif edx==55
 				;Timer
 				mov		lbid,PRP_BOOL_TIME
-				invoke ListFalseTrue,[esi].style,addr TimeAni,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr TimeAni,edi
 			.elseif edx==56
 				;AutoPlay
 				mov		lbid,PRP_BOOL_AUTOPLAY
 				.if eax==27
-					invoke ListFalseTrue,[esi].style,addr AutoAni,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoAni,edi
 				.endif
 			.elseif edx==57
 				;WeekNum
 				mov		lbid,PRP_BOOL_WEEK
-				invoke ListFalseTrue,[esi].style,addr WeekMvi,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr WeekMvi,edi
 			.elseif edx==58
 				;AviClip
 				mov		lbid,PRP_STR_AVI
-				invoke strcpy,edi,addr [esi].caption
+				invoke strcpy,edi,addr [esi].DIALOG.caption
 			.elseif edx==59
 				;AutoSize
 				mov		lbid,PRP_BOOL_AUTOSIZE
 				.if eax==18 || eax==19
-					invoke ListFalseTrue,[esi].style,addr AutoTbr,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr AutoTbr,edi
 				.endif
 			.elseif edx==60
 				;ToolTip
 				mov		lbid,PRP_BOOL_TOOLTIP
 				.if eax==11
-					invoke ListFalseTrue,[esi].style,addr ToolTab,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ToolTab,edi
 				.elseif eax==18
-					invoke ListFalseTrue,[esi].style,addr ToolTbr,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ToolTbr,edi
 				.elseif eax==19
-					invoke ListFalseTrue,[esi].style,addr ToolSbr,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr ToolSbr,edi
 				.endif
 			.elseif edx==61
 				;Wrap
 				mov		lbid,PRP_BOOL_WRAP
-				invoke ListFalseTrue,[esi].style,addr WrapTbr,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr WrapTbr,edi
 			.elseif edx==62
 				;Divider
 				mov		lbid,PRP_BOOL_DIVIDER
-				invoke ListFalseTrue,[esi].style,addr DiviTbr,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr DiviTbr,edi
 			.elseif edx==63
 				;DragDrop
 				mov		lbid,PRP_BOOL_DRAGDROP
-				invoke ListFalseTrue,[esi].style,addr DragHdr,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr DragHdr,edi
 			.elseif edx==64
 				;Smooth
 				mov		lbid,PRP_BOOL_SMOOTH
-				invoke ListFalseTrue,[esi].style,addr SmooPgb,edi
+				invoke ListFalseTrue,[esi].DIALOG.style,addr SmooPgb,edi
 			.elseif edx==65
 				;Ellipsis
 				mov		lbid,PRP_MULTI_ELLIPSIS
-				invoke ListMultiStyle,[esi].style,[esi].exstyle,addr ElliStc,edi
+				invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,addr ElliStc,edi
 			.elseif edx==66
 				;Language
 				mov		lbid,PRP_FUN_LANG
@@ -2360,14 +2396,14 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				;HasStrings
 				mov		lbid,PRP_BOOL_HASSTRINGS
 				.if eax==7
-					invoke ListFalseTrue,[esi].style,addr HasStcb,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr HasStcb,edi
 				.elseif eax==8
-					invoke ListFalseTrue,[esi].style,addr HasStlb,edi
+					invoke ListFalseTrue,[esi].DIALOG.style,addr HasStlb,edi
 				.endif
 			.elseif edx==68
 				;HelpID
 				mov		lbid,PRP_NUM_HELPID
-				invoke ResEdBinToDec,[esi].helpid,edi
+				invoke ResEdBinToDec,[esi].DIALOG.helpid,edi
 				.if hMultiSel
 					mov		eax,hMultiSel
 					.while eax
@@ -2375,7 +2411,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						invoke GetParent,eax
 						invoke GetWindowLong,eax,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,[esi].helpid
+						mov		eax,[esi].DIALOG.helpid
 						sub		eax,[ebx].DIALOG.helpid
 						.if eax
 							mov		byte ptr [edi],0
@@ -2396,11 +2432,11 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				mov		lbid,eax
 				.if eax
 					.if dword ptr [eax]==1
-						invoke ListFalseTrue,[esi].style,[eax+4],edi
+						invoke ListFalseTrue,[esi].DIALOG.style,[eax+4],edi
 					.elseif dword ptr [eax]==2
-						invoke ListFalseTrue,[esi].exstyle,[eax+4],edi
+						invoke ListFalseTrue,[esi].DIALOG.exstyle,[eax+4],edi
 					.elseif dword ptr [eax]==3
-						invoke ListMultiStyle,[esi].style,[esi].exstyle,[eax+4],edi
+						invoke ListMultiStyle,[esi].DIALOG.style,[esi].DIALOG.exstyle,[eax+4],edi
 					.endif
 				.endif
 			.endif
@@ -2412,12 +2448,17 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		jmp		@b
 	  @@:
 		invoke SendMessage,hPrpLstDlg,LB_SETTOPINDEX,tInx,0
-		invoke GetWindowLong,hDEd,DEWM_MEMORY
-		.if eax
-			invoke UpdateCbo,eax
-			invoke SetCbo,hCtl
+		.if hCtl==-2
+			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
+			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,lpResType
+			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		.else
+			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			.if eax
+				invoke UpdateCbo,eax
+				invoke SetCbo,hCtl
+			.endif
 		.endif
-		assume esi:nothing
 	.endif
 	invoke SetFocus,hDEd
 	invoke SendMessage,hPrpLstDlg,LB_FINDSTRING,-1,addr szLbString
@@ -2441,7 +2482,9 @@ PrpCboDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,CB_GETCURSEL,0,0
 			mov		nInx,eax
 			invoke SendMessage,hWin,CB_GETITEMDATA,nInx,0
-			invoke SizeingRect,eax,FALSE
+			.if eax
+				invoke SizeingRect,eax,FALSE
+			.endif
 		.endif
 	.endif
 	invoke CallWindowProc,OldPrpCboDlgProc,hWin,uMsg,wParam,lParam

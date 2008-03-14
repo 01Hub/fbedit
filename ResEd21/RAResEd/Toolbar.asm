@@ -169,7 +169,6 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		edi,eax
 				invoke GetProjectItemName,edi,addr buffer
 				invoke SetProjectItemName,edi,addr buffer
-				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.endif
