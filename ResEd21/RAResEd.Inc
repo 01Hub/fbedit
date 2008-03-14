@@ -233,6 +233,11 @@ PROJECT struct
 	lnend			dd ?
 PROJECT ends
 
+LANGUAGEMEM struct
+	lang			dd ?
+	sublang			dd ?
+LANGUAGEMEM ends
+
 NAMEMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
@@ -254,8 +259,7 @@ STRINGMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	szstring		db 512 dup(?)
-	lang			dd ?
-	sublang			dd ?
+	lang			LANGUAGEMEM <?>
 STRINGMEM ends
 
 ACCELMEM struct
@@ -264,8 +268,7 @@ ACCELMEM struct
 	nkey			dd ?
 	nascii			dd ?
 	flag			dd ?
-	lang			dd ?
-	sublang			dd ?
+	lang			LANGUAGEMEM <?>
 ACCELMEM ends
 
 XPMANIFESTMEM struct
@@ -309,11 +312,6 @@ VERSIONITEM struct
 	szname			db MaxName dup(?)
 	szvalue			db 256 dup(?)
 VERSIONITEM ends
-
-LANGUAGEMEM struct
-	lang			dd ?
-	sublang			dd ?
-LANGUAGEMEM ends
 
 ;Dialog Edit Window Styles
 DES_GRID			equ 1

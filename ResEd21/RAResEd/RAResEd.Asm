@@ -20,9 +20,9 @@ include IncludeEdit.asm
 include ResourceEdit.asm
 include StringEdit.asm
 include AccelEdit.asm
-include XPManifest.asm
-include RCData.asm
-include Toolbar.asm
+include XPManifestEdit.asm
+include RCDataEdit.asm
+include ToolbarEdit.asm
 include NameEdit.asm
 include ToolBox.asm
 include StyleMana.asm

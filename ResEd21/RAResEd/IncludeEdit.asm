@@ -133,6 +133,9 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endw
 			invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		.endif
+		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
+		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szINCLUDE
+		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
@@ -146,6 +149,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
+				invoke PropertyList,0
 			.elseif eax==IDC_BTNINCADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax

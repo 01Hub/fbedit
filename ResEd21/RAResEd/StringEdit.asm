@@ -4,11 +4,11 @@ IDD_DLGSTRING							equ 1200
 IDC_GRDSTR								equ 1001
 IDC_BTNSTRADD							equ 1002
 IDC_BTNSTRDEL							equ 1003
-IDC_BTNSTRLANG							equ 1006
+;IDC_BTNSTRLANG							equ 1006
 
-.data?
+;.data?
 
-strlng				LANGUAGEMEM <>
+;strlng				LANGUAGEMEM <>
 
 .code
 
@@ -60,7 +60,7 @@ ExportString proc uses esi edi,hMem:DWORD
 	stosb
 	mov		al,0Ah
 	stosb
-	.if [esi].STRINGMEM.lang || [esi].STRINGMEM.sublang
+	.if [esi].STRINGMEM.lang.lang || [esi].STRINGMEM.lang.sublang
 		invoke SaveLanguage,addr [esi].STRINGMEM.lang,edi
 		add		edi,eax
 	.endif
@@ -133,10 +133,10 @@ SaveStringEdit proc uses esi edi,hWin:HWND
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_STRING,FALSE
 	.endif
 	mov		edi,[eax].PROJECT.hmem
-	mov		eax,strlng.lang
-	mov		[edi].STRINGMEM.lang,eax
-	mov		eax,strlng.sublang
-	mov		[edi].STRINGMEM.sublang,eax
+;	mov		eax,strlng.lang
+;	mov		[edi].STRINGMEM.lang.lang,eax
+;	mov		eax,strlng.sublang
+;	mov		[edi].STRINGMEM.sublang,eax
 	xor		esi,esi
 	.while esi<nRows
 		;Name
@@ -228,10 +228,14 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if esi
 			mov		esi,[esi].PROJECT.hmem
-			mov		eax,[esi].STRINGMEM.lang
-			mov		strlng.lang,eax
-			mov		eax,[esi].STRINGMEM.sublang
-			mov		strlng.sublang,eax
+mov		lpResType,offset szSTRINGTABLE
+lea		eax,[esi].STRINGMEM.lang
+mov		lpResLang,eax
+mov		eax,[eax].LANGUAGEMEM.lang
+;			mov		eax,[esi].STRINGMEM.lang
+;			mov		strlng.lang,eax
+;			mov		eax,[esi].STRINGMEM.sublang
+;			mov		strlng.sublang,eax
 			.while [esi].STRINGMEM.szname || [esi].STRINGMEM.value
 				lea		eax,[esi].STRINGMEM.szname
 				mov		row[0],eax
@@ -244,6 +248,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endw
 			invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		.endif
+		invoke PropertyList,-5
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
@@ -257,8 +262,9 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
-			.elseif eax==IDC_BTNSTRLANG
-				invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hWin,offset LanguageEditProc2,offset strlng
+				invoke PropertyList,0
+;			.elseif eax==IDC_BTNSTRLANG
+;				invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hWin,offset LanguageEditProc2,offset strlng
 			.elseif eax==IDC_BTNSTRADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax

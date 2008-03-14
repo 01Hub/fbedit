@@ -332,15 +332,16 @@ OpenProject endp
 
 CloseProject proc uses esi,hProMem:DWORD
 
-	invoke GetWindowLong,hDEd,DEWM_DIALOG
-	.if eax
-		push	eax
-		invoke DestroySizeingRect
-		pop		eax
-		invoke DestroyWindow,eax
-	.endif
-	invoke SetWindowLong,hDEd,DEWM_DIALOG,0
-	invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+;	invoke GetWindowLong,hDEd,DEWM_DIALOG
+;	.if eax
+;		push	eax
+;		invoke DestroySizeingRect
+;		pop		eax
+;		invoke DestroyWindow,eax
+;	.endif
+;	invoke SetWindowLong,hDEd,DEWM_DIALOG,0
+;	invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+	invoke CloseDialog
 	.if hRoot
 		invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,TVI_ROOT
 		mov		hRoot,0
@@ -374,6 +375,9 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	buff[32]:BYTE
 
+	.if hDialog
+		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
+	.endif
 	;Names
 	mov		esi,lpProMem
 	.while [esi].PROJECT.hmem
@@ -694,6 +698,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGACCEL,hDEd,offset AccelEditProc,NULL
+			mov		hDialog,eax
 		.else
 			invoke AddProjectNode,TPE_ACCEL,offset szACCELERATORS,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_ACCEL
@@ -703,6 +708,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGVERSION,hDEd,offset VersionEditProc,NULL
+			mov		hDialog,eax
 		.else
 			invoke AddProjectNode,TPE_VERSION,offset szVERSIONINFO,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_VERSION
@@ -715,8 +721,11 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			mov		edx,[eax].PROJECT.hmem
 		.endif
 		.if fOpen
+			push	eax
 			invoke CloseDialog
+			pop		eax
 			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,eax
+			mov		hDialog,eax
 		.elseif !edx
 			invoke AddProjectNode,TPE_INCLUDE,offset szIncludeFile,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_INCLUDE
@@ -729,8 +738,11 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			mov		edx,[eax].PROJECT.hmem
 		.endif
 		.if fOpen
+			push	eax
 			invoke CloseDialog
+			pop		eax
 			invoke CreateDialogParam,hInstance,IDD_DLGRESOURCE,hDEd,offset ResourceEditProc,eax
+			mov		hDialog,eax
 		.elseif !edx
 			invoke AddProjectNode,TPE_RESOURCE,offset szResource,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RESOURCE
@@ -740,6 +752,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGSTRING,hDEd,offset StringEditProc,NULL
+			mov		hDialog,eax
 		.else
 			invoke AddProjectNode,TPE_STRING,offset szStringTable,esi
 			invoke AddTypeMem,lpProMem,512*1024,TPE_STRING
@@ -762,6 +775,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_XPMANIFEST,hDEd,offset XPManifestEditProc,esi
+			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,10*1024,TPE_XPMANIFEST
 			invoke AddProjectNode,TPE_XPMANIFEST,offset szMANIFEST,esi
@@ -771,6 +785,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_RCDATA,hDEd,offset RCDataEditProc,esi
+			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
 			invoke AddProjectNode,TPE_RCDATA,offset szRCDATA,esi
@@ -780,6 +795,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_TOOLBAR,hDEd,offset ToolbarEditProc,esi
+			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_TOOLBAR
 			invoke AddProjectNode,TPE_TOOLBAR,offset szTOOLBAR,esi

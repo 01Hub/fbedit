@@ -185,13 +185,21 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke GetUnikeName,addr [edi].XPMANIFESTMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-		invoke SendDlgItemMessage,hWin,IDC_EDTXPNAME,EM_LIMITTEXT,MaxName-1,0
-		invoke SetDlgItemText,hWin,IDC_EDTXPNAME,addr [edi].XPMANIFESTMEM.szname
-		invoke SendDlgItemMessage,hWin,IDC_EDTXPID,EM_LIMITTEXT,5,0
-		invoke SetDlgItemInt,hWin,IDC_EDTXPID,[edi].XPMANIFESTMEM.value,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_EDTXPFILE,EM_LIMITTEXT,MAX_PATH,0
-		invoke SetDlgItemText,hWin,IDC_EDTXPFILE,addr [edi].XPMANIFESTMEM.szfilename
+;		invoke SendDlgItemMessage,hWin,IDC_EDTXPNAME,EM_LIMITTEXT,MaxName-1,0
+;		invoke SetDlgItemText,hWin,IDC_EDTXPNAME,addr [edi].XPMANIFESTMEM.szname
+;		invoke SendDlgItemMessage,hWin,IDC_EDTXPID,EM_LIMITTEXT,5,0
+;		invoke SetDlgItemInt,hWin,IDC_EDTXPID,[edi].XPMANIFESTMEM.value,TRUE
+;		invoke SendDlgItemMessage,hWin,IDC_EDTXPFILE,EM_LIMITTEXT,MAX_PATH,0
+;		invoke SetDlgItemText,hWin,IDC_EDTXPFILE,addr [edi].XPMANIFESTMEM.szfilename
+mov		lpResType,offset szMANIFEST
+lea		eax,[edi].XPMANIFESTMEM.szname
+mov		lpResName,eax
+lea		eax,[edi].XPMANIFESTMEM.value
+mov		lpResID,eax
+lea		eax,[edi].XPMANIFESTMEM.szfilename
+mov		lpResFile,eax
 		invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [edi+sizeof XPMANIFESTMEM]
+		invoke PropertyList,-3
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -208,10 +216,10 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				.endif
 				mov		[eax].PROJECT.changed,TRUE
 				mov		esi,[eax].PROJECT.hmem
-				invoke GetDlgItemText,hWin,IDC_EDTXPNAME,addr [esi].XPMANIFESTMEM.szname,MaxName
-				invoke GetDlgItemInt,hWin,IDC_EDTXPID,NULL,FALSE
-				mov		[esi].XPMANIFESTMEM.value,eax
-				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr [esi].XPMANIFESTMEM.szfilename,MAX_PATH
+;				invoke GetDlgItemText,hWin,IDC_EDTXPNAME,addr [esi].XPMANIFESTMEM.szname,MaxName
+;				invoke GetDlgItemInt,hWin,IDC_EDTXPID,NULL,FALSE
+;				mov		[esi].XPMANIFESTMEM.value,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr [esi].XPMANIFESTMEM.szfilename,MAX_PATH
 				invoke GetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [esi+sizeof XPMANIFESTMEM],8192
 				invoke GetWindowLong,hWin,GWL_USERDATA
 				mov		esi,eax
@@ -225,29 +233,30 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNXPFILE
-				;Setup the ofn struct
-				invoke RtlZeroMemory,addr ofn,sizeof ofn
-				mov		ofn.lStructSize,sizeof ofn
-				mov		eax,offset szFilterManifest
-				mov		ofn.lpstrFilter,eax
-				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr buffer,sizeof buffer
-				push	hWin
-				pop		ofn.hwndOwner
-				push	hInstance
-				pop		ofn.hInstance
-				mov		ofn.lpstrInitialDir,offset szProjectPath
-				lea		eax,buffer
-				mov		ofn.lpstrFile,eax
-				mov		ofn.nMaxFile,sizeof buffer
-				mov		ofn.lpstrDefExt,NULL
-				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-				;Show the Open dialog
-				invoke GetOpenFileName,addr ofn
-				.if eax
-					invoke RemoveProjectPath,addr buffer
-					invoke SetDlgItemText,hWin,IDC_EDTXPFILE,eax
-				.endif
+				invoke PropertyList,0
+;			.elseif eax==IDC_BTNXPFILE
+;				;Setup the ofn struct
+;				invoke RtlZeroMemory,addr ofn,sizeof ofn
+;				mov		ofn.lStructSize,sizeof ofn
+;				mov		eax,offset szFilterManifest
+;				mov		ofn.lpstrFilter,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr buffer,sizeof buffer
+;				push	hWin
+;				pop		ofn.hwndOwner
+;				push	hInstance
+;				pop		ofn.hInstance
+;				mov		ofn.lpstrInitialDir,offset szProjectPath
+;				lea		eax,buffer
+;				mov		ofn.lpstrFile,eax
+;				mov		ofn.nMaxFile,sizeof buffer
+;				mov		ofn.lpstrDefExt,NULL
+;				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+;				;Show the Open dialog
+;				invoke GetOpenFileName,addr ofn
+;				.if eax
+;					invoke RemoveProjectPath,addr buffer
+;					invoke SetDlgItemText,hWin,IDC_EDTXPFILE,eax
+;				.endif
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

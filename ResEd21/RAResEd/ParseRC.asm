@@ -968,9 +968,9 @@ ParseStringTable proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 				invoke strcat,offset namebuff,offset wordbuff
 				invoke strcpyn,addr [edi].STRINGMEM.szstring,offset namebuff,sizeof STRINGMEM.szstring
 				mov		eax,lang
-				mov		[edi].STRINGMEM.lang,eax
+				mov		[edi].STRINGMEM.lang.lang,eax
 				mov		eax,sublang
-				mov		[edi].STRINGMEM.sublang,eax
+				mov		[edi].STRINGMEM.lang.sublang,eax
 				add		edi,sizeof STRINGMEM
 				jmp		@b
 			.endif
@@ -2544,9 +2544,9 @@ ParseAccelerators proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.endif
 	sub		esi,ebx
 	mov		eax,lang
-	mov		[edi].ACCELMEM.lang,eax
+	mov		[edi].ACCELMEM.lang.lang,eax
 	mov		eax,sublang
-	mov		[edi].ACCELMEM.sublang,eax
+	mov		[edi].ACCELMEM.lang.sublang,eax
 	add		edi,sizeof ACCELMEM
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax

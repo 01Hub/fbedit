@@ -1,9 +1,9 @@
 IDD_TOOLBAR						equ 2600
 IDC_EDTTOOLBAR					equ 1003
-IDC_EDTTBRID					equ 1002
-IDC_EDTTBRNAME					equ 1001
-IDC_EDTTBRWIDTH					equ 1004
-IDC_EDTTBRHEIGHT				equ 1006
+;IDC_EDTTBRID					equ 1002
+;IDC_EDTTBRNAME					equ 1001
+;IDC_EDTTBRWIDTH					equ 1004
+;IDC_EDTTBRHEIGHT				equ 1006
 
 .data
 
@@ -132,15 +132,25 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetUnikeName,addr [edi].TOOLBARMEM.szname
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-		invoke SendDlgItemMessage,hWin,IDC_EDTTBRNAME,EM_LIMITTEXT,MaxName-1,0
-		invoke SetDlgItemText,hWin,IDC_EDTTBRNAME,addr [edi].TOOLBARMEM.szname
-		invoke SendDlgItemMessage,hWin,IDC_EDTTBRID,EM_LIMITTEXT,5,0
-		invoke SetDlgItemInt,hWin,IDC_EDTTBRID,[edi].TOOLBARMEM.value,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_EDTTBRWIDTH,EM_LIMITTEXT,3,0
-		invoke SetDlgItemInt,hWin,IDC_EDTTBRWIDTH,[edi].TOOLBARMEM.ccx,TRUE
-		invoke SendDlgItemMessage,hWin,IDC_EDTTBRHEIGHT,EM_LIMITTEXT,3,0
-		invoke SetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,[edi].TOOLBARMEM.ccy,TRUE
+;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRNAME,EM_LIMITTEXT,MaxName-1,0
+;		invoke SetDlgItemText,hWin,IDC_EDTTBRNAME,addr [edi].TOOLBARMEM.szname
+;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRID,EM_LIMITTEXT,5,0
+;		invoke SetDlgItemInt,hWin,IDC_EDTTBRID,[edi].TOOLBARMEM.value,TRUE
+mov		lpResType,offset szTOOLBAR
+lea		eax,[edi].TOOLBARMEM.szname
+mov		lpResName,eax
+lea		eax,[edi].TOOLBARMEM.value
+mov		lpResID,eax
+lea		eax,[edi].TOOLBARMEM.ccx
+mov		lpResWidth,eax
+lea		eax,[edi].TOOLBARMEM.ccy
+mov		lpResHeight,eax
+;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRWIDTH,EM_LIMITTEXT,3,0
+;		invoke SetDlgItemInt,hWin,IDC_EDTTBRWIDTH,[edi].TOOLBARMEM.ccx,TRUE
+;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRHEIGHT,EM_LIMITTEXT,3,0
+;		invoke SetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,[edi].TOOLBARMEM.ccy,TRUE
 		invoke SetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [edi+sizeof TOOLBARMEM]
+		invoke PropertyList,-6
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -157,13 +167,13 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 				mov		[eax].PROJECT.changed,TRUE
 				mov		esi,[eax].PROJECT.hmem
-				invoke GetDlgItemText,hWin,IDC_EDTRCDNAME,addr [esi].TOOLBARMEM.szname,MaxName
-				invoke GetDlgItemInt,hWin,IDC_EDTTBRID,NULL,FALSE
-				mov		[esi].TOOLBARMEM.value,eax
-				invoke GetDlgItemInt,hWin,IDC_EDTTBRWIDTH,NULL,FALSE
-				mov		[esi].TOOLBARMEM.ccx,eax
-				invoke GetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,NULL,FALSE
-				mov		[esi].TOOLBARMEM.ccy,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTRCDNAME,addr [esi].TOOLBARMEM.szname,MaxName
+;				invoke GetDlgItemInt,hWin,IDC_EDTTBRID,NULL,FALSE
+;				mov		[esi].TOOLBARMEM.value,eax
+;				invoke GetDlgItemInt,hWin,IDC_EDTTBRWIDTH,NULL,FALSE
+;				mov		[esi].TOOLBARMEM.ccx,eax
+;				invoke GetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,NULL,FALSE
+;				mov		[esi].TOOLBARMEM.ccy,eax
 				invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [esi+sizeof TOOLBARMEM],64*1024
 				invoke GetWindowLong,hWin,GWL_USERDATA
 				mov		edi,eax
@@ -171,6 +181,7 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke SetProjectItemName,edi,addr buffer
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				invoke PropertyList,0
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

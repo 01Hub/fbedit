@@ -21,6 +21,7 @@ PRP_STR_CLASS		equ 1001
 PRP_STR_MENU		equ 1002
 PRP_STR_IMAGE		equ 1005
 PRP_STR_AVI			equ 1006
+PRP_STR_FILE		equ 1008
 
 PRP_FUN_STYLE		equ 1003
 PRP_FUN_EXSTYLE		equ 1004
@@ -515,7 +516,6 @@ szMaxWt				db 'QwnerDraw',0
 
 lbtxtbuffer			db 4096 dup(?)
 szLbString			db 64 dup(?)
-hPrpCboDlg			dd ?
 OldPrpCboDlgProc	dd ?
 hPrpLstDlg			dd ?
 OldPrpLstDlgProc	dd ?
@@ -533,6 +533,10 @@ fBtnClick			dd ?
 lpResType			dd ?
 lpResName			dd ?
 lpResID				dd ?
+lpResFile			dd ?
+lpResLang			dd ?
+lpResHeight			dd ?
+lpResWidth			dd ?
 
 .code
 
@@ -624,6 +628,8 @@ PropListSetTxt proc uses esi,hWin:HWND
 			invoke SendMessage,hPrpEdtDlgCldMulti,EM_LIMITTEXT,MaxCap-1,0
 		.elseif eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MaxName-1,0
+		.elseif eax==PRP_STR_FILE
+			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MAX_PATH,0
 		.else
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,31,0
 		.endif
@@ -674,7 +680,7 @@ PropListSetPos proc
 			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
 		.else
 			invoke PropListSetTxt,hPrpLstDlg
-			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC
+			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC || lbid==PRP_STR_FILE
 				mov		ecx,nPropHt
 				dec		ecx
 				sub		rect.right,ecx
@@ -1253,12 +1259,20 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke GlobalFree,hMem
 					invoke PropertyList,-1
 				.else
-					.if hCtl==-2
+					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6
 						mov		eax,lbid
 						.if eax==PRP_STR_NAME
 							invoke strcpy,lpResName,addr buffer1
 						.elseif eax==PRP_NUM_ID
 							mov		eax,lpResID
+							push	val
+							pop		[eax]
+						.elseif eax==PRP_NUM_SIZEW
+							mov		eax,lpResWidth
+							push	val
+							pop		[eax]
+						.elseif eax==PRP_NUM_SIZEH
+							mov		eax,lpResHeight
 							push	val
 							pop		[eax]
 						.endif
@@ -1521,7 +1535,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00001000000000000000000000000000b
-						;  SELHH
+						;  SELHHF
 			mov		fList4,00000000000000000000000000000000b
 						;
 			invoke GetParent,hMultiSel
@@ -1589,7 +1603,47 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00000000000000000000000000000000b
-						;  SELHH
+						;  SELHHF
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-3
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00000100000000000000000000000000b
+						;  SELHHF
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-4
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00100000000000000000000000000000b
+						;  SELHHF
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-5
+			mov		fList1,00000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00100000000000000000000000000000b
+						;  SELHHF
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-6
+			mov		fList1,11001100000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00000000000000000000000000000000b
+						;  SELHHF
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1613,7 +1667,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				and		fList2,00110000000000011000000000000000b
 							;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 				and		fList3,00001000000000000000000000000000b
-							;  SELHH
+							;  SELHHF
 				and		fList4,00000000000000000000000000000000b
 							;
 			.endif
@@ -1766,54 +1820,66 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==4
 				;Width
 				mov		lbid,PRP_NUM_SIZEW
-				invoke ResEdBinToDec,[esi].DIALOG.ccx,edi
-				.if hMultiSel
-					mov		eax,hMultiSel
-					.while eax
-						push	eax
-						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_USERDATA
-						mov		ebx,eax
-						mov		eax,[esi].DIALOG.ccx
-						sub		eax,[ebx].DIALOG.ccx
-						.if eax
-							mov		byte ptr [edi],0
-						.endif
-						pop		eax
-						mov		ecx,8
-						.while ecx
-							push	ecx
+				.if hCtl==-6
+					mov		eax,lpResWidth
+					mov		eax,[eax]
+					invoke ResEdBinToDec,eax,edi
+				.else
+					invoke ResEdBinToDec,[esi].DIALOG.ccx,edi
+					.if hMultiSel
+						mov		eax,hMultiSel
+						.while eax
+							push	eax
+							invoke GetParent,eax
 							invoke GetWindowLong,eax,GWL_USERDATA
-							pop		ecx
-							dec		ecx
+							mov		ebx,eax
+							mov		eax,[esi].DIALOG.ccx
+							sub		eax,[ebx].DIALOG.ccx
+							.if eax
+								mov		byte ptr [edi],0
+							.endif
+							pop		eax
+							mov		ecx,8
+							.while ecx
+								push	ecx
+								invoke GetWindowLong,eax,GWL_USERDATA
+								pop		ecx
+								dec		ecx
+							.endw
 						.endw
-					.endw
+					.endif
 				.endif
 			.elseif edx==5
 				;Height
 				mov		lbid,PRP_NUM_SIZEH
-				invoke ResEdBinToDec,[esi].DIALOG.ccy,edi
-				.if hMultiSel
-					mov		eax,hMultiSel
-					.while eax
-						push	eax
-						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_USERDATA
-						mov		ebx,eax
-						mov		eax,[esi].DIALOG.ccy
-						sub		eax,[ebx].DIALOG.ccy
-						.if eax
-							mov		byte ptr [edi],0
-						.endif
-						pop		eax
-						mov		ecx,8
-						.while ecx
-							push	ecx
+				.if hCtl==-6
+					mov		eax,lpResHeight
+					mov		eax,[eax]
+					invoke ResEdBinToDec,eax,edi
+				.else
+					invoke ResEdBinToDec,[esi].DIALOG.ccy,edi
+					.if hMultiSel
+						mov		eax,hMultiSel
+						.while eax
+							push	eax
+							invoke GetParent,eax
 							invoke GetWindowLong,eax,GWL_USERDATA
-							pop		ecx
-							dec		ecx
+							mov		ebx,eax
+							mov		eax,[esi].DIALOG.ccy
+							sub		eax,[ebx].DIALOG.ccy
+							.if eax
+								mov		byte ptr [edi],0
+							.endif
+							pop		eax
+							mov		ecx,8
+							.while ecx
+								push	ecx
+								invoke GetWindowLong,eax,GWL_USERDATA
+								pop		ecx
+								dec		ecx
+							.endw
 						.endw
-					.endw
+					.endif
 				.endif
 			.elseif edx==6
 				;Caption
@@ -2382,16 +2448,28 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==66
 				;Language
 				mov		lbid,PRP_FUN_LANG
-				sub		esi,sizeof DLGHEAD
-				mov		eax,(DLGHEAD ptr [esi]).lang
-				invoke ResEdBinToDec,eax,edi
-				invoke strlen,edi
-				lea		edi,[edi+eax]
-				mov		byte ptr [edi],','
-				inc		edi
-				mov		eax,(DLGHEAD ptr [esi]).sublang
-				invoke ResEdBinToDec,eax,edi
-				add		esi,sizeof DLGHEAD
+				.if hCtl==-4 || hCtl==-5
+					mov		esi,lpResLang
+					mov		eax,[esi].LANGUAGEMEM.lang
+					invoke ResEdBinToDec,eax,edi
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+					mov		byte ptr [edi],','
+					inc		edi
+					mov		eax,[esi].LANGUAGEMEM.sublang
+					invoke ResEdBinToDec,eax,edi
+				.else
+					sub		esi,sizeof DLGHEAD
+					mov		eax,(DLGHEAD ptr [esi]).lang
+					invoke ResEdBinToDec,eax,edi
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+					mov		byte ptr [edi],','
+					inc		edi
+					mov		eax,(DLGHEAD ptr [esi]).sublang
+					invoke ResEdBinToDec,eax,edi
+					add		esi,sizeof DLGHEAD
+				.endif
 			.elseif edx==67
 				;HasStrings
 				mov		lbid,PRP_BOOL_HASSTRINGS
@@ -2426,6 +2504,12 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						.endw
 					.endw
 				.endif
+			.elseif edx==69
+				;File
+				mov		lbid,PRP_STR_FILE
+				.if eax==-2
+					invoke strcpy,edi,lpResFile
+				.endif
 			.elseif eax>=NoOfButtons
 				;Custom properties
 				invoke GetCustProp,eax,edx
@@ -2448,7 +2532,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		jmp		@b
 	  @@:
 		invoke SendMessage,hPrpLstDlg,LB_SETTOPINDEX,tInx,0
-		.if hCtl==-2
+		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6
 			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,lpResType
 			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
@@ -2501,6 +2585,8 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hFnt:DWORD
     LOCAL	hDC:DWORD
     LOCAL	cf:CHOOSEFONT
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	ofn:OPENFILENAME
 
 
 	mov		eax,uMsg
@@ -2525,7 +2611,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hPrpLstDlgCld,WM_LBUTTONUP,0,0
 			invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
 			invoke SetFocus,hWin
-		.elseif eax==PRP_STR_FONT || eax==PRP_STR_MENU || eax==1003 || eax==1004 || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI || eax==PRP_FUN_LANG || eax==PRP_STR_CAPMULTI
+		.elseif eax==PRP_STR_FONT || eax==PRP_STR_MENU || eax==1003 || eax==1004 || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI || eax==PRP_FUN_LANG || eax==PRP_STR_CAPMULTI || eax==PRP_STR_FILE
 			invoke SendMessage,hWin,WM_COMMAND,1,0
 		.else
 			invoke PropListSetPos
@@ -2690,11 +2776,41 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						;jmp		Ex
 					.elseif eax==PRP_FUN_LANG
 						;Language
-						invoke GetWindowLong,hCtl,GWL_USERDATA
-						mov		esi,eax
-						sub		esi,sizeof DLGHEAD
-						invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,addr [esi].DLGHEAD.lang
+						.if hCtl==-4 || hCtl==-5
+							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,lpResLang
+						.else
+							invoke GetWindowLong,hCtl,GWL_USERDATA
+							mov		esi,eax
+							sub		esi,sizeof DLGHEAD
+							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,addr [esi].DLGHEAD.lang
+						.endif
 						.if eax
+							invoke PropertyList,hCtl
+							invoke SetChanged,TRUE,0
+						.endif
+					.elseif eax==PRP_STR_FILE
+						;File
+						;Setup the ofn struct
+						invoke RtlZeroMemory,addr ofn,sizeof ofn
+						mov		ofn.lStructSize,sizeof ofn
+						mov		eax,offset szFilterManifest
+						mov		ofn.lpstrFilter,eax
+						invoke strcpy,addr buffer,lpResFile
+						push	hWin
+						pop		ofn.hwndOwner
+						push	hInstance
+						pop		ofn.hInstance
+						mov		ofn.lpstrInitialDir,offset szProjectPath
+						lea		eax,buffer
+						mov		ofn.lpstrFile,eax
+						mov		ofn.nMaxFile,sizeof buffer
+						mov		ofn.lpstrDefExt,NULL
+						mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+						;Show the Open dialog
+						invoke GetOpenFileName,addr ofn
+						.if eax
+							invoke RemoveProjectPath,addr buffer
+							invoke strcpy,lpResFile,eax
 							invoke PropertyList,hCtl
 							invoke SetChanged,TRUE,0
 						.endif
