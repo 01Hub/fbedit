@@ -69,6 +69,7 @@ SaveIncludeEdit proc uses esi edi,hWin:HWND
 	.if !eax
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_INCLUDE,FALSE
 	.endif
+	push	eax
 	mov		edi,[eax].PROJECT.hmem
 	xor		esi,esi
 	.while esi<nRows
@@ -83,6 +84,7 @@ SaveIncludeEdit proc uses esi edi,hWin:HWND
 		inc		esi
 	.endw
 	mov		[edi].INCLUDEMEM.szfile,0
+	pop		eax
 	ret
 
 SaveIncludeEdit endp
@@ -119,9 +121,6 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		mov		esi,lParam
-		.if ![esi].PROJECT.hmem
-			xor		esi,esi
-		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if esi
 			mov		esi,[esi].PROJECT.hmem
@@ -132,6 +131,9 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		esi,sizeof INCLUDEMEM 
 			.endw
 			invoke SendMessage,hGrd,GM_SETCURSEL,0,0
+		.else
+			invoke SaveIncludeEdit,hWin
+			invoke SetWindowLong,hWin,GWL_USERDATA,eax
 		.endif
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szINCLUDE

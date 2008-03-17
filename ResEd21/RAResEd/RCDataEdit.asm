@@ -104,31 +104,48 @@ ExportRCData proc uses esi edi,hMem:DWORD
 
 ExportRCData endp
 
-RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 	LOCAL	buffer[256]:BYTE
+
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		ebx,eax
+	.if !ebx
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_RCDATA,FALSE
+		mov		ebx,eax
+		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset defrcdata,sizeof RCDATAMEM+1
+	.endif
+	push	ebx
+	mov		esi,[ebx].PROJECT.hmem
+	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,addr [esi+sizeof RCDATAMEM],64*1024
+	invoke GetProjectItemName,ebx,addr buffer
+	invoke SetProjectItemName,ebx,addr buffer
+	pop		eax
+	ret
+
+SaveRCDataEdit endp
+
+RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		esi,lParam
-		.if [esi].PROJECT.hmem
-			mov		edi,[esi].PROJECT.hmem
-		.else
-			invoke GetFreeProjectitemID,TPE_RCDATA
+		invoke SetWindowLong,hWin,GWL_USERDATA,esi
+		.if !esi
 			mov		edi,offset defrcdata
+			invoke GetFreeProjectitemID,TPE_RCDATA
 			mov		[edi].RCDATAMEM.value,eax
 			invoke strcpy,addr [edi].RCDATAMEM.szname,addr szRcdataName
 			invoke GetUnikeName,addr [edi].RCDATAMEM.szname
+			invoke SaveRCDataEdit,hWin
+			mov		esi,eax
+			invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.endif
-		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-;		invoke SendDlgItemMessage,hWin,IDC_EDTRCDNAME,EM_LIMITTEXT,MaxName-1,0
-;		invoke SetDlgItemText,hWin,IDC_EDTRCDNAME,addr [edi].RCDATAMEM.szname
-;		invoke SendDlgItemMessage,hWin,IDC_EDTRCDID,EM_LIMITTEXT,5,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTRCDID,[edi].RCDATAMEM.value,TRUE
-mov		lpResType,offset szRCDATA
-lea		eax,[edi].RCDATAMEM.szname
-mov		lpResName,eax
-lea		eax,[edi].RCDATAMEM.value
-mov		lpResID,eax
+		mov		edi,[esi].PROJECT.hmem
+		mov		lpResType,offset szRCDATA
+		lea		eax,[edi].RCDATAMEM.szname
+		mov		lpResName,eax
+		lea		eax,[edi].RCDATAMEM.value
+		mov		lpResID,eax
 		invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
 		invoke PropertyList,-2
 	.elseif eax==WM_COMMAND
@@ -137,24 +154,8 @@ mov		lpResID,eax
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				xor		esi,esi
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				.if eax
-					mov		esi,[eax].PROJECT.hmem
-				.endif
-				.if !esi
-					invoke SendMessage,hRes,PRO_ADDITEM,TPE_RCDATA,FALSE
-				.endif
-				mov		[eax].PROJECT.changed,TRUE
-				mov		esi,[eax].PROJECT.hmem
-;				invoke GetDlgItemText,hWin,IDC_EDTRCDNAME,addr [esi].RCDATAMEM.szname,MaxName
-;				invoke GetDlgItemInt,hWin,IDC_EDTRCDID,NULL,FALSE
-;				mov		[esi].RCDATAMEM.value,eax
-				invoke GetDlgItemText,hWin,IDC_EDTRCDATA,addr [esi+sizeof RCDATAMEM],64*1024
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				mov		edi,eax
-				invoke GetProjectItemName,edi,addr buffer
-				invoke SetProjectItemName,edi,addr buffer
+				invoke SaveRCDataEdit,hWin
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0

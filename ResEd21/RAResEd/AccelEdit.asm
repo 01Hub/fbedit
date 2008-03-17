@@ -4,9 +4,6 @@ IDD_DLGACCEL		equ 1300
 IDC_GRDACL			equ 1001
 IDC_BTNACLADD		equ 1002
 IDC_BTNACLDEL		equ 1003
-;IDC_EDTACLNAME		equ 1004
-;IDC_EDTACLID		equ 1005
-;IDC_BTNACLLANG		equ 1006
 
 .data
 
@@ -16,7 +13,6 @@ defacl				ACCELMEM <,1,0,0,0,<0,0>>
 .data?
 
 fNoUpdate			dd ?
-;acllng				LANGUAGEMEM <>
 
 .code
 
@@ -183,26 +179,16 @@ SaveAccelEdit proc uses ebx esi edi,hWin:HWND
 	invoke SendMessage,hGrd,GM_GETROWCOUNT,0,0
 	mov		nRows,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
-	.if !eax
-		invoke SendMessage,hRes,PRO_ADDITEM,TPE_ACCEL,FALSE
-	.endif
 	mov		ebx,eax
-	mov		edi,[eax].PROJECT.hmem
-;	invoke GetDlgItemText,hWin,IDC_EDTACLNAME,addr [edi].ACCELMEM.szname,MaxName
-;	invoke GetDlgItemInt,hWin,IDC_EDTACLID,NULL,FALSE
-;	mov		[edi].ACCELMEM.value,eax
-	.if [edi].ACCELMEM.szname
-		lea		eax,[edi].ACCELMEM.szname
-	.else
-		invoke ResEdBinToDec,[edi].ACCELMEM.value,addr buffer
-		lea		eax,buffer
+	.if !ebx
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_ACCEL,FALSE
+		mov		ebx,eax
+		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset defacl,sizeof ACCELMEM*2
 	.endif
+	push	ebx
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
-;	mov		eax,acllng.lang
-;	mov		[edi].ACCELMEM.lang,eax
-;	mov		eax,acllng.sublang
-;	mov		[edi].ACCELMEM.sublang,eax
+	mov		edi,[ebx].PROJECT.hmem
 	add		edi,sizeof ACCELMEM
 	xor		esi,esi
 	.while esi<nRows
@@ -266,6 +252,7 @@ SaveAccelEdit proc uses ebx esi edi,hWin:HWND
 	mov		[edi].ACCELMEM.value,eax
 	mov		[edi].ACCELMEM.nkey,eax
 	mov		[edi].ACCELMEM.flag,eax
+	pop		eax
 	ret
 
 SaveAccelEdit endp
@@ -383,30 +370,24 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-		.if esi
-			mov		esi,[esi].PROJECT.hmem
-		.else
+		.if !esi
 			invoke GetFreeProjectitemID,TPE_ACCEL
 			mov		esi,offset defacl
 			mov		[esi].ACCELMEM.value,eax
 			invoke strcpy,addr [esi].ACCELMEM.szname,addr szAccelName
 			invoke GetUnikeName,addr [esi].ACCELMEM.szname
+			invoke SaveAccelEdit,hWin
+			mov		esi,eax
+			invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.endif
-;		invoke SendDlgItemMessage,hWin,IDC_EDTACLNAME,EM_LIMITTEXT,MaxName-1,0
-;		invoke SetDlgItemText,hWin,IDC_EDTACLNAME,addr [esi].ACCELMEM.szname
-;		invoke SendDlgItemMessage,hWin,IDC_EDTACLID,EM_LIMITTEXT,5,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTACLID,[esi].ACCELMEM.value,FALSE
-mov		lpResType,offset szACCELERATORS
-lea		eax,[esi].ACCELMEM.szname
-mov		lpResName,eax
-lea		eax,[esi].ACCELMEM.value
-mov		lpResID,eax
-lea		eax,[esi].ACCELMEM.lang
-mov		lpResLang,eax
-;		mov		eax,[esi].ACCELMEM.lang
-;		mov		acllng.lang,eax
-;		mov		eax,[esi].ACCELMEM.sublang
-;		mov		acllng.sublang,eax
+		mov		esi,[esi].PROJECT.hmem
+		mov		lpResType,offset szACCELERATORS
+		lea		eax,[esi].ACCELMEM.szname
+		mov		lpResName,eax
+		lea		eax,[esi].ACCELMEM.value
+		mov		lpResID,eax
+		lea		eax,[esi].ACCELMEM.lang
+		mov		lpResLang,eax
 		add		esi,sizeof ACCELMEM
 		.while [esi].ACCELMEM.szname || [esi].ACCELMEM.value
 			lea		eax,[esi].ACCELMEM.szname
@@ -454,8 +435,6 @@ mov		lpResLang,eax
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
-;			.elseif eax==IDC_BTNACLLANG
-;				invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hWin,offset LanguageEditProc2,offset acllng
 			.elseif eax==IDC_BTNACLADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax

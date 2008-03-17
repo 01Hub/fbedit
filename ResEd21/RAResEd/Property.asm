@@ -1277,6 +1277,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 							pop		[eax]
 						.endif
 						invoke PropertyList,hCtl
+						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					.else
 						call SetCtrlData
 						invoke UpdateCtl,hCtl
@@ -2786,7 +2787,11 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						.if eax
 							invoke PropertyList,hCtl
-							invoke SetChanged,TRUE,0
+							.if hCtl==-4 || hCtl==-5
+								invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+							.else
+								invoke SetChanged,TRUE,0
+							.endif
 						.endif
 					.elseif eax==PRP_STR_FILE
 						;File
@@ -2812,7 +2817,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke RemoveProjectPath,addr buffer
 							invoke strcpy,lpResFile,eax
 							invoke PropertyList,hCtl
-							invoke SetChanged,TRUE,0
+							invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 						.endif
 					.else
 						invoke SendMessage,hWin,LB_GETITEMRECT,nInx,addr rect

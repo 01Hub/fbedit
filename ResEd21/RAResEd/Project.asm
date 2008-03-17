@@ -721,10 +721,8 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			mov		edx,[eax].PROJECT.hmem
 		.endif
 		.if fOpen
-			push	eax
 			invoke CloseDialog
-			pop		eax
-			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,eax
+			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,NULL
 			mov		hDialog,eax
 		.elseif !edx
 			invoke AddProjectNode,TPE_INCLUDE,offset szIncludeFile,esi
@@ -784,7 +782,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 	.elseif eax==TPE_RCDATA
 		.if fOpen
 			invoke CloseDialog
-			invoke CreateDialogParam,hInstance,IDD_RCDATA,hDEd,offset RCDataEditProc,esi
+			invoke CreateDialogParam,hInstance,IDD_RCDATA,hDEd,offset RCDataEditProc,NULL
 			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
