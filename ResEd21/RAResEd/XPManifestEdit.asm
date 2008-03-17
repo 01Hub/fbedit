@@ -1,10 +1,6 @@
 
 IDD_XPMANIFEST					equ 2000
-IDC_EDTXPID						equ 1001
-IDC_EDTXPNAME					equ 1000
 IDC_EDTXPMANIFEST				equ 1002
-IDC_EDTXPFILE					equ 1003
-IDC_BTNXPFILE					equ 1004
 
 .data
 
@@ -168,99 +164,93 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 
 ExportXPManifest endp
 
-XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+XPManifestSave proc uses esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	ofn:OPENFILENAME
+	LOCAL	rect:RECT
+
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	.if !eax
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_XPMANIFEST,FALSE
+		push	eax
+		invoke RtlMoveMemory,[eax].PROJECT.hmem,offset defxpmanifest,sizeof XPMANIFESTMEM+1024
+		invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,offset defxpmanifest+sizeof XPMANIFESTMEM
+		pop		eax
+	.endif
+	push	eax
+	mov		esi,[eax].PROJECT.hmem
+	invoke GetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [esi+sizeof XPMANIFESTMEM],8192
+	pop		esi
+	push	esi
+	invoke GetProjectItemName,esi,addr buffer
+	invoke SetProjectItemName,esi,addr buffer
+	invoke GetWindowLong,hPrj,0
+	mov		esi,eax
+	invoke FindName,esi,addr szMANIFEST
+	.if !eax
+		invoke AddName,esi,addr szMANIFEST,addr szManifestValue
+	.endif
+	pop		eax
+	ret
+
+XPManifestSave endp
+
+XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		esi,lParam
-		.if [esi].PROJECT.hmem
-			mov		edi,[esi].PROJECT.hmem
-		.else
+		invoke SetWindowLong,hWin,GWL_USERDATA,esi
+		.if !esi
 			invoke GetFreeProjectitemID,TPE_XPMANIFEST
 			mov		edi,offset defxpmanifest
 			mov		[edi].XPMANIFESTMEM.value,eax
 			invoke strcpy,addr [edi].XPMANIFESTMEM.szname,addr szManifestName
 			invoke GetUnikeName,addr [edi].XPMANIFESTMEM.szname
+			invoke XPManifestSave,hWin
+			mov		esi,eax
+			invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.endif
-		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-;		invoke SendDlgItemMessage,hWin,IDC_EDTXPNAME,EM_LIMITTEXT,MaxName-1,0
-;		invoke SetDlgItemText,hWin,IDC_EDTXPNAME,addr [edi].XPMANIFESTMEM.szname
-;		invoke SendDlgItemMessage,hWin,IDC_EDTXPID,EM_LIMITTEXT,5,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTXPID,[edi].XPMANIFESTMEM.value,TRUE
-;		invoke SendDlgItemMessage,hWin,IDC_EDTXPFILE,EM_LIMITTEXT,MAX_PATH,0
-;		invoke SetDlgItemText,hWin,IDC_EDTXPFILE,addr [edi].XPMANIFESTMEM.szfilename
-mov		lpResType,offset szMANIFEST
-lea		eax,[edi].XPMANIFESTMEM.szname
-mov		lpResName,eax
-lea		eax,[edi].XPMANIFESTMEM.value
-mov		lpResID,eax
-lea		eax,[edi].XPMANIFESTMEM.szfilename
-mov		lpResFile,eax
+		mov		edi,[esi].PROJECT.hmem
+		mov		lpResType,offset szMANIFEST
+		lea		eax,[edi].XPMANIFESTMEM.szname
+		mov		lpResName,eax
+		lea		eax,[edi].XPMANIFESTMEM.value
+		mov		lpResID,eax
+		lea		eax,[edi].XPMANIFESTMEM.szfilename
+		mov		lpResFile,eax
 		invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [edi+sizeof XPMANIFESTMEM]
 		invoke PropertyList,-3
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				xor		esi,esi
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				.if eax
-					mov		esi,[eax].PROJECT.hmem
-				.endif
-				.if !esi
-					invoke SendMessage,hRes,PRO_ADDITEM,TPE_XPMANIFEST,FALSE
-				.endif
-				mov		[eax].PROJECT.changed,TRUE
-				mov		esi,[eax].PROJECT.hmem
-;				invoke GetDlgItemText,hWin,IDC_EDTXPNAME,addr [esi].XPMANIFESTMEM.szname,MaxName
-;				invoke GetDlgItemInt,hWin,IDC_EDTXPID,NULL,FALSE
-;				mov		[esi].XPMANIFESTMEM.value,eax
-;				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr [esi].XPMANIFESTMEM.szfilename,MAX_PATH
-				invoke GetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [esi+sizeof XPMANIFESTMEM],8192
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				mov		esi,eax
-				invoke GetProjectItemName,esi,addr buffer
-				invoke SetProjectItemName,esi,addr buffer
-				invoke GetWindowLong,hPrj,0
-				mov		esi,eax
-				invoke FindName,esi,addr szMANIFEST
-				.if !eax
-					invoke AddName,esi,addr szMANIFEST,addr szManifestValue
-				.endif
+				invoke XPManifestSave,hWin
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
-;			.elseif eax==IDC_BTNXPFILE
-;				;Setup the ofn struct
-;				invoke RtlZeroMemory,addr ofn,sizeof ofn
-;				mov		ofn.lStructSize,sizeof ofn
-;				mov		eax,offset szFilterManifest
-;				mov		ofn.lpstrFilter,eax
-;				invoke GetDlgItemText,hWin,IDC_EDTXPFILE,addr buffer,sizeof buffer
-;				push	hWin
-;				pop		ofn.hwndOwner
-;				push	hInstance
-;				pop		ofn.hInstance
-;				mov		ofn.lpstrInitialDir,offset szProjectPath
-;				lea		eax,buffer
-;				mov		ofn.lpstrFile,eax
-;				mov		ofn.nMaxFile,sizeof buffer
-;				mov		ofn.lpstrDefExt,NULL
-;				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-;				;Show the Open dialog
-;				invoke GetOpenFileName,addr ofn
-;				.if eax
-;					invoke RemoveProjectPath,addr buffer
-;					invoke SetDlgItemText,hWin,IDC_EDTXPFILE,eax
-;				.endif
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
+	.elseif eax==WM_SIZE
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_EDTXPMANIFEST
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,eax,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

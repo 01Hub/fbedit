@@ -132,11 +132,8 @@ SaveStringEdit proc uses esi edi,hWin:HWND
 	.if !eax
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_STRING,FALSE
 	.endif
+	push	eax
 	mov		edi,[eax].PROJECT.hmem
-;	mov		eax,strlng.lang
-;	mov		[edi].STRINGMEM.lang.lang,eax
-;	mov		eax,strlng.sublang
-;	mov		[edi].STRINGMEM.sublang,eax
 	xor		esi,esi
 	.while esi<nRows
 		;Name
@@ -166,6 +163,7 @@ SaveStringEdit proc uses esi edi,hWin:HWND
 	mov		[edi].STRINGMEM.szname,al
 	mov		[edi].STRINGMEM.value,eax
 	mov		[edi].STRINGMEM.szstring,al
+	pop		eax
 	ret
 
 SaveStringEdit endp
@@ -174,6 +172,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hGrd:HWND
 	LOCAL	col:COLUMN
 	LOCAL	row[3]:DWORD
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -226,29 +225,28 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-		.if esi
-			mov		esi,[esi].PROJECT.hmem
-mov		lpResType,offset szSTRINGTABLE
-lea		eax,[esi].STRINGMEM.lang
-mov		lpResLang,eax
-mov		eax,[eax].LANGUAGEMEM.lang
-;			mov		eax,[esi].STRINGMEM.lang
-;			mov		strlng.lang,eax
-;			mov		eax,[esi].STRINGMEM.sublang
-;			mov		strlng.sublang,eax
-			.while [esi].STRINGMEM.szname || [esi].STRINGMEM.value
-				lea		eax,[esi].STRINGMEM.szname
-				mov		row[0],eax
-				mov		eax,[esi].STRINGMEM.value
-				mov		row[4],eax
-				lea		eax,[esi].STRINGMEM.szstring
-				mov		row[8],eax
-				invoke SendMessage,hGrd,GM_ADDROW,0,addr row
-				add		esi,sizeof STRINGMEM 
-			.endw
-			invoke SendMessage,hGrd,GM_SETCURSEL,0,0
+		.if !esi
+			invoke SaveStringEdit,hWin
+			mov		esi,eax
+			invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.endif
+		mov		esi,[esi].PROJECT.hmem
+		mov		lpResType,offset szSTRINGTABLE
+		lea		eax,[esi].STRINGMEM.lang
+		mov		lpResLang,eax
+		.while [esi].STRINGMEM.szname || [esi].STRINGMEM.value
+			lea		eax,[esi].STRINGMEM.szname
+			mov		row[0],eax
+			mov		eax,[esi].STRINGMEM.value
+			mov		row[4],eax
+			lea		eax,[esi].STRINGMEM.szstring
+			mov		row[8],eax
+			invoke SendMessage,hGrd,GM_ADDROW,0,addr row
+			add		esi,sizeof STRINGMEM 
+		.endw
+		invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		invoke PropertyList,-5
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
@@ -263,8 +261,6 @@ mov		eax,[eax].LANGUAGEMEM.lang
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
-;			.elseif eax==IDC_BTNSTRLANG
-;				invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hWin,offset LanguageEditProc2,offset strlng
 			.elseif eax==IDC_BTNSTRADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
@@ -296,6 +292,23 @@ mov		eax,[eax].LANGUAGEMEM.lang
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,wParam
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_GRDSTR
+		mov		hGrd,eax
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

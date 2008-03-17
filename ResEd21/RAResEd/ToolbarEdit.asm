@@ -1,9 +1,5 @@
 IDD_TOOLBAR						equ 2600
 IDC_EDTTOOLBAR					equ 1003
-;IDC_EDTTBRID					equ 1002
-;IDC_EDTTBRNAME					equ 1001
-;IDC_EDTTBRWIDTH					equ 1004
-;IDC_EDTTBRHEIGHT				equ 1006
 
 .data
 
@@ -116,69 +112,66 @@ ExportToolbar proc uses esi edi,hMem:DWORD
 
 ExportToolbar endp
 
-ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SaveToolbarEdit proc uses esi edi,hWin:HWND
 	LOCAL	buffer[256]:BYTE
+
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	.if !eax
+		invoke SendMessage,hRes,PRO_ADDITEM,TPE_TOOLBAR,FALSE
+		push	eax
+		invoke RtlMoveMemory,[eax].PROJECT.hmem,offset deftoolbar,sizeof TOOLBARMEM+1
+		pop		eax
+	.endif
+	push	eax
+	mov		esi,[eax].PROJECT.hmem
+	invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [esi+sizeof TOOLBARMEM],64*1024
+	pop		edi
+	push	edi
+	invoke GetProjectItemName,edi,addr buffer
+	invoke SetProjectItemName,edi,addr buffer
+	pop		eax
+	ret
+
+SaveToolbarEdit endp
+
+ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		esi,lParam
-		.if [esi].PROJECT.hmem
-			mov		edi,[esi].PROJECT.hmem
-		.else
+		invoke SetWindowLong,hWin,GWL_USERDATA,esi
+		.if !esi
 			invoke GetFreeProjectitemID,TPE_TOOLBAR
 			mov		edi,offset deftoolbar
 			mov		[edi].TOOLBARMEM.value,eax
 			invoke strcpy,addr [edi].TOOLBARMEM.szname,addr szToolbarName
 			invoke GetUnikeName,addr [edi].TOOLBARMEM.szname
+			invoke SaveToolbarEdit,hWin
+			mov		esi,eax
+			invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.endif
-		invoke SetWindowLong,hWin,GWL_USERDATA,esi
-;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRNAME,EM_LIMITTEXT,MaxName-1,0
-;		invoke SetDlgItemText,hWin,IDC_EDTTBRNAME,addr [edi].TOOLBARMEM.szname
-;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRID,EM_LIMITTEXT,5,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTTBRID,[edi].TOOLBARMEM.value,TRUE
-mov		lpResType,offset szTOOLBAR
-lea		eax,[edi].TOOLBARMEM.szname
-mov		lpResName,eax
-lea		eax,[edi].TOOLBARMEM.value
-mov		lpResID,eax
-lea		eax,[edi].TOOLBARMEM.ccx
-mov		lpResWidth,eax
-lea		eax,[edi].TOOLBARMEM.ccy
-mov		lpResHeight,eax
-;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRWIDTH,EM_LIMITTEXT,3,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTTBRWIDTH,[edi].TOOLBARMEM.ccx,TRUE
-;		invoke SendDlgItemMessage,hWin,IDC_EDTTBRHEIGHT,EM_LIMITTEXT,3,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,[edi].TOOLBARMEM.ccy,TRUE
+		mov		edi,[esi].PROJECT.hmem
+		mov		lpResType,offset szTOOLBAR
+		lea		eax,[edi].TOOLBARMEM.szname
+		mov		lpResName,eax
+		lea		eax,[edi].TOOLBARMEM.value
+		mov		lpResID,eax
+		lea		eax,[edi].TOOLBARMEM.ccx
+		mov		lpResWidth,eax
+		lea		eax,[edi].TOOLBARMEM.ccy
+		mov		lpResHeight,eax
 		invoke SetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [edi+sizeof TOOLBARMEM]
 		invoke PropertyList,-6
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				xor		esi,esi
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				.if eax
-					mov		esi,[eax].PROJECT.hmem
-				.endif
-				.if !esi
-					invoke SendMessage,hRes,PRO_ADDITEM,TPE_TOOLBAR,FALSE
-				.endif
-				mov		[eax].PROJECT.changed,TRUE
-				mov		esi,[eax].PROJECT.hmem
-;				invoke GetDlgItemText,hWin,IDC_EDTRCDNAME,addr [esi].TOOLBARMEM.szname,MaxName
-;				invoke GetDlgItemInt,hWin,IDC_EDTTBRID,NULL,FALSE
-;				mov		[esi].TOOLBARMEM.value,eax
-;				invoke GetDlgItemInt,hWin,IDC_EDTTBRWIDTH,NULL,FALSE
-;				mov		[esi].TOOLBARMEM.ccx,eax
-;				invoke GetDlgItemInt,hWin,IDC_EDTTBRHEIGHT,NULL,FALSE
-;				mov		[esi].TOOLBARMEM.ccy,eax
-				invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [esi+sizeof TOOLBARMEM],64*1024
-				invoke GetWindowLong,hWin,GWL_USERDATA
-				mov		edi,eax
-				invoke GetProjectItemName,edi,addr buffer
-				invoke SetProjectItemName,edi,addr buffer
+				invoke SaveToolbarEdit,hWin
+				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
@@ -186,6 +179,22 @@ mov		lpResHeight,eax
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_EDTTOOLBAR
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,eax,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

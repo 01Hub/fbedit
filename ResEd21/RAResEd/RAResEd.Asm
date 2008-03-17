@@ -1430,6 +1430,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		ecx,SIZEBAR
 		sub		edx,SIZEBAR
 		invoke MoveWindow,hPrp,eax,ecx,winsize.wtpro,edx,TRUE
+		.if hDialog
+			invoke SendMessage,hDialog,WM_SIZE,0,0
+		.endif
 	.elseif eax==WM_CTLCOLOREDIT
 		xor		eax,eax
 		mov		edx,lParam

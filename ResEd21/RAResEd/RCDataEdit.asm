@@ -125,6 +125,7 @@ SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 SaveRCDataEdit endp
 
 RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -148,6 +149,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpResID,eax
 		invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
 		invoke PropertyList,-2
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -163,6 +165,22 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_EDTRCDATA
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,eax,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

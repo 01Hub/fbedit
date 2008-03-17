@@ -94,6 +94,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	col:COLUMN
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -138,6 +139,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szINCLUDE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
@@ -216,6 +218,23 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,wParam
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_GRDINC
+		mov		hGrd,eax
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

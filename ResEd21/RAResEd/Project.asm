@@ -4,8 +4,8 @@ szDialog		db 'Dialog',0
 szMenu			db 'Menu',0
 szMisc			db 'Misc',0
 
-szResource		db 'Resource',0
-szIncludeFile	db 'Include file',0
+szResource		db 'Resource files',0
+szIncludeFile	db 'Include files',0
 szStringTable	db 'Stringtable',0
 szLanguage		db 'Language',0
 
@@ -721,8 +721,10 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			mov		edx,[eax].PROJECT.hmem
 		.endif
 		.if fOpen
+			push	eax
 			invoke CloseDialog
-			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,NULL
+			pop		eax
+			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,eax
 			mov		hDialog,eax
 		.elseif !edx
 			invoke AddProjectNode,TPE_INCLUDE,offset szIncludeFile,esi
@@ -772,7 +774,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 	.elseif eax==TPE_XPMANIFEST
 		.if fOpen
 			invoke CloseDialog
-			invoke CreateDialogParam,hInstance,IDD_XPMANIFEST,hDEd,offset XPManifestEditProc,esi
+			invoke CreateDialogParam,hInstance,IDD_XPMANIFEST,hDEd,offset XPManifestEditProc,NULL
 			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,10*1024,TPE_XPMANIFEST
@@ -792,7 +794,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 	.elseif eax==TPE_TOOLBAR
 		.if fOpen
 			invoke CloseDialog
-			invoke CreateDialogParam,hInstance,IDD_TOOLBAR,hDEd,offset ToolbarEditProc,esi
+			invoke CreateDialogParam,hInstance,IDD_TOOLBAR,hDEd,offset ToolbarEditProc,NULL
 			mov		hDialog,eax
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_TOOLBAR

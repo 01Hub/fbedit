@@ -1,7 +1,7 @@
 
 IDD_DLGVERSION		equ 1700
-IDC_EDTVERNAME		equ 2901
-IDC_EDTVERID		equ 2902
+;IDC_EDTVERNAME		equ 2901
+;IDC_EDTVERID		equ 2902
 IDC_EDTVERFILE		equ 2903
 IDC_EDTVERPROD		equ 2904
 IDC_CBOVEROS		equ 2905
@@ -565,22 +565,22 @@ SaveHex:
 
 ExportVersion endp
 
-SaveVersion proc uses ebx esi edi,hWin:HWND
+SaveVersionEdit proc uses ebx esi edi,hWin:HWND
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_VERSION,FALSE
+		push	eax
+		invoke RtlMoveMemory,[eax].PROJECT.hmem,offset defver,sizeof VERSIONMEM+sizeof VERSIONITEM*32
+		pop		eax
 	.endif
 	mov		ebx,eax
-	mov		esi,[eax].PROJECT.hmem
-;	invoke GetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname,MaxName
-;	invoke GetDlgItemInt,hWin,IDC_EDTVERID,NULL,FALSE
-;	mov		[esi].VERSIONMEM.value,eax
+	push	ebx
+	mov		esi,[ebx].PROJECT.hmem
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
-
 	invoke GetDlgItemText,hWin,IDC_EDTVERFILE,addr buffer,16
 	push	esi
 	lea		esi,[esi].VERSIONMEM.fv
@@ -615,6 +615,7 @@ SaveVersion proc uses ebx esi edi,hWin:HWND
 		lea		esi,[esi+sizeof VERSIONITEM]
 		inc		nInx
 	.endw
+	pop		eax
 	ret
 
 GetVerNum:
@@ -639,7 +640,7 @@ GetVerNumItem:
 	.endif
 	retn
 
-SaveVersion endp
+SaveVersionEdit endp
 
 VersionSetCbo proc uses esi,hWin:HWND,nID:DWORD,lpKey:DWORD,nVal:DWORD
 	LOCAL	nInx:DWORD
@@ -686,6 +687,7 @@ EditProc endp
 VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -701,15 +703,11 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetUnikeName,addr [esi].VERSIONMEM.szname
 		.endif
 		invoke RtlZeroMemory,offset szVersionTxt,sizeof szVersionTxt
-;		invoke SendDlgItemMessage,hWin,IDC_EDTVERNAME,EM_LIMITTEXT,MaxName-1,0
-;		invoke SetDlgItemText,hWin,IDC_EDTVERNAME,addr [esi].VERSIONMEM.szname
-;		invoke SendDlgItemMessage,hWin,IDC_EDTVERID,EM_LIMITTEXT,5,0
-;		invoke SetDlgItemInt,hWin,IDC_EDTVERID,[esi].VERSIONMEM.value,TRUE
-mov		lpResType,offset szVERSIONINFO
-lea		eax,[esi].VERSIONMEM.szname
-mov		lpResName,eax
-lea		eax,[esi].VERSIONMEM.value
-mov		lpResID,eax
+		mov		lpResType,offset szVERSIONINFO
+		lea		eax,[esi].VERSIONMEM.szname
+		mov		lpResName,eax
+		lea		eax,[esi].VERSIONMEM.value
+		mov		lpResID,eax
 		invoke SendDlgItemMessage,hWin,IDC_EDTVERFILE,EM_LIMITTEXT,16,0
 		push	esi
 		lea		esi,[esi].VERSIONMEM.fv
@@ -749,7 +747,13 @@ mov		lpResID,eax
 		mov		edx,eax
 		invoke SetWindowLong,edx,GWL_WNDPROC,addr EditProc
 		mov		lpOldEditProc,eax
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		.if !eax
+			invoke SaveVersionEdit,hWin
+			invoke SetWindowLong,hWin,GWL_USERDATA,eax
+		.endif
 		invoke PropertyList,-2
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		mov		edx,eax
@@ -757,7 +761,7 @@ mov		lpResID,eax
 		and		eax,0FFFFh
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke SaveVersion,hWin
+				invoke SaveVersionEdit,hWin
 				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
@@ -816,6 +820,15 @@ mov		lpResID,eax
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov eax,FALSE
 		ret

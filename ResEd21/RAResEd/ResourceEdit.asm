@@ -142,6 +142,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 	.if !eax
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_RESOURCE,FALSE
 	.endif
+	push	eax
 	mov		edi,[eax].PROJECT.hmem
 	xor		esi,esi
 	.while esi<nRows
@@ -186,6 +187,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 	mov		[edi].RESOURCEMEM.szname,al
 	mov		[edi].RESOURCEMEM.value,eax
 	mov		[edi].RESOURCEMEM.szfile,al
+	pop		eax
 	ret
 
 SaveResourceEdit endp
@@ -196,6 +198,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	row[4]:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -271,9 +274,6 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		mov		esi,lParam
-		.if ![esi].PROJECT.hmem
-			xor		esi,esi
-		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if esi
 			mov		esi,[esi].PROJECT.hmem
@@ -290,10 +290,14 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		esi,sizeof RESOURCEMEM 
 			.endw
 			invoke SendMessage,hGrd,GM_SETCURSEL,0,0
+		.else
+			invoke SaveResourceEdit,hWin
+			invoke SetWindowLong,hWin,GWL_USERDATA,eax
 		.endif
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szRESOURCE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
@@ -413,6 +417,23 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,wParam
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_GRDRES
+		mov		hGrd,eax
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,397
+		sub		rect.bottom,6
+		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret
