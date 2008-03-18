@@ -199,9 +199,11 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -293,11 +295,14 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke SaveResourceEdit,hWin
 			invoke SetWindowLong,hWin,GWL_USERDATA,eax
+			mov		fChanged,TRUE
 		.endif
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szRESOURCE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
@@ -308,7 +313,10 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveResourceEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
@@ -316,6 +324,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNRESDEL
@@ -325,6 +334,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.endif
@@ -410,9 +420,12 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,[esi].GRIDNOTIFY.lpdata
 					invoke strcpy,edx,eax
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
+					mov		fDialogChanged,TRUE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
 				.endif
+			.elseif eax==GN_AFTERUPDATE
+				mov		fDialogChanged,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

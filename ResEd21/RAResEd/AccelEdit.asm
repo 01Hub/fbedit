@@ -263,9 +263,11 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	row[7]:DWORD
 	LOCAL	val:DWORD
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDACL
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -380,6 +382,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SaveAccelEdit,hWin
 			mov		esi,eax
 			invoke SetWindowLong,hWin,GWL_USERDATA,esi
+			mov		fChanged,TRUE
 		.endif
 		mov		esi,[esi].PROJECT.hmem
 		mov		lpResType,offset szACCELERATORS
@@ -420,6 +423,8 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		invoke PropertyList,-4
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -433,7 +438,10 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				invoke SetFocus,hDEd
 				invoke SaveAccelEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
@@ -441,6 +449,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNACLDEL
@@ -450,6 +459,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.endif

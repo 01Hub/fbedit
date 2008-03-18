@@ -136,9 +136,11 @@ SaveToolbarEdit endp
 
 ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if !esi
@@ -150,6 +152,7 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke SaveToolbarEdit,hWin
 			mov		esi,eax
 			invoke SetWindowLong,hWin,GWL_USERDATA,esi
+			mov		fChanged,TRUE
 		.endif
 		mov		edi,[esi].PROJECT.hmem
 		mov		lpResType,offset szTOOLBAR
@@ -164,6 +167,8 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [edi+sizeof TOOLBARMEM]
 		invoke PropertyList,-6
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -171,11 +176,16 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveToolbarEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
 			.endif
+		.elseif edx==EN_CHANGE
+			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL

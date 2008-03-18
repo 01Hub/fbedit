@@ -126,9 +126,11 @@ SaveRCDataEdit endp
 
 RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if !esi
@@ -140,6 +142,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SaveRCDataEdit,hWin
 			mov		esi,eax
 			invoke SetWindowLong,hWin,GWL_USERDATA,esi
+			mov		fChanged,TRUE
 		.endif
 		mov		edi,[esi].PROJECT.hmem
 		mov		lpResType,offset szRCDATA
@@ -150,6 +153,8 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
 		invoke PropertyList,-2
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -157,11 +162,16 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveRCDataEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
 			.endif
+		.elseif edx==EN_CHANGE
+			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL

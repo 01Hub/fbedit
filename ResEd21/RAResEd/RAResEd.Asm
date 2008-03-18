@@ -1485,6 +1485,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_GETMODIFY
 		invoke GetWindowLong,hPrj,0
 		.if eax
+			.if hDialog
+				push	eax
+				invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
+				pop		eax
+			.endif
 			invoke GetProjectModify,eax
 		.endif
 		jmp		Ex

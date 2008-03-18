@@ -95,9 +95,11 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -135,11 +137,14 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			invoke SaveIncludeEdit,hWin
 			invoke SetWindowLong,hWin,GWL_USERDATA,eax
+			mov		fChanged,TRUE
 		.endif
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szINCLUDE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
@@ -150,7 +155,10 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveIncludeEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
@@ -158,6 +166,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNINCDEL
@@ -167,6 +176,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.endif

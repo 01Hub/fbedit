@@ -196,9 +196,11 @@ XPManifestSave endp
 
 XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if !esi
@@ -210,6 +212,7 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke XPManifestSave,hWin
 			mov		esi,eax
 			invoke SetWindowLong,hWin,GWL_USERDATA,esi
+			mov		fChanged,TRUE
 		.endif
 		mov		edi,[esi].PROJECT.hmem
 		mov		lpResType,offset szMANIFEST
@@ -222,6 +225,8 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [edi+sizeof XPMANIFESTMEM]
 		invoke PropertyList,-3
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -229,11 +234,16 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke XPManifestSave,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
 			.endif
+		.elseif edx==EN_CHANGE
+			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL

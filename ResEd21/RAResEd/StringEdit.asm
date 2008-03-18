@@ -173,9 +173,11 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	col:COLUMN
 	LOCAL	row[3]:DWORD
 	LOCAL	rect:RECT
+	LOCAL	fChanged:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -229,6 +231,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SaveStringEdit,hWin
 			mov		esi,eax
 			invoke SetWindowLong,hWin,GWL_USERDATA,esi
+			mov		fChanged,TRUE
 		.endif
 		mov		esi,[esi].PROJECT.hmem
 		mov		lpResType,offset szSTRINGTABLE
@@ -247,6 +250,8 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		invoke PropertyList,-5
 		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		eax,fChanged
+		mov		fDialogChanged,eax
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
@@ -257,7 +262,10 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SaveStringEdit,hWin
-				invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
@@ -265,6 +273,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNSTRDEL
@@ -274,6 +283,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.endif
@@ -288,6 +298,8 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==GN_HEADERCLICK
 				;Sort the grid by column, invert sorting order
 				invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
+			.elseif eax==GN_AFTERUPDATE
+				mov		fDialogChanged,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

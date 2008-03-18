@@ -1053,15 +1053,16 @@ CreateMnu proc uses ebx esi edi,hWin:HWND,lpProItemMem:DWORD
 		mov		(MNUHEAD ptr [esi]).menuid,eax
 		push	MnuItemID
 		pop		(MNUHEAD ptr [esi]).startid
-		invoke DialogBoxParam,hInstance,IDD_DLGMENUEDIT,hWin,addr DlgMenuEditProc,hMem
-		.if eax
-			mov		eax,hMem
-			mov		[eax].MNUHEAD.changed,TRUE
-		.else
-			invoke GlobalUnlock,hMem
-			invoke GlobalFree,hMem
-			xor		eax,eax
-		.endif
+		invoke CreateDialogParam,hInstance,IDD_DLGMENUEDIT,hWin,addr DlgMenuEditProc,hMem
+		mov		hDialog,eax
+;		.if eax
+;			mov		eax,hMem
+;			mov		[eax].MNUHEAD.changed,TRUE
+;		.else
+;			invoke GlobalUnlock,hMem
+;			invoke GlobalFree,hMem
+;			xor		eax,eax
+;		.endif
 	.else
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MaxMem
 		mov		ebx,eax
@@ -1071,19 +1072,20 @@ CreateMnu proc uses ebx esi edi,hWin:HWND,lpProItemMem:DWORD
 		mov		eax,[eax].PROJECT.hmem
 		mov		hMem,eax
 		invoke SaveMenu,hMem,ebx
-		invoke DialogBoxParam,hInstance,IDD_DLGMENUEDIT,hWin,addr DlgMenuEditProc,hMem
-		.if eax
-			mov		edx,hMem
-			mov		[edx].MNUHEAD.changed,TRUE
-			invoke GetProjectItemName,lpProItemMem,addr buffer
-			invoke SetProjectItemName,lpProItemMem,addr buffer
-		.else
-			;Restore copy
-			invoke SaveMenu,ebx,hMem
-		.endif
-		invoke GlobalUnlock,ebx
-		invoke GlobalFree,ebx
-		mov		eax,hMem
+		invoke CreateDialogParam,hInstance,IDD_DLGMENUEDIT,hWin,addr DlgMenuEditProc,hMem
+		mov		hDialog,eax
+;		.if eax
+;			mov		edx,hMem
+;			mov		[edx].MNUHEAD.changed,TRUE
+;			invoke GetProjectItemName,lpProItemMem,addr buffer
+;			invoke SetProjectItemName,lpProItemMem,addr buffer
+;		.else
+;			;Restore copy
+;			invoke SaveMenu,ebx,hMem
+;		.endif
+;		invoke GlobalUnlock,ebx
+;		invoke GlobalFree,ebx
+;		mov		eax,hMem
 	.endif
 	ret
 
