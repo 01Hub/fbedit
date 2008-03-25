@@ -1496,7 +1496,13 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_SETMODIFY
 		invoke GetWindowLong,hPrj,0
 		.if eax
-			invoke SetProjectModify,eax,wParam
+			.if !wParam
+				.if !fMenuErr
+					invoke SetProjectModify,eax,wParam
+				.endif
+			.else
+				invoke SetProjectModify,eax,wParam
+			.endif
 		.endif
 		jmp		Ex
 	.elseif eax==PRO_GETSELECTED
@@ -1544,7 +1550,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,hOut
 			.endif
 			mov		hExportOut,eax
-			invoke DialogBoxParam,hInstance,IDD_DLGNAMES,hPrj,offset NameEditProc,NULL
+			invoke CloseDialog
+			invoke CreateDialogParam,hInstance,IDD_DLGNAMES,hDEd,offset NameEditProc,NULL
+			mov		hDialog,eax
 		.endif
 		jmp		Ex
 	.elseif eax==PRO_SETEXPORT
@@ -1584,6 +1592,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
+		jmp		Ex
+	.elseif eax==MEM_GETERR
+		mov		eax,fMenuErr
 		jmp		Ex
 	.elseif eax==DEM_OPEN
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0

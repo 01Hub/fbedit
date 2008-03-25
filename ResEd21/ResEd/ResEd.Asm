@@ -262,34 +262,37 @@ SaveProject proc lpFileName:DWORD
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hMemDef,eax
 	invoke SendMessage,hResEd,PRO_EXPORT,hMemDef,hMem
-	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		invoke lstrlen,hMem
-		mov		nSize,eax
-		invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
-		invoke CloseHandle,hFile
-		invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
-		.if grdsize.nodefines
-			invoke lstrcpy,addr buff,lpFileName
-			invoke lstrlen,addr buff
-			.while byte ptr buff[eax-1]!='.' && eax
-				dec		eax
-			.endw
-			mov		word ptr buff[eax],'h'
-			invoke CreateFile,addr buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-			.if eax!=INVALID_HANDLE_VALUE
-				mov		hFile,eax
-				invoke lstrlen,hMemDef
-				mov		nSize,eax
-				invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
-				invoke CloseHandle,hFile
+	invoke SendMessage,hResEd,MEM_GETERR,0,0
+	.if !eax
+		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			invoke lstrlen,hMem
+			mov		nSize,eax
+			invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+			invoke CloseHandle,hFile
+			invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
+			.if grdsize.nodefines
+				invoke lstrcpy,addr buff,lpFileName
+				invoke lstrlen,addr buff
+				.while byte ptr buff[eax-1]!='.' && eax
+					dec		eax
+				.endw
+				mov		word ptr buff[eax],'h'
+				invoke CreateFile,addr buff,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+				.if eax!=INVALID_HANDLE_VALUE
+					mov		hFile,eax
+					invoke lstrlen,hMemDef
+					mov		nSize,eax
+					invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
+					invoke CloseHandle,hFile
+				.endif
 			.endif
+			.if nmeexp.fAuto
+				invoke SendMessage,hResEd,PRO_EXPORTNAMES,1,0
+			.endif
+			xor		eax,eax
 		.endif
-		.if nmeexp.fAuto
-			invoke SendMessage,hResEd,PRO_EXPORTNAMES,1,0
-		.endif
-		xor		eax,eax
 	.endif
 	push	eax
 	invoke GlobalFree,hMem
@@ -414,6 +417,13 @@ WantToSaveProject proc lpFileName:DWORD
 		.if eax==IDYES
 			invoke SaveProjectFile,lpFileName
 			dec		eax
+			push	eax
+			invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+			.if eax
+				pop		eax
+				push	1
+			.endif
+			pop		eax
 		.elseif eax==IDNO
 		    mov		eax,FALSE
 		.else

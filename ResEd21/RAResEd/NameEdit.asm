@@ -364,6 +364,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	col:COLUMN
 	LOCAL	row[5]:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -670,6 +671,11 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hGrd,GM_SETCURSEL,3,0
 			invoke SetFocus,hGrd
 		.endif
+		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
+		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szDEFINE
+		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		invoke SendMessage,hWin,WM_SIZE,0,0
+		mov		fDialogChanged,FALSE
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_COMMAND
@@ -682,13 +688,18 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke UpdateNames,hWin
-				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				invoke PropertyList,0
 			.elseif eax==IDC_BTNNMEADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,3,eax
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNNMEDEL
@@ -709,6 +720,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_DELROW,ebx,0
 				invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
 				invoke SetFocus,hGrd
+				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNNMEEXPORT
@@ -748,8 +760,27 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					inc		eax
 				.endif
 				invoke EnableWindow,edx,eax
+			.elseif eax==GN_AFTERUPDATE
+				mov		fDialogChanged,TRUE
 			.endif
 		.endif
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDC_GRDNME
+		mov		hGrd,eax
+		mov		rect.left,3
+		mov		rect.top,3
+		mov		rect.right,202+3
+		sub		rect.bottom,6
+		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,wParam
 	.else

@@ -457,3 +457,4 @@ fClose				dd ?
 hDialog				dd ?
 fDialogChanged		dd ?
 hPrpCboDlg			dd ?
+fMenuErr			dd ?

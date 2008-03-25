@@ -121,6 +121,32 @@ MnuSaveAccel proc uses esi edi,nAccel:DWORD,lpDest:DWORD
 
 MnuSaveAccel endp
 
+ExportMenuNames proc uses esi edi,hMem:DWORD
+
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	mov    edi,eax
+	invoke GlobalLock,edi
+	push	edi
+	mov		esi,hMem
+	invoke MnuSaveDefine,addr (MNUHEAD ptr [esi]).menuname,addr (MNUHEAD ptr [esi]).menuid
+	add		esi,sizeof MNUHEAD
+  @@:
+	mov		eax,(MNUITEM ptr [esi]).itemflag
+	.if eax
+		.if eax!=-1
+			invoke MnuSaveDefine,addr (MNUITEM ptr [esi]).itemname,addr (MNUITEM ptr [esi]).itemid
+		.endif
+		add		esi,sizeof MNUITEM
+		jmp		@b
+	.endif
+;	mov		ax,0A0Dh
+;	stosw
+	mov		byte ptr [edi],0
+	pop		eax
+	ret
+
+ExportMenuNames endp
+
 MnuSaveItemEx proc uses ebx,lpItem:DWORD,fPopUp:DWORD
 	LOCAL	val:DWORD
 
@@ -201,31 +227,18 @@ MnuSaveItemEx proc uses ebx,lpItem:DWORD,fPopUp:DWORD
 
 MnuSaveItemEx endp
 
-ExportMenuNames proc uses esi edi,hMem:DWORD
+MenuSkippedLevel proc uses esi,lpMenu:DWORD
+	LOCAL buffer[256]:BYTE
 
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-	mov    edi,eax
-	invoke GlobalLock,edi
-	push	edi
-	mov		esi,hMem
-	invoke MnuSaveDefine,addr (MNUHEAD ptr [esi]).menuname,addr (MNUHEAD ptr [esi]).menuid
-	add		esi,sizeof MNUHEAD
-  @@:
-	mov		eax,(MNUITEM ptr [esi]).itemflag
-	.if eax
-		.if eax!=-1
-			invoke MnuSaveDefine,addr (MNUITEM ptr [esi]).itemname,addr (MNUITEM ptr [esi]).itemid
-		.endif
-		add		esi,sizeof MNUITEM
-		jmp		@b
-	.endif
-;	mov		ax,0A0Dh
-;	stosw
-	mov		byte ptr [edi],0
-	pop		eax
+	mov		esi,lpMenu
+	invoke lstrcpy,addr buffer,addr [esi].MNUHEAD.menuname
+	invoke lstrcat,addr buffer,addr szCrLf
+	invoke lstrcat,addr buffer,addr szMnuErr
+	invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+	mov		fMenuErr,TRUE
 	ret
 
-ExportMenuNames endp
+MenuSkippedLevel endp
 
 ExportMenuEx proc uses esi edi,hMem:DWORD
 	LOCAL	val:DWORD
@@ -266,7 +279,7 @@ ExportMenuEx proc uses esi edi,hMem:DWORD
 		.if eax!=-1
 			mov		eax,(MNUITEM ptr [esi]).level
 			.if eax!=level
-				invoke MessageBox,hDEd,addr szMnuErr,addr szAppName,MB_OK or MB_ICONERROR
+				invoke MenuSkippedLevel,hMem
 				jmp		MnExEx
 			.endif
 			push	esi
@@ -291,7 +304,7 @@ ExportMenuEx proc uses esi edi,hMem:DWORD
 			.if eax>level
 				sub		eax,level
 				.if eax!=1
-					invoke MessageBox,hDEd,addr szMnuErr,addr szAppName,MB_OK or MB_ICONERROR
+					invoke MenuSkippedLevel,hMem
 					jmp		MnExEx
 				.endif
 				invoke MnuSpc,level
@@ -410,6 +423,7 @@ ExportMenu proc uses esi edi,hMem:DWORD
 	LOCAL	val:DWORD
 	LOCAL	level:DWORD
 
+	mov		fMenuErr,FALSE
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		edi,eax
 	invoke GlobalLock,edi
@@ -445,7 +459,7 @@ ExportMenu proc uses esi edi,hMem:DWORD
 		.if eax!=-1
 			mov		eax,(MNUITEM ptr [esi]).level
 			.if eax!=level
-				invoke MessageBox,hDEd,addr szMnuErr,addr szAppName,MB_OK or MB_ICONERROR
+				invoke MenuSkippedLevel,hMem
 				jmp		MnExEx
 			.endif
 			push	esi
@@ -470,7 +484,7 @@ ExportMenu proc uses esi edi,hMem:DWORD
 			.if eax>level
 				sub		eax,level
 				.if eax!=1
-					invoke MessageBox,hDEd,addr szMnuErr,addr szAppName,MB_OK or MB_ICONERROR
+					invoke MenuSkippedLevel,hMem
 					jmp		MnExEx
 				.endif
 				invoke MnuSpc,level

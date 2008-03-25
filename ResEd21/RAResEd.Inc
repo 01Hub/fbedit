@@ -193,6 +193,7 @@ ALIGN_DLGHCENTER	equ 11
 ;Menu editor messages
 MEM_BASE			equ DEM_BASE+1000
 MEM_OPEN			equ MEM_BASE+1		;wParam=0, lParam=Handle of memory or NULL
+MEM_GETERR			equ MEM_BASE+2		;wParam=0, lParam=0
 
 ;Project messages
 PRO_BASE			equ DEM_BASE+2000
