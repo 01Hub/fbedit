@@ -81,15 +81,18 @@ TYPES struct
 	flist			dd 4 dup(?)
 TYPES ends
 
+LANGUAGEMEM struct
+	lang			dd ?
+	sublang			dd ?
+LANGUAGEMEM ends
+
 ;Menu structures
 MNUHEAD struct
-	changed			dd ?
 	menuname		db MaxName dup(?)
 	menuid			dd ?
 	startid			dd ?
 	menuex			dd ?
-	lang			dd ?
-	sublang			dd ?
+	lang			LANGUAGEMEM <?>
 MNUHEAD ends
 
 MNUITEM struct
@@ -232,11 +235,6 @@ PROJECT struct
 	lnstart			dd ?
 	lnend			dd ?
 PROJECT ends
-
-LANGUAGEMEM struct
-	lang			dd ?
-	sublang			dd ?
-LANGUAGEMEM ends
 
 NAMEMEM struct
 	szname			db MaxName dup(?)

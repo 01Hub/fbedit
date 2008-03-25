@@ -2138,7 +2138,7 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			invoke FindStyle,offset wordbuff,offset langdef
 			shr		eax,16
 		.endif
-		mov		[edi].MNUHEAD.lang,eax
+		mov		[edi].MNUHEAD.lang.lang,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
@@ -2147,7 +2147,7 @@ ParseMenu proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			invoke FindStyle,offset wordbuff,offset langdef
 			and		eax,0FFFFh
 		.endif
-		mov		[edi].MNUHEAD.sublang,eax
+		mov		[edi].MNUHEAD.lang.sublang,eax
 		jmp		@b
 	.endif
 	sub		esi,ebx
@@ -2331,7 +2331,7 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			invoke FindStyle,offset wordbuff,offset langdef
 			shr		eax,16
 		.endif
-		mov		[edi].MNUHEAD.lang,eax
+		mov		[edi].MNUHEAD.lang.lang,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
@@ -2340,7 +2340,7 @@ ParseMenuEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 			invoke FindStyle,offset wordbuff,offset langdef
 			and		eax,0FFFFh
 		.endif
-		mov		[edi].MNUHEAD.sublang,eax
+		mov		[edi].MNUHEAD.lang.sublang,eax
 		jmp		@b
 	.endif
 	sub		esi,ebx

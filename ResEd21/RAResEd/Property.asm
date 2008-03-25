@@ -67,6 +67,7 @@ PRP_BOOL_AUTOSCROLL	equ 236
 PRP_BOOL_AUTOPLAY	equ 237
 PRP_BOOL_AUTOSIZE	equ 238
 PRP_BOOL_HASSTRINGS	equ 239
+PRP_BOOL_MENUEX		equ 240
 
 PRP_MULTI_CLIP		equ 300
 PRP_MULTI_SCROLL	equ 301
@@ -212,6 +213,8 @@ HasStcb				dd -1 xor CBS_HASSTRINGS,0
 					dd -1 xor CBS_HASSTRINGS,CBS_HASSTRINGS
 HasStlb				dd -1 xor LBS_HASSTRINGS,0
 					dd -1 xor LBS_HASSTRINGS,LBS_HASSTRINGS
+MenuEx				dd -1 xor TRUE,0
+					dd -1 xor TRUE,TRUE
 
 
 ;False/True ExStyles
@@ -533,10 +536,12 @@ fBtnClick			dd ?
 lpResType			dd ?
 lpResName			dd ?
 lpResID				dd ?
+lpResStartID		dd ?
 lpResFile			dd ?
 lpResLang			dd ?
 lpResHeight			dd ?
 lpResWidth			dd ?
+lpResMenuEx			dd ?
 
 .code
 
@@ -773,339 +778,347 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 	LOCAL	nType:DWORD
 	LOCAL	buffer[32]:BYTE
 
-	invoke GetWindowLong,hCtl,GWL_USERDATA
-	mov		esi,eax
-	assume esi:ptr DIALOG
-	push	[esi].ntype
-	pop		nType
 	invoke SetWindowLong,hPrpLstDlgCld,GWL_USERDATA,hCtl
-	mov		eax,lbid
-	.if eax==PRP_BOOL_SYSMENU
-		invoke TxtLstFalseTrue,[esi].style,addr SysMDlg
-	.elseif eax==PRP_BOOL_MAXBUTTON
-		invoke TxtLstFalseTrue,[esi].style,addr MaxBDlg
-	.elseif eax==PRP_BOOL_MINBUTTON
-		invoke TxtLstFalseTrue,[esi].style,addr MinBDlg
-	.elseif eax==PRP_BOOL_ENABLED
-		invoke TxtLstFalseTrue,[esi].style,addr EnabAll
-	.elseif eax==PRP_BOOL_VISIBLE
-		invoke TxtLstFalseTrue,[esi].style,addr VisiAll
-	.elseif eax==PRP_BOOL_DEFAULT
-		invoke TxtLstFalseTrue,[esi].style,addr DefaBtn
-	.elseif eax==PRP_BOOL_AUTO
-		.if nType==5
-			invoke TxtLstFalseTrue,[esi].style,addr AutoChk
-		.elseif nType==6
-			invoke TxtLstFalseTrue,[esi].style,addr AutoRbt
-		.elseif nType==16
-			invoke TxtLstFalseTrue,[esi].style,addr AutoSpn
+	.if hCtl==-7
+		.if lbid==PRP_BOOL_MENUEX
+			mov		eax,lpResMenuEx
+			mov		eax,[eax]
+			invoke TxtLstFalseTrue,eax,addr MenuEx
 		.endif
-	.elseif eax==PRP_BOOL_AUTOSCROLL
-		.if nType==7
-			invoke TxtLstFalseTrue,[esi].style,addr AutoCbo
-		.endif
-	.elseif eax==PRP_BOOL_AUTOPLAY
-		.if nType==27
-			invoke TxtLstFalseTrue,[esi].style,addr AutoAni
-		.endif
-	.elseif eax==PRP_BOOL_AUTOSIZE
-		.if nType==18 || nType==19
-			invoke TxtLstFalseTrue,[esi].style,addr AutoTbr
-		.endif
-	.elseif eax==PRP_BOOL_MNEMONIC
-		invoke TxtLstFalseTrue,[esi].style,addr MnemStc
-	.elseif eax==PRP_BOOL_WORDWRAP
-		invoke TxtLstFalseTrue,[esi].style,addr WordStc
-	.elseif eax==PRP_BOOL_MULTI
-		.if nType==1 || nType==22
-			invoke TxtLstFalseTrue,[esi].style,addr MultEdt
-		.elseif nType==4 || nType==5 || nType==6
-			invoke TxtLstFalseTrue,[esi].style,addr MultBtn
-		.elseif nType==8
-			invoke TxtLstFalseTrue,[esi].style,addr MultLst
-		.elseif nType==11
-			invoke TxtLstFalseTrue,[esi].style,addr MultTab
-		.elseif nType==21
-			invoke TxtLstFalseTrue,[esi].style,addr MultMvi
-		.endif
-	.elseif eax==PRP_BOOL_LOCK
-		invoke TxtLstFalseTrue,[esi].style,addr LockEdt
-	.elseif eax==PRP_BOOL_CHILD
-		invoke TxtLstFalseTrue,[esi].style,addr ChilAll
-	.elseif eax==PRP_BOOL_SIZE
-		.if nType==0
-			invoke TxtLstFalseTrue,[esi].style,addr SizeDlg
-		.elseif nType==19
-			invoke TxtLstFalseTrue,[esi].style,addr SizeSbr
-		.endif
-	.elseif eax==PRP_BOOL_TABSTOP
-		invoke TxtLstFalseTrue,[esi].style,addr TabSAll
-	.elseif eax==PRP_BOOL_NOTIFY
-		.if nType==2 || nType==17 || nType==25
-			invoke TxtLstFalseTrue,[esi].style,addr NotiStc
-		.elseif nType==4 || nType==5 || nType==6
-			invoke TxtLstFalseTrue,[esi].style,addr NotiBtn
-		.elseif nType==8
-			invoke TxtLstFalseTrue,[esi].style,addr NotiLst
-		.endif
-	.elseif eax==PRP_BOOL_WANTCR
-		invoke TxtLstFalseTrue,[esi].style,addr WantEdt
-	.elseif eax==PRP_BOOL_SORT
-		.if nType==7
-			invoke TxtLstFalseTrue,[esi].style,addr SortCbo
-		.elseif nType==8
-			invoke TxtLstFalseTrue,[esi].style,addr SortLst
-		.endif
-	.elseif eax==PRP_BOOL_FLAT
-		invoke TxtLstFalseTrue,[esi].style,addr FlatTbr
-	.elseif eax==PRP_BOOL_GROUP
-		invoke TxtLstFalseTrue,[esi].style,addr GrouAll
-	.elseif eax==PRP_BOOL_ICON
-;		invoke TxtLstFalseTrue,[esi].style,addr IconBtn
-	.elseif eax==PRP_BOOL_USETAB
-		invoke TxtLstFalseTrue,[esi].style,addr UseTLst
-	.elseif eax==PRP_BOOL_SETBUDDY
-		invoke TxtLstFalseTrue,[esi].style,addr SetBUdn
-	.elseif eax==PRP_BOOL_HIDE
-		.if nType==1 || nType==22
-			invoke TxtLstFalseTrue,[esi].style,addr HideEdt
-		.elseif nType==13
-			invoke TxtLstFalseTrue,[esi].style,addr HideTrv
-		.elseif nType==14
-			invoke TxtLstFalseTrue,[esi].style,addr HideLsv
-		.endif
-	.elseif eax==PRP_BOOL_TOPMOST
-		invoke TxtLstFalseTrue,[esi].exstyle,addr TopMost
-	.elseif eax==PRP_BOOL_INTEGRAL
-		.if nType==7
-			invoke TxtLstFalseTrue,[esi].style,addr IntHtCbo
-		.elseif nType==8
-			invoke TxtLstFalseTrue,[esi].style,addr IntHtLst
-		.endif
-	.elseif eax==PRP_BOOL_BUTTON
-		.if nType==11
-			invoke TxtLstFalseTrue,[esi].style,addr ButtTab
-		.elseif nType==13
-			invoke TxtLstFalseTrue,[esi].style,addr ButtTrv
-		.elseif nType==32
-			invoke TxtLstFalseTrue,[esi].style,addr ButtHdr
-		.endif
-	.elseif eax==PRP_BOOL_POPUP
-		invoke TxtLstFalseTrue,[esi].style,addr PopUAll
-	.elseif eax==PRP_BOOL_OWNERDRAW
-		invoke TxtLstFalseTrue,[esi].style,addr OwneLsv
-	.elseif eax==PRP_BOOL_TRANSP
-		invoke TxtLstFalseTrue,[esi].style,addr TranAni
-	.elseif eax==PRP_BOOL_TIME
-		invoke TxtLstFalseTrue,[esi].style,addr TimeAni
-	.elseif eax==PRP_BOOL_WEEK
-		invoke TxtLstFalseTrue,[esi].style,addr WeekMvi
-	.elseif eax==PRP_BOOL_TOOLTIP
-		.if nType==11
-			invoke TxtLstFalseTrue,[esi].style,addr ToolTab
-		.elseif nType==18
-			invoke TxtLstFalseTrue,[esi].style,addr ToolTbr
-		.else
-			invoke TxtLstFalseTrue,[esi].style,addr ToolSbr
-		.endif
-	.elseif eax==PRP_BOOL_WRAP
-		invoke TxtLstFalseTrue,[esi].style,addr WrapTbr
-	.elseif eax==PRP_BOOL_DIVIDER
-		invoke TxtLstFalseTrue,[esi].style,addr DiviTbr
-	.elseif eax==PRP_BOOL_DRAGDROP
-		invoke TxtLstFalseTrue,[esi].style,addr DragHdr
-	.elseif eax==PRP_BOOL_SMOOTH
-		invoke TxtLstFalseTrue,[esi].style,addr SmooPgb
-	.elseif eax==PRP_BOOL_HASSTRINGS
-		.if nType==7
-			invoke TxtLstFalseTrue,[esi].style,addr HasStcb
-		.elseif nType==8
-			invoke TxtLstFalseTrue,[esi].style,addr HasStlb
-		.endif
-	.elseif eax==PRP_MULTI_CLIP
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ClipAll
-	.elseif eax==PRP_MULTI_SCROLL
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ScroAll
-	.elseif eax==PRP_MULTI_ALIGN
-		.if nType==1
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligEdt
-		.elseif nType==2
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligStc
-		.elseif nType==4
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligBtn
-		.elseif nType==5 || nType==6
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligChk
-		.elseif nType==11
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligTab
-		.elseif nType==14
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligLsv
-		.elseif nType==16
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligSpn
-		.elseif nType==17
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligIco
-		.elseif nType==18 || nType==19
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligTbr
-		.elseif nType==27
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligAni
-		.endif
-	.elseif eax==PRP_MULTI_AUTOSCROLL
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AutoEdt
-	.elseif eax==PRP_MULTI_FORMAT
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr FormDtp
-	.elseif eax==PRP_MULTI_STARTPOS
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr StarDlg
-	.elseif eax==PRP_MULTI_ORIENT
-		.if nType==12
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OriePgb
-		.elseif nType==16
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OrieUdn
-		.endif
-	.elseif eax==PRP_MULTI_SORT
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr SortLsv
-	.elseif eax==PRP_MULTI_OWNERDRAW
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OwneCbo
-	.elseif eax==PRP_MULTI_ELLIPSIS
-		invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ElliStc
-	.elseif eax==PRP_MULTI_BORDER
-		mov		eax,nType
-		.if eax==0
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordDlg
-		.elseif eax==2 || eax==17 || eax==25
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordStc
-		.elseif eax==3 || eax==4
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordBtn
-		.else
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordAll
-		.endif
-	.elseif eax==PRP_MULTI_TYPE
-		mov		eax,nType
-		.if eax==1
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeEdt
-		.elseif eax==4
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeBtn
-		.elseif eax==7 || eax==24
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeCbo
-		.elseif eax==13
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeTrv
-		.elseif eax==14
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeLsv
-		.elseif eax==17
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeImg
-		.elseif eax==20
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeDtp
-		.elseif eax==25
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeStc
-		.endif
-	.elseif eax==PRP_STR_MENU
-		;Dialog Menu
-		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-		invoke GetWindowLong,hPrj,0
-		mov		edi,eax
-		.while [edi].PROJECT.hmem
-			.if [edi].PROJECT.ntype==TPE_MENU
-				mov		edx,[edi].PROJECT.hmem
-				.if [edx].MNUHEAD.menuname
-					lea		edx,[edx].MNUHEAD.menuname
-				.else
-					invoke ResEdBinToDec,[edx].MNUHEAD.menuid,addr buffer
-					lea		edx,buffer
+	.else
+		invoke GetWindowLong,hCtl,GWL_USERDATA
+		mov		esi,eax
+		assume esi:ptr DIALOG
+		push	[esi].ntype
+		pop		nType
+		mov		eax,lbid
+		.if eax==PRP_BOOL_SYSMENU
+			invoke TxtLstFalseTrue,[esi].style,addr SysMDlg
+		.elseif eax==PRP_BOOL_MAXBUTTON
+			invoke TxtLstFalseTrue,[esi].style,addr MaxBDlg
+		.elseif eax==PRP_BOOL_MINBUTTON
+			invoke TxtLstFalseTrue,[esi].style,addr MinBDlg
+		.elseif eax==PRP_BOOL_ENABLED
+			invoke TxtLstFalseTrue,[esi].style,addr EnabAll
+		.elseif eax==PRP_BOOL_VISIBLE
+			invoke TxtLstFalseTrue,[esi].style,addr VisiAll
+		.elseif eax==PRP_BOOL_DEFAULT
+			invoke TxtLstFalseTrue,[esi].style,addr DefaBtn
+		.elseif eax==PRP_BOOL_AUTO
+			.if nType==5
+				invoke TxtLstFalseTrue,[esi].style,addr AutoChk
+			.elseif nType==6
+				invoke TxtLstFalseTrue,[esi].style,addr AutoRbt
+			.elseif nType==16
+				invoke TxtLstFalseTrue,[esi].style,addr AutoSpn
+			.endif
+		.elseif eax==PRP_BOOL_AUTOSCROLL
+			.if nType==7
+				invoke TxtLstFalseTrue,[esi].style,addr AutoCbo
+			.endif
+		.elseif eax==PRP_BOOL_AUTOPLAY
+			.if nType==27
+				invoke TxtLstFalseTrue,[esi].style,addr AutoAni
+			.endif
+		.elseif eax==PRP_BOOL_AUTOSIZE
+			.if nType==18 || nType==19
+				invoke TxtLstFalseTrue,[esi].style,addr AutoTbr
+			.endif
+		.elseif eax==PRP_BOOL_MNEMONIC
+			invoke TxtLstFalseTrue,[esi].style,addr MnemStc
+		.elseif eax==PRP_BOOL_WORDWRAP
+			invoke TxtLstFalseTrue,[esi].style,addr WordStc
+		.elseif eax==PRP_BOOL_MULTI
+			.if nType==1 || nType==22
+				invoke TxtLstFalseTrue,[esi].style,addr MultEdt
+			.elseif nType==4 || nType==5 || nType==6
+				invoke TxtLstFalseTrue,[esi].style,addr MultBtn
+			.elseif nType==8
+				invoke TxtLstFalseTrue,[esi].style,addr MultLst
+			.elseif nType==11
+				invoke TxtLstFalseTrue,[esi].style,addr MultTab
+			.elseif nType==21
+				invoke TxtLstFalseTrue,[esi].style,addr MultMvi
+			.endif
+		.elseif eax==PRP_BOOL_LOCK
+			invoke TxtLstFalseTrue,[esi].style,addr LockEdt
+		.elseif eax==PRP_BOOL_CHILD
+			invoke TxtLstFalseTrue,[esi].style,addr ChilAll
+		.elseif eax==PRP_BOOL_SIZE
+			.if nType==0
+				invoke TxtLstFalseTrue,[esi].style,addr SizeDlg
+			.elseif nType==19
+				invoke TxtLstFalseTrue,[esi].style,addr SizeSbr
+			.endif
+		.elseif eax==PRP_BOOL_TABSTOP
+			invoke TxtLstFalseTrue,[esi].style,addr TabSAll
+		.elseif eax==PRP_BOOL_NOTIFY
+			.if nType==2 || nType==17 || nType==25
+				invoke TxtLstFalseTrue,[esi].style,addr NotiStc
+			.elseif nType==4 || nType==5 || nType==6
+				invoke TxtLstFalseTrue,[esi].style,addr NotiBtn
+			.elseif nType==8
+				invoke TxtLstFalseTrue,[esi].style,addr NotiLst
+			.endif
+		.elseif eax==PRP_BOOL_WANTCR
+			invoke TxtLstFalseTrue,[esi].style,addr WantEdt
+		.elseif eax==PRP_BOOL_SORT
+			.if nType==7
+				invoke TxtLstFalseTrue,[esi].style,addr SortCbo
+			.elseif nType==8
+				invoke TxtLstFalseTrue,[esi].style,addr SortLst
+			.endif
+		.elseif eax==PRP_BOOL_FLAT
+			invoke TxtLstFalseTrue,[esi].style,addr FlatTbr
+		.elseif eax==PRP_BOOL_GROUP
+			invoke TxtLstFalseTrue,[esi].style,addr GrouAll
+		.elseif eax==PRP_BOOL_ICON
+	;		invoke TxtLstFalseTrue,[esi].style,addr IconBtn
+		.elseif eax==PRP_BOOL_USETAB
+			invoke TxtLstFalseTrue,[esi].style,addr UseTLst
+		.elseif eax==PRP_BOOL_SETBUDDY
+			invoke TxtLstFalseTrue,[esi].style,addr SetBUdn
+		.elseif eax==PRP_BOOL_HIDE
+			.if nType==1 || nType==22
+				invoke TxtLstFalseTrue,[esi].style,addr HideEdt
+			.elseif nType==13
+				invoke TxtLstFalseTrue,[esi].style,addr HideTrv
+			.elseif nType==14
+				invoke TxtLstFalseTrue,[esi].style,addr HideLsv
+			.endif
+		.elseif eax==PRP_BOOL_TOPMOST
+			invoke TxtLstFalseTrue,[esi].exstyle,addr TopMost
+		.elseif eax==PRP_BOOL_INTEGRAL
+			.if nType==7
+				invoke TxtLstFalseTrue,[esi].style,addr IntHtCbo
+			.elseif nType==8
+				invoke TxtLstFalseTrue,[esi].style,addr IntHtLst
+			.endif
+		.elseif eax==PRP_BOOL_BUTTON
+			.if nType==11
+				invoke TxtLstFalseTrue,[esi].style,addr ButtTab
+			.elseif nType==13
+				invoke TxtLstFalseTrue,[esi].style,addr ButtTrv
+			.elseif nType==32
+				invoke TxtLstFalseTrue,[esi].style,addr ButtHdr
+			.endif
+		.elseif eax==PRP_BOOL_POPUP
+			invoke TxtLstFalseTrue,[esi].style,addr PopUAll
+		.elseif eax==PRP_BOOL_OWNERDRAW
+			invoke TxtLstFalseTrue,[esi].style,addr OwneLsv
+		.elseif eax==PRP_BOOL_TRANSP
+			invoke TxtLstFalseTrue,[esi].style,addr TranAni
+		.elseif eax==PRP_BOOL_TIME
+			invoke TxtLstFalseTrue,[esi].style,addr TimeAni
+		.elseif eax==PRP_BOOL_WEEK
+			invoke TxtLstFalseTrue,[esi].style,addr WeekMvi
+		.elseif eax==PRP_BOOL_TOOLTIP
+			.if nType==11
+				invoke TxtLstFalseTrue,[esi].style,addr ToolTab
+			.elseif nType==18
+				invoke TxtLstFalseTrue,[esi].style,addr ToolTbr
+			.else
+				invoke TxtLstFalseTrue,[esi].style,addr ToolSbr
+			.endif
+		.elseif eax==PRP_BOOL_WRAP
+			invoke TxtLstFalseTrue,[esi].style,addr WrapTbr
+		.elseif eax==PRP_BOOL_DIVIDER
+			invoke TxtLstFalseTrue,[esi].style,addr DiviTbr
+		.elseif eax==PRP_BOOL_DRAGDROP
+			invoke TxtLstFalseTrue,[esi].style,addr DragHdr
+		.elseif eax==PRP_BOOL_SMOOTH
+			invoke TxtLstFalseTrue,[esi].style,addr SmooPgb
+		.elseif eax==PRP_BOOL_HASSTRINGS
+			.if nType==7
+				invoke TxtLstFalseTrue,[esi].style,addr HasStcb
+			.elseif nType==8
+				invoke TxtLstFalseTrue,[esi].style,addr HasStlb
+			.endif
+		.elseif eax==PRP_MULTI_CLIP
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ClipAll
+		.elseif eax==PRP_MULTI_SCROLL
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ScroAll
+		.elseif eax==PRP_MULTI_ALIGN
+			.if nType==1
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligEdt
+			.elseif nType==2
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligStc
+			.elseif nType==4
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligBtn
+			.elseif nType==5 || nType==6
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligChk
+			.elseif nType==11
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligTab
+			.elseif nType==14
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligLsv
+			.elseif nType==16
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligSpn
+			.elseif nType==17
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligIco
+			.elseif nType==18 || nType==19
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligTbr
+			.elseif nType==27
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AligAni
+			.endif
+		.elseif eax==PRP_MULTI_AUTOSCROLL
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr AutoEdt
+		.elseif eax==PRP_MULTI_FORMAT
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr FormDtp
+		.elseif eax==PRP_MULTI_STARTPOS
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr StarDlg
+		.elseif eax==PRP_MULTI_ORIENT
+			.if nType==12
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OriePgb
+			.elseif nType==16
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OrieUdn
+			.endif
+		.elseif eax==PRP_MULTI_SORT
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr SortLsv
+		.elseif eax==PRP_MULTI_OWNERDRAW
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr OwneCbo
+		.elseif eax==PRP_MULTI_ELLIPSIS
+			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ElliStc
+		.elseif eax==PRP_MULTI_BORDER
+			mov		eax,nType
+			.if eax==0
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordDlg
+			.elseif eax==2 || eax==17 || eax==25
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordStc
+			.elseif eax==3 || eax==4
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordBtn
+			.else
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr BordAll
+			.endif
+		.elseif eax==PRP_MULTI_TYPE
+			mov		eax,nType
+			.if eax==1
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeEdt
+			.elseif eax==4
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeBtn
+			.elseif eax==7 || eax==24
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeCbo
+			.elseif eax==13
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeTrv
+			.elseif eax==14
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeLsv
+			.elseif eax==17
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeImg
+			.elseif eax==20
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeDtp
+			.elseif eax==25
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,addr TypeStc
+			.endif
+		.elseif eax==PRP_STR_MENU
+			;Dialog Menu
+			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+			invoke GetWindowLong,hPrj,0
+			mov		edi,eax
+			.while [edi].PROJECT.hmem
+				.if [edi].PROJECT.ntype==TPE_MENU
+					mov		edx,[edi].PROJECT.hmem
+					.if [edx].MNUHEAD.menuname
+						lea		edx,[edx].MNUHEAD.menuname
+					.else
+						invoke ResEdBinToDec,[edx].MNUHEAD.menuid,addr buffer
+						lea		edx,buffer
+					.endif
+					invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
 				.endif
-				invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
-			.endif
-			lea		edi,[edi+sizeof PROJECT]
-		.endw
-	.elseif eax==PRP_STR_IMAGE
-		;Image
-		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-		invoke GetWindowLong,hPrj,0
-		mov		edi,eax
-		.while [edi].PROJECT.hmem
-			.if [edi].PROJECT.ntype==TPE_RESOURCE
-				mov		edx,[edi].PROJECT.hmem
-				.while [edx].RESOURCEMEM.szname || [edx].RESOURCEMEM.value
-					mov		eax,[esi].DIALOG.style
-					and		eax,SS_TYPEMASK
-					.if eax==SS_BITMAP
-						mov		eax,0
-					.elseif eax==SS_ICON
-						mov		eax,2
-					.endif
-					.if eax==[edx].RESOURCEMEM.ntype
-						push	edx
-						.if [edx].RESOURCEMEM.szname
-							lea		edx,[edx].RESOURCEMEM.szname
-						.else
-							mov		buffer,'#'
-							invoke ResEdBinToDec,[edx].RESOURCEMEM.value,addr buffer[1]
-							lea		edx,buffer
+				lea		edi,[edi+sizeof PROJECT]
+			.endw
+		.elseif eax==PRP_STR_IMAGE
+			;Image
+			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+			invoke GetWindowLong,hPrj,0
+			mov		edi,eax
+			.while [edi].PROJECT.hmem
+				.if [edi].PROJECT.ntype==TPE_RESOURCE
+					mov		edx,[edi].PROJECT.hmem
+					.while [edx].RESOURCEMEM.szname || [edx].RESOURCEMEM.value
+						mov		eax,[esi].DIALOG.style
+						and		eax,SS_TYPEMASK
+						.if eax==SS_BITMAP
+							mov		eax,0
+						.elseif eax==SS_ICON
+							mov		eax,2
 						.endif
-						invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
-						pop		edx
-					.endif
-					lea		edx,[edx+sizeof RESOURCEMEM]
-				.endw
-			.endif
-			lea		edi,[edi+sizeof PROJECT]
-		.endw
-	.elseif eax==PRP_STR_AVI
-		;Avi
-		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-		invoke GetWindowLong,hPrj,0
-		mov		edi,eax
-		.while [edi].PROJECT.hmem
-			.if [edi].PROJECT.ntype==TPE_RESOURCE
-				mov		edx,[edi].PROJECT.hmem
-				.while [edx].RESOURCEMEM.szname || [edx].RESOURCEMEM.value
-					.if [edx].RESOURCEMEM.ntype==3
-						push	edx
-						.if [edx].RESOURCEMEM.szname
-							lea		edx,[edx].RESOURCEMEM.szname
-						.else
-							mov		buffer,'#'
-							invoke ResEdBinToDec,[edx].RESOURCEMEM.value,addr buffer[1]
-							lea		edx,buffer
+						.if eax==[edx].RESOURCEMEM.ntype
+							push	edx
+							.if [edx].RESOURCEMEM.szname
+								lea		edx,[edx].RESOURCEMEM.szname
+							.else
+								mov		buffer,'#'
+								invoke ResEdBinToDec,[edx].RESOURCEMEM.value,addr buffer[1]
+								lea		edx,buffer
+							.endif
+							invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
+							pop		edx
 						.endif
-						invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
-						pop		edx
-					.endif
-					lea		edx,[edx+sizeof RESOURCEMEM]
-				.endw
-			.endif
-			lea		edi,[edi+sizeof PROJECT]
-		.endw
-	.elseif eax==PRP_STR_NAMEBTN
-		;(Name)
-		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
-		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
-		invoke strcmpi,addr [esi].idname,addr szIDOK
-		.if !eax
-			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
-		.else
-			invoke strcmpi,addr [esi].idname,addr szIDCANCEL
+						lea		edx,[edx+sizeof RESOURCEMEM]
+					.endw
+				.endif
+				lea		edi,[edi+sizeof PROJECT]
+			.endw
+		.elseif eax==PRP_STR_AVI
+			;Avi
+			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+			invoke GetWindowLong,hPrj,0
+			mov		edi,eax
+			.while [edi].PROJECT.hmem
+				.if [edi].PROJECT.ntype==TPE_RESOURCE
+					mov		edx,[edi].PROJECT.hmem
+					.while [edx].RESOURCEMEM.szname || [edx].RESOURCEMEM.value
+						.if [edx].RESOURCEMEM.ntype==3
+							push	edx
+							.if [edx].RESOURCEMEM.szname
+								lea		edx,[edx].RESOURCEMEM.szname
+							.else
+								mov		buffer,'#'
+								invoke ResEdBinToDec,[edx].RESOURCEMEM.value,addr buffer[1]
+								lea		edx,buffer
+							.endif
+							invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,edx
+							pop		edx
+						.endif
+						lea		edx,[edx+sizeof RESOURCEMEM]
+					.endw
+				.endif
+				lea		edi,[edi+sizeof PROJECT]
+			.endw
+		.elseif eax==PRP_STR_NAMEBTN
+			;(Name)
+			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
+			invoke strcmpi,addr [esi].idname,addr szIDOK
 			.if !eax
-				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
+				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
+			.else
+				invoke strcmpi,addr [esi].idname,addr szIDCANCEL
+				.if !eax
+					invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
+				.endif
 			.endif
-		.endif
-	.elseif eax==PRP_STR_NAMESTC
-		;(Name)
-		invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
-		invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
-		invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
-		.if !eax
-			invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
-		.endif
-	.elseif eax==PRP_FUN_LANG
-		;Language
-	.elseif eax>65535
-		;Custom control
-		mov		edx,[eax+4]
-		.if dword ptr [eax]==1
-			invoke TxtLstFalseTrue,[esi].style,edx
-		.elseif dword ptr [eax]==2
-			invoke TxtLstFalseTrue,[esi].exstyle,edx
-		.elseif dword ptr [eax]==3
-			invoke TxtLstMulti,[esi].style,[esi].exstyle,edx
+		.elseif eax==PRP_STR_NAMESTC
+			;(Name)
+			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
+			invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
+			.if !eax
+				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
+			.endif
+		.elseif eax==PRP_FUN_LANG
+			;Language
+		.elseif eax>65535
+			;Custom control
+			mov		edx,[eax+4]
+			.if dword ptr [eax]==1
+				invoke TxtLstFalseTrue,[esi].style,edx
+			.elseif dword ptr [eax]==2
+				invoke TxtLstFalseTrue,[esi].exstyle,edx
+			.elseif dword ptr [eax]==3
+				invoke TxtLstMulti,[esi].style,[esi].exstyle,edx
+			.endif
 		.endif
 	.endif
 	assume esi:nothing
@@ -1259,7 +1272,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke GlobalFree,hMem
 					invoke PropertyList,-1
 				.else
-					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6
+					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7
 						mov		eax,lbid
 						.if eax==PRP_STR_NAME
 							invoke strcpy,lpResName,addr buffer1
@@ -1275,6 +1288,17 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 							mov		eax,lpResHeight
 							push	val
 							pop		[eax]
+						.elseif eax==PRP_NUM_STARTID
+							mov		eax,lpResStartID
+							push	val
+							pop		[eax]
+						.elseif eax==PRP_BOOL_MENUEX
+							mov		edi,lpPtr
+							mov		esi,lpResMenuEx
+							mov		eax,[esi]
+							and		eax,[edi]
+							or		eax,[edi+4]
+							mov		[esi],eax
 						.endif
 						invoke PropertyList,hCtl
 						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
@@ -1536,7 +1560,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00001000000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			invoke GetParent,hMultiSel
@@ -1604,7 +1628,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00000000000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1614,7 +1638,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00000100000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1624,7 +1648,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00100000000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1634,7 +1658,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00100000000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1644,7 +1668,17 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00000000000000000000000000000000b
-						;  SELHHF
+						;  SELHHFM
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-7
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00100000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00100010000000000000000000000000b
+						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
 			mov		nType,-2
@@ -1668,7 +1702,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				and		fList2,00110000000000011000000000000000b
 							;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 				and		fList3,00001000000000000000000000000000b
-							;  SELHHF
+							;  SELHHFM
 				and		fList4,00000000000000000000000000000000b
 							;
 			.endif
@@ -2231,9 +2265,15 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==34
 				;(StartID)
 				mov		lbid,PRP_NUM_STARTID
-				sub		esi,sizeof DLGHEAD
-				invoke ResEdBinToDec,(DLGHEAD ptr [esi]).ctlid,edi
-				add		esi,sizeof DLGHEAD
+				.if hCtl==-7
+					mov		eax,lpResStartID
+					mov		eax,[eax]
+					invoke ResEdBinToDec,eax,edi
+				.else
+					sub		esi,sizeof DLGHEAD
+					invoke ResEdBinToDec,(DLGHEAD ptr [esi]).ctlid,edi
+					add		esi,sizeof DLGHEAD
+				.endif
 			.elseif edx==35
 				;TabIndex
 				mov		lbid,PRP_NUM_TAB
@@ -2449,7 +2489,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==66
 				;Language
 				mov		lbid,PRP_FUN_LANG
-				.if hCtl==-4 || hCtl==-5
+				.if hCtl==-4 || hCtl==-5 || hCtl==-7
 					mov		esi,lpResLang
 					mov		eax,[esi].LANGUAGEMEM.lang
 					invoke ResEdBinToDec,eax,edi
@@ -2511,6 +2551,14 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				.if eax==-2
 					invoke strcpy,edi,lpResFile
 				.endif
+			.elseif edx==70
+				;MenuEx
+				mov		lbid,PRP_BOOL_MENUEX
+				.if eax==-2
+					mov		eax,lpResMenuEx
+					mov		eax,[eax]
+					invoke ListFalseTrue,eax,addr MenuEx,edi
+				.endif
 			.elseif eax>=NoOfButtons
 				;Custom properties
 				invoke GetCustProp,eax,edx
@@ -2533,7 +2581,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		jmp		@b
 	  @@:
 		invoke SendMessage,hPrpLstDlg,LB_SETTOPINDEX,tInx,0
-		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6
+		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6 || hCtl==-7
 			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,lpResType
 			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
@@ -2777,7 +2825,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						;jmp		Ex
 					.elseif eax==PRP_FUN_LANG
 						;Language
-						.if hCtl==-4 || hCtl==-5
+						.if hCtl==-4 || hCtl==-5 || hCtl==-7
 							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,lpResLang
 						.else
 							invoke GetWindowLong,hCtl,GWL_USERDATA

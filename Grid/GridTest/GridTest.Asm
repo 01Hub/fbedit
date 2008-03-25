@@ -118,6 +118,16 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_SETCELLDATA,00010002h,addr buffer
 			.endif
 		.endif
+	.elseif eax==WM_NOTIFY
+		mov		edx,lParam
+		mov		eax,[edx].GRIDNOTIFY.nmhdr.hwndFrom
+		.if eax==hGrd
+			.if [edx].GRIDNOTIFY.nmhdr.code==GN_BEFOREEDIT
+				.if [edx].GRIDNOTIFY.col==0
+					mov		[edx].GRIDNOTIFY.fcancel,TRUE
+				.endif
+			.endif
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
 	.else

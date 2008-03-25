@@ -49,6 +49,7 @@ ProjectDblClick proc uses ebx,hWin:HWND,lParam:LPARAM
 				.if [ebx].PROJECT.ntype==TPE_DIALOG
 					invoke SendMessage,hRes,DEM_OPEN,0,ebx
 				.elseif [ebx].PROJECT.ntype==TPE_MENU
+					invoke CloseDialog
 					invoke SendMessage,hRes,MEM_OPEN,0,ebx
 				.elseif [ebx].PROJECT.ntype==TPE_VERSION
 					invoke CloseDialog
@@ -638,10 +639,6 @@ GetProjectModify proc uses esi,lpProMem:DWORD
 				mov		edx,[esi].PROJECT.hmem
 				mov		eax,[edx].DLGHEAD.changed
 				.break .if eax
-			.elseif [esi].PROJECT.ntype==TPE_MENU
-				mov		edx,[esi].PROJECT.hmem
-				mov		eax,[edx].MNUHEAD.changed
-				.break .if eax
 			.endif
 		.endif
 		add		esi,sizeof PROJECT
@@ -659,9 +656,6 @@ SetProjectModify proc uses esi,lpProMem:DWORD,fChanged:DWORD
 		.if [esi].PROJECT.ntype==TPE_DIALOG
 			mov		edx,[esi].PROJECT.hmem
 			mov		[edx].DLGHEAD.changed,eax
-		.elseif [esi].PROJECT.ntype==TPE_MENU
-			mov		edx,[esi].PROJECT.hmem
-			mov		[edx].MNUHEAD.changed,eax
 		.endif
 		add		esi,sizeof PROJECT
 	.endw
@@ -687,13 +681,11 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		invoke ExpandProjectNodes,hNodeDlg
 	.elseif eax==TPE_MENU
 		invoke CreateMnu,hDEd,NULL
-		.if eax
-			mov		[esi].PROJECT.hmem,eax
-			mov		[esi].PROJECT.ntype,TPE_MENU
-			invoke GetProjectItemName,esi,addr buffer
-			invoke AddProjectNode,TPE_MENU,addr buffer,esi
-			invoke ExpandProjectNodes,hNodeMnu
-		.endif
+		mov		[esi].PROJECT.hmem,eax
+		mov		[esi].PROJECT.ntype,TPE_MENU
+		invoke GetProjectItemName,esi,addr buffer
+		invoke AddProjectNode,TPE_MENU,addr buffer,esi
+		invoke ExpandProjectNodes,hNodeMnu
 	.elseif eax==TPE_ACCEL
 		.if fOpen
 			invoke CloseDialog
@@ -724,6 +716,9 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			push	eax
 			invoke CloseDialog
 			pop		eax
+			.if !dword ptr [eax]
+				xor		eax,eax
+			.endif
 			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,eax
 			mov		hDialog,eax
 		.elseif !edx
@@ -741,6 +736,9 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			push	eax
 			invoke CloseDialog
 			pop		eax
+			.if !dword ptr [eax]
+				xor		eax,eax
+			.endif
 			invoke CreateDialogParam,hInstance,IDD_DLGRESOURCE,hDEd,offset ResourceEditProc,eax
 			mov		hDialog,eax
 		.elseif !edx
