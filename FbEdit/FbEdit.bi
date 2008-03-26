@@ -385,7 +385,7 @@ Dim hRACodeCompleteDll As HMODULE
 
 ' Addins
 Dim Shared ah As ADDINHANDLES
-Dim Shared ad As ADDINDATA=(1058)
+Dim Shared ad As ADDINDATA=(1060)
 Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString)
 
 ' Custom controls

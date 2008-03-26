@@ -250,6 +250,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If Asc(ad.fbcPath)=Asc("\") Then
 				ad.fbcPath=Left(ad.AppPath,2) & ad.fbcPath
 			EndIf
+			GetPrivateProfileString(StrPtr("Help"),StrPtr("Path"),@szNULL,@ad.HelpPath,SizeOf(ad.HelpPath),@ad.IniFile)
+			If Asc(ad.HelpPath)=Asc("\") Then
+				ad.HelpPath=Left(ad.AppPath,2) & ad.HelpPath
+			EndIf
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
@@ -1351,6 +1355,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GetPrivateProfileString(StrPtr("Help"),Str(1),@szNULL,@buff,260,@ad.IniFile)
 							If Len(buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
+								FixPath(buff)
 								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
 								EndIf
@@ -1369,6 +1374,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							GetPrivateProfileString(StrPtr("Help"),Str(2),@szNULL,@buff,256,@ad.IniFile)
 							If Len(buff) Then
 								buff=Mid(buff,InStr(buff,",")+1)
+								FixPath(buff)
 								If Asc(buff)=Asc("\") Then
 									buff=Left(ad.AppPath,2) & buff
 								EndIf
@@ -1482,6 +1488,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								GetPrivateProfileString(StrPtr("Tools"),Str(id-10999),@szNULL,@buff,260,@ad.IniFile)
 								If Len(buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
+									FixPath(@buff)
 									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf
@@ -1509,6 +1516,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								GetPrivateProfileString(StrPtr("Help"),Str(id-11999),@szNULL,@buff,256,@ad.IniFile)
 								If Len(buff) Then
 									buff=Mid(buff,InStr(buff,",")+1)
+									FixPath(@buff)
 									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf

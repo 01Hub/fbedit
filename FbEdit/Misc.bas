@@ -2142,3 +2142,33 @@ Sub PrintDoc
 	ReleaseDC(ah.hred,fmr.hdc)
 
 End Sub
+
+Sub FixPath(lpCmd As ZString Ptr)
+	Dim path As ZString*260
+	Dim x As Integer
+
+	lstrcpy(@path,lpCmd)
+Again:
+	If InStr(path,"$A") Then
+		x=InStr(path,"$A")
+		path=Left(path,x-1) & ad.AppPath & Mid(path,x+2)
+		GoTo Again
+	EndIf
+	If InStr(path,"$C") Then
+		x=InStr(path,"$C")
+		path=Left(path,x-1) & ad.fbcPath & Mid(path,x+2)
+		GoTo Again
+	EndIf
+	If InStr(path,"$H") Then
+		x=InStr(path,"$H")
+		path=Left(path,x-1) & ad.HelpPath & Mid(path,x+2)
+		GoTo Again
+	EndIf
+	If InStr(path,"$P") Then
+		x=InStr(path,"$P")
+		path=Left(path,x-1) & ad.DefProjectPath & Mid(path,x+2)
+		GoTo Again
+	EndIf
+	lstrcpy(lpCmd,@path)
+
+End Sub
