@@ -68,14 +68,15 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 			'
 		Case WM_NOTIFY
 			lpCTLDBLCLICK=Cast(CTLDBLCLICK Ptr,lParam)
-			If (GetKeyState(VK_LBUTTON) And &H80)=0 Then
-				fTimer=1
-			EndIf
+'			If (GetKeyState(VK_LBUTTON) And &H80)=0 Then
+'				fTimer=1
+'			EndIf
 			If lpCTLDBLCLICK->nmhdr.code=NM_DBLCLK Then
 				'TextToOutput(*lpCTLDBLCLICK->lpCtlName)
 				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
 				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
+			fTimer=1
 			'
 		Case WM_CONTEXTMENU
 			If lParam=-1 Then
