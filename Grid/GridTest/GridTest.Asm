@@ -52,6 +52,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hSbr,eax
 		invoke GetDlgItem,hWin,IDC_GRD1
 		mov		hGrd,eax
+
 		invoke SetWindowLong,hGrd,GWL_WNDPROC,offset GrdProc
 		mov		OldGrdProc,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -116,6 +117,10 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==1005
 				mov		dword ptr buffer,'cba'
 				invoke SendMessage,hGrd,GM_SETCELLDATA,00010002h,addr buffer
+			.elseif eax==1006
+				invoke CreateFontIndirect,addr MS_Sans_Serif_14
+				invoke SendMessage,hGrd,WM_SETFONT,eax,TRUE
+				invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,30
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY

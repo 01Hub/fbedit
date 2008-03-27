@@ -4,12 +4,14 @@ include kernel32.inc
 include user32.inc
 include Comctl32.inc
 include shell32.inc
+include gdi32.inc
 include ..\ragrid.inc
 
 includelib kernel32.lib
 includelib user32.lib
 includelib Comctl32.lib
 includelib shell32.lib
+includelib gdi32.lib
 
 ;Debug
 include masm32.inc
@@ -46,6 +48,10 @@ rdta				ROWDATA <offset szName,1,offset szName>
 					ROWDATA <offset szID,4,offset szName>
 
 ;#########################################################################
+
+.data
+
+MS_Sans_Serif_14 LOGFONT <-19,0,0,0,400,0,0,0,0,1,2,1,34,"MS Sans Serif">
 
 .data?
 
