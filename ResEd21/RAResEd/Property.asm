@@ -2806,7 +2806,6 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								invoke SizeingRect,hCtl,FALSE
 							.endif
 							mov		eax,lf.lfHeight
-PrintDec eax
 							mov		(DLGHEAD ptr [esi]).fontht,eax
 							mov		al,lf.lfItalic
 							mov		(DLGHEAD ptr [esi]).italic,al

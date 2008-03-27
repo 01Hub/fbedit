@@ -1027,7 +1027,7 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		eax,16
 		mov		pt.x,edx
 		mov		pt.y,eax
-		invoke MoveWindow,hPrpCboDlg,0,0,pt.x,21,TRUE
+		invoke MoveWindow,hPrpCboDlg,0,0,pt.x,150,TRUE
 		mov		edx,pt.y
 		sub		edx,25
 		invoke MoveWindow,hPrpLstDlg,0,25,pt.x,edx,TRUE
