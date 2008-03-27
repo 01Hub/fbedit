@@ -1,5 +1,13 @@
 ResEd
 
+2.1.0.0 - 2008.03.27
+--------------------
+o Previous modal dialogs are now child dialogs.
+  This makes the ResEd UI more uniform.
+o It is now possible to type the dialogs font.
+o Fixed problem with context menu on a dual screen system.
+o Fixed problem with keyboard resize after preview was used.
+
 2.0.0.0b - 2008.03.12
 ---------------------
 o Added SS_REALSIZEIMAGE style.

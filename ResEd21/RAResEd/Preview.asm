@@ -710,6 +710,7 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	invoke CreateDialogIndirectParam,hInstance,ebx,eax,offset PrevDlgProc,0
 	mov		hPreview,eax
 	invoke GlobalFree,ebx
+	mov		dlgdata,WS_CAPTION or DS_SETFONT
 	ret
 
 FindCtrl:

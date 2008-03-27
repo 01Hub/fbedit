@@ -18,7 +18,7 @@ IDC_CHKGRAYED			equ 2527
 IDC_CHKRIGHTALIGN		equ 2500
 IDC_CHKRADIO			equ 2509
 IDC_CHKOWNERDRAW		equ 2530
-IDC_GROUPBOX			equ 2510
+;IDC_GROUPBOX			equ 2510
 
 .data
 
@@ -1012,21 +1012,21 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		sub		rect.right,6
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
-		invoke GetClientRect,hWin,addr rect
-		invoke GetDlgItem,hWin,IDC_GROUPBOX
-		mov		hCtl,eax
-		mov		rect.left,3
-		mov		rect.top,3
-		mov		rect.right,319+3
-		sub		rect.bottom,6
-		invoke MoveWindow,hCtl,rect.left,rect.top,rect.right,rect.bottom,TRUE
+;		invoke GetClientRect,hWin,addr rect
+;		invoke GetDlgItem,hWin,IDC_GROUPBOX
+;		mov		hCtl,eax
+;		mov		rect.left,3
+;		mov		rect.top,3
+;		mov		rect.right,319+3
+;		sub		rect.bottom,6
+;		invoke MoveWindow,hCtl,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDlgItem,hWin,IDC_LSTMNU
 		mov		hCtl,eax
 		mov		rect.left,12
-		mov		rect.top,153
+		mov		rect.top,170
 		mov		rect.right,305
-		sub		rect.bottom,153+12
+		sub		rect.bottom,170+12
 		invoke MoveWindow,hCtl,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE

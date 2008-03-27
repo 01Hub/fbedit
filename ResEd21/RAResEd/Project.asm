@@ -51,40 +51,50 @@ ProjectDblClick proc uses ebx,hWin:HWND,lParam:LPARAM
 				.elseif [ebx].PROJECT.ntype==TPE_MENU
 					invoke CloseDialog
 					invoke SendMessage,hRes,MEM_OPEN,0,ebx
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_VERSION
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_DLGVERSION,hDEd,offset VersionEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_ACCEL
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_DLGACCEL,hDEd,offset AccelEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_INCLUDE
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_RESOURCE
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_DLGRESOURCE,hDEd,offset ResourceEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_STRING
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_DLGSTRING,hDEd,offset StringEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_LANGUAGE
 					invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hDEd,offset LanguageEditProc,ebx
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_XPMANIFEST
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_XPMANIFEST,hDEd,offset XPManifestEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_RCDATA
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_RCDATA,hDEd,offset RCDataEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_TOOLBAR
 					invoke CloseDialog
 					invoke CreateDialogParam,hInstance,IDD_TOOLBAR,hDEd,offset ToolbarEditProc,ebx
 					mov		hDialog,eax
+					invoke NotifyParent
 				.endif
 			.endif
 		.endif
@@ -686,11 +696,13 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		invoke GetProjectItemName,esi,addr buffer
 		invoke AddProjectNode,TPE_MENU,addr buffer,esi
 		invoke ExpandProjectNodes,hNodeMnu
+		invoke NotifyParent
 	.elseif eax==TPE_ACCEL
 		.if fOpen
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGACCEL,hDEd,offset AccelEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddProjectNode,TPE_ACCEL,offset szACCELERATORS,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_ACCEL
@@ -701,6 +713,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGVERSION,hDEd,offset VersionEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddProjectNode,TPE_VERSION,offset szVERSIONINFO,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_VERSION
@@ -721,6 +734,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			.endif
 			invoke CreateDialogParam,hInstance,IDD_DLGINCLUDE,hDEd,offset IncludeEditProc,eax
 			mov		hDialog,eax
+			invoke NotifyParent
 		.elseif !edx
 			invoke AddProjectNode,TPE_INCLUDE,offset szIncludeFile,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_INCLUDE
@@ -741,6 +755,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			.endif
 			invoke CreateDialogParam,hInstance,IDD_DLGRESOURCE,hDEd,offset ResourceEditProc,eax
 			mov		hDialog,eax
+			invoke NotifyParent
 		.elseif !edx
 			invoke AddProjectNode,TPE_RESOURCE,offset szResource,esi
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RESOURCE
@@ -751,6 +766,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_DLGSTRING,hDEd,offset StringEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddProjectNode,TPE_STRING,offset szStringTable,esi
 			invoke AddTypeMem,lpProMem,512*1024,TPE_STRING
@@ -764,6 +780,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.endif
 		.if fOpen
 			invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hDEd,offset LanguageEditProc,eax
+			invoke NotifyParent
 		.elseif !edx
 			invoke AddProjectNode,TPE_LANGUAGE,offset szLanguage,esi
 			invoke AddTypeMem,lpProMem,sizeof LANGUAGEMEM,TPE_LANGUAGE
@@ -774,6 +791,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_XPMANIFEST,hDEd,offset XPManifestEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddTypeMem,lpProMem,10*1024,TPE_XPMANIFEST
 			invoke AddProjectNode,TPE_XPMANIFEST,offset szMANIFEST,esi
@@ -784,6 +802,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_RCDATA,hDEd,offset RCDataEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
 			invoke AddProjectNode,TPE_RCDATA,offset szRCDATA,esi
@@ -794,6 +813,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			invoke CloseDialog
 			invoke CreateDialogParam,hInstance,IDD_TOOLBAR,hDEd,offset ToolbarEditProc,NULL
 			mov		hDialog,eax
+			invoke NotifyParent
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_TOOLBAR
 			invoke AddProjectNode,TPE_TOOLBAR,offset szTOOLBAR,esi

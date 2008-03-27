@@ -670,7 +670,7 @@ PropListSetPos proc
 		mov		lbid,eax
 		invoke SetWindowLong,hPrpBtnDlgCld,GWL_USERDATA,eax
 		mov		eax,lbid
-		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax==PRP_STR_FONT || eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE || eax==PRP_FUN_LANG || eax>65535
+		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE || eax==PRP_FUN_LANG || eax>65535
 			mov		ecx,nPropHt
 			sub		rect.right,ecx
 			mov		eax,rect.right
@@ -685,7 +685,8 @@ PropListSetPos proc
 			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
 		.else
 			invoke PropListSetTxt,hPrpLstDlg
-			.if lbid==PRP_STR_MENU || lbid==PRP_STR_IMAGE || lbid==PRP_STR_AVI || lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC || lbid==PRP_STR_FILE
+			mov		eax,lbid
+			.if eax==PRP_STR_MENU || eax==PRP_STR_IMAGE || eax==PRP_STR_AVI || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC || eax==PRP_STR_FILE || eax==PRP_STR_FONT
 				mov		ecx,nPropHt
 				dec		ecx
 				sub		rect.right,ecx
@@ -1179,6 +1180,39 @@ PropEditChkVal proc uses esi,lpTxt:DWORD,nTpe:DWORD,lpfErr:DWORD
 
 PropEditChkVal endp
 
+UpdateFont proc hCtl:HWND
+	LOCAL	hFnt:DWORD
+
+	invoke MakeDlgFont,esi
+	mov		hFnt,eax
+	add		esi,sizeof DLGHEAD
+	assume esi:ptr DIALOG
+	.while TRUE
+		mov		eax,[esi].hwnd
+	  .break .if !eax
+		.if eax!=-1
+			mov		eax,[esi].hcld
+			.if eax
+				invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
+			.endif
+			mov		eax,[esi].hwnd
+			invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
+			mov		eax,[esi].hcld
+			.if eax
+				invoke InvalidateRect,eax,NULL,TRUE
+				mov		eax,[esi].hwnd
+				invoke InvalidateRect,eax,NULL,TRUE
+			.endif
+		.endif
+		add		esi,sizeof DIALOG
+	.endw
+	invoke PropertyList,hCtl
+	invoke SetChanged,TRUE,0
+	assume esi:nothing
+	ret
+
+UpdateFont  endp
+
 PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -1345,6 +1379,40 @@ SetCtrlData:
 				invoke SetProjectItemName,edx,addr buffer1
 			.endif
 		.endif
+	.elseif eax==PRP_STR_FONT
+		invoke ResEdDecToBin,addr buffer1
+		mov		val,eax
+		mov		edx,esi
+		sub		edx,sizeof DLGHEAD
+		mov		[edx].DLGHEAD.fontsize,eax
+		lea		eax,buffer1
+		.while byte ptr [eax] && byte ptr [eax]!=','
+			inc		eax
+		.endw
+		.if byte ptr [eax]==','
+			inc		eax
+		.else
+			lea		eax,buffer1
+		.endif
+		invoke lstrcpy,addr [edx].DLGHEAD.font,eax
+		mov		edx,esi
+		sub		edx,sizeof DLGHEAD
+		mov		eax,[edx].DLGHEAD.fontsize
+		mov		edx,96
+		imul	edx
+		mov		ecx,72
+		xor		edx,edx
+		idiv	ecx
+		.if edx>=36
+			inc		eax
+		.endif
+		neg		eax
+		mov		edx,esi
+		sub		edx,sizeof DLGHEAD
+		mov		[edx].DLGHEAD.fontht,eax
+		sub		esi,sizeof DLGHEAD
+		invoke UpdateFont,hCtl
+		add		esi,sizeof DLGHEAD
 	.elseif eax==PRP_NUM_ID
 		push	val
 		pop		[esi].id
@@ -1404,10 +1472,6 @@ SetCtrlData:
 		invoke strcpy,addr [esi].caption,addr buffer1
 	.elseif eax==PRP_STR_AVI
 		invoke strcpy,addr [esi].caption,addr buffer1
-	.elseif eax==PRP_STR_FONT
-		mov		edx,esi
-		sub		edx,sizeof DLGHEAD
-		invoke strcpy,addr (DLGHEAD ptr [edx]).font,addr buffer1
 	.elseif eax==PRP_STR_CLASS
 		mov		eax,[esi].ntype
 		.if eax==0
@@ -2631,7 +2695,6 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hCtl:DWORD
 	LOCAL	lbid:DWORD
 	LOCAL	lf:LOGFONT
-	LOCAL	hFnt:DWORD
     LOCAL	hDC:DWORD
     LOCAL	cf:CHOOSEFONT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -2743,6 +2806,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								invoke SizeingRect,hCtl,FALSE
 							.endif
 							mov		eax,lf.lfHeight
+PrintDec eax
 							mov		(DLGHEAD ptr [esi]).fontht,eax
 							mov		al,lf.lfItalic
 							mov		(DLGHEAD ptr [esi]).italic,al
@@ -2756,7 +2820,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							div		ecx
 							mov		(DLGHEAD ptr [esi]).fontsize,eax
 							invoke strcpy,addr (DLGHEAD ptr [esi]).font,addr lf.lfFaceName
-							call	UpdateFont
+							invoke UpdateFont,hCtl
 						.endif
 					.elseif eax==PRP_STR_MENU
 						;Dialog Memu
@@ -2954,35 +3018,6 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
   Ex:
 	assume esi:nothing
 	ret
-
-UpdateFont:
-	invoke MakeDlgFont,esi
-	mov		hFnt,eax
-	add		esi,sizeof DLGHEAD
-	assume esi:ptr DIALOG
-	.while TRUE
-		mov		eax,[esi].hwnd
-	  .break .if !eax
-		.if eax!=-1
-			mov		eax,[esi].hcld
-			.if eax
-				invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-			.endif
-			mov		eax,[esi].hwnd
-			invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-			mov		eax,[esi].hcld
-			.if eax
-				invoke InvalidateRect,eax,NULL,TRUE
-				mov		eax,[esi].hwnd
-				invoke InvalidateRect,eax,NULL,TRUE
-			.endif
-		.endif
-		add		esi,sizeof DIALOG
-	.endw
-	invoke PropertyList,hCtl
-	invoke SetChanged,TRUE,0
-	assume esi:nothing
-	retn
 
 PrpLstDlgProc endp
 

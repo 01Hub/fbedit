@@ -600,9 +600,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,lParam
 		.if eax!=-1
 			and		eax,0FFFFh
+			cwde
 			mov		pt.x,eax
 			mov		eax,lParam
 			shr		eax,16
+			cwde
 			mov		pt.y,eax
 		.else
 			invoke GetWindowRect,hWin,addr rect

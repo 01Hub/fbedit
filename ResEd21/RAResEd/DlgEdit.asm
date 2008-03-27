@@ -812,8 +812,7 @@ szNOTStyleHex		db 'NOT 0x10000000|',0
 dwNOTStyle			dd WS_VISIBLE
 
 					align 4
-;dlgdata				dd WS_VISIBLE or WS_CAPTION or DS_SETFONT		;style
-dlgdata				dd WS_CAPTION or DS_SETFONT		;style
+dlgdata				dd WS_CAPTION or DS_SETFONT						;style
 					dd 00000000h									;exstyle
 					dw 0000h										;cdit
 					dw 4096											;x
