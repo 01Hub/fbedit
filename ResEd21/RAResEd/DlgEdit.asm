@@ -2827,7 +2827,7 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !eax
 				invoke GetClientRect,hWin,addr rect
 				sub		esi,sizeof DLGHEAD
-				mov		eax,(DLGHEAD ptr [esi]).htlb 
+				mov		eax,[esi].DLGHEAD.htlb 
 				.if eax
 					mov		hCtl,eax
 					invoke GetWindowLong,eax,GWL_STYLE
@@ -2836,7 +2836,7 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MoveWindow,hCtl,0,0,rect.right,rect.bottom,TRUE
 					.endif
 				.endif
-				mov		eax,(DLGHEAD ptr [esi]).hstb 
+				mov		eax,[esi].DLGHEAD.hstb 
 				.if eax
 					mov		hCtl,eax
 					invoke GetWindowLong,eax,GWL_STYLE
@@ -4732,9 +4732,9 @@ SendToBack proc uses esi edi,hCtl:HWND
 		invoke UpdateDialog,eax
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		mov		esi,eax
-		mov		eax,(DLGHEAD ptr [esi]).undo
+		mov		eax,[esi].DLGHEAD.undo
 		.if eax<=lpSt && eax
-			add		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
+			add		[esi].DLGHEAD.undo,sizeof DIALOG
 		.endif
 		invoke SetChanged,TRUE,0
 ;		invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -4774,9 +4774,9 @@ BringToFront proc uses esi edi,hCtl:HWND
 	invoke UpdateDialog,eax
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	mov		esi,eax
-	mov		eax,(DLGHEAD ptr [esi]).undo
+	mov		eax,[esi].DLGHEAD.undo
 	.if eax>lpSt
-		sub		(DLGHEAD ptr [esi]).undo,sizeof DIALOG
+		sub		[esi].DLGHEAD.undo,sizeof DIALOG
 	.endif
 	invoke SetChanged,TRUE,0
 ;	invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -5037,7 +5037,7 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowLong,hWin,GWL_USERDATA
 			sub		eax,sizeof DLGHEAD
 			mov		esi,eax
-			mov		al,(DLGHEAD ptr [esi]).menuid
+			mov		al,[esi].DLGHEAD.menuid
 			.if al
 				mov		esi,lParam
 				add		(RECT ptr [esi]).top,19
@@ -5081,11 +5081,11 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,GWL_USERDATA
 		sub		eax,sizeof DLGHEAD
 		mov		esi,eax
-		mov		al,(DLGHEAD ptr [esi]).menuid
+		mov		al,[esi].DLGHEAD.menuid
 		.if al
 			mov		nInx,0
-			invoke GetMnuString,addr (DLGHEAD ptr [esi]).menuid,addr buffer
-			mov		(DLGHEAD ptr [esi]).lpmnu,eax
+			invoke GetMnuString,addr [esi].DLGHEAD.menuid,addr buffer
+			mov		[esi].DLGHEAD.lpmnu,eax
 			invoke GetWindowDC,hWin
 			mov		hDC,eax
 			invoke CreateCompatibleDC,hDC
@@ -5512,7 +5512,7 @@ SaveUDCClass endp
 
 SaveDlgClass proc
 
-	mov		al,(DLGHEAD ptr [esi]).class
+	mov		al,[esi].DLGHEAD.class
 	.if al
 		invoke SaveStr,edi,addr szCLASS
 		add		edi,eax
@@ -5520,7 +5520,7 @@ SaveDlgClass proc
 		stosb
 		mov		al,22h
 		stosb
-		invoke SaveStr,edi,addr (DLGHEAD ptr [esi]).class
+		invoke SaveStr,edi,addr [esi].DLGHEAD.class
 		add		edi,eax
 		mov		al,22h
 		stosb
@@ -5535,13 +5535,13 @@ SaveDlgFont proc
 	LOCAL	buffer[512]:BYTE
 	LOCAL	val:DWORD
 
-	mov		al,(DLGHEAD ptr [esi]).font
+	mov		al,[esi].DLGHEAD.font
 	.if al
 		invoke SaveStr,edi,addr szFONT
 		add		edi,eax
 		mov		al,' '
 		stosb
-		push	(DLGHEAD ptr [esi]).fontsize
+		push	[esi].DLGHEAD.fontsize
 		pop		val
 		invoke ResEdBinToDec,val,addr buffer
 		invoke SaveStr,edi,addr buffer
@@ -5550,29 +5550,33 @@ SaveDlgFont proc
 		stosb
 		mov		al,22h
 		stosb
-		invoke SaveStr,edi,addr (DLGHEAD ptr [esi]).font
+		invoke SaveStr,edi,addr [esi].DLGHEAD.font
 		add		edi,eax
 		mov		ax,',"'
 		stosw
-		movzx	eax,(DLGHEAD ptr [esi]).weight
+		movzx	eax,[esi].DLGHEAD.weight
 		mov		val,eax
 		invoke ResEdBinToDec,val,addr buffer
 		invoke SaveStr,edi,addr buffer
 		add		edi,eax
 		mov		al,','
 		stosb
-		movzx	eax,(DLGHEAD ptr [esi]).italic
+		movzx	eax,[esi].DLGHEAD.italic
 		mov		val,eax
 		invoke ResEdBinToDec,val,addr buffer
 		invoke SaveStr,edi,addr buffer
 		add		edi,eax
-		movzx	eax,(DLGHEAD ptr [esi]).charset
-		mov		val,eax
-		mov		al,','
-		stosb
-		invoke ResEdBinToDec,val,addr buffer
-		invoke SaveStr,edi,addr buffer
-		add		edi,eax
+		invoke GetWindowLong,hRes,GWL_STYLE
+		test	eax,DES_BORLAND
+		.if ZERO?
+			movzx	eax,[esi].DLGHEAD.charset
+			mov		val,eax
+			mov		al,','
+			stosb
+			invoke ResEdBinToDec,val,addr buffer
+			invoke SaveStr,edi,addr buffer
+			add		edi,eax
+		.endif
 		mov		ax,0A0Dh
 		stosw
 	.endif
@@ -5582,13 +5586,13 @@ SaveDlgFont endp
 
 SaveDlgMenu proc
 
-	mov		al,(DLGHEAD ptr [esi]).menuid
+	mov		al,[esi].DLGHEAD.menuid
 	.if al
 		invoke SaveStr,edi,addr szMENU
 		add		edi,eax
 		mov		al,' '
 		stosb
-		invoke SaveStr,edi,addr (DLGHEAD ptr [esi]).menuid
+		invoke SaveStr,edi,addr [esi].DLGHEAD.menuid
 		add		edi,eax
 		mov		ax,0A0Dh
 		stosw
@@ -6149,15 +6153,6 @@ SaveCtl proc uses ebx esi edi
 			.endif
 			mov		eax,0A0Dh
 			stosw
-			;This is stored in DLGHEAD
-			sub		esi,sizeof DLGHEAD
-			assume esi:nothing
-			.if [esi].DLGHEAD.lang || [esi].DLGHEAD.sublang
-				invoke SaveLanguage,addr (DLGHEAD ptr [esi]).lang,edi
-				add		edi,eax
-			.endif
-			add		esi,sizeof DLGHEAD
-			assume esi:ptr DIALOG
 			mov		al,[esi].caption
 			.if al
 				invoke SaveStr,edi,addr szCAPTION
@@ -6172,8 +6167,17 @@ SaveCtl proc uses ebx esi edi
 			sub		esi,sizeof DLGHEAD
 			invoke SaveDlgFont
 			invoke SaveDlgClass
-			.if byte ptr (DLGHEAD ptr [esi]).menuid
+			mov		eax,esi
+			.if byte ptr [eax].DLGHEAD.menuid
 				invoke SaveDlgMenu
+			.endif
+			add		esi,sizeof DLGHEAD
+			;This is stored in DLGHEAD
+			sub		esi,sizeof DLGHEAD
+			mov		eax,esi
+			.if [eax].DLGHEAD.lang || [eax].DLGHEAD.sublang
+				invoke SaveLanguage,addr [eax].DLGHEAD.lang,edi
+				add		edi,eax
 			.endif
 			add		esi,sizeof DLGHEAD
 			invoke SaveStr,edi,addr szSTYLE
@@ -6673,7 +6677,7 @@ CompactDialog proc uses esi,hWin:HWND
 
 	invoke GetWindowLong,hWin,DEWM_MEMORY
 	mov		esi,eax
-	mov		(DLGHEAD ptr [esi]).undo,0
+	mov		[esi].DLGHEAD.undo,0
 	add		esi,sizeof DLGHEAD
   @@:
 	mov		eax,(DIALOG ptr [esi]).hwnd
@@ -6807,14 +6811,14 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 		;Create existing dlg
 		mov		esi,eax
 		push	esi
-		push	(DLGHEAD ptr [esi]).changed
+		push	[esi].DLGHEAD.changed
 		invoke SetWindowLong,hWin,DEWM_MEMORY,esi
 		xor		eax,eax
-		mov		(DLGHEAD ptr [esi]).hmnu,eax
-		mov		(DLGHEAD ptr [esi]).htlb,eax
-		mov		(DLGHEAD ptr [esi]).hstb,eax
-		mov		(DLGHEAD ptr [esi]).hfont,eax
-		mov		(DLGHEAD ptr [esi]).undo,eax
+		mov		[esi].DLGHEAD.hmnu,eax
+		mov		[esi].DLGHEAD.htlb,eax
+		mov		[esi].DLGHEAD.hstb,eax
+		mov		[esi].DLGHEAD.hfont,eax
+		mov		[esi].DLGHEAD.undo,eax
 		add		esi,sizeof DLGHEAD
 		push	hWin
 		pop		[esi].DIALOG.hpar

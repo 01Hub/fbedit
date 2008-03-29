@@ -499,6 +499,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		fNoUpdate,FALSE
 					.endif
 				.endif
+				mov		fDialogChanged,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

@@ -532,6 +532,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.defstatic
 			or		edx,DES_DEFIDC_STATIC
 		.endif
+		.if grdsize.borlandcomp
+			or		edx,DES_BORLAND
+		.endif
 		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_RESED,hInstance,0
 		mov		hResEd,eax
 		invoke SendMessage,eax,WM_SETFONT,hFont,0
@@ -1043,6 +1046,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		edx,ebx
 		invoke MoveWindow,hResEd,0,25,ecx,edx,TRUE
 	.elseif eax==WM_CLOSE
+		invoke SetFocus,hResEd
 		invoke WantToSaveProject,offset ProjectFileName
 		.if !eax
 			invoke SendMessage,hResEd,PRO_CLOSE,0,0

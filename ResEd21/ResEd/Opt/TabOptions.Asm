@@ -41,6 +41,7 @@ IDC_CHKNODEFINE		equ 4014
 IDC_CHKSIMPLE		equ 4015
 IDC_CHKIDC_STATIC	equ 4016
 IDC_CHKSTANDARD		equ 4017
+IDC_CHKBORLANDCOMP	equ 4018
 
 IDD_TABOPT4			equ 2400
 IDC_EDTDLGSTART		equ 1001
@@ -234,6 +235,7 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKSIMPLE,grdsize.simple
 		invoke CheckDlgButton,hWin,IDC_CHKIDC_STATIC,grdsize.defstatic
 		invoke CheckDlgButton,hWin,IDC_CHKSTANDARD,grdsize.standardmnu
+		invoke CheckDlgButton,hWin,IDC_CHKBORLANDCOMP,grdsize.borlandcomp
 	.elseif eax==WM_DRAWITEM
 		mov		eax,wParam
 		.if eax==IDC_STCGRIDCOLOR
@@ -422,6 +424,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		grdsize.defstatic,eax
 				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKSTANDARD
 				mov		grdsize.standardmnu,eax
+				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKBORLANDCOMP
+				mov		grdsize.borlandcomp,eax
 				invoke RegSetValueEx,hReg,addr szGrid,0,REG_BINARY,addr grdsize,sizeof grdsize
 				mov		eax,grdsize.y
 				shl		eax,16
@@ -451,7 +455,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
 				invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
 				invoke GetWindowLong,hResEd,GWL_STYLE
-				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES or DES_SIMPLEPROPERTY or DES_DEFIDC_STATIC)
+				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES or DES_SIMPLEPROPERTY or DES_DEFIDC_STATIC or DES_BORLAND)
 				.if grdsize.show
 					or		eax,DES_GRID
 				.endif
@@ -475,6 +479,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				.if grdsize.defstatic
 					or		eax,DES_DEFIDC_STATIC
+				.endif
+				.if grdsize.borlandcomp
+					or		eax,DES_BORLAND
 				.endif
 				invoke SetWindowLong,hResEd,GWL_STYLE,eax
 				.if grdsize.standardmnu

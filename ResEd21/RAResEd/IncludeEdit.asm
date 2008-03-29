@@ -224,6 +224,8 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
 				.endif
+			.elseif eax==GN_AFTERUPDATE
+				mov		fDialogChanged,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
