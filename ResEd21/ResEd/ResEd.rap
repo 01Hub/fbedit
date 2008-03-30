@@ -87,9 +87,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,30151
+1=580,0,290,688,29753
 6=
-2=0,0,0,0,3166
+2=0,0,0,0,5001
 7=0,0,699,490,8667
 9=
 8=
@@ -138,7 +138,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=0
+MilestoneEveryCurrent=1
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -159,7 +159,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -168,10 +168,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=2.0.0.0
-FileVersion=2.0.0.0
-PV=2.0.0.0
-ProductVersion=2.0.0.0
+FV=2.1.0.0
+FileVersion=2.1.0.0
+PV=2.1.0.0
+ProductVersion=2.1.0.0
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -247,6 +247,6 @@ ID=105
 18=,
 21=
 [PTimer]
-PTimer=235881471
+PTimer=235977315
 [AutoLoad]
 1=1
