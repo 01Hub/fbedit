@@ -194,6 +194,7 @@ Lang=English (default), By FbEdit team
 5400=Path Options
 1009=Default Project Path:
 1010=Compiler Path:
+5403=Help Path:
 1=OK
 2=Cancel
 ;--------------------------------------------------------------------------

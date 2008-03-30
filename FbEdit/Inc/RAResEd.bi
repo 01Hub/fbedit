@@ -166,6 +166,7 @@ End Type
 #Define DEM_SETTEXTMODE			DEM_BASE+36		' wParam=TRUE/FALSE, lParam=0
 #Define DEM_CANREDO				DEM_BASE+37		' wParam=0, lParam=0, Returns TRUE or FALSE
 #Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
+#Define DEM_GETSHOWDIALOG		DEM_BASE+39		' wParam=0, lParam=0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -183,6 +184,7 @@ End Type
 ' Menu editor messages
 #Define MEM_BASE					DEM_BASE+1000
 #Define MEM_OPEN					MEM_BASE+1		' wParam=0, lParam=Handle of memory or NULL
+#Define MEM_GETERR				MEM_BASE+2		' wParam=0, lParam=0
 
 ' Project messages
 #Define PRO_BASE					DEM_BASE+2000
@@ -202,6 +204,8 @@ End Type
 #Define PRO_EXPORTNAMES			PRO_BASE+14		' wParam=0, lParam=Handle output window
 #Define PRO_SETINITID			PRO_BASE+17		' wParam=0, lParam=lpINITID
 #Define PRO_GETMEM				PRO_BASE+18		' wParam=0, lParam=0
+#Define PRO_SETTEXTFONT			PRO_BASE+19		' wParam=hFont, lParam=0
+#Define PRO_GETTEXTFONT			PRO_BASE+20		' wParam=0, lParam=0
 
 ' Project item types
 #Define TPE_NAME					1
@@ -216,6 +220,7 @@ End Type
 #Define TPE_LANGUAGE				9
 #Define TPE_XPMANIFEST			10
 #Define TPE_RCDATA				11
+#Define TPE_TOOLBAR				12
 
 'type PROJECT
 '	hmem			dd ?
@@ -300,6 +305,7 @@ End Type
 #Define DES_SIMPLEPROPERTY	64
 #Define DES_SIMPLEPROPERTY	64
 #Define DES_DEFIDC_STATIC	128
+#Define DES_BORLAND			256
 
 ' Dialog edit window memory
 #Define DEWM_DIALOG			0
