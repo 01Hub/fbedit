@@ -213,6 +213,8 @@ PRO_SETEXPORT		equ PRO_BASE+13		;wParam=nType, lParam=lpszDefaultFileName
 PRO_EXPORTNAMES		equ PRO_BASE+14		;wParam=0, lParam=Handle output window
 PRO_SETINITID		equ PRO_BASE+17		;wParam=0, lParam=lpINITID
 PRO_GETMEM			equ PRO_BASE+18		;wParam=0, lParam=0
+PRO_SETTEXTFONT		equ PRO_BASE+19		;wParam=hFont, lParam=0
+PRO_GETTEXTFONT		equ PRO_BASE+20		;wParam=0, lParam=0
 
 ;Project item types
 TPE_NAME			equ 1

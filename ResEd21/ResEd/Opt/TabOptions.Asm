@@ -42,6 +42,8 @@ IDC_CHKSIMPLE		equ 4015
 IDC_CHKIDC_STATIC	equ 4016
 IDC_CHKSTANDARD		equ 4017
 IDC_CHKBORLANDCOMP	equ 4018
+IDC_BTNFONT			equ 4019
+IDC_STCFONT			equ 4020
 
 IDD_TABOPT4			equ 2400
 IDC_EDTDLGSTART		equ 1001
@@ -59,6 +61,7 @@ szFilterDLL			db 'Dll (*.dll)',0,'*.dll',0,0
 szGrid				db 'Grid',0
 szColor				db 'Color',0
 szInitID			db 'InitID',0
+szTextFont			db 'TextFont',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
@@ -77,6 +80,8 @@ hBrGrid				dd ?
 hBrBack				dd ?
 hBrText				dd ?
 CustColors			dd 16 dup(?)
+cflf				LOGFONT <>
+hfnt				HFONT ?
 
 .code
 
@@ -218,6 +223,7 @@ TabOpt2Proc endp
 
 TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	cc:CHOOSECOLOR
+	LOCAL	cf:CHOOSEFONT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -225,6 +231,7 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_UDNX,UDM_SETPOS,0,grdsize.x		; Set default value
 		invoke SendDlgItemMessage,hWin,IDC_UDNY,UDM_SETRANGE,0,00020014h	; Set range
 		invoke SendDlgItemMessage,hWin,IDC_UDNY,UDM_SETPOS,0,grdsize.y		; Set default value
+		invoke SendDlgItemMessage,hWin,IDC_STCFONT,WM_SETFONT,hfnt,FALSE
 		invoke CheckDlgButton,hWin,IDC_CHKSHOWGRID,grdsize.show
 		invoke CheckDlgButton,hWin,IDC_CHKSNAPGRID,grdsize.snap
 		invoke CheckDlgButton,hWin,IDC_CHKSHOWTIP,grdsize.tips
@@ -249,41 +256,75 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FillRect,[edx].DRAWITEMSTRUCT.hdc,addr [edx].DRAWITEMSTRUCT.rcItem,eax
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
-		.if eax==IDC_STCGRIDCOLOR
-			mov		eax,gridcolor
-			call	GetColor
-			.if eax
-				invoke DeleteObject,hBrGrid
-				mov		eax,cc.rgbResult
-				mov		gridcolor,eax
-				invoke CreateSolidBrush,eax
-				mov		hBrGrid,eax
-				invoke GetDlgItem,hWin,IDC_STCGRIDCOLOR
-				invoke InvalidateRect,eax,NULL,TRUE
-			.endif
-		.elseif eax==IDC_STCBACKCOLOR
-			mov		eax,backcolor
-			call	GetColor
-			.if eax
-				invoke DeleteObject,hBrBack
-				mov		eax,cc.rgbResult
-				mov		backcolor,eax
-				invoke CreateSolidBrush,eax
-				mov		hBrBack,eax
-				invoke GetDlgItem,hWin,IDC_STCBACKCOLOR
-				invoke InvalidateRect,eax,NULL,TRUE
-			.endif
-		.elseif eax==IDC_STCTEXTCOLOR
-			mov		eax,textcolor
-			call	GetColor
-			.if eax
-				invoke DeleteObject,hBrText
-				mov		eax,cc.rgbResult
-				mov		textcolor,eax
-				invoke CreateSolidBrush,eax
-				mov		hBrText,eax
-				invoke GetDlgItem,hWin,IDC_STCTEXTCOLOR
-				invoke InvalidateRect,eax,NULL,TRUE
+		mov		edx,eax
+		shr		edx,16
+		movzx	eax,ax
+		.if edx==BN_CLICKED
+			.if eax==IDC_STCGRIDCOLOR
+				mov		eax,gridcolor
+				call	GetColor
+				.if eax
+					invoke DeleteObject,hBrGrid
+					mov		eax,cc.rgbResult
+					mov		gridcolor,eax
+					invoke CreateSolidBrush,eax
+					mov		hBrGrid,eax
+					invoke GetDlgItem,hWin,IDC_STCGRIDCOLOR
+					invoke InvalidateRect,eax,NULL,TRUE
+				.endif
+			.elseif eax==IDC_STCBACKCOLOR
+				mov		eax,backcolor
+				call	GetColor
+				.if eax
+					invoke DeleteObject,hBrBack
+					mov		eax,cc.rgbResult
+					mov		backcolor,eax
+					invoke CreateSolidBrush,eax
+					mov		hBrBack,eax
+					invoke GetDlgItem,hWin,IDC_STCBACKCOLOR
+					invoke InvalidateRect,eax,NULL,TRUE
+				.endif
+			.elseif eax==IDC_STCTEXTCOLOR
+				mov		eax,textcolor
+				call	GetColor
+				.if eax
+					invoke DeleteObject,hBrText
+					mov		eax,cc.rgbResult
+					mov		textcolor,eax
+					invoke CreateSolidBrush,eax
+					mov		hBrText,eax
+					invoke GetDlgItem,hWin,IDC_STCTEXTCOLOR
+					invoke InvalidateRect,eax,NULL,TRUE
+				.endif
+			.elseif eax==IDC_BTNFONT
+				mov		cf.lStructSize,sizeof CHOOSEFONT
+				invoke GetDC,hWin
+				mov		cf.hDC,eax
+				push	hWin
+				pop		cf.hWndOwner
+				mov		cf.lpLogFont,offset cflf
+				mov		cf.iPointSize,0
+				mov		cf.Flags,CF_SCREENFONTS or CF_INITTOLOGFONTSTRUCT
+				mov		cf.rgbColors,0
+				mov		cf.lCustData,0
+				mov		cf.lpfnHook,0
+				mov		cf.lpTemplateName,0
+				mov		cf.hInstance,0
+				mov		cf.lpszStyle,0
+				mov		cf.nFontType,0
+				mov		cf.Alignment,0
+				mov		cf.nSizeMin,0
+				mov		cf.nSizeMax,0
+				invoke ChooseFont,addr cf
+				push	eax
+				invoke ReleaseDC,hWin,cf.hDC
+				pop		eax
+				.if eax
+					invoke DeleteObject,hfnt
+					invoke CreateFontIndirect,addr cflf
+					mov		hfnt,eax
+					invoke SendDlgItemMessage,hWin,IDC_STCFONT,WM_SETFONT,hfnt,TRUE
+				.endif
 			.endif
 		.endif
 	.else
@@ -342,6 +383,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDCANCEL
+				invoke DeleteObject,hfnt
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDOK
 				invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPOPT1
@@ -454,6 +496,17 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		initid.rcd.incid,eax
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
 				invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
+				invoke lstrcpy,addr textfont.lfFaceName,addr cflf.lfFaceName
+				mov		eax,cflf.lfHeight
+				mov		textfont.lfHeight,eax
+				mov		eax,cflf.lfWeight
+				mov		textfont.lfWeight,eax
+				movzx	eax,cflf.lfItalic
+				mov		textfont.lfItalic,eax
+				movzx	eax,cflf.lfCharSet
+				mov		textfont.lfCharSet,eax
+				invoke RegSetValueEx,hReg,addr szTextFont,0,REG_BINARY,addr textfont,sizeof textfont
+				invoke SendMessage,hResEd,PRO_SETTEXTFONT,hfnt,0
 				invoke GetWindowLong,hResEd,GWL_STYLE
 				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX or DES_SIZETOFONT or DES_NODEFINES or DES_SIMPLEPROPERTY or DES_DEFIDC_STATIC or DES_BORLAND)
 				.if grdsize.show
@@ -541,6 +594,10 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		textcolor,eax
 		invoke CreateSolidBrush,eax
 		mov		hBrText,eax
+		invoke SendMessage,hResEd,PRO_GETTEXTFONT,0,0
+		invoke GetObject,eax,sizeof cflf,addr cflf
+		invoke CreateFontIndirect,addr cflf
+		mov		hfnt,eax
 		;Create the tabs
 		invoke GetDlgItem,hWin,IDC_TABOPT
 		mov		hTab,eax

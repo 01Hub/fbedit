@@ -156,6 +156,14 @@ MENUDATA struct
 	tpe		dd ?
 MENUDATA ends
 
+TEXTFONT struct
+	lfFaceName		db LF_FACESIZE dup(?)
+	lfHeight		dd ?
+	lfWeight		dd ?
+	lfItalic		dd ?
+	lfCharSet		dd ?
+TEXTFONT ends
+
 .const
 
 szWannaSave			db 'Want to save changes to',0Dh,0
@@ -207,6 +215,7 @@ nmeexp				NAMEEXPORT <0,'rsrc.inc'>
 grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE>
 col					COLOR <0FFFFFFh,0>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>>
+textfont			TEXTFONT <'Courier New',-12,0,0,0>
 
 .data?
 

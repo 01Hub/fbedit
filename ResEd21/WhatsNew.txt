@@ -8,6 +8,7 @@ o It is now possible to type the dialogs font.
 o Fixed problem with context menu on a dual screen system.
 o Fixed problem with keyboard resize after preview was used.
 o Added option to set Borland compatible.
+o Added option to set textmode font.
 
 2.0.0.0b - 2008.03.12
 ---------------------

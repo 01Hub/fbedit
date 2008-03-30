@@ -1183,8 +1183,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hPrp,eax
 		invoke CreateWindowEx,0h,addr szToolBoxClass,0,56000000h,0,0,0,0,hWin,0,hInstance,0
 		mov		hTlb,eax
-		;mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_VSCROLL or WS_HSCROLL or ES_MULTILINE or ES_AUTOHSCROLL or ES_AUTOVSCROLL
-		;invoke CreateWindowEx,200h,addr szEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
 		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE or STYLE_NOLINENUMBER,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
 		invoke RtlZeroMemory,addr lf,size lf
@@ -1589,6 +1587,31 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==PRO_GETMEM
 		invoke GetWindowLong,hPrj,0
+		jmp		Ex
+	.elseif eax==PRO_SETTEXTFONT
+		.if hredfont
+			invoke DeleteObject,hredfont
+		.endif
+		mov		eax,wParam
+		mov		hredfont,eax
+		invoke SendMessage,hOut,WM_SETFONT,hredfont,TRUE
+		invoke GetWindowLong,hPrj,0
+		.if eax
+			mov		ebx,eax
+			.while [ebx].PROJECT.hmem
+				.if [ebx].PROJECT.ntype==TPE_DIALOG
+					mov		ebx,[ebx].PROJECT.hmem
+					.if [ebx].DLGHEAD.hred
+						invoke SendMessage,[ebx].DLGHEAD.hred,WM_SETFONT,hredfont,TRUE
+						invoke SendMessage,[ebx].DLGHEAD.hred,REM_REPAINT,0,TRUE
+					.endif
+				.endif
+				add		ebx,sizeof PROJECT
+			.endw
+		.endif
+		jmp		Ex
+	.elseif eax==PRO_GETTEXTFONT
+		mov		eax,hredfont
 		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam

@@ -50,6 +50,8 @@ start:
 		invoke RegQueryValueEx,hReg,addr szColor,0,addr lpType,addr col,addr lpcbData
 		mov		lpcbData,sizeof initid
 		invoke RegQueryValueEx,hReg,addr szInitID,0,addr lpType,addr initid,addr lpcbData
+		mov		lpcbData,sizeof textfont
+		invoke RegQueryValueEx,hReg,addr szTextFont,0,addr lpType,addr textfont,addr lpcbData
 	.endif
 	.if wpos.wtpro<5
 		mov		wpos.wtpro,150
@@ -478,6 +480,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hBr:DWORD
 	LOCAL	hPen:DWORD
 	LOCAL	mDC:HDC
+	LOCAL	lf:LOGFONT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -585,6 +588,18 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !grdsize.standardmnu
 			invoke CoolMenu
 		.endif
+		invoke RtlZeroMemory,addr lf,sizeof lf
+		invoke lstrcpy,addr lf.lfFaceName,addr textfont.lfFaceName
+		mov		eax,textfont.lfHeight
+		mov		lf.lfHeight,eax
+		mov		eax,textfont.lfWeight
+		mov		lf.lfWeight,eax
+		mov		eax,textfont.lfItalic
+		mov		lf.lfItalic,al
+		mov		eax,textfont.lfCharSet
+		mov		lf.lfCharSet,al
+		invoke CreateFontIndirect,addr lf
+		invoke SendMessage,hResEd,PRO_SETTEXTFONT,eax,0
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
