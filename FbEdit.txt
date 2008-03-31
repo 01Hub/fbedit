@@ -1,6 +1,9 @@
 Whats new:
 ----------
 1.0.6.0
+o Updated resource editor.
+  Previous modal dialogs are now child dialogs.
+  This makes the resource editors UI more uniform.
 o Fixed resource editor bug. Caption lenght was limitted to 31 characters.
 o Fixed Find / Replace bug.
 o Fixed with block bug.
