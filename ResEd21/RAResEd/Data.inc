@@ -409,7 +409,7 @@ szCrLf				db 0Dh,0Ah,0
 
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
-initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>>
+initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>>
 
 .data?
 

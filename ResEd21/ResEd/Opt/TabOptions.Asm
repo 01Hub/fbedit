@@ -52,6 +52,8 @@ IDC_EDTMNUSTART		equ 1003
 IDC_EDTMNUINC		equ 1004
 IDC_EDTRCDSTART		equ 1006
 IDC_EDTRCDINC		equ 1005
+IDC_EDTRESSTART		equ 1008
+IDC_EDTRESINC		equ 1007
 
 .const
 
@@ -361,6 +363,8 @@ TabOpt4Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetDlgItemInt,hWin,IDC_EDTMNUINC,initid.mnu.incid,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTRCDSTART,initid.rcd.startid,FALSE
 		invoke SetDlgItemInt,hWin,IDC_EDTRCDINC,initid.rcd.incid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTRESSTART,initid.res.startid,FALSE
+		invoke SetDlgItemInt,hWin,IDC_EDTRESINC,initid.res.incid,FALSE
 	.else
 		mov		eax,FALSE
 		ret
@@ -494,6 +498,10 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		initid.rcd.startid,eax
 				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRCDINC,NULL,FALSE
 				mov		initid.rcd.incid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRESSTART,NULL,FALSE
+				mov		initid.res.startid,eax
+				invoke GetDlgItemInt,hTabDlg[12],IDC_EDTRESINC,NULL,FALSE
+				mov		initid.res.incid,eax
 				invoke RegSetValueEx,hReg,addr szInitID,0,REG_BINARY,addr initid,sizeof initid
 				invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
 				invoke lstrcpy,addr textfont.lfFaceName,addr cflf.lfFaceName

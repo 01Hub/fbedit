@@ -1232,6 +1232,24 @@ GetFreeProjectitemID proc uses esi edi,nType:DWORD
 				.endif
 				add		esi,sizeof PROJECT
 			.endw
+		.elseif eax==TPE_RESOURCE
+			mov		eax,initid.res.startid
+			.while [esi].PROJECT.hmem
+				.if [esi].PROJECT.ntype==TPE_RESOURCE
+					.if ![esi].PROJECT.delete
+						mov		edx,[esi].PROJECT.hmem
+						.while [edx].RESOURCEMEM.szfile
+							.if eax==[edx].RESOURCEMEM.value
+								add		eax,initid.res.incid
+								mov		esi,edi
+								.break
+							.endif
+							add		edx,sizeof RESOURCEMEM
+						.endw
+					.endif
+				.endif
+				add		esi,sizeof PROJECT
+			.endw
 		.endif
 	.endif
 	ret

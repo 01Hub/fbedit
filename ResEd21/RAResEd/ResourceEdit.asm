@@ -200,6 +200,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	fChanged:DWORD
+	LOCAL	val:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -321,9 +322,16 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,NULL
 				invoke PropertyList,0
 			.elseif eax==IDC_BTNRESADD
+				invoke SaveResourceEdit,hWin
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
+				push	eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke GetFreeProjectitemID,TPE_RESOURCE
+				mov		val,eax
+				pop		edx
+				shl		edx,16
+				or		edx,2
+				invoke SendMessage,hGrd,GM_SETCELLDATA,edx,addr val
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
 				xor		eax,eax

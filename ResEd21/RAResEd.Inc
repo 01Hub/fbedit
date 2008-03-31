@@ -125,6 +125,7 @@ INITID struct
 	man				RESID <>
 	rcd				RESID <>
 	tbr				RESID <>
+	res				RESID <>
 INITID ends
 
 WINSIZE struct
