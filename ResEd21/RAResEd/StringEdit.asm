@@ -4,7 +4,6 @@ IDD_DLGSTRING							equ 1200
 IDC_GRDSTR								equ 1001
 IDC_BTNSTRADD							equ 1002
 IDC_BTNSTRDEL							equ 1003
-;IDC_BTNSTRLANG							equ 1006
 
 ;.data?
 

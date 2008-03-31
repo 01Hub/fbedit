@@ -323,6 +323,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_BTNRESADD
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
+				invoke GetFreeProjectitemID,TPE_RESOURCE
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
 				xor		eax,eax

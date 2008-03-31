@@ -1,7 +1,5 @@
 IDD_RCDATA					equ 2500
-IDC_EDTRCDATA					equ 1003
-IDC_EDTRCDID						equ 1002
-IDC_EDTRCDNAME					equ 1001
+IDC_EDTRCDATA				equ 1003
 
 .data
 

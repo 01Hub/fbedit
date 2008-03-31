@@ -824,7 +824,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					.if eax==BST_CHECKED
 						or		(MNUITEM ptr [esi]).nstate,MFS_CHECKED
 					.endif
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_CHKGRAYED
 				invoke MnuGetMem,hWin
@@ -835,7 +837,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					.if eax==BST_CHECKED
 						or		(MNUITEM ptr [esi]).nstate,MFS_GRAYED
 					.endif
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_CHKRIGHTALIGN
 				invoke MnuGetMem,hWin
@@ -846,7 +850,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					.if eax==BST_CHECKED
 						or		(MNUITEM ptr [esi]).ntype,MFT_RIGHTJUSTIFY
 					.endif
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_CHKRADIO
 				invoke MnuGetMem,hWin
@@ -857,7 +863,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					.if eax==BST_CHECKED
 						or		(MNUITEM ptr [esi]).ntype,MFT_RADIOCHECK
 					.endif
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_CHKOWNERDRAW
 				invoke MnuGetMem,hWin
@@ -869,7 +877,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 						or		(MNUITEM ptr [esi]).ntype,MFT_OWNERDRAW
 					.endif
 				.endif
-				mov		fDialogChanged,TRUE
+				.if !fMnuSel
+					mov		fDialogChanged,TRUE
+				.endif
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTITEMCAPTION
@@ -899,14 +909,18 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_INSERTSTRING,nMnuInx,addr buffer1
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETITEMDATA,nMnuInx,esi
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETCURSEL,nMnuInx,0
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_EDTITEMNAME
 				invoke MnuGetMem,hWin
 				.if eax
 					mov		esi,eax
 					invoke GetDlgItemText,hWin,IDC_EDTITEMNAME,addr (MNUITEM ptr [esi]).itemname,MaxName
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_EDTITEMID
 				invoke MnuGetMem,hWin
@@ -914,7 +928,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					mov		esi,eax
 					invoke GetDlgItemInt,hWin,IDC_EDTITEMID,addr val,FALSE
 					mov		(MNUITEM ptr [esi]).itemid,eax
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_EDTHELPID
 				invoke MnuGetMem,hWin
@@ -922,7 +938,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					mov		esi,eax
 					invoke GetDlgItemInt,hWin,IDC_EDTHELPID,addr val,FALSE
 					mov		(MNUITEM ptr [esi]).helpid,eax
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.elseif eax==IDC_HOTMENU
 				invoke MnuGetMem,hWin
@@ -931,7 +949,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_HOTMENU,HKM_GETHOTKEY,0,0
 					mov		(MNUITEM ptr [esi]).shortcut,eax
 					invoke SendMessage,hWin,WM_COMMAND,(EN_CHANGE shl 16) or IDC_EDTITEMCAPTION,0
-					mov		fDialogChanged,TRUE
+					.if !fMnuSel
+						mov		fDialogChanged,TRUE
+					.endif
 				.endif
 			.endif
 		.elseif edx==LBN_SELCHANGE
