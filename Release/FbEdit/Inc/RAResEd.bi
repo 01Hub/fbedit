@@ -116,6 +116,7 @@ Type INITID
 	ver		As RESID
 	man		As RESID
 	rcd		As RESID
+	res		As RESID
 End Type
 
 Type WINSIZE

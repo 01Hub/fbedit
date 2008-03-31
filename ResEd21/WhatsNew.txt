@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.03.29
+2.1.0.0 - 2008.03.31
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
