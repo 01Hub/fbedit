@@ -137,7 +137,7 @@ TryAgain:
 	' Get current selection
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	' Setup find
-	ft.chrg.cpMin=chrg.cpMin
+'*	ft.chrg.cpMin=chrg.cpMin
 'MessageBox(ah.hwnd,Str(fres),Str(frType),MB_OK)
 	If frType And FR_DOWN Then
 '		If fres<>-1 Then
@@ -368,9 +368,16 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDOK
+						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 						If fDir=2 Then
+							If fres<>-1 Then
+								ft.chrg.cpMin=chrg.cpMin-1
+							EndIf
 							buff=GetInternalString(IS_PREVIOUS)
 						Else
+							If fres<>-1 Then
+								ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
+							EndIf
 							buff=GetInternalString(IS_NEXT)
 						EndIf
 						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
@@ -395,8 +402,17 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						Else
 							If fres<>-1 Then
 								nReplaceCount=nReplaceCount+1
-								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@replacebuff))
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+								If fDir=2 Then
+									If fres<>-1 Then
+										ft.chrg.cpMin=chrg.cpMin-1
+									EndIf
+								Else
+									If fres<>-1 Then
+										ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
+									EndIf
+								EndIf
 								'update real end
 								If fPos=0 And ft.chrg.cpMax<>-1 Then
 									ft.chrg.cpMax=ft.chrg.cpMax+(Len(replacebuff)-Len(findbuff))
@@ -411,6 +427,16 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							Find(hWin,fr)
 						EndIf
 						Do While fres<>-1
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+							If fDir=2 Then
+								If fres<>-1 Then
+									ft.chrg.cpMin=chrg.cpMin-1
+								EndIf
+							Else
+								If fres<>-1 Then
+									ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
+								EndIf
+							EndIf
 							Find(hWin,fr)
 						Loop
 						'
