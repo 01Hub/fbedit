@@ -125,9 +125,21 @@ SaveRCDataEdit endp
 RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	fChanged:DWORD
+	LOCAL	racol:RACOLOR
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTRCDATA,hInstance,0
+		mov		hDlgRed,eax
+		mov		edi,eax
+		invoke SendMessage,edi,WM_SETFONT,hredfont,0
+		invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
+		mov		eax,color.back
+		mov		racol.bckcol,eax
+		mov		eax,color.text
+		mov		racol.txtcol,eax
+		mov		racol.strcol,0
+		invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
 		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
@@ -149,6 +161,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		lea		eax,[edi].RCDATAMEM.value
 		mov		lpResID,eax
 		invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
+		invoke SendDlgItemMessage,hWin,IDC_EDTRCDATA,EM_SETMODIFY,FALSE,0
 		invoke PropertyList,-2
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
@@ -159,6 +172,11 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				invoke SendDlgItemMessage,hWin,IDC_EDTRCDATA,EM_GETMODIFY,0,0
+				.if eax
+					mov		fDialogChanged,TRUE
+					invoke SendDlgItemMessage,hWin,IDC_EDTRCDATA,EM_SETMODIFY,FALSE,0
+				.endif
 				invoke SaveRCDataEdit,hWin
 				.if fDialogChanged
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
@@ -168,10 +186,9 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke PropertyList,0
 			.endif
-		.elseif edx==EN_CHANGE
-			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
+		mov		hDlgRed,0
 		invoke EndDialog,hWin,NULL
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
@@ -186,7 +203,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_EDTRCDATA
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,397
+		sub		rect.right,6
 		sub		rect.bottom,6
 		invoke MoveWindow,eax,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else

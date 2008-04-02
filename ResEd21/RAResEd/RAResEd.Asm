@@ -364,7 +364,7 @@ ResEdUninstall proc public
 
 ResEdUninstall endp
 
-SetColors proc
+SetColors proc uses ebx
 	LOCAL	racol:RACOLOR
 
 	.if hBrBack
@@ -386,6 +386,22 @@ SetColors proc
 	mov		racol.txtcol,eax
 	mov		racol.strcol,0
 	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
+	.if hDlgRed
+		invoke SendMessage,hDlgRed,REM_SETCOLOR,0,addr racol
+	.endif
+		invoke GetWindowLong,hPrj,0
+		.if eax
+			mov		ebx,eax
+			.while [ebx].PROJECT.hmem
+				.if [ebx].PROJECT.ntype==TPE_DIALOG
+					mov		ebx,[ebx].PROJECT.hmem
+					.if [ebx].DLGHEAD.hred
+						invoke SendMessage,[ebx].DLGHEAD.hred,REM_SETCOLOR,0,addr racol
+					.endif
+				.endif
+				add		ebx,sizeof PROJECT
+			.endw
+		.endif
 	ret
 
 SetColors endp
@@ -1595,6 +1611,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		mov		hredfont,eax
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,TRUE
+		invoke SendMessage,hOut,REM_REPAINT,0,TRUE
+		.if hDlgRed
+			invoke SendMessage,hDlgRed,WM_SETFONT,hredfont,TRUE
+			invoke SendMessage,hDlgRed,REM_REPAINT,0,TRUE
+		.endif
 		invoke GetWindowLong,hPrj,0
 		.if eax
 			mov		ebx,eax

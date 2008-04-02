@@ -458,3 +458,4 @@ hDialog				dd ?
 fDialogChanged		dd ?
 hPrpCboDlg			dd ?
 fMenuErr			dd ?
+hDlgRed				dd ?
