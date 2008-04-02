@@ -307,12 +307,13 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
-		invoke SetFocus,hGrd
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				invoke SendMessage,hGrd,GM_GETCURSEL,0,0
+				invoke SendMessage,hGrd,GM_ENDEDIT,eax,FALSE
 				invoke SaveResourceEdit,hWin
 				.if fDialogChanged
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
