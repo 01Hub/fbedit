@@ -239,6 +239,22 @@ szPRAGMA			db '#pragma',0
 szINCLUDE			db '#include',0
 szDESIGNINFO		db 'DESIGNINFO',0,0
 
+szManifestInfo		db 'xml',0
+					db 'encoding',0
+					db 'standalone',0
+					db 'assembly',0
+					db 'xmlns',0
+					db 'manifestVersion',0
+					db 'assemblyIdentity',0
+					db 'processorArchitecture',0
+					db 'name',0
+					db 'type',0
+					db 'description',0
+					db 'dependency',0
+					db 'dependentAssembly',0
+					db 'assemblyIdentity',0
+					db 'publicKeyToken',0,0
+
 szBEGINSHORT		db '{',0
 szENDSHORT			db '}',0
 
