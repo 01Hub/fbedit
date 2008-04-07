@@ -30,6 +30,20 @@ Dim Shared fLogFind As Long
 Dim Shared fLogFindClear As Long
 Dim Shared fOnlyOneTime As Long
 
+Sub ResetFind
+	fres=-1
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
+	fPos=ft.chrg.cpMin
+	ft.chrg.cpMax=-1
+	fProFileNo=1
+	fOnlyOneTime=0
+	If fLogFindClear Then
+		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
+	EndIf
+	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
+
+End Sub
+
 Sub ShowStat(ByVal fOneFile As Long)
 	Dim As Integer i,bm,nFiles,nFounds,nRepeats,nErrors,nWarnings
 
@@ -97,9 +111,13 @@ TryAgain:
 						If fDir=2 Then
 							chrg.cpMin=-1
 							chrg.cpMax=-1
+							ft.chrg.cpMin=-1
+							ft.chrg.cpMax=0
 						Else
 							chrg.cpMin=0
 							chrg.cpMax=0
+							ft.chrg.cpMin=0
+							ft.chrg.cpMax=-1
 						EndIf
 						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 						fOnlyOneTime=0
@@ -128,6 +146,7 @@ TryAgain:
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
 				fres=-1
 				fProFileNo=1
+				ResetFind
 				Return fres
 			ElseIf fProFileNo>256 And fProFileNo<1001 Then
 				fProFileNo=1001
@@ -137,17 +156,10 @@ TryAgain:
 	' Get current selection
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	' Setup find
-'*	ft.chrg.cpMin=chrg.cpMin
-'MessageBox(ah.hwnd,Str(fres),Str(frType),MB_OK)
-	If frType And FR_DOWN Then
-'		If fres<>-1 Then
-'			ft.chrg.cpMin+=1
-'		EndIf
-	Else
+	If (frType And FR_DOWN)=0 Then
 		ft.chrg.cpMax=0
 	EndIf
 	ft.lpstrText=@findbuff
-'MessageBox(ah.hwnd,Str(ft.chrg.cpMin),Str(ft.chrg.cpMax),MB_OK)
 TryFind:
 	' Do the find
 	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@ft))
@@ -239,20 +251,6 @@ TryFind:
 	Return fres
 
 End Function
-
-Sub ResetFind
-	fres=-1
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@ft.chrg))
-	fPos=ft.chrg.cpMin
-	ft.chrg.cpMax=-1
-	fProFileNo=1
-	fOnlyOneTime=0
-	If fLogFindClear Then
-		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
-	EndIf
-	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
-
-End Sub
 
 Sub LoadFindHistory()
 	Dim As Integer i
@@ -353,13 +351,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If id=IDC_HEXED Or id=0 Then
 				EnableWindow(GetDlgItem(hWin,IDOK),FALSE)
 				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACE),FALSE)
-'				EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),FALSE)
-'				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACEALL),FALSE)
 			Else
 				EnableWindow(GetDlgItem(hWin,IDOK),TRUE)
 				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACE),TRUE)
-'				EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),TRUE)
-'				EnableWindow(GetDlgItem(hWin,IDC_BTN_REPLACEALL),TRUE)
 			EndIf
 			'
 		Case WM_COMMAND
