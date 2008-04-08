@@ -15,6 +15,8 @@ Lang=English (default), By FbEdit team
 2=Cancel
 1002=Changes will take place when FbEdit is restarted.
 ;--------------------------------------------------------------------------
+[1300]
+;--------------------------------------------------------------------------
 [2000]
 2000=Options
 1=OK
@@ -295,8 +297,8 @@ Lang=English (default), By FbEdit team
 10016=&Print
 10014=E&xit\tAlt+F4
 10021=&Edit
-10022=&Undo\tCtrl+Z
-10023=&Redo\tCtrl+Y
+10022=Und&o\tCtrl+Z
+10023=R&edo\tCtrl+Y
 10024=C&ut\tCtrl+X
 10025=&Copy\tCtrl+C
 10026=&Paste\tCtrl+V
@@ -305,7 +307,7 @@ Lang=English (default), By FbEdit team
 10029=&Goto Line\tCtrl+G
 10030=&Find\tCtrl+F
 10031=Find &Next\tF3
-10032=Find P&revious\tCtrl+F3
+10032=Find Pre&vious\tCtrl+F3
 10033=&Replace\tCtrl+R
 10034=Find Declare\tF2
 10035=Return\tCtrl+F2
