@@ -748,10 +748,23 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ft.chrg))
+							If fres<>-1 Then
+								ft.chrg.cpMin=ft.chrg.cpMin+ft.chrg.cpMax-ft.chrg.cpMin
+							EndIf
+							ft.chrg.cpMax=-1
+							x=fDir
+							fDir=1
 							Find(hWin,fr Or FR_DOWN)
+							fDir=x
 							'
 						Case IDM_EDIT_FINDPREVIOUS
-							Find(hWin,fr And (-1 Xor FR_DOWN))
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ft.chrg))
+							ft.chrg.cpMax=0
+							x=fDir
+							fDir=2
+							Find(hWin,fr Or FR_DOWN)
+							fDir=x
 							'
 						Case IDM_EDIT_REPLACE
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
