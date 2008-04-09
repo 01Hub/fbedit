@@ -108,8 +108,10 @@ TreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDBLCLK
 		invoke ProjectDblClick,hWin,lParam
+		xor		eax,eax
+	.else
+		invoke CallWindowProc,OldTreeViewProc,hWin,uMsg,wParam,lParam
 	.endif
-	invoke CallWindowProc,OldTreeViewProc,hWin,uMsg,wParam,lParam
 	ret
 
 TreeViewProc endp
@@ -343,15 +345,6 @@ OpenProject endp
 
 CloseProject proc uses esi,hProMem:DWORD
 
-;	invoke GetWindowLong,hDEd,DEWM_DIALOG
-;	.if eax
-;		push	eax
-;		invoke DestroySizeingRect
-;		pop		eax
-;		invoke DestroyWindow,eax
-;	.endif
-;	invoke SetWindowLong,hDEd,DEWM_DIALOG,0
-;	invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 	invoke CloseDialog
 	.if hRoot
 		invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,TVI_ROOT
@@ -367,6 +360,21 @@ CloseProject proc uses esi,hProMem:DWORD
 				mov		eax,[esi].PROJECT.hmem
 				.if [eax].DLGHEAD.hred
 					invoke DestroyWindow,[eax].DLGHEAD.hred
+				.endif
+			.elseif [esi].PROJECT.ntype==TPE_RCDATA
+				mov		eax,[esi].PROJECT.hmem
+				.if [eax].RCDATAMEM.hred
+					invoke DestroyWindow,[eax].RCDATAMEM.hred
+				.endif
+			.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
+				mov		eax,[esi].PROJECT.hmem
+				.if [eax].TOOLBARMEM.hred
+					invoke DestroyWindow,[eax].TOOLBARMEM.hred
+				.endif
+			.elseif [esi].PROJECT.ntype==TPE_XPMANIFEST
+				mov		eax,[esi].PROJECT.hmem
+				.if [eax].XPMANIFESTMEM.hred
+					invoke DestroyWindow,[eax].XPMANIFESTMEM.hred
 				.endif
 			.endif
 			invoke GlobalUnlock,[esi].PROJECT.hmem

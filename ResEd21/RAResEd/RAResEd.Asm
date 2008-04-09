@@ -1678,6 +1678,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke SendMessage,eax,EM_CANUNDO,0,0
 			.endif
+		.elseif hDlgRed
+			invoke SendMessage,hDlgRed,EM_CANUNDO,0,0
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_UNDO
@@ -1689,6 +1691,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				invoke UndoRedo,FALSE
 			.endif
+		.elseif hDlgRed
+			invoke SendMessage,hDlgRed,EM_UNDO,0,0
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_CANREDO
@@ -1699,6 +1703,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke SendMessage,eax,EM_CANREDO,0,0
 			.endif
+		.elseif hDlgRed
+			invoke SendMessage,hDlgRed,EM_CANREDO,0,0
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_REDO
@@ -1710,6 +1716,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				invoke UndoRedo,TRUE
 			.endif
+		.elseif hDlgRed
+			invoke SendMessage,hDlgRed,EM_REDO,0,0
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_CUT

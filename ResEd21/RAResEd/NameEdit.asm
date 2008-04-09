@@ -783,7 +783,8 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,wParam
+		invoke DestroyWindow,hWin
+		;invoke EndDialog,hWin,wParam
 	.else
 		mov		eax,FALSE
 		ret

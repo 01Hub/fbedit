@@ -277,11 +277,13 @@ XPMANIFESTMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	szfilename		db MAX_PATH dup(?)
+	hred			dd ?
 XPMANIFESTMEM ends
 
 RCDATAMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
+	hred			dd ?
 RCDATAMEM ends
 
 TOOLBARMEM struct
@@ -289,6 +291,7 @@ TOOLBARMEM struct
 	value			dd ?
 	ccx				dd ?
 	ccy				dd ?
+	hred			dd ?
 TOOLBARMEM ends
 
 VERSIONMEM struct

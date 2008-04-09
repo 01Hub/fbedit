@@ -129,17 +129,6 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTRCDATA,hInstance,0
-		mov		hDlgRed,eax
-		mov		edi,eax
-		invoke SendMessage,edi,WM_SETFONT,hredfont,0
-		invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
-		mov		eax,color.back
-		mov		racol.bckcol,eax
-		mov		eax,color.text
-		mov		racol.txtcol,eax
-		mov		racol.strcol,0
-		invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
 		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
@@ -155,13 +144,35 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fChanged,TRUE
 		.endif
 		mov		edi,[esi].PROJECT.hmem
+		.if ![edi].RCDATAMEM.hred
+			push	edi
+			invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTRCDATA,hInstance,0
+			mov		hDlgRed,eax
+			mov		edi,eax
+			invoke SendMessage,edi,WM_SETFONT,hredfont,0
+			invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
+			mov		eax,color.back
+			mov		racol.bckcol,eax
+			mov		eax,color.text
+			mov		racol.txtcol,eax
+			mov		racol.strcol,0
+			invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
+			pop		edi
+			mov		eax,hDlgRed
+			mov		[edi].RCDATAMEM.hred,eax
+			invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
+			invoke SendDlgItemMessage,hWin,IDC_EDTRCDATA,EM_SETMODIFY,FALSE,0
+		.else
+			mov		eax,[edi].RCDATAMEM.hred
+			mov		hDlgRed,eax
+			invoke SetParent,eax,hWin
+			invoke ShowWindow,hDlgRed,SW_SHOW
+		.endif
 		mov		lpResType,offset szRCDATA
 		lea		eax,[edi].RCDATAMEM.szname
 		mov		lpResName,eax
 		lea		eax,[edi].RCDATAMEM.value
 		mov		lpResID,eax
-		invoke SetDlgItemText,hWin,IDC_EDTRCDATA,addr [edi+sizeof RCDATAMEM]
-		invoke SendDlgItemMessage,hWin,IDC_EDTRCDATA,EM_SETMODIFY,FALSE,0
 		invoke PropertyList,-2
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
@@ -188,8 +199,10 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke ShowWindow,hDlgRed,SW_HIDE
+		invoke SetParent,hDlgRed,hRes
 		mov		hDlgRed,0
-		invoke EndDialog,hWin,NULL
+		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
@@ -206,6 +219,12 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.right,6
 		sub		rect.bottom,6
 		invoke MoveWindow,eax,rect.left,rect.top,rect.right,rect.bottom,TRUE
+	.elseif eax==WM_NOTIFY
+		mov		eax,lParam
+		mov		eax,[eax].NMHDR.hwndFrom
+		.if eax==hDlgRed
+			invoke NotifyParent
+		.endif
 	.else
 		mov		eax,FALSE
 		ret

@@ -721,7 +721,8 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		fDialogChanged,FALSE
     .elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,wParam
+		invoke DestroyWindow,hWin
+		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

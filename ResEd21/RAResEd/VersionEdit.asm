@@ -827,7 +827,8 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke EndDialog,hWin,NULL
+		invoke DestroyWindow,hWin
+		;invoke EndDialog,hWin,NULL
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
