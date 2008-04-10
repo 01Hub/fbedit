@@ -2345,11 +2345,11 @@ rsexstyledef	dd WS_EX_ACCEPTFILES
 				dd WS_EX_WINDOWEDGE
 				dd WS_EX_WINDOWEDGE
 				db 'WS_EX_WINDOWEDGE',0
-				dd 0,0
-				db 0
 
 .data?
 
+rscuststyledef	db 2048 dup(?)
 srtstyledefdlg	dd 512 dup(?)
 srtstyledef		dd 512 dup(?)
 srtexstyledef	dd 512 dup(?)
+srtstylestr		dd 512 dup(?)

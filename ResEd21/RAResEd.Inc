@@ -136,6 +136,12 @@ WINSIZE struct
 	ptstyle	POINT <?>
 WINSIZE ends
 
+CUSTSTYLE struct
+	szStyle			db 64 dup(?)
+	nValue			dd ?
+	nMask			dd ?
+CUSTSTYLE ends
+
 ;Dialog editor messages
 DEM_BASE			equ WM_USER+2000
 DEM_OPEN			equ DEM_BASE+1		;wParam=0, lParam=Handle of memory or NULL
@@ -177,6 +183,8 @@ DEM_SETTEXTMODE		equ DEM_BASE+36		;wParam=TRUE/FALSE, lParam=0
 DEM_CANREDO			equ DEM_BASE+37		;wParam=0, lParam=0, Returns TRUE or FALSE
 DEM_REDO			equ DEM_BASE+38		;wParam=0, lParam=0
 DEM_GETSHOWDIALOG	equ DEM_BASE+39		;wParam=0, lParam=0
+DEM_CLEARCUSTSTYLE	equ DEM_BASE+40		;wParam=0, lParam=0
+DEM_ADDCUSTSTYLE	equ DEM_BASE+41		;wParam=0, lParam=0
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1

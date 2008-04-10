@@ -16,8 +16,6 @@ IDC_CHKAUTOEXPORT	equ 2114
 
 IDD_TABOPT2			equ 2200
 IDC_GRDCUST			equ 2201
-;IDC_BTNCUSTUP		equ 2202
-;IDC_BTNCUSTDN		equ 2203
 IDC_BTNCUSTADD		equ 2204
 IDC_BTNCUSTDEL		equ 2205
 
@@ -151,7 +149,7 @@ TabOpt1Proc endp
 TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[64]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	hGrd:HWND
 	LOCAL	clmn:COLUMN
@@ -159,11 +157,6 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-;		invoke ImageList_GetIcon,hIml,2,ILD_NORMAL
-;		invoke SendDlgItemMessage,hWin,IDC_BTNCUSTUP,BM_SETIMAGE,IMAGE_ICON,eax
-;		invoke ImageList_GetIcon,hIml,3,ILD_NORMAL
-;		invoke SendDlgItemMessage,hWin,IDC_BTNCUSTDN,BM_SETIMAGE,IMAGE_ICON,eax
-
 		invoke GetDlgItem,hWin,IDC_GRDCUST
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -174,7 +167,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;File
-		invoke ConvertDpiSize,180
+		invoke ConvertDpiSize,210
 		mov		clmn.colwt,eax
 		mov		clmn.lpszhdrtext,offset szHdrCust
 		mov		clmn.halign,GA_ALIGN_LEFT
@@ -219,7 +212,6 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
-;		invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,0,0
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDCUST
 		mov		hGrd,eax
@@ -231,11 +223,6 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
-;				invoke GetDlgItemText,hWin,IDC_EDTCUST,addr buffer,sizeof buffer
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_ADDSTRING,0,addr buffer
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,eax,0
-;				mov		buffer,0
-;				invoke SetDlgItemText,hWin,IDC_EDTCUST,addr buffer
 			.elseif eax==IDC_BTNCUSTDEL
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
 				push	eax
@@ -243,67 +230,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETCURSEL,0,0
-;				.if eax!=LB_ERR
-;					mov		nInx,eax
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_DELETESTRING,eax,0
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0
-;					.if eax==LB_ERR
-;						dec		nInx
-;						invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0
-;					.endif
-;				.endif
-;			.elseif eax==IDC_BTNCUSTUP
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETCURSEL,0,0
-;				.if eax
-;					mov		nInx,eax
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETTEXT,nInx,addr buffer
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_DELETESTRING,nInx,0
-;					dec		nInx
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_INSERTSTRING,nInx,addr buffer
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0
-;				.endif
-;			.elseif eax==IDC_BTNCUSTDN
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETCURSEL,0,0
-;				mov		nInx,eax
-;				invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETCOUNT,0,0
-;				dec		eax
-;				.if eax!=nInx
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_GETTEXT,nInx,addr buffer
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_DELETESTRING,nInx,0
-;					inc		nInx
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_INSERTSTRING,nInx,addr buffer
-;					invoke SendDlgItemMessage,hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0
-;				.endif
-;			.elseif eax==IDC_BTNCUST
-;				invoke RtlZeroMemory,addr ofn,sizeof ofn
-;				mov		ofn.lStructSize,sizeof ofn
-;				push	hWin
-;				pop		ofn.hwndOwner
-;				push	hInstance
-;				pop		ofn.hInstance
-;				mov		ofn.lpstrInitialDir,NULL
-;				mov		ofn.lpstrFilter,offset szFilterDLL
-;				mov		ofn.lpstrDefExt,0
-;				mov		ofn.lpstrTitle,0
-;				lea		eax,buffer
-;				mov		ofn.lpstrFile,eax
-;				invoke GetDlgItemText,hWin,IDC_EDTCUST,addr buffer,sizeof buffer
-;				mov		ofn.nMaxFile,sizeof buffer
-;				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-;				invoke GetOpenFileName,addr ofn
-;				.if eax
-;					invoke SetDlgItemText,hWin,IDC_EDTCUST,addr buffer
-;				.endif
 			.endif
-		.elseif edx==EN_CHANGE
-;			.if eax==IDC_EDTCUST
-;				invoke GetDlgItem,hWin,IDC_BTNCUSTADD
-;				push	eax
-;				invoke SendDlgItemMessage,hWin,IDC_EDTCUST,WM_GETTEXTLENGTH,0,0
-;				pop		edx
-;				invoke EnableWindow,edx,eax
-;			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
 		invoke GetDlgItem,hWin,IDC_GRDCUST
@@ -330,14 +257,14 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lpstrTitle,0
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
-;				invoke GetDlgItemText,hWin,IDC_EDTCUST,addr buffer,sizeof buffer
+				invoke lstrcpy,eax,[esi].GRIDNOTIFY.lpdata
 				mov		ofn.nMaxFile,sizeof buffer
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
 					mov		edx,[esi].GRIDNOTIFY.lpdata
-					invoke lstrcpy,edx,eax
+					invoke lstrcpy,edx,addr buffer
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
@@ -670,21 +597,25 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		edx,nmeexp.nType
 				invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
 				mov		nInx,0
-;				.while nInx<=32
-;					mov		buffer,0
-;					invoke SendDlgItemMessage,hTabDlg[4],IDC_LSTCUST,LB_GETTEXT,nInx,addr buffer
-;					.if eax!=LB_ERR
-;						inc		nInx
-;						invoke MakeKey,addr szCust,nInx,addr buffer1
-;						invoke lstrlen,addr buffer
-;						inc		eax
-;						invoke RegSetValueEx,hReg,addr buffer1,0,REG_SZ,addr buffer,eax
-;					.else
-;						inc		nInx
-;						invoke MakeKey,addr szCust,nInx,addr buffer1
-;						invoke RegDeleteValue,hReg,addr buffer1
-;					.endif
-;				.endw
+				.while nInx<=32
+					invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
+						inc		nInx
+						invoke MakeKey,addr szCust,nInx,addr buffer1
+						invoke lstrlen,addr buffer
+						inc		eax
+						invoke RegSetValueEx,hReg,addr buffer1,0,REG_SZ,addr buffer,eax
+					.else
+						inc		nInx
+						invoke MakeKey,addr szCust,nInx,addr buffer1
+						invoke RegDeleteValue,hReg,addr buffer1
+					.endif
+				.endw
+				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
 				mov		nInx,0
 				.while nInx<=64
 					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDSTYLE,GM_GETROWCOUNT,0,0
@@ -712,6 +643,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
 						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr cust,sizeof CUSTSTYLE
+						invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1

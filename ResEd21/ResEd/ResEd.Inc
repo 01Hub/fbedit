@@ -166,12 +166,6 @@ TEXTFONT struct
 	lfCharSet		dd ?
 TEXTFONT ends
 
-CUSTSTYLE struct
-	szStyle			db 64 dup(?)
-	nValue			dd ?
-	nMask			dd ?
-CUSTSTYLE ends
-
 .const
 
 szWannaSave			db 'Want to save changes to',0Dh,0

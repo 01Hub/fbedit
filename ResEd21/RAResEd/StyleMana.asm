@@ -153,23 +153,49 @@ AddStyles:
 	push	esi
 	mov		esi,eax
 	.if StyleEx
-		mov		edi,offset rsexstyledef
+;		mov		edi,offset rsexstyledef
+		invoke SortStylesStr,offset srtexstyledef,offset srtstylestr
+		mov		edi,offset srtstylestr
+		call	AddStyles1
 	.else
 		.if [ebx].RASTYLE.ntype
-			mov		edi,offset rsstyledef
+;			mov		edi,offset rsstyledef
+;			call	AddStyles1
+;			mov		edi,offset rscuststyledef
+;			mov		edi,offset srtstyledef
+			invoke SortStylesStr,offset srtstyledef,offset srtstylestr
+			mov		edi,offset srtstylestr
+			call	AddStyles1
 		.else
-			mov		edi,offset rsstyledefdlg
+;			mov		edi,offset rsstyledefdlg
+;			mov		edi,offset srtstyledefdlg
+			invoke SortStylesStr,offset srtstyledefdlg,offset srtstylestr
+			mov		edi,offset srtstylestr
+			call	AddStyles1
 		.endif
 	.endif
-	.while byte ptr [edi+8]
+	pop		esi
+	retn
+
+AddStyles1:
+;	.while byte ptr [edi+8]
+;		call	Compare
+;		.if !eax
+;			invoke SendMessage,hWin,RSM_ADDITEM,0,edi
+;		.endif
+;		invoke strlen,addr [edi+8]
+;		lea		edi,[edi+eax+8+1]
+;	.endw
+	.while dword ptr [edi]
+		push	edi
+		mov		edi,[edi]
 		call	Compare
 		.if !eax
 			invoke SendMessage,hWin,RSM_ADDITEM,0,edi
 		.endif
-		invoke strlen,addr [edi+8]
-		lea		edi,[edi+eax+8+1]
+		pop		edi
+		lea		edi,[edi+4]
 	.endw
-	pop		esi
 	retn
 
 ShowStyles endp

@@ -594,6 +594,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		cust.szStyle,0
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr cust,addr lpcbData
 			.if cust.szStyle
+				invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
 			.endif
 			inc		nInx
 		.endw

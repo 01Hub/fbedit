@@ -2165,6 +2165,24 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.endif
+	.elseif eax==DEM_CLEARCUSTSTYLE
+		invoke RtlZeroMemory,offset rscuststyledef,2048
+		invoke SortStyles
+	.elseif eax==DEM_ADDCUSTSTYLE
+		mov		ebx,offset rscuststyledef
+		.if byte ptr [ebx+8]
+			invoke strlen,addr [ebx+8]
+			lea		ebx,[ebx+eax+8+1]
+		.endif
+		mov		edx,lParam
+		mov		eax,[edx].CUSTSTYLE.nValue
+		mov		[ebx],eax
+		mov		eax,[edx].CUSTSTYLE.nMask
+		mov		[ebx+4],eax
+		invoke strcpy,addr [ebx+8],addr [edx].CUSTSTYLE.szStyle
+		invoke SortStyles
+		mov		eax,ebx
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.bottom

@@ -696,10 +696,19 @@ SortStyles proc uses ebx esi edi
 		inc		ecx
 	.endw
 	invoke CombSort,offset srtstyledefdlg,ecx
-
 	mov		edi,offset srtstyledef
 	mov		esi,offset rsstyledef
 	xor		ecx,ecx
+	.while byte ptr [esi+8]
+		push	ecx
+		mov		[edi],esi
+		invoke strlen,addr [esi+8]
+		lea		edi,[edi+4]
+		lea		esi,[esi+eax+8+1]
+		pop		ecx
+		inc		ecx
+	.endw
+	mov		esi,offset rscuststyledef
 	.while byte ptr [esi+8]
 		push	ecx
 		mov		[edi],esi
@@ -723,7 +732,72 @@ SortStyles proc uses ebx esi edi
 		inc		ecx
 	.endw
 	invoke CombSort,offset srtexstyledef,ecx
-
 	ret
 
 SortStyles endp
+
+CombSortStr proc uses ebx esi edi,Arr:DWORD,count:DWORD
+	LOCAL	Gap:DWORD
+	LOCAL	eFlag:DWORD
+
+	mov		eax,count
+	mov		Gap,eax
+	mov		ebx,Arr
+	dec		count
+  @Loop1:
+	fild	Gap								; load integer memory operand to divide
+	fdiv	CombSort_Const					; divide number by 1.3
+	fistp	Gap								; store result back in integer memory operand
+	dec		Gap
+	jnz		@F
+	mov		Gap,1
+  @@:
+	mov		eFlag,0
+	mov		esi,count
+	sub		esi,Gap
+	xor		ecx,ecx							; low value index
+  @Loop2:
+	mov 	edx,ecx
+	add 	edx,Gap							; high value index
+	push	edx
+	push	ecx
+	mov		eax,[ebx+ecx*4]
+	mov		edx,[ebx+edx*4]
+	lea		eax,[eax+8]
+	lea		edx,[edx+8]
+	invoke strcmpi,eax,edx
+	pop		ecx
+	pop		edx
+	cmp		eax,0
+	jle 	@F
+	mov 	eax,[ebx+ecx*4]					; lower value
+	mov 	edi,[ebx+edx*4]					; higher value
+	mov 	[ebx+edx*4],eax
+	mov 	[ebx+ecx*4],edi
+	inc 	eFlag
+  @@:
+	inc 	ecx
+	cmp 	ecx,esi
+	jle 	@Loop2
+	cmp 	eFlag,0
+	jg		@Loop1
+	cmp 	Gap,1
+	jg		@Loop1
+	ret
+
+CombSortStr endp
+
+SortStylesStr proc uses ebx esi edi,lpSource:DWORD,lpDest:DWORD
+
+	mov		esi,lpSource
+	mov		edi,lpDest
+	xor		ecx,ecx
+	.while dword ptr [esi+ecx*4]
+		mov		eax,[esi+ecx*4]
+		mov		[edi+ecx*4],eax
+		inc		ecx
+	.endw
+	invoke CombSortStr,edi,ecx
+	ret
+
+SortStylesStr endp
