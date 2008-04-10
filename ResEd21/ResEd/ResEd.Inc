@@ -20,6 +20,8 @@ includelib advapi32.lib
 include ..\RAResEd.inc
 includelib ..\Lib\RAResEd.lib
 
+include ..\RAResEd\RAGrid.Inc
+
 ;include masm32.inc
 ;include \RadASM\Masm\Inc\Debug.Inc
 ;includelib masm32.lib
@@ -163,6 +165,12 @@ TEXTFONT struct
 	lfItalic		dd ?
 	lfCharSet		dd ?
 TEXTFONT ends
+
+CUSTSTYLE struct
+	szStyle			db 64 dup(?)
+	nValue			dd ?
+	nMask			dd ?
+CUSTSTYLE ends
 
 .const
 

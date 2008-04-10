@@ -481,6 +481,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hPen:DWORD
 	LOCAL	mDC:HDC
 	LOCAL	lf:LOGFONT
+	LOCAL	cust:CUSTSTYLE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -582,6 +583,17 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[ebx],eax
 					add		ebx,4
 				.endif
+			.endif
+			inc		nInx
+		.endw
+		;Add custom styles
+		mov		nInx,1
+		.while nInx<=64
+			invoke MakeKey,addr szCustStyle,nInx,addr buffer1
+			mov		lpcbData,sizeof CUSTSTYLE
+			mov		cust.szStyle,0
+			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr cust,addr lpcbData
+			.if cust.szStyle
 			.endif
 			inc		nInx
 		.endw

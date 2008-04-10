@@ -48,6 +48,61 @@ DwToAscii proc uses ebx esi edi,dwVal:DWORD,lpAscii:DWORD
 
 DwToAscii endp
 
+DwToHex proc uses edi,dwVal:DWORD,lpAscii:DWORD
+
+	mov		eax,dwVal
+	mov		edi,lpAscii
+	mov		ecx,8
+	.while ecx
+		rol		eax,4
+		call	HexNyb
+		dec		ecx
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+HexNyb:
+	push	eax
+	and		eax,0Fh
+	.if al>9
+		add		al,41h-10
+	.else
+		add		al,30h
+	.endif
+	mov		[edi],al
+	inc		edi
+	pop		eax
+	retn
+
+DwToHex endp
+
+HexToDw proc uses esi,lpAscii:DWORD
+
+	mov		esi,lpAscii
+	xor		edx,edx
+	xor		ecx,ecx
+	xor		eax,eax
+	.while ecx<8
+		shl		edx,4
+		mov		al,[esi+ecx]
+		.if al<='9'
+			and		al,0Fh
+		.elseif al>='A' && al<="F"
+			sub		al,41h-10
+		.elseif al>='a' && al<="f"
+			and		al,5Fh
+			sub		al,41h-10
+		.else
+			xor		eax,eax
+		.endif
+		or		edx,eax
+		inc		ecx
+	.endw
+	mov		edx,eax
+	ret
+
+HexToDw endp
+
 MakeKey proc lpszStr:DWORD,nInx:DWORD,lpszKey:DWORD
 
 	invoke lstrcpy,lpszKey,lpszStr
