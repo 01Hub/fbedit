@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.03.31
+2.1.0.0 - 2008.04.09
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
@@ -10,6 +10,7 @@ o Fixed problem with keyboard resize after preview was used.
 o Added option to set Borland compatible.
 o Added option to set textmode font.
 o Added option to set resource startid and increment.
+o Added preview on resource files (bitmap, icon, cursor, ani cursor and avi clip).
 
 2.0.0.0b - 2008.03.12
 ---------------------

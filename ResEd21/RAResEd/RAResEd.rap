@@ -87,6 +87,7 @@ Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
 43=XPManifestEdit.asm
 44=RCDataEdit.asm
 45=RCDataEdit.dlg
+46=ResPreview.dlg
 
 [Colref]
 0=00FFFFFF
@@ -142,7 +143,7 @@ Options=52
 1=0,0,718,485,35848
 7=0,0,0,0,79374
 6=0,0,0,0,1695
-9=0,0,0,0,150054
+9=0,0,0,0,85676
 2=0,0,584,498,8090
 8=0,0,0,0,6713
 10=0,0,0,0,6555
@@ -153,9 +154,9 @@ Options=52
 21=0,0,0,0,41067
 23=0,0,0,0
 24=0,0,0,0,5861
-26=0,0,0,0,11171
+26=0,0,0,0,13518
 25=0,0,0,0
-22=0,0,0,0,3254
+22=0,0,0,0,806
 28=0,0,0,0,7182
 27=0,0,0,0
 29=0,0,0,0,11719
@@ -177,6 +178,7 @@ Options=52
 44=0,0,0,0,3993
 19=0,0,0,0
 13=0,0,0,0,3366
+46=0,0,0,0
 
 
 [Find]
@@ -196,27 +198,27 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.0.0.90
-PV=2.0.0.90
+FV=2.0.0.91
+PV=2.0.0.91
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.0.0.90
+ProductVersion=2.0.0.91
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.0.0.90
+FileVersion=2.0.0.91
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -293,6 +295,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 43=1
 44=1
 45=2
+46=2
 
 
 [Collapse]
@@ -313,7 +316,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 34=,
 29=,
 28=
-26=
+26=,
 24=
 3=
 39=,,

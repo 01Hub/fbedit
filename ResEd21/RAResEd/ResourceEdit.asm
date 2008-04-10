@@ -4,6 +4,9 @@ IDD_DLGRESOURCE							equ 1100
 IDC_GRDRES								equ 1001
 IDC_BTNRESADD							equ 1002
 IDC_BTNRESDEL							equ 1003
+IDC_BTNRESPREVIEW						equ 1004
+
+IDD_RESPREVIEW							equ 2700
 
 .const
 
@@ -192,6 +195,72 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 
 SaveResourceEdit endp
 
+ResPreviewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		edx,lParam
+		mov		eax,[edx]
+		add		edx,4
+		.if !eax
+			; Bitmap
+			invoke LoadImage,0,edx,IMAGE_BITMAP,0,0,LR_LOADFROMFILE
+			invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+			invoke GetDlgItem,hWin,1001
+			invoke ShowWindow,eax,SW_SHOW
+		.elseif eax==1
+			; Cursor
+			invoke LoadImage,0,edx,IMAGE_CURSOR,0,0,LR_LOADFROMFILE
+			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
+			invoke GetDlgItem,hWin,1002
+			invoke ShowWindow,eax,SW_SHOW
+		.elseif eax==2
+			; Icon
+			invoke LoadImage,0,edx,IMAGE_ICON,0,0,LR_LOADFROMFILE
+			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
+			invoke GetDlgItem,hWin,1002
+			invoke ShowWindow,eax,SW_SHOW
+		.elseif eax==3
+			; Animate
+			invoke SendDlgItemMessage,hWin,1003,ACM_OPEN,0,edx
+			invoke GetDlgItem,hWin,1003
+			invoke ShowWindow,eax,SW_SHOW
+		.elseif eax==8
+			; Anicursor
+			invoke LoadImage,0,edx,IMAGE_CURSOR,0,0,LR_LOADFROMFILE
+			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
+			invoke GetDlgItem,hWin,1002
+			invoke ShowWindow,eax,SW_SHOW
+		.endif
+	.elseif eax==WM_SIZE
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,1001
+		push	eax
+		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+		pop		eax
+		invoke InvalidateRect,eax,NULL,TRUE
+		invoke GetDlgItem,hWin,1002
+		push	eax
+		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+		pop		eax
+		invoke InvalidateRect,eax,NULL,TRUE
+		invoke GetDlgItem,hWin,1003
+		push	eax
+		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+		pop		eax
+		invoke InvalidateRect,eax,NULL,TRUE
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,0
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ResPreviewProc endp
+
 ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hGrd:HWND
 	LOCAL	col:COLUMN
@@ -347,6 +416,20 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fDialogChanged,TRUE
 				xor		eax,eax
 				jmp		Ex
+			.elseif eax==IDC_BTNRESPREVIEW
+				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				mov		ecx,eax
+				shl		ecx,16
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
+				mov		eax,dword ptr buffer
+				.if !eax || eax==1 || eax==2 || eax==3 || eax==8
+					invoke SendMessage,hGrd,GM_GETCURROW,0,0
+					mov		ecx,eax
+					shl		ecx,16
+					or		ecx,3
+					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer[4]
+					invoke DialogBoxParam,hInstance,IDD_RESPREVIEW,hWin,addr ResPreviewProc,addr buffer
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -436,11 +519,13 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
+				call Enable
+			.elseif eax==GN_AFTERSELCHANGE
+				call Enable
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
@@ -465,5 +550,20 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,TRUE
   Ex:
 	ret
+
+Enable:
+	;Type
+	mov		ecx,[esi].GRIDNOTIFY.row
+	shl		ecx,16
+	invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
+	mov		eax,dword ptr buffer
+	.if !eax || eax==1 || eax==2 || eax==3 || eax==8
+		invoke GetDlgItem,hWin,IDC_BTNRESPREVIEW
+		invoke EnableWindow,eax,TRUE
+	.else
+		invoke GetDlgItem,hWin,IDC_BTNRESPREVIEW
+		invoke EnableWindow,eax,FALSE
+	.endif
+	retn
 
 ResourceEditProc endp
