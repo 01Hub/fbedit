@@ -98,11 +98,18 @@ ShowStyles proc uses ebx esi edi,hWin:HWND
 	push	eax
 	invoke SendMessage,hWin,RSM_CLEAR,0,0
 	mov		eax,[ebx].RASTYLE.ntypeid
-	mov		esi,offset types
-	.while dword ptr [esi].RSTYPES.ctlid!=-1
+	mov		esi,offset custrstypes
+	.while dword ptr [esi].RSTYPES.ctlid
 		.break .if eax==[esi].RSTYPES.ctlid
 		lea		esi,[esi+sizeof RSTYPES]
 	.endw
+	.if ![esi].RSTYPES.ctlid
+		mov		esi,offset types
+		.while dword ptr [esi].RSTYPES.ctlid!=-1
+			.break .if eax==[esi].RSTYPES.ctlid
+			lea		esi,[esi+sizeof RSTYPES]
+		.endw
+	.endif
 	.if !StyleEx
 		lea		eax,[esi].RSTYPES.style2
 		.if byte ptr [eax]
@@ -153,22 +160,15 @@ AddStyles:
 	push	esi
 	mov		esi,eax
 	.if StyleEx
-;		mov		edi,offset rsexstyledef
 		invoke SortStylesStr,offset srtexstyledef,offset srtstylestr
 		mov		edi,offset srtstylestr
 		call	AddStyles1
 	.else
 		.if [ebx].RASTYLE.ntype
-;			mov		edi,offset rsstyledef
-;			call	AddStyles1
-;			mov		edi,offset rscuststyledef
-;			mov		edi,offset srtstyledef
 			invoke SortStylesStr,offset srtstyledef,offset srtstylestr
 			mov		edi,offset srtstylestr
 			call	AddStyles1
 		.else
-;			mov		edi,offset rsstyledefdlg
-;			mov		edi,offset srtstyledefdlg
 			invoke SortStylesStr,offset srtstyledefdlg,offset srtstylestr
 			mov		edi,offset srtstylestr
 			call	AddStyles1
@@ -178,14 +178,6 @@ AddStyles:
 	retn
 
 AddStyles1:
-;	.while byte ptr [edi+8]
-;		call	Compare
-;		.if !eax
-;			invoke SendMessage,hWin,RSM_ADDITEM,0,edi
-;		.endif
-;		invoke strlen,addr [edi+8]
-;		lea		edi,[edi+eax+8+1]
-;	.endw
 	.while dword ptr [edi]
 		push	edi
 		mov		edi,[edi]

@@ -670,7 +670,7 @@ PropListSetPos proc
 		mov		lbid,eax
 		invoke SetWindowLong,hPrpBtnDlgCld,GWL_USERDATA,eax
 		mov		eax,lbid
-		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE || eax==PRP_FUN_LANG || eax>65535
+		.if (eax>=PRP_BOOL_SYSMENU && eax<=499) || eax==PRP_FUN_LANG || eax>65535
 			mov		ecx,nPropHt
 			sub		rect.right,ecx
 			mov		eax,rect.right
@@ -683,6 +683,31 @@ PropListSetPos proc
 			.endif
 			invoke SetWindowPos,hPrpBtnDlgCld,HWND_TOP,rect.right,rect.top,nPropHt,nPropHt,0
 			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
+		.elseif eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE
+			invoke PropListSetTxt,hPrpLstDlg
+			mov		ecx,nPropHt
+			sub		rect.right,ecx
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		edx,nPropWt
+			add		edx,32
+			sub		edx,ecx
+			.if eax<edx
+				mov		rect.right,edx
+			.endif
+			invoke SetWindowPos,hPrpBtnDlgCld,HWND_TOP,rect.right,rect.top,nPropHt,nPropHt,0
+			invoke ShowWindow,hPrpBtnDlgCld,SW_SHOWNOACTIVATE
+			mov		edx,nPropWt
+			add		edx,1
+			mov		rect.left,edx
+			sub		rect.right,edx
+			invoke SetWindowPos,hPrpEdtDlgCld,HWND_TOP,rect.left,rect.top,rect.right,nPropHt,0
+			invoke ShowWindow,hPrpEdtDlgCld,SW_SHOWNOACTIVATE
+			mov		rect.left,1
+			mov		rect.top,0
+			mov		eax,nPropHt
+			mov		rect.bottom,eax
+			invoke SendMessage,hPrpEdtDlgCld,EM_SETRECT,0,addr rect
 		.else
 			invoke PropListSetTxt,hPrpLstDlg
 			mov		eax,lbid
@@ -1485,6 +1510,14 @@ SetCtrlData:
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
 		invoke strcpy,addr (DLGHEAD ptr [edx]).menuid,addr buffer1
+	.elseif eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE
+		.if eax==PRP_FUN_STYLE
+			invoke HexToBin,addr buffer1
+			mov		[esi].style,eax
+		.else
+			invoke HexToBin,addr buffer1
+			mov		[esi].exstyle,eax
+		.endif
 	.endif
 	mov		eax,lbid
 	;Is True/False Style or Multi Style changed
@@ -2403,7 +2436,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				invoke ListFalseTrue,[esi].DIALOG.exstyle,addr TopMost,edi
 			.elseif edx==47
 				;xExStyle
-				mov		lbid,PRP_FUN_STYLE
+				mov		lbid,PRP_FUN_EXSTYLE
 				mov		eax,[esi].DIALOG.exstyle
 				invoke hexEax
 				invoke strcpy,edi,addr strHex
@@ -2431,7 +2464,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 				.endif
 			.elseif edx==48
 				;xStyle
-				mov		lbid,PRP_FUN_EXSTYLE
+				mov		lbid,PRP_FUN_STYLE
 				mov		eax,[esi].DIALOG.style
 				invoke hexEax
 				invoke strcpy,edi,addr strHex
@@ -2833,12 +2866,12 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						sub		rect.right,eax
 						invoke PropTxtLst,hCtl,lbid
 						invoke SetTxtLstPos,addr rect
-					.elseif eax==1003
+					.elseif eax==PRP_FUN_EXSTYLE
 						;xExStyle
 						mov		StyleEx,TRUE
 						invoke GetWindowLong,hCtl,GWL_USERDATA
 						invoke DialogBoxParam,hInstance,IDD_DLGSTYLEMANA,hWin,addr StyleManaDialogProc,eax
-					.elseif eax==1004
+					.elseif eax==PRP_FUN_STYLE
 						;xStyle
 						mov		StyleEx,FALSE
 						invoke GetWindowLong,hCtl,GWL_USERDATA

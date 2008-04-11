@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.04.09
+2.1.0.0 - 2008.04.11
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
@@ -11,6 +11,20 @@ o Added option to set Borland compatible.
 o Added option to set textmode font.
 o Added option to set resource startid and increment.
 o Added preview on resource files (bitmap, icon, cursor, ani cursor and avi clip).
+o It is now possible to edit the xStyle and xExStyle hex values.
+o Enhanced the custom control support.
+  Example: Old rich edit control.
+  In Custom control field, type: "Riched32.dll,richedit,IDC_RED,Text,RichEdit,100,100,503110C4,00000200"
+  In Style mask field, type: WS_,ES_
+
+  This can also be used as a shortcut for often used controls.
+  Example: Horizontal line.
+  In Custom control field, type: ",static,IDC_LINE,,Horizontal line,100,2,50000110,00000000"
+  In Style mask field, type: WS_,SS_
+
+  Format for Custom control field: "[dll],class,name,[caption],tooltip,width,height,style,exstyle"
+  Format for Style mask field: Style1[,Style2[,Style3]]
+o Added option for custom styles.
 
 2.0.0.0b - 2008.03.12
 ---------------------

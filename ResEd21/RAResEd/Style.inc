@@ -1193,42 +1193,6 @@ types				RSTYPES <0,'WS_','DS_',>				;Dialog
 					RSTYPES <256,'WS_','SPS_',>				;SpreadSheet
 					RSTYPES <-1,'WS_',>
 
-;extypes				RSTYPES <'WS_',,>						;Dialog	
-;					RSTYPES <'WS_',,>						;Edit
-;					RSTYPES <'WS_',,>						;Static
-;					RSTYPES <'WS_',,>						;GroupBox
-;					RSTYPES <'WS_',,>						;Button
-;					RSTYPES <'WS_',,>						;CheckBox
-;					RSTYPES <'WS_',,>						;RadioButton
-;					RSTYPES <'WS_',,>						;ComboBox
-;					RSTYPES <'WS_',,>						;ListBox
-;					RSTYPES <'WS_',,>						;H-ScrollBar
-;					RSTYPES <'WS_',,>						;V-ScrollBar
-;					RSTYPES <'WS_',,>						;Tab control
-;					RSTYPES <'WS_',,>						;Progress bar
-;					RSTYPES <'WS_',,>						;Tree view
-;					RSTYPES <'WS_',,>						;List view
-;					RSTYPES <'WS_',,>						;Track bar
-;					RSTYPES <'WS_',,>						;UpDown
-;					RSTYPES <'WS_',,>						;Image
-;					RSTYPES <'WS_',,>						;ToolBar
-;					RSTYPES <'WS_',,>						;Status bar
-;					RSTYPES <'WS_',,>						;DateTimp picker
-;					RSTYPES <'WS_',,>						;Month view
-;					RSTYPES <'WS_',,>						;Rich edit
-;					RSTYPES <'WS_',,>						;User defined
-;					RSTYPES <'WS_',,>						;ComboBoxEx
-;					RSTYPES <'WS_',,>						;Shape
-;					RSTYPES <'WS_',,>						;IPAddress
-;					RSTYPES <'WS_',,>						;Animate
-;					RSTYPES <'WS_',,>						;Hotkey
-;					RSTYPES <'WS_',,>						;H-Pager
-;					RSTYPES <'WS_',,>						;V-Pager
-;					RSTYPES <'WS_',,>						;ReBar
-;					RSTYPES <'WS_',,>						;Header
-;					RSTYPES <'WS_',,>						;Custom controls
-;					RSTYPES <,,>
-
 rsstyledefdlg	dd DS_3DLOOK
 				dd DS_3DLOOK
 				db 'DS_3DLOOK',0
@@ -2353,3 +2317,4 @@ srtstyledefdlg	dd 512 dup(?)
 srtstyledef		dd 512 dup(?)
 srtexstyledef	dd 512 dup(?)
 srtstylestr		dd 512 dup(?)
+custrstypes		RSTYPES 32 dup(<>)

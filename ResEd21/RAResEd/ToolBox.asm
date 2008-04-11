@@ -14,6 +14,8 @@ OldToolBoxBtnProc	dd ?
 hToolTip			dd ?
 hBoxIml				dd ?
 ToolBoxID			dd ?
+strofs				dd ?
+strbuff				db 512 dup(?)
 
 .code
 
@@ -138,55 +140,190 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	LOCAL	nColor:DWORD
 	LOCAL	rect:RECT
 	LOCAL	fEx:DWORD
-	LOCAL	buffer[64]:BYTE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	lpszMask:DWORD
+	LOCAL	lpszTT:DWORD
+	LOCAL	ctlid:DWORD
 
 	mov		lpszMask,0
+	mov		ctlid,-1
 	mov		eax,lpszDLL
-	.while byte ptr [eax]
-		.if byte ptr [eax]==','
-			mov		byte ptr [eax],0
-			inc		eax
-			mov		lpszMask,eax
-			.break
-		.endif
+	.if byte ptr [eax]=='"'
+		lea		edi,buffer
 		inc		eax
-	.endw
-	invoke LoadLibrary,lpszDLL
-	.if eax
-		push	eax
-		mov		ebx,eax
-		invoke GetProcAddress,ebx,offset szGetDefEx
-		mov		fEx,eax
-		.if !eax
-			invoke GetProcAddress,ebx,offset szGetDef
-		.endif
-		.if eax
-			mov		ebx,eax
-			xor		esi,esi
-			.while eax
-				push	edi
-				mov		edi,esp
-				push	esi
-				call	ebx
-				mov		esp,edi
-				pop		edi
-				.if eax
-					call	InstallDLL
-					xor		eax,eax
+		.while byte ptr [eax]
+			mov		dl,[eax]
+			.if dl=='"'
+				inc		eax
+				.if byte ptr [eax]==','
 					inc		eax
+					mov		lpszMask,eax
 				.endif
-				inc		esi
-			.endw
+				.break
+			.endif
+			mov		[edi],dl
+			inc		eax
+			inc		edi
+		.endw
+		mov		byte ptr [edi],0
+		call		InstallClass
+	.else
+		.while byte ptr [eax]
+			.if byte ptr [eax]==','
+				mov		byte ptr [eax],0
+				inc		eax
+				mov		lpszMask,eax
+				.break
+			.endif
+			inc		eax
+		.endw
+		invoke LoadLibrary,lpszDLL
+		.if eax
+			push	eax
+			mov		ebx,eax
+			invoke GetProcAddress,ebx,offset szGetDefEx
+			mov		fEx,eax
+			.if !eax
+				invoke GetProcAddress,ebx,offset szGetDef
+			.endif
+			.if eax
+				mov		ebx,eax
+				xor		esi,esi
+				.while eax
+					push	edi
+					mov		edi,esp
+					push	esi
+					call	ebx
+					mov		esp,edi
+					pop		edi
+					.if eax
+						call	InstallDLL
+						xor		eax,eax
+						inc		eax
+					.endif
+					inc		esi
+				.endw
+			.endif
+			invoke GetClientRect,hTlb,addr rect
+			mov		eax,rect.bottom
+			shl		eax,16
+			add		eax,rect.right
+			invoke ToolBoxSize,eax
+			pop		eax
 		.endif
-		invoke GetClientRect,hTlb,addr rect
-		mov		eax,rect.bottom
-		shl		eax,16
-		add		eax,rect.right
-		invoke ToolBoxSize,eax
-		pop		eax
+	.endif
+	.if ctlid!=-1 && lpszMask!=0
+		mov		edi,offset custrstypes
+		.while [edi].RSTYPES.ctlid
+			lea		edi,[edi+sizeof RSTYPES]
+		.endw
+		mov		eax,ctlid
+		mov		[edi].RSTYPES.ctlid,eax
+		invoke strcpy,addr buffer,lpszMask
+		invoke GetStrItem,addr buffer,addr buffer1
+		invoke strcpyn,addr [edi].RSTYPES.style1,addr buffer1,8
+		invoke GetStrItem,addr buffer,addr buffer1
+		invoke strcpyn,addr [edi].RSTYPES.style2,addr buffer1,8
+		invoke GetStrItem,addr buffer,addr buffer1
+		invoke strcpyn,addr [edi].RSTYPES.style3,addr buffer1,8
 	.endif
 	ret
+
+InstallClass:
+	; "dll,class,name.caption,tooltip,width,height,style,exstyle"
+	push	ebx
+	lea		esi,buffer
+	mov		edi,offset strbuff
+	mov		ebx,offset ctltypes
+	mov		eax,nButtons
+	mov		ecx,sizeof TYPES
+	mul		ecx
+	lea		ebx,[ebx+eax]
+	mov		eax,nButtons
+	mov		[ebx].TYPES.ID,eax
+	mov		ctlid,eax
+	; Dll
+	invoke GetStrItem,esi,addr buffer1
+	.if buffer1
+		invoke LoadLibrary,addr buffer1
+	.endif
+	; Class
+	mov		eax,strofs
+	lea		edx,[edi+eax]
+	mov		[ebx].TYPES.lpclass,edx
+	invoke GetStrItem,esi,addr [edi+eax]
+	inc		eax
+	add		strofs,eax
+	; Name
+	mov		eax,strofs
+	lea		edx,[edi+eax]
+	mov		[ebx].TYPES.lpidname,edx
+	invoke GetStrItem,esi,addr [edi+eax]
+	inc		eax
+	add		strofs,eax
+	; Caption
+	mov		eax,strofs
+	lea		edx,[edi+eax]
+	mov		[ebx].TYPES.lpcaption,edx
+	invoke GetStrItem,esi,addr [edi+eax]
+	inc		eax
+	add		strofs,eax
+	; Tooltip
+	mov		eax,strofs
+	lea		edx,[edi+eax]
+	mov		lpszTT,edx
+	invoke GetStrItem,esi,addr [edi+eax]
+	inc		eax
+	add		strofs,eax
+	; Width
+	invoke GetStrItem,esi,addr buffer1
+	invoke ResEdDecToBin,addr buffer1
+	mov		[ebx].TYPES.xsize,eax
+	; Height
+	invoke GetStrItem,esi,addr buffer1
+	invoke ResEdDecToBin,addr buffer1
+	mov		[ebx].TYPES.ysize,eax
+	; Style
+	invoke GetStrItem,esi,addr buffer1
+	invoke HexToBin,addr buffer1
+	mov		[ebx].TYPES.style,eax
+	; ExStyle
+	invoke GetStrItem,esi,addr buffer1
+	invoke HexToBin,addr buffer1
+	mov		[ebx].TYPES.exstyle,eax
+	mov		[ebx].TYPES.typemask,0
+	mov		eax,11111111000111100000000001000000b
+	;           NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
+	mov		[ebx].TYPES.flist,eax
+	mov		eax,00010000000000011000000000000000b
+	;           SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+	mov		[ebx].TYPES.flist[4],eax
+	mov		eax,0
+	mov		[ebx].TYPES.flist[8],eax
+	mov		eax,0
+	mov		[ebx].TYPES.flist[12],eax
+	mov		[ebx].TYPES.lprc,offset szCONTROL
+	invoke LoadBitmap,hInstance,IDB_CUSTCTL
+	mov		ebx,eax
+	invoke CreateCompatibleDC,NULL
+	mov		mDC,eax
+	invoke SelectObject,mDC,ebx
+	push	eax
+	invoke GetPixel,mDC,0,0
+	mov		nColor,eax
+	pop		eax
+	invoke SelectObject,mDC,eax
+	invoke DeleteDC,mDC
+	invoke ImageList_AddMasked,hBoxIml,ebx,nColor  ; background colour
+	invoke DeleteObject,ebx
+	invoke strcat,offset szCtlText,offset szComma
+	invoke strcat,offset szCtlText,lpszTT
+	invoke strcpy,offset szToolBoxTlt,lpszTT
+	invoke Do_ToolBoxButton,hTlb,nButtons,hBoxIml
+	inc		nButtons
+	pop		ebx
+	retn
 
 InstallDLL:
 	push	ebx
@@ -198,6 +335,7 @@ InstallDLL:
 	lea		ebx,[ebx+eax]
 	mov		eax,[edi].CCDEF.ID
 	mov		[ebx].TYPES.ID,eax
+	mov		ctlid,eax
 	mov		eax,[edi].CCDEF.lpcaption
 	mov		[ebx].TYPES.lpcaption,eax
 	mov		eax,[edi].CCDEF.lpname
@@ -259,6 +397,7 @@ InstallDLL:
 	mov		ebx,[edi].CCDEF.hbmp
 	.if !ebx
 		invoke LoadBitmap,hInstance,IDB_CUSTCTL
+		mov		ebx,eax
 	.endif
 	invoke CreateCompatibleDC,NULL
 	mov		mDC,eax

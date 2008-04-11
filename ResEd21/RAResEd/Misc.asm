@@ -288,6 +288,35 @@ hexEax proc
 	
 hexEax endp
 
+UnQuoteWord proc uses esi edi,lpWord:DWORD
+
+	mov		esi,lpWord
+	mov		edi,esi
+	.if byte ptr [esi]=='"'
+		inc		esi
+	.endif
+	.while byte ptr [esi]
+		mov		ax,[esi]
+		inc		esi
+		.if ax=='""'
+			mov		[edi],al
+			inc		edi
+			inc		esi
+		.elseif ax=='"\'
+			mov		[edi],ax
+			inc		edi
+			inc		edi
+			inc		esi
+		.elseif al!='"'
+			mov		[edi],al
+			inc		edi
+		.endif
+	.endw
+	mov		dword ptr [edi],0
+	ret
+
+UnQuoteWord endp
+
 GetStrItem proc	lpSource:DWORD,lpDest:DWORD
 
 	push	esi

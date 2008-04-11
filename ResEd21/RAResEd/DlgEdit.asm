@@ -72,11 +72,11 @@ RebID				db 'IDC_REB',0
 HdrID				db 'IDC_HDR',0
 
 szMnu				db '  &File  ,	&Edit  ,  &Help  ',0
-nPr					dd 32+32+8
+nPr					dd 32+32+7
 PrAll				db '(Name),(ID),Left,Top,Width,Height,Caption,Border,SysMenu,MaxButton,MinButton,Enabled,Visible,Clipping,ScrollBar,Default,Auto,Alignment,Mnemonic,WordWrap,MultiLine,Type,Locked,Child,SizeBorder,TabStop,Font,Menu,Class,Notify,AutoScroll,WantCr,'
 					db 'Sort,Flat,(StartID),TabIndex,Format,SizeGrip,Group,Icon,UseTabs,StartupPos,Orientation,SetBuddy,MultiSelect,HideSel,TopMost,xExStyle,xStyle,IntegralHgt,Image,Buttons,PopUp,OwnerDraw,Transp,Timer,AutoPlay,WeekNum,AviClip,AutoSize,ToolTip,Wrap,'
 					db 'Divider,DragDrop,'
-					db 'Smooth,Ellipsis,Language,HasStrings,(HelpID),File,MenuEx,'
+					db 'Smooth,Ellipsis,Language,HasStrings,(HelpID),File,MenuEx'
 					db 512 dup(0)
 
 				;0-Dialog

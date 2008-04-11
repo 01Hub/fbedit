@@ -56,6 +56,10 @@ IDC_GRDSTYLE		equ 1001
 IDC_BTNSTYLEADD		equ 1002
 IDC_BTNSTYLEDEL		equ 1003
 
+IDD_TABOPT6			equ 2430
+IDC_EDTSYSPATH		equ 1001
+IDC_BTNSYSPATH		equ 1002
+
 .const
 
 szNmeExp			db 'NmeExp',0
@@ -72,6 +76,7 @@ TabTitle2			db 'Custom controls',0
 TabTitle3			db 'Behaviour',0
 TabTitle4			db "Resource ID's",0
 TabTitle5			db 'Custom styles',0
+TabTitle6			db 'Paths',0
 
 szHdrCust			db 'Custom control',0
 szHdrCustMask		db 'Style mask',0
@@ -83,7 +88,7 @@ szHdrMask			db 'Mask',0
 .data?
 
 hTab				dd ?
-hTabDlg				dd 5 dup(?)
+hTabDlg				dd 6 dup(?)
 SelTab				dd ?
 gridcolor			dd ?
 backcolor			dd ?
@@ -199,6 +204,16 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if buffer
 				lea		eax,buffer
 				mov		row[0],eax
+				.if byte ptr [eax]=='"'
+					inc		eax
+					.while byte ptr [eax]
+						.if byte ptr [eax]=='"'
+							inc		eax
+							.break
+						.endif
+						inc		eax
+					.endw
+				.endif
 				.while byte ptr [eax]
 					.if byte ptr [eax]==','
 						mov		byte ptr [eax],0
@@ -535,6 +550,19 @@ TabOpt5Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabOpt5Proc endp
 
+TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabOpt6Proc endp
+
 TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TCITEM
 	LOCAL	nInx:DWORD
@@ -552,6 +580,16 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DeleteObject,hfnt
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDOK
+				invoke GetDlgItem,hTabDlg[4],IDC_GRDCUST
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
+				invoke GetDlgItem,hTabDlg[16],IDC_GRDSTYLE
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
 				invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPOPT1
 				.if eax
 					mov		nmeexp.nType,0
@@ -842,6 +880,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ts.pszText,offset TabTitle5
 		mov		ts.cchTextMax,sizeof TabTitle5
 		invoke SendMessage,hTab,TCM_INSERTITEM,4,addr ts
+		mov		ts.pszText,offset TabTitle6
+		mov		ts.cchTextMax,sizeof TabTitle6
+		invoke SendMessage,hTab,TCM_INSERTITEM,5,addr ts
 		;Create the tab dialogs
 		invoke CreateDialogParam,hInstance,IDD_TABOPT1,hTab,addr TabOpt1Proc,0
 		mov		hTabDlg,eax
@@ -853,6 +894,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTabDlg[12],eax
 		invoke CreateDialogParam,hInstance,IDD_TABOPT5,hTab,addr TabOpt5Proc,0
 		mov		hTabDlg[16],eax
+		invoke CreateDialogParam,hInstance,IDD_TABOPT6,hTab,addr TabOpt6Proc,0
+		mov		hTabDlg[20],eax
 		mov		SelTab,0
 	.elseif eax==WM_CLOSE
 		invoke DeleteObject,hBrGrid
@@ -863,6 +906,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,hTabDlg[8]
 		invoke DestroyWindow,hTabDlg[12]
 		invoke DestroyWindow,hTabDlg[16]
+		invoke DestroyWindow,hTabDlg[20]
 		invoke EndDialog,hWin,NULL
 	.else
 		mov		eax,FALSE
