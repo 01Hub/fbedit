@@ -91,14 +91,14 @@ Options=52
 4=0,0,0,0
 1=580,0,290,688,15758
 6=
-2=0,0,0,0,3563
+2=0,0,0,0,5389
 7=0,0,699,490,3078
 9=
 8=
 3=0,0,0,0,1653
 10=0,0,0,0
 11=0,0,0,0,665
-13=0,0,0,0,15989
+13=0,0,0,0,16006
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -127,22 +127,22 @@ Options=52
 0=
 
 [Find]
-1="WM_CLOSE"
-2="DES_DEFIDC_STATIC"
-3="PRP_STR_CAPTION"
-4="PRP_STR_CAPMULTI"
-5="Print"
-6="17"
-7="SBT_"
-8="SBT_NOBORDERS"
-9="IDR_BPACTIONS"
-10="IDC_COMBO"
+1="DEM_ADDCONTROL"
+2="srtstyledef"
+3="StyleManaDialogProc"
+4="DEM_GETSHOWDIALOG"
+5="PRO_SETTEXTFONT"
+6="DEM_SETCOLOR"
+7="getfree"
+8="PRO_GETMEM"
+9="WM_CLOSE"
+10="DES_DEFIDC_STATIC"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=6
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -254,6 +254,6 @@ ID=105
 21=
 25=
 [PTimer]
-PTimer=246881220
+PTimer=247443736
 [AutoLoad]
 1=1

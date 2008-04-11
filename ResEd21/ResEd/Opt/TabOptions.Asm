@@ -604,6 +604,15 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		ecx,nInx
 						shl		ecx,16
 						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcat,addr buffer,addr szComma
+						invoke lstrlen,addr buffer
+						mov		ecx,nInx
+						shl		ecx,16
+						or		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer[eax]
 						inc		nInx
 						invoke MakeKey,addr szCust,nInx,addr buffer1
 						invoke lstrlen,addr buffer

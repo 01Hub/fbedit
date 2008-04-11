@@ -206,6 +206,7 @@ szOpen				db 'Open',0
 szRichEdit			db 'riched20.dll',0
 szNULL				db 0
 szTab				db VK_TAB,0
+szComma				db ',',0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0

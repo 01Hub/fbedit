@@ -139,7 +139,19 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	LOCAL	rect:RECT
 	LOCAL	fEx:DWORD
 	LOCAL	buffer[64]:BYTE
+	LOCAL	lpszMask:DWORD
 
+	mov		lpszMask,0
+	mov		eax,lpszDLL
+	.while byte ptr [eax]
+		.if byte ptr [eax]==','
+			mov		byte ptr [eax],0
+			inc		eax
+			mov		lpszMask,eax
+			.break
+		.endif
+		inc		eax
+	.endw
 	invoke LoadLibrary,lpszDLL
 	.if eax
 		push	eax
