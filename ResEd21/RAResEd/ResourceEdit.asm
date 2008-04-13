@@ -252,6 +252,9 @@ ResPreviewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,eax,NULL,TRUE
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
+	.elseif eax==WM_CTLCOLORSTATIC
+		invoke GetStockObject,WHITE_BRUSH
+		ret
 	.else
 		mov		eax,FALSE
 		ret
@@ -267,6 +270,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	row[4]:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	fChanged:DWORD
 	LOCAL	val:DWORD
@@ -420,15 +424,18 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
 				mov		ecx,eax
 				shl		ecx,16
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-				mov		eax,dword ptr buffer
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer1
+				mov		eax,dword ptr buffer1
 				.if !eax || eax==1 || eax==2 || eax==3 || eax==8
 					invoke SendMessage,hGrd,GM_GETCURROW,0,0
 					mov		ecx,eax
 					shl		ecx,16
 					or		ecx,3
-					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer[4]
-					invoke DialogBoxParam,hInstance,IDD_RESPREVIEW,hWin,addr ResPreviewProc,addr buffer
+					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
+					invoke strcpy,addr buffer1[4],addr szProjectPath
+					invoke strcat,addr buffer1[4],addr szBS
+					invoke strcat,addr buffer1[4],addr buffer
+					invoke DialogBoxParam,hInstance,IDD_RESPREVIEW,hWin,addr ResPreviewProc,addr buffer1
 				.endif
 			.endif
 		.endif

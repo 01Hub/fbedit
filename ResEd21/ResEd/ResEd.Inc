@@ -207,6 +207,7 @@ szRichEdit			db 'riched20.dll',0
 szNULL				db 0
 szTab				db VK_TAB,0
 szComma				db ',',0
+szBS				db '\',0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
@@ -237,6 +238,8 @@ hContextMenuPopup	dd ?
 hIml				dd ?
 hResEd				dd ?
 ProjectFileName		db MAX_PATH dup(?)
+ProjectPath			db MAX_PATH dup(?)
+SystemPath			db MAX_PATH dup(?)
 icex				INITCOMMONCONTROLSEX <?>
 hReg				dd ?
 lpdwDisp			dd ?

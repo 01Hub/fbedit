@@ -90,16 +90,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,37284
+1=580,0,290,688,7055
 6=
-2=0,0,0,0,5389
+2=0,0,0,0,5402
 7=0,0,699,490,3078
 9=
 8=
 3=0,0,0,0,1653
 10=0,0,0,0
-11=0,0,0,0,665
-13=0,0,0,0,1337
+11=0,0,0,0,3923
+13=0,0,0,0,24915
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -129,22 +129,22 @@ Options=52
 0=
 
 [Find]
-1="DEM_ADDCONTROL"
-2="srtstyledef"
-3="StyleManaDialogProc"
-4="DEM_GETSHOWDIALOG"
-5="PRO_SETTEXTFONT"
-6="DEM_SETCOLOR"
-7="getfree"
-8="PRO_GETMEM"
-9="WM_CLOSE"
-10="DES_DEFIDC_STATIC"
+1="REG_"
+2="DEM_ADDCONTROL"
+3="srtstyledef"
+4="StyleManaDialogProc"
+5="DEM_GETSHOWDIALOG"
+6="PRO_SETTEXTFONT"
+7="DEM_SETCOLOR"
+8="getfree"
+9="PRO_GETMEM"
+10="WM_CLOSE"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=9
+MilestoneEveryCurrent=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -165,7 +165,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -246,7 +246,7 @@ ID=105
 10="IDM_VIEW_PREVIEW,0,Preview Dialog"
 11="IDM_EDIT_REDO,0,Redo"
 [Collapse]
-1=,,,
+1=,,,,
 12=
 2=
 7=
@@ -257,6 +257,6 @@ ID=105
 21=
 25=
 [PTimer]
-PTimer=247443736
+PTimer=260468860
 [AutoLoad]
 1=1

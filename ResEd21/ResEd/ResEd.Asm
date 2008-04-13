@@ -52,6 +52,10 @@ start:
 		invoke RegQueryValueEx,hReg,addr szInitID,0,addr lpType,addr initid,addr lpcbData
 		mov		lpcbData,sizeof textfont
 		invoke RegQueryValueEx,hReg,addr szTextFont,0,addr lpType,addr textfont,addr lpcbData
+		mov		lpcbData,sizeof ProjectPath
+		invoke RegQueryValueEx,hReg,addr szProPath,0,addr lpType,addr ProjectPath,addr lpcbData
+		mov		lpcbData,sizeof SystemPath
+		invoke RegQueryValueEx,hReg,addr szSysPath,0,addr lpType,addr SystemPath,addr lpcbData
 	.endif
 	.if wpos.wtpro<5
 		mov		wpos.wtpro,150
@@ -233,6 +237,9 @@ OpenProject proc
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,offset szRCFilterString
 	mov		buffer[0],0
+	.if ProjectPath
+		mov		ofn.lpstrInitialDir,offset ProjectPath
+	.endif
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -319,6 +326,9 @@ SaveProjectFileAs proc lpFileName:DWORD
 		push	hInstance
 		pop		ofn.hInstance
 		mov		ofn.lpstrFilter,offset szRCFilterString
+		.if ProjectPath
+			mov		ofn.lpstrInitialDir,offset ProjectPath
+		.endif
 		invoke lstrcpy,addr buffer,lpFileName
 		lea		eax,buffer
 		mov		ofn.lpstrFile,eax

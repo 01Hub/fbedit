@@ -57,6 +57,8 @@ IDC_BTNSTYLEADD		equ 1002
 IDC_BTNSTYLEDEL		equ 1003
 
 IDD_TABOPT6			equ 2430
+IDC_EDTPROPATH		equ 1004
+IDC_BTNPROPATH		equ 1003
 IDC_EDTSYSPATH		equ 1001
 IDC_BTNSYSPATH		equ 1002
 
@@ -70,6 +72,8 @@ szGrid				db 'Grid',0
 szColor				db 'Color',0
 szInitID			db 'InitID',0
 szTextFont			db 'TextFont',0
+szProPath			db 'ProPath',0
+szSysPath			db 'SysPath',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
@@ -84,6 +88,7 @@ szHdrCustMask		db 'Style mask',0
 szHdrStyle			db 'Style',0
 szHdrVal			db 'Value',0
 szHdrMask			db 'Mask',0
+szBrowse			db 'Browse For Folder',0
 
 .data?
 
@@ -101,6 +106,18 @@ cflf				LOGFONT <>
 hfnt				HFONT ?
 
 .code
+
+BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpData:DWORD
+
+	mov eax,uMsg
+	.if eax==BFFM_INITIALIZED
+		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpData
+		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
+	.endif
+	xor eax, eax
+	ret
+
+BrowseCallbackProc endp
 
 ConvertDpiSize proc nPix:DWORD
 	LOCAL	lpx:DWORD
@@ -551,9 +568,54 @@ TabOpt5Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 TabOpt5Proc endp
 
 TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	bri:BROWSEINFO
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke SetDlgItemText,hWin,IDC_EDTPROPATH,addr ProjectPath
+		invoke SetDlgItemText,hWin,IDC_EDTSYSPATH,addr SystemPath
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNPROPATH
+				xor		eax,eax
+				mov		bri.pidlRoot,eax
+				mov		bri.pszDisplayName,eax
+				mov		bri.lpszTitle,eax
+				mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
+				mov		bri.lpfn,BrowseCallbackProc
+				invoke GetDlgItemText,hWin,IDC_EDTPROPATH,addr buffer,sizeof buffer
+				lea		eax,buffer
+				mov		bri.lParam,eax 
+				mov		bri.iImage,0
+				invoke SHBrowseForFolder,addr bri
+				.if eax
+					mov		edx,eax
+					invoke SHGetPathFromIDList,edx,addr buffer
+					invoke SetDlgItemText,hWin,IDC_EDTPROPATH,addr buffer
+				.endif
+			.elseif eax==IDC_BTNSYSPATH
+				xor		eax,eax
+				mov		bri.pidlRoot,eax
+				mov		bri.pszDisplayName,eax
+				mov		bri.lpszTitle,eax
+				mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
+				mov		bri.lpfn,BrowseCallbackProc
+				invoke GetDlgItemText,hWin,IDC_EDTSYSPATH,addr buffer,sizeof buffer
+				lea		eax,buffer
+				mov		bri.lParam,eax 
+				mov		bri.iImage,0
+				invoke SHBrowseForFolder,addr bri
+				.if eax
+					mov		edx,eax
+					invoke SHGetPathFromIDList,edx,addr buffer
+					invoke SetDlgItemText,hWin,IDC_EDTSYSPATH,addr buffer
+				.endif
+			.endif
+		.endif
 	.else
 		mov		eax,FALSE
 		ret
@@ -824,6 +886,14 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CoolMenu
 					.endif
 				.endif
+				invoke GetDlgItemText,hTabDlg[20],IDC_EDTPROPATH,addr ProjectPath,sizeof ProjectPath
+				invoke lstrlen,addr ProjectPath
+				inc		eax
+				invoke RegSetValueEx,hReg,addr szProPath,0,REG_SZ,addr ProjectPath,eax
+				invoke GetDlgItemText,hTabDlg[20],IDC_EDTSYSPATH,addr SystemPath,sizeof SystemPath
+				invoke lstrlen,addr SystemPath
+				inc		eax
+				invoke RegSetValueEx,hReg,addr szSysPath,0,REG_SZ,addr SystemPath,eax
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif
