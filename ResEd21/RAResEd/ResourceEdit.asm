@@ -432,8 +432,12 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					shl		ecx,16
 					or		ecx,3
 					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
-					invoke strcpy,addr buffer1[4],addr szProjectPath
-					invoke strcat,addr buffer1[4],addr szBS
+					mov		buffer1[4],0
+					mov		al,buffer[1]
+					.if al!=':'
+						invoke strcpy,addr buffer1[4],addr szProjectPath
+						invoke strcat,addr buffer1[4],addr szBS
+					.endif
 					invoke strcat,addr buffer1[4],addr buffer
 					invoke DialogBoxParam,hInstance,IDD_RESPREVIEW,hWin,addr ResPreviewProc,addr buffer1
 				.endif
@@ -516,7 +520,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					invoke RemoveProjectPath,addr buffer
+					invoke RemovePath,addr buffer,addr szProjectPath
 					mov		edx,[esi].GRIDNOTIFY.lpdata
 					invoke strcpy,edx,eax
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE

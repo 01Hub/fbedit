@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.04.11
+2.1.0.0 - 2008.04.14
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
@@ -25,6 +25,8 @@ o Enhanced the custom control support.
   Format for Custom control field: "[dll],class,name,[caption],tooltip,width,height,style,exstyle"
   Format for Style mask field: Style1[,Style2[,Style3]]
 o Added option for custom styles.
+o Added options for default project path and system include path.
+  These paths are optional and can be left blank.
 
 2.0.0.0b - 2008.03.12
 ---------------------

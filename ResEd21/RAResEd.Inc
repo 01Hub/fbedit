@@ -224,6 +224,8 @@ PRO_SETINITID		equ PRO_BASE+17		;wParam=0, lParam=lpINITID
 PRO_GETMEM			equ PRO_BASE+18		;wParam=0, lParam=0
 PRO_SETTEXTFONT		equ PRO_BASE+19		;wParam=hFont, lParam=0
 PRO_GETTEXTFONT		equ PRO_BASE+20		;wParam=0, lParam=0
+PRO_SETSYSTEMPATH	equ PRO_BASE+21		;wParam=0, lParam=lpPath
+PRO_GETSYSTEMPATH	equ PRO_BASE+22		;wParam=0, lParam=0
 
 ;Project item types
 TPE_NAME			equ 1

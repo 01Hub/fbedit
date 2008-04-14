@@ -2958,7 +2958,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						;Show the Open dialog
 						invoke GetOpenFileName,addr ofn
 						.if eax
-							invoke RemoveProjectPath,addr buffer
+							invoke RemovePath,addr buffer,addr szProjectPath
 							invoke strcpy,lpResFile,eax
 							invoke PropertyList,hCtl
 							invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0

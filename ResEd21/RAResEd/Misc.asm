@@ -401,10 +401,10 @@ NotifyParent proc uses ebx
 
 NotifyParent endp
 
-RemoveProjectPath proc uses esi edi,lpFileName:DWORD
+RemovePath proc uses esi edi,lpFileName:DWORD,lpPath:DWORD
 
 	mov		edi,lpFileName
-	mov		esi,offset szProjectPath
+	mov		esi,lpPath
 	jmp		@f
   Nxt:
 	inc		esi
@@ -431,7 +431,7 @@ RemoveProjectPath proc uses esi edi,lpFileName:DWORD
 	mov		eax,edi
 	ret
 
-RemoveProjectPath endp
+RemovePath endp
 
 SaveHexVal proc pVal:DWORD,fComma:DWORD
 

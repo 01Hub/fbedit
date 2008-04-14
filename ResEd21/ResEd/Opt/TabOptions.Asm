@@ -591,6 +591,8 @@ TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		eax,buffer
 				mov		bri.lParam,eax 
 				mov		bri.iImage,0
+				mov		eax,hWin
+				mov		bri.hwndOwner,eax
 				invoke SHBrowseForFolder,addr bri
 				.if eax
 					mov		edx,eax
@@ -608,6 +610,8 @@ TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		eax,buffer
 				mov		bri.lParam,eax 
 				mov		bri.iImage,0
+				mov		eax,hWin
+				mov		bri.hwndOwner,eax
 				invoke SHBrowseForFolder,addr bri
 				.if eax
 					mov		edx,eax
@@ -894,6 +898,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrlen,addr SystemPath
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szSysPath,0,REG_SZ,addr SystemPath,eax
+				invoke SendMessage,hResEd,PRO_SETSYSTEMPATH,0,addr SystemPath
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif

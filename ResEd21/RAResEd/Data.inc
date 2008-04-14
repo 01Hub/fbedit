@@ -453,6 +453,7 @@ icex				INITCOMMONCONTROLSEX <?>
 strHex				db 16 dup(?)
 nUndo				dd ?
 szProjectPath		db MAX_PATH dup(?)
+szSystemPath		db MAX_PATH dup(?)
 nPropWt				dd ?
 nPropHt				dd ?
 hPreview			dd ?

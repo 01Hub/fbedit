@@ -1640,6 +1640,14 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_GETTEXTFONT
 		mov		eax,hredfont
 		jmp		Ex
+	.elseif eax==PRO_SETSYSTEMPATH
+		;wParam=0, lParam=lpPath
+		invoke strcpy,addr szSystemPath,lParam
+		jmp		Ex
+	.elseif eax==PRO_GETSYSTEMPATH
+		;wParam=0, lParam=0
+		mov		eax,offset szSystemPath
+		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

@@ -3299,7 +3299,14 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 								invoke strcmp,addr [edi].caption,addr buffer
 							.endif
 							.if !eax
-								invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								mov		ax,word ptr [ebx].RESOURCEMEM.szfile
+								.if ah!=':'
+									invoke strcpy,addr buffer,addr szProjectPath
+									invoke strcat,addr buffer,addr szBS
+									invoke strcat,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								.else
+									invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								.endif
 								.if [ebx].RESOURCEMEM.ntype==0
 									mov		edx,IMAGE_BITMAP
 								.else
@@ -3599,7 +3606,15 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 								invoke strcmp,addr [edi].caption,addr buffer
 							.endif
 							.if !eax
-								invoke SendMessage,[edi].hcld,ACM_OPEN,0,addr [ebx].RESOURCEMEM.szfile
+								mov		ax,word ptr [ebx].RESOURCEMEM.szfile
+								.if ah!=':'
+									invoke strcpy,addr buffer,addr szProjectPath
+									invoke strcat,addr buffer,addr szBS
+									invoke strcat,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								.else
+									invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+								.endif
+								invoke SendMessage,[edi].hcld,ACM_OPEN,0,addr buffer
 								jmp		AviFound
 							.endif
 						.endif

@@ -623,6 +623,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lf.lfCharSet,al
 		invoke CreateFontIndirect,addr lf
 		invoke SendMessage,hResEd,PRO_SETTEXTFONT,eax,0
+		invoke SendMessage,hResEd,PRO_SETSYSTEMPATH,0,addr SystemPath
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0

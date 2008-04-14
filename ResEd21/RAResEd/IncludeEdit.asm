@@ -94,6 +94,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	col:COLUMN
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	fChanged:DWORD
 
@@ -194,9 +195,37 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
 			.elseif eax==GN_BUTTONCLICK
 				;Cell button clicked
+				mov		ofn.lpstrInitialDir,offset szProjectPath
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
 					invoke strcpy,addr buffer,[esi].GRIDNOTIFY.lpdata
+					.if buffer=='<'
+						lea		edx,buffer
+						mov		eax,edx
+						inc		eax
+						.while byte ptr [eax]
+							mov		cl,[eax]
+							.if cl=='>'
+								mov		cl,0
+							.endif
+							mov		[edx],cl
+							inc		eax
+							inc		edx
+						.endw
+						mov		byte ptr [edx],0
+						.if szSystemPath
+							invoke strcpy,addr buffer1,addr szSystemPath
+							invoke strcat,addr buffer1,addr szBS
+							invoke strcat,addr buffer1,addr buffer
+							invoke strcpy,addr buffer,addr buffer1
+							mov		ofn.lpstrInitialDir,offset szSystemPath
+						.endif
+					.else
+						invoke strcpy,addr buffer1,addr szProjectPath
+						invoke strcat,addr buffer1,addr szBS
+						invoke strcat,addr buffer1,addr buffer
+						invoke strcpy,addr buffer,addr buffer1
+					.endif
 				.else
 					mov		buffer,0
 				.endif
@@ -209,7 +238,6 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	hInstance
 				pop		ofn.hInstance
 				mov		ofn.lpstrFilter,NULL
-				mov		ofn.lpstrInitialDir,offset szProjectPath
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
 				mov		ofn.nMaxFile,sizeof buffer
@@ -218,7 +246,19 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					invoke RemoveProjectPath,addr buffer
+					invoke RemovePath,addr buffer,addr szProjectPath
+					lea		edx,buffer
+					.if eax==edx
+						invoke RemovePath,addr buffer,addr szSystemPath
+						lea		edx,buffer
+						.if eax!=edx
+							mov		word ptr buffer,'<'
+							invoke strcat,edx,eax
+							invoke strlen,addr buffer
+							mov		word ptr buffer[eax],'>'
+							lea		eax,buffer
+						.endif
+					.endif
 					mov		edx,[esi].GRIDNOTIFY.lpdata
 					invoke strcpy,edx,eax
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
