@@ -3108,78 +3108,21 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 			jmp		Ex
 		.endif
 	.endif
-	invoke strcmpi,offset wordbuff,offset szBITMAP
-	.if !eax
-		invoke ParseResource,esi,lpProMem,0
-		.if eax==-1
-			jmp		ExErr
+	mov		edi,offset rarstype
+	xor		ebx,ebx
+	.while [edi].RARSTYPE.sztype
+		invoke strcmpi,offset wordbuff,addr [edi].RARSTYPE.sztype
+		.if !eax
+			invoke ParseResource,esi,lpProMem,ebx
+			.if eax==-1
+				jmp		ExErr
+			.endif
+			add		esi,eax
+			jmp		Ex
 		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szCURSOR
-	.if !eax
-		invoke ParseResource,esi,lpProMem,1
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szICON
-	.if !eax
-		invoke ParseResource,esi,lpProMem,2
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szAVI
-	.if !eax
-		invoke ParseResource,esi,lpProMem,3
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szRCDATA
-	.if !eax
-		invoke ParseResource,esi,lpProMem,4
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szWAVE
-	.if !eax
-		invoke ParseResource,esi,lpProMem,5
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szIMAGE
-	.if !eax
-		invoke ParseResource,esi,lpProMem,6
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szMANIFEST
-	.if !eax
-		invoke ParseResource,esi,lpProMem,7
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
+		add		edi,sizeof RARSTYPE
+		inc		ebx
+	.endw
 	invoke strcmpi,offset wordbuff,offset szRT_MANIFEST
 	.if !eax
 		invoke ParseResource,esi,lpProMem,7
@@ -3189,33 +3132,108 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		add		esi,eax
 		jmp		Ex
 	.endif
-	invoke strcmpi,offset wordbuff,offset szANICURSOR
-	.if !eax
-		invoke ParseResource,esi,lpProMem,8
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szFONT
-	.if !eax
-		invoke ParseResource,esi,lpProMem,9
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
-	invoke strcmpi,offset wordbuff,offset szMESSAGETABLE
-	.if !eax
-		invoke ParseResource,esi,lpProMem,10
-		.if eax==-1
-			jmp		ExErr
-		.endif
-		add		esi,eax
-		jmp		Ex
-	.endif
+
+;	invoke strcmpi,offset wordbuff,offset szBITMAP
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,0
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szCURSOR
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,1
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szICON
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,2
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szAVI
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,3
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szRCDATA
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,4
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szWAVE
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,5
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szIMAGE
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,6
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szMANIFEST
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,7
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szANICURSOR
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,8
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szFONT
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,9
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+;	invoke strcmpi,offset wordbuff,offset szMESSAGETABLE
+;	.if !eax
+;		invoke ParseResource,esi,lpProMem,10
+;		.if eax==-1
+;			jmp		ExErr
+;		.endif
+;		add		esi,eax
+;		jmp		Ex
+;	.endif
+
+
 	invoke strcmpi,offset wordbuff,offset szACCELERATORS
 	.if !eax
 		invoke ParseAccelerators,esi,lpProMem

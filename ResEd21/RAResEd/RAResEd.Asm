@@ -1648,6 +1648,28 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;wParam=0, lParam=0
 		mov		eax,offset szSystemPath
 		jmp		Ex
+	.elseif eax==PRO_SETCUSTOMTYPE
+		;wParam=index, lParam=lpRARSTYPE
+		push	esi
+		push	edi
+		mov		esi,lParam
+		mov		eax,wParam
+		mov		ecx,sizeof RARSTYPE
+		mul		ecx
+		add		eax,offset rarstype
+		mov		edi,eax
+		mov		ecx,sizeof RARSTYPE
+		rep movsb
+		pop		edi
+		pop		esi
+		jmp		Ex
+	.elseif eax==PRO_GETCUSTOMTYPE
+		;wParam=index, lParam=0
+		mov		eax,wParam
+		mov		ecx,sizeof RARSTYPE
+		mul		ecx
+		add		eax,offset rarstype
+		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

@@ -68,6 +68,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 24=Opt\TabOpt5.dlg
 25=..\RAResEd\RAGrid.Inc
 26=Opt\TabOpt6.dlg
+27=Opt\TabOpt7.dlg
 
 
 [Resource]
@@ -90,16 +91,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,16692
+1=580,0,290,688,16347
 6=
 2=0,0,0,0,6106
-7=0,0,699,490,7342
+7=0,0,699,490,7386
 9=
 8=
 3=0,0,0,0,1653
 10=0,0,0,0
 11=0,0,0,0,3923
-13=0,0,0,0,2375
+13=0,0,0,0,19346
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -112,6 +113,7 @@ Options=52
 24=0,0,0,0
 25=0,0,0,0,3254
 26=0,0,0,0
+27=0,0,0,0
 
 [BookMark]
 0=
@@ -144,7 +146,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=5
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -165,7 +167,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -220,6 +222,7 @@ Group=Added files,Assembly,Resources,Misc,Include
 24=3
 25=5
 26=3
+27=3
 [CodeMake]
 4=0,C:\RadASM\Masm\Templates\DlgToWin.rad,,WndProc
 [Accel]

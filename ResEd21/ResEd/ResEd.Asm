@@ -492,6 +492,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	lf:LOGFONT
 	LOCAL	cust:CUSTSTYLE
+	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -605,6 +606,21 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr cust,addr lpcbData
 			.if cust.szStyle
 				invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
+			.endif
+			inc		nInx
+		.endw
+		;Set resource types
+		mov		nInx,1
+		mov		ebx,offset hCustDll
+		.while nInx<=32
+			invoke MakeKey,addr szCustType,nInx,addr buffer1
+			mov		lpcbData,sizeof RARSTYPE
+			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
+			.if rarstype.sztype
+				mov		edx,nInx
+				dec		edx
+				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
 			.endif
 			inc		nInx
 		.endw
@@ -1045,7 +1061,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			movzx	eax,mnu.szcmnd
 			.if eax
 				invoke ParseCmnd,addr mnu.szcmnd,addr buffer,addr buffer1
-				invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL
 			.endif
 		.elseif eax>=30000 && eax<=30020
 			;Help
@@ -1059,7 +1075,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			movzx	eax,mnu.szcmnd
 			.if eax
 				invoke ParseCmnd,addr mnu.szcmnd,addr buffer,addr buffer1
-				invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL
 			.endif
 		.endif
 	.elseif eax==WM_SIZE

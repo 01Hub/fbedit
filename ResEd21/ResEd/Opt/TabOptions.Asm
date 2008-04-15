@@ -62,18 +62,25 @@ IDC_BTNPROPATH		equ 1003
 IDC_EDTSYSPATH		equ 1001
 IDC_BTNSYSPATH		equ 1002
 
+IDD_TABOPT7			equ 2440
+IDC_GRDTYPE			equ 1001
+IDC_BTNTYPEADD		equ 1002
+IDC_BTNTYPEDEL		equ 1003
+
 .const
 
 szNmeExp			db 'NmeExp',0
 szCust				db 'Cust#',0
 szCustStyle			db 'Style#',0
 szFilterDLL			db 'Dll (*.dll)',0,'*.dll',0,0
+szFilterEXE			db 'Exe (*.exe)',0,'*.exe',0,0
 szGrid				db 'Grid',0
 szColor				db 'Color',0
 szInitID			db 'InitID',0
 szTextFont			db 'TextFont',0
 szProPath			db 'ProPath',0
 szSysPath			db 'SysPath',0
+szCustType			db 'Type#',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
@@ -81,6 +88,7 @@ TabTitle3			db 'Behaviour',0
 TabTitle4			db "Resource ID's",0
 TabTitle5			db 'Custom styles',0
 TabTitle6			db 'Paths',0
+TabTitle7			db 'Resource types',0
 
 szHdrCust			db 'Custom control',0
 szHdrCustMask		db 'Style mask',0
@@ -88,12 +96,17 @@ szHdrCustMask		db 'Style mask',0
 szHdrStyle			db 'Style',0
 szHdrVal			db 'Value',0
 szHdrMask			db 'Mask',0
+
+szHdrName			db 'Name',0
+szHdrFiles			db 'Files',0
+szHdrEdit			db 'Editor',0
+
 szBrowse			db 'Browse For Folder',0
 
 .data?
 
 hTab				dd ?
-hTabDlg				dd 6 dup(?)
+hTabDlg				dd 7 dup(?)
 SelTab				dd ?
 gridcolor			dd ?
 backcolor			dd ?
@@ -189,7 +202,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;File
-		invoke ConvertDpiSize,210
+		invoke ConvertDpiSize,300
 		mov		clmn.colwt,eax
 		mov		clmn.lpszhdrtext,offset szHdrCust
 		mov		clmn.halign,GA_ALIGN_LEFT
@@ -201,7 +214,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		clmn.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr clmn
 		;Style mask
-		invoke ConvertDpiSize,70
+		invoke ConvertDpiSize,80
 		mov		clmn.colwt,eax
 		mov		clmn.lpszhdrtext,offset szHdrCustMask
 		mov		clmn.halign,GA_ALIGN_LEFT
@@ -483,7 +496,7 @@ TabOpt5Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;Style
-		invoke ConvertDpiSize,140
+		invoke ConvertDpiSize,240
 		mov		clmn.colwt,eax
 		mov		clmn.lpszhdrtext,offset szHdrStyle
 		mov		clmn.halign,GA_ALIGN_LEFT
@@ -629,12 +642,180 @@ TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabOpt6Proc endp
 
+TabOpt7Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	hGrd:HWND
+	LOCAL	clmn:COLUMN
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	nInx:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	row[4]:DWORD
+	LOCAL	rarstype:RARSTYPE
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_GRDTYPE
+		mov		hGrd,eax
+		invoke SendMessage,hWin,WM_GETFONT,0,0
+		invoke SendMessage,hGrd,WM_SETFONT,eax,FALSE
+		invoke ConvertDpiSize,18
+		push	eax
+		invoke SendMessage,hGrd,GM_SETHDRHEIGHT,0,eax
+		pop		eax
+		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
+		;Type
+		invoke ConvertDpiSize,110
+		mov		clmn.colwt,eax
+		mov		clmn.lpszhdrtext,offset szHdrName
+		mov		clmn.halign,GA_ALIGN_LEFT
+		mov		clmn.calign,GA_ALIGN_LEFT
+		mov		clmn.ctype,TYPE_EDITTEXT
+		mov		clmn.ctextmax,31
+		mov		clmn.lpszformat,0
+		mov		clmn.himl,0
+		mov		clmn.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr clmn
+		;Value
+		invoke ConvertDpiSize,50
+		mov		clmn.colwt,eax
+		mov		clmn.lpszhdrtext,offset szHdrVal
+		mov		clmn.halign,GA_ALIGN_RIGHT
+		mov		clmn.calign,GA_ALIGN_RIGHT
+		mov		clmn.ctype,TYPE_EDITLONG
+		mov		clmn.ctextmax,5
+		mov		clmn.lpszformat,0
+		mov		clmn.himl,0
+		mov		clmn.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr clmn
+		;Files
+		invoke ConvertDpiSize,115
+		mov		clmn.colwt,eax
+		mov		clmn.lpszhdrtext,offset szHdrFiles
+		mov		clmn.halign,GA_ALIGN_LEFT
+		mov		clmn.calign,GA_ALIGN_LEFT
+		mov		clmn.ctype,TYPE_EDITTEXT
+		mov		clmn.ctextmax,63
+		mov		clmn.lpszformat,0
+		mov		clmn.himl,0
+		mov		clmn.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr clmn
+		;Editor
+		invoke ConvertDpiSize,115
+		mov		clmn.colwt,eax
+		mov		clmn.lpszhdrtext,offset szHdrEdit
+		mov		clmn.halign,GA_ALIGN_LEFT
+		mov		clmn.calign,GA_ALIGN_LEFT
+		mov		clmn.ctype,TYPE_EDITBUTTON
+		mov		clmn.ctextmax,127
+		mov		clmn.lpszformat,0
+		mov		clmn.himl,0
+		mov		clmn.hdrflag,0
+		invoke SendMessage,hGrd,GM_ADDCOL,0,addr clmn
+		mov		nInx,1
+		.while nInx<=32
+			invoke MakeKey,addr szCustType,nInx,addr buffer
+			mov		lpcbData,sizeof RARSTYPE
+			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+			invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr rarstype,addr lpcbData
+			.if rarstype.sztype
+				lea		eax,rarstype.sztype
+				mov		row[0],eax
+				mov		eax,rarstype.nid
+				mov		row[4],eax
+				lea		eax,rarstype.szext
+				mov		row[8],eax
+				lea		eax,rarstype.szedit
+				mov		row[12],eax
+				invoke SendMessage,hGrd,GM_ADDROW,0,addr row
+			.endif
+			inc		nInx
+		.endw
+	.elseif eax==WM_COMMAND
+		invoke GetDlgItem,hWin,IDC_GRDTYPE
+		mov		hGrd,eax
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_BTNTYPEADD
+				invoke SendMessage,hGrd,GM_ADDROW,0,NULL
+				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
+				invoke SetFocus,hGrd
+			.elseif eax==IDC_BTNTYPEDEL
+				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				push	eax
+				invoke SendMessage,hGrd,GM_DELROW,eax,0
+				pop		eax
+				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
+				invoke SetFocus,hGrd
+			.endif
+		.endif
+	.elseif eax==WM_NOTIFY
+		invoke GetDlgItem,hWin,IDC_GRDTYPE
+		mov		hGrd,eax
+		mov		esi,lParam
+		mov		eax,[esi].NMHDR.hwndFrom
+		.if eax==hGrd
+			mov		eax,[esi].NMHDR.code
+			.if eax==GN_HEADERCLICK
+				;Sort the grid by column, invert sorting order
+				;invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
+			.elseif eax==GN_BUTTONCLICK
+				;Cell button clicked
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrInitialDir,NULL
+				mov		ofn.lpstrFilter,offset szFilterEXE
+				mov		ofn.lpstrDefExt,0
+				mov		ofn.lpstrTitle,0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				invoke lstrcpy,eax,[esi].GRIDNOTIFY.lpdata
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					mov		edx,[esi].GRIDNOTIFY.lpdata
+					invoke lstrcpy,edx,addr buffer
+					mov		[esi].GRIDNOTIFY.fcancel,FALSE
+				.else
+					mov		[esi].GRIDNOTIFY.fcancel,TRUE
+				.endif
+			.elseif eax==GN_BEFOREEDIT
+				.if [esi].GRIDNOTIFY.row<=10 && [esi].GRIDNOTIFY.col<=2
+					mov		[esi].GRIDNOTIFY.fcancel,TRUE
+				.endif
+			.elseif eax==GN_AFTERSELCHANGE
+				.if [esi].GRIDNOTIFY.row<=10
+					invoke GetDlgItem,hWin,IDC_BTNTYPEDEL
+					invoke EnableWindow,eax,FALSE
+				.else
+					invoke GetDlgItem,hWin,IDC_BTNTYPEDEL
+					invoke EnableWindow,eax,TRUE
+				.endif
+			.endif
+		.endif
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+TabOpt7Proc endp
+
 TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TCITEM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[64]:BYTE
 	LOCAL	cust:CUSTSTYLE
+	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_COMMAND
@@ -652,6 +833,11 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
 				invoke GetDlgItem,hTabDlg[16],IDC_GRDSTYLE
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
+				invoke GetDlgItem,hTabDlg[24],IDC_GRDTYPE
 				push	eax
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
@@ -700,8 +886,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shl		edx,16
 				add		edx,nmeexp.nType
 				invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+				; Custom controls
 				mov		nInx,0
-				.while nInx<=32
+				.while nInx<32
 					invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETROWCOUNT,0,0
 					.if eax>nInx
 						mov		buffer,0
@@ -729,8 +916,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endw
 				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
+				; Custom styles
 				mov		nInx,0
-				.while nInx<=64
+				.while nInx<64
 					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDSTYLE,GM_GETROWCOUNT,0,0
 					.if eax>nInx
 						invoke RtlZeroMemory,addr cust,sizeof CUSTSTYLE
@@ -760,6 +948,46 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
+						invoke RegDeleteValue,hReg,addr buffer1
+					.endif
+				.endw
+				; Custom types
+				mov		nInx,0
+				.while nInx<32
+					invoke SendDlgItemMessage,hTabDlg[24],IDC_GRDTYPE,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[24],IDC_GRDTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.sztype,addr buffer
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[24],IDC_GRDTYPE,GM_GETCELLDATA,ecx,addr buffer
+						mov		eax,dword ptr buffer
+						mov		rarstype.nid,eax
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,2
+						invoke SendDlgItemMessage,hTabDlg[24],IDC_GRDTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.szext,addr buffer
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,3
+						invoke SendDlgItemMessage,hTabDlg[24],IDC_GRDTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.szedit,addr buffer
+						invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
+						inc		nInx
+						invoke MakeKey,addr szCustType,nInx,addr buffer1
+						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
+					.else
+						inc		nInx
+						invoke MakeKey,addr szCustType,nInx,addr buffer1
 						invoke RegDeleteValue,hReg,addr buffer1
 					.endif
 				.endw
@@ -958,6 +1186,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ts.pszText,offset TabTitle6
 		mov		ts.cchTextMax,sizeof TabTitle6
 		invoke SendMessage,hTab,TCM_INSERTITEM,5,addr ts
+		mov		ts.pszText,offset TabTitle7
+		mov		ts.cchTextMax,sizeof TabTitle7
+		invoke SendMessage,hTab,TCM_INSERTITEM,6,addr ts
 		;Create the tab dialogs
 		invoke CreateDialogParam,hInstance,IDD_TABOPT1,hTab,addr TabOpt1Proc,0
 		mov		hTabDlg,eax
@@ -971,6 +1202,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTabDlg[16],eax
 		invoke CreateDialogParam,hInstance,IDD_TABOPT6,hTab,addr TabOpt6Proc,0
 		mov		hTabDlg[20],eax
+		invoke CreateDialogParam,hInstance,IDD_TABOPT7,hTab,addr TabOpt7Proc,0
+		mov		hTabDlg[24],eax
 		mov		SelTab,0
 	.elseif eax==WM_CLOSE
 		invoke DeleteObject,hBrGrid

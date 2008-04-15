@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.04.14
+2.1.0.0 - 2008.04.15
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
@@ -27,6 +27,7 @@ o Enhanced the custom control support.
 o Added option for custom styles.
 o Added options for default project path and system include path.
   These paths are optional and can be left blank.
+o Added option to add custom resource types. You can also specify an editor for the resource.
 
 2.0.0.0b - 2008.03.12
 ---------------------

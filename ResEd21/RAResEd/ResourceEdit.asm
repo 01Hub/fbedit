@@ -5,6 +5,7 @@ IDC_GRDRES								equ 1001
 IDC_BTNRESADD							equ 1002
 IDC_BTNRESDEL							equ 1003
 IDC_BTNRESPREVIEW						equ 1004
+IDC_BTNRESEDIT							equ 1005
 
 IDD_RESPREVIEW							equ 2700
 
@@ -65,35 +66,15 @@ ExportResource proc uses esi edi,hMem:DWORD
 		stosb
 		mov		eax,[esi].RESOURCEMEM.ntype
 		push	eax
-		.if eax==0
-			mov		eax,offset szBITMAP
-		.elseif eax==1
-			mov		eax,offset szCURSOR
-		.elseif eax==2
-			mov		eax,offset szICON
-		.elseif eax==3
-			mov		eax,offset szAVI
-		.elseif eax==4
-			mov		eax,offset szRCDATA
-		.elseif eax==5
-			mov		eax,offset szWAVE
-		.elseif eax==6
-			mov		eax,offset szIMAGE
-		.elseif eax==7
-			mov		eax,offset szMANIFEST
-		.elseif eax==8
-			mov		eax,offset szANICURSOR
-		.elseif eax==9
-			mov		eax,offset szFONT
-		.elseif eax==10
-			mov		eax,offset szMESSAGETABLE
-		.endif
+		mov		ecx,sizeof RARSTYPE
+		mul		ecx
+		add		eax,offset rarstype
 		invoke SaveStr,edi,eax
 		add		edi,eax
 		mov		al,' '
 		stosb
 		pop		eax
-		.if eax!=10
+		.if eax<10
 			invoke SaveStr,edi,offset szDISCARDABLE
 			add		edi,eax
 			mov		al,' '
@@ -302,17 +283,22 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Fill types in the combo
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szBITMAP
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szCURSOR
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szICON
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szAVI
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szRCDATA
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szWAVE
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szIMAGE
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMANIFEST
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szANICURSOR
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szFONT
-		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMESSAGETABLE
+		mov		esi,offset rarstype
+		.while [esi].RARSTYPE.sztype
+			invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].RARSTYPE.sztype
+			add		esi,sizeof RARSTYPE
+		.endw
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szBITMAP
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szCURSOR
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szICON
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szAVI
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szRCDATA
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szWAVE
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szIMAGE
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMANIFEST
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szANICURSOR
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szFONT
+;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMESSAGETABLE
 		;Name
 		invoke ConvertDpiSize,100
 		mov		col.colwt,eax
@@ -441,6 +427,32 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke strcat,addr buffer1[4],addr buffer
 					invoke DialogBoxParam,hInstance,IDD_RESPREVIEW,hWin,addr ResPreviewProc,addr buffer1
 				.endif
+			.elseif eax==IDC_BTNRESEDIT
+				invoke SendMessage,hGrd,GM_GETCURROW,0,0
+				mov		ecx,eax
+				shl		ecx,16
+				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer1
+				mov		eax,dword ptr buffer1
+				mov		ecx,sizeof RARSTYPE
+				mul		ecx
+				add		eax,offset rarstype
+				lea		eax,[eax].RARSTYPE.szedit
+				.if byte ptr [eax]
+					push	eax
+					invoke SendMessage,hGrd,GM_GETCURROW,0,0
+					mov		ecx,eax
+					shl		ecx,16
+					or		ecx,3
+					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer1
+					mov		al,buffer[1]
+					.if al!=':'
+						invoke strcpy,addr buffer,addr szProjectPath
+						invoke strcat,addr buffer,addr szBS
+					.endif
+					invoke strcat,addr buffer,addr buffer1
+					pop		edx
+					invoke ShellExecute,hWin,NULL,edx,addr buffer,NULL,SW_SHOWNORMAL
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -462,42 +474,53 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shl		ecx,16
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
 				mov		eax,dword ptr buffer
-				.if !eax
-					;BITMAP
-					mov		eax,offset szFilterBitmap
-				.elseif eax==1
-					;CURSOR
-					mov		eax,offset szFilterCursor
-				.elseif eax==2
-					;ICON
-					mov		eax,offset szFilterIcon
-				.elseif eax==3
-					;AVI
-					mov		eax,offset szFilterAvi
-				.elseif eax==4
-					;RCDATA
-					mov		eax,offset szFilterAny
-				.elseif eax==5
-					;WAVE
-					mov		eax,offset szFilterWave
-				.elseif eax==6
-					;IMAGE
-					mov		eax,offset szFilterImage
-				.elseif eax==7
-					;MANIFEST
-					mov		eax,offset szFilterManifest
-				.elseif eax==8
-					;ANICURSOR
-					mov		eax,offset szFilterAniCursor
-				.elseif eax==9
-					;FONT
-					mov		eax,offset szFilterFont
-				.elseif eax==10
-					;MESSAGETABLE
-					mov		eax,offset szFilterBin
-				.else
-					xor		eax,eax
-				.endif
+				mov		ecx,sizeof RARSTYPE
+				mul		ecx
+				add		eax,offset rarstype
+				lea		eax,[eax].RARSTYPE.szext
+				mov		edx,eax
+				.while byte ptr [edx]
+					.if byte ptr [edx]=='|'
+						mov		byte ptr [edx],0
+					.endif
+					inc		edx
+				.endw
+;				.if !eax
+;					;BITMAP
+;					mov		eax,offset szFilterBitmap
+;				.elseif eax==1
+;					;CURSOR
+;					mov		eax,offset szFilterCursor
+;				.elseif eax==2
+;					;ICON
+;					mov		eax,offset szFilterIcon
+;				.elseif eax==3
+;					;AVI
+;					mov		eax,offset szFilterAvi
+;				.elseif eax==4
+;					;RCDATA
+;					mov		eax,offset szFilterAny
+;				.elseif eax==5
+;					;WAVE
+;					mov		eax,offset szFilterWave
+;				.elseif eax==6
+;					;IMAGE
+;					mov		eax,offset szFilterImage
+;				.elseif eax==7
+;					;MANIFEST
+;					mov		eax,offset szFilterManifest
+;				.elseif eax==8
+;					;ANICURSOR
+;					mov		eax,offset szFilterAniCursor
+;				.elseif eax==9
+;					;FONT
+;					mov		eax,offset szFilterFont
+;				.elseif eax==10
+;					;MESSAGETABLE
+;					mov		eax,offset szFilterBin
+;				.else
+;					xor		eax,eax
+;				.endif
 				mov		ofn.lpstrFilter,eax
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
@@ -573,6 +596,17 @@ Enable:
 		invoke EnableWindow,eax,TRUE
 	.else
 		invoke GetDlgItem,hWin,IDC_BTNRESPREVIEW
+		invoke EnableWindow,eax,FALSE
+	.endif
+	mov		eax,dword ptr buffer
+	mov		ecx,sizeof RARSTYPE
+	mul		ecx
+	add		eax,offset rarstype
+	.if byte ptr [eax].RARSTYPE.szedit
+		invoke GetDlgItem,hWin,IDC_BTNRESEDIT
+		invoke EnableWindow,eax,TRUE
+	.else
+		invoke GetDlgItem,hWin,IDC_BTNRESEDIT
 		invoke EnableWindow,eax,FALSE
 	.endif
 	retn
