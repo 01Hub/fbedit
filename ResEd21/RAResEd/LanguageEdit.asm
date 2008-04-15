@@ -107,8 +107,8 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,lParam
+		;invoke DestroyWindow,hWin
+		invoke EndDialog,hWin,lParam
 	.else
 		mov		eax,FALSE
 		ret

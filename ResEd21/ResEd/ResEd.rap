@@ -91,7 +91,7 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,16347
+1=580,0,290,688,17012
 6=
 2=0,0,0,0,6106
 7=0,0,699,490,7386
@@ -146,7 +146,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=5
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

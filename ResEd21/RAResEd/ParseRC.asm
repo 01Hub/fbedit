@@ -2889,6 +2889,8 @@ ParseToolbar endp
 
 ParseTextInclude proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
+	invoke GetLoadOptions,esi
+	add		esi,eax
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
 	invoke strcmpi,offset wordbuff,offset szBEGIN
