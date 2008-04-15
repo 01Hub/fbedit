@@ -146,7 +146,7 @@ Options=52
 9=0,0,0,0,86328
 2=0,0,584,498,7271
 8=0,0,0,0,6256
-10=0,0,0,0,12031
+10=0,0,0,0,11743
 16=0,0,0,0,15084
 15=0,0,0,0
 17=0,0,0,0,970
@@ -218,7 +218,7 @@ CompanyName=
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=3
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -239,7 +239,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -328,7 +328,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 5=
 13=
 [PTimer]
-PTimer=295031540
+PTimer=297327368
 
 [Exports]
 1=ResEdInstall

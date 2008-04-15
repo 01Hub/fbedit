@@ -134,6 +134,12 @@ RADIALOG struct
 	himg			dd ?				;Set to NULL
 RADIALOG ends
 
+RARSTYPE struct
+	sztype			db 64 dup(?)
+	nid				dd ?
+	szext			db 64 dup(?)	
+RARSTYPE ends
+
 .const
 
 szProject			db '[PROJECT]',0
@@ -426,6 +432,12 @@ szCrLf				db 0Dh,0Ah,0
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>>
+
+rarstype			RARSTYPE 32 dup(<'BITMAP',0,'Bitmap (*.bmp)|*.bmp'>,<'CURSOR',0,'Cursor (*.cur)|*.cur'>,<'ICON',0,'Icon (*.ico)|*.ico'>,<'AVI',0,'Avi (*.avi)|*.avi'>,
+									<'RCDATA',0,'All Files (*.*)|*.*'>,<'WAVE',0,'Wave (*.wav)|*.wav'>,
+									<'IMAGE',0,'Image (*.jpg, *.gif)|*.jpg;*.gif'>,<'MANIFEST',24,'Manifest (*.xml)|*.xml'>,
+									<'ANICURSOR',0,'Ani Cursor (*.ani)|*.ani'>,<'FONT',0,'Font (*.fon, *.ttc, *.ttf)|*.fon;*.ttc;*.ttf'>,
+									<'MESSAGETABLE',0,'Messagetable (*.bin)|*.bin'>)
 
 .data?
 
