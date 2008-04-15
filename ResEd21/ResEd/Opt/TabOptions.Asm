@@ -726,6 +726,22 @@ TabOpt7Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		eax,rarstype.szedit
 				mov		row[12],eax
 				invoke SendMessage,hGrd,GM_ADDROW,0,addr row
+			.elseif nInx<=11
+				mov		edx,nInx
+				dec		edx
+				invoke SendMessage,hResEd,PRO_GETCUSTOMTYPE,edx,0
+				mov		edx,eax
+				.if [edx].RARSTYPE.sztype
+					lea		eax,[edx].RARSTYPE.sztype
+					mov		row[0],eax
+					mov		eax,[edx].RARSTYPE.nid
+					mov		row[4],eax
+					lea		eax,[edx].RARSTYPE.szext
+					mov		row[8],eax
+					lea		eax,[edx].RARSTYPE.szedit
+					mov		row[12],eax
+					invoke SendMessage,hGrd,GM_ADDROW,0,addr row
+				.endif
 			.endif
 			inc		nInx
 		.endw
