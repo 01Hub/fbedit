@@ -816,6 +816,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke EnableWindow,edx,eax
 			.endif
 			mov		fDialogChanged,TRUE
+			invoke NotifyParent
 		.elseif edx==LBN_SELCHANGE
 			.if eax==IDC_LSTVER
 				invoke SendDlgItemMessage,hWin,IDC_LSTVER,LB_GETCURSEL,0,0
@@ -825,6 +826,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 			.endif
 			mov		fDialogChanged,TRUE
+			invoke NotifyParent
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin

@@ -722,6 +722,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_SETCURSEL,3,ebx
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNNMEEXPORT
@@ -763,6 +764,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke EnableWindow,edx,eax
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 			.endif
 		.endif
 	.elseif eax==WM_SIZE

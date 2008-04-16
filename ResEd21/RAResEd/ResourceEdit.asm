@@ -398,6 +398,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 				xor		eax,eax
 				jmp		Ex
 			.elseif eax==IDC_BTNRESPREVIEW
@@ -513,6 +514,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
 				call Enable
+				invoke NotifyParent
 			.elseif eax==GN_AFTERSELCHANGE
 				call Enable
 			.endif

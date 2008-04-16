@@ -458,6 +458,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 				xor		eax,eax
 				jmp		Ex
 			.endif
@@ -498,6 +499,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

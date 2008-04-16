@@ -179,6 +179,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_SETCURSEL,0,eax
 				invoke SetFocus,hGrd
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 				xor		eax,eax
 				jmp		Ex
 			.endif
@@ -267,6 +268,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
+				invoke NotifyParent
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

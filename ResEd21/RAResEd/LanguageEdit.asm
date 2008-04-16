@@ -90,6 +90,7 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		[esi].LANGUAGEMEM.lang,eax
 				mov		eax,nSubLang
 				mov		[esi].LANGUAGEMEM.sublang,eax
+				invoke NotifyParent
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
