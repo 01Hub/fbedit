@@ -284,21 +284,15 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Fill types in the combo
 		mov		esi,offset rarstype
-		.while [esi].RARSTYPE.sztype
-			invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].RARSTYPE.sztype
+		.while [esi].RARSTYPE.sztype || [esi].RARSTYPE.nid
+			.if [esi].RARSTYPE.sztype
+				invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].RARSTYPE.sztype
+			.else
+				invoke ResEdBinToDec,[esi].RARSTYPE.nid,addr buffer
+				invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr buffer
+			.endif
 			add		esi,sizeof RARSTYPE
 		.endw
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szBITMAP
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szCURSOR
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szICON
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szAVI
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szRCDATA
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szWAVE
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szIMAGE
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMANIFEST
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szANICURSOR
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szFONT
-;		invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,offset szMESSAGETABLE
 		;Name
 		invoke ConvertDpiSize,100
 		mov		col.colwt,eax
@@ -469,6 +463,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Cell button clicked
 				;Zero out the ofn struct
 				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				invoke RtlZeroMemory,addr buffer1,sizeof buffer1
 				;Type
 				mov		ecx,[esi].GRIDNOTIFY.row
 				shl		ecx,16
@@ -477,51 +472,15 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ecx,sizeof RARSTYPE
 				mul		ecx
 				add		eax,offset rarstype
-				lea		eax,[eax].RARSTYPE.szext
-				mov		edx,eax
-				.while byte ptr [edx]
-					.if byte ptr [edx]=='|'
-						mov		byte ptr [edx],0
-					.endif
-					inc		edx
-				.endw
-;				.if !eax
-;					;BITMAP
-;					mov		eax,offset szFilterBitmap
-;				.elseif eax==1
-;					;CURSOR
-;					mov		eax,offset szFilterCursor
-;				.elseif eax==2
-;					;ICON
-;					mov		eax,offset szFilterIcon
-;				.elseif eax==3
-;					;AVI
-;					mov		eax,offset szFilterAvi
-;				.elseif eax==4
-;					;RCDATA
-;					mov		eax,offset szFilterAny
-;				.elseif eax==5
-;					;WAVE
-;					mov		eax,offset szFilterWave
-;				.elseif eax==6
-;					;IMAGE
-;					mov		eax,offset szFilterImage
-;				.elseif eax==7
-;					;MANIFEST
-;					mov		eax,offset szFilterManifest
-;				.elseif eax==8
-;					;ANICURSOR
-;					mov		eax,offset szFilterAniCursor
-;				.elseif eax==9
-;					;FONT
-;					mov		eax,offset szFilterFont
-;				.elseif eax==10
-;					;MESSAGETABLE
-;					mov		eax,offset szFilterBin
-;				.else
-;					xor		eax,eax
-;				.endif
+				invoke strcpy,addr buffer1,addr [eax].RARSTYPE.szext
+				lea		eax,buffer1
 				mov		ofn.lpstrFilter,eax
+				.while byte ptr [eax]
+					.if byte ptr [eax]=='|'
+						mov		byte ptr [eax],0
+					.endif
+					inc		eax
+				.endw
 				mov		eax,[esi].GRIDNOTIFY.lpdata
 				.if byte ptr [eax]
 					invoke strcpy,addr buffer,[esi].GRIDNOTIFY.lpdata

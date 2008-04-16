@@ -716,7 +716,7 @@ TabOpt7Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		lpcbData,sizeof RARSTYPE
 			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
 			invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr rarstype,addr lpcbData
-			.if rarstype.sztype
+			.if rarstype.sztype || rarstype.nid
 				lea		eax,rarstype.sztype
 				mov		row[0],eax
 				mov		eax,rarstype.nid
