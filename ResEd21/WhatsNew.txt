@@ -1,6 +1,6 @@
 ResEd
 
-2.1.0.0 - 2008.04.15
+2.1.0.0 - 2008.04.16
 --------------------
 o Previous modal dialogs are now child dialogs.
   This makes the ResEd UI more uniform.
@@ -11,8 +11,8 @@ o Added option to set Borland compatible.
 o Added option to set textmode font.
 o Added option to set resource startid and increment.
 o Added preview on resource files (bitmap, icon, cursor, ani cursor and avi clip).
-o It is now possible to edit the xStyle and xExStyle hex values.
-o Enhanced the custom control support.
+o It is now possible to directly edit the xStyle and xExStyle hex values.
+o Enhanced the custom control support. It is now possibe to add controls that are not RadASM compatible.
   Example: Old rich edit control.
   In Custom control field, type: "Riched32.dll,richedit,IDC_RED,Text,RichEdit,100,100,503110C4,00000200"
   In Style mask field, type: WS_,ES_
@@ -28,6 +28,11 @@ o Added option for custom styles.
 o Added options for default project path and system include path.
   These paths are optional and can be left blank.
 o Added option to add custom resource types. You can also specify an editor for the resource.
+  Example:
+  Name:   MTTEXT
+  Value:  0
+  Files:  Text (*.txt)|*.txt|All files (*.*)|*.*
+  Editor: notpad.exe
 
 2.0.0.0b - 2008.03.12
 ---------------------
