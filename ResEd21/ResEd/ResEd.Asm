@@ -498,13 +498,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
-		invoke GetModuleFileName,0,addr buffer,sizeof buffer
-		invoke lstrlen,addr buffer
-		.while byte ptr buffer[eax]!='\' && eax
+		invoke GetModuleFileName,0,addr AppPath,sizeof AppPath
+		invoke lstrlen,addr AppPath
+		.while byte ptr AppPath[eax]!='\' && eax
 			dec		eax
 		.endw
-		mov		buffer[eax],0
-		invoke SetCurrentDirectory,addr buffer
+		mov		AppPath[eax],0
+		invoke SetCurrentDirectory,addr AppPath
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,eax,WM_GETFONT,0,0
 		mov		hFont,eax
@@ -513,6 +513,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hAccel,eax
 		invoke GetMenu,hWin
 		mov		hMnu,eax
+		invoke WriteDefHelp
 		invoke SetToolMenu
 		invoke SetHelpMenu
 		invoke LoadMenu,hInstance,IDR_CONTEXT

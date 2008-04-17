@@ -114,6 +114,7 @@ MakeKey proc lpszStr:DWORD,nInx:DWORD,lpszKey:DWORD
 MakeKey endp
 
 ParseCmnd proc uses esi edi,lpStr:DWORD,lpCmnd:DWORD,lpParam:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		esi,lpStr
 	call	SkipSpc
@@ -133,6 +134,12 @@ ParseCmnd proc uses esi edi,lpStr:DWORD,lpCmnd:DWORD,lpParam:DWORD
 		call	CopyQuoted
 	.else
 		call	CopyAll
+	.endif
+	mov		edi,lpCmnd
+	.if word ptr [edi]=='\\'
+		invoke lstrcpy,addr buffer,addr AppPath
+		invoke lstrcat,addr buffer,addr [edi+1]
+		invoke lstrcpy,edi,addr buffer
 	.endif
 	ret
 

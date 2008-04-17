@@ -137,17 +137,17 @@ Options=52
 16=,107,0,Res\Lock.bmp
 
 [Size]
-5=0,0,0,0,3925
+5=0,0,0,0,1770
 3=0,0,0,0,178
 4=0,0,0,0,8
-1=0,0,718,485,39674
-7=0,0,0,0,85239
-6=0,0,0,0,4987
-9=0,0,0,0,86328
+1=0,0,718,485,45747
+7=0,0,0,0,42553
+6=0,0,0,0,2026
+9=0,0,0,0,56043
 2=0,0,584,498,7339
 8=0,0,0,0,2681
-10=0,0,0,0,7937
-16=0,0,0,0,15084
+10=0,0,0,0,8148
+16=0,0,0,0,1699
 15=0,0,0,0
 17=0,0,0,0,64100
 18=0,0,0,0,15986
@@ -182,16 +182,16 @@ Options=52
 
 
 [Find]
-1="PRO_GETSYSTEMPATH"
-2="GM_ENDEDIT"
-3="RSM_SETSTYLEVAL"
-4="StyleManaDialogProc"
-5="PRP_FUN_EXSTYLE"
-6="srtstyledef"
-7="DEM_GETSHOWDIALOG"
-8="PRO_SETTEXTFONT"
-9="DEM_SETCOLOR"
-10="getfree"
+1="szCtrl"
+2="Ctrl"
+3="hStatus"
+4="PRO_GETSYSTEMPATH"
+5="GM_ENDEDIT"
+6="RSM_SETSTYLEVAL"
+7="StyleManaDialogProc"
+8="PRP_FUN_EXSTYLE"
+9="srtstyledef"
+10="DEM_GETSHOWDIALOG"
 
 [AutoLoad]
 1=1
@@ -218,7 +218,7 @@ CompanyName=
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=7
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -239,7 +239,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16

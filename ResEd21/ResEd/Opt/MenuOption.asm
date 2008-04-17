@@ -25,6 +25,9 @@ szMenuHelp			db 'Help#',0
 szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 					db 'All Files (*.*)',0,'*.*',0,0
 
+szDefKey			db 'Help#1',0
+DefHelp				MENU <'ResEd','\\ResEd.chm'>
+
 .data?
 
 lpAppName			dd ?
@@ -32,6 +35,21 @@ lpFilter			dd ?
 fUpdate				dd ?
 
 .code
+
+WriteDefHelp proc
+	LOCAL	mnu:MENU
+
+	mov		mnu.szcap,0
+	mov		mnu.szcmnd,0
+	mov		lpcbData,sizeof mnu
+	invoke RegQueryValueEx,hReg,addr szDefKey,0,addr lpType,addr mnu,addr lpcbData
+	movzx	eax,mnu.szcap
+	.if !eax
+		invoke RegSetValueEx,hReg,addr szDefKey,0,REG_BINARY,addr DefHelp,sizeof DefHelp
+	.endif
+	ret
+
+WriteDefHelp endp
 
 ClearMenu proc hSubMenu:DWORD,nID:DWORD
 	LOCAL	nInx:DWORD	

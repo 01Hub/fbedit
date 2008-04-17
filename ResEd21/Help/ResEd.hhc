@@ -24,9 +24,21 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Dialog editor">
 			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Dialog editor">
+				<param name="Local" value="EdtDialog.htm">
+				</OBJECT>
+		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Menu editor">
 			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Menu editor">
+				<param name="Local" value="EdtMenu.htm">
+				</OBJECT>
+		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Options">
 			</OBJECT>

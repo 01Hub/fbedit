@@ -2552,6 +2552,15 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetAsyncKeyState,VK_CONTROL
 					and		eax,8000h
 					mov		fControl,eax
+;.if eax
+;.if hStatus
+;	invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szHdrCtrl
+;.endif
+;.else
+;.if hStatus
+;	invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szNULL
+;.endif
+;.endif
 					.if !fControl && !fShift && !fMultiSel
 						mov		eax,hMultiSel
 						.if eax

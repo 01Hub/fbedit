@@ -240,6 +240,7 @@ hResEd				dd ?
 ProjectFileName		db MAX_PATH dup(?)
 ProjectPath			db MAX_PATH dup(?)
 SystemPath			db MAX_PATH dup(?)
+AppPath				db MAX_PATH dup(?)
 icex				INITCOMMONCONTROLSEX <?>
 hReg				dd ?
 lpdwDisp			dd ?
