@@ -33,9 +33,21 @@ div.Section1
 </table>
 <br><br><br>
 <p class=MsoNormal>&nbsp;<span style='font-size:16.0pt;color:blue'>Custom controls.</span></p>
-<p class=MsoNormal>&nbsp;</p>
-<p class=MsoNormal>&nbsp;</p>
 <p><img border="0" src="images/OptCustcont.JPG" width="512" height="302"></p>
+<font size="2">
+<p class=MsoNormal>&#9679; Custom control column.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;This field can contain the filename of a RadASM compatible custom control or a quoted string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Format: "[dll],class,name,[caption],tooltip,width,height,style,exstyle"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example1: RadASM compatible code edit control.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RAEdit.dll<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example2: Old rich edit control.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"Riched32.dll,richedit,IDC_RED,Text,RichEdit,100,100,503110C4,00000200"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example3: Horizontal line.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;",static,IDC_LINE,,Horizontal line,100,2,50000110,00000000"<br>
+<p class=MsoNormal>&#9679; Style mask column.</p>
+&nbsp;&nbsp;&nbsp;&nbsp;This field contains the style mask. There can be max 3 masks.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Format: Mask1[,Mask2[,Mask3]]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example: WS_,SS_<br>
 </div>
 </body>
 </html>
