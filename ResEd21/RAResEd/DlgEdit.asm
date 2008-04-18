@@ -2545,21 +2545,27 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.elseif !fMoveing
 					;Select control
 					;Shift key
-					invoke GetAsyncKeyState,VK_SHIFT
-					and		eax,8000h
+					mov		eax,wParam
+					and		eax,MK_SHIFT
 					mov		fShift,eax
-					;Control key
-					invoke GetAsyncKeyState,VK_CONTROL
-					and		eax,8000h
+;					invoke GetAsyncKeyState,VK_SHIFT
+;					and		eax,8000h
+;					mov		fShift,eax
+;					;Control key
+					mov		eax,wParam
+					and		eax,MK_CONTROL
 					mov		fControl,eax
+;					invoke GetAsyncKeyState,VK_CONTROL
+;					and		eax,8000h
+;					mov		fControl,eax
 ;.if eax
-;.if hStatus
-;	invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szHdrCtrl
-;.endif
+;	.if hStatus
+;		invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szHdrCtrl
+;	.endif
 ;.else
-;.if hStatus
-;	invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szNULL
-;.endif
+;	.if hStatus
+;		invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szNULL
+;	.endif
 ;.endif
 					.if !fControl && !fShift && !fMultiSel
 						mov		eax,hMultiSel
