@@ -246,18 +246,18 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	.if eax==-1
 		jmp		Ex
 	.endif
-	push	edx
-	mov		ecx,offset szResourceh
-  @@:
-	mov		al,[edx]
-	.if al!='.' && al
-		mov		[ecx],al
-		inc		edx
-		inc		ecx
-		jmp		@b
-	.endif
-	mov		dword ptr [ecx],'h.'
-	pop		edx
+;	push	edx
+;	mov		ecx,offset szResourceh
+;  @@:
+;	mov		al,[edx]
+;	.if al!='.' && al
+;		mov		[ecx],al
+;		inc		edx
+;		inc		ecx
+;		jmp		@b
+;	.endif
+;	mov		dword ptr [ecx],'h.'
+;	pop		edx
 	mov		esi,hProMem
 	invoke Do_TreeViewAddNode,hPrjTrv,TVI_ROOT,TVI_FIRST,edx,0,0,esi
 	mov		hRoot,eax

@@ -384,7 +384,7 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 
 SetupMenu endp
 
-MakeMenuBitmap proc wt:DWORD,nColor:DWORD
+MakeMenuBitmap proc uses ebx esi edi,wt:DWORD,nColor:DWORD
 	LOCAL	hBmp:HBITMAP
 	LOCAL	hOldBmp:HBITMAP
 	LOCAL	hDC:HDC
@@ -475,4 +475,36 @@ CoolMenu proc
 	ret
 
 CoolMenu endp
+
+RemovePath proc uses esi edi,lpFileName:DWORD,lpPath:DWORD
+
+	mov		edi,lpFileName
+	mov		esi,lpPath
+	jmp		@f
+  Nxt:
+	inc		esi
+	inc		edi
+  @@:
+	mov		al,[esi]
+	or		al,al
+	je		@f
+	mov		ah,[edi]
+	.if al>='a' && al<='z'
+		and		al,5Fh
+	.endif
+	.if ah>='a' && ah<='z'
+		and		ah,5Fh
+	.endif
+	cmp		al,ah
+	je		Nxt
+  @@:
+	.if byte ptr [edi]=='\'
+		inc		edi
+	.else
+		mov		edi,lpFileName
+	.endif
+	mov		eax,edi
+	ret
+
+RemovePath endp
 

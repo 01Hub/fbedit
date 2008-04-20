@@ -33,13 +33,16 @@ IDC_CHKSHOWTIP		equ 4001
 IDC_CHKGRIDLINE		equ 4009
 IDC_CHKSTYLEHEX		equ 4010
 IDC_CHKSIZETOFONT	equ 4012
-IDC_CHKNODEFINE		equ 4014
+;IDC_CHKNODEFINE		equ 4014
 IDC_CHKSIMPLE		equ 4015
 IDC_CHKIDC_STATIC	equ 4016
 IDC_CHKSTANDARD		equ 4017
 IDC_CHKBORLANDCOMP	equ 4018
 IDC_BTNFONT			equ 4019
 IDC_STCFONT			equ 4020
+IDC_RBNINCLUDE1		equ 4021
+IDC_RBNINCLUDE2		equ 4022
+IDC_RBNINCLUDE3		equ 4023
 
 IDD_TABOPT4			equ 2400
 IDC_EDTDLGSTART		equ 1001
@@ -342,7 +345,15 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKGRIDLINE,grdsize.line
 		invoke CheckDlgButton,hWin,IDC_CHKSTYLEHEX,grdsize.stylehex
 		invoke CheckDlgButton,hWin,IDC_CHKSIZETOFONT,grdsize.sizetofont
-		invoke CheckDlgButton,hWin,IDC_CHKNODEFINE,grdsize.nodefines
+		mov		eax,grdsize.defines
+		.if !eax
+			invoke CheckDlgButton,hWin,IDC_RBNINCLUDE1,TRUE
+		.elseif eax==1
+			invoke CheckDlgButton,hWin,IDC_RBNINCLUDE2,TRUE
+		.elseif eax==2
+			invoke CheckDlgButton,hWin,IDC_RBNINCLUDE3,TRUE
+		.endif
+;		invoke CheckDlgButton,hWin,IDC_CHKNODEFINE,grdsize.nodefines
 		invoke CheckDlgButton,hWin,IDC_CHKSIMPLE,grdsize.simple
 		invoke CheckDlgButton,hWin,IDC_CHKIDC_STATIC,grdsize.defstatic
 		invoke CheckDlgButton,hWin,IDC_CHKSTANDARD,grdsize.standardmnu
@@ -1025,8 +1036,18 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		grdsize.color,eax
 				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKSIZETOFONT
 				mov		grdsize.sizetofont,eax
-				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKNODEFINE
-				mov		grdsize.nodefines,eax
+				invoke IsDlgButtonChecked,hTabDlg[8],IDC_RBNINCLUDE1
+				.if eax
+					xor		eax,eax
+				.else
+					invoke IsDlgButtonChecked,hTabDlg[8],IDC_RBNINCLUDE2
+					.if eax
+						mov		eax,1
+					.else
+						mov		eax,2
+					.endif
+				.endif
+				mov		grdsize.defines,eax
 				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKSIMPLE
 				mov		grdsize.simple,eax
 				invoke IsDlgButtonChecked,hTabDlg[8],IDC_CHKIDC_STATIC
@@ -1095,7 +1116,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if grdsize.sizetofont
 					or		eax,DES_SIZETOFONT
 				.endif
-				.if grdsize.nodefines
+				.if grdsize.defines
 					or		eax,DES_NODEFINES
 				.endif
 				.if grdsize.simple

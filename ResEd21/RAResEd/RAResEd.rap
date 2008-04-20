@@ -140,20 +140,20 @@ Options=52
 5=0,0,0,0,1770
 3=0,0,0,0,178
 4=0,0,0,0,8
-1=0,0,718,485,45747
+1=0,0,718,485,35551
 7=0,0,0,0,42553
 6=0,0,0,0,2026
 9=0,0,0,0,58289
-2=0,0,584,498,7339
-8=0,0,0,0,2681
-10=0,0,0,0,8148
+2=0,0,584,498,7522
+8=0,0,0,0,5912
+10=0,0,0,0,12795
 16=0,0,0,0,1699
 15=0,0,0,0
 17=0,0,0,0,64100
-18=0,0,0,0,15986
+18=0,0,0,0,6140
 21=0,0,0,0,56009
 23=0,0,0,0
-24=0,0,0,0,6945
+24=0,0,0,0,372
 26=0,0,0,0,10019
 25=0,0,0,0
 22=0,0,0,0,3254
@@ -161,7 +161,7 @@ Options=52
 27=0,0,0,0
 29=0,0,0,0,11725
 30=0,0,0,0
-32=0,0,0,0,17036
+32=0,0,0,0,7379
 31=0,0,0,0
 34=0,0,0,0,16895
 33=0,0,0,0
@@ -182,43 +182,43 @@ Options=52
 
 
 [Find]
-1="szCtrl"
-2="Ctrl"
-3="hStatus"
-4="PRO_GETSYSTEMPATH"
-5="GM_ENDEDIT"
-6="RSM_SETSTYLEVAL"
-7="StyleManaDialogProc"
-8="PRP_FUN_EXSTYLE"
-9="srtstyledef"
-10="DEM_GETSHOWDIALOG"
+1="szResourceh"
+2="szCtrl"
+3="Ctrl"
+4="hStatus"
+5="PRO_GETSYSTEMPATH"
+6="GM_ENDEDIT"
+7="RSM_SETSTYLEVAL"
+8="StyleManaDialogProc"
+9="PRP_FUN_EXSTYLE"
+10="srtstyledef"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.0.0.102
-PV=2.0.0.102
+FV=2.0.0.103
+PV=2.0.0.103
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.0.0.102
+ProductVersion=2.0.0.103
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.0.0.102
+FileVersion=2.0.0.103
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=3
+MilestoneEveryCurrent=6
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -239,7 +239,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -328,7 +328,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 5=
 13=
 [PTimer]
-PTimer=298278712
+PTimer=319431993
 
 [Exports]
 1=ResEdInstall

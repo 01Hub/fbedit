@@ -227,7 +227,8 @@ PRO_GETTEXTFONT		equ PRO_BASE+20		;wParam=0, lParam=0
 PRO_SETSYSTEMPATH	equ PRO_BASE+21		;wParam=0, lParam=lpPath
 PRO_GETSYSTEMPATH	equ PRO_BASE+22		;wParam=0, lParam=0
 PRO_SETCUSTOMTYPE	equ PRO_BASE+23		;wParam=index, lParam=lpRARSTYPE
-PRO_GETCUSTOMTYPE	equ PRO_BASE+24		;wParam=indec, lParam=lpRARSTYPE
+PRO_GETCUSTOMTYPE	equ PRO_BASE+24		;wParam=index, lParam=lpRARSTYPE
+PRO_SETDEFINE		equ PRO_BASE+25		;wPatam=0, lParam=lpszName
 
 ;Project item types
 TPE_NAME			equ 1

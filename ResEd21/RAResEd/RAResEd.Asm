@@ -1562,6 +1562,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCurrentDirectory,offset szProjectPath
 		.endif
 		jmp		Ex
+	.elseif eax==PRO_SETDEFINE
+		invoke strcpy,addr szResourceh,lParam
+		jmp		Ex
 	.elseif eax==PRO_SHOWNAMES
 		invoke GetWindowLong,hPrj,0
 		.if eax

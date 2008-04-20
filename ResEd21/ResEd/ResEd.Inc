@@ -136,7 +136,7 @@ GRIDSIZE struct
 	line		dd ?
 	stylehex	dd ?
 	sizetofont	dd ?
-	nodefines	dd ?
+	defines		dd ?
 	simple		dd ?
 	defstatic	dd ?
 	standardmnu	dd ?
@@ -172,10 +172,14 @@ szWannaSave			db 'Want to save changes to',0Dh,0
 szOpenFileFail		db 'Cannot open the file',0Dh,0
 szSaveFileFail		db 'Cannot save the file',0Dh,0
 szMemFail			db 'Memory allocation failed!',0Dh,0
+szProjectTitle		db 'Open project file',0
+szIncludeTitle		db 'Open defines file',0
 
 szNewFile			db '(Untitled).rc',0
 szRCFilterString	db 'Resource (*.rc)',0,'*.rc',0,0
 szDefRCExt			db 'rc',0
+szHFilterString		db 'Include (*.h)',0,'*.h',0,0
+szDefHExt			db 'h',0
 szDLGFilterString	db 'RadASM dlg (*.dlg)',0,'*.dlg',0,0
 szDefDLGExt			db 'dlg',0
 
@@ -238,6 +242,7 @@ hContextMenuPopup	dd ?
 hIml				dd ?
 hResEd				dd ?
 ProjectFileName		db MAX_PATH dup(?)
+IncludeFileName		db MAX_PATH dup(?)
 ProjectPath			db MAX_PATH dup(?)
 SystemPath			db MAX_PATH dup(?)
 AppPath				db MAX_PATH dup(?)
