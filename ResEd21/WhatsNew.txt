@@ -35,6 +35,8 @@ o Added option to add custom resource types. You can also specify an editor for 
   Editor: notpad.exe
 o Added option to browse for defines file on project open.
 o Added mru projects to file menu.
+o Added ResEd help file.
+o Added Window Styles help file by Philippe Berthault
 
 2.0.0.0b - 2008.03.12
 ---------------------
