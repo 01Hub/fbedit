@@ -34,6 +34,8 @@ includelib Debug.lib
 
 WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
 WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
+SetToolMenu					PROTO
+SetHelpMenu					PROTO
 
 IDB_TOOLBAR					equ 100
 IDB_ARROW					equ 32101
@@ -45,6 +47,7 @@ IDC_RESED					equ 1002
 IDC_TBR1					equ 1004
 IDC_SBR1					equ 1005
 IDC_EDT1					equ 1007
+IDC_MRU						equ 1008
 
 IDR_MENU					equ 10000
 IDM_FILE_NEW_PROJECT		equ 10029
@@ -215,6 +218,7 @@ szBS				db '\',0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
+szMruProject		db 'MruProject#',0
 
 .data
 
@@ -259,3 +263,6 @@ mnubuff				db 8192 dup(?)
 hMenuBrushA			dd ?
 hMenuBrushB			dd ?
 hMnuFont			dd ?
+mruproject			db MAX_PATH*2*11 dup(?)
+tmpbuff				db 1024 dup(?)
+

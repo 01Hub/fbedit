@@ -1129,32 +1129,33 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		eax,DES_BORLAND
 				.endif
 				invoke SetWindowLong,hResEd,GWL_STYLE,eax
-				.if grdsize.standardmnu
-					; Standard menu
-					.if hMnuFont
-						invoke DeleteObject,hMenuBrushA
-						invoke DeleteObject,hMenuBrushB
-						invoke DeleteObject,hMnuFont
-						xor		eax,eax
-						mov		hMenuBrushA,eax
-						mov		hMenuBrushB,eax
-						mov		hMnuFont,eax
-						invoke LoadMenu,hInstance,IDR_MENU
-						push	eax
-						invoke SetMenu,hWnd,eax
-						invoke DestroyMenu,hMnu
-						pop		eax
-						mov		hMnu,eax
-						invoke DestroyMenu,hContextMenu
-						invoke LoadMenu,hInstance,IDR_CONTEXT
-						mov		hContextMenu,eax
-					.endif
-				.else
-					; Cool menu
-					.if !hMnuFont
-						invoke CoolMenu
-					.endif
-				.endif
+				invoke ResetMenu
+;				.if grdsize.standardmnu
+;					; Standard menu
+;					.if hMnuFont
+;						invoke DeleteObject,hMenuBrushA
+;						invoke DeleteObject,hMenuBrushB
+;						invoke DeleteObject,hMnuFont
+;						xor		eax,eax
+;						mov		hMenuBrushA,eax
+;						mov		hMenuBrushB,eax
+;						mov		hMnuFont,eax
+;						invoke LoadMenu,hInstance,IDR_MENU
+;						push	eax
+;						invoke SetMenu,hWnd,eax
+;						invoke DestroyMenu,hMnu
+;						pop		eax
+;						mov		hMnu,eax
+;						invoke DestroyMenu,hContextMenu
+;						invoke LoadMenu,hInstance,IDR_CONTEXT
+;						mov		hContextMenu,eax
+;					.endif
+;				.else
+;					; Cool menu
+;					.if !hMnuFont
+;						invoke CoolMenu
+;					.endif
+;				.endif
 				invoke GetDlgItemText,hTabDlg[20],IDC_EDTPROPATH,addr ProjectPath,sizeof ProjectPath
 				invoke lstrlen,addr ProjectPath
 				inc		eax

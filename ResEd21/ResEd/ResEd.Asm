@@ -80,6 +80,20 @@ start:
 	mov		winsize.ptstyle.y,eax
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
+	xor		ecx,ecx
+	mov		edx,offset mruproject
+	.while ecx<10
+		push	ecx
+		push	edx
+		push	edx
+		invoke MakeKey,addr szMruProject,ecx,addr tmpbuff
+		pop		edx
+		invoke RegSetValueEx,hReg,addr tmpbuff,0,REG_SZ,edx,MAX_PATH*2
+		pop		edx
+		pop		ecx
+		add		edx,MAX_PATH*2
+		inc		ecx
+	.endw
 	invoke RegCloseKey,hReg
 	invoke ResEdUninstall
 	invoke UnInstallRAEdit
@@ -153,6 +167,7 @@ LoadProjectFile proc lpFileName:DWORD
 		;invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
 		invoke RemovePath,addr IncludeFileName,addr buffer
 		invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
+		invoke AddMruProject
 	.else
 		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,FALSE
@@ -754,6 +769,30 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
+		;Set mru projects
+		mov		nInx,0
+		mov		ebx,offset mruproject
+		.while nInx<=9
+			invoke MakeKey,addr szMruProject,nInx,addr buffer1
+			mov		lpcbData,MAX_PATH*2
+			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,ebx,addr lpcbData
+			.if byte ptr [ebx]
+				mov		eax,nInx
+				shl		eax,8
+				or		eax,' 0&'
+				mov		dword ptr buffer,eax
+				invoke lstrcpy,offset tmpbuff,ebx
+				invoke GetStrItem,offset tmpbuff,addr buffer1
+				invoke PathCompactPathEx,addr buffer[3],addr buffer1,30,0
+				invoke GetSubMenu,hMnu,0
+				mov		edx,eax
+				mov		ecx,nInx
+				add		ecx,21000
+				invoke AppendMenu,edx,MF_STRING,ecx,addr buffer
+				add		ebx,MAX_PATH*2
+			.endif
+			inc		nInx
+		.endw
 		.if !grdsize.standardmnu
 			invoke CoolMenu
 		.endif
@@ -1172,10 +1211,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ExportDialog
 		.elseif eax==IDM_OPTION_TOOLS
 			invoke DialogBoxParam,hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,1
-			invoke SetToolMenu
+			invoke ResetMenu
 		.elseif eax==IDM_OPTION_HELP
 			invoke DialogBoxParam,hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,2
-			invoke SetHelpMenu
+			invoke ResetMenu
 		.elseif eax==IDM_OPTION_OPTIONS
 			invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
 		.elseif eax==IDM_HELP_ABOUT
@@ -1207,6 +1246,20 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke ParseCmnd,addr mnu.szcmnd,addr buffer,addr buffer1
 				invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL
+			.endif
+		.elseif eax>=21000 && eax<=21009
+			;MRU
+			sub		eax,21000
+			mov		ecx,MAX_PATH*2
+			mul		ecx
+			mov		ebx,offset mruproject
+			add		ebx,eax
+			invoke WantToSaveProject,offset ProjectFileName
+			.if !eax
+				invoke lstrcpy,addr buffer,ebx
+				invoke GetStrItem,addr buffer,offset ProjectFileName
+				invoke lstrcpy,offset IncludeFileName,addr buffer
+				invoke LoadProjectFile,addr ProjectFileName
 			.endif
 		.endif
 	.elseif eax==WM_SIZE

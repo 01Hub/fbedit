@@ -25,8 +25,10 @@ szMenuHelp			db 'Help#',0
 szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 					db 'All Files (*.*)',0,'*.*',0,0
 
-szDefKey			db 'Help#1',0
-DefHelp				MENU <'ResEd','\\ResEd.chm'>
+szDefKey1			db 'Help#1',0
+DefHelp1			MENU <'ResEd','\\ResEd.chm'>
+szDefKey2			db 'Help#2',0
+DefHelp2			MENU <'Window styles','\\Windows_Styles.chm'>
 
 .data?
 
@@ -42,10 +44,11 @@ WriteDefHelp proc
 	mov		mnu.szcap,0
 	mov		mnu.szcmnd,0
 	mov		lpcbData,sizeof mnu
-	invoke RegQueryValueEx,hReg,addr szDefKey,0,addr lpType,addr mnu,addr lpcbData
+	invoke RegQueryValueEx,hReg,addr szDefKey1,0,addr lpType,addr mnu,addr lpcbData
 	movzx	eax,mnu.szcap
 	.if !eax
-		invoke RegSetValueEx,hReg,addr szDefKey,0,REG_BINARY,addr DefHelp,sizeof DefHelp
+		invoke RegSetValueEx,hReg,addr szDefKey1,0,REG_BINARY,addr DefHelp1,sizeof DefHelp1
+		invoke RegSetValueEx,hReg,addr szDefKey2,0,REG_BINARY,addr DefHelp2,sizeof DefHelp2
 	.endif
 	ret
 

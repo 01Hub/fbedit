@@ -33,6 +33,8 @@ o Added option to add custom resource types. You can also specify an editor for 
   Value:  0
   Files:  Text (*.txt)|*.txt|All files (*.*)|*.*
   Editor: notpad.exe
+o Added option to browse for defines file on project open.
+o Added mru projects to file menu.
 
 2.0.0.0b - 2008.03.12
 ---------------------

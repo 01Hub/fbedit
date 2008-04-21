@@ -227,6 +227,47 @@ CopyPro:
 
 ParseCmnd endp
 
+GetStrItem proc	lpSource:DWORD,lpDest:DWORD
+
+	push	esi
+	push	edi
+	mov		esi,lpSource
+	mov		edi,lpDest
+  @@:
+	mov		al,[esi]
+	cmp		al,','
+	jz		@f
+	or		al,al
+	jz		@f
+	mov		[edi],al
+	inc		esi
+	inc		edi
+	jmp		@b
+  @@:
+	or		al,al
+	jz		@f
+	inc		esi
+	mov		al,0
+  @@:
+	mov		[edi],al
+	mov		eax,edi
+	sub		eax,lpDest
+	push	eax
+	mov		edi,lpSource
+  @@:
+	mov		al,[esi]
+	mov		[edi],al
+	inc		esi
+	inc		edi
+	or		al,al
+	jnz		@b
+	pop		eax
+	pop		edi
+	pop		esi
+	ret
+
+GetStrItem endp
+
 GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
@@ -450,6 +491,7 @@ CoolMenu proc
 	mov		hMenuBrushB,eax
 	invoke DeleteObject,hBmp
 	mov		nInx,0
+	mov		mnupos,0
   @@:
 	invoke GetSubMenu,hMnu,nInx
 	.if eax
@@ -475,6 +517,60 @@ CoolMenu proc
 	ret
 
 CoolMenu endp
+
+ResetMenu proc uses esi edi
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	; Standard menu
+	.if hMnuFont
+		invoke DeleteObject,hMenuBrushA
+		invoke DeleteObject,hMenuBrushB
+		invoke DeleteObject,hMnuFont
+		xor		eax,eax
+		mov		hMenuBrushA,eax
+		mov		hMenuBrushB,eax
+		mov		hMnuFont,eax
+	.endif
+	invoke LoadMenu,hInstance,IDR_MENU
+	push	eax
+	invoke SetMenu,hWnd,eax
+	invoke DestroyMenu,hMnu
+	pop		eax
+	mov		hMnu,eax
+	invoke DestroyMenu,hContextMenu
+	invoke LoadMenu,hInstance,IDR_CONTEXT
+	mov		hContextMenu,eax
+	invoke GetSubMenu,eax,0
+	mov		hContextMenuPopup,eax
+	invoke SetToolMenu
+	invoke SetHelpMenu
+	xor		edi,edi
+	mov		esi,offset mruproject
+	.while edi<=9
+		.if byte ptr [esi]
+			mov		eax,edi
+			shl		eax,8
+			or		eax,' 0&'
+			mov		dword ptr buffer,eax
+			invoke lstrcpy,offset tmpbuff,esi
+			invoke GetStrItem,offset tmpbuff,addr buffer1
+			invoke PathCompactPathEx,addr buffer[3],addr buffer1,30,0
+			invoke GetSubMenu,hMnu,0
+			mov		edx,eax
+			mov		ecx,edi
+			add		ecx,21000
+			invoke AppendMenu,edx,MF_STRING,ecx,addr buffer
+			add		esi,MAX_PATH*2
+		.endif
+		inc		edi
+	.endw
+	.if !grdsize.standardmnu
+		invoke CoolMenu
+	.endif
+	ret
+
+ResetMenu endp
 
 RemovePath proc uses esi edi,lpFileName:DWORD,lpPath:DWORD
 
@@ -508,3 +604,67 @@ RemovePath proc uses esi edi,lpFileName:DWORD,lpPath:DWORD
 
 RemovePath endp
 
+DelMruProject proc uses esi edi,nID:DWORD
+
+	mov		eax,nID
+	mov		ecx,MAX_PATH*2
+	mul		ecx
+	mov		edi,offset mruproject
+	add		edi,eax
+	mov		esi,edi
+	add		esi,MAX_PATH*2
+	.while esi<offset mruproject+MAX_PATH*2*11
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	ret
+
+DelMruProject endp
+
+FindMruProject proc uses esi
+
+	mov		esi,offset mruproject
+	xor		ecx,ecx
+	.while ecx<10
+		xor		edx,edx
+		.while byte ptr ProjectFileName[edx]
+			mov		al,ProjectFileName[edx]
+			mov		ah,[esi+edx]
+			.break .if al!=ah
+			inc		edx
+		.endw
+		mov		al,ProjectFileName[edx]
+		mov		ah,[esi+edx]
+		.break .if !al && ah==','
+		inc		ecx
+		add		esi,MAX_PATH*2
+	.endw
+	mov		eax,ecx
+	ret
+
+FindMruProject endp
+
+AddMruProject proc uses esi edi
+
+	invoke FindMruProject
+	.if eax<10
+		invoke DelMruProject,eax
+	.endif
+	mov		edi,offset mruproject+MAX_PATH*2*10-1
+	mov		esi,edi
+	sub		esi,MAX_PATH*2
+	.while esi>=offset mruproject
+		mov		al,[esi]
+		mov		[edi],al
+		dec		esi
+		dec		edi
+	.endw
+	invoke lstrcpy,offset mruproject,offset ProjectFileName
+	invoke lstrcat,offset mruproject,offset szComma
+	invoke lstrcat,offset mruproject,offset IncludeFileName
+	invoke ResetMenu
+	ret
+
+AddMruProject endp
