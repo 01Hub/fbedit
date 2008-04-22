@@ -99,12 +99,12 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,3389
-16=0,0,0,0,7697
+16=0,0,0,0,37685
 22=0,0,0,0,0
-23=0,0,0,0,27271
+23=0,0,0,0,13972
 24=0,0,0,0,601
 19=0,0,0,0,6573
-2=0,0,0,0,6979
+2=0,0,0,0,7128
 9=0,0,0,0,3033
 10=0,0,0,0,25961
 11=0,0,0,0,4796
@@ -125,16 +125,16 @@ CompanyName=
 0=
 
 [Find]
-1="CaseTab"
-2="STATE_NOBLOCK"
-3="REM_ISCHARPOS"
-4="SizeIt"
-5="REM_SETSPLIT"
-6="printhex"
-7="wm_close"
-8="wm_destroy"
-9="[ebx].EDIT.edtb.topyp"
-10="[ebx].EDIT.edta.topyp"
+1="REM_SETCOMMENTBLOCKS"
+2="CaseTab"
+3="STATE_NOBLOCK"
+4="REM_ISCHARPOS"
+5="SizeIt"
+6="REM_SETSPLIT"
+7="printhex"
+8="wm_close"
+9="wm_destroy"
+10="[ebx].EDIT.edtb.topyp"
 
 [AutoLoad]
 1=1
@@ -181,7 +181,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

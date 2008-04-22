@@ -636,7 +636,7 @@ PropListSetTxt proc uses esi,hWin:HWND
 		.elseif eax==PRP_STR_FILE
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MAX_PATH,0
 		.else
-			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,31,0
+			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,32-1,0
 		.endif
 		invoke SetWindowText,hPrpEdtDlgCld,esi
 	.endif

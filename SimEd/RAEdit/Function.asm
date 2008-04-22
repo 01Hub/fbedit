@@ -1993,6 +1993,15 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	.endif
 	ret
 
+SkipString:
+	mov		al,[esi+ecx+sizeof CHARS]
+	inc		ecx
+	.while ecx<[esi].CHARS.len
+		inc		ecx
+	  .break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
+	.endw
+	retn
+
 TestWrd:
 	push	ecx
 	push	edx
@@ -2046,8 +2055,17 @@ IsLineStart:
 	je		@b
 	cmp		al,VK_TAB
 	je		@b
+	movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+	movzx	eax,byte ptr [eax+offset CharTab]
+	cmp		eax,CT_CMNTCHAR
+	je		@f
 	.if [ebx].EDIT.ccmntblocks
 		.while ecx<[esi].CHARS.len
+			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+			movzx	eax,byte ptr [eax+offset CharTab]
+			.if eax==CT_STRING
+				call SkipString
+			.endif
 			call	TestWrd
 			inc		ecx
 		  .break .if !eax
@@ -2061,6 +2079,11 @@ IsLineStart:
 
 IsLineEnd:
 	.while ecx<[esi].CHARS.len
+		movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+		movzx	eax,byte ptr [eax+offset CharTab]
+		.if eax==CT_STRING
+			call SkipString
+		.endif
 		call	TestWrd
 		inc		ecx
 	  .break .if !eax

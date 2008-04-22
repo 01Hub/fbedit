@@ -3010,21 +3010,25 @@ DeConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 	mov		edi,lpDest
 	mov		esi,lpSource
 	xor		ecx,ecx
-	.while byte ptr [esi] && ecx<MaxCap-3
+	.while byte ptr [esi] && ecx<MaxCap-1
 		mov		al,[esi]
 		.if al==0Dh
+			.break .if ecx>MaxCap-3
 			mov		word ptr [edi],'r\'
 			add		edi,2
 			add		ecx,2
 		.elseif al==0Ah
+			.break .if ecx>MaxCap-3
 			mov		word ptr [edi],'n\'
 			add		edi,2
 			add		ecx,2
 		.elseif al==09h
+			.break .if ecx>MaxCap-3
 			mov		word ptr [edi],'t\'
 			add		edi,2
 			add		ecx,2
 		.elseif al==08h
+			.break .if ecx>MaxCap-3
 			mov		word ptr [edi],'a\'
 			add		edi,2
 			add		ecx,2
