@@ -18,7 +18,7 @@ MENU ends
 
 szOptTool			db 'Tools menu',0
 szMenuTool			db 'Tool#',0
-szFilterTools		db 'Commands (*.com, *.exe, *.cmd)',0,'*.com;*.exe;*.cmd',0
+szFilterTools		db 'Commands (*.com, *.exe, *.cmd, *.bat)',0,'*.com;*.exe;*.cmd;*.bat',0
 					db 'All Files (*.*)',0,'*.*',0,0
 szOptHelp			db 'Help menu',0
 szMenuHelp			db 'Help#',0
@@ -26,9 +26,9 @@ szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 					db 'All Files (*.*)',0,'*.*',0,0
 
 szDefKey1			db 'Help#1',0
-DefHelp1			MENU <'ResEd','\\ResEd.chm'>
+DefHelp1			MENU <'&ResEd','\\ResEd.chm'>
 szDefKey2			db 'Help#2',0
-DefHelp2			MENU <'Window styles','\\Windows_Styles.chm'>
+DefHelp2			MENU <'&Window styles','\\Windows_Styles.chm'>
 
 .data?
 

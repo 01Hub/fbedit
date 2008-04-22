@@ -33,7 +33,6 @@ IDC_CHKSHOWTIP		equ 4001
 IDC_CHKGRIDLINE		equ 4009
 IDC_CHKSTYLEHEX		equ 4010
 IDC_CHKSIZETOFONT	equ 4012
-;IDC_CHKNODEFINE		equ 4014
 IDC_CHKSIMPLE		equ 4015
 IDC_CHKIDC_STATIC	equ 4016
 IDC_CHKSTANDARD		equ 4017
@@ -353,7 +352,6 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==2
 			invoke CheckDlgButton,hWin,IDC_RBNINCLUDE3,TRUE
 		.endif
-;		invoke CheckDlgButton,hWin,IDC_CHKNODEFINE,grdsize.nodefines
 		invoke CheckDlgButton,hWin,IDC_CHKSIMPLE,grdsize.simple
 		invoke CheckDlgButton,hWin,IDC_CHKIDC_STATIC,grdsize.defstatic
 		invoke CheckDlgButton,hWin,IDC_CHKSTANDARD,grdsize.standardmnu
@@ -1130,32 +1128,6 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke SetWindowLong,hResEd,GWL_STYLE,eax
 				invoke ResetMenu
-;				.if grdsize.standardmnu
-;					; Standard menu
-;					.if hMnuFont
-;						invoke DeleteObject,hMenuBrushA
-;						invoke DeleteObject,hMenuBrushB
-;						invoke DeleteObject,hMnuFont
-;						xor		eax,eax
-;						mov		hMenuBrushA,eax
-;						mov		hMenuBrushB,eax
-;						mov		hMnuFont,eax
-;						invoke LoadMenu,hInstance,IDR_MENU
-;						push	eax
-;						invoke SetMenu,hWnd,eax
-;						invoke DestroyMenu,hMnu
-;						pop		eax
-;						mov		hMnu,eax
-;						invoke DestroyMenu,hContextMenu
-;						invoke LoadMenu,hInstance,IDR_CONTEXT
-;						mov		hContextMenu,eax
-;					.endif
-;				.else
-;					; Cool menu
-;					.if !hMnuFont
-;						invoke CoolMenu
-;					.endif
-;				.endif
 				invoke GetDlgItemText,hTabDlg[20],IDC_EDTPROPATH,addr ProjectPath,sizeof ProjectPath
 				invoke lstrlen,addr ProjectPath
 				inc		eax

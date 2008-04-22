@@ -370,6 +370,7 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 		mov		edi,offset mnubuff
 		add		edi,mnupos
 		mov		mii.dwItemData,edi
+		mov		[edi].MENUDATA.img,0
 		test	mii.fType,MFT_SEPARATOR
 		.if ZERO?
 			invoke SendMessage,hTbr,TB_COMMANDTOINDEX,mii.wID,0
@@ -402,14 +403,12 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 				inc		ecx
 				add		mnupos,ecx
 			.else
-				mov		[edi].MENUDATA.img,0
 				mov		[edi].MENUDATA.tpe,0
 				mov		word ptr [edi+sizeof MENUDATA],0
 				add		mnupos,sizeof MENUDATA+2
 			.endif
 		.else
 			; Separator
-			mov		[edi].MENUDATA.img,0
 			mov		[edi].MENUDATA.tpe,1
 			add		mnupos,sizeof MENUDATA
 		.endif
@@ -495,7 +494,6 @@ CoolMenu proc
   @@:
 	invoke GetSubMenu,hMnu,nInx
 	.if eax
-		mov		edx,eax
 		push	eax
 		invoke SetupMenu,eax
 		pop		edx
@@ -668,3 +666,11 @@ AddMruProject proc uses esi edi
 	ret
 
 AddMruProject endp
+
+ClearMruProject proc
+
+	invoke RtlZeroMemory,addr mruproject,sizeof mruproject
+	invoke ResetMenu
+	ret
+
+ClearMruProject endp

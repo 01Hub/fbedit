@@ -102,6 +102,7 @@ IDM_PROJECT_DLGSAVE			equ 10046
 IDM_OPTION_TOOLS			equ 10036
 IDM_OPTION_HELP				equ 10037
 IDM_OPTION_OPTIONS			equ 10038
+IDM_TOOLS_CLEAR				equ 10054
 IDM_HELP_ABOUT				equ 10101
 
 IDR_CONTEXT					equ 11000
@@ -177,6 +178,7 @@ szSaveFileFail		db 'Cannot save the file',0Dh,0
 szMemFail			db 'Memory allocation failed!',0Dh,0
 szProjectTitle		db 'Open project file',0
 szIncludeTitle		db 'Open defines file',0
+szClearMRU			db 'Clear MRU projects list?',0
 
 szNewFile			db '(Untitled).rc',0
 szRCFilterString	db 'Resource (*.rc)',0,'*.rc',0,0

@@ -88,7 +88,11 @@ start:
 		push	edx
 		invoke MakeKey,addr szMruProject,ecx,addr tmpbuff
 		pop		edx
-		invoke RegSetValueEx,hReg,addr tmpbuff,0,REG_SZ,edx,MAX_PATH*2
+		.if byte ptr [edx]
+			invoke RegSetValueEx,hReg,addr tmpbuff,0,REG_SZ,edx,MAX_PATH*2
+		.else
+			invoke RegDeleteValue,hReg,addr tmpbuff
+		.endif
 		pop		edx
 		pop		ecx
 		add		edx,MAX_PATH*2
@@ -1217,6 +1221,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ResetMenu
 		.elseif eax==IDM_OPTION_OPTIONS
 			invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
+		.elseif eax==IDM_TOOLS_CLEAR
+			invoke MessageBox,hWin,addr szClearMRU,addr szAppName,MB_OKCANCEL or MB_ICONQUESTION
+			.if eax==IDOK
+				invoke ClearMruProject
+			.endif
 		.elseif eax==IDM_HELP_ABOUT
 			invoke DialogBoxParam,hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 		.elseif eax>=20000 && eax<=20020
