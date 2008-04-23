@@ -175,6 +175,7 @@ Format,numerical_expression:Double,formatting_expression:String=""|String
 Frac,number:Double|Double
 Fre,value:Integer=0|UInteger
 FreeFile|Integer
+Get,#filenum:Integer,position:LongInt=?,data:Any,amount:Integer=1
 GetJoystick,id:Integer,ByRef buttons:Integer=0,ByRef a1:Single=0,ByRef a2:Single=0,ByRef a3:Single=0,ByRef a4:Single=0,ByRef a5:Single=0,ByRef a6:Single=0,ByRef a7:Single=0,ByRef a8:Single=0|Integer
 GetKey|Integer
 GetMouse,ByRef x:Integer,ByRef y:Integer,ByRef wheel:Integer=0,ByRef buttons:Integer=0,ByRef clip:Integer=0|Integer
@@ -277,6 +278,7 @@ SAdd,ByRef Str:String|Any Ptr
 SAdd,ByRef Str:WString|Any Ptr
 SAdd,ByRef Str:ZString|Any Ptr
 Screen,row:Integer,column:Integer,colorflag:Integer=0|Integer
+Screen,mode,depth=8,num_pages=1,flags=?,refresh_rate=?
 ScreenControl,what:Integer,[ByRef param:String]
 ScreenControl,what:Integer,[ByRef param1:Integer],[ByRef param2:Integer],[ByRef param3:Integer],[ByRef param4:Integer]
 ScreenCopy,frompage:Integer=-1,topage:Integer=-1
@@ -393,3 +395,10 @@ WStr,Str:WString Ptr|WString
 WString,count:Integer,ch:WString|WString
 WString,count:Integer,ch_code:Integer|WString
 Year,date_serial:Double|Integer
+;Put
+;Line
+;Circle
+;Point
+;PSet
+;Window
+;Draw String

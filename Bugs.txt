@@ -1,31 +1,90 @@
-Imortis
-I run FBEdit from my thumbdrive. If I open a file from the File Menu, the next time I open FbEdit on a different Computer (with different drive letters), It will give me several File Read errors.
-It is trying to read the recently used file list. If I open the file from the browser box on the right side of the screen, I don't have this problem. It only happens when I go in through the file menu.
+RESOURCE EDITOR
 
-Philippe
-1-It seem that FBEdit don't make any difference between structure and pointer to structure in the code completion.
-If i use Dim xxx as ITEMIDLIST i can access members with xxx.mkid or xxx->mkid.
-2-If i declare Dim xxx as LPITEMIDLIST i cannot acces members with code completion, but if i declare Dim xxx as ITEMIDLIST ptr then i can access members (with '.' or '->')
-3-To be able to access members with code completion (as in 1 & 2), i must drop/add the .bi to the project. The #include is not enought
-Anyway FreeBasic is great and FBEdit is the best IDE for it !!!
+** 1. If I create a new resource script for my program using "New"->"Resource file", I have to add at least one resource, anyway it won't compile
 
-KetilO
-o Parsing class typees:
-  - Private and Public ignored.
-o Functions with different signatures:
-  - Not supported in code tooltip.
-  - Creates duplicates in code complete list.
-o Using not supported.
-? Expanding macros while parsing.
+** 2. If I enter a text with a lenght of 255 chars in the multiline caption field, the last 2 chars get cutted off if I want to edit it using the one-line caption field. (The strange thing is - I can readd the 2 chars using the one-line captino field!)
 
-denise_amiga
-type the next code:
-Code:
-if a then print
-go back to "print" and press return
-Code:
-If a Then 
+** 3. If I change the type of a dialog from "Dialog" to "ModalFrame", the Icon in the upper-left corner of the dialog stays until I reopen the dialog (e.g. by opening IDD_DLG2 and then IDD_DLG1 again)
 
-EndIfprint
-insert the line after "endif"
 
+CODE COMPLETION / TOOLTIP WINDOW
+
+4. For Get, Put, Line, Circle, Point, PSet, Window and Draw String there is no tooltip window
+
+** 5. If I want to to add a comment to an "#include"-line, the tooltip window stays present even after the last doublequote (e.g. #include "windows.bi" ' This is a comment --- the tooltip window stays there even while I'm typing "This is a comment")
+
+** 6. "Function foo StdCall (bar As Integer) As Byte" - the tooltip window and the function list show "foo() Stdcall" instead of "foo(bar:Integer) Byte"
+
+** 7. If I'm typing too fast, it happens that the tooltip window stays present until I press ENTER, showing ALL keywords, functions, types, enums, and so on. Is there any way to get in this mode manually? I mean - I want to show the tooltip window all FB keywords or all Functions (e.g. by pressing CTRL+F5 or something like this)
+Press Ctrl+Space
+
+8. If I use this:
+
+Type Test
+x As Integer
+Enum
+XA
+XB
+End Enum
+y As Integer
+Enum
+YA
+YB
+End Enum
+End Type
+
+The tooltip window shows:
+
+x:Integer
+Enum:
+XA:
+XB:
+y:Integer
+Enum:
+YA:
+YB:
+
+Is this done purposefully?
+
+9. There are lots of problems with namespaces, espicially if I'm using several source files
+
+**10. " ''/' " is counted as beginning of a multi-line comment, but is actually isn't one.
+
+''/' Here comes a beep!
+Beep
+
+The program beeps, but FBEdit shows "Beep" green.
+
+11. FBEdit ignores "Asm..End Asm", it tries to highlight FB keywords anyway (and uses code completion!)
+
+Asm
+xor eax, eax <<< "xor" gets highlighted
+mov ebx, [esi + 4]
+sub ebx, 8 <<< "sub" gets highlighted
+End Asm
+
+12. Preprocessor lines are only highlighted right if there are no spaces between "#" and the keyword
+
+#ifdef _TEST_ <<< correct
+# print "Test!" <<< incorrect
+#endif <<< correct
+
+13. Code completion doesn't work correctly if the cursor isn't at the end of the word
+
+| = Cursor
+
+** Issue 1:
+MultiKey(SC_ESCAPE|
+MultiKey(SC_ES|CAPE
+after pressing ENTER:
+MultiKey(SC_ESCAPE|CAPE
+
+Issue 2:
+MultiKey(SC_ESC|
+Mu|ltiKey(SC_ESC
+The tooltip window still shows "SC_ESCAPE"
+
+
+I hope, I could help.
+
+greetings, Cherry

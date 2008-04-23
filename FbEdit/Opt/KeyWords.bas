@@ -13,6 +13,7 @@
 #Define IDC_LSTKWHOLD						4013
 #Define IDC_LSTKWACTIVE						4014
 #Define IDC_CHKRCFILE						4005
+#Define IDC_CHKASM							4064
 #Define IDC_LSTCOLORS						4015
 #Define IDC_EDTCODEFILES					4030
 #Define IDC_EDTTABSIZE						4018
@@ -489,6 +490,9 @@ Sub GetList(ByVal hWin As HWND)
 		x=x Or (1 Shl 25)
 	EndIf
 	If IsDlgButtonChecked(hWin,IDC_CHKRCFILE) Then
+		x=x Or (2 Shl 28)
+	EndIf
+	If IsDlgButtonChecked(hWin,IDC_CHKASM) Then
 		x=x Or (1 Shl 28)
 	EndIf
 	SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,oldsel,x)
@@ -515,7 +519,8 @@ Sub FillList(ByVal hWin As HWND)
 	x=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 	CheckDlgButton(hWin,IDC_CHKBOLD,((x Shr 24) And 1))
 	CheckDlgButton(hWin,IDC_CHKITALIC,((x Shr 25) And 1))
-	CheckDlgButton(hWin,IDC_CHKRCFILE,((x Shr 28) And 1))
+	CheckDlgButton(hWin,IDC_CHKRCFILE,((x Shr 28) And 2))
+	CheckDlgButton(hWin,IDC_CHKASM,((x Shr 28) And 1))
 	oldsel=nInx
 
 End Sub
@@ -808,6 +813,9 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKRCFILE
+							EnableWindow(hBtnApply,TRUE)
+							'
+						Case IDC_CHKASM
 							EnableWindow(hBtnApply,TRUE)
 							'
 						Case IDC_CHKEXPAND

@@ -434,7 +434,9 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SendMessage,hGrd,GM_GETCURSEL,0,0
-				invoke SendMessage,hGrd,GM_ENDEDIT,eax,FALSE
+				.if ax<4
+					invoke SendMessage,hGrd,GM_ENDEDIT,eax,FALSE
+				.endif
 				invoke SaveAccelEdit,hWin
 				.if fDialogChanged
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0

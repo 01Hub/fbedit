@@ -38,6 +38,10 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 		add		eax,[ebx].EDIT.fntinfo.fntht
 		mov		rect.bottom,eax
 		mov		edx,[esi].CHARS.state
+		test	edx,STATE_ALTHILITE
+		.if !ZERO?
+			inc		nGroup
+		.endif
 		mov		eax,edx
 		and		eax,STATE_COMMENT
 		mov		fCmnt,eax

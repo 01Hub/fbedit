@@ -913,6 +913,43 @@ IsLineNoBlock proc uses ebx,hMem:DWORD,nLine:DWORD
 
 IsLineNoBlock endp
 
+AltHiliteLine proc uses ebx,hMem:DWORD,nLine:DWORD,fAltHilite:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		add		eax,[ebx].EDIT.hLine
+		mov		eax,[eax].LINE.rpChars
+		add		eax,[ebx].EDIT.hChars
+		.if fAltHilite
+			or		[eax].CHARS.state,STATE_ALTHILITE
+		.else
+			and		[eax].CHARS.state,-1 xor STATE_ALTHILITE
+		.endif
+	.endif
+	ret
+
+AltHiliteLine endp
+
+IsLineAltHilite proc uses ebx,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		add		eax,[ebx].EDIT.hLine
+		mov		eax,[eax].LINE.rpChars
+		add		eax,[ebx].EDIT.hChars
+		mov		eax,[eax].CHARS.state
+		and		eax,STATE_ALTHILITE
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+IsLineAltHilite endp
+
 GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 	LOCAL	nLines:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -1253,6 +1290,9 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 			.if eax!=-1
 				mov		edx,nLine
 				add		nLine,eax
+				mov		eax,lpBlockDef
+				mov		eax,[eax].RABLOCKDEF.flag
+				and		eax,BD_ALTHILITE
 				.while edx<=nLine
 					inc		edx
 					mov		edi,edx
@@ -1263,8 +1303,33 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 						add		edi,[ebx].EDIT.hChars
 						and		[edi].CHARS.state,-1 xor (STATE_BMMASK or STATE_SEGMENTBLOCK or STATE_DIVIDERLINE)
 						or		[edi].CHARS.state,STATE_NOBLOCK
+						.if eax
+							or		[edi].CHARS.state,STATE_ALTHILITE
+						.endif
 					.endif
 				.endw
+			.endif
+		.else
+			mov		eax,lpBlockDef
+			test	[eax].RABLOCKDEF.flag,BD_ALTHILITE
+			.if !ZERO?
+				invoke GetBlock,ebx,nLine,lpBlockDef
+				.if eax!=-1
+					mov		edx,nLine
+					add		nLine,eax
+					.while edx<=nLine
+						inc		edx
+						mov		edi,edx
+						shl		edi,2
+						.if edi<esi
+							add		edi,[ebx].EDIT.hLine
+							mov		edi,[edi].LINE.rpChars
+							add		edi,[ebx].EDIT.hChars
+							;and		[edi].CHARS.state,-1 xor (STATE_BMMASK or STATE_SEGMENTBLOCK or STATE_DIVIDERLINE)
+							or		[edi].CHARS.state,STATE_ALTHILITE
+						.endif
+					.endw
+				.endif
 			.endif
 		.endif
 		jmp		@b

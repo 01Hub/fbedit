@@ -3729,14 +3729,15 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		invoke strcpyn,addr (DIALOG ptr [edi]).idname,addr buffer,MaxName
 		invoke strcpyn,addr (DIALOG ptr [edi]).caption,(TYPES ptr [esi]).lpcaption,MaxCap
 		.if !nType
-			mov		eax,DlgIDN
+;			mov		eax,DlgIDN
 			invoke GetFreeProjectitemID,TPE_DIALOG
 			mov		(DIALOG ptr [edi]).id,eax
 			;Set default DLGHEAD info
 			mov		esi,edi
 			sub		esi,sizeof DLGHEAD
 			assume esi:ptr DLGHEAD
-			mov		eax,CtrlIDN
+;			mov		eax,CtrlIDN
+			inc		eax
 			mov		[esi].ctlid,eax
 			mov		[esi].class,0
 			mov		[esi].menuid,0

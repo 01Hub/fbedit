@@ -1652,7 +1652,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										SendMessage(ah.hred,REM_SETSEGMENTBLOCK,nLastLine,FALSE)
 									EndIf
 								ElseIf bm=0 Then
-									If lret<>-1 Then
+									'If lret<>-1 Then
 										x=0
 										y=0
 										While x<32
@@ -1664,15 +1664,34 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 											EndIf
 											x=x+1
 										Wend
-										If y=0 Then
+										If y=0 And lret>=0 Then
 											' Set collapse bookmark
 											SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
 											SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
-										Else
+										ElseIf y Then
 											' Set no block flag
 											SendMessage(ah.hred,REM_SETNOBLOCKLINE,nLastLine,TRUE)
 										EndIf
-									EndIf
+										x=0
+										y=0
+										While x<32
+											If BD(x).lpszStart<>0 And (BD(x).flag And BD_ALTHILITE)<>0 Then
+												y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
+												If y Then
+													Exit While
+												EndIf
+											EndIf
+											x=x+1
+										Wend
+										If y=0 And lret>=0 Then
+											' Set collapse bookmark
+											SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
+											SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+										ElseIf y then
+											' Set althilite flag
+											SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
+										EndIf
+									'EndIf
 								EndIf
 								bm=0
 								If lpRASELCHANGE->Line>nLastLine Then

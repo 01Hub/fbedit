@@ -98,15 +98,15 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,3389
-16=0,0,0,0,37685
+1=0,0,0,0,7270
+16=0,0,0,0,23433
 22=0,0,0,0,0
-23=0,0,0,0,13972
+23=0,0,0,0,30438
 24=0,0,0,0,601
-19=0,0,0,0,6573
-2=0,0,0,0,7128
+19=0,0,0,0,7899
+2=0,0,0,0,6434
 9=0,0,0,0,3033
-10=0,0,0,0,25961
+10=0,0,0,0,898
 11=0,0,0,0,4796
 
 [BookMark]
@@ -181,7 +181,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

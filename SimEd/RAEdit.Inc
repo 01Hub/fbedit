@@ -131,6 +131,8 @@ REM_GETLOCK				equ REM_BASE+68		;wParam=0, lParam=0
 REM_GETWORDFROMPOS		equ REM_BASE+69		;wParam=cp, lParam=lpBuff
 REM_SETNOBLOCKLINE		equ REM_BASE+70		;wParam=Line, lParam=TRUE/FALSE
 REM_ISLINENOBLOCK		equ REM_BASE+71		;wParam=Line, lParam=0
+REM_SETALTHILITELINE	equ REM_BASE+72		;wParam=Line, lParam=TRUE/FALSE
+REM_ISLINEALTHILITE		equ REM_BASE+73		;wParam=Line, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -164,6 +166,7 @@ STATE_COMMENT			equ 0400h
 STATE_DIVIDERLINE		equ 0800h
 STATE_SEGMENTBLOCK		equ 1000h
 STATE_NOBLOCK			equ 2000h
+STATE_ALTHILITE			equ 4000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types
@@ -220,6 +223,7 @@ BD_LOOKAHEAD			equ 08h				;Look 500 lines ahead for the ending
 BD_SEGMENTBLOCK			equ 10h				;Segment block, collapse till next segmentblock
 BD_COMMENTBLOCK			equ 20h				;Comment block
 BD_NOBLOCK				equ 40h				;
+BD_ALTHILITE			equ 80h				;
 
 RABLOCKDEF struct
 	lpszStart	dd ?						;Block start

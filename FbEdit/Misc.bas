@@ -616,6 +616,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 		Case WM_CHAR
 			hPar=GetParent(hWin)
 			If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 Then
+				If wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
+					Return 0
+				endif
 				SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@prechrg))
 				lret=12345
 				If edtopt.autobrace Then
@@ -724,9 +727,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					Else
 						SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(LPARAM,@buff))
 					EndIf
-					chrg.cpMin=chrg.cpMax-Len(buff)
 					p=Cast(ZString Ptr,SendMessage(ah.hcc,CCM_GETITEM,SendMessage(ah.hcc,CCM_GETCURSEL,0,0),0))
 					If p Then
+						chrg.cpMin=chrg.cpMax-Len(buff)
+						SendMessage(hPar,REM_GETWORD,256,Cast(LPARAM,@buff))
+						chrg.cpMax=chrg.cpMin+Len(buff)
 						SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 						lstrcpy(@buff,p)
 						lret=InStr(buff,":")
@@ -751,7 +756,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ElseIf Asc(buff)=Asc(".") Then
 							Return 0
 						EndIf
-				ElseIf wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
+				ElseIf wParam=VK_SPACE Or wParam=VK_TAB Or wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
 					If lret=12345 Then
 						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 					EndIf
@@ -768,7 +773,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						tt.lpszType=StrPtr("Ppt")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
-						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And InStr(buff,"(")<>0 Then
+						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And (InStr(buff,"(")<>0 Or InStr(buff," ")<>0) Then
 							If ShowTooltip(hWin,@tt)=FALSE Then
 								If InStr(buff,".") Then
 									buff=Mid(buff,InStr(buff,".")+1)
@@ -807,8 +812,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)
 					EndIf
 					Return lret
-				ElseIf wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
-					Return 0
 				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
 					' Hide list and tooltip
 					ShowWindow(ah.htt,SW_HIDE)
@@ -875,8 +878,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
-							buff=Mid(buff,lret+1)
-							UpdateIncludeList()
+							If InStr(lret+1,buff,Chr(34)) Then
+								HideList()
+								Return 0
+							Else
+								buff=Mid(buff,lret+1)
+								UpdateIncludeList()
+							EndIf
 						ElseIf fincliblist Then
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
@@ -884,8 +892,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(LPARAM,@buff))
 							buff[lret]=NULL
 							lret=InStr(buff,Chr(34))
-							buff=Mid(buff,lret+1)
-							UpdateInclibList()
+							If InStr(lret+1,buff,Chr(34)) Then
+								HideList()
+								Return 0
+							Else
+								buff=Mid(buff,lret+1)
+								UpdateInclibList()
+							EndIf
 						Else
 							UpdateList(p)
 						EndIf
@@ -1044,6 +1057,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				Return lret
 			EndIf
 		Case WM_KEYDOWN
+			hPar=GetParent(hWin)
 			If IsWindowVisible(ah.hcc) Then
 				lp=(lParam Shr 16) And &H3FF
 				wp=wParam
@@ -1052,49 +1066,90 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					' Relay event to the code complete list
 					PostMessage(ah.hcc,uMsg,wParam,lParam)
 					Return 0
+				ElseIf (wp=&H27 And lp=&H14D) Or (wp=&H25 And lp=&H14B) Then
+					' Right, Left
+					lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					trng.chrg.cpMin=chrg.cpMin
+					trng.chrg.cpMax=chrg.cpMin+1
+					trng.lpstrText=@buff
+					SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+					If buff="," Or buff="(" Or buff=")" Then
+						HideList()
+					else
+						MoveList()
+					EndIf
+					Return lret
 				EndIf
-			ElseIf IsWindowVisible(ah.htt)<>0 And novr>1 Then
+			ElseIf IsWindowVisible(ah.htt)<>0 Then
 				lp=(lParam Shr 16) And &H3FF
 				wp=wParam
-				If wp=&H28 And (lp=&H150 Or lp=&H50) Then
+				If (wp=&H28 And (lp=&H150 Or lp=&H50)) And novr>1 Then
 					' Down
 					If nsel<novr-1 Then
 						nsel+=1
-						hPar=GetParent(hWin)
 						GoTo TT
 					EndIf
 					Return 0
-				ElseIf wp=&H26 And (lp=&H148 Or lp=&H48) Then
+				ElseIf wp=&H26 And (lp=&H148 Or lp=&H48) And novr>1 Then
 					' Up
 					If nsel Then
 						nsel-=1
-						hPar=GetParent(hWin)
 						GoTo TT
 					EndIf
 					Return 0
+				ElseIf (wp=&H27 And lp=&H14D) Then
+					' Right
+					lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					If chrg.cpMin Then
+						trng.chrg.cpMin=chrg.cpMin-1
+						trng.chrg.cpMax=chrg.cpMin
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If buff="," Or buff="(" Or buff=")" Then
+							GoTo TT
+						EndIf
+					EndIf
+					Return lret
+				ElseIf (wp=&H25 And lp=&H14B) Then
+					' Left
+					lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					If chrg.cpMin Then
+						trng.chrg.cpMin=chrg.cpMin
+						trng.chrg.cpMax=chrg.cpMin+1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If buff="," Or buff="(" Or buff=")" Then
+							GoTo TT
+						EndIf
+					EndIf
+					Return lret
 				EndIf
 			EndIf
 			If wParam=VK_INSERT Then
 				fTimer=1
 			ElseIf wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
-				' Show code complete list
-				ShowWindow(ah.htt,SW_HIDE)
-				HideList
-				hPar=GetParent(hWin)
-				SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-				isinp.nLine=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
-				isinp.nOwner=Cast(Integer,hPar)
-				If fProject Then
-					isinp.nOwner=GetProjectFileID(hPar)
+				If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 Then
+					' Show code complete list
+					ShowWindow(ah.htt,SW_HIDE)
+					HideList
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					isinp.nLine=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
+					isinp.nOwner=Cast(Integer,hPar)
+					If fProject Then
+						isinp.nOwner=GetProjectFileID(hPar)
+					EndIf
+					isinp.lpszType=StrPtr("pxyzo")
+					p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+					If p<>0 And (GetKeyState(VK_SHIFT) And &H80)<>0 Then
+						flocallist=TRUE
+					EndIf
+					UpdateList(p)
+					' Move code complete list
+					MoveList
 				EndIf
-				isinp.lpszType=StrPtr("pxyzo")
-				p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
-				If p<>0 And (GetKeyState(VK_SHIFT) And &H80)<>0 Then
-					flocallist=TRUE
-				EndIf
-				UpdateList(p)
-				' Move code complete list
-				MoveList
 				Return 0
 			EndIf
 		Case WM_CONTEXTMENU

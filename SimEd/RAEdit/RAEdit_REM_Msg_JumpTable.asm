@@ -1191,6 +1191,21 @@
 				mov		eax,TRUE
 			.endif
 			ret
+		align 4
+		_REM_SETALTHILITELINE:
+			;wParam=Line
+			;lParam=TRUE/FALSE
+			invoke AltHiliteLine,ebx,wParam,lParam
+			ret
+		align 4
+		_REM_ISLINEALTHILITE:
+			;wParam=Line
+			;lParam=0
+			invoke IsLineAltHilite,ebx,wParam
+			.if eax
+				mov		eax,TRUE
+			.endif
+			ret
 
 .data
 align 4
@@ -1267,5 +1282,7 @@ _REM_BASE \
 	dd _REM_GETWORDFROMPOS	;equ REM_BASE+69
 	dd _REM_SETNOBLOCKLINE	;equ REM_BASE+70
 	dd _REM_ISLINENOBLOCK	;equ REM_BASE+71
+	dd _REM_SETALTHILITELINE;equ REM_BASE+72
+	dd _REM_ISLINEALTHILITE	;equ REM_BASE+73
 .code
 align 4

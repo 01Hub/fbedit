@@ -35,6 +35,11 @@ nMnuInx					dd 0
 fMnuSel					dd FALSE
 MnuTabs					dd 135,140,145,150,155,160
 
+.data?
+
+lpOldHotProc			dd ?
+fHotFocus				dd ?
+
 .code
 
 MnuSaveDefine proc uses esi,lpName:DWORD,lpID:DWORD
@@ -646,6 +651,28 @@ MenuUpdate proc uses esi edi,hWin:HWND
 
 MenuUpdate endp
 
+HotProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
+	LOCAL	msg:MSG
+
+	mov		eax,uMsg
+	.if eax==WM_SETFOCUS
+		invoke CallWindowProc,lpOldHotProc,hWin,uMsg,wParam,lParam
+		mov		fHotFocus,TRUE
+		.while fHotFocus
+			invoke GetMessage,addr msg,NULL,0,0
+		  .BREAK .if !eax
+			invoke TranslateMessage,addr msg
+			invoke DispatchMessage,addr msg
+		.endw
+	.elseif eax==WM_KILLFOCUS
+		mov		fHotFocus,FALSE
+	.else
+		invoke CallWindowProc,lpOldHotProc,hWin,uMsg,wParam,lParam
+	.endif
+	ret
+
+HotProc endp
+
 DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 	LOCAL	hCtl:DWORD
 	LOCAL	buffer[64]:byte
@@ -720,6 +747,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		invoke PropertyList,-7
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		fDialogChanged,FALSE
+		invoke GetDlgItem,hWin,IDC_HOTMENU
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset HotProc
+		mov		lpOldHotProc,eax
     .elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 		;invoke EndDialog,hWin,wParam
@@ -1033,14 +1063,6 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		sub		rect.right,6
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
-;		invoke GetClientRect,hWin,addr rect
-;		invoke GetDlgItem,hWin,IDC_GROUPBOX
-;		mov		hCtl,eax
-;		mov		rect.left,3
-;		mov		rect.top,3
-;		mov		rect.right,319+3
-;		sub		rect.bottom,6
-;		invoke MoveWindow,hCtl,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDlgItem,hWin,IDC_LSTMNU
 		mov		hCtl,eax
