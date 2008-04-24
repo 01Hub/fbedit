@@ -12,6 +12,7 @@ GroupExpand=1
 3=Browse.Rc
 4=Browse.dlg
 5=RAFile.Inc
+6=RACodeComplete.Inc
 
 
 [MakeFiles]
@@ -62,6 +63,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 3=3
 4=3
 5=2
+6=2
 
 [VersionControl]
 Settings=1246
@@ -124,11 +126,13 @@ ProductVer4Range=0
 
 [Size]
 4=0,0,0,0
-2=0,0,0,0,205
-1=0,0,0,0,198
+2=0,0,0,0,735
+1=0,0,0,0,1273
 5=0,0,0,0,597
+6=0,0,0,0,666
 [PTimer]
 PTimer=871516
 [Collapse]
 2=
 1=
+6=

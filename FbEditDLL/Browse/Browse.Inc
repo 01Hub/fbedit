@@ -11,6 +11,7 @@ includelib Comctl32.lib
 includelib shell32.lib
 
 include RAFile.Inc
+include RACodeComplete.inc
 
 DlgProc			PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 
@@ -25,9 +26,16 @@ szDll				db 'FbEdit.dll',0
 Path				db 'C:\',0
 Filter				db '.asm.inc.rc.txt.ini.exe.bat.',0
 
+szTestApi			db 'GdiComment',0
+szTestParam			db 'hdc,cbSize,lpData',0
+szTestRetType		db ':Dword',0
+szTestDesc			db 'This is a test description',0
+ApiFile				db 'Words.txt',0
+
 .data?
 
 hInstance			dd ?
 hDll				dd ?
+FileData			db 32768 dup(?)
 
 ;#########################################################################

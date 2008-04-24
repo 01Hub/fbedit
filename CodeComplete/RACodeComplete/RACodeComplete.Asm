@@ -32,14 +32,15 @@ InstallRACodeComplete proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		wc.lpfnWndProc,offset CodeCompleteProc
 	mov		eax,NULL
 	mov		wc.cbClsExtra,eax
-	mov		wc.cbWndExtra,4
-	push	hInst
-	pop		wc.hInstance
 	mov		wc.hbrBackground,eax
 	mov		wc.lpszMenuName,eax
-	mov		wc.lpszClassName,offset szCCLBClassName
 	mov		wc.hIcon,eax
 	mov		wc.hIconSm,eax
+	mov		wc.cbWndExtra,4
+	mov		eax,hInst
+	mov		wc.hInstance,eax
+	mov		hInstance,eax
+	mov		wc.lpszClassName,offset szCCLBClassName
 	invoke LoadCursor,NULL,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
@@ -263,10 +264,6 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].RACC.fredraw,TRUE
 		mov		[ebx].RACC.itemheight,16
 		;Create imagelist for property types
-		.if !hInstance
-			invoke GetModuleHandle,NULL
-			mov		hInstance,eax
-		.endif
 		invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR8,16,0
 		mov		[ebx].RACC.himl,eax
 		invoke LoadBitmap,hInstance,IDB_TYPES
