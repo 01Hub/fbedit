@@ -13,16 +13,15 @@ include ..\RAFile.inc
 
 .code
 
-InstallFileBrowser proc public hInst:HINSTANCE
+InstallFileBrowser proc public hInst:HINSTANCE,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
 	;Create a windowclass for the user control
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS; or CS_PARENTDC or CS_DBLCLKS
-ELSE
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW; or CS_PARENTDC or CS_DBLCLKS
-ENDIF
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ControlProc
 	mov		eax,hInst
 	mov		hInstance,eax

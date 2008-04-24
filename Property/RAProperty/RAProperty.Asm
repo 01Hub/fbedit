@@ -1,6 +1,7 @@
 .386
 .model flat,stdcall
 option casemap:none
+option proc:private
 
 include Data.inc
 include WordList.asm
@@ -9,17 +10,21 @@ include Sort.asm
 
 .code
 
-CreateClass proc
+InstallRAProperty proc public hInst:HINSTANCE,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
 	;Create a windowclass for the user control
 	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS or CS_PARENTDC or CS_DBLCLKS
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_DBLCLKS
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_DBLCLKS or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ControlProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,4
-	push	hInstance
-	pop		wc.hInstance
+	mov		eax,hInst
+	mov		wc.hInstance,eax
+	mov		hInstance,eax
 	mov		wc.hbrBackground,COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset szClassName
@@ -31,7 +36,13 @@ CreateClass proc
 	invoke RegisterClassEx,addr wc
 	ret
 
-CreateClass endp
+InstallRAProperty endp
+
+UnInstallRAProperty proc public
+
+	ret
+
+UnInstallRAProperty endp
 
 ;--------------------------------------------------------------------------------
 
@@ -1088,6 +1099,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		.if [edx].NMHDR.code==TTN_NEEDTEXT
 			mov		edx,[edx].NMHDR.idFrom
+			add		edx,10
 			invoke LoadString,hInstance,edx,addr buffer,sizeof buffer
 			lea		eax,buffer
 			mov		edx,lParam
@@ -1201,5 +1213,8 @@ SkipToComma:
 
 ControlProc endp
 
-include Dll.asm
+IFDEF DLL
+	include Dll.asm
+ENDIF
 
+end

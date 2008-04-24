@@ -1,0 +1,19 @@
+;Filebrowser
+300 BITMAP					"Res/FileDir.bmp"
+STRINGTABLE DISCARDABLE
+BEGIN
+  1							"Up One Level"
+  2							"File Filter"
+END
+;Property
+101 BITMAP					"Res/ToolBar.bmp"
+STRINGTABLE DISCARDABLE
+BEGIN
+  11						"Current file"
+  12						"Open files"
+  13						"Selected project file"
+  14						"All project files"
+  15						"Refresh"
+END
+;Code complete
+102 BITMAP					"Res/Types.bmp"

@@ -1,4 +1,4 @@
 #define IDB_BMP							100
-#define IDB_TYPES						101
+#define IDB_TYPES						102
 IDB_BMP					BITMAP    DISCARDABLE "Res/ToolBox.bmp"
 IDB_TYPES				BITMAP    DISCARDABLE "Res/Types.bmp"

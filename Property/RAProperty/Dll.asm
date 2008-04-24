@@ -1,3 +1,5 @@
+ENDIF
+
 ;In RadASM.ini section [CustCtrl], x=RAProperty.dll,y
 ;x is next free number.
 ;y is number of controls in the dll. In this case there is only one control.
@@ -55,7 +57,19 @@ ccdefex					CCDEFEX <876,offset szToolTip,0,offset szCap,offset szName,offset sz
 
 .code
 
-GetDefEx proc nInx:DWORD
+DllEntry proc public hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
+
+	.if reason==DLL_PROCESS_ATTACH
+	    push    hInst
+	    pop     hInstance
+		invoke InstallRAProperty,hInst,TRUE
+	.endif
+    mov     eax,TRUE
+    ret
+
+DllEntry Endp
+
+GetDefEx proc public nInx:DWORD
 
 	mov		eax,nInx
 	.if !eax
@@ -70,18 +84,5 @@ GetDefEx proc nInx:DWORD
 	ret
 
 GetDefEx endp
-
-
-DllEntry proc hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
-
-	.if reason==DLL_PROCESS_ATTACH
-	    push    hInst
-	    pop     hInstance
-		invoke CreateClass
-	.endif
-    mov     eax,TRUE
-    ret
-
-DllEntry Endp
 
 End DllEntry

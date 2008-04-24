@@ -77,7 +77,7 @@ DllEntry proc public hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
 	.if reason==DLL_PROCESS_ATTACH
 	    push    hInst
 	    pop     hInstance
-		invoke InstallRACodeComplete,hInst
+		invoke InstallRACodeComplete,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 	.endif
     mov     eax,TRUE

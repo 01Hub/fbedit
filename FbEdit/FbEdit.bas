@@ -2156,12 +2156,14 @@ Dim CharTab As Function() As Any Ptr
 	If hRAEditDll Then
 		hRAHexEdDll=LoadLibrary("RAHexEd.dll")
 		If hRAHexEdDll Then
-			hRAFileDll=LoadLibrary("RAFile.dll")
-			If hRAFileDll Then
-				hRAPropertyDll=LoadLibrary("RAProperty.dll")
-				If hRAPropertyDll Then
-					hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
-					If hRACodeCompleteDll Then
+			hFbEditDll=LoadLibrary("FbEdit.dll")
+			If hFbEditDll then
+			'hRAFileDll=LoadLibrary("RAFile.dll")
+			'If hRAFileDll Then
+			'	hRAPropertyDll=LoadLibrary("RAProperty.dll")
+			'	If hRAPropertyDll Then
+			'		hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
+			'		If hRACodeCompleteDll Then
 						hRAResEdDll=LoadLibrary("RAResEd.dll")
 						If hRAResEdDll Then
 							hRAGridDll=LoadLibrary("RAGrid.dll")
@@ -2179,17 +2181,19 @@ Dim CharTab As Function() As Any Ptr
 						Else
 							MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 						EndIf
-						FreeLibrary(hRACodeCompleteDll)
-					Else
-						MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
-					EndIf
-					FreeLibrary(hRAPropertyDll)
-				Else
-					MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
-				EndIf
-				FreeLibrary(hRAFileDll)
+				'		FreeLibrary(hRACodeCompleteDll)
+				'	Else
+				'		MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				'	EndIf
+				'	FreeLibrary(hRAPropertyDll)
+				'Else
+				'	MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAProperty.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				'EndIf
+				'FreeLibrary(hRAFileDll)
+				FreeLibrary(hFbEditDll)
 			Else
-				MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				'MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAFile.dll",@szAppName,MB_OK Or MB_ICONERROR)
+				MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " FbEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
 			EndIf
 		Else
 			MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAHexEd.dll",@szAppName,MB_OK Or MB_ICONERROR)

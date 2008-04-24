@@ -5,7 +5,7 @@ Description=File Browser custom control
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Res.rc=1
 Ver.rc=1
 
@@ -96,11 +96,11 @@ Group=Added files,Assembly,Resources,Misc,Modules
 8=3
 
 [Size]
-2=0,0,672,551,566
-6=0,0,672,551,755
-1=13,41,809,677,5981
+2=0,0,672,551,20
+6=0,0,672,551,1032
+1=13,41,809,677,877
 4=0,0,0,0,0
-7=176,155,672,551,2656
+7=176,155,672,551,2506
 3=0,0,0,0,16
 
 [VersionControl]
@@ -113,7 +113,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=11
@@ -174,11 +174,15 @@ ProductVer4Range=0
 9="a\"
 10="MF_RIGHTJUSTIFY"
 [Collapse]
-7=0
+7=
 1=,,
 2=
+4=
+6=
 [PTimer]
 PTimer=6031126
 [Exports]
 1=GetDef
 2=GetDefEx
+[AutoLoad]
+1=1

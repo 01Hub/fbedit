@@ -67,7 +67,7 @@ ccdefex					CCDEFEX <300,offset szToolTip,0,offset szCap,offset szName,offset sz
 DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 
 	.if reason==DLL_PROCESS_ATTACH
-		invoke InstallFileBrowser,hInst
+		invoke InstallFileBrowser,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 		invoke UnInstallFileBrowser
 	.endif

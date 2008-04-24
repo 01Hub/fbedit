@@ -25,6 +25,10 @@ FBNOTIFY ends
 FBSTYLE_FLATTOOLBAR	equ 1
 FBSTYLE_DIVIDERLINE	equ 2
 
-.const
+.data
 
-szFBClassName		db 'RAFileBrowser',0
+IFDEF DLL
+	szFBClassName		db 'RAFileBrowser',0
+ELSE
+	szFBClassName		db 'MyRAFileBrowser',0
+ENDIF

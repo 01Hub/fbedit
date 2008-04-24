@@ -1,8 +1,8 @@
 STRINGTABLE DISCARDABLE
 BEGIN
-  1							"Current file"
-  2							"Open files"
-  3							"Selected project file"
-  4							"All project files"
-  5							"Refresh"
+  11						"Current file"
+  12						"Open files"
+  13						"Selected project file"
+  14						"All project files"
+  15						"Refresh"
 END

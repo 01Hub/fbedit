@@ -20,6 +20,7 @@ Debug=0
 10=Parse.asm
 11=RAProperty_Msg_JumpTable.asm
 12=Sort.asm
+13=
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -30,7 +31,7 @@ Debug=0
 6=RAProperty.def
 7=..\RAProperty.dll
 8=RAProperty.txt
-9=RAProperty.lib
+9=..\Lib\RAProperty.lib
 10=RAProperty.mak
 11=RAProperty.hla
 12=RAProperty.com
@@ -41,7 +42,7 @@ Debug=0
 [MakeDef]
 Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
-2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+2=3,O,$B\ML.EXE /DDLL /c /coff /Cp /nologo /I"$I",2
 3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -49,7 +50,7 @@ Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
-13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
+13=9,O,$B\LIB.EXE /VERBOSE /SUBSYSTEM:WINDOWS /OUT:"$9",3
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
@@ -58,11 +59,11 @@ Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
 1=IDB_BMP,100,0,Res\ToolBox.bmp
 2=IDB_TRV,101,0,Res\Toolbar.bmp
 [StringTable]
-1=",1,Current file"
-2=",2,Open files"
-3=",3,Selected project file"
-4=",4,All project files"
-5=",5,Refresh"
+1=",11,Current file"
+2=",12,Open files"
+3=",13,Selected project file"
+4=",14,All project files"
+5=",15,Refresh"
 [VerInf]
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules,Include
@@ -78,6 +79,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 10=2
 11=2
 12=2
+13=
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -88,7 +90,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -131,21 +133,23 @@ ProductVer4Range=0
 10=,,,,,,
 11=,
 12=
+13=
 [Size]
 2=0,0,699,490,1709
 <<<<<<< .mine
-1=0,0,699,490,13320
+1=0,0,699,490,631
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
-8=0,0,0,0,1641
-7=0,0,0,0,2213
+8=0,0,0,0,1542
+7=0,0,0,0,1810
 9=0,0,0,0,3073
 10=0,0,589,494,8947
 11=0,0,746,498,1506
 12=0,0,0,0,2850
+13=0,0,0,0,0
 [BookMark]
 0=
 1=

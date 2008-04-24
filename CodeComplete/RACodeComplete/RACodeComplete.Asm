@@ -16,20 +16,19 @@ include ..\RACodeComplete.inc
 include Data.inc
 include Sort.asm
 
-IDB_TYPES		equ 101
+IDB_TYPES		equ 102
 
 .code
 
-InstallRACodeComplete proc public hInst:HINSTANCE
+InstallRACodeComplete proc public hInst:HINSTANCE,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
 	;Create a windowclass for the listbox control
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS or CS_PARENTDC or CS_DBLCLKS
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_DBLCLKS
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_DBLCLKS or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset CodeCompleteProc
 	mov		eax,NULL
 	mov		wc.cbClsExtra,eax
@@ -46,11 +45,10 @@ ENDIF
 	invoke RegisterClassEx,addr wc
 
 	;Create a windowclass for the tooltip control
-IFDEF DLL
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS or CS_PARENTDC
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ToolTipProc
 	mov		wc.lpszClassName,offset szCCTTClassName
 	mov		wc.hCursor,NULL
@@ -58,6 +56,12 @@ ENDIF
 	ret
 
 InstallRACodeComplete endp
+
+UnInstallRACodeComplete proc public
+
+	ret
+
+UnInstallRACodeComplete endp
 
 ;--------------------------------------------------------------------------------
 

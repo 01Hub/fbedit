@@ -60,10 +60,5 @@ TTITEM ends
 
 .const
 
-IFDEF DLL
-	szCCLBClassName	db 'RACodeComplete',0
-	szCCTTClassName	db 'RAToolTip',0
-ELSE
-	szCCLBClassName	db 'MyRACodeComplete',0
-	szCCTTClassName	db 'MyRAToolTip',0
-ENDIF
+szCCLBClassName	db 'RACodeComplete',0
+szCCTTClassName	db 'RAToolTip',0
