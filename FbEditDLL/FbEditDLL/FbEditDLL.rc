@@ -17,3 +17,5 @@ BEGIN
 END
 ;Code complete
 102 BITMAP					"Res/Types.bmp"
+;Grid
+101 ICON					"Res/SplitV.cur"

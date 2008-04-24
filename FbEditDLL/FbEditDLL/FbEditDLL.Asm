@@ -13,6 +13,7 @@ DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 		invoke InstallRACodeComplete,hInst,TRUE
 		invoke InstallFileBrowser,hInst,TRUE
 		invoke InstallRAProperty,hInst,TRUE
+		invoke GridInstall,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 		invoke UnInstallRACodeComplete
 		invoke UnInstallFileBrowser

@@ -5,6 +5,7 @@ InstallFileBrowser			PROTO :DWORD,:DWORD
 UnInstallFileBrowser		PROTO
 InstallRAProperty			PROTO :DWORD,:DWORD
 UnInstallRAProperty			PROTO
+GridInstall					PROTO :DWORD,:DWORD
 
 include windows.inc
 include Comctl32.inc
@@ -20,6 +21,7 @@ includelib gdi32.lib
 includelib Lib\RACodeComplete.lib
 includelib Lib\RAFile.lib
 includelib Lib\RAProperty.lib
+includelib Lib\RAGrid.lib
 
 ;VKim Debug
 include masm32.inc

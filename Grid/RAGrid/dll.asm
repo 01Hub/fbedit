@@ -8,7 +8,7 @@ ENDIF
 ;x=RAGrid.dll,1
 ;Copy RAGrid.dll to c:\windows\system
 ;
-GetDef proc nInx:DWORD
+GetDef proc public nInx:DWORD
 
 	mov		eax,nInx
 	.if !eax
@@ -25,7 +25,7 @@ GetDef proc nInx:DWORD
 
 GetDef endp
 
-GetDefEx proc nInx:DWORD
+GetDefEx proc public nInx:DWORD
 
 	mov		eax,nInx
 	.if !eax
@@ -41,10 +41,10 @@ GetDefEx proc nInx:DWORD
 
 GetDefEx endp
 
-DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
+DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 
 	.if reason==DLL_PROCESS_ATTACH
-		invoke GridInstall,hInst
+		invoke GridInstall,hInst,TRUE
 		;prepare common control structure
 		mov		iccex.dwSize,sizeof INITCOMMONCONTROLSEX
 		mov		iccex.dwICC,ICC_DATE_CLASSES or ICC_INTERNET_CLASSES or ICC_HOTKEY_CLASS

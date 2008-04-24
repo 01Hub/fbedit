@@ -61,9 +61,9 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=
 [Size]
 3=0,0,0,0,8
-1=0,0,0,0,383
-2=0,0,0,0,75
-4=0,0,0,0,384
+1=0,0,0,0,334
+2=0,0,0,0,248
+4=0,0,0,0,383
 [VersionControl]
 Settings=1246
 Milestones=129

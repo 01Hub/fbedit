@@ -7,6 +7,7 @@
 .386
 .model flat, stdcall
 option casemap :none   ; case sensitive
+option proc:private
 
 include Data.inc
 include ..\RAGrid.inc
@@ -3307,17 +3308,16 @@ RAGridProc endp
 
 ;--------------------------------------------------------------------------------
 ;Create a windowclass for the user control
-GridInstall proc hInst:DWORD
+GridInstall proc public hInst:DWORD,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
 	push    hInst
 	pop     hInstance
 	mov		wc.cbSize,sizeof WNDCLASSEX
-	IFDEF DLL
-		mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-	ELSE
-		mov		wc.style,CS_HREDRAW or CS_VREDRAW
-	ENDIF
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset RAGridProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,4		;Holds memory handle

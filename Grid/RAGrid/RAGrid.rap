@@ -78,8 +78,8 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.5
 CompanyName=
 [Size]
-2=0,0,0,0,3846
-1=0,0,0,0,41595
+2=0,0,0,0,35
+1=0,0,0,0,83503
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,470
@@ -88,7 +88,7 @@ CompanyName=
 6=0,0,0,0,42
 10=0,0,0,0,5431
 12=0,0,0,0,6
-11=0,0,0,0,1303
+11=0,0,0,0,1233
 [Version-Inc]
 Options=52
 [Colref]
@@ -130,13 +130,13 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=3
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -188,6 +188,8 @@ Group=Added files,Assembly,Resources,Misc,Modules
 7=
 12=
 6=
+4=
+3=
 [PTimer]
 PTimer=5737219
 [Exports]
