@@ -32,6 +32,7 @@ szTestParam			db 'hdc,cbSize,lpData',0
 szTestRetType		db ':Dword',0
 szTestDesc			db 'This is a test description',0
 ApiFile				db 'Words.txt',0
+szName				db 'Name',0
 
 .data?
 

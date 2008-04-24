@@ -65,7 +65,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=3
 5=2
 6=2
-7=1
+7=2
 
 [VersionControl]
 Settings=1246
@@ -77,7 +77,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=11
@@ -128,13 +128,13 @@ ProductVer4Range=0
 
 [Size]
 4=0,0,0,0
-2=0,0,0,0,262
-1=0,0,0,0,1273
+2=0,0,0,0,706
+1=0,0,0,0,1974
 5=0,0,0,0,597
 6=0,0,0,0,666
 7=0,0,0,0,0
 [PTimer]
-PTimer=871516
+PTimer=2832047
 [Collapse]
 2=
 1=

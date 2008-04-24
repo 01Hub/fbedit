@@ -376,12 +376,12 @@ Dim Shared hInstance As HINSTANCE
 ' Custom controls used by FbEdit
 Dim hRichEditDll As HMODULE
 Dim hRAEditDll As HMODULE
-Dim hRAHexEdDll As HMODULE
+'Dim hRAHexEdDll As HMODULE
 Dim hRAResEdDll As HMODULE
-Dim hRAGridDll As HMODULE
+'Dim hRAGridDll As HMODULE
 'Dim hRAFileDll As HMODULE
-Dim hRAPropertyDll As HMODULE
-Dim hRACodeCompleteDll As HMODULE
+'Dim hRAPropertyDll As HMODULE
+'Dim hRACodeCompleteDll As HMODULE
 
 Dim hFbEditDll As HMODULE
 ' Addins

@@ -83,7 +83,7 @@ DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 	.if reason==DLL_PROCESS_ATTACH
 		mov		eax,hInst
 		mov		hInstance,eax
-		invoke RAHexEdInstall,eax
+		invoke RAHexEdInstall,eax,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 		invoke RAHexEdUnInstall
 	.endif

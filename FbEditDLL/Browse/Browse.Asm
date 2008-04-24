@@ -27,6 +27,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nBytes:DWORD
 	LOCAL	ccCol:CC_COLOR
 	LOCAL	ttCol:TT_COLOR
+	LOCAL	col:COLUMN
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -57,6 +58,17 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tti.novr,3
 		mov		tti.nsel,1
 		invoke SendDlgItemMessage,hWin,1005,TTM_SETITEM,0,addr tti
+		;Text column
+		mov		col.colwt,130
+		mov		col.lpszhdrtext,offset szName
+		mov		col.halign,GA_ALIGN_LEFT
+		mov		col.calign,GA_ALIGN_LEFT
+		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctextmax,31
+		mov		col.lpszformat,0
+		mov		col.himl,0
+		invoke SendDlgItemMessage,hWin,1006,GM_ADDCOL,0,addr col
+
 		pop		ebx
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0

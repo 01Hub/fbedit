@@ -7,6 +7,9 @@ InstallRAProperty			PROTO :DWORD,:DWORD
 UnInstallRAProperty			PROTO
 GridInstall					PROTO :DWORD,:DWORD
 
+RAHexEdInstall				PROTO C :DWORD,:DWORD
+RAHexEdUnInstall			PROTO
+
 include windows.inc
 include Comctl32.inc
 include user32.inc
@@ -22,6 +25,7 @@ includelib Lib\RACodeComplete.lib
 includelib Lib\RAFile.lib
 includelib Lib\RAProperty.lib
 includelib Lib\RAGrid.lib
+includelib Lib\RAHexEd.lib
 
 ;VKim Debug
 include masm32.inc

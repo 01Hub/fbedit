@@ -18,4 +18,9 @@ END
 ;Code complete
 102 BITMAP					"Res/Types.bmp"
 ;Grid
-101 ICON					"Res/SplitV.cur"
+102 CURSOR					"Res/SplitV.cur"
+;Hex edit
+;102 BITMAP					"Res/Bookmark.bmp"
+104 BITMAP					"Res/Linenumber.bmp"
+101 CURSOR					"Res/SplitH.cur"
+103 CURSOR					"Res/Select.cur"
