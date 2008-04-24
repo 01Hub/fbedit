@@ -6797,7 +6797,7 @@ UpdateRAEdit proc uses ebx esi edi,hMem:DWORD
 
 UpdateRAEdit endp
 
-CloseDialog proc
+CloseDialog proc uses esi
 
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	.if eax

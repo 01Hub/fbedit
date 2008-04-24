@@ -698,6 +698,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		invoke AddProjectNode,TPE_DIALOG,addr buffer,esi
 		invoke ExpandProjectNodes,hNodeDlg
 	.elseif eax==TPE_MENU
+		invoke CloseDialog
 		invoke CreateMnu,hDEd,NULL
 		mov		[esi].PROJECT.hmem,eax
 		mov		[esi].PROJECT.ntype,TPE_MENU

@@ -1091,8 +1091,8 @@ CreateMnu proc uses ebx esi edi,hWin:HWND,lpProItemMem:DWORD
 		invoke GetUnikeName,addr (MNUHEAD ptr [esi]).menuname
 		invoke GetFreeProjectitemID,TPE_MENU
 		mov		(MNUHEAD ptr [esi]).menuid,eax
-		push	MnuItemID
-		pop		(MNUHEAD ptr [esi]).startid
+		mov		eax,MnuItemID
+		mov		(MNUHEAD ptr [esi]).startid,eax
 		invoke CreateDialogParam,hInstance,IDD_DLGMENUEDIT,hWin,addr DlgMenuEditProc,esi
 		mov		hDialog,eax
 		mov		fDialogChanged,TRUE
