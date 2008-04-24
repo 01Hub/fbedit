@@ -663,10 +663,29 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			add		esi,sizeof PROJECT
 		.endw
+		mov		esi,hMem
+		.while [esi].PROJECT.hmem
+			.if [esi].PROJECT.ntype==TPE_TOOLBAR && ![esi].PROJECT.delete
+				mov		ebx,[esi].PROJECT.hmem
+				;Image
+				mov		row[8],3
+				;lpName
+				lea		eax,[ebx].TOOLBARMEM.szname
+				mov		row[0],eax
+				mov		row[12],eax
+				;lpID
+				lea		eax,[ebx].TOOLBARMEM.value
+				mov		row[4],eax
+				mov		eax,[eax]
+				mov		row[16],eax
+				invoke SendMessage,hGrd,GM_ADDROW,0,addr row
+			.endif
+			add		esi,sizeof PROJECT
+		.endw
 		.if lParam
 			dec		lParam
 			invoke SaveNamesToFile,hWin,lParam
-			invoke EndDialog,hWin,NULL
+			invoke DestroyWindow,hWin
 		.else
 			invoke SendMessage,hGrd,GM_SETCURSEL,3,0
 			invoke SetFocus,hGrd
@@ -688,8 +707,8 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				invoke SendMessage,hGrd,GM_GETCURSEL,0,0
 				invoke SendMessage,hGrd,GM_ENDEDIT,eax,FALSE
-				invoke UpdateNames,hWin
 				.if fDialogChanged
+					invoke UpdateNames,hWin
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					mov		fDialogChanged,FALSE
 				.endif

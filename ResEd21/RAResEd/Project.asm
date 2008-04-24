@@ -1426,6 +1426,13 @@ NameExists proc uses ebx esi,lpName:DWORD,lpItem:DWORD
 							jmp		Exist
 						.endif
 					.endif
+				.elseif eax==TPE_TOOLBAR
+					.if esi!=lpItem
+						invoke strcmpi,lpName,addr [esi].TOOLBARMEM.szname
+						.if !eax
+							jmp		Exist
+						.endif
+					.endif
 				.elseif eax==TPE_NAME
 					.while [esi].NAMEMEM.szname
 						.if ![esi].NAMEMEM.delete && esi!=lpItem

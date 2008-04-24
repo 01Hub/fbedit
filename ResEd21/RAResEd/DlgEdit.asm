@@ -3217,6 +3217,7 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 	or		ws,WS_ALWAYS
 	push	[edi].exstyle
 	pop		wsex
+	and		wsex,0F7FFFh
 	and		wsex,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
 	.if !tpe
 		and		ws,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE or WS_VISIBLE)

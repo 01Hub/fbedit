@@ -826,10 +826,14 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTMNU,0
 				mov		fDialogChanged,TRUE
 			.elseif eax==IDC_BTNINSERT
-				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_INSERTSTRING,nMnuInx,addr szNULL
-				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETCURSEL,nMnuInx,0
-				invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTMNU,0
-				mov		fDialogChanged,TRUE
+				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETITEMDATA,eax,0
+				.if eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_INSERTSTRING,nMnuInx,addr szNULL
+					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETCURSEL,nMnuInx,0
+					invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTMNU,0
+					mov		fDialogChanged,TRUE
+				.endif
 			.elseif eax==IDC_BTNDELETE
 				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETCOUNT,0,0
 				dec		eax
