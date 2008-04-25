@@ -2,7 +2,7 @@
 ResEdDllEntry proc public hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
 
 	.if reason==DLL_PROCESS_ATTACH
-		invoke ResEdInstall,hInst
+		invoke ResEdInstall,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 		invoke ResEdUninstall
 	.endif

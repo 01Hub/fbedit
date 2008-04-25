@@ -93,7 +93,7 @@ ccdefex					CCDEFEX <260,offset szToolTip,0,offset szCap,offset szName,offset sz
 DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 
 	.if reason==DLL_PROCESS_ATTACH
-		invoke InstallRAEdit,hInst
+		invoke InstallRAEdit,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
 		invoke UnInstallRAEdit
 	.endif

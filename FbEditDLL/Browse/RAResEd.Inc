@@ -1,8 +1,8 @@
 
-ResEdInstall		PROTO	:DWORD,:DWORD
+ResEdInstall		PROTO	:DWORD
 ResEdUninstall		PROTO
-GridInstall			PROTO	:DWORD,:DWORD
-InstallRAEdit		PROTO	:DWORD,:DWORD
+GridInstall			PROTO	:DWORD
+InstallRAEdit		PROTO	:DWORD
 UnInstallRAEdit		PROTO
 
 ;Dialog memory size
@@ -368,10 +368,20 @@ RARSTYPE ends
 
 .const
 
-;Window classes
-szResEdClass		db 'RESEDCLASS',0
-szDlgEditClass		db 'DLGEDITCLASS',0
-szToolBoxClass		db 'TOOLBOXCLASS',0
-szPropertyClass		db 'PROPERTYCLASS',0
-szProjectClass		db 'PROJECTCLASS',0
-szDlgEditDummyClass	db 'DlgEditDummy',0
+IFDEF DLL
+	;Window classes global
+	szResEdClass		db 'RESEDCLASS',0
+	szDlgEditClass		db 'DLGEDITCLASS',0
+	szToolBoxClass		db 'TOOLBOXCLASS',0
+	szPropertyClass		db 'PROPERTYCLASS',0
+	szProjectClass		db 'PROJECTCLASS',0
+	szDlgEditDummyClass	db 'DlgEditDummy',0
+ELSE
+	;Window classes local
+	szResEdClass		db 'MYRESEDCLASS',0
+	szDlgEditClass		db 'MYDLGEDITCLASS',0
+	szToolBoxClass		db 'MYTOOLBOXCLASS',0
+	szPropertyClass		db 'MYPROPERTYCLASS',0
+	szProjectClass		db 'MYPROJECTCLASS',0
+	szDlgEditDummyClass	db 'DlgEditDummy',0
+ENDIF

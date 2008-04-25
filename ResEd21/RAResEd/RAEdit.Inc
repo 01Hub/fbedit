@@ -243,10 +243,5 @@ BLOCKRANGE ends
 
 .const
 
-IFDEF DLL
-	szRAEditClass	db 'RAEdit',0
-	szEditClassName	db 'RAEditChild',0
-ELSE
-	szRAEditClass	db 'MyRAEdit',0
-	szEditClassName	db 'MyRAEditChild',0
-ENDIF
+szRAEditClass	db 'RAEdit',0
+szEditClassName	db 'RAEditChild',0

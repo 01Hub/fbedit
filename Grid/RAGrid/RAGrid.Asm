@@ -3341,6 +3341,12 @@ GridInstall proc public hInst:DWORD,fGlobal:DWORD
 
 GridInstall endp
 
+GridUnInstall proc public
+
+	ret
+
+GridUnInstall endp
+
 IFDEF DLL
 	include dll.asm
 ELSE

@@ -52,6 +52,7 @@ DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 		invoke GetTickCount
 		mov		rseed,eax
 	.elseif reason==DLL_PROCESS_DETACH
+		invoke GridUnInstall
 	.endif
 	mov     eax,TRUE
 	ret

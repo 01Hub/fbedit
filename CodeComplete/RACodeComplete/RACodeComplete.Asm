@@ -16,7 +16,7 @@ include ..\RACodeComplete.inc
 include Data.inc
 include Sort.asm
 
-IDB_TYPES		equ 102
+IDB_TYPES		equ 110
 
 .code
 

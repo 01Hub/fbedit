@@ -13,6 +13,8 @@ includelib shell32.lib
 include RAFile.Inc
 include RACodeComplete.inc
 include RAGrid.inc
+include RAHexEd.inc
+include RAEdit.inc
 
 DlgProc			PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 

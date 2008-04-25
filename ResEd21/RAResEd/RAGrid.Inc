@@ -1,5 +1,5 @@
 
-GridInstall			PROTO	:DWORD
+GridInstall			PROTO	:DWORD,:DWORD
 
 ;Column structure
 COLUMN struct

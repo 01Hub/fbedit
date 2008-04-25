@@ -6,9 +6,13 @@ UnInstallFileBrowser		PROTO
 InstallRAProperty			PROTO :DWORD,:DWORD
 UnInstallRAProperty			PROTO
 GridInstall					PROTO :DWORD,:DWORD
-
+GridUnInstall				PROTO
 RAHexEdInstall				PROTO C :DWORD,:DWORD
 RAHexEdUnInstall			PROTO
+InstallRAEdit				PROTO :DWORD,:DWORD
+UnInstallRAEdit				PROTO
+ResEdInstall				PROTO	:DWORD,:DWORD
+ResEdUninstall				PROTO
 
 include windows.inc
 include Comctl32.inc
@@ -21,11 +25,13 @@ includelib user32.lib
 includelib kernel32.lib
 includelib gdi32.lib
 
-includelib Lib\RACodeComplete.lib
-includelib Lib\RAFile.lib
-includelib Lib\RAProperty.lib
-includelib Lib\RAGrid.lib
-includelib Lib\RAHexEd.lib
+includelib ..\Lib\RACodeComplete.lib
+includelib ..\Lib\RAFile.lib
+includelib ..\Lib\RAProperty.lib
+includelib ..\Lib\RAGrid.lib
+includelib ..\Lib\RAHexEd.lib
+includelib ..\Lib\RAEdit.lib
+includelib ..\Lib\RAResEd.lib
 
 ;VKim Debug
 include masm32.inc

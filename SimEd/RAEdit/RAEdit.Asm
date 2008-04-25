@@ -54,18 +54,17 @@ TimerProc proc hWin:DWORD,uMsg:DWORD,idEvent:DWORD,dwTime:DWORD
 TimerProc endp
 
 ;Create a windowclass for the user control
-InstallRAEdit proc public hInst:HINSTANCE
+InstallRAEdit proc public hInst:HINSTANCE,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 	LOCAL	hBmp:DWORD
 
 	push    hInst
 	pop     hInstance
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset RAWndProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,4		;Holds memory handle

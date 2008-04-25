@@ -5,7 +5,7 @@ Description=RadASM resource editor 21
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
+Debug=0
 Res.rc=1
 Ver.rc=1
 
@@ -137,14 +137,14 @@ Options=52
 16=,107,0,Res\Lock.bmp
 
 [Size]
-5=0,0,0,0,1770
-3=0,0,0,0,178
+5=0,0,0,0,9356
+3=0,0,0,0,23
 4=0,0,0,0,8
-1=0,0,718,485,37693
+1=0,0,718,485,8243
 7=0,0,718,485,21446
 6=0,0,0,0,2026
 9=0,0,718,485,73444
-2=0,0,584,498,1535
+2=0,0,584,498,149
 8=0,0,0,0,8230
 10=0,0,0,0,2863
 16=0,0,718,485,18733
@@ -156,7 +156,7 @@ Options=52
 24=0,0,0,0,372
 26=0,0,0,0,10019
 25=0,0,0,0
-22=0,0,0,0,3254
+22=0,0,0,0,5060
 28=0,0,0,0,6701
 27=0,0,0,0
 29=0,0,0,0,9873
@@ -166,7 +166,7 @@ Options=52
 34=0,0,0,0,16895
 33=0,0,0,0
 36=0,0,0,0,12
-35=0,0,0,0,193
+35=0,0,0,0,140
 37=0,0,0,0,2040
 38=0,0,0,0
 39=0,0,0,0,3789
@@ -182,43 +182,43 @@ Options=52
 
 
 [Find]
-1="GWL_USERDATA"
-2="EM_LIM"
-3="PRP_FUN_STYLE"
-4="GM_ENDEDIT"
-5="CreateWindowEx"
-6="lpszformat"
-7="GM_SETHDRTEXT"
-8="GM_GETCOLDATA"
-9="GN_BUTTONCLICK"
-10="GN_AFTERUPDATE"
+1="InstallRAEdit"
+2="GridInstall"
+3="ResEdInstall"
+4="GWL_USERDATA"
+5="EM_LIM"
+6="PRP_FUN_STYLE"
+7="GM_ENDEDIT"
+8="CreateWindowEx"
+9="lpszformat"
+10="GM_SETHDRTEXT"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.1
-PV=2.1.0.1
+FV=2.1.0.5
+PV=2.1.0.5
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.1
+ProductVersion=2.1.0.5
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.1
+FileVersion=2.1.0.5
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=3
+MilestoneEveryCurrent=2
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

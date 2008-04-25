@@ -152,18 +152,17 @@ ToolTipProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ToolTipProc endp
 
-ResEdInstall proc public hInst:DWORD
+ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
     push    hInst
     pop     hInstance
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ResEdProc
 	mov		wc.cbClsExtra,0
 	;0=hDialog, 4=hMem, 8=ReadOnly
@@ -181,11 +180,10 @@ ENDIF
 	invoke RegisterClassEx,addr wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset DlgEditProc
 	mov		wc.cbClsExtra,0
 	;0=hDialog, 4=hMem, 8=ReadOnly
@@ -219,11 +217,10 @@ ENDIF
 	invoke RegisterClassEx,addr wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ToolBoxProc
 	mov		wc.cbClsExtra,0
 	mov		wc.cbWndExtra,0
@@ -239,11 +236,10 @@ ENDIF
 	invoke RegisterClassEx,addr	wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset PropertyProc
 	mov		wc.cbClsExtra,0
 	mov		wc.cbWndExtra,4
@@ -259,11 +255,10 @@ ENDIF
 	invoke RegisterClassEx,addr	wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset ProjectProc
 	mov		wc.cbClsExtra,0
 	;0=hMem
@@ -296,11 +291,10 @@ ENDIF
 	invoke RegisterClassEx,addr	wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-IFDEF DLL
-	mov		wc.style,CS_GLOBALCLASS or CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
-ELSE
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
-ENDIF
+	.if fGlobal
+		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS or CS_GLOBALCLASS
+	.endif
 	mov		wc.lpfnWndProc,offset StyleProc
 	mov		eax,NULL
 	mov		wc.cbClsExtra,eax

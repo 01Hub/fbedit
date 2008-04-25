@@ -2152,8 +2152,8 @@ Dim CharTab As Function() As Any Ptr
 	''
 	hInstance=GetModuleHandle(NULL)
 	hRichEditDll=LoadLibrary("riched20.dll")
-	hRAEditDll=LoadLibrary("RAEdit.dll")
-	If hRAEditDll Then
+	'hRAEditDll=LoadLibrary("RAEdit.dll")
+	'If hRAEditDll Then
 		'hRAHexEdDll=LoadLibrary("RAHexEd.dll")
 		'If hRAHexEdDll Then
 			hFbEditDll=LoadLibrary("FbEdit.dll")
@@ -2164,11 +2164,12 @@ Dim CharTab As Function() As Any Ptr
 			'	If hRAPropertyDll Then
 			'		hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
 			'		If hRACodeCompleteDll Then
-						hRAResEdDll=LoadLibrary("RAResEd.dll")
-						If hRAResEdDll Then
+			'			hRAResEdDll=LoadLibrary("RAResEd.dll")
+			'			If hRAResEdDll Then
 			'				hRAGridDll=LoadLibrary("RAGrid.dll")
 			'				If hRAGridDll Then
-								CharTab=Cast(Any Ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
+								'CharTab=Cast(Any Ptr,GetProcAddress(hRAEditDll,StrPtr("GetCharTabPtr")))
+								CharTab=Cast(Any Ptr,GetProcAddress(hFbEditDll,StrPtr("GetCharTabPtr")))
 								ad.lpCharTab=CharTab()
 								ah.haccel=LoadAccelerators(hInstance,Cast(ZString Ptr,IDA_ACCEL))
 								OleInitialize(NULL)
@@ -2178,9 +2179,9 @@ Dim CharTab As Function() As Any Ptr
 			'					MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAGrid.dll",@szAppName,MB_OK Or MB_ICONERROR)
 			'				EndIf
 			'				FreeLibrary(hRAResEdDll)
-						Else
-							MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
-						EndIf
+						'Else
+						'	MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAResEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
+						'EndIf
 				'		FreeLibrary(hRACodeCompleteDll)
 				'	Else
 				'		MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RACodeComplete.dll",@szAppName,MB_OK Or MB_ICONERROR)
@@ -2198,11 +2199,11 @@ Dim CharTab As Function() As Any Ptr
 		'Else
 		'	MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAHexEd.dll",@szAppName,MB_OK Or MB_ICONERROR)
 		'EndIf
-		FreeLibrary(hRAEditDll)
+		'FreeLibrary(hRAEditDll)
 		FreeLibrary(hRichEditDll)
-	Else
-		MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
-	EndIf
+	'Else
+	'	MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " RAEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
+	'EndIf
 	''
 	'' Program has ended
 	''

@@ -15,11 +15,17 @@ DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 		invoke InstallRAProperty,hInst,TRUE
 		invoke GridInstall,hInst,TRUE
 		invoke RAHexEdInstall,hInst,TRUE
+		invoke InstallRAEdit,hInst,TRUE
+		invoke ResEdInstall,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
+		invoke InstallRAEdit,hInst,TRUE
 		invoke UnInstallRACodeComplete
 		invoke UnInstallFileBrowser
 		invoke UnInstallRAProperty
+		invoke GridUnInstall
 		invoke RAHexEdUnInstall
+		invoke UnInstallRAEdit
+		invoke ResEdUninstall
 	.endif
 	mov     eax,TRUE
 	ret

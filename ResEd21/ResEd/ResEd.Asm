@@ -16,9 +16,9 @@ start:
 	mov    hInstance,eax
 	invoke LoadLibrary,offset szRichEdit
 	mov		hRichEd,eax
-	invoke GridInstall,hInstance
-	invoke InstallRAEdit,hInstance
-	invoke ResEdInstall,hInstance
+	invoke GridInstall,hInstance,FALSE
+	invoke InstallRAEdit,hInstance,FALSE
+	invoke ResEdInstall,hInstance,FALSE
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
