@@ -1049,7 +1049,9 @@ GetProjectSelected endp
 
 RemoveProjectSelected proc uses esi
 	LOCAL	tvi:TV_ITEMEX
+	LOCAL	fName:DWORD
 
+	mov		fName,FALSE
 	invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_CARET,NULL
 	.if eax
 		mov		tvi.hItem,eax
@@ -1060,6 +1062,28 @@ RemoveProjectSelected proc uses esi
 			.if edx
 				mov		eax,[edx].PROJECT.ntype
 				.if eax && eax!=TPE_NAME
+					.if hDialog
+						invoke GetWindowLong,hDialog,GWL_USERDATA
+						.if eax==tvi.lParam
+							invoke SendMessage,hDialog,WM_COMMAND,IDOK,0
+							invoke SendMessage,hDialog,WM_COMMAND,IDCANCEL,0
+						.else
+							invoke GetWindowLong,hPrj,0
+							mov		esi,eax
+							invoke GetWindowLong,hDialog,GWL_USERDATA
+							.while [esi].PROJECT.hmem
+								.if [esi].PROJECT.ntype==TPE_NAME
+									.if eax==esi
+										invoke SendMessage,hDialog,WM_COMMAND,IDOK,0
+										invoke SendMessage,hDialog,WM_COMMAND,IDCANCEL,0
+										mov		fName,TRUE
+									.endif
+									.break
+								.endif
+								add		esi,sizeof PROJECT
+							.endw
+						.endif
+					.endif
 					invoke GetWindowLong,hDEd,DEWM_DIALOG
 					mov		ecx,eax
 					inc		nUndo
@@ -1084,32 +1108,22 @@ RemoveProjectSelected proc uses esi
 						mov		esi,eax
 						xor		ecx,ecx
 						.while [esi].PROJECT.hmem
-							.if ![esi].PROJECT.delete && [edx].PROJECT.ntype==TPE_XPMANIFEST
+							.if ![esi].PROJECT.delete && [esi].PROJECT.ntype==TPE_XPMANIFEST
 								inc		ecx
 							.endif
 							add		esi,sizeof PROJECT
 						.endw
 						.if !ecx
 							invoke GetWindowLong,hPrj,0
-							mov		esi,eax
-							xor		ecx,ecx
-							.while [esi].PROJECT.hmem
-								.if [esi].PROJECT.ntype==TPE_NAME
-									mov		esi,[esi].PROJECT.hmem
-									.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
-										.if ![esi].NAMEMEM.delete
-											invoke lstrcmpi,addr [esi].NAMEMEM.szname,addr szMANIFEST
-											.if !eax
-												mov		[esi].NAMEMEM.delete,TRUE
-											.endif
-										.endif
-										add		esi,sizeof NAMEMEM
-									.endw
-									.break
-								.endif
-								add		esi,sizeof PROJECT
-							.endw
+							invoke FindName,eax,addr szMANIFEST
+							.if eax
+								mov		[eax].NAMEMEM.delete,TRUE
+							.endif
 						.endif
+					.endif
+					.if fName
+						invoke CreateDialogParam,hInstance,IDD_DLGNAMES,hDEd,offset NameEditProc,NULL
+						mov		hDialog,eax
 					.endif
 					invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,tvi.hItem
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
@@ -1140,7 +1154,9 @@ ProjectCanUndo endp
 
 ProjectUndoDeleted proc uses ebx esi
 	LOCAL	buffer[64]:BYTE
+	LOCAL	fName:DWORD
 
+	mov		fName,FALSE
 	invoke GetWindowLong,hPrj,0
 	.if eax
 		mov		esi,eax
@@ -1154,6 +1170,22 @@ ProjectUndoDeleted proc uses ebx esi
 			add		esi,sizeof PROJECT
 		.endw
 		.if ebx
+			.if hDialog
+				invoke GetWindowLong,hPrj,0
+				mov		esi,eax
+				invoke GetWindowLong,hDialog,GWL_USERDATA
+				.while [esi].PROJECT.hmem
+					.if [esi].PROJECT.ntype==TPE_NAME
+						.if eax==esi
+							invoke SendMessage,hDialog,WM_COMMAND,IDOK,0
+							invoke SendMessage,hDialog,WM_COMMAND,IDCANCEL,0
+							mov		fName,TRUE
+						.endif
+						.break
+					.endif
+					add		esi,sizeof PROJECT
+				.endw
+			.endif
 			mov		[ebx].PROJECT.delete,FALSE
 			invoke GetProjectItemName,ebx,addr buffer
 			mov		edx,[ebx].PROJECT.ntype
@@ -1162,24 +1194,14 @@ ProjectUndoDeleted proc uses ebx esi
 			.if [ebx].PROJECT.ntype==TPE_XPMANIFEST
 				invoke GetWindowLong,hPrj,0
 				mov		esi,eax
-				xor		ecx,ecx
-				.while [esi].PROJECT.hmem
-					.if [esi].PROJECT.ntype==TPE_NAME
-						mov		esi,[esi].PROJECT.hmem
-						.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
-							.if [esi].NAMEMEM.delete
-								invoke lstrcmpi,addr [esi].NAMEMEM.szname,addr szMANIFEST
-								.if !eax
-									mov		[esi].NAMEMEM.delete,FALSE
-									.break
-								.endif
-							.endif
-							add		esi,sizeof NAMEMEM
-						.endw
-						.break
-					.endif
-					add		esi,sizeof PROJECT
-				.endw
+				invoke FindName,esi,addr szMANIFEST
+				.if !eax
+					invoke AddName,esi,addr szMANIFEST,addr szManifestValue
+				.endif
+			.endif
+			.if fName
+				invoke CreateDialogParam,hInstance,IDD_DLGNAMES,hDEd,offset NameEditProc,NULL
+				mov		hDialog,eax
 			.endif
 		.endif
 	.endif

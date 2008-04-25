@@ -443,6 +443,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hMem,esi
 		.while [esi].PROJECT.hmem
 			.if [esi].PROJECT.ntype==TPE_NAME && ![esi].PROJECT.delete
+				invoke SetWindowLong,hWin,GWL_USERDATA,esi
 				mov		ebx,[esi].PROJECT.hmem
 				;Image
 				mov		row[8],0
