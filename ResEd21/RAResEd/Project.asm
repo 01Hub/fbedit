@@ -50,7 +50,8 @@ ProjectDblClick proc uses ebx,hWin:HWND,lParam:LPARAM
 					invoke SendMessage,hRes,DEM_OPEN,0,ebx
 				.elseif [ebx].PROJECT.ntype==TPE_MENU
 					invoke CloseDialog
-					invoke SendMessage,hRes,MEM_OPEN,0,ebx
+					invoke CreateMnu,hDEd,ebx
+					;invoke SendMessage,hRes,MEM_OPEN,0,ebx
 					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_VERSION
 					invoke CloseDialog
@@ -702,6 +703,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		invoke CreateMnu,hDEd,NULL
 		mov		[esi].PROJECT.hmem,eax
 		mov		[esi].PROJECT.ntype,TPE_MENU
+		invoke SetWindowLong,hDialog,GWL_USERDATA,esi
 		invoke GetProjectItemName,esi,addr buffer
 		invoke AddProjectNode,TPE_MENU,addr buffer,esi
 		invoke ExpandProjectNodes,hNodeMnu

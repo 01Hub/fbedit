@@ -140,17 +140,17 @@ Options=52
 5=0,0,0,0,9356
 3=0,0,0,0,23
 4=0,0,0,0,8
-1=0,0,718,485,8243
+1=0,0,718,485,39987
 7=0,0,718,485,21446
 6=0,0,0,0,2026
 9=0,0,718,485,73444
-2=0,0,584,498,149
+2=0,0,584,498,6038
 8=0,0,0,0,8230
 10=0,0,0,0,2863
-16=0,0,718,485,18733
+16=0,0,718,485,27103
 15=0,0,0,0
 17=0,0,0,0,64100
-18=0,0,0,0,32333
+18=0,0,0,0,18597
 21=0,0,0,0,56009
 23=0,0,0,0
 24=0,0,0,0,372
@@ -182,43 +182,43 @@ Options=52
 
 
 [Find]
-1="InstallRAEdit"
-2="GridInstall"
-3="ResEdInstall"
-4="GWL_USERDATA"
-5="EM_LIM"
-6="PRP_FUN_STYLE"
-7="GM_ENDEDIT"
-8="CreateWindowEx"
-9="lpszformat"
-10="GM_SETHDRTEXT"
+1="CreateMnu"
+2="MEM_OPEN"
+3="InstallRAEdit"
+4="GridInstall"
+5="ResEdInstall"
+6="GWL_USERDATA"
+7="EM_LIM"
+8="PRP_FUN_STYLE"
+9="GM_ENDEDIT"
+10="CreateWindowEx"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.5
-PV=2.1.0.5
+FV=2.1.0.8
+PV=2.1.0.8
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.5
+ProductVersion=2.1.0.8
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.5
+FileVersion=2.1.0.8
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=8
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
