@@ -1079,6 +1079,37 @@ RemoveProjectSelected proc uses esi
 							invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 							invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 						.endif
+					.elseif [edx].PROJECT.ntype==TPE_XPMANIFEST
+						invoke GetWindowLong,hPrj,0
+						mov		esi,eax
+						xor		ecx,ecx
+						.while [esi].PROJECT.hmem
+							.if ![esi].PROJECT.delete && [edx].PROJECT.ntype==TPE_XPMANIFEST
+								inc		ecx
+							.endif
+							add		esi,sizeof PROJECT
+						.endw
+						.if !ecx
+							invoke GetWindowLong,hPrj,0
+							mov		esi,eax
+							xor		ecx,ecx
+							.while [esi].PROJECT.hmem
+								.if [esi].PROJECT.ntype==TPE_NAME
+									mov		esi,[esi].PROJECT.hmem
+									.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+										.if ![esi].NAMEMEM.delete
+											invoke lstrcmpi,addr [esi].NAMEMEM.szname,addr szMANIFEST
+											.if !eax
+												mov		[esi].NAMEMEM.delete,TRUE
+											.endif
+										.endif
+										add		esi,sizeof NAMEMEM
+									.endw
+									.break
+								.endif
+								add		esi,sizeof PROJECT
+							.endw
+						.endif
 					.endif
 					invoke SendMessage,hPrjTrv,TVM_DELETEITEM,0,tvi.hItem
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
@@ -1128,6 +1159,28 @@ ProjectUndoDeleted proc uses ebx esi
 			mov		edx,[ebx].PROJECT.ntype
 			invoke AddProjectNode,edx,addr buffer,ebx
 			invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+			.if [ebx].PROJECT.ntype==TPE_XPMANIFEST
+				invoke GetWindowLong,hPrj,0
+				mov		esi,eax
+				xor		ecx,ecx
+				.while [esi].PROJECT.hmem
+					.if [esi].PROJECT.ntype==TPE_NAME
+						mov		esi,[esi].PROJECT.hmem
+						.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+							.if [esi].NAMEMEM.delete
+								invoke lstrcmpi,addr [esi].NAMEMEM.szname,addr szMANIFEST
+								.if !eax
+									mov		[esi].NAMEMEM.delete,FALSE
+									.break
+								.endif
+							.endif
+							add		esi,sizeof NAMEMEM
+						.endw
+						.break
+					.endif
+					add		esi,sizeof PROJECT
+				.endw
+			.endif
 		.endif
 	.endif
 	ret

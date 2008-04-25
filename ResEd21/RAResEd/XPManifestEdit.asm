@@ -202,6 +202,17 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		fChanged,FALSE
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTXPMANIFEST,hInstance,0
+		mov		hDlgRed,eax
+		mov		edi,eax
+		invoke SendMessage,edi,WM_SETFONT,hredfont,0
+		invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
+		mov		eax,color.back
+		mov		racol.bckcol,eax
+		mov		eax,color.text
+		mov		racol.txtcol,eax
+		mov		racol.strcol,0
+		invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if !esi
@@ -217,19 +228,6 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.endif
 		mov		edi,[esi].PROJECT.hmem
 		.if ![edi].XPMANIFESTMEM.hred
-			push	edi
-			invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTXPMANIFEST,hInstance,0
-			mov		hDlgRed,eax
-			mov		edi,eax
-			invoke SendMessage,edi,WM_SETFONT,hredfont,0
-			invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
-			mov		eax,color.back
-			mov		racol.bckcol,eax
-			mov		eax,color.text
-			mov		racol.txtcol,eax
-			mov		racol.strcol,0
-			invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
-			pop		edi
 			mov		eax,hDlgRed
 			mov		[edi].XPMANIFESTMEM.hred,eax
 			invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [edi+sizeof XPMANIFESTMEM]
