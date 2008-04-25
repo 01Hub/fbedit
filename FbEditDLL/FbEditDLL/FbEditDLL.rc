@@ -34,6 +34,7 @@ END
 32101 BITMAP				"Res/MnuArrow.bmp"
 32109 CURSOR				"Res/SplitH.cur"
 32110 CURSOR				"Res/SplitV.cur"
+32108 BITMAP				"Res/ResBookmark.bmp"
 #include					"Res/AccelEditDlg.Rc"
 #include					"Res/IncludeEditDlg.Rc"
 #include					"Res/LanguageEditDlg.Rc"
