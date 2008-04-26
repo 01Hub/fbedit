@@ -176,7 +176,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 
 SaveResourceEdit endp
 
-ResPreviewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ResPreviewProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 
 	mov		eax,uMsg
@@ -214,28 +214,23 @@ ResPreviewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetDlgItem,hWin,1002
 			invoke ShowWindow,eax,SW_SHOW
 		.endif
+;	.elseif eax==WM_EXITSIZEMOVE
+;		invoke InvalidateRect,hWin,NULL,TRUE
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
 		invoke GetDlgItem,hWin,1001
-		push	eax
 		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
-		pop		eax
-		invoke InvalidateRect,eax,NULL,TRUE
 		invoke GetDlgItem,hWin,1002
-		push	eax
 		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
-		pop		eax
-		invoke InvalidateRect,eax,NULL,TRUE
 		invoke GetDlgItem,hWin,1003
-		push	eax
 		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
-		pop		eax
-		invoke InvalidateRect,eax,NULL,TRUE
+		invoke InvalidateRect,hWin,NULL,TRUE
+		invoke UpdateWindow,hWin
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
-	.elseif eax==WM_CTLCOLORSTATIC
-		invoke GetStockObject,WHITE_BRUSH
-		ret
+;	.elseif eax==WM_CTLCOLORSTATIC
+;		invoke GetStockObject,WHITE_BRUSH
+;		ret
 	.else
 		mov		eax,FALSE
 		ret
