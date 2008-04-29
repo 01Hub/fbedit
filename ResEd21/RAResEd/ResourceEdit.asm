@@ -8,10 +8,47 @@ IDC_BTNRESPREVIEW						equ 1004
 IDC_BTNRESEDIT							equ 1005
 
 IDD_RESPREVIEW							equ 2700
+IDD_RESPREVIEWBTN						equ 2710
+IDD_RESPREVIEWCTL						equ 2720
+
+ICONSIZE struct
+	wt			db ?
+	ht			db ?
+	col			db ?
+	reserved	db ?
+	pl			dw ?
+	bits		dw ?
+	nsize		dd ?
+	nofs		dd ?
+ICONSIZE ends
+
+ICONDEF struct
+	szFile		db MAX_PATH dup(?)
+	reserved	dw ?
+	ntype		dw ?
+	ncount		dw ?
+	is1			ICONSIZE <?>
+	is2			ICONSIZE <?>
+	is3			ICONSIZE <?>
+	is4			ICONSIZE <?>
+	is5			ICONSIZE <?>
+	is6			ICONSIZE <?>
+ICONDEF ends
 
 .const
 
 szRESOURCE				db 'RESOURCE',0
+szX						db ' x ',0
+
+.data?
+
+hPrvDlg1				dd ?
+hPrvDlg2				dd ?
+hPrvDlg3				dd ?
+hPrvBmp					dd ?
+hPrvIcon				dd ?
+hPrvCursor				dd ?
+icondef					ICONDEF <>
 
 .code
 
@@ -176,61 +213,298 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 
 SaveResourceEdit endp
 
-ResPreviewProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SizeBmp proc uses ebx
+	LOCAL	rect:RECT
+	LOCAL	bmp:BITMAP
+
+	invoke GetClientRect,hPrvDlg3,addr rect
+	invoke GetDlgItem,hPrvDlg3,1001
+	mov		ebx,eax
+	invoke GetObject,hPrvBmp,sizeof BITMAP,addr bmp
+	mov		eax,rect.right
+	sub		eax,bmp.bmWidth
+	cdq
+	mov		ecx,2
+	idiv	ecx
+	mov		rect.left,eax
+	mov		eax,rect.bottom
+	sub		eax,bmp.bmHeight
+	cdq
+	mov		ecx,2
+	idiv	ecx
+	mov		rect.top,eax
+	invoke MoveWindow,ebx,rect.left,rect.top,bmp.bmWidth,bmp.bmHeight,TRUE
+	ret
+
+SizeBmp endp
+
+SizeIcon proc uses ebx
+	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
+
+	invoke GetClientRect,hPrvDlg3,addr rect
+	invoke GetDlgItem,hPrvDlg3,1002
+	mov		ebx,eax
+	invoke GetClientRect,ebx,addr rect1
+	mov		eax,rect.right
+	sub		eax,rect1.right
+	cdq
+	mov		ecx,2
+	idiv	ecx
+	mov		rect.left,eax
+	mov		eax,rect.bottom
+	sub		eax,rect1.bottom
+	cdq
+	mov		ecx,2
+	idiv	ecx
+	mov		rect.top,eax
+	invoke MoveWindow,ebx,rect.left,rect.top,rect1.right,rect1.bottom,TRUE
+	ret
+
+SizeIcon endp
+
+SizeAni proc
+	LOCAL	rect:RECT
+
+	invoke GetClientRect,hPrvDlg3,addr rect
+	invoke GetDlgItem,hPrvDlg3,1003
+	invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+	ret
+
+SizeAni endp
+
+Destroy proc
+
+	.if hPrvBmp
+		invoke DeleteObject,hPrvBmp
+		mov		hPrvBmp,0
+	.endif
+	.if hPrvIcon
+		invoke DestroyIcon,hPrvIcon
+		mov		hPrvIcon,0
+	.endif
+	.if hPrvCursor
+		invoke DestroyCursor,hPrvCursor
+		mov		hPrvCursor,0
+	.endif
+	ret
+
+Destroy endp
+
+ResPreviewBtnProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		mov		edx,lParam
-		mov		eax,[edx]
-		add		edx,4
-		.if !eax
-			; Bitmap
-			invoke LoadImage,0,edx,IMAGE_BITMAP,0,0,LR_LOADFROMFILE
-			invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
-			invoke GetDlgItem,hWin,1001
-			invoke ShowWindow,eax,SW_SHOW
-		.elseif eax==1
-			; Cursor
-			invoke LoadImage,0,edx,IMAGE_CURSOR,0,0,LR_LOADFROMFILE
-			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
-			invoke GetDlgItem,hWin,1002
-			invoke ShowWindow,eax,SW_SHOW
-		.elseif eax==2
-			; Icon
-			invoke LoadImage,0,edx,IMAGE_ICON,0,0,LR_LOADFROMFILE
-			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
-			invoke GetDlgItem,hWin,1002
-			invoke ShowWindow,eax,SW_SHOW
-		.elseif eax==3
-			; Animate
-			invoke SendDlgItemMessage,hWin,1003,ACM_OPEN,0,edx
-			invoke GetDlgItem,hWin,1003
-			invoke ShowWindow,eax,SW_SHOW
-		.elseif eax==8
-			; Anicursor
-			invoke LoadImage,0,edx,IMAGE_CURSOR,0,0,LR_LOADFROMFILE
-			invoke SendDlgItemMessage,hWin,1002,STM_SETIMAGE,IMAGE_ICON,eax
-			invoke GetDlgItem,hWin,1002
-			invoke ShowWindow,eax,SW_SHOW
+	.elseif eax==WM_COMMAND
+		mov		eax,wParam
+		mov		edx,eax
+		shr		edx,16
+		movzx	eax,ax
+		.if edx==BN_CLICKED
+			push	eax
+			invoke GetDlgItem,hWin,eax
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		ecx,eax
+			pop		eax
+			.if eax==IDCANCEL
+				invoke SendMessage,hPrvDlg1,WM_CLOSE,0,0
+			.elseif eax>=1001 && eax<=1006
+				mov		edx,ecx
+				movzx	ecx,cx
+				shr		edx,16
+				.if hPrvIcon
+					invoke LoadImage,0,addr icondef.szFile,IMAGE_ICON,ecx,edx,LR_LOADFROMFILE
+					mov		hPrvIcon,eax
+					invoke GetDlgItem,hPrvDlg3,1002
+					invoke SendMessage,eax,STM_SETIMAGE,IMAGE_ICON,hPrvIcon
+					invoke DestroyIcon,eax
+					invoke SizeIcon
+				.elseif hPrvCursor
+					invoke LoadImage,0,addr icondef.szFile,IMAGE_CURSOR,ecx,edx,LR_LOADFROMFILE
+					mov		hPrvCursor,eax
+					invoke GetDlgItem,hPrvDlg3,1002
+					invoke SendMessage,eax,STM_SETIMAGE,IMAGE_CURSOR,hPrvCursor
+					invoke DestroyCursor,eax
+					invoke SizeIcon
+				.endif
+			.endif
 		.endif
-;	.elseif eax==WM_EXITSIZEMOVE
-;		invoke InvalidateRect,hWin,NULL,TRUE
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
+		invoke GetDlgItem,hWin,IDCANCEL
+		mov		edx,rect.bottom
+		sub		edx,28
+		invoke MoveWindow,eax,3,edx,88,25,TRUE
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ResPreviewBtnProc endp
+
+ResPreviewCtlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+	.elseif eax==WM_CTLCOLORSTATIC
+		invoke GetStockObject,WHITE_BRUSH
+		ret
+	.elseif eax==WM_CTLCOLORDLG
+		invoke GetStockObject,WHITE_BRUSH
+		ret
+	.elseif eax==WM_SIZE
 		invoke GetDlgItem,hWin,1001
-		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+		invoke IsWindowVisible,eax
+		.if eax
+			invoke SizeBmp
+		.endif
 		invoke GetDlgItem,hWin,1002
-		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
+		invoke IsWindowVisible,eax
+		.if eax
+			invoke SizeIcon
+		.endif
 		invoke GetDlgItem,hWin,1003
-		invoke MoveWindow,eax,0,0,rect.right,rect.bottom,TRUE
-		invoke InvalidateRect,hWin,NULL,TRUE
-		invoke UpdateWindow,hWin
+		invoke IsWindowVisible,eax
+		.if eax
+			invoke SizeAni
+		.endif
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ResPreviewCtlProc endp
+
+GetIconSize proc uses ebx esi edi,lpFile:DWORD
+	LOCAL	hFile:DWORD
+	LOCAL	dwread:DWORD
+	LOCAL	nid:DWORD
+	LOCAL	buffer[64]:BYTE
+
+	invoke strcpy,addr icondef.szFile,lpFile
+	invoke CreateFile,lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke ReadFile,hFile,addr icondef.reserved,sizeof icondef-MAX_PATH,addr dwread,NULL
+		invoke CloseHandle,hFile
+		mov		nid,1001
+		movzx	edi,icondef.ncount
+		.if edi>6
+			mov		edi,6
+		.endif
+		lea		esi,icondef.is1
+		.while edi
+			movzx	edx,[esi].ICONSIZE.wt
+			.if !edx
+				mov		edx,256
+			.endif
+			push	edx
+			invoke ResEdBinToDec,edx,addr buffer
+			movzx	edx,[esi].ICONSIZE.ht
+			.if !edx
+				mov		edx,256
+			.endif
+			push	edx
+			invoke ResEdBinToDec,edx,addr buffer[32]
+			invoke strcat,addr buffer,addr szX
+			invoke strcat,addr buffer,addr buffer[32]
+			invoke GetDlgItem,hPrvDlg2,nid
+			mov		ebx,eax
+			invoke SendMessage,ebx,WM_SETTEXT,0,addr buffer
+			invoke ShowWindow,ebx,SW_SHOWNA
+			pop		eax
+			shl		eax,16
+			pop		edx
+			or		eax,edx
+			invoke SetWindowLong,ebx,GWL_USERDATA,eax
+			inc		nid
+			dec		edi
+			add		esi,sizeof ICONSIZE
+		.endw
+		invoke CheckDlgButton,hPrvDlg2,1001,BST_CHECKED
+	.endif
+	ret
+
+GetIconSize endp
+
+ResPreviewProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hPrvDlg1,eax
+		invoke CreateDialogParam,hInstance,IDD_RESPREVIEWBTN,hWin,addr ResPreviewBtnProc,0
+		mov		hPrvDlg2,eax
+		invoke CreateDialogParam,hInstance,IDD_RESPREVIEWCTL,hWin,addr ResPreviewCtlProc,0
+		mov		hPrvDlg3,eax
+		mov		esi,lParam
+		mov		eax,[esi]
+		add		esi,4
+		.if !eax
+			; Bitmap
+			invoke GetDlgItem,hPrvDlg3,1001
+			mov		ebx,eax
+			invoke LoadImage,0,esi,IMAGE_BITMAP,0,0,LR_LOADFROMFILE
+			mov		hPrvBmp,eax
+			invoke SendMessage,ebx,STM_SETIMAGE,IMAGE_BITMAP,eax
+			invoke SizeBmp
+			invoke ShowWindow,ebx,SW_SHOW
+		.elseif eax==1
+			; Cursor
+			invoke GetDlgItem,hPrvDlg3,1002
+			mov		ebx,eax
+			invoke GetIconSize,esi
+			movzx	ecx,icondef.is1.wt
+			movzx	edx,icondef.is1.ht
+			invoke LoadImage,0,esi,IMAGE_CURSOR,ecx,edx,LR_LOADFROMFILE
+			mov		hPrvCursor,eax
+			invoke SendMessage,ebx,STM_SETIMAGE,IMAGE_CURSOR,eax
+			invoke SizeIcon
+			invoke ShowWindow,ebx,SW_SHOW
+		.elseif eax==2
+			; Icon
+			invoke GetDlgItem,hPrvDlg3,1002
+			mov		ebx,eax
+			invoke GetIconSize,esi
+			movzx		ecx,icondef.is1.wt
+			movzx		edx,icondef.is1.ht
+			invoke LoadImage,0,esi,IMAGE_ICON,ecx,edx,LR_LOADFROMFILE
+			mov		hPrvIcon,eax
+			invoke SendMessage,ebx,STM_SETIMAGE,IMAGE_ICON,eax
+			invoke SizeIcon
+			invoke ShowWindow,ebx,SW_SHOW
+		.elseif eax==3
+			; Animate
+			invoke GetDlgItem,hPrvDlg3,1003
+			mov		ebx,eax
+			invoke SendMessage,ebx,ACM_OPEN,0,esi
+			invoke SizeAni
+			invoke ShowWindow,ebx,SW_SHOW
+		.elseif eax==8
+			; Anicursor
+			invoke GetDlgItem,hPrvDlg3,1002
+			mov		ebx,eax
+			invoke LoadImage,0,esi,IMAGE_CURSOR,0,0,LR_LOADFROMFILE
+			mov		hPrvCursor,eax
+			invoke SendMessage,ebx,STM_SETIMAGE,IMAGE_CURSOR,eax
+			invoke ShowWindow,ebx,SW_SHOW
+		.endif
+	.elseif eax==WM_SIZE
+		invoke GetClientRect,hWin,addr rect
+		mov		eax,rect.right
+		sub		eax,94
+		mov		rect.right,eax
+		invoke MoveWindow,hPrvDlg2,eax,0,94,rect.bottom,TRUE
+		invoke MoveWindow,hPrvDlg3,0,0,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CLOSE
+		invoke Destroy
 		invoke EndDialog,hWin,0
-;	.elseif eax==WM_CTLCOLORSTATIC
-;		invoke GetStockObject,WHITE_BRUSH
-;		ret
 	.else
 		mov		eax,FALSE
 		ret

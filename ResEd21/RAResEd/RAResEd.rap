@@ -5,7 +5,7 @@ Description=RadASM resource editor 21
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Res.rc=1
 Ver.rc=1
 
@@ -88,6 +88,8 @@ Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
 44=RCDataEdit.asm
 45=RCDataEdit.dlg
 46=ResPreview.dlg
+47=ResPreviewBtn.dlg
+48=ResPreviewCtl.dlg
 
 [Colref]
 0=00FFFFFF
@@ -154,7 +156,7 @@ Options=52
 21=0,0,0,0,56009
 23=0,0,0,0
 24=0,0,0,0,372
-26=0,0,0,0,4875
+26=0,0,0,0,6817
 25=0,0,0,0
 22=0,0,0,0,5060
 28=0,0,0,0,6701
@@ -179,6 +181,8 @@ Options=52
 19=0,0,0,0
 13=0,0,0,0,4910
 46=0,0,0,0
+47=0,0,0,0
+48=0,0,0,0
 
 
 [Find]
@@ -198,27 +202,27 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.16
-PV=2.1.0.16
+FV=2.1.0.13
+PV=2.1.0.13
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.16
+ProductVersion=2.1.0.13
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.16
+FileVersion=2.1.0.13
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=4
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -239,7 +243,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -296,6 +300,8 @@ Group=Assembly,Resources,Misc,Modules,Include
 44=1
 45=2
 46=2
+47=2
+48=2
 
 
 [Collapse]
@@ -316,7 +322,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 34=,
 29=,
 28=
-26=,
+26=,,
 24=
 3=
 39=,,
@@ -328,7 +334,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 5=
 13=
 [PTimer]
-PTimer=333602573
+PTimer=330513462
 
 [Exports]
 1=ResEdInstall

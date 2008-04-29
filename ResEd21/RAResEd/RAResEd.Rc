@@ -13,3 +13,5 @@
 #include "Res/RCDataEditDlg.rc"
 #include "Res/ToolbarEditDlg.rc"
 #include "Res/ResPreviewDlg.rc"
+#include "Res/ResPreviewBtnDlg.rc"
+#include "Res/ResPreviewCtlDlg.rc"
