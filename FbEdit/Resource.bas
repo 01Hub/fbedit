@@ -81,6 +81,7 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
 				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
+			ah.hrareseddlg=SendMessage(ah.hraresed,PRO_GETDIALOG,0,0)
 			fTimer=1
 			'
 		Case WM_CONTEXTMENU

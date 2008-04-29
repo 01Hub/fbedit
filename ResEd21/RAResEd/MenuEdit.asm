@@ -661,8 +661,11 @@ HotProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 		.while fHotFocus
 			invoke GetMessage,addr msg,NULL,0,0
 		  .BREAK .if !eax
-			invoke TranslateMessage,addr msg
-			invoke DispatchMessage,addr msg
+			invoke IsDialogMessage,hDialog,addr msg
+			.if !eax
+				invoke TranslateMessage,addr msg
+				invoke DispatchMessage,addr msg
+			.endif
 		.endw
 	.elseif eax==WM_KILLFOCUS
 		mov		fHotFocus,FALSE

@@ -92,6 +92,7 @@ Type ADDINHANDLES
 	hOutFont			As HFONT							' Output window font
 	hpane(1)			As HWND							' Handle of text or resource edit window in 2'nd pane
 	hraresed			As HWND							' Handle of RAResEd window
+	hrareseddlg		As HWND							' Handle of RAResEd dialog
 End Type
 
 Type ADDINDATA

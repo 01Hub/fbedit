@@ -1667,6 +1667,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mul		ecx
 		add		eax,offset rarstype
 		jmp		Ex
+	.elseif eax==PRO_GETDIALOG
+		mov		eax,hDialog
+		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

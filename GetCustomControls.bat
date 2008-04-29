@@ -6,4 +6,5 @@ Copy ResEd21\Dll\RAResEd.dll \FbEdit
 Copy SimEd\RAEdit.dll \FbEdit
 Copy HexEd\RAHexEd.dll \FbEdit
 Copy SpreadSheet\SprSht.dll \FbEdit
+Copy FbEditDLL\FbEdit.dll \FbEdit
 pause

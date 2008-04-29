@@ -259,6 +259,7 @@ lpType				dd ?
 lpcbData			dd ?
 hCustDll			dd 32 dup(?)
 hPreview			dd ?
+hDialog				dd ?
 winsize				WINSIZE <?>
 mnupos				dd ?
 mnubuff				db 8192 dup(?)

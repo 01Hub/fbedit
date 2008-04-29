@@ -60,6 +60,28 @@ Function CreateIDEvents(ByVal nType As Integer, ByRef sLine As String,ByRef hMem
 
 End Function
 
+Function CreateMenuIDEvents(ByRef sLine As String,ByRef hMem As HGLOBAL) As Integer
+	Dim nButton As Integer
+	Dim sTmp As String
+	Dim i As Integer
+
+	If lpMNUHEAD Then
+		lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUHEAD)+SizeOf(MNUHEAD))
+		While lpMNUITEM->itemflag
+			If Len(lpMNUITEM->itemname) And lpMNUITEM->itemid>0 Then
+				sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
+				sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
+				lstrcat(Cast(ZString Ptr,hMem),sTmp)
+				lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+				i+=1
+			EndIf
+			lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUITEM)+SizeOf(MNUITEM))
+		Wend
+	EndIf
+	Return i
+
+End Function
+
 Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 	Dim hMem As HGLOBAL
 	Dim f As Integer
@@ -115,10 +137,12 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 					Wend
 					If lpMNUITEM Then
 						While lpMNUITEM->itemflag
-							sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
-							sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
-							lstrcat(Cast(ZString Ptr,hMem),sTmp)
-							lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+							If Len(lpMNUITEM->itemname) And lpMNUITEM->itemid>0 Then
+								sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
+								sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
+								lstrcat(Cast(ZString Ptr,hMem),sTmp)
+								lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+							EndIf
 							lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUITEM)+SizeOf(MNUITEM))
 						Wend
 					EndIf
@@ -153,6 +177,10 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
 					nEventType=BN_CLICKED
 					nMode=5
+				ElseIf InStr(sLine,szBEGINMNUSEL) Then
+					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
+					nEventType=99
+					nMode=5
 				ElseIf InStr(sLine,szBEGINEN_CHANGE) Then
 					lpSubEvent=Cast(Integer,hMem)+lstrlen(hMem)
 					nEventType=EN_CHANGE
@@ -168,6 +196,11 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 				'
 			Case 5
 				If InStr(sLine,szENDBN_CLICKED) Then
+					nMode=4
+				ElseIf InStr(sLine,szENDMNUSEL) Then
+					If nEvents=0 Then
+						Poke lpSubEvent,0
+					EndIf
 					nMode=4
 				ElseIf InStr(sLine,szENDEN_CHANGE) Then
 					If nEvents=0 Then
@@ -216,6 +249,9 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 							nEvents+=CreateIDEvents(5,sLine,hMem)
 							' Radio buttons
 							nEvents+=CreateIDEvents(6,sLine,hMem)
+						Case 99
+							' Menu items
+							nEvents=CreateMenuIDEvents(sLine,hMem)
 						Case EN_CHANGE
 							' Textbox
 							nEvents=CreateIDEvents(1,sLine,hMem)

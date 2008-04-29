@@ -2134,8 +2134,10 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	Do While GetMessage(@msg,NULL,0,0)
 		If TranslateAccelerator(ah.hwnd,ah.haccel,@msg)=0 Then
 			If IsDialogMessage(ah.hfind,@msg)=0 Then
-				TranslateMessage(@msg)
-				DispatchMessage(@msg)
+				If IsDialogMessage(ah.hrareseddlg,@msg)=0 Then
+					TranslateMessage(@msg)
+					DispatchMessage(@msg)
+				EndIf
 			EndIf
 		EndIf
 	Loop

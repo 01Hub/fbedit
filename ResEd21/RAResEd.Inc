@@ -229,6 +229,7 @@ PRO_GETSYSTEMPATH	equ PRO_BASE+22		;wParam=0, lParam=0
 PRO_SETCUSTOMTYPE	equ PRO_BASE+23		;wParam=index, lParam=lpRARSTYPE
 PRO_GETCUSTOMTYPE	equ PRO_BASE+24		;wParam=index, lParam=lpRARSTYPE
 PRO_SETDEFINE		equ PRO_BASE+25		;wPatam=0, lParam=lpszName
+PRO_GETDIALOG		equ PRO_BASE+26		;wPatam=0, lParam=0
 
 ;Project item types
 TPE_NAME			equ 1

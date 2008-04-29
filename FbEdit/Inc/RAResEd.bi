@@ -213,6 +213,7 @@ End Type
 #Define PRO_SETCUSTOMTYPE		PRO_BASE+23		' wParam=index, lParam=lpRARSTYPE
 #Define PRO_GETCUSTOMTYPE		PRO_BASE+24		' wParam=index, lParam=lpRARSTYPE
 #Define PRO_SETDEFINE			PRO_BASE+25		' wPatam=0, lParam=lpszName
+#Define PRO_GETDIALOG			PRO_BASE+26		' wPatam=0, lParam=0
 
 ' Project item types
 #Define TPE_NAME					1

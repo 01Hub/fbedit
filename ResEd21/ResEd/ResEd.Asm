@@ -219,10 +219,13 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	  .BREAK .if !eax
 		invoke IsDialogMessage,hPreview,addr msg
 		.if !eax
-			invoke TranslateAccelerator,hWnd,hAccel,addr msg
+			invoke IsDialogMessage,hDialog,addr msg
 			.if !eax
-				invoke TranslateMessage,addr msg
-				invoke DispatchMessage,addr msg
+				invoke TranslateAccelerator,hWnd,hAccel,addr msg
+				.if !eax
+					invoke TranslateMessage,addr msg
+					invoke DispatchMessage,addr msg
+				.endif
 			.endif
 		.endif
 	.endw
@@ -1064,6 +1067,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hResEd
 			invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
 			mov		hPreview,eax
+			invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+			mov		hDialog,eax
 			invoke ToolBarEnable
 		.else
 			mov		eax,[edx].NMHDR.code
