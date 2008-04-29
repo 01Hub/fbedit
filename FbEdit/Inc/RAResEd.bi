@@ -1,34 +1,34 @@
 
-';Dialog memory size
-'MaxMem				equ 128*1024*3
+' Dialog memory size
+#Define MaxMem		128*1024*3
 #Define MaxCap		256
 #Define MaxName	64
 
-';Dialog structures
-'DLGHEAD struct
-'	changed			dd ?				;Set to FALSE
-'	class			db 32 dup(?)		;Set to Null string
-'	menuid			db MaxName dup(?)	;Set to Null string
-'	font			db 32 dup(?)		;Set to "MS Sans Serif"
-'	fontsize		dd ?				;Set to 8
-'	fontht			dd ?				;Set to -10
-'	lang			dd ?				;Set to NULL
-'	sublang			dd ?				;Set to NULL
-'	undo			dd ?				;Set to NULL
-'	ctlid			dd ?				;Set to 1001
-'	hmnu			dd ?				;Set to NULL
-'	lpmnu			dd ?				;Set to NULL
-'	htlb			dd ?				;Set to NULL
-'	hstb			dd ?				;Set to NULL
-'	locked			dd ?				;Set to TRUE or FALSE
-'	hfont			dd ?				;Set to NULL
-'	charset			db ?				;Set to NULL
-'	italic			db ?				;Set to NULL
-'	weight			dw ?				;Set to NULL
-'	hred			dd ?				;Set to NULL
-'	ftextmode		dd ?				;Set to NULL
-'DLGHEAD ends
-'
+' Dialog structures
+Type DLGHEAD
+	changed		As Integer				' Set to FALSE
+	class			As ZString*32			' Set to Null string
+	menuid		As ZString*MaxName	' Set to Null string
+	font			As ZString*32			' Set to "MS Sans Serif"
+	fontsize		As Integer				' Set to 8
+	fontht		As Integer				' Set to -10
+	lang			As Integer				' Set to NULL
+	sublang		As Integer				' Set to NULL
+	undo			As Integer				' Set to NULL
+	ctlid			As Integer				' Set to 1001
+	hmnu			As Integer				' Set to NULL
+	lpmnu			As Integer				' Set to NULL
+	htlb			As HWND					' Set to NULL
+	hstb			As HWND					' Set to NULL
+	locked		As Integer				' Set to TRUE or FALSE
+	hfont			As HFONT					' Set to NULL
+	charset		As Byte					' Set to NULL
+	italic		As Byte					' Set to NULL
+	weight		As Word					' Set to NULL
+	hred			As HWND					' Set to NULL
+	ftextmode	As Integer				' Set to NULL
+End Type
+
 Type DIALOG
 	hwnd			As HWND					' Set to TRUE
 	hdmy			As HWND					' Handle of transparent window
@@ -57,7 +57,7 @@ Type DIALOG
 	himg			As Integer				' Set to NULL
 End Type
 
-';Control types
+' Control types
 'TYPES struct
 '	ID				dd ?
 '	lpclass			dd ?
@@ -75,29 +75,28 @@ End Type
 '	flist			dd 4 dup(?)
 'TYPES ends
 '
-';Menu structures
-'MNUHEAD struct
-'	changed			dd ?
-'	menuname		db MaxName dup(?)
-'	menuid			dd ?
-'	startid			dd ?
-'	menuex			dd ?
-'	lang			dd ?
-'	sublang			dd ?
-'MNUHEAD ends
-'
-'MNUITEM struct
-'	itemflag		dd ?
-'	itemname		db MaxName dup(?)
-'	itemid			dd ?
-'	itemcaption		db 64 dup(?)
-'	level			dd ?
-'	ntype			dd ?
-'	nstate			dd ?
-'	shortcut		dd ?
-'	helpid			dd ?
-'MNUITEM ends
-'
+' Menu structures
+Type MNUHEAD
+	menuname		As ZString*MaxName
+	menuid		As Integer
+	startid		As Integer
+	menuex		As Integer
+	lang			As Integer
+	sublang		As Integer
+End Type
+
+Type MNUITEM
+	itemflag		As Integer
+	itemname		As ZString*MaxName
+	itemid		As Integer
+	itemcaption	As ZString*64
+	level			As Integer
+	ntype			As Integer
+	nstate		As Integer
+	shortcut		As Integer
+	helpid		As Integer
+End Type
+
 Type RARESEDCOLOR
 	back		As Integer
 	text		As Integer
@@ -168,6 +167,8 @@ End Type
 #Define DEM_CANREDO				DEM_BASE+37		' wParam=0, lParam=0, Returns TRUE or FALSE
 #Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
 #Define DEM_GETSHOWDIALOG		DEM_BASE+39		' wParam=0, lParam=0
+#Define DEM_CLEARCUSTSTYLE		DEM_BASE+40		' wParam=0, lParam=0
+#Define DEM_ADDCUSTSTYLE		DEM_BASE+41		' wParam=0, lParam=0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -207,6 +208,11 @@ End Type
 #Define PRO_GETMEM				PRO_BASE+18		' wParam=0, lParam=0
 #Define PRO_SETTEXTFONT			PRO_BASE+19		' wParam=hFont, lParam=0
 #Define PRO_GETTEXTFONT			PRO_BASE+20		' wParam=0, lParam=0
+#Define PRO_SETSYSTEMPATH		PRO_BASE+21		' wParam=0, lParam=lpPath
+#Define PRO_GETSYSTEMPATH		PRO_BASE+22		' wParam=0, lParam=0
+#Define PRO_SETCUSTOMTYPE		PRO_BASE+23		' wParam=index, lParam=lpRARSTYPE
+#Define PRO_GETCUSTOMTYPE		PRO_BASE+24		' wParam=index, lParam=lpRARSTYPE
+#Define PRO_SETDEFINE			PRO_BASE+25		' wPatam=0, lParam=lpszName
 
 ' Project item types
 #Define TPE_NAME					1

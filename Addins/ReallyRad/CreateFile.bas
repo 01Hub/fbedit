@@ -1,4 +1,7 @@
+Dim Shared lpDLGHEAD As DLGHEAD Ptr
 Dim Shared lpDIALOG As DIALOG Ptr
+Dim Shared lpMNUHEAD As MNUHEAD Ptr
+Dim Shared lpMNUITEM As MNUITEM Ptr
 
 Function ConvertLine(ByVal sLine As String,ByVal sFunction As String,ByVal sName As String) As String
 	Dim x As Integer
@@ -79,7 +82,14 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 		Select Case nMode
 			Case 0
 				If InStr(sLine,szBEGINDEF) Then
+					lpDLGHEAD=Cast(DLGHEAD Ptr,Cast(Integer,lpCTLDBLCLICK->lpDlgMem)-SizeOf(DLGHEAD))
 					lpDIALOG=lpCTLDBLCLICK->lpDlgMem
+					lpMNUHEAD=0
+					lpMNUITEM=0
+					If lpDLGHEAD->lpmnu Then
+						lpMNUHEAD=Cast(MNUHEAD Ptr,lpDLGHEAD->lpmnu)
+						lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpDLGHEAD->lpmnu)+SizeOf(MNUHEAD))
+					EndIf
 					nMode=1
 				ElseIf InStr(sLine,szBEGINCREATE) Then
 					nMode=2
@@ -103,6 +113,15 @@ Function CreateOutputFile(ByVal sTemplate As String) As HGLOBAL
 						EndIf
 						lpDIALOG=Cast(DIALOG Ptr,Cast(Integer,lpDIALOG)+SizeOf(DIALOG))
 					Wend
+					If lpMNUITEM Then
+						While lpMNUITEM->itemflag
+							sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
+							sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
+							lstrcat(Cast(ZString Ptr,hMem),sTmp)
+							lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+							lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUITEM)+SizeOf(MNUITEM))
+						Wend
+					EndIf
 				EndIf
 				'
 			Case 2
