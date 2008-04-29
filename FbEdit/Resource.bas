@@ -76,6 +76,11 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
 				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
+			If lpCTLDBLCLICK->nmhdr.code=NM_CLICK Then
+				'TextToOutput(*lpCTLDBLCLICK->lpCtlName)
+				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
+				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
+			EndIf
 			fTimer=1
 			'
 		Case WM_CONTEXTMENU

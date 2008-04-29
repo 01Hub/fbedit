@@ -2346,6 +2346,33 @@ GetNextLevel:
 
 GetMnuPopup endp
 
+GetMnuName proc uses ebx esi,lpDlgMem:DWORD,nid:DWORD
+
+	mov		esi,lpDlgMem
+	mov		eax,[esi].DLGHEAD.lpmnu
+	.if eax
+		mov		esi,eax
+		add		esi,sizeof MNUHEAD
+	  @@:
+		mov		eax,(MNUITEM ptr [esi]).itemflag
+		.if eax
+			.if eax!=-1
+				mov		eax,(MNUITEM ptr [esi]).itemid
+				.if eax==nid
+					lea		eax,(MNUITEM ptr [esi]).itemname
+					jmp		Ex
+				.endif
+			.endif
+			add		esi,sizeof MNUITEM
+			jmp		@b
+		.endif
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+GetMnuName endp
+
 CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lpOldProc:DWORD
 	LOCAL	pt:POINT
@@ -2446,6 +2473,37 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hWin,WM_NCPAINT,0,0
 				.endif
 			.elseif eax==WM_COMMAND && !lParam
+				push	ebx
+				lea		ebx,dblclk
+				mov		eax,hRes
+				mov		[ebx].CTLDBLCLICK.nmhdr.hwndFrom,eax
+				invoke GetWindowLong,hRes,GWL_ID
+				push	eax
+				mov		[ebx].CTLDBLCLICK.nmhdr.idFrom,eax
+				mov		[ebx].CTLDBLCLICK.nmhdr.code,NM_CLICK
+				mov		eax,wParam
+				mov		[ebx].CTLDBLCLICK.nCtlId,eax
+				lea		edx,[esi-sizeof DLGHEAD]
+				invoke GetMnuName,edx,eax
+				mov		[ebx].CTLDBLCLICK.lpCtlName,eax
+				mov		eax,(DIALOG ptr [esi]).ntype
+				.if !eax
+					mov		eax,esi
+				.else
+					mov		eax,(DIALOG ptr [esi]).hpar
+					invoke GetWindowLong,eax,GWL_USERDATA
+				.endif
+				mov		edx,eax
+				mov		[ebx].CTLDBLCLICK.lpDlgMem,eax
+				mov		eax,(DIALOG ptr [edx]).id
+				mov		[ebx].CTLDBLCLICK.nDlgId,eax
+				lea		eax,(DIALOG ptr [edx]).idname
+				mov		[ebx].CTLDBLCLICK.lpDlgName,eax
+				invoke GetParent,hRes
+				pop		edx
+				invoke SendMessage,eax,WM_NOTIFY,edx,ebx
+				pop		ebx
+				jmp		Ex
 			.endif
 		.endif
 		mov		eax,uMsg

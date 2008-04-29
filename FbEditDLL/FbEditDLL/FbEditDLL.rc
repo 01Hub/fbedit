@@ -43,6 +43,8 @@ END
 #include					"Res/RCDataEditDlg.rc"
 #include					"Res/ResourceEditDlg.Rc"
 #include					"Res/ResPreviewDlg.rc"
+#include					"Res/ResPreviewBtnDlg.rc"
+#include					"Res/ResPreviewCtlDlg.rc"
 #include					"Res/StringEditDlg.Rc"
 #include					"Res/StyleManaDlg.Rc"
 #include					"Res/ToolbarEditDlg.rc"

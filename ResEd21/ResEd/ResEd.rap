@@ -131,22 +131,22 @@ Options=52
 0=
 
 [Find]
-1="maxcap"
-2="szResourceh"
-3="szCtrl"
-4="Ctrl"
-5="hStatus"
-6="PRO_GETSYSTEMPATH"
-7="GM_ENDEDIT"
-8="RSM_SETSTYLEVAL"
-9="StyleManaDialogProc"
-10="PRP_FUN_EXSTYLE"
+1="GetMnuPopup"
+2="CreateMnu"
+3="MEM_OPEN"
+4="InstallRAEdit"
+5="GridInstall"
+6="ResEdInstall"
+7="GWL_USERDATA"
+8="EM_LIM"
+9="PRP_FUN_STYLE"
+10="GM_ENDEDIT"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=8
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
