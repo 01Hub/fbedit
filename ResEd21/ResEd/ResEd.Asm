@@ -858,8 +858,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		mov		eax,wParam
 		.if eax==hResEd
-			invoke SendMessage,hWin,WM_INITMENUPOPUP,hMnu,4
 			invoke GetSubMenu,hMnu,4
+			push	eax
+			invoke SendMessage,hWin,WM_INITMENUPOPUP,eax,4
+			pop		eax
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.else
 			invoke SendMessage,hWin,WM_INITMENUPOPUP,hContextMenuPopup,1

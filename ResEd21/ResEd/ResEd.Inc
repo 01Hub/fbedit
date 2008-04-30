@@ -47,7 +47,6 @@ IDC_RESED					equ 1002
 IDC_TBR1					equ 1004
 IDC_SBR1					equ 1005
 IDC_EDT1					equ 1007
-IDC_MRU						equ 1008
 
 IDR_MENU					equ 10000
 IDM_FILE_NEW_PROJECT		equ 10029

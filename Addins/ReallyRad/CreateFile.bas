@@ -68,12 +68,14 @@ Function CreateMenuIDEvents(ByRef sLine As String,ByRef hMem As HGLOBAL) As Inte
 	If lpMNUHEAD Then
 		lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUHEAD)+SizeOf(MNUHEAD))
 		While lpMNUITEM->itemflag
-			If Len(lpMNUITEM->itemname) And lpMNUITEM->itemid>0 Then
-				sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
-				sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
-				lstrcat(Cast(ZString Ptr,hMem),sTmp)
-				lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
-				i+=1
+			If lpMNUITEM->itemflag<>-1 Then
+				If Len(lpMNUITEM->itemname) And lpMNUITEM->itemid>0 Then
+					sTmp=ConvertLine(sLine,szCONTROLNAME,lpMNUITEM->itemname)
+					sTmp=ConvertLine(sTmp,szCONTROLID,Str(lpMNUITEM->itemid))
+					lstrcat(Cast(ZString Ptr,hMem),sTmp)
+					lstrcat(Cast(ZString Ptr,hMem),@szCRLF)
+					i+=1
+				EndIf
 			EndIf
 			lpMNUITEM=Cast(MNUITEM Ptr,Cast(Integer,lpMNUITEM)+SizeOf(MNUITEM))
 		Wend

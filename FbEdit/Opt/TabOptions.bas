@@ -17,13 +17,9 @@
 
 'TabOpt2.dlg
 #Define IDD_TABOPT2							2200
-#Define IDC_BTNCUST							2207
-#Define IDC_EDTCUST							2206
 #Define IDC_BTNCUSTDEL						2205
 #Define IDC_BTNCUSTADD						2204
-#Define IDC_BTNCUSTDN						2203
-#Define IDC_BTNCUSTUP						2202
-#Define IDC_LSTCUST							2201
+#Define IDC_GRDCUST							2201
 
 'TabOpt3.dlg
 #Define IDD_TABOPT3							2300
@@ -70,89 +66,104 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim As Long id,Event
 	Dim nInx As Integer
 	Dim ofn As OPENFILENAME
+	Dim hGrd As HWND
+	Dim clmn As COLUMN
+	Dim row(1) As Integer
+	Dim x As Integer
+	Dim lpGRIDNOTIFY As GRIDNOTIFY Ptr
 
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_TABOPT2)
-			SendDlgItemMessage(hWin,IDC_BTNCUSTUP,BM_SETIMAGE,IMAGE_ICON,Cast(Integer,ImageList_GetIcon(ah.hmnuiml,2,ILD_NORMAL)))
-			SendDlgItemMessage(hWin,IDC_BTNCUSTDN,BM_SETIMAGE,IMAGE_ICON,Cast(Integer,ImageList_GetIcon(ah.hmnuiml,3,ILD_NORMAL)))
-			SendDlgItemMessage(hWin,IDC_EDTCUST,EM_LIMITTEXT,MAX_PATH-1,0)
+			hGrd=GetDlgItem(hWin,IDC_GRDCUST)
+			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
+			clmn.colwt=300
+			clmn.lpszhdrtext=StrPtr("Custom control")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITBUTTON
+			clmn.ctextmax=128
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Style mask
+			clmn.colwt=80
+			clmn.lpszhdrtext=StrPtr("Style mask")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=16
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			nInx=1
 			While nInx<=32
 				GetPrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@szNULL,@buff,260,@ad.IniFile)
 				If Len(buff) Then
-					SendDlgItemMessage(hWin,IDC_LSTCUST,LB_ADDSTRING,0,Cast(Integer,@buff))
+					x=InStr(buff,",")
+					If x Then
+						buff[x-1]=NULL
+						row(0)=Cast(Integer,@buff)
+						row(1)=Cast(Integer,@buff[x])
+					Else
+						row(0)=Cast(Integer,@buff)
+						row(1)=0
+					EndIf
+					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
 				EndIf
 				nInx=nInx+1
 			Wend
-			SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,0,0)
 			'
 		Case WM_COMMAND
+			hGrd=GetDlgItem(hWin,IDC_GRDCUST)
 			id=LoWord(wParam)
 			Event=HiWord(wParam)
 			Select Case Event
 				Case BN_CLICKED
 					Select Case id
 						Case IDC_BTNCUSTADD
-							GetDlgItemText(hWin,IDC_EDTCUST,@buff,260)
-							nInx=SendDlgItemMessage(hWin,IDC_LSTCUST,LB_ADDSTRING,0,Cast(Integer,@buff))
-							SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0)
-							SetDlgItemText(hWin,IDC_EDTCUST,StrPtr(""))
+							nInx=SendMessage(hGrd,GM_ADDROW,0,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
 							'
 						Case IDC_BTNCUSTDEL
-							nInx=SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETCURSEL,0,0)
-							If nInx<>LB_ERR Then
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_DELETESTRING,nInx,0)
-								If SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0)=LB_ERR Then
-									SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,nInx-1,0)
-								EndIf
-							EndIf
-							'
-						Case IDC_BTNCUSTUP
-							nInx=SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETCURSEL,0,0)
-							If nInx Then
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETTEXT,nInx,Cast(Integer,@buff))
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_DELETESTRING,nInx,0)
-								nInx=nInx-1
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_INSERTSTRING,nInx,Cast(Integer,@buff))
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0)
-							EndIf
-							'
-						Case IDC_BTNCUSTDN
-							nInx=SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETCURSEL,0,0)
-							id=SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETCOUNT,0,0)
-							If id-1<>nInx Then
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_GETTEXT,nInx,Cast(Integer,@buff))
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_DELETESTRING,nInx,0)
-								nInx=nInx+1
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_INSERTSTRING,nInx,Cast(Integer,@buff))
-								SendDlgItemMessage(hWin,IDC_LSTCUST,LB_SETCURSEL,nInx,0)
-							EndIf
-							'
-						Case IDC_BTNCUST
-							ofn.lStructSize=SizeOf(ofn)
-							ofn.hwndOwner=hWin
-							ofn.hInstance=hInstance
-							ofn.lpstrInitialDir=NULL
-							ofn.lpstrFilter=@DLLFilterString
-							ofn.lpstrDefExt=0
-							ofn.lpstrTitle=0
-							ofn.lpstrFile=@buff
-							GetDlgItemText(hWin,IDC_EDTCUST,@buff,260)
-							ofn.nMaxFile=260
-							ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
-							If GetOpenFileName(@ofn) Then
-								SetDlgItemText(hWin,IDC_EDTCUST,@buff)
-							EndIf
+							nInx=SendMessage(hGrd,GM_GETCURROW,0,0)
+							SendMessage(hGrd,GM_DELROW,nInx,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
 							'
 					End Select
 					'
-				Case EN_CHANGE
-					If id=IDC_EDTCUST Then
-						EnableWindow(GetDlgItem(hWin,IDC_BTNCUSTADD),SendDlgItemMessage(hWin,IDC_EDTCUST,WM_GETTEXTLENGTH,0,0))
-					EndIf
-					'
 			End Select
+			'
+		Case WM_NOTIFY
+			hGrd=GetDlgItem(hWin,IDC_GRDCUST)
+			lpGRIDNOTIFY=Cast(GRIDNOTIFY Ptr,lParam)
+			If lpGRIDNOTIFY->nmhdr.hwndFrom=hGrd Then
+				If lpGRIDNOTIFY->nmhdr.code=GN_HEADERCLICK Then
+					' Sort the grid by column, invert sorting order
+					SendMessage(hGrd,GM_COLUMNSORT,lpGRIDNOTIFY->col,SORT_INVERT)
+				ElseIf lpGRIDNOTIFY->nmhdr.code=GN_BUTTONCLICK Then
+					' Cell button clicked
+					ofn.lStructSize=SizeOf(ofn)
+					ofn.hwndOwner=hWin
+					ofn.hInstance=hInstance
+					ofn.lpstrFilter=@DLLFilterString
+					ofn.lpstrFile=@buff
+					lstrcpy(@buff,Cast(ZString Ptr,lpGRIDNOTIFY->lpdata))
+					ofn.nMaxFile=MAX_PATH
+					ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
+					' Show the Open dialog
+					If GetOpenFileName(@ofn) Then
+						lstrcpy(Cast(ZString Ptr,lpGRIDNOTIFY->lpdata),@buff)
+						lpGRIDNOTIFY->fcancel=FALSE
+					Else
+						lpGRIDNOTIFY->fcancel=TRUE
+					EndIf
+				EndIf
+			EndIf
 			'
 		Case Else
 			Return FALSE
@@ -333,7 +344,10 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 					buff=String(32,0)
 					WritePrivateProfileSection(StrPtr("CustCtrl"),@buff,@ad.IniFile)
 					nInx=0
-					While SendDlgItemMessage(hTabDlg(1),IDC_LSTCUST,LB_GETTEXT,nInx,Cast(Integer,@buff))<>LB_ERR
+					While SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETROWCOUNT,0,0)>nInx
+						SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@buff))
+						buff &=","
+						SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@buff[Len(buff)]))
 						nInx=nInx+1
 						WritePrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@buff,@ad.IniFile)
 					Wend

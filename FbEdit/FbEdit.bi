@@ -14,6 +14,7 @@
 #Include "Inc/RAResEd.bi"
 #Include "Inc/RAHexEd.bi"
 #Include "Inc/Addins.bi"
+#Include "Inc/RAGrid.bi"
 
 Declare Function IsResOpen() As HWND
 Declare Function WantToSave(ByVal hWin As HWND) As Boolean

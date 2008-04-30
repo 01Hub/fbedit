@@ -222,7 +222,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		clmn.halign,GA_ALIGN_LEFT
 		mov		clmn.calign,GA_ALIGN_LEFT
 		mov		clmn.ctype,TYPE_EDITTEXT
-		mov		clmn.ctextmax,8
+		mov		clmn.ctextmax,16
 		mov		clmn.lpszformat,0
 		mov		clmn.himl,0
 		mov		clmn.hdrflag,0
@@ -917,9 +917,6 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETROWCOUNT,0,0
 					.if eax>nInx
 						mov		buffer,0
-						mov		ecx,nInx
-						shl		ecx,16
-						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
 						mov		ecx,nInx
 						shl		ecx,16
 						invoke SendDlgItemMessage,hTabDlg[4],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
