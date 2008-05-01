@@ -174,7 +174,6 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 End Function
 
 Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
 	Dim cc As ChooseColor
 
 	Select Case uMsg
@@ -193,9 +192,6 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			CheckDlgButton(hWin,IDC_CHKSIMPLEPROPERTY,grdsize.simple)
 			CheckDlgButton(hWin,IDC_CHKDEFSTATIC,grdsize.defstatic)
 			'
-		Case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
-			FillRect(lpDRAWITEMSTRUCT->hDC,@lpDRAWITEMSTRUCT->rcItem,hGrdBr)
 		Case WM_COMMAND
 			If wParam=IDC_STCGRIDCOLOR Then
 				cc.lStructSize=SizeOf(ChooseColor)
@@ -214,6 +210,11 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 					InvalidateRect(GetDlgItem(hWin,IDC_STCGRIDCOLOR),NULL,TRUE)
 				EndIf
 			EndIf
+		Case WM_CTLCOLORSTATIC
+			If GetDlgItem(hWin,IDC_STCGRIDCOLOR)=lParam Then
+				Return Cast(Integer,hGrdBr)
+			EndIf
+			Return FALSE
 		Case Else
 			Return FALSE
 			'
@@ -343,6 +344,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 					SetDialogOptions(ah.hres)
 					buff=String(32,0)
 					WritePrivateProfileSection(StrPtr("CustCtrl"),@buff,@ad.IniFile)
+					WritePrivateProfileSection(StrPtr("CustCtrl"),szNULL & szNULL,@ad.IniFile)
 					nInx=0
 					While SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETROWCOUNT,0,0)>nInx
 						SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@buff))

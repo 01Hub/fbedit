@@ -757,14 +757,16 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							Return 0
 						EndIf
 				ElseIf wParam=VK_SPACE Or wParam=VK_TAB Or wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
-					If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
-						SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
-						Return 0
-					Else
-						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-						If chrg.cpMin<>chrg.cpMax Then
-							SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+					If wParam=VK_TAB Then
+						If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
+							SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
 							Return 0
+						Else
+							SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+							If chrg.cpMin<>chrg.cpMax Then
+								SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+								Return 0
+							EndIf
 						EndIf
 					EndIf
 					If lret=12345 Then
