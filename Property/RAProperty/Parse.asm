@@ -1489,6 +1489,12 @@ ParseStruct:
 				lea		esi,[esi+ecx]
 				invoke GetWord,esi,addr npos
 				mov		esi,edx
+				invoke IsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
+				.if eax
+					lea		esi,[esi+ecx]
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+				.endif
 				mov		lpword2,esi
 				mov		len2,ecx
 				lea		esi,[esi+ecx]
