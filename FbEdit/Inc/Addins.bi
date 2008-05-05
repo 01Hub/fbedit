@@ -167,7 +167,7 @@ End Type
 #Define HOOK_MAKEBEGIN		&H200
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
-#Define HOOK_CTLDBLCLK	&H1000
+#Define HOOK_CTLDBLCLK		&H1000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

@@ -46,7 +46,6 @@ Const SPRM_GETCELLTYPE			= WM_USER+143		'Get cell data type. wParam=col, lParam=
 Const SPRM_ADJUSTCELLREF		= WM_USER+144		'Adjust cell refs in formula. wParam=pointer to cell, lParam=pointer to RECT.
 Const SPRM_CREATECOMBO			= WM_USER+145		'Creates a ComboBox. wPatam=0, lParam=0
 Const SPRM_SCROLLCELL			= WM_USER+146		'Scrolls current cell into view
-Const SPRM_DELETECELL			= WM_USER+147		'Deletes a cell. wParam=col, lParam=row
 
 'Styles
 Const SPS_VSCROLL			  		= &h0001				'Vertical scrollbar
@@ -77,14 +76,12 @@ Const TPE_CHECKBOX				= &h00B				'Checkbox
 Const TPE_COMBOBOX				= &h00C				'Combobox
 Const TPE_OWNERDRAWBLOB			= &h00D				'Owner drawn blob, first word is lenght of blob
 Const TPE_OWNERDRAWINTEGER		= &h00E				'Owner drawn integer
-Const TPE_EXPANDED				= &h00F				'Part of expanded cell, internally used
 
-Const TPE_TYPEMASK				= &h00F				'Type mask
+Const TPE_EXPANDED				= &h00F				'Part of expanded cell, internally used
 
 Const TPE_BUTTON					= &h010				'Small button
 Const TPE_WIDEBUTTON				= &h020				'Button, covers the cell
-Const TPE_FORCETYPE				= &h040				'Forced type
-Const TPE_FIXEDSIZE				= &h080				'Fixed size for CheckBox, ComboBox and Button image
+Const TPE_FORCETEXT				= &h044				'Forced text type
 
 'Format Alignment & Decimals
 Const FMTA_AUTO					= &h000				'Text left middle, numbers right middle
@@ -151,7 +148,7 @@ End Type
 
 Type FONT
 	hfont				As Integer							'Font handle
-	face				As PTSTR								'Face name
+	face				As ZString*LF_FACESIZE			'Face name
 	fsize				As Integer							'Point size
 	ht					As Integer							'Height
 	bold				As Byte								'Bold

@@ -1450,86 +1450,11 @@ ParseStruct:
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
-			invoke IsIgnore,IGNORE_STRUCTITEMFIRSTWORD,ecx,esi
-			.if eax
-				; As Integer x
-				lea		esi,[esi+ecx]
-				invoke GetWord,esi,addr npos
-				mov		esi,edx
-				mov		lpword2,esi
-				mov		len2,ecx
-				lea		esi,[esi+ecx]
-			  @@:
-				invoke GetWord,esi,addr npos
-				mov		esi,edx
-				.if !ecx
-					.if byte ptr [esi]=='*'
-						inc		esi
-						invoke GetWord,esi,addr npos
-						mov		esi,edx
-						lea		esi,[esi+ecx]
-						jmp		@b
-					.endif
-				.endif
-				invoke IsIgnore,IGNORE_PTR,ecx,esi
+			invoke IsIgnore,IGNORE_STRUCTLINEFIRSTWORD,ecx,esi
+			.if !eax
+				invoke IsIgnore,IGNORE_STRUCTITEMFIRSTWORD,ecx,esi
 				.if eax
-					; ptr
-					inc		fPtr
-					lea		esi,[esi+ecx]
-					jmp		@b
-				.endif
-				mov		lpword1,esi
-				mov		len1,ecx
-				lea		esi,[esi+ecx]
-				jmp		ParseStruct3
-			.endif
-			invoke IsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
-			.if eax
-				; Declare MySub 
-				lea		esi,[esi+ecx]
-				invoke GetWord,esi,addr npos
-				mov		esi,edx
-				invoke IsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
-				.if eax
-					lea		esi,[esi+ecx]
-					invoke GetWord,esi,addr npos
-					mov		esi,edx
-				.endif
-				mov		lpword2,esi
-				mov		len2,ecx
-				lea		esi,[esi+ecx]
-				invoke GetWord,esi,addr npos
-				mov		esi,edx
-				mov		lpword1,esi
-				xor		ecx,ecx
-				.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_TAB && byte ptr [esi]!=VK_RETURN && byte ptr [esi]!='('
-					inc		esi
-					inc		ecx
-				.endw
-				mov		len1,ecx
-				jmp		ParseStruct3
-			.else
-				mov		lpword1,esi
-				mov		len1,ecx
-				lea		esi,[esi+ecx]
-			.endif
-		  ParseStruct2:
-			invoke GetWord,esi,addr npos
-			mov		esi,edx
-			.if byte ptr [esi]=='('
-				; MyItem(0 To 7) As Integer
-				.while byte ptr [esi] && byte ptr [esi]!=0Dh && byte ptr [esi]!=')'
-					inc		esi
-				.endw
-				.if byte ptr [esi]==')'
-					inc		esi
-				.endif
-				jmp		ParseStruct2
-			.endif
-			.if ecx
-				invoke IsIgnore,IGNORE_STRUCTITEMSECONDWORD,ecx,esi
-				.if eax
-					; As Integer
+					; As Integer x
 					lea		esi,[esi+ecx]
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
@@ -1539,6 +1464,15 @@ ParseStruct:
 				  @@:
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
+					.if !ecx
+						.if byte ptr [esi]=='*'
+							inc		esi
+							invoke GetWord,esi,addr npos
+							mov		esi,edx
+							lea		esi,[esi+ecx]
+							jmp		@b
+						.endif
+					.endif
 					invoke IsIgnore,IGNORE_PTR,ecx,esi
 					.if eax
 						; ptr
@@ -1546,67 +1480,136 @@ ParseStruct:
 						lea		esi,[esi+ecx]
 						jmp		@b
 					.endif
+					mov		lpword1,esi
+					mov		len1,ecx
+					lea		esi,[esi+ecx]
 					jmp		ParseStruct3
 				.endif
-			.endif
-			mov		lpword2,esi
-			mov		len2,ecx
-			lea		esi,[esi+ecx]
-			invoke WhatIsIt,lpword1,len1,lpword2,len2
-			.if eax
-				movzx	eax,[eax].DEFTYPE.nDefType
-				.if eax==DEFTYPE_ENDSTRUCT
-					dec		nNest
-					.if ZERO?
-						mov		byte ptr [edi],0
-						retn
-					.endif
-				.elseif eax==DEFTYPE_STRUCT
-					inc		nNest
-				.endif
-			.else
-	  		  ParseStruct3:
-				.if byte ptr [edi]==','
-					inc		edi
-				.endif
-				mov		eax,len1
-				inc		eax
-				invoke lstrcpyn,edi,lpword1,eax
-				add		edi,len1
-				mov		word ptr [edi],':'
-				inc		edi
-				mov		eax,len2
-				inc		eax
-				invoke lstrcpyn,edi,lpword2,eax
-				add		edi,len2
-				.if fPtr
-				  @@:
-					invoke lstrcpyn,edi,addr szPtr,5
-					lea		edi,[edi+4]
-					dec		fPtr
-					jne		@b
-				.endif
-				invoke IsFunction,lpword2,len2
-				.if !eax
-					inc		fdim
-					push	edi
-					mov		eax,TYPE_NAMEFIRST
-					call	ParseProcNoNamespace
-					pop		edi
-					mov		edx,'t'
-					invoke AddWordToWordList,edx,nOwner,nline,npos,edi,4
-				.endif
-				mov		word ptr [edi],','
-				call	SkipToComma
-				.if byte ptr [esi]==','
-					inc		esi
+				invoke IsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
+				.if eax
+					; Declare MySub 
+					lea		esi,[esi+ecx]
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
-					.if ecx
-						mov		lpword1,esi
-						mov		len1,ecx
+					invoke IsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
+					.if eax
 						lea		esi,[esi+ecx]
+						invoke GetWord,esi,addr npos
+						mov		esi,edx
+					.endif
+					mov		lpword2,esi
+					mov		len2,ecx
+					lea		esi,[esi+ecx]
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+					mov		lpword1,esi
+					xor		ecx,ecx
+					.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_TAB && byte ptr [esi]!=VK_RETURN && byte ptr [esi]!='('
+						inc		esi
+						inc		ecx
+					.endw
+					mov		len1,ecx
+					jmp		ParseStruct3
+				.else
+					mov		lpword1,esi
+					mov		len1,ecx
+					lea		esi,[esi+ecx]
+				.endif
+			  ParseStruct2:
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				.if byte ptr [esi]=='('
+					; MyItem(0 To 7) As Integer
+					.while byte ptr [esi] && byte ptr [esi]!=0Dh && byte ptr [esi]!=')'
+						inc		esi
+					.endw
+					.if byte ptr [esi]==')'
+						inc		esi
+					.endif
+					jmp		ParseStruct2
+				.endif
+				.if ecx
+					invoke IsIgnore,IGNORE_STRUCTITEMSECONDWORD,ecx,esi
+					.if eax
+						; As Integer
+						lea		esi,[esi+ecx]
+						invoke GetWord,esi,addr npos
+						mov		esi,edx
+						mov		lpword2,esi
+						mov		len2,ecx
+						lea		esi,[esi+ecx]
+					  @@:
+						invoke GetWord,esi,addr npos
+						mov		esi,edx
+						invoke IsIgnore,IGNORE_PTR,ecx,esi
+						.if eax
+							; ptr
+							inc		fPtr
+							lea		esi,[esi+ecx]
+							jmp		@b
+						.endif
 						jmp		ParseStruct3
+					.endif
+				.endif
+				mov		lpword2,esi
+				mov		len2,ecx
+				lea		esi,[esi+ecx]
+				invoke WhatIsIt,lpword1,len1,lpword2,len2
+				.if eax
+					movzx	eax,[eax].DEFTYPE.nDefType
+					.if eax==DEFTYPE_ENDSTRUCT
+						dec		nNest
+						.if ZERO?
+							mov		byte ptr [edi],0
+							retn
+						.endif
+					.elseif eax==DEFTYPE_STRUCT
+						inc		nNest
+					.endif
+				.else
+		  		  ParseStruct3:
+					.if byte ptr [edi]==','
+						inc		edi
+					.endif
+					mov		eax,len1
+					inc		eax
+					invoke lstrcpyn,edi,lpword1,eax
+					add		edi,len1
+					mov		word ptr [edi],':'
+					inc		edi
+					mov		eax,len2
+					inc		eax
+					invoke lstrcpyn,edi,lpword2,eax
+					add		edi,len2
+					.if fPtr
+					  @@:
+						invoke lstrcpyn,edi,addr szPtr,5
+						lea		edi,[edi+4]
+						dec		fPtr
+						jne		@b
+					.endif
+					invoke IsFunction,lpword2,len2
+					.if !eax
+						inc		fdim
+						push	edi
+						mov		eax,TYPE_NAMEFIRST
+						call	ParseProcNoNamespace
+						pop		edi
+						mov		edx,'t'
+						invoke AddWordToWordList,edx,nOwner,nline,npos,edi,4
+					.endif
+					mov		word ptr [edi],','
+					call	SkipToComma
+					.if byte ptr [esi]==','
+						inc		esi
+						invoke GetWord,esi,addr npos
+						mov		esi,edx
+						.if ecx
+							mov		lpword1,esi
+							mov		len1,ecx
+							lea		esi,[esi+ecx]
+							jmp		ParseStruct3
+						.endif
 					.endif
 				.endif
 			.endif

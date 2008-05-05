@@ -38,6 +38,7 @@ Lang=English (default), By FbEdit team
 [2200]
 2204=Add
 2205=Delete
+2206=Changes will take place when FbEdit is restarted.
 ;--------------------------------------------------------------------------
 [2300]
 4020=Grid X-Size
@@ -102,6 +103,7 @@ Lang=English (default), By FbEdit team
 4004=Bold
 4003=Italic
 4005=RC file
+4064=Inline asm
 4057=Code Files (.bas.bi.):
 4058=Misc
 4059=Tab Size

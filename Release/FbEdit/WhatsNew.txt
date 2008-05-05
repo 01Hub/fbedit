@@ -1,12 +1,6 @@
 Whats new:
 ----------
-1.0.6.0
-o Fixed resource editor bug. Caption lenght was limitted to 31 characters.
-o Fixed Find / Replace bug.
-o Fixed with block bug.
-o Added option to set help files path.
-o Added path acronymes, used by tools and help menu.
-  $A Application path, where FbEdit.exe is found.
-  $C Compiler path, where fbc.exe is found.
-  $H Help path, where fb.chm and win32.hlp is found.
-  $P Default project path, where projects are found.
+1.0.6.1
+o Updated resource editor to version 2.1.
+o All custom controls that FbEdit depends on are now in FbEdit.dll.
+o Fixed code complete bugs.

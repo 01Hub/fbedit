@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.1
+o Updated resource editor to version 2.1.
+o All custom controls that FbEdit depends on are now in FbEdit.dll.
+o Fixed code complete bugs.
 1.0.6.0
 o Updated resource editor.
   Previous modal dialogs are now child dialogs.

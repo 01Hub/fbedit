@@ -21,6 +21,8 @@ Sub SetupProperty()
 	SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTITEMINIT,Cast(Integer,StrPtr("declare")))
 	SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTITEMINIT,Cast(Integer,StrPtr("static")))
 	SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_PTR,Cast(Integer,StrPtr("ptr")))
+	SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTLINEFIRSTWORD,Cast(Integer,StrPtr("private")))
+	SendMessage(ah.hpr,PRM_ADDIGNORE,IGNORE_STRUCTLINEFIRSTWORD,Cast(Integer,StrPtr("public")))
 	' Property types
 	SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("p")+256,Cast(Integer,StrPtr(szCode)))
 	SendMessage(ah.hpr,PRM_ADDPROPERTYTYPE,Asc("c"),Cast(Integer,StrPtr(szConst)))

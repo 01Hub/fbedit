@@ -92,6 +92,7 @@ Type ADDINHANDLES
 	hOutFont			As HFONT							' Output window font
 	hpane(1)			As HWND							' Handle of text or resource edit window in 2'nd pane
 	hraresed			As HWND							' Handle of RAResEd window
+	hrareseddlg		As HWND							' Handle of RAResEd dialog
 End Type
 
 Type ADDINDATA
@@ -166,7 +167,7 @@ End Type
 #Define HOOK_MAKEBEGIN		&H200
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
-#Define HOOK_CTLDBLCLK	&H1000
+#Define HOOK_CTLDBLCLK		&H1000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 
