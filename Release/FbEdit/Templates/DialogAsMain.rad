@@ -25,46 +25,63 @@ Function [*DIALOGPROC*](ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 		Case WM_COMMAND
 			id=LoWord(wParam)
 			nEvent=HiWord(wParam)
-		Case WM_COMMAND
-			id=LoWord(wParam)
-			nEvent=HiWord(wParam)
-			[*BEGINEVENT*]
-			Select Case nEvent
-				[*BEGINBN_CLICKED*]
-				Case BN_CLICKED
-					[*BEGINSELECTCASEID*]
-					Select Case id
-						[*BEGINCASEID*]
-						Case [*CONTROLNAME*]
-						[*ENDCASEID*]
-					End Select
-					[*ENDSELECTCASEID*]
-					'
-				[*ENDBN_CLICKED*]
-				[*BEGINEN_CHANGE*]
-				Case EN_CHANGE
-					[*BEGINSELECTCASEID*]
-					Select Case id
-						[*BEGINCASEID*]
-						Case [*CONTROLNAME*]
-						[*ENDCASEID*]
-					End Select
-					[*ENDSELECTCASEID*]
-					'
-				[*ENDEN_CHANGE*]
-				[*BEGINLBN_SELCHANGE*]
-				Case LBN_SELCHANGE,CBN_SELCHANGE
-					[*BEGINSELECTCASEID*]
-					Select Case id
-						[*BEGINCASEID*]
-						Case [*CONTROLNAME*]
-						[*ENDCASEID*]
-					End Select
-					[*ENDSELECTCASEID*]
-					'
-				[*ENDLBN_SELCHANGE*]
-			End Select
-			[*ENDEVENT*]
+			If lParam Then
+				' Control events
+				[*BEGINEVENT*]
+				Select Case nEvent
+					[*BEGINBN_CLICKED*]
+					Case BN_CLICKED
+						[*BEGINSELECTCASEID*]
+						Select Case id
+							[*BEGINCASEID*]
+							Case [*CONTROLNAME*]
+							[*ENDCASEID*]
+						End Select
+						[*ENDSELECTCASEID*]
+						'
+					[*ENDBN_CLICKED*]
+					[*BEGINEN_CHANGE*]
+					Case EN_CHANGE
+						[*BEGINSELECTCASEID*]
+						Select Case id
+							[*BEGINCASEID*]
+							Case [*CONTROLNAME*]
+							[*ENDCASEID*]
+						End Select
+						[*ENDSELECTCASEID*]
+						'
+					[*ENDEN_CHANGE*]
+					[*BEGINLBN_SELCHANGE*]
+					Case LBN_SELCHANGE,CBN_SELCHANGE
+						[*BEGINSELECTCASEID*]
+						Select Case id
+							[*BEGINCASEID*]
+							Case [*CONTROLNAME*]
+							[*ENDCASEID*]
+						End Select
+						[*ENDSELECTCASEID*]
+						'
+					[*ENDLBN_SELCHANGE*]
+				End Select
+				[*ENDEVENT*]
+			Else
+				' Menu, toolbar and accelerator events
+				[*BEGINEVENT*]
+				Select Case nEvent
+					[*BEGINMNUSEL*]
+					Case 0,1
+						[*BEGINSELECTCASEID*]
+						Select Case id
+							[*BEGINCASEID*]
+							Case [*CONTROLNAME*]
+							[*ENDCASEID*]
+						End Select
+						[*ENDSELECTCASEID*]
+						'
+					[*ENDMNUSEL*]
+				End Select
+				[*ENDEVENT*]
+			Endif
 			'
 		Case WM_CLOSE
 			DestroyWindow(hWin)

@@ -1505,7 +1505,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									If Asc(buff)=Asc("\") Then
 										buff=Left(ad.AppPath,2) & buff
 									EndIf
-									If InStr(buff," $" & szNULL) Then
+									If Right(buff,2)=" $" Then
 										buff[Len(buff)-2]=NULL
 										ShellExecute(hWin,NULL,@buff,@ad.filename,NULL,SW_SHOWNORMAL)
 									ElseIf Asc(buff)=Asc("$") Then
