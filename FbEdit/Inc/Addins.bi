@@ -1,4 +1,8 @@
 
+#Define IDC_RESED								1100
+#Define IDC_CODEED							1200
+#Define IDC_HEXED								1300
+
 #Ifndef RAFONT
 Type RAFONT Field=1
 	hFont				As HFONT							' Code edit normal
@@ -152,6 +156,7 @@ End Type
 #Define AIM_MAKEDONE			10						' wParam= lParam=
 #Define AIM_GETTOOLTIP		11						' wParam=id lParam=0
 #Define AIM_CTLDBLCLK		12						' wParam=0 lParam=lpCTLDBLCLICK
+#Define AIM_MENUENABLE		13						' wParam=0 lParam=0
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -168,6 +173,7 @@ End Type
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
 #Define HOOK_CTLDBLCLK		&H1000
+#Define HOOK_MENUENABLE		&H2000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

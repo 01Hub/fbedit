@@ -187,7 +187,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	EndIf
 
 	' Messages this addin will hook into
-	hooks.hook1=HOOK_COMMAND Or HOOK_GETTOOLTIP
+	hooks.hook1=HOOK_COMMAND Or HOOK_GETTOOLTIP Or HOOK_MENUENABLE
 	hooks.hook2=0
 	hooks.hook3=0
 	hooks.hook4=0
@@ -283,6 +283,7 @@ End Sub
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
 Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer Export
+	Dim en As Integer
 
 	Select Case uMsg
 		Case AIM_COMMAND
@@ -322,6 +323,23 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			If wParam=IDM_MAKE_QUICKRUN Then
 				Return Cast(Integer,@szQuickRun)
 			EndIf
+			'
+		Case AIM_MENUENABLE
+			en=MF_BYCOMMAND Or MF_GRAYED
+			If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+				If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+					en=MF_BYCOMMAND Or MF_ENABLED
+				EndIf
+			EndIf
+			EnableMenuItem(hSubMnu,IdSelectWord,en)
+			EnableMenuItem(hSubMnu,IdCopyWord,en)
+			EnableMenuItem(hSubMnu,IdCutWord,en)
+			EnableMenuItem(hSubMnu,IdDeleteWord,en)
+			EnableMenuItem(hSubMnu,IdSelectLine,en)
+			EnableMenuItem(hSubMnu,IdCopyLine,en)
+			EnableMenuItem(hSubMnu,IdCutLine,en)
+			EnableMenuItem(hSubMnu,IdDeleteLine,en)
+			EnableMenuItem(hSubMnu,IdDuplicateLine,en)
 			'
 	End Select
 	Return FALSE

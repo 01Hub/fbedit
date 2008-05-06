@@ -248,14 +248,6 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDA_ACCEL								1
 #Define IDB_FILES								102
 
-#Define IDC_RESED								1100
-#Define IDC_RESTOOLBOX						1101
-#Define IDC_RESEDIT							1102
-#Define IDC_RESPROPERTY						1103
-#Define IDC_RESPROJECT						1106
-#Define IDC_CODEED							1200
-#Define IDC_HEXED								1300
-
 Type TABMEM
 	hedit				As HWND
 	filename			As ZString*260

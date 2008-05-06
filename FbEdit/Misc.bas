@@ -1056,6 +1056,17 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					EndIf
 				EndIf
 				Return lret
+			ElseIf wParam=VK_TAB Then
+				If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
+					SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
+					Return 0
+				Else
+					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+					If chrg.cpMin<>chrg.cpMax Then
+						SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+						Return 0
+					EndIf
+				EndIf
 			EndIf
 		Case WM_KEYDOWN
 			hPar=GetParent(hWin)
@@ -1521,9 +1532,8 @@ Sub EnableMenu()
 	Dim id As Integer
 
 	If ah.hred=ah.hres Then
-
+		' Resource editor
 		EnableDisable(FALSE,IDM_FILE_PRINT)
-
 		EnableDisable(FALSE,IDM_EDIT_GOTO)
 		EnableDisable(FALSE,IDM_EDIT_FIND)
 		EnableDisable(FALSE,IDM_EDIT_FINDNEXT)
@@ -1531,7 +1541,6 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_EDIT_REPLACE)
 		EnableDisable(FALSE,IDM_EDIT_FINDDECLARE)
 		EnableDisable(FALSE,IDM_EDIT_RETURN)
-
 		EnableDisable(FALSE,IDM_EDIT_BLOCKINDENT)
 		EnableDisable(FALSE,IDM_EDIT_BLOCKOUTDENT)
 		EnableDisable(FALSE,IDM_EDIT_BLOCKCOMMENT)
@@ -1544,12 +1553,10 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_EDIT_BLOCKMODE)
 		EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
 		EnableDisable(FALSE,IDM_EDIT_EXPAND)
-
 		bm=SendMessage(ah.hraresed,DEM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
 		bm=SendMessage(ah.hraresed,DEM_CANREDO,0,0)
 		EnableDisable(bm,IDM_EDIT_REDO)
-
 		bm=SendMessage(ah.hraresed,DEM_ISSELECTION,0,0)
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)
@@ -1558,7 +1565,6 @@ Sub EnableMenu()
 		EnableDisableContext(bm,IDM_EDIT_COPY)
 		EnableDisableContext(bm,IDM_EDIT_DELETE)
 		EnableDisable(FALSE,IDM_EDIT_SELECTALL)
-
 		EnableDisable(bm,IDM_FORMAT_CENTER)
 		EnableDisableContext(bm,IDM_FORMAT_CENTER)
 		If bm<>2 Then
@@ -1570,18 +1576,15 @@ Sub EnableMenu()
 		EnableDisableContext(bm,IDM_FORMAT_ALIGN)
 		EnableDisableContext(bm,IDM_FORMAT_SIZE)
 		EnableDisableContext(bm,IDM_FORMAT_RENUM)
-
 		bm=SendMessage(ah.hraresed,DEM_CANPASTE,0,0)
 		EnableDisable(bm,IDM_EDIT_PASTE)
 		EnableDisableContext(bm,IDM_EDIT_PASTE)
-
 		EnableDisable(FALSE,IDM_EDIT_BOOKMARKTOGGLE)
 		EnableDisable(FALSE,IDM_EDIT_BOOKMARKNEXT)
 		EnableDisable(FALSE,IDM_EDIT_BOOKMARKPREVIOUS)
 		EnableDisable(FALSE,IDM_EDIT_BOOKMARKDELETE)
 		EnableDisable(FALSE,IDM_EDIT_ERRORCLEAR)
 		EnableDisable(FALSE,IDM_EDIT_ERRORNEXT)
-
 		EnableDisable(TRUE,IDM_FORMAT_LOCK)
 		EnableDisableContext(TRUE,IDM_FORMAT_LOCK)
 		bm=SendMessage(ah.hraresed,DEM_ISBACK,0,0) Xor TRUE
@@ -1596,15 +1599,12 @@ Sub EnableMenu()
 		EnableDisableContext(TRUE,IDM_FORMAT_GRID)
 		EnableDisableContext(TRUE,IDM_FORMAT_SNAP)
 		EnableDisableContext(TRUE,IDM_FORMAT_TAB)
-
 		EnableDisable(FALSE,IDM_FORMAT_CASECONVERT)
 		EnableDisable(FALSE,IDM_FORMAT_INDENT)
-
 		EnableDisable(TRUE,IDM_VIEW_DIALOG)
 		EnableDisable(FALSE,IDM_VIEW_SPLITSCREEN)
 		EnableDisable(TRUE,IDM_VIEW_FULLSCREEN)
 		EnableDisable(TRUE,IDM_VIEW_DUALPANE)
-
 		EnableDisable(TRUE,IDM_RESOURCE_DIALOG)
 		EnableDisable(TRUE,IDM_RESOURCE_MENU)
 		EnableDisable(TRUE,IDM_RESOURCE_ACCEL)
@@ -1619,11 +1619,11 @@ Sub EnableMenu()
 		EnableDisable(TRUE,IDM_RESOURCE_EXPORT)
 		EnableDisable(TRUE,IDM_RESOURCE_REMOVE)
 		EnableDisable(TRUE,IDM_RESOURCE_UNDO)
-
 		EnableDisable(FALSE,IDM_MAKE_QUICKRUN)
 		EnableDisableContext(FALSE,IDM_PROPERTY_JUMP)
 		EnableDisableContext(FALSE,IDM_PROPERTY_COPY)
 	ElseIf ah.hred=0 Then
+		' No open files
 		EnableDisable(FALSE,IDM_FILE_PRINT)
 		EnableDisable(FALSE,IDM_EDIT_GOTO)
 		EnableDisable(FALSE,IDM_EDIT_FIND)
@@ -1687,9 +1687,7 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_RESOURCE_EXPORT)
 		EnableDisable(FALSE,IDM_RESOURCE_REMOVE)
 		EnableDisable(FALSE,IDM_RESOURCE_UNDO)
-
 		EnableDisable(FALSE,IDM_MAKE_QUICKRUN)
-
 		EnableDisableContext(FALSE,IDM_PROPERTY_JUMP)
 		EnableDisableContext(FALSE,IDM_PROPERTY_COPY)
 	Else
@@ -1710,15 +1708,19 @@ Sub EnableMenu()
 			bm=1
 		EndIf
 		EnableDisable(bm,IDM_EDIT_FINDDECLARE)
-		EnableDisable(bm,IDM_EDIT_BLOCKINDENT)
-		EnableDisable(bm,IDM_EDIT_BLOCKOUTDENT)
+		EnableDisable(bm,IDM_MAKE_QUICKRUN)
+		EnableDisable(bm,IDM_EDIT_EXPAND)
+		EnableDisable(bm,IDM_FORMAT_INDENT)
+		EnableDisable(bm,IDM_FORMAT_CASECONVERT)
+		bm=1
+		If id=IDC_HEXED Then
+			bm=0
+		EndIf
 		EnableDisable(bm,IDM_EDIT_BLOCKCOMMENT)
 		EnableDisable(bm,IDM_EDIT_BLOCKUNCOMMENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKINDENT)
+		EnableDisable(bm,IDM_EDIT_BLOCKOUTDENT)
 		EnableDisable(bm,IDM_EDIT_BLOCKMODE)
-		EnableDisable(bm,IDM_EDIT_EXPAND)
-		EnableDisable(bm,IDM_FORMAT_CASECONVERT)
-		EnableDisable(bm,IDM_FORMAT_INDENT)
-		EnableDisable(bm,IDM_MAKE_QUICKRUN)
 		bm=SendMessage(ah.hred,EM_CANUNDO,0,0)
 		EnableDisable(bm,IDM_EDIT_UNDO)
 		bm=SendMessage(ah.hred,EM_CANREDO,0,0)
@@ -1728,7 +1730,7 @@ Sub EnableMenu()
 		EnableDisable(bm,IDM_EDIT_CUT)
 		EnableDisable(bm,IDM_EDIT_COPY)
 		EnableDisable(bm,IDM_EDIT_DELETE)
-		If id<>IDC_CODEED Then
+		If id=IDC_HEXED Then
 			bm=0
 		EndIf
 		EnableDisable(bm,IDM_EDIT_BLOCKTRIM)
@@ -1740,7 +1742,16 @@ Sub EnableMenu()
 		EnableDisable(bm,IDM_EDIT_PASTE)
 		EnableDisable(TRUE,IDM_EDIT_SELECTALL)
 		EnableDisable(TRUE,IDM_EDIT_BOOKMARKTOGGLE)
-		If id=IDC_CODEED Then
+		If id=IDC_HEXED Then
+			' Hex edit
+			EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
+			bm=SendMessage(ah.hred,HEM_ANYBOOKMARKS,0,0)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKNEXT)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
+			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
+			EnableDisable(FALSE,IDM_EDIT_ERRORCLEAR)
+			EnableDisable(FALSE,IDM_EDIT_ERRORNEXT)
+		Else
 			bm=SendMessage(ah.hred,REM_GETMODE,0,0) And MODE_BLOCK
 			EnableDisable(bm,IDM_EDIT_BLOCK_INSERT)
 			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)+1
@@ -1749,21 +1760,10 @@ Sub EnableMenu()
 			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
 			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,3)+1
 			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
-	
 			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,7)+1
 			EnableDisable(bm,IDM_EDIT_ERRORCLEAR)
 			EnableDisable(bm,IDM_EDIT_ERRORNEXT)
-		Else
-			EnableDisable(FALSE,IDM_EDIT_BLOCK_INSERT)
-			bm=SendMessage(ah.hred,HEM_ANYBOOKMARKS,0,0)
-			EnableDisable(bm,IDM_EDIT_BOOKMARKNEXT)
-			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
-			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
-
-			EnableDisable(FALSE,IDM_EDIT_ERRORCLEAR)
-			EnableDisable(FALSE,IDM_EDIT_ERRORNEXT)
 		EndIf
-
 		EnableDisable(FALSE,IDM_FORMAT_LOCK)
 		EnableDisable(FALSE,IDM_FORMAT_BACK)
 		EnableDisable(FALSE,IDM_FORMAT_FRONT)

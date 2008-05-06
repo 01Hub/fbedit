@@ -52,6 +52,7 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 		If fTimer=0 Then
 			EnableMenu
 			CheckMenu
+			CallAddins(hWin,AIM_MENUENABLE,0,0,HOOK_MENUENABLE)
 			If ah.hred<>0 And ah.hred<>ah.hres Then
 				wsprintf(@buffer,@fmt,nLastLine+1,nCaretPos+1)
 				SetWindowText(ah.hsbr,@buffer)
