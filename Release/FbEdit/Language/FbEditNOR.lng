@@ -15,6 +15,8 @@ Lang=Norwegian, By KetilO
 2=Avbryt
 1002=Endringene vil finne sted når FbEdit restartes.
 ;--------------------------------------------------------------------------
+[1300]
+;--------------------------------------------------------------------------
 [2000]
 2000=Opsjoner
 1=OK
@@ -101,6 +103,7 @@ Lang=Norwegian, By KetilO
 4004=Fet
 4003=Italic
 4005=RC fil
+4064=Inline asm
 4057=Kode Filer (.bas.bi.):
 4058=Diverse
 4059=Tab Størrelse
