@@ -4,6 +4,7 @@ Whats new:
 o Updated resource editor to version 2.1.
 o All custom controls that FbEdit depends on are now in FbEdit.dll.
 o Added inline asm hilite word group.
+o Added word group C19 and C20. Used by inline asm.
 o Updated FbEdit.chm help file.
 o Included windows_styles.chm help file.
 o Fixed code complete bugs.

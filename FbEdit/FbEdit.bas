@@ -298,6 +298,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				Next
 				' Update version
 				WritePrivateProfileString(StrPtr("Win"),StrPtr("Version"),StrPtr("1061"),@ad.IniFile)
+				buff=Chr(34) & Chr(34)
+				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@buff,@ad.IniFile)
+				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@buff,@ad.IniFile)
+				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@buff,@ad.IniFile)
+				buff=Chr(34) & C19 & Chr(34)
+				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@buff,@ad.IniFile)
+				buff=Chr(34) & C20 & Chr(34)
+				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C20"),@buff,@ad.IniFile)
 			EndIf
 			' Shape
 			ah.hshp=GetDlgItem(hWin,IDC_SHP)
