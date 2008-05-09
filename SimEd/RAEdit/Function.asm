@@ -1284,6 +1284,12 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 			.endif
 		.endif
 		mov		eax,lpBlockDef
+		test	[eax].RABLOCKDEF.flag,BD_ALTHILITE
+		.if !ZERO?
+			or		[edi].CHARS.state,STATE_ALTHILITE
+		.else
+			and		[edi].CHARS.state,-1 xor STATE_ALTHILITE
+		.endif
 		test	[eax].RABLOCKDEF.flag,BD_NOBLOCK
 		.if !ZERO?
 			invoke GetBlock,ebx,nLine,lpBlockDef
@@ -1404,6 +1410,11 @@ IsInBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 		je		@b
 		invoke GetBlock,ebx,edi,lpBlockDef
 		add		edi,eax
+		mov		eax,lpBlockDef
+		test	[eax].RABLOCKDEF.flag,BD_INCLUDELAST
+		.if ZERO?
+			inc		edi
+		.endif
 		xor		eax,eax
 		.if edi>=nLine
 			inc		eax

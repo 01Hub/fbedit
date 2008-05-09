@@ -231,6 +231,74 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hwnd=hWin
 			ad.lpFBCOLOR=@fbcol
 			ad.lpWINPOS=@wpos
+			For i=0 To 15
+				thme(i).lpszTheme=@szTheme(i)
+			Next
+			' Get version from ini
+			GetPrivateProfileString(StrPtr("Win"),StrPtr("Version"),StrPtr(""),@buff,255,@ad.IniFile)
+			If Val(buff)<1061 Then
+				' Update colors
+				LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
+				kwcol.C10=(kwcol.C10 And &HFFFFFF) Or &H20000000
+				kwcol.C19=285147264
+				kwcol.C20=276824319
+				SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
+				' Update themes
+				For i=1 To 15
+					GetPrivateProfileString(StrPtr("Theme"),Str(i),"",@buff,16384,ad.IniFile)
+					If Len(buff) Then
+						x=InStr(buff,",")
+						szTheme(0)=Left(buff,x-1)
+						buff=Mid(buff,x+1)
+						x=1
+						y=0
+						While x
+							x=InStr(x+1,buff,",")
+							If x Then
+								y+=1
+							EndIf
+						Wend
+						If y=40 Then
+							y=0
+							bm=Cast(Integer,@thme(0).kwc)
+							While y<18
+								x=InStr(buff,",")
+								sItem=Left(buff,x-1)
+								buff=Mid(buff,x+1)
+								id=Val(sItem)
+								RtlMoveMemory(Cast(HGLOBAL,bm),@id,4)
+								bm+=4
+								y+=1
+							Wend
+							bm=Cast(Integer,@thme(0).fbc)
+							While Len(buff)
+								x=InStr(buff,",")
+								If x Then
+									sItem=Left(buff,x-1)
+									buff=Mid(buff,x+1)
+								Else
+									sItem=buff
+									buff=""
+								EndIf
+								id=Val(sItem)
+								RtlMoveMemory(Cast(HGLOBAL,bm),@id,4)
+								bm+=4
+							Wend
+							thme(0).kwc.C10=(thme(0).kwc.C10 And &HFFFFFF) Or &H2000000
+							thme(0).kwc.C16=65535
+							thme(0).kwc.C17=65535
+							thme(0).kwc.C18=65535
+							thme(0).kwc.C19=285147264
+							thme(0).kwc.C20=276824319
+							thme(0).fbc.codetipsel=16711680
+							thme(0).fbc.propertiespar=128
+							SaveToIni(StrPtr("Theme"),Str(i),"04444444444444444444444444444444444444444444444",@thme(0),FALSE)
+						EndIf
+					EndIf
+				Next
+				' Update version
+				WritePrivateProfileString(StrPtr("Win"),StrPtr("Version"),StrPtr("1061"),@ad.IniFile)
+			EndIf
 			' Shape
 			ah.hshp=GetDlgItem(hWin,IDC_SHP)
 			' Statusbar
@@ -258,8 +326,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444444",@kwcol,FALSE)
-			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444444",@custcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"444444444444444444444",@custcol,FALSE)
 			' Get handle of build combobox
 			ah.hcbobuild=GetDlgItem(hWin,IDC_CBOBUILD)
 			' Get make option from ini
@@ -1653,46 +1721,51 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										SendMessage(ah.hred,REM_SETSEGMENTBLOCK,nLastLine,FALSE)
 									EndIf
 								ElseIf bm=0 Then
-									'If lret<>-1 Then
-										x=0
-										y=0
-										While x<32
-											If BD(x).lpszStart<>0 And (BD(x).flag And BD_NOBLOCK)<>0 Then
-												y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
-												If y Then
-													Exit While
-												EndIf
+									x=0
+									y=0
+									While x<32
+										If BD(x).lpszStart<>0 And (BD(x).flag And BD_NOBLOCK)<>0 Then
+											y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
+											If y Then
+												Exit While
 											EndIf
-											x=x+1
-										Wend
-										If y=0 And lret>=0 Then
-											' Set collapse bookmark
-											SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
-											SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
-										ElseIf y Then
-											' Set no block flag
-											SendMessage(ah.hred,REM_SETNOBLOCKLINE,nLastLine,TRUE)
 										EndIf
-										x=0
-										y=0
-										While x<32
-											If BD(x).lpszStart<>0 And (BD(x).flag And BD_ALTHILITE)<>0 Then
-												y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
-												If y Then
-													Exit While
-												EndIf
+										x=x+1
+									Wend
+									If y=0 And lret>=0 Then
+										' Set collapse bookmark
+										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
+										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+									ElseIf y Then
+										' Set no block flag
+										SendMessage(ah.hred,REM_SETNOBLOCKLINE,nLastLine,TRUE)
+									EndIf
+									x=0
+									y=0
+									While x<32
+										If BD(x).lpszStart<>0 And (BD(x).flag And BD_ALTHILITE)<>0 Then
+											y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
+											If y Then
+												Exit While
 											EndIf
-											x=x+1
-										Wend
-										If y=0 And lret>=0 Then
-											' Set collapse bookmark
-											SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
-											SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
-										ElseIf y then
+										EndIf
+										x=x+1
+									Wend
+									If y=0 And lret>=0 Then
+										' Set collapse bookmark
+										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
+										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+										If (BD(i).flag And BD_ALTHILITE)<>0 Then
 											' Set althilite flag
 											SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
 										EndIf
-									'EndIf
+									ElseIf y then
+										' Set althilite flag
+										SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
+									Else
+										' Set althilite flag off
+										SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,FALSE)
+									EndIf
 								EndIf
 								bm=0
 								If lpRASELCHANGE->Line>nLastLine Then

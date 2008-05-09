@@ -132,6 +132,10 @@ Sub SetHiliteWords(ByVal hWin As HWND)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C17,Cast(Integer,@buff))
 	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@C18,@buff,SizeOf(buff),@ad.IniFile)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C18,Cast(Integer,@buff))
+	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@C19,@buff,SizeOf(buff),@ad.IniFile)
+	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C19,Cast(Integer,@buff))
+	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C20"),@C20,@buff,SizeOf(buff),@ad.IniFile)
+	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C20,Cast(Integer,@buff))
 
 End Sub
 
@@ -314,7 +318,7 @@ Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 
 	ofs=@thme(nInx)
 	nInx=0
-	Do While nInx<18
+	Do While nInx<21
 		ofs=ofs+4
 		RtlMoveMemory(@col,ofs,4)
 		SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,nInx,col)
@@ -338,7 +342,7 @@ Sub PutTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 
 	ofs=@thme(nInx)
 	nInx=0
-	Do While nInx<18
+	Do While nInx<21
 		ofs=ofs+4
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
@@ -374,18 +378,18 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	' Keyword colors
 	ofs=@kwcol
 	nInx=0
-	Do While nInx<19
+	Do While nInx<21
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
 		ofs=ofs+4
 		nInx=nInx+1
 	Loop
-	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"4444444444444444444",@kwcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
 	' Custom colors
-	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"4444444444444444444",@custcol,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("CustColors"),"444444444444444444444",@custcol,FALSE)
 	' KeyWords
 	nInx=0
-	Do While nInx<20
+	Do While nInx<22
 		buff=Chr(34) & sKeyWords(nInx) & Chr(34)
 		WritePrivateProfileString("Edit","C" & Str(nInx),@buff,@ad.IniFile)
 		nInx=nInx+1
@@ -448,7 +452,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	WritePrivateProfileString(StrPtr("Theme"),StrPtr("Current"),@sItem,@ad.IniFile)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
-		If lstrlen(thme(nInx).sztheme) Then
+		If lstrlen(thme(nInx).lpszTheme) Then
 			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
@@ -535,7 +539,7 @@ Sub GetHold(ByVal hWin As HWND)
 		buff=buff & sItem & " "
 		nInx=nInx+1
 	Loop
-	sKeyWords(19)=buff
+	sKeyWords(21)=buff
 
 End Sub
 
@@ -544,7 +548,7 @@ Sub FillHold(ByVal hWin As HWND)
 	Dim sItem As ZString*256
 	Dim x As Integer
 
-	buff=sKeyWords(19)
+	buff=sKeyWords(21)
 	Do While Len(buff)
 		x=InStr(buff," ")
 		If x=0 Then
@@ -581,17 +585,17 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			nInx=0
 			For col=1 To 15
 				sItem=Str(col)
-				thme(col).sztheme=String(32,0)
-				LoadFromIni(StrPtr("Theme"),@sItem,"044444444444444444444444444444444444444444",@thme(col),FALSE)
-				If lstrlen(thme(col).sztheme) Then
+				szTheme(0)=String(32,0)
+				LoadFromIni(StrPtr("Theme"),@sItem,"04444444444444444444444444444444444444444444444",@thme(col),FALSE)
+				If lstrlen(thme(col).lpszTheme) Then
 					sItem=String(32,0)
-					lstrcpy(@sItem,thme(col).sztheme)
+					lstrcpy(@sItem,thme(col).lpszTheme)
 					nInx=SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,@sItem))
 				EndIf
 			Next col
 			If nInx=0 Then
 				PutTheme(hWin,1)
-				thme(1).sztheme="Default"
+				szTheme(1)="Default"
 				SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,StrPtr("Default")))
 			EndIf
 			nInx=GetPrivateProfileInt(StrPtr("Theme"),StrPtr("Current"),1,@ad.IniFile)
@@ -637,8 +641,12 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			sKeyWords(17)=buff
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@C18,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(18)=buff
-			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@C15,@buff,SizeOf(buff),@ad.IniFile)
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@C19,@buff,SizeOf(buff),@ad.IniFile)
 			sKeyWords(19)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C20"),@C20,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(20)=buff
+			GetPrivateProfileString(StrPtr("Edit"),StrPtr("C21"),@C21,@buff,SizeOf(buff),@ad.IniFile)
+			sKeyWords(21)=buff
 			' Misc
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,&H00010014)		' Set range
 			SendDlgItemMessage(hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edtopt.tabsize)	' Set default value
@@ -692,8 +700,8 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			' Keyword colors
 			ofs=@kwcol
 			nInx=0
-			Do While nInx<19
-				If nInx<12 Then
+			Do While nInx<21
+				If nInx<12 Or nInx>18 Then
 					sItem="C" & Str(nInx)
 				ElseIf nInx=12 Then
 					sItem="Data types"
@@ -934,7 +942,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							GetDlgItemText(hWin,IDC_EDTTHEME,@sItem,32)
 							nInx=SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,@sItem))
 							SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_SETCURSEL,nInx,0)
-							thme(nInx).sztheme=sItem
+							szTheme(nInx)=sItem
 							PutTheme(hWin,nInx)
 							EnableWindow(hBtnApply,TRUE)
 							'

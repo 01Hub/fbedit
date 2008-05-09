@@ -105,12 +105,12 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 	editstream.dwCookie=Cast(Integer,hFile)
 	editstream.pfnCallback=Cast(Any Ptr,@StreamIn)
 	SendMessage(hWin,EM_STREAMIN,SF_TEXT,Cast(Integer,@editstream))
-	SendMessage(hWin,REM_SETBLOCKS,0,0)
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
 	lstrcpy(@szItem,lpFilename)
 	If FileType(szItem)=1 Then
+		SendMessage(hWin,REM_SETBLOCKS,0,0)
 		' Set comment block definition
-		SendMessage(ah.hred,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
+		SendMessage(hWin,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
 		UpdateAllTabs(3)
 		If fProject<>FALSE And Len(ad.resexport) Then
 			buff=MakeProjectFileName(ad.resexport)
