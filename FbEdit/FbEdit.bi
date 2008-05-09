@@ -360,6 +360,7 @@ Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 #Define VIEW_TOOLBAR		8
 #Define VIEW_TABSELECT	16
 #Define VIEW_STATUSBAR	32
+#Define MAX_MISS			10
 
 Const szNULL=!"\0"
 Const CRLF=Chr(13) & Chr(10)

@@ -116,7 +116,7 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 
 	nInx=1
 	nMiss=0
-	Do While nInx<256 And nMiss<10
+	Do While nInx<256 And nMiss<MAX_MISS
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
@@ -132,7 +132,7 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 	Loop
 	nInx=1001
 	nMiss=0
-	Do While nInx<1256 And nMiss<10
+	Do While nInx<1256 And nMiss<MAX_MISS
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
@@ -152,25 +152,38 @@ End Function
 
 Sub UpdateProjectFileName(ByVal sOldFile As String,ByVal sNewFile As String)
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 
 	nInx=1
-	Do While nInx<256
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrcmpi(@sItem,@sOldFile)=0 Then
-			WritePrivateProfileString(StrPtr("File"),Str(nInx),@sNewFile,@ad.ProjectFile)
-			Exit Sub
+		If Len(sItem) Then
+			nMiss=0
+			If lstrcmpi(@sItem,@sOldFile)=0 Then
+				WritePrivateProfileString(StrPtr("File"),Str(nInx),@sNewFile,@ad.ProjectFile)
+				Exit Sub
+			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
 	nInx=1001
-	Do While nInx<1256
+	nMiss=0
+	Do While nInx<1256 And nMiss<MAX_MISS
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-		If lstrcmpi(@sItem,@sOldFile)=0 Then
-			WritePrivateProfileString(StrPtr("File"),Str(nInx),@sNewFile,@ad.ProjectFile)
-			Exit Sub
+		If Len(sItem) Then
+			nMiss=0
+			If lstrcmpi(@sItem,@sOldFile)=0 Then
+				WritePrivateProfileString(StrPtr("File"),Str(nInx),@sNewFile,@ad.ProjectFile)
+				Exit Sub
+			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
@@ -350,6 +363,7 @@ End Function
 
 Sub RefreshProjectTree
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim hPar As HTREEITEM
 	Dim tvs As TVSORTCB
@@ -357,18 +371,26 @@ Sub RefreshProjectTree
 	SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(LPARAM,TVI_ROOT))
 	hPar=TrvAddNode(0,@ProjectDescription,0,0)
 	nInx=1
-	Do While nInx<256
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
 	nInx=1001
-	Do While nInx<1256
+	nMiss=0
+	Do While nInx<1256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
@@ -382,6 +404,7 @@ End Sub
 
 Sub ReparseProject
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim hPar As HTREEITEM
 	Dim x As Integer
@@ -391,26 +414,34 @@ Sub ReparseProject
 	Dim tvs As TVSORTCB
 
 	nInx=1
-	Do While nInx<256
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			tpe=FileType(sItem)
 			If tpe=1 Then
 				sItem=MakeProjectFileName(sItem)
 				ParseFile(ah.hwnd,0,sItem)
 			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
 	nInx=1001
-	Do While nInx<1256
+	nMiss=0
+	Do While nInx<1256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			tpe=FileType(sItem)
 			If tpe=1 Then
 				sItem=MakeProjectFileName(sItem)
 				ParseFile(ah.hwnd,0,sItem)
 			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
@@ -419,6 +450,7 @@ End Sub
 
 Function OpenProject() As Integer
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim hPar As HTREEITEM
 	Dim x As Integer
@@ -520,9 +552,11 @@ Function OpenProject() As Integer
 	LoadApiFiles
 	SetHiliteWordsFromApi(ah.hwnd)
 	nInx=1
-	Do While nInx<256
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			tpe=FileType(sItem)
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 			sItem=MakeProjectFileName(sItem)
@@ -537,13 +571,17 @@ Function OpenProject() As Integer
 				OpenTheFile(sItem,FALSE)
 				fNoResMode=FALSE
 			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
 	nInx=1001
-	Do While nInx<1256
+	nMiss=0
+	Do While nInx<1256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
+			nMiss=0
 			tpe=FileType(sItem)
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
 			sItem=MakeProjectFileName(sItem)
@@ -554,6 +592,8 @@ Function OpenProject() As Integer
 			If pfi.nLoad Then
 				OpenTheFile(sItem,FALSE)
 			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
@@ -599,15 +639,22 @@ End Function
 
 Function GetProjectResource() As String
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim sFile As String
 
 	nInx=2
-	Do While nInx<256
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),"",@sItem,SizeOf(sItem),@ad.ProjectFile)
 		sFile=sItem
-		If UCase(Right(sFile,3))=".RC" Then
-			Return sFile
+		If Len(sFile) Then
+			nMiss=0
+			If UCase(Right(sFile,3))=".RC" Then
+				Return sFile
+			EndIf
+		Else
+			nMiss+=1
 		EndIf
 		nInx=nInx+1
 	Loop
@@ -820,6 +867,7 @@ End Sub
 Sub SetAsMainProjectFile
 	Dim tvi As TV_ITEM
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
@@ -829,22 +877,34 @@ Sub SetAsMainProjectFile
 		tvi.cchTextMax=260
 		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
 		nInx=1
-		Do While nInx<256
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrcmpi(@buff,@sItem)=0 Then
-				WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
-				Exit Sub
+			If Len(sItem) Then
+				nMiss=0
+				If lstrcmpi(@buff,@sItem)=0 Then
+					WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+					Exit Sub
+				EndIf
+			Else
+				nMiss+=1
 			EndIf
 			nInx=nInx+1
 		Loop
 		nInx=1001
-		Do While nInx<1256
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrcmpi(@buff,@sItem)=0 Then
-				WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
-				Exit Sub
+			If Len(sItem) Then
+				nMiss=0
+				If lstrcmpi(@buff,@sItem)=0 Then
+					WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+					Exit Sub
+				EndIf
+			Else
+				nMiss+=1
 			EndIf
 			nInx=nInx+1
 		Loop
@@ -855,6 +915,7 @@ End Sub
 Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 	Dim tvi As TV_ITEM
 	Dim nInx As Integer
+	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim buff As ZString*260
 
@@ -865,40 +926,52 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 		tvi.cchTextMax=260
 		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
 		nInx=1
-		Do While nInx<256
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrcmpi(@buff,@sItem)=0 Then
-				If fDontAsk=FALSE Then
-					buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
-					If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
-						Exit Sub
+			If Len(sItem) Then
+				nMiss=0
+				If lstrcmpi(@buff,@sItem)=0 Then
+					If fDontAsk=FALSE Then
+						buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
+						If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
+							Exit Sub
+						EndIf
 					EndIf
+					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
+					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
+					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
+					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+					Exit Sub
 				EndIf
-				SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
-				WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
-				SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
-				SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
-				Exit Sub
+			Else
+				nMiss+=1
 			EndIf
 			nInx=nInx+1
 		Loop
 		nInx=1001
-		Do While nInx<1256
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
 			sItem=szNULL
 			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
-			If lstrcmpi(@buff,@sItem)=0 Then
-				If fDontAsk=FALSE Then
-					buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
-					If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
-						Exit Sub
+			If Len(sItem) Then
+				nMiss=0
+				If lstrcmpi(@buff,@sItem)=0 Then
+					If fDontAsk=FALSE Then
+						buff=GetInternalString(IS_REMOVE_FILE_FROM_PROJECT)
+						If MessageBox(ah.hwnd,buff & CRLF & sItem,@szAppName,MB_YESNO Or MB_ICONQUESTION)=IDNO Then
+							Exit Sub
+						EndIf
 					EndIf
+					SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
+					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
+					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
+					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+					Exit Sub
 				EndIf
-				SendMessage(ah.hprj,TVM_DELETEITEM,0,Cast(Integer,tvi.hItem))
-				WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
-				SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
-				SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
-				Exit Sub
+			Else
+				nMiss+=1
 			EndIf
 			nInx=nInx+1
 		Loop

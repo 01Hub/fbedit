@@ -266,6 +266,7 @@ End Function
 Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Boolean,ByVal fNoClear As Boolean,ByVal fQuickRun As Boolean) As Integer
 	Dim fExitCode As Integer
 	Dim lret As Integer
+	Dim nMiss As Integer
 	Dim buffer As ZString*4096
 	Dim sItem As ZString*260
 	Dim nLine As Integer
@@ -318,10 +319,12 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			If fAddModuleFiles Then
 				' Add module oject files
 				lret=1001
-				Do While lret<1256
+				nMiss=0
+				Do While lret<1256 And nMiss<MAX_MISS
 					sItem=String(260,szNULL)
 					GetPrivateProfileString(StrPtr("File"),Str(lret),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 					If Len(sItem) Then
+						nMiss=0
 						x=InStr(sItem,".")
 						y=x
 						While x
@@ -336,6 +339,8 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 						Else
 							buff=buff & " " & """" & sItem & ".o" & """"
 						EndIf
+					Else
+						nMiss+=1
 					EndIf
 					lret=lret+1
 				Loop
@@ -459,6 +464,7 @@ End Function
 Function CompileModules(ByVal sMake As String) As Integer
 	Dim bm As Integer
 	Dim id As Integer
+	Dim nMiss As Integer
 	Dim sFile As String
 	Dim sOFile As String
 	Dim hFile As HANDLE
@@ -477,9 +483,11 @@ Function CompileModules(ByVal sMake As String) As Integer
 		If fProject Then
 			SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 			id=1001
-			Do While id<1256
+			nMiss=0
+			Do While id<1256 And nMiss<MAX_MISS
 				sFile=GetProjectFile(id)
 				If sFile<>"" Then
+					nMiss=0
 					If fCompileIfNewer Then
 						sOFile=RemoveFileExt(sFile) & ".o"
 						hFile=CreateFile(sOFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
@@ -504,6 +512,8 @@ Function CompileModules(ByVal sMake As String) As Integer
 					If fBuildErr Then
 						Exit Do
 					EndIf
+				Else
+					nMiss+=1
 				EndIf
 				id=id+1
 			Loop
