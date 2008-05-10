@@ -1232,6 +1232,9 @@ rsstyledefdlg	dd DS_3DLOOK
 				dd DS_SETFOREGROUND
 				dd DS_SETFOREGROUND
 				db 'DS_SETFOREGROUND',0
+				dd DS_SHELLFONT
+				dd DS_SHELLFONT
+				db 'DS_SHELLFONT',0
 				dd DS_SYSMODAL
 				dd DS_SYSMODAL
 				db 'DS_SYSMODAL',0
@@ -2069,9 +2072,9 @@ rsstyledef		dd ACS_CENTER
 				dd WS_CHILD
 				dd WS_POPUP or WS_CHILD
 				db 'WS_CHILD',0
-;				dd WS_CHILDWINDOW
-;				dd WS_POPUP or WS_CHILD
-;				db 'WS_CHILDWINDOW',0
+				dd WS_CHILDWINDOW
+				dd WS_POPUP or WS_CHILD
+				db 'WS_CHILDWINDOW',0
 				dd WS_CLIPCHILDREN
 				dd WS_CLIPCHILDREN
 				db 'WS_CLIPCHILDREN',0

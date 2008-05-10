@@ -284,7 +284,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								RtlMoveMemory(Cast(HGLOBAL,bm),@id,4)
 								bm+=4
 							Wend
-							thme(0).kwc.C10=(thme(0).kwc.C10 And &HFFFFFF) Or &H2000000
+							thme(0).kwc.C10=(thme(0).kwc.C10 And &HFFFFFF) Or &H20000000
 							thme(0).kwc.C16=65535
 							thme(0).kwc.C17=65535
 							thme(0).kwc.C18=65535
