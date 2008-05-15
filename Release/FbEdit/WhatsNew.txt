@@ -9,3 +9,4 @@ o Updated FbEdit.chm help file.
 o Included windows_styles.chm help file.
 o Speed optimized project handling on network drives.
 o Fixed code complete bugs.
+o Fixed themes in FbEdit.ini
