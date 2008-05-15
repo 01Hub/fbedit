@@ -68,6 +68,7 @@ PRP_BOOL_AUTOPLAY	equ 237
 PRP_BOOL_AUTOSIZE	equ 238
 PRP_BOOL_HASSTRINGS	equ 239
 PRP_BOOL_MENUEX		equ 240
+PRP_BOOL_SAVESEL	equ 241
 
 PRP_MULTI_CLIP		equ 300
 PRP_MULTI_SCROLL	equ 301
@@ -215,7 +216,8 @@ HasStlb				dd -1 xor LBS_HASSTRINGS,0
 					dd -1 xor LBS_HASSTRINGS,LBS_HASSTRINGS
 MenuEx				dd -1 xor TRUE,0
 					dd -1 xor TRUE,TRUE
-
+SaveRich			dd -1 xor ES_SAVESEL,0
+					dd -1 xor ES_SAVESEL,ES_SAVESEL
 
 ;False/True ExStyles
 TopMost				dd -1 xor WS_EX_TOPMOST,0
@@ -962,6 +964,8 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			.elseif nType==8
 				invoke TxtLstFalseTrue,[esi].style,addr HasStlb
 			.endif
+		.elseif eax==PRP_BOOL_SAVESEL
+				invoke TxtLstFalseTrue,[esi].style,addr SaveRich
 		.elseif eax==PRP_MULTI_CLIP
 			invoke TxtLstMulti,[esi].style,[esi].exstyle,addr ClipAll
 		.elseif eax==PRP_MULTI_SCROLL
@@ -2658,6 +2662,10 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					mov		eax,[eax]
 					invoke ListFalseTrue,eax,addr MenuEx,edi
 				.endif
+			.elseif edx==71
+				;SaveSel
+				mov		lbid,PRP_BOOL_SAVESEL
+				invoke ListFalseTrue,[esi].DIALOG.style,addr SaveRich,edi
 			.elseif eax>=NoOfButtons
 				;Custom properties
 				invoke GetCustProp,eax,edx
