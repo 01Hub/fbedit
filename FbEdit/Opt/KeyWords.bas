@@ -453,7 +453,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
 		If lstrlen(thme(nInx).lpszTheme) Then
-			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444",@thme(nInx),FALSE)
+			SaveToIni(StrPtr("Theme"),Str(nInx),"04444444444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
 	GetDlgItemText(hWin,IDC_EDTCODEFILES,@sCodeFiles,SizeOf(sCodeFiles))
