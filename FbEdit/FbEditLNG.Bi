@@ -16,12 +16,7 @@ Const szDivider As String=!";---------------------------------------------------
 Const szAppName As String="Language translator"
 ' Custom controls used by FbEdit
 Dim hRichEditDll As HMODULE
-Dim hRAEditDll As HMODULE
-Dim hRAResEdDll As HMODULE
-Dim hRAGridDll As HMODULE
-Dim hRAFileDll As HMODULE
-Dim hRAPropertyDll As HMODULE
-Dim hRACodeCompleteDll As HMODULE
+Dim hFbEditDll As HMODULE
 Const szFbEditLNGIni As String="FbEditLNG.ini"
 Dim Shared szAppPath As ZString*260
 Const szNULL=!"\0"

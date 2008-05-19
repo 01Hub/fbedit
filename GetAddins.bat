@@ -34,4 +34,7 @@ COPY Addins\ProjectZip\ProjectZip.txt \FbEdit\Addins\HELP
 COPY Addins\ReallyRad\ReallyRad.dll \FbEdit\Addins
 COPY Addins\ReallyRad\ReallyRad.txt \FbEdit\Addins\HELP
 
+COPY Addins\QuickEval\QuickEval.dll \FbEdit\Addins
+COPY Addins\QuickEval\QuickEval.txt \FbEdit\Addins\HELP
+
 Pause

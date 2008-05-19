@@ -1,3 +1,4 @@
+' Test comment
 
 #Include Once "windows.bi"
 #Include Once "win/commctrl.bi"

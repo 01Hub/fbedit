@@ -1,5 +1,10 @@
 Whats new:
 ----------
+1.0.6.1b
+o Fixed bugs in FbEdit.ini file
+o Updated German translation
+o Updated language translation tool
+o Added QuickEval addin by krcko
 1.0.6.1
 o Updated resource editor to version 2.1.
 o All custom controls that FbEdit depends on are now in FbEdit.dll.

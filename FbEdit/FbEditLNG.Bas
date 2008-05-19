@@ -210,43 +210,14 @@ End Function
 	SetCurrentDirectory(@szAppPath)
 
 	hRichEditDll=LoadLibrary("riched20.dll")
-	hRAEditDll=LoadLibrary("RAEdit.dll")
-	If hRAEditDll Then
-		hRAFileDll=LoadLibrary("RAFile.dll")
-		If hRAFileDll Then
-			hRAPropertyDll=LoadLibrary("RAProperty.dll")
-			If hRAPropertyDll Then
-				hRACodeCompleteDll=LoadLibrary("RACodeComplete.dll")
-				If hRACodeCompleteDll Then
-					hRAResEdDll=LoadLibrary("RAResEd.dll")
-					If hRAResEdDll Then
-						hRAGridDll=LoadLibrary("RAGrid.dll")
-						If hRAGridDll Then
-							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGLNG),NULL,@DlgProc,NULL)
-						Else
-							MessageBox(NULL,StrPtr("Could not find RAGrid.dll"),@szAppName,MB_OK Or MB_ICONERROR)
-						EndIf
-						FreeLibrary(hRAResEdDll)
-					Else
-						MessageBox(NULL,StrPtr("Could not find RAResEd.dll"),@szAppName,MB_OK Or MB_ICONERROR)
-					EndIf
-					FreeLibrary(hRACodeCompleteDll)
-				Else
-					MessageBox(NULL,StrPtr("Could not find RACodeComplete.dll"),@szAppName,MB_OK Or MB_ICONERROR)
-				EndIf
-				FreeLibrary(hRAPropertyDll)
-			Else
-				MessageBox(NULL,StrPtr("Could not find RAProperty.dll"),@szAppName,MB_OK Or MB_ICONERROR)
-			EndIf
-			FreeLibrary(hRAFileDll)
-		Else
-			MessageBox(NULL,StrPtr("Could not find RAFile.dll"),@szAppName,MB_OK Or MB_ICONERROR)
-		EndIf
-		FreeLibrary(hRAEditDll)
-		FreeLibrary(hRichEditDll)
+	hFbEditDll=LoadLibrary("FbEdit.dll")
+	If hFbEditDll Then
+		DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGLNG),NULL,@DlgProc,NULL)
+		FreeLibrary(hFbEditDll)
 	Else
-		MessageBox(NULL,StrPtr("Could not find RAEdit.dll"),@szAppName,MB_OK Or MB_ICONERROR)
+		MessageBox(NULL,StrPtr("Could not find FbEdit.dll"),@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
+	FreeLibrary(hRichEditDll)
 
 	''
 	'' Program has ended

@@ -38,6 +38,7 @@ Lang=Deutsch
 [2200]
 2204=Hinzufügen
 2205=Entfernen
+2206=Änderungen werden nach Neustart von FbEdit übernommen.
 ;--------------------------------------------------------------------------
 [2300]
 4020=Raster X-Größe
@@ -101,6 +102,7 @@ Lang=Deutsch
 4004=Fett
 4003=Kursiv
 4005=Ressourcen-Datei (.rc)
+4064=Inline Assembler
 4057=Quellcode-Dateien (.bas.bi.):
 4058=Diverses
 4059=Tab Größe
@@ -284,7 +286,7 @@ Lang=Deutsch
 10006=Neue &Ressourcen Datei\tStrg+Alt+N
 10007=&Öffnen\tStrg+O
 10060=Öffnen als &Hex
-10008=zuletzt verwendete Dateien
+10008=Zuletzt verwendete Dateien
 10009=&Speichern\tStrg+S
 10010=&Alles speichern\tShift+Strg+S
 10011=Speichern als\tStrg+Alt+S
@@ -555,7 +557,7 @@ SnipletAddin=Code Sniplets
 10000=Code &Sniplets\tF11
 ;--------------------------------------------------------------------------
 [AdvEdit]
-10000=Erweiterte Bearbeitung
+10000=Erweitert
 10001=Wort auswählen\tShift+Strg+W
 10002=Wort kopieren\tShift+Strg+C
 10003=Wort ausschneiden\tShift+Strg+X
@@ -578,16 +580,16 @@ CustomFontAddin=Benutzerdefinierte Schriftart
 [FBFileAssociation]
 FBFileAssociation=Dateiverknüpfungen
 1008=Info
-1009=Um Dateiverknüpfungen mit FbEdit zu ändern, einfach die entsprechenden Typen auswählen und auf Verknüpfung ändern klicken
-1001=Dateien
+1009=Um Dateiverknüpfungen mit FbEdit zu ändern, einfach die entsprechenden Typen auswählen und auf "Verknüpfungen ändern" klicken
+1001=Datei-Typen
 1002=*.bas - FreeBasic Quellcode
 1003=*.bi    - FreeBasic Header
 1005=*.rc    - Ressourcen Script
 1004=*.fbp  - FBEdit Projekt Dateien
-1006=Verknüpfung ändern
+1006=Verknüpfungen ändern
 1007=Schließen
-10000=Datei Verknüpfung
-10001=Datei Verknüpfung geändert!\rFBEdit Ordner ist:
+10000=Dateiverknüpfungen
+10001=Dateiverknüpfungen wurden geändert!\rFBEdit befindet sich in folgendem Ordner:
 ;--------------------------------------------------------------------------
 [FileTabStyle]
 10000=Datei-Tab Aussehen
