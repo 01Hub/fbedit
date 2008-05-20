@@ -38,7 +38,7 @@ SearchMemDown proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD
 			dec		al
 			je		Nx				;Not found yet
 			lea		eax,[edi-1]
-			.if eax>=hMem
+			.if sdword ptr eax>=hMem
 				movzx	eax,byte ptr [eax]
 				add		eax,lpCharTab
 				mov		al,[eax]

@@ -93,38 +93,42 @@ TryAgain:
 			If Len(sFile) Then
 				If FileType(sFile)=1 Then
 					hMem=GetFileMem(sFile)
-					ms.lpMem=hMem
-					ms.lpFind=@findbuff
-					ms.lpCharTab=ad.lpCharTab
-					' Memory search down is faster
-					ms.fr=fr Or FR_DOWN
-					fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
-					GlobalFree(hMem)
-					If fres Then
-						ft.chrg.cpMin-=1
-						ft.chrg.cpMax=ft.chrg.cpMin
-						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
-						tmp=fProFileNo
-						OpenProjectFile(fProFileNo)
-						SetFocus(ah.hfind)
-						fProFileNo=tmp
-						If fDir=2 Then
-							chrg.cpMin=-1
-							chrg.cpMax=-1
-							ft.chrg.cpMin=-1
-							ft.chrg.cpMax=0
-						Else
-							chrg.cpMin=0
-							chrg.cpMax=0
-							ft.chrg.cpMin=0
-							ft.chrg.cpMax=-1
+					If hMem Then
+						ms.lpMem=hMem
+						ms.lpFind=@findbuff
+						ms.lpCharTab=ad.lpCharTab
+						' Memory search down is faster
+						ms.fr=fr Or FR_DOWN
+						fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
+						GlobalFree(hMem)
+						If fres Then
+							ft.chrg.cpMin-=1
+							ft.chrg.cpMax=ft.chrg.cpMin
+							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@ft.chrg))
+							tmp=fProFileNo
+							OpenProjectFile(fProFileNo)
+							SetFocus(ah.hfind)
+							fProFileNo=tmp
+							If fDir=2 Then
+								chrg.cpMin=-1
+								chrg.cpMax=-1
+								ft.chrg.cpMin=-1
+								ft.chrg.cpMax=0
+							Else
+								chrg.cpMin=0
+								chrg.cpMax=0
+								ft.chrg.cpMin=0
+								ft.chrg.cpMax=-1
+							EndIf
+							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+							fOnlyOneTime=0
+							fPos=0
+							fPro=2
+							fres=-1
+							Exit While
 						EndIf
-						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-						fOnlyOneTime=0
-						fPos=0
-						fPro=2
-						fres=-1
-						Exit While
+					Else
+						MessageBox(ah.hfind,GetInternalString(IS_COULD_NOT_FIND) & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
 					EndIf
 				EndIf
 			EndIf
