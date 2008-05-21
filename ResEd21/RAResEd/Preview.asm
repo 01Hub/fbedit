@@ -40,8 +40,8 @@ MyDLGITEMTEMPLATE ends
 .data?
 
 hDlg				dd ?
-hDlgMnu				dd ?
 pDlgMem				dd ?
+hDlgMnu				dd ?
 
 .code
 
@@ -471,56 +471,6 @@ SaveWideChar proc lpStringA:DWORD,lpStringW:DWORD
 
 SaveWideChar endp
 
-MakeMnuPopup proc lpDlgMem:DWORD,nInx:DWORD
-
-	mov		eax,lpDlgMem
-	mov		eax,[eax].DLGHEAD.lpmnu
-	add		eax,sizeof MNUHEAD
-	mov		edx,nInx
-	inc		edx
-	invoke CreateSubMenu,eax,edx
-	ret
-
-MakeMnuPopup endp
-
-
-MakeMnuBar proc uses ebx esi edi,lpDlgMem:DWORD
-	LOCAL	nInx:DWORD
-	LOCAL	mii:MENUITEMINFO
-
-	invoke CreateMenu
-	mov		hDlgMnu,eax
-	mov		esi,lpDlgMem
-	mov		esi,[esi].DLGHEAD.lpmnu
-	add		esi,sizeof MNUHEAD
-	mov		nInx,0
-  @@:
-	mov		eax,(MNUITEM ptr [esi]).itemflag
-	.if eax
-		.if eax!=-1
-			mov		eax,(MNUITEM ptr [esi]).level
-			.if !eax
-				mov		edx,(MNUITEM ptr [esi]).ntype
-				and		edx,MFT_RIGHTJUSTIFY
-				or		edx,MF_STRING
-				invoke AppendMenu,hDlgMnu,edx,(MNUITEM ptr [esi]).itemid,addr [esi].MNUITEM.itemcaption
-				invoke MakeMnuPopup,lpDlgMem,nInx
-				.if eax
-					mov		mii.hSubMenu,eax
-					mov		mii.cbSize,sizeof MENUITEMINFO
-					mov		mii.fMask,MIIM_SUBMENU
-					invoke SetMenuItemInfo,hDlgMnu,nInx,TRUE,addr mii
-				.endif
-				inc		nInx
-			.endif
-		.endif
-		add		esi,sizeof MNUITEM
-		jmp		@b
-	.endif
-	ret
-
-MakeMnuBar endp
-
 ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	LOCAL	nInx:DWORD
 
@@ -572,7 +522,9 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	;Menu
 	.if [edi].DLGHEAD.menuid
 		.if [edi].DLGHEAD.lpmnu
-			invoke MakeMnuBar,edi
+			mov		eax,[edi].DLGHEAD.lpmnu
+			invoke MakeMnuBar,eax
+			mov		hDlgMnu,eax
 		.endif
 		mov		word ptr [ebx],-1
 		add		ebx,2

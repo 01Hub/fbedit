@@ -15,3 +15,4 @@
 #include "Res/ResPreviewDlg.rc"
 #include "Res/ResPreviewBtnDlg.rc"
 #include "Res/ResPreviewCtlDlg.rc"
+#include "Res/MnuPreviewDlg.rc"

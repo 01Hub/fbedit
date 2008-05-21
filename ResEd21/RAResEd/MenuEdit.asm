@@ -12,6 +12,7 @@ IDC_BTNL				equ 2521
 IDC_BTNR				equ 2522
 IDC_BTNU				equ 2523
 IDC_BTND				equ 2524
+IDC_BTNMNUPREVIEW		equ 2503
 IDC_LSTMNU				equ 2525
 IDC_CHKCHECKED			equ 2526
 IDC_CHKGRAYED			equ 2527
@@ -19,6 +20,8 @@ IDC_CHKRIGHTALIGN		equ 2500
 IDC_CHKRADIO			equ 2509
 IDC_CHKOWNERDRAW		equ 2530
 ;IDC_GROUPBOX			equ 2510
+
+IDD_DLGMNUPREVIEW		equ 1510
 
 .data
 
@@ -676,6 +679,42 @@ HotProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 
 HotProc endp
 
+DlgMnuPreviewProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke MakeMnuBar,lParam
+		invoke SetMenu,hWin,eax
+    .elseif eax==WM_CLOSE
+		invoke GetMenu,hWin
+		invoke DestroyMenu,eax
+		invoke EndDialog,hWin,wParam
+    .elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,FALSE,0
+			.endif
+		.endif
+    .elseif eax==WM_SIZE
+		invoke GetDlgItem,hWin,IDCANCEL
+		mov		edx,lParam
+		movzx	ecx,dx
+		shr		edx,16
+		sub		ecx,66
+		sub		edx,23
+		invoke MoveWindow,eax,ecx,edx,64,21,TRUE
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+DlgMnuPreviewProc endp
+
 DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 	LOCAL	hCtl:DWORD
 	LOCAL	buffer[64]:byte
@@ -755,7 +794,6 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		mov		lpOldHotProc,eax
     .elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -853,6 +891,8 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTMNU,0
 					.endif
 				.endif
+			.elseif eax==IDC_BTNMNUPREVIEW
+				invoke DialogBoxParam,hInstance,IDD_DLGMNUPREVIEW,hWin,addr DlgMnuPreviewProc,hMnuMem
 			.elseif eax==IDC_CHKCHECKED
 				invoke MnuGetMem,hWin
 				.if eax

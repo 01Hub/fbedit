@@ -90,6 +90,7 @@ Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
 46=ResPreview.dlg
 47=ResPreviewBtn.dlg
 48=ResPreviewCtl.dlg
+49=MnuPreview.dlg
 
 [Colref]
 0=00FFFFFF
@@ -142,14 +143,14 @@ Options=52
 5=0,0,0,0,9356
 3=0,0,0,0,23
 4=0,0,0,0,8
-1=0,0,718,485,40002
+1=0,0,718,485,0
 7=0,0,718,485,31605
 6=0,0,0,0,2026
 9=0,0,718,485,51028
 2=0,0,584,498,7648
-8=0,0,0,0,14969
-10=0,0,0,0,2863
-16=0,0,718,485,26767
+8=0,0,0,0,17385
+10=0,0,0,0,13121
+16=0,0,718,485,13418
 15=0,0,0,0
 17=0,0,0,0,64100
 18=0,0,0,0,18597
@@ -171,7 +172,7 @@ Options=52
 35=0,0,0,0,140
 37=0,0,0,0,2040
 38=0,0,0,0
-39=0,0,0,0,11226
+39=0,0,0,0,705
 40=0,0,0,0,2769
 41=0,0,0,0
 42=0,0,0,0
@@ -183,46 +184,47 @@ Options=52
 46=0,0,0,0
 47=0,0,0,0
 48=0,0,0,0
+49=0,0,0,0
 
 
 [Find]
-1="SELHHFM"
-2="SaveSel"
-3="CreateMnu"
-4="MEM_OPEN"
-5="InstallRAEdit"
-6="GridInstall"
-7="ResEdInstall"
-8="GWL_USERDATA"
-9="EM_LIM"
-10="PRP_FUN_STYLE"
+1="MakeMnuBar"
+2="SELHHFM"
+3="SaveSel"
+4="CreateMnu"
+5="MEM_OPEN"
+6="InstallRAEdit"
+7="GridInstall"
+8="ResEdInstall"
+9="GWL_USERDATA"
+10="EM_LIM"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.22
-PV=2.1.0.22
+FV=2.1.0.23
+PV=2.1.0.23
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.22
+ProductVersion=2.1.0.23
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.22
+FileVersion=2.1.0.23
 CompanyName=
 
 [VersionControl]
 Settings=1279
 Milestones=1153
 MilestoneEvery=10
-MilestoneEveryCurrent=6
+MilestoneEveryCurrent=3
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.
@@ -302,6 +304,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 46=2
 47=2
 48=2
+49=2
 
 
 [Collapse]

@@ -987,3 +987,46 @@ GetNextLevel:
 	retn
 
 CreateSubMenu endp
+
+MakeMnuBar proc uses ebx esi edi,lpMnuMem:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	hMnu:HMENU
+
+	invoke CreateMenu
+	mov		hMnu,eax
+	mov		esi,lpMnuMem
+	add		esi,sizeof MNUHEAD
+	mov		nInx,0
+  @@:
+	mov		eax,(MNUITEM ptr [esi]).itemflag
+	.if eax
+		.if eax!=-1
+			mov		eax,(MNUITEM ptr [esi]).level
+			.if !eax
+				mov		edx,(MNUITEM ptr [esi]).ntype
+				and		edx,MFT_RIGHTJUSTIFY
+				or		edx,MF_STRING
+				invoke AppendMenu,hMnu,edx,(MNUITEM ptr [esi]).itemid,addr [esi].MNUITEM.itemcaption
+				mov		eax,lpMnuMem
+				add		eax,sizeof MNUHEAD
+				mov		edx,nInx
+				inc		edx
+				invoke CreateSubMenu,eax,edx
+				.if eax
+					mov		mii.hSubMenu,eax
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_SUBMENU
+					invoke SetMenuItemInfo,hMnu,nInx,TRUE,addr mii
+				.endif
+				inc		nInx
+			.endif
+		.endif
+		add		esi,sizeof MNUITEM
+		jmp		@b
+	.endif
+	mov		eax,hMnu
+	ret
+
+MakeMnuBar endp
+

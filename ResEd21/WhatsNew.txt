@@ -1,5 +1,9 @@
 ResEd
 
+2.1.0.1 - 2008.05.21
+--------------------
+o Added preview to menu editor.
+o Fixed bug when showing menu accelerator on prview of a dialog with menu.
 2.1.0.0 - 2008.04.21
 --------------------
 o Previous modal dialogs are now child dialogs.
