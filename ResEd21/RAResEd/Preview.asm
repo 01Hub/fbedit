@@ -508,6 +508,7 @@ MakeMnuPopup proc uses ebx esi,lpDlgMem:DWORD,nInx:DWORD
 							mov		buffer1,VK_TAB
 							invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
 							invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
+							invoke ConvertCaption,addr buffer,addr buffer
 							.if buffer1[1]
 								invoke strcat,addr buffer,addr buffer1
 							.endif

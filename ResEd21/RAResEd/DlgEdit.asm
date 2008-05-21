@@ -2260,6 +2260,43 @@ CtlMultiSelect proc hWin:HWND,lParam:LPARAM
 
 CtlMultiSelect endp
 
+ConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
+
+	mov		edi,lpDest
+	mov		esi,lpSource
+	.while byte ptr [esi]
+		mov		ax,[esi]
+		.if ax=='a\'
+			add		esi,2
+			mov		byte ptr [edi],08h
+			inc		edi
+		.elseif ax=='n\'
+			add		esi,2
+			mov		byte ptr [edi],0Ah
+			inc		edi
+		.elseif ax=='r\'
+			add		esi,2
+			mov		byte ptr [edi],VK_RETURN
+			inc		edi
+		.elseif ax=='t\'
+			add		esi,2
+			mov		byte ptr [edi],VK_TAB
+			inc		edi
+		.elseif ax=='x\'
+			add		esi,2
+			mov		byte ptr [edi],0
+			inc		edi
+		.else
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endif
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+ConvertCaption endp
+
 GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
 	LOCAL	hMnu[8]:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -2299,6 +2336,7 @@ GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
 								mov		buffer1,VK_TAB
 								invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
 								invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
+								invoke ConvertCaption,addr buffer,addr buffer
 								.if buffer1[1]
 									invoke strcat,addr buffer,addr buffer1
 								.endif
@@ -3025,43 +3063,6 @@ MakeDlgFont proc uses esi,lpMem:DWORD
 	ret
 
 MakeDlgFont endp
-
-ConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
-
-	mov		edi,lpDest
-	mov		esi,lpSource
-	.while byte ptr [esi]
-		mov		ax,[esi]
-		.if ax=='a\'
-			add		esi,2
-			mov		byte ptr [edi],08h
-			inc		edi
-		.elseif ax=='n\'
-			add		esi,2
-			mov		byte ptr [edi],0Ah
-			inc		edi
-		.elseif ax=='r\'
-			add		esi,2
-			mov		byte ptr [edi],VK_RETURN
-			inc		edi
-		.elseif ax=='t\'
-			add		esi,2
-			mov		byte ptr [edi],VK_TAB
-			inc		edi
-		.elseif ax=='x\'
-			add		esi,2
-			mov		byte ptr [edi],0
-			inc		edi
-		.else
-			mov		[edi],al
-			inc		esi
-			inc		edi
-		.endif
-	.endw
-	mov		byte ptr [edi],0
-	ret
-
-ConvertCaption endp
 
 DeConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
