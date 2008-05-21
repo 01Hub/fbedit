@@ -471,93 +471,20 @@ SaveWideChar proc lpStringA:DWORD,lpStringW:DWORD
 
 SaveWideChar endp
 
-MakeMnuPopup proc uses ebx esi,lpDlgMem:DWORD,nInx:DWORD
-	LOCAL	hMnu[8]:DWORD
-	LOCAL	buffer[512]:BYTE
-	LOCAL	buffer1[32]:BYTE
+MakeMnuPopup proc lpDlgMem:DWORD,nInx:DWORD
 
-	mov		hMnu,0
-	mov		esi,lpDlgMem
-	mov		esi,[esi].DLGHEAD.lpmnu
-	add		esi,sizeof MNUHEAD
+	mov		eax,lpDlgMem
+	mov		eax,[eax].DLGHEAD.lpmnu
+	add		eax,sizeof MNUHEAD
 	mov		edx,nInx
 	inc		edx
-  @@:
-	mov		eax,(MNUITEM ptr [esi]).itemflag
-	.if eax
-		.if eax!=-1
-			mov		eax,(MNUITEM ptr [esi]).level
-			.if !eax
-				dec		edx
-				.if !edx
-				  Nx:
-					add		esi,sizeof MNUITEM
-					mov		eax,(MNUITEM ptr [esi]).level
-					.if eax
-						dec		eax
-						lea		ebx,[hMnu+eax*4]
-						mov		eax,[ebx]
-						.if !eax
-							invoke CreatePopupMenu
-							mov		[ebx],eax
-						.endif
-						mov		al,(MNUITEM ptr [esi]).itemcaption
-						.if al=='-'
-							invoke AppendMenu,[ebx],MF_SEPARATOR,0,0
-						.else
-							mov		buffer1,VK_TAB
-							invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
-							invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
-							invoke ConvertCaption,addr buffer,addr buffer
-							.if buffer1[1]
-								invoke strcat,addr buffer,addr buffer1
-							.endif
-							push	esi
-							call	GetNextLevel
-							pop		esi
-							mov		edx,(MNUITEM ptr [esi]).level
-							mov		ecx,(MNUITEM ptr [esi]).nstate
-							or		ecx,MF_STRING
-							.if eax>edx
-								push	ecx
-								invoke CreatePopupMenu
-								mov		[ebx+4],eax
-								pop		ecx
-								or		ecx,MF_POPUP
-								invoke AppendMenu,[ebx],ecx,[ebx+4],addr buffer
-							.elseif eax==edx
-								invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-							.elseif eax
-								invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-								mov		dword ptr [ebx],0
-							.else
-								invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-							.endif
-						.endif
-						jmp		Nx
-					.endif
-				.endif
-			.endif
-		.endif
-		add		esi,sizeof MNUITEM
-		jmp		@b
-	.endif
-	mov		eax,hMnu
+	invoke CreateSubMenu,eax,edx
 	ret
-
-GetNextLevel:
-	add		esi,sizeof MNUITEM
-	.if [esi].MNUITEM.itemflag==-1
-		jmp		GetNextLevel
-	.endif
-	mov		eax,(MNUITEM ptr [esi]).level
-	retn
 
 MakeMnuPopup endp
 
 
 MakeMnuBar proc uses ebx esi edi,lpDlgMem:DWORD
-;	LOCAL	buffer[512]:BYTE
 	LOCAL	nInx:DWORD
 	LOCAL	mii:MENUITEMINFO
 

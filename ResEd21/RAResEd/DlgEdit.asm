@@ -2260,127 +2260,17 @@ CtlMultiSelect proc hWin:HWND,lParam:LPARAM
 
 CtlMultiSelect endp
 
-ConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
-
-	mov		edi,lpDest
-	mov		esi,lpSource
-	.while byte ptr [esi]
-		mov		ax,[esi]
-		.if ax=='a\'
-			add		esi,2
-			mov		byte ptr [edi],08h
-			inc		edi
-		.elseif ax=='n\'
-			add		esi,2
-			mov		byte ptr [edi],0Ah
-			inc		edi
-		.elseif ax=='r\'
-			add		esi,2
-			mov		byte ptr [edi],VK_RETURN
-			inc		edi
-		.elseif ax=='t\'
-			add		esi,2
-			mov		byte ptr [edi],VK_TAB
-			inc		edi
-		.elseif ax=='x\'
-			add		esi,2
-			mov		byte ptr [edi],0
-			inc		edi
-		.else
-			mov		[edi],al
-			inc		esi
-			inc		edi
-		.endif
-	.endw
-	mov		byte ptr [edi],0
-	ret
-
-ConvertCaption endp
-
 GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
-	LOCAL	hMnu[8]:DWORD
-	LOCAL	buffer[512]:BYTE
-	LOCAL	buffer1[32]:BYTE
 
-	mov		hMnu,0
-	mov		esi,lpDlgMem
-	mov		eax,[esi].DLGHEAD.lpmnu
+	mov		eax,lpDlgMem
+	mov		eax,[eax].DLGHEAD.lpmnu
 	.if eax
-		mov		esi,eax
-		add		esi,sizeof MNUHEAD
+		add		eax,sizeof MNUHEAD
 		mov		edx,MnuInx
 		inc		edx
-	  @@:
-		mov		eax,(MNUITEM ptr [esi]).itemflag
-		.if eax
-			.if eax!=-1
-				mov		eax,(MNUITEM ptr [esi]).level
-				.if !eax
-					dec		edx
-					.if !edx
-					  Nx:
-						add		esi,sizeof MNUITEM
-						mov		eax,(MNUITEM ptr [esi]).level
-						.if eax
-							dec		eax
-							lea		ebx,[hMnu+eax*4]
-							mov		eax,[ebx]
-							.if !eax
-								invoke CreatePopupMenu
-								mov		[ebx],eax
-							.endif
-							mov		al,(MNUITEM ptr [esi]).itemcaption
-							.if al=='-'
-								invoke AppendMenu,[ebx],MF_SEPARATOR,0,0
-							.else
-								mov		buffer1,VK_TAB
-								invoke MnuSaveAccel,[esi].MNUITEM.shortcut,addr buffer1[1]
-								invoke strcpy,addr buffer,addr (MNUITEM ptr [esi]).itemcaption
-								invoke ConvertCaption,addr buffer,addr buffer
-								.if buffer1[1]
-									invoke strcat,addr buffer,addr buffer1
-								.endif
-								push	esi
-								call	GetNextLevel
-								pop		esi
-								mov		edx,(MNUITEM ptr [esi]).level
-								mov		ecx,(MNUITEM ptr [esi]).nstate
-								or		ecx,MF_STRING
-								.if eax>edx
-									push	ecx
-									invoke CreatePopupMenu
-									mov		[ebx+4],eax
-									pop		ecx
-									or		ecx,MF_POPUP
-									invoke AppendMenu,[ebx],ecx,[ebx+4],addr buffer
-								.elseif eax==edx
-									invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-								.elseif eax
-									invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-									mov		dword ptr [ebx],0
-								.else
-									invoke AppendMenu,[ebx],ecx,(MNUITEM ptr [esi]).itemid,addr buffer
-								.endif
-							.endif
-							jmp		Nx
-						.endif
-					.endif
-				.endif
-			.endif
-			add		esi,sizeof MNUITEM
-			jmp		@b
-		.endif
-		mov		eax,hMnu
+		invoke CreateSubMenu,eax,edx
 	.endif
 	ret
-
-GetNextLevel:
-	add		esi,sizeof MNUITEM
-	.if [esi].MNUITEM.itemflag==-1
-		jmp		GetNextLevel
-	.endif
-	mov		eax,(MNUITEM ptr [esi]).level
-	retn
 
 GetMnuPopup endp
 
@@ -2644,25 +2534,10 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,wParam
 					and		eax,MK_SHIFT
 					mov		fShift,eax
-;					invoke GetAsyncKeyState,VK_SHIFT
-;					and		eax,8000h
-;					mov		fShift,eax
-;					;Control key
+					;Control key
 					mov		eax,wParam
 					and		eax,MK_CONTROL
 					mov		fControl,eax
-;					invoke GetAsyncKeyState,VK_CONTROL
-;					and		eax,8000h
-;					mov		fControl,eax
-;.if eax
-;	.if hStatus
-;		invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szHdrCtrl
-;	.endif
-;.else
-;	.if hStatus
-;		invoke SendMessage,hStatus,SB_SETTEXT,nStatus,offset szNULL
-;	.endif
-;.endif
 					.if !fControl && !fShift && !fMultiSel
 						mov		eax,hMultiSel
 						.if eax
@@ -3063,45 +2938,6 @@ MakeDlgFont proc uses esi,lpMem:DWORD
 	ret
 
 MakeDlgFont endp
-
-DeConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
-
-	mov		edi,lpDest
-	mov		esi,lpSource
-	xor		ecx,ecx
-	.while byte ptr [esi] && ecx<MaxCap-1
-		mov		al,[esi]
-		.if al==0Dh
-			.break .if ecx>MaxCap-3
-			mov		word ptr [edi],'r\'
-			add		edi,2
-			add		ecx,2
-		.elseif al==0Ah
-			.break .if ecx>MaxCap-3
-			mov		word ptr [edi],'n\'
-			add		edi,2
-			add		ecx,2
-		.elseif al==09h
-			.break .if ecx>MaxCap-3
-			mov		word ptr [edi],'t\'
-			add		edi,2
-			add		ecx,2
-		.elseif al==08h
-			.break .if ecx>MaxCap-3
-			mov		word ptr [edi],'a\'
-			add		edi,2
-			add		ecx,2
-		.else
-			mov		[edi],al
-			inc		edi
-			inc		ecx
-		.endif
-		inc		esi
-	.endw
-	mov		byte ptr [edi],0
-	ret
-
-DeConvertCaption endp
 
 DesignDummyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
