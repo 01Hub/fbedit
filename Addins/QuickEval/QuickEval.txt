@@ -3,7 +3,7 @@
  
 	QuickEval FBEdit Addin
 	
-	version: 1.0.0.0
+	version: 1.1.0.0
 	author:	Aleksandar Ruzicic <krckoorascic@gmail.com>
 	
 	big thanks goes to KetilO, he saved me lot of gray hairs :)
@@ -13,7 +13,7 @@
 	QuickEval Adding enables you to use Output window (F6 toggles this window)
 	to evaluate some simple (or complex) math expressions.
 	
-	To invoke addin you time expression in Output window and hit Enter key, but line
+	To invoke addin you type expression in Output window and hit Enter key, but line
 	on which you typed your expression must begin with question mark (?)
 	
 	example:
@@ -41,7 +41,7 @@
 	
 	\		- integer division
 	
-	Mod	- modulus (remainder od integer division)
+	Mod	- modulus (remainder of integer division)
 	
 	+		- addition
 	-		- subtraction
@@ -120,4 +120,42 @@
 	
 		42
 	
+ --------------------------------------------------------------	 
+ 	
+ 	Version 1.1 changes:
+ 	
+ 	- added support for strings ("double quote delimited strings")
+ 	
+ 	- added string concatenation operator & (same precedence as + and -)
+ 	
+ 	- added string handling functions:
+ 	
+ 	Asc
+ 	Chr		(limited to maximum of 8 parameters)
+ 	Bin
+ 	Oct
+ 	Hex
+ 	Format
+ 	Val
+ 	ValInt
+ 	ValUInt
+ 	Mkd
+ 	Mki
+ 	Mkl
+ 	Mks
+ 	MkShort
+ 	Cvd
+ 	Cvi
+ 	Cvs
+ 	CvShort
+ 	Left
+ 	Mid		(function, not stamenet)
+ 	Right
+ 	LCase
+ 	UCase
+ 	LTrim		(only one parameter version supported)
+ 	RTrim		(only one parameter version supported)
+ 	Trim		(only one parameter version supported)
+ 	InStr		(Any keyword not supported)
+ 
  --------------------------------------------------------------	 

@@ -10,7 +10,9 @@
 #Include Once "win/commctrl.bi"
 #Include Once "win/richedit.bi"
 
-#Include "../../../../../Inc/Addins.bi"
+#Include Once "vbcompat.bi"
+
+#Include "../../Inc/Addins.bi"
 
 #Include "QuickEval.bi"
 #Include "exception.bi"
@@ -21,12 +23,13 @@ DIM_AS_EXCEPTION( UNEXPECTED_TOKEN,				2, "Unexpected token"			)
 DIM_AS_EXCEPTION( DIVISION_BY_ZERO,				3, "Division by zero"			)
 DIM_AS_EXCEPTION( BRACE_MISSING,					4, "Unbalanced parentheses"	)
 DIM_AS_EXCEPTION( ARGUMENT_COUNT_MISSMATCH,	5, "Argument count missmatch"	)
+DIM_AS_EXCEPTION( UNCLOSED_STRING_CONSTANT,	6, "Unclosed string constant"	)
 
 
 #Define END_OF_LINE	Chr(0)
 #Define WHITESPACE	Chr(9, 32)
-#Define OPERATORS		"^/*,+\-<.>="
-#Define DELIMITERS 	"()" + OPERATORS + WHITESPACE + END_OF_LINE
+#Define OPERATORS		"^/*&,+\-<.>="
+#Define DELIMITERS 	(!"(\")" + OPERATORS + WHITESPACE + END_OF_LINE)
 
 Namespace Eval
 
@@ -316,6 +319,7 @@ End Function
 '
 '  <Mod Exp> +	<Add Exp> 
 '  <Mod Exp> -	<Add Exp>
+'  <Mod Exp> &	<Add Exp>
 '  <Mod Exp>  
 '
 Function EvalAddExp As String
@@ -329,6 +333,10 @@ Function EvalAddExp As String
 	ElseIf MatchOperator("-") Then
 		
 		lhs = Str(Val(lhs) - Val(EvalAddExp))
+	
+	ElseIf MatchOperator("&") Then
+		
+		lhs = lhs + EvalAddExp
 
 	EndIf
 	
@@ -458,6 +466,7 @@ End Function
 '  &o[0-7]+
 '  &b[01]+
 '	[a-z_][a-z_0-9]*( <Expression> {, <Expression>} )
+'  " ([^"]|"")* "
 '
 Function EvalValue As String
 	
@@ -593,6 +602,31 @@ Function EvalValue As String
 			
 		End Select
 	
+	ElseIf Eval.lookahead = """" Then
+		
+		Dim As String ret
+		
+		NextChar
+		
+		Do
+			If Eval.lookahead = """" Then
+				NextChar
+				If Eval.lookahead = """" Then
+					NextChar
+					ret += """"
+				Else
+					Exit Do
+				EndIf
+			ElseIf Eval.lookahead = END_OF_LINE Then
+				THROWNEW( UNCLOSED_STRING_CONSTANT )
+			Else
+				ret += Eval.lookahead
+				NextChar
+			EndIf
+		Loop
+		
+		Return ret
+	
 	ElseIf InStr(LCase(Eval.lookahead), Any "_abcdefghijlmnopqrstuvwxyz") > 0 Then
 		
 		Dim As String func = Eval.lookahead, argv()
@@ -677,6 +711,74 @@ Function EvalValue As String
 			Case "atan2"
 				If argc < 2 Then THROWNEW( ARGUMENT_COUNT_MISSMATCH )
 				Return Str(ATan2(Val(argv(1)), Val(argv(2))))
+			Case "asc"
+				If argc < 2 Then
+					Return Str(Asc(argv(1), Val(argv(2)))) 
+				Else 
+					Return Str(Asc(argv(1)))
+				EndIf  
+				
+			Case "chr":
+				Select Case As Const argc
+					Case 1: Return Chr(Val(argv(1)))
+					Case 2: Return Chr(Val(argv(1)), Val(argv(2)))
+					Case 3: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)))
+					Case 4: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)), Val(argv(4)))
+					Case 5: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)), Val(argv(4)), Val(argv(5)))
+					Case 6: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)), Val(argv(4)), Val(argv(5)), Val(argv(6)))
+					Case 7: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)), Val(argv(4)), Val(argv(5)), Val(argv(6)), Val(argv(7)))
+					Case 8: Return Chr(Val(argv(1)), Val(argv(2)), Val(argv(3)), Val(argv(4)), Val(argv(5)), Val(argv(6)), Val(argv(7)), Val(argv(8)))
+					Case Else: THROWNEW( ARGUMENT_COUNT_MISSMATCH )
+				End Select
+			
+			Case "bin": Return Bin(Val(argv(1)))
+			Case "oct": Return Oct(Val(argv(1)))
+			Case "hex": Return Hex(Val(argv(1)))
+			Case "format"
+				If argc = 1 Then
+					Return Format(Val(argv(1)))
+				Else
+					Return Format(Val(argv(1)), argv(2))					
+				EndIf
+			Case "val": Return Str(Val(argv(1)))
+			Case "valint": Return Str(ValInt(argv(1)))
+			Case "valuint": Return Str(ValUInt(argv(1)))
+			Case "mkd": Return Mkd(Val(argv(1)))
+			Case "mki": Return Mki(Val(argv(1)))
+			Case "mkl": Return Mkl(Val(argv(1)))
+			Case "mks": Return Mks(Val(argv(1)))
+			Case "mkshort": Return MkShort(Val(argv(1)))
+			Case "cvd": Return Str(Cvd(argv(1)))
+			Case "cvi": Return Str(Cvi(argv(1)))
+			Case "cvs": Return Str(Cvs(argv(1)))
+			Case "cvshort": Return Str(CVShort(argv(1)))
+			Case "left"
+				If argc < 2 Then THROWNEW( ARGUMENT_COUNT_MISSMATCH )
+				Return Left(argv(1), Val(argv(2)))
+			Case "mid"
+				If argc = 2 Then
+					Return Mid(argv(1), Val(argv(2)))
+				ElseIf argc = 3 Then
+					Return Mid(argv(1), Val(argv(2)), Val(argv(3)))
+				Else
+					THROWNEW( ARGUMENT_COUNT_MISSMATCH )	
+				EndIf
+			Case "right"
+				If argc < 2 Then THROWNEW( ARGUMENT_COUNT_MISSMATCH )
+				Return Right(argv(1), Val(argv(2)))
+			Case "lcase": Return LCase(argv(1))
+			Case "ucase": Return UCase(argv(1))
+			Case "ltrim": Return LTrim(argv(1))
+			Case "rtrim": Return RTrim(argv(1))
+			Case "trim": Return Trim(argv(1))
+			Case "instr"
+				If argc = 2 Then
+					Return Str(InStr(argv(1), argv(2)))
+				ElseIf argc = 3 Then
+					Return Str(InStr(Val(argv(1)), argv(2), argv(3)))
+				Else
+					THROWNEW( ARGUMENT_COUNT_MISSMATCH )	
+				EndIf
 		End Select
 		
 	Else
@@ -722,7 +824,7 @@ Function OutputWndProc(ByVal hwnd As HWND, ByVal uMsg As UINT, ByVal wParam As W
             
             If Left(lineText, 1) = "?" Then
             	
-	            lineText = Chr(10, 13) + Evaluate(Mid(lineText, 2))
+	            lineText = Chr(13, 10) + Evaluate(Mid(lineText, 2))
 	            
 	            SendMessage( lpHandles->hOut, EM_REPLACESEL, 0, Cast(LPARAM, StrPtr(lineText)) )            	
             	
@@ -755,8 +857,8 @@ End Function
 
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
-Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer Export
-
+Function DllFunction CDecl Alias "DllFunction" (ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As bool Export
+	
 	Return FALSE
 
 End Function
