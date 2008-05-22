@@ -198,6 +198,9 @@ Whats new since 0.0.0.1
 - Added TPE_DATE cell type. To be combined with TPE_INTEGER
 - Added SPRM_GETDATEFORMAT and SPRM_SETDATEFORMAT. Use it to change default date format string (yyyy-MM-dd).
 - Added CDate function. Converts a date string to days since 1601-01-01.
+0.0.2.0
+- Fixed bug with SPRN_BUTTONCLICK. Did not return row and column.
+- Fixed bug with SPRN_HYPRLINKCLICK. Did not return row and column.
 
 NOTE
 ----

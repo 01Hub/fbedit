@@ -153,6 +153,18 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		spri.lpdta,offset szSomeText1
 		;Insert the item
 		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
+		;Button
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE; or SPRIF_IMAGEALIGN or SPRIF_TEXTALIGN
+		mov		spri.fmt.tpe,TPE_BUTTON or TPE_TEXTMULTILINE or TPE_FORCETYPE or TPE_FIXEDSIZE
+		;mov		spri.fmt.imgal,FMTA_RIGHT or FMTA_MIDDLE
+		;Col 1
+		mov		spri.col,1
+		;Row 9
+		mov		spri.row,10
+		;And a pointer to data
+		mov		spri.lpdta,offset szSomeText2
+		;Insert the item
+		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
 ;
 ;		;ComboBox
 ;		;flag specify valid struct items
@@ -389,6 +401,13 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShellExecute,hWin,offset szOpen,eax,NULL,NULL,SW_SHOWDEFAULT
 			.elseif eax==SPRN_BUTTONCLICK
 				PrintText "Button click"
+				mov		ecx,[edx].SPR_BUTTON.lpspri
+				mov		eax,[ecx].SPR_ITEM.row
+				PrintDec eax
+				mov		eax,[ecx].SPR_ITEM.col
+				PrintDec eax
+				mov		eax,[ecx].SPR_ITEM.lpdta
+				PrintStringByAddr eax
 			.elseif eax==SPRN_BEFOREUPDATE
 ;PrintText "SPRN_BEFOREUPDATE"
 				mov		edx,lParam

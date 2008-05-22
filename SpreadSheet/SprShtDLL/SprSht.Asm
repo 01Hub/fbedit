@@ -1248,6 +1248,10 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 HyperLink:
 	mov		edx,eax
 	lea		edi,spri
+	mov		eax,[esi].WIN.ccol
+	mov		[edi].SPR_ITEM.col,eax
+	mov		eax,[esi].WIN.crow
+	mov		[edi].SPR_ITEM.row,eax
 	mov		eax,[edx].COLDTA.fmt.bckcol
 	mov		[edi].SPR_ITEM.fmt.bckcol,eax
 	mov		eax,[edx].COLDTA.fmt.txtcol
@@ -1279,6 +1283,10 @@ HyperLink:
 ButtonClick:
 	mov		edx,eax
 	lea		edi,spri
+	mov		eax,[esi].WIN.ccol
+	mov		[edi].SPR_ITEM.col,eax
+	mov		eax,[esi].WIN.crow
+	mov		[edi].SPR_ITEM.row,eax
 	mov		eax,[edx].COLDTA.fmt.bckcol
 	mov		[edi].SPR_ITEM.fmt.bckcol,eax
 	mov		eax,[edx].COLDTA.fmt.txtcol
