@@ -79,7 +79,9 @@ ProjectDblClick proc uses ebx,hWin:HWND,lParam:LPARAM
 					mov		hDialog,eax
 					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_LANGUAGE
-					invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hDEd,offset LanguageEditProc,ebx
+					invoke CloseDialog
+					invoke CreateDialogParam,hInstance,IDD_LANGUAGECHILD,hDEd,offset LanguageEditProc,ebx
+					mov		hDialog,eax
 					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_XPMANIFEST
 					invoke CloseDialog
@@ -790,7 +792,11 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 			mov		edx,[eax].PROJECT.hmem
 		.endif
 		.if fOpen
-			invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hDEd,offset LanguageEditProc,eax
+			push	eax
+			invoke CloseDialog
+			pop		eax
+			invoke CreateDialogParam,hInstance,IDD_LANGUAGECHILD,hDEd,offset LanguageEditProc,eax
+			mov		hDialog,eax
 			invoke NotifyParent
 		.elseif !edx
 			invoke AddProjectNode,TPE_LANGUAGE,offset szLanguage,esi

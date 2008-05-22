@@ -2,6 +2,8 @@ IDD_LANGUAGE		equ 1800
 IDC_CBOLANG			equ 5001
 IDC_CBOSUBLANG		equ 5002
 
+IDD_LANGUAGECHILD	equ 1810
+
 .data?
 
 nLang				dd ?
@@ -47,6 +49,7 @@ ExportLanguage endp
 
 LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -57,13 +60,19 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		nLang,eax
 			mov		eax,[edx].LANGUAGEMEM.sublang
 			mov		nSubLang,eax
+			mov		fDialogChanged,FALSE
 		.else
 			xor		eax,eax
 			mov		nLang,eax
 			mov		nSubLang,eax
+			mov		fDialogChanged,TRUE
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		call	GetLang
+		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
+		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szLANGUAGE
+		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -84,16 +93,18 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.if !esi
 					invoke SendMessage,hRes,PRO_ADDITEM,TPE_LANGUAGE,FALSE
 				.endif
-				mov		[eax].PROJECT.changed,TRUE
 				mov		esi,[eax].PROJECT.hmem
 				mov		eax,nLang
 				mov		[esi].LANGUAGEMEM.lang,eax
 				mov		eax,nSubLang
 				mov		[esi].LANGUAGEMEM.sublang,eax
-				invoke NotifyParent
-				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
+				.if fDialogChanged
+					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
+					mov		fDialogChanged,FALSE
+				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,FALSE
+				invoke PropertyList,0
 			.endif
 		.elseif edx==CBN_SELCHANGE
 			.if eax==IDC_CBOLANG
@@ -106,10 +117,20 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 				call	GetLang
 			.endif
+			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
-		;invoke DestroyWindow,hWin
-		invoke EndDialog,hWin,lParam
+		invoke DestroyWindow,hWin
+		;invoke EndDialog,hWin,lParam
+	.elseif eax==WM_SIZE
+		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
+		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
+		invoke GetClientRect,hDEd,addr rect
+		mov		rect.left,3
+		mov		rect.top,3
+		sub		rect.right,6
+		sub		rect.bottom,6
+		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
 		mov		eax,FALSE
 		ret

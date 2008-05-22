@@ -16,3 +16,4 @@
 #include "Res/ResPreviewBtnDlg.rc"
 #include "Res/ResPreviewCtlDlg.rc"
 #include "Res/MnuPreviewDlg.rc"
+#include "Res/LanguageEditChildDlg.rc"
