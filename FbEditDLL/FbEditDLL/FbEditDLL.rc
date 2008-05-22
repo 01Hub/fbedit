@@ -50,3 +50,5 @@ END
 #include					"Res/ToolbarEditDlg.rc"
 #include					"Res/VersionEditDlg.Rc"
 #include					"Res/XPManifestEditDlg.rc"
+#include					"Res/MnuPreviewDlg.rc"
+#include					"Res/LanguageEditChildDlg.rc"
