@@ -1,17 +1,8 @@
 Whats new:
 ----------
-1.0.6.1b
-o Fixed bugs in FbEdit.ini file
-o Updated German translation
-o Updated language translation tool
-o Added QuickEval addin by krcko
-1.0.6.1
-o Updated resource editor to version 2.1.
-o All custom controls that FbEdit depends on are now in FbEdit.dll.
-o Added inline asm hilite group.
-o Added word group C19 and C20. Used by inline asm.
-o Updated FbEdit.chm help file.
-o Included windows_styles.chm help file.
-o Speed optimized project handling on network drives.
-o Fixed code complete bugs.
-o Fixed themes in FbEdit.ini
+1.0.6.2
+o The resource editor language dialog is now a child window.
+o Added variables to custom highlighting.
+o Fixed bug where opening a file that is not part of the project
+  would cause code properties to be refreshed constantly.
+  This would make code editing sluggish on slow computers.
