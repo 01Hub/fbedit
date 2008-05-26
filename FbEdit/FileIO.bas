@@ -92,6 +92,8 @@ Function ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
 			GlobalFree(hMem)
 			Return 1
 		EndIf
+	ElseIf hEdit Then
+		SetWindowLong(hEdit,GWL_USERDATA,0)
 	EndIf
 	Return 0
 

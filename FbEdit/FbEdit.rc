@@ -5,7 +5,6 @@
 #define IDD_DLGABOUT 3000
 #define IDC_EDTABOUT 1001
 #define IDC_URL 1002
-#define IDC_URL2 1003
 #define IDC_URL3 1004
 #define IDD_BLOCKDLG 5200
 #define IDC_EDTBLOCKINSERT 5201
@@ -423,7 +422,7 @@ BEGIN
 END
 
 IDD_DLGABOUT DIALOGEX 6,6,146,91
-CAPTION "FreeBASIC editor 1.0.6.1"
+CAPTION "FreeBASIC editor 1.0.6.2"
 FONT 8,"MS Sans Serif",0,0,0
 STYLE 0x10C80880
 EXSTYLE 0x00000001
@@ -433,8 +432,7 @@ BEGIN
   CONTROL "#100",-1,"Static",0x50001003,4,3,22,20
   CONTROL "FreeBASIC editor (C) KetilO 2008\r\n\r\nradasmide@hotmail.com",IDC_EDTABOUT,"Edit",0x50000805,30,3,112,28
   CONTROL "http://www.radasm.com/fbedit/",IDC_URL,"Static",0x50000381,12,35,130,11
-  CONTROL "http://www.assembler.ca/radasm/fbedit/",IDC_URL2,"Static",0x50000381,12,46,130,11
-  CONTROL "http://fbedit.freebasic.net/",IDC_URL3,"Static",0x50000381,10,57,132,11
+  CONTROL "http://fbedit.freebasic.net/",IDC_URL3,"Static",0x50000381,10,53,132,11
 END
 
 IDD_BLOCKDLG DIALOGEX 6,6,148,62
@@ -923,8 +921,8 @@ IDB_SPLASH BITMAP DISCARDABLE "Res/FbEdit.bmp"
 IDR_XPMANIFEST MANIFEST "Res/xptheme.xml"
 
 VERINF1 VERSIONINFO
-FILEVERSION 1,0,6,1
-PRODUCTVERSION 1,0,6,1
+FILEVERSION 1,0,6,2
+PRODUCTVERSION 1,0,6,2
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -932,12 +930,12 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.0.6.1\0"
+      VALUE "FileVersion", "1.0.6.2\0"
       VALUE "FileDescription", "FreeBASIC code editor\0"
       VALUE "InternalName", "FbEdit\0"
       VALUE "LegalCopyright", "KetilO (C) 2006\0"
       VALUE "OriginalFilename", "FbEdit.exe\0"
-      VALUE "ProductVersion", "1.0.6.1\0"
+      VALUE "ProductVersion", "1.0.6.2\0"
     END
   END
   BLOCK "VarFileInfo"

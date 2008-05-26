@@ -58,7 +58,7 @@ Function AboutDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPAR
 			TranslateDialog(hWin,IDD_DLGABOUT)
 			' Subclass the control
 			OldUrlProc=Cast(Any Ptr,SetWindowLong(GetDlgItem(hWin,IDC_URL1),GWL_WNDPROC,Cast(Integer,@UrlProc)))
-			SetWindowLong(GetDlgItem(hWin,IDC_URL2),GWL_WNDPROC,Cast(Integer,@UrlProc))
+			'SetWindowLong(GetDlgItem(hWin,IDC_URL2),GWL_WNDPROC,Cast(Integer,@UrlProc))
 			SetWindowLong(GetDlgItem(hWin,IDC_URL3),GWL_WNDPROC,Cast(Integer,@UrlProc))
 			' Get dialogs font
 			hUrlFont=Cast(HFONT,SendMessage(hWin,WM_GETFONT,0,0))

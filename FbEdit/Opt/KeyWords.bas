@@ -284,6 +284,20 @@ Sub HLConstants()
 
 End Sub
 
+Sub HLVariable()
+	Dim lret As ZString Ptr
+	Dim sItem As ZString*256
+	
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("d")),Cast(Integer,StrPtr(""))))
+	Do While lret
+		sItem= "^"
+		lstrcat(@sItem,lret)
+		SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C17,Cast(Integer,@sItem))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+	Loop
+
+End Sub
+
 Sub HLFunction()
 	Dim lret As ZString Ptr
 	Dim sItem As ZString*256
@@ -303,6 +317,7 @@ Sub PropertyHL(ByVal bUpdate As Integer)
 	If bUpdate Then
 		HLUDT()
 		HLConstants()
+		HLVariable()
 		HLFunction()
 	Else
 		SetHiliteWords(ah.hwnd)
