@@ -719,7 +719,6 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 						If (x=1 And lpTABMEM->hedit<>ah.hred) Or x=2 Then
 							' Update properties
 							p=p+ParseFile(ah.hwnd,lpTABMEM->hedit,lpTABMEM->filename)
-TextToOutput("Update")
 						EndIf
 					EndIf
 				Case 4
@@ -774,7 +773,6 @@ TextToOutput("Update")
 		SendMessage(ah.hpr,WM_SETREDRAW,FALSE,0)
 		SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 		SendMessage(ah.hpr,WM_SETREDRAW,TRUE,0)
-TextToOutput("Properties")
 	EndIf
 	If nType=2 Or nType=6 Then
 		fTimer=1
