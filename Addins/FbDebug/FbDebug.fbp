@@ -1,0 +1,23 @@
+[Project]
+Version=2
+Api=fb (FreeBASIC),win (Windows)
+Description=Debug addin
+[Make]
+Module=Module Build,fbc -c
+Recompile=0
+Current=1
+1=Windows dll,fbc -s gui -dll -export
+Output=
+Run=
+[File]
+1=FbDebug.bas
+2=FbDebug.bi
+3=FbDebug.txt
+4=Debug.bas
+5=..\..\..\..\..\Inc\Addins.bi
+[FileInfo]
+1=0,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+2=0,10,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+3=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+4=0,100,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+5=0,112,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
