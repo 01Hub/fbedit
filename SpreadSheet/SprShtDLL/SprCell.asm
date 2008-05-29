@@ -2032,6 +2032,89 @@ ConvRelCellRef:
 
 DecompFormula endp
 
+CheckClick proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,lpCell:DWORD
+	LOCAL	spredt:SPR_EDIT
+
+	mov		ebx,lpSheet
+	mov		esi,lpWin
+	mov		eax,lpCell
+	push	eax
+	mov		eax,[esi].WIN.ccol
+	mov		[ebx].SHEET.spri.col,eax
+	mov		eax,[esi].WIN.crow
+	mov		[ebx].SHEET.spri.row,eax
+	invoke GetCellData,ebx,esi,addr [ebx].SHEET.spri
+	mov		eax,[ebx].SHEET.hwnd
+	mov		spredt.hdr.hwndFrom,eax
+	mov		eax,[ebx].SHEET.nid
+	mov		spredt.hdr.idFrom,eax
+	mov		spredt.hdr.code,SPRN_BEFOREUPDATE
+	lea		eax,[ebx].SHEET.spri
+	mov		spredt.lpspri,eax
+	mov		spredt.fcancel,FALSE
+	invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr spredt
+	pop		eax
+	.if !spredt.fcancel
+		xor		dword ptr [eax].COLDTA.fmt.tpe[1],1
+		mov		eax,[esi].WIN.ccol
+		mov		[ebx].SHEET.spri.col,eax
+		mov		eax,[esi].WIN.crow
+		mov		[ebx].SHEET.spri.row,eax
+		invoke GetCellData,ebx,esi,addr [ebx].SHEET.spri
+		mov		eax,[ebx].SHEET.hwnd
+		mov		spredt.hdr.hwndFrom,eax
+		mov		eax,[ebx].SHEET.nid
+		mov		spredt.hdr.idFrom,eax
+		mov		spredt.hdr.code,SPRN_AFTERUPDATE
+		lea		eax,[ebx].SHEET.spri
+		mov		spredt.lpspri,eax
+		mov		spredt.fcancel,FALSE
+		invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr spredt
+		invoke RecalcSheet,ebx
+	.endif
+	ret
+
+CheckClick endp
+
+ComboClick proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,lpCell:DWORD
+	LOCAL	rect:RECT
+
+	mov		ebx,lpSheet
+	mov		esi,lpWin
+	mov		eax,lpCell
+	mov		lpCellData,eax
+	mov		edx,dword ptr [eax].COLDTA.fmt.tpe[1]
+	mov		eax,dword ptr [eax].COLDTA.fmt.tpe[1+4]
+	mov		hCtrl,eax
+	invoke SendMessage,hCtrl,LB_SETCURSEL,edx,0
+	invoke SendMessage,hCtrl,LB_GETCOUNT,0,0
+	push	eax
+	invoke SendMessage,hCtrl,LB_GETITEMHEIGHT,eax,0
+	pop		edx
+	mul		edx
+	add		eax,2
+	push	eax
+	invoke GetWindowLong,hCtrl,GWL_USERDATA
+	mov		eax,[eax].COMBO.height
+	push	eax
+	invoke GetRealCellRect,ebx,esi,addr rect
+	invoke ClientToScreen,[esi].WIN.hwin,addr rect.left
+	invoke ClientToScreen,[esi].WIN.hwin,addr rect.right
+	mov		edx,rect.right
+	sub		edx,rect.left
+	dec		edx
+	pop		eax
+	pop		ecx
+	.if eax>ecx
+		mov		eax,ecx
+	.endif
+	invoke SetWindowPos,hCtrl,HWND_TOP,rect.left,rect.bottom,edx,eax,SWP_SHOWWINDOW
+	mov		eax,[esi].WIN.hwin
+	mov		hCurrent,eax
+	ret
+
+ComboClick endp
+
 EditCell proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,fCell:DWORD,nChrRect:DWORD
 	LOCAL	rect:RECT
 	LOCAL	buffer[512]:BYTE
@@ -2044,10 +2127,30 @@ EditCell proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,fCell:DWORD,nChrRect:DWORD
 	je		Ex
 	invoke FindCell,ebx,[esi].WIN.ccol,[esi].WIN.crow
 	.if eax
-		movzx	eax,[eax].COLDTA.fmt.tpe
-		and		eax,TPE_TYPEMASK
-		.if eax==TPE_CHECKBOX || eax==TPE_COMBOBOX
-			jmp		Ex
+		movzx	edx,[eax].COLDTA.fmt.tpe
+		mov		ecx,edx
+		and		edx,TPE_TYPEMASK
+		and		ecx,30h
+		.if edx==TPE_CHECKBOX
+			mov		edx,nChrRect
+			.if edx==VK_SPACE || !edx;==VK_RETURN
+				invoke CheckClick,ebx,esi,eax
+				invoke InvalidateRect,[esi].WIN.hwin,NULL,TRUE
+				invoke InvalidateRect,[ebx].SHEET.hwnd,NULL,TRUE
+			.endif
+			jmp		ExZero
+		.elseif edx==TPE_COMBOBOX
+			mov		edx,nChrRect
+			.if edx==VK_SPACE || !edx;==VK_RETURN
+				invoke ComboClick,ebx,esi,eax
+			.endif
+			jmp		ExZero
+		.elseif ecx==TPE_BUTTON || ecx==TPE_WIDEBUTTON
+			movzx	edx,[eax].COLDTA.state
+			test	edx,STATE_LOCKED
+			.if !ZERO?
+				jmp		Ex
+			.endif
 		.endif
 	.endif
 	mov		eax,[esi].WIN.ccol
@@ -2057,7 +2160,7 @@ EditCell proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,fCell:DWORD,nChrRect:DWORD
 	invoke GetCellData,ebx,esi,addr [ebx].SHEET.spri
 	movzx	eax,[ebx].SHEET.spri.state
 	and		eax,STATE_LOCKED
-	jne		Ex
+	jne		ExZero
 	mov		eax,[ebx].SHEET.hwnd
 	mov		spredt.hdr.hwndFrom,eax
 	mov		eax,[ebx].SHEET.nid
@@ -2160,6 +2263,8 @@ EditCell proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,fCell:DWORD,nChrRect:DWORD
 		invoke SendMessage,[ebx].SHEET.hedt,EM_SETSEL,eax,eax
 		invoke SetFocus,[ebx].SHEET.hedt
 	.endif
+  ExZero:
+	xor		eax,eax
   Ex:
 	ret
 

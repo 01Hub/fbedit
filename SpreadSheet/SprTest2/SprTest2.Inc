@@ -35,7 +35,26 @@ Date				dd 1000
 szCDate				db 'CDate("2008-04-04")',0
 szSum				db 'Sum(AA1:AB1)',0
 
+szCheckChecked		dd 1
+					db 'CheckBox',0
+
+szOpen				db 'Open',0
+
+cbdata				db 'abc',0
+					db 'bcd',0
+					db 'cde',0
+					db 'def',0
+					db 'efg',0
+					db 'fgh',0,0
+
+szSomeText1			db 'Some text#1',0
+
+
 ;#########################################################################
+.data
+
+dtCombo				dd 1			;index
+hCombo				HWND 0
 
 .data?
 

@@ -422,79 +422,21 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		sprbtn.hdr.code,SPRN_BUTTONCLICK
 								call	ButtonClick
 							.elseif edx==TPE_CHECKBOX
-								.if CellClick
+								;.if CellClick
 									push	eax
 									invoke IsOnCellButton,ebx,esi,addr pt,eax
 									pop		edx
 									.if eax
-										mov		eax,edx
-										push	eax
-										mov		eax,[esi].WIN.ccol
-										mov		[ebx].SHEET.spri.col,eax
-										mov		eax,[esi].WIN.crow
-										mov		[ebx].SHEET.spri.row,eax
-										invoke GetCellData,ebx,esi,addr [ebx].SHEET.spri
-										mov		eax,[ebx].SHEET.hwnd
-										mov		spredt.hdr.hwndFrom,eax
-										mov		eax,[ebx].SHEET.nid
-										mov		spredt.hdr.idFrom,eax
-										mov		spredt.hdr.code,SPRN_BEFOREUPDATE
-										lea		eax,[ebx].SHEET.spri
-										mov		spredt.lpspri,eax
-										mov		spredt.fcancel,FALSE
-										invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr spredt
-										pop		eax
-										.if !spredt.fcancel
-											xor		dword ptr [eax].COLDTA.fmt.tpe[1],1
-											mov		eax,[esi].WIN.ccol
-											mov		[ebx].SHEET.spri.col,eax
-											mov		eax,[esi].WIN.crow
-											mov		[ebx].SHEET.spri.row,eax
-											invoke GetCellData,ebx,esi,addr [ebx].SHEET.spri
-											mov		eax,[ebx].SHEET.hwnd
-											mov		spredt.hdr.hwndFrom,eax
-											mov		eax,[ebx].SHEET.nid
-											mov		spredt.hdr.idFrom,eax
-											mov		spredt.hdr.code,SPRN_AFTERUPDATE
-											lea		eax,[ebx].SHEET.spri
-											mov		spredt.lpspri,eax
-											mov		spredt.fcancel,FALSE
-											invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr spredt
-											invoke RecalcSheet,ebx
-										.endif
+										invoke CheckClick,ebx,esi,edx
 									.endif
-								.endif
+								;.endif
 							.elseif edx==TPE_COMBOBOX
-								.if CellClick && !hCtrl
-									mov		lpCellData,eax
-									mov		edx,dword ptr [eax].COLDTA.fmt.tpe[1]
-									mov		eax,dword ptr [eax].COLDTA.fmt.tpe[1+4]
-									mov		hCtrl,eax
-									invoke SendMessage,hCtrl,LB_SETCURSEL,edx,0
-									invoke SendMessage,hCtrl,LB_GETCOUNT,0,0
-									push	eax
-									invoke SendMessage,hCtrl,LB_GETITEMHEIGHT,eax,0
-									pop		edx
-									mul		edx
-									add		eax,2
-									push	eax
-									invoke GetWindowLong,hCtrl,GWL_USERDATA
-									mov		eax,[eax].COMBO.height
-									push	eax
-									invoke GetRealCellRect,ebx,esi,addr rect
-									invoke ClientToScreen,hWin,addr rect.left
-									invoke ClientToScreen,hWin,addr rect.right
-									mov		edx,rect.right
-									sub		edx,rect.left
-									dec		edx
-									pop		eax
-									pop		ecx
-									.if eax>ecx
-										mov		eax,ecx
-									.endif
-									invoke SetWindowPos,hCtrl,HWND_TOP,rect.left,rect.bottom,edx,eax,SWP_SHOWWINDOW
-									mov		eax,hWin
-									mov		hCurrent,eax
+;								.if CellClick && !hCtrl
+								push	eax
+								invoke IsOnCellButton,ebx,esi,addr pt,eax
+								pop		edx
+								.if !hCtrl && eax
+									invoke ComboClick,ebx,esi,edx
 								.else
 									invoke ShowWindow,hCtrl,SW_HIDE
 									mov		hCtrl,0
@@ -1128,11 +1070,19 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==VK_RETURN
 			invoke EditCell,ebx,esi,TRUE,0
+			.if eax
+				mov		sprbtn.hdr.code,SPRN_BUTTONCLICK
+				call	ButtonClick
+			.endif
 		.endif
 	.elseif eax==WM_CHAR
 		mov		eax,wParam
 		.if eax>=' ' && eax<='z'
 			invoke EditCell,ebx,esi,TRUE,eax
+			.if eax
+				mov		sprbtn.hdr.code,SPRN_BUTTONCLICK
+				call	ButtonClick
+			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
 		invoke GetWindowLong,hWin,GWL_ID
@@ -1510,7 +1460,7 @@ ComboProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		xor		eax,eax
 		mov		hCtrl,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
 		invoke SendMessage,hWin,LB_GETCURSEL,0,0
 		push	eax
@@ -1532,11 +1482,23 @@ ComboProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif edx!=hfocus
 			invoke SendMessage,hfocus,WM_NCACTIVATE,FALSE,0
 			invoke ShowWindow,hWin,SW_HIDE
+			xor		eax,eax
+			mov		hCtrl,eax
 		.else
 			invoke ShowWindow,hWin,SW_HIDE
+			xor		eax,eax
+			mov		hCtrl,eax
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
+	.elseif eax==WM_CHAR
+		mov		eax,wParam
+		.if eax==VK_ESCAPE
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			invoke SetFocus,[eax].COMBO.howner
+		.elseif eax==VK_RETURN
+			invoke SendMessage,hWin,WM_LBUTTONDOWN,0,0
+		.endif
 	.elseif eax==WM_DESTROY
 		invoke GetWindowLong,hWin,GWL_USERDATA
 		invoke GlobalFree,eax

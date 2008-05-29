@@ -201,6 +201,14 @@ Whats new since 0.0.0.1
 0.0.2.0
 - Fixed bug with SPRN_BUTTONCLICK. Did not return row and column.
 - Fixed bug with SPRN_HYPRLINKCLICK. Did not return row and column.
+0.0.2.1
+- Single click on CheckBox cell changes checked state.
+- Enter or space in a CheckBox cell changes checked state.
+- Single click on ComboBox button shows combolist.
+- Enter or space in a ComboBox cell shows combolist.
+- Enter in a combolist selects the item.
+- Escape in a combolist hides the list.
+- Enter or space in a Button cell that has the STATE_LOCKED state sends a SPRN_BUTTONCLICK notification.
 
 NOTE
 ----
