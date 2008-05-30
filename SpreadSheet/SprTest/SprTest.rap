@@ -49,9 +49,9 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 5=..\SpreadSheet.inc
 
 [Size]
-1=0,0,0,0,3579
+1=0,0,0,0,1838
 5=0,0,0,0,6113
-2=0,0,0,0,629
+2=0,0,0,0,733
 4=0,0,0,0
 3=0,0,0,0,0
 
@@ -86,13 +86,13 @@ Options=52
 Settings=1151
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=9
+MilestoneEveryCurrent=2
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=28
@@ -123,10 +123,10 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=3
 5=2
 [VerInf]
-FV=0.2.7.7
-FileVersion=0.2.7.7
-PV=0.2.7.7
-ProductVersion=0.2.7.7
+FV=0.2.8.0
+FileVersion=0.2.8.0
+PV=0.2.8.0
+ProductVersion=0.2.8.0
 [Find]
 1="SPRM_CREATECOMBO"
 2="COLDTA.fmt.tpe"

@@ -23,6 +23,7 @@ start:
 DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[256]:BYTE
+	LOCAL	cbo:COMBOBOX_DATA
 
 	mov	eax,uMsg
 	.if	eax==WM_INITDIALOG
@@ -32,25 +33,27 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		;Create ComboBox
 		invoke SendMessage,hSht,SPRM_CREATECOMBO,80,0
-		mov		hCombo,eax
+		mov		cbo.hcbo,eax
 		;Set ComboBox font
 		invoke SendMessage,hWin,WM_GETFONT,0,0
-		invoke SendMessage,hCombo,WM_SETFONT,eax,FALSE
+		invoke SendMessage,cbo.hcbo,WM_SETFONT,eax,FALSE
 		;Put some data into the ComboBox
 		push	esi
 		mov		esi,offset cbdata
 		.while byte ptr [esi]
-			invoke SendMessage,hCombo,LB_ADDSTRING,0,esi
+			invoke SendMessage,cbo.hcbo,LB_ADDSTRING,0,esi
 			invoke lstrlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
 		pop		esi
 
+		;Create expanded cell
 		mov		rect.left,2
 		mov		rect.top,2
 		mov		rect.right,4
 		mov		rect.bottom,4
 		invoke SendMessage,hSht,SPRM_EXPANDCELL,0,addr rect
+		;Create some text cells
 		push	esi
 		push	edi
 		mov		esi,offset szData
@@ -66,27 +69,29 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+eax+1]
 			inc		edi
 		.endw
+		pop		edi
+		pop		esi
+		;Create a date cell
 		mov		spri.flag,SPRIF_TYPE or SPRIF_DATA
 		mov		spri.col,1
 		mov		spri.row,1
 		mov		spri.fmt.tpe,TPE_INTEGER or TPE_DATE
 		mov		spri.lpdta,offset Date
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-
+		;Create a CDate() cell, note the SPRIF_COMPILE
 		mov		spri.flag,SPRIF_TYPE or SPRIF_DATA or SPRIF_COMPILE
 		mov		spri.col,1
 		mov		spri.row,2
 		mov		spri.fmt.tpe,TPE_FORMULA
 		mov		spri.lpdta,offset szCDate
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-
+		;Create a Sum() cell, note the SPRIF_COMPILE
 		mov		spri.flag,SPRIF_TYPE or SPRIF_DATA or SPRIF_COMPILE
 		mov		spri.col,1
 		mov		spri.row,3
 		mov		spri.fmt.tpe,TPE_FORMULA
 		mov		spri.lpdta,offset szSum
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-
 		;CheckBox - Checked
 		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE or SPRIF_IMAGEALIGN or SPRIF_TEXTALIGN
 		mov		spri.fmt.imgal,FMTA_RIGHT or FMTA_MIDDLE
@@ -108,10 +113,12 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Row 8
 		mov		spri.row,8
 		;And a pointer to data
-		mov		spri.lpdta,offset dtCombo
+		lea		eax,cbo
+		mov		spri.lpdta,eax
+		;Set the initial combo index
+		mov		cbo.ninx,2
 		;Insert the item
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-
 		;Button
 		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE or SPRIF_STATE; or SPRIF_IMAGEALIGN or SPRIF_TEXTALIGN
 		mov		spri.fmt.tpe,TPE_BUTTON or TPE_TEXTMULTILINE or TPE_FORCETYPE or TPE_FIXEDSIZE
@@ -125,9 +132,41 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		spri.lpdta,offset szSomeText1
 		;Insert the item
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-		pop		edi
-		pop		esi
-		invoke SendMessage,hSht,SPRM_SETCOLWIDTH,0,40
+		;Hyperlink
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE
+		mov		spri.fmt.tpe,TPE_HYPERLINK or TPE_FORCETYPE
+		;Col 1
+		mov		spri.col,1
+		;Row 10
+		mov		spri.row,10
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Insert the item
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		;Hyperlink
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE
+		mov		spri.fmt.tpe,TPE_HYPERLINK or TPE_FORCETYPE
+		;Col 1
+		mov		spri.col,1
+		;Row 11
+		mov		spri.row,11
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Insert the item
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		;Set column header text
+		mov		spri.flag,SPRIF_TEXTALIGN Or SPRIF_DATA Or SPRIF_WIDTH Or SPRIF_HEIGHT
+		mov		spri.col,1
+		mov		spri.row,0
+		mov		spri.fmt.txtal,FMTA_CENTER Or FMTA_MIDDLE
+		mov		spri.wt,80
+		mov		spri.ht,42
+		mov		spri.lpdta,offset szColhdr
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		;Set row header width
+		invoke SendMessage,hSht,SPRM_SETCOLWIDTH,0,30
+		;Recalculate the sheet
+		invoke SendMessage,hSht,SPRM_RECALC,0,0
 		mov	eax,FALSE
 		ret
 	.elseif	eax==WM_COMMAND
@@ -157,49 +196,41 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hSht
 			mov		eax,[edx].NMHDR.code
-			.if eax!=SPRN_SELCHANGE
-				mov		ecx,[edx].SPR_EDIT.lpspri
-				;Get the cell type
-				movzx	eax,[ecx].SPR_ITEM.fmt.tpe
-;				.if eax==TPE_COMBOBOX
-					mov		eax,[ecx].SPR_ITEM.col
-;PrintDec eax
-					mov		eax,[ecx].SPR_ITEM.row
-;PrintDec eax
-;				.endif
-			.else
-PrintText "SPRN_SELCHANGE"
+			.if eax==SPRN_SELCHANGE
+				PrintText "SPRN_SELCHANGE"
 				mov		eax,[edx].SPR_SELCHANGE.col
-PrintDec eax
+				PrintDec eax
 				mov		eax,[edx].SPR_SELCHANGE.row
-PrintDec eax
-;				mov		[edx].SPR_SELCHANGE.fcancel,TRUE
-			.endif
-			mov		eax,[edx].NMHDR.code
-			.if eax==SPRN_BEFOREEDIT
-PrintText "SPRN_BEFOREEDIT"
+				PrintDec eax
+				;Cancel the selection change
+				;mov		[edx].SPR_SELCHANGE.fcancel,TRUE
+			.elseif eax==SPRN_BEFOREEDIT
+				PrintText "SPRN_BEFOREEDIT"
 				;Get pointer to SPR_ITEM
 				mov		ecx,[edx].SPR_EDIT.lpspri
 				;Get the cell type
 				movzx	eax,[ecx].SPR_ITEM.fmt.tpe
 				.if eax==TPE_HYPERLINK
 					;Cancel the edit operation
-;					mov		[edx].SPR_EDIT.fcancel,TRUE
+					;mov		[edx].SPR_EDIT.fcancel,TRUE
 				.endif
 			.elseif eax==SPRN_HYPERLINKENTER
+				PrintText "SPRN_HYPERLINKENTER"
 				;Get pointer to SPR_ITEM
 				mov		ecx,[edx].SPR_HYPERLINK.lpspri
 				;Change the cell text color from the default blue
 				mov		[ecx].SPR_ITEM.fmt.txtcol,008000h
+			.elseif eax==SPRN_HYPERLINKLEAVE
+				PrintText "SPRN_HYPERLINKLEAVE"
 			.elseif eax==SPRN_HYPERLINKCLICK
-PrintText "SPRN_HYPERLINKCLICK"
+				PrintText "SPRN_HYPERLINKCLICK"
 				;Get pointer to SPR_ITEM
 				mov		ecx,[edx].SPR_HYPERLINK.lpspri
 				;Get pointer to text
 				mov		eax,[ecx].SPR_ITEM.lpdta
 				invoke ShellExecute,hWin,offset szOpen,eax,NULL,NULL,SW_SHOWDEFAULT
 			.elseif eax==SPRN_BUTTONCLICK
-				PrintText "Button click"
+				PrintText "SPRN_BUTTONCLICK"
 				mov		ecx,[edx].SPR_BUTTON.lpspri
 				mov		eax,[ecx].SPR_ITEM.row
 				PrintDec eax
@@ -208,25 +239,26 @@ PrintText "SPRN_HYPERLINKCLICK"
 				mov		eax,[ecx].SPR_ITEM.lpdta
 				PrintStringByAddr eax
 			.elseif eax==SPRN_BEFOREUPDATE
-PrintText "SPRN_BEFOREUPDATE"
+				PrintText "SPRN_BEFOREUPDATE"
 				mov		edx,lParam
 				mov		ecx,[edx].SPR_EDIT.lpspri
 				;Get the cell type
 				movzx	eax,[ecx].SPR_ITEM.fmt.tpe
-PrintHex eax
+				PrintHex eax
 				and		eax,TPE_TYPEMASK
 				.if eax==TPE_COMBOBOX || eax==TPE_CHECKBOX
 					mov		eax,[ecx].SPR_ITEM.col
-PrintDec eax
+					PrintDec eax
 					mov		eax,[ecx].SPR_ITEM.row
-PrintDec eax
+					PrintDec eax
 					mov		eax,[ecx].SPR_ITEM.lpdta
 					mov		eax,[eax]
-PrintHex eax
-;					mov		[edx].SPR_EDIT.fcancel,TRUE
+					PrintHex eax
+					;Cancel the edit change
+					;mov		[edx].SPR_EDIT.fcancel,TRUE
 				.endif
 			.elseif eax==SPRN_AFTERUPDATE
-PrintText "SPRN_AFTERUPDATE"
+				PrintText "SPRN_AFTERUPDATE"
 				mov		edx,lParam
 				mov		ecx,[edx].SPR_EDIT.lpspri
 				;Get the cell type
@@ -234,12 +266,12 @@ PrintText "SPRN_AFTERUPDATE"
 				and		eax,TPE_TYPEMASK
 				.if eax==TPE_COMBOBOX || eax==TPE_CHECKBOX
 					mov		eax,[ecx].SPR_ITEM.col
-PrintDec eax
+					PrintDec eax
 					mov		eax,[ecx].SPR_ITEM.row
-PrintDec eax
+					PrintDec eax
 					mov		eax,[ecx].SPR_ITEM.lpdta
 					mov		eax,[eax]
-PrintHex eax
+					PrintHex eax
 				.endif
 			.endif
 		.endif

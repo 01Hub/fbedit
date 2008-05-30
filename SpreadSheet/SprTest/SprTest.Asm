@@ -82,6 +82,39 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		spri.lpdta,offset szHyperlink
 		;Insert the item
 		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
+		;Hyperlink
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE
+		mov		spri.fmt.tpe,TPE_HYPERLINK or TPE_FORCETYPE
+		;Col 1
+		mov		spri.col,1
+		;Row 3
+		mov		spri.row,4
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Insert the item
+		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
+		;Hyperlink
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE
+		mov		spri.fmt.tpe,TPE_HYPERLINK or TPE_FORCETYPE
+		;Col 1
+		mov		spri.col,1
+		;Row 3
+		mov		spri.row,5
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Insert the item
+		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
+		;Hyperlink
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE
+		mov		spri.fmt.tpe,TPE_HYPERLINK or TPE_FORCETYPE
+		;Col 1
+		mov		spri.col,2
+		;Row 3
+		mov		spri.row,5
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Insert the item
+		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
 ;
 ;		;Button
 ;		mov		spri.fmt.tpe,TPE_BUTTON or TPE_TEXT

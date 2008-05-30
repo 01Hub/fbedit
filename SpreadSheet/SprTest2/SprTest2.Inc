@@ -48,13 +48,10 @@ cbdata				db 'abc',0
 					db 'fgh',0,0
 
 szSomeText1			db 'Some text#1',0
-
+szHyperlink			db 'http://www.radasm.com/',0
+szColhdr			db 'This is a multiline column header test.',0
 
 ;#########################################################################
-.data
-
-dtCombo				dd 1			;index
-hCombo				HWND 0
 
 .data?
 

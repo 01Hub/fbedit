@@ -588,7 +588,17 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					movzx	edx,[eax].COLDTA.fmt.tpe
 					and		edx,TPE_TYPEMASK
 					.if edx==TPE_HYPERLINK
-						.if !lpHyperlink
+						.if eax!=lpHyperlink
+							.if lpHyperlink
+								push	eax
+								mov		eax,lpHyperlink
+								mov		ecx,OldHyperlinkCol
+								mov		[eax].COLDTA.fmt.txtcol,ecx
+								mov		sprlnk.hdr.code,SPRN_HYPERLINKLEAVE
+								call	HyperLink
+								invoke InvalidateRect,hWin,addr HyperLinkRect,TRUE
+								pop		eax
+							.endif
 							mov		lpHyperlink,eax
 							mov		ecx,[eax].COLDTA.fmt.txtcol
 							mov		OldHyperlinkCol,ecx

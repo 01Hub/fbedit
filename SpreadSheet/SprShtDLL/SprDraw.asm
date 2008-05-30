@@ -1097,6 +1097,7 @@ DrawCell1:
 				mov		al,0
 			.endif
 			call	DrawCellBack
+			add		rect.top,1
 			call	DrawCellTxt
 		.elseif eax==TPE_ROWHDR
 			lea		eax,[edi].COLDTA.fmt.tpe[1]
@@ -1725,7 +1726,7 @@ DrawCellTxt:
 		.endif
 		mov		cl,[edi].COLDTA.fmt.tpe
 		and		cl,0Fh
-		.if cl==TPE_TEXTMULTILINE
+		.if cl==TPE_TEXTMULTILINE || cl==TPE_COLHDR
 			xor		eax,DT_SINGLELINE
 			or		eax,DT_WORDBREAK
 		.endif

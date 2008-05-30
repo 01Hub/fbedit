@@ -209,6 +209,8 @@ Whats new since 0.0.0.1
 - Enter in a combolist selects the item.
 - Escape in a combolist hides the list.
 - Enter or space in a Button cell that has the STATE_LOCKED state sends a SPRN_BUTTONCLICK notification.
+- Column headers are now multiline.
+- Fixed bug with hyperlink coloring.
 
 NOTE
 ----

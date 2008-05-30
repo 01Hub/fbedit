@@ -163,42 +163,54 @@ FONT struct dword
 	strikeout		db ?					;Strikeout
 FONT ends
 
-STATE_LOCKED		equ 001h				;Cell is locked for editing
-STATE_HIDDEN		equ 002h				;Cell content is not displayed
-STATE_REDRAW		equ 008h
-STATE_ERROR			equ 010h
-STATE_DIV0			equ 020h
-STATE_UNDERFLOW		equ 030h
-STATE_OVERFLOW		equ 040h
-STATE_RECALC		equ 080h
-STATE_ERRMASK		equ 0F0h
+STATE_LOCKED			equ 001h			;Cell is locked for editing
+STATE_HIDDEN			equ 002h			;Cell content is not displayed
+STATE_REDRAW			equ 008h
+STATE_ERROR				equ 010h
+STATE_DIV0				equ 020h
+STATE_UNDERFLOW			equ 030h
+STATE_OVERFLOW			equ 040h
+STATE_RECALC			equ 080h
+STATE_ERRMASK			equ 0F0h
 
-SPRIF_BACKCOLOR		equ 00000001h			;Back color is valid
-SPRIF_TEXTCOLOR		equ 00000002h			;Text color is valid
-SPRIF_TEXTALIGN		equ 00000004h
-SPRIF_IMAGEALIGN	equ 00000008h
-SPRIF_FONT			equ 00000010h
-SPRIF_STATE			equ 00000020h
-SPRIF_TYPE			equ 00000040h
-SPRIF_WIDTH			equ 00000080h
-SPRIF_HEIGHT		equ 00000100h
-SPRIF_DATA			equ 00000200h
-SPRIF_DOUBLE		equ 00000400h			;Converts to / from double
-SPRIF_SINGLE		equ 00000800h			;Converts to / from single
-SPRIF_COMPILE		equ 80000000h			;Compile the formula
+SPRIF_BACKCOLOR			equ 00000001h		;Back color is valid
+SPRIF_TEXTCOLOR			equ 00000002h		;Text color is valid
+SPRIF_TEXTALIGN			equ 00000004h		;Text alignment is valid
+SPRIF_IMAGEALIGN		equ 00000008h		;Image alignment is valid
+SPRIF_FONT				equ 00000010h		;Font is valid
+SPRIF_STATE				equ 00000020h		;State is valid
+SPRIF_TYPE				equ 00000040h		;Type is valid
+SPRIF_WIDTH				equ 00000080h		;Column width is valid
+SPRIF_HEIGHT			equ 00000100h		;Row height is valid
+SPRIF_DATA				equ 00000200h		;Data is valid
+SPRIF_DOUBLE			equ 00000400h		;Converts to / from double
+SPRIF_SINGLE			equ 00000800h		;Converts to / from single
+SPRIF_COMPILE			equ 80000000h		;Compile the formula
 
 SPR_ITEM struct dword
-	flag			dd ?
-	col				dd ?
-	row				dd ?
+	flag			dd ?					;Combination of SPRIF_ values
+	col				dd ?					;Column
+	row				dd ?					;Row
 	expx			db ?					;Expanded columns
 	expy			db ?					;Expanded rows
-	state			db ?
-	fmt				FORMAT <?>
-	wt				dd ?
-	ht				dd ?
-	lpdta			dd ?
+	state			db ?					;Cell state
+	fmt				FORMAT <?>				;Back color, fore color, text alignment, image alignment, font and cell type
+	wt				dd ?					;Column width
+	ht				dd ?					;Row height
+	lpdta			dd ?					;Pointer to cell data
 SPR_ITEM ends
+
+;Use when creating a combobox cell
+COMBOBOX_DATA struct
+	ninx			dd ?					;Combobox listindex
+	hcbo			HWND ?					;Combobox handle
+COMBOBOX_DATA ends
+
+;Use when creating a checkbox cell
+CHECKBOX_DATA struct
+	state			dd ?					;1=Checked, 0=UnChecked
+	sztext			db 128 dup(?)			;Checkbox text
+CHECKBOX_DATA ends
 
 ;Notification messages (WM_NOTIFY)
 SPRN_SELCHANGE			equ 1				;Splitt, col or row changed.
@@ -212,6 +224,8 @@ SPRN_HYPERLINKCLICK		equ 8				;Hyperlink clicked
 SPRN_BUTTONCLICK		equ 9				;Button clicked
 
 ;Notification structs
+
+;SPRN_SELCHANGE
 SPR_SELCHANGE struct dword
 	hdr				NMHDR <?>
 	nwin			dd ?
@@ -220,17 +234,20 @@ SPR_SELCHANGE struct dword
 	fcancel			dd ?
 SPR_SELCHANGE ends
 
+;SPRN_BEFOREEDIT, SPRN_AFTEREDIT, SPRN_BEFOREUPDATE and SPRN_AFTERUPDATE
 SPR_EDIT struct dword
 	hdr				NMHDR <?>
 	lpspri			dd ?
 	fcancel			dd ?
 SPR_EDIT ends
 
+;SPRN_HYPERLINKENTER, SPRN_HYPERLINKLEAVE and SPRN_HYPERLINKCLICK
 SPR_HYPERLINK struct dword
 	hdr				NMHDR <?>
 	lpspri			dd ?
 SPR_HYPERLINK ends
 
+;SPRN_BUTTONCLICK
 SPR_BUTTON struct dword
 	hdr				NMHDR <?>
 	lpspri			dd ?
