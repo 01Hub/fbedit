@@ -12,7 +12,7 @@ Sub DelTab(ByVal hWin As HWND)
 		prevtab=-1
 		SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci))
 		lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-		CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
+		CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,@lpTABMEM->filename),HOOK_FILECLOSE)
 		If lpTABMEM->profileinx Then
 			WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,FALSE)
 		EndIf
@@ -528,7 +528,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 				If WantToSave(hWin) Then
 					Return TRUE
 				EndIf
-				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,lpTABMEM->filename),HOOK_FILECLOSE)
+				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,@lpTABMEM->filename),HOOK_FILECLOSE)
 				If lpTABMEM->profileinx Then
 					WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,fProjectClose)
 				EndIf

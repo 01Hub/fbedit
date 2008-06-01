@@ -37,4 +37,7 @@ COPY Addins\ReallyRad\ReallyRad.txt \FbEdit\Addins\HELP
 COPY Addins\QuickEval\QuickEval.dll \FbEdit\Addins
 COPY Addins\QuickEval\QuickEval.txt \FbEdit\Addins\HELP
 
+COPY Addins\FbDebug\FbDebug.dll \FbEdit\Addins
+COPY Addins\FbDebug\FbDebug.txt \FbEdit\Addins\HELP
+
 Pause

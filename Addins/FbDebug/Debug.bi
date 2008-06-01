@@ -1,0 +1,149 @@
+
+' DATA STAB
+Type udtstab
+	stabs As Integer
+	code As UShort
+	nline As UShort
+	ad As Integer
+End Type
+
+Type tproc
+	nm As String   'name
+	db As UInteger 'lower address
+	fn As UInteger 'upper address
+	sr As Byte     'source index
+	ad As UInteger 'address
+	vr As UInteger 'lower index variable upper (next proc) -1
+	rv As Integer  'return value type
+End Type
+
+Type tprocr
+	sk As UInteger
+	idx As UInteger
+	'lst as uinteger 'future array in LIST
+End Type
+
+Enum
+	TYUDT
+	TYRDM
+	TYDIM
+End Enum
+
+Enum 'type of running
+	RTRUN
+	RTSTEP
+	RTAUTO
+End Enum
+
+Type tudt
+	nm As String  'name of udt
+	lb As Integer 'lower limit for components
+	ub As Integer 'upper
+	lg As Integer 'lenght 
+End Type
+
+Type tcudt
+	nm As String    'name of components
+	Typ As UShort   'type
+	ofs As UInteger 'offset
+	arr As UInteger 'arr ptr
+	pt As UByte
+End Type
+
+Type tnlu
+	nb As UInteger
+	lb As UInteger
+	ub As UInteger
+End Type
+
+Type taudt
+	dm As Integer
+	nlu(5) As tnlu
+End Type
+
+Type tarr 'five dimensions max
+	dat As Any Ptr
+	pot As Any Ptr
+	siz As UInteger 'nb bytes non used
+	dmn As UInteger
+	nlu(5) As tnlu
+End Type
+
+Type tvar
+	nm As String    'name
+	typ As UShort   'type
+	adr As Integer  'address or offset 
+	mem As UByte    'scope 
+	arr As tarr Ptr 'pointer to array def
+	pt As UByte     'pointer
+End Type
+
+Type tline
+	ad As UInteger
+	nu As Integer
+	sv As Byte
+	pr As UShort
+End Type
+
+Dim Shared pinfo As PROCESS_INFORMATION
+Dim Shared dbghand As HANDLE
+Dim Shared ct As CONTEXT
+Dim Shared secnb As UShort
+Dim Shared pe As UInteger
+Dim Shared secnm As String*8
+Dim Shared basestab As UInteger
+Dim Shared basestabs As UInteger
+Dim Shared recupstab As udtstab
+Dim Shared recup As ZString *1000
+
+Dim Shared procnb As Integer,procfg As Byte
+Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
+
+Const PROCMAX=500
+Dim Shared proc(PROCMAX) As tproc
+proc(1).vr=1
+
+'Running proc
+Const PROCRMAX=50000
+Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
+Dim Shared procrsk As UInteger=4294967295'current proc stack
+
+'sources ===========================================
+Dim Shared source(10) As String,sourceix As Integer,sourcenb As Integer
+'ReDim Shared sourceline(5,1000) As String 'max 5 sources and 1000 lines purpose for testing
+
+Dim Shared ttyp As Byte
+
+Const TYPEMAX=500,CTYPEMAX=4000,ATYPEMAX=100
+Dim Shared udt(TYPEMAX) As tudt,udtidx As Integer
+Dim Shared cudt(CTYPEMAX) As tcudt,cudtnb As Integer
+Dim Shared audt(ATYPEMAX) As taudt,audtnb As Integer
+udt(0).nm="Proc"
+udt(1).nm="Integer"
+udt(2).nm="Byte"
+udt(3).nm="Ubyte"
+udt(4).nm="Char"
+udt(5).nm="Short"
+udt(6).nm="Ushort"
+udt(7).nm="Void"
+udt(8).nm="Uinteger"
+udt(9).nm="Longint"
+udt(10).nm="Ulongint"
+udt(11).nm="Single"
+udt(12).nm="Double"
+udt(13).nm="String"
+udt(14).nm="Zstring"
+udt(15).nm="Pchar"
+
+Const VARMAX=2000
+Dim Shared vrbnb As Integer  'nb of variables
+Dim Shared vrb(VARMAX) As tvar
+Const ARRMAX=100
+Dim Shared linenb As Integer,linesav As UInteger
+Dim Shared arr(ARRMAX) As tarr,arrnb As UShort
+Const LINEMAX=10000
+Dim Shared rline(LINEMAX) As tline
+Dim Shared breakvalue As Integer =&hCC
+Dim Shared threadcontext As UInteger
+Const THREADMAX=10
+Dim Shared threadnb As Integer,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
