@@ -313,6 +313,8 @@ End Sub
 
 Sub gestbrk(ad As UInteger)
 	Dim i As UInteger
+	Dim sln As String
+	Dim chrg As CHARRANGE
 
 	i=linesav+1
 	proccurad=ad
@@ -346,6 +348,23 @@ Sub gestbrk(ad As UInteger)
 	EndIf
 	'INTEGRATION FOLLOWING LINES ABOVE ???
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
+	sln="," & Str(rLine(i).nu-1) & ","
+	PutString(sln)
+	PutString(bp(0).sBP)
+	If InStr(bp(0).sBP,sln) Then
+		lstrcpy(@szFileName,bp(0).sFile)
+		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
+		WaitForSingleObject(pinfo.hProcess,100)
+		nLnDebug=rLine(i).nu-1
+		chrg.cpMin=SendMessage(lpHandles->hred,EM_LINEINDEX,nLnDebug,0)
+		chrg.cpMax=chrg.cpMin
+		SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+		SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
+		SendMessage(lpHandles->hred,REM_VCENTER,0,0)
+		SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,2)
+		SuspendThread(pinfo.hThread)
+	EndIf
+
 End Sub
 
 Sub findthread(tid As UInteger)
@@ -436,9 +455,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							linenb+=1:rline(linenb).ad=recupstab.ad+procad:rLine(linenb).nu=recupstab.nline:rLine(linenb).pr=procnb
 							ReadProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@rLine(linenb).sv,1,0) 'sav 1 byte before writing &CC
 							'Breakpoint
-							If recupstab.nline=6 Or recupstab.nline=8 Then
-								WriteProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@breakvalue,1,0)
-							EndIf 
+							WriteProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@breakvalue,1,0)
 						End If
 						'print linesv(linenb)
 						'ReadProcessMemory(dbghand,recupstab.ad+procad,@linesv(linenb),1,0)
@@ -480,32 +497,18 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						PutString(Str(lpEXCEPTION_DEBUG_INFO->dwFirstChance))
 						Select Case lpEXCEPTION_DEBUG_INFO->ExceptionRecord.ExceptionCode
 							Case EXCEPTION_ACCESS_VIOLATION
+								SuspendThread(pinfo.hThread)
 							Case EXCEPTION_BREAKPOINT
-								With de.Exception.ExceptionRecord
-									findthread(de.dwThreadId)               
-									'PRINT "adr : ";.ExceptionAddress 'value of instruction pointer when exception occurred	
-									gestbrk(Cast(UInteger,.ExceptionAddress))
-								End With
+								findthread(de.dwThreadId)               
+								'PRINT "adr : ";de.Exception.ExceptionRecord.ExceptionAddress 'value of instruction pointer when exception occurred	
+								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
 							Case EXCEPTION_DATATYPE_MISALIGNMENT
+								SuspendThread(pinfo.hThread)
 							Case EXCEPTION_SINGLE_STEP
+								SuspendThread(pinfo.hThread)
 							Case DBG_CONTROL_C
+								SuspendThread(pinfo.hThread)
 						End Select
-						'ct.ContextFlags=CONTEXT_FULL
-						'GetThreadContext(pinfo.hThread,@ct)
-						'PutString("eip:" & Hex(ct.Eip))
-						'PutString("CS:" & Hex(ct.SegCs))
-						'PutString("DS:" & Hex(ct.SegDs))
-						'PutString("ES:" & Hex(ct.SegEs))
-						'PutString("esp:" & Hex(ct.Esp))
-						'PutString("SS:" & Hex(ct.SegSs))
-						'lret=@lpEXCEPTION_DEBUG_INFO->ExceptionRecord
-						'PutString(Hex(lret))
-						'lret=@lpEXCEPTION_DEBUG_INFO->dwFirstChance
-						'PutString(Hex(lret))
-						'ba=&H400000
-						'lret=ReadProcessMemory(hOP,ba,@buffer,1024*96,@rd)
-						'SaveDump(@buffer)
-						SuspendThread(pinfo.hThread)
 					EndIf
 				Case CREATE_THREAD_DEBUG_EVENT
 					PutString(StrPtr("CREATE_THREAD_DEBUG_EVENT"))

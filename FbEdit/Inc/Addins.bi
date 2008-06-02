@@ -140,6 +140,7 @@ End Type
 #Define AIM_GETDATA			WM_USER+1001		' Returns a pointer to an ADDINDATA type
 #Define AIM_GETFUNCTIONS	WM_USER+1002		' Returns a pointer to an ADDINFUNCTIONS type (not implemented)
 #Define AIM_GETMENUID		WM_USER+1003		' Returns a free menu id. Use it if you add items to the menu.
+#Define AIM_OPENFILE			WM_USER+1004		' wParam=fHex, lParam=lpFileName
 
 ' Messages sendt to your addin if they are hooked
 
@@ -157,6 +158,7 @@ End Type
 #Define AIM_GETTOOLTIP		11						' wParam=id lParam=0
 #Define AIM_CTLDBLCLK		12						' wParam=0 lParam=lpCTLDBLCLICK
 #Define AIM_MENUENABLE		13						' wParam=0 lParam=0
+#Define AIM_FILEOPENNEW		14						' wParam=Handle, lParam=FileName.
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -174,6 +176,7 @@ End Type
 #Define HOOK_GETTOOLTIP		&H800
 #Define HOOK_CTLDBLCLK		&H1000
 #Define HOOK_MENUENABLE		&H2000
+#Define HOOK_FILEOPENNEW	&H4000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

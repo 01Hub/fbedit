@@ -2135,6 +2135,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			mnuid=mnuid+1
 			Return mnuid
 			'
+		Case AIM_OPENFILE
+			lstrcpy(@buff,Cast(ZString Ptr,lParam))
+			OpenTheFile(buff,wParam)
+			'
 		Case WM_COPYDATA
 			lpCOPYDATASTRUCT=Cast(COPYDATASTRUCT Ptr,lParam)
 			CommandLine=lpCOPYDATASTRUCT->lpData
