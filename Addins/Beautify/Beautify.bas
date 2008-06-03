@@ -1,32 +1,32 @@
-#include once "windows.bi"
-#include once "win/commctrl.bi"
+#Include Once "windows.bi"
+#Include Once "win/commctrl.bi"
 
-#include "..\..\FbEdit\Inc\Addins.bi"
+#Include "..\..\FbEdit\Inc\Addins.bi"
 
-#include "Beautify.bi"
+#Include "Beautify.bi"
 
 ' Update toolbar imagelists
-sub Toolbar
+Sub Toolbar
 	Dim nOld As Integer
 	Dim nNew As Integer
 	Dim hOldIml As HIMAGELIST
-	dim hDC as HDC
-	dim mDC as HDC
-	dim hBmp as HBITMAP
-	dim hOldBmp as HBITMAP
-	dim hBr as HBRUSH
-	dim rect as RECT
-	dim i as integer
-	dim x as integer
-	dim y as integer
-	dim c as integer
+	Dim hDC As HDC
+	Dim mDC As HDC
+	Dim hBmp As HBITMAP
+	Dim hOldBmp As HBITMAP
+	Dim hBr As HBRUSH
+	Dim rect As RECT
+	Dim i As Integer
+	Dim x As Integer
+	Dim y As Integer
+	Dim c As Integer
 
 	' Destroy old imagelist
 	hOldIml=Cast(HIMAGELIST,SendMessage(lpHANDLES->htoolbar,TB_GETIMAGELIST,0,0))
 	nOld=ImageList_GetImageCount(hOldIml)
 	SendMessage(lpHANDLES->htoolbar,TB_SETIMAGELIST,0,NULL)
 	' Create a new imagelist
-	hIml=ImageList_LoadImage(hInstance,Cast(zstring ptr,IDB_TOOLBAR),16,29,&HC0C0C0,IMAGE_BITMAP,LR_CREATEDIBSECTION)
+	hIml=ImageList_LoadImage(hInstance,Cast(ZString Ptr,IDB_TOOLBAR),16,29,&HC0C0C0,IMAGE_BITMAP,LR_CREATEDIBSECTION)
 	nNew=ImageList_GetImageCount(hIml)
 	hDC=GetDC(NULL)
 	mDC=CreateCompatibleDC(hDC)
@@ -57,92 +57,92 @@ sub Toolbar
 	FillRect(mDC,@rect,hBr)
 	DeleteObject(hBr)
 	i=0
-	while i<nOld
+	While i<nOld
 		ImageList_Draw(hIml,i,mDC,rect.left,0,ILD_TRANSPARENT)
 		rect.left=rect.left+16
 		i=i+1
-	wend
+	Wend
 	y=0
-	while y<16
+	While y<16
 		x=0
-		while x<rect.right
+		While x<rect.right
 			c=GetPixel(mDC,x,y)
-			if c<>&HC0C0C0 then
-				asm
+			If c<>&HC0C0C0 Then
+				Asm
 					mov		eax,[c]
 					bswap		eax
-					shr		eax,8
+					Shr		eax,8
 					'movzx		ecx,al			' red
-					xor		ecx,ecx
+					Xor		ecx,ecx
 					mov		cl,al
 					imul		ecx,ecx,66
 					'movzx		edx,ah			' green
-					xor		edx,edx
+					Xor		edx,edx
 					mov		dl,ah
 					imul		edx,edx,129
 					add		edx,ecx
-					shr		eax,16			' blue
+					Shr		eax,16			' blue
 					imul		eax,eax,25
 					add		eax,edx
 					add		eax,128
-					shr		eax,8
+					Shr		eax,8
 					add		eax,16
 					imul		eax,eax,&H010101
-					and		eax,&HFCFCFC
-					shr		eax,2
-					or			eax,&H808080
+					And		eax,&HFCFCFC
+					Shr		eax,2
+					Or			eax,&H808080
 					mov		[c],eax
-				end asm
+				End Asm
 				SetPixel(mDC,x,y,c)
-			endif
+			EndIf
 			x=x+1
-		wend
+		Wend
 		y=y+1
-	wend
+	Wend
 	SelectObject(mDC,hOldBmp)
 	DeleteDC(mDC)
 	' Create a grayed imagelist
-	hGrayIml=ImageList_Create(16,16,ILC_MASK or ILC_COLOR24,nOld,0)
+	hGrayIml=ImageList_Create(16,16,ILC_MASK Or ILC_COLOR24,nOld,0)
 	ImageList_AddMasked(hGrayIml,hBmp,&HC0C0C0)
 	DeleteObject(hBmp)
 	' Set the new imagelists to the toolbar
 	SendMessage(lpHANDLES->htoolbar,TB_SETIMAGELIST,0,Cast(LPARAM,hIml))
 	SendMessage(lpHANDLES->htoolbar,TB_SETDISABLEDIMAGELIST,0,Cast(LPARAM,hGrayIml))
-	hBmp=LoadBitmap(hInstance,Cast(zstring ptr,IDB_MENUCHECK))
+	hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_MENUCHECK))
 	nCheck=ImageList_AddMasked(hIml,hBmp,&HC0C0C0)
 	DeleteObject(hBmp)
 
-end sub
+End Sub
 
 ' FbEdit main window callback
-function WndProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,byval lParam as LPARAM) as integer
-	dim lpMEASUREITEMSTRUCT as MEASUREITEMSTRUCT ptr
-	dim lpDRAWITEMSTRUCT as DRAWITEMSTRUCT ptr
-	dim lpMNUITEM as MNUITEM ptr
-	dim mDC as HDC
-	dim rect as RECT
-	dim rect1 as RECT
-	dim hBmp as HBITMAP
-	dim hOldBmp as HBITMAP
-	dim hOldFont as HFONT
-	dim hBr as HBRUSH
-	dim hBr1 as HBRUSH
-	dim hPen as HPEN
-	dim hOldPen as HPEN
+Function WndProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim lpMEASUREITEMSTRUCT As MEASUREITEMSTRUCT Ptr
+	Dim lpDRAWITEMSTRUCT As DRAWITEMSTRUCT Ptr
+	Dim lpMNUITEM As MNUITEM Ptr
+	Dim mDC As HDC
+	Dim rect As RECT
+	Dim rect1 As RECT
+	Dim hBmp As HBITMAP
+	Dim hOldBmp As HBITMAP
+	Dim hOldFont As HFONT
+	Dim hBr As HBRUSH
+	Dim hBr1 As HBRUSH
+	Dim hPen As HPEN
+	Dim hOldPen As HPEN
 
-	select case uMsg
-		case WM_MEASUREITEM
-			lpMEASUREITEMSTRUCT=Cast( MEASUREITEMSTRUCT ptr,lParam)
-			if lpMEASUREITEMSTRUCT->CtlType=ODT_MENU and hMem<>0 then
-				lpMNUITEM=Cast(MNUITEM ptr,lpMEASUREITEMSTRUCT->itemData)
+	Select Case uMsg
+		Case WM_MEASUREITEM
+			lpMEASUREITEMSTRUCT=Cast( MEASUREITEMSTRUCT Ptr,lParam)
+			If lpMEASUREITEMSTRUCT->CtlType=ODT_MENU And hMem<>0 Then
+				lpMNUITEM=Cast(MNUITEM Ptr,lpMEASUREITEMSTRUCT->itemData)
 				lpMEASUREITEMSTRUCT->itemWidth=lpMNUITEM->wdt
 				lpMEASUREITEMSTRUCT->itemHeight=lpMNUITEM->hgt
-				return TRUE
-			endif
+				Return TRUE
+			EndIf
 			'
-		case WM_DRAWITEM
-			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT ptr,lParam)
-			if lpDRAWITEMSTRUCT->CtlType=ODT_MENU and hMem<>0 then
+		Case WM_DRAWITEM
+			lpDRAWITEMSTRUCT=Cast(DRAWITEMSTRUCT Ptr,lParam)
+			If lpDRAWITEMSTRUCT->CtlType=ODT_MENU And hMem<>0 Then
 				mDC=CreateCompatibleDC(lpDRAWITEMSTRUCT->hdc)
 				rect.left=0
 				rect.top=0
@@ -151,8 +151,8 @@ function WndProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,by
 				hBmp=CreateCompatibleBitmap(lpDRAWITEMSTRUCT->hdc,rect.right,rect.bottom)
 				hOldBmp=SelectObject(mDC,hBmp)
 				hOldFont=SelectObject(mDC,hMnuFont)
-				lpMNUITEM=Cast(MNUITEM ptr,lpDRAWITEMSTRUCT->itemData)
-				if lpMNUITEM->ntype=2 then
+				lpMNUITEM=Cast(MNUITEM Ptr,lpDRAWITEMSTRUCT->itemData)
+				If lpMNUITEM->ntype=2 Then
 					hPen=CreatePen(PS_SOLID,1,&HF5BE9F)
 					hOldPen=SelectObject(mDC,hPen)
 					FillRect(mDC,@rect,hMenuBrush)
@@ -160,14 +160,14 @@ function WndProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,by
 					LineTo(mDC,rect.right,rect.top+5)
 					SelectObject(mDC,hOldPen)
 					DeleteObject(hPen)
-				else
+				Else
 					SetBkMode(mDC,TRANSPARENT)
 					SetTextColor(mDC,GetSysColor(COLOR_MENUTEXT))
-					if (lpDRAWITEMSTRUCT->itemState and ODS_GRAYED)=0 then
-						if lpDRAWITEMSTRUCT->itemState and ODS_SELECTED then
+					If (lpDRAWITEMSTRUCT->itemState And ODS_GRAYED)=0 Then
+						If lpDRAWITEMSTRUCT->itemState And ODS_SELECTED Then
 							hBr=CreateSolidBrush(&HF5BE9F)
 							FillRect(mDC,@rect,hBr)
-							if lpMNUITEM->ntype=1 then
+							If lpMNUITEM->ntype=1 Then
 								' Menu bar
 								hPen=CreatePen(PS_SOLID,1,&H800000)
 								hOldPen=SelectObject(mDC,hPen)
@@ -177,164 +177,164 @@ function WndProc(byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,by
 								LineTo(mDC,rect.right-1,rect.bottom)
 								SelectObject(mDC,hOldPen)
 								DeleteObject(hPen)
-							else
+							Else
 								hBr1=CreateSolidBrush(&H800000)
 								FrameRect(mDC,@rect,hBr1)
 								DeleteObject(hBr1)
-							endif
+							EndIf
 							DeleteObject(hBr)
-						else
-							if lpMNUITEM->ntype=1 then
+						Else
+							If lpMNUITEM->ntype=1 Then
 								' Menu bar
 								FillRect(mDC,@rect,GetSysColorBrush(COLOR_MENU))
-							else
+							Else
 								FillRect(mDC,@rect,hMenuBrush)
-								if lpDRAWITEMSTRUCT->itemState and ODS_CHECKED then
+								If lpDRAWITEMSTRUCT->itemState And ODS_CHECKED Then
 									rect1.left=0
 									rect1.right=18
 									rect1.top=(rect.bottom-18)/2
 									rect1.bottom=rect1.top+18
 									DrawEdge(mDC,@rect1,BDR_SUNKENINNER,BF_RECT)
-								endif
-							endif
-						endif
-					else
+								EndIf
+							EndIf
+						EndIf
+					Else
 						FillRect(mDC,@rect,hMenuBrush)
-					endif
-					if lpDRAWITEMSTRUCT->itemState and ODS_GRAYED then
+					EndIf
+					If lpDRAWITEMSTRUCT->itemState And ODS_GRAYED Then
 						SetTextColor(mDC,GetSysColor(COLOR_GRAYTEXT))
-						if lpMNUITEM->img then
+						If lpMNUITEM->img Then
 							ImageList_Draw(hGrayIml,lpMNUITEM->img-1,mDC,rect.left+1,rect.top+1,ILD_NORMAL)
-						elseif lpDRAWITEMSTRUCT->itemState and ODS_CHECKED then
+						ElseIf lpDRAWITEMSTRUCT->itemState And ODS_CHECKED Then
 							ImageList_Draw(hIml,nCheck,mDC,rect.left+1,rect.top+1,ILD_NORMAL)
-						endif
-					else
-						if lpMNUITEM->img then
+						EndIf
+					Else
+						If lpMNUITEM->img Then
 							ImageList_Draw(hIml,lpMNUITEM->img-1,mDC,rect.left+1,rect.top+1,ILD_NORMAL)
-						elseif lpDRAWITEMSTRUCT->itemState and ODS_CHECKED then
+						ElseIf lpDRAWITEMSTRUCT->itemState And ODS_CHECKED Then
 							ImageList_Draw(hIml,nCheck,mDC,rect.left+1,rect.top+1,ILD_NORMAL)
-						endif
-					endif
-					if lpMNUITEM->ntype=1 then
+						EndIf
+					EndIf
+					If lpMNUITEM->ntype=1 Then
 						rect.left=rect.left+8
-					else
+					Else
 						rect.left=rect.left+21
-					endif
+					EndIf
 					rect.right=rect.right-4
-					DrawText(mDC,@lpMNUITEM->txt,lstrlen(@lpMNUITEM->txt),@rect,DT_SINGLELINE or DT_VCENTER)
-					DrawText(mDC,@lpMNUITEM->acl,lstrlen(@lpMNUITEM->acl),@rect,DT_SINGLELINE or DT_RIGHT or DT_VCENTER)
-				endif
+					DrawText(mDC,@lpMNUITEM->txt,lstrlen(@lpMNUITEM->txt),@rect,DT_SINGLELINE Or DT_VCENTER)
+					DrawText(mDC,@lpMNUITEM->acl,lstrlen(@lpMNUITEM->acl),@rect,DT_SINGLELINE Or DT_RIGHT Or DT_VCENTER)
+				EndIf
 				BitBlt(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left,lpDRAWITEMSTRUCT->rcItem.top,lpDRAWITEMSTRUCT->rcItem.right-lpDRAWITEMSTRUCT->rcItem.left,lpDRAWITEMSTRUCT->rcItem.bottom-lpDRAWITEMSTRUCT->rcItem.top,mDC,0,0,SRCCOPY)
 				SelectObject(mDC,hOldFont)
 				SelectObject(mDC,hOldBmp)
 				DeleteObject(hBmp)
 				DeleteDC(mDC)
-				return TRUE
-			endif
+				Return TRUE
+			EndIf
 			'
-	end select
-	return CallWindowProc(lpOldWndProc,hWin,uMsg,wParam,lParam)
+	End Select
+	Return CallWindowProc(lpOldWndProc,hWin,uMsg,wParam,lParam)
 
-end function
+End Function
 
 ' Check if menu item exists in array
-function FindMnuPos(byval pMem as MNUITEM ptr,byval hMnu as HMENU,byval wid as integer) as MNUITEM ptr
-	dim i as integer
+Function FindMnuPos(ByVal pMem As MNUITEM Ptr,ByVal hMnu As HMENU,ByVal wid As Integer) As MNUITEM Ptr
+	Dim i As Integer
 
-	while TRUE
-		if (pMem->wid=wid and pMem->hmnu=hMnu) or pMem->hmnu=0 then
-			exit while
-		endif
-		i=Cast(integer,pMem)
+	While TRUE
+		If (pMem->wid=wid And pMem->hmnu=hMnu) Or pMem->hmnu=0 Then
+			Exit While
+		EndIf
+		i=Cast(Integer,pMem)
 		i=i+SizeOf(MNUITEM)
-		pMem=Cast(MNUITEM ptr,i)
-	wend
-	return pMem
+		pMem=Cast(MNUITEM Ptr,i)
+	Wend
+	Return pMem
 
-end function
+End Function
 
 ' Make menu items ownerdrawn
-sub GetMenuItems(byval hMnu as HMENU,byval nPos as integer)
-	dim mii as MENUITEMINFO
-	dim buffer as zstring*260
-	dim i as integer
-	dim hDC as HDC
-	dim mDC as HDC
-	dim rect as RECT
-	dim hOldFont as HFONT
-	dim pMem as MNUITEM ptr
+Sub GetMenuItems(ByVal hMnu As HMENU,ByVal nPos As Integer)
+	Dim mii As MENUITEMINFO
+	Dim buffer As ZString*260
+	Dim i As Integer
+	Dim hDC As HDC
+	Dim mDC As HDC
+	Dim rect As RECT
+	Dim hOldFont As HFONT
+	Dim pMem As MNUITEM Ptr
 
 	hDC=GetDC(NULL)
 	mDC=CreateCompatibleDC(hDC)
 	ReleaseDC(NULL,hDC)
 	hOldFont=SelectObject(mDC,hMnuFont)
 NextMnu:
-	mii.cbSize=sizeof(MENUITEMINFO)
-	mii.fMask=MIIM_DATA or MIIM_ID or MIIM_SUBMENU or MIIM_TYPE
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_DATA Or MIIM_ID Or MIIM_SUBMENU Or MIIM_TYPE
 	mii.dwTypeData=@buffer
-	mii.cch=sizeof(buffer)
-	if GetMenuItemInfo(hMnu,nPos,TRUE,@mii) then
-		if (mii.fType and MFT_OWNERDRAW)=0 then
+	mii.cch=SizeOf(buffer)
+	If GetMenuItemInfo(hMnu,nPos,TRUE,@mii) Then
+		If (mii.fType And MFT_OWNERDRAW)=0 Then
 			pMem=FindMnuPos(hMem,hMnu,mii.wID)
 			pMem->hmnu=hMnu
 			pMem->wid=mii.wID
-			mii.fType=mii.fType or MFT_OWNERDRAW
-			mii.dwItemData=Cast(integer,pMem)
-			if (mii.fType and MFT_SEPARATOR)=0 then
-				i=instr(buffer,Chr(VK_TAB))
-				if i then
+			mii.fType=mii.fType Or MFT_OWNERDRAW
+			mii.dwItemData=Cast(Integer,pMem)
+			If (mii.fType And MFT_SEPARATOR)=0 Then
+				i=InStr(buffer,Chr(VK_TAB))
+				If i Then
 					lstrcpyn(@pMem->txt,@buffer,i)
-					pMem->acl=mid(buffer,i+1)
-				else
+					pMem->acl=Mid(buffer,i+1)
+				Else
 					lstrcpy(@pMem->txt,@buffer)
-				endif
-				DrawText(mDC,@pMem->txt,lstrlen(@pMem->txt),@rect,DT_CALCRECT or DT_SINGLELINE)
+				EndIf
+				DrawText(mDC,@pMem->txt,lstrlen(@pMem->txt),@rect,DT_CALCRECT Or DT_SINGLELINE)
 				pMem->wdt=rect.right
-				if lstrlen(@pMem->acl) then
-					DrawText(mDC,@pMem->acl,lstrlen(@pMem->acl),@rect,DT_CALCRECT or DT_SINGLELINE)
+				If lstrlen(@pMem->acl) Then
+					DrawText(mDC,@pMem->acl,lstrlen(@pMem->acl),@rect,DT_CALCRECT Or DT_SINGLELINE)
 					pMem->wdt=pMem->wdt+8+rect.right
-				endif
-				if hMnu=hMenu then
+				EndIf
+				If hMnu=hMenu Then
 					' Menu bar
 					pMem->ntype=1
 					pMem->wdt=pMem->wdt+4
-				else
+				Else
 					' Menu item
 					pMem->ntype=3
 					pMem->wdt=pMem->wdt+22
-					if SendMessage(lpHANDLES->htoolbar,TB_COMMANDTOINDEX,mii.wID,0)>=0 then
+					If SendMessage(lpHANDLES->htoolbar,TB_COMMANDTOINDEX,mii.wID,0)>=0 Then
 						pMem->img=SendMessage(lpHANDLES->htoolbar,TB_GETBITMAP,mii.wID,0)+1
-					endif
-				endif
+					EndIf
+				EndIf
 				pMem->hgt=MnuFontHt
-			else
+			Else
 				' Separator
 				pMem->ntype=2
 				pMem->hgt=10
-			endif
-			if pMem->ntype<>1 then
+			EndIf
+			If pMem->ntype<>1 Then
 				SetMenuItemInfo(hMnu,nPos,TRUE,@mii)
-			endif
-		endif
-		if mii.hSubMenu then
+			EndIf
+		EndIf
+		If mii.hSubMenu Then
 			GetMenuItems(mii.hSubMenu,0)
-		endif
+		EndIf
 		nPos=nPos+1
-		goto	NextMnu
-	endif
+		GoTo	NextMnu
+	EndIf
 	SelectObject(mDC,hOldFont)
 	DeleteDC(mDC)
 
-end sub
+End Sub
 
 ' Create a bitmap for the menu back brush
-function MakeBitMap(byval barwidth as integer,byval barcolor as integer,byval bodycolor as integer) as HBITMAP
-	dim hBmp as HBITMAP
-	dim hOldBmp as HBITMAP
-	dim hDC as HDC
-	dim mDC as HDC
-	dim hDeskTop as HWND
-	dim as integer x,y,bc
+Function MakeBitMap(ByVal barwidth As Integer,ByVal barcolor As Integer,ByVal bodycolor As Integer) As HBITMAP
+	Dim hBmp As HBITMAP
+	Dim hOldBmp As HBITMAP
+	Dim hDC As HDC
+	Dim mDC As HDC
+	Dim hDeskTop As HWND
+	Dim As Integer x,y,bc
 
 	hDeskTop=GetDesktopWindow
 	hDC=GetDC(hDeskTop)
@@ -343,103 +343,103 @@ function MakeBitMap(byval barwidth as integer,byval barcolor as integer,byval bo
 	ReleaseDC(hDeskTop,hDC)
 	hOldBmp=SelectObject(mDC,hBmp)
 	y=0
-	while y<8
+	While y<8
 		x=0
 		bc=barcolor
-		while x<barwidth
+		While x<barwidth
 			SetPixel(mDC,x,y,bc)
 			bc=bc-&h040404
 			x=x+1
-		wend
-		while x<600
+		Wend
+		While x<600
 			SetPixel(mDC,x,y,bodycolor)
 			x=x+1
-		wend
+		Wend
 		y=y+1
-	wend
+	Wend
 	SelectObject(mDC,hOldBmp)
 	DeleteDC(mDC)
-	return hBmp
+	Return hBmp
 
-end function
+End Function
 
 ' Let the menu look cool
-sub CoolMenu(byval hMenu as HMENU,byval barcolor as integer,byval bodycolor as integer)
-	dim MInfo as MENUINFO
-	dim i as integer
-	dim hMnu as HMENU
-	dim hBmp as HBITMAP
-	dim hBr as HBRUSH
+Sub CoolMenu(ByVal hMenu As HMENU,ByVal barcolor As Integer,ByVal bodycolor As Integer)
+	Dim MInfo As MENUINFO
+	Dim i As Integer
+	Dim hMnu As HMENU
+	Dim hBmp As HBITMAP
+	Dim hBr As HBRUSH
 
 	hBmp=MakeBitMap(22,BarColor,BodyColor)
 	hBr=CreatePatternBrush(hBmp)
 	DeleteObject(hBmp)
 	MInfo.hbrBack=hBr
 	MInfo.cbSize=SizeOf(MENUINFO)
-	MInfo.fmask=MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
+	MInfo.fmask=MIM_BACKGROUND Or MIM_APPLYTOSUBMENUS
 	i=0
   Nxt:
 	hMnu=GetSubMenu(hMenu,i)
-	if hMnu then
+	If hMnu Then
 		SetMenuInfo(hMnu,@MInfo)
 		i=i+1
-		goto Nxt
-	endif
+		GoTo Nxt
+	EndIf
 
-end sub
+End Sub
 
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
-function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
 
 	' The dll's instance
 	hInstance=hInst
 	' Get pointer to ADDINHANDLES
-	lpHandles=Cast(ADDINHANDLES ptr,SendMessage(hWin,AIM_GETHANDLES,0,0))
+	lpHandles=Cast(ADDINHANDLES Ptr,SendMessage(hWin,AIM_GETHANDLES,0,0))
 	' Get pointer to ADDINDATA
-	lpData=Cast(ADDINDATA ptr,SendMessage(hWin,AIM_GETDATA,0,0))
+	lpData=Cast(ADDINDATA Ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
-	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
+	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	' Messages this addin will hook into
-	hooks.hook1=HOOK_CLOSE or HOOK_ADDINSLOADED or HOOK_MENUREFRESH
+	hooks.hook1=HOOK_CLOSE Or HOOK_ADDINSLOADED Or HOOK_MENUREFRESH
 	hooks.hook2=0
 	hooks.hook3=0
 	hooks.hook4=0
-	return @hooks
+	Return @hooks
 
-end function
+End Function
 
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
-function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as UINT,byval wParam as WPARAM,byval lParam as LPARAM) as bool EXPORT
-	dim hBmp as HBITMAP
-	dim ncm as NONCLIENTMETRICS
+Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As bool Export
+	Dim hBmp As HBITMAP
+	Dim ncm As NONCLIENTMETRICS
 
-	select case uMsg
-		case AIM_CLOSE
+	Select Case uMsg
+		Case AIM_CLOSE
 			' FbEdit is closing
 			DeleteObject(hMnuFont)
 			DeleteObject(hMenuBrush)
 			GlobalFree(hMem)
 			hMem=0
 			'
-		case AIM_ADDINSLOADED
+		Case AIM_ADDINSLOADED
 			' Beautify toolbar
 			Toolbar
 			' Beautify menu arrows
 			ImageList_Destroy(lpHANDLES->hmnuiml)
-			lpHANDLES->hmnuiml=ImageList_Create(16,16,ILC_COLOR24 or ILC_MASK,4,0)
-			hBmp=LoadBitmap(hInstance,Cast(zstring ptr,IDB_MNUARROW))
+			lpHANDLES->hmnuiml=ImageList_Create(16,16,ILC_COLOR24 Or ILC_MASK,4,0)
+			hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_MNUARROW))
 			ImageList_AddMasked(lpHANDLES->hmnuiml,hBmp,&HC0C0C0)
 			DeleteObject(hBmp)
 			' Get menu font
-			ncm.cbSize=sizeof(NONCLIENTMETRICS)
-			SystemParametersInfo(SPI_GETNONCLIENTMETRICS,sizeof(NONCLIENTMETRICS),@ncm,0)
+			ncm.cbSize=SizeOf(NONCLIENTMETRICS)
+			SystemParametersInfo(SPI_GETNONCLIENTMETRICS,SizeOf(NONCLIENTMETRICS),@ncm,0)
 			hMnuFont=CreateFontIndirect(@ncm.lfMenuFont)
 			MnuFontHt=Abs(ncm.lfMenuFont.lfHeight)+6
-			if MnuFontHt<18 then
+			If MnuFontHt<18 Then
 				MnuFontHt=18
-			endif
+			EndIf
 			'Create back brush for menu items
 			hBmp=MakeBitMap(19,&HFFCEBE,&HFFFFFF)
 			hMenuBrush=CreatePatternBrush(hBmp)
@@ -448,23 +448,23 @@ function DllFunction CDECL alias "DllFunction" (byval hWin as HWND,byval uMsg as
 			CoolMenu(lpHANDLES->hmenu,&HFFCEBE,&HFFFFFF)
 			CoolMenu(lpHANDLES->hcontextmenu,&HFFCEBE,&HFFFFFF)
 			' Subclass FbEdit main window
-			lpOldWndProc=Cast(any ptr,SetWindowLong(lpHANDLES->hwnd,GWL_WNDPROC,Cast(integer,@WndProc)))
+			lpOldWndProc=Cast(Any Ptr,SetWindowLong(lpHANDLES->hwnd,GWL_WNDPROC,Cast(Integer,@WndProc)))
 			' Allocate memory for menu items
-			hMem=GlobalAlloc(GMEM_FIXED or GMEM_ZEROINIT,1024*64)
+			hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,1024*64)
 			' Make menu items ownerdrawn
 			hMenu=lpHANDLES->hmenu
 			GetMenuItems(hMenu,0)
 			hMenu=lpHANDLES->hcontextmenu
 			GetMenuItems(hMenu,0)
 			'
-		case AIM_MENUREFRESH
+		Case AIM_MENUREFRESH
 			' Make menu items ownerdrawn (only new or updated menu items)
 			hMenu=lpHANDLES->hmenu
 			GetMenuItems(hMenu,0)
 			hMenu=lpHANDLES->hcontextmenu
 			GetMenuItems(hMenu,0)
 			'
-	end select
-	return FALSE
+	End Select
+	Return FALSE
 
-end function
+End Function

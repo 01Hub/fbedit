@@ -396,7 +396,7 @@ Sub gestbrk(ad As UInteger)
 	'INTEGRATION FOLLOWING LINES ABOVE ???
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
 	sln="," & Str(rLine(i).nu-1) & ","
-	If InStr(bp(0).sBP,sln) Then
+	If InStr(bp(0).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
 		lstrcpy(@szFileName,bp(0).sFile)
 		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 		WaitForSingleObject(pinfo.hProcess,100)
@@ -421,6 +421,21 @@ Sub findthread(tid As UInteger)
 
 End Sub
 
+Sub ClearVars()
+
+	secnb=0
+	procnb=0
+	procrnb=0
+	udtidx=0
+	cudtnb=0
+	audtnb=0
+	vrbnb=0
+	linenb=0
+	arrnb=0
+	threadnb=0
+
+End Sub
+
 Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim sinfo As STARTUPINFO
 	Dim lret As Integer
@@ -434,6 +449,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim rd As Integer
 	Dim hFile As HANDLE
 
+	ClearVars
 	sinfo.cb=SizeOf(STARTUPINFO)
 	'GetStartupInfo(@sinfo)
 	sinfo.dwFlags=STARTF_USESHOWWINDOW
@@ -481,10 +497,12 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 					Case 38
 						'init var
-						decoup(recup):vrb(vrbnb).adr=recupstab.ad
+						decoup(recup)
+						vrb(vrbnb).adr=recupstab.ad
 					Case 40
 						'uninit var
-						decoup(recup):vrb(vrbnb).adr=recupstab.ad			  
+						decoup(recup)
+						vrb(vrbnb).adr=recupstab.ad			  
 					Case 100
 						PutString("Main Source: " & Str(recup))
 						source(0)+=recup:sourceix=0

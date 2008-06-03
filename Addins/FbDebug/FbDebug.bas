@@ -131,7 +131,11 @@ End Sub
 
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim buff As ZString*256
-	Dim pt As POINT
+	Dim nme As ZString*256
+	Dim pt As Point
+	Dim i As Integer
+	Dim adr As Integer
+	Dim bval As ZString*32
 
 	Select Case uMsg
 		Case WM_KEYDOWN
@@ -152,7 +156,96 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ptcur.x=pt.x
 						ptcur.y=pt.y
 						SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
-'PutString(buff)
+						nme=UCase(buff)
+						i=1
+						adr=0
+						While vrb(i).nm<>""
+							If nme=vrb(i).nm Then
+								Select Case vrb(i).mem
+									Case 1
+										nme="Shared"
+										adr=procsk+vrb(i).adr
+										'
+									Case 2
+										nme="Static"
+										adr=procsk+vrb(i).adr
+										'
+									Case 3
+										nme="ByRef"
+										'
+									Case 4
+										nme="ByVal"
+										'
+									Case 5
+										nme="Local"
+										adr=procsk+vrb(i).adr
+										'
+									Case Else
+										nme="Unknown"
+								End Select
+								buff=nme & " " & buff & ":" & udt(vrb(i).typ).nm & "="
+								If adr Then
+									Select Case vrb(i).typ
+										Case 0
+											' Proc
+										Case 1
+											' Integer
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+											buff=buff & Str(Peek(Integer,@bval))
+										Case 2
+											' Byte
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+											buff=buff & Str(Peek(Byte,@bval))
+										Case 3
+											' UByte
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+											buff=buff & Str(Peek(UByte,@bval))
+										Case 4
+											' Char
+										Case 5
+											' Short
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+											buff=buff & Str(Peek(Short,@bval))
+										Case 6
+											' UShort
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+											buff=buff & Str(Peek(UShort,@bval))
+										Case 7
+											' Void
+										Case 8
+											' UInteger
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+											buff=buff & Str(Peek(UInteger,@bval))
+										Case 9
+											' Longint
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+											buff=buff & Str(Peek(LongInt,@bval))
+										Case 10
+											' ULongint
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+											buff=buff & Str(Peek(ULongInt,@bval))
+										Case 11
+											' Single
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+											buff=buff & Str(Peek(Single,@bval))
+										Case 12
+											' Double
+											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+											buff=buff & Str(Peek(Double,@bval))
+										Case 13
+											' String
+										Case 14
+											' ZString
+										Case 15
+											' PChar
+									End Select
+								EndIf
+								PutString(buff)
+								PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
+								Exit While
+							EndIf
+							i+=1
+						Wend
 					EndIf
 				EndIf
 				Return 0
@@ -199,6 +292,30 @@ Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 	Wend
 End Sub
 
+Sub CreateDebugMenu()
+	Dim mii As MENUITEMINFO
+
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_TYPE Or MIIM_SUBMENU
+	mii.fType=MFT_STRING
+	mii.dwTypeData=StrPtr("&Debug")
+	mii.hSubMenu=CreatePopupMenu()
+	InsertMenuItem(lpHandles->hmenu,3,TRUE,@mii)
+	nMnuToggle=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuToggle,StrPtr("Toggle &Breakpoint"))
+	nMnuClear=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,StrPtr("&Clear Breakpoints"))
+	nMnuRun=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,StrPtr("&Run"))
+	nMnuRunToCursor=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCursor,StrPtr("Run &To Cursor"))
+	nMnuStepInto=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,StrPtr("Step &Into"))
+	nMnuStepOver=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,StrPtr("Step &Over"))
+
+End Sub
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
 
@@ -210,12 +327,8 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpData=Cast(ADDINDATA Ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
-	nMnuToggle=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AppendMenu(GetSubMenu(lpHandles->hmenu,1),MF_STRING,nMnuToggle,StrPtr("Toggle breakpoint"))
-	nMnuClear=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AppendMenu(GetSubMenu(lpHandles->hmenu,1),MF_STRING,nMnuClear,StrPtr("Clear breakpoints"))
 	' Messages this addin will hook into
-	hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE
+	hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED
 	hooks.hook2=0
 	hooks.hook3=0
 	hooks.hook4=0
@@ -234,28 +347,72 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 
 	Select Case uMsg
 		Case AIM_COMMAND
-			If wParam=IDM_MAKE_RUNDEBUG Then
+			If wParam=nMnuRun Then
 				If lstrlen(@lpData->ProjectFile) Then
-					If Len(lpData->smakeoutput) Then
-						szFileName=lpData->ProjectPath & "\" & lpData->smakeoutput
-					Else
-						szFileName=lpData->ProjectFile
-						szFileName=Left(szFileName,Len(szFileName)-3) & "exe"
-					EndIf
-					nLnDebug=-1
 					GetBreakPoints
-					hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
-					Return TRUE
+					nDebugMode=0
+					nLnRunTo=-1
+					If hThread Then
+						If nLnDebug<>-1 Then
+							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
+							nLnDebug=-1
+						EndIf
+						ResumeThread(pinfo.hThread)
+					Else
+						If Len(lpData->smakeoutput) Then
+							szFileName=lpData->ProjectPath & "\" & lpData->smakeoutput
+						Else
+							szFileName=lpData->ProjectFile
+							szFileName=Left(szFileName,Len(szFileName)-3) & "exe"
+						EndIf
+						nLnDebug=-1
+						nDebugMode=1
+						hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
+					EndIf
 				EndIf
-			ElseIf wParam=IDM_MAKE_RUN Then
+				Return TRUE
+			ElseIf wParam=nMnuRunToCursor Then
 				If hThread Then
+					nDebugMode=0
+					If nLnDebug<>-1 Then
+						SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
+						nLnDebug=-1
+					EndIf
+					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+							nInx=IsProjectFile(@lpData->filename)
+							If nInx Then
+								SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+								nLnRunTo=SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+							EndIf
+						EndIf
+					EndIf
+					ResumeThread(pinfo.hThread)
+				EndIf
+				Return TRUE
+			ElseIf wParam=nMnuStepInto Then
+				If hThread Then
+					nDebugMode=1
+					nLnRunTo=-1
 					If nLnDebug<>-1 Then
 						SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
 						nLnDebug=-1
 					EndIf
 					ResumeThread(pinfo.hThread)
-					Return TRUE
 				EndIf
+				Return TRUE
+			ElseIf wParam=nMnuStepOver Then
+				If hThread Then
+					nDebugMode=2
+					nLnRunTo=-1
+					nprocrnb=procrnb
+					If nLnDebug<>-1 Then
+						SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
+						nLnDebug=-1
+					EndIf
+					ResumeThread(pinfo.hThread)
+				EndIf
+				Return TRUE
 			ElseIf wParam=nMnuToggle Then
 				If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 					If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
@@ -311,6 +468,9 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					EndIf
 				EndIf
 			EndIf
+			'
+		Case AIM_ADDINSLOADED
+			CreateDebugMenu
 			'
 		Case AIM_MENUENABLE
 			nInx=MF_BYCOMMAND Or MF_GRAYED

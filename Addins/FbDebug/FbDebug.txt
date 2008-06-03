@@ -1,1 +1,8 @@
 FbEdit debug addin
+
+Big thanks to SARG.
+His FB DEBUGGER proof of concept post
+(http://www.freebasic.net/forum/viewtopic.php?t=10244&highlight=)
+saved me a lot of time understanding how to parse the debug info.
+
+KetilO

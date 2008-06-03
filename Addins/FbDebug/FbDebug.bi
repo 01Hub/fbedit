@@ -10,6 +10,10 @@ Dim Shared lpFunctions As ADDINFUNCTIONS Ptr
 Dim Shared lpData As ADDINDATA Ptr
 Dim Shared nMnuToggle As Integer
 Dim Shared nMnuClear As Integer
+Dim Shared nMnuRun As Integer
+Dim Shared nMnuRunToCursor As Integer
+Dim Shared nMnuStepInto As Integer
+Dim Shared nMnuStepOver As Integer
 Dim Shared szFileName As ZString*MAX_PATH
 Dim Shared lpOldEditProc As Any Ptr
 Dim Shared hThread As HANDLE
@@ -25,4 +29,8 @@ End Type
 
 Dim Shared bp(31) As BP
 Dim Shared nLnDebug As Integer
+Dim Shared nLnRunTo As Integer
+Dim Shared nDebugMode As Integer
+Dim Shared nprocrnb As Integer
+
 Dim Shared ptcur As POINT

@@ -1,34 +1,34 @@
 
-dim SHARED hInstance as HINSTANCE
-dim SHARED hooks as ADDINHOOKS
-dim SHARED lpHandles as ADDINHANDLES ptr
-dim SHARED lpFunctions as ADDINFUNCTIONS ptr
-dim SHARED lpData as ADDINDATA ptr
+Dim Shared hInstance As HINSTANCE
+Dim Shared hooks As ADDINHOOKS
+Dim Shared lpHandles As ADDINHANDLES Ptr
+Dim Shared lpFunctions As ADDINFUNCTIONS Ptr
+Dim Shared lpData As ADDINDATA Ptr
 
-type MNUITEM
-	hmnu	as HMENU
-	wid	as integer
-	ntype	as integer
-	txt	as zstring*64
-	acl	as zstring*32
-	img	as integer
-	wdt	as integer
-	hgt	as integer
-end type
+Type MNUITEM
+	hmnu	As HMENU
+	wid	As Integer
+	ntype	As Integer
+	txt	As ZString*64
+	acl	As ZString*32
+	img	As Integer
+	wdt	As Integer
+	hgt	As Integer
+End Type
 
 #define IDB_TOOLBAR				100
 #define IDB_MNUARROW				101
 #define IDB_MENUCHECK			102
 
-dim SHARED hIml as HIMAGELIST
-dim SHARED hGrayIml as HIMAGELIST
-dim SHARED lpOldWndProc as any ptr
-dim SHARED hMem as HGLOBAL
-dim SHARED hMenu as HMENU
-dim SHARED hMenuBrush as HBRUSH
-dim SHARED hMnuFont as HFONT
-dim SHARED MnuFontHt as integer
-dim SHARED nCheck as Integer
+Dim Shared hIml As HIMAGELIST
+Dim Shared hGrayIml As HIMAGELIST
+Dim Shared lpOldWndProc As Any Ptr
+Dim Shared hMem As HGLOBAL
+Dim Shared hMenu As HMENU
+Dim Shared hMenuBrush As HBRUSH
+Dim Shared hMnuFont As HFONT
+Dim Shared MnuFontHt As Integer
+Dim Shared nCheck As Integer
 
 #define MIM_BACKGROUND			2
 #define MIM_APPLYTOSUBMENUS	&H80000000
