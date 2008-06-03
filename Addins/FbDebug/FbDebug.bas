@@ -242,14 +242,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								EndIf
 								PutString(buff)
 								PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
-PutString(proc(procrnb).nm)
+PutString(proc(procrnb-1).nm)
 PutString(Str(procsk+vrb(i).adr))
-PutString("db" & Str(proc(procrnb).db))
-PutString("fn" & Str(proc(procrnb).fn))
-PutString("sr" & Str(proc(procrnb).sr))
-PutString("ad" & Str(proc(procrnb).ad))
-PutString("vr" & Str(proc(procrnb).vr))
-PutString("rv" & Str(proc(procrnb).rv))
+PutString("db" & Str(proc(procrnb-1).db))
+PutString("fn" & Str(proc(procrnb-1).fn))
+PutString("sr" & Str(proc(procrnb-1).sr))
+PutString("ad" & Str(proc(procrnb-1).ad))
+PutString("vr" & Str(proc(procrnb-1).vr))
+PutString("rv" & Str(proc(procrnb-1).rv))
 
 
 								Exit While
