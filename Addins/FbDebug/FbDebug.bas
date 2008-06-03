@@ -242,6 +242,16 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								EndIf
 								PutString(buff)
 								PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
+PutString(proc(procrnb).nm)
+PutString(Str(procsk+vrb(i).adr))
+PutString("db" & Str(proc(procrnb).db))
+PutString("fn" & Str(proc(procrnb).fn))
+PutString("sr" & Str(proc(procrnb).sr))
+PutString("ad" & Str(proc(procrnb).ad))
+PutString("vr" & Str(proc(procrnb).vr))
+PutString("rv" & Str(proc(procrnb).rv))
+
+
 								Exit While
 							EndIf
 							i+=1

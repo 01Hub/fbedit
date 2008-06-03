@@ -358,7 +358,9 @@ Sub gestbrk(ad As UInteger)
 	proccurad=ad
 	If rline(i).ad<>ad Then
 		For i=1 To linenb
-			If rline(i).ad=ad Then Exit For
+			If rline(i).ad=ad Then
+				Exit For
+			EndIf
 		Next
 		If i>linenb Then
 			'Print "Starting press space"
@@ -391,7 +393,7 @@ Sub gestbrk(ad As UInteger)
 		procsv=rline(i).pr
 		procrnb-=1
 		'planned to suppress LIST
-		PutString("RETURN proc"+proc(procsv).nm)
+		PutString("RETURN proc "+proc(procsv).nm)
 	EndIf
 	'INTEGRATION FOLLOWING LINES ABOVE ???
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
