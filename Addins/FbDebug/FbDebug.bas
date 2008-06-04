@@ -175,7 +175,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						i=1
 						adr=0
 						While i<=vrbnb 'vrb(i).nm<>""
-							If nme=vrb(i).nm Then
+							If nme=vrb(i).nm And (vrb(i).pn=procsv Or vrb(i).pn<0) Then
 								Select Case vrb(i).mem
 									Case 1
 										nme="Shared"
@@ -344,7 +344,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 'PutString("procr(1).idx " & Str(procr(1).idx))
 'PutString("procr(2).idx " & Str(procr(2).idx))
 'PutString("procr(3).idx " & Str(procr(3).idx))
-
 								Return 0
 							EndIf
 							i+=1

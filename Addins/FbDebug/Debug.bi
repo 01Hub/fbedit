@@ -76,6 +76,7 @@ Type tvar
 	mem As UByte    'scope 
 	arr As tarr Ptr 'pointer to array def
 	pt As UByte     'pointer
+	pn As UShort    'to keep track of vars with same name
 End Type
 
 Type tline
@@ -109,8 +110,7 @@ Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
 Dim Shared procrsk As UInteger
 
 'sources ===========================================
-Dim Shared source(10) As String,sourceix As Integer,sourcenb As Integer
-'ReDim Shared sourceline(5,1000) As String 'max 5 sources and 1000 lines purpose for testing
+Dim Shared source(100) As String,sourceix As Integer,sourcenb As Integer
 
 Dim Shared ttyp As Byte
 

@@ -276,22 +276,27 @@ Function decoupscp(gv As Byte) As Integer
 		Case Asc("S")
 			'shared
 			vrb(vrbnb).mem=1
+			vrb(vrbnb).pn=-procnb
 			Return 2
 		Case Asc("V")
 			'static
 			vrb(vrbnb).mem=2
+			vrb(vrbnb).pn=-procnb
 			Return 2
 		Case Asc("v")
 			'byref parameter
 			vrb(vrbnb).mem=3
+			vrb(vrbnb).pn=-procnb
 			Return 2
 		Case Asc("p")
 			'byval parameter
 			vrb(vrbnb).mem=4
+			vrb(vrbnb).pn=-procnb
 			Return 2
 		Case Else
 			'local
 			vrb(vrbnb).mem=5
+			vrb(vrbnb).pn=-procnb
 			Return 1
 	End Select	
 
@@ -351,6 +356,7 @@ End Sub
 
 Sub gestbrk(ad As UInteger)
 	Dim i As UInteger
+	Dim j As UInteger
 	Dim sln As String
 	Dim chrg As CHARRANGE
 
@@ -403,15 +409,24 @@ Sub gestbrk(ad As UInteger)
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
 	sln="," & Str(rLine(i).nu-1) & ","
 	If InStr(bp(0).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
-		lstrcpy(@szFileName,bp(0).sFile)
+		'lstrcpy(@szFileName,bp(0).sFile)
+		szFileName=source(proc(procsv).sr)
+		j=1
+		While j
+			j=InStr(j,szFileName,"/")
+			If j Then
+				szFileName[j-1]=Asc("\")
+			EndIf
+		Wend
+'PutString(szFileName)
 		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 		WaitForSingleObject(pinfo.hProcess,100)
 		nLnDebug=rLine(i).nu-1
 		chrg.cpMin=SendMessage(lpHandles->hred,EM_LINEINDEX,nLnDebug,0)
 		chrg.cpMax=chrg.cpMin
 		SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-		SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
 		SendMessage(lpHandles->hred,REM_VCENTER,0,0)
+		SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
 		SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,2)
 		SuspendThread(pinfo.hThread)
 	EndIf
@@ -456,6 +471,7 @@ Sub ClearVars()
 	arrnb=0
 	threadcontext=0
 	threadnb=0
+	source(0)=""
 	
 End Sub
 
@@ -595,6 +611,15 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			End If
 			basestab+=12
 		Wend
+		' To handle variables with the same name but of different type
+		For i As UShort=1 To vrbnb
+			For j As UShort=i+1 To vrbnb
+				If vrb(i).nm=vrb(j).nm Then
+					vrb(i).pn=Abs(vrb(i).pn)
+					vrb(j).pn=Abs(vrb(j).pn)
+				EndIf
+			Next
+		Next
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			Select Case de.dwDebugEventCode
