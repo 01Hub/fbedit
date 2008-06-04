@@ -112,7 +112,7 @@ REM_ISINBLOCK			equ REM_BASE+49		;wParam=nLine, lParam=lpRABLOCKDEF
 REM_TRIMSPACE			equ REM_BASE+50		;wParam=nLine, lParam=fLeft
 REM_SAVESEL				equ REM_BASE+51		;wParam=0, lParam=0
 REM_RESTORESEL			equ REM_BASE+52		;wParam=0, lParam=0
-REM_GETCURSORWORD		equ REM_BASE+53		;wParam=BuffSize, lParam=lpBuff
+REM_GETCURSORWORD		equ REM_BASE+53		;wParam=BuffSize, lParam=lpBuff, Returns line number
 REM_SETSEGMENTBLOCK		equ REM_BASE+54		;wParam=nLine, lParam=TRUE/FALSE
 REM_GETMODE				equ REM_BASE+55		;wParam=0, lParam=0
 REM_SETMODE				equ REM_BASE+56		;wParam=nMode, lParam=0

@@ -1,6 +1,9 @@
 
-#Define IDM_MAKE_RUN							10143
-#Define IDM_MAKE_RUNDEBUG					10145
+#Define IDM_MAKE_COMPILE					10142 'F5
+#Define IDM_MAKE_RUN							10143 'Shift+F5
+#Define IDM_MAKE_GO							10144 'Ctrl+F5
+#Define IDM_MAKE_QUICKRUN					10147 'Shift+Ctrl+F5
+
 #Define MAX_MISS								10
 
 Dim Shared hInstance As HINSTANCE
@@ -34,3 +37,8 @@ Dim Shared nDebugMode As Integer
 Dim Shared nprocrnb As Integer
 
 Dim Shared ptcur As POINT
+Dim Shared hTip As HWND
+Dim Shared szTipText As ZString*256
+Dim Shared ebp_main As UInteger
+Dim Shared ebp_this As UInteger
+Dim Shared fAL As Integer

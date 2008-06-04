@@ -62,6 +62,14 @@ Type WINPOS
 	ptsavelist		As Point							' Save list position
 End Type
 
+Type TABMEM
+	hedit				As HWND
+	filename			As ZString*260
+	profileinx		As Integer
+	filestate		As Integer
+	ft					As FILETIME
+End Type
+
 Type ADDINHOOKS
 	hook1				As UINT							' Hook flags for addin message 0 - 31
 	hook2				As UINT							' Hook flags for addin message 32 - 63
@@ -132,6 +140,7 @@ Type ADDINFUNCTIONS
 	ShowOutput As Sub(ByVal bShow As Boolean)
 	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)
 	FindString As Function(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
+	CallAddins As Function(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
 End Type
 
 ' Addin messages you can send to FbEdit main window

@@ -88,6 +88,7 @@ End Type
 Dim Shared pinfo As PROCESS_INFORMATION
 Dim Shared dbghand As HANDLE
 Dim Shared ct As CONTEXT
+
 Dim Shared secnb As UShort
 Dim Shared pe As UInteger
 Dim Shared secnm As String*8
@@ -101,12 +102,11 @@ Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
 
 Const PROCMAX=500
 Dim Shared proc(PROCMAX) As tproc
-proc(1).vr=1
 
 'Running proc
 Const PROCRMAX=50000
 Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
-Dim Shared procrsk As UInteger=4294967295'current proc stack
+Dim Shared procrsk As UInteger
 
 'sources ===========================================
 Dim Shared source(10) As String,sourceix As Integer,sourcenb As Integer

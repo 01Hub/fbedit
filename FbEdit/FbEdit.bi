@@ -249,14 +249,6 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDA_ACCEL								1
 #Define IDB_FILES								102
 
-Type TABMEM
-	hedit				As HWND
-	filename			As ZString*260
-	profileinx		As Integer
-	filestate		As Integer
-	ft					As FILETIME
-End Type
-
 Type EDITFONT
 	size				As Integer
 	charset			As Integer
@@ -377,7 +369,7 @@ Dim hFbEditDll As HMODULE
 ' Addins
 Dim Shared ah As ADDINHANDLES
 Dim Shared ad As ADDINDATA=(1062)
-Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString)
+Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins)
 
 ' Custom controls
 Dim Shared hCustDll(32) As HMODULE

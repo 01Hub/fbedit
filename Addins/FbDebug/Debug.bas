@@ -381,6 +381,10 @@ Sub gestbrk(ad As UInteger)
 		'new proc ATTENTION ADD A POSSIBILITY TO INCREASE THIS ARRAY
 		procrnb+=1
 		procrsk=procsk
+		ebp_this=procsk
+		If ebp_main=0 Then
+			ebp_main=procsk
+		EndIf
 		procr(procrnb).sk=procrsk
 		procsv=rline(i).pr
 		procr(procrnb).sk=procrsk
@@ -426,16 +430,33 @@ End Sub
 Sub ClearVars()
 
 	secnb=0
+	pe=0
+	basestab=0
+	basestabs=0
+	recup=String(1000,0)
 	procnb=0
+	procfg=0
+	procsv=0
+	procad=0
+	procin=0
+	procsk=0
+	proccurad=0
+	proc(1).vr=1
 	procrnb=0
+	procrsk=4294967295'current proc stack
+	sourceix=0
+	sourcenb=0
+	ttyp=0
 	udtidx=0
 	cudtnb=0
 	audtnb=0
 	vrbnb=0
 	linenb=0
+	linesav=0
 	arrnb=0
+	threadcontext=0
 	threadnb=0
-
+	
 End Sub
 
 Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer

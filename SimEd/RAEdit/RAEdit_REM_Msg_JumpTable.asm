@@ -829,6 +829,7 @@
 			mov		eax,ecx
 			rep movsb
 			mov		byte ptr [edi],0
+			mov		eax,[ebx].EDIT.line
 			ret
 		align 4
 		_REM_SETSEGMENTBLOCK:
