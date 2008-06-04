@@ -242,15 +242,19 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								EndIf
 								PutString(buff)
 								PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
-PutString(proc(procrnb-1).nm)
-PutString(Str(procsk+vrb(i).adr))
-PutString("db" & Str(proc(procrnb-1).db))
-PutString("fn" & Str(proc(procrnb-1).fn))
-PutString("sr" & Str(proc(procrnb-1).sr))
-PutString("ad" & Str(proc(procrnb-1).ad))
-PutString("vr" & Str(proc(procrnb-1).vr))
-PutString("rv" & Str(proc(procrnb-1).rv))
-
+PutString(proc(procsv).nm)
+PutString("Adr " & Str(procsk+vrb(i).adr))
+PutString("db " & Str(proc(procsv).db))
+PutString("fn " & Str(proc(procsv).fn))
+PutString("sr " & Str(proc(procsv).sr))
+PutString("ad " & Str(proc(procsv).ad))
+PutString("vr " & Str(proc(procsv).vr))
+PutString("rv " & Str(proc(procsv).rv))
+PutString("procsv " & Str(procsv))
+PutString("procr(0).idx " & Str(procr(0).idx))
+PutString("procr(1).idx " & Str(procr(1).idx))
+PutString("procr(2).idx " & Str(procr(2).idx))
+PutString("procr(3).idx " & Str(procr(3).idx))
 
 								Exit While
 							EndIf
