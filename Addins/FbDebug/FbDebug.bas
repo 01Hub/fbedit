@@ -153,11 +153,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim nCursorLine As Integer
 
 	Select Case uMsg
-		Case WM_KEYDOWN
-			If hThread Then
-				Return 0
-			EndIf
-			'
+'		Case WM_KEYDOWN
+'			If hThread Then
+'				Return 0
+'			EndIf
+'			'
 		Case WM_CHAR
 			If hThread Then
 				Return 0
@@ -180,8 +180,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 'PutString("vrb(i).pn: " & Str(vrb(i).pn))
 'PutString("vrb(i).nm: " & vrb(i).nm)
 'PutString("nme: " & nme)
-PutString("vrb(i).pt: " & vrb(i).pt)
-PutString("vrb(i).pt: " & vrb(i).adr)
+'PutString("vrb(i).pt: " & vrb(i).pt)
+'PutString("vrb(i).pt: " & vrb(i).adr)
 								Select Case vrb(i).mem
 									Case 1
 										nme="Shared"
@@ -248,10 +248,10 @@ PutString("vrb(i).pt: " & vrb(i).adr)
 								If adr Then
 									For j=1 To vrb(i).pt
 										buff="*" & buff
-PutString(Str(adr))
-										adr=ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+'PutString(Str(adr))
+										ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
 									Next
-PutString(Str(adr))
+'PutString(Str(adr))
 									buff=nme & " " & buff & " As " & udt(vrb(i).typ).nm & "="
 									Select Case vrb(i).typ
 										Case 0
