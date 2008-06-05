@@ -79,7 +79,7 @@ Sub GetBreakPoints()
 	Dim nMiss As Integer
 	Dim sItem As ZString*260
 
-	For i=0 To 31
+	For i=0 To SOURCEMAX
 		bp(i).nInx=0
 		bp(i).sFile=""
 		bp(i).sBP=""
@@ -174,8 +174,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						nme=UCase(buff)
 						i=1
 						adr=0
-						While i<=vrbnb 'vrb(i).nm<>""
+						While i<=vrbnb
 							If nme=vrb(i).nm And (vrb(i).pn=procsv Or vrb(i).pn<0) Then
+'PutString("procsv: " & Str(procsv))
+'PutString("vrb(i).pn: " & Str(vrb(i).pn))
+'PutString("vrb(i).nm: " & vrb(i).nm)
+'PutString("nme: " & nme)
+PutString("vrb(i).pt: " & vrb(i).pt)
+PutString("vrb(i).pt: " & vrb(i).adr)
 								Select Case vrb(i).mem
 									Case 1
 										nme="Shared"
@@ -212,6 +218,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										EndIf
 									Next
 									If j<=linenb Then
+										'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn) & ",ad " & Str(proc(procsv).ad) & ",vr " & Str(proc(procsv).vr))
 										If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
 											adr=0
 										EndIf
@@ -236,9 +243,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 											adr=0
 										EndIf
 									EndIf
-'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn))
+									'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn))
 								EndIf
 								If adr Then
+									For j=1 To vrb(i).pt
+										buff="*" & buff
+PutString(Str(adr))
+										adr=ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+									Next
+PutString(Str(adr))
 									buff=nme & " " & buff & " As " & udt(vrb(i).typ).nm & "="
 									Select Case vrb(i).typ
 										Case 0
@@ -329,21 +342,17 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
 									SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
 								EndIf
-'PutString(buff)
-'PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
-'PutString(proc(procsv).nm)
-'PutString("Adr " & Str(procsk+vrb(i).adr))
-'PutString("db " & Str(proc(procsv).db))
-'PutString("fn " & Str(proc(procsv).fn))
-'PutString("sr " & Str(proc(procsv).sr))
-'PutString("ad " & Str(proc(procsv).ad))
-'PutString("vr " & Str(proc(procsv).vr))
-'PutString("rv " & Str(proc(procsv).rv))
-'PutString("procsv " & Str(procsv))
-'PutString("procr(0).idx " & Str(procr(0).idx))
-'PutString("procr(1).idx " & Str(procr(1).idx))
-'PutString("procr(2).idx " & Str(procr(2).idx))
-'PutString("procr(3).idx " & Str(procr(3).idx))
+								'PutString(buff)
+								'PutString("Adr:" & Str(vrb(i).adr) & " Pt:" & Str(vrb(i).pt))
+								'PutString(proc(procsv).nm)
+								'PutString("Adr " & Str(procsk+vrb(i).adr))
+								'PutString("db " & Str(proc(procsv).db))
+								'PutString("fn " & Str(proc(procsv).fn))
+								'PutString("sr " & Str(proc(procsv).sr))
+								'PutString("ad " & Str(proc(procsv).ad))
+								'PutString("vr " & Str(proc(procsv).vr))
+								'PutString("rv " & Str(proc(procsv).rv))
+								'PutString("procsv " & Str(procsv))
 								Return 0
 							EndIf
 							i+=1
@@ -475,6 +484,8 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							EndIf
 							nLnDebug=-1
 							nDebugMode=1
+							lpFunctions->ShowOutput(TRUE)
+							PutString("Debugging: " & szFileName)
 							hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
 						EndIf
 					EndIf
@@ -657,6 +668,18 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			EndIf
 			EnableMenuItem(lpHandles->hmenu,nMnuToggle,nInx)
 			EnableMenuItem(lpHandles->hmenu,nMnuClear,nInx)
+			nInx=MF_BYCOMMAND Or MF_GRAYED
+			If lstrlen(@lpData->ProjectFile) Then
+				nInx=MF_BYCOMMAND Or MF_ENABLED
+			EndIf
+			EnableMenuItem(lpHandles->hmenu,nMnuRun,nInx)
+			nInx=MF_BYCOMMAND Or MF_GRAYED
+			If hThread Then
+				nInx=MF_BYCOMMAND Or MF_ENABLED
+			EndIf
+			EnableMenuItem(lpHandles->hmenu,nMnuRunToCursor,nInx)
+			EnableMenuItem(lpHandles->hmenu,nMnuStepInto,nInx)
+			EnableMenuItem(lpHandles->hmenu,nMnuStepOver,nInx)
 			'
 	End Select
 	Return FALSE

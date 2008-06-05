@@ -76,7 +76,7 @@ Type tvar
 	mem As UByte    'scope 
 	arr As tarr Ptr 'pointer to array def
 	pt As UByte     'pointer
-	pn As UShort    'to keep track of vars with same name
+	pn As Short    'to keep track of vars with same name
 End Type
 
 Type tline
@@ -96,7 +96,7 @@ Dim Shared secnm As String*8
 Dim Shared basestab As UInteger
 Dim Shared basestabs As UInteger
 Dim Shared recupstab As udtstab
-Dim Shared recup As ZString *1000
+Dim Shared recup As ZString*1000
 
 Dim Shared procnb As Integer,procfg As Byte
 Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
@@ -110,7 +110,7 @@ Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
 Dim Shared procrsk As UInteger
 
 'sources ===========================================
-Dim Shared source(100) As String,sourceix As Integer,sourcenb As Integer
+Dim Shared source(SOURCEMAX) As String,sourceix As Integer,sourcenb As Integer
 
 Dim Shared ttyp As Byte
 

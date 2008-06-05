@@ -387,7 +387,7 @@ Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 			ReadTheFile(ah.hred,ad.filename)
 			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
-			CallAddins(ah.hwnd,AIM_FILEOPENNEW,Cast(WPARAM,ah.hred),Cast(LPARAM,@sFile),HOOK_FILEOPENNEW)
+			CallAddins(ah.hwnd,AIM_FILEOPENNEW,Cast(WPARAM,ah.hred),Cast(LPARAM,@ad.filename),HOOK_FILEOPENNEW)
 		EndIf
 	EndIf
 

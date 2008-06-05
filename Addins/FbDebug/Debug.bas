@@ -266,7 +266,7 @@ Sub decoup(gv As String)
 		p=decoupscp(gv[InStr(gv,":")])
 		decoup2(Mid(gv,InStr(gv,":")+p,999),ttyp)
 	EndIf
-PutString(vrb(vrbnb).nm)
+	'PutString(vrb(vrbnb).nm)
 
 End Sub
 
@@ -388,37 +388,33 @@ Sub gestbrk(ad As UInteger)
 		procrnb+=1
 		procrsk=procsk
 		ebp_this=procsk
-		If ebp_main=0 Then
-			ebp_main=procsk
-		EndIf
 		procr(procrnb).sk=procrsk
 		procsv=rline(i).pr
 		procr(procrnb).sk=procrsk
 		procr(procrnb).idx=procsv
 		'add manage LIST
-		PutString("NEW proc "+proc(procsv).nm)
+		'PutString("NEW proc "+proc(procsv).nm)
 	ElseIf procrsk<procsk Then
 		'previous proc
 		procrsk=procsk
 		procsv=rline(i).pr
 		procrnb-=1
 		'planned to suppress LIST
-		PutString("RETURN proc "+proc(procsv).nm)
+		'PutString("RETURN proc "+proc(procsv).nm)
 	EndIf
 	'INTEGRATION FOLLOWING LINES ABOVE ???
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
 	sln="," & Str(rLine(i).nu-1) & ","
-	If InStr(bp(0).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
-		'lstrcpy(@szFileName,bp(0).sFile)
-		szFileName=source(proc(procsv).sr)
-		j=1
-		While j
-			j=InStr(j,szFileName,"/")
-			If j Then
-				szFileName[j-1]=Asc("\")
-			EndIf
-		Wend
-'PutString(szFileName)
+	For bpinx=0 To SOURCEMAX
+		'PutString(source(proc(procsv).sr))
+		'PutString(bp(bpinx).sFile)
+		If UCase(bp(bpinx).sFile)=UCase(source(proc(procsv).sr)) Then
+			Exit For
+		EndIf
+	Next
+	If InStr(bp(bpinx).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
+		szFileName=bp(bpinx).sFile
+		'PutString(szFileName)
 		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 		WaitForSingleObject(pinfo.hProcess,100)
 		nLnDebug=rLine(i).nu-1
@@ -427,6 +423,7 @@ Sub gestbrk(ad As UInteger)
 		SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 		SendMessage(lpHandles->hred,REM_VCENTER,0,0)
 		SendMessage(lpHandles->hred,EM_SCROLLCARET,0,0)
+		SendMessage(lpHandles->hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 		SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,2)
 		SuspendThread(pinfo.hThread)
 	EndIf
@@ -472,6 +469,7 @@ Sub ClearVars()
 	threadcontext=0
 	threadnb=0
 	source(0)=""
+	bpinx=0
 	
 End Sub
 
@@ -487,6 +485,8 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim ba As Integer
 	Dim rd As Integer
 	Dim hFile As HANDLE
+	Dim i As UShort
+	Dim j As UShort
 
 	ClearVars
 	sinfo.cb=SizeOf(STARTUPINFO)
@@ -502,7 +502,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		pe=&h400086
 		ReadProcessMemory(dbghand,Cast(Any Ptr,pe),@secnb,2,0)
 		pe=&h400178
-		For i As UShort =1 To secnb
+		For i=1 To secnb
 			'Init var
 			secnm=String(8,0)
 			'read 8 bytes max name size
@@ -543,8 +543,15 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						decoup(recup)
 						vrb(vrbnb).adr=recupstab.ad			  
 					Case 100
-						PutString("Main Source: " & Str(recup))
+						'PutString("Main Source: " & Str(recup))
 						source(0)+=recup:sourceix=0
+						i=1
+						While i
+							i=InStr(i,source(0),"/")
+							If i Then
+								source(0)[i-1]=Asc("\")
+							EndIf
+						Wend
 					Case 128
 						'local
 						decoup(recup)
@@ -556,10 +563,17 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						'include RAS
 					Case 132
 						'include
-						PutString("Include: " & Str(recup))
+						'PutString("Include: " & Str(recup))
 						sourcenb+=1
 						source(sourcenb)=recup
 						sourceix=sourcenb' ????? Utilité :sourcead(sourcenb)=recupstab.ad
+						i=1
+						While i
+							i=InStr(i,source(sourcenb),"/")
+							If i Then
+								source(sourcenb)[i-1]=Asc("\")
+							EndIf
+						Wend
 					Case 160
 						'parameter
 						 decoup(recup)
@@ -612,14 +626,15 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			basestab+=12
 		Wend
 		' To handle variables with the same name but of different type
-		For i As UShort=1 To vrbnb
-			For j As UShort=i+1 To vrbnb
+		For i=1 To vrbnb
+			For j=i+1 To vrbnb
 				If vrb(i).nm=vrb(j).nm Then
 					vrb(i).pn=Abs(vrb(i).pn)
 					vrb(j).pn=Abs(vrb(j).pn)
 				EndIf
 			Next
 		Next
+		PutString("Main Source: " & source(0))
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			Select Case de.dwDebugEventCode
@@ -733,6 +748,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		lret=CloseHandle(hThread)
 		'PutString("hThread: " & Str(lret))
 		hThread=0
+		DllFunction(lpHandles->hwnd,AIM_MENUENABLE,0,0)
 	EndIf
 	Return 0
 
