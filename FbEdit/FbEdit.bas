@@ -1685,9 +1685,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				Else
 					If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
 						SendMessage(ah.hred,REM_BRACKETMATCH,0,0)
-						SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
-						If edtopt.hiliteline Then
-							SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
+						If ad.fDebug=FALSE Then
+							SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
+							If edtopt.hiliteline Then
+								SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
+							EndIf
 						EndIf
 						If lpRASELCHANGE->Line<>nLastLine Then
 							ShowWindow(ah.htt,SW_HIDE)

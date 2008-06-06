@@ -8,8 +8,7 @@
 #Include "Debug.bas"
 
 Function MakeProjectFileName(ByVal sFile As String) As String
-	Dim sItem As String*260
-	Dim sPath As String*260
+	Dim As ZString*260 sItem,sPath
 	Dim As Integer x,y
 
 	sItem=sFile
@@ -33,8 +32,7 @@ Function MakeProjectFileName(ByVal sFile As String) As String
 End Function
 
 Function IsProjectFile(ByVal lpFile As ZString Ptr) As Integer
-	Dim nInx As Integer
-	Dim nMiss As Integer
+	Dim As Integer nInx,nMiss
 	Dim sItem As ZString*260
 
 	nInx=1
@@ -74,9 +72,7 @@ Function IsProjectFile(ByVal lpFile As ZString Ptr) As Integer
 End Function
 
 Sub GetBreakPoints()
-	Dim i As Integer
-	Dim nInx As Integer
-	Dim nMiss As Integer
+	Dim As Integer i,nInx,nMiss
 	Dim sItem As ZString*260
 
 	For i=0 To SOURCEMAX
@@ -113,7 +109,6 @@ Sub GetBreakPoints()
 		If Len(sItem) Then
 			nMiss=0
 			sItem=MakeProjectFileName(sItem)
-			sItem=MakeProjectFileName(sItem)
 			bp(i).nInx=nInx
 			bp(i).sFile=sItem
 			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
@@ -140,17 +135,11 @@ End sub
 
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim ti As TOOLINFO
-	Dim buff As ZString*256
-	Dim nme As ZString*256
+	Dim As ZString*256 buff,nme
 	Dim pt As Point
-	Dim i As Integer
-	Dim j As Integer
-	Dim adr As Integer
+	Dim As Integer i,j,adr,fGlobal,fParam,nCursorLine
 	Dim bval As ZString*32
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
-	Dim fGlobal As Integer
-	Dim fParam As Integer
-	Dim nCursorLine As Integer
 
 	Select Case uMsg
 '		Case WM_KEYDOWN
@@ -158,11 +147,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 '				Return 0
 '			EndIf
 '			'
-		Case WM_CHAR
-			If hThread Then
-				Return 0
-			EndIf
-			'
+'		Case WM_CHAR
+'			If hThread Then
+'				Return 0
+'			EndIf
+'			'
 		Case WM_MOUSEMOVE
 			If hThread Then
 				If nLnDebug<>-1 Then
@@ -388,8 +377,7 @@ End Sub
 
 Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim buff As ZString*2048
-	Dim nLn As Integer
-	Dim x As Integer
+	Dim As Integer nLn,x
 
 	SendMessage(hWin,REM_CLRBOOKMARKS,0,5)
 	GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
@@ -406,6 +394,27 @@ Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 	Wend
 End Sub
 
+Function CheckLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Boolean
+	Dim i As Integer
+
+	If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+		If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+			If hThread Then
+				nLine+=1
+				For i=1 To linenb
+					If rline(i).nu=nLine And UCase(*lpszFile)=UCase(source(proc(rline(i).pr).sr)) Then
+						Return TRUE
+					EndIf
+				Next
+				Return FALSE
+			EndIf
+			Return TRUE
+		EndIf
+	EndIf
+	Return FALSE
+
+End Function
+
 Sub CreateDebugMenu()
 	Dim mii As MENUITEMINFO
 
@@ -421,14 +430,168 @@ Sub CreateDebugMenu()
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,StrPtr("&Clear Breakpoints"))
 	nMnuRun=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,StrPtr("&Run"))
-	nMnuRunToCursor=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCursor,StrPtr("Run &To Cursor	Shift+F5"))
+	nMnuStop=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStop,StrPtr("&Stop"))
+	nMnuRunToCaret=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,StrPtr("Run &To Caret	Shift+F5"))
 	nMnuStepInto=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,StrPtr("Step &Into	F5"))
 	nMnuStepOver=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,StrPtr("Step &Over	Ctrl+F5"))
 
 End Sub
+
+Function GetLineNumber() As Integer
+	Dim chrg As CHARRANGE
+
+	SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+	Return SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+
+End Function
+
+Sub ClearDebugLine()
+
+	If nLnDebug<>-1 And hLnDebug<>0 Then
+		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
+		nLnDebug=-1
+		hLnDebug=0
+	EndIf
+
+End Sub
+
+Sub EnableDebugMenu()
+	Dim st As Integer
+
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+		If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+			st=MF_BYCOMMAND Or MF_ENABLED
+		EndIf
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuToggle,st)
+	EnableMenuItem(lpHandles->hmenu,nMnuClear,st)
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If lstrlen(@lpData->ProjectFile) Then
+		st=MF_BYCOMMAND Or MF_ENABLED
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuRun,st)
+	' Run To Caret
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If hThread Then
+		If CheckLine(GetLineNumber,@lpData->filename) Then
+			st=MF_BYCOMMAND Or MF_ENABLED
+		EndIf
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuRunToCaret,st)
+	' Step Into, Step Over
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If hThread Then
+		st=MF_BYCOMMAND Or MF_ENABLED
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuStop,st)
+	EnableMenuItem(lpHandles->hmenu,nMnuStepInto,st)
+	EnableMenuItem(lpHandles->hmenu,nMnuStepOver,st)
+
+End Sub
+
+Sub LockFiles(ByVal bLock As Boolean)
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
+	Dim i As Integer
+
+	tci.mask=TCIF_PARAM
+	i=0
+	While TRUE
+		If SendMessage(lpHandles->htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+			If lpTABMEM->profileinx Then
+				SendMessage(lpTABMEM->hedit,REM_READONLY,0,bLock)
+			EndIf
+		Else
+			Exit While
+		EndIf
+		i+=1
+	Wend
+
+End Sub
+
+Function CheckFileTime(ByVal lpszExe As ZString Ptr) As String
+	Dim As Integer i,nInx,nMiss
+	Dim hFile As HANDLE
+	Dim As FILETIME ftexe,ftfile
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
+	Dim szItem As ZString*260
+
+	' Get exe filetime
+	hFile=CreateFile(lpszExe,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	If hFile<>INVALID_HANDLE_VALUE Then
+		GetFileTime(hFile,NULL,NULL,@ftexe)
+		CloseHandle(hFile)
+		' Check for unsaved files
+		tci.mask=TCIF_PARAM
+		i=0
+		While TRUE
+			If SendMessage(lpHandles->htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+				If lpTABMEM->profileinx Then
+					If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
+						Return "File(s) not saved"
+					EndIf
+				EndIf
+			Else
+				Exit While
+			EndIf
+			i+=1
+		Wend
+		nInx=1
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
+			szItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+			If Len(szItem) Then
+				nMiss=0
+				szItem=MakeProjectFileName(szItem)
+				hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+				If hFile<>INVALID_HANDLE_VALUE Then
+					GetFileTime(hFile,NULL,NULL,@ftfile)
+					CloseHandle(hFile)
+					If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
+						Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+					EndIf
+				EndIf
+			Else
+				nMiss=nMiss+1
+			EndIf
+			nInx=nInx+1
+		Loop
+		nInx=1001
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
+			szItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+			If Len(szItem) Then
+				nMiss=0
+				szItem=MakeProjectFileName(szItem)
+				hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+				If hFile<>INVALID_HANDLE_VALUE Then
+					GetFileTime(hFile,NULL,NULL,@ftfile)
+					CloseHandle(hFile)
+					If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
+						Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+					EndIf
+				EndIf
+			Else
+				nMiss=nMiss+1
+			EndIf
+			nInx=nInx+1
+		Loop
+	Else
+		Return *lpszExe & " not found."
+	EndIf
+	Return ""
+
+End Function
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
@@ -453,10 +616,7 @@ End Function
 ' FbEdit calls this function for every addin message that this addin is hooked into.
 ' Returning TRUE will prevent FbEdit and other addins from processing the message.
 Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As bool Export
-	Dim tid As Integer
-	Dim nLn As Integer
-	Dim nInx As Integer
-	Dim chrg As CHARRANGE
+	Dim As Integer tid,nLn,nInx
 	Dim lp As Any Ptr
 	Dim lpTABMEM As TABMEM Ptr
 
@@ -470,10 +630,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						nDebugMode=0
 						nLnRunTo=-1
 						If hThread Then
-							If nLnDebug<>-1 Then
-								SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-								nLnDebug=-1
-							EndIf
+							ClearDebugLine
 							ResumeThread(pinfo.hThread)
 						Else
 							If Len(lpData->smakeoutput) Then
@@ -482,28 +639,47 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								szFileName=lpData->ProjectFile
 								szFileName=Left(szFileName,Len(szFileName)-3) & "exe"
 							EndIf
-							nLnDebug=-1
-							nDebugMode=1
-							lpFunctions->ShowOutput(TRUE)
-							PutString("Debugging: " & szFileName)
-							hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
+							szTipText=CheckFileTime(@szFileName)
+							If szTipText="" Then
+								nLnDebug=-1
+								nDebugMode=1
+								LockFiles(TRUE)
+								lpFunctions->ShowOutput(TRUE)
+								PutString("Debugging: " & szFileName)
+								lpData->fDebug=TRUE
+								hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
+							Else
+								MessageBox(lpHandles->hwnd,szTipText,"Debug",MB_OK Or MB_ICONERROR)
+							EndIf
 						EndIf
 					EndIf
 					Return TRUE
 					'
-				Case nMnuRunToCursor
+				Case nMnuStop
+					If hThread Then
+						TerminateThread(hThread,0)
+						CloseHandle(dbghand)
+						CloseHandle(pinfo.hThread)
+						CloseHandle(pinfo.hProcess)
+						CloseHandle(hDebugFile)
+						CloseHandle(hThread)
+						hThread=0
+						ClearDebugLine
+						LockFiles(FALSE)
+						lpData->fDebug=FALSE
+						EnableDebugMenu
+					EndIf
+					Return TRUE
+					'
+				Case nMnuRunToCaret
 					If hThread Then
 						nDebugMode=0
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 							If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 								nInx=IsProjectFile(@lpData->filename)
 								If nInx Then
-									SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-									nLnRunTo=SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+									nLnRunTo=GetLineNumber
 								EndIf
 							EndIf
 						EndIf
@@ -515,10 +691,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						nDebugMode=1
 						nLnRunTo=-1
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						ResumeThread(pinfo.hThread)
 					EndIf
 					Return TRUE
@@ -528,10 +701,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						nDebugMode=2
 						nLnRunTo=-1
 						nprocrnb=procrnb
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						ResumeThread(pinfo.hThread)
 					EndIf
 					Return TRUE
@@ -541,11 +711,12 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 							nInx=IsProjectFile(@lpData->filename)
 							If nInx Then
-								SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-								nLn=SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+								nLn=GetLineNumber
 								tid=SendMessage(lpHandles->hred,REM_GETBOOKMARK,nLn,0)
 								If tid=0 Then
-									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,5)
+									If CheckLine(nLn,@lpData->filename) Then
+										SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,5)
+									EndIf
 								ElseIf tid=5 Then
 									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,0)
 								EndIf
@@ -572,10 +743,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						' Step Into
 						nDebugMode=1
 						nLnRunTo=-1
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						ResumeThread(pinfo.hThread)
 						Return TRUE
 					EndIf
@@ -584,16 +752,12 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						' Tun To Cursor
 						nDebugMode=0
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 							If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 								nInx=IsProjectFile(@lpData->filename)
 								If nInx Then
-									SendMessage(lpHandles->hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-									nLnRunTo=SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+									nLnRunTo=GetLineNumber
 								EndIf
 							EndIf
 						EndIf
@@ -607,10 +771,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						nDebugMode=2
 						nLnRunTo=-1
 						nprocrnb=procrnb
-						If nLnDebug<>-1 Then
-							SendMessage(lpHandles->hred,REM_SETHILITELINE,nLnDebug,0)
-							nLnDebug=-1
-						EndIf
+						ClearDebugLine
 						ResumeThread(pinfo.hThread)
 						Return TRUE
 					EndIf
@@ -625,6 +786,9 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						If nInx Then
 							lpOldEditProc=Cast(Any Ptr,SendMessage(lpHandles->hred,REM_SUBCLASS,0,Cast(LPARAM,@EditProc)))
 							LoadBreakpoints(lpHandles->hred,nInx)
+							If hThread Then
+								SendMessage(lpHandles->hred,REM_READONLY,0,TRUE)
+							EndIf
 						EndIf
 					EndIf
 				EndIf
@@ -660,26 +824,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			lpFunctions->CallAddins(lpHandles->hwnd,AIM_MENUREFRESH,0,0,HOOK_MENUREFRESH)
 			'
 		Case AIM_MENUENABLE
-			nInx=MF_BYCOMMAND Or MF_GRAYED
-			If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
-				If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-					nInx=MF_BYCOMMAND Or MF_ENABLED
-				EndIf
-			EndIf
-			EnableMenuItem(lpHandles->hmenu,nMnuToggle,nInx)
-			EnableMenuItem(lpHandles->hmenu,nMnuClear,nInx)
-			nInx=MF_BYCOMMAND Or MF_GRAYED
-			If lstrlen(@lpData->ProjectFile) Then
-				nInx=MF_BYCOMMAND Or MF_ENABLED
-			EndIf
-			EnableMenuItem(lpHandles->hmenu,nMnuRun,nInx)
-			nInx=MF_BYCOMMAND Or MF_GRAYED
-			If hThread Then
-				nInx=MF_BYCOMMAND Or MF_ENABLED
-			EndIf
-			EnableMenuItem(lpHandles->hmenu,nMnuRunToCursor,nInx)
-			EnableMenuItem(lpHandles->hmenu,nMnuStepInto,nInx)
-			EnableMenuItem(lpHandles->hmenu,nMnuStepOver,nInx)
+			EnableDebugMenu
 			'
 	End Select
 	Return FALSE

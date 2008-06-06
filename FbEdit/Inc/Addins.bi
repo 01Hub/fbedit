@@ -129,6 +129,7 @@ Type ADDINDATA
 	hLangMem			As HGLOBAL						' Language translation
 	bExtOutput		As Integer						' External Output
 	HelpPath			As ZString*260					' Path to help files
+	fDebug			As Boolean						' Project is beeing debugged
 End Type
 
 Type ADDINFUNCTIONS
