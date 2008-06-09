@@ -250,7 +250,7 @@ Sub CreateToolTip()
 
 End sub
 
-Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal nme2 As ZString Ptr) As String
+Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal nme As ZString Ptr) As String
 	Dim bval As ZString*32, buff As ZString*128
 	Dim i As Integer
 
@@ -260,53 +260,53 @@ Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal nme2 As ZString
 		Case 1
 			' Integer
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-			Return Str(Peek(Integer,@bval))
+			buff=Str(Peek(Integer,@bval))
 		Case 2
 			' Byte
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-			Return Str(Peek(Byte,@bval))
+			buff=Str(Peek(Byte,@bval))
 		Case 3
 			' UByte
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-			Return Str(Peek(UByte,@bval))
+			buff=Str(Peek(UByte,@bval))
 		Case 4
 			' Char
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
 			If Len(buff)>64 Then
 				buff=Left(buff,64) & "..."
 			EndIf
-			Return Chr(34) & buff & Chr(34)
+			buff=Chr(34) & buff & Chr(34)
 		Case 5
 			' Short
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-			Return Str(Peek(Short,@bval))
+			buff=Str(Peek(Short,@bval))
 		Case 6
 			' UShort
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-			Return Str(Peek(UShort,@bval))
+			buff=Str(Peek(UShort,@bval))
 		Case 7
 			' Void
-			Return ""
+			buff=""
 		Case 8
 			' UInteger
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-			Return Str(Peek(UInteger,@bval))
+			buff=Str(Peek(UInteger,@bval))
 		Case 9
 			' Longint
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-			Return Str(Peek(LongInt,@bval))
+			buff=Str(Peek(LongInt,@bval))
 		Case 10
 			' ULongint
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-			Return Str(Peek(ULongInt,@bval))
+			buff=Str(Peek(ULongInt,@bval))
 		Case 11
 			' Single
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-			Return Str(Peek(Single,@bval))
+			buff=Str(Peek(Single,@bval))
 		Case 12
 			' Double
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-			Return Str(Peek(Double,@bval))
+			buff=Str(Peek(Double,@bval))
 		Case 13
 			' String
 			buff=String(66,0)
@@ -322,28 +322,45 @@ Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal nme2 As ZString
 					buff=Left(buff,64) & "..."
 				EndIf
 			EndIf
-			Return Chr(34) & buff & Chr(34)
+			buff=Chr(34) & buff & Chr(34)
 		Case 14
 			' ZString
 			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
 			If Len(buff)>64 Then
 				buff=Left(buff,64) & "..."
 			EndIf
-			Return Chr(34) & buff & Chr(34)
+			buff=Chr(34) & buff & Chr(34)
 		Case 15
 			' PChar
 		Case Else
-'PutString(nme2 & "vrb(i).typ: " & vrb(i).typ & " udt(vrb(i).typ).lb: " & udt(vrb(i).typ).lb & " udt(vrb(i).typ).ub: " & udt(vrb(i).typ).ub)
+			i=InStr(*nme,".")
+			If i Then
+				buff=Left(*nme,i-1)
+				*nme=Mid(*nme,i+1)
+			Else
+				i=InStr(*nme,"->")
+				If i Then
+					buff=Left(*nme,i-1)
+					*nme=Mid(*nme,i+2)
+				Else
+					buff=*nme
+					*nme=""
+				EndIf
+			EndIf
+			'PutString(buff & " typ: " & typ & " udt(typ).lb: " & udt(typ).lb & " udt(typ).ub: " & udt(typ).ub)
 			For i=udt(typ).lb To udt(typ).ub
-				If cudt(i).nm=*nme2 Then
-'					Return Str(cudt(i).ofs)
+				If cudt(i).nm=buff Then
 					adr+=cudt(i).ofs
-					Return GetVar(cudt(i).Typ,adr,nme2)
+					Return GetVar(cudt(i).Typ,adr,nme)
 					Exit For
 				EndIf
 			Next
 	End Select
-	Return ""
+	If Len(buff) Then
+		Return udt(typ).nm & "=" & buff
+	Else
+		Return udt(typ).nm
+	EndIf
 
 End Function
 
@@ -375,7 +392,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
 						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
-'PutString(buff)
 						nme1=UCase(buff)
 						i=InStr(nme1,".")
 						If i Then
@@ -391,13 +407,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						i=1
 						adr=0
 						While i<=vrbnb
-							If nme1=vrb(i).nm And (vrb(i).pn=procsv Or vrb(i).pn<0) Then
-'PutString("procsv: " & Str(procsv))
-'PutString("vrb(i).pn: " & Str(vrb(i).pn))
-'PutString("vrb(i).nm: " & vrb(i).nm)
-'PutString("nme: " & nme)
-'PutString("vrb(i).pt: " & vrb(i).pt)
-'PutString("vrb(i).pt: " & vrb(i).adr)
+							If (vrb(i).pn=procsv Or vrb(i).pn<0) And nme1=vrb(i).nm Then
+								'PutString("procsv: " & Str(procsv))
+								'PutString("vrb(i).pn: " & Str(vrb(i).pn))
+								'PutString("vrb(i).nm: " & vrb(i).nm)
+								'PutString("nme: " & nme)
+								'PutString("vrb(i).pt: " & vrb(i).pt)
+								'PutString("vrb(i).pt: " & vrb(i).adr)
 								Select Case vrb(i).mem
 									Case 1
 										nme1="Shared"
@@ -440,28 +456,21 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									Else
 										' Check if in scope
 										For j=1 To linenb
-											If rline(j).nu=nCursorLine+1 Then
+											If rline(j).nu=nCursorLine+1 And rline(j).sv=procsv Then
+												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+													adr=0
+												EndIf
 												Exit For
 											EndIf
 										Next
-										If j<=linenb Then
-											'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn) & ",ad " & Str(proc(procsv).ad) & ",vr " & Str(proc(procsv).vr))
-											If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-												adr=0
-											EndIf
-										Else
-										EndIf
-										'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn))
 									EndIf
 								EndIf
 								If adr Then
 									For j=1 To vrb(i).pt
 										buff="*" & buff
-'PutString(Str(adr))
 										ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
 									Next
-'PutString(Str(adr))
-									buff=nme1 & " " & buff & " As " & udt(vrb(i).typ).nm & "="
+									buff=nme1 & " " & buff & " As " '& udt(vrb(i).typ).nm & "="
 									buff=buff & GetVar(vrb(i).typ,adr,@nme2)
 									szTipText=buff
 									ti.cbSize=SizeOf(TOOLINFO)

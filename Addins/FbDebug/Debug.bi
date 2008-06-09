@@ -81,10 +81,10 @@ Type tvar
 End Type
 
 Type tline
-	ad As UInteger
-	nu As Integer
-	sv As Byte
-	pr As UShort
+	ad As UInteger	'Address
+	nu As Integer	'Line number
+	sv As Byte		'Source
+	pr As UShort	'Proc
 End Type
 
 Dim Shared pinfo As PROCESS_INFORMATION

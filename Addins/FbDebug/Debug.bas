@@ -397,6 +397,7 @@ Sub gestbrk(ad As UInteger)
 	ElseIf procrsk<procsk Then
 		'previous proc
 		procrsk=procsk
+		ebp_this=procsk
 		procsv=rline(i).pr
 		procrnb-=1
 		'planned to suppress LIST
@@ -642,12 +643,12 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		Else
 			PutString("No debug info found. Compile with the -g option.")
 		EndIf
-		For i=1 To udtidx
-			PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
-		Next
-		For i=1 To cudtnb
-			PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
-		Next
+		'For i=1 To udtidx
+		'	PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
+		'Next
+		'For i=1 To cudtnb
+		'	PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
+		'Next
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			Select Case de.dwDebugEventCode
