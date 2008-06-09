@@ -2336,7 +2336,7 @@ SkipWhiteSpace proc uses ebx esi,hMem:DWORD,cp:DWORD,fLeft:DWORD
 
 SkipWhiteSpace endp
 
-GetWordStart proc uses ebx esi,hMem:DWORD,cp:DWORD
+GetWordStart proc uses ebx esi,hMem:DWORD,cp:DWORD,nType:DWORD
 
 	mov		ebx,hMem
 	invoke GetCharPtr,ebx,cp
@@ -2346,7 +2346,18 @@ GetWordStart proc uses ebx esi,hMem:DWORD,cp:DWORD
   @@:
 	.if edx
 		mov		al,[esi+edx+sizeof CHARS-1]
-		invoke IsChar
+		.if al=='.' && nType
+			dec		edx
+			jmp		@b
+		.elseif al=='>' && nType==2 && edx>2
+			.if byte ptr [esi+edx+sizeof CHARS-2]=='-'
+				dec		edx
+				dec		edx
+				jmp		@b
+			.endif
+		.else
+			invoke IsChar
+		.endif
 		.if al==1
 			dec		edx
 			jmp		@b
@@ -2387,7 +2398,7 @@ GetTabPos proc uses ebx esi,hMem:DWORD,cp:DWORD
 
 GetTabPos endp
 
-GetWordEnd proc uses ebx esi,hMem:DWORD,cp:DWORD
+GetWordEnd proc uses ebx esi,hMem:DWORD,cp:DWORD,nType:DWORD
 
 	mov		ebx,hMem
 	invoke GetCharPtr,ebx,cp
@@ -2397,7 +2408,16 @@ GetWordEnd proc uses ebx esi,hMem:DWORD,cp:DWORD
   @@:
 	.if edx<[esi].CHARS.len
 		mov		al,[esi+edx+sizeof CHARS]
-		invoke IsChar
+		.if al=='.' && nType
+			inc		edx
+			jmp		@b
+		.elseif al=='-' && nType==2 && byte ptr [esi+edx+sizeof CHARS+1]=='>'
+			inc		edx
+			inc		edx
+			jmp		@b
+		.else
+			invoke IsChar
+		.endif
 		.if al==1
 			inc		edx
 			jmp		@b

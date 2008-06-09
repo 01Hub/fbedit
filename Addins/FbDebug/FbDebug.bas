@@ -71,6 +71,119 @@ Function IsProjectFile(ByVal lpFile As ZString Ptr) As Integer
 
 End Function
 
+Sub SaveBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
+	Dim buff As ZString*4096
+	Dim nLn As Integer
+
+	nLn=-1
+	While TRUE
+		nLn=SendMessage(hWin,REM_NXTBOOKMARK,nLn,5)
+		If nLn<>-1 Then
+			buff &="," & Str(nLn)
+		Else
+			WritePrivateProfileString("BreakPoint",Str(nInx),@buff[1],@lpData->ProjectFile)
+			Exit While
+		EndIf
+	Wend
+End Sub
+
+Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
+	Dim buff As ZString*2048
+	Dim As Integer nLn,x
+
+	SendMessage(hWin,REM_CLRBOOKMARKS,0,5)
+	GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+	While Len(buff)
+		x=InStr(buff,",")
+		If x Then
+			nLn=Val(Left(buff,x-1))
+			buff=Mid(buff,x+1)
+		Else
+			nLn=Val(buff)
+			buff=""
+		EndIf
+		SendMessage(hWin,REM_SETBOOKMARK,nLn,5)
+	Wend
+End Sub
+
+Function CheckBpLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Boolean
+	Dim i As Integer
+
+	nLine+=1
+	For i=1 To linenb
+		If rline(i).nu=nLine And UCase(*lpszFile)=UCase(source(proc(rline(i).pr).sr)) Then
+			Return TRUE
+		EndIf
+	Next
+	Return FALSE
+
+End Function
+
+Function CheckBpItems(ByVal lpszItems As ZString Ptr,ByVal lpszFile As ZString Ptr) As Integer
+	Dim As Integer x,y,nLn,nAnt
+
+	x=1
+	y=1
+	While x
+		x=InStr(y,*lpszItems,",")
+		If x Then
+			nLn=Val(Mid(*lpszItems,y,5))
+			y=x+1
+		Else
+			nLn=Val(Mid(*lpszItems,y,5))
+		EndIf
+		If CheckBpLine(nLn,lpszFile)=FALSE Then
+			nAnt+=1
+		EndIf
+	Wend
+	Return nAnt
+
+End Function
+
+Function CheckBreakPoints() As Integer
+	Dim As Integer i,nInx,nMiss,nAnt
+	Dim As ZString*260 szFile,szItem
+
+	nInx=1
+	nMiss=0
+	Do While nInx<256 And nMiss<MAX_MISS
+		szFile=szNULL
+		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szFile,SizeOf(szFile),@lpData->ProjectFile)
+		If Len(szFile) Then
+			nMiss=0
+			szFile=MakeProjectFileName(szFile)
+			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+			If Len(szItem) Then
+				nAnt+=CheckBpItems(@szItem,@szFile)
+			EndIf
+			i+=1
+		Else
+			nMiss=nMiss+1
+		EndIf
+		nInx=nInx+1
+	Loop
+	nInx=1001
+	nMiss=0
+	Do While nInx<1256 And nMiss<MAX_MISS
+		szFile=szNULL
+		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szFile,SizeOf(szFile),@lpData->ProjectFile)
+		If Len(szFile) Then
+			nMiss=0
+			szFile=MakeProjectFileName(szFile)
+			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+			If Len(szItem) Then
+				nAnt+=CheckBpItems(@szItem,@szFile)
+			EndIf
+			i+=1
+		Else
+			nMiss=nMiss+1
+		EndIf
+		nInx=nInx+1
+	Loop
+	Return nAnt
+
+End Function
+
 Sub GetBreakPoints()
 	Dim As Integer i,nInx,nMiss
 	Dim sItem As ZString*260
@@ -80,6 +193,10 @@ Sub GetBreakPoints()
 		bp(i).sFile=""
 		bp(i).sBP=""
 	Next
+	nMiss=CheckBreakPoints
+	If nMiss Then
+		MessageBox(lpHandles->hwnd,"There is " & Str(nMiss) & " unhandled breakpoint(s).","Debug",MB_OK Or MB_ICONINFORMATION)
+	EndIf
 	i=0
 	nInx=1
 	nMiss=0
@@ -133,12 +250,108 @@ Sub CreateToolTip()
 
 End sub
 
+Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal nme2 As ZString Ptr) As String
+	Dim bval As ZString*32, buff As ZString*128
+	Dim i As Integer
+
+	Select Case typ
+		Case 0
+			' Proc
+		Case 1
+			' Integer
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+			Return Str(Peek(Integer,@bval))
+		Case 2
+			' Byte
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+			Return Str(Peek(Byte,@bval))
+		Case 3
+			' UByte
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+			Return Str(Peek(UByte,@bval))
+		Case 4
+			' Char
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+			If Len(buff)>64 Then
+				buff=Left(buff,64) & "..."
+			EndIf
+			Return Chr(34) & buff & Chr(34)
+		Case 5
+			' Short
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+			Return Str(Peek(Short,@bval))
+		Case 6
+			' UShort
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+			Return Str(Peek(UShort,@bval))
+		Case 7
+			' Void
+			Return ""
+		Case 8
+			' UInteger
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+			Return Str(Peek(UInteger,@bval))
+		Case 9
+			' Longint
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+			Return Str(Peek(LongInt,@bval))
+		Case 10
+			' ULongint
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+			Return Str(Peek(ULongInt,@bval))
+		Case 11
+			' Single
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+			Return Str(Peek(Single,@bval))
+		Case 12
+			' Double
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+			Return Str(Peek(Double,@bval))
+		Case 13
+			' String
+			buff=String(66,0)
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+			adr=Peek(Integer,@bval)
+			i=Peek(Integer,@bval+4)
+			If adr>0 And i>0 Then
+				If i>65 Then
+					i=65
+				EndIf
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,i,0)
+				If Len(buff)>64 Then
+					buff=Left(buff,64) & "..."
+				EndIf
+			EndIf
+			Return Chr(34) & buff & Chr(34)
+		Case 14
+			' ZString
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+			If Len(buff)>64 Then
+				buff=Left(buff,64) & "..."
+			EndIf
+			Return Chr(34) & buff & Chr(34)
+		Case 15
+			' PChar
+		Case Else
+'PutString(nme2 & "vrb(i).typ: " & vrb(i).typ & " udt(vrb(i).typ).lb: " & udt(vrb(i).typ).lb & " udt(vrb(i).typ).ub: " & udt(vrb(i).typ).ub)
+			For i=udt(typ).lb To udt(typ).ub
+				If cudt(i).nm=*nme2 Then
+'					Return Str(cudt(i).ofs)
+					adr+=cudt(i).ofs
+					Return GetVar(cudt(i).Typ,adr,nme2)
+					Exit For
+				EndIf
+			Next
+	End Select
+	Return ""
+
+End Function
+
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim ti As TOOLINFO
-	Dim As ZString*256 buff,nme
+	Dim As ZString*256 buff,nme1,nme2
 	Dim pt As Point
 	Dim As Integer i,j,adr,fGlobal,fParam,nCursorLine
-	Dim bval As ZString*32
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
 
 	Select Case uMsg
@@ -159,12 +372,26 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3 Then
 						ptcur.x=pt.x
 						ptcur.y=pt.y
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
 						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
-						nme=UCase(buff)
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
+'PutString(buff)
+						nme1=UCase(buff)
+						i=InStr(nme1,".")
+						If i Then
+							nme2=Mid(nme1,i+1)
+							nme1=Left(nme1,i-1)
+						Else
+							i=InStr(nme1,"->")
+							If i Then
+								nme2=Mid(nme1,i+2)
+								nme1=Left(nme1,i-1)
+							EndIf
+						EndIf
 						i=1
 						adr=0
 						While i<=vrbnb
-							If nme=vrb(i).nm And (vrb(i).pn=procsv Or vrb(i).pn<0) Then
+							If nme1=vrb(i).nm And (vrb(i).pn=procsv Or vrb(i).pn<0) Then
 'PutString("procsv: " & Str(procsv))
 'PutString("vrb(i).pn: " & Str(vrb(i).pn))
 'PutString("vrb(i).nm: " & vrb(i).nm)
@@ -173,66 +400,59 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 'PutString("vrb(i).pt: " & vrb(i).adr)
 								Select Case vrb(i).mem
 									Case 1
-										nme="Shared"
+										nme1="Shared"
 										adr=vrb(i).adr
 										fGlobal=1
 										'
 									Case 2
-										nme="Static"
+										nme1="Static"
 										adr=vrb(i).adr
 										fGlobal=1
 										'
 									Case 3
-										nme="ByRef"
+										nme1="ByRef"
 										adr=ebp_this+vrb(i).adr
 										fParam=2
 										'
 									Case 4
-										nme="ByVal"
+										nme1="ByVal"
 										adr=ebp_this+vrb(i).adr
 										fParam=1
 										'
 									Case 5
-										nme="Local"
+										nme1="Local"
 										adr=ebp_this+vrb(i).adr
 										'
 									Case Else
-										nme="Unknown"
+										nme1="Unknown"
 								End Select
 								If fGlobal=0 Then
-									' Check if in scope
-									For j=1 To linenb
-										If rline(j).nu=nCursorLine+1 Then
-											Exit For
-										EndIf
-									Next
-									If j<=linenb Then
-										'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn) & ",ad " & Str(proc(procsv).ad) & ",vr " & Str(proc(procsv).vr))
-										If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-											adr=0
-										EndIf
-									Else
-										If fParam Then
-											For j=1 To linenb
-												If rline(j).nu=nCursorLine+2 Then
-													Exit For
-												EndIf
-											Next
-											If j<=linenb Then
-												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-													adr=0
-												ElseIf fParam=2 Then
-													' ByRef
-													ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-												EndIf
-											Else
-												adr=0
+									If fParam Then
+										' Parameter
+										If proc(procsv).nu=nCursorLine+1 Then
+											If fParam=2 Then
+												' ByRef
+												ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
 											EndIf
 										Else
 											adr=0
 										EndIf
+									Else
+										' Check if in scope
+										For j=1 To linenb
+											If rline(j).nu=nCursorLine+1 Then
+												Exit For
+											EndIf
+										Next
+										If j<=linenb Then
+											'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn) & ",ad " & Str(proc(procsv).ad) & ",vr " & Str(proc(procsv).vr))
+											If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+												adr=0
+											EndIf
+										Else
+										EndIf
+										'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn))
 									EndIf
-									'PutString(Str(rline(j).ad) & ",db " & Str(proc(procsv).db) & ",fn " & Str(proc(procsv).fn))
 								EndIf
 								If adr Then
 									For j=1 To vrb(i).pt
@@ -241,85 +461,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
 									Next
 'PutString(Str(adr))
-									buff=nme & " " & buff & " As " & udt(vrb(i).typ).nm & "="
-									Select Case vrb(i).typ
-										Case 0
-											' Proc
-										Case 1
-											' Integer
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-											buff=buff & Str(Peek(Integer,@bval))
-										Case 2
-											' Byte
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-											buff=buff & Str(Peek(Byte,@bval))
-										Case 3
-											' UByte
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-											buff=buff & Str(Peek(UByte,@bval))
-										Case 4
-											' Char
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@nme,65,0)
-											If Len(nme)>64 Then
-												nme=Left(nme,64) & "..."
-											EndIf
-											buff=buff & Chr(34) & nme & Chr(34)
-										Case 5
-											' Short
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-											buff=buff & Str(Peek(Short,@bval))
-										Case 6
-											' UShort
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-											buff=buff & Str(Peek(UShort,@bval))
-										Case 7
-											' Void
-										Case 8
-											' UInteger
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-											buff=buff & Str(Peek(UInteger,@bval))
-										Case 9
-											' Longint
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-											buff=buff & Str(Peek(LongInt,@bval))
-										Case 10
-											' ULongint
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-											buff=buff & Str(Peek(ULongInt,@bval))
-										Case 11
-											' Single
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-											buff=buff & Str(Peek(Single,@bval))
-										Case 12
-											' Double
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-											buff=buff & Str(Peek(Double,@bval))
-										Case 13
-											' String
-											nme=String(66,0)
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-											adr=Peek(Integer,@bval)
-											i=Peek(Integer,@bval+4)
-											If adr>0 And i>0 Then
-												If i>65 Then
-													i=65
-												EndIf
-												ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@nme,i,0)
-												If Len(nme)>64 Then
-													nme=Left(nme,64) & "..."
-												EndIf
-											EndIf
-											buff=buff & Chr(34) & nme & Chr(34)
-										Case 14
-											' ZString
-											ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@nme,65,0)
-											If Len(nme)>64 Then
-												nme=Left(nme,64) & "..."
-											EndIf
-											buff=buff & Chr(34) & nme & Chr(34)
-										Case 15
-											' PChar
-									End Select
+									buff=nme1 & " " & buff & " As " & udt(vrb(i).typ).nm & "="
+									buff=buff & GetVar(vrb(i).typ,adr,@nme2)
 									szTipText=buff
 									ti.cbSize=SizeOf(TOOLINFO)
 									ti.uFlags=TTF_IDISHWND Or TTF_SUBCLASS
@@ -358,41 +501,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 	
 End Function
-
-Sub SaveBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
-	Dim buff As ZString*4096
-	Dim nLn As Integer
-
-	nLn=-1
-	While TRUE
-		nLn=SendMessage(hWin,REM_NXTBOOKMARK,nLn,5)
-		If nLn<>-1 Then
-			buff &="," & Str(nLn)
-		Else
-			WritePrivateProfileString("BreakPoint",Str(nInx),@buff[1],@lpData->ProjectFile)
-			Exit While
-		EndIf
-	Wend
-End Sub
-
-Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
-	Dim buff As ZString*2048
-	Dim As Integer nLn,x
-
-	SendMessage(hWin,REM_CLRBOOKMARKS,0,5)
-	GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
-	While Len(buff)
-		x=InStr(buff,",")
-		If x Then
-			nLn=Val(Left(buff,x-1))
-			buff=Mid(buff,x+1)
-		Else
-			nLn=Val(buff)
-			buff=""
-		EndIf
-		SendMessage(hWin,REM_SETBOOKMARK,nLn,5)
-	Wend
-End Sub
 
 Function CheckLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Boolean
 	Dim i As Integer
@@ -626,7 +734,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			Select Case nInx
 				Case nMnuRun
 					If lstrlen(@lpData->ProjectFile) Then
-						GetBreakPoints
 						nDebugMode=0
 						nLnRunTo=-1
 						If hThread Then

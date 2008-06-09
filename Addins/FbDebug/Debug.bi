@@ -15,6 +15,7 @@ Type tproc
 	ad As UInteger 'address
 	vr As UInteger 'lower index variable upper (next proc) -1
 	rv As Integer  'return value type
+	nu As UShort	'Line number
 End Type
 
 Type tprocr

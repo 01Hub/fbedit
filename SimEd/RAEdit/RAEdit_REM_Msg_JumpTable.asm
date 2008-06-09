@@ -278,13 +278,13 @@
 		_REM_GETWORD:
 			;wParam=BuffSize
 			;lParam=lpBuff
-			invoke GetWordStart,ebx,[ebx].EDIT.cpMin
+			invoke GetWordStart,ebx,[ebx].EDIT.cpMin,0
 			mov		esi,[ebx].EDIT.rpChars
 			mov		ecx,eax
 			sub		ecx,[ebx].EDIT.cpLine
 			push	ecx
 			push	eax
-			invoke GetWordEnd,ebx,eax
+			invoke GetWordEnd,ebx,eax,0
 			pop		ecx
 			pop		edx
 			sub		eax,ecx
@@ -807,13 +807,13 @@
 			invoke ClientToScreen,hWin,addr pt
 			invoke ScreenToClient,[esi].RAEDT.hwnd,addr pt
 			invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,pt.x,pt.y
-			invoke GetWordStart,ebx,eax
+			invoke GetWordStart,ebx,eax,[ebx].EDIT.nCursorWordType
 			mov		esi,[ebx].EDIT.rpChars
 			mov		ecx,eax
 			sub		ecx,[ebx].EDIT.cpLine
 			push	ecx
 			push	eax
-			invoke GetWordEnd,ebx,eax
+			invoke GetWordEnd,ebx,eax,[ebx].EDIT.nCursorWordType
 			pop		ecx
 			pop		edx
 			sub		eax,ecx
@@ -1111,7 +1111,7 @@
 		_REM_CASEWORD:
 			;wParam=0
 			;lParam=lpBuff
-			invoke GetWordStart,ebx,wParam
+			invoke GetWordStart,ebx,wParam,0
 			mov		esi,[ebx].EDIT.rpChars
 			sub		eax,[ebx].EDIT.cpLine
 			add		esi,[ebx].EDIT.hChars
@@ -1158,13 +1158,13 @@
 		_REM_GETWORDFROMPOS:
 			;wParam=cp
 			;lParam=lpBuff
-			invoke GetWordStart,ebx,wParam
+			invoke GetWordStart,ebx,wParam,0
 			mov		esi,[ebx].EDIT.rpChars
 			mov		ecx,eax
 			sub		ecx,[ebx].EDIT.cpLine
 			push	ecx
 			push	eax
-			invoke GetWordEnd,ebx,eax
+			invoke GetWordEnd,ebx,eax,0
 			pop		ecx
 			pop		edx
 			sub		eax,ecx
@@ -1207,83 +1207,93 @@
 				mov		eax,TRUE
 			.endif
 			ret
+		align 4
+		_REM_SETCURSORWORDTYPE:
+			;wParam=Type
+			;lParam=0
+			mov		eax,wParam
+			mov		[ebx].EDIT.nCursorWordType,eax
+			ret
 
 .data
+
 align 4
 _REM_BASE \
 	dd _REM_SETHILITEWORDS		;equ REM_BASE+0
-	dd _REM_SETFONT			;equ REM_BASE+1
-	dd _REM_GETFONT			;equ REM_BASE+2	
-	dd _REM_SETCOLOR		;equ REM_BASE+3	
-	dd _REM_GETCOLOR		;equ REM_BASE+4	
+	dd _REM_SETFONT				;equ REM_BASE+1
+	dd _REM_GETFONT				;equ REM_BASE+2	
+	dd _REM_SETCOLOR			;equ REM_BASE+3	
+	dd _REM_GETCOLOR			;equ REM_BASE+4	
 	dd _REM_SETHILITELINE		;equ REM_BASE+5	
 	dd _REM_GETHILITELINE		;equ REM_BASE+6	
-	dd _REM_SETBOOKMARK		;equ REM_BASE+7	
-	dd _REM_GETBOOKMARK		;equ REM_BASE+8	
+	dd _REM_SETBOOKMARK			;equ REM_BASE+7	
+	dd _REM_GETBOOKMARK			;equ REM_BASE+8	
 	dd _REM_CLRBOOKMARKS		;equ REM_BASE+9	
-	dd _REM_NXTBOOKMARK		;equ REM_BASE+10
-	dd _REM_PRVBOOKMARK		;equ REM_BASE+11
+	dd _REM_NXTBOOKMARK			;equ REM_BASE+10
+	dd _REM_PRVBOOKMARK			;equ REM_BASE+11
 	dd _REM_FINDBOOKMARK		;equ REM_BASE+12
-	dd _REM_SETBLOCKS		;equ REM_BASE+13
-	dd _REM_ISLINE			;equ REM_BASE+14
-	dd _REM_GETWORD			;equ REM_BASE+15
-	dd _REM_COLLAPSE		;equ REM_BASE+16
-	dd _REM_COLLAPSEALL		;equ REM_BASE+17
-	dd _REM_EXPAND			;equ REM_BASE+18
-	dd _REM_EXPANDALL		;equ REM_BASE+19
-	dd _REM_LOCKLINE		;equ REM_BASE+20
+	dd _REM_SETBLOCKS			;equ REM_BASE+13
+	dd _REM_ISLINE				;equ REM_BASE+14
+	dd _REM_GETWORD				;equ REM_BASE+15
+	dd _REM_COLLAPSE			;equ REM_BASE+16
+	dd _REM_COLLAPSEALL			;equ REM_BASE+17
+	dd _REM_EXPAND				;equ REM_BASE+18
+	dd _REM_EXPANDALL			;equ REM_BASE+19
+	dd _REM_LOCKLINE			;equ REM_BASE+20
 	dd _REM_ISLINELOCKED		;equ REM_BASE+21
-	dd _REM_HIDELINE		;equ REM_BASE+22
+	dd _REM_HIDELINE			;equ REM_BASE+22
 	dd _REM_ISLINEHIDDEN		;equ REM_BASE+23
-	dd _REM_AUTOINDENT		;equ REM_BASE+24
-	dd _REM_TABWIDTH		;equ REM_BASE+25
-	dd _REM_SELBARWIDTH		;equ REM_BASE+26
+	dd _REM_AUTOINDENT			;equ REM_BASE+24
+	dd _REM_TABWIDTH			;equ REM_BASE+25
+	dd _REM_SELBARWIDTH			;equ REM_BASE+26
 	dd _REM_LINENUMBERWIDTH		;equ REM_BASE+27
-	dd _REM_MOUSEWHEEL		;equ REM_BASE+28
-	dd _REM_SUBCLASS		;equ REM_BASE+29
-	dd _REM_SETSPLIT		;equ REM_BASE+30
-	dd _REM_GETSPLIT		;equ REM_BASE+31
-	dd _REM_VCENTER			;equ REM_BASE+32
-	dd _REM_REPAINT			;equ REM_BASE+33
-	dd _REM_BMCALLBACK		;equ REM_BASE+34
-	dd _REM_READONLY		;equ REM_BASE+35
+	dd _REM_MOUSEWHEEL			;equ REM_BASE+28
+	dd _REM_SUBCLASS			;equ REM_BASE+29
+	dd _REM_SETSPLIT			;equ REM_BASE+30
+	dd _REM_GETSPLIT			;equ REM_BASE+31
+	dd _REM_VCENTER				;equ REM_BASE+32
+	dd _REM_REPAINT				;equ REM_BASE+33
+	dd _REM_BMCALLBACK			;equ REM_BASE+34
+	dd _REM_READONLY			;equ REM_BASE+35
 	dd _REM_INVALIDATELINE		;equ REM_BASE+36
-	dd _REM_SETPAGESIZE		;equ REM_BASE+37
-	dd _REM_GETPAGESIZE		;equ REM_BASE+38
-	dd _REM_GETCHARTAB		;equ REM_BASE+39
-	dd _REM_SETCHARTAB		;equ REM_BASE+40
+	dd _REM_SETPAGESIZE			;equ REM_BASE+37
+	dd _REM_GETPAGESIZE			;equ REM_BASE+38
+	dd _REM_GETCHARTAB			;equ REM_BASE+39
+	dd _REM_SETCHARTAB			;equ REM_BASE+40
 	dd _REM_SETCOMMENTBLOCKS	;equ REM_BASE+41
 	dd _REM_SETWORDGROUP		;equ REM_BASE+42
 	dd _REM_GETWORDGROUP		;equ REM_BASE+43
-	dd _REM_SETBMID			;equ REM_BASE+44
-	dd _REM_GETBMID			;equ REM_BASE+45
-	dd _REM_ISCHARPOS		;equ REM_BASE+46
-	dd _REM_HIDELINES		;equ REM_BASE+47
+	dd _REM_SETBMID				;equ REM_BASE+44
+	dd _REM_GETBMID				;equ REM_BASE+45
+	dd _REM_ISCHARPOS			;equ REM_BASE+46
+	dd _REM_HIDELINES			;equ REM_BASE+47
 	dd _REM_SETDIVIDERLINE		;equ REM_BASE+48
-	dd _REM_ISINBLOCK		;equ REM_BASE+49
-	dd _REM_TRIMSPACE		;equ REM_BASE+50
-	dd _REM_SAVESEL			;equ REM_BASE+51
-	dd _REM_RESTORESEL		;equ REM_BASE+52
+	dd _REM_ISINBLOCK			;equ REM_BASE+49
+	dd _REM_TRIMSPACE			;equ REM_BASE+50
+	dd _REM_SAVESEL				;equ REM_BASE+51
+	dd _REM_RESTORESEL			;equ REM_BASE+52
 	dd _REM_GETCURSORWORD		;equ REM_BASE+53
 	dd _REM_SETSEGMENTBLOCK		;equ REM_BASE+54
-	dd _REM_GETMODE			;equ REM_BASE+55
-	dd _REM_SETMODE			;equ REM_BASE+56
-	dd _REM_GETBLOCK		;equ REM_BASE+57
-	dd _REM_SETBLOCK		;equ REM_BASE+58
-	dd _REM_BLOCKINSERT		;equ REM_BASE+59
-	dd _REM_LOCKUNDOID		;equ REM_BASE+60
-	dd _REM_ADDBLOCKDEF		;equ REM_BASE+61
-	dd _REM_CONVERT			;equ REM_BASE+62
-	dd _REM_BRACKETMATCH	;equ REM_BASE+63
-	dd _REM_COMMAND			;equ REM_BASE+64
-	dd _REM_CASEWORD		;equ REM_BASE+65
-	dd _REM_GETBLOCKEND		;equ REM_BASE+66
-	dd _REM_SETLOCK			;equ REM_BASE+67
-	dd _REM_GETLOCK			;equ REM_BASE+68
-	dd _REM_GETWORDFROMPOS	;equ REM_BASE+69
-	dd _REM_SETNOBLOCKLINE	;equ REM_BASE+70
-	dd _REM_ISLINENOBLOCK	;equ REM_BASE+71
-	dd _REM_SETALTHILITELINE;equ REM_BASE+72
-	dd _REM_ISLINEALTHILITE	;equ REM_BASE+73
+	dd _REM_GETMODE				;equ REM_BASE+55
+	dd _REM_SETMODE				;equ REM_BASE+56
+	dd _REM_GETBLOCK			;equ REM_BASE+57
+	dd _REM_SETBLOCK			;equ REM_BASE+58
+	dd _REM_BLOCKINSERT			;equ REM_BASE+59
+	dd _REM_LOCKUNDOID			;equ REM_BASE+60
+	dd _REM_ADDBLOCKDEF			;equ REM_BASE+61
+	dd _REM_CONVERT				;equ REM_BASE+62
+	dd _REM_BRACKETMATCH		;equ REM_BASE+63
+	dd _REM_COMMAND				;equ REM_BASE+64
+	dd _REM_CASEWORD			;equ REM_BASE+65
+	dd _REM_GETBLOCKEND			;equ REM_BASE+66
+	dd _REM_SETLOCK				;equ REM_BASE+67
+	dd _REM_GETLOCK				;equ REM_BASE+68
+	dd _REM_GETWORDFROMPOS		;equ REM_BASE+69
+	dd _REM_SETNOBLOCKLINE		;equ REM_BASE+70
+	dd _REM_ISLINENOBLOCK		;equ REM_BASE+71
+	dd _REM_SETALTHILITELINE	;equ REM_BASE+72
+	dd _REM_ISLINEALTHILITE		;equ REM_BASE+73
+	dd _REM_SETCURSORWORDTYPE	;equ REM_BASE+74
+
 .code
 align 4

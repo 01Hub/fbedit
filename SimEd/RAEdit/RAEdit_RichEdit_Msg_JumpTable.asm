@@ -76,9 +76,9 @@
 			;lParam=cp
 			mov		eax,wParam
 			.if eax==WB_MOVEWORDLEFT
-				invoke GetWordStart,ebx,lParam
+				invoke GetWordStart,ebx,lParam,0
 			.elseif eax==WB_MOVEWORDRIGHT
-				invoke GetWordEnd,ebx,lParam
+				invoke GetWordEnd,ebx,lParam,0
 			.else
 				mov		eax,lParam
 			.endif

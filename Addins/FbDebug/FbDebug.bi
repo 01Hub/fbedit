@@ -8,6 +8,7 @@
 
 Declare Sub EnableDebugMenu
 Declare Sub LockFiles(ByVal bLock As Boolean)
+Declare Sub GetBreakPoints
 
 ' Addin
 Dim Shared hInstance As HINSTANCE

@@ -536,6 +536,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							proc(procnb).nm=decoupproc(Left(recup,InStr(recup,":")-1))
 							'return value
 							proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
+							proc(procnb).nu=recupstab.nline
 						Case 38
 							'init var
 							decoup(recup)
@@ -637,9 +638,16 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 				Next
 			Next
 			PutString("Main Source: " & source(0))
+			GetBreakPoints
 		Else
 			PutString("No debug info found. Compile with the -g option.")
 		EndIf
+		For i=1 To udtidx
+			PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
+		Next
+		For i=1 To cudtnb
+			PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
+		Next
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			Select Case de.dwDebugEventCode

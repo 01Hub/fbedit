@@ -779,7 +779,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 				.endif
 				.if fControl
 					invoke SkipWhiteSpace,ebx,eax,TRUE
-					invoke GetWordStart,ebx,eax
+					invoke GetWordStart,ebx,eax,0
 				.endif
 				invoke GetCharPtr,ebx,eax
 				mov		[ebx].EDIT.cpMin,ecx
@@ -867,7 +867,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 				.endif
 				.if fControl
 					invoke SkipWhiteSpace,ebx,eax,FALSE
-					invoke GetWordEnd,ebx,eax
+					invoke GetWordEnd,ebx,eax,0
 				.endif
 				invoke GetCharPtr,ebx,eax
 				mov		eax,[ebx].EDIT.cpMin
@@ -1340,7 +1340,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 						.if fShift
 							invoke GetLineEnd,ebx,[ebx].EDIT.cpMax
 						.else
-							invoke GetWordEnd,ebx,[ebx].EDIT.cpMax
+							invoke GetWordEnd,ebx,[ebx].EDIT.cpMax,0
 						.endif
 						mov		[ebx].EDIT.cpMax,eax
 					.endif
@@ -1452,7 +1452,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 				.if fShift
 					invoke GetLineStart,ebx,[ebx].EDIT.cpMin
 				.else
-					invoke GetWordStart,ebx,[ebx].EDIT.cpMin
+					invoke GetWordStart,ebx,[ebx].EDIT.cpMin,0
 				.endif
 				.if eax && eax==[ebx].EDIT.cpMin
 					dec		eax
@@ -2452,9 +2452,9 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[ebx].EDIT.cpMax,eax
 			invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,cpOldMin,cpOldMax
 			invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,cpOldMin,cpOldMax
-			invoke GetWordStart,ebx,[ebx].EDIT.cpMin
+			invoke GetWordStart,ebx,[ebx].EDIT.cpMin,0
 			mov		[ebx].EDIT.cpMin,eax
-			invoke GetWordEnd,ebx,eax
+			invoke GetWordEnd,ebx,eax,0
 			mov		[ebx].EDIT.cpMax,eax
 			invoke InvalidateSelection,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
 			invoke InvalidateSelection,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
@@ -2918,9 +2918,9 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	mov		eax,uMsg
-	.if eax>=REM_BASE && eax<=REM_ISLINEALTHILITE
+	.if eax>=REM_BASE && eax<=REM_SETCURSORWORDTYPE
 		sub		eax,REM_BASE
-		jmp 		DWORD PTR [offset _REM_BASE+eax*4]
+		jmp 	DWORD PTR [offset _REM_BASE+eax*4]
 		include RAEdit_REM_Msg_JumpTable.asm
 	.endif
 	.if eax>=EM_CANPASTE && eax<=EM_SETZOOM

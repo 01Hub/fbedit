@@ -164,6 +164,7 @@ EDIT struct
 	cpbren		dd ?
 	cpselbar	dd ?
 	fLock		dd ?
+	nCursorWordType	dd ?
 EDIT ends
 
 IDB_RAEDITBUTTON		equ 100

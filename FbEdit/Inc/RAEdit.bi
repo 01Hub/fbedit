@@ -129,6 +129,7 @@
 #Define REM_ISLINENOBLOCK					REM_BASE+71		' wParam=Line, lParam=0
 #Define REM_SETALTHILITELINE				REM_BASE+72		' wParam=Line, lParam=TRUE/FALSE
 #Define REM_ISLINEALTHILITE				REM_BASE+73		' wParam=Line, lParam=0
+#Define REM_SETCURSORWORDTYPE				REM_BASE+74		' wParam=nType, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
