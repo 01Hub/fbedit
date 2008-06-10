@@ -185,19 +185,19 @@ Function CheckBreakPoints() As Integer
 End Function
 
 Sub GetBreakPoints()
-	Dim As Integer i,nInx,nMiss
+	Dim As Integer nInx,nMiss
 	Dim sItem As ZString*260
 
-	For i=0 To SOURCEMAX
-		bp(i).nInx=0
-		bp(i).sFile=""
-		bp(i).sBP=""
+	For bpnb=0 To SOURCEMAX
+		bp(bpnb).nInx=0
+		bp(bpnb).sFile=""
+		bp(bpnb).sBP=""
 	Next
 	nMiss=CheckBreakPoints
 	If nMiss Then
 		MessageBox(lpHandles->hwnd,"There is " & Str(nMiss) & " unhandled breakpoint(s).","Debug",MB_OK Or MB_ICONINFORMATION)
 	EndIf
-	i=0
+	bpnb=0
 	nInx=1
 	nMiss=0
 	Do While nInx<256 And nMiss<MAX_MISS
@@ -206,13 +206,13 @@ Sub GetBreakPoints()
 		If Len(sItem) Then
 			nMiss=0
 			sItem=MakeProjectFileName(sItem)
-			bp(i).nInx=nInx
-			bp(i).sFile=sItem
+			bp(bpnb).nInx=nInx
+			bp(bpnb).sFile=sItem
 			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
 			If Len(sItem) Then
-				bp(i).sBP="," & sItem & ","
+				bp(bpnb).sBP="," & sItem & ","
 			EndIf
-			i+=1
+			bpnb+=1
 		Else
 			nMiss=nMiss+1
 		EndIf
@@ -226,13 +226,13 @@ Sub GetBreakPoints()
 		If Len(sItem) Then
 			nMiss=0
 			sItem=MakeProjectFileName(sItem)
-			bp(i).nInx=nInx
-			bp(i).sFile=sItem
+			bp(bpnb).nInx=nInx
+			bp(bpnb).sFile=sItem
 			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
 			If Len(sItem) Then
-				bp(i).sBP="," & sItem & ","
+				bp(bpnb).sBP="," & sItem & ","
 			EndIf
-			i+=1
+			bpnb+=1
 		Else
 			nMiss=nMiss+1
 		EndIf
@@ -384,6 +384,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 '			'
 		Case WM_MOUSEMOVE
 			If hThread Then
+				SetCursor(LoadCursor(0,IDC_ARROW))
 				If nLnDebug<>-1 Then
 					GetCursorPos(@pt)
 					If Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3 Then
@@ -532,6 +533,41 @@ Function CheckLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Bool
 
 End Function
 
+Sub AddAccelerator(ByVal fvirt As Integer,ByVal akey As Integer,ByVal id As Integer)
+	Dim nAccel As Integer
+	Dim acl(500) As ACCEL
+	Dim i As Integer
+
+	nAccel=CopyAcceleratorTable(lpHandles->haccel,NULL,0)
+	CopyAcceleratorTable(lpHandles->haccel,@acl(0),nAccel)
+	DestroyAcceleratorTable(lpHandles->haccel)
+	' Check if id exist
+	For i=0 To nAccel-1
+		If acl(i).cmd=id Then
+			' id exist, update accelerator
+			acl(i).fVirt=fvirt
+			acl(i).key=akey
+			GoTo Ex
+		EndIf
+	Next i
+	' Check if accelerator exist
+	For i=0 To nAccel-1
+		If acl(i).fVirt=fvirt And acl(i).key=akey Then
+			' Accelerator exist, update id
+			acl(i).cmd=id
+			GoTo Ex
+		EndIf
+	Next i
+	' Add new accelerator
+	acl(nAccel).fVirt=fvirt
+	acl(nAccel).key=akey
+	acl(nAccel).cmd=id
+	nAccel=nAccel+1
+Ex:
+	lpHandles->haccel=CreateAcceleratorTable(@acl(0),nAccel)
+
+End Sub
+
 Sub CreateDebugMenu()
 	Dim mii As MENUITEMINFO
 
@@ -541,20 +577,38 @@ Sub CreateDebugMenu()
 	mii.dwTypeData=StrPtr("&Debug")
 	mii.hSubMenu=CreatePopupMenu()
 	InsertMenuItem(lpHandles->hmenu,3,TRUE,@mii)
+	
 	nMnuToggle=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuToggle,StrPtr("Toggle &Breakpoint"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuToggle,StrPtr("Toggle &Breakpoint	Ctrl+T"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FCONTROL,Asc("T"),nMnuToggle)
+
 	nMnuClear=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,StrPtr("&Clear Breakpoints"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,StrPtr("&Clear Breakpoints	Shift+Ctrl+T"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("T"),nMnuClear)
+
+	AppendMenu(mii.hSubMenu,MF_SEPARATOR,0,0)
+
 	nMnuRun=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,StrPtr("&Run"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,StrPtr("&Run	Shift+F7"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT,VK_F7,nMnuRun)
+
 	nMnuStop=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStop,StrPtr("&Stop"))
-	nMnuRunToCaret=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,StrPtr("Run &To Caret	Shift+F5"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStop,StrPtr("&Stop	Alt+F7"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FALT,VK_F7,nMnuStop)
+
+	AppendMenu(mii.hSubMenu,MF_SEPARATOR,0,0)
+
 	nMnuStepInto=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,StrPtr("Step &Into	F5"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,StrPtr("Step &Into	F7"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT,VK_F7,nMnuStepInto)
+
 	nMnuStepOver=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,StrPtr("Step &Over	Ctrl+F5"))
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,StrPtr("Step &Over	Ctrl+F7"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FCONTROL,VK_F7,nMnuStepOver)
+
+	nMnuRunToCaret=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,StrPtr("Run &To Caret	Shift+Ctrl+F7"))
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,VK_F7,nMnuRunToCaret)
 
 End Sub
 
@@ -741,12 +795,46 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 		Case AIM_COMMAND
 			nInx=LoWord(wParam)
 			Select Case nInx
+				Case nMnuToggle
+					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+							nInx=IsProjectFile(@lpData->filename)
+							If nInx Then
+								nLn=GetLineNumber
+								tid=SendMessage(lpHandles->hred,REM_GETBOOKMARK,nLn,0)
+								If tid=0 Then
+									If CheckLine(nLn,@lpData->filename) Then
+										SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,5)
+									EndIf
+								ElseIf tid=5 Then
+									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,0)
+								EndIf
+								SaveBreakpoints(lpHandles->hred,nInx)
+							EndIf
+						EndIf
+					EndIf
+					Return TRUE
+					'
+				Case nMnuClear
+					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+							nInx=IsProjectFile(@lpData->filename)
+							If nInx Then
+								SendMessage(lpHandles->hred,REM_CLRBOOKMARKS,0,5)
+								SaveBreakpoints(lpHandles->hred,nInx)
+							EndIf
+						EndIf
+					EndIf
+					Return TRUE
+					'
 				Case nMnuRun
 					If lstrlen(@lpData->ProjectFile) Then
 						nDebugMode=0
 						nLnRunTo=-1
 						If hThread Then
 							ClearDebugLine
+							ClearBreakAll(0)
+							SetBreakPoints(0)
 							ResumeThread(pinfo.hThread)
 						Else
 							If Len(lpData->smakeoutput) Then
@@ -784,22 +872,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						LockFiles(FALSE)
 						lpData->fDebug=FALSE
 						EnableDebugMenu
-					EndIf
-					Return TRUE
-					'
-				Case nMnuRunToCaret
-					If hThread Then
-						nDebugMode=0
-						ClearDebugLine
-						If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
-							If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-								nInx=IsProjectFile(@lpData->filename)
-								If nInx Then
-									nLnRunTo=GetLineNumber
-								EndIf
-							EndIf
-						EndIf
-						ResumeThread(pinfo.hThread)
+						PutString("Terminated by user.")
 					EndIf
 					Return TRUE
 					'
@@ -818,55 +891,14 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						nLnRunTo=-1
 						nprocrnb=procrnb
 						ClearDebugLine
+						ClearBreakAll(procsv)
+						SetBreakPoints(0)
 						ResumeThread(pinfo.hThread)
 					EndIf
 					Return TRUE
 					'
-				Case nMnuToggle
-					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
-						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-							nInx=IsProjectFile(@lpData->filename)
-							If nInx Then
-								nLn=GetLineNumber
-								tid=SendMessage(lpHandles->hred,REM_GETBOOKMARK,nLn,0)
-								If tid=0 Then
-									If CheckLine(nLn,@lpData->filename) Then
-										SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,5)
-									EndIf
-								ElseIf tid=5 Then
-									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,0)
-								EndIf
-								SaveBreakpoints(lpHandles->hred,nInx)
-							EndIf
-						EndIf
-					EndIf
-					Return TRUE
-					'
-				Case nMnuClear
-					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
-						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-							nInx=IsProjectFile(@lpData->filename)
-							If nInx Then
-								SendMessage(lpHandles->hred,REM_CLRBOOKMARKS,0,5)
-								SaveBreakpoints(lpHandles->hred,nInx)
-							EndIf
-						EndIf
-					EndIf
-					Return TRUE
-					'
-				Case IDM_MAKE_COMPILE
+				Case nMnuRunToCaret
 					If hThread Then
-						' Step Into
-						nDebugMode=1
-						nLnRunTo=-1
-						ClearDebugLine
-						ResumeThread(pinfo.hThread)
-						Return TRUE
-					EndIf
-					'
-				Case IDM_MAKE_RUN
-					If hThread Then
-						' Tun To Cursor
 						nDebugMode=0
 						ClearDebugLine
 						If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
@@ -874,21 +906,17 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								nInx=IsProjectFile(@lpData->filename)
 								If nInx Then
 									nLnRunTo=GetLineNumber
+									ClearBreakAll(0)
+									SetBreakPoints(nLnRunTo)
 								EndIf
 							EndIf
 						EndIf
 						ResumeThread(pinfo.hThread)
-						Return TRUE
 					EndIf
+					Return TRUE
 					'
-				Case IDM_MAKE_GO
+				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO
 					If hThread Then
-						' Step Over
-						nDebugMode=2
-						nLnRunTo=-1
-						nprocrnb=procrnb
-						ClearDebugLine
-						ResumeThread(pinfo.hThread)
 						Return TRUE
 					EndIf
 					'

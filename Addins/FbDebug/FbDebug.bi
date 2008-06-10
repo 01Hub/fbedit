@@ -3,6 +3,7 @@
 #Define IDM_MAKE_RUN							10143 'Shift+F5
 #Define IDM_MAKE_GO							10144 'Ctrl+F5
 #Define IDM_MAKE_QUICKRUN					10147 'Shift+Ctrl+F5
+
 #Define MAX_MISS								10
 #Define SOURCEMAX								250
 
@@ -39,6 +40,7 @@ Dim Shared szFileName As ZString*MAX_PATH
 Dim Shared hThread As HANDLE
 Dim Shared hDebugFile As HANDLE
 Dim Shared bp(SOURCEMAX) As BP
+Dim Shared bpnb As Integer
 Dim Shared nLnDebug As Integer
 Dim Shared hLnDebug As HWND
 Dim Shared nLnRunTo As Integer

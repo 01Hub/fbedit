@@ -83,7 +83,7 @@ End Type
 Type tline
 	ad As UInteger	'Address
 	nu As Integer	'Line number
-	sv As Byte		'Source
+	sv As Short 	'Source byte
 	pr As UShort	'Proc
 End Type
 
@@ -97,7 +97,7 @@ Dim Shared secnm As String*8
 Dim Shared basestab As UInteger
 Dim Shared basestabs As UInteger
 Dim Shared recupstab As udtstab
-Dim Shared recup As ZString*1000
+Dim Shared recup As ZString*10000
 
 Dim Shared procnb As Integer,procfg As Byte
 Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
@@ -115,7 +115,7 @@ Dim Shared source(SOURCEMAX) As String,sourceix As Integer,sourcenb As Integer
 
 Dim Shared ttyp As Byte
 
-Const TYPEMAX=500,CTYPEMAX=4000,ATYPEMAX=100
+Const TYPEMAX=1500,CTYPEMAX=10000,ATYPEMAX=1000
 Dim Shared udt(TYPEMAX) As tudt,udtidx As Integer
 Dim Shared cudt(CTYPEMAX) As tcudt,cudtnb As Integer
 Dim Shared audt(ATYPEMAX) As taudt,audtnb As Integer
@@ -136,15 +136,15 @@ udt(13).nm="String"
 udt(14).nm="Zstring"
 udt(15).nm="Pchar"
 
-Const VARMAX=2000
+Const VARMAX=5000
 Dim Shared vrbnb As Integer  'nb of variables
 Dim Shared vrb(VARMAX) As tvar
-Const ARRMAX=100
+Const ARRMAX=1000
 Dim Shared linenb As Integer,linesav As UInteger
 Dim Shared arr(ARRMAX) As tarr,arrnb As UShort
-Const LINEMAX=10000
+Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared threadcontext As UInteger
-Const THREADMAX=10
+Const THREADMAX=50
 Dim Shared threadnb As Integer,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte

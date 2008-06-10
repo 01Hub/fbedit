@@ -354,6 +354,66 @@ Sub seteip(ad As UInteger)
 
 End Sub
 
+Sub SetBreakPoints(ByVal nLnRunTo As Integer)
+	Dim As Integer i,j,bpinx
+	Dim sln As String
+
+	For i=1 To linenb
+		If rLine(i).sv=-1 And i<>linesav Then
+			For bpinx=0 To bpnb
+				If UCase(bp(bpinx).sFile)=UCase(source(proc(rline(i).pr).sr)) Then
+					sln="," & Str(rLine(i).nu-1) & ","
+					If InStr(bp(bpinx).sBP,sln) Then
+						rLine(i).sv=0
+						'save 1 byte before writing &CC
+						ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+						'Breakpoint
+						WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
+					EndIf
+				EndIf
+			Next
+			If rline(i).nu-1=nLnRunTo And rLine(i).sv=-1 Then
+				If UCase(lpData->filename)=UCase(source(proc(rline(i).pr).sr)) Then
+					rLine(i).sv=0
+					'save 1 byte before writing &CC
+					ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+					'Breakpoint
+					WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
+				EndIf
+			EndIf
+		EndIf
+	Next
+
+End Sub
+
+Sub SetBreakAll()
+	Dim i As Integer
+
+	For i=1 To linenb
+		If rLine(i).sv=-1 Then
+			rLine(i).sv=0
+			'save 1 byte before writing &CC
+			ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+			'Breakpoint
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
+		EndIf
+	Next
+
+End Sub
+
+Sub ClearBreakAll(ByVal nNotProc As Integer)
+	Dim i As Integer
+
+	For i=1 To linenb
+		If rLine(i).sv<>-1 And rline(i).pr<>nNotProc Then
+			'restore 1 byte
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+			rLine(i).sv=-1
+		EndIf
+	Next
+
+End Sub
+
 Sub gestbrk(ad As UInteger)
 	Dim i As UInteger
 	Dim j As UInteger
@@ -374,12 +434,19 @@ Sub gestbrk(ad As UInteger)
 		EndIf
 	End If
 	If linesav<>0 Then
+		rLine(linesav).sv=0
+		'save 1 byte before writing &CC
+		ReadProcessMemory(dbghand,Cast(Any Ptr,rline(linesav).ad),@rLine(linesav).sv,1,0)
 		'restore CC previous line
 		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
 	EndIf
 	linesav=i
-	'restore old value for execution
-	WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+	SetBreakAll
+	If rline(i).sv<>-1 Then
+		'restore old value for execution
+		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+		rline(i).sv=-1
+	EndIf
 	'showcontext
 	seteip(ad)
 	'showcontext
@@ -405,15 +472,15 @@ Sub gestbrk(ad As UInteger)
 	EndIf
 	'INTEGRATION FOLLOWING LINES ABOVE ???
 	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
-	sln="," & Str(rLine(i).nu-1) & ","
-	For bpinx=0 To SOURCEMAX
+'	sln="," & Str(rLine(i).nu-1) & ","
+	For bpinx=0 To bpnb
 		'PutString(source(proc(procsv).sr))
 		'PutString(bp(bpinx).sFile)
 		If UCase(bp(bpinx).sFile)=UCase(source(proc(procsv).sr)) Then
 			Exit For
 		EndIf
 	Next
-	If InStr(bp(bpinx).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
+	'If InStr(bp(bpinx).sBP,sln) Or nDebugMode=1 Or nLnRunTo=rLine(i).nu-1 Or (nDebugMode=2 And nprocrnb=procrnb) Then
 		szFileName=bp(bpinx).sFile
 		'PutString(szFileName)
 		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
@@ -423,20 +490,25 @@ Sub gestbrk(ad As UInteger)
 		chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug,0)
 		chrg.cpMax=chrg.cpMin
 		SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-		SendMessage(hLnDebug,REM_VCENTER,0,0)
+		'SendMessage(hLnDebug,REM_VCENTER,0,0)
 		SendMessage(hLnDebug,EM_SCROLLCARET,0,0)
 		SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,2)
 		SuspendThread(pinfo.hThread)
-	EndIf
+	'EndIf
 
 End Sub
 
 Sub findthread(tid As UInteger)
 	Dim i As Byte
 
-	For i=0 To threadnb 'if msg from thread then flag off
-		If tid=threadid(i) Then threadcontext=thread(i):threadres(i)=0 :Exit Sub
+	'if msg from thread then flag off
+	For i=0 To threadnb
+		If tid=threadid(i) Then
+			threadcontext=thread(i)
+			threadres(i)=0
+			Exit Sub
+		EndIf
 	Next
 
 End Sub
@@ -595,11 +667,13 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 								'PutString("Line: " & Str(recupstab.nline))
 								linenb+=1
 								rline(linenb).ad=recupstab.ad+procad
-								rLine(linenb).nu=recupstab.nline:rLine(linenb).pr=procnb
-								'save 1 byte before writing &CC
-								ReadProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@rLine(linenb).sv,1,0)
-								'Breakpoint
-								WriteProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@breakvalue,1,0)
+								rLine(linenb).nu=recupstab.nline
+								rLine(linenb).pr=procnb
+								rLine(linenb).sv=-1
+'								'save 1 byte before writing &CC
+'								ReadProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@rLine(linenb).sv,1,0)
+'								'Breakpoint
+'								WriteProcessMemory(dbghand,Cast(Any Ptr,recupstab.ad+procad),@breakvalue,1,0)
 							End If
 							'print linesv(linenb)
 							'ReadProcessMemory(dbghand,recupstab.ad+procad,@linesv(linenb),1,0)
@@ -640,6 +714,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			Next
 			PutString("Main Source: " & source(0))
 			GetBreakPoints
+			SetBreakPoints(0)
 		Else
 			PutString("No debug info found. Compile with the -g option.")
 		EndIf
@@ -764,6 +839,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		hThread=0
 		lpData->fDebug=FALSE
 		LockFiles(FALSE)
+		ClearVars
 		EnableDebugMenu
 	EndIf
 	Return 0
