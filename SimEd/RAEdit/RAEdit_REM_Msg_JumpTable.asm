@@ -796,40 +796,58 @@
 		_REM_GETCURSORWORD:
 			;wParam=BuffSize
 			;lParam=lpBuff
+			mov		edi,lParam
+			mov		byte ptr [edi],0
 			invoke GetCursorPos,addr pt
 			invoke ScreenToClient,hWin,addr pt
-			invoke ChildWindowFromPoint,hWin,pt.x,pt.y
-			.if eax==[ebx].EDIT.edta.hwnd
-				lea		esi,[ebx].EDIT.edta
+			mov		eax,[ebx].EDIT.selbarwt
+			add		eax,[ebx].EDIT.nlinenrwt
+			.if eax<pt.x
+				invoke ChildWindowFromPoint,hWin,pt.x,pt.y
+				.if eax==[ebx].EDIT.edta.hwnd
+					lea		esi,[ebx].EDIT.edta
+				.else
+					lea		esi,[ebx].EDIT.edtb
+				.endif
+				invoke ClientToScreen,hWin,addr pt
+				invoke ScreenToClient,[esi].RAEDT.hwnd,addr pt
+				invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,pt.x,pt.y
+				push	eax
+				mov		edx,eax
+				push	pt.x
+				invoke GetPosFromChar,ebx,edx,addr pt
+				pop		edx
+				pop		eax
+				sub		edx,[ebx].EDIT.fntinfo.fntwt
+				.if edx<=pt.x
+					invoke GetWordStart,ebx,eax,[ebx].EDIT.nCursorWordType
+					mov		esi,[ebx].EDIT.rpChars
+					mov		ecx,eax
+					sub		ecx,[ebx].EDIT.cpLine
+					push	ecx
+					push	eax
+					invoke GetWordEnd,ebx,eax,[ebx].EDIT.nCursorWordType
+					pop		ecx
+					pop		edx
+					sub		eax,ecx
+					mov		ecx,eax
+					.if ecx>=wParam
+						mov		ecx,wParam
+						dec		ecx
+					.endif
+					add		esi,[ebx].EDIT.hChars
+					add		esi,edx
+					add		esi,sizeof CHARS
+					mov		eax,ecx
+					rep movsb
+					mov		byte ptr [edi],0
+					mov		eax,[ebx].EDIT.line
+				.else
+					mov		eax,-1
+				.endif
 			.else
-				lea		esi,[ebx].EDIT.edtb
+				mov		eax,-1
 			.endif
-			invoke ClientToScreen,hWin,addr pt
-			invoke ScreenToClient,[esi].RAEDT.hwnd,addr pt
-			invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,pt.x,pt.y
-			invoke GetWordStart,ebx,eax,[ebx].EDIT.nCursorWordType
-			mov		esi,[ebx].EDIT.rpChars
-			mov		ecx,eax
-			sub		ecx,[ebx].EDIT.cpLine
-			push	ecx
-			push	eax
-			invoke GetWordEnd,ebx,eax,[ebx].EDIT.nCursorWordType
-			pop		ecx
-			pop		edx
-			sub		eax,ecx
-			mov		ecx,eax
-			mov		edi,lParam
-			.if ecx>=wParam
-				mov		ecx,wParam
-				dec		ecx
-			.endif
-			add		esi,[ebx].EDIT.hChars
-			add		esi,edx
-			add		esi,sizeof CHARS
-			mov		eax,ecx
-			rep movsb
-			mov		byte ptr [edi],0
-			mov		eax,[ebx].EDIT.line
 			ret
 		align 4
 		_REM_SETSEGMENTBLOCK:

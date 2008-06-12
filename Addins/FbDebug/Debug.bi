@@ -97,7 +97,7 @@ Dim Shared secnm As String*8
 Dim Shared basestab As UInteger
 Dim Shared basestabs As UInteger
 Dim Shared recupstab As udtstab
-Dim Shared recup As ZString*10000
+Dim Shared recup As ZString*1000
 
 Dim Shared procnb As Integer,procfg As Byte
 Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad

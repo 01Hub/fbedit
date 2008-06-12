@@ -4,6 +4,7 @@
 
 #Include "..\..\..\..\..\Inc\RAEdit.bi"
 #Include "..\..\..\..\..\Inc\Addins.bi"
+#Include "..\..\..\..\..\Inc\RAProperty.bi"
 #Include "FbDebug.bi"
 #Include "Debug.bas"
 
@@ -366,7 +367,7 @@ End Function
 
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim ti As TOOLINFO
-	Dim As ZString*256 buff,nme1,nme2
+	Dim As ZString*256 buff,nme1,nme2,nsp
 	Dim pt As Point
 	Dim As Integer i,j,adr,fGlobal,fParam,nCursorLine
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
@@ -394,8 +395,19 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
 						nme1=UCase(buff)
+						If Left(nme1,1)="." Then
+							' With block
+							i=IsProjectFile(@lpData->filename)
+							i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,i,nCursorLine)
+							If i Then
+								lstrcpy(@nme2,Cast(ZString Ptr,i))
+								buff=nme2 & buff
+								nme1=UCase(buff)
+							EndIf
+						EndIf
 						i=InStr(nme1,".")
 						If i Then
+							nsp="NS : " & nme1
 							nme2=Mid(nme1,i+1)
 							nme1=Left(nme1,i-1)
 						Else
@@ -408,7 +420,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						i=1
 						adr=0
 						While i<=vrbnb
-							If (vrb(i).pn=procsv Or vrb(i).pn<0) And nme1=vrb(i).nm Then
+							If (vrb(i).pn=procsv Or vrb(i).pn<0) And (nme1=vrb(i).nm Or nsp=vrb(i).nm) Then
 								'PutString("procsv: " & Str(procsv))
 								'PutString("vrb(i).pn: " & Str(vrb(i).pn))
 								'PutString("vrb(i).nm: " & vrb(i).nm)
@@ -636,7 +648,9 @@ Sub EnableDebugMenu()
 	st=MF_BYCOMMAND Or MF_GRAYED
 	If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 		If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-			st=MF_BYCOMMAND Or MF_ENABLED
+			If IsProjectFile(@lpData->filename) Then
+				st=MF_BYCOMMAND Or MF_ENABLED
+			EndIf
 		EndIf
 	EndIf
 	EnableMenuItem(lpHandles->hmenu,nMnuToggle,st)
@@ -767,6 +781,10 @@ End Function
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
 
+	hooks.hook1=0
+	hooks.hook2=0
+	hooks.hook3=0
+	hooks.hook4=0
 	' The dll's instance
 	hInstance=hInst
 	' Get pointer to ADDINHANDLES
@@ -775,11 +793,10 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpData=Cast(ADDINDATA Ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
-	' Messages this addin will hook into
-	hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE
-	hooks.hook2=0
-	hooks.hook3=0
-	hooks.hook4=0
+	If lpData->version>=1062 Then
+		' Messages this addin will hook into
+		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE
+	EndIf
 	Return @hooks
 
 End Function
@@ -829,14 +846,13 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					'
 				Case nMnuRun
 					If lstrlen(@lpData->ProjectFile) Then
-						nDebugMode=0
 						nLnRunTo=-1
 						If hThread Then
 							ClearDebugLine
-							ClearBreakAll(0)
-							SetBreakPoints(0)
+							fRun=1
 							ResumeThread(pinfo.hThread)
 						Else
+							fExit=0
 							If Len(lpData->smakeoutput) Then
 								szFileName=lpData->ProjectPath & "\" & lpData->smakeoutput
 							Else
@@ -846,12 +862,12 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							szTipText=CheckFileTime(@szFileName)
 							If szTipText="" Then
 								nLnDebug=-1
-								nDebugMode=1
 								LockFiles(TRUE)
 								lpFunctions->ShowOutput(TRUE)
 								PutString("Debugging: " & szFileName)
 								lpData->fDebug=TRUE
 								hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
+								EnableDebugMenu
 							Else
 								MessageBox(lpHandles->hwnd,szTipText,"Debug",MB_OK Or MB_ICONERROR)
 							EndIf
@@ -861,24 +877,15 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					'
 				Case nMnuStop
 					If hThread Then
-						TerminateThread(hThread,0)
-						CloseHandle(dbghand)
-						CloseHandle(pinfo.hThread)
-						CloseHandle(pinfo.hProcess)
-						CloseHandle(hDebugFile)
-						CloseHandle(hThread)
-						hThread=0
+						fExit=1
+						WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
+						ResumeThread(pinfo.hThread)
 						ClearDebugLine
-						LockFiles(FALSE)
-						lpData->fDebug=FALSE
-						EnableDebugMenu
-						PutString("Terminated by user.")
 					EndIf
 					Return TRUE
 					'
 				Case nMnuStepInto
 					If hThread Then
-						nDebugMode=1
 						nLnRunTo=-1
 						ClearDebugLine
 						ResumeThread(pinfo.hThread)
@@ -887,7 +894,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					'
 				Case nMnuStepOver
 					If hThread Then
-						nDebugMode=2
 						nLnRunTo=-1
 						nprocrnb=procrnb
 						ClearDebugLine
@@ -899,7 +905,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					'
 				Case nMnuRunToCaret
 					If hThread Then
-						nDebugMode=0
 						ClearDebugLine
 						If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 							If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
@@ -915,7 +920,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					EndIf
 					Return TRUE
 					'
-				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO
+				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO,IDM_MAKE_QUICKRUN,IDM_FILE_NEWPROJECT,IDM_FILE_OPENPROJECT,IDM_FILE_CLOSEPROJECT
 					If hThread Then
 						Return TRUE
 					EndIf
@@ -963,12 +968,21 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			EndIf
 			'
 		Case AIM_ADDINSLOADED
-			CreateToolTip
-			CreateDebugMenu
-			lpFunctions->CallAddins(lpHandles->hwnd,AIM_MENUREFRESH,0,0,HOOK_MENUREFRESH)
+			If fDone=0 Then
+				fDone=1
+				CreateToolTip
+				CreateDebugMenu
+				lpFunctions->CallAddins(lpHandles->hwnd,AIM_MENUREFRESH,0,0,HOOK_MENUREFRESH)
+			EndIf
 			'
 		Case AIM_MENUENABLE
 			EnableDebugMenu
+			'
+		Case AIM_QUERYCLOSE
+			If hThread Then
+				MessageBox(hWin,"Still debugging.","Debug",MB_OK Or MB_ICONERROR)
+				Return TRUE
+			EndIf
 			'
 	End Select
 	Return FALSE

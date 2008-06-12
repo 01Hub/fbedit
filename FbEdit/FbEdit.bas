@@ -573,6 +573,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
+			If CallAddins(hWin,AIM_QUERYCLOSE,wParam,lParam,HOOK_QUERYCLOSE) Then
+				Return 0
+			EndIf
 			If CloseAllTabs(hWin,fProject,0,edtopt.closeonlocks)=FALSE Then
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0

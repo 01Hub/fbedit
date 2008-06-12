@@ -3,6 +3,9 @@
 #Define IDM_MAKE_RUN							10143 'Shift+F5
 #Define IDM_MAKE_GO							10144 'Ctrl+F5
 #Define IDM_MAKE_QUICKRUN					10147 'Shift+Ctrl+F5
+#Define IDM_FILE_NEWPROJECT				10002
+#Define IDM_FILE_OPENPROJECT				10003
+#Define IDM_FILE_CLOSEPROJECT				10004
 
 #Define MAX_MISS								10
 #Define SOURCEMAX								250
@@ -44,12 +47,12 @@ Dim Shared bpnb As Integer
 Dim Shared nLnDebug As Integer
 Dim Shared hLnDebug As HWND
 Dim Shared nLnRunTo As Integer
-Dim Shared nDebugMode As Integer
 Dim Shared nprocrnb As Integer
 Dim Shared ebp_this As UInteger
-Dim Shared fAL As Integer
-Dim Shared bpinx As Integer
 ' Tooltip
 Dim Shared ptcur As POINT
 Dim Shared hTip As HWND
 Dim Shared szTipText As ZString*256
+Dim Shared fDone As Integer
+Dim Shared fRun As Integer
+Dim Shared fExit As Integer

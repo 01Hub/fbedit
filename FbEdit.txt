@@ -1,7 +1,7 @@
 Whats new:
 ----------
 1.0.6.2
-o The resource editor language dialog is now a child window.
+o The resource editor language dialog is now a child dialog.
 o Added variables to custom highlighting.
 o Fixed bug where opening a file that is not part of the project
   would cause code properties to be refreshed constantly.
