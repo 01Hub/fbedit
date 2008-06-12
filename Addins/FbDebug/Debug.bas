@@ -138,6 +138,7 @@ Sub decoup2(gv As String,f As Byte)
 		End If
 	Else
 		If InStr(gv,"=ar1") Then
+			arrnb+=1
 			p=decouparray(gv,InStr(gv,"=ar1")+1,f)
 		EndIf
 		gv2=Mid(gv,p,999)
@@ -308,7 +309,8 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 		p+=4
 		q=InStr(p,gv,";")
 		If f=TYDIM Then
-			arrnb+=1
+'			arrnb+=1
+PutString("arrnb: " & arrnb)
 			'lbound
 			arr(arrnb).nlu(c).lb=Val(Mid(gv,p,q-p))
 		Else
