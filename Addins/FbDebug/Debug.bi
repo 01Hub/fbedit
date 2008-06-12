@@ -140,11 +140,12 @@ Const VARMAX=5000
 Dim Shared vrbnb As Integer  'nb of variables
 Dim Shared vrb(VARMAX) As tvar
 Const ARRMAX=1000
-Dim Shared linenb As Integer,linesav As UInteger
 Dim Shared arr(ARRMAX) As tarr,arrnb As UShort
 Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
-Dim Shared breakvalue As Integer =&hCC
-Dim Shared threadcontext As UInteger
+Dim Shared linenb As Integer,linesav As UInteger
 Const THREADMAX=50
 Dim Shared threadnb As Integer,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
+Dim Shared threadcontext As UInteger
+
+Dim Shared breakvalue As Integer =&hCC

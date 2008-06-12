@@ -2415,6 +2415,22 @@ GetWordEnd proc uses ebx esi,hMem:DWORD,cp:DWORD,nType:DWORD
 			inc		edx
 			inc		edx
 			jmp		@b
+		.elseif al=='(' && nType==2
+			xor		ecx,ecx
+			.while edx<[esi].CHARS.len
+				mov		al,[esi+edx+sizeof CHARS]
+				.if al=="("
+					inc		ecx
+				.elseif al==')'
+					dec		ecx
+					.if !ecx
+						inc		edx
+						.break
+					.endif
+				.endif
+				inc		edx
+			.endw
+			jmp		@b
 		.else
 			invoke IsChar
 		.endif

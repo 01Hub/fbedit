@@ -512,6 +512,7 @@ Sub findthread(tid As UInteger)
 End Sub
 
 Sub ClearVars()
+	Dim As Integer i,j
 
 	secnb=0
 	pe=0
@@ -540,9 +541,78 @@ Sub ClearVars()
 	arrnb=0
 	threadcontext=0
 	threadnb=0
-	source(0)=""
 	nLnDebug=-1
 	hLnDebug=0
+
+	For i=0 To PROCMAX
+		proc(i).nm=""
+		proc(i).db=0
+		proc(i).fn=0
+		proc(i).sr=0
+		proc(i).ad=0
+		proc(i).vr=0
+		proc(i).rv=0
+		proc(i).nu=0
+	Next
+	For i=0 To PROCRMAX
+		procr(i).sk=0
+		procr(i).idx=0
+	Next
+	For i=16 To TYPEMAX
+		udt(i).nm=""
+		udt(i).lb=0
+		udt(i).ub=0
+		udt(i).lg=0
+	Next
+	For i=0 To CTYPEMAX
+		cudt(i).nm=""
+		cudt(i).Typ=0
+		cudt(i).ofs=0
+		cudt(i).arr=0
+		cudt(i).pt=0
+	Next
+	For i=0 To ATYPEMAX
+		audt(i).dm=0
+		For j=0 To 5
+			audt(i).nlu(j).nb=0
+			audt(i).nlu(j).lb=0
+			audt(i).nlu(j).ub=0
+		Next
+	Next
+	For i=0 To SOURCEMAX
+		source(i)=""
+	Next
+	For i=0 To VARMAX
+		vrb(i).nm=""
+		vrb(i).typ=0
+		vrb(i).adr=0
+		vrb(i).mem=0
+		vrb(i).arr=0
+		vrb(i).pt=0
+		vrb(i).pn=0
+	Next
+	For i=0 To ARRMAX
+		arr(i).dat=0
+		arr(i).pot=0
+		arr(i).siz=0
+		arr(i).dmn=0
+		For j=0 To 5
+			arr(i).nlu(j).nb=0
+			arr(i).nlu(j).lb=0
+			arr(i).nlu(j).ub=0
+		Next
+	Next
+	For i=0 To LINEMAX
+		rline(i).ad=0
+		rline(i).nu=0
+		rline(i).sv=0
+		rline(i).pr=0
+	Next
+	For i=0 To THREADMAX
+		thread(i)=0
+		threadid(i)=0
+		threadres(i)=0
+	Next
 
 End Sub
 

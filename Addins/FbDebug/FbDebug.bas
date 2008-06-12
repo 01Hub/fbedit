@@ -369,8 +369,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim ti As TOOLINFO
 	Dim As ZString*256 buff,nme1,nme2,nsp
 	Dim pt As Point
-	Dim As Integer i,j,adr,fGlobal,fParam,nCursorLine
+	Dim As Integer i,j,k,adr,fGlobal,fParam,nCursorLine
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
+	Dim lpArr As tarr Ptr
 
 	Select Case uMsg
 '		Case WM_KEYDOWN
@@ -405,6 +406,23 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								nme1=UCase(buff)
 							EndIf
 						EndIf
+						If InStr(nme1,"(") Then
+							i=InStr(buff,"(")
+							k=i
+							While TRUE
+								If Mid(buff,i,1)="(" Then
+									j+=1
+								ElseIf Mid(buff,i,1)=")" Then
+									j-=1
+									If j=0 Then
+										buff=Left(buff,k) & Mid(buff,i)
+										Exit while
+									EndIf
+								EndIf
+								i+=1
+							Wend
+							nme1=Left(nme1,InStr(nme1,"(")-1)
+						EndIf
 						i=InStr(nme1,".")
 						If i Then
 							nsp="NS : " & nme1
@@ -427,6 +445,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								'PutString("nme: " & nme)
 								'PutString("vrb(i).pt: " & vrb(i).pt)
 								'PutString("vrb(i).pt: " & vrb(i).adr)
+								If vrb(i).arr Then
+									lpArr=vrb(i).arr
+									nme1=Str(lpArr->nlu(0).lb) & " To " & Str(lpArr->nlu(0).ub)
+									buff=Left(buff,k) & nme1 & Mid(buff,k+1)
+									PutString("siz: " & lpArr->siz & " dmn:" & lpArr->dmn & " nlu(0).nb: " & lpArr->nlu(0).nb & " nlu(0).lb: " & lpArr->nlu(0).lb & " nlu(0).ub: " & lpArr->nlu(0).ub)
+									PutString("siz: " & lpArr->siz & " dmn:" & lpArr->dmn & " nlu(1).nb: " & lpArr->nlu(1).nb & " nlu(1).lb: " & lpArr->nlu(1).lb & " nlu(1).ub: " & lpArr->nlu(1).ub)
+									PutString("siz: " & lpArr->siz & " dmn:" & lpArr->dmn & " nlu(2).nb: " & lpArr->nlu(2).nb & " nlu(2).lb: " & lpArr->nlu(2).lb & " nlu(2).ub: " & lpArr->nlu(2).ub)
+								EndIf
 								Select Case vrb(i).mem
 									Case 1
 										nme1="Shared"
