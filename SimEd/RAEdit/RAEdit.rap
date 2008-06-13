@@ -99,7 +99,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,64420
-16=0,0,0,0,45616
+16=0,0,0,0,44536
 22=0,0,0,0,0
 23=0,0,0,0,19333
 24=0,0,0,0,2099
@@ -182,7 +182,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -221,7 +221,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 
 [Collapse]
 1=,,,,,,,,,,,
-16=,,,,,,,,,,,
+16=,,,,,,,,,,,,
 22=
 23=,,
 24=

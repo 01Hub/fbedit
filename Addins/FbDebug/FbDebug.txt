@@ -31,7 +31,7 @@ Breakpoints:
 
 Inspecting variables:
 - You can inspect the value of variables in the current scope by
-  moving the mouse over the variable (not arrays).
+  moving the mouse over the variable (arrays will only show dimensions).
 - You can also insert the OutputDebugString api in your code to
   have the value displayed in FbEdit's output window.
 
@@ -63,8 +63,12 @@ Debug menu:
   
 Whats New:
 ----------
+Version 1.0.0.0
+o Posted on FbEdit forum.
 Version 1.0.0.1
 o Added support for namespace.
 o Added support for with block.
+o Arrays will show dimensions.
+o Fixed cosmetic bug if Highlighte active line option was enabled.
 
 KetilO

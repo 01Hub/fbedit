@@ -309,8 +309,7 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 		p+=4
 		q=InStr(p,gv,";")
 		If f=TYDIM Then
-'			arrnb+=1
-PutString("arrnb: " & arrnb)
+			'arrnb+=1
 			'lbound
 			arr(arrnb).nlu(c).lb=Val(Mid(gv,p,q-p))
 		Else
@@ -483,8 +482,15 @@ Sub gestbrk(ad As UInteger)
 				'PutString(szFileName)
 				PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 				WaitForSingleObject(pinfo.hProcess,100)
-				nLnDebug=rLine(i).nu-1
+
+
+				' Clear old line
 				hLnDebug=lpHandles->hred
+				SendMessage(hLnDebug,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+				nLnDebug=SendMessage(hLnDebug,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+				SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
+				' Select new line
+				nLnDebug=rLine(i).nu-1
 				chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug,0)
 				chrg.cpMax=chrg.cpMin
 				SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))

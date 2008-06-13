@@ -2355,6 +2355,22 @@ GetWordStart proc uses ebx esi,hMem:DWORD,cp:DWORD,nType:DWORD
 				dec		edx
 				jmp		@b
 			.endif
+		.elseif al==')' && nType==2
+			xor		ecx,ecx
+			.while edx>1
+				mov		al,[esi+edx+sizeof CHARS-1]
+				.if al==")"
+					inc		ecx
+				.elseif al=='('
+					dec		ecx
+					.if !ecx
+						dec	edx
+						.break
+					.endif
+				.endif
+				dec		edx
+			.endw
+			jmp		@b
 		.else
 			invoke IsChar
 		.endif
