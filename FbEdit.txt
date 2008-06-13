@@ -6,6 +6,7 @@ o Added variables to custom highlighting.
 o Fixed bug where opening a file that is not part of the project
   would cause code properties to be refreshed constantly.
   This would make code editing sluggish on slow computers.
+o Changed the way comment/uncomment works.
 1.0.6.1b
 o Fixed bugs in FbEdit.ini file
 o Updated German translation
