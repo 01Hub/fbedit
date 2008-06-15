@@ -802,7 +802,7 @@
 			invoke ScreenToClient,hWin,addr pt
 			mov		eax,[ebx].EDIT.selbarwt
 			add		eax,[ebx].EDIT.nlinenrwt
-			.if eax<pt.x
+			.if eax<=pt.x
 				invoke ChildWindowFromPoint,hWin,pt.x,pt.y
 				.if eax==[ebx].EDIT.edta.hwnd
 					lea		esi,[ebx].EDIT.edta
