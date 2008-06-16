@@ -193,16 +193,18 @@ Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM
 
 	Select Case uMsg
 		Case WM_CONTEXTMENU
-			If lParam=-1 Then
-				GetCaretPos(@pt)
-				ClientToScreen(hWin,@pt)
-				pt.x=pt.x+10
-			Else
-				pt.x=lParam And &HFFFF
-				pt.y=lParam Shr 16
+			If CallAddins(hWin,AIM_CONTEXTMEMU,wParam,lParam,HOOK_CONTEXTMEMU)=FALSE Then
+				If lParam=-1 Then
+					GetCaretPos(@pt)
+					ClientToScreen(hWin,@pt)
+					pt.x=pt.x+10
+				Else
+					pt.x=lParam And &HFFFF
+					pt.y=lParam Shr 16
+				EndIf
+				hMnu=GetSubMenu(ah.hcontextmenu,2)
+				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			EndIf
-			hMnu=GetSubMenu(ah.hcontextmenu,2)
-			TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			'
 	End Select
 	Return CallWindowProc(lpOldOutputProc,hWin,uMsg,wParam,lParam)
@@ -1165,17 +1167,19 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				Return 0
 			EndIf
 		Case WM_CONTEXTMENU
-			If lParam=-1 Then
-				GetCaretPos(@pt)
-				ClientToScreen(hWin,@pt)
-				pt.x=pt.x+10
-			Else
-				pt.x=lParam And &HFFFF
-				pt.y=lParam Shr 16
+			If CallAddins(hWin,AIM_CONTEXTMEMU,wParam,lParam,HOOK_CONTEXTMEMU)=FALSE Then
+				If lParam=-1 Then
+					GetCaretPos(@pt)
+					ClientToScreen(hWin,@pt)
+					pt.x=pt.x+10
+				Else
+					pt.x=lParam And &HFFFF
+					pt.y=lParam Shr 16
+				EndIf
+				hMnu=GetMenu(ah.hwnd)
+				hMnu=GetSubMenu(hMnu,1)
+				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			EndIf
-			hMnu=GetMenu(ah.hwnd)
-			hMnu=GetSubMenu(hMnu,1)
-			TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			Return 0
 		Case WM_LBUTTONDOWN
 			mdn=GetKeyState(VK_CONTROL) And &H80

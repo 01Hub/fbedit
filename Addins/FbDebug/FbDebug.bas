@@ -883,7 +883,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	If lpData->version>=1062 Then
 		' Messages this addin will hook into
-		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE
+		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
 	EndIf
 	Return @hooks
 
@@ -895,6 +895,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 	Dim As Integer tid,nLn,nInx
 	Dim lp As Any Ptr
 	Dim lpTABMEM As TABMEM Ptr
+	Dim pt As POINT
 
 	Select Case uMsg
 		Case AIM_COMMAND
@@ -1070,6 +1071,22 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			If hThread Then
 				MessageBox(hWin,"Still debugging.","Debug",MB_OK Or MB_ICONERROR)
 				Return TRUE
+			EndIf
+			'
+		Case AIM_CONTEXTMEMU
+			If hThread Then
+				If GetParent(Cast(HWND,wParam))=lphandles->hred Then
+					If lParam=-1 Then
+						GetCaretPos(@pt)
+						ClientToScreen(Cast(HWND,wParam),@pt)
+						pt.x=pt.x+10
+					Else
+						pt.x=lParam And &HFFFF
+						pt.y=lParam Shr 16
+					EndIf
+					TrackPopupMenu(GetSubMenu(GetMenu(lpHandles->hwnd),3),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,lpHandles->hwnd,0)
+					Return TRUE
+				EndIf
 			EndIf
 			'
 	End Select

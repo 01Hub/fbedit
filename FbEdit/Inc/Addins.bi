@@ -170,6 +170,7 @@ End Type
 #Define AIM_MENUENABLE		13						' wParam=0 lParam=0
 #Define AIM_FILEOPENNEW		14						' wParam=Handle, lParam=FileName.
 #Define AIM_QUERYCLOSE		15						' wParam and lParam as for WM_CLOSE. Return TRUE to prevent FbEdit from closing.
+#Define AIM_CONTEXTMEMU		16						' wParam and lParam as for WM_CONTEXTMENU
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -189,6 +190,7 @@ End Type
 #Define HOOK_MENUENABLE		&H2000
 #Define HOOK_FILEOPENNEW	&H4000
 #Define HOOK_QUERYCLOSE		&H8000
+#Define HOOK_CONTEXTMEMU	&H10000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

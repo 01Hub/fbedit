@@ -85,16 +85,18 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 			fTimer=1
 			'
 		Case WM_CONTEXTMENU
-			If lParam=-1 Then
-				GetWindowRect(hWin,@rect)
-				pt.x=rect.left+90
-				pt.y=rect.top+90
-			Else
-				pt.x=lParam And &HFFFF
-				pt.y=lParam Shr 16
+			If CallAddins(hWin,AIM_CONTEXTMEMU,wParam,lParam,HOOK_CONTEXTMEMU)=FALSE Then
+				If lParam=-1 Then
+					GetWindowRect(hWin,@rect)
+					pt.x=rect.left+90
+					pt.y=rect.top+90
+				Else
+					pt.x=lParam And &HFFFF
+					pt.y=lParam Shr 16
+				EndIf
+				hMnu=GetSubMenu(ah.hcontextmenu,4)
+				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 			EndIf
-			hMnu=GetSubMenu(ah.hcontextmenu,4)
-			TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
 		Case WM_SHOWWINDOW
 			If ah.hfullscreen<>0 And fInUse=FALSE Then
 				fInUse=TRUE
