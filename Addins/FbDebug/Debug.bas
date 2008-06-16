@@ -50,15 +50,21 @@ End Sub
 Sub readstab()
 
 	If ReadProcessMemory(dbghand,Cast(Any Ptr,basestab),@recupstab,12,0)=0 Then
-		PutString(StrPtr("error reading memory"))
+		PutString("Error reading memory at " & Hex(basestab))
+	Else
+		'		PutString("Reading memory at " & Hex(basestab) & " .stabs " & recupstab.stabs & " .code " & recupstab.code & " .nline " & recupstab.nline & " .ad &H" & Hex(recupstab.ad))
 	End If
 
 End Sub
 
 Sub readstabs(ad As UInteger)
+	Dim lret As Integer
 
-	If ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,1000,0)=0 Then
-		PutString(StrPtr("error reading memory"))
+	lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
+	If lret=0 Then
+		PutString("Error reading memory at " & Hex(ad+basestabs))
+	Else
+		'		PutString("Reading memory at " & Hex(ad+basestabs) & " recup " & recup)
 	End If
 
 End Sub
@@ -67,11 +73,11 @@ Function decoupnames(strg As String) As String
 	Dim As Integer p,d
 	Dim As String nm,strg2,nm2
 
-	strg2=Mid(strg,5,999)
+	strg2=Mid(strg,5)
 	p=Val(strg2)
 	If p>9 Then d=3 Else d=2
 	nm=Mid(strg2,d,p)
-	strg2=Mid(strg2,d+p,999)
+	strg2=Mid(strg2,d+p)
 	p=Val(strg2)
 	If p>9 Then d=3 Else d=2
 	nm2=Mid(strg2,d,p)
@@ -85,11 +91,11 @@ Function decoupproc(strg As String) As String
 
 	If Left(strg,3)<>"__Z" Then Return strg
 	If strg[3]=Asc("N") Then
-		strg2=Mid(strg,5,999)
+		strg2=Mid(strg,5)
 		p=Val(strg2)
 		If p>9 Then d=3 Else d=2
 		nm=Mid(strg2,d,p)
-		strg2=Mid(strg2,d+p,999)
+		strg2=Mid(strg2,d+p)
 		p=Val(strg2)
 		If p Then
 			If p>9 Then d=3 Else d=2
@@ -108,7 +114,7 @@ Function decoupproc(strg As String) As String
 		Else
 			Select Case Left(strg2,2)
 				Case "cv"
-					strg2=Mid(strg2,3,999)
+					strg2=Mid(strg2,3)
 					p=Val(strg2)
 					If p>9 Then d=3 Else d=2
 					Return "Cast : "+nm+"-->"+Mid(strg2,d,p)
@@ -124,7 +130,7 @@ Function decoupproc(strg As String) As String
 		'operator
 		Return "Operator : "+strg
 	EndIf
-	
+
 End Function
 
 Sub decoup2(gv As String,f As Byte)
@@ -132,16 +138,16 @@ Sub decoup2(gv As String,f As Byte)
 
 	If InStr(gv,"=")=0 Then
 		If f=TYUDT Then
-			cudt(cudtnb).typ=Val(Mid(gv,p,999))
+			cudt(cudtnb).typ=Val(Mid(gv,p))
 		Else
-			vrb(vrbnb).typ=Val(Mid(gv,p,999))
+			vrb(vrbnb).typ=Val(Mid(gv,p))
 		End If
 	Else
 		If InStr(gv,"=ar1") Then
 			arrnb+=1
 			p=decouparray(gv,InStr(gv,"=ar1")+1,f)
 		EndIf
-		gv2=Mid(gv,p,999)
+		gv2=Mid(gv,p)
 		For p=0 To Len(gv)-1
 			If gv2[p]=Asc("*") Then
 				c+=1
@@ -149,7 +155,7 @@ Sub decoup2(gv As String,f As Byte)
 			If gv2[p]=Asc("=") Then
 				e=p+1
 			EndIf
-		Next 
+		Next
 		If c Then
 			'pointer
 			If InStr(gv2,"=f") Then
@@ -170,12 +176,12 @@ Sub decoup2(gv As String,f As Byte)
 		End If
 		If f=TYUDT Then
 			cudt(cudtnb).pt=p
-			cudt(cudtnb).typ=Val(Mid(gv2,e+1,999))
+			cudt(cudtnb).typ=Val(Mid(gv2,e+1))
 		Else
 			vrb(vrbnb).pt=p
-			vrb(vrbnb).typ=Val(Mid(gv2,e+1,999))
+			vrb(vrbnb).typ=Val(Mid(gv2,e+1))
 		End If
-	EndIf 
+	EndIf
 
 End Sub
 
@@ -214,7 +220,7 @@ Sub decoupudt(readl As String)
 		p=q+1
 		q=InStr(p,readl,";")
 		'Val(Mid(readl,p,q-p))	'lenght in bits, not used
-		p=q+1 
+		p=q+1
 	Wend
 	udt(udtidx).ub=cudtnb
 
@@ -227,7 +233,7 @@ Sub decoup(gv As String)
 		Exit Sub
 	EndIf
 	If gv[0]=Asc(":") Then 'return value
-		'dbgprint ("type return value x "+Mid(gv,2,999))
+		'dbgprint ("type return value x "+Mid(gv,2))
 		Exit Sub
 	End If
 	If InStr(gv,";;") Then
@@ -247,7 +253,7 @@ Sub decoup(gv As String)
 			'first caracter after ":"
 			decoupscp(gv[InStr(gv,":")])
 			'indiquer position de ";;"+1 pour recherche du type
-			decoup2(Mid(gv,InStr(gv,";;")+2,999),ttyp)
+			decoup2(Mid(gv,InStr(gv,";;")+2),ttyp)
 		EndIf
 	Else
 		'DIM
@@ -263,7 +269,7 @@ Sub decoup(gv As String)
 		proc(procnb+1).vr=vrbnb+1
 		'first caracter after ":"
 		p=decoupscp(gv[InStr(gv,":")])
-		decoup2(Mid(gv,InStr(gv,":")+p,999),ttyp)
+		decoup2(Mid(gv,InStr(gv,":")+p),ttyp)
 	EndIf
 	'PutString(vrb(vrbnb).nm)
 
@@ -297,7 +303,7 @@ Function decoupscp(gv As Byte) As Integer
 			vrb(vrbnb).mem=5
 			vrb(vrbnb).pn=-procnb
 			Return 1
-	End Select	
+	End Select
 
 End Function
 
@@ -319,7 +325,7 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 		End If
 		p=q+1
 		q=InStr(p,gv,";")
-		If f=TYDIM Then 
+		If f=TYDIM Then
 			'ubound
 			arr(arrnb).nlu(c).ub=Val(Mid(gv,p,q-p))
 			'dim
@@ -631,7 +637,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim buffer As ZString*256
 	Dim As UShort i,j
 	Dim sException As String
-
+	Dim nln As Integer
 	ClearVars
 	sinfo.cb=SizeOf(STARTUPINFO)
 	'GetStartupInfo(@sinfo)
@@ -663,6 +669,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			basestabs+=&h400000
 			While TRUE
 				readstab()
+				'PutString("recupstab.code " & recupstab.code)
 				If recupstab.code=0 Then
 					Exit While
 				EndIf
@@ -686,10 +693,11 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case 40
 							'uninit var
 							decoup(recup)
-							vrb(vrbnb).adr=recupstab.ad			  
+							vrb(vrbnb).adr=recupstab.ad
 						Case 100
 							'PutString("Main Source: " & Str(recup))
-							source(0)+=recup:sourceix=0
+							source(0)+=recup
+							sourceix=0
 							i=1
 							While i
 								i=InStr(i,source(0),"/")
@@ -722,8 +730,8 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							Wend
 						Case 160
 							'parameter
-							 decoup(recup)
-							 vrb(vrbnb).adr=recupstab.ad
+							decoup(recup)
+							vrb(vrbnb).adr=recupstab.ad
 						Case 42
 							'main RAS
 							'PutString("main RAS " & recup)
@@ -741,6 +749,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 								rLine(linenb).nu=recupstab.nline
 								rLine(linenb).pr=procnb
 								rLine(linenb).sv=-1
+								'PutString("linenb " & linenb & " rLine(linenb).nu " & rLine(linenb).nu)
 							End If
 						Case 192
 							If procfg Then
@@ -748,7 +757,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 								procfg=0
 								proc(procnb).db=recupstab.ad+procad
 							Else
-								''print "Begin. of block"					
+								''print "Begin. of block"
 							End If
 							'PutString("Begin. of block" & rLine(linenb).nu)
 						Case 224
@@ -761,14 +770,17 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case 162
 							'' print "End include"
 							sourceix=0
+							'PutString(source(sourcenb) & " Line: " & rline(linenb).nu)
 						Case 100
-							Exit While 'end of file
+							'end of file
+							Exit While
 						Case Else
 							PutString("UNKNOWN " & recupstab.code & "," & recupstab.stabs & "," & recupstab.nline & "," & recupstab.ad)
 					End Select
 				End If
 				basestab+=12
 			Wend
+			'PutString(source(0) & " Line: " & rline(linenb).nu)
 			' To handle variables with the same name but of different type
 			For i=1 To vrbnb
 				For j=i+1 To vrbnb
@@ -784,72 +796,76 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		Else
 			PutString("No debug info found. Compile with the -g option.")
 		EndIf
-'		For i=1 To vrbnb
-'			PutString(vrb(i).nm)
-'		Next
-'		For i=1 To udtidx
-'			PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
-'		Next
-'		For i=1 To cudtnb
-'			PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
-'		Next
-'		For i=1 To audtnb
-'			PutString("i: " & i & " dm: " & audt(i).dm & " nlu.nb: " & audt(i).nlu(0).nb)
-'		Next
+		'PutString("sourcenb " & sourcenb)
+		'PutString("linenb " & linenb)
+		'PutString("procnb " & procnb)
+		'PutString("vrbnb " & vrbnb)
+		'PutString("udtidx " & udtidx)
+		'PutString("cudtnb " & cudtnb)
+		'PutString("audtnb " & audtnb)
+		'For i=1 To vrbnb
+		'	PutString(vrb(i).nm)
+		'Next
+		'For i=1 To udtidx
+		'	PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
+		'Next
+		'For i=1 To cudtnb
+		'	PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
+		'Next
+		'For i=1 To audtnb
+		'	PutString("i: " & i & " dm: " & audt(i).dm & " nlu.nb: " & audt(i).nlu(0).nb)
+		'Next
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			fContinue=DBG_CONTINUE
 			Select Case de.dwDebugEventCode
 				Case EXCEPTION_DEBUG_EVENT
-'					If de.Exception.ExceptionRecord.ExceptionAddress<&H70000000 Then
-						Select Case de.Exception.ExceptionRecord.ExceptionCode
-							Case EXCEPTION_BREAKPOINT
-								If fExit=0 Then
-									findthread(de.dwThreadId)
-									'PRINT "adr : ";de.Exception.ExceptionRecord.ExceptionAddress 'value of instruction pointer when exception occurred	
-									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
-								Else
-									'WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
-									fContinue=DBG_EXCEPTION_NOT_HANDLED
-								EndIf
-							Case EXCEPTION_ACCESS_VIOLATION
-								sException="EXCEPTION_ACCESS_VIOLATION"
+					Select Case de.Exception.ExceptionRecord.ExceptionCode
+						Case EXCEPTION_BREAKPOINT
+							If fExit=0 Then
+								findthread(de.dwThreadId)
+								'PRINT "adr : ";de.Exception.ExceptionRecord.ExceptionAddress 'value of instruction pointer when exception occurred
+								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+							Else
+								'WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
 								fContinue=DBG_EXCEPTION_NOT_HANDLED
-							Case EXCEPTION_FLT_DIVIDE_BY_ZERO
-								sException="EXCEPTION_FLT_DIVIDE_BY_ZERO"
-								fContinue=DBG_EXCEPTION_NOT_HANDLED
-							Case EXCEPTION_INT_DIVIDE_BY_ZERO
-								sException="EXCEPTION_INT_DIVIDE_BY_ZERO"
-								fContinue=DBG_EXCEPTION_NOT_HANDLED
-							Case EXCEPTION_DATATYPE_MISALIGNMENT
-								sException="EXCEPTION_DATATYPE_MISALIGNMENT"
-								fContinue=DBG_EXCEPTION_NOT_HANDLED
-							Case EXCEPTION_SINGLE_STEP
-								sException="EXCEPTION_SINGLE_STEP"
-								fContinue=DBG_EXCEPTION_NOT_HANDLED
-							Case DBG_CONTROL_C
-								sException="DBG_CONTROL_C"
-								fContinue=DBG_EXCEPTION_NOT_HANDLED
-						End Select
-						If fContinue=DBG_EXCEPTION_NOT_HANDLED Then
-							If de.Exception.dwFirstChance Then
-								If fexit=0 Then
-									PutString(sException)
-									findthread(de.dwThreadId)
-									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
-								EndIf
+							EndIf
+						Case EXCEPTION_ACCESS_VIOLATION
+							sException="EXCEPTION_ACCESS_VIOLATION"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+						Case EXCEPTION_FLT_DIVIDE_BY_ZERO
+							sException="EXCEPTION_FLT_DIVIDE_BY_ZERO"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+						Case EXCEPTION_INT_DIVIDE_BY_ZERO
+							sException="EXCEPTION_INT_DIVIDE_BY_ZERO"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+						Case EXCEPTION_DATATYPE_MISALIGNMENT
+							sException="EXCEPTION_DATATYPE_MISALIGNMENT"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+						Case EXCEPTION_SINGLE_STEP
+							sException="EXCEPTION_SINGLE_STEP"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+						Case DBG_CONTROL_C
+							sException="DBG_CONTROL_C"
+							fContinue=DBG_EXCEPTION_NOT_HANDLED
+					End Select
+					If fContinue=DBG_EXCEPTION_NOT_HANDLED Then
+						If de.Exception.dwFirstChance Then
+							If fexit=0 Then
+								PutString(sException)
+								findthread(de.dwThreadId)
+								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
 							EndIf
 						EndIf
-'					EndIf
+					EndIf
 				Case CREATE_THREAD_DEBUG_EVENT
-					'PutString(StrPtr("CREATE_THREAD_DEBUG_EVENT"))
+					'PutString("CREATE_THREAD_DEBUG_EVENT")
 					With de.CreateThread
-						'Print "hthread ";.hthread
 						threadnb+=1
 						thread(threadnb)=Cast(UInteger,.hThread)
 						threadid(threadnb)=de.dwThreadId
 						threadres(threadnb)=99
-						
+
 						threadcontext=Cast(UInteger,.hThread)
 						'Print "nb of thread";threadnb+1
 						For i As Integer=0 To threadnb
@@ -868,25 +884,27 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						hDebugFile=.hFile
 					End With
 				Case EXIT_THREAD_DEBUG_EVENT
-					PutString(StrPtr("EXIT_THREAD_DEBUG_EVENT"))
+					PutString("EXIT_THREAD_DEBUG_EVENT")
 				Case EXIT_PROCESS_DEBUG_EVENT
-					PutString(StrPtr("EXIT_PROCESS_DEBUG_EVENT"))
+					PutString("EXIT_PROCESS_DEBUG_EVENT")
 					lret=ContinueDebugEvent(de.dwProcessId,de.dwThreadId,DBG_CONTINUE)
 					If fExit Then
 						PutString("Terminated by user.")
 					EndIf
 					Exit While
 				Case LOAD_DLL_DEBUG_EVENT
+					buffer=""
 					GetModuleFileName(de.LoadDll.lpBaseOfDll,@buffer,256)
 					PutString("LOAD_DLL_DEBUG_EVENT " & buffer)
 				Case UNLOAD_DLL_DEBUG_EVENT
-					PutString(StrPtr("UNLOAD_DLL_DEBUG_EVENT"))
+					buffer=""
+					GetModuleFileName(de.UnloadDll.lpBaseOfDll,@buffer,256)
+					PutString("UNLOAD_DLL_DEBUG_EVENT " & buffer)
 				Case OUTPUT_DEBUG_STRING_EVENT
-					'PutString(StrPtr("OUTPUT_DEBUG_STRING_EVENT"))
 					lret=ReadProcessMemory(dbghand,de.DebugString.lpDebugStringData,@buffer,255,0)
 					PutString(@buffer)
 				Case RIP_EVENT
-					PutString(StrPtr("RIP_EVENT"))
+					PutString("RIP_EVENT")
 			End Select
 			ContinueDebugEvent(de.dwProcessId,de.dwThreadId,fContinue)
 		Wend

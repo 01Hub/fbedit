@@ -916,6 +916,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,0)
 								EndIf
 								SaveBreakpoints(lpHandles->hred,nInx)
+								If hThread Then
+									GetBreakPoints
+									SetBreakPoints(0)
+								EndIf
 							EndIf
 						EndIf
 					EndIf
@@ -928,6 +932,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							If nInx Then
 								SendMessage(lpHandles->hred,REM_CLRBOOKMARKS,0,5)
 								SaveBreakpoints(lpHandles->hred,nInx)
+								If hThread Then
+									GetBreakPoints
+									SetBreakPoints(0)
+								EndIf
 							EndIf
 						EndIf
 					EndIf

@@ -202,6 +202,8 @@ Sub LoadAddins
 						addins(nInx).hooks.hook4=y->hook4
 						addins(nInx).lpdllfunc=GetProcAddress(hDll,StrPtr("DllFunction"))
 						nInx=nInx+1
+					Else
+						FreeLibrary(hDll)
 					EndIf
 				EndIf
 			EndIf
@@ -212,4 +214,14 @@ Sub LoadAddins
 		FindClose(hwfd)
 		CallAddins(ah.hwnd,AIM_ADDINSLOADED,0,0,HOOK_ADDINSLOADED)
 	EndIf
+End Sub
+
+Sub FreeAddins
+	Dim nInx As Integer
+
+	While addins(nInx).hdll
+		FreeLibrary(addins(nInx).hdll)
+		nInx+=1
+	Wend
+	
 End Sub

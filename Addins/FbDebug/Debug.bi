@@ -137,15 +137,15 @@ udt(14).nm="Zstring"
 udt(15).nm="Pchar"
 
 Const VARMAX=5000
-Dim Shared vrbnb As Integer  'nb of variables
+Dim Shared vrbnb As UInteger  'nb of variables
 Dim Shared vrb(VARMAX) As tvar
 Const ARRMAX=1000
 Dim Shared arr(ARRMAX) As tarr,arrnb As UShort
 Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
-Dim Shared linenb As Integer,linesav As UInteger
+Dim Shared linenb As UInteger,linesav As UInteger
 Const THREADMAX=50
-Dim Shared threadnb As Integer,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
+Dim Shared threadnb As UInteger,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
 Dim Shared threadcontext As UInteger
 
 Dim Shared breakvalue As Integer =&hCC

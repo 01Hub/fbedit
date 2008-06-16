@@ -8,7 +8,9 @@ saved me a lot of time understanding how to parse the debug info.
 FbDebug addin:
   In most cases I find that a full blown debugger is too much.
   This debug addin acts pretty much like the debugger in vb.net
-  or VB6.
+  or VB6. Unlike other FreeBASIC debuggers the debugged exe will
+  run at normal speed until a breakpoint is reached. This makes
+  it possible to comfotable debug even large projects.
 
 Limitations:
 - You can only debug projects compiled with the -g option.
@@ -69,6 +71,7 @@ Version 1.0.0.1
 o Added support for namespace.
 o Added support for with block.
 o Arrays will show dimensions.
+o Whil debugging the debug menu is the context menu.
 o Fixed cosmetic bug if Highlighte active line option was enabled.
 
 KetilO

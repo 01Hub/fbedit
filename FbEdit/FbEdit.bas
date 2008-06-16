@@ -2255,6 +2255,7 @@ Dim CharTab As Function() As Any Ptr
 		OleInitialize(NULL)
 		WinMain(hInstance,NULL,NULL,NULL)
 		OleUninitialize
+		FreeAddins
 		FreeLibrary(hFbEditDll)
 	Else
 		MessageBox(NULL,GetInternalString(IS_COULD_NOT_FIND) & " FbEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
