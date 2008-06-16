@@ -73,5 +73,6 @@ o Added support for with block.
 o Arrays will show dimensions.
 o Whil debugging the debug menu is the context menu.
 o Fixed cosmetic bug if Highlighte active line option was enabled.
+o Fixed bug with label in asm block.
 
 KetilO

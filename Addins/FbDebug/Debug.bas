@@ -51,8 +51,8 @@ Sub readstab()
 
 	If ReadProcessMemory(dbghand,Cast(Any Ptr,basestab),@recupstab,12,0)=0 Then
 		PutString("Error reading memory at " & Hex(basestab))
-	Else
-		'		PutString("Reading memory at " & Hex(basestab) & " .stabs " & recupstab.stabs & " .code " & recupstab.code & " .nline " & recupstab.nline & " .ad &H" & Hex(recupstab.ad))
+	'Else
+	'	PutString("Reading memory at " & Hex(basestab) & " .stabs " & recupstab.stabs & " .code " & recupstab.code & " .nline " & recupstab.nline & " .ad &H" & Hex(recupstab.ad))
 	End If
 
 End Sub
@@ -63,8 +63,8 @@ Sub readstabs(ad As UInteger)
 	lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
 	If lret=0 Then
 		PutString("Error reading memory at " & Hex(ad+basestabs))
-	Else
-		'		PutString("Reading memory at " & Hex(ad+basestabs) & " recup " & recup)
+	'Else
+	'	PutString("Reading memory at " & Hex(ad+basestabs) & " recup " & recup)
 	End If
 
 End Sub
@@ -488,8 +488,6 @@ Sub gestbrk(ad As UInteger)
 				'PutString(szFileName)
 				PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 				WaitForSingleObject(pinfo.hProcess,100)
-
-
 				' Clear old line
 				hLnDebug=lpHandles->hred
 				SendMessage(hLnDebug,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -532,7 +530,7 @@ Sub ClearVars()
 	pe=0
 	basestab=0
 	basestabs=0
-	recup=String(1000,0)
+	recup=String(SizeOf(recup),0)
 	procnb=0
 	procfg=0
 	procsv=0
@@ -557,6 +555,7 @@ Sub ClearVars()
 	threadnb=0
 	nLnDebug=-1
 	hLnDebug=0
+	linead=-1
 
 	For i=0 To PROCMAX
 		proc(i).nm=""
@@ -638,6 +637,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim As UShort i,j
 	Dim sException As String
 	Dim nln As Integer
+
 	ClearVars
 	sinfo.cb=SizeOf(STARTUPINFO)
 	'GetStartupInfo(@sinfo)
@@ -677,7 +677,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 					readstabs(recupstab.stabs)
 					Select Case recupstab.code
 						Case 36
-							'proc
+							' Proc
 							procfg=1
 							procad=recupstab.ad:procnb+=1
 							proc(procnb).sr=sourceix
@@ -687,11 +687,11 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 							proc(procnb).nu=recupstab.nline
 						Case 38
-							'init var
+							' Init var
 							decoup(recup)
 							vrb(vrbnb).adr=recupstab.ad
 						Case 40
-							'uninit var
+							' Uninit var
 							decoup(recup)
 							vrb(vrbnb).adr=recupstab.ad
 						Case 100
@@ -706,17 +706,17 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 								EndIf
 							Wend
 						Case 128
-							'local
+							' Local
 							decoup(recup)
 							If recupstab.ad Then
 								'stack offset
 								vrb(vrbnb).adr=recupstab.ad
 							EndIf
 						Case 130
-							'include RAS
+							' Include RAS
 							'PutString("include RAS " & recup)
 						Case 132
-							'include
+							' Include
 							'PutString("Include: " & Str(recup))
 							sourcenb+=1
 							source(sourcenb)=recup
@@ -729,7 +729,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 								EndIf
 							Wend
 						Case 160
-							'parameter
+							' Parameter
 							decoup(recup)
 							vrb(vrbnb).adr=recupstab.ad
 						Case 42
@@ -741,10 +741,14 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 				Else
 					Select Case recupstab.code
 						Case 68
-							If recupstab.ad Then 'avoid to stop on sub or function line
-								'print "line : ";recupstab.nline;" offset adr :";recupstab.ad;" -> ";procad+recupstab.ad
+							' Avoid to stop on sub or function line
+							If recupstab.ad Then
 								'PutString("Line: " & Str(recupstab.nline))
-								linenb+=1
+								' Do not include label in asm block
+								If recupstab.ad<>linead Then
+									linead=recupstab.ad
+									linenb+=1
+								EndIf
 								rline(linenb).ad=recupstab.ad+procad
 								rLine(linenb).nu=recupstab.nline
 								rLine(linenb).pr=procnb
@@ -753,26 +757,26 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							End If
 						Case 192
 							If procfg Then
-								''print "Begin.block proc";recupstab.ad+procad
+								' Begin.block proc
 								procfg=0
 								proc(procnb).db=recupstab.ad+procad
 							Else
-								''print "Begin. of block"
+								' Begin. of block"
 							End If
 							'PutString("Begin. of block" & rLine(linenb).nu)
 						Case 224
-							''print "End of block";recupstab.ad+procad
+							' End of block
 							procsv=recupstab.ad+procad
 							'PutString("End of block" & rLine(linenb).nu)
 						Case 36
-							''print "End of proc";procsv
+							' End of proc
 							proc(procnb).fn=procsv
 						Case 162
-							'' print "End include"
+							' End include
 							sourceix=0
 							'PutString(source(sourcenb) & " Line: " & rline(linenb).nu)
 						Case 100
-							'end of file
+							' End of file
 							Exit While
 						Case Else
 							PutString("UNKNOWN " & recupstab.code & "," & recupstab.stabs & "," & recupstab.nline & "," & recupstab.ad)

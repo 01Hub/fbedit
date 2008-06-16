@@ -149,3 +149,4 @@ Dim Shared threadnb As UInteger,thread(THREADMAX) As UInteger,threadid(THREADMAX
 Dim Shared threadcontext As UInteger
 
 Dim Shared breakvalue As Integer =&hCC
+Dim Shared linead As UInteger
