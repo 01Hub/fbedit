@@ -87,6 +87,11 @@ Type tline
 	pr As UShort	'Proc
 End Type
 
+Type tsource
+	file		As String	'Filename
+	pInx		As Integer	'Project index
+End Type
+
 Dim Shared pinfo As PROCESS_INFORMATION
 Dim Shared dbghand As HANDLE
 Dim Shared ct As CONTEXT
@@ -111,7 +116,7 @@ Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
 Dim Shared procrsk As UInteger
 
 'sources ===========================================
-Dim Shared source(SOURCEMAX) As String,sourceix As Integer,sourcenb As Integer
+Dim Shared source(SOURCEMAX) As tsource,sourceix As Integer,sourcenb As Integer
 
 Dim Shared ttyp As Byte
 
@@ -145,8 +150,9 @@ Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
 Dim Shared linenb As UInteger,linesav As UInteger
 Const THREADMAX=50
-Dim Shared threadnb As UInteger,thread(THREADMAX) As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
-Dim Shared threadcontext As UInteger
+Dim Shared threadnb As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
+Dim Shared thread(THREADMAX) As HANDLE
+Dim Shared threadcontext As HANDLE
 
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared linead As UInteger

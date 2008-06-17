@@ -20,39 +20,10 @@ Sub PutString(ByVal lpStr As ZString Ptr)
 
 End Sub
 
-'Sub HexDump(ByVal lpBuff As ZString Ptr,ByVal nSize As Integer)
-'	Dim sLine As ZString*256
-'	Dim i As Integer
-'	Dim j As Integer
-'	Dim ub As UByte
-'	For j=0 To 1023
-'		sLine=""
-'		For i=0 To 15
-'			ub=Peek(lpBuff)
-'			sLine=sline & Right("0" & Hex(ub) & " ",3)
-'			lpBuff=lpBuff+1
-'		Next
-'		PutString(sLine)
-'	Next
-'
-'End Sub
-'
-'Sub SaveDump(ByVal lpBuff As ZString Ptr)
-'	Dim hFile As HANDLE
-'	Dim wr As Integer
-'
-'	hFile=CreateFile(@"dump.bin",GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL)
-'	WriteFile(hFile,lpBuff,1024*128,@wr,NULL)
-'	CloseHandle(hFile)
-'
-'End Sub
-'
 Sub readstab()
 
 	If ReadProcessMemory(dbghand,Cast(Any Ptr,basestab),@recupstab,12,0)=0 Then
 		PutString("Error reading memory at " & Hex(basestab))
-	'Else
-	'	PutString("Reading memory at " & Hex(basestab) & " .stabs " & recupstab.stabs & " .code " & recupstab.code & " .nline " & recupstab.nline & " .ad &H" & Hex(recupstab.ad))
 	End If
 
 End Sub
@@ -63,8 +34,6 @@ Sub readstabs(ad As UInteger)
 	lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
 	If lret=0 Then
 		PutString("Error reading memory at " & Hex(ad+basestabs))
-	'Else
-	'	PutString("Reading memory at " & Hex(ad+basestabs) & " recup " & recup)
 	End If
 
 End Sub
@@ -157,14 +126,14 @@ Sub decoup2(gv As String,f As Byte)
 			EndIf
 		Next
 		If c Then
-			'pointer
+			' Pointer
 			If InStr(gv2,"=f") Then
-				'procedure
+				' Procedure
 				If InStr(gv2,"=f7") Then
-					'sub
+					' Sub
 					p=200+c
 				Else
-					'function
+					' Function
 					p=220+c
 				EndIf
 			Else
@@ -207,19 +176,20 @@ Sub decoupudt(readl As String)
 	While readl[p-1]<>Asc(";")
 		cudtnb+=1
 		q=InStr(p,readl,":")
-		'variable name
+		' Variable name
 		cudt(cudtnb).nm=Mid(readl,p,q-p)
 		p=q+1
 		q=InStr(p,readl,",")
-		'variable type
+		' Variable type
 		decoup2(Mid(readl,p,q-p),TYUDT)
 		p=q+1
 		q=InStr(p,readl,",")
-		'offset début
+		' Offset data
 		cudt(cudtnb).ofs=Val(Mid(readl,p,q-p))\8
 		p=q+1
 		q=InStr(p,readl,";")
-		'Val(Mid(readl,p,q-p))	'lenght in bits, not used
+		' Lenght in bits, not used
+		'Val(Mid(readl,p,q-p))
 		p=q+1
 	Wend
 	udt(udtidx).ub=cudtnb
@@ -232,46 +202,44 @@ Sub decoup(gv As String)
 	If InStr(gv,"=-") Or Left(gv,8)="string:t" Or Left(gv,7)="pchar:t" Then
 		Exit Sub
 	EndIf
-	If gv[0]=Asc(":") Then 'return value
-		'dbgprint ("type return value x "+Mid(gv,2))
+	If gv[0]=Asc(":") Then
+		' Return value
 		Exit Sub
 	End If
 	If InStr(gv,";;") Then
-		'defined type or redim var
+		' Defined type or redim var
 		If InStr(gv,":Tt") Then
-			'UDT
+			' UDT
 			ttyp=TYUDT
 			decoupudt(gv)
 		Else
-			'REDIM
+			' REDIM
 			ttyp=TYRDM
-			'var ou parametre
+			' Var or parameter
 			vrbnb+=1:vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1)
 			vrb(vrbnb).arr=Cast(Any Ptr,recupstab.ad)
-			'just to have the next beginning
+			' Just to have the next beginning
 			proc(procnb+1).vr=vrbnb+1
-			'first caracter after ":"
+			' First caracter after ":"
 			decoupscp(gv[InStr(gv,":")])
-			'indiquer position de ";;"+1 pour recherche du type
 			decoup2(Mid(gv,InStr(gv,";;")+2),ttyp)
 		EndIf
 	Else
-		'DIM
+		' Dim
 		ttyp=TYDIM
 		vrbnb+=1
 		If Left(gv,4)="__ZN" And InStr(gv,":") Then
-			'namespace
+			' Namespace
 			vrb(vrbnb).nm=decoupnames(gv)
 		Else
 			vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1) 'var ou parametre
 		End If
-		'just to have the next beginning
+		' Just to have the next beginning
 		proc(procnb+1).vr=vrbnb+1
-		'first caracter after ":"
+		' First caracter after ":"
 		p=decoupscp(gv[InStr(gv,":")])
 		decoup2(Mid(gv,InStr(gv,":")+p),ttyp)
 	EndIf
-	'PutString(vrb(vrbnb).nm)
 
 End Sub
 
@@ -311,12 +279,11 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 	Dim As Integer p=d,q,c
 
 	While gv[p-1]=Asc("a")
-		'skip ar1
+		' Skip ar1
 		p+=4
 		q=InStr(p,gv,";")
 		If f=TYDIM Then
-			'arrnb+=1
-			'lbound
+			' Lbound
 			arr(arrnb).nlu(c).lb=Val(Mid(gv,p,q-p))
 		Else
 			audtnb+=1
@@ -326,9 +293,9 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 		p=q+1
 		q=InStr(p,gv,";")
 		If f=TYDIM Then
-			'ubound
+			' Ubound
 			arr(arrnb).nlu(c).ub=Val(Mid(gv,p,q-p))
-			'dim
+			' Dim
 			arr(arrnb).nlu(c).nb=arr(arrnb).nlu(c).ub-arr(arrnb).nlu(c).lb+1
 		Else
 			audt(audtnb).nlu(c).ub=Val(Mid(gv,p,q-p))
@@ -338,7 +305,7 @@ Function decouparray(gv As String,d As Integer,f As Byte) As Integer
 		c+=1
 	Wend
 	If f=TYDIM Then
-		'nb dim
+		' nb dim
 		arr(arrnb).dmn=c
 		vrb(vrbnb).arr=@arr(arrnb)
 	Else
@@ -365,24 +332,20 @@ Sub SetBreakPoints(ByVal nLnRunTo As Integer)
 
 	For i=1 To linenb
 		If rLine(i).sv=-1 And i<>linesav Then
-			For bpinx=0 To bpnb
-				If UCase(bp(bpinx).sFile)=UCase(source(proc(rline(i).pr).sr)) Then
-					sln="," & Str(rLine(i).nu-1) & ","
-					If InStr(bp(bpinx).sBP,sln) Then
-						rLine(i).sv=0
-						'save 1 byte before writing &CC
-						ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
-						'Breakpoint
-						WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
-					EndIf
-				EndIf
-			Next
+			sln="," & Str(rLine(i).nu-1) & ","
+			If InStr(bp(source(proc(rline(i).pr).sr).pInx).sBP,sln) Then
+				rLine(i).sv=0
+				' Save 1 byte before writing &CC
+				ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+				' Breakpoint
+				WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
+			EndIf
 			If rline(i).nu-1=nLnRunTo And rLine(i).sv=-1 Then
-				If UCase(lpData->filename)=UCase(source(proc(rline(i).pr).sr)) Then
+				If UCase(lpData->filename)=UCase(source(proc(rline(i).pr).sr).file) Then
 					rLine(i).sv=0
-					'save 1 byte before writing &CC
+					' Save 1 byte before writing &CC
 					ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
-					'Breakpoint
+					' Breakpoint
 					WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
 				EndIf
 			EndIf
@@ -398,9 +361,9 @@ Sub SetBreakAll()
 	For i=1 To linenb
 		If rLine(i).sv=-1 Then
 			rLine(i).sv=0
-			'save 1 byte before writing &CC
+			' Save 1 byte before writing &CC
 			ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
-			'Breakpoint
+			' Breakpoint
 			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
 		EndIf
 	Next
@@ -412,7 +375,7 @@ Sub ClearBreakAll(ByVal nNotProc As Integer)
 
 	For i=1 To linenb
 		If rLine(i).sv<>-1 And rline(i).pr<>nNotProc Then
-			'restore 1 byte
+			' Restore 1 byte
 			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
 			rLine(i).sv=-1
 		EndIf
@@ -421,7 +384,7 @@ Sub ClearBreakAll(ByVal nNotProc As Integer)
 End Sub
 
 Sub gestbrk(ad As UInteger)
-	Dim As UInteger i,bpinx
+	Dim As UInteger i
 	Dim chrg As CHARRANGE
 
 	i=linesav+1
@@ -433,29 +396,27 @@ Sub gestbrk(ad As UInteger)
 			EndIf
 		Next
 		If i>linenb Then
-			'Print "Starting press space"
 			Exit Sub
 		EndIf
 	End If
 	If linesav<>0 Then
 		rLine(linesav).sv=0
-		'save 1 byte before writing &CC
+		' Save 1 byte before writing &CC
 		ReadProcessMemory(dbghand,Cast(Any Ptr,rline(linesav).ad),@rLine(linesav).sv,1,0)
-		'restore CC previous line
+		' Restore CC previous line
 		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
 	EndIf
 	linesav=i
 	SetBreakAll
 	If rline(i).sv<>-1 Then
-		'restore old value for execution
+		' Restore old value for execution
 		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
 		rline(i).sv=-1
 	EndIf
-	'showcontext
+	' Get context
 	seteip(ad)
-	'showcontext
 	If procrsk>procsk Then
-		'new proc ATTENTION ADD A POSSIBILITY TO INCREASE THIS ARRAY
+		' New proc
 		procrnb+=1
 		procrsk=procsk
 		ebp_this=procsk
@@ -463,48 +424,55 @@ Sub gestbrk(ad As UInteger)
 		procsv=rline(i).pr
 		procr(procrnb).sk=procrsk
 		procr(procrnb).idx=procsv
-		'add manage LIST
-		'PutString("NEW proc "+proc(procsv).nm)
 	ElseIf procrsk<procsk Then
-		'previous proc
+		' Previous proc
 		procrsk=procsk
 		ebp_this=procsk
 		procsv=rline(i).pr
 		procrnb-=1
-		'planned to suppress LIST
-		'PutString("RETURN proc "+proc(procsv).nm)
 	EndIf
-	'INTEGRATION FOLLOWING LINES ABOVE ???
-	'dbgprint (Str(won)+" Current line "+Str(rLine(i).nu)+" : "+Left(sourceline(proc(procsv).sr,rLine(i).nu),55))
 	If fRun Then
 		ClearBreakAll(0)
 		SetBreakPoints(0)
 	Else
-		For bpinx=0 To bpnb
-			'PutString(source(proc(procsv).sr))
-			'PutString(bp(bpinx).sFile)
-			If UCase(bp(bpinx).sFile)=UCase(source(proc(procsv).sr)) Then
-				szFileName=bp(bpinx).sFile
-				'PutString(szFileName)
-				PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
-				WaitForSingleObject(pinfo.hProcess,100)
-				' Clear old line
-				hLnDebug=lpHandles->hred
-				SendMessage(hLnDebug,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-				nLnDebug=SendMessage(hLnDebug,EM_EXLINEFROMCHAR,0,chrg.cpMin)
-				SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
-				' Select new line
-				nLnDebug=rLine(i).nu-1
-				chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug,0)
-				chrg.cpMax=chrg.cpMin
-				SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-				SendMessage(hLnDebug,EM_SCROLLCARET,0,0)
-				SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-				SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,2)
-				SuspendThread(pinfo.hThread)
-				Exit For
-			EndIf
-		Next
+		szFileName=bp(source(proc(procsv).sr).pInx).sFile
+		'PutString(szFileName)
+		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
+		WaitForSingleObject(pinfo.hProcess,100)
+		' Clear old line
+		hLnDebug=lpHandles->hred
+		SendMessage(hLnDebug,WM_SETREDRAW,FALSE,0)
+		SendMessage(hLnDebug,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+		nLnDebug=SendMessage(hLnDebug,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
+		' Select new line
+		nLnDebug=rLine(i).nu-1
+		' If at top then make line abowe visible
+		If nLnDebug Then
+			chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug-1,0)
+			chrg.cpMax=chrg.cpMin
+			SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+			SendMessage(hLnDebug,EM_SCROLLCARET,0,0)
+		EndIf
+		' If at bottom then make line below visible
+		chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug+1,0)
+		chrg.cpMax=chrg.cpMin
+		SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+		SendMessage(hLnDebug,EM_SCROLLCARET,0,0)
+		' Select and highlight the line
+		chrg.cpMin=SendMessage(hLnDebug,EM_LINEINDEX,nLnDebug,0)
+		chrg.cpMax=chrg.cpMin
+		SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+		SendMessage(hLnDebug,EM_SCROLLCARET,0,0)
+		SendMessage(hLnDebug,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,2)
+		SendMessage(hLnDebug,WM_SETREDRAW,TRUE,0)
+		SendMessage(hLnDebug,REM_REPAINT,0,TRUE)
+		SuspendThread(threadcontext)
+		'If fSuspended=0 Then
+		'	fSuspended=1
+		'	SuspendThread(pinfo.hThread)
+		'EndIf
 	EndIf
 
 End Sub
@@ -512,7 +480,7 @@ End Sub
 Sub findthread(tid As UInteger)
 	Dim i As Byte
 
-	'if msg from thread then flag off
+	' If msg from thread then flag off
 	For i=0 To threadnb
 		If tid=threadid(i) Then
 			threadcontext=thread(i)
@@ -593,7 +561,8 @@ Sub ClearVars()
 		Next
 	Next
 	For i=0 To SOURCEMAX
-		source(i)=""
+		source(i).file=""
+		source(i).pInx=0
 	Next
 	For i=0 To VARMAX
 		vrb(i).nm=""
@@ -629,177 +598,166 @@ Sub ClearVars()
 
 End Sub
 
-Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
-	Dim sinfo As STARTUPINFO
-	Dim As Integer lret,fContinue
-	Dim de As DEBUG_EVENT
-	Dim buffer As ZString*256
-	Dim As UShort i,j
-	Dim sException As String
-	Dim nln As Integer
-
-	ClearVars
-	sinfo.cb=SizeOf(STARTUPINFO)
-	'GetStartupInfo(@sinfo)
-	sinfo.dwFlags=STARTF_USESHOWWINDOW
-	sinfo.wShowWindow=SW_NORMAL
-	' Create process
-	lret=CreateProcess(NULL,lpFileName,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS Or DEBUG_PROCESS Or DEBUG_ONLY_THIS_PROCESS,NULL,NULL,@sinfo,@pinfo)
-	If lret Then
-		WaitForSingleObject(pinfo.hProcess,10)
-		dbghand=OpenProcess(PROCESS_ALL_ACCESS,TRUE,pinfo.dwProcessId)
-		'beginning of section area
-		pe=&h400086
-		ReadProcessMemory(dbghand,Cast(Any Ptr,pe),@secnb,2,0)
-		pe=&h400178
-		For i=1 To secnb
-			'Init var
-			secnm=String(8,0)
-			'read 8 bytes max name size
-			ReadProcessMemory(dbghand,Cast(Any Ptr,pe),@secnm,8,0)
-			If secnm=".stab" Then
-				ReadProcessMemory(dbghand,Cast(Any Ptr,pe+12),@basestab,4,0)
-			ElseIf secnm=".stabstr" Then
-				ReadProcessMemory(dbghand,Cast(Any Ptr,pe+12),@basestabs,4,0)
+Sub SetSourceProjectInx()
+	Dim As UInteger i,j
+	
+	For i=0 To sourcenb
+		For j=0 To bpnb
+			If UCase(source(i).file)=UCase(bp(j).sFile) Then
+				source(i).pInx=j
+				Exit For
 			EndIf
-			pe+=40
 		Next
-		If basestab Then
-			basestab+=&h400000+12
-			basestabs+=&h400000
-			While TRUE
-				readstab()
-				'PutString("recupstab.code " & recupstab.code)
-				If recupstab.code=0 Then
-					Exit While
-				EndIf
-				If recupstab.stabs Then
-					readstabs(recupstab.stabs)
-					Select Case recupstab.code
-						Case 36
-							' Proc
-							procfg=1
-							procad=recupstab.ad:procnb+=1
-							proc(procnb).sr=sourceix
-							proc(procnb).ad=recupstab.ad
-							proc(procnb).nm=decoupproc(Left(recup,InStr(recup,":")-1))
-							'return value
-							proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
-							proc(procnb).nu=recupstab.nline
-						Case 38
-							' Init var
-							decoup(recup)
-							vrb(vrbnb).adr=recupstab.ad
-						Case 40
-							' Uninit var
-							decoup(recup)
-							vrb(vrbnb).adr=recupstab.ad
-						Case 100
-							'PutString("Main Source: " & Str(recup))
-							source(0)+=recup
-							sourceix=0
-							i=1
-							While i
-								i=InStr(i,source(0),"/")
-								If i Then
-									source(0)[i-1]=Asc("\")
-								EndIf
-							Wend
-						Case 128
-							' Local
-							decoup(recup)
-							If recupstab.ad Then
-								'stack offset
-								vrb(vrbnb).adr=recupstab.ad
-							EndIf
-						Case 130
-							' Include RAS
-							'PutString("include RAS " & recup)
-						Case 132
-							' Include
-							'PutString("Include: " & Str(recup))
-							sourcenb+=1
-							source(sourcenb)=recup
-							sourceix=sourcenb' ????? Utilité :sourcead(sourcenb)=recupstab.ad
-							i=1
-							While i
-								i=InStr(i,source(sourcenb),"/")
-								If i Then
-									source(sourcenb)[i-1]=Asc("\")
-								EndIf
-							Wend
-						Case 160
-							' Parameter
-							decoup(recup)
-							vrb(vrbnb).adr=recupstab.ad
-						Case 42
-							'main RAS
-							'PutString("main RAS " & recup)
-						Case Else
-							PutString("UNKNOWN ")';recupstab.code;recupstab.stabs;recupstab.nline,recupstab.ad;" ";recup
-					End Select
-				Else
-					Select Case recupstab.code
-						Case 68
-							' Avoid to stop on sub or function line
-							If recupstab.ad Then
-								'PutString("Line: " & Str(recupstab.nline))
-								' Do not include label in asm block
-								If recupstab.ad<>linead Then
-									linead=recupstab.ad
-									linenb+=1
-								EndIf
-								rline(linenb).ad=recupstab.ad+procad
-								rLine(linenb).nu=recupstab.nline
-								rLine(linenb).pr=procnb
-								rLine(linenb).sv=-1
-								'PutString("linenb " & linenb & " rLine(linenb).nu " & rLine(linenb).nu)
-							End If
-						Case 192
-							If procfg Then
-								' Begin.block proc
-								procfg=0
-								proc(procnb).db=recupstab.ad+procad
-							Else
-								' Begin. of block"
-							End If
-							'PutString("Begin. of block" & rLine(linenb).nu)
-						Case 224
-							' End of block
-							procsv=recupstab.ad+procad
-							'PutString("End of block" & rLine(linenb).nu)
-						Case 36
-							' End of proc
-							proc(procnb).fn=procsv
-						Case 162
-							' End include
-							sourceix=0
-							'PutString(source(sourcenb) & " Line: " & rline(linenb).nu)
-						Case 100
-							' End of file
-							Exit While
-						Case Else
-							PutString("UNKNOWN " & recupstab.code & "," & recupstab.stabs & "," & recupstab.nline & "," & recupstab.ad)
-					End Select
-				End If
-				basestab+=12
-			Wend
-			'PutString(source(0) & " Line: " & rline(linenb).nu)
-			' To handle variables with the same name but of different type
-			For i=1 To vrbnb
-				For j=i+1 To vrbnb
-					If vrb(i).nm=vrb(j).nm Then
-						vrb(i).pn=Abs(vrb(i).pn)
-						vrb(j).pn=Abs(vrb(j).pn)
-					EndIf
-				Next
-			Next
-			PutString("Main Source: " & source(0))
-			GetBreakPoints
-			SetBreakPoints(0)
-		Else
-			PutString("No debug info found. Compile with the -g option.")
+	Next
+
+End Sub
+
+Sub ParseDebugInfo()
+	Dim As UInteger i,j
+	
+	' Beginning of section area
+	pe=&h400086
+	ReadProcessMemory(dbghand,Cast(Any Ptr,pe),@secnb,2,0)
+	pe=&h400178
+	For i=1 To secnb
+		' Init var
+		secnm=String(8,0)
+		' Read 8 bytes max section name size
+		ReadProcessMemory(dbghand,Cast(Any Ptr,pe),@secnm,8,0)
+		If secnm=".stab" Then
+			ReadProcessMemory(dbghand,Cast(Any Ptr,pe+12),@basestab,4,0)
+		ElseIf secnm=".stabstr" Then
+			ReadProcessMemory(dbghand,Cast(Any Ptr,pe+12),@basestabs,4,0)
 		EndIf
+		pe+=40
+	Next
+	If basestab Then
+		basestab+=&h400000+12
+		basestabs+=&h400000
+		While TRUE
+			readstab()
+			If recupstab.code=0 Then
+				Exit While
+			EndIf
+			If recupstab.stabs Then
+				readstabs(recupstab.stabs)
+				Select Case recupstab.code
+					Case 36
+						' Proc
+						procfg=1
+						procad=recupstab.ad:procnb+=1
+						proc(procnb).sr=sourceix
+						proc(procnb).ad=recupstab.ad
+						proc(procnb).nm=decoupproc(Left(recup,InStr(recup,":")-1))
+						' Return value
+						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
+						proc(procnb).nu=recupstab.nline
+					Case 38
+						' Init var
+						decoup(recup)
+						vrb(vrbnb).adr=recupstab.ad
+					Case 40
+						' Uninit var
+						decoup(recup)
+						vrb(vrbnb).adr=recupstab.ad
+					Case 100
+						' Main Source
+						source(0).file+=recup
+						sourceix=0
+						i=1
+						While i
+							i=InStr(i,source(0).file,"/")
+							If i Then
+								source(0).file[i-1]=Asc("\")
+							EndIf
+						Wend
+					Case 128
+						' Local
+						decoup(recup)
+						If recupstab.ad Then
+							' Stack offset
+							vrb(vrbnb).adr=recupstab.ad
+						EndIf
+					Case 130
+						' Include RAS
+						'PutString("include RAS " & recup)
+					Case 132
+						' Include
+						'PutString("Include: " & Str(recup))
+						sourcenb+=1
+						source(sourcenb).file=recup
+						sourceix=sourcenb
+						i=1
+						While i
+							i=InStr(i,source(sourcenb).file,"/")
+							If i Then
+								source(sourcenb).file[i-1]=Asc("\")
+							EndIf
+						Wend
+					Case 160
+						' Parameter
+						decoup(recup)
+						vrb(vrbnb).adr=recupstab.ad
+					Case 42
+						' Main RAS
+						'PutString("Main RAS " & recup)
+					Case Else
+						PutString("UNKNOWN ")
+				End Select
+			Else
+				Select Case recupstab.code
+					Case 68
+						' Avoid to stop on sub or function line
+						If recupstab.ad Then
+							' Do not include label in asm block
+							If recupstab.ad<>linead Then
+								linead=recupstab.ad
+								linenb+=1
+							EndIf
+							rline(linenb).ad=recupstab.ad+procad
+							rLine(linenb).nu=recupstab.nline
+							rLine(linenb).pr=procnb
+							rLine(linenb).sv=-1
+						End If
+					Case 192
+						If procfg Then
+							' Begin. block proc
+							procfg=0
+							proc(procnb).db=recupstab.ad+procad
+						Else
+							' Begin. of block"
+						End If
+					Case 224
+						' End of block
+						procsv=recupstab.ad+procad
+					Case 36
+						' End of proc
+						proc(procnb).fn=procsv
+					Case 162
+						' End include
+						sourceix=0
+					Case 100
+						' End of file
+						Exit While
+					Case Else
+						PutString("UNKNOWN " & recupstab.code & "," & recupstab.stabs & "," & recupstab.nline & "," & recupstab.ad)
+				End Select
+			End If
+			basestab+=12
+		Wend
+		' To handle variables with the same name but of different type
+		For i=1 To vrbnb
+			For j=i+1 To vrbnb
+				If vrb(i).nm=vrb(j).nm Then
+					vrb(i).pn=Abs(vrb(i).pn)
+					vrb(j).pn=Abs(vrb(j).pn)
+				EndIf
+			Next
+		Next
+		PutString("Main Source: " & source(0).file)
+		GetBreakPoints
+		SetSourceProjectInx
+		SetBreakPoints(0)
 		'PutString("sourcenb " & sourcenb)
 		'PutString("linenb " & linenb)
 		'PutString("procnb " & procnb)
@@ -819,6 +777,31 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		'For i=1 To audtnb
 		'	PutString("i: " & i & " dm: " & audt(i).dm & " nlu.nb: " & audt(i).nlu(0).nb)
 		'Next
+	Else
+		PutString("No debug info found. Compile with the -g option.")
+	EndIf
+
+End Sub
+
+Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
+	Dim sinfo As STARTUPINFO
+	Dim As Integer lret,fContinue
+	Dim de As DEBUG_EVENT
+	Dim buffer As ZString*256
+	Dim sException As String
+	Dim nln As Integer
+
+	ClearVars
+	sinfo.cb=SizeOf(STARTUPINFO)
+	sinfo.dwFlags=STARTF_USESHOWWINDOW
+	sinfo.wShowWindow=SW_NORMAL
+	' Create process
+	lret=CreateProcess(NULL,lpFileName,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS Or DEBUG_PROCESS Or DEBUG_ONLY_THIS_PROCESS,NULL,NULL,@sinfo,@pinfo)
+	If lret Then
+		WaitForSingleObject(pinfo.hProcess,10)
+		dbghand=OpenProcess(PROCESS_ALL_ACCESS,TRUE,pinfo.dwProcessId)
+		ParseDebugInfo
+		' Debug loop
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
 			fContinue=DBG_CONTINUE
@@ -828,10 +811,9 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case EXCEPTION_BREAKPOINT
 							If fExit=0 Then
 								findthread(de.dwThreadId)
-								'PRINT "adr : ";de.Exception.ExceptionRecord.ExceptionAddress 'value of instruction pointer when exception occurred
 								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
 							Else
-								'WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
+								' Stop
 								fContinue=DBG_EXCEPTION_NOT_HANDLED
 							EndIf
 						Case EXCEPTION_ACCESS_VIOLATION
@@ -863,32 +845,33 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						EndIf
 					EndIf
 				Case CREATE_THREAD_DEBUG_EVENT
-					'PutString("CREATE_THREAD_DEBUG_EVENT")
+					PutString("CREATE_THREAD_DEBUG_EVENT")
 					With de.CreateThread
 						threadnb+=1
-						thread(threadnb)=Cast(UInteger,.hThread)
+						thread(threadnb)=.hThread
 						threadid(threadnb)=de.dwThreadId
 						threadres(threadnb)=99
 
-						threadcontext=Cast(UInteger,.hThread)
+						threadcontext=.hThread
 						'Print "nb of thread";threadnb+1
 						For i As Integer=0 To threadnb
-							'Print i,thread(i),threadres(i)
 						Next
-						'Print "start adress";.lpStartAddress
 					End With
 				Case CREATE_PROCESS_DEBUG_EVENT
 					'PutString("CREATE_PROCESS_DEBUG_EVENT")
 					With de.CreateProcessInfo
 						threadnb+=1
-						thread(threadnb)=Cast(UInteger,.hThread)
+						thread(threadnb)=.hThread
 						threadid(threadnb)=de.dwThreadId
 						threadres(threadnb)=0
-						threadcontext=Cast(UInteger,.hThread)
+						threadcontext=.hThread
 						hDebugFile=.hFile
 					End With
 				Case EXIT_THREAD_DEBUG_EVENT
 					PutString("EXIT_THREAD_DEBUG_EVENT")
+					threadnb-=1
+					threadcontext=thread(threadnb)
+					ResumeThread(threadcontext)
 				Case EXIT_PROCESS_DEBUG_EVENT
 					PutString("EXIT_PROCESS_DEBUG_EVENT")
 					lret=ContinueDebugEvent(de.dwProcessId,de.dwThreadId,DBG_CONTINUE)
@@ -905,13 +888,18 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 					GetModuleFileName(de.UnloadDll.lpBaseOfDll,@buffer,256)
 					PutString("UNLOAD_DLL_DEBUG_EVENT " & buffer)
 				Case OUTPUT_DEBUG_STRING_EVENT
-					lret=ReadProcessMemory(dbghand,de.DebugString.lpDebugStringData,@buffer,255,0)
+					nln=de.DebugString.nDebugStringLength
+					If nln>255 Then
+						nln=255
+					EndIf
+					lret=ReadProcessMemory(dbghand,de.DebugString.lpDebugStringData,@buffer,nln,0)
 					PutString(@buffer)
 				Case RIP_EVENT
 					PutString("RIP_EVENT")
 			End Select
 			ContinueDebugEvent(de.dwProcessId,de.dwThreadId,fContinue)
 		Wend
+		' Process ended
 		lret=CloseHandle(dbghand)
 		lret=CloseHandle(pinfo.hThread)
 		lret=CloseHandle(pinfo.hProcess)
