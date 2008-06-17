@@ -1679,6 +1679,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
+					SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
 					If bm=1 Then
 						' Collapse
@@ -1686,6 +1687,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					ElseIf bm=2 Then
 						' Expand
 						SendMessage(ah.hred,REM_EXPAND,lpRASELCHANGE->Line,0)
+					EndIf
+					If edtopt.hiliteline Then
+						SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
 					EndIf
 				Else
 					If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
