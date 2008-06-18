@@ -21,8 +21,7 @@ Limitations:
   the value displayed in FbEdit's output window. This will
   also work if the project is compiled without the -g option.
 - You can not debug libraries or object files included at link
-  time.
-- Threads not supported yet.
+  time. Hopefully this will be supported in future releases.
 - Debugging dll's is not supported yet.
 - OOP is not tested at all.
 - Will only work on FbEdit version 1.0.6.2 or higher.
@@ -50,7 +49,8 @@ Debug menu:
 - Run
   Starts the execution. Execution will be halted on a breakpoint.
   You will be warned if there are unsaved source files or if any
-  source files are newer than the exe.
+  source files are newer than the exe. You will also be warned if
+  there are unhandled breakpionts.
 
 - Stop
   Terminates the execution.
@@ -73,9 +73,12 @@ o Posted on FbEdit forum.
 Version 1.0.0.1
 o Added support for namespace.
 o Added support for with block.
+o Added support for threads and nested threads.
 o Arrays will show dimensions.
 o While debugging the debug menu is the context menu.
 o Fixed cosmetic bug if Highlight active line option is enabled.
 o Fixed bug with label in asm block.
+Version 1.0.0.2
+o Added support for modules.
 
 KetilO

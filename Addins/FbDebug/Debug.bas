@@ -647,6 +647,7 @@ Sub ParseDebugInfo()
 						procfg=1
 						procad=recupstab.ad:procnb+=1
 						proc(procnb).sr=sourceix
+						'proc(procnb).sr=sourcenb
 						proc(procnb).ad=recupstab.ad
 						proc(procnb).nm=decoupproc(Left(recup,InStr(recup,":")-1))
 						' Return value
@@ -662,13 +663,17 @@ Sub ParseDebugInfo()
 						vrb(vrbnb).adr=recupstab.ad
 					Case 100
 						' Main Source
-						source(0).file+=recup
-						sourceix=0
+						'PutString("Main " & recup)
+						If Right(recup,1)="/" Then
+							sourcenb+=1
+						EndIf
+						source(sourcenb).file+=recup
+						sourceix=sourcenb
 						i=1
 						While i
-							i=InStr(i,source(0).file,"/")
+							i=InStr(i,source(sourcenb).file,"/")
 							If i Then
-								source(0).file[i-1]=Asc("\")
+								source(sourcenb).file[i-1]=Asc("\")
 							EndIf
 						Wend
 					Case 128
@@ -735,10 +740,10 @@ Sub ParseDebugInfo()
 						proc(procnb).fn=procsv
 					Case 162
 						' End include
-						sourceix=0
+						sourceix=1
 					Case 100
 						' End of file
-						Exit While
+						'Exit While
 					Case Else
 						PutString("UNKNOWN " & recupstab.code & "," & recupstab.stabs & "," & recupstab.nline & "," & recupstab.ad)
 				End Select
@@ -754,7 +759,7 @@ Sub ParseDebugInfo()
 				EndIf
 			Next
 		Next
-		PutString("Main Source: " & source(0).file)
+		PutString("Main Source: " & source(1).file)
 		GetBreakPoints
 		SetSourceProjectInx
 		SetBreakPoints(0)
@@ -765,6 +770,9 @@ Sub ParseDebugInfo()
 		'PutString("udtidx " & udtidx)
 		'PutString("cudtnb " & cudtnb)
 		'PutString("audtnb " & audtnb)
+		'For i=0 To sourcenb
+		'	PutString(source(i).file)
+		'Next
 		'For i=1 To vrbnb
 		'	PutString(vrb(i).nm)
 		'Next
@@ -868,12 +876,12 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						hDebugFile=.hFile
 					End With
 				Case EXIT_THREAD_DEBUG_EVENT
-					PutString("EXIT_THREAD_DEBUG_EVENT")
+					PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode)
 					threadnb-=1
 					threadcontext=thread(threadnb)
 					ResumeThread(threadcontext)
 				Case EXIT_PROCESS_DEBUG_EVENT
-					PutString("EXIT_PROCESS_DEBUG_EVENT")
+					PutString("EXIT_PROCESS_DEBUG_EVENT ExitCode=" & de.ExitProcess.dwExitCode)
 					lret=ContinueDebugEvent(de.dwProcessId,de.dwThreadId,DBG_CONTINUE)
 					If fExit Then
 						PutString("Terminated by user.")
