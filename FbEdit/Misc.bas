@@ -617,7 +617,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Select Case uMsg
 		Case WM_CHAR
 			hPar=GetParent(hWin)
-			If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 Then
+			If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 And SendMessage(hPar,REM_GETMODE,0,0)=0 Then
 				If wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
 					Return 0
 				endif
@@ -1083,15 +1083,17 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				ElseIf (wp=&H27 And lp=&H14D) Or (wp=&H25 And lp=&H14B) Then
 					' Right, Left
 					lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					trng.chrg.cpMin=chrg.cpMin
-					trng.chrg.cpMax=chrg.cpMin+1
-					trng.lpstrText=@buff
-					SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-					If buff="," Or buff="(" Or buff=")" Then
-						HideList()
-					else
-						MoveList()
+					If IsWindowVisible(ah.hcc) Then
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+						trng.chrg.cpMin=chrg.cpMin
+						trng.chrg.cpMax=chrg.cpMin+1
+						trng.lpstrText=@buff
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						If buff="," Or buff="(" Or buff=")" Then
+							HideList()
+						Else
+							MoveList()
+						EndIf
 					EndIf
 					Return lret
 				EndIf
@@ -1564,16 +1566,8 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 			SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
 			n=0
 			For tmp=0 To 127
-				If buffer[tmp]=VK_SPACE Then
-					n+=1
-				ElseIf buffer[tmp]=VK_TAB Then
-					n+=edtopt.tabsize
-					n=(n\edtopt.tabsize)*edtopt.tabsize
-				ElseIf buffer[tmp]=0 Then
-					Exit For
-				EndIf
 				If n=nmin Then
-					chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,LnSt,0)+tmp+1
+					chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,LnSt,0)+tmp
 					chrg.cpMax=chrg.cpMin
 					SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 					SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@char))
@@ -1581,6 +1575,14 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 					If LnCnt=0 Then
 						ochrg.cpMin=ochrg.cpMin+1
 					EndIf
+					Exit For
+				EndIf
+				If buffer[tmp]=VK_SPACE Then
+					n+=1
+				ElseIf buffer[tmp]=VK_TAB Then
+					n+=edtopt.tabsize
+					n=(n\edtopt.tabsize)*edtopt.tabsize
+				ElseIf buffer[tmp]=0 Then
 					Exit For
 				EndIf
 			Next

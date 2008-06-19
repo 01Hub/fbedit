@@ -163,6 +163,11 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		spri.ht,42
 		mov		spri.lpdta,offset szColhdr
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		mov		rect.left,1
+		mov		rect.right,3
+		mov		rect.top,0
+		mov		rect.bottom,0
+		invoke SendMessage,hSht,SPRM_EXPANDCELL,0,addr rect
 		;Set row header width
 		invoke SendMessage,hSht,SPRM_SETCOLWIDTH,0,30
 		;Recalculate the sheet

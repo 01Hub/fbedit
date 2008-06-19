@@ -49,7 +49,7 @@ cbdata				db 'abc',0
 
 szSomeText1			db 'Some text#1',0
 szHyperlink			db 'http://www.radasm.com/',0
-szColhdr			db 'This is a multiline column header test.',0
+szColhdr			db 'This is a multiline column header test. The header is also expanded to cover more than one column.',0
 
 ;#########################################################################
 

@@ -9,6 +9,7 @@ o Fixed bug where opening a file that is not part of the project
 o Added FbDebug addin. The addin provides FbEdit with an internal
   debugger. See the FbDebug.txt help file by using the addin manager.
 o Changed the way comment/uncomment works.
+o Fixed context menu position bug on dual monitor system.
 1.0.6.1b
 o Fixed bugs in FbEdit.ini file
 o Updated German translation
