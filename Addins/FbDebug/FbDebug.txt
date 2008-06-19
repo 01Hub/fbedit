@@ -80,5 +80,6 @@ o Fixed cosmetic bug if Highlight active line option is enabled.
 o Fixed bug with label in asm block.
 Version 1.0.0.2
 o Added support for modules.
+o Fixed bug with exe filename.
 
 KetilO

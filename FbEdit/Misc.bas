@@ -199,8 +199,8 @@ Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM
 					ClientToScreen(hWin,@pt)
 					pt.x=pt.x+10
 				Else
-					pt.x=lParam And &HFFFF
-					pt.y=lParam Shr 16
+					pt.x=Cast(Short,LoWord(lParam))
+					pt.y=Cast(Short,HiWord(lParam))
 				EndIf
 				hMnu=GetSubMenu(ah.hcontextmenu,2)
 				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
@@ -1173,8 +1173,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					ClientToScreen(hWin,@pt)
 					pt.x=pt.x+10
 				Else
-					pt.x=lParam And &HFFFF
-					pt.y=lParam Shr 16
+					pt.x=Cast(Short,LoWord(lParam))
+					pt.y=Cast(Short,HiWord(lParam))
 				EndIf
 				hMnu=GetMenu(ah.hwnd)
 				hMnu=GetSubMenu(hMnu,1)

@@ -242,6 +242,16 @@ Sub GetBreakPoints()
 
 End Sub
 
+Function GetMainFile() As String
+	Dim nInx As Integer
+	Dim sItem As ZString*260
+
+	nInx=GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,@lpData->ProjectFile)
+	GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+	Return sItem
+	
+End Function
+
 Sub CreateToolTip()
 
 	hTip=CreateWindowEx(0,"tooltips_class32",NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0)
@@ -919,14 +929,14 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						If hThread Then
 							ClearDebugLine
 							fRun=1
-							ResumeThread(threadcontext)
+							ResumeAllThreads
 						Else
 							fExit=0
 							If Len(lpData->smakeoutput) Then
 								szFileName=lpData->ProjectPath & "\" & lpData->smakeoutput
 							Else
-								szFileName=lpData->ProjectFile
-								szFileName=Left(szFileName,Len(szFileName)-3) & "exe"
+								szFileName=GetMainFile
+								szFileName=lpData->ProjectPath & "\" & Left(szFileName,Len(szFileName)-3) & "exe"
 							EndIf
 							szTipText=CheckFileTime(@szFileName)
 							If szTipText="" Then
@@ -948,7 +958,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						fExit=1
 						WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
-						ResumeThread(threadcontext)
+						ResumeAllThreads
 						ClearDebugLine
 					EndIf
 					Return TRUE
@@ -957,7 +967,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						nLnRunTo=-1
 						ClearDebugLine
-						ResumeThread(threadcontext)
+						ResumeAllThreads
 					EndIf
 					Return TRUE
 					'
@@ -968,7 +978,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClearDebugLine
 						ClearBreakAll(procsv)
 						SetBreakPoints(0)
-						ResumeThread(threadcontext)
+						ResumeAllThreads
 					EndIf
 					Return TRUE
 					'
@@ -985,7 +995,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								EndIf
 							EndIf
 						EndIf
-						ResumeThread(threadcontext)
+						ResumeAllThreads
 					EndIf
 					Return TRUE
 					'
@@ -1061,8 +1071,8 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClientToScreen(Cast(HWND,wParam),@pt)
 						pt.x=pt.x+10
 					Else
-						pt.x=lParam And &HFFFF
-						pt.y=lParam Shr 16
+						pt.x=Cast(Short,LoWord(lParam))
+						pt.y=Cast(Short,HiWord(lParam))
 					EndIf
 					TrackPopupMenu(GetSubMenu(GetMenu(lpHandles->hwnd),3),TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,lpHandles->hwnd,0)
 					Return TRUE

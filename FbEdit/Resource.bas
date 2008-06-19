@@ -91,8 +91,8 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 					pt.x=rect.left+90
 					pt.y=rect.top+90
 				Else
-					pt.x=lParam And &HFFFF
-					pt.y=lParam Shr 16
+					pt.x=Cast(Short,LoWord(lParam))
+					pt.y=Cast(Short,HiWord(lParam))
 				EndIf
 				hMnu=GetSubMenu(ah.hcontextmenu,4)
 				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)

@@ -1,27 +1,27 @@
 
 ' DATA STAB
 Type udtstab
-	stabs As Integer
-	code As UShort
-	nline As UShort
-	ad As Integer
+	stabs			As Integer
+	code			As UShort
+	nline			As UShort
+	ad				As Integer
 End Type
 
 Type tproc
-	nm As String   'name
-	db As UInteger 'lower address
-	fn As UInteger 'upper address
-	sr As Byte     'source index
-	ad As UInteger 'address
-	vr As UInteger 'lower index variable upper (next proc) -1
-	rv As Integer  'return value type
-	nu As UShort	'Line number
+	nm				As String   'name
+	db				As UInteger 'lower address
+	fn				As UInteger 'upper address
+	sr				As Byte     'source index
+	ad				As UInteger 'address
+	vr				As UInteger 'lower index variable upper (next proc) -1
+	rv				As Integer  'return value type
+	nu				As UShort	'Line number
 End Type
 
 Type tprocr
-	sk As UInteger
-	idx As UInteger
-	'lst as uinteger 'future array in LIST
+	sk				As UInteger
+	idx			As UInteger
+	'lst 			As uinteger 'future array in LIST
 End Type
 
 Enum
@@ -37,59 +37,66 @@ Enum 'type of running
 End Enum
 
 Type tudt
-	nm As String  'name of udt
-	lb As Integer 'lower limit for components
-	ub As Integer 'upper
-	lg As Integer 'lenght 
+	nm				As String  'name of udt
+	lb				As Integer 'lower limit for components
+	ub				As Integer 'upper
+	lg				As Integer 'lenght 
 End Type
 
 Type tcudt
-	nm As String    'name of components
-	Typ As UShort   'type
-	ofs As UInteger 'offset
-	arr As UInteger 'arr ptr
-	pt As UByte
+	nm				As String    'name of components
+	Typ			As UShort   'type
+	ofs			As UInteger 'offset
+	arr			As UInteger 'arr ptr
+	pt				As UByte
 End Type
 
 Type tnlu
-	nb As UInteger
-	lb As UInteger
-	ub As UInteger
+	nb				As UInteger
+	lb				As UInteger
+	ub				As UInteger
 End Type
 
 Type taudt
-	dm As Integer
-	nlu(5) As tnlu
+	dm				As Integer
+	nlu(5)		As tnlu
 End Type
 
 Type tarr 'five dimensions max
-	dat As Any Ptr
-	pot As Any Ptr
-	siz As UInteger 'nb bytes non used
-	dmn As UInteger
-	nlu(5) As tnlu
+	dat			As Any Ptr
+	pot			As Any Ptr
+	siz			As UInteger 'nb bytes non used
+	dmn			As UInteger
+	nlu(5)		As tnlu
 End Type
 
 Type tvar
-	nm As String    'name
-	typ As UShort   'type
-	adr As Integer  'address or offset 
-	mem As UByte    'scope 
-	arr As tarr Ptr 'pointer to array def
-	pt As UByte     'pointer
-	pn As Short    'to keep track of vars with same name
+	nm				As String    'name
+	typ			As UShort   'type
+	adr			As Integer  'address or offset 
+	mem			As UByte    'scope 
+	arr			As tarr Ptr 'pointer to array def
+	pt				As UByte     'pointer
+	pn				As Short    'to keep track of vars with same name
 End Type
 
 Type tline
-	ad As UInteger	'Address
-	nu As Integer	'Line number
-	sv As Short 	'Source byte
-	pr As UShort	'Proc
+	ad				As UInteger	'Address
+	nu				As Integer	'Line number
+	sv				As Short 	'Source byte
+	pr				As UShort	'Proc
+	isbp			As Integer	'Breakpoint
 End Type
 
 Type tsource
-	file		As String	'Filename
-	pInx		As Integer	'Project index
+	file			As String	'Filename
+	pInx			As Integer	'Project index
+End Type
+
+Type tthread
+	thread		As HANDLE
+	threadid		As UInteger
+	threadres	As UInteger
 End Type
 
 Dim Shared pinfo As PROCESS_INFORMATION
@@ -150,8 +157,8 @@ Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
 Dim Shared linenb As UInteger,linesav As UInteger
 Const THREADMAX=50
-Dim Shared threadnb As UInteger,threadid(THREADMAX) As UInteger,threadres(THREADMAX) As Byte
-Dim Shared thread(THREADMAX) As HANDLE
+Dim Shared threadnb As UInteger
+Dim Shared thread(THREADMAX) As tthread
 Dim Shared threadcontext As HANDLE
 
 Dim Shared breakvalue As Integer =&hCC

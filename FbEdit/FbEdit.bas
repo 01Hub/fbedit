@@ -1651,8 +1651,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					ClientToScreen(hCtl,@pt)
 					pt.x=pt.x+10
 				Else
-					pt.x=lParam And &HFFFF
-					pt.y=lParam Shr 16
+					pt.x=Cast(Short,LoWord(lParam))
+					pt.y=Cast(Short,HiWord(lParam))
 					hCtl=WindowFromPoint(pt)
 				EndIf
 				hCtl=Cast(HWND,wParam)
