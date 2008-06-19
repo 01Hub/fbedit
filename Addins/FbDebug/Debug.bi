@@ -97,6 +97,7 @@ Type tthread
 	thread		As HANDLE
 	threadid		As UInteger
 	threadres	As UInteger
+	threadline	As UInteger
 End Type
 
 Dim Shared pinfo As PROCESS_INFORMATION
@@ -160,6 +161,7 @@ Const THREADMAX=50
 Dim Shared threadnb As UInteger
 Dim Shared thread(THREADMAX) As tthread
 Dim Shared threadcontext As HANDLE
+Dim Shared threadidx As Integer
 
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared linead As UInteger

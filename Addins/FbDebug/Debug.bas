@@ -616,6 +616,7 @@ Sub gestbrk(ad As UInteger)
 		' Restore old value for execution
 		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
 		rline(i).sv=-1
+		thread(threadidx).threadline=i
 PutString("rLine(i).ad " & rLine(i).ad)
 	EndIf
 	' Get context
@@ -693,6 +694,7 @@ Sub findthread(tid As UInteger)
 		If tid=thread(i).threadid Then
 			threadcontext=thread(i).thread
 			thread(i).threadres=0
+			threadidx=i
 			Exit Sub
 		EndIf
 	Next
