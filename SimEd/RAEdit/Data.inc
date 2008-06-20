@@ -174,7 +174,7 @@ IDC_SELECTCUR			equ 103
 IDB_LINENUMBER			equ 104
 IDB_EXPAND				equ 105
 IDB_COLLAPSE			equ 106
-IDB_LOCK			equ 107
+IDB_LOCK				equ 107
 
 .const
 

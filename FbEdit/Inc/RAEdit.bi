@@ -130,6 +130,9 @@
 #Define REM_SETALTHILITELINE				REM_BASE+72		' wParam=Line, lParam=TRUE/FALSE
 #Define REM_ISLINEALTHILITE				REM_BASE+73		' wParam=Line, lParam=0
 #Define REM_SETCURSORWORDTYPE				REM_BASE+74		' wParam=nType, lParam=0
+#Define REM_SETBREAKPOINT					REM_BASE+75		' wParam=nLine, lParam=TRUE/FALSE
+#Define REM_NEXTBREAKPOINT					REM_BASE+76		' wParam=nLine, lParam=0
+#Define REM_GETLINESTATE					REM_BASE+77		' wParam=nLine, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
@@ -169,6 +172,7 @@
 #Define STATE_SEGMENTBLOCK					&H1000
 #Define STATE_NOBLOCK						&H2000
 #Define STATE_ALTHILITE						&H4000
+#Define STATE_BREAKPOINT					&H8000
 #Define STATE_GARBAGE						&H80000000
 
 ' Character table types

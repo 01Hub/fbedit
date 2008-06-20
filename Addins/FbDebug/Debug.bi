@@ -85,7 +85,6 @@ Type tline
 	nu				As Integer	'Line number
 	sv				As Short 	'Source byte
 	pr				As UShort	'Proc
-	isbp			As Integer	'Breakpoint
 End Type
 
 Type tsource
@@ -97,7 +96,6 @@ Type tthread
 	thread		As HANDLE
 	threadid		As UInteger
 	threadres	As UInteger
-	threadline	As UInteger
 End Type
 
 Dim Shared pinfo As PROCESS_INFORMATION

@@ -126,9 +126,9 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 				Return nInx
 			EndIf
 		Else
-			nMiss=nMiss+1
+			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=1001
 	nMiss=0
@@ -142,9 +142,9 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 				Return nInx
 			EndIf
 		Else
-			nMiss=nMiss+1
+			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	Return 0
 
@@ -169,7 +169,7 @@ Sub UpdateProjectFileName(ByVal sOldFile As String,ByVal sNewFile As String)
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=1001
 	nMiss=0
@@ -185,7 +185,7 @@ Sub UpdateProjectFileName(ByVal sOldFile As String,ByVal sNewFile As String)
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 
 End Sub
@@ -380,7 +380,7 @@ Sub RefreshProjectTree
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=1001
 	nMiss=0
@@ -392,7 +392,7 @@ Sub RefreshProjectTree
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	SendMessage(ah.hprj,TVM_EXPAND,TVE_EXPAND,Cast(Integer,hPar))
 	tvs.hParent=hPar
@@ -427,7 +427,7 @@ Sub ReparseProject
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=1001
 	nMiss=0
@@ -443,7 +443,7 @@ Sub ReparseProject
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 
 End Sub
@@ -493,7 +493,7 @@ Function OpenProject() As Integer
 				WritePrivateProfileString(StrPtr("File"),Str(x),@sItem,@ad.ProjectFile)
 				x=x+1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 		nInx=1001
 		x=1001
@@ -503,7 +503,7 @@ Function OpenProject() As Integer
 				WritePrivateProfileString(StrPtr("File"),Str(x),@sItem,@ad.ProjectFile)
 				x=x+1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 		WritePrivateProfileSection(StrPtr("Project"),@buff,@ad.ProjectFile)
 		tpe=1
@@ -574,7 +574,7 @@ Function OpenProject() As Integer
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=1001
 	nMiss=0
@@ -595,7 +595,7 @@ Function OpenProject() As Integer
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	SendMessage(ah.hprj,TVM_EXPAND,TVE_EXPAND,Cast(Integer,hPar))
 	tvs.hParent=hPar
@@ -656,7 +656,7 @@ Function GetProjectResource() As String
 		Else
 			nMiss+=1
 		EndIf
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	Return ""
 
@@ -708,7 +708,7 @@ Sub AddProjectFile(ByVal sFile As String,ByVal fModule As Boolean)
 		sItem=szNULL
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
-			nInx=nInx+1
+			nInx+=1
 		Else
 			Exit While
 		EndIf
@@ -890,7 +890,7 @@ Sub SetAsMainProjectFile
 			Else
 				nMiss+=1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 		nInx=1001
 		nMiss=0
@@ -906,7 +906,7 @@ Sub SetAsMainProjectFile
 			Else
 				nMiss+=1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 	EndIf
 
@@ -948,7 +948,7 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 			Else
 				nMiss+=1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 		nInx=1001
 		nMiss=0
@@ -973,7 +973,7 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 			Else
 				nMiss+=1
 			EndIf
-			nInx=nInx+1
+			nInx+=1
 		Loop
 	EndIf
 
@@ -1027,7 +1027,7 @@ Sub ToggleProjectFile
 				sItem=szNULL
 				GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 				If Len(sItem) Then
-					nInx=nInx+1
+					nInx+=1
 				Else
 					Exit While
 				EndIf
@@ -1428,7 +1428,7 @@ Function NewProjectTab1Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam A
 					buff[x-1]=NULL
 					SendDlgItemMessage(hWin,IDC_CBOPROJECTTYPE,CB_ADDSTRING,0,Cast(Integer,@buff))
 				EndIf
-				nInx=nInx+1
+				nInx+=1
 			Loop
 			SendDlgItemMessage(hWin,IDC_CBOPROJECTTYPE,CB_SETCURSEL,0,0)
 			CheckDlgButton(hWin,IDC_CHKCODE,BST_CHECKED)
@@ -1653,7 +1653,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 									EndIf
 									buff=buff & sItem
 								EndIf
-								nInx=nInx+1
+								nInx+=1
 							Wend
 							EndDialog(hWin,TRUE)
 							'

@@ -1212,13 +1212,13 @@
 			ret
 		align 4
 		_REM_SETALTHILITELINE:
-			;wParam=Line
+			;wParam=nLine
 			;lParam=TRUE/FALSE
 			invoke AltHiliteLine,ebx,wParam,lParam
 			ret
 		align 4
 		_REM_ISLINEALTHILITE:
-			;wParam=Line
+			;wParam=nLine
 			;lParam=0
 			invoke IsLineAltHilite,ebx,wParam
 			.if eax
@@ -1232,7 +1232,26 @@
 			mov		eax,wParam
 			mov		[ebx].EDIT.nCursorWordType,eax
 			ret
-
+		align 4
+		_REM_SETBREAKPOINT:
+			;wParam=nLine
+			;lParam=TRUE/FALSE
+			invoke SetBreakpoint,ebx,wParam,lParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
+			ret
+		align 4
+		_REM_NEXTBREAKPOINT:
+			;wParam=nLine
+			;lParam=0
+			invoke NextBreakpoint,ebx,wParam
+			ret
+		align 4
+		_REM_GETLINESTATE:
+			;wParam=nLine
+			;lParam=0
+			invoke GetLineState,ebx,wParam
+			ret
 .data
 
 align 4
@@ -1312,6 +1331,9 @@ _REM_BASE \
 	dd _REM_SETALTHILITELINE	;equ REM_BASE+72
 	dd _REM_ISLINEALTHILITE		;equ REM_BASE+73
 	dd _REM_SETCURSORWORDTYPE	;equ REM_BASE+74
+	dd _REM_SETBREAKPOINT		;equ REM_BASE+75
+	dd _REM_NEXTBREAKPOINT		;equ REM_BASE+76
+	dd _REM_GETLINESTATE		;equ REM_BASE+77
 
 .code
 align 4

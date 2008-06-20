@@ -78,7 +78,7 @@ Sub SaveBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 
 	nLn=-1
 	While TRUE
-		nLn=SendMessage(hWin,REM_NXTBOOKMARK,nLn,5)
+		nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
 		If nLn<>-1 Then
 			buff &="," & Str(nLn)
 		Else
@@ -86,13 +86,21 @@ Sub SaveBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 			Exit While
 		EndIf
 	Wend
+
 End Sub
 
 Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim buff As ZString*2048
 	Dim As Integer nLn,x
 
-	SendMessage(hWin,REM_CLRBOOKMARKS,0,5)
+	nLn=-1
+	While TRUE
+		nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
+		If nLn=-1 Then
+			Exit While
+		EndIf
+		SendMessage(hWin,REM_SETBREAKPOINT,nLn,FALSE)
+	Wend
 	GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
 	While Len(buff)
 		x=InStr(buff,",")
@@ -103,7 +111,7 @@ Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 			nLn=Val(buff)
 			buff=""
 		EndIf
-		SendMessage(hWin,REM_SETBOOKMARK,nLn,5)
+		SendMessage(hWin,REM_SETBREAKPOINT,nLn,TRUE)
 	Wend
 End Sub
 
@@ -887,13 +895,13 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							nInx=IsProjectFile(@lpData->filename)
 							If nInx Then
 								nLn=GetLineNumber
-								tid=SendMessage(lpHandles->hred,REM_GETBOOKMARK,nLn,0)
-								If tid=0 Then
+								tid=SendMessage(lpHandles->hred,REM_GETLINESTATE,nLn,0)
+								If tid And STATE_BREAKPOINT Then
+									SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
+								Else
 									If CheckLine(nLn,@lpData->filename) Then
-										SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,5)
+										SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,TRUE)
 									EndIf
-								ElseIf tid=5 Then
-									SendMessage(lpHandles->hred,REM_SETBOOKMARK,nLn,0)
 								EndIf
 								SaveBreakpoints(lpHandles->hred,nInx)
 								If hThread Then
@@ -911,7 +919,15 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 							nInx=IsProjectFile(@lpData->filename)
 							If nInx Then
-								SendMessage(lpHandles->hred,REM_CLRBOOKMARKS,0,5)
+								nLn=-1
+								While TRUE
+									nLn=SendMessage(lpHandles->hred,REM_NEXTBREAKPOINT,nLn,0)
+									If nLn=-1 Then
+										Exit While
+									EndIf
+									SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
+									nLn+=1
+								Wend
 								SaveBreakpoints(lpHandles->hred,nInx)
 								If hThread Then
 									GetBreakPoints
@@ -957,9 +973,21 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 				Case nMnuStop
 					If hThread Then
 						fExit=1
-						WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
-						ResumeAllThreads
-						ClearDebugLine
+						If nLnDebug=-1 Then
+							SetBreakAll
+							WaitForSingleObject(pinfo.hProcess,10)
+						EndIf
+						If nLnDebug<>-1 Then
+							WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(linesav).ad),@breakvalue,1,0)
+							ResumeAllThreads
+							ClearDebugLine
+						Else
+							If MessageBox(hWin,"Terminate process?","Debug",MB_YESNO Or MB_ICONQUESTION)=IDYES Then
+								TerminateProcess(pinfo.hProcess,0)
+							Else
+								fExit=0
+							EndIf
+						EndIf
 					EndIf
 					Return TRUE
 					'

@@ -715,6 +715,31 @@ NextBookMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nType:DWORD
 
 NextBookMark endp
 
+NextBreakpoint proc uses ebx edi,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		edi,nLine
+	inc		edi
+	shl		edi,2
+	xor		eax,eax
+	dec		eax
+	.while edi<[ebx].EDIT.rpLineFree
+		mov		edx,edi
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx].LINE.rpChars
+		add		edx,[ebx].EDIT.hChars
+		test	[edx].CHARS.state,STATE_BREAKPOINT
+		.if !ZERO?
+			mov		eax,edi
+			shr		eax,2
+			.break
+		.endif
+		add		edi,sizeof LINE
+	.endw
+	ret
+
+NextBreakpoint endp
+
 PreviousBookMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nType:DWORD
 	LOCAL	fExpand:DWORD
 
@@ -949,6 +974,41 @@ IsLineAltHilite proc uses ebx,hMem:DWORD,nLine:DWORD
 	ret
 
 IsLineAltHilite endp
+
+SetBreakpoint proc uses ebx,hMem:DWORD,nLine:DWORD,fBreakpoint:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		add		eax,[ebx].EDIT.hLine
+		mov		eax,[eax].LINE.rpChars
+		add		eax,[ebx].EDIT.hChars
+		.if fBreakpoint
+			or		[eax].CHARS.state,STATE_BREAKPOINT
+		.else
+			and		[eax].CHARS.state,-1 xor STATE_BREAKPOINT
+		.endif
+	.endif
+	ret
+
+SetBreakpoint endp
+
+GetLineState proc uses ebx,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		edx,nLine
+	shl		edx,2
+	xor		eax,eax
+	.if edx<[ebx].EDIT.rpLineFree
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx].LINE.rpChars
+		add		edx,[ebx].EDIT.hChars
+		mov		eax,[edx].CHARS.state
+	.endif
+	ret
+
+GetLineState endp
 
 GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 	LOCAL	nLines:DWORD

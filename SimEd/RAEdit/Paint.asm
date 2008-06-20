@@ -785,6 +785,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	mDC:HDC
 	LOCAL	rect:RECT
 	LOCAL	rect1:RECT
+	LOCAL	rect2:RECT
 	LOCAL	cp:DWORD
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
@@ -934,6 +935,30 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
 					invoke SelectClipRgn,mDC,NULL
+					test	[edi].CHARS.state,STATE_BREAKPOINT
+					.if !ZERO?
+						invoke CreateSolidBrush,5151A2h
+						invoke SelectObject,mDC,eax
+						push	eax
+						mov		eax,[ebx].EDIT.selbarwt
+						add		eax,[ebx].EDIT.linenrwt
+						sub		eax,16
+						sub		eax,ps.rcPaint.left
+						mov		edx,[ebx].EDIT.fntinfo.fntht
+						sub		edx,14
+						shr		edx,1
+						add		edx,rect1.top
+						mov		rect2.left,eax
+						add		eax,16
+						mov		rect2.right,eax
+						mov		rect2.top,edx
+						add		edx,16
+						mov		rect2.bottom,edx
+						invoke RoundRect,mDC,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
+						pop		eax
+						invoke SelectObject,mDC,eax
+						invoke DeleteObject,eax
+					.endif
 					mov		eax,[ebx].EDIT.lpBmCB
 					mov		ecx,[edi].CHARS.state
 					and		ecx,STATE_BMMASK
@@ -1044,6 +1069,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
 	LOCAL	rect1:RECT
+	LOCAL	rect2:RECT
 	LOCAL	cp:DWORD
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
@@ -1177,6 +1203,30 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
 					invoke SelectClipRgn,ps.hdc,NULL
+					test	[edi].CHARS.state,STATE_BREAKPOINT
+					.if !ZERO?
+						invoke CreateSolidBrush,5151A2h
+						invoke SelectObject,ps.hdc,eax
+						push	eax
+						mov		eax,[ebx].EDIT.selbarwt
+						add		eax,[ebx].EDIT.linenrwt
+						sub		eax,16
+						sub		eax,ps.rcPaint.left
+						mov		edx,[ebx].EDIT.fntinfo.fntht
+						sub		edx,14
+						shr		edx,1
+						add		edx,rect1.top
+						mov		rect2.left,eax
+						add		eax,16
+						mov		rect2.right,eax
+						mov		rect2.top,edx
+						add		edx,16
+						mov		rect2.bottom,edx
+						invoke RoundRect,ps.hdc,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
+						pop		eax
+						invoke SelectObject,ps.hdc,eax
+						invoke DeleteObject,eax
+					.endif
 					mov		eax,[ebx].EDIT.lpBmCB
 					mov		ecx,[edi].CHARS.state
 					and		ecx,STATE_BMMASK

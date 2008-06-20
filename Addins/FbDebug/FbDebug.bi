@@ -57,3 +57,4 @@ Dim Shared szTipText As ZString*256
 Dim Shared fDone As Integer
 Dim Shared fRun As Integer
 Dim Shared fExit As Integer
+

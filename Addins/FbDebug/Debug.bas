@@ -501,9 +501,6 @@ Sub SetBreakPoints(ByVal nLnRunTo As Integer)
 				ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
 				' Breakpoint
 				WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
-				rline(i).isbp=1
-			Else
-				rline(i).isbp=0
 			EndIf
 			If rline(i).nu-1=nLnRunTo And rLine(i).sv=-1 Then
 				If UCase(lpData->filename)=UCase(source(proc(rline(i).pr).sr).file) Then
@@ -512,7 +509,6 @@ Sub SetBreakPoints(ByVal nLnRunTo As Integer)
 					ReadProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
 					' Breakpoint
 					WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@breakvalue,1,0)
-					rline(i).isbp=1
 				EndIf
 			EndIf
 		EndIf
@@ -569,8 +565,11 @@ Sub ResumeAllThreads()
 '	lret=ResumeThread(threadcontext)
 	For i=0 To threadnb
 		If thread(i).thread Then
-			lret=ResumeThread(thread(i).thread)
-			'PutString("ResumeThread " & lret)
+			lret=1
+			While lret
+				lret=ResumeThread(thread(i).thread)
+				'PutString("ResumeThread " & lret)
+			Wend
 		EndIf
 	Next i
 
@@ -616,8 +615,7 @@ Sub gestbrk(ad As UInteger)
 		' Restore old value for execution
 		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
 		rline(i).sv=-1
-		thread(threadidx).threadline=i
-PutString("rLine(i).ad " & rLine(i).ad)
+'		thread(threadidx).threadline=i
 	EndIf
 	' Get context
 	seteip(ad)
@@ -642,7 +640,7 @@ PutString("rLine(i).ad " & rLine(i).ad)
 		SetBreakPoints(0)
 	Else
 'PutString("threadcontext " & threadcontext)
-		If thread_this=threadcontext Or thread_this=0 Or rline(i).isbp=1 Then
+		If thread_this=threadcontext Or thread_this=0 Then
 			thread_this=threadcontext
 			szFileName=bp(source(proc(procsv).sr).pInx).sFile
 			'PutString(szFileName)
