@@ -1026,9 +1026,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							UpdateAllTabs(2)
 							'
 						Case IDM_EDIT_ERRORNEXT
-							nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,7)
+							nLine=SendMessage(ah.hred,REM_NEXTERROR,nLastLine,0)
 							If nLine=-1 Then
-								nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,7)
+								nLine=SendMessage(ah.hred,REM_NEXTERROR,-1,7)
 							EndIf
 							If nLine<>-1 Then
 								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
@@ -1834,7 +1834,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					ElseIf bm=6 Or bm=7 Then 
 						SendMessage(ah.hout,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						y=SendMessage(ah.hout,EM_LINEFROMCHAR,chrg.cpMin,0)
-						x=SendMessage(ah.hout,EM_LINELENGTH,y,0)
+						x=SendMessage(ah.hout,EM_LINELENGTH,chrg.cpMin,0)
 						buff=Chr(x And 255) & Chr(x\256)
 						x=SendMessage(ah.hout,EM_GETLINE,y,Cast(LPARAM,@buff))
 						buff[x]=NULL
@@ -1843,10 +1843,18 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If ah.hred<>ah.hres Then
 								x=SendMessage(ah.hout,REM_GETBMID,lpRASELCHANGE->Line,0)
 								If x Then
-									x=SendMessage(ah.hred,REM_FINDBOOKMARK,x,0)
-									If x>=0 Then
-										y=x
-									EndIf
+									lret=-1
+									While TRUE
+										lret=SendMessage(ah.hred,REM_NEXTERROR,lret,0)
+										If lret=-1 Then
+											Exit While
+										EndIf
+										i=SendMessage(ah.hred,REM_GETERROR,lret,0)
+										If x=i Then
+											y=lret
+											Exit While
+										EndIf
+									Wend
 								EndIf
 								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,y,0)
 								chrg.cpMax=chrg.cpMin

@@ -740,6 +740,30 @@ NextBreakpoint proc uses ebx edi,hMem:DWORD,nLine:DWORD
 
 NextBreakpoint endp
 
+NextError proc uses ebx edi,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		edi,nLine
+	inc		edi
+	shl		edi,2
+	xor		eax,eax
+	dec		eax
+	.while edi<[ebx].EDIT.rpLineFree
+		mov		edx,edi
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx].LINE.rpChars
+		add		edx,[ebx].EDIT.hChars
+		.if [edx].CHARS.errid
+			mov		eax,edi
+			shr		eax,2
+			.break
+		.endif
+		add		edi,sizeof LINE
+	.endw
+	ret
+
+NextError endp
+
 PreviousBookMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nType:DWORD
 	LOCAL	fExpand:DWORD
 
@@ -993,6 +1017,38 @@ SetBreakpoint proc uses ebx,hMem:DWORD,nLine:DWORD,fBreakpoint:DWORD
 	ret
 
 SetBreakpoint endp
+
+SetError proc uses ebx,hMem:DWORD,nLine:DWORD,nErrID:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		add		eax,[ebx].EDIT.hLine
+		mov		eax,[eax].LINE.rpChars
+		add		eax,[ebx].EDIT.hChars
+		mov		edx,nErrID
+		mov		[eax].CHARS.errid,edx
+	.endif
+	ret
+
+SetError endp
+
+GetError proc uses ebx,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		edx,nLine
+	shl		edx,2
+	xor		eax,eax
+	.if edx<[ebx].EDIT.rpLineFree
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx].LINE.rpChars
+		add		edx,[ebx].EDIT.hChars
+		mov		eax,[edx].CHARS.errid
+	.endif
+	ret
+
+GetError endp
 
 GetLineState proc uses ebx,hMem:DWORD,nLine:DWORD
 

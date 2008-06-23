@@ -418,11 +418,10 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 						If ah.hred<>ah.hres Then
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,y,0)
 							chrg.cpMax=chrg.cpMin
-							SendMessage(ah.hred,REM_SETBOOKMARK,y,7)
 							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 							SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 							x=SendMessage(ah.hout,REM_GETBMID,nLine,0)
-							SendMessage(ah.hred,REM_SETBMID,y,x)
+							SendMessage(ah.hred,REM_SETERROR,y,x)
 						EndIf
 						SetFocus(ah.hred)
 					EndIf

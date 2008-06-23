@@ -98,17 +98,18 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,75123
+1=0,0,0,0,75032
 16=0,0,0,0,12658
 22=0,0,0,0,0
-23=0,0,0,0,28649
+23=0,0,0,0,29154
 24=0,0,0,0,2099
-19=0,0,0,0,4693
-2=0,0,0,0,6730
+19=0,0,0,0,1606
+2=0,0,0,0,6906
 9=0,0,0,0,8563
-10=0,0,0,0,20665
+10=0,0,0,0,28819
 11=0,0,0,0,6031
 20=0,0,0,0,3784
+15=0,0,0,0,0
 
 [BookMark]
 0=
@@ -182,7 +183,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -228,9 +229,10 @@ Group=Added files,Assembly,Resources,Misc,Modules
 19=
 2=
 9=,,
-10=,,,
+10=,,,,
 11=,
 20=
+15=,
 
 [PTimer]
 PTimer=134906884

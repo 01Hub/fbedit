@@ -137,6 +137,9 @@ REM_SETCURSORWORDTYPE	equ REM_BASE+74		;wParam=nType, lParam=0
 REM_SETBREAKPOINT		equ REM_BASE+75		;wParam=nLine, lParam=TRUE/FALSE
 REM_NEXTBREAKPOINT		equ REM_BASE+76		;wParam=nLine, lParam=0
 REM_GETLINESTATE		equ REM_BASE+77		;wParam=nLine, lParam=0
+REM_SETERROR			equ REM_BASE+78		;wParam=nLine, lParam=nErrID
+REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
+REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

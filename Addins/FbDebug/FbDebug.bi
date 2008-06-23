@@ -49,7 +49,6 @@ Dim Shared hLnDebug As HWND
 Dim Shared nLnRunTo As Integer
 Dim Shared nprocrnb As Integer
 Dim Shared ebp_this As UInteger
-Dim Shared thread_this As HANDLE
 ' Tooltip
 Dim Shared ptcur As POINT
 Dim Shared hTip As HWND

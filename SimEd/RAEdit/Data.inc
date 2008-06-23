@@ -15,7 +15,7 @@ MAXSTREAM				equ 32*1024
 
 BTNWT					equ 14
 BTNHT					equ 6
-SELWT					equ 14
+SELWT					equ 16
 LNRWT					equ 28
 
 UNDO_INSERT				equ 1
@@ -70,6 +70,7 @@ CHARS struct
 	max			dd ?		;Max size
 	state		dd ?		;Line state
 	bmid		dd ?		;Bookmark ID
+	errid		dd ?		;Error ID
 CHARS ends
 
 RAUNDO struct

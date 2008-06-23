@@ -1252,6 +1252,26 @@
 			;lParam=0
 			invoke GetLineState,ebx,wParam
 			ret
+		align 4
+		_REM_SETERROR:
+			;wParam=nLine
+			;lParam=nErrID
+			invoke SetError,ebx,wParam,lParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
+			ret
+		_REM_GETERROR:
+			;wParam=nLine
+			;lParam=0
+			invoke GetError,ebx,wParam
+			ret
+		align 4
+		_REM_NEXTERROR:
+			;wParam=nLine
+			;lParam=0
+			invoke NextError,ebx,wParam
+			ret
+
 .data
 
 align 4
@@ -1334,6 +1354,9 @@ _REM_BASE \
 	dd _REM_SETBREAKPOINT		;equ REM_BASE+75
 	dd _REM_NEXTBREAKPOINT		;equ REM_BASE+76
 	dd _REM_GETLINESTATE		;equ REM_BASE+77
+	dd _REM_SETERROR			;equ REM_BASE+78
+	dd _REM_GETERROR			;equ REM_BASE+79
+	dd _REM_NEXTERROR			;equ REM_BASE+80
 
 .code
 align 4

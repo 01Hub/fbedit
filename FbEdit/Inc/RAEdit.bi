@@ -133,6 +133,9 @@
 #Define REM_SETBREAKPOINT					REM_BASE+75		' wParam=nLine, lParam=TRUE/FALSE
 #Define REM_NEXTBREAKPOINT					REM_BASE+76		' wParam=nLine, lParam=0
 #Define REM_GETLINESTATE					REM_BASE+77		' wParam=nLine, lParam=0
+#Define REM_SETERROR							REM_BASE+78		' wParam=nLine, lParam=nErrID
+#Define REM_GETERROR							REM_BASE+79		' wParam=nLine, lParam=0
+#Define REM_NEXTERROR						REM_BASE+80		' wParam=nLine, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

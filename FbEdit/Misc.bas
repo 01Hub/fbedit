@@ -1852,7 +1852,7 @@ Sub EnableMenu()
 			EnableDisable(bm,IDM_EDIT_BOOKMARKPREVIOUS)
 			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,3)+1
 			EnableDisable(bm,IDM_EDIT_BOOKMARKDELETE)
-			bm=SendMessage(ah.hred,REM_NXTBOOKMARK,-1,7)+1
+			bm=SendMessage(ah.hred,REM_NEXTERROR,-1,0)+1
 			EnableDisable(bm,IDM_EDIT_ERRORCLEAR)
 			EnableDisable(bm,IDM_EDIT_ERRORNEXT)
 		EndIf

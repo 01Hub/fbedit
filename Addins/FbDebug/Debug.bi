@@ -94,6 +94,7 @@ End Type
 
 Type tthread
 	thread		As HANDLE
+	threadret	As HANDLE
 	threadid		As UInteger
 	threadres	As UInteger
 End Type

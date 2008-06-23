@@ -945,7 +945,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						If hThread Then
 							ClearDebugLine
 							fRun=1
-							ResumeAllThreads
+							tid=1
+							While tid>0
+								tid=ResumeThread(threadcontext)
+							Wend
 						Else
 							fExit=0
 							If Len(lpData->smakeoutput) Then
@@ -995,7 +998,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						nLnRunTo=-1
 						ClearDebugLine
-						ResumeAllThreads
+						tid=1
+						While tid>0
+							tid=ResumeThread(threadcontext)
+						Wend
 					EndIf
 					Return TRUE
 					'
@@ -1006,7 +1012,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClearDebugLine
 						ClearBreakAll(procsv)
 						SetBreakPoints(0)
-						ResumeAllThreads
+						tid=1
+						While tid>0
+							tid=ResumeThread(threadcontext)
+						Wend
 					EndIf
 					Return TRUE
 					'
@@ -1023,7 +1032,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								EndIf
 							EndIf
 						EndIf
-						ResumeAllThreads
+						tid=1
+						While tid>0
+							tid=ResumeThread(threadcontext)
+						Wend
 					EndIf
 					Return TRUE
 					'

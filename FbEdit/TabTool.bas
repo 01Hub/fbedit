@@ -712,7 +712,14 @@ Sub UpdateAllTabs(ByVal nType As Integer)
 				Case 2
 					' Clear errors
 					If lpTABMEM->hedit<>ah.hres Then
-						SendMessage(lpTABMEM->hedit,REM_CLRBOOKMARKS,0,7)
+						x=-1
+						While TRUE
+							x=SendMessage(lpTABMEM->hedit,REM_NEXTERROR,x,0)
+							If x=-1 Then
+								Exit While
+							EndIf
+							SendMessage(lpTABMEM->hedit,REM_SETERROR,x,0)
+						Wend
 					EndIf
 				Case 3
 					If lpTABMEM->hedit<>ah.hres Then
