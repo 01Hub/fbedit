@@ -1437,11 +1437,12 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 	SendMessage(ah.hred,WM_SETREDRAW,FALSE,0)
 	SendMessage(ah.hred,REM_LOCKUNDOID,TRUE,0)
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ochrg))
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+	chrg.cpMin=ochrg.cpMin
+	chrg.cpMax=ochrg.cpMax
 	SendMessage(ah.hred,EM_HIDESELECTION,TRUE,0)
 	LnSt=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
 	If chrg.cpMax>chrg.cpMin Then
-		chrg.cpMax=chrg.cpMax-1
+		chrg.cpMax-=1
 	EndIf
 	LnEn=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 	LnCnt=LnEn-LnSt
@@ -1449,7 +1450,7 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 		ochrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,LnSt,0)
 		ochrg.cpMax=SendMessage(ah.hred,EM_LINEINDEX,LnEn,0)
 		ochrg.cpMax=ochrg.cpMax+SendMessage(ah.hred,EM_LINELENGTH,ochrg.cpMax,0)+1
-	Else
+	ElseIf ochrg.cpMin<>ochrg.cpMax Then
 		If ochrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,LnSt,0) And ochrg.cpMax=SendMessage(ah.hred,EM_LINEINDEX,LnEn+1,0) Then
 			LnCnt=1
 		EndIf
@@ -1465,9 +1466,11 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 				SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buffer))
 				If buffer=Chr(9) Then
 					SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,StrPtr("")))
-					ochrg.cpMax=ochrg.cpMax-1
-					If LnCnt=0 Then
-						ochrg.cpMin=ochrg.cpMin-1
+					If lnCnt>0 Or chrg.cpMin<ochrg.cpMax Then
+						ochrg.cpMax-=1
+						If LnCnt=0 And chrg.cpMin<=ochrg.cpMin Then
+							ochrg.cpMin-=1
+						EndIf
 					EndIf
 				Else
 					tmp=edtopt.tabsize
@@ -1477,9 +1480,14 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 						SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buffer))
 						If buffer=Space(tmp) Then
 							SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,StrPtr("")))
-							ochrg.cpMax=ochrg.cpMax-tmp
-							If LnCnt=0 Then
-								ochrg.cpMin=ochrg.cpMin-tmp
+							If lnCnt>0 Or chrg.cpMax<=ochrg.cpMax Then
+								ochrg.cpMax-=tmp
+								If LnCnt=0 And chrg.cpMin<=ochrg.cpMin Then
+									ochrg.cpMin-=tmp
+								EndIf
+							ElseIf chrg.cpMax>ochrg.cpMax Then
+								ochrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,LnSt,0)
+								ochrg.cpMax=ochrg.cpMin
 							EndIf
 							Exit While
 						EndIf
@@ -1488,9 +1496,9 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 				EndIf
 			Else
 				' Uncomment
-				buffer=String(128,0)
 				buffer=Chr(127) & Chr(0)
-				SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+				n=SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+				buffer[n]=0
 				For tmp=0 To 127
 					If buffer[tmp]<>VK_SPACE And buffer[tmp]<>VK_TAB And buffer[tmp]<>Asc("'") Then
 						Exit For
@@ -1499,9 +1507,11 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 						chrg.cpMax=chrg.cpMin+1
 						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 						SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,StrPtr("")))
-						ochrg.cpMax=ochrg.cpMax-1
-						If LnCnt=0 Then
-							ochrg.cpMin=ochrg.cpMin-1
+						If lnCnt>0 Or chrg.cpMin<ochrg.cpMax Then
+							ochrg.cpMax-=1
+							If LnCnt=0 And chrg.cpMin<=ochrg.cpMin Then
+								ochrg.cpMin-=1
+							EndIf
 						EndIf
 						Exit For
 					EndIf
@@ -1517,21 +1527,22 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 				If edtopt.expand Then
 					buffer=Space(edtopt.tabsize)
 					SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
-					ochrg.cpMax=ochrg.cpMax+edtopt.tabsize
+					ochrg.cpMax+=edtopt.tabsize
 					If LnCnt=0 Then
-						ochrg.cpMin=ochrg.cpMin+edtopt.tabsize
+						ochrg.cpMin+=edtopt.tabsize
 					EndIf
 				Else
 					SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@char))
-					ochrg.cpMax=ochrg.cpMax+1
+					ochrg.cpMax+=1
 					If LnCnt=0 Then
-						ochrg.cpMin=ochrg.cpMin+1
+						ochrg.cpMin+=1
 					EndIf
 				EndIf
 			Else
 				' Comment
 				buffer=Chr(127) & Chr(0)
-				SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+				n=SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+				buffer[n]=0
 				n=0
 				For tmp=0 To 127
 					If buffer[tmp]=VK_SPACE Then
@@ -1539,6 +1550,9 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 					ElseIf buffer[tmp]=VK_TAB Then
 						n+=edtopt.tabsize
 						n=(n\edtopt.tabsize)*edtopt.tabsize
+					ElseIf buffer[tmp]=0 Then
+						n=999
+						Exit For
 					Else
 						Exit For
 					EndIf
@@ -1563,7 +1577,8 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 		Do While LnSt<=LnEn
 			buffer=String(128,0)
 			buffer=Chr(127) & Chr(0)
-			SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+			n=SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
+			buffer[n]=0
 			n=0
 			For tmp=0 To 127
 				If n=nmin Then
@@ -1571,9 +1586,11 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 					chrg.cpMax=chrg.cpMin
 					SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 					SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@char))
-					ochrg.cpMax=ochrg.cpMax+1
-					If LnCnt=0 Then
-						ochrg.cpMin=ochrg.cpMin+1
+					If lnCnt>0 Or chrg.cpMin<ochrg.cpMax Then
+						ochrg.cpMax+=1
+						If LnCnt=0 And chrg.cpMin<=ochrg.cpMin Then
+							ochrg.cpMin+=1
+						EndIf
 					EndIf
 					Exit For
 				EndIf

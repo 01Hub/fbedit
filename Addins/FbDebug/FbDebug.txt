@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.1
+FbEdit debug addin version 1.0.0.2
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -10,7 +10,7 @@ FbDebug addin:
   This debug addin acts pretty much like the debugger in vb.net
   or VB6. Unlike other FreeBASIC debuggers the debugged exe will
   run at normal speed until a breakpoint is reached. This makes
-  it possible to comfotable debug even large projects and event
+  it possible to comfortable debug even large projects and event
   driven applications like windogs gui projects.
 
 Limitations:
@@ -20,8 +20,7 @@ Limitations:
   However you can use the OutputDebugString api to have
   the value displayed in FbEdit's output window. This will
   also work if the project is compiled without the -g option.
-- You can not debug libraries or object files included at link
-  time. Hopefully this will be supported in future releases.
+- You can not debug libraries.
 - Debugging dll's is not supported yet.
 - OOP is not tested at all.
 - Will only work on FbEdit version 1.0.6.2 or higher.
@@ -80,6 +79,7 @@ o Fixed cosmetic bug if Highlight active line option is enabled.
 o Fixed bug with label in asm block.
 Version 1.0.0.2
 o Added support for modules.
+o Improved breakpoint setting.
 o Improved Stop function. If a safe exit is not possible you will
   be asked to terminate the process.
 o Fixed bug with exe filename.

@@ -10,7 +10,7 @@ o Fixed bug where opening a file that is not part of the project
   would cause code properties to be refreshed constantly.
   This would make code editing sluggish on slow computers.
 o Fixed context menu position bug on dual monitor system.
-o Fixxed 'jump to error on bookmark click' bugs.
+o Fixxed compiler error handling bugs.
 1.0.6.1b
 o Fixed bugs in FbEdit.ini file
 o Updated German translation
