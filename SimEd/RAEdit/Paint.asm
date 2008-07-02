@@ -146,7 +146,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				push	ecx
 				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt
 					movzx	eax,word ptr [esi+edi-2]
-					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2)
+					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3)
 						mov		fCmnt,0
 					.endif
 				.endif
@@ -232,7 +232,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 						.endif
 					.elseif al==CT_CMNTINITCHAR
 						movzx	eax,word ptr [esi+edi]
-						.if ah=="'"
+						.if ah=="'" || al=='{'
 							mov		fCmnt,eax
 							mov		eax,[ebx].EDIT.clr.cmntcol
 							call	DrawCmntBack

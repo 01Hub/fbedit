@@ -2132,6 +2132,8 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		[ebx].EDIT.ccmntblocks,1
 	.elseif word ptr [eax]=="'/" && word ptr [edx]=="/'"
 		mov		[ebx].EDIT.ccmntblocks,2
+	.elseif word ptr [eax]=='{' && word ptr [edx]=='}'
+		mov		[ebx].EDIT.ccmntblocks,3
 	.endif
 	mov		al,byte ptr [eax]
 	.if al

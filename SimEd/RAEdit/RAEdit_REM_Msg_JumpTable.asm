@@ -1271,6 +1271,15 @@
 			;lParam=0
 			invoke NextError,ebx,wParam
 			ret
+		align 4
+		_REM_CHARTABINIT:
+			;wParam=0
+			;lParam=0
+			mov		esi,offset CharTabInit
+			mov		edi,offset CharTab
+			mov		ecx,256
+			rep		movsb
+			ret
 
 .data
 
@@ -1357,6 +1366,7 @@ _REM_BASE \
 	dd _REM_SETERROR			;equ REM_BASE+78
 	dd _REM_GETERROR			;equ REM_BASE+79
 	dd _REM_NEXTERROR			;equ REM_BASE+80
+	dd _REM_CHARTABINIT			;equ REM_BASE+81
 
 .code
 align 4

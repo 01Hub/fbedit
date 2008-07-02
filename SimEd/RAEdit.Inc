@@ -140,6 +140,7 @@ REM_GETLINESTATE		equ REM_BASE+77		;wParam=nLine, lParam=0
 REM_SETERROR			equ REM_BASE+78		;wParam=nLine, lParam=nErrID
 REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
 REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
+REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
