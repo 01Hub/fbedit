@@ -530,7 +530,7 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 					Return TRUE
 				EndIf
 				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,@lpTABMEM->filename),HOOK_FILECLOSE)
-				If lpTABMEM->profileinx Then
+				If lpTABMEM->profileinx And GetWindowLong(lpTABMEM->hedit,GWL_ID)<>IDC_HEXED Then
 					WriteProjectFileInfo(lpTABMEM->hedit,lpTABMEM->profileinx,fProjectClose)
 				EndIf
 				SendMessage(ah.hpr,PRM_DELPROPERTY,Cast(Integer,lpTABMEM->hedit),0)
