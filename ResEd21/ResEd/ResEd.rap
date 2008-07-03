@@ -108,7 +108,7 @@ Options=52
 18=0,0,0,0,6901
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,296
+21=0,0,0,0,358
 22=0,0,0,0
 24=0,0,0,0
 25=0,0,0,0,5060
@@ -131,22 +131,22 @@ Options=52
 0=
 
 [Find]
-1="MakeMnuBar"
-2="hMnuMem"
-3="SELHHFM"
-4="SaveSel"
-5="CreateMnu"
-6="MEM_OPEN"
-7="InstallRAEdit"
-8="GridInstall"
-9="ResEdInstall"
-10="GWL_USERDATA"
+1="MnuHigh"
+2="DrawMnu"
+3="MakeMnuBar"
+4="SELHHFM"
+5="SaveSel"
+6="CreateMnu"
+7="MEM_OPEN"
+8="InstallRAEdit"
+9="GridInstall"
+10="ResEdInstall"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=7
+MilestoneEveryCurrent=9
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
 DefaultComment=Project Default Comment, Edit To Your Suit Yourself.

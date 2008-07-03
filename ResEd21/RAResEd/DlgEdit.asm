@@ -5042,7 +5042,10 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ReleaseDC,hWin,hDC
 			.if !fDrawing && !fSizeing && !fMoveing
 				.if MnuHigh
-					invoke SetCapture,hWin
+					invoke GetCapture
+					.if eax!=hPreview
+						invoke SetCapture,hWin
+					.endif
 				.else
 					invoke GetCapture
 					.if eax==hWin

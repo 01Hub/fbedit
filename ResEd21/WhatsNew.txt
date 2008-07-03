@@ -4,8 +4,9 @@ ResEd
 --------------------
 o Added preview to menu editor.
 o Language resource is now a child dialog.
-o Fixed bug when showing menu accelerator on prview of a dialog with menu.
 o Fixed problem with edit / richedit ES_NUMBER / ES_DISABLENOSCROLL style.
+o Fixed bug when showing menu accelerator on prview of a dialog with menu.
+o Fixed bug when dragging the dialog preview, with a menu, over the desiged dialog.
 
 2.1.0.0 - 2008.04.21
 --------------------
