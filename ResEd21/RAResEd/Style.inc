@@ -2313,6 +2313,14 @@ rsexstyledef	dd WS_EX_ACCEPTFILES
 				dd WS_EX_WINDOWEDGE
 				db 'WS_EX_WINDOWEDGE',0
 
+editnot			db 'ES_DISABLENOSCROLL',0
+				db 0
+richednot		db 'ES_LOWERCASE',0
+				db 'ES_OEMCONVERT',0
+				db 'ES_UPPERCASE',0
+				db 'ES_NUMBER',0
+				db 0
+
 .data?
 
 rscuststyledef	db 2048 dup(?)

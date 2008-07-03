@@ -183,7 +183,21 @@ AddStyles1:
 		mov		edi,[edi]
 		call	Compare
 		.if !eax
-			invoke SendMessage,hWin,RSM_ADDITEM,0,edi
+			.if [ebx].RASTYLE.ntype==1
+				; Edit control
+				invoke IsNotStyle,addr [edi+8],offset editnot
+				.if !eax
+					invoke SendMessage,hWin,RSM_ADDITEM,0,edi
+				.endif
+			.elseif [ebx].RASTYLE.ntype==22
+				; RichEdit control
+				invoke IsNotStyle,addr [edi+8],offset richednot
+				.if !eax
+					invoke SendMessage,hWin,RSM_ADDITEM,0,edi
+				.endif
+			.else
+				invoke SendMessage,hWin,RSM_ADDITEM,0,edi
+			.endif
 		.endif
 		pop		edi
 		lea		edi,[edi+4]

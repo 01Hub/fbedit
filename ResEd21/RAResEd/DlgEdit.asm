@@ -2609,7 +2609,6 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 											invoke DialogTltSize,ParPt.x,ParPt.y
 										.endif
 									.else
-										;invoke DrawingRect,hWin,lParam,0
 										mov		fMultiSel,TRUE
 										mov		eax,lParam
 										mov		mousedown,eax
@@ -2625,7 +2624,6 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if fShift && !fControl
 							.if !eax || eax==3 || eax==11
 								;Draw multisel rect
-								;invoke DrawingRect,hWin,lParam,0
 								mov		fMultiSel,TRUE
 								mov		eax,lParam
 								mov		mousedown,eax
@@ -3625,14 +3623,12 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		invoke strcpyn,addr (DIALOG ptr [edi]).idname,addr buffer,MaxName
 		invoke strcpyn,addr (DIALOG ptr [edi]).caption,(TYPES ptr [esi]).lpcaption,MaxCap
 		.if !nType
-;			mov		eax,DlgIDN
 			invoke GetFreeProjectitemID,TPE_DIALOG
 			mov		(DIALOG ptr [edi]).id,eax
 			;Set default DLGHEAD info
 			mov		esi,edi
 			sub		esi,sizeof DLGHEAD
 			assume esi:ptr DLGHEAD
-;			mov		eax,CtrlIDN
 			inc		eax
 			mov		[esi].ctlid,eax
 			mov		[esi].class,0
@@ -3910,41 +3906,6 @@ DeleteCtl proc uses esi
 	ret
 
 DeleteCtl endp
-
-;UndoCtl proc uses esi
-;	LOCAL	hCtl:HWND
-;	LOCAL	nTab:DWORD
-;
-;	invoke GetWindowLong,hDEd,DEWM_MEMORY
-;	.if eax
-;		mov		esi,eax
-;		mov		eax,(DLGHEAD ptr[esi]).undo
-;		.if eax
-;			push	(DIALOG ptr [eax]).undo
-;			pop		(DLGHEAD ptr[esi]).undo
-;			mov		(DIALOG ptr [eax]).undo,0
-;			mov		esi,eax
-;			mov		eax,(DIALOG ptr [esi]).id
-;			invoke IsFreeID,eax
-;			.if eax==FALSE
-;				invoke GetFreeID
-;				mov		(DIALOG ptr [esi]).id,eax
-;			.endif
-;			invoke CreateCtl,esi
-;			mov		hCtl,eax
-;			invoke GetWindowLong,hCtl,GWL_USERDATA
-;			mov		esi,eax
-;			push	(DIALOG ptr [esi]).tab
-;			pop		nTab
-;			invoke InsertTab,nTab
-;			push	nTab
-;			pop		(DIALOG ptr [esi]).tab
-;			invoke SizeingRect,hCtl,FALSE
-;		.endif
-;	.endif
-;	ret
-;
-;UndoCtl endp
 
 AlignSizeCtl proc uses esi ebx,nFun:DWORD
 	LOCAL	xp:DWORD
@@ -4668,8 +4629,6 @@ SendToBack proc uses esi edi,hCtl:HWND
 			add		[esi].DLGHEAD.undo,sizeof DIALOG
 		.endif
 		invoke SetChanged,TRUE,0
-;		invoke GetWindowLong,hDEd,DEWM_MEMORY
-;		invoke UpdateRAEdit,eax
 		invoke NotifyParent
 	.endif
 	ret
@@ -4710,8 +4669,6 @@ BringToFront proc uses esi edi,hCtl:HWND
 		sub		[esi].DLGHEAD.undo,sizeof DIALOG
 	.endif
 	invoke SetChanged,TRUE,0
-;	invoke GetWindowLong,hDEd,DEWM_MEMORY
-;	invoke UpdateRAEdit,eax
 	invoke NotifyParent
 	ret
 
@@ -4778,8 +4735,6 @@ DrawingRect proc hWin:HWND,lParam:LPARAM,nFun:DWORD
 		mov		fNoParent,FALSE
 		invoke CopyRect,addr SizeRect,addr CtlRect
 	.elseif nFun==1
-;		invoke LoadCursor,0,IDC_CROSS
-;		invoke SetCursor,eax
 		.if fDrawing
 ;//Edit
 			call RSnapToGrid
@@ -4987,12 +4942,6 @@ EditDlgProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DeleteObject,[esi].DLGHEAD.hfont
 				mov		[esi].DLGHEAD.hfont,0
 			.endif
-;			.if [esi].DLGHEAD.menuid && ![esi].DLGHEAD.class
-;				;Adjust for menu
-;				mov		edx,esi
-;				add		edx,sizeof DLGHEAD
-;				sub		[edx].DIALOG.ccy,19
-;			.endif
 			add		esi,sizeof DLGHEAD+sizeof DIALOG
 			.while [esi].DIALOG.hwnd
 				.if [esi].DIALOG.hwnd!=-1
@@ -5216,13 +5165,6 @@ SaveCtlSize proc uses ebx edx esi
 		add		eax,rect.top
 		mov		rect.bottom,eax
 		mov		rect.top,0		
-;		sub		esi,sizeof DLGHEAD
-;		assume esi:nothing
-;		.if [esi].DLGHEAD.menuid && ![esi].DLGHEAD.class
-;			sub		rect.bottom,19
-;		.endif
-;		add		esi,sizeof DLGHEAD
-;		assume esi:ptr DIALOG
 	.else
 		push	[esi].ccx
 		pop		rect.right
@@ -5532,98 +5474,7 @@ SaveDlgMenu proc
 
 SaveDlgMenu endp
 
-;GetStyleStr proc uses esi,nStyle:DWORD,lpStyle1:DWORD,lpStyle2:DWORD,lpStyle3:DWORD
-;
-;	mov		esi,offset styledef
-;	.while byte ptr [esi+4]
-;		mov		eax,nStyle
-;		mov		edx,[esi]
-;		add		esi,4
-;		.if eax==edx
-;			mov		edx,lpStyle1
-;			call	TestStr
-;			.if !eax
-;				mov		eax,esi
-;				jmp		Ex
-;			.else
-;				mov		edx,lpStyle2
-;				call	TestStr
-;				.if !eax
-;					mov		eax,esi
-;					jmp		Ex
-;				.else
-;					mov		edx,lpStyle3
-;					call	TestStr
-;					.if !eax
-;						mov		eax,esi
-;						jmp		Ex
-;					.endif
-;				.endif
-;			.endif
-;		.endif
-;		invoke strlen,esi
-;		lea		esi,[esi+eax+1]
-;	.endw
-;	xor		eax,eax
-;  Ex:
-;	ret
-;
-;TestStr:
-;	xor		ecx,ecx
-;	xor		eax,eax
-;	inc		eax
-;	.while byte ptr [edx+ecx]
-;		mov		al,[edx+ecx]
-;		sub		al,[esi+ecx]
-;		jne		@f
-;		inc		ecx
-;	.endw
-;  @@:
-;	retn
-;
-;GetStyleStr endp
-
-;GetExStyleStr proc uses esi,nExStyle:DWORD,lpStyle1:DWORD
-;
-;	mov		esi,offset exstyledef
-;	.while byte ptr [esi+4]
-;		mov		eax,nExStyle
-;		mov		edx,[esi]
-;		add		esi,4
-;		.if eax==edx
-;			mov		edx,lpStyle1
-;			call	TestStr
-;			.if !eax
-;				mov		eax,esi
-;				jmp		Ex
-;			.endif
-;		.endif
-;		invoke strlen,esi
-;		lea		esi,[esi+eax+1]
-;	.endw
-;	xor		eax,eax
-;  Ex:
-;	ret
-;
-;TestStr:
-;	xor		ecx,ecx
-;	xor		eax,eax
-;	inc		eax
-;	.while byte ptr [edx+ecx]
-;		mov		al,[edx+ecx]
-;		sub		al,[esi+ecx]
-;		jne		@f
-;		inc		ecx
-;	.endw
-;  @@:
-;	retn
-;
-;GetExStyleStr endp
-
 SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
-;	LOCAL	buffer1[8]:BYTE
-;	LOCAL	buffer2[8]:BYTE
-;	LOCAL	buffer3[8]:BYTE
 	LOCAL	nst:DWORD
 	LOCAL	ncount:DWORD
 	LOCAL	npos:DWORD
@@ -5672,229 +5523,6 @@ SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 	.endif
 	ret
 
-;		mov		nst,80000000h
-;		xor		eax,eax
-;		mov		ncount,eax
-;		mov		dword ptr buffer1,eax
-;		mov		dword ptr buffer1[4],eax
-;		mov		dword ptr buffer2,eax
-;		mov		dword ptr buffer2[4],eax
-;		mov		dword ptr buffer3,eax
-;		mov		dword ptr buffer3[4],eax
-;		mov		dword ptr buffer1,'_SW'
-;		mov		eax,nType
-;		.if eax==0
-;			;Dialog
-;			mov		dword ptr buffer2,'_SD'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==1
-;			;Edit
-;			mov		dword ptr buffer2,'_SE'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==2
-;			;Static
-;			mov		dword ptr buffer2,'_SS'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==3 || eax==4 || eax==5 || eax==6
-;			;Button
-;			mov		dword ptr buffer2,'_SB'
-;			call	TestTypeMask
-;			mov		eax,BS_CENTER
-;			call	TestTypeMask1
-;			mov		eax,BS_VCENTER
-;			call	TestTypeMask1
-;			call	WriteStyles
-;		.elseif eax==7
-;			;ComboBox
-;			mov		dword ptr buffer2,'_SBC'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==8
-;			;ListBox
-;			mov		dword ptr buffer2,'_SBL'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==9 || eax==10
-;			;ScrollBar
-;			mov		dword ptr buffer2,'_SBS'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==11
-;			;TabControl
-;			mov		dword ptr buffer2,'_SCT'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==12
-;			;ProgressBar
-;			mov		dword ptr buffer2,'_SBP'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==13
-;			;TreeView
-;			mov		dword ptr buffer2,'_SVT'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==14
-;			;ListView
-;			mov		dword ptr buffer2,'_SVL'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==15
-;			;TrackBar
-;			mov		dword ptr buffer2,'_SBT'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==16
-;			;UpDown
-;			mov		dword ptr buffer2,'_SDU'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==17
-;			;Image
-;			mov		dword ptr buffer2,'_SS'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==18
-;			;ToolBar
-;			mov		dword ptr buffer2,'TSBT'
-;			mov		dword ptr buffer3,'_SCC'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==19
-;			;StatusBar
-;			mov		dword ptr buffer2,'RABS'
-;			mov		dword ptr buffer3,'_SCC'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==20
-;			;DatePicker
-;			mov		dword ptr buffer2,'_STD'
-;
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==21
-;			;MonthView
-;			mov		dword ptr buffer2,'_SCM'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==22
-;			;RichEdit
-;			mov		dword ptr buffer2,'_SE'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==23
-;			;UserDefinedControl
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==24
-;			;ImageCombo
-;			mov		dword ptr buffer2,'_SBC'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==25
-;			;Shape
-;			mov		dword ptr buffer2,'_SS'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==26
-;			;IPAddress
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==27
-;			;Animate
-;			mov		dword ptr buffer2,'_SCA'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==28
-;			;HotKey
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==29 || eax==30
-;			;HPager / VPager
-;			mov		dword ptr buffer2,'_SGP'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==31
-;			;ReBar
-;			mov		dword ptr buffer2,'_SBR'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.elseif eax==32
-;			;Header
-;			mov		dword ptr buffer2,'_SDH'
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.else
-;			call	TestTypeMask
-;			call	WriteStyles
-;		.endif
-;	.endif
-;	ret
-;
-;WriteStyles:
-;	.while nst
-;		mov		eax,nst
-;		test	eax,nStyle
-;		.if !ZERO?
-;			invoke GetStyleStr,nst,addr buffer1,addr buffer2,addr buffer3
-;			.if eax
-;				.if ncount
-;					mov		byte ptr [edi],'|'
-;					add		edi,1
-;				.endif
-;				invoke strcpy,edi,eax
-;				invoke strlen,edi
-;				lea		edi,[edi+eax]
-;				inc		ncount
-;				mov		eax,nst
-;				xor		nStyle,eax
-;			.endif
-;		.endif
-;		shr		nst,1
-;	.endw
-;	.if nStyle
-;		.if ncount
-;			mov		byte ptr [edi],'|'
-;			add		edi,1
-;		.endif
-;		invoke SaveHexVal,nStyle,fComma
-;	.elseif fComma
-;		mov		al,','
-;		stosb
-;	.endif
-;	retn
-;
-;TestTypeMask:
-;	mov		eax,nType
-;	mov		edx,sizeof TYPES
-;	mul		edx
-;	add		eax,offset ctltypes
-;	mov		eax,[eax].TYPES.typemask
-;TestTypeMask1:
-;	.if eax
-;		mov		edx,nStyle
-;		and		edx,eax
-;		.if edx
-;			xor		eax,-1
-;			and		nStyle,eax
-;			invoke GetStyleStr,edx,addr buffer1,addr buffer2,addr buffer3
-;			.if eax
-;				.if ncount
-;					mov		dword ptr [edi],'|'
-;					add		edi,1
-;				.endif
-;				invoke strcpy,edi,eax
-;				invoke strlen,edi
-;				lea		edi,[edi+eax]
-;				inc		ncount
-;			.endif
-;		.endif
-;	.endif
-;	retn
-;
 Compare:
 	xor		eax,eax
 	xor		ecx,ecx
@@ -5923,13 +5551,31 @@ AddStyles:
 			mov		eax,edx
 			and		eax,[edi+4]
 			.if eax==[edi] && eax
-				or		nst,eax
-				inc		ncount
-				xor		edx,eax
-				push	edx
-				invoke strcat,offset namebuff,offset szOR
-				invoke strcat,offset namebuff,addr [edi+8]
-				pop		edx
+				xor		ecx,ecx
+				.if nType==1
+					push	eax
+					push	edx
+					invoke IsNotStyle,addr [edi+8],offset editnot
+					mov		ecx,eax
+					pop		edx
+					pop		eax
+				.elseif nType==22
+					push	eax
+					push	edx
+					invoke IsNotStyle,addr [edi+8],offset richednot
+					mov		ecx,eax
+					pop		edx
+					pop		eax
+				.endif
+				.if !ecx
+					or		nst,eax
+					inc		ncount
+					xor		edx,eax
+					push	edx
+					invoke strcat,offset namebuff,offset szOR
+					invoke strcat,offset namebuff,addr [edi+8]
+					pop		edx
+				.endif
 			.endif
 		.endif
 		pop		edi
@@ -6010,48 +5656,6 @@ AddStyles:
 		lea		edi,[edi+4]
 	.endw
 	retn
-;
-;	LOCAL	buffer1[8]:BYTE
-;	LOCAL	nst:DWORD
-;	LOCAL	ncount:DWORD
-;
-;	.if fStyleHex
-;		invoke SaveHexVal,nExStyle,FALSE
-;	.else
-;		mov		nst,80000000h
-;		xor		eax,eax
-;		mov		ncount,eax
-;		mov		dword ptr buffer1,'E_SW'
-;		mov		dword ptr buffer1[4],'_X'
-;		.while nst
-;			mov		eax,nst
-;			test	eax,nExStyle
-;			.if !ZERO?
-;				invoke GetExStyleStr,nst,addr buffer1
-;				.if eax
-;					.if ncount
-;						mov		byte ptr [edi],'|'
-;						add		edi,1
-;					.endif
-;					invoke strcpy,edi,eax
-;					invoke strlen,edi
-;					lea		edi,[edi+eax]
-;					inc		ncount
-;					mov		eax,nst
-;					xor		nExStyle,eax
-;				.endif
-;			.endif
-;			shr		nst,1
-;		.endw
-;		.if nExStyle
-;			.if ncount
-;				mov		byte ptr [edi],'|'
-;				add		edi,1
-;			.endif
-;			invoke SaveHexVal,nExStyle,FALSE
-;		.endif
-;	.endif
-;	ret
 
 SaveExStyle endp
 
@@ -6649,9 +6253,6 @@ GetType proc uses ebx esi,lpDlg:DWORD
 		.if eax
 			mov		[esi].DIALOG.ntype,2
 			mov		[esi].DIALOG.ntypeid,2
-;			invoke TextToOutput,CTEXT("Unknown control type!")
-;			invoke TextToOutput,addr [esi].DIALOG.idname
-;			invoke TextToOutput,addr [esi].DIALOG.caption
 		.endif
 	.else
 		mov		eax,[esi].DIALOG.ntype

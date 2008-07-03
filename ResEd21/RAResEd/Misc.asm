@@ -1030,3 +1030,21 @@ MakeMnuBar proc uses ebx esi edi,lpMnuMem:DWORD
 
 MakeMnuBar endp
 
+IsNotStyle proc uses esi edi,lpStyle:DWORD,lpNot:DWORD
+	
+	mov		edi,lpStyle
+	mov		esi,lpNot
+	.while TRUE
+		invoke strcmp,esi,edi
+		.if !eax
+			inc		eax
+			ret
+		.endif
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		.break .if !byte ptr [esi]
+	.endw
+	xor		eax,eax
+	ret
+
+IsNotStyle endp
