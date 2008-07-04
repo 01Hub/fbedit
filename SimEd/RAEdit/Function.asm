@@ -1,25 +1,76 @@
 
 .code
 
-FindTextDown proc uses ebx esi edi,hMem:DWORD,lpFind:DWORD,len:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD
+FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,nlen:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD
 	LOCAL	nLine:DWORD
+	LOCAL	lnlen:DWORD
+	LOCAL	lpFind[15]:DWORD
+	LOCAL	len[15] :DWORD
+	LOCAL	findbuff[512]:BYTE
 
+	xor		esi,esi
+	mov		lnlen,esi
+	.while esi<16
+		mov		lpFind[esi*4],0
+		mov		len[esi*4],0
+		inc		esi
+	.endw
+	mov		esi,pFind
+	lea		edi,findbuff
+	mov		lpFind[0],edi
+	xor		ecx,ecx
+	xor		edx,edx
+	.while byte ptr [esi] && ecx<255 && edx<16
+		mov		al,[esi]
+		mov		[edi],al
+		.if al==VK_RETURN
+			inc		edi
+			mov		byte ptr [edi],0
+			inc		edi
+			inc		ecx
+			mov		len[edx*4],ecx
+			xor		ecx,ecx
+			inc		edx
+			mov		lpFind[edx*4],edi
+			dec		edi
+			dec		ecx
+		.endif
+		inc		esi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],0
+	mov		len[edx*4],ecx
 	mov		ebx,hMem
 	invoke GetCharPtr,ebx,cpMin
 	mov		nLine,edx
 	mov		ecx,eax
+	sub		cpMin,ecx
 	mov		edx,cpMin
-	sub		edx,ecx
 	.while edx<cpMax
-		call	TstLn
+		push	nLine
+		xor		esi,esi
+		.while len[esi*4]
+			call	TstLn
+			.break .if eax==-1
+			inc		nLine
+			inc		esi
+			xor		ecx,ecx
+		.endw
+		pop		nLine
 		.break .if eax!=-1
-		xor		ecx,ecx
+		mov		edx,lnlen
+		add		cpMin,edx
+		mov		edx,cpMin
 		inc		nLine
+		xor		ecx,ecx
 	.endw
 	ret
 
 TstFind:
-	mov		esi,lpFind
+	push	ecx
+	push	esi
+	mov		esi,lpFind[esi*4]
 	dec		esi
 	dec		ecx
   TstFind1:
@@ -32,10 +83,8 @@ TstFind:
 	cmp		al,ah
 	je		TstFind1
 	.if !fMC
-		push	edx
 		movzx	edx,al
 		mov		al,CaseTab[edx]
-		pop		edx
 		cmp		al,ah
 		je		TstFind1
 	.endif
@@ -55,6 +104,8 @@ TstFind:
 			.endif
 		.endif
 	.endif
+	pop		esi
+	pop		ecx
 	or		al,al
 	retn
 
@@ -65,8 +116,12 @@ TstLn:
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
+		.if !esi
+			mov		eax,[edi].CHARS.len
+			mov		lnlen,eax
+		.endif
 	  Nxt:
-		mov		eax,len
+		mov		eax,len[esi*4]
 		add		eax,ecx
 		.if eax<=[edi].CHARS.len
 			.if fWW && ecx
@@ -76,24 +131,26 @@ TstLn:
 					jmp		Nxt
 				.endif
 			.endif
-			push	ecx
 			call	TstFind
-			pop		ecx
-			je		Ex
-			inc		ecx
-			jmp		Nxt
-		.else
-			mov		eax,-1
-			add		edx,[edi].CHARS.len
+			je		Found
+			.if !esi
+				inc		ecx
+				jmp		Nxt
+			.endif
 		.endif
 	.else
-		mov		eax,-1
-		mov		edx,-1
+		; EOF
+		mov		cpMin,-1
+		mov		lnlen,0
 	.endif
+	mov		eax,-1
 	retn
-  Ex:
-	add		edx,ecx
-	mov		eax,edx
+  Found:
+	.if !esi
+		add		cpMin,ecx
+		sub		lnlen,ecx
+	.endif
+	mov		eax,cpMin
 	retn
 
 FindTextDown endp
@@ -190,7 +247,6 @@ TstLn:
 	retn
   Ex:
 	mov		eax,edx
-	add		eax,ecx
 	retn
 
 FindTextUp endp
