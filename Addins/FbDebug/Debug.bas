@@ -628,7 +628,7 @@ Sub gestbrk(ad As UInteger)
 	EndIf
 	If fRun Then
 		ClearBreakAll(0)
-		SetBreakPoints(0)
+		SetBreakPoints(-1)
 	Else
 		szFileName=bp(source(proc(procsv).sr).pInx).sFile
 		'PutString(szFileName)
@@ -826,7 +826,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 		ParseDebugInfo
 		GetBreakPoints
 		SetSourceProjectInx
-		SetBreakPoints(0)
+		SetBreakPoints(-1)
 		' Debug loop
 		While TRUE
 			lret=WaitForDebugEvent(@de,INFINITE)
@@ -885,7 +885,11 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadret=threadcontext
 						thread(i).threadid=de.dwThreadId
 						thread(i).threadres=99
-						SuspendThread(threadcontext)
+						For i=1 To linenb
+							If rline(i).ad=.lpStartAddress Then
+								SuspendThread(threadcontext)
+							EndIf
+						Next
 						threadcontext=.hThread
 						'Print "nb of thread";threadnb+1
 					End With

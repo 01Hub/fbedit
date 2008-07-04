@@ -1,8 +1,8 @@
 #define IDR_VERSION1 1
 
 IDR_VERSION1 VERSIONINFO
-FILEVERSION 1,0,0,2
-PRODUCTVERSION 1,0,0,2
+FILEVERSION 1,0,0,3
+PRODUCTVERSION 1,0,0,3
 FILEOS 0x00000004
 FILETYPE 0x00000000
 BEGIN
@@ -10,8 +10,8 @@ BEGIN
   BEGIN
     BLOCK "FFFF0000"
     BEGIN
-      VALUE "FileVersion", "1.0.0.2\0"
-      VALUE "ProductVersion", "1.0.0.2\0"
+      VALUE "FileVersion", "1.0.0.3\0"
+      VALUE "ProductVersion", "1.0.0.3\0"
       VALUE "FileDescription", "FbEdit debug addin\0"
       VALUE "InternalName", "FbDebug.dll\0"
     END
