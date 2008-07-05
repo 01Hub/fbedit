@@ -20,3 +20,15 @@ GLUnurbsObj
 GLUquadricObj
 GLUtesselatorObj
 GLUtriangulatorObj
+GLFWthread
+GLFWmutex
+GLFWcond
+GLFWwindowsizefun
+GLFWwindowclosefun
+GLFWwindowrefreshfun
+GLFWmousebuttonfun
+GLFWmouseposfun
+GLFWmousewheelfun
+GLFWkeyfun
+GLFWcharfun
+GLFWthreadfun
