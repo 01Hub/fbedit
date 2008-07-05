@@ -9,3 +9,4 @@ lpRect,Pointer to a RECT structure.
 lpBuffer,Pointer to a buffer.
 lpString,Pointer to a string.
 nCount,Number of items.
+hKL,Handle to Keyboard Locale.
