@@ -195,10 +195,12 @@ Inkey|As String
 Inp,port:UShort|Integer
 Input,n:Integer|String
 Input,n:Integer,filenum:Integer|String
-InStr,Start:Integer,ByRef Str:String,[Any] ByRef substring:String|Integer
-InStr,Start:Integer,ByRef Str:WString,[Any] ByRef substring:WString|Integer
-InStr,ByRef Str:String,[Any] ByRef substring:String|Integer
-InStr,ByRef Str:WString,[Any] ByRef substring:WString|Integer
+InStr,ByRef Str:String,[Any] ByRef Substring:String|Integer
+InStr,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
+InStr,Start:Integer,ByRef Str:String,[Any] ByRef Substring:String|Integer
+InStr,Start:Integer,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
+InStrRev,ByRef Str:String,[Any] ByRef Substring:String,Start:Integer = -1|Integer
+InStrRev,ByRef Str:WString,[Any] ByRef Substring:WString,Start:Integer = -1|Integer
 Int,number:Double|Double
 IsDate,stringdate:String|Integer
 Kill,ByRef filename:String|Integer
@@ -254,7 +256,7 @@ PCopy,source:Integer,destination:Integer
 Peek,address:Any Ptr|UByte
 Peek,datatype,address:Any Ptr|datatype
 PMap,coord:Single,func:Integer|Single
-Point,coord_x,coord_y,[buffer]
+;Point,coord_x,coord_y,[buffer]
 Poke,address:Any Ptr,ByRef value:UByte
 Poke,datatype,address:Any Ptr,ByRef value:datatype
 Pos|Integer
@@ -395,10 +397,13 @@ WStr,Str:WString Ptr|WString
 WString,count:Integer,ch:WString|WString
 WString,count:Integer,ch_code:Integer|WString
 Year,date_serial:Double|Integer
-;Put
-;Line
-;Circle
-;Point
-;PSet
-;Window
-;Draw String
+Put,#filenum:Integer,[position:LongInt],data:Any[,amount:Integer]|Integer
+Put,#filenum:Integer,[position:LongInt],data():Any|Integer
+Put,[target,][STEP](x,y),source[,(x1,y1)-[STEP](x2,y2)][,method[,(alphaval\value\blender[,param])]]
+Line,[target,][[STEP](x1,y1)]-[STEP](x2,y2)[,[color][,[B\BF][,style]]]
+Line,-(x1,y1)[,[color][,[B\BF][,style]]]
+Circle,[target,][STEP](x,y),radius[,[color][,[start][,[end][,[aspect][,F]]]]]
+Point,coord_x,coord_y[,buffer]|Integer
+PSet,[target,][STEP](x, y)[,color]
+Window,[[SCREEN](x1,y1)-(x2,y2)]
+Draw String,[buffer,][STEP](x,y),text[,color[,font[,method[,(alpha\blender)]]]]
