@@ -83,5 +83,8 @@ o Improved breakpoint setting.
 o Improved Stop function. If a safe exit is not possible you will
   be asked to terminate the process.
 o Fixed bug with exe filename.
+Version 1.0.0.3
+o Fixed bug with threads in libraries.
+o Fixed bug with module filenames.
 
 KetilO

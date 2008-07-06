@@ -363,10 +363,12 @@ Sub ParseDebugInfo()
 						' Main Source
 						'PutString("Main " & recup)
 						If Right(recup,1)="/" Then
+							source(0).file=recup
+						Else
 							sourcenb+=1
+							source(sourcenb).file=source(0).file & recup
+							sourceix=sourcenb
 						EndIf
-						source(sourcenb).file+=recup
-						sourceix=sourcenb
 						i=1
 						While i
 							i=InStr(i,source(sourcenb).file,"/")
