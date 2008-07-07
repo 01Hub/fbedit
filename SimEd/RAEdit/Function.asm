@@ -1,12 +1,14 @@
 
 .code
 
-FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,nlen:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD
+FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD,fWhiteSpace:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	lnlen:DWORD
 	LOCAL	lpFind[15]:DWORD
 	LOCAL	len[15] :DWORD
 	LOCAL	findbuff[512]:BYTE
+	LOCAL	nIgnore:DWORD
+	LOCAL	prev:DWORD
 
 	xor		esi,esi
 	mov		lnlen,esi
@@ -48,6 +50,7 @@ FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,nlen:DWORD,fMC:DWORD,f
 	sub		cpMin,ecx
 	mov		edx,cpMin
 	.while edx<cpMax
+		mov		nIgnore,0
 		push	nLine
 		xor		esi,esi
 		.while len[esi*4]
@@ -65,9 +68,11 @@ FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,nlen:DWORD,fMC:DWORD,f
 		inc		nLine
 		xor		ecx,ecx
 	.endw
+	mov		edx,nIgnore
 	ret
 
 TstFind:
+	mov		prev,1
 	push	ecx
 	push	esi
 	mov		esi,lpFind[esi*4]
@@ -76,10 +81,34 @@ TstFind:
   TstFind1:
 	inc		esi
 	inc		ecx
+  TstFind3:
 	mov		al,[esi]
 	or		al,al
 	je		TstFind2
 	mov		ah,[edi+ecx+sizeof CHARS]
+	.if fWhiteSpace
+		movzx	edx,al
+		movzx	edx,CharTab[edx]
+		.if (al==VK_SPACE || al==VK_TAB) && (ah==VK_SPACE || ah==VK_TAB)
+			.while (byte ptr [edi+ecx+sizeof CHARS]==VK_SPACE || byte ptr [edi+ecx+sizeof CHARS]==VK_TAB) && ecx<[edi].CHARS.len
+				inc		ecx
+				inc		nIgnore
+			.endw
+			.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+				inc		esi
+				dec		nIgnore
+			.endw
+			jmp		TstFind3
+		.elseif (ah==VK_SPACE || ah==VK_TAB) && (!ecx || edx!=1 || prev!=1)
+			;Ignore whitespace
+			.while (byte ptr [edi+ecx+sizeof CHARS]==VK_SPACE || byte ptr [edi+ecx+sizeof CHARS]==VK_TAB) && ecx<[edi].CHARS.len
+				inc		ecx
+				inc		nIgnore
+			.endw
+			mov		prev,edx
+			jmp		TstFind3
+		.endif
+	.endif
 	cmp		al,ah
 	je		TstFind1
 	.if !fMC
@@ -278,7 +307,13 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 		mov		eax,[esi].FINDTEXTEX.chrg.cpMin
 		.if eax<[esi].FINDTEXTEX.chrg.cpMax
 			;Down
-			invoke FindTextDown,ebx,lpText,len,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax
+			xor		eax,eax
+			test	fFlag,FR_IGNOREWHITESPACE
+			.if !ZERO?
+				inc		eax
+			.endif
+			invoke FindTextDown,ebx,lpText,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,eax
+			add		len,edx
 		.elseif eax>[esi].FINDTEXTEX.chrg.cpMax
 			;Up
 			invoke FindTextUp,ebx,lpText,len,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMax,[esi].FINDTEXTEX.chrg.cpMin

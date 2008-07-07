@@ -188,6 +188,9 @@ CT_STRING				equ 5
 CT_CMNTDBLCHAR			equ 6
 CT_CMNTINITCHAR			equ 7
 
+; Find
+FR_IGNOREWHITESPACE		equ 8000000h
+
 RAFONT struct
 	hFont		dd ?						;Code edit normal
 	hIFont		dd ?						;Code edit italics
