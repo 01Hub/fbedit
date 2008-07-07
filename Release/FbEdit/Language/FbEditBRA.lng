@@ -1,6 +1,7 @@
 ;--------------------------------------------------------------------------
 [Lang]
 Lang=Português (Brasil), By Frederico Ramos
+;released: 04/07/2008
 ;--------------------------------------------------------------------------
 [1100]
 1100=Ir para a linha
@@ -24,10 +25,10 @@ Lang=Português (Brasil), By Frederico Ramos
 ;--------------------------------------------------------------------------
 [2100]
 2115=Exportar como
-2101=Assembly equ's
-2102=C defines
+2101=Equ's Assembly
+2102=Definições C
 2103=hla
-2104=PureBasic
+2104=Basic Puro
 2116=Exportar para
 2110=Arquivo
 2111=ClipBoard
@@ -105,7 +106,7 @@ Lang=Português (Brasil), By Frederico Ramos
 4005=Arquivo RC
 4064=inline asm
 4057=Arquivos de código (.bas.bi.):
-4058=Misc
+4058=Miscelânea
 4059=Tab (espaços)
 4060=Backups
 4006=Número da linha
@@ -129,11 +130,11 @@ Lang=Português (Brasil), By Frederico Ramos
 4023=12345
 4062=Completar Código
 4039=Ativo
-4046=Include/Inclib
-4045=Autoosize
-4048=TolTipText
-4063=Case Convert
-4040=Nenhum
+4046=Include/Inc lib
+4045=Tamanho automático
+4048=Dicas
+4063=Conversões
+4040=Nenhuma
 4041=Misturada
 4042=Minúsculas
 4043=Maiúsculas
@@ -154,14 +155,14 @@ Lang=Português (Brasil), By Frederico Ramos
 5000=Salvar arquivos
 2=Cancelar
 1=OK
-1003=Deselecionar todos
-1002=Selecionar todos
+1003=Desel todos
+1002=Selec todos
 ;--------------------------------------------------------------------------
 [5100]
 5100=Opções de Debug
-2=Cancelar
 1=OK
-1002=Debugador:
+2=Cancelar
+;1002=Debugador:
 ;--------------------------------------------------------------------------
 [5200]
 5200=Inserir bloco
@@ -174,7 +175,7 @@ Lang=Português (Brasil), By Frederico Ramos
 1015=Nome do projeto:
 1016=Descrição do projeto:
 1017=Path do projeto:
-1018=Criação da pasta
+1018=Criação de pastas
 1014=Sub-pastas do projeto
 1012=Bak
 1010=Mod
@@ -190,7 +191,7 @@ Lang=Português (Brasil), By Frederico Ramos
 1007=Arquivo de declarações (.bi)
 1006=Arquivo de código (.bas)
 1011=Criar arquivo
-1012=As configurações desta orelha serão anuladas se um modelo é selecionado.
+1012=As configurações desta Aba serão anuladas se um modelo é selecionado.
 ;--------------------------------------------------------------------------
 [5380]
 ;--------------------------------------------------------------------------
@@ -212,13 +213,13 @@ Lang=Português (Brasil), By Frederico Ramos
 5515=Manipulador de Modulo
 5522=Adicionar comando para construir modulo
 5516=Comando para Construir Modulo:
-5521=Compilar só se for mais novo
+5521=Compilar o mais recente
 5504=Construção manual
 5505=Recompilar
 5506=Linha de Comando
 5517=Arquivo de Saída:
-5518=Parâmetro para rodar:
-5519=Exportar Nome do Arquivo de Recurso:
+5518=Parâmetro de execução:
+5519=Exportar Nome do Arquivo de Recursos:
 5520=Agrupando o Projeto
 5501=Nenhum
 5502=Por Pasta
@@ -261,7 +262,7 @@ Lang=Português (Brasil), By Frederico Ramos
 1003=As mudanças terão efeito após reiniciar o FbEdit.
 ;--------------------------------------------------------------------------
 [6200]
-6200=Arquivos Api do Projeto
+6200=Apis do Projeto
 2=Cancelar
 1=OK
 ;--------------------------------------------------------------------------
@@ -277,7 +278,7 @@ Lang=Português (Brasil), By Frederico Ramos
 1010=Para Cima
 1=Procurar
 1011=Substituir
-1012=Substituir Todos
+1012=Subs.Tudo
 2=Cancelar
 ;--------------------------------------------------------------------------
 [10000]
@@ -352,7 +353,7 @@ Lang=Português (Brasil), By Frederico Ramos
 10075=&Largura
 10076=&Altura
 10077=Am&bos
-10078=Centro em Diálogo
+10078=Centralizar no Formulário
 10079=&Horizontal
 10080=&Vertical
 10081=Definir Tabindex
@@ -364,9 +365,9 @@ Lang=Português (Brasil), By Frederico Ramos
 10093=Janela de &Projeto
 10094=Janela de Propriedades
 10020=Barra de Ferramentas
-10058=Barra de Tabuladores
+10058=Barra de Arquivos
 10059=Barra de Estado
-10095=Prever &Diálogo
+10095=Prever &Formulário
 10096=Dividir tela
 10097=Tela cheia\tCtrl+W
 10098=Painel Duplo\tShift+Ctrl+D
@@ -384,7 +385,7 @@ Lang=Português (Brasil), By Frederico Ramos
 10110=&Opções de Projeto
 10111=Criar &Modelo
 10121=&Recursos
-10122=Adicionar &Diálogo
+10122=Adicionar &Formulário
 10123=Adicionar &Menu
 10124=Adicionar Acelerador
 10125=Adicionar Tabela de Textos
@@ -397,20 +398,20 @@ Lang=Português (Brasil), By Frederico Ramos
 10132=Nomes
 10133=Exportar Nomes
 10134=Remover
-10135=DesRemover
+10135=Repor
 10141=Construir
 10142=&Compilar\tF5
-10143=&Rodar\tShift+F5
+10143=&Compilar e Executar\tShift+F5
 10144=&Executar\tCtrl+F5
-10145=Rodar com Debug
+10145=Executar com Debug
 10146=Compilar &Modulos
-10147=Rodar Rápido\tShift+Ctrl+F5
+10147=Execução Rápida\tShift+Ctrl+F5
 10151=&Ferramentas
 10152=&Exportar propriedades
 10161=&Opções
 10017=&Linguagem
 10162=Editor de &Código
-10163=Editor de &Diálogos
+10163=Editor de &Formulários
 10164=Opções de &Path
 10165=Opções de Deb&ug
 10166=Opções de &Construção
@@ -422,15 +423,15 @@ Lang=Português (Brasil), By Frederico Ramos
 10182=&Sobre
 ;--------------------------------------------------------------------------
 [20000]
-20001=Orelha de Ferramen&tas	
-10012=Fechar Orelha Atual\tF4
-10013=Fechar Todas as Orelhas\tCtrl+F4
+20001=Abas de Ferramen&tas	
+10012=Fechar Aba Atual\tF4
+10013=Fechar Todas as Abas\tCtrl+F4
 10203=Fechar Todas Menos a Atual
-10204=Orelha Seguinte\tCtrl+Tab
-10205=Orelha Anterior\tShift+Ctrl+Tab
+10204=Aba Seguinte\tCtrl+Tab
+10205=Aba Anterior\tShift+Ctrl+Tab
 10206=Cortar/Fechar Dividir
-10201=Bloquear/Desbloquear Orelha
-10202=Desbloquear Todas as Orelhas
+10201=Bloquear/Desbloquear Aba
+10202=Desbloquear Todas as Abas
 20002=&Projeto
 10002=Novo Projeto
 10003=Abrir Projeto...
@@ -479,7 +480,7 @@ Lang=Português (Brasil), By Frederico Ramos
 10075=&Largura
 10076=&Altura
 10077=Am&bos
-10078=Centralizar em Diálogo
+10078=Centralizar no Formulário
 10079=&Horizontal
 10080=&Vertical
 10081=Definir Tabindex
@@ -510,7 +511,7 @@ Lang=Português (Brasil), By Frederico Ramos
 10093=Mostrar/Ocultar Janela de Projeto
 10094=Mostrar/Ocultar Janela de Propriedades
 10142=Compilar
-10143=Rodar
+10143=Compilar e Executar
 10144=Executar
 ;--------------------------------------------------------------------------
 [Internal]
@@ -569,7 +570,7 @@ SnipletAddin=Código Sniplets
 10006=Copiar Linha\tAlt+Ctrl+C
 10007=Cortar Linha\tAlt+Ctrl+X
 10008=Apagar Linha
-10009=Rodar rápido
+10009=Execução rápida
 10010=Duplicar Linha\tCtrl+D
 ;--------------------------------------------------------------------------
 [CustomFontAddin]
@@ -595,11 +596,11 @@ FBFileAssociation=Associações de Arquivo
 10001=Alteração de Associação de Arquivo!\rPath do FBEdit é:
 ;--------------------------------------------------------------------------
 [FileTabStyle]
-10000=Estilo barra de tabuladores
+10000=Estilo da barra de arquivos
 10001=Padrão
 10002=Botões
 10003=Plano
-10004=Indicador de estado modificado
+10004=Indicador de alteração
 10005=Largura fixa
 10006=Destacar Ícone
 10007=Asterisco (*)
@@ -675,8 +676,8 @@ Toolbar=Criador de Barra de Ferramentas
 9003=Arquivo
 ;--------------------------------------------------------------------------
 [ProjectZip]
-ProjectZip=Projeto FbEdit zipper
-1009=Zip para:
+ProjectZip=Projeto Zip
+1009=Zipar para:
 1010=Atual:
 1007=Selecionar Todos
 1004=Zip
@@ -690,5 +691,5 @@ ProjectZip=Projeto FbEdit zipper
 2005=Não posso criar Arquivo\r
 2006=Adicionado para zip: 
 2007=Feito.
-10000=Projeto Zipper
+10000=Projeto Zip
 ;--------------------------------------------------------------------------
