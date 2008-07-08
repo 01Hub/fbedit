@@ -175,12 +175,12 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,102
-2=0,416,869,416,606
+2=0,416,869,416,15527
 3=154,154,590,413,749
 4=0,0,590,413,2139
 5=132,132,536,413,5239
-6=12,26,869,416,52231
-7=132,132,536,413,9684
+6=12,26,869,416,78075
+7=132,132,536,413,25044
 8=44,44,536,413,4150
 9=88,88,536,413,49924
 10=110,110,536,413,2715
@@ -486,16 +486,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="inc ecx^M inc edx"
-2="inc ecx^Minc edx"
-3="^I^Iinc^I^Iecx^M^I^Iinc^I^Iedx^M"
-4="FixFind"
-5="SearchMem"
-6="FR_"
-7="FR_WHOLEWORD"
-8="^Idec^i^Iesi^m^idec^i^iecx"
-9="^Idec^i^Iesi^m^idec^i^iecx^m"
-10="^Iinc^I^Iesi^M^Iinc^I^Iecx^M"
+1="IDM_MAKE_BUILD"
+2="IDM_MAKE_COMPILERC"
+3="inc ecx^M inc edx"
+4="inc ecx^Minc edx"
+5="^I^Iinc^I^Iecx^M^I^Iinc^I^Iedx^M"
+6="FixFind"
+7="SearchMem"
+8="FR_"
+9="FR_WHOLEWORD"
+10="^Idec^i^Iesi^m^idec^i^iecx"
 
 [BreakPoint]
 0=
@@ -671,7 +671,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 123=1
 124=1
 [Collapse]
-6=,,,,,,,,,,,,,,,,,,,,,
+6=,,,,,,,,,,,,,,,,,,,,,,
 2=
 11=,,,,,
 8=,,,,,,,,

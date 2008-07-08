@@ -2571,17 +2571,28 @@ CmdMenus proc hWin:HWND,wParam:WPARAM
 			invoke OutputClear
 			movzx	eax,word ptr wParam
 			.if (eax==IDM_MAKE_GO || eax==IDM_MAKE_BUILD) && fProject && fResProject
-				.if !fResChanged
-					invoke ResFileExist
+			mov		word ptr iniBuffer,'1'
+				.if fProject
+					invoke GetPrivateProfileString,addr iniMakeDef,addr iniBuffer,addr szNULL,addr iniBuffer,192,addr ProjectFile
 					.if !eax
-						mov		fResChanged,TRUE
+					   	invoke GetPrivateProfileString,addr ProjectType,addr iniBuffer,addr szNULL,addr iniBuffer,192,addr iniAsmFile
 					.endif
+				.else
+					invoke GetPrivateProfileString,addr iniMakeDefNoPro,addr iniBuffer,addr szNULL,addr iniBuffer,192,addr iniAsmFile
 				.endif
-				.if fResChanged
-					invoke CmdMenus,hWin,IDM_MAKE_COMPILERC
-					.if eax
-						xor		eax,eax
-						ret
+				.if eax
+					.if !fResChanged
+						invoke ResFileExist
+						.if !eax
+							mov		fResChanged,TRUE
+						.endif
+					.endif
+					.if fResChanged
+						invoke CmdMenus,hWin,IDM_MAKE_COMPILERC
+						.if eax
+							xor		eax,eax
+							ret
+						.endif
 					.endif
 				.endif
 			.endif
