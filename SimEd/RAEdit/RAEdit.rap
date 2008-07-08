@@ -71,20 +71,20 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.1.0.9
-PV=1.1.0.9
+FV=1.1.1.0
+PV=1.1.1.0
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.1.0.9
+ProductVersion=1.1.1.0
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
-LegalCopyright=KetilO (C) 2002 - 2007
+LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.1.0.9
+FileVersion=1.1.1.0
 CompanyName=
 
 [Resource]
@@ -99,13 +99,13 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,148
-16=0,0,810,411,2107
+16=0,0,810,411,6443
 22=0,0,0,0,0
 23=0,0,0,0,29322
 24=0,0,0,0,2099
 19=0,0,0,0,0
 2=0,0,0,0,7946
-9=0,0,0,0,8563
+9=0,0,0,0,1811
 10=0,0,0,0,3275
 11=0,0,0,0,6031
 20=0,0,0,0,3784
@@ -127,10 +127,16 @@ CompanyName=
 0=
 
 [Find]
-1="^Idec^i^Iesi^m^idec^i^iecx"
-2="^Idec^i^Iesi^m^idec^i^iecx^m"
-3="^Iinc^I^Iesi^M^Iinc^I^Iecx^M"
-4="aaa^mbbb"
+1="mov"
+2="mov^I^Ieax,FALSE^M^I^Imov^Iedx,TRUE^M"
+3="mov eax,FALSE"
+4="mov eax,FALSE^Mmov edx,TRUE"
+5="^I^Imov^I^Ieax,FALSE^M^I^Imov^I^Iedx,TRUE^M"
+6="mov eax,FALSE^M mov edx,TRUE"
+7="^I^Imov^Ieax,FALSE^M^I^Imov^Iedx,TRUE^M"
+8="mov^Ieax,FALSE^M mov edx,TRUE^M"
+9="mov^Ieax,FALSE^M mov edx,TRUE"
+10="mov^Ieax,FALSE^M mov edx"
 
 [AutoLoad]
 1=1
@@ -178,7 +184,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

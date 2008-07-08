@@ -1,7 +1,7 @@
 
 .code
 
-FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD,fWhiteSpace:DWORD
+FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWhiteSpace:DWORD,cpMin:DWORD,cpMax:DWORD,fDir:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	lnlen:DWORD
 	LOCAL	lpFind[15]:DWORD
@@ -9,6 +9,7 @@ FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,cp
 	LOCAL	findbuff[512]:BYTE
 	LOCAL	nIgnore:DWORD
 	LOCAL	prev:DWORD
+	LOCAL	cp:DWORD
 
 	xor		esi,esi
 	mov		lnlen,esi
@@ -44,30 +45,65 @@ FindTextDown proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,cp
 	mov		byte ptr [edi],0
 	mov		len[edx*4],ecx
 	mov		ebx,hMem
-	invoke GetCharPtr,ebx,cpMin
-	mov		nLine,edx
-	mov		ecx,eax
-	sub		cpMin,ecx
-	mov		edx,cpMin
-	.while edx<cpMax
-		mov		nIgnore,0
-		push	nLine
-		xor		esi,esi
-		.while len[esi*4]
-			call	TstLn
-			.break .if eax==-1
+	.if fDir==1
+		; Down
+		invoke GetCharPtr,ebx,cpMin
+		mov		nLine,edx
+		mov		ecx,eax
+		sub		cpMin,ecx
+		mov		edx,cpMin
+		.while edx<cpMax
+			mov		nIgnore,0
+			push	nLine
+			xor		esi,esi
+			.while len[esi*4]
+				call	TstLn
+				.break .if eax==-1
+				inc		nLine
+				inc		esi
+				xor		ecx,ecx
+			.endw
+			pop		nLine
+			.break .if eax!=-1
+			mov		edx,lnlen
+			add		cpMin,edx
+			mov		edx,cpMin
 			inc		nLine
-			inc		esi
 			xor		ecx,ecx
 		.endw
-		pop		nLine
-		.break .if eax!=-1
-		mov		edx,lnlen
-		add		cpMin,edx
-		mov		edx,cpMin
-		inc		nLine
+	.else
+		; Up
+		mov		eax,cpMin
+		mov		cp,eax
+		dec		eax
+		mov		cpMin,eax
+		invoke GetCharPtr,ebx,cpMin
+		mov		nLine,edx
+		invoke GetCpFromLine,ebx,nLine
+		mov		cpMin,eax
 		xor		ecx,ecx
-	.endw
+		mov		edx,cpMin
+		.while sdword ptr edx>cpMax
+			mov		nIgnore,0
+			push	nLine
+			xor		esi,esi
+			.while len[esi*4]
+				call	TstLn
+				.break .if eax==-1
+				inc		nLine
+				inc		esi
+				xor		ecx,ecx
+			.endw
+			pop		nLine
+			.break .if eax!=-1 && eax<cp
+			dec		nLine
+			invoke GetCpFromLine,ebx,nLine
+			mov		cpMin,eax
+			mov		edx,cpMin
+			xor		ecx,ecx
+			mov		eax,-1
+		.endw
+	.endif
 	mov		edx,nIgnore
 	ret
 
@@ -169,8 +205,13 @@ TstLn:
 		.endif
 	.else
 		; EOF
-		mov		cpMin,-1
-		mov		lnlen,0
+		.if fDir==1
+			mov		cpMin,-1
+			mov		lnlen,0
+		.else
+			mov		cpMax,-1
+			mov		lnlen,0
+		.endif
 	.endif
 	mov		eax,-1
 	retn
@@ -182,104 +223,104 @@ TstLn:
 	mov		eax,cpMin
 	retn
 
-FindTextDown endp
+FindTheText endp
 
-FindTextUp proc uses ebx esi edi,hMem:DWORD,lpFind:DWORD,len:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD
-	LOCAL	nLine:DWORD
-
-	mov		ebx,hMem
-	invoke GetCharPtr,ebx,cpMax
-	mov		nLine,edx
-	mov		edx,ecx
-	mov		ecx,eax
-	.while sdword ptr edx>=cpMin
-		call	TstLn
-		.break .if eax!=-1
-		mov		ecx,eax
-		dec		nLine
-	.endw
-	ret
-
-TstFind:
-	mov		esi,lpFind
-	dec		esi
-	dec		ecx
-  TstFind1:
-	inc		esi
-	inc		ecx
-	mov		al,[esi]
-	or		al,al
-	je		TstFind2
-	mov		ah,[edi+ecx+sizeof CHARS]
-	cmp		al,ah
-	je		TstFind1
-	.if !fMC
-		push	edx
-		movzx	edx,al
-		mov		al,CaseTab[edx]
-		pop		edx
-		cmp		al,ah
-		je		TstFind1
-	.endif
-	xor		eax,eax
-	dec		eax
-  TstFind2:
-	.if fWW && !al
-		.if ecx<=[edi].CHARS.len
-			movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
-			mov		al,CharTab[eax]
-			.if al==CT_CHAR
-				xor		eax,eax
-				dec		eax
-			.else
-				xor		eax,eax
-			.endif
-		.endif
-	.endif
-	or		al,al
-	retn
-
-TstLn:
-	mov		edi,nLine
-	shl		edi,2
-	.if edi<[ebx].EDIT.rpLineFree
-		add		edi,[ebx].EDIT.hLine
-		mov		edi,[edi].LINE.rpChars
-		add		edi,[ebx].EDIT.hChars
-		.if ecx==-1
-			mov		ecx,[edi].CHARS.len
-		.endif
-		sub		edx,ecx
-		sub		ecx,len
-	  Nxt:
-		.if sdword ptr ecx>=0
-			.if fWW && ecx
-				movzx	eax,byte ptr [edi+ecx+sizeof CHARS-1]
-				.if byte ptr CharTab[eax]==CT_CHAR
-					dec		ecx
-					jmp		Nxt
-				.endif
-			.endif
-			push	ecx
-			call	TstFind
-			pop		ecx
-			je		Ex
-			dec		ecx
-			jmp		Nxt
-		.else
-			mov		eax,-1
-		.endif
-	.else
-		mov		eax,-1
-		mov		edx,-1
-	.endif
-	retn
-  Ex:
-	mov		eax,edx
-	retn
-
-FindTextUp endp
-
+;FindTextUp proc uses ebx esi edi,hMem:DWORD,lpFind:DWORD,len:DWORD,fMC:DWORD,fWW:DWORD,cpMin:DWORD,cpMax:DWORD
+;	LOCAL	nLine:DWORD
+;
+;	mov		ebx,hMem
+;	invoke GetCharPtr,ebx,cpMax
+;	mov		nLine,edx
+;	mov		edx,ecx
+;	mov		ecx,eax
+;	.while sdword ptr edx>=cpMin
+;		call	TstLn
+;		.break .if eax!=-1
+;		mov		ecx,eax
+;		dec		nLine
+;	.endw
+;	ret
+;
+;TstFind:
+;	mov		esi,lpFind
+;	dec		esi
+;	dec		ecx
+;  TstFind1:
+;	inc		esi
+;	inc		ecx
+;	mov		al,[esi]
+;	or		al,al
+;	je		TstFind2
+;	mov		ah,[edi+ecx+sizeof CHARS]
+;	cmp		al,ah
+;	je		TstFind1
+;	.if !fMC
+;		push	edx
+;		movzx	edx,al
+;		mov		al,CaseTab[edx]
+;		pop		edx
+;		cmp		al,ah
+;		je		TstFind1
+;	.endif
+;	xor		eax,eax
+;	dec		eax
+;  TstFind2:
+;	.if fWW && !al
+;		.if ecx<=[edi].CHARS.len
+;			movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
+;			mov		al,CharTab[eax]
+;			.if al==CT_CHAR
+;				xor		eax,eax
+;				dec		eax
+;			.else
+;				xor		eax,eax
+;			.endif
+;		.endif
+;	.endif
+;	or		al,al
+;	retn
+;
+;TstLn:
+;	mov		edi,nLine
+;	shl		edi,2
+;	.if edi<[ebx].EDIT.rpLineFree
+;		add		edi,[ebx].EDIT.hLine
+;		mov		edi,[edi].LINE.rpChars
+;		add		edi,[ebx].EDIT.hChars
+;		.if ecx==-1
+;			mov		ecx,[edi].CHARS.len
+;		.endif
+;		sub		edx,ecx
+;		sub		ecx,len
+;	  Nxt:
+;		.if sdword ptr ecx>=0
+;			.if fWW && ecx
+;				movzx	eax,byte ptr [edi+ecx+sizeof CHARS-1]
+;				.if byte ptr CharTab[eax]==CT_CHAR
+;					dec		ecx
+;					jmp		Nxt
+;				.endif
+;			.endif
+;			push	ecx
+;			call	TstFind
+;			pop		ecx
+;			je		Ex
+;			dec		ecx
+;			jmp		Nxt
+;		.else
+;			mov		eax,-1
+;		.endif
+;	.else
+;		mov		eax,-1
+;		mov		edx,-1
+;	.endif
+;	retn
+;  Ex:
+;	mov		eax,edx
+;	retn
+;
+;FindTextUp endp
+;
 FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 	LOCAL	lpText:DWORD
 	LOCAL	len:DWORD
@@ -312,11 +353,18 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 			.if !ZERO?
 				inc		eax
 			.endif
-			invoke FindTextDown,ebx,lpText,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,eax
+			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,1
 			add		len,edx
 		.elseif eax>[esi].FINDTEXTEX.chrg.cpMax
 			;Up
-			invoke FindTextUp,ebx,lpText,len,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMax,[esi].FINDTEXTEX.chrg.cpMin
+			xor		eax,eax
+			test	fFlag,FR_IGNOREWHITESPACE
+			.if !ZERO?
+				inc		eax
+			.endif
+			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,-1
+			add		len,edx
+			;invoke FindTextUp,ebx,lpText,len,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMax,[esi].FINDTEXTEX.chrg.cpMin
 		.else
 			mov		eax,-1
 		.endif
