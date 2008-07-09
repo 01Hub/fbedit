@@ -208,8 +208,26 @@ defver				VERSIONMEM <,1,1,0,0,0,1,0,0,0,4,0,409h,4B0h>
 
 szVersionTxt		db 32*256 dup(?)
 lpOldEditProc		dd ?
+hVerDlg				dd ?
 
 .code
+
+IncrementVersion proc lpProMem:DWORD
+
+	mov		eax,hDialog
+	.if eax && eax==hVerDlg
+		invoke CloseDialog
+	.endif
+	invoke GetTypeMem,lpProMem,TPE_VERSION
+	.if eax
+		mov		edx,[eax].PROJECT.hmem
+		inc		[edx].VERSIONMEM.fv3
+		inc		[edx].VERSIONMEM.pv3
+		mov		[eax].PROJECT.changed,TRUE
+	.endif
+	ret
+
+IncrementVersion endp
 
 ExportVersionNames proc uses esi edi,hMem:DWORD
 
@@ -690,6 +708,8 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hVerDlg,eax
 		mov		fChanged,FALSE
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
@@ -830,7 +850,7 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,NULL
+		mov		hVerDlg,0
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0

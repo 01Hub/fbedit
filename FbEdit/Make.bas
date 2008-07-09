@@ -535,7 +535,23 @@ Function Compile(ByVal sMake As String) As Integer
 	Dim bm As Integer
 	Dim nMain As Integer
 	Dim sFile As String
+	Dim lRet As Integer
 
+	If fProject Then
+		If ah.hres Then
+			lRet=SendMessage(ah.hraresed,PRO_GETMEM,0,0)
+			If SendMessage(ah.hraresed,PRO_GETMEM,0,0) Then
+				SendMessage(ah.hraresed,PRO_INCVERSION,0,0)
+			Else
+				sFile=GetProjectResource
+				If sFile<>"" Then
+					sFile=ad.ProjectPath & "\" & sFile
+					OpenTheFile(sFile,FALSE)
+					SendMessage(ah.hraresed,PRO_INCVERSION,0,0)
+				EndIf
+			EndIf
+		EndIf
+	EndIf
 	If edtopt.autosave Then
 		bm=SaveAllFiles(ah.hwnd)
 	Else

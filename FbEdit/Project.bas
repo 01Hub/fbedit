@@ -643,7 +643,7 @@ Function GetProjectResource() As String
 	Dim sItem As ZString*260
 	Dim sFile As String
 
-	nInx=2
+	nInx=1
 	nMiss=0
 	Do While nInx<256 And nMiss<MAX_MISS
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),"",@sItem,SizeOf(sItem),@ad.ProjectFile)

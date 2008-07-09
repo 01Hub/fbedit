@@ -1670,6 +1670,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_GETDIALOG
 		mov		eax,hDialog
 		jmp		Ex
+	.elseif eax==PRO_INCVERSION
+		invoke GetWindowLong,hPrj,0
+		.if eax
+			invoke IncrementVersion,eax
+		.endif
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

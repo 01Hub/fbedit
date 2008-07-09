@@ -27,6 +27,7 @@ Sub DelTab(ByVal hWin As HWND)
 			Wend
 			DestroyWindow(lpTABMEM->hedit)
 		Else
+			SendMessage(ah.hraresed,PRO_CLOSE,0,0)
 			ShowWindow(lpTABMEM->hedit,SW_HIDE)
 		EndIf
 		ah.hpane(1)=0
