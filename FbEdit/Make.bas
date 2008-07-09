@@ -537,7 +537,7 @@ Function Compile(ByVal sMake As String) As Integer
 	Dim sFile As String
 	Dim lRet As Integer
 
-	If fProject Then
+	If fProject<>0 And fIncVersion<>0 Then
 		If ah.hres Then
 			lRet=SendMessage(ah.hraresed,PRO_GETMEM,0,0)
 			If SendMessage(ah.hraresed,PRO_GETMEM,0,0) Then
