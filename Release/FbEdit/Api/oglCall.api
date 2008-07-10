@@ -592,3 +592,66 @@ glutGameModeString,string:ZString ptr
 glutEnterGameMode|Integer
 glutLeaveGameMode
 glutGameModeGet,mode:GLenum|Integer
+glfwInit|integer
+glfwTerminate
+glfwGetVersion,major:Integer ptr,minor:Integer ptr,rev:Integer ptr
+glfwOpenWindow,width:Integer,height:Integer,redbits:integer,greenbits:integer,bluebits:integer,alphabits:integer,depthbits:integer,stencilbits:integer,mode:integer|integer
+glfwOpenWindowHint,target:integer,hint:integer
+glfwCloseWindow
+glfwSetWindowTitle,title:zstring ptr
+glfwGetWindowSize,width:integer ptr,height:integer ptr
+glfwSetWindowSize,width:integer,height:integer
+glfwSetWindowPos,x:integer,y:integer
+glfwIconifyWindow
+glfwRestoreWindow
+glfwSwapBuffers
+glfwSwapInterval,interval:integer
+glfwGetWindowParam,param:integer|integer
+glfwSetWindowSizeCallback,cbfun:GLFWwindowsizefun
+glfwSetWindowCloseCallback,cbfun:GLFWwindowclosefun
+glfwSetWindowRefreshCallback,cbfun:GLFWwindowrefreshfun
+glfwGetVideoModes,list:GLFWvidmode ptr,maxcount:integer|integer
+glfwGetDesktopMode,mode:GLFWvidmode ptr
+glfwPollEvents
+glfwWaitEvents
+glfwGetKey,key:integer|integer
+glfwGetMouseButton,button:integer|integer
+glfwGetMousePos,xpos:integer ptr,ypos:integer ptr
+glfwSetMousePos,xpos:integer,ypos:integer
+glfwGetMouseWheel|integer
+glfwSetMouseWheel,pos:integer
+glfwSetKeyCallback,cbfun:GLFWkeyfun
+glfwSetCharCallback,cbfun:GLFWcharfun
+glfwSetMouseButtonCallback,cbfun:GLFWmousebuttonfun
+glfwSetMousePosCallback,cbfun:GLFWmouseposfun
+glfwSetMouseWheelCallback,cbfun:GLFWmousewheelfun
+glfwGetJoystickParam,joy:integer,param:integer|integer
+glfwGetJoystickPos,joy:integer,pos:single ptr,numaxes:integer|integer
+glfwGetJoystickButtons,joy:integer,buttons:ubyte ptr,numbuttons:integer|integer
+glfwGetTime|double
+glfwSetTime,time:double
+glfwSleep,time:double
+glfwExtensionSupported,extension:zstring ptr|integer
+glfwGetProcAddress,procname:zstring ptr|any ptr
+glfwGetGLVersion,major:integer ptr,minor:integer ptr,rev:integer ptr
+glfwCreateThread,fun:GLFWthreadfun,arg:any ptr|GLFWthread
+glfwDestroyThread,ID:GLFWthread
+glfwWaitThread,ID:GLFWthread,waitmode:integer|integer
+glfwGetThreadID|GLFWthread
+glfwCreateMutex|GLFWmutex
+glfwDestroyMutex,mutex:GLFWmutex
+glfwLockMutex,mutex:GLFWmutex
+glfwUnlockMutex,mutex:GLFWmutex
+glfwCreateCond|GLFWcond
+glfwDestroyCond,cond:GLFWcond
+glfwWaitCond,cond:GLFWcond,mutex:GLFWmutex,timeout:double
+glfwSignalCond,cond:GLFWcond
+glfwBroadcastCond,cond:GLFWcond
+glfwGetNumberOfProcessors|integer
+glfwEnable,token:integer
+glfwDisable,token:integer
+glfwReadImage,name:zstring ptr,img:GLFWimage ptr,flags:integer|integer
+glfwReadMemoryImage,data:Any Ptr,size:long,img:GLFWimage Ptr,flags:integer|integer
+glfwFreeImage,img:GLFWimage ptr
+glfwLoadTexture2D,name:zstring ptr,flags:integer|integer
+glfwLoadMemoryTexture2D,data:Any Ptr,size:long,flags:integer|integer

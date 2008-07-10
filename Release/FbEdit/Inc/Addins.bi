@@ -1,4 +1,8 @@
 
+#Define IDC_RESED								1100
+#Define IDC_CODEED							1200
+#Define IDC_HEXED								1300
+
 #Ifndef RAFONT
 Type RAFONT Field=1
 	hFont				As HFONT							' Code edit normal
@@ -56,6 +60,14 @@ Type WINPOS
 	singleinstance	As Integer						' Single instance
 	ptcclist			As Point							' Code complete size
 	ptsavelist		As Point							' Save list position
+End Type
+
+Type TABMEM
+	hedit				As HWND
+	filename			As ZString*260
+	profileinx		As Integer
+	filestate		As Integer
+	ft					As FILETIME
 End Type
 
 Type ADDINHOOKS
@@ -117,6 +129,7 @@ Type ADDINDATA
 	hLangMem			As HGLOBAL						' Language translation
 	bExtOutput		As Integer						' External Output
 	HelpPath			As ZString*260					' Path to help files
+	fDebug			As Boolean						' Project is beeing debugged
 End Type
 
 Type ADDINFUNCTIONS
@@ -128,6 +141,7 @@ Type ADDINFUNCTIONS
 	ShowOutput As Sub(ByVal bShow As Boolean)
 	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)
 	FindString As Function(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
+	CallAddins As Function(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
 End Type
 
 ' Addin messages you can send to FbEdit main window
@@ -136,6 +150,7 @@ End Type
 #Define AIM_GETDATA			WM_USER+1001		' Returns a pointer to an ADDINDATA type
 #Define AIM_GETFUNCTIONS	WM_USER+1002		' Returns a pointer to an ADDINFUNCTIONS type (not implemented)
 #Define AIM_GETMENUID		WM_USER+1003		' Returns a free menu id. Use it if you add items to the menu.
+#Define AIM_OPENFILE			WM_USER+1004		' wParam=fHex, lParam=lpFileName
 
 ' Messages sendt to your addin if they are hooked
 
@@ -152,6 +167,10 @@ End Type
 #Define AIM_MAKEDONE			10						' wParam= lParam=
 #Define AIM_GETTOOLTIP		11						' wParam=id lParam=0
 #Define AIM_CTLDBLCLK		12						' wParam=0 lParam=lpCTLDBLCLICK
+#Define AIM_MENUENABLE		13						' wParam=0 lParam=0
+#Define AIM_FILEOPENNEW		14						' wParam=Handle, lParam=FileName.
+#Define AIM_QUERYCLOSE		15						' wParam and lParam as for WM_CLOSE. Return TRUE to prevent FbEdit from closing.
+#Define AIM_CONTEXTMEMU		16						' wParam and lParam as for WM_CONTEXTMENU
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -168,6 +187,10 @@ End Type
 #Define HOOK_MAKEDONE		&H400
 #Define HOOK_GETTOOLTIP		&H800
 #Define HOOK_CTLDBLCLK		&H1000
+#Define HOOK_MENUENABLE		&H2000
+#Define HOOK_FILEOPENNEW	&H4000
+#Define HOOK_QUERYCLOSE		&H8000
+#Define HOOK_CONTEXTMEMU	&H10000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

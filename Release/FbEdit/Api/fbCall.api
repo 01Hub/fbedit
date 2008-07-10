@@ -195,10 +195,12 @@ Inkey|As String
 Inp,port:UShort|Integer
 Input,n:Integer|String
 Input,n:Integer,filenum:Integer|String
-InStr,Start:Integer,ByRef Str:String,[Any] ByRef substring:String|Integer
-InStr,Start:Integer,ByRef Str:WString,[Any] ByRef substring:WString|Integer
-InStr,ByRef Str:String,[Any] ByRef substring:String|Integer
-InStr,ByRef Str:WString,[Any] ByRef substring:WString|Integer
+InStr,ByRef Str:String,[Any] ByRef Substring:String|Integer
+InStr,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
+InStr,Start:Integer,ByRef Str:String,[Any] ByRef Substring:String|Integer
+InStr,Start:Integer,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
+InStrRev,ByRef Str:String,[Any] ByRef Substring:String,Start:Integer = -1|Integer
+InStrRev,ByRef Str:WString,[Any] ByRef Substring:WString,Start:Integer = -1|Integer
 Int,number:Double|Double
 IsDate,stringdate:String|Integer
 Kill,ByRef filename:String|Integer
