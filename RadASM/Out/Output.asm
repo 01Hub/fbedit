@@ -1196,9 +1196,9 @@ OutputText:
 MakeThreadProc endp
 
 OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
-	LOCAL	buffer[256]:BYTE
-	LOCAL	buffer1[256]:BYTE
-	LOCAL	buffer2[256]:BYTE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	iNbr:DWORD
 	LOCAL	fQuote:DWORD
 	LOCAL	chrg:CHARRANGE
@@ -1225,12 +1225,12 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 	mov		fQuote,0
 	mov		dword ptr outbuffer,0
 	.if fProject
-		invoke GetPrivateProfileString,addr iniMakeDef,lpCommandLine,addr szNULL,addr iniBuffer,192,addr ProjectFile
+		invoke GetPrivateProfileString,addr iniMakeDef,lpCommandLine,addr szNULL,addr iniBuffer,SizeOf iniBuffer,addr ProjectFile
 		.if !eax
-		   	invoke GetPrivateProfileString,addr ProjectType,lpCommandLine,addr szNULL,addr iniBuffer,192,addr iniAsmFile
+		   	invoke GetPrivateProfileString,addr ProjectType,lpCommandLine,addr szNULL,addr iniBuffer,SizeOf iniBuffer,addr iniAsmFile
 		.endif
 	.else
-		invoke GetPrivateProfileString,addr iniMakeDefNoPro,lpCommandLine,addr szNULL,addr iniBuffer,192,addr iniAsmFile
+		invoke GetPrivateProfileString,addr iniMakeDefNoPro,lpCommandLine,addr szNULL,addr iniBuffer,SizeOf iniBuffer,addr iniAsmFile
 	.endif
 	;Get file to delete
 	invoke iniGetItem,addr iniBuffer,addr buffer
@@ -1242,7 +1242,7 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		mov		edx,dword ptr buffer[1]
 		push	edx
 		.if al>='0' && al<='9'
-			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,128,addr ProjectFile
+			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,SizeOf buffer,addr ProjectFile
 		.else
 			call AddFile
 		.endif
@@ -1292,7 +1292,7 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		.if (al>='1' && al<='9' && ah==0) || (ah>='0' && ah<='9' && al=='1')
 			push	eax
 			;Get filename
-			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,256,addr ProjectFile
+			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,SizeOf buffer,addr ProjectFile
 			call AddFile
 			pop		eax
 			.if ax=='3' || ax=='31'

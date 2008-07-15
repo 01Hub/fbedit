@@ -1579,7 +1579,7 @@ fDebug					dd ?
 fGroup					dd ?
 fGroupExpand			dd ?
 
-iniBuffer				db 256 dup(?)
+iniBuffer				db MAX_PATH dup(?)
 
 ;Files
 ProjectFile				db MAX_PATH dup(?)

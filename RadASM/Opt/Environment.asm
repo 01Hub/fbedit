@@ -27,7 +27,7 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,1
 		.while TRUE
 			invoke BinToDec,ebx,addr buffer
-			invoke GetPrivateProfileString,addr iniEnv,addr buffer,NULL,edi,512,addr iniAsmFile
+			invoke GetPrivateProfileString,addr iniEnv,addr buffer,NULL,edi,384,addr iniAsmFile
 		  .break .if !eax
 			invoke iniGetItem,edi,addr buffer
 			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_ADDSTRING,0,addr buffer
@@ -36,6 +36,11 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ebx
 		.endw
 		mov		pNextVal,edi
+		.if edi==hEnvMem
+			mov		buffer,0
+			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_ADDSTRING,0,addr buffer
+			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETITEMDATA,eax,edi
+		.endif
 		invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETCURSEL,0,0
 		call	SetEdit
 		pop		edi
