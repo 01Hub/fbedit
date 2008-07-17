@@ -1,4 +1,275 @@
 
+Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr) As Integer
+	Dim As ZString*256 buff,nme1,nme2,nsp,bval
+	Dim As Integer i,j,n,dp,adr,fGlobal,fParam
+	Dim lpArr As tarr Ptr
+	
+	buff=*lpBuff
+	' With block, fixup buff
+	If Left(buff,1)="." Then
+		i=IsProjectFile(@lpData->filename)
+		i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,i,nLnDebug)
+		If i Then
+			lstrcpy(@nme1,Cast(ZString Ptr,i))
+			buff=nme1 & buff
+		EndIf
+	EndIf
+	' Array, fixup buff
+	dp=0
+	While InStr(dp+1,buff,"(")
+		i=InStr(dp+1,buff,"(")
+		dp=i
+		j=0
+		While TRUE
+			If Mid(buff,i,1)="(" Then
+				j+=1
+			ElseIf Mid(buff,i,1)=")" Then
+				j-=1
+				If j=0 Then
+					buff=Left(buff,dp) & Mid(buff,i)
+					Exit while
+				EndIf
+			EndIf
+			i+=1
+		Wend
+	Wend
+	nme1=UCase(buff)
+	' Fixup nme1
+	While InStr(nme1,"(")
+		i=InStr(nme1,"(")
+		nme1=Left(nme1,i-1) & Mid(nme1,i+2)
+	Wend
+	While InStr(nme1,"->")
+		i=InStr(nme1,"->")
+		nme1=Left(nme1,i-1) & "." & Mid(nme1,i+2)
+	Wend
+	i=InStr(nme1,".")
+	If i Then
+		nsp="NS : " & nme1
+		nme2=Mid(nme1,i+1)
+		nme1=Left(nme1,i-1)
+	EndIf
+	i=1
+	adr=0
+	While i<=vrbnb
+		If (vrb(i).pn=procsv Or vrb(i).pn<0) And (nme1=vrb(i).nm Or nsp=vrb(i).nm) Then
+			' Array, insert dimension(s)
+			dp=0
+			If vrb(i).arr Then
+				lpArr=vrb(i).arr
+				dp=InStr(buff,"(")
+				buff=Left(buff,dp) & GetArrayDim(lpArr) & Mid(buff,dp+1)
+			EndIf
+			Select Case vrb(i).mem
+				Case 1
+					nme1="Shared"
+					adr=vrb(i).adr
+					fGlobal=1
+					'
+				Case 2
+					nme1="Static"
+					adr=vrb(i).adr
+					fGlobal=1
+					'
+				Case 3
+					nme1="ByRef"
+					adr=ebp_this+vrb(i).adr
+					fParam=2
+					'
+				Case 4
+					nme1="ByVal"
+					adr=ebp_this+vrb(i).adr
+					fParam=1
+					'
+				Case 5
+					nme1="Local"
+					adr=ebp_this+vrb(i).adr
+					'
+				Case Else
+					nme1="Unknown"
+			End Select
+			If fGlobal=0 Then
+				If fParam Then
+					' Parameter
+					If proc(procsv).nu=nLnDebug+1 Then
+						If fParam=2 Then
+							' ByRef
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+						EndIf
+					Else
+						adr=0
+					EndIf
+				Else
+					' Check if in scope
+					For j=1 To linenb
+						If rline(j).nu=nLnDebug+1 And rline(j).sv=procsv Then
+							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+								adr=0
+							EndIf
+							Exit For
+						EndIf
+					Next
+				EndIf
+			EndIf
+			If adr Then
+				For j=1 To vrb(i).pt
+					buff="*" & buff
+					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+				Next
+				buff=nme1 & " " & buff & " As "
+				dp=InStr(buff,"(")
+				If dp Then
+					adr=0
+				EndIf
+
+				Select Case vrb(i).typ
+					Case 0
+						' Proc
+					Case 1
+						' Integer
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+							pres->dval=Peek(Integer,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 2
+						' Byte
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+							pres->dval=Peek(Byte,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 3
+						' UByte
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+							pres->dval=Peek(UByte,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 4
+						' Char
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+							If Len(buff)>64 Then
+								buff=Left(buff,64) & "..."
+							EndIf
+							buff=Chr(34) & buff & Chr(34)
+						EndIf
+					Case 5
+						' Short
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+							pres->dval=Peek(Short,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 6
+						' UShort
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+							pres->dval=Peek(UShort,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 7
+						' Void
+						buff=""
+					Case 8
+						' UInteger
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+							pres->ntyp=INUM
+							pres->dval=Peek(UInteger,@bval)
+						EndIf
+					Case 9
+						' Longint
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+							pres->dval=Peek(LongInt,@bval)
+						EndIf
+					Case 10
+						' ULongint
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+							pres->dval=Peek(ULongInt,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 11
+						' Single
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+							pres->dval=Peek(Single,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 12
+						' Double
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+							pres->dval=Peek(Double,@bval)
+							pres->ntyp=INUM
+						EndIf
+					Case 13
+						' String
+						If adr Then
+							buff=String(66,0)
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+							adr=Peek(Integer,@bval)
+							i=Peek(Integer,@bval+4)
+							If adr>0 And i>0 Then
+								If i>65 Then
+									i=65
+								EndIf
+								ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,i,0)
+								If Len(buff)>64 Then
+									buff=Left(buff,64) & "..."
+								EndIf
+							EndIf
+							buff=Chr(34) & buff & Chr(34)
+						EndIf
+					Case 14
+						' ZString
+						If adr Then
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+							If Len(buff)>64 Then
+								buff=Left(buff,64) & "..."
+							EndIf
+							buff=Chr(34) & buff & Chr(34)
+						EndIf
+					Case 15
+						' PChar
+						buff=""
+					Case Else
+						'i=InStr(*lpszNme,".")
+						'If i Then
+						'	buff=Left(*lpszNme,i-1)
+						'	*lpszNme=Mid(*lpszNme,i+1)
+						'Else
+						'	buff=*lpszNme
+						'	*lpszNme=""
+						'EndIf
+						'For i=udt(typ).lb To udt(typ).ub
+						'	If cudt(i).nm=buff Then
+						'		If adr Then
+						'			adr+=cudt(i).ofs
+						'		EndIf
+						'		' Array
+						'		If cudt(i).arr Then
+						'			lpArr=Cast(tarr Ptr,cudt(i).arr)
+						'			dp=InStr(dp+1,*lpszBuff,"(")
+						'			*lpszBuff=Left(*lpszBuff,dp) & GetUdtDim(@audt(cudt(i).arr)) & Mid(*lpszBuff,dp+1)
+						'		EndIf
+						'		Return GetVar(cudt(i).Typ,adr,lpszNme,lpszBuff,dp)
+						'		Exit For
+						'	EndIf
+						'Next
+				End Select
+			EndIf
+			Return adr
+		EndIf
+		i+=1
+	Wend
+	Return adr
+
+End Function
+
 Function ExecFunc(ByVal f As Integer,ByVal pres1 As RES Ptr,ByVal pres2 As RES Ptr) As Integer
 	Dim res As RES
 
@@ -360,25 +631,29 @@ End Function
 
 Function VarFunc(ByVal px As Integer Ptr,ByVal pres As RES Ptr) As Integer
 	Dim l As Integer
-	Dim svar As String
+	Dim svar As ZString*256
 
 	l=szCompiled[*px]
 	*px+=1
 	svar=LCase(Mid(szCompiled,*px+1,l))
 	*px+=l
-	Select Case svar
-		Case "i"
-			pres->ntyp=INUM
-			pres->dval=i
-		Case "d"
-			pres->ntyp=INUM
-			pres->dval=d
-		Case "di"
-		Case "s"
-			pres->ntyp=ISTR
-			pres->sval=s
-		Case "si"
-	End Select
+	If hThread Then
+		l=FindVarVal(@svar,pres)
+	Else
+		Select Case svar
+			Case "i"
+				pres->ntyp=INUM
+				pres->dval=i
+			Case "d"
+				pres->ntyp=INUM
+				pres->dval=d
+			Case "di"
+			Case "s"
+				pres->ntyp=ISTR
+				pres->sval=s
+			Case "si"
+		End Select
+	EndIf
 	Return 0
 
 End Function

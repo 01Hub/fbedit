@@ -13,6 +13,7 @@
 Declare Sub EnableDebugMenu
 Declare Sub LockFiles(ByVal bLock As Boolean)
 Declare Sub GetBreakPoints
+Declare Function IsProjectFile(ByVal lpFile As ZString Ptr) As Integer
 
 ' Addin
 Dim Shared hInstance As HINSTANCE
