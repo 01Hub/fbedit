@@ -10,9 +10,9 @@ AcquireSRWLockShared,SRWLock:SRWLOCK Ptr
 ActivateKeyboardLayout,hKL:HKL,Flags:UINT|HKL
 AddAtom,lpString:ZString Ptr|ATOM
 AddERExcludedApplication,szApplication:ZString Ptr|BOOL
-AddFontMemResourceEx,pbFont:PVOID,cbFont:DWORD,pdv:PVOID,pcFonts:DWORD Ptr|HANDLE
+AddFontMemResourceEx,pbFont:Any Ptr,cbFont:DWORD,pdv:Any Ptr,pcFonts:DWORD Ptr|HANDLE
 AddFontResource,lpszFilename:LPCTSTR|Integer
-AddFontResourceEx,lpszFilename:LPCTSTR,fl:DWORD,pdv:PVOID|Integer
+AddFontResourceEx,lpszFilename:LPCTSTR,fl:DWORD,pdv:Any Ptr|Integer
 AddForm,hPrinter:HANDLE,Level:DWORD,pForm:LPBYTE|BOOL
 AddJob,hPrinter:HANDLE,Level:DWORD,pData:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
 AddMonitor,pName:LPTSTR,Level:DWORD,pMonitors:LPBYTE|BOOL
@@ -26,7 +26,7 @@ AddPrintProcessor,pName:LPTSTR,pEnvironment:LPTSTR,pPathName:LPTSTR,pPrintProces
 AddPrintProvidor,pName:LPTSTR,Level:DWORD,pProviderInfo:LPBYTE |BOOL
 AddSIDToBoundaryDescriptor,*BoundaryDescriptor:HANDLE,RequiredSid:PSID|BOOL
 AddUsersToEncryptedFile,lpFileName:LPCWSTR,pUsers:PENCRYPTION_CERTIFICATE_LIST|DWORD
-AddVectoredExceptionHandler,FirstHandler:ULONG,VectoredHandler:PVECTORED_EXCEPTION_HANDLER|PVOID
+AddVectoredExceptionHandler,FirstHandler:ULONG,VectoredHandler:PVECTORED_EXCEPTION_HANDLER|Any Ptr
 AdjustWindowRect,lpRect:LPRECT,dwStyle:DWORD,bMenu:BOOL|BOOL
 AdjustWindowRectEx,lpRect:LPRECT,dwStyle:DWORD,bMenu:BOOL,dwExStyle:DWORD|BOOL
 AdvancedDocumentProperties,hWnd:HWND,hPrinter:HANDLE,pDeviceName:LPTSTR,pDevModeOutput:PDEVMODE,pDevModeInput:PDEVMODE |LONG
@@ -38,10 +38,10 @@ AllocConsole|BOOL
 AllowSetForegroundWindow,dwProcessId:DWORD|BOOL
 AlphaBlend,hdcDest:HDC,nXOriginDest:Integer,nYOriginDest:Integer,nWidthDest:Integer,nHeightDest:Integer,hdcSrc:HDC,nXOriginSrc:Integer,nYOriginSrc:Integer,nWidthSrc:Integer,nHeightSrc:Integer,blendFunction:BLENDFUNCTION|BOOL
 AngleArc,hdc:HDC,X:Integer,Y:Integer,dwRadius:DWORD,eStartAngle:FLOAT,eSweepAngle:FLOAT|BOOL
-AnimatePalette,hpal:HPALETTE,iStartIndex:UINT,cEntries:UINT,*ppe:CONST PALETTEENTRY|BOOL
+AnimatePalette,hpal:HPALETTE,iStartIndex:UINT,cEntries:UINT,*ppe:PALETTEENTRY|BOOL
 AnimateWindow,hwnd:HWND,dwTime:DWORD,dwFlags:DWORD|BOOL
 AnyPopup|BOOL
-APCProc,dwParam:ULONG_PTR 
+APCProc,dwParam:ULONG_PTR
 AppendMenu,hMenu:HMENU,uFlags:UINT,uIDNewItem:UINT_PTR,lpNewItem:LPCTSTR|BOOL
 ApplicationRecoveryFinished,bSuccess:BOOL
 ApplicationRecoveryInProgress,pbCanceled:PBOOL|HRESULT
@@ -64,7 +64,7 @@ AvSetMmMaxThreadCharacteristics,FirstTask:LPCTSTR,SecondTask:LPCTSTR,TaskIndex:L
 AvSetMmThreadCharacteristics,TaskName:LPCTSTR,TaskIndex:LPDWORD|HANDLE
 AvSetMmThreadPriority,AvrtHandle:HANDLE,Priority:AVRT_PRIORITY|BOOL
 BackupEventLog,hEventLog:HANDLE,lpBackupFileName:LPCTSTR|BOOL
-BackupRead,hFile:HANDLE,lpBuffer:LPBYTE,nNumberOfBytesToRead:DWORD,lpNumberOfBytesRead:LPDWORD,bAbort:BOOL,bProcessSecurity:BOOL,*lpContext:LPVOID|BOOL
+BackupRead,hFile:HANDLE,lpBuffer:LPBYTE,nNumberOfBytesToRead:DWORD,lpNumberOfBytesRead:LPDWORD,bAbort:BOOL,bProcessSecurity:BOOL,lpContext:LPVOID Ptr|BOOL
 BackupSeek,hFile:HANDLE,dwLowBytesToSeek:DWORD,dwHighBytesToSeek:DWORD,lpdwLowByteSeeked:LPDWORD,lpdwHighByteSeeked:LPDWORD,*lpContext:LPVOID|BOOL
 BackupWrite,hFile:HANDLE,lpBuffer:LPBYTE,nNumberOfBytesToWrite:DWORD,lpNumberOfBytesWritten:LPDWORD,bAbort:BOOL,bProcessSecurity:BOOL,*lpContext:LPVOID|BOOL
 Beep,dwFreq:DWORD,dwDuration:DWORD|BOOL
@@ -86,7 +86,7 @@ CallbackMayRunLong,pci:PTP_CALLBACK_INSTANCE|BOOL
 CallMsgFilter,lpMsg:LPMSG,nCode:Integer|BOOL
 CallNamedPipe,lpNamedPipeName:LPCTSTR,lpInBuffer:LPVOID,nInBufferSize:DWORD,lpOutBuffer:LPVOID,nOutBufferSize:DWORD,lpBytesRead:LPDWORD,nTimeOut:DWORD|BOOL
 CallNextHookEx,hhk:HHOOK,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
-CallNtPowerInformation,InformationLevel:POWER_INFORMATION_LEVEL,lpInputBuffer:PVOID,nInputBufferSize:ULONG,lpOutputBuffer:PVOID,nOutputBufferSize:ULONG|NTSTATUS
+CallNtPowerInformation,InformationLevel:POWER_INFORMATION_LEVEL,lpInputBuffer:Any Ptr,nInputBufferSize:ULONG,lpOutputBuffer:Any Ptr,nOutputBufferSize:ULONG|NTSTATUS
 CallWindowProc,lpPrevWndFunc:WNDPROC,hWnd:HWND,Msg:UINT,wParam:WPARAM,lParam:LPARAM|LRESULT
 CallWndProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 CallWndRetProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
@@ -133,7 +133,7 @@ ClearCommBreak,hFile:HANDLE|BOOL
 ClearCommError,hFile:HANDLE,lpErrors:LPDWORD,lpStat:LPCOMSTAT|BOOL
 ClearEventLog,hEventLog:HANDLE,lpBackupFileName:LPCTSTR|BOOL
 ClientToScreen,hWnd:HWND,lpPoint:LPPOINT|BOOL
-ClipCursor,*lpRect:RECT|BOOL
+ClipCursor,lpRect:LPCRECT|BOOL
 CloseClipboard|BOOL
 CloseDesktop,hDesktop:HDESK|BOOL
 CloseEnhMetaFile,hdc:HDC|HENHMETAFILE
@@ -148,7 +148,7 @@ ClosePrivateNamespace,Handle:HANDLE,Flags:ULONG|BOOLEAN
 CloseServiceHandle,hSCObject:SC_HANDLE|BOOL
 CloseThreadpool,ptpp:PTP_POOL
 CloseThreadpoolCleanupGroup,ptpcg:PTP_CLEANUP_GROUP
-CloseThreadpoolCleanupGroupMembers,ptpcg:PTP_CLEANUP_GROUP,fCancelPendingCallbacks:BOOL,pvCleanupContext:PVOID
+CloseThreadpoolCleanupGroupMembers,ptpcg:PTP_CLEANUP_GROUP,fCancelPendingCallbacks:BOOL,pvCleanupContext:Any Ptr
 CloseThreadpoolIo,pio:PTP_IO
 CloseThreadpoolTimer,pti:PTP_TIMER
 CloseThreadpoolWait,pwa:PTP_WAIT
@@ -167,9 +167,9 @@ ConfigurePort,pName:LPTSTR,hWnd:HWND,pPortName:LPTSTR|BOOL
 ConnectNamedPipe,hNamedPipe:HANDLE,lpOverlapped:LPOVERLAPPED|BOOL
 ConnectToPrinterDlg,hwnd:HWND,Flags:DWORD|HANDLE
 ContinueDebugEvent,dwProcessId:DWORD,dwThreadId:DWORD,dwContinueStatus:DWORD|BOOL
-ControlCallback,RequestCode:WMIDPREQUESTCODE,Context:PVOID,*Reserved:ULONG,Buffer:PVOID|ULONG
+ControlCallback,RequestCode:WMIDPREQUESTCODE,Context:Any Ptr,*Reserved:ULONG,Buffer:Any Ptr|ULONG
 ControlService,hService:SC_HANDLE,dwControl:DWORD,lpServiceStatus:LPSERVICE_STATUS|BOOL
-ControlServiceEx,hService:SC_HANDLE,dwControl:DWORD,dwInfoLevel:DWORD,pControlParams:PVOID|BOOL
+ControlServiceEx,hService:SC_HANDLE,dwControl:DWORD,dwInfoLevel:DWORD,pControlParams:Any Ptr|BOOL
 ControlTrace,SessionHandle:TRACEHANDLE,SessionName:LPCTSTR,Properties:PEVENT_TRACE_PROPERTIES,ControlCode:ULONG|ULONG
 ConvertDefaultLocale,Locale:LCID|LCID
 ConvertFiberToThread|BOOL
@@ -182,22 +182,22 @@ CopyFile,lpExistingFileNameLPCTSTR,lpNewFileNameLPCTSTR,bFailIfExists:BOOL|BOOL
 CopyFileEx,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR,lpProgressRoutine:LPPROGRESS_ROUTINE,lpData:LPVOID,pbCancel:LPBOOL,dwCopyFlags:DWORD|BOOL
 CopyIcon,hIcon:HICON|HICON
 CopyImage,hImage:HANDLE,uType:UINT,cxDesired:Integer,cyDesired:Integer,fuFlags:UINT|HANDLE
-CopyMemory,Destination:PVOID,*Source:VOID,Length:SIZE_T
+CopyMemory,Destination:Any Ptr,Source:Any Ptr,Length:Integer
 CopyMetaFile,hmfSrc:HMETAFILE,lpszFile:LPCTSTR|HMETAFILE
 CopyProgressRoutine,TotalFileSize:LARGE_INTEGER,TotalBytesTransferred:LARGE_INTEGER,StreamSize:LARGE_INTEGER,StreamBytesTransferred:LARGE_INTEGER,dwStreamNumber:DWORD,dwCallbackReason:DWORD,hSourceFile:HANDLE,hDestinationFile:HANDLE,lpData:LPVOID|DWORD
-CopyRect,lprcDst:LPRECT,*lprcSrc:RECT|BOOL
+CopyRect,lprcDst:LPRECT,lprcSrc:LPCRECT|BOOL
 CountClipboardFormats|Integer
 CounterPathCallBack,dwArg:DWORD_PTR|PDH_STATUS
 CreateAcceleratorTable,lpaccl:LPACCEL,cEntries:Integer|HACCEL
-CreateBitmap,nWidth:Integer,nHeight:Integer,cPlanes:UINT,cBitsPerPel:UINT,*lpvBits:VOID|HBITMAP
-CreateBitmapIndirect,*lpbm:BITMAP|HBITMAP
+CreateBitmap,nWidth:Integer,nHeight:Integer,cPlanes:UINT,cBitsPerPel:UINT,lpvBits:PCVOID|HBITMAP
+CreateBitmapIndirect,lpbm:BITMAP Ptr|HBITMAP
 CreateBoundaryDescriptor,NameLPCTSTR,Flags:ULONG|HANDLE
-CreateBrushIndirect,*lplb:LOGBRUSH|HBRUSH
+CreateBrushIndirect,lplb:LOGBRUSH Ptr|HBRUSH
 CreateCaret,hWnd:HWND,hBitmap:HBITMAP,nWidth:Integer,nHeight:Integer|BOOL
 CreateCompatibleBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
 CreateCompatibleDC,hdc:HDC|HDC
 CreateConsoleScreenBuffer,dwDesiredAccess:DWORD,dwShareMode:DWORD,*lpSecurityAttributes:SECURITY_ATTRIBUTES,dwFlags:DWORD,lpScreenBufferData:LPVOID|HANDLE
-CreateCursor,hInst:HINSTANCE,xHotSpot:Integer,yHotSpot:Integer,nWidth:Integer,nHeight:Integer,*pvANDPlane:VOID,*pvXORPlane:VOID|HCURSOR
+CreateCursor,hInst:HINSTANCE,xHotSpot:Integer,yHotSpot:Integer,nWidth:Integer,nHeight:Integer,pvANDPlane:PCVOID,pvXORPlane:PCVOID|HCURSOR
 CreateDC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpInitData:DEVMODE|HDC
 CreateDesktop,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HDESK
 CreateDesktopEx,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES,ulHeapSize:ULONG,pvoid:PVOID|HDESK
@@ -209,1501 +209,1182 @@ CreateDirectory,lpPathName:LPCTSTR,lpSecurityAttributes,LPSECURITY_ATTRIBUTES|BO
 CreateDirectoryEx,lpTemplateDirectory:LPCTSTR,lpNewDirectory:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
 CreateDiscardableBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
 CreateEllipticRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
-CreateEllipticRgnIndirect,*lprc:RECT|HRGN
+CreateEllipticRgnIndirect,lprc:LPCRECT|HRGN
 CreateEnhMetaFile,hdcRef:HDC,lpFilename:LPCTSTR,*lpRect:RECT,lpDescription:LPCTSTR|HDC
 CreateEvent,lpEventAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,bInitialState:BOOL,lpName:LPCTSTR|HANDLE
 CreateEventEx,lpEventAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
 CreateFiber,dwStackSize:SIZE_T,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
 CreateFiberEx,dwStackCommitSize:SIZE_T,dwStackReserveSize:SIZE_T,dwFlags:DWORD,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
 CreateFile,lpFileName:LPCTSTR,dwDesiredAccess:DWORD,dwShareMode:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,dwCreationDisposition:DWORD,dwFlagsAndAttributes:DWORD,hTemplateFile:HANDLE|HANDLE
-
-HANDLE CreateFileMapping(
-  HANDLE hFile,
-  LPSECURITY_ATTRIBUTES lpAttributes,
-  DWORD flProtect,
-  DWORD dwMaximumSizeHigh,
-  DWORD dwMaximumSizeLow,
-  LPCTSTR lpName
-);
-
-HANDLE WINAPI CreateFileMappingNuma(
-  HANDLE hFile,
-  LPSECURITY_ATTRIBUTES lpFileMappingAttributes,
-  DWORD flProtect,
-  DWORD dwMaximumSizeHigh,
-  DWORD dwMaximumSizeLow,
-  LPCTSTR lpName,
-  DWORD nndPreferred
-);
-
-HFONT CreateFont(
-  Integer nHeight,               // height of font
-  Integer nWidth,                // average character width
-  Integer nEscapement,           // angle of escapement
-  Integer nOrientation,          // base-line orientation angle
-  Integer fnWeight,              // font weight
-  DWORD fdwItalic,           // italic attribute option
-  DWORD fdwUnderline,        // underline attribute option
-  DWORD fdwStrikeOut,        // strikeout attribute option
-  DWORD fdwCharSet,          // character set identifier
-  DWORD fdwOutputPrecision,  // output precision
-  DWORD fdwClipPrecision,    // clipping precision
-  DWORD fdwQuality,          // output quality
-  DWORD fdwPitchAndFamily,   // pitch and family
-  LPCTSTR lpszFace           // typeface name
-);
-
-HFONT CreateFontIndirect(
-  CONST LOGFONT* lplf   // characteristics
-);
-
-HFONT CreateFontIndirectEx(
-  CONST ENUMLOGFONTEXDV *penumlfex   // characteristiccs
-);
-
-HPALETTE CreateHalftonePalette(
-  HDC hdc   // handle to DC
-);
-
-BOOL CreateHardLink(
-  LPCTSTR lpFileName,
-  LPCTSTR lpExistingFileName,
-  LPSECURITY_ATTRIBUTES lpSecurityAttributes
-);
-
-HBRUSH CreateHatchBrush(
-  Integer fnStyle,      // hatch style
-  COLORREF clrref   // foreground color
-);
-
-HDC CreateIC(
-  LPCTSTR lpszDriver,       // driver name
-  LPCTSTR lpszDevice,       // device name
-  LPCTSTR lpszOutput,       // port or file name
-  CONST DEVMODE *lpdvmInit  // optional initialization data
-);
-
-HICON CreateIcon(     
-     HINSTANCE hInstance,
-    Integer nWidth,
-    Integer nHeight,
-    BYTE cPlanes,
-    BYTE cBitsPixel,
-    const BYTE *lpbANDbits,
-    const BYTE *lpbXORbits
-);
-
-HICON CreateIconFromResource(   
-       PBYTE presbits,
-    DWORD dwResSize,
-    BOOL fIcon,
-    DWORD dwVer
-);
-
-HICON CreateIconFromResourceEx(     
-     PBYTE pbIconBits,
-    DWORD cbIconBits,
-    BOOL fIcon,
-    DWORD dwVersion,
-    Integer cxDesired,
-    Integer cyDesired,
-    UINT uFlags
-);
-
-HICON CreateIconIndirect(     
-     PICONINFO piconinfo
-);
-
-HANDLE CreateIoCompletionPort(
-  HANDLE FileHandle,
-  HANDLE ExistingCompletionPort,
-  ULONG_PTR CompletionKey,
-  DWORD NumberOfConcurrentThreads
-);
-
-HANDLE WINAPI CreateJobObject(
-  LPSECURITY_ATTRIBUTES lpJobAttributes,
-  LPCTSTR lpName
-);
-
-HANDLE CreateMailslot(
-  LPCTSTR lpName,
-  DWORD nMaxMessageSize,
-  DWORD lReadTimeout,
-  LPSECURITY_ATTRIBUTES lpSecurityAttributes
-);
-
-HWND CreateMDIWindow(    
-      LPCTSTR lpClassName,
-    LPCTSTR lpWindowName,
-    DWORD dwStyle,
-    Integer X,
-    Integer Y,
-    Integer nWidth,
-    Integer nHeight,
-    HWND hWndParent,
-    HINSTANCE hInstance,
-    LPARAM lParam
-);
-
-HMENU CreateMenu(VOID);
-
-HDC CreateMetaFile(
-  LPCTSTR lpszFile   // file name
-);
-
-HANDLE WINAPI CreateMutex(
-  LPSECURITY_ATTRIBUTES lpMutexAttributes,
-  BOOL bInitialOwner,
-  LPCTSTR lpName
-);
-
-HANDLE WINAPI CreateMutexEx(
-  LPSECURITY_ATTRIBUTES lpMutexAttributes,
-  LPCTSTR lpName,
-  DWORD dwFlags,
-  DWORD dwDesiredAccess
-);
-
-HANDLE CreateNamedPipe(
-  LPCTSTR lpName,
-  DWORD dwOpenMode,
-  DWORD dwPipeMode,
-  DWORD nMaxInstances,
-  DWORD nOutBufferSize,
-  DWORD nInBufferSize,
-  DWORD nDefaultTimeOut,
-  LPSECURITY_ATTRIBUTES lpSecurityAttributes
-);
-
-DWORD CreateNtmsMedia(
-  HANDLE hSession,
-  LPNTMS_OBJECTINFORMATION lpMedia,
-  LPNTMS_OBJECTINFORMATION lpList,
-  DWORD dwOptions
-);
-
-DWORD CreateNtmsMediaPool(
-  HANDLE hSession,
-  LPCTSTR lpPoolName,
-  LPNTMS_GUID lpMediaType,
-  DWORD dwAction,
-  LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-  LPNTMS_GUID lpPoolId
-);
-
-HPALETTE CreatePalette(
-  CONST LOGPALETTE *lplgpl   // logical palette
-);
-
-HBRUSH CreatePatternBrush(
-  HBITMAP hbmp   // handle to bitmap
-);
-
-HPEN CreatePen(
-  Integer fnPenStyle,    // pen style
-  Integer nWidth,        // pen width
-  COLORREF crColor   // pen color
-);
-
-HPEN CreatePenIndirect(
-  CONST LOGPEN *lplgpn   // style, width, and color
-);
-
-BOOL CreatePipe(
-  PHANDLE hReadPipe,
-  PHANDLE hWritePipe,
-  LPSECURITY_ATTRIBUTES lpPipeAttributes,
-  DWORD nSize
-);
-
-HRGN CreatePolygonRgn(
-  CONST POINT *lppt,  // array of points
-  Integer cPoints,        // number of points in array
-  Integer fnPolyFillMode  // polygon-filling mode
-);
-
-HRGN CreatePolyPolygonRgn(
-  CONST POINT *lppt,        // pointer to array of points
-  CONST Integer *lpPolyCounts,  // pointer to count of vertices
-  Integer nCount,               // number of integers in array
-  Integer fnPolyFillMode        // polygon fill mode
-);
-
-HMENU CreatePopupMenu(VOID);
-
-HANDLE WINAPI CreatePrivateNamespace(
-  LPSECURITY_ATTRIBUTES lpPrivateNamespaceAttributes,
-  LPVOID lpBoundaryDescriptor,
-  LPCTSTR lpAliasPrefix
-);
-
-BOOL WINAPI CreateProcess(
-  LPCTSTR lpApplicationName,
-  LPTSTR lpCommandLine,
-  LPSECURITY_ATTRIBUTES lpProcessAttributes,
-  LPSECURITY_ATTRIBUTES lpThreadAttributes,
-  BOOL bInheritHandles,
-  DWORD dwCreationFlags,
-  LPVOID lpEnvironment,
-  LPCTSTR lpCurrentDirectory,
-  LPSTARTUPINFO lpStartupInfo,
-  LPPROCESS_INFORMATION lpProcessInformation
-);
-
-BOOL WINAPI CreateProcessWithLogonW(
-  LPCWSTR lpUsername,
-  LPCWSTR lpDomain,
-  LPCWSTR lpPassword,
-  DWORD dwLogonFlags,
-  LPCWSTR lpApplicationName,
-  LPWSTR lpCommandLine,
-  DWORD dwCreationFlags,
-  LPVOID lpEnvironment,
-  LPCWSTR lpCurrentDirectory,
-  LPSTARTUPINFOW lpStartupInfo,
-  LPPROCESS_INFORMATION lpProcessInfo
-);
-
-BOOL WINAPI CreateProcessWithTokenW(
-  HANDLE hToken,
-  DWORD dwLogonFlags,
-  LPCWSTR lpApplicationName,
-  LPWSTR lpCommandLine,
-  DWORD dwCreationFlags,
-  LPVOID lpEnvironment,
-  LPCWSTR lpCurrentDirectory,
-  LPSTARTUPINFOW lpStartupInfo,
-  LPPROCESS_INFORMATION lpProcessInfo
-);
-
-HRGN CreateRectRgn(
-  Integer nLeftRect,   // x-coordinate of upper-left corner
-  Integer nTopRect,    // y-coordinate of upper-left corner
-  Integer nRightRect,  // x-coordinate of lower-right corner
-  Integer nBottomRect  // y-coordinate of lower-right corner
-);
-
-HRGN CreateRectRgnIndirect(
-  CONST RECT *lprc   // rectangle
-);
-
-HANDLE WINAPI CreateRemoteThread(
-  HANDLE hProcess,
-  LPSECURITY_ATTRIBUTES lpThreadAttributes,
-  SIZE_T dwStackSize,
-  LPTHREAD_START_ROUTINE lpStartAddress,
-  LPVOID lpParameter,
-  DWORD dwCreationFlags,
-  LPDWORD lpThreadId
-);
-
-HRGN CreateRoundRectRgn(
-  Integer nLeftRect,      // x-coordinate of upper-left corner
-  Integer nTopRect,       // y-coordinate of upper-left corner
-  Integer nRightRect,     // x-coordinate of lower-right corner
-  Integer nBottomRect,    // y-coordinate of lower-right corner
-  Integer nWidthEllipse,  // height of ellipse
-  Integer nHeightEllipse  // width of ellipse
-);
-
-BOOL CreateScalableFontResource(
-  DWORD fdwHidden,          // read-only option
-  LPCTSTR lpszFontRes,      // font file name
-  LPCTSTR lpszFontFile,     // scalable font file name
-  LPCTSTR lpszCurrentPath   // scalable font file path
-);
-
-HANDLE WINAPI CreateSemaphore(
-  LPSECURITY_ATTRIBUTES lpSemaphoreAttributes,
-  LONG lInitialCount,
-  LONG lMaximumCount,
-  LPCTSTR lpName
-);
-
-HANDLE WINAPI CreateSemaphoreEx(
-  LPSECURITY_ATTRIBUTES lpSemaphoreAttributes,
-  LONG lInitialCount,
-  LONG lMaximumCount,
-  LPCTSTR lpName,
-  DWORD dwFlags,
-  DWORD dwDesiredAccess
-);
-
-SC_HANDLE WINAPI CreateService(
-  SC_HANDLE hSCManager,
-  LPCTSTR lpServiceName,
-  LPCTSTR lpDisplayName,
-  DWORD dwDesiredAccess,
-  DWORD dwServiceType,
-  DWORD dwStartType,
-  DWORD dwErrorControl,
-  LPCTSTR lpBinaryPathName,
-  LPCTSTR lpLoadOrderGroup,
-  LPDWORD lpdwTagId,
-  LPCTSTR lpDependencies,
-  LPCTSTR lpServiceStartName,
-  LPCTSTR lpPassword
-);
-
-HBRUSH CreateSolidBrush(
-  COLORREF crColor   // brush color value
-);
-
-BOOL CreateSymbolicLink(
-  LPCWSTR lpSymlinkFileName,
-  LPCWSTR lpTargetFileName,
-  DWORD dwFlags
-);
-
-DWORD CreateTapePartition(
-  HANDLE hDevice,
-  DWORD dwPartitionMethod,
-  DWORD dwCount,
-  DWORD dwSize
-);
-
-HANDLE WINAPI CreateThread(
-  LPSECURITY_ATTRIBUTES lpThreadAttributes,
-  SIZE_T dwStackSize,
-  LPTHREAD_START_ROUTINE lpStartAddress,
-  LPVOID lpParameter,
-  DWORD dwCreationFlags,
-  LPDWORD lpThreadId
-);
-
-PTP_POOL WINAPI CreateThreadpool(
-  PVOID reserved
-);
-
-PTP_CLEANUP_GROUP WINAPI CreateThreadpoolCleanupGroup(void);
-
-PTP_IO WINAPI CreateThreadpoolIo(
-  HANDLE fl,
-  PTP_WIN32_IO_CALLBACK pfnio,
-  PVOID pv,
-  PTP_CALLBACK_ENVIRON pcbe
-);
-
-PTP_TIMER WINAPI CreateThreadpoolTimer(
-  PTP_TIMER_CALLBACK pfnti,
-  PVOID pv,
-  PTP_CALLBACK_ENVIRON pcbe
-);
-
-PTP_WAIT WINAPI CreateThreadpoolWait(
-  PTP_WAIT_CALLBACK pfnwa,
-  PVOID pv,
-  PTP_CALLBACK_ENVIRON pcbe
-);
-
-PTP_WORK WINAPI CreateThreadpoolWork(
-  PTP_WORK_CALLBACK pfnwk,
-  PVOID pv,
-  PTP_CALLBACK_ENVIRON pcbe
-);
-
-HANDLE WINAPI CreateTimerQueue(void);
-
-BOOL WINAPI CreateTimerQueueTimer(
-  PHANDLE phNewTimer,
-  HANDLE TimerQueue,
-  WAITORTIMERCALLBACK Callback,
-  PVOID Parameter,
-  DWORD DueTime,
-  DWORD Period,
-  ULONG Flags
-);
-
-HANDLE WINAPI CreateToolhelp32Snapshot(
-  DWORD dwFlags,
-  DWORD th32ProcessID
-);
-
-ULONG CreateTraceInstanceId(
-  HANDLE RegHandle,
-  PEVENT_INSTANCE_INFO pInstInfo
-);
-
-HANDLE WINAPI CreateWaitableTimer(
-  LPSECURITY_ATTRIBUTES lpTimerAttributes,
-  BOOL bManualReset,
-  LPCTSTR lpTimerName
-);
-
-HANDLE WINAPI CreateWaitableTimerEx(
-  LPSECURITY_ATTRIBUTES lpTimerAttributes,
-  LPCTSTR lpTimerName,
-  DWORD dwFlags,
-  DWORD dwDesiredAccess
-);
-
-HWND CreateWindow(       
-   LPCTSTR lpClassName,
-    LPCTSTR lpWindowName,
-    DWORD dwStyle,
-    Integer x,
-    Integer y,
-    Integer nWidth,
-    Integer nHeight,
-    HWND hWndParent,
-    HMENU hMenu,
-    HINSTANCE hInstance,
-    LPVOID lpParam
-);
-
-HWND CreateWindowEx(     
-     DWORD dwExStyle,
-    LPCTSTR lpClassName,
-    LPCTSTR lpWindowName,
-    DWORD dwStyle,
-    Integer x,
-    Integer y,
-    Integer nWidth,
-    Integer nHeight,
-    HWND hWndParent,
-    HMENU hMenu,
-    HINSTANCE hInstance,
-    LPVOID lpParam
-);
-
-HWINSTA WINAPI CreateWindowStation(
-  LPCTSTR lpwinsta,
-  DWORD dwFlags,
-  ACCESS_MASK dwDesiredAccess,
-  LPSECURITY_ATTRIBUTES lpsa
-);
-
-
-DdeAbandonTransaction
-DdeAccessData
-DdeAddData
-DdeCallback
-DdeClientTransaction
-DdeCmpStringHandles
-DdeConnect
-DdeConnectList
-DdeCreateDataHandle
-DdeCreateStringHandle
-DdeDisconnect
-DdeDisconnectList
-DdeEnableCallback
-DdeFreeDataHandle
-DdeFreeStringHandle
-DdeGetData
-DdeGetLastError
-DdeImpersonateClient
-DdeInitialize
-DdeKeepStringHandle
-DdeNameService
-DdePostAdvise
-DdeQueryConvInfo
-DdeQueryNextServer
-DdeQueryString
-DdeReconnect
-DdeSetQualityOfService
-DdeSetUserHandle
-DdeUnaccessData
-DdeUninitialize
-DeallocateNtmsMedia
-DebugActiveProcess
-DebugActiveProcessStop
+CreateFileMapping,hFile:HANDLE,lpAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR|HANDLE
+CreateFileMappingNuma,hFile:HANDLE,lpFileMappingAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR,nndPreferred:DWORD|HANDLE
+CreateFont,nHeight:Integer,nWidth:Integer,nEscapement:Integer,nOrientation:Integer,fnWeight:Integer,fdwItalic:DWORD,fdwUnderline:DWORD,fdwStrikeOut:DWORD,fdwCharSet:DWORD,fdwOutputPrecision:DWORD,fdwClipPrecision:DWORD,fdwQuality:DWORD,fdwPitchAndFamily:DWORD,lpszFace:LPCTSTR|HFONT
+CreateFontIndirect,*lplf:LOGFONT|HFONT
+CreateFontIndirectEx,*penumlfex:ENUMLOGFONTEXDV|HFONT
+CreateHalftonePalette,hdc:HDC|HPALETTE
+CreateHardLink,lpFileName:LPCTSTR,lpExistingFileName:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
+CreateHatchBrush,Integer fnStyle:,clrref:COLORREF|HBRUSH
+CreateIC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpdvmInit:DEVMODE|HDC
+CreateIcon,hInstance:HINSTANCE,nWidth:Integer,nHeight:Integer,cPlanes:BYTE,cBitsPixel:BYTE,*lpbANDbits:BYTE,*lpbXORbits:BYTE|HICON
+CreateIconFromResource,presbits:PBYTE,dwResSize:DWORD,fIcon:BOOL,dwVer:DWORD|HICON
+CreateIconFromResourceEx,pbIconBits:PBYTE,cbIconBits:DWORD,fIcon:BOOL,dwVersion:DWORD,cxDesired:Integer,cyDesired:Integer,uFlags:UINT|HICON
+CreateIconIndirect,piconinfo:PICONINFO|HICON
+CreateIoCompletionPort,FileHandle:HANDLE,ExistingCompletionPort:HANDLE,CompletionKey:ULONG_PTR,NumberOfConcurrentThreads:DWORD|HANDLE
+CreateJobObject,lpJobAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR|HANDLE
+CreateMailslot,lpName:LPCTSTR,nMaxMessageSize:DWORD,lReadTimeout:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
+CreateMDIWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,X:Integer,Y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hInstance:HINSTANCE,lParam:LPARAM|HWND
+CreateMenu|HMENU
+CreateMetaFile,lpszFile:LPCTSTR|HDC
+CreateMutex,lpMutexAttributes:LPSECURITY_ATTRIBUTES,bInitialOwner:BOOL,lpName:LPCTSTR|HANDLE
+CreateMutexEx,lpMutexAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateNamedPipe,lpName:LPCTSTR,dwOpenMode:DWORD,dwPipeMode:DWORD,nMaxInstances:DWORD,nOutBufferSize:DWORD,nInBufferSize:DWORD,nDefaultTimeOut:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
+CreateNtmsMedia,hSession:HANDLE,lpMedia:LPNTMS_OBJECTINFORMATION,lpList:LPNTMS_OBJECTINFORMATION,dwOptions:DWORD|DWORD
+CreateNtmsMediaPool,hSession:HANDLE,lpPoolName:LPCTSTR,lpMediaType:LPNTMS_GUID,dwAction:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,lpPoolId:LPNTMS_GUID|DWORD
+CreatePalette,*lplgpl:LOGPALETTE|HPALETTE
+CreatePatternBrush,hbmp:HBITMAP|HBRUSH
+CreatePen,fnPenStyle:Integer,nWidth:Integer,crColor:COLORREF|HPEN
+CreatePenIndirect,*lplgpn:LOGPEN|HPEN
+CreatePipe,hReadPipe:PHANDLE,hWritePipe:PHANDLE,lpPipeAttributes:LPSECURITY_ATTRIBUTES,nSize:DWORD|BOOL
+CreatePolygonRgn,lppt:POINT Ptr,cPoints:Integer,fnPolyFillMode:Integer|HRGN
+CreatePolyPolygonRgn,*lppt:POINT,*lpPolyCounts:Integer,nCount:Integer,fnPolyFillMode:Integer|HRGN
+CreatePopupMenu|HMENU
+CreatePrivateNamespace,lpPrivateNamespaceAttributes:LPSECURITY_ATTRIBUTES,lpBoundaryDescriptor:LPVOID,lpAliasPrefix:LPCTSTR|HANDLE
+CreateProcess,lpApplicationName:LPCTSTR,lpCommandLine:LPTSTR,lpProcessAttributes:LPSECURITY_ATTRIBUTES,lpThreadAttributes:LPSECURITY_ATTRIBUTES,bInheritHandles:BOOL,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCTSTR,lpStartupInfo:LPSTARTUPINFO,lpProcessInformation:LPPROCESS_INFORMATION|BOOL
+CreateProcessWithLogonW,lpUsername:LPCWSTR,lpDomain:LPCWSTR,lpPassword:LPCWSTR,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
+CreateProcessWithTokenW,hToken:HANDLE,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
+CreateRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
+CreateRectRgnIndirect,*lprc:RECT|HRGN
+CreateRemoteThread,hProcess:HANDLE,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:LPDWORD|HANDLE
+CreateRoundRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer,nWidthEllipse:Integer,nHeightEllipse:Integer|HRGN
+CreateScalableFontResource,fdwHidden:DWORD,lpszFontRes:LPCTSTR,lpszFontFile:LPCTSTR,lpszCurrentPath:LPCTSTR|BOOL
+CreateSemaphore,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR|HANDLE
+CreateSemaphoreEx,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateService,hSCManager:SC_HANDLE,lpServiceName:LPCTSTR,lpDisplayName:LPCTSTR,dwDesiredAccess:DWORD,dwServiceType:DWORD,dwStartType:DWORD,dwErrorControl:DWORD,lpBinaryPathName:LPCTSTR,lpLoadOrderGroup:LPCTSTR,lpdwTagId:LPDWORD,lpDependencies:LPCTSTR,lpServiceStartName:LPCTSTR,lpPassword:LPCTSTR|SC_HANDLE
+CreateSolidBrush,crColor:COLORREF|HBRUSH
+CreateSymbolicLink,lpSymlinkFileName:LPCWSTR,lpTargetFileName:LPCWSTR,dwFlags:DWORD|BOOL
+CreateTapePartition,hDevice:HANDLE,dwPartitionMethod:DWORD,dwCount:DWORD,dwSize:DWORD|DWORD
+CreateThread,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:LPDWORD|HANDLE
+CreateThreadpool,reserved:PVOID|PTP_POOL
+CreateThreadpoolCleanupGroup|PTP_CLEANUP_GROUP
+CreateThreadpoolIo,fl:HANDLE,pfnio:PTP_WIN32_IO_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_IO
+CreateThreadpoolTimer,pfnti:PTP_TIMER_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_TIMER
+CreateThreadpoolWait,pfnwa:PTP_WAIT_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WAIT
+CreateThreadpoolWork,pfnwk:PTP_WORK_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WORK
+CreateTimerQueue|HANDLE
+CreateTimerQueueTimer,phNewTimer:PHANDLE,TimerQueue:HANDLE,Callback:WAITORTIMERCALLBACK,Parameter:PVOID,DueTime:DWORD,Period:DWORD,Flags:ULONG|BOOL
+CreateToolhelp32Snapshot,dwFlags:DWORD,th32ProcessID:DWORD|HANDLE
+CreateTraceInstanceId,RegHandle:HANDLE,pInstInfo:PEVENT_INSTANCE_INFO|ULONG
+CreateWaitableTimer,lpTimerAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,lpTimerName:LPCTSTR|HANDLE
+CreateWaitableTimerEx,lpTimerAttributes:LPSECURITY_ATTRIBUTES,lpTimerName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
+CreateWindowEx,dwExStyle:DWORD,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
+CreateWindowStation,lpwinsta:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HWINSTA
+DdeAbandonTransaction,idInst:DWORD,hConv:HCONV,idTransaction:DWORD|BOOL
+DdeAccessData,hData:HDDEDATA,pcbDataSize:LPDWORD|LPBYTE
+DdeAddData,hData:HDDEDATA,pSrc:LPBYTE,cb:DWORD,cbOff:DWORD|HDDEDATA
+DdeCallback,uType:UINT,uFmt:UINT,hconv:HCONV,hsz1:HDDEDATA,hsz2:HDDEDATA,hdata:HDDEDATA,dwData1:HDDEDATA,dwData2:HDDEDATA|HDDEDATA
+DdeClientTransaction,pData:LPBYTE,cbData:DWORD,hConv:HCONV,hszItem:HSZ,wFmt:UINT,wType:UINT,dwTimeout:DWORD,pdwResult:LPDWORD|HDDEDATA
+DdeCmpStringHandles,hsz1:HSZ,hsz2:HSZ|Integer
+DdeConnect,idInst:DWORD,hszService:HSZ,hszTopic:HSZ,pCC:PCONVCONTEXT|HCONV
+DdeConnectList,idInst:DWORD,hszService:HSZ,hszTopic:HSZ,hConvList:HCONVLIST,pCC:PCONVCONTEXT|HCONVLIST
+DdeCreateDataHandle,idInst:DWORD,pSrc:LPBYTE,cb:DWORD,cbOff:DWORD,hszItem:HSZ,wFmt:UINT,afCmd:UINT|HDDEDATA
+DdeCreateStringHandle,idInst:DWORD,psz:LPTSTR,iCodePage:Integer|HSZ
+DdeDisconnect,hConv:HCONV|BOOL
+DdeDisconnectList,hConvList:HCONVLIST|BOOL
+DdeEnableCallback,idInst:DWORD,hConv:HCONV,wCmd:UINT|BOOL
+DdeFreeDataHandle,hData:HDDEDATA|BOOL
+DdeFreeStringHandle,idInst:DWORD,hsz:HSZ|BOOL
+DdeGetData,hData:HDDEDATA,pDst:LPBYTE,cbMax:DWORD,cbOff:DWORD|DWORD
+DdeGetLastError,idInst:DWORD|UINT
+DdeImpersonateClient,hConv:HCONV|BOOL
+DdeInitialize,pidInst:LPDWORD,pfnCallback:PFNCALLBACK,afCmd:DWORD,ulRes:DWORD|UINT
+DdeKeepStringHandle,idInst:DWORD,hsz:HSZ|BOOL
+DdeNameService,idInst:DWORD,hsz1:UINT,hsz2:UINT,afCmd:UINT|HDDEDATA
+DdePostAdvise,idInst:DWORD,hszTopic:HSZ,hszItem:HSZ|BOOL
+DdeQueryConvInfo,hConv:HCONV,idTransaction:DWORD,pConvInfo:PCONVINFO|UINT
+DdeQueryNextServer,hConvList:HCONVLIST,hConvPrev:HCONV|HCONV
+DdeQueryString,idInst:DWORD,hsz:HSZ,psz:LPTSTR,cchMax:DWORD,iCodePage:Integer|DWORD
+DdeReconnect,hConv:HCONV|HCONV
+DdeSetQualityOfService,hwndClient:HWND,*pqosNew:SECURITY_QUALITY_OF_SERVICE,pqosPrev:PSECURITY_QUALITY_OF_SERVICE|BOOL
+DdeSetUserHandle,hConv:HCONV,id:DWORD,hUser:DWORD_PTR|BOOL
+DdeUnaccessData,hData:HDDEDATA|BOOL
+DdeUninitialize,idInst:DWORD|BOOL
+DeallocateNtmsMedia,hSession:HANDLE,lpMediaId:LPNTMS_GUID,dwOptions:DWORD|DWORD
+DebugActiveProcess,dwProcessId:DWORD|BOOL
+DebugActiveProcessStop,dwProcessId:DWORD|BOOL
 DebugBreak
-DebugBreakProcess
-DebugProc
-DebugSetProcessKillOnExit
-DecommissionNtmsMedia
-DecryptFile
-DeferWindowPos
-DefFrameProc
-DefineDosDevice
-DefMDIChildProc
-DefRawInputProc
-DefWindowProc
-DeleteAtom
-DeleteBoundaryDescriptor
-DeleteCriticalSection
-DeleteDC
-DeleteEnhMetaFile
-DeleteFiber
-DeleteFile
-DeleteForm
-DeleteMenu
-DeleteMetaFile
-DeleteMonitor
-DeleteNtmsDrive
-DeleteNtmsLibrary
-DeleteNtmsMedia
-DeleteNtmsMediaPool
-DeleteNtmsMediaType
-DeleteNtmsRequests
-DeleteObject
-DeletePort
-DeletePrinter
-DeletePrinterConnection
-DeletePrinterData
-DeletePrinterDataEx
-DeletePrinterDriver
-DeletePrinterDriverEx
-DeletePrinterKey
-DeletePrintProcessor
-DeletePrintProvidor
-DeleteProcThreadAttributeList
-DeletePwrScheme
-DeleteService
-DeleteTimerQueue
-DeleteTimerQueueEx
-DeleteTimerQueueTimer
-DeleteVolumeMountPoint
-DeregisterEventSource
-DeregisterShellHookWindow
-DestroyAcceleratorTable
-DestroyCaret
-DestroyCursor
-DestroyIcon
-DestroyMenu
-DestroyThreadpoolEnvironment
-DestroyWindow
-DeviceCapabilities
-DeviceIoControl
-DisableNtmsObject
+DebugBreakProcess,Process:HANDLE|BOOL
+DebugProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+DebugSetProcessKillOnExit,KillOnExit:BOOL|BOOL
+DecommissionNtmsMedia,hSession:HANDLE,lpMedia:LPNTMS_GUID|DWORD
+DecryptFile,lpFileName:LPCTSTR,dwReserved:DWORD|BOOL
+DeferWindowPos,hWinPosInfo:HDWP,hWnd:HWND,hWndInsertAfter:HWND,x:Integer,y:Integer,cx:Integer,cy:Integer,uFlags:UINT|HDWP
+DefFrameProc,hWnd:HWND,hWndMDIClient:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM|LRESULT
+DefineDosDevice,dwFlags:DWORD,lpDeviceName:LPCTSTR,lpTargetPath:LPCTSTR|BOOL
+DefMDIChildProc,hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM|LRESULT
+DefRawInputProc,*paRawInput:PRAWINPUT,nInput:Integer,cbSizeHeader:UINT|LRESULT
+DefWindowProc,hWnd:HWND,Msg:UINT,wParam:WPARAM,lParam:LPARAM|LRESULT
+DeleteAtom,nAtom:ATOM|ATOM
+DeleteBoundaryDescriptor,BoundaryDescriptor:HANDLE
+DeleteCriticalSection,lpCriticalSection:LPCRITICAL_SECTION
+DeleteDC,hdc:HDC|BOOL
+DeleteEnhMetaFile,hemf:HENHMETAFILE|BOOL
+DeleteFiber,lpFiber:LPVOID
+DeleteFile,lpFileName:LPCTSTR|BOOL
+DeleteForm,hPrinter:HANDLE,pFormName:LPTSTR|BOOL
+DeleteMenu,hMenu:HMENU,uPosition:UINT,uFlags:UINT|BOOL
+DeleteMetaFile,hmf:HMETAFILE|BOOL
+DeleteMonitor,pName:LPTSTR,pEnvironment:LPTSTR,pMonitorName:LPTSTR|BOOL
+DeleteNtmsDrive,hSession:HANDLE,lpDriveId:LPNTMS_GUID|DWORD
+DeleteNtmsLibrary,hSession:HANDLE,lpLibraryId:LPNTMS_GUID|DWORD
+DeleteNtmsMedia,hSession:HANDLE,lpMediaId:LPNTMS_GUID|DWORD
+DeleteNtmsMediaPool,hSession:HANDLE,lpPoolId:LPNTMS_GUID|DWORD
+DeleteNtmsMediaType,hSession:HANDLE,lpMediaTypeId:LPNTMS_GUID,lpLibId:LPNTMS_GUID|DWORD
+DeleteNtmsRequests,hSession:HANDLE,lpRequestId:LPNTMS_GUID,dwType:DWORD,dwCount:DWORD|DWORD
+DeleteObject,hObject:HGDIOBJ|BOOL
+DeletePort,pName:LPTSTR,hWnd:HWND,pPortName:LPTSTR|BOOL
+DeletePrinter,hPrinter:HANDLE|BOOL
+DeletePrinterConnection,pName:LPTSTR|BOOL
+DeletePrinterData,hPrinter:HANDLE,pValueName:LPTSTR|DWORD
+DeletePrinterDataEx,hPrinter:HANDLE,pKeyName:LPCTSTR,pValueName:LPCTSTR|DWORD
+DeletePrinterDriver,pName:LPTSTR,pEnvironment:LPTSTR,pDriverName:LPTSTR|BOOL
+DeletePrinterDriverEx,pName:LPTSTR,pEnvironment:LPTSTR,pDriverName:LPTSTR,dwDeleteFlag:DWORD,dwVersionFlag:DWORD|BOOL
+DeletePrinterKey,hPrinter:HANDLE,pKeyName:LPCTSTR|DWORD
+DeletePrintProcessor,pName:LPTSTR,pEnvironment:LPTSTR,pPrintProcessorName:LPTSTR|BOOL
+DeletePrintProvidor,pName:LPTSTR,pEnvironment:LPTSTR,pPrintProviderName:LPTSTR|BOOL
+DeleteProcThreadAttributeList,lpAttributeListLPPROC_THREAD_ATTRIBUTE_LIST
+DeletePwrScheme,uiIndex:UINT|BOOLEAN
+DeleteService,hService:SC_HANDLE|BOOL
+DeleteTimerQueue,TimerQueue:HANDLE|BOOL
+DeleteTimerQueueEx,TimerQueue:HANDLE,CompletionEvent:HANDLE|BOOL
+DeleteTimerQueueTimer,TimerQueue:HANDLE,Timer:HANDLE,CompletionEvent:HANDLE|BOOL
+DeleteVolumeMountPoint,lpszVolumeMountPoint:LPCTSTR|BOOL
+DeregisterEventSource,hEventLog:HANDLE|BOOL
+DeregisterShellHookWindow,hWnd:HWND|BOOL
+DestroyAcceleratorTable,hAccel:HACCEL|BOOL
+DestroyCaret|BOOL
+DestroyCursor,hCursor:HCURSOR|BOOL
+DestroyIcon,hIcon:HICON|BOOL
+DestroyMenu,hMenu:HMENU|BOOL
+DestroyThreadpoolEnvironment,pcbe:PTP_CALLBACK_ENVIRON
+DestroyWindow,hWnd:HWND|BOOL
+DeviceCapabilities,pDevice:LPCTSTR,pPort:LPCTSTR,fwCapability:WORD,pOutput:LPTSTR,*pDevMode:DEVMODE|DWORD
+DeviceIoControl,hDevice:HANDLE,dwIoControlCode:DWORD,lpInBuffer:LPVOID,nInBufferSize:DWORD,lpOutBuffer:LPVOID,nOutBufferSize:DWORD,lpBytesReturned:LPDWORD,lpOverlapped:LPOVERLAPPED|BOOL
+DisableNtmsObject,hSession:HANDLE,dwType:DWORD,lpObjectId:LPNTMS_GUID|DWORD
 DisableProcessWindowsGhosting
-DisableThreadLibraryCalls
-DisassociateCurrentThreadFromCallback
-DisconnectNamedPipe
-DismountNtmsDrive
-DismountNtmsMedia
-DispatchMessage
-DlgDirList
-DlgDirListComboBox
-DlgDirSelectComboBoxEx
-DlgDirSelectEx
-DllMain
-DnsHostnameToComputerName
-DocumentProperties
-DosDateTimeToFileTime
-DPtoLP
-DragDetect
-DrawAnimatedRects
-DrawCaption
-DrawEdge
-DrawEscape
-DrawFocusRect
-DrawFrameControl
-DrawIcon
-DrawIconEx
-DrawMenuBar
-DrawState
-DrawStateProc
-DrawText
-DrawTextEx
-DuplicateEncryptionInfoFile
-DuplicateIcon
-
-EditWordBreakProc
-EjectDiskFromSADrive
-EjectNtmsCleaner
-EjectNtmsMedia
-Ellipse
-EmptyClipboard
-EmptyWorkingSet
-EnableMenuItem
-EnableNtmsObject
-EnableScrollBar
-EnableTrace
-EnableWindow
-EncryptFile
-EncryptionDisable
-EndDeferWindowPos
-EndDoc
-EndDocPrinter
-EndMenu
-EndNtmsDeviceChangeDetection
-EndPage
-EndPagePrinter
-EndPaint
-EndPath
-EndTask
-EndUpdateResource
-EnhMetaFileProc
-EnterCriticalSection
-EnumCalendarInfo
-EnumCalendarInfoEx
-EnumCalendarInfoProc
-EnumCalendarInfoProcEx
-EnumChildProc
-EnumChildWindows
-EnumClipboardFormats
-EnumCodePagesProc
-EnumDateFormats
-EnumDateFormatsEx
-EnumDateFormatsProc
-EnumDateFormatsProcEx
-EnumDependentServices
-EnumDesktopProc
-EnumDesktops
-EnumDesktopWindows
-EnumDeviceDrivers
-EnumDisplayDevices
-EnumDisplayMonitors
-EnumDisplaySettings
-EnumDisplaySettingsEx
-EnumEnhMetaFile
-EnumerateNtmsObject
-EnumerateTraceGuids
-EnumFontFamExProc
-EnumFontFamilies
-EnumFontFamiliesEx
-EnumFontFamProc
-EnumFonts
-EnumFontsProc
-EnumForms
-EnumGeoInfoProc
-EnumInputContext
-EnumJobs
-EnumLanguageGroupLocales
-EnumLanguageGroupLocalesProc
-EnumLanguageGroupsProc
-EnumLocalesProc
-EnumMetaFile
-EnumMetaFileProc
-EnumMonitors
-EnumObjects
-EnumObjectsProc
-EnumPageFiles
-EnumPorts
-EnumPrinterData
-EnumPrinterDataEx
-EnumPrinterDrivers
-EnumPrinterKey
-EnumPrinters
-EnumPrintProcessorDatatypes
-EnumPrintProcessors
-EnumProcesses
-EnumProcessModules
-EnumProcessModulesEx
-EnumProps
-EnumPropsEx
-EnumPwrSchemes
-EnumRegisterWordProc
-EnumResLangProc
-EnumResNameProc
-EnumResourceLanguages
-EnumResourceNames
-EnumResourceTypes
-EnumResTypeProc
-EnumServicesStatus
-EnumServicesStatusEx
-EnumSystemCodePages
-EnumSystemFirmwareTables
-EnumSystemGeoID
-EnumSystemLanguageGroups
-EnumSystemLocales
-EnumThreadWindows
-EnumThreadWndProc
-EnumTimeFormats
-EnumTimeFormatsProc
-EnumUILanguages
-EnumUILanguagesProc
-EnumWindows
-EnumWindowsProc
-EnumWindowStationProc
-EnumWindowStations
-EqualRect
-EqualRgn
-EraseTape
-Escape
-EscapeCommFunction
-EUDC
-EUDCCodeRange
-EventCallback
-EventClassCallback
-ExcludeClipRect
-ExcludeUpdateRgn
-ExitProcess
-ExitThread
-ExitWindows
-ExitWindowsEx
-ExpandEnvironmentStrings
-ExportNtmsDatabase
-ExtCreatePen
-ExtCreateRegion
-ExtEscape
-ExtFloodFill
-ExtractAssociatedIcon
-ExtractIcon
-ExtractIconEx
-ExtSelectClipRgn
-ExtTextOut
-
-FatalAppExit
-FatalExit
-FiberProc
-FileEncryptionStatus
-FileIOCompletionRoutine
-FileTimeToDosDateTime
-FileTimeToLocalFileTime
-FileTimeToSystemTime
-FillConsoleOutputAttribute
-FillConsoleOutputCharacter
-FillMemory
-FillPath
-FillRect
-FillRgn
-FindAtom
-FindClose
-FindCloseChangeNotification
-FindClosePrinterChangeNotification
-FindFirstChangeNotification
-FindFirstFile
-FindFirstFileEx
-FindFirstFileNameW
-FindFirstPrinterChangeNotification
-FindFirstStreamW
-FindFirstVolume
-FindFirstVolumeMountPoint
-FindNextChangeNotification
-FindNextFile
-FindNextFileNameW
-FindNextPrinterChangeNotification
-FindNextStreamW
-FindNextVolume
-FindNextVolumeMountPoint
-FindResource
-FindResourceEx
-FindVolumeClose
-FindVolumeMountPointClose
-FindWindow
-FindWindowEx
-FlashWindow
-FlashWindowEx
-FlattenPath
-FloodFill
-FlsAlloc
-FlsCallback
-FlsFree
-FlsGetValue
-FlsSetValue
-FlushConsoleInputBuffer
-FlushFileBuffers
-FlushInstructionCache
-FlushPrinter
-FlushTrace
-FlushViewOfFile
-FoldString
-ForegroundIdleProc
-FormatMessage
-FrameRect
-FrameRgn
-FreeConsole
-FreeDDElParam
-FreeEncryptionCertificateHashList
-FreeEnvironmentStrings
-FreeLibrary
-FreeLibraryAndExitThread
-FreeLibraryWhenCallbackReturns
-FreePrinterNotifyInfo
-FreeUserPhysicalPages
-
-GdiComment
-GdiFlush
-GdiGetBatchLimit
-GdiSetBatchLimit
-GenerateConsoleCtrlEvent
-GetACP
-GetActivePwrScheme
-GetActiveWindow
-GetAltTabInfo
-GetAncestor
-GetApplicationRecoveryCallback
-GetApplicationRestartSettings
-GetArcDirection
-GetAspectRatioFilterEx
-GetAsyncKeyState
-GetAtomName
-GetBinaryType
-GetBitmapBits
-GetBitmapDimensionEx
-GetBkColor
-GetBkMode
-GetBoundsRect
-GetBrushOrgEx
-GetCalendarInfo
-GetCapture
-GetCaretBlinkTime
-GetCaretPos
-GetCharABCWidths
-GetCharABCWidthsFloat
-GetCharABCWidthsI
-GetCharacterPlacement
-GetCharWidth
-GetCharWidth32
-GetCharWidthFloat
-GetCharWidthI
-GetClassInfo
-GetClassInfoEx
-GetClassLong
-GetClassLongPtr
-GetClassName
-GetClassWord
-GetClientRect
-GetClipboardData
-GetClipboardFormatName
-GetClipboardOwner
-GetClipboardSequenceNumber
-GetClipboardViewer
-GetClipBox
-GetClipCursor
-GetClipRgn
-GetColorAdjustment
-GetComboBoxInfo
-GetCommandLine
-GetCommConfig
-GetCommMask
-GetCommModemStatus
-GetCommProperties
-GetCommState
-GetCommTimeouts
-GetCompressedFileSize
-GetComputerName
-GetComputerNameEx
-GetComputerObjectName
-GetConsoleCP
-GetConsoleCursorInfo
-GetConsoleDisplayMode
-GetConsoleFontSize
-GetConsoleHistoryInfo
-GetConsoleMode
-GetConsoleOriginalTitle
-GetConsoleOutputCP
-GetConsoleProcessList
-GetConsoleScreenBufferInfo
-GetConsoleScreenBufferInfoEx
-GetConsoleSelectionInfo
-GetConsoleTitle
-GetConsoleWindow
-GetCPInfo
-GetCPInfoEx
-GetCurrencyFormat
-GetCurrentConsoleFont
-GetCurrentConsoleFontEx
-GetCurrentDirectory
-GetCurrentHwProfile
-GetCurrentObject
-GetCurrentPositionEx
-GetCurrentPowerPolicies
-GetCurrentProcess
-GetCurrentProcessId
-GetCurrentProcessorNumber
-GetCurrentThread
-GetCurrentThreadId
-GetCursor
-GetCursorInfo
-GetCursorPos
-GetDateFormat
-GetDC
-GetDCBrushColor
-GetDCEx
-GetDCOrgEx
-GetDCPenColor
-GetDefaultCommConfig
-GetDefaultPrinter
-GetDesktopWindow
-GetDeviceCaps
-GetDeviceDriverBaseName
-GetDeviceDriverFileName
-GetDevicePowerState
-GetDIBColorTable
-GetDIBits
-GetDiskFreeSpace
-GetDiskFreeSpaceEx
-GetDllDirectory
-GetDoubleClickTime
-GetDriveType
-GetDynamicTimeZoneInformation
-GetEnhMetaFile
-GetEnhMetaFileBits
-GetEnhMetaFileDescription
-GetEnhMetaFileHeader
-GetEnhMetaFilePaletteEntries
-GetEnvironmentStrings
-GetEnvironmentVariable
-GetErrorMode
-GetEventLogInformation
-GetExceptionCode
-GetExceptionInformation
-GetExitCodeProcess
-GetExitCodeThread
-GetExpandedName
-GetFileAttributes
-GetFileAttributesEx
-GetFileBandwidthReservation
-GetFileInformationByHandle
-GetFileInformationByHandleEx
-GetFileSize
-GetFileSizeEx
-GetFileTime
-GetFileType
-GetFileVersionInfo
-GetFileVersionInfoSize
-GetFinalPathNameByHandle
-GetFocus
-GetFontData
-GetFontLanguageInfo
-GetFontUnicodeRanges
-GetForegroundWindow
-GetForm
-GetFullPathName
-GetGeoInfo
-GetGlyphIndices
-GetGlyphOutline
-GetGraphicsMode
-GetGuiResources
-GetGUIThreadInfo
-GetIconInfo
-GetInputState
-GetJob
-GetKBCodePage
-GetKerningPairs
-GetKeyboardLayout
-GetKeyboardLayoutList
-GetKeyboardLayoutName
-GetKeyboardState
-GetKeyboardType
-GetKeyNameText
-GetKeyState
-GetLargePageMinimum
-GetLargestConsoleWindowSize
-GetLastActivePopup
-GetLastError
-GetLastInputInfo
-GetLayeredWindowAttributes
-GetLayout
-GetListBoxInfo
-GetLocaleInfo
-GetLocalTime
-GetLogicalDrives
-GetLogicalDriveStrings
-GetLogicalProcessorInformation
-GetLongPathName
-GetMailslotInfo
-GetMapMode
-GetMappedFileName
-GetMenu
-GetMenuBarInfo
-GetMenuCheckMarkDimensions
-GetMenuDefaultItem
-GetMenuInfo
-GetMenuItemCount
-GetMenuItemID
-GetMenuItemInfo
-GetMenuItemRect
-GetMenuState
-GetMenuString
-GetMessage
-GetMessageExtraInfo
-GetMessagePos
-GetMessageTime
-GetMetaFileBitsEx
-GetMetaRgn
-GetMiterLimit
-GetModuleBaseName
-GetModuleFileName
-GetModuleFileNameEx
-GetModuleHandle
-GetModuleHandleEx
-GetModuleInformation
-GetMonitorInfo
-GetMouseMovePointsEx
-GetMsgProc
-GetNamedPipeClientComputerName
-GetNamedPipeClientProcessId
-GetNamedPipeClientSessionId
-GetNamedPipeHandleState
-GetNamedPipeInfo
-GetNamedPipeServerProcessId
-GetNamedPipeServerSessionId
-GetNativeSystemInfo
-GetNearestColor
-GetNearestPaletteIndex
-GetNextWindow
-GetNtmsMediaPoolName
-GetNtmsObjectAttribute
-GetNtmsObjectInformation
-GetNtmsObjectSecurity
-GetNtmsRequestOrder
-GetNtmsUIOptions
-GetNumaAvailableMemoryNode
-GetNumaHighestNodeNumber
-GetNumaNodeProcessorMask
-GetNumaProcessorNode
-GetNumaProximityNode
-GetNumberFormat
-GetNumberOfConsoleInputEvents
-GetNumberOfConsoleMouseButtons
-GetNumberOfEventLogRecords
-GetObject
-GetObjectType
-GetOEMCP
-GetOldestEventLogRecord
-GetOpenClipboardWindow
-GetOutlineTextMetrics
-GetOverlappedResult
-GetPaletteEntries
-GetParent
-GetPath
-GetPerformanceInfo
-GetPixel
-GetPolyFillMode
-GetPrinter
-GetPrinterData
-GetPrinterDataEx
-GetPrinterDriver
-GetPrinterDriverDirectory
-GetPrintProcessorDirectory
-GetPriorityClass
-GetPriorityClipboardFormat
-GetPrivateProfileInt
-GetPrivateProfileSection
-GetPrivateProfileSectionNames
-GetPrivateProfileString
-GetPrivateProfileStruct
-GetProcAddress
-GetProcessAffinityMask
-GetProcessDefaultLayout
-GetProcessHandleCount
-GetProcessHeap
-GetProcessHeaps
-GetProcessId
-GetProcessIdOfThread
-GetProcessIoCounters
-GetProcessMemoryInfo
-GetProcessPriorityBoost
-GetProcessShutdownParameters
-GetProcessTimes
-GetProcessVersion
-GetProcessWindowStation
-GetProcessWorkingSetSize
-GetProcessWorkingSetSizeEx
-GetProductInfo
-GetProfileInt
-GetProfileSection
-GetProfileString
-GetProp
-GetPwrCapabilities
-GetPwrDiskSpindownRange
-GetQueuedCompletionStatus
-GetQueuedCompletionStatusEx
-GetQueueStatus
-GetRandomRgn
-GetRasterizerCaps
-GetRawInputBuffer
-GetRawInputData
-GetRawInputDeviceInfo
-GetRawInputDeviceList
-GetRegionData
-GetRegisteredRawInputDevices
-GetRgnBox
-GetROP2
-GetScrollBarInfo
-GetScrollInfo
-GetScrollPos
-GetScrollRange
-GetServiceDisplayName
-GetServiceKeyName
-GetShellWindow
-GetShortPathName
-GetStartupInfo
-GetStdHandle
-GetStockObject
-GetStretchBltMode
-GetStringTypeA
-GetStringTypeEx
-GetStringTypeW
-GetSubMenu
-GetSysColor
-GetSysColorBrush
-GetSystemDefaultLangID
-GetSystemDefaultLCID
-GetSystemDefaultUILanguage
-GetSystemDirectory
-GetSystemFileCacheSize
-GetSystemFirmwareTable
-GetSystemInfo
-GetSystemMenu
-GetSystemMetrics
-GetSystemPaletteEntries
-GetSystemPaletteUse
-GetSystemPowerStatus
-GetSystemRegistryQuota
-GetSystemTime
-GetSystemTimes
-GetSystemTimeAdjustment
-GetSystemTimeAsFileTime
-GetSystemWindowsDirectory
-GetSystemWow64Directory
-GetTabbedTextExtent
-GetTapeParameters
-GetTapePosition
-GetTapeStatus
-GetTempFileName
-GetTempPath
-GetTextAlign
-GetTextCharacterExtra
-GetTextColor
-GetTextExtentExPoint
-GetTextExtentExPointI
-GetTextExtentPoint
-GetTextExtentPoint32
-GetTextExtentPointI
-GetTextFace
-GetTextMetrics
-GetThreadContext
-GetThreadDesktop
-GetThreadId
-GetThreadIOPendingFlag
-GetThreadLocale
-GetThreadPriority
-GetThreadPriorityBoost
-GetThreadSelectorEntry
-GetThreadTimes
-GetThreadWaitChain
-GetTickCount
-GetTickCount64
-GetTimeFormat
-GetTimeSysInfo
-GetTimeZoneInformation
-GetTitleBarInfo
-GetTopWindow
-GetTraceEnableFlags
-GetTraceEnableLevel
-GetTraceLoggerHandle
-GetUpdateRect
-GetUpdateRgn
-GetUserDefaultLangID
-GetUserDefaultLCID
-GetUserDefaultUILanguage
-GetUserGeoID
-GetUserName
-GetUserNameEx
-GetUserObjectInformation
-GetVersion
-GetVersionEx
-GetViewportExtEx
-GetViewportOrgEx
-GetVolumeInformation
-GetVolumeNameForVolumeMountPoint
-GetVolumePathName
-GetVolumePathNamesForVolumeName
-GetVolumesFromDrive
-GetWindow
-GetWindowDC
-GetWindowExtEx
-GetWindowInfo
-GetWindowLong
-GetWindowLongPtr
-GetWindowModuleFileName
-GetWindowOrgEx
-GetWindowPlacement
-GetWindowRect
-GetWindowRgn
-GetWindowRgnBox
-GetWindowsDirectory
-GetWindowText
-GetWindowTextLength
-GetWindowThreadProcessId
-GetWinMetaFileBits
-GetWorldTransform
-GetWriteWatch
-GetWsChanges
-GlobalAddAtom
-GlobalAlloc
-GlobalDeleteAtom
-GlobalDiscard
-GlobalFindAtom
-GlobalFlags
-GlobalFree
-GlobalGetAtomName
-GlobalHandle
-GlobalLock
-GlobalMemoryStatus
-GlobalMemoryStatusEx
-GlobalReAlloc
-GlobalSize
-GlobalUnlock
-GradientFill
-GrayString
-
-Handler
-HandlerEx
-HandlerRoutine
-Heap32First
-Heap32ListFirst
-Heap32ListNext
-Heap32Next
-HeapAlloc
-HeapCompact
-HeapCreate
-HeapDestroy
-HeapFree
-HeapLock
-HeapQueryInformation
-HeapReAlloc
-HeapSetInformation
-HeapSize
-HeapUnlock
-HeapValidate
-HeapWalk
-HideCaret
-HiliteMenuItem
-
-IdentifyNtmsSlot
-ImmAssociateContext
-ImmAssociateContextEx
-ImmConfigureIME
-ImmCreateContext
-ImmDestroyContext
-ImmDisableIME
-ImmEnumInputContext
-ImmEnumRegisterWord
-ImmEscape
-ImmGetCandidateList
-ImmGetCandidateListCount
-ImmGetCandidateWindow
-ImmGetCompositionFont
-ImmGetCompositionString
-ImmGetCompositionWindow
-ImmGetContext
-ImmGetConversionList
-ImmGetConversionStatus
-ImmGetDefaultIMEWnd
-ImmGetDescription
-ImmGetGuideLine
-ImmGetIMEFileName
-ImmGetImeMenuItems
-ImmGetOpenStatus
-ImmGetProperty
-ImmGetRegisterWordStyle
-ImmGetStatusWindowPos
-ImmGetVirtualKey
-ImmInstallIME
-ImmIsIME
-ImmIsUIMessage
-ImmNotifyIME
-ImmRegisterWord
-ImmReleaseContext
-ImmSetCandidateWindow
-ImmSetCompositionFont
-ImmSetCompositionString
-ImmSetCompositionWindow
-ImmSetConversionStatus
-ImmSetOpenStatus
-ImmSetStatusWindowPos
-ImmSimulateHotKey
-ImmUnregisterWord
-ImpersonateDdeClientWindow
-ImportNtmsDatabase
-InflateRect
-InitAtomTable
-InitializeConditionVariable
-InitializeCriticalSection
-InitializeCriticalSectionEx
-InitializeCriticalSectionAndSpinCount
-InitializeProcessForWsWatch
-InitializeProcThreadAttributeList
-InitializeSRWLock
-InitializeThreadpoolEnvironment
-InitiateShutdown
-InitiateSystemShutdown
-InitiateSystemShutdownEx
-InitOnceBeginInitialize
-InitOnceComplete
-InitOnceExecuteOnce
-InitOnceInitialize
-InjectNtmsCleaner
-InjectNtmsMedia
-InSendMessage
-InSendMessageEx
-InsertMenu
-InsertMenuItem
-InterlockedCompareExchange
-InterlockedCompareExchangeAcquire
-InterlockedCompareExchangeAcquire64
-InterlockedCompareExchangePointer
-InterlockedCompareExchangeRelease
-InterlockedCompareExchangeRelease64
-InterlockedDecrement
-InterlockedDecrement64
-InterlockedDecrementAcquire
-InterlockedDecrementRelease
-InterlockedExchange
-InterlockedExchangeAcquire64
-InterlockedExchangeAdd
-InterlockedExchangePointer
-InterlockedIncrement
-InterlockedIncrement64
-InterlockedIncrementAcquire
-InterlockedIncrementRelease
-InternalGetWindowText
-IntersectClipRect
-IntersectRect
-InvalidateRect
-InvalidateRgn
-InventoryNtmsLibrary
-InvertRect
-InvertRgn
-IsBadCodePtr
-IsBadReadPtr
-IsBadStringPtr
-IsBadWritePtr
-IsCharAlpha
-IsCharAlphaNumeric
-IsCharLower
-IsCharUpper
-IsChild
-IsClipboardFormatAvailable
-IsDebuggerPresent
-IsDlgButtonChecked
-IsGUIThread
-IsHungAppWindow
-IsIconic
-IsMenu
-IsProcessInJob
-IsProcessorFeaturePresent
-IsPwrHibernateAllowed
-IsPwrShutdownAllowed
-IsPwrSuspendAllowed
-IsRectEmpty
-IsSystemResumeAutomatic
-IsThreadAFiber
-IsThreadpoolTimerSet
-IsValidCodePage
-IsValidLanguageGroup
-IsValidLocale
-IsWindow
-IsWindowEnabled
-IsWindowUnicode
-IsWindowVisible
-IsWow64Message
-IsWow64Process
-IsZoomed
-
-JournalPlaybackProc
-JournalRecordProc
-
-keybd_event
-KeyboardProc
-KillTimer
-
-LCMapString
-LeaveCriticalSection
-LeaveCriticalSectionWhenCallbackReturns
-LineDDA
-LineDDAProc
-LineTo
-LoadAccelerators
-LoadBitmap
-LoadCursor
-LoadCursorFromFile
-LoadIcon
-LoadImage
-LoadKeyboardLayout
-LoadLibrary
-LoadLibraryEx
-LoadMenu
-LoadMenuIndirect
-LoadModule
-LoadPerfCounterTextStrings
-LoadResource
-LoadString
-LocalAlloc
-LocalDiscard
-LocalFileTimeToFileTime
-LocalFlags
-LocalFree
-LocalHandle
-LocalLock
-LocalReAlloc
-LocalSize
-LocalUnlock
-LockFile
-LockFileEx
-LockResource
-LockServiceDatabase
-LockSetForegroundWindow
-LockWindowUpdate
-LockWorkStation
-LogicalToPhysicalPoint
-LogTimeProvEvent
-LookupIconIdFromDirectory
-LookupIconIdFromDirectoryEx
-LowLevelKeyboardProc
-LowLevelMouseProc
-LPtoDP
-lstrcat
-lstrcmp
-lstrcmpi
-lstrcpy
-lstrcpyn
-lstrlen
-LZClose
-LZCopy
-LZInit
-LZOpenFile
-LZRead
-LZSeek
-
-MapUserPhysicalPages
-MapUserPhysicalPagesScatter
-MapViewOfFile
-MapViewOfFileEx
-MapViewOfFileExNuma
-MapVirtualKey
-MapVirtualKeyEx
-MapWindowPoints
-MaskBlt
-MaxMediaLabel
+DisableThreadLibraryCalls,hModule:HMODULE|BOOL
+DisassociateCurrentThreadFromCallback,pci:PTP_CALLBACK_INSTANCE
+DisconnectNamedPipe,hNamedPipe:HANDLE|BOOL
+DismountNtmsDrive,hSession:HANDLE,lpDriveId:LPNTMS_GUID|DWORD
+DismountNtmsMedia,hSession:HANDLE,lpMediaId:LPNTMS_GUID,dwCount:DWORD,dwOptions:DWORD|DWORD
+DispatchMessage,*lpmsg:MSG|LRESULT
+DlgDirList,hDlg:HWND,lpPathSpec:LPTSTR,nIDListBox:Integer,nIDStaticPath:Integer,uFileType:UINT|Integer
+DlgDirListComboBox,hDlg:HWND,lpPathSpec:LPTSTR,nIDComboBox:Integer,nIDStaticPath:Integer,uFiletype:UINT|Integer
+DlgDirSelectComboBoxEx,hDlg:HWND,lpString:LPTSTR,nCount:Integer,nIDComboBox:Integer|BOOL
+DlgDirSelectEx,hDlg:HWND,lpString:LPTSTR,nCount:Integer,nIDListBox:Integer|BOOL
+DllMain,hinstDLL:HINSTANCE,fdwReason:DWORD,lpvReserved:LPVOID|BOOL
+DnsHostnameToComputerName,Hostname:LPCTSTR,ComputerName:LPTSTR,nSize:LPDWORD|BOOL
+DocumentProperties,hWnd:HWND,hPrinter:HANDLE,pDeviceName:LPTSTR,pDevModeOutput:PDEVMODE,pDevModeInput:PDEVMODE,fMode:DWORD|LONG
+DosDateTimeToFileTime,wFatDate:WORD,wFatTime:WORD,lpFileTime:LPFILETIME|BOOL
+DPtoLP,hdc:HDC,lpPoints:LPPOINT,nCount:Integer|BOOL
+DragDetect,hwnd:HWND,pt:POINT|BOOL
+DrawAnimatedRects,hwnd:HWND,idAni:Integer,*lprcFrom:RECT,*lprcTo:RECT|BOOL
+DrawCaption,hwnd:HWND,hdc:HDC,lprc:LPCRECT,uFlags:UINT|BOOL
+DrawEdge,hdc:HDC,qrc:LPRECT,edge:UINT,grfFlags:UINT|BOOL
+DrawEscape,hdc:HDC,nEscape:Integer,cbInput:Integer,lpszInData:LPCSTR|Integer
+DrawFocusRect,hDC:HDC,*lprc:RECT|BOOL
+DrawFrameControl,hdc:HDC,lprc:LPRECT,uType:UINT,uState:UINT|BOOL
+DrawIcon,hDC:HDC,X:Integer,Y:Integer,hIcon:HICON|BOOL
+DrawIconEx,hdc:HDC,xLeft:Integer,yTop:Integer,hIcon:HICON,cxWidth:Integer,cyWidth:Integer,istepIfAniCur:UINT,hbrFlickerFreeDraw:HBRUSH,diFlags:UINT|BOOL
+DrawMenuBar,hWnd:HWND|BOOL
+DrawState,hdc:HDC,hbr:HBRUSH,lpOutputFunc:DRAWSTATEPROC,lData:LPARAM,wData:WPARAM,x:Integer,y:Integer,cx:Integer,cy:Integer,fuFlags:UINT|BOOL
+DrawStateProc,hdc:HDC,lData:LPARAM,wData:WPARAM,cx:Integer,cy:Integer|BOOL
+DrawText,hDC:HDC,lpString:LPCTSTR,nCount:Integer,lpRect:LPRECT,uFormat:UINT|Integer
+DrawTextEx,hdc:HDC,lpchText:LPTSTR,cchText:Integer,lprc:LPRECT,dwDTFormat:UINT,lpDTParams:LPDRAWTEXTPARAMS|Integer
+DuplicateEncryptionInfoFile,SrcFileName:LPCTSTR,DstFileName:LPCTSTR,dwCreationDistribution:DWORD,dwAttributes:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|DWORD
+DuplicateIcon,hInst:HINSTANCE,hIcon:HICON|HICON
+EditWordBreakProc,lpch:LPTSTR,ichCurrent:Integer,cch:Integer,code:Integer|Integer
+EjectDiskFromSADrive,lpComputerName:LPCWSTR,lpAppName:LPCWSTR,lpDeviceName:LPCWSTR,hWnd:HWND,lpTitle:LPCWSTR,lpMessage:LPCWSTR,dwOptions:DWORD|DWORD
+EjectNtmsCleaner,hSession:HANDLE,lpLibrary:LPNTMS_GUID,lpEjectOperation:LPNTMS_GUID,dwAction:DWORD|DWORD
+EjectNtmsMedia,hSession:HANDLE,lpMediaId:LPNTMS_GUID,lpEjectOperation:LPNTMS_GUID,dwAction:DWORD|DWORD
+Ellipse,hdc:HDC,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|BOOL
+EmptyClipboard|BOOL
+EmptyWorkingSet,hProcess:HANDLE|BOOL
+EnableMenuItem,hMenu:HMENU,uIDEnableItem:UINT,uEnable:UINT|BOOL
+EnableNtmsObject,hSession:HANDLE,dwType:DWORD,lpObjectId:LPNTMS_GUID|DWORD
+EnableScrollBar,hWnd:HWND,wSBflags:UINT,wArrows:UINT|BOOL
+EnableTrace,Enable:ULONG,EnableFlag:ULONG,EnableLevel:ULONG,ControlGuid:LPCGUID,SessionHandle:TRACEHANDLE|ULONG
+EnableWindow,hWnd:HWND,bEnable:BOOL|BOOL
+EncryptFile,lpFileName:LPCTSTR|BOOL
+EncryptionDisable,DirPath:LPCWSTR,Disable:BOOL|BOOL
+EndDeferWindowPos,hWinPosInfo:HDWP|BOOL
+EndDoc,hdc:HDC|Integer
+EndDocPrinter,hPrinter:HANDLE|BOOL
+EndMenu|BOOL
+EndNtmsDeviceChangeDetection,hSession:HANDLE,hDetectHandle:HANDLE|DWORD
+EndPage,hdc:HDC|Integer
+EndPagePrinter,hPrinter:HANDLE|BOOL
+EndPaint,hWnd:HWND,*lpPaint:PAINTSTRUCT|BOOL
+EndPath,hdc:HDC|BOOL
+EndTask,hWnd:HWND,fShutDown:BOOL,fForce:BOOL|BOOL
+EndUpdateResource,hUpdate:HANDLE,fDiscard:BOOL|BOOL
+EnhMetaFileProc,hDC:HDC,*lpHTable:HANDLETABLE,*lpEMFR:ENHMETARECORD,nObj:Integer,lpData:LPARAM|Integer
+EnterCriticalSection,lpCriticalSection::LPCRITICAL_SECTION
+EnumCalendarInfo,pCalInfoEnumProc:CALINFO_ENUMPROC,Locale:LCID,Calendar:CALID,CalType:CALTYPE|BOOL
+EnumCalendarInfoEx,pCalInfoEnumProcEx:CALINFO_ENUMPROCEX,Locale:LCID,Calendar:CALID,CalType:CALTYPE|BOOL
+EnumCalendarInfoProc,lpCalendarInfoString:LPTSTR|BOOL
+EnumCalendarInfoProcEx,lpCalendarInfoString::LPTSTR,Calendar:CALID|BOOL
+EnumChildProc,hwnd:HWND,lParam:LPARAM|BOOL
+EnumChildWindows,hWndParent:HWND,lpEnumFunc:WNDENUMPROC,lParam:LPARAM|BOOL
+EnumClipboardFormats,format:UINT|UINT
+EnumCodePagesProc,lpCodePageString:LPTSTR|BOOL
+EnumDateFormats,lpDateFmtEnumProc:DATEFMT_ENUMPROC,Locale:LCID,dwFlags:DWORD|BOOL
+EnumDateFormatsEx,lpDateFmtEnumProcEx:DATEFMT_ENUMPROCEX,Locale:LCID,dwFlags:DWORD|BOOL
+EnumDateFormatsProc,lpDateFormatString:LPTSTR|BOOL
+EnumDateFormatsProcEx,lpDateFormatString:LPTSTR,CalendarID:CALID|BOOL
+EnumDependentServices,hService:SC_HANDLE,dwServiceState:DWORD,lpServices:LPENUM_SERVICE_STATUS,cbBufSize:DWORD,pcbBytesNeeded:LPDWORD,lpServicesReturned:LPDWORD|BOOL
+EnumDesktopProc,lpszDesktop:LPTSTR,lParam:LPARAM|BOOL
+EnumDesktops,hwinsta:HWINSTA,lpEnumFunc:DESKTOPENUMPROC,lParam:LPARAM|BOOL
+EnumDesktopWindows,hDesktop:HDESK,lpfn:WNDENUMPROC,lParam:LPARAM|BOOL
+EnumDeviceDrivers,*lpImageBase:LPVOID,cb:DWORD,lpcbNeeded:LPDWORD|BOOL
+EnumDisplayDevices,lpDevice:LPCTSTR,iDevNum:DWORD,lpDisplayDevice:PDISPLAY_DEVICE,dwFlags:DWORD|BOOL
+EnumDisplayMonitors,hdc:HDC,lprcClip:LPCRECT,lpfnEnum:MONITORENUMPROC,dwData:LPARAM|BOOL
+EnumDisplaySettings,lpszDeviceName:LPCTSTR,iModeNum:DWORD,lpDevMode:LPDEVMODE|BOOL
+EnumDisplaySettingsEx,lpszDeviceName:LPCTSTR,iModeNum:DWORD,lpDevMode:LPDEVMODE,dwFlags:DWORD|BOOL
+EnumEnhMetaFile,hdc:HDC,hemf:HENHMETAFILE,lpEnhMetaFunc:ENHMFENUMPROC,lpData:LPVOID,*lpRect:RECT|BOOL
+EnumerateNtmsObject,hSession:HANDLE,lpContainerId:LPNTMS_GUID,lpList:LPNTMS_GUID,lpdwListSize:LPDWORD,dwType:DWORD,dwOptions:DWORD|DWORD
+EnumerateTraceGuids,*GuidPropertiesArray:PTRACE_GUID_PROPERTIES,PropertyArrayCount:ULONG,GuidCount:PULONG|ULONG
+EnumFontFamExProc,*lpelfe:ENUMLOGFONTEX,*lpntme:NEWTEXTMETRICEX,FontType:DWORD,lParam:LPARAM|Integer
+EnumFontFamilies,hdc:HDC,lpszFamily:LPCTSTR,lpEnumFontFamProc:FONTENUMPROC,lParam:LPARAM|Integer
+EnumFontFamiliesEx,hdc:HDC,lpLogfont:LPLOGFONT,lpEnumFontFamExProc:FONTENUMPROC,lParam:LPARAM,dwFlags:DWORD|Integer
+EnumFontFamProc,*lpelf:ENUMLOGFONT,*lpntm:NEWTEXTMETRIC,FontType:DWORD,lParam:LPARAM|Integer
+EnumFonts,hdc:HDC,lpFaceName:LPCTSTR,lpFontFunc:FONTENUMPROC,lParam:LPARAM|Integer
+EnumFontsProc,*lplf:LOGFONT,*lptm:TEXTMETRIC,dwType:DWORD,lpData:LPARAM|Integer
+EnumForms,hPrinter:HANDLE,Level:DWORD,pForm:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumGeoInfoProc,GeoId:GEOID|BOOL
+EnumInputContext,hIMC:HIMC,lParam:LPARAM|BOOL
+EnumJobs,hPrinter:HANDLE,FirstJob:DWORD,NoJobs:DWORD,Level:DWORD,pJob:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumLanguageGroupLocales,pLangGroupLocaleEnumProc:LANGGROUPLOCALE_ENUMPROC,LanguageGroup:LGRPID,dwFlags:DWORD,lParam:LONG_PTR|BOOL
+EnumLanguageGroupLocalesProc,LanguageGroup:LGRPID,Locale:LCID,lpLocaleString:LPTSTR,lParam:LONG_PTR|BOOL
+EnumLanguageGroupsProc,LanguageGroup:LGRPID,lpLanguageGroupString:LPTSTR,lpLanguageGroupNameString:LPTSTR,dwFlags:DWORD,lParam:LONG_PTR|BOOL
+EnumLocalesProc,lpLocaleString:LPTSTR|BOOL
+EnumMetaFile,hdc:HDC,hmf:HMETAFILE,lpMetaFunc:MFENUMPROC,lParam:LPARAM|BOOL
+EnumMetaFileProc,hDC:HDC,*lpHTable:HANDLETABLE,*lpMFR:METARECORD,nObj:Integer,lpClientData:LPARAM|Integer
+EnumMonitors,pName:LPTSTR,Level:DWORD,pMonitors:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumObjects,hdc:HDC,nObjectType:Integer,lpObjectFunc:GOBJENUMPROC,lParam:LPARAM|Integer
+EnumObjectsProc,lpLogObject:LPVOID,lpData:LPARAM|Integer
+EnumPageFiles,pCallbackRoutine:PENUM_PAGE_CALLBACK,lpContext:LPVOID|BOOL
+EnumPorts,pName:LPTSTR,Level:DWORD,pPorts:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumPrinterData,hPrinter:HANDLE,dwIndex:DWORD,pValueName:LPTSTR,cbValueName:DWORD,pcbValueName:LPDWORD,pType:LPDWORD,pData:LPBYTE,cbData:DWORD,pcbData:LPDWORD|DWORD
+EnumPrinterDataEx,hPrinter:HANDLE,pKeyName:LPCTSTR,pEnumValues:LPBYTE,cbEnumValues:DWORD,pcbEnumValues:LPDWORD,pnEnumValues:LPDWORD|DWORD
+EnumPrinterDrivers,pName:LPTSTR,pEnvironment:LPTSTR,Level:DWORD,pDriverInfo:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumPrinterKey,hPrinter:HANDLE,pKeyName:LPCTSTR,pSubkey:LPTSTR,cbSubkey:DWORD,pcbSubkey:LPDWORD|DWORD
+EnumPrinters,Flags:DWORD,Name:LPTSTR,Level:DWORD,pPrinterEnum:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumPrintProcessorDatatypes,pName:LPTSTR,pPrintProcessorName:LPTSTR,Level:DWORD,pDatatypes:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumPrintProcessors,pName:LPTSTR,pEnvironment:LPTSTR,Level:DWORD,pPrintProcessorInfo:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD,pcReturned:LPDWORD|BOOL
+EnumProcesses,*pProcessIds:DWORD,cb:DWORD,*pBytesReturned:DWORD|BOOL
+EnumProcessModules,hProcess:HANDLE,*lphModule:HMODULE,cb:DWORD,lpcbNeeded:LPDWORD|BOOL
+EnumProcessModulesEx,hProcess:HANDLE,*lphModule:HMODULE,cb:DWORD,lpcbNeeded:LPDWORD,dwFilterFlag:DWORD|BOOL
+EnumProps,hWnd:HWND,lpEnumFunc:PROPENUMPROC|Integer
+EnumPropsEx,hWnd:HWND,lpEnumFunc:PROPENUMPROCEX,lParam:LPARAM|Integer
+EnumPwrSchemes,lpfnPwrSchemesEnumProc:PWRSCHEMESENUMPROC,lParam:LPARAM|BOOLEAN
+EnumRegisterWordProc,lpszReading:LPCTSTR,dwStyle:DWORD,lpszString:LPCTSTR,lpData:LPVOID|UINT
+EnumResLangProc,hModule:HANDLE,lpszType:LPCTSTR,lpszName:LPCTSTR,wIDLanguage:WORD,lParam:LONG_PTR|BOOL
+EnumResNameProc,hModule:HMODULE,lpszType:LPCTSTR,lpszName:LPTSTR,lParam:LONG_PTR|BOOL
+EnumResourceLanguages,hModule:HMODULE,lpType:LPCTSTR,lpName:LPCTSTR,lpEnumFunc:ENUMRESLANGPROC,lParam:LONG_PTR|BOOL
+EnumResourceNames,hModule:HMODULE,lpszType:LPCTSTR,lpEnumFunc:ENUMRESNAMEPROC,lParam:LONG_PTR|BOOL
+EnumResourceTypes,hModule:HMODULE,lpEnumFunc:ENUMRESTYPEPROC,lParam:LONG_PTR|BOOL
+EnumResTypeProc,hModule:HMODULE,lpszType:LPTSTR,lParam:LONG_PTR|BOOL
+EnumServicesStatus,hSCManager:SC_HANDLE,dwServiceType:DWORD,dwServiceState:DWORD,lpServices:LPENUM_SERVICE_STATUS,cbBufSize:DWORD,pcbBytesNeeded:LPDWORD,lpServicesReturned:LPDWORD,lpResumeHandle:LPDWORD|BOOL
+EnumServicesStatusEx,hSCManager:SC_HANDLE,InfoLevel:SC_ENUM_TYPE,dwServiceType:DWORD,dwServiceState:DWORD,lpServices:LPBYTE,cbBufSize:DWORD,pcbBytesNeeded:LPDWORD,lpServicesReturned:LPDWORD,lpResumeHandle:LPDWORD,pszGroupName:LPCTSTR|BOOL
+EnumSystemCodePages,lpCodePageEnumProc:CODEPAGE_ENUMPROC,dwFlags:DWORD|BOOL
+EnumSystemFirmwareTables,FirmwareTableProviderSignature:DWORD,pFirmwareTableBuffer:PVOID,BufferSize:DWORD|UINT
+EnumSystemGeoID,GeoClass:GEOCLASS,ParentGeoId:GEOID,lpGeoEnumProc:GEO_ENUMPROC|BOOL
+EnumSystemLanguageGroups,pLangGroupEnumProc:LANGUAGEGROUP_ENUMPROC,dwFlags:DWORD,lParam:LONG_PTR|BOOL
+EnumSystemLocales,lpLocaleEnumProc:LOCALE_ENUMPROC,dwFlags:DWORD|BOOL
+EnumThreadWindows,dwThreadId:DWORD,lpfn:WNDENUMPROC,lParam:LPARAM|BOOL
+EnumThreadWndProc,hwnd:HWND,lParam:LPARAM|BOOL
+EnumTimeFormats,lpTimeFmtEnumProc:TIMEFMT_ENUMPROC,Locale:LCID,dwFlags:DWORD|BOOL
+EnumTimeFormatsProc,lpTimeFormatString:LPTSTR|BOOL
+EnumUILanguages,lpUILanguageEnumProc:UILANGUAGE_ENUMPROC,dwFlags:DWORD,lParam:LONG_PTR|BOOL
+EnumUILanguagesProc,lpUILanguageString:LPTSTR,lParam:LONG_PTR|BOOL
+EnumWindows,lpEnumFunc:WNDENUMPROC,lParam:LPARAM|BOOL
+EnumWindowsProc,hwnd:HWND,lParam:LPARAM|BOOL
+EnumWindowStationProc,lpszWindowStation:LPTSTR,lParam:LPARAM|BOOL
+EnumWindowStations,lpEnumFunc:WINSTAENUMPROC,lParam:LPARAM|BOOL
+EqualRect,*lprc1:RECT,*lprc2:RECT|BOOL
+EqualRgn,hSrcRgn1:HRGN,hSrcRgn2:HRGN|BOOL
+EraseTape,hDevice:HANDLE,dwEraseType:DWORD,bImmediate:BOOL|DWORD
+Escape,hdc:HDC,nEscape:Integer,cbInput:Integer,lpvInData:LPCSTR,lpvOutData:LPVOID|Integer
+EscapeCommFunction,hFile:HANDLE,dwFunc:DWORD|BOOL
+EventCallback,pEvent:PEVENT_TRACE
+EventClassCallback,pEvent:PEVENT_TRACE
+ExcludeClipRect,hdc:HDC,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|Integer
+ExcludeUpdateRgn,hDC:HDC,hWnd:HWND|Integer
+ExitProcess,uExitCode:UINT
+ExitThread, dwExitCode:DWORD
+ExitWindows,dwReserved:DWORD,uReserved:UINT|BOOL
+ExitWindowsEx,uFlags:UINT,dwReason:DWORD|BOOL
+ExpandEnvironmentStrings,lpSrc:LPCTSTR,lpDst:LPTSTR,nSize:DWORD|DWORD
+ExportNtmsDatabase,hSession:HANDLE|DWORD
+ExtCreatePen,dwPenStyle:DWORD,dwWidth:DWORD,*lplb:LOGBRUSH,dwStyleCount:DWORD,*lpStyle:DWORD|HPEN
+ExtCreateRegion,*lpXform:XFORM,nCount:DWORD,*lpRgnData:RGNDATA|HRGN
+ExtEscape,hdc:HDC,nEscape:Integer,cbInput:Integer,lpszInData:LPCSTR,cbOutput:Integer,lpszOutData:LPSTR|Integer
+ExtFloodFill,hdc:HDC,nXStart:Integer,nYStart:Integer,crColor:COLORREF,fuFillType:UINT|BOOL
+ExtractAssociatedIcon,hInst:HINSTANCE,lpIconPath:LPTSTR,lpiIcon:LPWORD|HICON
+ExtractIcon,hInst:HINSTANCE,lpszExeFileName:LPCTSTR,nIconIndex:UINT|HICON
+ExtractIconEx,lpszFile:LPCTSTR,nIconIndex:Integer,*phiconLarge:HICON,*phiconSmall:HICON,nIcons:UINT|UINT
+ExtSelectClipRgn,hdc:HDC,hrgn:HRGN,fnMode:Integer|Integer
+ExtTextOut,hdc:HDC,X:Integer,Y:Integer,fuOptions:UINT,*lprc:RECT,lpString:LPCTSTR,cbCount:UINT,*lpDx:Integer|BOOL
+FatalAppExit,uAction:UINT,lpMessageText:LPCTSTR
+FatalExit,ExitCode:Integer
+FiberProc,lpParameter:PVOID
+FileEncryptionStatus,lpFileName:LPCTSTR,lpStatus:LPDWORD|BOOL
+FileIOCompletionRoutine,dwErrorCode:DWORD,dwNumberOfBytesTransfered:DWORD,lpOverlapped:LPOVERLAPPED
+FileTimeToDosDateTime,*lpFileTime:FILETIME,lpFatDate:LPWORD,lpFatTime:LPWORD|BOOL
+FileTimeToLocalFileTime,*lpFileTime:FILETIME,lpLocalFileTime:LPFILETIME|BOOL
+FileTimeToSystemTime,*lpFileTime:FILETIME,lpSystemTime:LPSYSTEMTIME|BOOL
+FillConsoleOutputAttribute,hConsoleOutput:HANDLE,wAttribute:WORD,nLength:DWORD,dwWriteCoord:COORD,lpNumberOfAttrsWritten:LPDWORD|BOOL
+FillConsoleOutputCharacter,hConsoleOutput:HANDLE,cCharacter:TCHAR,nLength:DWORD,dwWriteCoord:COORD,lpNumberOfCharsWritten:LPDWORD|BOOL
+FillMemory,Destination:PVOID,Length:SIZE_T,Fill:BYTE
+FillPath,hdc:HDC|BOOL
+FillRect,hDC:HDC,*lprc:RECT,hbr:HBRUSH|Integer
+FillRgn,hdc:HDC,hrgn:HRGN,hbr:HBRUSH|BOOL
+FindAtom,lpString:LPCTSTR|ATOM
+FindClose,hFindFile:HANDLE|BOOL
+FindCloseChangeNotification,hChangeHandle:HANDLE|BOOL
+FindClosePrinterChangeNotification,hChange:HANDLE|BOOL
+FindFirstChangeNotification,lpPathName:LPCTSTR,bWatchSubtree:BOOL,dwNotifyFilter:DWORD|HANDLE
+FindFirstFile,lpFileName:LPCTSTR,lpFindFileData:LPWIN32_FIND_DATA|HANDLE
+FindFirstFileEx,lpFileName:LPCTSTR,fInfoLevelId:FINDEX_INFO_LEVELS,lpFindFileData:LPVOID,fSearchOp:FINDEX_SEARCH_OPS,lpSearchFilter:LPVOID,dwAdditionalFlags:DWORD|HANDLE
+FindFirstFileNameW,lpFileName:LPCWSTR,dwFlags:DWORD,StringLength:LPDWORD,LinkName:PWCHAR|HANDLE
+FindFirstPrinterChangeNotification,hPrinter:HANDLE,fdwFlags:DWORD,fdwOptions:DWORD,pPrinterNotifyOptions:LPVOID|HANDLE
+FindFirstStreamW,lpFileName:LPCWSTR,InfoLevel:STREAM_INFO_LEVELS,lpFindStreamData:LPVOID,dwFlags:DWORD|HANDLE
+FindFirstVolume,lpszVolumeName:LPTSTR,cchBufferLength:DWORD|HANDLE
+FindFirstVolumeMountPoint,lpszRootPathName:LPTSTR,lpszVolumeMountPoint:LPTSTR,cchBufferLength:DWORD|HANDLE
+FindNextChangeNotification,hChangeHandle:HANDLE|BOOL
+FindNextFile,hFindFile:HANDLE,lpFindFileData:LPWIN32_FIND_DATA|BOOL
+FindNextFileNameW,hFindStream:HANDLE,StringLength:LPDWORD,LinkName:PWCHAR|BOOL
+FindNextPrinterChangeNotification,hChange:HANDLE,pdwChange:PDWORD,pPrinterNotifyOptions:LPVOID,*ppPrinterNotifyInfo:LPVOID|BOOL
+FindNextStreamW,hFindStream:HANDLE,lpFindStreamData:LPVOID|BOOL
+FindNextVolume,hFindVolume:HANDLE,lpszVolumeName:LPTSTR,cchBufferLength:DWORD|BOOL
+FindNextVolumeMountPoint,hFindVolumeMountPoint:HANDLE,lpszVolumeMountPoint:LPTSTR,cchBufferLength:DWORD|BOOL
+FindResource,hModule:HMODULE,lpName:LPCTSTR,lpType:LPCTSTR|HRSRC
+FindResourceEx,hModule:HMODULE,lpType:LPCTSTR,lpName:LPCTSTR,wLanguage:WORD|HRSRC
+FindVolumeClose,hFindVolume:HANDLE|BOOL
+FindVolumeMountPointClose,hFindVolumeMountPoint:HANDLE|BOOL
+FindWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR|HWND
+FindWindowEx,hwndParent:HWND,hwndChildAfter:HWND,lpszClass:LPCTSTR,lpszWindow:LPCTSTR|HWND
+FlashWindow,hWnd:HWND,bInvert:BOOL|BOOL
+FlashWindowEx,pfwi:PFLASHWINFO|BOOL
+FlattenPath,hdc:HDC|BOOL
+FloodFill,hdc:HDC,nXStart:Integer,nYStart:Integer,crFill:COLORREF|BOOL
+FlsAlloc,lpCallback:PFLS_CALLBACK_FUNCTION|DWORD
+FlsCallback,lpFlsData:PVOID
+FlsFree,dwFlsIndex:DWORD|BOOL
+FlsGetValue,dwFlsIndex:DWORD|PVOID
+FlsSetValue,dwFlsIndex:DWORD,lpFlsData:PVOID|BOOL
+FlushConsoleInputBuffer,hConsoleInput:HANDLE|BOOL
+FlushFileBuffers,hFile:HANDLE|BOOL
+FlushInstructionCache,hProcess:HANDLE,lpBaseAddress:LPCVOID,dwSize:SIZE_T|BOOL
+FlushPrinter,hPrinter:HANDLE,pBuf:LPVOID,cbBuf:DWORD,pcWritten:LPDWORD,cSleep:DWORD|BOOL
+FlushTrace,SessionHandle:TRACEHANDLE,SessionName:LPCTSTR,Properties:PEVENT_TRACE_PROPERTIES|ULONG
+FlushViewOfFile,lpBaseAddress:LPCVOID,dwNumberOfBytesToFlush:SIZE_T|BOOL
+FoldString,dwMapFlags:DWORD,lpSrcStr:LPCTSTR,cchSrc:Integer,lpDestStr:LPTSTR,cchDest:Integer|Integer
+ForegroundIdleProc,code:Integer,wParam:DWORD,lParam:LONG|DWORD
+FormatMessage,dwFlags:DWORD,lpSource:LPCVOID,dwMessageId:DWORD,dwLanguageId:DWORD,lpBuffer:LPTSTR,nSize:DWORD,*Arguments:Any Ptr|DWORD
+FrameRect,hDC:HDC,*lprc:RECT,hbr:HBRUSH|Integer
+FrameRgn,hdc:HDC,hrgn:HRGN,hbr:HBRUSH,nWidth:Integer,nHeight:Integer|BOOL
+FreeConsole|BOOL
+FreeDDElParam,msg:UINT,lParam:LPARAM|BOOL
+FreeEncryptionCertificateHashList,pHashes:PENCRYPTION_CERTIFICATE_HASH_LIST
+FreeEnvironmentStrings,lpszEnvironmentBlock:LPTCH|BOOL
+FreeLibrary,hModule:HMODULE|BOOL
+FreeLibraryAndExitThread,hModule:HMODULE,dwExitCode:DWORD
+FreeLibraryWhenCallbackReturns,pci:PTP_CALLBACK_INSTANCE,mod:HMODULE
+FreePrinterNotifyInfo,pPrinterNotifyInfo:PPRINTER_NOTIFY_INFO|BOOL
+FreeUserPhysicalPages,hProcess:HANDLE,NumberOfPages:PULONG_PTR,UserPfnArray:PULONG_PTR|BOOL
+GdiComment,hdc:HDC,cbSize:UINT,lpData:UBYTE Ptr|BOOL
+GdiFlush|BOOL
+GdiGetBatchLimit|WORD
+GdiSetBatchLimit,dwLimit:DWORD|DWORD
+GenerateConsoleCtrlEvent,dwCtrlEvent:DWORD,dwProcessGroupId:DWORD|BOOL
+GetACP|UINT
+GetActivePwrScheme,puiID:PUINT|BOOLEAN
+GetActiveWindow|HWND
+GetAltTabInfo,hwnd:HWND,iItem:Integer,pati:PALTTABINFO,pszItemText:LPTSTR,cchItemText:UINT|BOOL
+GetAncestor,hwnd:HWND,gaFlags:UINT|HWND
+GetApplicationRecoveryCallback,hProcess:HANDLE,*pRecoveryCallback:APPLICATION_RECOVERY_CALLBACK,*ppvParameter:PVOID,dwPingInterval:DWORD,dwFlagsDWORD|HRESULT
+GetApplicationRestartSettings,hProcess:HANDLE,pwzCommandline:PWSTR,pcchSize:PDWORD,pdwFlags:PDWORD|HRESULT
+GetArcDirection,hdc:HDC|Integer
+GetAspectRatioFilterEx,hdc:HDC,lpAspectRatio:LPSIZE|BOOL
+GetAsyncKeyState,vKey:Integer|SHORT
+GetAtomName,nAtom:ATOM,lpBuffer:LPTSTR,nSize:Integer|UINT
+GetBinaryType,lpApplicationName:LPCTSTR,lpBinaryType:LPDWORD|BOOL
+GetBitmapBits,hbmp:HBITMAP,cbBuffer:LONG,lpvBits:LPVOID|LONG
+GetBitmapDimensionEx,hBitmap:HBITMAP,lpDimension:LPSIZE|BOOL
+GetBkColor,hdc:HDC|COLORREF
+GetBkMode,hdc:HDC|Integer
+GetBoundsRect,hdc:HDC,lprcBounds:LPRECT,flags:UINT|UINT
+GetBrushOrgEx,hdc:HDC,lppt:LPPOINT|BOOL
+GetCalendarInfo,Locale:LCID,Calendar:CALID,CalType:CALTYPE,lpCalData:LPTSTR,cchData:Integer,lpValue:LPDWORD|Integer
+GetCapture|HWND
+GetCaretBlinkTime|UINT
+GetCaretPos,lpPoint:LPPOINT|BOOL
+GetCharABCWidths,hdc:HDC,uFirstChar:UINT,uLastChar:UINT,lpabc:LPABC|BOOL
+GetCharABCWidthsFloat,hdc:HDC,iFirstChar:UINT,iLastChar:UINT,lpABCF:LPABCFLOAT|BOOL
+GetCharABCWidthsI,hdc:HDC,giFirst:UINT,cgi:UINT,pgi:LPWORD,lpabc:LPABC|BOOL
+GetCharacterPlacement,hdc:HDC,lpString:LPCTSTR,nCount:Integer,nMaxExtent:Integer,lpResults:LPGCP_RESULTS,dwFlags:DWORD|DWORD
+GetCharWidth,hdc:HDC,iFirstChar:UINT,iLastChar:UINT,lpBuffer:LPINT|BOOL
+GetCharWidth32,hdc:HDC,iFirstChar:UINT,iLastChar:UINT,lpBuffer:LPINT|BOOL
+GetCharWidthFloat,hdc:HDC,iFirstChar:UINT,iLastChar:UINT,pxBuffer:PFLOAT|BOOL
+GetCharWidthI,hdc:HDC,giFirst:UINT,cgi:UINT,pgi:LPWORD,lpBuffer:LPINT|BOOL
+GetClassInfo,hInstance:HINSTANCE,lpClassName:LPCTSTR,lpWndClass:LPWNDCLASS|BOOL
+GetClassInfoEx,hinst:HINSTANCE,lpszClass:LPCTSTR,lpwcx:LPWNDCLASSEX|BOOL
+GetClassLong,hWnd:HWND,nIndex:Integer|DWORD
+GetClassLongPtr,hWnd:HWND,nIndex:Integer|ULONG Ptr
+GetClassName,hWnd:HWND,lpClassName:LPTSTR,nMaxCount:Integer|Integer
+GetClassWord,hWnd:HWND,nIndex:Integer|WORD
+GetClientRect,hWnd:HWND,lpRect:LPRECT|BOOL
+GetClipboardData,uFormat:UINT|HANDLE
+GetClipboardFormatName,format:UINT,lpszFormatName:LPTSTR,cchMaxCount:Integer|Integer
+GetClipboardOwner|HWND
+GetClipboardSequenceNumber|DWORD
+GetClipboardViewer|HWND
+GetClipBox,hdc:HDC,lprc:LPRECT|Integer
+GetClipCursor,lpRect:LPRECT|BOOL
+GetClipRgn,hdc:HDC,hrgn:HRGN|Integer
+GetColorAdjustment,hdc:HDC,lpca:LPCOLORADJUSTMENT|BOOL
+GetComboBoxInfo,hwndCombo:HWND,pcbi:PCOMBOBOXINFO|BOOL
+GetCommandLine|LPTSTR
+GetCommConfig,hCommDev:HANDLE,lpCC:LPCOMMCONFIG,lpdwSize:LPDWORD|BOOL
+GetCommMask,hFile:HANDLE,lpEvtMask:LPDWORD|BOOL
+GetCommModemStatus,hFile:HANDLE,lpModemStat:LPDWORD|BOOL
+GetCommProperties,hFile:HANDLE,lpCommProp:LPCOMMPROP|BOOL
+GetCommState,hFile:HANDLE,lpDCB:LPDCB|BOOL
+GetCommTimeouts,hFile:HANDLE,lpCommTimeouts:LPCOMMTIMEOUTS|BOOL
+GetCompressedFileSize,lpFileName:LPCTSTR,lpFileSizeHigh:LPDWORD|DWORD
+GetComputerName,lpBuffer:LPTSTR,lpnSize:LPDWORD|BOOL
+GetComputerNameEx,NameType:COMPUTER_NAME_FORMAT,lpBuffer:LPTSTR,lpnSize:LPDWORD|BOOL
+GetComputerObjectName,NameFormat:EXTENDED_NAME_FORMAT,lpNameBuffer:LPTSTR,lpnSize:PULONG|BOOLEAN
+GetConsoleCP|UINT
+GetConsoleCursorInfo,hConsoleOutput:HANDLE,lpConsoleCursorInfo:PCONSOLE_CURSOR_INFO|BOOL
+GetConsoleDisplayMode,lpModeFlags:LPDWORD|BOOL
+GetConsoleFontSize,hConsoleOutput:HANDLE,nFont:DWORD|COORD
+GetConsoleHistoryInfo,lpConsoleHistoryInfo:PCONSOLE_HISTORY_INFO|BOOL
+GetConsoleMode,hConsoleHandle:HANDLE,lpMode:LPDWORD|BOOL
+GetConsoleOriginalTitle,lpConsoleTitle:LPTSTR,nSize:DWORD|DWORD
+GetConsoleOutputCP|UINT
+GetConsoleProcessList,lpdwProcessList:LPDWORD,dwProcessCount:DWORD|DWORD
+GetConsoleScreenBufferInfo,hConsoleOutput:HANDLE,lpConsoleScreenBufferInfo:PCONSOLE_SCREEN_BUFFER_INFO|BOOL
+GetConsoleScreenBufferInfoEx,hConsoleOutput:HANDLE,lpConsoleScreenBufferInfoEx:PCONSOLE_SCREEN_BUFFER_INFOEX|BOOL
+GetConsoleSelectionInfo,lpConsoleSelectionInfo:PCONSOLE_SELECTION_INFO|BOOL
+GetConsoleTitle,lpConsoleTitle:LPTSTR,nSize:DWORD|DWORD
+GetConsoleWindow|HWND
+GetCPInfo,CodePage:UINT,lpCPInfo:LPCPINFO|BOOL
+GetCPInfoEx,CodePage:UINT,dwFlags:DWORD,lpCPInfoEx:LPCPINFOEX|BOOL
+GetCurrencyFormat,Locale:LCID,dwFlags:DWORD,lpValue:LPCTSTR,lpFormat:CURRENCYFMT Ptr,lpCurrencyStr:LPTSTR,cchCurrency:Integer|Integer
+GetCurrentConsoleFont,hConsoleOutput:HANDLE,bMaximumWindow:BOOL,lpConsoleCurrentFont:PCONSOLE_FONT_INFO|BOOL
+GetCurrentConsoleFontEx,hConsoleOutput:HANDLE,bMaximumWindow:BOOL,lpConsoleCurrentFontEx:PCONSOLE_FONT_INFOEX|BOOL
+GetCurrentDirectory,nBufferLength:DWORD,lpBuffer:LPTSTR|DWORD
+GetCurrentHwProfile,lpHwProfileInfo:LPHW_PROFILE_INFO|BOOL
+GetCurrentObject,hdc:HDC,uObjectType:UINT|HGDIOBJ
+GetCurrentPositionEx,hdc:HDC,lpPoint:LPPOINT|BOOL
+GetCurrentPowerPolicies,pGlobalPowerPolicy:PGLOBAL_POWER_POLICY,pPowerPolicy:PPOWER_POLICY|BOOLEAN
+GetCurrentProcess|HANDLE
+GetCurrentProcessId|DWORD
+GetCurrentProcessorNumber|DWORD
+GetCurrentThread|HANDLE
+GetCurrentThreadId|DWORD
+GetCursor|HCURSOR
+GetCursorInfo,pci:PCURSORINFO|BOOL
+GetCursorPos,lpPoint:LPPOINT|BOOL
+GetDateFormat,Locale:LCID,dwFlags:DWORD,lpDate:SYSTEMTIME Ptr,lpFormat:LPCTSTR,lpDateStr:LPTSTR,cchDate:Integer|Integer
+GetDC,hWnd:HWND|HDC
+GetDCBrushColor,hdc:HDC|COLORREF
+GetDCEx,hWnd:HWND,hrgnClip:HRGN,flags:DWORD|HDC
+GetDCOrgEx,hdc:HDC,lpPoint:LPPOINT|BOOL
+GetDCPenColor,hdc:HDC|COLORREF
+GetDefaultCommConfig,lpszName:LPCTSTR,lpCC:LPCOMMCONFIG,lpdwSize:LPDWORD|BOOL
+GetDefaultPrinter,pszBuffer:LPTSTR,pcchBuffer:LPDWORD|BOOL
+GetDesktopWindow|HWND
+GetDeviceCaps,hdc:HDC,nIndex:Integer|Integer
+GetDeviceDriverBaseName,ImageBase:LPVOID,lpBaseName:LPTSTR,nSize:DWORD|DWORD
+GetDeviceDriverFileName,ImageBase:LPVOID,lpFilename:LPTSTR,nSize:DWORD|DWORD
+GetDevicePowerState,hDevice:HANDLE,*pfOn:BOOL|BOOL
+GetDIBColorTable,hdc:HDC,uStartIndex:UINT,cEntries:UINT,pColors:RGBQUAD Ptr|UINT
+GetDIBits,hdc:HDC,hbmp:HBITMAP,uStartScan:UINT,cScanLines:UINT,lpvBits:LPVOID,lpbi:LPBITMAPINFO,uUsage:UINT|Integer
+GetDiskFreeSpace,lpRootPathName:LPCTSTR,lpSectorsPerCluster:LPDWORD,lpBytesPerSector:LPDWORD,lpNumberOfFreeClusters:LPDWORD,lpTotalNumberOfClusters:LPDWORD|BOOL
+GetDiskFreeSpaceEx,lpDirectoryName:LPCTSTR,lpFreeBytesAvailable:PULARGE_INTEGER,lpTotalNumberOfBytes:PULARGE_INTEGER,lpTotalNumberOfFreeBytes:PULARGE_INTEGER|BOOL
+GetDllDirectory,nBufferLength:DWORD,lpBuffer:LPTSTR|DWORD
+GetDoubleClickTime|UINT
+GetDriveType,lpRootPathName:LPCTSTR|UINT
+GetDynamicTimeZoneInformation,pTimeZoneInformation:PDYNAMIC_TIME_ZONE_INFORMATION|DWORD
+GetEnhMetaFile,lpszMetaFile:LPCTSTR|HENHMETAFILE
+GetEnhMetaFileBits,hemf:HENHMETAFILE,cbBuffer:UINT,lpbBuffer:LPBYTE|UINT
+GetEnhMetaFileDescription,hemf:HENHMETAFILE,cchBuffer:UINT,lpszDescription:LPTSTR|UINT
+GetEnhMetaFileHeader,hemf:HENHMETAFILE,cbBuffer:UINT,lpemh:LPENHMETAHEADER|UINT
+GetEnhMetaFilePaletteEntries,hemf:HENHMETAFILE,cEntries:UINT,lppe:LPPALETTEENTRY|UINT
+GetEnvironmentStrings|LPVOID
+GetEnvironmentVariable,lpName:LPCTSTR,lpBuffer:LPTSTR,nSize:DWORD|DWORD
+GetErrorMode|UINT
+GetEventLogInformation,hEventLog:HANDLE,dwInfoLevel:DWORD,lpBuffer:LPVOID,cbBufSize:DWORD,pcbBytesNeeded:LPDWORD|BOOL
+GetExceptionCode|DWORD
+GetExceptionInformation|LPEXCEPTION_POINTERS
+GetExitCodeProcess,hProcess:HANDLE,lpExitCode:LPDWORD|BOOL
+GetExitCodeThread,hThread:HANDLE,lpExitCode:LPDWORD|BOOL
+GetExpandedName,lpszSource:LPTSTR,lpszBuffer:LPTSTR|Integer
+GetFileAttributes,lpFileName:LPCTSTR|DWORD
+GetFileAttributesEx,lpFileName:LPCTSTR,fInfoLevelId:GET_FILEEX_INFO_LEVELS,lpFileInformation:LPVOID|BOOL
+GetFileBandwidthReservation,hFile:HANDLE,lpPeriodMilliseconds:LPDWORD,lpBytesPerPeriod:LPDWORD,pDiscardable:LPBOOL,lpTransferSize:LPDWORD,lpNumOutstandingRequests:LPDWORD|BOOL
+GetFileInformationByHandle,hFile:HANDLE,lpFileInformation:LPBY_HANDLE_FILE_INFORMATION|BOOL
+GetFileInformationByHandleEx,hFile:HANDLE,FileInformationClass:FILE_INFO_BY_HANDLE_CLASS,lpFileInformation:LPVOID,dwBufferSize:DWORD|BOOL
+GetFileSize,hFile:HANDLE,lpFileSizeHigh:LPDWORD|DWORD
+GetFileSizeEx,hFile:HANDLE,lpFileSize:PLARGE_INTEGER|BOOL
+GetFileTime,hFile:HANDLE,lpCreationTime:LPFILETIME,lpLastAccessTime:LPFILETIME,lpLastWriteTime:LPFILETIME|BOOL
+GetFileType,hFile:HANDLE|DWORD
+GetFileVersionInfo,lptstrFilename:LPCTSTR,dwHandle:DWORD,dwLen:DWORD,lpData:LPVOID|BOOL
+GetFileVersionInfoEx,dwFlags:DWORD,lptstrFilename:LPCTSTR,dwHandle:DWORD,dwLen:DWORD,lpData:LPVOID|BOOL
+GetFileVersionInfoSize,lptstrFilename:LPCTSTR,lpdwHandle:LPDWORD|DWORD
+GetFileVersionInfoSizeEx,dwFlags:DWORD,lptstrFilename:LPCTSTR,lpdwHandle:LPDWORD|DWORD
+GetFinalPathNameByHandle,hFile:HANDLE,lpszFilePath:LPWSTR,cchFilePath:DWORD,dwFlags:DWORD|DWORD
+GetFocus|HWND
+GetFontData,hdc:HDC,dwTable:DWORD,dwOffset:DWORD,lpvBuffer:LPVOID,cbData:DWORD|DWORD
+GetFontLanguageInfo,hdc:HDC|DWORD
+GetFontUnicodeRanges,hdc:HDC,lpgs:LPGLYPHSET|DWORD
+GetForegroundWindow|HWND
+GetForm,hPrinter:HANDLE,pFormName:LPTSTR,Level:DWORD,pForm:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetFullPathName,lpFileName:LPCTSTR,nBufferLength:DWORD,lpBuffer:LPTSTR,lpFilePart:LPTSTR Ptr|DWORD
+GetGeoInfo,GeoId:GEOID,GeoType:GEOTYPE,lpGeoData:LPTSTR,cchData:Integer,language:LANGID|Integer
+GetGlyphIndices,hdc:HDC,lpstr:LPCTSTR,c:Integer,pgi:LPWORD,fl:DWORD|DWORD
+GetGlyphOutline,hdc:HDC,uChar:UINT,uFormat:UINT,lpgm:LPGLYPHMETRICS,cbBuffer:DWORD,lpvBuffer:LPVOID,lpmat2:MAT2 Ptr|DWORD
+GetGraphicsMode,hdc:HDC|Integer
+GetGuiResources,hProcess:HANDLE,uiFlags:DWORD|DWORD
+GetGUIThreadInfo,idThread:DWORD,lpgui:LPGUITHREADINFO|BOOL
+GetIconInfo,hIcon:HICON,piconinfo:PICONINFO|BOOL
+GetIconInfoEx,hIcon:HICON,piconinfoex:PICONINFOEX|BOOL
+GetInputState|BOOL
+GetJob,hPrinter:HANDLE,JobId:DWORD,Level:DWORD,pJob:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetKBCodePage|UINT
+GetKerningPairs,hdc:HDC,nNumPairs:DWORD,lpkrnpair:LPKERNINGPAIR|DWORD
+GetKeyboardLayout,idThread:DWORD|HKL
+GetKeyboardLayoutList,nBuff:Integer,lpList:HKL Ptr|UINT
+GetKeyboardLayoutName,pwszKLID:LPTSTR|BOOL
+GetKeyboardState,lpKeyState:PBYTE|BOOL
+GetKeyboardType,nTypeFlag:Integer|Integer
+GetKeyNameText,lParam:LONG,lpString:LPTSTR,nSize:Integer|Integer
+GetKeyState,nVirtKey:Integer|SHORT
+GetLargePageMinimum|SIZE_T
+GetLargestConsoleWindowSize,hConsoleOutput:HANDLE|COORD
+GetLastActivePopup,hWnd:HWND|HWND
+GetLastError|DWORD
+GetLastInputInfo,plii:PLASTINPUTINFO|BOOL
+GetLayeredWindowAttributes,hwnd:HWND,pcrKey:COLORREF Ptr,pbAlpha:UBYTE Ptr,pdwFlags:DWORD Ptr|BOOL
+GetLayout,hdc:HDC|DWORD
+GetListBoxInfo,hwnd:HWND|DWORD
+GetLocaleInfo,Locale:LCID,LCType:LCTYPE,lpLCData:LPTSTR,cchData:Integer|Integer
+GetLocalTime,lpSystemTime:LPSYSTEMTIME
+GetLogicalDrives|DWORD
+GetLogicalDriveStrings,nBufferLength:DWORD,lpBuffer:LPTSTR|DWORD
+GetLogicalProcessorInformation,Buffer:PSYSTEM_LOGICAL_PROCESSOR_INFORMATION,ReturnLength:PDWORD|BOOL
+GetLongPathName,lpszShortPath:LPCTSTR,lpszLongPath:LPTSTR,cchBuffer:DWORD|DWORD
+GetMailslotInfo,hMailslot:HANDLE,lpMaxMessageSize:LPDWORD,lpNextSize:LPDWORD,lpMessageCount:LPDWORD,lpReadTimeout:LPDWORD|BOOL
+GetMapMode,hdc:HDC|Integer
+GetMappedFileName,hProcess:HANDLE,lpv:LPVOID,lpFilename:LPTSTR,nSize:DWORD|DWORD
+GetMenu,hWnd:HWND|HMENU
+GetMenuBarInfo,hwnd:HWND,idObject:LONG,idItem:LONG,pmbi:PMENUBARINFO|BOOL
+GetMenuCheckMarkDimensions|LONG
+GetMenuDefaultItem,hMenu:HMENU,fByPos:UINT,gmdiFlags:UINT|UINT
+GetMenuInfo,hmenu:HMENU,lpcmi:LPCMENUINFO|BOOL
+GetMenuItemCount,hMenu:HMENU|Integer
+GetMenuItemID,hMenu:HMENU,nPos:Integer|UINT
+GetMenuItemInfo,hMenu:HMENU,uItem:UINT,fByPosition:BOOL,lpmii:LPMENUITEMINFO|BOOL
+GetMenuItemRect,hWnd:HWND,hMenu:HMENU,uItem:UINT,lprcItem:LPRECT|BOOL
+GetMenuState,hMenu:HMENU,uId:UINT,uFlags:UINT|UINT
+GetMenuString,hMenu:HMENU,uIDItem:UINT,lpString:LPTSTR,nMaxCount:Integer,uFlag:UINT|Integer
+GetMessage,lpMsg:LPMSG,hWnd:HWND,wMsgFilterMin:UINT,wMsgFilterMax:UINT|BOOL
+GetMessageExtraInfo|LPARAM
+GetMessagePos|DWORD
+GetMessageTime|LONG
+GetMetaFileBitsEx,hmf:HMETAFILE,nSize:UINT,lpvData:LPVOID|UINT
+GetMetaRgn,hdc:HDC,hrgn:HRGN|Integer
+GetMiterLimit,hdc:HDC,peLimit:PFLOAT|BOOL
+GetModuleBaseName,hProcess:HANDLE,hModule:HMODULE,lpBaseName:LPTSTR,nSize:DWORD|DWORD
+GetModuleFileName,hModule:HMODULE,lpFilename:LPTSTR,nSize:DWORD|DWORD
+GetModuleFileNameEx,hProcess:HANDLE,hModule:HMODULE,lpFilename:LPTSTR,nSize:DWORD|DWORD
+GetModuleHandle,lpModuleName:LPCTSTR|HMODULE
+GetModuleHandleEx,dwFlags:DWORD,lpModuleName:LPCTSTR,phModule:HMODULE Ptr|BOOL
+GetModuleInformation,hProcess:HANDLE,hModule:HMODULE,lpmodinfo:LPMODULEINFO,cb:DWORD|BOOL
+GetMonitorInfo,hMonitor:HMONITOR,lpmi:LPMONITORINFO|BOOL
+GetMouseMovePointsEx,cbSize:UINT,lppt:LPMOUSEMOVEPOINT,lpptBuf:LPMOUSEMOVEPOINT,nBufPoints:Integer,resolution:DWORD|Integer
+GetMsgProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+GetNamedPipeClientComputerName,Pipe:HANDLE,ClientComputerName:LPTSTR,ClientComputerNameLength:ULONG|BOOL
+GetNamedPipeClientProcessId,Pipe:HANDLE,ClientProcessId:PULONG|BOOL
+GetNamedPipeClientSessionId,Pipe:HANDLE,ClientSessionId:PULONG|BOOL
+GetNamedPipeHandleState,hNamedPipe:HANDLE,lpState:LPDWORD,lpCurInstances:LPDWORD,lpMaxCollectionCount:LPDWORD,lpCollectDataTimeout:LPDWORD,lpUserName:LPTSTR,nMaxUserNameSize:DWORD|BOOL
+GetNamedPipeInfo,hNamedPipe:HANDLE,lpFlags:LPDWORD,lpOutBufferSize:LPDWORD,lpInBufferSize:LPDWORD,lpMaxInstances:LPDWORD|BOOL
+GetNamedPipeServerProcessId,Pipe:HANDLE,ServerProcessId:PULONG|BOOL
+GetNamedPipeServerSessionId,Pipe:HANDLE,ServerSessionId:PULONG|BOOL
+GetNativeSystemInfo,lpSystemInfo:LPSYSTEM_INFO
+GetNearestColor,hdc:HDC,crColor:COLORREF|COLORREF
+GetNearestPaletteIndex,hpal:HPALETTE,crColor:COLORREF|UINT
+GetNextWindow,hWnd:HWND,wCmd:UINT|HWND
+GetNtmsMediaPoolName,hSession:HANDLE,lpPoolId:LPNTMS_GUID,lpBufName:LPTSTR,lpdwBufSize:LPDWORD|DWORD
+GetNtmsObjectAttribute,hSession:HANDLE,lpObjectId:LPNTMS_GUID,dwType:DWORD,lpAttributeName:LPCTSTR,lpAttributeData:LPVOID,lpAttributeSize:LPDWORD|DWORD
+GetNtmsObjectInformation,hSession:HANDLE,lpObjectId:LPNTMS_GUID,lpInfo:LPNTMS_OBJECTINFORMATION|DWORD
+GetNtmsObjectSecurity,hSession:HANDLE,lpObjectId:LPNTMS_GUID,dwType:DWORD,RequestedInformation:SECURITY_INFORMATION,pSecurityDescriptor:PSECURITY_DESCRIPTOR,nLength:DWORD,lpnLengthNeeded:LPDWORD|DWORD
+GetNtmsRequestOrder,hSession:HANDLE,lpRequestId:LPNTMS_GUID,lpdwOrderNumber:LPDWORD|DWORD
+GetNtmsUIOptions,hSession:HANDLE,lpObjectId:LPNTMS_GUID,dwType:DWORD,lpszDestination:LPTSTR,lpdwSize:LPDWORD|DWORD
+GetNumaAvailableMemoryNode,Node:UCHAR,AvailableBytes:PULONGLONG|BOOL
+GetNumaHighestNodeNumber,HighestNodeNumber:PULONG|BOOL
+GetNumaNodeProcessorMask,Node:UCHAR,ProcessorMask:PULONGLONG|BOOL
+GetNumaProcessorNode,Processor:UCHAR,NodeNumber:PUCHAR|BOOL
+GetNumaProximityNode,ProximityId:ULONG,NodeNumber:PUCHAR|BOOL
+GetNumberFormat,Locale:LCID,dwFlags:DWORD,lpValue:LPCTSTR,lpFormat:NUMBERFMT Ptr,lpNumberStr:LPTSTR,cchNumber:Integer|Integer
+GetNumberOfConsoleInputEvents,hConsoleInput:HANDLE,lpcNumberOfEvents:LPDWORD|BOOL
+GetNumberOfConsoleMouseButtons,lpNumberOfMouseButtons:LPDWORD|BOOL
+GetNumberOfEventLogRecords,hEventLog:HANDLE,NumberOfRecords:PDWORD|BOOL
+GetObject,hgdiobj:HGDIOBJ,cbBuffer:Integer,lpvObject:LPVOID|Integer
+GetObjectType,h:HGDIOBJ|DWORD
+GetOEMCP|UINT
+GetOldestEventLogRecord,hEventLog:HANDLE,OldestRecord:PDWORD|BOOL
+GetOpenClipboardWindow,|HWND
+GetOutlineTextMetrics,hdc:HDC,cbData:UINT,lpOTM:LPOUTLINETEXTMETRIC|UINT
+GetOverlappedResult,hFile:HANDLE,lpOverlapped:LPOVERLAPPED,lpNumberOfBytesTransferred:LPDWORD,bWait:BOOL|BOOL
+GetPaletteEntries,hpal:HPALETTE,iStartIndex:UINT,nEntries:UINT,lppe:LPPALETTEENTRY|UINT
+GetParent,hWnd:HWND|HWND
+GetPath,hdc:HDC,lpPoints:LPPOINT,lpTypes:LPBYTE,nSize:Integer|Integer
+GetPerformanceInfo,pPerformanceInformation:PPERFORMANCE_INFORMATION,cb:DWORD|BOOL
+GetPixel,hdc:HDC,nXPos:Integer,nYPos:Integer|COLORREF
+GetPolyFillMode,hdc:HDC|Integer
+GetPrinter,hPrinter:HANDLE,Level:DWORD,pPrinter:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetPrinterData,hPrinter:HANDLE,pValueName:LPTSTR,pType:LPDWORD,pData:LPBYTE,nSize:DWORD,pcbNeeded:LPDWORD|DWORD
+GetPrinterDataEx,hPrinter:HANDLE,pKeyName:LPCTSTR,pValueName:LPCTSTR,pType:LPDWORD,pData:LPBYTE,nSize:DWORD,pcbNeeded:LPDWORD|DWORD
+GetPrinterDriver,hPrinter:HANDLE,pEnvironment:LPTSTR,Level:DWORD,pDriverInfo:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetPrinterDriverDirectory,pName:LPTSTR,pEnvironment:LPTSTR,Level:DWORD,pDriverDirectory:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetPrintProcessorDirectory,pName:LPTSTR,pEnvironment:LPTSTR,Level:DWORD,pPrintProcessorInfo:LPBYTE,cbBuf:DWORD,pcbNeeded:LPDWORD|BOOL
+GetPriorityClass,hProcess:HANDLE|DWORD
+GetPriorityClipboardFormat,paFormatPriorityList:UINT Ptr,cFormats:Integer|Integer
+GetPrivateProfileInt,lpAppName:LPCTSTR,lpKeyName:LPCTSTR,nDefault:Integer,lpFileName:LPCTSTR|UINT
+GetPrivateProfileSection,lpAppName:LPCTSTR,lpReturnedString:LPTSTR,nSize:DWORD,lpFileName:LPCTSTR|DWORD
+GetPrivateProfileSectionNames,lpszReturnBuffer:LPTSTR,nSize:DWORD,lpFileName:LPCTSTR|DWORD
+GetPrivateProfileString,lpAppName:LPCTSTR,lpKeyName:LPCTSTR,lpDefault:LPCTSTR,lpReturnedString:LPTSTR,nSize:DWORD,lpFileName:LPCTSTR|DWORD
+GetPrivateProfileStruct,lpszSection:LPCTSTR,lpszKey:LPCTSTR,lpStruct:LPVOID,uSizeStruct:UINT,szFile:LPCTSTR|BOOL
+GetProcAddress,hModule:HMODULE,lpProcName:LPCSTR|FARPROC
+GetProcessAffinityMask,hProcess:HANDLE,lpProcessAffinityMask:PDWORD_PTR,lpSystemAffinityMask:PDWORD_PTR|BOOL
+GetProcessDefaultLayout,pdwDefaultLayout:DWORD Ptr|BOOL
+GetProcessHandleCount,hProcess:HANDLE,pdwHandleCount:PDWORD|BOOL
+GetProcessHeap|HANDLE
+GetProcessHeaps,NumberOfHeaps:DWORD,ProcessHeaps:PHANDLE|DWORD
+GetProcessId,Process:HANDLE|DWORD
+GetProcessIdOfThread,Thread:HANDLE|DWORD
+GetProcessIoCounters,hProcess:HANDLE,lpIoCounters:PIO_COUNTERS|BOOL
+GetProcessMemoryInfo,Process:HANDLE,ppsmemCounters:PPROCESS_MEMORY_COUNTERS,cb:DWORD|BOOL
+GetProcessPriorityBoost,hProcess:HANDLE,pDisablePriorityBoost:PBOOL|BOOL
+GetProcessShutdownParameters,lpdwLevel:LPDWORD,lpdwFlags:LPDWORD|BOOL
+GetProcessTimes,hProcess:HANDLE,lpCreationTime:LPFILETIME,lpExitTime:LPFILETIME,lpKernelTime:LPFILETIME,lpUserTime:LPFILETIME|BOOL
+GetProcessVersion,ProcessId:DWORD|DWORD
+GetProcessWindowStation|HWINSTA
+GetProcessWorkingSetSize,hProcess:HANDLE,lpMinimumWorkingSetSize:PSIZE_T,lpMaximumWorkingSetSize:PSIZE_T|BOOL
+GetProcessWorkingSetSizeEx,hProcess:HANDLE,lpMinimumWorkingSetSize:PSIZE_T,lpMaximumWorkingSetSize:PSIZE_T,Flags:PDWORD|BOOL
+GetProductInfo,dwOSMajorVersion:DWORD,dwOSMinorVersion:DWORD,dwSpMajorVersion:DWORD,dwSpMinorVersion:DWORD,pdwReturnedProductType:PDWORD|BOOL
+GetProfileInt,lpAppName:LPCTSTR,lpKeyName:LPCTSTR,nDefault:Integer|UINT
+GetProfileSection,lpAppName:LPCTSTR,lpReturnedString:LPTSTR,nSize:DWORD|DWORD
+GetProfileString,lpAppName:LPCTSTR,lpKeyName:LPCTSTR,lpDefault:LPCTSTR,lpReturnedString:LPTSTR,nSize:DWORD|DWORD
+GetProp,hWnd:HWND,lpString:LPCTSTR|HANDLE
+GetPwrCapabilities,lpSystemPowerCapabilities:PSYSTEM_POWER_CAPABILITIES|BOOLEAN
+GetPwrDiskSpindownRange,RangeMax:PUINT,RangeMin:PUINT|BOOLEAN
+GetQueuedCompletionStatus,CompletionPort:HANDLE,lpNumberOfBytes:PDWORD,lpCompletionKey:PDWORD,lpOverlapped:LPOVERLAPPED Ptr,dwMilliseconds:DWORD|BOOL
+GetQueuedCompletionStatusEx,CompletionPort:HANDLE,lpCompletionPortEntries:LPOVERLAPPED_ENTRY,ulCount:ULONG,ulNumEntriesRemoved:PULONG,dwMilliseconds:DWORD,fAlertable:BOOL|BOOL
+GetQueueStatus,flags:UINT|DWORD
+GetRandomRgn,hdc:HDC,hrgn:HRGN,iNum:Integer|Integer
+GetRasterizerCaps,lprs:LPRASTERIZER_STATUS,cb:UINT|BOOL
+GetRawInputBuffer,pData:PRAWINPUT,pcbSize:PUINT,cbSizeHeader:UINT|UINT
+GetRawInputData,hRawInput:HRAWINPUT,uiCommand:UINT,pData:LPVOID,pcbSize:PUINT,cbSizeHeader:UINT|UINT
+GetRawInputDeviceInfo,hDevice:HANDLE,uiCommand:UINT,pData:LPVOID,pcbSize:PUINT|UINT
+GetRawInputDeviceList,pRawInputDeviceList:PRAWINPUTDEVICELIST,puiNumDevices:PUINT,cbSize:UINT|UINT
+GetRegionData,hRgn:HRGN,dwCount:DWORD,lpRgnData:LPRGNDATA|DWORD
+GetRegisteredRawInputDevices,pRawInputDevices:PRAWINPUTDEVICE,puiNumDevices:PUINT,cbSize:UINT|UINT
+GetRgnBox,hrgn:HRGN,lprc:LPRECT|Integer
+GetROP2,hdc:HDC|Integer
+GetScrollBarInfo,hwnd:HWND,idObject:LONG,psbi:PSCROLLBARINFO|BOOL
+GetScrollInfo,hwnd:HWND,fnBar:Integer,lpsi:LPSCROLLINFO|BOOL
+GetScrollPos,hWnd:HWND,nBar:Integer|Integer
+GetScrollRange,hWnd:HWND,nBar:Integer,lpMinPos:LPINT,lpMaxPos:LPINT|BOOL
+GetServiceDisplayName,hSCManager:SC_HANDLE,lpServiceName:LPCTSTR,lpDisplayName:LPTSTR,lpcchBuffer:LPDWORD|BOOL
+GetServiceKeyName,hSCManager:SC_HANDLE,lpDisplayName:LPCTSTR,lpServiceName:LPTSTR,lpcchBuffer:LPDWORD|BOOL
+GetShellWindow|HWND
+GetShortPathName,lpszLongPath:LPCTSTR,lpszShortPath:LPTSTR,cchBuffer:DWORD|DWORD
+GetStartupInfo,lpStartupInfo:LPSTARTUPINFO
+GetStdHandle,nStdHandle:DWORD|HANDLE
+GetStockObject,fnObject:Integer|HGDIOBJ
+GetStretchBltMode,hdc:HDC|Integer
+GetStringTypeA,Locale:LCID,dwInfoType:DWORD,lpSrcStr:LPCSTR,cchSrc:Integer,lpCharType:LPWORD|BOOL
+GetStringTypeEx,Locale:LCID,dwInfoType:DWORD,lpSrcStr:LPCTSTR,cchSrc:Integer,lpCharType:LPWORD|BOOL
+GetStringTypeW,dwInfoType:DWORD,lpSrcStr:LPCWSTR,cchSrc:Integer,lpCharType:LPWORD|BOOL
+GetSubMenu,hMenu:HMENU,nPos:Integer|HMENU
+GetSysColor,nIndex:Integer|DWORD
+GetSysColorBrush,nIndex:Integer|HBRUSH
+GetSystemDefaultLangID|LANGID
+GetSystemDefaultLCID|LCID
+GetSystemDefaultUILanguage|LANGID
+GetSystemDirectory,lpBuffer:LPTSTR,uSize:UINT|UINT
+GetSystemFileCacheSize,lpMinimumFileCacheSize:PSIZE_T,lpMaximumFileCacheSize:PSIZE_T,lpFlags:PDWORD|BOOL
+GetSystemFirmwareTable,FirmwareTableProviderSignature:DWORD,FirmwareTableID:DWORD,pFirmwareTableBuffer:PVOID,BufferSize:DWORD|UINT
+GetSystemInfo,lpSystemInfo:LPSYSTEM_INFO
+GetSystemMenu,hWnd:HWND,bRevert:BOOL|HMENU
+GetSystemMetrics,nIndex:Integer|Integer
+GetSystemPaletteEntries,hdc:HDC,iStartIndex:UINT,nEntries:UINT,lppe:LPPALETTEENTRY|UINT
+GetSystemPaletteUse,hdc:HDC|UINT
+GetSystemPowerStatus,lpSystemPowerStatus:LPSYSTEM_POWER_STATUS|BOOL
+GetSystemRegistryQuota,pdwQuotaAllowed:PDWORD,pdwQuotaUsed:PDWORD|BOOL
+GetSystemTime,lpSystemTime:LPSYSTEMTIME
+GetSystemTimes,lpIdleTime:LPFILETIME,lpKernelTime:LPFILETIME,lpUserTime:LPFILETIME|BOOL
+GetSystemTimeAdjustment,lpTimeAdjustment:PDWORD,lpTimeIncrement:PDWORD,lpTimeAdjustmentDisabled:PBOOL|BOOL
+GetSystemTimeAsFileTime,lpSystemTimeAsFileTime:LPFILETIME
+GetSystemWindowsDirectory,lpBuffer:LPTSTR,uSize:UINT|UINT
+GetSystemWow64Directory,lpBuffer:LPTSTR,uSize:UINT|UINT
+GetTabbedTextExtent,hDC:HDC,lpString:LPCTSTR,nCount:Integer,nTabPositions:Integer,lpnTabStopPositions:LPINT|DWORD
+GetTapeParameters,hDevice:HANDLE,dwOperation:DWORD,lpdwSize:LPDWORD,lpTapeInformation:LPVOID|DWORD
+GetTapePosition,hDevice:HANDLE,dwPositionType:DWORD,lpdwPartition:LPDWORD,lpdwOffsetLow:LPDWORD,lpdwOffsetHigh:LPDWORD|DWORD
+GetTapeStatus,hDevice:HANDLE|DWORD
+GetTempFileName,lpPathName:LPCTSTR,lpPrefixString:LPCTSTR,uUnique:UINT,lpTempFileName:LPTSTR|UINT
+GetTempPath,nBufferLength:DWORD,lpBuffer:LPTSTR|DWORD
+GetTextAlign,hdc:HDC|UINT
+GetTextCharacterExtra,hdc:HDC|Integer
+GetTextColor,hdc:HDC|COLORREF
+GetTextExtentExPoint,hdc:HDC,lpszStr:LPCTSTR,cchString:Integer,nMaxExtent:Integer,lpnFit:LPINT,alpDx:LPINT,lpSize:LPSIZE|BOOL
+GetTextExtentExPointI,hdc:HDC,pgiIn:LPWORD,cgi:Integer,nMaxExtent:Integer,lpnFit:LPINT,alpDx:LPINT,lpSize:LPSIZE|BOOL
+GetTextExtentPoint,hdc:HDC,lpString:LPCTSTR,cbString:Integer,lpSize:LPSIZE|BOOL
+GetTextExtentPoint32,hdc:HDC,lpString:LPCTSTR,cbString:Integer,lpSize:LPSIZE|BOOL
+GetTextExtentPointI,hdc:HDC,pgiIn:LPWORD,cgi:Integer,lpSize:LPSIZE|BOOL
+GetTextFace,hdc:HDC,nCount:Integer,lpFaceName:LPTSTR|Integer
+GetTextMetrics,hdc:HDC,lptm:LPTEXTMETRIC|BOOL
+GetThreadContext,hThread:HANDLE,lpContext:LPCONTEXT|BOOL
+GetThreadDesktop,dwThreadId:DWORD|HDESK
+GetThreadId,Thread:HANDLE|DWORD
+GetThreadIOPendingFlag,hThread:HANDLE,lpIOIsPending:PBOOL|BOOL
+GetThreadLocale|LCID
+GetThreadPriority,hThread:HANDLE|Integer
+GetThreadPriorityBoost,hThread:HANDLE,pDisablePriorityBoost:PBOOL|BOOL
+GetThreadSelectorEntry,hThread:HANDLE,dwSelector:DWORD,lpSelectorEntry:LPLDT_ENTRY|BOOL
+GetThreadTimes,hThread:HANDLE,lpCreationTime:LPFILETIME,lpExitTime:LPFILETIME,lpKernelTime:LPFILETIME,lpUserTime:LPFILETIME|BOOL
+GetThreadWaitChain,WctHandle:HWCT,Context:DWORD_PTR,Flags:DWORD,ThreadId:DWORD,NodeCount:LPDWORD,NodeInfoArray:PWAITCHAIN_NODE_INFO,IsCycle:LPBOOL|BOOL
+GetTickCount|DWORD
+GetTickCount64|ULONGLONG
+GetTimeFormat,Locale:LCID,dwFlags:DWORD,lpTime:SYSTEMTIME Ptr,lpFormat:LPCTSTR,lpTimeStr:LPTSTR,cchTime:Integer|Integer
+GetTimeSysInfoFunc,eInfo:TimeSysInfo,pvInfo:PVOID|HRESULT
+GetTimeZoneInformation,lpTimeZoneInformation:LPTIME_ZONE_INFORMATION|DWORD
+GetTitleBarInfo,hwnd:HWND,pti:PTITLEBARINFO|BOOL
+GetTopWindow,hWnd:HWND|HWND
+GetTraceEnableFlags,SessionHandle:TRACEHANDLE|ULONG
+GetTraceEnableLevel,SessionHandle:TRACEHANDLE|UCHAR
+GetTraceLoggerHandle,Buffer:PVOID|TRACEHANDLE
+GetUpdateRect,hWnd:HWND,lpRect:LPRECT,bErase:BOOL|BOOL
+GetUpdateRgn,hWnd:HWND,hRgn:HRGN,bErase:BOOL|Integer
+GetUserDefaultLangID|LANGID
+GetUserDefaultLCID|LCID
+GetUserDefaultUILanguage|LANGID
+GetUserGeoID,GeoClass:GEOCLASS|GEOID
+GetUserName,pbstrUserName:BSTR Ptr|HRESULT
+GetUserNameEx,NameFormat:EXTENDED_NAME_FORMAT,lpNameBuffer:LPTSTR,lpnSize:PULONG|BOOLEAN
+GetUserObjectInformation,hObj:HANDLE,nIndex:Integer,pvInfo:PVOID,nLength:DWORD,lpnLengthNeeded:LPDWORD|BOOL
+GetVersion|DWORD
+GetVersionEx,lpVersionInfo:LPOSVERSIONINFO|BOOL
+GetViewportExtEx,hdc:HDC,lpSize:LPSIZE|BOOL
+GetViewportOrgEx,hdc:HDC,lpPoint:LPPOINT|BOOL
+GetVolumeInformation,lpRootPathName:LPCTSTR,lpVolumeNameBuffer:LPTSTR,nVolumeNameSize:DWORD,lpVolumeSerialNumber:LPDWORD,lpMaximumComponentLength:LPDWORD,lpFileSystemFlags:LPDWORD,lpFileSystemNameBuffer:LPTSTR,nFileSystemNameSize:DWORD|BOOL
+GetVolumeNameForVolumeMountPoint,lpszVolumeMountPoint:LPCTSTR,lpszVolumeName:LPTSTR,cchBufferLength:DWORD|BOOL
+GetVolumePathName,lpszFileName:LPCTSTR,lpszVolumePathName:LPTSTR,cchBufferLength:DWORD|BOOL
+GetVolumePathNamesForVolumeName,lpszVolumeName:LPCTSTR,lpszVolumePathNames:LPTSTR,cchBufferLength:DWORD,lpcchReturnLength:PDWORD|BOOL
+GetVolumesFromDrive,pszDriveName:LPWSTR,*VolumeNameBufferPtr:LPWSTR,*DriveLetterBufferPtr:LPWSTR|DWORD
+GetWindow,hWnd:HWND,uCmd:UINT|HWND
+GetWindowDC,hWnd:HWND|HDC
+GetWindowExtEx,hdc:HDC,lpSize:LPSIZE|BOOL
+GetWindowInfo,hwnd:HWND,pwi:PWINDOWINFO|BOOL
+GetWindowLong,hWnd:HWND,nIndex:Integer|LONG
+GetWindowLongPtr,hWnd:HWND,nIndex:Integer|LONG Ptr
+GetWindowModuleFileName,hwnd:HWND,lpszFileName:LPTSTR,cchFileNameMax:UINT|UINT
+GetWindowOrgEx,hdc:HDC,lpPoint:LPPOINT|BOOL
+GetWindowPlacement,hWnd:HWND,lpwndpl:WINDOWPLACEMENT Ptr|BOOL
+GetWindowRect,hWnd:HWND,lpRect:LPRECT|BOOL
+GetWindowRgn,hWnd:HWND,hRgn:HRGN|Integer
+GetWindowRgnBox,hWnd:HWND,lprc:LPRECT|Integer
+GetWindowsDirectory,lpBuffer:LPTSTR,uSize:UINT|UINT
+GetWindowText,hWnd:HWND,LPlpString:TSTR,InnMaxCount:teger|Integer
+GetWindowTextLength,hWnd:HWND|Integer
+GetWindowThreadProcessId,hWnd:HWND,lpdwProcessId:LPDWORD|DWORD
+GetWinMetaFileBits,hemf:HENHMETAFILE,cbBuffer:UINT,lpbBuffer:LPBYTE,fnMapMode:Integer,hdcRef:HDC|UINT
+GetWorldTransform,hdc:HDC,lpXform:LPXFORM|BOOL
+GetWriteWatch,dwFlags:DWORD,lpBaseAddress:PVOID,dwRegionSize:SIZE_T,lpAddresses:PVOID Ptr,lpdwCount:PULONG_PTR,lpdwGranularity:PULONG|UINT
+GetWsChanges,hProcess:HANDLE,lpWatchInfo:PPSAPI_WS_WATCH_INFORMATION,cb:DWORD|BOOL
+GlobalAddAtom,lpString:LPCTSTR|ATOM
+GlobalAlloc,uFlags:UINT,dwBytes:SIZE_T|HGLOBAL
+GlobalDeleteAtom,nAtom:ATOM|ATOM
+GlobalDiscard,hMem:HGLOBAL|HGLOBAL
+GlobalFindAtom,lpString:LPCTSTR|ATOM
+GlobalFlags,hMem:HGLOBAL|UINT
+GlobalFree,hMem:HGLOBAL|HGLOBAL
+GlobalGetAtomName,nAtom:ATOM,lpBuffer:LPTSTR,nSize:Integer|UINT
+GlobalHandle,pMem:LPCVOID|HGLOBAL
+GlobalLock,hMem:HGLOBAL|LPVOID
+GlobalMemoryStatus,lpBuffer:LPMEMORYSTATUS
+GlobalMemoryStatusEx,lpBuffer:LPMEMORYSTATUSEX|BOOL
+GlobalReAlloc,hMem:HGLOBAL,dwBytes:SIZE_T,uFlags:UINT|HGLOBAL
+GlobalSize,hMem:HGLOBAL|SIZE_T
+GlobalUnlock,hMem:HGLOBAL|BOOL
+GradientFill,hdc:HDC,pVertex:PTRIVERTEX,dwNumVertex:ULONG,pMesh:PVOID,dwNumMesh:ULONG,dwMode:ULONG|BOOL
+GrayString,hDC:HDC,hBrush:HBRUSH,lpOutputFunc:GRAYSTRINGPROC,lpData:LPARAM,nCount:Integer,X:Integer,Y:Integer,nWidth:Integer,nHeight:Integer|BOOL
+Handler,fdwControl:DWORD
+HandlerEx,dwControl:DWORD,dwEventType:DWORD,lpEventData:LPVOID,lpContext:LPVOID|DWORD
+HandlerRoutine,dwCtrlType:DWORD|BOOL
+Heap32First,lphe:LPHEAPENTRY32,th32ProcessID:DWORD,th32HeapID:ULONG_PTR|BOOL
+Heap32ListFirst,hSnapshot:HANDLE,lphl:LPHEAPLIST32|BOOL
+Heap32ListNext,hSnapshot:HANDLE,lphl:LPHEAPLIST32|BOOL
+Heap32Next,lphe:LPHEAPENTRY32|BOOL
+HeapAlloc,hHeap:HANDLE,dwFlags:DWORD,dwBytes:SIZE_T|LPVOID
+HeapCompact,hHeap:HANDLE,dwFlags:DWORD|SIZE_T
+HeapCreate,flOptions:DWORD,dwInitialSize:SIZE_T,dwMaximumSize:SIZE_T|HANDLE
+HeapDestroy,hHeap:HANDLE|BOOL
+HeapFree,hHeap:HANDLE,dwFlags:DWORD,lpMem:LPVOID|BOOL
+HeapLock,hHeap:HANDLE|BOOL
+HeapQueryInformation,HeapHandle:HANDLE,HeapInformationClass:HEAP_INFORMATION_CLASS,HeapInformation:PVOID,HeapInformationLength:SIZE_T,ReturnLength:PSIZE_T|BOOL
+HeapReAlloc,hHeap:HANDLE,dwFlags:DWORD,lpMem:LPVOID,dwBytes:SIZE_T|LPVOID
+HeapSetInformation,HeapHandle:HANDLE,HeapInformationClass:HEAP_INFORMATION_CLASS,HeapInformation:PVOID,HeapInformationLength:SIZE_T|BOOL
+HeapSize,hHeap:HANDLE,dwFlags:DWORD,lpMem:LPCVOID|SIZE_T
+HeapUnlock,hHeap:HANDLE|BOOL
+HeapValidate,hHeap:HANDLE,dwFlags:DWORD,lpMem:LPCVOID|BOOL
+HeapWalk,hHeap:HANDLE,lpEntry:LPPROCESS_HEAP_ENTRY|BOOL
+HideCaret,hWnd:HWND|BOOL
+HiliteMenuItem,hwnd:HWND,hmenu:HMENU,uItemHilite:UINT,uHilite:UINT|BOOL
+IdentifyNtmsSlot,hSession:HANDLE,lpSlotID:LPNTMS_GUID,dwOption:DWORD|DWORD
+ImmAssociateContext,hWnd:HWND,hIMC:HIMC|HIMC
+ImmAssociateContextEx,hWnd:HWND,hIMC:HINC,dwFlags:DWORD|BOOL
+ImmConfigureIME,hKL:HKL,hWnd:HWND,dwMode:DWORD,lpData:LPVOID|BOOL
+ImmCreateContext|HIMC
+ImmDestroyContext,hIMC:HIMC|BOOL
+ImmDisableIME,idThread:DWORD|BOOL
+ImmEnumInputContext,idThread:DWORD,lpfn:IMCENUMPROC,lParam:LPARAM|BOOL
+ImmEnumRegisterWord,hKL:HKL,lpfnEnumProc:REGISTERWORDENUMPROC,lpszReading:LPCTSTR,dwStyle:DWORD,lpszRegister:LPCTSTR,lpData:LPVOID|UINT
+ImmEscape,hKL:HKL,hIMC:HIMC,uEscape:UINT,lpData:LPVOID|LRESULT
+ImmGetCandidateList,hIMC:HIMC,dwIndex:DWORD,lpCandList:LPCANDIDATELIST,dwBufLen:DWORD|DWORD
+ImmGetCandidateListCount,hIMC:HIMC,lpdwListCount:LPDWORD|DWORD
+ImmGetCandidateWindow,hIMC:HIMC,dwIndex:DWORD,lpCandidate:LPCANDIDATEFORM|BOOL
+ImmGetCompositionFont,hIMC:HIMC,lplf:LPLOGFONT|BOOL
+ImmGetCompositionString,hIMC:HIMC,dwIndex:DWORD,lpBuf:LPVOID,dwBufLen:DWORD|LONG
+ImmGetCompositionWindow,hIMC:HIMC,lpCompForm:LPCOMPOSITIONFORM|BOOL
+ImmGetContext,hWnd:HWND|HIMC
+ImmGetConversionList,hKL:HKL,hIMC:HIMC,lpSrc:LPCTSTR,lpDst:LPCANDIDATELIST,dwBufLen:DWORD,uFlag:UINT|DWORD
+ImmGetConversionStatus,hIMC:HIMC,lpfdwConversion:LPDWORD,lpfdwSentence:LPDWORD|BOOL
+ImmGetDefaultIMEWnd,hWnd:HWND|HWND
+ImmGetDescription,hKL:HKL,lpszDescription:LPTSTR,uBufLen:UINT|UINT
+ImmGetGuideLine,hIMC:HIMC,dwIndex:DWORD,lpBuf:LPTSTR,dwBufLen:DWORD|DWORD
+ImmGetIMEFileName,hKL:HKL,lpszFileName:LPTSTR,uBufLen:UINT|UINT
+ImmGetImeMenuItems,hIMC:HIMC,dwFlags:DWORD,dwType:DWORD,lpImeParentMenu:LPIMEMENUITEMINFO,lpImeMenu:LPIMEMENUITEMINFO,dwSize:DWORD|DWORD
+ImmGetOpenStatus,hIMC:HIMC|BOOL
+ImmGetProperty,hKL:HKL,fdwIndex:DWORD|DWORD
+ImmGetRegisterWordStyle,hKL:HKL,nItem:UINT,lpStyleBuf:LPSTYLEBUF|UINT
+ImmGetStatusWindowPos,hIMC:HIMC,lpptPos:LPPOINT|BOOL
+ImmGetVirtualKey,hWnd:HWND|UINT
+ImmInstallIME,lpszIMEFileName:LPCTSTR,lpszLayoutText:LPCTSTR|HKL
+ImmIsIME,hKL:HKL|BOOL
+ImmIsUIMessage,hWndIME:HWND,msg:UINT,wParam:WPARAM,lParam:LPARAM|BOOL
+ImmNotifyIME,hIMC:HIMC,dwAction:DWORD,dwIndex:DWORD,dwValue:DWORD|BOOL
+ImmRegisterWord,hKL:HKL,lpszReading:LPCTSTR,dwStyle:DWORD,lpszRegister:LPCTSTR|BOOL
+ImmReleaseContext,hWnd:HWND,hIMC:HIMC|BOOL
+ImmSetCandidateWindow,hIMC:HIMC,lpCandidate:LPCANDIDATEFORM|BOOL
+ImmSetCompositionFont,hIMC:HIMC,lplf:LPLOGFONT|BOOL
+ImmSetCompositionString,hIMC:HIMC,dwIndex:DWORD,lpComp:LPVOID,dwCompLen:DWORD,lpRead:LPVOID,dwReadLen:DWORD|BOOL
+ImmSetCompositionWindow,hIMC:HIMC,lpCompForm:LPCOMPOSITIONFORM|BOOL
+ImmSetConversionStatus,hIMC:HIMC,fdwConversion:DWORD,fdwSentence:DWORD|BOOL
+ImmSetOpenStatus,hIMC:HIMC,fOpen:BOOL|BOOL
+ImmSetStatusWindowPos,hIMC:HIMC,lpptPos:LPPOINT|BOOL
+ImmSimulateHotKey,hWnd:HWND,dwHotKeyID:DWORD|BOOL
+ImmUnregisterWord,hKL:HKL,lpszReading:LPCTSTR,dwStyle:DWORD,lpszUnregister:LPCTSTR|BOOL
+ImpersonateDdeClientWindow,hWndClient:HWND,hWndServer:HWND|BOOL
+ImportNtmsDatabase,hSession:HANDLE|DWORD
+InflateRect,lprc:LPRECT,dx:Integer,dy:Integer|BOOL
+InitAtomTable,nSize:DWORD|BOOL
+InitializeConditionVariable,ConditionVariable:PCONDITION_VARIABLE
+InitializeCriticalSection,lpCriticalSection:LPCRITICAL_SECTION
+InitializeCriticalSectionEx,lpCriticalSection:LPCRITICAL_SECTION,dwSpinCount:DWORD,Flags:DWORD|BOOL
+InitializeCriticalSectionAndSpinCount,lpCriticalSection:LPCRITICAL_SECTION,dwSpinCount:DWORD|BOOL
+InitializeProcessForWsWatch,hProcess:HANDLE|BOOL
+InitializeProcThreadAttributeList,lpAttributeList:LPPROC_THREAD_ATTRIBUTE_LIST,dwAttributeCount:DWORD,dwFlags:DWORD,lpSize:PSIZE_T|BOOL
+InitializeSRWLock,SRWLock:PSRWLOCK
+InitializeThreadpoolEnvironment,pcbe:PTP_CALLBACK_ENVIRON
+InitiateShutdown,lpMachineName:LPTSTR,lpMessage:LPTSTR,dwGracePeriod:DWORD,dwShutdownFlags:DWORD,dwReason:DWORD|DWORD
+InitiateSystemShutdown,lpMachineName:LPTSTR,lpMessage:LPTSTR,dwTimeout:DWORD,bForceAppsClosed:BOOL,bRebootAfterShutdown:BOOL|BOOL
+InitiateSystemShutdownEx,lpMachineName:LPTSTR,lpMessage:LPTSTR,dwTimeout:DWORD,bForceAppsClosed:BOOL,bRebootAfterShutdown:BOOL,dwReason:DWORD|BOOL
+InitOnceBeginInitialize,lpInitOnce:LPINIT_ONCE,dwFlags:DWORD,fPending:PBOOL,*lpContext:LPVOID|BOOL
+InitOnceComplete,lpInitOnce:LPINIT_ONCE,dwFlags:DWORD,lpContext:LPVOID|BOOL
+InitOnceExecuteOnce,InitOnce:PINIT_ONCE,InitFn:PINIT_ONCE_FN,Parameter:PVOID,*Context:LPVOID|BOOL
+InitOnceInitialize,InitOnce:PINIT_ONCE
+InjectNtmsCleaner,hSession:HANDLE,lpLibrary:LPNTMS_GUID,lpInjectOperation:LPNTMS_GUID,dwNumberOfCleansLeft:WORD,dwAction:DWORD|DWORD
+InjectNtmsMedia,hSession:HANDLE,lpLibraryId:LPNTMS_GUID,lpInjectOperation:LPNTMS_GUID,dwAction:DWORD|DWORD
+InSendMessage|BOOL
+InSendMessageEx,lpReserved:LPVOID|DWORD
+InsertMenu,hMenu:HMENU,uPosition:UINT,uFlags:UINT,uIDNewItem:PTR,lpNewItem:LPCTSTR|BOOL
+InsertMenuItem,hMenu:HMENU,uItem:UINT,fByPosition:BOOL,lpmii:LPCMENUITEMINFO|BOOL
+InterlockedCompareExchange,*Destination:LONG,Exchange:LONG,Comparand:LONG|LONG
+InterlockedCompareExchangeAcquire,*Destination:LONG,Exchange:LONG,Comparand:LONG|LONG
+InterlockedCompareExchangeAcquire64,*Destination:LONGLONG,Exchange:LONGLONG,Comparand:LONGLONG|LONGLONG
+InterlockedCompareExchangePointer,*Destination:PVOID,Exchange:PVOID,Comparand:PVOID|PVOID
+InterlockedCompareExchangeRelease,*Destination:LONG,Exchange:LONG,Comparand:LONG|LONG
+InterlockedCompareExchangeRelease64,*Destination:LONGLONG,Exchange:LONGLONG,Comparand:LONGLONG|LONGLONG
+InterlockedDecrement,LONG *Addend:|LONG
+InterlockedDecrement64,LONGLONG *Addend:|LONGLONG
+InterlockedDecrementAcquire,*Addend:LONG|LONG
+InterlockedDecrementRelease,*Addend:LONG|LONG
+InterlockedExchange,*Target:LONG,Value:LONG|LONG
+InterlockedExchangeAcquire64,Target:LONGLONG,Value:LONGLONG|LONGLONG
+InterlockedExchangeAdd,*Addend:LONG,Value:LONG|LONG
+InterlockedExchangePointer,*Target:PVOID,Value:PVOID|PVOID
+InterlockedIncrement,*Addend:LONG|LONG
+InterlockedIncrement64,*Addend:LONGLONG|LONGLONG
+InterlockedIncrementAcquire,*Addend:LONG|LONG
+InterlockedIncrementAcquire64,*Addend:LONGLONG|LONGLONG
+InterlockedIncrementRelease,*Addend:LONG|LONG
+InterlockedIncrementRelease64,*Addend:LONGLONG|LONGLONG
+InternalGetWindowText,hWnd:HWND,lpString:LPWSTR,nMaxCount:Integer|Integer
+IntersectClipRect,hdc:HDC,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|Integer
+IntersectRect,lprcDst:LPRECT,lprcSrc1:LPRECT,lprcSrc2:LPRECT|BOOL
+InvalidateRect,hWnd:HWND,lpRect:LPRECT,bErase:BOOL|BOOL
+InvalidateRgn,hWnd:HWND,hRgn:HRGN,bErase:BOOL|BOOL
+InventoryNtmsLibrary,hSession:HANDLE,lpLibraryId:LPNTMS_GUID,dwAction:DWORD|DWORD
+InvertRect,hDC:HDC,lprc:LPRECT|BOOL
+InvertRgn,hdc:HDC,hrgn:HRGN|BOOL
+IsBadCodePtr,lpfn:FARPROC|BOOL
+IsBadReadPtr,lp:PCVOID,ucb:UINT|BOOL
+IsBadStringPtr,lpsz:LPCTSTR,ucchMax:UINT|BOOL
+IsBadWritePtr,lp:PVOID,ucb:UINT|BOOL
+IsCharAlpha,ch:TCHAR|BOOL
+IsCharAlphaNumeric,ch:TCHAR|BOOL
+IsCharAlphaNumericWrapW,ch:WCHAR|BOOL
+IsCharLower,ch:TCHAR|BOOL
+IsCharUpper,ch:TCHAR|BOOL
+IsChild,hWndParent:HWND,hWnd:HWND|BOOL
+IsClipboardFormatAvailable,format:UINT|BOOL
+IsDebuggerPresent,|BOOL
+IsDlgButtonChecked,hDlg:HWND,nIDButton:Integer|UINT
+IsGUIThread,bConvert:BOOL|BOOL
+IsHungAppWindow,hWnd:HWND|BOOL
+IsIconic,hWnd:HWND|BOOL
+IsMenu,hMenu:HMENU|BOOL
+IsProcessInJob,ProcessHandle:HANDLE,JobHandle:HANDLE,Result:PBOOL|BOOL
+IsProcessorFeaturePresent,ProcessorFeature:DWORD|BOOL
+IsPwrHibernateAllowed|BOOLEAN
+IsPwrShutdownAllowed|BOOLEAN
+IsPwrSuspendAllowed|BOOLEAN
+IsRectEmpty,*lprc:RECT|BOOL
+IsSystemResumeAutomatic|BOOL
+IsThreadAFiber|BOOL
+IsThreadpoolTimerSet,pti:PTP_TIMER|BOOL
+IsValidCodePage,CodePage:UINT|BOOL
+IsValidLanguageGroup,LanguageGroup:LGRPID,dwFlags:DWORD|BOOL
+IsValidLocale,Locale:LCID,dwFlags:DWORD|BOOL
+IsWindow,hWnd:HWND|BOOL
+IsWindowEnabled,hWnd:HWND|BOOL
+IsWindowUnicode,hWnd:HWND|BOOL
+IsWindowVisible,hWnd:HWND|BOOL
+IsWow64Message|BOOL
+IsWow64Process,hProcess:HANDLE,Wow64Process:PBOOL|BOOL
+IsZoomed,hWnd:HWND|BOOL
+JournalPlaybackProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+JournalRecordProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+keybd_event,bVk:BYTE,bScan:BYTE,dwFlags:DWORD,dwExtraInfo:PTR
+KeyboardProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+KillTimer,dwTimerId:DWORD|HRESULT
+LCMapString,Locale:LCID,dwMapFlags:DWORD,lpSrcStr:LPCTSTR,cchSrc:Integer,lpDestStr:LPTSTR,cchDest:Integer|Integer
+LeaveCriticalSection,lpCriticalSection:LPCRITICAL_SECTION
+LeaveCriticalSectionWhenCallbackReturns,pci:PTP_CALLBACK_INSTANCE,pcs:PCRITICAL_SECTION
+LineDDA,nXStart:Integer,nYStart:Integer,nXEnd:Integer,nYEnd:Integer,lpLineFunc:LINEDDAPROC,lpData:LPARAM|BOOL
+LineDDAProc,X:Integer,Y:Integer,lpData:LPARAM
+LineTo,hdc:HDC,nXEnd:Integer,nYEnd:Integer|BOOL
+LoadAccelerators,hInstance:HINSTANCE,lpTableName:LPCTSTR|HACCEL
+LoadBitmap,hInstance:HINSTANCE,lpBitmapName:LPCTSTR|HBITMAP
+LoadCursor,hInstance:HINSTANCE,lpCursorName:LPCTSTR|HCURSOR
+LoadCursorFromFile,lpFileName:LPCTSTR|HCURSOR
+LoadIcon,hInstance:HINSTANCE,lpIconName:LPCTSTR|HICON
+LoadImage,hinst:HINSTANCE,lpszName:LPCTSTR,uType:UINT,cxDesired:Integer,cyDesired:Integer,fuLoad:UINT|HANDLE
+LoadKeyboardLayout,pwszKLID:LPCTSTR,Flags:UINT|HKL
+LoadLibrary,lpFileName:LPCTSTR|HMODULE
+LoadLibraryEx,lpFileName:LPCTSTR,hFile:HANDLE,dwFlags:DWORD|HMODULE
+LoadMenu,hInstance:HINSTANCE,lpMenuName:LPCTSTR|HMENU
+LoadMenuIndirect,*lpMenuTemplate:MENUTEMPLATE|HMENU
+LoadModule,lpModuleName:LPCSTR,lpParameterBlock:LPVOID|DWORD
+LoadPerfCounterTextStrings,commandLine:LPCTSTR,bQuietModeArg:BOOL|DWORD
+LoadResource,hModule:HMODULE,hResInfo:HRSRC|HGLOBAL
+LoadString,hInstance:HINSTANCE,uID:UINT,lpBuffer:LPTSTR,nBufferMax:Integer|Integer
+LocalAlloc,uFlags:UINT,uBytes:SIZE_T|HLOCAL
+LocalDiscard,hlocMem:HLOCAL|HLOCAL
+LocalFileTimeToFileTime,*lpLocalFileTime:FILETIME,lpFileTime:LPFILETIME|BOOL
+LocalFlags,hMem:HLOCAL|UINT
+LocalFree,hMem:HLOCAL|HLOCAL
+LocalHandle,pMem:LPCVOID|HLOCAL
+LocalLock,hMem:HLOCAL|LPVOID
+LocalReAlloc,hMem:HLOCAL,uBytes:SIZE_T,uFlags:UINT|HLOCAL
+LocalSize,hMem:HLOCAL|UINT
+LocalUnlock,hMem:HLOCAL|BOOL
+LockFile,hFile:HANDLE,dwFileOffsetLow:DWORD,dwFileOffsetHigh:DWORD,nNumberOfBytesToLockLow:DWORD,nNumberOfBytesToLockHigh:DWORD|BOOL
+LockFileEx,hFile:HANDLE,dwFlags:DWORD,dwReserved:DWORD,nNumberOfBytesToLockLow:DWORD,nNumberOfBytesToLockHigh:DWORD,lpOverlapped:LPOVERLAPPED|BOOL
+LockResource,hResData:HGLOBAL|LPVOID
+LockServiceDatabase,hSCManager:SC_HANDLE|SC_LOCK
+LockSetForegroundWindow,uLockCode:UINT|BOOL
+LockWindowUpdate,hWndLock:HWND|BOOL
+LockWorkStation|BOOL
+LogicalToPhysicalPoint,hWnd:HWND,lpPoint:LPPOINT
+LogTimeProvEventFunc,wType:WORD,*wszProvName:WCHAR,*wszMessage:WCHAR|HRESULT
+LookupIconIdFromDirectory,presbits:PBYTE,fIcon:BOOL|Integer
+LookupIconIdFromDirectoryEx,presbits:PBYTE,fIcon:BOOL,cxDesired:Integer,cyDesired:Integer,Flags:UINT|Integer
+LowLevelKeyboardProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+LowLevelMouseProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+LPtoDP,hdc:HDC,lpPoints:LPPOINT,nCount:Integer|BOOL
+lstrcat,lpString1:LPTSTR,lpString2:LPTSTR|LPTSTR
+lstrcmp,lpString1:LPCTSTR,lpString2:LPCTSTR|Integer
+lstrcmpi,lpString1:LPCTSTR,lpString2:LPCTSTR|Integer
+lstrcpy,lpString1:LPTSTR,lpString2:LPTSTR|LPTSTR
+lstrcpyn,lpString1:LPTSTR,lpString2:LPCTSTR,iMaxLength:Integer|LPTSTR
+lstrlen,lpString:LPCTSTR|Integer
+LZClose,hFile:Integer
+LZCopy,hfSource:Integer,hfDest:Integer|LONG
+LZInit,hfSource:Integer|Integer
+LZOpenFile,lpFileName:LPTSTR,lpReOpenBuf:LPOFSTRUCT,wStyle:WORD|Integer
+LZRead,hFile:Integer,lpBuffer:LPSTR,cbRead:Integer|Integer
+LZSeek,hFile:Integer,lOffset:LONG,iOrigin:Integer|LONG
+MapUserPhysicalPages,lpAddress:PVOID,NumberOfPages:ULONG_PTR,UserPfnArray:PULONG_PTR|BOOL
+MapUserPhysicalPagesScatter,*VirtualAddresses:PVOID,NumberOfPages:ULONG_PTR,PageArray:PULONG_PTR|BOOL
+MapViewOfFile,hFileMappingObject:HANDLE,dwDesiredAccess:DWORD,dwFileOffsetHigh:DWORD,dwFileOffsetLow:DWORD,dwNumberOfBytesToMap:SIZE_T|LPVOID
+MapViewOfFileEx,hFileMappingObject:HANDLE,dwDesiredAccess:DWORD,dwFileOffsetHigh:DWORD,dwFileOffsetLow:DWORD,dwNumberOfBytesToMap:SIZE_T,lpBaseAddress:LPVOID|LPVOID
+MapViewOfFileExNuma,hFileMappingObject:HANDLE,dwDesiredAccess:DWORD,dwFileOffsetHigh:DWORD,dwFileOffsetLow:DWORD,dwNumberOfBytesToMap:SIZE_T,lpBaseAddress:LPVOID,nndPreferred:DWORD|LPVOID
+MapVirtualKey,uCode:UINT,uMapType:UINT|UINT
+MapVirtualKeyEx,uCode:UINT,uMapType:UINT,dwhkl:HKL|UINT
+MapWindowPoints,hWndFrom:HWND,hWndTo:HWND,lpPoints:LPPOINT,cPoints:UINT|Integer
+MaskBlt,hdcDest:HDC,nXDest:Integer,nYDest:Integer,nWidth:Integer,nHeight:Integer,hdcSrc:HDC,nXSrc:Integer,nYSrc:Integer,hbmMask:HBITMAP,xMask:Integer,yMask:Integer,dwRop:DWORD|BOOL
+MaxMediaLabel,*pMaxSize:DWORD|DWORD
 MemoryBarrier
-MenuItemFromPoint
-MessageBeep
-MessageProc
-ModifyMenu
-ModifyWorldTransform
-Module32First
-Module32Next
-MonitorEnumProc
-MonitorFromPoint
-MonitorFromRect
-MonitorFromWindow
-MountNtmsMedia
-mouse_event
-MouseProc
-MoveFile
-MoveFileEx
-MoveFileWithProgress
-MoveMemory
-MoveToEx
-MoveToNtmsMediaPool
-MoveWindow
-MsgWaitForMultipleObjects
-MsgWaitForMultipleObjectsEx
-MultinetGetConnectionPerformance
+MenuItemFromPoint,hWnd:HWND,hMenu:HMENU,ptScreen:POINT|Integer
+MessageBeep,uType:UINT|BOOL
+MessageProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+ModifyMenu,hMnu:HMENU,uPosition:UINT,uFlags:UINT,uIDNewItem:PTR,lpNewItem:LPCTSTR|BOOL
+ModifyWorldTransform,hdc:HDC,*lpXform:XFORM,iMode:DWORD|BOOL
+Module32First,hSnapshot:HANDLE,lpme:LPMODULEENTRY32|BOOL
+Module32Next,hSnapshot:HANDLE,lpme:LPMODULEENTRY32|BOOL
+MonitorEnumProc,hMonitor:HMONITOR,hdcMonitor:HDC,lprcMonitor:LPRECT,dwData:LPARAM|BOOL
+MonitorFromPoint,pt:POINT,dwFlags:DWORD|HMONITOR
+MonitorFromRect,lprc:LPCRECT,dwFlags:DWORD|HMONITOR
+MonitorFromWindow,hwnd:HWND,dwFlags:DWORD|HMONITOR
+MountNtmsMedia,hSession:HANDLE,lpMediaId:LPNTMS_GUID,lpDriveId:LPNTMS_GUID,dwCount:DWORD,dwOptions:DWORD,dwPriority:DWORD,dwTimeout:DWORD,lpMountInformation:LPNTMS_MOUNT_INFORMATION|DWORD
+mouse_event,dwFlags:DWORD,dx:DWORD,dy:DWORD,dwData:DWORD,dwExtraInfo:ULONG_PTR
+MouseProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
+MoveFile,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR|BOOL
+MoveFileEx,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR,dwFlags:DWORD|BOOL
+MoveFileWithProgress,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR,lpProgressRoutine:LPPROGRESS_ROUTINE,lpData:LPVOID,dwFlags:DWORD|BOOL
+MoveMemory,Destination:Any Ptr,Source:Any Ptr,Length:Integer
+MoveToEx,hdc:HDC,X:Integer,Y:Integer,lpPoint:LPPOINT|BOOL
+MoveToNtmsMediaPool,hSession:HANDLE,lpMediaId:LPNTMS_GUID,lpPoolId:LPNTMS_GUID|DWORD
+MoveWindow,hWnd:HWND,X:Integer,Y:Integer,nWidth:Integer,nHeight:Integer,bRepaint:BOOL|BOOL
+MsgWaitForMultipleObjects,nCount:DWORD,*pHandles:HANDLE,bWaitAll:BOOL,dwMilliseconds:DWORD,dwWakeMask:DWORD|DWORD
+MsgWaitForMultipleObjectsEx,nCount:DWORD,pHandles:HANDLE Ptr,dwMilliseconds:DWORD,dwWakeMask:DWORD,dwFlags:DWORD|DWORD
+MultinetGetConnectionPerformance,lpNetResource:LPNETRESOURCE,lpNetConnectInfoStruct:LPNETCONNECTINFOSTRUCT|DWORD
 
-NDdeGetErrorString
-NDdeGetShareSecurity
-NDdeGetTrustedShare
-NDdeIsValidAppTopicList
-NDdeIsValidShareName
-NDdeSetShareSecurity
-NDdeSetTrustedShare
-NDdeShareAdd
-NDdeShareDel
-NDdeShareEnum
-NDdeShareGetInfo
-NDdeShareSetInfo
-NDdeTrustedShareEnum
-NetAccessAdd
-NetAccessCheck
+;--
+
+UINT NDdeGetErrorString(
+  UINT uErrorCode,
+  LPTSTR lpszErrorString,
+  DWORD cBufSize
+
+UINT NDdeGetShareSecurity(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  SECURITY_INFORMATION si,
+  PSECURITY_DESCRIPTOR pSD,
+  DWORD cbSD,
+  LPDWORD lpcbsdRequired
+
+UINT NDdeGetTrustedShare(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  LPDWORD lpdwTrustOptions,
+  LPDWORD lpdwShareModId0,
+  LPDWORD lpdwShareModId1
+
+BOOL NDdeIsValidAppTopicList(
+  LPTSTR targetTopic
+
+BOOL NDdeIsValidShareName(
+  LPTSTR shareName
+
+UINT NDdeSetShareSecurity(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  SECURITY_INFORMATION si,
+  PSECURITY_DESCRIPTOR pSD
+
+UINT NDdeSetTrustedShare(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  DWORD dwTrustOptions
+
+UINT NDdeShareAdd(
+  LPTSTR lpszServer,
+  UINT nLevel,
+  PSECURITY_DESCRIPTOR pSD,
+  LPBYTE lpBuffer,
+  DWORD cBufSize
+
+UINT NDdeShareDel(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  UINT wReserved
+
+UINT NDdeShareEnum(
+  LPTSTR lpszServer,
+  UINT nLevel,
+  LPBYTE lpBuffer,
+  DWORD cBufSize,
+  LPDWORD lpnEntriesRead,
+  LPDWORD lpcbTotalAvailable
+
+UINT NDdeShareGetInfo(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  UINT nLevel,
+  LPBYTE lpBuffer,
+  DWORD cBufSize,
+  LPDWORD lpnTotalAvailable,
+  LPWORD lpnItems
+
+UINT NDdeShareSetInfo(
+  LPTSTR lpszServer,
+  LPTSTR lpszShareName,
+  UINT nLevel,
+  LPBYTE lpBuffer,
+  DWORD cBufSize,
+  WORD sParmNum
+
+UINT NDdeTrustedShareEnum(
+  LPTSTR lpszServer,
+  UINT nLevel,
+  LPBYTE lpBuffer,
+  DWORD cBufSize,
+  LPDWORD lpnEntriesRead,
+  LPDWORD lpcbTotalAvailable
+
+extern API_FUNCTION NetAccessAdd(
+  const char* pszServer,
+  short sLevel,
+  char* pbBuffer,
+  unsigned short cbBuffer
+
+extern API_FUNCTION NetAccessCheck(
+  char* pszReserved,
+  char* pszUserName,
+  char* pszResource,
+  unsigned short usOperation,
+  unsigned short* pusResult
+
 NetAccessDel
 NetAccessEnum
 NetAccessGetInfo
@@ -2740,4 +2421,4 @@ WriteTapemark
 wsprintf
 wvsprintf
 
-ZeroMemory,Destination:PVOID,Length:SIZE_T
+ZeroMemory,Destination:Any Ptr,Length:Integer
