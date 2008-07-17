@@ -14,9 +14,9 @@ PROGROUP ends
 .const
 
 pbrtbrbtns			TBBUTTON <10,11,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
-					TBBUTTON <36,12,0,TBSTYLE_BUTTON or	TBSTYLE_CHECK,0,0>
-					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <34,13,TBSTATE_ENABLED	or TBSTATE_CHECKED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
+					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
+					TBBUTTON <36,12,TBSTATE_ENABLED or TBSTATE_HIDDEN,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
 					TBBUTTON <15,14,TBSTATE_ENABLED	or TBSTATE_CHECKED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
 					TBBUTTON <35,15,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
@@ -1204,6 +1204,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		.endif
 		mov		eax,FALSE
 		mov		fNoGroups,eax
+		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,12,fGroup
 		ret
 	.else
 		invoke strcpy,addr	LineTxt,addr OpenFileFail
@@ -1891,8 +1892,8 @@ Do_ProjectTool proc
 	invoke iniGetItem,addr buffer,addr buffer2
 	invoke DecToBin,addr	buffer2
 	mov		sTool.FloatRect.bottom,eax
-	invoke CreateWindowEx,0,addr szStatic,NULL,
-			WS_CHILD or	WS_VISIBLE or SS_NOTIFY	or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
+	invoke CreateWindowEx,0,addr szToolCldClass,NULL,
+			WS_CHILD or	WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
 			0,0,0,0,hWnd,0,hInstance,0
 	mov		hWin,eax
 	invoke Do_TreeView,hInstance,hWin,0,hTbrIml,TRUE
@@ -1904,7 +1905,7 @@ Do_ProjectTool proc
 	invoke SetWindowLong,hFileTrv,GWL_WNDPROC,offset FileTreeViewProc
 	invoke ShowWindow,hPbrTrv,SW_HIDE
 	;Create	the	toolbar
-	invoke CreateWindowEx,0,addr szToolBar,0,WS_CHILD or WS_VISIBLE	or TBSTYLE_TOOLTIPS	or CCS_NODIVIDER or	CCS_NORESIZE,0,1,200,24,hWin,0,hInstance,0
+	invoke CreateWindowEx,0,addr szToolBar,0,WS_CHILD or WS_VISIBLE	or TBSTYLE_TOOLTIPS or TBSTYLE_FLAT	or CCS_NODIVIDER or	CCS_NORESIZE,0,1,200,24,hWin,0,hInstance,0
 	mov		hPbrTbr,eax
 	.if fNT
 		;Unicode

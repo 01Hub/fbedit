@@ -7,6 +7,8 @@
 #Include "..\..\..\..\..\Inc\RAProperty.bi"
 #Include "FbDebug.bi"
 #Include "Debug.bas"
+#Include "Immediate.bi"
+#Include "Immediate.bas"
 
 Function MakeProjectFileName(ByVal sFile As String) As String
 	Dim As ZString*260 sItem,sPath
@@ -600,6 +602,21 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	
 End Function
 
+Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim lret As Integer
+
+	Select Case uMsg
+		Case WM_CHAR
+			If wParam=VK_RETURN Then
+				lret=Immediate()
+				Return 0
+			EndIf
+	End Select
+	Return CallWindowProc(lpOldOutputProc,hWin,uMsg,wParam,lParam)
+
+End Function
+
+
 Function CheckLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Boolean
 	Dim i As Integer
 
@@ -869,6 +886,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpData=Cast(ADDINDATA Ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
+	lpOldOutputProc=Cast(Any Ptr,SendMessage(lpHandles->hout,REM_SUBCLASS,0,Cast(LPARAM,@OutputProc)))
 	If lpData->version>=1062 Then
 		' Messages this addin will hook into
 		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU

@@ -2750,7 +2750,7 @@ Do_Properties proc
     invoke DecToBin,addr buffer2
     mov     sTool.FloatRect.bottom,eax
 
-	invoke CreateWindowEx,0,addr szStatic,NULL,WS_CHILD or WS_VISIBLE or SS_NOTIFY or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
+	invoke CreateWindowEx,0,addr szToolCldClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
 	mov		hWin,eax
 	invoke CreateWindowEx,0,addr szComboBox,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CBS_DROPDOWNLIST or WS_VSCROLL,0,0,0,0,hWin,0,hInstance,0
 	mov		hPrpCbo,eax
@@ -2797,7 +2797,7 @@ Do_Properties proc
 	invoke SetWindowLong,hTxtBtn,GWL_WNDPROC,addr PropTxtBtnProc
 	mov		OldPropTxtBtnProc,eax
 	;Create the toolbar
-	invoke CreateWindowEx,0,addr szToolBar,0,WS_CHILD or WS_VISIBLE or TBSTYLE_TOOLTIPS or CCS_NODIVIDER or CCS_NORESIZE,0,1,200,24,hWin,0,hInstance,0
+	invoke CreateWindowEx,0,addr szToolBar,0,WS_CHILD or WS_VISIBLE or TBSTYLE_TOOLTIPS or TBSTYLE_FLAT or CCS_NODIVIDER or CCS_NORESIZE,0,1,200,24,hWin,0,hInstance,0
 	mov		hPrpTbrCode,eax
 	.if fNT
 		;Unicode

@@ -94,6 +94,7 @@
 .data
 
 	szToolClass			db "ToolClass",0
+	szToolCldClass		db "ToolCldClass",0
 
 ; ######################################################################
 
@@ -1479,6 +1480,13 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ToolWndProc endp
 
+ToolCldProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
+	ret
+
+ToolCldProc endp
+
 GetToolStruct proc
 
 	invoke GetWindowLong,eax,GWL_USERDATA
@@ -1491,22 +1499,22 @@ EnableProjectBrowser proc fFlag:DWORD
 
 	.if fFlag
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,TRUE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,12,TRUE
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,FALSE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,14,FALSE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,15,FALSE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,16,FALSE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,17,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,TRUE
 		invoke ShowWindow,hFileTrv,SW_HIDE
 		invoke ShowWindow,hPbrTrv,SW_SHOW
 	.else
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,FALSE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,12,FALSE
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,TRUE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,14,TRUE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,15,TRUE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,16,TRUE
-		invoke SendMessage,hPbrTbr,TB_ENABLEBUTTON,17,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,FALSE
 		invoke ShowWindow,hFileTrv,SW_SHOW
 		invoke ShowWindow,hPbrTrv,SW_HIDE
 	.endif

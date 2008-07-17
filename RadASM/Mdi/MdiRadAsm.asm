@@ -393,6 +393,20 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	m2m		wc.hCursor,hCursor
 	m2m		wc.hIconSm,NULL
 	invoke RegisterClassEx,addr wc
+	;Tool child windows
+	mov		wc.cbSize,sizeof WNDCLASSEX
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	mov		wc.lpfnWndProc,offset ToolCldProc
+	mov		wc.cbClsExtra,NULL
+	mov		wc.cbWndExtra,NULL
+	m2m		wc.hInstance,hInst
+	mov		wc.hbrBackground,COLOR_BTNFACE+1
+	mov		wc.lpszMenuName,NULL
+	mov		wc.lpszClassName,offset szToolCldClass
+	m2m		wc.hIcon,NULL
+	m2m		wc.hCursor,hCursor
+	m2m		wc.hIconSm,NULL
+	invoke RegisterClassEx,addr wc
 	;Dialog Edit Window
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
