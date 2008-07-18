@@ -6,6 +6,9 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 	Select Case typ
 		Case 0
 			' Proc
+			' Unknown type
+			nErr=5
+			Return -1
 		Case 1
 			' Integer
 			If adr Then
@@ -53,7 +56,9 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 			EndIf
 		Case 7
 			' Void
-			buff=""
+			' Unknown type
+			nErr=5
+			Return -1
 		Case 8
 			' UInteger
 			If adr Then
@@ -120,9 +125,13 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 			EndIf
 		Case 15
 			' PChar
-			buff=""
+			' Unknown type
+			nErr=5
+			Return -1
 		Case Else
-			'
+			' Unknown type
+			nErr=5
+			Return -1
 	End Select
 	Return 0
 
@@ -241,13 +250,17 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 					For j=1 To linenb
 						If (proc(procsv).nu=nLnDebug+1 Or rline(j).nu=nLnDebug+1) And rline(j).pr=procsv Then
 							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-								adr=0
+								' Not in scope
+								nErr=3
+								Return -1
 							EndIf
 							Exit For
 						EndIf
 					Next
 					If j>linenb Then
-						adr=0
+						' Variable not found
+						nErr=3
+						Return -1
 					EndIf
 					If adr Then
 						If fParam=2 Then
@@ -266,7 +279,9 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 						EndIf
 					Next
 					If j>linenb Then
-						adr=0
+						' Not in scope
+						nErr=3
+						Return -1
 					EndIf
 				EndIf
 			EndIf
@@ -279,15 +294,21 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 						For j=lpArr->dmn-1 To 0 Step -1
 							If parr(j).ntyp=INUM Then
 								If parr(j).dval<lpArr->nlu(j).lb Or parr(j).dval>lpArr->nlu(j).ub Then
+									' Index out of range
+									nErr=4
 									Return -1
 								EndIf
 							Else
+								' Syntax error
+								nErr=1
 								Return -1
 							EndIf
 							adr+=siz*parr(j).dval
 							siz*=(lpArr->nlu(j).ub+1)
 						Next
 					Else
+						' Index out of range
+						nErr=4
 						Return -1
 					EndIf
 				EndIf
@@ -319,7 +340,9 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 		EndIf
 		i+=1
 	Wend
-	Return adr
+	' Variable not found
+	nErr=3
+	Return -1
 
 End Function
 
@@ -699,17 +722,26 @@ Function VarFunc(ByVal px As Integer Ptr,ByVal pres As RES Ptr) As Integer
 			If szCompiled[*px]=MFUN And szCompiled[*px+1]=FRPA Then
 				*px+=2
 				l=FindVarVal(@svar,pres,n,res())
+				If l=-1 Then
+					' Error
+					Return -1
+				EndIf
 			Else
+				' Syntax error
+				nErr=1
 				Return -1
 			EndIf
 		Else
 			l=FindVarVal(@svar,pres,0,res())
-		EndIf
-		If l=-1 Then
-			Return -1
+			If l=-1 Then
+				' Error
+				Return -1
+			EndIf
 		EndIf
 	Else
-		nErr=1
+		' Only in debug mode
+		nErr=2
+		Return -1
 	EndIf
 	Return 0
 
@@ -926,7 +958,7 @@ Function Compile(lpLine As ZString Ptr) As Integer
 			ElseIf ftyp=0 Then
 				buff &=Chr(c)
 			Else
-				MessageBox(0,"Error","Compile",MB_OK)
+				nErr=1
 				Return -1
 			EndIf
 		ElseIf c=46 Then
@@ -937,7 +969,7 @@ Function Compile(lpLine As ZString Ptr) As Integer
 			ElseIf ftyp=0 Then
 				buff &=Chr(c)
 			Else
-				MessageBox(0,"Error","Compile",MB_OK)
+				nErr=1
 				Return -1
 			EndIf
 		ElseIf c=34 Then
@@ -946,7 +978,7 @@ Function Compile(lpLine As ZString Ptr) As Integer
 				buff=""
 				ftyp=ISTR
 			Else
-				MessageBox(0,"Error","Compile",MB_OK)
+				nErr=1
 				Return -1
 			EndIf
 		ElseIf c=32 Or c=9 Or c=40 Or c=41 Or c=43 Or c=45 Or c=42 Or c=47 Or c=94 Or c=60 Or c=61 Or c=62 Or c=38 Or c=44 Or c=92 Then
@@ -1049,11 +1081,17 @@ Function Compile(lpLine As ZString Ptr) As Integer
 				EndIf
 			Else
 				' Variable
-				AddFunction(VFUN,VFUN,@buff)
+				If hThread Then
+					AddFunction(VFUN,VFUN,@buff)
+				Else
+					nErr=2
+					Return -1
+				EndIf
 			EndIf
 		EndIf
 	EndIf
 	If npara Then
+		nErr=1
 		Return -1
 	EndIf
 	'buff=" ("
@@ -1071,6 +1109,7 @@ Function Immediate() As Integer
 	Dim As Integer lret,x
 	Dim res As RES
 
+	nErr=0
 	buff=String(SizeOf(buff),0)
 	lret=SendMessage(lpHandles->hout,EM_GETSEL,0,0)
 	lret=LoWord(lret)
@@ -1096,20 +1135,41 @@ Function Immediate() As Integer
 			EndIf
 		EndIf
 	ElseIf InStr(buff,"=") Then
-		buff=Mid(buff,InStr(buff,"=")+1)
-		lret=Compile(@buff)
-		If lret=0 Then
-			lret=EvalFunc(@x,0,@res)
+		If hThread Then
+			' Only in debug mode
+			buff=Mid(buff,InStr(buff,"=")+1)
+			lret=Compile(@buff)
 			If lret=0 Then
-				buff=Chr(VK_RETURN,10)
-				SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+				lret=EvalFunc(@x,0,@res)
+				If lret=0 Then
+					buff=Chr(VK_RETURN,10)
+					SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+				EndIf
 			EndIf
+		Else
+			nErr=2
+			lret=-1
 		EndIf
 	Else
+		nErr=1
 		lret=-1
 	EndIf
 	If lret=-1 Then
-		buff=Chr(VK_RETURN,10) & "Syntax error" & Chr(VK_RETURN,10)
+		Select Case nErr
+			Case 1
+				buff="Syntax error"
+			Case 2
+				buff="Variables only in debug mode"
+			Case 3
+				buff="Variable not found"
+			Case 4
+				buff="Index out of range"
+			Case 5
+				buff="Unknown variable type"
+			Case Else
+				buff="Unknown error"
+		End Select
+		buff=Chr(VK_RETURN,10) & buff & Chr(VK_RETURN,10)
 		SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	EndIf
 	Return 0

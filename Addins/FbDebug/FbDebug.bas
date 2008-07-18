@@ -466,6 +466,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								buff=nme1 & buff
 							EndIf
 						EndIf
+For j=1 To sourcenb
+	If UCase(source(j).file)=UCase(lpData->filename) Then
+PutString(Str(j))
+	EndIf
+Next
 						dp=0
 						While InStr(dp+1,buff,"(")
 							' Array, fixup buff
