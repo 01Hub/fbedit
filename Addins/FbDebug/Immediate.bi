@@ -67,9 +67,4 @@ Dim Shared fn(255) As FUNC={(FLPA,"("),(FRPA,")"),(FEQV,"eqv"),(FIMP,"imp"),(FXO
 									 (SSTR,"str"),(SCHR,"chr"),(SLEFT,"left"),(SRIGHT,"right"),(SMID,"mid"),(SSPACE,"space"),(SSTRING,"string")}
 
 Dim Shared szCompiled As ZString*2048
-
-Dim Shared i As Integer
-Dim Shared d As Double
-Dim Shared di(10) As Double
-Dim Shared s As String
-Dim Shared si(10) As String
+Dim Shared nErr As Integer

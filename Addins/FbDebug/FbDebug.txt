@@ -86,5 +86,8 @@ o Fixed bug with exe filename.
 Version 1.0.0.3
 o Fixed bug with threads in libraries.
 o Fixed bug with module filenames.
+Version 1.0.0.4
+o Fixed bug with showing parameters and locals.
+o Added immediate functions in output windiw.
 
 KetilO

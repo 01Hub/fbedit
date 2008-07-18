@@ -1,6 +1,7 @@
 
 Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES Ptr) As Integer
 	Dim As ZString*256 buff,bval
+	Dim As Integer l
 
 	Select Case typ
 		Case 0
@@ -94,12 +95,12 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 				buff=String(66,0)
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
 				adr=Peek(Integer,@bval)
-				i=Peek(Integer,@bval+4)
-				If adr>0 And i>0 Then
-					If i>65 Then
-						i=65
+				l=Peek(Integer,@bval+4)
+				If adr>0 And l>0 Then
+					If l>65 Then
+						l=65
 					EndIf
-					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,i,0)
+					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,l,0)
 					If Len(buff)>64 Then
 						buff=Left(buff,64) & "..."
 					EndIf
@@ -236,25 +237,37 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 			End Select
 			If fGlobal=0 Then
 				If fParam Then
-					' Parameter
-					If proc(procsv).nu=nLnDebug+1 Then
-						If fParam=2 Then
-							' ByRef
-							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-						EndIf
-					Else
-						adr=0
-					EndIf
-				Else
-					' Check if in scope
+					' Parameter, Check if in scope
 					For j=1 To linenb
-						If rline(j).nu=nLnDebug+1 And rline(j).sv=procsv Then
+						If (proc(procsv).nu=nLnDebug+1 Or rline(j).nu=nLnDebug+1) And rline(j).pr=procsv Then
 							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
 								adr=0
 							EndIf
 							Exit For
 						EndIf
 					Next
+					If j>linenb Then
+						adr=0
+					EndIf
+					If adr Then
+						If fParam=2 Then
+							' ByRef
+							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+						EndIf
+					EndIf
+				Else
+					' Local, Check if in scope
+					For j=1 To linenb
+						If rline(j).nu=nLnDebug+1 And rline(j).pr=procsv Then
+							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+								adr=0
+							EndIf
+							Exit For
+						EndIf
+					Next
+					If j>linenb Then
+						adr=0
+					EndIf
 				EndIf
 			EndIf
 			If adr Then
@@ -262,21 +275,20 @@ Function FindVarVal(ByVal lpBuff As ZString Ptr,ByVal pres As RES Ptr,ByVal n As
 				If vrb(i).arr Then
 					siz=GetVarSize(typ)
 					lpArr=vrb(i).arr
-MessageBox(0,Str(n),Str(lpArr->dmn),MB_OK)
 					If n=lpArr->dmn Then
-						For j=0 To lpArr->dmn-1
+						For j=lpArr->dmn-1 To 0 Step -1
 							If parr(j).ntyp=INUM Then
 								If parr(j).dval<lpArr->nlu(j).lb Or parr(j).dval>lpArr->nlu(j).ub Then
-									adr=0
-									Exit For
+									Return -1
 								EndIf
 							Else
-								adr=0
-								Exit For
+								Return -1
 							EndIf
+							adr+=siz*parr(j).dval
+							siz*=(lpArr->nlu(j).ub+1)
 						Next
 					Else
-						adr=0
+						Return -1
 					EndIf
 				EndIf
 				For j=1 To vrb(i).pt
@@ -688,23 +700,16 @@ Function VarFunc(ByVal px As Integer Ptr,ByVal pres As RES Ptr) As Integer
 				*px+=2
 				l=FindVarVal(@svar,pres,n,res())
 			Else
-				l=FindVarVal(@svar,pres,0,res())
+				Return -1
 			EndIf
+		Else
+			l=FindVarVal(@svar,pres,0,res())
+		EndIf
+		If l=-1 Then
+			Return -1
 		EndIf
 	Else
-		Select Case svar
-			Case "i"
-				pres->ntyp=INUM
-				pres->dval=i
-			Case "d"
-				pres->ntyp=INUM
-				pres->dval=d
-			Case "di"
-			Case "s"
-				pres->ntyp=ISTR
-				pres->sval=s
-			Case "si"
-		End Select
+		nErr=1
 	EndIf
 	Return 0
 
@@ -1051,12 +1056,12 @@ Function Compile(lpLine As ZString Ptr) As Integer
 	If npara Then
 		Return -1
 	EndIf
-	buff=" ("
-	For i=0 To Len(szCompiled)
-		buff &=Str(szCompiled[i]) & ","
-	Next
-	buff=Left(buff,Len(buff)-1) & ")"
-	SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+	'buff=" ("
+	'For i=0 To Len(szCompiled)
+	'	buff &=Str(szCompiled[i]) & ","
+	'Next
+	'buff=Left(buff,Len(buff)-1) & ")"
+	'SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	Return 0
 
 End Function
@@ -1096,7 +1101,6 @@ Function Immediate() As Integer
 		If lret=0 Then
 			lret=EvalFunc(@x,0,@res)
 			If lret=0 Then
-				i=res.dval
 				buff=Chr(VK_RETURN,10)
 				SendMessage(lpHandles->hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			EndIf

@@ -272,6 +272,171 @@ Sub CreateToolTip()
 
 End sub
 
+Function GetArrayDim(ByVal lpArr As tarr Ptr) As String
+	Dim n As Integer
+	Dim s As String
+
+	For n=0 To lpArr->dmn-1
+		s=s & "," & Str(lpArr->nlu(n).lb) & " To " & Str(lpArr->nlu(n).ub)
+	Next
+	Return Mid(s,2)
+
+End Function
+
+Function GetUdtDim(ByVal lpArr As taudt Ptr) As String
+	Dim n As Integer
+	Dim s As String
+
+	For n=0 To lpArr->dm-1
+		s=s & "," & Str(lpArr->nlu(n).lb) & " To " & Str(lpArr->nlu(n).ub)
+	Next
+	Return Mid(s,2)
+
+End Function
+
+Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal lpszNme As ZString Ptr,ByVal lpszBuff As ZString Ptr,ByVal dp As Integer) As String
+	Dim bval As ZString*32, buff As ZString*128
+	Dim i As Integer
+	Dim lpArr As tarr Ptr
+
+	Select Case typ
+		Case 0
+			' Proc
+		Case 1
+			' Integer
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+				buff=Str(Peek(Integer,@bval))
+			EndIf
+		Case 2
+			' Byte
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+				buff=Str(Peek(Byte,@bval))
+			EndIf
+		Case 3
+			' UByte
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
+				buff=Str(Peek(UByte,@bval))
+			EndIf
+		Case 4
+			' Char
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+				If Len(buff)>64 Then
+					buff=Left(buff,64) & "..."
+				EndIf
+				buff=Chr(34) & buff & Chr(34)
+			EndIf
+		Case 5
+			' Short
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+				buff=Str(Peek(Short,@bval))
+			EndIf
+		Case 6
+			' UShort
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
+				buff=Str(Peek(UShort,@bval))
+			EndIf
+		Case 7
+			' Void
+			buff=""
+		Case 8
+			' UInteger
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+				buff=Str(Peek(UInteger,@bval))
+			EndIf
+		Case 9
+			' Longint
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+				buff=Str(Peek(LongInt,@bval))
+			EndIf
+		Case 10
+			' ULongint
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+				buff=Str(Peek(ULongInt,@bval))
+			EndIf
+		Case 11
+			' Single
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+				buff=Str(Peek(Single,@bval))
+			EndIf
+		Case 12
+			' Double
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+				buff=Str(Peek(Double,@bval))
+			EndIf
+		Case 13
+			' String
+			If adr Then
+				buff=String(66,0)
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+				adr=Peek(Integer,@bval)
+				i=Peek(Integer,@bval+4)
+				If adr>0 And i>0 Then
+					If i>65 Then
+						i=65
+					EndIf
+					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,i,0)
+					If Len(buff)>64 Then
+						buff=Left(buff,64) & "..."
+					EndIf
+				EndIf
+				buff=Chr(34) & buff & Chr(34)
+			EndIf
+		Case 14
+			' ZString
+			If adr Then
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,65,0)
+				If Len(buff)>64 Then
+					buff=Left(buff,64) & "..."
+				EndIf
+				buff=Chr(34) & buff & Chr(34)
+			EndIf
+		Case 15
+			' PChar
+			buff=""
+		Case Else
+			i=InStr(*lpszNme,".")
+			If i Then
+				buff=Left(*lpszNme,i-1)
+				*lpszNme=Mid(*lpszNme,i+1)
+			Else
+				buff=*lpszNme
+				*lpszNme=""
+			EndIf
+			For i=udt(typ).lb To udt(typ).ub
+				If cudt(i).nm=buff Then
+					If adr Then
+						adr+=cudt(i).ofs
+					EndIf
+					' Array
+					If cudt(i).arr Then
+						lpArr=Cast(tarr Ptr,cudt(i).arr)
+						dp=InStr(dp+1,*lpszBuff,"(")
+						*lpszBuff=Left(*lpszBuff,dp) & GetUdtDim(@audt(cudt(i).arr)) & Mid(*lpszBuff,dp+1)
+					EndIf
+					Return GetVar(cudt(i).Typ,adr,lpszNme,lpszBuff,dp)
+					Exit For
+				EndIf
+			Next
+	End Select
+	If Len(buff) Then
+		Return udt(typ).nm & "=" & buff
+	Else
+		Return udt(typ).nm
+	EndIf
+
+End Function
+
 Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim ti As TOOLINFO
 	Dim As ZString*256 buff,nme1,nme2,nsp
@@ -292,8 +457,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
 						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
-						' With block, fixup buff
 						If Left(buff,1)="." Then
+							' With block, fixup buff
 							i=IsProjectFile(@lpData->filename)
 							i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,i,nCursorLine)
 							If i Then
@@ -301,9 +466,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								buff=nme1 & buff
 							EndIf
 						EndIf
-						' Array, fixup buff
 						dp=0
 						While InStr(dp+1,buff,"(")
+							' Array, fixup buff
 							i=InStr(dp+1,buff,"(")
 							dp=i
 							j=0
@@ -340,9 +505,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						adr=0
 						While i<=vrbnb
 							If (vrb(i).pn=procsv Or vrb(i).pn<0) And (nme1=vrb(i).nm Or nsp=vrb(i).nm) Then
-								' Array, insert dimension(s)
 								dp=0
 								If vrb(i).arr Then
+									' Array, insert dimension(s)
 									lpArr=vrb(i).arr
 									dp=InStr(buff,"(")
 									buff=Left(buff,dp) & GetArrayDim(lpArr) & Mid(buff,dp+1)
@@ -377,25 +542,37 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								End Select
 								If fGlobal=0 Then
 									If fParam Then
-										' Parameter
-										If proc(procsv).nu=nCursorLine+1 Then
-											If fParam=2 Then
-												' ByRef
-												ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-											EndIf
-										Else
-											adr=0
-										EndIf
-									Else
-										' Check if in scope
+										' Parameter, Check if in scope
 										For j=1 To linenb
-											If rline(j).nu=nCursorLine+1 And rline(j).sv=procsv Then
+											If (proc(procsv).nu=nCursorLine+1 Or rline(j).nu=nCursorLine+1) And rline(j).pr=procsv Then
 												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
 													adr=0
 												EndIf
 												Exit For
 											EndIf
 										Next
+										If j>linenb Then
+											adr=0
+										EndIf
+										If adr Then
+											If fParam=2 Then
+												' ByRef
+												ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+											EndIf
+										EndIf
+									Else
+										' Local, Check if in scope
+										For j=1 To linenb
+											If rline(j).nu=nCursorLine+1 And rline(j).pr=procsv Then
+												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+													adr=0
+												EndIf
+												Exit For
+											EndIf
+										Next
+										If j>linenb Then
+											adr=0
+										EndIf
 									EndIf
 								EndIf
 								If adr Then

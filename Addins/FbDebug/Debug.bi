@@ -71,13 +71,13 @@ Type tarr 'five dimensions max
 End Type
 
 Type tvar
-	nm				As String    'name
-	typ			As UShort   'type
-	adr			As Integer  'address or offset 
-	mem			As UByte    'scope 
-	arr			As tarr Ptr 'pointer to array def
-	pt				As UByte     'pointer
-	pn				As Short    'to keep track of vars with same name
+	nm				As String	'name
+	typ			As UShort	'type
+	adr			As Integer	'address or offset 
+	mem			As UByte		'scope 
+	arr			As tarr Ptr	'pointer to array def
+	pt				As UByte		'pointer
+	pn				As Short		'to keep track of vars with same name
 End Type
 
 Type tline
