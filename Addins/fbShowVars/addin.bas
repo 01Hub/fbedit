@@ -75,11 +75,19 @@ Function DllFunction Cdecl Alias "DllFunction" ( ByVal hWin As HWND, ByVal uMsg 
 					'
 				Case IDM_VIEW_OUTPUT
 					lpData->lpWINPOS->fview Xor= VIEW_OUTPUT
-					ShowWindow( hDbgWin, lpData->lpWINPOS->fview And VIEW_OUTPUT )
+					ShowWindow( hDbgWin, lpData->lpWINPOS->fview And (VIEW_OUTPUT Or VIEW_IMMEDIATE) )
 					SendMessage(lpHandles->htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,lpData->lpWINPOS->fview And VIEW_OUTPUT)
 					CheckMenuItem(lpHandles->hmenu,IDM_VIEW_OUTPUT,IIf(lpData->lpWINPOS->fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
 					SendMessage(hWin,WM_SIZE,0,0)
 					If ((lpData->lpWINPOS->fview And VIEW_OUTPUT)=FALSE) And (lpHandles->hred<>0) And (lpHandles->hred<>lpHandles->hres) Then SetFocus( lpHandles->hred )
+					Return TRUE
+				Case IDM_VIEW_IMMEDIATE
+					lpData->lpWINPOS->fview Xor= VIEW_IMMEDIATE
+					ShowWindow( hDbgWin, lpData->lpWINPOS->fview And (VIEW_OUTPUT Or VIEW_IMMEDIATE) )
+					SendMessage(lpHandles->htoolbar,TB_CHECKBUTTON,IDM_VIEW_IMMEDIATE,lpData->lpWINPOS->fview And VIEW_IMMEDIATE)
+					CheckMenuItem(lpHandles->hmenu,IDM_VIEW_IMMEDIATE,IIf(lpData->lpWINPOS->fview And VIEW_IMMEDIATE,MF_CHECKED,MF_UNCHECKED))
+					SendMessage(hWin,WM_SIZE,0,0)
+					If ((lpData->lpWINPOS->fview And VIEW_IMMEDIATE)=FALSE) And (lpHandles->hred<>0) And (lpHandles->hred<>lpHandles->hres) Then SetFocus( lpHandles->hred )
 					Return TRUE
 					'
 			End Select

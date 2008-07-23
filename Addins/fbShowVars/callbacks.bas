@@ -24,6 +24,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			'tab output
 			SetParent(lpHandles->hout,hTabs(TAB_0))
 			SetWindowPos(lpHandles->hout,0,dock1.nPos.left,dock1.nPos.top,dock1.nPos.right,dock1.nPos.bottom,SWP_SHOWWINDOW)
+			SetParent(lpHandles->himm,hTabs(TAB_0))
 			'tab var
 			hList(LSV_1)=GetDlgItem(hTabs(TAB_1),IDC_LSV01)
 			InsertColumn( hList(LSV_1), 0,   0, GetString( 9000, "Line" ) )
@@ -169,8 +170,21 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				MoveWindow(hList(LSV_5),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
 				MoveWindow(hList(LSV_6),15,0,wt,lpData->lpWINPOS->htout-3,TRUE)
 				wt+=1
-'				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout+2,TRUE)
-				MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout-3,TRUE)
+				Select Case lpData->lpWINPOS->fview And (VIEW_OUTPUT Or VIEW_IMMEDIATE)
+					Case VIEW_OUTPUT
+						MoveWindow(lpHandles->hout,15,-1,wt,lpData->lpWINPOS->htout-3,TRUE)
+						ShowWindow(lpHandles->hout,SW_SHOWNA)
+						ShowWindow(lpHandles->himm,SW_HIDE)
+					Case VIEW_IMMEDIATE
+						MoveWindow(lpHandles->himm,15,-1,wt,lpData->lpWINPOS->htout-3,TRUE)
+						ShowWindow(lpHandles->himm,SW_SHOWNA)
+						ShowWindow(lpHandles->hout,SW_HIDE)
+					Case VIEW_OUTPUT Or VIEW_IMMEDIATE
+						MoveWindow(lpHandles->hout,15,-1,wt\2,lpData->lpWINPOS->htout-3,TRUE)
+						MoveWindow(lpHandles->himm,15+wt\2,-1,wt-wt\2,lpData->lpWINPOS->htout-3,TRUE)
+						ShowWindow(lpHandles->hout,SW_SHOWNA)
+						ShowWindow(lpHandles->himm,SW_SHOWNA)
+				End Select
 			EndIf
 			'
 		Case DBG_VAR
@@ -433,7 +447,7 @@ Function FBEProc( ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 				hgt+=IIf(lpData->lpWINPOS->fview And VIEW_TABSELECT,nSize.nTabselect,0)
 				CallWindowProc(lpOldMain,hWin,uMsg,wParam,lParam)
 				' Size the Output
-				If lpData->lpWINPOS->fview And VIEW_OUTPUT Then
+				If lpData->lpWINPOS->fview And (VIEW_OUTPUT Or VIEW_IMMEDIATE) Then
 					GetWindowRect(lpHandles->hshp,@rc3)
 					ScreenToClient(hWin,Cast(Point Ptr,@rc3.right))
 					If dock1.fDocked = TRUE Then

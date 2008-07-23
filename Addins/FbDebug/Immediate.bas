@@ -359,7 +359,8 @@ SErr:
 End Function
 
 Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES Ptr) As Integer
-	Dim As ZString*256 buff,bval
+	Dim As ZString*512 buff
+	Dim As ZString*32 bval
 	Dim As Integer l
 
 	Select Case typ
@@ -461,12 +462,12 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 				adr=Peek(Integer,@bval)
 				l=Peek(Integer,@bval+4)
 				If adr>0 And l>0 Then
-					If l>65 Then
-						l=65
+					If l>501 Then
+						l=501
 					EndIf
 					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,l,0)
-					If Len(buff)>64 Then
-						buff=Left(buff,64) & "..."
+					If Len(buff)>500 Then
+						buff=Left(buff,500) & "..."
 					EndIf
 				EndIf
 				pres->sval=buff
@@ -513,6 +514,7 @@ Function GetVarSize(ByVal typ As Integer) As Integer
 			s=1
 		Case 4
 			' Char
+			s=32
 		Case 5
 			' Short
 			s=2
@@ -1169,12 +1171,12 @@ Function Compile(lpLine As ZString Ptr) As Integer
 		nErr=1
 		Return -1
 	EndIf
-	buff=" ("
-	For i=0 To Len(szCompiled)
-		buff &=Str(szCompiled[i]) & ","
-	Next
-	buff=Left(buff,Len(buff)-1) & ")"
-	SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+	'buff=" ("
+	'For i=0 To Len(szCompiled)
+	'	buff &=Str(szCompiled[i]) & ","
+	'Next
+	'buff=Left(buff,Len(buff)-1) & ")"
+	'SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	Return 0
 
 End Function

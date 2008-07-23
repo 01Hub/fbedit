@@ -1663,6 +1663,7 @@ End Sub
 Sub CheckMenu()
 
 	CheckMenuItem(ah.hmenu,IDM_VIEW_OUTPUT,IIf(wpos.fview And VIEW_OUTPUT,MF_CHECKED,MF_UNCHECKED))
+	CheckMenuItem(ah.hmenu,IDM_VIEW_IMMEDIATE,IIf(wpos.fview And VIEW_IMMEDIATE,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_PROJECT,IIf(wpos.fview And VIEW_PROJECT,MF_CHECKED,MF_UNCHECKED))
 	CheckMenuItem(ah.hmenu,IDM_VIEW_PROPERTY,IIf(wpos.fview And VIEW_PROPERTY,MF_CHECKED,MF_UNCHECKED))
 
