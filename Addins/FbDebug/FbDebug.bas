@@ -294,11 +294,17 @@ Function GetUdtDim(ByVal lpArr As taudt Ptr) As String
 
 End Function
 
-Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal lpszNme As ZString Ptr,ByVal lpszBuff As ZString Ptr,ByVal dp As Integer) As String
+Function GetVar(ByVal typ As Integer,ByVal pt As Integer,ByRef adr As UInteger,ByVal lpszNme As ZString Ptr,ByVal lpszBuff As ZString Ptr,ByVal dp As Integer) As String
 	Dim bval As ZString*32, buff As ZString*128
 	Dim i As Integer
 	Dim lpArr As tarr Ptr
 
+	If typ<16 Then
+		For i=1 To pt
+			*lpszBuff="*" & lpszBuff
+			ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+		Next
+	EndIf
 	Select Case typ
 		Case 0
 			' Proc
@@ -405,29 +411,37 @@ Function GetVar(ByVal typ As Integer,ByRef adr As UInteger,ByVal lpszNme As ZStr
 			' PChar
 			buff=""
 		Case Else
-			i=InStr(*lpszNme,".")
-			If i Then
-				buff=Left(*lpszNme,i-1)
-				*lpszNme=Mid(*lpszNme,i+1)
-			Else
-				buff=*lpszNme
-				*lpszNme=""
-			EndIf
-			For i=udt(typ).lb To udt(typ).ub
-				If cudt(i).nm=buff Then
-					If adr Then
-						adr+=cudt(i).ofs
-					EndIf
-					' Array
-					If cudt(i).arr Then
-						lpArr=Cast(tarr Ptr,cudt(i).arr)
-						dp=InStr(dp+1,*lpszBuff,"(")
-						*lpszBuff=Left(*lpszBuff,dp) & GetUdtDim(@audt(cudt(i).arr)) & Mid(*lpszBuff,dp+1)
-					EndIf
-					Return GetVar(cudt(i).Typ,adr,lpszNme,lpszBuff,dp)
-					Exit For
+			If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
+				' Integer
+				If adr Then
+					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
+					buff=Str(Peek(Integer,@bval))
 				EndIf
-			Next
+			Else
+				i=InStr(*lpszNme,".")
+				If i Then
+					buff=Left(*lpszNme,i-1)
+					*lpszNme=Mid(*lpszNme,i+1)
+				Else
+					buff=*lpszNme
+					*lpszNme=""
+				EndIf
+				For i=udt(typ).lb To udt(typ).ub
+					If cudt(i).nm=buff Then
+						If adr Then
+							adr+=cudt(i).ofs
+						EndIf
+						' Array
+						If cudt(i).arr Then
+							lpArr=Cast(tarr Ptr,cudt(i).arr)
+							dp=InStr(dp+1,*lpszBuff,"(")
+							*lpszBuff=Left(*lpszBuff,dp) & GetUdtDim(@audt(cudt(i).arr)) & Mid(*lpszBuff,dp+1)
+						EndIf
+						Return GetVar(cudt(i).Typ,cudt(i).pt,adr,lpszNme,lpszBuff,dp)
+						Exit For
+					EndIf
+				Next
+			EndIf
 	End Select
 	If Len(buff) Then
 		Return udt(typ).nm & "=" & buff
@@ -441,7 +455,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim ti As TOOLINFO
 	Dim As ZString*256 buff,nme1,nme2,nsp
 	Dim pt As Point
-	Dim As Integer i,j,n,dp,adr,fGlobal,fParam,nCursorLine
+	Dim As Integer i,j,n,dp,adr,fGlobal,fParam,nCursorLine,nSrc
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
 	Dim lpArr As tarr Ptr
 
@@ -454,6 +468,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3 Then
 						ptcur.x=pt.x
 						ptcur.y=pt.y
+						' Find source
+						For nSrc=1 To sourcenb
+							If UCase(source(nSrc).file)=UCase(lpData->filename) Then
+								Exit For
+							EndIf
+						Next
+						If proc(procsv).sr<>nSrc And nSrc<>1 Then
+							Return 0
+						EndIf
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
 						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
 						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
@@ -466,11 +489,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								buff=nme1 & buff
 							EndIf
 						EndIf
-For j=1 To sourcenb
-	If UCase(source(j).file)=UCase(lpData->filename) Then
-PutString(Str(j))
-	EndIf
-Next
 						dp=0
 						While InStr(dp+1,buff,"(")
 							' Array, fixup buff
@@ -546,6 +564,15 @@ Next
 										nme1="Unknown"
 								End Select
 								If fGlobal=0 Then
+									' Find source
+									For nSrc=1 To sourcenb
+										If UCase(source(nSrc).file)=UCase(lpData->filename) Then
+											Exit For
+										EndIf
+									Next
+									If proc(procsv).sr<>nSrc Then
+										Return 0
+									EndIf
 									If fParam Then
 										' Parameter, Check if in scope
 										For j=1 To linenb
@@ -581,16 +608,12 @@ Next
 									EndIf
 								EndIf
 								If adr Then
-									For j=1 To vrb(i).pt
-										buff="*" & buff
-										ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-									Next
 									buff=nme1 & " " & buff & " As "
 									dp=InStr(buff,"(")
 									If dp Then
 										adr=0
 									EndIf
-									buff=buff & GetVar(vrb(i).typ,adr,@nme2,@buff,dp)
+									buff=buff & GetVar(vrb(i).typ,vrb(i).pt,adr,@nme2,@buff,dp)
 									szTipText=buff
 									ti.cbSize=SizeOf(TOOLINFO)
 									ti.uFlags=TTF_IDISHWND Or TTF_SUBCLASS
@@ -619,7 +642,7 @@ Next
 	
 End Function
 
-Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+Function ImmediateProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim lret As Integer
 
 	Select Case uMsg
@@ -629,7 +652,7 @@ Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM
 				Return 0
 			EndIf
 	End Select
-	Return CallWindowProc(lpOldOutputProc,hWin,uMsg,wParam,lParam)
+	Return CallWindowProc(lpOldImmediateProc,hWin,uMsg,wParam,lParam)
 
 End Function
 
@@ -731,6 +754,7 @@ Sub CreateDebugMenu()
 	nMnuRunToCaret=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,StrPtr("Run &To Caret	Shift+Ctrl+F7"))
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,VK_F7,nMnuRunToCaret)
+	DrawMenuBar(lpHandles->hwnd)
 
 End Sub
 
@@ -903,7 +927,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpData=Cast(ADDINDATA Ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
-	lpOldOutputProc=Cast(Any Ptr,SendMessage(lpHandles->hout,REM_SUBCLASS,0,Cast(LPARAM,@OutputProc)))
+	lpOldImmediateProc=Cast(Any Ptr,SendMessage(lpHandles->himm,REM_SUBCLASS,0,Cast(LPARAM,@ImmediateProc)))
 	If lpData->version>=1062 Then
 		' Messages this addin will hook into
 		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
@@ -997,6 +1021,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								nLnDebug=-1
 								LockFiles(TRUE)
 								lpFunctions->ShowOutput(TRUE)
+								lpFunctions->ShowImmediate(TRUE)
 								PutString("Debugging: " & szFileName)
 								lpData->fDebug=TRUE
 								hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)

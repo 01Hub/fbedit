@@ -2,8 +2,10 @@
 Dim Shared lpOldEditProc As Any Ptr
 Dim Shared lpOldParEditProc As Any Ptr
 Dim Shared lpOldOutputProc As Any Ptr
+Dim Shared lpOldImmediateProc As Any Ptr
 Dim Shared mdn As Integer
 Dim Shared prechrg As CHARRANGE
+Dim Shared fSizeing As Integer
 
 Function GetOwner() As HWND
 
@@ -74,6 +76,20 @@ Sub ShowOutput(ByVal bShow As Boolean)
 	Else
 		If wpos.fview And VIEW_OUTPUT Then
 			SendMessage(ah.hwnd,WM_COMMAND,IDM_VIEW_OUTPUT,0)
+		EndIf
+	EndIf
+
+End Sub
+
+Sub ShowImmediate(ByVal bShow As Boolean)
+
+	If bShow Then
+		If (wpos.fview And VIEW_IMMEDIATE)=0 Then
+			SendMessage(ah.hwnd,WM_COMMAND,IDM_VIEW_IMMEDIATE,0)
+		EndIf
+	Else
+		If wpos.fview And VIEW_IMMEDIATE Then
+			SendMessage(ah.hwnd,WM_COMMAND,IDM_VIEW_IMMEDIATE,0)
 		EndIf
 	EndIf
 
@@ -190,6 +206,8 @@ End Function
 Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim pt As Point
 	Dim hMnu As HMENU
+	Dim As Integer wt,ht
+	Dim rect As RECT
 
 	Select Case uMsg
 		Case WM_CONTEXTMENU
@@ -208,6 +226,32 @@ Function OutputProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM
 			'
 	End Select
 	Return CallWindowProc(lpOldOutputProc,hWin,uMsg,wParam,lParam)
+
+End Function
+
+Function ImmediateProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim pt As Point
+	Dim hMnu As HMENU
+	Dim As Integer wt,ht
+	Dim rect As RECT
+
+	Select Case uMsg
+		Case WM_CONTEXTMENU
+			If CallAddins(hWin,AIM_CONTEXTMEMU,wParam,lParam,HOOK_CONTEXTMEMU)=FALSE Then
+				If lParam=-1 Then
+					GetCaretPos(@pt)
+					ClientToScreen(hWin,@pt)
+					pt.x=pt.x+10
+				Else
+					pt.x=Cast(Short,LoWord(lParam))
+					pt.y=Cast(Short,HiWord(lParam))
+				EndIf
+				hMnu=GetSubMenu(ah.hcontextmenu,5)
+				TrackPopupMenu(hMnu,TPM_LEFTALIGN Or TPM_RIGHTBUTTON,pt.x,pt.y,0,ah.hwnd,0)
+			EndIf
+			'
+	End Select
+	Return CallWindowProc(lpOldImmediateProc,hWin,uMsg,wParam,lParam)
 
 End Function
 

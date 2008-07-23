@@ -10,13 +10,14 @@ Type RES
 	sval		As String
 End Type
 
-Declare Function EvalFunc(ByVal px As Integer Ptr,ByVal pf As Integer,ByVal pres As RES Ptr) As Integer
+Declare Function EvalFunc(ByRef px As Integer,ByVal pf As Integer,ByVal pres As RES Ptr) As Integer
 
 #Define IFUN		1		' Immediate
 #Define MFUN		2		' +, -, *, /, ^
 #Define NFUN		3		' Asc
 #Define SFUN		4		' Str
 #Define VFUN		5		' Variable
+#Define UFUN		6		' UDT Item
 
 #Define INUM		1		' Number
 #Define ISTR		2		' String

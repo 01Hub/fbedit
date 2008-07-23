@@ -356,6 +356,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Handle of output window
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
 			lpOldOutputProc=Cast(Any Ptr,SetWindowLong(ah.hout,GWL_WNDPROC,Cast(Integer,@OutputProc)))
+			ah.himm=GetDlgItem(hWin,IDC_IMMEDIATE)
+			lpOldImmediateProc=Cast(Any Ptr,SetWindowLong(ah.himm,GWL_WNDPROC,Cast(Integer,@ImmediateProc)))
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
 			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"44444444444444444444",@edtopt,FALSE)
 			' Get find history
@@ -382,6 +384,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lfnt.lfItalic=0
 			ah.hOutFont=CreateFontIndirect(@lfnt)
 			SendMessage(ah.hout,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
+			SendMessage(ah.himm,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			' Turn off default comment char
 			SendMessage(ah.hout,REM_SETCHARTAB,Asc(";"),CT_OPER)
 			' Define @ as a operand
@@ -494,6 +497,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If wpos.fview And VIEW_OUTPUT Then
 				ShowWindow(ah.hout,SW_SHOWNA)
 				SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,TRUE)
+			EndIf
+			If wpos.fview And VIEW_IMMEDIATE Then
+				ShowWindow(ah.himm,SW_SHOWNA)
+				SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_IMMEDIATE,TRUE)
 			EndIf
 			If wpos.fview And VIEW_PROJECT Then
 				ShowWindow(ah.htab,SW_SHOWNA)
@@ -1138,6 +1145,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							fTimer=1
 							'
+						Case IDM_VIEW_IMMEDIATE
+							wpos.fview=wpos.fview Xor VIEW_IMMEDIATE
+							SendMessage(hWin,WM_SIZE,0,0)
+							ShowWindow(ah.himm,IIf(wpos.fview And VIEW_IMMEDIATE,SW_SHOW,SW_HIDE))
+							SendMessage(ah.htoolbar,TB_CHECKBUTTON,IDM_VIEW_IMMEDIATE,wpos.fview And VIEW_IMMEDIATE)
+							If ah.hred Then
+								SetFocus(ah.hred)
+							EndIf
+							fTimer=1
+							'
 						Case IDM_VIEW_PROJECT
 							wpos.fview=wpos.fview Xor VIEW_PROJECT
 							SendMessage(hWin,WM_SIZE,0,0)
@@ -1533,6 +1550,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_OUTPUT_COPY
 							SendMessage(ah.hout,WM_COPY,0,0)
+							'
+						Case IDM_IMMEDIATE_CLEAR
+							SendMessage(ah.himm,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
+							'
+						Case IDM_IMMEDIATE_SELECTALL
+							chrg.cpMin=0
+							chrg.cpMax=-1
+							SendMessage(ah.himm,EM_EXSETSEL,0,Cast(Integer,@chrg))
+							'
+						Case IDM_IMMEDIATE_COPY
+							SendMessage(ah.himm,WM_COPY,0,0)
 							'
 						Case IDM_PROPERTY_JUMP
 							SendMessage(ah.hpr,WM_COMMAND,(LBN_DBLCLK Shl 16) Or 1003,0)
@@ -2024,7 +2052,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				MoveWindow(ah.hprj,rect.right-twt+3,tbhgt+22,twt-5,prjht-24,TRUE)
 				' Size the property
 				MoveWindow(ah.hpr,rect.right-twt+2,tbhgt+prjht,twt-2,prht,TRUE)
-				y=rect.bottom-hgt-rect1.bottom-wpos.htout*(wpos.fview And VIEW_OUTPUT)
+				y=rect.bottom-hgt-rect1.bottom-wpos.htout*((wpos.fview And VIEW_OUTPUT) Or ((wpos.fview And VIEW_IMMEDIATE)/VIEW_IMMEDIATE))
 				If ah.hpane(0) Then
 					' Two panes
 					MoveWindow(ah.hpane(0),0,hgt,rect.right-twt,y\2,TRUE)
@@ -2046,8 +2074,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					MoveWindow(ah.hshp,0,hgt,rect.right-twt,y,TRUE)
 				EndIf
 				If ad.bExtOutput=0 Then
-					' Size the Output
-					MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
+					' Size the Output / Immediate
+					Select Case wpos.fview And (VIEW_OUTPUT Or VIEW_IMMEDIATE)
+						Case VIEW_OUTPUT
+							MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
+						Case VIEW_IMMEDIATE
+							MoveWindow(ah.himm,0,rect.bottom-rect1.bottom-wpos.htout+2,rect.right-twt,wpos.htout-2,TRUE)
+						Case VIEW_OUTPUT Or VIEW_IMMEDIATE
+							x=rect.right-twt
+							MoveWindow(ah.hout,0,rect.bottom-rect1.bottom-wpos.htout+2,x\2,wpos.htout-2,TRUE)
+							MoveWindow(ah.himm,x\2,rect.bottom-rect1.bottom-wpos.htout+2,x-x\2,wpos.htout-2,TRUE)
+					End Select
 				EndIf
 				' Size the splash
 				GetWindowRect(ah.hshp,@rect1)

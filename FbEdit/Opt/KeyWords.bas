@@ -75,6 +75,7 @@ Sub SetToolsColors(ByVal hWin As HWND)
 	racol.bckcol=fbcol.toolback
 	racol.txtcol=fbcol.tooltext
 	SendMessage(ah.hout,REM_SETCOLOR,0,Cast(Integer,@racol))
+	SendMessage(ah.himm,REM_SETCOLOR,0,Cast(Integer,@racol))
 	rescol.back=fbcol.dialogback
 	rescol.text=fbcol.dialogtext
 	SendMessage(ah.hraresed,DEM_SETCOLOR,0,Cast(Integer,@rescol))

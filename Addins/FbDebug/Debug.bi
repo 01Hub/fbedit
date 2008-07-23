@@ -36,21 +36,6 @@ Enum 'type of running
 	RTAUTO
 End Enum
 
-Type tudt
-	nm				As String  'name of udt
-	lb				As Integer 'lower limit for components
-	ub				As Integer 'upper
-	lg				As Integer 'lenght 
-End Type
-
-Type tcudt
-	nm				As String    'name of components
-	Typ			As UShort   'type
-	ofs			As UInteger 'offset
-	arr			As UInteger 'arr ptr
-	pt				As UByte
-End Type
-
 Type tnlu
 	nb				As UInteger
 	lb				As UInteger
@@ -60,6 +45,21 @@ End Type
 Type taudt
 	dm				As Integer
 	nlu(5)		As tnlu
+End Type
+
+Type tcudt
+	nm				As String	'name of components
+	Typ			As UShort	'type
+	ofs			As UInteger	'offset
+	arr			As UInteger 'Index array def
+	pt				As UByte
+End Type
+
+Type tudt
+	nm				As String  'name of udt
+	lb				As Integer 'lower limit for components
+	ub				As Integer 'upper
+	lg				As Integer 'lenght 
 End Type
 
 Type tarr 'five dimensions max

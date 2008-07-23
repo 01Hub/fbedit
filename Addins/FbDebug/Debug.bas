@@ -188,6 +188,11 @@ Sub decoupudt(readl As String)
 		p=q+1
 	Wend
 	udt(udtidx).ub=cudtnb
+	If udt(udtidx).lb=udt(udtidx).ub And cudt(udt(udtidx).lb).nm="I" Then
+		If Right(udt(udtidx).nm,2)="__" Then
+			udt(udtidx).nm=Left(udt(udtidx).nm,Len(udt(udtidx).nm)-2)
+		EndIf
+	EndIf
 
 End Sub
 

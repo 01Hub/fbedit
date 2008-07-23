@@ -33,6 +33,7 @@ Declare Function CallAddins(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPAR
 Declare Function GetProjectFile(ByVal nInx As Integer) As String
 Declare Function Compile(ByVal sMake As String) As Integer
 Declare Sub ShowOutput(ByVal bShow As Boolean)
+Declare Sub ShowImmediate(ByVal bShow As Boolean)
 Declare Sub UpdateAllTabs(ByVal nType As Integer)
 Declare Function OpenInclude() As String
 Declare Function GetFileImg(ByVal sFile As String) As Integer
@@ -58,6 +59,7 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDC_FILEBROWSER						1006
 #Define IDC_TRVPRJ							1012
 #Define IDC_OUTPUT							1007
+#Define IDC_IMMEDIATE						1018
 #Define IDC_PROPERTY							1008
 #Define IDC_RACCTT							1009
 #Define IDC_RACCLB							1010
@@ -150,6 +152,7 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 
 #Define IDM_VIEW								10091
 #Define IDM_VIEW_OUTPUT						10092
+#Define IDM_VIEW_IMMEDIATE					10085
 #Define IDM_VIEW_PROJECT					10093
 #Define IDM_VIEW_PROPERTY					10094
 #Define IDM_VIEW_TOOLBAR					10020
@@ -229,6 +232,10 @@ Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 #Define IDM_OUTPUT_SELECTALL				10212
 #Define IDM_OUTPUT_COPY						10213
 
+#define IDM_IMMEDIATE_CLEAR 10226
+#define IDM_IMMEDIATE_SELECTALL 10227
+#define IDM_IMMEDIATE_COPY 10228
+
 #Define IDM_PROPERTY_JUMP					10221
 #Define IDM_PROPERTY_COPY					10222
 #define IDM_PROPERTY_HILIGHT 				10223
@@ -303,7 +310,7 @@ Type KWCOLOR
 End Type
 
 Type THEME
-	lpszTheme		As ZString ptr
+	lpszTheme		As ZString Ptr
 	kwc				As KWCOLOR
 	fbc				As FBCOLOR
 End Type
@@ -353,6 +360,7 @@ Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 #Define VIEW_TOOLBAR		8
 #Define VIEW_TABSELECT	16
 #Define VIEW_STATUSBAR	32
+#Define VIEW_IMMEDIATE	64
 #Define MAX_MISS			10
 
 Const szNULL=!"\0"
@@ -369,7 +377,7 @@ Dim hFbEditDll As HMODULE
 ' Addins
 Dim Shared ah As ADDINHANDLES
 Dim Shared ad As ADDINDATA=(1062)
-Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins)
+Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate)
 
 ' Custom controls
 Dim Shared hCustDll(32) As HMODULE

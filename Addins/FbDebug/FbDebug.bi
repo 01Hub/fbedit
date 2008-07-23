@@ -31,7 +31,7 @@ Dim Shared nMnuStepInto As Integer
 Dim Shared nMnuStepOver As Integer
 ' Misc
 Dim Shared lpOldEditProc As Any Ptr
-Dim Shared lpOldOutputProc As Any Ptr
+Dim Shared lpOldImmediateProc As Any Ptr
 
 Const szCRLF=!"\13\10"
 Const szNULL=!"\0"
