@@ -1,5 +1,12 @@
-RadASM 2.2.1.3
+RadASM 2.2.1.4
 --------------
+2.2.1.4
+o Flat toolbar on Project and Properties tools.
+o Rearanged Project toolbar buttons.
+o Option to set Info tool colors.
+o Incraced size of build option buffer.
+o Fixed bug with environment option if there was no entries.
+o Fixed bug with project option / project groups.
 2.2.1.3
 o Added support for Free Pascal.
 o Added support for Digital Mars C/C++ compiler. Thanks PauloH.

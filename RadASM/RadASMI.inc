@@ -166,6 +166,8 @@ RADCOLOR struct
 	projecttext		dd ?
 	properties		dd ?
 	propertiestext	dd ?
+	info			dd ?
+	infotext		dd ?
 	dialogedit		dd ?
 	keywords		dd 16 dup(?)
 RADCOLOR ends
@@ -1128,14 +1130,14 @@ lpAddWordToWordList		dd offset AddWordToWordList
 lpRefreshProperty		dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName					db 'RadASM version 2.2.1.3',0
+AppName					db 'RadASM version 2.2.1.4',0
 DisplayName				db 'RadASM',0
 AboutMsg				db 'RadASM (C) KetilO 2001-2008',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1				db 'http://www.radasm.com',0
 ;AboutUrl2				db 'http://radasm.assembler.ca',0
 
 ;Do not insert or move, just add
-nRadASMVer				dd 2212
+nRadASMVer				dd 2214
 fMaximized				dd 0
 lpIniFile				dd offset iniFile
 lpProject				dd offset ProjectFile
@@ -1416,6 +1418,12 @@ iniColors				dd offset racol.bckcol
 						dd offset radcol.propertiestext
 						dd 0
 						db 'Propertytext',0
+						dd offset radcol.info
+						dd 00C0F0F0h
+						db 'Info',0
+						dd offset radcol.infotext
+						dd 0
+						db 'Infotext',0
 						dd offset radcol.dialogedit
 						dd 00C0F0F0h
 						db 'Dialog',0
@@ -1640,6 +1648,7 @@ hSplitCurV				dd ?
 hSplitCurH				dd ?
 hBrTlt					dd ?
 hBrPrp					dd ?
+hBrInfo					dd ?
 hBrDlg					dd ?
 
 ASMSyntaxArray			dd 256 dup(?)

@@ -45,8 +45,11 @@ Do_InfoTool proc
     invoke iniGetItem,addr buffer,addr buffer2
     invoke DecToBin,addr buffer2
     mov     sTool.FloatRect.bottom,eax
-	invoke CreateWindowEx,0,addr szStatic,NULL,
-			WS_CHILD or WS_VISIBLE or SS_NOTIFY or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
+;	invoke CreateWindowEx,0,addr szStatic,NULL,
+;			WS_CHILD or WS_VISIBLE or SS_NOTIFY or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
+;			0,0,0,0,hWnd,0,hInstance,0
+	invoke CreateWindowEx,0,addr szToolCldClass,NULL,
+			WS_CHILD or	WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
 			0,0,0,0,hWnd,0,hInstance,0
 	mov		hWin,eax
 ;    invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr RAEditClass,0,

@@ -1482,6 +1482,13 @@ ToolWndProc endp
 
 ToolCldProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
+	mov		eax,uMsg
+	.if eax==WM_CTLCOLORSTATIC
+		invoke SetBkMode,wParam,TRANSPARENT
+		invoke SetTextColor,wParam,radcol.infotext
+		mov		eax,hBrInfo
+		ret
+	.endif
 	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
 	ret
 
@@ -1499,20 +1506,26 @@ EnableProjectBrowser proc fFlag:DWORD
 
 	.if fFlag
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,11,TRUE
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,TRUE
 		invoke ShowWindow,hFileTrv,SW_HIDE
 		invoke ShowWindow,hPbrTrv,SW_SHOW
 	.else
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,11,FALSE
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,FALSE
 		invoke ShowWindow,hFileTrv,SW_SHOW

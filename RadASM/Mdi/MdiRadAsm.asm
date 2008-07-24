@@ -3402,6 +3402,12 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke CreateSolidBrush,radcol.properties
 		mov		hBrPrp,eax
+		;Info brush
+		.if hBrInfo
+			invoke DeleteObject,hBrInfo
+		.endif
+		invoke CreateSolidBrush,radcol.info
+		mov		hBrInfo,eax
 		;Dialog brush
 		.if hBrDlg
 			invoke DeleteObject,hBrDlg
@@ -3627,6 +3633,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyMenu,hToolMenu
 		invoke DeleteObject,hBrTlt
 		invoke DeleteObject,hBrPrp
+		invoke DeleteObject,hBrInfo
 		invoke DeleteObject,hBrDlg
 		invoke DeleteObject,hGridBr
 		invoke ImageList_Destroy,hTbrIml

@@ -212,7 +212,7 @@ LineSkip proc
 
 LineSkip endp
 
-Scan proc uses esi,FileNo:DWORD,fMCase:DWORD,fWWord:DWORD,fWhiteSpage:DWORD
+Scan proc uses esi,FileNo:DWORD,fMCase:DWORD,fWWord:DWORD,fWhiteSpace:DWORD
 	LOCAL	lpf:DWORD
 
 	invoke GetFileNameFromID,FileNo
@@ -232,7 +232,7 @@ Scan proc uses esi,FileNo:DWORD,fMCase:DWORD,fWWord:DWORD,fWhiteSpage:DWORD
 				invoke LoadEdit,hFound
 			.endif
 			.if eax
-				invoke SearchMem,hSrcMem,addr FindBufferFixed,fMCase,fWWord,fWhiteSpage
+				invoke SearchMem,hSrcMem,addr FindBufferFixed,fMCase,fWWord,fWhiteSpace
 				.if eax
 					invoke ProjectOpenFile,TRUE
 					mov		eax,TRUE

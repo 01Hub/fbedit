@@ -59,6 +59,10 @@ szColors			dd offset racol.bckcol
 					db 'Properties',0
 					dd offset radcol.propertiestext
 					db 'Properties text',0
+					dd offset radcol.info
+					db 'Info',0
+					dd offset radcol.infotext
+					db 'Info text',0
 					dd offset radcol.dialogedit
 					db 'Dialog editor',0
 					dd 0,0
@@ -306,6 +310,11 @@ UpdateEditColors proc
 	.endif
 	invoke CreateSolidBrush,radcol.properties
 	mov		hBrPrp,eax
+	.if hBrInfo
+		invoke DeleteObject,hBrInfo
+	.endif
+	invoke CreateSolidBrush,radcol.info
+	mov		hBrInfo,eax
 	.if hBrDlg
 		invoke DeleteObject,hBrDlg
 	.endif
@@ -313,6 +322,7 @@ UpdateEditColors proc
 	mov		hBrDlg,eax
 	invoke InvalidateRect,hPrpLst,NULL,TRUE
 	invoke InvalidateRect,hPrpCbo,NULL,TRUE
+	invoke InvalidateRect,hInfEdt,NULL,TRUE
 	invoke UpdateAll,IDM_OPTION_COLORS
 	invoke UpdateAll,IDM_OPTION_FONTS
 	ret
