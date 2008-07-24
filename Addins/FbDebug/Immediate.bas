@@ -1,228 +1,228 @@
 
-Function ExecFunc(ByVal f As Integer,ByVal pres1 As RES Ptr,ByVal pres2 As RES Ptr) As Integer
+Function ExecFunc(ByVal f As Integer,ByRef pres1 As RES,ByRef pres2 As RES) As Integer
 	Dim res As RES
 
 	Select Case f
 		Case FADD
 			' +
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval+pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->sval=pres1->sval & pres2->sval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval+pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.sval=pres1.sval & pres2.sval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FSUB
 			' -
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval-pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval-pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FSHL
 			' Shl
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Shl pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Shl pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FSHR
 			' Shr
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Shr pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Shr pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FMOD
 			' Mod
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Mod pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Mod pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FIDIV
 			' \
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval\pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval\pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FMUL
 			' *
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval*pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval*pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FDIV
 			' *
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval/pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval/pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FNEG
-			If pres2->ntyp=INUM Then
-				pres1->ntyp=INUM
-				pres1->dval=-pres2->dval
+			If pres2.ntyp=INUM Then
+				pres1.ntyp=INUM
+				pres1.dval=-pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FEXP
 			' ^
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval^pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval^pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FLE
 			' <
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval<pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval<pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval<pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval<pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FLEEQ
 			' <=
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval<=pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval<=pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval<=pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval<=pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FEQ
 			' =
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval=pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval=pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval=pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval=pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FNEQ
 			' <>
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval<>pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval<>pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval<>pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval<>pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FGTEQ
 			' >=
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval>=pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval>=pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval>=pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval>=pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FGT
 			' >
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval>pres2->dval
-			ElseIf pres1->ntyp=ISTR And pres2->ntyp=ISTR Then
-				pres1->dval=pres1->sval>pres2->sval
-				pres1->ntyp=INUM
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval>pres2.dval
+			ElseIf pres1.ntyp=ISTR And pres2.ntyp=ISTR Then
+				pres1.dval=pres1.sval>pres2.sval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FNOT
 			' Not
-			If pres2->ntyp=INUM Then
-				pres1->dval=Not pres2->dval
-				pres1->ntyp=INUM
+			If pres2.ntyp=INUM Then
+				pres1.dval=Not pres2.dval
+				pres1.ntyp=INUM
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FAND
 			' And
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval And pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval And pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FLOR
 			' Or
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Or pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Or pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FXOR
 			' Xor
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Xor pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Xor pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FEQV
 			' Eqv
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Eqv pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Eqv pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FIMP
 			' Imp
-			If pres1->ntyp=INUM And pres2->ntyp=INUM Then
-				pres1->dval=pres1->dval Imp pres2->dval
+			If pres1.ntyp=INUM And pres2.ntyp=INUM Then
+				pres1.dval=pres1.dval Imp pres2.dval
 			Else
-				pres1->ntyp=IERR
+				pres1.ntyp=IERR
 				Return -1
 			EndIf
 		Case FSADD
 			' &
-			pres1->sval=pres1->sval & pres2->sval
+			pres1.sval=pres1.sval & pres2.sval
 	End Select
 	Return 0
 
 End Function
 
-Function ImmFunc(ByRef px As Integer,ByVal n As Integer,ByVal f As Integer,ByVal pres As RES Ptr) As Integer
+Function ImmFunc(ByRef px As Integer,ByVal n As Integer,ByVal f As Integer,ByRef pres As RES) As Integer
 	Dim As Integer l
 
 	Select Case f
 		Case INUM
 			l=szCompiled[px]
 			px+=1
-			pres->ntyp=f
-			pres->dval=Val(Mid(szCompiled,px+1,l))
+			pres.ntyp=f
+			pres.dval=Val(Mid(szCompiled,px+1,l))
 			px+=l
 		Case ISTR
 			l=szCompiled[px]
 			px+=1
-			pres->ntyp=f
-			pres->sval=Mid(szCompiled,px+1,l)
+			pres.ntyp=f
+			pres.sval=Mid(szCompiled,px+1,l)
 			px+=l
 	End Select
 	Return 0
@@ -232,83 +232,83 @@ End Function
 Function ArgFunc(ByRef px As Integer,pres() As RES) As Integer
 	Dim As Integer i,lret
 
-	lret=EvalFunc(px,0,@pres(i))
+	lret=EvalFunc(px,0,pres(i),FALSE)
 	i+=1
 	While szCompiled[px]=MFUN And szCompiled[px+1]=FCOMMA
 		px+=2
-		lret=EvalFunc(px,0,@pres(i))
+		lret=EvalFunc(px,0,pres(i),FALSE)
 		i+=1
 	Wend
 	Return i
 
 End Function
 
-Function NumFunc(ByRef px As Integer,ByVal f As Integer,ByVal pres As RES Ptr) As Integer
+Function NumFunc(ByRef px As Integer,ByVal f As Integer,ByRef pres As RES) As Integer
 	Dim lret As Integer
 	Dim res(8) As RES
 
 	lret=ArgFunc(px,res())
-	pres->ntyp=INUM
+	pres.ntyp=INUM
 	Select Case f
 		Case NASC
 			If lret=1 And res(0).ntyp=ISTR Then
-				pres->dval=Asc(res(0).sval)
+				pres.dval=Asc(res(0).sval)
 			ElseIf lret=2 And res(0).ntyp=ISTR And res(1).ntyp=INUM Then
-				pres->dval=Asc(res(0).sval,res(1).dval)
+				pres.dval=Asc(res(0).sval,res(1).dval)
 			Else
 				GoTo NErr
 			EndIf
 		Case NLEN
 			If lret=1 And res(0).ntyp=ISTR Then
-				pres->dval=Len((res(0).sval))
+				pres.dval=Len((res(0).sval))
 			Else
 				GoTo NErr
 			EndIf
 		Case NINSTR
 			If lret=2 And res(0).ntyp=ISTR And res(1).ntyp=ISTR Then
-				pres->dval=InStr(res(0).sval,res(1).sval)
+				pres.dval=InStr(res(0).sval,res(1).sval)
 			ElseIf lret=3 And res(0).ntyp=INUM And res(1).ntyp=ISTR And res(2).ntyp=ISTR Then
-				pres->dval=InStr(res(0).dval,res(1).sval,res(2).sval)
+				pres.dval=InStr(res(0).dval,res(1).sval,res(2).sval)
 			Else
 				GoTo NErr
 			EndIf
 		Case NINSTRREV
-			'If lret=2 And res(0).ntyp=ISTR And res(1).ntyp=ISTR Then
-			'	pres->dval=InStrRev(res(0).sval,res(1).sval)
-			'ElseIf lret=3 And res(0).ntyp=ISTR And res(1).ntyp=ISTR And res(2).ntyp=INUM Then
-			'	pres->dval=InStrRev(res(0).sval,res(1).sval,res(2).dval)
-			'Else
-			'	GoTo NErr
-			'EndIf
+			If lret=2 And res(0).ntyp=ISTR And res(1).ntyp=ISTR Then
+				pres.dval=InStrRev(res(0).sval,res(1).sval)
+			ElseIf lret=3 And res(0).ntyp=ISTR And res(1).ntyp=ISTR And res(2).ntyp=INUM Then
+				pres.dval=InStrRev(res(0).sval,res(1).sval,res(2).dval)
+			Else
+				GoTo NErr
+			EndIf
 	End Select
 	If szCompiled[px]=MFUN And szCompiled[px+1]=FRPA Then
 		px+=2
 		Return 0
 	EndIf
 NErr:
-	pres->ntyp=IERR
+	pres.ntyp=IERR
 	Return -1
 
 End Function
 
-Function StrFunc(ByRef px As Integer,ByVal f As Integer,ByVal pres As RES Ptr) As Integer
+Function StrFunc(ByRef px As Integer,ByVal f As Integer,ByRef pres As RES) As Integer
 	Dim As Integer lret,i
 	Dim res(8) As RES
 
 	lret=ArgFunc(px,res())
-	pres->ntyp=ISTR
+	pres.ntyp=ISTR
 	Select Case f
 		Case SSTR
 			If lret=1 And res(0).ntyp=INUM Then
-				pres->sval=Str(res(0).dval)
+				pres.sval=Str(res(0).dval)
 			Else
 				GoTo SErr
 			EndIf
 		Case SCHR
-			pres->sval=""
+			pres.sval=""
 			For i=0 To lret-1
 				If res(i).ntyp=INUM Then
-					pres->sval &=Chr(res(i).dval)
+					pres.sval &=Chr(res(i).dval)
 				Else
 					GoTo SErr
 				EndIf
@@ -316,33 +316,33 @@ Function StrFunc(ByRef px As Integer,ByVal f As Integer,ByVal pres As RES Ptr) A
 		Case SLEFT,SRIGHT
 			If lret=2 And res(0).ntyp=ISTR And res(1).ntyp=INUM Then
 				If f=SLEFT Then
-					pres->sval=Left(res(0).sval,res(1).dval)
+					pres.sval=Left(res(0).sval,res(1).dval)
 				Else
-					pres->sval=Right(res(0).sval,res(1).dval)
+					pres.sval=Right(res(0).sval,res(1).dval)
 				EndIf
 			Else
 				GoTo SErr
 			EndIf
 		Case SMID
 			If lret=2 And res(0).ntyp=ISTR And res(1).ntyp=INUM Then
-				pres->sval=Mid(res(0).sval,res(1).dval)
+				pres.sval=Mid(res(0).sval,res(1).dval)
 			ElseIf lret=3 And res(0).ntyp=ISTR And res(1).ntyp=INUM And res(2).ntyp=INUM Then
-				pres->sval=Mid(res(0).sval,res(1).dval,res(2).dval)
+				pres.sval=Mid(res(0).sval,res(1).dval,res(2).dval)
 			Else
 				GoTo SErr
 			EndIf
 		Case SSPACE
 			If lret=1 And res(0).ntyp=INUM Then
-				pres->sval=Space(res(0).dval)
+				pres.sval=Space(res(0).dval)
 			Else
 				GoTo SErr
 			EndIf
 		Case SSTRING
 			If lret=2 And res(0).ntyp=INUM Then
 				If res(1).ntyp=ISTR Then
-					pres->sval=String(res(0).dval,res(1).sval)
+					pres.sval=String(res(0).dval,res(1).sval)
 				Else
-					pres->sval=String(res(0).dval,res(1).dval)
+					pres.sval=String(res(0).dval,res(1).dval)
 				EndIf
 			Else
 				GoTo SErr
@@ -353,15 +353,15 @@ Function StrFunc(ByRef px As Integer,ByVal f As Integer,ByVal pres As RES Ptr) A
 		Return 0
 	EndIf
 SErr:
-	pres->ntyp=IERR
+	pres.ntyp=IERR
 	Return -1
 
 End Function
 
-Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES Ptr) As Integer
+Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByRef pres As RES) As Integer
 	Dim As ZString*512 buff
 	Dim As ZString*32 bval
-	Dim As Integer l
+	Dim As Integer l,sadr
 
 	Select Case typ
 		Case 0
@@ -373,22 +373,22 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 			' Integer
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-				pres->dval=Peek(Integer,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(Integer,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 2
 			' Byte
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-				pres->dval=Peek(Byte,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(Byte,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 3
 			' UByte
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,1,0)
-				pres->dval=Peek(UByte,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(UByte,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 4
 			' Char
@@ -397,22 +397,22 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 				If Len(buff)>64 Then
 					buff=Left(buff,64) & "..."
 				EndIf
-				pres->sval=buff
-				pres->ntyp=ISTR
+				pres.sval=buff
+				pres.ntyp=ISTR
 			EndIf
 		Case 5
 			' Short
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-				pres->dval=Peek(Short,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(Short,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 6
 			' UShort
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,2,0)
-				pres->dval=Peek(UShort,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(UShort,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 7
 			' Void
@@ -423,55 +423,50 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 			' UInteger
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-				pres->dval=Peek(UInteger,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(UInteger,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 9
 			' Longint
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-				pres->dval=Peek(LongInt,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(LongInt,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 10
 			' ULongint
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-				pres->dval=Peek(ULongInt,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(ULongInt,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 11
 			' Single
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,4,0)
-				pres->dval=Peek(Single,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(Single,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 12
 			' Double
 			If adr Then
 				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
-				pres->dval=Peek(Double,@bval)
-				pres->ntyp=INUM
+				pres.dval=Peek(Double,@bval)
+				pres.ntyp=INUM
 			EndIf
 		Case 13
 			' String
 			If adr Then
-				buff=String(66,0)
-				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,8,0)
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@bval,12,0)
+				pres.sval=""
 				adr=Peek(Integer,@bval)
 				l=Peek(Integer,@bval+4)
 				If adr>0 And l>0 Then
-					If l>501 Then
-						l=501
-					EndIf
-					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,l,0)
-					If Len(buff)>500 Then
-						buff=Left(buff,500) & "..."
-					EndIf
+					pres.sval=Space(l)
+					sadr=Peek(Integer,@pres.sval)
+					ReadProcessMemory(dbghand,Cast(Any Ptr,adr),Cast(Any Ptr,sadr),l,0)
 				EndIf
-				pres->sval=buff
-				pres->ntyp=ISTR
+				pres.ntyp=ISTR
 			EndIf
 		Case 14
 			' ZString
@@ -480,8 +475,8 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 				If Len(buff)>64 Then
 					buff=Left(buff,64) & "..."
 				EndIf
-				pres->sval=buff
-				pres->ntyp=ISTR
+				pres.sval=buff
+				pres.ntyp=ISTR
 			EndIf
 		Case 15
 			' PChar
@@ -494,61 +489,6 @@ Function GetVarVal(ByVal typ As Integer,ByVal adr As Integer,ByVal pres As RES P
 			Return -1
 	End Select
 	Return 0
-
-End Function
-
-Function GetVarSize(ByVal typ As Integer) As Integer
-	Dim s As Integer
-
-	Select Case typ
-		Case 0
-			' Proc
-		Case 1
-			' Integer
-			s=4
-		Case 2
-			' Byte
-			s=1
-		Case 3
-			' UByte
-			s=1
-		Case 4
-			' Char
-			s=32
-		Case 5
-			' Short
-			s=2
-		Case 6
-			' UShort
-			s=2
-		Case 7
-			' Void
-		Case 8
-			' UInteger
-			s=4
-		Case 9
-			' Longint
-			s=8
-		Case 10
-			' ULongint
-			s=8
-		Case 11
-			' Single
-		Case 12
-			' Double
-			s=8
-		Case 13
-			' String
-			s=12
-		Case 14
-			' ZString
-		Case 15
-			' PChar
-		Case Else
-			' UDT
-			s=udt(typ).lg
-	End Select
-	Return s
 
 End Function
 
@@ -563,7 +503,7 @@ Function GetArrOfs(ByRef px As Integer,ByVal typ As Integer,ByVal lpArr As tarr 
 			n=ArgFunc(px,arr())
 			If szCompiled[px]=MFUN And szCompiled[px+1]=FRPA Then
 				px+=2
-				siz=GetVarSize(typ)
+				siz=udt(typ).lg
 				If lpArr Then
 					If n=lpArr->dmn Then
 						For i=n-1 To 0 Step -1
@@ -751,8 +691,8 @@ Nxt:
 
 End Function
 
-Function VarFunc(ByRef px As Integer,ByVal pres As RES Ptr) As Integer
-	Dim As Integer adr,typ,lret
+Function VarFunc(ByRef px As Integer,ByRef pres As RES,ByRef typ As Integer) As Integer
+	Dim As Integer adr,lret
 
 	If hThread Then
 		adr=GetVarAdr(px,typ)
@@ -767,14 +707,14 @@ Function VarFunc(ByRef px As Integer,ByVal pres As RES Ptr) As Integer
 
 End Function
 
-Function EvalFunc(ByRef px As Integer,ByVal pf As Integer,ByVal pres As RES Ptr) As Integer
-	Dim As Integer n,f,lret
+Function EvalFunc(ByRef px As Integer,ByVal pf As Integer,ByRef pres As RES,ByVal bset As Integer) As Integer
+	Dim As Integer n,f,lret,typ
 	Dim res As RES
 
 	While TRUE
 Nxt:
 		If lret=-1 Then
-			pres->ntyp=IERR
+			pres.ntyp=IERR
 			Return -1
 		EndIf
 		n=szCompiled[px]
@@ -782,41 +722,56 @@ Nxt:
 		Select Case n
 			Case IFUN
 				px+=2
-				lret=ImmFunc(px,n,f,@res)
+				lret=ImmFunc(px,n,f,res)
 				GoTo Nxt
 			Case NFUN
 				px+=2
 				If szCompiled[px]=MFUN And szCompiled[px+1]=FLPA Then
 					px+=2
-					lret=NumFunc(px,f,@res)
+					lret=NumFunc(px,f,res)
 					GoTo Nxt
 				EndIf
-				pres->ntyp=IERR
+				pres.ntyp=IERR
 				Return -1
 			Case SFUN
 				px+=2
 				If szCompiled[px]=MFUN And szCompiled[px+1]=FLPA Then
 					px+=2
-					lret=StrFunc(px,f,@res)
+					lret=StrFunc(px,f,res)
 					GoTo Nxt
 				EndIf
-				pres->ntyp=IERR
+				pres.ntyp=IERR
 				Return -1
 			Case VFUN
 				px+=2
-				lret=VarFunc(px,@res)
-				GoTo Nxt
+				If bset Then
+					pres.dval=GetVarAdr(px,typ)
+					pres.ntyp=typ
+					If pres.dval=-1 Then
+						Return -1
+					EndIf
+					If szCompiled[px]=MFUN And szCompiled[px+1]=FEQ Then
+						px+=2
+					Else
+						nErr=1
+						Return -1
+					EndIf
+					Return 0
+				Else
+					lret=VarFunc(px,res,typ)
+					GoTo Nxt
+				EndIf
 			Case 0,MFUN
 				Select Case f
 					Case FLPA
 						px+=2
-						lret=EvalFunc(px,f,@res)
+						lret=EvalFunc(px,f,res,FALSE)
 						If szCompiled[px]=MFUN And szCompiled[px+1]=FRPA Then
 							px+=2
-							lret=ExecFunc(pf,pres,@res)
+							lret=ExecFunc(pf,pres,res)
 							GoTo Nxt
 						Else
-							pres->ntyp=IERR
+							pres.ntyp=IERR
 							Return -1
 						EndIf
 					Case FRPA,FCOMMA
@@ -826,104 +781,104 @@ Nxt:
 					Case FXOR,FIMP,FEQV
 						' Xor, Imp, Eqv
 						If f<FLOR Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FLOR
 						' Or
 						If f<FAND Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FAND
 						' And
 						If f<FNOT Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FNOT
 						' Not
 						If f<FGTEQ Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FGTEQ
 						' >=
 						If f<FLEEQ Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FLEEQ
 						' <=
 						If f<FGT Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FGT
 						' >
 						If f<FLE Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FLE
 						' <
 						If f<FNEQ Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FNEQ
 						' <>
 						If f<FEQ Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FEQ
 						' =
 						If f<FADD Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FADD,FSUB
 						' +,-
 						If f<FSHL Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FSHL,FSHR
 						' Shl, Shr
 						If f<FMOD Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FMOD
 						' Mod
 						If f<FIDIV Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FIDIV
 						' \
 						If f<FMUL Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FMUL,FDIV
 						' *,/
 						If f<FNEG Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FNEG
 						' -
 						If f<FEXP Then
-							Return ExecFunc(pf,pres,@res)
+							Return ExecFunc(pf,pres,res)
 						EndIf
 					Case FEXP
 						' ^
-						Return ExecFunc(pf,pres,@res)
+						Return ExecFunc(pf,pres,res)
 					Case FSADD
 						' &
-						Return ExecFunc(pf,pres,@res)
+						Return ExecFunc(pf,pres,res)
 				End Select
 			Case Else
 				Return -1
 		End Select
 		If f Then
 			px+=2
-			lret=EvalFunc(px,f,@res)
+			lret=EvalFunc(px,f,res,FALSE)
 		Else
-			pres->ntyp=res.ntyp
-			pres->dval=res.dval
-			pres->sval=res.sval
+			pres.ntyp=res.ntyp
+			pres.dval=res.dval
+			pres.sval=res.sval
 			Return 0
 		EndIf
 	Wend
-	pres->ntyp=IERR
+	pres.ntyp=IERR
 	Return -1
 
 End Function
@@ -1183,7 +1138,9 @@ End Function
 
 Function Immediate() As Integer
 	Dim buff As ZString*256
-	Dim As Integer lret,x
+	Dim As Integer lret,x,adr,typ,ival,sadr
+	Dim As Single sval
+	Dim As LongInt lval
 	Dim res As RES
 
 	nErr=0
@@ -1199,7 +1156,7 @@ Function Immediate() As Integer
 		lret=Compile(@buff)
 		If lret=0 Then
 			x=0
-			lret=EvalFunc(x,0,@res)
+			lret=EvalFunc(x,0,res,FALSE)
 			If lret=0 Then
 				Select Case res.ntyp
 					Case INUM
@@ -1214,13 +1171,69 @@ Function Immediate() As Integer
 	ElseIf InStr(buff,"=") Then
 		If hThread Then
 			' Only in debug mode
-			buff=Mid(buff,InStr(buff,"=")+1)
 			lret=Compile(@buff)
 			If lret=0 Then
-				lret=EvalFunc(x,0,@res)
+				lret=EvalFunc(x,0,res,TRUE)
 				If lret=0 Then
-					buff=Chr(VK_RETURN,10)
-					SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+					adr=res.dval
+					typ=res.ntyp
+					lret=EvalFunc(x,0,res,FALSE)
+					If lret=0 Then
+						If res.ntyp=INUM Then
+							Select Case typ
+								Case 1,8,2,3,5,6
+									' Integer, UInteger, Byte, UByte, Short, UShort
+									ival=res.dval
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@ival,udt(typ).lg,0)
+								Case 9,10
+									' Longint, ULongint
+									lval=res.dval
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@lval,8,0)
+								Case 11
+									' Single
+									sval=res.dval
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@lval,4,0)
+								Case 12
+									' Double
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@res.dval,8,0)
+								Case Else
+									nErr=6
+									lret=-1
+							End Select
+						Else
+							Select Case typ
+								Case 4
+									' Char
+									buff=res.sval
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,Len(buff)+1,0)
+								Case 13
+									' String
+									ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,12,0)
+									x=Peek(Integer,@buff+8)
+									If Len((res.sval))<x Then
+										x=Len((res.sval))
+										WriteProcessMemory(dbghand,Cast(Any Ptr,adr+4),@x,4,0)
+										adr=Peek(Integer,@buff)
+										sadr=Peek(Integer,@res.sval)
+										WriteProcessMemory(dbghand,Cast(Any Ptr,adr),Cast(Any Ptr,sadr),x,0)
+									Else
+										nErr=7
+										lret=-1
+									EndIf
+								Case 14
+									' ZString
+									buff=res.sval
+									WriteProcessMemory(dbghand,Cast(Any Ptr,adr),@buff,Len(buff)+1,0)
+								Case Else
+									nErr=6
+									lret=-1
+							End Select
+						EndIf
+						If lret=0 Then
+							buff=Chr(VK_RETURN,10)
+							SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+						EndIf
+					EndIf
 				EndIf
 			EndIf
 		Else
@@ -1243,6 +1256,10 @@ Function Immediate() As Integer
 				buff="Index out of range"
 			Case 5
 				buff="Unknown variable type"
+			Case 6
+				buff="Type mismatch"
+			Case 7
+				buff="String too long"
 			Case Else
 				buff="Unknown error"
 		End Select

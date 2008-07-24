@@ -132,21 +132,37 @@ Dim Shared udt(TYPEMAX) As tudt,udtidx As Integer
 Dim Shared cudt(CTYPEMAX) As tcudt,cudtnb As Integer
 Dim Shared audt(ATYPEMAX) As taudt,audtnb As Integer
 udt(0).nm="Proc"
+udt(0).lg=0
 udt(1).nm="Integer"
+udt(1).lg=4
 udt(2).nm="Byte"
+udt(2).lg=1
 udt(3).nm="Ubyte"
+udt(3).lg=1
 udt(4).nm="Char"
+udt(4).lg=0
 udt(5).nm="Short"
+udt(5).lg=2
 udt(6).nm="Ushort"
+udt(6).lg=2
 udt(7).nm="Void"
+udt(7).lg=0
 udt(8).nm="Uinteger"
+udt(8).lg=4
 udt(9).nm="Longint"
+udt(9).lg=8
 udt(10).nm="Ulongint"
+udt(10).lg=8
 udt(11).nm="Single"
+udt(11).lg=4
 udt(12).nm="Double"
+udt(12).lg=8
 udt(13).nm="String"
+udt(13).lg=0
 udt(14).nm="Zstring"
+udt(14).lg=0
 udt(15).nm="Pchar"
+udt(15).lg=0
 
 Const VARMAX=5000
 Dim Shared vrbnb As UInteger  'nb of variables

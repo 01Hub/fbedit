@@ -10,7 +10,7 @@ Type RES
 	sval		As String
 End Type
 
-Declare Function EvalFunc(ByRef px As Integer,ByVal pf As Integer,ByVal pres As RES Ptr) As Integer
+Declare Function EvalFunc(ByRef px As Integer,ByVal pf As Integer,ByRef pres As RES,ByVal bset As Integer) As Integer
 
 #Define IFUN		1		' Immediate
 #Define MFUN		2		' +, -, *, /, ^
