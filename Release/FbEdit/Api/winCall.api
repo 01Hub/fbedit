@@ -342,6 +342,7 @@ CallWindowProc,lpPrevWndFunc:WNDPROC,hWnd:HWND,Msg:UINT,wParam:WPARAM,lParam:LPA
 CallWndProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 CallWndRetProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 CancelDC,hdc:HDC|BOOL
+CancelDefaultHandling,lEvCode:HANDLE|HRESULT
 CancelIoEx,hFile:HANDLE,lpOverlapped:LPOVERLAPPED|BOOL
 CancelIo|HRESULT
 CancelNtmsLibraryRequest,hSession:HANDLE,lpRequestId:LPNTMS_GUID|DWORD
@@ -349,193 +350,12 @@ CancelNtmsOperatorRequest,hSession:HANDLE,lpRequestId:LPNTMS_GUID|DWORD
 CancelSynchronousIo,hThread:HANDLE|BOOL
 CancelThreadpoolIo,pio:PTP_IO
 CancelWaitableTimer,hTimer:HANDLE|BOOL
-CanUserWritePwrScheme|BOOLEAN
-CascadeWindows,hwndParent:HWND,wHow:UINT,*lpRect:RECT,cKids:UINT,*lpKids:HWND|WORD
-CBTProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
-ChangeClipboardChain,hWndRemove:HWND,hWndNewNext:HWND|BOOL
-ChangeDisplaySettings,lpDevMode:LPDEVMODE,dwflags:DWORD|LONG
-ChangeDisplaySettingsEx,lpszDeviceName:LPCTSTR,lpDevMode:LPDEVMODE,hwnd:HWND,dwflags:DWORD,lParam:LPVOID|LONG
-ChangeNtmsMediaType,hSession:HANDLE,Pmid:LPNTMS_GUID,MPoolId:LPNTMS_GUID|DWORD
-ChangeServiceConfig,hService:SC_HANDLE,dwServiceType:DWORD,dwStartType:DWORD,dwErrorControl:DWORD,lpBinaryPathName:LPCTSTR,lpLoadOrderGroup:LPCTSTR,lpdwTagId:PDWORD,lpDependencies:LPCTSTR,lpServiceStartName:LPCTSTR,lpPassword:LPCTSTR,lpDisplayName:LPCTSTR|BOOL
-ChangeServiceConfig2,hService:SC_HANDLE,dwInfoLevel:DWORD,lpInfo,:LPVOID|BOOL
-ChangeTimerQueueTimer,TimerQueue:HANDLE,Timer:HANDLE,DueTime:ULONG,Period:ULONG|BOOL
-CharLower,lpsz:LPTSTR|LPTSTR
-CharLowerBuff,lpsz:LPTSTR,cchLength:DWORD|DWORD
-CharNext,lpsz:LPCTSTR|LPTSTR
-CharNextExA,CodePage:WORD,lpCurrentChar:LPCSTR,dwFlags:DWORD|LPSTR
-CharPrev,lpszStart:LPCTSTR,lpszCurrent:LPCTSTR|LPTSTR
-CharPrevExA,CodePage:WORD,lpStart:LPCSTR,lpCurrentChar:LPCSTR,dwFlags:DWORD|LPSTR
-CharToOem,lpszSrc:LPCTSTR,lpszDst:LPSTR|BOOL
-CharToOemBuff,lpszSrc:LPCTSTR,lpszDst:LPSTR,cchDstLength:DWORD|BOOL
-CharUpper,lpsz:LPTSTR|LPTSTR
-CharUpperBuff,lpsz:LPTSTR,cchLength:DWORD|DWORD
-CheckDlgButton,hDlg:HWND,nIDButton:Integer,uCheck:UINT|BOOL
-CheckMenuItem,hmenu:HMENU,uIDCheckItem:UINT,uCheck:UINT|DWORD
-CheckMenuRadioItem,hmenu:HMENU,idFirst:UINT,idLast:UINT,idCheck:UINT,uFlags:UINT|BOOL
-CheckNameLegalDOS8Dot3,lpName:LPCTSTR,lpOemName:LPSTR,OemNameSize:DWORD,pbNameContainsSpaces:PBOOL,pbNameLegal:PBOOL|BOOL
-CheckRadioButton,hDlg:HWND,nIDFirstButton:Integer,nIDLastButton:Integer,nIDCheckButton:Integer|BOOL
-CheckRemoteDebuggerPresent,hProcess:HANDLE,pbDebuggerPresent:PBOOL|BOOL
-ChildWindowFromPoint,hWndParent:HWND,Point:POINT|HWND
-ChildWindowFromPointEx,hwndParent:HWND,pt:POINT,uFlags:UINT|HWND
-Chord,hdc:HDC,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer,nXRadial1:Integer,nYRadial1:Integer,nXRadial2:Integer,nYRadial2:Integer|BOOL
-ClaimMediaLabel,*pBuffer:BYTE,nBufferSize:DWORD,*pLabelInfo:MediaLabelInfo|DWORD
-CleanNtmsDrive,hSession:HANDLE,lpDriveId:LPNTMS_GUID|DWORD
-ClearCommBreak,hFile:HANDLE|BOOL
-ClearCommError,hFile:HANDLE,lpErrors:PDWORD,lpStat:LPCOMSTAT|BOOL
-ClearEventLog,hEventLog:HANDLE,lpBackupFileName:LPCTSTR|BOOL
-ClientToScreen,hWnd:HWND,lpPoint:LPPOINT|BOOL
-ClipCursor,lpRect:LPCRECT|BOOL
-CloseClipboard|BOOL
-CloseDesktop,hDesktop:HDESK|BOOL
-CloseEnhMetaFile,hdc:HDC|HENHMETAFILE
-CloseEventLog,hEventLog:HANDLE|BOOL
-CloseFigure,hdc:HDC|BOOL
-CloseHandle,hObject:HANDLE|BOOL
-CloseMetaFile,hdc:HDC|HMETAFILE
-CloseNtmsNotification,hNotification:HANDLE|DWORD
-CloseNtmsSession,hSession:HANDLE|DWORD
-ClosePrinter,hPrinter:HANDLE|BOOL
-ClosePrivateNamespace,Handle:HANDLE,Flags:ULONG|BOOLEAN
-CloseServiceHandle,hSCObject:SC_HANDLE|BOOL
-CloseThreadpool,ptpp:PTP_POOL
-CloseThreadpoolCleanupGroup,ptpcg:PTP_CLEANUP_GROUP
-CloseThreadpoolCleanupGroupMembers,ptpcg:PTP_CLEANUP_GROUP,fCancelPendingCallbacks:BOOL,pvCleanupContext:Any Ptr
-CloseThreadpoolIo,pio:PTP_IO
-CloseThreadpoolTimer,pti:PTP_TIMER
-CloseThreadpoolWait,pwa:PTP_WAIT
-CloseThreadpoolWork,pwk:PTP_WORK
-CloseThreadWaitChainSession,WctHandle:HWCT
-CloseTrace,TraceHandle:TRACEHANDLE|ULONG
-CloseWindow,hWnd:HWND|BOOL
-CloseWindowStation,hWinSta:HWINSTA|BOOL
-CombineRgn,hrgnDest:HRGN,hrgnSrc1:HRGN,hrgnSrc2:HRGN,fnCombineMode:Integer|Integer
-CombineTransform,lpxformResult:LPXFORM,lpxform1:XFORM Ptr,lpxform2:XFORM Ptr|BOOL
-CommandLineToArgvW,lpCmdLine:LPCWSTR,pNumArgs:Integer Ptr|LPWSTR Ptr
-CommConfigDialog,lpszName:LPCTSTR,hWnd:HWND,lpCC:LPCOMMCONFIG|BOOL
-CompareFileTime,lpFileTime1:FILETIME Ptr,lpFileTime2:FILETIME Ptr|LONG
-CompareString,Locale:LCID,dwCmpFlags:DWORD,lpString1:LPCTSTR,cchCount1:Integer,lpString2:LPCTSTR,cchCount2:Integer|Integer
-ConfigurePort,pName:LPTSTR,hWnd:HWND,pPortName:LPTSTR|BOOL
-ConnectNamedPipe,hNamedPipe:HANDLE,lpOverlapped:LPOVERLAPPED|BOOL
-ConnectToPrinterDlg,hwnd:HWND,Flags:DWORD|HANDLE
-ContinueDebugEvent,dwProcessId:DWORD,dwThreadId:DWORD,dwContinueStatus:DWORD|BOOL
-ControlCallback,RequestCode:WMIDPREQUESTCODE,Context:Any Ptr,*Reserved:ULONG,Buffer:Any Ptr|ULONG
-ControlService,hService:SC_HANDLE,dwControl:DWORD,lpServiceStatus:LPSERVICE_STATUS|BOOL
-ControlServiceEx,hService:SC_HANDLE,dwControl:DWORD,dwInfoLevel:DWORD,pControlParams:Any Ptr|BOOL
-ControlTrace,SessionHandle:TRACEHANDLE,SessionName:LPCTSTR,Properties:PEVENT_TRACE_PROPERTIES,ControlCode:ULONG|ULONG
-ConvertDefaultLocale,Locale:LCID|LCID
-ConvertFiberToThread|BOOL
-ConvertThreadToFiber,lpParameter:LPVOID|LPVOID
-ConvertThreadToFiberEx,lpParameter:LPVOID,dwFlags:DWORD|LPVOID
-CopyAcceleratorTable,hAccelSrc:HACCEL,lpAccelDst:LPACCEL,cAccelEntries:Integer|Integer
-CopyCursor,pcur:HCURSOR|HCURSOR
-CopyEnhMetaFile,hemfSrc:HENHMETAFILE,lpszFile:LPCTSTR|HENHMETAFILE
-CopyFile,lpExistingFileNameLPCTSTR,lpNewFileNameLPCTSTR,bFailIfExists:BOOL|BOOL
-CopyFileEx,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR,lpProgressRoutine:LPPROGRESS_ROUTINE,lpData:LPVOID,pbCancel:LPBOOL,dwCopyFlags:DWORD|BOOL
-CopyIcon,hIcon:HICON|HICON
-CopyImage,hImage:HANDLE,uType:UINT,cxDesired:Integer,cyDesired:Integer,fuFlags:UINT|HANDLE
-CopyMemory,Destination:Any Ptr,Source:Any Ptr,Length:Integer
-CopyMetaFile,hmfSrc:HMETAFILE,lpszFile:LPCTSTR|HMETAFILE
-CopyProgressRoutine,TotalFileSize:LARGE_INTEGER,TotalBytesTransferred:LARGE_INTEGER,StreamSize:LARGE_INTEGER,StreamBytesTransferred:LARGE_INTEGER,dwStreamNumber:DWORD,dwCallbackReason:DWORD,hSourceFile:HANDLE,hDestinationFile:HANDLE,lpData:LPVOID|DWORD
-CopyRect,lprcDst:LPRECT,lprcSrc:LPCRECT|BOOL
-CountClipboardFormats|Integer
-CounterPathCallBack,dwArg:DWORD_PTR|PDH_STATUS
-CreateAcceleratorTable,lpaccl:LPACCEL,cEntries:Integer|HACCEL
-CreateBitmap,nWidth:Integer,nHeight:Integer,cPlanes:UINT,cBitsPerPel:UINT,lpvBits:PCVOID|HBITMAP
-CreateBitmapIndirect,lpbm:BITMAP Ptr|HBITMAP
-CreateBoundaryDescriptor,NameLPCTSTR,Flags:ULONG|HANDLE
-CreateBrushIndirect,lplb:LOGBRUSH Ptr|HBRUSH
-CreateCaret,hWnd:HWND,hBitmap:HBITMAP,nWidth:Integer,nHeight:Integer|BOOL
-CreateCompatibleBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
-CreateCompatibleDC,hdc:HDC|HDC
-CreateConsoleScreenBuffer,dwDesiredAccess:DWORD,dwShareMode:DWORD,*lpSecurityAttributes:SECURITY_ATTRIBUTES,dwFlags:DWORD,lpScreenBufferData:LPVOID|HANDLE
-CreateCursor,hInst:HINSTANCE,xHotSpot:Integer,yHotSpot:Integer,nWidth:Integer,nHeight:Integer,pvANDPlane:PCVOID,pvXORPlane:PCVOID|HCURSOR
-CreateDC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpInitData:DEVMODE|HDC
-CreateDesktop,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HDESK
-CreateDesktopEx,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES,ulHeapSize:ULONG,pvoid:PVOID|HDESK
-CreateDialogIndirectParam(hInstance:HINSTANCE,lpTemplate:LPCDLGTEMPLATE,hWndParent:HWND,lpDialogFunc:DLGPROC,lParamInit:LPARAM|HWND
-CreateDialogParam,hInstance:HINSTANCE,lpTemplateName:LPCTSTR,hWndParent:HWND,lpDialogFunc:DLGPROC,dwInitParam:LPARAM|HWND
-CreateDIBitmap,hdc:HDC,*lpbmih:BITMAPINFOHEADER,fdwInit:DWORD,*lpbInit:VOID,*lpbmi:BITMAPINFO,fuUsage:UINT|HBITMAP
-CreateDIBPatternBrush,hglbDIBPacked:HGLOBAL,fuColorSpec:UINT|HBRUSH
-CreateDIBPatternBrushPt,lpPackedDIB:PCVOID,iUsage:UINT|HBRUSH
-CreateDIBSection,hdc:HDC,pbmi:BITMAPINFO Ptr,iUsage:UINT,ppvBits:Any Ptr Ptr,hSection:HANDLE,dwOffset:DWORD|HBITMAP
-CreateDirectory,lpPathName:LPCTSTR,lpSecurityAttributes,LPSECURITY_ATTRIBUTES|BOOL
-CreateDirectoryEx,lpTemplateDirectory:LPCTSTR,lpNewDirectory:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
-CreateDiscardableBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
-CreateEllipticRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
-CreateEllipticRgnIndirect,lprc:LPCRECT|HRGN
-CreateEnhMetaFile,hdcRef:HDC,lpFilename:LPCTSTR,*lpRect:RECT,lpDescription:LPCTSTR|HDC
-CreateEvent,lpEventAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,bInitialState:BOOL,lpName:LPCTSTR|HANDLE
-CreateEventEx,lpEventAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
-CreateFiber,dwStackSize:SIZE_T,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
-CreateFiberEx,dwStackCommitSize:SIZE_T,dwStackReserveSize:SIZE_T,dwFlags:DWORD,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
-CreateFile,lpFileName:LPCTSTR,dwDesiredAccess:DWORD,dwShareMode:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,dwCreationDisposition:DWORD,dwFlagsAndAttributes:DWORD,hTemplateFile:HANDLE|HANDLE
-CreateFileMapping,hFile:HANDLE,lpAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR|HANDLE
-CreateFileMappingNuma,hFile:HANDLE,lpFileMappingAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR,nndPreferred:DWORD|HANDLE
-CreateFont,nHeight:Integer,nWidth:Integer,nEscapement:Integer,nOrientation:Integer,fnWeight:Integer,fdwItalic:DWORD,fdwUnderline:DWORD,fdwStrikeOut:DWORD,fdwCharSet:DWORD,fdwOutputPrecision:DWORD,fdwClipPrecision:DWORD,fdwQuality:DWORD,fdwPitchAndFamily:DWORD,lpszFace:LPCTSTR|HFONT
-CreateFontIndirect,lplf:LOGFONT Ptr|HFONT
-CreateFontIndirectEx,penumlfex:ENUMLOGFONTEXDV Ptr|HFONT
-CreateHalftonePalette,hdc:HDC|HPALETTE
-CreateHardLink,lpFileName:LPCTSTR,lpExistingFileName:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
-CreateHatchBrush,Integer fnStyle:,clrref:COLORREF|HBRUSH
-CreateIC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpdvmInit:DEVMODE|HDC
-CreateIcon,hInstance:HINSTANCE,nWidth:Integer,nHeight:Integer,cPlanes:BYTE,cBitsPixel:BYTE,*lpbANDbits:BYTE,*lpbXORbits:BYTE|HICON
-CreateIconFromResource,presbits:PBYTE,dwResSize:DWORD,fIcon:BOOL,dwVer:DWORD|HICON
-CreateIconFromResourceEx,pbIconBits:PBYTE,cbIconBits:DWORD,fIcon:BOOL,dwVersion:DWORD,cxDesired:Integer,cyDesired:Integer,uFlags:UINT|HICON
-CreateIconIndirect,piconinfo:PICONINFO|HICON
-CreateIoCompletionPort,FileHandle:HANDLE,ExistingCompletionPort:HANDLE,CompletionKey:ULONG_PTR,NumberOfConcurrentThreads:DWORD|HANDLE
-CreateJobObject,lpJobAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR|HANDLE
-CreateMailslot,lpName:LPCTSTR,nMaxMessageSize:DWORD,lReadTimeout:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
-CreateMDIWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,X:Integer,Y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hInstance:HINSTANCE,lParam:LPARAM|HWND
-CreateMenu|HMENU
-CreateMetaFile,lpszFile:LPCTSTR|HDC
-CreateMutex,lpMutexAttributes:LPSECURITY_ATTRIBUTES,bInitialOwner:BOOL,lpName:LPCTSTR|HANDLE
-CreateMutexEx,lpMutexAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
-CreateNamedPipe,lpName:LPCTSTR,dwOpenMode:DWORD,dwPipeMode:DWORD,nMaxInstances:DWORD,nOutBufferSize:DWORD,nInBufferSize:DWORD,nDefaultTimeOut:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
-CreateNtmsMedia,hSession:HANDLE,lpMedia:LPNTMS_OBJECTINFORMATION,lpList:LPNTMS_OBJECTINFORMATION,dwOptions:DWORD|DWORD
-CreateNtmsMediaPool,hSession:HANDLE,lpPoolName:LPCTSTR,lpMediaType:LPNTMS_GUID,dwAction:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,lpPoolId:LPNTMS_GUID|DWORD
-CreatePalette,lplgpl:LOGPALETTE Ptr|HPALETTE
-CreatePatternBrush,hbmp:HBITMAP|HBRUSH
-CreatePen,fnPenStyle:Integer,nWidth:Integer,crColor:COLORREF|HPEN
-CreatePenIndirect,*lplgpn:LOGPEN|HPEN
-CreatePipe,hReadPipe:PHANDLE,hWritePipe:PHANDLE,lpPipeAttributes:LPSECURITY_ATTRIBUTES,nSize:DWORD|BOOL
-CreatePolygonRgn,lppt:POINT Ptr,cPoints:Integer,fnPolyFillMode:Integer|HRGN
-CreatePolyPolygonRgn,lppt:POINT Ptr,lpPolyCounts:INT_ Ptr,nCount:Integer,fnPolyFillMode:Integer|HRGN
-CreatePopupMenu|HMENU
-CreatePrivateNamespace,lpPrivateNamespaceAttributes:LPSECURITY_ATTRIBUTES,lpBoundaryDescriptor:LPVOID,lpAliasPrefix:LPCTSTR|HANDLE
-CreateProcess,lpApplicationName:LPCTSTR,lpCommandLine:LPTSTR,lpProcessAttributes:LPSECURITY_ATTRIBUTES,lpThreadAttributes:LPSECURITY_ATTRIBUTES,bInheritHandles:BOOL,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCTSTR,lpStartupInfo:LPSTARTUPINFO,lpProcessInformation:LPPROCESS_INFORMATION|BOOL
-CreateProcessWithLogonW,lpUsername:LPCWSTR,lpDomain:LPCWSTR,lpPassword:LPCWSTR,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
-CreateProcessWithTokenW,hToken:HANDLE,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
-CreateRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
-CreateRectRgnIndirect,lprc:LPRECT|HRGN
-CreateRemoteThread,hProcess:HANDLE,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:PDWORD|HANDLE
-CreateRoundRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer,nWidthEllipse:Integer,nHeightEllipse:Integer|HRGN
-CreateScalableFontResource,fdwHidden:DWORD,lpszFontRes:LPCTSTR,lpszFontFile:LPCTSTR,lpszCurrentPath:LPCTSTR|BOOL
-CreateSemaphore,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR|HANDLE
-CreateSemaphoreEx,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
-CreateService,hSCManager:SC_HANDLE,lpServiceName:LPCTSTR,lpDisplayName:LPCTSTR,dwDesiredAccess:DWORD,dwServiceType:DWORD,dwStartType:DWORD,dwErrorControl:DWORD,lpBinaryPathName:LPCTSTR,lpLoadOrderGroup:LPCTSTR,lpdwTagId:PDWORD,lpDependencies:LPCTSTR,lpServiceStartName:LPCTSTR,lpPassword:LPCTSTR|SC_HANDLE
-CreateSolidBrush,crColor:COLORREF|HBRUSH
-CreateSymbolicLink,lpSymlinkFileName:LPCWSTR,lpTargetFileName:LPCWSTR,dwFlags:DWORD|BOOL
-CreateTapePartition,hDevice:HANDLE,dwPartitionMethod:DWORD,dwCount:DWORD,dwSize:DWORD|DWORD
-CreateThread,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:PDWORD|HANDLE
-CreateThreadpool,reserved:PVOID|PTP_POOL
-CreateThreadpoolCleanupGroup|PTP_CLEANUP_GROUP
-CreateThreadpoolIo,fl:HANDLE,pfnio:PTP_WIN32_IO_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_IO
-CreateThreadpoolTimer,pfnti:PTP_TIMER_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_TIMER
-CreateThreadpoolWait,pfnwa:PTP_WAIT_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WAIT
-CreateThreadpoolWork,pfnwk:PTP_WORK_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WORK
-CreateTimerQueueTimer,phNewTimer:PHANDLE,TimerQueue:HANDLE,Callback:WAITORTIMERCALLBACK,Parameter:PVOID,DueTime:DWORD,Period:DWORD,Flags:ULONG|BOOL
-CreateTimerQueue|HANDLE
-CreateToolhelp32Snapshot,dwFlags:DWORD,th32ProcessID:DWORD|HANDLE
-CreateTraceInstanceId,RegHandle:HANDLE,pInstInfo:PEVENT_INSTANCE_INFO|ULONG
-CreateWaitableTimer,lpTimerAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,lpTimerName:LPCTSTR|HANDLE
-CreateWaitableTimerEx,lpTimerAttributes:LPSECURITY_ATTRIBUTES,lpTimerName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
-CreateWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
-CreateWindowEx,dwExStyle:DWORD,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
-CreateWindowStation,lpwinsta:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HWINSTA
-CancelDefaultHandling,lEvCode:HANDLE|HRESULT
 CanResourceBeDependent,hResource:HRESOURCE,hResourceDependent:HRESOURCE|BOOL
+CanUserWritePwrScheme|BOOLEAN
 capCreateCaptureWindow,lpszWindowName:LPCSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWnd:HWND,nID:Integer|HWND
 capGetDriverDescription,wDriverIndex:UINT,lpszName:LPSTR,cbName:Integer,lpszVer:LPSTR,cbVer:Integer|BOOL
+CascadeWindows,hwndParent:HWND,wHow:UINT,*lpRect:RECT,cKids:UINT,*lpKids:HWND|WORD
+CBTProc,nCode:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 CertAddCertificateContextToStore,hCertStore:HCERTSTORE,pCertContext:PCCERT_CONTEXT,dwAddDisposition:DWORD,ppStoreContext:PCCERT_CONTEXT Ptr|BOOL
 CertAddCertificateLinkToStore,hCertStore:HCERTSTORE,pCertContext:PCCERT_CONTEXT,dwAddDisposition:DWORD,ppStoreContext:PCCERT_CONTEXT Ptr|BOOL
 CertAddCRLContextToStore,hCertStore:HCERTSTORE,pCrlContext:PCCRL_CONTEXT,dwAddDisposition:DWORD,ppStoreContext:PCCRL_CONTEXT Ptr|BOOL
@@ -618,6 +438,14 @@ CertRegisterSystemStore,pvSystemStore:Any Ptr,dwFlags:DWORD,pStoreInfo:PCERT_SYS
 CertRemoveEnhancedKeyUsageIdentifier,pCertContext:PCCERT_CONTEXT,pszUsageIdentifier:LPCSTR|BOOL
 CertRemoveStoreFromCollection,hCollectionStore:HCERTSTORE,hSiblingStore:HCERTSTORE
 CertSaveStore,hCertStore:HCERTSTORE,dwMsgAndCertEncodingType:DWORD,dwSaveAs:DWORD,dwSaveTo:DWORD,pvSaveToPara:Any Ptr,dwFlags:DWORD|BOOL
+CertSerializeCertificateStoreElement,pCertContext:PCCERT_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
+CertSerializeCRLStoreElement,pCrlContext:PCCRL_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
+CertSerializeCTLStoreElement,pCtlContext:PCCTL_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
+CertSetCertificateContextProperty,pCertContext:PCCERT_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
+CertSetCRLContextProperty,pCrlContext:PCCRL_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
+CertSetCTLContextProperty,pCtlContext:PCCTL_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
+CertSetEnhancedKeyUsage,pCertContext:PCCERT_CONTEXT,pUsage:PCERT_ENHKEY_USAGE|BOOL
+CertSetStoreProperty,hCertStore:HCERTSTORE,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
 CertStoreProvCloseCallback,hStoreProv:HCERTSTOREPROV,dwFlags:DWORD
 CertStoreProvControl,hStoreProv:HCERTSTOREPROV,dwFlags:DWORD,dwCtrlType:DWORD,pvCtrlPara:Any Ptr|BOOL
 CertStoreProvDeleteCertCallback,hStoreProv:HCERTSTOREPROV,pCertContext:PCCERT_CONTEXT,dwFlags:DWORD|BOOL
@@ -642,14 +470,6 @@ CertStoreProvWriteCertCallback,hStoreProv:HCERTSTOREPROV,pCertContext:PCCERT_CON
 CertStoreProvWriteCRLCallback,hStoreProv:HCERTSTOREPROV,pCrlContext:PCCRL_CONTEXT,dwFlags:DWORD|BOOL
 CertStoreProvWriteCTL,hStoreProv:HCERTSTOREPROV,pCtlContext:PCCTL_CONTEXT,dwFlags:DWORD|BOOL
 CertStrToName,dwCertEncodingType:DWORD,pszX500:LPCTSTR,dwStrType:DWORD,pvReserved:Any Ptr,pbEncoded:BYTE Ptr,pcbEncoded:DWORD Ptr,ppszError:LPCTSTR Ptr|BOOL
-CertSerializeCertificateStoreElement,pCertContext:PCCERT_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
-CertSerializeCRLStoreElement,pCrlContext:PCCRL_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
-CertSerializeCTLStoreElement,pCtlContext:PCCTL_CONTEXT,dwFlags:DWORD,pbElement:BYTE Ptr,pcbElement:DWORD Ptr|BOOL
-CertSetCertificateContextProperty,pCertContext:PCCERT_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
-CertSetCRLContextProperty,pCrlContext:PCCRL_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
-CertSetCTLContextProperty,pCtlContext:PCCTL_CONTEXT,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
-CertSetEnhancedKeyUsage,pCertContext:PCCERT_CONTEXT,pUsage:PCERT_ENHKEY_USAGE|BOOL
-CertSetStoreProperty,hCertStore:HCERTSTORE,dwPropId:DWORD,dwFlags:DWORD,pvData:Any Ptr|BOOL
 CertUnregisterPhysicalStore,pvSystemStore:Any Ptr,dwFlags:DWORD,pwszStoreName:LPCWSTR|BOOL
 CertUnregisterSystemStore,pvSystemStore:Any Ptr,dwFlags:DWORD|BOOL
 CertVerifyCertificateChainPolicy,pszPolicyOID:LPCSTR,pChainContext:PCCERT_CHAIN_CONTEXT,pPolicyPara:PCERT_CHAIN_POLICY_PARA,pPolicyStatus:PCERT_CHAIN_POLICY_STATUS|BOOL
@@ -661,27 +481,83 @@ CertVerifySubjectCertificateContext,pSubject:PCCERT_CONTEXT,pIssuer:PCCERT_CONTE
 CertVerifyTimeValidity,pTimeToVerify:LPFILETIME,pCertInfo:PCERT_INFO|LONG
 CertVerifyValidityNesting,pSubjectInfo:PCERT_INFO,pIssuerInfo:PCERT_INFO|BOOL
 CertViewProperties,pCertViewInfo:CERT_VIEWPROPERTIES_STRUCT Ptr|BOOL
+ChangeClipboardChain,hWndRemove:HWND,hWndNewNext:HWND|BOOL
 ChangeClusterResourceGroup,hResource:HRESOURCE,hGroup:HGROUP|DWORD
+ChangeDisplaySettings,lpDevMode:LPDEVMODE,dwflags:DWORD|LONG
+ChangeDisplaySettingsEx,lpszDeviceName:LPCTSTR,lpDevMode:LPDEVMODE,hwnd:HWND,dwflags:DWORD,lParam:LPVOID|LONG
+ChangeNtmsMediaType,hSession:HANDLE,Pmid:LPNTMS_GUID,MPoolId:LPNTMS_GUID|DWORD
+ChangeServiceConfig,hService:SC_HANDLE,dwServiceType:DWORD,dwStartType:DWORD,dwErrorControl:DWORD,lpBinaryPathName:LPCTSTR,lpLoadOrderGroup:LPCTSTR,lpdwTagId:PDWORD,lpDependencies:LPCTSTR,lpServiceStartName:LPCTSTR,lpPassword:LPCTSTR,lpDisplayName:LPCTSTR|BOOL
+ChangeServiceConfig2,hService:SC_HANDLE,dwInfoLevel:DWORD,lpInfo,:LPVOID|BOOL
+ChangeTimerQueueTimer,TimerQueue:HANDLE,Timer:HANDLE,DueTime:ULONG,Period:ULONG|BOOL
+CharLower,lpsz:LPTSTR|LPTSTR
+CharLowerBuff,lpsz:LPTSTR,cchLength:DWORD|DWORD
+CharNext,lpsz:LPCTSTR|LPTSTR
+CharNextExA,CodePage:WORD,lpCurrentChar:LPCSTR,dwFlags:DWORD|LPSTR
+CharPrev,lpszStart:LPCTSTR,lpszCurrent:LPCTSTR|LPTSTR
+CharPrevExA,CodePage:WORD,lpStart:LPCSTR,lpCurrentChar:LPCSTR,dwFlags:DWORD|LPSTR
+CharToOem,lpszSrc:LPCTSTR,lpszDst:LPSTR|BOOL
+CharToOemBuff,lpszSrc:LPCTSTR,lpszDst:LPSTR,cchDstLength:DWORD|BOOL
+CharUpper,lpsz:LPTSTR|LPTSTR
+CharUpperBuff,lpsz:LPTSTR,cchLength:DWORD|DWORD
 CheckBitmapBits,hColorTransform:HTRANSFORM,pSrcBits:PVOID,bmInput:BMFORMAT,dwWidth:DWORD,dwHeight:DWORD,dwStride:DWORD,paResult:PBYTE,pfnCallback:PBMCALLBACKFN,lpCallbackData:LPARAM|BOOL
 CheckColors,hColorTransform:HTRANSFORM,paInputColors:PCOLOR,nColors:DWORD,ctInput:COLORTYPE,paResult:PBYTE|BOOL
 CheckColorsInGamut,hDC:HDC,lpRGBTriples:LPVOID,lpBuffer:LPVOID,nCount:UINT|BOOL
+CheckDlgButton,hDlg:HWND,nIDButton:Integer,uCheck:UINT|BOOL
+CheckMenuItem,hmenu:HMENU,uIDCheckItem:UINT,uCheck:UINT|DWORD
+CheckMenuRadioItem,hmenu:HMENU,idFirst:UINT,idLast:UINT,idCheck:UINT,uFlags:UINT|BOOL
+CheckNameLegalDOS8Dot3,lpName:LPCTSTR,lpOemName:LPSTR,OemNameSize:DWORD,pbNameContainsSpaces:PBOOL,pbNameLegal:PBOOL|BOOL
+CheckRadioButton,hDlg:HWND,nIDFirstButton:Integer,nIDLastButton:Integer,nIDCheckButton:Integer|BOOL
+CheckRemoteDebuggerPresent,hProcess:HANDLE,pbDebuggerPresent:PBOOL|BOOL
 CheckSumMappedFile,BaseAddress:PVOID,FileLength:DWORD,HeaderSum:PDWORD,CheckSum:PDWORD|PIMAGE_NT_HEADERS
 CheckTokenMembership,TokenHandle:HANDLE,SidToCheck:PSID,IsMember:PBOOL|BOOL
+ChildWindowFromPoint,hWndParent:HWND,Point:POINT|HWND
+ChildWindowFromPointEx,hwndParent:HWND,pt:POINT,uFlags:UINT|HWND
 ChooseColor,lpcc:LPCHOOSECOLOR|BOOL
 ChooseFont,lpcf:LPCHOOSEFONT|BOOL
 ChoosePixelFormat,hdc:HDC,ppfd:PIXELFORMATDESCRIPTOR Ptr|Integer
+Chord,hdc:HDC,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer,nXRadial1:Integer,nYRadial1:Integer,nXRadial2:Integer,nYRadial2:Integer|BOOL
 ChrCmpI,w1:TCHAR,w2:TCHAR|BOOL
+ClaimMediaLabel,*pBuffer:BYTE,nBufferSize:DWORD,*pLabelInfo:MediaLabelInfo|DWORD
 cldap_open,HostName:PCHAR,PortNumber:ULONG|LDAP Ptr
+CleanNtmsDrive,hSession:HANDLE,lpDriveId:LPNTMS_GUID|DWORD
+ClearCommBreak,hFile:HANDLE|BOOL
+ClearCommError,hFile:HANDLE,lpErrors:PDWORD,lpStat:LPCOMSTAT|BOOL
 ClearCustData,pCustData:LPCUSTDATA
+ClearEventLog,hEventLog:HANDLE,lpBackupFileName:LPCTSTR|BOOL
+ClientToScreen,hWnd:HWND,lpPoint:LPPOINT|BOOL
+ClipCursor,lpRect:LPCRECT|BOOL
+CloseClipboard|BOOL
 CloseCluster,hCluster:HCLUSTER|BOOL
 CloseClusterGroup,hGroup:HGROUP|BOOL
 CloseClusterNode,hNode:HNODE|BOOL
 CloseClusterNotifyPort,hChange:HCHANGE|BOOL
 CloseClusterResource,hResource:HRESOURCE|BOOL
 CloseColorProfile,hProfile:HPROFILE|BOOL
+CloseDesktop,hDesktop:HDESK|BOOL
 CloseDriver,hdrvr:HDRVR,lParam1:LONG,lParam2:LONG|LRESULT
 CloseEncryptedFileRaw,pvContext:PVOID
+CloseEnhMetaFile,hdc:HDC|HENHMETAFILE
+CloseEventLog,hEventLog:HANDLE|BOOL
+CloseFigure,hdc:HDC|BOOL
+CloseHandle,hObject:HANDLE|BOOL
+CloseMetaFile,hdc:HDC|HMETAFILE
+CloseNtmsNotification,hNotification:HANDLE|DWORD
+CloseNtmsSession,hSession:HANDLE|DWORD
+ClosePrinter,hPrinter:HANDLE|BOOL
+ClosePrivateNamespace,Handle:HANDLE,Flags:ULONG|BOOLEAN
+CloseServiceHandle,hSCObject:SC_HANDLE|BOOL
 closesocket,s:SOCKET|Integer
+CloseThreadpool,ptpp:PTP_POOL
+CloseThreadpoolCleanupGroup,ptpcg:PTP_CLEANUP_GROUP
+CloseThreadpoolCleanupGroupMembers,ptpcg:PTP_CLEANUP_GROUP,fCancelPendingCallbacks:BOOL,pvCleanupContext:Any Ptr
+CloseThreadpoolIo,pio:PTP_IO
+CloseThreadpoolTimer,pti:PTP_TIMER
+CloseThreadpoolWait,pwa:PTP_WAIT
+CloseThreadpoolWork,pwk:PTP_WORK
+CloseThreadWaitChainSession,WctHandle:HWCT
+CloseTrace,TraceHandle:TRACEHANDLE|ULONG
+CloseWindow,hWnd:HWND|BOOL
+CloseWindowStation,hWinSta:HWINSTA|BOOL
 CLSIDFromProgID,lpszProgID:LPCOLESTR,pclsid:LPCLSID|HRESULT
 CLSIDFromProgIDEx,lpszProgID:LPCOLESTR,pclsid:LPCLSID|HRESULT
 CLSIDFromString,lpsz:LPOLESTR,pclsid:LPCLSID|HRESULT
@@ -723,6 +599,468 @@ ClusterResourceTypeOpenEnum,hCluster:HCLUSTER,lpszResourceTypeName:LPCWSTR,dwTyp
 ClusWorkerCheckTerminate,Worker:PCLUS_WORKER|BOOL
 ClusWorkerCreate,Worker:PCLUS_WORKER,lpStartAddress:PWORKER_START_ROUTINE,lpParameter:PVOID|DWORD
 ClusWorkerTerminate,Worker:PCLUS_WORKER
+CMCheckColors,hcmTransform:HCMTRANSFORM,lpaInputColors:LPCOLOR,nColors:DWORD,ctInput:COLORTYPE,lpaResult:LPBYTE|BOOL
+CMCheckColorsInGamut,hcmTransform:HCMTRANSFORM,lpaRGBTriple:RGBTRIPLE Ptr,lpaResult:LPBYTE,nCount:UINT|BOOL
+CMCheckRGBs,hcmTransform:HCMTRANSFORM,lpSrcBits:LPVOID,bmInput:BMFORMAT,dwWidth:DWORD,dwHeight:DWORD,dwStride:DWORD,lpaResult:LPBYTE,pfnCallback:PBMCALLBACKFN,ulCallbackData:ULONG|BOOL
+CMConvertColorNameToIndex,hProfile:HPROFILE,paColorName:PCOLOR_NAME,paIndex:PDWORD,dwCount:DWORD|BOOL
+CMConvertIndexToColorName,hProfile:HPROFILE,paIndex:PDWORD,paColorName:PCOLOR_NAME,dwCount:DWORD|BOOL
+CMCreateDeviceLinkProfile,lpahProfiles:LPHPROFILE,nProfiles:DWORD,padwIntents:PDWORD,nIntents:DWORD,dwFlags:DWORD,lpProfileData:LPBYTE Ptr|BOOL
+CMCreateMultiProfileTransform,lpahProfiles:LPHPROFILE,nProfiles:DWORD,padwIntents:PDWORD,nIntents:DWORD,dwFlags:DWORD|HCMTRANSFORM
+CMCreateProfile,lpColorSpace:LPLOGCOLORSPACEA,lpProfileData:LPBYTE Ptr|BOOL
+CMCreateTransformExt,lpColorSpace:LPLOGCOLORSPACEA,lpDevCharacter:LPDEVCHARACTER,lpTargetDevCharacter:LPDEVCHARACTER,dwFlags:DWORD|HCMTRANSFORM
+cmc_act_on,session:CMC_session_id,message_reference:CMC_message_reference Ptr,operation:CMC_enum,act_on_flags:CMC_flags,ui_id:CMC_ui_id,act_on_extensions:CMC_extension Ptr|CMC_return_code
+cmc_free,memory:CMC_buffer|CMC_return_code
+cmc_list,session:CMC_session_id,message_type:CMC_string,list_flags:CMC_flags,seed:CMC_message_reference Ptr,count:CMC_uint32 Ptr Ptr,ui_id:CMC_ui_id,result:CMC_message_summary Ptr Ptr,list_extensions:CMC_extension Ptr|CMC_return_code
+cmc_logoff,session:CMC_session_id,ui_id:CMC_ui_id,logoff_flags:CMC_flags,logoff_extensions:CMC_extension Ptr|CMC_return_code
+cmc_logon,service:CMC_string,user:CMC_string,password:CMC_string,character_set:CMC_object_identifier,ui_id:CMC_ui_id,caller_CMC_version:CMC_uint16,logon_flags:CMC_flags,session:CMC_session_id Ptr,logon_extensions:CMC_extension Ptr|CMC_return_code
+cmc_look_up,session:CMC_session_id,recipient_in:CMC_recipient Ptr,look_up_flags:CMC_flags,ui_id:CMC_ui_id,count:CMC_uint32 Ptr,recipient_out:CMC_recipient Ptr Ptr,look_up_extensions:CMC_extension Ptr|CMC_return_code
+cmc_query_configuration,session:CMC_session_id,item:CMC_enum,reference:CMC_buffer,config_extensions:CMC_extension Ptr|CMC_return_code
+cmc_read,session:CMC_session_id,message_reference:CMC_message_reference Ptr,read_flags:CMC_flags,message:CMC_message Ptr Ptr,ui_id:CMC_ui_id,read_extensions:CMC_extension Ptr|CMC_return_code
+cmc_send,session:CMC_session_id,message:CMC_message Ptr,send_flags:CMC_flags,ui_id:CMC_ui_id,send_extensions:CMC_extension|CMC_return_code
+cmc_send_documents,recipient_addresses:CMC_string,subject:CMC_string,text_note:CMC_string,send_doc_flags:CMC_flags,file_paths:CMC_string,file_names:CMC_string,delimiter:CMC_string,ui_id:CMC_ui_id|CMC_return_code
+CMDeleteTransform,hcmTransform:HCMTRANSFORM|BOOL
+CMGetInfo,dwInfo:DWORD|DWORD
+CMGetNamedProfileInfo,hProfile:HPROFILE,pNamedProfileInfo:PNAMED_PROFILE_INFO|BOOL
+CMGetPS2ColorRenderingDictionary,hProfile:HPROFILE,dwIntent:DWORD,lpBuffer:LPBYTE,lpcbSize:LPDWORD,lpbBinary:LPBOOL|BOOL
+CMGetPS2ColorRenderingIntent,hProfile:HPROFILE,dwIntent:DWORD,lpBuffer:LPBYTE,lpcbSize:LPDWORD|BOOL
+CMGetPS2ColorSpaceArray,hProfile:HPROFILE,dwIntent:DWORD,dwCSAType:DWORD,lpBuffer:LPBYTE,lpcbSize:LPDWORD,lpbBinary:LPBOOL|BOOL
+CMIsProfileValid,hProfile:HPROFILE,lpbValid:LPBOOL|BOOL
+CMTranslateColors,hcmTransform:HCMTRANSFORM,lpaInputColors:LPCOLOR,nColors:DWORD,ctInput:COLORTYPE,lpaOutputColors:LPCOLOR,ctOutput:COLORTYPE|BOOL
+CMTranslateRGB,hcmTransform:HCMTRANSFORM,ColorRef:COLORREF,lpColorRef:LPCOLORREF,dwFlags:DWORD|BOOL
+CMTranslateRGBs,hcmTransform:HCMTRANSFORM,lpSrcBits:LPVOID,bmInput:BMFORMAT,dwWidth:DWORD,dwHeight:DWORD,dwStride:DWORD,lpDestBits:LPVOID,bmOutput:BMFORMAT,dwTranslateDirection:DWORD|BOOL
+CMTranslateRGBsExt,hcmTransform:HCMTRANSFORM,lpSrcBits:LPVOID,bmInput:BMFORMAT,dwWidth:DWORD,dwHeight:DWORD,dwInputStride:DWORD,lpDestBits:LPVOID,bmOutput:BMFORMAT,dwOutputStride:DWORD,lpfnCallback:LPBMCALLBACKFN,ulCallbackData:ULONG|BOOL
+CoAddRefServerProcess|ULONG
+CoAllowSetForegroundWindow,pUnk:IUnknown Ptr,lpvReserved:LPVOID|HRESULT
+CoCancelCall,dwThreadID:DWORD,ulTimeout:ULONG|HRESULT
+CoCopyProxy,pProxy:IUnknown Ptr,ppCopy:IUnknown Ptr Ptr|HRESULT
+CoCreateActivity,pIUnknown:IUnknown Ptr,riid:IID Ptr,ppObj:Any Ptr Ptr|HRESULT
+CoCreateFreeThreadedMarshaler,punkOuter:LPUNKNOWN,ppunkMarshaler:LPUNKNOWN Ptr|HRESULT
+CoCreateGuid,pguid:GUID Ptr|HRESULT
+CoCreateInstance,rclsid:CLSID Ptr,pUnkOuter:LPUNKNOWN,dwClsContext:DWORD,riid:IID Ptr,ppv:PVOID Ptr|HRESULT
+CoCreateInstanceEx,rclsid:CLSID Ptr,punkOuter:IUnknown Ptr,dwClsCtx:DWORD,pServerInfo:COSERVERINFO,cmq:ULONG,pResults:MULTI_QI Ptr|HRESULT
+CoCreateOutlookExpress,pUnkOuter Ptr,ppUnknown:IUnknown Ptr Ptr|HRESULT
+CoDisableCallCancellation,pvReserved:LPVOID|HRESULT
+CoDisconnectObject,pUnk:IUnknown Ptr,dwReserved:DWORD|HRESULT
+CoDosDateTimeToFileTime,nDosDate:WORD,nDosTime:WORD,lpFileTime:FILETIME Ptr|BOOL
+CoEnableCallCancellation,pvReserved:LPVOID|HRESULT
+CoEnterServiceDomain,pConfigObject:IUnknown Ptr|HRESULT
+CoFileTimeNow,lpFileTime:FILETIME Ptr|HRESULT
+CoFileTimeToDosDateTime,lpFileTime:FILETIME Ptr,lpDosDate:LPWORD,lpDosTime:LPWORD|BOOL
+CoFreeAllLibraries
+CoFreeLibrary,hInst:HINSTANCE
+CoFreeUnusedLibraries
+CoFreeUnusedLibrariesEx,dwUnloadDelay:DWORD,dwReserved:DWORD
+CoGetCallContext,riid:IID Ptr,ppInterface:Any Ptr Ptr|HRESULT
+CoGetCallerTID,lpdwTID:LPDWORD|HRESULT
+CoGetCancelObject,dwThreadID:DWORD,riid:IID Ptr,ppUnk:Any Ptr Ptr|HRESULT
+CoGetClassObject,rclsid:CLSID Ptr,dwClsContext:DWORD,pServerInfo:COSERVERINFO Ptr,riid:IID Ptr,ppv:LPVOID Ptr|HRESULT
+CoGetClassObjectFromURL,rclsid:CLSID,szCodeURL:LPCWSTR,dwFileVersionMS:DWORD,dwFileVersionLS:DWORD,szContentType:LPCWSTR,pBindCtx:LPBINDCTX,dwClsContext:DWORD,pvReserved:LPVOID,riid:IID Ptr,ppv:Any Ptr Ptr|HRESULT
+CoGetContextToken,pToken:ULONG Ptr Ptr|HRESULT
+CoGetCurrentProcess|DWORD
+CoGetCurrentProcess|DWORD
+CoGetInstanceFromFile,pServerInfo:COSERVERINFO Ptr,pclsid:CLSID Ptr,punkOuter:IUnknown Ptr,dwClsCtx:DWORD,grfMode:DWORD,szName:OLECHAR Ptr,cmq:ULONG,rgmqResults:MULTI_QI Ptr|HRESULT
+CoGetInstanceFromIStorage,pServerInfo:COSERVERINFO Ptr,pclsid:CLSID Ptr,punkOuter:IUnknown Ptr,dwClsCtx:DWORD,pstg:IStorage Ptr,cmq:ULONG,rgmqResults:MULTI_QI Ptr|HRESULT
+CoGetInterceptor,iidIntercepted:IID Ptr,punkOuter:IUnknown Ptr,iid:IID Ptr,ppv:Any Ptr Ptr|HRESULT
+CoGetInterfaceAndReleaseStream,pStm:LPSTREAM,riid:IID Ptr,ppv:LPVOID Ptr|HRESULT
+CoGetMalloc,dwMemContext:DWORD,ppMalloc:LPMALLOC Ptr|HRESULT
+CoGetMarshalSizeMax,pulSize:ULONG Ptr,riid:IID Ptr,pUnk:IUnknown Ptr,dwDestContext:DWORD,pvDestContext:LPVOID,mshlflags:DWORD|HRESULT
+CoGetObject,pszName:LPCWSTR,pBindOptions:BIND_OPTS Ptr,riid:IID Ptr,ppv:Any Ptr Ptr|HRESULT
+CoGetObjectContext,riid:IID Ptr,ppv:LPVOID Ptr Ptr|HRESULT
+CoGetPSClsid,riid:IID Ptr,pclsid:CLSID Ptr|HRESULT
+CoGetStandardMarshal,riid:IID Ptr,pUnk:IUnknown Ptr,dwDestContext:DWORD,pvDestContext:LPVOID,mshlflags:DWORD,ppMarshal:LPMARSHAL Ptr|HRESULT
+CoGetStdMarshalEx,pUnkOuter:IUnknown Ptr,dwSMEXFlags:DWORD,ppUnkInner:IUnknown Ptr Ptr|HRESULT
+CoGetTreatAsClass,clsidOld:CLSID Ptr,pclsidNew:LPCLSID|HRESULT
+CoImpersonateClient|HRESULT
+CoInitialize,pvReserved:LPVOID|HRESULT
+CoInitializeEx,pvReserved:Any Ptr,dwCoInit:DWORD|HRESULT
+CoInitializeSecurity,pVoid:PSECURITY_DESCRIPTOR,cAuthSvc:LONG,asAuthSvc:SOLE_AUTHENTICATION_SERVICE Ptr,pReserved1:Any Ptr,dwAuthnLevel:DWORD,dwImpLevel:DWORD,pAuthList:SOLE_AUTHENTICATION_LIST Ptr,dwCapabilities:DWORD,pReserved3:Any Ptr|HRESULT
+CoInstall,pbc:IBindCtx Ptr,dwFlags:DWORD,pClassSpec:uCLSSPEC Ptr,pQuery:QUERYCONTEXT Ptr,pszCodeBase:LPWSTR|HRESULT
+CoInternetCombineIUri,pBaseUri:IUri Ptr,pRelativeUri:IUri Ptr,dwCombineFlags:DWORD,ppCombinedUri:IUri Ptr Ptr,dwReserved:DWORD Ptr|HRESULT
+CoInternetCombineUrl,pwzBaseUrl:LPCWSTR,pwzRelativeUrl:LPCWSTR,dwCombineFlags:DWORD,pwzResult:LPWSTR,cchResult:DWORD,pcchResult:DWORD Ptr,dwReserved:DWORD|HRESULT
+CoInternetCombineUrlEx,pBaseUri:IUri Ptr,pwzRelativeUrl:LPCWSTR,dwCombineFlags:DWORD,ppCombinedUri:IUri Ptr Ptr,dwReserved:DWORD Ptr|HRESULT
+CoInternetCompareUrl,pwzUrl1:LPCWSTR,pwzUrl2:LPCWSTR,dwCompareFlags:DWORD|HRESULT
+CoInternetCreateSecurityManager,pSP:IServiceProvider Ptr,ppSM:IInternetSecurityManager Ptr Ptr,dwReserved:DWORD|HRESULT
+CoInternetCreateZoneManager,pSP:IServiceProvider Ptr,ppZM:IInternetZoneManager Ptr Ptr,dwReserved:DWORD|HRESULT
+CoInternetGetProtocolFlags,pwzUrl:LPCWSTR,pdwFlags:DWORD Ptr,dwReserved:DWORD|HRESULT
+CoInternetGetSecurityUrl,pwzUrl:LPCWSTR,ppwzSecUrl:LPWSTR Ptr,psuAction:PSUACTION,dwReserved:DWORD|HRESULT
+CoInternetGetSecurityUrlEx,pUri:IUri Ptr,ppSecUri:IUri Ptr Ptr,psuAction:PSUACTION,dwReserved:DWORD Ptr|HRESULT
+CoInternetGetSession,dwSessionMode:DWORD,ppIInternetSession:IInternetSession Ptr Ptr,dwReserved:DWORD|HRESULT
+CoInternetParseUrl,pwzUrl:LPCWSTR,ParseAction:PARSEACTION,dwFlags:DWORD,pszResult:LPWSTR,cchResult:DWORD,pcchResult:DWORD Ptr,dwReserved:DWORD|HRESULT
+CoInternetQueryInfo,pwzUrl:LPCWSTR,QueryOption:QUERYOPTION,dwQueryFlags:DWORD,pvBuffer:LPVOID,cbBuffer:DWORD,pcbBuffer:DWORD Ptr,dwReserved:DWORD|HRESULT
+CoInternetSetFeatureEnabled,FeatureEntry:INTERNETFEATURELIST,dwFlags:DWORD,fEnable:BOOL|HRESULT
+CoInvalidateRemoteMachineBindings,pszMachineName:LPOLESTR|HRESULT
+CoIsHandlerConnected,pUnk:LPUNKNOWN|BOOL
+CoIsOle1Class,rclsid:CLSID Ptr|BOOL
+CoLeaveServiceDomain,pUnkStatus:IUnknown Ptr
+CoLoadLibrary,lpszLibName:LPOLESTR,bAutoFree:BOOL|HINSTANCE
+CoLockObjectExternal,pUnk:IUnknown Ptr,fLock:BOOL,fLastUnlockReleases:BOOL|HRESULT
+ColorAdjustLuma,clrRGB:COLORREF,n:Integer,fScale:BOOL|COLORREF
+ColorCorrectPalette,hDC:HDC,hPalette:HPALETTE,dwFirstEntry:DWORD,dwNumOfEntries:DWORD|BOOL
+ColorHLSToRGB,wHue:WORD,wLuminance:WORD,wSaturation:WORD|COLORREF
+ColorMatchToTarget,hDC:HDC,hdcTarget:HDC,uiAction:DWORD|BOOL
+ColorRGBToHLS,clrRGB:COLORREF,pwHue:WORD Ptr,pwLuminance:WORD Ptr,pwSaturation:WORD Ptr
+CoMarshalHresult,pStm:IStream Ptr,hresult:HRESULT|HRESULT
+CoMarshalInterface,pStm:IStream Ptr,riid:IID Ptr,pUnk:IUnknown Ptr,dwDestContext:DWORD,pvDestContext:Any Ptr,mshlflags:DWORD|HRESULT
+CoMarshalInterThreadInterfaceInStream,riid:IID Ptr,pUnk:LPUNKNOWN,ppStm:LPSTREAM Ptr|HRESULT
+CombineRgn,hrgnDest:HRGN,hrgnSrc1:HRGN,hrgnSrc2:HRGN,fnCombineMode:Integer|Integer
+CombineTransform,lpxformResult:LPXFORM,lpxform1:XFORM Ptr,lpxform2:XFORM Ptr|BOOL
+CommandLineToArgvW,lpCmdLine:LPCWSTR,pNumArgs:Integer Ptr|LPWSTR Ptr
+CommConfigDialog,lpszName:LPCTSTR,hWnd:HWND,lpCC:LPCOMMCONFIG|BOOL
+CommDlgExtendedError|DWORD
+CommitUrlCacheEntry,lpszUrlName:LPCTSTR,lpszLocalFileName:LPCTSTR,ExpireTime:FILETIME,LastModifiedTime:FILETIME,CacheEntryType:DWORD,lpHeaderInfo:LPCTSTR,dwHeaderSize:DWORD,lpszFileExtension:LPCTSTR,lpszOriginalUrl:LPCTSTR|BOOLAPI
+CompareFileTime,lpFileTime1:FILETIME Ptr,lpFileTime2:FILETIME Ptr|LONG
+CompareString,Locale:LCID,dwCmpFlags:DWORD,lpString1:LPCTSTR,cchCount1:Integer,lpString2:LPCTSTR,cchCount2:Integer|Integer
+CompleteAuthToken,phContext:PCtxtHandle,pToken:PSecBufferDesc|SECURITY_STATUS
+ConfigDSN,hwndParent:HWND,fRequest:WORD,lpszDriver:LPCSTR,lpszAttributes:LPCSTR|BOOL
+ConfigTranslator,hwndParent:HWND,pvOption:DWORD Ptr|BOOL
+ConfigurePort,pName:LPTSTR,hWnd:HWND,pPortName:LPTSTR|BOOL
+Connect,s:SOCKET,name:sockaddr Ptr,namelen:Integer|Integer
+ConnectNamedPipe,hNamedPipe:HANDLE,lpOverlapped:LPOVERLAPPED|BOOL
+ConnectToPrinterDlg,hwnd:HWND,Flags:DWORD|HANDLE
+ContinueDebugEvent,dwProcessId:DWORD,dwThreadId:DWORD,dwContinueStatus:DWORD|BOOL
+ControlCallback,RequestCode:WMIDPREQUESTCODE,Context:Any Ptr,*Reserved:ULONG,Buffer:Any Ptr|ULONG
+ControlService,hService:SC_HANDLE,dwControl:DWORD,lpServiceStatus:LPSERVICE_STATUS|BOOL
+ControlServiceEx,hService:SC_HANDLE,dwControl:DWORD,dwInfoLevel:DWORD,pControlParams:Any Ptr|BOOL
+ControlTrace,SessionHandle:TRACEHANDLE,SessionName:LPCTSTR,Properties:PEVENT_TRACE_PROPERTIES,ControlCode:ULONG|ULONG
+ConvertColorNameToIndex,hProfile:HPROFILE,paColorName:PCOLOR_NAME,paIndex:PDWORD,dwCount:DWORD|BOOL
+ConvertDefaultLocale,Locale:LCID|LCID
+ConvertFiberToThread|BOOL
+ConvertIndexToColorName,hProfile:HPROFILE,paIndex:PDWORD,paColorName:PCOLOR_NAME,dwCount:DWORD|BOOL
+ConvertSecurityDescriptorToStringSecurityDescriptor,SecurityDescriptor:PSECURITY_DESCRIPTOR,RequestedStringSDRevision:DWORD,SecurityInformation:SECURITY_INFORMATION,StringSecurityDescriptor:LPTSTR Ptr,StringSecurityDescriptorLen:PULONG|BOOL
+ConvertSidToStringSid,Sid:PSID,StringSid:LPTSTR Ptr|BOOL
+ConvertStringSecurityDescriptorToSecurityDescriptor,StringSecurityDescriptor:LPCTSTR,StringSDRevision:DWORD,SecurityDescriptor:PSECURITY_DESCRIPTOR Ptr,SecurityDescriptorSize:PULONG|BOOL
+ConvertStringSidToSid,StringSid:LPCTSTR,Sid:PSID Ptr|BOOL
+ConvertThreadToFiber,lpParameter:LPVOID|LPVOID
+ConvertThreadToFiberEx,lpParameter:LPVOID,dwFlags:DWORD|LPVOID
+ConvertToAutoInheritPrivateObjectSecurity,ParentDescriptor:PSECURITY_DESCRIPTOR,CurrentSecurityDescriptor:PSECURITY_DESCRIPTOR,NewSecurityDescriptor:PSECURITY_DESCRIPTOR Ptr,ObjectType:GUID Ptr,IsDirectoryObject:BOOLEAN,GenericMapping:PGENERIC_MAPPING|BOOL
+CopyAcceleratorTable,hAccelSrc:HACCEL,lpAccelDst:LPACCEL,cAccelEntries:Integer|Integer
+CopyBindInfo,pcbiSrc:BINDINFO Ptr,pcbiDest:BINDINFO Ptr|HRESULT
+CopyCursor,pcur:HCURSOR|HCURSOR
+CopyEnhMetaFile,hemfSrc:HENHMETAFILE,lpszFile:LPCTSTR|HENHMETAFILE
+CopyFile,lpExistingFileNameLPCTSTR,lpNewFileNameLPCTSTR,bFailIfExists:BOOL|BOOL
+CopyFileEx,lpExistingFileName:LPCTSTR,lpNewFileName:LPCTSTR,lpProgressRoutine:LPPROGRESS_ROUTINE,lpData:LPVOID,pbCancel:LPBOOL,dwCopyFlags:DWORD|BOOL
+CopyIcon,hIcon:HICON|HICON
+CopyImage,hImage:HANDLE,uType:UINT,cxDesired:Integer,cyDesired:Integer,fuFlags:UINT|HANDLE
+CopyMemory,Destination:Any Ptr,Source:Any Ptr,Length:Integer
+CopyMetaFile,hmfSrc:HMETAFILE,lpszFile:LPCTSTR|HMETAFILE
+CopyProgressRoutine,TotalFileSize:LARGE_INTEGER,TotalBytesTransferred:LARGE_INTEGER,StreamSize:LARGE_INTEGER,StreamBytesTransferred:LARGE_INTEGER,dwStreamNumber:DWORD,dwCallbackReason:DWORD,hSourceFile:HANDLE,hDestinationFile:HANDLE,lpData:LPVOID|DWORD
+CopyRect,lprcDst:LPRECT,lprcSrc:LPCRECT|BOOL
+CopySid,nDestinationSidLength:DWORD,pDestinationSid:PSID,pSourceSid:PSID|BOOL
+CopyStgMedium,pcstgmedSrc:STGMEDIUM Ptr,pstgmedDest:STGMEDIUM Ptr|HRESULT
+CoQueryAuthenticationServices,pcAuthSvc:DWORD Ptr,Ptr asAuthSvc:SOLE_AUTHENTICATION_SERVICE Ptr|HRESULT
+CoQueryClientBlanket,pAuthnSvc:DWORD Ptr,pAuthzSvc:DWORD Ptr,pServerPrincName:OLECHAR Ptr Ptr,pAuthnLevel:DWORD Ptr,pImpLevel:DWORD Ptr,pPrivs:RPC_AUTHZ_HANDLE Ptr,pCapabilities:DWORD Ptr|HRESULT
+CoQueryProxyBlanket,pProxy:IUnknown Ptr,pAuthnSvc:DWORD Ptr,pAuthzSvc:DWORD Ptr,pServerPrincName:OLECHAR Ptr Ptr,pAuthnLevel:DWORD Ptr,pImpLevel:DWORD Ptr,ppAuthInfo:RPC_AUTH_IDENTITY_HANDLE Ptr,pCapabilities:DWORD Ptr|HRESULT
+CoRegisterClassObject,rclsid:CLSID Ptr,pUnk:IUnknown Ptr,dwClsContext:DWORD,flags:DWORD,lpdwRegister:LPDWORD|HRESULT
+CoRegisterMallocSpy,pMallocSpy:LPMALLOCSPY|HRESULT
+CoRegisterMessageFilter,lpMessageFilter:LPMESSAGEFILTER,lplpMessageFilter:LPMESSAGEFILTER Ptr|HRESULT
+CoRegisterPSClsid,riid:IID Ptr,rclsid:REFCLSID|HRESULT
+CoRegisterSurrogate,pSurrogate:ISurrogate Ptr|HRESULT
+CoReleaseMarshalData,pStm:IStream Ptr|HRESULT
+CoReleaseServerProcess|ULONG
+CorePrinterDriverInstalled,pszServer:LPCTSTR,pszEnvironment:LPCTSTR,CoreDriverGUID:GUID,ftDriverDate:FILETIME,dwlDriverVersion:DWORDLONG,pbDriverInstalled:BOOL Ptr|HRESULT
+CoResumeClassObjects|HRESULT
+CoRevertToSelf|HRESULT
+CoRevokeClassObject,dwRegister:DWORD|HRESULT
+CoRevokeMallocSpy|HRESULT
+CoSetCancelObject,pUnk:IUnknown Ptr|HRESULT
+CoSetProxyBlanket,pProxy:IUnknown Ptr,dwAuthnSvc:DWORD,dwAuthzSvc:DWORD,pServerPrincName:WCHAR Ptr,dwAuthnLevel:DWORD,dwImpLevel:DWORD,pAuthInfo:RPC_AUTH_IDENTITY_HANDLE,dwCapabilities:DWORD|HRESULT
+CoSuspendClassObjects|HRESULT
+CoSwitchCallContext,pNewObject:IUnknown Ptr,ppOldObject:IUnknown Ptr Ptr|HRESULT
+CoTaskMemAlloc,cb:ULONG|LPVOID
+CoTaskMemFree,pv:Any Ptr
+CoTaskMemRealloc,pv:LPVOID,cb:ULONG|LPVOID
+CoTestCancel|HRESULT
+CoTreatAsClass,clsidOld:REFCLSID,clsidNew:REFCLSID|HRESULT
+CoUninitialize
+CoUnmarshalHresult,pStm:LPSTREAM,phresult:HRESULT Ptr|HRESULT
+CoUnmarshalInterface,pStm:IStream Ptr,riid:IID Ptr,ppv:Any Ptr Ptr|HRESULT
+CountClipboardFormats|Integer
+CounterPathCallBack,dwArg:DWORD_PTR|PDH_STATUS
+CoWaitForMultipleHandles,dwFlags:DWORD,dwTimeout:DWORD,cHandles:ULONG,pHandles:LPHANDLE,lpdwindex:LPDWORD|HRESULT
+CreateAcceleratorTable,lpaccl:LPACCEL,cEntries:Integer|HACCEL
+CreateAntiMoniker,ppmk:LPMONIKER Ptr|HRESULT
+CreateAsyncBindCtx,dwReserved:DWORD,pbsc:IBindStatusCallback Ptr,penumfmtetc:IEnumFORMATETC Ptr,ppbc:IBindCtx Ptr Ptr|HRESULT
+CreateAsyncBindCtxEx,pbc:IBindCtx Ptr,dwOptions:DWORD,pBSCb:IBindStatusCallback Ptr,pEnum:IEnumFORMATETC Ptr,ppBC:IBindCtx Ptr Ptr,reserved:DWORD|HRESULT
+CreateBindCtx,reserved:DWORD,ppbc:LPBC Ptr|HRESULT
+CreateBitmap,nWidth:Integer,nHeight:Integer,cPlanes:UINT,cBitsPerPel:UINT,lpvBits:PCVOID|HBITMAP
+CreateBitmapIndirect,lpbm:BITMAP Ptr|HBITMAP
+CreateBlob,phBlob:HBLOB Ptr|DWORD
+CreateBoundaryDescriptor,NameLPCTSTR,Flags:ULONG|HANDLE
+CreateBrushIndirect,lplb:LOGBRUSH Ptr|HBRUSH
+CreateCaret,hWnd:HWND,hBitmap:HBITMAP,nWidth:Integer,nHeight:Integer|BOOL
+CreateClassMoniker,rclsid:CLSID Ptr,ppmk:IMoniker Ptr Ptr|HRESULT
+CreateClusterGroup,hCluster:HCLUSTER,lpszGroupName:LPCWSTR|HGROUP
+CreateClusterNotifyPort,hChange:HCHANGE,hCluster:HCLUSTER,dwFilter:DWORD,dwNotifyKey:DWORD Ptr|HCHANGE
+CreateClusterResource,hGroup:HGROUP,lpszResourceName:LPCWSTR,lpszResourceType:LPCWSTR,dwFlags:DWORD|HRESOURCE
+CreateClusterResourceType,hCluster:HCLUSTER,lpszResourceTypeName:LPCWSTR,lpszDisplayName:LPCWSTR,lpszResourceTypeDll:LPCWSTR,dwLooksAlivePollInterval:DWORD,dwIsAlivePollInterval:DWORD|DWORD
+CreateColorSpace,lpLogColorSpace:LPLOGCOLORSPACE|HCOLORSPACE
+CreateColorTransform,pLogColorSpace:LPLOGCOLORSPACE,hDestProfile:HPROFILE,hTargetProfile:HPROFILE,dwFlags:DWORD|HTRANSFORM
+CreateCompatibleBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
+CreateCompatibleDC,hdc:HDC|HDC
+CreateConsoleScreenBuffer,dwDesiredAccess:DWORD,dwShareMode:DWORD,*lpSecurityAttributes:SECURITY_ATTRIBUTES,dwFlags:DWORD,lpScreenBufferData:LPVOID|HANDLE
+CreateCursor,hInst:HINSTANCE,xHotSpot:Integer,yHotSpot:Integer,nWidth:Integer,nHeight:Integer,pvANDPlane:PCVOID,pvXORPlane:PCVOID|HCURSOR
+CreateDataAdviseHolder,ppDAHolder:IDataAdviseHolder Ptr Ptr|HRESULT
+CreateDataCache,pUnkOuter:LPUNKNOWN,rclsid:CLSID Ptr,riid:IID Ptr,ppvObj:LPVOID Ptr|HRESULT
+CreateDC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpInitData:DEVMODE|HDC
+CreateDesktop,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HDESK
+CreateDesktopEx,lpszDesktop:LPCTSTR,lpszDevice:LPCTSTR,pDevmode:LPDEVMODE,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES,ulHeapSize:ULONG,pvoid:PVOID|HDESK
+CreateDeviceLinkProfile,pahProfiles:PHPROFILE,nProfiles:DWORD,padwIntent:PDWORD,nIntents:DWORD,dwFlags:DWORD,pProfileData:PBYTE Ptr,indexPreferredCMM:DWORD|BOOL
+CreateDialogIndirectParam(hInstance:HINSTANCE,lpTemplate:LPCDLGTEMPLATE,hWndParent:HWND,lpDialogFunc:DLGPROC,lParamInit:LPARAM|HWND
+CreateDialogParam,hInstance:HINSTANCE,lpTemplateName:LPCTSTR,hWndParent:HWND,lpDialogFunc:DLGPROC,dwInitParam:LPARAM|HWND
+CreateDIBitmap,hdc:HDC,*lpbmih:BITMAPINFOHEADER,fdwInit:DWORD,*lpbInit:VOID,*lpbmi:BITMAPINFO,fuUsage:UINT|HBITMAP
+CreateDIBPatternBrush,hglbDIBPacked:HGLOBAL,fuColorSpec:UINT|HBRUSH
+CreateDIBPatternBrushPt,lpPackedDIB:PCVOID,iUsage:UINT|HBRUSH
+CreateDIBSection,hdc:HDC,pbmi:BITMAPINFO Ptr,iUsage:UINT,ppvBits:Any Ptr Ptr,hSection:HANDLE,dwOffset:DWORD|HBITMAP
+CreateDirectory,lpPathName:LPCTSTR,lpSecurityAttributes,LPSECURITY_ATTRIBUTES|BOOL
+CreateDirectoryEx,lpTemplateDirectory:LPCTSTR,lpNewDirectory:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
+CreateDiscardableBitmap,hdc:HDC,nWidth:Integer,nHeight:Integer|HBITMAP
+CreateDispTypeInfo,pidata:INTERFACEDATA,lcid:LCID,pptinfo:ITypeInfo Ptr Ptr|HRESULT
+CreateEditableStream,ppsEditable:PAVISTREAM Ptr,psSource:PAVISTREAM|HRESULT
+CreateEllipticRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
+CreateEllipticRgnIndirect,lprc:LPCRECT|HRGN
+CreateEnhMetaFile,hdcRef:HDC,lpFilename:LPCTSTR,*lpRect:RECT,lpDescription:LPCTSTR|HDC
+CreateEnvironmentBlock,lpEnvironment:LPVOID Ptr,hToken:HANDLE,bInherit:BOOL|BOOL
+CreateErrorInfo,pperrinfo:ICreateErrorInfo Ptr Ptr|HRESULT
+CreateEvent,lpEventAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,bInitialState:BOOL,lpName:LPCTSTR|HANDLE
+CreateEventEx,lpEventAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateFiber,dwStackSize:SIZE_T,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
+CreateFiberEx,dwStackCommitSize:SIZE_T,dwStackReserveSize:SIZE_T,dwFlags:DWORD,lpStartAddress:LPFIBER_START_ROUTINE,lpParameter:LPVOID|LPVOID
+CreateFile,lpFileName:LPCTSTR,dwDesiredAccess:DWORD,dwShareMode:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,dwCreationDisposition:DWORD,dwFlagsAndAttributes:DWORD,hTemplateFile:HANDLE|HANDLE
+CreateFileMapping,hFile:HANDLE,lpAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR|HANDLE
+CreateFileMappingNuma,hFile:HANDLE,lpFileMappingAttributes:LPSECURITY_ATTRIBUTES,flProtect:DWORD,dwMaximumSizeHigh:DWORD,dwMaximumSizeLow:DWORD,lpName:LPCTSTR,nndPreferred:DWORD|HANDLE
+CreateFileMoniker,lpszPathName:LPCOLESTR,ppmk:LPMONIKER Ptr|HRESULT
+CreateFont,nHeight:Integer,nWidth:Integer,nEscapement:Integer,nOrientation:Integer,fnWeight:Integer,fdwItalic:DWORD,fdwUnderline:DWORD,fdwStrikeOut:DWORD,fdwCharSet:DWORD,fdwOutputPrecision:DWORD,fdwClipPrecision:DWORD,fdwQuality:DWORD,fdwPitchAndFamily:DWORD,lpszFace:LPCTSTR|HFONT
+CreateFontIndirect,lplf:LOGFONT Ptr|HFONT
+CreateFontIndirectEx,penumlfex:ENUMLOGFONTEXDV Ptr|HFONT
+CreateFormatEnumerator,cfmtetc:UINT,rgfmtetc:FORMATETC Ptr,ppenumfmtetc:IpenumFORMATETC Ptr Ptr|HRESULT
+CreateGenericComposite,pmkFirst:LPMONIKER,pmkRest:LPMONIKER,ppmkComposite:LPMONIKER Ptr|HRESULT
+CreateGPOLink,lpGPO:LPOLESTR,lpContainer:LPOLESTR,fHighPriority:BOOL|HRESULT
+CreateHalftonePalette,hdc:HDC|HPALETTE
+CreateHardLink,lpFileName:LPCTSTR,lpExistingFileName:LPCTSTR,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|BOOL
+CreateHatchBrush,Integer fnStyle:,clrref:COLORREF|HBRUSH
+CreateHTMLPropertyPage,pmk:IMoniker Ptr,ppPP:IPropertyPage Ptr Ptr|HRESULT
+CreateIC,lpszDriver:LPCTSTR,lpszDevice:LPCTSTR,lpszOutput:LPCTSTR,*lpdvmInit:DEVMODE|HDC
+CreateIcon,hInstance:HINSTANCE,nWidth:Integer,nHeight:Integer,cPlanes:BYTE,cBitsPixel:BYTE,*lpbANDbits:BYTE,*lpbXORbits:BYTE|HICON
+CreateIconFromResource,presbits:PBYTE,dwResSize:DWORD,fIcon:BOOL,dwVer:DWORD|HICON
+CreateIconFromResourceEx,pbIconBits:PBYTE,cbIconBits:DWORD,fIcon:BOOL,dwVersion:DWORD,cxDesired:Integer,cyDesired:Integer,uFlags:UINT|HICON
+CreateIconIndirect,piconinfo:PICONINFO|HICON
+CreateILockBytesOnHGlobal,hGlobal:HGLOBAL,fDeleteOnRelease:BOOL,ppLkbyt:ILockBytes Ptr Ptr|HRESULT
+CreateInstance,pUnkOuter:IUnknown Ptr,riid:IID Ptr,ppvObj:Any Ptr Ptr|HRESULT
+CreateIoCompletionPort,FileHandle:HANDLE,ExistingCompletionPort:HANDLE,CompletionKey:ULONG_PTR,NumberOfConcurrentThreads:DWORD|HANDLE
+CreateIpForwardEntry(pRoute:PMIB_IPFORWARDROW|DWORD
+CreateIpNetEntry,pArpEntry:PMIB_IPNETROW|DWORD
+CreateIpNetEntry2,Row:MIB_IPNET_ROW2 Ptr|NETIOAPI_API
+CreateItemMoniker,lpszDelim:LPCOLESTR,lpszItem:LPCOLESTR,ppmk:LPMONIKER Ptr|HRESULT
+CreateJobObject,lpJobAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR|HANDLE
+CreateMailslot,lpName:LPCTSTR,nMaxMessageSize:DWORD,lReadTimeout:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
+CreateMappedBitmap,hInstance:HINSTANCE,idBitmap:Integer Ptr,wFlags:UINT,lpColorMap:LPCOLORMAP,iNumMaps:Integer|HBITMAP
+CreateMDIWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,X:Integer,Y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hInstance:HINSTANCE,lParam:LPARAM|HWND
+CreateMenu|HMENU
+CreateMetaFile,lpszFile:LPCTSTR|HDC
+CreateMultiProfileTransform,pahProfiles:PHPROFILE,nProfiles:DWORD,padwIntent:PDWORD,nIntents:DWORD,dwFlags:DWORD,indexPreferredCMM:DWORD|HTRANSFORM
+CreateMutex,lpMutexAttributes:LPSECURITY_ATTRIBUTES,bInitialOwner:BOOL,lpName:LPCTSTR|HANDLE
+CreateMutexEx,lpMutexAttributes:LPSECURITY_ATTRIBUTES,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateNamedPipe,lpName:LPCTSTR,dwOpenMode:DWORD,dwPipeMode:DWORD,nMaxInstances:DWORD,nOutBufferSize:DWORD,nInBufferSize:DWORD,nDefaultTimeOut:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|HANDLE
+CreateNPPInterface,hBlob:HBLOB,iid:REFIID,ppvObject:Any Ptr Ptr|DWORD
+CreateNtmsMedia,hSession:HANDLE,lpMedia:LPNTMS_OBJECTINFORMATION,lpList:LPNTMS_OBJECTINFORMATION,dwOptions:DWORD|DWORD
+CreateNtmsMediaPool,hSession:HANDLE,lpPoolName:LPCTSTR,lpMediaType:LPNTMS_GUID,dwAction:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES,lpPoolId:LPNTMS_GUID|DWORD
+CreateObjrefMoniker,pUnk:LPUNKNOWN,ppMk:LPMONIKER Ptr|HRESULT
+CreateOleAdviseHolder,ppOAHolder:LPOLEADVISEHOLDER Ptr|HRESULT
+CreatePalette,lplgpl:LOGPALETTE Ptr|HPALETTE
+CreatePatternBrush,hbmp:HBITMAP|HBRUSH
+CreatePen,fnPenStyle:Integer,nWidth:Integer,crColor:COLORREF|HPEN
+CreatePenIndirect,*lplgpn:LOGPEN|HPEN
+CreatePipe,hReadPipe:PHANDLE,hWritePipe:PHANDLE,lpPipeAttributes:LPSECURITY_ATTRIBUTES,nSize:DWORD|BOOL
+CreatePointerMoniker,punk:LPUNKNOWN,ppmk:LPMONIKER Ptr|HRESULT
+CreatePolygonRgn,lppt:POINT Ptr,cPoints:Integer,fnPolyFillMode:Integer|HRGN
+CreatePolyPolygonRgn,lppt:POINT Ptr,lpPolyCounts:INT_ Ptr,nCount:Integer,fnPolyFillMode:Integer|HRGN
+CreatePopupMenu|HMENU
+CreatePrivateNamespace,lpPrivateNamespaceAttributes:LPSECURITY_ATTRIBUTES,lpBoundaryDescriptor:LPVOID,lpAliasPrefix:LPCTSTR|HANDLE
+CreatePrivateObjectSecurity,ParentDescriptor:PSECURITY_DESCRIPTOR,CreatorDescriptor:PSECURITY_DESCRIPTOR,NewDescriptor:PSECURITY_DESCRIPTOR Ptr,IsDirectoryObject:BOOL,Token:HANDLE,GenericMapping:PGENERIC_MAPPING|BOOL
+CreatePrivateObjectSecurityEx,ParentDescriptor:PSECURITY_DESCRIPTOR,CreatorDescriptor:PSECURITY_DESCRIPTOR,NewDescriptor:PSECURITY_DESCRIPTOR Ptr,ObjectType:GUID Ptr,IsContainerObject:BOOL,AutoInheritFlags:ULONG,Token:HANDLE,GenericMapping:PGENERIC_MAPPING|BOOL
+CreatePrivateObjectSecurityWithMultipleInheritance,ParentDescriptor:PSECURITY_DESCRIPTOR,CreatorDescriptor:PSECURITY_DESCRIPTOR,NewDescriptor:PSECURITY_DESCRIPTOR Ptr,ObjectTypes:GUID Ptr Ptr,GuidCount:ULONG,IsContainerObject:BOOL,AutoInheritFlags:ULONG,Token:HANDLE,GenericMapping:PGENERIC_MAPPING|BOOL
+CreateProcess,lpApplicationName:LPCTSTR,lpCommandLine:LPTSTR,lpProcessAttributes:LPSECURITY_ATTRIBUTES,lpThreadAttributes:LPSECURITY_ATTRIBUTES,bInheritHandles:BOOL,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCTSTR,lpStartupInfo:LPSTARTUPINFO,lpProcessInformation:LPPROCESS_INFORMATION|BOOL
+CreateProcessAsUser,hToken:HANDLE,lpApplicationName:LPCTSTR,lpCommandLine:LPTSTR,lpProcessAttributes:LPSECURITY_ATTRIBUTES,lpThreadAttributes:LPSECURITY_ATTRIBUTES,bInheritHandles:BOOL,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCTSTR,lpStartupInfo:LPSTARTUPINFO,lpProcessInformation:LPPROCESS_INFORMATION|BOOL
+CreateProcessWithLogonW,lpUsername:LPCWSTR,lpDomain:LPCWSTR,lpPassword:LPCWSTR,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
+CreateProcessWithTokenW,hToken:HANDLE,dwLogonFlags:DWORD,lpApplicationName:LPCWSTR,lpCommandLine:LPWSTR,dwCreationFlags:DWORD,lpEnvironment:LPVOID,lpCurrentDirectory:LPCWSTR,lpStartupInfo:LPSTARTUPINFOW,lpProcessInfo:LPPROCESS_INFORMATION|BOOL
+CreateProfileFromLogColorSpace,pLogColorSpace:LPLOGCOLORSPACE,pBuffer:PBYTE Ptr|BOOL
+CreatePropertySheetPage,lppsp:LPCPROPSHEETPAGE|HPROPSHEETPAGE
+CreateProxyArpEntry,dwAddress:DWORD,dwMask:DWORD,dwIfIndex:DWORD|DWORD
+CreateRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer|HRGN
+CreateRectRgnIndirect,lprc:LPRECT|HRGN
+CreateRemoteThread,hProcess:HANDLE,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:PDWORD|HANDLE
+CreateRestrictedToken,ExistingTokenHandle:HANDLE,Flags:DWORD,DisableSidCount:DWORD,SidsToDisable:PSID_AND_ATTRIBUTES,DeletePrivilegeCount:DWORD,PrivilegesToDelete:PLUID_AND_ATTRIBUTES,RestrictedSidCount:DWORD,SidsToRestrict:PSID_AND_ATTRIBUTES,NewTokenHandle:PHANDLE|BOOL
+CreateRoundRectRgn,nLeftRect:Integer,nTopRect:Integer,nRightRect:Integer,nBottomRect:Integer,nWidthEllipse:Integer,nHeightEllipse:Integer|HRGN
+CreateScalableFontResource,fdwHidden:DWORD,lpszFontRes:LPCTSTR,lpszFontFile:LPCTSTR,lpszCurrentPath:LPCTSTR|BOOL
+CreateSecurityPage,psi:LPSECURITYINFO|HPROPSHEETPAGE
+CreateSemaphore,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR|HANDLE
+CreateSemaphoreEx,lpSemaphoreAttributes:LPSECURITY_ATTRIBUTES,lInitialCount:LONG,lMaximumCount:LONG,lpName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateService,hSCManager:SC_HANDLE,lpServiceName:LPCTSTR,lpDisplayName:LPCTSTR,dwDesiredAccess:DWORD,dwServiceType:DWORD,dwStartType:DWORD,dwErrorControl:DWORD,lpBinaryPathName:LPCTSTR,lpLoadOrderGroup:LPCTSTR,lpdwTagId:PDWORD,lpDependencies:LPCTSTR,lpServiceStartName:LPCTSTR,lpPassword:LPCTSTR|SC_HANDLE
+CreateSolidBrush,crColor:COLORREF|HBRUSH
+CreateStatusWindow,style:LONG,lpszText:LPCTSTR,hwndParent:HWND,wID:UINT|HWND
+CreateStdAccessibleObject,hwnd:HWND,idObject:LONG,riidInterface:IID Ptr,Ptr ppvObject:Any Ptr|HRESULT
+CreateStdAccessibleProxy,hwnd:HWND,pszClassName:LPCTSTR,idObject:LONG,riidInterface:IID Ptr,ppvObject:Any Ptr Ptr|HRESULT
+CreateStdDispatch,punkOuter:IUnknown Ptr,pvThis:Any Ptr,ptinfo:ITypeInfo Ptr,ppunkStdDisp:IUnknown Ptr Ptr|HRESULT
+CreateStreamOnHGlobal,hGlobal:HGLOBAL,fDeleteOnRelease:BOOL,ppstm:LPSTREAM Ptr|HRESULT
+CreateSymbolicLink,lpSymlinkFileName:LPCWSTR,lpTargetFileName:LPCWSTR,dwFlags:DWORD|BOOL
+CreateTable,lpInterface:LPCIID,lpAllocateBuffer:ALLOCATEBUFFER Ptr,lpAllocateMore:ALLOCATEMORE Ptr,lpFreeBuffer:FREEBUFFER Ptr,lpvReserved:LPVOID,ulTableType:ULONG,ulPropTagIndexColumn:ULONG,lpSPropTagArrayColumns:LPSPropTagArray,lppTableData:LPTABLEDATA Ptr|SCODE
+CreateTapePartition,hDevice:HANDLE,dwPartitionMethod:DWORD,dwCount:DWORD,dwSize:DWORD|DWORD
+CreateTextServices,punkOuter:IUnknown Ptr,pITextHost:ITextHost Ptr,ppUnk:IUnknown Ptr Ptr|HRESULT
+CreateThread,lpThreadAttributes:LPSECURITY_ATTRIBUTES,dwStackSize:SIZE_T,lpStartAddress:LPTHREAD_START_ROUTINE,lpParameter:LPVOID,dwCreationFlags:DWORD,lpThreadId:PDWORD|HANDLE
+CreateThreadpool,reserved:PVOID|PTP_POOL
+CreateThreadpoolCleanupGroup|PTP_CLEANUP_GROUP
+CreateThreadpoolIo,fl:HANDLE,pfnio:PTP_WIN32_IO_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_IO
+CreateThreadpoolTimer,pfnti:PTP_TIMER_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_TIMER
+CreateThreadpoolWait,pfnwa:PTP_WAIT_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WAIT
+CreateThreadpoolWork,pfnwk:PTP_WORK_CALLBACK,pv:PVOID,pcbe:PTP_CALLBACK_ENVIRON|PTP_WORK
+CreateTimerQueueTimer,phNewTimer:PHANDLE,TimerQueue:HANDLE,Callback:WAITORTIMERCALLBACK,Parameter:PVOID,DueTime:DWORD,Period:DWORD,Flags:ULONG|BOOL
+CreateTimerQueue|HANDLE
+CreateToolbarEx,hwnd:HWND,ws:DWORD,wID:UINT,nBitmaps:Integer,hBMInst:HINSTANCE,wBMID:UINT,lpButtons:LPCTBBUTTON,iNumButtons:Integer,dxButton:Integer,dyButton:Integer,dxBitmap:Integer,dyBitmap:Integer,uStructSize:UINT|HWND
+CreateToolhelp32Snapshot,dwFlags:DWORD,th32ProcessID:DWORD|HANDLE
+CreateTraceInstanceId,RegHandle:HANDLE,pInstInfo:PEVENT_INSTANCE_INFO|ULONG
+CreateTypeLib,syskind:SYSKIND,szFile:OLECHAR Ptr,ppctlib:ICreateTypeLib Ptr Ptr|HRESULT
+CreateTypeLib2,syskind:SYSKIND,szFile:LPOLESTR,ppctlib:ICreateTypeLib2 Ptr Ptr|HRESULT
+CreateUpDownControl,dwStyle:DWORD,x:Integer,y:Integer,cx:Integer,cy:Integer,hParent:HWND,nID:Integer,hInst:HINSTANCE,hBuddy:HWND,nUpper:Integer,nLower:Integer,nPos:Integer|HWND
+CreateUrlCacheEntry,lpszUrlName:LPCTSTR,dwExpectedFileSize:DWORD,lpszFileExtension:LPCTSTR,lpszFileName:LPTSTR,dwReserved:DWORD|BOOLAPI
+CreateUrlCacheGroup,dwFlags:DWORD,lpReserved:LPVOID|GROUPID
+CreateURLMoniker,pmkContext:IMoniker Ptr,szURL:LPWSTR,ppmk:IMoniker Ptr Ptr|HRESULT
+CreateURLMonikerEx,pMkCtx:LPMONIKER,szURL:LPCWSTR,ppmk:LPMONIKER Ptr,dwFlags:DWORD|HRESULT
+CreateURLMonikerEx2,pMkCtx:LPMONIKER,pUri:IUri Ptr,ppmk:LPMONIKER Ptr,dwFlags:DWORD|HRESULT
+CreateWaitableTimer,lpTimerAttributes:LPSECURITY_ATTRIBUTES,bManualReset:BOOL,lpTimerName:LPCTSTR|HANDLE
+CreateWaitableTimerEx,lpTimerAttributes:LPSECURITY_ATTRIBUTES,lpTimerName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateWaitableTimerEx,lpTimerAttributes:LPSECURITY_ATTRIBUTES,lpTimerName:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:DWORD|HANDLE
+CreateWebPage,pRootStm:IStream Ptr,pOptions:LPWEBPAGEOPTIONS,pCallback:IMimeMessageCallback Ptr,ppMoniker:IMoniker Ptr Ptr|HRESULT
+CreateWellKnownSid,WellKnownSidType:WELL_KNOWN_SID_TYPE,DomainSid:PSID,pSid:PSID,cbSid:DWORD Ptr|BOOL
+CreateWindow,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
+CreateWindowEx,dwExStyle:DWORD,lpClassName:LPCTSTR,lpWindowName:LPCTSTR,dwStyle:DWORD,x:Integer,y:Integer,nWidth:Integer,nHeight:Integer,hWndParent:HWND,hMenu:HMENU,hInstance:HINSTANCE,lpParam:LPVOID|HWND
+CreateWindowStation,lpwinsta:LPCTSTR,dwFlags:DWORD,dwDesiredAccess:ACCESS_MASK,lpsa:LPSECURITY_ATTRIBUTES|HWINSTA
+CryptAcquireCertificatePrivateKey,pCert:PCCERT_CONTEXT,dwFlags:DWORD,pvReserved:Any Ptr,phCryptProvOrNCryptKey:HCRYPTPROV_OR_NCRYPT_KEY_HANDLE Ptr,pdwKeySpec:DWORD Ptr,pfCallerFreeProvOrNCryptKey:BOOL Ptr|BOOL
+CryptAcquireContext,phProv:HCRYPTPROV Ptr,pszContainer:LPCTSTR,pszProvider:LPCTSTR,dwProvType:DWORD,dwFlags:DWORD|BOOL
+CryptCATOpen,pwszFileName:LPWSTR,fdwOpenFlags:DWORD,hProv:HCRYPTPROV,dwPublicVersion:DWORD,dwEncodingType:DWORD|HANDLE
+CryptContextAddRef,hProv:HCRYPTPROV,pdwReserved:DWORD Ptr,dwFlags:DWORD|BOOL
+CryptCreateHash,hProv:HCRYPTPROV,Algid:ALG_ID,hKey:HCRYPTKEY,dwFlags:DWORD,phHash:HCRYPTHASH Ptr|BOOL
+CryptCreateKeyIdentifierFromCSP,dwCertEncodingType:DWORD,pszPubKeyOID:LPCSTR,pPubKeyStruc:PUBLICKEYSTRUC Ptr,cbPubKeyStruc:DWORD,dwFlags:DWORD,pvReserved:Any Ptr,pbHash:UBYTE Ptr,pcbHash:DWORD Ptr|BOOL
+CryptDecodeMessage,dwMsgTypeFlags:DWORD,pDecryptPara:PCRYPT_DECRYPT_MESSAGE_PARA,pVerifyPara:PCRYPT_VERIFY_MESSAGE_PARA,dwSignerIndex:DWORD,pbEncodedBlob:UBYTE Ptr,cbEncodedBlob:DWORD,dwPrevInnerContentType:DWORD,pdwMsgType:DWORD Ptr,pdwInnerContentType:DWORD Ptr,pbDecoded:UBYTE Ptr,pcbDecoded:DWORD Ptr,ppXchgCert:PCCERT_CONTEXT Ptr,ppSignerCert:PCCERT_CONTEXT Ptr|BOOL
+CryptDecodeObject,dwCertEncodingType:DWORD,lpszStructType:LPCSTR,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,dwFlags:DWORD,pvStructInfo:Any Ptr,pcbStructInfo:DWORD Ptr|BOOL
+CryptDecodeObjectEx,dwCertEncodingType:DWORD,lpszStructType:LPCSTR,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,dwFlags:DWORD,pDecodePara:PCRYPT_DECODE_PARA,pvStructInfo:Any Ptr,pcbStructInfo:DWORD Ptr|BOOL
+CryptDecrypt,hKey:HCRYPTKEY,hHash:HCRYPTHASH,Final:BOOL,dwFlags:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr|BOOL
+CryptDecryptAndVerifyMessageSignature,pDecryptPara:PCRYPT_DECRYPT_MESSAGE_PARA,pVerifyPara:PCRYPT_VERIFY_MESSAGE_PARA,dwSignerIndex:DWORD,pbEncryptedBlob:UBYTE Ptr,cbEncryptedBlob:DWORD,pbDecrypted:UBYTE Ptr,pcbDecrypted:DWORD Ptr,ppXchgCert:PCCERT_CONTEXT Ptr,ppSignerCert:PCCERT_CONTEXT Ptr|BOOL
+CryptDecryptMessage,pDecryptPara:PCRYPT_DECRYPT_MESSAGE_PARA,pbEncryptedBlob:UBYTE Ptr,cbEncryptedBlob:DWORD,pbDecrypted:UBYTE Ptr,pcbDecrypted:DWORD Ptr,ppXchgCert:PCCERT_CONTEXT Ptr|BOOL
+CryptDeriveKey,hProv:HCRYPTPROV,Algid:ALG_ID,hBaseData:HCRYPTHASH,dwFlags:DWORD,phKey:HCRYPTKEY Ptr|BOOL
+CryptDestroyHash,hHash:HCRYPTHASH|BOOL
+CryptDestroyKey,hKey:HCRYPTKEY|BOOL
+CryptDuplicateHash,hHash:HCRYPTHASH,pdwReserved:DWORD Ptr,dwFlags:DWORD,phHash:HCRYPTHASH Ptr|BOOL
+CryptDuplicateKey,hKey:HCRYPTKEY,pdwReserved:DWORD Ptr,dwFlags:DWORD,phKey:HCRYPTKEY Ptr|BOOL
+CryptEncodeObject,dwCertEncodingType:DWORD,lpszStructType:LPCSTR,pvStructInfo:Any Ptr,pbEncoded:UBYTE Ptr,pcbEncoded:DWORD Ptr|BOOL
+CryptEncodeObjectEx,dwCertEncodingType:DWORD,lpszStructType:LPCSTR,pvStructInfo:Any Ptr,dwFlags:DWORD,pEncodePara:PCRYPT_ENCODE_PARA,pvEncoded:Any Ptr,pcbEncoded:DWORD Ptr|BOOL
+CryptEncrypt,hKey:HCRYPTKEY,hHash:HCRYPTHASH,Final:BOOL,dwFlags:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr,dwBufLen:DWORD|BOOL
+CryptEncryptMessage,pEncryptPara:PCRYPT_ENCRYPT_MESSAGE_PARA,cRecipientCert:DWORD,rgpRecipientCert:PCCERT_CONTEXT Ptr,pbToBeEncrypted:UBYTE Ptr,cbToBeEncrypted:DWORD,pbEncryptedBlob:UBYTE Ptr,pcbEncryptedBlob:DWORD Ptr|BOOL
+CryptEnumKeyIdentifierProperties,pKeyIdentifier:CRYPT_HASH_BLOB Ptr,dwPropId:DWORD,dwFlags:DWORD,pwszComputerName:LPCWSTR,pvReserved:Any Ptr,pvArg:Any Ptr,pfnEnum:PFN_CRYPT_ENUM_KEYID_PROP|BOOL
+CryptEnumOIDFunction,dwEncodingType:DWORD,pszFuncName:LPCSTR,pszOID:LPCSTR,dwFlags:DWORD,pvArg:Any Ptr,pfnEnumOIDFunc:PFN_CRYPT_ENUM_OID_FUNC|BOOL
+CryptEnumOIDInfo,dwGroupId:DWORD,dwFlags:DWORD,pvArg:Any Ptr,pfnEnumOIDInfo:PFN_CRYPT_ENUM_OID_INFO|BOOL
+CryptEnumProviders,dwIndex:DWORD,pdwReserved:DWORD Ptr,dwFlags:DWORD,pdwProvType:DWORD Ptr,pszProvName:LPTSTR,pcbProvName:DWORD Ptr|BOOL
+CryptEnumProviderTypes,dwIndex:DWORD,pdwReserved:DWORD Ptr,dwFlags:DWORD,pdwProvType:DWORD Ptr,pszTypeName:LPTSTR,pcbTypeName:DWORD Ptr|BOOL
+CryptExportKey,hKey:HCRYPTKEY,hExpKey:HCRYPTKEY,dwBlobType:DWORD,dwFlags:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr|BOOL
+CryptExportPKCS8,hCryptProv:HCRYPTPROV,dwKeySpec:DWORD,pszPrivateKeyObjId:LPSTR,dwFlags:DWORD,pvAuxInfo:Any Ptr,pbPrivateKeyBlob:UBYTE Ptr,pcbPrivateKeyBlob:DWORD Ptr|BOOL
+CryptExportPKCS8Ex,psExportParams:CRYPT_PKCS8_EXPORT_PARAMS Ptr,dwFlags:DWORD,pvAuxInfo:Any Ptr,pbPrivateKeyBlob:UBYTE Ptr,pcbPrivateKeyBlob:DWORD Ptr|BOOL
+CryptExportPublicKeyInfoEx,hCryptProvOrNCryptKey:HCRYPTPROV_OR_NCRYPT_KEY_HANDLE,dwKeySpec:DWORD,dwCertEncodingType:DWORD,pszPublicKeyObjId:LPSTR,dwFlags:DWORD,pvAuxInfo:Any Ptr,pInfo:PCERT_PUBLIC_KEY_INFO,pcbInfo:DWORD Ptr|BOOL
+CryptFindCertificateKeyProvInfo,pCert:PCCERT_CONTEXT,dwFlags:DWORD,pvReserved:Any Ptr|BOOL
+CryptFindLocalizedName,pwszCryptName:LPCWSTR|LPCWSTR
+CryptFindOIDInfo,dwKeyType:DWORD,pvKey:Any Ptr,dwGroupId:DWORD|PCCRYPT_OID_INFO
+CryptFormatObject,dwCertEncodingType:DWORD,dwFormatType:DWORD,dwFormatStrType:DWORD,pFormatStruct:Any Ptr,lpszStructType:LPCSTR,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,pbFormat:Any Ptr,pcbFormat:DWORD Ptr|BOOL
+CryptFreeOIDFunctionAddress,hFuncAddr:HCRYPTOIDFUNCADDR,dwFlags:DWORD|BOOL
+CryptGenKey,hProv:HCRYPTPROV,Algid:ALG_ID,dwFlags:DWORD,phKey:HCRYPTKEY Ptr|BOOL
+CryptGenRandom,hProv:HCRYPTPROV,dwLen:DWORD,pbBuffer:UBYTE Ptr|BOOL
+CryptGetDefaultOIDDllList,hFuncSet:HCRYPTOIDFUNCSET,dwEncodingType:DWORD,pwszDllList:LPWSTR,pcchDllList:DWORD Ptr|BOOL
+CryptGetDefaultOIDFunctionAddress,hFuncSet:HCRYPTOIDFUNCSET,dwEncodingType:DWORD,pwszDll:LPCWSTR,dwFlags:DWORD,ppvFuncAddr:Any Ptr Ptr,phFuncAddr:HCRYPTOIDFUNCADDR Ptr|BOOL
+CryptGetDefaultProvider,dwProvType:DWORD,pdwReserved:DWORD Ptr,dwFlags:DWORD,pszProvName:LPTSTR,pcbProvName:DWORD Ptr|BOOL
+CryptGetHashParam,hHash:HCRYPTHASH,dwParam:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr,dwFlags:DWORD|BOOL
+CryptGetKeyIdentifierProperty,pKeyIdentifier:CRYPT_HASH_BLOB Ptr,dwPropId:DWORD,dwFlags:DWORD,pwszComputerName:LPCWSTR,pvReserved:Any Ptr,pvData:Any Ptr,pcbData:DWORD Ptr|BOOL
+CryptGetKeyParam,hKey:HCRYPTKEY,dwParam:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr,dwFlags:DWORD|BOOL
+CryptGetMessageCertificates,dwMsgAndCertEncodingType:DWORD,hCryptProv:HCRYPTPROV_LEGACY,dwFlags:DWORD,pbSignedBlob:UBYTE Ptr,cbSignedBlob:DWORD|HCERTSTORE
+CryptGetMessageSignerCount,dwMsgEncodingType:DWORD,pbSignedBlob:UBYTE Ptr,cbSignedBlob:DWORD|LONG
+CryptGetObjectUrl,pszUrlOid:LPCSTR,pvPara:LPVOID,dwFlags:DWORD,pUrlArray:PCRYPT_URL_ARRAY,pcbUrlArray:DWORD Ptr,pUrlInfo:PCRYPT_URL_INFO,pcbUrlInfo:DWORD Ptr,pvReserved:LPVOID|BOOL
+CryptGetOIDFunctionAddress,hFuncSet:HCRYPTOIDFUNCSET,dwEncodingType:DWORD,pszOID:LPCSTR,dwFlags:DWORD,ppvFuncAddr:Any Ptr Ptr,phFuncAddr:HCRYPTOIDFUNCADDR Ptr|BOOL
+CryptGetOIDFunctionValue,dwEncodingType:DWORD,pszFuncName:LPCSTR,pszOID:LPCSTR,pwszValueName:LPCWSTR,pdwValueType:DWORD Ptr,pbValueData:UBYTE Ptr,pcbValueData:DWORD Ptr|BOOL
+CryptGetProvParam,hProv:HCRYPTPROV,dwParam:DWORD,pbData:UBYTE Ptr,pdwDataLen:DWORD Ptr,dwFlags:DWORD|BOOL
+CryptGetUserKey,hProv:HCRYPTPROV,dwKeySpec:DWORD,phUserKey:HCRYPTKEY Ptr|BOOL
+CryptHashCertificate,hCryptProv:HCRYPTPROV_LEGACY,Algid:ALG_ID,dwFlags:DWORD,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptHashCertificate2,pwszCNGHashAlgid:LPCWSTR,dwFlags:DWORD,pvReserved:Any Ptr,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptHashData,hHash:HCRYPTHASH,pbData:UBYTE Ptr,dwDataLen:DWORD,dwFlags:DWORD|BOOL
+CryptHashMessage,pHashPara:PCRYPT_HASH_MESSAGE_PARA,fDetachedHash:BOOL,cToBeHashed:DWORD,rgpbToBeHashed:UBYTE Ptr,rgcbToBeHashed:DWORD Ptr,pbHashedBlob:UBYTE Ptr,pcbHashedBlob:DWORD Ptr,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptHashPublicKeyInfo,hCryptProv:HCRYPTPROV_LEGACY,Algid:ALG_ID,dwFlags:DWORD,dwCertEncodingType:DWORD,pInfo:PCERT_PUBLIC_KEY_INFO,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptHashSessionKey,hHash:HCRYPTHASH,hKey:HCRYPTKEY,dwFlags:DWORD|BOOL
+CryptHashToBeSigned,hCryptProv:HCRYPTPROV_LEGACY,dwCertEncodingType:DWORD,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptImportKey,hProv:HCRYPTPROV,pbData:UBYTE Ptr,dwDataLen:DWORD,hPubKey:HCRYPTKEY,dwFlags:DWORD,phKey:HCRYPTKEY Ptr|BOOL
+CryptImportPKCS8,sImportParams:CRYPT_PKCS8_IMPORT_PARAMS,dwFlags:DWORD,phCryptProv:HCRYPTPROV Ptr,pvAuxInfo:Any Ptr|BOOL
+CryptImportPublicKeyInfo,hCryptProv:HCRYPTPROV,dwCertEncodingType:DWORD,pInfo:PCERT_PUBLIC_KEY_INFO,phKey:HCRYPTKEY Ptr|BOOL
+CryptImportPublicKeyInfoEx,hCryptProv:HCRYPTPROV,dwCertEncodingType:DWORD,pInfo:PCERT_PUBLIC_KEY_INFO,aiKeyAlg:ALG_ID,dwFlags:DWORD,pvAuxInfo:Any Ptr,phKey:HCRYPTKEY Ptr|BOOL
+CryptImportPublicKeyInfoEx2,dwCertEncodingType:DWORD,pInfo:PCERT_PUBLIC_KEY_INFO,dwFlags:DWORD,pvAuxInfo:Any Ptr,phKey:BCRYPT_KEY_HANDLE Ptr|BOOL
+CryptInstallDefaultContext,hCryptProv:HCRYPTPROV,dwDefaultType:DWORD,pvDefaultPara:Any Ptr,dwFlags:DWORD,pvReserved:Any Ptr,phDefaultContext:HCRYPTDEFAULTCONTEXT Ptr|BOOL
+CryptInstallOIDFunctionAddress,hModule:HMODULE,dwEncodingType:DWORD,pszFuncName:LPCSTR,cFuncEntry:DWORD,rgFuncEntry:CRYPT_OID_FUNC_ENTRY Ptr,dwFlags:DWORD|BOOL
+CryptMemAlloc,cbSize:ULONG|LPVOID
+CryptMemFree,pv:LPVOID
+CryptMemRealloc,pv:LPVOID,cbSize:ULONG|LPVOID
+CryptMsgCalculateEncodedLength,dwMsgEncodingType:DWORD,dwFlags:DWORD,dwMsgType:DWORD,pvMsgEncodeInfo:Any Ptr,pszInnerContentObjID:LPSTR,cbData:DWORD|DWORD
+CryptMsgClose,hCryptMsg:HCRYPTMSG|BOOL
+CryptMsgControl,hCryptMsg:HCRYPTMSG,dwFlags:DWORD,dwCtrlType:DWORD,pvCtrlPara:Any Ptr|BOOL
+CryptMsgCountersign,hCryptMsg:HCRYPTMSG,dwIndex:DWORD,cCountersigners:DWORD,rgCountersigners:PCMSG_SIGNER_ENCODE_INFO|BOOL
+CryptMsgCountersignEncoded,dwEncodingType:DWORD,pbSignerInfo:PBYTE,cbSignerInfo:DWORD,cCountersigners:DWORD,rgCountersigners:PCMSG_SIGNER_ENCODE_INFO,pbCountersignature:PBYTE,pcbCountersignature:PDWORD|BOOL
+CryptMsgDuplicate,hCryptMsg:HCRYPTMSG|HCRYPTMSG
+CryptMsgEncodeAndSignCTL,dwMsgEncodingType:DWORD,pCtlInfo:PCTL_INFO,pSignInfo:PCMSG_SIGNED_ENCODE_INFO,dwFlags:DWORD,pbEncoded:UBYTE Ptr,pcbEncoded:DWORD Ptr|BOOL
+CryptMsgGetAndVerifySigner,hCryptMsg:HCRYPTMSG,cSignerStore:DWORD,rghSignerStore:HCERTSTORE Ptr,dwFlags:DWORD,ppSigner:PCCERT_CONTEXT Ptr,pdwSignerIndex:DWORD Ptr|BOOL
+CryptMsgGetParam,hCryptMsg:HCRYPTMSG,dwParamType:DWORD,dwIndex:DWORD,pvData:Any Ptr,pcbData:DWORD Ptr|BOOL
+CryptMsgOpenToDecode,dwMsgEncodingType:DWORD,dwFlags:DWORD,dwMsgType:DWORD,hCryptProv:HCRYPTPROV_LEGACY,pRecipientInfo:PCERT_INFO,pStreamInfo:PCMSG_STREAM_INFO|HCRYPTMSG
+CryptMsgOpenToEncode,dwMsgEncodingType:DWORD,dwFlags:DWORD,dwMsgType:DWORD,pvMsgEncodeInfo:Any Ptr,pszInnerContentObjID:LPSTR,pStreamInfo:PCMSG_STREAM_INFO|HCRYPTMSG
+CryptMsgSignCTL,dwMsgEncodingType:DWORD,pbCtlContent:UBYTE Ptr,cbCtlContent:DWORD,pSignInfo:PCMSG_SIGNED_ENCODE_INFO,dwFlags:DWORD,pbEncoded:UBYTE Ptr,pcbEncoded:DWORD Ptr|BOOL
+CryptMsgUpdate,hCryptMsg:HCRYPTMSG,pbData:UBYTE Ptr,cbData:DWORD,fFinal:BOOL|BOOL
+CryptMsgVerifyCountersignatureEncoded,hCryptProv:HCRYPTPROV_LEGACY,dwEncodingType:DWORD,pbSignerInfo:PBYTE,cbSignerInfo:DWORD,pbSignerInfoCountersignature:PBYTE,cbSignerInfoCountersignature:DWORD,pciCountersigner:PCERT_INFO|BOOL
+CryptMsgVerifyCountersignatureEncodedEx,hCryptProv:HCRYPTPROV_LEGACY,dwEncodingType:DWORD,pbSignerInfo:PBYTE,cbSignerInfo:DWORD,pbSignerInfoCountersignature:PBYTE,cbSignerInfoCountersignature:DWORD,dwSignerType:DWORD,pvSigner:Any Ptr,dwFlags:DWORD,pvReserved:Any Ptr|BOOL
+CryptProtectData,pDataIn:DATA_BLOB Ptr,szDataDescr:LPCWSTR,pOptionalEntropy:DATA_BLOB Ptr,pvReserved:PVOID,pPromptStruct:CRYPTPROTECT_PROMPTSTRUCT Ptr,dwFlags:DWORD,pDataOut:DATA_BLOB Ptr|BOOL
+CryptQueryObject,dwObjectType:DWORD,pvObject:Any Ptr,dwExpectedContentTypeFlags:DWORD,dwExpectedFormatTypeFlags:DWORD,dwFlags:DWORD,pdwMsgAndCertEncodingType:DWORD Ptr,pdwContentType:DWORD Ptr,pdwFormatType:DWORD Ptr,phCertStore:HCERTSTORE Ptr,phMsg:HCRYPTMSG Ptr,ppvContext:Any Ptr Ptr|BOOL
+CryptRegisterDefaultOIDFunction,dwEncodingType:DWORD,pszFuncName:LPCSTR,dwIndex:DWORD,pwszDll:LPCWSTR|BOOL
+CryptRegisterOIDFunction,dwEncodingType:DWORD,pszFuncName:LPCSTR,pszOID:LPCSTR,pwszDll:LPCWSTR,pszOverrideFuncName:LPCSTR|BOOL
+CryptRegisterOIDInfo,pInfo:PCCRYPT_OID_INFO,dwFlags:DWORD|BOOL
+CryptReleaseContext,hProv:HCRYPTPROV,dwFlags:DWORD|BOOL
+CryptRetrieveObjectByUrl,pszUrl:LPCTSTR,pszObjectOid:LPCSTR,dwRetrievalFlags:DWORD,dwTimeout:DWORD,ppvObject:LPAny Ptr,hAsyncRetrieve:HCRYPTASYNC,pCredentials:PCRYPT_CREDENTIALS,pvVerify:LPVOID,pAuxInfo:PCRYPT_RETRIEVE_AUX_INFO|BOOL
+CryptSetHashParam,hHash:HCRYPTHASH,dwParam:DWORD,pbData:UBYTE Ptr,dwFlags:DWORD|BOOL
+CryptSetKeyIdentifierProperty,pKeyIdentifier:CRYPT_HASH_BLOB Ptr,dwPropId:DWORD,dwFlags:DWORD,pwszComputerName:LPCWSTR,pvReserved:Any Ptr,pvData:Any Ptr|BOOL
+CryptSetKeyParam,hKey:HCRYPTKEY,dwParam:DWORD,pbData:UBYTE Ptr,dwFlags:DWORD|BOOL
+CryptSetOIDFunctionValue,dwEncodingType:DWORD,pszFuncName:LPCSTR,pszOID:LPCSTR,pwszValueName:LPCWSTR,dwValueType:DWORD,pbValueData:UBYTE Ptr,cbValueData:DWORD|BOOL
+CryptSetProvider,pszProvName:LPCTSTR,dwProvType:DWORD|BOOL
+CryptSetProviderEx,pszProvName:LPCTSTR,dwProvType:DWORD,pdwReserved:DWORD Ptr,dwFlags:DWORD|BOOL
+CryptSetProvParam,hProv:HCRYPTPROV,dwParam:DWORD,pbData:UBYTE Ptr,dwFlags:DWORD|BOOL
+CryptSignAndEncodeCertificate,hCryptProvOrNCryptKey:HCRYPTPROV_OR_NCRYPT_KEY_HANDLE,dwKeySpec:DWORD,dwCertEncodingType:DWORD,lpszStructType:LPCSTR,pvStructInfo:Any Ptr,pSignatureAlgorithm:PCRYPT_ALGORITHM_IDENTIFIER,pvHashAuxInfo:Any Ptr,pbEncoded:PBYTE,pcbEncoded:DWORD Ptr|BOOL
+CryptSignAndEncryptMessage,pSignPara:PCRYPT_SIGN_MESSAGE_PARA,pEncryptPara:PCRYPT_ENCRYPT_MESSAGE_PARA,cRecipientCert:DWORD,rgpRecipientCert:PCCERT_CONTEXT Ptr,pbToBeSignedAndEncrypted:UBYTE Ptr,cbToBeSignedAndEncrypted:DWORD,pbSignedAndEncryptedBlob:UBYTE Ptr,pcbSignedAndEncryptedBlob:DWORD Ptr|BOOL
+CryptSignCertificate,hCryptProvOrNCryptKey:HCRYPTPROV_OR_NCRYPT_KEY_HANDLE,dwKeySpec:DWORD,dwCertEncodingType:DWORD,pbEncodedToBeSigned:UBYTE Ptr,cbEncodedToBeSigned:DWORD,pSignatureAlgorithm:PCRYPT_ALGORITHM_IDENTIFIER,pvHashAuxInfo:Any Ptr,pbSignature:UBYTE Ptr,pcbSignature:DWORD Ptr|BOOL
+CryptSignHash,hHash:HCRYPTHASH,dwKeySpec:DWORD,sDescription:LPCTSTR,dwFlags:DWORD,pbSignature:UBYTE Ptr,pdwSigLen:DWORD Ptr|BOOL
+CryptSignMessage,pSignPara:PCRYPT_SIGN_MESSAGE_PARA,fDetachedSignature:BOOL,cToBeSigned:DWORD,rgpbToBeSigned:UBYTE Ptr,rgcbToBeSigned:DWORD Ptr,pbSignedBlob:UBYTE Ptr,pcbSignedBlob:DWORD Ptr|BOOL
+CryptSignMessageWithKey,pSignPara:PCRYPT_KEY_SIGN_MESSAGE_PARA,pbToBeSigned:UBYTE Ptr,cToBeSigned:DWORD,pbSignedBlob:UBYTE Ptr,pcbSignedBlob:DWORD Ptr|BOOL
+CryptSIPAddProvider,psNewProv:SIP_ADD_NEWPROVIDER Ptr|BOOL
+CryptSIPRemoveProvider,pgProv:GUID Ptr|BOOL
+CryptStringToBinary,pszString:LPCTSTR,cchString:DWORD,dwFlags:DWORD,pbBinary:UBYTE Ptr,pcbBinary:DWORD Ptr,pdwSkip:DWORD Ptr,pdwFlags:DWORD Ptr|BOOL
+CryptUninstallDefaultContext,hDefaultContext:HCRYPTDEFAULTCONTEXT,dwFlags:DWORD,pvReserved:Any Ptr|BOOL
+CryptUnprotectData,pDataIn:DATA_BLOB Ptr,ppszDataDescr:LPWSTR Ptr,pOptionalEntropy:DATA_BLOB Ptr,pvReserved:PVOID,pPromptStruct:CRYPTPROTECT_PROMPTSTRUCT Ptr,dwFlags:DWORD,pDataOut:DATA_BLOB Ptr|BOOL
+CryptUnregisterDefaultOIDFunction,dwEncodingType:DWORD,pszFuncName:LPCSTR,pwszDll:LPCWSTR|BOOL
+CryptUnregisterOIDFunction,dwEncodingType:DWORD,pszFuncName:LPCSTR,pszOID:LPCSTR|BOOL
+CryptUnregisterOIDInfo,pInfo:PCCRYPT_OID_INFO|BOOL
+CryptVerifyCertificateSignature,hCryptProv:HCRYPTPROV_LEGACY,dwCertEncodingType:DWORD,pbEncoded:UBYTE Ptr,cbEncoded:DWORD,pPublicKey:PCERT_PUBLIC_KEY_INFO|BOOL
+CryptVerifyCertificateSignatureEx,hCryptProv:HCRYPTPROV_LEGACY,dwCertEncodingType:DWORD,dwSubjectType:DWORD,pvSubject:Any Ptr,dwIssuerType:DWORD,pvIssuer:Any Ptr,dwFlags:DWORD,pvReserved:Any Ptr|BOOL
+CryptVerifyDetachedMessageHash,pHashPara:PCRYPT_HASH_MESSAGE_PARA,pbDetachedHashBlob:UBYTE Ptr,cbDetachedHashBlob:DWORD,cToBeHashed:DWORD,rgpbToBeHashed:UBYTE Ptr,rgcbToBeHashed:DWORD Ptr,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptVerifyDetachedMessageSignature,pVerifyPara:PCRYPT_VERIFY_MESSAGE_PARA,dwSignerIndex:DWORD,pbDetachedSignBlob:UBYTE Ptr,cbDetachedSignBlob:DWORD,cToBeSigned:DWORD,rgpbToBeSigned:UBYTE Ptr,rgcbToBeSigned:DWORD Ptr,ppSignerCert:PCCERT_CONTEXT Ptr|BOOL
+CryptVerifyMessageHash,pHashPara:PCRYPT_HASH_MESSAGE_PARA,pbHashedBlob:UBYTE Ptr,cbHashedBlob:DWORD,pbToBeHashed:UBYTE Ptr,pcbToBeHashed:DWORD Ptr,pbComputedHash:UBYTE Ptr,pcbComputedHash:DWORD Ptr|BOOL
+CryptVerifyMessageSignature,pVerifyPara:PCRYPT_VERIFY_MESSAGE_PARA,dwSignerIndex:DWORD,pbSignedBlob:UBYTE Ptr,cbSignedBlob:DWORD,pbDecoded:UBYTE Ptr,pcbDecoded:DWORD Ptr,ppSignerCert:PCCERT_CONTEXT Ptr|BOOL
+CryptVerifyMessageSignatureWithKey,pVerifyPara:PCRYPT_KEY_VERIFY_MESSAGE_PARA,pPublicKeyInfo:PCERT_PUBLIC_KEY_INFO,pbSignedBlob:UBYTE Ptr,cbSignedBlob:DWORD,pbDecoded:UBYTE Ptr,pcbDecoded:DWORD Ptr|BOOL
+CryptVerifySignature,hHash:HCRYPTHASH,pbSignature:UBYTE Ptr,dwSigLen:DWORD,hPubKey:HCRYPTKEY,sDescription:LPCTSTR,dwFlags:DWORD|BOOL
+CStdStubBuffer_AddRef,This:IRpcStubBuffer Ptr|ULONG
+CStdStubBuffer_Connect,This:IRpcStubBuffer Ptr,pUnkServer:IUnknown Ptr|HRESULT
+CStdStubBuffer_CountRefs,This:IRpcStubBuffer Ptr|ULONG
+CStdStubBuffer_DebugServerQueryInterface,This:IRpcStubBuffer Ptr,ppv:Any Ptr Ptr|HRESULT
+CStdStubBuffer_DebugServerRelease,This:IRpcStubBuffer Ptr,pv:Any Ptr
+CStdStubBuffer_Disconnect,This:IRpcStubBuffer Ptr
+CStdStubBuffer_Invoke,This:IRpcStubBuffer Ptr,pRpcMsg:RPCOLEMESSAGE Ptr,pRpcChannelBuffer:IRpcChannelBuffer Ptr|HRESULT
+CStdStubBuffer_IsIIDSupported,This:IRpcStubBuffer Ptr,riid:IID Ptr|IRpcStubBuffer Ptr
+CStdStubBuffer_QueryInterface,This:IRpcStubBuffer Ptr,riid:IID Ptr,ppvObject:Any Ptr Ptr|HRESULT
 DdeAbandonTransaction,idInst:DWORD,hConv:HCONV,idTransaction:DWORD|BOOL
 DdeAccessData,hData:HDDEDATA,pcbDataSize:PDWORD|LPBYTE
 DdeAddData,hData:HDDEDATA,pSrc:LPBYTE,cb:DWORD,cbOff:DWORD|HDDEDATA
@@ -847,6 +1185,107 @@ DrawText,hDC:HDC,lpString:LPCTSTR,nCount:Integer,lpRect:LPRECT,uFormat:UINT|Inte
 DrawTextEx,hdc:HDC,lpchText:LPTSTR,cchText:Integer,lprc:LPRECT,dwDTFormat:UINT,lpDTParams:LPDRAWTEXTPARAMS|Integer
 DuplicateEncryptionInfoFile,SrcFileName:LPCTSTR,DstFileName:LPCTSTR,dwCreationDistribution:DWORD,dwAttributes:DWORD,lpSecurityAttributes:LPSECURITY_ATTRIBUTES|DWORD
 DuplicateIcon,hInst:HINSTANCE,hIcon:HICON|HICON
+DceErrorInqText,StatusToConvert:RPC_STATUS,ErrorText:UBYTE Ptr|RPC_STATUS
+DecryptMessage,phContext:PCtxtHandle,pMessage:PSecBufferDesc,MessageSeqNo:ULONG,pfQOP:PULONG|SECURITY_STATUS
+DefDlgProchDlg:HWND,Msg:UINT,wParam:WPARAM,lParam:LPARAM|LRESULT
+DefDriverProc,dwDriverId:DWORD,hdrvr:HDRVR,msg:UINT,lParam1:LPARAM,lParam2:LPARAM|LONG
+DeleteAce,pAcl:PACL,dwAceIndex:DWORD|BOOL
+DeleteAllGPOLinks,lpContainer:LPOLESTR|HRESULT
+DeleteClusterGroup,hGroup:HGROUP|DWORD
+DeleteClusterResource,hResource:HRESOURCE|DWORD
+DeleteClusterResourceType,hCluster:HCLUSTER,lpszResourceTypeName:LPCWSTR|DWORD
+DeleteColorSpace,hColorSpace:HCOLORSPACE|BOOL
+DeleteColorTransform,hColorTransform:HTRANSFORM|BOOL
+DeleteGPOLink,lpGPO:LPOLESTR,lpContainer:LPOLESTR|HRESULT
+DeleteIPAddress,NTEContext:ULONG|DWORD
+DeleteIpForwardEntry,pRoute:PMIB_IPFORWARDROW|DWORD
+DeleteIpForwardEntry2,Row:MIB_IPFORWARD_ROW2 Ptr|NETIOAPI_API
+DeleteIpNetEntry,pArpEntry:PMIB_IPNETROW|DWORD
+DeleteIpNetEntry2,Row:MIB_IPNET_ROW2 Ptr|NETIOAPI_API
+DeleteProfile,lpSidString:LPCTSTR,lpProfilePath:LPCTSTR,lpComputerName:LPCTSTR|BOOL
+DeleteProxyArpEntry,dwAddress:DWORD,dwMask:DWORD,dwIfIndex:DWORD|DWORD
+DeleteSecurityContext,phContext:PCtxtHandle|SECURITY_STATUS
+DeleteUrlCacheEntry,lpszUrlName:LPCTSTR|BOOLAPI
+DeleteUrlCacheGroup,GroupId:GROUPID,dwFlags:DWORD,lpReserved:LPVOID|BOOL
+DeregisterShellHookWindow,hWnd:HWND|BOOL
+DescribePixelFormat,hdc:HDC,iPixelFormat:Integer,nBytes:UINT,ppfd:LPPIXELFORMATDESCRIPTOR|Integer
+DestroyBlob,hBlob:HBLOB|DWORD
+DestroyCursor,hCursor:HCURSOR|BOOL
+DestroyEnvironmentBlock,lpEnvironment:LPVOID|BOOL
+DestroyPrivateObjectSecurity,ObjectDescriptor:PSECURITY_DESCRIPTOR Ptr|BOOL
+DestroyPropertyDatabase,hProtocol:HPROTOCOL|DWORD
+DestroyPropertySheetPage,hPSPage:HPROPSHEETPAGE|BOOL
+DestroyProtocol,hProtocol:HPROTOCOL
+DestroySoftKeyboard,hSoftKbdWnd:HWND|HRESULT
+DestroyThreadpoolEnvironment,pcbe:PTP_CALLBACK_ENVIRON
+DestroyVideo|HRESULT
+DestroyViewWindow|HRESULT
+DestroyWindow,hWnd:HWND|BOOL
+DestroyZoneEnumerator,dwEnum:DWORD|HRESULT
+DhcpCApiCleanup
+DhcpCApiInitialize,Version:LPDWORD|DWORD
+DhcpControlHook,dwControlCode:DWORD,lpReserved:LPVOID|DWORD
+DhcpCreateClientInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,ClientInfo:DHCP_CONST DHCP_CLIENT_INFO Ptr|DWORD
+DhcpCreateOptionV5,ServerIpAddress:DHCP_SRV_HANDLE,Flags:DWORD,OptionId:DHCP_OPTION_ID,ClassName:LPWSTR,VendorName:LPWSTR,OptionInfo:LPDHCP_OPTION|DWORD
+DhcpCreateSubnet,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,SubnetInfo:DHCP_CONST DHCP_SUBNET_INFO Ptr|DWORD
+DhcpDeleteClientHook,IpAddress:DWORD,HwAddress:LPBYTE,HwAddressLength:ULONG,Reserved:DWORD,ClientType:DWORD|DWORD
+DhcpDeleteClientInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,ClientInfo:DHCP_CONST DHCP_SEARCH_INFO Ptr|DWORD
+DhcpDeleteServer,Flags:DWORD,IdInfo:LPVOID,NewServer:LPDHCP_SERVER_INFO,CallbackFn:LPVOID,CallbackData:LPVOID|DWORD
+DhcpDeleteSubnet,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,ForceFlag:DHCP_FORCE_FLAG|DWORD
+DhcpDeRegisterParamChange,Flags:DWORD,Reserved:LPVOID,Event:LPVOID|DWORD
+DhcpDsCleanup
+DhcpDsInit|DWORD
+DhcpEnumServers,Flags:DWORD,IdInfo:LPVOID,Servers:LPDHCP_SERVER_INFO_ARRAY Ptr,CallbackFn:LPVOID,CallbackData:LPVOID|DWORD
+DhcpEnumSubnetClients,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,ResumeHandle:DHCP_RESUME_HANDLE Ptr,PreferredMaximum:DWORD,ClientInfo:LPDHCP_CLIENT_INFO_ARRAY Ptr,ClientsRead:DWORD Ptr,ClientsTotal:DWORD Ptr|DWORD
+DhcpEnumSubnetElementsV5,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,EnumElementType:DHCP_SUBNET_ELEMENT_TYPE,ResumeHandle:DHCP_RESUME_HANDLE Ptr,PreferredMaximum:DWORD,EnumElementInfo:LPDHCP_SUBNET_ELEMENT_INFO_ARRAY Ptr,ElementsRead:DWORD Ptr,ElementsTotal:DWORD Ptr|DWORD
+DhcpEnumSubnets,ServerIpAddress:DHCP_CONST WCHAR Ptr,ResumeHandle:DHCP_RESUME_HANDLE Ptr,PreferredMaximum:DWORD,EnumInfo:LPDHCP_IP_ARRAY Ptr,ElementsRead:DWORD Ptr,ElementsTotal:DWORD Ptr|DWORD
+DhcpGetClientInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,SearchInfo:DHCP_CONST DHCP_SEARCH_INFO Ptr,ClientInfo:LPDHCP_CLIENT_INFO Ptr|DWORD
+DhcpGetOptionValue,ServerIpAddress:DHCP_CONST WCHAR Ptr,OptionID:DHCP_OPTION_ID,ScopeInfo:DHCP_CONST DHCP_OPTION_SCOPE_INFO Ptr,OptionValue:LPDHCP_OPTION_VALUE Ptr|DWORD
+DhcpGetServerBindingInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,Flags:ULONG,BindElementsInfo:LPDHCP_BIND_ELEMENT_ARRAY Ptr|DWORD
+DhcpGetSubnetInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,SubnetInfo:LPDHCP_SUBNET_INFO Ptr|DWORD
+DhcpGetVersion,ServerIpAddress:LPWSTR,MajorVersion:LPDWORD,MinorVersion:LPDWORD|DWORD
+DhcpHandleOptionsHook,Packet:LPBYTE,PacketSize:DWORD,Reserved:LPVOID,PktContext:LPVOID,ServerOptions:LPDHCP_SERVER_OPTIONS|DWORD
+DhcpNewPktHook,Packet:LPBYTE Ptr,PacketSize:DWORD Ptr,IpAddress:DWORD,Reserved:LPVOID,PktContext:LPVOID Ptr,ProcessIt:LPBOOL|DWORD
+DhcpPktDropHook,Packet:LPBYTE Ptr,PacketSize:DWORD Ptr,ControlCode:DWORD,IpAddress:DWORD,Reserved:LPVOID,PktContext:LPVOID|DWORD
+DhcpPktSendHook,Packet:LPBYTE Ptr,PacketSize:DWORD Ptr,ControlCode:DWORD,IpAddress:DWORD,Reserved:LPVOID,PktContext:LPVOID|DWORD
+DhcpRegisterParamChange,Flags:DWORD,Reserved:LPVOID,AdapterName:LPWSTR,pClassId:LPDHCPCAPI_CLASSID,Params:DHCPCAPI_PARAMS_ARRAY,Handle:LPVOID|DWORD
+DhcpRemoveDNSRegistrations|DWORD
+DhcpRemoveOptionValueV5,ServerIpAddress:LPWSTR,Flags:DWORD,OptionID:DHCP_OPTION_ID,ClassName:LPWSTR,VendorName:LPWSTR,ScopeInfo:DHCP_CONST DHCP_OPTION_SCOPE_INFO|DWORD
+DhcpRemoveSubnetElementV5,ServerIpAddress:DHCP_SRV_HANDLE,SubnetAddress:DHCP_IP_ADDRESS,RemoveElementInfo:DHCP_CONST DHCP_SUBNET_ELEMENT_DATA_V5,ForceFlag:DHCP_FORCE_FLAG|DWORD
+DhcpRequestParams,Flags:DWORD,Reserved:LPVOID,AdapterName:LPWSTR,ClassId:LPDHCPCAPI_CLASSID,SendParams:DHCPCAPI_PARAMS_ARRAY,RecdParams:DHCPCAPI_PARAMS_ARRAY,Buffer:LPBYTE,pSize:LPDWORD,RequestIdStr:LPWSTR|DWORD
+DhcpRpcFreeMemory,BufferPointer:PVOID
+DhcpServerCalloutEntry,ChainDlls:LPWSTR,CalloutVersion:DWORD,CalloutTbl:LPDHCP_CALLOUT_TABLE|DWORD
+DhcpServerRedoAuthorization,ServerIpAddr:LPWSTR,dwReserved:ULONG|DWORD
+DhcpSetClientInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,ClientInfo:DHCP_CONST DHCP_CLIENT_INFO Ptr|DWORD
+DhcpSetOptionValueV5,ServerIpAddress:LPWSTR,Flags:DWORD,ClassName:LPWSTR,VendorName:LPWSTR,ScopeInfo:DHCP_CONST DHCP_OPTION_SCOPE_INFO,OptionValue:DHCP_CONST DHCP_OPTION_DATA|DWORD
+DhcpSetServerBindingInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,Flags:ULONG,BindElementInfo:LPDHCP_BIND_ELEMENT_ARRAY|DWORD
+DhcpSetSubnetInfo,ServerIpAddress:DHCP_CONST WCHAR Ptr,SubnetAddress:DHCP_IP_ADDRESS,SubnetInfo:DHCP_CONST DHCP_SUBNET_INFO Ptr|DWORD
+DhcpUndoRequestParams,Flags:DWORD,Reserved:LPVOID,AdapterName:LPWSTR,RequestIdStr:LPWSTR|DWORD
+DhcpV6CApiCleanup
+DhcpV6CApiInitialize,Version:LPDWORD|DWORD
+Dhcpv6RenewPrefix,adapterName:LPWSTR,classId:LPDHCPV6CAPI_CLASSID,prefixleaseInfo:LPDHCPV6CAPIPrefixLeaseInformation|DWORD
+Dhcpv6RequestParams,forceNewInform:BOOL,reserved:LPVOID,adapterName:LPWSTR,classId:LPDHCPV6CAPI_CLASSID,recdParams:DHCPV6CAPI_PARAMS_ARRAY,buffer:LPBYTE,pSize:LPDWORD|DWORD
+Dhcpv6RequestPrefix,adapterName:LPWSTR,classId:LPDHCPV6CAPI_CLASSID,prefixleaseInfo:LPDHCPV6PrefixLeaseInformation,pdwTimeToWait:DWORD|DWORD
+DialogBox,hInstance:HINSTANCE,lpTemplate:LPCTSTR,hWndParent:HWND,lpDialogFunc:DLGPROC|Integer
+DialogBoxIndirect,hInstance:HINSTANCE,lpTemplate:LPCDLGTEMPLATE,hWndParent:HWND,lpDialogFunc:DLGPROC|Integer
+DialogBoxIndirectParam,hInstance:HINSTANCE,hDialogTemplate:LPCDLGTEMPLATE,hWndParent:HWND,lpDialogFunc:DLGPROC,dwInitParam:LPARAM|Integer
+DialogBoxParam,hInstance:HINSTANCE,lpTemplateName:LPCTSTR,hWndParent:HWND,lpDialogFunc:DLGPROC,dwInitParam:LPARAM|Integer
+DialogProc,hwndDlg:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM|Integer
+DisassociateColorProfileFromDevice,pMachineName:PCTSTR,pProfileName:PCTSTR,pDeviceName:PCTSTR|BOOL
+DisassociateCurrentThreadFromCallback,pci:PTP_CALLBACK_INSTANCE
+DispCallFunc,pvInstance:Any Ptr,oVft:ULONG,cc:CALLCONV,vtReturn:VARTYPE,cActuals:UINT,prgvt:VARTYPE Ptr,prgpvarg:VARIANTARG Ptr Ptr,pvargResult:VARIANT Ptr|HRESULT
+DispGetIDsOfNames,ptinfo:LPTYPEINFO,rgszNames:OLECHAR Ptr Ptr,cNames:UINT,rgdispid:DISPID Ptr|HRESULT
+DispGetParam,pdispparams:DISPPARAMS Ptr,position:UINT,vtTarg:VARTYPE,pvarResult:VARIANT Ptr,puArgErr:UINT Ptr|HRESULT
+DispInvoke,_this:Any Ptr,ptinfo:LPTYPEINFO,dispidMember:DISPID,wFlags:WORD,pparams:DISPPARAMS Ptr,pvarResult:VARIANT Ptr,pexcepinfo:EXCEPINFO Ptr,puArgErr:UINT Ptr|HRESULT
+DllCanUnloadNow|HRESULT
+DllGetClassObject,rclsid:CLSID Ptr,riid:IID Ptr,ppv:Any Ptr Ptr|HRESULT
+DllGetMonitorObject,riid:IID Ptr,ppObj:LPVOID Ptr|HRESULT
+DllGetVersion,pdvi:DLLVERSIONINFO Ptr|HRESULT
+DllInstall,bInstall:BOOL,pszCmdLine:LPCWSTR|HRESULT
+DllMain,hinstDLL:HINSTANCE,fdwReason:DWORD,lpvReserved:LPVOID|BOOL
+DllRegisterCluAdminExtension,hCluster:HCLUSTER|HRESULT
+DllRegisterServer|HRESULT
+DllUnregisterServer|HRESULT
 EditWordBreakProc,lpch:LPTSTR,ichCurrent:Integer,cch:Integer,code:Integer|Integer
 EjectDiskFromSADrive,lpComputerName:LPCWSTR,lpAppName:LPCWSTR,lpDeviceName:LPCWSTR,hWnd:HWND,lpTitle:LPCWSTR,lpMessage:LPCWSTR,dwOptions:DWORD|DWORD
 EjectNtmsCleaner,hSession:HANDLE,lpLibrary:LPNTMS_GUID,lpEjectOperation:LPNTMS_GUID,dwAction:DWORD|DWORD
@@ -971,8 +1410,8 @@ ExitWindows,dwReserved:DWORD,uReserved:UINT|BOOL
 ExitWindowsEx,uFlags:UINT,dwReason:DWORD|BOOL
 ExpandEnvironmentStrings,lpSrc:LPCTSTR,lpDst:LPTSTR,nSize:DWORD|DWORD
 ExportNtmsDatabase,hSession:HANDLE|DWORD
-ExtCreatePen,dwPenStyle:DWORD,dwWidth:DWORD,*lplb:LOGBRUSH,dwStyleCount:DWORD,*lpStyle:DWORD|HPEN
-ExtCreateRegion,*lpXform:XFORM,nCount:DWORD,*lpRgnData:RGNDATA|HRGN
+ExtCreatePen,dwPenStyle:DWORD,dwWidth:DWORD,lplb:LOGBRUSH Ptr,dwStyleCount:DWORD,lpStyle:DWORD Ptr|HPEN
+ExtCreateRegion,lpXform:XFORM Ptr,nCount:DWORD,lpRgnData:RGNDATA Ptr|HRGN
 ExtEscape,hdc:HDC,nEscape:Integer,cbInput:Integer,lpszInData:LPCSTR,cbOutput:Integer,lpszOutData:LPSTR|Integer
 ExtFloodFill,hdc:HDC,nXStart:Integer,nYStart:Integer,crColor:COLORREF,fuFillType:UINT|BOOL
 ExtractAssociatedIcon,hInst:HINSTANCE,lpIconPath:LPTSTR,lpiIcon:LPWORD|HICON
@@ -987,12 +1426,12 @@ FileEncryptionStatus,lpFileName:LPCTSTR,lpStatus:PDWORD|BOOL
 FileIOCompletionRoutine,dwErrorCode:DWORD,dwNumberOfBytesTransfered:DWORD,lpOverlapped:LPOVERLAPPED
 FileTimeToDosDateTime,lpFileTime:FILETIME Ptr,lpFatDate:LPWORD,lpFatTime:LPWORD|BOOL
 FileTimeToLocalFileTime,lpFileTime:FILETIME Ptr,lpLocalFileTime:LPFILETIME|BOOL
-FileTimeToSystemTime,*lpFileTime:FILETIME,lpSystemTime:LPSYSTEMTIME|BOOL
+FileTimeToSystemTime,lpFileTime:FILETIME Ptr,lpSystemTime:LPSYSTEMTIME|BOOL
 FillConsoleOutputAttribute,hConsoleOutput:HANDLE,wAttribute:WORD,nLength:DWORD,dwWriteCoord:COORD,lpNumberOfAttrsWritten:PDWORD|BOOL
 FillConsoleOutputCharacter,hConsoleOutput:HANDLE,cCharacter:TCHAR,nLength:DWORD,dwWriteCoord:COORD,lpNumberOfCharsWritten:PDWORD|BOOL
 FillMemory,Destination:PVOID,Length:SIZE_T,Fill:BYTE
 FillPath,hdc:HDC|BOOL
-FillRect,hDC:HDC,*lprc:RECT,hbr:HBRUSH|Integer
+FillRect,hDC:HDC,lprc:LPCRECT,hbr:HBRUSH|Integer
 FillRgn,hdc:HDC,hrgn:HRGN,hbr:HBRUSH|BOOL
 FindAtom,lpString:LPCTSTR|ATOM
 FindClose,hFindFile:HANDLE|BOOL
@@ -1549,9 +1988,9 @@ ImmUnregisterWord,hKL:HKL,lpszReading:LPCTSTR,dwStyle:DWORD,lpszUnregister:LPCTS
 ImpersonateDdeClientWindow,hWndClient:HWND,hWndServer:HWND|BOOL
 ImportNtmsDatabase,hSession:HANDLE|DWORD
 InflateRect,lprc:LPRECT,dx:Integer,dy:Integer|BOOL
+InitAtomTable,nSize:DWORD|BOOL
 InitCommonControls
 InitCommonControlsEx,lpInitCtrls:LPINITCOMMONCONTROLSEX|BOOL
-InitAtomTable,nSize:DWORD|BOOL
 InitializeConditionVariable,ConditionVariable:PCONDITION_VARIABLE
 InitializeCriticalSection,lpCriticalSection:LPCRITICAL_SECTION
 InitializeCriticalSectionAndSpinCount,lpCriticalSection:LPCRITICAL_SECTION,dwSpinCount:DWORD|BOOL
@@ -2851,412 +3290,48 @@ CLIPFORMAT_UserMarshal,pLong,pChar,pClipformat
 CLIPFORMAT_UserSize,pLong,lLong,pClipformat
 CLIPFORMAT_UserUnmarshal,pLong,pChar,pClipformat
 CloseINFEngine,hInf
-;-
-cmc_act_on,session,message_reference,Operation,act_on_flags,ui_id,act_on_extensions
-cmc_free,memory
-cmc_list,session,message_type,list_flags,seed,count,ui_id,result,list_extensions
-cmc_logoff,session,ui_id,logoff_flags,logoff_extensions
-cmc_logon,service,User,passWord,character_set,ui_id,caller_cmc_version,logon_flags,session,logon_extensions
-cmc_look_up,session,recipient_in,look_up_flags,ui_id,count,recipient_out,look_up_extensions
-cmc_query_configuration,session,item,reference,config_extensions
-cmc_read,session,message_reference,read_flags,message,ui_id,read_extensions
-cmc_send,session,message,send_flags,ui_id,send_extensions
-cmc_send_documents,recipient_addresses,subject,text_note,send_doc_flags,file_paths,file_names,delimiter,ui_id
-CMCheckColors,hcmTransform,lpaInputColors,nColors,ctInput,lpaResult
-CMCheckColorsInGamut,hcmTransform,lpaRGBTriple,lpaResult,nCount
-CMCheckRGBs,hcmTransform,lpSrcBits,bmInput,dwWidth,dwHeight,dwStride,lpaResult,pfnCallback,ulCallbackData
-CMConvertColorNameToIndex,hProfile,paColorName,paIndex,dwCount
-CMConvertIndexToColorName,hProfile,paIndex,paColorName,dwCount
-CMCreateDeviceLinkProfile,pahProfiles,nProfiles,padwIntents,nIntents,dwFlags,lpProfileData
-CMCreateMultiProfileTransform,pahProfiles,nProfiles,padwIntents,nIntents,dwFlags
-CMCreateProfile,lpColorSpace,lpProfileData
-CMCreateTransform,lpColorSpace,lpDevCharacter,lpTargetDevCharacter
-CMCreateTransformExt,lpColorSpace,lpDevCharacter,lpTargetDevCharacter,dwFlags
-CMDeleteTransform,hcmTransform
-CMGetInfo,dwInfo
-CMGetNamedProfileInfo,hProfile,pNamedProfileInfo
-CMIsProfileValid,hProfile,lpbValid
-CMTranslateColors,hcmTransform,lpaInputColors,nColors,ctInput,lpaOutputColors,ctOutput
-CMTranslateRGB,hcmTransform,ColorRef,lpColorRef,dwFlags
-CMTranslateRGBs,hcmTransform,lpSrcBits,bmInput,dwWidth,dwHeight,dwStride,lpDestBits,bmOutput,dwTranslateDirection
-CMTranslateRGBsExt,hcmTransform,lpSrcBits,bmInput,dwWidth,dwHeight,dwInputStride,lpDestBits,bmOutput,dwOutputStride,lpfnCallback,ulCallbackData
-
-CoAddRefServerProcess|ULONG
-CoAllowSetForegroundWindow,pUnk:IUnknown Ptr,lpvReserved:LPVOID|HRESULT
-CoCancelCall,dwThreadID:DWORD,ulTimeout:ULONG|HRESULT
-
-CoCopyProxy,pProxy,ppCopy
-CoCreateFreeThreadedMarshaler,punkOuter,ppunkMarshal
-CoCreateGuid,pguid
-CoCreateInstance,rclsid,pUnkOuter,dwClsContext,riid,ppv
-CoCreateInstanceEx,Clsid,punkOuter,dwClsCtx,pServerInfo,dwCount,pResults
-CoDisableCallCancellation,pReserved
-CoDisconnectObject,pUnk,dwReserved
-CoDosDateTimeToFileTime,nDosDate,nDosTime,lpFileTime
-CoEnableCallCancellation,pReserved
-CoFileTimeNow,lpFileTime
-CoFileTimeToDosDateTime,lpFileTime,lpDosDate,lpDosTime
-CoFreeAllLibraries
-CoFreeLibrary,hInst
-CoFreeUnusedLibraries
-CoGetCallContext,riid,ppInterface
-CoGetCancelObject,dwThreadId,iid,ppUnk
-CoGetClassObject,rclsid,dwClsContext,pvReserved,riid,ppv
-CoGetClassObjectFromURL,rCLASSID,szCODE,dwFileVersionMS,dwFileVersionLS,szType,pBindCtx,dwClsContext,pvReserved,riid,ppv
 CoGetClassVersion,pClassSpec,pdwVersionMS,pdwVersionLS
-CoGetCurrentProcess
-CoGetInstanceFromFile,pServerInfo,pClsid,punkOuter,dwClsCtx,grfMode,pwszName,dwCount,pResults
-CoGetInstanceFromIStorage,pServerInfo,pClsid,punkOuter,dwClsCtx,pstg,dwCount,pResults
-CoGetInterfaceAndReleaseStream,pStm,iid,ppv
-CoGetMalloc,dwMemContext,ppMalloc
-CoGetMarshalSizeMax,pulSize,riid,pUnk,dwDestContext,pvDestContext,mshlflags
-CoGetObject,pszName,pBindOptions,riid,ppv
-CoGetObjectContext,riid,ppv
-CoGetPSClsid,riid,pClsid
-CoGetStandardMarshal,riid,pUnk,dwDestContext,pvDestContext,mshlflags,ppMarshal
-CoGetStdMarshalEx,pUnkOuter,smexflags,ppUnkInner
-CoGetTreatAsClass,clsidOld,pClsidNew
-CoImpersonateClient
-CoInitialize,pzReserved
-CoInitializeEx,pvReserved,dwCoInit
-CoInitializeSecurity,pSecDesc,cAuthSvc,asAuthSvc,pReserved1,dwAuthnLevel,dwImpLevel,pAuthList,dwCapabilities,pReserved3
-CoInstall,pbc,dwFlags,pClassSpec,pQuery,pszCodeBase
-CoInternetCombineUrl,pwzBaseUrl,pwzRelativeUrl,dwCombineFlags,pszResult,cchResult,pcchResult,dwReserved
-CoInternetCompareUrl,pwzUrl1,pwzUrl2,dwFlags
-CoInternetCreateSecurityManager,pSP,ppSM,dwReserved
-CoInternetCreateZoneManager,pSP,ppZM,dwReserved
-CoInternetGetProtocolFlags,pwzUrl,pdwFlags,dwReserved
-CoInternetGetSecurityUrl,pwzUrl,ppwzSecUrl,psuAction,dwReserved
-CoInternetGetSession,dwSessionMode,ppIInternetSession,dwReserved
-CoInternetParseUrl,pwzUrl,ParseAction,dwFlags,pszResult,cchResult,pcchResult,dwReserved
-CoInternetQueryInfo,pwzUrl,QueryOptions,dwQueryFlags,pvBuffer,cbBuffer,pcbBuffer,dwReserved
-CoIsHandlerConnected,pUnk
-CoIsOle1Class,rclsid
-CoLoadLibrary,lpszLibName,bAutoFree
-CoLockObjectExternal,pUnk,fLock,fLastUnlockReleases
-ColorAdjustLuma,clrRGB,n,fScale
-ColorCorrectPalette,hDC,hpalette,dword,dword
-ColorHLSToRGB,wHue,wLuminance,wSaturation
-ColorMatchToTarget,hDC,hdc2,dw
-ColorRGBToHLS,clrRGB,pwHue,pwLuminance,pwSaturation
-CoMarshalHresult,pstm,hresult
-CoMarshalInterface,pStm,riid,pUnk,dwDestContext,pvDestContext,mshlflags
-CoMarshalInterThreadInterfaceInStream,riid,pUnk,ppStm
-CommDlgExtendedError
-CommitUrlCacheEntry,lpszUrlName,lpszLocalFileName,ExpireTime,LastModifiedTime,CacheEntryType,lpHeaderInfo,dwHeaderSize,lpszFileExtension,lpszOriginalUrl
-CompleteAuthToken,phContext,pToken
 CompressText,hcmp,pbText,cbText,ppbCompressed,iCharset
-ConfigDSN,hwndParent,fRequest,lpszDriver,lpszAttributes
-ConfigTranslator,hwndParent,pvOption
-connect,s,name,namelen
-ConvertColorNameToIndex,THPROFILE,TPCOLOR_NAME,pdword,dword
-ConvertIndexToColorName,THPROFILE,pdword,TPCOLOR_NAME,dword
-ConvertSecurityDescriptorToStringSecurityDescriptor,SecurityDescriptor,RequestedStringSDRevision,SecurityInformation,StringSecurityDescriptor,StringSecurityDescriptorLen
-ConvertSidToStringSid,Sid,StringSid
-ConvertStringSecurityDescriptorToSecurityDescriptor,StringSecurityDescriptor,StringSDRevision,SecurityDescriptor,SecurityDescriptorSize
-ConvertStringSidToSid,StringSid,Sid
-ConvertToAutoInheritPrivateObjectSecurity,ParentDescriptor,CurrentSecurityDescriptor,NewSecurityDescriptor,ObjectType,IsDirectoryObject,GenericMapping
-CopyBindInfo,pcbiSrc,pbiDest
-CopyLZFile,n1,n2
-CopySid,nDestinationSidLength,pDestinationSid,pSourceSid
-CopyStgMedium,pcstgmedSrc,pstgmedDest
-CoQueryAuthenticationServices,pcAuthSvc,asAuthSvc
-CoQueryClientBlanket,pAuthnSvc,pAuthzSvc,pServerPrincName,pAuthnLevel,pImpLevel,pPrivs,pCapabilities
-CoQueryProxyBlanket,pProxy,pwAuthnSvc,pAuthzSvc,pServerPrincName,pAuthnLevel,pImpLevel,pAuthInfo,pCapabilites
-CoRegisterChannelHook,ExtensionUuid,pChannelHook
-CoRegisterClassObject,rclsid,pUnk,dwClsContext,flags,lpdwRegister
-CoRegisterMallocSpy,pMallocSpy
-CoRegisterMessageFilter,lpMessageFilter,lplpMessageFilter
-CoRegisterPSClsid,riid,rclsid
-CoRegisterSurrogate,pSurrogate
-CoReleaseMarshalData,pStm
-CoReleaseServerProcess
-CoResumeClassObjects
-CoRevertToSelf
-CoRevokeClassObject,dwRegister
-CoRevokeMallocSpy
-CoSetCancelObject,pUnk
-CoSetProxyBlanket,pProxy,dwAuthnSvc,dwAuthzSvc,pServerPrincName,dwAuthnLevel,dwImpLevel,pAuthInfo,dwCapabilities
-CoSuspendClassObjects
-CoSwitchCallContext,pNewObject,ppOldObject
-CoTaskMemAlloc,cb
-CoTaskMemFree,lpIDList
-CoTaskMemRealloc,pv,cb
-CoTestCancel
-CoTreatAsClass,clsidOld,clsidNew
-CoUninitialize
-CoUnmarshalHresult,pstm,phresult
-CoUnmarshalInterface,pStm,riid,ppv
 CountHilites,hhil,base,limit
-CoWaitForMultipleHandles,dwFlags,dwTimeout,cHandles,pHandles,lpdwindex
-CreateAntiMoniker,ppmk
-CreateAsyncBindCtx,Reserved,pBSCb,pEFetc,ppBC
-CreateAsyncBindCtxEx,pbc,dwOptions,pBSCb,pEnum,ppBC,Reserved
-CreateBindCtx,reserved,ppbc
-CreateBlob,phBlob
-CreateClassMoniker,rclsid,ppmk
-CreateClusterGroup,hCluster,lpszGroupName
-CreateClusterNotifyPort,hChange,hCluster,dwFilter,dwNotifyKey
-CreateClusterResource,hGroup,lpszResourceName,lpszResourceType,dwFlags
-CreateColorSpace,lplogcolorspace
-CreateColorTransform,lplogcolorspacea,THPROFILE,THPROFILE,dword
-CreateDataAdviseHolder,ppDAHolder
-CreateDataCache,pUnkOuter,rclsid,iid,ppv
-CreateDeviceLinkProfile,TPHPROFILE,dword,pdword,dword,dword,pbyte,dword
-CreateDispTypeInfo,pidata,lcid,pptinfo
-CreateEditableStream,ppsEditable,psSource
-CreateEnvironmentBlock,lpEnvironment,hToken,bInherit
-CreateErrorInfo,pperrinfo
-CreateFileMoniker,lpszPathName,ppmk
-CreateFormatEnumerator,cfmtetc,rgfmtetc,ppenumfmtetc
-CreateGenericComposite,pmkFirst,pmkRest,ppmkComposite
-CreateGPOLink,lpGPO,lpContainer,fHighPriority
-CreateHTMLPropertyPage,pMk,ppPP
-CreateILockBytesOnHGlobal,hGlobal,fDeleteOnRelease,pplkbyt
-CreateInstance,pfnCreateInstance,riid,ppvObj
-CreateIpForwardEntry,pRoute
-CreateIpNetEntry,pArpEntry
-CreateItemMoniker,lpszDelim,lpszItem,ppmk
-CreateMappedBitmap,hInstance,idBitmap,wFlags,lpColorMap,ByValumMaps
-CreateMultiProfileTransform,TPHPROFILE,dword,pdword,dword,dword,dword
-CreateNPPInterface,hBlob,iid,ppvObject
-CreateObjrefMoniker,punk,ppmk
-CreateOleAdviseHolder,ppOAHolder
-CreatePointerMoniker,punk,ppmk
-CreatePrivateObjectSecurity,ParentDescriptor,CreatorDescriptor,NewDescriptor,IsDirectoryObject,Token,GenericMapping
-CreatePrivateObjectSecurityEx,ParentDescriptor,CreatorDescriptor,NewDescriptor,ObjectType,IsContainerObject,AutoInheritFlags,Token,GenericMapping
-CreateProcessAsUser,hToken,lpApplicationName,lpCommandLine,lpProcessAttributes,lpThreadAttributes,bInheritHandles,dwCreationFlags,lpEnvironment,lpCurrentDirectory,lpStartupInfo,lpProcessInformation
-CreateProfileFromLogColorSpace,lplogcolorspacea,pbyte
-CreatePropertySheetPage,lpcpropsheetpagea
-CreateProxyArpEntry,dwAddress,dwMask,dwIfIndex
-CreateRestrictedToken,ExistingTokenHandle,Flags,DisableSidCount,SidsToDisable,DeletePrivilegeCount,PrivilegesToDelete,RestrictedSidCount,SidsToRestrict,NewTokenHandle
-CreateSecurityPage,psi
 CreateSocketPort,Socket
-CreateStatusWindow,dwStyle,lpszText,hWndParent,wID
-CreateStdAccessibleObject,hWnd,idObject,riid,ppvObject
-CreateStdAccessibleProxy,hWnd,pClassName,idObject,riid,ppvObject
-CreateStdDispatch,punkOuter,pvThis,ptinfo,ppunkStdDisp
 CreateStdProgressIndicator,hwndParent,pszTitle,pIbscCaller,ppIbsc
-CreateStreamOnHGlobal,hGlobal,fDeleteOnRelease,ppstm
-CreateTable,lpInterface,lpAllocateBuffer,lpAllocateMore,lpFreeBuffer,lpvReserved,ulTableType,ulPropTagIndexColumn,lpSPropTagArrayColumns,lppTableData
-CreateTextServices,pUnkOuter,pITextHost,ppUnk
-CreateToolbarEx,hWndParent,dwStyle,wID,nBitmaps,hBMInst,wBMID,lpButtons,iNumButtons,dxButton,dyButton,dxBitmap,dyBitmap,uStructSize
-CreateTypeLib,syskind,szFile,ppctlib
-CreateTypeLib2,syskind,szFile,ppctlib
-CreateUpDownControl,dwStyle,x,y,cx,cy,hParent,nID,hInst,hBuddy,nUpper,nLower,nPos
-CreateUrlCacheEntry,lpszUrlName,dwExpectedFileSize,lpszFileExtension,lpszFileName,dwReserved
-CreateUrlCacheGroup,dwFlags,lpReserved
-CreateURLMoniker,pMkCtx,szURL,ppmk
 CreateWaitEvent,OPT1_1,OPT1_2,bManualReset,bInitialState,OPT1_2,bHighPriority,OPT2_1,OPT2_1,OPT2_1,OPT2_1
 CreateWaitEventBinding,pee,pFunction,pContext,dwContextSz,bRunInServerContext
 CreateWaitTimer,pFunction,pContext,dwContextSz,bRunInServerContext
-CryptAcquireCertificatePrivateKey,pCert,dwFlags,pvReserved,phCryptProv,pdwKeySpec,pfCallerFreeProv
-CryptAcquireContext,phProv,pszContainer,pszProvider,dwProvType,dwFlags
 CryptCancelAsyncRetrieval,hAsyncRetrieval
-CryptCloseAsyncHandle,hAsync
-CryptContextAddRef,hProv,pdwReserved,dwFlags
 CryptCreateAsyncHandle,dwFlags,phAsync
-CryptCreateHash,hProv,Algid,hKey,dwFlags,phHash
-CryptCreateKeyIdentifierFromCSP,dwCertEncodingType,pszPubKeyOID,pPubKeyStruc,cbPubKeyStruc,dwFlags,pvReserved,pbHash,pcbHash
-CryptDecodeMessage,dwMsgTypeFlags,pDecryptPara,pVerifyPara,dwSignerIndex,pbEncodedBlob,cbEncodedBlob,dwPrevInnerContentType,pdwMsgType,pdwInnerContentType,pbDecoded,pcbDecoded,ppXchgCert,ppSignerCert
-CryptDecodeObject,dwCertEncodingType,lpszStructType,pbEncoded,cbEncoded,dwFlags,pvStructInfo,pcbStructInfo
-CryptDecodeObjectEx,dwCertEncodingType,lpszStructType,pbEncoded,cbEncoded,dwFlags,pDecodePara,pvStructInfo,pcbStructInfo
-CryptDecrypt,hKey,hHash,Final,dwFlags,pbData,pdwDataLen
-CryptDecryptAndVerifyMessageSignature,pDecryptPara,pVerifyPara,dwSignerIndex,pbEncryptedBlob,cbEncryptedBlob,pbDecrypted,pcbDecrypted,ppXchgCert,ppSignerCert
-CryptDecryptMessage,pDecryptPara,pbEncryptedBlob,cbEncryptedBlob,pbDecrypted,pcbDecrypted,ppXchgCert
-CryptDeriveKey,hProv,Algid,hBaseData,dwFlags,phKey
-CryptDestroyHash,hHash
-CryptDestroyKey,hKey
-CryptDuplicateHash,hHash,pdwReserved,dwFlags,phHash
-CryptDuplicateKey,hKey,pdwReserved,dwFlags,phKey
-CryptEncodeObject,dwCertEncodingType,lpszStructType,pvStructInfo,pbEncoded,pcbEncoded
-CryptEncodeObjectEx,dwCertEncodingType,lpszStructType,pvStructInfo,dwFlags,pEncodePara,pvEncoded,pcbEncoded
-CryptEncrypt,hKey,hHash,Final,dwFlags,pbData,pdwDataLen,dwBufLen
-CryptEncryptMessage,pEncryptPara,cRecipientCert,rgpRecipientCert,pbToBeEncrypted,cbToBeEncrypted,pbEncryptedBlob,pcbEncryptedBlob
-CryptEnumKeyIdentifierProperties,pKeyIdentifier,dwPropId,dwFlags,pwszComputerName,pvReserved,pvArg,pfnEnum
-CryptEnumOIDFunction,dwEncodingType,pszFuncName,pszOID,dwFlags,pvArg,pfnEnumOIDFunc
-CryptEnumOIDInfo,dwGroupId,dwFlags,pvArg,pfnEnumOIDInfo
-CryptEnumProviders,dwIndex,pdwReserved,dwFlags,pdwProvType,pszProvName,pcbProvName
-CryptEnumProviderTypes,dwIndex,pdwReserved,dwFlags,pdwProvType,pszTypeName,pcbTypeName
-CryptExportKey,hKey,hExpKey,dwBlobType,dwFlags,pbData,pdwDataLen
-CryptExportPKCS8,hCryptProv,dwKeySpec,pszPrivateKeyObjId,dwFlags,pvAuxInfo,pbPrivateKeyBlob,pcbPrivateKeyBlob
-CryptExportPublicKeyInfo,hCryptProv,dwKeySpec,dwCertEncodingType,pInfo,pcbInfo
-CryptExportPublicKeyInfoEx,hCryptProv,dwKeySpec,dwCertEncodingType,pszPublicKeyObjId,dwFlags,pvAuxInfo,pInfo,pcbInfo
-CryptFindCertificateKeyProvInfo,pCert,dwFlags,pvReserved
-CryptFindLocalizedName,pwszCryptName
-CryptFindOIDInfo,dwKeyType,pvKey,dwGroupId
 CryptFlushTimeValidObject,pszFlushTimeValidOid,pvPara,pIssuer,dwFlags,pvReserved
-CryptFormatObject,dwCertEncodingType,dwFormatType,dwFormatStrType,pFormatStruct,lpszStructType,pbEncoded,cbEncoded,pbFormat,pcbFormat
-CryptFreeOIDFunctionAddress,hFuncAddr,dwFlags
-CryptGenKey,hProv,Algid,dwFlags,phKey
-CryptGenRandom,hProv,dwLen,pbBuffer
 CryptGetAsyncParam,hAsync,pszParamOid,ppvParam,ppfnFree
-CryptGetDefaultOIDDllList,hFuncSet,dwEncodingType,pwszDllList,pcchDllList
-CryptGetDefaultOIDFunctionAddress,hFuncSet,dwEncodingType,pwszDll,dwFlags,ppvFuncAddr,phFuncAddr
-CryptGetDefaultProvider,dwProvType,pdwReserved,dwFlags,pszProvName,pcbProvName
-CryptGetHashParam,hHash,dwParam,pbData,pdwDataLen,dwFlags
-CryptGetHashParam,hHash,dwParam,pByte,pdwDataLen,dwFlags
-CryptGetKeyIdentifierProperty,pKeyIdentifier,dwPropId,dwFlags,pwszComputerName,pvReserved,pvData,pcbData
-CryptGetKeyParam,hKey,dwParam,pbData,pdwDataLen,dwFlags
-CryptGetMessageCertificates,dwMsgAndCertEncodingType,hCryptProv,dwFlags,pbSignedBlob,cbSignedBlob
-CryptGetMessageSignerCount,dwMsgEncodingType,pbSignedBlob,cbSignedBlob
-CryptGetObjectUrl,pszUrlOid,pvPara,dwFlags,pUrlArray,pcbUrlArray,pUrlInfo,pcbUrlInfo,pvReserved
-CryptGetOIDFunctionAddress,hFuncSet,dwEncodingType,pszOID,dwFlags,ppvFuncAddr,phFuncAddr
-CryptGetOIDFunctionValue,dwEncodingType,pszFuncName,pszOID,pwszValueName,pdwValueType,pbValueData,pcbValueData
-CryptGetProvParam,hProv,dwParam,pbData,pdwDataLen,dwFlags
-CryptGetProvParam,hProv,dwParam,pByte,pdwDataLen,dwFlags
 CryptGetTimeValidObject,pszTimeValidOid,pvPara,pIssuer,pftValidFor,dwFlags,dwTimeout,ppvObject,pCredentials,pvReserved
-CryptGetUserKey,hProv,dwKeySpec,phUserKey
-CryptHashCertificate,hCryptProv,Algid,dwFlags,pbEncoded,cbEncoded,pbComputedHash,pcbComputedHash
-CryptHashData,hHash,pbData,dwDataLen,dwFlags
-CryptHashMessage,pHashPara,fDetachedHash,cToBeHashed,rgpbToBeHashed,rgcbToBeHashed,pbHashedBlob,pcbHashedBlob,pbComputedHash,pcbComputedHash
-CryptHashPublicKeyInfo,hCryptProv,Algid,dwFlags,dwCertEncodingType,pInfo,pbComputedHash,pcbComputedHash
-CryptHashSessionKey,hHash,hKey,dwFlags
-CryptHashToBeSigned,hCryptProv,dwCertEncodingType,pbEncoded,cbEncoded,pbComputedHash,pcbComputedHash
-CryptImportKey,hProv,pbData,dwDataLen,hPubKey,dwFlags,phKey
-CryptImportPKCS8,sImportParams,dwFlags,phCryptProv,pvAuxInfo
-CryptImportPublicKeyInfo,hCryptProv,dwCertEncodingType,pInfo,phKey
-CryptImportPublicKeyInfoEx,hCryptProv,dwCertEncodingType,pInfo,aiKeyAlg,dwFlags,pvAuxInfo,phKey
-CryptInitOIDFunctionSet,pszFuncName,dwFlags
-CryptInstallCancelRetrieval,pfnCancel,pvArg,dwFlags,pvReserved
-CryptInstallDefaultContext,hCryptProv,dwDefaultType,pvDefaultPara,dwFlags,pvReserved,phDefaultContext
-CryptInstallOIDFunctionAddress,hModule,dwEncodingType,pszFuncName,cFuncEntry,rgFuncEntry,dwFlags
-CryptMemAlloc,cbSize
-CryptMemFree,pv
-CryptMemRealloc,pv,cbSize
-CryptMsgCalculateEncodedLength,dwMsgEncodingType,dwFlags,dwMsgType,pvMsgEncodeInfo,pszInnerContentObjID,cbData
-CryptMsgClose,hCryptMsg
-CryptMsgControl,hCryptMsg,dwFlags,dwCtrlType,pvCtrlPara
-CryptMsgCountersign,hCryptMsg,dwIndex,cCountersigners,rgCountersigners
-CryptMsgCountersignEncoded,dwEncodingType,pbSignerInfo,cbSignerInfo,cCountersigners,rgCountersigners,pbCountersignature,pcbCountersignature
-CryptMsgDuplicate,hCryptMsg
-CryptMsgEncodeAndSignCTL,dwMsgEncodingType,pCtlInfo,pSignInfo,dwFlags,pbEncoded,pcbEncoded
-CryptMsgGetAndVerifySigner,hCryptMsg,cSignerStore,rghSignerStore,dwFlags,ppSigner,pdwSignerIndex
-CryptMsgGetParam,hCryptMsg,dwParamType,dwIndex,pvData,pcbData
-CryptMsgOpenToDecode,dwMsgEncodingType,dwFlags,dwMsgType,hCryptProv,pRecipientInfo,pStreamInfo
-CryptMsgOpenToEncode,dwMsgEncodingType,dwFlags,dwMsgType,pvMsgEncodeInfo,pszInnerContentObjID,pStreamInfo
-CryptMsgSignCTL,dwMsgEncodingType,pbCtlContent,cbCtlContent,pSignInfo,dwFlags,pbEncoded,pcbEncoded
-CryptMsgUpdate,hCryptMsg,pbData,cbData,fFinal
-CryptMsgVerifyCountersignatureEncoded,hCryptProv,dwEncodingType,pbSignerInfo,cbSignerInfo,pbSignerInfoCountersignature,cbSignerInfoCountersignature,pciCountersigner
-CryptMsgVerifyCountersignatureEncodedEx,hCryptProv,dwEncodingType,pbSignerInfo,cbSignerInfo,pbSignerInfoCountersignature,cbSignerInfoCountersignature,dwSignerType,pvSigner,dwFlags,pvReserved
-CryptProtectData,pDataIn,szDataDescr,pOptionalEntropy,pvReserved,pPromptStruct,dwFlags,pDataOut
-CryptQueryObject,dwObjectType,pvObject,dwExpectedContentTypeFlags,dwExpectedFormatTypeFlags,dwFlags,pdwMsgAndCertEncodingType,pdwContentType,pdwFormatType,phCertStore,phMsg,ppvContext
-CryptRegisterDefaultOIDFunction,dwEncodingType,pszFuncName,dwIndex,pwszDll
-CryptRegisterOIDFunction,dwEncodingType,pszFuncName,pszOID,pwszDll,pszOverrideFuncName
-CryptRegisterOIDInfo,pInfo,dwFlags
-CryptReleaseContext,hProv,dwFlags
-CryptRetrieveObjectByUrl,pszUrl,pszObjectOid,dwRetrievalFlags,dwTimeout,ppvObject,hAsyncRetrieve,pCredentials,pvVerify,pvReserved
-CryptSetAsyncParam,hAsync,pszParamOid,pvParam,pfnFree
-CryptSetHashParam,hHash,dwParam,pbData,dwFlags
-CryptSetKeyIdentifierProperty,pKeyIdentifier,dwPropId,dwFlags,pwszComputerName,pvReserved,pvData
-CryptSetKeyParam,hKey,dwParam,pbData,dwFlags
-CryptSetOIDFunctionValue,dwEncodingType,pszFuncName,pszOID,pwszValueName,dwValueType,pbValueData,cbValueData
-CryptSetProvider,pszProvName,dwProvType
-CryptSetProviderEx,pszProvName,dwProvType,pdwReserved,dwFlags
-CryptSetProvParam,hProv,dwParam,pbData,dwFlags
-CryptSignAndEncodeCertificate,hCryptProv,dwKeySpec,dwCertEncodingType,lpszStructType,pvStructInfo,pSignatureAlgorithm,pvHashAuxInfo,pbEncoded,pcbEncoded
-CryptSignAndEncryptMessage,pSignPara,pEncryptPara,cRecipientCert,rgpRecipientCert,pbToBeSignedAndEncrypted,cbToBeSignedAndEncrypted,pbSignedAndEncryptedBlob,pcbSignedAndEncryptedBlob
-CryptSignCertificate,hCryptProv,dwKeySpec,dwCertEncodingType,pbEncodedToBeSigned,cbEncodedToBeSigned,pSignatureAlgorithm,pvHashAuxInfo,pbSignature,pcbSignature
-CryptSignHash,hHash,dwKeySpec,sDescription,dwFlags,pbSignature,pdwSigLen
-CryptSignMessage,pSignPara,fDetachedSignature,cToBeSigned,rgpbToBeSigned,rgcbToBeSigned,pbSignedBlob,pcbSignedBlob
-CryptSignMessageWithKey,pSignPara,pbToBeSigned,cbToBeSigned,pbSignedBlob,pcbSignedBlob
-CryptSIPAddProvider,psNewProv
 CryptSIPCreateIndirectData,pSubjectInfo,pcbIndirectData,pIndirectData
 CryptSIPGetSignedDataMsg,pSubjectInfo,pdwEncodingType,dwIndex,pcbSignedDataMsg,pbSignedDataMsg
 CryptSIPLoad,pgSubject,dwFlags,pSipDispatch
 CryptSIPPutSignedDataMsg,pSubjectInfo,dwEncodingType,pdwIndex,cbSignedDataMsg,pbSignedDataMsg
-CryptSIPRemoveProvider,pgProv
 CryptSIPRemoveSignedDataMsg,pSubjectInfo,dwIndex
 CryptSIPRetrieveSubjectGuid,FileName,hFileIn,pgSubject
 CryptSIPVerifyIndirectData,pSubjectInfo,pIndirectData
-CryptUninstallCancelRetrieval,dwFlags,pvReserved
-CryptUninstallDefaultContext,hDefaultContext,dwFlags,pvReserved
-CryptUnprotectData,pDataIn,ppszDataDescr,pOptionalEntropy,pvReserved,pPromptStruct,dwFlags,pDataOut
-CryptUnregisterDefaultOIDFunction,dwEncodingType,pszFuncName,pwszDll
-CryptUnregisterOIDFunction,dwEncodingType,pszFuncName,pszOID
-CryptUnregisterOIDInfo,pInfo
-CryptVerifyCertificateSignature,hCryptProv,dwCertEncodingType,pbEncoded,cbEncoded,pPublicKey
-CryptVerifyCertificateSignatureEx,hCryptProv,dwCertEncodingType,dwSubjectType,pvSubject,dwIssuerType,pvIssuer,dwFlags,pvReserved
-CryptVerifyDetachedMessageHash,pHashPara,pbDetachedHashBlob,cbDetachedHashBlob,cToBeHashed,rgpbToBeHashed,rgcbToBeHashed,pbComputedHash,pcbComputedHash
-CryptVerifyDetachedMessageSignature,pVerifyPara,dwSignerIndex,pbDetachedSignBlob,cbDetachedSignBlob,cToBeSigned,rgpbToBeSigned,rgcbToBeSigned,ppSignerCert
-CryptVerifyMessageHash,pHashPara,pbHashedBlob,cbHashedBlob,pbToBeHashed,pcbToBeHashed,pbComputedHash,pcbComputedHash
-CryptVerifyMessageSignature,pVerifyPara,dwSignerIndex,pbSignedBlob,cbSignedBlob,pbDecoded,pcbDecoded,ppSignerCert
-CryptVerifyMessageSignatureWithKey,pVerifyPara,pPublicKeyInfo,pbSignedBlob,cbSignedBlob,pbDecoded,pcbDecoded
-CryptVerifySignature,hHash,pbSignature,dwSigLen,hPubKey,sDescription,dwFlags
-CStdStubBuffer_AddRef,This
-CStdStubBuffer_Connect,This,pUnkServer
-CStdStubBuffer_CountRefs,This
-CStdStubBuffer_DebugServerQueryInterface,This,ppv
-CStdStubBuffer_DebugServerRelease,This,pv
-CStdStubBuffer_Disconnect,This
-CStdStubBuffer_Invoke,This,pRpcMsg,pRpcChannelBuffer
-CStdStubBuffer_IsIIDSupported,This,riid
-CStdStubBuffer_QueryInterface,This,riid,ppvObject
 data_from_ndr,source,target,format,MscPak
 data_into_ndr,source,target,format,MscPak
 data_size_ndr,source,target,format,MscPak
 DbgBreakPoint,pCondition,pFileName,iLine
 dbprtype,intx
-DceErrorInqText,RpcStatus,ErrorText
 DeactivateWindowTheme,hWnd,pszSubAppName,pszSubIdList
 DebugPrintWaitWorkerThreads,dwDebugLevel
 DecompressText,hcmp,pbCompressed,cbCompressed,pbText
-DecryptMessage,phContext,pMessage,MessageSeqNo,pfQOP
-DefDlgProc,hDlg,wMsg,wParam,lParam
-DefDriverProc,dwDriverIdentifier,hdrvr,uMsg,lParam1,lParam2
-DeleteAce,pAcl,dwAceIndex
-DeleteAllGPOLinks,lpContainer
-DeleteClusterGroup,hGroup
-DeleteClusterResource,hResource
-DeleteColorSpace,hcolorspace
-DeleteColorTransform,THTRANSFORM
 DeleteCompressor,hcmp
-DeleteGPOLink,lpGPO,lpContainer
 DeleteHiliter,hhil
 DeleteIndex,hinx
-DeleteIPAddress,NTEContext
-DeleteIpForwardEntry,pRoute
-DeleteIpNetEntry,pArpEntry
-DeleteProfile,lpSidString,lpProfilePath,lpComputerName
-DeleteProxyArpEntry,dwAddress,dwMask,dwIfIndex
 DeleteSearcher,hsrch
-DeleteSecurityContext,phContext
 DeleteSecurityPackage,pszPackageName
 DeleteSocketPort,Handle
-DeleteUrlCacheEntry,lpszUrlName
-DeleteUrlCacheGroup,GroupId,dwFlags,lpReserved
 DelNode,pszFileOrDirName,dwFlags
 DelNodeRunDLL32,hWnd,hInstance,pszParms,nShow
 DeRegisterWaitEventBinding,pwiWorkItem
 DeRegisterWaitEventBindingSelf,pwiWorkItem
 DeRegisterWaitEventsTimers,pLEvents,pLTimers
 DeRegisterWaitEventsTimersSelf,pLEvents,pLTimers
-DescribePixelFormat,hDC,n,un,lpPixelFormatDescriptor
-DestroyBlob,hBlob
-DestroyCursor,hCursor
-DestroyEnvironmentBlock,lpEnvironment
-DestroyPrivateObjectSecurity,ObjectDescriptor
-DestroyPropertySheetPage,hpropsheetpage
-DhcpCApiCleanup
-DhcpCApiInitialize,Version
-DhcpDeRegisterParamChange,flags,Reserved,lEvent
-DhcpRegisterParamChange,flags,Reserved,AdapterName,ClassId,params,Handle
-DhcpRemoveDNSRegistrations
-DhcpRequestParams,flags,Reserved,AdapterName,ClassId,SendParams,RecdParams,buffer,pSize,RequestIdStr
-DhcpUndoRequestParams,flags,Reserved,AdapterName,RequestIdStr
-DialogBoxIndirectParam,hInstance,hDialogTemplate,hWndParent,lpDialogFunc,dwInitParam
-DialogBoxParam,hInstance,lpTemplateName,hWndParent,lpDialogFunc,dwInitParam
-DisassociateColorProfileFromDevice,pcstr,pcstr,pcstr
 DiscardIndex,hsrch,iIndex
-DispCallFunc,pvInstance,oVft,cc,vtReturn,cActuals,prgvt,prgpvarg,pvargResult
-DispGetIDsOfNames,ptinfo,rgszNames,cNames,rgdispid
-DispGetParam,pdispparams,position,vtTarg,pvarResult,puArgErr
-DispInvoke,this,ptinfo,dispidMember,wFlags,pparams,pvarResult,pexcepinfo,puArgErr
-DllCanUnloadNow
-DllGetClassObject,rclsid,riid,ppv
-DllInstall,bInstall,pszCmdLine
-DllRegisterServer
-DllUnregisterServer
+;-
 DoDragDrop,pDataObj,pDropSource,dwOKEffects,pdwEffect
 DoEnvironmentSubst,szString,cbString
 DosDateTimeToVariantTime,wDosDate,wDosTime,pvtime
