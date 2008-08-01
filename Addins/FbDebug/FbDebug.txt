@@ -11,15 +11,16 @@ FbDebug addin:
   or VB6. Unlike other FreeBASIC debuggers the debugged exe will
   run at normal speed until a breakpoint is reached. This makes
   it possible to comfortable debug even large projects and event
-  driven applications like windogs gui projects.
+  driven applications like windows gui projects.
 
 Limitations:
 - You can only debug projects compiled with the -g option.
 - You can not debug files that are not included in the project.
 - You can not inspect the value of variables in an array.
-  However you can use the OutputDebugString api to have
-  the value displayed in FbEdit's output window. This will
-  also work if the project is compiled without the -g option.
+  However you can use the immediate window. You can also use the
+  OutputDebugString api to have the value displayed in FbEdit's
+  output window. This will also work if the project is compiled
+  without the -g option.
 - You can not debug libraries.
 - Debugging dll's is not supported yet.
 - OOP is not tested at all.
@@ -35,6 +36,8 @@ Breakpoints:
 Inspecting variables:
 - You can inspect the value of variables in the current scope by
   moving the mouse over the variable (arrays will only show dimensions).
+- You can use the immediate window to print the value of variables.
+  Example: ?x
 - You can also insert the OutputDebugString api in your code to
   have the value displayed in FbEdit's output window.
 
@@ -88,6 +91,8 @@ o Fixed bug with threads in libraries.
 o Fixed bug with module filenames.
 Version 1.0.0.4
 o Fixed bug with showing parameters and locals.
-o Added immediate functions in output windiw.
+o Added immediate window.
+  While debugging you can inspect or set the
+  value of variables in the current scope.
 
 KetilO

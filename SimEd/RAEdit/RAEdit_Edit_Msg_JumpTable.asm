@@ -293,48 +293,48 @@
 .data
 align 4
 _EDIT_MSG \
-	dd _EM_GETSEL			;0x00B0
-	dd _EM_SETSEL			;0x00B1
-	dd _EM_GETRECT			;0x00B2
-	dd _DefEditMsg			;0x00B3 _EM_SETRECT			<- DefWindowProc
-	dd _DefEditMsg			;0x00B4 _EM_SETRECTNP			<- DefWindowProc
-	dd _DefEditMsg			;0x00B5 _EM_SCROLL			<- DefWindowProc
-	dd _EM_LINESCROLL		;0x00B6
-	dd _EM_SCROLLCARET		;0x00B7
-	dd _EM_GETMODIFY		;0x00B8
-	dd _EM_SETMODIFY		;0x00B9
-	dd _EM_GETLINECOUNT		;0x00BA
-	dd _EM_LINEINDEX		;0x00BB
-	dd _DefEditMsg			;0x00BC _EM_SETHANDLE			<- DefWindowProc
-	dd _DefEditMsg			;0x00BD _EM_GETHANDLE			<- DefWindowProc
-	dd _DefEditMsg			;0x00BE _EM_GETTHUMB			<- DefWindowProc
-	dd _DefEditMsg			;0x00BF _UNKNOW_MSG			<- DefWindowProc
-	dd _DefEditMsg			;0x00C0 _UNKNOW_MSG			<- DefWindowProc
-	dd _EM_LINELENGTH		;0x00C1
-	dd _EM_REPLACESEL		;0x00C2
-	dd _DefEditMsg			;0x00C3 _UNKNOW_MSG			<- DefWindowProc
-	dd _EM_GETLINE			;0x00C4
-	dd _DefEditMsg			;0x00C5 _EM_LIMITTEXT			<- DefWindowProc
-	dd _EM_CANUNDO			;0x00C6
-	dd _EM_UNDO			;0x00C7
-	dd _DefEditMsg			;0x00C8 _EM_FMTLINES			<- DefWindowProc
-	dd _EM_LINEFROMCHAR		;0x00C9
-	dd _DefEditMsg			;0x00CA _UNKNOW_MSG			<- DefWindowProc
-	dd _DefEditMsg			;0x00CB _EM_SETTABSTOPS			<- DefWindowProc
-	dd _DefEditMsg			;0x00CC _EM_SETPASSWORDCHAR		<- DefWindowProc
+	dd _EM_GETSEL				;0x00B0
+	dd _EM_SETSEL				;0x00B1
+	dd _EM_GETRECT				;0x00B2
+	dd _DefEditMsg				;0x00B3 _EM_SETRECT					<- DefWindowProc
+	dd _DefEditMsg				;0x00B4 _EM_SETRECTNP				<- DefWindowProc
+	dd _DefEditMsg				;0x00B5 _EM_SCROLL					<- DefWindowProc
+	dd _EM_LINESCROLL			;0x00B6
+	dd _EM_SCROLLCARET			;0x00B7
+	dd _EM_GETMODIFY			;0x00B8
+	dd _EM_SETMODIFY			;0x00B9
+	dd _EM_GETLINECOUNT			;0x00BA
+	dd _EM_LINEINDEX			;0x00BB
+	dd _DefEditMsg				;0x00BC _EM_SETHANDLE				<- DefWindowProc
+	dd _DefEditMsg				;0x00BD _EM_GETHANDLE				<- DefWindowProc
+	dd _DefEditMsg				;0x00BE _EM_GETTHUMB				<- DefWindowProc
+	dd _DefEditMsg				;0x00BF _UNKNOW_MSG					<- DefWindowProc
+	dd _DefEditMsg				;0x00C0 _UNKNOW_MSG					<- DefWindowProc
+	dd _EM_LINELENGTH			;0x00C1
+	dd _EM_REPLACESEL			;0x00C2
+	dd _DefEditMsg				;0x00C3 _UNKNOW_MSG					<- DefWindowProc
+	dd _EM_GETLINE				;0x00C4
+	dd _DefEditMsg				;0x00C5 _EM_LIMITTEXT				<- DefWindowProc
+	dd _EM_CANUNDO				;0x00C6
+	dd _EM_UNDO					;0x00C7
+	dd _DefEditMsg				;0x00C8 _EM_FMTLINES				<- DefWindowProc
+	dd _EM_LINEFROMCHAR			;0x00C9
+	dd _DefEditMsg				;0x00CA _UNKNOW_MSG					<- DefWindowProc
+	dd _DefEditMsg				;0x00CB _EM_SETTABSTOPS				<- DefWindowProc
+	dd _DefEditMsg				;0x00CC _EM_SETPASSWORDCHAR			<- DefWindowProc
 	dd _EM_EMPTYUNDOBUFFER		;0x00CD
 	dd _EM_GETFIRSTVISIBLELINE	;0x00CE
-	dd _DefEditMsg			;0x00CF _EM_SETREADONLY			<- DefWindowProc
-	dd _DefEditMsg			;0x00D0 _EM_SETWORDBREAKPROC		<- DefWindowProc
-	dd _DefEditMsg			;0x00D1 _EM_GETWORDBREAKPROC		<- DefWindowProc
-	dd _DefEditMsg			;0x00D2 _EM_GETPASSWORDCHAR		<- DefWindowProc
-	dd _DefEditMsg			;0x00D3 _EM_SETMARGINS			<- DefWindowProc
-	dd _DefEditMsg			;0x00D4 _EM_GETMARGINS			<- DefWindowProc
-	dd _DefEditMsg			;0x00D5 _EM_GETLIMITTEXT		<- DefWindowProc
-	dd _EM_POSFROMCHAR		;0x00D6
-	dd _EM_CHARFROMPOS		;0x00D7
-	dd _DefEditMsg			;0x00D8 _EM_SETIMESTATUS		<- DefWindowProc
-	dd _DefEditMsg			;0x00D9 _EM_GETIMESTATUS		<- DefWindowProc
+	dd _DefEditMsg				;0x00CF _EM_SETREADONLY				<- DefWindowProc
+	dd _DefEditMsg				;0x00D0 _EM_SETWORDBREAKPROC		<- DefWindowProc
+	dd _DefEditMsg				;0x00D1 _EM_GETWORDBREAKPROC		<- DefWindowProc
+	dd _DefEditMsg				;0x00D2 _EM_GETPASSWORDCHAR			<- DefWindowProc
+	dd _DefEditMsg				;0x00D3 _EM_SETMARGINS				<- DefWindowProc
+	dd _DefEditMsg				;0x00D4 _EM_GETMARGINS				<- DefWindowProc
+	dd _DefEditMsg				;0x00D5 _EM_GETLIMITTEXT			<- DefWindowProc
+	dd _EM_POSFROMCHAR			;0x00D6
+	dd _EM_CHARFROMPOS			;0x00D7
+	dd _DefEditMsg				;0x00D8 _EM_SETIMESTATUS			<- DefWindowProc
+	dd _DefEditMsg				;0x00D9 _EM_GETIMESTATUS			<- DefWindowProc
 	;dd _EM_SETLIMITTEXT		;EM_LIMITTEXT   /* ;win40 Name change */
 
 .code
