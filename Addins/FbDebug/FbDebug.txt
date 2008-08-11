@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.2
+FbEdit debug addin version 1.0.0.4
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -21,6 +21,10 @@ Limitations:
   OutputDebugString api to have the value displayed in FbEdit's
   output window. This will also work if the project is compiled
   without the -g option.
+- Immediate window:
+  Due to limitted debug info on zstring size, zstring arrays are
+  not supported.
+  You can not set a string variable longer than its allocated string space.
 - You can not debug libraries.
 - Debugging dll's is not supported yet.
 - OOP is not tested at all.
@@ -37,7 +41,8 @@ Inspecting variables:
 - You can inspect the value of variables in the current scope by
   moving the mouse over the variable (arrays will only show dimensions).
 - You can use the immediate window to print the value of variables.
-  Example: ?x
+  Example:
+  ?x                Will print the value of x.
 - You can also insert the OutputDebugString api in your code to
   have the value displayed in FbEdit's output window.
 
@@ -68,6 +73,24 @@ Debug menu:
   Execution will be halted on the current line (unless there is
   a breakpoint).
   
+- Immediate window
+  With the immediate window you can print or set the value of
+  variables in the current scope.
+  Example:
+  ?x                Will print the value of x.
+  x=99              Will set the value of x to 99.
+  You can also evaluete a limitted numper of fb functions like:
+  Asc, Len, InStr, InStrRev
+  Str, Chr, Left, Right, Mid, Space, String
+  Example:
+  ?Asc("A")         Will print 65
+  Supported operators:
+  Eqv, Imp, Xor, Or, And, Not, =, <>,< , >, <=, >=, +, -, Shr, Shl,
+  Mod, \, *, /, ^, &
+  Example:
+  ?(1+2)*3          Will print 9
+  
+
 Whats New:
 ----------
 Version 1.0.0.0
@@ -94,5 +117,8 @@ o Fixed bug with showing parameters and locals.
 o Added immediate window.
   While debugging you can inspect or set the
   value of variables in the current scope.
+  Example:
+  ?x             Will print the value of x.
+  x=Asc("A")     Will set the value of x.
 
 KetilO
