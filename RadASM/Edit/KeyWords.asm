@@ -413,13 +413,13 @@ AddCboTheme proc uses ebx,hWin:HWND
 	invoke strcpy,addr tempbuff,addr szCurrent
 	invoke strcat,addr tempbuff,addr szComma
 	xor		ebx,ebx
-	.while ebx<17
+	.while ebx<19
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,ebx,0
 		invoke iniPutItem,eax,addr tempbuff,TRUE
 		inc		ebx
 	.endw
 	xor		ebx,ebx
-	.while ebx<18
+	.while ebx<19
 		invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,ebx,0
 		invoke iniPutItem,eax,addr tempbuff,TRUE
 		inc		ebx
@@ -451,14 +451,14 @@ ApplyCboTheme proc uses ebx,hWin:HWND
 		invoke GetPrivateProfileString,addr iniColor,addr buffer,addr szNULL,addr tempbuff,sizeof tempbuff,addr iniFile
 		invoke iniGetItem,addr tempbuff,addr tempbuff[8192]
 		xor		ebx,ebx
-		.while ebx<17
+		.while ebx<19
 			invoke iniGetItem,addr tempbuff,addr tempbuff[8192]
 			invoke DecToBin,addr tempbuff[8192]
 			invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,ebx,eax
 			inc		ebx
 		.endw
 		xor		ebx,ebx
-		.while ebx<19
+		.while ebx<20
 			invoke iniGetItem,addr tempbuff,addr tempbuff[8192]
 			invoke DecToBin,addr tempbuff[8192]
 			invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,ebx,eax
