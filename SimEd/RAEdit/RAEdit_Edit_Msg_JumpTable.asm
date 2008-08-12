@@ -117,6 +117,7 @@
 			.endif
 			mov		[esi].RAEDT.cpy,eax
 			invoke InvalidateEdit,ebx,[esi].RAEDT.hwnd
+			mov		eax,TRUE
 			ret
 		align 4 
 		_EM_SCROLLCARET:
@@ -124,7 +125,7 @@
 			;lParam=0
 			invoke SetCaretVisible,[esi].RAEDT.hwnd,[esi].RAEDT.cpy
 			invoke SetCaret,ebx,[esi].RAEDT.cpy
-			xor		eax,eax
+			mov		eax,TRUE
 			ret
 		align 4 
 		_EM_SETSEL:

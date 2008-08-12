@@ -668,7 +668,11 @@ Nxt:
 						If svar=cudt(i).nm Then
 							adr+=cudt(i).ofs
 							typ=cudt(i).Typ
-							ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
+							If cudt(i).arr Then
+								ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
+							Else
+								ofs=GetArrOfs(px,typ,0,0)
+							EndIf
 							If ofs=-1 Then
 								Return -1
 							EndIf
@@ -1126,19 +1130,19 @@ Function Compile(lpLine As ZString Ptr) As Integer
 		nErr=1
 		Return -1
 	EndIf
-	'buff=" ("
-	'For i=0 To Len(szCompiled)
-	'	buff &=Str(szCompiled[i]) & ","
-	'Next
-	'buff=Left(buff,Len(buff)-1) & ")"
-	'SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+	buff=" ("
+	For i=0 To Len(szCompiled)
+		buff &=Str(szCompiled[i]) & ","
+	Next
+	buff=Left(buff,Len(buff)-1) & ")"
+	SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	Return 0
 
 End Function
 
 Function Immediate() As Integer
 	Dim buff As ZString*256
-	Dim As Integer lret,x,adr,typ,ival,sadr
+	Dim As Integer lret,x,adr,typ,ival,sadr,i
 	Dim As Single sval
 	Dim As LongInt lval
 	Dim res As RES
@@ -1240,6 +1244,40 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf UCase(buff)="DUMP" Then
+		buff=Chr(VK_RETURN,10)
+		SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+		For x=1 To vrbnb
+			Select Case vrb(x).mem
+				Case 1
+					buff="Shared"
+					'
+				Case 2
+					buff="Static"
+					'
+				Case 3
+					buff="ByRef"
+					'
+				Case 4
+					buff="ByVal"
+					'
+				Case 5
+					buff="Local"
+					'
+				Case Else
+					buff="Unknown"
+			End Select
+			If vrb(x).arr Then
+				buff=buff & " " & vrb(x).nm & "("
+				For i=0 To vrb(x).arr->dmn-1
+					buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
+				Next
+				buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+			Else
+				buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+			EndIf
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+		Next
 	Else
 		nErr=1
 		lret=-1

@@ -2491,7 +2491,6 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 				pop		ecx
 				push	ecx
 				invoke SaveUndo,ebx,UNDO_DELETEBLOCK,eax,edx,ecx
-
 				pop		ecx
 			.endif
 			sub		[edi].CHARS.len,ecx

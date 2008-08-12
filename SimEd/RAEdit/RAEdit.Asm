@@ -3041,7 +3041,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetCaret,ebx,0
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
-		xor		eax,eax
+		mov		eax,TRUE
 		ret
 	.elseif eax==WM_GETTEXT
 		;wParam=cbBuff

@@ -23,6 +23,7 @@
 				mov		[ebx].EDIT.cpMax,ecx
 				invoke GetCharPtr,ebx,[edi].CHARRANGE.cpMin
 				mov		[ebx].EDIT.cpMin,ecx
+				push	edx
 				.if ![ebx].EDIT.fHideSel
 					invoke TestExpand,ebx,[ebx].EDIT.line
 					mov		eax,[ebx].EDIT.cpMin
@@ -34,8 +35,11 @@
 					.endif
 				.endif
 				invoke SelChange,ebx,SEL_TEXT
+				pop		eax
+			.else
+				xor		eax,eax
+				dec		eax
 			.endif
-			xor		eax,eax
 			ret
 		align 4 
 		_EM_EXGETSEL:
