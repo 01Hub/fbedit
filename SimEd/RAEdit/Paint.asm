@@ -1050,8 +1050,8 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 
 DrawBlockMarker:
 
-retn
-	.if [edi].CHARS.bmid
+	test	[edi].CHARS.state,STATE_BLOCK
+	.if !ZERO?
 		xor		eax,eax
 		sub		eax,ps.rcPaint.left
 		add		eax,15
@@ -1318,9 +1318,8 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
-
-retn
-	.if [edi].CHARS.bmid
+	test	[edi].CHARS.state,STATE_BLOCK
+	.if !ZERO?
 		mov		eax,15
 		mov		edx,rect1.top
 		push	eax

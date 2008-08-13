@@ -1494,6 +1494,7 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 	mov		edi,nLine
 	shl		edi,2
 	.if edi<esi
+;		and		[edi].CHARS.state,-1 xor STATE_BLOCK
 		invoke IsLine,ebx,nLine,offset szInclude
 		inc		eax
 		jne		@b
@@ -1515,6 +1516,7 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 		inc		nBmid
 		mov		eax,nBmid
 		mov		[edi].CHARS.bmid,eax
+		or		[edi].CHARS.state,STATE_BLOCK
 		and		[edi].CHARS.state,-1 xor STATE_BMMASK
 		or		[edi].CHARS.state,STATE_BM1
 		mov		eax,lpBlockDef
