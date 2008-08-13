@@ -11,7 +11,7 @@ RAHexEdInstall				PROTO C :DWORD,:DWORD
 RAHexEdUnInstall			PROTO
 InstallRAEdit				PROTO :DWORD,:DWORD
 UnInstallRAEdit				PROTO
-ResEdInstall				PROTO	:DWORD,:DWORD
+ResEdInstall				PROTO :DWORD,:DWORD
 ResEdUninstall				PROTO
 
 include windows.inc

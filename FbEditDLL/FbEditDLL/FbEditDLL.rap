@@ -11,6 +11,9 @@ Debug=0
 2=FbEditDLL.Inc
 3=FbEditDLL.Def
 4=FbEditDLL.rc
+5=..\GetLibs.bat
+6=..\..\GetCustomControls.bat
+7=..\..\..\..\..\FbEdit.exe
 [MakeFiles]
 0=FbEditDLL.rap
 1=FbEditDLL.rc
@@ -51,6 +54,9 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=2
 3=4
 4=4
+5=4
+6=4
+7=1
 [AutoLoad]
 1=1
 2=1
@@ -59,11 +65,15 @@ Group=Added files,Assembly,Resources,Misc,Modules
 1=
 2=
 4=
+6=
+5=
 [Size]
 3=0,0,0,0,42
-1=0,0,0,0,414
-2=0,0,0,0,143
+1=0,0,0,0,484
+2=0,0,0,0,373
 4=0,0,0,0,389
+6=0,0,0,0,42
+5=0,0,0,0,51
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -74,7 +84,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2008
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=24

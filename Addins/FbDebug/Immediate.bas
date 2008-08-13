@@ -577,6 +577,7 @@ Function GetVarAdr(ByRef px As Integer,ByRef typ As Integer) As Integer
 	px+=1
 	svar=UCase(Mid(szCompiled,px+1,i))
 	px+=i
+Again:
 	i=1
 	adr=0
 	While i<=vrbnb
@@ -680,16 +681,29 @@ Nxt:
 							Exit For
 						EndIf
 					Next
+					GoTo Nxt
 				Else
-					nErr=1
-					Return -1
+					If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
+						' Foreign Integer
+						typ=1
+					Else
+						nErr=1
+						Return -1
+					EndIf
 				EndIf
-				GoTo Nxt
 			EndIf
 			Return adr
 		EndIf
 		i+=1
 	Wend
+	If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
+		px+=2
+		i=szCompiled[px]
+		px+=1
+		svar="NS : " & svar & "." & UCase(Mid(szCompiled,px+1,i))
+		px+=i
+		GoTo Again
+	EndIf
 	nErr=3
 	Return -1
 
@@ -1130,12 +1144,12 @@ Function Compile(lpLine As ZString Ptr) As Integer
 		nErr=1
 		Return -1
 	EndIf
-	buff=" ("
-	For i=0 To Len(szCompiled)
-		buff &=Str(szCompiled[i]) & ","
-	Next
-	buff=Left(buff,Len(buff)-1) & ")"
-	SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+	'buff=" ("
+	'For i=0 To Len(szCompiled)
+	'	buff &=Str(szCompiled[i]) & ","
+	'Next
+	'buff=Left(buff,Len(buff)-1) & ")"
+	'SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	Return 0
 
 End Function
@@ -1245,39 +1259,45 @@ Function Immediate() As Integer
 			lret=-1
 		EndIf
 	ElseIf UCase(buff)="DUMP" Then
-		buff=Chr(VK_RETURN,10)
-		SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-		For x=1 To vrbnb
-			Select Case vrb(x).mem
-				Case 1
-					buff="Shared"
-					'
-				Case 2
-					buff="Static"
-					'
-				Case 3
-					buff="ByRef"
-					'
-				Case 4
-					buff="ByVal"
-					'
-				Case 5
-					buff="Local"
-					'
-				Case Else
-					buff="Unknown"
-			End Select
-			If vrb(x).arr Then
-				buff=buff & " " & vrb(x).nm & "("
-				For i=0 To vrb(x).arr->dmn-1
-					buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
-				Next
-				buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
-			Else
-				buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
-			EndIf
+		If hThread Then
+			' Only in debug mode
+			buff=Chr(VK_RETURN,10)
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-		Next
+			For x=1 To vrbnb
+				Select Case vrb(x).mem
+					Case 1
+						buff="Shared"
+						'
+					Case 2
+						buff="Static"
+						'
+					Case 3
+						buff="ByRef"
+						'
+					Case 4
+						buff="ByVal"
+						'
+					Case 5
+						buff="Local"
+						'
+					Case Else
+						buff="Unknown"
+				End Select
+				If vrb(x).arr Then
+					buff=buff & " " & vrb(x).nm & "("
+					For i=0 To vrb(x).arr->dmn-1
+						buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
+					Next
+					buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+				Else
+					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+				EndIf
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
 	Else
 		nErr=1
 		lret=-1

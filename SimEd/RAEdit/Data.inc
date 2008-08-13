@@ -15,7 +15,7 @@ MAXSTREAM				equ 32*1024
 
 BTNWT					equ 14
 BTNHT					equ 6
-SELWT					equ 16
+SELWT					equ 24
 LNRWT					equ 28
 
 UNDO_INSERT				equ 1

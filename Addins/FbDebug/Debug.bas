@@ -25,11 +25,20 @@ End Sub
 
 Sub readstabs(ad As UInteger)
 	Dim lret As Integer
+	Dim b As Byte
 
-	lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
-	If lret=0 Then
-		PutString("Error reading memory at " & Hex(ad+basestabs))
-	End If
+	b=1
+	recup=""
+	While b
+		b=0
+		lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@b,1,0)
+		If lret=0 Then
+			PutString("Error reading memory at " & Hex(ad+basestabs))
+		End If
+		recup &=Chr(b)
+		ad+=1
+	Wend
+	'lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
 
 End Sub
 

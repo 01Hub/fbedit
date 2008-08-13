@@ -18,7 +18,6 @@ DllEntry proc public hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 		invoke InstallRAEdit,hInst,TRUE
 		invoke ResEdInstall,hInst,TRUE
 	.elseif reason==DLL_PROCESS_DETACH
-		invoke InstallRAEdit,hInst,TRUE
 		invoke UnInstallRACodeComplete
 		invoke UnInstallFileBrowser
 		invoke UnInstallRAProperty

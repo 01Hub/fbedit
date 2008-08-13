@@ -92,7 +92,7 @@ RAHexEdInstall proc C public hInst:HINSTANCE,fGlobal:DWORD
 	mov		hSelCur,eax
 	invoke LoadBitmap,hInst,IDB_BOOKMARK
 	mov		hBmp,eax
-	invoke ImageList_Create,9,9,ILC_COLOR4,8,8
+	invoke ImageList_Create,11,11,ILC_COLOR4,8,8
 	mov		hIml,eax
 	invoke ImageList_Add,hIml,hBmp,NULL
 	invoke DeleteObject,hBmp

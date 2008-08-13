@@ -120,5 +120,13 @@ o Added immediate window.
   Example:
   ?x             Will print the value of x.
   x=Asc("A")     Will set the value of x.
+Version 1.0.0.5
+o Changed the way debug info is read from the process.
+  This should prevent the 'Error reading memory at xxxx' message.
+o Added support for namespaces to immediate window.
+o Added support for foreign datatypes (like HINSTANCE) to immediate window.
+o Added Dump command to immediate window. The command
+  will create a list of all variables.
+o Fixed bug with UDT's in immediate window.
 
 KetilO

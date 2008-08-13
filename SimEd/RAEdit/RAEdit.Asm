@@ -102,9 +102,9 @@ InstallRAEdit proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		hSelCur,eax
 	invoke LoadBitmap,hInstance,IDB_BOOKMARK
 	mov		hBmp,eax
-	invoke ImageList_Create,9,9,ILC_COLOR4,7,7
+	invoke ImageList_Create,11,11,ILC_COLOR4 or ILC_MASK,7,7
 	mov		hIml,eax
-	invoke ImageList_Add,hIml,hBmp,NULL
+	invoke ImageList_AddMasked,hIml,hBmp,0C0C0C0h
 	invoke DeleteObject,hBmp
 	invoke LoadBitmap,hInstance,IDB_LINENUMBER
 	mov		hBmpLnr,eax

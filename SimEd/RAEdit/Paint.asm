@@ -284,22 +284,7 @@ DrawWord:
 		mul		ecx
 		add		eax,rcleft
 		.while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len
-			.if edi && !fChr
-				pushad
-				lea		esi,[eax+2]
-				mov		ecx,[ebx].EDIT.fntinfo.fntht
-				shr		ecx,1
-				mov		edi,rect.top
-				.while ecx
-					push	ecx
-					inc		edi
-					invoke SetPixel,hDC,esi,edi,[ebx].EDIT.clr.hicol3
-					inc		edi
-					pop		ecx
-					dec		ecx
-				.endw
-				popad
-			.endif
+			call	DrawTabMarker
 			add		eax,ecx
 			inc		edi
 			.if fWrd
@@ -308,10 +293,16 @@ DrawWord:
 		.endw
 		mov		rect.right,eax
 	.elseif edx==VK_SPACE
-		mov		fChr,TRUE
+		;mov		fChr,TRUE
 		mov		ecx,[ebx].EDIT.fntinfo.spcwt
 		mov		eax,rect.left
+		mov		edx,[ebx].EDIT.fntinfo.tabwt
+		add		edx,eax
 		.while byte ptr [esi+edi]==VK_SPACE && edi<[esi].CHARS.len
+			.if eax==edx
+				add		edx,[ebx].EDIT.fntinfo.tabwt
+				call	DrawTabMarker
+			.endif
 			add		eax,ecx
 			inc		edi
 			.if fWrd
@@ -456,6 +447,25 @@ DrawWord:
 			.endif
 			add		edi,fTmp
 		.endif
+	.endif
+	retn
+
+DrawTabMarker:
+	.if edi && !fChr
+		pushad
+		lea		esi,[eax+2]
+		mov		ecx,[ebx].EDIT.fntinfo.fntht
+		shr		ecx,1
+		mov		edi,rect.top
+		.while ecx
+			push	ecx
+			inc		edi
+			invoke SetPixel,hDC,esi,edi,[ebx].EDIT.clr.hicol3
+			inc		edi
+			pop		ecx
+			dec		ecx
+		.endw
+		popad
 	.endif
 	retn
 
@@ -935,52 +945,29 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
 					invoke SelectClipRgn,mDC,NULL
+					call	DrawBlockMarker
 					test	[edi].CHARS.state,STATE_BREAKPOINT
 					.if !ZERO?
-						invoke CreateSolidBrush,5151A2h
-						invoke SelectObject,mDC,eax
-						push	eax
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,16
+						sub		eax,13+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,14
+						sub		edx,7
 						shr		edx,1
 						add		edx,rect1.top
-						mov		rect2.left,eax
-						add		eax,16
-						mov		rect2.right,eax
-						mov		rect2.top,edx
-						add		edx,16
-						mov		rect2.bottom,edx
-						invoke RoundRect,mDC,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
-						pop		eax
-						invoke SelectObject,mDC,eax
-						invoke DeleteObject,eax
+						invoke ImageList_Draw,hIml,3,mDC,eax,edx,ILD_TRANSPARENT
 					.endif
 					.if [edi].CHARS.errid
-						invoke CreateSolidBrush,0FFh
-						invoke SelectObject,mDC,eax
-						push	eax
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,16
+						sub		eax,13+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,14
+						sub		edx,7
 						shr		edx,1
 						add		edx,rect1.top
-						mov		rect2.left,eax
-						add		eax,16
-						mov		rect2.right,eax
-						mov		rect2.top,edx
-						add		edx,16
-						mov		rect2.bottom,edx
-						invoke RoundRect,mDC,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
-						pop		eax
-						invoke SelectObject,mDC,eax
-						invoke DeleteObject,eax
+						invoke ImageList_Draw,hIml,6,mDC,eax,edx,ILD_TRANSPARENT
 					.endif
 					mov		eax,[ebx].EDIT.lpBmCB
 					mov		ecx,[edi].CHARS.state
@@ -999,7 +986,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 						dec		ecx
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,12
+						sub		eax,13
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
@@ -1060,6 +1047,23 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	invoke EndPaint,hWin,addr ps
 	invoke DeleteObject,hRgn1
 	ret
+
+DrawBlockMarker:
+
+retn
+	.if [edi].CHARS.bmid
+		xor		eax,eax
+		sub		eax,ps.rcPaint.left
+		add		eax,15
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,mDC,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		add		edx,rect1.top
+		invoke LineTo,mDC,eax,edx
+	.endif
+	retn
 
 DrawPageBreak:
 	mov		ecx,[ebx].EDIT.nPageBreak
@@ -1226,52 +1230,27 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
 					invoke SelectClipRgn,ps.hdc,NULL
+					call	DrawBlockMarker
 					test	[edi].CHARS.state,STATE_BREAKPOINT
 					.if !ZERO?
-						invoke CreateSolidBrush,5151A2h
-						invoke SelectObject,ps.hdc,eax
-						push	eax
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,16
-						sub		eax,ps.rcPaint.left
+						sub		eax,13+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,14
+						sub		edx,7
 						shr		edx,1
 						add		edx,rect1.top
-						mov		rect2.left,eax
-						add		eax,16
-						mov		rect2.right,eax
-						mov		rect2.top,edx
-						add		edx,16
-						mov		rect2.bottom,edx
-						invoke RoundRect,ps.hdc,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
-						pop		eax
-						invoke SelectObject,ps.hdc,eax
-						invoke DeleteObject,eax
+						invoke ImageList_Draw,hIml,3,ps.hdc,eax,edx,ILD_TRANSPARENT
 					.endif
 					.if [edi].CHARS.errid
-						invoke CreateSolidBrush,0FFh
-						invoke SelectObject,ps.hdc,eax
-						push	eax
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,16
-						sub		eax,ps.rcPaint.left
+						sub		eax,13+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,14
+						sub		edx,7
 						shr		edx,1
 						add		edx,rect1.top
-						mov		rect2.left,eax
-						add		eax,16
-						mov		rect2.right,eax
-						mov		rect2.top,edx
-						add		edx,16
-						mov		rect2.bottom,edx
-						invoke RoundRect,ps.hdc,rect2.left,rect2.top,rect2.right,rect2.bottom,7,7
-						pop		eax
-						invoke SelectObject,ps.hdc,eax
-						invoke DeleteObject,eax
+						invoke ImageList_Draw,hIml,6,ps.hdc,eax,edx,ILD_TRANSPARENT
 					.endif
 					mov		eax,[ebx].EDIT.lpBmCB
 					mov		ecx,[edi].CHARS.state
@@ -1290,7 +1269,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 						dec		ecx
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,12
+						sub		eax,13
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
 						shr		edx,1
@@ -1337,6 +1316,21 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	invoke EndPaint,hWin,addr ps
 	invoke DeleteObject,hRgn1
 	ret
+
+DrawBlockMarker:
+
+retn
+	.if [edi].CHARS.bmid
+		mov		eax,15
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,ps.hdc,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		add		edx,rect1.top
+		invoke LineTo,ps.hdc,eax,edx
+	.endif
+	retn
 
 DrawPageBreak:
 	mov		ecx,[ebx].EDIT.nPageBreak
