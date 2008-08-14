@@ -38,6 +38,7 @@ Sub readstabs(ad As UInteger)
 		recup &=Chr(b)
 		ad+=1
 	Wend
+	PutString(recup)
 	'lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
 
 End Sub
@@ -273,6 +274,11 @@ Function decoupscp(gv As Byte) As Integer
 		Case Asc("p")
 			'byval parameter
 			vrb(vrbnb).mem=4
+			vrb(vrbnb).pn=-procnb
+			Return 2
+		Case Asc("G")
+			'common
+			vrb(vrbnb).mem=6
 			vrb(vrbnb).pn=-procnb
 			Return 2
 		Case Else

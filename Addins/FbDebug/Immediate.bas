@@ -608,6 +608,11 @@ Again:
 					' Local
 					adr=ebp_this+vrb(i).adr
 					'
+				Case 6
+					' Common
+					adr=vrb(i).adr
+					fGlobal=1
+					'
 				Case Else
 					Return -1
 			End Select
@@ -1279,6 +1284,9 @@ Function Immediate() As Integer
 						'
 					Case 5
 						buff="Local"
+						'
+					Case 6
+						buff="Common"
 						'
 					Case Else
 						buff="Unknown"

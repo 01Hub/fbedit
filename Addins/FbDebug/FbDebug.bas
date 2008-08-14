@@ -560,6 +560,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										nme1="Local"
 										adr=ebp_this+vrb(i).adr
 										'
+									Case 6
+										nme1="Common"
+										adr=vrb(i).adr
+										fGlobal=1
 									Case Else
 										nme1="Unknown"
 								End Select
