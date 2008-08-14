@@ -298,6 +298,7 @@ DrawWord:
 		mov		eax,rect.left
 		mov		edx,[ebx].EDIT.fntinfo.tabwt
 		add		edx,eax
+		mov		edx,eax
 		.while byte ptr [esi+edi]==VK_SPACE && edi<[esi].CHARS.len
 			.if eax==edx
 				add		edx,[ebx].EDIT.fntinfo.tabwt
@@ -454,17 +455,20 @@ DrawTabMarker:
 	.if edi && !fChr
 		pushad
 		lea		esi,[eax+2]
-		mov		ecx,[ebx].EDIT.fntinfo.fntht
-		shr		ecx,1
-		mov		edi,rect.top
-		.while ecx
-			push	ecx
-			inc		edi
-			invoke SetPixel,hDC,esi,edi,[ebx].EDIT.clr.hicol3
-			inc		edi
-			pop		ecx
-			dec		ecx
-		.endw
+		sub		eax,rcleft
+		.if eax
+			mov		ecx,[ebx].EDIT.fntinfo.fntht
+			shr		ecx,1
+			mov		edi,rect.top
+			.while ecx
+				push	ecx
+				inc		edi
+				invoke SetPixel,hDC,esi,edi,[ebx].EDIT.clr.hicol3
+				inc		edi
+				pop		ecx
+				dec		ecx
+			.endw
+		.endif
 		popad
 	.endif
 	retn
@@ -789,6 +793,93 @@ DrawSelBck:
 
 DrawLine endp
 
+SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
+	LOCAL	nLnMax:DWORD
+	LOCAL	nLnSt:DWORD
+	LOCAL	nLnEn:DWORD
+	LOCAL	lpBlockDef:DWORD
+
+	mov		ebx,hMem
+	;Clear block markers
+	mov		eax,nLine
+	add		eax,100
+	mov		edx,[ebx].EDIT.rpLineFree
+	shr		edx,2
+	dec		edx
+	.if eax>edx
+		mov		eax,edx
+	.endif
+	mov		nLnMax,eax
+	mov		eax,nLine
+	.while eax<=nLnMax
+		mov		edx,eax
+		shl		edx,2
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx]
+		add		edx,[ebx].EDIT.hChars
+		and		[edx].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+		inc		eax
+	.endw
+	;Find root block
+	mov		esi,-1
+  Nxt:
+	call	BlockRoot
+	.if nLnEn
+		mov		esi,nLnSt
+		inc		esi
+		.if esi<nLine
+			mov		esi,nLine
+		.endif
+		.while esi<=nLnEn && esi<nLnMax
+			mov		edi,esi
+			shl		edi,2
+			add		edi,[ebx].EDIT.hLine
+			mov		edi,[edi]
+			add		edi,[ebx].EDIT.hChars
+			and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+			.if esi<nLnEn
+				or		[edi].CHARS.state,STATE_BLOCK
+			.endif
+			invoke TestBlockEnd,ebx,esi
+			.if eax!=-1
+				or		[edi].CHARS.state,STATE_BLOCKEND
+			.endif
+			inc		esi
+		.endw
+		.if esi<nLnMax
+			jmp		Nxt
+		.endif
+	.endif
+	ret
+
+BlockRoot:
+	mov		nLnSt,0
+	mov		nLnEn,0
+	invoke NextBookMark,ebx,esi,1
+	.if eax!=-1
+		mov		esi,eax
+		invoke TestBlockStart,ebx,esi
+		.if eax!=-1
+			mov		lpBlockDef,eax
+			invoke GetBlock,ebx,esi,lpBlockDef
+			mov		edx,lpBlockDef
+			test	[edx].RABLOCKDEF.flag,BD_INCLUDELAST
+			.if ZERO?
+				inc		eax
+			.endif
+			add		eax,esi
+			.if eax>=nLine
+				mov		nLnSt,esi
+				mov		nLnEn,eax
+			.else
+				jmp		BlockRoot
+			.endif
+		.endif
+	.endif
+	retn
+
+SetBlockMarkers endp
+
 ;This proc does all the painting and drawing
 RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	ps:PAINTSTRUCT
@@ -896,6 +987,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	mov		eax,[esi].RAEDT.topcp
 	mov		cp,eax
 	mov		esi,[esi].RAEDT.topln
+	invoke SetBlockMarkers,ebx,esi
 	mov		ecx,[ebx].EDIT.fntinfo.fntht
 	pop		eax
 	push	eax
@@ -940,6 +1032,25 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				invoke SelectClipRgn,mDC,hRgn1
 				mov		edx,esi
 				dec		edx
+;				and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+;				test	[edi].CHARS.state,STATE_COMMENT
+;				.if !ZERO?
+;					or		[edi].CHARS.state,STATE_BLOCK
+;				.else
+;					push	edx
+;					invoke TestBlockEnd,ebx,edx
+;					pop		edx
+;					.if eax!=-1
+;						or		[edi].CHARS.state,STATE_BLOCKEND
+;					.else
+;						push	edx
+;						invoke IsInAnyBlock,ebx,edx
+;						pop		edx
+;						.if eax
+;							or		[edi].CHARS.state,STATE_BLOCK
+;						.endif
+;					.endif
+;				.endif
 				invoke DrawLine,ebx,edi,edx,cp,mDC,addr rect1
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
@@ -1083,7 +1194,7 @@ DrawBlockMarker:
 		xor		eax,eax
 		sub		eax,ps.rcPaint.left
 		add		eax,[ebx].EDIT.linenrwt
-		add		eax,SELWT
+		add		eax,SELWT-4
 		invoke LineTo,mDC,eax,edx
 	.endif
 	retn
@@ -1197,6 +1308,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	mov		eax,[esi].RAEDT.topcp
 	mov		cp,eax
 	mov		esi,[esi].RAEDT.topln
+	invoke SetBlockMarkers,ebx,esi
 	mov		ecx,[ebx].EDIT.fntinfo.fntht
 	pop		eax
 	push	eax
@@ -1248,6 +1360,25 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				invoke SelectClipRgn,ps.hdc,hRgn1
 				mov		edx,esi
 				dec		edx
+;				and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+;				test	[edi].CHARS.state,STATE_COMMENT
+;				.if !ZERO?
+;					or		[edi].CHARS.state,STATE_BLOCK
+;				.else
+;					push	edx
+;					invoke TestBlockEnd,ebx,edx
+;					pop		edx
+;					.if eax!=-1
+;						or		[edi].CHARS.state,STATE_BLOCKEND
+;					.else
+;						push	edx
+;						invoke IsInAnyBlock,ebx,edx
+;						pop		edx
+;						.if eax
+;							or		[edi].CHARS.state,STATE_BLOCK
+;						.endif
+;					.endif
+;				.endif
 				invoke DrawLine,ebx,edi,edx,cp,ps.hdc,addr rect1
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
@@ -1368,7 +1499,7 @@ DrawBlockMarker:
 		invoke LineTo,ps.hdc,eax,edx
 		pop		edx
 		mov		eax,[ebx].EDIT.linenrwt
-		add		eax,SELWT
+		add		eax,SELWT-4
 		invoke LineTo,ps.hdc,eax,edx
 	.endif
 	retn

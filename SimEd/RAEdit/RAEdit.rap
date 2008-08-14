@@ -99,14 +99,14 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,2654
-16=0,0,810,411,48793
-22=0,0,0,0,2506
+16=0,0,810,411,21760
+22=0,0,0,0,1657
 23=0,0,0,0,6490
 24=0,0,0,0,7015
-19=0,0,0,0,403
-2=0,0,0,0,7761
+19=0,0,0,0,350
+2=0,0,0,0,2101
 9=0,0,0,0,13641
-10=0,0,0,0,30796
+10=0,0,0,0,16992
 11=0,0,0,0,6031
 20=0,0,0,0,3099
 15=0,0,0,0,0
@@ -129,16 +129,16 @@ CompanyName=
 0=
 
 [Find]
-1="STATE_BLOCK"
-2="Collapse"
-3="REM_CHARTABINIT"
-4="REM_NEXTERROR"
-5="REM_GETERROR"
-6="REM_SETERROR"
-7="REM_GETLINESTATE"
-8="REM_NEXTBREAKPOINT"
-9="REM_SETBREAKPOINT"
-10="REM_SETCURSORWORDTYPE"
+1="SetBlockMarkers"
+2="EM_GETFI"
+3="EM_GETF"
+4="STATE_BLOCK"
+5="Collapse"
+6="REM_CHARTABINIT"
+7="REM_NEXTERROR"
+8="REM_GETERROR"
+9="REM_SETERROR"
+10="REM_GETLINESTATE"
 
 [AutoLoad]
 1=1
@@ -186,7 +186,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -225,7 +225,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 
 [Collapse]
 1=,,,,,,,,,,,
-16=,,,,,,,,,,,,
+16=,,,,,,,,,,,,,
 22=
 23=,,
 24=

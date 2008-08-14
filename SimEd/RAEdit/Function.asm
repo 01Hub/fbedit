@@ -1755,6 +1755,28 @@ TestBlockEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 
 TestBlockEnd endp
 
+IsInAnyBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		mov		edi,offset blockdefs
+		lea		esi,[edi+32*4]
+		.while dword ptr [edi]
+			invoke IsInBlock,ebx,nLine,esi
+			or		eax,eax
+			jnz		Ex
+			mov		esi,[edi]
+			add		edi,4
+		.endw
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+IsInAnyBlock endp
+
 CollapseGetEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 	LOCAL	nLines:DWORD
 	LOCAL	nNest:DWORD
@@ -2442,16 +2464,29 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 			mov		eax,[ebx].EDIT.rpLineFree
 			shr		eax,2
 			mov		nMax,eax
+			mov		eax,STATE_BLOCKSTART
+			call	SetBlock
 			inc		edi
 			.while edi<nMax
 				mov		esi,edi
+				inc		esi
+				.if esi==nMax
+					mov		eax,STATE_BLOCKEND
+					call	SetBlock
+					.break
+				.endif
 				shl		esi,2
 				add		esi,[ebx].EDIT.hLine
 				mov		esi,[esi]
 				add		esi,[ebx].EDIT.hChars
 				test	[esi].CHARS.state,STATE_SEGMENTBLOCK
-			  .break .if !ZERO?
-				or		[esi].CHARS.state,STATE_BLOCK
+				.if !ZERO?
+				  	mov		eax,STATE_BLOCKEND
+				  	call	SetBlock
+					.break
+				.endif
+			  	mov		eax,STATE_BLOCK
+			  	call	SetBlock
 				inc		edi
 			.endw
 		.else
@@ -2460,16 +2495,29 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 				mov		eax,[ebx].EDIT.rpLineFree
 				shr		eax,2
 				mov		nMax,eax
+				mov		eax,STATE_BLOCKSTART
+				call	SetBlock
 				inc		edi
 				.while edi<nMax
 					mov		esi,edi
+					inc		esi
+					.if esi==nMax
+					  	mov		eax,STATE_BLOCKEND
+					  	call	SetBlock
+						.break
+					.endif
 					shl		esi,2
 					add		esi,[ebx].EDIT.hLine
 					mov		esi,[esi]
 					add		esi,[ebx].EDIT.hChars
 					test	[esi].CHARS.state,STATE_COMMENT
-				  .break .if ZERO?
-					or		[esi].CHARS.state,STATE_BLOCK
+					.if ZERO?
+					  	mov		eax,STATE_BLOCKEND
+					  	call	SetBlock
+						.break
+					.endif
+				  	mov		eax,STATE_BLOCK
+				  	call	SetBlock
 					inc		edi
 				.endw
 			.else
@@ -2501,13 +2549,8 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 					mov		edi,nLine
 					inc		edi
 					.while edi<=nLines
-						push	edi
-						shl		edi,2
-						add		edi,[ebx].EDIT.hLine
-						mov		edi,[edi]
-						add		edi,[ebx].EDIT.hChars
-						or		[edi].CHARS.state,STATE_BLOCK
-						pop		edi
+						mov		eax,STATE_BLOCK
+						call	SetBlock
 						inc		edi
 					.endw
 				.else
@@ -2518,6 +2561,10 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 							invoke TestBlockStart,ebx,edi
 						.endif
 						.if eax!=-1
+							push	eax
+							mov		eax,STATE_BLOCKSTART or STATE_BLOCK
+							call	SetBlock
+							pop		eax
 							test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
 							.if ZERO?
 								test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
@@ -2534,33 +2581,28 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 									mov		edi,nLine
 									inc		edi
 									.while edi<=nLines
-										push	edi
-										shl		edi,2
-										add		edi,[ebx].EDIT.hLine
-										mov		edi,[edi]
-										add		edi,[ebx].EDIT.hChars
-										or		[edi].CHARS.state,STATE_BLOCK
-										pop		edi
 										invoke TestBlockStart,ebx,edi
 										.if eax!=-1
+											mov		eax,STATE_BLOCKSTART
+											call	SetBlock
 											inc		nNest
 										.else
 											invoke TestBlockEnd,ebx,edi
 											.if eax!=-1
 												dec		nNest
-												push	edi
-												shl		edi,2
-												add		edi,[ebx].EDIT.hLine
-												mov		edi,[edi]
-												add		edi,[ebx].EDIT.hChars
-												and		[edi].CHARS.state,-1 xor STATE_BLOCK
-												or		[edi].CHARS.state,STATE_BLOCKEND
-												pop		edi
+												mov		eax,STATE_BLOCKEND
+												call	SetBlock
+											.else
+												mov		eax,STATE_BLOCK
+												call	SetBlock
 											.endif
 										.endif
 										inc		edi
 									.endw
 									jmp		Ex
+								.else
+									mov		eax,STATE_BLOCK
+									call	SetBlock
 								.endif
 							.endif
 						.endif
@@ -2573,10 +2615,21 @@ BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 	.endif
 	ret
 
+SetBlock:
+	push	edi
+	shl		edi,2
+	add		edi,[ebx].EDIT.hLine
+	mov		edi,[edi]
+	add		edi,[ebx].EDIT.hChars
+	or		[edi].CHARS.state,eax
+	pop		edi
+	retn
+
 BlockMark endp
 
 BlockMarkAll proc uses ebx esi edi,hMem:DWORD
 
+ret
 	mov		ebx,hMem
 	xor		esi,esi
 	mov		edi,[ebx].EDIT.rpLineFree
