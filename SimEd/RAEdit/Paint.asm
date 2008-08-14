@@ -794,6 +794,7 @@ DrawSelBck:
 DrawLine endp
 
 SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
+	LOCAL	nLines:DWORD
 	LOCAL	nLnMax:DWORD
 	LOCAL	nLnSt:DWORD
 	LOCAL	nLnEn:DWORD
@@ -801,25 +802,26 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 
 	mov		ebx,hMem
 	;Clear block markers
-	mov		eax,nLine
-	add		eax,100
 	mov		edx,[ebx].EDIT.rpLineFree
 	shr		edx,2
 	dec		edx
-	.if eax>edx
-		mov		eax,edx
-	.endif
-	mov		nLnMax,eax
+	mov		nLnMax,edx
+	mov		nLines,0
 	mov		eax,nLine
-	.while eax<=nLnMax
+	.while eax<=nLnMax && nLines<100
 		mov		edx,eax
 		shl		edx,2
 		add		edx,[ebx].EDIT.hLine
 		mov		edx,[edx]
 		add		edx,[ebx].EDIT.hChars
 		and		[edx].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+		test	[edx].CHARS.state,STATE_HIDDEN
+		.if ZERO?
+			inc		nLines
+		.endif
 		inc		eax
 	.endw
+	mov		nLines,0
 	;Find root block
 	mov		esi,-1
   Nxt:
@@ -830,23 +832,27 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 		.if esi<nLine
 			mov		esi,nLine
 		.endif
-		.while esi<=nLnEn && esi<nLnMax
+		.while esi<=nLnEn && nLines<100
 			mov		edi,esi
 			shl		edi,2
 			add		edi,[ebx].EDIT.hLine
 			mov		edi,[edi]
 			add		edi,[ebx].EDIT.hChars
-			and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
-			.if esi<nLnEn
-				or		[edi].CHARS.state,STATE_BLOCK
-			.endif
-			invoke TestBlockEnd,ebx,esi
-			.if eax!=-1
-				or		[edi].CHARS.state,STATE_BLOCKEND
+			test	[edi].CHARS.state,STATE_HIDDEN
+			.if ZERO?
+				and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+				.if esi<nLnEn
+					or		[edi].CHARS.state,STATE_BLOCK
+				.endif
+				invoke TestBlockEnd,ebx,esi
+				.if eax!=-1
+					or		[edi].CHARS.state,STATE_BLOCKEND
+				.endif
+				inc		nLines
 			.endif
 			inc		esi
 		.endw
-		.if esi<nLnMax
+		.if esi<nLnMax && nLines<100
 			jmp		Nxt
 		.endif
 	.endif
