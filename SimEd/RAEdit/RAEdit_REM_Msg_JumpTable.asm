@@ -259,6 +259,7 @@
 				mov		edi,[esi]
 				add		esi,4
 			.endw
+			invoke BlockMarkAll,ebx
 			pop		eax
 			.if eax!=nBmid
 				invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE

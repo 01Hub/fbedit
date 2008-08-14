@@ -1494,7 +1494,6 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 	mov		edi,nLine
 	shl		edi,2
 	.if edi<esi
-;		and		[edi].CHARS.state,-1 xor STATE_BLOCK
 		invoke IsLine,ebx,nLine,offset szInclude
 		inc		eax
 		jne		@b
@@ -1516,7 +1515,6 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 		inc		nBmid
 		mov		eax,nBmid
 		mov		[edi].CHARS.bmid,eax
-		or		[edi].CHARS.state,STATE_BLOCK
 		and		[edi].CHARS.state,-1 xor STATE_BMMASK
 		or		[edi].CHARS.state,STATE_BM1
 		mov		eax,lpBlockDef
@@ -2426,6 +2424,178 @@ IsLineEnd:
 	retn
 
 SetCommentBlocks endp
+
+BlockMark proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
+	LOCAL	nLines:DWORD
+	LOCAL	nNest:DWORD
+	LOCAL	nMax:DWORD
+
+	mov		ebx,hMem
+	mov		nLines,0
+	mov		nNest,0
+	mov		edi,nLine
+	invoke TestBlockStart,ebx,edi
+	.if eax!=-1
+		mov		esi,eax
+		test	[esi].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+		.if !ZERO?
+			mov		eax,[ebx].EDIT.rpLineFree
+			shr		eax,2
+			mov		nMax,eax
+			inc		edi
+			.while edi<nMax
+				mov		esi,edi
+				shl		esi,2
+				add		esi,[ebx].EDIT.hLine
+				mov		esi,[esi]
+				add		esi,[ebx].EDIT.hChars
+				test	[esi].CHARS.state,STATE_SEGMENTBLOCK
+			  .break .if !ZERO?
+				or		[esi].CHARS.state,STATE_BLOCK
+				inc		edi
+			.endw
+		.else
+			test	[esi].RABLOCKDEF.flag,BD_COMMENTBLOCK
+			.if !ZERO?
+				mov		eax,[ebx].EDIT.rpLineFree
+				shr		eax,2
+				mov		nMax,eax
+				inc		edi
+				.while edi<nMax
+					mov		esi,edi
+					shl		esi,2
+					add		esi,[ebx].EDIT.hLine
+					mov		esi,[esi]
+					add		esi,[ebx].EDIT.hChars
+					test	[esi].CHARS.state,STATE_COMMENT
+				  .break .if ZERO?
+					or		[esi].CHARS.state,STATE_BLOCK
+					inc		edi
+				.endw
+			.else
+				mov		eax,[ebx].EDIT.rpLineFree
+				shr		eax,2
+				mov		nMax,eax
+				inc		nNest
+				inc		edi
+				test	[esi].RABLOCKDEF.flag,BD_LOOKAHEAD
+				.if !ZERO?
+					mov		eax,edi
+					add		eax,500
+					.if eax<nMax
+						mov		nMax,eax
+					.endif
+					.while edi<nMax
+						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszStart
+					  .break .if eax!=-1
+						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszEnd
+						.if eax!=-1
+							mov		nLines,edi
+						.endif
+						inc		edi
+					.endw
+					test	[esi].RABLOCKDEF.flag,BD_INCLUDELAST
+					.if ZERO?
+						inc		nLines
+					.endif
+					mov		edi,nLine
+					inc		edi
+					.while edi<=nLines
+						push	edi
+						shl		edi,2
+						add		edi,[ebx].EDIT.hLine
+						mov		edi,[edi]
+						add		edi,[ebx].EDIT.hChars
+						or		[edi].CHARS.state,STATE_BLOCK
+						pop		edi
+						inc		edi
+					.endw
+				.else
+					.while edi<nMax
+						mov		eax,-1
+						test	[esi].RABLOCKDEF.flag,BD_NOBLOCK
+						.if ZERO?
+							invoke TestBlockStart,ebx,edi
+						.endif
+						.if eax!=-1
+							test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+							.if ZERO?
+								test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
+								.if ZERO?
+									inc		nNest
+								.endif
+							.endif
+						.else
+							invoke TestBlockEnd,ebx,edi
+							.if eax!=-1
+								dec		nNest
+								.if ZERO?
+									mov		nLines,edi
+									mov		edi,nLine
+									inc		edi
+									.while edi<=nLines
+										push	edi
+										shl		edi,2
+										add		edi,[ebx].EDIT.hLine
+										mov		edi,[edi]
+										add		edi,[ebx].EDIT.hChars
+										or		[edi].CHARS.state,STATE_BLOCK
+										pop		edi
+										invoke TestBlockStart,ebx,edi
+										.if eax!=-1
+											inc		nNest
+										.else
+											invoke TestBlockEnd,ebx,edi
+											.if eax!=-1
+												dec		nNest
+												push	edi
+												shl		edi,2
+												add		edi,[ebx].EDIT.hLine
+												mov		edi,[edi]
+												add		edi,[ebx].EDIT.hChars
+												and		[edi].CHARS.state,-1 xor STATE_BLOCK
+												or		[edi].CHARS.state,STATE_BLOCKEND
+												pop		edi
+											.endif
+										.endif
+										inc		edi
+									.endw
+									jmp		Ex
+								.endif
+							.endif
+						.endif
+						inc		edi
+					.endw
+				.endif
+			.endif
+		.endif
+	  Ex:
+	.endif
+	ret
+
+BlockMark endp
+
+BlockMarkAll proc uses ebx esi edi,hMem:DWORD
+
+	mov		ebx,hMem
+	xor		esi,esi
+	mov		edi,[ebx].EDIT.rpLineFree
+	shr		edi,2
+  @@:
+	invoke PreviousBookMark,ebx,edi,1
+	.if eax!=-1
+		mov		edi,eax
+		invoke BlockMark,ebx,edi
+		.if eax!=-1
+			inc		esi
+		.endif
+		jmp		@b
+	.endif
+	mov		eax,esi
+	ret
+
+BlockMarkAll endp
+
 
 IsSelectionLocked proc uses ebx,hMem:DWORD,cpMin:DWORD,cpMax:DWORD
 	LOCAL	nLineMax:DWORD

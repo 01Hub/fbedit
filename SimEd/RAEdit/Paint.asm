@@ -1054,6 +1054,7 @@ DrawBlockMarker:
 	.if !ZERO?
 		xor		eax,eax
 		sub		eax,ps.rcPaint.left
+		add		eax,[ebx].EDIT.linenrwt
 		add		eax,15
 		mov		edx,rect1.top
 		push	eax
@@ -1061,6 +1062,28 @@ DrawBlockMarker:
 		pop		eax
 		mov		edx,[ebx].EDIT.fntinfo.fntht
 		add		edx,rect1.top
+		invoke LineTo,mDC,eax,edx
+	.endif
+	test	[edi].CHARS.state,STATE_BLOCKEND
+	.if !ZERO?
+		xor		eax,eax
+		sub		eax,ps.rcPaint.left
+		add		eax,[ebx].EDIT.linenrwt
+		add		eax,15
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,mDC,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		shr		edx,1
+		add		edx,rect1.top
+		push	edx
+		invoke LineTo,mDC,eax,edx
+		pop		edx
+		xor		eax,eax
+		sub		eax,ps.rcPaint.left
+		add		eax,[ebx].EDIT.linenrwt
+		add		eax,SELWT
 		invoke LineTo,mDC,eax,edx
 	.endif
 	retn
@@ -1320,13 +1343,32 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 DrawBlockMarker:
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
-		mov		eax,15
+		mov		eax,[ebx].EDIT.linenrwt
+		add		eax,15
 		mov		edx,rect1.top
 		push	eax
 		invoke MoveToEx,ps.hdc,eax,edx,NULL
 		pop		eax
 		mov		edx,[ebx].EDIT.fntinfo.fntht
 		add		edx,rect1.top
+		invoke LineTo,ps.hdc,eax,edx
+	.endif
+	test	[edi].CHARS.state,STATE_BLOCKEND
+	.if !ZERO?
+		mov		eax,[ebx].EDIT.linenrwt
+		add		eax,15
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,ps.hdc,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		shr		edx,1
+		add		edx,rect1.top
+		push	edx
+		invoke LineTo,ps.hdc,eax,edx
+		pop		edx
+		mov		eax,[ebx].EDIT.linenrwt
+		add		eax,SELWT
 		invoke LineTo,ps.hdc,eax,edx
 	.endif
 	retn
