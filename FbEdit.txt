@@ -5,11 +5,16 @@ o The resource editor language dialog is now a child dialog.
 o Added variables to custom highlighting.
 o Added FbDebug addin. The addin provides FbEdit with an internal
   debugger. See the FbDebug.txt help file by using the addin manager.
+o Added immediate window. Used while debugging to get / set variables.
+  See the FbDebug.txt help file by using the addin manager.
 o Changed the way comment/uncomment works.
 o Added project option to increment version on build.
 o Added project option to delete files after successfull build.
   Example:
   Auto delete files after build: *.ohj;*.a
+o Added block guides to code editor.
+o Indent markers now works with spaces.
+o ppdk did a great job updating api files.
 o Fixed bug where opening a file that is not part of the project
   would cause code properties to be refreshed constantly.
   This would make code editing sluggish on slow computers.

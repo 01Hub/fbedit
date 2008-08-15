@@ -105,6 +105,7 @@ Type ADDINHANDLES
 	hpane(1)			As HWND							' Handle of text or resource edit window in 2'nd pane
 	hraresed			As HWND							' Handle of RAResEd window
 	hrareseddlg		As HWND							' Handle of RAResEd dialog
+	himm				As HWND							' Handle of immediate window
 End Type
 
 Type ADDINDATA
@@ -142,6 +143,7 @@ Type ADDINFUNCTIONS
 	TranslateAddinDialog As Sub(ByVal hWin As HWND,ByVal sID As String)
 	FindString As Function(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 	CallAddins As Function(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
+	ShowImmediate As Sub(ByVal bShow As Boolean)
 End Type
 
 ' Addin messages you can send to FbEdit main window

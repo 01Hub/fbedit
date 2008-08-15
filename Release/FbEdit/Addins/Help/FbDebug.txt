@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.2
+FbEdit debug addin version 1.0.0.6
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -11,18 +11,23 @@ FbDebug addin:
   or VB6. Unlike other FreeBASIC debuggers the debugged exe will
   run at normal speed until a breakpoint is reached. This makes
   it possible to comfortable debug even large projects and event
-  driven applications like windogs gui projects.
+  driven applications like windows gui projects.
 
 Limitations:
 - You can only debug projects compiled with the -g option.
 - You can not debug files that are not included in the project.
 - You can not inspect the value of variables in an array.
-  However you can use the OutputDebugString api to have
-  the value displayed in FbEdit's output window. This will
-  also work if the project is compiled without the -g option.
+  However you can use the immediate window. You can also use the
+  OutputDebugString api to have the value displayed in FbEdit's
+  output window. This will also work if the project is compiled
+  without the -g option.
+- Immediate window:
+  Due to limitted debug info on zstring size, zstring arrays are
+  not supported.
+  You can not set a string variable longer than its allocated string space.
 - You can not debug libraries.
 - Debugging dll's is not supported yet.
-- OOP is not tested at all.
+- OOP briefly tested, seem OK.
 - Will only work on FbEdit version 1.0.6.2 or higher.
 
 Breakpoints:
@@ -35,6 +40,9 @@ Breakpoints:
 Inspecting variables:
 - You can inspect the value of variables in the current scope by
   moving the mouse over the variable (arrays will only show dimensions).
+- You can use the immediate window to print the value of variables.
+  Example:
+  ?x                Will print the value of x.
 - You can also insert the OutputDebugString api in your code to
   have the value displayed in FbEdit's output window.
 
@@ -65,6 +73,24 @@ Debug menu:
   Execution will be halted on the current line (unless there is
   a breakpoint).
   
+- Immediate window
+  With the immediate window you can print or set the value of
+  variables in the current scope.
+  Example:
+  ?x                Will print the value of x.
+  x=99              Will set the value of x to 99.
+  You can also evaluete a limitted numper of fb functions like:
+  Asc, Len, InStr, InStrRev
+  Str, Chr, Left, Right, Mid, Space, String
+  Example:
+  ?Asc("A")         Will print 65
+  Supported operators:
+  Eqv, Imp, Xor, Or, And, Not, =, <>,< , >, <=, >=, +, -, Shr, Shl,
+  Mod, \, *, /, ^, &
+  Example:
+  ?(1+2)*3          Will print 9
+  
+
 Whats New:
 ----------
 Version 1.0.0.0
@@ -86,5 +112,23 @@ o Fixed bug with exe filename.
 Version 1.0.0.3
 o Fixed bug with threads in libraries.
 o Fixed bug with module filenames.
+Version 1.0.0.4
+o Fixed bug with showing parameters and locals.
+o Added immediate window.
+  While debugging you can inspect or set the
+  value of variables in the current scope.
+  Example:
+  ?x             Will print the value of x.
+  x=Asc("A")     Will set the value of x.
+Version 1.0.0.5
+o Changed the way debug info is read from the process.
+  This should prevent the 'Error reading memory at xxxx' message.
+o Added support for namespaces to immediate window.
+o Added support for foreign datatypes (like HINSTANCE) to immediate window.
+o Added Dump command to immediate window. The command
+  will create a list of all variables.
+o Fixed bug with UDT's in immediate window.
+Version 1.0.0.6
+o Fixed bug with parsing debug info on common variables.
 
 KetilO
