@@ -38,8 +38,6 @@ Sub readstabs(ad As UInteger)
 		recup &=Chr(b)
 		ad+=1
 	Wend
-	PutString(recup)
-	'lret=ReadProcessMemory(dbghand,Cast(Any Ptr,ad+basestabs),@recup,SizeOf(recup),0)
 
 End Sub
 

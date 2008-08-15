@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.4
+FbEdit debug addin version 1.0.0.6
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -27,7 +27,7 @@ Limitations:
   You can not set a string variable longer than its allocated string space.
 - You can not debug libraries.
 - Debugging dll's is not supported yet.
-- OOP is not tested at all.
+- OOP briefly tested, seem OK.
 - Will only work on FbEdit version 1.0.6.2 or higher.
 
 Breakpoints:
@@ -128,5 +128,7 @@ o Added support for foreign datatypes (like HINSTANCE) to immediate window.
 o Added Dump command to immediate window. The command
   will create a list of all variables.
 o Fixed bug with UDT's in immediate window.
+Version 1.0.0.6
+o Fixed bug with parsing debug info on common variables.
 
 KetilO

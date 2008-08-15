@@ -43,6 +43,7 @@
 #Define IDC_CHKCOMPILENEWER				5521
 #Define IDC_CHKADDMODULEFILES				5522
 #Define IDC_CHKINCVERSION					5523
+#Define IDC_EDTDELETE						5524
 
 ' Api select
 #Define IDD_DLGPROJECTOPTIONAPI			6200
@@ -1716,6 +1717,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 			SendDlgItemMessage(hWin,IDC_EDTPOMODULE,EM_LIMITTEXT,128,0)
 			SendDlgItemMessage(hWin,IDC_EDTOUTFILE,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTRUN,EM_LIMITTEXT,64,0)
+			SendDlgItemMessage(hWin,IDC_EDTDELETE,EM_LIMITTEXT,128,0)
 			SetDlgItemText(hWin,IDC_EDTPODESCRIPTION,@ProjectDescription)
 			x=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Current"),1,@ad.ProjectFile)
 			GetPrivateProfileString(StrPtr("Make"),Str(x),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
@@ -1733,7 +1735,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 				SetDlgItemText(hWin,IDC_EDTPOMODULE,@sItem)
 			EndIf
 			SetDlgItemText(hWin,IDC_EDTAPIFILES,@ProjectApiFiles)
-			'x=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Recompile"),0,@ad.ProjectFile)
+			SetDlgItemText(hWin,IDC_EDTDELETE,@ProjectDeleteFiles)
 			CheckDlgButton(hWin,IDC_RBNMODMANUAL+fRecompile,TRUE)
 			CheckDlgButton(hWin,IDC_CHKADDMAINFILES,fAddMainFiles)
 			GetPrivateProfileString(StrPtr("Make"),StrPtr("Output"),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
@@ -1764,7 +1766,6 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Make"),StrPtr("Module"),@sItem,@ad.ProjectFile)
 					GetDlgItemText(hWin,IDC_EDTAPIFILES,@ProjectApiFiles,SizeOf(ProjectApiFiles))
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("Api"),@ProjectApiFiles,@ad.ProjectFile)
-'					x=IsDlgButtonChecked(hWin,IDC_CHKPORECOMPILE)
 					If IsDlgButtonChecked(hWin,IDC_RBNMODMANUAL) Then
 						fRecompile=0
 					ElseIf IsDlgButtonChecked(hWin,IDC_RBNMODAUTO) Then
@@ -1777,6 +1778,8 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Make"),StrPtr("Output"),@sItem,@ad.ProjectFile)
 					GetDlgItemText(hWin,IDC_EDTRUN,@sItem,SizeOf(sItem))
 					WritePrivateProfileString(StrPtr("Make"),StrPtr("Run"),@sItem,@ad.ProjectFile)
+					GetDlgItemText(hWin,IDC_EDTDELETE,@sItem,SizeOf(sItem))
+					WritePrivateProfileString(StrPtr("Make"),StrPtr("Delete"),@sItem,@ad.ProjectFile)
 					If IsDlgButtonChecked(hWin,IDC_RBNGRPNONE) Then
 						nProjectGroup=0
 					ElseIf IsDlgButtonChecked(hWin,IDC_RBNGRPFOLDER) Then

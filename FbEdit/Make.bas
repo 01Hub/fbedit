@@ -5,7 +5,7 @@ Sub GetMakeOption()
 
 	SendMessage(ah.hcbobuild,CB_RESETCONTENT,0,0)
 	If fProject Then
-		' Get make option from ini
+		' Get make option from project
 		nInx=1
 		While GetPrivateProfileString(StrPtr("Make"),Str(nInx),@szNULL,@buff,SizeOf(ad.smake),@ad.ProjectFile)
 			If Len(buff) Then
@@ -31,6 +31,7 @@ Sub GetMakeOption()
 		fRecompile=GetPrivateProfileInt(StrPtr("Make"),StrPtr("Recompile"),0,@ad.ProjectFile)
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("Output"),@szNULL,@ad.smakeoutput,SizeOf(ad.smakeoutput),@ad.ProjectFile)
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("Run"),@szNULL,@ad.smakerun,SizeOf(ad.smakerun),@ad.ProjectFile)
+		GetPrivateProfileString(StrPtr("Make"),StrPtr("Delete"),@szNULL,@ProjectDeleteFiles,SizeOf(ProjectDeleteFiles),@ad.ProjectFile)
 	Else
 		' Get make option from ini
 		nInx=1
@@ -58,6 +59,7 @@ Sub GetMakeOption()
 		fRecompile=0
 		ad.smakeoutput=""
 		ad.smakerun=""
+		ProjectDeleteFiles=""
 	EndIf
 	If Len(ad.fbcPath)>0 And Mid(ad.smake,2,2)<>":\" And Left(ad.smake,1)<>"$" Then
 		ad.smake=ad.fbcPath & "\" & ad.smake
@@ -263,6 +265,33 @@ Function GetErrLine(ByVal buff As String,ByVal fQuickRun As Boolean) As Integer
 
 End Function
 
+Sub DeleteFiles(ByVal sFile As String)
+	Dim wfd As WIN32_FIND_DATA
+	Dim hwfd As HANDLE
+	Dim sPath As String
+	Dim i As Integer
+
+	i=InStrRev(sFile,"\")
+	If i Then
+		sPath=Left(sFile,i)
+	EndIf
+	hwfd=FindFirstFile(sFile,@wfd)
+	If hwfd<>INVALID_HANDLE_VALUE Then
+		While TRUE
+			sFile=ad.ProjectPath & "\" & sPath & wfd.cFileName
+			If DeleteFile(sFile) Then
+				sFile="Deleted: " & sFile & CR
+				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sFile))
+			EndIf
+			If FindNextFile(hwfd,@wfd)=FALSE Then
+				Exit While
+			EndIf
+		Wend
+		FindClose(hwfd)
+	EndIf
+
+End Sub
+
 Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Boolean,ByVal fNoClear As Boolean,ByVal fQuickRun As Boolean) As Integer
 	Dim fExitCode As Integer
 	Dim lret As Integer
@@ -276,6 +305,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	Dim chrg As CHARRANGE
 	Dim msg As MSG
 	Dim bm As Integer
+	Dim sTmp As String
 
 	CallAddins(ah.hwnd,AIM_MAKEBEGIN,Cast(WPARAM,@sFile),Cast(LPARAM,@sMakeOpt),HOOK_MAKEBEGIN)
 	nErr=0
@@ -446,7 +476,20 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sItem))
 			MessageBeep(MB_ICONERROR)
 		Else
-			sItem=CR & "Make done" & CR
+			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@CR))
+			sTmp=ProjectDeleteFiles
+			While Len(sTmp)
+				lret=InStr(sTmp,";")
+				If lret Then
+					sFile=Trim(Left(sTmp,lret-1))
+					sTmp=Mid(sTmp,lret+1)
+				Else
+					sFile=Trim(sTmp)
+					sTmp=""
+				EndIf
+				DeleteFiles(sFile)
+			Wend
+			sItem="Make done" & CR
 			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sItem))
 			If ah.hred Then
 				SetFocus(ah.hred)
