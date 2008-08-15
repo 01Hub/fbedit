@@ -14,6 +14,9 @@ Debug=0
 5=..\GetLibs.bat
 6=..\..\GetCustomControls.bat
 7=..\..\..\..\..\FbEdit.exe
+AutoDelete=1
+AskMe=0
+MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [MakeFiles]
 0=FbEditDLL.rap
 1=FbEditDLL.rc
@@ -70,7 +73,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 [Size]
 3=0,0,0,0,42
 1=0,0,0,0,96
-2=0,0,0,0,373
+2=0,0,0,0,265
 4=0,0,0,0,389
 6=0,0,0,0,42
 5=0,0,0,0,51
@@ -84,7 +87,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2008
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=24

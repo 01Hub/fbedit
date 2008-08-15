@@ -67,6 +67,9 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 23=RAEdit_REM_Msg_JumpTable.asm
 24=RAEdit_RichEdit_Msg_JumpTable.asm
 25=Res\Lock.bmp
+AutoDelete=1
+AskMe=0
+MinorFiles=*.res;*.obj;*.exp;
 
 [VerInf]
 Nme=VERINF1
@@ -106,7 +109,7 @@ CompanyName=
 19=0,0,0,0,350
 2=0,0,0,0,2101
 9=0,0,0,0,13641
-10=0,0,0,0,17165
+10=0,0,0,0,17915
 11=0,0,0,0,6031
 20=0,0,0,0,3099
 15=0,0,0,0,0

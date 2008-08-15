@@ -853,6 +853,7 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 			inc		esi
 		.endw
 		.if esi<nLnMax && nLines<100
+			dec		esi
 			jmp		Nxt
 		.endif
 	.endif
