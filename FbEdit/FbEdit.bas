@@ -1766,6 +1766,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,0)
 										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,FALSE)
 										SendMessage(ah.hred,REM_SETSEGMENTBLOCK,nLastLine,FALSE)
+										SendMessage(ah.hred,REM_REPAINT,0,TRUE)
 									EndIf
 								ElseIf bm=0 Then
 									x=0
@@ -1783,6 +1784,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										' Set collapse bookmark
 										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,1)
 										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,BD(i).flag And BD_DIVIDERLINE)
+										SendMessage(ah.hred,REM_REPAINT,0,TRUE)
 									ElseIf y Then
 										' Set no block flag
 										SendMessage(ah.hred,REM_SETNOBLOCKLINE,nLastLine,TRUE)
@@ -1806,6 +1808,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 											' Set althilite flag
 											SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
 										EndIf
+										SendMessage(ah.hred,REM_REPAINT,0,TRUE)
 									ElseIf y then
 										' Set althilite flag
 										SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
