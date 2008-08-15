@@ -71,20 +71,20 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.1.1.1
-PV=1.1.1.1
+FV=1.2.0.0
+PV=1.2.0.0
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.1.1.1
+ProductVersion=1.2.0.0
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.1.1.1
+FileVersion=1.2.0.0
 CompanyName=
 
 [Resource]
@@ -186,7 +186,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
