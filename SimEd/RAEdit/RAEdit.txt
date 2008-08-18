@@ -30,6 +30,7 @@ Features:
    1. Show/hide line numbers.
    2. Collapse all blocks
    3. Expand all blocks
+   4. Lock.
 
 Todo:
 -----
@@ -68,6 +69,8 @@ Messages:
 REM_SETHILITEWORDS
 wParam=Color
 lParam=lpszWords
+Color	gggg0sff cccccccc cccccccc cccccccc
+		g=Word group, s=Case sensitive, f=Font style, c=Color
 The return value is zero.
 
 REM_SETFONT
@@ -93,6 +96,7 @@ The return value is zero.
 REM_SETHILITELINE
 wParam=Line
 lParam=nColor
+nColor 0 to 3
 The return value is zero.
 
 REM_GETHILITELINE
@@ -103,6 +107,7 @@ The return value is the hilite index (0 to 3) or -1 if the line number is greate
 REM_SETBOOKMARK
 wParam=Line
 lParam=nType
+nType 0 to 15
 The return value is the bookmark id or zero if the line number is greater than the number of lines in the edit control.
 
 REM_GETBOOKMARK
@@ -118,11 +123,13 @@ The return value is zero.
 REM_NXTBOOKMARK
 wParam=Line
 lParam=nType
+nType 0 to 15
 The return value is the next line number or -1 if there are no more bookmarks of the specified type.
 
 REM_PRVBOOKMARK
 wParam=Line
 lParam=nType
+nType 0 to 15
 The return value is the previous line number or -1 if there are no more bookmarks of the specified type.
 
 REM_FINDBOOKMARK
@@ -131,8 +138,8 @@ lParam=0
 The return value is the line number of the bookmark or -1 if not found.
 
 REM_SETBLOCKS
-wParam=0
-lParam=lpRABLOCKDEF
+wParam=[lpLINERANGE]
+lParam=0
 The return value is zero.
 
 REM_ISLINE
@@ -148,12 +155,12 @@ Returns the number of characters copied.
 
 REM_COLLAPSE
 wParam=Line
-lParam=lpRABLOCKDEF
+lParam=0
 This message does not return a value.
 
 REM_COLLAPSEALL
 wParam=0
-lParam=lpRABLOCKDEF
+lParam=0
 This message does not return a value.
 
 REM_EXPAND

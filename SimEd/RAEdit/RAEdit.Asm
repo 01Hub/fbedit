@@ -175,8 +175,8 @@ UnInstallRAEdit endp
 ;Suffix +		Hilites rest of line with comment color
 ;Suffix -		Hilites rest of line with text color
 ;
-;nColor			gggg00ff cccccccc cccccccc cccccccc
-;				g=Word group, f=Font style, c=color
+;nColor			gggg0sff cccccccc cccccccc cccccccc
+;				g=Word group, s=Case sensitive, f=Font style, c=color
 SetHiliteWords proc public uses esi edi,nColor:DWORD,lpWords:DWORD
 	LOCAL	fEnd:DWORD
 	LOCAL	fEnd2:DWORD
@@ -193,7 +193,11 @@ SetHiliteWords proc public uses esi edi,nColor:DWORD,lpWords:DWORD
 	.else
 	  NxtWrd:
 		mov		fEnd,0
-		invoke ExpandWordMem
+		.if byte ptr nColor[3] & 4 
+			; group is case sensitive. Toggles meaning of '^'
+			or		fEnd,3
+		.endif
+  		invoke ExpandWordMem
 		mov		edi,hWrdMem
 	  NxtWrd1:
 		movzx	eax,byte ptr [esi]
@@ -205,7 +209,7 @@ SetHiliteWords proc public uses esi edi,nColor:DWORD,lpWords:DWORD
 			.if al>='a' && al<='z'
 				and		al,5Fh
 			.elseif al=='^'
-				mov		fEnd,3
+				xor		fEnd,3
 				inc		esi
 				jmp		NxtWrd1
 			.elseif al=='~'

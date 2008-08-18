@@ -238,7 +238,7 @@ BD_LOOKAHEAD			equ 08h				;Look 500 lines ahead for the ending
 BD_SEGMENTBLOCK			equ 10h				;Segment block, collapse till next segmentblock
 BD_COMMENTBLOCK			equ 20h				;Comment block
 BD_NOBLOCK				equ 40h				;
-BD_ALTHILITE			equ 80h				;
+BD_ALTHILITE			equ 80h				;Adds 1 to the current word group for syntax coloring.
 
 RABLOCKDEF struct
 	lpszStart	dd ?						;Block start
