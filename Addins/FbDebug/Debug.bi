@@ -49,7 +49,7 @@ End Type
 
 Type tcudt
 	nm				As String	'name of components
-	Typ			As UShort	'type
+	typ			As UShort	'type
 	ofs			As UInteger	'offset
 	arr			As UInteger 'Index array def
 	pt				As UByte
@@ -103,6 +103,7 @@ Dim Shared pinfo As PROCESS_INFORMATION
 Dim Shared dbghand As HANDLE
 Dim Shared ct As CONTEXT
 
+' Stabs
 Dim Shared secnb As UShort
 Dim Shared pe As UInteger
 Dim Shared secnm As String*8
@@ -111,26 +112,30 @@ Dim Shared basestabs As UInteger
 Dim Shared recupstab As udtstab
 Dim Shared recup As ZString*1000
 
-Dim Shared procnb As Integer,procfg As Byte
-Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
-
+' Proc
 Const PROCMAX=500
 Dim Shared proc(PROCMAX) As tproc
+Dim Shared procnb As Integer
+Dim Shared procfg As Byte
+Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
 
 'Running proc
 Const PROCRMAX=50000
-Dim Shared procr(PROCRMAX) As tprocr,procrnb as Integer 'list of running proc
+Dim Shared procr(PROCRMAX) As tprocr 'list of running proc
+Dim Shared procrnb as Integer
 Dim Shared procrsk As UInteger
 
 'sources ===========================================
-Dim Shared source(SOURCEMAX) As tsource,sourceix As Integer,sourcenb As Integer
+Dim Shared source(SOURCEMAX) As tsource
+Dim Shared sourceix As Integer
+Dim Shared sourcenb As Integer
 
 Dim Shared ttyp As Byte
 
-Const TYPEMAX=1500,CTYPEMAX=10000,ATYPEMAX=1000
-Dim Shared udt(TYPEMAX) As tudt,udtidx As Integer
-Dim Shared cudt(CTYPEMAX) As tcudt,cudtnb As Integer
-Dim Shared audt(ATYPEMAX) As taudt,audtnb As Integer
+' UDT's
+Const TYPEMAX=1500
+Dim Shared udt(TYPEMAX) As tudt
+Dim Shared udtidx As Integer
 udt(0).nm="Proc"
 udt(0).lg=0
 udt(1).nm="Integer"
@@ -164,19 +169,41 @@ udt(14).lg=0
 udt(15).nm="Pchar"
 udt(15).lg=0
 
+Const CTYPEMAX=10000
+Dim Shared cudt(CTYPEMAX) As tcudt
+Dim Shared cudtnb As Integer
+
+Const ATYPEMAX=1000
+Dim Shared audt(ATYPEMAX) As taudt
+Dim Shared audtnb As Integer
+
+' Variables
 Const VARMAX=5000
-Dim Shared vrbnb As UInteger  'nb of variables
 Dim Shared vrb(VARMAX) As tvar
+Dim Shared vrbnb As UInteger  'nb of variables
+
+' Arrays
 Const ARRMAX=1000
-Dim Shared arr(ARRMAX) As tarr,arrnb As UShort
+Dim Shared arr(ARRMAX) As tarr
+Dim Shared arrnb As UShort
+
+' Lines
 Const LINEMAX=250000
 Dim Shared rline(LINEMAX) As tline
-Dim Shared linenb As UInteger,linesav As UInteger
+Dim Shared linenb As UInteger
+Dim Shared linesav As UInteger
+
+' Threads
 Const THREADMAX=50
-Dim Shared threadnb As UInteger
 Dim Shared thread(THREADMAX) As tthread
+Dim Shared threadnb As UInteger
 Dim Shared threadcontext As HANDLE
 Dim Shared threadidx As Integer
+
+' Stabs
+Dim Shared stabnb As Integer
+Const STABMAX=10000
+Dim Shared stab(STABMAX) As String
 
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared linead As UInteger

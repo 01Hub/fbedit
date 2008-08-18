@@ -437,7 +437,7 @@ Function GetVar(ByVal typ As Integer,ByVal pt As Integer,ByRef adr As UInteger,B
 							dp=InStr(dp+1,*lpszBuff,"(")
 							*lpszBuff=Left(*lpszBuff,dp) & GetUdtDim(@audt(cudt(i).arr)) & Mid(*lpszBuff,dp+1)
 						EndIf
-						Return GetVar(cudt(i).Typ,cudt(i).pt,adr,lpszNme,lpszBuff,dp)
+						Return GetVar(cudt(i).typ,cudt(i).pt,adr,lpszNme,lpszBuff,dp)
 						Exit For
 					EndIf
 				Next
@@ -1072,7 +1072,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 				Case nMnuStepOver
 					If hThread Then
 						nLnRunTo=-1
-						nprocrnb=procrnb
 						ClearDebugLine
 						ClearBreakAll(procsv)
 						SetBreakPoints(0)

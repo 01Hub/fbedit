@@ -38,6 +38,8 @@ Sub readstabs(ad As UInteger)
 		recup &=Chr(b)
 		ad+=1
 	Wend
+	stabnb+=1
+	stab(stabnb)=recup
 
 End Sub
 
@@ -120,7 +122,7 @@ Sub decoup2(gv As String,f As Byte)
 			p=decouparray(gv,InStr(gv,"=ar1")+1,f)
 		EndIf
 		gv2=Mid(gv,p)
-		For p=0 To Len(gv)-1
+		For p=0 To Len(gv2)-1
 			If gv2[p]=Asc("*") Then
 				c+=1
 			EndIf
@@ -495,7 +497,7 @@ Sub ParseDebugInfo()
 		'	PutString("i: " & i & " " & udt(i).nm & " lb: " & udt(i).lb & " ub: " & udt(i).ub & " lg: " & udt(i).lg)
 		'Next
 		'For i=1 To cudtnb
-		'	PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).Typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
+		'	PutString("i: " & i & " " & cudt(i).nm & " Typ: " & cudt(i).typ & " ofs: " & cudt(i).ofs & " arr: " & cudt(i).arr & " pt: " & cudt(i).pt)
 		'Next
 		'For i=1 To audtnb
 		'	PutString("i: " & i & " dm: " & audt(i).dm & " nlu.nb: " & audt(i).nlu(0).nb)
@@ -708,11 +710,29 @@ End Sub
 Sub ClearVars()
 	Dim As Integer i,j
 
+'Dim Shared secnb As UShort
+'Dim Shared pe As UInteger
+'Dim Shared secnm As String*8
+'Dim Shared basestab As UInteger
+'Dim Shared basestabs As UInteger
+'Dim Shared recupstab As udtstab
+'Dim Shared recup As ZString*1000
 	secnb=0
 	pe=0
+	secnm=""
 	basestab=0
 	basestabs=0
+	recupstab.stabs=0
+	recupstab.code=0
+	recupstab.nline=0
+	recupstab.ad=0
 	recup=String(SizeOf(recup),0)
+
+'Dim Shared procnb As Integer
+'Dim Shared procfg As Byte
+'Dim Shared As UInteger procsv,procad ,procin,procsk,proccurad
+'Const PROCMAX=500
+'Dim Shared proc(PROCMAX) As tproc
 	procnb=0
 	procfg=0
 	procsv=0
@@ -720,25 +740,6 @@ Sub ClearVars()
 	procin=0
 	procsk=0
 	proccurad=0
-	proc(1).vr=1
-	procrnb=0
-	procrsk=4294967295'current proc stack
-	sourceix=0
-	sourcenb=0
-	ttyp=0
-	udtidx=0
-	cudtnb=0
-	audtnb=0
-	vrbnb=0
-	linenb=0
-	linesav=0
-	arrnb=0
-	threadcontext=0
-	threadnb=0
-	nLnDebug=-1
-	hLnDebug=0
-	linead=-1
-
 	For i=0 To PROCMAX
 		proc(i).nm=""
 		proc(i).db=0
@@ -749,23 +750,59 @@ Sub ClearVars()
 		proc(i).rv=0
 		proc(i).nu=0
 	Next
+	proc(1).vr=1
+
+'Const PROCRMAX=50000
+'Dim Shared procr(PROCRMAX) As tprocr 'list of running proc
+'Dim Shared procrnb as Integer
+'Dim Shared procrsk As UInteger
 	For i=0 To PROCRMAX
 		procr(i).sk=0
 		procr(i).idx=0
 	Next
+	procrnb=0
+	procrsk=4294967295'current proc stack
+
+
+'Dim Shared source(SOURCEMAX) As tsource
+'Dim Shared sourceix As Integer
+'Dim Shared sourcenb As Integer
+	For i=0 To SOURCEMAX
+		source(i).file=""
+		source(i).pInx=0
+	Next
+	sourceix=0
+	sourcenb=0
+
+'Dim Shared ttyp As Byte
+	ttyp=0
+
+'Const TYPEMAX=1500
+'Dim Shared udt(TYPEMAX) As tudt
+'Dim Shared udtidx As Integer
 	For i=16 To TYPEMAX
 		udt(i).nm=""
 		udt(i).lb=0
 		udt(i).ub=0
 		udt(i).lg=0
 	Next
+	udtidx=0
+
+'Const CTYPEMAX=10000
+'Dim Shared cudt(CTYPEMAX) As tcudt
+'Dim Shared cudtnb As Integer
 	For i=0 To CTYPEMAX
 		cudt(i).nm=""
-		cudt(i).Typ=0
+		cudt(i).typ=0
 		cudt(i).ofs=0
 		cudt(i).arr=0
 		cudt(i).pt=0
 	Next
+	cudtnb=0
+
+'Const ATYPEMAX=1000
+'Dim Shared audt(ATYPEMAX) As taudt
+'Dim Shared audtnb As Integer
 	For i=0 To ATYPEMAX
 		audt(i).dm=0
 		For j=0 To 5
@@ -774,10 +811,11 @@ Sub ClearVars()
 			audt(i).nlu(j).ub=0
 		Next
 	Next
-	For i=0 To SOURCEMAX
-		source(i).file=""
-		source(i).pInx=0
-	Next
+	audtnb=0
+
+'Const VARMAX=5000
+'Dim Shared vrb(VARMAX) As tvar
+'Dim Shared vrbnb As UInteger  'nb of variables
 	For i=0 To VARMAX
 		vrb(i).nm=""
 		vrb(i).typ=0
@@ -787,6 +825,11 @@ Sub ClearVars()
 		vrb(i).pt=0
 		vrb(i).pn=0
 	Next
+	vrbnb=0
+
+'Const ARRMAX=1000
+'Dim Shared arr(ARRMAX) As tarr
+'Dim Shared arrnb As UShort
 	For i=0 To ARRMAX
 		arr(i).dat=0
 		arr(i).pot=0
@@ -798,17 +841,47 @@ Sub ClearVars()
 			arr(i).nlu(j).ub=0
 		Next
 	Next
+	arrnb=0
+
+'Const LINEMAX=250000
+'Dim Shared rline(LINEMAX) As tline
+'Dim Shared linenb As UInteger
+'Dim Shared linesav As UInteger
 	For i=0 To LINEMAX
 		rline(i).ad=0
 		rline(i).nu=0
 		rline(i).sv=0
 		rline(i).pr=0
 	Next
+	linenb=0
+	linesav=0
+
+'Const THREADMAX=50
+'Dim Shared thread(THREADMAX) As tthread
+'Dim Shared threadnb As UInteger
+'Dim Shared threadcontext As HANDLE
+'Dim Shared threadidx As Integer
 	For i=0 To THREADMAX
 		thread(i).thread=0
+		thread(i).threadret=0
 		thread(i).threadid=0
 		thread(i).threadres=0
 	Next
+	threadnb=0
+	threadcontext=0
+	threadidx=0
+
+'Dim Shared stabnb As Integer
+'Const STABMAX=10000
+'Dim Shared stab(STABMAX) As String
+	For i=0 To STABMAX
+		stab(i)=""
+	Next
+	stabnb=0
+
+	nLnDebug=-1
+	hLnDebug=0
+	linead=-1
 
 End Sub
 

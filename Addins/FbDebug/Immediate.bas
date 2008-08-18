@@ -673,7 +673,7 @@ Nxt:
 					For i=udt(typ).lb To udt(typ).ub
 						If svar=cudt(i).nm Then
 							adr+=cudt(i).ofs
-							typ=cudt(i).Typ
+							typ=cudt(i).typ
 							If cudt(i).arr Then
 								ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
 							Else
@@ -1302,6 +1302,36 @@ Function Immediate() As Integer
 				EndIf
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
+	ElseIf UCase(buff)="STABS" Then
+		If hThread Then
+			' Only in debug mode
+			buff=Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			For x=1 To stabnb
+				buff=stab(x) & Chr(VK_RETURN,10)
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
+	ElseIf UCase(buff)="STAT" Then
+		If hThread Then
+			' Only in debug mode
+			buff=Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			buff="Number of procs: " & Str(procnb) & Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			buff="Number of variables: " & Str(vrbnb) & Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			buff="Number of code producing lines: " & Str(linenb) & Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			buff="Number of UDT's: " & Str(udtidx) & Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 		Else
 			nErr=2
 			lret=-1

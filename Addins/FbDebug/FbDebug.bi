@@ -50,7 +50,6 @@ Dim Shared bpnb As Integer
 Dim Shared nLnDebug As Integer
 Dim Shared hLnDebug As HWND
 Dim Shared nLnRunTo As Integer
-Dim Shared nprocrnb As Integer
 Dim Shared ebp_this As UInteger
 ' Tooltip
 Dim Shared ptcur As POINT

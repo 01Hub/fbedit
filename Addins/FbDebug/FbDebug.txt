@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.6
+FbEdit debug addin version 1.0.0.7
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -130,5 +130,8 @@ o Added Dump command to immediate window. The command
 o Fixed bug with UDT's in immediate window.
 Version 1.0.0.6
 o Fixed bug with parsing debug info on common variables.
+Version 1.0.0.7
+o Fixed bug with parsing debug info.
+  The bug would create some kind of random parsing of UDT's.
 
 KetilO
