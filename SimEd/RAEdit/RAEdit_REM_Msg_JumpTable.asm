@@ -1281,6 +1281,14 @@
 			mov		ecx,256
 			rep		movsb
 			ret
+		align 4
+		_REM_LINEREDTEXT:
+			;wParam=nLine
+			;lParam=TRUE/FALSE
+			invoke SetRedText,ebx,wParam,lParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
+			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
+			ret
 
 .data
 
@@ -1368,6 +1376,7 @@ _REM_BASE \
 	dd _REM_GETERROR			;equ REM_BASE+79
 	dd _REM_NEXTERROR			;equ REM_BASE+80
 	dd _REM_CHARTABINIT			;equ REM_BASE+81
+	dd _REM_LINEREDTEXT			;equ REM_BASE+82
 
 .code
 align 4

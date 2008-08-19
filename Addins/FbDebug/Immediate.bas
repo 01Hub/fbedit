@@ -1159,6 +1159,50 @@ Function Compile(lpLine As ZString Ptr) As Integer
 
 End Function
 
+Sub WatchVars
+	Dim i As Integer
+	Dim szLine As ZString*256
+	Dim buff As ZString*4096
+	Dim x As Integer
+	Dim typ As Integer
+	Dim res As RES
+	Dim bRed As Boolean
+
+	If W(0).sVar<>"" Then
+		SendMessage(lpHandles->himm,WM_SETTEXT,0,0)
+		For i=0 To WATCHMAX
+			If W(i).sVar<>"" Then
+				bRed=FALSE
+				szLine=W(i).sVar
+				Compile(@szLine)
+				x=2
+				If VarFunc(x,res,typ)<>-1 Then
+					If res.ntyp=INUM Then
+						buff=W(i).sVar & "=" & Str(res.dval) & szCRLF
+						If W(i).sVal<>Str(res.dval) Then
+							bRed=TRUE
+							W(i).sVal=Str(res.dval)
+						EndIf
+					ElseIf res.ntyp=ISTR Then
+						buff=W(i).sVar & "=" & Chr(34) & res.sval & Chr(34) & szCRLF
+						If W(i).sVal<>res.sval Then
+							bRed=TRUE
+							W(i).sVal=res.sval
+						EndIf
+					EndIf
+				Else
+					buff=W(i).sVar & " Variable not found. " & szCRLF
+				EndIf
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+				If bRed Then
+					SendMessage(lpHandles->himm,REM_LINEREDTEXT,i,TRUE)
+				EndIf
+			EndIf
+		Next
+	EndIf
+
+End Sub
+
 Function Immediate() As Integer
 	Dim buff As ZString*256
 	Dim As Integer lret,x,adr,typ,ival,sadr,i
@@ -1183,10 +1227,10 @@ Function Immediate() As Integer
 			If lret=0 Then
 				Select Case res.ntyp
 					Case INUM
-						buff=Chr(VK_RETURN,10) & Str(res.dval) & Chr(VK_RETURN,10)
+						buff=szCRLF & Str(res.dval) & szCRLF
 						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 					Case ISTR
-						buff=Chr(VK_RETURN,10) & res.sval & Chr(VK_RETURN,10)
+						buff=szCRLF & res.sval & szCRLF
 						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 				End Select
 			EndIf
@@ -1253,8 +1297,7 @@ Function Immediate() As Integer
 							End Select
 						EndIf
 						If lret=0 Then
-							buff=Chr(VK_RETURN,10)
-							SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+							SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 						EndIf
 					EndIf
 				EndIf
@@ -1266,8 +1309,7 @@ Function Immediate() As Integer
 	ElseIf UCase(buff)="DUMP" Then
 		If hThread Then
 			' Only in debug mode
-			buff=Chr(VK_RETURN,10)
-			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 			For x=1 To vrbnb
 				Select Case vrb(x).mem
 					Case 1
@@ -1296,9 +1338,9 @@ Function Immediate() As Integer
 					For i=0 To vrb(x).arr->dmn-1
 						buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
 					Next
-					buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+					buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & szCRLF
 				Else
-					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & Chr(VK_RETURN,10)
+					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & szCRLF
 				EndIf
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			Next
@@ -1306,13 +1348,31 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf Left(UCase(buff),5)="WATCH" Then
+		SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+		For i=0 To WATCHMAX
+			W(i).sVar=""
+			W(i).sVal=Chr(255,254,253)
+		Next
+		buff=Trim(Mid(buff,6))
+		i=0
+		While Len(buff) And i<30
+			x=InStr(buff,",")
+			If x Then
+				W(i).sVar=Left(buff,x-1)
+				buff=Trim(Mid(buff,x+1))
+			Else
+				W(i).sVar=buff
+				buff=""
+			EndIf
+			i+=1
+		Wend
 	ElseIf UCase(buff)="STABS" Then
 		If hThread Then
 			' Only in debug mode
-			buff=Chr(VK_RETURN,10)
-			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 			For x=1 To stabnb
-				buff=stab(x) & Chr(VK_RETURN,10)
+				buff=stab(x) & szCRLF
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			Next
 		Else
@@ -1322,15 +1382,14 @@ Function Immediate() As Integer
 	ElseIf UCase(buff)="STAT" Then
 		If hThread Then
 			' Only in debug mode
-			buff=Chr(VK_RETURN,10)
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			buff="Number of procs: " & Str(procnb) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			buff="Number of procs: " & Str(procnb) & Chr(VK_RETURN,10)
+			buff="Number of variables: " & Str(vrbnb) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			buff="Number of variables: " & Str(vrbnb) & Chr(VK_RETURN,10)
+			buff="Number of code producing lines: " & Str(linenb) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			buff="Number of code producing lines: " & Str(linenb) & Chr(VK_RETURN,10)
-			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			buff="Number of UDT's: " & Str(udtidx) & Chr(VK_RETURN,10)
+			buff="Number of UDT's: " & Str(udtidx) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 		Else
 			nErr=2
@@ -1359,7 +1418,7 @@ Function Immediate() As Integer
 			Case Else
 				buff="Unknown error"
 		End Select
-		buff=Chr(VK_RETURN,10) & buff & Chr(VK_RETURN,10)
+		buff=szCRLF & buff & szCRLF
 		SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 	EndIf
 	Return 0

@@ -1189,6 +1189,25 @@ GetError proc uses ebx,hMem:DWORD,nLine:DWORD
 
 GetError endp
 
+SetRedText proc uses ebx,hMem:DWORD,nLine:DWORD,fRed:DWORD
+
+	mov		ebx,hMem
+	mov		eax,nLine
+	shl		eax,2
+	.if eax<[ebx].EDIT.rpLineFree
+		add		eax,[ebx].EDIT.hLine
+		mov		eax,[eax].LINE.rpChars
+		add		eax,[ebx].EDIT.hChars
+		.if fRed
+			or		[eax].CHARS.state,STATE_REDTEXT
+		.else
+			and		[eax].CHARS.state,-1 xor STATE_REDTEXT
+		.endif
+	.endif
+	ret
+
+SetRedText endp
+
 GetLineState proc uses ebx,hMem:DWORD,nLine:DWORD
 
 	mov		ebx,hMem

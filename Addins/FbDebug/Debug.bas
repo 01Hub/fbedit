@@ -3,6 +3,7 @@
 
 Declare Function decouparray(As String,As Integer,As Byte) As Integer
 Declare Function decoupscp(As Byte) As Integer
+Declare Sub WatchVars
 
 Sub PutString(ByVal lpStr As ZString Ptr)
 	Dim chrg As CHARRANGE
@@ -473,7 +474,7 @@ Sub ParseDebugInfo()
 		' To handle variables with the same name but of different type
 		For i=1 To vrbnb
 			For j=i+1 To vrbnb
-				If vrb(i).nm=vrb(j).nm Then
+				If vrb(i).nm=vrb(j).nm And vrb(i).mem<>6 Then
 					vrb(i).pn=Abs(vrb(i).pn)
 					vrb(j).pn=Abs(vrb(j).pn)
 				EndIf
@@ -688,6 +689,7 @@ Sub gestbrk(ad As UInteger)
 		SuspendThread(threadcontext)
 		SetForegroundWindow(lpHandles->hwnd)
 		SetFocus(hLnDebug)
+		WatchVars
 	EndIf
 
 End Sub
@@ -878,6 +880,10 @@ Sub ClearVars()
 		stab(i)=""
 	Next
 	stabnb=0
+
+	For i=0 To WATCHMAX
+		W(i).sVal=Chr(255,254,253)
+	Next
 
 	nLnDebug=-1
 	hLnDebug=0

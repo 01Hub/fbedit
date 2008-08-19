@@ -36,6 +36,7 @@ END
 32110 CURSOR				"Res/SplitV.cur"
 32108 BITMAP				"Res/ResBookmark.bmp"
 #include					"Res/AccelEditDlg.Rc"
+#include 					"Res/FbEditDLLVer.rc"
 #include					"Res/IncludeEditDlg.Rc"
 #include					"Res/LanguageEditDlg.Rc"
 #include					"Res/MenuEditDlg.Rc"

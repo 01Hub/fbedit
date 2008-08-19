@@ -21,10 +21,12 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	fChr:DWORD
 	LOCAL	tmp:BYTE
 	LOCAL	fDot:DWORD
+	LOCAL	fRed:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
 	mov		nGroup,eax
+	mov		fRed,0
 	mov		eax,'.'
 	movzx	eax,byte ptr [eax+offset CharTab]
 	and		eax,1
@@ -41,6 +43,10 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 		test	edx,STATE_ALTHILITE
 		.if !ZERO?
 			inc		nGroup
+		.endif
+		test	edx,STATE_REDTEXT
+		.if !ZERO?
+			inc		fRed
 		.endif
 		mov		eax,edx
 		and		eax,STATE_COMMENT
@@ -248,6 +254,9 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 						mov		eax,[ebx].EDIT.clr.txtcol
 						mov		wCol,eax
 					.endif
+				.endif
+				.if fRed
+					mov		eax,0FFh
 				.endif
 				call	DrawWord
 				.if fEnd==1 && !fWrd

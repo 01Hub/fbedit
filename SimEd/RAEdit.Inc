@@ -141,6 +141,7 @@ REM_SETERROR			equ REM_BASE+78		;wParam=nLine, lParam=nErrID
 REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
 REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
+REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -179,6 +180,7 @@ STATE_BREAKPOINT		equ 08000h
 STATE_BLOCKSTART		equ 10000h
 STATE_BLOCK				equ 20000h
 STATE_BLOCKEND			equ 40000h
+STATE_REDTEXT			equ 80000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types

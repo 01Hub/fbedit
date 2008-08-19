@@ -9,6 +9,7 @@
 
 #Define MAX_MISS								10
 #Define SOURCEMAX								250
+#Define WATCHMAX								29
 
 Declare Sub EnableDebugMenu
 Declare Sub LockFiles(ByVal bLock As Boolean)
@@ -42,6 +43,11 @@ Type BP
 	sBP		As String		' Breakpoints
 End Type
 
+Type WATCH
+	sVar		As String
+	sVal		As String
+End Type
+
 Dim Shared szFileName As ZString*MAX_PATH
 Dim Shared hThread As HANDLE
 Dim Shared hDebugFile As HANDLE
@@ -58,4 +64,5 @@ Dim Shared szTipText As ZString*256
 Dim Shared fDone As Integer
 Dim Shared fRun As Integer
 Dim Shared fExit As Integer
+Dim Shared W(WATCHMAX) As WATCH
 
