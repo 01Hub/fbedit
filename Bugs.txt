@@ -88,3 +88,4 @@ The tooltip window still shows "SC_ESCAPE"
 I hope, I could help.
 
 greetings, Cherry
+ 
