@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.6
+FbEdit debug addin version 1.0.0.8
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -45,6 +45,11 @@ Inspecting variables:
   ?x                Will print the value of x.
 - You can also insert the OutputDebugString api in your code to
   have the value displayed in FbEdit's output window.
+- Watch
+  You can watch max 30 variables at a time.
+  Example:
+  Watch x,y,z			Will watch variables x, y and z.
+                     Varialble that changes will have a red color.
 
 Debug menu:
 - Toggle Breakpoint
@@ -89,7 +94,10 @@ Debug menu:
   Mod, \, *, /, ^, &
   Example:
   ?(1+2)*3          Will print 9
-  
+  You can also add Watch to variables.
+  Variables that changes will have a red color.
+  Example:
+  Watch x,y,z
 
 Whats New:
 ----------
@@ -130,5 +138,11 @@ o Added Dump command to immediate window. The command
 o Fixed bug with UDT's in immediate window.
 Version 1.0.0.6
 o Fixed bug with parsing debug info on common variables.
+Version 1.0.0.7
+o Fixed bug with parsing debug info.
+  The bug would create some kind of random parsing of UDT's.
+Version 1.0.0.8
+o Added Watch to immediate window.
+o Fixed bug with parsing Common variables.
 
 KetilO

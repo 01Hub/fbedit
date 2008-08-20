@@ -209,7 +209,7 @@ Lang=Norwegian, By KetilO
 5513=Build Kommando:
 5510=Legg hovedfiler til Build Kommando
 5514=Api filer:
-5523=Incrementer Versjon ved Build
+5523=Inkrementer Versjon ved Build
 5515=Modul Behandling
 5522=Legg modul filer til Build Kommando
 5516=Modul Build Kommando:
@@ -219,6 +219,7 @@ Lang=Norwegian, By KetilO
 5506=Kommando linje
 5517=Output filenavn:
 5518=Run kommando linje parameter:
+5525=Auto slett filer etter build (*.obj ; *.a):
 5519=Resurs Navn Eksport Fil:
 5520=Prosjekt Fil Gruppering
 5501=Ingen
@@ -485,6 +486,11 @@ Lang=Norwegian, By KetilO
 10080=&Vertikalt
 10081=Sett Tabindex
 10082=Auto Renumrer ID's
+20006=&Immediate
+10085=Skjul
+10226=Tøm
+10227=Velg Alt
+10228=Kopier
 ;--------------------------------------------------------------------------
 [Strings]
 10005=Ny fil
@@ -692,4 +698,13 @@ ProjectZip=FbEdit prosjekt zipper
 2006=Lagt til zip: 
 2007=Ferdig.
 10000=Prosjekt Zipper
+;--------------------------------------------------------------------------
+[FbDebug]
+10000=Togggle &Bruddpunktt\tCtrl+T
+10001=&Blank Bruddpunkt\tShift+Ctrl+T
+10002=&Kjør\tShift+F7
+10003=&Stopp\tAlt+F7
+10004=Stepp &Inn\tF7
+10005=Stepp &Over\tCtrl+F7
+10006=Kjør &Til Markør\tShift+Ctrl+F7
 ;--------------------------------------------------------------------------

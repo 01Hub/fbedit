@@ -717,8 +717,15 @@ Ex:
 
 End Sub
 
+Function GetString(ByVal id As Integer) As String
+
+	Return lpFunctions->FindString(lpData->hLangMem,"FbDebug",Str(id))
+
+End Function
+
 Sub CreateDebugMenu()
 	Dim mii As MENUITEMINFO
+	Dim buff As ZString*256
 
 	mii.cbSize=SizeOf(MENUITEMINFO)
 	mii.fMask=MIIM_TYPE Or MIIM_SUBMENU
@@ -728,36 +735,65 @@ Sub CreateDebugMenu()
 	InsertMenuItem(lpHandles->hmenu,3,TRUE,@mii)
 	
 	nMnuToggle=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuToggle,StrPtr("Toggle &Breakpoint	Ctrl+T"))
+	buff=GetString(10000)
+	If buff="" Then
+		buff="Toggle &Breakpoint	Ctrl+T"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuToggle,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FCONTROL,Asc("T"),nMnuToggle)
 
 	nMnuClear=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,StrPtr("&Clear Breakpoints	Shift+Ctrl+T"))
+	buff=GetString(10001)
+	If buff="" Then
+		buff="&Clear Breakpoints	Shift+Ctrl+T"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuClear,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,Asc("T"),nMnuClear)
 
 	AppendMenu(mii.hSubMenu,MF_SEPARATOR,0,0)
 
 	nMnuRun=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,StrPtr("&Run	Shift+F7"))
+	buff=GetString(10002)
+	If buff="" Then
+		buff="&Run	Shift+F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT,VK_F7,nMnuRun)
 
 	nMnuStop=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStop,StrPtr("&Stop	Alt+F7"))
+	buff=GetString(10003)
+	If buff="" Then
+		buff="&Stop	Alt+F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStop,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FALT,VK_F7,nMnuStop)
 
 	AppendMenu(mii.hSubMenu,MF_SEPARATOR,0,0)
 
 	nMnuStepInto=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,StrPtr("Step &Into	F7"))
+	buff=GetString(10004)
+	If buff="" Then
+		buff="Step &Into	F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepInto,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT,VK_F7,nMnuStepInto)
 
 	nMnuStepOver=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,StrPtr("Step &Over	Ctrl+F7"))
+	buff=GetString(10005)
+	If buff="" Then
+		buff="Step &Over	Ctrl+F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuStepOver,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FCONTROL,VK_F7,nMnuStepOver)
 
 	nMnuRunToCaret=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
-	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,StrPtr("Run &To Caret	Shift+Ctrl+F7"))
+	buff=GetString(10006)
+	If buff="" Then
+		buff="Run &To Caret	Shift+Ctrl+F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,VK_F7,nMnuRunToCaret)
+
 	DrawMenuBar(lpHandles->hwnd)
 
 End Sub

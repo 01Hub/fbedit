@@ -136,6 +136,8 @@
 #Define REM_SETERROR							REM_BASE+78		' wParam=nLine, lParam=nErrID
 #Define REM_GETERROR							REM_BASE+79		' wParam=nLine, lParam=0
 #Define REM_NEXTERROR						REM_BASE+80		' wParam=nLine, lParam=0
+#Define REM_CHARTABINIT						REM_BASE+81		' wParam=0, lParam=0
+#Define REM_LINEREDTEXT						REM_BASE+82		' wParam=nLine, lParam=TRUE/FALSE
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
@@ -168,14 +170,18 @@
 #Define STATE_BMMASK							&HF0
 
 ' Line states
-#Define STATE_LOCKED							&H0100
-#Define STATE_HIDDEN							&H0200
-#Define STATE_COMMENT						&H0400
-#Define STATE_DIVIDERLINE					&H0800
-#Define STATE_SEGMENTBLOCK					&H1000
-#Define STATE_NOBLOCK						&H2000
-#Define STATE_ALTHILITE						&H4000
-#Define STATE_BREAKPOINT					&H8000
+#Define STATE_LOCKED							&H00100
+#Define STATE_HIDDEN							&H00200
+#Define STATE_COMMENT						&H00400
+#Define STATE_DIVIDERLINE					&H00800
+#Define STATE_SEGMENTBLOCK					&H01000
+#Define STATE_NOBLOCK						&H02000
+#Define STATE_ALTHILITE						&H04000
+#Define STATE_BREAKPOINT					&H08000
+#Define STATE_BLOCKSTART					&H10000
+#Define STATE_BLOCK							&H20000
+#Define STATE_BLOCKEND						&H40000
+#Define STATE_REDTEXT						&H80000
 #Define STATE_GARBAGE						&H80000000
 
 ' Character table types
