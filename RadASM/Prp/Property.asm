@@ -1877,7 +1877,7 @@ PropEditUpdList proc uses esi edi,lpPtr:DWORD
 						sub		edx,sizeof DLGHEAD
 						invoke strcpy,addr (DLGHEAD ptr [edx]).class,addr buffer1
 					.elseif eax==23
-						invoke strcpy,addr [esi].caption,addr buffer1
+						invoke strcpy,addr [esi].class,addr buffer1
 					.endif
 				.elseif edx==1002	;Menu
 					mov		edx,esi
@@ -2476,7 +2476,7 @@ PropertyList proc uses esi edi,hCtl:DWORD
 					invoke strcpy,edi,addr (DLGHEAD ptr [esi]).class
 					add		esi,sizeof DLGHEAD
 				.elseif eax==23
-					invoke strcpy,edi,addr (DIALOG ptr [esi]).caption
+					invoke strcpy,edi,addr (DIALOG ptr [esi]).class
 				.endif
 			.elseif edx==29	;Notify
 				mov		lbid,214

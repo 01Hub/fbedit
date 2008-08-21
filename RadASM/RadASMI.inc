@@ -288,7 +288,30 @@ DIALOG struct
 	idname			db 32 dup(?)		;ID Name, max 31 chars
 	undo			dd ?				;Set to NULL
 	himg			dd ?				;Set to NULL
+	class			db 32 dup(?)		;Class fur UDC
 DIALOG ends
+
+DIALOG101 struct
+	hwnd			dd ?				;Set to TRUE
+	hdmy			dd ?				;Transparent dummy window
+	oldproc			dd ?				;Set to NULL
+	hpar			dd ?				;Set to NULL
+	hcld			dd ?				;Set to NULL
+	style			dd ?				;Set to desired style
+	exstyle			dd ?				;Set to desired ex style
+	x				dd ?				;X position in pixels
+	y				dd ?				;Y position in pixels
+	ccx				dd ?				;Width in pixels
+	ccy				dd ?				;Height in pixels
+	caption			db MaxCap dup(?)	;Caption max 240+1 char
+	ntype			dd ?				;Follows ToolBox buttons Dialog=0, Edit=1, Static=2, GroupBox=3
+	ntypeid			dd ?				;Set to NULL
+	tab				dd ?				;Tab index, Dialog=0, First index=0
+	id				dd ?				;Dialog / Controls ID
+	idname			db 32 dup(?)		;ID Name, max 31 chars
+	undo			dd ?				;Set to NULL
+	himg			dd ?				;Set to NULL
+DIALOG101 ends
 
 DIALOG100 struct
 	hwnd			dd ?

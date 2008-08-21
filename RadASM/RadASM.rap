@@ -175,7 +175,7 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,102
-2=0,416,869,416,28743
+2=0,416,869,416,6920
 3=154,154,590,413,749
 4=0,0,590,413,43619
 5=132,132,536,413,67942
@@ -188,8 +188,8 @@ MinorFiles=*.res;*.obj;
 12=154,154,590,413,1082
 13=176,176,590,413,1067
 14=176,176,536,413,5760
-15=22,22,590,413,123146
-16=66,66,536,413,52451
+15=22,22,590,413,114674
+16=66,66,536,413,71978
 17=0,0,536,413,1017
 18=176,176,536,413
 19=110,110,536,413
@@ -487,16 +487,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="AIM_RCSAVED"
-2="2210"
-3="hBr"
-4="iniColors"
-5="RADCOL"
-6="propertiestext"
-7="SW_SHOWDEFAULT"
-8="OPEN"
-9="TBSTATE_ENABLED"
-10="inibuff"
+1="23"
+2="DLGVER"
+3="100"
+4="101"
+5="AIM_RCSAVED"
+6="2210"
+7="hBr"
+8="iniColors"
+9="RADCOL"
+10="propertiestext"
 
 [BreakPoint]
 0=
@@ -537,7 +537,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

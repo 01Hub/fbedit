@@ -4,7 +4,7 @@ UpdateCtl			PROTO :DWORD
 
 .const
 
-DLGVER			equ 101
+DLGVER			equ 102
 MaxMem			equ 128*1024*3
 WS_ALWAYS		equ WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN
 
@@ -550,7 +550,7 @@ ctltypes			dd 0
 					dd offset ConRC
 					dd 0	;nMethod
 					dd 0	;Methods
-					dd 11111101000101100000000101001000b
+					dd 11111111000101100000000101001000b
 					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
 					dd 00010000000000011000000000000000b
 					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
@@ -5056,6 +5056,20 @@ SaveCaption proc
 
 SaveCaption endp
 
+SaveUDCClass proc
+
+	assume esi:ptr DIALOG
+	mov		al,22h
+	stosb
+	invoke SaveStr,edi,addr [esi].class
+	add		edi,eax
+	mov		al,22h
+	stosb
+	assume esi:nothing
+	ret
+
+SaveUDCClass endp
+
 SaveClass proc
 	LOCAL	lpclass:DWORD
 
@@ -5258,9 +5272,7 @@ SaveCtl proc uses esi edi
 			mov		al,' '
 			stosb
 			;Caption
-			mov		al,22h
-			stosb
-			stosb
+			invoke SaveCaption
 			mov		al,','
 			stosb
 			invoke SaveName
@@ -5268,7 +5280,7 @@ SaveCtl proc uses esi edi
 			mov		al,','
 			stosb
 			;Class
-			invoke SaveCaption
+			invoke SaveUDCClass
 			mov		al,','
 			stosb
 			mov		eax,[esi].style
@@ -5643,38 +5655,79 @@ ConvertDialog proc uses esi edi,ver:DWORD,hMem:DWORD
 	mov		edi,eax
 	mov		esi,hMem
 	.if ver==100
-		mov		dword ptr [esi],DLGVER
-		mov		ecx,sizeof DLGHEAD
-		rep movsb
-		mov		eax,[esi].DIALOG100.hwnd
-		.while eax
-			m2m		[edi].DIALOG.hwnd,[esi].DIALOG100.hwnd
-			mov		[edi].DIALOG.hdmy,0
-			m2m		[edi].DIALOG.oldproc,[esi].DIALOG100.oldproc
-			m2m		[edi].DIALOG.hpar,[esi].DIALOG100.hpar
-			m2m		[edi].DIALOG.hcld,[esi].DIALOG100.hcld
-			m2m		[edi].DIALOG.style,[esi].DIALOG100.style
-			m2m		[edi].DIALOG.exstyle,[esi].DIALOG100.exstyle
-			m2m		[edi].DIALOG.x,[esi].DIALOG100.x
-			m2m		[edi].DIALOG.y,[esi].DIALOG100.y
-			m2m		[edi].DIALOG.ccx,[esi].DIALOG100.ccx
-			m2m		[edi].DIALOG.ccy,[esi].DIALOG100.ccy
-			invoke strcpy,addr [edi].DIALOG.caption,addr [esi].DIALOG100.caption
-			m2m		[edi].DIALOG.ntype,[esi].DIALOG100.ntype
-			m2m		[edi].DIALOG.tab,[esi].DIALOG100.tab
-			m2m		[edi].DIALOG.id,[esi].DIALOG100.id
-			invoke strcpy,addr [edi].DIALOG.idname,addr [esi].DIALOG100.idname
-			m2m		[edi].DIALOG.undo,[esi].DIALOG100.undo
-			m2m		[edi].DIALOG.himg,[esi].DIALOG100.himg
-			add		esi,sizeof DIALOG100
-			add		edi,sizeof DIALOG
-			mov		eax,[esi].DIALOG100.hwnd
-		.endw
+		call ConvFrom100
+	.elseif ver==101
+		call ConvFrom101
 	.endif
 	invoke GlobalUnlock,hMem
 	invoke GlobalFree,hMem
 	mov		eax,hMemNew
 	ret
+
+ConvFrom100:
+	mov		dword ptr [esi],DLGVER
+	mov		ecx,sizeof DLGHEAD
+	rep movsb
+	mov		eax,[esi].DIALOG100.hwnd
+	.while eax
+		m2m		[edi].DIALOG.hwnd,[esi].DIALOG100.hwnd
+		mov		[edi].DIALOG.hdmy,0
+		m2m		[edi].DIALOG.oldproc,[esi].DIALOG100.oldproc
+		m2m		[edi].DIALOG.hpar,[esi].DIALOG100.hpar
+		m2m		[edi].DIALOG.hcld,[esi].DIALOG100.hcld
+		m2m		[edi].DIALOG.style,[esi].DIALOG100.style
+		m2m		[edi].DIALOG.exstyle,[esi].DIALOG100.exstyle
+		m2m		[edi].DIALOG.x,[esi].DIALOG100.x
+		m2m		[edi].DIALOG.y,[esi].DIALOG100.y
+		m2m		[edi].DIALOG.ccx,[esi].DIALOG100.ccx
+		m2m		[edi].DIALOG.ccy,[esi].DIALOG100.ccy
+		m2m		[edi].DIALOG.ntype,[esi].DIALOG100.ntype
+		m2m		[edi].DIALOG.tab,[esi].DIALOG100.tab
+		m2m		[edi].DIALOG.id,[esi].DIALOG100.id
+		invoke strcpy,addr [edi].DIALOG.idname,addr [esi].DIALOG100.idname
+		m2m		[edi].DIALOG.undo,[esi].DIALOG100.undo
+		m2m		[edi].DIALOG.himg,[esi].DIALOG100.himg
+		add		esi,sizeof DIALOG100
+		add		edi,sizeof DIALOG
+		mov		eax,[esi].DIALOG100.hwnd
+	.endw
+	retn
+
+ConvFrom101:
+	mov		dword ptr [esi],DLGVER
+	mov		ecx,sizeof DLGHEAD
+	rep movsb
+	mov		eax,[esi].DIALOG101.hwnd
+	.while eax
+		m2m		[edi].DIALOG.hwnd,[esi].DIALOG101.hwnd
+		mov		[edi].DIALOG.hdmy,0
+		m2m		[edi].DIALOG.oldproc,[esi].DIALOG101.oldproc
+		m2m		[edi].DIALOG.hpar,[esi].DIALOG101.hpar
+		m2m		[edi].DIALOG.hcld,[esi].DIALOG101.hcld
+		m2m		[edi].DIALOG.style,[esi].DIALOG101.style
+		m2m		[edi].DIALOG.exstyle,[esi].DIALOG101.exstyle
+		m2m		[edi].DIALOG.x,[esi].DIALOG101.x
+		m2m		[edi].DIALOG.y,[esi].DIALOG101.y
+		m2m		[edi].DIALOG.ccx,[esi].DIALOG101.ccx
+		m2m		[edi].DIALOG.ccy,[esi].DIALOG101.ccy
+		.if [esi].DIALOG101.ntype==23
+			mov		[edi].DIALOG.caption,0
+			invoke strcpy,addr [edi].DIALOG.class,addr [esi].DIALOG100.caption
+		.else
+			mov		[edi].DIALOG.class,0
+			invoke strcpy,addr [edi].DIALOG.caption,addr [esi].DIALOG101.caption
+		.endif
+		m2m		[edi].DIALOG.ntype,[esi].DIALOG101.ntype
+		m2m		[edi].DIALOG.tab,[esi].DIALOG101.tab
+		m2m		[edi].DIALOG.id,[esi].DIALOG101.id
+		invoke strcpy,addr [edi].DIALOG.idname,addr [esi].DIALOG101.idname
+		m2m		[edi].DIALOG.undo,[esi].DIALOG101.undo
+		m2m		[edi].DIALOG.himg,[esi].DIALOG101.himg
+		add		esi,sizeof DIALOG101
+		add		edi,sizeof DIALOG
+		mov		eax,[esi].DIALOG101.hwnd
+	.endw
+	retn
 
 ConvertDialog endp
 
