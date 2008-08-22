@@ -1,0 +1,30 @@
+MasmEd
+
+1.0.4.6 - 2006.05.09
+--------------------
+o Made option, tools menu and help menu dialogs larger.
+o Made project path removal from filenames in resources and include files case insensitive.
+o Updated internal grid component.
+o It is now possible to manually edit filename in resource and include file grids.
+o Pushing OK while still in grid edit mode now updates data.
+o New Project now forces you to create a file since several functions are dependant on a project path.
+o Accelerator key INSERT returned wrong code.
+o Added build options.
+
+1.0.4.5 - 2006.04.23
+--------------------
+o Fixed bug where radasm custom controls on a dialog would trigger endless paint loop.
+o Added support for line continuations in strings in the dialog parser.
+o Added SS_CENTERIMAGE style to dialog parser and stylemanager.
+o Fixed a bug where copy and paste a groupbox or tabcontrol would create duplicate tabindexes
+  and MasmEd would crash after reporting the problem.
+o Fixed a paint bug in User Defined Control.
+
+1.0.4.4 - 2006.04.02
+--------------------
+o New style manager to set control styles.
+o Added Default to button text alignment.
+o Added function to set tabindexes.
+o Fixed a dialog edit fontsize bug.
+
+KetilO
