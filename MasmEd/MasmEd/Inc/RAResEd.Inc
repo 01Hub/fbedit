@@ -2,6 +2,7 @@
 ResEdInstall		PROTO	:DWORD,:DWORD
 ResEdUninstall		PROTO
 GridInstall			PROTO	:DWORD,:DWORD
+GridUnInstall		PROTO
 InstallRAEdit		PROTO	:DWORD,:DWORD
 UnInstallRAEdit		PROTO
 

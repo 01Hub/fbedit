@@ -1,6 +1,6 @@
 #define IDB_TBRBMP						150
-#define IDC_HSPLIT						101
-#define IDC_VSPLIT						102
+#define IDC_HSPLIT						32109
+#define IDC_VSPLIT						32110
 #define IDB_MNUARROW					32101
 #define MANIFEST 						24
 IDB_TBRBMP				BITMAP    DISCARDABLE "Res/Toolbar.bmp"
@@ -19,4 +19,4 @@ IDB_MNUARROW			BITMAP    DISCARDABLE "Res/MNUARROW.bmp"
 32106					BITMAP    DISCARDABLE "Res/Button.bmp"
 300						BITMAP    DISCARDABLE "Res/FileDir.bmp"
 32108					BITMAP    DISCARDABLE "Res/CollapseBM.bmp"
-101						BITMAP    DISCARDABLE "Res/Types.bmp"
+110						BITMAP    DISCARDABLE "Res/Types.bmp"

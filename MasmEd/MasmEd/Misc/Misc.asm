@@ -176,24 +176,25 @@ SetKeyWords proc uses esi edi
 		invoke SetHiliteWords,kwcol[edx],ecx
 		inc		nInx
 	.endw
-;	invoke RtlZeroMemory,hMem,65536*4
 	mov		esi,hApiCallMem
-	mov		edi,hMem
-	.while byte ptr [esi]
-		mov		byte ptr [edi],'^'
-		inc		edi
-		invoke lstrcpy,edi,esi
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-		lea		edi,[edi+eax]
-		mov		byte ptr [edi],' '
-		inc		edi
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	mov		byte ptr [edi],0
-	invoke SetHiliteWords,kwcol[15*4],hMem
-	invoke GlobalFree,hMem
+	.if esi
+		mov		edi,hMem
+		.while byte ptr [esi]
+			mov		byte ptr [edi],'^'
+			inc		edi
+			invoke lstrcpy,edi,esi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			lea		edi,[edi+eax]
+			mov		byte ptr [edi],' '
+			inc		edi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+		mov		byte ptr [edi],0
+		invoke SetHiliteWords,kwcol[15*4],hMem
+		invoke GlobalFree,hMem
+	.endif
 	ret
 
 SetKeyWords endp

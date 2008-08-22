@@ -49,13 +49,12 @@ CreateNew				PROTO
 TabToolAdd				PROTO :DWORD,:DWORD
 
 DwToAscii				PROTO :DWORD,:DWORD
-InstallRAEdit			PROTO :DWORD,:DWORD
-UnInstallRAEdit			PROTO
-RAHexEdInstall			PROTO C :DWORD
-RAHexEdUnInstall		PROTO
-InstallFileBrowser		PROTO :DWORD
-UnInstallFileBrowser	PROTO
-InstallRACodeComplete	PROTO :DWORD
+;RAHexEdInstall			PROTO C :DWORD,:DWORD
+;RAHexEdUnInstall		PROTO
+;InstallFileBrowser		PROTO :DWORD,:DWORD
+;UnInstallFileBrowser	PROTO
+;InstallRACodeComplete	PROTO :DWORD,:DWORD
+;UnInstallRACodeComplete	PROTO
 
 SetHiliteWords			PROTO :DWORD,:DWORD
 
@@ -73,8 +72,8 @@ RESIZEHT				equ 3
 
 IDB_TBRBMP				equ 150
 IDR_ACCEL				equ 200
-IDC_HSPLIT				equ 101
-IDC_VSPLIT				equ 102
+IDC_HSPLIT				equ 32109
+IDC_VSPLIT				equ 32110
 IDB_MNUARROW			equ 32101
 
 ;Find.dlg
@@ -330,7 +329,7 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 szAppName				db 'MasmEd',0
 szVersion				db 'MasmEd version 1.0.4.8',0
-szAboutMsg				db 'MasmEd code & resource editor',13,10,13,10,'KetilO (C) 2004-2007',13,10,'radasmide@hotmail.com',0
+szAboutMsg				db 'MasmEd code & resource editor',13,10,13,10,'KetilO (C) 2004-2008',13,10,'radasmide@hotmail.com',0
 szAboutUrl				db 'http://www.radasm.com',0
 szOpen					db 'Open',0
 

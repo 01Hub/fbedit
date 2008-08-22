@@ -4,6 +4,7 @@ CHARS struct
 	max			dd ?		;Max size
 	state		dd ?		;Line state
 	bmid		dd ?		;Bookmark ID
+	errid		dd ?		;Error ID
 CHARS ends
 
 .const
@@ -114,18 +115,20 @@ UpdateApiCallList proc uses esi edi,lpWord:DWORD
 		invoke SendMessage,edi,CCM_CLEAR,0,0
 		invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
 		mov		esi,hApiCallMem
-		.while byte ptr [esi]
-			call	Filter
-			.if !eax
-				invoke SendMessage,edi,CCM_ADDITEM,0,esi
-				inc		nCount
-			.endif
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
-		invoke SendMessage,edi,CCM_SORT,FALSE,0
+		.if esi
+			.while byte ptr [esi]
+				call	Filter
+				.if !eax
+					invoke SendMessage,edi,CCM_ADDITEM,0,esi
+					inc		nCount
+				.endif
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+			.endw
+			invoke SendMessage,edi,CCM_SORT,FALSE,0
+		.endif
 		invoke SendMessage,edi,WM_SETREDRAW,TRUE,0
 		invoke SendMessage,edi,CCM_SETCURSEL,0,0
 	.endif
@@ -160,65 +163,67 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 
 	invoke SendMessage,hCCLB,CCM_CLEAR,0,0
 	mov		esi,hApiConstMem
-	.while byte ptr [esi]
-		mov		edx,lpApi
-		call	Filter
-		.if !eax
+	.if esi
+		.while byte ptr [esi]
+			mov		edx,lpApi
+			call	Filter
+			.if !eax
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				mov		nCount,0
+				mov		eax,lpWord
+			  @@:
+				.while (byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB) && eax<lpCPos
+					inc		eax
+				.endw
+				mov		lpWord,eax
+				.while byte ptr [eax] && byte ptr [eax]!=',' && eax<lpCPos
+					.if byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
+						jmp		@b
+					.endif
+					inc		eax
+				.endw
+				mov		edi,offset ConstData
+				.while byte ptr [esi]
+					mov		edx,lpWord
+					call	Filter
+					.if !eax
+						push	edi
+						.while byte ptr [esi] && byte ptr [esi]!=','
+							mov		al,[esi]
+							mov		[edi],al
+							inc		esi
+							inc		edi
+						.endw
+						mov		byte ptr [edi],0
+						inc		edi
+						pop		eax
+						invoke SendMessage,hCCLB,CCM_ADDITEM,2,eax
+						inc		nCount
+					.else
+						.while byte ptr [esi] && byte ptr [esi]!=','
+							inc		esi
+						.endw
+					.endif
+					.if byte ptr [esi]
+						inc		esi
+					.endif
+				.endw
+				.if nCount
+					invoke SendMessage,edi,CCM_SORT,FALSE,0
+					invoke SendMessage,hCCLB,CCM_SETCURSEL,0,0
+					mov		eax,lpWord
+				.else
+					xor		eax,eax
+				.endif
+				ret
+			.endif
 			invoke lstrlen,esi
 			lea		esi,[esi+eax+1]
-			mov		nCount,0
-			mov		eax,lpWord
-		  @@:
-			.while (byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB) && eax<lpCPos
-				inc		eax
-			.endw
-			mov		lpWord,eax
-			.while byte ptr [eax] && byte ptr [eax]!=',' && eax<lpCPos
-				.if byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
-					jmp		@b
-				.endif
-				inc		eax
-			.endw
-			mov		edi,offset ConstData
-			.while byte ptr [esi]
-				mov		edx,lpWord
-				call	Filter
-				.if !eax
-					push	edi
-					.while byte ptr [esi] && byte ptr [esi]!=','
-						mov		al,[esi]
-						mov		[edi],al
-						inc		esi
-						inc		edi
-					.endw
-					mov		byte ptr [edi],0
-					inc		edi
-					pop		eax
-					invoke SendMessage,hCCLB,CCM_ADDITEM,2,eax
-					inc		nCount
-				.else
-					.while byte ptr [esi] && byte ptr [esi]!=','
-						inc		esi
-					.endw
-				.endif
-				.if byte ptr [esi]
-					inc		esi
-				.endif
-			.endw
-			.if nCount
-				invoke SendMessage,edi,CCM_SORT,FALSE,0
-				invoke SendMessage,hCCLB,CCM_SETCURSEL,0,0
-				mov		eax,lpWord
-			.else
-				xor		eax,eax
-			.endif
-			ret
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.endif
 	xor		eax,eax
 	ret
 
@@ -252,19 +257,21 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 	mov		eax,lpWord
 	.if byte ptr [eax]
 		mov		esi,hApiCallMem
-		.while byte ptr [esi]
-			call	Filter
-			.if !eax
+		.if esi
+			.while byte ptr [esi]
+				call	Filter
+				.if !eax
+					invoke lstrlen,esi
+					lea		eax,[esi+eax+1]
+					mov		edx,esi
+					jmp		Ex
+				.endif
 				invoke lstrlen,esi
-				lea		eax,[esi+eax+1]
-				mov		edx,esi
-				jmp		Ex
-			.endif
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
+				lea		esi,[esi+eax+1]
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+			.endw
+		.endif
 	.endif
 	xor		eax,eax
 	xor		edx,edx
@@ -389,6 +396,11 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 			invoke ShowWindow,hCCLB,SW_HIDE
 			invoke UpdateApiToolTip,esi
 			.if eax
+				mov		tti.lpszRetType,0
+				mov		tti.lpszDesc,0
+				mov		tti.novr,0
+				mov		tti.nsel,0
+				mov		tti.nwidth,0
 				mov		tti.lpszApi,edx
 				mov		tti.lpszParam,eax
 				mov		eax,cpline

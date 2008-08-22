@@ -110,11 +110,11 @@ start:
 	mov		winsize.ptstyle.y,eax
 	invoke OleInitialize,NULL
 	invoke InstallRAEdit,hInstance,FALSE
-	invoke RAHexEdInstall,hInstance
+	invoke RAHexEdInstall,hInstance,FALSE
 	invoke GridInstall,hInstance,FALSE
 	invoke ResEdInstall,hInstance,FALSE
-	invoke InstallFileBrowser,hInstance
-	invoke InstallRACodeComplete,hInstance
+	invoke InstallFileBrowser,hInstance,FALSE
+	invoke InstallRACodeComplete,hInstance,FALSE
 	invoke ParseApiFile,addr szApiCallFile
 	mov		hApiCallMem,eax
 	invoke ParseApiFile,addr szApiConstFile
@@ -123,8 +123,10 @@ start:
 	push	eax
 	invoke UnInstallRAEdit
 	invoke RAHexEdUnInstall
+	invoke GridUnInstall
 	invoke ResEdUninstall
 	invoke UnInstallFileBrowser
+	invoke UnInstallRACodeComplete
 	.if hApiCallMem
 		invoke GlobalFree,hApiCallMem
 	.endif
@@ -290,9 +292,9 @@ CreateRAEdit proc
 
 	push	hREd
 	.if edopt.hilitecmnt
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_NOLOCK or STYLE_AUTOSIZELINENUM
 	.else
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOLOCK or STYLE_AUTOSIZELINENUM
 	.endif
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,eax,0,0,0,0,hWnd,IDC_RAE,hInstance,0
 	mov		hREd,eax
@@ -860,88 +862,13 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	max:DWORD
 
 	mov		eax,uMsg
-	.if eax==WM_LBUTTONDOWN
-		.if fVSplit==1
-			invoke SetCapture,hWin
-			invoke SetCursor,hHSplitCur
-			mov		fVSplit,2
-		.elseif fVSplit==3
-			invoke SetCapture,hWin
-			invoke SetCursor,hVSplitCur
-			mov		fVSplit,4
-		.endif
-	.elseif eax==WM_LBUTTONUP
-		.if fVSplit
-			invoke ReleaseCapture
-			mov		fVSplit,0
-		.endif
-	.elseif eax==WM_MOUSEMOVE
-		invoke GetClientRect,hWin,addr rect
-		mov		eax,wpos.wtprop
-		sub		rect.right,eax
-		mov		eax,wpos.htprop
-		add		eax,RESIZEHT
-		sub		rect.bottom,eax
-		invoke GetCursorPos,addr pt
-		invoke ScreenToClient,hWin,addr pt
-		.if fVSplit==0 || fVSplit==1 || fVSplit==3
-			mov		fVSplit,0
-			mov		eax,pt.x
-			mov		edx,pt.y
-			mov		ecx,rect.right
-			add		ecx,RESIZEHT
-			.if eax>=ecx && edx>rect.bottom
-				invoke SetCursor,hHSplitCur
-				mov		fVSplit,1
-			.elseif eax>=rect.right && edx>rect.top
-				invoke SetCursor,hVSplitCur
-				mov		fVSplit,3
-			.endif
-		.elseif fVSplit==2
-			invoke GetClientRect,hWin,addr rect
-			mov		eax,rect.bottom
-			sub		eax,50
-			mov		max,eax
-			mov		min,50
-
-			mov		eax,rect.bottom
-			sub		eax,pt.y
-			.if sdword ptr eax>max
-				mov		eax,max
-			.elseif sdword ptr eax<min
-				mov		eax,min
-			.endif
-			.if eax!=wpos.htprop
-				mov		wpos.htprop,eax
-				invoke SendMessage,hWin,WM_SIZE,0,0
-			.endif
-		.elseif fVSplit==4
-			invoke GetClientRect,hWin,addr rect
-			mov		eax,rect.right
-			sub		eax,53+50
-			mov		max,eax
-			mov		min,50
-			mov		eax,pt.x
-			sub		eax,rect.right
-			neg		eax
-			.if sdword ptr eax>max
-				mov		eax,max
-			.endif
-			.if sdword ptr eax<min
-				mov		eax,min
-			.endif
-			.if eax!=wpos.wtprop
-				mov		wpos.wtprop,eax
-				invoke SendMessage,hWin,WM_SIZE,0,0
-			.endif
-		.endif
-	.elseif eax==WM_SIZE
+	.if eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
 		invoke MoveWindow,hResEd,0,0,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CREATE
 		mov		ebx,lParam
 		mov		ebx,[ebx].CREATESTRUCT.lpCreateParams
-		mov		edx,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPSIBLINGS or WS_CLIPCHILDREN
+		mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN; or WS_VSCROLL or WS_HSCROLL
 		.if grdsize.show
 			or		edx,DES_GRID
 		.endif
@@ -954,7 +881,7 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.stylehex
 			or		edx,DES_STYLEHEX
 		.endif
-		invoke CreateWindowEx,200h,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
+		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
 		mov		hResEd,eax
 		invoke SendMessage,eax,WM_SETFONT,ebx,0
 		mov		edx,nmeexp.nOutput

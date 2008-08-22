@@ -92,8 +92,8 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 
 [Resource]
 1=IDB_TBRBMP,150,0,Res\Toolbar.bmp
-2=IDC_HSPLIT,101,1,Res\SplitH.cur
-3=IDC_VSPLIT,102,1,Res\SplitV.cur
+2=IDC_HSPLIT,32109,1,Res\SplitH.cur
+3=IDC_VSPLIT,32110,1,Res\SplitV.cur
 4=IDB_MNUARROW,32101,0,Res\MNUARROW.bmp
 5=,1,8,Res\xptheme.xml
 6=,102,0,Res\Bookmark.bmp
@@ -107,7 +107,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 14=,32106,0,Res\Button.bmp
 15=,300,0,Res\FileDir.bmp
 16=,32108,0,Res\CollapseBM.bmp
-17=,101,0,Res\Types.bmp
+17=,110,0,Res\Types.bmp
 
 [StringTable]
 1="IDM_FILE_PRINT,0,Print"
@@ -233,16 +233,16 @@ Group=Assembly,Resources,Misc,Include
 41=2
 
 [Find]
-1="GridInstall"
-2="dll"
-3="RAGRID"
-4="hCustDll"
-5="chm"
-6="winhelp"
-7="UpdateApiConstList"
-8="CCM_ADD"
-9="hCCLB"
-10="150h"
+1="InstallFileBrowser"
+2="GridInstall"
+3="LineTxt"
+4="UpdateApiCallList"
+5="hApiConstMem"
+6="hApiCallMem"
+7="dll"
+8="RAGRID"
+9="hCustDll"
+10="chm"
 
 [VersionControl]
 Settings=1246
@@ -254,7 +254,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -289,12 +289,12 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,18247
-1=0,0,0,0,25920
-11=0,0,0,0,3549
-22=0,0,0,0,10390
+2=0,0,0,0,1190
+1=0,0,0,0,3567
+11=0,0,0,0,3601
+22=0,0,0,0,60
 10=0,0,0,0,6569
-23=0,0,0,0,5278
+23=0,0,0,0,170
 9=0,0,0,0,160
 4=0,0,0,0
 17=0,0,0,0,323
@@ -314,13 +314,13 @@ ProductVer4Range=0
 24=0,0,0,0
 14=0,0,0,0,6937
 12=0,0,0,0,8089
-31=0,0,0,0,3023
+31=0,0,0,0,63
 32=0,0,0,0
-33=0,0,0,0,925
+33=0,0,0,0,68
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,1448
-36=0,0,661,490,84
+37=0,0,0,0,1920
+36=0,0,661,490,0
 20=0,0,0,0,0
 38=0,0,0,0,28
 39=0,0,0,0
@@ -344,7 +344,7 @@ ProductVer4Range=0
 1=1
 [Collapse]
 2=
-1=,,,,3932162,
+1=,,,8388608,7680,
 31=
 23=
 3=

@@ -1,3 +1,6 @@
+InstallFileBrowser		PROTO :DWORD,:DWORD
+UnInstallFileBrowser	PROTO
+
 ;Messages
 FBM_SETPATH			equ WM_USER+1	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to path string
 FBM_GETPATH			equ WM_USER+2	;wParam=0, lParam=Pointer to path string
@@ -25,10 +28,6 @@ FBNOTIFY ends
 FBSTYLE_FLATTOOLBAR	equ 1
 FBSTYLE_DIVIDERLINE	equ 2
 
-.data
+.const
 
-IFDEF DLL
-	szFBClassName		db 'RAFileBrowser',0
-ELSE
-	szFBClassName		db 'MyRAFileBrowser',0
-ENDIF
+szFBClassName		db 'RAFileBrowser',0

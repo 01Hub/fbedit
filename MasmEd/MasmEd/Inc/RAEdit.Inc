@@ -1,3 +1,5 @@
+InstallRAEdit			PROTO :DWORD,:DWORD
+UnInstallRAEdit			PROTO
 
 ;Default colors
 DEFBCKCOLOR				equ 00C0F0F0h
