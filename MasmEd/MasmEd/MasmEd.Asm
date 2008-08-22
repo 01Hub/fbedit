@@ -56,26 +56,6 @@ start:
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof wpos
 		invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
-		.if wpos.wtfile<50
-			mov		wpos.wtfile,175
-		.endif
-
-;	.if wpos.wtpro<5
-;		mov		wpos.wtpro,150
-;	.endif
-;	.if wpos.htpro<5
-;		mov		wpos.htpro,200
-;	.endif
-;	mov		eax,wpos.htout
-	mov		winsize.htout,0
-	mov		winsize.wtpro,150
-	mov		winsize.htpro,150
-	mov		winsize.wttbx,52
-	mov		eax,wpos.left
-	mov		winsize.ptstyle.x,eax
-	mov		eax,wpos.top
-	mov		winsize.ptstyle.y,eax
-
 		mov		lpcbData,sizeof edopt
 		invoke RegQueryValueEx,hReg,addr szEditOpt,0,addr lpType,addr edopt,addr lpcbData
 		mov		lpcbData,sizeof lfnt
@@ -109,6 +89,25 @@ start:
 		mov		eax,ppos.pagesize.y
 		mov		psd.ptPaperSize.y,eax
 	.endif
+	.if wpos.wtfile<50
+		mov		wpos.wtfile,175
+	.endif
+	.if wpos.wtprop<5
+		mov		wpos.wtprop,150
+	.endif
+	.if wpos.htprop<5
+		mov		wpos.htprop,200
+	.endif
+	mov		winsize.htout,0
+	mov		eax,wpos.wtprop
+	mov		winsize.wtpro,eax
+	mov		eax,wpos.htprop
+	mov		winsize.htpro,eax
+	mov		winsize.wttbx,52
+	mov		eax,wpos.left
+	mov		winsize.ptstyle.x,eax
+	mov		eax,wpos.top
+	mov		winsize.ptstyle.y,eax
 	invoke OleInitialize,NULL
 	invoke InstallRAEdit,hInstance,FALSE
 	invoke RAHexEdInstall,hInstance
@@ -962,7 +961,6 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shl		edx,16
 		add		edx,nmeexp.nType
 		invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
-;		invoke SendMessage,hResEd,PRO_SETSTYLEPOS,0,addr wpos.left
 		invoke SendMessage,hResEd,DEM_SETSIZE,0,addr winsize
 		mov		eax,grdsize.y
 		shl		eax,16
@@ -972,10 +970,15 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		edx,grdsize.color
 		invoke SendMessage,hResEd,DEM_SETGRIDSIZE,eax,edx
 	.elseif eax==WM_DESTROY
-;		invoke SendMessage,hResEd,PRO_GETSTYLEPOS,0,addr wpos.left
-;		invoke DestroyWindow,hToolBox
-;		invoke DestroyWindow,hProperty
-;		invoke DestroyWindow,hProject
+		invoke SendMessage,hResEd,DEM_GETSIZE,0,addr winsize
+		mov		eax,winsize.htpro
+		mov		eax,wpos.htprop
+		mov		eax,winsize.wtpro
+		mov		wpos.wtprop,eax
+		mov		eax,winsize.ptstyle.x
+		mov		wpos.left,eax
+		mov		eax,winsize.ptstyle.y
+		mov		wpos.top,eax
 		invoke DestroyWindow,hResEd
 	.elseif eax==EM_GETMODIFY
 		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
