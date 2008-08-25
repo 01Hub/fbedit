@@ -474,7 +474,7 @@ Sub ParseDebugInfo()
 		' To handle variables with the same name but of different type
 		For i=1 To vrbnb
 			For j=i+1 To vrbnb
-				If vrb(i).nm=vrb(j).nm And vrb(i).mem<>6 Then
+				If vrb(i).nm=vrb(j).nm And vrb(i).mem<>6 And vrb(j).mem<>6 Then
 					vrb(i).pn=Abs(vrb(i).pn)
 					vrb(j).pn=Abs(vrb(j).pn)
 				EndIf
@@ -920,6 +920,8 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	' Create process
 	lret=CreateProcess(NULL,lpFileName,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS Or DEBUG_PROCESS Or DEBUG_ONLY_THIS_PROCESS,NULL,NULL,@sinfo,@pinfo)
 	If lret Then
+		mpid=pinfo.dwProcessId
+		mtid=pinfo.dwThreadId
 		WaitForSingleObject(pinfo.hProcess,10)
 		dbghand=OpenProcess(PROCESS_ALL_ACCESS,TRUE,pinfo.dwProcessId)
 		ParseDebugInfo

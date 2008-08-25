@@ -66,3 +66,5 @@ Dim Shared fRun As Integer
 Dim Shared fExit As Integer
 Dim Shared W(WATCHMAX) As WATCH
 
+Dim Shared mtid As Integer
+Dim Shared mpid As Integer

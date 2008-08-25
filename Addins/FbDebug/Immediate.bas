@@ -572,133 +572,158 @@ Function GetVarAdr(ByRef px As Integer,ByRef typ As Integer) As Integer
 	Dim As Integer i,j,adr,ofs,fGlobal,fParam
 	Dim svar As ZString*256
 	Dim lpArr As tarr Ptr
+	Dim bFound As Boolean
 
 	i=szCompiled[px]
 	px+=1
 	svar=UCase(Mid(szCompiled,px+1,i))
 	px+=i
 Again:
+'	i=1
+'	While i<=vrbnb
+'		If svar=vrb(i).nm Then
+'PutString("vrb(i).pn: " & Str(vrb(i).pn) & " procsv: " & Str(procsv) & " procsv: " & Str(procsv) & " vrb(i).mem: " & Str(vrb(i).mem))
+'		EndIf
+'		i+=1
+'	Wend
 	i=1
 	adr=0
+	bFound=FALSE
 	While i<=vrbnb
-		If (vrb(i).pn=procsv Or vrb(i).pn<0) And svar=vrb(i).nm Then
-			typ=vrb(i).typ
-			Select Case vrb(i).mem
-				Case 1
-					' Shared
-					adr=vrb(i).adr
-					fGlobal=1
-					'
-				Case 2
-					' Static
-					adr=vrb(i).adr
-					fGlobal=1
-					'
-				Case 3
-					' ByRef
-					adr=ebp_this+vrb(i).adr
-					fParam=2
-					'
-				Case 4
-					' ByVal
-					adr=ebp_this+vrb(i).adr
-					fParam=1
-					'
-				Case 5
-					' Local
-					adr=ebp_this+vrb(i).adr
-					'
-				Case 6
-					' Common
-					adr=vrb(i).adr
-					fGlobal=1
-					'
-				Case Else
-					Return -1
-			End Select
-			If fGlobal=0 Then
-				If fParam Then
-					' Parameter, Check if in scope
-					For j=1 To linenb
-						If (proc(procsv).nu=nLnDebug+1 Or rline(j).nu=nLnDebug+1) And rline(j).pr=procsv Then
-							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-								' Not in scope
-								nErr=3
-								Return -1
-							EndIf
+		If svar=vrb(i).nm Then
+			bFound=TRUE
+			If (vrb(i).pn=procsv Or vrb(i).pn<0) Then
+				typ=vrb(i).typ
+				Select Case vrb(i).mem
+					Case 1
+						' Shared
+						adr=vrb(i).adr
+						fGlobal=1
+						'
+					Case 2
+						' Static
+						adr=vrb(i).adr
+						fGlobal=1
+						'
+					Case 3
+						' ByRef
+						adr=ebp_this+vrb(i).adr
+						fParam=2
+						'
+					Case 4
+						' ByVal
+						adr=ebp_this+vrb(i).adr
+						fParam=1
+						'
+					Case 5
+						' Local
+						adr=ebp_this+vrb(i).adr
+						'
+					Case 6
+						' Common
+						adr=vrb(i).adr
+						fGlobal=1
+						'
+					Case Else
+						Return -1
+				End Select
+				If fGlobal=0 Then
+					If vrb(i).pn<>procsv And vrb(i).pn<>-procsv Then
+						' Not in current scope
+						GoTo NotInScope
+					EndIf
+					' Find source
+					For j=1 To sourcenb
+						If UCase(source(j).file)=UCase(lpData->filename) Then
 							Exit For
 						EndIf
 					Next
-					If j>linenb Then
-						' Variable not found
-						nErr=3
+					If proc(procsv).sr<>j Then
+						' Unknown source
+						nErr=9
 						Return -1
 					EndIf
-					If adr Then
-						If fParam=2 Then
-							' ByRef
-							ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-						EndIf
-					EndIf
-				Else
-					' Local, Check if in scope
-					For j=1 To linenb
-						If rline(j).nu=nLnDebug+1 And rline(j).pr=procsv Then
-							If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-								adr=0
+					If fParam Then
+						' Parameter, Check if in scope
+						For j=1 To linenb
+							If (proc(procsv).nu=nLnDebug+1 Or rline(j).nu=nLnDebug+1) And rline(j).pr=procsv Then
+								If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+									' Not in current scope
+									GoTo NotInScope
+								EndIf
+								Exit For
 							EndIf
-							Exit For
+						Next
+						If j>linenb Then
+							' Variable not found
+							GoTo NotInScope
 						EndIf
-					Next
-					If j>linenb Then
-						' Not in scope
-						nErr=3
-						Return -1
-					EndIf
-				EndIf
-			EndIf
-			ofs=GetArrOfs(px,typ,vrb(i).arr,0)
-			If ofs=-1 Then
-				Return -1
-			EndIf
-			adr+=ofs
-Nxt:
-			If typ>15 Then
-				If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
-					px+=2
-					i=szCompiled[px]
-					px+=1
-					svar=UCase(Mid(szCompiled,px+1,i))
-					px+=i
-					For i=udt(typ).lb To udt(typ).ub
-						If svar=cudt(i).nm Then
-							adr+=cudt(i).ofs
-							typ=cudt(i).typ
-							If cudt(i).arr Then
-								ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
-							Else
-								ofs=GetArrOfs(px,typ,0,0)
+						If adr Then
+							If fParam=2 Then
+								' ByRef
+								ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
 							EndIf
-							If ofs=-1 Then
-								Return -1
-							EndIf
-							adr+=ofs
-							Exit For
 						EndIf
-					Next
-					GoTo Nxt
-				Else
-					If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
-						' Foreign Integer
-						typ=1
 					Else
-						nErr=1
-						Return -1
+						' Local, Check if in scope
+						For j=1 To linenb
+							If rline(j).nu=nLnDebug+1 And rline(j).pr=procsv Then
+								If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+									adr=0
+								EndIf
+								Exit For
+							EndIf
+						Next
+						If j>linenb Or adr=0 Then
+							' Not in current scope
+							GoTo NotInScope
+						EndIf
 					EndIf
 				EndIf
+				ofs=GetArrOfs(px,typ,vrb(i).arr,0)
+				If ofs=-1 Then
+					Return -1
+				EndIf
+				adr+=ofs
+Nxt:
+				If typ>15 Then
+					If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
+						px+=2
+						i=szCompiled[px]
+						px+=1
+						svar=UCase(Mid(szCompiled,px+1,i))
+						px+=i
+						For i=udt(typ).lb To udt(typ).ub
+							If svar=cudt(i).nm Then
+								adr+=cudt(i).ofs
+								typ=cudt(i).typ
+								If cudt(i).arr Then
+									ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
+								Else
+									ofs=GetArrOfs(px,typ,0,0)
+								EndIf
+								If ofs=-1 Then
+									Return -1
+								EndIf
+								adr+=ofs
+								Exit For
+							EndIf
+						Next
+						GoTo Nxt
+					Else
+						If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
+							' Foreign Integer
+							typ=1
+						Else
+							nErr=1
+							Return -1
+						EndIf
+					EndIf
+				EndIf
+				Return adr
 			EndIf
-			Return adr
 		EndIf
+NotInScope:
 		i+=1
 	Wend
 	If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
@@ -709,7 +734,12 @@ Nxt:
 		px+=i
 		GoTo Again
 	EndIf
-	nErr=3
+	' Variable not found
+	If bFound Then
+		nErr=8
+	Else
+		nErr=3
+	EndIf
 	Return -1
 
 End Function
@@ -1415,6 +1445,10 @@ Function Immediate() As Integer
 				buff="Type mismatch"
 			Case 7
 				buff="String too long"
+			Case 8
+				buff="Not in current scope"
+			Case 9
+				buff="Unknown source"
 			Case Else
 				buff="Unknown error"
 		End Select

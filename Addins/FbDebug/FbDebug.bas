@@ -272,6 +272,25 @@ Sub CreateToolTip()
 
 End sub
 
+Function EnumProc(ByVal hWin As HWND,ByVal lParam As Integer) As Boolean
+	Dim tid As Integer
+	Dim pid As Integer
+
+	tid=GetWindowThreadProcessId(hWin,@pid)
+	If tid=mtid And pid=mpid Then
+		BringWindowToTop(hWin)
+		Return FALSE
+	EndIf
+	Return TRUE
+
+End Function
+
+Sub BringWindowToFront
+
+	EnumWindows(@EnumProc,0)
+	
+End Sub
+
 Function GetArrayDim(ByVal lpArr As tarr Ptr) As String
 	Dim n As Integer
 	Dim s As String
@@ -1048,6 +1067,9 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							While tid>0
 								tid=ResumeThread(threadcontext)
 							Wend
+							'If nLnDebug=-1 Then
+							'	BringWindowToFront
+							'EndIf
 						Else
 							fExit=0
 							If Len(lpData->smakeoutput) Then
