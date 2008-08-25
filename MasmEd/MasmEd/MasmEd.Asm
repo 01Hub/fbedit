@@ -501,11 +501,14 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	EnableDisable
 			invoke GetWindowLong,hREd,GWL_ID
 			.if eax==IDC_RES
-				mov		eax,TRUE
+				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
 				invoke SendMessage,hResEd,DEM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
+				call	EnableDisable
+				invoke SendMessage,hResEd,DEM_CANREDO,0,0
+				mov		edx,IDM_EDIT_REDO
 				call	EnableDisable
 				invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
 				mov		edx,IDM_EDIT_CUT
@@ -528,8 +531,6 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				xor		eax,eax
 				mov		edx,IDM_FILE_PRINT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_REDO
 				call	EnableDisable
 				mov		edx,IDM_EDIT_SELECTALL
 				call	EnableDisable
@@ -916,6 +917,9 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		jmp		Ex
 	.elseif eax==EM_UNDO
 		invoke SendMessage,hResEd,DEM_UNDO,0,0
+		jmp		Ex
+	.elseif eax==EM_REDO
+		invoke SendMessage,hResEd,DEM_REDO,0,0
 		jmp		Ex
 	.elseif eax==WM_CUT
 		invoke SendMessage,hResEd,DEM_CUT,0,0
