@@ -1,5 +1,13 @@
 MasmEd
 
+1.0.5.0
+
+
+1.0.4.9 - 2007.11.19
+--------------------
+o Fixed bug that caused crash on Vista.
+o Updated all internal components to latest version.
+
 1.0.4.6 - 2006.05.09
 --------------------
 o Made option, tools menu and help menu dialogs larger.

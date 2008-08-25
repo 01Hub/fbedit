@@ -197,6 +197,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	invoke LoadAccelerators,hInstance,IDR_ACCEL
 	mov		hAccel,eax
 	;Get command line filename
+	mov		edx,CmdLine
 	.if byte ptr [edx]
 		invoke OpenCommandLine,CommandLine
 	.endif
