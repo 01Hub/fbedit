@@ -221,23 +221,21 @@ Sub decoup(gv As String)
 		' Defined type or redim var
 		If InStr(gv,":Tt") Then
 			' UDT
-			ttyp=TYUDT
 			decoupudt(gv)
 		Else
 			' REDIM
-			ttyp=TYRDM
 			' Var or parameter
-			vrbnb+=1:vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1)
+			vrbnb+=1
+			vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1)
 			vrb(vrbnb).arr=Cast(Any Ptr,recupstab.ad)
 			' Just to have the next beginning
 			proc(procnb+1).vr=vrbnb+1
 			' First caracter after ":"
 			decoupscp(gv[InStr(gv,":")])
-			decoup2(Mid(gv,InStr(gv,";;")+2),ttyp)
+			decoup2(Mid(gv,InStr(gv,";;")+2),TYRDM)
 		EndIf
 	Else
 		' Dim
-		ttyp=TYDIM
 		vrbnb+=1
 		If Left(gv,4)="__ZN" And InStr(gv,":") Then
 			' Namespace
@@ -249,7 +247,7 @@ Sub decoup(gv As String)
 		proc(procnb+1).vr=vrbnb+1
 		' First caracter after ":"
 		p=decoupscp(gv[InStr(gv,":")])
-		decoup2(Mid(gv,InStr(gv,":")+p),ttyp)
+		decoup2(Mid(gv,InStr(gv,":")+p),TYDIM)
 	EndIf
 
 End Sub
@@ -372,12 +370,8 @@ Sub ParseDebugInfo()
 						' Return value
 						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 						proc(procnb).nu=recupstab.nline
-					Case 38
+					Case 38,40,128,160
 						' Init var
-						decoup(recup)
-						vrb(vrbnb).adr=recupstab.ad
-					Case 40
-						' Uninit var
 						decoup(recup)
 						vrb(vrbnb).adr=recupstab.ad
 					Case 100
@@ -397,13 +391,6 @@ Sub ParseDebugInfo()
 								source(sourcenb).file[i-1]=Asc("\")
 							EndIf
 						Wend
-					Case 128
-						' Local
-						decoup(recup)
-						If recupstab.ad Then
-							' Stack offset
-							vrb(vrbnb).adr=recupstab.ad
-						EndIf
 					Case 130
 						' Include RAS
 						'PutString("include RAS " & recup)
@@ -420,10 +407,6 @@ Sub ParseDebugInfo()
 								source(sourcenb).file[i-1]=Asc("\")
 							EndIf
 						Wend
-					Case 160
-						' Parameter
-						decoup(recup)
-						vrb(vrbnb).adr=recupstab.ad
 					Case 42
 						' Main RAS
 						'PutString("Main RAS " & recup)
@@ -775,9 +758,6 @@ Sub ClearVars()
 	Next
 	sourceix=0
 	sourcenb=0
-
-'Dim Shared ttyp As Byte
-	ttyp=0
 
 'Const TYPEMAX=1500
 'Dim Shared udt(TYPEMAX) As tudt
