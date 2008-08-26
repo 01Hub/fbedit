@@ -278,7 +278,7 @@ Function EnumProc(ByVal hWin As HWND,ByVal lParam As Integer) As Boolean
 
 	tid=GetWindowThreadProcessId(hWin,@pid)
 	If tid=mtid And pid=mpid Then
-		BringWindowToTop(hWin)
+		SetForegroundWindow(hWin)
 		Return FALSE
 	EndIf
 	Return TRUE
@@ -1067,9 +1067,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							While tid>0
 								tid=ResumeThread(threadcontext)
 							Wend
-							'If nLnDebug=-1 Then
-							'	BringWindowToFront
-							'EndIf
+							BringWindowToFront
 						Else
 							fExit=0
 							If Len(lpData->smakeoutput) Then

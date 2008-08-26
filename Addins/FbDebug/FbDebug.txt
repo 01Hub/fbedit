@@ -146,5 +146,6 @@ o Added Watch to immediate window.
 o Fixed bug with parsing Common variables.
 Version 1.0.0.9
 o Fixed bug while parsing huge UDT's.
+o Run wil bring the debugged window / console to top.
 
 KetilO
