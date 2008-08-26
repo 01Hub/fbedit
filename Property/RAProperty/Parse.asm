@@ -303,8 +303,12 @@ GetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		edx,lpMem
 	movzx	ecx,byte ptr [ebx].RAPROPERTY.defgen.szLineCont
-	.while byte ptr [edx]==VK_SPACE || byte ptr [edx]==VK_TAB || (cl==byte ptr [edx] && byte ptr [edx+1]==0Dh)
+	.while byte ptr [edx]==VK_SPACE || byte ptr [edx]==VK_TAB || (cl==byte ptr [edx] && (byte ptr [edx+1]==VK_RETURN || byte ptr [edx+1]==VK_SPACE || byte ptr [edx+1]==VK_TAB))
 		.if cl==byte ptr [edx]
+			.while byte ptr [edx+1]==VK_SPACE || byte ptr [edx+1]==VK_TAB
+				inc		edx
+			.endw
+			.break .if byte ptr [edx+1]!=VK_RETURN
 			mov		eax,lpnpos
 			inc		dword ptr [eax]
 			.if byte ptr [edx+2]==0Ah
