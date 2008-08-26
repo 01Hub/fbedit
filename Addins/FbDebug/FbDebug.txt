@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.8
+FbEdit debug addin version 1.0.0.9
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -144,5 +144,7 @@ o Fixed bug with parsing debug info.
 Version 1.0.0.8
 o Added Watch to immediate window.
 o Fixed bug with parsing Common variables.
+Version 1.0.0.9
+o Fixed bug while parsing huge UDT's.
 
 KetilO

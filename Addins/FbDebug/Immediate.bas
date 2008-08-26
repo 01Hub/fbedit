@@ -1402,8 +1402,8 @@ Function Immediate() As Integer
 			' Only in debug mode
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 			For x=1 To stabnb
-				buff=stab(x) & szCRLF
-				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+				recup=stab(x) & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
 			Next
 		Else
 			nErr=2

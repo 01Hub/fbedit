@@ -24,7 +24,7 @@ Sub readstab()
 
 End Sub
 
-Sub readstabs(ad As UInteger)
+Sub readstabs(ByVal ad As UInteger)
 	Dim lret As Integer
 	Dim b As Byte
 
@@ -39,6 +39,7 @@ Sub readstabs(ad As UInteger)
 		recup &=Chr(b)
 		ad+=1
 	Wend
+PutString(recup)
 	stabnb+=1
 	stab(stabnb)=recup
 

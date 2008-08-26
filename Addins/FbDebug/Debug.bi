@@ -110,7 +110,7 @@ Dim Shared secnm As String*8
 Dim Shared basestab As UInteger
 Dim Shared basestabs As UInteger
 Dim Shared recupstab As udtstab
-Dim Shared recup As ZString*1000
+Dim Shared recup As ZString*8192
 
 ' Proc
 Const PROCMAX=500
