@@ -91,9 +91,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,19633
+1=580,0,290,688,9410
 6=
-2=0,0,0,0,5435
+2=0,0,0,0,5522
 7=0,0,699,490,7475
 9=
 8=
@@ -108,7 +108,7 @@ Options=52
 18=0,0,0,0,6901
 12=0,0,0,0,1241
 19=0,0,0,0
-21=0,0,0,0,358
+21=0,0,0,0,109
 22=0,0,0,0
 24=0,0,0,0
 25=0,0,0,0,5060
@@ -131,16 +131,16 @@ Options=52
 0=
 
 [Find]
-1="MnuHigh"
-2="DrawMnu"
-3="MakeMnuBar"
-4="SELHHFM"
-5="SaveSel"
-6="CreateMnu"
-7="MEM_OPEN"
-8="InstallRAEdit"
-9="GridInstall"
-10="ResEdInstall"
+1="MenuUpdate"
+2="PRO_ADDITEM"
+3="PRO_GETDIALOG"
+4="MakeMnuBar"
+5="SELHHFM"
+6="SaveSel"
+7="CreateMnu"
+8="MEM_OPEN"
+9="InstallRAEdit"
+10="GridInstall"
 
 [VersionControl]
 Settings=1278
@@ -176,10 +176,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=2.1.0.1
-FileVersion=2.1.0.1
-PV=2.1.0.1
-ProductVersion=2.1.0.1
+FV=2.1.0.2
+FileVersion=2.1.0.2
+PV=2.1.0.2
+ProductVersion=2.1.0.2
 Nme=VERINF1
 ID=1
 VerOS=0x00000004

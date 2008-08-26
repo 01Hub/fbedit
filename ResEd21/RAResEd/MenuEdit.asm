@@ -652,6 +652,7 @@ MenuUpdateMem endp
 MenuUpdate proc uses esi edi,hWin:HWND
 	LOCAL	hMem:DWORD
 
+PrintText 'Saved'
 	invoke MenuUpdateMem,hWin
 	mov		hMem,eax
 	mov		esi,hMem
@@ -814,8 +815,8 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				invoke SendMessage,hWin,WM_CLOSE,FALSE,0
 				invoke PropertyList,0
 			.elseif eax==IDOK
-				invoke MenuUpdate,hWin
 				.if fDialogChanged
+					invoke MenuUpdate,hWin
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					mov		fDialogChanged,FALSE
 				.endif

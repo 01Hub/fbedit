@@ -1,5 +1,10 @@
 ResEd
 
+2.1.0.2 - 2008.08.27
+--------------------
+o Fixed bug with menu editor.
+o Fixed bug with menu preview.
+
 2.1.0.1 - 2008.07.03
 --------------------
 o Added preview to menu editor.
