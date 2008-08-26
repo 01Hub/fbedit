@@ -14,8 +14,12 @@
 #include "Res/TabOpt1Dlg.rc"
 
 #include "Res/MenuEditDlg.rc"
+#include "Res/MnuPreviewDlg.rc"
 #include "Res/IncludeEditDlg.rc"
 #include "Res/ResourceEditDlg.rc"
+#include "Res/ResPreviewDlg.rc"
+#include "Res/ResPreviewBtnDlg.rc"
+#include "Res/ResPreviewCtlDlg.rc"
 #include "Res/StringEditDlg.rc"
 #include "Res/AccelEditDlg.rc"
 #include "Res/NameEditDlg.rc"
