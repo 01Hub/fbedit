@@ -1106,7 +1106,11 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							ClearDebugLine
 						Else
 							If MessageBox(hWin,"Terminate process?","Debug",MB_YESNO Or MB_ICONQUESTION)=IDYES Then
-								TerminateProcess(pinfo.hProcess,0)
+								If TerminateProcess(pinfo.hProcess,0)=0 Then
+									TerminateThread(hThread,0)
+									StopDebugging
+									PutString("Terminated by user.")
+								EndIf
 							Else
 								fExit=0
 							EndIf

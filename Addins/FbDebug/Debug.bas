@@ -886,6 +886,22 @@ Sub SetSourceProjectInx()
 
 End Sub
 
+Sub StopDebugging
+	Dim lret As Integer
+
+	lret=CloseHandle(dbghand)
+	lret=CloseHandle(pinfo.hThread)
+	lret=CloseHandle(pinfo.hProcess)
+	lret=CloseHandle(hDebugFile)
+	lret=CloseHandle(hThread)
+	hThread=0
+	lpData->fDebug=FALSE
+	LockFiles(FALSE)
+	ClearVars
+	EnableDebugMenu
+
+End Sub
+
 Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim sinfo As STARTUPINFO
 	Dim As Integer lret,fContinue,i
@@ -1028,16 +1044,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			ContinueDebugEvent(de.dwProcessId,de.dwThreadId,fContinue)
 		Wend
 		' Process ended
-		lret=CloseHandle(dbghand)
-		lret=CloseHandle(pinfo.hThread)
-		lret=CloseHandle(pinfo.hProcess)
-		lret=CloseHandle(hDebugFile)
-		lret=CloseHandle(hThread)
-		hThread=0
-		lpData->fDebug=FALSE
-		LockFiles(FALSE)
-		ClearVars
-		EnableDebugMenu
+		StopDebugging
 	EndIf
 	Return 0
 
