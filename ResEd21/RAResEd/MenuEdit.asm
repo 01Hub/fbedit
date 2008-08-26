@@ -618,7 +618,7 @@ MnuGetMem proc uses esi,hWin:HWND
 
 MnuGetMem endp
 
-MenuUpdate proc uses esi edi,hWin:HWND
+MenuUpdateMem proc uses esi edi,hWin:HWND
 	LOCAL	hMem:DWORD
 	LOCAL	nInx:DWORD
 
@@ -644,6 +644,16 @@ MenuUpdate proc uses esi edi,hWin:HWND
 		inc		nInx
 		jmp		@b
 	.endif
+	mov		eax,hMem
+	ret
+
+MenuUpdateMem endp
+
+MenuUpdate proc uses esi edi,hWin:HWND
+	LOCAL	hMem:DWORD
+
+	invoke MenuUpdateMem,hWin
+	mov		hMem,eax
 	mov		esi,hMem
 	mov		edi,hMnuMem
 	mov		ecx,MaxMem/4
@@ -721,6 +731,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 	LOCAL	buffer1[256]:byte
 	LOCAL	val:DWORD
 	LOCAL	rect:RECT
+	LOCAL	hMem:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -892,7 +903,11 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					.endif
 				.endif
 			.elseif eax==IDC_BTNMNUPREVIEW
-				invoke DialogBoxParam,hInstance,IDD_DLGMNUPREVIEW,hWin,addr DlgMnuPreviewProc,hMnuMem
+				invoke MenuUpdateMem,hWin
+				mov		hMem,eax
+				invoke DialogBoxParam,hInstance,IDD_DLGMNUPREVIEW,hWin,addr DlgMnuPreviewProc,hMem
+				invoke GlobalUnlock,hMem
+				invoke GlobalFree,hMem
 			.elseif eax==IDC_CHKCHECKED
 				invoke MnuGetMem,hWin
 				.if eax
