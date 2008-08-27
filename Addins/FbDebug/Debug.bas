@@ -39,7 +39,6 @@ Sub readstabs(ByVal ad As UInteger)
 		recup &=Chr(b)
 		ad+=1
 	Wend
-PutString(recup)
 	stabnb+=1
 	stab(stabnb)=recup
 
