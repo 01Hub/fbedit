@@ -233,16 +233,16 @@ Group=Assembly,Resources,Misc,Include
 41=2
 
 [Find]
-1="InstallFileBrowser"
-2="GridInstall"
-3="LineTxt"
-4="UpdateApiCallList"
-5="hApiConstMem"
-6="hApiCallMem"
-7="dll"
-8="RAGRID"
-9="hCustDll"
-10="chm"
+1="IDM_RESOURCE_VERINF"
+2="InstallFileBrowser"
+3="GridInstall"
+4="LineTxt"
+5="UpdateApiCallList"
+6="hApiConstMem"
+7="hApiCallMem"
+8="dll"
+9="RAGRID"
+10="hCustDll"
 
 [VersionControl]
 Settings=1246
@@ -289,18 +289,18 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,7880
-1=0,0,0,0,13944
+2=0,0,0,0,4361
+1=0,0,0,0,15807
 11=0,0,0,0,3601
 22=0,0,0,0,60
 10=0,0,0,0,11560
-23=0,0,0,0,9564
+23=0,0,0,0,7962
 9=0,0,0,0,160
 4=0,0,0,0
 17=0,0,0,0,323
 16=0,0,0,0
 6=0,0,0,0
-3=0,0,0,0,22
+3=0,0,0,0,538
 18=0,0,0,0
 15=0,0,0,0,833
 30=0,0,0,0
@@ -324,7 +324,7 @@ ProductVer4Range=0
 20=0,0,0,0,0
 38=0,0,0,0,330
 39=0,0,0,0
-40=0,0,0,0,1574
+40=0,0,0,0,29
 
 [BookMark]
 0=

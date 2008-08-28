@@ -504,6 +504,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
+				mov		edx,IDM_FORMAT_TABINDEX
+				call	EnableDisable
 				invoke SendMessage,hResEd,DEM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
 				call	EnableDisable
@@ -578,6 +580,12 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_VERINF
 				call	EnableDisable
+				mov		edx,IDM_RESOURCE_MANIFEST
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_RCDATA
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_TOOLBAR
+				call	EnableDisable
 				mov		edx,IDM_RESOURCE_LANGUAGE
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_INCLUDE
@@ -620,6 +628,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_FORMAT_CENTER
 				call	EnableDisable
+				mov		edx,IDM_FORMAT_TABINDEX
+				call	EnableDisable
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_DIALOG
@@ -629,6 +639,12 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_RESOURCE_ACCEL
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_VERINF
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_MANIFEST
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_RCDATA
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_TOOLBAR
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_LANGUAGE
 				call	EnableDisable
@@ -741,6 +757,12 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_RESOURCE_ACCEL
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_VERINF
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_MANIFEST
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_RCDATA
+				call	EnableDisable
+				mov		edx,IDM_RESOURCE_TOOLBAR
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_LANGUAGE
 				call	EnableDisable
@@ -1665,6 +1687,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_ACCEL,TRUE
 			.elseif eax==IDM_RESOURCE_VERINF
 				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_VERSION,TRUE
+			.elseif eax==IDM_RESOURCE_MANIFEST
+				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
+			.elseif eax==IDM_RESOURCE_RCDATA
+				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RCDATA,TRUE
+			.elseif eax==IDM_RESOURCE_TOOLBAR
+				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_TOOLBAR,TRUE
 			.elseif eax==IDM_RESOURCE_LANGUAGE
 				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_LANGUAGE,TRUE
 			.elseif eax==IDM_RESOURCE_INCLUDE
