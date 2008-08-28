@@ -497,6 +497,7 @@ nLastLine				dd ?
 fTimer					dd ?
 hMnuIml					dd ?
 LineTxt					db 16384 dup(?)
+tmpbuff					db 16384 dup(?)
 prvline					dd ?
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>

@@ -228,6 +228,7 @@ IndentComment proc uses esi,nChr:DWORD,fN:DWORD
 		mov		chr.cpMin,eax
 		inc		LnSt
 		.if fN
+			; Indent / Comment
 			mov		chr.cpMax,eax
 			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chr
 			invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
@@ -235,11 +236,12 @@ IndentComment proc uses esi,nChr:DWORD,fN:DWORD
 			add		ochr.cpMax,eax
 			jmp		nxt
 		.else
+			; Outdent / Uncomment
 			invoke SendMessage,hREd,EM_LINEINDEX,LnSt,0
 			mov		chr.cpMax,eax
 			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chr
-			invoke SendMessage,hREd,EM_GETSELTEXT,0,addr LineTxt
-			mov		esi,offset LineTxt
+			invoke SendMessage,hREd,EM_GETSELTEXT,0,addr tmpbuff
+			mov		esi,offset tmpbuff
 			xor		eax,eax
 			mov		al,[esi]
 			.if eax==nChr

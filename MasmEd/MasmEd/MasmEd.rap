@@ -233,16 +233,16 @@ Group=Assembly,Resources,Misc,Include
 41=2
 
 [Find]
-1="IDM_RESOURCE_VERINF"
-2="InstallFileBrowser"
-3="GridInstall"
-4="LineTxt"
-5="UpdateApiCallList"
-6="hApiConstMem"
-7="hApiCallMem"
-8="dll"
-9="RAGRID"
-10="hCustDll"
+1="IndentComment"
+2="10038"
+3="IDM_EDIT_OUTDENT"
+4="IDM_RESOURCE_VERINF"
+5="InstallFileBrowser"
+6="GridInstall"
+7="LineTxt"
+8="UpdateApiCallList"
+9="hApiConstMem"
+10="hApiCallMem"
 
 [VersionControl]
 Settings=1246
@@ -254,7 +254,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -289,9 +289,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,4361
-1=0,0,0,0,15807
-11=0,0,0,0,3601
+2=0,0,0,0,18230
+1=0,0,0,0,54151
+11=0,0,0,0,5203
 22=0,0,0,0,60
 10=0,0,0,0,11560
 23=0,0,0,0,7962
@@ -319,10 +319,10 @@ ProductVer4Range=0
 33=0,0,0,0,68
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,1920
+37=0,0,0,0,6371
 36=0,0,661,490,0
 20=0,0,0,0,0
-38=0,0,0,0,330
+38=0,0,0,0,192
 39=0,0,0,0
 40=0,0,0,0,29
 

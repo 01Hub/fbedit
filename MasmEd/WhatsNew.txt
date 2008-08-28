@@ -4,6 +4,7 @@ MasmEd
 --------------------
 o Updated all internal components to latest version.
 o Fixed bug if any of the api files are missing.
+o Fixed bug with outdent and uncomment.
 
 1.0.4.9 - 2007.11.19
 --------------------
