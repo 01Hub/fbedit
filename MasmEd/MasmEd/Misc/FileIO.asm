@@ -268,7 +268,22 @@ LoadRCFile endp
 
 OpenEditFile proc uses esi,lpFileName:DWORD
 	LOCAL	fClose:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fCtrl:DWORD
 
+	invoke GetKeyState,VK_CONTROL
+	and		eax,80h
+	mov		fCtrl,eax
+	.if !eax
+		invoke lstrcpy,addr buffer,lpFileName
+		invoke CharUpper,addr buffer
+		invoke lstrlen,addr buffer
+		mov		eax,dword ptr buffer[eax-4]
+		.if eax=='EXE.' || eax=='TAB.' || eax=='MOC.'
+			invoke WinExec,lpFileName,SW_SHOWNORMAL
+			ret
+		.endif
+	.endif
 	mov		fClose,0
 	invoke lstrcmp,offset FileName,offset szNewFile
 	.if !eax
@@ -282,7 +297,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD
 	invoke UpdateAll,IS_OPEN
 	.if !eax
 		invoke IsFileResource,lpFileName
-		.if eax
+		.if eax && !fCtrl
 			invoke UpdateAll,IS_RESOURCE
 			.if eax
 				invoke WantToSave,hREd,offset FileName
@@ -492,3 +507,56 @@ OpenCommandLine proc uses ebx,lpCmnd:DWORD
 
 OpenCommandLine endp
 
+RestoreSession proc uses esi edi
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	nLn:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	mov		esi,offset tmpbuff
+	.if edopt.session && byte ptr [esi]
+		mov		nInx,-2
+		.while byte ptr [esi]
+			call	GetItem
+			.if nInx==-2
+				invoke AsciiToDw,addr buffer
+				mov		nInx,eax
+			.else
+				invoke AsciiToDw,addr buffer
+				mov		nLn,eax
+				call	GetItem
+				invoke OpenEditFile,addr buffer
+				mov		eax,hREd
+				.if nLn!=-1 && eax!=hResEd
+					invoke SendMessage,hREd,EM_LINEINDEX,nLn,0
+					mov		chrg.cpMin,eax
+					mov		chrg.cpMax,eax
+					invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+					invoke SendMessage,hREd,REM_VCENTER,0,0
+					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+				.endif
+			.endif
+		.endw
+		.if nInx!=-2
+			invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+			invoke TabToolActivate
+		.endif
+	.endif
+	ret
+
+GetItem:
+	lea		edi,buffer
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	retn
+
+RestoreSession endp

@@ -88,6 +88,7 @@ start:
 		mov		psd.ptPaperSize.x,eax
 		mov		eax,ppos.pagesize.y
 		mov		psd.ptPaperSize.y,eax
+		mov		lpcbData,sizeof nmeexp
 	.endif
 	.if wpos.wtfile<50
 		mov		wpos.wtfile,175
@@ -137,6 +138,7 @@ start:
 		invoke FreeLibrary,hRichEd
 	.endif
 	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
+	invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
 	invoke RegCloseKey,hReg
 	invoke OleUninitialize
 	pop		eax
@@ -200,6 +202,12 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		edx,CmdLine
 	.if byte ptr [edx]
 		invoke OpenCommandLine,CommandLine
+	.else
+		mov		lpcbData,sizeof tmpbuff
+		invoke RegQueryValueEx,hReg,addr szSession,0,addr lpType,addr tmpbuff,addr lpcbData
+		.if byte ptr tmpbuff
+			invoke RestoreSession
+		.endif
 	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
@@ -367,6 +375,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TCITEM
 	LOCAL	hefnt:HEFONT
+	LOCAL	chrg:CHARRANGE
 
 	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
 	mov		nInx,eax
@@ -422,10 +431,6 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				invoke GetProcessHeap
 				invoke HeapFree,eax,NULL,ebx
 			.elseif eax==WM_DESTROY
-;				.if [ebx].TABMEM.hchange
-;					invoke FindCloseChangeNotification,[ebx].TABMEM.hchange
-;				.endif
-;				invoke CloseHandle,[ebx].TABMEM.hthread
 				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
 				invoke DestroyWindow,[ebx].TABMEM.hwnd
 				invoke GetProcessHeap
@@ -479,6 +484,24 @@ UpdateAll proc uses ebx,nFunction:DWORD
 			.elseif eax==CLEAR_CHANGED
 				.if [ebx].TABMEM.nchange
 					mov		[ebx].TABMEM.nchange,0
+				.endif
+			.elseif eax==SAVE_SESSION
+				invoke lstrcmp,addr [ebx].TABMEM.filename, addr szNewFile
+				.if eax
+					invoke lstrcpy,addr LineTxt,addr tmpbuff
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_RAE
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					.else
+						mov		eax,-1
+					.endif
+					mov		edx,eax
+					invoke DwToAscii,edx,addr tmpbuff
+					invoke lstrcat,addr tmpbuff,addr szComma
+					invoke lstrcat,addr tmpbuff,addr [ebx].TABMEM.filename
+					invoke lstrcat,addr tmpbuff,addr szComma
+					invoke lstrcat,addr tmpbuff,addr LineTxt
 				.endif
 			.endif
 		.endif
@@ -1302,18 +1325,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
-		mov		lpcbData,256
 		invoke lstrcpy,addr CompileRC,addr defCompileRC
+		mov		lpcbData,sizeof CompileRC
 		invoke RegQueryValueEx,hReg,addr szCompileRC,0,addr lpType,addr CompileRC,addr lpcbData
 		invoke lstrcpy,addr Assemble,addr defAssemble
+		mov		lpcbData,sizeof Assemble
 		invoke RegQueryValueEx,hReg,addr szAssemble,0,addr lpType,addr Assemble,addr lpcbData
 		invoke lstrcpy,addr Link,addr defLink
+		mov		lpcbData,sizeof Link
 		invoke RegQueryValueEx,hReg,addr szLink,0,addr lpType,addr Link,addr lpcbData
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
+		mov		lpcbData,sizeof szInitFolder
+		invoke RegQueryValueEx,hReg,addr szFolder,0,addr lpType,addr szInitFolder,addr lpcbData
 		invoke SendMessage,hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter
 		invoke SendMessage,hBrowse,FBM_SETFILTER,FALSE,TRUE
-		invoke GetModuleFileName,0,addr buffer,sizeof buffer
+		.if byte ptr szInitFolder
+			invoke lstrcpy,addr buffer,addr szInitFolder
+		.else
+			invoke GetModuleFileName,0,addr buffer,sizeof buffer
+		.endif
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
 		INVOKE SetBlockDefs,hREd
@@ -1912,17 +1943,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==EN_SELCHANGE && ecx==IDC_HEX
 			mov		fTimer,2
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
-			push	edx
-			invoke lstrcpy,addr buffer,[edx].FBNOTIFY.lpfile
-			invoke CharUpper,addr buffer
-			invoke lstrlen,addr buffer
-			mov		eax,dword ptr buffer[eax-4]
-			pop		edx
-			.if eax=='EXE.' || eax=='TAB.' || eax=='MOC.'
-				invoke WinExec,[edx].FBNOTIFY.lpfile,SW_SHOWNORMAL
-			.else
-				invoke OpenEditFile,[edx].FBNOTIFY.lpfile
-			.endif
+			invoke OpenEditFile,[edx].FBNOTIFY.lpfile
 		.elseif eax==TTN_NEEDTEXT
 			;Toolbar tooltip
 			mov		edx,(NMHDR ptr [edx]).idFrom
@@ -1936,6 +1957,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_SETFOCUS
 		invoke SetFocus,hREd
 	.elseif eax==WM_CLOSE
+		mov		byte ptr tmpbuff,0
+		invoke UpdateAll,SAVE_SESSION
+		invoke lstrlen,addr tmpbuff
+		.if eax
+			mov		byte ptr tmpbuff[eax-1],0
+		.endif
+		invoke lstrcpy,addr LineTxt,addr tmpbuff
+		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+		mov		edx,eax
+		invoke DwToAscii,edx,addr tmpbuff
+		invoke lstrcat,addr tmpbuff,addr szComma
+		invoke lstrcat,addr tmpbuff,addr LineTxt
+		invoke lstrlen,addr tmpbuff
+		inc		eax
+		invoke RegSetValueEx,hReg,addr szSession,0,REG_SZ,addr tmpbuff,eax
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
 			invoke CloseNotify
@@ -1960,6 +1996,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		wpos.fMax,TRUE
 			.endif
+			invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
+			invoke lstrcat,addr szInitFolder,addr szBackSlash
 			invoke DestroyWindow,hCCLB
 			invoke DestroyWindow,hCCTT
 			invoke DestroyWindow,hWin

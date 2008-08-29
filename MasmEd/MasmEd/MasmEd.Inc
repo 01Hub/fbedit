@@ -65,6 +65,7 @@ IS_RESOURCE_OPEN		equ -4
 CLOSE_ALL				equ -5
 IS_CHANGED				equ -6
 CLEAR_CHANGED			equ -7
+SAVE_SESSION			equ -8
 
 TABHT					equ 21
 CBOWT					equ 175
@@ -247,6 +248,7 @@ EDITOPT struct
 	indent		dd ?
 	hiliteline	dd ?
 	hilitecmnt	dd ?
+	session		dd ?
 EDITOPT ends
 
 PRNPOS struct
@@ -351,6 +353,8 @@ szTab					db VK_TAB,0
 szSpc					db ' ',0
 szCr					db 0Dh,0
 szQuote					db '"',0
+szBackSlash				db '\',0
+szComma					db ',',0
 szProc					db '$ proc',0
 szEndp					db '? endp',0
 szIf					db '.if',0
@@ -395,7 +399,7 @@ szSimEd					db 'Software\MasmEd1000\',0
 szWinPos				db 'WinPos',0
 wpos					WINPOS <0,15,10,10,620,460,100,175,175,200,100,100>
 szEditOpt				db 'EditOpt',0
-edopt					EDITOPT <4,FALSE,TRUE,FALSE,TRUE>
+edopt					EDITOPT <4,FALSE,TRUE,FALSE,TRUE,TRUE>
 szCodeFont				db 'CodeFont',0
 lfnt					LOGFONT <-12,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Courier New'>
 szLnrFont				db 'LnrFont',0
@@ -454,6 +458,8 @@ szNmeExp				db 'NmeExp',0
 nmeexp					NAMEEXPORT <0,'rsrc.inc',0>
 szGrid					db 'Grid',0
 grdsize					GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE>
+szFolder				db 'Folder',0
+szSession				db 'Session',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
@@ -510,3 +516,4 @@ lpOldRAEditProc			dd ?
 ConstData				db 8192 dup(?)
 fLBConst				dd ?
 winsize					WINSIZE <?>
+szInitFolder			db MAX_PATH dup(?)

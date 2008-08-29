@@ -3,6 +3,10 @@ MasmEd
 1.0.5.0 - 2008.08.25
 --------------------
 o Updated all internal components to latest version.
+o You can open .rc and .bat files for text editing by holding Ctrl key.
+o File browser now remembers folder between sessions.
+o Updated file browser icons.
+o Added option to restore session.
 o Fixed bug if any of the api files are missing.
 o Fixed bug with outdent and uncomment.
 

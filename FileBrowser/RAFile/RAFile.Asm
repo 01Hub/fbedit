@@ -598,7 +598,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].FILEBROWSER.htrv,eax
 		invoke SetWindowLong,[ebx].FILEBROWSER.htrv,GWL_WNDPROC,offset FileTreeViewProc
 		invoke SetWindowLong,[ebx].FILEBROWSER.htrv,GWL_USERDATA,eax
-		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,10,0
+		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,10,0
 		mov		[ebx].FILEBROWSER.himl,eax
 		invoke LoadBitmap,hInstance,IDB_TRV
 		push	eax
