@@ -774,6 +774,11 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		invoke SendMessage,[ebx].FILEBROWSER.htrv,TVM_GETTEXTCOLOR,0,0
 		jmp		Ex
+	.elseif eax==FBM_GETIMAGELIST
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		eax,[ebx].FILEBROWSER.himl
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

@@ -1190,7 +1190,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,rect.right
 			sub		edx,CBOWT
 			push	edx
-			inc		edx
+			sub		edx,17
+			push	edx
+			mov		eax,rect.top
+			add		eax,5
+			invoke MoveWindow,hBtn,edx,eax,16,16,TRUE
+			pop		edx
+			;dec		edx
 			invoke MoveWindow,hTab,-1,rect.top,edx,TABHT,TRUE
 			invoke UpdateWindow,hTab
 			pop		edx
@@ -1280,9 +1286,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
 		;and give it focus
 		invoke SetFocus,hREd
+		;Create file browser
+		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
+		mov		hBrowse,eax
 		;Get handle of tab window
 		invoke GetDlgItem,hWin,IDC_TAB
 		mov		hTab,eax
+		invoke SendMessage,hBrowse,FBM_GETIMAGELIST,0,0
+		invoke SendMessage,hTab,TCM_SETIMAGELIST,0,eax
 		invoke TabToolAdd,hREd,offset FileName
 		invoke GetMenu,hWin
 		mov		hMnu,eax
@@ -1300,8 +1311,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke SetToolMenu
 		invoke SetHelpMenu
-		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
-		mov		hBrowse,eax
 		invoke SendDlgItemMessage,hWin,IDC_SBR,WM_GETFONT,0,0
 		push	eax
 		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
@@ -1348,6 +1357,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
 		INVOKE SetBlockDefs,hREd
+		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
+		mov		hBtn,eax
+		invoke LoadBitmap,hInstance,111
+		invoke SendMessage,hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
 		;Menu and toolbar has the same ID's
@@ -1375,7 +1388,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,SAVE_ALL
 			.elseif eax==IDM_FILE_SAVEAS
 				invoke SaveEditAs,hREd,offset FileName
-			.elseif eax==IDM_FILE_CLOSE
+			.elseif eax==IDM_FILE_CLOSE || eax==IDC_BTNTABCLOSE
 				invoke WantToSave,hREd,offset FileName
 				.if !eax
 					mov		eax,hREd

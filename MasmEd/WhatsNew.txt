@@ -6,6 +6,8 @@ o Updated all internal components to latest version.
 o You can open .rc and .bat files for text editing by holding Ctrl key.
 o File browser now remembers folder between sessions.
 o Updated file browser icons.
+o Added icons to tab select.
+o Added close button to tab select.
 o Added option to restore session.
 o Fixed bug if any of the api files are missing.
 o Fixed bug with outdent and uncomment.

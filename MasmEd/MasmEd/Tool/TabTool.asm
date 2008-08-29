@@ -291,6 +291,7 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	LOCAL	tci:TCITEM
 	LOCAL	ThreadID:DWORD
 	LOCAL	msg:MSG
+	LOCAL	buffer[32]:BYTE
 
 	invoke GetProcessHeap
 	invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof TABMEM
@@ -306,10 +307,30 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 		.break .if al=='\'
 		dec		ecx
 	.endw
-	mov		tci.imask,TCIF_TEXT or TCIF_PARAM
+	mov		tci.imask,TCIF_TEXT or TCIF_PARAM or TCIF_IMAGE
 	lea		eax,[edx+ecx]
 	mov		tci.pszText,eax
 	mov		tci.cchTextMax,20
+	invoke lstrlen,lpFileName
+	add		eax,lpFileName
+	sub		eax,4
+	mov		eax,[eax]
+	mov		dword ptr buffer,eax
+	mov		byte ptr buffer[5],0
+	invoke CharUpper,addr buffer
+	mov		eax,dword ptr buffer
+	mov		edx,5
+	.if eax=='MSA.'
+		mov		edx,2
+	.elseif eax=='CNI.'
+		mov		edx,3
+	.else
+		shr		eax,8
+		.if eax=='CR.'
+			mov		edx,4
+		.endif
+	.endif
+	mov		tci.iImage,edx
 	mov		tci.lParam,ebx
 	invoke SendMessage,hTab,TCM_INSERTITEM,999,addr tci
 	invoke SendMessage,hTab,TCM_SETCURSEL,eax,0

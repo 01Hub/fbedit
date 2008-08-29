@@ -108,6 +108,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 15=,300,0,Res\FileDir.bmp
 16=,32108,0,Res\CollapseBM.bmp
 17=,110,0,Res\Types.bmp
+18=,111,0,Res\Close.bmp
 
 [StringTable]
 1="IDM_FILE_PRINT,0,Print"
@@ -233,16 +234,16 @@ Group=Assembly,Resources,Misc,Include
 41=2
 
 [Find]
-1="SAVE_SESSION"
-2="EDITOPT"
-3="SetCurDir"
-4="FBM_SETPATH"
-5="IndentComment"
-6="10038"
-7="IDM_EDIT_OUTDENT"
-8="IDM_RESOURCE_VERINF"
-9="InstallFileBrowser"
-10="GridInstall"
+1="WM_SI"
+2="WM_IN"
+3="SAVE_SESSION"
+4="EDITOPT"
+5="SetCurDir"
+6="FBM_SETPATH"
+7="IndentComment"
+8="10038"
+9="IDM_EDIT_OUTDENT"
+10="IDM_RESOURCE_VERINF"
 
 [VersionControl]
 Settings=1246
@@ -289,11 +290,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,1452
-1=0,0,0,0,6076
+2=0,0,0,0,17943
+1=0,0,0,0,37425
 11=0,0,0,0,533
 22=0,0,0,0,7146
-10=0,0,0,0,12556
+10=0,0,0,0,6975
 23=0,0,0,0,7962
 9=0,0,0,0,160
 4=0,0,0,0
@@ -312,17 +313,17 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,5567
+14=0,0,0,0,7027
 12=0,0,0,0,8089
 31=0,0,0,0,63
 32=0,0,0,0
-33=0,0,0,0,78
+33=0,0,0,0,927
 35=0,0,0,0,51
 34=0,0,0,0
 37=0,0,0,0,6371
 36=0,0,661,490,0
 20=0,0,0,0,0
-38=0,0,0,0,383
+38=0,0,0,0,324
 39=0,0,0,0
 40=0,0,0,0,29
 
@@ -344,7 +345,7 @@ ProductVer4Range=0
 1=1
 [Collapse]
 2=
-1=,,,,57344,
+1=,,,,16384,
 31=
 23=
 3=

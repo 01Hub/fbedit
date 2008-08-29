@@ -112,6 +112,7 @@ IDC_RAE					equ 1011
 IDC_RES					equ 1012
 IDC_HEX					equ 1013
 IDC_FILE				equ 1014
+IDC_BTNTABCLOSE			equ 1002
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
@@ -477,6 +478,7 @@ hAccel					dd ?
 hWnd					dd ?
 hREd					dd ?
 hTab					dd ?
+hBtn					dd ?
 hCbo					dd ?
 hFind					dd ?
 hMnu					dd ?
