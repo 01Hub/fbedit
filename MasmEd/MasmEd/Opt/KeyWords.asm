@@ -19,6 +19,7 @@ IDC_SPNTABSIZE		equ 4017
 IDC_EDTTABSIZE		equ 4018
 IDC_CHKEXPAND		equ 4019
 IDC_CHKAUTOINDENT	equ 4020
+IDC_CHKLINENUMBER	equ 4007
 IDC_CHKHILITELINE	equ 4021
 IDC_CHKHILITECMNT	equ 4026
 IDC_CHKSESSION		equ 4006
@@ -264,6 +265,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKHILITELINE,edopt.hiliteline
 		invoke CheckDlgButton,hWin,IDC_CHKHILITECMNT,edopt.hilitecmnt
 		invoke CheckDlgButton,hWin,IDC_CHKSESSION,edopt.session
+		invoke CheckDlgButton,hWin,IDC_CHKLINENUMBER,edopt.linenumber
 		mov		esi,offset szColors
 		mov		edi,offset col
 	  @@:
@@ -401,6 +403,10 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,TRUE
 				call	EnButton
 			.elseif eax==IDC_CHKSESSION
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
+				call	EnButton
+			.elseif eax==IDC_CHKLINENUMBER
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
@@ -662,6 +668,8 @@ Update:
 		mov		edopt.hilitecmnt,eax
 		invoke IsDlgButtonChecked,hWin,IDC_CHKSESSION
 		mov		edopt.session,eax
+		invoke IsDlgButtonChecked,hWin,IDC_CHKLINENUMBER
+		mov		edopt.linenumber,eax
 		push	edi
 		mov		edi,offset col
 		xor		eax,eax

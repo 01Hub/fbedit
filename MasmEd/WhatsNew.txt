@@ -7,8 +7,12 @@ o You can open .rc and .bat files for text editing by holding Ctrl key.
 o File browser now remembers folder between sessions.
 o Updated file browser icons.
 o Added icons to tab select.
+O Tab will show asterix if a file is changed.
 o Added close button to tab select.
-o Added option to restore session.
+o Added option to save and restore session.
+o Added option to show linenumbers.
+o Errors are now bookmarked.
+o Added Edit / Next Error and Edit / Clear Errors.
 o Fixed bug if any of the api files are missing.
 o Fixed bug with outdent and uncomment.
 

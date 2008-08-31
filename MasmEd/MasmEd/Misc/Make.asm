@@ -13,10 +13,6 @@ defCompileRC			db '\masm32\bin\rc /v',0
 defAssemble				db '\masm32\bin\ml /c /coff /Cp /I\masm32\include',0
 defLink					db '\masm32\bin\link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:\masm32\lib',0
 
-szCompileRC				db 'CompileRC',0
-szAssemble				db 'Assemble',0
-szLink					db 'Link',0
-
 ExtRC					db '.rc',0
 ExtRes					db '.res',0
 ExtObj					db '.obj',0
@@ -38,9 +34,6 @@ CreateProcessError		db 'Error during process creation',0Dh,0Ah,0
 .data?
 
 make					MAKE <>
-CompileRC				db 256 dup(?)
-Assemble				db 256 dup(?)
-Link					db 256 dup(?)
 
 .code
 
@@ -128,6 +121,54 @@ OutputText:
 	retn
 
 MakeThreadProc endp
+
+FindErrors proc uses ebx
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nLn:DWORD
+	LOCAL	nLnErr:DWORD
+	LOCAL	nErr:DWORD
+
+	invoke SendMessage,hOut,EM_GETLINECOUNT,0,0
+	xor		ebx,ebx
+	mov		nErrID,ebx
+	mov		nLn,0
+	.while nLn<eax
+		push	eax
+		call	TestLine
+		pop		eax
+		inc		nLn
+	.endw
+	mov		ErrID[ebx*4],0
+	ret
+
+TestLine:
+	mov		word ptr buffer,sizeof buffer-1
+	invoke SendMessage,hOut,EM_GETLINE,nLn,addr buffer
+	mov		byte ptr buffer[eax],0
+	invoke iniInStr,addr buffer,addr szError
+	.if eax!=-1
+		.while eax && byte ptr buffer[eax]!='('
+			dec		eax
+		.endw
+		mov		byte ptr buffer[eax],0
+		invoke AsciiToDw,addr buffer[eax+1]
+		dec		eax
+		mov		nLnErr,eax
+		invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
+		invoke SendMessage,hOut,REM_GETBMID,nLn,0
+		mov		nErr,eax
+		invoke OpenEditFile,addr buffer,0
+		invoke GetWindowLong,hREd,GWL_ID
+		.if eax==IDC_RAE
+			invoke SendMessage,hREd,REM_SETERROR,nLnErr,nErr
+			mov		eax,nErr
+			mov		ErrID[ebx*4],eax
+			inc		ebx
+		.endif
+	.endif
+	retn
+
+FindErrors endp
 
 OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -255,7 +296,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		mov		eax,msg.message
 		.if eax!=WM_CHAR
 			.if msg.wParam==VK_ESCAPE
-				invoke TerminateProcess,make.pInfo.hProcess,1
+				invoke TerminateProcess,make.pInfo.hProcess,1234
 			.endif
 		.elseif eax!=WM_KEYDOWN && eax!=WM_CLOSE && (eax<WM_MOUSEFIRST || eax>WM_MOUSELAST)
 			invoke TranslateMessage,addr msg
@@ -266,23 +307,29 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.endw
 	invoke CloseHandle,make.hThread
 	.if ThreadID
-		.if !make.uExit
+		.if make.uExit==1234
+			invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Terminated
+			invoke FindErrors
+		.else
+			mov		fExitCode,-1
 			;Check if file exists
 			invoke GetFileAttributes,addr buffer2
 			.if eax==-1
 				mov		fExitCode,eax
 				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Errors
+				invoke FindErrors
 			.else
 				.if fClear==1 || fClear==3
 					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset MakeDone
 				.endif
 			.endif
-		.else
-			mov		fExitCode,-1
-			invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Terminated
 		.endif
-		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-		invoke SetFocus,hOut
+		.if dword ptr [ErrID]
+			invoke SendMessage,hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
+		.else
+			invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+			invoke SetFocus,hOut
+		.endif
 	.endif
   Ex:
 	invoke LoadCursor,0,IDC_ARROW

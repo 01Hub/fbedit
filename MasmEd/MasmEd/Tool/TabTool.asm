@@ -260,6 +260,45 @@ TabToolSetText proc nInx:DWORD,lpFileName:DWORD
 
 TabToolSetText endp
 
+TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TCITEM
+	LOCAL buffer[256]:BYTE
+
+	mov		nInx,-1
+	mov		tci.imask,TCIF_PARAM or TCIF_TEXT
+	lea		eax,buffer
+	mov		tci.pszText,eax
+	mov		tci.cchTextMax,sizeof buffer
+	mov		eax,TRUE
+	.while eax
+		inc		nInx
+		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		.if eax
+			mov		ebx,tci.lParam
+			mov		eax,[ebx].TABMEM.hwnd
+			.break .if eax==hWin
+		.endif
+	.endw
+	invoke lstrlen,addr buffer
+	.if fChanged
+		.if buffer[eax-1]!='*'
+			mov		word ptr buffer[eax],'*'
+		.endif
+		mov		[ebx].TABMEM.fchanged,TRUE
+	.else
+		.if buffer[eax-1]=='*'
+			mov		byte ptr buffer[eax-1],0
+		.endif
+		mov		[ebx].TABMEM.fchanged,FALSE
+	.endif
+	mov		tci.imask,TCIF_TEXT
+	invoke SendMessage,hTab,TCM_SETITEM,nInx,addr tci
+	mov		eax,nInx
+	ret
+
+TabToolSetChanged endp
+
 TabToolActivate proc uses ebx
 	LOCAL	tci:TCITEM
 
@@ -337,6 +376,7 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	invoke UpdateFileTime,ebx
 	invoke AddPath,lpFileName
 	invoke SendMessage,hBrowse,FBM_SETSELECTED,0,lpFileName
+	invoke SetWindowLong,hWin,GWL_USERDATA,ebx
 	ret
 
 TabToolAdd endp

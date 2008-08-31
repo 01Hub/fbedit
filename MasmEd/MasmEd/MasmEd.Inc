@@ -49,12 +49,12 @@ CreateNew				PROTO
 TabToolAdd				PROTO :DWORD,:DWORD
 
 DwToAscii				PROTO :DWORD,:DWORD
-;RAHexEdInstall			PROTO C :DWORD,:DWORD
-;RAHexEdUnInstall		PROTO
-;InstallFileBrowser		PROTO :DWORD,:DWORD
-;UnInstallFileBrowser	PROTO
-;InstallRACodeComplete	PROTO :DWORD,:DWORD
-;UnInstallRACodeComplete	PROTO
+SetWinCaption			PROTO :DWORD
+WantToSave				PROTO :DWORD,:DWORD
+SaveEdit				PROTO :DWORD,:DWORD
+LoadEditFile			PROTO :DWORD,:DWORD
+LoadHexFile				PROTO :DWORD,:DWORD
+LoadRCFile				PROTO :DWORD
 
 SetHiliteWords			PROTO :DWORD,:DWORD
 
@@ -66,6 +66,8 @@ CLOSE_ALL				equ -5
 IS_CHANGED				equ -6
 CLEAR_CHANGED			equ -7
 SAVE_SESSION			equ -8
+CLEAR_ERRORS			equ -9
+FIND_ERROR				equ -10
 
 TABHT					equ 21
 CBOWT					equ 175
@@ -132,6 +134,8 @@ IDM_FILE_SAVEAS			equ 10004
 IDM_FILE_SAVEALL		equ 10011
 IDM_FILE_CLOSE			equ 10010
 IDM_FILE_CLOSE_ALL		equ 10058
+IDM_FILE_OPENSESSION	equ 10076
+IDM_FILE_SAVESESSION	equ 10077
 IDM_FILE_PAGESETUP		equ 10029
 IDM_FILE_PRINT			equ 10005
 IDM_FILE_EXIT			equ 10006
@@ -156,6 +160,8 @@ IDM_EDIT_TOGGLEBM		equ 10018
 IDM_EDIT_NEXTBM			equ 10019
 IDM_EDIT_PREVBM			equ 10020
 IDM_EDIT_CLEARBM		equ 10021
+IDM_EDIT_CLEARERRORS	equ 10074
+IDM_EDIT_NEXTERROR		equ 10075
 IDM_FORMAT_LOCK			equ 10012
 IDM_FORMAT_BACK			equ 10013
 IDM_FORMAT_FRONT		equ 10014
@@ -213,6 +219,7 @@ TABMEM struct
 	filename	db MAX_PATH dup (?)
 	ft			FILETIME <?>
 	nchange		dd ?
+	fchanged	dd ?
 TABMEM ends
 
 FILENOTIFYPATH struct
@@ -250,6 +257,7 @@ EDITOPT struct
 	hiliteline	dd ?
 	hilitecmnt	dd ?
 	session		dd ?
+	linenumber	dd ?
 EDITOPT ends
 
 PRNPOS struct
@@ -327,6 +335,7 @@ ntbrbtns				equ 36
 ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',0
 						db 'Text Files (*.txt)',0,'*.txt',0
 ANYFilterString			db 'All Files (*.*)',0,'*.*',0,0
+MESFilterString			db 'Session (*.mes)',0,'*.mes',0,0
 
 .data
 
@@ -346,9 +355,11 @@ szWannaSave           	db 'Want to save changes to',0Dh,0
 szNewFile             	db '(Untitled)',0
 szChanged				db 'File is changed outside editor',0Dh,0Ah,0
 szReopen				db 0Dh,0Ah,0Dh,0Ah,'Reopen the file?',0
+szSaveSession			db 'Save current session to?',0Dh,0Ah,0
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
 szFtRc					db '.rc',0
+szFtMes					db '.mes',0
 szNULL					db 0
 szTab					db VK_TAB,0
 szSpc					db ' ',0
@@ -356,6 +367,7 @@ szCr					db 0Dh,0
 szQuote					db '"',0
 szBackSlash				db '\',0
 szComma					db ',',0
+szError					db ' error ',0
 szProc					db '$ proc',0
 szEndp					db '? endp',0
 szIf					db '.if',0
@@ -400,7 +412,7 @@ szSimEd					db 'Software\MasmEd1000\',0
 szWinPos				db 'WinPos',0
 wpos					WINPOS <0,15,10,10,620,460,100,175,175,200,100,100>
 szEditOpt				db 'EditOpt',0
-edopt					EDITOPT <4,FALSE,TRUE,FALSE,TRUE,TRUE>
+edopt					EDITOPT <4,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE>
 szCodeFont				db 'CodeFont',0
 lfnt					LOGFONT <-12,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Courier New'>
 szLnrFont				db 'LnrFont',0
@@ -459,6 +471,11 @@ szNmeExp				db 'NmeExp',0
 nmeexp					NAMEEXPORT <0,'rsrc.inc',0>
 szGrid					db 'Grid',0
 grdsize					GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE>
+
+szCompileRC				db 'CompileRC',0
+szAssemble				db 'Assemble',0
+szLink					db 'Link',0
+
 szFolder				db 'Folder',0
 szSession				db 'Session',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.',0
@@ -519,3 +536,9 @@ ConstData				db 8192 dup(?)
 fLBConst				dd ?
 winsize					WINSIZE <?>
 szInitFolder			db MAX_PATH dup(?)
+szSessionFile			db MAX_PATH dup(?)
+nErrID					dd ?
+ErrID					dd 128 dup(?)
+CompileRC				db 256 dup(?)
+Assemble				db 256 dup(?)
+Link					db 256 dup(?)

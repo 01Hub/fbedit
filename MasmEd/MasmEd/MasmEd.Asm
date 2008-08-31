@@ -4,8 +4,8 @@ option casemap:none
 
 include MasmEd.inc
 include Tool\CboTool.asm
-include Misc\Misc.asm
 include Tool\TabTool.asm
+include Misc\Misc.asm
 include Misc\FileIO.asm
 include Misc\Find.asm
 include Misc\Make.asm
@@ -137,8 +137,6 @@ start:
 	.if hRichEd
 		invoke FreeLibrary,hRichEd
 	.endif
-	invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
-	invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
 	invoke RegCloseKey,hReg
 	invoke OleUninitialize
 	pop		eax
@@ -205,8 +203,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.else
 		mov		lpcbData,sizeof tmpbuff
 		invoke RegQueryValueEx,hReg,addr szSession,0,addr lpType,addr tmpbuff,addr lpcbData
-		.if byte ptr tmpbuff
-			invoke RestoreSession
+		.if byte ptr tmpbuff && edopt.session
+			invoke RestoreSession,TRUE
 		.endif
 	.endif
 	.while TRUE
@@ -312,6 +310,10 @@ CreateRAEdit proc
 	invoke SetFormat,hREd
 	;Set colors
 	invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
+	.if edopt.linenumber
+		invoke CheckDlgButton,hREd,-2,TRUE
+		invoke SendMessage,hREd,WM_COMMAND,-2,0
+	.endif
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	pop		eax
 	invoke ShowWindow,eax,SW_HIDE
@@ -371,147 +373,6 @@ CreateNewRes proc
 
 CreateNewRes endp
 
-UpdateAll proc uses ebx,nFunction:DWORD
-	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
-	LOCAL	hefnt:HEFONT
-	LOCAL	chrg:CHARRANGE
-
-	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
-	mov		nInx,eax
-	mov		tci.imask,TCIF_PARAM
-	.while nInx
-		dec		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
-		.if eax
-			mov		ebx,tci.lParam
-			mov		eax,nFunction
-			.if eax==WM_SETFONT
-				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-				.if eax==IDC_RAE
-					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_STYLE
-					.if edopt.hilitecmnt
-						or		eax,STYLE_HILITECOMMENT
-					.else
-						and		eax,-1 xor STYLE_HILITECOMMENT
-					.endif
-					invoke SetWindowLong,[ebx].TABMEM.hwnd,GWL_STYLE,eax
-					invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETCOLOR,0,addr col
-					invoke SetFormat,[ebx].TABMEM.hwnd
-				.elseif eax==IDC_HEX
-					mov		eax,hFont
-					mov		hefnt.hFont,eax
-					mov		eax,hLnrFont
-					mov		hefnt.hLnrFont,eax
-					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_SETFONT,0,addr hefnt
-				.endif
-			.elseif eax==WM_PAINT
-				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-				.if eax==IDC_RAE
-					invoke SendMessage,[ebx].TABMEM.hwnd,REM_REPAINT,0,0
-				.elseif eax==IDC_HEX
-					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_REPAINT,0,0
-				.endif
-			.elseif eax==WM_CLOSE
-				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
-				.if eax
-					invoke TabToolGetInx,[ebx].TABMEM.hwnd
-					invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
-					invoke TabToolActivate
-					invoke WantToSave,hREd,offset FileName
-					or		eax,eax
-					jne		Ex
-				.endif
-			.elseif eax==CLOSE_ALL
-				mov		eax,[ebx].TABMEM.hwnd
-				.if eax!=hRes
-					invoke DestroyWindow,[ebx].TABMEM.hwnd
-				.endif
-				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
-				invoke GetProcessHeap
-				invoke HeapFree,eax,NULL,ebx
-			.elseif eax==WM_DESTROY
-				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
-				invoke DestroyWindow,[ebx].TABMEM.hwnd
-				invoke GetProcessHeap
-				invoke HeapFree,eax,NULL,ebx
-			.elseif eax==IS_OPEN
-				invoke lstrcmpi,offset FileName,addr [ebx].TABMEM.filename
-				.if !eax
-					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
-					invoke TabToolActivate
-					mov		eax,TRUE
-					jmp		Ex
-				.endif
-			.elseif eax==IS_RESOURCE
-				mov		eax,[ebx].TABMEM.hwnd
-				.if eax==hRes
-					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
-					invoke TabToolActivate
-					mov		eax,TRUE
-					jmp		Ex
-				.endif
-			.elseif eax==IS_RESOURCE_OPEN
-				mov		eax,[ebx].TABMEM.hwnd
-				.if eax==hRes
-					mov		eax,TRUE
-					jmp		Ex
-				.endif
-			.elseif eax==SAVE_ALL
-				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
-				.if eax
-					invoke SaveEdit,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
-				.endif
-			.elseif eax==IS_CHANGED
-				.if [ebx].TABMEM.nchange
-					invoke ReleaseCapture
-					mov		[ebx].TABMEM.nchange,0
-					invoke lstrcpy,addr LineTxt,addr szChanged
-					invoke lstrcat,addr LineTxt,addr [ebx].TABMEM.filename
-					invoke lstrcat,addr LineTxt,addr szReopen
-					invoke MessageBox,hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
-					.if eax==6
-						invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-						.if eax==IDC_RAE
-							invoke LoadFile,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
-						.elseif eax==IDC_HEX
-							invoke LoadHexFile,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
-						.elseif eax==IDC_RES
-							invoke LoadRCFile,addr [ebx].TABMEM.filename
-						.endif
-					.endif
-				.endif
-			.elseif eax==CLEAR_CHANGED
-				.if [ebx].TABMEM.nchange
-					mov		[ebx].TABMEM.nchange,0
-				.endif
-			.elseif eax==SAVE_SESSION
-				invoke lstrcmp,addr [ebx].TABMEM.filename, addr szNewFile
-				.if eax
-					invoke lstrcpy,addr LineTxt,addr tmpbuff
-					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-					.if eax==IDC_RAE
-						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
-						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-					.else
-						mov		eax,-1
-					.endif
-					mov		edx,eax
-					invoke DwToAscii,edx,addr tmpbuff
-					invoke lstrcat,addr tmpbuff,addr szComma
-					invoke lstrcat,addr tmpbuff,addr [ebx].TABMEM.filename
-					invoke lstrcat,addr tmpbuff,addr szComma
-					invoke lstrcat,addr tmpbuff,addr LineTxt
-				.endif
-			.endif
-		.endif
-		xor		eax,eax
-	.endw
-  Ex:
-	ret
-
-UpdateAll endp
-
 MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
 
@@ -521,6 +382,11 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateAll,IS_RESOURCE_OPEN
 			xor		eax,1
 			mov		edx,IDM_FILE_NEW_RES
+			call	EnableDisable
+			mov		eax,ErrID
+			mov		edx,IDM_EDIT_CLEARERRORS
+			call	EnableDisable
+			mov		edx,IDM_EDIT_NEXTERROR
 			call	EnableDisable
 			invoke GetWindowLong,hREd,GWL_ID
 			.if eax==IDC_RES
@@ -979,7 +845,16 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
 		jmp		Ex
 	.elseif eax==WM_NOTIFY
+		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+		.if eax
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			.if ![eax].TABMEM.fchanged
+				invoke TabToolSetChanged,hWin,TRUE
+			.endif
+		.endif
 		mov		fTimer,1
+		xor		eax,eax
+		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -1345,10 +1220,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke RegQueryValueEx,hReg,addr szLink,0,addr lpType,addr Link,addr lpcbData
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
-		mov		lpcbData,sizeof szInitFolder
-		invoke RegQueryValueEx,hReg,addr szFolder,0,addr lpType,addr szInitFolder,addr lpcbData
 		invoke SendMessage,hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter
 		invoke SendMessage,hBrowse,FBM_SETFILTER,FALSE,TRUE
+		mov		lpcbData,sizeof szInitFolder
+		invoke RegQueryValueEx,hReg,addr szFolder,0,addr lpType,addr szInitFolder,addr lpcbData
 		.if byte ptr szInitFolder
 			invoke lstrcpy,addr buffer,addr szInitFolder
 		.else
@@ -1401,11 +1276,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FILE_CLOSE_ALL
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
-					invoke CloseNotify
-					invoke UpdateAll,CLOSE_ALL
-					invoke CreateNew
+					invoke AskSaveSessionFile
+					.if !eax
+						mov		szSessionFile,0
+						invoke CloseNotify
+						invoke UpdateAll,CLOSE_ALL
+						invoke CreateNew
+					.endif
 				.endif
 				mov		fTimer,1
+			.elseif eax==IDM_FILE_OPENSESSION
+				invoke OpenSessionFile
+			.elseif eax==IDM_FILE_SAVESESSION
+				invoke SaveSessionFile
 			.elseif eax==IDM_FILE_PAGESETUP
 				invoke GetPrnCaps
 				mov		psd.lStructSize,sizeof psd
@@ -1638,6 +1521,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hREd,HEM_CLEARBOOKMARKS,0,0
 				.endif
 				mov		fTimer,1
+			.elseif eax==IDM_EDIT_CLEARERRORS
+				invoke UpdateAll,CLEAR_ERRORS
+			.elseif eax==IDM_EDIT_NEXTERROR
+				mov		eax,nErrID
+				mov		eax,ErrID[eax*4]
+				.if !eax
+					mov		nErrID,0
+					mov		eax,ErrID
+				.endif
+				.if eax
+					invoke UpdateAll,FIND_ERROR
+					inc		nErrID
+				.endif
 			.elseif eax==IDM_FORMAT_LOCK
 				invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
 				xor		eax,TRUE
@@ -1754,18 +1650,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_RESOURCE_UNDO
 				invoke SendMessage,hResEd,PRO_UNDODELETED,0,0
 			.elseif eax==IDM_MAKE_COMPILE
+				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_COMPILE,offset FileName,TRUE
 			.elseif eax==IDM_MAKE_ASSEMBLE
+				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset FileName,TRUE
 			.elseif eax==IDM_MAKE_LINK
+				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_LINK,offset FileName,TRUE
 			.elseif eax==IDM_MAKE_RUN
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_RUN,offset FileName,2
 			.elseif eax==IDM_MAKE_GO
+				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_COMPILE,offset FileName,2
 				or		eax,eax
@@ -1952,11 +1852,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hCCTT,SW_HIDE
 				.endif
 			.endif
+			.if [edi].RASELCHANGE.fchanged
+				invoke GetWindowLong,hREd,GWL_USERDATA
+				.if ![eax].TABMEM.fchanged
+					invoke TabToolSetChanged,hREd,TRUE
+				.endif
+			.endif
 			mov		fTimer,2
 		.elseif eax==EN_SELCHANGE && ecx==IDC_HEX
+			mov		edi,edx
+			.if [edi].HESELCHANGE.fchanged
+				invoke GetWindowLong,hREd,GWL_USERDATA
+				.if ![eax].TABMEM.fchanged
+					invoke TabToolSetChanged,hREd,TRUE
+				.endif
+			.endif
 			mov		fTimer,2
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
-			invoke OpenEditFile,[edx].FBNOTIFY.lpfile
+			invoke OpenEditFile,[edx].FBNOTIFY.lpfile,0
 		.elseif eax==TTN_NEEDTEXT
 			;Toolbar tooltip
 			mov		edx,(NMHDR ptr [edx]).idFrom
@@ -1970,50 +1883,48 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_SETFOCUS
 		invoke SetFocus,hREd
 	.elseif eax==WM_CLOSE
-		mov		byte ptr tmpbuff,0
-		invoke UpdateAll,SAVE_SESSION
-		invoke lstrlen,addr tmpbuff
-		.if eax
-			mov		byte ptr tmpbuff[eax-1],0
-		.endif
-		invoke lstrcpy,addr LineTxt,addr tmpbuff
-		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
-		mov		edx,eax
-		invoke DwToAscii,edx,addr tmpbuff
-		invoke lstrcat,addr tmpbuff,addr szComma
-		invoke lstrcat,addr tmpbuff,addr LineTxt
-		invoke lstrlen,addr tmpbuff
-		inc		eax
-		invoke RegSetValueEx,hReg,addr szSession,0,REG_SZ,addr tmpbuff,eax
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
-			invoke CloseNotify
-			invoke GetWindowLong,hWin,GWL_STYLE
-			test	eax,WS_MAXIMIZE
-			.if ZERO?
-				test	eax,WS_MINIMIZE
+			invoke AskSaveSessionFile
+			.if !eax
+				invoke MakeSession
+				invoke lstrcpy,addr LineTxt,addr tmpbuff
+				invoke lstrcpy,addr tmpbuff,addr szSessionFile
+				invoke lstrcat,addr tmpbuff,addr szComma
+				invoke lstrcat,addr tmpbuff,addr LineTxt
+				invoke lstrlen,addr tmpbuff
+				inc		eax
+				invoke RegSetValueEx,hReg,addr szSession,0,REG_SZ,addr tmpbuff,eax
+				invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
+				invoke lstrcat,addr szInitFolder,addr szBackSlash
+				invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
+				invoke CloseNotify
+				invoke GetWindowLong,hWin,GWL_STYLE
+				test	eax,WS_MAXIMIZE
 				.if ZERO?
-					mov		wpos.fMax,FALSE
-					invoke GetWindowRect,hWin,addr rect
-					mov		eax,rect.left
-					mov		wpos.x,eax
-					mov		eax,rect.top
-					mov		wpos.y,eax
-					mov		eax,rect.right
-					sub		eax,rect.left
-					mov		wpos.wt,eax
-					mov		eax,rect.bottom
-					sub		eax,rect.top
-					mov		wpos.ht,eax
+					test	eax,WS_MINIMIZE
+					.if ZERO?
+						mov		wpos.fMax,FALSE
+						invoke GetWindowRect,hWin,addr rect
+						mov		eax,rect.left
+						mov		wpos.x,eax
+						mov		eax,rect.top
+						mov		wpos.y,eax
+						mov		eax,rect.right
+						sub		eax,rect.left
+						mov		wpos.wt,eax
+						mov		eax,rect.bottom
+						sub		eax,rect.top
+						mov		wpos.ht,eax
+					.endif
+				.else
+					mov		wpos.fMax,TRUE
 				.endif
-			.else
-				mov		wpos.fMax,TRUE
+				invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
+				invoke DestroyWindow,hCCLB
+				invoke DestroyWindow,hCCTT
+				invoke DestroyWindow,hWin
 			.endif
-			invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
-			invoke lstrcat,addr szInitFolder,addr szBackSlash
-			invoke DestroyWindow,hCCLB
-			invoke DestroyWindow,hCCTT
-			invoke DestroyWindow,hWin
 		.endif
 	.elseif eax==WM_DESTROY
 		mov		nInx,1
@@ -2115,7 +2026,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	  @@:
 		invoke DragQueryFile,wParam,ebx,addr buffer,sizeof buffer
 		.if eax
-			invoke OpenEditFile,addr buffer
+			invoke OpenEditFile,addr buffer,0
 			inc		ebx
 			jmp		@b
 		.endif

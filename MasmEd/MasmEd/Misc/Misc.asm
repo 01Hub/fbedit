@@ -438,3 +438,247 @@ CopyPro:
 	retn
 
 ParseCmnd endp
+
+iniInStr proc lpStr:DWORD,lpSrc:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	push	esi
+	push	edi
+	mov		esi,lpSrc
+	lea		edi,buffer
+iniInStr0:
+	mov		al,[esi]
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	mov		[edi],al
+	inc		esi
+	inc		edi
+	or		al,al
+	jne		iniInStr0
+	mov		edi,lpStr
+	dec		edi
+iniInStr1:
+	inc		edi
+	push	edi
+	lea		esi,buffer
+iniInStr2:
+	mov		ah,[esi]
+	or		ah,ah
+	je		iniInStr8;Found
+	mov		al,[edi]
+	or		al,al
+	je		iniInStr9;Not found
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	inc		esi
+	inc		edi
+	cmp		al,ah
+	jz		iniInStr2
+	pop		edi
+	jmp		iniInStr1
+iniInStr8:
+	pop		eax
+	sub		eax,lpStr
+	pop		edi
+	pop		esi
+	ret
+iniInStr9:
+	pop		edi
+	mov		eax,-1
+	pop		edi
+	pop		esi
+	ret
+
+iniInStr endp
+
+UpdateAll proc uses ebx,nFunction:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TCITEM
+	LOCAL	hefnt:HEFONT
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nLn:DWORD
+
+	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
+	mov		nInx,eax
+	mov		tci.imask,TCIF_PARAM
+	.while nInx
+		dec		nInx
+		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		.if eax
+			mov		ebx,tci.lParam
+			mov		eax,nFunction
+			.if eax==WM_SETFONT
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_STYLE
+					.if edopt.hilitecmnt
+						or		eax,STYLE_HILITECOMMENT
+					.else
+						and		eax,-1 xor STYLE_HILITECOMMENT
+					.endif
+					invoke SetWindowLong,[ebx].TABMEM.hwnd,GWL_STYLE,eax
+					invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETCOLOR,0,addr col
+					invoke SetFormat,[ebx].TABMEM.hwnd
+				.elseif eax==IDC_HEX
+					mov		eax,hFont
+					mov		hefnt.hFont,eax
+					mov		eax,hLnrFont
+					mov		hefnt.hLnrFont,eax
+					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_SETFONT,0,addr hefnt
+				.endif
+			.elseif eax==WM_PAINT
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke SendMessage,[ebx].TABMEM.hwnd,REM_REPAINT,0,0
+				.elseif eax==IDC_HEX
+					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_REPAINT,0,0
+				.endif
+			.elseif eax==WM_CLOSE
+				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+				.if eax
+					invoke TabToolGetInx,[ebx].TABMEM.hwnd
+					invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+					invoke TabToolActivate
+					invoke WantToSave,hREd,offset FileName
+					or		eax,eax
+					jne		Ex
+				.endif
+			.elseif eax==CLOSE_ALL
+				mov		eax,[ebx].TABMEM.hwnd
+				.if eax!=hRes
+					invoke DestroyWindow,[ebx].TABMEM.hwnd
+				.endif
+				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
+				invoke GetProcessHeap
+				invoke HeapFree,eax,NULL,ebx
+			.elseif eax==WM_DESTROY
+				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
+				invoke DestroyWindow,[ebx].TABMEM.hwnd
+				invoke GetProcessHeap
+				invoke HeapFree,eax,NULL,ebx
+			.elseif eax==IS_OPEN
+				invoke lstrcmpi,offset FileName,addr [ebx].TABMEM.filename
+				.if !eax
+					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+					invoke TabToolActivate
+					mov		eax,TRUE
+					jmp		Ex
+				.endif
+			.elseif eax==IS_RESOURCE
+				mov		eax,[ebx].TABMEM.hwnd
+				.if eax==hRes
+					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+					invoke TabToolActivate
+					mov		eax,TRUE
+					jmp		Ex
+				.endif
+			.elseif eax==IS_RESOURCE_OPEN
+				mov		eax,[ebx].TABMEM.hwnd
+				.if eax==hRes
+					mov		eax,TRUE
+					jmp		Ex
+				.endif
+			.elseif eax==SAVE_ALL
+				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+				.if eax
+					invoke SaveEdit,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
+				.endif
+			.elseif eax==IS_CHANGED
+				.if [ebx].TABMEM.nchange
+					invoke ReleaseCapture
+					mov		[ebx].TABMEM.nchange,0
+					invoke lstrcpy,addr LineTxt,addr szChanged
+					invoke lstrcat,addr LineTxt,addr [ebx].TABMEM.filename
+					invoke lstrcat,addr LineTxt,addr szReopen
+					invoke MessageBox,hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
+					.if eax==6
+						invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+						.if eax==IDC_RAE
+							invoke LoadEditFile,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
+						.elseif eax==IDC_HEX
+							invoke LoadHexFile,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
+						.elseif eax==IDC_RES
+							invoke LoadRCFile,addr [ebx].TABMEM.filename
+						.endif
+					.endif
+				.endif
+			.elseif eax==CLEAR_CHANGED
+				.if [ebx].TABMEM.nchange
+					mov		[ebx].TABMEM.nchange,0
+				.endif
+			.elseif eax==SAVE_SESSION
+				invoke lstrcmp,addr [ebx].TABMEM.filename, addr szNewFile
+				.if eax
+					invoke lstrcpy,addr LineTxt,addr tmpbuff
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_RAE
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					.elseif eax==IDC_HEX
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						add		eax,2
+						neg		eax
+					.else
+						mov		eax,-1
+					.endif
+					mov		edx,eax
+					invoke DwToAscii,edx,addr tmpbuff
+					invoke lstrcat,addr tmpbuff,addr szComma
+					invoke lstrcat,addr tmpbuff,addr [ebx].TABMEM.filename
+					invoke lstrcat,addr tmpbuff,addr szComma
+					invoke lstrcat,addr tmpbuff,addr LineTxt
+				.endif
+			.elseif eax==CLEAR_ERRORS
+				mov		ErrID,0
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTERROR,eax,0
+						.break .if eax==-1
+						push	eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETERROR,eax,0
+						pop		eax
+					.endw
+				.endif
+			.elseif eax==FIND_ERROR
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					mov		nLn,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTERROR,nLn,0
+						.break .if eax==-1
+						mov		nLn,eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_GETERROR,nLn,0
+						mov		edx,nErrID
+						.if eax==ErrID[edx*4]
+							invoke TabToolGetInx,[ebx].TABMEM.hwnd
+							invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+							invoke TabToolActivate
+							invoke SendMessage,[ebx].TABMEM.hwnd,EM_LINEINDEX,nLn,0
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,[ebx].TABMEM.hwnd,EM_SCROLLCARET,0,0
+							mov		eax,TRUE
+							ret
+						.endif
+					.endw
+				.endif
+			.endif
+		.endif
+		xor		eax,eax
+	.endw
+  Ex:
+	ret
+
+UpdateAll endp

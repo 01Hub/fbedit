@@ -652,7 +652,6 @@ MenuUpdateMem endp
 MenuUpdate proc uses esi edi,hWin:HWND
 	LOCAL	hMem:DWORD
 
-PrintText 'Saved'
 	invoke MenuUpdateMem,hWin
 	mov		hMem,eax
 	mov		esi,hMem
