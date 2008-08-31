@@ -322,6 +322,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 				.if fClear==1 || fClear==3
 					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset MakeDone
 				.endif
+				mov		fExitCode,0
 			.endif
 		.endif
 		.if dword ptr [ErrID]

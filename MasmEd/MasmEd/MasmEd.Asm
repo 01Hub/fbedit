@@ -845,14 +845,18 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
 		jmp		Ex
 	.elseif eax==WM_NOTIFY
-		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
-		.if eax
-			invoke GetWindowLong,hWin,GWL_USERDATA
-			.if ![eax].TABMEM.fchanged
-				invoke TabToolSetChanged,hWin,TRUE
+		.if !fResNotify
+			inc		fResNotify
+			invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+			.if eax
+				invoke GetWindowLong,hWin,GWL_USERDATA
+				.if ![eax].TABMEM.fchanged
+					invoke TabToolSetChanged,hWin,TRUE
+				.endif
 			.endif
+			mov		fTimer,1
+			dec		fResNotify
 		.endif
-		mov		fTimer,1
 		xor		eax,eax
 		jmp		Ex
 	.endif

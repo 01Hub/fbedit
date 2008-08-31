@@ -542,3 +542,4 @@ ErrID					dd 128 dup(?)
 CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)
+fResNotify				dd ?
