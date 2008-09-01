@@ -204,6 +204,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 		mov		lpcbData,sizeof tmpbuff
 		invoke RegQueryValueEx,hReg,addr szSession,0,addr lpType,addr tmpbuff,addr lpcbData
 		.if byte ptr tmpbuff && edopt.session
+			mov		lpcbData,sizeof MainFile
+			invoke RegQueryValueEx,hReg,addr szMainFile,0,addr lpType,addr MainFile,addr lpcbData
 			invoke RestoreSession,TRUE
 		.endif
 	.endif
@@ -387,6 +389,12 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,IDM_EDIT_CLEARERRORS
 			call	EnableDisable
 			mov		edx,IDM_EDIT_NEXTERROR
+			call	EnableDisable
+			xor		eax,eax
+			.if szSessionFile
+				mov		eax,TRUE
+			.endif
+			mov		edx,IDM_FILE_CLOSESESSION
 			call	EnableDisable
 			invoke GetWindowLong,hREd,GWL_ID
 			.if eax==IDC_RES
@@ -734,6 +742,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		eax
 			.endif
 			invoke SendMessage,hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+			INVOKE ShowSession
 			invoke GetCapture
 			.if !eax
 				invoke UpdateAll,IS_CHANGED
@@ -871,7 +880,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	tmprect:RECT
 	LOCAL	ht:DWORD
-	LOCAL	hCtl:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	cf:CHOOSEFONT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -899,9 +907,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fVSplit,0
 		.endif
 	.elseif eax==WM_MOUSEMOVE
-		invoke GetDlgItem,hWin,IDC_SBR
-		mov		edx,eax
-		invoke GetWindowRect,edx,addr rect
+		invoke GetWindowRect,hSbr,addr rect
 		mov		eax,rect.bottom
 		sub		eax,rect.top
 		push	eax
@@ -944,11 +950,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 			test	wpos.fView,2
 			.if !ZERO?
-				;Get handle of statusbar
-				invoke GetDlgItem,hWnd,IDC_SBR
-				mov		edx,eax
 				;Get height of statusbar
-				invoke GetWindowRect,edx,addr rect
+				invoke GetWindowRect,hSbr,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
 			.endif
@@ -956,11 +959,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 			test	wpos.fView,1
 			.if !ZERO?
-				;Get handle of toolbar
-				invoke GetDlgItem,hWnd,IDC_TBR
-				mov		edx,eax
 				;Get height of toolbar
-				invoke GetWindowRect,edx,addr rect
+				invoke GetWindowRect,hTbr,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
 			.endif
@@ -1013,46 +1013,39 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_SIZE
 		;Get size of windows client area
 		invoke GetClientRect,hWin,addr rect
-		invoke GetDlgItem,hWin,IDC_SHP
-		mov		hCtl,eax
 		test	wpos.fView,1
 		.if !ZERO?
 			;Resize toolbar
 			.if lParam
-				invoke MoveWindow,hCtl,0,0,rect.right,27,TRUE
-				invoke ShowWindow,hCtl,SW_SHOW
-				invoke GetDlgItem,hWin,IDC_TBR
-				mov		hCtl,eax
+				invoke MoveWindow,hShp,0,0,rect.right,27,TRUE
+				invoke ShowWindow,hShp,SW_SHOW
 				mov		eax,rect.right
 				sub		eax,4
-				invoke MoveWindow,hCtl,2,2,eax,23,TRUE
-				invoke ShowWindow,hCtl,SW_SHOW
+				invoke MoveWindow,hTbr,2,2,eax,23,TRUE
+				invoke ShowWindow,hTbr,SW_SHOW
 			.endif
 			mov		eax,27
 		.else
-			invoke ShowWindow,hCtl,SW_HIDE
-			invoke GetDlgItem,hWin,IDC_TBR
-			invoke ShowWindow,eax,SW_HIDE
+			invoke ShowWindow,hShp,SW_HIDE
+			invoke ShowWindow,hTbr,SW_HIDE
 			xor		eax,eax
 		.endif
 		push	eax
-		invoke GetDlgItem,hWin,IDC_SBR
-		mov		hCtl,eax
 		test	wpos.fView,2
 		.if !ZERO?
 			;Resize statusbar
 			.if lParam
 				mov		eax,rect.bottom
 				sub		eax,21
-				invoke MoveWindow,hCtl,0,eax,rect.right,21,TRUE
-				invoke ShowWindow,hCtl,SW_SHOW
+				invoke MoveWindow,hSbr,0,eax,rect.right,21,TRUE
+				invoke ShowWindow,hSbr,SW_SHOW
 			.endif
 			;Get height of statusbar
-			invoke GetWindowRect,hCtl,addr tmprect
+			invoke GetWindowRect,hSbr,addr tmprect
 			mov		eax,tmprect.bottom
 			sub		eax,tmprect.top
 		.else
-			invoke ShowWindow,hCtl,SW_HIDE
+			invoke ShowWindow,hSbr,SW_HIDE
 			xor		eax,eax
 		.endif
 		push	eax
@@ -1136,7 +1129,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hVSplitCur,eax
 		;Set the toolbar buttons
 		invoke GetDlgItem,hWin,IDC_TBR
+		mov		hTbr,eax
 		invoke DoToolBar,hInstance,eax
+		;Statusbar
+		invoke GetDlgItem,hWin,IDC_SBR
+		mov		hSbr,eax
+		invoke DoStatusBar,eax
+		;ComboBox
+		invoke GetDlgItem,hWin,IDC_CBO
+		mov		hCbo,eax
+		;Shape
+		invoke GetDlgItem,hWin,IDC_SHP
+		mov		hShp,eax
+		;Close button
+		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
+		mov		hBtn,eax
+		invoke LoadBitmap,hInstance,111
+		invoke SendMessage,hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
 		;Set FileName to NewFile
 		invoke lstrcpy,offset FileName,offset szNewFile
 		invoke SetWinCaption,offset FileName
@@ -1176,10 +1185,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke TabToolAdd,hREd,offset FileName
 		invoke GetMenu,hWin
 		mov		hMnu,eax
-		invoke GetDlgItem,hWin,IDC_TBR
-		mov		hTbr,eax
-		invoke GetDlgItem,hWin,IDC_CBO
-		mov		hCbo,eax
 		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,4,0
 		mov     hMnuIml,eax
 		invoke LoadBitmap,hInstance,IDB_MNUARROW
@@ -1190,7 +1195,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke SetToolMenu
 		invoke SetHelpMenu
-		invoke SendDlgItemMessage,hWin,IDC_SBR,WM_GETFONT,0,0
+		invoke SendMessage,hSbr,WM_GETFONT,0,0
 		push	eax
 		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
 		pop		eax
@@ -1236,10 +1241,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
 		INVOKE SetBlockDefs,hREd
-		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
-		mov		hBtn,eax
-		invoke LoadBitmap,hInstance,111
-		invoke SendMessage,hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
 		;Menu and toolbar has the same ID's
@@ -1280,19 +1281,31 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FILE_CLOSE_ALL
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
+					mov		szSessionFile,0
+					invoke CloseNotify
+					invoke UpdateAll,CLOSE_ALL
+					invoke CreateNew
+				.endif
+				mov		fTimer,1
+			.elseif eax==IDM_FILE_OPENSESSION
+				invoke OpenSessionFile
+				mov		fTimer,1
+			.elseif eax==IDM_FILE_SAVESESSION
+				invoke SaveSessionFile
+				mov		fTimer,1
+			.elseif eax==IDM_FILE_CLOSESESSION
+				invoke UpdateAll,WM_CLOSE
+				.if !eax
 					invoke AskSaveSessionFile
 					.if !eax
 						mov		szSessionFile,0
+						mov		MainFile,0
 						invoke CloseNotify
 						invoke UpdateAll,CLOSE_ALL
 						invoke CreateNew
 					.endif
 				.endif
 				mov		fTimer,1
-			.elseif eax==IDM_FILE_OPENSESSION
-				invoke OpenSessionFile
-			.elseif eax==IDM_FILE_SAVESESSION
-				invoke SaveSessionFile
 			.elseif eax==IDM_FILE_PAGESETUP
 				invoke GetPrnCaps
 				mov		psd.lStructSize,sizeof psd
@@ -1579,25 +1592,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FORMAT_TABINDEX
 				invoke SendMessage,hResEd,DEM_SHOWTABINDEX,0,0
 			.elseif eax==IDM_VIEW_TOOLBAR
-				invoke GetDlgItem,hWin,IDC_TBR
-				mov		hCtl,eax
 				xor		wpos.fView,1
 				test	wpos.fView,1
 				.if !ZERO?
-					invoke ShowWindow,hCtl,SW_SHOWNA
+					invoke ShowWindow,hTbr,SW_SHOWNA
 				.else
-					invoke ShowWindow,hCtl,SW_HIDE
+					invoke ShowWindow,hTbr,SW_HIDE
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,1
 			.elseif eax==IDM_VIEW_STATUSBAR
-				invoke GetDlgItem,hWin,IDC_SBR
-				mov		hCtl,eax
 				xor		wpos.fView,2
 				test	wpos.fView,2
 				.if !ZERO?
-					invoke ShowWindow,hCtl,SW_SHOWNA
+					invoke ShowWindow,hSbr,SW_SHOWNA
 				.else
-					invoke ShowWindow,hCtl,SW_HIDE
+					invoke ShowWindow,hSbr,SW_HIDE
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,1
 				invoke SendMessage,hOut,WM_SIZE,0,0
@@ -1656,31 +1665,34 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_MAKE_COMPILE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_COMPILE,offset FileName,TRUE
+				invoke OutputMake,IDM_MAKE_COMPILE,offset MainFile,TRUE
 			.elseif eax==IDM_MAKE_ASSEMBLE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset FileName,TRUE
+				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset MainFile,TRUE
 			.elseif eax==IDM_MAKE_LINK
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_LINK,offset FileName,TRUE
+				invoke OutputMake,IDM_MAKE_LINK,offset MainFile,TRUE
 			.elseif eax==IDM_MAKE_RUN
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_RUN,offset FileName,2
+				invoke OutputMake,IDM_MAKE_RUN,offset MainFile,2
 			.elseif eax==IDM_MAKE_GO
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_COMPILE,offset FileName,2
+				invoke OutputMake,IDM_MAKE_COMPILE,offset MainFile,2
 				or		eax,eax
 				jne		Ex
-				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset FileName,0
+				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset MainFile,0
 				or		eax,eax
 				jne		Ex
-				invoke OutputMake,IDM_MAKE_LINK,offset FileName,3
+				invoke OutputMake,IDM_MAKE_LINK,offset MainFile,3
 				or		eax,eax
 				jne		Ex
-				invoke OutputMake,IDM_MAKE_RUN,offset FileName,4
+				invoke OutputMake,IDM_MAKE_RUN,offset MainFile,4
+			.elseif eax==IDM_MAKE_MAINFILE
+				invoke lstrcpy,addr MainFile,addr FileName
+				mov		fTimer,1
 			.elseif eax==IDM_OPTION_CODE
 				invoke DialogBoxParam,hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_DIALOG
@@ -1902,6 +1914,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
 				invoke lstrcat,addr szInitFolder,addr szBackSlash
 				invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
+				invoke RegSetValueEx,hReg,addr szMainFile,0,REG_SZ,addr MainFile,sizeof MainFile
 				invoke CloseNotify
 				invoke GetWindowLong,hWin,GWL_STYLE
 				test	eax,WS_MAXIMIZE

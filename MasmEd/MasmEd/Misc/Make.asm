@@ -126,12 +126,14 @@ FindErrors proc uses ebx
 	LOCAL	buffer[256]:BYTE
 	LOCAL	nLn:DWORD
 	LOCAL	nLnErr:DWORD
+	LOCAL	nLastLnErr:DWORD
 	LOCAL	nErr:DWORD
 
 	invoke SendMessage,hOut,EM_GETLINECOUNT,0,0
 	xor		ebx,ebx
 	mov		nErrID,ebx
-	mov		nLn,0
+	mov		nLn,ebx
+	mov		nLastLnErr,-1
 	.while nLn<eax
 		push	eax
 		call	TestLine
@@ -153,17 +155,20 @@ TestLine:
 		mov		byte ptr buffer[eax],0
 		invoke AsciiToDw,addr buffer[eax+1]
 		dec		eax
-		mov		nLnErr,eax
-		invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
-		invoke SendMessage,hOut,REM_GETBMID,nLn,0
-		mov		nErr,eax
-		invoke OpenEditFile,addr buffer,0
-		invoke GetWindowLong,hREd,GWL_ID
-		.if eax==IDC_RAE
-			invoke SendMessage,hREd,REM_SETERROR,nLnErr,nErr
-			mov		eax,nErr
-			mov		ErrID[ebx*4],eax
-			inc		ebx
+		.if eax!=nLastLnErr
+			mov		nLnErr,eax
+			mov		nLastLnErr,eax
+			invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
+			invoke SendMessage,hOut,REM_GETBMID,nLn,0
+			mov		nErr,eax
+			invoke OpenEditFile,addr buffer,0
+			invoke GetWindowLong,hREd,GWL_ID
+			.if eax==IDC_RAE
+				invoke SendMessage,hREd,REM_SETERROR,nLnErr,nErr
+				mov		eax,nErr
+				mov		ErrID[ebx*4],eax
+				inc		ebx
+			.endif
 		.endif
 	.endif
 	retn
@@ -177,16 +182,21 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	LOCAL	ThreadID:DWORD
 	LOCAL	msg:MSG
 
-	invoke SetCurDir,lpFileName,FALSE
-	mov		fExitCode,0
-	invoke LoadCursor,0,IDC_WAIT
-	invoke SetCursor,eax
 	test	wpos.fView,4
 	.if ZERO?
 		or		wpos.fView,4
 		invoke ShowWindow,hOut,SW_SHOWNA
 		invoke SendMessage,hWnd,WM_SIZE,0,1
 	.endif
+	movzx	eax,MainFile
+	.if !eax
+		invoke SendMessage,hOut,WM_SETTEXT,0,addr szNoMain
+		ret
+	.endif
+	invoke SetCurDir,lpFileName,FALSE
+	mov		fExitCode,0
+	invoke LoadCursor,0,IDC_WAIT
+	invoke SetCursor,eax
 	invoke SetFocus,hOut
 	mov		make.buffer,0
 	.if fClear==1 || fClear==2

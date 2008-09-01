@@ -461,6 +461,7 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke WritePrivateProfileString,addr szSession,addr szFolder,addr tmpbuff,lpszFile
 	invoke MakeSession
 	invoke WritePrivateProfileString,addr szSession,addr szSession,addr tmpbuff,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr MainFile,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr CompileRC,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr Assemble,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szLink,addr Link,lpszFile
@@ -588,6 +589,7 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke SendMessage,hBrowse,FBM_SETPATH,TRUE,addr tmpbuff
 	invoke GetPrivateProfileString,addr szSession,addr szSession,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
 	invoke RestoreSession,FALSE
+	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr MainFile,sizeof MainFile,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr CompileRC,sizeof CompileRC,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr Assemble,sizeof Assemble,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr Link,sizeof Link,lpszFile

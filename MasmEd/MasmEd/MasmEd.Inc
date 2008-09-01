@@ -136,6 +136,7 @@ IDM_FILE_CLOSE			equ 10010
 IDM_FILE_CLOSE_ALL		equ 10058
 IDM_FILE_OPENSESSION	equ 10076
 IDM_FILE_SAVESESSION	equ 10077
+IDM_FILE_CLOSESESSION	equ 10078
 IDM_FILE_PAGESETUP		equ 10029
 IDM_FILE_PRINT			equ 10005
 IDM_FILE_EXIT			equ 10006
@@ -207,6 +208,7 @@ IDM_MAKE_ASSEMBLE		equ 10025
 IDM_MAKE_LINK			equ 10026
 IDM_MAKE_RUN			equ 10027
 IDM_MAKE_GO				equ 10028
+IDM_MAKE_MAINFILE		equ 10079
 IDM_OPTION_CODE			equ 10030
 IDM_OPTION_DIALOG		equ 10047
 IDM_OPTION_BUILD		equ 10070
@@ -356,6 +358,7 @@ szNewFile             	db '(Untitled)',0
 szChanged				db 'File is changed outside editor',0Dh,0Ah,0
 szReopen				db 0Dh,0Ah,0Dh,0Ah,'Reopen the file?',0
 szSaveSession			db 'Save current session to?',0Dh,0Ah,0
+szNoMain				db 'No main file selected.',0Dh,'Use Make / Set Current as Mainfile.',0Dh,0
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
 szFtRc					db '.rc',0
@@ -472,6 +475,7 @@ nmeexp					NAMEEXPORT <0,'rsrc.inc',0>
 szGrid					db 'Grid',0
 grdsize					GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE>
 
+szMainFile				db 'MainFile',0
 szCompileRC				db 'CompileRC',0
 szAssemble				db 'Assemble',0
 szLink					db 'Link',0
@@ -500,8 +504,10 @@ hCbo					dd ?
 hFind					dd ?
 hMnu					dd ?
 hTbr					dd ?
+hShp					dd ?
 hOut					dd ?
 hBrowse					dd ?
+hSbr					dd ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?
 fVSplit					dd ?
@@ -510,6 +516,7 @@ lpdwDisp				dd ?
 lpType					dd ?
 lpcbData				dd ?
 FileName				db MAX_PATH dup(?)
+MainFile				db MAX_PATH dup(?)
 hFont					dd ?
 hIFont					dd ?
 hLnrFont				dd ?

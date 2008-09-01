@@ -92,6 +92,17 @@ DoToolBar proc hInst:DWORD,hToolBar:HWND
 
 DoToolBar endp
 
+DoStatusBar proc hWin:DWORD
+	LOCAL	sbParts[3]:DWORD
+
+	mov [sbParts+0],100				; pixels from left
+	mov [sbParts+4],400				; pixels from left
+	mov [sbParts+8],-1				; last part
+	invoke SendMessage,hWin,SB_SETPARTS,3,addr sbParts
+	ret
+
+DoStatusBar endp
+
 SetWinCaption proc lpFileName:DWORD
 	LOCAL	buffer[sizeof szAppName+3+MAX_PATH]:BYTE
 	LOCAL	buffer1[4]:BYTE
@@ -146,10 +157,41 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 	mov		edx,nPos
 	inc		edx
 	invoke DwToAscii,edx,addr buffer[eax+6]
-	invoke SetDlgItemText,hWnd,IDC_SBR,addr buffer
+	invoke SendMessage,hSbr,SB_SETTEXT,0,addr buffer
 	ret
 
 ShowPos endp
+
+ShowSession proc
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	.if MainFile
+		invoke lstrcpy,addr buffer,addr szMainFile
+		mov		dword ptr buffer[4],' :'
+		invoke lstrlen,addr MainFile
+		.while MainFile[eax-1]!='\'
+			dec		eax
+		.endw
+		invoke lstrcat,addr buffer,addr MainFile[eax]
+	.else
+		mov		buffer,0
+	.endif
+	invoke SendMessage,hSbr,SB_SETTEXT,1,addr buffer
+	.if szSessionFile
+		invoke lstrcpy,addr buffer,addr szSession
+		mov		dword ptr buffer[7],' :'
+		invoke lstrlen,addr szSessionFile
+		.while szSessionFile[eax-1]!='\'
+			dec		eax
+		.endw
+		invoke lstrcat,addr buffer,addr szSessionFile[eax]
+	.else
+		mov		buffer,0
+	.endif
+	invoke SendMessage,hSbr,SB_SETTEXT,2,addr buffer
+	ret
+
+ShowSession endp
 
 RemoveFileExt proc lpFileName:DWORD
 
