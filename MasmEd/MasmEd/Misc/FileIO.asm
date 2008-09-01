@@ -303,19 +303,36 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 	invoke lstrcpy,offset FileName,lpFileName
 	invoke UpdateAll,IS_OPEN
 	.if !eax
-		xor		eax,eax
-		.if fType==0 || fType==IDC_RES
-			invoke IsFileResource,lpFileName
-		.endif
-		.if eax && !fCtrl
-			invoke UpdateAll,IS_RESOURCE
-			.if eax
-				invoke WantToSave,hREd,offset FileName
-				.if !eax
+		invoke GetFileAttributes,lpFileName
+		.if eax!=-1
+			xor		eax,eax
+			.if fType==0 || fType==IDC_RES
+				invoke IsFileResource,lpFileName
+			.endif
+			.if eax && !fCtrl
+				invoke UpdateAll,IS_RESOURCE
+				.if eax
+					invoke WantToSave,hREd,offset FileName
+					.if !eax
+						invoke LoadRCFile,lpFileName
+						.if eax
+							invoke TabToolGetInx,hREd
+							invoke TabToolSetText,eax,lpFileName
+							invoke SetWinCaption,lpFileName
+							invoke lstrcpy,offset FileName,lpFileName
+							invoke RefreshCombo,hREd
+							call	CloseIt
+						.endif
+					.endif
+				.else
 					invoke LoadRCFile,lpFileName
 					.if eax
-						invoke TabToolGetInx,hREd
-						invoke TabToolSetText,eax,lpFileName
+						invoke ShowWindow,hREd,SW_HIDE
+						mov		eax,hRes
+						mov		hREd,eax
+						invoke TabToolAdd,hREd,lpFileName
+						invoke SendMessage,hWnd,WM_SIZE,0,0
+						invoke ShowWindow,hREd,SW_SHOW
 						invoke SetWinCaption,lpFileName
 						invoke lstrcpy,offset FileName,lpFileName
 						invoke RefreshCombo,hREd
@@ -323,39 +340,27 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					.endif
 				.endif
 			.else
-				invoke LoadRCFile,lpFileName
-				.if eax
-					invoke ShowWindow,hREd,SW_HIDE
-					mov		eax,hRes
-					mov		hREd,eax
-					invoke TabToolAdd,hREd,lpFileName
-					invoke SendMessage,hWnd,WM_SIZE,0,0
-					invoke ShowWindow,hREd,SW_SHOW
-					invoke SetWinCaption,lpFileName
-					invoke lstrcpy,offset FileName,lpFileName
-					invoke RefreshCombo,hREd
-					call	CloseIt
+				invoke LoadCursor,0,IDC_WAIT
+				invoke SetCursor,eax
+				.if fType==0 || fType==IDC_RAE
+					invoke CreateRAEdit
+					invoke TabToolAdd,hREd,offset FileName
+					invoke LoadEditFile,hREd,offset FileName
+					invoke SendMessage,hREd,REM_LINENUMBERWIDTH,32,0
+					invoke SendMessage,hREd,REM_SETBLOCKS,0,0
+				.else
+					invoke CreateRAHexEd
+					invoke TabToolAdd,hREd,offset FileName
+					invoke LoadHexFile,hREd,offset FileName
 				.endif
+				invoke RefreshCombo,hREd
+				call	CloseIt
+				invoke TabToolSetChanged,hREd,FALSE
+				invoke LoadCursor,0,IDC_ARROW
+				invoke SetCursor,eax
 			.endif
 		.else
-			invoke LoadCursor,0,IDC_WAIT
-			invoke SetCursor,eax
-			.if fType==0 || fType==IDC_RAE
-				invoke CreateRAEdit
-				invoke TabToolAdd,hREd,offset FileName
-				invoke LoadEditFile,hREd,offset FileName
-				invoke SendMessage,hREd,REM_LINENUMBERWIDTH,32,0
-				invoke SendMessage,hREd,REM_SETBLOCKS,0,0
-			.else
-				invoke CreateRAHexEd
-				invoke TabToolAdd,hREd,offset FileName
-				invoke LoadHexFile,hREd,offset FileName
-			.endif
-			invoke RefreshCombo,hREd
-			call	CloseIt
-			invoke TabToolSetChanged,hREd,FALSE
-			invoke LoadCursor,0,IDC_ARROW
-			invoke SetCursor,eax
+			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
 		.endif
 	.endif
 	invoke SetFocus,hREd
