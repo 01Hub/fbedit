@@ -1364,11 +1364,15 @@ Function Immediate() As Integer
 						buff="Unknown"
 				End Select
 				If vrb(x).arr Then
-					buff=buff & " " & vrb(x).nm & "("
-					For i=0 To vrb(x).arr->dmn-1
-						buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
-					Next
-					buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & szCRLF
+					If vrb(x).arr<&H400000 Then
+						buff=buff & " " & vrb(x).nm & "() As " & udt(vrb(x).typ).nm & szCRLF
+					Else
+						buff=buff & " " & vrb(x).nm & "("
+						For i=0 To vrb(x).arr->dmn-1
+							buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
+						Next
+						buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & szCRLF
+					EndIf
 				Else
 					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & szCRLF
 				EndIf
