@@ -57,6 +57,8 @@ End Type
 
 Type tudt
 	nm				As String  'name of udt
+	typ			As UShort
+	sr				As Byte     'source index
 	lb				As Integer 'lower limit for components
 	ub				As Integer 'upper
 	lg				As Integer 'lenght 
@@ -73,6 +75,7 @@ End Type
 Type tvar
 	nm				As String	'name
 	typ			As UShort	'type
+	sr				As Byte     'source index
 	adr			As Integer	'address or offset 
 	mem			As UByte		'scope 
 	arr			As tarr Ptr	'pointer to array def
@@ -133,38 +136,54 @@ Dim Shared sourcenb As Integer
 ' UDT's
 Const TYPEMAX=1500
 Dim Shared udt(TYPEMAX) As tudt
-Dim Shared udtidx As Integer
+Dim Shared udtnb As Integer
 udt(0).nm="Proc"
+udt(0).typ=0
 udt(0).lg=0
 udt(1).nm="Integer"
+udt(1).typ=1
 udt(1).lg=4
 udt(2).nm="Byte"
+udt(2).typ=2
 udt(2).lg=1
 udt(3).nm="UByte"
+udt(3).typ=3
 udt(3).lg=1
 udt(4).nm="ZString"
+udt(4).typ=4
 udt(4).lg=0
 udt(5).nm="Short"
+udt(5).typ=5
 udt(5).lg=2
 udt(6).nm="UShort"
+udt(6).typ=6
 udt(6).lg=2
 udt(7).nm="Void"
+udt(7).typ=7
 udt(7).lg=0
 udt(8).nm="UInteger"
+udt(8).typ=8
 udt(8).lg=4
 udt(9).nm="Longint"
+udt(9).typ=9
 udt(9).lg=8
 udt(10).nm="ULongint"
+udt(10).typ=10
 udt(10).lg=8
 udt(11).nm="Single"
+udt(11).typ=11
 udt(11).lg=4
 udt(12).nm="Double"
+udt(12).typ=12
 udt(12).lg=8
 udt(13).nm="String"
+udt(13).typ=13
 udt(13).lg=0
 udt(14).nm="FString"
+udt(14).typ=14
 udt(14).lg=0
 udt(15).nm="PChar"
+udt(15).typ=15
 udt(15).lg=0
 
 Const CTYPEMAX=10000

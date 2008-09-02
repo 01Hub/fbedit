@@ -108,14 +108,37 @@ Function decoupproc(strg As String) As String
 
 End Function
 
+Function FindUdt(ByVal typ As Integer,ByVal sr As UByte) As Integer
+	Dim i As Integer
+
+	for i=udtnb To 1 Step -1
+		If typ=udt(i).typ And sr=udt(i).sr Then
+			Return i
+		EndIf
+	Next
+	for i=udtnb To 1 Step -1
+		If typ=udt(i).typ And sr=udt(i).sr Then
+			Return i
+		EndIf
+	Next
+	Return 0
+	
+End Function
+
 Sub decoup2(gv As String,f As Byte)
-	Dim p As Integer=1,c As UShort,e As Integer,gv2 As String
+	Dim p As Integer=1,c As UShort,e As Integer,gv2 As String,typ As UShort
 
 	If InStr(gv,"=")=0 Then
 		If f=TYUDT Then
 			cudt(cudtnb).typ=Val(Mid(gv,p))
 		Else
-			vrb(vrbnb).typ=Val(Mid(gv,p))
+			typ=Val(Mid(gv,p))
+			If typ<=15 Then
+				vrb(vrbnb).typ=typ
+			Else
+				vrb(vrbnb).typ=FindUdt(typ)
+			EndIf
+			vrb(vrbnb).sr=sourcenb
 		End If
 	Else
 		If InStr(gv,"=ar1") Then
@@ -154,31 +177,39 @@ Sub decoup2(gv As String,f As Byte)
 			cudt(cudtnb).typ=Val(Mid(gv2,e+1))
 		Else
 			vrb(vrbnb).pt=p
-			vrb(vrbnb).typ=Val(Mid(gv2,e+1))
+			typ=Val(Mid(gv2,e+1))
+			If typ<=15 Then
+				vrb(vrbnb).typ=typ
+			Else
+				vrb(vrbnb).typ=FindUdt(typ)
+			EndIf
+			vrb(vrbnb).sr=sourcenb
 		End If
 	EndIf
-
+'PutString(vrb(vrbnb).nm & " " & Str(vrb(vrbnb).typ))
 End Sub
 
 Sub decoupudt(readl As String)
 	Dim As UShort p,q
 	Dim As String tnm
 
+	udtnb+=1
 	p=InStr(readl,":")
 	tnm=Left(readl,p-1)
 	p+=3
 	q=InStr(readl,"=")
-	udtidx=Val(Mid(readl,p,q-p))
-	udt(udtidx).nm=tnm
+	udt(udtnb).nm=tnm
+	udt(udtnb).typ=Val(Mid(readl,p,q-p))
+	udt(udtnb).sr=sourcenb
 	p=q+2
 	q=p-1
 	While readl[q]<64
 		q+=1
 	Wend
 	q+=1
-	udt(udtidx).lg=Val(Mid(readl,p,q-p))
+	udt(udtnb).lg=Val(Mid(readl,p,q-p))
 	p=q
-	udt(udtidx).lb=cudtnb+1
+	udt(udtnb).lb=cudtnb+1
 	While readl[p-1]<>Asc(";")
 		cudtnb+=1
 		q=InStr(p,readl,":")
@@ -198,10 +229,10 @@ Sub decoupudt(readl As String)
 		'Val(Mid(readl,p,q-p))
 		p=q+1
 	Wend
-	udt(udtidx).ub=cudtnb
-	If udt(udtidx).lb=udt(udtidx).ub And cudt(udt(udtidx).lb).nm="I" Then
-		If Right(udt(udtidx).nm,2)="__" Then
-			udt(udtidx).nm=Left(udt(udtidx).nm,Len(udt(udtidx).nm)-2)
+	udt(udtnb).ub=cudtnb
+	If udt(udtnb).lb=udt(udtnb).ub And cudt(udt(udtnb).lb).nm="I" Then
+		If Right(udt(udtnb).nm,2)="__" Then
+			udt(udtnb).nm=Left(udt(udtnb).nm,Len(udt(udtnb).nm)-2)
 		EndIf
 	EndIf
 
@@ -227,6 +258,7 @@ Sub decoup(gv As String)
 			' Var or parameter
 			vrbnb+=1
 			vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1)
+			vrb(vrbnb).sr=sourcenb
 			vrb(vrbnb).arr=Cast(Any Ptr,recupstab.ad)
 			' Just to have the next beginning
 			proc(procnb+1).vr=vrbnb+1
@@ -243,6 +275,7 @@ Sub decoup(gv As String)
 		Else
 			vrb(vrbnb).nm=Left(gv,InStr(gv,":")-1) 'var ou parametre
 		End If
+		vrb(vrbnb).sr=sourcenb
 		' Just to have the next beginning
 		proc(procnb+1).vr=vrbnb+1
 		' First caracter after ":"
@@ -764,11 +797,12 @@ Sub ClearVars()
 'Dim Shared udtidx As Integer
 	For i=16 To TYPEMAX
 		udt(i).nm=""
+		udt(i).typ=0
 		udt(i).lb=0
 		udt(i).ub=0
 		udt(i).lg=0
 	Next
-	udtidx=0
+	udtnb=15
 
 'Const CTYPEMAX=10000
 'Dim Shared cudt(CTYPEMAX) As tcudt

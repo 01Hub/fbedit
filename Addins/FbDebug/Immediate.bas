@@ -1365,18 +1365,38 @@ Function Immediate() As Integer
 				End Select
 				If vrb(x).arr Then
 					If vrb(x).arr<&H400000 Then
-						buff=buff & " " & vrb(x).nm & "() As " & udt(vrb(x).typ).nm & szCRLF
+						buff=buff & " " & vrb(x).nm & "() As " & udt(vrb(x).typ).nm
 					Else
 						buff=buff & " " & vrb(x).nm & "("
 						For i=0 To vrb(x).arr->dmn-1
 							buff=buff & Str(vrb(x).arr->nlu(i).lb) & " To " & Str(vrb(x).arr->nlu(i).ub) & ","
 						Next
-						buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm & szCRLF
+						buff=Left(buff,Len(buff)-1) & ") As " & udt(vrb(x).typ).nm
 					EndIf
 				Else
-					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm & szCRLF
+					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm
 				EndIf
+				buff=buff & " " & source(vrb(x).sr).file & szCRLF
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
+	ElseIf UCase(Left(buff,4))="DUMP" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			buff=UCase(Trim(Mid(buff,5)))
+			For i=1 To udtnb
+'SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,udt(i).nm))
+				If buff=udt(i).nm Then
+					For x=udt(i).lb To udt(i).ub
+						buff=cudt(x).nm & szCRLF
+						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+					Next
+					Exit For
+				EndIf
 			Next
 		Else
 			nErr=2
@@ -1423,7 +1443,7 @@ Function Immediate() As Integer
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			buff="Number of code producing lines: " & Str(linenb) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			buff="Number of UDT's: " & Str(udtidx) & szCRLF
+			buff="Number of UDT's: " & Str(udtnb) & szCRLF
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 		Else
 			nErr=2
