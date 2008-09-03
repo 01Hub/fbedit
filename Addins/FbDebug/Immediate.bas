@@ -568,178 +568,141 @@ Function GetArrOfs(ByRef px As Integer,ByVal typ As Integer,ByVal lpArr As tarr 
 
 End Function
 
+Function IsLocal(ByVal svar As String) As Integer
+	Dim i As Integer
+
+	i=1
+	While i<=vrbnb
+		If svar=vrb(i).nm And vrb(i).pn=procsv Then
+			Return i
+		EndIf
+		i+=1
+	Wend
+	Return 0
+
+End Function
+
+Function IsGlobal(ByVal svar As String) As Integer
+	Dim i As Integer
+
+	i=1
+	While i<=vrbnb
+		If svar=vrb(i).nm And vrb(i).pn=0 Then'<0 And vrb(i).sr=proc(procsv).sr Then
+			Return i
+		EndIf
+		i+=1
+	Wend
+	Return 0
+
+End Function
+
 Function GetVarAdr(ByRef px As Integer,ByRef typ As Integer) As Integer
-	Dim As Integer i,j,adr,ofs,fGlobal,fParam
+	Dim As Integer i,adr,ofs,fGlobal,fParam
 	Dim svar As ZString*256
 	Dim lpArr As tarr Ptr
-	Dim bFound As Boolean
 
 	i=szCompiled[px]
 	px+=1
 	svar=UCase(Mid(szCompiled,px+1,i))
 	px+=i
 Again:
-'	i=1
-'	While i<=vrbnb
-'		If svar=vrb(i).nm Then
-'PutString("vrb(i).pn: " & Str(vrb(i).pn) & " procsv: " & Str(procsv) & " procsv: " & Str(procsv) & " vrb(i).mem: " & Str(vrb(i).mem))
-'		EndIf
-'		i+=1
-'	Wend
 	i=1
 	adr=0
-	bFound=FALSE
-	While i<=vrbnb
-		If svar=vrb(i).nm Then
-			bFound=TRUE
-			If (vrb(i).pn=procsv Or vrb(i).pn<0) Then
-				typ=vrb(i).typ
-				Select Case vrb(i).mem
-					Case 1
-						' Shared
-						adr=vrb(i).adr
-						fGlobal=1
-						'
-					Case 2
-						' Static
-						adr=vrb(i).adr
-						fGlobal=1
-						'
-					Case 3
-						' ByRef
-						adr=ebp_this+vrb(i).adr
-						fParam=2
-						'
-					Case 4
-						' ByVal
-						adr=ebp_this+vrb(i).adr
-						fParam=1
-						'
-					Case 5
-						' Local
-						adr=ebp_this+vrb(i).adr
-						'
-					Case 6
-						' Common
-						adr=vrb(i).adr
-						fGlobal=1
-						'
-					Case Else
-						Return -1
-				End Select
-				If fGlobal=0 Then
-					If vrb(i).pn<>procsv And vrb(i).pn<>-procsv Then
-						' Not in current scope
-						GoTo NotInScope
-					EndIf
-					' Find source
-					For j=1 To sourcenb
-						If UCase(source(j).file)=UCase(lpData->filename) Then
-							Exit For
-						EndIf
-					Next
-					If proc(procsv).sr<>j Then
-						' Unknown source
-						nErr=9
-						Return -1
-					EndIf
-					If fParam Then
-						' Parameter, Check if in scope
-						For j=1 To linenb
-							If (proc(procsv).nu=nLnDebug+1 Or rline(j).nu=nLnDebug+1) And rline(j).pr=procsv Then
-								If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-									' Not in current scope
-									GoTo NotInScope
-								EndIf
-								Exit For
-							EndIf
-						Next
-						If j>linenb Then
-							' Variable not found
-							GoTo NotInScope
-						EndIf
-						If adr Then
-							If fParam=2 Then
-								' ByRef
-								ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-							EndIf
-						EndIf
-					Else
-						' Local, Check if in scope
-						For j=1 To linenb
-							If rline(j).nu=nLnDebug+1 And rline(j).pr=procsv Then
-								If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-									adr=0
-								EndIf
-								Exit For
-							EndIf
-						Next
-						If j>linenb Or adr=0 Then
-							' Not in current scope
-							GoTo NotInScope
-						EndIf
-					EndIf
-				EndIf
-				ofs=GetArrOfs(px,typ,vrb(i).arr,0)
-				If ofs=-1 Then
-					Return -1
-				EndIf
-				adr+=ofs
+	i=IsLocal(svar)
+	If i=0 Then
+		i=IsGlobal(svar)
+	EndIf
+	If i Then
+		typ=vrb(i).typ
+		Select Case vrb(i).mem
+			Case 1
+				' Shared
+				adr=vrb(i).adr
+				fGlobal=1
+				'
+			Case 2
+				' Static
+				adr=vrb(i).adr
+				fGlobal=1
+				'
+			Case 3
+				' ByRef
+				adr=ebp_this+vrb(i).adr
+				ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+				fParam=2
+				'
+			Case 4
+				' ByVal
+				adr=ebp_this+vrb(i).adr
+				fParam=1
+				'
+			Case 5
+				' Local
+				adr=ebp_this+vrb(i).adr
+				'
+			Case 6
+				' Common
+				adr=vrb(i).adr
+				fGlobal=1
+				'
+			Case Else
+				nErr=5
+				Return -1
+		End Select
+		ofs=GetArrOfs(px,typ,vrb(i).arr,0)
+		If ofs=-1 Then
+			Return -1
+		EndIf
+		adr+=ofs
 Nxt:
-				If typ>15 Then
-					If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
-						px+=2
-						i=szCompiled[px]
-						px+=1
-						svar=UCase(Mid(szCompiled,px+1,i))
-						px+=i
-						For i=udt(typ).lb To udt(typ).ub
-							If svar=cudt(i).nm Then
-								adr+=cudt(i).ofs
-								typ=cudt(i).typ
-								If cudt(i).arr Then
-									ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
-								Else
-									ofs=GetArrOfs(px,typ,0,0)
-								EndIf
-								If ofs=-1 Then
-									Return -1
-								EndIf
-								adr+=ofs
-								Exit For
-							EndIf
-						Next
-						GoTo Nxt
-					Else
-						If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
-							' Foreign Integer
-							typ=1
+		If typ>15 Then
+			' UDT
+			If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
+				px+=2
+				i=szCompiled[px]
+				px+=1
+				svar=UCase(Mid(szCompiled,px+1,i))
+				px+=i
+				For i=udt(typ).lb To udt(typ).ub
+					If svar=cudt(i).nm Then
+						adr+=cudt(i).ofs
+						typ=cudt(i).typ
+						If cudt(i).arr Then
+							ofs=GetArrOfs(px,typ,0,@audt(cudt(i).arr))
 						Else
-							nErr=1
+							ofs=GetArrOfs(px,typ,0,0)
+						EndIf
+						If ofs=-1 Then
 							Return -1
 						EndIf
+						adr+=ofs
+						Exit For
 					EndIf
+				Next
+				GoTo Nxt
+			Else
+				If udt(typ).lb=udt(typ).ub And cudt(udt(typ).lb).nm="I" Then
+					' Foreign Integer
+					typ=1
+				Else
+					nErr=1
+					Return -1
 				EndIf
-				Return adr
 			EndIf
 		EndIf
-NotInScope:
-		i+=1
-	Wend
-	If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
-		px+=2
-		i=szCompiled[px]
-		px+=1
-		svar="NS : " & svar & "." & UCase(Mid(szCompiled,px+1,i))
-		px+=i
-		GoTo Again
-	EndIf
-	' Variable not found
-	If bFound Then
-		nErr=8
+		Return adr
 	Else
-		nErr=3
+		If szCompiled[px]=UFUN And szCompiled[px+1]=UFUN Then
+			' Namespace
+			px+=2
+			i=szCompiled[px]
+			px+=1
+			svar="NS : " & svar & "." & UCase(Mid(szCompiled,px+1,i))
+			px+=i
+			GoTo Again
+		EndIf
 	EndIf
+	nErr=3
 	Return -1
 
 End Function
@@ -1376,9 +1339,27 @@ Function Immediate() As Integer
 				Else
 					buff=buff & " " & vrb(x).nm & " As " & udt(vrb(x).typ).nm
 				EndIf
-				buff=buff & " " & source(vrb(x).sr).file & szCRLF
+				buff=buff & szCRLF
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
 			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
+	ElseIf UCase(Left(buff,8))="DUMP VRB" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			buff=UCase(Trim(Mid(buff,9)))
+			For x=1 To vrbnb
+				If vrb(x).nm=buff Then
+					recup="vrb(i).nm=" & vrb(x).nm & " vrb(i).typ=" & Str(vrb(x).typ) & " vrb(i).sr=" & Str(vrb(x).sr) & " vrb(i).adr=" & Str(vrb(x).adr) & " vrb(i).mem=" & Str(vrb(x).mem) & " vrb(i).arr=" & Str(vrb(x).arr) & " vrb(i).pt=" & Str(vrb(x).pt) & " vrb(i).pn=" & Str(vrb(x).pn)
+					recup=recup & szCRLF
+					SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
+				EndIf
+			Next
+			recup="procsv=" & Str(procsv) & " proc(procsv).nm=" & proc(procsv).nm & " proc(procsv).sr=" & Str(proc(procsv).sr) & szCRLF
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
 		Else
 			nErr=2
 			lret=-1
@@ -1389,11 +1370,10 @@ Function Immediate() As Integer
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 			buff=UCase(Trim(Mid(buff,5)))
 			For i=1 To udtnb
-'SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,udt(i).nm))
 				If buff=udt(i).nm Then
 					For x=udt(i).lb To udt(i).ub
-						buff=cudt(x).nm & szCRLF
-						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+						recup=cudt(x).nm & szCRLF
+						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
 					Next
 					Exit For
 				EndIf

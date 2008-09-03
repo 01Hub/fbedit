@@ -267,7 +267,7 @@ Sub CreateToolTip()
 	hTip=CreateWindowEx(0,"tooltips_class32",NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0)
 	SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
 	SendMessage(hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100)
-	SendMessage(hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,5000)
+	SendMessage(hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,2000)
 	SendMessage(hTip,TTM_SETMAXTIPWIDTH,0,800)
 
 End sub
@@ -545,120 +545,129 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						EndIf
 						i=1
 						adr=0
-						While i<=vrbnb
-							If (vrb(i).pn=procsv Or vrb(i).pn<0) And (nme1=vrb(i).nm Or nsp=vrb(i).nm) Then
-								dp=0
-								If vrb(i).arr Then
-									' Array, insert dimension(s)
-									lpArr=vrb(i).arr
-									dp=InStr(buff,"(")
-									buff=Left(buff,dp) & GetArrayDim(lpArr) & Mid(buff,dp+1)
+						i=IsLocal(nme1)
+						If i=0 Then
+							i=IsGlobal(nme1)
+						EndIf
+						If i=0 Then
+							i=IsLocal(nsp)
+							If i=0 Then
+								i=IsGlobal(nsp)
+							EndIf
+						EndIf
+						If i=0 Then
+							Return 0
+						EndIf
+						dp=0
+						If vrb(i).arr Then
+							' Array, insert dimension(s)
+							lpArr=vrb(i).arr
+							dp=InStr(buff,"(")
+							buff=Left(buff,dp) & GetArrayDim(lpArr) & Mid(buff,dp+1)
+						EndIf
+						Select Case vrb(i).mem
+							Case 1
+								nme1="Shared"
+								adr=vrb(i).adr
+								fGlobal=1
+								'
+							Case 2
+								nme1="Static"
+								adr=vrb(i).adr
+								fGlobal=1
+								'
+							Case 3
+								nme1="ByRef"
+								adr=ebp_this+vrb(i).adr
+								fParam=2
+								'
+							Case 4
+								nme1="ByVal"
+								adr=ebp_this+vrb(i).adr
+								fParam=1
+								'
+							Case 5
+								nme1="Local"
+								adr=ebp_this+vrb(i).adr
+								'
+							Case 6
+								nme1="Common"
+								adr=vrb(i).adr
+								fGlobal=1
+							Case Else
+								nme1="Unknown"
+						End Select
+						If fGlobal=0 Then
+							' Find source
+							For nSrc=1 To sourcenb
+								If UCase(source(nSrc).file)=UCase(lpData->filename) Then
+									Exit For
 								EndIf
-								Select Case vrb(i).mem
-									Case 1
-										nme1="Shared"
-										adr=vrb(i).adr
-										fGlobal=1
-										'
-									Case 2
-										nme1="Static"
-										adr=vrb(i).adr
-										fGlobal=1
-										'
-									Case 3
-										nme1="ByRef"
-										adr=ebp_this+vrb(i).adr
-										fParam=2
-										'
-									Case 4
-										nme1="ByVal"
-										adr=ebp_this+vrb(i).adr
-										fParam=1
-										'
-									Case 5
-										nme1="Local"
-										adr=ebp_this+vrb(i).adr
-										'
-									Case 6
-										nme1="Common"
-										adr=vrb(i).adr
-										fGlobal=1
-									Case Else
-										nme1="Unknown"
-								End Select
-								If fGlobal=0 Then
-									' Find source
-									For nSrc=1 To sourcenb
-										If UCase(source(nSrc).file)=UCase(lpData->filename) Then
-											Exit For
-										EndIf
-									Next
-									If proc(procsv).sr<>nSrc Then
-										Return 0
-									EndIf
-									If fParam Then
-										' Parameter, Check if in scope
-										For j=1 To linenb
-											If (proc(procsv).nu=nCursorLine+1 Or rline(j).nu=nCursorLine+1) And rline(j).pr=procsv Then
-												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-													adr=0
-												EndIf
-												Exit For
-											EndIf
-										Next
-										If j>linenb Then
-											adr=0
-										EndIf
-										If adr Then
-											If fParam=2 Then
-												' ByRef
-												ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
-											EndIf
-										EndIf
-									Else
-										' Local, Check if in scope
-										For j=1 To linenb
-											If rline(j).nu=nCursorLine+1 And rline(j).pr=procsv Then
-												If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
-													adr=0
-												EndIf
-												Exit For
-											EndIf
-										Next
-										If j>linenb Then
-											adr=0
-										EndIf
-									EndIf
-								EndIf
-								If adr Then
-									buff=nme1 & " " & buff & " As "
-									dp=InStr(buff,"(")
-									If dp Then
-										adr=0
-									EndIf
-									buff=buff & GetVar(vrb(i).typ,vrb(i).pt,adr,@nme2,@buff,dp)
-									szTipText=buff
-									ti.cbSize=SizeOf(TOOLINFO)
-									ti.uFlags=TTF_IDISHWND Or TTF_SUBCLASS
-									ti.hWnd=hWin
-									ti.uId=Cast(Integer,hWin)
-									ti.hInst=hInstance
-									ti.lpszText=@szTipText
-									SendMessage(hTip,TTM_ADDTOOL,0,Cast(LPARAM,@ti))
-									SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
-									SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
-								EndIf
+							Next
+							If proc(procsv).sr<>nSrc Then
 								Return 0
 							EndIf
-							i+=1
-						Wend
+							If fParam Then
+								' Parameter, Check if in scope
+								For j=1 To linenb
+									If (proc(procsv).nu=nCursorLine+1 Or rline(j).nu=nCursorLine+1) And rline(j).pr=procsv Then
+										If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+											adr=0
+										EndIf
+										Exit For
+									EndIf
+								Next
+								If j>linenb Then
+									adr=0
+								EndIf
+								If adr Then
+									If fParam=2 Then
+										' ByRef
+										ReadProcessMemory(dbghand,Cast(Any Ptr,adr),@adr,4,0)
+									EndIf
+								EndIf
+							Else
+								' Local, Check if in scope
+								For j=1 To linenb
+									If rline(j).nu=nCursorLine+1 And rline(j).pr=procsv Then
+										If rline(j).ad<proc(procsv).db Or rline(j).ad>proc(procsv).fn Then
+											adr=0
+										EndIf
+										Exit For
+									EndIf
+								Next
+								If j>linenb Then
+									adr=0
+								EndIf
+							EndIf
+						EndIf
+						If adr Then
+							buff=nme1 & " " & buff & " As "
+							dp=InStr(buff,"(")
+							If dp Then
+								adr=0
+							EndIf
+							buff=buff & GetVar(vrb(i).typ,vrb(i).pt,adr,@nme2,@buff,dp)
+							szTipText=buff
+							ti.cbSize=SizeOf(TOOLINFO)
+							ti.uFlags=TTF_IDISHWND Or TTF_SUBCLASS
+							ti.hWnd=hWin
+							ti.uId=Cast(Integer,hWin)
+							ti.hInst=hInstance
+							ti.lpszText=@szTipText
+							SendMessage(hTip,TTM_ADDTOOL,0,Cast(LPARAM,@ti))
+							SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+							SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
+							Return 0
+						EndIf
 					Else
+						' No cursor movement
 						Return 0
 					EndIf
 				EndIf
-				SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
-				Return 0
 			EndIf
+			SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+			Return 0
 			'
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)

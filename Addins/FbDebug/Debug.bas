@@ -136,7 +136,7 @@ Sub decoup2(gv As String,f As Byte)
 			If typ<=15 Then
 				vrb(vrbnb).typ=typ
 			Else
-				vrb(vrbnb).typ=FindUdt(typ)
+				vrb(vrbnb).typ=FindUdt(typ,sourcenb)
 			EndIf
 			vrb(vrbnb).sr=sourcenb
 		End If
@@ -181,12 +181,12 @@ Sub decoup2(gv As String,f As Byte)
 			If typ<=15 Then
 				vrb(vrbnb).typ=typ
 			Else
-				vrb(vrbnb).typ=FindUdt(typ)
+				vrb(vrbnb).typ=FindUdt(typ,sourcenb)
 			EndIf
 			vrb(vrbnb).sr=sourcenb
 		End If
 	EndIf
-'PutString(vrb(vrbnb).nm & " " & Str(vrb(vrbnb).typ))
+
 End Sub
 
 Sub decoupudt(readl As String)
@@ -291,32 +291,32 @@ Function decoupscp(gv As Byte) As Integer
 		Case Asc("S")
 			'shared
 			vrb(vrbnb).mem=1
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=0
 			Return 2
 		Case Asc("V")
 			'static
 			vrb(vrbnb).mem=2
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=procnb
 			Return 2
 		Case Asc("v")
 			'byref parameter
 			vrb(vrbnb).mem=3
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=procnb
 			Return 2
 		Case Asc("p")
 			'byval parameter
 			vrb(vrbnb).mem=4
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=procnb
 			Return 2
 		Case Asc("G")
 			'common
 			vrb(vrbnb).mem=6
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=0
 			Return 2
 		Case Else
 			'local
 			vrb(vrbnb).mem=5
-			vrb(vrbnb).pn=-procnb
+			vrb(vrbnb).pn=procnb
 			Return 1
 	End Select
 
@@ -406,7 +406,9 @@ Sub ParseDebugInfo()
 					Case 38,40,128,160
 						' Init var
 						decoup(recup)
-						vrb(vrbnb).adr=recupstab.ad
+						If recupstab.ad Then
+							vrb(vrbnb).adr=recupstab.ad
+						EndIf
 					Case 100
 						' Main Source
 						'PutString("Main " & recup)
@@ -487,15 +489,6 @@ Sub ParseDebugInfo()
 			End If
 			basestab+=12
 		Wend
-		' To handle variables with the same name but of different type
-		For i=1 To vrbnb
-			For j=i+1 To vrbnb
-				If vrb(i).nm=vrb(j).nm And vrb(i).mem<>6 And vrb(j).mem<>6 Then
-					vrb(i).pn=Abs(vrb(i).pn)
-					vrb(j).pn=Abs(vrb(j).pn)
-				EndIf
-			Next
-		Next
 		PutString("Main Source: " & source(1).file)
 		'PutString("sourcenb " & sourcenb)
 		'PutString("linenb " & linenb)
