@@ -98,6 +98,14 @@ Debug menu:
   Variables that changes will have a red color.
   Example:
   Watch x,y,z
+  The command Dump will show a list of all variables.
+  The command Dump MyUdt will show a list of all members in the udt MyUdt.
+  Example:
+  Dump RECT				Will show this list:
+  LEFT As Integer
+  TOP As Integer
+  RIGHT As Integer
+  BOTTOM As Integer
 
 Whats New:
 ----------
@@ -147,5 +155,10 @@ o Fixed bug with parsing Common variables.
 Version 1.0.0.9
 o Fixed bug while parsing huge UDT's.
 o Run wil bring the debugged window / console to top.
+Version 1.0.1.0
+o Added Dump udt. Will show all members of the requested udt.
+o Fixed bugs with showing variables in multimodule projects.
+  This involved a major redesign on how variables are parsed
+  from the debug info.
 
 KetilO
