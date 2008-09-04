@@ -1198,7 +1198,7 @@ End Sub
 
 Function Immediate() As Integer
 	Dim buff As ZString*256
-	Dim As Integer lret,x,adr,typ,ival,sadr,i
+	Dim As Integer lret,x,adr,typ,ival,sadr,i,j
 	Dim As Single sval
 	Dim As LongInt lval
 	Dim res As RES
@@ -1372,7 +1372,17 @@ Function Immediate() As Integer
 			For i=1 To udtnb
 				If buff=udt(i).nm Then
 					For x=udt(i).lb To udt(i).ub
-						recup=cudt(x).nm & szCRLF
+						If cudt(x).arr Then
+							recup=cudt(x).nm & "("
+PutString(Str(audt(cudt(x).arr).dm))
+							For j=0 To audt(cudt(x).arr).dm-1
+								recup=recup & Str(audt(cudt(x).arr).nlu(j).lb) & " To " & Str(audt(cudt(x).arr).nlu(j).ub) & ","
+							Next
+							recup=Left(recup,Len(recup)-1) & ")"
+						Else
+							recup=cudt(x).nm
+						EndIf
+						recup=recup & " As "  & udt(cudt(x).typ).nm & szCRLF
 						SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
 					Next
 					Exit For
