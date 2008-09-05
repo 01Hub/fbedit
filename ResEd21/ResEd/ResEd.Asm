@@ -343,6 +343,9 @@ OpenProjectAsText proc uses ebx
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	racol:RACOLOR
+	LOCAL	hMem:DWORD
+	LOCAL	hFile:DWORD
+	LOCAL	dwRead:DWORD
 
 	;Zero out the ofn struct
 	invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -402,8 +405,26 @@ OpenProjectAsText proc uses ebx
 		mov		racol.txtcol,eax
 		mov		racol.strcol,0
 		invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
-		invoke lstrcpy,offset ProjectFileName,addr buffer
-		invoke SetWinCaption,offset ProjectFileName
+		;Open the file
+		invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			invoke GetFileSize,hFile,NULL
+			push	eax
+			inc		eax
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+			mov     hMem,eax
+			pop		edx
+			invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+			invoke CloseHandle,hFile
+			invoke SendMessage,hResEd,WM_SETTEXT,0,hMem
+			invoke lstrcpy,offset ProjectFileName,addr buffer
+			invoke SetWinCaption,offset ProjectFileName
+			mov		eax,TRUE
+		.else
+			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+			mov		eax,FALSE
+		.endif
 	.endif
 	ret
 
