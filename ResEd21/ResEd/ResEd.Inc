@@ -21,6 +21,7 @@ include ..\RAResEd.inc
 includelib ..\Lib\RAResEd.lib
 
 include ..\RAResEd\RAGrid.Inc
+include ..\RAResEd\RAEdit.Inc
 
 ;include masm32.inc
 ;include \RadASM\Masm\Inc\Debug.Inc
@@ -51,6 +52,7 @@ IDC_EDT1					equ 1007
 IDR_MENU					equ 10000
 IDM_FILE_NEW_PROJECT		equ 10029
 IDM_FILE_OPEN_PROJECT		equ 10028
+IDM_FILE_OPEN_TEXT			equ 10055
 IDM_FILE_CLOSE_PROJECT		equ 10030
 IDM_FILE_SAVE_PROJECT		equ 10031
 IDM_FILE_SAVE_PROJECT_AS	equ 10032
@@ -176,6 +178,7 @@ szOpenFileFail		db 'Cannot open the file',0Dh,0
 szSaveFileFail		db 'Cannot save the file',0Dh,0
 szMemFail			db 'Memory allocation failed!',0Dh,0
 szProjectTitle		db 'Open project file',0
+szProjectTextTitle	db 'Open project as text',0
 szIncludeTitle		db 'Open defines file',0
 szClearMRU			db 'Clear MRU projects list?',0
 
@@ -246,6 +249,7 @@ hAccel				dd ?
 hContextMenuPopup	dd ?
 hIml				dd ?
 hResEd				dd ?
+hResEdSave			dd ?
 ProjectFileName		db MAX_PATH dup(?)
 IncludeFileName		db MAX_PATH dup(?)
 ProjectPath			db MAX_PATH dup(?)

@@ -92,6 +92,8 @@ Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
 48=ResPreviewCtl.dlg
 49=MnuPreview.dlg
 50=LanguageEditChild.dlg
+51=
+52=
 
 [Colref]
 0=00FFFFFF
@@ -142,19 +144,19 @@ Options=52
 
 [Size]
 5=0,0,0,0,9356
-3=0,0,0,0,581
+3=0,0,0,0,668
 4=0,0,0,0,8
-1=0,0,718,485,36414
+1=0,0,718,485,221
 7=0,0,718,485,31605
 6=0,0,0,0,2026
 9=0,0,718,485,140864
-2=0,0,584,498,10160
+2=0,0,584,498,7707
 8=0,0,0,0,5605
-10=0,0,0,0,13034
+10=0,0,0,0,0
 16=0,0,718,485,12682
 15=0,0,0,0
 17=0,0,0,0,64100
-18=0,0,0,0,17253
+18=0,0,0,0,21864
 21=0,0,0,0,56077
 23=0,0,0,0
 24=0,0,0,0,3626
@@ -181,25 +183,27 @@ Options=52
 45=0,0,0,0
 44=0,0,0,0,1867
 19=0,0,0,0
-13=0,0,0,0,2094
+13=0,0,0,0,3711
 46=0,0,0,0
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0
+51=
+52=
 
 
 [Find]
-1="PRO_ADDITEM"
-2="PRO_GETDIALOG"
-3="MakeMnuBar"
-4="SELHHFM"
-5="SaveSel"
-6="CreateMnu"
-7="MEM_OPEN"
-8="InstallRAEdit"
-9="GridInstall"
-10="ResEdInstall"
+1="PRO_OPENTEXT"
+2="PRO_ADDITEM"
+3="PRO_GETDIALOG"
+4="MakeMnuBar"
+5="SELHHFM"
+6="SaveSel"
+7="CreateMnu"
+8="MEM_OPEN"
+9="InstallRAEdit"
+10="GridInstall"
 
 [AutoLoad]
 1=1
@@ -247,7 +251,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -308,6 +312,8 @@ Group=Assembly,Resources,Misc,Modules,Include
 48=2
 49=2
 50=2
+51=
+52=
 
 
 [Collapse]
@@ -339,6 +345,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 35=
 5=
 13=
+52=
 [PTimer]
 PTimer=330867960
 

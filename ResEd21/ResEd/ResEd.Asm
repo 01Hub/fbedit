@@ -337,6 +337,78 @@ OpenProject proc
 
 OpenProject endp
 
+OpenProjectAsText proc uses ebx
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
+	LOCAL	racol:RACOLOR
+
+	;Zero out the ofn struct
+	invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	hWnd
+	pop		ofn.hwndOwner
+	push	hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset szRCFilterString
+	mov		buffer[0],0
+	.if ProjectPath
+		mov		ofn.lpstrInitialDir,offset ProjectPath
+	.endif
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.lpstrDefExt,NULL
+	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	mov		ofn.lpstrTitle,offset szProjectTextTitle
+	.if ProjectFileName
+		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
+		lea		eax,buffer1
+		mov		ofn.lpstrInitialDir,eax
+	.endif
+	;Show the Open dialog
+	invoke GetOpenFileName,addr ofn
+	.if eax
+		mov		eax,hResEd
+		mov		hResEdSave,eax
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWnd,0,hInstance,NULL
+		mov		hResEd,eax
+		;Statusbar
+		invoke GetDlgItem,hWnd,IDC_SBR1
+		push	eax
+		invoke MoveWindow,eax,0,0,0,0,FALSE
+		pop		edx
+		invoke GetWindowRect,edx,addr rect
+		mov		ebx,rect.bottom
+		sub		ebx,rect.top
+		;ToolBar
+		invoke GetDlgItem,hWnd,IDC_TBR1
+		invoke MoveWindow,eax,0,0,rect.right,25,TRUE
+		invoke GetClientRect,hWnd,addr rect
+		mov		edx,rect.bottom
+		sub		edx,ebx
+		sub		edx,25
+		invoke MoveWindow,hResEd,0,25,rect.right,edx,TRUE
+		invoke ShowWindow,hResEdSave,SW_HIDE
+
+		invoke SendMessage,hResEdSave,PRO_GETTEXTFONT,0,0
+		invoke SendMessage,hResEd,WM_SETFONT,eax,0
+		invoke SendMessage,hResEd,REM_GETCOLOR,0,addr racol
+		mov		eax,col.back
+		mov		racol.bckcol,eax
+		mov		eax,col.text
+		mov		racol.txtcol,eax
+		mov		racol.strcol,0
+		invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
+		invoke lstrcpy,offset ProjectFileName,addr buffer
+		invoke SetWinCaption,offset ProjectFileName
+	.endif
+	ret
+
+OpenProjectAsText endp
+
 SaveProject proc lpFileName:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	hMemDef:DWORD
@@ -1110,10 +1182,23 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !eax
 				invoke OpenProject
 			.endif
+		.elseif eax==IDM_FILE_OPEN_TEXT
+			invoke WantToSaveProject,offset ProjectFileName
+			.if !eax
+				invoke OpenProjectAsText
+			.endif
 		.elseif eax==IDM_FILE_CLOSE_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
-				invoke SendMessage,hResEd,PRO_CLOSE,0,0
+				.if hResEdSave
+					invoke ShowWindow,hResEdSave,SW_SHOW
+					invoke DestroyWindow,hResEd
+					mov		eax,hResEdSave
+					mov		hResEd,eax
+					mov		hResEdSave,0
+				.else
+					invoke SendMessage,hResEd,PRO_CLOSE,0,0
+				.endif
 				invoke SetWinCaption,NULL
 			.endif
 		.elseif eax==IDM_FILE_SAVE_PROJECT
