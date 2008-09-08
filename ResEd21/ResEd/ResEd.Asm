@@ -106,6 +106,22 @@ start:
 	.endif
 	invoke ExitProcess,0
 
+StreamInProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesRead:DWORD
+
+	invoke ReadFile,hFile,pBuffer,NumBytes,pBytesRead,0
+	xor		eax,1
+	ret
+
+StreamInProc endp
+
+StreamOutProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesWritten:DWORD
+
+	invoke WriteFile,hFile,pBuffer,NumBytes,pBytesWritten,0
+	xor		eax,1
+	ret
+
+StreamOutProc endp
+
 SetWinCaption proc lpFileName:DWORD
 	LOCAL	buffer[sizeof szAppName+3+MAX_PATH]:BYTE
 	LOCAL	buffer1[4]:BYTE
@@ -123,6 +139,22 @@ SetWinCaption proc lpFileName:DWORD
 
 SetWinCaption endp
 
+CloseProject proc
+
+	.if hResEdSave
+		invoke ShowWindow,hResEdSave,SW_SHOW
+		invoke DestroyWindow,hResEd
+		mov		eax,hResEdSave
+		mov		hResEd,eax
+		mov		hResEdSave,0
+	.else
+		invoke SendMessage,hResEd,PRO_CLOSE,0,0
+	.endif
+	invoke SetWinCaption,NULL
+	ret
+
+CloseProject endp
+
 LoadProjectFile proc lpFileName:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
@@ -134,6 +166,7 @@ LoadProjectFile proc lpFileName:DWORD
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
+		invoke CloseProject
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
 		mov     hMem,eax
 		invoke GlobalLock,hMem
@@ -343,9 +376,8 @@ OpenProjectAsText proc uses ebx
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	racol:RACOLOR
-	LOCAL	hMem:DWORD
 	LOCAL	hFile:DWORD
-	LOCAL	dwRead:DWORD
+	LOCAL	editstream:EDITSTREAM
 
 	;Zero out the ofn struct
 	invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -374,52 +406,53 @@ OpenProjectAsText proc uses ebx
 	;Show the Open dialog
 	invoke GetOpenFileName,addr ofn
 	.if eax
-		mov		eax,hResEd
-		mov		hResEdSave,eax
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWnd,0,hInstance,NULL
-		mov		hResEd,eax
-		;Statusbar
-		invoke GetDlgItem,hWnd,IDC_SBR1
-		push	eax
-		invoke MoveWindow,eax,0,0,0,0,FALSE
-		pop		edx
-		invoke GetWindowRect,edx,addr rect
-		mov		ebx,rect.bottom
-		sub		ebx,rect.top
-		;ToolBar
-		invoke GetDlgItem,hWnd,IDC_TBR1
-		invoke MoveWindow,eax,0,0,rect.right,25,TRUE
-		invoke GetClientRect,hWnd,addr rect
-		mov		edx,rect.bottom
-		sub		edx,ebx
-		sub		edx,25
-		invoke MoveWindow,hResEd,0,25,rect.right,edx,TRUE
-		invoke ShowWindow,hResEdSave,SW_HIDE
-
-		invoke SendMessage,hResEdSave,PRO_GETTEXTFONT,0,0
-		invoke SendMessage,hResEd,WM_SETFONT,eax,0
-		invoke SendMessage,hResEd,REM_GETCOLOR,0,addr racol
-		mov		eax,col.back
-		mov		racol.bckcol,eax
-		mov		eax,col.text
-		mov		racol.txtcol,eax
-		mov		racol.strcol,0
-		invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
 		;Open the file
 		invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
-			invoke GetFileSize,hFile,NULL
+			invoke CloseProject
+			mov		eax,hResEd
+			mov		hResEdSave,eax
+			invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWnd,0,hInstance,NULL
+			mov		hResEd,eax
+			;Statusbar
+			invoke GetDlgItem,hWnd,IDC_SBR1
 			push	eax
-			inc		eax
-			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-			mov     hMem,eax
+			invoke MoveWindow,eax,0,0,0,0,FALSE
 			pop		edx
-			invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+			invoke GetWindowRect,edx,addr rect
+			mov		ebx,rect.bottom
+			sub		ebx,rect.top
+			;ToolBar
+			invoke GetDlgItem,hWnd,IDC_TBR1
+			invoke MoveWindow,eax,0,0,rect.right,25,TRUE
+			invoke GetClientRect,hWnd,addr rect
+			mov		edx,rect.bottom
+			sub		edx,ebx
+			sub		edx,25
+			invoke MoveWindow,hResEd,0,25,rect.right,edx,TRUE
+			invoke ShowWindow,hResEdSave,SW_HIDE
+
+			invoke SendMessage,hResEdSave,PRO_GETTEXTFONT,0,0
+			invoke SendMessage,hResEd,WM_SETFONT,eax,0
+			invoke SendMessage,hResEd,REM_GETCOLOR,0,addr racol
+			mov		eax,col.back
+			mov		racol.bckcol,eax
+			mov		eax,col.text
+			mov		racol.txtcol,eax
+			mov		racol.strcol,0
+			invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
+
+			;stream the text into the RAEdit control
+			mov		eax,hFile
+			mov		editstream.dwCookie,eax
+			mov		editstream.pfnCallback,offset StreamInProc
+			invoke SendMessage,hResEd,EM_STREAMIN,SF_TEXT,addr editstream
 			invoke CloseHandle,hFile
-			invoke SendMessage,hResEd,WM_SETTEXT,0,hMem
+			invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
 			invoke lstrcpy,offset ProjectFileName,addr buffer
 			invoke SetWinCaption,offset ProjectFileName
+			invoke SetFocus,hResEd
 			mov		eax,TRUE
 		.else
 			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
@@ -636,6 +669,30 @@ ExportDialog proc
 
 ExportDialog endp
 
+SaveProjectTextFile proc lpFileName:DWORD
+	LOCAL	hFile:DWORD
+	LOCAL	editstream:EDITSTREAM
+
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		;stream the text to the file
+		mov		eax,hFile
+		mov		editstream.dwCookie,eax
+		mov		editstream.pfnCallback,offset StreamOutProc
+		invoke SendMessage,hResEd,EM_STREAMOUT,SF_TEXT,addr editstream
+		invoke CloseHandle,hFile
+		;Set the modify state to false
+		invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
+		xor		eax,eax
+		inc		eax
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+SaveProjectTextFile endp
+
 SaveProjectFile proc lpFileName:DWORD
 
 	invoke SendMessage,hResEd,PRO_GETMEM,0,0
@@ -662,28 +719,48 @@ WantToSaveProject proc lpFileName:DWORD
 	LOCAL	buffer1[2]:BYTE
 
 	invoke SetFocus,hWnd
-	invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
-	.if eax
-		invoke lstrcpy,addr buffer,offset szWannaSave
-		invoke lstrcat,addr buffer,lpFileName
-		mov		ax,'?'
-		mov		word ptr buffer1,ax
-		invoke lstrcat,addr buffer,addr buffer1
-		invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
-		.if eax==IDYES
-			invoke SaveProjectFile,lpFileName
-			dec		eax
-			push	eax
-			invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
-			.if eax
-				pop		eax
-				push	1
+	.if hResEdSave
+		invoke SendMessage,hResEd,EM_GETMODIFY,0,0
+		.if eax
+			invoke lstrcpy,addr buffer,offset szWannaSave
+			invoke lstrcat,addr buffer,lpFileName
+			mov		ax,'?'
+			mov		word ptr buffer1,ax
+			invoke lstrcat,addr buffer,addr buffer1
+			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
+			.if eax==IDYES
+				invoke SaveProjectTextFile,lpFileName
+				dec		eax
+			.elseif eax==IDNO
+			    mov		eax,FALSE
+			.else
+			    mov		eax,TRUE
 			.endif
-			pop		eax
-		.elseif eax==IDNO
-		    mov		eax,FALSE
-		.else
-		    mov		eax,TRUE
+		.endif
+	.else
+		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+		.if eax
+			invoke lstrcpy,addr buffer,offset szWannaSave
+			invoke lstrcat,addr buffer,lpFileName
+			mov		ax,'?'
+			mov		word ptr buffer1,ax
+			invoke lstrcat,addr buffer,addr buffer1
+			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
+			.if eax==IDYES
+				invoke SaveProjectFile,lpFileName
+				dec		eax
+				push	eax
+				invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+				.if eax
+					pop		eax
+					push	1
+				.endif
+				pop		eax
+			.elseif eax==IDNO
+			    mov		eax,FALSE
+			.else
+			    mov		eax,TRUE
+			.endif
 		.endif
 	.endif
 	ret
@@ -1182,6 +1259,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==IDM_FILE_NEW_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
+				invoke CloseProject
 				invoke lstrcpy,offset ProjectFileName,offset szNewFile
 				mov		IncludeFileName,0
 				invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
@@ -1211,16 +1289,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_FILE_CLOSE_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
-				.if hResEdSave
-					invoke ShowWindow,hResEdSave,SW_SHOW
-					invoke DestroyWindow,hResEd
-					mov		eax,hResEdSave
-					mov		hResEd,eax
-					mov		hResEdSave,0
-				.else
-					invoke SendMessage,hResEd,PRO_CLOSE,0,0
-				.endif
-				invoke SetWinCaption,NULL
+				invoke CloseProject
 			.endif
 		.elseif eax==IDM_FILE_SAVE_PROJECT
 			invoke SaveProjectFile,offset ProjectFileName
