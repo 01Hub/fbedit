@@ -665,9 +665,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						Return 0
 					EndIf
 				EndIf
+				SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+				Return 0
 			EndIf
-			SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
-			Return 0
 			'
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)

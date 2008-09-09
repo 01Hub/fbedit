@@ -256,7 +256,7 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 				hPar=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_INSERTITEM,0,Cast(Integer,@tvins)))
 			EndIf
 		EndIf
-	ElseIf nProjectGroup=2 Then
+	ElseIf nProjectGroup=2 And hPar<>0 Then
 		x=GetFileImg(sPath)
 		If x=5 Then
 			sPath=UCase(sPath)
@@ -696,6 +696,41 @@ Function RemoveProjectPath(ByVal sFile As String) As String
 	Return sItem
 
 End Function
+
+Sub GetTrvItems(ByVal hPar As HTREEITEM,ByRef sFile As String)
+	Dim hCld As HTREEITEM
+	Dim tvi As TVITEM
+	Dim sItem As ZString*260
+
+	hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CHILD,Cast(LPARAM,hPar)))
+	If hCld Then
+		While hCld
+			tvi.hItem=hCld
+			tvi.mask=TVIF_PARAM Or TVIF_TEXT
+			tvi.pszText=@sItem
+			tvi.cchTextMax=SizeOf(sItem)
+			SendMessage(ah.hprj,TVM_GETITEM,0,Cast(LPARAM,@tvi))
+			If UCase(sFile)=UCase(sItem) Then
+				SendMessage(ah.hprj,TVM_SELECTITEM,TVGN_CARET,hCld)
+				Exit Sub
+			EndIf
+			GetTrvItems(hCld,sFile)
+			hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_NEXT,Cast(LPARAM,hCld)))
+		Wend
+	EndIf
+
+End Sub
+
+Sub SelectProjectFile(ByVal sFile As String)
+	Dim sSelect As String
+
+	If fProject Then
+		sSelect=sFile
+		sSelect=RemoveProjectPath(sSelect)
+		GetTrvItems(Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_ROOT,NULL)),sSelect)
+	EndIf
+
+End Sub
 
 Sub AddProjectFile(ByVal sFile As String,ByVal fModule As Boolean)
 	Dim sItem As ZString*260

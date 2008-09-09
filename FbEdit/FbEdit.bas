@@ -1921,6 +1921,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
 				SetFocus(ah.hred)
+				SelectProjectFile(ad.filename)
 				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
 				' Project tab

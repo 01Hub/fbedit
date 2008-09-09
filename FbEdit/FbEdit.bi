@@ -46,6 +46,7 @@ Declare Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal sz
 Declare Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
 Declare Function GetInternalString(ByVal id As Integer) As String
 Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
+Declare Sub SelectProjectFile(ByVal sFile As String)
 
 ' Main dialog
 #Define IDD_MAIN 								1000
