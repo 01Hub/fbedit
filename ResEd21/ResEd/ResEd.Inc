@@ -33,8 +33,8 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
-WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
-WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
+;WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
+;WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
 SetToolMenu					PROTO
 SetHelpMenu					PROTO
 
