@@ -8,6 +8,7 @@ include FileIO.asm
 include About.asm
 include Opt\MenuOption.asm
 include Opt\TabOptions.asm
+include Find\Find.asm
 
 .code
 
@@ -25,26 +26,50 @@ DoToolBar proc hToolBar:HWND
 DoToolBar endp
 
 ToolBarEnable proc uses ebx
+	LOCAL	chrg:CHARRANGE
 
 	mov		ebx,hTbr
-	invoke SendMessage,hResEd,DEM_CANUNDO,0,0
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_UNDO,eax
-	invoke SendMessage,hResEd,DEM_CANREDO,0,0
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REDO,eax
-	invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
-	push	eax
-	push	eax
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_DELETE,eax
-	pop		eax
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_CUT,eax
-	pop		eax
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_COPY,eax
-	invoke SendMessage,hResEd,DEM_CANPASTE,0,0
-	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_PASTE,eax
+	.if hResEdSave
+		invoke SendMessage,hResEd,EM_CANUNDO,0,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_UNDO,eax
+		invoke SendMessage,hResEd,EM_CANREDO,0,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REDO,eax
+		invoke SendMessage,hResEd,EM_EXGETSEL,0,addr chrg
+		mov		eax,chrg.cpMax
+		sub		eax,chrg.cpMin
+		push	eax
+		push	eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_DELETE,eax
+		pop		eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_CUT,eax
+		pop		eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_COPY,eax
+		invoke SendMessage,hResEd,EM_CANPASTE,SF_TEXT,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_PASTE,eax
+	.else
+		invoke SendMessage,hResEd,DEM_CANUNDO,0,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_UNDO,eax
+		invoke SendMessage,hResEd,DEM_CANREDO,0,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REDO,eax
+		invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
+		push	eax
+		push	eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_DELETE,eax
+		pop		eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_CUT,eax
+		pop		eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_COPY,eax
+		invoke SendMessage,hResEd,DEM_CANPASTE,0,0
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_PASTE,eax
+	.endif
 	mov		eax,wpos.fView
 	and		eax,1
 	invoke SendMessage,ebx,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
-	invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+	.if hResEdSave
+		xor		eax,eax
+	.else
+		invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+	.endif
 	invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_VIEW_PREVIEW,eax
 	xor		eax,eax
 	.if hPreview
@@ -71,6 +96,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lf:LOGFONT
 	LOCAL	cust:CUSTSTYLE
 	LOCAL	rarstype:RARSTYPE
+	LOCAL	chrg:CHARRANGE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -299,36 +325,75 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,lParam
 		.if eax==1
 			;Edit
-			invoke SendMessage,hResEd,DEM_CANUNDO,0,0
-			xor		eax,1
-			.if eax
-				mov		eax,MF_GRAYED
-			.endif
-			invoke EnableMenuItem,wParam,IDM_EDIT_UNDO,eax
-			invoke SendMessage,hResEd,DEM_CANREDO,0,0
-			xor		eax,1
-			.if eax
-				mov		eax,MF_GRAYED
-			.endif
-			invoke EnableMenuItem,wParam,IDM_EDIT_REDO,eax
-			invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
-			.if !eax
-				mov		ebx,MF_GRAYED
+			.if hResEdSave
+				invoke SendMessage,hResEd,EM_CANUNDO,0,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_UNDO,eax
+				invoke SendMessage,hResEd,EM_CANREDO,0,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_REDO,eax
+				invoke SendMessage,hResEd,EM_EXGETSEL,0,addr chrg
+				mov		eax,chrg.cpMax
+				sub		eax,chrg.cpMin
+				.if !eax
+					mov		ebx,MF_GRAYED
+				.else
+					xor		ebx,ebx
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_DELETE,ebx
+				invoke EnableMenuItem,wParam,IDM_EDIT_CUT,ebx
+				invoke EnableMenuItem,wParam,IDM_EDIT_COPY,ebx
+				invoke SendMessage,hResEd,EM_CANPASTE,SF_TEXT,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_PASTE,eax
+				invoke EnableMenuItem,wParam,IDM_EDIT_FIND,MF_ENABLED
+				invoke EnableMenuItem,wParam,IDM_EDIT_REPLACE,MF_ENABLED
 			.else
-				xor		ebx,ebx
+				invoke SendMessage,hResEd,DEM_CANUNDO,0,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_UNDO,eax
+				invoke SendMessage,hResEd,DEM_CANREDO,0,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_REDO,eax
+				invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
+				.if !eax
+					mov		ebx,MF_GRAYED
+				.else
+					xor		ebx,ebx
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_DELETE,ebx
+				invoke EnableMenuItem,wParam,IDM_EDIT_CUT,ebx
+				invoke EnableMenuItem,wParam,IDM_EDIT_COPY,ebx
+				invoke SendMessage,hResEd,DEM_CANPASTE,0,0
+				xor		eax,1
+				.if eax
+					mov		eax,MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_EDIT_PASTE,eax
+				invoke EnableMenuItem,wParam,IDM_EDIT_FIND,MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_EDIT_REPLACE,MF_GRAYED
 			.endif
-			invoke EnableMenuItem,wParam,IDM_EDIT_DELETE,ebx
-			invoke EnableMenuItem,wParam,IDM_EDIT_CUT,ebx
-			invoke EnableMenuItem,wParam,IDM_EDIT_COPY,ebx
-			invoke SendMessage,hResEd,DEM_CANPASTE,0,0
-			xor		eax,1
-			.if eax
-				mov		eax,MF_GRAYED
-			.endif
-			invoke EnableMenuItem,wParam,IDM_EDIT_PASTE,eax
 		.elseif eax==2
 			;Format
-			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
+			mov		eax,hResEdSave
+			.if !eax
+				invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
+			.endif
 			.if eax
 				invoke EnableMenuItem,wParam,IDM_FORMAT_LOCK,MF_GRAYED
 				invoke EnableMenuItem,wParam,IDM_FORMAT_BACK,MF_GRAYED
@@ -422,41 +487,51 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;View
 			test	wpos.fView,1
 			.if !ZERO?
-				mov		eax,MF_BYCOMMAND or MF_CHECKED
+				mov		ebx,MF_BYCOMMAND or MF_CHECKED
 			.else
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+				mov		ebx,MF_BYCOMMAND or MF_UNCHECKED
 			.endif
-			invoke CheckMenuItem,wParam,IDM_VIEW_OUTPUT,eax
+			invoke CheckMenuItem,wParam,IDM_VIEW_OUTPUT,ebx
 			.if hPreview
-				mov		eax,MF_BYCOMMAND or MF_CHECKED
+				mov		ebx,MF_BYCOMMAND or MF_CHECKED
 			.else
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+				mov		ebx,MF_BYCOMMAND or MF_UNCHECKED
 			.endif
-			invoke CheckMenuItem,wParam,IDM_VIEW_PREVIEW,eax
-			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
-			.if eax
-				mov		eax,MF_BYCOMMAND
+			invoke CheckMenuItem,wParam,IDM_VIEW_PREVIEW,ebx
+			.if hResEdSave
+				mov		ebx,MF_BYCOMMAND or MF_GRAYED
+				invoke EnableMenuItem,wParam,IDM_VIEW_PREVIEW,ebx
+				invoke EnableMenuItem,wParam,IDM_VIEW_TEXTMODE,ebx
+				mov		ebx,MF_BYCOMMAND or MF_UNCHECKED
+				invoke CheckMenuItem,wParam,IDM_VIEW_TEXTMODE,ebx
 			.else
-				mov		eax,MF_BYCOMMAND or MF_GRAYED
+				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+				.if eax
+					mov		ebx,MF_BYCOMMAND
+				.else
+					mov		ebx,MF_BYCOMMAND or MF_GRAYED
+				.endif
+				invoke EnableMenuItem,wParam,IDM_VIEW_PREVIEW,ebx
+				invoke EnableMenuItem,wParam,IDM_VIEW_TEXTMODE,ebx
+				invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
+				.if eax
+					mov		ebx,MF_BYCOMMAND or MF_CHECKED
+				.else
+					mov		ebx,MF_BYCOMMAND or MF_UNCHECKED
+				.endif
+				invoke CheckMenuItem,wParam,IDM_VIEW_TEXTMODE,ebx
 			.endif
-			push	eax
-			invoke EnableMenuItem,wParam,IDM_VIEW_PREVIEW,eax
-			pop		eax
-			invoke EnableMenuItem,wParam,IDM_VIEW_TEXTMODE,eax
-			invoke SendMessage,hResEd,DEM_GETTEXTMODE,0,0
-			.if eax
-				mov		eax,MF_BYCOMMAND or MF_CHECKED
-			.else
-				mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-			.endif
-			invoke CheckMenuItem,wParam,IDM_VIEW_TEXTMODE,eax
 		.elseif eax==4
 			;Project
-			invoke SendMessage,hResEd,PRO_GETMEM,0,0
-			.if eax
-				xor		ebx,ebx
-			.else
+			.if hResEdSave
 				mov		ebx,MF_GRAYED
+			.else
+				invoke SendMessage,hResEd,PRO_GETMEM,0,0
+				.if eax
+					xor		ebx,ebx
+				.else
+					mov		ebx,MF_GRAYED
+				.endif
 			.endif
 			invoke EnableMenuItem,wParam,IDM_PROJECT_ADD_DIALOG,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_ADD_MENU,ebx
@@ -471,24 +546,30 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableMenuItem,wParam,IDM_PROJECT_RESOURCE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_NAMES,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_EXPORT,ebx
-			invoke SendMessage,hResEd,PRO_GETSELECTED,0,0
-			mov		ebx,MF_GRAYED
-			.if eax>=2
-				xor		ebx,ebx
+			.if hResEdSave
+				invoke EnableMenuItem,wParam,IDM_PROJECT_REMOVE,ebx
+				invoke EnableMenuItem,wParam,IDM_PROJECT_UNDO,ebx
+				invoke EnableMenuItem,wParam,IDM_PROJECT_DLGSAVE,ebx
+			.else
+				invoke SendMessage,hResEd,PRO_GETSELECTED,0,0
+				mov		ebx,MF_GRAYED
+				.if eax>=2
+					xor		ebx,ebx
+				.endif
+				invoke EnableMenuItem,wParam,IDM_PROJECT_REMOVE,ebx
+				invoke SendMessage,hResEd,PRO_CANUNDO,0,0
+				mov		ebx,MF_GRAYED
+				.if eax
+					xor		ebx,ebx
+				.endif
+				invoke EnableMenuItem,wParam,IDM_PROJECT_UNDO,ebx
+				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+				mov		ebx,MF_GRAYED
+				.if eax
+					xor		ebx,ebx
+				.endif
+				invoke EnableMenuItem,wParam,IDM_PROJECT_DLGSAVE,ebx
 			.endif
-			invoke EnableMenuItem,wParam,IDM_PROJECT_REMOVE,ebx
-			invoke SendMessage,hResEd,PRO_CANUNDO,0,0
-			mov		ebx,MF_GRAYED
-			.if eax
-				xor		ebx,ebx
-			.endif
-			invoke EnableMenuItem,wParam,IDM_PROJECT_UNDO,ebx
-			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
-			mov		ebx,MF_GRAYED
-			.if eax
-				xor		ebx,ebx
-			.endif
-			invoke EnableMenuItem,wParam,IDM_PROJECT_DLGSAVE,ebx
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		edx,lParam
@@ -524,24 +605,24 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GlobalLock,hMem
 				invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
 				invoke SetWinCaption,offset ProjectFileName
-				invoke SaveProjectFile,offset ProjectFileName
+				invoke SaveProjectFile,offset ProjectFileName,FALSE
 				.if !eax
 					invoke SendMessage,hResEd,PRO_CLOSE,0,0
 					invoke SetWinCaption,NULL
 				.else
 					invoke SendMessage,hResEd,PRO_CLOSE,0,0
-					invoke LoadProjectFile,offset ProjectFileName
+					invoke ReadProjectFile,offset ProjectFileName,FALSE
 				.endif
 			.endif
 		.elseif eax==IDM_FILE_OPEN_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
-				invoke OpenProject
+				invoke OpenProject,FALSE
 			.endif
 		.elseif eax==IDM_FILE_OPEN_TEXT
 			invoke WantToSaveProject,offset ProjectFileName
 			.if !eax
-				invoke OpenProjectAsText
+				invoke OpenProject,TRUE
 			.endif
 		.elseif eax==IDM_FILE_CLOSE_PROJECT
 			invoke WantToSaveProject,offset ProjectFileName
@@ -549,23 +630,53 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CloseProject
 			.endif
 		.elseif eax==IDM_FILE_SAVE_PROJECT
-			invoke SaveProjectFile,offset ProjectFileName
+			invoke SaveProjectFile,offset ProjectFileName,hResEdSave
 		.elseif eax==IDM_FILE_SAVE_PROJECT_AS
-			invoke SaveProjectFileAs,offset ProjectFileName
+			invoke SaveProjectFileAs,offset ProjectFileName,hResEdSave
 		.elseif eax==IDM_FILE_EXIT
 			invoke SendMessage,hWin,WM_CLOSE,0,0
 		.elseif eax==IDM_EDIT_UNDO
-			invoke SendMessage,hResEd,DEM_UNDO,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,EM_UNDO,0,0
+			.else
+				invoke SendMessage,hResEd,DEM_UNDO,0,0
+			.endif
 		.elseif eax==IDM_EDIT_REDO
-			invoke SendMessage,hResEd,DEM_REDO,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,EM_REDO,0,0
+			.else
+				invoke SendMessage,hResEd,DEM_REDO,0,0
+			.endif
 		.elseif eax==IDM_EDIT_DELETE
-			invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,EM_REPLACESEL,TRUE,addr szNULL
+			.else
+				invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
+			.endif
 		.elseif eax==IDM_EDIT_CUT
-			invoke SendMessage,hResEd,DEM_CUT,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,WM_CUT,0,0
+			.else
+				invoke SendMessage,hResEd,DEM_CUT,0,0
+			.endif
 		.elseif eax==IDM_EDIT_COPY
-			invoke SendMessage,hResEd,DEM_COPY,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,WM_COPY,0,0
+			.else
+				invoke SendMessage,hResEd,DEM_COPY,0,0
+			.endif
 		.elseif eax==IDM_EDIT_PASTE
-			invoke SendMessage,hResEd,DEM_PASTE,0,0
+			.if hResEdSave
+				invoke SendMessage,hResEd,WM_PASTE,0,0
+			.else
+				invoke SendMessage,hResEd,DEM_PASTE,0,0
+			.endif
+		.elseif eax==IDM_EDIT_FIND
+			invoke CreateDialogParam,hInstance,IDD_FINDDLG,hWin,offset FindDlgProc,0
+			mov		hFind,eax
+		.elseif eax==IDM_EDIT_REPLACE
+			invoke CreateDialogParam,hInstance,IDD_FINDDLG,hWin,offset FindDlgProc,1
+			mov		hFind,eax
 		.elseif eax==IDM_VIEW_OUTPUT
 			xor		wpos.fView,1
 			mov		eax,wpos.fView
@@ -707,7 +818,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrcpy,addr buffer,ebx
 				invoke GetStrItem,addr buffer,offset ProjectFileName
 				invoke lstrcpy,offset IncludeFileName,addr buffer
-				invoke LoadProjectFile,addr ProjectFileName
+				invoke ReadProjectFile,addr ProjectFileName,FALSE
 			.endif
 		.endif
 	.elseif eax==WM_SIZE
@@ -801,7 +912,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DragQueryFile,wParam,0,addr buffer,sizeof buffer
 		invoke WantToSaveProject,offset ProjectFileName
 		.if !eax
-			invoke LoadProjectFile,addr buffer
+			invoke ReadProjectFile,addr buffer,FALSE
 		.endif
 	.elseif eax==WM_MEASUREITEM
 		mov		ebx,lParam
@@ -1001,7 +1112,7 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	;Get command line filename
 	mov		eax,CommandLine
 	.if byte ptr [eax]
-		invoke LoadProjectFile,eax
+		invoke ReadProjectFile,eax,FALSE
 	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
@@ -1010,10 +1121,13 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 		.if !eax
 			invoke IsDialogMessage,hDialog,addr msg
 			.if !eax
-				invoke TranslateAccelerator,hWnd,hAccel,addr msg
+				invoke IsDialogMessage,hFind,addr msg
 				.if !eax
-					invoke TranslateMessage,addr msg
-					invoke DispatchMessage,addr msg
+					invoke TranslateAccelerator,hWnd,hAccel,addr msg
+					.if !eax
+						invoke TranslateMessage,addr msg
+						invoke DispatchMessage,addr msg
+					.endif
 				.endif
 			.endif
 		.endif

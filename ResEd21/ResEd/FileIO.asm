@@ -32,192 +32,19 @@ CloseProject proc
 
 CloseProject endp
 
-LoadProjectFile proc lpFileName:DWORD
+ReadProjectFile proc lpFileName:DWORD,fText:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	hMemRes:DWORD
 	LOCAL	dwRead:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-
-	;Open the file
-	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		invoke CloseProject
-		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
-		mov     hMem,eax
-		invoke GlobalLock,hMem
-		invoke GetFileSize,hFile,NULL
-		push	eax
-		inc		eax
-		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-		mov     hMemRes,eax
-		pop		edx
-		invoke ReadFile,hFile,hMemRes,edx,addr dwRead,NULL
-		invoke CloseHandle,hFile
-		;Copy buffer to ProjectFileName
-		invoke lstrcpy,offset ProjectFileName,lpFileName
-		.if grdsize.defines
-			invoke CreateFile,addr IncludeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
-			.if eax!=INVALID_HANDLE_VALUE
-				mov		hFile,eax
-				invoke GetFileSize,hFile,NULL
-				mov		edx,eax
-				invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
-				invoke CloseHandle,hFile
-			.endif
-		.endif
-		invoke lstrcat,hMem,hMemRes
-		invoke GlobalFree,hMemRes
-		invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
-		invoke SetWinCaption,offset ProjectFileName
-		invoke lstrcpy,addr buffer,offset ProjectFileName
-		invoke lstrlen,addr buffer
-		.while byte ptr buffer[eax]!='\' && eax
-			dec		eax
-		.endw
-		mov		byte ptr buffer[eax],0
-		lea		edx,buffer[eax+1]
-		;invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
-		invoke RemovePath,addr IncludeFileName,addr buffer
-		invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
-		invoke AddMruProject
-	.else
-		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
-		mov		eax,FALSE
-	.endif
-	ret
-
-LoadProjectFile endp
-
-OpenInclude proc
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
-
-	;Zero out the ofn struct
-	invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	hWnd
-	pop		ofn.hwndOwner
-	push	hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset szHFilterString
-	mov		buffer[0],0
-	.if ProjectPath
-		mov		ofn.lpstrInitialDir,offset ProjectPath
-	.endif
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.lpstrDefExt,NULL
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-	mov		ofn.lpstrTitle,offset szIncludeTitle
-	.if ProjectFileName
-		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
-		lea		eax,buffer1
-		mov		ofn.lpstrInitialDir,eax
-	.endif
-	;Show the Open dialog
-	invoke GetOpenFileName,addr ofn
-	.if eax
-		invoke lstrcpy,addr IncludeFileName,addr buffer
-		mov		eax,TRUE
-	.endif
-	ret
-
-OpenInclude endp
-
-OpenProject proc
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
-
-	;Zero out the ofn struct
-	invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	hWnd
-	pop		ofn.hwndOwner
-	push	hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset szRCFilterString
-	mov		buffer[0],0
-	.if ProjectPath
-		mov		ofn.lpstrInitialDir,offset ProjectPath
-	.endif
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.lpstrDefExt,NULL
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-	mov		ofn.lpstrTitle,offset szProjectTitle
-	.if ProjectFileName
-		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
-		lea		eax,buffer1
-		mov		ofn.lpstrInitialDir,eax
-	.endif
-	;Show the Open dialog
-	invoke GetOpenFileName,addr ofn
-	.if eax
-		.if grdsize.defines==2
-			invoke OpenInclude
-			.if eax
-				invoke LoadProjectFile,addr buffer
-			.endif
-		.else
-			invoke lstrcpy,addr IncludeFileName,addr buffer
-			invoke lstrlen,addr IncludeFileName
-			.while byte ptr IncludeFileName[eax-1]!='.' && eax
-				dec		eax
-			.endw
-			mov		word ptr IncludeFileName[eax],'h'
-			invoke LoadProjectFile,addr buffer
-		.endif
-	.endif
-	ret
-
-OpenProject endp
-
-OpenProjectAsText proc uses ebx
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 	LOCAL	racol:RACOLOR
-	LOCAL	hFile:DWORD
 	LOCAL	editstream:EDITSTREAM
 
-	;Zero out the ofn struct
-	invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	hWnd
-	pop		ofn.hwndOwner
-	push	hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset szRCFilterString
-	mov		buffer[0],0
-	.if ProjectPath
-		mov		ofn.lpstrInitialDir,offset ProjectPath
-	.endif
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.lpstrDefExt,NULL
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-	mov		ofn.lpstrTitle,offset szProjectTextTitle
-	.if ProjectFileName
-		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
-		lea		eax,buffer1
-		mov		ofn.lpstrInitialDir,eax
-	.endif
-	;Show the Open dialog
-	invoke GetOpenFileName,addr ofn
-	.if eax
+	.if fText
 		;Open the file
-		invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+		invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
 			invoke CloseProject
@@ -260,7 +87,7 @@ OpenProjectAsText proc uses ebx
 			invoke SendMessage,hResEd,EM_STREAMIN,SF_TEXT,addr editstream
 			invoke CloseHandle,hFile
 			invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
-			invoke lstrcpy,offset ProjectFileName,addr buffer
+			invoke lstrcpy,offset ProjectFileName,lpFileName
 			invoke SetWinCaption,offset ProjectFileName
 			invoke SetFocus,hResEd
 			mov		eax,TRUE
@@ -268,64 +95,218 @@ OpenProjectAsText proc uses ebx
 			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
 			mov		eax,FALSE
 		.endif
+	.else
+		;Open the file
+		invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			invoke CloseProject
+			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+			mov     hMem,eax
+			invoke GlobalLock,hMem
+			invoke GetFileSize,hFile,NULL
+			push	eax
+			inc		eax
+			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+			mov     hMemRes,eax
+			pop		edx
+			invoke ReadFile,hFile,hMemRes,edx,addr dwRead,NULL
+			invoke CloseHandle,hFile
+			;Copy buffer to ProjectFileName
+			invoke lstrcpy,offset ProjectFileName,lpFileName
+			.if grdsize.defines
+				invoke CreateFile,addr IncludeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+				.if eax!=INVALID_HANDLE_VALUE
+					mov		hFile,eax
+					invoke GetFileSize,hFile,NULL
+					mov		edx,eax
+					invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+					invoke CloseHandle,hFile
+				.endif
+			.endif
+			invoke lstrcat,hMem,hMemRes
+			invoke GlobalFree,hMemRes
+			invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
+			invoke SetWinCaption,offset ProjectFileName
+			invoke lstrcpy,addr buffer,offset ProjectFileName
+			invoke lstrlen,addr buffer
+			.while byte ptr buffer[eax]!='\' && eax
+				dec		eax
+			.endw
+			mov		byte ptr buffer[eax],0
+			lea		edx,buffer[eax+1]
+			;invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
+			invoke RemovePath,addr IncludeFileName,addr buffer
+			invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
+			invoke AddMruProject
+		.else
+			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+			mov		eax,FALSE
+		.endif
 	.endif
 	ret
 
-OpenProjectAsText endp
+ReadProjectFile endp
 
-SaveProject proc lpFileName:DWORD
+OpenInclude proc
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+	invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	hWnd
+	pop		ofn.hwndOwner
+	push	hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset szHFilterString
+	mov		buffer[0],0
+	.if ProjectPath
+		mov		ofn.lpstrInitialDir,offset ProjectPath
+	.endif
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.lpstrDefExt,NULL
+	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	mov		ofn.lpstrTitle,offset szIncludeTitle
+	.if ProjectFileName
+		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
+		lea		eax,buffer1
+		mov		ofn.lpstrInitialDir,eax
+	.endif
+	;Show the Open dialog
+	invoke GetOpenFileName,addr ofn
+	.if eax
+		invoke lstrcpy,addr IncludeFileName,addr buffer
+		mov		eax,TRUE
+	.endif
+	ret
+
+OpenInclude endp
+
+OpenProject proc uses ebx,fText:DWORD
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+	invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	hWnd
+	pop		ofn.hwndOwner
+	push	hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset szRCFilterString
+	mov		buffer[0],0
+	.if ProjectPath
+		mov		ofn.lpstrInitialDir,offset ProjectPath
+	.endif
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.lpstrDefExt,NULL
+	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	mov		ofn.lpstrTitle,offset szProjectTitle
+	.if ProjectFileName
+		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
+		lea		eax,buffer1
+		mov		ofn.lpstrInitialDir,eax
+	.endif
+	;Show the Open dialog
+	invoke GetOpenFileName,addr ofn
+	.if eax
+		.if fText
+			invoke ReadProjectFile,addr buffer,TRUE
+		.else
+			.if grdsize.defines==2
+				invoke OpenInclude
+				.if eax
+					invoke ReadProjectFile,addr buffer,FALSE
+				.endif
+			.else
+				invoke lstrcpy,addr IncludeFileName,addr buffer
+				invoke lstrlen,addr IncludeFileName
+				.while byte ptr IncludeFileName[eax-1]!='.' && eax
+					dec		eax
+				.endw
+				mov		word ptr IncludeFileName[eax],'h'
+				invoke ReadProjectFile,addr buffer,FALSE
+			.endif
+		.endif
+	.endif
+	ret
+
+OpenProject endp
+
+WriteProjectFile proc lpFileName:DWORD,fText:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	hMemDef:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nSize:DWORD
 	LOCAL	buff[MAX_PATH]:BYTE
+	LOCAL	editstream:EDITSTREAM
 
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
-	mov		hMem,eax
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-	mov		hMemDef,eax
-	invoke SendMessage,hResEd,PRO_EXPORT,hMemDef,hMem
-	invoke SendMessage,hResEd,MEM_GETERR,0,0
-	.if !eax
-		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.if fText
+		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
-			invoke lstrlen,hMem
-			mov		nSize,eax
-			invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+			;stream the text to the file
+			mov		eax,hFile
+			mov		editstream.dwCookie,eax
+			mov		editstream.pfnCallback,offset StreamOutProc
+			invoke SendMessage,hResEd,EM_STREAMOUT,SF_TEXT,addr editstream
 			invoke CloseHandle,hFile
-			invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
-			.if grdsize.defines
-;				.if !IncludeFileName
-;					invoke lstrcpy,addr IncludeFileName,lpFileName
-;					invoke lstrlen,addr IncludeFileName
-;					.while byte ptr IncludeFileName[eax-1]!='.' && eax
-;						dec		eax
-;					.endw
-;					mov		word ptr IncludeFileName[eax],'h'
-;				.endif
-				invoke CreateFile,addr IncludeFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-				.if eax!=INVALID_HANDLE_VALUE
-					mov		hFile,eax
-					invoke lstrlen,hMemDef
-					mov		nSize,eax
-					invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
-					invoke CloseHandle,hFile
-				.endif
-			.endif
-			.if nmeexp.fAuto
-				invoke SendMessage,hResEd,PRO_EXPORTNAMES,1,0
-			.endif
+			;Set the modify state to false
+			invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
 			xor		eax,eax
+		.else
+			xor		eax,eax
+			inc		eax
 		.endif
+	.else
+		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+		mov		hMem,eax
+		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		hMemDef,eax
+		invoke SendMessage,hResEd,PRO_EXPORT,hMemDef,hMem
+		invoke SendMessage,hResEd,MEM_GETERR,0,0
+		.if !eax
+			invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+			.if eax!=INVALID_HANDLE_VALUE
+				mov		hFile,eax
+				invoke lstrlen,hMem
+				mov		nSize,eax
+				invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+				invoke CloseHandle,hFile
+				invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
+				.if grdsize.defines
+					invoke CreateFile,addr IncludeFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+					.if eax!=INVALID_HANDLE_VALUE
+						mov		hFile,eax
+						invoke lstrlen,hMemDef
+						mov		nSize,eax
+						invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
+						invoke CloseHandle,hFile
+					.endif
+				.endif
+				.if nmeexp.fAuto
+					invoke SendMessage,hResEd,PRO_EXPORTNAMES,1,0
+				.endif
+				xor		eax,eax
+			.endif
+		.endif
+		push	eax
+		invoke GlobalFree,hMem
+		invoke GlobalFree,hMemDef
+		pop		eax
 	.endif
-	push	eax
-	invoke GlobalFree,hMem
-	invoke GlobalFree,hMemDef
-	pop		eax
 	ret
 
-SaveProject endp
+WriteProjectFile endp
 
 SaveIncludeFileAs proc lpFileName:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -367,11 +348,14 @@ SaveIncludeFileAs proc lpFileName:DWORD
 
 SaveIncludeFileAs endp
 
-SaveProjectFileAs proc lpFileName:DWORD
+SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke SendMessage,hResEd,PRO_GETMEM,0,0
+	mov		eax,fText
+	.if !eax
+		invoke SendMessage,hResEd,PRO_GETMEM,0,0
+	.endif
 	.if eax
 		;Zero out the ofn struct
 		invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -394,9 +378,34 @@ SaveProjectFileAs proc lpFileName:DWORD
 		;Show save as dialog
 		invoke GetSaveFileName,addr ofn
 		.if eax
-			.if grdsize.defines==2
-				invoke SaveIncludeFileAs,addr buffer
-				.if eax
+			.if fText
+				invoke lstrcpy,offset ProjectFileName,addr buffer
+				invoke SetWinCaption,offset ProjectFileName
+				invoke WriteProjectFile,offset ProjectFileName,TRUE
+			.else
+				.if grdsize.defines==2
+					invoke SaveIncludeFileAs,addr buffer
+					.if eax
+						invoke lstrcpy,offset ProjectFileName,addr buffer
+						invoke SetWinCaption,offset ProjectFileName
+						invoke lstrlen,addr buffer
+						.while byte ptr buffer[eax]!='\' && eax
+							dec		eax
+						.endw
+						mov		byte ptr buffer[eax],0
+						lea		edx,buffer[eax+1]
+						invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
+						invoke RemovePath,addr IncludeFileName,addr buffer
+						invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
+						invoke WriteProjectFile,offset ProjectFileName,FALSE
+						.if !eax
+							xor		eax,eax
+							inc		eax
+						.else
+							xor		eax,eax
+						.endif
+					.endif
+				.else
 					invoke lstrcpy,offset ProjectFileName,addr buffer
 					invoke SetWinCaption,offset ProjectFileName
 					invoke lstrlen,addr buffer
@@ -406,9 +415,15 @@ SaveProjectFileAs proc lpFileName:DWORD
 					mov		byte ptr buffer[eax],0
 					lea		edx,buffer[eax+1]
 					invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
+					invoke lstrcpy,addr IncludeFileName,addr ProjectFileName
+					invoke lstrlen,addr IncludeFileName
+					.while IncludeFileName[eax-1]!='.' && eax
+						dec		eax
+					.endw
+					mov		word ptr IncludeFileName[eax],'h'
 					invoke RemovePath,addr IncludeFileName,addr buffer
 					invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
-					invoke SaveProject,offset ProjectFileName
+					invoke WriteProjectFile,offset ProjectFileName,FALSE
 					.if !eax
 						xor		eax,eax
 						inc		eax
@@ -416,37 +431,90 @@ SaveProjectFileAs proc lpFileName:DWORD
 						xor		eax,eax
 					.endif
 				.endif
-			.else
-				invoke lstrcpy,offset ProjectFileName,addr buffer
-				invoke SetWinCaption,offset ProjectFileName
-				invoke lstrlen,addr buffer
-				.while byte ptr buffer[eax]!='\' && eax
-					dec		eax
-				.endw
-				mov		byte ptr buffer[eax],0
-				lea		edx,buffer[eax+1]
-				invoke SendMessage,hResEd,PRO_SETNAME,edx,addr buffer
-				invoke lstrcpy,addr IncludeFileName,addr ProjectFileName
-				invoke lstrlen,addr IncludeFileName
-				.while IncludeFileName[eax-1]!='.' && eax
-					dec		eax
-				.endw
-				mov		word ptr IncludeFileName[eax],'h'
-				invoke RemovePath,addr IncludeFileName,addr buffer
-				invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
-				invoke SaveProject,offset ProjectFileName
-				.if !eax
-					xor		eax,eax
-					inc		eax
-				.else
-					xor		eax,eax
-				.endif
 			.endif
 		.endif
 	.endif
 	ret
 
 SaveProjectFileAs endp
+
+SaveProjectFile proc lpFileName:DWORD,fText:DWORD
+
+	.if fText
+		invoke SendMessage,hResEd,EM_GETMODIFY,0,0
+	.else
+		invoke SendMessage,hResEd,PRO_GETMEM,0,0
+	.endif
+	.if eax
+		invoke lstrcmp,lpFileName,offset szNewFile
+		.if !eax
+			invoke SaveProjectFileAs,lpFileName,fText
+		.else
+			invoke WriteProjectFile,lpFileName,fText
+			.if !eax
+				xor		eax,eax
+				inc		eax
+			.else
+				xor		eax,eax
+			.endif
+		.endif
+	.endif
+	ret
+
+SaveProjectFile endp
+
+WantToSaveProject proc lpFileName:DWORD
+	LOCAL	buffer[512]:BYTE
+	LOCAL	buffer1[2]:BYTE
+
+	invoke SetFocus,hWnd
+	.if hResEdSave
+		invoke SendMessage,hResEd,EM_GETMODIFY,0,0
+		.if eax
+			invoke lstrcpy,addr buffer,offset szWannaSave
+			invoke lstrcat,addr buffer,lpFileName
+			mov		ax,'?'
+			mov		word ptr buffer1,ax
+			invoke lstrcat,addr buffer,addr buffer1
+			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
+			.if eax==IDYES
+				invoke SaveProjectFile,lpFileName,TRUE
+				dec		eax
+			.elseif eax==IDNO
+			    mov		eax,FALSE
+			.else
+			    mov		eax,TRUE
+			.endif
+		.endif
+	.else
+		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+		.if eax
+			invoke lstrcpy,addr buffer,offset szWannaSave
+			invoke lstrcat,addr buffer,lpFileName
+			mov		ax,'?'
+			mov		word ptr buffer1,ax
+			invoke lstrcat,addr buffer,addr buffer1
+			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
+			.if eax==IDYES
+				invoke SaveProjectFile,lpFileName,FALSE
+				dec		eax
+				push	eax
+				invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+				.if eax
+					pop		eax
+					push	1
+				.endif
+				pop		eax
+			.elseif eax==IDNO
+			    mov		eax,FALSE
+			.else
+			    mov		eax,TRUE
+			.endif
+		.endif
+	.endif
+	ret
+
+WantToSaveProject endp
 
 ExportDialog proc
 	LOCAL	ofn:OPENFILENAME
@@ -478,102 +546,4 @@ ExportDialog proc
 	ret
 
 ExportDialog endp
-
-SaveProjectTextFile proc lpFileName:DWORD
-	LOCAL	hFile:DWORD
-	LOCAL	editstream:EDITSTREAM
-
-	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		;stream the text to the file
-		mov		eax,hFile
-		mov		editstream.dwCookie,eax
-		mov		editstream.pfnCallback,offset StreamOutProc
-		invoke SendMessage,hResEd,EM_STREAMOUT,SF_TEXT,addr editstream
-		invoke CloseHandle,hFile
-		;Set the modify state to false
-		invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
-		xor		eax,eax
-		inc		eax
-	.else
-		xor		eax,eax
-	.endif
-	ret
-
-SaveProjectTextFile endp
-
-SaveProjectFile proc lpFileName:DWORD
-
-	invoke SendMessage,hResEd,PRO_GETMEM,0,0
-	.if eax
-		invoke lstrcmp,lpFileName,offset szNewFile
-		.if !eax
-			invoke SaveProjectFileAs,lpFileName
-		.else
-			invoke SaveProject,lpFileName
-			.if !eax
-				xor		eax,eax
-				inc		eax
-			.else
-				xor		eax,eax
-			.endif
-		.endif
-	.endif
-	ret
-
-SaveProjectFile endp
-
-WantToSaveProject proc lpFileName:DWORD
-	LOCAL	buffer[512]:BYTE
-	LOCAL	buffer1[2]:BYTE
-
-	invoke SetFocus,hWnd
-	.if hResEdSave
-		invoke SendMessage,hResEd,EM_GETMODIFY,0,0
-		.if eax
-			invoke lstrcpy,addr buffer,offset szWannaSave
-			invoke lstrcat,addr buffer,lpFileName
-			mov		ax,'?'
-			mov		word ptr buffer1,ax
-			invoke lstrcat,addr buffer,addr buffer1
-			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
-			.if eax==IDYES
-				invoke SaveProjectTextFile,lpFileName
-				dec		eax
-			.elseif eax==IDNO
-			    mov		eax,FALSE
-			.else
-			    mov		eax,TRUE
-			.endif
-		.endif
-	.else
-		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
-		.if eax
-			invoke lstrcpy,addr buffer,offset szWannaSave
-			invoke lstrcat,addr buffer,lpFileName
-			mov		ax,'?'
-			mov		word ptr buffer1,ax
-			invoke lstrcat,addr buffer,addr buffer1
-			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
-			.if eax==IDYES
-				invoke SaveProjectFile,lpFileName
-				dec		eax
-				push	eax
-				invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
-				.if eax
-					pop		eax
-					push	1
-				.endif
-				pop		eax
-			.elseif eax==IDNO
-			    mov		eax,FALSE
-			.else
-			    mov		eax,TRUE
-			.endif
-		.endif
-	.endif
-	ret
-
-WantToSaveProject endp
 

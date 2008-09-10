@@ -1,7 +1,8 @@
 ResEd
 
-2.1.0.2 - 2008.08.27
+2.1.0.2 - 2008.09.10
 --------------------
+o Added Open Project As Text.
 o Fixed bug with menu editor.
 o Fixed bug with menu preview.
 

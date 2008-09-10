@@ -1,4 +1,5 @@
 #include "Res/ResEdMnu.rc"
+#include "Res/FindDlg.rc"
 #include "Res/ContextMnu.Rc"
 #include "Res/ResEdDlg.rc"
 #include "Res/MenuOptionDlg.rc"
