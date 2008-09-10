@@ -11,4 +11,6 @@ BEGIN
   IDM_VIEW_OUTPUT			"Show / Hide Output"
   IDM_VIEW_PREVIEW			"Preview Dialog"
   IDM_EDIT_REDO				"Redo"
+  IDM_EDIT_FIND				"Find"
+  IDM_EDIT_REPLACE			"Replace"
 END

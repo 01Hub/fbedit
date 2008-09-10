@@ -298,7 +298,7 @@ szFILESUBTYPE		db 'FILESUBTYPE',0
 szBLOCK				db 'BLOCK',0
 szVALUE				db 'VALUE',0
 szNOT				db 'NOT',0
-szTEXTINCLUDE		db 'TEXTINCLUDE',0
+szTEXTINCLUDE		db 'TEXTINCLUDE',0,0
 
 szHdrType			db 'Type',0
 szHdrName			db 'Name',0

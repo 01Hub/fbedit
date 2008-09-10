@@ -1,5 +1,4 @@
 #include "Res/RAResEdRes.rc"
-#include "Res/TextEditDlg.rc"
 #include "Res/RAResEdVer.rc"
 #include "Res/IncludeEditDlg.rc"
 #include "Res/ResourceEditDlg.rc"
@@ -18,4 +17,3 @@
 #include "Res/ResPreviewCtlDlg.rc"
 #include "Res/MnuPreviewDlg.rc"
 #include "Res/LanguageEditChildDlg.rc"
-#include "Res/TextEditDlg.rc"

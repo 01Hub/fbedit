@@ -46,6 +46,8 @@ ToolBarEnable proc uses ebx
 		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_COPY,eax
 		invoke SendMessage,hResEd,EM_CANPASTE,SF_TEXT,0
 		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_PASTE,eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_FIND,TRUE
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REPLACE,TRUE
 	.else
 		invoke SendMessage,hResEd,DEM_CANUNDO,0,0
 		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_UNDO,eax
@@ -61,6 +63,8 @@ ToolBarEnable proc uses ebx
 		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_COPY,eax
 		invoke SendMessage,hResEd,DEM_CANPASTE,0,0
 		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_PASTE,eax
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_FIND,FALSE
+		invoke SendMessage,ebx,TB_ENABLEBUTTON,IDM_EDIT_REPLACE,FALSE
 	.endif
 	mov		eax,wpos.fView
 	and		eax,1
@@ -102,6 +106,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
+		mov		fr,FR_DOWN
 		invoke GetModuleFileName,0,addr AppPath,sizeof AppPath
 		invoke lstrlen,addr AppPath
 		.while byte ptr AppPath[eax]!='\' && eax
@@ -575,10 +580,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hResEd
-			invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
-			mov		hPreview,eax
-			invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
-			mov		hDialog,eax
+			.if !hResEdSave
+				invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
+				mov		hPreview,eax
+				invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+				mov		hDialog,eax
+			.endif
 			invoke ToolBarEnable
 		.else
 			mov		eax,[edx].NMHDR.code
@@ -629,6 +636,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !eax
 				invoke CloseProject
 			.endif
+			invoke ToolBarEnable
 		.elseif eax==IDM_FILE_SAVE_PROJECT
 			invoke SaveProjectFile,offset ProjectFileName,hResEdSave
 		.elseif eax==IDM_FILE_SAVE_PROJECT_AS

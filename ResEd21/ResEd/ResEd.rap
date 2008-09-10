@@ -98,9 +98,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,10738
+1=580,0,290,688,16877
 6=
-2=0,0,0,0,1442
+2=0,0,0,0,5649
 7=0,0,699,490,7238
 9=
 8=
@@ -123,7 +123,7 @@ Options=52
 27=0,0,0,0
 28=0,0,0,0,9293
 29=0,0,0,0,7275
-30=0,0,0,0,2230
+30=0,0,0,0,3624
 31=0,0,0,0
 
 [BookMark]
@@ -236,8 +236,8 @@ Group=Added files,Assembly,Resources,Misc,Include
 27=3
 28=5
 29=2
-30=1
-31=1
+30=2
+31=3
 [CodeMake]
 4=0,C:\RadASM\Masm\Templates\DlgToWin.rad,,WndProc
 [Accel]
@@ -251,6 +251,8 @@ ID=105
 6=IDM_FILE_CLOSE_PROJECT,0,115,0
 7=IDM_EDIT_UNDO,0,90,8
 8=IDM_EDIT_REDO,0,89,8
+9=IDM_EDIT_FIND,0,70,8
+10=IDM_EDIT_REPLACE,0,82,8
 [StringTable]
 1="IDM_FILE_NEW_PROJECT,0,New project"
 2="IDM_FILE_OPEN_PROJECT,0,Open project"
@@ -263,8 +265,10 @@ ID=105
 9="IDM_VIEW_OUTPUT,0,Show / Hide Output"
 10="IDM_VIEW_PREVIEW,0,Preview Dialog"
 11="IDM_EDIT_REDO,0,Redo"
+12="IDM_EDIT_FIND,0,Find"
+13="IDM_EDIT_REPLACE,0,Replace"
 [Collapse]
-1=,,,131072
+1=,,,
 12=
 2=
 7=

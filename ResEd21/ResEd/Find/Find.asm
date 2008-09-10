@@ -14,7 +14,7 @@ IDC_RBN_DIRUP			equ 2006
 .data
 
 szReplace				db 'Replace ..',0
-
+szRegionSearched		db 'Region searched.',0
 .data?
 
 hFind					HWND ?
@@ -52,6 +52,7 @@ Find proc frType:DWORD
 		invoke SendMessage,hResEd,EM_SCROLLCARET,0,0
 	.else
 		;Region searched
+		invoke MessageBox,hFind,addr szRegionSearched,addr szAppName,MB_OK
 	.endif
 	ret
 

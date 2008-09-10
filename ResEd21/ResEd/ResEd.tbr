@@ -1,9 +1,9 @@
 [Tbr]
 Tbr=,0,1
-Bmp=C:\RadASM\Masm\Projects\ResEd20\ResEd\Res\Toolbar.bmp,IDB_TOOLBAR,9
-Mnu=C:\RadASM\Masm\Projects\ResEd20\ResEd\ResEd.mnu
+Bmp=C:\FbEdit\Projects\Applications\FbEdit\ResEd21\ResEd\Res\toolbar-new.bmp,IDB_TOOLBAR,9
+Mnu=C:\FbEdit\Projects\Applications\FbEdit\ResEd21\ResEd\ResEd.mnu
 Size=16
-0=-,0,0,0
+0=-,0,0,9
 1=IDM_FILE_NEW_PROJECT,0,0,0
 2=IDM_FILE_OPEN_PROJECT,0,0,1
 3=IDM_FILE_SAVE_PROJECT,0,0,2
@@ -16,6 +16,9 @@ Size=16
 10=IDM_EDIT_REDO,0,0,7
 11=IDM_EDIT_DELETE,0,0,8
 12=-,0,0,0
-13=IDM_VIEW_OUTPUT,0,1,9
-14=IDM_VIEW_PREVIEW,0,0,10
+13=IDM_EDIT_FIND,0,0,12
+14=IDM_EDIT_REPLACE,0,0,13
 15=-,0,0,0
+16=IDM_VIEW_OUTPUT,0,1,9
+17=IDM_VIEW_PREVIEW,0,0,10
+18=-,0,0,0

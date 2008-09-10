@@ -1215,6 +1215,12 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke strlen,ebx
 			lea		ebx,[ebx+eax+1]
 		.endw
+		mov		ebx,offset szBITMAP
+		.while byte ptr [ebx]
+			invoke SendMessage,hOut,REM_SETHILITEWORDS,01C00000h,ebx
+			invoke strlen,ebx
+			lea		ebx,[ebx+eax+1]
+		.endw
 		mov		ebx,offset rsstyledefdlg
 		.while byte ptr [ebx+8]
 			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
