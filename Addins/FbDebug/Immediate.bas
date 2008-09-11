@@ -1374,7 +1374,6 @@ Function Immediate() As Integer
 					For x=udt(i).lb To udt(i).ub
 						If cudt(x).arr Then
 							recup=cudt(x).nm & "("
-PutString(Str(audt(cudt(x).arr).dm))
 							For j=0 To audt(cudt(x).arr).dm-1
 								recup=recup & Str(audt(cudt(x).arr).nlu(j).lb) & " To " & Str(audt(cudt(x).arr).nlu(j).ub) & ","
 							Next
