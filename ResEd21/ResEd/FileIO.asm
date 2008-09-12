@@ -200,7 +200,11 @@ OpenProject proc uses ebx,fText:DWORD
 	pop		ofn.hwndOwner
 	push	hInstance
 	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset szRCFilterString
+	.if fText
+		mov		ofn.lpstrFilter,offset szALLFilterString
+	.else
+		mov		ofn.lpstrFilter,offset szRCFilterString
+	.endif
 	mov		buffer[0],0
 	.if ProjectPath
 		mov		ofn.lpstrInitialDir,offset ProjectPath
@@ -365,7 +369,11 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 		pop		ofn.hwndOwner
 		push	hInstance
 		pop		ofn.hInstance
-		mov		ofn.lpstrFilter,offset szRCFilterString
+		.if fText
+			mov		ofn.lpstrFilter,offset szALLFilterString
+		.else
+			mov		ofn.lpstrFilter,offset szRCFilterString
+		.endif
 		.if ProjectPath
 			mov		ofn.lpstrInitialDir,offset ProjectPath
 		.endif

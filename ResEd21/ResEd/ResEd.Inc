@@ -191,6 +191,7 @@ szHFilterString		db 'Include (*.h)',0,'*.h',0,0
 szDefHExt			db 'h',0
 szDLGFilterString	db 'RadASM dlg (*.dlg)',0,'*.dlg',0,0
 szDefDLGExt			db 'dlg',0
+szALLFilterString	db 'Resource (*.rc)',0,'*.rc',0,'All files (*.*)',0,'*.*',0,0
 
 tbrbtns				TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <0,IDM_FILE_NEW_PROJECT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
