@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.0.9
+FbEdit debug addin version 1.0.1.0
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
