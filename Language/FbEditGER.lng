@@ -1,6 +1,6 @@
 ;--------------------------------------------------------------------------
 [Lang]
-Lang=Deutsch
+Lang=Deutsch (German), By B.Wiegmann
 ;--------------------------------------------------------------------------
 [1100]
 1100=Gehe zu Zeile
@@ -211,7 +211,7 @@ Lang=Deutsch
 5511=Projekt Beschreibung:
 5512=Projekt Typ:
 5513=Build Befehl:
-5510=Haupt-Datei in den Build Befehl
+5510=Haupt-Datei in den Build-Befehl
 5514=API Dateien:
 5515=Modul Handling
 5516=Modul Build Befehl:
@@ -221,6 +221,8 @@ Lang=Deutsch
 5520=Projekt Dateigruppe
 5521=Nur neue kompilieren
 5522=Modul Dateien zum Build-Befehl hinzufügen
+5523=Versionsnummer nach dem Build erhöhen
+5525=Automatisches Löschen von Dateien nach dem Build (*.obj ; *.a):
 1=OK
 2=Abbrechen
 ;--------------------------------------------------------------------------
@@ -356,6 +358,7 @@ Lang=Deutsch
 10082=Autom. Neunummerieung der ID's
 10083=&Groß-/Kleinschreibung konvertieren\tStrg+F12
 10084=&Einrücken\tShift+Strg+F12
+10085=&Direktausgabe
 10091=&Ansicht
 10092=&Ausgabe\tF6
 10093=&Projekt
@@ -481,6 +484,11 @@ Lang=Deutsch
 10080=&Vertikal
 10081=Tab Index setzen
 10082=Autom. Neunummerieung der ID's
+20006=&
+10085=Verstecken
+10226=Leeren
+10227=Alles auswählen
+10228=Kopieren
 ;--------------------------------------------------------------------------
 [Strings]
 10005=Neue Datei
@@ -503,7 +511,8 @@ Lang=Deutsch
 10052=Nächstes Lesezeichen
 10053=Vorheriges Lesezeichen
 10054=Alle Lesezeichen löschen
-10092=Ausgabefenster anzeigen/verstecken
+10085=Direktausgabe-Fenster anzeigen/verstecken
+10092=Ausgabe-Fenster anzeigen/verstecken
 10093=Projekt anzeigen/verstecken
 10094=Eigenschaften  anzeigen/verstecken
 10142=Kompilieren
@@ -688,4 +697,13 @@ ProjectZip=FbEdit Project Packer
 2006=Zu Zip hinzufügen: 
 2007=Fertig.
 10000=Projekt Packer
+;--------------------------------------------------------------------------
+[FbDebug]
+10000=Haltepunkte &umschalten\tCtrl+T
+10001=&Haltepunkte leeren\tShift+Ctrl+T
+10002=&Ausführen\tShift+F7
+10003=S&topp\tAlt+F7
+10004=Schritt &in\tF7
+10005=Schritt &über\tCtrl+F7
+10006=Ausführen &bis zur Markierung\tShift+Ctrl+F7
 ;--------------------------------------------------------------------------
