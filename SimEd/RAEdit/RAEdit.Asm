@@ -42,13 +42,14 @@ include DragDrop.asm
 TimerProc proc hWin:DWORD,uMsg:DWORD,idEvent:DWORD,dwTime:DWORD
 
 	.if tmr1.hwnd
-		invoke PostMessage,tmr1.hwnd,tmr1.umsg,tmr1.wparam,tmr1.lparam
-		mov		tmr1.hwnd,0
+			invoke PostMessage,tmr1.hwnd,tmr1.umsg,tmr1.wparam,tmr1.lparam
+			mov		tmr1.hwnd,0
 	.endif
 	.if tmr2.hwnd
 		invoke PostMessage,tmr2.hwnd,tmr2.umsg,tmr2.wparam,tmr2.lparam
 		mov		tmr2.hwnd,0
 	.endif
+	invoke KillTimer,NULL,TimerID
 	ret
 
 TimerProc endp
@@ -123,8 +124,6 @@ InstallRAEdit proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		hWrdMem,eax
 	mov		cbWrdMem,MAXWORDMEM
 	mov		rpWrdFree,256*4
-	invoke SetTimer,NULL,0,50,offset TimerProc
-	mov		TimerID,eax
 	;Setup upper CharTab
 	push	ebx
 	mov		ebx,128
@@ -155,7 +154,6 @@ InstallRAEdit endp
 
 UnInstallRAEdit proc public
 
-	invoke KillTimer,NULL,TimerID
 	invoke DestroyCursor,hHSCur
 	invoke DestroyCursor,hSelCur
 	invoke ImageList_Destroy,hIml
@@ -1932,48 +1930,64 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			test	wParam,MK_LBUTTON
 			.if !ZERO?
-				mov		eax,pt.x
-				mov		edx,pt.y
-				mov		ecx,[ebx].EDIT.selbarwt
-				add		ecx,[ebx].EDIT.linenrwt
-				.if eax>[esi].RAEDT.rc.right || sdword ptr eax<ecx || edx>[esi].RAEDT.rc.bottom
-					.if sdword ptr edx>[esi].RAEDT.rc.bottom
+				.if !tmr1.hwnd
+					mov		eax,pt.x
+					mov		edx,pt.y
+					mov		ecx,[ebx].EDIT.selbarwt
+					add		ecx,[ebx].EDIT.linenrwt
+					.if eax>[esi].RAEDT.rc.right || sdword ptr eax<ecx || edx>[esi].RAEDT.rc.bottom
+						.if sdword ptr edx>[esi].RAEDT.rc.bottom
+							sub		edx,[esi].RAEDT.rc.bottom
+							mov		eax,hWin
+							mov		tmr1.hwnd,eax
+							mov		tmr1.umsg,WM_VSCROLL
+							mov		tmr1.wparam,SB_LINEDOWN
+							mov		eax,[esi].RAEDT.hvscroll
+							mov		tmr1.lparam,eax
+						.elseif sdword ptr edx<0
+							neg		edx
+							mov		eax,hWin
+							mov		tmr1.hwnd,eax
+							mov		tmr1.umsg,WM_VSCROLL
+							mov		tmr1.wparam,SB_LINEUP
+							mov		eax,[esi].RAEDT.hvscroll
+							mov		tmr1.lparam,eax
+						.elseif sdword ptr eax>[esi].RAEDT.rc.right
+							mov		edx,eax
+							sub		edx,[esi].RAEDT.rc.right
+							mov		eax,[ebx].EDIT.hwnd
+							mov		tmr1.hwnd,eax
+							mov		tmr1.umsg,WM_HSCROLL
+							mov		tmr1.wparam,SB_LINEDOWN
+							mov		eax,[ebx].EDIT.hhscroll
+							mov		tmr1.lparam,eax
+						.elseif sdword ptr eax<ecx
+							mov		edx,ecx
+							sub		edx,eax
+							mov		eax,[ebx].EDIT.hwnd
+							mov		tmr1.hwnd,eax
+							mov		tmr1.umsg,WM_HSCROLL
+							mov		tmr1.wparam,SB_LINEUP
+							mov		eax,[ebx].EDIT.hhscroll
+							mov		tmr1.lparam,eax
+						.endif
 						mov		eax,hWin
-						mov		tmr1.hwnd,eax
-						mov		tmr1.umsg,WM_VSCROLL
-						mov		tmr1.wparam,SB_LINEDOWN
-						mov		eax,[esi].RAEDT.hvscroll
-						mov		tmr1.lparam,eax
-					.elseif sdword ptr edx<0
-						mov		eax,hWin
-						mov		tmr1.hwnd,eax
-						mov		tmr1.umsg,WM_VSCROLL
-						mov		tmr1.wparam,SB_LINEUP
-						mov		eax,[esi].RAEDT.hvscroll
-						mov		tmr1.lparam,eax
-					.elseif sdword ptr eax>[esi].RAEDT.rc.right
-						mov		eax,[ebx].EDIT.hwnd
-						mov		tmr1.hwnd,eax
-						mov		tmr1.umsg,WM_HSCROLL
-						mov		tmr1.wparam,SB_LINEDOWN
-						mov		eax,[ebx].EDIT.hhscroll
-						mov		tmr1.lparam,eax
-					.elseif sdword ptr eax<ecx
-						mov		eax,[ebx].EDIT.hwnd
-						mov		tmr1.hwnd,eax
-						mov		tmr1.umsg,WM_HSCROLL
-						mov		tmr1.wparam,SB_LINEUP
-						mov		eax,[ebx].EDIT.hhscroll
-						mov		tmr1.lparam,eax
+						mov		tmr2.hwnd,eax
+						mov		eax,uMsg
+						mov		tmr2.umsg,eax
+						mov		eax,wParam
+						mov		tmr2.wparam,eax
+						mov		eax,lParam
+						mov		tmr2.lparam,eax
+						shl		edx,2
+						mov		eax,100
+						sub		eax,edx
+						.if sdword ptr eax<10
+							mov		eax,10
+						.endif
+						invoke SetTimer,NULL,0,eax,offset TimerProc
+						mov		TimerID,eax
 					.endif
-					mov		eax,hWin
-					mov		tmr2.hwnd,eax
-					mov		eax,uMsg
-					mov		tmr2.umsg,eax
-					mov		eax,wParam
-					mov		tmr2.wparam,eax
-					mov		eax,lParam
-					mov		tmr2.lparam,eax
 				.endif
 			.else
 				xor		eax,eax
@@ -2168,29 +2182,44 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !ZERO?
 						mov		eax,pt.y
 						.if eax>[esi].RAEDT.rc.bottom
-							.if sdword ptr eax>[esi].RAEDT.rc.bottom
+							.if !tmr1.hwnd
+								mov		eax,pt.y
+								.if sdword ptr eax>[esi].RAEDT.rc.bottom
+									mov		edx,eax
+									sub		edx,[esi].RAEDT.rc.bottom
+									mov		eax,hWin
+									mov		tmr1.hwnd,eax
+									mov		tmr1.umsg,WM_VSCROLL
+									mov		tmr1.wparam,SB_LINEDOWN
+									mov		eax,[esi].RAEDT.hvscroll
+									mov		tmr1.lparam,eax
+								.elseif sdword ptr eax<0
+									mov		edx,eax
+									neg		edx
+									mov		eax,hWin
+									mov		tmr1.hwnd,eax
+									mov		tmr1.umsg,WM_VSCROLL
+									mov		tmr1.wparam,SB_LINEUP
+									mov		eax,[esi].RAEDT.hvscroll
+									mov		tmr1.lparam,eax
+								.endif
 								mov		eax,hWin
-								mov		tmr1.hwnd,eax
-								mov		tmr1.umsg,WM_VSCROLL
-								mov		tmr1.wparam,SB_LINEDOWN
-								mov		eax,[esi].RAEDT.hvscroll
-								mov		tmr1.lparam,eax
-							.elseif sdword ptr eax<0
-								mov		eax,hWin
-								mov		tmr1.hwnd,eax
-								mov		tmr1.umsg,WM_VSCROLL
-								mov		tmr1.wparam,SB_LINEUP
-								mov		eax,[esi].RAEDT.hvscroll
-								mov		tmr1.lparam,eax
+								mov		tmr2.hwnd,eax
+								mov		eax,uMsg
+								mov		tmr2.umsg,eax
+								mov		eax,wParam
+								mov		tmr2.wparam,eax
+								mov		eax,lParam
+								mov		tmr2.lparam,eax
+								shl		edx,2
+								mov		eax,100
+								sub		eax,edx
+								.if sdword ptr eax<10
+									mov		eax,10
+								.endif
+								invoke SetTimer,NULL,0,eax,offset TimerProc
+								mov		TimerID,eax
 							.endif
-							mov		eax,hWin
-							mov		tmr2.hwnd,eax
-							mov		eax,uMsg
-							mov		tmr2.umsg,eax
-							mov		eax,wParam
-							mov		tmr2.wparam,eax
-							mov		eax,lParam
-							mov		tmr2.lparam,eax
 						.endif
 					.endif
 				.else

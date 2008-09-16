@@ -323,14 +323,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If Asc(ad.DefProjectPath)=Asc("\") Then
 				ad.DefProjectPath=Left(ad.AppPath,2) & ad.DefProjectPath
 			EndIf
+			FixPath(ad.DefProjectPath)
 			GetPrivateProfileString(StrPtr("Make"),StrPtr("fbcPath"),@szNULL,@ad.fbcPath,SizeOf(ad.fbcPath),@ad.IniFile)
 			If Asc(ad.fbcPath)=Asc("\") Then
 				ad.fbcPath=Left(ad.AppPath,2) & ad.fbcPath
 			EndIf
+			FixPath(ad.fbcPath)
 			GetPrivateProfileString(StrPtr("Help"),StrPtr("Path"),@szNULL,@ad.HelpPath,SizeOf(ad.HelpPath),@ad.IniFile)
 			If Asc(ad.HelpPath)=Asc("\") Then
 				ad.HelpPath=Left(ad.AppPath,2) & ad.HelpPath
 			EndIf
+			FixPath(ad.HelpPath)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)

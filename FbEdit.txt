@@ -1,5 +1,11 @@
 Whats new:
 ----------
+1.0.6.2b
+o Path Options can now use path acronymes.
+  $A Application path, where FbEdit.exe is found.
+  $C Compiler path, where fbc.exe is found.
+  $H Help path, where fb.chm and win32.hlp is found.
+  $P Default project path, where projects are found.
 1.0.6.2
 o Added FbDebug addin. The addin provides FbEdit with an internal
   debugger. See the FbDebug.txt help file by using the addin manager.
