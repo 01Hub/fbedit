@@ -353,11 +353,11 @@
 #define IDC_RBNMODCMD 5506
 #define IDC_EDTOUTFILE 1006
 #define IDC_EDTRUN 1008
+#define IDC_EDTDELETE 5524
 #define IDC_EDTRESOURCEEXPORT 5507
 #define IDC_RBNGRPNONE 5501
 #define IDC_RBNGRPFOLDER 5502
 #define IDC_RBNGRPTYPE 5503
-#define IDC_EDTDELETE 5524
 #define IDD_TABOPT1 2100
 #define IDC_RBNEXPOPT1 2101
 #define IDC_RBNEXPOPT2 2102
@@ -951,7 +951,7 @@ BEGIN
       VALUE "FileVersion", "1.0.6.2\0"
       VALUE "FileDescription", "FreeBASIC code editor\0"
       VALUE "InternalName", "FbEdit\0"
-      VALUE "LegalCopyright", "KetilO (C) 2006\0"
+      VALUE "LegalCopyright", "KetilO (C) 2006-2008\0"
       VALUE "OriginalFilename", "FbEdit.exe\0"
       VALUE "ProductVersion", "1.0.6.2\0"
     END
