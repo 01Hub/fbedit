@@ -138,6 +138,7 @@ ProjectZip=FbEdit project zipper
 10000=Project Zipper
 ;--------------------------------------------------------------------------
 [FbDebug]
+10010=&Debug
 10000=Togggle &Breakpoint\tCtrl+T
 10001=&Clear Breakpoints\tShift+Ctrl+T
 10002=&Run\tShift+F7

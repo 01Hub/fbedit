@@ -287,7 +287,7 @@ End Function
 
 Sub BringWindowToFront
 
-	EnumWindows(@EnumProc,0)
+	EnumWindows(Cast(Any Ptr,@EnumProc),0)
 	
 End Sub
 
@@ -758,7 +758,11 @@ Sub CreateDebugMenu()
 	mii.cbSize=SizeOf(MENUITEMINFO)
 	mii.fMask=MIIM_TYPE Or MIIM_SUBMENU
 	mii.fType=MFT_STRING
-	mii.dwTypeData=StrPtr("&Debug")
+	buff=GetString(10010)
+	If buff="" Then
+		buff="&Debug"
+	EndIf
+	mii.dwTypeData=StrPtr(buff)
 	mii.hSubMenu=CreatePopupMenu()
 	InsertMenuItem(lpHandles->hmenu,3,TRUE,@mii)
 	

@@ -700,6 +700,7 @@ ProjectZip=FbEdit prosjekt zipper
 10000=Prosjekt Zipper
 ;--------------------------------------------------------------------------
 [FbDebug]
+10010=&Debug
 10000=Togggle &Bruddpunktt\tCtrl+T
 10001=&Blank Bruddpunkt\tShift+Ctrl+T
 10002=&Kjør\tShift+F7

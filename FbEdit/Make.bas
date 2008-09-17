@@ -270,6 +270,7 @@ Sub DeleteFiles(ByVal sFile As String)
 	Dim hwfd As HANDLE
 	Dim sPath As String
 	Dim i As Integer
+	Dim sTmp As String
 
 	i=InStrRev(sFile,"\")
 	If i Then
@@ -278,10 +279,12 @@ Sub DeleteFiles(ByVal sFile As String)
 	hwfd=FindFirstFile(sFile,@wfd)
 	If hwfd<>INVALID_HANDLE_VALUE Then
 		While TRUE
-			sFile=ad.ProjectPath & "\" & sPath & wfd.cFileName
-			If DeleteFile(sFile) Then
-				sFile="Deleted: " & sFile & CR
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sFile))
+			If (wfd.dwFileAttributes And FILE_ATTRIBUTE_DIRECTORY)=0 Then
+				sTmp=ad.ProjectPath & "\" & sPath & wfd.cFileName
+				If DeleteFile(sTmp) Then
+					sTmp="Deleted: " & sTmp
+					TextToOutput(sTmp)
+				EndIf
 			EndIf
 			If FindNextFile(hwfd,@wfd)=FALSE Then
 				Exit While
