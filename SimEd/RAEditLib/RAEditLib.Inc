@@ -15,7 +15,7 @@ includelib ole32.lib
 includelib ..\Lib\RaEdit.lib
 
 DlgProc				PROTO	:HWND,:UINT,:WPARAM,:LPARAM
-InstallRAEdit		PROTO	:DWORD
+InstallRAEdit		PROTO	:DWORD,:DWORD
 UnInstallRAEdit		PROTO
 
 IDD_DIALOG1			equ 1000

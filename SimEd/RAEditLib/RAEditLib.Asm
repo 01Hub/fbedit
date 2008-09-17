@@ -13,7 +13,7 @@ start:
 
     invoke InitCommonControls
 	invoke OleInitialize,NULL
-	invoke InstallRAEdit,hInstance
+	invoke InstallRAEdit,hInstance,FALSE
 	invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
 	invoke UnInstallRAEdit
 	invoke OleUninitialize

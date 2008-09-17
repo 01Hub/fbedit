@@ -178,6 +178,7 @@ CreateRAEdit proc
 	invoke SetFormat,hREd
 	;Set colors
 	invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
+	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	ret
 
@@ -613,7 +614,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Get handle of RAEdit window
 		invoke GetDlgItem,hWin,IDC_RAE
 		mov		hREd,eax
-		invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_LOCK,0
+		invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
 		;Set hilite words
 		invoke SetKeyWords,hREd
 		;Set block defs

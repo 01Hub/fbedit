@@ -711,7 +711,7 @@ Sub GetTrvItems(ByVal hPar As HTREEITEM,ByRef sFile As String)
 			tvi.cchTextMax=SizeOf(sItem)
 			SendMessage(ah.hprj,TVM_GETITEM,0,Cast(LPARAM,@tvi))
 			If UCase(sFile)=UCase(sItem) Then
-				SendMessage(ah.hprj,TVM_SELECTITEM,TVGN_CARET,hCld)
+				SendMessage(ah.hprj,TVM_SELECTITEM,TVGN_CARET,Cast(LPARAM,hCld))
 				Exit Sub
 			EndIf
 			GetTrvItems(hCld,sFile)

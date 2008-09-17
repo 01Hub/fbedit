@@ -1363,6 +1363,7 @@ Sub UpdateEditOption(hEdt As HWND)
 		style=style Or STYLE_HILITECOMMENT
 	EndIf
 	SetWindowLong(hEdt,GWL_STYLE,style)
+	SendMessage(hEdt,REM_SETSTYLEEX,STYLEEX_LOCK Or STYLEEX_BLOCKGUIDE,0)
 
 End Sub
 

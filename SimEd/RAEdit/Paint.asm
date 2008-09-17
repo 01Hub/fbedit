@@ -810,62 +810,65 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 	LOCAL	lpBlockDef:DWORD
 
 	mov		ebx,hMem
-	;Clear block markers
-	mov		edx,[ebx].EDIT.rpLineFree
-	shr		edx,2
-	dec		edx
-	mov		nLnMax,edx
-	mov		eax,nLine
-	mov		edx,nMax
-	mov		nLines,edx
-	.while eax<=nLnMax && nLines
-		mov		edx,eax
-		shl		edx,2
-		add		edx,[ebx].EDIT.hLine
-		mov		edx,[edx]
-		add		edx,[ebx].EDIT.hChars
-		and		[edx].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
-		test	[edx].CHARS.state,STATE_HIDDEN
-		.if ZERO?
-			dec		nLines
-		.endif
-		inc		eax
-	.endw
-	mov		edx,nMax
-	mov		nLines,edx
-	;Find root block
-	mov		esi,-1
-  Nxt:
-	call	BlockRoot
-	.if nLnEn
-		mov		esi,nLnSt
-		inc		esi
-		.if esi<nLine
-			mov		esi,nLine
-		.endif
-		.while esi<=nLnEn && nLines
-			mov		edi,esi
-			shl		edi,2
-			add		edi,[ebx].EDIT.hLine
-			mov		edi,[edi]
-			add		edi,[ebx].EDIT.hChars
-			test	[edi].CHARS.state,STATE_HIDDEN
+	test	[ebx].EDIT.fstyleex,STYLEEX_BLOCKGUIDE
+	.if !ZERO?
+		;Clear block markers
+		mov		edx,[ebx].EDIT.rpLineFree
+		shr		edx,2
+		dec		edx
+		mov		nLnMax,edx
+		mov		eax,nLine
+		mov		edx,nMax
+		mov		nLines,edx
+		.while eax<=nLnMax && nLines
+			mov		edx,eax
+			shl		edx,2
+			add		edx,[ebx].EDIT.hLine
+			mov		edx,[edx]
+			add		edx,[ebx].EDIT.hChars
+			and		[edx].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+			test	[edx].CHARS.state,STATE_HIDDEN
 			.if ZERO?
-				and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
-				.if esi<nLnEn
-					or		[edi].CHARS.state,STATE_BLOCK
-				.endif
-				invoke TestBlockEnd,ebx,esi
-				.if eax!=-1
-					or		[edi].CHARS.state,STATE_BLOCKEND
-				.endif
 				dec		nLines
 			.endif
-			inc		esi
+			inc		eax
 		.endw
-		.if esi<nLnMax && nLines
-			dec		esi
-			jmp		Nxt
+		mov		edx,nMax
+		mov		nLines,edx
+		;Find root block
+		mov		esi,-1
+	  Nxt:
+		call	BlockRoot
+		.if nLnEn
+			mov		esi,nLnSt
+			inc		esi
+			.if esi<nLine
+				mov		esi,nLine
+			.endif
+			.while esi<=nLnEn && nLines
+				mov		edi,esi
+				shl		edi,2
+				add		edi,[ebx].EDIT.hLine
+				mov		edi,[edi]
+				add		edi,[ebx].EDIT.hChars
+				test	[edi].CHARS.state,STATE_HIDDEN
+				.if ZERO?
+					and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+					.if esi<nLnEn
+						or		[edi].CHARS.state,STATE_BLOCK
+					.endif
+					invoke TestBlockEnd,ebx,esi
+					.if eax!=-1
+						or		[edi].CHARS.state,STATE_BLOCKEND
+					.endif
+					dec		nLines
+				.endif
+				inc		esi
+			.endw
+			.if esi<nLnMax && nLines
+				dec		esi
+				jmp		Nxt
+			.endif
 		.endif
 	.endif
 	ret
@@ -890,6 +893,9 @@ BlockRoot:
 				mov		nLnSt,esi
 				mov		nLnEn,eax
 			.else
+				.if sdword ptr eax>esi
+					mov		esi,eax
+				.endif
 				jmp		BlockRoot
 			.endif
 		.endif
