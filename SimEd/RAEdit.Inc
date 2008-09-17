@@ -16,23 +16,26 @@ DEFLNRCOLOR				equ 00800000h
 DEFNUMCOLOR				equ 00808080h
 
 ;Window styles
-STYLE_NOSPLITT			equ 00001h			;No splitt button
-STYLE_NOLINENUMBER		equ 00002h			;No linenumber button
-STYLE_NOCOLLAPSE		equ 00004h			;No expand/collapse buttons
-STYLE_NOHSCROLL			equ 00008h			;No horizontal scrollbar
-STYLE_NOVSCROLL			equ 00010h			;No vertical scrollbar
-STYLE_NOHILITE			equ 00020h			;No color hiliting
-STYLE_NOSIZEGRIP		equ 00040h			;No size grip
-STYLE_NODBLCLICK		equ 00080h			;No action on double clicks
-STYLE_READONLY			equ 00100h			;Text is locked
-STYLE_NODIVIDERLINE		equ 00200h			;Blocks are not divided by line
-STYLE_NOBACKBUFFER		equ 00400h			;Drawing directly to screen DC
-STYLE_NOSTATE			equ 00800h			;No state indicator
-STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
-STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
-STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
-STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
-STYLE_NOLOCK			equ 10000h			;No lock button
+STYLE_NOSPLITT			equ 0001h			;No splitt button
+STYLE_NOLINENUMBER		equ 0002h			;No linenumber button
+STYLE_NOCOLLAPSE		equ 0004h			;No expand/collapse buttons
+STYLE_NOHSCROLL			equ 0008h			;No horizontal scrollbar
+STYLE_NOVSCROLL			equ 0010h			;No vertical scrollbar
+STYLE_NOHILITE			equ 0020h			;No color hiliting
+STYLE_NOSIZEGRIP		equ 0040h			;No size grip
+STYLE_NODBLCLICK		equ 0080h			;No action on double clicks
+STYLE_READONLY			equ 0100h			;Text is locked
+STYLE_NODIVIDERLINE		equ 0200h			;Blocks are not divided by line
+STYLE_NOBACKBUFFER		equ 0400h			;Drawing directly to screen DC
+STYLE_NOSTATE			equ 0800h			;No state indicator
+STYLE_DRAGDROP			equ 1000h			;Drag & Drop support, app must load ole
+STYLE_SCROLLTIP			equ 2000h			;Scrollbar tooltip
+STYLE_HILITECOMMENT		equ 4000h			;Comments are hilited
+STYLE_AUTOSIZELINENUM	equ 8000h			;Line number column autosizes
+
+;Styles used with REM_SETSTYLEEX message
+STYLEEX_LOCK			equ 0001h			;Show lock button
+STYLEEX_BLOCKGUIDE		equ 0002h			;Show block guiders
 
 ;Edit modes
 MODE_NORMAL				equ 0				;Normal
@@ -142,6 +145,7 @@ REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
 REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
+REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

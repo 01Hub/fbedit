@@ -259,7 +259,6 @@
 				mov		edi,[esi]
 				add		esi,4
 			.endw
-			invoke BlockMarkAll,ebx
 			pop		eax
 			.if eax!=nBmid
 				invoke InvalidateRect,[ebx].EDIT.edta.hwnd,NULL,FALSE
@@ -1289,6 +1288,12 @@
 			invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
 			invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
 			ret
+		align 4
+		_REM_SETSTYLEEX:
+			mov		eax,wParam
+			mov		[ebx].EDIT.fstyleex,eax
+			invoke InvalidateRect,hWin,NULL,TRUE
+			ret
 
 .data
 
@@ -1377,6 +1382,7 @@ _REM_BASE \
 	dd _REM_NEXTERROR			;equ REM_BASE+80
 	dd _REM_CHARTABINIT			;equ REM_BASE+81
 	dd _REM_LINEREDTEXT			;equ REM_BASE+82
+	dd 	_REM_SETSTYLEEX			;equ REM_BASE+83
 
 .code
 align 4

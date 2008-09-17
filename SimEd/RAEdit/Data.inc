@@ -5,7 +5,6 @@ TestExpand				PROTO :DWORD,:DWORD
 GetCharPtr				PROTO :DWORD,:DWORD
 SelChange				PROTO :DWORD,:DWORD
 GetYpFromLine			PROTO :DWORD,:DWORD
-IsInAnyBlock			PROTO :DWORD,:DWORD
 TestBlockEnd			PROTO :DWORD,:DWORD
 PreviousBookMark		PROTO :DWORD,:DWORD,:DWORD
 NextBookMark			PROTO :DWORD,:DWORD,:DWORD
@@ -172,6 +171,7 @@ EDIT struct
 	cpselbar	dd ?
 	fLock		dd ?
 	nCursorWordType	dd ?
+	fstyleex	dd ?
 EDIT ends
 
 IDB_RAEDITBUTTON		equ 100

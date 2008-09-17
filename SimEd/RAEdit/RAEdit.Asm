@@ -33,6 +33,7 @@ include Paint.asm
 include Memory.asm
 include Edit.asm
 include Function.asm
+include Block.asm
 include Undo.asm
 include ClipBoard.asm
 include DragDrop.asm
@@ -2951,7 +2952,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	mov		eax,uMsg
-	.if eax>=REM_BASE && eax<=REM_LINEREDTEXT
+	.if eax>=REM_BASE && eax<=REM_SETSTYLEEX
 		sub		eax,REM_BASE
 		jmp 	DWORD PTR [offset _REM_BASE+eax*4]
 		include RAEdit_REM_Msg_JumpTable.asm
@@ -3390,8 +3391,10 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].EDIT.fstyle,eax
 		invoke GetClientRect,hWin,addr [ebx].EDIT.rc
 		mov		eax,[ebx].EDIT.fstyle
-		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
-		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
+		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
+		mov		edx,[ebx].EDIT.fstyleex
+		and		edx,STYLEEX_LOCK
+		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL || edx==STYLEEX_LOCK
 			mov		eax,SBWT
 			sub		[ebx].EDIT.rc.bottom,eax
 		.endif
@@ -3414,16 +3417,18 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,[ebx].EDIT.hexp,0,0,0,0,TRUE
 			invoke MoveWindow,[ebx].EDIT.hcol,0,0,0,0,TRUE
 		.endif
-		test	[ebx].EDIT.fstyle,STYLE_NOLOCK
-		.if ZERO?
+		test	[ebx].EDIT.fstyleex,STYLEEX_LOCK
+		.if !ZERO?
 			invoke MoveWindow,[ebx].EDIT.hlock,edi,[ebx].EDIT.rc.bottom,BTNWT,SBWT,TRUE
 			add		edi,BTNWT
 		.else
 			invoke MoveWindow,[ebx].EDIT.hlock,0,0,0,0,TRUE
 		.endif
 		mov		eax,[ebx].EDIT.fstyle
-		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
-		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL or STYLE_NOLOCK
+		and		eax,STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL
+		mov		edx,[ebx].EDIT.fstyleex
+		and		edx,STYLEEX_LOCK
+		.if eax!=STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHSCROLL || edx==STYLEEX_LOCK
 			mov		ecx,[ebx].EDIT.rc.right
 			sub		ecx,edi
 			mov		eax,[ebx].EDIT.fstyle
