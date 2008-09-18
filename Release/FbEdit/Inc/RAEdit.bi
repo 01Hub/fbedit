@@ -18,23 +18,25 @@
 #Define DEFNUMCOLOR							&H00808080
 
 ' Window styles
-#Define STYLE_NOSPLITT						&H00001			' No splitt button
-#Define STYLE_NOLINENUMBER					&H00002			' No linenumber button
-#Define STYLE_NOCOLLAPSE					&H00004			' No expand/collapse buttons
-#Define STYLE_NOHSCROLL						&H00008			' No horizontal scrollbar
-#Define STYLE_NOVSCROLL						&H00010			' No vertical scrollbar
-#Define STYLE_NOHILITE						&H00020			' No color hiliting
-#Define STYLE_NOSIZEGRIP					&H00040			' No size grip
-#Define STYLE_NODBLCLICK					&H00080			' No action on double clicks
-#Define STYLE_READONLY						&H00100			' Text is locked
-#Define STYLE_NODIVIDERLINE				&H00200			' Blocks are not divided by line
-#Define STYLE_NOBACKBUFFER					&H00400			' Drawing directly to screen DC
-#Define STYLE_NOSTATE						&H00800			' No state indicator
-#Define STYLE_DRAGDROP						&H01000			' Drag & Drop support, app must load ole
-#Define STYLE_SCROLLTIP						&H02000			' Scrollbar tooltip
-#Define STYLE_HILITECOMMENT				&H04000			' Comments are hilited
-#Define STYLE_AUTOSIZELINENUM				&H08000			' With of linenumber bar autosizes
-#Define STYLE_NOLOCK							&H10000			' No lock button
+#Define STYLE_NOSPLITT						&H0001			' No splitt button
+#Define STYLE_NOLINENUMBER					&H0002			' No linenumber button
+#Define STYLE_NOCOLLAPSE					&H0004			' No expand/collapse buttons
+#Define STYLE_NOHSCROLL						&H0008			' No horizontal scrollbar
+#Define STYLE_NOVSCROLL						&H0010			' No vertical scrollbar
+#Define STYLE_NOHILITE						&H0020			' No color hiliting
+#Define STYLE_NOSIZEGRIP					&H0040			' No size grip
+#Define STYLE_NODBLCLICK					&H0080			' No action on double clicks
+#Define STYLE_READONLY						&H0100			' Text is locked
+#Define STYLE_NODIVIDERLINE				&H0200			' Blocks are not divided by line
+#Define STYLE_NOBACKBUFFER					&H0400			' Drawing directly to screen DC
+#Define STYLE_NOSTATE						&H0800			' No state indicator
+#Define STYLE_DRAGDROP						&H1000			' Drag & Drop support, app must load ole
+#Define STYLE_SCROLLTIP						&H2000			' Scrollbar tooltip
+#Define STYLE_HILITECOMMENT				&H4000			' Comments are hilited
+#Define STYLE_AUTOSIZELINENUM				&H8000			' With of linenumber bar autosizes
+
+#Define STYLEEX_LOCK							&H0001			' Show lock button
+#Define STYLEEX_BLOCKGUIDE					&H0002			' Show block guiders
 
 ' REM_COMMAND commands
 #Define CMD_LEFT								1
@@ -138,6 +140,7 @@
 #Define REM_NEXTERROR						REM_BASE+80		' wParam=nLine, lParam=0
 #Define REM_CHARTABINIT						REM_BASE+81		' wParam=0, lParam=0
 #Define REM_LINEREDTEXT						REM_BASE+82		' wParam=nLine, lParam=TRUE/FALSE
+#Define REM_SETSTYLEEX						REM_BASE+83		' wParam=nStyleEx, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

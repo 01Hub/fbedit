@@ -7,7 +7,11 @@ o Path Options can now use path acronymes.
   $H Help path, where fb.chm and win32.hlp is found.
   $P Default project path, where projects are found.
 o Variable speed selection scrolling by mouse.
-o Speed optimized block guiders.
+o Speed optimized block guiders. Could cause sluggish editing on large files
+  with many nested blocks.
+o Added the Debug menu item to the language translation.
+o The current file is now selected in the project browser.
+o Fixed bug with Auto delete files after build. Could cause a crash on Vista.
 1.0.6.2
 o Added FbDebug addin. The addin provides FbEdit with an internal
   debugger. See the FbDebug.txt help file by using the addin manager.
