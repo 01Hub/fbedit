@@ -826,6 +826,7 @@ SortStylesStr proc uses ebx esi edi,lpSource:DWORD,lpDest:DWORD
 		mov		[edi+ecx*4],eax
 		inc		ecx
 	.endw
+	mov		dword ptr [edi+ecx*4],0
 	invoke CombSortStr,edi,ecx
 	ret
 

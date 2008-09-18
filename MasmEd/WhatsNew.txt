@@ -1,5 +1,12 @@
 MasmEd
 
+1.0.5.1 - 2008.09.18
+--------------------
+o Variable speed selection scrolling by mouse.
+o Speed optimized block guiders. Could cause sluggish editing on large files
+  with many nested blocks.
+o Fixed bug with resource editor style manager. Could show unrelated / duplicated styles.
+
 1.0.5.0 - 2008.08.25
 --------------------
 o Updated all internal components to latest version.

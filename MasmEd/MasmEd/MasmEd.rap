@@ -175,20 +175,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.5.0
-PV=1.0.5.0
+FV=1.0.5.1
+PV=1.0.5.1
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.5.0
+ProductVersion=1.0.5.1
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2007
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.0.5.0
+FileVersion=1.0.5.1
 CompanyName=
 
 [Group]
@@ -259,7 +259,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -294,7 +294,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,18659
+2=0,0,0,0,9134
 1=0,0,0,0,10782
 11=0,0,0,0,3259
 22=0,0,0,0,6910
@@ -327,7 +327,7 @@ ProductVer4Range=0
 37=0,0,0,0,6371
 36=0,0,661,490,0
 20=0,0,0,0,0
-38=0,0,0,0,529
+38=0,0,0,0,243
 39=0,0,0,0
 40=0,0,0,0,29
 42=0,0,0,0,783

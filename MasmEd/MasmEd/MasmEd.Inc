@@ -345,7 +345,7 @@ szRichEdit				db 'riched20.dll',0
 ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.0.5.0',0
+szVersion				db 'MasmEd version 1.0.5.1',0
 szAboutMsg				db 'MasmEd code & resource editor',13,10,13,10,'KetilO (C) 2004-2008',13,10,'radasmide@hotmail.com',0
 szAboutUrl				db 'http://www.radasm.com',0
 szOpen					db 'Open',0

@@ -12,3 +12,5 @@ o Speed optimized block guiders. Could cause sluggish editing on large files
 o Added the Debug menu item to the language translation.
 o The current file is now selected in the project browser.
 o Fixed bug with Auto delete files after build. Could cause a crash on Vista.
+o Fixed bug with resource editor style manager.
+  Could show unrelated / duplicated styles.

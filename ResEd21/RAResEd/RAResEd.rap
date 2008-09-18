@@ -149,12 +149,12 @@ Options=52
 5=0,0,0,0,1953
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,29794
-7=0,0,718,485,31605
+1=0,0,718,485,7294
+7=0,0,718,485,82741
 6=0,0,0,0,2026
 9=0,0,718,485,140864
 2=0,0,584,498,7707
-8=0,0,0,0,5605
+8=0,0,0,0,13308
 10=0,0,0,0,7056
 16=0,0,718,485,12682
 15=0,0,0,0
@@ -179,7 +179,7 @@ Options=52
 37=0,0,0,0,2096
 38=0,0,0,0
 39=0,0,0,0,705
-40=0,0,0,0,4733
+40=0,0,0,0,3833
 41=0,0,0,0
 42=0,0,0,0
 43=0,0,0,0,3969
@@ -197,36 +197,36 @@ Options=52
 
 
 [Find]
-1="REM_SETHILITEWORDS"
-2="PRO_OPENTEXT"
-3="PRO_ADDITEM"
-4="PRO_GETDIALOG"
-5="MakeMnuBar"
-6="SELHHFM"
-7="SaveSel"
-8="CreateMnu"
-9="MEM_OPEN"
-10="InstallRAEdit"
+1="RSM_SETSTYLEVAL"
+2="szClassName"
+3="StyleProc"
+4="REM_SETHILITEWORDS"
+5="PRO_OPENTEXT"
+6="PRO_ADDITEM"
+7="PRO_GETDIALOG"
+8="MakeMnuBar"
+9="SELHHFM"
+10="SaveSel"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.36
-PV=2.1.0.36
+FV=2.1.0.38
+PV=2.1.0.38
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.36
+ProductVersion=2.1.0.38
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.36
+FileVersion=2.1.0.38
 CompanyName=
 
 [VersionControl]
@@ -254,7 +254,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
