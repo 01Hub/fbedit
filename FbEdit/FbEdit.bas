@@ -38,6 +38,7 @@
 #Include "CreateTemplate.bas"
 #Include "Addins.bas"
 #Include "Opt\Language.bas"
+#Include "inc\fbeditini.bi"
 
 Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim buffer As ZString*260
@@ -2229,6 +2230,7 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	' Get inifilename
 	GetModuleFileName(NULL,@ad.IniFile,260)
 	Mid(ad.IniFile,Len(ad.IniFile)-2,3)="ini"
+	CheckIniFile()
 	GetPrivateProfileString(StrPtr("Win"),StrPtr("AppPath"),@szNULL,@buff,260,@ad.IniFile)
 	If Len(buff) Then
 		' FbEdit development, use main ini file
