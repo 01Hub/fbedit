@@ -5,6 +5,8 @@ o Flat toolbar on Project and Properties tools.
 o Rearanged Project toolbar buttons.
 o Option to set Info tool colors.
 o Incraced size of build option buffer.
+o Added block guiders.
+o Variable speed selection scrolling by mouse.
 o Fixed bug with environment option if there was no entries.
 o Fixed bug with project option / project groups.
 2.2.1.3

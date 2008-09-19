@@ -4574,7 +4574,7 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 		mov		LastLine,-1
 		mov		LastCol,-1
 		m2m     hMdiCld,hWin
-		mov		ws,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOLOCK or STYLE_AUTOSIZELINENUM
+		mov		ws,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
 		.if MdiID==ID_EDITTXT
 			or		ws,STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NODIVIDERLINE
 		.elseif !fUseHighLight
@@ -4597,6 +4597,7 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			mov		OldEditProc,eax
 			;Set font & format
 			invoke SetFormat,hEdt,hFont[0],hFont[4],hFont[8],TRUE
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
 		.else
 			;Subclass the RAEdit control
 			invoke SendMessage,hEdt,REM_SUBCLASS,0,addr EditTxtProc
