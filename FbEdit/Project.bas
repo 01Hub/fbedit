@@ -625,6 +625,7 @@ Function CloseProject() As Integer
 		SendMessage(ah.hpr,PRM_DELPROPERTY,0,0)
 		SendMessage(ah.hpr,PRM_SELECTPROPERTY,Asc("p")+256,0)
 		fProject=FALSE
+		ad.ProjectFile=""
 		SetHiliteWords(ah.hwnd)
 		' Add api files
 		LoadApiFiles

@@ -28,8 +28,12 @@ Sub SetToolMenu(ByVal hWin As HWND)
 	Dim nID As Integer
 	Dim sItem As ZString*32
 	Dim x As Integer
+	Dim mii As MENUITEMINFO
 
-	hSubMnu=GetSubMenu(GetMenu(hWin),7)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(ah.hmenu,10151,FALSE,@mii)
+	hSubMnu=mii.hSubMenu
 	nID=11000
 	ClearMenu(hSubMnu,nID)
 	nInx=1
@@ -52,8 +56,12 @@ Sub SetHelpMenu(ByVal hWin As HWND)
 	Dim nID As Integer
 	Dim sItem As ZString*32
 	Dim x As Integer
+	Dim mii As MENUITEMINFO
 
-	hSubMnu=GetSubMenu(GetMenu(hWin),9)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(ah.hmenu,10181,FALSE,@mii)
+	hSubMnu=mii.hSubMenu
 	nID=12000
 	ClearMenu(hSubMnu,nID)
 	nInx=1

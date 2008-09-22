@@ -619,7 +619,11 @@ End Sub
 
 Sub gestbrk(ad As UInteger)
 	Dim As UInteger i
+	Dim n As ZString Ptr
 	Dim chrg As CHARRANGE
+	Dim hwfd As HANDLE
+	Dim wfd As WIN32_FIND_DATA
+	Dim szCurDir As ZString*260
 
 	i=linesav+1
 	proccurad=ad
@@ -662,8 +666,20 @@ Sub gestbrk(ad As UInteger)
 		ClearBreakAll(0)
 		SetBreakPoints(-1)
 	Else
-		szFileName=bp(source(proc(procsv).sr).pInx).sFile
-		'PutString(szFileName)
+		If lstrlen(lpData->ProjectFile) Then
+			szFileName=bp(source(proc(procsv).sr).pInx).sFile
+		Else
+			szFileName=source(proc(procsv).sr).file
+			hwfd=FindFirstFile(@szFileName,@wfd)
+			If hwfd<>INVALID_HANDLE_VALUE Then
+				szFileName=Left(szFileName,Len(szFileName)-Len(wfd.cFileName))
+				If UCase(szFileName)=UCase(source(0).file) Then
+					szFileName=source(0).file
+				EndIf
+				szFileName=szFileName & wfd.cFileName
+				FindClose(hwfd)
+			EndIf
+		EndIf
 		PostMessage(lpHandles->hwnd,AIM_OPENFILE,0,Cast(LPARAM,@szFileName))
 		WaitForSingleObject(pinfo.hProcess,100)
 		' Clear old line

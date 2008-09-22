@@ -2,7 +2,7 @@ Const szSecWin=			!"[Win]\13\10"_
 								!"Winpos=0,64,34,1059,875,127,0,0,162,221,514,107,10,10,0,180,150,10,10\13\10"_
 								!"Colors=16777215,0,8404992,16777215,33587200,0,255,16777215,15393755,15329769,15987699,11184810,0,0,16777215,0,16777215,0,16777215,0,14024703,0,8404992,128,128\13\10"_
 								!"ressize=257,170,0,52,100,100\13\10"_
-								!"Version=1061\13\10"
+								!"Version=1063\13\10"
 Const szSecTheme=			!"[Theme]\13\10"_
 								!"Current=8\13\10"_
 								!"1=Default,128,128,128,8421440,8388608,128,128,128,128,16777344,536871040,128,128,10485760,10485760,10485760,65535,65535,65535,285147264,276824319,14024703,268435456,276840448,16777215,4227072,10485760,255,15329769,12632256,12632256,12632256,8421504,8404992,8421504,14024703,8404992,13828050,8404992,14024703,0,14024703,0,4194432,16711680,210\13\10"_
@@ -101,12 +101,6 @@ Const szSecAutoFormat=	!"[AutoFormat]\13\10"_
 Const szSecResource=		!"[Resource]\13\10"_
 								!"Export=1,2,0,rsrc.bi\13\10"_
 								!"Grid=3,3,1,1,1,32896,0,1,0,0,0,1\13\10"
-Const szSecCustCtrl=		!"[CustCtrl]\13\10"_
-								!"1=RACodeComplete.dll,\13\10"_
-								!"2=RAEdit.dll,\13\10"_
-								!"3=RAFile.dll,\13\10"_
-								!"4=RAGrid.dll,\13\10"_
-								!"5=RAProperty.dll,\13\10"
 Const szSecTools=			!"[Tools]\13\10"_
 								!"1=&Calculator,calc.exe\13\10"_
 								!"2=&Notepad,notepad.exe\13\10"_
@@ -163,23 +157,6 @@ Const szSecPrinter=		!"[Printer]\13\10"_
 								!"Page=21000,29700,1000,1000,1000,1000,66\13\10"
 Const szSecLanguage=		!"[Language]\13\10"_
 								!"Language=(None)\13\10"
-Const szSecAddins=		!"[Addins]\13\10"_
-								!"AdvEdit.dll=1\13\10"_
-								!"Beautify.dll=1\13\10"_
-								!"FileTabStyle.dll=1\13\10"_
-								!"HelpAddin.dll=1\13\10"_
-								!"SnipletAddin.dll=1\13\10"_
-								!"Toolbar.dll=1\13\10"_
-								!"FBFileAssociation.dll=1\13\10"_
-								!"fbshowvars.dll=1\13\10"_
-								!"TortoiseSVN.dll=1\13\10"_
-								!"CustomFontAddin.dll=1\13\10"_
-								!"Base Calc.dll=1\13\10"_
-								!"ProjectZip.dll=1\13\10"_
-								!"ControlDefs.dll=0\13\10"_
-								!"ReallyRad.dll=1\13\10"_
-								!"QuickEval.dll=0\13\10"_
-								!"FbDebug.dll=1\13\10"
 Const szSecSniplet=		!"[Sniplet]\13\10"_
 								!"WinPos=10,10,800,600\13\10"
 Const szSecToolbar=		!"[Toolbar]\13\10"_
@@ -192,12 +169,37 @@ Const szSecShowVars=		!"[ShowVars]\13\10"_
 								!"Dock=1,10,10,300,200,0,0,0,2500\13\10"
 Const szSecProjectZip=	!"[ProjectZip]\13\10"_
 								!"pos=407,384,466,255\13\10"_
-								!";Optional. Skip all files in folder \bak\13\10"_
+								!";Optional. Skip all files in folder \\bak\13\10"_
 								!"skip=\\bak\13\10"_
 								!";Optional. Folder where to put zip files\13\10"_
-								!"folder=E:\Archive\13\10"_
+								!"folder=C:\\Archive\13\10"_
 								!";Optional incluse date=1 or datetime=2\13\10"_
 								!"opt=2\13\10"
+
+Sub UpdateSection(ByVal sName As String,ByVal sBlock As String)
+	Dim As Integer i,l
+
+	buff=sBlock
+	buff=Mid(buff,Len(sName)+4)
+	i=1
+	While i
+		i=InStr(buff,!"\13\10")
+		If i Then
+			buff=Left(buff,i) & Mid(buff,i+2)
+		EndIf
+	Wend
+	i=0
+	l=Len(buff)
+	While i<l
+		If buff[i]=13 Then
+			buff[i]=0
+		EndIf
+		i+=1
+	Wend
+	buff[i]=0
+	WritePrivateProfileSection(sName,@buff,@ad.IniFile)
+
+End Sub
 
 Sub CheckIniFile()
 	Dim lret As Integer
@@ -205,16 +207,34 @@ Sub CheckIniFile()
 
 	lret=GetFileAttributes(@ad.IniFile)
 	If lret=INVALID_HANDLE_VALUE Then
-		If MessageBox(NULL,"Ini file not found." & CR & ad.IniFile & CR & CR & "Create it?","FbEdit",MB_YESNO Or MB_ICONERROR)=IDNO Then
-			End
-		EndIf
+		' FbEdit.ini does not exist, create it.
 		hFile=CreateFile(@ad.IniFile,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_NEW,FILE_ATTRIBUTE_NORMAL,NULL)
 		If hFile<>INVALID_HANDLE_VALUE Then
-			buff=szSecWin & szSecTheme & szSecEdit1 & szSecEdit2 & szSecEdit3 & szSecEdit4 & szSecEdit5 & szSecEdit6 & szSecEdit7 & szSecBlock & szSecAutoFormat & szSecResource & szSecCustCtrl & szSecTools & szSecHelp & szSecProject & szSecMake & szSecOpen & szSecApi & szSecDebug & szSecTemplate & szSecPrinter & szSecLanguage & szSecAddins & szSecSniplet & szSecToolbar & szSecFileTab & szSecShowVars & szSecProjectZip
+			buff=szSecWin & szSecTheme & szSecEdit1 & szSecEdit2 & szSecEdit3 & szSecEdit4 & szSecEdit5 & szSecEdit6 & szSecEdit7 & szSecBlock & szSecAutoFormat & szSecResource & szSecTools & szSecHelp & szSecProject & szSecMake & szSecOpen & szSecApi & szSecDebug & szSecTemplate & szSecPrinter & szSecLanguage & szSecSniplet & szSecToolbar & szSecFileTab & szSecShowVars & szSecProjectZip
 			WriteFile(hFile,@buff,Len(buff),@lret,NULL)
 			CloseHandle(hFile)
 		Else
+			' Coud not create it.
 			End
+		EndIf
+	Else
+		CloseHandle(hFile)
+		' FbEdit.ini exist, update it.
+		buff=ad.AppPath & "\FbEditOld.ini"
+		lret=GetPrivateProfileInt("Win","Version",0,@ad.IniFile)
+		If lret<1061 Then
+			' Delete old backup
+			DeleteFile(@buff)
+			MoveFile(@ad.IniFile,@buff)
+			CheckIniFile
+			MessageBox(NULL,"Your FbEdit.ini file was too old to be updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)
+		ElseIf lret<>ad.version Then
+			CopyFile(@ad.IniFile,@buff,FALSE)
+			If lret<1063 Then
+				UpdateSection("Block",szSecBlock)
+			EndIf
+			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)
+			MessageBox(NULL,"The FbEdit.ini file has been updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)
 		EndIf
 	EndIf
 

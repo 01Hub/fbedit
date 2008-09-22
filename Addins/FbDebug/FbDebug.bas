@@ -38,38 +38,40 @@ Function IsProjectFile(ByVal lpFile As ZString Ptr) As Integer
 	Dim As Integer nInx,nMiss
 	Dim sItem As ZString*260
 
-	nInx=1
-	nMiss=0
-	Do While nInx<256 And nMiss<MAX_MISS
-		sItem=szNULL
-		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-		If Len(sItem) Then
-			nMiss=0
-			sItem=MakeProjectFileName(sItem)
-			If lstrcmpi(@sItem,lpFile)=0 Then
-				Return nInx
+	If lstrlen(lpData->ProjectFile) Then
+		nInx=1
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				sItem=MakeProjectFileName(sItem)
+				If lstrcmpi(@sItem,lpFile)=0 Then
+					Return nInx
+				EndIf
+			Else
+				nMiss=nMiss+1
 			EndIf
-		Else
-			nMiss=nMiss+1
-		EndIf
-		nInx=nInx+1
-	Loop
-	nInx=1001
-	nMiss=0
-	Do While nInx<1256 And nMiss<MAX_MISS
-		sItem=szNULL
-		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-		If Len(sItem) Then
-			nMiss=0
-			sItem=MakeProjectFileName(sItem)
-			If lstrcmpi(@sItem,lpFile)=0 Then
-				Return nInx
+			nInx=nInx+1
+		Loop
+		nInx=1001
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				sItem=MakeProjectFileName(sItem)
+				If lstrcmpi(@sItem,lpFile)=0 Then
+					Return nInx
+				EndIf
+			Else
+				nMiss=nMiss+1
 			EndIf
-		Else
-			nMiss=nMiss+1
-		EndIf
-		nInx=nInx+1
-	Loop
+			nInx=nInx+1
+		Loop
+	EndIf
 	Return 0
 
 End Function
@@ -78,43 +80,48 @@ Sub SaveBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim buff As ZString*4096
 	Dim nLn As Integer
 
-	nLn=-1
-	While TRUE
-		nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
-		If nLn<>-1 Then
-			buff &="," & Str(nLn)
-		Else
-			WritePrivateProfileString("BreakPoint",Str(nInx),@buff[1],@lpData->ProjectFile)
-			Exit While
-		EndIf
-	Wend
+	If lstrlen(lpData->ProjectFile) Then
+		nLn=-1
+		While TRUE
+			nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
+			If nLn<>-1 Then
+				buff &="," & Str(nLn)
+			Else
+				WritePrivateProfileString("BreakPoint",Str(nInx),@buff[1],@lpData->ProjectFile)
+				Exit While
+			EndIf
+		Wend
+	EndIf
 
 End Sub
 
 Sub LoadBreakpoints(ByVal hWin As HWND,ByVal nInx As Integer)
-	Dim buff As ZString*2048
+	Dim buff As ZString*4096
 	Dim As Integer nLn,x
 
-	nLn=-1
-	While TRUE
-		nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
-		If nLn=-1 Then
-			Exit While
-		EndIf
-		SendMessage(hWin,REM_SETBREAKPOINT,nLn,FALSE)
-	Wend
-	GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
-	While Len(buff)
-		x=InStr(buff,",")
-		If x Then
-			nLn=Val(Left(buff,x-1))
-			buff=Mid(buff,x+1)
-		Else
-			nLn=Val(buff)
-			buff=""
-		EndIf
-		SendMessage(hWin,REM_SETBREAKPOINT,nLn,TRUE)
-	Wend
+	If lstrlen(lpData->ProjectFile) Then
+		nLn=-1
+		While TRUE
+			nLn=SendMessage(hWin,REM_NEXTBREAKPOINT,nLn,0)
+			If nLn=-1 Then
+				Exit While
+			EndIf
+			SendMessage(hWin,REM_SETBREAKPOINT,nLn,FALSE)
+		Wend
+		GetPrivateProfileString("BreakPoint",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+		While Len(buff)
+			x=InStr(buff,",")
+			If x Then
+				nLn=Val(Left(buff,x-1))
+				buff=Mid(buff,x+1)
+			Else
+				nLn=Val(buff)
+				buff=""
+			EndIf
+			SendMessage(hWin,REM_SETBREAKPOINT,nLn,TRUE)
+		Wend
+	EndIf
+
 End Sub
 
 Function CheckBpLine(ByVal nLine As Integer,ByVal lpszFile As ZString Ptr) As Boolean
@@ -196,59 +203,94 @@ Function CheckBreakPoints() As Integer
 End Function
 
 Sub GetBreakPoints()
-	Dim As Integer nInx,nMiss
+	Dim As Integer nInx,nMiss,nLn,i
 	Dim sItem As ZString*260
+	Dim buff As ZString*4096
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
 
 	For bpnb=0 To SOURCEMAX
 		bp(bpnb).nInx=0
 		bp(bpnb).sFile=""
 		bp(bpnb).sBP=""
 	Next
-	nMiss=CheckBreakPoints
-	If nMiss Then
-		MessageBox(lpHandles->hwnd,"There is " & Str(nMiss) & " unhandled breakpoint(s).","Debug",MB_OK Or MB_ICONINFORMATION)
+	If lstrlen(lpData->ProjectFile) Then
+		nMiss=CheckBreakPoints
+		If nMiss Then
+			MessageBox(lpHandles->hwnd,"There is " & Str(nMiss) & " unhandled breakpoint(s).","Debug",MB_OK Or MB_ICONINFORMATION)
+		EndIf
+		bpnb=0
+		nInx=1
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				sItem=MakeProjectFileName(sItem)
+				bp(bpnb).nInx=nInx
+				bp(bpnb).sFile=sItem
+				GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+				If Len(sItem) Then
+					bp(bpnb).sBP="," & sItem & ","
+				EndIf
+				bpnb+=1
+			Else
+				nMiss=nMiss+1
+			EndIf
+			nInx=nInx+1
+		Loop
+		nInx=1001
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
+			sItem=szNULL
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				sItem=MakeProjectFileName(sItem)
+				bp(bpnb).nInx=nInx
+				bp(bpnb).sFile=sItem
+				GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
+				If Len(sItem) Then
+					bp(bpnb).sBP="," & sItem & ","
+				EndIf
+				bpnb+=1
+			Else
+				nMiss=nMiss+1
+			EndIf
+			nInx=nInx+1
+		Loop
+	Else
+		tci.mask=TCIF_PARAM
+		i=0
+		bpnb=0
+		While TRUE
+			If SendMessage(lpHandles->htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+				If lpTABMEM->hedit<>lpHandles->hres Then
+					If GetWindowLong(lpTABMEM->hedit,GWL_ID)<>IDC_HEXED Then
+						nLn=-1
+						buff=""
+						While TRUE
+							nLn=SendMessage(lpTABMEM->hedit,REM_NEXTBREAKPOINT,nLn,0)
+							If nLn<>-1 Then
+								buff &="," & Str(nLn)
+							Else
+								bp(bpnb).sBP=buff & ","
+								bp(bpnb).sFile=lpTABMEM->filename
+								bp(bpnb).nInx=i
+								bpnb+=1
+								Exit While
+							EndIf
+						Wend
+					EndIf
+				EndIf
+			Else
+				Exit While
+			EndIf
+			i+=1
+		Wend
 	EndIf
-	bpnb=0
-	nInx=1
-	nMiss=0
-	Do While nInx<256 And nMiss<MAX_MISS
-		sItem=szNULL
-		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-		If Len(sItem) Then
-			nMiss=0
-			sItem=MakeProjectFileName(sItem)
-			bp(bpnb).nInx=nInx
-			bp(bpnb).sFile=sItem
-			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-			If Len(sItem) Then
-				bp(bpnb).sBP="," & sItem & ","
-			EndIf
-			bpnb+=1
-		Else
-			nMiss=nMiss+1
-		EndIf
-		nInx=nInx+1
-	Loop
-	nInx=1001
-	nMiss=0
-	Do While nInx<1256 And nMiss<MAX_MISS
-		sItem=szNULL
-		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-		If Len(sItem) Then
-			nMiss=0
-			sItem=MakeProjectFileName(sItem)
-			bp(bpnb).nInx=nInx
-			bp(bpnb).sFile=sItem
-			GetPrivateProfileString(StrPtr("BreakPoint"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@lpData->ProjectFile)
-			If Len(sItem) Then
-				bp(bpnb).sBP="," & sItem & ","
-			EndIf
-			bpnb+=1
-		Else
-			nMiss=nMiss+1
-		EndIf
-		nInx=nInx+1
-	Loop
 
 End Sub
 
@@ -502,7 +544,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						If Left(buff,1)="." Then
 							' With block, fixup buff
 							i=IsProjectFile(@lpData->filename)
-							i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,i,nCursorLine)
+							If i Then
+								i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,i,nCursorLine)
+							Else
+								i=SendMessage(lpHandles->hpr,PRM_ISINWITHBLOCK,Cast(WPARAM,GetParent(hWin)),nCursorLine)
+							EndIf
 							If i Then
 								lstrcpy(@nme1,Cast(ZString Ptr,i))
 								buff=nme1 & buff
@@ -854,17 +900,11 @@ Sub EnableDebugMenu()
 	st=MF_BYCOMMAND Or MF_GRAYED
 	If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 		If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-			If IsProjectFile(@lpData->filename) Then
-				st=MF_BYCOMMAND Or MF_ENABLED
-			EndIf
+			st=MF_BYCOMMAND Or MF_ENABLED
 		EndIf
 	EndIf
 	EnableMenuItem(lpHandles->hmenu,nMnuToggle,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuClear,st)
-	st=MF_BYCOMMAND Or MF_GRAYED
-	If lstrlen(@lpData->ProjectFile) Then
-		st=MF_BYCOMMAND Or MF_ENABLED
-	EndIf
 	EnableMenuItem(lpHandles->hmenu,nMnuRun,st)
 	' Run To Caret
 	st=MF_BYCOMMAND Or MF_GRAYED
@@ -895,8 +935,10 @@ Sub LockFiles(ByVal bLock As Boolean)
 	While TRUE
 		If SendMessage(lpHandles->htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
 			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-			If lpTABMEM->profileinx Then
-				SendMessage(lpTABMEM->hedit,REM_READONLY,0,bLock)
+			If lpTABMEM->hedit<>lpHandles->hres Then
+				If GetWindowLong(lpTABMEM->hedit,GWL_ID)<>IDC_HEXED Then
+					SendMessage(lpTABMEM->hedit,REM_READONLY,0,bLock)
+				EndIf
 			EndIf
 		Else
 			Exit While
@@ -925,9 +967,20 @@ Function CheckFileTime(ByVal lpszExe As ZString Ptr) As String
 		While TRUE
 			If SendMessage(lpHandles->htabtool,TCM_GETITEM,i,Cast(LPARAM,@tci)) Then
 				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-				If lpTABMEM->profileinx Then
-					If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
-						Return "File(s) not saved"
+				If lpTABMEM->hedit<>lpHandles->hres Then
+					If GetWindowLong(lpTABMEM->hedit,GWL_ID)<>IDC_HEXED Then
+						If SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0) Then
+							Return "File(s) not saved"
+						Else
+							hFile=CreateFile(lpTABMEM->filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+							If hFile<>INVALID_HANDLE_VALUE Then
+								GetFileTime(hFile,NULL,NULL,@ftfile)
+								CloseHandle(hFile)
+								If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
+									Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+								EndIf
+							EndIf
+						EndIf
 					EndIf
 				EndIf
 			Else
@@ -935,48 +988,50 @@ Function CheckFileTime(ByVal lpszExe As ZString Ptr) As String
 			EndIf
 			i+=1
 		Wend
-		nInx=1
-		nMiss=0
-		Do While nInx<256 And nMiss<MAX_MISS
-			szItem=szNULL
-			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
-			If Len(szItem) Then
-				nMiss=0
-				szItem=MakeProjectFileName(szItem)
-				hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-				If hFile<>INVALID_HANDLE_VALUE Then
-					GetFileTime(hFile,NULL,NULL,@ftfile)
-					CloseHandle(hFile)
-					If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
-						Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+		If lstrlen(lpData->ProjectFile) Then
+			nInx=1
+			nMiss=0
+			Do While nInx<256 And nMiss<MAX_MISS
+				szItem=szNULL
+				GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+				If Len(szItem) Then
+					nMiss=0
+					szItem=MakeProjectFileName(szItem)
+					hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+					If hFile<>INVALID_HANDLE_VALUE Then
+						GetFileTime(hFile,NULL,NULL,@ftfile)
+						CloseHandle(hFile)
+						If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
+							Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+						EndIf
 					EndIf
+				Else
+					nMiss=nMiss+1
 				EndIf
-			Else
-				nMiss=nMiss+1
-			EndIf
-			nInx=nInx+1
-		Loop
-		nInx=1001
-		nMiss=0
-		Do While nInx<1256 And nMiss<MAX_MISS
-			szItem=szNULL
-			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
-			If Len(szItem) Then
-				nMiss=0
-				szItem=MakeProjectFileName(szItem)
-				hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-				If hFile<>INVALID_HANDLE_VALUE Then
-					GetFileTime(hFile,NULL,NULL,@ftfile)
-					CloseHandle(hFile)
-					If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
-						Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+				nInx=nInx+1
+			Loop
+			nInx=1001
+			nMiss=0
+			Do While nInx<1256 And nMiss<MAX_MISS
+				szItem=szNULL
+				GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@szItem,SizeOf(szItem),@lpData->ProjectFile)
+				If Len(szItem) Then
+					nMiss=0
+					szItem=MakeProjectFileName(szItem)
+					hFile=CreateFile(szItem,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+					If hFile<>INVALID_HANDLE_VALUE Then
+						GetFileTime(hFile,NULL,NULL,@ftfile)
+						CloseHandle(hFile)
+						If (ftexe.dwHighDateTime=ftfile.dwHighDateTime And  ftexe.dwLowDateTime<ftfile.dwLowDateTime) Or ftexe.dwHighDateTime<ftfile.dwHighDateTime Then
+							Return "A source file is newer than the exe." & Chr(13) & Chr(10) & "Recompile the project."
+						EndIf
 					EndIf
+				Else
+					nMiss=nMiss+1
 				EndIf
-			Else
-				nMiss=nMiss+1
-			EndIf
-			nInx=nInx+1
-		Loop
+				nInx=nInx+1
+			Loop
+		EndIf
 	Else
 		Return *lpszExe & " not found."
 	EndIf
@@ -1024,22 +1079,22 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 							nInx=IsProjectFile(@lpData->filename)
+							nLn=GetLineNumber
+							tid=SendMessage(lpHandles->hred,REM_GETLINESTATE,nLn,0)
+							If tid And STATE_BREAKPOINT Then
+								SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
+							Else
+								If CheckLine(nLn,@lpData->filename) Then
+									SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,TRUE)
+								EndIf
+							EndIf
 							If nInx Then
-								nLn=GetLineNumber
-								tid=SendMessage(lpHandles->hred,REM_GETLINESTATE,nLn,0)
-								If tid And STATE_BREAKPOINT Then
-									SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
-								Else
-									If CheckLine(nLn,@lpData->filename) Then
-										SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,TRUE)
-									EndIf
-								EndIf
 								SaveBreakpoints(lpHandles->hred,nInx)
-								If hThread Then
-									GetBreakPoints
-									SetSourceProjectInx
-									SetBreakPoints(0)
-								EndIf
+							EndIf
+							If hThread Then
+								GetBreakPoints
+								SetSourceProjectInx
+								SetBreakPoints(0)
 							EndIf
 						EndIf
 					EndIf
@@ -1049,59 +1104,62 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
 						If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
 							nInx=IsProjectFile(@lpData->filename)
-							If nInx Then
-								nLn=-1
-								While TRUE
-									nLn=SendMessage(lpHandles->hred,REM_NEXTBREAKPOINT,nLn,0)
-									If nLn=-1 Then
-										Exit While
-									EndIf
-									SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
-									nLn+=1
-								Wend
-								SaveBreakpoints(lpHandles->hred,nInx)
-								If hThread Then
-									GetBreakPoints
-									SetSourceProjectInx
-									SetBreakPoints(0)
+							nLn=-1
+							While TRUE
+								nLn=SendMessage(lpHandles->hred,REM_NEXTBREAKPOINT,nLn,0)
+								If nLn=-1 Then
+									Exit While
 								EndIf
+								SendMessage(lpHandles->hred,REM_SETBREAKPOINT,nLn,FALSE)
+								nLn+=1
+							Wend
+							If nInx Then
+								SaveBreakpoints(lpHandles->hred,nInx)
+							EndIf
+							If hThread Then
+								GetBreakPoints
+								SetSourceProjectInx
+								SetBreakPoints(0)
 							EndIf
 						EndIf
 					EndIf
 					Return TRUE
 					'
 				Case nMnuRun
-					If lstrlen(@lpData->ProjectFile) Then
-						nLnRunTo=-1
-						If hThread Then
-							ClearDebugLine
-							fRun=1
-							tid=1
-							While tid>0
-								tid=ResumeThread(threadcontext)
-							Wend
-							BringWindowToFront
-						Else
-							fExit=0
+					nLnRunTo=-1
+					If hThread Then
+						ClearDebugLine
+						fRun=1
+						tid=1
+						While tid>0
+							tid=ResumeThread(threadcontext)
+						Wend
+						BringWindowToFront
+					Else
+						fExit=0
+						If lstrlen(@lpData->ProjectFile) Then
 							If Len(lpData->smakeoutput) Then
 								szFileName=lpData->ProjectPath & "\" & lpData->smakeoutput
 							Else
 								szFileName=GetMainFile
 								szFileName=lpData->ProjectPath & "\" & Left(szFileName,Len(szFileName)-3) & "exe"
 							EndIf
-							szTipText=CheckFileTime(@szFileName)
-							If szTipText="" Then
-								nLnDebug=-1
-								LockFiles(TRUE)
-								lpFunctions->ShowOutput(TRUE)
-								lpFunctions->ShowImmediate(TRUE)
-								PutString("Debugging: " & szFileName)
-								lpData->fDebug=TRUE
-								hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
-								EnableDebugMenu
-							Else
-								MessageBox(lpHandles->hwnd,szTipText,"Debug",MB_OK Or MB_ICONERROR)
-							EndIf
+						Else
+							szFileName=lpData->filename
+							szFileName=Left(szFileName,Len(szFileName)-3) & "exe"
+						EndIf
+						szTipText=CheckFileTime(@szFileName)
+						If szTipText="" Then
+							nLnDebug=-1
+							LockFiles(TRUE)
+							lpFunctions->ShowOutput(TRUE)
+							lpFunctions->ShowImmediate(TRUE)
+							PutString("Debugging: " & szFileName)
+							lpData->fDebug=TRUE
+							hThread=CreateThread(NULL,0,Cast(Any Ptr,@RunFile),Cast(LPVOID,@szFileName),NULL,@tid)
+							EnableDebugMenu
+						Else
+							MessageBox(lpHandles->hwnd,szTipText,"Debug",MB_OK Or MB_ICONERROR)
 						EndIf
 					EndIf
 					Return TRUE
@@ -1183,17 +1241,15 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 			End Select
 			'
 		Case AIM_FILEOPENNEW
-			If lstrlen(@lpData->ProjectFile) Then
-				If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
-					If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
-						nInx=IsProjectFile(Cast(ZString Ptr,lParam))
-						If nInx Then
-							lpOldEditProc=Cast(Any Ptr,SendMessage(lpHandles->hred,REM_SUBCLASS,0,Cast(LPARAM,@EditProc)))
-							LoadBreakpoints(lpHandles->hred,nInx)
-							If hThread Then
-								SendMessage(lpHandles->hred,REM_READONLY,0,TRUE)
-							EndIf
-						EndIf
+			If lpHandles->hred<>0 And lpHandles->hred<>lpHandles->hres Then
+				If GetWindowLong(lpHandles->hred,GWL_ID)<>IDC_HEXED Then
+					lpOldEditProc=Cast(Any Ptr,SendMessage(lpHandles->hred,REM_SUBCLASS,0,Cast(LPARAM,@EditProc)))
+					If hThread Then
+						SendMessage(lpHandles->hred,REM_READONLY,0,TRUE)
+					EndIf
+					nInx=IsProjectFile(Cast(ZString Ptr,lParam))
+					If nInx Then
+						LoadBreakpoints(lpHandles->hred,nInx)
 					EndIf
 				EndIf
 			EndIf
