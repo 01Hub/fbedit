@@ -185,6 +185,7 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGOPTMNU)
+			CenterOwner(hWin)
 			SendDlgItemMessage(hWin,IDC_EDTMEITEM,EM_LIMITTEXT,32,0)
 			SendDlgItemMessage(hWin,IDC_EDTMECMND,EM_LIMITTEXT,128,0)
 			nInx=120

@@ -39,6 +39,7 @@ Function ExternalFileDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPara
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGEXTERNALFILE)
+			CenterOwner(hWin)
 			nInx=1
 			Do While TRUE
 				GetPrivateProfileString(StrPtr("Open"),Str(nInx),@szNULL,@buff,SizeOf(buff),@ad.IniFile)

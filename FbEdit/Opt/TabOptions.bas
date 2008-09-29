@@ -268,6 +268,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_TABOPTIONS)
+			CenterOwner(hWin)
 			grdcol=grdsize.color
 			hGrdBr=CreateSolidBrush(grdcol)
 			' Create the tabs

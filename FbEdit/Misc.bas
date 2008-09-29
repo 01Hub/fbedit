@@ -2383,3 +2383,22 @@ Again:
 	lstrcpy(lpCmd,@path)
 
 End Sub
+
+Sub CenterOwner(ByVal hWin As HWND)
+	Dim hPar As HWND
+	Dim rect As RECT
+	Dim rect1 As RECT
+
+	hPar=Cast(HWND,GetWindowLong(hWin,GWL_HWNDPARENT))
+	If hPar=0 Then
+		hPar=GetDesktopWindow
+	EndIf
+	GetWindowRect(hPar,@rect)
+	GetWindowRect(hWin,@rect1)
+	rect1.right=rect1.right-rect1.left
+	rect1.bottom=rect1.bottom-rect1.top
+	rect1.left=rect.left+(rect.right-rect.left-rect1.right)/2
+	rect1.top=rect.top+(rect.bottom-rect.top-rect1.bottom)/2
+	MoveWindow(hWin,rect1.left,rect1.top,rect1.right,rect1.bottom,FALSE)
+	
+End Sub

@@ -1,5 +1,5 @@
 Const szSecWin=			!"[Win]\13\10"_
-								!"Winpos=0,64,34,1059,875,127,0,0,162,221,514,107,10,10,0,180,150,10,10\13\10"_
+								!"Winpos=0,0,0,850,600,127,0,0,162,221,514,107,10,10,0,180,150,10,10\13\10"_
 								!"Colors=16777215,0,8404992,16777215,33587200,0,255,16777215,15393755,15329769,15987699,11184810,0,0,16777215,0,16777215,0,16777215,0,14024703,0,8404992,128,128\13\10"_
 								!"ressize=257,170,0,52,100,100\13\10"_
 								!"Version=1063\13\10"
@@ -115,7 +115,7 @@ Const szSecHelp=			!"[Help]\13\10"_
 								!"4=FbEdit help,$A\\Help\\FbEdit.chm\13\10"_
 								!"Path=\\FreeBASIC\\Help\13\10"
 Const szSecProject=		!"[Project]\13\10"_
-								!"Path=\\FbEdit\\Projects\13\10"
+								!"Path=$A\\Projects\13\10"
 Const szSecMake=			!"[Make]\13\10"_
 								!"fbcPath=\\FreeBASIC\13\10"_
 								!"Module=Module Build,fbc -c\13\10"_
@@ -213,6 +213,7 @@ Sub CheckIniFile()
 			buff=szSecWin & szSecTheme & szSecEdit1 & szSecEdit2 & szSecEdit3 & szSecEdit4 & szSecEdit5 & szSecEdit6 & szSecEdit7 & szSecBlock & szSecAutoFormat & szSecResource & szSecTools & szSecHelp & szSecProject & szSecMake & szSecOpen & szSecApi & szSecDebug & szSecTemplate & szSecPrinter & szSecLanguage & szSecSniplet & szSecToolbar & szSecFileTab & szSecShowVars & szSecProjectZip
 			WriteFile(hFile,@buff,Len(buff),@lret,NULL)
 			CloseHandle(hFile)
+			DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGPATHOPTION),NULL,@PathOptDlgProc,0)
 		Else
 			' Coud not create it.
 			End

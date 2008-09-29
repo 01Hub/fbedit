@@ -1946,6 +1946,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					Case 2
 						SendMessage(ah.hpr,PRM_SELOWNER,0,0)
 					Case 5
+						i=SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)
+						If i=1 Then
+							' Current file
+							UpdateFileProperty
+						EndIf
 						SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				End Select
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then

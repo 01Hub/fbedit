@@ -188,6 +188,7 @@ Function LanguageDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGLANGUAGE)
+			CenterOwner(hWin)
 			id=256
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_SETTABSTOPS,1,Cast(LPARAM,@id))
 			SendDlgItemMessage(hWin,IDC_LSTLANGUAGE,LB_ADDSTRING,0,Cast(LPARAM,StrPtr("(None)")))

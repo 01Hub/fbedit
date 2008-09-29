@@ -1544,6 +1544,7 @@ Function NewProjectDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_NEWPROJECT)
+			CenterOwner(hWin)
 			hNPTab=GetDlgItem(hWin,IDC_TABNEWPROJECT)
 			ts.mask=TCIF_TEXT
 			sItem=GetInternalString(IS_FILES)
@@ -1656,6 +1657,7 @@ Function ApiOptionProc(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lP
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGPROJECTOPTIONAPI)
+			CenterOwner(hWin)
 			hLst=GetDlgItem(hWin,IDC_LSTAPIFILES)
 			lpOldApiListProc=Cast(Any Ptr,SetWindowLong(hLst,GWL_WNDPROC,Cast(Integer,@ApiListProc)))
 			s=ApiFiles
@@ -1747,6 +1749,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 	Select Case uMsg
 		Case WM_INITDIALOG
 			TranslateDialog(hWin,IDD_DLGPROJECTOPTION)
+			CenterOwner(hWin)
 			SendDlgItemMessage(hWin,IDC_EDTPODESCRIPTION,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPOTYPE,EM_LIMITTEXT,64,0)
 			SendDlgItemMessage(hWin,IDC_EDTPOBUILD,EM_LIMITTEXT,128,0)
