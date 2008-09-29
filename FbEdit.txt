@@ -21,6 +21,7 @@ o Fixed bug with Auto delete files after build. Could cause a crash on Vista.
 o Fixed bug with resource editor style manager.
   Could show unrelated / duplicated styles.
 o Fixed bug where using Options / Tools Menu or Help Menu would update the wrong menu.
+o Fixed bug with properties refresh button.
 1.0.6.2
 o Added FbDebug addin. The addin provides FbEdit with an internal
   debugger. See the FbDebug.txt help file by using the addin manager.
