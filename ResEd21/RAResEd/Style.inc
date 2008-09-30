@@ -2312,6 +2312,8 @@ rsexstyledef	dd WS_EX_ACCEPTFILES
 				dd WS_EX_WINDOWEDGE
 				dd WS_EX_WINDOWEDGE
 				db 'WS_EX_WINDOWEDGE',0
+				dd 0,0
+				db 0
 
 editnot			db 'ES_DISABLENOSCROLL',0
 				db 0

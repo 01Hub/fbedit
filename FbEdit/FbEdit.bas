@@ -219,7 +219,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim nLine As Integer
 	Dim hBmp As HBITMAP
 	Dim sItem As ZString*260
-	Dim wcex As WNDCLASSEXA
 	Dim hMem As HGLOBAL
 	Dim lpCOPYDATASTRUCT As COPYDATASTRUCT Ptr
 	Dim sbParts(3) As Integer
@@ -531,35 +530,22 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If wpos.fview And VIEW_STATUSBAR Then
 				ShowWindow(ah.hsbr,SW_SHOWNA)
 			EndIf
-			GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@ApiFiles,SizeOf(ApiFiles),@ad.IniFile)
-			GetPrivateProfileString(StrPtr("Api"),StrPtr("DefApi"),@szNULL,@DefApiFiles,SizeOf(DefApiFiles),@ad.IniFile)
-			SetHiliteWords(ah.hwnd)
-			' Add api files
-			LoadApiFiles
-			SetHiliteWordsFromApi(ah.hwnd)
 			ah.hmnuiml=ImageList_Create(16,16,ILC_COLOR4 Or ILC_MASK,4,0)
 			hBmp=LoadBitmap(hInstance,Cast(ZString Ptr,IDB_MNUARROW))
 			ImageList_AddMasked(ah.hmnuiml,hBmp,&HC0C0C0)
 			DeleteObject(hBmp)
-			' Full screen
-			wcex.cbSize=SizeOf(WNDCLASSEXA)
-			wcex.style=CS_HREDRAW Or CS_VREDRAW
-			wcex.lpfnWndProc=@FullScreenProc
-			wcex.cbClsExtra=NULL
-			wcex.cbWndExtra=NULL
-			wcex.hInstance=hInstance
-			wcex.hbrBackground=Cast(HBRUSH,NULL)
-			wcex.lpszMenuName=NULL
-			wcex.lpszClassName=@szFullScreenClassName
-			wcex.hIcon=0
-			wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
-			wcex.hIconSm=0
-			RegisterClassEx(@wcex)
 			' Resource editor child dialog
 			ah.hres=CreateDialogParam(hInstance,Cast(zstring ptr,IDD_DLGRESED),hWin,@ResEdProc,0)
 			SetToolsColors(hWin)
 			SetToolMenu(hWin)
 			SetHelpMenu(hWin)
+			' Syntax hiliting
+			SetHiliteWords(ah.hwnd)
+			' Add api files
+			GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@ApiFiles,SizeOf(ApiFiles),@ad.IniFile)
+			GetPrivateProfileString(StrPtr("Api"),StrPtr("DefApi"),@szNULL,@DefApiFiles,SizeOf(DefApiFiles),@ad.IniFile)
+			LoadApiFiles
+			SetHiliteWordsFromApi(ah.hwnd)
 			SetTimer(hWin,200,200,Cast(Any Ptr,@MyTimerProc))
 			SetWinCaption
 			hVCur=LoadCursor(hInstance,Cast(ZString Ptr,IDC_VSPLIT))
@@ -2264,6 +2250,7 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 			Return 0
 		EndIf
 	EndIf
+	' Main window
 	wcex.cbSize=SizeOf(WNDCLASSEX)
 	wcex.style=CS_HREDRAW Or CS_VREDRAW
 	wcex.lpfnWndProc=@DlgProc
@@ -2277,6 +2264,20 @@ Function WinMain(ByVal hInst As HINSTANCE,ByVal hPrevInst As HINSTANCE,ByVal lpC
 	wcex.hIcon=hIcon
 	wcex.hIconSm=0
 	wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
+	RegisterClassEx(@wcex)
+	' Full screen
+	wcex.cbSize=SizeOf(WNDCLASSEXA)
+	wcex.style=CS_HREDRAW Or CS_VREDRAW
+	wcex.lpfnWndProc=@FullScreenProc
+	wcex.cbClsExtra=NULL
+	wcex.cbWndExtra=NULL
+	wcex.hInstance=hInstance
+	wcex.hbrBackground=Cast(HBRUSH,NULL)
+	wcex.lpszMenuName=NULL
+	wcex.lpszClassName=@szFullScreenClassName
+	wcex.hIcon=0
+	wcex.hCursor=LoadCursor(NULL,IDC_ARROW)
+	wcex.hIconSm=0
 	RegisterClassEx(@wcex)
 	CreateDialogParam(hInst,Cast(ZString Ptr,IDD_MAIN),NULL,@DlgProc,NULL)
 	If wpos.fMax Then
