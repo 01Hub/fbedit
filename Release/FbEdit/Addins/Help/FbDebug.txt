@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.1.0
+FbEdit debug addin version 1.0.1.|
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -14,8 +14,7 @@ FbDebug addin:
   driven applications like windows gui projects.
 
 Limitations:
-- You can only debug projects compiled with the -g option.
-- You can not debug files that are not included in the project.
+- You can only debug exe's compiled with the -g option.
 - You can not inspect the value of variables in an array.
   However you can use the immediate window. You can also use the
   OutputDebugString api to have the value displayed in FbEdit's
@@ -31,7 +30,7 @@ Limitations:
 - Will only work on FbEdit version 1.0.6.2 or higher.
 
 Breakpoints:
-- Breakpoints are saved in the project file.
+- Breakpoints are saved in the project file if a project is open.
 - At designtime it is possible to set a breakpoint on a line
   that does not produce any code. This breakpoint will have
   no effect. You will be warned if this is the case. At runtime
@@ -160,5 +159,7 @@ o Added Dump udt. Will show all members of the requested udt.
 o Fixed bugs with showing variables in multimodule projects.
   This involved a major redesign on how variables are parsed
   from the debug info.
+Version 1.0.1.1
+o The internal debugger now also works without a project.
 
 KetilO

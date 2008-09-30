@@ -1,6 +1,12 @@
 Whats new:
 ----------
 1.0.6.3
+o FbEdit.ini is no longer distributed with the zip.
+  For first time installations FbEdit.ini will be created.
+  If the previous version is 1.0.6.1 or higher the inifile will be updated,
+  else a new ini file will be created.
+  A backup of your existing ini file will be saves as FbEditOld.ini
+o Internal debugger is no longer limitted to projects.
 o Path Options can now use path acronymes.
   $A Application path, where FbEdit.exe is found.
   $C Compiler path, where fbc.exe is found.
@@ -14,3 +20,5 @@ o The current file is now selected in the project browser.
 o Fixed bug with Auto delete files after build. Could cause a crash on Vista.
 o Fixed bug with resource editor style manager.
   Could show unrelated / duplicated styles.
+o Fixed bug where using Options / Tools Menu or Help Menu would update the wrong menu.
+o Fixed bug with properties refresh button.
