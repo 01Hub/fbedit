@@ -22,3 +22,4 @@ o Fixed bug with resource editor style manager.
   Could show unrelated / duplicated styles.
 o Fixed bug where using Options / Tools Menu or Help Menu would update the wrong menu.
 o Fixed bug with properties refresh button.
+o Fixed bug with syntax highlighting.
