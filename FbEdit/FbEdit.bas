@@ -567,6 +567,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ttmsg.lpMsgApi(2).nPos=3
 			ttmsg.lpMsgApi(2).lpszApi=@szMsg3
 			'DefFrameProc,DefWindowProc,DefMDIChildProc,DefDlgProc
+			' Search Module
+			f.fsearch=1
 			Return FALSE
 			'
 		Case WM_CLOSE
@@ -814,10 +816,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 								EndIf
 								If Len(buff) Then
-									findbuff=buff
+									f.findbuff=buff
 								EndIf
 								If findvisible Then
-									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@findbuff))
+									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@f.findbuff))
 									SetFocus(findvisible)
 								Else
 									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
@@ -825,23 +827,23 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
-							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ft.chrg))
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
 							If fres<>-1 Then
-								ft.chrg.cpMin=ft.chrg.cpMin+ft.chrg.cpMax-ft.chrg.cpMin
+								f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
 							EndIf
-							ft.chrg.cpMax=-1
-							x=fDir
-							fDir=1
-							Find(hWin,fr Or FR_DOWN)
-							fDir=x
+							f.ft.chrg.cpMax=-1
+							x=f.fdir
+							f.fdir=1
+							Find(hWin,f.fr Or FR_DOWN)
+							f.fdir=x
 							'
 						Case IDM_EDIT_FINDPREVIOUS
-							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ft.chrg))
-							ft.chrg.cpMax=0
-							x=fDir
-							fDir=2
-							Find(hWin,fr Or FR_DOWN)
-							fDir=x
+							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
+							f.ft.chrg.cpMax=0
+							x=f.fdir
+							f.fdir=2
+							Find(hWin,f.fr Or FR_DOWN)
+							f.fdir=x
 							'
 						Case IDM_EDIT_REPLACE
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
@@ -868,7 +870,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 								EndIf
 								If Len(buff) Then
-									findbuff=buff
+									f.findbuff=buff
 								EndIf
 								If findvisible Then
 									SetFocus(findvisible)
@@ -898,7 +900,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 								SendMessage(ah.hred,REM_VCENTER,0,0)
 								SetFocus(ah.hred)
-								fdcpos=(fdcpos+1) And 15
+								fdcpos=(fdcpos+1) And 31
 								fdc(fdcpos).npos=nLine
 								fdc(fdcpos).hwnd=hCtl
 							EndIf
@@ -916,7 +918,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If fdcpos Then
 								fdcpos=fdcpos-1
 							Else
-								fdcpos=15
+								fdcpos=31
 							EndIf
 							fTimer=1
 							'
@@ -1940,6 +1942,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				End Select
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
+				If ah.hred<>0 And ah.hred<>ah.hres Then
+					SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+					fdcpos=(fdcpos+1) And 31
+					fdc(fdcpos).npos=chrg.cpMin
+					fdc(fdcpos).hwnd=ah.hred
+				EndIf
 				lpRAPNOTIFY=Cast(RAPNOTIFY Ptr,lParam)
 				If fProject Then
 					SelectTab(hWin,0,lpRAPNOTIFY->nid)

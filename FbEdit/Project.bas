@@ -634,6 +634,8 @@ Function CloseProject() As Integer
 		SetWinCaption
 		GetMakeOption
 		CallAddins(ah.hwnd,AIM_PROJECTCLOSE,0,0,HOOK_PROJECTCLOSE)
+		' Search Module
+		f.fsearch=1
 		Return TRUE
 	Else
 		Return FALSE
