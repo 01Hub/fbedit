@@ -24,8 +24,6 @@
 'Dim Shared replacebuff As ZString*260
 'Dim Shared fDir As Long=0
 Dim Shared fPos As Long
-Dim Shared fPro As Long
-Dim Shared fProFileNo As Long
 'Dim Shared fr As Long=FR_DOWN
 Dim Shared fres As Long
 'Dim Shared ft As FINDTEXTEX
@@ -40,7 +38,7 @@ Sub ResetFind
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.ft.chrg))
 	fPos=f.ft.chrg.cpMin
 	f.ft.chrg.cpMax=-1
-	fProFileNo=1
+	f.fprofileno=1
 	fOnlyOneTime=0
 	If fLogFindClear Then
 		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
@@ -91,10 +89,10 @@ Function Find(hWin As HWND,frType As Long) As Long
 	nLinesOut=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
 
 TryAgain:
-	If fPro=1 Then
+	If f.fpro=1 Then
 		fres=0
 		While fres=0
-			sFile=GetProjectFileName(fProFileNo)
+			sFile=GetProjectFileName(f.fprofileno)
 			If Len(sFile) Then
 				If FileType(sFile)=1 Then
 					hMem=GetFileMem(sFile)
@@ -110,10 +108,10 @@ TryAgain:
 							f.ft.chrg.cpMin-=1
 							f.ft.chrg.cpMax=f.ft.chrg.cpMin
 							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
-							tmp=fProFileNo
-							OpenProjectFile(fProFileNo)
+							tmp=f.fprofileno
+							OpenProjectFile(f.fprofileno)
 							SetFocus(ah.hfind)
-							fProFileNo=tmp
+							f.fprofileno=tmp
 							If f.fdir=2 Then
 								chrg.cpMin=-1
 								chrg.cpMax=-1
@@ -128,7 +126,7 @@ TryAgain:
 							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 							fOnlyOneTime=0
 							fPos=0
-							fPro=2
+							f.fpro=2
 							fres=-1
 							Exit While
 						EndIf
@@ -137,8 +135,8 @@ TryAgain:
 					EndIf
 				EndIf
 			EndIf
-			fProFileNo=fProFileNo+1
-			If fProFileNo>1256 Then
+			f.fprofileno=f.fprofileno+1
+			If f.fprofileno>1256 Then
 				' Project Files searched
 				If nReplaceCount Then
 					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
@@ -154,11 +152,11 @@ TryAgain:
 				f.ft.chrg.cpMax=f.ft.chrg.cpMin
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
 				fres=-1
-				fProFileNo=1
+				f.fprofileno=1
 				ResetFind
 				Return fres
-			ElseIf fProFileNo>256 And fProFileNo<1001 Then
-				fProFileNo=1001
+			ElseIf f.fprofileno>256 And f.fprofileno<1001 Then
+				f.fprofileno=1001
 			EndIf
 		Wend
 	EndIf
@@ -230,10 +228,10 @@ TryFind:
 			fPos=0
 			GoTo TryFind
 		Else
-			If fPro Then
+			If f.fpro Then
 				' Next project file
-				fPro=1
-				fProFileNo=fProFileNo+1
+				f.fpro=1
+				f.fprofileno=f.fprofileno+1
 				GoTo TryAgain
 			Else
 				' Region searched
@@ -253,7 +251,7 @@ TryFind:
 				fPos=f.ft.chrg.cpMin
 				fres=-1
 				f.ft.chrg.cpMax=-1 
-				fProFileNo=1
+				f.fprofileno=1
 			EndIf
 		EndIf
 	EndIf
@@ -332,14 +330,14 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.ft.chrg))
 			If fProject=0 Then
-				fPro=0
+				f.fpro=0
 			EndIf
 			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(fSkipCommentLine,BST_CHECKED,BST_UNCHECKED))
 			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(fLogFind,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
 			fPos=f.ft.chrg.cpMin
 			f.ft.chrg.cpMax=-1
-			fProFileNo=1
+			f.fprofileno=1
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
 			Select Case f.fsearch
 				Case 0
@@ -360,9 +358,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				ah.hfind=hWin
 			EndIf
 			If fProject=0 Then
-				fPro=0
+				f.fpro=0
 			EndIf
-			CheckDlgButton(hWin,IDC_RBN_PROJECTFILES,IIf(fPro,BST_CHECKED,BST_UNCHECKED))
+			CheckDlgButton(hWin,IDC_RBN_PROJECTFILES,IIf(f.fpro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
 			ResetFind
 			If ah.hred Then
@@ -502,10 +500,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						f.fsearch=2
 					Case IDC_RBN_PROJECTFILES
 						f.fsearch=3
-						If fPro Then
-							fPro=0
+						If f.fpro Then
+							f.fpro=0
 						Else
-							fPro=1
+							f.fpro=1
 						EndIf
 						ResetFind
 						'

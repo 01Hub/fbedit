@@ -657,6 +657,8 @@ Dim Shared ttmsg As MESSAGE
 Type FIND
 	fdir			As Integer						' 0=All,1=Up,2=Down
 	fsearch		As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
+	fpro			As Integer
+	fprofileno	As Integer
 	chrg			As CHARRANGE
 	fr				As Integer
 	ft				As FINDTEXTEX
