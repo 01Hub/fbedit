@@ -655,15 +655,21 @@ Const szMsg3 = "SendDlgItemMessage"
 Dim Shared ttmsg As MESSAGE
 
 Type FIND
-	fdir			As Integer						' 0=All,1=Up,2=Down
-	fsearch		As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
-	fpro			As Integer
-	fprofileno	As Integer
-	chrg			As CHARRANGE
-	fr				As Integer
-	ft				As FINDTEXTEX
-	findbuff		As ZString*260
-	replacebuff	As ZString*260
+	fdir					As Integer						' 0=All,1=Up,2=Down
+	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
+	fpro					As Integer
+	fprofileno			As Integer
+	chrgrange			As CHARRANGE
+	fr						As Integer
+	ft						As FINDTEXTEX
+	findbuff				As ZString*260
+	replacebuff			As ZString*260
+	nreplacecount		As Integer
+	fskipcommentline	As Integer
+	flogfind				As Integer
+	flogfindclear		As Integer
+	fonlyonetime		As Integer
+	fnoproc				As Boolean
 End Type
 
 Dim Shared f As FIND

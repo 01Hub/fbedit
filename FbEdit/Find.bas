@@ -20,34 +20,63 @@
 #Define IDC_RBN_FILES						2504
 #Define IDC_RBN_PROJECTFILES				2012
 
-'Dim Shared findbuff As ZString*260
-'Dim Shared replacebuff As ZString*260
-'Dim Shared fDir As Long=0
-Dim Shared fPos As Long
-'Dim Shared fr As Long=FR_DOWN
-Dim Shared fres As Long
-'Dim Shared ft As FINDTEXTEX
-Dim Shared nReplaceCount As Integer
-Dim Shared fSkipCommentLine As Long
-Dim Shared fLogFind As Long
-Dim Shared fLogFindClear As Long
-Dim Shared fOnlyOneTime As Long
+Dim Shared fPos As Integer
+Dim Shared fres As Integer
 
 Sub ResetFind
+	Dim nLn As Integer
+	Dim isinp As ISINPROC
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
+	Dim p As ZString Ptr
+
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
+	Select Case f.fsearch
+		Case 0
+			' Current Procedure
+			isinp.nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,f.ft.chrg.cpMin)
+			isinp.lpszType=StrPtr("p")
+			If fProject Then
+				tci.mask=TCIF_PARAM
+				SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(LPARAM,@tci))
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+				isinp.nOwner=lpTABMEM->profileinx
+			Else
+				isinp.nOwner=Cast(Integer,ah.hred)
+			EndIf
+			p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+			If p Then
+				p=FindExact(StrPtr("p"),p,TRUE)
+				nLn=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
+				f.chrgrange.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLn,0)
+				nLn=SendMessage(ah.hpr,PRM_FINDGETENDLINE,0,0)
+				f.chrgrange.cpMax=SendMessage(ah.hred,EM_LINEINDEX,nLn,0)
+				f.fnoproc=FALSE
+			Else
+				f.chrgrange.cpMin=0
+				f.chrgrange.cpMax=SendMessage(ah.hres,WM_GETTEXTLENGTH,0,0)
+				f.fnoproc=TRUE
+			EndIf
+		Case 1
+			' Current Module
+		Case 2
+			' All Open Files
+		Case 3
+			' All Project Files
+	End Select
 	fres=-1
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.ft.chrg))
 	fPos=f.ft.chrg.cpMin
 	f.ft.chrg.cpMax=-1
 	f.fprofileno=1
-	fOnlyOneTime=0
-	If fLogFindClear Then
+	f.fonlyonetime=0
+	If f.flogfindclear Then
 		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
 	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
 
 End Sub
 
-Sub ShowStat(ByVal fOneFile As Long)
+Sub ShowStat(ByVal fOneFile As Integer)
 	Dim As Integer i,bm,nFiles,nFounds,nRepeats,nErrors,nWarnings
 
 	i=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
@@ -76,7 +105,7 @@ Sub ShowStat(ByVal fOneFile As Long)
 
 End Sub
 
-Function Find(hWin As HWND,frType As Long) As Long
+Function Find(hWin As HWND,frType As Integer) As Long
 	Dim chrg As CHARRANGE
 	Dim sFile As ZString*260
 	Dim hMem As HGLOBAL
@@ -124,7 +153,7 @@ TryAgain:
 								f.ft.chrg.cpMax=-1
 							EndIf
 							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-							fOnlyOneTime=0
+							f.fonlyonetime=0
 							fPos=0
 							f.fpro=2
 							fres=-1
@@ -138,12 +167,12 @@ TryAgain:
 			f.fprofileno=f.fprofileno+1
 			If f.fprofileno>1256 Then
 				' Project Files searched
-				If nReplaceCount Then
-					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+				If f.nreplacecount Then
+					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
-					nReplaceCount=0
+					f.nreplacecount=0
 				Else
-					If fLogFind Then
+					If f.flogfind Then
 						ShowStat(FALSE)
 					Else
 						MessageBox(hWin,GetInternalString(IS_PROJECT_FILES_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
@@ -174,7 +203,7 @@ TryFind:
 		fres=-1
 	EndIf
 	If fres<>-1 Then
-		If fSkipCommentLine Then
+		If f.fskipcommentline Then
 			tmp=SendMessage(ah.hred,REM_ISCHARPOS,f.ft.chrgText.cpMin,0)
 			If tmp=1 Or tmp=2 Then
 				If f.fdir=2 Then
@@ -185,13 +214,13 @@ TryFind:
 				GoTo TryFind
 			EndIf
 		EndIf
-		If fLogFind Then
-			If fOnlyOneTime=0 Then
+		If f.flogfind Then
+			If f.fonlyonetime=0 Then
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
 				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
 				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,5)
 				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
-				fOnlyOneTime=1
+				f.fonlyonetime=1
 				nLinesOut+=1
 			EndIf
 			buff=Chr(255) & Chr(1)
@@ -235,12 +264,12 @@ TryFind:
 				GoTo TryAgain
 			Else
 				' Region searched
-				If nReplaceCount Then
-					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(nReplaceCount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+				If f.nreplacecount Then
+					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
-					nReplaceCount=0
+					f.nreplacecount=0
 				Else
-					If fLogFind Then
+					If f.flogfind Then
 						ShowStat(TRUE)
 					Else
 						MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
@@ -291,7 +320,7 @@ Sub UpdateFindHistory(ByVal hWin As HWND)
 End Sub
 
 Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim As Long id,Event,lret
+	Dim As Integer id,Event,lret
 	Dim hCtl As HWND
 	Dim chrg As CHARRANGE
 	Dim rect As RECT
@@ -332,9 +361,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If fProject=0 Then
 				f.fpro=0
 			EndIf
-			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(fSkipCommentLine,BST_CHECKED,BST_UNCHECKED))
-			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(fLogFind,BST_CHECKED,BST_UNCHECKED))
-			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
+			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(f.fskipcommentline,BST_CHECKED,BST_UNCHECKED))
+			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(f.flogfind,BST_CHECKED,BST_UNCHECKED))
+			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),f.flogfind)
 			fPos=f.ft.chrg.cpMin
 			f.ft.chrg.cpMax=-1
 			f.fprofileno=1
@@ -351,7 +380,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			End Select
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SetWindowPos(hWin,0,wpos.ptfind.x,wpos.ptfind.y,0,0,SWP_NOSIZE)
-			nReplaceCount=0
+			f.nreplacecount=0
 			'
 		Case WM_ACTIVATE
 			If wParam<>WA_INACTIVE Then
@@ -413,7 +442,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							ShowWindow(hCtl,SW_SHOWNA)
 						Else
 							If fres<>-1 Then
-								nReplaceCount=nReplaceCount+1
+								f.nreplacecount=f.nreplacecount+1
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@f.replacebuff))
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								If f.fdir=2 Then
@@ -469,12 +498,12 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						ResetFind
 						'
 					Case IDC_CHK_SKIPCOMMENTS
-						fSkipCommentLine=fSkipCommentLine Xor 1
+						f.fskipcommentline=f.fskipcommentline Xor 1
 						ResetFind
 						'
 					Case IDC_CHK_LOGFIND
-						fLogFind=fLogFind Xor 1
-						EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),fLogFind)
+						f.flogfind=f.flogfind Xor 1
+						EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),f.flogfind)
 						ResetFind
 						'
 					Case IDC_RBN_ALL
@@ -494,12 +523,16 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						'
 					Case IDC_RBN_PROCEDURE
 						f.fsearch=0
+						ResetFind
 					Case IDC_RBN_MODULE
 						f.fsearch=1
+						ResetFind
 					Case IDC_RBN_FILES
 						f.fsearch=2
+						ResetFind
 					Case IDC_RBN_PROJECTFILES
 						f.fsearch=3
+						ResetFind
 						If f.fpro Then
 							f.fpro=0
 						Else
