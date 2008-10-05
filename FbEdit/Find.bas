@@ -23,18 +23,18 @@
 Dim Shared fPos As Integer
 Dim Shared fres As Integer
 
-Sub ResetFind
+Sub InitFind
 	Dim nLn As Integer
 	Dim isinp As ISINPROC
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim p As ZString Ptr
 
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
 	Select Case f.fsearch
 		Case 0
 			' Current Procedure
-			isinp.nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,f.ft.chrg.cpMin)
+			isinp.nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,f.chrginit.cpMin)
 			isinp.lpszType=StrPtr("p")
 			If fProject Then
 				tci.mask=TCIF_PARAM
@@ -54,25 +54,51 @@ Sub ResetFind
 				f.fnoproc=FALSE
 			Else
 				f.chrgrange.cpMin=0
-				f.chrgrange.cpMax=SendMessage(ah.hres,WM_GETTEXTLENGTH,0,0)
+				f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
 				f.fnoproc=TRUE
 			EndIf
 		Case 1
 			' Current Module
+			f.chrgrange.cpMin=0
+			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
 		Case 2
 			' All Open Files
 		Case 3
 			' All Project Files
 	End Select
+	Select Case f.fdir
+		Case 0
+			' All
+			f.ft.chrg.cpMin=f.chrginit.cpMin
+			f.ft.chrg.cpMax=f.chrgrange.cpMax
+			f.fr=f.fr Or FR_DOWN
+		Case 1
+			' Down
+			f.ft.chrg.cpMin=f.chrgrange.cpMin
+			f.ft.chrg.cpMax=f.chrgrange.cpMax
+			f.fr=f.fr Or FR_DOWN
+		Case 2
+			' Up
+			f.ft.chrg.cpMin=f.chrgrange.cpMax
+			f.ft.chrg.cpMax=f.chrgrange.cpMin
+			f.fr=f.fr And (-1 Xor FR_DOWN)
+	End Select
+	f.ft.lpstrText=@f.findbuff
+
+End Sub
+
+Sub ResetFind
+
 	fres=-1
-	fPos=f.ft.chrg.cpMin
-	f.ft.chrg.cpMax=-1
+'	fPos=f.ft.chrg.cpMin
+'	f.ft.chrg.cpMax=-1
 	f.fprofileno=1
 	f.fonlyonetime=0
 	If f.flogfindclear Then
 		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
 	EndIf
 	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
+	InitFind
 
 End Sub
 
@@ -105,189 +131,237 @@ Sub ShowStat(ByVal fOneFile As Integer)
 
 End Sub
 
-Function Find(hWin As HWND,frType As Integer) As Long
-	Dim chrg As CHARRANGE
-	Dim sFile As ZString*260
-	Dim hMem As HGLOBAL
-	Dim ms As MEMSEARCH
-	Dim As Integer x,tmp,nLine,nLinesOut
+Function FindInFile(frType As Integer) As Integer
+	Dim res As Integer
 
-	chrg.cpMin=-1
-	chrg.cpMax=-1
-	SendMessage(ah.hout,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-	nLinesOut=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
-
-TryAgain:
-	If f.fpro=1 Then
-		fres=0
-		While fres=0
-			sFile=GetProjectFileName(f.fprofileno)
-			If Len(sFile) Then
-				If FileType(sFile)=1 Then
-					hMem=GetFileMem(sFile)
-					If hMem Then
-						ms.lpMem=hMem
-						ms.lpFind=@f.findbuff
-						ms.lpCharTab=ad.lpCharTab
-						' Memory search down is faster
-						ms.fr=f.fr Or FR_DOWN
-						fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
-						GlobalFree(hMem)
-						If fres Then
-							f.ft.chrg.cpMin-=1
-							f.ft.chrg.cpMax=f.ft.chrg.cpMin
-							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
-							tmp=f.fprofileno
-							OpenProjectFile(f.fprofileno)
-							SetFocus(ah.hfind)
-							f.fprofileno=tmp
-							If f.fdir=2 Then
-								chrg.cpMin=-1
-								chrg.cpMax=-1
-								f.ft.chrg.cpMin=-1
-								f.ft.chrg.cpMax=0
-							Else
-								chrg.cpMin=0
-								chrg.cpMax=0
-								f.ft.chrg.cpMin=0
-								f.ft.chrg.cpMax=-1
-							EndIf
-							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-							f.fonlyonetime=0
-							fPos=0
-							f.fpro=2
-							fres=-1
-							Exit While
-						EndIf
-					Else
-						MessageBox(ah.hfind,GetInternalString(IS_COULD_NOT_FIND) & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
-					EndIf
-				EndIf
-			EndIf
-			f.fprofileno=f.fprofileno+1
-			If f.fprofileno>1256 Then
-				' Project Files searched
-				If f.nreplacecount Then
-					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
-					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
-					f.nreplacecount=0
-				Else
-					If f.flogfind Then
-						ShowStat(FALSE)
-					Else
-						MessageBox(hWin,GetInternalString(IS_PROJECT_FILES_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
-					EndIf
-				EndIf
-				f.ft.chrg.cpMax=f.ft.chrg.cpMin
-				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
-				fres=-1
-				f.fprofileno=1
-				ResetFind
-				Return fres
-			ElseIf f.fprofileno>256 And f.fprofileno<1001 Then
-				f.fprofileno=1001
-			EndIf
-		Wend
-	EndIf
-	' Get current selection
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
-	' Setup find
-	If (frType And FR_DOWN)=0 Then
-		f.ft.chrg.cpMax=0
-	EndIf
-	f.ft.lpstrText=@f.findbuff
-TryFind:
-	' Do the find
-	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@f.ft))
-	If f.ft.chrgText.cpMin>=(f.ft.chrg.cpMax And &h7FFFFFFF) And f.fdir=0 Then
-		fres=-1
-	EndIf
-	If fres<>-1 Then
-		If f.fskipcommentline Then
-			tmp=SendMessage(ah.hred,REM_ISCHARPOS,f.ft.chrgText.cpMin,0)
-			If tmp=1 Or tmp=2 Then
-				If f.fdir=2 Then
-					f.ft.chrg.cpMin-=1
-				Else
-					f.ft.chrg.cpMin+=1
-				EndIf
-				GoTo TryFind
+	res=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(LPARAM,@f.ft))
+	If res<>-1 Then
+		f.ft.chrg.cpMin=f.ft.chrgText.cpMax
+	Else
+		If f.fdir=0 Then
+			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
+				f.ft.chrg.cpMin=0
+				f.ft.chrg.cpMax=f.chrginit.cpMin-1
+				res=FindInFile(frType)
 			EndIf
 		EndIf
-		If f.flogfind Then
-			If f.fonlyonetime=0 Then
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
-				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,5)
-				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
-				f.fonlyonetime=1
-				nLinesOut+=1
-			EndIf
-			buff=Chr(255) & Chr(1)
-			nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,fres)
-			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
-			chrg.cpMax=SendMessage(ah.hred,EM_GETLINE,nLine,Cast(LPARAM,@buff))
-			buff[chrg.cpMax]=NULL
-			lstrcpy(@s," (")
-			lstrcat(@s,Str(nLine+1))
-			lstrcat(@s,") ")
-			lstrcat(@s,@buff)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@s))
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
-			x=SendMessage(ah.hred,REM_GETBOOKMARK,nLine,0)
-			If x<>3 Then
-				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,3)
-				SendMessage(ah.hred,REM_SETBOOKMARK,nLine,3)
-				x=SendMessage(ah.hout,REM_GETBMID,nLinesOut,0)
-				SendMessage(ah.hred,REM_SETBMID,nLine,x)
+	EndIf
+	Return res
+
+End Function
+
+Function Find(hWin As HWND,frType As Integer) As Integer
+
+	Select Case f.fsearch
+		Case 0
+			' Current Procedure
+			If f.fnoproc Then
 			Else
-				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,4)
-				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
+				fres=FindInFile(frType)
 			EndIf
-			nLinesOut+=1
-		EndIf
-		' Mark the foud text
-		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrgText))
+		Case 1
+			' Current Module
+			fres=FindInFile(frType)
+		Case 2
+			' All Open Files
+		Case 3
+			' All Project Files
+	End Select
+	If fres<>-1 Then
+		SendMessage(ah.hred,EM_EXSETSEL,0,@f.ft.chrgText)
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+TextToOutput(Str(fres))
 	Else
-		If f.fdir=0 And fPos<>0 Then 
-			f.ft.chrg.cpMin=0
-			f.ft.chrg.cpMax=fPos
-			fPos=0
-			GoTo TryFind
-		Else
-			If f.fpro Then
-				' Next project file
-				f.fpro=1
-				f.fprofileno=f.fprofileno+1
-				GoTo TryAgain
-			Else
-				' Region searched
-				If f.nreplacecount Then
-					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
-					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
-					f.nreplacecount=0
-				Else
-					If f.flogfind Then
-						ShowStat(TRUE)
-					Else
-						MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
-					EndIf
-				EndIf
-				f.ft.chrg.cpMax=f.ft.chrg.cpMin
-				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
-				fPos=f.ft.chrg.cpMin
-				fres=-1
-				f.ft.chrg.cpMax=-1 
-				f.fprofileno=1
-			EndIf
-		EndIf
+		MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
 	EndIf
 	Return fres
 
 End Function
 
+'Function Find(hWin As HWND,frType As Integer) As Long
+'	Dim chrg As CHARRANGE
+'	Dim sFile As ZString*260
+'	Dim hMem As HGLOBAL
+'	Dim ms As MEMSEARCH
+'	Dim As Integer x,tmp,nLine,nLinesOut
+'
+'	chrg.cpMin=-1
+'	chrg.cpMax=-1
+'	SendMessage(ah.hout,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+'	nLinesOut=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
+'
+'TryAgain:
+'	If f.fpro=1 Then
+'		fres=0
+'		While fres=0
+'			sFile=GetProjectFileName(f.fprofileno)
+'			If Len(sFile) Then
+'				If FileType(sFile)=1 Then
+'					hMem=GetFileMem(sFile)
+'					If hMem Then
+'						ms.lpMem=hMem
+'						ms.lpFind=@f.findbuff
+'						ms.lpCharTab=ad.lpCharTab
+'						' Memory search down is faster
+'						ms.fr=f.fr Or FR_DOWN
+'						fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
+'						GlobalFree(hMem)
+'						If fres Then
+'							f.ft.chrg.cpMin-=1
+'							f.ft.chrg.cpMax=f.ft.chrg.cpMin
+'							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
+'							tmp=f.fprofileno
+'							OpenProjectFile(f.fprofileno)
+'							SetFocus(ah.hfind)
+'							f.fprofileno=tmp
+'							If f.fdir=2 Then
+'								chrg.cpMin=-1
+'								chrg.cpMax=-1
+'								f.ft.chrg.cpMin=-1
+'								f.ft.chrg.cpMax=0
+'							Else
+'								chrg.cpMin=0
+'								chrg.cpMax=0
+'								f.ft.chrg.cpMin=0
+'								f.ft.chrg.cpMax=-1
+'							EndIf
+'							SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+'							f.fonlyonetime=0
+'							fPos=0
+'							f.fpro=2
+'							fres=-1
+'							Exit While
+'						EndIf
+'					Else
+'						MessageBox(ah.hfind,GetInternalString(IS_COULD_NOT_FIND) & CRLF & sFile,@szAppName,MB_OK Or MB_ICONERROR)
+'					EndIf
+'				EndIf
+'			EndIf
+'			f.fprofileno=f.fprofileno+1
+'			If f.fprofileno>1256 Then
+'				' Project Files searched
+'				If f.nreplacecount Then
+'					buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+'					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
+'					f.nreplacecount=0
+'				Else
+'					If f.flogfind Then
+'						ShowStat(FALSE)
+'					Else
+'						MessageBox(hWin,GetInternalString(IS_PROJECT_FILES_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+'					EndIf
+'				EndIf
+'				f.ft.chrg.cpMax=f.ft.chrg.cpMin
+'				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
+'				fres=-1
+'				f.fprofileno=1
+'				ResetFind
+'				Return fres
+'			ElseIf f.fprofileno>256 And f.fprofileno<1001 Then
+'				f.fprofileno=1001
+'			EndIf
+'		Wend
+'	EndIf
+'	' Get current selection
+'	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+'	' Setup find
+'	If (frType And FR_DOWN)=0 Then
+'		f.ft.chrg.cpMax=0
+'	EndIf
+'	f.ft.lpstrText=@f.findbuff
+'TryFind:
+'	' Do the find
+'	fres=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(Integer,@f.ft))
+'	If f.ft.chrgText.cpMin>=(f.ft.chrg.cpMax And &h7FFFFFFF) And f.fdir=0 Then
+'		fres=-1
+'	EndIf
+'	If fres<>-1 Then
+'		If f.fskipcommentline Then
+'			tmp=SendMessage(ah.hred,REM_ISCHARPOS,f.ft.chrgText.cpMin,0)
+'			If tmp=1 Or tmp=2 Then
+'				If f.fdir=2 Then
+'					f.ft.chrg.cpMin-=1
+'				Else
+'					f.ft.chrg.cpMin+=1
+'				EndIf
+'				GoTo TryFind
+'			EndIf
+'		EndIf
+'		If f.flogfind Then
+'			If f.fonlyonetime=0 Then
+'				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
+'				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+'				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,5)
+'				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
+'				f.fonlyonetime=1
+'				nLinesOut+=1
+'			EndIf
+'			buff=Chr(255) & Chr(1)
+'			nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,fres)
+'			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+'			chrg.cpMax=SendMessage(ah.hred,EM_GETLINE,nLine,Cast(LPARAM,@buff))
+'			buff[chrg.cpMax]=NULL
+'			lstrcpy(@s," (")
+'			lstrcat(@s,Str(nLine+1))
+'			lstrcat(@s,") ")
+'			lstrcat(@s,@buff)
+'			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@s))
+'			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+'			x=SendMessage(ah.hred,REM_GETBOOKMARK,nLine,0)
+'			If x<>3 Then
+'				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,3)
+'				SendMessage(ah.hred,REM_SETBOOKMARK,nLine,3)
+'				x=SendMessage(ah.hout,REM_GETBMID,nLinesOut,0)
+'				SendMessage(ah.hred,REM_SETBMID,nLine,x)
+'			Else
+'				SendMessage(ah.hout,REM_SETBOOKMARK,nLinesOut,4)
+'				SendMessage(ah.hout,REM_SETBMID,nLinesOut,0)
+'			EndIf
+'			nLinesOut+=1
+'		EndIf
+'		' Mark the foud text
+'		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrgText))
+'		SendMessage(ah.hred,REM_VCENTER,0,0)
+'		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+'	Else
+'		If f.fdir=0 And fPos<>0 Then 
+'			f.ft.chrg.cpMin=0
+'			f.ft.chrg.cpMax=fPos
+'			fPos=0
+'			GoTo TryFind
+'		Else
+'			If f.fpro Then
+'				' Next project file
+'				f.fpro=1
+'				f.fprofileno=f.fprofileno+1
+'				GoTo TryAgain
+'			Else
+'				' Region searched
+'				If f.nreplacecount Then
+'					buff=GetInternalString(IS_REGION_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+'					MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
+'					f.nreplacecount=0
+'				Else
+'					If f.flogfind Then
+'						ShowStat(TRUE)
+'					Else
+'						MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+'					EndIf
+'				EndIf
+'				f.ft.chrg.cpMax=f.ft.chrg.cpMin
+'				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
+'				fPos=f.ft.chrg.cpMin
+'				fres=-1
+'				f.ft.chrg.cpMax=-1 
+'				f.fprofileno=1
+'			EndIf
+'		EndIf
+'	EndIf
+'	Return fres
+'
+'End Function
+'
 Sub LoadFindHistory()
 	Dim As Integer i
 	Dim As ZString*260 sItem
@@ -409,20 +483,20 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDOK
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
-						If f.fdir=2 Then
-							If fres<>-1 Then
-								f.ft.chrg.cpMin=chrg.cpMin-1
-							EndIf
-							buff=GetInternalString(IS_PREVIOUS)
-						Else
-							If fres<>-1 Then
-								f.ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
-							EndIf
-							buff=GetInternalString(IS_NEXT)
-						EndIf
-						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
-						UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
+						'SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+						'If f.fdir=2 Then
+						'	If fres<>-1 Then
+						'		f.ft.chrg.cpMin=chrg.cpMin-1
+						'	EndIf
+						'	buff=GetInternalString(IS_PREVIOUS)
+						'Else
+						'	If fres<>-1 Then
+						'		f.ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
+						'	EndIf
+						'	buff=GetInternalString(IS_NEXT)
+						'EndIf
+						'SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
+						'UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
 						Find(hWin,f.fr)
 						'
 					Case IDCANCEL

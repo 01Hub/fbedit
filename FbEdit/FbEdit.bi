@@ -659,6 +659,7 @@ Type FIND
 	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
 	fpro					As Integer
 	fprofileno			As Integer
+	chrginit				As CHARRANGE
 	chrgrange			As CHARRANGE
 	fr						As Integer
 	ft						As FINDTEXTEX
