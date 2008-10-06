@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Ver.rc=1
 Res.rc=1
 
@@ -103,7 +103,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,90552
-16=0,0,810,411,22126
+16=0,0,810,411,1345
 22=0,0,0,0,3097
 23=0,0,0,0,29586
 24=0,0,0,0,755
@@ -192,7 +192,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

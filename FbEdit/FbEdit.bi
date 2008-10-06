@@ -671,6 +671,8 @@ Type FIND
 	flogfindclear		As Integer
 	fonlyonetime		As Integer
 	fnoproc				As Boolean
+	ntabinit				As Integer
+	ntab					As Integer
 End Type
 
 Dim Shared f As FIND

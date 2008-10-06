@@ -23,6 +23,28 @@
 Dim Shared fPos As Integer
 Dim Shared fres As Integer
 
+Sub InitFindDir
+	
+	Select Case f.fdir
+		Case 0
+			' All
+			f.ft.chrg.cpMin=f.chrginit.cpMin
+			f.ft.chrg.cpMax=f.chrgrange.cpMax
+			f.fr=f.fr Or FR_DOWN
+		Case 1
+			' Down
+			f.ft.chrg.cpMin=f.chrgrange.cpMin
+			f.ft.chrg.cpMax=f.chrgrange.cpMax
+			f.fr=f.fr Or FR_DOWN
+		Case 2
+			' Up
+			f.ft.chrg.cpMin=f.chrgrange.cpMax
+			f.ft.chrg.cpMax=f.chrgrange.cpMin
+			f.fr=f.fr And (-1 Xor FR_DOWN)
+	End Select
+
+End Sub
+
 Sub InitFind
 	Dim nLn As Integer
 	Dim isinp As ISINPROC
@@ -63,26 +85,14 @@ Sub InitFind
 			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
 		Case 2
 			' All Open Files
+			f.ntabinit=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
+			f.ntab=f.ntabinit
+			f.chrgrange.cpMin=0
+			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
 		Case 3
 			' All Project Files
 	End Select
-	Select Case f.fdir
-		Case 0
-			' All
-			f.ft.chrg.cpMin=f.chrginit.cpMin
-			f.ft.chrg.cpMax=f.chrgrange.cpMax
-			f.fr=f.fr Or FR_DOWN
-		Case 1
-			' Down
-			f.ft.chrg.cpMin=f.chrgrange.cpMin
-			f.ft.chrg.cpMax=f.chrgrange.cpMax
-			f.fr=f.fr Or FR_DOWN
-		Case 2
-			' Up
-			f.ft.chrg.cpMin=f.chrgrange.cpMax
-			f.ft.chrg.cpMax=f.chrgrange.cpMin
-			f.fr=f.fr And (-1 Xor FR_DOWN)
-	End Select
+	InitFindDir
 	f.ft.lpstrText=@f.findbuff
 
 End Sub
@@ -131,18 +141,18 @@ Sub ShowStat(ByVal fOneFile As Integer)
 
 End Sub
 
-Function FindInFile(frType As Integer) As Integer
+Function FindInFile(hWin As HWND,frType As Integer) As Integer
 	Dim res As Integer
 
-	res=SendMessage(ah.hred,EM_FINDTEXTEX,frType,Cast(LPARAM,@f.ft))
+	res=SendMessage(hWin,EM_FINDTEXTEX,frType,Cast(LPARAM,@f.ft))
 	If res<>-1 Then
 		f.ft.chrg.cpMin=f.ft.chrgText.cpMax
 	Else
 		If f.fdir=0 Then
 			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
-				f.ft.chrg.cpMin=0
+				f.ft.chrg.cpMin=f.chrgrange.cpMin
 				f.ft.chrg.cpMax=f.chrginit.cpMin-1
-				res=FindInFile(frType)
+				res=FindInFile(hWin,frType)
 			EndIf
 		EndIf
 	EndIf
@@ -151,19 +161,81 @@ Function FindInFile(frType As Integer) As Integer
 End Function
 
 Function Find(hWin As HWND,frType As Integer) As Integer
+	Dim isinp As ISINPROC
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
+	Dim p As ZString Ptr
 
 	Select Case f.fsearch
 		Case 0
 			' Current Procedure
 			If f.fnoproc Then
+				While TRUE
+					fres=FindInFile(ah.hred,frType)
+					If fres<>-1 Then
+						isinp.nLine=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,f.ft.chrgText.cpMin)
+						isinp.lpszType=StrPtr("p")
+						If fProject Then
+							tci.mask=TCIF_PARAM
+							SendMessage(ah.htabtool,TCM_GETITEM,SendMessage(ah.htabtool,TCM_GETCURSEL,0,0),Cast(LPARAM,@tci))
+							lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+							isinp.nOwner=lpTABMEM->profileinx
+						Else
+							isinp.nOwner=Cast(Integer,ah.hred)
+						EndIf
+						p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+						If p=0 Then
+							Exit While
+						EndIf
+					Else
+						Exit While
+					EndIf
+				Wend
 			Else
-				fres=FindInFile(frType)
+				fres=FindInFile(ah.hred,frType)
 			EndIf
 		Case 1
 			' Current Module
-			fres=FindInFile(frType)
+			fres=FindInFile(ah.hred,frType)
 		Case 2
 			' All Open Files
+			While TRUE
+				fres=FindInFile(ah.hred,frType)
+				If fres=-1 Then
+TheNextTab:
+					f.ntab+=1
+					If SendMessage(ah.htabtool,TCM_GETITEMCOUNT,0,0)=f.ntab Then
+						If f.ntabinit Then
+							f.ntab=0
+						Else
+							Exit While
+						EndIf
+					Else
+						If f.ntab=f.ntabinit Then
+							Exit while
+						EndIf
+					EndIf
+					tci.mask=TCIF_PARAM
+					SendMessage(ah.htabtool,TCM_GETITEM,f.ntab,Cast(LPARAM,@tci))
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+					If lpTABMEM->hedit=ah.hres Then
+						GoTo TheNextTab
+					EndIf
+					SendMessage(lpTABMEM->hedit,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
+					f.chrgrange.cpMin=0
+					f.chrgrange.cpMax=SendMessage(lpTABMEM->hedit,WM_GETTEXTLENGTH,0,0)
+					InitFindDir
+					fres=FindInFile(lpTABMEM->hedit,frType)
+					If fres<>-1 Then
+						SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+						Exit While
+					Else
+						GoTo TheNextTab
+					EndIf
+				Else
+					Exit While
+				EndIf
+			Wend
 		Case 3
 			' All Project Files
 	End Select
@@ -171,7 +243,6 @@ Function Find(hWin As HWND,frType As Integer) As Integer
 		SendMessage(ah.hred,EM_EXSETSEL,0,@f.ft.chrgText)
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-TextToOutput(Str(fres))
 	Else
 		MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
 	EndIf
