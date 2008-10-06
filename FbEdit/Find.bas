@@ -20,7 +20,7 @@
 #Define IDC_RBN_FILES						2504
 #Define IDC_RBN_PROJECTFILES				2012
 
-Dim Shared fPos As Integer
+'Dim Shared fPos As Integer
 Dim Shared fres As Integer
 
 Sub InitFindDir
@@ -91,6 +91,8 @@ Sub InitFind
 			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
 		Case 3
 			' All Project Files
+			f.fprofileno=1
+			f.fpro=1
 	End Select
 	InitFindDir
 	f.ft.lpstrText=@f.findbuff
@@ -99,16 +101,17 @@ End Sub
 
 Sub ResetFind
 
-	fres=-1
-'	fPos=f.ft.chrg.cpMin
-'	f.ft.chrg.cpMax=-1
-	f.fprofileno=1
-	f.fonlyonetime=0
-	If f.flogfindclear Then
-		SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
+	If f.fpro=0 Then
+		fres=-1
+		f.fprofileno=1
+		f.fonlyonetime=0
+		f.nreplacecount=0
+		If f.flogfindclear Then
+			SendMessage(ah.hwnd,IDM_OUTPUT_CLEAR,0,0)
+		EndIf
+		SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
+		InitFind
 	EndIf
-	SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
-	InitFind
 
 End Sub
 
@@ -165,6 +168,10 @@ Function Find(hWin As HWND,frType As Integer) As Integer
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim p As ZString Ptr
+	Dim sFile As ZString*260
+	Dim hMem As HGLOBAL
+	Dim ms As MEMSEARCH
+	Dim hREd As HWND
 
 	Select Case f.fsearch
 		Case 0
@@ -238,6 +245,66 @@ TheNextTab:
 			Wend
 		Case 3
 			' All Project Files
+			If f.fpro=1 Then
+				While TRUE
+					sFile=GetProjectFileName(f.fprofileno)
+					If Len(sFile) Then
+						If FileType(sFile)=1 Then
+							hMem=GetFileMem(sFile)
+							If hMem Then
+								ms.lpMem=hMem
+								ms.lpFind=@f.findbuff
+								ms.lpCharTab=ad.lpCharTab
+								' Memory search down is faster
+								ms.fr=f.fr Or FR_DOWN
+								fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
+								GlobalFree(hMem)
+								If fres Then
+									OpenProjectFile(f.fprofileno)
+									SetFocus(ah.hfind)
+									SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
+									f.chrgrange.cpMin=0
+									f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
+									InitFindDir
+									fres=FindInFile(ah.hred,frType)
+									f.fpro=2
+									Exit While
+								EndIf
+							EndIf
+						EndIf
+					EndIf
+TheNextFile:
+					f.fprofileno+=1
+					If f.fprofileno>1256 Then
+						' Project Files searched
+						If f.nreplacecount Then
+							buff=GetInternalString(IS_PROJECT_FILES_SEARCHED) & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+							MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
+							f.nreplacecount=0
+						Else
+							If f.flogfind Then
+								ShowStat(FALSE)
+							Else
+								MessageBox(hWin,GetInternalString(IS_PROJECT_FILES_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+							EndIf
+						EndIf
+						f.ft.chrg.cpMax=f.ft.chrg.cpMin
+						SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
+						fres=-1
+						f.fpro=0
+						ResetFind
+						Return fres
+					ElseIf f.fprofileno>256 And f.fprofileno<1001 Then
+						f.fprofileno=1001
+					EndIf
+				Wend
+			Else
+				fres=FindInFile(ah.hred,frType)
+				If fres=-1 Then
+					f.fpro=1
+					GoTo TheNextFile
+				EndIf
+			EndIf
 	End Select
 	If fres<>-1 Then
 		SendMessage(ah.hred,EM_EXSETSEL,0,@f.ft.chrgText)
@@ -245,6 +312,8 @@ TheNextTab:
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 	Else
 		MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+		f.fpro=0
+		ResetFind
 	EndIf
 	Return fres
 
@@ -503,15 +572,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			End Select
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.ft.chrg))
-			If fProject=0 Then
-				f.fpro=0
-			EndIf
 			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(f.fskipcommentline,BST_CHECKED,BST_UNCHECKED))
 			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(f.flogfind,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),f.flogfind)
-			fPos=f.ft.chrg.cpMin
-			f.ft.chrg.cpMax=-1
-			f.fprofileno=1
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
 			Select Case f.fsearch
 				Case 0
@@ -525,18 +588,15 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			End Select
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SetWindowPos(hWin,0,wpos.ptfind.x,wpos.ptfind.y,0,0,SWP_NOSIZE)
-			f.nreplacecount=0
+			ResetFind
 			'
 		Case WM_ACTIVATE
 			If wParam<>WA_INACTIVE Then
 				ah.hfind=hWin
 			EndIf
-			If fProject=0 Then
-				f.fpro=0
-			EndIf
 			CheckDlgButton(hWin,IDC_RBN_PROJECTFILES,IIf(f.fpro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
-			ResetFind
+			'ResetFind
 			If ah.hred Then
 				id=GetWindowLong(ah.hred,GWL_ID)
 			EndIf
@@ -554,20 +614,13 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If Event=BN_CLICKED Then
 				Select Case id
 					Case IDOK
-						'SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-						'If f.fdir=2 Then
-						'	If fres<>-1 Then
-						'		f.ft.chrg.cpMin=chrg.cpMin-1
-						'	EndIf
-						'	buff=GetInternalString(IS_PREVIOUS)
-						'Else
-						'	If fres<>-1 Then
-						'		f.ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
-						'	EndIf
-						'	buff=GetInternalString(IS_NEXT)
-						'EndIf
-						'SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
-						'UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
+						If f.fdir=2 Then
+							buff=GetInternalString(IS_PREVIOUS)
+						Else
+							buff=GetInternalString(IS_NEXT)
+						EndIf
+						SendMessage(GetDlgItem(hWin,IDOK),WM_SETTEXT,0,Cast(LPARAM,@buff))
+						UpdateFindHistory(GetDlgItem(hWin,IDC_FINDTEXT))
 						Find(hWin,f.fr)
 						'
 					Case IDCANCEL
@@ -587,7 +640,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							ShowWindow(hCtl,SW_SHOWNA)
 						Else
 							If fres<>-1 Then
-								f.nreplacecount=f.nreplacecount+1
+								f.nreplacecount+=1
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@f.replacebuff))
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								If f.fdir=2 Then
@@ -600,9 +653,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 									EndIf
 								EndIf
 								'update real end
-								If fPos=0 And f.ft.chrg.cpMax<>-1 Then
-									f.ft.chrg.cpMax=f.ft.chrg.cpMax+(Len(f.replacebuff)-Len(f.findbuff))
-								EndIf
+								'If fPos=0 And f.ft.chrg.cpMax<>-1 Then
+								'	f.ft.chrg.cpMax=f.ft.chrg.cpMax+(Len(f.replacebuff)-Len(f.findbuff))
+								'EndIf
 							EndIf
 							Find(hWin,f.fr)
 						EndIf
@@ -653,17 +706,14 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						'
 					Case IDC_RBN_ALL
 						f.fdir=0
-						f.fr=f.fr Or FR_DOWN
 						ResetFind
 						'
 					Case IDC_RBN_DOWN
 						f.fdir=1
-						f.fr=f.fr Or FR_DOWN
 						ResetFind
 						'
 					Case IDC_RBN_UP
 						f.fdir=2
-						f.fr=f.fr And (-1 Xor FR_DOWN)
 						ResetFind
 						'
 					Case IDC_RBN_PROCEDURE
@@ -677,12 +727,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						ResetFind
 					Case IDC_RBN_PROJECTFILES
 						f.fsearch=3
-						ResetFind
-						If f.fpro Then
-							f.fpro=0
-						Else
-							f.fpro=1
-						EndIf
 						ResetFind
 						'
 				End Select
@@ -702,7 +746,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			ElseIf Event=EN_CHANGE Then
 				' Update text buffers
 				SendDlgItemMessage(hWin,IDC_FINDTEXT,WM_GETTEXT,255,Cast(LPARAM,@f.findbuff))
-				SendDlgItemMessage(hWin,id,WM_GETTEXT,255,Cast(LPARAM,@f.replacebuff))
+				SendDlgItemMessage(hWin,IDC_REPLACETEXT,WM_GETTEXT,255,Cast(LPARAM,@f.replacebuff))
 				ResetFind
 			EndIf
 			'
