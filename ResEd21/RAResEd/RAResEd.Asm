@@ -1170,41 +1170,45 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 PropertyProc endp
 
-SetHilite proc
+SetHilite proc uses ebx esi,nColorStyles:DWORD,nColorWords:DWORD
 
 	mov		ebx,offset szPRELOAD
+	mov		esi,nColorWords
+	or		esi,21000000h
 	.while byte ptr [ebx]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,ebx
 		invoke strlen,ebx
 		lea		ebx,[ebx+eax+1]
 	.endw
 	mov		ebx,offset szManifestInfo
 	.while byte ptr [ebx]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,ebx
 		invoke strlen,ebx
 		lea		ebx,[ebx+eax+1]
 	.endw
 	mov		ebx,offset szBITMAP
 	.while byte ptr [ebx]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,ebx
 		invoke strlen,ebx
 		lea		ebx,[ebx+eax+1]
 	.endw
 	mov		ebx,offset rsstyledefdlg
+	mov		esi,nColorStyles
+	or		esi,20000000h
 	.while byte ptr [ebx+8]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,addr [ebx+8]
 		invoke strlen,addr [ebx+8]
 		lea		ebx,[ebx+eax+8+1]
 	.endw
 	mov		ebx,offset rsstyledef
 	.while byte ptr [ebx+8]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,addr [ebx+8]
 		invoke strlen,addr [ebx+8]
 		lea		ebx,[ebx+eax+8+1]
 	.endw
 	mov		ebx,offset rsexstyledef
 	.while byte ptr [ebx+8]
-		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,esi,addr [ebx+8]
 		invoke strlen,addr [ebx+8]
 		lea		ebx,[ebx+eax+8+1]
 	.endw
@@ -1689,7 +1693,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke IncrementVersion,eax
 		.endif
 	.elseif eax==PRO_SETHIGHLIGHT
-		invoke SetHilite
+		mov		eax,wParam
+		and		eax,0FFFFFFh
+		mov		edx,lParam
+		and		edx,0FFFFFFh
+		invoke SetHilite,eax,edx
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

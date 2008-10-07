@@ -110,6 +110,8 @@ MNUITEM ends
 COLOR struct
 	back			dd ?
 	text			dd ?
+	styles			dd ?
+	words			dd ?
 COLOR ends
 
 RESID struct
@@ -231,7 +233,7 @@ PRO_GETCUSTOMTYPE	equ PRO_BASE+24		;wParam=index, lParam=lpRARSTYPE
 PRO_SETDEFINE		equ PRO_BASE+25		;wPatam=0, lParam=lpszName
 PRO_GETDIALOG		equ PRO_BASE+26		;wPatam=0, lParam=0
 PRO_INCVERSION		equ PRO_BASE+27		;wPatam=0, lParam=0
-PRO_SETHIGHLIGHT	equ PRO_BASE+28		;wPatam=0, lParam=0
+PRO_SETHIGHLIGHT	equ PRO_BASE+28		;wPatam=ColorStyles, lParam=ColorWords
 
 ;Project item types
 TPE_NAME			equ 1

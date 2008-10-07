@@ -258,7 +258,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		hTmp=CreateWindowEx(WS_EX_CLIENTEDGE,StrPtr("RAEDIT"),NULL,st,0,0,0,0,ah.hwnd,Cast(Any Ptr,IDC_RAEDIT),hInstance,0)
 		UpdateEditOption(hTmp)
 		If tpe=2 Then
-			SendMessage(hTmp,REM_SETWORDGROUP,0,1)
+			SendMessage(hTmp,REM_SETWORDGROUP,0,2)
 		ElseIf tpe=1 Then
 			SetWindowLong(hTmp,GWL_ID,IDC_CODEED)
 			SetWindowLong(hTmp,GWL_USERDATA,2)

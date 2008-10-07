@@ -137,6 +137,7 @@ Sub SetHiliteWords(ByVal hWin As HWND)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C19,Cast(Integer,@buff))
 	GetPrivateProfileString(StrPtr("Edit"),StrPtr("C20"),@C20,@buff,SizeOf(buff),@ad.IniFile)
 	SendMessage(ah.hout,REM_SETHILITEWORDS,kwcol.C20,Cast(Integer,@buff))
+	SendMessage(ah.hraresed,PRO_SETHIGHLIGHT,kwcol.C10,kwcol.C10)
 
 End Sub
 

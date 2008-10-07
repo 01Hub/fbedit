@@ -149,13 +149,13 @@ Options=52
 5=0,0,0,0,9329
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,29906
+1=0,0,718,485,28100
 7=0,0,718,485,82741
 6=0,0,0,0,2026
 9=0,0,718,485,142689
-2=0,0,584,498,7664
+2=0,0,584,498,7719
 8=0,0,0,0,7331
-10=0,0,0,0,7493
+10=0,0,0,0,7967
 16=0,0,718,485,24915
 15=0,0,0,0
 17=0,0,0,0,64100
@@ -197,36 +197,36 @@ Options=52
 
 
 [Find]
-1="szRAEditClass"
-2="PRO_INCVERSION"
-3="itemcaption"
-4="REM_SETHILITEWORDS"
-5="RSM_SETSTYLEVAL"
-6="szClassName"
-7="StyleProc"
-8="PRO_OPENTEXT"
-9="PRO_ADDITEM"
-10="PRO_GETDIALOG"
+1="PRO_SETHIGHLIGHT"
+2="szRAEditClass"
+3="PRO_INCVERSION"
+4="itemcaption"
+5="REM_SETHILITEWORDS"
+6="RSM_SETSTYLEVAL"
+7="szClassName"
+8="StyleProc"
+9="PRO_OPENTEXT"
+10="PRO_ADDITEM"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.42
-PV=2.1.0.42
+FV=2.1.0.44
+PV=2.1.0.44
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.42
+ProductVersion=2.1.0.44
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.42
+FileVersion=2.1.0.44
 CompanyName=
 
 [VersionControl]

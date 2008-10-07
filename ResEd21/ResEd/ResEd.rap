@@ -98,10 +98,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,18257
+1=580,0,290,688,4671
 6=
-2=0,0,0,0,5873
-7=0,0,699,490,7238
+2=0,0,0,0,6432
+7=0,0,699,490,6634
 9=
 8=
 3=0,0,0,0,1872
@@ -142,16 +142,16 @@ Options=52
 0=
 
 [Find]
-1="hREd"
-2="OpenProject"
-3="MenuUpdate"
-4="PRO_ADDITEM"
-5="PRO_GETDIALOG"
-6="MakeMnuBar"
-7="SELHHFM"
-8="SaveSel"
-9="CreateMnu"
-10="MEM_OPEN"
+1="PRO_SETHIGHLIGHT"
+2="hREd"
+3="OpenProject"
+4="MenuUpdate"
+5="PRO_ADDITEM"
+6="PRO_GETDIALOG"
+7="MakeMnuBar"
+8="SELHHFM"
+9="SaveSel"
+10="CreateMnu"
 
 [VersionControl]
 Settings=1278
@@ -268,7 +268,7 @@ ID=105
 12="IDM_EDIT_FIND,0,Find"
 13="IDM_EDIT_REPLACE,0,Replace"
 [Collapse]
-1=,,,262144
+1=,,,
 12=
 2=
 7=
