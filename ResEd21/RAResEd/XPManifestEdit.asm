@@ -213,6 +213,7 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		mov		racol.txtcol,eax
 		mov		racol.strcol,0
 		invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
+		invoke SendMessage,edi,REM_SETWORDGROUP,0,2
 		mov		esi,lParam
 		invoke SetWindowLong,hWin,GWL_USERDATA,esi
 		.if !esi

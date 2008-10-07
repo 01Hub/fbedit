@@ -157,6 +157,7 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		racol.txtcol,eax
 			mov		racol.strcol,0
 			invoke SendMessage,edi,REM_SETCOLOR,0,addr racol
+			invoke SendMessage,edi,REM_SETWORDGROUP,0,2
 			pop		edi
 			mov		eax,hDlgRed
 			mov		[edi].RCDATAMEM.hred,eax

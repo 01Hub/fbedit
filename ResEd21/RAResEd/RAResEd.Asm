@@ -1170,6 +1170,48 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 PropertyProc endp
 
+SetHilite proc
+
+	mov		ebx,offset szPRELOAD
+	.while byte ptr [ebx]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke strlen,ebx
+		lea		ebx,[ebx+eax+1]
+	.endw
+	mov		ebx,offset szManifestInfo
+	.while byte ptr [ebx]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke strlen,ebx
+		lea		ebx,[ebx+eax+1]
+	.endw
+	mov		ebx,offset szBITMAP
+	.while byte ptr [ebx]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,21C00000h,ebx
+		invoke strlen,ebx
+		lea		ebx,[ebx+eax+1]
+	.endw
+	mov		ebx,offset rsstyledefdlg
+	.while byte ptr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke strlen,addr [ebx+8]
+		lea		ebx,[ebx+eax+8+1]
+	.endw
+	mov		ebx,offset rsstyledef
+	.while byte ptr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke strlen,addr [ebx+8]
+		lea		ebx,[ebx+eax+8+1]
+	.endw
+	mov		ebx,offset rsexstyledef
+	.while byte ptr [ebx+8]
+		invoke SendMessage,hOut,REM_SETHILITEWORDS,20804000h,addr [ebx+8]
+		invoke strlen,addr [ebx+8]
+		lea		ebx,[ebx+eax+8+1]
+	.endw
+	ret
+
+SetHilite endp
+
 ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
@@ -1195,6 +1237,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTlb,eax
 		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE or STYLE_NOLINENUMBER,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
+		invoke SendMessage,hOut,REM_SETWORDGROUP,0,2
 		invoke RtlZeroMemory,addr lf,size lf
 		mov		lf.lfHeight,-13
 		invoke strcpy,addr lf.lfFaceName,addr szCourierNew
@@ -1203,42 +1246,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 		invoke SetupCasetab
 		invoke SortStyles
-		mov		ebx,offset szPRELOAD
-		.while byte ptr [ebx]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,01C00000h,ebx
-			invoke strlen,ebx
-			lea		ebx,[ebx+eax+1]
-		.endw
-		mov		ebx,offset szManifestInfo
-		.while byte ptr [ebx]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,01C00000h,ebx
-			invoke strlen,ebx
-			lea		ebx,[ebx+eax+1]
-		.endw
-		mov		ebx,offset szBITMAP
-		.while byte ptr [ebx]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,01C00000h,ebx
-			invoke strlen,ebx
-			lea		ebx,[ebx+eax+1]
-		.endw
-		mov		ebx,offset rsstyledefdlg
-		.while byte ptr [ebx+8]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
-			invoke strlen,addr [ebx+8]
-			lea		ebx,[ebx+eax+8+1]
-		.endw
-		mov		ebx,offset rsstyledef
-		.while byte ptr [ebx+8]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
-			invoke strlen,addr [ebx+8]
-			lea		ebx,[ebx+eax+8+1]
-		.endw
-		mov		ebx,offset rsexstyledef
-		.while byte ptr [ebx+8]
-			invoke SendMessage,hOut,REM_SETHILITEWORDS,00804000h,addr [ebx+8]
-			invoke strlen,addr [ebx+8]
-			lea		ebx,[ebx+eax+8+1]
-		.endw
 	.elseif	eax==WM_DESTROY
 		invoke DeleteObject,hredfont
 	.elseif	eax==WM_SETFONT
@@ -1681,6 +1688,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			invoke IncrementVersion,eax
 		.endif
+	.elseif eax==PRO_SETHIGHLIGHT
+		invoke SetHilite
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

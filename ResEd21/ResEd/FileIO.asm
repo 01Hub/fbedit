@@ -79,6 +79,7 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			mov		racol.txtcol,eax
 			mov		racol.strcol,0
 			invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
+			invoke SendMessage,hResEd,REM_SETWORDGROUP,0,2
 
 			;stream the text into the RAEdit control
 			mov		eax,hFile

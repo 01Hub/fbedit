@@ -1,19 +1,19 @@
 
 ;Default colors
-DEFBCKCOLOR			equ 00C0F0F0h
-DEFTXTCOLOR			equ 00000000h
+DEFBCKCOLOR				equ 00C0F0F0h
+DEFTXTCOLOR				equ 00000000h
 DEFSELBCKCOLOR			equ 00800000h
 DEFSELTXTCOLOR			equ 00FFFFFFh
 DEFCMNTCOLOR			equ 02008000h
-DEFSTRCOLOR			equ 00A00000h
-DEFOPRCOLOR			equ 000000A0h
-DEFHILITE1			equ 00F0C0C0h
-DEFHILITE2			equ 00C0F0C0h
-DEFHILITE3			equ 00C0C0F0h
+DEFSTRCOLOR				equ 00A00000h
+DEFOPRCOLOR				equ 000000A0h
+DEFHILITE1				equ 00F0C0C0h
+DEFHILITE2				equ 00C0F0C0h
+DEFHILITE3				equ 00C0C0F0h
 DEFSELBARCOLOR			equ 00C0C0C0h
 DEFSELBARPEN			equ 00808080h
-DEFLNRCOLOR			equ 00800000h
-DEFNUMCOLOR			equ 00808080h
+DEFLNRCOLOR				equ 00800000h
+DEFNUMCOLOR				equ 00808080h
 
 ;Window styles
 STYLE_NOSPLITT			equ 00001h			;No splitt button
@@ -31,30 +31,30 @@ STYLE_NOSTATE			equ 00800h			;No state indicator
 STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
 STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
 STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
-STYLE_AUTOSIZELINENUM		equ 08000h			;Line number column autosizes
+STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
 STYLE_NOLOCK			equ 10000h			;No lock button
 
 ;Edit modes
-MODE_NORMAL			equ 0				;Normal
-MODE_BLOCK			equ 1				;Block select
+MODE_NORMAL				equ 0				;Normal
+MODE_BLOCK				equ 1				;Block select
 MODE_OVERWRITE			equ 2				;Overwrite
 
 ;REM_COMMAND commands
-CMD_LEFT			equ 1
-CMD_RIGHT			equ 2
-CMD_LINE_UP			equ 3
+CMD_LEFT				equ 1
+CMD_RIGHT				equ 2
+CMD_LINE_UP				equ 3
 CMD_LINE_DOWN			equ 4
-CMD_PAGE_UP			equ 5
+CMD_PAGE_UP				equ 5
 CMD_PAGE_DOWN			equ 6
-CMD_HOME			equ 7
-CMD_END				equ 8
-CMD_INSERT			equ 9
-CMD_DELETE			equ 10
+CMD_HOME				equ 7
+CMD_END					equ 8
+CMD_INSERT				equ 9
+CMD_DELETE				equ 10
 CMD_BACKSPACE			equ 11
 ;REM_COMMAND modifyers
-CMD_ALT				equ 256
-CMD_CTRL			equ 512
-CMD_SHIFT			equ 1024
+CMD_ALT					equ 256
+CMD_CTRL				equ 512
+CMD_SHIFT				equ 1024
 
 ;Private edit messages
 REM_RAINIT				equ WM_USER+9999	;wParam=0, lParam=pointer to controls DIALOG struct
@@ -146,15 +146,15 @@ STATE_HILITE3			equ 3
 STATE_HILITEMASK		equ 3
 
 ;Bookmarks
-STATE_BMOFF			equ 00h
-STATE_BM1			equ 10h
-STATE_BM2			equ 20h
-STATE_BM3			equ 30h
-STATE_BM4			equ 40h
-STATE_BM5			equ 50h
-STATE_BM6			equ 60h
-STATE_BM7			equ 70h
-STATE_BM8			equ 80h
+STATE_BMOFF				equ 00h
+STATE_BM1				equ 10h
+STATE_BM2				equ 20h
+STATE_BM3				equ 30h
+STATE_BM4				equ 40h
+STATE_BM5				equ 50h
+STATE_BM6				equ 60h
+STATE_BM7				equ 70h
+STATE_BM8				equ 80h
 STATE_BMMASK			equ 0F0h
 
 ;Line states
@@ -167,12 +167,12 @@ STATE_NOBLOCK			equ 2000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types
-CT_NONE				equ 0
-CT_CHAR				equ 1
-CT_OPER				equ 2
-CT_HICHAR			equ 3
-CT_CMNTCHAR			equ 4
-CT_STRING			equ 5
+CT_NONE					equ 0
+CT_CHAR					equ 1
+CT_OPER					equ 2
+CT_HICHAR				equ 3
+CT_CMNTCHAR				equ 4
+CT_STRING				equ 5
 CT_CMNTDBLCHAR			equ 6
 CT_CMNTINITCHAR			equ 7
 

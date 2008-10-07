@@ -146,17 +146,17 @@ Options=52
 16=,107,0,Res\Lock.bmp
 
 [Size]
-5=0,0,0,0,1953
+5=0,0,0,0,9329
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,30198
+1=0,0,718,485,29906
 7=0,0,718,485,82741
 6=0,0,0,0,2026
-9=0,0,718,485,140864
-2=0,0,584,498,7707
-8=0,0,0,0,13308
+9=0,0,718,485,142689
+2=0,0,584,498,7664
+8=0,0,0,0,7331
 10=0,0,0,0,7493
-16=0,0,718,485,12682
+16=0,0,718,485,24915
 15=0,0,0,0
 17=0,0,0,0,64100
 18=0,0,0,0,21864
@@ -182,11 +182,11 @@ Options=52
 40=0,0,0,0,3833
 41=0,0,0,0
 42=0,0,0,0
-43=0,0,0,0,3969
+43=0,0,0,0,4872
 45=0,0,0,0
-44=0,0,0,0,1867
+44=0,0,0,0,2961
 19=0,0,0,0
-13=0,0,0,0,3711
+13=0,0,0,0,3203
 46=0,0,0,0
 47=0,0,0,0
 48=0,0,0,0
@@ -197,36 +197,36 @@ Options=52
 
 
 [Find]
-1="REM_SETHILITEWORDS"
-2="RSM_SETSTYLEVAL"
-3="szClassName"
-4="StyleProc"
-5="PRO_OPENTEXT"
-6="PRO_ADDITEM"
-7="PRO_GETDIALOG"
-8="MakeMnuBar"
-9="SELHHFM"
-10="SaveSel"
+1="szRAEditClass"
+2="PRO_INCVERSION"
+3="itemcaption"
+4="REM_SETHILITEWORDS"
+5="RSM_SETSTYLEVAL"
+6="szClassName"
+7="StyleProc"
+8="PRO_OPENTEXT"
+9="PRO_ADDITEM"
+10="PRO_GETDIALOG"
 
 [AutoLoad]
 1=1
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.39
-PV=2.1.0.39
+FV=2.1.0.42
+PV=2.1.0.42
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.39
+ProductVersion=2.1.0.42
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.39
+FileVersion=2.1.0.42
 CompanyName=
 
 [VersionControl]
@@ -254,7 +254,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -323,7 +323,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 32=,,
 1=,,,,,,,
 2=
-8=,,
+8=,,,
 17=,,,,,,,,,,,,,
 18=,,,,,,,,
 22=
@@ -349,6 +349,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 5=
 13=
 52=
+36=
 [PTimer]
 PTimer=330867960
 

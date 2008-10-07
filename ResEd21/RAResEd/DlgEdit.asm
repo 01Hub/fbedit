@@ -6402,6 +6402,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 		mov		racol.txtcol,eax
 		mov		racol.strcol,0
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_SETCOLOR,0,addr racol
+		invoke SendMessage,[esi].DLGHEAD.hred,REM_SETWORDGROUP,0,2
 		invoke UpdateRAEdit,esi
 		invoke SendMessage,hRes,WM_SIZE,0,0
 		invoke SendMessage,[esi].DLGHEAD.hred,EM_EMPTYUNDOBUFFER,0,0

@@ -168,6 +168,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		edx,nmeexp.nType
 		invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
 		invoke SendMessage,hResEd,PRO_SETINITID,0,addr initid
+		invoke SendMessage,hResEd,PRO_SETHIGHLIGHT,0,0
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,hResEd,DEM_SETPOSSTATUS,eax,0
 		mov		eax,grdsize.y

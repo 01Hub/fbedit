@@ -170,7 +170,7 @@ MnuSaveItemEx proc uses ebx,lpItem:DWORD,fPopUp:DWORD
 	mov		al,22h
 	stosb
 	.if byte ptr (MNUITEM ptr [esi]).itemcaption!='-'
-		invoke SaveStr,edi,addr (MNUITEM ptr [esi]).itemcaption
+		invoke SaveText,edi,addr (MNUITEM ptr [esi]).itemcaption
 		add		edi,eax
 	.endif
 	mov		eax,(MNUITEM ptr [esi]).shortcut
@@ -367,7 +367,7 @@ MnuSaveItem proc uses ebx,lpItem:DWORD,fPopUp:DWORD
 	.else
 		mov		al,22h
 		stosb
-		invoke SaveStr,edi,addr (MNUITEM ptr [esi]).itemcaption
+		invoke SaveText,edi,addr (MNUITEM ptr [esi]).itemcaption
 		add		edi,eax
 		mov		eax,(MNUITEM ptr [esi]).shortcut
 		.if eax

@@ -494,6 +494,31 @@ SaveStr proc uses ecx esi edi,lpDest:DWORD,lpSrc:DWORD
 
 SaveStr endp
 
+SaveText proc uses ecx esi edi,lpDest:DWORD,lpSrc:DWORD
+
+	mov		esi,lpSrc
+	mov		edi,lpDest
+	dec		esi
+	dec		edi
+	mov		ecx,-1
+  @@:
+	inc		ecx
+	inc		esi
+	inc		edi
+	mov		al,[esi]
+	.if al=='"'
+		mov		[edi],al
+		inc		edi
+		inc		ecx
+	.endif
+	mov		[edi],al
+	or		al,al
+	jne		@b
+	mov		eax,ecx
+	ret
+
+SaveText endp
+
 GetTypeMem proc uses esi,lpProMem:DWORD,nType:DWORD
 
 	mov		esi,lpProMem

@@ -1,8 +1,9 @@
 ResEd
 
-2.1.0.3 - 2008.09.18
+2.1.0.3 - 2008.10.07
 --------------------
 o Fixed bug with style manager. Could show unrelated / duplicated styles.
+o Fixed bug with quoted menu text.
 
 2.1.0.2 - 2008.09.10
 --------------------
