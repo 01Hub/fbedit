@@ -20,7 +20,6 @@
 #Define IDC_RBN_FILES						2504
 #Define IDC_RBN_PROJECTFILES				2012
 
-'Dim Shared fPos As Integer
 Dim Shared fres As Integer
 
 Sub InitFindDir
@@ -33,13 +32,13 @@ Sub InitFindDir
 			f.fr=f.fr Or FR_DOWN
 		Case 1
 			' Down
-			f.ft.chrg.cpMin=f.chrgrange.cpMin
+			f.ft.chrg.cpMin=f.chrginit.cpMin
 			f.ft.chrg.cpMax=f.chrgrange.cpMax
 			f.fr=f.fr Or FR_DOWN
 		Case 2
 			' Up
-			f.ft.chrg.cpMin=f.chrgrange.cpMax
-			f.ft.chrg.cpMax=f.chrgrange.cpMin
+			f.ft.chrg.cpMin=f.chrginit.cpMin
+			f.ft.chrg.cpMax=0
 			f.fr=f.fr And (-1 Xor FR_DOWN)
 	End Select
 
@@ -149,7 +148,11 @@ Function FindInFile(hWin As HWND,frType As Integer) As Integer
 
 	res=SendMessage(hWin,EM_FINDTEXTEX,frType,Cast(LPARAM,@f.ft))
 	If res<>-1 Then
-		f.ft.chrg.cpMin=f.ft.chrgText.cpMax
+		If f.fdir=2 Then
+			f.ft.chrg.cpMin=f.ft.chrgText.cpMin-1
+		Else
+			f.ft.chrg.cpMin=f.ft.chrgText.cpMax
+		EndIf
 	Else
 		If f.fdir=0 Then
 			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
@@ -307,7 +310,7 @@ TheNextFile:
 			EndIf
 	End Select
 	If fres<>-1 Then
-		SendMessage(ah.hred,EM_EXSETSEL,0,@f.ft.chrgText)
+		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@f.ft.chrgText))
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 	Else
@@ -596,7 +599,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			EndIf
 			CheckDlgButton(hWin,IDC_RBN_PROJECTFILES,IIf(f.fpro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
-			'ResetFind
+			ResetFind
 			If ah.hred Then
 				id=GetWindowLong(ah.hred,GWL_ID)
 			EndIf
