@@ -658,7 +658,7 @@ Type FIND
 	fdir					As Integer						' 0=All,1=Up,2=Down
 	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
 	fpro					As Integer
-	fprofileno			As Integer
+	ffileno				As Integer
 	chrginit				As CHARRANGE
 	chrgrange			As CHARRANGE
 	fr						As Integer
@@ -671,8 +671,9 @@ Type FIND
 	flogfindclear		As Integer
 	fonlyonetime		As Integer
 	fnoproc				As Boolean
-	ntabinit				As Integer
-	ntab					As Integer
+	'ntabinit				As Integer
+	'ntab					As Integer
+	listoffiles			As String
 End Type
 
 Dim Shared f As FIND

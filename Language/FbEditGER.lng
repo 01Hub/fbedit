@@ -699,6 +699,7 @@ ProjectZip=FbEdit Project Packer
 10000=Projekt Packer
 ;--------------------------------------------------------------------------
 [FbDebug]
+10010=&Debug
 10000=Haltepunkte &umschalten\tCtrl+T
 10001=&Haltepunkte leeren\tShift+Ctrl+T
 10002=&Ausführen\tShift+F7
