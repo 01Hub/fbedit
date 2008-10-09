@@ -58,7 +58,7 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 			push	nLine
 			xor		esi,esi
 			.while len[esi*4]
-				call	TstLn
+				call	TstLnDown
 				.break .if eax==-1
 				inc		nLine
 				inc		esi
@@ -94,7 +94,7 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 			push	nLine
 			xor		esi,esi
 			.while len[esi*4]
-				call	TstLn
+				call	TstLnUp
 				.break .if eax==-1
 				inc		nLine
 				inc		esi
@@ -180,7 +180,7 @@ TstFind:
 	or		al,al
 	retn
 
-TstLn:
+TstLnDown:
 	mov		edi,nLine
 	shl		edi,2
 	.if edi<[ebx].EDIT.rpLineFree
@@ -222,6 +222,57 @@ TstLn:
 	mov		eax,-1
 	retn
   Found:
+	.if !esi
+		add		cpMin,ecx
+		sub		lnlen,ecx
+	.endif
+	mov		eax,cpMin
+	retn
+
+TstLnUp:
+	mov		edi,nLine
+	shl		edi,2
+	.if edi<[ebx].EDIT.rpLineFree
+		add		edi,[ebx].EDIT.hLine
+		mov		edi,[edi].LINE.rpChars
+		add		edi,[ebx].EDIT.hChars
+		.if !esi
+			mov		eax,[edi].CHARS.len
+			mov		lnlen,eax
+		.endif
+		mov		ecx,[edi].CHARS.len
+		sub		ecx,len[esi*4]
+		.if !CARRY?
+		  NxtUp:
+			.if fWW && ecx
+				movzx	eax,byte ptr [edi+ecx+sizeof CHARS-1]
+				.if byte ptr CharTab[eax]==CT_CHAR
+					dec		ecx
+					jge		NxtUp
+					jmp		NotFoundUp
+				.endif
+			.endif
+			call	TstFind
+			je		FoundUp
+			.if !esi
+				dec		ecx
+				jge		NxtUp
+			.endif
+		.endif
+	.else
+		; EOF
+		.if fDir==1
+			mov		cpMin,-1
+			mov		lnlen,0
+		.else
+			mov		cpMax,-1
+			mov		lnlen,0
+		.endif
+	.endif
+  NotFoundUp:
+	mov		eax,-1
+	retn
+  FoundUp:
 	.if !esi
 		add		cpMin,ecx
 		sub		lnlen,ecx

@@ -78,19 +78,17 @@ Sub InitFind
 				f.fnoproc=FALSE
 			Else
 				f.chrgrange.cpMin=0
-				f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
+				f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
 				f.fnoproc=TRUE
 			EndIf
 		Case 1
 			' Current Module
 			f.chrgrange.cpMin=0
-			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
+			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
 		Case 2
 			' All Open Files
-			'f.ntabinit=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
-			'f.ntab=f.ntabinit
 			f.chrgrange.cpMin=0
-			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
+			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
 			f.listoffiles=","
 			' Add open files
 			i=SendMessage(ah.htabtool,TCM_GETCURSEL,0,0)
@@ -125,7 +123,6 @@ Sub InitFind
 			Wend
 			f.fpro=1
 			f.listoffiles=Mid(f.listoffiles,2)
-TextToOutput(f.listoffiles)
 		Case 3
 			' All Project Files
 			f.listoffiles=","
@@ -191,9 +188,8 @@ End Sub
 
 Sub ResetFind
 
-	If f.fpro=0 Then
+	If f.fnoreset=FALSE Then
 		fres=-1
-		'f.ffileno=1
 		f.fonlyonetime=0
 		f.nreplacecount=0
 		If f.flogfindclear Then
@@ -312,19 +308,19 @@ TheNextTab:
 					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
 					SendMessage(lpTABMEM->hedit,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
 					f.chrgrange.cpMin=0
-					f.chrgrange.cpMax=SendMessage(lpTABMEM->hedit,WM_GETTEXTLENGTH,0,0)
+					f.chrgrange.cpMax=SendMessage(lpTABMEM->hedit,WM_GETTEXTLENGTH,0,0)+1
 					InitFindDir
 					fres=FindInFile(lpTABMEM->hedit,frType)
 					If fres<>-1 Then
 						f.fpro=2
 						SelectTab(ah.hwnd,lpTABMEM->hedit,0)
-						GoTo TheNextTab
+						Exit While
 					Else
 						f.fpro=1
 						GoTo TheNextTab
 					EndIf
+					fres=-1
 				Wend
-				fres=-1
 			Else
 				fres=FindInFile(ah.hred,frType)
 				If fres=-1 Then
@@ -350,11 +346,13 @@ TheNextFile:
 					fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
 					GlobalFree(hMem)
 					If fres Then
+						f.fnoreset=TRUE
 						OpenProjectFile(f.ffileno)
 						SetFocus(ah.hfind)
+						f.fnoreset=FALSE
 						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
 						f.chrgrange.cpMin=0
-						f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)
+						f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
 						InitFindDir
 						f.fpro=2
 						GoTo TheNextFile
@@ -675,7 +673,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If wParam<>WA_INACTIVE Then
 				ah.hfind=hWin
 			EndIf
-			'CheckDlgButton(hWin,IDC_RBN_PROJECTFILES,IIf(f.fpro,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_RBN_PROJECTFILES),fProject)
 			ResetFind
 			If ah.hred Then
@@ -723,20 +720,18 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							If fres<>-1 Then
 								f.nreplacecount+=1
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@f.replacebuff))
-								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+								'SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								If f.fdir=2 Then
-									If fres<>-1 Then
-										f.ft.chrg.cpMin=chrg.cpMin-1
-									EndIf
+									' Up
+									f.ft.chrg.cpMin=chrg.cpMin-1
 								Else
-									If fres<>-1 Then
-										f.ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
-									EndIf
+									' Down, All
+									lret=Len(f.replacebuff)-Len(f.findbuff)
+									f.ft.chrg.cpMin+=lret
+									f.ft.chrg.cpMax+=lret
+									'update real end
+									f.chrgrange.cpMax+=lret
 								EndIf
-								'update real end
-								'If fPos=0 And f.ft.chrg.cpMax<>-1 Then
-								'	f.ft.chrg.cpMax=f.ft.chrg.cpMax+(Len(f.replacebuff)-Len(f.findbuff))
-								'EndIf
 							EndIf
 							Find(hWin,f.fr)
 						EndIf

@@ -671,8 +671,7 @@ Type FIND
 	flogfindclear		As Integer
 	fonlyonetime		As Integer
 	fnoproc				As Boolean
-	'ntabinit				As Integer
-	'ntab					As Integer
+	fnoreset				As Boolean
 	listoffiles			As String
 End Type
 

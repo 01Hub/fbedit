@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
+Debug=0
 Ver.rc=1
 Res.rc=1
 
@@ -103,13 +103,13 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,90552
-16=0,0,810,411,1345
+16=0,0,810,411,4504
 22=0,0,0,0,3097
 23=0,0,0,0,29586
 24=0,0,0,0,755
 19=0,0,0,0,4740
 2=0,0,0,0,1404
-9=0,0,0,0,13641
+9=0,0,0,0,1811
 10=0,0,0,0,18463
 11=0,0,0,0,6031
 20=0,0,0,0,3058
@@ -135,16 +135,16 @@ CompanyName=
 0=
 
 [Find]
-1="WM_SI"
-2="SetBlockMarkers"
-3="RAEditPaintNoBuff"
-4="TestExpand"
-5="Collapse"
-6="CollapseGetEnd"
-7="IsInAnyBlock"
-8="TestBlockEnd"
-9="TestBlockStart"
-10="IsInBlock"
+1="lnlen"
+2="WM_SI"
+3="SetBlockMarkers"
+4="RAEditPaintNoBuff"
+5="TestExpand"
+6="Collapse"
+7="CollapseGetEnd"
+8="IsInAnyBlock"
+9="TestBlockEnd"
+10="TestBlockStart"
 
 [AutoLoad]
 1=1
@@ -192,7 +192,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -232,7 +232,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 
 [Collapse]
 1=,,,,,,,,,,,
-16=,,,,,,,
+16=,,,,,,,,
 22=
 23=,,
 24=
