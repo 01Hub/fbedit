@@ -195,7 +195,6 @@ Sub ResetFind
 		'EndIf
 		SetDlgItemText(findvisible,IDOK,GetInternalString(IS_FIND))
 		InitFind
-TextToOutput("Reset")
 	EndIf
 
 End Sub
@@ -233,6 +232,9 @@ Function FindInFile(hWin As HWND,frType As Integer) As Integer
 	Dim res As Integer
 
 	res=SendMessage(hWin,EM_FINDTEXTEX,frType,Cast(LPARAM,@f.ft))
+If f.ft.chrg.cpMin=f.ft.chrgText.cpMax Then
+	res=-1
+EndIf
 	If res<>-1 Then
 		If f.fdir=2 Then
 			f.ft.chrg.cpMin=f.ft.chrgText.cpMin-1
@@ -451,7 +453,6 @@ TheNextFile:
 				f.ft.chrg.cpMax=f.ft.chrg.cpMin
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@f.ft.chrg))
 		End Select
-		f.fpro=0
 		ResetFind
 	EndIf
 	Return f.fres
@@ -817,18 +818,11 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 						Loop
 						'
 					Case IDC_BTN_REPLACEALL
-id=0
 						If f.fres=-1 Then
 							Find(hWin,f.fr)
 						EndIf
-						Do While f.fres<>-1 And id<30
-TextToOutput("B:" & Str(f.ft.chrg.cpMin) & " " & Str(f.fres) & " " & Str(f.ffileno))
+						Do While f.fres<>-1
 							SendMessage(hWin,WM_COMMAND,(BN_CLICKED Shl 16) Or IDC_BTN_REPLACE,0)
-TextToOutput("A:" & Str(f.ft.chrg.cpMin) & " " & Str(f.fres) & " " & Str(f.ffileno))
-'f.fnoreset=TRUE
-'MessageBox(hWin,Str(f.ft.chrg.cpMin),Str(f.fres),MB_OK)
-'f.fnoreset=FALSE
-id+=1
 						Loop
 						ResetFind
 						'
