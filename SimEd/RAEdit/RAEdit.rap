@@ -103,7 +103,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,90552
-16=0,0,810,411,4504
+16=0,0,810,411,4415
 22=0,0,0,0,3097
 23=0,0,0,0,29586
 24=0,0,0,0,755
@@ -135,16 +135,16 @@ CompanyName=
 0=
 
 [Find]
-1="lnlen"
-2="WM_SI"
-3="SetBlockMarkers"
-4="RAEditPaintNoBuff"
-5="TestExpand"
-6="Collapse"
-7="CollapseGetEnd"
-8="IsInAnyBlock"
-9="TestBlockEnd"
-10="TestBlockStart"
+1="cp"
+2="lnlen"
+3="WM_SI"
+4="SetBlockMarkers"
+5="RAEditPaintNoBuff"
+6="TestExpand"
+7="Collapse"
+8="CollapseGetEnd"
+9="IsInAnyBlock"
+10="TestBlockEnd"
 
 [AutoLoad]
 1=1

@@ -668,11 +668,13 @@ Type FIND
 	nreplacecount		As Integer
 	fskipcommentline	As Integer
 	flogfind				As Integer
-	flogfindclear		As Integer
+	'flogfindclear		As Integer
 	fonlyonetime		As Integer
 	fnoproc				As Boolean
 	fnoreset				As Boolean
 	listoffiles			As String
+	nlinesout			As Integer
+	fres					As Integer
 End Type
 
 Dim Shared f As FIND

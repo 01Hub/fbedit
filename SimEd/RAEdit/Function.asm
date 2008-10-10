@@ -80,13 +80,9 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 		; Up
 		mov		eax,cpMin
 		mov		cp,eax
-		dec		eax
-		mov		cpMin,eax
 		invoke GetCharPtr,ebx,cpMin
 		mov		nLine,edx
-		invoke GetCpFromLine,ebx,nLine
-		mov		cpMin,eax
-		xor		ecx,ecx
+		mov		ecx,eax
 		mov		edx,cpMin
 		mov		eax,-1
 		.while sdword ptr edx>cpMax
@@ -101,12 +97,20 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 				xor		ecx,ecx
 			.endw
 			pop		nLine
-			.break .if eax!=-1 && eax<cp
+			.break .if eax!=-1 && eax<=cp
 			dec		nLine
+			mov		edi,nLine
+			shl		edi,2
+			mov		eax,-1
+			.break .if edi>=[ebx].EDIT.rpLineFree
 			invoke GetCpFromLine,ebx,nLine
 			mov		cpMin,eax
+			add		edi,[ebx].EDIT.hLine
+			mov		edi,[edi].LINE.rpChars
+			add		edi,[ebx].EDIT.hChars
+			mov		ecx,[edi].CHARS.len
+			add		cpMin,ecx
 			mov		edx,cpMin
-			xor		ecx,ecx
 			mov		eax,-1
 		.endw
 	.endif
@@ -239,9 +243,8 @@ TstLnUp:
 		.if !esi
 			mov		eax,[edi].CHARS.len
 			mov		lnlen,eax
+			sub		cpMin,ecx
 		.endif
-		mov		ecx,[edi].CHARS.len
-		sub		ecx,len[esi*4]
 		.if !CARRY?
 		  NxtUp:
 			.if fWW && ecx
