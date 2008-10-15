@@ -24,7 +24,7 @@ include		kernel32.inc
 include		user32.inc
 include		shell32.inc
 
-include		C:\RadASM\Masm\Inc\RadAsm.inc
+include		..\RadAsm.inc
 
 includelib	kernel32.lib
 includelib	user32.lib

@@ -39,9 +39,9 @@ Menu=1,0,0,1,0,0,0,0
 3=PthExpl++.rc
 4=Res\setup.dlg
 AutoDelete=1
-AskMe=1
+AskMe=0
 MinorFiles=*.res;*.obj;*.lib;*.exp;
-5=..\..\..\Inc\RadAsm.inc
+5=..\RadAsm.inc
 [Version-Inc]
 Options=52
 [BookMark]
@@ -63,8 +63,8 @@ Options=52
 2=0,0,0,0,58
 3=0,0,0,0,27
 4=0,0,0,0
-1=0,0,0,0,0
-5=0,0,0,0,11387
+1=0,0,0,0,711
+5=0,0,0,0,0
 [CodeMake]
 4=1,,,WndProc
 [Find]
@@ -88,7 +88,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=4
 3=3
 4=3
-5=2
+5=1
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -99,7 +99,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=3
 MilestoneOnDateTimeDate=30

@@ -33,11 +33,14 @@ Menu=1,1,1,1,0,0,0,0
 5=DlgToWin.dlg
 6=DlgToWin.rc
 7=DlgToWin.txt
+AutoDelete=1
+AskMe=0
+MinorFiles=*.res;*.obj;*.lib;*.exp;
 
 [Size]
 3=132,132,560,438,54
 1=0,0,773,502,3065
-2=32,17,574,424,5293
+2=32,17,574,424,11
 4=0,0,821,620,24284
 5=0,0,274,290
 6=-4,-23,773,502,642
@@ -110,7 +113,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=17
