@@ -85,7 +85,7 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 		mov		ecx,eax
 		mov		edx,cpMin
 		mov		eax,-1
-		.while sdword ptr edx>cpMax
+		.while sdword ptr edx>=cpMax
 			mov		nIgnore,0
 			push	nLine
 			xor		esi,esi
@@ -406,7 +406,8 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 			inc		fMC
 		.endif
 		mov		eax,[esi].FINDTEXTEX.chrg.cpMin
-		.if eax<[esi].FINDTEXTEX.chrg.cpMax
+		test	fFlag,FR_DOWN
+		.if !ZERO?
 			;Down
 			xor		eax,eax
 			test	fFlag,FR_IGNOREWHITESPACE
@@ -415,7 +416,7 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 			.endif
 			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,1
 			add		len,edx
-		.elseif eax>[esi].FINDTEXTEX.chrg.cpMax
+		.else
 			;Up
 			xor		eax,eax
 			test	fFlag,FR_IGNOREWHITESPACE
@@ -424,9 +425,6 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 			.endif
 			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,-1
 			add		len,edx
-			;invoke FindTextUp,ebx,lpText,len,fMC,fWW,[esi].FINDTEXTEX.chrg.cpMax,[esi].FINDTEXTEX.chrg.cpMin
-		.else
-			mov		eax,-1
 		.endif
 		.if eax!=-1
 			mov		[esi].FINDTEXTEX.chrgText.cpMin,eax

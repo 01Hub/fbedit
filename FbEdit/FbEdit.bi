@@ -659,8 +659,8 @@ Type FIND
 	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
 	fpro					As Integer
 	ffileno				As Integer
-	chrginit				As CHARRANGE
-	chrgrange			As CHARRANGE
+	chrginit				As CHARRANGE					' Position at startup
+	chrgrange			As CHARRANGE					' Range to search
 	fr						As Integer
 	ft						As FINDTEXTEX
 	findbuff				As ZString*260
@@ -668,7 +668,6 @@ Type FIND
 	nreplacecount		As Integer
 	fskipcommentline	As Integer
 	flogfind				As Integer
-	'flogfindclear		As Integer
 	fonlyonetime		As Integer
 	fnoproc				As Boolean
 	fnoreset				As Boolean
@@ -679,3 +678,12 @@ End Type
 
 Dim Shared f As FIND
 
+Type LASTPOS
+	hwnd		As HWND
+	chrg		As CHARRANGE
+	nline		As Integer
+	fchanged	As Integer
+	fnohandling	As Integer
+End Type
+
+Dim Shared lstpos As LASTPOS

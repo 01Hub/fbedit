@@ -199,6 +199,8 @@ ntbrbtns				equ 30
 ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',0
 						db 'Text Files (*.txt)',0,'*.txt',0
 						db 'All Files (*.*)',0,'*.*',0,0
+RegionSearched			db	'Region searched.',0
+
 .data
 
 RAEditDLL				db 'RAEdit.dll',0

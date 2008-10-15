@@ -1919,21 +1919,27 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			Do While lret
 				lret=DragQueryFile(Cast(HDROP,wParam),id,sFile,SizeOf(sFile))
 				If lret Then
-					If fProject Then
-						If fCtrl<>FALSE And GetFileImg(sFile)=1 Then
-							AddProjectFile(sFile,TRUE)
+					If (GetFileAttributes(sFile) And FILE_ATTRIBUTE_DIRECTORY)=0 Then
+						If fProject Then
+							If fCtrl<>FALSE And GetFileImg(sFile)=1 Then
+								' Module
+								AddProjectFile(sFile,TRUE)
+							Else
+								AddProjectFile(sFile,FALSE)
+							EndIf
 						Else
-							AddProjectFile(sFile,FALSE)
+							' Open single file
+							OpenTheFile(sFile,FALSE)
 						EndIf
-					Else
-						' Open single file
-						OpenTheFile(sFile,FALSE)
 					EndIf
 				EndIf
-				id=id+1
+				id+=1
 			Loop
 			'
+		Case Else
+			Return CallWindowProc(lpOldProjectProc,hWin,uMsg,wParam,lParam)
+			'
 	End Select
-	Return CallWindowProc(lpOldProjectProc,hWin,uMsg,wParam,lParam)
+	Return 0
 
 End Function

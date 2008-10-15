@@ -59,13 +59,17 @@ Lang=English (default), By FbEdit team
 2009=Replace:
 2003=Match Case
 2007=Whole Word
-2012=All Project Files
 2013=Skip Comment Line
 2014=Log operation
 2217=Direction
 2004=All
 2006=Up
 2005=Down
+2501=Search
+2502=Current Procedure
+2503=Current Module
+2504=All Open Files
+2012=All Project Files
 1=Find
 2010=Replace
 2015=Find All
@@ -195,7 +199,7 @@ Lang=English (default), By FbEdit team
 [5380]
 ;--------------------------------------------------------------------------
 [5400]
-5400=Path Options
+5400=FbEdit Path Options
 1009=Default Project Path:
 1010=Compiler Path:
 5403=Help Path:
@@ -535,6 +539,7 @@ Lang=English (default), By FbEdit team
 1006=Project Files searched
 1007=Region searched%c%cFind%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
 1008=Project Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
+1009=Open Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d
 1100=Tools Menu Option
 1101=Help Menu Option
 1102=Build Options

@@ -5,7 +5,9 @@ o You cam now press Ctrl+F2 to return to where you came from after double clicki
   in properties.
 o Added Current Procedure to find / replace dialog.
 o Added All Open Files  to find / replace dialog.
+o Improved case convert and autoformat a little.
 o Fixed quoted string bug in menu editor.
+o Fixed parser bug where opening winddk.bi caused a crash.
 1.0.6.3
 o FbEdit.ini is no longer distributed with the zip.
   For first time installations FbEdit.ini will be created.

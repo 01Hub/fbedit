@@ -269,12 +269,10 @@ End Sub
 
 Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
 	Dim lret As ZString Ptr
-	Dim lp As Integer
-	Dim chrg As CHARRANGE
 
 	If SendMessage(hWin,REM_ISCHARPOS,cp,0)=0 Then
 		SendMessage(hWin,REM_SETCHARTAB,Asc("."),CT_CHAR)
-		If SendMessage(hWin,REM_GETWORD,260,Cast(LPARAM,@buff)) Then
+		If SendMessage(hWin,REM_GETWORDFROMPOS,cp,Cast(LPARAM,@buff)) Then
 			lret=FindExact(@szCaseConvert,@buff,FALSE)
 			If lret Then
 				lstrcpy(@buff,lret)
@@ -422,10 +420,12 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 	If lstrcmp(@szIndent,lpszIndent) Then
 		SendMessage(hWin,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 		SendMessage(hWin,EM_REPLACESEL,TRUE,Cast(LPARAM,lpszIndent))
+		lz=Len(szIndent)-Len(*lpszIndent)
 	Else
 		chrg.cpMin=chrg.cpMax
 		SendMessage(hWin,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 		SendMessage(hWin,EM_SCROLLCARET,0,0)
+		lz=0
 	EndIf
 	Return lz
 
@@ -634,6 +634,50 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		EndIf
 	EndIf
 	Return FALSE
+
+End Function
+
+Function AutoFormatLine(ByVal hWin As HWND,ByVal lpchrg As CHARRANGE Ptr) As Integer
+	Dim chrg As CHARRANGE
+	Dim ln As Integer
+	Dim lz As Integer
+	Dim wp As Integer
+
+	If edtopt.autoformat Then
+		' Indent / Outdent
+		If lpchrg=0 Then
+			SendMessage(hWin,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+			ln=SendMessage(hWin,EM_LINEFROMCHAR,chrg.cpMin,0)-1
+		Else
+			chrg=*lpchrg
+			ln=SendMessage(hWin,EM_LINEFROMCHAR,chrg.cpMin,0)
+		EndIf
+		wp=0
+		While wp<32
+			If szIndent(wp)<>szNULL Then
+				If SendMessage(hWin,REM_ISLINE,ln,Cast(LPARAM,@szIndent(wp)))>=0 Then
+					' Get current indent
+					lz=0
+					buff=GetIndent(hWin,ln,@szIndent(autofmt(wp).st),@lz)
+					If lz=0 Then
+						' Indent word line
+						lz=Len(buff)
+						buff=AddIndent(autofmt(wp).add1,@buff)
+						lz-=Len(buff)
+						lz=SetIndent(hWin,ln,@buff)
+						If lpchrg=0 Then
+							' Indent caret line
+							buff=AddIndent(autofmt(wp).add2,@buff)
+							SetIndent(hWin,ln+1,@buff)
+						EndIf
+						Exit While
+					EndIf
+				EndIf
+			EndIf
+			wp=wp+1
+		Wend
+	EndIf
+	Return lz
 
 End Function
 
@@ -878,6 +922,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						Return 0
 					EndIf
 				EndIf
+				If wParam=VK_RETURN Then
+					lstpos.fnohandling=1
+				EndIf
 				lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 				TestCaseConvert(hPar,wParam)
 				If (wParam=Asc(".") Or wParam=Asc(">")) And fconstlist=TRUE Then
@@ -1016,8 +1063,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						HideList
 					EndIf
 				ElseIf wParam=VK_RETURN Then
-					' Block Complete
 					If edtopt.autoblock Then
+						' Block Complete
 						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
 						If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
@@ -1075,31 +1122,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							Wend
 						EndIf
 					EndIf
-					If edtopt.autoformat Then
-						' Indent / Outdent
-						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-						ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
-						wp=0
-						While wp<32
-							If szIndent(wp)<>szNULL Then
-								If SendMessage(hPar,REM_ISLINE,ln,Cast(LPARAM,@szIndent(wp)))>=0 Then
-									' Get current indent
-									lz=0
-									buff=GetIndent(hPar,ln,@szIndent(autofmt(wp).st),@lz)
-									If lz=0 Then
-										' Indent word line
-										buff=AddIndent(autofmt(wp).add1,@buff)
-										SetIndent(hPar,ln,@buff)
-										' Indent caret line
-										buff=AddIndent(autofmt(wp).add2,@buff)
-										SetIndent(hPar,ln+1,@buff)
-										Exit While
-									EndIf
-								EndIf
-							EndIf
-							wp=wp+1
-						Wend
-					EndIf
+					AutoFormatLine(hPar,0)
+					lstpos.fnohandling=0
 				EndIf
 				Return lret
 			ElseIf wParam=VK_TAB Then
@@ -1116,9 +1140,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			EndIf
 		Case WM_KEYDOWN
 			hPar=GetParent(hWin)
+			lp=(lParam Shr 16) And &H3FF
+			wp=wParam
 			If IsWindowVisible(ah.hcc) Then
-				lp=(lParam Shr 16) And &H3FF
-				wp=wParam
 				If (wp=&H28 And (lp=&H150 Or lp=&H50)) Or (wp=&H26 And (lp=&H148 Or lp=&H48)) Or (wp=&H21 And (lp=&H149 Or lp=&H49)) Or (wp=&H22 And (lp=&H151 Or lp=&H51)) Then
 					' Down / Up /PgUp / PgDn
 					' Relay event to the code complete list

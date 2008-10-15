@@ -1,4 +1,4 @@
-cd C:\FbEdit\Projects\Applications\FbEdit\FbEditDLL
+cd \FbEdit\Projects\Applications\FbEdit\FbEditDLL
 copy ..\CodeComplete\Lib\RACodeComplete.lib Lib
 copy ..\FileBrowser\Lib\RAFile.lib Lib
 copy ..\Grid\Lib\RAGrid.lib Lib

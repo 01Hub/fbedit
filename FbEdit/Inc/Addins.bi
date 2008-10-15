@@ -131,6 +131,7 @@ Type ADDINDATA
 	bExtOutput		As Integer						' External Output
 	HelpPath			As ZString*260					' Path to help files
 	fDebug			As Boolean						' Project is beeing debugged
+	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
 End Type
 
 Type ADDINFUNCTIONS

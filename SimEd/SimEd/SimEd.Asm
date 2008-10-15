@@ -794,6 +794,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		al,findbuff
 				.if al
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrg
+					mov		eax,ft.chrg.cpMax
+					sub		eax,ft.chrg.cpMin
+					add		ft.chrg.cpMin,eax
+					mov		ft.chrg.cpMax,-1
 					invoke Find,FR_DOWN
 				.endif
 			.elseif eax==IDM_EDIT_FINDPREV
@@ -802,6 +807,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		al,findbuff
 				.if al
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrg
+					dec		ft.chrg.cpMin
+					mov		ft.chrg.cpMax,0
 					invoke Find,0
 				.endif
 			.elseif eax==IDM_EDIT_INDENT

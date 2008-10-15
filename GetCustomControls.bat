@@ -1,4 +1,4 @@
-cd C:\FbEdit\Projects\Applications\FbEdit
+cd \FbEdit\Projects\Applications\FbEdit
 rem Copy CodeComplete\RACodeComplete.dll \FbEdit
 rem Copy FileBrowser\RAFile.dll \FbEdit
 rem Copy Grid\RAGrid.dll \FbEdit

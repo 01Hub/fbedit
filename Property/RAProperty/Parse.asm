@@ -1531,6 +1531,12 @@ ParseStruct:
 						inc		esi
 					.endif
 					jmp		ParseStruct2
+				.elseif byte ptr [esi]==':'
+					inc		esi
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+					lea		esi,[esi+ecx]
+					jmp		ParseStruct2
 				.endif
 				.if ecx
 					invoke IsIgnore,IGNORE_STRUCTITEMSECONDWORD,ecx,esi

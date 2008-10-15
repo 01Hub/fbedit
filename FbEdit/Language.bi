@@ -23,8 +23,9 @@
 #DEFINE IS_PROJECT_FILES_SEARCHED       1006
 #DEFINE IS_REGION_SEARCHED_INFO         1007
 #DEFINE IS_PROJECT_FILES_SEARCHED_INFO  1008
+#Define IS_OPEN_FILES_SEARCHED_INFO  	 1009
 #DEFINE IS_TOOLS_MENU_OPTION            1100
-#DEFINE IS_HELP_MENU_OPTION             1101
+#Define IS_HELP_MENU_OPTION             1101
 #DEFINE IS_BUILD_OPTIONS                1102
 #DEFINE IS_PROJECT_BUILD_OPTIONS        1103
 #DEFINE IS_IMPORT_BUILD_OPTION          1104
@@ -64,6 +65,7 @@ Const InternalStrings=	!"\13\10" & _
 								!"1006=Project Files searched\13\10" & _
 								!"1007=Region searched%c%cFind%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d\13\10" & _
 								!"1008=Project Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d\13\10" & _
+								!"1009=Open Files searched%c%cFind%c  Files: %d%c  Founds: %d%c  Repeats: %d%c%cBuild%c  Errors: %d%c  Warnings: %d\13\10" & _
 								!"1100=Tools Menu Option\13\10" & _
 								!"1101=Help Menu Option\13\10" & _
 								!"1102=Build Options\13\10" & _

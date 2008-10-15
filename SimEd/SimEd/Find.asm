@@ -2,15 +2,9 @@
 
 Find proc frType:DWORD
 
-	;Get current selection
-	invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 	;Setup find
-	mov		eax,frType
-	and		eax,FR_DOWN
-	.if eax
-		.if fres!=-1
-			inc		ft.chrg.cpMin
-		.endif
+	test	frType,FR_DOWN
+	.if !ZERO?
 		mov		ft.chrg.cpMax,-1
 	.else
 		mov		ft.chrg.cpMax,0
@@ -24,8 +18,18 @@ Find proc frType:DWORD
 		invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
 		invoke SendMessage,hREd,REM_VCENTER,0,0
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+		test	frType,FR_DOWN
+		.if !ZERO?
+			mov		eax,ft.chrgText.cpMax
+			mov		ft.chrg.cpMin,eax
+		.else
+			mov		eax,ft.chrgText.cpMin
+			dec		eax
+			mov		ft.chrg.cpMin,eax
+		.endif
 	.else
 		;Region searched
+		invoke MessageBox,hWnd,addr RegionSearched,addr szAppName,MB_OK
 	.endif
 	ret
 
@@ -69,6 +73,9 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,IDC_RBN_UP
 		.endif
 		invoke CheckDlgButton,hWin,eax,BST_CHECKED
+	.elseif eax==WM_ACTIVATE
+		;Get current selection
+		invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		mov		edx,eax
@@ -103,6 +110,13 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						add		eax,ft.chrg.cpMin
 						mov		ft.chrg.cpMax,eax
 						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrg
+						test	fr,FR_DOWN
+						.if !ZERO?
+							mov		eax,ft.chrg.cpMax
+							mov		ft.chrg.cpMin,eax
+						.else
+							dec		ft.chrg.cpMin
+						.endif
 					.endif
 					invoke Find,fr
 				.endif
@@ -120,10 +134,14 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Set find direction to down
 				or		fr,FR_DOWN
 				mov		fres,-1
+				;Get current selection
+				invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 			.elseif eax==IDC_RBN_UP
 				;Set find direction to up
 				and		fr,-1 xor FR_DOWN
 				mov		fres,-1
+				;Get current selection
+				invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 			.elseif eax==IDC_CHK_MATCHCASE
 				;Set match case mode
 				invoke IsDlgButtonChecked,hWin,IDC_CHK_MATCHCASE

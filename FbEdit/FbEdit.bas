@@ -1698,6 +1698,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
+				If ad.fNoNotify Then
+					Return 0
+				EndIf
 				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
 					SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
@@ -1714,6 +1717,23 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				Else
 					If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
+						If lstpos.fchanged<>0 And lstpos.nline<>lpRASELCHANGE->Line And lstpos.fnohandling=0 Then
+							ad.fNoNotify=TRUE
+							CaseConvertWord(lstpos.hwnd,lstpos.chrg.cpMin)
+							lret=AutoFormatLine(lstpos.hwnd,@lstpos.chrg)
+							If lpRASELCHANGE->chrg.cpMin>lstpos.chrg.cpMin Then
+								lpRASELCHANGE->chrg.cpMin-=lret
+								lpRASELCHANGE->chrg.cpMax-=lret
+							EndIf
+							SendMessage(lstpos.hwnd,EM_EXSETSEL,0,Cast(LPARAM,@lpRASELCHANGE->chrg.cpMin))
+							SendMessage(lstpos.hwnd,EM_SCROLLCARET,0,0)
+							ad.fNoNotify=FALSE
+						EndIf
+						lstpos.hwnd=ah.hred
+						lstpos.chrg.cpMin=lpRASELCHANGE->chrg.cpMin
+						lstpos.chrg.cpMax=lpRASELCHANGE->chrg.cpMax
+						lstpos.fchanged=lpRASELCHANGE->fchanged
+						lstpos.nline=lpRASELCHANGE->Line
 						SendMessage(ah.hred,REM_BRACKETMATCH,0,0)
 						If ad.fDebug=FALSE Then
 							SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
@@ -1992,9 +2012,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				lret=DragQueryFile(Cast(HDROP,wParam),id,@sItem,SizeOf(sItem))
 				If lret Then
 					' Open single file
-					OpenTheFile(sItem,FALSE)
+					If (GetFileAttributes(@sItem) And FILE_ATTRIBUTE_DIRECTORY)=0 Then
+						OpenTheFile(sItem,FALSE)
+					EndIf
 				EndIf
-				id=id+1
+				id+=1
 			Loop
 			'
 		Case WM_SIZE

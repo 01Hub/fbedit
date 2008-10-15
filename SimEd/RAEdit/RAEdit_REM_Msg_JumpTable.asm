@@ -1127,9 +1127,10 @@
 			ret
 		align 4
 		_REM_CASEWORD:
-			;wParam=0
+			;wParam=cp
 			;lParam=lpBuff
-			invoke GetWordStart,ebx,wParam,0
+			mov		edx,wParam
+			invoke GetWordStart,ebx,edx,0
 			mov		esi,[ebx].EDIT.rpChars
 			sub		eax,[ebx].EDIT.cpLine
 			add		esi,[ebx].EDIT.hChars
