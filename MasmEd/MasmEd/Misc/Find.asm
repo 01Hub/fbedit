@@ -9,10 +9,14 @@ Find proc frType:DWORD
 	and		eax,FR_DOWN
 	.if eax
 		.if fres!=-1
-			inc		ft.chrg.cpMin
+			mov		eax,ft.chrgText.cpMax
+			mov		ft.chrg.cpMin,eax
 		.endif
 		mov		ft.chrg.cpMax,-1
 	.else
+		.if fres!=-1
+			dec		ft.chrg.cpMin
+		.endif
 		mov		ft.chrg.cpMax,0
 	.endif
 	mov		ft.lpstrText,offset findbuff
@@ -26,6 +30,7 @@ Find proc frType:DWORD
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 	.else
 		;Region searched
+		invoke MessageBox,hFind,addr szRegionSearched,addr szAppName,MB_OK
 	.endif
 	ret
 
@@ -100,9 +105,9 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset replacebuff
 						invoke lstrlen,offset replacebuff
-						add		eax,ft.chrg.cpMin
-						mov		ft.chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrg
+						add		eax,ft.chrgText.cpMin
+						mov		ft.chrgText.cpMax,eax
+						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
 					.endif
 					invoke Find,fr
 				.endif

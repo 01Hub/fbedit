@@ -162,7 +162,7 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 					invoke lstrcmpi,addr [esi+offset FileName-3],offset szFtRc
 					.if !eax
 						;RC File
-						inc		ebx
+						mov		ebx,2
 					.else
 						;Unknown file type
 						mov		ebx,15

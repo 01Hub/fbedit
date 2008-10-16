@@ -275,6 +275,7 @@ SetKeyWords proc uses esi edi
 		invoke SetHiliteWords,kwcol[15*4],hMem
 		invoke GlobalFree,hMem
 	.endif
+	invoke SendMessage,hResEd,PRO_SETHIGHLIGHT,col.styles,col.words
 	ret
 
 SetKeyWords endp

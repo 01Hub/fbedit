@@ -64,6 +64,12 @@ start:
 		invoke RegQueryValueEx,hReg,addr szLnrFont,0,addr lpType,addr lfntlnr,addr lpcbData
 		mov		lpcbData,sizeof col
 		invoke RegQueryValueEx,hReg,addr szColor,0,addr lpType,addr col,addr lpcbData
+		.if col.styles==-1
+			mov		col.styles,DEFSTYLESCOLOR
+		.endif
+		.if col.words==-1
+			mov		col.words,DEFWORDSCOLOR
+		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
 
@@ -1168,15 +1174,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hOut,eax
 		invoke SendMessage,hOut,WM_SETFONT,hFont,FALSE
 		invoke CreateRAEdit
+		;Create file browser
+		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
+		mov		hBrowse,eax
+		invoke SendMessage,hSbr,WM_GETFONT,0,0
+		push	eax
+		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
+		pop		eax
+		;Create ResEd
+		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
+		mov		hRes,eax
 		;Set hilite words
 		invoke SetKeyWords
 		;Set colors
 		invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
 		;and give it focus
 		invoke SetFocus,hREd
-		;Create file browser
-		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
-		mov		hBrowse,eax
 		;Get handle of tab window
 		invoke GetDlgItem,hWin,IDC_TAB
 		mov		hTab,eax
@@ -1195,12 +1208,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 		invoke SetToolMenu
 		invoke SetHelpMenu
-		invoke SendMessage,hSbr,WM_GETFONT,0,0
-		push	eax
-		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
-		pop		eax
-		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
-		mov		hRes,eax
 		;Add custom controls
 		mov		nInx,1
 		mov		ebx,offset hCustDll

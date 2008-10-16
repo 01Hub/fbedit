@@ -292,6 +292,8 @@ MEDCOLOR struct
 	tooltext	dd ?
 	dialogback	dd ?
 	dialogtext	dd ?
+	styles		dd ?
+	words		dd ?
 MEDCOLOR ends
 
 .const
@@ -351,6 +353,7 @@ szAboutUrl				db 'http://www.radasm.com',0
 szOpen					db 'Open',0
 
 szReplace				db 'Replace ..',0
+szRegionSearched		db 'Region searched.',0
 szOpenFileFail        	db 'Cannot open the file',0
 szSaveFileFail			db 'Cannot save the file',0
 szWannaSave           	db 'Want to save changes to',0Dh,0
@@ -421,7 +424,7 @@ lfnt					LOGFONT <-12,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Courier New'>
 szLnrFont				db 'LnrFont',0
 lfntlnr					LOGFONT <-8,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Terminal'>
 szColor					db 'Color',0
-col						MEDCOLOR <<DEFBCKCOLOR,DEFTXTCOLOR,DEFSELBCKCOLOR,DEFSELTXTCOLOR,DEFCMNTCOLOR,DEFSTRCOLOR,DEFOPRCOLOR,DEFHILITE1,DEFHILITE2,DEFHILITE3,DEFSELBARCOLOR,DEFSELBARPEN,DEFLNRCOLOR,DEFNUMCOLOR>,DEFBCKCOLOR,DEFTXTCOLOR,DEFBCKCOLOR,DEFTXTCOLOR>
+col						MEDCOLOR <<DEFBCKCOLOR,DEFTXTCOLOR,DEFSELBCKCOLOR,DEFSELTXTCOLOR,DEFCMNTCOLOR,DEFSTRCOLOR,DEFOPRCOLOR,DEFHILITE1,DEFHILITE2,DEFHILITE3,DEFSELBARCOLOR,DEFSELBARPEN,DEFLNRCOLOR,DEFNUMCOLOR>,DEFBCKCOLOR,DEFTXTCOLOR,DEFBCKCOLOR,DEFTXTCOLOR,DEFSTYLESCOLOR,DEFWORDSCOLOR>
 szPrnPos				db 'PrnPos',0
 ppos					PRNPOS <<1000,1000,1000,1000>,<21000,29700>,65>
 

@@ -238,16 +238,16 @@ Group=Assembly,Resources,Misc,Include
 42=3
 
 [Find]
-1="ShowPos"
-2="hSbr"
-3="IDC_SHP"
-4="WM_INIT"
-5="IDC_TBR"
-6="IDC_SBR"
-7="hTbr"
-8="1003"
-9="WM_NOTIFY"
-10="WM_CLOSE"
+1="hBrowse"
+2="szFtRc"
+3=".rc"
+4="MEDCOLOR"
+5="ShowPos"
+6="hSbr"
+7="IDC_SHP"
+8="WM_INIT"
+9="IDC_TBR"
+10="IDC_SBR"
 
 [VersionControl]
 Settings=1246
@@ -259,7 +259,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -294,12 +294,12 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,9134
-1=0,0,0,0,10782
-11=0,0,0,0,3259
-22=0,0,0,0,6910
-10=0,0,0,0,9311
-23=0,0,0,0,7962
+2=0,0,0,0,9417
+1=0,0,0,0,2148
+11=0,0,0,0,5541
+22=0,0,0,0,77
+10=0,0,0,0,4136
+23=0,0,0,0,7874
 9=0,0,0,0,160
 4=0,0,0,0
 17=0,0,0,0,323
@@ -318,7 +318,7 @@ ProductVer4Range=0
 27=0,0,0,0
 24=0,0,0,0
 14=0,0,0,0,2138
-12=0,0,0,0,8089
+12=0,0,0,0,2866
 31=0,0,0,0,2652
 32=0,0,0,0
 33=0,0,0,0,165
