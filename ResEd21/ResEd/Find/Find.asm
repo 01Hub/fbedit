@@ -35,11 +35,13 @@ Find proc frType:DWORD
 	and		eax,FR_DOWN
 	.if eax
 		.if fres!=-1
-			inc		ft.chrg.cpMin
+			mov		eax,ft.chrgText.cpMax
+			mov		ft.chrg.cpMin,eax
 		.endif
 		mov		ft.chrg.cpMax,-1
 	.else
 		mov		ft.chrg.cpMax,0
+		dec		ft.chrg.cpMin
 	.endif
 	mov		ft.lpstrText,offset findbuff
 	;Do the find
