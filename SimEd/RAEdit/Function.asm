@@ -541,7 +541,7 @@ SkipString:
 SkipSpc:
 	.if ecx<[edi].CHARS.len
 		mov		al,[edi+ecx+sizeof CHARS]
-		.if al==VK_TAB || al==' ' || al==':'
+		.if al==VK_TAB || al==' ' || al==':' || al=='*'
 			inc		ecx
 			jmp		SkipSpc
 		.elseif al=='"'

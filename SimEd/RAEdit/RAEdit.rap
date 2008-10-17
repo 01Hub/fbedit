@@ -103,7 +103,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,75788
-16=0,0,810,411,26114
+16=0,0,810,411,9603
 22=0,0,0,0,3097
 23=0,0,0,0,26463
 24=0,0,0,0,755
@@ -192,7 +192,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

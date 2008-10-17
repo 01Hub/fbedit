@@ -455,6 +455,7 @@ Sub FormatIndent(ByVal hWin As HWND)
 	Dim hCur As HCURSOR
 
 	' Indent / Outdent
+	lstpos.fnohandling=1
 	hCur=GetCursor
 	SetCursor(LoadCursor(0,IDC_WAIT))
 	SendMessage(hWin,WM_SETREDRAW,FALSE,0)
@@ -512,6 +513,7 @@ Sub FormatIndent(ByVal hWin As HWND)
 	SendMessage(hWin,REM_REPAINT,0,0)
 	SendMessage(hWin,EM_SCROLLCARET,0,0)
 	SetCursor(hCur)
+	lstpos.fnohandling=0
 
 End Sub
 
