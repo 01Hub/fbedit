@@ -5,7 +5,10 @@ MasmEd
 o Variable speed selection scrolling by mouse.
 o Speed optimized block guiders. Could cause sluggish editing on large files
   with many nested blocks.
+o Added direction All to find / replace.
+o Added All Open Files to find / replace.
 o Fixed bug with resource editor style manager. Could show unrelated / duplicated styles.
+o Fixed bug with resource editor menu editor. Did not handle quoted menu text correctly.
 
 1.0.5.0 - 2008.08.25
 --------------------

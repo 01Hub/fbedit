@@ -2,18 +2,34 @@
 
 Find proc frType:DWORD
 
+
+FindNext:
 	;Get current selection
 	invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 	;Setup find
-	mov		eax,frType
-	and		eax,FR_DOWN
-	.if eax
+	mov		eax,ndir
+	.if eax==0
+		;All
+		.if fres!=-1
+			mov		eax,ft.chrgText.cpMax
+			mov		ft.chrg.cpMin,eax
+		.else
+			mov		eax,findchrg.cpMax
+			.if eax!=-1
+				mov		ft.chrg.cpMin,0
+			.endif
+		.endif
+		mov		eax,findchrg.cpMax
+		mov		ft.chrg.cpMax,eax
+	.elseif eax==1
+		;Down
 		.if fres!=-1
 			mov		eax,ft.chrgText.cpMax
 			mov		ft.chrg.cpMin,eax
 		.endif
 		mov		ft.chrg.cpMax,-1
 	.else
+		;Up
 		.if fres!=-1
 			dec		ft.chrg.cpMin
 		.endif
@@ -29,6 +45,13 @@ Find proc frType:DWORD
 		invoke SendMessage,hREd,REM_VCENTER,0,0
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 	.else
+		mov		eax,findchrg.cpMin
+		.if ndir==0 && eax
+			dec		eax
+			mov		findchrg.cpMax,eax
+			mov		findchrg.cpMin,0
+			jmp		FindNext
+		.endif
 		;Region searched
 		invoke MessageBox,hFind,addr szRegionSearched,addr szAppName,MB_OK
 	.endif
@@ -38,6 +61,7 @@ Find endp
 
 FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hCtl:DWORD
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -66,14 +90,16 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CheckDlgButton,hWin,IDC_CHK_WHOLEWORD,BST_CHECKED
 		.endif
 		;Set find direction
-		mov		eax,fr
-		and		eax,FR_DOWN
-		.if eax
+		mov		eax,ndir
+		.if eax==0
+			mov		eax,IDC_RBN_ALL
+		.elseif eax==1
 			mov		eax,IDC_RBN_DOWN
 		.else
 			mov		eax,IDC_RBN_UP
 		.endif
 		invoke CheckDlgButton,hWin,eax,BST_CHECKED
+		invoke SetWindowPos,hWin,0,findpt.x,findpt.y,0,0,SWP_NOSIZE or SWP_NOZORDER
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		mov		edx,eax
@@ -105,9 +131,18 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset replacebuff
 						invoke lstrlen,offset replacebuff
+						push	eax
 						add		eax,ft.chrgText.cpMin
 						mov		ft.chrgText.cpMax,eax
 						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
+						invoke lstrlen,offset findbuff
+						pop		edx
+						sub		edx,eax
+						.if ndir==0
+							.if findchrg.cpMax!=-1
+								add		findchrg.cpMax,edx
+							.endif
+						.endif
 					.endif
 					invoke Find,fr
 				.endif
@@ -121,14 +156,21 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		eax,IDC_BTN_REPLACE
 					invoke SendMessage,hWin,WM_COMMAND,eax,0
 				.endw
+			.elseif eax==IDC_RBN_ALL
+				;Set find direction to down
+				or		fr,FR_DOWN
+				mov		fres,-1
+				mov		ndir,0
 			.elseif eax==IDC_RBN_DOWN
 				;Set find direction to down
 				or		fr,FR_DOWN
 				mov		fres,-1
+				mov		ndir,1
 			.elseif eax==IDC_RBN_UP
 				;Set find direction to up
 				and		fr,-1 xor FR_DOWN
 				mov		fres,-1
+				mov		ndir,2
 			.elseif eax==IDC_CHK_MATCHCASE
 				;Set match case mode
 				invoke IsDlgButtonChecked,hWin,IDC_CHK_MATCHCASE
@@ -160,7 +202,14 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_ACTIVATE
 		mov		fres,-1
+		invoke SendMessage,hREd,EM_EXGETSEL,0,offset findchrg
+		mov		findchrg.cpMax,-1
 	.elseif eax==WM_CLOSE
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.left
+		mov		findpt.x,eax
+		mov		eax,rect.top
+		mov		findpt.y,eax
 		mov		hFind,0
 		invoke DestroyWindow,hWin
 		invoke SetFocus,hREd

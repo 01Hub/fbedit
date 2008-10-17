@@ -307,9 +307,9 @@ CreateRAEdit proc
 
 	push	hREd
 	.if edopt.hilitecmnt
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_NOLOCK or STYLE_AUTOSIZELINENUM
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM
 	.else
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOLOCK or STYLE_AUTOSIZELINENUM
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
 	.endif
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,eax,0,0,0,0,hWnd,IDC_RAE,hInstance,0
 	mov		hREd,eax
@@ -322,6 +322,7 @@ CreateRAEdit proc
 		invoke CheckDlgButton,hREd,-2,TRUE
 		invoke SendMessage,hREd,WM_COMMAND,-2,0
 	.endif
+	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	pop		eax
 	invoke ShowWindow,eax,SW_HIDE
@@ -1129,6 +1130,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		hWnd
 		invoke MoveWindow,hWin,wpos.x,wpos.y,wpos.wt,wpos.ht,TRUE
 		mov		fr,FR_DOWN
+		mov		eax,wpos.x
+		add		eax,30
+		mov		findpt.x,eax
+		mov		eax,wpos.y
+		add		eax,30
+		mov		findpt.y,eax
 		invoke LoadCursor,hInstance,IDC_HSPLIT
 		mov		hHSplitCur,eax
 		invoke LoadCursor,hInstance,IDC_VSPLIT

@@ -34,7 +34,10 @@ STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
 STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
 STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
 STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
-STYLE_NOLOCK			equ 10000h			;No lock button
+
+;Styles used with REM_SETSTYLEEX message
+STYLEEX_LOCK			equ 0001h			;Show lock button
+STYLEEX_BLOCKGUIDE		equ 0002h			;Show block guiders
 
 ;Edit modes
 MODE_NORMAL				equ 0				;Normal
@@ -144,6 +147,7 @@ REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
 REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
+REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

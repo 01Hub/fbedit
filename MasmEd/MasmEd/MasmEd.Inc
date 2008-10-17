@@ -88,6 +88,7 @@ IDC_REPLACESTATIC		equ 2009
 IDC_BTN_REPLACEALL		equ 2008
 IDC_CHK_WHOLEWORD		equ 2004
 IDC_CHK_MATCHCASE		equ 2003
+IDC_RBN_ALL				equ 2011
 IDC_RBN_DOWN			equ 2005
 IDC_RBN_UP				equ 2006
 
@@ -528,6 +529,9 @@ replacebuff				db 256 dup(?)
 ft						FINDTEXTEX <>
 fr						dd ?
 fres					dd ?
+ndir					dd ?
+findchrg				CHARRANGE <>
+findpt					POINT <>
 nLastLine				dd ?
 fTimer					dd ?
 hMnuIml					dd ?
