@@ -364,11 +364,17 @@ IndentComment endp
 
 GetSelText proc lpBuff:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	buffer[256]:BYTE
 
 	invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
 	mov		eax,chrg.cpMax
 	sub		eax,chrg.cpMin
-	.if eax && eax<256
+	.if !eax
+		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		.if buffer
+			invoke lstrcpy,lpBuff,addr buffer
+		.endif
+	.elseif eax<256
 		invoke SendMessage,hREd,EM_GETSELTEXT,0,lpBuff
 	.endif
 	ret
@@ -590,6 +596,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke TabToolGetInx,[ebx].TABMEM.hwnd
 					invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
 					invoke TabToolActivate
+					invoke SetFocus,hREd
 					invoke WantToSave,hREd,offset FileName
 					or		eax,eax
 					jne		Ex
@@ -612,6 +619,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				.if !eax
 					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
 					invoke TabToolActivate
+					invoke SetFocus,hREd
 					mov		eax,TRUE
 					jmp		Ex
 				.endif
@@ -620,6 +628,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				.if eax==hRes
 					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
 					invoke TabToolActivate
+					invoke SetFocus,hREd
 					mov		eax,TRUE
 					jmp		Ex
 				.endif
@@ -712,6 +721,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 							mov		chrg.cpMax,eax
 							invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXSETSEL,0,addr chrg
 							invoke SendMessage,[ebx].TABMEM.hwnd,EM_SCROLLCARET,0,0
+							invoke SetFocus,[ebx].TABMEM.hwnd
 							mov		eax,TRUE
 							ret
 						.endif

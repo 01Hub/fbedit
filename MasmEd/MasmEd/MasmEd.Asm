@@ -1075,7 +1075,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,5
 			invoke MoveWindow,hBtn,edx,eax,16,16,TRUE
 			pop		edx
-			;dec		edx
 			invoke MoveWindow,hTab,-1,rect.top,edx,TABHT,TRUE
 			invoke UpdateWindow,hTab
 			pop		edx
@@ -1432,7 +1431,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax==IDC_RAE
 					mov		al,findbuff
 					.if al
-						invoke Find,FR_DOWN
+						push	ndir
+						push	fallfiles
+						mov		ndir,1
+						mov		fallfiles,0
+						invoke FindInit,hREd
+						invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrgText
+						mov		fres,0
+						invoke Find,hREd,FR_DOWN
+						pop		fallfiles
+						pop		ndir
 					.endif
 				.elseif eax==IDC_HEX
 					mov		al,findbuff
@@ -1448,7 +1456,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax==IDC_RAE
 					mov		al,findbuff
 					.if al
-						invoke Find,0
+						push	ndir
+						push	fallfiles
+						mov		ndir,2
+						mov		fallfiles,0
+						invoke FindInit,hREd
+						invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrgText
+						mov		fres,0
+						invoke Find,hREd,0
+						pop		fallfiles
+						pop		ndir
 					.endif
 				.elseif eax==IDC_HEX
 					mov		al,findbuff
@@ -1515,6 +1532,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		chrg.cpMax,eax
 						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 						invoke SendMessage,hREd,HEM_VCENTER,0,0
+						invoke SetFocus,hREd
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_PREVBM
@@ -1542,6 +1560,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		chrg.cpMax,eax
 						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 						invoke SendMessage,hREd,HEM_VCENTER,0,0
+						invoke SetFocus,hREd
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_CLEARBM
@@ -1909,6 +1928,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		(TOOLTIPTEXT ptr [edx]).lpszText,eax
 		.elseif eax==TCN_SELCHANGE
 			invoke TabToolActivate
+			invoke SetFocus,hREd
 		.endif
 	.elseif eax==WM_SETFOCUS
 		invoke SetFocus,hREd

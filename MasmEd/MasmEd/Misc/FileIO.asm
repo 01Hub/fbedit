@@ -569,6 +569,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	.if nInx!=-2
 		invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
 		invoke TabToolActivate
+		invoke SetFocus,hREd
 	.endif
 	ret
 

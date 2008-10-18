@@ -314,7 +314,6 @@ TabToolActivate proc uses ebx
 	invoke SetWinCaption,offset FileName
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	invoke ShowWindow,hREd,SW_SHOW
-	invoke SetFocus,hREd
 	mov		fTimer,1
 	invoke RefreshCombo,hREd
 	pop		eax
@@ -416,6 +415,7 @@ TabToolDel proc uses ebx,hWin:HWND
 		jmp		@b
 	.endif
 	invoke TabToolActivate
+	invoke SetFocus,hREd
 	ret
 
 TabToolDel endp

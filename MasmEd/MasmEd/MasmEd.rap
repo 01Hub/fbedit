@@ -238,16 +238,16 @@ Group=Assembly,Resources,Misc,Include
 42=3
 
 [Find]
-1="hBrowse"
-2="szFtRc"
-3=".rc"
-4="MEDCOLOR"
-5="ShowPos"
-6="hSbr"
-7="IDC_SHP"
-8="WM_INIT"
-9="IDC_TBR"
-10="IDC_SBR"
+1="GetSelText"
+2="TabToolActivate"
+3="hBrowse"
+4="szFtRc"
+5=".rc"
+6="MEDCOLOR"
+7="ShowPos"
+8="hSbr"
+9="IDC_SHP"
+10="WM_INIT"
 
 [VersionControl]
 Settings=1246
@@ -294,11 +294,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,0,0,19188
-1=0,0,0,0,28982
-11=0,0,0,0,5541
-22=0,0,0,0,1480
-10=0,0,0,0,4136
+2=0,0,0,0,19252
+1=0,0,0,0,27512
+11=0,0,0,0,180
+22=0,0,0,0,3030
+10=0,0,0,0,14446
 23=0,0,0,0,7874
 9=0,0,0,0,160
 4=0,0,0,0
@@ -317,8 +317,8 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,2138
-12=0,0,0,0,3514
+14=0,0,0,0,8909
+12=0,0,0,0,7
 31=0,0,0,0,2652
 32=0,0,0,0
 33=0,0,0,0,165
