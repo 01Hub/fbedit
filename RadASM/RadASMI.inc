@@ -26,7 +26,7 @@
 	includelib ole32.lib
 	includelib advapi32.lib
 
-	include C:\RadASM\Masm\Inc\RadAsm.inc
+	include Addins\RadAsm.inc
 	include Inc\RAEdit.inc
 	include Inc\RAHexEd.inc
 	include Inc\RAGrid.inc
@@ -1153,14 +1153,14 @@ lpAddWordToWordList		dd offset AddWordToWordList
 lpRefreshProperty		dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName					db 'RadASM version 2.2.1.4',0
+AppName					db 'RadASM version 2.2.1.5',0
 DisplayName				db 'RadASM',0
 AboutMsg				db 'RadASM (C) KetilO 2001-2008',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1				db 'http://www.radasm.com',0
 ;AboutUrl2				db 'http://radasm.assembler.ca',0
 
 ;Do not insert or move, just add
-nRadASMVer				dd 2214
+nRadASMVer				dd 2215
 fMaximized				dd 0
 lpIniFile				dd offset iniFile
 lpProject				dd offset ProjectFile

@@ -332,6 +332,7 @@ Find:
 		.endif
 		.if fSearchUp
 			mov		eax,findtext.chrgText.cpMin
+			dec		eax
 			mov		findtext.chrg.cpMin,eax
 			mov		findtext.chrg.cpMax,0
 		.else

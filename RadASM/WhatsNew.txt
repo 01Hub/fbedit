@@ -1,5 +1,6 @@
-RadASM 2.2.1.4
+RadASM 2.2.1.5
 --------------
+2.2.1.5
 2.2.1.4
 o Flat toolbar on Project and Properties tools.
 o Rearanged Project toolbar buttons.

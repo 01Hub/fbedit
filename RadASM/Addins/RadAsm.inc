@@ -11,6 +11,7 @@ nNASM					equ 5
 nHLA					equ 6
 nCPP					equ 7
 nBCET					equ 8
+nFP						equ 9
 nOTHER					equ 99
 
 ;Messages to RadASM's mdi frame
