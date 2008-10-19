@@ -1550,10 +1550,10 @@ SetFormat proc hWin:HWND,hFnt:DWORD,hIFnt:DWORD,hLFnt:DWORD,fCode:DWORD
 		mov		eax,AutoIndent
 	.endif
 	invoke SendMessage,hWin,REM_AUTOINDENT,0,eax
-	mov		eax,LnrWidth
-	mov		edx,7
-	mul		edx
-	invoke SendMessage,hWin,REM_LINENUMBERWIDTH,eax,0
+;	mov		eax,LnrWidth
+;	mov		edx,7
+;	mul		edx
+;	invoke SendMessage,hWin,REM_LINENUMBERWIDTH,eax,0
 	invoke SendMessage,hWin,REM_SETPAGESIZE,nPageSize,0
 	ret
 

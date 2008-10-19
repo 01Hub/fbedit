@@ -7,6 +7,8 @@ o Speed optimized block guiders. Could cause sluggish editing on large files
   with many nested blocks.
 o Added direction All to find / replace.
 o Added All Open Files to find / replace.
+o Nicer looking toolbar.
+o Nicer looking menu.
 o Fixed bug with resource editor style manager. Could show unrelated / duplicated styles.
 o Fixed bug with resource editor menu editor. Did not handle quoted menu text correctly.
 

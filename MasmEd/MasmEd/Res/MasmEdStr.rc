@@ -25,4 +25,8 @@ BEGIN
   1							"Up One Level"
   2							"File Filter"
   IDM_VIEW_DIALOG			"Dialog Preview"
+  IDM_EDIT_INDENT			"Indent"
+  IDM_EDIT_OUTDENT			"Outdent"
+  IDM_EDIT_COMMENT			"Comment"
+  IDM_EDIT_UNCOMMENT		"Uncomment"
 END

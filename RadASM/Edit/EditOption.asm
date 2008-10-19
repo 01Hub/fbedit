@@ -33,8 +33,6 @@ IDC_CHKAUTOBRACKETS			equ 2832
 IDC_CHKCHANGENOTIFY			equ 2837
 IDC_CHKMINIMIZE				equ 2843
 
-IDC_EDTLNRWIDTH				equ 2826
-IDC_SPNLNRWIDTH				equ 2825
 IDC_CHKLNR					equ 2821
 IDC_EDTPAGESIZE				equ 2828
 IDC_SPNPAGESIZE				equ 2827
@@ -66,13 +64,6 @@ EditOptionSave proc uses ebx,hWin:HWND
 			mov		eax,20
 		.endif
 		mov		TabSize,eax
-		invoke GetDlgItemInt,hWin,IDC_EDTLNRWIDTH,NULL,0 ;Get data value from edit box
-		.if eax<1
-			mov		eax,1
-		.elseif eax>8
-			mov		eax,8
-		.endif
-		mov		LnrWidth,eax
 		invoke GetDlgItemInt,hWin,IDC_EDTPAGESIZE,NULL,FALSE
 		mov		nPageSize,eax
 		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTOSAVE
@@ -241,8 +232,6 @@ EditOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_SPNBACKUP,UDM_SETPOS,0,Backup		; Set default value
 		invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,00010014h	; Set range
 		invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,TabSize		; Set default value
-		invoke SendDlgItemMessage,hWin,IDC_SPNLNRWIDTH,UDM_SETRANGE,0,00010008h	; Set range
-		invoke SendDlgItemMessage,hWin,IDC_SPNLNRWIDTH,UDM_SETPOS,0,LnrWidth	; Set default value
 		invoke SendDlgItemMessage,hWin,IDC_SPNPAGESIZE,UDM_SETRANGE,0,000000C7h	; Set range
 		invoke SendDlgItemMessage,hWin,IDC_SPNPAGESIZE,UDM_SETPOS,0,nPageSize	; Set default value
 		mov		eax,BST_CHECKED
@@ -421,7 +410,7 @@ EditOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke EnableWindow,eax,TRUE
 			.endif
 		.elseif dx==EN_CHANGE
-			.if ax==IDC_EDTBACKUP || ax==IDC_EDTTABSIZE || ax==IDC_EDTCODEFILES || ax==IDC_EDTLNRWIDTH || ax==IDC_EDTPAGESIZE
+			.if ax==IDC_EDTBACKUP || ax==IDC_EDTTABSIZE || ax==IDC_EDTCODEFILES || ax==IDC_EDTPAGESIZE
 				invoke GetDlgItem,hWin,IDUSE
 				invoke EnableWindow,eax,1
 			.endif

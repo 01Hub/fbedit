@@ -1558,7 +1558,7 @@ fAutoBrackets			dd ?
 szTltSel				dd 64 dup(?)
 szApiEnd				db 2 dup(?)
 szCodeFiles				db 64 dup(?)
-LnrWidth				dd ?
+;LnrWidth				dd ?
 LnrOnOpen				dd ?
 nPageSize				dd ?
 

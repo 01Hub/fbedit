@@ -826,8 +826,8 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		;Code Files
 		invoke GetPrivateProfileString,addr iniEdit,addr iniEditCodeFiles,addr iniDefCodeFiles,addr szCodeFiles,64,addr iniAsmFile
 		;Linenumber width
-		invoke GetPrivateProfileInt,addr iniEdit,addr iniEditLnrWidth,4,addr iniAsmFile
-		mov		LnrWidth,eax
+;		invoke GetPrivateProfileInt,addr iniEdit,addr iniEditLnrWidth,4,addr iniAsmFile
+;		mov		LnrWidth,eax
 		;Linenumbers on open
 		invoke GetPrivateProfileInt,addr iniEdit,addr iniEditLnrOnOpen,0,addr iniAsmFile
 		and		eax,1
@@ -1956,8 +1956,8 @@ iniEditSave proc
 	invoke BinToDec,fProcInSBar,addr iniBuffer
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditProcInSBar,addr iniBuffer,addr iniAsmFile
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditCodeFiles,addr szCodeFiles,addr iniAsmFile
-	invoke BinToDec,LnrWidth,addr iniBuffer
-	invoke WritePrivateProfileString,addr iniEdit,addr iniEditLnrWidth,addr iniBuffer,addr iniAsmFile
+;	invoke BinToDec,LnrWidth,addr iniBuffer
+;	invoke WritePrivateProfileString,addr iniEdit,addr iniEditLnrWidth,addr iniBuffer,addr iniAsmFile
 	invoke BinToDec,LnrOnOpen,addr iniBuffer
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditLnrOnOpen,addr iniBuffer,addr iniAsmFile
 	invoke BinToDec,nPageSize,addr iniBuffer

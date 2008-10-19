@@ -57,6 +57,8 @@ LoadHexFile				PROTO :DWORD,:DWORD
 LoadRCFile				PROTO :DWORD
 
 SetHiliteWords			PROTO :DWORD,:DWORD
+SetToolMenu				PROTO
+SetHelpMenu				PROTO
 
 IS_OPEN					equ -1
 SAVE_ALL				equ -2
@@ -297,6 +299,21 @@ MEDCOLOR struct
 	styles		dd ?
 	words		dd ?
 MEDCOLOR ends
+
+MENUINFO STRUCT
+	cbSize			DWORD	?
+	fmask			DWORD	?
+	dwstyle			DWORD	?
+	cyMax			DWORD	?
+	hbrBack			DWORD	?
+	dwContextHelpID	DWORD	?
+	dwMenuData		DWORD	?
+MENUINFO ends
+
+MENUDATA struct
+	img		dd ?
+	tpe		dd ?
+MENUDATA ends
 
 .const
 
@@ -563,3 +580,10 @@ CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)
 fResNotify				dd ?
+hImlTbr					dd ?
+hImlTbrGray				dd ?
+mnupos					dd ?
+mnubuff					db 8192 dup(?)
+hMenuBrushA				dd ?
+hMenuBrushB				dd ?
+hMnuFont				dd ?

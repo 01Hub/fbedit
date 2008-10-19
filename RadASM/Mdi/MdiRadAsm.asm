@@ -4968,10 +4968,10 @@ HexEdChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		mov		eax,hFont[8]
 		mov		hef.hLnrFont,eax
 		invoke SendMessage,hEdt,HEM_SETFONT,0,addr hef
-		mov		eax,LnrWidth
-		mov		edx,7
-		mul		edx
-		invoke SendMessage,hEdt,HEM_LINENUMBERWIDTH,eax,0
+;		mov		eax,LnrWidth
+;		mov		edx,7
+;		mul		edx
+;		invoke SendMessage,hEdt,HEM_LINENUMBERWIDTH,eax,0
 		invoke GetProcessHeap
 		invoke xHeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof RADMEM
 		invoke SetWindowLong,hWin,28,eax			;RADMEM
