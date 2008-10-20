@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.4c
+o It is now possible to insert a separator in Tools and Help menu
+  by typing a "-" as Menu item.
+o Fixed bug if case convert was turned off.
 1.0.6.4b
 o Fixed bug with Format / Indent
 o Fixed bug with code blocks

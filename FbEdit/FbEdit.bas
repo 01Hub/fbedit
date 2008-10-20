@@ -1719,7 +1719,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
 						If lstpos.fchanged<>0 And lstpos.nline<>lpRASELCHANGE->Line And lstpos.fnohandling=0 Then
 							ad.fNoNotify=TRUE
-							CaseConvertWord(lstpos.hwnd,lstpos.chrg.cpMin)
+							If edtopt.autocase Then
+								CaseConvertWord(lstpos.hwnd,lstpos.chrg.cpMin)
+							EndIf
 							lret=AutoFormatLine(lstpos.hwnd,@lstpos.chrg)
 							If lpRASELCHANGE->chrg.cpMin>lstpos.chrg.cpMin Then
 								lpRASELCHANGE->chrg.cpMin-=lret
