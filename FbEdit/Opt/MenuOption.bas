@@ -42,7 +42,11 @@ Sub SetToolMenu(ByVal hWin As HWND)
 		If Len(buff) Then
 			x=InStr(buff,",")
 			buff=Left(buff,x-1)
-			AppendMenu(hSubMnu,MF_STRING,nID,@buff)
+			If buff="-" Then
+				AppendMenu(hSubMnu,MF_SEPARATOR,0,@szNULL)
+			Else
+				AppendMenu(hSubMnu,MF_STRING,nID,@buff)
+			EndIf
 			nID=nID+1
 		EndIf
 		nInx=nInx+1
@@ -70,7 +74,11 @@ Sub SetHelpMenu(ByVal hWin As HWND)
 		If Len(buff) Then
 			x=InStr(buff,",")
 			buff=Left(buff,x-1)
-			AppendMenu(hSubMnu,MF_STRING,nID,@buff)
+			If buff="-" Then
+				AppendMenu(hSubMnu,MF_SEPARATOR,0,@szNULL)
+			Else
+				AppendMenu(hSubMnu,MF_STRING,nID,@buff)
+			EndIf
 			nID=nID+1
 		EndIf
 		nInx=nInx+1
