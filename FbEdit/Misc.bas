@@ -1263,12 +1263,16 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 			EndIf
 		Case WM_KILLFOCUS
+			hPar=GetParent(Cast(HWND,wParam))
+			If GetWindowLong(hPar,GWL_USERDATA)=1 Then
+				' Must be parsed
+				SetWindowLong(hPar,GWL_USERDATA,2)
+			EndIf
 			'temp fix split focus bug
 			If ah.hpane(0)=0 Then
 				Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 			EndIf
 			ShowWindow(ah.hTT,SW_HIDE)
-			hPar=GetParent(Cast(HWND,wParam))
 			While hPar
 				If hPar=ah.hres Then
 					If ah.hred<>ah.hpane(0) Then
