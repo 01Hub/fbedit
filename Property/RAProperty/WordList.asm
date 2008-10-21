@@ -100,7 +100,12 @@ AddWordToWordList proc uses	esi	edi,nType:DWORD,nOwner:DWORD,nLine:DWORD,nEnd:DW
 		mov		edx,nParts
 		.while edx
 			mov		al,[esi]
-			.if	al==0Dh || al==0Ah
+			.if al==1
+				xor		al,al
+				mov		[edi+ecx+sizeof	PROPERTIES],al
+				inc		esi
+				inc		ecx
+			.elseif	al==0Dh || al==0Ah
 				dec		esi
 				xor		al,al
 			.endif
@@ -203,6 +208,11 @@ ZeroTerminateParts:
 	je		@f
 	cmp		al,0Ah
 	je		@f
+	.if al=='|'
+		mov		byte ptr [esi],1
+		inc		esi
+		jmp		@f
+	.endif
 	.if al=='('
 		mov		al,','
 	.endif
