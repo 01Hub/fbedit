@@ -67,7 +67,11 @@ SetToolMenu proc
 		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
 		movzx	eax,mnu.szcap
 		.if eax
-			invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.if eax=='-'
+				invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+			.else
+				invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.endif
 			inc		nID
 		.endif
 		inc		nInx
@@ -97,7 +101,11 @@ SetHelpMenu proc
 		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
 		movzx	eax,mnu.szcap
 		.if eax
-			invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.if eax=='-'
+				invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+			.else
+				invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.endif
 			inc		nID
 		.endif
 		inc		nInx
