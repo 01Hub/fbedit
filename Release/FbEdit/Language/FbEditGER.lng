@@ -58,13 +58,17 @@ Lang=Deutsch (German), By B.Wiegmann
 2009=Ersetze mit:
 2003=Groß-/Klein beachten
 2007=Ganzes Wort
-2012=Alle Projekt-Dateien
 2013=Kommentare überspringen
 2014=Protokollieren
 2217=Richtung
 2004=Alles
 2006=Hoch
 2005=Runter
+2501=Suchen
+2502=Aktuelle Prozedur
+2503=Aktuelles Modul
+2504=Alle offenen Dateien
+2012=Alle Projekt Dateien
 1=Suchen
 2010=Ersetzen
 2015=Alle Suchen
@@ -193,7 +197,7 @@ Lang=Deutsch (German), By B.Wiegmann
 [5380]
 ;--------------------------------------------------------------------------
 [5400]
-5400=Ordner Optionen
+5400=FbEdit Ordner Optionen
 1009=Vorgabe Projekt Pfad:
 1010=Compiler Pfad:
 5403=Hilfe Pfad:
@@ -532,6 +536,7 @@ Lang=Deutsch (German), By B.Wiegmann
 1006=Projekt Dateien gesucht.
 1007=Region abgesucht%c%cFind%c  Gefunden: %d%c  Wiederholungen: %d%c%cBuild%c  Fehler: %d%c  Warnungen: %d
 1008=Projekt Dateien gesucht%c%cFind%c  Dateien: %d%c  Gefunden: %d%c  Wiederholungen: %d%c%cBuild%c  Fehler: %d%c  Warnungen: %d
+1009=Offene Dateien gesucht%c%cFind%c  Dateien: %d%c  Gefunden: %d%c  Wiederholungen: %d%c%cBuild%c  Fehler: %d%c  Warnungen: %d
 1100=Werkzeuge Menüoptionen
 1101=Hilfe Menüoptionen
 1102=Build Optionen
