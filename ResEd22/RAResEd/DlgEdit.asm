@@ -3081,17 +3081,42 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
 	LOCAL	hCld:HWND
+	LOCAL	hDC:HDC
+	LOCAL	hMemDC:HDC
 
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
-;		PrintDec eax
+		mov		eax,lParam
+		movsx	edx,ax
+		shr		eax,16
+		cwde
+		mov		pt.x,edx
+		mov		pt.y,eax
+		.if fDrawing
+			invoke GetDC,hWin
+			mov		hDC,eax
+			call	Restore
+			mov		eax,pt.x
+			mov		CtlRect.right,eax
+			mov		eax,pt.y
+			mov		CtlRect.bottom,eax
+			invoke CopyRect,addr rect,addr CtlRect
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			invoke GetStockObject,BLACK_BRUSH
+			invoke FrameRect,hDC,addr rect,eax
+			invoke ReleaseDC,hWin,hDC
+		.endif
 	.elseif eax==WM_LBUTTONDOWN
-		invoke DestroySizeingRect
-		invoke ShowWindow,hInvisible,SW_HIDE
-		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-		invoke UpdateWindow,hDEd
-	.elseif eax==WM_LBUTTONUP
-		mov		hCld,0
+		invoke SetCapture,hWin
 		mov		eax,lParam
 		movsx	edx,ax
 		shr		eax,16
@@ -3102,19 +3127,103 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		ebx,eax
 		call	IsInWindow
 		.if eax
-			invoke GetWindow,ebx,GW_CHILD
-			mov		ebx,eax
-			.while ebx
-				call	IsInWindow
-				invoke GetWindow,ebx,GW_HWNDNEXT
-				mov		ebx,eax
-			.endw
-			invoke SizeingRect,hCld,FALSE
+			invoke DestroySizeingRect
+			invoke ShowWindow,hInvisible,SW_HIDE
+			invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+			invoke UpdateWindow,hDEd
+			.if ToolBoxID
+				;Is readOnly
+				invoke GetWindowLong,hDEd,DEWM_READONLY
+				.if !eax
+					invoke GetDC,hWin
+					mov		hDC,eax
+					call	Capture
+					mov		eax,pt.x
+					mov		CtlRect.left,eax
+					mov		CtlRect.right,eax
+					mov		eax,pt.y
+					mov		CtlRect.top,eax
+					mov		CtlRect.bottom,eax
+					invoke ReleaseDC,hWin,hDC
+					mov		fDrawing,TRUE
+				.endif
+			.endif
 		.endif
+	.elseif eax==WM_LBUTTONUP
+		invoke ReleaseCapture
+		.if fDrawing
+			invoke GetDC,hWin
+			mov		hDC,eax
+			call	Restore
+			invoke ReleaseDC,hWin,hDC
+			invoke DeleteObject,hWinBmp
+			mov		fDrawing,FALSE
+		.else
+			mov		hCld,0
+			mov		eax,lParam
+			movsx	edx,ax
+			shr		eax,16
+			cwde
+			mov		pt.x,edx
+			mov		pt.y,eax
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			call	IsInWindow
+			.if eax
+				invoke GetWindow,ebx,GW_CHILD
+				mov		ebx,eax
+				.while ebx
+					call	IsInWindow
+					invoke GetWindow,ebx,GW_HWNDNEXT
+					mov		ebx,eax
+				.endw
+				invoke SizeingRect,hCld,FALSE
+			.endif
+		.endif
+	.elseif eax==WM_SETCURSOR
+		invoke GetCursorPos,addr pt
+		invoke ScreenToClient,hInvisible,addr pt
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		mov		ebx,eax
+		call	IsInWindow
+		.if ToolBoxID && (eax || fDrawing)
+			invoke LoadCursor,0,IDC_CROSS
+		.else
+			invoke LoadCursor,0,IDC_ARROW
+		.endif
+		invoke SetCursor,eax
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+		ret
 	.endif
+	xor		eax,eax
 	ret
+
+Capture:
+	invoke GetClientRect,hDEd,addr rect
+	invoke CreateCompatibleDC,hDC
+	mov		hMemDC,eax
+	invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
+	mov		hWinBmp,eax
+	invoke SelectObject,hMemDC,hWinBmp
+	push	eax
+	invoke BitBlt,hMemDC,0,0,rect.right,rect.bottom,hDC,0,0,SRCCOPY
+	pop		eax
+	invoke SelectObject,hMemDC,eax
+	invoke DeleteDC,hMemDC
+	retn
+
+Restore:
+	invoke GetClientRect,hDEd,addr rect
+	invoke CreateCompatibleDC,hDC
+	mov		hMemDC,eax
+	invoke SelectObject,hMemDC,hWinBmp
+	push	eax
+	invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hMemDC,0,0,SRCCOPY
+	pop		eax
+	invoke SelectObject,hMemDC,eax
+	invoke DeleteDC,hMemDC
+	retn
 
 IsInWindow:
 	invoke GetWindowRect,ebx,addr rect
