@@ -90,7 +90,11 @@ SetToolMenu proc
 			.if nID==20000
 				invoke ClearMenu,hSubMnu,nID
 			.endif
-			invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.if byte ptr mnu.szcap=='-'
+				invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+			.else
+				invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.endif
 			inc		nID
 		.endif
 		inc		nInx
@@ -122,7 +126,11 @@ SetHelpMenu proc
 			.if nID==30000
 				invoke ClearMenu,hSubMnu,nID
 			.endif
-			invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.if byte ptr mnu.szcap=='-'
+				invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+			.else
+				invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+			.endif
 			inc		nID
 		.endif
 		inc		nInx
