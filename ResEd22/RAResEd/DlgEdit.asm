@@ -22,6 +22,10 @@ ID_DIALOG			equ	65502
 WS_ALWAYS			equ WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN
 MAXMULSEL			equ 256
 
+MODE_DRAWING		equ 1
+MODE_MOVING			equ 2
+MODE_SIZEING		equ 3
+
 .data
 
 szPos				db 'Pos: ',32 dup(0)
@@ -830,6 +834,7 @@ szMissTab			db 0Dh,0Ah,'Missing TabIndex',0
 
 .data?
 
+fMode				dd ?
 fGrid				dd ?
 ;//Edit
 fRSnapToGrid		dd ?
@@ -897,167 +902,217 @@ RSnapToGrid proc
 	ret
 RSnapToGrid endp
 
-CaptureWin proc hWin:HWND
-	LOCAL	rect:RECT
-	LOCAL	rect1:RECT
-	LOCAL	Ht:DWORD
-	LOCAL	Wt:DWORD
-	LOCAL	hCld:HWND
 
-	.if !hComDC
-		mov		eax,hWin
-		mov		hCld,eax
-		invoke GetParent,hWin
-		mov		hWin,eax
-		invoke GetWindowRect,hWin,addr rect
-		mov		eax,rect.right
-		sub		eax,rect.left
-		mov		Wt,eax
-		mov		eax,rect.bottom
-		sub		eax,rect.top
-		mov		Ht,eax
-		invoke GetWindowDC,hWin
-		mov    hWinDC,eax
-		mov		eax,hWin
-		mov		hWinHwnd,eax
-		invoke CreateCompatibleDC,hWinDC
-		mov    hComDC,eax
-		invoke CreateCompatibleBitmap,hWinDC,Wt,Ht
-		mov		hWinBmp,eax
-		invoke GdiFlush
-		invoke SelectObject,hComDC,hWinBmp
-		invoke BitBlt,hComDC,0,0,Wt,Ht,hWinDC,0,0,SRCCOPY
-		invoke GetDC,0
-		mov		hScrDC,eax
-		.if fNoParent
-			invoke GetWindowRect,hCld,addr rect
-		.endif
-		invoke GetClientRect,hDEd,addr rect1
-		invoke ClientToScreen,hDEd,addr rect1.left
-		invoke ClientToScreen,hDEd,addr rect1.right
-		mov		eax,rect1.left
-		.if eax>rect.left
-			mov		rect.left,eax
-		.endif
-		mov		eax,rect1.top
-		.if eax>rect.top
-			mov		rect.top,eax
-		.endif
-		mov		eax,rect1.right
-		.if eax<rect.right
-			mov		rect.right,eax
-		.endif
-		mov		eax,rect1.bottom
-		.if eax<rect.bottom
-			mov		rect.bottom,eax
-		.endif
-		invoke CreateRectRgn,rect.left,rect.top,rect.right,rect.bottom
-		mov		hWinRgn,eax
-		invoke SelectObject,hScrDC,hWinRgn
-		mov		hOldRgn,eax
-	.endif
+CaptureWin proc
+	LOCAL	rect:RECT
+	LOCAL	hDC:HDC
+	LOCAL	hMemDC:HDC
+
+	invoke GetDC,hInvisible
+	mov		hDC,eax
+	invoke GetClientRect,hDEd,addr rect
+	invoke CreateCompatibleDC,hDC
+	mov		hMemDC,eax
+	invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
+	mov		hWinBmp,eax
+	invoke SelectObject,hMemDC,hWinBmp
+	push	eax
+	invoke BitBlt,hMemDC,0,0,rect.right,rect.bottom,hDC,0,0,SRCCOPY
+	pop		eax
+	invoke SelectObject,hMemDC,eax
+	invoke DeleteDC,hMemDC
+	invoke ReleaseDC,hInvisible,hDC
 	ret
 
 CaptureWin endp
 
-PaintWin proc hWin:HWND
-	LOCAL	hDC:HDC
+RestoreWin proc
 	LOCAL	rect:RECT
+	LOCAL	hDC:HDC
+	LOCAL	hMemDC:HDC
 
-	.if hComDC
-		invoke GetParent,hWin
-		mov		hWin,eax
-		invoke GetWindowDC,hWin
-		mov		hDC,eax
-		invoke GetWindowRect,hWin,addr rect
-		mov		eax,rect.right
-		sub		eax,rect.left
-		mov		rect.right,eax
-		mov		eax,rect.bottom
-		sub		eax,rect.top
-		mov		rect.bottom,eax
-		invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hComDC,0,0,SRCCOPY
-		invoke ReleaseDC,hWin,hDC
-	.endif
+	invoke GetDC,hInvisible
+	mov		hDC,eax
+	invoke GetClientRect,hDEd,addr rect
+	invoke CreateCompatibleDC,hDC
+	mov		hMemDC,eax
+	invoke SelectObject,hMemDC,hWinBmp
+	push	eax
+	invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hMemDC,0,0,SRCCOPY
+	pop		eax
+	invoke SelectObject,hMemDC,eax
+	invoke DeleteDC,hMemDC
+	invoke ReleaseDC,hInvisible,hDC
 	ret
 
-PaintWin endp
+RestoreWin endp
 
-DestroyWin proc
 
-	.if hComDC
-		invoke ReleaseDC,hWinHwnd,hWinDC
-		invoke DeleteDC,hComDC
-		invoke DeleteObject,hWinBmp
-		invoke SelectObject,hScrDC,hOldRgn
-		invoke DeleteObject,hWinRgn
-		invoke ReleaseDC,0,hScrDC
-		mov		hComDC,0
-	.endif
-	ret
 
-DestroyWin endp
-
+;CaptureWin proc hWin:HWND
+;	LOCAL	rect:RECT
+;	LOCAL	rect1:RECT
+;	LOCAL	Ht:DWORD
+;	LOCAL	Wt:DWORD
+;	LOCAL	hCld:HWND
+;
+;	.if !hComDC
+;		mov		eax,hWin
+;		mov		hCld,eax
+;		invoke GetParent,hWin
+;		mov		hWin,eax
+;		invoke GetWindowRect,hWin,addr rect
+;		mov		eax,rect.right
+;		sub		eax,rect.left
+;		mov		Wt,eax
+;		mov		eax,rect.bottom
+;		sub		eax,rect.top
+;		mov		Ht,eax
+;		invoke GetWindowDC,hWin
+;		mov    hWinDC,eax
+;		mov		eax,hWin
+;		mov		hWinHwnd,eax
+;		invoke CreateCompatibleDC,hWinDC
+;		mov    hComDC,eax
+;		invoke CreateCompatibleBitmap,hWinDC,Wt,Ht
+;		mov		hWinBmp,eax
+;		invoke GdiFlush
+;		invoke SelectObject,hComDC,hWinBmp
+;		invoke BitBlt,hComDC,0,0,Wt,Ht,hWinDC,0,0,SRCCOPY
+;		invoke GetDC,0
+;		mov		hScrDC,eax
+;		.if fNoParent
+;			invoke GetWindowRect,hCld,addr rect
+;		.endif
+;		invoke GetClientRect,hDEd,addr rect1
+;		invoke ClientToScreen,hDEd,addr rect1.left
+;		invoke ClientToScreen,hDEd,addr rect1.right
+;		mov		eax,rect1.left
+;		.if eax>rect.left
+;			mov		rect.left,eax
+;		.endif
+;		mov		eax,rect1.top
+;		.if eax>rect.top
+;			mov		rect.top,eax
+;		.endif
+;		mov		eax,rect1.right
+;		.if eax<rect.right
+;			mov		rect.right,eax
+;		.endif
+;		mov		eax,rect1.bottom
+;		.if eax<rect.bottom
+;			mov		rect.bottom,eax
+;		.endif
+;		invoke CreateRectRgn,rect.left,rect.top,rect.right,rect.bottom
+;		mov		hWinRgn,eax
+;		invoke SelectObject,hScrDC,hWinRgn
+;		mov		hOldRgn,eax
+;	.endif
+;	ret
+;
+;CaptureWin endp
+;
+;PaintWin proc hWin:HWND
+;	LOCAL	hDC:HDC
+;	LOCAL	rect:RECT
+;
+;	.if hComDC
+;		invoke GetParent,hWin
+;		mov		hWin,eax
+;		invoke GetWindowDC,hWin
+;		mov		hDC,eax
+;		invoke GetWindowRect,hWin,addr rect
+;		mov		eax,rect.right
+;		sub		eax,rect.left
+;		mov		rect.right,eax
+;		mov		eax,rect.bottom
+;		sub		eax,rect.top
+;		mov		rect.bottom,eax
+;		invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hComDC,0,0,SRCCOPY
+;		invoke ReleaseDC,hWin,hDC
+;	.endif
+;	ret
+;
+;PaintWin endp
+;
+;DestroyWin proc
+;
+;	.if hComDC
+;		invoke ReleaseDC,hWinHwnd,hWinDC
+;		invoke DeleteDC,hComDC
+;		invoke DeleteObject,hWinBmp
+;		invoke SelectObject,hScrDC,hOldRgn
+;		invoke DeleteObject,hWinRgn
+;		invoke ReleaseDC,0,hScrDC
+;		mov		hComDC,0
+;	.endif
+;	ret
+;
+;DestroyWin endp
+;
 DlgDrawRect proc uses esi edi,hWin:HWND,lpRect:DWORD,nFun:DWORD,nInx:DWORD
 	LOCAL	ht:DWORD
 	LOCAL	wt:DWORD
 	LOCAL	rect:RECT
+	LOCAL	hDC:HDC
 
 	invoke CopyRect,addr rect,lpRect
 	lea		esi,rect
-	assume esi:ptr RECT
-	add		[esi].right,1
-	mov		eax,[esi].right
-	sub		eax,[esi].left
+	add		[esi].RECT.right,1
+	mov		eax,[esi].RECT.right
+	sub		eax,[esi].RECT.left
 	jns		@f
-	mov		eax,[esi].right
-	xchg	eax,[esi].left
-	mov		[esi].right,eax
-	sub		eax,[esi].left
-	dec		[esi].left
-	inc		[esi].right
+	mov		eax,[esi].RECT.right
+	xchg	eax,[esi].RECT.left
+	mov		[esi].RECT.right,eax
+	sub		eax,[esi].RECT.left
+	dec		[esi].RECT.left
+	inc		[esi].RECT.right
 	inc		eax
   @@:
 	mov		wt,eax
-	add		[esi].bottom,1
-	mov		eax,[esi].bottom
-	sub		eax,[esi].top
+	add		[esi].RECT.bottom,1
+	mov		eax,[esi].RECT.bottom
+	sub		eax,[esi].RECT.top
 	jns		@f
-	mov		eax,[esi].bottom
-	xchg	eax,[esi].top
-	mov		[esi].bottom,eax
-	sub		eax,[esi].top
-	dec		[esi].top
-	inc		[esi].bottom
+	mov		eax,[esi].RECT.bottom
+	xchg	eax,[esi].RECT.top
+	mov		[esi].RECT.bottom,eax
+	sub		eax,[esi].RECT.top
+	dec		[esi].RECT.top
+	inc		[esi].RECT.bottom
 	inc		eax
   @@:
 	mov		ht,eax
-	dec		[esi].right
-	dec		[esi].bottom
+	dec		[esi].RECT.right
+	dec		[esi].RECT.bottom
 	mov		edi,nInx
 	shl		edi,4
 	add		edi,offset hRect
 	.if nFun==0
 		.if nInx==0
-			invoke CaptureWin,hWin
+			invoke CaptureWin
 		.endif
+		invoke GetDC,hInvisible
+		mov		hDC,eax
 		invoke GetStockObject,BLACK_BRUSH
-		mov edx,eax
-		invoke FrameRect,hScrDC,addr rect,edx
+		invoke FrameRect,hDC,addr rect,eax
+		invoke ReleaseDC,hInvisible,hDC
 	.elseif nFun==1
 		.if nInx==0
-			invoke PaintWin,hWin
+			invoke RestoreWin
 		.endif
+		invoke GetDC,hInvisible
+		mov		hDC,eax
 		invoke GetStockObject,BLACK_BRUSH
-		mov edx,eax
-		invoke FrameRect,hScrDC,addr rect,edx
+		invoke FrameRect,hDC,addr rect,eax
+		invoke ReleaseDC,hInvisible,hDC
 	.elseif nFun==2
 		.if nInx==0
-			invoke PaintWin,hWin
-			invoke DestroyWin
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
 		.endif
 	.endif
-	assume esi:nothing
 	ret
 
 DlgDrawRect endp
@@ -1585,29 +1640,23 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nInx,eax
 		.if edx
 			mov		eax,uMsg
-			.if eax==WM_LBUTTONDOWN && !fSizeing
-				mov		fSizeing,TRUE
+			.if eax==WM_LBUTTONDOWN
+				mov		fMode,MODE_SIZEING
 				invoke PropertyList,0
 				mov		eax,lParam
-				and		eax,0FFFFh
-				cwde
-				mov		MousePtDown.x,eax
-				mov		eax,lParam
+				movsx	edx,ax
+				mov		MousePtDown.x,edx
 				shr		eax,16
 				cwde
 				mov		MousePtDown.y,eax
-				mov		ParPt.x,0
-				mov		ParPt.y,0
-				invoke GetWindowLong,hDEd,DEWM_DIALOG
-				mov		edx,eax
-				invoke ClientToScreen,edx,addr ParPt
 				invoke GetWindowRect,hReSize,addr CtlRect
-				invoke GetWindowLong,hReSize,GWL_USERDATA
+				invoke ScreenToClient,hDEd,addr CtlRect.left
+				invoke ScreenToClient,hDEd,addr CtlRect.right
+				invoke GetCtrlMem,hReSize
 				mov		edi,eax
-				assume edi:ptr DIALOG
-				mov		eax,[edi].ntype
+				mov		eax,[edi].DIALOG.ntype
 				.if eax==7 || eax==24
-					mov		eax,[edi].ccy
+					mov		eax,[edi].DIALOG.ccy
 					add		eax,CtlRect.top
 					mov		CtlRect.bottom,eax
 				.endif
@@ -1615,8 +1664,8 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DlgDrawRect,hReSize,addr SizeRect,0,0
 				invoke SetCapture,hWin
 				invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
-			.elseif eax==WM_LBUTTONUP && fSizeing
-				mov		fSizeing,FALSE
+			.elseif eax==WM_LBUTTONUP && fMode==MODE_SIZEING
+				mov		fMode,0
 				invoke ReleaseCapture
 				invoke DlgDrawRect,hReSize,addr SizeRect,2,0
 				mov		eax,SizeRect.left
@@ -1627,20 +1676,19 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		SizeRect.left,eax
 				mov		eax,ParPt.y
 				sub		SizeRect.top,eax
-				invoke GetWindowLong,hReSize,GWL_USERDATA
+				invoke GetCtrlMem,hReSize
 				mov		edi,eax
-				assume edi:ptr DIALOG
 				mov		fChanged,FALSE
-				mov		eax,[edi].ntype
+				mov		eax,[edi].DIALOG.ntype
 				.if eax
 					mov		eax,SizeRect.left
-					.if eax!=[edi].x
-						mov		[edi].x,eax
+					.if eax!=[edi].DIALOG.x
+						mov		[edi].DIALOG.x,eax
 						mov		fChanged,TRUE
 					.endif
 					mov		eax,SizeRect.top
-					.if eax!=[edi].y
-						mov		[edi].y,eax
+					.if eax!=[edi].DIALOG.y
+						mov		[edi].DIALOG.y,eax
 						mov		fChanged,TRUE
 					.endif
 				.else
@@ -1651,41 +1699,49 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 				mov		eax,SizeRect.right
-				.if eax!=[edi].ccx
-					mov		[edi].ccx,eax
+				.if eax!=[edi].DIALOG.ccx
+					mov		[edi].DIALOG.ccx,eax
 					mov		fChanged,TRUE
 				.endif
 				mov		eax,SizeRect.bottom
-				.if eax!=[edi].ccy
-					mov		[edi].ccy,eax
+				.if eax!=[edi].DIALOG.ccy
+					mov		[edi].DIALOG.ccy,eax
 					mov		fChanged,TRUE
 				.endif
 				.if fChanged
-					xor		eax,eax
-					mov		[edi].dux,eax
-					mov		[edi].duy,eax
-					mov		[edi].duccx,eax
-					mov		[edi].duccy,eax
-					invoke UpdateCtl,hReSize
-					mov		hReSize,eax
+;					xor		eax,eax
+;					mov		[edi].DIALOG.dux,eax
+;					mov		[edi].DIALOG.duy,eax
+;					mov		[edi].DIALOG.duccx,eax
+;					mov		[edi].DIALOG.duccy,eax
+;					invoke UpdateCtl,hReSize
+;					mov		hReSize,eax
 				.else
 					invoke PropertyList,hReSize
 				.endif
 				invoke ShowWindow,hTlt,SW_HIDE
-				assume edi:nothing
-			.elseif eax==WM_MOUSEMOVE && fSizeing
-				mov		parpt.x,0
-				mov		parpt.y,0
+			.elseif eax==WM_MOUSEMOVE && fMode==MODE_SIZEING
+;				mov		parpt.x,0
+;				mov		parpt.y,0
 				invoke GetWindowLong,hDEd,DEWM_DIALOG
 				mov		edx,eax
-				invoke ClientToScreen,edx,addr parpt
+				invoke GetWindowRect,edx,addr SizeRect
+				mov		eax,SizeRect.left
+				mov		parpt.x,eax
+				mov		eax,SizeRect.top
+				mov		parpt.y,eax
+;				invoke ClientToScreen,edx,addr parpt
+				invoke GetWindowRect,hDEd,addr SizeRect
+				mov		eax,SizeRect.left
+				sub		parpt.x,eax
+				mov		eax,SizeRect.top
+				sub		parpt.y,eax
+;PrintDec parpt.x
 				invoke CopyRect,addr SizeRect,addr CtlRect
 				mov		eax,lParam
-				and		eax,0FFFFh
-				cwde
-				sub		eax,MousePtDown.x
-				mov		pt.x,eax
-				mov		eax,lParam
+				movsx	edx,ax
+				sub		edx,MousePtDown.x
+				mov		pt.x,edx
 				shr		eax,16
 				cwde
 				sub		eax,MousePtDown.y
@@ -3092,10 +3148,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		cwde
 		mov		pt.x,edx
 		mov		pt.y,eax
-		.if fDrawing
-			invoke GetDC,hWin
-			mov		hDC,eax
-			call	Restore
+		.if fMode==MODE_DRAWING
+			invoke RestoreWin
 			mov		eax,pt.x
 			mov		CtlRect.right,eax
 			mov		eax,pt.y
@@ -3103,14 +3157,47 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke CopyRect,addr rect,addr CtlRect
 			mov		eax,rect.right
 			.if sdword ptr eax<rect.left
+				inc		eax
 				xchg	rect.left,eax
 				mov		rect.right,eax
 			.endif
 			mov		eax,rect.bottom
 			.if sdword ptr eax<rect.top
+				inc		eax
 				xchg	rect.top,eax
 				mov		rect.bottom,eax
 			.endif
+			invoke GetDC,hWin
+			mov		hDC,eax
+			invoke GetStockObject,BLACK_BRUSH
+			invoke FrameRect,hDC,addr rect,eax
+			invoke ReleaseDC,hWin,hDC
+		.elseif fMode==MODE_MOVING
+			invoke RestoreWin
+			invoke CopyRect,addr rect,addr CtlRect
+			mov		eax,pt.x
+			sub		eax,MousePtDown.x
+			add		rect.left,eax
+			add		rect.right,eax
+			mov		eax,rect.right
+			mov		eax,pt.y
+			sub		eax,MousePtDown.y
+			add		rect.top,eax
+			add		rect.bottom,eax
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			invoke GetDC,hWin
+			mov		hDC,eax
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FrameRect,hDC,addr rect,eax
 			invoke ReleaseDC,hWin,hDC
@@ -3123,6 +3210,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		cwde
 		mov		pt.x,edx
 		mov		pt.y,eax
+		mov		MousePtDown.x,edx
+		mov		MousePtDown.y,eax
 		invoke GetWindowLong,hDEd,DEWM_DIALOG
 		mov		ebx,eax
 		call	IsInWindow
@@ -3135,29 +3224,41 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				;Is readOnly
 				invoke GetWindowLong,hDEd,DEWM_READONLY
 				.if !eax
-					invoke GetDC,hWin
-					mov		hDC,eax
-					call	Capture
+					invoke CaptureWin
 					mov		eax,pt.x
 					mov		CtlRect.left,eax
 					mov		CtlRect.right,eax
 					mov		eax,pt.y
 					mov		CtlRect.top,eax
 					mov		CtlRect.bottom,eax
-					invoke ReleaseDC,hWin,hDC
-					mov		fDrawing,TRUE
+					mov		fMode,MODE_DRAWING
 				.endif
+			.else
+				invoke CaptureWin
+				invoke GetWindow,ebx,GW_CHILD
+				mov		ebx,eax
+				.while ebx
+					call	IsInWindow
+					invoke GetWindow,ebx,GW_HWNDNEXT
+					mov		ebx,eax
+				.endw
+				invoke GetWindowRect,hCld,addr CtlRect
+				invoke ScreenToClient,hDEd,addr CtlRect.left
+				invoke ScreenToClient,hDEd,addr CtlRect.right
+				mov		fMode,MODE_MOVING
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONUP
 		invoke ReleaseCapture
-		.if fDrawing
-			invoke GetDC,hWin
-			mov		hDC,eax
-			call	Restore
-			invoke ReleaseDC,hWin,hDC
+		.if fMode==MODE_DRAWING
+			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
-			mov		fDrawing,FALSE
+			mov		fMode,0
+		.elseif fMode==MODE_MOVING
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			mov		fMode,0
+			invoke SendMessage,hWin,uMsg,wParam,lParam
 		.else
 			mov		hCld,0
 			mov		eax,lParam
@@ -3186,7 +3287,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke GetWindowLong,hDEd,DEWM_DIALOG
 		mov		ebx,eax
 		call	IsInWindow
-		.if ToolBoxID && (eax || fDrawing)
+		.if ToolBoxID && (eax || fMode==MODE_DRAWING)
 			invoke LoadCursor,0,IDC_CROSS
 		.else
 			invoke LoadCursor,0,IDC_ARROW
@@ -3198,32 +3299,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.endif
 	xor		eax,eax
 	ret
-
-Capture:
-	invoke GetClientRect,hDEd,addr rect
-	invoke CreateCompatibleDC,hDC
-	mov		hMemDC,eax
-	invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
-	mov		hWinBmp,eax
-	invoke SelectObject,hMemDC,hWinBmp
-	push	eax
-	invoke BitBlt,hMemDC,0,0,rect.right,rect.bottom,hDC,0,0,SRCCOPY
-	pop		eax
-	invoke SelectObject,hMemDC,eax
-	invoke DeleteDC,hMemDC
-	retn
-
-Restore:
-	invoke GetClientRect,hDEd,addr rect
-	invoke CreateCompatibleDC,hDC
-	mov		hMemDC,eax
-	invoke SelectObject,hMemDC,hWinBmp
-	push	eax
-	invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hMemDC,0,0,SRCCOPY
-	pop		eax
-	invoke SelectObject,hMemDC,eax
-	invoke DeleteDC,hMemDC
-	retn
 
 IsInWindow:
 	invoke GetWindowRect,ebx,addr rect
