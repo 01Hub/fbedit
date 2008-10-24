@@ -1098,3 +1098,40 @@ GetCtrlMem proc uses esi,hWin:HWND
 	ret
 
 GetCtrlMem endp
+
+ConvertToDux proc uses ebx,px:DWORD
+
+	invoke GetDialogBaseUnits
+	movzx	ecx,ax
+	mov		eax,px
+	shl		eax,2
+	mov		ebx,dfntwt
+	imul	ebx
+	cdq
+	mov		ebx,ecx
+	idiv	ebx
+	cdq
+	mov		ebx,fntwt
+	idiv	ebx
+	ret
+
+ConvertToDux endp
+
+ConvertToDuy proc uses ebx,py:DWORD
+
+	invoke GetDialogBaseUnits
+	shr		eax,16
+	mov		ecx,eax
+	mov		eax,py
+	shl		eax,3
+	mov		ebx,dfntht
+	mul		ebx
+	cdq
+	mov		ebx,ecx
+	idiv	ebx
+	cdq
+	mov		ebx,fntht
+	idiv	ebx
+	ret
+
+ConvertToDuy endp

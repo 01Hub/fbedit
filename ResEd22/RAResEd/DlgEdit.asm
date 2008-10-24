@@ -1563,7 +1563,8 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		mov		al,' '
 		mov		[esi],al
 		inc		esi
-		invoke ResEdBinToDec,ccx,esi
+		invoke ConvertToDux,ccx
+		invoke ResEdBinToDec,eax,esi
 		invoke strlen,esi
 		add		esi,eax
 		mov		al,','
@@ -1572,7 +1573,8 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		mov		al,' '
 		mov		[esi],al
 		inc		esi
-		invoke ResEdBinToDec,ccy,esi
+		invoke ConvertToDuy,ccy
+		invoke ResEdBinToDec,eax,esi
 		invoke strlen,esi
 		add		esi,eax
 		mov		eax,'  '
@@ -3139,20 +3141,22 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	hCld:HWND
 	LOCAL	hDC:HDC
 	LOCAL	hMemDC:HDC
+	LOCAL	parpt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
-		mov		eax,lParam
-		movsx	edx,ax
-		shr		eax,16
-		cwde
-		mov		pt.x,edx
-		mov		pt.y,eax
 		.if fMode==MODE_DRAWING
+			call	SnapPt
 			invoke RestoreWin
 			mov		eax,pt.x
+			sub		eax,parpt.x
+			invoke SizeX,0
+			add		eax,parpt.x
 			mov		CtlRect.right,eax
 			mov		eax,pt.y
+			sub		eax,parpt.y
+			invoke SizeY,0
+			add		eax,parpt.y
 			mov		CtlRect.bottom,eax
 			invoke CopyRect,addr rect,addr CtlRect
 			mov		eax,rect.right
@@ -3172,7 +3176,13 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FrameRect,hDC,addr rect,eax
 			invoke ReleaseDC,hWin,hDC
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			invoke DialogTltSize,eax,edx
 		.elseif fMode==MODE_MOVING
+			call	SnapPt
 			invoke RestoreWin
 			invoke CopyRect,addr rect,addr CtlRect
 			mov		eax,pt.x
@@ -3201,6 +3211,11 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FrameRect,hDC,addr rect,eax
 			invoke ReleaseDC,hWin,hDC
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			invoke ScreenToClient,ebx,addr rect.left
+			invoke DialogTltSize,rect.left,rect.top
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
 		invoke SetCapture,hWin
@@ -3210,8 +3225,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		cwde
 		mov		pt.x,edx
 		mov		pt.y,eax
-		mov		MousePtDown.x,edx
-		mov		MousePtDown.y,eax
 		invoke GetWindowLong,hDEd,DEWM_DIALOG
 		mov		ebx,eax
 		call	IsInWindow
@@ -3225,6 +3238,11 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke GetWindowLong,hDEd,DEWM_READONLY
 				.if !eax
 					invoke CaptureWin
+					call	SnapPt
+					mov		eax,pt.x
+					mov		MousePtDown.x,eax
+					mov		eax,pt.y
+					mov		MousePtDown.y,eax
 					mov		eax,pt.x
 					mov		CtlRect.left,eax
 					mov		CtlRect.right,eax
@@ -3234,7 +3252,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					mov		fMode,MODE_DRAWING
 				.endif
 			.else
-				invoke CaptureWin
+				push	ebx
 				invoke GetWindow,ebx,GW_CHILD
 				mov		ebx,eax
 				.while ebx
@@ -3242,10 +3260,19 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					invoke GetWindow,ebx,GW_HWNDNEXT
 					mov		ebx,eax
 				.endw
-				invoke GetWindowRect,hCld,addr CtlRect
-				invoke ScreenToClient,hDEd,addr CtlRect.left
-				invoke ScreenToClient,hDEd,addr CtlRect.right
-				mov		fMode,MODE_MOVING
+				pop		eax
+				.if eax!=hCld
+					invoke CaptureWin
+					call	SnapPt
+					mov		eax,pt.x
+					mov		MousePtDown.x,eax
+					mov		eax,pt.y
+					mov		MousePtDown.y,eax
+					invoke GetWindowRect,hCld,addr CtlRect
+					invoke ScreenToClient,hInvisible,addr CtlRect.left
+					invoke ScreenToClient,hInvisible,addr CtlRect.right
+					mov		fMode,MODE_MOVING
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONUP
@@ -3253,10 +3280,12 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if fMode==MODE_DRAWING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
 			mov		fMode,0
 		.elseif fMode==MODE_MOVING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
 			mov		fMode,0
 			invoke SendMessage,hWin,uMsg,wParam,lParam
 		.else
@@ -3300,10 +3329,39 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	xor		eax,eax
 	ret
 
+SnapPt:
+	mov		eax,lParam
+	movsx	edx,ax
+	shr		eax,16
+	cwde
+	mov		pt.x,edx
+	mov		pt.y,eax
+	mov		parpt.x,0
+	mov		parpt.y,0
+	invoke GetWindowLong,hDEd,DEWM_DIALOG
+	mov		edx,eax
+	invoke ClientToScreen,edx,addr parpt
+	invoke GetWindowRect,hInvisible,addr rect
+	mov		eax,rect.left
+	sub		parpt.x,eax
+	mov		eax,rect.top
+	sub		parpt.y,eax
+	mov		eax,pt.x
+	sub		eax,parpt.x
+	invoke SizeX,0
+	add		eax,parpt.x
+	mov		pt.x,eax
+	mov		eax,pt.y
+	sub		eax,parpt.y
+	invoke SizeY,0
+	add		eax,parpt.y
+	mov		pt.y,eax
+	retn
+
 IsInWindow:
 	invoke GetWindowRect,ebx,addr rect
-	invoke ScreenToClient,hDEd,addr rect.left
-	invoke ScreenToClient,hDEd,addr rect.right
+	invoke ScreenToClient,hInvisible,addr rect.left
+	invoke ScreenToClient,hInvisible,addr rect.right
 	mov		eax,pt.x
 	mov		edx,pt.y
 	.if eax>=rect.left && eax<=rect.right && edx>=rect.top && edx<=rect.bottom
@@ -6623,6 +6681,8 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				invoke PostMessage,hWin,WM_CLOSE,0,0
 ;			.endif
 ;		.endif
+		mov		eax,FALSE
+		ret
 	.else
 		mov		eax,FALSE
 		ret
@@ -6632,8 +6692,31 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 MakeDlgProc endp
 
-MakeDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
+MakeDialog proc uses esi edi ebx,hMem:DWORD
 	LOCAL	nInx:DWORD
+
+	;Get convertiion
+	mov		esi,hMem
+	mov		dlgps,10
+	mov		dlgfn,0
+	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	invoke DestroyWindow,eax
+	mov		eax,fntwt
+	mov		dfntwt,eax
+	mov		eax,fntht
+	mov		dfntht,eax
+	mov		eax,[esi].DLGHEAD.fontsize
+	mov		dlgps,ax
+	lea		esi,[esi].DLGHEAD.font
+	mov		edi,offset dlgfn
+	xor		eax,eax
+	mov		ecx,32
+  @@:
+	lodsb
+	stosw
+	loop	@b
+	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+	invoke DestroyWindow,eax
 
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024
 	mov		ebx,eax
@@ -6743,9 +6826,13 @@ MakeDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 		jmp		@b
 	.endif
 	pop		ebx
-	invoke CreateDialogIndirectParam,hInstance,ebx,hWin,offset MakeDlgProc,0
+	invoke CreateDialogIndirectParam,hInstance,ebx,hDEd,offset MakeDlgProc,0
 	push	eax
 	invoke GlobalFree,ebx
+	invoke GetWindowLong,hDEd,DEWM_DIALOG
+	.if eax
+		invoke DestroyWindow,eax
+	.endif
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 	pop		eax
 	ret
@@ -6785,7 +6872,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 	.else
 		;Create existing dlg
 		mov		esi,eax
-		invoke MakeDialog,hWin,esi
+		invoke MakeDialog,esi
 		mov		hDlg,eax
 		mov		eax,hWin
 		mov		[esi+sizeof DLGHEAD].DIALOG.hpar,eax
