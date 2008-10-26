@@ -13,6 +13,7 @@ includelib ..\Lib\RAEdit.lib
 include Style.inc
 include Misc.asm
 include LanguageEdit.asm
+include DlgExport.asm
 include DlgEdit.asm
 include MenuEdit.asm
 include VersionEdit.asm

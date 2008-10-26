@@ -1135,3 +1135,46 @@ ConvertToDuy proc uses ebx,py:DWORD
 	ret
 
 ConvertToDuy endp
+
+GetTypePtr proc nType:DWORD
+
+	push	edx
+	mov		eax,size TYPES
+	mov		edx,nType
+	mul		edx
+	add		eax,offset ctltypes
+	pop		edx
+	ret
+
+GetTypePtr endp
+
+FindTab proc uses esi,nTab:DWORD,hMem:HWND
+	LOCAL	hCtl:HWND
+
+	xor		edx,edx
+	mov		hCtl,edx
+	mov		eax,hMem
+	.if eax
+		mov		esi,eax
+		add		esi,sizeof DLGHEAD
+		assume esi:ptr DIALOG
+	  @@:
+		add		esi,sizeof DIALOG
+		cmp		[esi].hwnd,0
+		je		@f
+		cmp		[esi].hwnd,-1
+		je		@b
+		mov		eax,nTab
+		cmp		eax,[esi].tab
+		jne		@b
+		mov		eax,[esi].hwnd
+		mov		hCtl,eax
+		mov		edx,esi
+	  @@:
+	.endif
+	mov		eax,hCtl
+	assume esi:nothing
+	ret
+
+FindTab endp
+

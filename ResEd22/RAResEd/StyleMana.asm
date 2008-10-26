@@ -1049,7 +1049,7 @@ UpdateStyle:
 		mov		ebx,hMem
 		.while dword ptr [ebx]
 			mov		eax,[ebx]
-			invoke CtlMultiSelect,eax,0
+			invoke CtlMultiSelect,eax
 			add		ebx,4
 		.endw
 		invoke PropertyList,-1
