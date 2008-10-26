@@ -19,6 +19,7 @@ PGM_GETBUTTONSTATE	equ PGM_FIRST+12
 PGM_GETDROPTARGET	equ CCM_GETDROPTARGET
 
 DESIGN struct
+	hdlg			HWND ?
 	fmode			dd ?
 	ctlrect			RECT <?>
 	parpt			POINT <?>
@@ -1512,8 +1513,8 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				cwde
 				mov		MousePtDown.y,eax
 				invoke GetWindowRect,hReSize,addr des.ctlrect
-				invoke ScreenToClient,hDEd,addr des.ctlrect.left
-				invoke ScreenToClient,hDEd,addr des.ctlrect.right
+				invoke ScreenToClient,hInvisible,addr des.ctlrect.left
+				invoke ScreenToClient,hInvisible,addr des.ctlrect.right
 				invoke GetCtrlMem,hReSize
 				mov		edi,eax
 				mov		eax,[edi].DIALOG.ntype
@@ -1527,64 +1528,10 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetCapture,hWin
 				invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
 			.elseif eax==WM_LBUTTONUP && des.fmode==MODE_SIZEING
-				mov		des.fmode,0
-				invoke ReleaseCapture
-				invoke DlgDrawRect,hReSize,addr SizeRect,2,0
-				mov		eax,SizeRect.left
-				sub		SizeRect.right,eax
-				mov		eax,SizeRect.top
-				sub		SizeRect.bottom,eax
-				mov		eax,des.parpt.x
-				sub		SizeRect.left,eax
-				mov		eax,des.parpt.y
-				sub		SizeRect.top,eax
-				invoke GetCtrlMem,hReSize
-				mov		edi,eax
-				mov		fChanged,FALSE
-				mov		eax,[edi].DIALOG.ntype
-				.if eax
-					mov		eax,SizeRect.left
-					.if eax!=[edi].DIALOG.x
-						mov		[edi].DIALOG.x,eax
-						mov		fChanged,TRUE
-					.endif
-					mov		eax,SizeRect.top
-					.if eax!=[edi].DIALOG.y
-						mov		[edi].DIALOG.y,eax
-						mov		fChanged,TRUE
-					.endif
-				.else
-					mov		edx,edi
-					sub		edx,sizeof DLGHEAD
-					.if [edx].DLGHEAD.menuid
-						sub		SizeRect.bottom,19
-					.endif
-				.endif
-				mov		eax,SizeRect.right
-				.if eax!=[edi].DIALOG.ccx
-					mov		[edi].DIALOG.ccx,eax
-					mov		fChanged,TRUE
-				.endif
-				mov		eax,SizeRect.bottom
-				.if eax!=[edi].DIALOG.ccy
-					mov		[edi].DIALOG.ccy,eax
-					mov		fChanged,TRUE
-				.endif
-				.if fChanged
-;					xor		eax,eax
-;					mov		[edi].DIALOG.dux,eax
-;					mov		[edi].DIALOG.duy,eax
-;					mov		[edi].DIALOG.duccx,eax
-;					mov		[edi].DIALOG.duccy,eax
-;					invoke UpdateCtl,hReSize
-;					mov		hReSize,eax
-				.else
-					invoke PropertyList,hReSize
-				.endif
-				invoke ShowWindow,hTlt,SW_HIDE
+				mov		eax,hReSize
+				mov		des.hselected,eax
+				invoke SendMessage,hInvisible,WM_LBUTTONUP,0,0
 			.elseif eax==WM_MOUSEMOVE && des.fmode==MODE_SIZEING
-;				mov		parpt.x,0
-;				mov		parpt.y,0
 				invoke GetWindowLong,hDEd,DEWM_DIALOG
 				mov		edx,eax
 				invoke GetWindowRect,edx,addr SizeRect
@@ -1592,13 +1539,7 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		parpt.x,eax
 				mov		eax,SizeRect.top
 				mov		parpt.y,eax
-;				invoke ClientToScreen,edx,addr parpt
-				invoke GetWindowRect,hDEd,addr SizeRect
-				mov		eax,SizeRect.left
-				sub		parpt.x,eax
-				mov		eax,SizeRect.top
-				sub		parpt.y,eax
-;PrintDec parpt.x
+				invoke ScreenToClient,hInvisible,addr parpt
 				invoke CopyRect,addr SizeRect,addr des.ctlrect
 				mov		eax,lParam
 				movsx	edx,ax
@@ -2998,6 +2939,7 @@ DesignDummyProc endp
 DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
 	LOCAL	hCld:HWND
 	LOCAL	hDC:HDC
 	LOCAL	hMemDC:HDC
@@ -3158,23 +3100,29 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.if eax!=hCld
 					; Control
 					.if !fShift && !fControl
-						mov		eax,hCld
-						mov		des.hselected,eax
-						invoke CaptureWin
-						call	SnapPt
-						mov		eax,pt.x
-						mov		MousePtDown.x,eax
-						mov		eax,pt.y
-						mov		MousePtDown.y,eax
-						invoke GetWindowRect,hCld,addr des.ctlrect
-						invoke ScreenToClient,hInvisible,addr des.ctlrect.left
-						invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-						mov		des.fmode,MODE_MOVING
+						invoke GetWindowLong,hDEd,DEWM_READONLY
+						.if !eax
+							invoke GetWindowLong,hDEd,DEWM_MEMORY
+							.if ![eax].DLGHEAD.locked
+								mov		eax,hCld
+								mov		des.hselected,eax
+								invoke CaptureWin
+								call	SnapPt
+								mov		eax,pt.x
+								mov		MousePtDown.x,eax
+								mov		eax,pt.y
+								mov		MousePtDown.y,eax
+								invoke GetWindowRect,hCld,addr des.ctlrect
+								invoke ScreenToClient,hInvisible,addr des.ctlrect.left
+								invoke ScreenToClient,hInvisible,addr des.ctlrect.right
+								mov		des.fmode,MODE_MOVING
+							.endif
+						.endif
 					.elseif !fShift && fControl
 						invoke CtlMultiSelect,hCld
 						.if hMultiSel
 							mov		des.fmode,MODE_MULTISEL
-;							invoke PropertyList,-1
+							invoke PropertyList,-1
 						.endif
 					.elseif fShift && !fControl
 						.while hMultiSel
@@ -3262,9 +3210,11 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		rect.bottom,eax
 			.endif
 			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke ClientToScreen,hInvisible,addr rect.right
 			invoke GetWindowLong,hDEd,DEWM_DIALOG
 			mov		ebx,eax
 			invoke ScreenToClient,ebx,addr rect.left
+			invoke ScreenToClient,ebx,addr rect.right
 			invoke GetWindowLong,des.hselected,GWL_ID
 			push	eax
 			invoke GetCtrlMem,des.hselected
@@ -3277,6 +3227,67 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke MakeDialog,eax
 			pop		edx
 			invoke GetDlgItem,eax,edx
+			invoke SizeingRect,eax,FALSE
+		.elseif des.fmode==MODE_SIZEING
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
+			mov		des.fmode,0
+			invoke CopyRect,addr rect,addr SizeRect
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke ClientToScreen,hInvisible,addr rect.right
+			invoke ScreenToClient,des.hdlg,addr rect.left
+			invoke ScreenToClient,des.hdlg,addr rect.right
+			mov		eax,des.hdlg
+			.if eax==des.hselected
+				mov		eax,rect.left
+				sub		rect.right,eax
+				mov		eax,rect.top
+				sub		rect.bottom,eax
+				xor		eax,eax
+				mov		rect.left,eax
+				mov		rect.top,eax
+				mov		rect1.left,eax
+				mov		rect1.top,eax
+				mov		rect1.right,eax
+				mov		rect1.bottom,eax
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+				invoke AdjustWindowRectEx,addr rect1,[eax+sizeof DLGHEAD].DIALOG.style,FALSE,[eax+sizeof DLGHEAD].DIALOG.exstyle
+				mov		eax,rect1.right
+				sub		eax,rect1.left
+				sub		rect.right,eax
+				mov		eax,rect1.bottom
+				sub		eax,rect1.top
+				sub		rect.bottom,eax
+			.endif
+			invoke GetWindowLong,des.hselected,GWL_ID
+			push	eax
+			invoke GetCtrlMem,des.hselected
+			mov		ebx,eax
+			mov		eax,des.hdlg
+			.if eax!=des.hselected
+		 		invoke ConvertToDux,rect.left
+				mov		[ebx].DIALOG.dux,eax
+		 		invoke ConvertToDuy,rect.top
+				mov		[ebx].DIALOG.duy,eax
+		 		invoke ConvertToDux,rect.right
+		 		sub		eax,[ebx].DIALOG.dux
+				mov		[ebx].DIALOG.duccx,eax
+		 		invoke ConvertToDuy,rect.bottom
+		 		sub		eax,[ebx].DIALOG.duy
+				mov		[ebx].DIALOG.duccy,eax
+			.else
+		 		invoke ConvertToDux,rect.right
+				mov		[ebx].DIALOG.duccx,eax
+		 		invoke ConvertToDuy,rect.bottom
+				mov		[ebx].DIALOG.duccy,eax
+			.endif
+			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			invoke MakeDialog,eax
+			pop		edx
+			.if edx
+				invoke GetDlgItem,eax,edx
+			.endif
 			invoke SizeingRect,eax,FALSE
 		.elseif des.fmode==MODE_MULTISEL
 		.elseif des.fmode==MODE_SELECT
@@ -5714,7 +5725,17 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;		mov		hPreview,0
 ;		invoke NotifyParent
 	.elseif eax==WM_INITDIALOG
-		invoke SetWindowPos,hWin,0,10,10,0,0,SWP_NOSIZE or SWP_NOZORDER
+		invoke GetWindowLong,hDEd,DEWM_SCROLLY
+		push	eax
+		invoke GetWindowLong,hDEd,DEWM_SCROLLX
+		shl		eax,3
+		neg		eax
+		add		eax,10
+		pop		edx
+		shl		edx,3
+		neg		edx
+		add		edx,10
+		invoke SetWindowPos,hWin,0,eax,edx,0,0,SWP_NOSIZE or SWP_NOZORDER
 ;		mov		eax,hWin
 ;		mov		hDlg,eax
 ;		.if hDlgMnu
@@ -5923,6 +5944,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD
 	invoke SetWindowLong,hDlg,GWL_USERDATA,eax
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
 	mov		eax,hDlg
+	mov		des.hdlg,eax
 	ret
 
 FindCtrl:

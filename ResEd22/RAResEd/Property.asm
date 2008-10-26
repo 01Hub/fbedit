@@ -553,22 +553,22 @@ UpdateCbo proc uses esi,lpData:DWORD
 	LOCAL	buffer1[1024]:BYTE
 	LOCAL	buffer2[64]:BYTE
 
+	mov		nInx,0
 	invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 	mov		esi,lpData
 	add		esi,sizeof DLGHEAD
-	assume esi:ptr DIALOG
   @@:
-	mov		eax,[esi].hwnd
+	mov		eax,[esi].DIALOG.hwnd
 	.if eax
 		.if eax!=-1
-			mov		al,[esi].idname
+			mov		al,[esi].DIALOG.idname
 			.if al
-				invoke strcpy,addr buffer,addr [esi].idname
+				invoke strcpy,addr buffer,addr [esi].DIALOG.idname
 			.else
-				invoke ResEdBinToDec,[esi].id,addr buffer
+				invoke ResEdBinToDec,[esi].DIALOG.id,addr buffer
 			.endif
 			invoke strcpy,addr buffer1,addr szCtlText
-			mov		eax,[esi].ntype
+			mov		eax,[esi].DIALOG.ntype
 			inc		eax
 			.while eax
 				push	eax
@@ -586,18 +586,17 @@ UpdateCbo proc uses esi,lpData:DWORD
 			invoke strcpy,esi,addr buffer2
 			pop		esi
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,addr buffer
-			mov		nInx,eax
-			invoke SendMessage,hPrpCboDlg,CB_SETITEMDATA,nInx,[esi].hwnd
+			invoke SendMessage,hPrpCboDlg,CB_SETITEMDATA,eax,nInx
 		.endif
+		inc		nInx
 		add		esi,sizeof DIALOG
 		jmp		@b
 	.endif
-	assume esi:nothing
 	ret
 
 UpdateCbo endp
 
-SetCbo proc hCtl:DWORD
+SetCbo proc nID:DWORD
 	LOCAL	nInx:DWORD
 
 	invoke SendMessage,hPrpCboDlg,CB_GETCOUNT,0,0
@@ -606,7 +605,7 @@ SetCbo proc hCtl:DWORD
 	.if nInx
 		dec		nInx
 		invoke SendMessage,hPrpCboDlg,CB_GETITEMDATA,nInx,0
-		.if eax==hCtl
+		.if eax==nID
 			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,nInx,0
 		.endif
 		jmp		@b
@@ -1668,7 +1667,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			invoke GetParent,hMultiSel
 			mov		hCtl,eax
-			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetCtrlMem,hCtl
 			mov		esi,eax
 			mov		eax,[esi].DIALOG.ntype
 			mov		nType,eax
@@ -1676,7 +1675,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		  @@:
 			push	eax
 			invoke GetParent,eax
-			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetCtrlMem,eax
 			mov		eax,[eax].DIALOG.ntype
 			.if eax!=nType
 				mov		nType,-1
@@ -1701,7 +1700,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		  @@:
 			push	eax
 			invoke GetParent,eax
-			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetCtrlMem,eax
 			mov		edi,eax
 			mov		eax,[edi].DIALOG.ntype
 			mov		nType,eax
@@ -1786,12 +1785,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.else
-			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			invoke GetCtrlMem,hCtl
 			mov		esi,eax
-			invoke GetWindowLong,hCtl,GWL_ID
-			mov		edx,sizeof DIALOG
-			mul		edx
-			lea		esi,[esi+eax+sizeof DLGHEAD]
 			mov		eax,[esi].DIALOG.ntype
 			mov		nType,eax
 			invoke GetTypePtr,nType
@@ -1851,12 +1846,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						invoke strcmp,addr [esi].DIALOG.idname,addr [ebx].DIALOG.idname
 						.if eax
 							mov		byte ptr [edi],0
@@ -1894,12 +1885,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.id
 						sub		eax,[ebx].DIALOG.id
 						.if eax
@@ -1924,12 +1911,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.dux
 						sub		eax,[ebx].DIALOG.dux
 						.if eax
@@ -1954,12 +1937,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.duy
 						sub		eax,[ebx].DIALOG.duy
 						.if eax
@@ -1989,12 +1968,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						.while eax
 							push	eax
 							invoke GetParent,eax
-							invoke GetWindowLong,eax,GWL_ID
-							mov		edx,sizeof DIALOG
-							mul		edx
+							invoke GetCtrlMem,eax
 							mov		ebx,eax
-							invoke GetWindowLong,hDEd,DEWM_MEMORY
-							lea		ebx,[ebx+eax+sizeof DLGHEAD]
 							mov		eax,[esi].DIALOG.duccx
 							sub		eax,[ebx].DIALOG.duccx
 							.if eax
@@ -2025,12 +2000,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						.while eax
 							push	eax
 							invoke GetParent,eax
-							invoke GetWindowLong,eax,GWL_ID
-							mov		edx,sizeof DIALOG
-							mul		edx
+							invoke GetCtrlMem,eax
 							mov		ebx,eax
-							invoke GetWindowLong,hDEd,DEWM_MEMORY
-							lea		ebx,[ebx+eax+sizeof DLGHEAD]
 							mov		eax,[esi].DIALOG.ccy
 							sub		eax,[ebx].DIALOG.ccy
 							.if eax
@@ -2058,12 +2029,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						invoke strcmp,addr [esi].DIALOG.caption,addr [ebx].DIALOG.caption
 						.if eax
 							mov		byte ptr [edi],0
@@ -2127,12 +2094,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.style
 						and		eax,WS_DISABLED
 						mov		edx,[ebx].DIALOG.style
@@ -2160,12 +2123,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.style
 						and		eax,WS_VISIBLE
 						mov		edx,[ebx].DIALOG.style
@@ -2193,12 +2152,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.style
 						and		eax,WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 						mov		edx,[ebx].DIALOG.style
@@ -2320,12 +2275,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.style
 						and		eax,WS_TABSTOP
 						mov		edx,[ebx].DIALOG.style
@@ -2499,12 +2450,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.exstyle
 						sub		eax,[ebx].DIALOG.exstyle
 						.if eax
@@ -2531,12 +2478,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.style
 						sub		eax,[ebx].DIALOG.style
 						.if eax
@@ -2687,12 +2630,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 					.while eax
 						push	eax
 						invoke GetParent,eax
-						invoke GetWindowLong,eax,GWL_ID
-						mov		edx,sizeof DIALOG
-						mul		edx
+						invoke GetCtrlMem,eax
 						mov		ebx,eax
-						invoke GetWindowLong,hDEd,DEWM_MEMORY
-						lea		ebx,[ebx+eax+sizeof DLGHEAD]
 						mov		eax,[esi].DIALOG.helpid
 						sub		eax,[ebx].DIALOG.helpid
 						.if eax
@@ -2756,7 +2695,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			invoke GetWindowLong,hDEd,DEWM_MEMORY
 			.if eax
 				invoke UpdateCbo,eax
-				invoke SetCbo,hCtl
+				invoke GetWindowLong,hCtl,GWL_ID
+				invoke SetCbo,eax
 			.endif
 		.endif
 	.endif
@@ -2782,6 +2722,14 @@ PrpCboDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,CB_GETCURSEL,0,0
 			mov		nInx,eax
 			invoke SendMessage,hWin,CB_GETITEMDATA,nInx,0
+			.if !eax
+				invoke GetWindowLong,hDEd,DEWM_DIALOG
+			.else
+				push	eax
+				invoke GetWindowLong,hDEd,DEWM_DIALOG
+				pop		edx
+				invoke GetDlgItem,eax,edx
+			.endif
 			.if eax
 				invoke SizeingRect,eax,FALSE
 			.endif
