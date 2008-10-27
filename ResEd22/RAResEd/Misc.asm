@@ -1099,6 +1099,19 @@ GetCtrlMem proc uses esi,hWin:HWND
 
 GetCtrlMem endp
 
+GetCtrlID proc hMem:DWORD
+
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	lea		edx,[eax+sizeof DLGHEAD]
+	mov		eax,hMem
+	sub		eax,edx
+	mov		ecx,sizeof DIALOG
+	xor		edx,edx
+	div		ecx
+	ret
+
+GetCtrlID endp
+
 ConvertToDux proc uses ebx,px:DWORD
 
 	invoke GetDialogBaseUnits

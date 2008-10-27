@@ -1877,11 +1877,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_ISBACK
-		invoke GetWindowLong,hDEd,DEWM_DIALOG
-		invoke GetWindowLong,eax,GWL_USERDATA
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		lea		eax,[eax+sizeof DLGHEAD]
 		push	eax
 		.if hReSize
-			invoke GetWindowLong,hReSize,GWL_USERDATA
+			invoke GetCtrlMem,hReSize
 		.endif
 		pop		edx
 		.if eax==edx
@@ -1898,29 +1898,28 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==DEM_SENDTOBACK
 		mov		eax,hReSize
 		.if eax
-			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetCtrlMem,eax
 			.if eax
 				.if [eax].DIALOG.ntype
-					invoke SendToBack,[eax].DIALOG.hwnd
+					invoke SendToBack,hReSize
 				.endif
 			.endif
 		.endif
 		invoke NotifyParent
 		jmp		Ex
 	.elseif eax==DEM_ISFRONT
-		invoke GetWindowLong,hDEd,DEWM_DIALOG
-		invoke GetWindowLong,eax,GWL_USERDATA
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		lea		eax,[eax+sizeof DLGHEAD]
 		push	eax
 		.if hReSize
-			invoke GetWindowLong,hReSize,GWL_USERDATA
+			invoke GetCtrlMem,hReSize
 		.endif
 		pop		edx
 		.if eax==edx
 			mov		eax,TRUE
 		.else
 			add		eax,sizeof DIALOG
-			mov		eax,(DIALOG ptr [eax]).hwnd
-			.if eax
+			.if [eax].DIALOG.hwnd
 				mov		eax,FALSE
 			.else
 				mov		eax,TRUE
@@ -1930,10 +1929,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==DEM_BRINGTOFRONT
 		mov		eax,hReSize
 		.if eax
-			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetCtrlMem,eax
 			.if eax
 				.if [eax].DIALOG.ntype
-					invoke BringToFront,[eax].DIALOG.hwnd
+					invoke BringToFront,hReSize
 				.endif
 			.endif
 		.endif

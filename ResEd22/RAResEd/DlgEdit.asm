@@ -1,7 +1,7 @@
 SendToBack			PROTO	:DWORD
 UpdateRAEdit		PROTO	:DWORD
 CreateDlg			PROTO	:HWND,:DWORD,:DWORD
-MakeDialog			PROTO	:DWORD
+MakeDialog			PROTO	:DWORD,:DWORD
 
 PGM_FIRST			equ 1400h
 PGM_SETCHILD		equ PGM_FIRST+1
@@ -3224,10 +3224,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	 		invoke ConvertToDuy,rect.top
 			mov		[ebx].DIALOG.duy,eax
 			invoke GetWindowLong,hDEd,DEWM_MEMORY
-			invoke MakeDialog,eax
 			pop		edx
-			invoke GetDlgItem,eax,edx
-			invoke SizeingRect,eax,FALSE
+			invoke MakeDialog,eax,edx
 		.elseif des.fmode==MODE_SIZEING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
@@ -3283,12 +3281,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		[ebx].DIALOG.duccy,eax
 			.endif
 			invoke GetWindowLong,hDEd,DEWM_MEMORY
-			invoke MakeDialog,eax
 			pop		edx
-			.if edx
-				invoke GetDlgItem,eax,edx
-			.endif
-			invoke SizeingRect,eax,FALSE
+			invoke MakeDialog,eax,edx
 		.elseif des.fmode==MODE_MULTISEL
 		.elseif des.fmode==MODE_SELECT
 			invoke RestoreWin
@@ -3958,15 +3952,10 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		.endif
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		push	eax
-		invoke MakeDialog,eax
-		pop		eax
-		add		eax,sizeof DLGHEAD
-		sub		edi,eax
-		mov		eax,edi
-		mov		ecx,sizeof DIALOG
-		xor		edx,edx
-		div		ecx
+		invoke GetCtrlID,edi
+		pop		edx
 		push	eax
+		invoke MakeDialog,edx,eax
 		invoke GetWindowLong,hDEd,DEWM_DIALOG
 		pop		edx
 		.if edx
@@ -4907,8 +4896,9 @@ SendToBack proc uses esi edi,hCtl:HWND
 	LOCAL	buffer[512]:BYTE
 	LOCAL	lpSt:DWORD
 	LOCAL	lpFirst:DWORD
+	LOCAL	nID:DWORD
 
-	invoke GetWindowLong,hCtl,GWL_USERDATA
+	invoke GetCtrlMem,hCtl
 	mov		lpSt,eax
 	mov		esi,eax
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -4939,20 +4929,19 @@ SendToBack proc uses esi edi,hCtl:HWND
 		sub		esi,sizeof DIALOG
 		cmp		esi,lpFirst
 		jge		@b
+		invoke GetCtrlID,lpFirst
+		mov		nID,eax
 		lea		esi,buffer
 		mov		edi,lpFirst
 		mov		ecx,sizeof DIALOG
 		rep movsb
-		invoke GetWindowLong,hDEd,DEWM_DIALOG
-		invoke UpdateDialog,eax
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		mov		esi,eax
+		invoke MakeDialog,esi,nID
 		mov		eax,[esi].DLGHEAD.undo
 		.if eax<=lpSt && eax
 			add		[esi].DLGHEAD.undo,sizeof DIALOG
 		.endif
-		invoke SetChanged,TRUE,0
-		invoke NotifyParent
 	.endif
 	ret
 
@@ -4961,8 +4950,9 @@ SendToBack endp
 BringToFront proc uses esi edi,hCtl:HWND
 	LOCAL	buffer[512]:BYTE
 	LOCAL	lpSt:DWORD
+	LOCAL	nID:DWORD
 
-	invoke GetWindowLong,hCtl,GWL_USERDATA
+	invoke GetCtrlMem,hCtl
 	mov		lpSt,eax
 	mov		esi,eax
 	lea		edi,buffer
@@ -4980,19 +4970,18 @@ BringToFront proc uses esi edi,hCtl:HWND
 	mov		eax,dword ptr [esi]
 	or		eax,eax
 	jne		@b
+	invoke GetCtrlID,edi
+	mov		nID,eax
 	lea		esi,buffer
 	mov		ecx,sizeof DIALOG
 	rep movsb
-	invoke GetWindowLong,hDEd,DEWM_DIALOG
-	invoke UpdateDialog,eax
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	mov		esi,eax
+	invoke MakeDialog,esi,nID
 	mov		eax,[esi].DLGHEAD.undo
 	.if eax>lpSt
 		sub		[esi].DLGHEAD.undo,sizeof DIALOG
 	.endif
-	invoke SetChanged,TRUE,0
-	invoke NotifyParent
 	ret
 
 BringToFront endp
@@ -5790,7 +5779,7 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 MakeDlgProc endp
 
-MakeDialog proc uses esi edi ebx,hMem:DWORD
+MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	hDlg:HWND
 
@@ -5822,7 +5811,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD
 	push	eax
 	mov		esi,hMem
 	mov		edi,esi
-;	mov		pDlgMem,esi
 	add		esi,sizeof DLGHEAD
 	mov		eax,[esi].DIALOG.style
 	.if byte ptr [edi].DLGHEAD.font
@@ -5883,45 +5871,45 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD
 		add		ebx,eax
 	.endif
 	add		esi,sizeof DIALOG
-	xor		ecx,ecx
+	mov		edi,esi
+	mov		nInx,0
   @@:
+	inc		nInx
 	add		ebx,2
 	and		ebx,0FFFFFFFCh
-	call	FindCtrl
 	.if [edi].DIALOG.hwnd
-		push	ecx
-		mov		eax,[edi].DIALOG.style
-		or		eax,WS_VISIBLE
-		.if [edi].DIALOG.ntype==14
-			or		eax,LVS_SHAREIMAGELISTS
+		.if [edi].DIALOG.hwnd!=-1
+			mov		eax,[edi].DIALOG.style
+			or		eax,WS_VISIBLE
+			.if [edi].DIALOG.ntype==14
+				or		eax,LVS_SHAREIMAGELISTS
+			.endif
+			mov		[ebx].MyDLGITEMTEMPLATE.style,eax
+			mov		eax,[edi].DIALOG.exstyle
+			mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
+			mov		eax,[edi].DIALOG.dux
+			mov		[ebx].MyDLGITEMTEMPLATE.x,ax
+			mov		eax,[edi].DIALOG.duy
+			mov		[ebx].MyDLGITEMTEMPLATE.y,ax
+			mov		eax,[edi].DIALOG.duccx
+			mov		[ebx].MyDLGITEMTEMPLATE.lx,ax
+			mov		eax,[edi].DIALOG.duccy
+			mov		[ebx].MyDLGITEMTEMPLATE.cy,ax
+			mov		eax,nInx
+			mov		[ebx].MyDLGITEMTEMPLATE.id,ax
+			add		ebx,sizeof MyDLGITEMTEMPLATE
+			mov		eax,[edi].DIALOG.ntype
+			mov		edx,sizeof TYPES
+			mul		edx
+			add		eax,offset ctltypes
+			invoke SaveWideChar,[eax].TYPES.lpclass,ebx
+			add		ebx,eax
+			invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
+			add		ebx,eax
+			mov		word ptr [ebx],0
+			add		ebx,2
 		.endif
-		mov		[ebx].MyDLGITEMTEMPLATE.style,eax
-		mov		eax,[edi].DIALOG.exstyle
-		mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
-		mov		eax,[edi].DIALOG.dux
-		mov		[ebx].MyDLGITEMTEMPLATE.x,ax
-		mov		eax,[edi].DIALOG.duy
-		mov		[ebx].MyDLGITEMTEMPLATE.y,ax
-		mov		eax,[edi].DIALOG.duccx
-		mov		[ebx].MyDLGITEMTEMPLATE.lx,ax
-		mov		eax,[edi].DIALOG.duccy
-		mov		[ebx].MyDLGITEMTEMPLATE.cy,ax
-;		mov		eax,[edi].DIALOG.id
-		mov		eax,nInx
-		mov		[ebx].MyDLGITEMTEMPLATE.id,ax
-		add		ebx,sizeof MyDLGITEMTEMPLATE
-		mov		eax,[edi].DIALOG.ntype
-		mov		edx,sizeof TYPES
-		mul		edx
-		add		eax,offset ctltypes
-		invoke SaveWideChar,[eax].TYPES.lpclass,ebx
-		add		ebx,eax
-		invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
-		add		ebx,eax
-		mov		word ptr [ebx],0
-		add		ebx,2
-		pop		ecx
-		inc		ecx
+		add		edi,sizeof DIALOG
 		jmp		@b
 	.endif
 	pop		ebx
@@ -5937,27 +5925,19 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD
 	mov		esi,hMem
 	mov		eax,hDEd
 	mov		[esi+sizeof DLGHEAD].DIALOG.hpar,eax
-	invoke SetWindowLong,hDEd,DEWM_DIALOG,hDlg
-	invoke SetWindowLong,hDlg,GWL_ID,0;ID_DIALOG
+	invoke SetWindowLong,hDlg,GWL_ID,0
 	invoke SetWindowLong,hDEd,DEWM_MEMORY,esi
 	lea		eax,[esi+sizeof DLGHEAD]
-	invoke SetWindowLong,hDlg,GWL_USERDATA,eax
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
+	.if nSelID
+		invoke GetDlgItem,hDlg,nSelID
+	.else
+		mov		eax,hDlg
+	.endif
+	invoke SizeingRect,eax,FALSE
 	mov		eax,hDlg
 	mov		des.hdlg,eax
 	ret
-
-FindCtrl:
-	mov		nInx,0
-	mov		edi,esi
-	.while [edi].DIALOG.hwnd
-		inc		nInx
-		.if [edi].DIALOG.hwnd!=-1
-			.break .if ecx==[edi].DIALOG.tab
-		.endif
-		add		edi,sizeof DIALOG
-	.endw
-	retn
 
 MakeDialog endp
 
@@ -5977,13 +5957,12 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 		invoke SetWindowLong,hWin,DEWM_MEMORY,esi
 		invoke CreateNewCtl,hWin,0,DlgX,DlgY,150,100
 		mov		hDlg,eax
-		invoke SizeingRect,hDlg,FALSE
 		mov		eax,esi
 		ret
 	.else
 		;Create existing dlg
 		mov		esi,eax
-		invoke MakeDialog,esi
+		invoke MakeDialog,esi,0
 		mov		hDlg,eax
 
 ;		lea		edx,[esi+sizeof DLGHEAD+sizeof DIALOG]
@@ -5993,7 +5972,6 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 ;			lea		edx,[edx+sizeof DIALOG]
 ;		.endw
 
-		invoke SizeingRect,hDlg,FALSE
 		mov		eax,esi
 		ret
 
