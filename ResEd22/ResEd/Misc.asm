@@ -98,7 +98,7 @@ HexToDw proc uses esi,lpAscii:DWORD
 		or		edx,eax
 		inc		ecx
 	.endw
-	mov		edx,eax
+	mov		eax,edx
 	ret
 
 HexToDw endp
