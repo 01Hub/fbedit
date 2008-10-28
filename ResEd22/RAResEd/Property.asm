@@ -1210,39 +1210,39 @@ PropEditChkVal proc uses esi,lpTxt:DWORD,nTpe:DWORD,lpfErr:DWORD
 
 PropEditChkVal endp
 
-UpdateFont proc hCtl:HWND
-	LOCAL	hFnt:DWORD
-
-	invoke MakeDlgFont,esi
-	mov		hFnt,eax
-	add		esi,sizeof DLGHEAD
-	assume esi:ptr DIALOG
-	.while TRUE
-		mov		eax,[esi].hwnd
-	  .break .if !eax
-		.if eax!=-1
-			mov		eax,[esi].hcld
-			.if eax
-				invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-			.endif
-			mov		eax,[esi].hwnd
-			invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-			mov		eax,[esi].hcld
-			.if eax
-				invoke InvalidateRect,eax,NULL,TRUE
-				mov		eax,[esi].hwnd
-				invoke InvalidateRect,eax,NULL,TRUE
-			.endif
-		.endif
-		add		esi,sizeof DIALOG
-	.endw
-	invoke PropertyList,hCtl
-	invoke SetChanged,TRUE,0
-	assume esi:nothing
-	ret
-
-UpdateFont  endp
-
+;UpdateFont proc hCtl:HWND
+;	LOCAL	hFnt:DWORD
+;
+;	invoke MakeDlgFont,esi
+;	mov		hFnt,eax
+;	add		esi,sizeof DLGHEAD
+;	assume esi:ptr DIALOG
+;	.while TRUE
+;		mov		eax,[esi].hwnd
+;	  .break .if !eax
+;		.if eax!=-1
+;			mov		eax,[esi].hcld
+;			.if eax
+;				invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
+;			.endif
+;			mov		eax,[esi].hwnd
+;			invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
+;			mov		eax,[esi].hcld
+;			.if eax
+;				invoke InvalidateRect,eax,NULL,TRUE
+;				mov		eax,[esi].hwnd
+;				invoke InvalidateRect,eax,NULL,TRUE
+;			.endif
+;		.endif
+;		add		esi,sizeof DIALOG
+;	.endw
+;	invoke PropertyList,hCtl
+;	invoke SetChanged,TRUE,0
+;	assume esi:nothing
+;	ret
+;
+;UpdateFont  endp
+;
 PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -1446,7 +1446,7 @@ SetCtrlData:
 		sub		edx,sizeof DLGHEAD
 		mov		[edx].DLGHEAD.fontht,eax
 		sub		esi,sizeof DLGHEAD
-		invoke UpdateFont,hCtl
+;		invoke UpdateFont,hCtl
 		add		esi,sizeof DLGHEAD
 	.elseif eax==PRP_NUM_ID
 		push	val
@@ -2798,14 +2798,14 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetCtrlMem,hCtl
 						mov		esi,eax
 						sub		esi,sizeof DLGHEAD
-						invoke strcpy,addr lf.lfFaceName,addr (DLGHEAD ptr [esi]).font
-						push	(DLGHEAD ptr [esi]).fontht
+						invoke strcpy,addr lf.lfFaceName,addr [esi].DLGHEAD.font
+						push	[esi].DLGHEAD.fontht
 						pop		lf.lfHeight
-						mov		al,(DLGHEAD ptr [esi]).charset
+						mov		al,[esi].DLGHEAD.charset
 						mov		lf.lfCharSet,al
-						mov		al,(DLGHEAD ptr [esi]).italic
+						mov		al,[esi].DLGHEAD.italic
 						mov		lf.lfItalic,al
-						movzx	eax,word ptr (DLGHEAD ptr [esi]).weight
+						movzx	eax,word ptr [esi].DLGHEAD.weight
 						mov		lf.lfWeight,eax
 						mov		cf.lStructSize,sizeof CHOOSEFONT
 						invoke GetDC,hWin
@@ -2832,30 +2832,28 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke ReleaseDC,hWin,hDC
 						pop		eax
 						.if eax
-							invoke ResetSize,esi
-							.if fSizeToFont
+							.if !fSizeToFont
 								mov		eax,cf.iPointSize
 								mov		ecx,10
 								xor		edx,edx
 								div		ecx
-								invoke DlgResize,esi,addr (DLGHEAD ptr [esi]).font,(DLGHEAD ptr [esi]).fontsize,addr lf.lfFaceName,eax
-								invoke SizeingRect,hCtl,FALSE
+								invoke DlgResize,esi,addr [esi].DLGHEAD.font,[esi].DLGHEAD.fontsize,addr lf.lfFaceName,eax
 							.endif
 							mov		eax,lf.lfHeight
-							mov		(DLGHEAD ptr [esi]).fontht,eax
+							mov		[esi].DLGHEAD.fontht,eax
 							mov		al,lf.lfItalic
-							mov		(DLGHEAD ptr [esi]).italic,al
+							mov		[esi].DLGHEAD.italic,al
 							mov		al,lf.lfCharSet
-							mov		(DLGHEAD ptr [esi]).charset,al
+							mov		[esi].DLGHEAD.charset,al
 							mov		eax,lf.lfWeight
-							mov		(DLGHEAD ptr [esi]).weight,ax
+							mov		[esi].DLGHEAD.weight,ax
 							mov		eax,cf.iPointSize
 							mov		ecx,10
 							xor		edx,edx
 							div		ecx
-							mov		(DLGHEAD ptr [esi]).fontsize,eax
-							invoke strcpy,addr (DLGHEAD ptr [esi]).font,addr lf.lfFaceName
-							invoke UpdateFont,hCtl
+							mov		[esi].DLGHEAD.fontsize,eax
+							invoke strcpy,addr [esi].DLGHEAD.font,addr lf.lfFaceName
+							invoke MakeDialog,esi,0
 						.endif
 					.elseif eax==PRP_STR_MENU
 						;Dialog Memu
@@ -2904,6 +2902,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke PropTxtLst,hCtl,lbid
 						invoke SetTxtLstPos,addr rect
 					.elseif eax==PRP_STR_CAPMULTI
+						;Multiline caption
 						invoke SendMessage,hWin,LB_GETITEMRECT,nInx,addr rect
 						mov		eax,nPropHt
 						add		rect.top,eax
@@ -3030,7 +3029,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[esi].DLGHEAD.font,0
 					mov		[esi].DLGHEAD.fontsize,0
 					mov		[esi].DLGHEAD.fontht,0
-					call	UpdateFont
+;					call	UpdateFont
 				.endif
 			.endif
 		.endif
