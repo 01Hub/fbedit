@@ -94,25 +94,22 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]
 
 	invoke GetParent,hWin
-	.if eax==hDlg
-		invoke GetWindowLong,hWin,GWL_ID
-		mov		esi,sizeof DIALOG
-		mul		esi
+	.if eax==lParam
+		invoke GetCtrlMem,hWin
 		mov		esi,eax
-		add		esi,pDlgMem
-		add		esi,sizeof DLGHEAD
 		mov		eax,[esi].DIALOG.ntypeid
 		.if eax==7
 			;ComboBox
-			invoke SendMessage,hWin,CB_ADDSTRING,0,addr szAppName
+			invoke SendMessage,hWin,CB_ADDSTRING,0,addr [esi].DIALOG.idname
 			invoke SendMessage,hWin,CB_SETCURSEL,0,0
 		.elseif eax==8
 			;ListBox
-			invoke SendMessage,hWin,LB_ADDSTRING,0,addr szAppName
+			invoke SendMessage,hWin,LB_ADDSTRING,0,addr [esi].DIALOG.idname
 		.elseif eax==11
 			;TabControl
 			mov		tci.imask,TCIF_TEXT
-			mov		tci.pszText,offset szAppName
+			lea		eax,[esi].DIALOG.idname
+			mov		tci.pszText,eax
 			mov		tci.cchTextMax,0
 			invoke SendMessage,hWin,TCM_INSERTITEM,0,addr tci
 			invoke SendMessage,hWin,TCM_INSERTITEM,1,addr tci
@@ -125,13 +122,13 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			;TreeView
 ;			mov		eax,lpHandles
 ;			invoke SendMessage,hWin,TVM_SETIMAGELIST,0,[eax].ADDINHANDLES.hTbrIml
-			invoke PrevDo_TreeViewAddNode,hWin,TVI_ROOT,NULL,offset szAppName,42+0
+			invoke PrevDo_TreeViewAddNode,hWin,TVI_ROOT,NULL,addr [esi].DIALOG.idname,42+0
 			mov		edx,eax
 			push	eax
-			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,offset szAppName,42+1
+			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,42+1
 			mov		edx,eax
 			push	eax
-			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,offset szAppName,42+2
+			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,42+2
 			pop		eax
 			invoke SendMessage,hWin,TVM_EXPAND,TVE_EXPAND,eax
 			pop		eax
@@ -144,7 +141,8 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			mov		lvi.imask,LVIF_TEXT or LVIF_IMAGE
 			mov		lvi.iItem,0
 			mov		lvi.iSubItem,0
-			mov		lvi.pszText,offset szAppName
+			lea		eax,[esi].DIALOG.idname
+			mov		lvi.pszText,eax
 			mov		lvi.cchTextMax,0
 			mov		lvi.iImage,42+0
 			invoke SendMessage,hWin,LVM_INSERTITEM,0,addr lvi
@@ -222,7 +220,8 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 ;			invoke SendMessage,hWin,CBEM_SETIMAGELIST,0,[eax].ADDINHANDLES.hTbrIml
 			mov		cbei._mask,CBEIF_IMAGE or CBEIF_TEXT or CBEIF_SELECTEDIMAGE
 			mov		cbei.iItem,0
-			mov		cbei.pszText,offset szAppName
+			lea		eax,[esi].DIALOG.idname
+			mov		cbei.pszText,eax
 			mov		cbei.cchTextMax,32
 			mov		cbei.iImage,42+0
 			mov		cbei.iSelectedImage,42+0
@@ -277,7 +276,8 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			;Header
 			mov		hdi.imask,HDI_TEXT or HDI_WIDTH or HDI_FORMAT
 			mov		hdi.lxy,100
-			mov		hdi.pszText,offset szAppName
+			lea		eax,[esi].DIALOG.idname
+			mov		hdi.pszText,eax
 			mov		hdi.fmt,HDF_STRING
 			invoke SendMessage,hWin,HDM_INSERTITEM,0,addr hdi
 		.elseif eax>=33
@@ -349,7 +349,7 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		edx,ecx
 			invoke SetWindowPos,hWin,0,0,0,eax,edx,SWP_NOMOVE or SWP_NOZORDER
 		.endif
-		invoke EnumChildWindows,hWin,addr DlgEnumProc,0
+		invoke EnumChildWindows,hWin,addr DlgEnumProc,hWin
 		invoke NotifyParent
 ;	.elseif eax==WM_COMMAND
 ;		mov		eax,wParam

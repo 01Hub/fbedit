@@ -815,7 +815,7 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			invoke TxtLstFalseTrue,eax,addr MenuEx
 		.endif
 	.else
-		invoke GetWindowLong,hCtl,GWL_USERDATA
+		invoke GetCtrlMem,hCtl
 		mov		esi,eax
 		assume esi:ptr DIALOG
 		push	[esi].ntype
@@ -1368,7 +1368,12 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					.else
 						call SetCtrlData
-						invoke UpdateCtl,hCtl
+						invoke GetCtrlMem,hCtl
+						invoke GetCtrlID,eax
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.endif
 				.endif
 			.endif
@@ -1378,7 +1383,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 
 SetCtrlData:
 	;Get ptr data
-	invoke GetWindowLong,hCtl,GWL_USERDATA
+	invoke GetCtrlMem,hCtl
 	mov		esi,eax
 	assume esi:ptr DIALOG
 	;What is changed
@@ -1456,35 +1461,15 @@ SetCtrlData:
 		.endif
 	.elseif eax==PRP_NUM_POSL
 		mov		eax,val
-		mov		[esi].x,eax
-		xor		eax,eax
 		mov		[esi].dux,eax
-		mov		[esi].duy,eax
-		mov		[esi].duccx,eax
-		mov		[esi].duccy,eax
 	.elseif eax==PRP_NUM_POST
 		mov		eax,val
-		mov		[esi].y,eax
-		xor		eax,eax
-		mov		[esi].dux,eax
 		mov		[esi].duy,eax
-		mov		[esi].duccx,eax
-		mov		[esi].duccy,eax
 	.elseif eax==PRP_NUM_SIZEW
 		mov		eax,val
-		mov		[esi].ccx,eax
-		xor		eax,eax
-		mov		[esi].dux,eax
-		mov		[esi].duy,eax
 		mov		[esi].duccx,eax
-		mov		[esi].duccy,eax
 	.elseif eax==PRP_NUM_SIZEH
 		mov		eax,val
-		mov		[esi].ccy,eax
-		xor		eax,eax
-		mov		[esi].dux,eax
-		mov		[esi].duy,eax
-		mov		[esi].duccx,eax
 		mov		[esi].duccy,eax
 	.elseif eax==PRP_NUM_STARTID
 		sub		esi,sizeof DLGHEAD
@@ -2002,8 +1987,8 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 							invoke GetParent,eax
 							invoke GetCtrlMem,eax
 							mov		ebx,eax
-							mov		eax,[esi].DIALOG.ccy
-							sub		eax,[ebx].DIALOG.ccy
+							mov		eax,[esi].DIALOG.duccy
+							sub		eax,[ebx].DIALOG.duccy
 							.if eax
 								mov		byte ptr [edi],0
 							.endif
@@ -2810,7 +2795,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax==PRP_STR_FONT
 						;Font
 						invoke RtlZeroMemory,addr lf,sizeof lf
-						invoke GetWindowLong,hCtl,GWL_USERDATA
+						invoke GetCtrlMem,hCtl
 						mov		esi,eax
 						sub		esi,sizeof DLGHEAD
 						invoke strcpy,addr lf.lfFaceName,addr (DLGHEAD ptr [esi]).font
@@ -2887,12 +2872,12 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.elseif eax==PRP_FUN_EXSTYLE
 						;xExStyle
 						mov		StyleEx,TRUE
-						invoke GetWindowLong,hCtl,GWL_USERDATA
+						invoke GetCtrlMem,hCtl
 						invoke DialogBoxParam,hInstance,IDD_DLGSTYLEMANA,hWin,addr StyleManaDialogProc,eax
 					.elseif eax==PRP_FUN_STYLE
 						;xStyle
 						mov		StyleEx,FALSE
-						invoke GetWindowLong,hCtl,GWL_USERDATA
+						invoke GetCtrlMem,hCtl
 						invoke DialogBoxParam,hInstance,IDD_DLGSTYLEMANA,hWin,addr StyleManaDialogProc,eax
 					.elseif eax==PRP_STR_IMAGE
 						;Image
@@ -2927,7 +2912,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						add		rect.left,eax
 						mov		eax,rect.left
 						sub		rect.right,eax
-						invoke GetWindowLong,hCtl,GWL_USERDATA
+						invoke GetCtrlMem,hCtl
 						mov		esi,eax
 						invoke ConvertCaption,addr lbtxtbuffer,addr (DIALOG ptr [esi]).caption
 						invoke SetWindowText,hPrpEdtDlgCldMulti,addr lbtxtbuffer
@@ -3039,7 +3024,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax==PRP_STR_FONT
 					invoke GetWindowLong,hWin,GWL_USERDATA
 					mov		hCtl,eax
-					invoke GetWindowLong,eax,GWL_USERDATA
+					invoke GetCtrlMem,hCtl
 					sub		eax,sizeof DLGHEAD
 					mov		esi,eax
 					mov		[esi].DLGHEAD.font,0
@@ -3104,11 +3089,11 @@ PrpEdtDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ConvertCaption,addr buffer,addr buffer
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			.if [eax].DIALOG.ntype==3
-				mov		edx,[eax].DIALOG.hcld
-				mov		hCtl,edx
-			.endif
+			invoke GetCtrlMem,hCtl
+;			.if [eax].DIALOG.ntype==3
+;				mov		edx,[eax].DIALOG.hcld
+;				mov		hCtl,edx
+;			.endif
 			invoke SetWindowText,hCtl,addr buffer
 			pop		esi
 		.endif

@@ -2,6 +2,7 @@ SendToBack			PROTO	:DWORD
 UpdateRAEdit		PROTO	:DWORD
 CreateDlg			PROTO	:HWND,:DWORD,:DWORD
 MakeDialog			PROTO	:DWORD,:DWORD
+DlgEnumProc			PROTO	:DWORD,:DWORD
 
 PGM_FIRST			equ 1400h
 PGM_SETCHILD		equ PGM_FIRST+1
@@ -2936,453 +2937,6 @@ DesignDummyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 DesignDummyProc endp
 
-DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	pt:POINT
-	LOCAL	rect:RECT
-	LOCAL	rect1:RECT
-	LOCAL	hCld:HWND
-	LOCAL	hDC:HDC
-	LOCAL	hMemDC:HDC
-	LOCAL	parpt:POINT
-	LOCAL	fShift:DWORD
-	LOCAL	fControl:DWORD
-
-	mov		eax,uMsg
-	.if eax==WM_MOUSEMOVE
-		.if des.fmode==MODE_DRAWING
-			call	SnapPt
-			invoke RestoreWin
-			mov		eax,pt.x
-			sub		eax,parpt.x
-			invoke SizeX,0
-			add		eax,parpt.x
-			mov		des.ctlrect.right,eax
-			mov		eax,pt.y
-			sub		eax,parpt.y
-			invoke SizeY,0
-			add		eax,parpt.y
-			mov		des.ctlrect.bottom,eax
-			invoke CopyRect,addr rect,addr des.ctlrect
-			mov		eax,rect.right
-			.if sdword ptr eax<rect.left
-				inc		eax
-				xchg	rect.left,eax
-				mov		rect.right,eax
-			.endif
-			mov		eax,rect.bottom
-			.if sdword ptr eax<rect.top
-				inc		eax
-				xchg	rect.top,eax
-				mov		rect.bottom,eax
-			.endif
-			call	DrawRect
-			mov		eax,rect.right
-			sub		eax,rect.left
-			mov		edx,rect.bottom
-			sub		edx,rect.top
-			invoke DialogTltSize,eax,edx
-		.elseif des.fmode==MODE_MOVING
-			call	SnapPt
-			invoke RestoreWin
-			invoke CopyRect,addr rect,addr des.ctlrect
-			mov		eax,pt.x
-			sub		eax,MousePtDown.x
-			add		rect.left,eax
-			add		rect.right,eax
-			mov		eax,pt.y
-			sub		eax,MousePtDown.y
-			add		rect.top,eax
-			add		rect.bottom,eax
-			mov		eax,rect.right
-			.if sdword ptr eax<rect.left
-				inc		eax
-				xchg	rect.left,eax
-				mov		rect.right,eax
-			.endif
-			mov		eax,rect.bottom
-			.if sdword ptr eax<rect.top
-				inc		eax
-				xchg	rect.top,eax
-				mov		rect.bottom,eax
-			.endif
-			call	DrawRect
-			invoke ClientToScreen,hInvisible,addr rect.left
-			invoke GetWindowLong,hDEd,DEWM_DIALOG
-			mov		ebx,eax
-			invoke ScreenToClient,ebx,addr rect.left
-			invoke DialogTltSize,rect.left,rect.top
-		.elseif des.fmode==MODE_SELECT
-			call	SnapPt
-			invoke RestoreWin
-			mov		eax,pt.x
-			sub		eax,parpt.x
-			invoke SizeX,0
-			add		eax,parpt.x
-			mov		des.ctlrect.right,eax
-			mov		eax,pt.y
-			sub		eax,parpt.y
-			invoke SizeY,0
-			add		eax,parpt.y
-			mov		des.ctlrect.bottom,eax
-			invoke CopyRect,addr rect,addr des.ctlrect
-			mov		eax,rect.right
-			.if sdword ptr eax<rect.left
-				inc		eax
-				xchg	rect.left,eax
-				mov		rect.right,eax
-			.endif
-			mov		eax,rect.bottom
-			.if sdword ptr eax<rect.top
-				inc		eax
-				xchg	rect.top,eax
-				mov		rect.bottom,eax
-			.endif
-			call	DrawRect
-		.endif
-	.elseif eax==WM_LBUTTONDOWN
-		mov		eax,lParam
-		movsx	edx,ax
-		shr		eax,16
-		cwde
-		mov		pt.x,edx
-		mov		pt.y,eax
-		invoke SetCapture,hWin
-		invoke GetWindowLong,hDEd,DEWM_DIALOG
-		mov		ebx,eax
-		call	IsInWindow
-		.if eax
-			mov		fShift,FALSE
-			mov		fControl,FALSE
-			mov		eax,wParam
-			test	eax,MK_SHIFT
-			.if !ZERO?
-				mov		fShift,TRUE
-			.endif
-			;Control key
-			test	eax,MK_CONTROL
-			.if !ZERO?
-				mov		fControl,TRUE
-			.endif
-			mov		eax,hReSize
-			mov		des.hselected,eax
-			invoke DestroySizeingRect
-			invoke ShowWindow,hInvisible,SW_HIDE
-			invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-			invoke UpdateWindow,hDEd
-			.if ToolBoxID
-				;Is readOnly
-				invoke GetWindowLong,hDEd,DEWM_READONLY
-				.if !eax
-					invoke CaptureWin
-					call	SnapPt
-					mov		eax,pt.x
-					mov		MousePtDown.x,eax
-					mov		eax,pt.y
-					mov		MousePtDown.y,eax
-					mov		eax,pt.x
-					mov		des.ctlrect.left,eax
-					mov		des.ctlrect.right,eax
-					mov		eax,pt.y
-					mov		des.ctlrect.top,eax
-					mov		des.ctlrect.bottom,eax
-					mov		des.fmode,MODE_DRAWING
-				.endif
-			.else
-				push	ebx
-				invoke GetWindow,ebx,GW_CHILD
-				mov		ebx,eax
-				.while ebx
-					call	IsInWindow
-					invoke GetWindow,ebx,GW_HWNDNEXT
-					mov		ebx,eax
-				.endw
-				pop		eax
-				.if eax!=hCld
-					; Control
-					.if !fShift && !fControl
-						invoke GetWindowLong,hDEd,DEWM_READONLY
-						.if !eax
-							invoke GetWindowLong,hDEd,DEWM_MEMORY
-							.if ![eax].DLGHEAD.locked
-								mov		eax,hCld
-								mov		des.hselected,eax
-								invoke CaptureWin
-								call	SnapPt
-								mov		eax,pt.x
-								mov		MousePtDown.x,eax
-								mov		eax,pt.y
-								mov		MousePtDown.y,eax
-								invoke GetWindowRect,hCld,addr des.ctlrect
-								invoke ScreenToClient,hInvisible,addr des.ctlrect.left
-								invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-								mov		des.fmode,MODE_MOVING
-							.endif
-						.endif
-					.elseif !fShift && fControl
-						invoke CtlMultiSelect,hCld
-						.if hMultiSel
-							mov		des.fmode,MODE_MULTISEL
-							invoke PropertyList,-1
-						.endif
-					.elseif fShift && !fControl
-						.while hMultiSel
-							invoke DestroyMultiSel,hMultiSel
-							mov		hMultiSel,eax
-						.endw
-						invoke CaptureWin
-						call	SnapPt
-						mov		eax,pt.x
-						mov		MousePtDown.x,eax
-						mov		eax,pt.y
-						mov		MousePtDown.y,eax
-						mov		eax,pt.x
-						mov		des.ctlrect.left,eax
-						mov		des.ctlrect.right,eax
-						mov		eax,pt.y
-						mov		des.ctlrect.top,eax
-						mov		des.ctlrect.bottom,eax
-						mov		des.fmode,MODE_SELECT
-					.endif
-				.else
-					; Dialog
-					.while hMultiSel
-						invoke DestroyMultiSel,hMultiSel
-						mov		hMultiSel,eax
-					.endw
-					mov		des.fmode,0
-					mov		eax,hCld
-					.if eax==des.hselected || (fShift && !fControl)
-						invoke CaptureWin
-						call	SnapPt
-						mov		eax,pt.x
-						mov		MousePtDown.x,eax
-						mov		eax,pt.y
-						mov		MousePtDown.y,eax
-						mov		eax,pt.x
-						mov		des.ctlrect.left,eax
-						mov		des.ctlrect.right,eax
-						mov		eax,pt.y
-						mov		des.ctlrect.top,eax
-						mov		des.ctlrect.bottom,eax
-						mov		des.fmode,MODE_SELECT
-					.endif
-				.endif
-			.endif
-		.endif
-	.elseif eax==WM_LBUTTONUP
-		mov		eax,lParam
-		movsx	edx,ax
-		shr		eax,16
-		cwde
-		mov		pt.x,edx
-		mov		pt.y,eax
-		invoke ReleaseCapture
-		.if des.fmode==MODE_DRAWING
-			invoke RestoreWin
-			invoke DeleteObject,hWinBmp
-			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
-		.elseif des.fmode==MODE_MOVING
-			invoke RestoreWin
-			invoke DeleteObject,hWinBmp
-			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
-			call	SnapPt
-			invoke CopyRect,addr rect,addr des.ctlrect
-			mov		eax,pt.x
-			sub		eax,MousePtDown.x
-			add		rect.left,eax
-			add		rect.right,eax
-			mov		eax,pt.y
-			sub		eax,MousePtDown.y
-			add		rect.top,eax
-			add		rect.bottom,eax
-			mov		eax,rect.right
-			.if sdword ptr eax<rect.left
-				inc		eax
-				xchg	rect.left,eax
-				mov		rect.right,eax
-			.endif
-			mov		eax,rect.bottom
-			.if sdword ptr eax<rect.top
-				inc		eax
-				xchg	rect.top,eax
-				mov		rect.bottom,eax
-			.endif
-			invoke ClientToScreen,hInvisible,addr rect.left
-			invoke ClientToScreen,hInvisible,addr rect.right
-			invoke GetWindowLong,hDEd,DEWM_DIALOG
-			mov		ebx,eax
-			invoke ScreenToClient,ebx,addr rect.left
-			invoke ScreenToClient,ebx,addr rect.right
-			invoke GetWindowLong,des.hselected,GWL_ID
-			push	eax
-			invoke GetCtrlMem,des.hselected
-			mov		ebx,eax
-	 		invoke ConvertToDux,rect.left
-			mov		[ebx].DIALOG.dux,eax
-	 		invoke ConvertToDuy,rect.top
-			mov		[ebx].DIALOG.duy,eax
-			invoke GetWindowLong,hDEd,DEWM_MEMORY
-			pop		edx
-			invoke MakeDialog,eax,edx
-		.elseif des.fmode==MODE_SIZEING
-			invoke RestoreWin
-			invoke DeleteObject,hWinBmp
-			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
-			invoke CopyRect,addr rect,addr SizeRect
-			invoke ClientToScreen,hInvisible,addr rect.left
-			invoke ClientToScreen,hInvisible,addr rect.right
-			invoke ScreenToClient,des.hdlg,addr rect.left
-			invoke ScreenToClient,des.hdlg,addr rect.right
-			mov		eax,des.hdlg
-			.if eax==des.hselected
-				mov		eax,rect.left
-				sub		rect.right,eax
-				mov		eax,rect.top
-				sub		rect.bottom,eax
-				xor		eax,eax
-				mov		rect.left,eax
-				mov		rect.top,eax
-				mov		rect1.left,eax
-				mov		rect1.top,eax
-				mov		rect1.right,eax
-				mov		rect1.bottom,eax
-				invoke GetWindowLong,hDEd,DEWM_MEMORY
-				invoke AdjustWindowRectEx,addr rect1,[eax+sizeof DLGHEAD].DIALOG.style,FALSE,[eax+sizeof DLGHEAD].DIALOG.exstyle
-				mov		eax,rect1.right
-				sub		eax,rect1.left
-				sub		rect.right,eax
-				mov		eax,rect1.bottom
-				sub		eax,rect1.top
-				sub		rect.bottom,eax
-			.endif
-			invoke GetWindowLong,des.hselected,GWL_ID
-			push	eax
-			invoke GetCtrlMem,des.hselected
-			mov		ebx,eax
-			mov		eax,des.hdlg
-			.if eax!=des.hselected
-		 		invoke ConvertToDux,rect.left
-				mov		[ebx].DIALOG.dux,eax
-		 		invoke ConvertToDuy,rect.top
-				mov		[ebx].DIALOG.duy,eax
-		 		invoke ConvertToDux,rect.right
-		 		sub		eax,[ebx].DIALOG.dux
-				mov		[ebx].DIALOG.duccx,eax
-		 		invoke ConvertToDuy,rect.bottom
-		 		sub		eax,[ebx].DIALOG.duy
-				mov		[ebx].DIALOG.duccy,eax
-			.else
-		 		invoke ConvertToDux,rect.right
-				mov		[ebx].DIALOG.duccx,eax
-		 		invoke ConvertToDuy,rect.bottom
-				mov		[ebx].DIALOG.duccy,eax
-			.endif
-			invoke GetWindowLong,hDEd,DEWM_MEMORY
-			pop		edx
-			invoke MakeDialog,eax,edx
-		.elseif des.fmode==MODE_MULTISEL
-		.elseif des.fmode==MODE_SELECT
-			invoke RestoreWin
-			invoke DeleteObject,hWinBmp
-			mov		des.fmode,0
-			invoke SendMessage,hWin,uMsg,wParam,lParam
-		.else
-			mov		hCld,0
-			mov		eax,lParam
-			movsx	edx,ax
-			shr		eax,16
-			cwde
-			mov		pt.x,edx
-			mov		pt.y,eax
-			invoke GetWindowLong,hDEd,DEWM_DIALOG
-			mov		ebx,eax
-			call	IsInWindow
-			.if eax
-				invoke GetWindow,ebx,GW_CHILD
-				mov		ebx,eax
-				.while ebx
-					call	IsInWindow
-					invoke GetWindow,ebx,GW_HWNDNEXT
-					mov		ebx,eax
-				.endw
-				invoke SizeingRect,hCld,FALSE
-			.endif
-		.endif
-	.elseif eax==WM_SETCURSOR
-		invoke GetCursorPos,addr pt
-		invoke ScreenToClient,hInvisible,addr pt
-		invoke GetWindowLong,hDEd,DEWM_DIALOG
-		mov		ebx,eax
-		call	IsInWindow
-		.if ToolBoxID && (eax || des.fmode==MODE_DRAWING)
-			invoke LoadCursor,0,IDC_CROSS
-		.else
-			invoke LoadCursor,0,IDC_ARROW
-		.endif
-		invoke SetCursor,eax
-	.else
-		invoke DefWindowProc,hWin,uMsg,wParam,lParam
-		ret
-	.endif
-	xor		eax,eax
-	ret
-
-SnapPt:
-	mov		eax,lParam
-	movsx	edx,ax
-	shr		eax,16
-	cwde
-	mov		pt.x,edx
-	mov		pt.y,eax
-	mov		parpt.x,0
-	mov		parpt.y,0
-	invoke GetWindowLong,hDEd,DEWM_DIALOG
-	mov		edx,eax
-	invoke ClientToScreen,edx,addr parpt
-	invoke GetWindowRect,hInvisible,addr rect
-	mov		eax,rect.left
-	sub		parpt.x,eax
-	mov		eax,rect.top
-	sub		parpt.y,eax
-	mov		eax,pt.x
-	sub		eax,parpt.x
-	invoke SizeX,0
-	add		eax,parpt.x
-	mov		pt.x,eax
-	mov		eax,pt.y
-	sub		eax,parpt.y
-	invoke SizeY,0
-	add		eax,parpt.y
-	mov		pt.y,eax
-	retn
-
-IsInWindow:
-	invoke GetWindowRect,ebx,addr rect
-	invoke ScreenToClient,hInvisible,addr rect.left
-	invoke ScreenToClient,hInvisible,addr rect.right
-	mov		eax,pt.x
-	mov		edx,pt.y
-	.if eax>=rect.left && eax<=rect.right && edx>=rect.top && edx<=rect.bottom
-		mov		hCld,ebx
-		mov		eax,TRUE
-	.else
-		xor		eax,eax
-	.endif
-	retn
-
-DrawRect:
-	invoke GetDC,hWin
-	mov		hDC,eax
-	invoke GetStockObject,BLACK_BRUSH
-	invoke FrameRect,hDC,addr rect,eax
-	invoke ReleaseDC,hWin,hDC
-	retn
-
-DesignInvisibleProc endp
-
 CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 ;	LOCAL	hCtl:HWND
 ;	LOCAL	hCld:HWND
@@ -3970,6 +3524,491 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 	ret
 
 CreateNewCtl endp
+
+DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	pt:POINT
+	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
+	LOCAL	hCld:HWND
+	LOCAL	hDC:HDC
+	LOCAL	hMemDC:HDC
+	LOCAL	parpt:POINT
+	LOCAL	fShift:DWORD
+	LOCAL	fControl:DWORD
+
+	mov		eax,uMsg
+	.if eax==WM_MOUSEMOVE
+		.if des.fmode==MODE_DRAWING
+			call	SnapPt
+			invoke RestoreWin
+			mov		eax,pt.x
+			sub		eax,parpt.x
+			invoke SizeX,0
+			add		eax,parpt.x
+			mov		des.ctlrect.right,eax
+			mov		eax,pt.y
+			sub		eax,parpt.y
+			invoke SizeY,0
+			add		eax,parpt.y
+			mov		des.ctlrect.bottom,eax
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			call	DrawRect
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			invoke DialogTltSize,eax,edx
+		.elseif des.fmode==MODE_MOVING
+			call	SnapPt
+			invoke RestoreWin
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,pt.x
+			sub		eax,MousePtDown.x
+			add		rect.left,eax
+			add		rect.right,eax
+			mov		eax,pt.y
+			sub		eax,MousePtDown.y
+			add		rect.top,eax
+			add		rect.bottom,eax
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			call	DrawRect
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			invoke ScreenToClient,ebx,addr rect.left
+			invoke DialogTltSize,rect.left,rect.top
+		.elseif des.fmode==MODE_SELECT
+			call	SnapPt
+			invoke RestoreWin
+			mov		eax,pt.x
+			sub		eax,parpt.x
+			invoke SizeX,0
+			add		eax,parpt.x
+			mov		des.ctlrect.right,eax
+			mov		eax,pt.y
+			sub		eax,parpt.y
+			invoke SizeY,0
+			add		eax,parpt.y
+			mov		des.ctlrect.bottom,eax
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			call	DrawRect
+		.endif
+	.elseif eax==WM_LBUTTONDOWN
+		mov		eax,lParam
+		movsx	edx,ax
+		shr		eax,16
+		cwde
+		mov		pt.x,edx
+		mov		pt.y,eax
+		invoke SetCapture,hWin
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		mov		ebx,eax
+		call	IsInWindow
+		.if eax
+			mov		fShift,FALSE
+			mov		fControl,FALSE
+			mov		eax,wParam
+			test	eax,MK_SHIFT
+			.if !ZERO?
+				mov		fShift,TRUE
+			.endif
+			;Control key
+			test	eax,MK_CONTROL
+			.if !ZERO?
+				mov		fControl,TRUE
+			.endif
+			mov		eax,hReSize
+			mov		des.hselected,eax
+			invoke DestroySizeingRect
+			invoke ShowWindow,hInvisible,SW_HIDE
+			invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+			invoke UpdateWindow,hDEd
+			.if ToolBoxID
+				;Is readOnly
+				invoke GetWindowLong,hDEd,DEWM_READONLY
+				.if !eax
+					invoke CaptureWin
+					call	SnapPt
+					mov		eax,pt.x
+					mov		MousePtDown.x,eax
+					mov		eax,pt.y
+					mov		MousePtDown.y,eax
+					mov		eax,pt.x
+					mov		des.ctlrect.left,eax
+					mov		des.ctlrect.right,eax
+					mov		eax,pt.y
+					mov		des.ctlrect.top,eax
+					mov		des.ctlrect.bottom,eax
+					mov		des.fmode,MODE_DRAWING
+				.endif
+			.else
+				push	ebx
+				invoke GetWindow,ebx,GW_CHILD
+				mov		ebx,eax
+				.while ebx
+					call	IsInWindow
+					invoke GetWindow,ebx,GW_HWNDNEXT
+					mov		ebx,eax
+				.endw
+				pop		eax
+				.if eax!=hCld
+					; Control
+					.if !fShift && !fControl
+						invoke GetWindowLong,hDEd,DEWM_READONLY
+						.if !eax
+							invoke GetWindowLong,hDEd,DEWM_MEMORY
+							.if ![eax].DLGHEAD.locked
+								mov		eax,hCld
+								mov		des.hselected,eax
+								invoke CaptureWin
+								call	SnapPt
+								mov		eax,pt.x
+								mov		MousePtDown.x,eax
+								mov		eax,pt.y
+								mov		MousePtDown.y,eax
+								invoke GetWindowRect,hCld,addr des.ctlrect
+								invoke ScreenToClient,hInvisible,addr des.ctlrect.left
+								invoke ScreenToClient,hInvisible,addr des.ctlrect.right
+								mov		des.fmode,MODE_MOVING
+							.endif
+						.endif
+					.elseif !fShift && fControl
+						invoke CtlMultiSelect,hCld
+						.if hMultiSel
+							mov		des.fmode,MODE_MULTISEL
+							invoke PropertyList,-1
+						.endif
+					.elseif fShift && !fControl
+						.while hMultiSel
+							invoke DestroyMultiSel,hMultiSel
+							mov		hMultiSel,eax
+						.endw
+						invoke CaptureWin
+						call	SnapPt
+						mov		eax,pt.x
+						mov		MousePtDown.x,eax
+						mov		eax,pt.y
+						mov		MousePtDown.y,eax
+						mov		eax,pt.x
+						mov		des.ctlrect.left,eax
+						mov		des.ctlrect.right,eax
+						mov		eax,pt.y
+						mov		des.ctlrect.top,eax
+						mov		des.ctlrect.bottom,eax
+						mov		des.fmode,MODE_SELECT
+					.endif
+				.else
+					; Dialog
+					.while hMultiSel
+						invoke DestroyMultiSel,hMultiSel
+						mov		hMultiSel,eax
+					.endw
+					mov		des.fmode,0
+					mov		eax,hCld
+					.if eax==des.hselected || (fShift && !fControl)
+						invoke CaptureWin
+						call	SnapPt
+						mov		eax,pt.x
+						mov		MousePtDown.x,eax
+						mov		eax,pt.y
+						mov		MousePtDown.y,eax
+						mov		eax,pt.x
+						mov		des.ctlrect.left,eax
+						mov		des.ctlrect.right,eax
+						mov		eax,pt.y
+						mov		des.ctlrect.top,eax
+						mov		des.ctlrect.bottom,eax
+						mov		des.fmode,MODE_SELECT
+					.endif
+				.endif
+			.endif
+		.endif
+	.elseif eax==WM_LBUTTONUP
+		mov		eax,lParam
+		movsx	edx,ax
+		shr		eax,16
+		cwde
+		mov		pt.x,edx
+		mov		pt.y,eax
+		invoke ReleaseCapture
+		.if des.fmode==MODE_DRAWING
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
+			mov		des.fmode,0
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke ClientToScreen,hInvisible,addr rect.right
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			invoke ScreenToClient,ebx,addr rect.left
+			invoke ScreenToClient,ebx,addr rect.right
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		rect.right,eax
+			mov		eax,rect.bottom
+			sub		eax,rect.top
+			mov		rect.bottom,eax
+	 		invoke ConvertToDux,rect.left
+			mov		rect.left,eax
+	 		invoke ConvertToDux,rect.right
+			mov		rect.right,eax
+	 		invoke ConvertToDuy,rect.top
+			mov		rect.top,eax
+	 		invoke ConvertToDuy,rect.bottom
+			mov		rect.bottom,eax
+
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		edx,ToolBoxID
+			invoke CreateNewCtl,eax,edx,rect.left,rect.top,rect.right,rect.bottom
+			invoke ToolBoxReset
+		.elseif des.fmode==MODE_MOVING
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
+			mov		des.fmode,0
+			call	SnapPt
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,pt.x
+			sub		eax,MousePtDown.x
+			add		rect.left,eax
+			add		rect.right,eax
+			mov		eax,pt.y
+			sub		eax,MousePtDown.y
+			add		rect.top,eax
+			add		rect.bottom,eax
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke ClientToScreen,hInvisible,addr rect.right
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			invoke ScreenToClient,ebx,addr rect.left
+			invoke ScreenToClient,ebx,addr rect.right
+			invoke GetWindowLong,des.hselected,GWL_ID
+			push	eax
+			invoke GetCtrlMem,des.hselected
+			mov		ebx,eax
+	 		invoke ConvertToDux,rect.left
+			mov		[ebx].DIALOG.dux,eax
+	 		invoke ConvertToDuy,rect.top
+			mov		[ebx].DIALOG.duy,eax
+			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			pop		edx
+			invoke MakeDialog,eax,edx
+		.elseif des.fmode==MODE_SIZEING
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			invoke ShowWindow,hTlt,SW_HIDE
+			mov		des.fmode,0
+			invoke CopyRect,addr rect,addr SizeRect
+			invoke ClientToScreen,hInvisible,addr rect.left
+			invoke ClientToScreen,hInvisible,addr rect.right
+			invoke ScreenToClient,des.hdlg,addr rect.left
+			invoke ScreenToClient,des.hdlg,addr rect.right
+			mov		eax,des.hdlg
+			.if eax==des.hselected
+				mov		eax,rect.left
+				sub		rect.right,eax
+				mov		eax,rect.top
+				sub		rect.bottom,eax
+				xor		eax,eax
+				mov		rect.left,eax
+				mov		rect.top,eax
+				mov		rect1.left,eax
+				mov		rect1.top,eax
+				mov		rect1.right,eax
+				mov		rect1.bottom,eax
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+				invoke AdjustWindowRectEx,addr rect1,[eax+sizeof DLGHEAD].DIALOG.style,FALSE,[eax+sizeof DLGHEAD].DIALOG.exstyle
+				mov		eax,rect1.right
+				sub		eax,rect1.left
+				sub		rect.right,eax
+				mov		eax,rect1.bottom
+				sub		eax,rect1.top
+				sub		rect.bottom,eax
+			.endif
+			invoke GetWindowLong,des.hselected,GWL_ID
+			push	eax
+			invoke GetCtrlMem,des.hselected
+			mov		ebx,eax
+			mov		eax,des.hdlg
+			.if eax!=des.hselected
+		 		invoke ConvertToDux,rect.left
+				mov		[ebx].DIALOG.dux,eax
+		 		invoke ConvertToDuy,rect.top
+				mov		[ebx].DIALOG.duy,eax
+		 		invoke ConvertToDux,rect.right
+		 		sub		eax,[ebx].DIALOG.dux
+				mov		[ebx].DIALOG.duccx,eax
+		 		invoke ConvertToDuy,rect.bottom
+		 		sub		eax,[ebx].DIALOG.duy
+				mov		[ebx].DIALOG.duccy,eax
+			.else
+		 		invoke ConvertToDux,rect.right
+				mov		[ebx].DIALOG.duccx,eax
+		 		invoke ConvertToDuy,rect.bottom
+				mov		[ebx].DIALOG.duccy,eax
+			.endif
+			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			pop		edx
+			invoke MakeDialog,eax,edx
+		.elseif des.fmode==MODE_MULTISEL
+		.elseif des.fmode==MODE_SELECT
+			invoke RestoreWin
+			invoke DeleteObject,hWinBmp
+			mov		des.fmode,0
+			invoke SendMessage,hWin,uMsg,wParam,lParam
+		.else
+			mov		hCld,0
+			mov		eax,lParam
+			movsx	edx,ax
+			shr		eax,16
+			cwde
+			mov		pt.x,edx
+			mov		pt.y,eax
+			invoke GetWindowLong,hDEd,DEWM_DIALOG
+			mov		ebx,eax
+			call	IsInWindow
+			.if eax
+				invoke GetWindow,ebx,GW_CHILD
+				mov		ebx,eax
+				.while ebx
+					call	IsInWindow
+					invoke GetWindow,ebx,GW_HWNDNEXT
+					mov		ebx,eax
+				.endw
+				invoke SizeingRect,hCld,FALSE
+			.endif
+		.endif
+	.elseif eax==WM_SETCURSOR
+		invoke GetCursorPos,addr pt
+		invoke ScreenToClient,hInvisible,addr pt
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		mov		ebx,eax
+		call	IsInWindow
+		.if ToolBoxID && (eax || des.fmode==MODE_DRAWING)
+			invoke LoadCursor,0,IDC_CROSS
+		.else
+			invoke LoadCursor,0,IDC_ARROW
+		.endif
+		invoke SetCursor,eax
+	.else
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+		ret
+	.endif
+	xor		eax,eax
+	ret
+
+SnapPt:
+	mov		eax,lParam
+	movsx	edx,ax
+	shr		eax,16
+	cwde
+	mov		pt.x,edx
+	mov		pt.y,eax
+	mov		parpt.x,0
+	mov		parpt.y,0
+	invoke GetWindowLong,hDEd,DEWM_DIALOG
+	mov		edx,eax
+	invoke ClientToScreen,edx,addr parpt
+	invoke GetWindowRect,hInvisible,addr rect
+	mov		eax,rect.left
+	sub		parpt.x,eax
+	mov		eax,rect.top
+	sub		parpt.y,eax
+	mov		eax,pt.x
+	sub		eax,parpt.x
+	invoke SizeX,0
+	add		eax,parpt.x
+	mov		pt.x,eax
+	mov		eax,pt.y
+	sub		eax,parpt.y
+	invoke SizeY,0
+	add		eax,parpt.y
+	mov		pt.y,eax
+	retn
+
+IsInWindow:
+	invoke GetWindowRect,ebx,addr rect
+	invoke ScreenToClient,hInvisible,addr rect.left
+	invoke ScreenToClient,hInvisible,addr rect.right
+	mov		eax,pt.x
+	mov		edx,pt.y
+	.if eax>=rect.left && eax<=rect.right && edx>=rect.top && edx<=rect.bottom
+		mov		hCld,ebx
+		mov		eax,TRUE
+	.else
+		xor		eax,eax
+	.endif
+	retn
+
+DrawRect:
+	invoke GetDC,hWin
+	mov		hDC,eax
+	invoke GetStockObject,BLACK_BRUSH
+	invoke FrameRect,hDC,addr rect,eax
+	invoke ReleaseDC,hWin,hDC
+	retn
+
+DesignInvisibleProc endp
 
 CopyCtl proc uses esi edi ebx
 	LOCAL	hCtl:HWND
@@ -5784,6 +5823,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	hDlg:HWND
 
 	;Get convertiion
+	invoke SendMessage,hDEd,WM_SETREDRAW,FALSE,0
 	mov		esi,hMem
 	mov		dlgps,10
 	mov		dlgfn,0
@@ -5816,11 +5856,13 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	.if byte ptr [edi].DLGHEAD.font
 		or		eax,DS_SETFONT
 	.endif
-	or		eax,DS_NOFAILCREATE or WS_VISIBLE or WS_CHILD
+	or		eax,WS_ALWAYS or DS_NOFAILCREATE
+	and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
 	mov		[ebx].MyDLGTEMPLATE.style,eax
 	push	eax
 	mov		eax,[esi].DIALOG.exstyle
-	and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT)
+	and		eax,0F7FFFh
+	and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
 	mov		[ebx].MyDLGTEMPLATE.dwExtendedStyle,eax
 	push	esi
 	mov		ecx,-1
@@ -5880,12 +5922,15 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	.if [edi].DIALOG.hwnd
 		.if [edi].DIALOG.hwnd!=-1
 			mov		eax,[edi].DIALOG.style
-			or		eax,WS_VISIBLE
+			or		eax,WS_ALWAYS
+			and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
 			.if [edi].DIALOG.ntype==14
 				or		eax,LVS_SHAREIMAGELISTS
 			.endif
 			mov		[ebx].MyDLGITEMTEMPLATE.style,eax
 			mov		eax,[edi].DIALOG.exstyle
+			and		eax,0F7FFFh
+			and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
 			mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
 			mov		eax,[edi].DIALOG.dux
 			mov		[ebx].MyDLGITEMTEMPLATE.x,ax
@@ -5929,12 +5974,18 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke SetWindowLong,hDEd,DEWM_MEMORY,esi
 	lea		eax,[esi+sizeof DLGHEAD]
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
+	invoke EnumChildWindows,hDlg,addr DlgEnumProc,hDlg
 	.if nSelID
 		invoke GetDlgItem,hDlg,nSelID
 	.else
 		mov		eax,hDlg
 	.endif
 	invoke SizeingRect,eax,FALSE
+	invoke ShowWindow,hInvisible,SW_HIDE
+	invoke SendMessage,hDEd,WM_SETREDRAW,TRUE,0
+	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+	invoke UpdateWindow,hDEd
+	invoke UpdateWindow,hDlg
 	mov		eax,hDlg
 	mov		des.hdlg,eax
 	ret
@@ -5962,6 +6013,16 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 	.else
 		;Create existing dlg
 		mov		esi,eax
+		push	esi
+		add		esi,sizeof DLGHEAD
+		.while [esi].DIALOG.hwnd
+			mov		eax,[esi].DIALOG.ntype
+			invoke GetTypePtr,eax
+			mov		eax,[eax].TYPES.ID
+			mov		[esi].DIALOG.ntypeid,eax
+			add		esi,sizeof DIALOG
+		.endw
+		pop		esi
 		invoke MakeDialog,esi,0
 		mov		hDlg,eax
 

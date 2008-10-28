@@ -150,9 +150,9 @@ Options=52
 3=0,0,0,0,620
 4=0,0,0,0,8
 1=0,0,718,485,47996
-7=0,0,718,485,77991
-6=0,0,0,0,2026
-9=0,0,718,485,97591
+7=0,0,718,485,82341
+6=0,0,0,0,514
+9=0,0,718,485,138820
 2=0,0,584,498,10262
 8=0,0,0,0,18589
 10=0,0,0,0,12423
@@ -178,8 +178,8 @@ Options=52
 35=0,0,0,0,140
 37=0,0,0,0,2096
 38=0,0,0,0
-39=0,0,0,0,10959
-40=0,0,0,0,25509
+39=0,0,0,0,7588
+40=0,0,0,0,2229
 41=0,0,0,0
 42=0,0,0,0
 43=0,0,0,0,2041
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="div ecx"
-2="MakeDialog"
-3="hSelected"
-4="hSelect"
-5="ParPt"
-6="CtlRect"
-7="lParam"
-8="hWin"
-9="DlgDrawRect"
-10="DEWM_MEM"
+1="typeid"
+2="CreateNewCtl"
+3="div ecx"
+4="MakeDialog"
+5="hSelected"
+6="hSelect"
+7="ParPt"
+8="CtlRect"
+9="lParam"
+10="hWin"
 
 [AutoLoad]
 1=1
@@ -255,7 +255,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -322,7 +322,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 
 [Collapse]
 32=,,
-1=,,,131072,,,,
+1=,,,,,,,
 2=
 8=,,,
 17=,,,,,,,,,,,,,
@@ -333,7 +333,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 21=
 7=,,,,,,,,
 6=,
-9=268443776,27268362,655368,34607104,4,2097664,4161,84885504,1376781572,68505632,1241663510,10118
+9=536871040,54536724,1083441168,69214208,8,2143290368,131,679084032,276834336,548045061,1343373488,80948
 37=
 34=,
 29=,

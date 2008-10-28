@@ -1055,9 +1055,14 @@ UpdateStyle:
 		invoke PropertyList,-1
 	.else
 		mov		eax,[ebx].RASTYLE.lpdialog
-		mov		eax,[eax].DIALOG.hwnd
+		invoke GetCtrlID,eax
+		push	eax
+		push	eax
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		pop		edx
+		invoke GetDlgItem,eax,edx
 		mov		hCtl,eax
-		invoke GetWindowLong,hCtl,GWL_USERDATA
+		invoke GetCtrlMem,hCtl
 		mov		edx,eax
 		.if StyleEx
 			mov		eax,exstyle
@@ -1066,7 +1071,9 @@ UpdateStyle:
 			mov		eax,style
 			mov		[edx].DIALOG.style,eax
 		.endif
-		invoke UpdateCtl,hCtl
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		pop		edx
+		invoke MakeDialog,eax,edx
 	.endif
 	retn
 
