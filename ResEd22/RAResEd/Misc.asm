@@ -1181,6 +1181,11 @@ FindTab proc uses esi,nTab:DWORD,hMem:HWND
 		cmp		eax,[esi].tab
 		jne		@b
 		mov		eax,[esi].hwnd
+		invoke GetCtrlID,esi
+		push	eax
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		pop		edx
+		invoke GetDlgItem,eax,edx
 		mov		hCtl,eax
 		mov		edx,esi
 	  @@:

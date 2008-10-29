@@ -615,25 +615,25 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DeleteCtl
 				.elseif wParam==VK_PGDN
 					.if hReSize
-						invoke GetWindowLong,hReSize,GWL_USERDATA
+						invoke GetCtrlMem,hReSize
 						.if eax
 							mov		edx,[eax].DIALOG.tab
-							mov		eax,[eax].DIALOG.hwnd
 							inc		edx
-							invoke SetNewTab,eax,edx
-							invoke UpdateCtl,hReSize
+							invoke SetNewTab,hReSize,edx
+							invoke PropertyList,hReSize
+							;invoke UpdateCtl,hReSize
 						.endif
 					.endif
 				.elseif wParam==VK_PGUP
 					.if hReSize
-						invoke GetWindowLong,hReSize,GWL_USERDATA
+						invoke GetCtrlMem,hReSize
 						.if eax
 							mov		edx,[eax].DIALOG.tab
-							mov		eax,[eax].DIALOG.hwnd
 							.if edx
 								dec		edx
-								invoke SetNewTab,eax,edx
-								invoke UpdateCtl,hReSize
+								invoke SetNewTab,hReSize,edx
+								invoke PropertyList,hReSize
+								;invoke UpdateCtl,hReSize
 							.endif
 						.endif
 					.endif
@@ -656,7 +656,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !eax && !edx
 				; Select control
 				.if wParam==VK_TAB || wParam==VK_RIGHT || wParam==VK_DOWN
-					invoke GetWindowLong,hReSize,GWL_USERDATA
+					invoke GetCtrlMem,hReSize
 					.if eax
 						push	esi
 						mov		esi,eax
@@ -680,7 +680,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.elseif wParam==VK_LEFT || wParam==VK_UP
 				  SelPrev:
-					invoke GetWindowLong,hReSize,GWL_USERDATA
+					invoke GetCtrlMem,hReSize
 					.if eax
 						push	esi
 						mov		esi,eax
@@ -711,7 +711,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif !edx && eax
 				; Move control
-				invoke GetWindowLong,hReSize,GWL_USERDATA
+				invoke GetCtrlMem,hReSize
 				.if eax
 					push	esi
 					mov		esi,eax
@@ -720,78 +720,74 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
-							mov		eax,(DIALOG ptr [esi]).x
+							mov		eax,(DIALOG ptr [esi]).dux
 							sub		eax,Gridcx
 							xor		edx,edx
 							idiv	Gridcx
 							imul	Gridcx
-							mov		(DIALOG ptr [esi]).x,eax
+							mov		(DIALOG ptr [esi]).dux,eax
 						.else
-							dec		(DIALOG ptr [esi]).x
+							dec		(DIALOG ptr [esi]).dux
 						.endif
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.elseif eax==VK_RIGHT
 ;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
-							mov		eax,(DIALOG ptr [esi]).x
+							mov		eax,(DIALOG ptr [esi]).dux
 							add		eax,Gridcx
 							xor		edx,edx
 							idiv	Gridcx
 							imul	Gridcx
-							mov		(DIALOG ptr [esi]).x,eax
+							mov		(DIALOG ptr [esi]).dux,eax
 						.else
-							inc		(DIALOG ptr [esi]).x
+							inc		(DIALOG ptr [esi]).dux
 						.endif
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.elseif eax==VK_UP
 ;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
-							mov		eax,(DIALOG ptr [esi]).y
+							mov		eax,(DIALOG ptr [esi]).duy
 							sub		eax,Gridcy
 							xor		edx,edx
 							idiv	Gridcy
 							imul	Gridcy
-							mov		(DIALOG ptr [esi]).y,eax
+							mov		(DIALOG ptr [esi]).duy,eax
 						.else
-							dec		(DIALOG ptr [esi]).y
+							dec		(DIALOG ptr [esi]).duy
 						.endif
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.elseif eax==VK_DOWN
 ;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
-							mov		eax,(DIALOG ptr [esi]).y
+							mov		eax,(DIALOG ptr [esi]).duy
 							add		eax,Gridcy
 							xor		edx,edx
 							idiv	Gridcy
 							imul	Gridcy
-							mov		(DIALOG ptr [esi]).y,eax
+							mov		(DIALOG ptr [esi]).duy,eax
 						.else
-							inc		(DIALOG ptr [esi]).y
+							inc		(DIALOG ptr [esi]).duy
 						.endif
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.endif
 					pop		esi
 				.endif
@@ -801,49 +797,45 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax==VK_TAB
 					jmp		SelPrev
 				.endif
-				invoke GetWindowLong,hReSize,GWL_USERDATA
+				invoke GetCtrlMem,hReSize
 				.if eax
 					push	esi
 					mov		esi,eax
 					mov		eax,wParam
 					.if eax==VK_LEFT
-						mov		eax,(DIALOG ptr [esi]).ccx
+						mov		eax,(DIALOG ptr [esi]).duccx
 						.if eax>1
-							dec		(DIALOG ptr [esi]).ccx
-							xor		eax,eax
-							mov		[esi].DIALOG.dux,eax
-							mov		[esi].DIALOG.duy,eax
-							mov		[esi].DIALOG.duccx,eax
-							mov		[esi].DIALOG.duccy,eax
-							invoke UpdateCtl,hReSize
+							dec		(DIALOG ptr [esi]).duccx
+							invoke GetCtrlID,esi
+							push	eax
+							invoke GetWindowLong,hDEd,DEWM_MEMORY
+							pop		edx
+							invoke MakeDialog,eax,edx
 						.endif
 					.elseif eax==VK_RIGHT
-						inc		(DIALOG ptr [esi]).ccx
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						inc		(DIALOG ptr [esi]).duccx
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.elseif eax==VK_UP
-						mov		eax,(DIALOG ptr [esi]).ccy
+						mov		eax,(DIALOG ptr [esi]).duccy
 						.if eax>1
-							dec		(DIALOG ptr [esi]).ccy
-							xor		eax,eax
-							mov		[esi].DIALOG.dux,eax
-							mov		[esi].DIALOG.duy,eax
-							mov		[esi].DIALOG.duccx,eax
-							mov		[esi].DIALOG.duccy,eax
-							invoke UpdateCtl,hReSize
+							dec		(DIALOG ptr [esi]).duccy
+							invoke GetCtrlID,esi
+							push	eax
+							invoke GetWindowLong,hDEd,DEWM_MEMORY
+							pop		edx
+							invoke MakeDialog,eax,edx
 						.endif
 					.elseif eax==VK_DOWN
-						inc		(DIALOG ptr [esi]).ccy
-						xor		eax,eax
-						mov		[esi].DIALOG.dux,eax
-						mov		[esi].DIALOG.duy,eax
-						mov		[esi].DIALOG.duccx,eax
-						mov		[esi].DIALOG.duccy,eax
-						invoke UpdateCtl,hReSize
+						inc		(DIALOG ptr [esi]).duccy
+						invoke GetCtrlID,esi
+						push	eax
+						invoke GetWindowLong,hDEd,DEWM_MEMORY
+						pop		edx
+						invoke MakeDialog,eax,edx
 					.endif
 					pop		esi
 				.endif

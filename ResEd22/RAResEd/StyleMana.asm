@@ -239,7 +239,6 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	style:DWORD
 	LOCAL	exstyle:DWORD
 	LOCAL	hCtl:HWND
-	LOCAL	hMem:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -600,7 +599,12 @@ StyleProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		style,eax
 		.endif
 		mov		[ebx].RASTYLE.styleval,eax
-		push	[edx].DIALOG.hwnd
+		invoke GetCtrlID,edx
+		push	eax
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		pop		edx
+		invoke GetDlgItem,eax,edx
+		push	eax
 		invoke ShowStyles,hWin
 		pop		eax
 		mov		hCtl,eax
@@ -1006,14 +1010,19 @@ FlipStyle:
 
 UpdateStyle:
 	.if hMultiSel
-		push	0
 		mov		eax,hMultiSel
 		.while eax
 			push	eax
 			invoke GetParent,eax
-			mov		edx,eax
+			invoke GetCtrlMem,eax
+			.if StyleEx
+				mov		edx,exstyle
+				mov		[eax].DIALOG.exstyle,edx
+			.else
+				mov		edx,style
+				mov		[eax].DIALOG.style,edx
+			.endif
 			pop		eax
-			push	edx
 			mov		ecx,8
 			.while ecx
 				push	ecx
@@ -1022,36 +1031,8 @@ UpdateStyle:
 				dec		ecx
 			.endw
 		.endw
-		.while hMultiSel
-			invoke DestroyMultiSel,hMultiSel
-			mov		hMultiSel,eax
-		.endw
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
-		mov		ebx,eax
-		mov		hMem,eax
-		pop		eax
-		.while eax
-			mov		hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			mov		edx,eax
-			.if StyleEx
-				mov		eax,exstyle
-				mov		[edx].DIALOG.exstyle,eax
-			.else
-				mov		eax,style
-				mov		[edx].DIALOG.style,eax
-			.endif
-			invoke UpdateCtl,hCtl
-			mov		[ebx],eax
-			add		ebx,4
-			pop		eax
-		.endw
-		mov		ebx,hMem
-		.while dword ptr [ebx]
-			mov		eax,[ebx]
-			invoke CtlMultiSelect,eax
-			add		ebx,4
-		.endw
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke MakeDialog,eax,-1
 		invoke PropertyList,-1
 	.else
 		mov		eax,[ebx].RASTYLE.lpdialog

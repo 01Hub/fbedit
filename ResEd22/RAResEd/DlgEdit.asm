@@ -1135,7 +1135,7 @@ GetFreeTab endp
 SetNewTab proc uses esi edi,hCtl:HWND,nTab:DWORD
 	LOCAL	nOld:DWORD
 
-	invoke GetWindowLong,hCtl,GWL_USERDATA
+	invoke GetCtrlMem,hCtl
 	.if eax
 		mov		esi,eax
 		invoke GetFreeTab
@@ -2145,7 +2145,7 @@ GetMnuName proc uses ebx esi,lpDlgMem:DWORD,nid:DWORD
 
 GetMnuName endp
 
-CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+;CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;	LOCAL	lpOldProc:DWORD
 ;	LOCAL	pt:POINT
 ;	LOCAL	rect:RECT
@@ -2704,10 +2704,10 @@ CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;	ret
 ;  Ex:
 ;	xor		eax,eax
-	ret
-
-CtlProc endp
-
+;	ret
+;
+;CtlProc endp
+;
 CtlDummyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;	LOCAL	pt:POINT
 ;	LOCAL	ptp:POINT
@@ -2919,7 +2919,7 @@ DesignDummyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 DesignDummyProc endp
 
-CreateCtl proc uses esi edi,lpDlgCtl:DWORD
+;CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 ;	LOCAL	hCtl:HWND
 ;	LOCAL	hCld:HWND
 ;	LOCAL	hTmp:DWORD
@@ -3424,10 +3424,10 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 ;	.endif
 ;	mov		eax,hCtl
 ;	assume edi:nothing
-	ret
-
-CreateCtl endp
-
+;	ret
+;
+;CreateCtl endp
+;
 CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWORD,ccy:DWORD
 	LOCAL	buffer[MaxName]:BYTE
 
@@ -3517,6 +3517,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	fShift:DWORD
 	LOCAL	fControl:DWORD
 	LOCAL	fChanged:DWORD
+	LOCAL	nInx:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
@@ -3802,6 +3803,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.endif
 				.endif
 			.endif
+			invoke NotifyParent
 		.endif
 	.elseif eax==WM_LBUTTONUP
 		mov		eax,lParam
@@ -4009,7 +4011,56 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			mov		des.fmode,0
-			invoke SendMessage,hWin,uMsg,wParam,lParam
+			.while hMultiSel
+				invoke DestroyMultiSel,hMultiSel
+				mov		hMultiSel,eax
+			.endw
+			invoke CopyRect,addr rect,addr des.ctlrect
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				inc		eax
+				xchg	rect.left,eax
+				mov		rect.right,eax
+			.endif
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				inc		eax
+				xchg	rect.top,eax
+				mov		rect.bottom,eax
+			.endif
+			invoke ClientToScreen,hWin,addr rect.left
+			invoke ClientToScreen,hWin,addr rect.right
+			invoke GetWindowLong,hDEd,DEWM_MEMORY
+			lea		ebx,[eax+sizeof DLGHEAD+sizeof DIALOG]
+			mov		nInx,0
+			.while [ebx].DIALOG.hwnd
+				.if [ebx].DIALOG.hwnd!=-1
+					invoke GetCtrlID,ebx
+					invoke GetDlgItem,des.hdlg,eax
+					mov		hCld,eax
+					invoke GetWindowRect,hCld,addr rect1
+					mov		eax,rect1.left
+					mov		ecx,rect1.right
+					.if (eax>=rect.left && eax<=rect.right) || (ecx>=rect.left && ecx<=rect.right) || (rect.left>=eax && rect.right<=ecx)
+						mov		eax,rect1.top
+						mov		ecx,rect1.bottom
+						.if (eax>=rect.top && eax<=rect.bottom) || (ecx>=rect.top && ecx<=rect.bottom) || (rect.top>=eax && rect.bottom<=ecx)
+							mov		eax,[ebx].DIALOG.ntype
+							.if eax!=18 && eax!=19
+								invoke CtlMultiSelect,hCld
+								inc		nInx
+							.endif
+						.endif
+					.endif
+				.endif
+				lea		ebx,[ebx+sizeof DIALOG]
+			.endw
+			.if nInx==1 && hMultiSel
+				invoke GetParent,hMultiSel
+				invoke SizeingRect,eax,FALSE
+			.elseif hMultiSel
+				invoke PropertyList,-1
+			.endif
 		.else
 			mov		hCld,0
 			mov		eax,lParam
@@ -4031,6 +4082,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke SizeingRect,hCld,FALSE
 			.endif
 		.endif
+		invoke NotifyParent
+		invoke SetFocus,hDEd
 	.elseif eax==WM_SETCURSOR
 		invoke GetCursorPos,addr pt
 		invoke ScreenToClient,hInvisible,addr pt
@@ -4127,7 +4180,7 @@ CopyCtl proc uses esi edi ebx
 	LOCAL	hCtl:HWND
 
 	.if hReSize
-		invoke GetWindowLong,hReSize,GWL_USERDATA
+		invoke GetCtrlMem,hReSize
 		.if eax
 			mov		esi,eax
 			mov		edi,offset dlgpaste
@@ -4150,7 +4203,7 @@ CopyCtl proc uses esi edi ebx
 				pop		eax
 				dec		eax
 			.endw
-			invoke GetWindowLong,hCtl,GWL_USERDATA
+			invoke GetCtrlMem,hCtl
 			.if eax
 				mov		esi,eax
 				mov		ecx,sizeof DIALOG
@@ -4181,11 +4234,11 @@ PasteCtl proc uses esi edi
   @@:
 	mov		eax,[esi].hwnd
 	.if eax
-		mov		eax,[esi].x
+		mov		eax,[esi].dux
 		.if (px<80000000 && eax<80000000 && eax<px) || (px>80000000 && eax>80000000 && eax<px) || (px<80000000 && eax>80000000)
 			mov		px,eax
 		.endif
-		mov		eax,[esi].y
+		mov		eax,[esi].duy
 		.if (py<80000000 && eax<80000000 && eax<py) || (py>80000000 && eax>80000000 && eax<py) || (py<80000000 && eax>80000000)
 			mov		py,eax
 		.endif
@@ -4202,7 +4255,7 @@ PasteCtl proc uses esi edi
 			mov		edx,eax
 			mov		edx,[edx].DLGHEAD.ctlid
 			add		eax,sizeof DLGHEAD
-			push	(DIALOG ptr [eax]).hwnd
+			push	des.hdlg
 			pop		hPar
 			push	hPar
 			pop		[esi].hpar
@@ -4221,56 +4274,48 @@ PasteCtl proc uses esi edi
 			rep	movsb
 			pop		esi
 			mov		eax,px
-			sub		[esi].x,eax
+			sub		[esi].dux,eax
 			mov		eax,py
-			sub		[esi].y,eax
+			sub		[esi].duy,eax
 			xor		eax,eax
 			mov		[esi].himg,eax
-			mov		[esi].dux,eax
-			mov		[esi].duy,eax
-			mov		[esi].duccx,eax
-			mov		[esi].duccy,eax
 			invoke GetTypePtr,[esi].ntype
 			invoke strcpyn,addr [esi].idname,(TYPES ptr [eax]).lpidname,MaxName
 			invoke GetUnikeName,addr [esi].idname
-			;invoke CreateCtl,esi
-			mov		hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			mov		esi,eax
 			mov		[esi].tab,-1
 			invoke GetFreeTab
 			mov		[esi].tab,eax
-			invoke SizeingRect,hCtl,FALSE
-			invoke SetChanged,TRUE,0
 			pop		esi
-			push	hCtl
-			pop		[esi].hwnd
 			add		esi,sizeof DIALOG
 			inc		nbr
 			jmp		@b
 		.endif
 	.endif
-	.if nbr>1
+	.if nbr
 		invoke DestroySizeingRect
-		mov		esi,offset dlgpaste
-		.while nbr
-			.if hMultiSel
-				invoke GetParent,hMultiSel
-				push	eax
-				invoke DestroyMultiSel,hMultiSel
-				mov		hMultiSel,eax
-				pop		eax
-				invoke MultiSelRect,eax,TRUE
-			.endif
-			mov		eax,[esi].hwnd
-			invoke MultiSelRect,eax,FALSE
-			add		esi,sizeof DIALOG
-			dec		nbr
+		.while hMultiSel
+			invoke DestroyMultiSel,hMultiSel
+			mov		hMultiSel,eax
 		.endw
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke MakeDialog,eax,-2
+		.if nbr>1
+			.while nbr
+				sub		edi,sizeof DIALOG
+				invoke GetCtrlID,edi
+				invoke GetDlgItem,des.hdlg,eax
+				invoke CtlMultiSelect,eax
+				dec		nbr
+			.endw
+		.else
+			sub		edi,sizeof DIALOG
+			invoke GetCtrlID,edi
+			invoke GetDlgItem,des.hdlg,eax
+			invoke SizeingRect,eax,FALSE
+		.endif
+;		invoke UpdateRAEdit,eax
+		invoke NotifyParent
 	.endif
-	invoke GetWindowLong,hDEd,DEWM_MEMORY
-	invoke UpdateRAEdit,eax
-	invoke NotifyParent
 	assume esi:nothing
 	ret
 
@@ -4280,7 +4325,7 @@ DeleteCtl proc uses esi
 	LOCAL	hCtl:HWND
 
 	.if hReSize
-		invoke GetWindowLong,hReSize,GWL_USERDATA
+		invoke GetCtrlMem,hReSize
 		.if eax
 			mov		esi,eax
 			assume esi:ptr DIALOG
@@ -4294,22 +4339,10 @@ DeleteCtl proc uses esi
 				mov		(DLGHEAD ptr [edx]).undo,esi
 				mov		[esi].hwnd,-1
 				invoke DeleteTab,[esi].tab
-				mov		eax,[esi].himg
-				.if eax
-					invoke DeleteObject,eax
-					mov		[esi].himg,0
-				.endif
-				.if [esi].hcld
-					invoke GetStockObject,SYSTEM_FONT
-					invoke SendMessage,[esi].hcld,WM_SETFONT,eax,0
-					invoke DestroyWindow,[esi].hcld
-				.endif
-				invoke GetStockObject,SYSTEM_FONT
-				invoke SendMessage,hReSize,WM_SETFONT,eax,0
-				invoke DestroyWindow,hReSize
 				invoke DestroySizeingRect
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+				invoke MakeDialog,eax,0
 				invoke SetChanged,TRUE,0
-				invoke SizeingRect,des.hdlg,FALSE
 			.endif
 			assume esi:nothing
 		.endif
@@ -4328,7 +4361,7 @@ DeleteCtl proc uses esi
 				pop		eax
 				dec		eax
 			.endw
-			invoke GetWindowLong,hCtl,GWL_USERDATA
+			invoke GetCtrlMem,hCtl
 			.if eax
 				mov		esi,eax
 				assume esi:ptr DIALOG
@@ -4341,29 +4374,17 @@ DeleteCtl proc uses esi
 					mov		[esi].hwnd,-1
 					pop		[esi].undo
 					invoke DeleteTab,[esi].tab
-					mov		eax,[esi].himg
-					.if eax
-						invoke DeleteObject,eax
-						mov		[esi].himg,0
-					.endif
-					.if [esi].hcld
-						invoke GetStockObject,SYSTEM_FONT
-						invoke SendMessage,[esi].hcld,WM_SETFONT,eax,0
-						invoke DestroyWindow,[esi].hcld
-					.endif
-					invoke GetStockObject,SYSTEM_FONT
-					invoke SendMessage,hCtl,WM_SETFONT,eax,0
-					invoke DestroyWindow,hCtl
 				.endif
 				assume esi:nothing
 			.endif
 		.endw
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke MakeDialog,eax,0
 		invoke SetChanged,TRUE,0
-		invoke SizeingRect,des.hdlg,FALSE
 	.endif
 	invoke SendMessage,hDEd,WM_LBUTTONDOWN,0,0
-	invoke GetWindowLong,hDEd,DEWM_MEMORY
-	invoke UpdateRAEdit,eax
+;	invoke GetWindowLong,hDEd,DEWM_MEMORY
+;	invoke UpdateRAEdit,eax
 	invoke NotifyParent
 	ret
 
@@ -5136,165 +5157,165 @@ BringToFront proc uses esi edi,hCtl:HWND
 
 BringToFront endp
 
-ResetSize proc uses edi,lpMem:DWORD
-
-	mov		edi,lpMem
-	add		edi,sizeof DLGHEAD
-	xor		eax,eax
-	.while [edi].DIALOG.hwnd
-		mov		[edi].DIALOG.dux,eax
-		mov		[edi].DIALOG.duy,eax
-		mov		[edi].DIALOG.duccx,eax
-		mov		[edi].DIALOG.duccy,eax
-		add		edi,sizeof DIALOG
-	.endw
-	ret
-
-ResetSize endp
-
-DrawingRect proc hWin:HWND,lParam:LPARAM,nFun:DWORD
-	LOCAL	pt:POINT
-
-	mov		eax,lParam
-	and		eax,0FFFFh
-	cwde
-	mov		pt.x,eax
-	mov		eax,lParam
-	shr		eax,16
-	cwde
-	mov		pt.y,eax
-;//Edit
-	call RSnapToGrid
-	.if fRSnapToGrid
-		mov		eax,pt.x
-		xor		edx,edx
-		idiv	Gridcx
-		imul	Gridcx
-		mov		pt.x,eax
-		mov		eax,pt.y
-		xor		edx,edx
-		idiv	Gridcy
-		imul	Gridcy
-		mov		pt.y,eax
-	.endif
-	.if nFun==0
-		mov		fDrawing,TRUE
-		invoke SetCapture,hWin
-		invoke ClientToScreen,hWin,addr pt
-		mov		eax,pt.x
-		mov		MousePtDown.x,eax
-		mov		des.ctlrect.left,eax
-		mov		des.ctlrect.right,eax
-		mov		eax,pt.y
-		mov		MousePtDown.y,eax
-		mov		des.ctlrect.top,eax
-		mov		des.ctlrect.bottom,eax
-		mov		fNoParent,TRUE
-		invoke DlgDrawRect,addr des.ctlrect,0,0
-		mov		fNoParent,FALSE
-		invoke CopyRect,addr SizeRect,addr des.ctlrect
-	.elseif nFun==1
-		.if fDrawing
-;//Edit
-			call RSnapToGrid
-			.if fRSnapToGrid
-				inc		pt.x
-				inc		pt.y
-			.endif
-			invoke ClientToScreen,hWin,addr pt
-			mov		eax,pt.x
-			sub		eax,MousePtDown.x
-			mov		pt.x,eax
-			mov		eax,pt.y
-			sub		eax,MousePtDown.y
-			mov		pt.y,eax
-			invoke CopyRect,addr SizeRect,addr des.ctlrect
-			mov		eax,pt.x
-			add		SizeRect.right,eax
-			mov		eax,pt.y
-			add		SizeRect.bottom,eax
-			invoke DlgDrawRect,addr SizeRect,1,0
-			invoke DialogTltSize,pt.x,pt.y
-		.endif
-	.elseif nFun==2
-		mov		fDrawing,FALSE
-		invoke DlgDrawRect,addr SizeRect,2,0
-		mov		des.parpt.x,0
-		mov		des.parpt.y,0
-		invoke ClientToScreen,des.hdlg,addr des.parpt
-		mov		eax,des.parpt.x
-		sub		SizeRect.left,eax
-		sub		SizeRect.right,eax
-		mov		eax,des.parpt.y
-		sub		SizeRect.top,eax
-		sub		SizeRect.bottom,eax
-		mov		eax,SizeRect.left
-		.if sdword ptr eax>SizeRect.right
-			xchg	eax,SizeRect.right
-			mov		SizeRect.left,eax
-		.endif
-		sub		SizeRect.right,eax
-		mov		eax,SizeRect.top
-		.if sdword ptr eax>SizeRect.bottom
-			xchg	eax,SizeRect.bottom
-			mov		SizeRect.top,eax
-		.endif
-		sub		SizeRect.bottom,eax
-		invoke ReleaseCapture
-		mov		eax,ToolBoxID
-		.if eax>=1 && eax<nButtons
-			push	eax
-			mov		ecx,sizeof TYPES
-			mul		ecx
-			mov		ecx,offset ctltypes
-			lea		ecx,[ecx+eax]
-			.if SizeRect.right<=1
-				mov		SizeRect.right,20
-;//Edit			
-				call RSnapToGrid
-				.if fRSnapToGrid
-					mov		eax,SizeRect.left
-					add		eax,[ecx].TYPES.xsize
-					xor		edx,edx
-					idiv	Gridcx
-					imul	Gridcx
-					sub		eax,SizeRect.left
-					inc		eax
-					mov		SizeRect.right,eax
-				.endif
-			.endif
-			.if SizeRect.bottom<=1
-				mov		SizeRect.bottom,20
-;//Edit				
-				call RSnapToGrid
-				.if fRSnapToGrid
-					mov		eax,SizeRect.top
-					add		eax,[ecx].TYPES.ysize
-					xor		edx,edx
-					idiv	Gridcy
-					imul	Gridcy
-					sub		eax,SizeRect.top
-					inc		eax
-					mov		SizeRect.bottom,eax
-				.endif
-			.endif
-			pop		eax
-			invoke CreateNewCtl,des.hdlg,eax,SizeRect.left,SizeRect.top,SizeRect.right,SizeRect.bottom
-			.if eax
-				invoke SizeingRect,eax,FALSE
-			.endif
-			.if !fNoResetToolbox
-				invoke ToolBoxReset
-			.endif
-			invoke NotifyParent
-		.endif
-		invoke ShowWindow,hTlt,SW_HIDE
-	.endif
-  Ex:
-	ret
-
-DrawingRect endp
-
+;ResetSize proc uses edi,lpMem:DWORD
+;
+;	mov		edi,lpMem
+;	add		edi,sizeof DLGHEAD
+;	xor		eax,eax
+;	.while [edi].DIALOG.hwnd
+;		mov		[edi].DIALOG.dux,eax
+;		mov		[edi].DIALOG.duy,eax
+;		mov		[edi].DIALOG.duccx,eax
+;		mov		[edi].DIALOG.duccy,eax
+;		add		edi,sizeof DIALOG
+;	.endw
+;	ret
+;
+;ResetSize endp
+;
+;DrawingRect proc hWin:HWND,lParam:LPARAM,nFun:DWORD
+;	LOCAL	pt:POINT
+;
+;	mov		eax,lParam
+;	and		eax,0FFFFh
+;	cwde
+;	mov		pt.x,eax
+;	mov		eax,lParam
+;	shr		eax,16
+;	cwde
+;	mov		pt.y,eax
+;;//Edit
+;	call RSnapToGrid
+;	.if fRSnapToGrid
+;		mov		eax,pt.x
+;		xor		edx,edx
+;		idiv	Gridcx
+;		imul	Gridcx
+;		mov		pt.x,eax
+;		mov		eax,pt.y
+;		xor		edx,edx
+;		idiv	Gridcy
+;		imul	Gridcy
+;		mov		pt.y,eax
+;	.endif
+;	.if nFun==0
+;		mov		fDrawing,TRUE
+;		invoke SetCapture,hWin
+;		invoke ClientToScreen,hWin,addr pt
+;		mov		eax,pt.x
+;		mov		MousePtDown.x,eax
+;		mov		des.ctlrect.left,eax
+;		mov		des.ctlrect.right,eax
+;		mov		eax,pt.y
+;		mov		MousePtDown.y,eax
+;		mov		des.ctlrect.top,eax
+;		mov		des.ctlrect.bottom,eax
+;		mov		fNoParent,TRUE
+;		invoke DlgDrawRect,addr des.ctlrect,0,0
+;		mov		fNoParent,FALSE
+;		invoke CopyRect,addr SizeRect,addr des.ctlrect
+;	.elseif nFun==1
+;		.if fDrawing
+;;//Edit
+;			call RSnapToGrid
+;			.if fRSnapToGrid
+;				inc		pt.x
+;				inc		pt.y
+;			.endif
+;			invoke ClientToScreen,hWin,addr pt
+;			mov		eax,pt.x
+;			sub		eax,MousePtDown.x
+;			mov		pt.x,eax
+;			mov		eax,pt.y
+;			sub		eax,MousePtDown.y
+;			mov		pt.y,eax
+;			invoke CopyRect,addr SizeRect,addr des.ctlrect
+;			mov		eax,pt.x
+;			add		SizeRect.right,eax
+;			mov		eax,pt.y
+;			add		SizeRect.bottom,eax
+;			invoke DlgDrawRect,addr SizeRect,1,0
+;			invoke DialogTltSize,pt.x,pt.y
+;		.endif
+;	.elseif nFun==2
+;		mov		fDrawing,FALSE
+;		invoke DlgDrawRect,addr SizeRect,2,0
+;		mov		des.parpt.x,0
+;		mov		des.parpt.y,0
+;		invoke ClientToScreen,des.hdlg,addr des.parpt
+;		mov		eax,des.parpt.x
+;		sub		SizeRect.left,eax
+;		sub		SizeRect.right,eax
+;		mov		eax,des.parpt.y
+;		sub		SizeRect.top,eax
+;		sub		SizeRect.bottom,eax
+;		mov		eax,SizeRect.left
+;		.if sdword ptr eax>SizeRect.right
+;			xchg	eax,SizeRect.right
+;			mov		SizeRect.left,eax
+;		.endif
+;		sub		SizeRect.right,eax
+;		mov		eax,SizeRect.top
+;		.if sdword ptr eax>SizeRect.bottom
+;			xchg	eax,SizeRect.bottom
+;			mov		SizeRect.top,eax
+;		.endif
+;		sub		SizeRect.bottom,eax
+;		invoke ReleaseCapture
+;		mov		eax,ToolBoxID
+;		.if eax>=1 && eax<nButtons
+;			push	eax
+;			mov		ecx,sizeof TYPES
+;			mul		ecx
+;			mov		ecx,offset ctltypes
+;			lea		ecx,[ecx+eax]
+;			.if SizeRect.right<=1
+;				mov		SizeRect.right,20
+;;//Edit			
+;				call RSnapToGrid
+;				.if fRSnapToGrid
+;					mov		eax,SizeRect.left
+;					add		eax,[ecx].TYPES.xsize
+;					xor		edx,edx
+;					idiv	Gridcx
+;					imul	Gridcx
+;					sub		eax,SizeRect.left
+;					inc		eax
+;					mov		SizeRect.right,eax
+;				.endif
+;			.endif
+;			.if SizeRect.bottom<=1
+;				mov		SizeRect.bottom,20
+;;//Edit				
+;				call RSnapToGrid
+;				.if fRSnapToGrid
+;					mov		eax,SizeRect.top
+;					add		eax,[ecx].TYPES.ysize
+;					xor		edx,edx
+;					idiv	Gridcy
+;					imul	Gridcy
+;					sub		eax,SizeRect.top
+;					inc		eax
+;					mov		SizeRect.bottom,eax
+;				.endif
+;			.endif
+;			pop		eax
+;			invoke CreateNewCtl,des.hdlg,eax,SizeRect.left,SizeRect.top,SizeRect.right,SizeRect.bottom
+;			.if eax
+;				invoke SizeingRect,eax,FALSE
+;			.endif
+;			.if !fNoResetToolbox
+;				invoke ToolBoxReset
+;			.endif
+;			invoke NotifyParent
+;		.endif
+;		invoke ShowWindow,hTlt,SW_HIDE
+;	.endif
+;  Ex:
+;	ret
+;
+;DrawingRect endp
+;
 GetMnuString proc uses ebx esi edi,lpName:DWORD,lpBuff:DWORD
 
 	invoke GetWindowLong,hPrj,0
@@ -5857,10 +5878,6 @@ CloseDialog proc uses esi
 			invoke DestroySizeingRect
 		.endif
 		invoke DestroyWindow,des.hdlg
-;		.if [esi].DLGHEAD.hfont
-;			invoke DeleteObject,[esi].DLGHEAD.hfont
-;			mov		[esi].DLGHEAD.hfont,0
-;		.endif
 		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 		invoke SetWindowLong,hDEd,DEWM_PROJECT,0

@@ -1311,10 +1311,6 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 							dec		ecx
 						.endw
 					.endw
-					.while hMultiSel
-						invoke DestroyMultiSel,hMultiSel
-						mov		hMultiSel,eax
-					.endw
 					invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 					mov		ebx,eax
 					mov		hMem,eax
@@ -1322,18 +1318,11 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					.while eax
 						mov		hCtl,eax
 						call SetCtrlData
-						invoke UpdateCtl,hCtl
-						mov		[ebx],eax
-						add		ebx,4
 						pop		eax
 					.endw
-					mov		ebx,hMem
-					.while dword ptr [ebx]
-						mov		eax,[ebx]
-						invoke CtlMultiSelect,eax
-						add		ebx,4
-					.endw
 					invoke GlobalFree,hMem
+					invoke GetWindowLong,hDEd,DEWM_MEMORY
+					invoke MakeDialog,eax,-1
 					invoke PropertyList,-1
 				.else
 					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7
@@ -2926,7 +2915,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if hCtl==-4 || hCtl==-5 || hCtl==-7
 							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,lpResLang
 						.else
-							invoke GetWindowLong,hCtl,GWL_USERDATA
+							invoke GetCtrlMem,hCtl
 							mov		esi,eax
 							sub		esi,sizeof DLGHEAD
 							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,addr [esi].DLGHEAD.lang
@@ -3137,11 +3126,12 @@ PrpEdtDlgCldMultiProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowText,hWin,addr buffer,sizeof buffer
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_USERDATA
-			.if [eax].DIALOG.ntype==3
-				mov		edx,[eax].DIALOG.hcld
-				mov		hCtl,edx
-			.endif
+			invoke GetCtrlMem,hCtl
+;			invoke GetWindowLong,hCtl,GWL_USERDATA
+;			.if [eax].DIALOG.ntype==3
+;				mov		edx,[eax].DIALOG.hcld
+;				mov		hCtl,edx
+;			.endif
 			invoke SetWindowText,hCtl,addr buffer
 			invoke DeConvertCaption,addr buffer1,addr buffer
 			invoke SetWindowText,hPrpEdtDlgCld,addr buffer1
