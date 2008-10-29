@@ -521,7 +521,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hTlt,GWL_WNDPROC,addr ToolTipProc
 		mov		OldToolTipProc,eax
 		;invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,32767,32767,hWin,0,hInstance,0
-		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_VISIBLE,0,0,32767,32767,hWin,0,hInstance,0
+		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,32767,32767,hWin,0,hInstance,0
 		mov		hInvisible,eax
 	.elseif eax==WM_MOUSEMOVE
 		.if hStatus
@@ -1952,7 +1952,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				xor		eax,eax
 				.if hReSize
-					invoke GetWindowLong,hReSize,GWL_USERDATA
+					invoke GetCtrlMem,hReSize
 					.if eax
 						mov		eax,[eax].DIALOG.ntype
 						.if eax
