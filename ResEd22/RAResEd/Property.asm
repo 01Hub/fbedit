@@ -1433,7 +1433,7 @@ SetCtrlData:
 		neg		eax
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
-		mov		[edx].DLGHEAD.fontht,eax
+;		mov		[edx].DLGHEAD.fontht,eax
 		sub		esi,sizeof DLGHEAD
 ;		invoke UpdateFont,hCtl
 		add		esi,sizeof DLGHEAD
@@ -2788,8 +2788,8 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		esi,eax
 						sub		esi,sizeof DLGHEAD
 						invoke strcpy,addr lf.lfFaceName,addr [esi].DLGHEAD.font
-						push	[esi].DLGHEAD.fontht
-						pop		lf.lfHeight
+;						push	[esi].DLGHEAD.fontht
+;						pop		lf.lfHeight
 						mov		al,[esi].DLGHEAD.charset
 						mov		lf.lfCharSet,al
 						mov		al,[esi].DLGHEAD.italic
@@ -2828,8 +2828,8 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								div		ecx
 								invoke DlgResize,esi,addr [esi].DLGHEAD.font,[esi].DLGHEAD.fontsize,addr lf.lfFaceName,eax
 							.endif
-							mov		eax,lf.lfHeight
-							mov		[esi].DLGHEAD.fontht,eax
+;							mov		eax,lf.lfHeight
+;							mov		[esi].DLGHEAD.fontht,eax
 							mov		al,lf.lfItalic
 							mov		[esi].DLGHEAD.italic,al
 							mov		al,lf.lfCharSet
@@ -3017,7 +3017,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		esi,eax
 					mov		[esi].DLGHEAD.font,0
 					mov		[esi].DLGHEAD.fontsize,0
-					mov		[esi].DLGHEAD.fontht,0
+;					mov		[esi].DLGHEAD.fontht,0
 ;					call	UpdateFont
 				.endif
 			.endif

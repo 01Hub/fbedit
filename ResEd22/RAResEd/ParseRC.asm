@@ -490,132 +490,132 @@ ConvertSize proc uses esi,lpMem:DWORD
 	LOCAL	buy:DWORD
 	LOCAL	rect:RECT
 
-	mov		esi,lpMem
-	mov		dlgps,10
-	mov		dlgfn,0
-	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	invoke DestroyWindow,eax
-	push	fntwt
-	pop		dfntwt
-	push	fntht
-	pop		dfntht
-	mov		eax,[esi].DLGHEAD.fontsize
-	mov		dlgps,ax
-	pushad
-	lea		esi,[esi].DLGHEAD.font
-	mov		edi,offset dlgfn
-	xor		eax,eax
-	mov		ecx,32
-  @@:
-	lodsb
-	stosw
-	loop	@b
-	popad
-	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	invoke DestroyWindow,eax
-	invoke GetDialogBaseUnits
-	mov		edx,eax
-	and		eax,0FFFFh
-	mov		bux,eax
-	shr		edx,16
-	mov		buy,edx
-	add		esi,sizeof DLGHEAD
-	.while [esi].DIALOG.hwnd
-		mov		rect.left,0
-		mov		rect.top,0
-		mov		rect.right,0
-		mov		rect.bottom,0
-		.if ![esi].DIALOG.ntype
-			invoke AdjustWindowRectEx,addr rect,[esi].DIALOG.style,FALSE,[esi].DIALOG.exstyle
-		.endif
-		mov		eax,[esi].DIALOG.x
-		call	ConvX
-		.if fSnapToGrid
-			call	SnapX
-		.endif
-		mov		[esi].DIALOG.x,eax
-		mov		eax,[esi].DIALOG.y
-		call	ConvY
-		.if fSnapToGrid
-			call	SnapY
-		.endif
-		mov		[esi].DIALOG.y,eax
-		mov		eax,[esi].DIALOG.ccx
-		call	ConvX
-		.if fSnapToGrid
-			call	SnapX
-			inc		eax
-		.endif
-		add		eax,rect.right
-		sub		eax,rect.left
-		mov		[esi].DIALOG.ccx,eax
-		mov		eax,[esi].DIALOG.ccy
-		call	ConvY
-		.if fSnapToGrid
-			call	SnapY
-			inc		eax
-		.endif
-		add		eax,rect.bottom
-		sub		eax,rect.top
-		mov		[esi].DIALOG.ccy,eax
-		add		esi,sizeof DIALOG
-	.endw
+;	mov		esi,lpMem
+;	mov		dlgps,10
+;	mov		dlgfn,0
+;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+;	invoke DestroyWindow,eax
+;	push	fntwt
+;	pop		dfntwt
+;	push	fntht
+;	pop		dfntht
+;	mov		eax,[esi].DLGHEAD.fontsize
+;	mov		dlgps,ax
+;	pushad
+;	lea		esi,[esi].DLGHEAD.font
+;	mov		edi,offset dlgfn
+;	xor		eax,eax
+;	mov		ecx,32
+;  @@:
+;	lodsb
+;	stosw
+;	loop	@b
+;	popad
+;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
+;	invoke DestroyWindow,eax
+;	invoke GetDialogBaseUnits
+;	mov		edx,eax
+;	and		eax,0FFFFh
+;	mov		bux,eax
+;	shr		edx,16
+;	mov		buy,edx
+;	add		esi,sizeof DLGHEAD
+;	.while [esi].DIALOG.hwnd
+;		mov		rect.left,0
+;		mov		rect.top,0
+;		mov		rect.right,0
+;		mov		rect.bottom,0
+;		.if ![esi].DIALOG.ntype
+;			invoke AdjustWindowRectEx,addr rect,[esi].DIALOG.style,FALSE,[esi].DIALOG.exstyle
+;		.endif
+;		mov		eax,[esi].DIALOG.x
+;		call	ConvX
+;		.if fSnapToGrid
+;			call	SnapX
+;		.endif
+;		mov		[esi].DIALOG.x,eax
+;		mov		eax,[esi].DIALOG.y
+;		call	ConvY
+;		.if fSnapToGrid
+;			call	SnapY
+;		.endif
+;		mov		[esi].DIALOG.y,eax
+;		mov		eax,[esi].DIALOG.ccx
+;		call	ConvX
+;		.if fSnapToGrid
+;			call	SnapX
+;			inc		eax
+;		.endif
+;		add		eax,rect.right
+;		sub		eax,rect.left
+;		mov		[esi].DIALOG.ccx,eax
+;		mov		eax,[esi].DIALOG.ccy
+;		call	ConvY
+;		.if fSnapToGrid
+;			call	SnapY
+;			inc		eax
+;		.endif
+;		add		eax,rect.bottom
+;		sub		eax,rect.top
+;		mov		[esi].DIALOG.ccy,eax
+;		add		esi,sizeof DIALOG
+;	.endw
 	ret
 
-ConvX:
-	cdq
-	mov		ecx,fntwt
-	imul	ecx
-	mov		ecx,bux
-	imul	ecx
-	mov		ecx,dfntwt
-	idiv	ecx
-	cdq
-	mov		ecx,4
-	idiv	ecx
-	retn
-
-SnapX:
-	mov		ecx,Gridcx
-	.if sdword ptr eax>0
-		add		eax,ecx
-		dec		eax
-	.else
-		sub		eax,ecx
-		inc		eax
-	.endif
-	cdq
-	idiv	ecx
-	cdq
-	imul	ecx
-	retn
-
-ConvY:
-	cdq
-	mov		ecx,fntht
-	imul	ecx
-	mov		ecx,buy
-	imul	ecx
-	mov		ecx,dfntht
-	idiv	ecx
-	cdq
-	mov		ecx,8
-	idiv	ecx
-	retn
-
-SnapY:
-	mov		ecx,Gridcy
-	.if sdword ptr eax>0
-		add		eax,ecx
-		dec		eax
-	.else
-		sub		eax,ecx
-		inc		eax
-	.endif
-	cdq
-	idiv	ecx
-	imul	ecx
-	retn
+;ConvX:
+;	cdq
+;	mov		ecx,fntwt
+;	imul	ecx
+;	mov		ecx,bux
+;	imul	ecx
+;	mov		ecx,dfntwt
+;	idiv	ecx
+;	cdq
+;	mov		ecx,4
+;	idiv	ecx
+;	retn
+;
+;SnapX:
+;	mov		ecx,Gridcx
+;	.if sdword ptr eax>0
+;		add		eax,ecx
+;		dec		eax
+;	.else
+;		sub		eax,ecx
+;		inc		eax
+;	.endif
+;	cdq
+;	idiv	ecx
+;	cdq
+;	imul	ecx
+;	retn
+;
+;ConvY:
+;	cdq
+;	mov		ecx,fntht
+;	imul	ecx
+;	mov		ecx,buy
+;	imul	ecx
+;	mov		ecx,dfntht
+;	idiv	ecx
+;	cdq
+;	mov		ecx,8
+;	idiv	ecx
+;	retn
+;
+;SnapY:
+;	mov		ecx,Gridcy
+;	.if sdword ptr eax>0
+;		add		eax,ecx
+;		dec		eax
+;	.else
+;		sub		eax,ecx
+;		inc		eax
+;	.endif
+;	cdq
+;	idiv	ecx
+;	imul	ecx
+;	retn
 
 ConvertSize endp
 
@@ -1313,16 +1313,16 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	;Pos & Size
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.dux,eax
-	mov		[edi].DIALOG.x,eax
+;	mov		[edi].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duy,eax
-	mov		[edi].DIALOG.y,eax
+;	mov		[edi].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccx,eax
-	mov		[edi].DIALOG.ccx,eax
+;	mov		[edi].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccy,eax
-	mov		[edi].DIALOG.ccy,eax
+;	mov		[edi].DIALOG.ccy,eax
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;ExStyle
@@ -1572,16 +1572,16 @@ ParseControlType proc uses esi edi,nType:DWORD,nStyle:DWORD,nExStyle:DWORD,lpRCM
 	;Pos & Size
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.dux,eax
-	mov		[edi].DIALOG.x,eax
+;	mov		[edi].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duy,eax
-	mov		[edi].DIALOG.y,eax
+;	mov		[edi].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccx,eax
-	mov		[edi].DIALOG.ccx,eax
+;	mov		[edi].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccy,eax
-	mov		[edi].DIALOG.ccy,eax
+;	mov		[edi].DIALOG.ccy,eax
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;Style
@@ -1739,23 +1739,23 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		esi,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.dux,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duy,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccx,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccy,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
 	xor		eax,eax
 	.if dl==','
 		;HelpID
 		invoke GetNum,lpProMem
 	.endif
 	mov		[edi+sizeof DLGHEAD].DIALOG.helpid,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
+;	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
@@ -1855,8 +1855,8 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		pop		esi
 		invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 		invoke DestroyWindow,eax
-		mov		eax,lfntht
-		mov		[edi].DLGHEAD.fontht,eax
+;		mov		eax,lfntht
+;		mov		[edi].DLGHEAD.fontht,eax
 		jmp		@b
 	.endif
 	invoke strcmpi,offset wordbuff,offset szMENU
@@ -1926,17 +1926,17 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		esi,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.dux,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duy,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccx,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccy,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
-	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
+;	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
+;	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
@@ -2025,7 +2025,7 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		mov		ecx,72
 		div		ecx
 		neg		eax
-		mov		[edi].DLGHEAD.fontht,eax
+;		mov		[edi].DLGHEAD.fontht,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff

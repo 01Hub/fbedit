@@ -142,16 +142,16 @@ Options=52
 0=
 
 [Find]
-1="SizeingRect"
-2="GetCtrlMem"
-3="DEWM_MEM"
-4="PrintHex"
-5="hInvisible"
-6="PRO_SETHIGHLIGHT"
-7="szRAEditClass"
-8="PRO_INCVERSION"
-9="itemcaption"
-10="REM_SETHILITEWORDS"
+1="UpdateCtl"
+2="SizeingRect"
+3="GetCtrlMem"
+4="DEWM_MEM"
+5="PrintHex"
+6="hInvisible"
+7="PRO_SETHIGHLIGHT"
+8="szRAEditClass"
+9="PRO_INCVERSION"
+10="itemcaption"
 
 [VersionControl]
 Settings=1278
@@ -178,7 +178,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

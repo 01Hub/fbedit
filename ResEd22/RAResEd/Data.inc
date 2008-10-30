@@ -22,7 +22,7 @@ ToolBoxReset			PROTO
 PropListSetPos			PROTO
 
 DrawingRect				PROTO	:DWORD,:DWORD,:DWORD
-UpdateCtl				PROTO	:DWORD
+;UpdateCtl				PROTO	:DWORD
 SetProjectItemName		PROTO	:DWORD,:DWORD
 GetProjectItemName		PROTO	:DWORD,:DWORD
 Do_TreeViewAddNode		PROTO	:HWND,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:LPARAM
@@ -147,7 +147,7 @@ STYLE				equ WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 EXSTYLE				equ 0
 
 szToolTipsClass		db 'Tooltips_class32',0
-szDlgChildClass		db 'RARESEDDIALOG',0
+;szDlgChildClass		db 'RARESEDDIALOG',0
 szStaticClass		db 'Static',0
 szEditClass			db 'Edit',0
 szButtonClass		db 'Button',0

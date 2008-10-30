@@ -201,22 +201,22 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 
-	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
-	mov		wc.lpfnWndProc,offset EditDlgProc
-	mov		wc.cbClsExtra,0
-	mov		wc.cbWndExtra,0
-	push	hInstance
-	pop		wc.hInstance
-	mov		wc.hbrBackground,NULL
-	mov		wc.lpszMenuName,NULL
-	mov		wc.lpszClassName,offset szDlgChildClass
-	mov		wc.hIcon,NULL
-	mov		wc.hIconSm,NULL
-	invoke LoadCursor,NULL,IDC_ARROW
-	mov		wc.hCursor,eax
-	invoke RegisterClassEx,addr wc
-
+;	mov		wc.cbSize,sizeof WNDCLASSEX
+;	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
+;	mov		wc.lpfnWndProc,offset EditDlgProc
+;	mov		wc.cbClsExtra,0
+;	mov		wc.cbWndExtra,0
+;	push	hInstance
+;	pop		wc.hInstance
+;	mov		wc.hbrBackground,NULL
+;	mov		wc.lpszMenuName,NULL
+;	mov		wc.lpszClassName,offset szDlgChildClass
+;	mov		wc.hIcon,NULL
+;	mov		wc.hIconSm,NULL
+;	invoke LoadCursor,NULL,IDC_ARROW
+;	mov		wc.hCursor,eax
+;	invoke RegisterClassEx,addr wc
+;
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
 	.if fGlobal
@@ -2080,8 +2080,8 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke strcpy,addr [edi].RADLGHEAD.font,addr [esi].DLGHEAD.font
 			mov		eax,[esi].DLGHEAD.fontsize
 			mov		[edi].RADLGHEAD.fontsize,eax
-			mov		eax,[esi].DLGHEAD.fontht
-			mov		[edi].RADLGHEAD.fontht,eax
+;			mov		eax,[esi].DLGHEAD.fontht
+;			mov		[edi].RADLGHEAD.fontht,eax
 			mov		[edi].RADLGHEAD.undo,FALSE
 			mov		eax,[esi].DLGHEAD.ctlid
 			mov		[edi].RADLGHEAD.ctlid,eax
@@ -2106,14 +2106,14 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[edi].RADIALOG.style,eax
 					mov		eax,[esi].DIALOG.exstyle
 					mov		[edi].RADIALOG.exstyle,eax
-					mov		eax,[esi].DIALOG.x
-					mov		[edi].RADIALOG.x,eax
-					mov		eax,[esi].DIALOG.y
-					mov		[edi].RADIALOG.y,eax
-					mov		eax,[esi].DIALOG.ccx
-					mov		[edi].RADIALOG.ccx,eax
-					mov		eax,[esi].DIALOG.ccy
-					mov		[edi].RADIALOG.ccy,eax
+;					mov		eax,[esi].DIALOG.x
+;					mov		[edi].RADIALOG.x,eax
+;					mov		eax,[esi].DIALOG.y
+;					mov		[edi].RADIALOG.y,eax
+;					mov		eax,[esi].DIALOG.ccx
+;					mov		[edi].RADIALOG.ccx,eax
+;					mov		eax,[esi].DIALOG.ccy
+;					mov		[edi].RADIALOG.ccy,eax
 					.if [esi].DIALOG.ntype==23
 						invoke strcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.class,32
 					.else

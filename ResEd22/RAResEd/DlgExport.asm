@@ -9,111 +9,111 @@ szMissTab			db 0Dh,0Ah,'Missing TabIndex',0
 .code
 
 SaveCtlSize proc uses ebx edx esi
-	LOCAL	rect:RECT
-	LOCAL	bux:DWORD
-	LOCAL	buy:DWORD
-	LOCAL	fNoChange:DWORD
+;	LOCAL	rect:RECT
+;	LOCAL	bux:DWORD
+;	LOCAL	buy:DWORD
+;	LOCAL	fNoChange:DWORD
 
 	assume esi:ptr DIALOG
-	mov		eax,[esi].dux
-	or		eax,[esi].duy
-	or		eax,[esi].duccx
-	or		eax,[esi].duccy
-	mov		fNoChange,eax
-	mov		eax,[esi].ntype
-	.if !eax
-		mov		rect.left,eax
-		mov		rect.top,eax
-		mov		rect.right,eax
-		mov		rect.bottom,eax
-		.if ![esi].DIALOG.ntype
-			invoke AdjustWindowRectEx,addr rect,[esi].style,FALSE,[esi].exstyle
-		.endif
-		mov		eax,[esi].ccx
-		sub		eax,rect.right
-		add		eax,rect.left
-		mov		rect.right,eax
-		mov		rect.left,0		
-		mov		eax,[esi].ccy
-		sub		eax,rect.bottom
-		add		eax,rect.top
-		mov		rect.bottom,eax
-		mov		rect.top,0		
-	.else
-		push	[esi].ccx
-		pop		rect.right
-		push	[esi].ccy
-		pop		rect.bottom
-	.endif
-	invoke GetDialogBaseUnits
-	mov		edx,eax
-	and		eax,0FFFFh
-	mov		bux,eax
-	shr		edx,16
-	mov		buy,edx
-
-	mov		eax,[esi].x
-	shl		eax,2
-	mov		ebx,dfntwt
-	imul	ebx
-	cdq
-	mov		ebx,bux
-	idiv	ebx
-	cdq
-	mov		ebx,fntwt
-	idiv	ebx
-	.if fNoChange
+;	mov		eax,[esi].dux
+;	or		eax,[esi].duy
+;	or		eax,[esi].duccx
+;	or		eax,[esi].duccy
+;	mov		fNoChange,eax
+;	mov		eax,[esi].ntype
+;	.if !eax
+;		mov		rect.left,eax
+;		mov		rect.top,eax
+;		mov		rect.right,eax
+;		mov		rect.bottom,eax
+;		.if ![esi].DIALOG.ntype
+;			invoke AdjustWindowRectEx,addr rect,[esi].style,FALSE,[esi].exstyle
+;		.endif
+;		mov		eax,[esi].ccx
+;		sub		eax,rect.right
+;		add		eax,rect.left
+;		mov		rect.right,eax
+;		mov		rect.left,0		
+;		mov		eax,[esi].ccy
+;		sub		eax,rect.bottom
+;		add		eax,rect.top
+;		mov		rect.bottom,eax
+;		mov		rect.top,0		
+;	.else
+;		push	[esi].ccx
+;		pop		rect.right
+;		push	[esi].ccy
+;		pop		rect.bottom
+;	.endif
+;	invoke GetDialogBaseUnits
+;	mov		edx,eax
+;	and		eax,0FFFFh
+;	mov		bux,eax
+;	shr		edx,16
+;	mov		buy,edx
+;
+;	mov		eax,[esi].x
+;	shl		eax,2
+;	mov		ebx,dfntwt
+;	imul	ebx
+;	cdq
+;	mov		ebx,bux
+;	idiv	ebx
+;	cdq
+;	mov		ebx,fntwt
+;	idiv	ebx
+;	.if fNoChange
 		mov		eax,[esi].dux
-	.endif
+;	.endif
 	invoke SaveVal,eax,TRUE
 
-	mov		eax,[esi].y
-	shl		eax,3
-	mov		ebx,dfntht
-	mul		ebx
-	cdq
-	mov		ebx,buy
-	idiv	ebx
-
-	cdq
-	mov		ebx,fntht
-	idiv	ebx
-	.if fNoChange
+;	mov		eax,[esi].y
+;	shl		eax,3
+;	mov		ebx,dfntht
+;	mul		ebx
+;	cdq
+;	mov		ebx,buy
+;	idiv	ebx
+;
+;	cdq
+;	mov		ebx,fntht
+;	idiv	ebx
+;	.if fNoChange
 		mov		eax,[esi].duy
-	.endif
+;	.endif
 	invoke SaveVal,eax,TRUE
 
-	mov		eax,rect.right
-	shl		eax,2+9
-	mov		ebx,dfntwt
-	mul		ebx
-	xor		edx,edx
-	mov		ebx,bux
-	idiv	ebx
-
-	xor		edx,edx
-	mov		ebx,fntwt
-	idiv	ebx
-	shr		eax,9
-	.if fNoChange
+;	mov		eax,rect.right
+;	shl		eax,2+9
+;	mov		ebx,dfntwt
+;	mul		ebx
+;	xor		edx,edx
+;	mov		ebx,bux
+;	idiv	ebx
+;
+;	xor		edx,edx
+;	mov		ebx,fntwt
+;	idiv	ebx
+;	shr		eax,9
+;	.if fNoChange
 		mov		eax,[esi].duccx
-	.endif
+;	.endif
 	invoke SaveVal,eax,TRUE
 
-	mov		eax,rect.bottom
-	shl		eax,3+9
-	mov		ebx,dfntht
-	mul		ebx
-	xor		edx,edx
-	mov		ebx,buy
-	idiv	ebx
-	xor		edx,edx
-	mov		ebx,fntht
-	idiv	ebx
-	shr		eax,9
-	.if fNoChange
+;	mov		eax,rect.bottom
+;	shl		eax,3+9
+;	mov		ebx,dfntht
+;	mul		ebx
+;	xor		edx,edx
+;	mov		ebx,buy
+;	idiv	ebx
+;	xor		edx,edx
+;	mov		ebx,fntht
+;	idiv	ebx
+;	shr		eax,9
+;	.if fNoChange
 		mov		eax,[esi].duccy
-	.endif
+;	.endif
 	invoke SaveVal,eax,FALSE
 	assume esi:nothing
 	ret
@@ -801,10 +801,10 @@ ExportDialogNames proc uses ebx esi edi,hMem:DWORD
 				.if eax==esi
 ;					invoke DestroySizeingRect
 					invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
-					.if [esi].DLGHEAD.hfont
-						invoke DeleteObject,[esi].DLGHEAD.hfont
-						mov		[esi].DLGHEAD.hfont,0
-					.endif
+;					.if [esi].DLGHEAD.hfont
+;						invoke DeleteObject,[esi].DLGHEAD.hfont
+;						mov		[esi].DLGHEAD.hfont,0
+;					.endif
 					invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 					invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 					invoke SetWindowLong,hDEd,DEWM_PROJECT,0
