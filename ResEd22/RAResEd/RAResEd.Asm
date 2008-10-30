@@ -532,7 +532,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke FillRect,ps.hdc,addr ps.rcPaint,hBrBack
 		invoke GetWindowLong,hWin,DEWM_MEMORY
 		.if eax
-			invoke SetChanged,2,hWin
+			invoke SetChanged,2
 		.endif
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
@@ -734,6 +734,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.elseif eax==VK_RIGHT
 ;//Edit				
 						call RSnapToGrid
@@ -752,6 +753,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.elseif eax==VK_UP
 ;//Edit				
 						call RSnapToGrid
@@ -770,6 +772,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.elseif eax==VK_DOWN
 ;//Edit				
 						call RSnapToGrid
@@ -788,6 +791,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.endif
 					pop		esi
 				.endif
@@ -811,6 +815,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke GetWindowLong,hDEd,DEWM_MEMORY
 							pop		edx
 							invoke MakeDialog,eax,edx
+							invoke SetChanged,TRUE
 						.endif
 					.elseif eax==VK_RIGHT
 						inc		(DIALOG ptr [esi]).duccx
@@ -819,6 +824,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.elseif eax==VK_UP
 						mov		eax,(DIALOG ptr [esi]).duccy
 						.if eax>1
@@ -828,6 +834,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke GetWindowLong,hDEd,DEWM_MEMORY
 							pop		edx
 							invoke MakeDialog,eax,edx
+							invoke SetChanged,TRUE
 						.endif
 					.elseif eax==VK_DOWN
 						inc		(DIALOG ptr [esi]).duccy
@@ -836,6 +843,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.endif
 					pop		esi
 				.endif
@@ -920,6 +928,20 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SizeMultiSel,eax,edx
 			.endif
 		.endif
+	.elseif eax==WM_MOUSEWHEEL
+		mov		eax,wParam
+		shr		eax,16
+		cwde
+		.if sdword ptr eax<0
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
+		.else
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
+			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
+		.endif
+		xor		eax,eax
 	.elseif eax==WM_HSCROLL
 		.if fEditMode
 			xor		eax,eax
@@ -1865,7 +1887,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if hReSize
 				invoke SizeingRect,hReSize,FALSE
 			.endif
-			invoke SetChanged,TRUE,hDEd
+			invoke SetChanged,TRUE
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_ISBACK
@@ -1972,7 +1994,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			mov		eax,TRUE
 		.endif
-		invoke SetChanged,eax,hDEd
+		invoke SetChanged,eax
 		invoke InvalidateRect,hDEd,NULL,TRUE
 		jmp		Ex
 	.elseif eax==DEM_COMPACT

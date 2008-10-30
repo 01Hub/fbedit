@@ -1324,6 +1324,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke GetWindowLong,hDEd,DEWM_MEMORY
 					invoke MakeDialog,eax,-1
 					invoke PropertyList,-1
+					invoke SetChanged,TRUE
 				.else
 					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7
 						mov		eax,lbid
@@ -1363,6 +1364,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 						invoke GetWindowLong,hDEd,DEWM_MEMORY
 						pop		edx
 						invoke MakeDialog,eax,edx
+						invoke SetChanged,TRUE
 					.endif
 				.endif
 			.endif
@@ -2843,6 +2845,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							mov		[esi].DLGHEAD.fontsize,eax
 							invoke strcpy,addr [esi].DLGHEAD.font,addr lf.lfFaceName
 							invoke MakeDialog,esi,0
+							invoke SetChanged,TRUE
 						.endif
 					.elseif eax==PRP_STR_MENU
 						;Dialog Memu
@@ -2925,7 +2928,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.if hCtl==-4 || hCtl==-5
 								invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 							.else
-								invoke SetChanged,TRUE,0
+								invoke SetChanged,TRUE
 							.endif
 						.endif
 					.elseif eax==PRP_STR_FILE

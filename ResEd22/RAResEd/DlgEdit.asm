@@ -1295,16 +1295,12 @@ DeleteTab endp
 ;
 ;FetchParent endp
 ;
-SetChanged proc fChanged:DWORD,hWin:HWND
+SetChanged proc fChanged:DWORD
 	LOCAL	hDC:HDC
 	LOCAL	hBr:DWORD
 	LOCAL	rect:RECT
 
-	.if !hWin
-		mov		eax,hDEd
-		mov		hWin,eax
-	.endif
-	invoke GetWindowLong,hWin,DEWM_MEMORY
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	.if eax
 		.if fChanged==2
 			push	(DLGHEAD ptr [eax]).changed
@@ -1313,12 +1309,12 @@ SetChanged proc fChanged:DWORD,hWin:HWND
 			push	fChanged
 			pop		(DLGHEAD ptr [eax]).changed
 		.endif
-		invoke GetDC,hWin
+		invoke GetDC,hDEd
 		mov		hDC,eax
 		.if fChanged
 			mov		eax,40A040h
 		.else
-			invoke GetWindowLong,hWin,DEWM_READONLY
+			invoke GetWindowLong,hDEd,DEWM_READONLY
 			.if eax
 				mov		eax,0FFh
 			.else
@@ -1332,7 +1328,7 @@ SetChanged proc fChanged:DWORD,hWin:HWND
 		mov		rect.right,6
 		mov		rect.bottom,6
 		invoke FillRect,hDC,addr rect,hBr
-		invoke ReleaseDC,hWin,hDC
+		invoke ReleaseDC,hDEd,hDC
 		invoke DeleteObject,hBr
 	.endif
 	invoke NotifyParent
@@ -3476,11 +3472,13 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 			invoke strcpy,addr [esi].DLGHEAD.font,addr DlgFN
 			mov		eax,DlgFS
 			mov		[esi].DLGHEAD.fontsize,eax
+			mov		[edi].DIALOG.tab,0
 ;			mov		eax,DlgFH
 ;			mov		[esi].DLGHEAD.fontht,eax
 		.else
 			invoke GetFreeID
 			mov		[edi].DIALOG.id,eax
+			mov		[edi].DIALOG.tab,-1
 			invoke GetFreeTab
 			mov		[edi].DIALOG.tab,eax
 			.if nType==23
@@ -3493,6 +3491,7 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		pop		edx
 		push	eax
 		invoke MakeDialog,edx,eax
+		invoke SetChanged,TRUE
 		pop		edx
 		.if edx
 			invoke GetDlgItem,des.hdlg,edx
@@ -3851,7 +3850,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		rect.top,eax
 	 		invoke ConvertToDuy,rect.bottom
 			mov		rect.bottom,eax
-
 			mov		edx,ToolBoxID
 			invoke CreateNewCtl,des.hdlg,edx,rect.left,rect.top,rect.right,rect.bottom
 			invoke ToolBoxReset
@@ -3906,6 +3904,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke GetWindowLong,hDEd,DEWM_MEMORY
 				pop		edx
 				invoke MakeDialog,eax,edx
+				invoke SetChanged,TRUE
 			.else
 				invoke SizeingRect,des.hselected,FALSE
 			.endif
@@ -3966,6 +3965,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetWindowLong,hDEd,DEWM_MEMORY
 			pop		edx
 			invoke MakeDialog,eax,edx
+			invoke SetChanged,TRUE
 		.elseif des.fmode==MODE_MULTISEL
 			.if !hMultiSel
 				mov		des.fmode,0
@@ -4007,6 +4007,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke GetWindowLong,hDEd,DEWM_MEMORY
 				invoke MakeDialog,eax,-1
 				invoke PropertyList,-1
+				invoke SetChanged,TRUE
 			.endif
 		.elseif des.fmode==MODE_SELECT
 			invoke RestoreWin
@@ -4061,6 +4062,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke SizeingRect,eax,FALSE
 			.elseif hMultiSel
 				invoke PropertyList,-1
+			.else
+				invoke SizeingRect,des.hdlg,FALSE
 			.endif
 		.else
 			mov		hCld,0
@@ -4300,6 +4303,7 @@ PasteCtl proc uses esi edi
 		.endw
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		invoke MakeDialog,eax,-2
+		invoke SetChanged,TRUE
 		.if nbr>1
 			.while nbr
 				sub		edi,sizeof DIALOG
@@ -4343,7 +4347,7 @@ DeleteCtl proc uses esi
 				invoke DestroySizeingRect
 				invoke GetWindowLong,hDEd,DEWM_MEMORY
 				invoke MakeDialog,eax,0
-				invoke SetChanged,TRUE,0
+				invoke SetChanged,TRUE
 			.endif
 			assume esi:nothing
 		.endif
@@ -4381,7 +4385,7 @@ DeleteCtl proc uses esi
 		.endw
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		invoke MakeDialog,eax,0
-		invoke SetChanged,TRUE,0
+		invoke SetChanged,TRUE
 	.endif
 	invoke SendMessage,hDEd,WM_LBUTTONDOWN,0,0
 ;	invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -4612,6 +4616,7 @@ AlignSizeCtl proc uses esi ebx,nFun:DWORD
 		.endif
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		invoke MakeDialog,eax,-1
+		invoke SetChanged,TRUE
 	.else
 		mov		eax,nFun
 		.if (eax==ALIGN_DLGVCENTER || eax==ALIGN_DLGHCENTER) && hReSize
@@ -4674,6 +4679,7 @@ AlignSizeCtl proc uses esi ebx,nFun:DWORD
 			invoke GetWindowLong,hDEd,DEWM_MEMORY
 			pop		edx
 			invoke MakeDialog,eax,edx
+			invoke SetChanged,TRUE
 		.endif
 	.endif
 ;	invoke UpdateRAEdit,eax
@@ -4900,7 +4906,7 @@ MoveMultiSel proc uses esi,x:DWORD,y:DWORD
 	.endw
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	invoke MakeDialog,eax,-1
-	invoke SetChanged,TRUE,0
+	invoke SetChanged,TRUE
 ;	invoke GetWindowLong,hDEd,DEWM_MEMORY
 ;	invoke UpdateRAEdit,eax
 	invoke NotifyParent
@@ -4947,7 +4953,7 @@ SizeMultiSel proc uses esi,x:DWORD,y:DWORD
 	.endw
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	invoke MakeDialog,eax,-1
-	invoke SetChanged,TRUE,0
+	invoke SetChanged,TRUE
 ;	invoke GetWindowLong,hDEd,DEWM_MEMORY
 ;	invoke UpdateRAEdit,eax
 	invoke NotifyParent
@@ -5006,7 +5012,7 @@ AutoIDMultiSel proc uses esi
 			.endif
 			inc		MinTab
 		.endw
-		invoke SetChanged,TRUE,0
+		invoke SetChanged,TRUE
 	.endif
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	invoke UpdateRAEdit,eax
@@ -6170,6 +6176,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 		invoke SetWindowLong,hWin,DEWM_MEMORY,esi
 		invoke CreateNewCtl,hWin,0,DlgX,DlgY,150,100
 		mov		hDlg,eax
+		invoke SetChanged,TRUE
 		mov		eax,esi
 		ret
 	.else
@@ -6230,7 +6237,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD,fNoSelect:DWORD
 			add		esi,sizeof DIALOG
 		.endw
 		pop		eax
-		invoke SetChanged,eax,hWin
+		invoke SetChanged,eax
 		pop		esi
 	.endif
 	invoke SetWindowLong,hWin,DEWM_READONLY,0
@@ -6309,7 +6316,7 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 				invoke GlobalFree,ebx
 			.endif
 			invoke GlobalFree,edi
-			invoke SetChanged,TRUE,hDEd
+			invoke SetChanged,TRUE
 			mov		fClose,0
 		.endif
 	.endif

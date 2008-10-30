@@ -1034,6 +1034,7 @@ UpdateStyle:
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		invoke MakeDialog,eax,-1
 		invoke PropertyList,-1
+		invoke SetChanged,TRUE
 	.else
 		mov		eax,[ebx].RASTYLE.lpdialog
 		invoke GetCtrlID,eax
@@ -1055,6 +1056,7 @@ UpdateStyle:
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		pop		edx
 		invoke MakeDialog,eax,edx
+		invoke SetChanged,TRUE
 	.endif
 	retn
 

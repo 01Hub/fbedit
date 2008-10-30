@@ -888,28 +888,28 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	invoke GlobalLock,hWrMem
 	mov		esi,hRdMem
 	invoke VerifyTebIndex,esi
-	mov		dlgps,10
-	mov		dlgfn,0
+;	mov		dlgps,10
+;	mov		dlgfn,0
 ;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	invoke DestroyWindow,eax
-	push	fntwt
-	pop		dfntwt
-	push	fntht
-	pop		dfntht
-	mov		eax,[esi].DLGHEAD.fontsize
-	mov		dlgps,ax
-	pushad
-	lea		esi,[esi].DLGHEAD.font
-	mov		edi,offset dlgfn
-	xor		eax,eax
-	mov		ecx,32
-  @@:
-	lodsb
-	stosw
-	loop	@b
-	popad
+;	invoke DestroyWindow,eax
+;	push	fntwt
+;	pop		dfntwt
+;	push	fntht
+;	pop		dfntht
+;	mov		eax,[esi].DLGHEAD.fontsize
+;	mov		dlgps,ax
+;	pushad
+;	lea		esi,[esi].DLGHEAD.font
+;	mov		edi,offset dlgfn
+;	xor		eax,eax
+;	mov		ecx,32
+;  @@:
+;	lodsb
+;	stosw
+;	loop	@b
+;	popad
 ;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-	invoke DestroyWindow,eax
+;	invoke DestroyWindow,eax
 	mov		edi,hWrMem
 	mov		esi,hRdMem
 	add		esi,sizeof DLGHEAD
