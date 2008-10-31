@@ -856,17 +856,17 @@ fSimpleProperty		dd ?
 fNoResetToolbox		dd ?
 hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
-fNoMouseUp			dd ?
-
-fSizeing			dd ?
-fMoveing			dd ?
-fDrawing			dd ?
-fMultiSel			dd ?
+;fNoMouseUp			dd ?
+;
+;fSizeing			dd ?
+;fMoveing			dd ?
+;fDrawing			dd ?
+;fMultiSel			dd ?
 
 hReSize				dd ?
 MousePtDown			POINT <?>
 OldSizeingProc		dd ?
-hDlgIml				dd ?
+;hDlgIml				dd ?
 dlgpaste			DIALOG MAXMULSEL dup(<?>)
 SizeRect			RECT MAXMULSEL dup(<?>)
 ;Dialog menu
@@ -882,15 +882,15 @@ MnuInx				dd ?
 ;hComDC				dd ?
 hWinBmp				dd ?
 ;hOldRgn				dd ?
-fNoParent			dd ?
+;fNoParent			dd ?
 dfntwt				dd ?
 dfntht				dd ?
-
-mpt					POINT <?>
 fntwt				dd ?
 fntht				dd ?
+
+mpt					POINT <?>
 hRect				dd MAXMULSEL*4 dup(?)
-mousedown			dd ?
+;mousedown			dd ?
 
 .code
 
@@ -2083,7 +2083,6 @@ CtlMultiSelect proc hWin:HWND
 			.if hMultiSel
 				invoke MultiSelRect,eax,FALSE
 			.else
-				mov		fNoMouseUp,TRUE
 				invoke SizeingRect,eax,FALSE
 			.endif
 			xor		eax,eax
@@ -3697,13 +3696,29 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 			.else
 				push	ebx
-				invoke GetWindow,ebx,GW_CHILD
-				mov		ebx,eax
-				.while ebx
-					call	IsInWindow
-					invoke GetWindow,ebx,GW_HWNDNEXT
-					mov		ebx,eax
+				push	esi
+				push	edi
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+				mov		esi,eax
+				lea		esi,[esi+sizeof DLGHEAD]
+				.while [esi].DIALOG.hwnd
+					lea		esi,[esi+sizeof DIALOG]
 				.endw
+				lea		esi,[esi-sizeof DIALOG]
+				.while esi>edi
+					invoke GetCtrlID,esi
+					.if eax
+						invoke GetDlgItem,des.hdlg,eax
+						mov		ebx,eax
+					.else
+						mov		ebx,des.hdlg
+					.endif
+					call	IsInWindow
+					.break.if eax
+					lea		esi,[esi-sizeof DIALOG]
+				.endw
+				pop		edi
+				pop		esi
 				pop		eax
 				.if eax!=hCld
 					; Control
@@ -3852,7 +3867,9 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		rect.bottom,eax
 			mov		edx,ToolBoxID
 			invoke CreateNewCtl,des.hdlg,edx,rect.left,rect.top,rect.right,rect.bottom
-			invoke ToolBoxReset
+			.if !fNoResetToolbox
+				invoke ToolBoxReset
+			.endif
 		.elseif des.fmode==MODE_MOVING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
@@ -5901,6 +5918,8 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		neg		edx
 		add		edx,10
 		invoke SetWindowPos,hWin,0,eax,edx,0,0,SWP_NOSIZE or SWP_NOZORDER
+		mov		eax,FALSE
+		ret
 ;		mov		eax,hWin
 ;		mov		hDlg,eax
 ;		.if hDlgMnu
@@ -5944,8 +5963,6 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				invoke PostMessage,hWin,WM_CLOSE,0,0
 ;			.endif
 ;		.endif
-		mov		eax,FALSE
-		ret
 	.else
 		mov		eax,FALSE
 		ret
@@ -5954,6 +5971,21 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 MakeDlgProc endp
+
+MakeDlgClassProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_NCCALCSIZE
+;PrintHex wParam
+;PrintHex lParam
+	.elseif eax==WM_NCCREATE
+;PrintHex wParam
+;PrintHex lParam
+	.endif
+	invoke DefDlgProc,hWin,uMsg,wParam,lParam
+	ret
+
+MakeDlgClassProc endp
 
 MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	nInx:DWORD
@@ -5982,7 +6014,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	loop	@b
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 	invoke DestroyWindow,eax
-
 	.if nSelID==-1
 		push	0
 		mov		ebx,hMultiSel
@@ -6008,6 +6039,31 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024
 	mov		ebx,eax
 	push	eax
+;// typedef struct {   
+;//     WORD   dlgVer; 
+;//     WORD   signature; 
+;//     DWORD  helpID; 
+;//     DWORD  exStyle; 
+;//     DWORD  style; 
+;//     WORD   cDlgItems; 
+;//     short  x; 
+;//     short  y; 
+;//     short  cx; 
+;//     short  cy; 
+;//     sz_Or_Ord menu;         // name or ordinal of a menu resource
+;//     sz_Or_Ord windowClass;  // name or ordinal of a window class
+;//     WCHAR  title[titleLen]; // title string of the dialog box
+;//     short  pointsize;       // only if DS_SETFONT flag is set
+;
+;//     short  weight;          // only if DS_SETFONT flag is set
+;//     short  bItalic;         // only if DS_SETFONT flag is set
+;//     WCHAR  font[fontLen];   // typeface name, if DS_SETFONT is set
+;// } DLGTEMPLATEEX; 
+
+
+	mov		[ebx].MyDLGTEMPLATEEX.dlgVer,1
+	mov		[ebx].MyDLGTEMPLATEEX.signature,-1
+	mov		[ebx].MyDLGTEMPLATEEX.helpID,0
 	mov		esi,hMem
 	mov		edi,esi
 	add		esi,sizeof DLGHEAD
@@ -6016,13 +6072,13 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		or		eax,DS_SETFONT
 	.endif
 	or		eax,WS_ALWAYS or DS_NOFAILCREATE
-	and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
-	mov		[ebx].MyDLGTEMPLATE.style,eax
+	and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE or WS_CLIPCHILDREN)
+	mov		[ebx].MyDLGTEMPLATEEX.style,eax
 	push	eax
 	mov		eax,[esi].DIALOG.exstyle
 	and		eax,0F7FFFh
 	and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
-	mov		[ebx].MyDLGTEMPLATE.dwExtendedStyle,eax
+	mov		[ebx].MyDLGTEMPLATEEX.exStyle,eax
 	push	esi
 	mov		ecx,-1
 	.while [esi].DIALOG.hwnd
@@ -6032,31 +6088,32 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		add		esi,sizeof DIALOG
 	.endw
 	pop		esi
-	mov		[ebx].MyDLGTEMPLATE.cdit,cx
-	mov		[ebx].MyDLGTEMPLATE.x,0
-	mov		[ebx].MyDLGTEMPLATE.y,0
+	mov		[ebx].MyDLGTEMPLATEEX.cDlgItems,cx
+	mov		[ebx].MyDLGTEMPLATEEX.x,0
+	mov		[ebx].MyDLGTEMPLATEEX.y,0
 	mov		eax,[esi].DIALOG.duccx
-	mov		[ebx].MyDLGTEMPLATE.lx,ax
+	mov		[ebx].MyDLGTEMPLATEEX.ccx,ax
 	mov		eax,[esi].DIALOG.duccy
-	mov		[ebx].MyDLGTEMPLATE.ly,ax
-	add		ebx,sizeof MyDLGTEMPLATE
-	;Menu
-	.if [edi].DLGHEAD.menuid
-		.if [edi].DLGHEAD.lpmnu
-			mov		eax,[edi].DLGHEAD.lpmnu
-			invoke MakeMnuBar,eax
-			mov		hDlgMnu,eax
-		.endif
-		mov		word ptr [ebx],-1
-		add		ebx,2
-		mov		word ptr [ebx],10000
-	.else
-		mov		word ptr [ebx],0
-	.endif
-	add		ebx,2
+	mov		[ebx].MyDLGTEMPLATEEX.ccy,ax
+	mov		[ebx].MyDLGTEMPLATEEX.menu,0
+	add		ebx,sizeof MyDLGTEMPLATEEX
+;	;Menu
+;	.if [edi].DLGHEAD.menuid
+;		.if [edi].DLGHEAD.lpmnu
+;			mov		eax,[edi].DLGHEAD.lpmnu
+;			invoke MakeMnuBar,eax
+;			mov		hDlgMnu,eax
+;		.endif
+;		mov		word ptr [ebx],-1
+;		add		ebx,2
+;		mov		word ptr [ebx],10000
+;	.else
+;		mov		word ptr [ebx],0
+;	.endif
+;	add		ebx,2
 	;Class
-	mov		word ptr [ebx],0
-	add		ebx,2
+	invoke SaveWideChar,addr szDlgChildClass,ebx
+	add		ebx,eax
 	;Caption
 	invoke SaveWideChar,addr [esi].DIALOG.caption,ebx
 	add		ebx,eax
@@ -6067,6 +6124,15 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		mov		eax,[edi].DLGHEAD.fontsize
 		mov		[ebx],ax
 		add		ebx,2
+		;Weight
+		mov		word ptr [ebx],0
+		add		ebx,2
+		;Italics
+		mov		byte ptr [ebx],0
+		add		ebx,1
+		;Charset
+		mov		byte ptr [ebx],0
+		add		ebx,1
 		;Facename
 		invoke SaveWideChar,addr [edi].DLGHEAD.font,ebx
 		add		ebx,eax
@@ -6075,39 +6141,42 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	mov		edi,esi
 	mov		nInx,0
   @@:
-	inc		nInx
 	add		ebx,2
 	and		ebx,0FFFFFFFCh
+	inc		nInx
 	.if [edi].DIALOG.hwnd
 		.if [edi].DIALOG.hwnd!=-1
+			mov		[ebx].MyDLGITEMTEMPLATEEX.helpID,0
 			mov		eax,[edi].DIALOG.style
 			or		eax,WS_ALWAYS
 			and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
 			.if [edi].DIALOG.ntype==14
 				or		eax,LVS_SHAREIMAGELISTS
 			.endif
-			mov		[ebx].MyDLGITEMTEMPLATE.style,eax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.style,eax
 			mov		eax,[edi].DIALOG.exstyle
 			and		eax,0F7FFFh
 			and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
-			mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.exStyle,eax
 			mov		eax,[edi].DIALOG.dux
-			mov		[ebx].MyDLGITEMTEMPLATE.x,ax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.x,ax
 			mov		eax,[edi].DIALOG.duy
-			mov		[ebx].MyDLGITEMTEMPLATE.y,ax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.y,ax
 			mov		eax,[edi].DIALOG.duccx
-			mov		[ebx].MyDLGITEMTEMPLATE.lx,ax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.ccx,ax
 			mov		eax,[edi].DIALOG.duccy
-			mov		[ebx].MyDLGITEMTEMPLATE.cy,ax
+			mov		[ebx].MyDLGITEMTEMPLATEEX.ccy,ax
 			mov		eax,nInx
-			mov		[ebx].MyDLGITEMTEMPLATE.id,ax
-			add		ebx,sizeof MyDLGITEMTEMPLATE
+			mov		[ebx].MyDLGITEMTEMPLATEEX.id,eax
+			add		ebx,sizeof MyDLGITEMTEMPLATEEX
+			;Class
 			mov		eax,[edi].DIALOG.ntype
 			mov		edx,sizeof TYPES
 			mul		edx
 			add		eax,offset ctltypes
 			invoke SaveWideChar,[eax].TYPES.lpclass,ebx
 			add		ebx,eax
+			;Caption
 			invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
 			add		ebx,eax
 			mov		word ptr [ebx],0
@@ -6149,6 +6218,16 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		.endif
 		invoke SizeingRect,eax,FALSE
 	.endif
+	mov		esi,hMem
+	lea		esi,[esi+sizeof DLGHEAD+sizeof DIALOG]
+	.while [esi].DIALOG.hwnd
+		.if [esi].DIALOG.hwnd!=-1
+			invoke GetCtrlID,esi
+			invoke GetDlgItem,hDlg,eax
+			invoke SetWindowPos,eax,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+		.endif
+		lea		esi,[esi+sizeof DIALOG]
+	.endw
 	invoke ShowWindow,hInvisible,SW_HIDE
 	invoke SendMessage,hDEd,WM_SETREDRAW,TRUE,0
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE

@@ -19,6 +19,64 @@ MyDLGITEMTEMPLATE struct
 	id				WORD	?
 MyDLGITEMTEMPLATE ends
 
+;// typedef struct {   
+;//     WORD   dlgVer; 
+;//     WORD   signature; 
+;//     DWORD  helpID; 
+;//     DWORD  exStyle; 
+;//     DWORD  style; 
+;//     WORD   cDlgItems; 
+;//     short  x; 
+;//     short  y; 
+;//     short  cx; 
+;//     short  cy; 
+;//     sz_Or_Ord menu;         // name or ordinal of a menu resource
+;//     sz_Or_Ord windowClass;  // name or ordinal of a window class
+;//     WCHAR  title[titleLen]; // title string of the dialog box
+;//     short  pointsize;       // only if DS_SETFONT flag is set
+;
+;//     short  weight;          // only if DS_SETFONT flag is set
+;//     short  bItalic;         // only if DS_SETFONT flag is set
+;//     WCHAR  font[fontLen];   // typeface name, if DS_SETFONT is set
+;// } DLGTEMPLATEEX; 
+MyDLGTEMPLATEEX struct
+	dlgVer			WORD	?
+	signature		WORD	?
+	helpID			DWORD	?
+	exStyle			DWORD	?
+	style			DWORD	?
+	cDlgItems		WORD	?
+	x				WORD	?
+	y				WORD	?
+	ccx				WORD	?
+	ccy				WORD	?
+	menu			WORD	?
+MyDLGTEMPLATEEX ends
+
+;// typedef struct {  
+;//     DWORD  helpID; 
+;//     DWORD  exStyle; 
+;//     DWORD  style; 
+;//     short  x; 
+;//     short  y; 
+;//     short  cx; 
+;//     short  cy; 
+;//     WORD   id; 
+;//     sz_Or_Ord windowClass; // name or ordinal of a window class
+;//     sz_Or_Ord title;       // title string or ordinal of a resource
+;//     WORD   extraCount;     // bytes of following creation data
+;// } DLGITEMTEMPLATEEX; 
+MyDLGITEMTEMPLATEEX struct
+	helpID			DWORD ?
+	exStyle			DWORD	?
+	style			DWORD	?
+	x				WORD	?
+	y				WORD	?
+	ccx				WORD	?
+	ccy				WORD	?
+	id				DWORD	?
+MyDLGITEMTEMPLATEEX ends
+
 ;.data
 
 ;					align 4

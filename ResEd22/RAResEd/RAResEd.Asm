@@ -201,22 +201,22 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 
-;	mov		wc.cbSize,sizeof WNDCLASSEX
-;	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
-;	mov		wc.lpfnWndProc,offset EditDlgProc
-;	mov		wc.cbClsExtra,0
-;	mov		wc.cbWndExtra,0
-;	push	hInstance
-;	pop		wc.hInstance
-;	mov		wc.hbrBackground,NULL
-;	mov		wc.lpszMenuName,NULL
-;	mov		wc.lpszClassName,offset szDlgChildClass
-;	mov		wc.hIcon,NULL
-;	mov		wc.hIconSm,NULL
-;	invoke LoadCursor,NULL,IDC_ARROW
-;	mov		wc.hCursor,eax
-;	invoke RegisterClassEx,addr wc
-;
+	mov		wc.cbSize,sizeof WNDCLASSEX
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
+	mov		wc.lpfnWndProc,offset MakeDlgClassProc
+	mov		wc.cbClsExtra,0
+	mov		wc.cbWndExtra,DLGWINDOWEXTRA
+	push	hInstance
+	pop		wc.hInstance
+	mov		wc.hbrBackground,NULL
+	mov		wc.lpszMenuName,NULL
+	mov		wc.lpszClassName,offset szDlgChildClass
+	mov		wc.hIcon,NULL
+	mov		wc.hIconSm,NULL
+	invoke LoadCursor,NULL,IDC_ARROW
+	mov		wc.hCursor,eax
+	invoke RegisterClassEx,addr wc
+
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
 	.if fGlobal

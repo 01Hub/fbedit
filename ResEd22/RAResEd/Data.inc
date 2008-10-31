@@ -147,7 +147,7 @@ STYLE				equ WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 EXSTYLE				equ 0
 
 szToolTipsClass		db 'Tooltips_class32',0
-;szDlgChildClass		db 'RARESEDDIALOG',0
+szDlgChildClass		db 'RARESEDDIALOG',0
 szStaticClass		db 'Static',0
 szEditClass			db 'Edit',0
 szButtonClass		db 'Button',0
