@@ -5972,12 +5972,38 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 MakeDlgProc endp
 
-MakeDlgClassProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+MakeDlgClassProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_NCCALCSIZE
-;PrintHex wParam
-;PrintHex lParam
+		mov		ebx,lParam
+		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.left
+		add		eax,4
+		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.left,eax
+		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.top
+		add		eax,20
+		mov		[ebx].NCCALCSIZE_PARAMS.rgrc.top,eax
+		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.right
+		sub		eax,4
+		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.right,eax
+		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.bottom
+		sub		eax,4
+		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.bottom,eax
+
+		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.left
+		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.top
+		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.right
+		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.bottom
+
+		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.left
+		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.top
+		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.right
+		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.bottom
+
+
+		xor		eax,eax
+		inc		eax
+;		ret
 	.elseif eax==WM_NCCREATE
 ;PrintHex wParam
 ;PrintHex lParam
@@ -6039,28 +6065,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024
 	mov		ebx,eax
 	push	eax
-;// typedef struct {   
-;//     WORD   dlgVer; 
-;//     WORD   signature; 
-;//     DWORD  helpID; 
-;//     DWORD  exStyle; 
-;//     DWORD  style; 
-;//     WORD   cDlgItems; 
-;//     short  x; 
-;//     short  y; 
-;//     short  cx; 
-;//     short  cy; 
-;//     sz_Or_Ord menu;         // name or ordinal of a menu resource
-;//     sz_Or_Ord windowClass;  // name or ordinal of a window class
-;//     WCHAR  title[titleLen]; // title string of the dialog box
-;//     short  pointsize;       // only if DS_SETFONT flag is set
-;
-;//     short  weight;          // only if DS_SETFONT flag is set
-;//     short  bItalic;         // only if DS_SETFONT flag is set
-;//     WCHAR  font[fontLen];   // typeface name, if DS_SETFONT is set
-;// } DLGTEMPLATEEX; 
-
-
 	mov		[ebx].MyDLGTEMPLATEEX.dlgVer,1
 	mov		[ebx].MyDLGTEMPLATEEX.signature,-1
 	mov		[ebx].MyDLGTEMPLATEEX.helpID,0
