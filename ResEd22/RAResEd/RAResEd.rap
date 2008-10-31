@@ -149,12 +149,12 @@ Options=52
 5=0,0,0,0,9329
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,22204
+1=0,0,718,485,16512
 7=0,0,718,485,84227
 6=0,0,0,0,514
-9=0,0,718,485,86391
+9=0,0,718,485,138874
 2=0,0,584,498,1552
-8=0,0,0,0,19826
+8=0,0,0,0,19875
 10=0,0,0,0,490
 16=0,0,718,485,5166
 15=0,0,0,0
@@ -192,21 +192,21 @@ Options=52
 48=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0
-51=0,0,0,0,2416
+51=0,0,0,0,15330
 52=
 
 
 [Find]
-1="WM_MOUSEWHEEL"
-2="hWin"
-3="PRO_EXPORT"
-4="makedialog"
-5="makedia"
-6="UpdateCtl"
-7="DesignDummyProc"
-8="DrawingRect"
-9="notifyparent"
-10="DEWM_DIALOG"
+1="FindTab"
+2="WM_MOUSEWHEEL"
+3="hWin"
+4="PRO_EXPORT"
+5="makedialog"
+6="makedia"
+7="UpdateCtl"
+8="DesignDummyProc"
+9="DrawingRect"
+10="notifyparent"
 
 [AutoLoad]
 1=1
@@ -351,7 +351,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 13=
 52=
 36=
-51=,,,
+51=,,
 [PTimer]
 PTimer=330867960
 

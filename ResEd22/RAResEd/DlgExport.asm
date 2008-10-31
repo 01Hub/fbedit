@@ -9,113 +9,15 @@ szMissTab			db 0Dh,0Ah,'Missing TabIndex',0
 .code
 
 SaveCtlSize proc uses ebx edx esi
-;	LOCAL	rect:RECT
-;	LOCAL	bux:DWORD
-;	LOCAL	buy:DWORD
-;	LOCAL	fNoChange:DWORD
 
-	assume esi:ptr DIALOG
-;	mov		eax,[esi].dux
-;	or		eax,[esi].duy
-;	or		eax,[esi].duccx
-;	or		eax,[esi].duccy
-;	mov		fNoChange,eax
-;	mov		eax,[esi].ntype
-;	.if !eax
-;		mov		rect.left,eax
-;		mov		rect.top,eax
-;		mov		rect.right,eax
-;		mov		rect.bottom,eax
-;		.if ![esi].DIALOG.ntype
-;			invoke AdjustWindowRectEx,addr rect,[esi].style,FALSE,[esi].exstyle
-;		.endif
-;		mov		eax,[esi].ccx
-;		sub		eax,rect.right
-;		add		eax,rect.left
-;		mov		rect.right,eax
-;		mov		rect.left,0		
-;		mov		eax,[esi].ccy
-;		sub		eax,rect.bottom
-;		add		eax,rect.top
-;		mov		rect.bottom,eax
-;		mov		rect.top,0		
-;	.else
-;		push	[esi].ccx
-;		pop		rect.right
-;		push	[esi].ccy
-;		pop		rect.bottom
-;	.endif
-;	invoke GetDialogBaseUnits
-;	mov		edx,eax
-;	and		eax,0FFFFh
-;	mov		bux,eax
-;	shr		edx,16
-;	mov		buy,edx
-;
-;	mov		eax,[esi].x
-;	shl		eax,2
-;	mov		ebx,dfntwt
-;	imul	ebx
-;	cdq
-;	mov		ebx,bux
-;	idiv	ebx
-;	cdq
-;	mov		ebx,fntwt
-;	idiv	ebx
-;	.if fNoChange
-		mov		eax,[esi].dux
-;	.endif
+	mov		eax,[esi].DIALOG.dux
 	invoke SaveVal,eax,TRUE
-
-;	mov		eax,[esi].y
-;	shl		eax,3
-;	mov		ebx,dfntht
-;	mul		ebx
-;	cdq
-;	mov		ebx,buy
-;	idiv	ebx
-;
-;	cdq
-;	mov		ebx,fntht
-;	idiv	ebx
-;	.if fNoChange
-		mov		eax,[esi].duy
-;	.endif
+	mov		eax,[esi].DIALOG.duy
 	invoke SaveVal,eax,TRUE
-
-;	mov		eax,rect.right
-;	shl		eax,2+9
-;	mov		ebx,dfntwt
-;	mul		ebx
-;	xor		edx,edx
-;	mov		ebx,bux
-;	idiv	ebx
-;
-;	xor		edx,edx
-;	mov		ebx,fntwt
-;	idiv	ebx
-;	shr		eax,9
-;	.if fNoChange
-		mov		eax,[esi].duccx
-;	.endif
+	mov		eax,[esi].DIALOG.duccx
 	invoke SaveVal,eax,TRUE
-
-;	mov		eax,rect.bottom
-;	shl		eax,3+9
-;	mov		ebx,dfntht
-;	mul		ebx
-;	xor		edx,edx
-;	mov		ebx,buy
-;	idiv	ebx
-;	xor		edx,edx
-;	mov		ebx,fntht
-;	idiv	ebx
-;	shr		eax,9
-;	.if fNoChange
-		mov		eax,[esi].duccy
-;	.endif
+	mov		eax,[esi].DIALOG.duccy
 	invoke SaveVal,eax,FALSE
-	assume esi:nothing
 	ret
 
 SaveCtlSize endp
@@ -132,15 +34,13 @@ SaveType endp
 SaveName proc uses esi edi
 	LOCAL	buffer[16]:BYTE
 
-	assume esi:ptr DIALOG
-	mov		al,[esi].idname
+	mov		al,[esi].DIALOG.idname
 	.if al
-		invoke SaveStr,edi,addr [esi].idname
+		invoke SaveStr,edi,addr [esi].DIALOG.idname
 	.else
-		invoke ResEdBinToDec,[esi].id,addr buffer
+		invoke ResEdBinToDec,[esi].DIALOG.id,addr buffer
 		invoke SaveStr,edi,addr buffer
 	.endif
-	assume esi:nothing
 	ret
 
 SaveName endp
@@ -148,17 +48,16 @@ SaveName endp
 SaveDefine proc
 	LOCAL	buffer[16]:BYTE
 
-	assume esi:ptr DIALOG
 	;Is ctl deleted
-	mov		eax,[esi].hwnd
+	mov		eax,[esi].DIALOG.hwnd
 	.if eax!=-1
-		mov		al,[esi].idname
-		.if al && [esi].id
-			invoke strcmpi,addr [esi].idname,addr szIDOK
+		mov		al,[esi].DIALOG.idname
+		.if al && [esi].DIALOG.id
+			invoke strcmpi,addr [esi].DIALOG.idname,addr szIDOK
 			.if eax
-				invoke strcmpi,addr [esi].idname,addr szIDCANCEL
+				invoke strcmpi,addr [esi].DIALOG.idname,addr szIDCANCEL
 				.if eax
-					invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
+					invoke strcmpi,addr [esi].DIALOG.idname,addr szIDC_STATIC
 					.if !eax
 						invoke GetWindowLong,hRes,GWL_STYLE
 						test	eax,DES_DEFIDC_STATIC
@@ -181,11 +80,11 @@ SaveDefine proc
 				add		edi,eax
 				mov		al,' '
 				stosb
-				invoke SaveStr,edi,addr [esi].idname
+				invoke SaveStr,edi,addr [esi].DIALOG.idname
 				add		edi,eax
 				mov		al,' '
 				stosb
-				invoke ResEdBinToDec,[esi].id,addr buffer
+				invoke ResEdBinToDec,[esi].DIALOG.id,addr buffer
 				invoke SaveStr,edi,addr buffer
 				add		edi,eax
 				mov		ax,0A0Dh
@@ -193,17 +92,15 @@ SaveDefine proc
 			.endif
 		.endif
 	.endif
-	assume esi:nothing
 	ret
 
 SaveDefine endp
 
 SaveCaption proc
 
-	assume esi:ptr DIALOG
 	mov		al,22h
 	stosb
-	lea		edx,[esi].caption
+	lea		edx,[esi].DIALOG.caption
   @@:
 	mov		al,[edx]
 	.if al=='"'
@@ -218,7 +115,6 @@ SaveCaption proc
 	dec		edi
 	mov		al,22h
 	stosb
-	assume esi:nothing
 	ret
 
 SaveCaption endp
@@ -226,33 +122,27 @@ SaveCaption endp
 SaveClass proc
 	LOCAL	lpclass:DWORD
 
-	assume esi:ptr DIALOG
-	invoke GetTypePtr,[esi].ntype
-	push	(TYPES ptr [eax]).lpclass
+	invoke GetTypePtr,[esi].DIALOG.ntype
+	push	[eax].TYPES.lpclass
 	pop		lpclass
-
 	mov		al,22h
 	stosb
 	invoke SaveStr,edi,lpclass
 	add		edi,eax
 	mov		al,22h
 	stosb
-	assume esi:nothing
 	ret
 
 SaveClass endp
 
 SaveUDCClass proc
 
-	assume esi:ptr DIALOG
-
 	mov		al,22h
 	stosb
-	invoke SaveStr,edi,addr [esi].class
+	invoke SaveStr,edi,addr [esi].DIALOG.class
 	add		edi,eax
 	mov		al,22h
 	stosb
-	assume esi:nothing
 	ret
 
 SaveUDCClass endp
@@ -536,11 +426,10 @@ SaveExStyle endp
 SaveCtl proc uses ebx esi edi
 	LOCAL	buffer[512]:BYTE
 
-	assume esi:ptr DIALOG
 	;Is ctl deleted
-	mov		eax,[esi].hwnd
+	mov		eax,[esi].DIALOG.hwnd
 	.if eax!=-1
-		mov		eax,[esi].ntype
+		mov		eax,[esi].DIALOG.ntype
 		.if eax==0
 			;Dialog
 			invoke SaveName
@@ -552,7 +441,7 @@ SaveCtl proc uses ebx esi edi
 			mov		al,' '
 			stosb
 			invoke SaveCtlSize
-			mov		edx,[esi].helpid
+			mov		edx,[esi].DIALOG.helpid
 			.if edx
 				mov		al,','
 				stosb
@@ -562,7 +451,7 @@ SaveCtl proc uses ebx esi edi
 			.endif
 			mov		eax,0A0Dh
 			stosw
-			mov		al,[esi].caption
+			mov		al,[esi].DIALOG.caption
 			.if al
 				invoke SaveStr,edi,addr szCAPTION
 				add		edi,eax
@@ -576,16 +465,11 @@ SaveCtl proc uses ebx esi edi
 			sub		esi,sizeof DLGHEAD
 			invoke SaveDlgFont
 			invoke SaveDlgClass
-			mov		eax,esi
-			.if byte ptr [eax].DLGHEAD.menuid
+			.if byte ptr [esi].DLGHEAD.menuid
 				invoke SaveDlgMenu
 			.endif
-			add		esi,sizeof DLGHEAD
-			;This is stored in DLGHEAD
-			sub		esi,sizeof DLGHEAD
-			mov		eax,esi
-			.if [eax].DLGHEAD.lang || [eax].DLGHEAD.sublang
-				invoke SaveLanguage,addr [eax].DLGHEAD.lang,edi
+			.if [esi].DLGHEAD.lang || [esi].DLGHEAD.sublang
+				invoke SaveLanguage,addr [esi].DLGHEAD.lang,edi
 				add		edi,eax
 			.endif
 			add		esi,sizeof DLGHEAD
@@ -593,7 +477,7 @@ SaveCtl proc uses ebx esi edi
 			add		edi,eax
 			mov		al,' '
 			stosb
-			mov		eax,[esi].style
+			mov		eax,[esi].DIALOG.style
 			and		eax,dwNOTStyle
 			xor		eax,dwNOTStyle
 			.if eax
@@ -604,15 +488,15 @@ SaveCtl proc uses ebx esi edi
 				.endif
 				add		edi,eax
 			.endif
-			invoke SaveStyle,[esi].style,[esi].ntype,FALSE
+			invoke SaveStyle,[esi].DIALOG.style,[esi].DIALOG.ntype,FALSE
 			mov		ax,0A0Dh
 			stosw
-			.if [esi].exstyle
+			.if [esi].DIALOG.exstyle
 				invoke SaveStr,edi,addr szEXSTYLE
 				add		edi,eax
 				mov		al,' '
 				stosb
-				invoke SaveExStyle,[esi].exstyle
+				invoke SaveExStyle,[esi].DIALOG.exstyle
 				mov		ax,0A0Dh
 				stosw
 			.endif
@@ -640,25 +524,25 @@ SaveCtl proc uses ebx esi edi
 			invoke SaveUDCClass
 			mov		al,','
 			stosb
-			mov		eax,[esi].style
+			mov		eax,[esi].DIALOG.style
 			and		eax,dwNOTStyle
 			xor		eax,dwNOTStyle
 			.if eax
 				invoke SaveStr,edi,addr szNOTStyle
 				add		edi,eax
 			.endif
-			invoke SaveStyle,[esi].style,[esi].ntype,TRUE
+			invoke SaveStyle,[esi].DIALOG.style,[esi].DIALOG.ntype,TRUE
 			invoke SaveCtlSize
-			.if [esi].exstyle || [esi].helpid
+			.if [esi].DIALOG.exstyle || [esi].DIALOG.helpid
 				mov		al,','
 				stosb
-				.if [esi].exstyle
-					invoke SaveExStyle,[esi].exstyle
+				.if [esi].DIALOG.exstyle
+					invoke SaveExStyle,[esi].DIALOG.exstyle
 				.endif
-				.if [esi].helpid
+				.if [esi].DIALOG.helpid
 					mov		al,','
 					stosb
-					invoke ResEdBinToDec,[esi].helpid,addr buffer
+					invoke ResEdBinToDec,[esi].DIALOG.helpid,addr buffer
 					invoke SaveStr,edi,addr buffer
 					add		edi,eax
 				.endif
@@ -676,28 +560,28 @@ SaveCtl proc uses ebx esi edi
 			stosb
 			pop		eax
 			.if eax==17 || eax==27
-				.if byte ptr [esi].caption=='#'
+				.if byte ptr [esi].DIALOG.caption=='#'
 					; "#100"
 					invoke SaveCaption
-				.elseif  byte ptr [esi].caption>='0' && byte ptr [esi].caption<='9'
+				.elseif  byte ptr [esi].DIALOG.caption>='0' && byte ptr [esi].DIALOG.caption<='9'
 					; 100
-					invoke SaveStr,edi,addr [esi].caption
+					invoke SaveStr,edi,addr [esi].DIALOG.caption
 					add		edi,eax
 				.else
 					xor		ebx,ebx
-					.if byte ptr [esi].caption
+					.if byte ptr [esi].DIALOG.caption
 						invoke GetWindowLong,hPrj,0
 						invoke GetTypeMem,eax,TPE_RESOURCE
 						.if [eax].PROJECT.hmem
 							push	edi
 							mov		edi,[eax].PROJECT.hmem
 							.while byte ptr [edi].RESOURCEMEM.szname || [edi].RESOURCEMEM.value
-								invoke strcmp,addr [edi].RESOURCEMEM.szname,addr [esi].caption
+								invoke strcmp,addr [edi].RESOURCEMEM.szname,addr [esi].DIALOG.caption
 								.if !eax
 									.if [edi].RESOURCEMEM.value
 										; IDI_ICON
 										pop		edi
-										invoke SaveStr,edi,addr [esi].caption
+										invoke SaveStr,edi,addr [esi].DIALOG.caption
 										add		edi,eax
 										push	edi
 									.else
@@ -730,7 +614,7 @@ SaveCtl proc uses ebx esi edi
 			invoke SaveClass
 			mov		al,','
 			stosb
-			mov		eax,[esi].style
+			mov		eax,[esi].DIALOG.style
 			and		eax,dwNOTStyle
 			xor		eax,dwNOTStyle
 			.if eax
@@ -741,18 +625,18 @@ SaveCtl proc uses ebx esi edi
 				.endif
 				add		edi,eax
 			.endif
-			invoke SaveStyle,[esi].style,[esi].ntype,TRUE
+			invoke SaveStyle,[esi].DIALOG.style,[esi].DIALOG.ntype,TRUE
 			invoke SaveCtlSize
-			.if [esi].exstyle || [esi].helpid
+			.if [esi].DIALOG.exstyle || [esi].DIALOG.helpid
 				mov		al,','
 				stosb
-				.if [esi].exstyle
-					invoke SaveExStyle,[esi].exstyle
+				.if [esi].DIALOG.exstyle
+					invoke SaveExStyle,[esi].DIALOG.exstyle
 				.endif
-				.if [esi].helpid
+				.if [esi].DIALOG.helpid
 					mov		al,','
 					stosb
-					invoke ResEdBinToDec,[esi].helpid,addr buffer
+					invoke ResEdBinToDec,[esi].DIALOG.helpid,addr buffer
 					invoke SaveStr,edi,addr buffer
 					add		edi,eax
 				.endif
@@ -762,7 +646,6 @@ SaveCtl proc uses ebx esi edi
 		.endif
 	.endif
 	mov		eax,edi
-	assume esi:nothing
 	ret
 
 SaveCtl endp
@@ -775,57 +658,57 @@ ExportDialogNames proc uses ebx esi edi,hMem:DWORD
 	invoke GlobalLock,edi
 	push	edi
 	.if [esi].DLGHEAD.ftextmode
-		invoke SendMessage,[esi].DLGHEAD.hred,EM_GETMODIFY,0,0
-		.if eax
-			invoke GetWindowLong,hPrj,0
-			mov		ebx,eax
-			.while esi!=[ebx].PROJECT.hmem
-				add		ebx,sizeof PROJECT
-			.endw
-			mov		[ebx].PROJECT.hmem,0
-			push	[esi].DLGHEAD.hred
-			push	[esi].DLGHEAD.ftextmode
-			invoke SaveToMem,[esi].DLGHEAD.hred,edi
-			invoke GetWindowLong,hPrj,0
-			invoke ParseRCMem,edi,eax
-			.if fParseError
-				.if [ebx].PROJECT.hmem
-					invoke GlobalUnlock,[ebx].PROJECT.hmem
-					invoke GlobalFree,[ebx].PROJECT.hmem
-				.endif
-				mov		[ebx].PROJECT.hmem,esi
-				pop		eax
-				pop		eax
-			.else
-				invoke GetWindowLong,hDEd,DEWM_MEMORY
-				.if eax==esi
-;					invoke DestroySizeingRect
-					invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
-;					.if [esi].DLGHEAD.hfont
-;						invoke DeleteObject,[esi].DLGHEAD.hfont
-;						mov		[esi].DLGHEAD.hfont,0
-;					.endif
-					invoke SetWindowLong,hDEd,DEWM_MEMORY,0
-					invoke SetWindowLong,hDEd,DEWM_DIALOG,0
-					invoke SetWindowLong,hDEd,DEWM_PROJECT,0
-					invoke GlobalUnlock,esi
-					invoke GlobalFree,esi
-;					invoke CreateDlg,hDEd,ebx,TRUE
-				.endif
-				mov		esi,[ebx].PROJECT.hmem
-				mov		hMem,esi
-				pop		[esi].DLGHEAD.ftextmode
-				pop		[esi].DLGHEAD.hred
-				invoke SendMessage,[esi].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
-			.endif
-		.endif
+;		invoke SendMessage,[esi].DLGHEAD.hred,EM_GETMODIFY,0,0
+;		.if eax
+;			invoke GetWindowLong,hPrj,0
+;			mov		ebx,eax
+;			.while esi!=[ebx].PROJECT.hmem
+;				add		ebx,sizeof PROJECT
+;			.endw
+;			mov		[ebx].PROJECT.hmem,0
+;			push	[esi].DLGHEAD.hred
+;			push	[esi].DLGHEAD.ftextmode
+;			invoke SaveToMem,[esi].DLGHEAD.hred,edi
+;			invoke GetWindowLong,hPrj,0
+;			invoke ParseRCMem,edi,eax
+;			.if fParseError
+;				.if [ebx].PROJECT.hmem
+;					invoke GlobalUnlock,[ebx].PROJECT.hmem
+;					invoke GlobalFree,[ebx].PROJECT.hmem
+;				.endif
+;				mov		[ebx].PROJECT.hmem,esi
+;				pop		eax
+;				pop		eax
+;			.else
+;				invoke GetWindowLong,hDEd,DEWM_MEMORY
+;				.if eax==esi
+;;					invoke DestroySizeingRect
+;					invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
+;;					.if [esi].DLGHEAD.hfont
+;;						invoke DeleteObject,[esi].DLGHEAD.hfont
+;;						mov		[esi].DLGHEAD.hfont,0
+;;					.endif
+;					invoke SetWindowLong,hDEd,DEWM_MEMORY,0
+;					invoke SetWindowLong,hDEd,DEWM_DIALOG,0
+;					invoke SetWindowLong,hDEd,DEWM_PROJECT,0
+;					invoke GlobalUnlock,esi
+;					invoke GlobalFree,esi
+;;					invoke CreateDlg,hDEd,ebx,TRUE
+;				.endif
+;				mov		esi,[ebx].PROJECT.hmem
+;				mov		hMem,esi
+;				pop		[esi].DLGHEAD.ftextmode
+;				pop		[esi].DLGHEAD.hred
+;				invoke SendMessage,[esi].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
+;			.endif
+;		.endif
 	.endif
 	mov		esi,hMem
 	add		esi,sizeof DLGHEAD
   @@:
 	invoke SaveDefine
 	add		esi,size DIALOG
-	mov		eax,[esi]
+	mov		eax,[esi].DIALOG.hwnd
 	or		eax,eax
 	jne		@b
 	mov		byte ptr [edi],0
@@ -881,35 +764,12 @@ VerifyTebIndex endp
 ExportDialog proc uses esi edi,hRdMem:DWORD
 	LOCAL	hWrMem:DWORD
 	LOCAL	nTab:DWORD
-	LOCAL	nMiss:DWORD
 
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		hWrMem,eax
 	invoke GlobalLock,hWrMem
 	mov		esi,hRdMem
 	invoke VerifyTebIndex,esi
-;	mov		dlgps,10
-;	mov		dlgfn,0
-;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-;	invoke DestroyWindow,eax
-;	push	fntwt
-;	pop		dfntwt
-;	push	fntht
-;	pop		dfntht
-;	mov		eax,[esi].DLGHEAD.fontsize
-;	mov		dlgps,ax
-;	pushad
-;	lea		esi,[esi].DLGHEAD.font
-;	mov		edi,offset dlgfn
-;	xor		eax,eax
-;	mov		ecx,32
-;  @@:
-;	lodsb
-;	stosw
-;	loop	@b
-;	popad
-;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-;	invoke DestroyWindow,eax
 	mov		edi,hWrMem
 	mov		esi,hRdMem
 	add		esi,sizeof DLGHEAD
@@ -917,22 +777,13 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	mov		edi,eax
 	add		esi,sizeof DIALOG
 	mov		nTab,0
-	mov		nMiss,0
   @@:
-	invoke FindTab,nTab,hRdMem
+	call	FindCtlTab
 	.if eax
-		mov		esi,edx
 		invoke SaveCtl
 		mov		edi,eax
 		inc		nTab
-		mov		nMiss,0
 		jmp		@b
-	.else
-		.if nMiss<10
-			inc		nMiss
-			inc		nTab
-			jmp		@b
-		.endif
 	.endif
 	invoke SaveStr,edi,addr szEND
 	add		edi,eax
@@ -941,6 +792,20 @@ ExportDialog proc uses esi edi,hRdMem:DWORD
 	stosd
 	mov		eax,hWrMem
 	ret
+
+FindCtlTab:
+	mov		esi,hRdMem
+	lea		esi,[esi+sizeof DLGHEAD+sizeof DIALOG]
+	xor		eax,eax
+	mov		edx,nTab
+	.while [esi].DIALOG.hwnd
+		.if edx==[esi].DIALOG.tab
+			inc		eax
+			retn
+		.endif
+		lea		esi,[esi+sizeof DIALOG]
+	.endw
+	retn
 
 ExportDialog endp
 
