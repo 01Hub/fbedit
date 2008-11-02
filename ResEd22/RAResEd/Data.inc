@@ -490,3 +490,4 @@ fDialogChanged		dd ?
 hPrpCboDlg			dd ?
 fMenuErr			dd ?
 hDlgRed				dd ?
+hMnuFont			dd ?

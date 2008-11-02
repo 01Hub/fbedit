@@ -21,9 +21,14 @@ PGM_GETDROPTARGET	equ CCM_GETDROPTARGET
 
 DESIGN struct
 	hdlg			HWND ?
+	hbmp			HBITMAP ?
 	fmode			dd ?
 	ctlrect			RECT <?>
 	parpt			POINT <?>
+	dlgpt			POINT <?>
+	mnurect			RECT <?>
+	nmnu			dd ?
+	hmnu			dd ?
 	hselected		HWND ?
 DESIGN ends
 
@@ -880,7 +885,7 @@ MnuInx				dd ?
 ;hWinHwnd			dd ?
 ;hWinRgn				dd ?
 ;hComDC				dd ?
-hWinBmp				dd ?
+hWinBmp				HBITMAP ?
 ;hOldRgn				dd ?
 ;fNoParent			dd ?
 dfntwt				dd ?
@@ -2100,47 +2105,47 @@ CtlMultiSelect proc hWin:HWND
 
 CtlMultiSelect endp
 
-GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
-
-	mov		eax,lpDlgMem
-	mov		eax,[eax].DLGHEAD.lpmnu
-	.if eax
-		add		eax,sizeof MNUHEAD
-		mov		edx,MnuInx
-		inc		edx
-		invoke CreateSubMenu,eax,edx
-	.endif
-	ret
-
-GetMnuPopup endp
-
-GetMnuName proc uses ebx esi,lpDlgMem:DWORD,nid:DWORD
-
-	mov		esi,lpDlgMem
-	mov		eax,[esi].DLGHEAD.lpmnu
-	.if eax
-		mov		esi,eax
-		add		esi,sizeof MNUHEAD
-	  @@:
-		mov		eax,(MNUITEM ptr [esi]).itemflag
-		.if eax
-			.if eax!=-1
-				mov		eax,(MNUITEM ptr [esi]).itemid
-				.if eax==nid
-					lea		eax,(MNUITEM ptr [esi]).itemname
-					jmp		Ex
-				.endif
-			.endif
-			add		esi,sizeof MNUITEM
-			jmp		@b
-		.endif
-	.endif
-	xor		eax,eax
-  Ex:
-	ret
-
-GetMnuName endp
-
+;GetMnuPopup proc uses ebx esi,lpDlgMem:DWORD
+;
+;	mov		eax,lpDlgMem
+;	mov		eax,[eax].DLGHEAD.lpmnu
+;	.if eax
+;		add		eax,sizeof MNUHEAD
+;		mov		edx,MnuInx
+;		inc		edx
+;		invoke CreateSubMenu,eax,edx
+;	.endif
+;	ret
+;
+;GetMnuPopup endp
+;
+;GetMnuName proc uses ebx esi,lpDlgMem:DWORD,nid:DWORD
+;
+;	mov		esi,lpDlgMem
+;	mov		eax,[esi].DLGHEAD.lpmnu
+;	.if eax
+;		mov		esi,eax
+;		add		esi,sizeof MNUHEAD
+;	  @@:
+;		mov		eax,(MNUITEM ptr [esi]).itemflag
+;		.if eax
+;			.if eax!=-1
+;				mov		eax,(MNUITEM ptr [esi]).itemid
+;				.if eax==nid
+;					lea		eax,(MNUITEM ptr [esi]).itemname
+;					jmp		Ex
+;				.endif
+;			.endif
+;			add		esi,sizeof MNUITEM
+;			jmp		@b
+;		.endif
+;	.endif
+;	xor		eax,eax
+;  Ex:
+;	ret
+;
+;GetMnuName endp
+;
 ;CtlProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;	LOCAL	lpOldProc:DWORD
 ;	LOCAL	pt:POINT
@@ -3646,179 +3651,209 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		rect.bottom,eax
 			.endif
 			call	DrawRect
+		.elseif !ToolBoxID
+			mov		eax,lParam
+			movsx	edx,ax
+			shr		eax,16
+			cwde
+			mov		pt.x,edx
+			mov		pt.y,eax
+			invoke ClientToScreen,hWin,addr pt
+			invoke GetWindowRect,des.hdlg,addr rect
+			mov		eax,rect.left
+			sub		pt.x,eax
+			mov		eax,rect.top
+			sub		pt.y,eax
+			mov		eax,pt.x
+			mov		edx,pt.y
+			.if eax!=des.dlgpt.x || edx!=des.dlgpt.y
+				mov		des.dlgpt.x,eax
+				mov		des.dlgpt.y,edx
+				.if (eax>=des.mnurect.left && eax<=des.mnurect.right && edx>=des.mnurect.top && edx <=des.mnurect.bottom) || des.nmnu
+					shl		edx,16
+					movzx	eax,ax
+					or		eax,edx
+					invoke SendMessage,des.hdlg,WM_NCMOUSEMOVE,wParam,eax
+				.endif
+			.endif
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
-		mov		eax,lParam
-		movsx	edx,ax
-		shr		eax,16
-		cwde
-		mov		pt.x,edx
-		mov		pt.y,eax
-		invoke SetCapture,hWin
-		mov		ebx,des.hdlg
-		call	IsInWindow
-		.if eax
-			mov		fShift,FALSE
-			mov		fControl,FALSE
-			mov		eax,wParam
-			test	eax,MK_SHIFT
-			.if !ZERO?
-				mov		fShift,TRUE
-			.endif
-			;Control key
-			test	eax,MK_CONTROL
-			.if !ZERO?
-				mov		fControl,TRUE
-			.endif
-			mov		eax,hReSize
-			mov		des.hselected,eax
-			invoke DestroySizeingRect
-			invoke ShowWindow,hInvisible,SW_HIDE
-			invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-			invoke UpdateWindow,hDEd
-			.if ToolBoxID
-				;Is readOnly
-				invoke GetWindowLong,hDEd,DEWM_READONLY
-				.if !eax
-					invoke CaptureWin
-					call	SnapPt
-					mov		eax,pt.x
-					mov		MousePtDown.x,eax
-					mov		eax,pt.y
-					mov		MousePtDown.y,eax
-					mov		eax,pt.x
-					mov		des.ctlrect.left,eax
-					mov		des.ctlrect.right,eax
-					mov		eax,pt.y
-					mov		des.ctlrect.top,eax
-					mov		des.ctlrect.bottom,eax
-					mov		des.fmode,MODE_DRAWING
+		.if des.nmnu
+			dec		des.dlgpt.x
+			invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
+		.else
+			mov		eax,lParam
+			movsx	edx,ax
+			shr		eax,16
+			cwde
+			mov		pt.x,edx
+			mov		pt.y,eax
+			invoke SetCapture,hWin
+			mov		ebx,des.hdlg
+			call	IsInWindow
+			.if eax
+				mov		fShift,FALSE
+				mov		fControl,FALSE
+				mov		eax,wParam
+				test	eax,MK_SHIFT
+				.if !ZERO?
+					mov		fShift,TRUE
 				.endif
-			.else
-				push	ebx
-				push	esi
-				push	edi
-				invoke GetWindowLong,hDEd,DEWM_MEMORY
-				mov		esi,eax
-				lea		esi,[esi+sizeof DLGHEAD]
-				.while [esi].DIALOG.hwnd
-					lea		esi,[esi+sizeof DIALOG]
-				.endw
-				lea		esi,[esi-sizeof DIALOG]
-				.while esi>edi
-					invoke GetCtrlID,esi
-					.if eax
-						invoke GetDlgItem,des.hdlg,eax
-						mov		ebx,eax
-					.else
-						mov		ebx,des.hdlg
+				;Control key
+				test	eax,MK_CONTROL
+				.if !ZERO?
+					mov		fControl,TRUE
+				.endif
+				mov		eax,hReSize
+				mov		des.hselected,eax
+				invoke DestroySizeingRect
+				invoke ShowWindow,hInvisible,SW_HIDE
+				invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+				invoke UpdateWindow,hDEd
+				.if ToolBoxID
+					;Is readOnly
+					invoke GetWindowLong,hDEd,DEWM_READONLY
+					.if !eax
+						invoke CaptureWin
+						call	SnapPt
+						mov		eax,pt.x
+						mov		MousePtDown.x,eax
+						mov		eax,pt.y
+						mov		MousePtDown.y,eax
+						mov		eax,pt.x
+						mov		des.ctlrect.left,eax
+						mov		des.ctlrect.right,eax
+						mov		eax,pt.y
+						mov		des.ctlrect.top,eax
+						mov		des.ctlrect.bottom,eax
+						mov		des.fmode,MODE_DRAWING
 					.endif
-					call	IsInWindow
-					.break.if eax
+				.else
+					push	ebx
+					push	esi
+					push	edi
+					invoke GetWindowLong,hDEd,DEWM_MEMORY
+					mov		esi,eax
+					lea		esi,[esi+sizeof DLGHEAD]
+					.while [esi].DIALOG.hwnd
+						lea		esi,[esi+sizeof DIALOG]
+					.endw
 					lea		esi,[esi-sizeof DIALOG]
-				.endw
-				pop		edi
-				pop		esi
-				pop		eax
-				.if eax!=hCld
-					; Control
-					.if !fShift && !fControl
-						invoke GetWindowLong,hDEd,DEWM_READONLY
-						.if !eax
-							mov		eax,hMultiSel
-							.if eax
-								call	IsMultisel
+					.while esi>edi
+						invoke GetCtrlID,esi
+						.if eax
+							invoke GetDlgItem,des.hdlg,eax
+							mov		ebx,eax
+						.else
+							mov		ebx,des.hdlg
+						.endif
+						call	IsInWindow
+						.break.if eax
+						lea		esi,[esi-sizeof DIALOG]
+					.endw
+					pop		edi
+					pop		esi
+					pop		eax
+					.if eax!=hCld
+						; Control
+						.if !fShift && !fControl
+							invoke GetWindowLong,hDEd,DEWM_READONLY
+							.if !eax
+								mov		eax,hMultiSel
 								.if eax
-									mov		des.fmode,MODE_MULTISELMOVE
+									call	IsMultisel
+									.if eax
+										mov		des.fmode,MODE_MULTISELMOVE
+										invoke CaptureWin
+										call	SnapPt
+										mov		eax,pt.x
+										mov		MousePtDown.x,eax
+										mov		eax,pt.y
+										mov		MousePtDown.y,eax
+										ret
+									.endif
+									.while hMultiSel
+										invoke DestroyMultiSel,hMultiSel
+										mov		hMultiSel,eax
+									.endw
+								.endif
+								invoke GetWindowLong,hDEd,DEWM_MEMORY
+								.if ![eax].DLGHEAD.locked
+									mov		eax,hCld
+									mov		des.hselected,eax
 									invoke CaptureWin
 									call	SnapPt
 									mov		eax,pt.x
 									mov		MousePtDown.x,eax
 									mov		eax,pt.y
 									mov		MousePtDown.y,eax
-									ret
+									invoke GetWindowRect,hCld,addr des.ctlrect
+									invoke ScreenToClient,hInvisible,addr des.ctlrect.left
+									invoke ScreenToClient,hInvisible,addr des.ctlrect.right
+									mov		des.fmode,MODE_MOVING
 								.endif
-								.while hMultiSel
-									invoke DestroyMultiSel,hMultiSel
-									mov		hMultiSel,eax
-								.endw
 							.endif
-							invoke GetWindowLong,hDEd,DEWM_MEMORY
-							.if ![eax].DLGHEAD.locked
-								mov		eax,hCld
-								mov		des.hselected,eax
-								invoke CaptureWin
-								call	SnapPt
-								mov		eax,pt.x
-								mov		MousePtDown.x,eax
-								mov		eax,pt.y
-								mov		MousePtDown.y,eax
-								invoke GetWindowRect,hCld,addr des.ctlrect
-								invoke ScreenToClient,hInvisible,addr des.ctlrect.left
-								invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-								mov		des.fmode,MODE_MOVING
-							.endif
-						.endif
-					.elseif !fShift && fControl
-						.if hMultiSel
-							invoke CtlMultiSelect,hCld
-						.else
-							mov		edx,des.hdlg
-							mov		eax,hCld
-							.if eax!=des.hselected && edx!=des.hselected
-								invoke CtlMultiSelect,des.hselected
+						.elseif !fShift && fControl
+							.if hMultiSel
 								invoke CtlMultiSelect,hCld
+							.else
+								mov		edx,des.hdlg
+								mov		eax,hCld
+								.if eax!=des.hselected && edx!=des.hselected
+									invoke CtlMultiSelect,des.hselected
+									invoke CtlMultiSelect,hCld
+								.endif
 							.endif
+							.if hMultiSel
+								mov		des.fmode,MODE_MULTISEL
+								invoke PropertyList,-1
+							.endif
+						.elseif fShift && !fControl
+							.while hMultiSel
+								invoke DestroyMultiSel,hMultiSel
+								mov		hMultiSel,eax
+							.endw
+							invoke CaptureWin
+							call	SnapPt
+							mov		eax,pt.x
+							mov		MousePtDown.x,eax
+							mov		eax,pt.y
+							mov		MousePtDown.y,eax
+							mov		eax,pt.x
+							mov		des.ctlrect.left,eax
+							mov		des.ctlrect.right,eax
+							mov		eax,pt.y
+							mov		des.ctlrect.top,eax
+							mov		des.ctlrect.bottom,eax
+							mov		des.fmode,MODE_SELECT
 						.endif
-						.if hMultiSel
-							mov		des.fmode,MODE_MULTISEL
-							invoke PropertyList,-1
-						.endif
-					.elseif fShift && !fControl
+					.else
+						; Dialog
 						.while hMultiSel
 							invoke DestroyMultiSel,hMultiSel
 							mov		hMultiSel,eax
 						.endw
-						invoke CaptureWin
-						call	SnapPt
-						mov		eax,pt.x
-						mov		MousePtDown.x,eax
-						mov		eax,pt.y
-						mov		MousePtDown.y,eax
-						mov		eax,pt.x
-						mov		des.ctlrect.left,eax
-						mov		des.ctlrect.right,eax
-						mov		eax,pt.y
-						mov		des.ctlrect.top,eax
-						mov		des.ctlrect.bottom,eax
-						mov		des.fmode,MODE_SELECT
-					.endif
-				.else
-					; Dialog
-					.while hMultiSel
-						invoke DestroyMultiSel,hMultiSel
-						mov		hMultiSel,eax
-					.endw
-					mov		des.fmode,0
-					mov		eax,hCld
-					.if eax==des.hselected || (fShift && !fControl)
-						invoke CaptureWin
-						call	SnapPt
-						mov		eax,pt.x
-						mov		MousePtDown.x,eax
-						mov		eax,pt.y
-						mov		MousePtDown.y,eax
-						mov		eax,pt.x
-						mov		des.ctlrect.left,eax
-						mov		des.ctlrect.right,eax
-						mov		eax,pt.y
-						mov		des.ctlrect.top,eax
-						mov		des.ctlrect.bottom,eax
-						mov		des.fmode,MODE_SELECT
+						mov		des.fmode,0
+						mov		eax,hCld
+						.if eax==des.hselected || (fShift && !fControl)
+							invoke CaptureWin
+							call	SnapPt
+							mov		eax,pt.x
+							mov		MousePtDown.x,eax
+							mov		eax,pt.y
+							mov		MousePtDown.y,eax
+							mov		eax,pt.x
+							mov		des.ctlrect.left,eax
+							mov		des.ctlrect.right,eax
+							mov		eax,pt.y
+							mov		des.ctlrect.top,eax
+							mov		des.ctlrect.bottom,eax
+							mov		des.fmode,MODE_SELECT
+						.endif
 					.endif
 				.endif
+				invoke NotifyParent
 			.endif
-			invoke NotifyParent
 		.endif
 	.elseif eax==WM_LBUTTONUP
 		mov		eax,lParam
@@ -5895,18 +5930,36 @@ CloseDialog endp
 
 MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
 
 	mov		eax,uMsg
-	.if eax==WM_CLOSE
-;		.if hDlgMnu
-;			invoke DestroyMenu,hDlgMnu
-;			mov		hDlgMnu,0
-;		.endif
-;		invoke EnumChildWindows,hWin,addr DlgEnumDelProc,0
-;		invoke DestroyWindow,hWin
-;		mov		hPreview,0
-;		invoke NotifyParent
-	.elseif eax==WM_INITDIALOG
+	.if eax==WM_INITDIALOG
+		.if des.hbmp
+			invoke DeleteObject,des.hbmp
+			mov		des.hbmp,0
+		.endif
+		invoke GetClientRect,hWin,addr rect
+		invoke GetDC,hWin
+		mov		hDC,eax
+		invoke CreateCompatibleDC,hDC
+		mov		mDC,eax
+		invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
+		invoke SelectObject,mDC,eax
+		push	eax
+		invoke GetStockObject,DKGRAY_BRUSH
+		invoke FillRect,mDC,addr rect,eax
+		pop		eax
+		invoke SelectObject,mDC,eax
+		mov		des.hbmp,eax
+		invoke DeleteDC,mDC
+		invoke ReleaseDC,hWin,hDC
+		invoke GetWindowRect,hWin,addr rect
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if [eax].DLGHEAD.menuid
+			invoke GetSystemMetrics,SM_CYMENU
+			add		rect.bottom,eax
+		.endif
 		invoke GetWindowLong,hDEd,DEWM_SCROLLY
 		push	eax
 		invoke GetWindowLong,hDEd,DEWM_SCROLLX
@@ -5917,52 +5970,14 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shl		edx,3
 		neg		edx
 		add		edx,10
-		invoke SetWindowPos,hWin,0,eax,edx,0,0,SWP_NOSIZE or SWP_NOZORDER
+		mov		ecx,rect.bottom
+		sub		ecx,rect.top
+		mov		rect.bottom,ecx
+		mov		ecx,rect.left
+		sub		rect.right,ecx
+		invoke SetWindowPos,hWin,0,eax,edx,rect.right,rect.bottom,SWP_NOZORDER
 		mov		eax,FALSE
 		ret
-;		mov		eax,hWin
-;		mov		hDlg,eax
-;		.if hDlgMnu
-;			invoke GetMenu,hWin
-;			invoke DestroyMenu,eax
-;			invoke SetMenu,hWin,hDlgMnu
-;		.endif
-;		invoke GetWindowRect,hWin,addr rect
-;		mov		eax,pDlgMem
-;		add		eax,sizeof DLGHEAD
-;		test	[eax].DIALOG.style,WS_CAPTION
-;		.if ZERO?
-;			invoke GetSystemMetrics,SM_CYCAPTION
-;			push	eax
-;			invoke GetSystemMetrics,SM_CYDLGFRAME
-;			push	eax
-;			invoke GetSystemMetrics,SM_CXDLGFRAME
-;			push	eax
-;			mov		eax,rect.right
-;			sub		eax,rect.left
-;			pop		ecx
-;			add		eax,ecx
-;			add		eax,ecx
-;			mov		edx,rect.bottom
-;			sub		edx,rect.top
-;			pop		ecx
-;			add		edx,ecx
-;			add		edx,ecx
-;			pop		ecx
-;			add		edx,ecx
-;			invoke SetWindowPos,hWin,0,0,0,eax,edx,SWP_NOMOVE or SWP_NOZORDER
-;		.endif
-;		invoke EnumChildWindows,hWin,addr DlgEnumProc,0
-;		invoke NotifyParent
-;	.elseif eax==WM_COMMAND
-;		mov		eax,wParam
-;		movzx	edx,ax
-;		shr		eax,16
-;		.if eax==BN_CLICKED
-;			.if edx==IDCANCEL
-;				invoke PostMessage,hWin,WM_CLOSE,0,0
-;			.endif
-;		.endif
 	.else
 		mov		eax,FALSE
 		ret
@@ -5973,40 +5988,195 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 MakeDlgProc endp
 
 MakeDlgClassProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	buffer[512]:BYTE
+	LOCAL	buffer1[128]:BYTE
+	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
+	LOCAL	rect2:RECT
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	nInx:DWORD
+	LOCAL	pt:POINT
+	LOCAL	fMnu:DWORD
+	LOCAL	ps:PAINTSTRUCT
 
 	mov		eax,uMsg
 	.if eax==WM_NCCALCSIZE
-		mov		ebx,lParam
-		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.left
-		add		eax,4
-		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.left,eax
-		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.top
-		add		eax,20
-		mov		[ebx].NCCALCSIZE_PARAMS.rgrc.top,eax
-		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.right
-		sub		eax,4
-		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.right,eax
-		mov		eax,[ebx].NCCALCSIZE_PARAMS.rgrc.bottom
-		sub		eax,4
-		;mov		[ebx].NCCALCSIZE_PARAMS.rgrc.bottom,eax
-
-		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.left
-		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.top
-		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.right
-		mov		eax,[ebx+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.bottom
-
-		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.left
-		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.top
-		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.right
-		mov		eax,[ebx+sizeof RECT+sizeof RECT].NCCALCSIZE_PARAMS.rgrc.bottom
-
-
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if [eax].DLGHEAD.menuid
+			mov		ebx,lParam
+			invoke GetSystemMetrics,SM_CYMENU
+			add		[ebx].NCCALCSIZE_PARAMS.rgrc.top,eax
+		.endif
+	.elseif eax==WM_NCPAINT
 		xor		eax,eax
-		inc		eax
-;		ret
-	.elseif eax==WM_NCCREATE
-;PrintHex wParam
-;PrintHex lParam
+		mov		des.mnurect.left,eax
+		mov		des.mnurect.top,eax
+		mov		des.mnurect.right,eax
+		mov		des.mnurect.bottom,eax
+		mov		rect1.left,eax
+		mov		rect1.top,eax
+		mov		rect1.right,eax
+		mov		rect1.bottom,eax
+		mov		nInx,eax
+		mov		des.nmnu,eax
+		mov		fMnu,eax
+		mov		rect2.left,eax
+		mov		rect2.top,eax
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		mov		ebx,eax
+		.if [ebx].DLGHEAD.menuid
+			invoke GetMnuString,addr [ebx].DLGHEAD.menuid,addr buffer
+			mov		[ebx].DLGHEAD.lpmnu,eax
+			invoke GetWindowDC,hWin
+			mov		hDC,eax
+			invoke CreateCompatibleDC,hDC
+			mov		mDC,eax
+			invoke GetWindowLong,hWin,GWL_STYLE
+			push	eax
+			invoke GetWindowLong,hWin,GWL_EXSTYLE
+			pop		edx
+			invoke AdjustWindowRectEx,addr rect1,edx,FALSE,eax
+			invoke GetWindowRect,hWin,addr rect
+			mov		eax,rect.left
+			sub		rect.right,eax
+			mov		rect.left,0
+			mov		eax,rect.top
+			sub		rect.bottom,eax
+			mov		rect.top,0
+			mov		eax,rect1.left
+			sub		rect.left,eax
+			mov		eax,rect1.right
+			sub		rect.right,eax
+			mov		eax,rect1.top
+			sub		rect.top,eax
+			mov		eax,rect1.bottom
+			sub		rect.bottom,eax
+			invoke GetSystemMetrics,SM_CYMENU
+			add		eax,rect.top
+			.if eax<rect.bottom
+				mov		rect.bottom,eax
+			.endif
+			invoke CopyRect,addr des.mnurect,addr rect
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		rect2.right,eax
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			mov		rect2.bottom,edx
+			invoke CreateCompatibleBitmap,hDC,eax,edx
+			invoke SelectObject,mDC,eax
+			push	eax
+			invoke FillRect,mDC,addr rect2,COLOR_BTNFACE+1
+			invoke SetBkMode,mDC,TRANSPARENT
+			invoke SelectObject,mDC,hMnuFont
+			push	eax
+			mov		eax,rect2.left
+			mov		rect2.right,eax
+		  @@:
+			invoke GetStrItem,addr buffer,addr buffer1
+			.if buffer1
+				inc		nInx
+				xor		eax,eax
+				mov		rect1.left,eax
+				mov		rect1.top,eax
+				mov		rect1.right,eax
+				mov		rect1.bottom,eax
+				invoke DrawText,mDC,addr buffer1,-1,addr rect1,DT_SINGLELINE or DT_CALCRECT
+				mov		eax,rect2.right
+				mov		rect2.left,eax
+				mov		eax,rect1.right
+				add		rect2.right,eax
+				invoke DrawText,mDC,addr buffer1,-1,addr rect2,DT_SINGLELINE
+				mov		eax,des.dlgpt.x
+				sub		eax,des.mnurect.left
+				mov		edx,des.dlgpt.y
+				sub		edx,des.mnurect.top
+				.if eax>=rect2.left && eax<=rect2.right && edx>=rect2.top && edx<=rect2.bottom
+					mov		eax,nInx
+					mov		des.nmnu,eax
+					dec		rect2.bottom
+					invoke GetSystemMetrics,SM_SWAPBUTTON
+					.if eax
+						mov		eax,VK_RBUTTON
+					.else
+						mov		eax,VK_LBUTTON
+					.endif
+					invoke GetAsyncKeyState,eax
+					and		eax,8000h
+					push	eax
+					.if eax
+						mov		eax,BDR_SUNKENOUTER
+					.else
+						mov		eax,BDR_RAISEDINNER
+					.endif
+					invoke DrawEdge,mDC,addr rect2,eax,BF_RECT
+					pop		edx
+					mov		eax,[ebx].DLGHEAD.lpmnu
+					.if eax && edx
+						mov		eax,nInx
+						mov		fMnu,eax
+						invoke GetWindowRect,hWin,addr rect1
+						mov		eax,rect1.left
+						add		eax,rect.left
+						add		eax,rect2.left
+						mov		pt.x,eax
+						mov		eax,rect1.top
+						add		eax,rect.bottom
+						dec		eax
+						mov		pt.y,eax
+					.endif
+					inc		rect2.bottom
+				.endif
+				jmp		@b
+			.endif
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			invoke BitBlt,hDC,rect.left,rect.top,eax,edx,mDC,0,0,SRCCOPY
+			pop		eax
+			invoke SelectObject,mDC,eax
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+			invoke DeleteDC,mDC
+			invoke ReleaseDC,hWin,hDC
+			.if fMnu
+				mov		eax,[ebx].DLGHEAD.lpmnu
+				add		eax,sizeof MNUHEAD
+				invoke CreateSubMenu,eax,fMnu
+				.if eax
+					.if des.hmnu
+						push	eax
+						invoke DestroyMenu,des.hmnu
+						mov		des.hmnu,0
+						pop		eax
+					.endif
+					mov		des.hmnu,eax
+					invoke TrackPopupMenu,des.hmnu,TPM_LEFTALIGN or TPM_LEFTBUTTON,pt.x,pt.y,0,hWin,0
+				.endif
+			.endif
+		.endif
+	.elseif eax==WM_NCMOUSEMOVE
+		invoke SetWindowPos,hWin,0,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
+	.elseif eax==WM_EXITMENULOOP
+		.if des.hmnu
+			invoke DestroyMenu,des.hmnu
+		.endif
+		xor		eax,eax
+		mov		des.hmnu,eax
+		mov		des.dlgpt.x,eax
+		mov		des.dlgpt.y,eax
+		invoke SetWindowPos,hWin,0,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
+	.elseif eax==WM_ERASEBKGND
+		.if fGrid
+			invoke GetClientRect,hWin,addr rect
+			invoke FillRect,wParam,addr rect,hGridBr
+			xor		eax,eax
+			;inc		eax
+			ret
+		.endif
 	.endif
 	invoke DefDlgProc,hWin,uMsg,wParam,lParam
 	ret
@@ -6101,20 +6271,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	mov		[ebx].MyDLGTEMPLATEEX.ccy,ax
 	mov		[ebx].MyDLGTEMPLATEEX.menu,0
 	add		ebx,sizeof MyDLGTEMPLATEEX
-;	;Menu
-;	.if [edi].DLGHEAD.menuid
-;		.if [edi].DLGHEAD.lpmnu
-;			mov		eax,[edi].DLGHEAD.lpmnu
-;			invoke MakeMnuBar,eax
-;			mov		hDlgMnu,eax
-;		.endif
-;		mov		word ptr [ebx],-1
-;		add		ebx,2
-;		mov		word ptr [ebx],10000
-;	.else
-;		mov		word ptr [ebx],0
-;	.endif
-;	add		ebx,2
 	;Class
 	invoke SaveWideChar,addr szDlgChildClass,ebx
 	add		ebx,eax
@@ -6190,6 +6346,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		jmp		@b
 	.endif
 	pop		ebx
+	invoke SetWindowLong,hDEd,DEWM_MEMORY,hMem
 	invoke CreateDialogIndirectParam,hInstance,ebx,hDEd,offset MakeDlgProc,0
 	mov		hDlg,eax
 	invoke GlobalFree,ebx
@@ -6197,14 +6354,11 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	.if eax
 		invoke DestroyWindow,eax
 	.endif
-	;invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 	invoke SetWindowLong,hDEd,DEWM_DIALOG,hDlg
 	mov		esi,hMem
 	mov		eax,hDEd
 	mov		[esi+sizeof DLGHEAD].DIALOG.hpar,eax
 	invoke SetWindowLong,hDlg,GWL_ID,0
-	invoke SetWindowLong,hDEd,DEWM_MEMORY,esi
-	;lea		eax,[esi+sizeof DLGHEAD]
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
 	invoke EnumChildWindows,hDlg,addr DlgEnumProc,hDlg
 	.if nSelID==-1

@@ -432,6 +432,17 @@ GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD,fEdit:DWORD
 	LOCAL	bux:DWORD
 	LOCAL	buy:DWORD
 
+	mov		esi,lpDIALOG
+	mov		edi,lpRECT
+	mov		eax,[esi].DIALOG.dux
+	mov		[edi],ax
+	mov		eax,[esi].DIALOG.duy
+	mov		[edi+2],ax
+	mov		eax,[esi].DIALOG.duccx
+	mov		[edi+4],ax
+	mov		eax,[esi].DIALOG.duccy
+	mov		[edi+6],ax
+
 ;	mov		esi,lpDIALOG
 ;	mov		edi,lpRECT
 ;	mov		eax,[esi].DIALOG.ntype
@@ -527,21 +538,21 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	mov		edi,esi
 	mov		pDlgMem,esi
 	add		esi,sizeof DLGHEAD
-	mov		dlgdata,WS_VISIBLE or WS_CAPTION
-	mov		dlgps,0
-	mov		dlgfn,0
-	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
-	mov		eax,fntwt
-	mov		dfntwt,eax
-	mov		eax,fntht
-	mov		dfntht,eax
-	.if byte ptr [edi].DLGHEAD.font
-		mov		dlgdata,WS_VISIBLE or WS_CAPTION or DS_SETFONT
-		mov		eax,[edi].DLGHEAD.fontsize
-		mov		dlgps,ax
-		invoke SaveWideChar,addr [edi].DLGHEAD.font,offset dlgfn
-	.endif
-	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
+;	mov		dlgdata,WS_VISIBLE or WS_CAPTION
+;	mov		dlgps,0
+;	mov		dlgfn,0
+;	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
+;	mov		eax,fntwt
+;	mov		dfntwt,eax
+;	mov		eax,fntht
+;	mov		dfntht,eax
+;	.if byte ptr [edi].DLGHEAD.font
+;		mov		dlgdata,WS_VISIBLE or WS_CAPTION or DS_SETFONT
+;		mov		eax,[edi].DLGHEAD.fontsize
+;		mov		dlgps,ax
+;		invoke SaveWideChar,addr [edi].DLGHEAD.font,offset dlgfn
+;	.endif
+;	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
 	mov		eax,[esi].DIALOG.style
 	.if byte ptr [edi].DLGHEAD.font
 		or		eax,DS_SETFONT

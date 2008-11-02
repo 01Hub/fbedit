@@ -1257,6 +1257,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	dwbytes:DWORD
 	LOCAL	lf:LOGFONT
 	LOCAL	chrg:CHARRANGE
+	LOCAL	ncm:NONCLIENTMETRICS
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -1284,7 +1285,12 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hOut,WM_SETFONT,hredfont,0
 		invoke SetupCasetab
 		invoke SortStyles
+		mov		ncm.cbSize,sizeof NONCLIENTMETRICS
+		invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
+		invoke CreateFontIndirect,addr ncm.lfMenuFont
+		mov		hMnuFont,eax
 	.elseif	eax==WM_DESTROY
+		invoke DeleteObject,hMnuFont
 		invoke DeleteObject,hredfont
 	.elseif	eax==WM_SETFONT
 		invoke SendMessage,hPrp,WM_SETFONT,wParam,TRUE
