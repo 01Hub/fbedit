@@ -694,7 +694,7 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 	.endw
 	mov		eax,nType
 	.if eax==TPE_DIALOG
-		invoke CreateDlg,hDEd,esi,FALSE
+		invoke CreateDlg,hDEd,esi
 		mov		[esi].PROJECT.hmem,eax
 		mov		[esi].PROJECT.ntype,TPE_DIALOG
 		invoke GetProjectItemName,esi,addr buffer

@@ -1504,15 +1504,15 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if hDialog
 			invoke SendMessage,hDialog,WM_SIZE,0,0
 		.endif
-	.elseif eax==WM_CTLCOLOREDIT
-		xor		eax,eax
-		mov		edx,lParam
-		.if edx==hOut
-			invoke SetBkColor,wParam,color.back
-			invoke SetTextColor,wParam,color.text
-			mov		eax,hBrBack
-		.endif
-		jmp		Ex
+;	.elseif eax==WM_CTLCOLOREDIT
+;		xor		eax,eax
+;		mov		edx,lParam
+;		.if edx==hOut
+;			invoke SetBkColor,wParam,color.back
+;			invoke SetTextColor,wParam,color.text
+;			mov		eax,hBrBack
+;		.endif
+;		jmp		Ex
 	.elseif eax==WM_CONTEXTMENU
 		invoke GetParent,hWin
 		mov		edx,wParam
@@ -1754,7 +1754,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 			.endif
 		.endif
-		invoke CreateDlg,hDEd,lParam,FALSE
+		invoke CreateDlg,hDEd,lParam
 		push	eax
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax
@@ -2084,12 +2084,20 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if hTabSet
 				invoke DestroyWindow,hTabSet
 				mov		hTabSet,0
+				invoke ShowWindow,hInvisible,SW_SHOWNA
 			.else
+				mov		nTabSet,0
+				.while hMultiSel
+					invoke GetParent,hMultiSel
+					invoke DestroyMultiSel,hMultiSel
+					mov		hMultiSel,eax
+				.endw
+				invoke DestroySizeingRect
+				invoke ShowWindow,hInvisible,SW_HIDE
 				invoke GetClientRect,hDEd,addr rect
 				invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditDummyClass,NULL,WS_CHILD or WS_VISIBLE,0,0,rect.right,rect.bottom,hDEd,123456789,hInstance,0
 				mov		hTabSet,eax
-				invoke SetWindowPos,eax,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
-				mov		nTabSet,0
+				invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
 			.endif
 		.endif
 	.elseif eax==DEM_EXPORTDLG
@@ -2257,7 +2265,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !fParseError
 						invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 						mov		[ebx].DLGHEAD.ftextmode,FALSE
-						invoke SizeingRect,[ebx+sizeof DLGHEAD].DIALOG.hwnd,FALSE
+						invoke SizeingRect,des.hdlg,FALSE
 					.endif
 				.endif
 			.endif
