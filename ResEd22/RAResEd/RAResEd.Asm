@@ -282,7 +282,7 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	mov		wc.cbWndExtra,0
 	push	hInstance
 	pop		wc.hInstance
-	mov		wc.hbrBackground,NULL
+	mov		wc.hbrBackground,COLOR_BTNFACE+1;NULL
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset	szDlgEditDummyClass
 	mov		wc.hIcon,0
@@ -2004,7 +2004,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,hDEd,NULL,TRUE
 		jmp		Ex
 	.elseif eax==DEM_COMPACT
-		invoke CompactDialog,hDEd
+;		invoke CompactDialog,hDEd
 		jmp		Ex
 	.elseif eax==DEM_EXPORTTORC
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
@@ -2093,11 +2093,18 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		hMultiSel,eax
 				.endw
 				invoke DestroySizeingRect
-				invoke ShowWindow,hInvisible,SW_HIDE
 				invoke GetClientRect,hDEd,addr rect
 				invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditDummyClass,NULL,WS_CHILD or WS_VISIBLE,0,0,rect.right,rect.bottom,hDEd,123456789,hInstance,0
 				mov		hTabSet,eax
-				invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
+				invoke ShowWindow,hInvisible,SW_HIDE
+
+	invoke ShowWindow,hTabSet,SW_HIDE
+	invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+	invoke UpdateWindow,hDEd
+
+;				invoke ShowWindow,hTabSet,SW_SHOW
+;				invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
+;				invoke InvalidateRect,hDEd,NULL,TRUE
 			.endif
 		.endif
 	.elseif eax==DEM_EXPORTDLG

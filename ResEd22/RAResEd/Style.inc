@@ -1835,6 +1835,9 @@ rsstyledef		dd ACS_CENTER
 				dd SS_NOTIFY
 				dd SS_NOTIFY
 				db 'SS_NOTIFY',0
+				dd SS_OWNERDRAW
+				dd 1Fh
+				db 'SS_OWNERDRAW',0
 				dd SS_PATHELLIPSIS
 				dd SS_ELLIPSISMASK
 				db 'SS_PATHELLIPSIS',0

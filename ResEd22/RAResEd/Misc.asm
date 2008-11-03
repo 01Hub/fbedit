@@ -1149,6 +1149,50 @@ ConvertToDuy proc uses ebx,py:DWORD
 
 ConvertToDuy endp
 
+ConvertDuxToPix proc dux:DWORD
+	LOCAL	bux:DWORD
+
+	invoke GetDialogBaseUnits
+	and		eax,0FFFFh
+	mov		bux,eax
+
+	mov		eax,dux
+	cdq
+	mov		ecx,fntwt
+	imul	ecx
+	mov		ecx,bux
+	imul	ecx
+	mov		ecx,dfntwt
+	idiv	ecx
+	cdq
+	mov		ecx,4
+	idiv	ecx
+	ret
+
+ConvertDuxToPix endp
+
+ConvertDuyToPix proc duy:DWORD
+	LOCAL	buy:DWORD
+
+	invoke GetDialogBaseUnits
+	shr		eax,16
+	mov		buy,eax
+
+	mov		eax,duy
+	cdq
+	mov		ecx,fntht
+	imul	ecx
+	mov		ecx,buy
+	imul	ecx
+	mov		ecx,dfntht
+	idiv	ecx
+	cdq
+	mov		ecx,8
+	idiv	ecx
+	ret
+
+ConvertDuyToPix endp
+
 GetTypePtr proc nType:DWORD
 
 	push	edx

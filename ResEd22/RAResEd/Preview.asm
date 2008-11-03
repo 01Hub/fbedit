@@ -178,15 +178,14 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			invoke SendMessage,hWin,PBM_STEPIT,0,0
 		.elseif eax==13
 			;TreeView
-;			mov		eax,lpHandles
-;			invoke SendMessage,hWin,TVM_SETIMAGELIST,0,[eax].ADDINHANDLES.hTbrIml
-			invoke PrevDo_TreeViewAddNode,hWin,TVI_ROOT,NULL,addr [esi].DIALOG.idname,42+0
+			invoke SendMessage,hWin,TVM_SETIMAGELIST,0,hPrjIml
+			invoke PrevDo_TreeViewAddNode,hWin,TVI_ROOT,NULL,addr [esi].DIALOG.idname,0
 			mov		edx,eax
 			push	eax
-			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,42+1
+			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,1
 			mov		edx,eax
 			push	eax
-			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,42+2
+			invoke PrevDo_TreeViewAddNode,hWin,edx,NULL,addr [esi].DIALOG.idname,2
 			pop		eax
 			invoke SendMessage,hWin,TVM_EXPAND,TVE_EXPAND,eax
 			pop		eax
@@ -194,21 +193,20 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 		.elseif eax==14
 			;ListView
 			invoke SendMessage,hWin,LVM_SETCOLUMNWIDTH,-1,LVSCW_AUTOSIZE
-;			mov		eax,lpHandles
-;			invoke SendMessage,hWin,LVM_SETIMAGELIST,LVSIL_SMALL,[eax].ADDINHANDLES.hTbrIml
+			invoke SendMessage,hWin,LVM_SETIMAGELIST,LVSIL_SMALL,hPrjIml
 			mov		lvi.imask,LVIF_TEXT or LVIF_IMAGE
 			mov		lvi.iItem,0
 			mov		lvi.iSubItem,0
 			lea		eax,[esi].DIALOG.idname
 			mov		lvi.pszText,eax
 			mov		lvi.cchTextMax,0
-			mov		lvi.iImage,42+0
+			mov		lvi.iImage,0
 			invoke SendMessage,hWin,LVM_INSERTITEM,0,addr lvi
 			mov		lvi.iItem,1
-			mov		lvi.iImage,42+1
+			mov		lvi.iImage,1
 			invoke SendMessage,hWin,LVM_INSERTITEM,0,addr lvi
 			mov		lvi.iItem,2
-			mov		lvi.iImage,42+2
+			mov		lvi.iImage,2
 			invoke SendMessage,hWin,LVM_INSERTITEM,0,addr lvi
 		.elseif eax==17
 			;Image
@@ -274,19 +272,18 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			invoke SendMessage,hWin,TB_ADDBUTTONS,1,addr tbb
 		.elseif eax==24
 			;ImageCombo
-;			mov		eax,lpHandles
-;			invoke SendMessage,hWin,CBEM_SETIMAGELIST,0,[eax].ADDINHANDLES.hTbrIml
+			invoke SendMessage,hWin,CBEM_SETIMAGELIST,0,hPrjIml
 			mov		cbei._mask,CBEIF_IMAGE or CBEIF_TEXT or CBEIF_SELECTEDIMAGE
 			mov		cbei.iItem,0
 			lea		eax,[esi].DIALOG.idname
 			mov		cbei.pszText,eax
 			mov		cbei.cchTextMax,32
-			mov		cbei.iImage,42+0
-			mov		cbei.iSelectedImage,42+0
+			mov		cbei.iImage,0
+			mov		cbei.iSelectedImage,0
 			invoke SendMessage,hWin,CBEM_INSERTITEM,0,addr cbei
 			mov		cbei.iItem,1
-			mov		cbei.iImage,42+1
-			mov		cbei.iSelectedImage,42+1
+			mov		cbei.iImage,1
+			mov		cbei.iSelectedImage,1
 			invoke SendMessage,hWin,CBEM_INSERTITEM,0,addr cbei
 			invoke SendMessage,hWin,CB_SETCURSEL,0,0
 		.elseif eax==26
@@ -409,6 +406,13 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke EnumChildWindows,hWin,addr DlgEnumProc,hWin
 		invoke NotifyParent
+	.elseif eax==WM_DRAWITEM
+		mov		esi,lParam
+		invoke GetStockObject,GRAY_BRUSH
+		invoke FillRect,[esi].DRAWITEMSTRUCT.hdc,addr [esi].DRAWITEMSTRUCT.rcItem,eax
+		xor		eax,eax
+		inc		eax
+		ret
 ;	.elseif eax==WM_COMMAND
 ;		mov		eax,wParam
 ;		movzx	edx,ax
@@ -624,7 +628,6 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 		mov		eax,[edi].DIALOG.exstyle
 		mov		[ebx].MyDLGITEMTEMPLATE.dwExtendedStyle,eax
 		invoke GetCtrlSize,edi,addr [ebx].MyDLGITEMTEMPLATE.x,FALSE
-;		mov		eax,[edi].DIALOG.id
 		mov		eax,nInx
 		mov		[ebx].MyDLGITEMTEMPLATE.id,ax
 		add		ebx,sizeof MyDLGITEMTEMPLATE
