@@ -88,7 +88,7 @@ HexConv proc lpBuff:DWORD,nVal:DWORD
 HexConv endp
 
 ShowStyles proc uses ebx esi edi,hWin:HWND
-	LOCAL	nHeight:DWORD
+;	LOCAL	nHeight:DWORD
 	LOCAL	buffer[16]:BYTE
 
 	invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0

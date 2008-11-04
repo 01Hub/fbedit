@@ -485,11 +485,11 @@ ParseSkip proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
 ParseSkip endp
 
-ConvertSize proc uses esi,lpMem:DWORD
-	LOCAL	bux:DWORD
-	LOCAL	buy:DWORD
-	LOCAL	rect:RECT
-
+;ConvertSize proc uses esi,lpMem:DWORD
+;	LOCAL	bux:DWORD
+;	LOCAL	buy:DWORD
+;	LOCAL	rect:RECT
+;
 ;	mov		esi,lpMem
 ;	mov		dlgps,10
 ;	mov		dlgfn,0
@@ -616,8 +616,8 @@ ConvertSize proc uses esi,lpMem:DWORD
 ;	idiv	ecx
 ;	imul	ecx
 ;	retn
-
-ConvertSize endp
+;
+;ConvertSize endp
 
 ConvNum proc lpProMem:DWORD,lpBuff:DWORD
 
@@ -965,7 +965,7 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	hBmp:DWORD
+;	LOCAL	hBmp:DWORD
 	LOCAL	nSize:DWORD
 
 	invoke strcpy,addr buffer,offset wordbuff
@@ -1720,7 +1720,7 @@ ParseControls endp
 
 ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	LOCAL	hMem:DWORD
-	LOCAL	nPixy:DWORD
+;	LOCAL	nPixy:DWORD
 
 	invoke AddTypeMem,lpProMem,MaxMem,TPE_DIALOG
 	mov		hMem,eax
@@ -1898,7 +1898,7 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.if !eax
 		invoke ParseControls,lpProMem
 	.endif
-	invoke ConvertSize,hMem
+;	invoke ConvertSize,hMem
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
@@ -2061,7 +2061,7 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.if !eax
 		invoke ParseControls,lpProMem
 	.endif
-	invoke ConvertSize,hMem
+;	invoke ConvertSize,hMem
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret

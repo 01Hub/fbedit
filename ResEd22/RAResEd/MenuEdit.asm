@@ -27,8 +27,8 @@ IDD_DLGMNUPREVIEW		equ 1510
 
 szMnuErr				db 'Menu skipped a level.',0
 szMnuName				db 'IDR_MENU',0
-MnuID					dd 10000
-MnuItemID				dd 10001
+;MnuID					dd 10000
+;MnuItemID				dd 10001
 szMnuItemName			db 'IDM_',0
 szShift					db 'Shift+',0
 szCtrl					db 'Ctrl+',0

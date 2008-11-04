@@ -419,7 +419,7 @@ SetColors endp
 
 ToolBoxProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-	LOCAL	rect:RECT
+;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -446,7 +446,7 @@ ToolBoxProc	endp
 
 ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-	LOCAL	rect:RECT
+;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -474,7 +474,7 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ProjectProc	endp
 
 DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	pt:POINT
+;	LOCAL	pt:POINT
 	LOCAL	sinf:SCROLLINFO
 	LOCAL	rect:RECT
 	LOCAL	ps:PAINTSTRUCT
@@ -1052,7 +1052,7 @@ DlgEditProc endp
 
 PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-	LOCAL	rect:RECT
+;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE

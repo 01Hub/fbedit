@@ -248,7 +248,7 @@ SaveStyle proc uses ebx esi,nStyle:DWORD,nType:DWORD,fComma:DWORD
 	.else
 		mov		nst,0
 		mov		ncount,0
-		mov		[npos],edi
+		mov		npos,edi
 		push	edi
 		mov		dword ptr namebuff,0
 		mov		ebx,offset types
@@ -360,7 +360,7 @@ SaveExStyle proc uses ebx esi,nExStyle:DWORD
 	.else
 		mov		nst,0
 		mov		ncount,0
-		mov		[npos],edi
+		mov		npos,edi
 		mov		dword ptr buffer1,'E_SW'
 		mov		dword ptr buffer1[4],'_X'
 		push	edi
@@ -799,7 +799,7 @@ FindCtlTab:
 	xor		eax,eax
 	mov		edx,nTab
 	.while [esi].DIALOG.hwnd
-		.if edx==[esi].DIALOG.tab
+		.if edx==[esi].DIALOG.tab && [esi].DIALOG.hwnd!=-1
 			inc		eax
 			retn
 		.endif

@@ -309,18 +309,18 @@ szHdrCtrl			db 'Ctrl',0
 szHdrShift			db 'Shift',0
 szHdrAlt			db 'Alt',0
 
-szFilterBitmap		db 'Bitmap (*.bmp)',0,'*.bmp',0,0
-szFilterCursor		db 'Cursor (*.cur)',0,'*.cur',0,0
-szFilterIcon		db 'Icon (*.ico)',0,'*.ico',0,0
-szFilterAvi			db 'Avi (*.avi)',0,'*.avi',0,0
-szFilterAny			db 'All Files (*.*)',0,'*.*',0,0
-szFilterWave		db 'Wave (*.wav)',0,'*.wav',0,0
-szFilterImage		db 'Image (*.jpg, *.gif)',0,'*.jpg;*.gif',0,0
+;szFilterBitmap		db 'Bitmap (*.bmp)',0,'*.bmp',0,0
+;szFilterCursor		db 'Cursor (*.cur)',0,'*.cur',0,0
+;szFilterIcon		db 'Icon (*.ico)',0,'*.ico',0,0
+;szFilterAvi			db 'Avi (*.avi)',0,'*.avi',0,0
+;szFilterAny			db 'All Files (*.*)',0,'*.*',0,0
+;szFilterWave		db 'Wave (*.wav)',0,'*.wav',0,0
+;szFilterImage		db 'Image (*.jpg, *.gif)',0,'*.jpg;*.gif',0,0
 szFilterManifest	db 'Manifest (*.xml)',0,'*.xml',0,0
-szFilterAniCursor	db 'Ani Cursor (*.ani)',0,'*.ani',0,0
-szFilterFont		db 'Font (*.fon, *.ttc, *.ttf)',0,'*.fon;*.ttc;*.ttf',0,0
-szFilterBin			db 'Messagetable (*.bin)',0,'*.bin',0,0
-
+;szFilterAniCursor	db 'Ani Cursor (*.ani)',0,'*.ani',0,0
+;szFilterFont		db 'Font (*.fon, *.ttc, *.ttf)',0,'*.fon;*.ttc;*.ttf',0,0
+;szFilterBin			db 'Messagetable (*.bin)',0,'*.bin',0,0
+;
 szAclKeys			db 01h,'.Ascii',0
 					db 30h,'0',0
 					db 31h,'1',0

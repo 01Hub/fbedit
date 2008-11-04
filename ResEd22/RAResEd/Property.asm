@@ -96,9 +96,9 @@ IDC_STCTXT			equ 3306
 
 szNameExist			db 'Name already exist.',0Dh,0Ah,0Dh,0Ah,0
 
-szStyle				db 'Style',0
-szExStyle			db 'ExStyle',0
-
+;szStyle				db 'Style',0
+;szExStyle			db 'ExStyle',0
+;
 szFalse				db 'False',0
 szTrue				db 'True',0
 ;False/True Styles
@@ -533,7 +533,7 @@ OldPrpLstDlgCldProc	dd ?
 hPrpBtnDlgCld		dd ?
 
 tempbuff			db 256 dup(?)
-fBtnClick			dd ?
+;fBtnClick			dd ?
 
 lpResType			dd ?
 lpResName			dd ?

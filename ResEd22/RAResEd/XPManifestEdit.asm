@@ -166,7 +166,7 @@ ExportXPManifest endp
 
 XPManifestSave proc uses esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	rect:RECT
+;	LOCAL	rect:RECT
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax

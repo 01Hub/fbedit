@@ -147,7 +147,7 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 	LOCAL	tbb:TBBUTTON
 	LOCAL	tbab:TBADDBITMAP
 	LOCAL	cbei:COMBOBOXEXITEM
-	LOCAL	rbbi:REBARBANDINFO
+;	LOCAL	rbbi:REBARBANDINFO
 	LOCAL	hdi:HD_ITEM
 	LOCAL	buffer[MAX_PATH]
 
@@ -432,9 +432,6 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 PrevDlgProc endp
 
 GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD,fEdit:DWORD
-	LOCAL	rect:RECT
-	LOCAL	bux:DWORD
-	LOCAL	buy:DWORD
 
 	mov		esi,lpDIALOG
 	mov		edi,lpRECT
@@ -446,88 +443,6 @@ GetCtrlSize proc uses ebx esi edi,lpDIALOG:DWORD,lpRECT:DWORD,fEdit:DWORD
 	mov		[edi+4],ax
 	mov		eax,[esi].DIALOG.duccy
 	mov		[edi+6],ax
-
-;	mov		esi,lpDIALOG
-;	mov		edi,lpRECT
-;	mov		eax,[esi].DIALOG.ntype
-;	.if eax==0
-;		.if fEdit
-;			mov		rect.left,10
-;			mov		rect.top,10
-;			mov		eax,[esi].DIALOG.ccx
-;;			add		eax,10
-;			mov		rect.right,eax
-;			mov		eax,[esi].DIALOG.ccy
-;			sub		eax,17
-;			mov		rect.bottom,eax
-;		.else
-;			invoke GetClientRect,[esi].DIALOG.hwnd,addr rect
-;		.endif
-;	.else
-;		mov		eax,[esi].DIALOG.ccx
-;		mov		rect.right,eax
-;		mov		eax,[esi].DIALOG.ccy
-;		mov		rect.bottom,eax
-;	.endif
-;	invoke GetDialogBaseUnits
-;	movzx	edx,ax
-;	mov		bux,edx
-;	shr		eax,16
-;	mov		buy,eax
-;	.if fEdit!=0 && [esi].DIALOG.ntype==0
-;		mov		eax,10
-;	.else
-;		mov		eax,[esi].DIALOG.x
-;	.endif
-;	shl		eax,2
-;	mov		ebx,dfntwt
-;	imul	ebx
-;	cdq
-;	mov		ebx,bux
-;	idiv	ebx
-;	cdq
-;	mov		ebx,fntwt
-;	idiv	ebx
-;	mov		[edi],ax
-;	.if fEdit!=0 && [esi].DIALOG.ntype==0
-;		mov		eax,10
-;	.else
-;		mov		eax,[esi].DIALOG.y
-;	.endif
-;	shl		eax,3
-;	mov		ebx,dfntht
-;	mul		ebx
-;	cdq
-;	mov		ebx,buy
-;	idiv	ebx
-;	cdq
-;	mov		ebx,fntht
-;	idiv	ebx
-;	mov		[edi+2],ax
-;	mov		eax,rect.right
-;	shl		eax,2+9
-;	mov		ebx,dfntwt
-;	mul		ebx
-;	xor		edx,edx
-;	mov		ebx,bux
-;	idiv	ebx
-;	xor		edx,edx
-;	mov		ebx,fntwt
-;	idiv	ebx
-;	shr		eax,9
-;	mov		[edi+4],ax
-;	mov		eax,rect.bottom
-;	shl		eax,3+9
-;	mov		ebx,dfntht
-;	mul		ebx
-;	xor		edx,edx
-;	mov		ebx,buy
-;	idiv	ebx
-;	xor		edx,edx
-;	mov		ebx,fntht
-;	idiv	ebx
-;	shr		eax,9
-;	mov		[edi+6],ax
 	ret
 
 GetCtrlSize endp

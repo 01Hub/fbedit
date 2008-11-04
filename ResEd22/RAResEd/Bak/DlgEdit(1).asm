@@ -1190,9 +1190,10 @@ DeleteTab proc uses esi,nTab:DWORD
 
 	invoke GetWindowLong,hDEd,DEWM_MEMORY
 	.if eax
-		lea		esi,[eax+sizeof DLGHEAD]
+		mov		esi,eax
+		add		esi,sizeof DLGHEAD
 	  @@:
-		lea		esi,[esi+sizeof DIALOG]
+		add		esi,sizeof DIALOG
 		cmp		[esi].DIALOG.hwnd,0
 		je		@f
 		cmp		[esi].DIALOG.hwnd,-1
@@ -3506,8 +3507,8 @@ DeleteCtl proc uses esi
 			mov		eax,[esi].DIALOG.ntype
 			;Don't delete DialogBox
 			.if eax
-;				invoke GetWindowLong,hDEd,DEWM_MEMORY
-;				mov		edx,eax
+				invoke GetWindowLong,hDEd,DEWM_MEMORY
+				mov		edx,eax
 				mov		[esi].DIALOG.hwnd,-1
 				invoke DeleteTab,[esi].DIALOG.tab
 				invoke DestroySizeingRect
@@ -3537,7 +3538,7 @@ DeleteCtl proc uses esi
 				mov		eax,[esi].DIALOG.ntype
 				;Don't delete DialogBox
 				.if eax
-;					invoke GetWindowLong,hDEd,DEWM_MEMORY
+					invoke GetWindowLong,hDEd,DEWM_MEMORY
 					mov		[esi].DIALOG.hwnd,-1
 					invoke DeleteTab,[esi].DIALOG.tab
 				.endif
