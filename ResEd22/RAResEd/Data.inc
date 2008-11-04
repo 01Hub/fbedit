@@ -136,6 +136,18 @@ RADIALOG struct
 	himg			dd ?				;Set to NULL
 RADIALOG ends
 
+DESIGN struct
+	hdlg			HWND ?
+	fmode			dd ?
+	ctlrect			RECT <?>
+	parpt			POINT <?>
+	dlgpt			POINT <?>
+	mnurect			RECT <?>
+	nmnu			dd ?
+	hmnu			dd ?
+	hselected		HWND ?
+DESIGN ends
+
 .const
 
 szProject			db '[PROJECT]',0
@@ -491,3 +503,4 @@ hPrpCboDlg			dd ?
 fMenuErr			dd ?
 hDlgRed				dd ?
 hMnuFont			dd ?
+des					DESIGN <?>

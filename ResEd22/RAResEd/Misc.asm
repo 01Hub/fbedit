@@ -1117,7 +1117,7 @@ ConvertToDux proc uses ebx,px:DWORD
 	invoke GetDialogBaseUnits
 	movzx	ecx,ax
 	mov		eax,px
-	shl		eax,2
+	sal		eax,3
 	mov		ebx,dfntwt
 	imul	ebx
 	cdq
@@ -1126,6 +1126,8 @@ ConvertToDux proc uses ebx,px:DWORD
 	cdq
 	mov		ebx,fntwt
 	idiv	ebx
+	sar		eax,1
+	adc		eax,0
 	ret
 
 ConvertToDux endp
@@ -1136,7 +1138,7 @@ ConvertToDuy proc uses ebx,py:DWORD
 	shr		eax,16
 	mov		ecx,eax
 	mov		eax,py
-	shl		eax,3
+	sal		eax,4
 	mov		ebx,dfntht
 	mul		ebx
 	cdq
@@ -1145,6 +1147,8 @@ ConvertToDuy proc uses ebx,py:DWORD
 	cdq
 	mov		ebx,fntht
 	idiv	ebx
+	sar		eax,1
+	adc		eax,0
 	ret
 
 ConvertToDuy endp
@@ -1157,6 +1161,7 @@ ConvertDuxToPix proc dux:DWORD
 	mov		bux,eax
 
 	mov		eax,dux
+	sal		eax,1
 	cdq
 	mov		ecx,fntwt
 	imul	ecx
@@ -1167,6 +1172,8 @@ ConvertDuxToPix proc dux:DWORD
 	cdq
 	mov		ecx,4
 	idiv	ecx
+	sar		eax,1
+	adc		eax,0
 	ret
 
 ConvertDuxToPix endp
@@ -1179,6 +1186,7 @@ ConvertDuyToPix proc duy:DWORD
 	mov		buy,eax
 
 	mov		eax,duy
+	sal		eax,1
 	cdq
 	mov		ecx,fntht
 	imul	ecx
@@ -1189,9 +1197,89 @@ ConvertDuyToPix proc duy:DWORD
 	cdq
 	mov		ecx,8
 	idiv	ecx
+	sar		eax,1
+	adc		eax,0
 	ret
 
 ConvertDuyToPix endp
+
+ConvertToDlgPt proc lpPoint:ptr POINT
+
+	invoke ClientToScreen,hInvisible,lpPoint
+	invoke ScreenToClient,des.hdlg,lpPoint
+	ret
+
+ConvertToDlgPt endp
+
+RSnapToGrid proc 
+
+	push	eax
+	push	ecx
+	push	edx
+	invoke	GetAsyncKeyState,VK_MENU
+	cmp		eax,0
+	mov		eax,0
+	setne 	al
+	xor		eax,fSnapToGrid
+	mov		fRSnapToGrid,eax
+	pop		edx
+	pop		ecx
+	pop		eax
+	ret
+
+RSnapToGrid endp
+
+SizeX proc nInc:DWORD
+
+;//Edit
+	call RSnapToGrid
+	.if fRSnapToGrid
+		xor		edx,edx
+		sal		eax,1
+		idiv	Gridcx
+		sar		eax,1
+		adc		eax,0
+		imul	Gridcx
+		add		eax,nInc
+	.endif
+	ret
+
+SizeX endp
+
+SizeY proc nInc:DWORD
+
+;//Edit
+	call RSnapToGrid
+	.if fRSnapToGrid
+		xor		edx,edx
+		sal		eax,1
+		idiv	Gridcy
+		sar		eax,1
+		adc		eax,0
+		imul	Gridcy
+		add		eax,nInc
+	.endif
+	ret
+
+SizeY endp
+
+SnapPtDu proc uses ebx,lpPoint:ptr POINT
+
+	mov		ebx,lpPoint
+	invoke ConvertToDlgPt,ebx
+	invoke ConvertToDux,[ebx].POINT.x
+	invoke SizeX,0
+	invoke ConvertDuxToPix,eax
+	mov		[ebx].POINT.x,eax
+	invoke ConvertToDuy,[ebx].POINT.y
+	invoke SizeY,0
+	invoke ConvertDuyToPix,eax
+	mov		[ebx].POINT.y,eax
+	invoke ClientToScreen,des.hdlg,lpPoint
+	invoke MapWindowPoints,NULL,hInvisible,lpPoint,1
+	ret
+
+SnapPtDu endp
 
 GetTypePtr proc nType:DWORD
 

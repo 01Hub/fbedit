@@ -1,5 +1,9 @@
 ResEd
 
+2.2.0.0 - 2008-11-04
+---------------------
+o Dialog editor uses dialogunits instead of pixels.
+
 2.1.0.3b - 2008-10-27
 ---------------------
 o Fixed bug with Options / Custom styles. 

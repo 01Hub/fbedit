@@ -12,12 +12,11 @@ MaxName				equ 64
 
 ;Dialog structures
 DLGHEAD struct
-	changed			dd ?				;Set to FALSE
+	locked			dd ?				;Set to TRUE or FALSE
 	class			db 32 dup(?)		;Set to Null string
 	menuid			db MaxName dup(?)	;Set to Null string
 	font			db 32 dup(?)		;Set to "MS Sans Serif"
 	fontsize		dd ?				;Set to 8
-	locked			dd ?				;Set to TRUE or FALSE
 	charset			db ?				;Set to NULL
 	italic			db ?				;Set to NULL
 	weight			dw ?				;Set to NULL
@@ -34,7 +33,6 @@ DLGHEAD ends
 
 DIALOG struct
 	hwnd			dd ?				;Set to TRUE
-	hpar			dd ?				;Set to NULL
 	style			dd ?				;Set to desired style
 	exstyle			dd ?				;Set to desired ex style
 	dux				dd ?				;X position in dialog units

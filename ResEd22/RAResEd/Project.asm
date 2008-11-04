@@ -655,13 +655,6 @@ GetProjectModify proc uses esi,lpProMem:DWORD
 	.while [esi].PROJECT.hmem
 		mov		eax,[esi].PROJECT.changed
 		.break .if eax
-		.if ![esi].PROJECT.delete
-			.if [esi].PROJECT.ntype==TPE_DIALOG
-				mov		edx,[esi].PROJECT.hmem
-				mov		eax,[edx].DLGHEAD.changed
-				.break .if eax
-			.endif
-		.endif
 		add		esi,sizeof PROJECT
 	.endw
 	ret
@@ -674,10 +667,6 @@ SetProjectModify proc uses esi,lpProMem:DWORD,fChanged:DWORD
 	mov		eax,fChanged
 	.while [esi].PROJECT.hmem
 		mov		[esi].PROJECT.changed,eax
-		.if [esi].PROJECT.ntype==TPE_DIALOG
-			mov		edx,[esi].PROJECT.hmem
-			mov		[edx].DLGHEAD.changed,eax
-		.endif
 		add		esi,sizeof PROJECT
 	.endw
 	invoke InvalidateRect,hDEd,NULL,TRUE

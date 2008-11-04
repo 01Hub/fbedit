@@ -147,7 +147,6 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 	LOCAL	tbb:TBBUTTON
 	LOCAL	tbab:TBADDBITMAP
 	LOCAL	cbei:COMBOBOXEXITEM
-;	LOCAL	rbbi:REBARBANDINFO
 	LOCAL	hdi:HD_ITEM
 	LOCAL	buffer[MAX_PATH]
 
@@ -215,6 +214,51 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			.if eax==SS_BITMAP
 				.if [esi].DIALOG.caption
 					mov		eax,[esi].DIALOG.himg
+					.if !eax
+						push	ebx
+						push	edi
+						invoke GetWindowLong,hPrj,0
+						mov		edi,eax
+						.while [edi].PROJECT.hmem
+							.if [edi].PROJECT.ntype==TPE_RESOURCE
+								mov		ebx,[edi].PROJECT.hmem
+								.while [ebx].RESOURCEMEM.szname || [ebx].RESOURCEMEM.value
+									.if [ebx].RESOURCEMEM.ntype==0
+										invoke strcmp,addr [esi].DIALOG.caption,addr [ebx].RESOURCEMEM.szname
+										.if eax
+											mov		buffer,'#'
+											invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,addr buffer[1]
+											invoke strcmp,addr [esi].DIALOG.caption,addr buffer
+										.endif
+										.if !eax
+											mov		ax,word ptr [ebx].RESOURCEMEM.szfile
+											.if ah!=':'
+												invoke strcpy,addr buffer,addr szProjectPath
+												invoke strcat,addr buffer,addr szBS
+												invoke strcat,addr buffer,addr [ebx].RESOURCEMEM.szfile
+											.else
+												invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+											.endif
+											mov		eax,TRUE
+											jmp		BitmapFound
+										.endif
+									.endif
+									lea		ebx,[ebx+sizeof RESOURCEMEM]
+								.endw
+							.endif
+							lea		edi,[edi+sizeof PROJECT]
+						.endw
+						xor		eax,eax
+					  BitmapFound:
+						pop		edi
+						pop		ebx
+						.if eax
+							invoke LoadImage,NULL,addr buffer,IMAGE_BITMAP,NULL,NULL,LR_LOADFROMFILE
+							mov		[esi].DIALOG.himg,eax
+						.else
+							invoke LoadBitmap,hInstance,100
+						.endif
+					.endif
 				.else
 					invoke LoadBitmap,hInstance,100
 				.endif
@@ -222,6 +266,51 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			.elseif eax==SS_ICON
 				.if [esi].DIALOG.caption
 					mov		eax,[esi].DIALOG.himg
+					.if !eax
+						push	ebx
+						push	edi
+						invoke GetWindowLong,hPrj,0
+						mov		edi,eax
+						.while [edi].PROJECT.hmem
+							.if [edi].PROJECT.ntype==TPE_RESOURCE
+								mov		ebx,[edi].PROJECT.hmem
+								.while [ebx].RESOURCEMEM.szname || [ebx].RESOURCEMEM.value
+									.if [ebx].RESOURCEMEM.ntype==2
+										invoke strcmp,addr [esi].DIALOG.caption,addr [ebx].RESOURCEMEM.szname
+										.if eax
+											mov		buffer,'#'
+											invoke ResEdBinToDec,[ebx].RESOURCEMEM.value,addr buffer[1]
+											invoke strcmp,addr [esi].DIALOG.caption,addr buffer
+										.endif
+										.if !eax
+											mov		ax,word ptr [ebx].RESOURCEMEM.szfile
+											.if ah!=':'
+												invoke strcpy,addr buffer,addr szProjectPath
+												invoke strcat,addr buffer,addr szBS
+												invoke strcat,addr buffer,addr [ebx].RESOURCEMEM.szfile
+											.else
+												invoke strcpy,addr buffer,addr [ebx].RESOURCEMEM.szfile
+											.endif
+											mov		eax,TRUE
+											jmp		IconFound
+										.endif
+									.endif
+									lea		ebx,[ebx+sizeof RESOURCEMEM]
+								.endw
+							.endif
+							lea		edi,[edi+sizeof PROJECT]
+						.endw
+						xor		eax,eax
+					  IconFound:
+						pop		edi
+						pop		ebx
+						.if eax
+							invoke LoadImage,NULL,addr buffer,IMAGE_ICON,NULL,NULL,LR_LOADFROMFILE
+							mov		[esi].DIALOG.himg,eax
+						.else
+							invoke LoadIcon,0,IDI_WINLOGO
+						.endif
+					.endif
 				.else
 					invoke LoadIcon,0,IDI_WINLOGO
 				.endif

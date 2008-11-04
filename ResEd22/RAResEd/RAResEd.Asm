@@ -292,7 +292,7 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	invoke RegisterClassEx,addr	wc
 
 	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_PARENTDC or CS_DBLCLKS
 	mov		wc.lpfnWndProc,offset DesignInvisibleProc
 	mov		wc.cbClsExtra,0
 	mov		wc.cbWndExtra,0
@@ -1990,9 +1990,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke AlignSizeCtl,lParam
 		jmp		Ex
 	.elseif eax==DEM_GETMODIFY
-		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		invoke GetWindowLong,hDEd,DEWM_PROJECT
 		.if eax
-			mov		eax,[eax].DLGHEAD.changed
+			mov		eax,[eax].PROJECT.changed
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_SETMODIFY
