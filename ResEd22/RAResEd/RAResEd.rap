@@ -152,9 +152,9 @@ Options=52
 1=0,0,718,485,7228
 7=0,0,718,485,84484
 6=0,0,0,0,514
-9=0,0,718,485,107349
+9=0,0,718,485,49058
 2=0,0,584,498,266
-8=0,0,0,0,20346
+8=0,0,0,0,20277
 10=0,0,0,0,3884
 16=0,0,718,485,314
 15=0,0,0,0
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="17"
-2="szFilterBitmap"
-3="szExStyle"
-4="MnuID"
-5="MnuRight"
-6="szICODLG"
-7="szPos"
-8="DEM_SHOWDIALOG"
-9="24"
-10="SS_OW"
+1="hSizeing"
+2="SizeRect"
+3="DlgDrawRect"
+4="17"
+5="szFilterBitmap"
+6="szExStyle"
+7="MnuID"
+8="MnuRight"
+9="szICODLG"
+10="szPos"
 
 [AutoLoad]
 1=1
@@ -255,7 +255,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
