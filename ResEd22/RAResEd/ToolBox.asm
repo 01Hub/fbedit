@@ -279,10 +279,18 @@ InstallClass:
 	; Width
 	invoke GetStrItem,esi,addr buffer1
 	invoke ResEdDecToBin,addr buffer1
+	.if sdword ptr eax<0
+		or		[ebx].TYPES.keepsize,2
+		neg		eax
+	.endif
 	mov		[ebx].TYPES.xsize,eax
 	; Height
 	invoke GetStrItem,esi,addr buffer1
 	invoke ResEdDecToBin,addr buffer1
+	.if sdword ptr eax<0
+		or		[ebx].TYPES.keepsize,1
+		neg		eax
+	.endif
 	mov		[ebx].TYPES.ysize,eax
 	; Style
 	invoke GetStrItem,esi,addr buffer1

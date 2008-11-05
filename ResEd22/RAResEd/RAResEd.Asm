@@ -32,101 +32,8 @@ include ParseRC.asm
 include Project.asm
 include Preview.asm
 
-.data
-
-
 .code
 
-;CreateGridBrush proc uses ebx esi edi
-;	LOCAL	hDC:HDC
-;	LOCAL	hBit:DWORD
-;	LOCAL	pBits:DWORD
-;	LOCAL	clr:DWORD
-;	LOCAL	bline:DWORD
-;
-;	mov		eax,Gridc
-;	shr		eax,24
-;	mov		bline,eax
-;	mov		eax,Gridc
-;	xchg	al,ah	;ABDC
-;	ror		eax,16	;DCAB
-;	xchg	al,ah	;DCBA
-;	ror		eax,8	;ADCB
-;	and		eax,0FFFFFFh
-;	mov		clr,eax
-;	mov		eax,hGridBr
-;	.if eax
-;		invoke DeleteObject,eax
-;	.endif
-;	invoke CreateCompatibleDC,NULL
-;	mov		hDC,eax
-;	mov		eax,Gridcx
-;	mov		ecx,eax
-;	.while ecx<8
-;		add		ecx,eax
-;	.endw
-;	mov		eax,Gridcy
-;	mov		edx,eax
-;	.while edx<8
-;		add		edx,eax
-;	.endw
-;	mov		bmiMakeBitmap.bmiHeader.biWidth,ecx
-;	mov		bmiMakeBitmap.bmiHeader.biHeight,edx
-;	invoke CreateDIBSection,hDC,addr bmiMakeBitmap,DIB_RGB_COLORS,addr pBits,0,0
-;	mov		hBit,eax
-;	invoke GdiFlush
-;	invoke GetSysColor,COLOR_BTNFACE
-;	xchg	al,ah	;ABDC
-;	ror		eax,16	;DCAB
-;	xchg	al,ah	;DCBA
-;	ror		eax,8	;ADCB
-;	mov		edx,bmiMakeBitmap.bmiHeader.biWidth
-;	mov		ecx,bmiMakeBitmap.bmiHeader.biHeight
-;	imul	ecx,edx						; total pixel count
-;	mov		edi,pBits
-;	shl		edx,2						; bytes per line
-;	rep stosd							; fill bitmap with COLOR_BTNFACE
-;	mov		ecx,Gridcy
-;	sub		edi,edx						; start on last line
-;	imul	ecx,edx
-;	shr		edx,2						; pixels per line
-;	mov		ebx,clr
-;	.if bline
-;		push	edi
-;		.while edi>pBits
-;			mov		eax,edx
-;		@@:	dec		eax							; next horizontal dot in grid
-;			mov		dword ptr [edi+eax*4],ebx	; pixel for grid dot
-;			jne		@b
-;			sub		edi,ecx
-;		.endw
-;		pop		edi
-;		lea		ecx,[edx*4]
-;		.while edi>pBits
-;			sub		edi,ecx
-;			mov		eax,edx
-;		@@:	mov		dword ptr [edi+eax*4],ebx	; pixel for grid dot
-;			sub		eax,Gridcx					; next horizontal dot in grid
-;			jns		@b
-;		.endw
-;	.else
-;		.while edi>pBits
-;			mov		eax,edx
-;		@@:	sub		eax,Gridcx					; next horizontal dot in grid
-;			mov		dword ptr [edi+eax*4],ebx	; pixel for grid dot
-;			jg		@b
-;			sub		edi,ecx
-;		.endw
-;	.endif
-;	invoke DeleteDC,hDC
-;	mov		edi,hBit
-;	invoke CreatePatternBrush,edi
-;	mov		hGridBr,eax
-;	invoke DeleteObject,edi
-;	ret
-;
-;CreateGridBrush endp
-;
 ToolTipProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	buffer[32]:BYTE
@@ -1503,15 +1410,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if hDialog
 			invoke SendMessage,hDialog,WM_SIZE,0,0
 		.endif
-;	.elseif eax==WM_CTLCOLOREDIT
-;		xor		eax,eax
-;		mov		edx,lParam
-;		.if edx==hOut
-;			invoke SetBkColor,wParam,color.back
-;			invoke SetTextColor,wParam,color.text
-;			mov		eax,hBrBack
-;		.endif
-;		jmp		Ex
 	.elseif eax==WM_CONTEXTMENU
 		invoke GetParent,hWin
 		mov		edx,wParam
@@ -2098,14 +1996,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditDummyClass,NULL,WS_CHILD or WS_VISIBLE,0,0,rect.right,rect.bottom,hDEd,123456789,hInstance,0
 				mov		hTabSet,eax
 				invoke ShowWindow,hInvisible,SW_HIDE
-
-	invoke ShowWindow,hTabSet,SW_HIDE
-	invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-	invoke UpdateWindow,hDEd
-
-;				invoke ShowWindow,hTabSet,SW_SHOW
-;				invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
-;				invoke InvalidateRect,hDEd,NULL,TRUE
+				invoke ShowWindow,hTabSet,SW_HIDE
+				invoke SetWindowPos,hTabSet,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+				invoke UpdateWindow,hDEd
 			.endif
 		.endif
 	.elseif eax==DEM_EXPORTDLG
@@ -2124,8 +2017,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke strcpy,addr [edi].RADLGHEAD.font,addr [esi].DLGHEAD.font
 			mov		eax,[esi].DLGHEAD.fontsize
 			mov		[edi].RADLGHEAD.fontsize,eax
-;			mov		eax,[esi].DLGHEAD.fontht
-;			mov		[edi].RADLGHEAD.fontht,eax
 			mov		[edi].RADLGHEAD.undo,FALSE
 			mov		eax,[esi].DLGHEAD.ctlid
 			mov		[edi].RADLGHEAD.ctlid,eax
@@ -2150,14 +2041,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[edi].RADIALOG.style,eax
 					mov		eax,[esi].DIALOG.exstyle
 					mov		[edi].RADIALOG.exstyle,eax
-;					mov		eax,[esi].DIALOG.x
-;					mov		[edi].RADIALOG.x,eax
-;					mov		eax,[esi].DIALOG.y
-;					mov		[edi].RADIALOG.y,eax
-;					mov		eax,[esi].DIALOG.ccx
-;					mov		[edi].RADIALOG.ccx,eax
-;					mov		eax,[esi].DIALOG.ccy
-;					mov		[edi].RADIALOG.ccy,eax
 					.if [esi].DIALOG.ntype==23
 						invoke strcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.class,32
 					.else
@@ -2283,10 +2166,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SortStyles
 	.elseif eax==DEM_ADDCUSTSTYLE
 		mov		ebx,offset rscuststyledef
-		.if byte ptr [ebx+8]
+		.while byte ptr [ebx+8]
 			invoke strlen,addr [ebx+8]
 			lea		ebx,[ebx+eax+8+1]
-		.endif
+		.endw
 		mov		edx,lParam
 		mov		eax,[edx].CUSTSTYLE.nValue
 		mov		[ebx],eax

@@ -85,7 +85,7 @@ PrAll				db '(Name),(ID),Left,Top,Width,Height,Caption,Border,SysMenu,MaxButton,
 ctltypes			dd 0
 ;					dd offset szDlgChildClass
 					dd offset szNULL
-					dd 1	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CAPTION or WS_MAXIMIZEBOX or WS_MINIMIZEBOX or WS_SYSMENU or WS_SIZEBOX
 					dd 0C00000h	;Typemask
 					dd 0	;ExStyle
@@ -107,7 +107,7 @@ ctltypes			dd 0
 				;1-Edit
 					dd 1
 					dd offset szEditClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or ES_LEFT
 					dd 0	;Typemask
 					dd WS_EX_CLIENTEDGE
@@ -129,7 +129,7 @@ ctltypes			dd 0
 				;2-Static
 					dd 2
 					dd offset szStaticClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or SS_LEFT
 					dd SS_TYPEMASK	;Typemask
 					dd 0	;ExStyle
@@ -151,7 +151,7 @@ ctltypes			dd 0
 				;3-GroupBox
 					dd 3
 					dd offset szButtonClass
-					dd 0;2	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or BS_GROUPBOX
 					dd 0Fh	;Typemask
 					dd 0	;ExStyle
@@ -173,7 +173,7 @@ ctltypes			dd 0
 				;4-Pushbutton
 					dd 4
 					dd offset szButtonClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or BS_PUSHBUTTON
 					dd 0Fh	;Typemask
 					dd 0	;ExStyle
@@ -195,7 +195,7 @@ ctltypes			dd 0
 				;5-CheckBox
 					dd 5
 					dd offset szButtonClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or BS_AUTOCHECKBOX
 					dd 0Fh	;Typemask
 					dd 0	;ExStyle
@@ -217,7 +217,7 @@ ctltypes			dd 0
 				;6-RadioButton
 					dd 6
 					dd offset szButtonClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or BS_AUTORADIOBUTTON
 					dd 0Fh	;Typemask
 					dd 0	;ExStyle
@@ -239,7 +239,7 @@ ctltypes			dd 0
 				;7-ComboBox
 					dd 7
 					dd offset szComboBoxClass
-					dd 0	;Parent
+					dd 1	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or CBS_DROPDOWNLIST
 					dd 03h	;Typemask
 					dd 0	;ExStyle
@@ -261,7 +261,7 @@ ctltypes			dd 0
 				;8-ListBox
 					dd 8
 					dd offset szListBoxClass
-					dd 0	;Parent
+					dd 1	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or LBS_HASSTRINGS or LBS_NOINTEGRALHEIGHT or LBS_NOTIFY
 					dd 0	;Typemask
 					dd WS_EX_CLIENTEDGE
@@ -283,7 +283,7 @@ ctltypes			dd 0
 				;9-HScrollBar
 					dd 9
 					dd offset szScrollBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or SBS_HORZ
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -305,7 +305,7 @@ ctltypes			dd 0
 				;10-VScrollBar
 					dd 10
 					dd offset szScrollBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or SBS_VERT
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -327,7 +327,7 @@ ctltypes			dd 0
 				;11-TabControl
 					dd 11
 					dd offset szTabControlClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or TCS_FOCUSNEVER
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -349,7 +349,7 @@ ctltypes			dd 0
 				;12-ProgressBar
 					dd 12
 					dd offset szProgressBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -371,7 +371,7 @@ ctltypes			dd 0
 				;13-TreeView
 					dd 13
 					dd offset szTreeViewClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or TVS_HASLINES or TVS_LINESATROOT or TVS_HASBUTTONS
 					dd 0	;Typemask
 					dd WS_EX_CLIENTEDGE
@@ -393,7 +393,7 @@ ctltypes			dd 0
 				;14-ListViev
 					dd 14
 					dd offset szListViewClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or LVS_LIST
 					dd LVS_TYPEMASK	;Typemask
 					dd WS_EX_CLIENTEDGE
@@ -415,7 +415,7 @@ ctltypes			dd 0
 				;15-TrackBar
 					dd 15
 					dd offset szTrackBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -437,7 +437,7 @@ ctltypes			dd 0
 				;16-UpDown
 					dd 16
 					dd offset szUpDownClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -459,7 +459,7 @@ ctltypes			dd 0
 				;17-Image
 					dd 17
 					dd offset szStaticClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or SS_ICON or SS_CENTERIMAGE
 					dd SS_TYPEMASK	;Typemask
 					dd 0	;ExStyle
@@ -481,7 +481,7 @@ ctltypes			dd 0
 				;18-ToolBar
 					dd 18
 					dd offset szToolBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or CCS_TOP
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -503,7 +503,7 @@ ctltypes			dd 0
 				;19-StatusBar
 					dd 19
 					dd offset szStatusBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or CCS_BOTTOM
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -525,7 +525,7 @@ ctltypes			dd 0
 				;20-DateTimePicker
 					dd 20
 					dd offset szDateTimeClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or 4
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -547,7 +547,7 @@ ctltypes			dd 0
 				;21-MonthView
 					dd 21
 					dd offset szMonthViewClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd WS_EX_CLIENTEDGE	;ExStyle
@@ -569,7 +569,7 @@ ctltypes			dd 0
 				;22-RichEdit
 					dd 22
 					dd offset szRichEditClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP
 					dd 0	;Typemask
 					dd WS_EX_CLIENTEDGE	;ExStyle
@@ -591,7 +591,7 @@ ctltypes			dd 0
 				;23-UserDefinedControl
 					dd 23
 					dd offset szStaticClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -613,7 +613,7 @@ ctltypes			dd 0
 				;24-ComboBoxEx
 					dd 24
 					dd offset szComboBoxExClass
-					dd 0	;Parent
+					dd 1	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP or CBS_DROPDOWNLIST
 					dd 03h	;Typemask
 					dd 0	;ExStyle
@@ -635,7 +635,7 @@ ctltypes			dd 0
 				;25-Static Rect & Line
 					dd 25
 					dd offset szStaticClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or SS_BLACKRECT
 					dd SS_TYPEMASK	;Typemask
 					dd 0	;ExStyle
@@ -657,7 +657,7 @@ ctltypes			dd 0
 				;26-IP Address
 					dd 26
 					dd offset szIPAddressClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -679,7 +679,7 @@ ctltypes			dd 0
 				;27-Animate
 					dd 27
 					dd offset szAnimateClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -701,7 +701,7 @@ ctltypes			dd 0
 				;28-HotKey
 					dd 28
 					dd offset szHotKeyClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or WS_TABSTOP
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -723,7 +723,7 @@ ctltypes			dd 0
 				;29-HPager
 					dd 29
 					dd offset szPagerClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or PGS_HORZ
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -745,7 +745,7 @@ ctltypes			dd 0
 				;30-VPager
 					dd 30
 					dd offset szPagerClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or PGS_VERT
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -767,7 +767,7 @@ ctltypes			dd 0
 				;31-ReBar
 					dd 31
 					dd offset szReBarClass
-					dd 0	;Parent
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -789,7 +789,7 @@ ctltypes			dd 0
 				;32-Header
 					dd 32
 					dd offset szHeaderClass
-					dd 0	;Not used
+					dd 0	;Keep size
 					dd WS_VISIBLE or WS_CHILD or HDS_BUTTONS
 					dd 0	;Typemask
 					dd 0	;ExStyle
@@ -1242,7 +1242,10 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetCtrlMem,hReSize
 				mov		edi,eax
 				mov		eax,[edi].DIALOG.ntype
-				.if eax==7 || eax==8 || eax==24
+				invoke GetTypePtr,eax
+				mov		eax,[eax].TYPES.keepsize
+				and		eax,1
+				.if eax
 					invoke ConvertDuyToPix,[edi].DIALOG.duccy
 					add		eax,des.ctlrect.top
 					mov		des.ctlrect.bottom,eax
@@ -1550,7 +1553,10 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	invoke ClientToScreen,hInvisible,addr des.parpt
 	invoke GetWindowRect,hWin,addr rect
 	mov		eax,[esi].DIALOG.ntype
-	.if eax==7 || eax==8 || eax==24
+	invoke GetTypePtr,eax
+	mov		eax,[eax].TYPES.keepsize
+	and		eax,1
+	.if eax
 		invoke ConvertDuyToPix,[esi].DIALOG.duccy
 		add		eax,rect.top
 		mov		rect.bottom,eax

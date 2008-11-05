@@ -218,7 +218,7 @@ ntbrbtns			equ 19
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 2.1.0.3',13,10,'KetilO © 2008',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.2.0.0',13,10,'KetilO © 2008',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl			db 'http://www.radasm.com/resed/',0
 szOpen				db 'Open',0
 szRichEdit			db 'riched20.dll',0

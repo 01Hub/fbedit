@@ -54,7 +54,7 @@ DIALOG ends
 TYPES struct
 	ID				dd ?
 	lpclass			dd ?
-	partype			dd ?
+	keepsize		dd ?
 	style			dd ?
 	typemask		dd ?
 	exstyle			dd ?
