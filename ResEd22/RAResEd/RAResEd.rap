@@ -149,13 +149,13 @@ Options=52
 5=0,0,0,0,9329
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,7228
+1=0,0,718,485,47857
 7=0,0,718,485,84484
 6=0,0,0,0,514
-9=0,0,718,485,49058
+9=0,0,718,485,48364
 2=0,0,584,498,266
-8=0,0,0,0,20277
-10=0,0,0,0,3884
+8=0,0,0,0,23437
+10=0,0,0,0,12491
 16=0,0,718,485,314
 15=0,0,0,0
 17=0,0,0,0,36590
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="hSizeing"
-2="SizeRect"
-3="DlgDrawRect"
-4="17"
-5="szFilterBitmap"
-6="szExStyle"
-7="MnuID"
-8="MnuRight"
-9="szICODLG"
-10="szPos"
+1="CreateGridBrush"
+2="hSizeing"
+3="SizeRect"
+4="DlgDrawRect"
+5="17"
+6="szFilterBitmap"
+7="szExStyle"
+8="MnuID"
+9="MnuRight"
+10="szICODLG"
 
 [AutoLoad]
 1=1

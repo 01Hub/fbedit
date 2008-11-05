@@ -1327,3 +1327,97 @@ FindTab proc uses esi,nTab:DWORD,hMem:HWND
 
 FindTab endp
 
+CreateGridBrush proc hWin:HWND
+	LOCAL	hDC:HDC
+	LOCAL	mDC:HDC
+	LOCAL	rect:RECT
+	LOCAL	pt:POINT
+	LOCAL	bline:DWORD
+
+	mov		eax,Gridc
+	shr		eax,24
+	mov		bline,eax
+	invoke GetClientRect,hWin,addr rect
+	invoke GetWindowDC,hWin
+	mov		hDC,eax
+	invoke CreateCompatibleDC,hDC
+	mov		mDC,eax
+	invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
+	invoke SelectObject,mDC,eax
+	push	eax
+	invoke FillRect,mDC,addr rect,COLOR_BTNFACE+1
+	invoke ConvertToDux,rect.right
+	mov		pt.x,eax
+	invoke ConvertToDuy,rect.bottom
+	mov		pt.y,eax
+	.if bline
+		mov		eax,Gridc
+		and		eax,0FFFFFFh
+		invoke CreatePen,PS_SOLID,1,eax
+		invoke SelectObject,mDC,eax
+		push	eax
+		;Horizontal lines
+		xor		edx,edx
+		.while edx<=pt.y
+			push	edx
+			invoke ConvertDuyToPix,edx
+			mov		edx,eax
+			push	edx
+			invoke MoveToEx,mDC,0,edx,NULL
+			pop		edx
+			invoke LineTo,mDC,rect.right,edx
+			pop		edx
+			add		edx,Gridcy
+		.endw
+		;Vertical lines
+		xor		ecx,ecx
+		.while ecx<=pt.x
+			push	ecx
+			invoke ConvertDuxToPix,ecx
+			mov		ecx,eax
+			push	ecx
+			invoke MoveToEx,mDC,ecx,0,NULL
+			pop		ecx
+			invoke LineTo,mDC,ecx,rect.bottom
+			pop		ecx
+			add		ecx,Gridcx
+		.endw
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+	.else
+		xor		edx,edx
+		.while edx<=pt.y
+			xor		ecx,ecx
+			.while ecx<=pt.x
+				push	ecx
+				push	edx
+				push	edx
+				invoke ConvertDuxToPix,ecx
+				mov		ecx,eax
+				pop		edx
+				push	ecx
+				invoke ConvertDuyToPix,edx
+				mov		edx,eax
+				pop		ecx
+				invoke SetPixel,mDC,ecx,edx,Gridc
+				pop		edx
+				pop		ecx
+				add		ecx,Gridcx
+			.endw
+			add		edx,Gridcy
+		.endw
+	.endif
+	pop		eax
+	invoke SelectObject,mDC,eax
+	push	eax
+	invoke CreatePatternBrush,eax
+	mov		hGridBr,eax
+	pop		eax
+	invoke DeleteObject,eax
+	invoke DeleteDC,mDC
+	invoke ReleaseDC,hWin,hDC
+	ret
+
+CreateGridBrush endp
+

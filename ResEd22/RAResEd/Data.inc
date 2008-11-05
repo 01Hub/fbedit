@@ -452,12 +452,17 @@ rarstype			RARSTYPE <'BITMAP',0,'Bitmap (*.bmp)|*.bmp','mspaint.exe'>
 					RARSTYPE <'MESSAGETABLE',0,'Messagetable (*.bin)|*.bin'>
 custrarstype		RARSTYPE 32 dup(<>)
 
+;Grid
+bmiMakeBitmap		BITMAPINFO <<SIZEOF BITMAPINFOHEADER,,,1,32,BI_RGB>,>
+Gridcx				dd 3
+Gridcy				dd 3
+Gridc				dd 0
+
 .data?
 
 hInstance			dd ?
 hRes				dd ?
 hDEd				dd ?
-;hREd				dd ?
 hTlb				dd ?
 hPrp				dd ?
 hPrj				dd ?
