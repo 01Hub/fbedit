@@ -1865,8 +1865,10 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		mov		[edi].DIALOG.duy,eax
 		.if ccx<3 && ccy<3
 			invoke ConvertToDux,[esi].TYPES.xsize
+			invoke SizeX,0
 			mov		ccx,eax
 			invoke ConvertToDuy,[esi].TYPES.ysize
+			invoke SizeY,0
 			mov		ccy,eax
 		.endif
 		mov		eax,ccx

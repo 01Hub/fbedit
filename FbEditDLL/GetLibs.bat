@@ -4,6 +4,6 @@ copy ..\FileBrowser\Lib\RAFile.lib Lib
 copy ..\Grid\Lib\RAGrid.lib Lib
 copy ..\HexEd\Lib\RAHexEd.lib Lib
 copy ..\Property\Lib\RAProperty.lib Lib
-copy ..\ResEd21\Lib\RAResEd.lib Lib
+copy ..\ResEd22\Lib\RAResEd.lib Lib
 copy ..\SimEd\Lib\RAEdit.lib Lib
 Pause
