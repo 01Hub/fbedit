@@ -3641,7 +3641,7 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 				xor		edx,edx
 				idiv	Gridcx
 				imul	Gridcx
-				inc		eax
+				;inc		eax
 			.endif
 			mov		[esi].DIALOG.duccx,eax
 			mov		eax,[esi].DIALOG.duccy
@@ -3650,7 +3650,7 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 				xor		edx,edx
 				idiv	Gridcy
 				imul	Gridcy
-				inc		eax
+				;inc		eax
 			.endif
 			mov		[esi].DIALOG.duccy,eax
 		.endif
@@ -3840,6 +3840,7 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,rect.left
 		sub		rect.right,ecx
 		invoke SetWindowPos,hWin,0,eax,edx,rect.right,rect.bottom,SWP_NOZORDER
+		invoke EnumChildWindows,hWin,addr DlgEnumProc,hWin
 		mov		eax,FALSE
 		ret
 	.elseif eax==WM_COMMAND
@@ -4100,9 +4101,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	hDlg:HWND
 	LOCAL	racol:RACOLOR
 
-	;Get convertiion
 	invoke SendMessage,hDEd,WM_SETREDRAW,FALSE,0
-	mov		esi,hMem
+	;Get convertiion
 	mov		dlgps,10
 	mov		dlgfn,0
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
@@ -4111,6 +4111,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	mov		dfntwt,eax
 	mov		eax,fntht
 	mov		dfntht,eax
+	mov		esi,hMem
 	mov		eax,[esi].DLGHEAD.fontsize
 	mov		dlgps,ax
 	lea		esi,[esi].DLGHEAD.font
@@ -4213,10 +4214,14 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	add		esi,sizeof DIALOG
 	mov		edi,esi
 	mov		nInx,0
+	.while [edi].DIALOG.hwnd
+		inc		nInx
+		add		edi,sizeof DIALOG
+	.endw
   @@:
+	sub		edi,sizeof DIALOG
 	add		ebx,2
 	and		ebx,0FFFFFFFCh
-	inc		nInx
 	.if [edi].DIALOG.hwnd
 		.if [edi].DIALOG.hwnd!=-1
 			mov		[ebx].MyDLGITEMTEMPLATEEX.helpID,0
@@ -4255,8 +4260,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 			mov		word ptr [ebx],0
 			add		ebx,2
 		.endif
-		add		edi,sizeof DIALOG
-		jmp		@b
+		dec		nInx
+		jne		@b
 	.endif
 	pop		ebx
 	invoke SetWindowLong,hDEd,DEWM_MEMORY,hMem
@@ -4271,7 +4276,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	mov		esi,hMem
 	invoke SetWindowLong,hDlg,GWL_ID,0
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
-	invoke EnumChildWindows,hDlg,addr DlgEnumProc,hDlg
 	.if nSelID==-1
 		.while TRUE
 			pop		eax
@@ -4287,16 +4291,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		.endif
 		invoke SizeingRect,eax,FALSE
 	.endif
-	mov		esi,hMem
-	lea		esi,[esi+sizeof DLGHEAD+sizeof DIALOG]
-	.while [esi].DIALOG.hwnd
-		.if [esi].DIALOG.hwnd!=-1
-			invoke GetCtrlID,esi
-			invoke GetDlgItem,hDlg,eax
-			invoke SetWindowPos,eax,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-		.endif
-		lea		esi,[esi+sizeof DIALOG]
-	.endw
 	invoke ShowWindow,hInvisible,SW_HIDE
 	invoke SendMessage,hDEd,WM_SETREDRAW,TRUE,0
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
