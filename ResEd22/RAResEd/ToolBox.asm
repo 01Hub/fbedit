@@ -135,6 +135,20 @@ Do_ToolBoxButton proc hWin:HWND,CtlID:DWORD,hIml:DWORD
 
 Do_ToolBoxButton endp
 
+EnumResProc proc hMod:HMODULE,lpszType:DWORD,lpszName:DWORD,lParam:LPARAM
+
+	mov		eax,lpszName
+	.if eax>10000h
+		invoke strcpy,offset namebuff,lpszName
+		mov		eax,offset namebuff
+	.endif
+	mov		edx,lParam
+	mov		[edx],eax
+	xor		eax,eax
+	ret
+
+EnumResProc endp
+
 AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	LOCAL	mDC:HDC
 	LOCAL	nColor:DWORD
@@ -148,6 +162,7 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	LOCAL	hLib:HMODULE
 	LOCAL	cci:CCINFOA
 	LOCAL	ccs:CUSTSTYLE
+	LOCAL	idi:DWORD
 
 	mov		lpszMask,0
 	mov		ctlid,-1
@@ -235,6 +250,7 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 
 InstallClass:
 	; "dll,class,name.caption,tooltip,width,height,style,exstyle"
+	mov		idi,-1
 	push	ebx
 	lea		esi,buffer
 	mov		edi,offset strbuff
@@ -349,6 +365,8 @@ InstallClass:
 							add		ebx,sizeof CCSTYLEFLAGA
 							dec		ecx
 						.endw
+						; Find first icon
+						invoke EnumResourceNames,hLib,RT_GROUP_ICON,offset EnumResProc,addr idi
 						mov		eax,TRUE
 					.else
 						xor		eax,eax
@@ -427,12 +445,35 @@ InstallClass:
 	mov		eax,0
 	mov		[ebx].TYPES.flist[12],eax
 	mov		[ebx].TYPES.lprc,offset szCONTROL
-	invoke LoadBitmap,hInstance,IDB_CUSTCTL
-	mov		ebx,eax
 	invoke CreateCompatibleDC,NULL
 	mov		mDC,eax
-	invoke SelectObject,mDC,ebx
-	push	eax
+	.if idi!=-1
+		invoke GetDC,NULL
+		push	eax
+		invoke CreateCompatibleBitmap,eax,20,20
+		mov		ebx,eax
+		invoke SelectObject,mDC,eax
+		pop		edx
+		push	eax
+		invoke ReleaseDC,NULL,eax
+		mov		rect.left,0
+		mov		rect.top,0
+		mov		rect.right,20
+		mov		rect.bottom,20
+		invoke FillRect,mDC,addr rect,COLOR_BTNFACE+1
+		invoke LoadIcon,hLib,idi
+		.if eax
+			push	eax
+			invoke DrawIconEx,mDC,2,2,eax,16,16,0,COLOR_BTNFACE+1,0
+			pop		eax
+			invoke DestroyIcon,eax
+		.endif
+	.else
+		invoke LoadBitmap,hInstance,IDB_CUSTCTL
+		mov		ebx,eax
+		invoke SelectObject,mDC,ebx
+		push	eax
+	.endif
 	invoke GetPixel,mDC,0,0
 	mov		nColor,eax
 	pop		eax
