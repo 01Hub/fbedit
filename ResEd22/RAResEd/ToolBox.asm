@@ -145,6 +145,9 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	LOCAL	lpszMask:DWORD
 	LOCAL	lpszTT:DWORD
 	LOCAL	ctlid:DWORD
+	LOCAL	hLib:HMODULE
+	LOCAL	cci:CCINFOA
+	LOCAL	ccs:CUSTSTYLE
 
 	mov		lpszMask,0
 	mov		ctlid,-1
@@ -245,61 +248,173 @@ InstallClass:
 	mov		ctlid,eax
 	; Dll
 	invoke GetStrItem,esi,addr buffer1
+	xor		eax,eax
 	.if buffer1
 		invoke LoadLibrary,addr buffer1
+		.if eax
+			mov		hLib,eax
+			invoke GetProcAddress,hLib,addr szCustInfo
+			.if eax
+				push	ebx
+				mov		ebx,eax
+				push	0
+				call	ebx
+				.if eax==1
+					lea		eax,cci
+					push	eax
+					call	ebx
+					.if eax==1
+						pop		ebx
+						push	ebx
+						; Set class
+						invoke GetStrItem,esi,0
+						mov		eax,strofs
+						lea		edx,[edi+eax]
+						mov		[ebx].TYPES.lpclass,edx
+						invoke strcpy,edx,addr cci.szClass
+						invoke strlen,addr cci.szClass
+						inc		eax
+						add		strofs,eax
+						; Name
+						mov		eax,strofs
+						lea		edx,[edi+eax]
+						mov		[ebx].TYPES.lpidname,edx
+						invoke GetStrItem,esi,addr [edi+eax]
+						inc		eax
+						add		strofs,eax
+						; Caption
+						invoke GetStrItem,esi,0
+						mov		eax,strofs
+						lea		edx,[edi+eax]
+						mov		[ebx].TYPES.lpcaption,edx
+						invoke strcpy,edx,addr cci.szTextDefault
+						invoke strlen,addr cci.szTextDefault
+						inc		eax
+						add		strofs,eax
+						; Tooltip
+						invoke GetStrItem,esi,0
+						mov		eax,strofs
+						lea		edx,[edi+eax]
+						mov		lpszTT,edx
+						invoke strcpy,edx,addr cci.szDesc
+						invoke strlen,addr cci.szDesc
+						inc		eax
+						add		strofs,eax
+						; Width
+						invoke GetStrItem,esi,addr buffer1
+						invoke ResEdDecToBin,addr buffer1
+						.if !eax
+							mov		eax,cci.cxDefault
+						.endif
+						.if sdword ptr eax<0
+							or		[ebx].TYPES.keepsize,2
+							neg		eax
+						.endif
+						mov		[ebx].TYPES.xsize,eax
+						; Height
+						invoke GetStrItem,esi,addr buffer1
+						invoke ResEdDecToBin,addr buffer1
+						.if !eax
+							mov		eax,cci.cyDefault
+						.endif
+						.if sdword ptr eax<0
+							or		[ebx].TYPES.keepsize,1
+							neg		eax
+						.endif
+						mov		[ebx].TYPES.ysize,eax
+						; Style
+						invoke GetStrItem,esi,0
+						mov		eax,cci.flStyleDefault
+						mov		[ebx].TYPES.style,eax
+						; ExStyle
+						invoke GetStrItem,esi,0
+						mov		eax,cci.flExtStyleDefault
+						mov		[ebx].TYPES.exstyle,eax
+
+						; Add custom styles
+						mov		ecx,cci.cStyleFlags
+						mov		ebx,cci.aStyleFlags
+						.while ecx
+							push	ecx
+							mov		eax,[ebx].CCSTYLEFLAGA.flStyle
+							mov		ccs.nValue,eax
+							mov		eax,[ebx].CCSTYLEFLAGA.flStyleMask
+							.if !eax
+								mov		eax,[ebx].CCSTYLEFLAGA.flStyle
+							.endif
+							mov		ccs.nMask,eax
+							invoke strcpyn,addr ccs.szStyle,[ebx].CCSTYLEFLAGA.pszStyle,sizeof CUSTSTYLE.szStyle
+							invoke SendMessage,hRes,DEM_ADDCUSTSTYLE,0,addr ccs
+							pop		ecx
+							add		ebx,sizeof CCSTYLEFLAGA
+							dec		ecx
+						.endw
+						mov		eax,TRUE
+					.else
+						xor		eax,eax
+					.endif
+				.else
+					xor		eax,eax
+				.endif
+				pop		ebx
+			.endif
+		.endif
 	.endif
-	; Class
-	mov		eax,strofs
-	lea		edx,[edi+eax]
-	mov		[ebx].TYPES.lpclass,edx
-	invoke GetStrItem,esi,addr [edi+eax]
-	inc		eax
-	add		strofs,eax
-	; Name
-	mov		eax,strofs
-	lea		edx,[edi+eax]
-	mov		[ebx].TYPES.lpidname,edx
-	invoke GetStrItem,esi,addr [edi+eax]
-	inc		eax
-	add		strofs,eax
-	; Caption
-	mov		eax,strofs
-	lea		edx,[edi+eax]
-	mov		[ebx].TYPES.lpcaption,edx
-	invoke GetStrItem,esi,addr [edi+eax]
-	inc		eax
-	add		strofs,eax
-	; Tooltip
-	mov		eax,strofs
-	lea		edx,[edi+eax]
-	mov		lpszTT,edx
-	invoke GetStrItem,esi,addr [edi+eax]
-	inc		eax
-	add		strofs,eax
-	; Width
-	invoke GetStrItem,esi,addr buffer1
-	invoke ResEdDecToBin,addr buffer1
-	.if sdword ptr eax<0
-		or		[ebx].TYPES.keepsize,2
-		neg		eax
+	.if !eax
+		; Class
+		mov		eax,strofs
+		lea		edx,[edi+eax]
+		mov		[ebx].TYPES.lpclass,edx
+		invoke GetStrItem,esi,addr [edi+eax]
+		inc		eax
+		add		strofs,eax
+		; Name
+		mov		eax,strofs
+		lea		edx,[edi+eax]
+		mov		[ebx].TYPES.lpidname,edx
+		invoke GetStrItem,esi,addr [edi+eax]
+		inc		eax
+		add		strofs,eax
+		; Caption
+		mov		eax,strofs
+		lea		edx,[edi+eax]
+		mov		[ebx].TYPES.lpcaption,edx
+		invoke GetStrItem,esi,addr [edi+eax]
+		inc		eax
+		add		strofs,eax
+		; Tooltip
+		mov		eax,strofs
+		lea		edx,[edi+eax]
+		mov		lpszTT,edx
+		invoke GetStrItem,esi,addr [edi+eax]
+		inc		eax
+		add		strofs,eax
+		; Width
+		invoke GetStrItem,esi,addr buffer1
+		invoke ResEdDecToBin,addr buffer1
+		.if sdword ptr eax<0
+			or		[ebx].TYPES.keepsize,2
+			neg		eax
+		.endif
+		mov		[ebx].TYPES.xsize,eax
+		; Height
+		invoke GetStrItem,esi,addr buffer1
+		invoke ResEdDecToBin,addr buffer1
+		.if sdword ptr eax<0
+			or		[ebx].TYPES.keepsize,1
+			neg		eax
+		.endif
+		mov		[ebx].TYPES.ysize,eax
+		; Style
+		invoke GetStrItem,esi,addr buffer1
+		invoke HexToBin,addr buffer1
+		mov		[ebx].TYPES.style,eax
+		; ExStyle
+		invoke GetStrItem,esi,addr buffer1
+		invoke HexToBin,addr buffer1
+		mov		[ebx].TYPES.exstyle,eax
 	.endif
-	mov		[ebx].TYPES.xsize,eax
-	; Height
-	invoke GetStrItem,esi,addr buffer1
-	invoke ResEdDecToBin,addr buffer1
-	.if sdword ptr eax<0
-		or		[ebx].TYPES.keepsize,1
-		neg		eax
-	.endif
-	mov		[ebx].TYPES.ysize,eax
-	; Style
-	invoke GetStrItem,esi,addr buffer1
-	invoke HexToBin,addr buffer1
-	mov		[ebx].TYPES.style,eax
-	; ExStyle
-	invoke GetStrItem,esi,addr buffer1
-	invoke HexToBin,addr buffer1
-	mov		[ebx].TYPES.exstyle,eax
+
 	mov		[ebx].TYPES.typemask,0
 	mov		eax,11111111000111100000000001000000b
 	;           NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW

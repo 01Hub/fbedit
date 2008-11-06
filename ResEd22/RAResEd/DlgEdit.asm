@@ -2597,7 +2597,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		cwde
 		mov		pt.x,edx
 		mov		pt.y,eax
-		invoke SetCapture,hWin
 		mov		ebx,des.hdlg
 		call	IsInWindow
 		.if eax
@@ -4124,7 +4123,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	loop	@b
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 	invoke DestroyWindow,eax
-	;invoke CreateGridBrush
 	.if nSelID==-1
 		push	0
 		mov		ebx,hMultiSel
@@ -4161,7 +4159,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		or		eax,DS_SETFONT
 	.endif
 	or		eax,WS_ALWAYS or DS_NOFAILCREATE
-	and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE or WS_CLIPCHILDREN)
+	and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS)
 	mov		[ebx].MyDLGTEMPLATEEX.style,eax
 	push	eax
 	mov		eax,[esi].DIALOG.exstyle

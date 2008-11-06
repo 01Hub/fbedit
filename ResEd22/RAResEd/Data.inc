@@ -146,7 +146,37 @@ DESIGN struct
 	nmnu			dd ?
 	hmnu			dd ?
 	hselected		HWND ?
+	fdblclk			dd ?
 DESIGN ends
+
+CCHCCCLASS			equ 32		; Max chars in a class name.
+CCHCCDESC			equ 32		; Max chars in a control description.
+CCHCCTEXT			equ 256		; Max chars in a text field.
+
+;Custom controls
+CCINFOA struct
+    szClass				db CCHCCCLASS dup(?)	; Class name for the control.
+    flOptions			DWORD ?					; Option flags (CCF_* defines).
+    szDesc				db CCHCCDESC dup(?)		; Short, descriptive text for the ctrl.
+    cxDefault			DWORD ?					; Default width (in dialog units).
+    cyDefault			DWORD ?					; Default height (in dialog units).
+    flStyleDefault		DWORD ?					; Default style (WS_CHILD | WS_VISIBLE).
+    flExtStyleDefault	DWORD ?					; Default extended style.
+    flCtrlTypeMask		DWORD ?					; Mask for control type styles.
+    szTextDefault		db CCHCCTEXT dup(?)		; Default text.
+    cStyleFlags			DWORD ?					; Entries in the following style table.
+    aStyleFlags			DWORD ?					; Points to style flag table.
+    lpfnStyle			DWORD ?					; Pointer to the Styles function.
+    lpfnSizeToText		DWORD ?					; Pointer to the SizeToText function.
+    dwReserved1			DWORD ?					; Reserved.  Must be zero.
+    dwReserved2			DWORD ?					; Reserved.  Must be zero.
+CCINFOA ends
+
+CCSTYLEFLAGA struct
+	flStyle				DWORD ?					; Style bits for this style.
+	flStyleMask			DWORD ?					; Mask for the style.  Can be zero.
+	pszStyle			DWORD ?					; Points to the style define string.
+CCSTYLEFLAGA ends
 
 .const
 
@@ -419,6 +449,7 @@ szIDC_STATIC		db 'IDC_STATIC',0
 szIDC_STATICValue	db '-1',0
 
 CombSort_Const		REAL4 1.3
+szCustInfo			db 'CustomControlInfoA',0
 
 .data
 

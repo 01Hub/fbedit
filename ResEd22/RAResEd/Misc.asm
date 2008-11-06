@@ -323,6 +323,9 @@ GetStrItem proc	lpSource:DWORD,lpDest:DWORD
 	push	edi
 	mov		esi,lpSource
 	mov		edi,lpDest
+	.if !edi
+		mov		edi,offset namebuff
+	.endif
   @@:
 	mov		al,[esi]
 	cmp		al,','
