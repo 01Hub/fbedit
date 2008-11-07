@@ -2790,8 +2790,14 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		esi,eax
 						sub		esi,sizeof DLGHEAD
 						invoke strcpy,addr lf.lfFaceName,addr [esi].DLGHEAD.font
-;						push	[esi].DLGHEAD.fontht
-;						pop		lf.lfHeight
+						mov		eax,[esi].DLGHEAD.fontsize
+						mov		ecx,96
+						mul		ecx
+						mov		ecx,72
+						xor		edx,edx
+						div		ecx
+						neg		eax
+						mov		lf.lfHeight,eax
 						mov		al,[esi].DLGHEAD.charset
 						mov		lf.lfCharSet,al
 						mov		al,[esi].DLGHEAD.italic

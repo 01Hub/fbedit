@@ -842,6 +842,7 @@ hSizeing			dd 8 dup(?)
 hMultiSel			dd ?
 
 hReSize				dd ?
+OldPt				POINT <?>
 MousePtDown			POINT <?>
 OldSizeingProc		dd ?
 dlgpaste			DIALOG MAXMULSEL dup(<?>)
@@ -2007,41 +2008,47 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke DialogTltSize,rect.left,rect.top
 		.elseif des.fmode==MODE_MULTISELMOVE
 			call	SnapPt
-			invoke RestoreWin
-			mov		eax,hMultiSel
-		  @@:
-			push	eax
-			invoke GetParent,eax
-			push	eax
-			mov		edx,eax
-			invoke GetWindowRect,edx,addr rect
 			mov		eax,pt.x
-			sub		eax,MousePtDown.x
-			add		rect.left,eax
-			add		rect.right,eax
-			mov		eax,pt.y
-			sub		eax,MousePtDown.y
-			add		rect.top,eax
-			add		rect.bottom,eax
-			invoke ScreenToClient,hInvisible,addr rect.left
-			invoke ScreenToClient,hInvisible,addr rect.right
-			call	DrawRect
-			invoke GetParent,hMultiSel
-			pop		edx
-			.if eax==edx
-				invoke ConvertToDlgPt,addr rect.left
-				invoke DialogTltSize,rect.left,rect.top
+			mov		edx,pt.y
+			.if eax!=OldPt.x || edx!=OldPt.y
+				mov		OldPt.x,eax
+				mov		OldPt.y,edx
+				invoke RestoreWin
+				mov		eax,hMultiSel
+			  @@:
+				push	eax
+				invoke GetParent,eax
+				push	eax
+				mov		edx,eax
+				invoke GetWindowRect,edx,addr rect
+				mov		eax,pt.x
+				sub		eax,MousePtDown.x
+				add		rect.left,eax
+				add		rect.right,eax
+				mov		eax,pt.y
+				sub		eax,MousePtDown.y
+				add		rect.top,eax
+				add		rect.bottom,eax
+				invoke ScreenToClient,hInvisible,addr rect.left
+				invoke ScreenToClient,hInvisible,addr rect.right
+				call	DrawRect
+				invoke GetParent,hMultiSel
+				pop		edx
+				.if eax==edx
+					invoke ConvertToDlgPt,addr rect.left
+					invoke DialogTltSize,rect.left,rect.top
+				.endif
+				mov		ecx,8
+				pop		eax
+				.while ecx
+					push	ecx
+					invoke GetWindowLong,eax,GWL_USERDATA
+					pop		ecx
+					dec		ecx
+				.endw
+				or		eax,eax
+				jne		@b
 			.endif
-			mov		ecx,8
-			pop		eax
-			.while ecx
-				push	ecx
-				invoke GetWindowLong,eax,GWL_USERDATA
-				pop		ecx
-				dec		ecx
-			.endw
-			or		eax,eax
-			jne		@b
 		.elseif des.fmode==MODE_SELECT
 			call	SnapPt
 			invoke RestoreWin
@@ -2472,6 +2479,8 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		des.fmode,0
 			.endif
 		.elseif des.fmode==MODE_MULTISELMOVE
+			mov		OldPt.x,0FFFFh
+			mov		OldPt.y,0FFFFh
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
