@@ -7,7 +7,7 @@ o Fixed bug with custom styles.
 o To make a custom control keep it's height, enter a negative default height.
   Example:
   "mtcombo.dll,Mt_ComboBox32,IDC_MTCB,,MTComboBox,100,-100,50000003,00000000"
-o Added support for custom controls has the the CustomControlInfoA function.
+o Added support for custom controls that has the the CustomControlInfoA function.
   Also, if the dll has a group icon then the icon is used on the toolbox button.
   Example:
   "mtcombo.dll,,IDC_MTCB,,,,-100"
