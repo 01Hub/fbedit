@@ -2672,6 +2672,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		eax,eax
 		ret
 	.elseif eax==WM_SETFOCUS
+		invoke HideCaret,hWin
 		mov		eax,hWin
 		mov		[ebx].EDIT.focus,eax
 		test	[ebx].EDIT.nMode,MODE_BLOCK
@@ -2683,6 +2684,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,[ebx].EDIT.fntinfo.fntht
 		invoke CreateCaret,hWin,NULL,eax,edx
 		invoke SetCaret,ebx,[esi].RAEDT.cpy
+		invoke ShowCaret,hWin
 		invoke SelChange,ebx,SEL_TEXT
 	.elseif eax==WM_KILLFOCUS
 		invoke DestroyCaret

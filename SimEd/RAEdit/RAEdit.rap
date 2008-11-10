@@ -102,22 +102,24 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,75788
-16=0,0,810,411,9603
-22=0,0,0,0,3097
-23=0,0,0,0,26463
-24=0,0,0,0,755
+1=0,0,0,0,79314
+16=0,0,810,411,30669
+22=0,0,0,0,4317
+23=0,0,0,0,24496
+24=0,0,0,0,713
 19=0,0,0,0,4740
 2=0,0,0,0,7226
-9=0,0,0,0,1811
-10=0,0,0,0,18463
+9=0,0,0,0,16094
+10=0,0,0,0,27866
 11=0,0,0,0,6031
 20=0,0,0,0,3058
-15=0,0,0,0,0
+15=0,0,0,0,8393
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,6954
 26=0,0,0,0,21193
+21=0,0,0,0,175
+14=0,0,0,0,8065
 
 [BookMark]
 0=
@@ -135,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="REM_GETWORD"
-2="REM_SETSTYLEEX"
-3="REM_GETCURSORWORD"
-4="REM_CASE"
-5="cp"
-6="lnlen"
-7="WM_SI"
-8="SetBlockMarkers"
-9="RAEditPaintNoBuff"
-10="TestExpand"
+1="SetCaret"
+2="REM_GETWORD"
+3="REM_SETSTYLEEX"
+4="REM_GETCURSORWORD"
+5="REM_CASE"
+6="cp"
+7="lnlen"
+8="WM_SI"
+9="SetBlockMarkers"
+10="RAEditPaintNoBuff"
 
 [AutoLoad]
 1=1
@@ -192,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=9
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -247,6 +249,8 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=
 13=,
 26=,,,,,
+21=,,
+14=
 
 [PTimer]
 PTimer=134906884
