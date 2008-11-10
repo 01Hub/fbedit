@@ -123,7 +123,9 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
 			nMiss=0
-			sItem=MakeProjectFileName(sItem)
+			If Mid(sItem,2,2)<>":\" Then
+				sItem=MakeProjectFileName(sItem)
+			EndIf
 			If lstrcmpi(@sItem,@sFile)=0 Then
 				Return nInx
 			EndIf
@@ -139,7 +141,9 @@ Function IsProjectFile(ByVal sFile As String) As Integer
 		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
 		If Len(sItem) Then
 			nMiss=0
-			sItem=MakeProjectFileName(sItem)
+			If Mid(sItem,2,2)<>":\" Then
+				sItem=MakeProjectFileName(sItem)
+			EndIf
 			If lstrcmpi(@sItem,@sFile)=0 Then
 				Return nInx
 			EndIf
@@ -562,7 +566,9 @@ Function OpenProject() As Integer
 			nMiss=0
 			tpe=FileType(sItem)
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
-			sItem=MakeProjectFileName(sItem)
+			If Mid(sItem,2,2)<>":\" Then
+				sItem=MakeProjectFileName(sItem)
+			EndIf
 			If tpe=1 Then
 				ParseFile(ah.hwnd,0,sItem)
 			EndIf
@@ -1901,7 +1907,11 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				tvi.cchTextMax=260
 				SendMessage(hWin,TVM_GETITEM,0,Cast(Integer,@tvi))
 				If tvi.lParam Then
-					sFile=MakeProjectFileName(buff)
+					If Mid(buff,2,2)=":\" Then
+						sFile=buff
+					Else
+						sFile=MakeProjectFileName(buff)
+					EndIf
 					OpenTheFile(sFile,FALSE)
 					fTimer=1
 				EndIf
