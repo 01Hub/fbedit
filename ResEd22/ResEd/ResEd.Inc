@@ -226,6 +226,7 @@ szNULL				db 0
 szTab				db VK_TAB,0
 szComma				db ',',0
 szBS				db '\',0
+szAsterix			db '*',0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
@@ -278,4 +279,6 @@ hMenuBrushB			dd ?
 hMnuFont			dd ?
 mruproject			db MAX_PATH*2*11 dup(?)
 tmpbuff				db 1024 dup(?)
+fModify				dd ?
+fNotify				dd ?
 

@@ -102,15 +102,15 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,79314
+1=0,0,0,0,69794
 16=0,0,810,411,30669
 22=0,0,0,0,4317
 23=0,0,0,0,24496
 24=0,0,0,0,713
 19=0,0,0,0,4740
 2=0,0,0,0,7226
-9=0,0,0,0,16094
-10=0,0,0,0,27866
+9=0,0,0,0,10244
+10=0,0,0,0,27206
 11=0,0,0,0,6031
 20=0,0,0,0,3058
 15=0,0,0,0,8393
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="SetCaret"
-2="REM_GETWORD"
-3="REM_SETSTYLEEX"
-4="REM_GETCURSORWORD"
-5="REM_CASE"
-6="cp"
-7="lnlen"
-8="WM_SI"
-9="SetBlockMarkers"
-10="RAEditPaintNoBuff"
+1="hidecaret"
+2="SetCaret"
+3="REM_GETWORD"
+4="REM_SETSTYLEEX"
+5="REM_GETCURSORWORD"
+6="REM_CASE"
+7="cp"
+8="lnlen"
+9="WM_SI"
+10="SetBlockMarkers"
 
 [AutoLoad]
 1=1
@@ -194,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

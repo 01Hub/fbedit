@@ -581,13 +581,28 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hResEd
-			.if !hResEdSave
-				invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
-				mov		hPreview,eax
-				invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
-				mov		hDialog,eax
+			.if !fNotify
+				mov		fNotify,1
+				.if !hResEdSave
+					invoke SendMessage,hResEd,DEM_GETSHOWDIALOG,0,0
+					mov		hPreview,eax
+					invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+					mov		hDialog,eax
+					invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+					.if eax!=fModify
+						mov		fModify,eax
+						invoke SetWinCaption,offset ProjectFileName,fModify
+					.endif
+				.else
+					invoke SendMessage,hResEd,EM_GETMODIFY,0,0
+					.if eax!=fModify
+						mov		fModify,eax
+						invoke SetWinCaption,offset ProjectFileName,fModify
+					.endif
+				.endif
+				invoke ToolBarEnable
+				mov		fNotify,0
 			.endif
-			invoke ToolBarEnable
 		.else
 			mov		eax,[edx].NMHDR.code
 			.if eax==TTN_NEEDTEXT
@@ -612,11 +627,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		hMem,eax
 				invoke GlobalLock,hMem
 				invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
-				invoke SetWinCaption,offset ProjectFileName
+				invoke SetWinCaption,offset ProjectFileName,fModify
 				invoke SaveProjectFile,offset ProjectFileName,FALSE
 				.if !eax
 					invoke SendMessage,hResEd,PRO_CLOSE,0,0
-					invoke SetWinCaption,NULL
+					invoke SetWinCaption,NULL,fModify
 				.else
 					invoke SendMessage,hResEd,PRO_CLOSE,0,0
 					invoke ReadProjectFile,offset ProjectFileName,FALSE

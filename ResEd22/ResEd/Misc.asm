@@ -675,7 +675,7 @@ ClearMruProject proc
 
 ClearMruProject endp
 
-SetWinCaption proc lpFileName:DWORD
+SetWinCaption proc lpFileName:DWORD,Modified:DWORD
 	LOCAL	buffer[sizeof szAppName+3+MAX_PATH]:BYTE
 	LOCAL	buffer1[4]:BYTE
 
@@ -686,6 +686,9 @@ SetWinCaption proc lpFileName:DWORD
 		mov		dword ptr buffer1,eax
 		invoke lstrcat,addr buffer,addr buffer1
 		invoke lstrcat,addr buffer,lpFileName
+		.if Modified
+			invoke lstrcat,addr buffer,addr szAsterix
+		.endif
 	.endif
 	invoke SetWindowText,hWnd,addr buffer
 	ret

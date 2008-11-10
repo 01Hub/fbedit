@@ -915,6 +915,10 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
 
+	invoke GetFocus
+	.if eax==hWin
+		invoke HideCaret,hWin
+	.endif
 	;Get the memory pointer
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
@@ -1168,6 +1172,10 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	invoke DeleteDC,mDC
 	invoke EndPaint,hWin,addr ps
 	invoke DeleteObject,hRgn1
+	invoke GetFocus
+	.if eax==hWin
+		invoke ShowCaret,hWin
+	.endif
 	ret
 
 DrawBlockMarker:
@@ -1246,6 +1254,10 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
 
+	invoke GetFocus
+	.if eax==hWin
+		invoke HideCaret,hWin
+	.endif
 	;Get the memory pointer
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
@@ -1467,6 +1479,10 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	invoke SelectObject,ps.hdc,eax
 	invoke EndPaint,hWin,addr ps
 	invoke DeleteObject,hRgn1
+	invoke GetFocus
+	.if eax==hWin
+		invoke ShowCaret,hWin
+	.endif
 	ret
 
 DrawBlockMarker:

@@ -27,7 +27,7 @@ CloseProject proc
 	.else
 		invoke SendMessage,hResEd,PRO_CLOSE,0,0
 	.endif
-	invoke SetWinCaption,NULL
+	invoke SetWinCaption,NULL,0
 	ret
 
 CloseProject endp
@@ -89,7 +89,7 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke CloseHandle,hFile
 			invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
 			invoke lstrcpy,offset ProjectFileName,lpFileName
-			invoke SetWinCaption,offset ProjectFileName
+			invoke SetWinCaption,offset ProjectFileName,fModify
 			invoke SetFocus,hResEd
 			mov		eax,TRUE
 		.else
@@ -128,7 +128,7 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke lstrcat,hMem,hMemRes
 			invoke GlobalFree,hMemRes
 			invoke SendMessage,hResEd,PRO_OPEN,offset ProjectFileName,hMem
-			invoke SetWinCaption,offset ProjectFileName
+			invoke SetWinCaption,offset ProjectFileName,fModify
 			invoke lstrcpy,addr buffer,offset ProjectFileName
 			invoke lstrlen,addr buffer
 			.while byte ptr buffer[eax]!='\' && eax
@@ -267,6 +267,8 @@ WriteProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke CloseHandle,hFile
 			;Set the modify state to false
 			invoke SendMessage,hResEd,EM_SETMODIFY,FALSE,0
+			mov		fModify,0
+			invoke SetWinCaption,offset ProjectFileName,fModify
 			xor		eax,eax
 		.else
 			xor		eax,eax
@@ -389,14 +391,15 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 		.if eax
 			.if fText
 				invoke lstrcpy,offset ProjectFileName,addr buffer
-				invoke SetWinCaption,offset ProjectFileName
 				invoke WriteProjectFile,offset ProjectFileName,TRUE
+				push	eax
+				invoke SetWinCaption,offset ProjectFileName,fModify
+				pop		eax
 			.else
 				.if grdsize.defines==2
 					invoke SaveIncludeFileAs,addr buffer
 					.if eax
 						invoke lstrcpy,offset ProjectFileName,addr buffer
-						invoke SetWinCaption,offset ProjectFileName
 						invoke lstrlen,addr buffer
 						.while byte ptr buffer[eax]!='\' && eax
 							dec		eax
@@ -407,8 +410,10 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 						invoke RemovePath,addr IncludeFileName,addr buffer
 						invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
 						invoke WriteProjectFile,offset ProjectFileName,FALSE
+						push	eax
+						invoke SetWinCaption,offset ProjectFileName,fModify
+						pop		eax
 						.if !eax
-							xor		eax,eax
 							inc		eax
 						.else
 							xor		eax,eax
@@ -416,7 +421,6 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 					.endif
 				.else
 					invoke lstrcpy,offset ProjectFileName,addr buffer
-					invoke SetWinCaption,offset ProjectFileName
 					invoke lstrlen,addr buffer
 					.while byte ptr buffer[eax]!='\' && eax
 						dec		eax
@@ -433,8 +437,10 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 					invoke RemovePath,addr IncludeFileName,addr buffer
 					invoke SendMessage,hResEd,PRO_SETDEFINE,0,eax
 					invoke WriteProjectFile,offset ProjectFileName,FALSE
+					push	eax
+					invoke SetWinCaption,offset ProjectFileName,fModify
+					pop		eax
 					.if !eax
-						xor		eax,eax
 						inc		eax
 					.else
 						xor		eax,eax
@@ -461,7 +467,6 @@ SaveProjectFile proc lpFileName:DWORD,fText:DWORD
 		.else
 			invoke WriteProjectFile,lpFileName,fText
 			.if !eax
-				xor		eax,eax
 				inc		eax
 			.else
 				xor		eax,eax

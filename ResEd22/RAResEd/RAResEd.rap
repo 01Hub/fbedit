@@ -10,7 +10,7 @@ Res.rc=1
 Ver.rc=1
 
 [MakeDef]
-Menu=1,1,1,1,0,1,0,0,0,0,0,0,0,0,0,0
+Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /DDLL /c /coff /Cp /nologo /I"$I",2
 3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /DLL /OUT:"$7" /DEF:$6 /LIBPATH:"$L",3,4
@@ -149,17 +149,17 @@ Options=52
 5=0,0,0,0,3430
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,29770
-7=0,0,718,485,80099
+1=0,0,718,485,20304
+7=0,0,718,485,85239
 6=0,0,0,0,5793
-9=0,0,718,485,48076
-2=0,0,584,498,2616
-8=0,0,0,0,622
+9=0,0,718,485,912
+2=0,0,584,498,6063
+8=0,0,0,0,5650
 10=0,0,0,0,12107
 16=0,0,718,485,12970
 15=0,0,0,0
 17=0,0,0,0,3839
-18=0,0,0,0,17185
+18=0,0,0,0,17665
 21=0,0,0,0,56160
 23=0,0,0,0
 24=0,0,0,0,4363
@@ -178,7 +178,7 @@ Options=52
 35=0,0,0,0,140
 37=0,0,0,0,2096
 38=0,0,0,0
-39=0,0,0,0,12012
+39=0,0,0,0,12279
 40=0,0,0,0,19025
 41=0,0,0,0
 42=0,0,0,0
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="DlgResize"
-2="PRP_STR_FONT"
-3="CUSTSTYLE"
-4="dem_addc"
-5="namebuff"
-6="Casetab"
-7="SetFocus"
-8="SetFocus,hDEd"
-9="24"
-10="DEM_ADDCONTROL"
+1="VK_CONTROL"
+2="PRO_SETMODIFY"
+3="getmodify"
+4="10"
+5="DEM_SETMODIFY"
+6="DlgResize"
+7="PRP_STR_FONT"
+8="CUSTSTYLE"
+9="dem_addc"
+10="namebuff"
 
 [AutoLoad]
 1=1
@@ -214,20 +214,20 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.44
-PV=2.1.0.44
+FV=2.1.0.46
+PV=2.1.0.46
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.44
+ProductVersion=2.1.0.46
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.44
+FileVersion=2.1.0.46
 CompanyName=
 
 [VersionControl]
@@ -255,7 +255,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16

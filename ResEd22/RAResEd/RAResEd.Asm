@@ -380,7 +380,6 @@ ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ProjectProc	endp
 
 DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-;	LOCAL	pt:POINT
 	LOCAL	sinf:SCROLLINFO
 	LOCAL	rect:RECT
 	LOCAL	ps:PAINTSTRUCT
@@ -427,7 +426,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hTlt,GWL_WNDPROC,addr ToolTipProc
 		mov		OldToolTipProc,eax
 		;invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,32767,32767,hWin,0,hInstance,0
-		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,32767,32767,hWin,0,hInstance,0
+		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_CLIPSIBLINGS,0,0,32767,32767,hWin,0,hInstance,0
 		mov		hInvisible,eax
 	.elseif eax==WM_MOUSEMOVE
 		.if hStatus
@@ -436,10 +435,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
 		invoke FillRect,ps.hdc,addr ps.rcPaint,hBrBack
-		invoke GetWindowLong,hWin,DEWM_MEMORY
-		.if eax
-			invoke SetChanged,2
-		.endif
+;		invoke GetWindowLong,hWin,DEWM_MEMORY
+;		.if eax
+;			invoke SetChanged,2
+;		.endif
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
 		ret
@@ -835,18 +834,25 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_MOUSEWHEEL
+		push	ebx
 		mov		eax,wParam
+		mov		ebx,WM_VSCROLL
+		test	eax,MK_CONTROL
+		.if !ZERO?
+			mov		ebx,WM_HSCROLL
+		.endif
 		shr		eax,16
 		cwde
 		.if sdword ptr eax<0
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
+			invoke PostMessage,hWin,ebx,SB_LINEDOWN,0
+			invoke PostMessage,hWin,ebx,SB_LINEDOWN,0
+			invoke PostMessage,hWin,ebx,SB_LINEDOWN,0
 		.else
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
-			invoke PostMessage,hWin,WM_VSCROLL,SB_LINEUP,0
+			invoke PostMessage,hWin,ebx,SB_LINEUP,0
+			invoke PostMessage,hWin,ebx,SB_LINEUP,0
+			invoke PostMessage,hWin,ebx,SB_LINEUP,0
 		.endif
+		pop		ebx
 		xor		eax,eax
 	.elseif eax==WM_HSCROLL
 		.if fEditMode
@@ -867,10 +873,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			shl		eax,3
 			invoke ScrollWindow,hWin,eax,0,NULL,NULL
 			invoke SetWindowLong,hWin,DEWM_SCROLLX,sinf.nPos
-			invoke GetClientRect,hWin,addr rect
-			mov		rect.bottom,6
-			invoke InvalidateRect,hWin,addr rect,TRUE
-			invoke UpdateWindow,hWin
+;			invoke GetClientRect,hWin,addr rect
+;			mov		rect.bottom,6
+;			invoke InvalidateRect,hWin,addr rect,TRUE
+;			invoke UpdateWindow,hWin
 		.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
 			mov		sinf.cbSize,sizeof sinf
 			mov		sinf.fMask,SIF_POS
@@ -917,10 +923,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			shl		eax,3
 			invoke ScrollWindow,hWin,0,eax,NULL,NULL
 			invoke SetWindowLong,hWin,DEWM_SCROLLY,sinf.nPos
-			invoke GetClientRect,hWin,addr rect
-			mov		rect.right,6
-			invoke InvalidateRect,hWin,addr rect,TRUE
-			invoke UpdateWindow,hWin
+;			invoke GetClientRect,hWin,addr rect
+;			mov		rect.right,6
+;			invoke InvalidateRect,hWin,addr rect,TRUE
+;			invoke UpdateWindow,hWin
 		.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
 			mov		sinf.cbSize,sizeof sinf
 			mov		sinf.fMask,SIF_POS
@@ -958,7 +964,6 @@ DlgEditProc endp
 
 PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -1025,36 +1030,35 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_DRAWITEM
 		push	esi
 		mov		esi,lParam
-		assume esi:ptr DRAWITEMSTRUCT
-		mov		eax,[esi].hwndItem
+		mov		eax,[esi].DRAWITEMSTRUCT.hwndItem
 		.if eax==hPrpLstDlg
-			.if [esi].itemID!=LB_ERR
-				test	[esi].itemState,ODS_SELECTED
+			.if [esi].DRAWITEMSTRUCT.itemID!=LB_ERR
+				test	[esi].DRAWITEMSTRUCT.itemState,ODS_SELECTED
 				.if ZERO?
-					invoke SetTextColor,[esi].hdc,color.text
-					invoke SetBkColor,[esi].hdc,color.back
+					invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,color.text
+					invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,color.back
 				.else
 					invoke GetSysColor,COLOR_HIGHLIGHTTEXT
-					invoke SetTextColor,[esi].hdc,eax
+					invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,eax
 					invoke GetSysColor,COLOR_HIGHLIGHT
-					invoke SetBkColor,[esi].hdc,eax
+					invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,eax
 				.endif
-				push	[esi].rcItem.right
-				mov		eax,[esi].hwndItem
+				push	[esi].DRAWITEMSTRUCT.rcItem.right
+				mov		eax,[esi].DRAWITEMSTRUCT.hwndItem
 				mov		eax,nPropWt
-				mov		[esi].rcItem.right,eax
-				invoke ExtTextOut,[esi].hdc,0,0,ETO_OPAQUE,addr [esi].rcItem,NULL,0,NULL
-				pop		[esi].rcItem.right
-				invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr tempbuff
+				mov		[esi].DRAWITEMSTRUCT.rcItem.right,eax
+				invoke ExtTextOut,[esi].DRAWITEMSTRUCT.hdc,0,0,ETO_OPAQUE,addr [esi].DRAWITEMSTRUCT.rcItem,NULL,0,NULL
+				pop		[esi].DRAWITEMSTRUCT.rcItem.right
+				invoke SendMessage,[esi].DRAWITEMSTRUCT.hwndItem,LB_GETTEXT,[esi].DRAWITEMSTRUCT.itemID,addr tempbuff
 				mov		eax,offset tempbuff
 				.while byte ptr [eax] && byte ptr [eax]!=VK_TAB
 					inc		eax
 				.endw
 				sub		eax,offset tempbuff
-				invoke TextOut,[esi].hdc,2,[esi].rcItem.top,addr tempbuff,eax
-				mov		eax,[esi].hwndItem
-				invoke SetTextColor,[esi].hdc,color.text
-				invoke SetBkColor,[esi].hdc,color.back
+				invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,2,[esi].DRAWITEMSTRUCT.rcItem.top,addr tempbuff,eax
+				mov		eax,[esi].DRAWITEMSTRUCT.hwndItem
+				invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,color.text
+				invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,color.back
 				mov		edx,offset tempbuff
 				.while byte ptr [edx] && byte ptr [edx]!=VK_TAB
 					inc		edx
@@ -1067,29 +1071,28 @@ PropertyProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				sub		eax,edx
 				mov		ecx,nPropWt
 				add		ecx,2
-				invoke TextOut,[esi].hdc,ecx,[esi].rcItem.top,edx,eax
+				invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,ecx,[esi].DRAWITEMSTRUCT.rcItem.top,edx,eax
 				invoke CreatePen,PS_SOLID,0,0C0C0C0h
-				invoke SelectObject,[esi].hdc,eax
+				invoke SelectObject,[esi].DRAWITEMSTRUCT.hdc,eax
 				push	eax
-				mov		edx,[esi].rcItem.bottom
+				mov		edx,[esi].DRAWITEMSTRUCT.rcItem.bottom
 				dec		edx
-				invoke MoveToEx,[esi].hdc,[esi].rcItem.left,edx,NULL
-				mov		edx,[esi].rcItem.bottom
+				invoke MoveToEx,[esi].DRAWITEMSTRUCT.hdc,[esi].DRAWITEMSTRUCT.rcItem.left,edx,NULL
+				mov		edx,[esi].DRAWITEMSTRUCT.rcItem.bottom
 				dec		edx
-				invoke LineTo,[esi].hdc,[esi].rcItem.right,edx
-				mov		eax,[esi].hwndItem
-				mov		edx,[esi].rcItem.left
+				invoke LineTo,[esi].DRAWITEMSTRUCT.hdc,[esi].DRAWITEMSTRUCT.rcItem.right,edx
+				mov		eax,[esi].DRAWITEMSTRUCT.hwndItem
+				mov		edx,[esi].DRAWITEMSTRUCT.rcItem.left
 				add		edx,nPropWt
-				invoke MoveToEx,[esi].hdc,edx,[esi].rcItem.top,NULL
-				mov		edx,[esi].rcItem.left
+				invoke MoveToEx,[esi].DRAWITEMSTRUCT.hdc,edx,[esi].DRAWITEMSTRUCT.rcItem.top,NULL
+				mov		edx,[esi].DRAWITEMSTRUCT.rcItem.left
 				add		edx,nPropWt
-				invoke LineTo,[esi].hdc,edx,[esi].rcItem.bottom
+				invoke LineTo,[esi].DRAWITEMSTRUCT.hdc,edx,[esi].DRAWITEMSTRUCT.rcItem.bottom
 				pop		eax
-				invoke SelectObject,[esi].hdc,eax
+				invoke SelectObject,[esi].DRAWITEMSTRUCT.hdc,eax
 				invoke DeleteObject,eax
 			.endif
 		.endif
-		assume esi:nothing
 		pop		esi
 		xor		eax,eax
 		ret
@@ -1418,6 +1421,16 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SendMessage,eax,WM_CONTEXTMENU,edx,lParam
 	.elseif eax==WM_NOTIFY
+		invoke GetWindowLong,hDEd,DEWM_MEMORY
+		.if eax
+			mov		ebx,eax
+			.if [ebx].DLGHEAD.ftextmode
+				mov		edx,lParam
+				.if [edx].RASELCHANGE.fchanged
+					invoke SendMessage,hWin,PRO_SETMODIFY,TRUE,0
+				.endif
+			.endif
+		.endif
 		invoke NotifyParent
 	.elseif eax==PRO_OPEN
 		mov		fClose,0
@@ -1472,6 +1485,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetProjectModify,eax,wParam
 			.endif
 		.endif
+		invoke NotifyParent
 		jmp		Ex
 	.elseif eax==PRO_GETSELECTED
 		invoke GetProjectSelected
@@ -1898,7 +1912,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 		.endif
 		invoke SetChanged,eax
-		invoke InvalidateRect,hDEd,NULL,TRUE
+		;invoke InvalidateRect,hDEd,NULL,TRUE
+		invoke ShowWindow,hInvisible,SW_HIDE
+		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+		invoke UpdateWindow,hDEd
 		jmp		Ex
 	.elseif eax==DEM_COMPACT
 ;		invoke CompactDialog,hDEd

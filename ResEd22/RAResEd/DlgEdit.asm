@@ -1102,9 +1102,9 @@ DeleteTab proc uses esi,nTab:DWORD
 DeleteTab endp
 
 SetChanged proc fChanged:DWORD
-	LOCAL	hDC:HDC
-	LOCAL	hBr:DWORD
-	LOCAL	rect:RECT
+;	LOCAL	hDC:HDC
+;	LOCAL	hBr:DWORD
+;	LOCAL	rect:RECT
 
 	invoke GetWindowLong,hDEd,DEWM_PROJECT
 	.if eax
@@ -1115,27 +1115,27 @@ SetChanged proc fChanged:DWORD
 			push	fChanged
 			pop		[eax].PROJECT.changed
 		.endif
-		invoke GetDC,hDEd
-		mov		hDC,eax
-		.if fChanged
-			mov		eax,40A040h
-		.else
-			invoke GetWindowLong,hDEd,DEWM_READONLY
-			.if eax
-				mov		eax,0FFh
-			.else
-				mov		eax,color.back
-			.endif
-		.endif
-		invoke CreateSolidBrush,eax
-		mov		hBr,eax
-		mov		rect.left,1
-		mov		rect.top,1
-		mov		rect.right,6
-		mov		rect.bottom,6
-		invoke FillRect,hDC,addr rect,hBr
-		invoke ReleaseDC,hDEd,hDC
-		invoke DeleteObject,hBr
+;		invoke GetDC,hDEd
+;		mov		hDC,eax
+;		.if fChanged
+;			mov		eax,40A040h
+;		.else
+;			invoke GetWindowLong,hDEd,DEWM_READONLY
+;			.if eax
+;				mov		eax,0FFh
+;			.else
+;				mov		eax,color.back
+;			.endif
+;		.endif
+;		invoke CreateSolidBrush,eax
+;		mov		hBr,eax
+;		mov		rect.left,1
+;		mov		rect.top,1
+;		mov		rect.right,6
+;		mov		rect.bottom,6
+;		invoke FillRect,hDC,addr rect,hBr
+;		invoke ReleaseDC,hDEd,hDC
+;		invoke DeleteObject,hBr
 	.endif
 	invoke NotifyParent
 	ret
@@ -3838,11 +3838,11 @@ MakeDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hDEd,DEWM_SCROLLX
 		shl		eax,3
 		neg		eax
-		add		eax,10
+		add		eax,DlgX
 		pop		edx
 		shl		edx,3
 		neg		edx
-		add		edx,10
+		add		edx,DlgY
 		mov		ecx,rect.bottom
 		sub		ecx,rect.top
 		mov		rect.bottom,ecx
@@ -4345,6 +4345,7 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 		invoke CreateNewCtl,hWin,0,DlgX,DlgY,150,100
 		mov		hDlg,eax
 		invoke SetChanged,TRUE
+		invoke NotifyParent
 	.else
 		;Create existing dlg
 		mov		esi,eax

@@ -669,7 +669,12 @@ SetProjectModify proc uses esi,lpProMem:DWORD,fChanged:DWORD
 		mov		[esi].PROJECT.changed,eax
 		add		esi,sizeof PROJECT
 	.endw
-	invoke InvalidateRect,hDEd,NULL,TRUE
+	invoke GetWindowLong,hDEd,DEWM_DIALOG
+	.if eax
+		invoke ShowWindow,hInvisible,SW_HIDE
+		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+		invoke UpdateWindow,hDEd
+	.endif
 	ret
 
 SetProjectModify endp

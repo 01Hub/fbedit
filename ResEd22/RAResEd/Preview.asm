@@ -539,6 +539,10 @@ GetCtrlSize endp
 ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	LOCAL	nInx:DWORD
 
+	.if hDlgMnu
+		invoke DestroyMenu,hDlgMnu
+		mov		hDlgMnu,0
+	.endif
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024
 	mov		ebx,eax
 	push	eax
@@ -546,21 +550,6 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	mov		edi,esi
 	mov		pDlgMem,esi
 	add		esi,sizeof DLGHEAD
-;	mov		dlgdata,WS_VISIBLE or WS_CAPTION
-;	mov		dlgps,0
-;	mov		dlgfn,0
-;	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
-;	mov		eax,fntwt
-;	mov		dfntwt,eax
-;	mov		eax,fntht
-;	mov		dfntht,eax
-;	.if byte ptr [edi].DLGHEAD.font
-;		mov		dlgdata,WS_VISIBLE or WS_CAPTION or DS_SETFONT
-;		mov		eax,[edi].DLGHEAD.fontsize
-;		mov		dlgps,ax
-;		invoke SaveWideChar,addr [edi].DLGHEAD.font,offset dlgfn
-;	.endif
-;	invoke DialogBoxIndirectParam,hInstance,offset dlgdata,hWin,offset PrevTestProc,0
 	mov		eax,[esi].DIALOG.style
 	.if byte ptr [edi].DLGHEAD.font
 		or		eax,DS_SETFONT
