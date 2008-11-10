@@ -102,21 +102,21 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,69794
-16=0,0,810,411,30669
+1=0,0,0,0,36642
+16=0,0,810,411,24824
 22=0,0,0,0,4317
 23=0,0,0,0,24496
 24=0,0,0,0,713
 19=0,0,0,0,4740
 2=0,0,0,0,7226
-9=0,0,0,0,10244
+9=0,0,0,0,4681
 10=0,0,0,0,27206
 11=0,0,0,0,6031
 20=0,0,0,0,3058
 15=0,0,0,0,8393
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,6954
+13=0,0,0,0,4518
 26=0,0,0,0,21193
 21=0,0,0,0,175
 14=0,0,0,0,8065
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="hidecaret"
-2="SetCaret"
-3="REM_GETWORD"
-4="REM_SETSTYLEEX"
-5="REM_GETCURSORWORD"
-6="REM_CASE"
-7="cp"
-8="lnlen"
-9="WM_SI"
-10="SetBlockMarkers"
+1="GetTopFromYp"
+2="hidecaret"
+3="SetCaret"
+4="REM_GETWORD"
+5="REM_SETSTYLEEX"
+6="REM_GETCURSORWORD"
+7="REM_CASE"
+8="cp"
+9="lnlen"
+10="WM_SI"
 
 [AutoLoad]
 1=1

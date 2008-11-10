@@ -1722,13 +1722,15 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							If edtopt.autocase Then
 								CaseConvertWord(lstpos.hwnd,lstpos.chrg.cpMin)
 							EndIf
-							lret=AutoFormatLine(lstpos.hwnd,@lstpos.chrg)
-							If lpRASELCHANGE->chrg.cpMin>lstpos.chrg.cpMin Then
-								lpRASELCHANGE->chrg.cpMin-=lret
-								lpRASELCHANGE->chrg.cpMax-=lret
+							If ah.hred=lstpos.hwnd Then
+								lret=AutoFormatLine(lstpos.hwnd,@lstpos.chrg)
+								If lpRASELCHANGE->chrg.cpMin>lstpos.chrg.cpMin Then
+									lpRASELCHANGE->chrg.cpMin-=lret
+									lpRASELCHANGE->chrg.cpMax-=lret
+								EndIf
+								SendMessage(lstpos.hwnd,EM_EXSETSEL,0,Cast(LPARAM,@lpRASELCHANGE->chrg.cpMin))
+								SendMessage(lstpos.hwnd,EM_SCROLLCARET,0,0)
 							EndIf
-							SendMessage(lstpos.hwnd,EM_EXSETSEL,0,Cast(LPARAM,@lpRASELCHANGE->chrg.cpMin))
-							SendMessage(lstpos.hwnd,EM_SCROLLCARET,0,0)
 							ad.fNoNotify=FALSE
 						EndIf
 						lstpos.hwnd=ah.hred

@@ -1243,7 +1243,7 @@ SaveParam1:
 					inc		esi
 					invoke GetWord,esi,addr npos
 					mov		esi,edx
-					.if byte ptr [esi]=='-' || byte ptr [esi]=='+'
+					.if byte ptr [esi]=='-' || byte ptr [esi]=='+' || byte ptr [esi]=='&'
 						jmp		@b
 					.endif
 					lea		esi,[esi+ecx]

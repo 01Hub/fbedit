@@ -282,6 +282,7 @@ Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
 					buff=UCase(buff)
 				EndIf
 				SendMessage(hWin,REM_CASEWORD,cp,Cast(LPARAM,@buff))
+				SendMessage(hWin,REM_INVALIDATELINE,SendMessage(hWin,EM_LINEFROMCHAR,cp,0),0)
 			EndIf
 		EndIf
 		SendMessage(hWin,REM_SETCHARTAB,Asc("."),CT_HICHAR)

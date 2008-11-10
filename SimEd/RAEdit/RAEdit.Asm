@@ -1357,7 +1357,20 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 						invoke DeleteSelection,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
 						mov		[ebx].EDIT.cpMin,eax
 						mov		[ebx].EDIT.cpMax,eax
+						.if eax<[ebx].EDIT.edta.cp
+							mov		[ebx].EDIT.edta.cp,eax
+						.endif
+						.if eax<[ebx].EDIT.edtb.cp
+							mov		[ebx].EDIT.edtb.cp,eax
+						.endif
 						invoke GetCharPtr,ebx,[ebx].EDIT.cpMin
+						invoke GetYpFromLine,ebx,edx
+						.if eax<[ebx].EDIT.edta.cpy
+							mov		[ebx].EDIT.edta.cpy,eax
+						.endif
+						.if eax<[ebx].EDIT.edtb.cpy
+							mov		[ebx].EDIT.edtb.cpy,eax
+						.endif
 						invoke SetCaretVisible,hWin,[esi].RAEDT.cpy
 						invoke SetCaret,ebx,[esi].RAEDT.cpy
 						invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd

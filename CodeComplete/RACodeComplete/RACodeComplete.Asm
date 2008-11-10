@@ -602,12 +602,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke wsprintf,offset findbuff,offset szFmt,eax,[ebx].RATT.tti.novr
 				mov		esp,esi
 				pop		esi
-				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				; more space for extreme overload function
 				; 34=24+10(extra space)
 				add		rect.right,34
 				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
-				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_SINGLELINE or DT_CENTER
+				invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_CENTER
 				push	rect.right
 				mov		eax,rect.left
 				add		eax,9
@@ -626,8 +626,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		rect.left,eax
 			.endif
 			invoke SetTextColor,ps.hdc,[ebx].RATT.apicolor
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			mov		rect.left,eax
 			invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
@@ -637,19 +637,19 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		rgt,'('
 			.endif
-			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
-			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
+			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			mov		rect.left,eax
 			mov		rgt,eax
 			.if [ebx].RATT.tti.lpszParam
 				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
-				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
-				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				.if [ebx].RATT.nlen
 					invoke SetTextColor,ps.hdc,[ebx].RATT.hilitecolor
 					.if [ebx].RATT.nleft
-						invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,[ebx].RATT.nleft,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+						invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,[ebx].RATT.nleft,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 					.else
 						mov		eax,rect.left
 						mov		rect.right,eax
@@ -664,12 +664,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			test	style,STYLE_USEPARANTESES
 			.if !ZERO?
 				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
-				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				mov		eax,rect.right
 				mov		rect.left,eax
 				mov		rgt,')'
-				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
-				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
+				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				mov		eax,rect.right
 				mov		rect.left,eax
 			.endif
@@ -678,8 +678,8 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if byte ptr [eax]
 					add		rect.left,5
 					invoke SetTextColor,ps.hdc,[ebx].RATT.apicolor
-					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
-					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_SINGLELINE or DT_LEFT
+					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
+					invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				.endif
 			.endif
 			.if [ebx].RATT.tti.lpszDesc
@@ -689,7 +689,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		rect.bottom,99
 				mov		rect.right,512
 				invoke SetTextColor,ps.hdc,[ebx].RATT.textcolor
-				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect,DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect,DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			.endif
 		.endif
 		pop		eax
@@ -792,14 +792,14 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke wsprintf,offset findbuff,offset szFmt,eax,[ebx].RATT.tti.novr
 			mov		esp,esi
 			pop		esi
-			invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,offset findbuff,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			; 40=25+10(extra space)+5(space between api and graph)
 			add		eax,40
 			mov		rect.left,eax
 		.endif
 		.if [ebx].RATT.tti.lpszApi
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszApi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			mov		rect.left,eax
 			test	style,STYLE_USEPARANTESES
@@ -808,24 +808,24 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		rgt,'('
 			.endif
-			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			mov		rect.left,eax
 		.endif
 		.if [ebx].RATT.tti.lpszParam && [ebx].RATT.nleft
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,[ebx].RATT.nleft,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,[ebx].RATT.nleft,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 		.endif
 		mov		eax,rect.right
 		mov		rgt,eax
 		.if [ebx].RATT.tti.lpszParam
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszParam,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect.right
 			mov		rect.left,eax
 			test	style,STYLE_USEPARANTESES
 			.if !ZERO?
 				push	rgt
 				mov		rgt,')'
-				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,addr rgt,1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 				mov		eax,rect.right
 				mov		rect.left,eax
 				pop		rgt
@@ -835,7 +835,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			.if byte ptr [eax]
 				add		rect.left,5
-				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+				invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszRetType,-1,addr rect,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			.endif
 		.endif
 		add		rect.right,4
@@ -843,7 +843,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if [edx].TTITEM.lpszDesc
 			mov		rect1.left,4
 			mov		rect1.top,0
-			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect1,DT_CALCRECT or DT_SINGLELINE or DT_LEFT
+			invoke DrawText,ps.hdc,[ebx].RATT.tti.lpszDesc,-1,addr rect1,DT_CALCRECT or DT_SINGLELINE or DT_NOPREFIX or DT_LEFT
 			mov		eax,rect1.right
 			.if eax>rect.right
 				mov		rect.right,eax
