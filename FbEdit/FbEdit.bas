@@ -827,24 +827,28 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
-							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
-							If f.fres<>-1 Then
-								f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
+							If Len(f.findbuff) Then
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
+								If f.fres<>-1 Then
+									f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
+								EndIf
+								f.ft.chrg.cpMax=-1
+								x=f.fdir
+								f.fdir=1
+								Find(hWin,f.fr Or FR_DOWN)
+								f.fdir=x
 							EndIf
-							f.ft.chrg.cpMax=-1
-							x=f.fdir
-							f.fdir=1
-							Find(hWin,f.fr Or FR_DOWN)
-							f.fdir=x
 							'
 						Case IDM_EDIT_FINDPREVIOUS
-							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
-							f.ft.chrg.cpMax=0
-							f.ft.chrg.cpMin-=1
-							x=f.fdir
-							f.fdir=2
-							Find(hWin,f.fr And (-1 Xor FR_DOWN))
-							f.fdir=x
+							If Len(f.findbuff) Then
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
+								f.ft.chrg.cpMax=0
+								f.ft.chrg.cpMin-=1
+								x=f.fdir
+								f.fdir=2
+								Find(hWin,f.fr And (-1 Xor FR_DOWN))
+								f.fdir=x
+							EndIf
 							'
 						Case IDM_EDIT_REPLACE
 							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))

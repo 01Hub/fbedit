@@ -2,8 +2,13 @@ Whats new:
 ----------
 1.0.6.5
 o Dialog editor now uses dialog units instead of pixels.
+o Block mode accelerator has been changed from Ctrl+B to Shift+Ctrl+B
 o Fixed bug if a file in a project is on another drive.
 o Fixed bug with leaving 'dead' carets while editing.
+o Fixed bug with changing tab. Could jump to a new position.
+o Fixed bug with tooltips. '&' was intepreted as a prefix.
+o Fixed bug with code parser. Hex values in parameters was not parsed correctly.
+o Fixed bug with Find next / previous.
 1.0.6.4c
 o It is now possible to insert a separator in Tools and Help menu
   by typing a "-" as Menu item.
