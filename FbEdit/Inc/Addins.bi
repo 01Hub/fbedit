@@ -106,6 +106,7 @@ Type ADDINHANDLES
 	hraresed			As HWND							' Handle of RAResEd window
 	hrareseddlg		As HWND							' Handle of RAResEd dialog
 	himm				As HWND							' Handle of immediate window
+	hToolFont		As HFONT							' Tool windows font
 End Type
 
 Type ADDINDATA

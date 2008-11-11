@@ -4239,6 +4239,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 			and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
 			.if [edi].DIALOG.ntype==14
 				or		eax,LVS_SHAREIMAGELISTS
+			.elseif [edi].DIALOG.ntype==16
+				and		eax,(-1 xor UDS_AUTOBUDDY)
 			.endif
 			mov		[ebx].MyDLGITEMTEMPLATEEX.style,eax
 			mov		eax,[edi].DIALOG.exstyle

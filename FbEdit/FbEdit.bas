@@ -388,6 +388,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hOutFont=CreateFontIndirect(@lfnt)
 			SendMessage(ah.hout,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			SendMessage(ah.himm,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
+			' Font for tools
+			LoadFromIni(StrPtr("Edit"),StrPtr("ToolFont"),"440",@toolfnt,FALSE)
+			lfnt.lfHeight=toolfnt.size
+			lfnt.lfCharSet=toolfnt.charset
+			lstrcpy(lfnt.lfFaceName,toolfnt.szFont)
+			lfnt.lfItalic=0
+			ah.hToolFont=CreateFontIndirect(@lfnt)
 			' Turn off default comment char
 			SendMessage(ah.hout,REM_SETCHARTAB,Asc(";"),CT_OPER)
 			' Define @ as a operand
@@ -474,10 +481,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
 			lpOldCCProc=Cast(Any Ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
-			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+'			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
-			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+'			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,hDlgFnt),0)
+			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+			' Property
+			SendMessage(ah.hpr,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Printer
 			LoadFromIni(StrPtr("Printer"),StrPtr("Page"),"4444444",@ppage,FALSE)
 			GetLocaleInfo(GetUserDefaultLCID,LOCALE_IMEASURE,@buff,SizeOf(buff))
@@ -608,6 +619,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			DeleteObject(ah.rafnt.hIFont)
 			DeleteObject(ah.rafnt.hLnrFont)
 			DeleteObject(ah.hOutFont)
+			DeleteObject(ah.hToolFont)
 			DestroyIcon(hIcon)
 			DestroyCursor(hVCur)
 			DestroyCursor(hHCur)

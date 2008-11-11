@@ -23,8 +23,10 @@
 #Define IDC_CHKHILITELINE					4021
 #Define IDC_STCCODEFONT						4022
 #Define IDC_STCLNRFONT						4023
+#Define IDC_STCTOOLSFONT					4065
 #Define IDC_BTNCODEFONT						4024
 #Define IDC_BTNLNRFONT						4025
+#Define IDC_BTNTOOLSFONT					4066
 #Define IDC_CHKHILITECMNT					4026
 #Define IDC_CHKSINGLEINSTANCE				4031
 #Define IDC_CBOTHEME							4007
@@ -54,6 +56,7 @@
 
 Dim Shared hCFont As HFONT
 Dim Shared hLFont As HFONT
+Dim Shared hTFont As HFONT
 Dim Shared oldsel As Integer
 
 Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,Comments back,Active line back,Indent markers,Selection bar,Selection bar pen,Line numbers,Numbers & hex,Tools Back,Tools Text,Dialog Back,Dialog Text,CodeComplete Back,CodeComplete Text,CodeTip Back,CodeTip Text,CodeTip Api,CodeTip Sel,Properties parameters"
@@ -429,6 +432,15 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	lstrcpy(lnrfnt.szFont,lfnt.lfFaceName)
 	SaveToIni(StrPtr("Edit"),StrPtr("LnrFont"),"440",@lnrfnt,FALSE)
 	ah.rafnt.hLnrFont=CreateFontIndirect(@lfnt)
+	GetObject(hTFont,SizeOf(LOGFONT),@lfnt)
+	toolfnt.size=lfnt.lfHeight
+	toolfnt.charset=lfnt.lfCharSet
+	lstrcpy(toolfnt.szFont,lfnt.lfFaceName)
+	SaveToIni(StrPtr("Edit"),StrPtr("ToolFont"),"440",@toolfnt,FALSE)
+	ah.hToolFont=CreateFontIndirect(@lfnt)
+	SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.htt,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.hpr,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 	' Edit options
 	edtopt.tabsize=GetDlgItemInt(hWin,IDC_EDTTABSIZE,NULL,FALSE)
 	edtopt.expand=IsDlgButtonChecked(hWin,IDC_CHKEXPAND)
@@ -698,6 +710,9 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			GetObject(ah.rafnt.hLnrFont,SizeOf(LOGFONT),@lfnt)
 			hLFont=CreateFontIndirect(@lfnt)
 			SendDlgItemMessage(hWin,IDC_STCLNRFONT,WM_SETFONT,Cast(Integer,hLFont),FALSE)
+			GetObject(ah.hToolFont,SizeOf(LOGFONT),@lfnt)
+			hTFont=CreateFontIndirect(@lfnt)
+			SendDlgItemMessage(hWin,IDC_STCTOOLSFONT,WM_SETFONT,Cast(Integer,hTFont),FALSE)
 			hBtnApply=GetDlgItem(hWin,IDC_BTNKWAPPLY)
 			' Colors
 			buff=sColors
@@ -956,6 +971,19 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 								EnableWindow(hBtnApply,TRUE)
 							EndIf
 							'
+						Case IDC_BTNTOOLSFONT
+							GetObject(hTFont,SizeOf(LOGFONT),@lfnt)
+							cf.lStructSize=SizeOf(cf)
+							cf.hwndOwner=hWin
+							cf.lpLogFont=@lfnt
+							cf.Flags=CF_SCREENFONTS Or CF_INITTOLOGFONTSTRUCT
+							If ChooseFont(@cf) Then
+								DeleteObject(hTFont)
+								hTFont=CreateFontIndirect(@lfnt)
+								SendDlgItemMessage(hWin,IDC_STCTOOLSFONT,WM_SETFONT,Cast(Integer,hTFont),TRUE)
+								EnableWindow(hBtnApply,TRUE)
+							EndIf
+							'
 						Case IDC_BTNSAVETHEME
 							GetDlgItemText(hWin,IDC_EDTTHEME,@sItem,32)
 							nInx=SendDlgItemMessage(hWin,IDC_CBOTHEME,CB_ADDSTRING,0,Cast(Integer,@sItem))
@@ -1109,6 +1137,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 		Case WM_CLOSE
 			DeleteObject(hCFont)
 			DeleteObject(hLFont)
+			DeleteObject(hTFont)
 			EndDialog(hWin, 0)
 			'
 		Case Else
