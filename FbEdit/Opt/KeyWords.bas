@@ -421,26 +421,37 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	GetObject(hCFont,SizeOf(LOGFONT),@lfnt)
 	edtfnt.size=lfnt.lfHeight
 	edtfnt.charset=lfnt.lfCharSet
+	edtfnt.weight=lfnt.lfWeight
+	edtfnt.italics=lfnt.lfItalic
 	lstrcpy(edtfnt.szFont,lfnt.lfFaceName)
-	SaveToIni(StrPtr("Edit"),StrPtr("EditFont"),"440",@edtfnt,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("EditFont"),"44044",@edtfnt,FALSE)
 	ah.rafnt.hFont=CreateFontIndirect(@lfnt)
 	lfnt.lfItalic=TRUE
 	ah.rafnt.hIFont=CreateFontIndirect(@lfnt)
 	GetObject(hLFont,SizeOf(LOGFONT),@lfnt)
 	lnrfnt.size=lfnt.lfHeight
 	lnrfnt.charset=lfnt.lfCharSet
+	lnrfnt.weight=lfnt.lfWeight
+	lnrfnt.italics=lfnt.lfItalic
 	lstrcpy(lnrfnt.szFont,lfnt.lfFaceName)
-	SaveToIni(StrPtr("Edit"),StrPtr("LnrFont"),"440",@lnrfnt,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("LnrFont"),"44044",@lnrfnt,FALSE)
 	ah.rafnt.hLnrFont=CreateFontIndirect(@lfnt)
 	GetObject(hTFont,SizeOf(LOGFONT),@lfnt)
 	toolfnt.size=lfnt.lfHeight
 	toolfnt.charset=lfnt.lfCharSet
+	toolfnt.weight=lfnt.lfWeight
+	toolfnt.italics=lfnt.lfItalic
 	lstrcpy(toolfnt.szFont,lfnt.lfFaceName)
-	SaveToIni(StrPtr("Edit"),StrPtr("ToolFont"),"440",@toolfnt,FALSE)
+	SaveToIni(StrPtr("Edit"),StrPtr("ToolFont"),"44044",@toolfnt,FALSE)
 	ah.hToolFont=CreateFontIndirect(@lfnt)
 	SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 	SendMessage(ah.htt,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 	SendMessage(ah.hpr,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+	SendMessage(ah.hprj,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.hfib,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.htab,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+	SendMessage(ah.htabtool,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 	' Edit options
 	edtopt.tabsize=GetDlgItemInt(hWin,IDC_EDTTABSIZE,NULL,FALSE)
 	edtopt.expand=IsDlgButtonChecked(hWin,IDC_CHKEXPAND)

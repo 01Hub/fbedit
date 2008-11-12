@@ -261,6 +261,8 @@ Type EDITFONT
 	size				As Integer
 	charset			As Integer
 	szFont			As ZString Ptr
+	weight			As Integer
+	italics			As Integer
 End Type
 
 Type EDITOPTION
@@ -503,9 +505,9 @@ Dim Shared szIndent(31) As ZString*32
 Const sf1 = !"Courier New\0                    "
 Const sf2 = !"Terminal\0                       "
 Const sf3 = !"Tahoma\0                         "
-Dim Shared edtfnt As EDITFONT=(-12,0,@sf1)
-Dim Shared lnrfnt As EDITFONT=(-6,0,@sf2)
-Dim Shared toolfnt As EDITFONT=(-11,0,@sf3)
+Dim Shared edtfnt As EDITFONT=(-12,0,@sf1,400,0)
+Dim Shared lnrfnt As EDITFONT=(-6,0,@sf2,400,0)
+Dim Shared toolfnt As EDITFONT=(-11,0,@sf3,400,0)
 Dim Shared edtopt As EDITOPTION=(3,0,0,1,0,0,3,1,1,1,1,1,1,0,0,0,1,1,1,0)
 Const sn = !"rsrc.bi\0                        "
 Dim Shared nmeexp As NAMEEXPORT=(1,2,0,@sn)

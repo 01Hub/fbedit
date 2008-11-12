@@ -91,4 +91,5 @@ hInstance				dd ?
 OldListBoxProc			dd ?
 OldItem					dd ?
 szname					db 32768 dup(?)
+itemht					dd ?
 

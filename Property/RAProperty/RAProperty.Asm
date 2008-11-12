@@ -880,6 +880,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	len:DWORD
 	LOCAL	rapn:RAPNOTIFY
 	LOCAL	pt:POINT
+	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
 	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ISTOOLTIPMESSAGE
@@ -940,7 +941,8 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,0,addr szComboBox,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or CBS_HASSTRINGS,0,0,0,0,hWin,1002,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hcbo,eax
 		;Create ListBox
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,1003,hInstance,NULL
+;		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,1003,hInstance,NULL
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWVARIABLE,0,0,0,0,hWin,1003,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hlst,eax
 		invoke SetWindowLong,[ebx].RAPROPERTY.hlst,GWL_WNDPROC,offset ListBoxProc
 		mov		OldListBoxProc,eax
@@ -952,6 +954,12 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetStockObject,WHITE_BRUSH
 		mov		[ebx].RAPROPERTY.hbrback,eax
 		invoke CreateToolTip,[ebx].RAPROPERTY.hlst
+	.elseif eax==WM_MEASUREITEM
+		mov		edx,lParam
+		mov		eax,itemht
+		mov		[edx].MEASUREITEMSTRUCT.itemHeight,eax
+		mov		eax,TRUE
+		ret
 	.elseif eax==WM_DRAWITEM
 		push	esi
 		invoke GetWindowLong,hWin,0
@@ -1109,8 +1117,8 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		push	edi
-		invoke GetWindowLong,hWin,GWL_STYLE
 		mov		edi,28
+		invoke GetWindowLong,hWin,GWL_STYLE
 		test	eax,PRSTYLE_FLATTOOLBAR
 		.if !ZERO?
 			sub		edi,4
@@ -1124,6 +1132,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,[ebx].RAPROPERTY.hcbo,0,edi,rect.right,200,TRUE
 		invoke GetClientRect,[ebx].RAPROPERTY.hcbo,addr rect1
 		add		edi,rect1.bottom
+		add		edi,2
 		mov		edx,rect.bottom
 		sub		edx,edi
 		invoke MoveWindow,[ebx].RAPROPERTY.hlst,0,edi,rect.right,edx,TRUE
@@ -1155,6 +1164,14 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke InvalidateRect,[ebx].RAPROPERTY.hcbo,NULL,TRUE
 			invoke InvalidateRect,[ebx].RAPROPERTY.hlst,NULL,TRUE
 		.endif
+		invoke SendMessage,hWin,WM_SIZE,0,0
+		invoke GetObject,[ebx].RAPROPERTY.hfont,sizeof LOGFONT,addr lfnt
+		mov		eax,lfnt.lfHeight
+		.if sdword ptr eax<0
+			neg		eax
+		.endif
+		add		eax,4
+		mov		itemht,eax
 	.elseif eax==WM_CTLCOLOREDIT
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

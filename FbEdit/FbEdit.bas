@@ -366,17 +366,21 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Get find history
 			LoadFindHistory
 			' Create fonts
-			LoadFromIni(StrPtr("Edit"),StrPtr("EditFont"),"440",@edtfnt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("EditFont"),"44044",@edtfnt,FALSE)
 			lfnt.lfHeight=edtfnt.size
 			lfnt.lfCharSet=edtfnt.charset
+			lfnt.lfWeight=edtfnt.weight
+			lfnt.lfItalic=edtfnt.italics
 			lstrcpy(lfnt.lfFaceName,edtfnt.szFont)
-			lfnt.lfItalic=0
+'			lfnt.lfItalic=0
 			ah.rafnt.hFont=CreateFontIndirect(@lfnt)
 			lfnt.lfItalic=1
 			ah.rafnt.hIFont=CreateFontIndirect(@lfnt)
-			LoadFromIni(StrPtr("Edit"),StrPtr("LnrFont"),"440",@lnrfnt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("LnrFont"),"44044",@lnrfnt,FALSE)
 			lfnt.lfHeight=lnrfnt.size
 			lfnt.lfCharSet=lnrfnt.charset
+			lfnt.lfWeight=lnrfnt.weight
+			lfnt.lfItalic=lnrfnt.italics
 			lstrcpy(lfnt.lfFaceName,lnrfnt.szFont)
 			lfnt.lfItalic=0
 			ah.rafnt.hLnrFont=CreateFontIndirect(@lfnt)
@@ -389,11 +393,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hout,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			SendMessage(ah.himm,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			' Font for tools
-			LoadFromIni(StrPtr("Edit"),StrPtr("ToolFont"),"440",@toolfnt,FALSE)
+			LoadFromIni(StrPtr("Edit"),StrPtr("ToolFont"),"44044",@toolfnt,FALSE)
 			lfnt.lfHeight=toolfnt.size
 			lfnt.lfCharSet=toolfnt.charset
+			lfnt.lfWeight=toolfnt.weight
+			lfnt.lfItalic=toolfnt.italics
 			lstrcpy(lfnt.lfFaceName,toolfnt.szFont)
-			lfnt.lfItalic=0
 			ah.hToolFont=CreateFontIndirect(@lfnt)
 			' Turn off default comment char
 			SendMessage(ah.hout,REM_SETCHARTAB,Asc(";"),CT_OPER)
@@ -489,6 +494,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Property
 			SendMessage(ah.hpr,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+			SendMessage(ah.hprj,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+			SendMessage(ah.hfib,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+			SendMessage(ah.htab,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
+			SendMessage(ah.htabtool,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Printer
 			LoadFromIni(StrPtr("Printer"),StrPtr("Page"),"4444444",@ppage,FALSE)
 			GetLocaleInfo(GetUserDefaultLCID,LOCALE_IMEASURE,@buff,SizeOf(buff))
