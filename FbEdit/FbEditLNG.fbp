@@ -5,6 +5,9 @@ Description=FbEdit language translator
 Grouping=1
 AddMainFiles=1
 ResExport=
+AddModuleFiles=1
+CompileIfNewer=0
+IncVersion=0
 [Make]
 Recompile=0
 Module=Module Build,fbc -c
@@ -13,6 +16,7 @@ Current=1
 2=Windows GUI (Debug),fbc -s gui -g
 Output=..\Language\FbEditLNG.exe
 Run=
+Delete=*.obj
 [File]
 1=FbEditLNG.Bas
 2=FbEditLNG.Bi
