@@ -1102,9 +1102,6 @@ DeleteTab proc uses esi,nTab:DWORD
 DeleteTab endp
 
 SetChanged proc fChanged:DWORD
-;	LOCAL	hDC:HDC
-;	LOCAL	hBr:DWORD
-;	LOCAL	rect:RECT
 
 	invoke GetWindowLong,hDEd,DEWM_PROJECT
 	.if eax
@@ -1115,27 +1112,6 @@ SetChanged proc fChanged:DWORD
 			push	fChanged
 			pop		[eax].PROJECT.changed
 		.endif
-;		invoke GetDC,hDEd
-;		mov		hDC,eax
-;		.if fChanged
-;			mov		eax,40A040h
-;		.else
-;			invoke GetWindowLong,hDEd,DEWM_READONLY
-;			.if eax
-;				mov		eax,0FFh
-;			.else
-;				mov		eax,color.back
-;			.endif
-;		.endif
-;		invoke CreateSolidBrush,eax
-;		mov		hBr,eax
-;		mov		rect.left,1
-;		mov		rect.top,1
-;		mov		rect.right,6
-;		mov		rect.bottom,6
-;		invoke FillRect,hDC,addr rect,hBr
-;		invoke ReleaseDC,hDEd,hDC
-;		invoke DeleteObject,hBr
 	.endif
 	invoke NotifyParent
 	ret
@@ -1438,8 +1414,6 @@ DrawMultiSelItem endp
 DestroyMultiSel proc hSel:HWND
 
 	.if hSel
-		invoke GetParent,hSel
-		push	eax
 		mov		eax,8
 		.while eax
 			push	eax
@@ -1450,7 +1424,10 @@ DestroyMultiSel proc hSel:HWND
 			pop		eax
 			dec		eax
 		.endw
-		pop		eax
+		invoke ShowWindow,hInvisible,SW_HIDE
+		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+		invoke UpdateWindow,des.hdlg
+		invoke UpdateWindow,hDEd
 	.endif
 	mov		eax,hSel
 	ret
@@ -1521,7 +1498,6 @@ MultiSelRect proc uses ebx,hWin:HWND,fLocked:DWORD
 	invoke DrawMultiSelItem,pt.x,rect.bottom,hWin,fLocked,eax
 	invoke DrawMultiSelItem,rect.right,rect.bottom,hWin,fLocked,eax
 	mov		hMultiSel,eax
-	invoke SendMessage,hDEd,WM_LBUTTONDOWN,0,0
 	ret
 
 MultiSelRect endp
@@ -1601,6 +1577,7 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	invoke PropertyList,hWin
 	invoke ShowWindow,hInvisible,SW_HIDE
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+	invoke UpdateWindow,des.hdlg
 	invoke UpdateWindow,hDEd
 	ret
 
@@ -2146,6 +2123,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke DestroySizeingRect
 				invoke ShowWindow,hInvisible,SW_HIDE
 				invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+				invoke UpdateWindow,des.hdlg
 				invoke UpdateWindow,hDEd
 				.if ToolBoxID
 					;Is readOnly
@@ -2167,30 +2145,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.endif
 				.else
 					push	ebx
-					push	esi
-					push	edi
-					invoke GetWindowLong,hDEd,DEWM_MEMORY
-					mov		esi,eax
-					mov		edi,eax
-					lea		esi,[esi+sizeof DLGHEAD]
-					.while [esi].DIALOG.hwnd
-						lea		esi,[esi+sizeof DIALOG]
-					.endw
-					lea		esi,[esi-sizeof DIALOG]
-					.while esi>edi
-						invoke GetCtrlID,esi
-						.if eax
-							invoke GetDlgItem,des.hdlg,eax
-							mov		ebx,eax
-						.else
-							mov		ebx,des.hdlg
-						.endif
-						call	IsInWindow
-						.break .if eax
-						lea		esi,[esi-sizeof DIALOG]
-					.endw
-					pop		edi
-					pop		esi
+					call	GetCtrl
 					pop		eax
 					.if eax!=hCld
 						; Control
@@ -2235,6 +2190,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 							.if hMultiSel
 								invoke CtlMultiSelect,hCld
 							.else
+								call	GetCtrl
 								mov		edx,des.hdlg
 								mov		eax,hCld
 								.if eax!=des.hselected && edx!=des.hselected
@@ -2587,13 +2543,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		ebx,des.hdlg
 			call	IsInWindow
 			.if eax
-				invoke GetWindow,ebx,GW_CHILD
-				mov		ebx,eax
-				.while ebx
-					call	IsInWindow
-					invoke GetWindow,ebx,GW_HWNDNEXT
-					mov		ebx,eax
-				.endw
+				call	GetCtrl
 				invoke SizeingRect,hCld,FALSE
 			.endif
 		.endif
@@ -2722,6 +2672,33 @@ IsInWindow:
 	.else
 		xor		eax,eax
 	.endif
+	retn
+
+GetCtrl:
+	push	esi
+	push	edi
+	invoke GetWindowLong,hDEd,DEWM_MEMORY
+	mov		esi,eax
+	mov		edi,eax
+	lea		esi,[esi+sizeof DLGHEAD]
+	.while [esi].DIALOG.hwnd
+		lea		esi,[esi+sizeof DIALOG]
+	.endw
+	lea		esi,[esi-sizeof DIALOG]
+	.while esi>edi
+		invoke GetCtrlID,esi
+		.if eax
+			invoke GetDlgItem,des.hdlg,eax
+			mov		ebx,eax
+		.else
+			mov		ebx,des.hdlg
+		.endif
+		call	IsInWindow
+		.break .if eax
+		lea		esi,[esi-sizeof DIALOG]
+	.endw
+	pop		edi
+	pop		esi
 	retn
 
 DrawRect:
@@ -4305,8 +4282,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke ShowWindow,hInvisible,SW_HIDE
 	invoke SendMessage,hDEd,WM_SETREDRAW,TRUE,0
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-	invoke UpdateWindow,hDEd
 	invoke UpdateWindow,hDlg
+	invoke UpdateWindow,hDEd
 	mov		esi,hMem
 	.if ![esi].DLGHEAD.hred
 		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hRes,0,hInstance,0
