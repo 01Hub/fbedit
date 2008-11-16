@@ -56,8 +56,6 @@ ExportXPManifestNames proc uses esi edi,hMem:DWORD
 		mov		al,0Ah
 		stosb
 	.endif
-;	mov		ax,0A0Dh
-;	stosw
 	mov		al,0
 	stosb
 	pop		eax
@@ -166,7 +164,6 @@ ExportXPManifest endp
 
 XPManifestSave proc uses esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
-;	LOCAL	rect:RECT
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	.if !eax

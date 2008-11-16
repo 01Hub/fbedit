@@ -485,140 +485,6 @@ ParseSkip proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 
 ParseSkip endp
 
-;ConvertSize proc uses esi,lpMem:DWORD
-;	LOCAL	bux:DWORD
-;	LOCAL	buy:DWORD
-;	LOCAL	rect:RECT
-;
-;	mov		esi,lpMem
-;	mov		dlgps,10
-;	mov		dlgfn,0
-;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-;	invoke DestroyWindow,eax
-;	push	fntwt
-;	pop		dfntwt
-;	push	fntht
-;	pop		dfntht
-;	mov		eax,[esi].DLGHEAD.fontsize
-;	mov		dlgps,ax
-;	pushad
-;	lea		esi,[esi].DLGHEAD.font
-;	mov		edi,offset dlgfn
-;	xor		eax,eax
-;	mov		ecx,32
-;  @@:
-;	lodsb
-;	stosw
-;	loop	@b
-;	popad
-;	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
-;	invoke DestroyWindow,eax
-;	invoke GetDialogBaseUnits
-;	mov		edx,eax
-;	and		eax,0FFFFh
-;	mov		bux,eax
-;	shr		edx,16
-;	mov		buy,edx
-;	add		esi,sizeof DLGHEAD
-;	.while [esi].DIALOG.hwnd
-;		mov		rect.left,0
-;		mov		rect.top,0
-;		mov		rect.right,0
-;		mov		rect.bottom,0
-;		.if ![esi].DIALOG.ntype
-;			invoke AdjustWindowRectEx,addr rect,[esi].DIALOG.style,FALSE,[esi].DIALOG.exstyle
-;		.endif
-;		mov		eax,[esi].DIALOG.x
-;		call	ConvX
-;		.if fSnapToGrid
-;			call	SnapX
-;		.endif
-;		mov		[esi].DIALOG.x,eax
-;		mov		eax,[esi].DIALOG.y
-;		call	ConvY
-;		.if fSnapToGrid
-;			call	SnapY
-;		.endif
-;		mov		[esi].DIALOG.y,eax
-;		mov		eax,[esi].DIALOG.ccx
-;		call	ConvX
-;		.if fSnapToGrid
-;			call	SnapX
-;			inc		eax
-;		.endif
-;		add		eax,rect.right
-;		sub		eax,rect.left
-;		mov		[esi].DIALOG.ccx,eax
-;		mov		eax,[esi].DIALOG.ccy
-;		call	ConvY
-;		.if fSnapToGrid
-;			call	SnapY
-;			inc		eax
-;		.endif
-;		add		eax,rect.bottom
-;		sub		eax,rect.top
-;		mov		[esi].DIALOG.ccy,eax
-;		add		esi,sizeof DIALOG
-;	.endw
-	ret
-
-;ConvX:
-;	cdq
-;	mov		ecx,fntwt
-;	imul	ecx
-;	mov		ecx,bux
-;	imul	ecx
-;	mov		ecx,dfntwt
-;	idiv	ecx
-;	cdq
-;	mov		ecx,4
-;	idiv	ecx
-;	retn
-;
-;SnapX:
-;	mov		ecx,Gridcx
-;	.if sdword ptr eax>0
-;		add		eax,ecx
-;		dec		eax
-;	.else
-;		sub		eax,ecx
-;		inc		eax
-;	.endif
-;	cdq
-;	idiv	ecx
-;	cdq
-;	imul	ecx
-;	retn
-;
-;ConvY:
-;	cdq
-;	mov		ecx,fntht
-;	imul	ecx
-;	mov		ecx,buy
-;	imul	ecx
-;	mov		ecx,dfntht
-;	idiv	ecx
-;	cdq
-;	mov		ecx,8
-;	idiv	ecx
-;	retn
-;
-;SnapY:
-;	mov		ecx,Gridcy
-;	.if sdword ptr eax>0
-;		add		eax,ecx
-;		dec		eax
-;	.else
-;		sub		eax,ecx
-;		inc		eax
-;	.endif
-;	cdq
-;	idiv	ecx
-;	imul	ecx
-;	retn
-;
-;ConvertSize endp
-
 ConvNum proc lpProMem:DWORD,lpBuff:DWORD
 
 	mov		eax,lpBuff
@@ -965,7 +831,6 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 	LOCAL	hFile:DWORD
 	LOCAL	nBytes:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-;	LOCAL	hBmp:DWORD
 	LOCAL	nSize:DWORD
 
 	invoke strcpy,addr buffer,offset wordbuff
@@ -1313,16 +1178,12 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 	;Pos & Size
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.dux,eax
-;	mov		[edi].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duy,eax
-;	mov		[edi].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccx,eax
-;	mov		[edi].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccy,eax
-;	mov		[edi].DIALOG.ccy,eax
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;ExStyle
@@ -1572,16 +1433,12 @@ ParseControlType proc uses esi edi,nType:DWORD,nStyle:DWORD,nExStyle:DWORD,lpRCM
 	;Pos & Size
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.dux,eax
-;	mov		[edi].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duy,eax
-;	mov		[edi].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccx,eax
-;	mov		[edi].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi].DIALOG.duccy,eax
-;	mov		[edi].DIALOG.ccy,eax
 	movzx	eax,byte ptr [esi]
 	.if eax!=0Dh
 		;Style
@@ -1701,12 +1558,6 @@ ParseControls proc lpProMem:DWORD
 		invoke ParseControlType,9,SBS_HORZ,0,esi,edi,nTab,lpProMem
 		jmp		Nxt
 	.endif
-;	invoke strcmpi,offset wordbuff,offset sz
-;	.if !eax
-;		invoke ParseControlType,,,esi,edi,nTab,lpProMem
-;		jmp		Nxt
-;	.endif
-
 	invoke strcmpi,offset wordbuff,offset szENDSHORT
 	or		eax,eax
 	je		Ex
@@ -1720,7 +1571,6 @@ ParseControls endp
 
 ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	LOCAL	hMem:DWORD
-;	LOCAL	nPixy:DWORD
 
 	invoke AddTypeMem,lpProMem,MaxMem,TPE_DIALOG
 	mov		hMem,eax
@@ -1739,23 +1589,18 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		esi,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.dux,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duy,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccx,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccy,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
 	xor		eax,eax
 	.if dl==','
 		;HelpID
 		invoke GetNum,lpProMem
 	.endif
 	mov		[edi+sizeof DLGHEAD].DIALOG.helpid,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
@@ -1801,21 +1646,8 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.endif
 	invoke strcmpi,offset wordbuff,offset szFONT
 	.if !eax
-;		invoke GetDC,NULL
-;		push	eax
-;		invoke GetDeviceCaps,eax,LOGPIXELSY
-;		mov		nPixy,eax
-;		pop		edx
-;		push	eax
-;		invoke ReleaseDC,NULL,edx
 		invoke GetNum,lpProMem
 		mov		[edi].DLGHEAD.fontsize,eax
-;		pop		edx
-;		mul		edx
-;		mov		ecx,72
-;		div		ecx
-;		neg		eax
-;		mov		[edi].DLGHEAD.fontht,eax
 		invoke GetWord,offset wordbuff,esi
 		add		esi,eax
 		invoke UnQuoteWord,offset wordbuff
@@ -1855,8 +1687,6 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		pop		esi
 		invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 		invoke DestroyWindow,eax
-;		mov		eax,lfntht
-;		mov		[edi].DLGHEAD.fontht,eax
 		jmp		@b
 	.endif
 	invoke strcmpi,offset wordbuff,offset szMENU
@@ -1898,7 +1728,6 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.if !eax
 		invoke ParseControls,lpProMem
 	.endif
-;	invoke ConvertSize,hMem
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
@@ -1926,17 +1755,12 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	add		esi,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.dux,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.x,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duy,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.y,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccx,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.ccx,eax
 	invoke GetNum,lpProMem
 	mov		[edi+sizeof DLGHEAD].DIALOG.duccy,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.ccy,eax
-;	mov		[edi+sizeof DLGHEAD].DIALOG.hdmy,0
   @@:
 	invoke GetWord,offset wordbuff,esi
 	add		esi,eax
@@ -2061,7 +1885,6 @@ ParseDialog proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 	.if !eax
 		invoke ParseControls,lpProMem
 	.endif
-;	invoke ConvertSize,hMem
 	mov		eax,esi
 	sub		eax,lpRCMem
 	ret
@@ -3134,108 +2957,6 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 		add		esi,eax
 		jmp		Ex
 	.endif
-
-;	invoke strcmpi,offset wordbuff,offset szBITMAP
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,0
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szCURSOR
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,1
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szICON
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,2
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szAVI
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,3
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szRCDATA
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,4
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szWAVE
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,5
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szIMAGE
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,6
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szMANIFEST
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,7
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szANICURSOR
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,8
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szFONT
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,9
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-;	invoke strcmpi,offset wordbuff,offset szMESSAGETABLE
-;	.if !eax
-;		invoke ParseResource,esi,lpProMem,10
-;		.if eax==-1
-;			jmp		ExErr
-;		.endif
-;		add		esi,eax
-;		jmp		Ex
-;	.endif
-
-
 	invoke strcmpi,offset wordbuff,offset szACCELERATORS
 	.if !eax
 		invoke ParseAccelerators,esi,lpProMem

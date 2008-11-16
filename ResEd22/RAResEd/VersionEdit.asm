@@ -254,8 +254,6 @@ ExportVersionNames proc uses esi edi,hMem:DWORD
 		mov		al,0Ah
 		stosb
 	.endif
-;	mov		ax,0A0Dh
-;	stosw
 	mov		al,0
 	stosb
 	pop		eax

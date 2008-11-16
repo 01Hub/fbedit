@@ -19,26 +19,6 @@ MyDLGITEMTEMPLATE struct
 	id				WORD	?
 MyDLGITEMTEMPLATE ends
 
-;// typedef struct {   
-;//     WORD   dlgVer; 
-;//     WORD   signature; 
-;//     DWORD  helpID; 
-;//     DWORD  exStyle; 
-;//     DWORD  style; 
-;//     WORD   cDlgItems; 
-;//     short  x; 
-;//     short  y; 
-;//     short  cx; 
-;//     short  cy; 
-;//     sz_Or_Ord menu;         // name or ordinal of a menu resource
-;//     sz_Or_Ord windowClass;  // name or ordinal of a window class
-;//     WCHAR  title[titleLen]; // title string of the dialog box
-;//     short  pointsize;       // only if DS_SETFONT flag is set
-;
-;//     short  weight;          // only if DS_SETFONT flag is set
-;//     short  bItalic;         // only if DS_SETFONT flag is set
-;//     WCHAR  font[fontLen];   // typeface name, if DS_SETFONT is set
-;// } DLGTEMPLATEEX; 
 MyDLGTEMPLATEEX struct
 	dlgVer			WORD	?
 	signature		WORD	?
@@ -53,19 +33,6 @@ MyDLGTEMPLATEEX struct
 	menu			WORD	?
 MyDLGTEMPLATEEX ends
 
-;// typedef struct {  
-;//     DWORD  helpID; 
-;//     DWORD  exStyle; 
-;//     DWORD  style; 
-;//     short  x; 
-;//     short  y; 
-;//     short  cx; 
-;//     short  cy; 
-;//     WORD   id; 
-;//     sz_Or_Ord windowClass; // name or ordinal of a window class
-;//     sz_Or_Ord title;       // title string or ordinal of a resource
-;//     WORD   extraCount;     // bytes of following creation data
-;// } DLGITEMTEMPLATEEX; 
 MyDLGITEMTEMPLATEEX struct
 	helpID			DWORD ?
 	exStyle			DWORD	?
@@ -76,24 +43,6 @@ MyDLGITEMTEMPLATEEX struct
 	ccy				WORD	?
 	id				DWORD	?
 MyDLGITEMTEMPLATEEX ends
-
-;.data
-
-;					align 4
-;predlgdata			dd 00000000h	;style
-;					dd 00000000h	;exstyle
-;					dw 0000h		;cdit
-;					dw 0006h		;x
-;					dw 0006h		;y
-;					dw 0060h		;cx
-;					dw 0040h		;cy
-;					dw 0000h		;menu
-;					dw 0000h		;class
-;					dw 0000h		;caption
-;dlgps				dw 0			;point size
-;dlgfn				dw 32 dup(0)	;face name
-;					dw 0
-;					dw 0
 
 .data?
 
@@ -502,15 +451,6 @@ PrevDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		eax,eax
 		inc		eax
 		ret
-;	.elseif eax==WM_COMMAND
-;		mov		eax,wParam
-;		movzx	edx,ax
-;		shr		eax,16
-;		.if eax==BN_CLICKED
-;			.if edx==IDCANCEL
-;				invoke PostMessage,hWin,WM_CLOSE,0,0
-;			.endif
-;		.endif
 	.else
 		mov		eax,FALSE
 		ret

@@ -42,10 +42,6 @@ ExportNamesNames proc uses esi edi,hMem:DWORD
 		.endif
 		add		esi,sizeof NAMEMEM
 	.endw
-;	mov		al,0Dh
-;	stosb
-;	mov		al,0Ah
-;	stosb
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -178,7 +174,6 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			mov		ofn.lpstrTitle,offset szExportAs
 			mov		ofn.lpstrInitialDir,offset szProjectPath
 			mov		ofn.lpstrFileTitle,offset szExportFileName
-;			invoke strcpy,addr fnbuffer,offset szExportFileName
 			call	GetFileName
 			invoke strcpy,addr fnbuffer,addr tmpbuffer
 			lea		eax,fnbuffer
@@ -763,7 +758,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Sort the grid by column, invert sorting order
 				invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
 			.elseif eax==GN_BEFORESELCHANGE
-				;Restrict to gol 3 & 4
+				;Restrict to col 3 & 4
 				.if [esi].GRIDNOTIFY.col<3
 					mov		[esi].GRIDNOTIFY.col,3
 				.endif
@@ -806,7 +801,6 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.else
 		mov		eax,FALSE
 		ret

@@ -1118,8 +1118,32 @@ SetChanged proc fChanged:DWORD
 
 SetChanged endp
 
-DestroySizeingRect proc uses edi
+InvalidateSizeingRect proc uses edi
+	LOCAL	rect:RECT
 
+	mov		edi,offset hSizeing
+	mov		ecx,8
+  @@:
+	mov		eax,[edi]
+	.if eax
+		push	ecx
+		mov		ecx,eax
+		invoke GetWindowRect,ecx,addr rect
+		invoke ScreenToClient,des.hdlg,addr rect.left
+		invoke ScreenToClient,des.hdlg,addr rect.right
+		invoke InvalidateRect,des.hdlg,addr rect,TRUE
+		pop		ecx
+	.endif
+	add		edi,4
+	loop	@b
+	ret
+
+InvalidateSizeingRect endp
+
+DestroySizeingRect proc uses edi
+	LOCAL	rect:RECT
+
+	invoke InvalidateSizeingRect
 	mov		edi,offset hSizeing
 	mov		ecx,8
   @@:
@@ -1133,6 +1157,14 @@ DestroySizeingRect proc uses edi
 	mov		[edi],eax
 	add		edi,4
 	loop	@b
+	invoke UpdateWindow,des.hdlg
+	mov		rect.left,0
+	mov		rect.top,0
+	mov		rect.right,1234
+	mov		rect.bottom,1234
+	invoke RedrawWindow,des.hdlg,addr rect,NULL,RDW_FRAME or RDW_INVALIDATE
+	invoke InvalidateRect,hDEd,NULL,TRUE
+	invoke UpdateWindow,hDEd
 	mov		hReSize,0
 	invoke PropertyList,0
 	ret
@@ -1177,7 +1209,6 @@ DialogTltSize proc uses esi,ccx:DWORD,ccy:DWORD
 		mov		hOldFont,eax
 		invoke strlen,addr buffer
 		mov		len,eax
-
 		invoke GetTextExtentPoint32,hDC,addr buffer,len,addr pt
 		invoke SelectObject,hDC,hOldFont
 		invoke ReleaseDC,hTlt,hDC
@@ -1412,11 +1443,16 @@ DrawMultiSelItem proc xP:DWORD,yP:DWORD,hPar:HWND,fLocked:DWORD,hPrv:HWND
 DrawMultiSelItem endp
 
 DestroyMultiSel proc hSel:HWND
+	LOCAL	rect:RECT
 
 	.if hSel
 		mov		eax,8
 		.while eax
 			push	eax
+			invoke GetWindowRect,hSel,addr rect
+			invoke ScreenToClient,des.hdlg,addr rect.left
+			invoke ScreenToClient,des.hdlg,addr rect.right
+			invoke InvalidateRect,des.hdlg,addr rect,TRUE
 			invoke GetWindowLong,hSel,GWL_USERDATA
 			push	eax
 			invoke DestroyWindow,hSel
@@ -1424,10 +1460,6 @@ DestroyMultiSel proc hSel:HWND
 			pop		eax
 			dec		eax
 		.endw
-		invoke ShowWindow,hInvisible,SW_HIDE
-		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-		invoke UpdateWindow,des.hdlg
-		invoke UpdateWindow,hDEd
 	.endif
 	mov		eax,hSel
 	ret
@@ -1575,10 +1607,8 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	invoke DrawSizeingItem,pt.x,rect.bottom,6,IDC_SIZENS,hInvisible,fLocked
 	invoke DrawSizeingItem,rect.right,rect.bottom,7,IDC_SIZENWSE,hInvisible,fLocked
 	invoke PropertyList,hWin
-	invoke ShowWindow,hInvisible,SW_HIDE
-	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+	invoke InvalidateSizeingRect
 	invoke UpdateWindow,des.hdlg
-	invoke UpdateWindow,hDEd
 	ret
 
 SizeingRect endp
@@ -2121,10 +2151,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				mov		eax,hReSize
 				mov		des.hselected,eax
 				invoke DestroySizeingRect
-				invoke ShowWindow,hInvisible,SW_HIDE
-				invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-				invoke UpdateWindow,des.hdlg
-				invoke UpdateWindow,hDEd
 				.if ToolBoxID
 					;Is readOnly
 					invoke GetWindowLong,hDEd,DEWM_READONLY
@@ -3756,6 +3782,10 @@ CloseDialog proc uses esi
 			invoke ShowWindow,[esi].DLGHEAD.hred,SW_HIDE
 		.else
 			invoke DestroySizeingRect
+			.while hMultiSel
+				invoke DestroyMultiSel,hMultiSel
+				mov		hMultiSel,eax
+			.endw
 		.endif
 		invoke DestroyWindow,des.hdlg
 		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
@@ -3905,9 +3935,7 @@ MakeDlgClassProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DeleteObject,hGridBr
 			mov		hGridBr,0
 		.endif
-		.if fGrid
-			invoke CreateGridBrush,hWin
-		.endif
+		invoke CreateGridBrush,hWin
 	.elseif eax==WM_NCPAINT
 		xor		eax,eax
 		mov		des.mnurect.left,eax
@@ -4087,7 +4115,6 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	hDlg:HWND
 	LOCAL	racol:RACOLOR
 
-	invoke SendMessage,hDEd,WM_SETREDRAW,FALSE,0
 	;Get convertiion
 	mov		dlgps,10
 	mov		dlgfn,0
@@ -4260,6 +4287,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	.if eax
 		invoke DestroyWindow,eax
 	.endif
+	mov		eax,hDlg
+	mov		des.hdlg,eax
 	invoke SetWindowLong,hDEd,DEWM_DIALOG,hDlg
 	mov		esi,hMem
 	invoke SetWindowLong,hDlg,GWL_ID,0
@@ -4279,10 +4308,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		.endif
 		invoke SizeingRect,eax,FALSE
 	.endif
-	invoke ShowWindow,hInvisible,SW_HIDE
-	invoke SendMessage,hDEd,WM_SETREDRAW,TRUE,0
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-	invoke UpdateWindow,hDlg
+	invoke InvalidateRect,hDEd,NULL,TRUE
 	invoke UpdateWindow,hDEd
 	mov		esi,hMem
 	.if ![esi].DLGHEAD.hred

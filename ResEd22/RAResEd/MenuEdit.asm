@@ -19,7 +19,6 @@ IDC_CHKGRAYED			equ 2527
 IDC_CHKRIGHTALIGN		equ 2500
 IDC_CHKRADIO			equ 2509
 IDC_CHKOWNERDRAW		equ 2530
-;IDC_GROUPBOX			equ 2510
 
 IDD_DLGMNUPREVIEW		equ 1510
 
@@ -27,8 +26,6 @@ IDD_DLGMNUPREVIEW		equ 1510
 
 szMnuErr				db 'Menu skipped a level.',0
 szMnuName				db 'IDR_MENU',0
-;MnuID					dd 10000
-;MnuItemID				dd 10001
 szMnuItemName			db 'IDM_',0
 szShift					db 'Shift+',0
 szCtrl					db 'Ctrl+',0
@@ -147,8 +144,6 @@ ExportMenuNames proc uses esi edi,hMem:DWORD
 		add		esi,sizeof MNUITEM
 		jmp		@b
 	.endif
-;	mov		ax,0A0Dh
-;	stosw
 	mov		byte ptr [edi],0
 	pop		eax
 	ret
@@ -162,11 +157,6 @@ MnuSaveItemEx proc uses ebx,lpItem:DWORD,fPopUp:DWORD
 	add		edi,eax
 	mov		al,' '
 	stosb
-;	.if byte ptr (MNUITEM ptr [esi]).itemcaption=='-' || byte ptr (MNUITEM ptr [esi]).itemcaption==0
-;		invoke SaveStr,edi,offset szSEPARATOR
-;		add		edi,eax
-;		jmp		Ex
-;	.endif
 	mov		al,22h
 	stosb
 	.if byte ptr (MNUITEM ptr [esi]).itemcaption!='-'

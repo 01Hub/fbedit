@@ -5,10 +5,6 @@ IDC_GRDSTR								equ 1001
 IDC_BTNSTRADD							equ 1002
 IDC_BTNSTRDEL							equ 1003
 
-;.data?
-
-;strlng				LANGUAGEMEM <>
-
 .code
 
 ExportStringNames proc uses esi edi,hMem:DWORD

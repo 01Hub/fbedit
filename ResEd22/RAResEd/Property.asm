@@ -1,104 +1,101 @@
 
 .const
 
-PRP_NUM_ID			equ 1
-PRP_NUM_POSL		equ 2
-PRP_NUM_POST		equ 3
-PRP_NUM_SIZEW		equ 4
-PRP_NUM_SIZEH		equ 5
-PRP_NUM_STARTID		equ 6
-PRP_NUM_TAB			equ 7
-PRP_NUM_HELPID		equ 8
+PRP_NUM_ID				equ 1
+PRP_NUM_POSL			equ 2
+PRP_NUM_POST			equ 3
+PRP_NUM_SIZEW			equ 4
+PRP_NUM_SIZEH			equ 5
+PRP_NUM_STARTID			equ 6
+PRP_NUM_TAB				equ 7
+PRP_NUM_HELPID			equ 8
 
-PRP_STR_NAME		equ 100
-PRP_STR_NAMEBTN		equ 101
-PRP_STR_NAMESTC		equ 102
-PRP_STR_CAPTION		equ 103
-PRP_STR_CAPMULTI	equ 104
+PRP_STR_NAME			equ 100
+PRP_STR_NAMEBTN			equ 101
+PRP_STR_NAMESTC			equ 102
+PRP_STR_CAPTION			equ 103
+PRP_STR_CAPMULTI		equ 104
 
-PRP_STR_FONT		equ 1000
-PRP_STR_CLASS		equ 1001
-PRP_STR_MENU		equ 1002
-PRP_STR_IMAGE		equ 1005
-PRP_STR_AVI			equ 1006
-PRP_STR_FILE		equ 1008
+PRP_STR_FONT			equ 1000
+PRP_STR_CLASS			equ 1001
+PRP_STR_MENU			equ 1002
+PRP_STR_IMAGE			equ 1005
+PRP_STR_AVI				equ 1006
+PRP_STR_FILE			equ 1008
 
-PRP_FUN_STYLE		equ 1003
-PRP_FUN_EXSTYLE		equ 1004
-PRP_FUN_LANG		equ 1007
+PRP_FUN_STYLE			equ 1003
+PRP_FUN_EXSTYLE			equ 1004
+PRP_FUN_LANG			equ 1007
 
-PRP_BOOL_SYSMENU	equ 200
-PRP_BOOL_MAXBUTTON	equ 201
-PRP_BOOL_MINBUTTON	equ 202
-PRP_BOOL_ENABLED	equ 203
-PRP_BOOL_VISIBLE	equ 204
-PRP_BOOL_DEFAULT	equ 205
-PRP_BOOL_AUTO		equ 206
-PRP_BOOL_MNEMONIC	equ 207
-PRP_BOOL_WORDWRAP	equ 208
-PRP_BOOL_MULTI		equ 209
-PRP_BOOL_LOCK		equ 210
-PRP_BOOL_CHILD		equ 211
-PRP_BOOL_SIZE		equ 212
-PRP_BOOL_TABSTOP	equ 213
-PRP_BOOL_NOTIFY		equ 214
-PRP_BOOL_WANTCR		equ 215
-PRP_BOOL_SORT		equ 216
-PRP_BOOL_FLAT		equ 217
-PRP_BOOL_GROUP		equ 218
-PRP_BOOL_ICON		equ 219
-PRP_BOOL_USETAB		equ 220
-PRP_BOOL_SETBUDDY	equ 221
-PRP_BOOL_HIDE		equ 222
-PRP_BOOL_TOPMOST	equ 223
-PRP_BOOL_INTEGRAL	equ 224
-PRP_BOOL_BUTTON		equ 225
-PRP_BOOL_POPUP		equ 226
-PRP_BOOL_OWNERDRAW	equ 227
-PRP_BOOL_TRANSP		equ 228
-PRP_BOOL_TIME		equ 229
-PRP_BOOL_WEEK		equ 230
-PRP_BOOL_TOOLTIP	equ 231
-PRP_BOOL_WRAP		equ 232
-PRP_BOOL_DIVIDER	equ 233
-PRP_BOOL_DRAGDROP	equ 234
-PRP_BOOL_SMOOTH		equ 235
-PRP_BOOL_AUTOSCROLL	equ 236
-PRP_BOOL_AUTOPLAY	equ 237
-PRP_BOOL_AUTOSIZE	equ 238
-PRP_BOOL_HASSTRINGS	equ 239
-PRP_BOOL_MENUEX		equ 240
-PRP_BOOL_SAVESEL	equ 241
+PRP_BOOL_SYSMENU		equ 200
+PRP_BOOL_MAXBUTTON		equ 201
+PRP_BOOL_MINBUTTON		equ 202
+PRP_BOOL_ENABLED		equ 203
+PRP_BOOL_VISIBLE		equ 204
+PRP_BOOL_DEFAULT		equ 205
+PRP_BOOL_AUTO			equ 206
+PRP_BOOL_MNEMONIC		equ 207
+PRP_BOOL_WORDWRAP		equ 208
+PRP_BOOL_MULTI			equ 209
+PRP_BOOL_LOCK			equ 210
+PRP_BOOL_CHILD			equ 211
+PRP_BOOL_SIZE			equ 212
+PRP_BOOL_TABSTOP		equ 213
+PRP_BOOL_NOTIFY			equ 214
+PRP_BOOL_WANTCR			equ 215
+PRP_BOOL_SORT			equ 216
+PRP_BOOL_FLAT			equ 217
+PRP_BOOL_GROUP			equ 218
+PRP_BOOL_ICON			equ 219
+PRP_BOOL_USETAB			equ 220
+PRP_BOOL_SETBUDDY		equ 221
+PRP_BOOL_HIDE			equ 222
+PRP_BOOL_TOPMOST		equ 223
+PRP_BOOL_INTEGRAL		equ 224
+PRP_BOOL_BUTTON			equ 225
+PRP_BOOL_POPUP			equ 226
+PRP_BOOL_OWNERDRAW		equ 227
+PRP_BOOL_TRANSP			equ 228
+PRP_BOOL_TIME			equ 229
+PRP_BOOL_WEEK			equ 230
+PRP_BOOL_TOOLTIP		equ 231
+PRP_BOOL_WRAP			equ 232
+PRP_BOOL_DIVIDER		equ 233
+PRP_BOOL_DRAGDROP		equ 234
+PRP_BOOL_SMOOTH			equ 235
+PRP_BOOL_AUTOSCROLL		equ 236
+PRP_BOOL_AUTOPLAY		equ 237
+PRP_BOOL_AUTOSIZE		equ 238
+PRP_BOOL_HASSTRINGS		equ 239
+PRP_BOOL_MENUEX			equ 240
+PRP_BOOL_SAVESEL		equ 241
 
-PRP_MULTI_CLIP		equ 300
-PRP_MULTI_SCROLL	equ 301
-PRP_MULTI_ALIGN		equ 302
+PRP_MULTI_CLIP			equ 300
+PRP_MULTI_SCROLL		equ 301
+PRP_MULTI_ALIGN			equ 302
 PRP_MULTI_AUTOSCROLL	equ 303
-PRP_MULTI_FORMAT	equ 304
-PRP_MULTI_STARTPOS	equ 305
-PRP_MULTI_ORIENT	equ 306
-PRP_MULTI_SORT		equ 307
-PRP_MULTI_OWNERDRAW	equ 308
-PRP_MULTI_ELLIPSIS	equ 309
+PRP_MULTI_FORMAT		equ 304
+PRP_MULTI_STARTPOS		equ 305
+PRP_MULTI_ORIENT		equ 306
+PRP_MULTI_SORT			equ 307
+PRP_MULTI_OWNERDRAW		equ 308
+PRP_MULTI_ELLIPSIS		equ 309
 
-PRP_MULTI_BORDER	equ 400
-PRP_MULTI_TYPE		equ 401
+PRP_MULTI_BORDER		equ 400
+PRP_MULTI_TYPE			equ 401
 
-IDD_PROPERTY		equ 1600
-IDC_EDTSTYLE		equ 3301
-IDC_BTNLEFT			equ 3302
-IDC_BTNRIGHT		equ 3303
-IDC_BTNSET			equ 3304
-IDC_STCWARN			equ 3305
-IDC_STCTXT			equ 3306
+IDD_PROPERTY			equ 1600
+IDC_EDTSTYLE			equ 3301
+IDC_BTNLEFT				equ 3302
+IDC_BTNRIGHT			equ 3303
+IDC_BTNSET				equ 3304
+IDC_STCWARN				equ 3305
+IDC_STCTXT				equ 3306
 
 .data
 
 szNameExist			db 'Name already exist.',0Dh,0Ah,0Dh,0Ah,0
 
-;szStyle				db 'Style',0
-;szExStyle			db 'ExStyle',0
-;
 szFalse				db 'False',0
 szTrue				db 'True',0
 ;False/True Styles
@@ -533,7 +530,6 @@ OldPrpLstDlgCldProc	dd ?
 hPrpBtnDlgCld		dd ?
 
 tempbuff			db 256 dup(?)
-;fBtnClick			dd ?
 
 lpResType			dd ?
 lpResName			dd ?
@@ -1210,39 +1206,6 @@ PropEditChkVal proc uses esi,lpTxt:DWORD,nTpe:DWORD,lpfErr:DWORD
 
 PropEditChkVal endp
 
-;UpdateFont proc hCtl:HWND
-;	LOCAL	hFnt:DWORD
-;
-;	invoke MakeDlgFont,esi
-;	mov		hFnt,eax
-;	add		esi,sizeof DLGHEAD
-;	assume esi:ptr DIALOG
-;	.while TRUE
-;		mov		eax,[esi].hwnd
-;	  .break .if !eax
-;		.if eax!=-1
-;			mov		eax,[esi].hcld
-;			.if eax
-;				invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-;			.endif
-;			mov		eax,[esi].hwnd
-;			invoke SendMessage,eax,WM_SETFONT,hFnt,TRUE
-;			mov		eax,[esi].hcld
-;			.if eax
-;				invoke InvalidateRect,eax,NULL,TRUE
-;				mov		eax,[esi].hwnd
-;				invoke InvalidateRect,eax,NULL,TRUE
-;			.endif
-;		.endif
-;		add		esi,sizeof DIALOG
-;	.endw
-;	invoke PropertyList,hCtl
-;	invoke SetChanged,TRUE,0
-;	assume esi:nothing
-;	ret
-;
-;UpdateFont  endp
-;
 PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -1435,7 +1398,6 @@ SetCtrlData:
 		neg		eax
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
-;		mov		[edx].DLGHEAD.fontht,eax
 		sub		esi,sizeof DLGHEAD
 ;		invoke UpdateFont,hCtl
 		add		esi,sizeof DLGHEAD
@@ -2836,8 +2798,6 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								div		ecx
 								invoke DlgResize,esi,addr [esi].DLGHEAD.font,[esi].DLGHEAD.fontsize,addr lf.lfFaceName,eax
 							.endif
-;							mov		eax,lf.lfHeight
-;							mov		[esi].DLGHEAD.fontht,eax
 							mov		al,lf.lfItalic
 							mov		[esi].DLGHEAD.italic,al
 							mov		al,lf.lfCharSet
@@ -3026,8 +2986,6 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		esi,eax
 					mov		[esi].DLGHEAD.font,0
 					mov		[esi].DLGHEAD.fontsize,0
-;					mov		[esi].DLGHEAD.fontht,0
-;					call	UpdateFont
 				.endif
 			.endif
 		.endif
@@ -3086,11 +3044,6 @@ PrpEdtDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ConvertCaption,addr buffer,addr buffer
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
-			invoke GetCtrlMem,hCtl
-;			.if [eax].DIALOG.ntype==3
-;				mov		edx,[eax].DIALOG.hcld
-;				mov		hCtl,edx
-;			.endif
 			invoke SetWindowText,hCtl,addr buffer
 			pop		esi
 		.endif
@@ -3135,12 +3088,6 @@ PrpEdtDlgCldMultiProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowText,hWin,addr buffer,sizeof buffer
 			invoke GetWindowLong,hPrpLstDlg,GWL_USERDATA
 			mov		hCtl,eax
-			invoke GetCtrlMem,hCtl
-;			invoke GetWindowLong,hCtl,GWL_USERDATA
-;			.if [eax].DIALOG.ntype==3
-;				mov		edx,[eax].DIALOG.hcld
-;				mov		hCtl,edx
-;			.endif
 			invoke SetWindowText,hCtl,addr buffer
 			invoke DeConvertCaption,addr buffer1,addr buffer
 			invoke SetWindowText,hPrpEdtDlgCld,addr buffer1

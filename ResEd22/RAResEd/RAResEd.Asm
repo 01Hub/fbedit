@@ -98,7 +98,7 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	mov		wc.cbWndExtra,24
 	push	hInstance
 	pop		wc.hInstance
-	mov		wc.hbrBackground,NULL;COLOR_WINDOW+1
+	mov		wc.hbrBackground,NULL
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset szDlgEditClass
 	mov		wc.hIcon,NULL
@@ -262,7 +262,6 @@ ResEdInstall endp
 
 ResEdUninstall proc public
 
-;	invoke DestroyWindow,hTlt
 	invoke DestroyWindow,hToolTip
 	invoke DeleteObject,hBrTlt
 	invoke DeleteObject,hGridBr
@@ -325,7 +324,6 @@ SetColors endp
 
 ToolBoxProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -352,7 +350,6 @@ ToolBoxProc	endp
 
 ProjectProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
-;	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -425,9 +422,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTlt,eax
 		invoke SetWindowLong,hTlt,GWL_WNDPROC,addr ToolTipProc
 		mov		OldToolTipProc,eax
-		;invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,32767,32767,hWin,0,hInstance,0
-		;invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,32767,32767,hWin,0,hInstance,0
-		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD or WS_CLIPSIBLINGS,0,0,32767,32767,hWin,0,hInstance,0
+		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,32767,32767,hWin,0,hInstance,0
 		mov		hInvisible,eax
 	.elseif eax==WM_MOUSEMOVE
 		.if hStatus
@@ -436,16 +431,11 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
 		invoke FillRect,ps.hdc,addr ps.rcPaint,hBrBack
-;		invoke GetWindowLong,hWin,DEWM_MEMORY
-;		.if eax
-;			invoke SetChanged,2
-;		.endif
 		invoke EndPaint,hWin,addr ps
 		xor		eax,eax
 		ret
 	.elseif eax==WM_USER+9999
 		mov		fEditMode,TRUE
-;		invoke CreateDlg,hWin,0
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_STYLECHANGED
@@ -486,6 +476,9 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowLong,hWin,DEWM_DIALOG
 			.if eax
 				invoke InvalidateRect,eax,NULL,TRUE
+				.if hReSize
+					invoke SizeingRect,hReSize,FALSE
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_DESTROY
@@ -527,7 +520,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							inc		edx
 							invoke SetNewTab,hReSize,edx
 							invoke PropertyList,hReSize
-							;invoke UpdateCtl,hReSize
 						.endif
 					.endif
 				.elseif wParam==VK_PGUP
@@ -539,7 +531,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								dec		edx
 								invoke SetNewTab,hReSize,edx
 								invoke PropertyList,hReSize
-								;invoke UpdateCtl,hReSize
 							.endif
 						.endif
 					.endif
@@ -553,8 +544,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.elseif wParam==VK_X
 					invoke CopyCtl
 					invoke DeleteCtl
-;				.elseif wParam==VK_Z
-;					invoke UndoCtl
 				.endif
 			.endif
 		.endif
@@ -874,10 +863,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			shl		eax,3
 			invoke ScrollWindow,hWin,eax,0,NULL,NULL
 			invoke SetWindowLong,hWin,DEWM_SCROLLX,sinf.nPos
-;			invoke GetClientRect,hWin,addr rect
-;			mov		rect.bottom,6
-;			invoke InvalidateRect,hWin,addr rect,TRUE
-;			invoke UpdateWindow,hWin
 		.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
 			mov		sinf.cbSize,sizeof sinf
 			mov		sinf.fMask,SIF_POS
@@ -924,10 +909,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			shl		eax,3
 			invoke ScrollWindow,hWin,0,eax,NULL,NULL
 			invoke SetWindowLong,hWin,DEWM_SCROLLY,sinf.nPos
-;			invoke GetClientRect,hWin,addr rect
-;			mov		rect.right,6
-;			invoke InvalidateRect,hWin,addr rect,TRUE
-;			invoke UpdateWindow,hWin
 		.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
 			mov		sinf.cbSize,sizeof sinf
 			mov		sinf.fMask,SIF_POS
@@ -1913,10 +1894,6 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 		.endif
 		invoke SetChanged,eax
-		;invoke InvalidateRect,hDEd,NULL,TRUE
-		;invoke ShowWindow,hInvisible,SW_HIDE
-		;invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-		;invoke UpdateWindow,hDEd
 		jmp		Ex
 	.elseif eax==DEM_COMPACT
 ;		invoke CompactDialog,hDEd
@@ -1945,6 +1922,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CreateGridBrush,eax
 			pop		eax
 			invoke InvalidateRect,eax,NULL,TRUE
+			.if hReSize
+				invoke SizeingRect,hReSize,FALSE
+			.endif
 		.endif
 		jmp		Ex
 	.elseif eax==DEM_ADDCONTROL
@@ -2154,6 +2134,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ebx,eax
 			.if wParam
 				invoke DestroySizeingRect
+				.while hMultiSel
+					invoke DestroyMultiSel,hMultiSel
+					mov		hMultiSel,eax
+				.endw
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_SHOW
 				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
 				invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0

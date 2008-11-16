@@ -51,7 +51,6 @@ ProjectDblClick proc uses ebx,hWin:HWND,lParam:LPARAM
 				.elseif [ebx].PROJECT.ntype==TPE_MENU
 					invoke CloseDialog
 					invoke CreateMnu,hDEd,ebx
-					;invoke SendMessage,hRes,MEM_OPEN,0,ebx
 					invoke NotifyParent
 				.elseif [ebx].PROJECT.ntype==TPE_VERSION
 					invoke CloseDialog
@@ -249,18 +248,6 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	.if eax==-1
 		jmp		Ex
 	.endif
-;	push	edx
-;	mov		ecx,offset szResourceh
-;  @@:
-;	mov		al,[edx]
-;	.if al!='.' && al
-;		mov		[ecx],al
-;		inc		edx
-;		inc		ecx
-;		jmp		@b
-;	.endif
-;	mov		dword ptr [ecx],'h.'
-;	pop		edx
 	mov		esi,hProMem
 	invoke Do_TreeViewAddNode,hPrjTrv,TVI_ROOT,TVI_FIRST,edx,0,0,esi
 	mov		hRoot,eax
@@ -669,12 +656,6 @@ SetProjectModify proc uses esi,lpProMem:DWORD,fChanged:DWORD
 		mov		[esi].PROJECT.changed,eax
 		add		esi,sizeof PROJECT
 	.endw
-;	invoke GetWindowLong,hDEd,DEWM_DIALOG
-;	.if eax
-;		invoke ShowWindow,hInvisible,SW_HIDE
-;		invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-;		invoke UpdateWindow,hDEd
-;	.endif
 	ret
 
 SetProjectModify endp
