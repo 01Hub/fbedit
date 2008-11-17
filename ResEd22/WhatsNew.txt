@@ -1,5 +1,10 @@
 ResEd
 
+2.2.0.0b - 2008-11-17
+---------------------
+o Reduced flicker on dialog editor.
+o Fixed bug with menu editor.
+
 2.2.0.0 - 2008-11-06
 ---------------------
 o Dialog editor uses dialogunits instead of pixels.

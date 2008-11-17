@@ -805,9 +805,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				invoke PropertyList,0
 			.elseif eax==IDOK
 				.if fDialogChanged
+					mov		fDialogChanged,FALSE
 					invoke MenuUpdate,hWin
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
-					mov		fDialogChanged,FALSE
 				.endif
 			.elseif eax==IDC_BTNL
 				invoke MnuGetMem,hWin
