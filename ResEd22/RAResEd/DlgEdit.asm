@@ -1,6 +1,6 @@
 SendToBack			PROTO	:DWORD
 UpdateRAEdit		PROTO	:DWORD
-CreateDlg			PROTO	:HWND,:DWORD
+CreateDlg			PROTO	:HWND
 MakeDialog			PROTO	:DWORD,:DWORD
 DlgEnumProc			PROTO	:DWORD,:DWORD
 
@@ -1105,13 +1105,8 @@ SetChanged proc fChanged:DWORD
 
 	invoke GetWindowLong,hDEd,DEWM_PROJECT
 	.if eax
-		.if fChanged==2
-			push	[eax].PROJECT.changed
-			pop		fChanged
-		.else
-			push	fChanged
-			pop		[eax].PROJECT.changed
-		.endif
+		mov		edx,fChanged
+		mov		[eax].PROJECT.changed,edx
 	.endif
 	invoke NotifyParent
 	ret
@@ -1918,11 +1913,10 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 			.endif
 		.endif
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
-		push	eax
+		mov		esi,eax
 		invoke GetCtrlID,edi
-		pop		edx
 		push	eax
-		invoke MakeDialog,edx,eax
+		invoke MakeDialog,esi,eax
 		invoke SetChanged,TRUE
 		pop		edx
 		.if edx
@@ -3787,7 +3781,9 @@ CloseDialog proc uses esi
 				mov		hMultiSel,eax
 			.endw
 		.endif
-		invoke DestroyWindow,des.hdlg
+		invoke GetWindowLong,hDEd,DEWM_DIALOG
+		invoke DestroyWindow,eax
+		mov		des.hdlg,0
 		invoke SetWindowLong,hDEd,DEWM_MEMORY,0
 		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 		invoke SetWindowLong,hDEd,DEWM_PROJECT,0
@@ -4231,65 +4227,66 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		inc		nInx
 		add		edi,sizeof DIALOG
 	.endw
-  @@:
-	sub		edi,sizeof DIALOG
-	add		ebx,2
-	and		ebx,0FFFFFFFCh
-	.if [edi].DIALOG.hwnd
-		.if [edi].DIALOG.hwnd!=-1
-			mov		[ebx].MyDLGITEMTEMPLATEEX.helpID,0
-			mov		eax,[edi].DIALOG.style
-			or		eax,WS_ALWAYS
-			and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
-			.if [edi].DIALOG.ntype==14
-				or		eax,LVS_SHAREIMAGELISTS
-			.elseif [edi].DIALOG.ntype==16
-				and		eax,(-1 xor UDS_AUTOBUDDY)
+	.if nInx
+	  @@:
+		sub		edi,sizeof DIALOG
+		add		ebx,2
+		and		ebx,0FFFFFFFCh
+		.if [edi].DIALOG.hwnd
+			.if [edi].DIALOG.hwnd!=-1
+				mov		[ebx].MyDLGITEMTEMPLATEEX.helpID,0
+				mov		eax,[edi].DIALOG.style
+				or		eax,WS_ALWAYS
+				and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
+				.if [edi].DIALOG.ntype==14
+					or		eax,LVS_SHAREIMAGELISTS
+				.elseif [edi].DIALOG.ntype==16
+					and		eax,(-1 xor UDS_AUTOBUDDY)
+				.endif
+				mov		[ebx].MyDLGITEMTEMPLATEEX.style,eax
+				mov		eax,[edi].DIALOG.exstyle
+				and		eax,0F7FFFh
+				and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
+				mov		[ebx].MyDLGITEMTEMPLATEEX.exStyle,eax
+				mov		eax,[edi].DIALOG.dux
+				mov		[ebx].MyDLGITEMTEMPLATEEX.x,ax
+				mov		eax,[edi].DIALOG.duy
+				mov		[ebx].MyDLGITEMTEMPLATEEX.y,ax
+				mov		eax,[edi].DIALOG.duccx
+				mov		[ebx].MyDLGITEMTEMPLATEEX.ccx,ax
+				mov		eax,[edi].DIALOG.duccy
+				mov		[ebx].MyDLGITEMTEMPLATEEX.ccy,ax
+				mov		eax,nInx
+				mov		[ebx].MyDLGITEMTEMPLATEEX.id,eax
+				add		ebx,sizeof MyDLGITEMTEMPLATEEX
+				;Class
+				mov		eax,[edi].DIALOG.ntype
+				mov		edx,sizeof TYPES
+				mul		edx
+				add		eax,offset ctltypes
+				invoke SaveWideChar,[eax].TYPES.lpclass,ebx
+				add		ebx,eax
+				;Caption
+				invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
+				add		ebx,eax
+				mov		word ptr [ebx],0
+				add		ebx,2
 			.endif
-			mov		[ebx].MyDLGITEMTEMPLATEEX.style,eax
-			mov		eax,[edi].DIALOG.exstyle
-			and		eax,0F7FFFh
-			and		eax,-1 xor (WS_EX_LAYERED or WS_EX_TRANSPARENT or WS_EX_MDICHILD)
-			mov		[ebx].MyDLGITEMTEMPLATEEX.exStyle,eax
-			mov		eax,[edi].DIALOG.dux
-			mov		[ebx].MyDLGITEMTEMPLATEEX.x,ax
-			mov		eax,[edi].DIALOG.duy
-			mov		[ebx].MyDLGITEMTEMPLATEEX.y,ax
-			mov		eax,[edi].DIALOG.duccx
-			mov		[ebx].MyDLGITEMTEMPLATEEX.ccx,ax
-			mov		eax,[edi].DIALOG.duccy
-			mov		[ebx].MyDLGITEMTEMPLATEEX.ccy,ax
-			mov		eax,nInx
-			mov		[ebx].MyDLGITEMTEMPLATEEX.id,eax
-			add		ebx,sizeof MyDLGITEMTEMPLATEEX
-			;Class
-			mov		eax,[edi].DIALOG.ntype
-			mov		edx,sizeof TYPES
-			mul		edx
-			add		eax,offset ctltypes
-			invoke SaveWideChar,[eax].TYPES.lpclass,ebx
-			add		ebx,eax
-			;Caption
-			invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
-			add		ebx,eax
-			mov		word ptr [ebx],0
-			add		ebx,2
+			dec		nInx
+			jne		@b
 		.endif
-		dec		nInx
-		jne		@b
 	.endif
 	pop		ebx
-	invoke SetWindowLong,hDEd,DEWM_MEMORY,hMem
-	invoke CreateDialogIndirectParam,hInstance,ebx,hDEd,offset MakeDlgProc,0
-	mov		hDlg,eax
-	invoke GlobalFree,ebx
 	invoke GetWindowLong,hDEd,DEWM_DIALOG
 	.if eax
 		invoke DestroyWindow,eax
 	.endif
-	mov		eax,hDlg
+	invoke SetWindowLong,hDEd,DEWM_MEMORY,hMem
+	invoke CreateDialogIndirectParam,hInstance,ebx,hDEd,offset MakeDlgProc,0
+	mov		hDlg,eax
 	mov		des.hdlg,eax
 	invoke SetWindowLong,hDEd,DEWM_DIALOG,hDlg
+	invoke GlobalFree,ebx
 	mov		esi,hMem
 	invoke SetWindowLong,hDlg,GWL_ID,0
 	invoke SendMessage,hDlg,WM_NCACTIVATE,1,0
@@ -4335,23 +4332,19 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 
 MakeDialog endp
 
-CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
-	LOCAL	hDlg:HWND
+CreateDlg proc uses esi edi,lpProItemMem:DWORD
 
 	invoke CloseDialog
 	mov		esi,lpProItemMem
-	invoke SetWindowLong,hWin,DEWM_PROJECT,esi
+	invoke SetWindowLong,hDEd,DEWM_PROJECT,esi
 	mov		eax,(PROJECT ptr [esi]).hmem
 	.if !eax
 		;Create new dlg
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MaxMem
 		mov		esi,eax
 		invoke GlobalLock,esi
-		invoke SetWindowLong,hWin,DEWM_MEMORY,esi
-		invoke CreateNewCtl,hWin,0,DlgX,DlgY,150,100
-		mov		hDlg,eax
-		invoke SetChanged,TRUE
-		invoke NotifyParent
+		invoke SetWindowLong,hDEd,DEWM_MEMORY,esi
+		invoke CreateNewCtl,hDEd,0,DlgX,DlgY,150,100
 	.else
 		;Create existing dlg
 		mov		esi,eax
@@ -4366,7 +4359,6 @@ CreateDlg proc uses esi edi,hWin:HWND,lpProItemMem:DWORD
 		.endw
 		pop		esi
 		invoke MakeDialog,esi,0
-		mov		hDlg,eax
 	.endif
 	mov		eax,esi
 	ret
@@ -4412,7 +4404,7 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 				mov		eax,[esi].PROJECT.hmem
 				pop		[eax].DLGHEAD.ftextmode
 				pop		[eax].DLGHEAD.hred
-				invoke CreateDlg,hDEd,esi
+				invoke CreateDlg,esi
 				invoke GlobalUnlock,ebx
 				invoke GlobalFree,ebx
 			.endif

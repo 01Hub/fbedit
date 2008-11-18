@@ -1647,7 +1647,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 			.endif
 		.endif
-		invoke CreateDlg,hDEd,lParam
+		invoke CreateDlg,lParam
 		push	eax
 		invoke GetWindowLong,hDEd,DEWM_MEMORY
 		.if eax

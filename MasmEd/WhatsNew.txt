@@ -1,5 +1,9 @@
 MasmEd
 
+1.0.5.2 - 2008.11.18
+--------------------
+o Updated resource editor to latest version.
+
 1.0.5.1 - 2008.09.18
 --------------------
 o Variable speed selection scrolling by mouse.
