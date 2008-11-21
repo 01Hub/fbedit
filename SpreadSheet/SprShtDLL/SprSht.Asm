@@ -2255,19 +2255,25 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if ecx==TPE_TEXTMULTILINE
 							movzx	eax,[esi].COLDTA.coln
 							invoke SendMessage,hWin,SPRM_GETCOLWIDTH,eax,0
+							.if eax==-1
+								mov		eax,[ebx].SHEET.gfmt.gcellwt
+							.endif
 							mov		rect.left,0
+							sub		eax,6
 							mov		rect.right,eax
-							mov		rect.top,0
+							mov		rect.top,4
 							mov		rect.bottom,0
 							invoke GetDC,hWin
 							mov		mDC,eax
 							movzx	eax,[esi].COLDTA.fmt.fnt
+							.if eax==0FFh
+								xor		eax,eax
+							.endif
 							mov		edx,sizeof FONT
 							mul		edx
-							invoke SelectObject,mDC,[ebx].SHEET.ofont.hfont[eax]
+							mov		edx,[ebx].SHEET.ofont.hfont[eax]
+							invoke SelectObject,mDC,edx
 							push	eax
-							add		rect.left,2
-							sub		rect.right,4
 							mov		eax,DT_WORDBREAK or DT_TOP or DT_CALCRECT
 							movzx	ecx,[esi].COLDTA.fmt.txtal
 							and		ecx,FMTA_XMASK

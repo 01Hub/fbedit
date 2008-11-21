@@ -186,6 +186,7 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hSht,SPRM_SETCOLWIDTH,0,30
 		;Recalculate the sheet
 		invoke SendMessage,hSht,SPRM_RECALC,0,0
+		invoke SendMessage,hSht,SPRM_CALCROWHEIGHT,12,TRUE
 		mov	eax,FALSE
 		ret
 	.elseif	eax==WM_COMMAND
