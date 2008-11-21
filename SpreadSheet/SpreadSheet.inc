@@ -49,7 +49,7 @@ SPRM_SCROLLCELL			equ WM_USER+146		;Scrolls current cell into view
 SPRM_DELETECELL			equ WM_USER+147		;Deletes a cell. wParam=col, lParam=row
 SPRM_GETDATEFORMAT		equ WM_USER+148		;Returns date format string. wParam=0, lParam=0
 SPRM_SETDATEFORMAT		equ WM_USER+149		;Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
-SPRM_CALCROWHEIGHT		equ WM_USER+150		;Calculate row height. wParam=row, lParam=0. Returns max row height needed.
+SPRM_CALCROWHEIGHT		equ WM_USER+150		;Calculate row height. wParam=row, lParam=Update TRUE/FALSE. Returns max row height needed.
 
 ;Styles
 SPS_VSCROLL				equ 0001h			;Vertical scrollbar

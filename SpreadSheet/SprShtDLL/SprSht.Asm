@@ -1309,6 +1309,11 @@ EditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call SetUp
 		.if !fEditCancel
 			call Update
+			mov		eax,spredt.lpspri
+			test	[eax].SPR_ITEM.state,STATE_AUTOSIZEHEIGHT
+			.if !ZERO?
+				invoke SendMessage,[ebx].SHEET.hwnd,SPRM_CALCROWHEIGHT,[eax].SPR_ITEM.row,TRUE
+			.endif
 		.endif
 		mov		[ebx].SHEET.fedt,FALSE
 		invoke SetParent,hWin,[ebx].SHEET.hwnd
@@ -2289,8 +2294,11 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		esi,[esi+edx]
 			.endw
 			pop		esi
+			mov		edx,edi
 			.if !edi
 				movzx	edi,[esi].ROWDTA.rowht
+			.elseif dx!=[esi].ROWDTA.rowht && lParam
+				invoke SendMessage,hWin,SPRM_SETROWHEIGHT,wParam,edi
 			.endif
 			mov		eax,edi
 		.else
