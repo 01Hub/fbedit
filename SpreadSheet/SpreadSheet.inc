@@ -49,6 +49,7 @@ SPRM_SCROLLCELL			equ WM_USER+146		;Scrolls current cell into view
 SPRM_DELETECELL			equ WM_USER+147		;Deletes a cell. wParam=col, lParam=row
 SPRM_GETDATEFORMAT		equ WM_USER+148		;Returns date format string. wParam=0, lParam=0
 SPRM_SETDATEFORMAT		equ WM_USER+149		;Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
+SPRM_CALCROWHEIGHT		equ WM_USER+150		;Calculate row height. wParam=row, lParam=0. Returns max row height needed.
 
 ;Styles
 SPS_VSCROLL				equ 0001h			;Vertical scrollbar
@@ -165,12 +166,13 @@ FONT ends
 
 STATE_LOCKED			equ 001h			;Cell is locked for editing
 STATE_HIDDEN			equ 002h			;Cell content is not displayed
-STATE_REDRAW			equ 008h
+STATE_AUTOSIZEHEIGHT	equ 004h			;Cell forces autosize height for the row when data is entered in a multiline cell
+STATE_REDRAW			equ 008h			;Internally used
 STATE_ERROR				equ 010h
 STATE_DIV0				equ 020h
 STATE_UNDERFLOW			equ 030h
 STATE_OVERFLOW			equ 040h
-STATE_RECALC			equ 080h
+STATE_RECALC			equ 080h			;Internally used
 STATE_ERRMASK			equ 0F0h
 
 SPRIF_BACKCOLOR			equ 00000001h		;Back color is valid

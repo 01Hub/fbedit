@@ -1315,17 +1315,23 @@ EditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,[ebx].SHEET.hwnd,NULL,FALSE
 		mov		fEditCancel,FALSE
 	.elseif eax==WM_KEYDOWN
+		invoke GetKeyState,VK_CONTROL
+		mov		edx,eax
+		and		edx,80h
 		mov		eax,wParam
-		.if eax==VK_RETURN
+		.if eax==VK_RETURN && !edx
 			invoke ShowWindow,hWin,SW_HIDE
 			xor		eax,eax
-			ret
+			jmp		Ex
 		.endif
 	.elseif eax==WM_CHAR
+		invoke GetKeyState,VK_CONTROL
+		mov		edx,eax
+		and		edx,80h
 		mov		eax,wParam
-		.if eax==VK_RETURN
+		.if eax==VK_RETURN && !edx
 			xor		eax,eax
-			ret
+			jmp		Ex
 		.elseif eax==VK_ESCAPE
 			mov		fEditCancel,TRUE
 			invoke ShowWindow,hWin,SW_HIDE
@@ -2226,6 +2232,71 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke StrCpy,addr [ebx].SHEET.szDateFormat,lParam
 		xor		eax,eax
 		jmp		ExRet
+	.elseif eax==SPRM_CALCROWHEIGHT
+		invoke FindRow,ebx,wParam
+		mov		edx,wParam
+		.if dx==[eax].ROWDTA.rown && [eax].ROWDTA.len
+			push	eax
+			lea		esi,[eax+sizeof ROWDTA-4]
+			xor		edi,edi
+			;Walk the row
+			.while [esi].COLDTA.len
+				test	[esi].COLDTA.state,STATE_HIDDEN
+				.if ZERO?
+					test	[esi].COLDTA.state,STATE_AUTOSIZEHEIGHT
+					.if !ZERO?
+						movzx	ecx,[esi].COLDTA.fmt.tpe
+						and		ecx,TPE_TYPEMASK
+						.if ecx==TPE_TEXTMULTILINE
+							movzx	eax,[esi].COLDTA.coln
+							invoke SendMessage,hWin,SPRM_GETCOLWIDTH,eax,0
+							mov		rect.left,0
+							mov		rect.right,eax
+							mov		rect.top,0
+							mov		rect.bottom,0
+							invoke GetDC,hWin
+							mov		mDC,eax
+							movzx	eax,[esi].COLDTA.fmt.fnt
+							mov		edx,sizeof FONT
+							mul		edx
+							invoke SelectObject,mDC,[ebx].SHEET.ofont.hfont[eax]
+							push	eax
+							add		rect.left,2
+							sub		rect.right,4
+							mov		eax,DT_WORDBREAK or DT_TOP or DT_CALCRECT
+							movzx	ecx,[esi].COLDTA.fmt.txtal
+							and		ecx,FMTA_XMASK
+							.if ecx==FMTA_LEFT
+								or		eax,DT_LEFT
+							.elseif ecx==FMTA_CENTER
+								or		eax,DT_CENTER
+							.elseif ecx==FMTA_RIGHT
+								or		eax,DT_RIGHT
+							.elseif ecx==FMTA_AUTO
+								or		eax,DT_LEFT
+							.endif
+							invoke DrawText,mDC,addr [esi].COLDTA.fmt.tpe[1],-1,addr rect,eax
+							pop		eax
+							invoke SelectObject,mDC,eax
+							invoke ReleaseDC,hWin,mDC
+							.if edi<rect.bottom
+								mov		edi,rect.bottom
+							.endif
+						.endif
+					.endif
+				.endif
+				movzx	edx,[esi].COLDTA.len
+				lea		esi,[esi+edx]
+			.endw
+			pop		esi
+			.if !edi
+				movzx	edi,[esi].ROWDTA.rowht
+			.endif
+			mov		eax,edi
+		.else
+			mov		eax,-1
+		.endif
+		jmp		ExRet
 ;--------------------------------------------------------------------------------
 	.elseif eax==WM_LBUTTONDOWN
 		invoke GetClientRect,hWin,addr rect
@@ -2257,7 +2328,7 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetParent,hWin
 		mov		[ebx].SHEET.howner,eax
 		lea		esi,[ebx].SHEET.owin
-		invoke CreateWindowEx,NULL,offset szClassNameEdit,NULL,WS_CHILD or WS_BORDER or ES_AUTOHSCROLL or ES_WANTRETURN,0,0,0,0,hWin,0,hInstance,0
+		invoke CreateWindowEx,NULL,offset szClassNameEdit,NULL,WS_CHILD or WS_BORDER or ES_AUTOHSCROLL or ES_WANTRETURN or ES_MULTILINE or ES_AUTOVSCROLL,0,0,0,0,hWin,0,hInstance,0
 		mov		edi,eax
 		mov		[ebx].SHEET.hedt,edi
 		invoke SetWindowLong,edi,GWL_USERDATA,ebx

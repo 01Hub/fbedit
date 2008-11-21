@@ -1725,7 +1725,7 @@ DrawCellTxt:
 			or		eax,DT_BOTTOM
 		.endif
 		mov		cl,[edi].COLDTA.fmt.tpe
-		and		cl,0Fh
+		and		cl,TPE_TYPEMASK
 		.if cl==TPE_TEXTMULTILINE || cl==TPE_COLHDR
 			xor		eax,DT_SINGLELINE
 			or		eax,DT_WORDBREAK

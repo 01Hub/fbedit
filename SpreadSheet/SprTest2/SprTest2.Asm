@@ -154,6 +154,30 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		spri.lpdta,offset szHyperlink
 		;Insert the item
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		
+		;Let row be a autosize height row
+		mov		spri.flag,SPRIF_STATE
+		mov		spri.state,STATE_AUTOSIZEHEIGHT
+		;Col 0
+		mov		spri.col,0
+		;Row 12
+		mov		spri.row,12
+		;Insert the item
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+
+		;Multiline text
+		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE or SPRIF_STATE
+		mov		spri.fmt.tpe,TPE_TEXTMULTILINE or TPE_FORCETYPE
+		mov		spri.state,STATE_AUTOSIZEHEIGHT
+		;Col 1
+		mov		spri.col,1
+		;Row 12
+		mov		spri.row,12
+		;And a pointer to text
+		mov		spri.lpdta,offset szMultilineText
+		;Insert the item
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+
 		;Set column header text
 		mov		spri.flag,SPRIF_TEXTALIGN Or SPRIF_DATA Or SPRIF_WIDTH Or SPRIF_HEIGHT
 		mov		spri.col,1
@@ -182,7 +206,16 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				invoke SendMessage,hSht,SPRM_GETCELLSTRING,0,0
 				.if eax
-					invoke MessageBox,hWin,eax,eax,MB_OK
+					invoke MessageBox,hWin,eax,addr szLibName,MB_OK
+
+					mov		spri.col,0
+					mov		spri.row,12
+					invoke SendMessage,hSht,SPRM_GETCELLDATA,0,addr spri
+					movzx	eax,spri.state
+					PrintHex eax
+					invoke SendMessage,hSht,SPRM_CALCROWHEIGHT,12,0
+					PrintDec eax
+					invoke SendMessage,hSht,SPRM_SETROWHEIGHT,12,eax
 				.else
 					invoke MessageBox,hWin,addr szNotExist,addr szLibName,MB_OK
 				.endif
