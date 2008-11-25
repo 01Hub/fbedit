@@ -1450,6 +1450,19 @@ iniColors				dd offset racol.bckcol
 						dd offset radcol.dialogedit
 						dd 00C0F0F0h
 						db 'Dialog',0
+
+						dd offset racol.cmntback
+						dd 00C0F0F0h
+						db 'CmntBack',0
+						dd offset racol.strback
+						dd 00C0F0F0h
+						db 'StrBack',0
+						dd offset racol.numback
+						dd 00C0F0F0h
+						db 'NumBack',0
+						dd offset racol.oprback
+						dd 00C0F0F0h
+						db 'OperBack',0
 						dd 0
 
 szStringsW				dw 'S','t','r','i','n','g','s',0
@@ -1648,7 +1661,7 @@ fNoFlicker				dd ?
 
 racol					RACOLOR <?>
 radcol					RADCOLOR <?>
-
+backcol					dd 20 dup(?)
 CustColors				dd 16 dup(?)
 lpcc					CHOOSECOLOR <?>
 

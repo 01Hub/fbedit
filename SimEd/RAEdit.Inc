@@ -221,6 +221,10 @@ RACOLOR struct
 	selbarpen	dd ?						;Selection bar pen
 	lnrcol		dd ?						;Line numbers color
 	numcol		dd ?						;Numbers & hex color
+	cmntback	dd ?						;Comment back color
+	strback		dd ?						;String back color
+	numback		dd ?						;Numbers & hex back color
+	oprback		dd ?						;Operator back color
 RACOLOR ends
 
 RASELCHANGE struct

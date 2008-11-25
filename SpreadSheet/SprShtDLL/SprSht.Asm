@@ -1396,7 +1396,6 @@ Update:
 			invoke Compile,ebx,addr buffer,addr buff
 			mov		[ebx].SHEET.spri.fmt.tpe,al
 		.endif
-		push	eax
 		lea		eax,buff
 		mov		[ebx].SHEET.spri.lpdta,eax
 		mov		eax,[ebx].SHEET.hwnd
@@ -1408,8 +1407,8 @@ Update:
 		mov		spredt.lpspri,eax
 		mov		spredt.fcancel,FALSE
 		invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr spredt
-		pop		edx
 		.if !spredt.fcancel
+			movzx	edx,[ebx].SHEET.spri.fmt.tpe
 			invoke UpdateCell,ebx,[ebx].SHEET.spri.col,[ebx].SHEET.spri.row,edx,addr buff,0
 			lea		eax,buff
 			mov		[ebx].SHEET.spri.lpdta,eax

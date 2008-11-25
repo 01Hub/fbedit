@@ -116,6 +116,7 @@ szCurrent			db 'Current',0
 
 nKWInx				dd ?
 nTHInx				dd ?
+backtemp			dd 20 dup(?)
 
 .code
 
@@ -489,6 +490,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	cc:CHOOSECOLOR
 	LOCAL	nSt:DWORD
 	LOCAL	nEn:DWORD
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -555,6 +557,10 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,IDC_BTNKWAPPLY
 		xor		edx,edx
 		call	EnButton
+		mov		esi,offset backcol
+		mov		edi,offset backtemp
+		mov		ecx,20
+		rep movsd
 		pop		edi
 		pop		esi
 		invoke SetLanguage,hWin,IDD_DLGKEYWORDS,FALSE
@@ -742,6 +748,8 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif edx==LBN_DBLCLK
 			.if eax==IDC_LSTKWCOLORS
+				invoke GetCursorPos,addr pt
+				invoke ScreenToClient,lParam,addr pt
 				mov		cc.lStructSize,sizeof CHOOSECOLOR
 				mov		eax,hWin
 				mov		cc.hwndOwner,eax
@@ -752,8 +760,14 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lCustData,0
 				mov		cc.lpfnHook,0
 				mov		cc.lpTemplateName,0
-				invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,eax,0
+				invoke SendMessage,lParam,LB_GETCURSEL,0,0
+				.if pt.x>30 && pt.x<60
+					;Back color
+					mov		eax,backtemp[eax*4]
+				.else
+					;Text color
+					invoke SendMessage,lParam,LB_GETITEMDATA,eax,0
+				.endif
 				push	eax
 				;Mask off group/font
 				and		eax,0FFFFFFh
@@ -761,32 +775,32 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ChooseColor,addr cc
 				pop		ecx
 				.if eax
-					push	ecx
-					invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETCURSEL,0,0
-					pop		ecx
-					mov		edx,cc.rgbResult
-					;Group/Font
-					and		ecx,0FF000000h
-					or		edx,ecx
-					invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,eax,edx
-					invoke GetDlgItem,hWin,IDC_LSTKWCOLORS
-					invoke InvalidateRect,eax,NULL,FALSE
+					.if pt.x>30 && pt.x<60
+						;Back color
+						invoke SendMessage,lParam,LB_GETCURSEL,0,0
+						mov		edx,cc.rgbResult
+						mov		backtemp[eax*4],edx
+					.else
+						;Text color
+						push	ecx
+						invoke SendMessage,lParam,LB_GETCURSEL,0,0
+						pop		ecx
+						mov		edx,cc.rgbResult
+						;Group/Font
+						and		ecx,0FF000000h
+						or		edx,ecx
+						invoke SendMessage,lParam,LB_SETITEMDATA,eax,edx
+					.endif
+					invoke InvalidateRect,lParam,NULL,FALSE
 					mov		eax,IDC_BTNKWAPPLY
 					mov		edx,TRUE
 					call	EnButton
 				.endif
-			.elseif eax==IDC_LSTKWACTIVE
-				invoke SendDlgItemMessage,hWin,IDC_LSTKWACTIVE,LB_GETCURSEL,0,0
+			.elseif eax==IDC_LSTKWACTIVE || eax==IDC_LSTKWHOLD
+				invoke SendMessage,lParam,LB_GETCURSEL,0,0
 				.if eax!=LB_ERR
 					mov		edx,eax
-					invoke SendDlgItemMessage,hWin,IDC_LSTKWACTIVE,LB_GETTEXT,edx,addr buffer
-					invoke SetDlgItemText,hWin,IDC_EDTKW,addr buffer
-				.endif
-			.elseif eax==IDC_LSTKWHOLD
-				invoke SendDlgItemMessage,hWin,IDC_LSTKWHOLD,LB_GETCURSEL,0,0
-				.if eax!=LB_ERR
-					mov		edx,eax
-					invoke SendDlgItemMessage,hWin,IDC_LSTKWHOLD,LB_GETTEXT,edx,addr buffer
+					invoke SendMessage,lParam,LB_GETTEXT,edx,addr buffer
 					invoke SetDlgItemText,hWin,IDC_EDTKW,addr buffer
 				.endif
 			.elseif eax==IDC_LSTCOLORS
@@ -866,6 +880,24 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strlen,addr buffer
 		mov		edx,[esi].rcItem.left
 		add		edx,30
+		.if [esi].CtlID==IDC_LSTKWCOLORS
+			push	eax
+			push	edx
+			mov		eax,[esi].itemID
+			mov		eax,backtemp[eax*4]
+			invoke CreateSolidBrush,eax
+			mov		hBr,eax
+			add		rect.left,30
+			add		rect.right,30
+			invoke FillRect,[esi].hdc,addr rect,hBr
+			invoke DeleteObject,hBr
+			invoke GetStockObject,BLACK_BRUSH
+			invoke FrameRect,[esi].hdc,addr rect,eax
+
+			pop		edx
+			pop		eax
+			add		edx,30
+		.endif
 		invoke TextOut,[esi].hdc,edx,[esi].rcItem.top,addr buffer,eax
 		assume esi:nothing
 		pop		esi
@@ -916,6 +948,18 @@ Update:
 	mov		esi,offset szKeyWords
 	mov		edi,IDC_LSTKWCOLORS
 	call	SetColors
+	mov		esi,offset backtemp
+	mov		edi,offset backcol
+	mov		ecx,20
+	rep	movsd
+	mov		eax,backcol[0*4]
+	mov		racol.cmntback,eax
+	mov		eax,backcol[1*4]
+	mov		racol.strback,eax
+	mov		eax,backcol[2*4]
+	mov		racol.numback,eax
+	mov		eax,backcol[3*4]
+	mov		racol.oprback,eax
 	pop		edi
 	pop		esi
 	invoke FillHiliteInfo

@@ -931,6 +931,25 @@ iniReadPaths proc uses edi,lpIni:DWORD
 			mov 	radcol.keywords[edx*4],eax
 			inc		nInx
 		.endw
+		;Syntax back colors
+		mov		edi,offset backcol
+		mov		eax,racol.cmntback
+		mov		[edi+0*4],eax
+		mov		eax,racol.strback
+		mov		[edi+1*4],eax
+		mov		eax,racol.numback
+		mov		[edi+2*4],eax
+		mov		eax,racol.oprback
+		mov		[edi+3*4],eax
+		mov		nInx,0
+		mov		buffer,'B'
+		.while nInx<16
+			invoke BinToDec,nInx,addr buffer[1]
+			invoke GetPrivateProfileInt,addr iniColor,addr buffer,00C0F0F0h,addr iniAsmFile
+			mov		edx,nInx
+			mov 	[edi+edx*4+4*4],eax
+			inc		nInx
+		.endw
 		invoke GetPrivateProfileString,addr iniColor,addr iniCustColors,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
 		mov		edi,offset CustColors
 		xor		eax,eax
@@ -2036,6 +2055,16 @@ iniColSave proc uses esi
 		invoke BinToDec,nInx,addr buffer[1]
 		mov		edx,nInx
 		mov		edx,radcol.keywords[edx*4]
+		invoke BinToDec,edx,addr iniBuffer
+		invoke WritePrivateProfileString,addr iniColor,addr buffer,addr iniBuffer,addr iniAsmFile
+		inc		nInx
+	.endw
+	mov		buffer,'B'
+	mov		nInx,0
+	.while nInx<16
+		invoke BinToDec,nInx,addr buffer[1]
+		mov		edx,nInx
+		mov		edx,backcol[edx*4+4*4]
 		invoke BinToDec,edx,addr iniBuffer
 		invoke WritePrivateProfileString,addr iniColor,addr buffer,addr iniBuffer,addr iniAsmFile
 		inc		nInx

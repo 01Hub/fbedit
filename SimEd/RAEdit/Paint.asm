@@ -22,6 +22,8 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	tmp:BYTE
 	LOCAL	fDot:DWORD
 	LOCAL	fRed:DWORD
+	LOCAL	fBack:DWORD
+	LOCAL	bCol:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
@@ -150,6 +152,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			xor		edi,edi
 			.while edi<ecx
 				push	ecx
+				mov		fBack,0
 				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt
 					movzx	eax,word ptr [esi+edi-2]
 					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3)
@@ -196,9 +199,15 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				.elseif fStr
 					movzx	eax,byte ptr [esi+edi]
 					.if eax==fStr
+						mov		fBack,0
 						mov		fStr,0
 						mov		eax,[ebx].EDIT.clr.oprcol
 					.else
+						mov		fBack,TRUE
+						mov		eax,[ebx].EDIT.clr.strback
+						mov		bCol,eax
+						mov		eax,0808080h
+invoke SetBkColor,hDC,eax
 						mov		eax,[ebx].EDIT.clr.strcol
 						mov		wCol,eax
 					.endif
@@ -321,6 +330,17 @@ DrawWord:
 		.endw
 		mov		rect.right,eax
 	.else
+push	eax
+push	ecx
+push	edx
+.if fBack
+invoke SetBkMode,hDC,OPAQUE
+.else
+invoke SetBkMode,hDC,TRANSPARENT
+.endif
+pop		edx
+pop		ecx
+pop		eax
 		mov		fChr,TRUE
 		.if !fWrd
 			push	eax
@@ -338,6 +358,15 @@ DrawWord:
 			mov		ecx,cpMin
 			sub		ecx,edi
 		.elseif edi>=cpMin && ecx<=cpMax
+push	eax
+push	ecx
+push	edx
+.if fBack
+invoke SetBkMode,hDC,TRANSPARENT
+.endif
+pop		edx
+pop		ecx
+pop		eax
 			;Word is in selection
 			mov		ecx,fWrd
 			and		eax,03000000h
