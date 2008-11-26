@@ -898,6 +898,27 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		mov		CtrlIDN,eax
 
 		;Color
+		invoke GetPrivateProfileInt,addr iniVersion,addr iniVersion,0,addr iniAsmFile
+		.if eax<2215
+			invoke GetPrivateProfileInt,addr iniColor,addr iniColors+8,0,addr iniAsmFile
+			invoke BinToDec,eax,addr iniBuffer
+			mov		esi,offset iniColorsBack
+			.while dword ptr [esi]
+				lea		esi,[esi+8]
+				invoke WritePrivateProfileString,addr iniColor,esi,addr iniBuffer,addr iniAsmFile
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+			.endw
+			mov		nInx,0
+			mov		buffer,'B'
+			.while nInx<16
+				invoke BinToDec,nInx,addr buffer[1]
+				invoke WritePrivateProfileString,addr iniColor,addr buffer,addr iniBuffer,addr iniAsmFile
+				inc		nInx
+			.endw
+		.endif
+		invoke BinToDec,nRadASMVer,addr iniBuffer
+		invoke WritePrivateProfileString,addr iniVersion,addr iniVersion,addr iniBuffer,addr iniAsmFile
 		invoke GetPrivateProfileInt,addr iniColor,addr iniUseColor,1,addr iniAsmFile
 		and		eax,1
 		mov 	fUseHighLight,eax
@@ -1010,6 +1031,45 @@ iniRead proc
 			invoke strcpy,addr iniFile,addr AppPath
 			invoke strcat,addr iniFile,addr iniFilename
 		.endif
+		;Version
+		invoke GetPrivateProfileInt,addr iniVersion,addr iniVersion,0,addr iniFile
+		.if eax<2215
+			push	ebx
+			xor		ebx,ebx
+			.while ebx<MAXTHEME
+				mov		byte ptr prnbuff,0
+				invoke BinToDec,ebx,addr buffer
+				invoke GetPrivateProfileString,addr iniColor,addr buffer,addr szNULL,addr prnbuff,16384,addr iniFile
+				.if byte ptr prnbuff
+PrintDec ebx
+					mov		edx,offset prnbuff
+					.while byte ptr [edx]!=','
+						inc		edx
+					.endw
+					mov		ecx,offset iniBuffer
+					.while TRUE
+						mov		al,[edx]
+						mov		[ecx],al
+						inc		edx
+						inc		ecx
+						.break .if byte ptr [edx]==','
+					.endw
+					mov		byte ptr [ecx],0
+					xor		ecx,ecx
+					.while ecx<20
+						push	ecx
+						invoke strcat,addr prnbuff,addr iniBuffer
+						pop		ecx
+						inc		ecx
+					.endw
+					invoke WritePrivateProfileString,addr iniColor,addr buffer,addr prnbuff,addr iniFile
+				.endif
+				inc		ebx
+			.endw
+			pop		ebx
+		.endif
+		invoke BinToDec,nRadASMVer,addr iniBuffer
+		invoke WritePrivateProfileString,addr iniVersion,addr iniVersion,addr iniBuffer,addr iniFile
 		;Language
 		invoke GetPrivateProfileString,addr iniWindow,addr szLanguage,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniFile
 		.if eax

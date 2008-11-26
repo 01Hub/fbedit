@@ -1331,6 +1331,7 @@ iniDialogCtrlID			db 'CtrlID',0
 iniMenuMake				db 'MenuMake',0
 
 iniColor				db 'Color',0
+iniVersion				db 'Version',0
 iniUseColor				db 'UseColor',0
 iniUseDivLine			db 'DivLine',0
 iniNoFlicker			db 'NoFlicker',0
@@ -1451,7 +1452,7 @@ iniColors				dd offset racol.bckcol
 						dd 00C0F0F0h
 						db 'Dialog',0
 
-						dd offset racol.cmntback
+iniColorsBack			dd offset racol.cmntback
 						dd 00C0F0F0h
 						db 'CmntBack',0
 						dd offset racol.strback

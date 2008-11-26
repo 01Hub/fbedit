@@ -105,6 +105,14 @@
 			mov		[ebx].EDIT.clr.lnrcol,eax
 			mov		eax,[edx].RACOLOR.numcol
 			mov		[ebx].EDIT.clr.numcol,eax
+			mov		eax,[edx].RACOLOR.cmntback
+			mov		[ebx].EDIT.clr.cmntback,eax
+			mov		eax,[edx].RACOLOR.strback
+			mov		[ebx].EDIT.clr.strback,eax
+			mov		eax,[edx].RACOLOR.numback
+			mov		[ebx].EDIT.clr.numback,eax
+			mov		eax,[edx].RACOLOR.oprback
+			mov		[ebx].EDIT.clr.oprback,eax
 			invoke CreateBrushes,ebx
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd

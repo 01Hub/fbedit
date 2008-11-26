@@ -24,6 +24,8 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	fRed:DWORD
 	LOCAL	fBack:DWORD
 	LOCAL	bCol:DWORD
+	LOCAL	fOpr:DWORD
+	LOCAL	fNum:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
@@ -130,6 +132,8 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			mov		fWrd,0
 			mov		fEnd,0
 			mov		fChr,0
+			mov		fNum,0
+			mov		fOpr,0
 			mov		edx,[esi-sizeof CHARS].CHARS.state
 			mov		eax,edx
 			and		eax,STATE_COMMENT
@@ -153,6 +157,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			.while edi<ecx
 				push	ecx
 				mov		fBack,0
+				mov		fOpr,0
 				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt
 					movzx	eax,word ptr [esi+edi-2]
 					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3)
@@ -193,21 +198,21 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 						mov		eax,[ebx].EDIT.clr.strcol
 					.endif
 				.elseif fCmnt
+					mov		eax,[ebx].EDIT.clr.cmntback
+					call	SetBack
 					mov		eax,[ebx].EDIT.clr.cmntcol
 				.elseif fWrd
 					mov		eax,wCol
 				.elseif fStr
 					movzx	eax,byte ptr [esi+edi]
 					.if eax==fStr
-						mov		fBack,0
 						mov		fStr,0
+						mov		eax,[ebx].EDIT.clr.oprback
+						call	SetBack
 						mov		eax,[ebx].EDIT.clr.oprcol
 					.else
-						mov		fBack,TRUE
 						mov		eax,[ebx].EDIT.clr.strback
-						mov		bCol,eax
-						mov		eax,0808080h
-invoke SetBkColor,hDC,eax
+						call	SetBack
 						mov		eax,[ebx].EDIT.clr.strcol
 						mov		wCol,eax
 					.endif
@@ -217,6 +222,12 @@ invoke SetBkColor,hDC,eax
 					mov		al,byte ptr [eax+offset CharTab]
 					.if al==CT_CHAR || edx=='h&' || edx=='H&'
 						call	ScanWord
+						.if fNum
+							push	eax
+							mov		eax,[ebx].EDIT.clr.numback
+							call	SetBack
+							pop		eax
+						.endif
 						.if fEnd==2
 							call	DrawCmntBack
 						.endif
@@ -227,19 +238,29 @@ invoke SetBkColor,hDC,eax
 							mov		eax,[ebx].EDIT.clr.oprcol
 						.endif
 					.elseif al==CT_OPER
+						mov		eax,[ebx].EDIT.clr.oprback
+						call	SetBack
 						mov		eax,[ebx].EDIT.clr.oprcol
+						mov		fOpr,1
 					.elseif al==CT_CMNTCHAR
 						mov		fCmnt,eax
+						mov		eax,[ebx].EDIT.clr.cmntback
+						call	SetBack
 						mov		eax,[ebx].EDIT.clr.cmntcol
 						call	DrawCmntBack
 					.elseif al==CT_STRING
 						movzx	eax,byte ptr [esi+edi]
 						mov		fStr,eax
+						mov		fOpr,1
+						mov		eax,[ebx].EDIT.clr.oprback
+						call	SetBack
 						mov		eax,[ebx].EDIT.clr.oprcol
 					.elseif al==CT_CMNTDBLCHAR
 						movzx	eax,word ptr [esi+edi]
 						.if al==ah || ah=='*'
 							mov		fCmnt,eax
+							mov		eax,[ebx].EDIT.clr.cmntback
+							call	SetBack
 							mov		eax,[ebx].EDIT.clr.cmntcol
 							call	DrawCmntBack
 						.else
@@ -249,6 +270,8 @@ invoke SetBkColor,hDC,eax
 						movzx	eax,word ptr [esi+edi]
 						.if ah=="'" || al=='{'
 							mov		fCmnt,eax
+							mov		eax,[ebx].EDIT.clr.cmntback
+							call	SetBack
 							mov		eax,[ebx].EDIT.clr.cmntcol
 							call	DrawCmntBack
 						.else
@@ -266,6 +289,9 @@ invoke SetBkColor,hDC,eax
 				.endif
 				.if fRed
 					mov		eax,0FFh
+				.endif
+				.if fStr && !fOpr
+					mov		fBack,1
 				.endif
 				call	DrawWord
 				.if fEnd==1 && !fWrd
@@ -291,7 +317,20 @@ invoke SetBkColor,hDC,eax
 	.endif
 	ret
 
+SetBack:
+	mov		bCol,eax
+	invoke SetBkColor,hDC,eax
+	mov		fBack,TRUE
+	retn
+
 DrawWord:
+	push	eax
+	mov		eax,TRANSPARENT
+	.if fBack
+		mov		eax,OPAQUE
+	.endif
+	invoke SetBkMode,hDC,eax
+	pop		eax
 	movzx	edx,byte ptr [esi+edi]
 	.if edx==VK_TAB
 		mov		ecx,[ebx].EDIT.fntinfo.tabwt
@@ -305,13 +344,27 @@ DrawWord:
 			call	DrawTabMarker
 			add		eax,ecx
 			inc		edi
+			mov		rect.right,eax
+			.if fBack && (edi<=cpMin || edi>cpMax)
+				push	eax
+				push	ecx
+				push	edx
+				invoke CreateSolidBrush,bCol
+				push	eax
+				call	BackFill
+				pop		eax
+				invoke DeleteObject,eax
+				pop		edx
+				pop		ecx
+				pop		eax
+				push	rect.right
+				pop		rect.left
+			.endif
 			.if fWrd
 				dec		fWrd
 			.endif
 		.endw
-		mov		rect.right,eax
 	.elseif edx==VK_SPACE
-		;mov		fChr,TRUE
 		mov		ecx,[ebx].EDIT.fntinfo.spcwt
 		mov		eax,rect.left
 		mov		edx,[ebx].EDIT.fntinfo.tabwt
@@ -324,23 +377,27 @@ DrawWord:
 			.endif
 			add		eax,ecx
 			inc		edi
+			mov		rect.right,eax
+			.if fBack && (edi<=cpMin || edi>cpMax)
+				push	eax
+				push	ecx
+				push	edx
+				invoke CreateSolidBrush,bCol
+				push	eax
+				call	BackFill
+				pop		eax
+				invoke DeleteObject,eax
+				pop		edx
+				pop		ecx
+				pop		eax
+				push	rect.right
+				pop		rect.left
+			.endif
 			.if fWrd
 				dec		fWrd
 			.endif
 		.endw
-		mov		rect.right,eax
 	.else
-push	eax
-push	ecx
-push	edx
-.if fBack
-invoke SetBkMode,hDC,OPAQUE
-.else
-invoke SetBkMode,hDC,TRANSPARENT
-.endif
-pop		edx
-pop		ecx
-pop		eax
 		mov		fChr,TRUE
 		.if !fWrd
 			push	eax
@@ -358,21 +415,26 @@ pop		eax
 			mov		ecx,cpMin
 			sub		ecx,edi
 		.elseif edi>=cpMin && ecx<=cpMax
-push	eax
-push	ecx
-push	edx
-.if fBack
-invoke SetBkMode,hDC,TRANSPARENT
-.endif
-pop		edx
-pop		ecx
-pop		eax
 			;Word is in selection
+			push	eax
+			push	ecx
+			.if fBack
+				invoke SetBkMode,hDC,TRANSPARENT
+			.endif
+			pop		ecx
+			pop		eax
 			mov		ecx,fWrd
 			and		eax,03000000h
 			or		eax,[ebx].EDIT.clr.seltxtcol
 		.else
 			;Part of word is selected
+			push	eax
+			push	ecx
+			.if fBack
+				invoke SetBkMode,hDC,TRANSPARENT
+			.endif
+			pop		ecx
+			pop		eax
 			mov		ecx,cpMax
 			sub		ecx,edi
 			and		eax,03000000h
@@ -417,6 +479,11 @@ pop		eax
 				invoke GetTextWidth,ebx,hDC,addr [esi+edi],fTmp,addr rect
 			.endif
 			.if sdword ptr rect.right>0
+				invoke CreateRectRgn,rect.left,rect.top,rect.right,rect.bottom
+				push	eax
+				invoke SelectClipRgn,hDC,eax
+				pop		eax
+				invoke DeleteObject,eax
 				push	rect.top
 				mov		eax,[ebx].EDIT.fntinfo.linespace
 				shr		eax,1
@@ -454,6 +521,7 @@ pop		eax
 					;Bold
 					invoke TextOut,hDC,rect.left,rect.top,addr [esi+edi],fTmp
 					inc		rect.left
+					invoke SetBkMode,hDC,TRANSPARENT
 					invoke TextOut,hDC,rect.left,rect.top,addr [esi+edi],fTmp
 					dec		rect.left
 				.elseif eax==2
@@ -476,6 +544,7 @@ pop		eax
 					push	eax
 					invoke TextOut,hDC,rect.left,rect.top,addr [esi+edi],fTmp
 					inc		rect.left
+					invoke SetBkMode,hDC,TRANSPARENT
 					invoke TextOut,hDC,rect.left,rect.top,addr [esi+edi],fTmp
 					pop		eax
 					invoke SelectObject,hDC,eax
@@ -483,6 +552,7 @@ pop		eax
 					pop		rect.top
 				.endif
 				pop		rect.top
+				invoke SelectClipRgn,hDC,NULL
 			.endif
 			add		edi,fTmp
 		.endif
@@ -523,6 +593,7 @@ DrawDivider:
 
 ScanWord:
 	xor		ecx,ecx
+	mov		fNum,ecx
 	call	GetWord
 	mov		fWrd,ecx
 	.if ecx
@@ -533,6 +604,7 @@ ScanWord:
 				mov		eax,[ebx].EDIT.clr.txtcol
 			.else
 				mov		fWrd,ecx
+				mov		fNum,1
 				mov		eax,[ebx].EDIT.clr.numcol
 			.endif
 		.endif

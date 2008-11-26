@@ -298,8 +298,6 @@ UpdateEditColors proc
 	invoke SendMessage,hOut1,REM_SETCOLOR,0,addr rac
 	invoke SendMessage,hOut2,REM_SETCOLOR,0,addr rac
 	invoke SendMessage,hOut3,REM_SETCOLOR,0,addr rac
-;	invoke SendMessage,hPbrTrv,TVM_SETIMAGELIST,TVSIL_NORMAL,hTbrIml
-;	invoke SendMessage,hFileTrv,TVM_SETIMAGELIST,TVSIL_NORMAL,hTbrIml
 	.if radcol.project!=0FFFFFFh
 		invoke SendMessage,hPbrTrv,TVM_SETBKCOLOR,0,radcol.project
 		invoke SendMessage,hPbrTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
@@ -337,10 +335,11 @@ LoadCboTheme proc hWin:HWND
 	invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_RESETCONTENT,0,0
 	mov		nInx,0
 	.while nInx<MAXTHEME
+		mov		byte ptr tempbuff,0
 		invoke BinToDec,nInx,addr buffer
 		mov		dword ptr tempbuff,0
 		invoke GetPrivateProfileString,addr iniColor,addr buffer,addr szNULL,addr tempbuff,sizeof tempbuff,addr iniFile
-		.if eax
+		.if byte ptr tempbuff
 			invoke iniGetItem,addr tempbuff,addr buffer
 			invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_ADDSTRING,0,addr buffer
 			invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_SETITEMDATA,eax,nInx
@@ -426,6 +425,14 @@ AddCboTheme proc uses ebx,hWin:HWND
 		inc		ebx
 	.endw
 	invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,ebx,0
+	invoke iniPutItem,eax,addr tempbuff,TRUE
+	xor		ebx,ebx
+	.while ebx<19
+		mov		eax,backtemp[ebx*4]
+		invoke iniPutItem,eax,addr tempbuff,TRUE
+		inc		ebx
+	.endw
+	mov		eax,backtemp[ebx*4]
 	invoke iniPutItem,eax,addr tempbuff,FALSE
 	invoke BinToDec,nInx,addr buffer
 	invoke WritePrivateProfileString,addr iniColor,addr buffer,addr tempbuff,addr iniFile
@@ -463,6 +470,13 @@ ApplyCboTheme proc uses ebx,hWin:HWND
 			invoke iniGetItem,addr tempbuff,addr tempbuff[8192]
 			invoke DecToBin,addr tempbuff[8192]
 			invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,ebx,eax
+			inc		ebx
+		.endw
+		xor		ebx,ebx
+		.while ebx<20
+			invoke iniGetItem,addr tempbuff,addr tempbuff[8192]
+			invoke DecToBin,addr tempbuff[8192]
+			mov		backtemp[ebx*4],eax
 			inc		ebx
 		.endw
 		invoke GetDlgItem,hWin,IDC_LSTCOLORS
