@@ -1322,6 +1322,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendMessage(ah.hprj,TVM_EDITLABEL,0,lret)
 							EndIf
 							'
+						Case IDM_PROJECT_INCLUDE
+							InsertInclude()
+							'
 						Case IDM_PROJECT_OPTIONS
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGPROJECTOPTION),hWin,@ProjectOptionDlgProc,NULL)
 							'

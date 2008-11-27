@@ -1026,6 +1026,22 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 
 End Sub
 
+Sub InsertInclude()
+	Dim tvi As TV_ITEM
+	Dim buffer As ZString*260
+
+	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	If tvi.hItem Then
+		tvi.Mask=TVIF_TEXT
+		tvi.pszText=@buffer
+		tvi.cchTextMax=260
+		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		buffer="#Include " & Chr(34) & buffer & Chr(34) & CR
+		SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
+	EndIf	
+
+End Sub
+
 Function GetProjectFile(ByVal nInx As Integer) As String
 	Dim sFile As ZString*260
 
