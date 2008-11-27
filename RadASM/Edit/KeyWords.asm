@@ -382,13 +382,11 @@ SaveCboTheme proc uses ebx,hWin:HWND
 	.endw
 	mov		nInx,0
 	mov		ebx,offset tempbuff[1024]
-	.while nInx<MAXTHEME
+	.while nInx<MAXTHEME && byte ptr [ebx]
 		invoke BinToDec,nInx,addr buffer
 		invoke WritePrivateProfileString,addr iniColor,addr buffer,ebx,addr iniFile
-		.if byte ptr [ebx]
-			invoke strlen,ebx
-			lea		ebx,[ebx+eax+1]
-		.endif
+		invoke strlen,ebx
+		lea		ebx,[ebx+eax+1]
 		inc		nInx
 	.endw
 	ret

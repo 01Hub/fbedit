@@ -1041,7 +1041,6 @@ iniRead proc
 				invoke BinToDec,ebx,addr buffer
 				invoke GetPrivateProfileString,addr iniColor,addr buffer,addr szNULL,addr prnbuff,16384,addr iniFile
 				.if byte ptr prnbuff
-PrintDec ebx
 					mov		edx,offset prnbuff
 					.while byte ptr [edx]!=','
 						inc		edx

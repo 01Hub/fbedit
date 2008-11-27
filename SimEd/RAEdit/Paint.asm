@@ -318,9 +318,13 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	ret
 
 SetBack:
-	mov		bCol,eax
-	invoke SetBkColor,hDC,eax
-	mov		fBack,TRUE
+	.if eax!=[ebx].EDIT.clr.bckcol
+		mov		bCol,eax
+		invoke SetBkColor,hDC,eax
+		mov		fBack,TRUE
+	.else
+		mov		fBack,FALSE
+	.endif
 	retn
 
 DrawWord:
@@ -1223,6 +1227,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 					.endif
 					call	DrawPageBreak
 					.if [ebx].EDIT.linenrwt
+						invoke SetBkMode,mDC,TRANSPARENT
 						invoke SetTextColor,mDC,[ebx].EDIT.clr.lnrcol
 						invoke SelectObject,mDC,[ebx].EDIT.fnt.hLnrFont
 						push	eax
@@ -1543,6 +1548,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 					.endif
 					call	DrawPageBreak
 					.if [ebx].EDIT.linenrwt
+						invoke SetBkMode,ps.hdc,TRANSPARENT
 						invoke SetTextColor,ps.hdc,[ebx].EDIT.clr.lnrcol
 						invoke SelectObject,ps.hdc,[ebx].EDIT.fnt.hLnrFont
 						push	eax
