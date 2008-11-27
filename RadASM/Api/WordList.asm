@@ -99,7 +99,11 @@ AddFileToWordList proc uses	esi,nType:DWORD,nOwner:DWORD,lpFileName:DWORD,nParts
 		dec		esi
 	  Nx:
 		inc		esi
-		mov		al,[esi]
+		mov		ax,[esi]
+		.if al==';' || ax=='//'
+			call	SkipToEol
+			mov		al,[esi]
+		.endif
 		cmp		al,0Dh
 		je		Nx
 		cmp		al,0Ah
@@ -145,6 +149,12 @@ ZeroTerminateParts:
 	mov		[esi],al
   @@:
 	pop		esi
+	retn
+
+SkipToEol:
+	.while byte ptr [esi] && byte ptr [esi]!=0Dh
+		inc		esi
+	.endw
 	retn
 
 AddFileToWordList endp

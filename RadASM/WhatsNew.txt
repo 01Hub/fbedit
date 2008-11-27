@@ -1,7 +1,11 @@
 RadASM 2.2.1.5
 --------------
 2.2.1.5
-o Option to set syntax backcolor on strings, comments, operators and numbers / hex values.
+o Option to set syntax backcolor on strings, comments, operators and numbers & hex values.
+o Api files can now have commented lines. A commented line must start with ; or //
+o Ini files are now has a version.
+o Updated addins to latest version. This fixess several bugs.
+o Fixed bug with split screen.
 2.2.1.4
 o Flat toolbar on Project and Properties tools.
 o Rearanged Project toolbar buttons.
