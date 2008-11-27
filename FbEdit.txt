@@ -6,6 +6,7 @@ o Added option to select tools window font.
 o Block mode accelerator has been changed from Ctrl+B to Shift+Ctrl+B
 o Fixed bug if a file in a project is on another drive.
 o Fixed bug with leaving 'dead' carets while editing.
+o Fixed bug with split screen editing.
 o Fixed bug with changing tab. Could jump to a new position.
 o Fixed bug with tooltips. '&' was intepreted as a prefix.
 o Fixed bug with code parser. Hex values in parameters was not parsed correctly.

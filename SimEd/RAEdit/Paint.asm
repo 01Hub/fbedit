@@ -291,7 +291,10 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 					mov		eax,0FFh
 				.endif
 				.if fStr && !fOpr
-					mov		fBack,1
+					push	eax
+					mov		eax,[ebx].EDIT.clr.strback
+					call	SetBack
+					pop		eax
 				.endif
 				call	DrawWord
 				.if fEnd==1 && !fWrd

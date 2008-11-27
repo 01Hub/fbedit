@@ -773,7 +773,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lpfnHook,0
 				mov		cc.lpTemplateName,0
 				invoke SendMessage,lParam,LB_GETCURSEL,0,0
-				.if pt.x>30 && pt.x<60
+				.if pt.x>30 && pt.x<60 && eax<4
 					;Back color
 					mov		eax,backtemp[eax*4]
 				.else
@@ -787,16 +787,15 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ChooseColor,addr cc
 				pop		ecx
 				.if eax
-					.if pt.x>30 && pt.x<60
+					push	ecx
+					invoke SendMessage,lParam,LB_GETCURSEL,0,0
+					pop		ecx
+					.if pt.x>30 && pt.x<60 && eax<4
 						;Back color
-						invoke SendMessage,lParam,LB_GETCURSEL,0,0
 						mov		edx,cc.rgbResult
 						mov		backtemp[eax*4],edx
 					.else
 						;Text color
-						push	ecx
-						invoke SendMessage,lParam,LB_GETCURSEL,0,0
-						pop		ecx
 						mov		edx,cc.rgbResult
 						;Group/Font
 						and		ecx,0FF000000h
@@ -892,7 +891,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strlen,addr buffer
 		mov		edx,[esi].rcItem.left
 		add		edx,30
-		.if [esi].CtlID==IDC_LSTKWCOLORS
+		.if [esi].CtlID==IDC_LSTKWCOLORS && [esi].itemID<4
 			push	eax
 			push	edx
 			mov		eax,[esi].itemID
@@ -905,7 +904,6 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DeleteObject,hBr
 			invoke GetStockObject,BLACK_BRUSH
 			invoke FrameRect,[esi].hdc,addr rect,eax
-
 			pop		edx
 			pop		eax
 			add		edx,30

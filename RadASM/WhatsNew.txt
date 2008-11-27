@@ -1,6 +1,7 @@
 RadASM 2.2.1.5
 --------------
 2.2.1.5
+o Option to set syntax backcolor on strings, comments, operators and numbers / hex values.
 2.2.1.4
 o Flat toolbar on Project and Properties tools.
 o Rearanged Project toolbar buttons.

@@ -42,6 +42,7 @@ szCustColors		db 'CustColors',0
 
 nKWInx				dd ?
 CustColors			dd 16 dup(?)
+tempcol				RACOLOR <?>
 
 .code
 
@@ -214,11 +215,16 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	hBr:DWORD
 	LOCAL	cc:CHOOSECOLOR
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		push	esi
 		push	edi
+		mov		esi,offset col
+		mov		edi,offset tempcol
+		mov		ecx,sizeof RACOLOR
+		rep		movsb
         invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,00010014h		; Set range
         invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edopt.tabsize	; Set default value
 		mov		eax,edopt.exptabs
@@ -460,7 +466,32 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lpfnHook,0
 				mov		cc.lpTemplateName,0
 				invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,eax,0
+				xor		ecx,ecx
+				.if (eax>=4 && eax<=6) || eax==13
+					push	eax
+					invoke GetCursorPos,addr pt
+					invoke GetDlgItem,hWin,IDC_LSTCOLORS
+					mov		edx,eax
+					invoke ScreenToClient,edx,addr pt
+					xor		ecx,ecx
+					.if pt.x>30 && pt.x<60
+						inc		ecx
+					.endif
+					pop		eax
+				.endif
+				.if ecx
+					.if eax==4
+						mov		eax,tempcol.cmntback
+					.elseif eax==5
+						mov		eax,tempcol.strback
+					.elseif eax==6
+						mov		eax,tempcol.oprback
+					.elseif eax==13
+						mov		eax,tempcol.numback
+					.endif
+				.else
+					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,eax,0
+				.endif
 				push	eax
 				;Mask off font
 				and		eax,0FFFFFFh
@@ -472,10 +503,20 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
 					pop		ecx
 					mov		edx,cc.rgbResult
-					;Font
-					and		ecx,0FF000000h
-					or		edx,ecx
-					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,edx
+					.if eax==4
+						mov		tempcol.cmntback,edx
+					.elseif eax==5
+						mov		tempcol.strback,edx
+					.elseif eax==6
+						mov		tempcol.oprback,edx
+					.elseif eax==13
+						mov		tempcol.numback,edx
+					.else
+						;Font
+						and		ecx,0FF000000h
+						or		edx,ecx
+						invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,edx
+					.endif
 					invoke GetDlgItem,hWin,IDC_LSTCOLORS
 					invoke InvalidateRect,eax,NULL,FALSE
 					mov		eax,IDC_BTNKWAPPLY
@@ -521,9 +562,38 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,hBr
 		invoke GetStockObject,BLACK_BRUSH
 		invoke FrameRect,[esi].hdc,addr rect,eax
+		.if [esi].CtlID==IDC_LSTCOLORS
+			mov		ecx,[esi].itemID
+			.if (ecx>=4 && ecx<=6) || ecx==13
+				add		rect.left,30
+				add		rect.right,30
+				.if ecx==4
+					mov		eax,tempcol.cmntback
+				.elseif ecx==5
+					mov		eax,tempcol.strback
+				.elseif ecx==6
+					mov		eax,tempcol.oprback
+				.elseif ecx==13
+					mov		eax,tempcol.numback
+				.endif
+				and		eax,0FFFFFFh
+				invoke CreateSolidBrush,eax
+				mov		hBr,eax
+				invoke FillRect,[esi].hdc,addr rect,hBr
+				invoke DeleteObject,hBr
+				invoke GetStockObject,BLACK_BRUSH
+				invoke FrameRect,[esi].hdc,addr rect,eax
+			.endif
+		.endif
 		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr buffer
 		invoke lstrlen,addr buffer
 		mov		edx,[esi].rcItem.left
+		mov		ecx,[esi].itemID
+		.if [esi].CtlID==IDC_LSTCOLORS
+			.if (ecx>=4 && ecx<=6) || ecx==13
+				add		edx,30
+			.endif
+		.endif
 		add		edx,30
 		invoke TextOut,[esi].hdc,edx,[esi].rcItem.top,addr buffer,eax
 		assume esi:nothing
@@ -569,6 +639,14 @@ Update:
 	cmp		edi,offset col+sizeof col
 	jc		@b
 	pop		edi
+	mov		eax,tempcol.cmntback
+	mov		col.cmntback,eax
+	mov		eax,tempcol.strback
+	mov		col.strback,eax
+	mov		eax,tempcol.oprback
+	mov		col.oprback,eax
+	mov		eax,tempcol.numback
+	mov		col.numback,eax
 	invoke UpdateAll,WM_SETFONT
 	invoke RegSetValueEx,hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
 	invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
