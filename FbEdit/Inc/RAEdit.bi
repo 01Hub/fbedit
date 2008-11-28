@@ -218,6 +218,10 @@ Type RACOLOR Field=1
 	selbarpen	As Long											' Selection bar pen
 	lnrcol		As Long											' Line numbers color
 	numcol		As Long											' Numbers & hex color
+	cmntback		As Long											' Comment back color
+	strback		As Long											' String back color
+	numback		As Long											' Numbers & hex back color
+	oprback		As Long											' Operator back color
 End Type
 
 Type RASELCHANGE Field=1

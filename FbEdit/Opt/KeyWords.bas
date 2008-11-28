@@ -58,6 +58,7 @@ Dim Shared hCFont As HFONT
 Dim Shared hLFont As HFONT
 Dim Shared hTFont As HFONT
 Dim Shared oldsel As Integer
+Dim Shared tmpcol As FBCOLOR
 
 Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,Comments back,Active line back,Indent markers,Selection bar,Selection bar pen,Line numbers,Numbers & hex,Tools Back,Tools Text,Dialog Back,Dialog Text,CodeComplete Back,CodeComplete Text,CodeTip Back,CodeTip Text,CodeTip Api,CodeTip Sel,Properties parameters"
 
@@ -336,6 +337,10 @@ Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim ofs As Any Ptr
 	Dim col As Integer
 
+	tmpcol.racol.cmntback=thme(nInx).fbc.racol.cmntback
+	tmpcol.racol.strback=thme(nInx).fbc.racol.strback
+	tmpcol.racol.numback=thme(nInx).fbc.racol.numback
+	tmpcol.racol.oprback=thme(nInx).fbc.racol.oprback
 	ofs=@thme(nInx)
 	nInx=0
 	Do While nInx<21
@@ -347,10 +352,13 @@ Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	InvalidateRect(GetDlgItem(hWin,IDC_LSTKWCOLORS),NULL,TRUE)
 	nInx=0
 	Do While nInx<25
-		ofs=ofs+4
+		ofs+=4
 		RtlMoveMemory(@col,ofs,4)
 		SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETITEMDATA,nInx,col)
-		nInx=nInx+1
+		If nInx=13 Then
+			ofs+=16
+		EndIf
+		nInx+=1
 	Loop
 	InvalidateRect(GetDlgItem(hWin,IDC_LSTCOLORS),NULL,TRUE)
 
@@ -360,20 +368,27 @@ Sub PutTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Dim ofs As Any Ptr
 	Dim col As Integer
 
+	thme(nInx).fbc.racol.cmntback=tmpcol.racol.cmntback
+	thme(nInx).fbc.racol.strback=tmpcol.racol.strback
+	thme(nInx).fbc.racol.numback=tmpcol.racol.numback
+	thme(nInx).fbc.racol.oprback=tmpcol.racol.oprback
 	ofs=@thme(nInx)
 	nInx=0
 	Do While nInx<21
-		ofs=ofs+4
+		ofs+=4
 		col=SendDlgItemMessage(hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
-		nInx=nInx+1
+		nInx+=1
 	Loop
 	nInx=0
 	Do While nInx<25
-		ofs=ofs+4
+		ofs+=4
 		col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
-		nInx=nInx+1
+		If nInx=13 Then
+			ofs+=16
+		EndIf
+		nInx+=1
 	Loop
 
 End Sub
@@ -391,10 +406,18 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	Do While nInx<25
 		col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
-		ofs=ofs+4
-		nInx=nInx+1
+		If nInx=13 Then
+			ofs+=16
+		EndIf
+		ofs+=4
+		nInx+=1
 	Loop
-	SaveToIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
+	' Syntax back colors
+	fbcol.racol.cmntback=tmpcol.racol.cmntback
+	fbcol.racol.strback=tmpcol.racol.strback
+	fbcol.racol.oprback=tmpcol.racol.oprback
+	fbcol.racol.numback=tmpcol.racol.numback
+	SaveToIni(StrPtr("Win"),StrPtr("Colors"),"44444444444444444444444444444",@fbcol,FALSE)
 	' Keyword colors
 	ofs=@kwcol
 	nInx=0
@@ -493,7 +516,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
 		If lstrlen(thme(nInx).lpszTheme) Then
-			SaveToIni(StrPtr("Theme"),Str(nInx),"04444444444444444444444444444444444444444444444",@thme(nInx),FALSE)
+			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
 	GetDlgItemText(hWin,IDC_EDTCODEFILES,@sCodeFiles,SizeOf(sCodeFiles))
@@ -616,6 +639,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 	Dim col As Integer
 	Dim cc As ChooseColor
 	Dim x As Integer
+	Dim pt As Point
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -627,7 +651,7 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			For col=1 To 15
 				sItem=Str(col)
 				szTheme(0)=String(32,0)
-				LoadFromIni(StrPtr("Theme"),@sItem,"04444444444444444444444444444444444444444444444",@thme(col),FALSE)
+				LoadFromIni(StrPtr("Theme"),@sItem,"044444444444444444444444444444444444444444444444444",@thme(col),FALSE)
 				If lstrlen(thme(col).lpszTheme) Then
 					sItem=String(32,0)
 					lstrcpy(@sItem,thme(col).lpszTheme)
@@ -726,8 +750,10 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			SendDlgItemMessage(hWin,IDC_STCTOOLSFONT,WM_SETFONT,Cast(Integer,hTFont),FALSE)
 			hBtnApply=GetDlgItem(hWin,IDC_BTNKWAPPLY)
 			' Colors
+			tmpcol=fbcol
 			buff=sColors
 			ofs=@fbcol
+			nInx=0
 			Do While Len(buff)
 				nInx=InStr(buff,",")
 				If nInx=0 Then
@@ -738,7 +764,10 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 				RtlMoveMemory(@col,ofs,4)
 				nInx=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_ADDSTRING,0,Cast(Integer,@sItem))
 				SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETITEMDATA,nInx,col)
-				ofs=ofs+4
+				If nInx=13 Then
+					ofs+=16
+				EndIf
+				ofs+=4
 			Loop
 			SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETCURSEL,0,0)
 			' Keyword colors
@@ -1084,10 +1113,39 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 							cc.lpTemplateName=0
 							nInx=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0)
 							col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
+							If (nInx>=4 And nInx<=6) Or nInx=13 Then
+								GetCursorPos(@pt)
+								ScreenToClient(Cast(HWND,lParam),@pt)
+								If pt.x>30 And pt.x<55 Then
+									Select Case nInx
+										Case 4
+											col=tmpcol.racol.cmntback
+										Case 5
+											col=tmpcol.racol.strback
+										Case 6
+											col=tmpcol.racol.oprback
+										Case 13
+											col=tmpcol.racol.numback
+									End Select
+								EndIf
+							EndIf
 							cc.rgbResult=col And &HFFFFFF
 							If ChooseColor(@cc) Then
-								col=(col And &HFF000000) Or cc.rgbResult
-								SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETITEMDATA,nInx,col)
+								If pt.x>30 And pt.x<55 Then
+									Select Case nInx
+										Case 4
+											tmpcol.racol.cmntback=cc.rgbResult
+										Case 5
+											tmpcol.racol.strback=cc.rgbResult
+										Case 6
+											tmpcol.racol.oprback=cc.rgbResult
+										Case 13
+											tmpcol.racol.numback=cc.rgbResult
+									End Select
+								Else
+									col=(col And &HFF000000) Or cc.rgbResult
+									SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETITEMDATA,nInx,col)
+								EndIf
 								InvalidateRect(GetDlgItem(hWin,IDC_LSTCOLORS),NULL,TRUE)
 								EnableWindow(hBtnApply,TRUE)
 							EndIf
@@ -1137,9 +1195,34 @@ Function KeyWordsDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As
 			DeleteObject(hBr)
 			' Draw a black frame
 			FrameRect(lpDRAWITEMSTRUCT->hdc,@rect,GetStockObject(BLACK_BRUSH))
+			If lpDRAWITEMSTRUCT->CtlID=IDC_LSTCOLORS Then
+				x=lpDRAWITEMSTRUCT->itemID
+				If (x>=4 And x<=6) Or x=13 Then
+					rect.left=rect.left+30
+					rect.right=rect.left+25
+					Select Case x
+						Case 4
+							col=tmpcol.racol.cmntback
+						Case 5
+							col=tmpcol.racol.strback
+						Case 6
+							col=tmpcol.racol.oprback
+						Case 13
+							col=tmpcol.racol.numback
+					End Select
+					hBr=CreateSolidBrush(col)
+					FillRect(lpDRAWITEMSTRUCT->hdc,@rect,hBr)
+					DeleteObject(hBr)
+					' Draw a black frame
+					FrameRect(lpDRAWITEMSTRUCT->hdc,@rect,GetStockObject(BLACK_BRUSH))
+					x=30
+				Else
+					x=0
+				EndIf
+			EndIf
 			' Draw the text
 			SendMessage(lpDRAWITEMSTRUCT->hwndItem,LB_GETTEXT,lpDRAWITEMSTRUCT->itemID,Cast(Integer,@sItem))
-			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+30,lpDRAWITEMSTRUCT->rcItem.top,@sItem,Len(sItem))
+			TextOut(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left+x+30,lpDRAWITEMSTRUCT->rcItem.top,@sItem,Len(sItem))
 			If lpDRAWITEMSTRUCT->hwndItem=GetFocus() Then
 				' Let windows draw the focus rectangle
 				Return FALSE

@@ -336,7 +336,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			FixPath(ad.HelpPath)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
-			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444",@fbcol,FALSE)
+			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"444444444444444444444444444444444",@fbcol,FALSE)
 			LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
 			LoadFromIni(StrPtr("Edit"),StrPtr("CustColors"),"444444444444444444444",@custcol,FALSE)
 			' Get handle of build combobox
