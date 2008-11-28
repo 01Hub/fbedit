@@ -213,6 +213,28 @@ GetDlgID proc uses esi edi,lpFileName:DWORD
 			.endw
 		.elseif eax==101
 			add		esi,sizeof DLGHEAD
+			mov		eax,(DIALOG101 ptr [esi]).hwnd
+			.while eax
+				lea		edi,buffer
+				mov		al,(DIALOG101 ptr [esi]).idname
+				.if al
+					mov		eax,(DIALOG101 ptr [esi]).id
+					.if eax
+						invoke strcpy,addr buffer,addr (DIALOG101 ptr [esi]).idname
+						invoke strlen,addr buffer
+						lea		edi,buffer
+						add		edi,eax
+						mov		al,' '
+						stosb
+						invoke BinToDec,(DIALOG101 ptr [esi]).id,edi
+						invoke ExportID,addr buffer
+					.endif
+				.endif
+				add		esi,sizeof DIALOG101
+				mov		eax,(DIALOG101 ptr [esi]).hwnd
+			.endw
+		.elseif eax==102
+			add		esi,sizeof DLGHEAD
 			mov		eax,(DIALOG ptr [esi]).hwnd
 			.while eax
 				lea		edi,buffer
