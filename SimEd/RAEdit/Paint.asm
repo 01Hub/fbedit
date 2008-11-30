@@ -140,10 +140,10 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			mov		fCmnt,eax
 			and		edx,3
 			call	DrawSelBck
-			test	[esi-sizeof CHARS].CHARS.state,STATE_DIVIDERLINE
-			.if !ZERO?
-				call	DrawDivider
-			.endif
+;			test	[esi-sizeof CHARS].CHARS.state,STATE_DIVIDERLINE
+;			.if !ZERO?
+;				call	DrawDivider
+;			.endif
 			mov		eax,[ebx].EDIT.fstyle
 			test	eax,STYLE_NOHILITE
 			.if !ZERO?
@@ -312,6 +312,10 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				jg		@f
 			.endw
 		  @@:
+			test	[esi-sizeof CHARS].CHARS.state,STATE_DIVIDERLINE
+			.if !ZERO?
+				call	DrawDivider
+			.endif
 			mov		eax,lpCR
 			.if eax
 				mov		byte ptr [eax],0Dh
@@ -486,7 +490,9 @@ DrawWord:
 				invoke GetTextWidth,ebx,hDC,addr [esi+edi],fTmp,addr rect
 			.endif
 			.if sdword ptr rect.right>0
-				invoke CreateRectRgn,rect.left,rect.top,rect.right,rect.bottom
+				mov		eax,[ebx].EDIT.selbarwt
+				add		eax,[ebx].EDIT.linenrwt
+				invoke CreateRectRgn,eax,rect.top,rect.right,rect.bottom
 				push	eax
 				invoke SelectClipRgn,hDC,eax
 				pop		eax
@@ -591,7 +597,9 @@ DrawTabMarker:
 DrawDivider:
 	test	[ebx].EDIT.fstyle,STYLE_NODIVIDERLINE
 	.if ZERO?
-		invoke MoveToEx,hDC,rect.left,rect.top,NULL
+		mov		eax,[ebx].EDIT.selbarwt
+		add		eax,[ebx].EDIT.linenrwt
+		invoke MoveToEx,hDC,eax,rect.top,NULL
 		mov		eax,lpRect
 		mov		eax,[eax].RECT.right
 		invoke LineTo,hDC,eax,rect.top
