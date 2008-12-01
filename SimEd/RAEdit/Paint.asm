@@ -140,10 +140,6 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			mov		fCmnt,eax
 			and		edx,3
 			call	DrawSelBck
-;			test	[esi-sizeof CHARS].CHARS.state,STATE_DIVIDERLINE
-;			.if !ZERO?
-;				call	DrawDivider
-;			.endif
 			mov		eax,[ebx].EDIT.fstyle
 			test	eax,STYLE_NOHILITE
 			.if !ZERO?
@@ -312,10 +308,6 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				jg		@f
 			.endw
 		  @@:
-			test	[esi-sizeof CHARS].CHARS.state,STATE_DIVIDERLINE
-			.if !ZERO?
-				call	DrawDivider
-			.endif
 			mov		eax,lpCR
 			.if eax
 				mov		byte ptr [eax],0Dh
@@ -490,13 +482,6 @@ DrawWord:
 				invoke GetTextWidth,ebx,hDC,addr [esi+edi],fTmp,addr rect
 			.endif
 			.if sdword ptr rect.right>0
-;				mov		eax,[ebx].EDIT.selbarwt
-;				add		eax,[ebx].EDIT.linenrwt
-;				invoke CreateRectRgn,eax,rect.top,rect.right,rect.bottom
-;				push	eax
-;				invoke SelectClipRgn,hDC,eax
-;				pop		eax
-;				invoke DeleteObject,eax
 				push	rect.top
 				mov		eax,[ebx].EDIT.fntinfo.linespace
 				shr		eax,1
@@ -565,7 +550,6 @@ DrawWord:
 					pop		rect.top
 				.endif
 				pop		rect.top
-;				invoke SelectClipRgn,hDC,NULL
 			.endif
 			add		edi,fTmp
 		.endif
@@ -591,18 +575,6 @@ DrawTabMarker:
 			.endw
 		.endif
 		popad
-	.endif
-	retn
-
-DrawDivider:
-	test	[ebx].EDIT.fstyle,STYLE_NODIVIDERLINE
-	.if ZERO?
-		mov		eax,[ebx].EDIT.selbarwt
-		add		eax,[ebx].EDIT.linenrwt
-		invoke MoveToEx,hDC,eax,rect.top,NULL
-		mov		eax,lpRect
-		mov		eax,[eax].RECT.right
-		invoke LineTo,hDC,eax,rect.top
 	.endif
 	retn
 
@@ -1190,6 +1162,11 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				dec		edx
 				invoke DrawLine,ebx,edi,edx,cp,mDC,addr rect1
 				invoke SelectClipRgn,mDC,hRgn1
+				test	[edi].CHARS.state,STATE_DIVIDERLINE
+				.if !ZERO?
+					invoke MoveToEx,mDC,rcRgn1.left,rect1.top,NULL
+					invoke LineTo,mDC,rcRgn1.right,rect1.top
+				.endif
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
@@ -1303,7 +1280,6 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
-
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
 		xor		eax,eax
@@ -1521,6 +1497,13 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				dec		edx
 				invoke DrawLine,ebx,edi,edx,cp,ps.hdc,addr rect1
 				invoke SelectClipRgn,ps.hdc,hRgn1
+				test	[edi].CHARS.state,STATE_DIVIDERLINE
+				.if !ZERO?
+					mov		eax,[ebx].EDIT.selbarwt
+					add		eax,[ebx].EDIT.linenrwt
+					invoke MoveToEx,ps.hdc,eax,rect1.top,NULL
+					invoke LineTo,ps.hdc,rect1.right,rect1.top
+				.endif
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
