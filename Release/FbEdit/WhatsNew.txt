@@ -3,8 +3,10 @@ Whats new:
 1.0.6.5
 o Dialog editor now uses dialog units instead of pixels.
 o Added option to select tools window font.
+o Added option to set back color of comments, strings, operators and numbers & hex.
 o Added Insert selected as #Include to Project menu.
 o Block mode accelerator has been changed from Ctrl+B to Shift+Ctrl+B
+o ppdk has updated the winConst.api file.
 o Fixed bug if a file in a project is on another drive.
 o Fixed bug with leaving 'dead' carets while editing.
 o Fixed bug with split screen editing.
