@@ -2,20 +2,20 @@ InstallRAEdit			PROTO :DWORD,:DWORD
 UnInstallRAEdit			PROTO
 
 ;Default colors
-DEFBCKCOLOR				equ 00C0F0F0h
-DEFTXTCOLOR				equ 00000000h
-DEFSELBCKCOLOR			equ 00800000h
-DEFSELTXTCOLOR			equ 00FFFFFFh
-DEFCMNTCOLOR			equ 02008000h
-DEFSTRCOLOR				equ 00A00000h
-DEFOPRCOLOR				equ 000000A0h
+BCKCOL					equ 00C0F0F0h
+DEFTXTCOL				equ 00000000h
+DEFSELBCKCOL			equ 00800000h
+DEFSELTXTCOL			equ 00FFFFFFh
+DEFCMNTCOL				equ 02008000h
+DEFSTRCOL				equ 00A00000h
+DEFOPRCOL				equ 000000A0h
 DEFHILITE1				equ 00F0C0C0h
 DEFHILITE2				equ 00C0F0C0h
 DEFHILITE3				equ 00C0C0F0h
-DEFSELBARCOLOR			equ 00C0C0C0h
+DEFSELBARCOL			equ 00C0C0C0h
 DEFSELBARPEN			equ 00808080h
-DEFLNRCOLOR				equ 00800000h
-DEFNUMCOLOR				equ 00808080h
+DEFLNRCOL				equ 00800000h
+DEFNUMCOL				equ 00808080h
 
 ;Window styles
 STYLE_NOSPLITT			equ 00001h			;No splitt button
@@ -223,6 +223,10 @@ RACOLOR struct
 	selbarpen	dd ?						;Selection bar pen
 	lnrcol		dd ?						;Line numbers color
 	numcol		dd ?						;Numbers & hex color
+	cmntback	dd ?						;Comment back color
+	strback		dd ?						;String back color
+	numback		dd ?						;Numbers & hex back color
+	oprback		dd ?						;Operator back color
 RACOLOR ends
 
 RASELCHANGE struct

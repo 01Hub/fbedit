@@ -7,8 +7,8 @@ InstallRAEdit		PROTO	:DWORD,:DWORD
 UnInstallRAEdit		PROTO
 
 ;Hilight colors
-DEFSTYLESCOLOR		equ 804000h
-DEFWORDSCOLOR		equ 0C00000h
+DEFSTYLESCOL		equ 804000h
+DEFWORDSCOL			equ 0C00000h
 
 ;Dialog memory size
 MaxMem				equ 128*1024*3

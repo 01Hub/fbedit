@@ -3,6 +3,7 @@ MasmEd
 1.0.5.2 - 2008.11.18
 --------------------
 o Updated resource editor to latest version.
+o You can now select a back color for comments, strings, operators and numbers % hex.
 
 1.0.5.1 - 2008.09.18
 --------------------

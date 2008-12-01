@@ -47,6 +47,8 @@ szColors			db 'Back',0
 					db 'Tools Text',0
 					db 'Dialog Back',0
 					db 'Dialog Text',0
+					db 'Res. Styles',0
+					db 'Res. Words',0
 					db 0
 szCustColors		db 'CustColors',0
 
@@ -56,6 +58,7 @@ nKWInx				dd ?
 CustColors			dd 16 dup(?)
 hCFnt				dd ?
 hLFnt				dd ?
+tempcol				RACOLOR <?>
 
 .code
 
@@ -226,6 +229,10 @@ UpdateToolColors proc
 	invoke SendMessage,hOut,REM_GETCOLOR,0,addr racol
 	mov		eax,col.toolback
 	mov		racol.bckcol,eax
+	mov		racol.cmntback,eax
+	mov		racol.strback,eax
+	mov		racol.numback,eax
+	mov		racol.oprback,eax
 	mov		eax,col.tooltext
 	mov		racol.txtcol,eax
 	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
@@ -241,6 +248,7 @@ UpdateToolColors proc
 	.endif
 	invoke CreateSolidBrush,col.toolback
 	mov		hBrBack,eax
+	invoke InvalidateRect,hCbo,NULL,TRUE
 	ret
 
 UpdateToolColors endp
@@ -253,11 +261,16 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	cc:CHOOSECOLOR
 	LOCAL	cf:CHOOSEFONT
 	LOCAL	lf:LOGFONT
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		push	esi
 		push	edi
+		mov		esi,offset col.racol
+		mov		edi,offset tempcol
+		mov		ecx,sizeof RACOLOR
+		rep		movsb
         invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETRANGE,0,00010014h		; Set range
         invoke SendDlgItemMessage,hWin,IDC_SPNTABSIZE,UDM_SETPOS,0,edopt.tabsize	; Set default value
 		invoke CheckDlgButton,hWin,IDC_CHKEXPAND,edopt.exptabs
@@ -268,13 +281,20 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKLINENUMBER,edopt.linenumber
 		mov		esi,offset szColors
 		mov		edi,offset col
+		xor		ecx,ecx
 	  @@:
+		push	ecx
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_ADDSTRING,0,esi
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,[edi]
 		invoke lstrlen,esi
 		add		esi,eax
 		inc		esi
 		add		edi,4
+		pop		ecx
+		.if ecx==13
+			add		edi,16
+		.endif
+		inc		ecx
 		mov		al,[esi]
 		or		al,al
 		jne		@b
@@ -560,22 +580,65 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lpfnHook,0
 				mov		cc.lpTemplateName,0
 				invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
-				invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,eax,0
+				xor		ecx,ecx
+				.if (eax>=4 && eax<=6) || eax==13
+					push	eax
+					invoke GetCursorPos,addr pt
+					invoke GetDlgItem,hWin,IDC_LSTCOLORS
+					mov		edx,eax
+					invoke ScreenToClient,edx,addr pt
+					xor		ecx,ecx
+					.if pt.x>30 && pt.x<60
+						inc		ecx
+					.endif
+					pop		eax
+				.endif
+				.if ecx
+					.if eax==4
+						mov		eax,tempcol.cmntback
+					.elseif eax==5
+						mov		eax,tempcol.strback
+					.elseif eax==6
+						mov		eax,tempcol.oprback
+					.elseif eax==13
+						mov		eax,tempcol.numback
+					.endif
+				.else
+					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,eax,0
+					xor		ecx,ecx
+				.endif
+				push	ecx
 				push	eax
 				;Mask off font
 				and		eax,0FFFFFFh
 				mov		cc.rgbResult,eax
 				invoke ChooseColor,addr cc
 				pop		ecx
+				pop		edx
 				.if eax
+					push	edx
 					push	ecx
 					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
 					pop		ecx
-					mov		edx,cc.rgbResult
-					;Font
-					and		ecx,0FF000000h
-					or		edx,ecx
-					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,edx
+					pop		edx
+					.if edx
+						mov		edx,cc.rgbResult
+						.if eax==4
+							mov		tempcol.cmntback,edx
+						.elseif eax==5
+							mov		tempcol.strback,edx
+						.elseif eax==6
+							mov		tempcol.oprback,edx
+						.elseif eax==13
+							mov		tempcol.numback,edx
+						.endif
+					.else
+						mov		edx,cc.rgbResult
+						;Font
+						and		ecx,0FF000000h
+						or		edx,ecx
+						invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,edx
+					.endif
 					invoke GetDlgItem,hWin,IDC_LSTCOLORS
 					invoke InvalidateRect,eax,NULL,FALSE
 					mov		eax,IDC_BTNKWAPPLY
@@ -621,9 +684,38 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,hBr
 		invoke GetStockObject,BLACK_BRUSH
 		invoke FrameRect,[esi].hdc,addr rect,eax
+		.if [esi].CtlID==IDC_LSTCOLORS
+			mov		ecx,[esi].itemID
+			.if (ecx>=4 && ecx<=6) || ecx==13
+				add		rect.left,30
+				add		rect.right,30
+				.if ecx==4
+					mov		eax,tempcol.cmntback
+				.elseif ecx==5
+					mov		eax,tempcol.strback
+				.elseif ecx==6
+					mov		eax,tempcol.oprback
+				.elseif ecx==13
+					mov		eax,tempcol.numback
+				.endif
+				and		eax,0FFFFFFh
+				invoke CreateSolidBrush,eax
+				mov		hBr,eax
+				invoke FillRect,[esi].hdc,addr rect,hBr
+				invoke DeleteObject,hBr
+				invoke GetStockObject,BLACK_BRUSH
+				invoke FrameRect,[esi].hdc,addr rect,eax
+			.endif
+		.endif
 		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr buffer
 		invoke lstrlen,addr buffer
 		mov		edx,[esi].rcItem.left
+		mov		ecx,[esi].itemID
+		.if [esi].CtlID==IDC_LSTCOLORS
+			.if (ecx>=4 && ecx<=6) || ecx==13
+				add		edx,30
+			.endif
+		.endif
 		add		edx,30
 		invoke TextOut,[esi].hdc,edx,[esi].rcItem.top,addr buffer,eax
 		assume esi:nothing
@@ -679,9 +771,20 @@ Update:
 		mov		[edi],eax
 		pop		eax
 		inc		eax
+		.if eax==13
+			add		edi,16
+		.endif
 		add		edi,4
 		cmp		edi,offset col+sizeof col
 		jc		@b
+		mov		eax,tempcol.cmntback
+		mov		col.racol.cmntback,eax
+		mov		eax,tempcol.strback
+		mov		col.racol.strback,eax
+		mov		eax,tempcol.oprback
+		mov		col.racol.oprback,eax
+		mov		eax,tempcol.numback
+		mov		col.racol.numback,eax
 		pop		edi
 		.if hCFnt
 			invoke DeleteObject,hFont

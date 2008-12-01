@@ -65,10 +65,10 @@ start:
 		mov		lpcbData,sizeof col
 		invoke RegQueryValueEx,hReg,addr szColor,0,addr lpType,addr col,addr lpcbData
 		.if col.styles==-1
-			mov		col.styles,DEFSTYLESCOLOR
+			mov		col.styles,DEFSTYLESCOL
 		.endif
 		.if col.words==-1
-			mov		col.words,DEFWORDSCOLOR
+			mov		col.words,DEFWORDSCOL
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
