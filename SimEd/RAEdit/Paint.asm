@@ -490,13 +490,13 @@ DrawWord:
 				invoke GetTextWidth,ebx,hDC,addr [esi+edi],fTmp,addr rect
 			.endif
 			.if sdword ptr rect.right>0
-				mov		eax,[ebx].EDIT.selbarwt
-				add		eax,[ebx].EDIT.linenrwt
-				invoke CreateRectRgn,eax,rect.top,rect.right,rect.bottom
-				push	eax
-				invoke SelectClipRgn,hDC,eax
-				pop		eax
-				invoke DeleteObject,eax
+;				mov		eax,[ebx].EDIT.selbarwt
+;				add		eax,[ebx].EDIT.linenrwt
+;				invoke CreateRectRgn,eax,rect.top,rect.right,rect.bottom
+;				push	eax
+;				invoke SelectClipRgn,hDC,eax
+;				pop		eax
+;				invoke DeleteObject,eax
 				push	rect.top
 				mov		eax,[ebx].EDIT.fntinfo.linespace
 				shr		eax,1
@@ -565,7 +565,7 @@ DrawWord:
 					pop		rect.top
 				.endif
 				pop		rect.top
-				invoke SelectClipRgn,hDC,NULL
+;				invoke SelectClipRgn,hDC,NULL
 			.endif
 			add		edi,fTmp
 		.endif
@@ -1030,6 +1030,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	cp:DWORD
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
+	LOCAL	rcRgn1:RECT
 
 	invoke GetFocus
 	.if eax==hWin
@@ -1110,6 +1111,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	mov		rect1.left,eax
   @@:
 	invoke FillRect,mDC,addr rect1,[ebx].EDIT.br.hBrBck
+	invoke CopyRect,addr rcRgn1,addr rect1
 	invoke CreateRectRgn,rect1.left,rect1.top,rect1.right,rect1.bottom
 	mov		hRgn1,eax
 	.if rect1.left
@@ -1179,10 +1181,15 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 			mov		eax,rect.top
 			add		eax,[ebx].EDIT.fntinfo.fntht
 			.if eax>ps.rcPaint.top
-				invoke SelectClipRgn,mDC,hRgn1
+				invoke CreateRectRgn,rcRgn1.left,rect1.top,rcRgn1.right,rect1.bottom
+				push	eax
+				invoke SelectClipRgn,mDC,eax
+				pop		eax
+				invoke DeleteObject,eax
 				mov		edx,esi
 				dec		edx
 				invoke DrawLine,ebx,edi,edx,cp,mDC,addr rect1
+				invoke SelectClipRgn,mDC,hRgn1
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
@@ -1503,10 +1510,17 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 			add		eax,[ebx].EDIT.fntinfo.fntht
 			.if eax>=ps.rcPaint.top
 				mov		rect1.bottom,eax
-				invoke SelectClipRgn,ps.hdc,hRgn1
+				mov		eax,[ebx].EDIT.selbarwt
+				add		eax,[ebx].EDIT.linenrwt
+				invoke CreateRectRgn,eax,rect1.top,rect1.right,rect1.bottom
+				push	eax
+				invoke SelectClipRgn,ps.hdc,eax
+				pop		eax
+				invoke DeleteObject,eax
 				mov		edx,esi
 				dec		edx
 				invoke DrawLine,ebx,edi,edx,cp,ps.hdc,addr rect1
+				invoke SelectClipRgn,ps.hdc,hRgn1
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
 				.if ps.rcPaint.left<eax
