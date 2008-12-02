@@ -75,6 +75,37 @@ AsciiToDw proc lpStr:DWORD
 
 AsciiToDw endp
 
+DwToHex proc uses edi,dwVal:DWORD,lpAscii:DWORD
+
+	mov		edi,lpAscii
+	add		edi,7
+	mov		eax,dwVal
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	ret
+
+  hexNibble:
+	push    eax
+	and     eax,0fh
+	cmp     eax,0ah
+	jb      hexNibble1
+	add     eax,07h
+  hexNibble1:
+	add     eax,30h
+	mov     [edi],al
+	dec     edi
+	pop     eax
+	shr     eax,4
+	retn
+	
+DwToHex endp
+
 GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC

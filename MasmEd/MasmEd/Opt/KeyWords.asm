@@ -1,5 +1,10 @@
 
 IDD_DLGKEYWORDS		equ 4000
+
+IDC_CBOTHEME		equ 4016
+IDC_EDTTHEME		equ 4027
+IDC_BTNTHEME		equ 4028
+
 IDC_LSTKWCOLORS		equ 4001
 IDC_LSTKWACTIVE		equ 4014
 IDC_LSTKWHOLD		equ 4013
@@ -47,10 +52,33 @@ szColors			db 'Back',0
 					db 'Tools Text',0
 					db 'Dialog Back',0
 					db 'Dialog Text',0
-					db 'Res. Styles',0
-					db 'Res. Words',0
+					db 'Resource Styles',0
+					db 'Resource Words',0
+					db 'CodeComplete Back',0
+					db 'CodeComplete Text',0
+					db 'CodeTip Back',0
+					db 'CodeTip Text',0
+					db 'CodeTip Api',0
+					db 'CodeTip Sel',0
 					db 0
 szCustColors		db 'CustColors',0
+
+szTheme				db 'Theme',0
+
+thme0				db 'Default',0
+					dd 00804000h,00808000h,00FF0000h,00FF0000h,00FF0000h,10FF0000h,000040FFh,00FF0000h,01FF0000h,00FF0000h,00A00000h,00A00000h,00A00000h,00A00000h,00A00000h,00A00000h
+					dd 00C0F0F0h,00000000h,00800000h,00FFFFFFh,02808040h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00C0C0C0h,00808080h,00800000h,00808080h,00C0F0F0h,00C0F0F0h,00C0F0F0h,00C0F0F0h
+					dd 00C0F0F0h,00000000h,00C0F0F0h,00000000h,00804000h,00C00000h,00FFFFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
+
+thme1				db 'Black Night',0
+					dd 0000FF00h,00FFFF80h,00FFFF00h,00FFFF00h,00FFFF00h,10FF0000h,004080FFh,00FF8080h,01FF0000h,00FF00FFh,00FF0000h,00FF0000h,00FF0000h,00FF0000h,00FF0000h,00FF0000h
+					dd 00000000h,00C0C0C0h,00800000h,00FFFFFFh,0280FFFFh,00FFFFFFh,000000FFh,004A4A4Ah,00C0F0C0h,00181869h,00E0E0E0h,00808080h,00800000h,00808080h,00000000h,00000000h,00000000h,00000000h
+					dd 00C6FFFFh,00000000h,00C6FFFFh,00000000h,00804000h,00C00000h,00C6FFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
+
+thme2				db 'Visual Studio',0
+					dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
+					dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh
+					dd 00FFFFFFh,00000000h,00FFFFFFh,00000000h,00804000h,00C00000h,00FFFFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
 
 .data?
 
@@ -59,8 +87,126 @@ CustColors			dd 16 dup(?)
 hCFnt				dd ?
 hLFnt				dd ?
 tempcol				RACOLOR <?>
+theme				THEME 10 dup(<>)
 
 .code
+
+GetThemes proc uses esi edi
+	LOCAL	nInx:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	mov		nInx,0
+	mov		edi,offset theme
+	.while nInx<10
+		invoke MakeKey,addr szTheme,nInx,addr buffer
+		mov		lpcbData,sizeof THEME
+		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,edi,addr lpcbData
+		.if eax && !nInx
+			invoke MakeKey,addr szTheme,0,addr buffer
+			mov		esi,offset thme0
+			mov		edi,offset theme+sizeof THEME*0
+			invoke lstrcpy,addr [edi].THEME.szname,esi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			lea		edi,[edi+sizeof THEME.szname]
+			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
+			rep		movsb
+			mov		edi,offset theme+sizeof THEME*0
+			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+
+			invoke MakeKey,addr szTheme,1,addr buffer
+			mov		esi,offset thme1
+			mov		edi,offset theme+sizeof THEME*1
+			invoke lstrcpy,addr [edi].THEME.szname,esi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			lea		edi,[edi+sizeof THEME.szname]
+			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
+			rep		movsb
+			mov		edi,offset theme+sizeof THEME*1
+			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+
+			invoke MakeKey,addr szTheme,2,addr buffer
+			mov		esi,offset thme2
+			mov		edi,offset theme+sizeof THEME*2
+			invoke lstrcpy,addr [edi].THEME.szname,esi
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			lea		edi,[edi+sizeof THEME.szname]
+			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
+			rep		movsb
+			mov		edi,offset theme+sizeof THEME*2
+			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+			.break
+		.endif
+		add		edi,sizeof THEME
+		inc		nInx
+	.endw
+	ret
+
+GetThemes endp
+
+SetTheme proc uses ebx esi edi,hWin:HWND,nInx:DWORD
+
+	lea		esi,theme.kwcol
+	mov		eax,nInx
+	mov		edx,sizeof THEME
+	mul		edx
+	add		esi,eax
+	xor		ebx,ebx
+	.while ebx<16
+		invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_SETITEMDATA,ebx,[esi]
+		add		esi,4
+		inc		ebx
+	.endw
+	invoke GetDlgItem,hWin,IDC_LSTKWCOLORS
+	invoke InvalidateRect,eax,NULL,TRUE
+	lea		esi,theme.medcol
+	mov		eax,nInx
+	mov		edx,sizeof THEME
+	mul		edx
+	add		esi,eax
+	xor		ebx,ebx
+	.while ebx<18+12-4
+		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,ebx,[esi]
+		.if ebx==13
+			add		esi,16
+		.endif
+		add		esi,4
+		inc		ebx
+	.endw
+
+	lea		esi,theme.medcol.racol
+	mov		eax,nInx
+	mov		edx,sizeof THEME
+	mul		edx
+	add		esi,eax
+	mov		edi,offset tempcol
+	mov		ecx,sizeof RACOLOR
+	rep		movsb
+	invoke GetDlgItem,hWin,IDC_LSTCOLORS
+	invoke InvalidateRect,eax,NULL,TRUE
+	ret
+
+SetTheme endp
+
+SaveTheme proc uses esi edi
+	LOCAL	nInx:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	mov		nInx,0
+	mov		esi,offset theme
+	.while nInx<10
+		.if byte ptr [esi].THEME.szname
+			invoke MakeKey,addr szTheme,nInx,addr buffer
+			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,esi,sizeof THEME
+		.endif
+		add		esi,sizeof THEME
+		inc		nInx
+	.endw
+	ret
+
+SaveTheme endp
 
 SetKeyWordList proc uses esi edi,hWin:HWND,idLst:DWORD,nInx:DWORD
 	LOCAL	hMem:DWORD
@@ -224,7 +370,9 @@ UpdateKeyWords endp
 
 UpdateToolColors proc
 	LOCAL	racol:RACOLOR
-	LOCAL	rescol:COLOR
+	LOCAL	rescol:RESCOLOR
+	LOCAL	cccol:CC_COLOR
+	LOCAL	ttcol:TT_COLOR
 
 	invoke SendMessage,hOut,REM_GETCOLOR,0,addr racol
 	mov		eax,col.toolback
@@ -249,6 +397,20 @@ UpdateToolColors proc
 	invoke CreateSolidBrush,col.toolback
 	mov		hBrBack,eax
 	invoke InvalidateRect,hCbo,NULL,TRUE
+	mov		eax,col.ccback
+	mov		cccol.back,eax
+	mov		eax,col.cctext
+	mov		cccol.text,eax
+	invoke SendMessage,hCCLB,CCM_SETCOLOR,0,addr cccol
+	mov		eax,col.ttback
+	mov		ttcol.back,eax
+	mov		eax,col.tttext
+	mov		ttcol.text,eax
+	mov		eax,col.ttapi
+	mov		ttcol.api,eax
+	mov		eax,col.ttsel
+	mov		ttcol.hilite,eax
+	invoke SendMessage,hCCTT,TTM_SETCOLOR,0,addr ttcol
 	ret
 
 UpdateToolColors endp
@@ -312,6 +474,18 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetKeyWordList,hWin,IDC_LSTKWHOLD,10
 		invoke SetKeyWordList,hWin,IDC_LSTKWACTIVE,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTKW,EM_LIMITTEXT,63,0
+		invoke GetThemes
+		mov		esi,offset theme
+		mov		nInx,0
+		.while nInx<10
+			.if byte ptr [esi].THEME.szname
+				invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_ADDSTRING,0,addr [esi].THEME.szname
+				invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_SETITEMDATA,eax,nInx
+			.endif
+			add		esi,sizeof THEME
+			inc		nInx
+		.endw
+		invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_SETCURSEL,0,0
 		mov		eax,IDC_BTNKWAPPLY
 		xor		edx,edx
 		call	EnButton
@@ -338,6 +512,41 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNKWAPPLY
 				call	Update
+			.elseif eax==IDC_BTNTHEME
+				push	esi
+				xor		esi,esi
+				.while esi<16
+					mov		eax,offset kwcol
+					lea		eax,[eax+esi*4]
+					mov		edx,dword ptr [eax]
+					invoke DwToHex,edx,addr buffer
+					mov		dword ptr buffer[8],',h'
+					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
+					inc		esi
+				.endw
+				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
+				xor		esi,esi
+				.while esi<18
+					mov		eax,offset col
+					lea		eax,[eax+esi*4]
+					mov		edx,dword ptr [eax]
+					invoke DwToHex,edx,addr buffer
+					mov		dword ptr buffer[8],',h'
+					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
+					inc		esi
+				.endw
+				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
+				.while esi<18+12
+					mov		eax,offset col
+					lea		eax,[eax+esi*4]
+					mov		edx,dword ptr [eax]
+					invoke DwToHex,edx,addr buffer
+					mov		dword ptr buffer[8],',h'
+					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
+					inc		esi
+				.endw
+				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
+				pop		esi
 			.elseif eax==IDC_BTNHOLD
 				invoke MoveKeyWords,hWin,IDC_LSTKWACTIVE,IDC_LSTKWHOLD
 				mov		eax,IDC_BTNHOLD
@@ -517,6 +726,13 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		edx,eax
 				mov		eax,IDC_BTNACTIVE
+				call	EnButton
+			.elseif eax==IDC_CBOTHEME
+				invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_GETITEMDATA,eax,0
+				invoke SetTheme,hWin,eax
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
 				call	EnButton
 			.endif
 		.elseif edx==LBN_DBLCLK

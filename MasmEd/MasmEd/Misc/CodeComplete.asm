@@ -17,8 +17,6 @@ szInvoke		db 'INVOKE',0
 
 hApiCallMem		dd ?
 hApiConstMem	dd ?
-hCCLB			dd ?
-hCCTT			dd ?
 lpOldCCProc		dd ?
 ccchrg			CHARRANGE <?>
 

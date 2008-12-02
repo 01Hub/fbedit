@@ -28,6 +28,9 @@ CC_COLOR struct
 	text	dd ?
 CC_COLOR ends
 
+CCBACK				equ 0FFFFFFh
+CCTEXT				equ 0
+
 CC_ADDLIST struct
 	lpszList	dd ?
 	lpszFilter	dd ?
@@ -49,6 +52,11 @@ TT_COLOR struct
 	api		dd ?
 	hilite	dd ?
 TT_COLOR ends
+
+TTBACK				equ 00C0F0F0h
+TTTEXT				equ 0
+TTAPI				equ 00404080h
+TTSEL				equ 00FF8000h
 
 TTITEM struct
 	lpszApi		dd ?						;Pointer to api string

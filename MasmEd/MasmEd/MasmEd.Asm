@@ -241,6 +241,7 @@ SetBlockDefs proc uses esi,hWin:HWND
 		invoke SendMessage,hWin,REM_ADDBLOCKDEF,0,[esi]
 		add		esi,4
 	.endw
+	invoke SendMessage,hWin,REM_BRACKETMATCH,0,offset szBracketMatch
 	ret
 
 SetBlockDefs endp
@@ -307,9 +308,9 @@ CreateRAEdit proc
 
 	push	hREd
 	.if edopt.hilitecmnt
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM
 	.else
-		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
+		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
 	.endif
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,eax,0,0,0,0,hWnd,IDC_RAE,hInstance,0
 	mov		hREd,eax
@@ -786,7 +787,7 @@ MyTimerProc endp
 ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
-	LOCAL	rescol:COLOR
+	LOCAL	rescol:RESCOLOR
 	LOCAL	min:DWORD
 	LOCAL	max:DWORD
 
@@ -1824,6 +1825,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hREd,REM_SETBOOKMARK,[edi].RASELCHANGE.line,0
 				.endif
 			.else
+				invoke SendMessage,hREd,REM_BRACKETMATCH,0,0
 				invoke SendMessage,hREd,REM_SETHILITELINE,prvline,0
 				mov		eax,[edi].RASELCHANGE.line
 				mov		prvline,eax

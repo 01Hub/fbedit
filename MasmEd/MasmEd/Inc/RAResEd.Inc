@@ -112,10 +112,10 @@ MNUITEM struct
 	helpid			dd ?
 MNUITEM ends
 
-COLOR struct
+RESCOLOR struct
 	back			dd ?
 	text			dd ?
-COLOR ends
+RESCOLOR ends
 
 RESID struct
 	startid			dd ?

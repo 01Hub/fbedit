@@ -298,7 +298,19 @@ MEDCOLOR struct
 	dialogtext	dd ?
 	styles		dd ?
 	words		dd ?
+	ccback		dd ?
+	cctext		dd ?
+	ttback		dd ?
+	tttext		dd ?
+	ttapi		dd ?
+	ttsel		dd ?
 MEDCOLOR ends
+
+THEME struct
+	szname		db 32 dup(?)
+	kwcol		dd 16 dup(?)
+	medcol		MEDCOLOR <>
+THEME ends
 
 MENUINFO STRUCT
 	cbSize			DWORD	?
@@ -389,6 +401,7 @@ szNULL					db 0
 szTab					db VK_TAB,0
 szSpc					db ' ',0
 szCr					db 0Dh,0
+szCrLf					db 0Dh,0Ah,0
 szQuote					db '"',0
 szBackSlash				db '\',0
 szComma					db ',',0
@@ -416,6 +429,8 @@ szEnd					db 'END',0
 
 szCmntStart				db 'comment+',0
 szCmntEnd				db '-',0
+szBracketMatch			db '[({,])},\,',0
+
 rabdproc				RABLOCKDEF <offset szProc,offset szEndp,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdif					RABLOCKDEF <offset szIf,offset szEndIf,offset szElseIf,offset szElse,0>
 rabdwhile				RABLOCKDEF <offset szWhile,offset szEndw,0,0,0>
@@ -443,7 +458,7 @@ lfnt					LOGFONT <-12,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Courier New'>
 szLnrFont				db 'LnrFont',0
 lfntlnr					LOGFONT <-8,0,0,0,400,FALSE,FALSE,FALSE,0,0,0,0,0,'Terminal'>
 szColor					db 'Color',0
-col						MEDCOLOR <<BCKCOL,DEFTXTCOL,DEFSELBCKCOL,DEFSELTXTCOL,DEFCMNTCOL,DEFSTRCOL,DEFOPRCOL,DEFHILITE1,DEFHILITE2,DEFHILITE3,DEFSELBARCOL,DEFSELBARPEN,DEFLNRCOL,DEFNUMCOL,BCKCOL,BCKCOL,BCKCOL,BCKCOL>,DEFBCKCOL,DEFTXTCOL,DEFBCKCOL,DEFTXTCOL,DEFSTYLESCOL,DEFWORDSCOL>
+col						MEDCOLOR <<BCKCOL,TXTCOL,SELBCKCOL,SELTXTCOL,CMNTCOL,STRCOL,OPRCOL,HILITE1,HILITE2,HILITE3,SELBARCOL,SELBARPEN,LNRCOL,NUMCOL,BCKCOL,BCKCOL,BCKCOL,BCKCOL>,DEFBCKCOL,TXTCOL,DEFBCKCOL,TXTCOL,DEFSTYLESCOL,DEFWORDSCOL,CCBACK,CCTEXT,TTBACK,TTTEXT,TTAPI,TTSEL>
 szPrnPos				db 'PrnPos',0
 ppos					PRNPOS <<1000,1000,1000,1000>,<21000,29700>,65>
 
@@ -587,3 +602,5 @@ mnubuff					db 8192 dup(?)
 hMenuBrushA				dd ?
 hMenuBrushB				dd ?
 hMnuFont				dd ?
+hCCLB					dd ?
+hCCTT					dd ?
