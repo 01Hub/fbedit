@@ -446,7 +446,7 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 	mov		edi,nLine
 	shl		edi,2
 	mov		esi,lpszTest
-	.if edi<=[ebx].EDIT.rpLineFree && byte ptr [esi]
+	.if edi<[ebx].EDIT.rpLineFree && byte ptr [esi]
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
@@ -550,23 +550,23 @@ SkipSpc:
 				inc		ecx
 			.endif
 			jmp		SkipSpc
-		.elseif al==byte ptr bracketcont
-			.if byte ptr [edi+ecx+sizeof CHARS+1]==VK_RETURN
-				inc		nLine
-				mov		edi,nLine
-				shl		edi,2
-				.if edi<=[ebx].EDIT.rpLineFree
-					add		edi,[ebx].EDIT.hLine
-					mov		edi,[edi].LINE.rpChars
-					add		edi,[ebx].EDIT.hChars
-					test	[edi].CHARS.state,STATE_COMMENT
-					jne		Nf
-					xor		ecx,ecx
-					jmp		SkipSpc
-				.else
-					jmp		Nf
-				.endif
-			.endif
+;		.elseif al==byte ptr bracketcont
+;			.if byte ptr [edi+ecx+sizeof CHARS+1]==VK_RETURN
+;				inc		nLine
+;				mov		edi,nLine
+;				shl		edi,2
+;				.if edi<[ebx].EDIT.rpLineFree
+;					add		edi,[ebx].EDIT.hLine
+;					mov		edi,[edi].LINE.rpChars
+;					add		edi,[ebx].EDIT.hChars
+;					test	[edi].CHARS.state,STATE_COMMENT
+;					jne		Nf
+;					xor		ecx,ecx
+;					jmp		SkipSpc
+;				.else
+;					jmp		Nf
+;				.endif
+;			.endif
 		.endif
 		xor		eax,eax
 	.else

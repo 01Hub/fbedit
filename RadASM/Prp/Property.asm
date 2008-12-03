@@ -1997,8 +1997,16 @@ PropEditMultiProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_SETFOCUS || eax==WM_KILLFOCUS
-		.if eax==WM_KILLFOCUS 
+		mov		edx,lParam
+		.if eax==WM_KILLFOCUS
+			invoke SendMessage,hPrpLst,LB_GETCURSEL,0,0
+			push	eax
 			invoke PropEditUpdList,0
+			pop		eax
+			invoke SendMessage,hPrpLst,LB_SETCURSEL,eax,0
+			invoke ShowWindow,hTxtBtn,SW_SHOWNA
+		.else
+			invoke ShowWindow,hPrpTxt,SW_HIDE
 		.endif
 		invoke SetPrpFocus
 	.elseif eax==WM_CHAR
@@ -2032,7 +2040,7 @@ PropEditMultiProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		esi
 		.endif
 	.endif
-	invoke CallWindowProc,OldPropEditProc,hWin,uMsg,wParam,lParam
+	invoke CallWindowProc,OldPropEditMultiProc,hWin,uMsg,wParam,lParam
 	ret
 
 PropEditMultiProc endp
@@ -2328,17 +2336,27 @@ PropertyList proc uses esi edi,hCtl:DWORD
 				invoke BinToDec,[esi].ccy,edi
 			.elseif edx==6	;Caption
 				mov		lbid,StrCap
-				.if eax==1	;Edit
+				.if eax==1
+					;Edit
 					mov		eax,[esi].style
 					test	eax,ES_MULTILINE
 					.if !ZERO?
 						mov		lbid,StrCapMulti
 					.endif
-				.elseif eax==2	;Static
+				.elseif eax==2
+					;Static
 					mov		lbid,StrCapMulti
-				.elseif eax==4	;Button
+				.elseif eax==4
+					;Button
 					mov		eax,[esi].style
 					test	eax,BS_MULTILINE
+					.if !ZERO?
+						mov		lbid,StrCapMulti
+					.endif
+				.elseif eax==22
+					;RichEdit
+					mov		eax,[esi].style
+					test	eax,ES_MULTILINE
 					.if !ZERO?
 						mov		lbid,StrCapMulti
 					.endif

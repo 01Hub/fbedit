@@ -896,10 +896,12 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 	LOCAL	nLnSt:DWORD
 	LOCAL	nLnEn:DWORD
 	LOCAL	lpBlockDef:DWORD
+	LOCAL	fcmnt:DWORD
 
 	mov		ebx,hMem
 	test	[ebx].EDIT.fstyleex,STYLEEX_BLOCKGUIDE
 	.if !ZERO?
+		mov		fcmnt,FALSE
 		;Clear block markers
 		mov		edx,[ebx].EDIT.rpLineFree
 		shr		edx,2
@@ -941,12 +943,26 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 				add		edi,[ebx].EDIT.hChars
 				test	[edi].CHARS.state,STATE_HIDDEN
 				.if ZERO?
+					test	[edi].CHARS.state,STATE_COMMENT
+					.if !ZERO?
+						mov		fcmnt,edi
+					.elseif fcmnt
+						mov		edx,fcmnt
+						mov		fcmnt,0
+						.if esi==nLnEn
+							and		[edx].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+						.endif
+						or		[edx].CHARS.state,STATE_BLOCKEND
+					.endif
 					and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
 					.if esi<nLnEn
 						or		[edi].CHARS.state,STATE_BLOCK
 					.endif
 					invoke TestBlockEnd,ebx,esi
-					.if eax!=-1
+					mov		edx,esi
+					inc		edx
+					shl		edx,2
+					.if eax!=-1 || edx==[ebx].EDIT.rpLineFree
 						or		[edi].CHARS.state,STATE_BLOCKEND
 					.endif
 					dec		nLines
