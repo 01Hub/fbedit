@@ -2,11 +2,13 @@ MasmEd
 ------
 
 Make:
+-----
 Before you can make your project you must select a mainfile.
 You do this with Make / Set Current as Mainfile.
 Selected mainfile will be shown in statusbar.
 
 Session files:
+--------------
 If you work with several projects, then using session files makes life easier.
 
 A session file contains:
@@ -29,5 +31,16 @@ This will overwrite existing or create a new session file.
 
 Close Session
 This will close the current session.
+
+Adding a new color theme:
+-------------------------
+1. Optional. Select a theme close to what you want.
+2. Optional. Change the colors and font options.
+3. Push [Add New]
+4. Type in a name for the theme.
+5. Push [Update] and the theme will be added to the combobox using the current colors.
+6. Push [OK] or [Apply] and your new theme will be saved.
+
+There can be max 10 themes.
 
 KetilO
