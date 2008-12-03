@@ -580,7 +580,7 @@ ctltypes			dd 0
 					dd 82	;ysize
 					dd 0	;nmethod
 					dd 0	;methods
-					dd 11111101000111100000101001000011b
+					dd 11111111000111100000101001000011b
 					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
 					dd 00010000000001011000000000000000b
 					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
@@ -4110,6 +4110,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	hDlg:HWND
 	LOCAL	racol:RACOLOR
+	LOCAL	buffer[MaxCap]:BYTE
 
 	;Get convertiion
 	mov		dlgps,10
@@ -4198,7 +4199,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke SaveWideChar,addr szDlgChildClass,ebx
 	add		ebx,eax
 	;Caption
-	invoke SaveWideChar,addr [esi].DIALOG.caption,ebx
+	invoke ConvertCaption,addr buffer,addr [esi].DIALOG.caption
+	invoke SaveWideChar,addr buffer,ebx
 	add		ebx,eax
 	pop		eax
 	test	eax,DS_SETFONT
@@ -4267,7 +4269,8 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 				invoke SaveWideChar,[eax].TYPES.lpclass,ebx
 				add		ebx,eax
 				;Caption
-				invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
+				invoke ConvertCaption,addr buffer,addr [edi].DIALOG.caption
+				invoke SaveWideChar,addr buffer,ebx
 				add		ebx,eax
 				mov		word ptr [ebx],0
 				add		ebx,2

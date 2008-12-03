@@ -1983,17 +1983,27 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						.endw
 					.endw
 				.else
-					.if eax==1	;Edit
+					.if eax==1
+						;Edit
 						mov		eax,[esi].DIALOG.style
 						test	eax,ES_MULTILINE
 						.if !ZERO?
 							mov		lbid,PRP_STR_CAPMULTI
 						.endif
-					.elseif eax==2	;Static
+					.elseif eax==2
+						;Static
 						mov		lbid,PRP_STR_CAPMULTI
-					.elseif eax==4	;Button
+					.elseif eax==4
+						;Button
 						mov		eax,[esi].DIALOG.style
 						test	eax,BS_MULTILINE
+						.if !ZERO?
+							mov		lbid,PRP_STR_CAPMULTI
+						.endif
+					.elseif eax==22
+						;RichEdit
+						mov		eax,[esi].DIALOG.style
+						test	eax,ES_MULTILINE
 						.if !ZERO?
 							mov		lbid,PRP_STR_CAPMULTI
 						.endif
