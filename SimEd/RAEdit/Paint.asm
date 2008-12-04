@@ -1180,8 +1180,11 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				invoke SelectClipRgn,mDC,hRgn1
 				test	[edi].CHARS.state,STATE_DIVIDERLINE
 				.if !ZERO?
-					invoke MoveToEx,mDC,rcRgn1.left,rect1.top,NULL
-					invoke LineTo,mDC,rcRgn1.right,rect1.top
+					test	[ebx].EDIT.fstyle,STYLE_NODIVIDERLINE
+					.if ZERO?
+						invoke MoveToEx,mDC,rcRgn1.left,rect1.top,NULL
+						invoke LineTo,mDC,rcRgn1.right,rect1.top
+					.endif
 				.endif
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
@@ -1515,10 +1518,13 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				invoke SelectClipRgn,ps.hdc,hRgn1
 				test	[edi].CHARS.state,STATE_DIVIDERLINE
 				.if !ZERO?
-					mov		eax,[ebx].EDIT.selbarwt
-					add		eax,[ebx].EDIT.linenrwt
-					invoke MoveToEx,ps.hdc,eax,rect1.top,NULL
-					invoke LineTo,ps.hdc,rect1.right,rect1.top
+					test	[ebx].EDIT.fstyle,STYLE_NODIVIDERLINE
+					.if ZERO?
+						mov		eax,[ebx].EDIT.selbarwt
+						add		eax,[ebx].EDIT.linenrwt
+						invoke MoveToEx,ps.hdc,eax,rect1.top,NULL
+						invoke LineTo,ps.hdc,rect1.right,rect1.top
+					.endif
 				.endif
 				mov		eax,[ebx].EDIT.selbarwt
 				add		eax,[ebx].EDIT.linenrwt
