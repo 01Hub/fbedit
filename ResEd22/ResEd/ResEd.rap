@@ -98,16 +98,16 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,18821
+1=580,0,290,688,5021
 6=
-2=0,0,0,0,7361
-7=0,0,699,490,2763
+2=0,0,0,0,0
+7=0,0,699,490,4367
 9=
 8=
 3=0,0,0,0,1872
 10=0,0,0,0
 11=0,0,0,0,2848
-13=0,0,0,0,4999
+13=0,0,0,0,29195
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -121,8 +121,8 @@ Options=52
 25=0,0,0,0,5060
 26=0,0,0,0
 27=0,0,0,0
-28=0,0,0,0,9293
-29=0,0,0,0,14016
+28=0,0,0,0,2158
+29=0,0,0,0,1690
 30=0,0,0,0,739
 31=0,0,0,0
 
@@ -142,16 +142,16 @@ Options=52
 0=
 
 [Find]
-1="DEM_COMPACT"
-2="UpdateCtl"
-3="SizeingRect"
-4="GetCtrlMem"
-5="DEWM_MEM"
-6="PrintHex"
-7="hInvisible"
-8="PRO_SETHIGHLIGHT"
-9="szRAEditClass"
-10="PRO_INCVERSION"
+1="DEM_SETCOLOR"
+2="REM_SETCOL"
+3="REM_SETC"
+4="DEM_COMPACT"
+5="UpdateCtl"
+6="SizeingRect"
+7="GetCtrlMem"
+8="DEWM_MEM"
+9="PrintHex"
+10="hInvisible"
 
 [VersionControl]
 Settings=1278

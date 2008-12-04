@@ -161,6 +161,10 @@ ToolbarEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
 			mov		eax,color.back
 			mov		racol.bckcol,eax
+			mov		racol.cmntback,eax
+			mov		racol.strback,eax
+			mov		racol.oprback,eax
+			mov		racol.numback,eax
 			mov		eax,color.text
 			mov		racol.txtcol,eax
 			mov		racol.strcol,0

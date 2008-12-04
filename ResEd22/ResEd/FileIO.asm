@@ -75,6 +75,10 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke SendMessage,hResEd,REM_GETCOLOR,0,addr racol
 			mov		eax,col.back
 			mov		racol.bckcol,eax
+			mov		racol.cmntback,eax
+			mov		racol.strback,eax
+			mov		racol.numback,eax
+			mov		racol.oprback,eax
 			mov		eax,col.text
 			mov		racol.txtcol,eax
 			mov		racol.strcol,0

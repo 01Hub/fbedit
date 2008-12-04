@@ -10,7 +10,7 @@ defxpmanifest		XPMANIFESTMEM	<,1,"xpmanifest.xml">
 					db '<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">',0Dh,0Ah
 					db '<assemblyIdentity',0Dh,0Ah
 					db 09h,'version="1.0.0.0"',0Dh,0Ah
-					db 09h,'processorArchitecture="X86"',0Dh,0Ah
+					db 09h,'processorArchitecture="*"',0Dh,0Ah
 					db 09h,'name="Company.Product.Name"',0Dh,0Ah
 					db 09h,'type="win32"',0Dh,0Ah
 					db '/>',0Dh,0Ah
@@ -206,6 +206,10 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke SendMessage,edi,REM_GETCOLOR,0,addr racol
 		mov		eax,color.back
 		mov		racol.bckcol,eax
+		mov		racol.cmntback,eax
+		mov		racol.strback,eax
+		mov		racol.oprback,eax
+		mov		racol.numback,eax
 		mov		eax,color.text
 		mov		racol.txtcol,eax
 		mov		racol.strcol,0

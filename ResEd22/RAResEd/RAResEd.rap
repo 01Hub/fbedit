@@ -146,13 +146,13 @@ Options=52
 16=,107,0,Res\Lock.bmp
 
 [Size]
-5=0,0,0,0,3430
+5=0,0,0,0,2158
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,45186
+1=0,0,718,485,8257
 7=0,0,718,485,57639
 6=0,0,0,0,5793
-9=0,0,718,485,97385
+9=0,0,718,485,99027
 2=0,0,584,498,4179
 8=0,0,0,0,13710
 10=0,0,0,0,12107
@@ -182,11 +182,11 @@ Options=52
 40=0,0,0,0,25683
 41=0,0,0,0
 42=0,0,0,0
-43=0,0,0,0,3851
+43=0,0,0,0,531
 45=0,0,0,0
-44=0,0,0,0,671
+44=0,0,0,0,3457
 19=0,0,0,0
-13=0,0,0,0,690
+13=0,0,0,0,3700
 46=0,0,0,0
 47=0,0,0,0
 48=0,0,0,0
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="SetChanged"
-2="DEM_SETGRIDSIZE"
-3="show"
-4="SetWindowPos,hInvisible"
-5="VK_CONTROL"
-6="PRO_SETMODIFY"
-7="getmodify"
-8="10"
-9="DEM_SETMODIFY"
-10="DlgResize"
+1="REM_SETCOLOR"
+2="DEM_SETCOL"
+3="SetChanged"
+4="DEM_SETGRIDSIZE"
+5="show"
+6="SetWindowPos,hInvisible"
+7="VK_CONTROL"
+8="PRO_SETMODIFY"
+9="getmodify"
+10="10"
 
 [AutoLoad]
 1=1
@@ -215,20 +215,20 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.56
-PV=2.1.0.56
+FV=2.1.0.58
+PV=2.1.0.58
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.56
+ProductVersion=2.1.0.58
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.56
+FileVersion=2.1.0.58
 CompanyName=
 
 [VersionControl]
