@@ -478,6 +478,7 @@ GetCtrlSize endp
 
 ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	LOCAL	nInx:DWORD
+	LOCAL	buffer[MaxCap]:BYTE
 
 	.if hDlgMnu
 		invoke DestroyMenu,hDlgMnu
@@ -531,7 +532,8 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 	mov		word ptr [ebx],0
 	add		ebx,2
 	;Caption
-	invoke SaveWideChar,addr [esi].DIALOG.caption,ebx
+	invoke ConvertCaption,addr buffer,addr [esi].DIALOG.caption
+	invoke SaveWideChar,addr buffer,ebx
 	add		ebx,eax
 	pop		eax
 	test	eax,DS_SETFONT
@@ -570,7 +572,8 @@ ShowDialog proc uses esi edi ebx,hWin:HWND,hMem:DWORD
 		add		eax,offset ctltypes
 		invoke SaveWideChar,[eax].TYPES.lpclass,ebx
 		add		ebx,eax
-		invoke SaveWideChar,addr [edi].DIALOG.caption,ebx
+		invoke ConvertCaption,addr buffer,addr [edi].DIALOG.caption
+		invoke SaveWideChar,addr buffer,ebx
 		add		ebx,eax
 		mov		word ptr [ebx],0
 		add		ebx,2
