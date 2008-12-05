@@ -19,6 +19,7 @@
 #define IDM_MAKE_RUN			20006
 
 #include "Res/MdiMenuMnu.rc"
+#include "Res/AcceptDlg.rc"
 #include "Res/ProMenuMnu.rc"
 
 #include "Res/CreateTplDlg.rc"

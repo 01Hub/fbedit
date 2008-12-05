@@ -1911,3 +1911,4 @@ fNewDialog				dd ?
 hTabSet					dd ?
 nTabSet					dd ?
 fProExp					dd ?
+szaccept				db 4096 dup(?)

@@ -9,6 +9,13 @@ MAKE struct
 	fExecThread	dd ?
 MAKE ends
 
+;Dialogs\Accept.dlg
+IDD_DLGACCEPT					equ 6100
+IDC_IMGACCEPT					equ 1001
+IDC_STCACCEPT					equ 1002
+IDC_STCCOMMAND					equ 1003
+IDC_CHKDONTASK					equ 1004
+
 .data
 
 szErr1				db '**Error** ',0
@@ -23,6 +30,7 @@ szErr7				db 'at line ',0
 iniErrIdentify		db 'Identify',0
 iniSkipWords		db 'Skip',0
 iniErrIdentifyDef	db 'error',0
+szdotexe			db '.exe',0
 
 .data?
 
@@ -1078,12 +1086,100 @@ GetAnyFileName:
 
 FindErrors endp
 
+AcceptDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke LoadIcon,0,IDI_QUESTION
+		invoke SendDlgItemMessage,hWin,IDC_IMGACCEPT,STM_SETIMAGE,IMAGE_ICON,eax
+		invoke SetDlgItemText,hWin,IDC_STCCOMMAND,lParam
+	.elseif eax==WM_COMMAND
+		mov		eax,wParam
+		mov		edx,eax
+		shr		edx,16
+		and		eax,0FFFFh
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke IsDlgButtonChecked,hWin,IDC_CHKDONTASK
+				.if eax
+					mov		eax,2
+				.else
+					mov		eax,1
+				.endif
+				invoke EndDialog,hWin,eax
+			.elseif eax==IDCANCEL
+				invoke EndDialog,hWin,0
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,0
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+AcceptDlgProc endp
+
+GetCommand proc uses esi edi,lpCommand:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		esi,lpCommand
+	.if byte ptr [esi]=='"'
+		inc		esi
+		.while byte ptr [esi]!='"' && byte ptr [esi]
+			inc		esi
+		.endw
+		dec		esi
+	.else
+		.while byte ptr [esi]!=' ' && byte ptr [esi]
+			inc		esi
+		.endw
+		dec		esi
+	.endif
+	.while byte ptr [esi]!='\' && esi>lpCommand
+		dec		esi
+	.endw
+	.if byte ptr [esi]=='\'
+		inc		esi
+	.endif
+	lea		edi,buffer
+	.while byte ptr [esi]!='"' && byte ptr [esi]!=' '
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	invoke CharLower,addr buffer
+	invoke strlen,addr buffer
+	.if eax>4
+		mov		eax,dword ptr buffer[eax-4]
+	.endif
+	.if eax!='exe.'
+		invoke strcat,addr buffer,addr szdotexe
+	.endif
+	invoke LoadCursor,0,IDC_ARROW
+	invoke SetCursor,eax
+	invoke ModalDialog,hInstance,IDD_DLGACCEPT,hWnd,offset AcceptDlgProc,addr buffer
+	push	eax
+	invoke LoadCursor,0,IDC_WAIT
+	invoke SetCursor,eax
+	pop		eax
+	ret
+
+GetCommand endp
+
 MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	sat:SECURITY_ATTRIBUTES
 	LOCAL	startupinfo:STARTUPINFO
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
+;	invoke GetCommand,addr outbuffer
+;	or		eax,eax
+;	je		Ex
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr outbuffer
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr szCrLf
 	invoke SendMessage,hOutREd,EM_SCROLLCARET,0,0
@@ -1184,6 +1280,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 		mov		make.uExit,eax
 	.endif
 ;	invoke ExitThread,eax
+  Ex:
 	ret
 
 OutputText:
