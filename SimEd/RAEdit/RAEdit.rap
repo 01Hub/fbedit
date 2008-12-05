@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.20
-PV=1.2.0.20
+FV=1.2.0.30
+PV=1.2.0.30
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.20
+ProductVersion=1.2.0.30
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.20
+FileVersion=1.2.0.30
 CompanyName=
 
 [Resource]
@@ -102,7 +102,7 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,18930
+1=0,0,0,0,147
 16=0,0,810,411,10156
 22=0,0,0,0,4317
 23=0,0,0,0,25767
@@ -111,7 +111,7 @@ CompanyName=
 2=0,0,0,0,904
 9=0,0,0,0,685
 10=0,0,0,0,33456
-11=0,0,0,0,566
+11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,8393
 18=0,0,0,0,1314
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="[ebx].EDIT.fntinfo.fntwt,"
-2="fntinfo.fntwt"
-3="<=[ebx].EDIT.rpLineFree"
-4="<[ebx].EDIT.rpLineFree"
-5="bracketcont"
-6="RAEditPaintNoBuff"
-7="createrect"
-8="strback"
-9="REM_SETCOLOR"
-10="GetTopFromYp"
+1="DBCS"
+2="[ebx].EDIT.fntinfo.fntwt,"
+3="fntinfo.fntwt"
+4="<=[ebx].EDIT.rpLineFree"
+5="<[ebx].EDIT.rpLineFree"
+6="bracketcont"
+7="RAEditPaintNoBuff"
+8="createrect"
+9="strback"
+10="REM_SETCOLOR"
 
 [AutoLoad]
 1=1
@@ -194,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

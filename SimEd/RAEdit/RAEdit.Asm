@@ -592,12 +592,13 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 					add		eax,[ebx].EDIT.linenrwt
 					sub		eax,[ebx].EDIT.cpx
 					invoke GetCharFromPos,ebx,[esi].RAEDT.cpy,eax,pt.y
-					push	eax
-					dec		eax
-					invoke IsCharLeadByte,ebx,eax
-					pop		edx
-					add		edx,eax
-					mov		eax,edx
+					.if eax!=[ebx].EDIT.cpLine
+						push	eax
+						dec		eax
+						invoke IsCharLeadByte,ebx,eax
+						pop		edx
+						add		eax,edx
+					.endif
 					mov		[ebx].EDIT.cpMin,eax
 					.if !fShift
 						mov		[ebx].EDIT.cpMax,eax
@@ -769,7 +770,7 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 					mov		eax,[ebx].EDIT.cpMax
 				.elseif eax>=[ebx].EDIT.cpMax || fShift
 					.if eax
-						.if eax>2
+						.if eax>=2
 							push	eax
 							sub		eax,2
 							invoke IsCharLeadByte,ebx,eax
