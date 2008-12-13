@@ -436,7 +436,7 @@ UShort
 Using
 Val
 Val64
-valInt
+ValInt
 ValLng
 ValUInt
 ValULng
@@ -446,7 +446,7 @@ VarSeg
 va_arg
 va_first
 va_next
-view
+View
 Wait
 WBin
 Wchr
