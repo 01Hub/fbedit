@@ -12,6 +12,8 @@ Assert,expression
 AssertWarn,expression
 Atan2,y:Double,x:Double|Double
 Atn,number:Double|Double
+BLoad,ByRef filename:String,addr:Any Ptr=0,pal:Any Ptr=0|Integer
+BSave,ByRef filename:String,addr:Any Ptr,size:Integer=0,pal:Any Ptr=0|Integer
 Beep
 Bin,number:Byte|String
 Bin,number:Integer,digits:Integer|String
@@ -22,47 +24,45 @@ Bin,number:Short|String
 Bit,value:Any,bit_number:Any
 BitReset,value:Any,bit_number:Any
 BitSet,value:Any,bit_number:Any
-BLoad,ByRef filename:String,addr:Any Ptr=0,pal:Any Ptr=0|Integer
-BSave,ByRef filename:String,addr:Any Ptr,size:Integer=0,pal:Any Ptr=0|Integer
-Callocate,num_elements:Integer,size:Integer=1|Any Ptr
-Cast,datatype,expression
 CByte,expression:datatype|Byte
 CDbl,expression:datatype|Double
-Chain,ByRef program:String|Integer
-ChDir,ByRef path:String|Integer
-Chr,ch:Integer,[...]|String
 CInt,expression:datatype|Integer
-Circle,[target,][STEP](x,y),radius[,[color][,[start][,[end][,[aspect][,F]]]]]
-Clear,ByRef dst:Any,value:Integer=0,bytes:Integer
 CLng,expression:datatype|Long
 CLngInt,expression:datatype|LongInt
-Cls,mode:Integer=-65536
-Color,foreground:Integer,background:Integer|Integer
-Command,index:Integer=-1|String
-Condbroadcast,handle As Any Ptr
-CondCreate|Any Ptr
-CondDestroy,handle:Any Ptr
-CondSignal,handle:Any Ptr
-CondWait,handle:Any Ptr
-Cos,number:Double|Double
 CPtr,DataType Ptr,expression
 CShort,expression:datatype|Short
 CSign,expression
 CSng,expression:datatype|Single
-CsrLin,|Integer
 CUByte,expression:datatype|UByte
 CUInt,expression:datatype|UInteger
 CULng,expression:datatype|ULong
 CULngInt,expression:datatype|ULongInt
-CUnsg,expression
-CurDir|String
 CUShort,expression:datatype|UShort
-Cvd,ByRef Str:String|Double
+CUnsg,expression
 CVI,ByRef Str:String|Integer
-Cvl,ByRef Str:String|Integer
 CVLongInt,ByRef Str:String|LongInt
 CVS,ByRef Str:String|Single
 CVShort,ByRef Str:String|Short
+Callocate,num_elements:Integer,size:Integer=1|Any Ptr
+Cast,datatype,expression
+ChDir,ByRef path:String|Integer
+Chain,ByRef program:String|Integer
+Chr,ch:Integer,[...]|String
+Circle,[target,][STEP](x,y),radius[,[color][,[start][,[end][,[aspect][,F]]]]]
+Clear,ByRef dst:Any,value:Integer=0,bytes:Integer
+Cls,mode:Integer=-65536
+Color,foreground:Integer,background:Integer|Integer
+Command,index:Integer=-1|String
+CondCreate|Any Ptr
+CondDestroy,handle:Any Ptr
+CondSignal,handle:Any Ptr
+CondWait,handle:Any Ptr
+Condbroadcast,handle As Any Ptr
+Cos,number:Double|Double
+CsrLin,|Integer
+CurDir|String
+Cvd,ByRef Str:String|Double
+Cvl,ByRef Str:String|Integer
 DateAdd,interval:String,number:Double,date_serial:Double|Double
 DateDiff,interval:String,serial1:Double,serial2:Double,firstdayofweek:Integer=fbUseSystem,firstdayofyear:Integer=fbUseSystem|Integer
 DatePart,interval:String,date_serial:Double,firstdayofweek:Integer=fbUseSystem,firstdayofyear:Integer=fbUseSystem|Integer
@@ -76,12 +76,12 @@ Dir,ByRef file_spec:String="",attrib_mask:Integer=&h21,out_attrib:Integer Ptr=0|
 Dir,out_attrib:Integer Ptr=0|String
 Draw String,[buffer,][STEP](x,y),text[,color[,font[,method[,(alpha\blender)]]]]
 DyLibFree,library:Any Ptr
-DylibLoad,ByRef filename:String|Any Ptr
 DyLibSymbol,library:Any Ptr,ByRef symbol:String|Any Ptr
 DyLibSymbol,library:Any Ptr,symbol:Short|Any Ptr
+DylibLoad,ByRef filename:String|Any Ptr
+EOF,filenum:Integer|Integer
 End,retval:Integer=0
 Environ,ByRef varname:String|String
-EOF,filenum:Integer|Integer
 Eqv,ByRef lhs:Any,ByRef rhs:Any|Any
 Erase,array:Any,[...]
 Erfn|ZString Ptr
@@ -89,8 +89,8 @@ Erl|Integer
 Ermn|ZString Ptr
 Error,errno:Integer
 Err|Integer
-Exec,ByRef program:String,ByRef arguments:String|Integer
 ExePath|String
+Exec,ByRef program:String,ByRef arguments:String|Integer
 Exp,number:Double|Double
 FileAttr,filenum:Integer,returntype:Integer=1|Integer
 FileCopy,source:String,destination:String|Integer
@@ -120,22 +120,27 @@ ImageConvertRow,src:Any Ptr,src_bpp:Integer,dst:Any Ptr,dst_bpp:Integer,Width:In
 ImageCreate,Width:Integer,height:Integer,[Color:UInteger],[depth:Integer]|Any Ptr
 ImageDestroy,Pointer:Any Ptr
 Imp,ByRef lhs:Any,ByRef rhs:Any|Any
-Inkey|As String
-Inp,port:UShort|Integer
-Input,n:Integer,filenum:Integer|String
-Input,n:Integer|String
 InStr,ByRef Str:String,[Any] ByRef Substring:String|Integer
 InStr,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
 InStr,Start:Integer,ByRef Str:String,[Any] ByRef Substring:String|Integer
 InStr,Start:Integer,ByRef Str:WString,[Any] ByRef Substring:WString|Integer
 InStrRev,ByRef Str:String,[Any] ByRef Substring:String,Start:Integer = -1|Integer
 InStrRev,ByRef Str:WString,[Any] ByRef Substring:WString,Start:Integer = -1|Integer
+Inkey|As String
+Inp,port:UShort|Integer
+Input,n:Integer,filenum:Integer|String
+Input,n:Integer|String
 Int,number:Double|Double
 IsDate,stringdate:String|Integer
 Kill,ByRef filename:String|Integer
 LBound,array:Any,dimension:Integer=1|Integer
 LCase,ByRef Str:String|String
 LCase,ByRef Str:WString|WString
+LPos,printer:Integer|Integer
+LSet,ByRef dst:String,ByRef src:String
+LSet,dst:WString Ptr,src:WString Ptr
+LTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
+LTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
 Left,ByRef Str:String,n:Integer|String
 Left,ByRef Str:WString,n:Integer|WString
 Len,ByRef variable:Any|Integer
@@ -143,15 +148,13 @@ Len,datatype|Integer
 Line,-(x1,y1)[,[color][,[B\BF][,style]]]
 Line,[target,][[STEP](x1,y1)]-[STEP](x2,y2)[,[color][,[B\BF][,style]]]
 LoByte,x:UInteger
+LoWord,x:UInteger
 Loc,filenum:Integer|LongInt
 Lof,filenum:Integer|UInteger
 Log,number:Double|Double
-LoWord,x:UInteger
-LPos,printer:Integer|Integer
-LSet,ByRef dst:String,ByRef src:String
-LSet,dst:WString Ptr,src:WString Ptr
-LTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
-LTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
+MKL,number:Integer|String
+MKLongInt,number:LongInt|String
+MKS,number:Single|String
 Mid,ByRef Str:String,Start:Integer,n:Integer|String
 Mid,ByRef Str:String,Start:Integer|String
 Mid,ByRef text:String,Start:Integer,length:Integer,ByRef expression:String
@@ -159,13 +162,10 @@ Mid,Str As WString Ptr,Start:Integer,n:Integer|WString
 Mid,Str As WString Ptr,Start:Integer|WString
 Mid,text:WString Ptr,Start:Integer,length:Integer,:Integer,expression:WString Ptr
 Minute,date_serial:Double|Integer
-Mkd,number:Double|String
 MkDir,ByRef folder:String|Integer
-Mki,number:Integer|String
-MKL,number:Integer|String
-MKLongInt,number:LongInt|String
-MKS,number:Single|String
 MkShort,number:Short|String
+Mkd,number:Double|String
+Mki,number:Integer|String
 Mod,ByRef lhs:Integer,ByRef rhs:Integer|Integer
 Month,date_serial:Double|Integer
 MonthName,Month:Integer,abbreviate:Integer=0|String
@@ -194,32 +194,32 @@ OffsetOf,typename,fieldname
 Or,ByRef lhs:Any,ByRef rhs:Any|Any
 Out,port:UShort,Data:UByte|Integer
 PCopy,source:Integer,destination:Integer
+PMap,coord:Single,func:Integer|Single
+PSet,[target,][STEP](x, y)[,color]
 Peek,address:Any Ptr|UByte
 Peek,datatype,address:Any Ptr|datatype
-PMap,coord:Single,func:Integer|Single
 Point,coord_x,coord_y[,buffer]|Integer
 Poke,address:Any Ptr,ByRef value:UByte
 Poke,datatype,address:Any Ptr,ByRef value:datatype
 Pos,dummy:Integer|Integer
 Pos|Integer
 ProcPtr,ByRef lhs:Any|Any Ptr
-PSet,[target,][STEP](x, y)[,color]
 Put,#filenum:Integer,[position:LongInt],data():Any|Integer
 Put,#filenum:Integer,[position:LongInt],data:Any[,amount:Integer]|Integer
 Put,[target,][STEP](x,y),source[,(x1,y1)-[STEP](x2,y2)][,method[,(alphaval\value\blender[,param])]]
-Randomize,seed:Double=-1,algorithm:Integer=0
-ReAllocate,Pointer:Any Ptr,count:Integer|Any Ptr
-Reset
 RGB,r:UInteger,g:UInteger,b:UInteger
 RGBA,r:UInteger,g:UInteger,b:UInteger,a:UInteger
-Right,ByRef Str:String,n:Integer|String
-Right,ByRef Str:WString,n:Integer|WString
-RmDir,ByRef folder:String|Integer
-Rnd,number:Integer=1|Double
 RSet,ByRef dst:String,ByRef src:String
 RSet,dst:WString Ptr,src:WString Ptr
 RTrim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
 RTrim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
+Randomize,seed:Double=-1,algorithm:Integer=0
+ReAllocate,Pointer:Any Ptr,count:Integer|Any Ptr
+Reset
+Right,ByRef Str:String,n:Integer|String
+Right,ByRef Str:WString,n:Integer|WString
+RmDir,ByRef folder:String|Integer
+Rnd,number:Integer=1|Double
 Run,ByRef program:String,ByRef arguments:String=""|Integer
 SAdd,ByRef Str:String|Any Ptr
 SAdd,ByRef Str:WString|Any Ptr
@@ -263,6 +263,7 @@ Spc,columns
 Sqr,number:Double|Double
 Stop,retval:Integer=0
 Str,ByRef Str:String|String
+Str,Str:WString Ptr|String
 Str,n:Byte|String
 Str,n:Double|String
 Str,n:Integer|String
@@ -273,20 +274,19 @@ Str,n:UByte|String
 Str,n:UInteger|String
 Str,n:ULongInt|String
 Str,n:UShort|String
-Str,Str:WString Ptr|String
-String,count:Integer,ch:String|String
-String,count:Integer,ch_code:Integer|String
 StrPtr,ByRef lhs:String|ZString Ptr
 StrPtr,ByRef lhs:WString|ZString Ptr
+String,count:Integer,ch:String|String
+String,count:Integer,ch_code:Integer|String
 Swap,ByRef a:Any,ByRef b:Any
 System,retval:Integer=0
 Tab,column
 Tan,number:Double|Double
 ThreadCreate,proc:Sub(Any Ptr),param:Any Ptr=0|Any Ptr
 ThreadWait,id:Any Ptr
-Timer|Double
 TimeSerial,Hour:Integer,Minute:Integer,Second:Integer|Double
 TimeValue,ByRef timestring:String|Double
+Timer|Double
 Time|String
 Trim,ByRef Str:String,[Any] ByRef trimset:String=" "|String
 Trim,ByRef Str:WString,[Any] ByRef trimset:WString=WStr(" ")|WString
@@ -305,10 +305,6 @@ ValUInt,ByRef strnum:WString|UInteger
 ValULng,ByRef strnum:String|ULongInt
 ValULng,ByRef strnum:WString|ULongInt
 VarPtr,ByRef lhs:Any|Any Ptr
-va_arg,argument_list:va_first / va_next,datatype
-va_first|Ptr
-va_next,Argument_List:(va_first),datatype
-Wait,port:UShort,and_mask:Integer,xor_mask:Integer=0|Integer
 WBin,number:Byte,digits:Integer|WString
 WBin,number:Byte|WString
 WBin,number:Integer,digits:Integer|WString
@@ -317,9 +313,6 @@ WBin,number:LongInt,digits:Integer|WString
 WBin,number:LongInt|WString
 WBin,number:Short,digits:Integer|WString
 WBin,number:Short|WString
-Wchr,ch:Integer,[...]|WString
-Weekday,serial:Double,firstdayofweek:Integer=fbusesystem|Integer
-WeekdayName,Weekday:Integer,abbreviate:Integer=0,firstdayofweek:Integer=fbUseSystem|String
 WHex,number:Byte,digits:Integer|WString
 WHex,number:Byte|WString
 WHex,number:Integer,digits:Integer|WString
@@ -328,9 +321,6 @@ WHex,number:LongInt,digits:Integer|WString
 WHex,number:LongInt|WString
 WHex,number:Short,digits:Integer|WString
 WHex,number:Short|WString
-Width,[columns],[rows]|Integer
-Window,[[SCREEN](x1,y1)-(x2,y2)]
-WindowTitle,ByRef Title:String
 WInput,num:Integer,filenum:Integer=0|WString
 WInput,num:Integer|WString
 WOct,number:Byte,digits:Integer|WString
@@ -344,6 +334,7 @@ WOct,number:Short|WString
 WS,r,n:LongInt|WString
 WSpace,count:Integer|WString
 WStr,ByRef Str:String|WString
+WStr,Str:WString Ptr|WString
 WStr,n:Byte|WString
 WStr,n:Double|WString
 WStr,n:Integer|WString
@@ -353,8 +344,17 @@ WStr,n:UByte|WString
 WStr,n:UInteger|WString
 WStr,n:ULongInt|WString
 WStr,n:UShort|WString
-WStr,Str:WString Ptr|WString
 WString,count:Integer,ch:WString|WString
 WString,count:Integer,ch_code:Integer|WString
+Wait,port:UShort,and_mask:Integer,xor_mask:Integer=0|Integer
+Wchr,ch:Integer,[...]|WString
+Weekday,serial:Double,firstdayofweek:Integer=fbusesystem|Integer
+WeekdayName,Weekday:Integer,abbreviate:Integer=0,firstdayofweek:Integer=fbUseSystem|String
+Width,[columns],[rows]|Integer
+Window,[[SCREEN](x1,y1)-(x2,y2)]
+WindowTitle,ByRef Title:String
 Xor,ByRef lhs:Any,ByRef rhs:Any|Any
 Year,date_serial:Double|Integer
+va_arg,argument_list:va_first / va_next,datatype
+va_first|Ptr
+va_next,Argument_List:(va_first),datatype

@@ -1,4 +1,3 @@
-Boolean
 Byte
 UByte
 Short
@@ -14,7 +13,3 @@ Double
 String
 ZString
 WString
-Word
-Dword
-Pointer
-Ptr
