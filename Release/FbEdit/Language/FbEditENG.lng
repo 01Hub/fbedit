@@ -622,6 +622,7 @@ FBFileAssociation=File Association
 10006=Highlight icon
 10007=Asterisk character
 10008=No indicator
+10009=Multiline
 ;--------------------------------------------------------------------------
 [Toolbar]
 Toolbar=Toolbar Creator
