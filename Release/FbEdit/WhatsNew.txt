@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.5b
+o Fixed bug where FbEdit would crash if a sub or function had too many parameters.
+o Fixed bug with flat tabs. Did not paint properly.
+o Enabled theming on systems with 64 bit processors.
 1.0.6.5
 o Dialog editor now uses dialog units instead of pixels.
 o Added option to select tools window font.

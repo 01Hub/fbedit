@@ -33,7 +33,7 @@ Sub ConvertFrom(ByVal buff As ZString Ptr)
 End Sub
 
 Function FindString(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
-	Dim buff As ZString*512
+	Dim buff As ZString*1024
 	Dim As Integer x,y,z
 	Dim lp As ZString Ptr
 
@@ -128,7 +128,7 @@ Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
 End Sub
 
 Function GetInternalString(ByVal id As Integer) As String
-	Dim buff As ZString*512
+	Dim buff As ZString*1024
 
 	If ad.hLangMem Then
 		buff=FindString(ad.hLangMem,"Internal",Str(id))

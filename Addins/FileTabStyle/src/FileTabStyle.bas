@@ -19,7 +19,7 @@
 
 '' tab styles
 #Define TAB_STYLE_DEFAULT  TCS_TABS
-#Define TAB_STYLE_BUTTONS  TCS_BUTTONS Or TCS_BOTTOM
+#Define TAB_STYLE_BUTTONS  TCS_BUTTONS' Or TCS_BOTTOM
 #Define TAB_STYLE_FLAT     TAB_STYLE_BUTTONS Or TCS_FLATBUTTONS Or TCS_HOTTRACK 
 
 #Define TAB_STYLE_ID_DEFAULT   0
@@ -274,7 +274,7 @@ Sub SetTabHeight()
 		GetWindowRect(lpHandles->htabtool,@rect)
 		ScreenToClient(lpHandles->hwnd,Cast(Point Ptr,@rect.left))
 		ScreenToClient(lpHandles->hwnd,Cast(Point Ptr,@rect.right))
-		rect.bottom=nTabRows*25
+		rect.bottom=nTabRows*24
 		MoveWindow(lpHandles->htabtool,rect.left,rect.top,rect.right,rect.bottom,TRUE)
 		SendMessage(lpHandles->hwnd,WM_SIZE,0,0)
 	EndIf

@@ -358,7 +358,7 @@ End Sub
 Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As ZString Ptr,ByVal lpErr As Integer Ptr) As String
 	Dim lx As Integer
 	Dim lz As Integer
-	Dim szIndent As ZString*512
+	Dim szIndent As ZString*1024
 	
 	Poke Integer,lpErr,1
 	lx=ln+1
@@ -399,7 +399,7 @@ Function GetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszBlockSt As Z
 End Function
 
 Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZString Ptr) As Integer
-	Dim szIndent As ZString*512
+	Dim szIndent As ZString*1024
 	Dim lx As Integer
 	Dim lz As Integer
 	Dim chrg As CHARRANGE
@@ -433,7 +433,7 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 End Function
 
 Function AddIndent(ByVal n As Integer,ByVal lpszIndent As ZString Ptr) As String
-	Dim szIndent As ZString*512
+	Dim szIndent As ZString*1024
 
 	lstrcpy(@szIndent,lpszIndent)
 	If edtopt.expand Then

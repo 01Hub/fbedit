@@ -41,13 +41,21 @@
 #Include "inc\fbeditini.bi"
 
 Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim buffer As ZString*260
+	Dim buffer As ZString*1024
 	Dim chrg As CHARRANGE
 	Dim nLn As Integer
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim isinp As ISINPROC
 
+	If nSplash Then
+		nSplash=nSplash-1
+		If nsplash=0 Then
+			DestroyWindow(GetDlgItem(ah.hwnd,IDC_IMGSPLASH))
+			DeleteObject(hSplashBmp)
+		EndIf
+		Return 0
+	EndIf
 	If fTimer Then
 		fTimer-=1
 		If fTimer=0 Then
@@ -101,13 +109,6 @@ Function MyTimerProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 		If nLn<>curtab Then
 			prevtab=curtab
 			curtab=nLn
-		EndIf
-	EndIf
-	If nSplash Then
-		nSplash=nSplash-1
-		If nsplash=0 Then
-			DestroyWindow(GetDlgItem(ah.hwnd,IDC_IMGSPLASH))
-			DeleteObject(hSplashBmp)
 		EndIf
 	EndIf
 	If fChangeNotification=0 Then
@@ -353,8 +354,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ad.tbwt=670
 			ah.htoolbar=GetDlgItem(hWin,IDC_TOOLBAR)
 			DoToolbar(ah.htoolbar,hInstance)
-			' Handle of tabs
+			' Handle of tab tool
 			ah.htabtool=GetDlgItem(hWin,IDC_TABSELECT)
+			SetWindowLong(ah.htabtool,GWL_ID,1004)
 			lpOldTabToolProc=Cast(Any Ptr,SetWindowLong(ah.htabtool,GWL_WNDPROC,Cast(Integer,@TabToolProc)))
 			' Handle of output window
 			ah.hout=GetDlgItem(hWin,IDC_OUTPUT)
@@ -1725,6 +1727,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
+'If lpRASELCHANGE->nmhdr.idFrom=1004 Then
+'TextToOutput(Str(lpRASELCHANGE->nmhdr.idFrom))
+'EndIf
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				If ad.fNoNotify Then
 					Return 0
@@ -1945,7 +1950,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				EndIf
 				'
-			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA Then
+			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA And lpRASELCHANGE->nmhdr.hwndFrom=ah.htoolbar Then
 				' ToolBar tooltip
 				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT Ptr,lParam)
 				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
@@ -1958,7 +1963,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 					lpTOOLTIPTEXT->lpszText=@buff
 				EndIf
-			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TABSELECT Then
+			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htabtool Then
 				' Tab select
 				hCtl=ah.hred
 				tci.mask=TCIF_PARAM
@@ -1968,10 +1973,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				SetFocus(ah.hred)
 				SelectProjectFile(ad.filename)
 				fTimer=1
-			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_TAB Then
+			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htab Then
 				' Project tab
 				ShowProjectTab
-			ElseIf lpRASELCHANGE->nmhdr.code=FBN_DBLCLICK  And lpRASELCHANGE->nmhdr.idFrom=IDC_FILEBROWSER Then
+			ElseIf lpRASELCHANGE->nmhdr.code=FBN_DBLCLICK  And lpRASELCHANGE->nmhdr.hwndFrom=ah.hfib Then
 				' File dblclicked
 				lpFBNOTIFY=Cast(FBNOTIFY Ptr,lParam)
 				lstrcpy(@sItem,lpFBNOTIFY->lpfile)
@@ -1979,7 +1984,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 					UpdateFileProperty
 				EndIf
-			ElseIf lpRASELCHANGE->nmhdr.code=BN_CLICKED And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
+			ElseIf lpRASELCHANGE->nmhdr.code=BN_CLICKED And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
+				' Property toolbar button
 				lpRAPNOTIFY=Cast(RAPNOTIFY Ptr,lParam)
 				Select Case lpRAPNOTIFY->nid
 					Case 1
@@ -1994,7 +2000,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						EndIf
 						SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				End Select
-			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
+			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
+				' Property dbl click
 				If ah.hred<>0 And ah.hred<>ah.hres Then
 					SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 					fdcpos=(fdcpos+1) And 31
@@ -2012,15 +2019,18 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 				SendMessage(ah.hred,REM_VCENTER,0,0)
 				SetFocus(ah.hred)
-			ElseIf lpRASELCHANGE->nmhdr.code=LBN_SELCHANGE And lpRASELCHANGE->nmhdr.idFrom=IDC_PROPERTY Then
+			ElseIf lpRASELCHANGE->nmhdr.code=LBN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
+				' Property selchange
 				fTimer=1
-			ElseIf lpRASELCHANGE->nmhdr.code=TVN_BEGINLABELEDIT Then
+			ElseIf lpRASELCHANGE->nmhdr.code=TVN_BEGINLABELEDIT And lpRASELCHANGE->nmhdr.hwndFrom=ah.hprj Then
+				' Project labeledit
 				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
 				lstrcpy(@sEditFileName,lpNMTVDISPINFO->item.pszText)
 				If lpNMTVDISPINFO->item.lParam=0 Then
 					SendMessage(ah.hprj,TVM_ENDEDITLABELNOW,0,0)
 				EndIf
-			ElseIf lpRASELCHANGE->nmhdr.code=TVN_ENDLABELEDIT Then
+			ElseIf lpRASELCHANGE->nmhdr.code=TVN_ENDLABELEDIT And lpRASELCHANGE->nmhdr.hwndFrom=ah.hprj Then
+				' Project labeledit
 				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
 				lstrcpy(@sItem,lpNMTVDISPINFO->item.pszText)
 				SetCurrentDirectory(@ad.ProjectPath)
@@ -2230,8 +2240,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				EndIf
 			EndIf
-			'
 			Return DefWindowProc(hWin,uMsg,wParam,lParam)
+			'
 		Case WM_SETFOCUS
 			If ah.hred Then
 				' Hack to solve a caret problem

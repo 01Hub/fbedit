@@ -841,6 +841,11 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(ah.hwnd,WM_COMMAND,IDM_FILE_CLOSE,0)
 			Return 0
 			'
+		'Case WM_MOUSELEAVE
+		'	CallWindowProc(lpOldTabToolProc,hWin,uMsg,wParam,lParam)
+		'	InvalidateRect(hWin,NULL,TRUE)
+		'	UpdateWindow(hWin)
+		'	Return 0
 	End Select
 	Return CallWindowProc(lpOldTabToolProc,hWin,uMsg,wParam,lParam)
 

@@ -245,8 +245,8 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 	Dim chrg As CHARRANGE
 	Dim ntype As Integer
 	Dim As Integer x,y
-	Dim sLine As ZString*512
-	Dim sItem As ZString*512
+	Dim sLine As ZString*1024
+	Dim sItem As ZString*1024
 	Dim p As ZString Ptr
 	Dim nline As Integer
 	Dim nowner As Integer
