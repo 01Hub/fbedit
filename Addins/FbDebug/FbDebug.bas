@@ -872,6 +872,13 @@ Sub CreateDebugMenu()
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,VK_F7,nMnuRunToCaret)
 
+	nMnuNoDebug=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	buff=GetString(10007)
+	If buff="" Then
+		buff="Do not debug"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuNoDebug,@buff)
+
 	DrawMenuBar(lpHandles->hwnd)
 
 End Sub
@@ -922,6 +929,11 @@ Sub EnableDebugMenu()
 	EnableMenuItem(lpHandles->hmenu,nMnuStop,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepInto,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepOver,st)
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If lstrlen(@lpData->ProjectFile) Then
+		st=MF_BYCOMMAND Or MF_ENABLED
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuNoDebug,st)
 
 End Sub
 
@@ -1039,6 +1051,97 @@ Function CheckFileTime(ByVal lpszExe As ZString Ptr) As String
 
 End Function
 
+Function IsNoDebug(ByVal hWin As HWND, ByVal lpsz As ZString Ptr) As Boolean
+	Dim As Integer nInx,lret
+	Dim buff As ZString*260
+	
+	nInx=0
+	While nInx<100
+		lret=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+		If lret=LB_ERR Then
+			Return FALSE
+		ElseIf lstrcmpi(@buff,lpsz)=0 Then
+			Return TRUE
+		EndIf
+		nInx+=1
+	Wend
+
+End Function
+
+Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+	Dim As Integer id,Event,nInx
+	Dim lret As ZString Ptr
+	Dim buff As ZString*260
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			If lstrlen(@lpData->ProjectFile) Then
+				nInx=0
+				While nInx<100
+					GetPrivateProfileString("NoDebug",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+					If lstrlen(buff) Then
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+					EndIf
+					nInx+=1
+				Wend
+			EndIf
+			lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
+			Do While lret
+				If IsNoDebug(hWin,lret)=FALSE Then
+					SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,lret))
+				EndIf
+				lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDNEXT,0,0))
+			Loop
+			'
+		Case WM_CLOSE
+			EndDialog(hWin, 0)
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case id
+				Case IDOK
+					If lstrlen(@lpData->ProjectFile) Then
+						WritePrivateProfileSection("NoDebug",@szNULL,@lpData->ProjectFile)
+						nInx=0
+						While nInx<100
+							id=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+							If id=LB_ERR Then
+								Exit While
+							Else
+								WritePrivateProfileString("NoDebug",Str(nInx),@buff,@lpData->ProjectFile)
+							EndIf
+							nInx+=1
+						Wend
+					EndIf
+					EndDialog(hWin, 0)
+					'
+				Case IDC_BTNADD
+					nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETCURSEL,0,0)
+					If nInx<>LB_ERR Then
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_DELETESTRING,nInx,0)
+					EndIf
+					'
+				Case IDC_BTNDEL
+					nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETCURSEL,0,0)
+					If nInx<>LB_ERR Then
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_DELETESTRING,nInx,0)
+					EndIf
+					'
+			End Select
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
 
@@ -1132,7 +1235,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						fRun=1
 						tid=1
 						While tid>0
-							tid=ResumeThread(threadcontext)
+							tid=ResumeThread(thisthreadcontext)
 						Wend
 						BringWindowToFront
 					Else
@@ -1195,7 +1298,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClearDebugLine
 						tid=1
 						While tid>0
-							tid=ResumeThread(threadcontext)
+							tid=ResumeThread(thisthreadcontext)
 						Wend
 					EndIf
 					Return TRUE
@@ -1208,7 +1311,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						SetBreakPoints(0)
 						tid=1
 						While tid>0
-							tid=ResumeThread(threadcontext)
+							tid=ResumeThread(thisthreadcontext)
 						Wend
 					EndIf
 					Return TRUE
@@ -1228,10 +1331,13 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						EndIf
 						tid=1
 						While tid>0
-							tid=ResumeThread(threadcontext)
+							tid=ResumeThread(thisthreadcontext)
 						Wend
 					EndIf
 					Return TRUE
+					'
+				Case nMnuNoDebug
+					DialogBoxParam(hInstance, Cast(ZString Ptr,IDD_DLGNODEBUG), NULL, @NoDebugProc, NULL)
 					'
 				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO,IDM_MAKE_QUICKRUN,IDM_FILE_NEWPROJECT,IDM_FILE_OPENPROJECT,IDM_FILE_CLOSEPROJECT
 					If hThread Then

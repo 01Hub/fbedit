@@ -1727,9 +1727,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case WM_NOTIFY
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
-'If lpRASELCHANGE->nmhdr.idFrom=1004 Then
-'TextToOutput(Str(lpRASELCHANGE->nmhdr.idFrom))
-'EndIf
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				If ad.fNoNotify Then
 					Return 0
@@ -1950,19 +1947,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				EndIf
 				'
-			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA And lpRASELCHANGE->nmhdr.hwndFrom=ah.htoolbar Then
-				' ToolBar tooltip
-				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT Ptr,lParam)
-				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
-				If lret Then
-					lpTOOLTIPTEXT->lpszText=Cast(ZString Ptr,lret)
-				Else
-					buff=FindString(ad.hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
-					If buff="" Then
-						LoadString(hInstance,lpTOOLTIPTEXT->hdr.idFrom,@buff,256)
-					EndIf
-					lpTOOLTIPTEXT->lpszText=@buff
-				EndIf
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htabtool Then
 				' Tab select
 				hCtl=ah.hred
@@ -2044,6 +2028,19 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SetWinCaption
 					EndIf
 					RefreshProjectTree
+				EndIf
+			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA Then
+				' ToolBar tooltip
+				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT Ptr,lParam)
+				lret=CallAddins(ah.hwnd,AIM_GETTOOLTIP,lpTOOLTIPTEXT->hdr.idFrom,0,HOOK_GETTOOLTIP)
+				If lret Then
+					lpTOOLTIPTEXT->lpszText=Cast(ZString Ptr,lret)
+				Else
+					buff=FindString(ad.hLangMem,"Strings",Str(lpTOOLTIPTEXT->hdr.idFrom))
+					If buff="" Then
+						LoadString(hInstance,lpTOOLTIPTEXT->hdr.idFrom,@buff,256)
+					EndIf
+					lpTOOLTIPTEXT->lpszText=@buff
 				EndIf
 			EndIf
 			'

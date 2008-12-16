@@ -224,3 +224,4 @@ Dim Shared stab(STABMAX) As String
 
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared linead As UInteger
+Dim Shared thisthreadcontext As HANDLE

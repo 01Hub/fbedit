@@ -364,6 +364,7 @@ End Function
 
 Sub ParseDebugInfo()
 	Dim As UInteger i,j
+	Dim As Boolean bNoDebug
 	
 	' Beginning of section area
 	pe=&h400086
@@ -403,6 +404,13 @@ Sub ParseDebugInfo()
 						' Return value
 						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 						proc(procnb).nu=recupstab.nline
+						bNoDebug=FALSE
+						For i=0 To 99
+							If NoDebug(i)=proc(procnb).nm Then
+								bNoDebug=TRUE
+								Exit For
+							EndIf
+						Next
 					Case 38,40,128,160
 						' Init var
 						decoup(recup)
@@ -452,7 +460,7 @@ Sub ParseDebugInfo()
 				Select Case recupstab.code
 					Case 68
 						' Avoid to stop on sub or function line
-						If recupstab.ad Then
+						If recupstab.ad And bNoDebug=FALSE Then
 							' Do not include label in asm block
 							If recupstab.ad<>linead Then
 								linead=recupstab.ad
@@ -462,6 +470,8 @@ Sub ParseDebugInfo()
 							rLine(linenb).nu=recupstab.nline
 							rLine(linenb).pr=procnb
 							rLine(linenb).sv=-1
+						Else
+PutString("NoDebug")
 						End If
 					Case 192
 						If procfg Then
@@ -712,6 +722,7 @@ Sub gestbrk(ad As UInteger)
 		SendMessage(hLnDebug,WM_SETREDRAW,TRUE,0)
 		SendMessage(hLnDebug,REM_REPAINT,0,TRUE)
 		SuspendThread(threadcontext)
+		thisthreadcontext=threadcontext
 		SetForegroundWindow(lpHandles->hwnd)
 		SetFocus(hLnDebug)
 		WatchVars
@@ -911,6 +922,11 @@ Sub ClearVars()
 	nLnDebug=-1
 	hLnDebug=0
 	linead=-1
+	i=0
+	While i<100
+		NoDebug(i)=""
+		i+=1
+	Wend
 
 End Sub
 
@@ -948,11 +964,23 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim sinfo As STARTUPINFO
 	Dim As Integer lret,fContinue,i
 	Dim de As DEBUG_EVENT
-	Dim buffer As ZString*256
+	Dim buffer As ZString*260
 	Dim sException As String
 	Dim nln As Integer
 
 	ClearVars
+	If lstrlen(@lpData->ProjectFile) Then
+		i=0
+		While i<100
+			GetPrivateProfileString("NoDebug",Str(i),@szNULL,@buffer,SizeOf(buffer),@lpData->ProjectFile)
+			If lstrlen(buffer) Then
+				NoDebug(i)=UCase(buffer)
+			Else
+				NoDebug(i)=""
+			EndIf
+			i+=1
+		Wend
+	EndIf
 	sinfo.cb=SizeOf(STARTUPINFO)
 	sinfo.dwFlags=STARTF_USESHOWWINDOW
 	sinfo.wShowWindow=SW_NORMAL
@@ -1027,7 +1055,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadres=99
 						For i=1 To linenb
 							If rline(i).ad=.lpStartAddress Then
-								SuspendThread(threadcontext)
+'								SuspendThread(threadcontext)
 							EndIf
 						Next
 						threadcontext=.hThread
@@ -1049,12 +1077,14 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode & " Exitthread=" & thread(i).thread & " Returnthread=" & thread(i).threadret)
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
-							If threadcontext Then
-								lret=1
-								While lret>0
-									lret=ResumeThread(threadcontext)
-								Wend
-							EndIf
+							thisthreadcontext=threadcontext
+							lret=ResumeThread(threadcontext)
+'							If threadcontext Then
+'								lret=1
+'								While lret>0
+'									lret=ResumeThread(threadcontext)
+'								Wend
+'							EndIf
 							Exit For
 						EndIf
 					Next
