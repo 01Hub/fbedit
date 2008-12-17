@@ -1078,7 +1078,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
 							thisthreadcontext=threadcontext
-							lret=ResumeThread(threadcontext)
+'							lret=ResumeThread(threadcontext)
 '							If threadcontext Then
 '								lret=1
 '								While lret>0

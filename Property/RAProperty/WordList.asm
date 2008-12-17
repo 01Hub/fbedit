@@ -103,7 +103,7 @@ AddWordToWordList proc uses	esi	edi,nType:DWORD,nOwner:DWORD,nLine:DWORD,nEnd:DW
 			.if al==1
 				xor		al,al
 				mov		[edi+ecx+sizeof	PROPERTIES],al
-				inc		esi
+				;inc		esi
 				inc		ecx
 			.elseif	al==0Dh || al==0Ah
 				dec		esi

@@ -930,7 +930,7 @@ Sub EnableDebugMenu()
 	EnableMenuItem(lpHandles->hmenu,nMnuStepInto,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepOver,st)
 	st=MF_BYCOMMAND Or MF_GRAYED
-	If lstrlen(@lpData->ProjectFile) Then
+	If lstrlen(@lpData->ProjectFile)>0 And hThread=0 Then
 		st=MF_BYCOMMAND Or MF_ENABLED
 	EndIf
 	EnableMenuItem(lpHandles->hmenu,nMnuNoDebug,st)
