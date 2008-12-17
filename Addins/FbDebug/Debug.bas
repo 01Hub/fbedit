@@ -470,8 +470,6 @@ Sub ParseDebugInfo()
 							rLine(linenb).nu=recupstab.nline
 							rLine(linenb).pr=procnb
 							rLine(linenb).sv=-1
-						Else
-PutString("NoDebug")
 						End If
 					Case 192
 						If procfg Then
@@ -584,35 +582,6 @@ Sub ClearBreakAll(ByVal nNotProc As Integer)
 			rLine(i).sv=-1
 		EndIf
 	Next
-
-End Sub
-
-'Sub SuspendAllThreads()
-'	Dim i As Integer
-'	Dim lret As Integer
-'
-'	For i=0 To threadnb
-'		If thread(i).thread Then
-'			lret=SuspendThread(thread(i).thread)
-'			'PutString("SuspendThread " & lret)
-'		EndIf
-'	Next i
-'
-'End Sub
-'
-Sub ResumeAllThreads()
-	Dim i As Integer
-	Dim lret As Integer
-
-	For i=0 To threadnb
-		If thread(i).thread Then
-			lret=1
-			While lret>0
-				lret=ResumeThread(thread(i).thread)
-				'PutString("ResumeThread " & lret)
-			Wend
-		EndIf
-	Next i
 
 End Sub
 
@@ -742,6 +711,22 @@ Sub findthread(tid As UInteger)
 			Exit Sub
 		EndIf
 	Next
+
+End Sub
+
+Sub ResumeAllThreads()
+	Dim i As Integer
+	Dim lret As Integer
+
+	For i=0 To threadnb
+		If thread(i).thread Then
+			lret=1
+			While lret>0
+				lret=ResumeThread(thread(i).thread)
+				'PutString("ResumeThread " & lret)
+			Wend
+		EndIf
+	Next i
 
 End Sub
 
@@ -1053,11 +1038,11 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadret=threadcontext
 						thread(i).threadid=de.dwThreadId
 						thread(i).threadres=99
-						For i=1 To linenb
-							If rline(i).ad=.lpStartAddress Then
+'						For i=1 To linenb
+'							If rline(i).ad=.lpStartAddress Then
 '								SuspendThread(threadcontext)
-							EndIf
-						Next
+'							EndIf
+'						Next
 						threadcontext=.hThread
 						'Print "nb of thread";threadnb+1
 					End With
@@ -1078,13 +1063,9 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
 							thisthreadcontext=threadcontext
-'							lret=ResumeThread(threadcontext)
-'							If threadcontext Then
-'								lret=1
-'								While lret>0
-'									lret=ResumeThread(threadcontext)
-'								Wend
-'							EndIf
+							If nLnDebug=-1 Then
+								lret=ResumeThread(threadcontext)
+							EndIf
 							Exit For
 						EndIf
 					Next

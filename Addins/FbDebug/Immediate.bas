@@ -664,6 +664,7 @@ Nxt:
 				svar=UCase(Mid(szCompiled,px+1,i))
 				px+=i
 				For i=udt(typ).lb To udt(typ).ub
+PutString(svar & " " & cudt(i).nm & " " & Str(cudt(i).typ))
 					If svar=cudt(i).nm Then
 						adr+=cudt(i).ofs
 						typ=cudt(i).typ

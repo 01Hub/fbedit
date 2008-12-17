@@ -1,4 +1,4 @@
-FbEdit debug addin version 1.0.1.|
+FbEdit debug addin version 1.0.1.2
 
 Big thanks to SARG.
 His FB DEBUGGER proof of concept post
@@ -76,7 +76,13 @@ Debug menu:
 - Run To Caret
   Execution will be halted on the current line (unless there is
   a breakpoint).
-  
+
+- Do not debug
+  Lets you exclude subs and functions from debugging.
+  This is useful when debugging applications with threads.
+  It is also useful when you are confident that a sub or function is working as it should
+  and hence can be excluded from debugging.
+
 - Immediate window
   With the immediate window you can print or set the value of
   variables in the current scope.
@@ -105,6 +111,12 @@ Debug menu:
   TOP As Integer
   RIGHT As Integer
   BOTTOM As Integer
+
+How does the FbDebug addin work.
+--------------------------------
+The main goal for FbDebug is that code that is not debugged shold run at full speed.
+This makes debugging applications with threads behave weird.
+If a breakpoint in any thread is reached all threads will halt and be debugged.
 
 Whats New:
 ----------
@@ -161,5 +173,7 @@ o Fixed bugs with showing variables in multimodule projects.
   from the debug info.
 Version 1.0.1.1
 o The internal debugger now also works without a project.
+Version 1.0.1.2
+o Added option to add subs and functions to Do not debug.
 
 KetilO

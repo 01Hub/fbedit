@@ -704,6 +704,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							SendMessage(hTip,TTM_ADDTOOL,0,Cast(LPARAM,@ti))
 							SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
 							SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
+							fToolTip=1
 							Return 0
 						EndIf
 					Else
@@ -712,12 +713,18 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					EndIf
 				EndIf
 				SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+				fToolTip=0
 				Return 0
+			Else
+				If fToolTip Then
+					SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+					fToolTip=0
+				EndIf
 			EndIf
 			'
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-	
+
 End Function
 
 Function ImmediateProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
@@ -1233,10 +1240,10 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						ClearDebugLine
 						fRun=1
-						tid=1
-						While tid>0
+						'tid=1
+						'While tid>0
 							tid=ResumeThread(thisthreadcontext)
-						Wend
+						'Wend
 						BringWindowToFront
 					Else
 						fExit=0
