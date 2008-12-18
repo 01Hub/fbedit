@@ -16,8 +16,11 @@
 #Define IDC_LSTNODEBUG          			1001
 #Define IDC_BTNADD              			1003
 #Define IDC_BTNDEL              			1004
+#Define IDC_BTNADDALL						1008
+#Define IDC_BTNDELALL						1007
 #Define IDC_STCDEBUG            			1006
 #Define IDC_LSTDEBUG            			1002
+#Define IDC_CHKTHREADS						1009
 
 #Define PRM_FINDFIRST						WM_USER+13		' wParam=lpszTypes, lParam=lpszText
 #Define PRM_FINDNEXT							WM_USER+14		' wParam=0, lParam=0
@@ -83,4 +86,8 @@ Dim Shared mtid As Integer
 Dim Shared mpid As Integer
 Dim Shared NoDebug(99) As String
 Dim Shared fToolTip As Integer
-
+Dim Shared mainthread As HANDLE
+Dim Shared thisthreadcontext As HANDLE
+Dim Shared fDebugThreads As Integer
+Dim Shared thislinesav As Integer
+Dim Shared thisprocsv As Integer

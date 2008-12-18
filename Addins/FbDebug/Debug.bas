@@ -111,12 +111,7 @@ End Function
 Function FindUdt(ByVal typ As Integer,ByVal sr As UByte) As Integer
 	Dim i As Integer
 
-	for i=udtnb To 1 Step -1
-		If typ=udt(i).typ And sr=udt(i).sr Then
-			Return i
-		EndIf
-	Next
-	for i=udtnb To 1 Step -1
+	For i=udtnb To 1 Step -1
 		If typ=udt(i).typ And sr=udt(i).sr Then
 			Return i
 		EndIf
@@ -130,7 +125,12 @@ Sub decoup2(gv As String,f As Byte)
 
 	If InStr(gv,"=")=0 Then
 		If f=TYUDT Then
-			cudt(cudtnb).typ=Val(Mid(gv,p))
+			typ=Val(Mid(gv,p))
+			If typ<=15 Then
+				cudt(cudtnb).typ=typ
+			Else
+				cudt(cudtnb).typ=FindUdt(typ,sourcenb)
+			EndIf
 		Else
 			typ=Val(Mid(gv,p))
 			If typ<=15 Then
@@ -200,6 +200,7 @@ Sub decoupudt(readl As String)
 	q=InStr(readl,"=")
 	udt(udtnb).nm=tnm
 	udt(udtnb).typ=Val(Mid(readl,p,q-p))
+'	udt(udtnb).typ=FindUdt(Val(Mid(readl,p,q-p)),sourcenb)
 	udt(udtnb).sr=sourcenb
 	p=q+2
 	q=p-1
@@ -406,7 +407,7 @@ Sub ParseDebugInfo()
 						proc(procnb).nu=recupstab.nline
 						bNoDebug=FALSE
 						For i=0 To 99
-							If NoDebug(i)=proc(procnb).nm Then
+							If NoDebug(i)=UCase(proc(procnb).nm) Then
 								bNoDebug=TRUE
 								Exit For
 							EndIf
@@ -585,6 +586,19 @@ Sub ClearBreakAll(ByVal nNotProc As Integer)
 
 End Sub
 
+Sub ClearBreakProc(ByVal nProc As Integer)
+	Dim i As Integer
+
+	For i=1 To linenb
+		If rLine(i).sv<>-1 And rline(i).pr=nProc Then
+			' Restore 1 byte
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+			rLine(i).sv=-1
+		EndIf
+	Next
+
+End Sub
+
 Sub seteip(ad As UInteger)
 	Dim vcontext As CONTEXT
 
@@ -642,9 +656,23 @@ Sub gestbrk(ad As UInteger)
 		procrnb-=1
 	EndIf
 	If fRun Then
-		ClearBreakAll(0)
-		SetBreakPoints(-1)
+		If fRun=99 Then
+			ClearBreakProc(rline(i).pr)
+			SetBreakPoints(-1)
+			If thislinesav<>-1 Then
+				If rline(thislinesav).sv<>-1 Then
+					' Restore old value for execution
+					WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(thislinesav).ad),@rLine(thislinesav).sv,1,0)
+					rline(thislinesav).sv=-1
+				EndIf
+			EndIf
+		Else
+			ClearBreakAll(0)
+			SetBreakPoints(-1)
+		EndIf
 	Else
+		thisprocsv=procsv
+		thislinesav=i
 		If lstrlen(lpData->ProjectFile) Then
 			szFileName=bp(source(proc(procsv).sr).pInx).sFile
 		Else
@@ -912,6 +940,9 @@ Sub ClearVars()
 		NoDebug(i)=""
 		i+=1
 	Wend
+	mainthread=0
+	thisthreadcontext=0
+	thislinesav=-1
 
 End Sub
 
@@ -965,6 +996,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			EndIf
 			i+=1
 		Wend
+		fDebugThreads=GetPrivateProfileInt("NoDebug","Threads",0,@lpData->ProjectFile)
 	EndIf
 	sinfo.cb=SizeOf(STARTUPINFO)
 	sinfo.dwFlags=STARTF_USESHOWWINDOW
@@ -990,7 +1022,19 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case EXCEPTION_BREAKPOINT
 							If fExit=0 Then
 								findthread(de.dwThreadId)
-								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								If mainthread=0 Then
+									mainthread=threadcontext
+'PutString("Main thread " & Str(threadcontext))
+								EndIf
+								If threadcontext=mainthread Or fDebugThreads<>0 Then
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								Else
+'PutString("Thread " & Str(threadcontext))
+									lret=fRun
+									fRun=99
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+									fRun=lret
+								EndIf
 							Else
 								' Stop
 								fContinue=DBG_EXCEPTION_NOT_HANDLED
@@ -1062,7 +1106,6 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode & " Exitthread=" & thread(i).thread & " Returnthread=" & thread(i).threadret)
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
-							thisthreadcontext=threadcontext
 							If nLnDebug=-1 Then
 								lret=ResumeThread(threadcontext)
 							EndIf

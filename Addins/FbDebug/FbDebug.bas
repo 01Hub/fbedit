@@ -1092,6 +1092,10 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 					nInx+=1
 				Wend
 			EndIf
+			buff="main"
+			If IsNoDebug(hWin,@buff)=FALSE Then
+				SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+			EndIf
 			lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
 			Do While lret
 				If IsNoDebug(hWin,lret)=FALSE Then
@@ -1099,6 +1103,12 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 				EndIf
 				lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDNEXT,0,0))
 			Loop
+			SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0)
+			SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,0,0)
+			nInx=GetPrivateProfileInt("NoDebug","Threads",0,@lpData->ProjectFile)
+			If nInx Then
+				CheckDlgButton(hWin,IDC_CHKTHREADS,BST_CHECKED)
+			EndIf
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
@@ -1121,23 +1131,60 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 							nInx+=1
 						Wend
 					EndIf
+					nInx=IsDlgButtonChecked(hWin,IDC_CHKTHREADS)
+					If nInx Then
+						nInx=1
+					EndIf
+					WritePrivateProfileString("NoDebug","Threads",Str(nInx),@lpData->ProjectFile)
 					EndDialog(hWin, 0)
 					'
 				Case IDC_BTNADD
 					nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETCURSEL,0,0)
 					If nInx<>LB_ERR Then
 						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
-						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
 						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_DELETESTRING,nInx,0)
+						If SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0)=LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx-1,0)
+						EndIf
+						nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx,0)
 					EndIf
 					'
 				Case IDC_BTNDEL
 					nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETCURSEL,0,0)
 					If nInx<>LB_ERR Then
 						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
-						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
 						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_DELETESTRING,nInx,0)
+						If SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx,0)=LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx-1,0)
+						EndIf
+						nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0)
 					EndIf
+					'
+				Case IDC_BTNADDALL
+					While TRUE
+						nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETTEXT,0,Cast(WPARAM,@buff))
+						If nInx<>LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_DELETESTRING,0,0)
+						Else
+							Exit While
+						EndIf
+					Wend
+					SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,0,0)
+					'
+				Case IDC_BTNDELALL
+					While TRUE
+						nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,0,Cast(WPARAM,@buff))
+						If nInx<>LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_DELETESTRING,0,0)
+						Else
+							Exit While
+						EndIf
+					Wend
+					SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0)
 					'
 			End Select
 			'
@@ -1240,10 +1287,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						ClearDebugLine
 						fRun=1
-						'tid=1
-						'While tid>0
-							tid=ResumeThread(thisthreadcontext)
-						'Wend
+						tid=ResumeThread(thisthreadcontext)
 						BringWindowToFront
 					Else
 						fExit=0
@@ -1303,10 +1347,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						nLnRunTo=-1
 						ClearDebugLine
-						tid=1
-						While tid>0
-							tid=ResumeThread(thisthreadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
 					Return TRUE
 					'
@@ -1316,10 +1357,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClearDebugLine
 						ClearBreakAll(procsv)
 						SetBreakPoints(0)
-						tid=1
-						While tid>0
-							tid=ResumeThread(thisthreadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
 					Return TRUE
 					'
@@ -1336,15 +1374,13 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								EndIf
 							EndIf
 						EndIf
-						tid=1
-						While tid>0
-							tid=ResumeThread(thisthreadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
 					Return TRUE
 					'
 				Case nMnuNoDebug
 					DialogBoxParam(hInstance, Cast(ZString Ptr,IDD_DLGNODEBUG), NULL, @NoDebugProc, NULL)
+					Return TRUE
 					'
 				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO,IDM_MAKE_QUICKRUN,IDM_FILE_NEWPROJECT,IDM_FILE_OPENPROJECT,IDM_FILE_CLOSEPROJECT
 					If hThread Then

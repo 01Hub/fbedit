@@ -664,7 +664,6 @@ Nxt:
 				svar=UCase(Mid(szCompiled,px+1,i))
 				px+=i
 				For i=udt(typ).lb To udt(typ).ub
-PutString(svar & " " & cudt(i).nm & " " & Str(cudt(i).typ))
 					If svar=cudt(i).nm Then
 						adr+=cudt(i).ofs
 						typ=cudt(i).typ
@@ -1299,6 +1298,16 @@ Function Immediate() As Integer
 		Else
 			nErr=2
 			lret=-1
+		EndIf
+	ElseIf UCase(buff)="UDT" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			For x=1 To udtnb
+				buff=Str(x) & " " & udt(x).nm & Chr(9) & Str(udt(x).typ)
+				buff=buff & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			Next
 		EndIf
 	ElseIf UCase(buff)="DUMP" Then
 		If hThread Then
