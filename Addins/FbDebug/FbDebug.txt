@@ -78,10 +78,12 @@ Debug menu:
   a breakpoint).
 
 - Do not debug
-  Lets you exclude subs and functions from debugging.
-  This is useful when debugging applications with threads.
-  It is also useful when you are confident that a sub or function is working as it should
+  Lets you exclude subs and functions from debugging and enable thread debugging.
+  This is useful when you are confident that a sub or function is working properly
   and hence can be excluded from debugging.
+  It is also useful when debugging applications with threads. Excluding thread
+  subs and functions from debugging will ensure that the thread is running at full
+  speed.
 
 - Immediate window
   With the immediate window you can print or set the value of
@@ -114,7 +116,7 @@ Debug menu:
 
 How does the FbDebug addin work.
 --------------------------------
-The main goal for FbDebug is that code that is not debugged shold run at full speed.
+The main goal for FbDebug is that code that is not debugged should run at full speed.
 This makes debugging applications with threads behave weird.
 If a breakpoint in any thread is reached all threads will halt and be debugged.
 
@@ -175,5 +177,6 @@ Version 1.0.1.1
 o The internal debugger now also works without a project.
 Version 1.0.1.2
 o Added option to add subs and functions to Do not debug.
+o Added option to debug threads.
 
 KetilO

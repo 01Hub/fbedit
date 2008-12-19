@@ -610,7 +610,19 @@ Sub seteip(ad As UInteger)
 
 End Sub
 
-Sub gestbrk(ad As UInteger)
+Function FindLine(ByVal ad As Integer) As Integer
+	Dim i As Integer
+
+	For i=1 To linenb
+		If rline(i).ad=ad Then
+			Exit For
+		EndIf
+	Next
+	Return i
+
+End Function
+
+Sub gestbrk(ByVal ad As UInteger,ByVal fRun As Integer)
 	Dim As UInteger i
 	Dim n As ZString Ptr
 	Dim chrg As CHARRANGE
@@ -621,24 +633,22 @@ Sub gestbrk(ad As UInteger)
 	i=linesav+1
 	proccurad=ad
 	If rline(i).ad<>ad Then
-		For i=1 To linenb
-			If rline(i).ad=ad Then
-				Exit For
-			EndIf
-		Next
+		i=FindLine(ad)
 		If i>linenb Then
 			Exit Sub
 		EndIf
 	End If
-	linesav=i
-	SetBreakAll
-	If rline(i).sv<>-1 Then
-		' Restore old value for execution
-		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
-		rline(i).sv=-1
-	EndIf
 	' Get context
 	seteip(ad)
+	If fRun=99 Then
+		If rline(i).sv<>-1 Then
+			' Restore old value for execution
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+			rline(i).sv=-1
+		EndIf
+		Exit Sub
+	EndIf
+	linesav=i
 	If procrsk>procsk Then
 		' New proc
 		procrnb+=1
@@ -656,23 +666,18 @@ Sub gestbrk(ad As UInteger)
 		procrnb-=1
 	EndIf
 	If fRun Then
-		If fRun=99 Then
-			ClearBreakProc(rline(i).pr)
-			SetBreakPoints(-1)
-			If thislinesav<>-1 Then
-				If rline(thislinesav).sv<>-1 Then
-					' Restore old value for execution
-					WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(thislinesav).ad),@rLine(thislinesav).sv,1,0)
-					rline(thislinesav).sv=-1
-				EndIf
-			EndIf
-		Else
-			ClearBreakAll(0)
-			SetBreakPoints(-1)
-		EndIf
+		ClearBreakAll(0)
+		SetBreakPoints(-1)
 	Else
+		SetBreakAll
+		If rline(i).sv<>-1 Then
+			' Restore old value for execution
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+			rline(i).sv=-1
+		EndIf
 		thisprocsv=procsv
 		thislinesav=i
+		thisthreadcontext=threadcontext
 		If lstrlen(lpData->ProjectFile) Then
 			szFileName=bp(source(proc(procsv).sr).pInx).sFile
 		Else
@@ -718,11 +723,20 @@ Sub gestbrk(ad As UInteger)
 		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,2)
 		SendMessage(hLnDebug,WM_SETREDRAW,TRUE,0)
 		SendMessage(hLnDebug,REM_REPAINT,0,TRUE)
-		SuspendThread(threadcontext)
-		thisthreadcontext=threadcontext
+		SuspendThread(thisthreadcontext)
 		SetForegroundWindow(lpHandles->hwnd)
 		SetFocus(hLnDebug)
 		WatchVars
+	EndIf
+
+End Sub
+
+Sub ClearDebugLine()
+
+	If nLnDebug<>-1 And hLnDebug<>0 Then
+		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
+		nLnDebug=-1
+		hLnDebug=0
 	EndIf
 
 End Sub
@@ -970,6 +984,7 @@ Sub StopDebugging
 	lret=CloseHandle(hThread)
 	hThread=0
 	lpData->fDebug=FALSE
+	ClearDebugLine
 	LockFiles(FALSE)
 	ClearVars
 	EnableDebugMenu
@@ -1022,18 +1037,18 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case EXCEPTION_BREAKPOINT
 							If fExit=0 Then
 								findthread(de.dwThreadId)
-								If mainthread=0 Then
-									mainthread=threadcontext
-'PutString("Main thread " & Str(threadcontext))
-								EndIf
-								If threadcontext=mainthread Or fDebugThreads<>0 Then
-									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								If fDebugThreads Then
+									If threadcontext=mainthread Then
+										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
+									Else
+										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
+									EndIf
 								Else
-'PutString("Thread " & Str(threadcontext))
-									lret=fRun
-									fRun=99
-									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
-									fRun=lret
+									If threadcontext=mainthread Then
+										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
+									Else
+										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
+									EndIf
 								EndIf
 							Else
 								' Stop
@@ -1063,7 +1078,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							If fexit=0 Then
 								PutString(sException)
 								findthread(de.dwThreadId)
-								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),0)
 							EndIf
 						EndIf
 					EndIf
@@ -1082,13 +1097,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadret=threadcontext
 						thread(i).threadid=de.dwThreadId
 						thread(i).threadres=99
-'						For i=1 To linenb
-'							If rline(i).ad=.lpStartAddress Then
-'								SuspendThread(threadcontext)
-'							EndIf
-'						Next
 						threadcontext=.hThread
-						'Print "nb of thread";threadnb+1
 					End With
 				Case CREATE_PROCESS_DEBUG_EVENT
 					'PutString("CREATE_PROCESS_DEBUG_EVENT")
@@ -1099,6 +1108,9 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(threadnb).threadres=0
 						threadcontext=.hThread
 						hDebugFile=.hFile
+						If mainthread=0 Then
+							mainthread=threadcontext
+						EndIf
 					End With
 				Case EXIT_THREAD_DEBUG_EVENT
 					For i=0 To threadnb
@@ -1106,7 +1118,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode & " Exitthread=" & thread(i).thread & " Returnthread=" & thread(i).threadret)
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
-							If nLnDebug=-1 Then
+							If nLnDebug=-1 And threadcontext<>0 Then
 								lret=ResumeThread(threadcontext)
 							EndIf
 							Exit For

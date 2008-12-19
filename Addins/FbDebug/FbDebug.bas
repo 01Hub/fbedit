@@ -519,6 +519,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim As Integer i,j,n,dp,adr,fGlobal,fParam,nCursorLine,nSrc
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
 	Dim lpArr As tarr Ptr
+	Dim lpNMHDR As NMHDR Ptr
 
 	Select Case uMsg
 		Case WM_MOUSEMOVE
@@ -526,9 +527,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				SetCursor(LoadCursor(0,IDC_ARROW))
 				If nLnDebug<>-1 Then
 					GetCursorPos(@pt)
-					If Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3 Then
+					If (Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3) And fToolTip=0 Then
 						ptcur.x=pt.x
 						ptcur.y=pt.y
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
+						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
+						If Len(buff)=0 Then
+							Return 0
+						EndIf
 						' Find source
 						For nSrc=1 To sourcenb
 							If UCase(source(nSrc).file)=UCase(lpData->filename) Then
@@ -538,9 +545,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						If proc(procsv).sr<>nSrc And nSrc<>1 Then
 							Return 0
 						EndIf
-						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
-						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
-						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
 						If Left(buff,1)="." Then
 							' With block, fixup buff
 							i=IsProjectFile(@lpData->filename)
@@ -722,6 +726,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				EndIf
 			EndIf
 			'
+		Case WM_NOTIFY
+			lpNMHDR=Cast(NMHDR Ptr,lParam)
+			If lpNMHDR->code=TTN_POP Then
+				fToolTip=0
+			EndIf
+			'
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 
@@ -897,16 +907,6 @@ Function GetLineNumber() As Integer
 	Return SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
 
 End Function
-
-Sub ClearDebugLine()
-
-	If nLnDebug<>-1 And hLnDebug<>0 Then
-		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
-		nLnDebug=-1
-		hLnDebug=0
-	EndIf
-
-End Sub
 
 Sub EnableDebugMenu()
 	Dim st As Integer
