@@ -956,6 +956,7 @@ Sub ClearVars()
 	Wend
 	mainthread=0
 	thisthreadcontext=0
+	debugthreadcontext=0
 	thislinesav=-1
 
 End Sub
@@ -1011,7 +1012,6 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 			EndIf
 			i+=1
 		Wend
-		fDebugThreads=GetPrivateProfileInt("NoDebug","Threads",0,@lpData->ProjectFile)
 	EndIf
 	sinfo.cb=SizeOf(STARTUPINFO)
 	sinfo.dwFlags=STARTF_USESHOWWINDOW
@@ -1037,18 +1037,15 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case EXCEPTION_BREAKPOINT
 							If fExit=0 Then
 								findthread(de.dwThreadId)
-								If fDebugThreads Then
-									If threadcontext=mainthread Then
-										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
-									Else
-										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
+								If debugthreadcontext=0 Then
+									If rline(FindLine(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))).nu Then
+										debugthreadcontext=threadcontext
 									EndIf
+								EndIf
+								If threadcontext=debugthreadcontext Then
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
 								Else
-									If threadcontext=mainthread Then
-										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
-									Else
-										gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
-									EndIf
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
 								EndIf
 							Else
 								' Stop
@@ -1082,6 +1079,19 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							EndIf
 						EndIf
 					EndIf
+				Case CREATE_PROCESS_DEBUG_EVENT
+					'PutString("CREATE_PROCESS_DEBUG_EVENT")
+					With de.CreateProcessInfo
+						threadnb+=1
+						thread(threadnb).thread=.hThread
+						thread(threadnb).threadid=de.dwThreadId
+						thread(threadnb).threadres=0
+						threadcontext=.hThread
+						hDebugFile=.hFile
+						If mainthread=0 Then
+							mainthread=threadcontext
+						EndIf
+					End With
 				Case CREATE_THREAD_DEBUG_EVENT
 					PutString("CREATE_THREAD_DEBUG_EVENT Thread=" & de.CreateThread.hThread)
 					With de.CreateThread
@@ -1099,22 +1109,14 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadres=99
 						threadcontext=.hThread
 					End With
-				Case CREATE_PROCESS_DEBUG_EVENT
-					'PutString("CREATE_PROCESS_DEBUG_EVENT")
-					With de.CreateProcessInfo
-						threadnb+=1
-						thread(threadnb).thread=.hThread
-						thread(threadnb).threadid=de.dwThreadId
-						thread(threadnb).threadres=0
-						threadcontext=.hThread
-						hDebugFile=.hFile
-						If mainthread=0 Then
-							mainthread=threadcontext
-						EndIf
-					End With
 				Case EXIT_THREAD_DEBUG_EVENT
 					For i=0 To threadnb
 						If thread(i).threadid=de.dwThreadId Then
+							If debugthreadcontext=thread(i).thread Then
+								ClearBreakAll(0)
+								SetBreakPoints(-1)
+								debugthreadcontext=0
+							EndIf
 							PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode & " Exitthread=" & thread(i).thread & " Returnthread=" & thread(i).threadret)
 							thread(i).thread=0
 							threadcontext=thread(i).threadret

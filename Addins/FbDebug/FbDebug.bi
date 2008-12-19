@@ -88,6 +88,7 @@ Dim Shared NoDebug(99) As String
 Dim Shared fToolTip As Integer
 Dim Shared mainthread As HANDLE
 Dim Shared thisthreadcontext As HANDLE
-Dim Shared fDebugThreads As Integer
+Dim Shared debugthreadcontext As HANDLE
+'Dim Shared fDebugThreads As Integer
 Dim Shared thislinesav As Integer
 Dim Shared thisprocsv As Integer

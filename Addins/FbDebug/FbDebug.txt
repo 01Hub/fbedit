@@ -50,6 +50,12 @@ Inspecting variables:
   Watch x,y,z			Will watch variables x, y and z.
                      Varialble that changes will have a red color.
 
+Threads:
+FbDebug can only debug one thread at a time.
+The first breakpoint that the debugger handles will determine what
+thread will be debugged. If the debugged thread terminates then a
+new thread can be debugged.
+
 Debug menu:
 - Toggle Breakpoint
   Sets or clears a breakpoint.
@@ -78,7 +84,7 @@ Debug menu:
   a breakpoint).
 
 - Do not debug
-  Lets you exclude subs and functions from debugging and enable thread debugging.
+  Lets you exclude subs and functions from debugging.
   This is useful when you are confident that a sub or function is working properly
   and hence can be excluded from debugging.
   It is also useful when debugging applications with threads. Excluding thread
@@ -113,12 +119,6 @@ Debug menu:
   TOP As Integer
   RIGHT As Integer
   BOTTOM As Integer
-
-How does the FbDebug addin work.
---------------------------------
-The main goal for FbDebug is that code that is not debugged should run at full speed.
-This makes debugging applications with threads behave weird.
-If a breakpoint in any thread is reached all threads will halt and be debugged.
 
 Whats New:
 ----------
@@ -177,6 +177,7 @@ Version 1.0.1.1
 o The internal debugger now also works without a project.
 Version 1.0.1.2
 o Added option to add subs and functions to Do not debug.
-o Added option to debug threads.
+o Fixed bugs with debugging applacations that uses threads.
+o Fixed bugs with debug tooltip.
 
 KetilO

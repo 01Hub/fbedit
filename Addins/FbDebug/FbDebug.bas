@@ -1105,10 +1105,6 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 			Loop
 			SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0)
 			SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,0,0)
-			nInx=GetPrivateProfileInt("NoDebug","Threads",0,@lpData->ProjectFile)
-			If nInx Then
-				CheckDlgButton(hWin,IDC_CHKTHREADS,BST_CHECKED)
-			EndIf
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
@@ -1131,11 +1127,6 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 							nInx+=1
 						Wend
 					EndIf
-					nInx=IsDlgButtonChecked(hWin,IDC_CHKTHREADS)
-					If nInx Then
-						nInx=1
-					EndIf
-					WritePrivateProfileString("NoDebug","Threads",Str(nInx),@lpData->ProjectFile)
 					EndDialog(hWin, 0)
 					'
 				Case IDC_BTNADD
