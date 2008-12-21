@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.5c
+o Updated FbDebug addin.
+o Fixed bug with highlighting active line. Could leave several lines highlighted.
+o Fixed bug with parsing api files. Retutn type could lose first character.
 1.0.6.5b
 o Fixed bug where FbEdit would crash if a sub or function had too many parameters.
 o Fixed bug with flat tabs. Did not paint properly.

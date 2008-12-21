@@ -1998,6 +1998,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				Else
 					SelectTab(hWin,Cast(HWND,lpRAPNOTIFY->nid),0)
 				EndIf
+				SetFocus(ah.hred)
 				chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lpRAPNOTIFY->nline,0)
 				chrg.cpMax=chrg.cpMin
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
