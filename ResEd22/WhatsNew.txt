@@ -1,5 +1,9 @@
 ResEd
 
+2.2.0.1 -2008-12-21
+o Fixed bug with opening project by command line or drop file.
+  Did not set / open include file properly.
+
 2.2.0.0d - 2008-12-04
 ---------------------
 o Added caption property to RichEdit control.

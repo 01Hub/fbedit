@@ -167,9 +167,10 @@ OpenInclude proc
 	push	hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,offset szHFilterString
-	mov		buffer[0],0
+	mov		buffer,0
 	.if ProjectPath
 		mov		ofn.lpstrInitialDir,offset ProjectPath
+		invoke SetCurrentDirectory,offset ProjectPath
 	.endif
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
@@ -177,11 +178,6 @@ OpenInclude proc
 	mov		ofn.lpstrDefExt,NULL
 	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 	mov		ofn.lpstrTitle,offset szIncludeTitle
-	.if ProjectFileName
-		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
-		lea		eax,buffer1
-		mov		ofn.lpstrInitialDir,eax
-	.endif
 	;Show the Open dialog
 	invoke GetOpenFileName,addr ofn
 	.if eax
@@ -191,6 +187,32 @@ OpenInclude proc
 	ret
 
 OpenInclude endp
+
+GetInclude proc lpProject:DWORD
+
+	.if grdsize.defines==2
+		invoke lstrcpy,addr ProjectPath,lpProject
+		invoke lstrlen,addr ProjectPath
+		.while byte ptr ProjectPath[eax]!='\' && eax
+			dec		eax
+		.endw
+		mov		byte ptr ProjectPath[eax],0
+		invoke OpenInclude
+		.if eax
+			invoke ReadProjectFile,lpProject,FALSE
+		.endif
+	.else
+		invoke lstrcpy,addr IncludeFileName,lpProject
+		invoke lstrlen,addr IncludeFileName
+		.while byte ptr IncludeFileName[eax-1]!='.' && eax
+			dec		eax
+		.endw
+		mov		word ptr IncludeFileName[eax],'h'
+		invoke ReadProjectFile,lpProject,FALSE
+	.endif
+	ret
+
+GetInclude endp
 
 OpenProject proc uses ebx,fText:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -231,20 +253,7 @@ OpenProject proc uses ebx,fText:DWORD
 		.if fText
 			invoke ReadProjectFile,addr buffer,TRUE
 		.else
-			.if grdsize.defines==2
-				invoke OpenInclude
-				.if eax
-					invoke ReadProjectFile,addr buffer,FALSE
-				.endif
-			.else
-				invoke lstrcpy,addr IncludeFileName,addr buffer
-				invoke lstrlen,addr IncludeFileName
-				.while byte ptr IncludeFileName[eax-1]!='.' && eax
-					dec		eax
-				.endw
-				mov		word ptr IncludeFileName[eax],'h'
-				invoke ReadProjectFile,addr buffer,FALSE
-			.endif
+			invoke GetInclude,addr buffer
 		.endif
 	.endif
 	ret

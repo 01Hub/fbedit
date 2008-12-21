@@ -936,7 +936,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DragQueryFile,wParam,0,addr buffer,sizeof buffer
 		invoke WantToSaveProject,offset ProjectFileName
 		.if !eax
-			invoke ReadProjectFile,addr buffer,FALSE
+			invoke GetInclude,addr buffer
 		.endif
 	.elseif eax==WM_MEASUREITEM
 		mov		ebx,lParam
@@ -1136,7 +1136,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	;Get command line filename
 	mov		eax,CommandLine
 	.if byte ptr [eax]
-		invoke ReadProjectFile,eax,FALSE
+		invoke GetInclude,eax
+		;invoke ReadProjectFile,eax,FALSE
 	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
@@ -1182,6 +1183,7 @@ start:
 		jmp		@b
 	.elseif dl=='"'
 		invoke PathUnquoteSpaces,eax
+		mov		eax,CommandLine
 	.endif
 	mov		CommandLine,eax
 	invoke InitCommonControls
