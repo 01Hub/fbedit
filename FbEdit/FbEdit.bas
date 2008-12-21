@@ -351,7 +351,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Get case convert
 			GetPrivateProfileString(StrPtr("Edit"),StrPtr("CaseConvert"),StrPtr("CWPp"),@szCaseConvert,SizeOf(szCaseConvert),@ad.IniFile)
 			' Get handle of ToolBar control
-			ad.tbwt=670
+			ad.tbwt=694
 			ah.htoolbar=GetDlgItem(hWin,IDC_TOOLBAR)
 			DoToolbar(ah.htoolbar,hInstance)
 			' Handle of tab tool
@@ -1432,16 +1432,26 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								sItem=ad.filename
 								GetFilePath(sItem)
 							EndIf
-							SetCurrentDirectory(sItem)
-							sItem="FbTemp.bas"
+							sItem=sItem & "\FbTemp.bas"
+							If fProject Then
+								sItem=RemoveProjectPath(sItem)
+								SetCurrentDirectory(ad.ProjectPath)						
+							Else
+								GetFilePath(sItem)
+								SetCurrentDirectory(sItem)
+								sItem="FbTemp.bas"
+							EndIf
 							SaveTempFile(ah.hred,sItem)
-							fBuildErr=Make(ad.smake,sItem,FALSE,FALSE,TRUE)
-							DeleteFile(StrPtr("FbTemp.bas"))
+							sFile=sItem
+							GetPrivateProfileString(StrPtr("Make"),StrPtr("QuickRun"),StrPtr("fbc -s console"),@buff,255,@ad.IniFile)
+							fBuildErr=Make(ad.fbcPath & "\" & buff,sItem,FALSE,FALSE,TRUE)
+							DeleteFile(StrPtr(sFile))
 							If fBuildErr=0 Then
 								If bm=0 Then
 									nHideOut=15
 								EndIf
-								CreateThread(NULL,NULL,Cast(Any Ptr,@MakeThreadProc),Cast(ZString Ptr,@"FbTemp.exe"),NORMAL_PRIORITY_CLASS,@x)
+								szQuickRun=Left(sFile,Len(sFile)-3) & "exe"
+								CreateThread(NULL,NULL,Cast(Any Ptr,@MakeThreadProc),0,NORMAL_PRIORITY_CLASS,@x)
 							Else
 								fQR=TRUE
 								nHideOut=0

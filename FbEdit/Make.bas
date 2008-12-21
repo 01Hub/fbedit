@@ -90,7 +90,9 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 	Dim startupinfo As STARTUPINFO
 	Dim lret As Integer
 	Dim i As Integer
+	Dim buff As ZString*MAX_PATH
 
+	buff=szQuickRun
 	sat.nLength=SizeOf(SECURITY_ATTRIBUTES)
 	sat.lpSecurityDescriptor=NULL
 	sat.bInheritHandle=TRUE
@@ -106,7 +108,7 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 		' Create process
 		startupinfo.dwFlags=STARTF_USESHOWWINDOW
 		startupinfo.wShowWindow=SW_SHOWNORMAL
-		If CreateProcess(NULL,Param,NULL,NULL,FALSE,NULL,NULL,NULL,@startupinfo,@makeinf.pInfo)=0 Then
+		If CreateProcess(NULL,@buff,NULL,NULL,FALSE,NULL,NULL,NULL,@startupinfo,@makeinf.pInfo)=0 Then
 			' CreateProcess failed
 			CloseHandle(makeinf.hrd)
 			CloseHandle(makeinf.hwr)
@@ -121,7 +123,7 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 		EndIf
 	EndIf
 	Do While i<1000
-		lret=DeleteFile(StrPtr("FbTemp.exe"))
+		lret=DeleteFile(@buff)
 		If lret Then
 			Exit Do
 		EndIf
@@ -129,7 +131,7 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 	Loop
 	If lret=0 Then
 		lret=GetLastError
-		MessageBox(ah.hwnd,"Deleting FbTemp.exe failed! Error: " & Str(lret),"Quick run",MB_OK Or MB_ICONERROR)
+		MessageBox(ah.hwnd,"Deleting " & buff & " failed! Error: " & Str(lret),"Quick run",MB_OK Or MB_ICONERROR)
 	EndIf
 	Return makeinf.uExit
 
