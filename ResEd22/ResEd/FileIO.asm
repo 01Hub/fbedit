@@ -153,7 +153,7 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 
 ReadProjectFile endp
 
-OpenInclude proc
+OpenInclude proc lpProject:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
@@ -177,7 +177,10 @@ OpenInclude proc
 	mov		ofn.nMaxFile,sizeof buffer
 	mov		ofn.lpstrDefExt,NULL
 	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-	mov		ofn.lpstrTitle,offset szIncludeTitle
+	invoke lstrcpy,addr buffer1,offset szIncludeTitle
+	invoke lstrcat,addr buffer1,lpProject
+	lea		eax,buffer1
+	mov		ofn.lpstrTitle,eax
 	;Show the Open dialog
 	invoke GetOpenFileName,addr ofn
 	.if eax
@@ -197,7 +200,7 @@ GetInclude proc lpProject:DWORD
 			dec		eax
 		.endw
 		mov		byte ptr ProjectPath[eax],0
-		invoke OpenInclude
+		invoke OpenInclude,lpProject
 		.if eax
 			invoke ReadProjectFile,lpProject,FALSE
 		.endif

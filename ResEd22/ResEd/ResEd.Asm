@@ -1136,8 +1136,10 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	;Get command line filename
 	mov		eax,CommandLine
 	.if byte ptr [eax]
+		.while byte ptr [eax]==VK_SPACE
+			inc		eax
+		.endw
 		invoke GetInclude,eax
-		;invoke ReadProjectFile,eax,FALSE
 	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0

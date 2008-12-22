@@ -181,7 +181,7 @@ szSaveFileFail		db 'Cannot save the file',0Dh,0
 szMemFail			db 'Memory allocation failed!',0Dh,0
 szProjectTitle		db 'Open project file',0
 szProjectTextTitle	db 'Open project as text',0
-szIncludeTitle		db 'Open defines file',0
+szIncludeTitle		db 'Open defines file for: ',0
 szClearMRU			db 'Clear MRU projects list?',0
 
 szNewFile			db '(Untitled).rc',0
