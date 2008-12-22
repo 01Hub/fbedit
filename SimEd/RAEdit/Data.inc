@@ -172,6 +172,7 @@ EDIT struct
 	fLock		dd ?
 	nCursorWordType	dd ?
 	fstyleex	dd ?
+	funicode	dd ?
 EDIT ends
 
 IDB_RAEDITBUTTON		equ 100

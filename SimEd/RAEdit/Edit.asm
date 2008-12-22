@@ -1,7 +1,7 @@
 
 .code
 
-InsertLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
+InsertNewLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 
 	mov		ebx,hMem
 	mov		eax,nLine
@@ -38,7 +38,35 @@ InsertLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 	mov		[ebx].EDIT.rpChars,esi
 	ret
 
-InsertLine endp
+InsertNewLine endp
+
+AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
+
+	mov		ebx,hMem
+	invoke ExpandLineMem,ebx
+	invoke ExpandCharMem,ebx,0
+	mov		esi,[ebx].EDIT.hLine
+	add		esi,[ebx].EDIT.rpLineFree
+	add		[ebx].EDIT.rpLineFree,sizeof LINE
+	mov		eax,[ebx].EDIT.rpCharsFree
+	mov		[esi].LINE.rpChars,eax
+	mov		edi,[ebx].EDIT.hChars
+	add		edi,eax
+	mov		eax,nSize
+	mov		[edi].CHARS.len,eax
+	mov		[edi].CHARS.max,eax
+	mov		[edi].CHARS.state,0
+	mov		[edi].CHARS.bmid,0
+	mov		[edi].CHARS.errid,0
+	add		eax,sizeof CHARS
+	add		[ebx].EDIT.rpCharsFree,eax
+	mov		ecx,nSize
+	mov		esi,lpLine
+	lea		edi,[edi+sizeof CHARS]
+	rep movsb
+	ret
+
+AddNewLine endp
 
 ExpandLine proc uses ebx esi edi,hMem:DWORD,nLen:DWORD
 
@@ -185,7 +213,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 		mov		ecx,MAXFREE
 		add		ecx,[esi].CHARS.len
 		sub		ecx,edi
-		invoke InsertLine,ebx,eax,ecx
+		invoke InsertNewLine,ebx,eax,ecx
 		mov		ecx,edi
 		xor		edx,edx
 		mov		edi,[ebx].EDIT.rpChars
