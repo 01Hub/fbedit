@@ -709,6 +709,9 @@ ProjectZip=FbEdit prosjekt zipper
 10000=Prosjekt Zipper
 ;--------------------------------------------------------------------------
 [FbDebug]
+1005=Ikke debug
+1006=Debug
+1=OK
 10010=&Debug
 10000=Togggle &Bruddpunktt\tCtrl+T
 10001=&Blank Bruddpunkt\tShift+Ctrl+T
@@ -717,4 +720,5 @@ ProjectZip=FbEdit prosjekt zipper
 10004=Stepp &Inn\tF7
 10005=Stepp &Over\tCtrl+F7
 10006=Kjør &Til Markør\tShift+Ctrl+F7
+10007=&Ikke debug
 ;--------------------------------------------------------------------------

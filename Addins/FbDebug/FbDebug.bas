@@ -1082,6 +1082,7 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hWin,"FbDebug")
 			If lstrlen(@lpData->ProjectFile) Then
 				nInx=0
 				While nInx<100

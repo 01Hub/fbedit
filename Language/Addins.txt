@@ -139,6 +139,10 @@ ProjectZip=FbEdit project zipper
 10000=Project Zipper
 ;--------------------------------------------------------------------------
 [FbDebug]
+FbDebug=Debug
+1005=Do not debug
+1006=Debug
+1=OK
 10010=&Debug
 10000=Togggle &Breakpoint\tCtrl+T
 10001=&Clear Breakpoints\tShift+Ctrl+T
@@ -147,3 +151,4 @@ ProjectZip=FbEdit project zipper
 10004=Step &Into\tF7
 10005=Step &Over\tCtrl+F7
 10006=Run &To Caret\tShift+Ctrl+F7
+10007=Do not debug
