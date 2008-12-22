@@ -44,14 +44,17 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 
 	mov		ebx,hMem
 	invoke ExpandLineMem,ebx
-	invoke ExpandCharMem,ebx,0
+	invoke ExpandCharMem,ebx,nSize
+	mov		edx,[ebx].EDIT.rpCharsFree
 	mov		esi,[ebx].EDIT.hLine
-	add		esi,[ebx].EDIT.rpLineFree
+	mov		eax,[ebx].EDIT.rpLineFree
+	lea		esi,[esi+eax-sizeof LINE]
+	mov		eax,[esi].LINE.rpChars
+	mov		[esi+sizeof LINE].LINE.rpChars,eax
 	add		[ebx].EDIT.rpLineFree,sizeof LINE
-	mov		eax,[ebx].EDIT.rpCharsFree
-	mov		[esi].LINE.rpChars,eax
+	mov		[esi].LINE.rpChars,edx
 	mov		edi,[ebx].EDIT.hChars
-	add		edi,eax
+	add		edi,edx
 	mov		eax,nSize
 	mov		[edi].CHARS.len,eax
 	mov		[edi].CHARS.max,eax

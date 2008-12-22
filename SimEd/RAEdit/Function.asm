@@ -1610,19 +1610,12 @@ GetLineEnd proc uses ebx esi,hMem:DWORD,cp:DWORD
 
 GetLineEnd endp
 
-ConvertLineFromUnicode proc uses edx ebx esi edi,lpBuffIn:DWORD,nBytesIn:DWORD,lpBuffOut:DWORD
-
-	invoke WideCharToMultiByte,CP_ACP,0,lpBuffIn,nBytesIn,lpBuffOut,512,NULL,NULL
-	ret
-
-ConvertLineFromUnicode endp
-
 StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	dwRead:DWORD
 	LOCAL	hCMem:DWORD
 	LOCAL	nreminding:DWORD
 	LOCAL	fUnicode:DWORD
-	LOCAL	nBytesIn:DWORD
+	LOCAL	fNewLine:DWORD
 
 	mov		ebx,hMem
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*2
@@ -1633,6 +1626,7 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	mov		fUnicode,edi
 	mov		esi,hCMem
 	add		esi,MAXSTREAM
+	mov		fNewLine,TRUE
   @@:
 	call	ReadChars
 	or		eax,eax
@@ -1642,7 +1636,6 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 		movzx	eax,word ptr [esi+ecx]
 		.if eax==0FEFFh
 			;Unicode
-			mov		[ebx].EDIT.rpLineFree,0
 			mov		fUnicode,2
 			mov		[ebx].EDIT.funicode,TRUE
 			mov		ecx,2
@@ -1656,17 +1649,12 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 		add		dwRead,eax
 		call	InsertChars
 	.elseif nreminding
-;		mov		eax,nreminding
-;		mov		dwRead,eax
-;		xor		ecx,ecx
-;		xor		eax,eax
-;		mov		nBytesIn,ecx
-;		.while byte ptr [esi+ecx]!=0Ah && ecx<dwRead
-;			add		ecx,fUnicode
-;			inc		nBytesIn
-;		.endw
-;		xor		ecx,ecx
-;		call	InsertTheLine
+		mov		eax,nreminding
+		mov		dwRead,eax
+		call GetLineLen
+		xor		eax,eax
+		mov		fNewLine,eax
+		call	InsertTheLine
 		mov		dwRead,0
 	.endif
 	mov		eax,dwRead
@@ -1683,7 +1671,7 @@ ReadChars:
 	mov		[edx].EDITSTREAM.dwError,0
 	lea		eax,dwRead
 	push	eax
-	mov		eax,4096;MAXSTREAM
+	mov		eax,MAXSTREAM
 	sub		eax,nreminding
 	push	eax
 	mov		eax,esi
@@ -1718,23 +1706,48 @@ GetLineLen:
 	retn
 
 InsertTheLine:
+	push	ecx
 	.if fUnicode==2
-		push	esi
-		push	ecx
-		mov		eax,nBytesIn
-		invoke ConvertLineFromUnicode,addr [esi+ecx],eax,hCMem
-		xor		ecx,ecx
-		mov		esi,hCMem
-		invoke AddNewLine,ebx,hCMem,eax
-		pop		ecx
-		pop		esi
-		add		ecx,nBytesIn
-		add		ecx,nBytesIn
+		invoke WideCharToMultiByte,CP_ACP,0,addr [esi+eax],edx,hCMem,MAXSTREAM,NULL,NULL
+		.if fNewLine
+			add		edi,eax
+			invoke AddNewLine,ebx,hCMem,eax
+		.else
+			mov		edx,eax
+			mov		esi,hCMem
+			xor		ecx,ecx
+			.while edx
+				push	ecx
+				push	edx
+				movzx	eax,byte ptr [esi+ecx]
+				invoke InsertChar,ebx,edi,eax
+				pop		edx
+				pop		ecx
+				inc		edi
+				dec		edx
+				inc		ecx
+			.endw
+		.endif
 	.else
-		push	ecx
-		invoke AddNewLine,ebx,addr [esi+eax],edx
-		pop		ecx
+		.if fNewLine
+			add		edi,edx
+			invoke AddNewLine,ebx,addr [esi+eax],edx
+		.else
+			mov		ecx,eax
+			.while edx
+				push	ecx
+				push	edx
+				movzx	eax,byte ptr [esi+ecx]
+				invoke InsertChar,ebx,edi,eax
+				pop		edx
+				pop		ecx
+				inc		edi
+				dec		edx
+				inc		ecx
+			.endw
+		.endif
 	.endif
+	pop		ecx
 	retn
 
 InsertChars:
@@ -1745,10 +1758,10 @@ InsertChars:
 		call	InsertTheLine
 		jmp		InsertChars
 	.else
+		pop		ecx
 		mov		eax,dwRead
 		sub		eax,ecx
 		mov		nreminding,eax
-		push	ecx
 		push	esi
 		push	edi
 		mov		edi,esi
@@ -1757,9 +1770,6 @@ InsertChars:
 		rep movsb
 		pop		edi
 		pop		esi
-		pop		ecx
-		pop		eax
-		call	InsertTheLine
 	.endif
 	retn
 
