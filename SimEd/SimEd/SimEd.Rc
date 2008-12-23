@@ -1,5 +1,6 @@
 #define IDM_HELPF1 500
 #include "Res/SimEdMnu.rc"
+#include "Res/SaveTemplateDlg.rc"
 #include "Res/SimEdDlg.rc"
 #include "Res/FindDlg.rc"
 #include "Res/KeyWordsDlg.rc"

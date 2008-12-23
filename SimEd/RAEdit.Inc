@@ -146,6 +146,8 @@ REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
 REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
+REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
+REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

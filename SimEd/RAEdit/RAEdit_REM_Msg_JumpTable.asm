@@ -1303,6 +1303,15 @@
 			mov		[ebx].EDIT.fstyleex,eax
 			invoke InvalidateRect,hWin,NULL,TRUE
 			ret
+		align 4
+		_REM_GETUNICODE:
+			mov		eax,[ebx].EDIT.funicode
+			ret
+		align 4
+		_REM_SETUNICODE:
+			mov		eax,wParam
+			mov		[ebx].EDIT.funicode,eax
+			ret
 
 .data
 
@@ -1392,6 +1401,8 @@ _REM_BASE \
 	dd _REM_CHARTABINIT			;equ REM_BASE+81
 	dd _REM_LINEREDTEXT			;equ REM_BASE+82
 	dd 	_REM_SETSTYLEEX			;equ REM_BASE+83
+	dd _REM_GETUNICODE			;equ REM_BASE+84
+	dd _REM_SETUNICODE			;equ REM_BASE+85
 
 .code
 align 4

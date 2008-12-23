@@ -55,7 +55,7 @@ DoToolBar proc hInst:DWORD,hToolBar:HWND
 DoToolBar endp
 
 SetWinCaption proc lpFileName:DWORD
-	LOCAL	buffer[sizeof szAppName+3+MAX_PATH]:BYTE
+	LOCAL	buffer[sizeof szAppName+3+MAX_PATH+16]:BYTE
 	LOCAL	buffer1[4]:BYTE
 
 	;Add filename to windows caption
@@ -64,6 +64,10 @@ SetWinCaption proc lpFileName:DWORD
 	mov		dword ptr buffer1,eax
 	invoke lstrcat,addr buffer,addr buffer1
 	invoke lstrcat,addr buffer,lpFileName
+	invoke SendMessage,hREd,REM_GETUNICODE,0,0
+	.if eax
+	invoke lstrcat,addr buffer,addr szUnicode
+	.endif
 	invoke SetWindowText,hWnd,addr buffer
 	ret
 

@@ -200,6 +200,7 @@ ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',
 						db 'Text Files (*.txt)',0,'*.txt',0
 						db 'All Files (*.*)',0,'*.*',0,0
 RegionSearched			db	'Region searched.',0
+szUnicode				db ' [Unicode]',0
 
 .data
 
@@ -366,4 +367,5 @@ pd						PRINTDLG <?>
 prnfntht				dd ?
 rcPrnPage				RECT <>
 rcPrn					RECT <>
+fUnicode				dd ?
 
