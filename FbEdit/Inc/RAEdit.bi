@@ -141,6 +141,8 @@
 #Define REM_CHARTABINIT						REM_BASE+81		' wParam=0, lParam=0
 #Define REM_LINEREDTEXT						REM_BASE+82		' wParam=nLine, lParam=TRUE/FALSE
 #Define REM_SETSTYLEEX						REM_BASE+83		' wParam=nStyleEx, lParam=0
+#Define REM_GETUNICODE						REM_BASE+84		' wParam=0, lParam=0
+#Define REM_SETUNICODE						REM_BASE+85		' wParam=TRUE/FALSE, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

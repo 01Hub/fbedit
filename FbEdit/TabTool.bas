@@ -411,7 +411,7 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 	ofn.lpstrFile=Cast(ZString Ptr,hMem)
 	ofn.nMaxFile=32*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
+	ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,Cast(ZString Ptr,hMem))
 		i=Len(pth)+1
@@ -435,6 +435,27 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 
 End Sub
 
+#Define IDD_DLGSAVEUNICODE		1400
+#Define IDC_CHKUNICODE			1401
+
+Function UnicodeProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam as WPARAM,ByVal lParam as LPARAM) As Integer
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			If fUnicode Then
+				CheckDlgButton(hWin,IDC_CHKUNICODE,BST_CHECKED)
+			EndIf
+			'
+		Case WM_COMMAND
+			If HiWord(wParam)=BN_CLICKED Then
+				fUnicode=IsDlgButtonChecked(hWin,IDC_CHKUNICODE)
+			EndIf
+			'
+	End Select
+	Return FALSE
+
+End Function
+
 Function SaveFileAs(ByVal hWin As HWND) As Boolean
 	Dim ofn As OPENFILENAME
 
@@ -450,9 +471,13 @@ Function SaveFileAs(ByVal hWin As HWND) As Boolean
 	ofn.nMaxFile=260
 	ofn.lpstrDefExt=StrPtr("bas")
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
-	ofn.Flags=OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_OVERWRITEPROMPT
+	ofn.Flags=OFN_EXPLORER Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_OVERWRITEPROMPT Or OFN_ENABLETEMPLATE Or OFN_ENABLEHOOK
+	ofn.lpTemplateName=Cast(ZString Ptr,IDD_DLGSAVEUNICODE)
+	ofn.lpfnHook=Cast(Any Ptr,@UnicodeProc)
+	fUnicode=SendMessage(ah.hred,REM_GETUNICODE,0,0)
 	If GetSaveFileName(@ofn) Then
 		ad.filename=buff
+		SendMessage(ah.hred,REM_SETUNICODE,fUnicode,0)
 		WriteTheFile(ah.hred,ad.filename)
 		UpdateTab
 		SetWinCaption
@@ -601,7 +626,7 @@ Function OpenAProject(ByVal hWin As HWND) As Boolean
 	ofn.lpstrFilter=StrPtr(PRJFilterString)
 	s=GetInternalString(IS_OPEN_PROJECT)
 	ofn.lpstrTitle=@s
-	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_EXPLORER
+	ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_EXPLORER
 	If GetOpenFileName(@ofn) Then
 		If fProject Then
 			If CloseProject=FALSE Then

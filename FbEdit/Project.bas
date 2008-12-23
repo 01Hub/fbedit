@@ -800,7 +800,7 @@ Sub AddNewProjectFile()
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
 	sFile=GetInternalString(IS_ADD_NEW_FILE)
 	ofn.lpstrTitle=@sFile
-	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
+	ofn.Flags=OFN_EXPLORER Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	If GetSaveFileName(@ofn) Then
 		sFile=buff
 		AddAProjectFile(sFile,FALSE,TRUE)
@@ -826,7 +826,7 @@ Sub AddExistingProjectFile()
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
 	s=GetInternalString(IS_ADD_EXISTING_FILE)
 	ofn.lpstrTitle=@s
-	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
+	ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
 		i=Len(pth)+1
@@ -862,7 +862,7 @@ Sub AddNewProjectModule()
 	ofn.lpstrFilter=StrPtr(MODFilterString)
 	sFile=GetInternalString(IS_ADD_NEW_MODULE)
 	ofn.lpstrTitle=@sFile
-	ofn.Flags=OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
+	ofn.Flags=OFN_EXPLORER Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_OVERWRITEPROMPT Or OFN_EXPLORER
 	ofn.lpstrDefExt=StrPtr("bas")
 	If GetSaveFileName(@ofn) Then
 		sFile=buff
@@ -889,7 +889,7 @@ Sub AddExistingProjectModule()
 	ofn.lpstrFilter=StrPtr(MODFilterString)
 	s=GetInternalString(IS_ADD_EXISTING_MODULE)
 	ofn.lpstrTitle=@s
-	ofn.Flags=OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
+	ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_PATHMUSTEXIST Or OFN_HIDEREADONLY Or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,@buff)
 		i=Len(pth)+1

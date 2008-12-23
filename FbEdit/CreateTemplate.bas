@@ -170,7 +170,7 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 					ofn.lpstrFile=StrPtr(buff)
 					ofn.nMaxFile=260
 					ofn.lpstrFilter=StrPtr(ALLFilterString)
-					ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
+					ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
 					If GetOpenFileName(@ofn) Then
 						buff=RemoveProjectPath(buff)
 						SendDlgItemMessage(hWin,IDC_LSTTPLFILES,LB_ADDSTRING,0,Cast(LPARAM,@buff))
@@ -195,7 +195,7 @@ Function CreateTemplateDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wPara
 					buff=""
 					ofn.lpstrFile=StrPtr(buff)
 					ofn.nMaxFile=260
-					ofn.Flags=OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_OVERWRITEPROMPT
+					ofn.Flags=OFN_EXPLORER Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_OVERWRITEPROMPT
 					If GetSaveFileName(@ofn) Then
 						SetDlgItemText(hWin,IDC_EDTTPLFILENAME,@buff)
 					EndIf

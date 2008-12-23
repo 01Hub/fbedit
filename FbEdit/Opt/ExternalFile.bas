@@ -96,7 +96,7 @@ Function ExternalFileDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPara
 							ofn.lpstrFile=@buff
 							GetDlgItemText(hWin,IDC_EDTCOMMAND,@buff,SizeOf(buff))
 							ofn.nMaxFile=260
-							ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
+							ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
 							If GetOpenFileName(@ofn) Then
 								SetDlgItemText(hWin,IDC_EDTCOMMAND,@buff)
 							EndIf

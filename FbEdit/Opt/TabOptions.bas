@@ -154,7 +154,7 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 					ofn.lpstrFile=@buff
 					lstrcpy(@buff,Cast(ZString Ptr,lpGRIDNOTIFY->lpdata))
 					ofn.nMaxFile=MAX_PATH
-					ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
+					ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
 					' Show the Open dialog
 					If GetOpenFileName(@ofn) Then
 						lstrcpy(Cast(ZString Ptr,lpGRIDNOTIFY->lpdata),@buff)

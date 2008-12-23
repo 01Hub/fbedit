@@ -48,25 +48,38 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 	mov		edx,[ebx].EDIT.rpCharsFree
 	mov		esi,[ebx].EDIT.hLine
 	mov		eax,[ebx].EDIT.rpLineFree
+;	mov		[ebx].EDIT.rpLine,eax
 	lea		esi,[esi+eax-sizeof LINE]
 	mov		eax,[esi].LINE.rpChars
 	mov		[esi+sizeof LINE].LINE.rpChars,eax
 	add		[ebx].EDIT.rpLineFree,sizeof LINE
 	mov		[esi].LINE.rpChars,edx
+;	mov		[ebx].EDIT.rpChars,edx
 	mov		edi,[ebx].EDIT.hChars
 	add		edi,edx
 	mov		eax,nSize
 	mov		[edi].CHARS.len,eax
+	add		eax,sizeof CHARS
 	mov		[edi].CHARS.max,eax
 	mov		[edi].CHARS.state,0
 	mov		[edi].CHARS.bmid,0
 	mov		[edi].CHARS.errid,0
-	add		eax,sizeof CHARS
 	add		[ebx].EDIT.rpCharsFree,eax
 	mov		ecx,nSize
 	mov		esi,lpLine
 	lea		edi,[edi+sizeof CHARS]
 	rep movsb
+
+;	mov		esi,[ebx].EDIT.hLine
+;	mov		edx,[ebx].EDIT.rpLineFree
+;	mov		eax,[ebx].EDIT.rpCharsFree
+;	mov		[esi+edx].LINE.rpChars,eax
+;	mov		esi,[ebx].EDIT.hChars
+;	mov		[esi+eax].CHARS.max,MAXFREE
+;	mov		[esi+eax].CHARS.len,0
+;	mov		[esi+eax].CHARS.state,0
+;	mov		[esi+eax].CHARS.bmid,0
+;	mov		[esi+eax].CHARS.errid,0
 	ret
 
 AddNewLine endp

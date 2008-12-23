@@ -352,7 +352,7 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 							ofn.lpstrFile=@buff
 							GetDlgItemText(hWin,IDC_EDTMECMND,@buff,256)
 							ofn.nMaxFile=256
-							ofn.Flags=OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
+							ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST
 							If GetOpenFileName(@ofn) Then
 								SetDlgItemText(hWin,IDC_EDTMECMND,@buff)
 							EndIf
