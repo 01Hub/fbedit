@@ -84,7 +84,7 @@ Dim Shared W(WATCHMAX) As WATCH
 
 Dim Shared mtid As Integer
 Dim Shared mpid As Integer
-Dim Shared NoDebug(99) As String
+Dim Shared NoDebug(299) As String
 Dim Shared fToolTip As Integer
 Dim Shared mainthread As HANDLE
 Dim Shared thisthreadcontext As HANDLE

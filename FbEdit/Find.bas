@@ -244,6 +244,7 @@ Function FindInFile(hWin As HWND,frType As Integer) As Integer
 		EndIf
 	Else
 		If f.fdir=0 Then
+			' All
 			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
 				f.ft.chrg.cpMin=f.chrgrange.cpMin
 				f.ft.chrg.cpMax=f.chrginit.cpMin-1
@@ -589,7 +590,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 							If f.fres<>-1 Then
 								f.nreplacecount+=1
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(Integer,@f.replacebuff))
-								'SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 								If f.fdir=2 Then
 									' Up
 									f.ft.chrg.cpMin=f.ft.chrg.cpMin-1
@@ -600,6 +600,10 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 									f.ft.chrg.cpMax+=lret
 									'update real end
 									f.chrgrange.cpMax+=lret
+									If f.chrginit.cpMin<>0 And f.chrginit.cpMin>f.ft.chrg.cpMin Then
+										f.chrginit.cpMin+=lret
+										f.chrginit.cpMax+=lret
+									EndIf
 								EndIf
 							EndIf
 							Find(hWin,f.fr)

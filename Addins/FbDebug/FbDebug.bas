@@ -1063,7 +1063,7 @@ Function IsNoDebug(ByVal hWin As HWND, ByVal lpsz As ZString Ptr) As Boolean
 	Dim buff As ZString*260
 	
 	nInx=0
-	While nInx<100
+	While nInx<300
 		lret=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
 		If lret=LB_ERR Then
 			Return FALSE
@@ -1085,7 +1085,7 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 			lpFunctions->TranslateAddinDialog(hWin,"FbDebug")
 			If lstrlen(@lpData->ProjectFile) Then
 				nInx=0
-				While nInx<100
+				While nInx<300
 					GetPrivateProfileString("NoDebug",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
 					If lstrlen(buff) Then
 						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
@@ -1118,7 +1118,7 @@ Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPA
 					If lstrlen(@lpData->ProjectFile) Then
 						WritePrivateProfileSection("NoDebug",@szNULL,@lpData->ProjectFile)
 						nInx=0
-						While nInx<100
+						While nInx<300
 							id=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
 							If id=LB_ERR Then
 								Exit While

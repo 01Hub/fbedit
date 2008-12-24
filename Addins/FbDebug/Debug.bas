@@ -406,7 +406,7 @@ Sub ParseDebugInfo()
 						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 						proc(procnb).nu=recupstab.nline
 						bNoDebug=FALSE
-						For i=0 To 99
+						For i=0 To 299
 							If NoDebug(i)=UCase(proc(procnb).nm) Then
 								bNoDebug=TRUE
 								Exit For
@@ -950,7 +950,7 @@ Sub ClearVars()
 	hLnDebug=0
 	linead=-1
 	i=0
-	While i<100
+	While i<300
 		NoDebug(i)=""
 		i+=1
 	Wend
@@ -1003,7 +1003,7 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	ClearVars
 	If lstrlen(@lpData->ProjectFile) Then
 		i=0
-		While i<100
+		While i<300
 			GetPrivateProfileString("NoDebug",Str(i),@szNULL,@buffer,SizeOf(buffer),@lpData->ProjectFile)
 			If lstrlen(buffer) Then
 				NoDebug(i)=UCase(buffer)
