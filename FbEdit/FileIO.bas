@@ -17,6 +17,7 @@ Function GetFileMem(ByVal sFile As String) As HGLOBAL
 	Dim i As Integer
 	Dim nlen As Integer
 	Dim hMem As HGLOBAL
+	Dim hMem1 As HGLOBAL
 	Dim hFile As HANDLE
 	Dim bread As Integer
 	Dim hEdit As HWND
@@ -43,9 +44,16 @@ Function GetFileMem(ByVal sFile As String) As HGLOBAL
 		hFile=CreateFile(@sFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 		If hFile<>INVALID_HANDLE_VALUE Then
 			nlen=GetFileSize(hFile,NULL)+1
-			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nlen+1)
+			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nlen+2)
 			ReadFile(hFile,hMem,nlen,@bread,NULL)
 			CloseHandle(hFile)
+			If Peek(WORD,hMem)=&HFEFF Then
+				' Unicode
+				hMem1=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nlen+1)
+				WideCharToMultiByte(CP_ACP,0,hMem,-1,hMem1,nlen,NULL,NULL)
+				GlobalFree(hMem)
+				Return hMem1
+			EndIf
 		EndIf
 	EndIf
 	Return hMem
@@ -55,6 +63,7 @@ End Function
 Function ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String) As Integer
 	Dim nlen As Integer
 	Dim hMem As HGLOBAL
+	Dim hMem1 As HGLOBAL
 	Dim fParse As Boolean
 	Dim nInx As Integer
 	Dim hFile As HANDLE
@@ -84,6 +93,13 @@ Function ParseFile(ByVal hWin As HWND,ByVal hEdit As HWND,ByVal sFile As String)
 				hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nlen+1)
 				ReadFile(hFile,hMem,nlen,@bread,NULL)
 				CloseHandle(hFile)
+				If Peek(WORD,hMem)=&HFEFF Then
+					' Unicode
+					hMem1=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,nlen+1)
+					WideCharToMultiByte(CP_ACP,0,hMem,-1,hMem1,nlen,NULL,NULL)
+					GlobalFree(hMem)
+					hMem=hMem1
+				EndIf
 			EndIf
 		EndIf
 		If hMem Then

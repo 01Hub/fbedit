@@ -15,6 +15,7 @@
 #Define IDC_RBN_DOWN							2005
 #Define IDC_RBN_UP							2006
 ' Search
+#Define IDC_RBN_SELECTION					2505
 #Define IDC_RBN_PROCEDURE					2502
 #Define IDC_RBN_MODULE						2503
 #Define IDC_RBN_FILES						2504
@@ -80,10 +81,12 @@ Sub InitFind
 				f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
 				f.fnoproc=TRUE
 			EndIf
+			'
 		Case 1
 			' Current Module
 			f.chrgrange.cpMin=0
 			f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
+			'
 		Case 2
 			' All Open Files
 			f.chrgrange.cpMin=0
@@ -122,6 +125,7 @@ Sub InitFind
 			Wend
 			f.fpro=1
 			f.listoffiles=Mid(f.listoffiles,2)
+			'
 		Case 3
 			' All Project Files
 			f.listoffiles=","
@@ -183,6 +187,11 @@ Sub InitFind
 			f.listoffiles=Mid(f.listoffiles,2)
 			f.ffileno=1
 			f.fpro=1
+			'
+		Case 4
+			' Current selection
+			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.chrgrange))
+			'
 	End Select
 	InitFindDir
 	f.ft.lpstrText=@f.findbuff
@@ -243,7 +252,7 @@ Function FindInFile(hWin As HWND,frType As Integer) As Integer
 			f.ft.chrg.cpMin=f.ft.chrgText.cpMax
 		EndIf
 	Else
-		If f.fdir=0 Then
+		If f.fdir=0 And f.fsearch<>4 Then
 			' All
 			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
 				f.ft.chrg.cpMin=f.chrgrange.cpMin
@@ -302,9 +311,11 @@ TryAgain:
 			Else
 				f.fres=FindInFile(ah.hred,frType)
 			EndIf
+			'
 		Case 1
 			' Current Module
 			f.fres=FindInFile(ah.hred,frType)
+			'
 		Case 2
 			' All Open Files
 TheNextTab:
@@ -339,6 +350,7 @@ TheNextTab:
 					GoTo TheNextTab
 				EndIf
 			EndIf
+			'
 		Case 3
 			' All Project Files
 TheNextFile:
@@ -378,6 +390,10 @@ TheNextFile:
 					GoTo TheNextFile
 				EndIf
 			EndIf
+			'
+		Case 4
+			f.fres=FindInFile(ah.hred,frType)
+			'
 	End Select
 	If f.fres<>-1 Then
 		If f.fskipcommentline Then
@@ -520,6 +536,7 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			End Select
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@f.ft.chrg))
+			EnableWindow(GetDlgItem(hWin,IDC_RBN_SELECTION),f.ft.chrg.cpMin<>f.ft.chrg.cpMax)
 			CheckDlgButton(hWin,IDC_CHK_SKIPCOMMENTS,IIf(f.fskipcommentline,BST_CHECKED,BST_UNCHECKED))
 			CheckDlgButton(hWin,IDC_CHK_LOGFIND,IIf(f.flogfind,BST_CHECKED,BST_UNCHECKED))
 			EnableWindow(GetDlgItem(hWin,IDC_BTN_FINDALL),f.flogfind)
@@ -533,6 +550,9 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 					id=IDC_RBN_FILES
 				Case 3
 					id=IDC_RBN_PROJECTFILES
+				Case 4
+					id=IDC_RBN_MODULE
+					f.fsearch=1
 			End Select
 			CheckDlgButton(hWin,id,BST_CHECKED)
 			SetWindowPos(hWin,0,wpos.ptfind.x,wpos.ptfind.y,0,0,SWP_NOSIZE)
@@ -669,14 +689,21 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 					Case IDC_RBN_PROCEDURE
 						f.fsearch=0
 						ResetFind
+						'
 					Case IDC_RBN_MODULE
 						f.fsearch=1
 						ResetFind
+						'
 					Case IDC_RBN_FILES
 						f.fsearch=2
 						ResetFind
+						'
 					Case IDC_RBN_PROJECTFILES
 						f.fsearch=3
+						ResetFind
+						'
+					Case IDC_RBN_SELECTION
+						f.fsearch=4
 						ResetFind
 						'
 				End Select

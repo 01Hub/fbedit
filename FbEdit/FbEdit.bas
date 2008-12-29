@@ -838,7 +838,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								Else
 									SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 								EndIf
-								If Len(buff) Then
+								If Len(buff)>0 And InStr(buff,CR)=0 Then
 									f.findbuff=buff
 								EndIf
 								If findvisible Then

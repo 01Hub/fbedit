@@ -704,6 +704,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim tp As Integer
 	Dim lz As Integer
 	Dim isinp As ISINPROC
+	Dim buffer As ZString*256
 
 	Select Case uMsg
 		Case WM_CHAR
@@ -1069,6 +1070,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					If edtopt.autoblock Then
 						' Block Complete
 						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+						trng.chrg.cpMin=chrg.cpMin
+						trng.chrg.cpMax=chrg.cpMin+255
+						trng.lpstrText=@buffer
+						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+						buffer=Trim(buffer)
 						ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
 						If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
 							wp=0
@@ -1110,7 +1116,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										lz=lz+1
 									Wend
 									' Insert the text
-									buff=Chr(VK_RETURN) & buff & szEn(wp)
+									buff=CR & buff & szEn(wp)
+									If Asc(buffer)<>13 Then
+										buff &=CR
+									EndIf
 									If edtopt.autocase=2 Then
 										buff=LCase(buff)
 									ElseIf edtopt.autocase=3 Then
