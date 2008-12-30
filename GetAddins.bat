@@ -40,4 +40,7 @@ COPY Addins\QuickEval\QuickEval.txt \FbEdit\Addins\HELP
 COPY Addins\FbDebug\FbDebug.dll \FbEdit\Addins
 COPY Addins\FbDebug\FbDebug.txt \FbEdit\Addins\HELP
 
+COPY Addins\HelpAddin\HelpAddin.dll \FbEdit\Addins
+COPY Addins\HelpAddin\HelpAddin.txt \FbEdit\Addins\HELP
+
 Pause

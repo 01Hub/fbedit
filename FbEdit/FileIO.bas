@@ -126,9 +126,10 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
 	lstrcpy(@szItem,lpFilename)
 	If FileType(szItem)=1 Then
-		SendMessage(hWin,REM_SETBLOCKS,0,0)
 		' Set comment block definition
 		SendMessage(hWin,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
+		' Set blocks
+		SendMessage(hWin,REM_SETBLOCKS,0,0)
 		UpdateAllTabs(3)
 		If fProject<>FALSE And Len(ad.resexport) Then
 			buff=MakeProjectFileName(ad.resexport)
@@ -157,7 +158,7 @@ Sub ReadTheFile(ByVal hWin As HWND,ByVal lpFile As ZString Ptr)
 			SendMessage(ah.hraresed,PRO_OPEN,Cast(Integer,lpFile),Cast(Integer,hMem))
 		Else
 			ReadTextFile(hWin,hFile,lpFile)
-			nLastLine=0
+			'nLastLine=0
 			CloseHandle(hFile)
 		EndIf
 	EndIf

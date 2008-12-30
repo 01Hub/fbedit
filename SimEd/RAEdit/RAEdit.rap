@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.173
-PV=1.2.0.173
+FV=1.2.0.179
+PV=1.2.0.179
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.173
+ProductVersion=1.2.0.179
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.173
+FileVersion=1.2.0.179
 CompanyName=
 
 [Resource]
@@ -105,10 +105,10 @@ CompanyName=
 1=0,0,0,0,96559
 16=0,0,810,411,30631
 22=0,0,0,0,4317
-23=0,0,0,0,33484
+23=0,0,0,0,14255
 24=0,0,0,0,713
 19=0,0,0,0,4765
-2=0,0,0,0,7226
+2=0,0,0,0,4516
 9=0,0,0,0,685
 10=0,0,0,0,33456
 11=0,0,0,0,5553
@@ -117,7 +117,7 @@ CompanyName=
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,1370
-26=0,0,0,0,9487
+26=0,0,0,0,22210
 21=0,0,0,0,175
 14=0,0,0,0,8065
 
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="InsertLine"
-2="DBCS"
-3="[ebx].EDIT.fntinfo.fntwt,"
-4="fntinfo.fntwt"
-5="<=[ebx].EDIT.rpLineFree"
-6="<[ebx].EDIT.rpLineFree"
-7="bracketcont"
-8="RAEditPaintNoBuff"
-9="createrect"
-10="strback"
+1="REM_SETCOMMENTBLOCKS"
+2="InsertLine"
+3="DBCS"
+4="[ebx].EDIT.fntinfo.fntwt,"
+5="fntinfo.fntwt"
+6="<=[ebx].EDIT.rpLineFree"
+7="<[ebx].EDIT.rpLineFree"
+8="bracketcont"
+9="RAEditPaintNoBuff"
+10="createrect"
 
 [AutoLoad]
 1=1
@@ -194,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

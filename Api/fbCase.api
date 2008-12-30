@@ -135,6 +135,7 @@ Else
 ElseIf
 Encoding
 End
+EndIf
 Enum
 Environ
 Eof

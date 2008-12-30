@@ -17,6 +17,9 @@ Lang=English (default), By FbEdit team
 ;--------------------------------------------------------------------------
 [1300]
 ;--------------------------------------------------------------------------
+[1400]
+1401=Save As Unicode
+;--------------------------------------------------------------------------
 [2000]
 2000=Options
 1=OK
@@ -66,6 +69,7 @@ Lang=English (default), By FbEdit team
 2006=Up
 2005=Down
 2501=Search
+2505=Current Selection
 2502=Current Procedure
 2503=Current Module
 2504=All Open Files

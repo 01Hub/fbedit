@@ -1054,7 +1054,9 @@ TestExpand endp
 
 SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	LOCAL	nLine:DWORD
-	LOCAL	fCmnt:DWORD
+;	LOCAL	fCmnt:DWORD
+	LOCAL	nCmnt:DWORD
+	LOCAL	fLn:DWORD
 	LOCAL	cmntchar:DWORD
 	LOCAL	fChanged:DWORD
 
@@ -1075,8 +1077,10 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		ebx,hMem
 		xor		ecx,ecx
 		mov		nLine,ecx
-		mov		fCmnt,ecx
+;		mov		fCmnt,ecx
+		mov		nCmnt,ecx
 		mov		fChanged,ecx
+		mov		fLn,ecx
 		mov		edi,[ebx].EDIT.rpLineFree
 		shr		edi,2
 		.while nLine<edi
@@ -1086,29 +1090,48 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			mov		esi,[esi]
 			add		esi,[ebx].EDIT.hChars
 			push	[esi].CHARS.state
-			.if fCmnt
-				.if fCmnt==1
-					and		[esi].CHARS.state,-1 xor STATE_COMMENT
-					inc		fCmnt
-				.else
-					or		[esi].CHARS.state,STATE_COMMENT
-				.endif
+			mov		edx,lpStart
+			call	IsLineStart
+			.if !eax
+				inc		nCmnt
+				inc		fLn
+			.endif
+			.if nCmnt>1 || (nCmnt && !fLn)
+				or		[esi].CHARS.state,STATE_COMMENT
+			.else
+				and		[esi].CHARS.state,-1 xor STATE_COMMENT
+			.endif
+			mov		fLn,0
+			.if nCmnt
 				mov		edx,lpEnd
 				call	IsLineEnd
 				.if !eax
-					mov		fCmnt,0
-				.endif
-				xor		ecx,ecx
-			.else
-				mov		edx,lpStart
-				call	IsLineStart
-				.if !eax
-					mov		fCmnt,1
-					dec		nLine
-				.else
-					and		[esi].CHARS.state,-1 xor STATE_COMMENT
+					dec		nCmnt
 				.endif
 			.endif
+;			.if fCmnt
+;				.if fCmnt==1
+;					and		[esi].CHARS.state,-1 xor STATE_COMMENT
+;					inc		fCmnt
+;				.else
+;					or		[esi].CHARS.state,STATE_COMMENT
+;				.endif
+;				mov		edx,lpEnd
+;				call	IsLineEnd
+;				.if !eax
+;					mov		fCmnt,0
+;				.endif
+;				xor		ecx,ecx
+;			.else
+;				mov		edx,lpStart
+;				call	IsLineStart
+;				.if !eax
+;					mov		fCmnt,1
+;					dec		nLine
+;				.else
+;					and		[esi].CHARS.state,-1 xor STATE_COMMENT
+;				.endif
+;			.endif
 			pop		eax
 			.if eax!=[esi].CHARS.state
 				inc		fChanged

@@ -2059,15 +2059,15 @@ Sub SetWinCaption()
 
 	If ah.hred Then
 		If fProject Then
-			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ProjectDescription & " - ["& ad.filename & "]")
+			SetWindowText(ah.hwnd,"FbEdit - " & ProjectDescription & " - ["& ad.filename & "]")
 		Else
-			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ad.filename)
+			SetWindowText(ah.hwnd,"FbEdit - " & ad.filename)
 		EndIf
 	Else
 		If fProject Then
-			SetWindowText(ah.hwnd,"FreeBASIC editor - " & ProjectDescription)
+			SetWindowText(ah.hwnd,"FbEdit - " & ProjectDescription)
 		Else
-			SetWindowText(ah.hwnd,"FreeBASIC editor")
+			SetWindowText(ah.hwnd,"FbEdit")
 		EndIf
 	EndIf
 

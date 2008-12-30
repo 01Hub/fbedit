@@ -1,24 +1,14 @@
 Whats new:
 ----------
-1.0.6.5c
-o Updated FbDebug addin.
-o Fixed bug with highlighting active line. Could leave several lines highlighted.
-o Fixed bug with parsing api files. Retutn type could loose first character.
-1.0.6.5b
-o Fixed bug where FbEdit would crash if a sub or function had too many parameters.
-o Fixed bug with flat tabs. Did not paint properly.
-o Enabled theming on systems with 64 bit processors.
-1.0.6.5
-o Dialog editor now uses dialog units instead of pixels.
-o Added option to select tools window font.
-o Added option to set back color of comments, strings, operators and numbers & hex.
-o Added Insert selected as #Include to Project menu.
-o Block mode accelerator has been changed from Ctrl+B to Shift+Ctrl+B
-o ppdk has updated the winConst.api file.
-o Fixed bug if a file in a project is on another drive.
-o Fixed bug with leaving 'dead' carets while editing.
-o Fixed bug with split screen editing.
-o Fixed bug with changing tab. Could jump to a new position.
-o Fixed bug with tooltips. '&' was intepreted as a prefix.
-o Fixed bug with code parser. Hex values in parameters was not parsed correctly.
-o Fixed bug with Find next / previous.
+1.0.6.6
+o FbEdit can now load and save unicode files. The Save As dialog has a checkbox and lets
+  you convert to / from unicode.
+  Note! There is a bug in the FreeBASIC compiler. Errors are not handled correctly when
+  compiling unicode files (no CrLf between errors).
+o Added Current Selection to Find / Replace dialog.
+o Added support for nested comment blocks.
+o ppdk updated fb keywords in ini file. Api files also updated.
+o Updated help addin to use new fb keywords.
+o Fixed bug where Quick run toolbar button was not shown.
+o Fixed a Find and Replace bug.
+o Fixed bug with ini file generation on clean install. Could result in loss of text colors.

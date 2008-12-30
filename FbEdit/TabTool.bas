@@ -384,9 +384,12 @@ Sub OpenTheFile(ByVal sFile As String,ByVal fHex As Boolean)
 			hTmp=CreateEdit(sFile)
 		EndIf
 		If hTmp Then
+			x=edtopt.hiliteline
+			edtopt.hiliteline=FALSE
 			ad.filename=sFile
 			AddTab(hTmp,ad.filename,fHex)
 			ReadTheFile(ah.hred,ad.filename)
+			edtopt.hiliteline=x
 			SetFileInfo(ah.hred,ad.filename)
 			SetFocus(ah.hred)
 			CallAddins(ah.hwnd,AIM_FILEOPENNEW,Cast(WPARAM,ah.hred),Cast(LPARAM,@ad.filename),HOOK_FILEOPENNEW)
