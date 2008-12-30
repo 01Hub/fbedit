@@ -82,6 +82,7 @@ Sub HideList()
 	flocallist=FALSE
 	fincludelist=FALSE
 	fincliblist=FALSE
+	fenumlist=FALSE
 
 End Sub
 
@@ -464,7 +465,6 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 		SendMessage(ah.hcc,CCM_CLEAR,0,0)
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 		If chrg.cpMin=chrg.cpMax Then
-'			SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 			lret=lret+Len(buff)+1
 			ln=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
@@ -498,10 +498,36 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 				SendMessage(ah.hcc,CCM_SORT,0,0)
 			EndIf
 			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-'			SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-'			UpdateWindow(ah.hcc)
 			Return TRUE
 		EndIf
+	EndIf
+	Return FALSE
+
+End Function
+
+Function UpdateEnumList(ByVal lpszEnum As ZString Ptr) As Boolean
+	Dim lret As ZString Ptr
+	Dim chrg As CHARRANGE
+	Dim ln As Integer
+	Dim ccal As CC_ADDLIST
+
+	SendMessage(ah.hcc,CCM_CLEAR,0,0)
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+	If chrg.cpMin=chrg.cpMax Then
+		lret=lpszEnum+Len(*lpszEnum)+1
+		ln=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
+		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
+		buff=Chr(255) & Chr(1)
+		ln=SendMessage(ah.hred,EM_GETLINE,ln,Cast(Integer,@buff))
+		buff[ln]=NULL
+		SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
+		lstrcpy(@s,lret)
+		ccal.lpszList=@s
+		ccal.lpszFilter=@buff
+		ccal.nType=14
+		SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
+		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+		Return TRUE
 	EndIf
 	Return FALSE
 

@@ -619,6 +619,15 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		tti.lpszParam=lptt->ovr(nsel).lpszParam
 		tti.lpszRetType=lptt->ovr(nsel).lpszRetType
 		tti.nitem=lptt->nPos
+		wp=SendMessage(ah.htt,TTM_GETITEMTYPE,0,Cast(LPARAM,@tti))
+		If Len(*Cast(ZString Ptr,wp)) Then
+			wp=Cast(Integer,FindExact(StrPtr("e"),Cast(ZString Ptr,wp),TRUE))
+			If wp Then
+				fenumlist=UpdateEnumList(Cast(ZString Ptr,wp))
+				MoveList
+				Return TRUE
+			EndIf
+		EndIf
 		wp=SendMessage(ah.htt,TTM_GETITEMNAME,0,Cast(LPARAM,@tti))
 		tti.lpszDesc=FindExact(StrPtr("D"),Cast(ZString Ptr,wp),TRUE)
 		If tti.lpszDesc Then

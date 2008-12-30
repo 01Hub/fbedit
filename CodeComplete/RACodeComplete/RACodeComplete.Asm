@@ -926,6 +926,53 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		byte ptr [ecx],0
 		mov		eax,offset itembuff
 		pop		esi
+	.elseif eax==TTM_GETITEMTYPE
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		edx,lParam
+		push	esi
+		mov		esi,[edx].TTITEM.lpszParam
+		mov		ecx,[edx].TTITEM.nitem
+		.while ecx
+			.while byte ptr [esi]!=',' && byte ptr [esi]
+				inc		esi
+			.endw
+			.if byte ptr [esi]==','
+				inc		esi
+			.endif
+			dec		ecx
+			.break .if !byte ptr [esi]
+		.endw
+		.while byte ptr [esi]==' '
+			inc		esi
+		.endw
+		invoke lstrcmpi,esi,offset szByVal
+		.if eax
+			invoke lstrcmpi,esi,offset szByRef
+		.endif
+		.if !eax
+			add		esi,6
+		.endif
+		.while byte ptr [esi]==' '
+			inc		esi
+		.endw
+		mov		ecx,offset itembuff
+		.while byte ptr [esi]!=':' && byte ptr [esi]
+			inc		esi
+		.endw
+		.if byte ptr [esi]==':'
+			inc		esi
+			.while byte ptr [esi]
+				mov		al,[esi]
+				.break .if al==',' || al==' '
+				mov		[ecx],al
+				inc		esi
+				inc		ecx
+			.endw
+		.endif
+		mov		byte ptr [ecx],0
+		mov		eax,offset itembuff
+		pop		esi
 	.elseif eax==TTM_SCREENFITS
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

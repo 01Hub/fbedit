@@ -39,6 +39,7 @@ End Type
 #Define TTM_SETCOLOR			WM_USER+2			' wParam=0, lParam=lpTT_COLOR, Returns nothing
 #Define TTM_GETITEMNAME		WM_USER+3			' wParam=0, lParam=lpTTITEM, Returns pointer to item string
 #Define TTM_SCREENFITS		WM_USER+4			' wParam=0, lParam=lpPOINT, Returns nothing
+#Define TTM_GETITEMTYPE		WM_USER+5			' wParam=0, lParam=lpTTITEM, Returns pointer to item string
 
 Type TT_COLOR
 	back As Integer

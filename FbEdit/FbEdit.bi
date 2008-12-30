@@ -428,6 +428,7 @@ Dim Shared fmessagelist As Boolean
 Dim Shared flocallist As Boolean
 Dim Shared fincludelist As Boolean
 Dim Shared fincliblist As Boolean
+Dim Shared fenumlist As Boolean
 Dim Shared sEditFileName As ZString*260
 Dim Shared ccpos As ZString Ptr
 Dim Shared ccstring As ZString*32768
