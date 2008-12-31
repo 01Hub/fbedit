@@ -232,82 +232,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hwnd=hWin
 			ad.lpFBCOLOR=@fbcol
 			ad.lpWINPOS=@wpos
-			For i=0 To 15
-				thme(i).lpszTheme=@szTheme(i)
-			Next
-			' Get version from ini
-			GetPrivateProfileString(StrPtr("Win"),StrPtr("Version"),StrPtr(""),@buff,255,@ad.IniFile)
-			If Val(buff)<1061 Then
-				' Update colors
-				LoadFromIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
-				kwcol.C10=(kwcol.C10 And &HFFFFFF) Or &H20000000
-				kwcol.C19=285147264
-				kwcol.C20=276824319
-				SaveToIni(StrPtr("Edit"),StrPtr("Colors"),"444444444444444444444",@kwcol,FALSE)
-				' Update themes
-				For i=1 To 15
-					GetPrivateProfileString(StrPtr("Theme"),Str(i),"",@buff,16384,ad.IniFile)
-					If Len(buff) Then
-						x=InStr(buff,",")
-						szTheme(0)=Left(buff,x-1)
-						buff=Mid(buff,x+1)
-						x=1
-						y=0
-						While x
-							x=InStr(x+1,buff,",")
-							If x Then
-								y+=1
-							EndIf
-						Wend
-						If y=40 Then
-							y=0
-							bm=Cast(Integer,@thme(0).kwc)
-							While y<18
-								x=InStr(buff,",")
-								sItem=Left(buff,x-1)
-								buff=Mid(buff,x+1)
-								id=Val(sItem)
-								RtlMoveMemory(Cast(HGLOBAL,bm),@id,4)
-								bm+=4
-								y+=1
-							Wend
-							bm=Cast(Integer,@thme(0).fbc)
-							While Len(buff)
-								x=InStr(buff,",")
-								If x Then
-									sItem=Left(buff,x-1)
-									buff=Mid(buff,x+1)
-								Else
-									sItem=buff
-									buff=""
-								EndIf
-								id=Val(sItem)
-								RtlMoveMemory(Cast(HGLOBAL,bm),@id,4)
-								bm+=4
-							Wend
-							thme(0).kwc.C10=(thme(0).kwc.C10 And &HFFFFFF) Or &H20000000
-							thme(0).kwc.C16=65535
-							thme(0).kwc.C17=65535
-							thme(0).kwc.C18=65535
-							thme(0).kwc.C19=285147264
-							thme(0).kwc.C20=276824319
-							thme(0).fbc.codetipsel=16711680
-							thme(0).fbc.propertiespar=128
-							SaveToIni(StrPtr("Theme"),Str(i),"04444444444444444444444444444444444444444444444",@thme(0),FALSE)
-						EndIf
-					EndIf
-				Next
-				' Update version
-				WritePrivateProfileString(StrPtr("Win"),StrPtr("Version"),StrPtr("1061"),@ad.IniFile)
-				buff=Chr(34) & Chr(34)
-				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C16"),@buff,@ad.IniFile)
-				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C17"),@buff,@ad.IniFile)
-				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C18"),@buff,@ad.IniFile)
-				buff=Chr(34) & C19 & Chr(34)
-				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C19"),@buff,@ad.IniFile)
-				buff=Chr(34) & C20 & Chr(34)
-				WritePrivateProfileString(StrPtr("Edit"),StrPtr("C20"),@buff,@ad.IniFile)
-			EndIf
+			'For i=0 To 15
+			'	thme(i).lpszTheme=@szTheme(i)
+			'Next
 			' Shape
 			ah.hshp=GetDlgItem(hWin,IDC_SHP)
 			' Statusbar
@@ -374,7 +301,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lfnt.lfWeight=edtfnt.weight
 			lfnt.lfItalic=edtfnt.italics
 			lstrcpy(lfnt.lfFaceName,edtfnt.szFont)
-'			lfnt.lfItalic=0
 			ah.rafnt.hFont=CreateFontIndirect(@lfnt)
 			lfnt.lfItalic=1
 			ah.rafnt.hIFont=CreateFontIndirect(@lfnt)
@@ -416,7 +342,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hout,REM_SETCOMMENTBLOCKS,Cast(Integer,StrPtr("/'")),Cast(Integer,StrPtr("'/")))
 			' Set code blocks
 			i=0
-			While i<31
+			While i<40
 				blk.lpszStart=@szSt(i)
 				blk.lpszEnd=@szEn(i)
 				blk.lpszNot1=@szNot1
@@ -443,7 +369,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 				autofmt(i).wrd=@szIndent(i)
 				LoadFromIni(StrPtr("AutoFormat"),Str(i),"0444",@autofmt(i),FALSE)
-				i=i+1
+				i+=1
 			Wend
 			' Set bracket matching
 			If edtopt.bracematch Then
@@ -488,11 +414,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)
 			lpOldCCProc=Cast(Any Ptr,SetWindowLong(ah.hcc,GWL_WNDPROC,Cast(Integer,@CCProc)))
-'			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,hDlgFnt),0)
 			SendMessage(ah.hcc,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Code complete tooltip
 			ah.htt=CreateWindowEx(NULL,@szCCTTClassName,NULL,WS_POPUP Or WS_BORDER Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEPARANTESES,0,0,0,0,hWin,NULL,hInstance,0)
-'			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,hDlgFnt),0)
 			SendMessage(ah.htt,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
 			' Property
 			SendMessage(ah.hpr,WM_SETFONT,Cast(Integer,ah.hToolFont),0)
@@ -1808,8 +1732,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								bm=SendMessage(ah.hred,REM_GETBOOKMARK,nLastLine,0)
 								i=-1
 								lret=-1
-								While lret=-1 And i<31
-									i=i+1
+								While lret=-1 And i<40
+									i+=1
 									If BD(i).lpszStart Then
 										lret=SendMessage(ah.hred,REM_ISLINE,nLastLine,Cast(Integer,@szSt(i)))
 									EndIf
@@ -1828,14 +1752,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								ElseIf bm=0 Then
 									x=0
 									y=0
-									While x<32
+									While x<40
 										If BD(x).lpszStart<>0 And (BD(x).flag And BD_NOBLOCK)<>0 Then
 											y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
 											If y Then
 												Exit While
 											EndIf
 										EndIf
-										x=x+1
+										x+=1
 									Wend
 									If y=0 And lret>=0 Then
 										' Set collapse bookmark
@@ -1848,14 +1772,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									EndIf
 									x=0
 									y=0
-									While x<32
+									While x<40
 										If BD(x).lpszStart<>0 And (BD(x).flag And BD_ALTHILITE)<>0 Then
 											y=SendMessage(ah.hred,REM_ISINBLOCK,nLastLine,Cast(Integer,@BD(x)))
 											If y Then
 												Exit While
 											EndIf
 										EndIf
-										x=x+1
+										x+=1
 									Wend
 									If y=0 And lret>=0 Then
 										' Set collapse bookmark

@@ -435,18 +435,18 @@ Dim Shared ccstring As ZString*32768
 Dim Shared sCodeFiles As ZString*260
 
 ' Hilite words
-Const C0="Date$ Err Mid$ Pen Play Screen Seek Shell Stack Strig Time$ Timer"
-Const C1="^Print Beep BLoad BSave Call Calls Chain ChDir ChDrive Clear Close Cls Color Com Common Const Data Declare Def DefCur DefDbl DefInt DefLng DefSng DefStr Dim Do Environ Erase Error Event Exit Field Files For Get GoSub GoTo Input IoCtl Key Kill Let Line Locate Lock Loop LPrint LSet MkDir Name Next On Open Option Out Poke PokeByte PokeCurr PokeLong PokeWord Put Randomize Read ReDim Rem Reset Restore Resume Return RmDir RSet Run Shared Signal Sleep Sound Static Stop"
-Const C2="Abs Asc Atn Bin$ CByt CCur CDbl Chr$ CInt CLng Command$ CompileLine CompileLine$ Cos CSng CsrLin CurDir$ Cvb Cvc Cvd Cvi Cvl Cvs Dir$ Environ$ Eof ErDev ErDev$ Erl Error$ Exp FileAttr Fix Fre FreeFile Hex$ InKey$ Inp Input$ Instr Int IoCtl$ LBound LCase$ Left$ Len Loc Lof Log LPos LTrim$ Mkb$ Mkc$ Mkd$ Mki$ Mkl$ Mks$ Oct$ Peek PeekByte PeekCurr PeekLong PeekWord Pos Right$ Rnd RTrim$ Sadd SetMem Sgn Sin Space$ Spc Sqr Sseg Ssegadd Stick Str$ String$ Tab Tan Test TestNot Trim$ UBound UCase$ Val VarPtr VarPtr$ VarSeg"
-Const C3="#Define #Else #ElseIf #EndIf #EndMacro #Error #If #Ifdef #Ifndef #Inclib #Include #Libpath #Line #Macro #Pragma #Print #Undef Access Alias Any Append As Base Basic Binary ByRef ByVal Cdecl Currency DisableBOPT DisableFold DisableIncDec DisablePeriodMsg DisableShifts DisableTest DisableTrim Explicit Fortran Go Is Lib LineNumber List Local Off Offset once Output Pascal Preserve Random Seg Seg$ Stdcall Step Syscall To Until Using WinCon WinGui"
-Const C4="$Begin $Debug $Dynamic $Finish $Ignore $Inc $Include $LineSize $List $Module $Name $OCode $Option $Page $PageIf $PageSize $Process $Skip $Start $Static $StringPool $SubTitle $Title FALSE NULL TRUE"
-Const C5="And Delete Eqv Imp Mod New Not Or Rol Ror Shl Shr Xor"
-Const C6="abs access acos alias allocate append as asc asin asm atan2 atn base beep bin$ binary bit bitreset bitset bload bsave byref byval call callocate cbyte cdbl cdecl chain chdir chr$ cint circle clear clng clngint close cls color command$ common continue cos cshort csign csng csrlin cubyte cuint culngint cunsg curdir cushort cvd cvi cvl cvs data date$ deallocate declare defbyte defined defshort defubyte defuint defushort deflngint defulngint dim dir$ do draw dylibfree dylibload dylibsymbol dynamic enum environ environ$ eof erase err error escape exec exepath exit exp explicit export extern"
-Const C7="fix flip for fre freefile get getkey getmouse gosub goto hex$ hibyte hiword iif inkey$ inp input input$ instr int is kill lbound lcase lcase$ left left$ len let lib line lobyte loc local locate lock lof log loop loword lset ltrim$ mid$ mkd$ mkdir mki$ mkl$ mklongint mks$ mkshort multikey name next oct$ on open option out output overload paint palette pascal pcopy peek peeki peeks pmap point poke pokei pokes pos preserve preset private procptr pset public put random randomize read reallocate redim reset restore resume resume return rgb right right$ rmdir rnd rset rtrim$ run"
-Const C8="sadd screen screencopy screeninfo screenlock screenptr screenres screenset screenunlock seek sgn shared shell sin sizeof sleep space$ spc sqr static stdcall step stop str$ strcat strchr strcmp strcpy string$ strlen strncat strncmp strncpy strptr strrchr strstr swap system tab tan threadcreate threadwait time$ time$ timer to trim trim$ type ubound ucase ucase$ union unlock until using va_arg va_first va_next val val64 valint varptr view wait wend while width window windowtitle with write"
-Const C9="Case Else ElseIf End EndIf Function If Select Sub Then"
-Const C10="BEGIN END"
-Const C11="__DATE__ __FB_ARGC__ __FB_ARGV__ __FB_BIGENDIAN__ __FB_BUILD_DATE__ __FB_DEBUG__ __FB_DOS__ __FB_ERR__ __FB_LANG__ __FB_LINUX__ __FB_MAIN__ __FB_MT__ __FB_OPTION_BYVAL__ __FB_OPTION_DYNAMIC__ __FB_OPTION_ESCAPE__ __FB_OPTION_EXPLICIT__ __FB_OPTION_PRIVATE__ __FB_OUT_DLL__ __FB_OUT_EXE__ __FB_OUT_LIB__ __FB_OUT_OBJ__ __FB_SIGNATURE__ __FB_VER_MAJOR__ __FB_VER_MINOR__ __FB_VER_PATCH__ __FB_WIN32__ __FILE__ __FILE_NQ__ __FUNCTION__ __FUNCTION_NQ__ __LINE__ __PATH__ __TIME__"
+Const C0=""
+Const C1=""
+Const C2=""
+Const C3=""
+Const C4=""
+Const C5=""
+Const C6=""
+Const C7=""
+Const C8=""
+Const C9=""
+Const C10=""
+Const C11=""
 Const C12=""
 Const C13=""
 Const C14=""
@@ -454,11 +454,8 @@ Const C15=""
 Const C16=""
 Const C17=""
 Const C18=""
-Const C19="adc add addpd addps addsd addss and andnpd andnps andpd andps arpl asm bound bsf bsr bswap bt btc btr bts call cbw cdq clc cld clflush cli clts cmc cmova cmovae cmovb cmovbe cmovc cmove cmovg cmovge cmovl cmovle cmovna cmovnae cmovnb cmovnbe cmovnc cmovne cmovng cmovnge cmovnl cmovnle cmovno cmovnp cmovns cmovnz cmovo cmovp cmovpe cmovpe cmovpo cmovs cmovz cmp cmppd cmpps cmps cmpsb cmpsd cmpss cmpsw cmpxchg cmpxchg8b comisd comiss cpuid cvtdq2pd cvtdq2ps cvtpd2dq cvtpd2pi cvtpd2ps cvtpi2pd cvtpi2ps cvtps2dq cvtps2pd cvtps2pi cvtsd2si cvtsd2ss cvtsi2sd cvtsi2ss cvtss2sd cvtss2si cvttpd2dq cvttpd2pi cvttps2dq cvttps2pi cvttsd2si cvttss2si cwd cwde das dec div divpd divps divss daa emms end enter f2xm1 fabs fadd faddp fbld fbstp fchs fclex fcmovb fcmovbe fcmove fcmovnb fcmovnbe fcmovne fcmovnu fcmovu fcom fcomi fcomip fcomp fcompp fcos fdecstp fdiv fdivp fdivr fdivrp femms ffree fiadd ficom ficomp fidiv fidivr fild fimul fincstp finit fist fistp fisub fisubr fld fld1 fldcw fldenv fldl2e fldl2t "_
-"fldlg2 fldln2 fldpi fldz fmul fmulp fnclex fninit fnop fnsave fnstcw fnstenv fnstsw fpatan fprem fprem1 fptan frndint frstor fsave fscale fsin fsincos fsqrt fst fstcw fstenv fstp fstsw fsub fsubp fsubr fsubrp ftst fucom fucomi fucomip fucomp fucompp fwait fxam fxch fxrstor fxsave fxtract fyl2x fyl2xp1 hlt idiv imul in inc ins insb insd insw int into invd invlpg iret iretd ja jae jb jbe jc jcxz je jecxz jg jge jl jle jmp jna jnae jnb jnbe jnc jne jng jnge jnl jnle jno jnp jns jnz jo jp jpe jpo js jz lahf lar ldmxcsr lds lea leave les lfence lfs lgdt lgs lidt lldt lmsw lock lods lodsb lodsd lodsw loop loope loopne loopnz loopz lsl lss ltr maskmovdqu maskmovq maxpd maxps maxsd maxss mfence minpd minps minsd minss mov movapd movaps movd movdq2q movdqa movdqu movhlps movhpd movhps movlhps movlpd movlps movmskpd movmskps movntdq movnti movntpd movntps movntq movq movq2dq movs movsb movsd movss movsw movsx movupd movups movzx mul mulpd mulps mulsd mulss neg nop not or orpd orps out outs outsb outsd "_
-"outsw packssdw packsswb packuswb paddb paddd paddq paddsb paddsw paddusb paddusw paddw pand pandn pause pavgb pavgusb pavgw pcmpeqb pcmpeqd pcmpeqw pcmpgtb pcmpgtd pcmpgtw pextrw pf2id pf2iw pfacc pfadd pfcmpeq pfcmpge pfcmpgt pfmax pfmin pfmul pfnacc pfpnacc pfrcp pfrcpit1 pfrcpit2 pfrsqit1 pfrsqrt pfsub pfsubr pi2fd pi2fw pinsrw pmaddwd pmaxsw pmaxub pminsw pminub pmovmskb pmulhrw pmulhuv pmulhuw pmulhw pmullw pmuludq pop popa popad popf popfd por prefetch prefetchnta prefetcht0 prefetcht1 prefetcht2 prefetchw psadbw pshufd pshufhw pshuflw pshufw pslld psllq psllw psrad psraw psrld psrldq psrlq psrlw psubb psubd psubq psubsb psubsw psubusb psubusw psubw pswapd pswapw punpckhbw punpckhdq punpckhqdq punpckhwd punpcklbw punpckldq punpcklqdq punpcklwd push pusha pushad pushf pushfd pxor rcl rcpps rcpss rcr rdmsr rdpmc rdtsc rep repe repne repnz repz ret rol ror rsm rsqrtps rsqrtss sahf sal sar sbb scas scasb scasd scasw seta setae setb setbe setc sete setg setge setl setle setna setnae setnb "_
-"setnbe setnc setne setng setnge setnl setnle setno setnp setns setnz seto setp setpe setpo sets setz sfence sgdt shl shld shr shrd shufpd shufps sidt sldt smsw sqrtpd sqrtps sqrtsd sqrtss stc std sti stmxcsr stos stosb stosd stosw str sub subpd subps subsd subss sysenter sysexit test ucomisd ucomiss ud2 unpckhpd unpckhps unpcklpd unpcklps verr verw wait wbinvd wrmsr xadd xchg xlat xlatb xor xorpd xorps aaa aad aam aas"
-Const C20="ah al ax bh bl bp bx byte ch cl cx dh dl dword dx eax ebp ebx ecx edi edx esi esp mm0 mm1 mm2 mm3 mm4 mm5 mm6 mm7 offset ptr qword sp st(0) st(1) st(2) st(3) st(4) st(5) st(6) st(7) word xmm0 xmm1 xmm2 xmm3 xmm4 xmm5 xmm6 xmm7"
+Const C19=""
+Const C20=""
 Const C21=""
 Dim Shared sKeyWords(21) As String
 
@@ -488,12 +485,13 @@ Const szBracketMatch="({[,)}],_"
 
 ' Code blocks
 Dim Shared blk As RABLOCKDEF
-Dim Shared szSt(31) As ZString*32
-Dim Shared szEn(31) As ZString*32
+Dim Shared szSt(40) As ZString*32
+Dim Shared szEn(40) As ZString*32
 Dim Shared szNot1 As ZString*32
 Dim Shared szNot2 As ZString*32
-Dim Shared BD(31) As RABLOCKDEF
+Dim Shared BD(40) As RABLOCKDEF
 
+' Autoformat
 Type AUTOFORMAT
 	wrd	As ZString Ptr
 	st		As Integer
@@ -501,8 +499,8 @@ Type AUTOFORMAT
 	add2	As Integer
 End Type
 
-Dim Shared autofmt(31) As AUTOFORMAT
-Dim Shared szIndent(31) As ZString*32
+Dim Shared autofmt(40) As AUTOFORMAT
+Dim Shared szIndent(40) As ZString*32
 
 Const sf1 = !"Courier New\0                    "
 Const sf2 = !"Terminal\0                       "

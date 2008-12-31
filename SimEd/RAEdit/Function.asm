@@ -450,8 +450,11 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
-		test	[edi].CHARS.state,STATE_COMMENT
-		jne		Nf
+		mov		ax,[esi]
+		.if ax!="/'" && ax!="'/"
+			test	[edi].CHARS.state,STATE_COMMENT
+			jne		Nf
+		.endif
 		xor		ecx,ecx
 		call	SkipSpc
 		or		eax,eax

@@ -665,7 +665,7 @@ Function AutoFormatLine(ByVal hWin As HWND,ByVal lpchrg As CHARRANGE Ptr) As Int
 			ln=SendMessage(hWin,EM_LINEFROMCHAR,chrg.cpMin,0)
 		EndIf
 		wp=0
-		While wp<32
+		While wp<40
 			If szIndent(wp)<>szNULL Then
 				If SendMessage(hWin,REM_ISLINE,ln,Cast(LPARAM,@szIndent(wp)))>=0 Then
 					' Get current indent
@@ -686,7 +686,7 @@ Function AutoFormatLine(ByVal hWin As HWND,ByVal lpchrg As CHARRANGE Ptr) As Int
 					EndIf
 				EndIf
 			EndIf
-			wp=wp+1
+			wp+=1
 		Wend
 	EndIf
 	Return lz
