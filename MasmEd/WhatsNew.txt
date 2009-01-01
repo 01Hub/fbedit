@@ -5,6 +5,7 @@ MasmEd
 o Updated resource editor to latest version.
 o You can now select a back color for comments, strings, operators and numbers & hex.
 o You can now select code complete and tooltip colors.
+o Added color themes.
 o Added bracket matching.
 
 1.0.5.1 - 2008.09.18

@@ -574,6 +574,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						.if eax
 							invoke SizeingRect,eax,FALSE
+							invoke ShowWindow,hInvisible,SW_HIDE
+							invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+							invoke InvalidateRect,hDEd,NULL,TRUE
+							invoke UpdateWindow,hDEd
 						.endif
 						pop		esi
 					.endif
@@ -601,6 +605,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						.if eax
 							invoke SizeingRect,eax,FALSE
+							invoke ShowWindow,hInvisible,SW_HIDE
+							invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
+							invoke InvalidateRect,hDEd,NULL,TRUE
+							invoke UpdateWindow,hDEd
 						.endif
 						pop		esi
 					.endif
