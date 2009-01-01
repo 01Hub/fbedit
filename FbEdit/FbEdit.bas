@@ -232,9 +232,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ah.hwnd=hWin
 			ad.lpFBCOLOR=@fbcol
 			ad.lpWINPOS=@wpos
-			'For i=0 To 15
-			'	thme(i).lpszTheme=@szTheme(i)
-			'Next
 			' Shape
 			ah.hshp=GetDlgItem(hWin,IDC_SHP)
 			' Statusbar

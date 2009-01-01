@@ -464,6 +464,7 @@ Function OpenProject() As Integer
 	Dim tpe As Integer
 	Dim pfi As PFI
 	Dim tvs As TVSORTCB
+	Dim szTabOrder As ZString*1024
 
 	fProject=TRUE
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("Description"),@szNULL,@ProjectDescription,SizeOf(ProjectDescription),@ad.ProjectFile)
@@ -515,7 +516,7 @@ Function OpenProject() As Integer
 		tpe=1
 	EndIf
 	If tpe=1 Then
-		' Convert project file to version 1
+		' Convert project file to version 2
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Recompile"),"0",@sItem,SizeOf(sItem),@ad.ProjectFile)
 		WritePrivateProfileString(StrPtr("Make"),StrPtr("Recompile"),@sItem,@ad.ProjectFile)
 		GetPrivateProfileString(StrPtr("Project"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@sItem,SizeOf(sItem),@ad.ProjectFile)
@@ -533,6 +534,43 @@ Function OpenProject() As Integer
 		sItem=szNULL
 		lstrcpy(p,@sItem)
 		WritePrivateProfileSection(StrPtr("Project"),@buff,@ad.ProjectFile)
+		tpe=2
+	EndIf
+	If tpe=2 Then
+		' Convert project file to version 3
+		nInx=1
+		nMiss=0
+		Do While nInx<256 And nMiss<MAX_MISS
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				ReadProjectFileInfo(nInx,@pfi)
+				If pfi.nLoad Then
+					szTabOrder &="," & Str(nInx)
+				EndIf
+			Else
+				nMiss+=1
+			EndIf
+			nInx+=1
+		Loop
+		nInx=1001
+		nMiss=0
+		Do While nInx<1256 And nMiss<MAX_MISS
+			GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+			If Len(sItem) Then
+				nMiss=0
+				ReadProjectFileInfo(nInx,@pfi)
+				If pfi.nLoad Then
+					szTabOrder &="," & Str(nInx)
+				EndIf
+			Else
+				nMiss+=1
+			EndIf
+			nInx+=1
+		Loop
+		WritePrivateProfileString(StrPtr("TabOrder"),StrPtr("TabOrder"),@szTabOrder,@ad.ProjectFile)
+		WritePrivateProfileString(StrPtr("Project"),StrPtr("Version"),StrPtr("3"),@ad.ProjectFile)
+		tpe=3
 	EndIf
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),"",@ad.resexport,SizeOf(ad.resexport),@ad.ProjectFile)
 	nProjectGroup=GetPrivateProfileInt(StrPtr("Project"),StrPtr("Grouping"),1,@ad.ProjectFile)
@@ -558,6 +596,7 @@ Function OpenProject() As Integer
 	' Add api files
 	LoadApiFiles
 	SetHiliteWordsFromApi(ah.hwnd)
+	GetPrivateProfileString(StrPtr("TabOrder"),StrPtr("TabOrder"),@szNULL,@szTabOrder,SizeOf(szTabOrder),@ad.ProjectFile)
 	nInx=1
 	nMiss=0
 	Do While nInx<256 And nMiss<MAX_MISS
@@ -571,14 +610,6 @@ Function OpenProject() As Integer
 			EndIf
 			If tpe=1 Then
 				ParseFile(ah.hwnd,0,sItem)
-			EndIf
-			ReadProjectFileInfo(nInx,@pfi)
-			If pfi.nLoad Then
-				If pfi.nLoad=2 Then
-					fNoResMode=TRUE
-				EndIf
-				OpenTheFile(sItem,FALSE)
-				fNoResMode=FALSE
 			EndIf
 		Else
 			nMiss+=1
@@ -597,15 +628,33 @@ Function OpenProject() As Integer
 			If tpe=1 Then
 				ParseFile(ah.hwnd,0,sItem)
 			EndIf
-			ReadProjectFileInfo(nInx,@pfi)
-			If pfi.nLoad Then
-				OpenTheFile(sItem,FALSE)
-			EndIf
 		Else
 			nMiss+=1
 		EndIf
 		nInx+=1
 	Loop
+	' Open files
+	While Len(szTabOrder)
+		nInx=Val(szTabOrder)
+		GetPrivateProfileString(StrPtr("File"),Str(nInx),@szNULL,@sItem,SizeOf(sItem),@ad.ProjectFile)
+		If Len(sItem) Then
+			sItem=MakeProjectFileName(sItem)
+			ReadProjectFileInfo(nInx,@pfi)
+			If pfi.nLoad Then
+				If pfi.nLoad=2 Then
+					fNoResMode=TRUE
+				EndIf
+				OpenTheFile(sItem,FALSE)
+				fNoResMode=FALSE
+			EndIf
+		EndIf
+		x=InStr(szTabOrder,",")
+		If x Then
+			szTabOrder=Mid(szTabOrder,x+1)
+		Else
+			szTabOrder=""
+		EndIf
+	Wend
 	SendMessage(ah.hprj,TVM_EXPAND,TVE_EXPAND,Cast(Integer,hPar))
 	tvs.hParent=hPar
 	tvs.lpfnCompare=@TVCompare

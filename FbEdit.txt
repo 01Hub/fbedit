@@ -10,9 +10,12 @@ o Added support for nested comment blocks.
 o ppdk updated fb keywords in ini file. Api files also updated.
 o Updated help addin to use new fb keywords.
 o Added code complete on enums.
+o Added code complete on cast to UDT.
+o You can now change the order of tabs by dragging them to a new position.
+o The tabs order is saved to project file.
 o Fixed bug where Quick run toolbar button was not shown.
 o Fixed a Find and Replace bug.
-o Fixed bug with ini file generation on clean install. Could result in loss of text colors.
+o Fixed bug with ini file generation on a clean install. Could result in loss of text colors.
 1.0.6.5c
 o Updated FbDebug addin.
 o Fixed bug with highlighting active line. Could leave several lines highlighted.

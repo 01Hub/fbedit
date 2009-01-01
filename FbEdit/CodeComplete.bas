@@ -281,8 +281,38 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 		While InStr(buff,".")
 			buff=Mid(buff,InStr(buff,".")+1)
 		Wend
+		If UCase(Left(sLine,5))="CAST(" Then
+			' Cast
+			sItem=Mid(sLine,6)
+			x=InStr(sItem,",")
+			If x Then
+				sItem=Left(sItem,x-1)
+				While sItem[0]=VK_SPACE Or sItem[0]=VK_TAB
+					sItem=Mid(sItem,2)
+				Wend
+				While Right(sItem,1)=Chr(VK_SPACE) Or Right(sItem,1)=Chr(VK_TAB)
+					sItem=Left(sItem,Len(sItem)-1)
+				Wend
+				p=@sLine
+				x=Len(sLine)
+				SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
+				GoTo TestNext2
+			EndIf
+		EndIf
 		x=Len(sLine)
 		SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
+		sItem=sLine
+		lret=FindExact(StrPtr("Ee"),@sItem,FALSE)
+		If lret Then
+			' Enum
+			lret=lret+Len(*lret)+1
+			ccpos=@ccstring
+			lstrcpy(@s,lret)
+			If Asc(s)<>NULL Then
+				GetItems(15)
+				GoTo Ex
+			EndIf
+		EndIf
 		p=@sLine
 		If lpProc Then
 			If lstrcmpi(StrPtr("this"),@sLine)=0 Then
@@ -312,6 +342,7 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 				lstrcpy(@sItem,p)
 				SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
 			EndIf
+		TestNext2:
 			If Len(sItem) Then
 				lret=FindExact(StrPtr("Ss"),@sItem,FALSE)
 				If lret Then
@@ -401,6 +432,7 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 				EndIf
 			EndIf
 		EndIf
+	Ex:
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
 		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
 			fstructlist=TRUE

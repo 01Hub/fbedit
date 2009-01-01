@@ -851,14 +851,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					Return 0
 				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc) Then
 					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
-						trng.chrg.cpMin-=1
-						trng.lpstrText=@buff
-						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						If SendMessage(ah.hcc,CCM_GETCOUNT,0,0)<=1 Then
-							HideList
-						ElseIf Asc(buff)=Asc(".") Then
-							Return 0
-						EndIf
+					trng.chrg.cpMin-=1
+					trng.lpstrText=@buff
+					SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+					If SendMessage(ah.hcc,CCM_GETCOUNT,0,0)<=1 Then
+						HideList
+					ElseIf Asc(buff)=Asc(".") Then
+						Return 0
+					EndIf
 				ElseIf wParam=VK_SPACE Or wParam=VK_TAB Or wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
 					If wParam=VK_TAB Then
 						If (GetKeyState(VK_SHIFT) And &H80)<>0 Then

@@ -1,3 +1,7 @@
+#Define IDD_DLGSAVESELECTION		5000
+#Define IDC_LSTFILES					1001
+#Define IDC_BTNSELECT				1002
+#Define IDC_BTNDESELECT				1003
 
 Sub DelTab(ByVal hWin As HWND)
 	Dim tci As TCITEM
@@ -537,12 +541,137 @@ Sub UnlockAllTabs()
 	
 End Sub
 
+Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim As Integer i,n,id,Event,x
+	Dim tci As TCITEM
+	Dim lpTABMEM As TABMEM Ptr
+	Dim sItem As ZString*260
+	Dim hOld As HWND
+	Dim rect As RECT
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_DLGSAVESELECTION)
+			tci.mask=TCIF_PARAM
+			i=0
+			n=0
+			Do While TRUE
+				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
+					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+					If lpTABMEM->hedit=ah.hres Then
+						x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
+					Else
+						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
+					EndIf
+					If x Then
+						lstrcpy(@buff,lpTABMEM->filename)
+						sItem=GetFileName(buff,TRUE)
+						id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_ADDSTRING,0,Cast(LPARAM,@sItem))
+						SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETITEMDATA,id,i)
+						SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,TRUE,id)
+						n=n+1
+					EndIf
+				Else
+					Exit Do
+				EndIf
+				i=i+1
+			Loop
+			If n=0 Then
+				EndDialog(hWin,0)
+			EndIf
+			SetWindowPos(hWin,0,wpos.ptsavelist.x,wpos.ptsavelist.y,0,0,SWP_NOREPOSITION Or SWP_NOSIZE)
+			'
+		Case WM_CLOSE
+			If lParam=2 Then
+				lParam=0
+			Else
+				lParam=1
+			EndIf
+			GetWindowRect(hWin,@rect)
+			wpos.ptsavelist.x=rect.left
+			wpos.ptsavelist.y=rect.top
+			EndDialog(hWin,lParam)
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case id
+				Case IDOK
+					i=0
+					tci.mask=TCIF_PARAM
+					While TRUE
+						id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_GETSEL,i,0)
+						If id=LB_ERR Then
+							Exit While
+						ElseIf id=TRUE Then
+							id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_GETITEMDATA,i,0)
+							SendMessage(ah.htabtool,TCM_GETITEM,id,Cast(Integer,@tci))
+							lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+							If Left(lpTABMEM->filename,10)="(Untitled)" Then
+								hOld=ah.hred
+								ah.hred=lpTABMEM->hedit
+								ad.filename=lpTABMEM->filename
+								SendMessage(ah.hwnd,WM_SIZE,0,0)
+								If ah.hred<>hOld Then
+									ShowWindow(ah.hred,SW_SHOW)
+									ShowWindow(hOld,SW_HIDE)
+								EndIf
+								SendMessage(ah.htabtool,TCM_SETCURSEL,id,0)
+								SetWinCaption
+								If SaveFileAs(hWin)=FALSE Then
+									EndDialog(hWin,1)
+									Return TRUE
+								EndIf
+							Else
+								WriteTheFile(lpTABMEM->hedit,lpTABMEM->filename)
+							EndIf
+						EndIf
+						i=i+1
+					Wend
+					SendMessage(hWin,WM_CLOSE,0,2)
+					'
+				Case IDCANCEL
+					SendMessage(hWin,WM_CLOSE,0,1)
+					'
+				Case IDC_BTNSELECT
+					i=0
+					While TRUE
+						If SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,TRUE,i)=LB_ERR Then
+							Exit While
+						EndIf
+						i=i+1
+					Wend
+					'
+				Case IDC_BTNDESELECT
+					i=0
+					While TRUE
+						If SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,FALSE,i)=LB_ERR Then
+							Exit While
+						EndIf
+						i=i+1
+					Wend
+					'
+			End Select
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
 Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hWinDontClose As HWND,ByVal fCloseLocked As Boolean=FALSE) As Boolean
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
 	Dim x As Integer
+	Dim sTabOrder As String
 
+	If fProjectClose Then
+		If DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGSAVESELECTION),ah.hwnd,@SaveAllProc,NULL) Then
+			Return TRUE
+		EndIf
+	EndIf
 	tci.mask=TCIF_PARAM
 	i=0
 	While TRUE
@@ -556,8 +685,12 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 				ShowWindow(ah.hred,SW_SHOW)
 				SendMessage(ah.htabtool,TCM_SETCURSEL,i,0)
 				SetWinCaption
-				If WantToSave(hWin) Then
-					Return TRUE
+				If fProjectClose Then
+					sTabOrder &="," & Str(lpTABMEM->profileinx)
+				Else
+					If WantToSave(hWin) Then
+						Return TRUE
+					EndIf
 				EndIf
 				CallAddins(ah.hwnd,AIM_FILECLOSE,0,Cast(LPARAM,@lpTABMEM->filename),HOOK_FILECLOSE)
 				If lpTABMEM->profileinx And GetWindowLong(lpTABMEM->hedit,GWL_ID)<>IDC_HEXED Then
@@ -595,6 +728,10 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 		SetFocus(ah.hred)
 		Return TRUE
 	Else
+		If fProjectClose Then
+			sTabOrder=Mid(sTabOrder,2)
+			WritePrivateProfileString(StrPtr("TabOrder"),StrPtr("TabOrder"),sTabOrder,@ad.ProjectFile)
+		EndIf
 		If wpos.fview And VIEW_TABSELECT Then
 			ShowWindow(ah.htabtool,SW_HIDE)
 		EndIf
@@ -823,6 +960,8 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim ht As TCHITTESTINFO
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
+	Dim buffer As ZString*260
+	Static i As Integer=-1
 
 	Select Case uMsg
 		Case WM_LBUTTONDBLCLK
@@ -869,136 +1008,26 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(ah.hwnd,WM_COMMAND,IDM_FILE_CLOSE,0)
 			Return 0
 			'
-		'Case WM_MOUSELEAVE
-		'	CallWindowProc(lpOldTabToolProc,hWin,uMsg,wParam,lParam)
-		'	InvalidateRect(hWin,NULL,TRUE)
-		'	UpdateWindow(hWin)
-		'	Return 0
+		Case WM_LBUTTONDOWN
+			ht.pt.x=LoWord(lParam)
+			ht.pt.y=HiWord(lParam)
+			i=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
+			'
+		Case WM_LBUTTONUP
+			ht.pt.x=LoWord(lParam)
+			ht.pt.y=HiWord(lParam)
+			lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
+			If lret<>i And lret>=0 And i>=0 Then
+				tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+				tci.pszText=@buffer
+				tci.cchTextMax=260
+				SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
+				SendMessage(hWin,TCM_DELETEITEM,i,0)
+				SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
+			EndIf
+			'
 	End Select
 	Return CallWindowProc(lpOldTabToolProc,hWin,uMsg,wParam,lParam)
 
 End Function
 
-#Define IDD_DLGSAVESELECTION		5000
-#Define IDC_LSTFILES					1001
-#Define IDC_BTNSELECT				1002
-#Define IDC_BTNDESELECT				1003
-
-Function SaveAllProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim As Integer i,n,id,Event,x
-	Dim tci As TCITEM
-	Dim lpTABMEM As TABMEM Ptr
-	Dim sItem As ZString*260
-	Dim hOld As HWND
-	Dim rect As RECT
-
-	Select Case uMsg
-		Case WM_INITDIALOG
-			TranslateDialog(hWin,IDD_DLGSAVESELECTION)
-			tci.mask=TCIF_PARAM
-			i=0
-			n=0
-			Do While TRUE
-				If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
-					lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-					If lpTABMEM->hedit=ah.hres Then
-						x=SendMessage(ah.hraresed,PRO_GETMODIFY,0,0)
-					Else
-						x=SendMessage(lpTABMEM->hedit,EM_GETMODIFY,0,0)
-					EndIf
-					If x Then
-						lstrcpy(@buff,lpTABMEM->filename)
-						sItem=GetFileName(buff,TRUE)
-						id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_ADDSTRING,0,Cast(LPARAM,@sItem))
-						SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETITEMDATA,id,i)
-						SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,TRUE,id)
-						n=n+1
-					EndIf
-				Else
-					Exit Do
-				EndIf
-				i=i+1
-			Loop
-			If n=0 Then
-				EndDialog(hWin,0)
-			EndIf
-			SetWindowPos(hWin,0,wpos.ptsavelist.x,wpos.ptsavelist.y,0,0,SWP_NOREPOSITION Or SWP_NOSIZE)
-			'
-		Case WM_CLOSE
-			If lParam=2 Then
-				lParam=0
-			Else
-				lParam=1
-			EndIf
-			GetWindowRect(hWin,@rect)
-			wpos.ptsavelist.x=rect.left
-			wpos.ptsavelist.y=rect.top
-			EndDialog(hWin,lParam)
-			'
-		Case WM_COMMAND
-			id=LoWord(wParam)
-			Event=HiWord(wParam)
-			Select Case id
-				Case IDOK
-					i=0
-					tci.mask=TCIF_PARAM
-					While TRUE
-						id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_GETSEL,i,0)
-						If id=LB_ERR Then
-							Exit While
-						ElseIf id=TRUE Then
-							id=SendDlgItemMessage(hWin,IDC_LSTFILES,LB_GETITEMDATA,i,0)
-							SendMessage(ah.htabtool,TCM_GETITEM,id,Cast(Integer,@tci))
-							lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-							If Left(lpTABMEM->filename,10)="(Untitled)" Then
-								hOld=ah.hred
-								ah.hred=lpTABMEM->hedit
-								ad.filename=lpTABMEM->filename
-								SendMessage(ah.hwnd,WM_SIZE,0,0)
-								If ah.hred<>hOld Then
-									ShowWindow(ah.hred,SW_SHOW)
-									ShowWindow(hOld,SW_HIDE)
-								EndIf
-								SendMessage(ah.htabtool,TCM_SETCURSEL,id,0)
-								SetWinCaption
-								If SaveFileAs(hWin)=FALSE Then
-									EndDialog(hWin,1)
-									Return TRUE
-								EndIf
-							Else
-								WriteTheFile(lpTABMEM->hedit,lpTABMEM->filename)
-							EndIf
-						EndIf
-						i=i+1
-					Wend
-					SendMessage(hWin,WM_CLOSE,0,2)
-					'
-				Case IDCANCEL
-					SendMessage(hWin,WM_CLOSE,0,1)
-					'
-				Case IDC_BTNSELECT
-					i=0
-					While TRUE
-						If SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,TRUE,i)=LB_ERR Then
-							Exit While
-						EndIf
-						i=i+1
-					Wend
-					'
-				Case IDC_BTNDESELECT
-					i=0
-					While TRUE
-						If SendDlgItemMessage(hWin,IDC_LSTFILES,LB_SETSEL,FALSE,i)=LB_ERR Then
-							Exit While
-						EndIf
-						i=i+1
-					Wend
-					'
-			End Select
-		Case Else
-			Return FALSE
-			'
-	End Select
-	Return TRUE
-
-End Function
