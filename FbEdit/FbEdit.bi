@@ -419,6 +419,7 @@ Dim Shared fAddMainFiles As Boolean
 Dim Shared fCompileIfNewer As Boolean
 Dim Shared fAddModuleFiles As Boolean
 Dim Shared fIncVersion As Boolean
+Dim Shared fRunCmd As Boolean
 
 ' Code complete
 Dim Shared ftypelist As Boolean

@@ -226,6 +226,7 @@ Lang=Norwegian, By KetilO
 5506=Kommando linje
 5517=Output filenavn:
 5518=Run kommando linje parameter:
+5526=Start cmd.exe
 5525=Auto slett filer etter build (*.obj ; *.a):
 5519=Resurs Navn Eksport Fil:
 5520=Prosjekt Fil Gruppering

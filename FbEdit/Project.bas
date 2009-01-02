@@ -44,6 +44,7 @@
 #Define IDC_CHKADDMODULEFILES				5522
 #Define IDC_CHKINCVERSION					5523
 #Define IDC_EDTDELETE						5524
+#Define IDC_CHKRUN							5526
 
 ' Api select
 #Define IDD_DLGPROJECTOPTIONAPI			6200
@@ -578,6 +579,7 @@ Function OpenProject() As Integer
 	fAddModuleFiles=GetPrivateProfileInt(StrPtr("Project"),StrPtr("AddModuleFiles"),1,@ad.ProjectFile)
 	fCompileIfNewer=GetPrivateProfileInt(StrPtr("Project"),StrPtr("CompileIfNewer"),0,@ad.ProjectFile)
 	fIncVersion=GetPrivateProfileInt(StrPtr("Project"),StrPtr("IncVersion"),0,@ad.ProjectFile)
+	fRunCmd=GetPrivateProfileInt(StrPtr("Project"),StrPtr("RunCmd"),0,@ad.ProjectFile)
 	hPar=TrvAddNode(0,@ProjectDescription,0,0)
 	SendMessage(ah.htab,TCM_SETCURSEL,1,0)
 	ShowWindow(ah.hprj,SW_SHOWNA)
@@ -591,6 +593,7 @@ Function OpenProject() As Integer
 		x=InStr(x+1,sItem,"\")
 	Loop
 	ad.ProjectPath=Left(sItem,tpe-1)
+	SetCurrentDirectory(ad.ProjectPath)
 	SetHiliteWords(ah.hwnd)
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("Api"),@DefApiFiles,@ProjectApiFiles,SizeOf(ProjectApiFiles),@ad.ProjectFile)
 	' Add api files
@@ -1859,6 +1862,7 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 			CheckDlgButton(hWin,IDC_CHKCOMPILENEWER,fCompileIfNewer)
 			CheckDlgButton(hWin,IDC_CHKADDMODULEFILES,fAddModuleFiles)
 			CheckDlgButton(hWin,IDC_CHKINCVERSION,fIncVersion)
+			CheckDlgButton(hWin,IDC_CHKRUN,fRunCmd)
 			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
@@ -1910,6 +1914,8 @@ Function ProjectOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wPar
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("CompileIfNewer"),Str(fCompileIfNewer),@ad.ProjectFile)
 					fIncVersion=IsDlgButtonChecked(hWin,IDC_CHKINCVERSION)
 					WritePrivateProfileString(StrPtr("Project"),StrPtr("IncVersion"),Str(fIncVersion),@ad.ProjectFile)
+					fRunCmd=IsDlgButtonChecked(hWin,IDC_CHKRUN)
+					WritePrivateProfileString(StrPtr("Project"),StrPtr("RunCmd"),Str(fRunCmd),@ad.ProjectFile)
 					RefreshProjectTree
 					GetMakeOption
 					SetWinCaption

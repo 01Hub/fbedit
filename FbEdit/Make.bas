@@ -148,7 +148,12 @@ Function MakeRun(ByVal sFile As String,ByVal fDebug As Boolean) As Integer
 	If Len(ad.smakerun) Then
 		buff=buff & " " & ad.smakerun
 	EndIf
-	MakeRun=WinExec(@buff,SW_SHOWNORMAL)
+	If fRunCmd<>0 And fDebug=0 Then
+		buff="/k " & buff
+		ShellExecute(ah.hwnd,NULL,"cmd.exe",@buff,NULL,SW_SHOWNORMAL)
+	Else
+		MakeRun=WinExec(@buff,SW_SHOWNORMAL)
+	EndIf
 
 End Function
 

@@ -229,6 +229,7 @@ Lang=English (default), By FbEdit team
 5506=Command line
 5517=Output filename:
 5518=Run Command line parameter:
+5526=Start cmd.exe
 5525=Auto delete files after build (*.obj ; *.a):
 5519=Resource Name Export File:
 5520=Project File Grouping

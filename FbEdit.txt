@@ -13,6 +13,8 @@ o Added code complete on enums.
 o Added code complete on cast to UDT.
 o You can now change the order of tabs by dragging them to a new position.
 o The tabs order is saved to project file.
+o Project Options now has an option to start cmd.exe. This makes it possible to handle
+  input / optput redirections on command line.
 o Fixed bug where Quick run toolbar button was not shown.
 o Fixed a Find and Replace bug.
 o Fixed bug with ini file generation on a clean install. Could result in loss of text colors.
