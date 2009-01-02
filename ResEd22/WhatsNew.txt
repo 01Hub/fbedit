@@ -3,6 +3,7 @@ ResEd
 2.2.0.1 -2008-12-21
 o Fixed bug with opening project by command line or drop file.
   Did not set / open include file properly.
+o Fixed paint bug when selectin control by using keyboard.
 
 2.2.0.0d - 2008-12-04
 ---------------------
