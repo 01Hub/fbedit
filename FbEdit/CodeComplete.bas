@@ -145,7 +145,6 @@ Sub GetItems(ByVal ntype As Integer)
 		If x Then
 			lstrcpyn(ccpos,@s,x)
 			s=*(lps+x)
-'			s=Mid(s,x+1)
 		Else
 			lstrcpy(ccpos,@s)
 		EndIf
@@ -173,7 +172,6 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
-'		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 		lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
@@ -235,8 +233,6 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 		EndIf
 		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-'		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-'		UpdateWindow(ah.hcc)
 	EndIf
 
 End Sub
@@ -293,6 +289,10 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 				While Right(sItem,1)=Chr(VK_SPACE) Or Right(sItem,1)=Chr(VK_TAB)
 					sItem=Left(sItem,Len(sItem)-1)
 				Wend
+				x=InStr(sItem," ")
+				If x Then
+					sItem=Left(sItem,x-1)
+				EndIf
 				p=@sLine
 				x=Len(sLine)
 				SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
@@ -449,7 +449,6 @@ Sub UpdateTypeList()
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
-'		SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 		lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 		buff=Chr(255) & Chr(1)
@@ -474,8 +473,6 @@ Sub UpdateTypeList()
 		Loop
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-'		SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-'		UpdateWindow(ah.hcc)
 		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
 			ftypelist=TRUE
 		EndIf
