@@ -1160,13 +1160,25 @@ GetCommand proc uses esi edi,lpCommand:DWORD
 	.if eax!='exe.'
 		invoke strcat,addr buffer,addr szdotexe
 	.endif
-	invoke LoadCursor,0,IDC_ARROW
-	invoke SetCursor,eax
-	invoke ModalDialog,hInstance,IDD_DLGACCEPT,hWnd,offset AcceptDlgProc,addr buffer
-	push	eax
-	invoke LoadCursor,0,IDC_WAIT
-	invoke SetCursor,eax
-	pop		eax
+	invoke iniInStr,addr szaccept,addr buffer
+	.if eax==-1
+		invoke LoadCursor,0,IDC_ARROW
+		invoke SetCursor,eax
+		invoke ModalDialog,hInstance,IDD_DLGACCEPT,hWnd,offset AcceptDlgProc,addr buffer
+		push	eax
+		.if eax==2
+			.if szaccept
+				invoke strcat,addr szaccept,addr szComma
+			.endif
+			invoke strcat,addr szaccept,addr buffer
+			invoke WritePrivateProfileString,addr iniAccept,addr iniAccept,addr szaccept,addr iniFile
+		.endif
+		invoke LoadCursor,0,IDC_WAIT
+		invoke SetCursor,eax
+		pop		eax
+	.else
+		mov		eax,1
+	.endif
 	ret
 
 GetCommand endp
@@ -1177,9 +1189,9 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
-;	invoke GetCommand,addr outbuffer
-;	or		eax,eax
-;	je		Ex
+	invoke GetCommand,addr outbuffer
+	or		eax,eax
+	je		Ex
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr outbuffer
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr szCrLf
 	invoke SendMessage,hOutREd,EM_SCROLLCARET,0,0

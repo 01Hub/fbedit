@@ -1394,6 +1394,9 @@ Function CCProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByV
 		Case WM_ACTIVATE
 			SendMessage(ah.hwnd,WM_NCACTIVATE,TRUE,0)
 			'
+		Case WM_SIZING
+			wpos.ptcclist.y=Cast(RECT Ptr,lParam)->bottom-Cast(RECT Ptr,lParam)->top
+			'
 	End Select
 	Return CallWindowProc(lpOldCCProc,hWin,uMsg,wParam,lParam)
 

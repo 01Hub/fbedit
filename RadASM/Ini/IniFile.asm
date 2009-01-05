@@ -98,6 +98,8 @@ iniDefSrc			db 'Assembly (*.asm),*.asm,asm',0
 iniDefHdr			db 'Include (*.inc),*.inc,inc',0
 iniDefMod			db 'Module (*.asm),*.asm,asm',0
 
+iniAccept			db 'Accept',0
+
 .code
 
 GetRecentFiles proc uses esi
@@ -1183,6 +1185,7 @@ iniRead proc
 		mov		PosProWizLeft,eax
 		invoke DecToBin,addr iniBuffer
 		mov		PosProWizTop,eax
+		invoke GetPrivateProfileString,addr iniAccept,addr iniAccept,addr szNULL,addr szaccept,64,addr iniFile
 		;Project options
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinProOpt,addr iniDefProOpt,addr iniBuffer,64,addr iniFile
 		invoke iniGetItem,addr iniBuffer,addr buffer
