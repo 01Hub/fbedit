@@ -725,6 +725,15 @@ TestWord:
 		.endif
 		pop		ecx
 		retn
+	.elseif ax=="/'"
+		xor		eax,eax
+		push	ecx
+		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
+		.if cx!="/'"
+			dec		eax
+		.endif
+		pop		ecx
+		retn
 	.elseif al=='*'
 		xor		eax,eax
 		push	ecx

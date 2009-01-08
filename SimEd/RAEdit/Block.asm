@@ -110,25 +110,25 @@ GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 				inc		nLine
 				inc		nLines
 			.endw
-		.else
-			test	flag,BD_COMMENTBLOCK
-			.if !ZERO?
-				mov		esi,[ebx].EDIT.rpLineFree
-				sub		esi,4
-				inc		nLine
-				.while TRUE
-					mov		edi,nLine
-					shl		edi,2
-					.break .if edi>=esi
-					add		edi,[ebx].EDIT.hLine
-					mov		edi,[edi].LINE.rpChars
-					add		edi,[ebx].EDIT.hChars
-					test	[edi].CHARS.state,STATE_COMMENT
-					.break .if ZERO?
-					inc		nLine
-					inc		nLines
-				.endw
-			.endif
+;		.else
+;			test	flag,BD_COMMENTBLOCK
+;			.if !ZERO?
+;				mov		esi,[ebx].EDIT.rpLineFree
+;				sub		esi,4
+;				inc		nLine
+;				.while TRUE
+;					mov		edi,nLine
+;					shl		edi,2
+;					.break .if edi>=esi
+;					add		edi,[ebx].EDIT.hLine
+;					mov		edi,[edi].LINE.rpChars
+;					add		edi,[ebx].EDIT.hChars
+;					test	[edi].CHARS.state,STATE_COMMENT
+;					.break .if ZERO?
+;					inc		nLine
+;					inc		nLines
+;				.endw
+;			.endif
 		.endif
 		mov		eax,nLines
 	.endif
@@ -382,7 +382,6 @@ SetBlocks proc uses ebx esi edi,hMem:DWORD,lpLnrg:DWORD,lpBlockDef:DWORD
 							add		edi,[ebx].EDIT.hLine
 							mov		edi,[edi].LINE.rpChars
 							add		edi,[ebx].EDIT.hChars
-							;and		[edi].CHARS.state,-1 xor (STATE_BMMASK or STATE_SEGMENTBLOCK or STATE_DIVIDERLINE)
 							or		[edi].CHARS.state,STATE_ALTHILITE
 						.endif
 					.endw
@@ -584,77 +583,60 @@ CollapseGetEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 			mov		eax,edi
 			jmp		Ex
 		.else
-			test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
+			inc		nNest
+			inc		edi
+			test	[eax].RABLOCKDEF.flag,BD_LOOKAHEAD
 			.if !ZERO?
-				inc		edi
+				mov		esi,eax
+				mov		eax,edi
+				add		eax,500
+				.if eax<nMax
+					mov		nMax,eax
+				.endif
 				.while edi<nMax
-					mov		esi,edi
-					shl		esi,2
-					add		esi,[ebx].EDIT.hLine
-					mov		esi,[esi]
-					add		esi,[ebx].EDIT.hChars
-					test	[esi].CHARS.state,STATE_COMMENT
-				  .break .if ZERO?
+					invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszStart
+				  .break .if eax!=-1
+					invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszEnd
+					.if eax!=-1
+						mov		nLines,edi
+					.endif
 					inc		edi
 				.endw
+				mov		edi,nLines
 				mov		eax,edi
 				jmp		Ex
 			.else
-				inc		nNest
-				inc		edi
-				test	[eax].RABLOCKDEF.flag,BD_LOOKAHEAD
-				.if !ZERO?
-					mov		esi,eax
-					mov		eax,edi
-					add		eax,500
-					.if eax<nMax
-						mov		nMax,eax
-					.endif
-					.while edi<nMax
-						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszStart
-					  .break .if eax!=-1
-						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszEnd
-						.if eax!=-1
-							mov		nLines,edi
-						.endif
-						inc		edi
-					.endw
-					mov		edi,nLines
-					mov		eax,edi
-					jmp		Ex
-				.else
-					.while edi<nMax
-						invoke TestBlockStart,ebx,edi
-						.if eax!=-1
-							test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+				.while edi<nMax
+					invoke TestBlockStart,ebx,edi
+					.if eax!=-1
+						test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+						.if ZERO?
+							test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
 							.if ZERO?
-								test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
-								.if ZERO?
-									mov		edx,nNest
-									mov		Nest[edx*4],eax
-									inc		nNest
-								.endif
-							.endif
-						.else
-							invoke TestBlockEnd,ebx,edi
-							.if eax!=-1
 								mov		edx,nNest
-								dec		edx
-								.if eax!=Nest[edx*4]
-									xor		eax,eax
-									dec		eax
-									jmp		Ex
-								.endif
-								dec		nNest
-								.if ZERO?
-									mov		eax,edi
-									jmp		Ex
-								.endif
+								mov		Nest[edx*4],eax
+								inc		nNest
 							.endif
 						.endif
-						inc		edi
-					.endw
-				.endif
+					.else
+						invoke TestBlockEnd,ebx,edi
+						.if eax!=-1
+							mov		edx,nNest
+							dec		edx
+							.if eax!=Nest[edx*4]
+								xor		eax,eax
+								dec		eax
+								jmp		Ex
+							.endif
+							dec		nNest
+							.if ZERO?
+								mov		eax,edi
+								jmp		Ex
+							.endif
+						.endif
+					.endif
+					inc		edi
+				.endw
 			.endif
 		.endif
 	.endif
@@ -702,167 +684,138 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 				inc		edi
 			.endw
 		.else
-			test	[esi].RABLOCKDEF.flag,BD_COMMENTBLOCK
+			mov		eax,[ebx].EDIT.rpLineFree
+			shr		eax,2
+			mov		nMax,eax
+			inc		nNest
+			inc		edi
+			test	[esi].RABLOCKDEF.flag,BD_LOOKAHEAD
 			.if !ZERO?
-				mov		eax,[ebx].EDIT.rpLineFree
-				shr		eax,2
-				mov		nMax,eax
+				mov		eax,edi
+				add		eax,500
+				.if eax<nMax
+					mov		nMax,eax
+				.endif
+				.while edi<nMax
+					invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszStart
+				  .break .if eax!=-1
+					invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszEnd
+					.if eax!=-1
+						mov		nLines,edi
+					.endif
+					inc		edi
+				.endw
+				test	[esi].RABLOCKDEF.flag,BD_INCLUDELAST
+				.if ZERO?
+					inc		nLines
+				.endif
+				mov		edi,nLine
 				invoke SetBookMark,ebx,edi,2
 				mov		edx,eax
 				inc		edi
-				.while edi<nMax
-					mov		esi,edi
-					shl		esi,2
-					add		esi,[ebx].EDIT.hLine
-					mov		esi,[esi]
-					add		esi,[ebx].EDIT.hChars
-					test	[esi].CHARS.state,STATE_COMMENT
-				  .break .if ZERO?
-					test	[esi].CHARS.state,STATE_HIDDEN
-					.if ZERO?
-						or		[esi].CHARS.state,STATE_HIDDEN
-						mov		[esi].CHARS.bmid,edx
-						inc		[ebx].EDIT.nHidden
+				.while edi<=nLines
+					xor		eax,eax
+					dec		eax
+					push	edx
+					.if [esi].RABLOCKDEF.lpszNot1
+						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
+						.if eax==-1
+							.if [esi].RABLOCKDEF.lpszNot2
+								invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
+							.endif
+						.endif
+					.endif
+					pop		edx
+					.if eax==-1
+						push	edi
+						shl		edi,2
+						add		edi,[ebx].EDIT.hLine
+						mov		edi,[edi]
+						add		edi,[ebx].EDIT.hChars
+						test	[edi].CHARS.state,STATE_HIDDEN
+						.if ZERO?
+							or		[edi].CHARS.state,STATE_HIDDEN
+							mov		[edi].CHARS.bmid,edx
+							inc		[ebx].EDIT.nHidden
+						.endif
+						pop		edi
 					.endif
 					inc		edi
 				.endw
 			.else
-				mov		eax,[ebx].EDIT.rpLineFree
-				shr		eax,2
-				mov		nMax,eax
-				inc		nNest
-				inc		edi
-				test	[esi].RABLOCKDEF.flag,BD_LOOKAHEAD
-				.if !ZERO?
-					mov		eax,edi
-					add		eax,500
-					.if eax<nMax
-						mov		nMax,eax
-					.endif
-					.while edi<nMax
-						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszStart
-					  .break .if eax!=-1
-						invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszEnd
-						.if eax!=-1
-							mov		nLines,edi
-						.endif
-						inc		edi
-					.endw
-					test	[esi].RABLOCKDEF.flag,BD_INCLUDELAST
+				.while edi<nMax
+					mov		eax,-1
+					test	[esi].RABLOCKDEF.flag,BD_NOBLOCK
 					.if ZERO?
-						inc		nLines
+						invoke TestBlockStart,ebx,edi
 					.endif
-					mov		edi,nLine
-					invoke SetBookMark,ebx,edi,2
-					mov		edx,eax
-					inc		edi
-					.while edi<=nLines
-						xor		eax,eax
-						dec		eax
-						push	edx
-						.if [esi].RABLOCKDEF.lpszNot1
-							invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
-							.if eax==-1
-								.if [esi].RABLOCKDEF.lpszNot2
-									invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
-								.endif
-							.endif
-						.endif
-						pop		edx
-						.if eax==-1
-							push	edi
-							shl		edi,2
-							add		edi,[ebx].EDIT.hLine
-							mov		edi,[edi]
-							add		edi,[ebx].EDIT.hChars
-							test	[edi].CHARS.state,STATE_HIDDEN
-							.if ZERO?
-								or		[edi].CHARS.state,STATE_HIDDEN
-								mov		[edi].CHARS.bmid,edx
-								inc		[ebx].EDIT.nHidden
-							.endif
-							pop		edi
-						.endif
-						inc		edi
-					.endw
-				.else
-					.while edi<nMax
-						mov		eax,-1
-						test	[esi].RABLOCKDEF.flag,BD_NOBLOCK
+					.if eax!=-1
+						test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
 						.if ZERO?
-							invoke TestBlockStart,ebx,edi
+							inc		nNest
 						.endif
+					.else
+						invoke TestBlockEnd,ebx,edi
 						.if eax!=-1
-							test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+							dec		nNest
 							.if ZERO?
-								test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
+								test	[esi].RABLOCKDEF.flag,BD_INCLUDELAST
 								.if ZERO?
-									inc		nNest
+									dec		edi
 								.endif
-							.endif
-						.else
-							invoke TestBlockEnd,ebx,edi
-							.if eax!=-1
-								dec		nNest
-								.if ZERO?
-									test	[esi].RABLOCKDEF.flag,BD_INCLUDELAST
-									.if ZERO?
-										dec		edi
-									.endif
-									mov		nLines,edi
-									mov		edi,nLine
-									invoke SetBookMark,ebx,edi,2
-									mov		edx,eax
-									inc		edi
-									.while edi<=nLines
-										push	edx
-										invoke TestBlockStart,ebx,edi
+								mov		nLines,edi
+								mov		edi,nLine
+								invoke SetBookMark,ebx,edi,2
+								mov		edx,eax
+								inc		edi
+								.while edi<=nLines
+									push	edx
+									invoke TestBlockStart,ebx,edi
+									.if eax!=-1
+										inc		nNest
+									.else
+										invoke TestBlockEnd,ebx,edi
 										.if eax!=-1
-											inc		nNest
-										.else
-											invoke TestBlockEnd,ebx,edi
-											.if eax!=-1
-												dec		nNest
+											dec		nNest
+										.endif
+									.endif
+									pop		edx
+									xor		eax,eax
+									dec		eax
+									.if !nNest
+										push	edx
+										.if [esi].RABLOCKDEF.lpszNot1
+											invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
+											.if eax==-1
+												.if [esi].RABLOCKDEF.lpszNot2
+													invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
+												.endif
 											.endif
 										.endif
 										pop		edx
-										xor		eax,eax
-										dec		eax
-										.if !nNest
-											push	edx
-											.if [esi].RABLOCKDEF.lpszNot1
-												invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
-												.if eax==-1
-													.if [esi].RABLOCKDEF.lpszNot2
-														invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
-													.endif
-												.endif
-											.endif
-											pop		edx
+									.endif
+									.if eax==-1
+										push	edi
+										shl		edi,2
+										add		edi,[ebx].EDIT.hLine
+										mov		edi,[edi]
+										add		edi,[ebx].EDIT.hChars
+										test	[edi].CHARS.state,STATE_HIDDEN
+										.if ZERO?
+											or		[edi].CHARS.state,STATE_HIDDEN
+											mov		[edi].CHARS.bmid,edx
+											inc		[ebx].EDIT.nHidden
 										.endif
-										.if eax==-1
-											push	edi
-											shl		edi,2
-											add		edi,[ebx].EDIT.hLine
-											mov		edi,[edi]
-											add		edi,[ebx].EDIT.hChars
-											test	[edi].CHARS.state,STATE_HIDDEN
-											.if ZERO?
-												or		[edi].CHARS.state,STATE_HIDDEN
-												mov		[edi].CHARS.bmid,edx
-												inc		[ebx].EDIT.nHidden
-											.endif
-											pop		edi
-										.endif
-										inc		edi
-									.endw
-									jmp		Ex
-								.endif
+										pop		edi
+									.endif
+									inc		edi
+								.endw
+								jmp		Ex
 							.endif
 						.endif
-						inc		edi
-					.endw
-				.endif
+					.endif
+					inc		edi
+				.endw
 			.endif
 		.endif
 	  Ex:
