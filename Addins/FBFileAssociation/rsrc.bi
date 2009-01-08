@@ -2,13 +2,13 @@
 #define IDC_STC1                1009
 #define IDD_DLG1                1000
 #define IDC_GRP1                1001
-#define IDC_GRP2                1008
 #define baBAS                   1002
 #define baBI                    1003
 #define baFBP                   1004
 #define baRC                    1005
 #define baDOIT                  1006
 #define baCLOSE                 1007
+#define IDC_GRP2                1008
 #define IDC_STC1                1009
 #define IDC_IMG1                1010
 #define IDC_IMG2                1011
