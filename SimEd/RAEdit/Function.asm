@@ -496,6 +496,25 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 				inc		esi
 				call	OptSkipWord
 				jmp		Nxt
+			.elseif ax=="'/"
+				call	SkipSpc
+				or		eax,eax
+				jne		Nf
+				cmp		word ptr [edi+ecx+sizeof CHARS],"'/"
+				jne		Nf
+				add		ecx,2
+				.while ecx<[edi].CHARS.len
+					cmp		word ptr [edi+ecx+sizeof CHARS],"/'"
+					je		Nf
+					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	esi,byte ptr [esi+offset CharTab]
+					.if esi==CT_STRING
+						call	SkipString
+					.endif
+					inc		ecx
+				.endw
+				xor		eax,eax
+				jmp		Found
 			.endif
 			call	TestWord
 			or		eax,eax
@@ -760,22 +779,27 @@ TestWord:
 		.endif
 		inc		esi
 		mov		tmpesi,esi
-		.while TRUE
-			push	ecx
-			call	TestWord
-			pop		edx
-			inc		eax
-		  .break .if eax
-			mov		esi,tmpesi
-			mov		ecx,edx
-			call	SkipWord
-			.if eax
-				inc		ecx
-			.endif
-			call	SkipSpc
-			xor		eax,eax
-		  .break .if ecx>=[edi].CHARS.len
-		.endw
+		mov		ax,[esi]
+		.if ax=="/'"
+PrintHex eax
+		.else
+			.while TRUE
+				push	ecx
+				call	TestWord
+				pop		edx
+				inc		eax
+			  .break .if eax
+				mov		esi,tmpesi
+				mov		ecx,edx
+				call	SkipWord
+				.if eax
+					inc		ecx
+				.endif
+				call	SkipSpc
+				xor		eax,eax
+			  .break .if ecx>=[edi].CHARS.len
+			.endw
+		.endif
 		retn
 	.elseif ax==' $'
 		call	SkipWord

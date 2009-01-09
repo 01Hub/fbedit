@@ -1007,7 +1007,6 @@ TestExpand endp
 
 SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	LOCAL	nLine:DWORD
-;	LOCAL	fCmnt:DWORD
 	LOCAL	nCmnt:DWORD
 	LOCAL	fLn:DWORD
 	LOCAL	cmntchar:DWORD
@@ -1030,7 +1029,6 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		ebx,hMem
 		xor		ecx,ecx
 		mov		nLine,ecx
-;		mov		fCmnt,ecx
 		mov		nCmnt,ecx
 		mov		fChanged,ecx
 		mov		fLn,ecx
@@ -1044,6 +1042,7 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			add		esi,[ebx].EDIT.hChars
 			push	[esi].CHARS.state
 			mov		edx,lpStart
+			mov		ax,[edx]
 			call	IsLineStart
 			.if !eax
 				inc		nCmnt
@@ -1062,29 +1061,6 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 					dec		nCmnt
 				.endif
 			.endif
-;			.if fCmnt
-;				.if fCmnt==1
-;					and		[esi].CHARS.state,-1 xor STATE_COMMENT
-;					inc		fCmnt
-;				.else
-;					or		[esi].CHARS.state,STATE_COMMENT
-;				.endif
-;				mov		edx,lpEnd
-;				call	IsLineEnd
-;				.if !eax
-;					mov		fCmnt,0
-;				.endif
-;				xor		ecx,ecx
-;			.else
-;				mov		edx,lpStart
-;				call	IsLineStart
-;				.if !eax
-;					mov		fCmnt,1
-;					dec		nLine
-;				.else
-;					and		[esi].CHARS.state,-1 xor STATE_COMMENT
-;				.endif
-;			.endif
 			pop		eax
 			.if eax!=[esi].CHARS.state
 				inc		fChanged
