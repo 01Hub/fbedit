@@ -169,55 +169,11 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 			mov		fbyte,eax
 		.endif
 	  @@:
-		invoke SearchMemDown,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
-		.if eax
-			mov		esi,eax
-			mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
-;			dec		eax
-			.while eax>lpMem
-				.break .if byte ptr [eax-1]==0Dh || byte ptr [eax-1]==0Ah
-				dec		eax
-			.endw
-			mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szString
-			mov		edx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
-			.while eax<esi
-				.if byte ptr [eax]==cl || byte ptr [eax]==ch
-					;String
-					invoke DestroyString,eax
-					mov		esi,eax
-					jmp		@b
-				.elseif (byte ptr [eax]==cl && ch==0) || word ptr [eax]==dx
-					;Comment
-					invoke DestroyToEol,eax
-					mov		esi,eax
-					jmp		@b
-				.endif
-				inc		eax
-			.endw
-			.if fbyte
-				add		esi,fbyte
-				.while byte ptr [esi]==' ' || byte ptr [esi]==VK_TAB
-					inc		esi
-				.endw
-				mov		ah,[esi]
-				.if ah!=0Dh && ah!=0Ah
-					mov		byte ptr [esi],' '
-				.endif
-				.while ah!=byte ptr [esi] && byte ptr [esi+1]
-					mov		al,[esi]
-					.if al!=0Dh && al!=0Ah
-						mov		byte ptr [esi],' '
-					.endif
-					inc		esi
-				.endw
-				mov		al,[esi]
-				.if al!=0Dh && al!=0Ah
-					mov		byte ptr [esi],' '
-					inc		esi
-				.endif
-				jmp		@b
-			.else
-				invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+		.if word ptr buffer=="'/"
+			invoke SearchMemDown,esi,addr buffer,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
+			.if eax
+				mov		esi,eax
+				invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
 				.if eax
 					mov		edx,eax
 					.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
@@ -231,6 +187,72 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 						inc		esi
 					.endw
 					jmp		@b
+				.endif
+			.endif
+		.else
+			invoke SearchMemDown,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+			.if eax
+				mov		esi,eax
+				mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
+	;			dec		eax
+				.while eax>lpMem
+					.break .if byte ptr [eax-1]==0Dh || byte ptr [eax-1]==0Ah
+					dec		eax
+				.endw
+				mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szString
+				mov		edx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
+				.while eax<esi
+					.if byte ptr [eax]==cl || byte ptr [eax]==ch
+						;String
+						invoke DestroyString,eax
+						mov		esi,eax
+						jmp		@b
+					.elseif (byte ptr [eax]==cl && ch==0) || word ptr [eax]==dx
+						;Comment
+						invoke DestroyToEol,eax
+						mov		esi,eax
+						jmp		@b
+					.endif
+					inc		eax
+				.endw
+				.if fbyte
+					add		esi,fbyte
+					.while byte ptr [esi]==' ' || byte ptr [esi]==VK_TAB
+						inc		esi
+					.endw
+					mov		ah,[esi]
+					.if ah!=0Dh && ah!=0Ah
+						mov		byte ptr [esi],' '
+					.endif
+					.while ah!=byte ptr [esi] && byte ptr [esi+1]
+						mov		al,[esi]
+						.if al!=0Dh && al!=0Ah
+							mov		byte ptr [esi],' '
+						.endif
+						inc		esi
+					.endw
+					mov		al,[esi]
+					.if al!=0Dh && al!=0Ah
+						mov		byte ptr [esi],' '
+						inc		esi
+					.endif
+					jmp		@b
+				.else
+					invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+					.if eax
+						mov		edx,eax
+						.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
+							inc		edx
+						.endif
+						.while esi<=edx
+							mov		al,[esi]
+							.if al!=0Dh && al!=0Ah
+								mov		byte ptr [esi],' '
+							.endif
+							inc		esi
+						.endw
+						jmp		@b
+					.endif
 				.endif
 			.endif
 		.endif

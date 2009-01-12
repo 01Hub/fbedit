@@ -611,12 +611,12 @@ CollapseGetEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 					.if eax!=-1
 						test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
 						.if ZERO?
-							test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
-							.if ZERO?
+;							test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
+;							.if ZERO?
 								mov		edx,nNest
 								mov		Nest[edx*4],eax
 								inc		nNest
-							.endif
+;							.endif
 						.endif
 					.else
 						invoke TestBlockEnd,ebx,edi

@@ -450,11 +450,11 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
-		mov		ax,[esi]
-		.if ax!="/'" && ax!="'/"
-			test	[edi].CHARS.state,STATE_COMMENT
-			jne		Nf
-		.endif
+;		mov		ax,[esi]
+;		.if ax!="/'" && ax!="'/"
+;			test	[edi].CHARS.state,STATE_COMMENT
+;			jne		Nf
+;		.endif
 		xor		ecx,ecx
 		call	SkipSpc
 		or		eax,eax
@@ -562,8 +562,21 @@ SkipString:
 
 SkipSpc:
 	.if ecx<[edi].CHARS.len
-		mov		al,[edi+ecx+sizeof CHARS]
-		.if al==VK_TAB || al==' ' || al==':' || al=='*'
+		mov		ax,[edi+ecx+sizeof CHARS]
+		.if ax=="'/"
+			push	ecx
+			add		ecx,2
+			.while ecx<[edi].CHARS.len
+				.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
+				inc		ecx
+			.endw
+			.if word ptr [edi+ecx+sizeof CHARS]=="/'"
+				add		ecx,2
+				pop		eax
+				jmp		SkipSpc
+			.endif
+			pop		ecx
+		.elseif al==VK_TAB || al==' ' || al==':' || al=='*'
 			inc		ecx
 			jmp		SkipSpc
 		.elseif al=='"'
@@ -780,26 +793,22 @@ TestWord:
 		inc		esi
 		mov		tmpesi,esi
 		mov		ax,[esi]
-		.if ax=="/'"
-PrintHex eax
-		.else
-			.while TRUE
-				push	ecx
-				call	TestWord
-				pop		edx
-				inc		eax
-			  .break .if eax
-				mov		esi,tmpesi
-				mov		ecx,edx
-				call	SkipWord
-				.if eax
-					inc		ecx
-				.endif
-				call	SkipSpc
-				xor		eax,eax
-			  .break .if ecx>=[edi].CHARS.len
-			.endw
-		.endif
+		.while TRUE
+			push	ecx
+			call	TestWord
+			pop		edx
+			inc		eax
+		  .break .if eax
+			mov		esi,tmpesi
+			mov		ecx,edx
+			call	SkipWord
+			.if eax
+				inc		ecx
+			.endif
+			call	SkipSpc
+			xor		eax,eax
+		  .break .if ecx>=[edi].CHARS.len
+		.endw
 		retn
 	.elseif ax==' $'
 		call	SkipWord
@@ -2028,30 +2037,45 @@ IsCharPos proc uses ebx esi,hMem:DWORD,cp:DWORD
 	.if ZERO?
 		xor		ecx,ecx
 		.while ecx<nMax
-			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-			mov		al,byte ptr [eax+offset CharTab]
-			.if al==CT_CMNTCHAR
-				mov		eax,2
-				jmp		Ex
-			.elseif al==CT_CMNTDBLCHAR
-				mov		al,byte ptr [esi+ecx+sizeof CHARS]
-				mov		ah,byte ptr [esi+ecx+sizeof CHARS+1]
-				.if al==ah || ah=='*'
+			.if word ptr [esi+ecx+sizeof CHARS]=="'/"
+				add		ecx,2
+				.while ecx<nMax
+					.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
+					inc		ecx
+				.endw
+				.if word ptr [edi+ecx+sizeof CHARS]=="/'"
+					add		ecx,2
+				.else
+					;On comment block
+					mov		eax,1
+					jmp		Ex
+				.endif
+			.else
+				movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+				mov		al,byte ptr [eax+offset CharTab]
+				.if al==CT_CMNTCHAR
 					mov		eax,2
 					jmp		Ex
+				.elseif al==CT_CMNTDBLCHAR
+					mov		al,byte ptr [esi+ecx+sizeof CHARS]
+					mov		ah,byte ptr [esi+ecx+sizeof CHARS+1]
+					.if al==ah || ah=='*'
+						mov		eax,2
+						jmp		Ex
+					.endif
+				.elseif al==CT_STRING
+					mov		al,byte ptr [esi+ecx+sizeof CHARS]
+					.while ecx<nMax
+						inc		ecx
+						.break .if al==byte ptr [esi+ecx+sizeof CHARS]
+					.endw
+					.if ecx>=nMax
+						mov		eax,3
+						jmp		Ex
+					.endif
 				.endif
-			.elseif al==CT_STRING
-				mov		al,byte ptr [esi+ecx+sizeof CHARS]
-				.while ecx<nMax
-					inc		ecx
-					.break .if al==byte ptr [esi+ecx+sizeof CHARS]
-				.endw
-				.if ecx>=nMax
-					mov		eax,3
-					jmp		Ex
-				.endif
+				inc		ecx
 			.endif
-			inc		ecx
 		.endw
 		xor		eax,eax
 	.else
