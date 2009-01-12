@@ -888,7 +888,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						tt.lpszType=StrPtr("Ppt")
 						tt.lpszLine=@buff
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_CHAR)
-						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And (InStr(buff,"(")<>0 Or InStr(buff," ")<>0) Then
+						' Is line function or sub
+						lx=SendMessage(hPar,REM_ISLINE,lp,Cast(LPARAM,@szST(0)))
+						If lx=-1 Then
+							lx=SendMessage(hPar,REM_ISLINE,lp,Cast(LPARAM,@szST(1)))
+						EndIf
+						If SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))<>0 And (InStr(buff,"(")<>0 Or InStr(buff," ")<>0) And lx=-1 Then
 							If ShowTooltip(hWin,@tt)=FALSE Then
 								If InStr(buff,".") Then
 									buff=Mid(buff,InStr(buff,".")+1)
