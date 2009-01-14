@@ -546,7 +546,7 @@ CloseNtmsSession,hSession:HANDLE|DWORD
 ClosePrinter,hPrinter:HANDLE|BOOL
 ClosePrivateNamespace,Handle:HANDLE,Flags:ULONG|BOOLEAN
 CloseServiceHandle,hSCObject:SC_HANDLE|BOOL
-closesocket,s:SOCKET|Integer
+CloseSocket,s:SOCKET|Integer
 CloseThreadpool,ptpp:PTP_POOL
 CloseThreadpoolCleanupGroup,ptpcg:PTP_CLEANUP_GROUP
 CloseThreadpoolCleanupGroupMembers,ptpcg:PTP_CLEANUP_GROUP,fCancelPendingCallbacks:BOOL,pvCleanupContext:Any Ptr
@@ -3892,7 +3892,7 @@ InternetTimeToSystemTime,lpszTime,pst,dwReserved
 InternetUnlockRequestFile,hLockRequestInfo
 InternetWriteFile,hFile,lpBuffer,dwNumberOfBytesToWrite,lpdwNumberOfBytesWritten
 IntlStrEqWorker,fCaseSens,lpString1,lpString2,nChar
-ioctlsocket,s,cmd,argp
+IOCtlSocket,s,cmd,argp
 IpReleaseAddress,AdapterInfo
 IpRenewAddress,AdapterInfo
 IpxRecvPacket,Handle,IpxPacket,IpxPacketLength,lpReserved,lpOverlapped,CompletionRoutine
@@ -6010,7 +6010,7 @@ SnmpUtilVarBindCpy,pVbDst,pVbSrc
 SnmpUtilVarBindFree,pVb
 SnmpUtilVarBindListCpy,pVblDst,pVblSrc
 SnmpUtilVarBindListFree,pVbl
-socket,af,lType,protocol
+Socket,af,lType,protocol
 SoftwareUpdateMessageBox,hWnd,szDistUnit,dwFlags,psdi
 SplitSymbols,ImageName,SymbolsPath,SymbolFilePath,Flags
 SQLAllocConnect,henv,phdbc

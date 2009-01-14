@@ -191,6 +191,7 @@ Oct,number:LongInt|String
 Oct,number:Short,digits:Integer|String
 Oct,number:Short|String
 OffsetOf,typename,fieldname
+OpenSocket,af:Integer,type:Integer,protocol:Integer|SOCKET
 Or,ByRef lhs:Any,ByRef rhs:Any|Any
 Out,port:UShort,Data:UByte|Integer
 PCopy,source:Integer,destination:Integer
