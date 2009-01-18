@@ -1011,19 +1011,45 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 		Case WM_LBUTTONDOWN
 			ht.pt.x=LoWord(lParam)
 			ht.pt.y=HiWord(lParam)
-			i=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
-			'
-		Case WM_LBUTTONUP
-			ht.pt.x=LoWord(lParam)
-			ht.pt.y=HiWord(lParam)
 			lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
-			If lret<>i And lret>=0 And i>=0 Then
-				tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
-				tci.pszText=@buffer
-				tci.cchTextMax=260
-				SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
-				SendMessage(hWin,TCM_DELETEITEM,i,0)
-				SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
+			If lret<>-1 Then
+				tci.mask=TCIF_PARAM
+				SendMessage(hWin,TCM_GETITEM,lret,Cast(Integer,@tci))
+				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
+				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
+				SetFocus(ah.hred)
+				i=lret
+				Return 0
+			EndIf
+			'
+		'Case WM_LBUTTONUP
+		'	ht.pt.x=LoWord(lParam)
+		'	ht.pt.y=HiWord(lParam)
+		'	lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
+		'	If lret<>i And lret>=0 And i>=0 Then
+		'		tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+		'		tci.pszText=@buffer
+		'		tci.cchTextMax=260
+		'		SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
+		'		SendMessage(hWin,TCM_DELETEITEM,i,0)
+		'		SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
+		'	EndIf
+		'	'
+		Case WM_MOUSEMOVE
+			If wParam And MK_LBUTTON Then
+				ht.pt.x=LoWord(lParam)
+				ht.pt.y=HiWord(lParam)
+				lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
+				If lret<>i And lret>=0 And i>=0 Then
+					tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+					tci.pszText=@buffer
+					tci.cchTextMax=260
+					SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
+					SendMessage(hWin,TCM_DELETEITEM,i,0)
+					SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
+					i=lret
+				EndIf
+				Return 0
 			EndIf
 			'
 	End Select

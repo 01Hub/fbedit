@@ -119,9 +119,9 @@ Sub ClearIndicators
 			TabItem.mask = TCIF_TEXT
 			TabItem.pszText = StrPtr(TabText)
 		End If
-		If TabImage > 6 Then
+		If TabImage > 7 Then
 			TabItem.mask Or= TCIF_IMAGE
-			TabItem.iImage = TabImage - 7
+			TabItem.iImage = TabImage - 8
 		End If
 		SendMessage lpHandles->htabtool, TCM_SETITEM, TabIndex, Cast(LPARAM,VarPtr(TabItem))
 	Next
@@ -144,9 +144,9 @@ Sub UpdateTab(ByRef theTab As TABMEM, index As Integer)
 		End If
 		If item.mask And TCIF_IMAGE Then
 			If changed Then 
-				image += 7
+				image += 8
 			Else
-				image -= 7
+				image -= 8
 			End If
 			item.iImage = image
 		

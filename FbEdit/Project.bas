@@ -311,7 +311,12 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 	tvins.item.mask=TVIF_TEXT Or TVIF_PARAM Or TVIF_IMAGE Or TVIF_SELECTEDIMAGE
 	tvins.item.pszText=lpPth
 	If lParam>=1001 And nImg=1 Then
+		' Module
 		nImg=6
+	ElseIf lParam=nMain And nImg=1 Then
+		' Main file
+		nImg=7
+TextToOutput("Main " & Str(lParam))
 	EndIf
 	tvins.item.iImage=nImg
 	tvins.item.iSelectedImage=nImg
@@ -573,6 +578,7 @@ Function OpenProject() As Integer
 		WritePrivateProfileString(StrPtr("Project"),StrPtr("Version"),StrPtr("3"),@ad.ProjectFile)
 		tpe=3
 	EndIf
+	nMain=GetPrivateProfileInt(StrPtr("File"),StrPtr("Main"),1,ad.ProjectFile)
 	GetPrivateProfileString(StrPtr("Project"),StrPtr("ResExport"),"",@ad.resexport,SizeOf(ad.resexport),@ad.ProjectFile)
 	nProjectGroup=GetPrivateProfileInt(StrPtr("Project"),StrPtr("Grouping"),1,@ad.ProjectFile)
 	fAddMainFiles=GetPrivateProfileInt(StrPtr("Project"),StrPtr("AddMainFiles"),1,@ad.ProjectFile)
@@ -984,6 +990,8 @@ Sub SetAsMainProjectFile
 				nMiss=0
 				If lstrcmpi(@buff,@sItem)=0 Then
 					WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+					nMain=nInx
+					RefreshProjectTree
 					Exit Sub
 				EndIf
 			Else
@@ -1000,6 +1008,8 @@ Sub SetAsMainProjectFile
 				nMiss=0
 				If lstrcmpi(@buff,@sItem)=0 Then
 					WritePrivateProfileString(StrPtr("File"),StrPtr("Main"),Str(nInx),@ad.ProjectFile)
+					nMain=nInx
+					RefreshProjectTree
 					Exit Sub
 				EndIf
 			Else

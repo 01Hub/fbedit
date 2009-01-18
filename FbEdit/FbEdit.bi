@@ -412,6 +412,7 @@ Dim Shared fProject As Boolean
 Dim Shared ProjectDescription As ZString*260
 Dim Shared ProjectApiFiles As ZString*260
 Dim Shared ProjectDeleteFiles As ZString*260
+Dim Shared nMain As Integer
 Dim Shared fRecompile As Integer
 Dim Shared fNoResMode As Boolean
 Dim Shared nProjectGroup As Integer

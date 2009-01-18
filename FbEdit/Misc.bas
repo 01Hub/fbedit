@@ -2290,26 +2290,28 @@ Function OpenInclude() As String
 			buff=Mid(buff,x)
 			x=InStr(buff,"""")
 			buff=Left(buff,x-1)
-			If fProject Then
-				sItem=ad.ProjectPath & "\"
-			Else
-				sItem=ad.filename
-				GetFilePath(sItem)
-				sItem=sItem & "\"
-			EndIf
-			If GetFileAttributes(sItem & buff)<>-1 Then
-				buff=sItem & buff
-				GetFullPathName(@buff,260,@buff,@p)
-				Return buff
-			Else
-				If Len(ad.fbcPath) Then
-					buff=ad.fbcPath & "\inc\" & buff
+			If Len(buff) Then
+				If fProject Then
+					sItem=ad.ProjectPath & "\"
 				Else
-					buff=ad.AppPath & "\inc\" & buff
+					sItem=ad.filename
+					GetFilePath(sItem)
+					sItem=sItem & "\"
 				EndIf
-				If GetFileAttributes(buff)<>-1 Then
+				If GetFileAttributes(sItem & buff)<>-1 Then
+					buff=sItem & buff
 					GetFullPathName(@buff,260,@buff,@p)
 					Return buff
+				Else
+					If Len(ad.fbcPath) Then
+						buff=ad.fbcPath & "\inc\" & buff
+					Else
+						buff=ad.AppPath & "\inc\" & buff
+					EndIf
+					If GetFileAttributes(buff)<>-1 Then
+						GetFullPathName(@buff,260,@buff,@p)
+						Return buff
+					EndIf
 				EndIf
 			EndIf
 		EndIf
