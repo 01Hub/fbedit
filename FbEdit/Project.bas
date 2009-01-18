@@ -316,7 +316,6 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 	ElseIf lParam=nMain And nImg=1 Then
 		' Main file
 		nImg=7
-TextToOutput("Main " & Str(lParam))
 	EndIf
 	tvins.item.iImage=nImg
 	tvins.item.iSelectedImage=nImg
