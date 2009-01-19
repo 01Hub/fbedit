@@ -1021,6 +1021,71 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		[ebx].EDIT.ccmntblocks,1
 	.elseif word ptr [eax]=="'/" && word ptr [edx]=="/'"
 		mov		[ebx].EDIT.ccmntblocks,2
+		mov		ebx,hMem
+		xor		ecx,ecx
+		mov		nLine,ecx
+		mov		nCmnt,ecx
+		mov		fChanged,ecx
+		mov		fLn,ecx
+		mov		edi,[ebx].EDIT.rpLineFree
+		shr		edi,2
+		.while nLine<edi
+			mov		esi,nLine
+			shl		esi,2
+			add		esi,[ebx].EDIT.hLine
+			mov		esi,[esi]
+			add		esi,[ebx].EDIT.hChars
+			push	[esi].CHARS.state
+			xor		ecx,ecx
+			inc		ecx
+			mov		edx,lpStart
+			mov		ax,[edx]
+			.while ecx<[esi].CHARS.len
+				.if ax==[esi+ecx+sizeof CHARS-1]
+					add		ecx,2
+					xor		eax,eax
+					.break
+				.endif
+				inc		ecx
+			.endw
+			.if !eax
+				inc		nCmnt
+				inc		fLn
+			.else
+				xor		ecx,ecx
+				inc		ecx
+			.endif
+			.if nCmnt>1 || (nCmnt && !fLn)
+				or		[esi].CHARS.state,STATE_COMMENT
+			.else
+				and		[esi].CHARS.state,-1 xor STATE_COMMENT
+			.endif
+			mov		fLn,0
+			.if nCmnt
+				mov		edx,lpEnd
+				mov		ax,[edx]
+				.while ecx<[esi].CHARS.len
+					.if ax==[esi+ecx+sizeof CHARS-1]
+						xor		eax,eax
+						.break
+					.endif
+					inc		ecx
+				.endw
+				.if !eax
+					dec		nCmnt
+				.endif
+			.endif
+			pop		eax
+			.if eax!=[esi].CHARS.state
+				inc		fChanged
+			.endif
+			inc		nLine
+		.endw
+		.if fChanged
+			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
+			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
+		.endif
+		ret
 	.elseif word ptr [eax]=='{' && word ptr [edx]=='}'
 		mov		[ebx].EDIT.ccmntblocks,3
 	.endif
@@ -1043,7 +1108,18 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			push	[esi].CHARS.state
 			mov		edx,lpStart
 			mov		ax,[edx]
-			call	IsLineStart
+		.while ecx<[esi].CHARS.len
+			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+			movzx	eax,byte ptr [eax+offset CharTab]
+			.if eax==CT_STRING
+				call SkipString
+			.endif
+			mov		edx,lpStart
+			mov		ax,[edx]
+			
+			inc		ecx
+		  .break .if !eax
+		.endw
 			.if !eax
 				inc		nCmnt
 				inc		fLn

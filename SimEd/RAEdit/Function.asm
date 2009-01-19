@@ -450,15 +450,30 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
-		mov		ax,[esi]
-		.if ax!="/'" && ax!="'/"
-			test	[edi].CHARS.state,STATE_COMMENT
-			jne		Nf
-		.endif
+;		mov		ax,[esi]
+;		.if ax!="/'" && ax!="'/"
+;			test	[edi].CHARS.state,STATE_COMMENT
+;			jne		Nf
+;		.endif
 		xor		ecx,ecx
 		call	SkipSpc
 		or		eax,eax
 		jne		Nf
+;		mov		ax,[esi]
+;		.if ax=="'/"
+;		.elseif ax=="/'"
+;			xor		ecx,ecx
+;			push	ecx
+;			.while ecx<[edi].CHARS.len
+;				.if ax==[edi+ecx+sizeof CHARS]
+;					pop		eax
+;					xor		eax,eax
+;					je		Found
+;				.endif
+;				inc		ecx
+;			.endw
+;			pop		ecx
+;		.endif
 	  Nxt:
 		mov		ax,[esi]
 		.if ah
@@ -497,9 +512,23 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 				call	OptSkipWord
 				jmp		Nxt
 			.elseif ax=="'/"
+				; comment init
 				call	SkipSpc
 				or		eax,eax
 				jne		Nf
+				.while ecx<[edi].CHARS.len
+					cmp		word ptr [edi+ecx+sizeof CHARS],"'/"
+					.break .if ZERO?
+					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	esi,byte ptr [esi+offset CharTab]
+					.if esi==CT_STRING
+						call	SkipString
+					.endif
+					inc		ecx
+				.endw
+				.if ecx>=[edi].CHARS.len
+					jmp		Nf
+				.endif
 				cmp		word ptr [edi+ecx+sizeof CHARS],"'/"
 				jne		Nf
 				add		ecx,2
@@ -513,6 +542,28 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 					.endif
 					inc		ecx
 				.endw
+				xor		eax,eax
+				jmp		Found
+			.elseif ax=="/'"
+				; Comment end
+				call	SkipSpc
+				or		eax,eax
+				jne		Nf
+				.while ecx<[edi].CHARS.len
+					cmp		word ptr [edi+ecx+sizeof CHARS],"/'"
+					.break .if ZERO?
+					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	esi,byte ptr [esi+offset CharTab]
+					.if esi==CT_STRING
+						call	SkipString
+					.endif
+					inc		ecx
+				.endw
+				.if ecx>=[edi].CHARS.len
+					jmp		Nf
+				.endif
+				cmp		word ptr [edi+ecx+sizeof CHARS],"/'"
+				jne		Nf
 				xor		eax,eax
 				jmp		Found
 			.endif
@@ -562,21 +613,21 @@ SkipString:
 
 SkipSpc:
 	.if ecx<[edi].CHARS.len
-		mov		ax,[edi+ecx+sizeof CHARS]
-		.if ax=="'/"
-			push	ecx
-			add		ecx,2
-			.while ecx<[edi].CHARS.len
-				.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
-				inc		ecx
-			.endw
-			.if word ptr [edi+ecx+sizeof CHARS]=="/'"
-				add		ecx,2
-				pop		eax
-				jmp		SkipSpc
-			.endif
-			pop		ecx
-		.elseif al==VK_TAB || al==' ' || al==':' || al=='*'
+;		mov		ax,[edi+ecx+sizeof CHARS]
+;		.if ax=="'/"
+;			push	ecx
+;			add		ecx,2
+;			.while ecx<[edi].CHARS.len
+;				.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
+;				inc		ecx
+;			.endw
+;			.if word ptr [edi+ecx+sizeof CHARS]=="/'"
+;				add		ecx,2
+;				pop		eax
+;				jmp		SkipSpc
+;			.endif
+;			pop		ecx
+		.if al==VK_TAB || al==' ' || al==':' || al=='*'
 			inc		ecx
 			jmp		SkipSpc
 		.elseif al=='"'
@@ -744,24 +795,6 @@ TestWord:
 		push	ecx
 		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
 		.if cx!='/*'
-			dec		eax
-		.endif
-		pop		ecx
-		retn
-	.elseif ax=="'/"
-		xor		eax,eax
-		push	ecx
-		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
-		.if cx!="'/"
-			dec		eax
-		.endif
-		pop		ecx
-		retn
-	.elseif ax=="/'"
-		xor		eax,eax
-		push	ecx
-		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
-		.if cx!="/'"
 			dec		eax
 		.endif
 		pop		ecx

@@ -103,7 +103,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,96559
-16=0,0,810,411,8053
+16=0,0,810,411,8027
 22=0,0,0,0,4317
 23=0,0,0,0,27197
 24=0,0,0,0,713
@@ -117,7 +117,7 @@ CompanyName=
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,1370
-26=0,0,0,0,11423
+26=0,0,0,0,21095
 21=0,0,0,0,175
 14=0,0,0,0,8065
 
@@ -194,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -248,7 +248,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 18=
 4=
 13=,
-26=,,,,
+26=,,,,,
 21=,,
 14=
 
