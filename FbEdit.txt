@@ -3,6 +3,8 @@ Whats new:
 1.0.6.6b
 o Dragging a tab is now visible.
 o Selected main file is now shown as an icon with check mark in project browser.
+o Fixed bug with comment blocks.
+o Fixed bug with parsing api files. This bug made FbEdit unstable.
 1.0.6.6
 o FbEdit can now load and save unicode files. The Save As dialog has a checkbox and lets
   you convert to / from unicode.

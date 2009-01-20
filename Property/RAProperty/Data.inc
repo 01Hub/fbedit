@@ -84,6 +84,7 @@ szColon					db ':',0
 szSub					db 'SUB',0
 szFunction				db 'FUNCTION',0
 szAs					db ' As ',0
+szCRLF					db 0Dh,0Ah,0
 
 .data?
 
