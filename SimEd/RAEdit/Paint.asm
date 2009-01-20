@@ -26,6 +26,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	bCol:DWORD
 	LOCAL	fOpr:DWORD
 	LOCAL	fNum:DWORD
+	LOCAL	fCmntNest:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
@@ -55,6 +56,9 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 		mov		eax,edx
 		and		eax,STATE_COMMENT
 		mov		fCmnt,eax
+		mov		eax,edx
+		and		eax,STATE_COMMENTNEST
+		mov		fCmntNest,eax
 		and		edx,STATE_HILITEMASK
 		.if edx
 			.if edx==STATE_HILITE1
@@ -154,7 +158,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				push	ecx
 				mov		fBack,0
 				mov		fOpr,0
-				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt
+				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt && !fCmntNest
 					movzx	eax,word ptr [esi+edi-2]
 					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3)
 						mov		fCmnt,0

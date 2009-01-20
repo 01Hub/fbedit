@@ -2,6 +2,7 @@
 ;radasmide@hotmail.com
 
 .386
+
 .model flat, stdcall
 option casemap :none   ; case sensitive
 option proc:private

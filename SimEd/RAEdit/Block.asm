@@ -1008,7 +1008,7 @@ TestExpand endp
 SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	nCmnt:DWORD
-	LOCAL	fLn:DWORD
+	LOCAL	fCmnt:DWORD
 	LOCAL	cmntchar:DWORD
 	LOCAL	fChanged:DWORD
 
@@ -1026,7 +1026,6 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		nLine,ecx
 		mov		nCmnt,ecx
 		mov		fChanged,ecx
-		mov		fLn,ecx
 		mov		edi,[ebx].EDIT.rpLineFree
 		shr		edi,2
 		.while nLine<edi
@@ -1038,41 +1037,26 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			push	[esi].CHARS.state
 			xor		ecx,ecx
 			inc		ecx
-			mov		edx,lpStart
-			mov		ax,[edx]
+			mov		eax,nCmnt
+			mov		fCmnt,eax
 			.while ecx<[esi].CHARS.len
-				.if ax==[esi+ecx+sizeof CHARS-1]
+				.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
 					add		ecx,2
-					xor		eax,eax
-					.break
+					inc		nCmnt
+				.endif
+				.if word ptr [esi+ecx+sizeof CHARS-1]=="/'"
+					inc		ecx
+					.if nCmnt
+						dec		nCmnt
+					.endif
 				.endif
 				inc		ecx
 			.endw
-			.if !eax
-				inc		nCmnt
-				inc		fLn
-			.else
-				xor		ecx,ecx
-				inc		ecx
-			.endif
-			.if nCmnt>1 || (nCmnt && !fLn)
+			and		[esi].CHARS.state,-1 xor STATE_COMMENT or STATE_COMMENTNEST
+			.if nCmnt>1 || fCmnt
 				or		[esi].CHARS.state,STATE_COMMENT
-			.else
-				and		[esi].CHARS.state,-1 xor STATE_COMMENT
-			.endif
-			mov		fLn,0
-			.if nCmnt
-				mov		edx,lpEnd
-				mov		ax,[edx]
-				.while ecx<[esi].CHARS.len
-					.if ax==[esi+ecx+sizeof CHARS-1]
-						xor		eax,eax
-						.break
-					.endif
-					inc		ecx
-				.endw
-				.if !eax
-					dec		nCmnt
+				.if nCmnt && fCmnt
+					or		[esi].CHARS.state,STATE_COMMENT or STATE_COMMENTNEST
 				.endif
 			.endif
 			pop		eax
@@ -1096,7 +1080,7 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		nLine,ecx
 		mov		nCmnt,ecx
 		mov		fChanged,ecx
-		mov		fLn,ecx
+		mov		fCmnt,ecx
 		mov		edi,[ebx].EDIT.rpLineFree
 		shr		edi,2
 		.while nLine<edi
@@ -1108,28 +1092,17 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			push	[esi].CHARS.state
 			mov		edx,lpStart
 			mov		ax,[edx]
-		.while ecx<[esi].CHARS.len
-			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-			movzx	eax,byte ptr [eax+offset CharTab]
-			.if eax==CT_STRING
-				call SkipString
-			.endif
-			mov		edx,lpStart
-			mov		ax,[edx]
-			
-			inc		ecx
-		  .break .if !eax
-		.endw
+			call	IsLineStart
 			.if !eax
 				inc		nCmnt
-				inc		fLn
+				inc		fCmnt
 			.endif
-			.if nCmnt>1 || (nCmnt && !fLn)
+			.if nCmnt>1 || (nCmnt && !fCmnt)
 				or		[esi].CHARS.state,STATE_COMMENT
 			.else
 				and		[esi].CHARS.state,-1 xor STATE_COMMENT
 			.endif
-			mov		fLn,0
+			mov		fCmnt,0
 			.if nCmnt
 				mov		edx,lpEnd
 				call	IsLineEnd
