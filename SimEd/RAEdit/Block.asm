@@ -1040,17 +1040,25 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			mov		eax,nCmnt
 			mov		fCmnt,eax
 			.while ecx<[esi].CHARS.len
-				.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
-					add		ecx,2
-					inc		nCmnt
-				.endif
-				.if word ptr [esi+ecx+sizeof CHARS-1]=="/'"
-					inc		ecx
-					.if nCmnt
-						dec		nCmnt
+				movzx	eax,byte ptr [esi+ecx+sizeof CHARS-1]
+				.if byte ptr [eax+offset CharTab]==CT_STRING
+					.while ecx<[esi].CHARS.len
+						.break .if al==byte ptr [esi+ecx+sizeof CHARS]
+						inc		ecx
+					.endw
+				.else
+					.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
+						add		ecx,2
+						inc		nCmnt
 					.endif
+					.if word ptr [esi+ecx+sizeof CHARS-1]=="/'"
+						inc		ecx
+						.if nCmnt
+							dec		nCmnt
+						.endif
+					.endif
+					inc		ecx
 				.endif
-				inc		ecx
 			.endw
 			and		[esi].CHARS.state,-1 xor STATE_COMMENT or STATE_COMMENTNEST
 			.if nCmnt>1 || fCmnt
