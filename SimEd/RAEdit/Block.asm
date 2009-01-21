@@ -1043,8 +1043,8 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 				movzx	eax,byte ptr [esi+ecx+sizeof CHARS-1]
 				.if byte ptr [eax+offset CharTab]==CT_STRING
 					.while ecx<[esi].CHARS.len
-						.break .if al==byte ptr [esi+ecx+sizeof CHARS]
 						inc		ecx
+						.break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
 					.endw
 				.else
 					.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
