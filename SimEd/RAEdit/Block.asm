@@ -1056,8 +1056,8 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 							dec		nCmnt
 						.endif
 					.endif
-					inc		ecx
 				.endif
+					inc		ecx
 			.endw
 			and		[esi].CHARS.state,-1 xor STATE_COMMENT or STATE_COMMENTNEST
 			.if nCmnt>1 || fCmnt

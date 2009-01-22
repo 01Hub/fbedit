@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.209
-PV=1.2.0.209
+FV=1.2.0.210
+PV=1.2.0.210
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.209
+ProductVersion=1.2.0.210
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.209
+FileVersion=1.2.0.210
 CompanyName=
 
 [Resource]
@@ -110,7 +110,7 @@ CompanyName=
 19=0,0,0,0,4765
 2=0,0,0,0,8203
 9=0,0,0,0,685
-10=0,0,0,0,3366
+10=0,0,0,0,6476
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,8393
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="SkipCmnt"
-2="print"
-3="BD_COMMENTBLOCK"
-4="BD_NOBLOCK"
-5="REM_SETCOMMENTBLOCKS"
-6="InsertLine"
-7="DBCS"
-8="[ebx].EDIT.fntinfo.fntwt,"
-9="fntinfo.fntwt"
-10="<=[ebx].EDIT.rpLineFree"
+1="'/"
+2="/'"
+3="SkipCmnt"
+4="print"
+5="BD_COMMENTBLOCK"
+6="BD_NOBLOCK"
+7="REM_SETCOMMENTBLOCKS"
+8="InsertLine"
+9="DBCS"
+10="[ebx].EDIT.fntinfo.fntwt,"
 
 [AutoLoad]
 1=1

@@ -27,6 +27,8 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	fOpr:DWORD
 	LOCAL	fNum:DWORD
 	LOCAL	fCmntNest:DWORD
+	LOCAL	nStr:DWORD
+	LOCAL	nCmnt:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
@@ -40,6 +42,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	mov		edi,[esi].CHARS.len
 	test	[esi].CHARS.state,STATE_HIDDEN
 	.if ZERO?
+		mov		nCmnt,0
 		invoke CopyRect,addr rect,lpRect
 		mov		eax,rect.top
 		add		eax,[ebx].EDIT.fntinfo.fntht
@@ -138,10 +141,15 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 			mov		fChr,0
 			mov		fNum,0
 			mov		fOpr,0
+			mov		nStr,0
+			mov		nCmnt,0
 			mov		edx,[esi-sizeof CHARS].CHARS.state
 			mov		eax,edx
 			and		eax,STATE_COMMENT
 			mov		fCmnt,eax
+			.if eax
+				mov		nCmnt,1
+			.endif
 			and		edx,3
 			call	DrawSelBck
 			mov		eax,[ebx].EDIT.fstyle
@@ -158,10 +166,11 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				push	ecx
 				mov		fBack,0
 				mov		fOpr,0
-				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt && !fCmntNest
+				.if edi>=2 && [ebx].EDIT.ccmntblocks && fCmnt && !fCmntNest && !nStr && nCmnt
 					movzx	eax,word ptr [esi+edi-2]
-					.if (eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3)
+					.if ((eax=='/*' && [ebx].EDIT.ccmntblocks==1) || (eax=="/'" && [ebx].EDIT.ccmntblocks==2) || (ah=="}" && [ebx].EDIT.ccmntblocks==3))
 						mov		fCmnt,0
+						dec		nCmnt
 					.endif
 				.endif
 				.if fEnd==99
@@ -269,6 +278,7 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 					.elseif al==CT_CMNTINITCHAR
 						movzx	eax,word ptr [esi+edi]
 						.if ah=="'" || al=='{'
+							inc		nCmnt
 							mov		fCmnt,eax
 							mov		eax,[ebx].EDIT.clr.cmntback
 							call	SetBack
@@ -405,6 +415,13 @@ DrawWord:
 			.endif
 		.endw
 	.else
+		.if edx=='"'
+			.if nStr
+				dec		nStr
+			.else
+				inc		nStr
+			.endif
+		.endif
 		mov		fChr,TRUE
 		.if !fWrd
 			push	eax

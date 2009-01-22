@@ -277,7 +277,7 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 		While InStr(buff,".")
 			buff=Mid(buff,InStr(buff,".")+1)
 		Wend
-		If UCase(Left(sLine,5))="CAST(" Then
+	If UCase(Left(sLine,5))="CAST(" Then
 			' Cast
 			sItem=Mid(sLine,6)
 			x=InStr(sItem,",")
