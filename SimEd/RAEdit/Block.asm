@@ -1048,10 +1048,9 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 					.endw
 				.else
 					.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
-						add		ecx,2
+						inc		ecx
 						inc		nCmnt
-					.endif
-					.if word ptr [esi+ecx+sizeof CHARS-1]=="/'"
+					.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/'"
 						inc		ecx
 						.if nCmnt
 							dec		nCmnt

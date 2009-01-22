@@ -465,6 +465,7 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 		mov		ax,[esi]
 		.if ah
 			.if ax==' $'
+				call	SkipCmnt
 				inc		esi
 				call	SkipWord
 				or		eax,eax
@@ -473,10 +474,12 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 				.if al==' '
 					inc		esi
 					call	SkipSpc
+					call	SkipCmnt
 					or		eax,eax
 					jne		Nf
 				.endif
 			.elseif ax==' ?'
+				call	SkipCmnt
 				add		esi,2
 				push	esi
 				call	TestWord
@@ -491,10 +494,12 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 				.if al==' '
 					inc		esi
 					call	SkipSpc
+					call	SkipCmnt
 					or		eax,eax
 					jne		Nf
 				.endif
 			.elseif al=='%'
+				call	SkipCmnt
 				inc		esi
 				call	OptSkipWord
 				jmp		Nxt
@@ -503,52 +508,49 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 				.while ecx<[edi].CHARS.len
 					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
 					movzx	esi,byte ptr [esi+offset CharTab]
-					.if word ptr [edi+ecx+sizeof CHARS]=="'/"
+					.if esi==CT_STRING
+						call	SkipString
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
 						inc		ecx
 						inc		fCmnt
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
 						inc		ecx
-						.if fCmnt
-							dec		fCmnt
-						.endif
-					.elseif esi==CT_STRING
-						call	SkipString
+						dec		fCmnt
 					.endif
 					inc		ecx
 				.endw
-				.if fCmnt
+				.if sdword ptr fCmnt>0
 					xor		eax,eax
 					jmp		Found
 				.endif
 				jmp		Nf
 			.elseif ax=="/'"
 				; Comment end
-				call	SkipSpc
-				or		eax,eax
-				jne		Nf
 				.while ecx<[edi].CHARS.len
-					cmp		word ptr [edi+ecx+sizeof CHARS],"/'"
-					.break .if ZERO?
 					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
 					movzx	esi,byte ptr [esi+offset CharTab]
 					.if esi==CT_STRING
 						call	SkipString
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
+						dec		fCmnt
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
+						inc		fCmnt
 					.endif
 					inc		ecx
 				.endw
-				.if ecx>=[edi].CHARS.len
-					jmp		Nf
+				.if sdword ptr fCmnt<0
+					xor		eax,eax
+					jmp		Found
 				.endif
-				cmp		word ptr [edi+ecx+sizeof CHARS],"/'"
-				jne		Nf
-				xor		eax,eax
-				jmp		Found
+				jmp		Nf
 			.endif
+			call	SkipCmnt
 			call	TestWord
 			or		eax,eax
 			jne		Nf
 			xor		edx,edx
 		.else
+			call	SkipCmnt
 			.while ecx<[edi].CHARS.len
 				xor		edx,edx
 				cmp		al,[edi+ecx+sizeof CHARS]
@@ -586,6 +588,22 @@ SkipString:
 		inc		ecx
 	.endw
 	pop		eax
+	retn
+
+SkipCmnt:
+	.if word ptr [edi+ecx+sizeof CHARS]=="'/"
+		push	eax
+		inc		ecx
+		.while ecx<[edi].CHARS.len
+			inc		ecx
+			.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
+		.endw
+		.if word ptr [edi+ecx+sizeof CHARS]=="/'"
+			add		ecx,2
+		.endif
+		call	SkipSpc
+		pop		eax
+	.endif
 	retn
 
 SkipSpc:
@@ -691,9 +709,10 @@ TestWord:
 	or		al,al
 	je		@f
 	.if al==' '
-		mov		al,[edi+ecx+sizeof CHARS]
+		mov		ax,[edi+ecx+sizeof CHARS]
 		.if al==' ' || al==VK_TAB
 			call	SkipSpc
+			call	SkipCmnt
 			dec		ecx
 			jmp		@b
 		.elseif al=='('
@@ -722,9 +741,11 @@ TestWord:
 		.while ecx<[edi].CHARS.len
 			push	esi
 			call	SkipSpc
+			call	SkipCmnt
 			call	TestWord
 			.if !eax
 				call	SkipSpc
+				call	SkipCmnt
 				pop		eax
 				mov		al,[edi+ecx+sizeof CHARS]
 				.if al==VK_RETURN || ecx==[edi].CHARS.len
@@ -783,6 +804,7 @@ TestWord:
 			.endif
 		.endif
 		call	SkipSpc
+		call	SkipCmnt
 		.if ecx==[edi].CHARS.len
 			xor		eax,eax
 			retn
@@ -803,6 +825,7 @@ TestWord:
 				inc		ecx
 			.endif
 			call	SkipSpc
+			call	SkipCmnt
 			xor		eax,eax
 		  .break .if ecx>=[edi].CHARS.len
 		.endw
@@ -810,6 +833,7 @@ TestWord:
 	.elseif ax==' $'
 		call	SkipWord
 		call	SkipSpc
+		call	SkipCmnt
 		inc		esi
 		inc		esi
 		jmp		TestWord
