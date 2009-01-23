@@ -33,7 +33,7 @@ InsertNewLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 	add		[ebx].EDIT.rpCharsFree,eax
 	mov		[esi].CHARS.max,eax
 	mov		[esi].CHARS.len,0
-	mov		[esi].CHARS.state,0
+	mov		[esi].CHARS.state,STATE_CHANGED
 	sub		esi,[ebx].EDIT.hChars
 	mov		[ebx].EDIT.rpChars,esi
 	ret
@@ -48,13 +48,11 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 	mov		edx,[ebx].EDIT.rpCharsFree
 	mov		esi,[ebx].EDIT.hLine
 	mov		eax,[ebx].EDIT.rpLineFree
-;	mov		[ebx].EDIT.rpLine,eax
 	lea		esi,[esi+eax-sizeof LINE]
 	mov		eax,[esi].LINE.rpChars
 	mov		[esi+sizeof LINE].LINE.rpChars,eax
 	add		[ebx].EDIT.rpLineFree,sizeof LINE
 	mov		[esi].LINE.rpChars,edx
-;	mov		[ebx].EDIT.rpChars,edx
 	mov		edi,[ebx].EDIT.hChars
 	add		edi,edx
 	mov		eax,nSize
@@ -69,17 +67,6 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 	mov		esi,lpLine
 	lea		edi,[edi+sizeof CHARS]
 	rep movsb
-
-;	mov		esi,[ebx].EDIT.hLine
-;	mov		edx,[ebx].EDIT.rpLineFree
-;	mov		eax,[ebx].EDIT.rpCharsFree
-;	mov		[esi+edx].LINE.rpChars,eax
-;	mov		esi,[ebx].EDIT.hChars
-;	mov		[esi+eax].CHARS.max,MAXFREE
-;	mov		[esi+eax].CHARS.len,0
-;	mov		[esi+eax].CHARS.state,0
-;	mov		[esi+eax].CHARS.bmid,0
-;	mov		[esi+eax].CHARS.errid,0
 	ret
 
 AddNewLine endp
@@ -193,6 +180,9 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 		.if edi<[esi].CHARS.len
 			movzx	eax,byte ptr [esi+edi+sizeof CHARS]
 			.if al!=0Dh
+				;Replace char
+				and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+				or		[esi].CHARS.state,STATE_CHANGED
 				mov		[esi+edi+sizeof CHARS],cl
 				jmp		Ex
 			.endif
@@ -203,6 +193,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 	.if eax==[esi].CHARS.max
 		invoke ExpandLine,ebx,1
 	.endif
+	;Insert char
 	mov		esi,[ebx].EDIT.rpChars
 	add		esi,[ebx].EDIT.hChars
 	mov		ecx,nChr
@@ -214,7 +205,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 	pop		edi
 	inc		[esi].CHARS.len
 	mov		ecx,nChr
-	.if cl==0Dh
+	.if ecx==0Dh
 		mov		eax,[ebx].EDIT.rpLine
 		shr		eax,2
 		mov		ecx,[esi].CHARS.state
@@ -245,6 +236,15 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 		mov		eax,[esi].CHARS.len
 		add		[ebx].EDIT.cpLine,eax
 		inc		[ebx].EDIT.line
+		.if edx>1
+			and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+			or		[esi].CHARS.state,STATE_CHANGED
+		.endif
+		and		[edi].CHARS.state,-1 xor STATE_CHANGESAVED
+		or		[edi].CHARS.state,STATE_CHANGED
+	.else
+		and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+		or		[esi].CHARS.state,STATE_CHANGED
 	.endif
 	xor		eax,eax
   Ex:
@@ -327,6 +327,8 @@ DeleteChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD
 				pop		[esi].CHARS.bmid
 			.endif
 			pop		[ebx].EDIT.fOvr
+			and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+			or		[esi].CHARS.state,STATE_CHANGED
 		.endif
 		.if ![ebx].EDIT.fChanged
 			mov		[ebx].EDIT.fChanged,TRUE
@@ -343,6 +345,8 @@ DeleteChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD
 			.endw
 			mov		byte ptr [esi+edi+sizeof CHARS],0
 		.endif
+		and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+		or		[esi].CHARS.state,STATE_CHANGED
 		.if ![ebx].EDIT.fChanged
 			mov		[ebx].EDIT.fChanged,TRUE
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE

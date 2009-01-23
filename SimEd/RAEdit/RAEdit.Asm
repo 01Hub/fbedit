@@ -2969,7 +2969,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	mov		eax,uMsg
-	.if eax>=REM_BASE && eax<=REM_SETUNICODE
+	.if eax>=REM_BASE && eax<=REM_SETCHANGEDSTATE
 		sub		eax,REM_BASE
 		jmp 	DWORD PTR [offset _REM_BASE+eax*4]
 		include RAEdit_REM_Msg_JumpTable.asm

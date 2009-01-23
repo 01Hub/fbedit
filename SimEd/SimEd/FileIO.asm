@@ -30,6 +30,8 @@ SaveFile proc hWin:DWORD,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		;Set the modify state to false
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		;Update line changed state
+		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
    		mov		eax,FALSE
 	.else
 		invoke MessageBox,hWnd,offset SaveFileFail,offset szAppName,MB_OK

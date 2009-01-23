@@ -143,6 +143,7 @@
 #Define REM_SETSTYLEEX						REM_BASE+83		' wParam=nStyleEx, lParam=0
 #Define REM_GETUNICODE						REM_BASE+84		' wParam=0, lParam=0
 #Define REM_SETUNICODE						REM_BASE+85		' wParam=TRUE/FALSE, lParam=0
+#Define REM_SETCHANGEDSTATE				REM_BASE+86		' wParam=TRUE/FALSE, lParam=0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
@@ -187,6 +188,8 @@
 #Define STATE_BLOCK							&H20000
 #Define STATE_BLOCKEND						&H40000
 #Define STATE_REDTEXT						&H80000
+#Define STATE_CHANGED						&H200000
+#Define STATE_CHANGESAVED					&H400000
 #Define STATE_GARBAGE						&H80000000
 
 ' Character table types

@@ -124,6 +124,7 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 	editstream.pfnCallback=Cast(Any Ptr,@StreamIn)
 	SendMessage(hWin,EM_STREAMIN,SF_TEXT,Cast(Integer,@editstream))
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
+	SendMessage(hWin,REM_SETCHANGEDSTATE,FALSE,0)
 	lstrcpy(@szItem,lpFilename)
 	If FileType(szItem)=1 Then
 		' Set comment block definition
@@ -284,11 +285,16 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 			Loop
 			CloseHandle(hFile)
 			If tpe=1 Then
-				SetWindowLong(hWin,GWL_ID,IDC_CODEED)
+				If GetWindowLong(hWin,GWL_ID)<>IDC_HEXED Then
+					SetWindowLong(hWin,GWL_ID,IDC_CODEED)
+				EndIf
 				UpdateAllTabs(3)
 			EndIf
 		EndIf
 		SendMessage(hWin,EM_SETMODIFY,FALSE,0)
+		If GetWindowLong(hWin,GWL_ID)<>IDC_HEXED Then
+			SendMessage(hWin,REM_SETCHANGEDSTATE,TRUE,0)
+		EndIf
 	EndIf
 
 End Sub

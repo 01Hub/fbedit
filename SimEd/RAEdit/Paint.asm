@@ -1320,6 +1320,47 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
+	test	[edi].CHARS.state,STATE_CHANGESAVED
+	.if !ZERO?
+		invoke CreatePen,PS_SOLID,2,DEFCHANGESAVEDCOLOR
+		invoke SelectObject,mDC,eax
+		push	eax
+		xor		eax,eax
+		sub		eax,ps.rcPaint.left
+		add		eax,[ebx].EDIT.linenrwt
+		add		eax,22
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,mDC,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		add		edx,rect1.top
+		invoke LineTo,mDC,eax,edx
+		pop		eax
+		invoke SelectObject,mDC,eax
+		invoke DeleteObject,eax
+	.else
+		test	[edi].CHARS.state,STATE_CHANGED
+		.if !ZERO?
+			invoke CreatePen,PS_SOLID,2,DEFCHANGEDCOLOR
+			invoke SelectObject,mDC,eax
+			push	eax
+			xor		eax,eax
+			sub		eax,ps.rcPaint.left
+			add		eax,[ebx].EDIT.linenrwt
+			add		eax,22
+			mov		edx,rect1.top
+			push	eax
+			invoke MoveToEx,mDC,eax,edx,NULL
+			pop		eax
+			mov		edx,[ebx].EDIT.fntinfo.fntht
+			add		edx,rect1.top
+			invoke LineTo,mDC,eax,edx
+			pop		eax
+			invoke SelectObject,mDC,eax
+			invoke DeleteObject,eax
+		.endif
+	.endif
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
 		xor		eax,eax
@@ -1644,6 +1685,47 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
+	test	[edi].CHARS.state,STATE_CHANGESAVED
+	.if !ZERO?
+		invoke CreatePen,PS_SOLID,2,DEFCHANGESAVEDCOLOR
+		invoke SelectObject,ps.hdc,eax
+		push	eax
+		xor		eax,eax
+		sub		eax,ps.rcPaint.left
+		add		eax,[ebx].EDIT.linenrwt
+		add		eax,22
+		mov		edx,rect1.top
+		push	eax
+		invoke MoveToEx,ps.hdc,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		add		edx,rect1.top
+		invoke LineTo,ps.hdc,eax,edx
+		pop		eax
+		invoke SelectObject,ps.hdc,eax
+		invoke DeleteObject,eax
+	.else
+		test	[edi].CHARS.state,STATE_CHANGED
+		.if !ZERO?
+			invoke CreatePen,PS_SOLID,2,DEFCHANGEDCOLOR
+			invoke SelectObject,ps.hdc,eax
+			push	eax
+			xor		eax,eax
+			sub		eax,ps.rcPaint.left
+			add		eax,[ebx].EDIT.linenrwt
+			add		eax,22
+			mov		edx,rect1.top
+			push	eax
+			invoke MoveToEx,ps.hdc,eax,edx,NULL
+			pop		eax
+			mov		edx,[ebx].EDIT.fntinfo.fntht
+			add		edx,rect1.top
+			invoke LineTo,ps.hdc,eax,edx
+			pop		eax
+			invoke SelectObject,ps.hdc,eax
+			invoke DeleteObject,eax
+		.endif
+	.endif
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
 		mov		eax,[ebx].EDIT.linenrwt

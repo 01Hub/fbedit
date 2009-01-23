@@ -1021,7 +1021,6 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		mov		[ebx].EDIT.ccmntblocks,1
 	.elseif word ptr [eax]=="'/" && word ptr [edx]=="/'"
 		mov		[ebx].EDIT.ccmntblocks,2
-		mov		ebx,hMem
 		xor		ecx,ecx
 		mov		nLine,ecx
 		mov		nCmnt,ecx
@@ -1228,3 +1227,44 @@ IsLineEnd:
 	retn
 
 SetCommentBlocks endp
+
+SetChangedState proc uses ebx esi edi,hMem:DWORD,fUpdate:DWORD
+	LOCAL	nLine:DWORD
+	LOCAL	fChanged:DWORD
+
+	mov		ebx,hMem
+	xor		edx,edx
+	mov		nLine,edx
+	mov		fChanged,edx
+	mov		edx,fUpdate
+	mov		edi,[ebx].EDIT.rpLineFree
+	shr		edi,2
+	.while nLine<edi
+		mov		esi,nLine
+		shl		esi,2
+		add		esi,[ebx].EDIT.hLine
+		mov		esi,[esi]
+		add		esi,[ebx].EDIT.hChars
+		mov		ecx,[esi].CHARS.state
+		test	[esi].CHARS.state,STATE_CHANGED
+		.if !ZERO?
+			and		[esi].CHARS.state,-1 xor STATE_CHANGED
+			.if edx
+				or		[esi].CHARS.state,STATE_CHANGESAVED
+			.endif
+		.elseif !edx
+			and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
+		.endif
+		.if ecx!=[esi].CHARS.state
+			inc		fChanged
+		.endif
+		inc		nLine
+	.endw
+	.if fChanged
+		invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
+		invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
+	.endif
+	mov		eax,fChanged
+	ret
+
+SetChangedState endp

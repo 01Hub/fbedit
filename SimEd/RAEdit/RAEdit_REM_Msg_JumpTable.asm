@@ -1312,6 +1312,9 @@
 			mov		eax,wParam
 			mov		[ebx].EDIT.funicode,eax
 			ret
+		_REM_SETCHANGEDSTATE:
+			invoke SetChangedState,ebx,wParam
+			ret
 
 .data
 
@@ -1403,6 +1406,7 @@ _REM_BASE \
 	dd 	_REM_SETSTYLEEX			;equ REM_BASE+83
 	dd _REM_GETUNICODE			;equ REM_BASE+84
 	dd _REM_SETUNICODE			;equ REM_BASE+85
+	dd _REM_SETCHANGEDSTATE		;equ REM_BASE+86
 
 .code
 align 4
