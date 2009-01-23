@@ -1,5 +1,8 @@
 Whats new:
 ----------
+1.0.6.6c
+o Updated fbConst.api file. Cast datatype codecomplete list was lost.
+o Fixed bug with comment blocks.
 1.0.6.6b
 o Dragging a tab is now visible.
 o Selected main file is now shown as an icon with check mark in project browser.
