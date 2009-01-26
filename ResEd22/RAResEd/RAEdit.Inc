@@ -1,19 +1,25 @@
 
 ;Default colors
-DEFBCKCOLOR				equ 00C0F0F0h
-DEFTXTCOLOR				equ 00000000h
-DEFSELBCKCOLOR			equ 00800000h
-DEFSELTXTCOLOR			equ 00FFFFFFh
-DEFCMNTCOLOR			equ 02008000h
-DEFSTRCOLOR				equ 00A00000h
-DEFOPRCOLOR				equ 000000A0h
-DEFHILITE1				equ 00F0C0C0h
-DEFHILITE2				equ 00C0F0C0h
-DEFHILITE3				equ 00C0C0F0h
-DEFSELBARCOLOR			equ 00C0C0C0h
-DEFSELBARPEN			equ 00808080h
-DEFLNRCOLOR				equ 00800000h
-DEFNUMCOLOR				equ 00808080h
+BCKCLR					equ 00C0F0F0h
+TXTCLR					equ 00000000h
+SELBCKCLR				equ 00800000h
+SELTXTCLR				equ 00FFFFFFh
+CMNTCLR					equ 02008000h
+STRCLR					equ 00A00000h
+OPRCLR					equ 000000A0h
+HILITE1					equ 00F0C0C0h
+HILITE2					equ 00C0F0C0h
+HILITE3					equ 00C0C0F0h
+SELBARCLR				equ 00C0C0C0h
+SELBARPEN				equ 00808080h
+LNRCLR					equ 00800000h
+NUMCLR					equ 00808080h
+CMNTBCK					equ 00C0F0F0h
+STRBCK					equ 00C0F0F0h
+NUMBCK					equ 00C0F0F0h
+OPRBCK					equ 00C0F0F0h
+CHANGEDCLR				equ 0000F0F0h
+CHANGESAVEDCLR			equ 0000F000h
 
 ;Window styles
 STYLE_NOSPLITT			equ 00001h			;No splitt button
@@ -32,7 +38,10 @@ STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
 STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
 STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
 STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
-STYLE_NOLOCK			equ 10000h			;No lock button
+
+;Styles used with REM_SETSTYLEEX message
+STYLEEX_LOCK			equ 0001h			;Show lock button
+STYLEEX_BLOCKGUIDE		equ 0002h			;Show block guiders
 
 ;Edit modes
 MODE_NORMAL				equ 0				;Normal
@@ -131,6 +140,21 @@ REM_GETLOCK				equ REM_BASE+68		;wParam=0, lParam=0
 REM_GETWORDFROMPOS		equ REM_BASE+69		;wParam=cp, lParam=lpBuff
 REM_SETNOBLOCKLINE		equ REM_BASE+70		;wParam=Line, lParam=TRUE/FALSE
 REM_ISLINENOBLOCK		equ REM_BASE+71		;wParam=Line, lParam=0
+REM_SETALTHILITELINE	equ REM_BASE+72		;wParam=Line, lParam=TRUE/FALSE
+REM_ISLINEALTHILITE		equ REM_BASE+73		;wParam=Line, lParam=0
+REM_SETCURSORWORDTYPE	equ REM_BASE+74		;wParam=nType, lParam=0
+REM_SETBREAKPOINT		equ REM_BASE+75		;wParam=nLine, lParam=TRUE/FALSE
+REM_NEXTBREAKPOINT		equ REM_BASE+76		;wParam=nLine, lParam=0
+REM_GETLINESTATE		equ REM_BASE+77		;wParam=nLine, lParam=0
+REM_SETERROR			equ REM_BASE+78		;wParam=nLine, lParam=nErrID
+REM_GETERROR			equ REM_BASE+79		;wParam=nLine, lParam=0
+REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
+REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
+REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
+REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
+REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
+REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
+REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -158,12 +182,21 @@ STATE_BM8				equ 80h
 STATE_BMMASK			equ 0F0h
 
 ;Line states
-STATE_LOCKED			equ 0100h
-STATE_HIDDEN			equ 0200h
-STATE_COMMENT			equ 0400h
-STATE_DIVIDERLINE		equ 0800h
-STATE_SEGMENTBLOCK		equ 1000h
-STATE_NOBLOCK			equ 2000h
+STATE_LOCKED			equ 00000100h
+STATE_HIDDEN			equ 00000200h
+STATE_COMMENT			equ 00000400h
+STATE_DIVIDERLINE		equ 00000800h
+STATE_SEGMENTBLOCK		equ 00001000h
+STATE_NOBLOCK			equ 00002000h
+STATE_ALTHILITE			equ 00004000h
+STATE_BREAKPOINT		equ 00008000h
+STATE_BLOCKSTART		equ 00010000h
+STATE_BLOCK				equ 00020000h
+STATE_BLOCKEND			equ 00040000h
+STATE_REDTEXT			equ 00080000h
+STATE_COMMENTNEST		equ 00100000h
+STATE_CHANGED			equ 00200000h
+STATE_CHANGESAVED		equ 00400000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types
@@ -201,6 +234,8 @@ RACOLOR struct
 	strback		dd ?						;String back color
 	numback		dd ?						;Numbers & hex back color
 	oprback		dd ?						;Operator back color
+	changed		dd ?						;Line changed indicator
+	changesaved	dd ?						;Line saved chane indicator
 RACOLOR ends
 
 RASELCHANGE struct
@@ -224,6 +259,7 @@ BD_LOOKAHEAD			equ 08h				;Look 500 lines ahead for the ending
 BD_SEGMENTBLOCK			equ 10h				;Segment block, collapse till next segmentblock
 BD_COMMENTBLOCK			equ 20h				;Comment block
 BD_NOBLOCK				equ 40h				;
+BD_ALTHILITE			equ 80h				;Adds 1 to the current word group for syntax coloring.
 
 RABLOCKDEF struct
 	lpszStart	dd ?						;Block start

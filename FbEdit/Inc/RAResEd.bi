@@ -100,6 +100,8 @@ End Type
 Type RARESEDCOLOR
 	back		As Integer
 	text		As Integer
+	styles	As Integer
+	words		As Integer
 End Type
 
 ' Resource ID's
@@ -115,6 +117,7 @@ Type INITID
 	ver		As RESID
 	man		As RESID
 	rcd		As RESID
+	tbr		As RESID
 	res		As RESID
 End Type
 

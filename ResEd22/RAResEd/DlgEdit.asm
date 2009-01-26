@@ -4313,7 +4313,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	invoke UpdateWindow,hDEd
 	mov		esi,hMem
 	.if ![esi].DLGHEAD.hred
-		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hRes,0,hInstance,0
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or STYLE_NOSIZEGRIP or STYLE_NOCOLLAPSE,0,0,0,0,hRes,0,hInstance,0
 		mov		[esi].DLGHEAD.hred,eax
 		invoke SendMessage,[esi].DLGHEAD.hred,WM_SETFONT,hredfont,0
 		invoke SendMessage,[esi].DLGHEAD.hred,REM_GETCOLOR,0,addr racol

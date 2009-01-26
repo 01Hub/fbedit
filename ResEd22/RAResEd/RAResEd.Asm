@@ -1177,7 +1177,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hPrp,eax
 		invoke CreateWindowEx,0h,addr szToolBoxClass,0,56000000h,0,0,0,0,hWin,0,hInstance,0
 		mov		hTlb,eax
-		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE or STYLE_NOLINENUMBER,0,0,0,0,hWin,0,hInstance,0
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_NOSIZEGRIP or STYLE_NOCOLLAPSE or STYLE_NOLINENUMBER,0,0,0,0,hWin,0,hInstance,0
 		mov		hOut,eax
 		invoke SendMessage,hOut,REM_SETWORDGROUP,0,2
 		invoke RtlZeroMemory,addr lf,size lf

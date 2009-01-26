@@ -13,20 +13,26 @@ End Type
 
 #Ifndef RACOLOR
 Type RACOLOR Field=1
-	bckcol			As Integer						' Back color
-	txtcol			As Integer						' Text color
-	selbckcol		As Integer						' Sel back color
-	seltxtcol		As Integer						' Sel text color
-	cmntcol			As Integer						' Comment color
-	strcol			As Integer						' String color
-	oprcol			As Integer						' Operator color
-	hicol1			As Integer						' Line hilite 1
-	hicol2			As Integer						' Line hilite 2
-	hicol3			As Integer						' Line hilite 3
-	selbarbck		As Integer						' Selection bar
-	selbarpen		As Integer						' Selection bar pen
-	lnrcol			As Integer						' Line numbers color
-	numcol			As Integer						' Numbers & hex color
+	bckcol			As Long							' Back color
+	txtcol			As Long							' Text color
+	selbckcol		As Long							' Sel back color
+	seltxtcol		As Long							' Sel text color
+	cmntcol			As Long							' Comment color
+	strcol			As Long							' String color
+	oprcol			As Long							' Operator color
+	hicol1			As Long							' Line hilite 1
+	hicol2			As Long							' Line hilite 2
+	hicol3			As Long							' Line hilite 3
+	selbarbck		As Long							' Selection bar
+	selbarpen		As Long							' Selection bar pen
+	lnrcol			As Long							' Line numbers color
+	numcol			As Long							' Numbers & hex color
+	cmntback			As Long							' Comment back color
+	strback			As Long							' String back color
+	numback			As Long							' Numbers & hex back color
+	oprback			As Long							' Operator back color
+	changed			As Long							' Line changed indicator
+	changesaved		As Long							' Line saved chane indicator
 End Type
 #EndIf
 
@@ -110,7 +116,7 @@ Type ADDINHANDLES
 End Type
 
 Type ADDINDATA
-	version			As Integer						' FbEdit version (currently 1066)
+	version			As Integer						' FbEdit version (currently 1067)
 	AppPath			As ZString*260					' Path where FbEdit.exe is found
 	ProjectPath		As ZString*260					' Path to current project
 	DefProjectPath	As ZString*260					' Default project path

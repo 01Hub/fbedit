@@ -60,7 +60,7 @@ Dim Shared hTFont As HFONT
 Dim Shared oldsel As Integer
 Dim Shared tmpcol As FBCOLOR
 
-Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,Comments back,Active line back,Indent markers,Selection bar,Selection bar pen,Line numbers,Numbers & hex,Tools Back,Tools Text,Dialog Back,Dialog Text,CodeComplete Back,CodeComplete Text,CodeTip Back,CodeTip Text,CodeTip Api,CodeTip Sel,Properties parameters"
+Const sColors="Back,Text,Selected back,Selected text,Comments,Strings,Operators,Comments back,Active line back,Indent markers,Selection bar,Selection bar pen,Line numbers,Numbers & hex,Line changed,Saved line change,Tools Back,Tools Text,Dialog Back,Dialog Text,CodeComplete Back,CodeComplete Text,CodeTip Back,CodeTip Text,CodeTip Api,CodeTip Sel,Properties parameters"
 
 Sub SetToolsColors(ByVal hWin As HWND)
 	Dim racol As RACOLOR
@@ -403,7 +403,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	' Window colors
 	ofs=@fbcol
 	nInx=0
-	Do While nInx<25
+	Do While nInx<27
 		col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
 		If nInx=13 Then
@@ -417,7 +417,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	fbcol.racol.strback=tmpcol.racol.strback
 	fbcol.racol.oprback=tmpcol.racol.oprback
 	fbcol.racol.numback=tmpcol.racol.numback
-	SaveToIni(StrPtr("Win"),StrPtr("Colors"),"44444444444444444444444444444",@fbcol,FALSE)
+	SaveToIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444444444",@fbcol,FALSE)
 	' Keyword colors
 	ofs=@kwcol
 	nInx=0

@@ -16,6 +16,12 @@
 #Define DEFSELBARPEN							&H00808080
 #Define DEFLNRCOLOR							&H00800000
 #Define DEFNUMCOLOR							&H00808080
+#Define DEFCMNTBCK							&H00C0F0F0
+#Define DEFSTRBCK								&H00C0F0F0
+#Define DEFNUMBCK								&H00C0F0F0
+#Define DEFOPRBCK								&H00C0F0F0
+#Define DEFCHANGEDCLR						&H0000FFFF
+#Define DEFCHANGESAVEDCLR					&H0000FF00
 
 ' Window styles
 #Define STYLE_NOSPLITT						&H0001			' No splitt button
@@ -227,6 +233,8 @@ Type RACOLOR Field=1
 	strback		As Long											' String back color
 	numback		As Long											' Numbers & hex back color
 	oprback		As Long											' Operator back color
+	changed		As Long											' Line changed indicator
+	changesaved	As Long											' Line saved chane indicator
 End Type
 
 Type RASELCHANGE Field=1

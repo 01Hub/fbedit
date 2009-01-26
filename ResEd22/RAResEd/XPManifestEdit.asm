@@ -199,7 +199,7 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		fChanged,FALSE
-		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOLOCK or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTXPMANIFEST,hInstance,0
+		invoke CreateWindowEx,200h,addr szRAEditClass,0,WS_CHILD or WS_VISIBLE or STYLE_NOSIZEGRIP or STYLE_NOCOLLAPSE,0,0,0,0,hWin,IDC_EDTXPMANIFEST,hInstance,0
 		mov		hDlgRed,eax
 		mov		edi,eax
 		invoke SendMessage,edi,WM_SETFONT,hredfont,0
