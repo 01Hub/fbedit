@@ -1029,6 +1029,55 @@ BlockRoot:
 
 SetBlockMarkers endp
 
+DrawChangedState proc uses ebx edi,hMem:DWORD,hDC:HDC,lpLine:DWORD,x:DWORD,y:DWORD
+
+	mov		ebx,hMem
+	mov		edi,lpLine
+	test	[edi].CHARS.state,STATE_CHANGESAVED
+	.if !ZERO?
+		invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changesaved
+		invoke SelectObject,hDC,eax
+		push	eax
+		xor		eax,eax
+		sub		eax,x
+		add		eax,[ebx].EDIT.linenrwt
+		add		eax,24
+		mov		edx,y
+		push	eax
+		invoke MoveToEx,hDC,eax,edx,NULL
+		pop		eax
+		mov		edx,[ebx].EDIT.fntinfo.fntht
+		add		edx,y
+		invoke LineTo,hDC,eax,edx
+		pop		eax
+		invoke SelectObject,hDC,eax
+		invoke DeleteObject,eax
+	.else
+		test	[edi].CHARS.state,STATE_CHANGED
+		.if !ZERO?
+			invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changed
+			invoke SelectObject,hDC,eax
+			push	eax
+			xor		eax,eax
+			sub		eax,x
+			add		eax,[ebx].EDIT.linenrwt
+			add		eax,24
+			mov		edx,y
+			push	eax
+			invoke MoveToEx,hDC,eax,edx,NULL
+			pop		eax
+			mov		edx,[ebx].EDIT.fntinfo.fntht
+			add		edx,y
+			invoke LineTo,hDC,eax,edx
+			pop		eax
+			invoke SelectObject,hDC,eax
+			invoke DeleteObject,eax
+		.endif
+	.endif
+	ret
+
+DrawChangedState endp
+
 ;This proc does all the painting and drawing
 RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	ps:PAINTSTRUCT
@@ -1216,7 +1265,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 					.if !ZERO?
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13+12
+						sub		eax,15+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
@@ -1227,7 +1276,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 					.if [edi].CHARS.errid
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13+12
+						sub		eax,15+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
@@ -1252,7 +1301,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 						dec		ecx
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13
+						sub		eax,15
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
@@ -1320,47 +1369,7 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
-	test	[edi].CHARS.state,STATE_CHANGESAVED
-	.if !ZERO?
-		invoke CreatePen,PS_SOLID,2,DEFCHANGESAVEDCOLOR
-		invoke SelectObject,mDC,eax
-		push	eax
-		xor		eax,eax
-		sub		eax,ps.rcPaint.left
-		add		eax,[ebx].EDIT.linenrwt
-		add		eax,22
-		mov		edx,rect1.top
-		push	eax
-		invoke MoveToEx,mDC,eax,edx,NULL
-		pop		eax
-		mov		edx,[ebx].EDIT.fntinfo.fntht
-		add		edx,rect1.top
-		invoke LineTo,mDC,eax,edx
-		pop		eax
-		invoke SelectObject,mDC,eax
-		invoke DeleteObject,eax
-	.else
-		test	[edi].CHARS.state,STATE_CHANGED
-		.if !ZERO?
-			invoke CreatePen,PS_SOLID,2,DEFCHANGEDCOLOR
-			invoke SelectObject,mDC,eax
-			push	eax
-			xor		eax,eax
-			sub		eax,ps.rcPaint.left
-			add		eax,[ebx].EDIT.linenrwt
-			add		eax,22
-			mov		edx,rect1.top
-			push	eax
-			invoke MoveToEx,mDC,eax,edx,NULL
-			pop		eax
-			mov		edx,[ebx].EDIT.fntinfo.fntht
-			add		edx,rect1.top
-			invoke LineTo,mDC,eax,edx
-			pop		eax
-			invoke SelectObject,mDC,eax
-			invoke DeleteObject,eax
-		.endif
-	.endif
+	invoke DrawChangedState,ebx,mDC,edi,ps.rcPaint.left,rect1.top
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
 		xor		eax,eax
@@ -1685,47 +1694,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	ret
 
 DrawBlockMarker:
-	test	[edi].CHARS.state,STATE_CHANGESAVED
-	.if !ZERO?
-		invoke CreatePen,PS_SOLID,2,DEFCHANGESAVEDCOLOR
-		invoke SelectObject,ps.hdc,eax
-		push	eax
-		xor		eax,eax
-		sub		eax,ps.rcPaint.left
-		add		eax,[ebx].EDIT.linenrwt
-		add		eax,22
-		mov		edx,rect1.top
-		push	eax
-		invoke MoveToEx,ps.hdc,eax,edx,NULL
-		pop		eax
-		mov		edx,[ebx].EDIT.fntinfo.fntht
-		add		edx,rect1.top
-		invoke LineTo,ps.hdc,eax,edx
-		pop		eax
-		invoke SelectObject,ps.hdc,eax
-		invoke DeleteObject,eax
-	.else
-		test	[edi].CHARS.state,STATE_CHANGED
-		.if !ZERO?
-			invoke CreatePen,PS_SOLID,2,DEFCHANGEDCOLOR
-			invoke SelectObject,ps.hdc,eax
-			push	eax
-			xor		eax,eax
-			sub		eax,ps.rcPaint.left
-			add		eax,[ebx].EDIT.linenrwt
-			add		eax,22
-			mov		edx,rect1.top
-			push	eax
-			invoke MoveToEx,ps.hdc,eax,edx,NULL
-			pop		eax
-			mov		edx,[ebx].EDIT.fntinfo.fntht
-			add		edx,rect1.top
-			invoke LineTo,ps.hdc,eax,edx
-			pop		eax
-			invoke SelectObject,ps.hdc,eax
-			invoke DeleteObject,eax
-		.endif
-	.endif
+	invoke DrawChangedState,ebx,ps.hdc,edi,0,rect1.top
 	test	[edi].CHARS.state,STATE_BLOCK
 	.if !ZERO?
 		mov		eax,[ebx].EDIT.linenrwt

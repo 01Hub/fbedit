@@ -113,6 +113,10 @@
 			mov		[ebx].EDIT.clr.numback,eax
 			mov		eax,[edx].RACOLOR.oprback
 			mov		[ebx].EDIT.clr.oprback,eax
+			mov		eax,[edx].RACOLOR.changed
+			mov		[ebx].EDIT.clr.changed,eax
+			mov		eax,[edx].RACOLOR.changesaved
+			mov		[ebx].EDIT.clr.changesaved,eax
 			invoke CreateBrushes,ebx
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
@@ -152,6 +156,18 @@
 			mov		[edx].RACOLOR.lnrcol,eax
 			mov		eax,[ebx].EDIT.clr.numcol
 			mov		[edx].RACOLOR.numcol,eax
+			mov		eax,[ebx].EDIT.clr.cmntback
+			mov		[edx].RACOLOR.cmntback,eax
+			mov		eax,[ebx].EDIT.clr.strback
+			mov		[edx].RACOLOR.strback,eax
+			mov		eax,[ebx].EDIT.clr.numback
+			mov		[edx].RACOLOR.numback,eax
+			mov		eax,[ebx].EDIT.clr.oprback
+			mov		[edx].RACOLOR.oprback,eax
+			mov		eax,[ebx].EDIT.clr.changed
+			mov		[edx].RACOLOR.changed,eax
+			mov		eax,[ebx].EDIT.clr.changesaved
+			mov		[edx].RACOLOR.changesaved,eax
 			xor		eax,eax
 			ret
 		align 4

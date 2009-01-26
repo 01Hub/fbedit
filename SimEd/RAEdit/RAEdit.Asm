@@ -3230,20 +3230,26 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx].EDIT.nTab,4
 		mov		[ebx].EDIT.nScroll,3
 		mov		[ebx].EDIT.fntinfo.fntht,10
-		mov		[ebx].EDIT.clr.bckcol,DEFBCKCOLOR
-		mov		[ebx].EDIT.clr.txtcol,DEFTXTCOLOR
-		mov		[ebx].EDIT.clr.selbckcol,DEFSELBCKCOLOR
-		mov		[ebx].EDIT.clr.seltxtcol,DEFSELTXTCOLOR
-		mov		[ebx].EDIT.clr.cmntcol,DEFCMNTCOLOR
-		mov		[ebx].EDIT.clr.strcol,DEFSTRCOLOR
-		mov		[ebx].EDIT.clr.oprcol,DEFOPRCOLOR
-		mov		[ebx].EDIT.clr.hicol1,DEFHILITE1
-		mov		[ebx].EDIT.clr.hicol2,DEFHILITE2
-		mov		[ebx].EDIT.clr.hicol3,DEFHILITE3
-		mov		[ebx].EDIT.clr.selbarbck,DEFSELBARCOLOR
-		mov		[ebx].EDIT.clr.selbarpen,DEFSELBARPEN
-		mov		[ebx].EDIT.clr.lnrcol,DEFLNRCOLOR
-		mov		[ebx].EDIT.clr.numcol,DEFNUMCOLOR
+		mov		[ebx].EDIT.clr.bckcol,BCKCLR
+		mov		[ebx].EDIT.clr.txtcol,TXTCLR
+		mov		[ebx].EDIT.clr.selbckcol,SELBCKCLR
+		mov		[ebx].EDIT.clr.seltxtcol,SELTXTCLR
+		mov		[ebx].EDIT.clr.cmntcol,CMNTCLR
+		mov		[ebx].EDIT.clr.strcol,STRCLR
+		mov		[ebx].EDIT.clr.oprcol,OPRCLR
+		mov		[ebx].EDIT.clr.hicol1,HILITE1
+		mov		[ebx].EDIT.clr.hicol2,HILITE2
+		mov		[ebx].EDIT.clr.hicol3,HILITE3
+		mov		[ebx].EDIT.clr.selbarbck,SELBARCLR
+		mov		[ebx].EDIT.clr.selbarpen,SELBARPEN
+		mov		[ebx].EDIT.clr.lnrcol,LNRCLR
+		mov		[ebx].EDIT.clr.numcol,NUMCLR
+		mov		[ebx].EDIT.clr.cmntback,CMNTBCK
+		mov		[ebx].EDIT.clr.strback,STRBCK
+		mov		[ebx].EDIT.clr.numback,NUMBCK
+		mov		[ebx].EDIT.clr.oprback,OPRBCK
+		mov		[ebx].EDIT.clr.changed,CHANGEDCLR
+		mov		[ebx].EDIT.clr.changesaved,CHANGESAVEDCLR
 		invoke CreateBrushes,ebx
 
 		invoke CreateWindowEx,NULL,addr szToolTips,NULL,TTS_ALWAYSTIP,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,hInstance,NULL

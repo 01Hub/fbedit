@@ -173,7 +173,8 @@ WinMain endp
 CreateRAEdit proc
 
 	invoke ShowWindow,hREd,SW_HIDE
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT,0,0,0,0,hWnd,NULL,hInstance,0
+;	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT,0,0,0,0,hWnd,NULL,hInstance,0
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT,0,0,0,0,hWnd,NULL,hInstance,0
 	mov		hREd,eax
 	invoke SetFormat,hREd
 	;Set colors

@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
+Debug=0
 Ver.rc=1
 Res.rc=1
 
@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.232
-PV=1.2.0.232
+FV=1.2.0.247
+PV=1.2.0.247
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.232
+ProductVersion=1.2.0.247
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.232
+FileVersion=1.2.0.247
 CompanyName=
 
 [Resource]
@@ -102,15 +102,15 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,76377
+1=0,0,0,0,83368
 16=0,0,810,411,4925
 22=0,0,0,0,4317
-23=0,0,0,0,30196
+23=0,0,0,0,3173
 24=0,0,0,0,713
-19=0,0,0,0,4765
-2=0,0,0,0,489
+19=0,0,0,0,617
+2=0,0,0,0,571
 9=0,0,0,0,685
-10=0,0,0,0,33168
+10=0,0,0,0,22122
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,8393
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="'/"
-2="/'"
-3="SkipCmnt"
-4="print"
-5="BD_COMMENTBLOCK"
-6="BD_NOBLOCK"
-7="REM_SETCOMMENTBLOCKS"
-8="InsertLine"
-9="DBCS"
-10="[ebx].EDIT.fntinfo.fntwt,"
+1="_REM_GETCOLOR"
+2="'/"
+3="/'"
+4="SkipCmnt"
+5="print"
+6="BD_COMMENTBLOCK"
+7="BD_NOBLOCK"
+8="REM_SETCOMMENTBLOCKS"
+9="InsertLine"
+10="DBCS"
 
 [AutoLoad]
 1=1
@@ -194,7 +194,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

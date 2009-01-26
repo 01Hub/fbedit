@@ -35,6 +35,8 @@ szColors			db 'Back',0
 					db 'Selection bar pen',0
 					db 'Line numbers',0
 					db 'Numbers & hex',0
+					db 'Changed line',0
+					db 'Change saved',0
 					db 0
 szCustColors		db 'CustColors',0
 
@@ -235,13 +237,20 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKHILITELINE,eax
 		mov		esi,offset szColors
 		mov		edi,offset col
+		xor		ecx,ecx
 	  @@:
+		push	ecx
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_ADDSTRING,0,esi
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,[edi]
 		invoke lstrlen,esi
+		pop		ecx
 		add		esi,eax
 		inc		esi
 		add		edi,4
+		inc		ecx
+		.if ecx==13
+			add		edi,16
+		.endif
 		mov		al,[esi]
 		or		al,al
 		jne		@b
@@ -635,6 +644,9 @@ Update:
 	mov		[edi],eax
 	pop		eax
 	inc		eax
+	.if eax==13
+		add		edi,16
+	.endif
 	add		edi,4
 	cmp		edi,offset col+sizeof col
 	jc		@b

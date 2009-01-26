@@ -1,21 +1,25 @@
 
 ;Default colors
-DEFBCKCOLOR				equ 00C0F0F0h
-DEFTXTCOLOR				equ 00000000h
-DEFSELBCKCOLOR			equ 00800000h
-DEFSELTXTCOLOR			equ 00FFFFFFh
-DEFCMNTCOLOR			equ 02008000h
-DEFSTRCOLOR				equ 00A00000h
-DEFOPRCOLOR				equ 000000A0h
-DEFHILITE1				equ 00F0C0C0h
-DEFHILITE2				equ 00C0F0C0h
-DEFHILITE3				equ 00C0C0F0h
-DEFSELBARCOLOR			equ 00C0C0C0h
-DEFSELBARPEN			equ 00808080h
-DEFLNRCOLOR				equ 00800000h
-DEFNUMCOLOR				equ 00808080h
-DEFCHANGEDCOLOR			equ 0000F0F0h
-DEFCHANGESAVEDCOLOR		equ 0000F000h
+BCKCLR					equ 00C0F0F0h
+TXTCLR					equ 00000000h
+SELBCKCLR				equ 00800000h
+SELTXTCLR				equ 00FFFFFFh
+CMNTCLR					equ 02008000h
+STRCLR					equ 00A00000h
+OPRCLR					equ 000000A0h
+HILITE1					equ 00F0C0C0h
+HILITE2					equ 00C0F0C0h
+HILITE3					equ 00C0C0F0h
+SELBARCLR				equ 00C0C0C0h
+SELBARPEN				equ 00808080h
+LNRCLR					equ 00800000h
+NUMCLR					equ 00808080h
+CMNTBCK					equ 00C0F0F0h
+STRBCK					equ 00C0F0F0h
+NUMBCK					equ 00C0F0F0h
+OPRBCK					equ 00C0F0F0h
+CHANGEDCLR				equ 0000F0F0h
+CHANGESAVEDCLR			equ 0000F000h
 
 ;Window styles
 STYLE_NOSPLITT			equ 0001h			;No splitt button
@@ -233,6 +237,8 @@ RACOLOR struct
 	strback		dd ?						;String back color
 	numback		dd ?						;Numbers & hex back color
 	oprback		dd ?						;Operator back color
+	changed		dd ?						;Line changed indicator
+	changesaved	dd ?						;Line saved chane indicator
 RACOLOR ends
 
 RASELCHANGE struct
