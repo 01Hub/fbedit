@@ -28,8 +28,8 @@ CC_COLOR struct
 	text	dd ?
 CC_COLOR ends
 
-CCBACK				equ 0FFFFFFh
-CCTEXT				equ 0
+CCBCK				equ 0FFFFFFh
+CCTXT				equ 0
 
 CC_ADDLIST struct
 	lpszList	dd ?
@@ -53,8 +53,8 @@ TT_COLOR struct
 	hilite	dd ?
 TT_COLOR ends
 
-TTBACK				equ 00C0F0F0h
-TTTEXT				equ 0
+TTBCK				equ 00C0F0F0h
+TTTXT				equ 0
 TTAPI				equ 00404080h
 TTSEL				equ 00FF8000h
 

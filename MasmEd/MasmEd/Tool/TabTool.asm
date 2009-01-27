@@ -420,3 +420,95 @@ TabToolDel proc uses ebx,hWin:HWND
 
 TabToolDel endp
 
+TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ht:TCHITTESTINFO
+	LOCAL	tci:TCITEM
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_RBUTTONDOWN
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax!=-1
+			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+			invoke SetFocus,hREd
+			xor		eax,eax
+			ret
+		.endif
+	.elseif eax==WM_MBUTTONDOWN
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax!=-1
+			mov		tabinx,eax
+			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+			invoke SetFocus,hREd
+			xor		eax,eax
+			ret
+		.endif
+	.elseif eax==WM_MBUTTONUP
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax==tabinx
+			invoke SendMessage,hWnd,WM_COMMAND,IDM_FILE_CLOSE,0
+		.endif
+		mov		tabinx,-2
+		xor		eax,eax
+		ret
+	.elseif eax==WM_LBUTTONDOWN
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax!=-1
+			mov		tabinx,eax
+			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+			invoke SetFocus,hREd
+			xor		eax,eax
+			ret
+		.endif
+	.elseif eax==WM_MOUSEMOVE
+		test	wParam,MK_LBUTTON
+		.if !ZERO?
+			mov		eax,lParam
+			movzx	edx,ax
+			shr		eax,16
+			mov		ht.pt.x,edx
+			mov		ht.pt.y,eax
+			invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+			.if eax!=tabinx && sdword ptr eax>=0 && sdword ptr tabinx>=0
+				push	eax
+				mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+
+				lea		eax,buffer
+				mov		tci.pszText,eax
+				mov		tci.cchTextMax,MAX_PATH
+				invoke SendMessage,hWin,TCM_GETITEM,tabinx,addr tci
+				invoke SendMessage,hWin,TCM_DELETEITEM,tabinx,0
+				pop		tabinx
+				invoke SendMessage,hWin,TCM_INSERTITEM,tabinx,addr tci
+			.endif
+			xor		eax,eax
+			ret
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldTabProc,hWin,uMsg,wParam,lParam
+	ret
+
+TabProc endp

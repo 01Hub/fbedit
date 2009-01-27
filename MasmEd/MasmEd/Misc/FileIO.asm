@@ -44,10 +44,11 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 			mov		editstream.dwCookie,eax
 			mov		editstream.pfnCallback,offset StreamOutProc
 			invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+			;Set the modify state to false
+			invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+			invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
 		.endif
 		invoke CloseHandle,hFile
-		;Set the modify state to false
-		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
 		invoke TabToolGetMem,hWin
 		mov		ebx,eax
 		mov		[ebx].TABMEM.nchange,0
@@ -182,6 +183,7 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SendMessage,hWin,EM_STREAMIN,SF_TEXT,addr editstream
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
 		mov		chrg.cpMin,0
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg

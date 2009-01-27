@@ -2,10 +2,10 @@ InstallRAEdit			PROTO :DWORD,:DWORD
 UnInstallRAEdit			PROTO
 
 ;Default colors
-BCKCOL					equ 00C0F0F0h
-TXTCOL					equ 00000000h
-SELBCKCOL				equ 00800000h
-SELTXTCOL				equ 00FFFFFFh
+BCOL					equ 00C0F0F0h
+TCOL					equ 00000000h
+SELBCOL					equ 00800000h
+SELTCOL					equ 00FFFFFFh
 CMNTCOL					equ 02008000h
 STRCOL					equ 00A00000h
 OPRCOL					equ 000000A0h
@@ -16,6 +16,12 @@ SELBARCOL				equ 00C0C0C0h
 SELBARPEN				equ 00808080h
 LNRCOL					equ 00800000h
 NUMCOL					equ 00808080h
+CMNTB					equ 00C0F0F0h
+STRB					equ 00C0F0F0h
+NUMB					equ 00C0F0F0h
+OPRB					equ 00C0F0F0h
+CHCOL					equ 0000F0F0h
+CHSAVEDCOL				equ 0000F000h
 
 ;Window styles
 STYLE_NOSPLITT			equ 00001h			;No splitt button
@@ -148,6 +154,9 @@ REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
 REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
+REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
+REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
+REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -187,6 +196,9 @@ STATE_BLOCKSTART		equ 10000h
 STATE_BLOCK				equ 20000h
 STATE_BLOCKEND			equ 40000h
 STATE_REDTEXT			equ 80000h
+STATE_COMMENTNEST		equ 00100000h
+STATE_CHANGED			equ 00200000h
+STATE_CHANGESAVED		equ 00400000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types
@@ -227,6 +239,8 @@ RACOLOR struct
 	strback		dd ?						;String back color
 	numback		dd ?						;Numbers & hex back color
 	oprback		dd ?						;Operator back color
+	changed		dd ?						;Line changed indicator
+	changesaved	dd ?						;Line saved chane indicator
 RACOLOR ends
 
 RASELCHANGE struct

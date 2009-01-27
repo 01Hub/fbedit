@@ -54,6 +54,8 @@ start:
 	invoke SetCurrentDirectory,offset FileName
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
+		mov		lpcbData,sizeof ver
+		invoke RegQueryValueEx,hReg,addr szVer,0,addr lpType,addr ver,addr lpcbData
 		mov		lpcbData,sizeof wpos
 		invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
 		mov		lpcbData,sizeof edopt
@@ -65,10 +67,32 @@ start:
 		mov		lpcbData,sizeof col
 		invoke RegQueryValueEx,hReg,addr szColor,0,addr lpType,addr col,addr lpcbData
 		.if col.styles==-1
-			mov		col.styles,DEFSTYLESCOL
+			mov		col.styles,STYLESCOL
 		.endif
 		.if col.words==-1
-			mov		col.words,DEFWORDSCOL
+			mov		col.words,WORDSCOL
+		.endif
+		.if ver<1053
+			push	esi
+			push	edi
+			mov		esi,offset col.tttext
+			mov		edi,offset col.ttsel
+			mov		ecx,12
+			.while ecx
+				mov		eax,[esi]
+				mov		[edi],eax
+				sub		esi,4
+				sub		edi,4
+				dec		ecx
+			.endw
+			mov		col.racol.changed,CHCOL
+			mov		col.racol.changesaved,CHSAVEDCOL
+			pop		esi
+			pop		edi
+			invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
+			invoke UpdateTheme1053
+			mov		ver,1053
+			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
@@ -95,6 +119,9 @@ start:
 		mov		eax,ppos.pagesize.y
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
+	.else
+		mov		ver,1053
+		invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 	.endif
 	.if wpos.wtfile<50
 		mov		wpos.wtfile,175
@@ -1201,6 +1228,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Get handle of tab window
 		invoke GetDlgItem,hWin,IDC_TAB
 		mov		hTab,eax
+		invoke SetWindowLong,hTab,GWL_WNDPROC,offset TabProc
+		mov		lpOldTabProc,eax
 		invoke SendMessage,hBrowse,FBM_GETIMAGELIST,0,0
 		invoke SendMessage,hTab,TCM_SETIMAGELIST,0,eax
 		invoke TabToolAdd,hREd,offset FileName
