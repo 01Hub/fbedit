@@ -351,7 +351,7 @@ Sub GetTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 	Loop
 	InvalidateRect(GetDlgItem(hWin,IDC_LSTKWCOLORS),NULL,TRUE)
 	nInx=0
-	Do While nInx<25
+	Do While nInx<27
 		ofs+=4
 		RtlMoveMemory(@col,ofs,4)
 		SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_SETITEMDATA,nInx,col)
@@ -381,7 +381,7 @@ Sub PutTheme(ByVal hWin As HWND,ByVal nInx As Integer)
 		nInx+=1
 	Loop
 	nInx=0
-	Do While nInx<25
+	Do While nInx<27
 		ofs+=4
 		col=SendDlgItemMessage(hWin,IDC_LSTCOLORS,LB_GETITEMDATA,nInx,0)
 		RtlMoveMemory(ofs,@col,4)
@@ -516,7 +516,7 @@ Sub SaveEditOpt(ByVal hWin As HWND)
 	PutTheme(hWin,nInx)
 	For nInx=1 To 15
 		If lstrlen(thme(nInx).lpszTheme) Then
-			SaveToIni(StrPtr("Theme"),Str(nInx),"044444444444444444444444444444444444444444444444444",@thme(nInx),FALSE)
+			SaveToIni(StrPtr("Theme"),Str(nInx),"04444444444444444444444444444444444444444444444444444",@thme(nInx),FALSE)
 		EndIf
 	Next nInx
 	GetDlgItemText(hWin,IDC_EDTCODEFILES,@sCodeFiles,SizeOf(sCodeFiles))

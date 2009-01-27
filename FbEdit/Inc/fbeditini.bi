@@ -324,20 +324,15 @@ Sub CheckIniFile()
 			If lret<1063 Then
 				UpdateSection("Block",szSecBlock)
 				UpdateColorsTo1065
+				UpdateColorsTo1067
 			ElseIf lret<1065 Then
 				UpdateColorsTo1065
+				UpdateColorsTo1067
+			ElseIf lret<1067 Then
+				UpdateColorsTo1067
 			EndIf
-			UpdateColorsTo1067
 			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)
 			MessageBox(NULL,"The FbEdit.ini file has been updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)
-		ElseIf lret=1065 Then
-			' Check if colors are updated
-			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"444444444444444444444444444444444",@fbcol,FALSE)
-			If fbcol.codetiptext=0 And fbcol.codetipapi=0 And fbcol.codetipsel=0 And fbcol.propertiespar=0 Then
-				CopyFile(@ad.IniFile,@buff,FALSE)
-				UpdateColorsTo1065
-				MessageBox(NULL,"The FbEdit.ini file has been updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)
-			EndIf
 		EndIf
 	EndIf
 
