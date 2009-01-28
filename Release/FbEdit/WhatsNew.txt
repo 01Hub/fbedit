@@ -1,28 +1,4 @@
 Whats new:
 ----------
-1.0.6.6c
-o Updated fbConst.api file. Cast datatype codecomplete list was lost.
-o Fixed bug with comment blocks.
-1.0.6.6b
-o Dragging a tab is now visible.
-o Selected main file is now shown as an icon with check mark in project browser.
-o Fixed bug with comment blocks.
-o Fixed bug with parsing api files. This bug made FbEdit unstable.
-1.0.6.6
-o FbEdit can now load and save unicode files. The Save As dialog has a checkbox and lets
-  you convert to / from unicode.
-  Note! There is a bug in the FreeBASIC compiler. Errors are not handled correctly when
-  compiling unicode files (no CrLf between errors).
-o Added Current Selection to Find / Replace dialog.
-o Added support for nested comment blocks.
-o ppdk updated fb keywords in ini file. Api files also updated.
-o Updated help addin to use new fb keywords.
-o Added code complete on enums.
-o Added code complete on cast to UDT.
-o You can now change the order of tabs by dragging them to a new position.
-o The tabs order is saved to project file.
-o Project Options now has an option to start cmd.exe. This makes it possible to handle
-  input / optput redirections on command line.
-o Fixed bug where Quick run toolbar button was not shown.
-o Fixed a Find and Replace bug.
-o Fixed bug with ini file generation on a clean install. Could result in loss of text colors.
+1.0.6.7
+o Added line changed indicator. The default yellow for unsaved line and green for saved line can be changed.

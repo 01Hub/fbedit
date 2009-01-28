@@ -1032,30 +1032,12 @@ SetBlockMarkers endp
 DrawChangedState proc uses ebx edi,hMem:DWORD,hDC:HDC,lpLine:DWORD,x:DWORD,y:DWORD
 
 	mov		ebx,hMem
-	mov		edi,lpLine
-	test	[edi].CHARS.state,STATE_CHANGESAVED
+	test	[ebx].EDIT.fstyleex,STILEEX_LINECHANGED
 	.if !ZERO?
-		invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changesaved
-		invoke SelectObject,hDC,eax
-		push	eax
-		xor		eax,eax
-		sub		eax,x
-		add		eax,[ebx].EDIT.linenrwt
-		add		eax,24
-		mov		edx,y
-		push	eax
-		invoke MoveToEx,hDC,eax,edx,NULL
-		pop		eax
-		mov		edx,[ebx].EDIT.fntinfo.fntht
-		add		edx,y
-		invoke LineTo,hDC,eax,edx
-		pop		eax
-		invoke SelectObject,hDC,eax
-		invoke DeleteObject,eax
-	.else
-		test	[edi].CHARS.state,STATE_CHANGED
+		mov		edi,lpLine
+		test	[edi].CHARS.state,STATE_CHANGESAVED
 		.if !ZERO?
-			invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changed
+			invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changesaved
 			invoke SelectObject,hDC,eax
 			push	eax
 			xor		eax,eax
@@ -1072,6 +1054,27 @@ DrawChangedState proc uses ebx edi,hMem:DWORD,hDC:HDC,lpLine:DWORD,x:DWORD,y:DWO
 			pop		eax
 			invoke SelectObject,hDC,eax
 			invoke DeleteObject,eax
+		.else
+			test	[edi].CHARS.state,STATE_CHANGED
+			.if !ZERO?
+				invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changed
+				invoke SelectObject,hDC,eax
+				push	eax
+				xor		eax,eax
+				sub		eax,x
+				add		eax,[ebx].EDIT.linenrwt
+				add		eax,24
+				mov		edx,y
+				push	eax
+				invoke MoveToEx,hDC,eax,edx,NULL
+				pop		eax
+				mov		edx,[ebx].EDIT.fntinfo.fntht
+				add		edx,y
+				invoke LineTo,hDC,eax,edx
+				pop		eax
+				invoke SelectObject,hDC,eax
+				invoke DeleteObject,eax
+			.endif
 		.endif
 	.endif
 	ret

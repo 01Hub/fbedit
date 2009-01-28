@@ -179,7 +179,7 @@ CreateRAEdit proc
 	invoke SetFormat,hREd
 	;Set colors
 	invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
-	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
+	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	ret
 

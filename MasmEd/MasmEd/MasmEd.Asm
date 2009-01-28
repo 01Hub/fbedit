@@ -350,7 +350,7 @@ CreateRAEdit proc
 		invoke CheckDlgButton,hREd,-2,TRUE
 		invoke SendMessage,hREd,WM_COMMAND,-2,0
 	.endif
-	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
+	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	pop		eax
 	invoke ShowWindow,eax,SW_HIDE

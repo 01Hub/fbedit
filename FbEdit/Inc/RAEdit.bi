@@ -43,6 +43,7 @@
 
 #Define STYLEEX_LOCK							&H0001			' Show lock button
 #Define STYLEEX_BLOCKGUIDE					&H0002			' Show block guiders
+#Define STILEEX_LINECHANGED				&H0004			' Show line changed state
 
 ' REM_COMMAND commands
 #Define CMD_LEFT								1
