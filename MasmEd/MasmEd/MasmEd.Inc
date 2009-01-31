@@ -125,6 +125,9 @@ IDC_DLGEDIT				equ 1102
 IDC_PROPERTY			equ 1103
 IDC_PROJECT				equ 1106
 
+IDD_DLGSAVEUNICODE		equ 9000
+IDC_CHKUNICODE			equ 1001
+
 IDM_HELPF1				equ 500
 IDM_MENU				equ 10000
 
@@ -607,3 +610,4 @@ hCCLB					dd ?
 hCCTT					dd ?
 lpOldTabProc			dd ?
 tabinx					dd ?
+fUnicode				dd ?

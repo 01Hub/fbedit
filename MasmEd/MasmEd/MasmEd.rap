@@ -55,6 +55,7 @@ MinorFiles=*.res;*.obj;
 40=Opt\BuildOption.asm
 41=Res\Types.bmp
 42=..\Readme.txt
+43=Misc\Unicode.dlg
 
 [MakeFiles]
 0=MasmEd.rap
@@ -240,6 +241,7 @@ Group=Assembly,Resources,Misc,Include
 40=1
 41=3
 42=3
+43=2
 
 [Find]
 1="STYLEEX_BLOCKGUIDE"
@@ -263,7 +265,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -298,11 +300,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,0
-1=0,0,0,0,9779
+2=0,0,687,524,20641
+1=0,0,0,0,24097
 11=0,0,0,0,17581
-22=0,0,0,0,1624
-10=0,0,0,0,1389
+22=0,0,0,0,7506
+10=0,0,0,0,2423
 23=0,0,0,0,197
 9=0,0,0,0,160
 4=0,0,0,0
@@ -331,10 +333,11 @@ ProductVer4Range=0
 37=0,0,0,0,303
 36=0,0,661,490,1559
 20=0,0,0,0,0
-38=0,0,0,0,257
+38=0,0,0,0,476
 39=0,0,0,0
 40=0,0,0,0,29
 42=0,0,0,0,1241
+43=0,0,0,0
 
 [BookMark]
 0=

@@ -64,6 +64,22 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 
 SaveFile endp
 
+UnicodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		.if fUnicode
+			invoke CheckDlgButton,hWin,IDC_CHKUNICODE,BST_CHECKED
+		.endif
+	.elseif eax==WM_COMMAND
+		invoke IsDlgButtonChecked,hWin,IDC_CHKUNICODE
+		mov		fUnicode,eax
+	.endif
+	xor		eax,eax
+	ret
+
+UnicodeProc endp
+
 SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -77,15 +93,32 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	push	hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
-	mov		buffer[0],0
+	invoke lstrcpy,addr buffer,addr FileName
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+	invoke GetWindowLong,hWin,GWL_ID
+	.if eax!=IDC_RAE
+		xor		eax,eax
+		mov		fUnicode,eax
+	.endif
+	.if eax
+		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
+		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
+		mov		ofn.lpfnHook,offset UnicodeProc
+		invoke SendMessage,hWin,REM_GETUNICODE,0,0
+		mov		fUnicode,eax
+	.else
+		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
+	.endif
     mov		ofn.lpstrDefExt,NULL
     ;Show save as dialog
 	invoke GetSaveFileName,addr ofn
 	.if eax
+		invoke GetWindowLong,hWin,GWL_ID
+		.if eax!=IDC_RAE
+			invoke SendMessage,hWin,REM_SETUNICODE,fUnicode,0
+		.endif
 		invoke SaveFile,hWin,addr buffer
 		.if !eax
 			;The file was saved
