@@ -1242,7 +1242,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_AddMasked,hMnuIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
-
+		invoke LoadMenu,hInstance,IDR_MENUCONTEXT
+		mov		hContextMnu,eax
 		invoke SetToolMenu
 		invoke SetHelpMenu
 		;Add custom controls
@@ -1324,12 +1325,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL
+				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
+					invoke UpdateAll,CLOSE_ALL
 					mov		szSessionFile,0
 					invoke CloseNotify
-					invoke UpdateAll,CLOSE_ALL
 					invoke CreateNew
+				.endif
+				mov		fTimer,1
+			.elseif eax==IDM_FILE_CLOSE_ALL_BUT
+				invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+				mov		nTabInx,eax
+				invoke UpdateAll,WM_CLOSE
+				.if !eax
+					invoke UpdateAll,CLOSE_ALL
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_OPENSESSION
@@ -1825,6 +1835,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ParseCmnd,addr mnu.szcmnd,addr buffer,addr buffer1
 					invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
 				.endif
+			.elseif eax==IDM_OUTPUT_CLEAR
+				invoke SendMessage,hOut,WM_SETTEXT,0,addr szNULL
+			.elseif eax==IDM_BROWSER_OPEN
+				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
+				invoke GetFileAttributes,addr buffer
+				test	eax,FILE_ATTRIBUTE_DIRECTORY
+				.if ZERO?
+					invoke OpenEditFile,addr buffer,0
+				.else
+					invoke SendMessage,hBrowse,FBM_SETPATH,TRUE,addr buffer
+				.endif
+			.elseif eax==IDM_BROWSE_COPY
+				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
+				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+				invoke SetFocus,hREd
 			.elseif eax==IDC_CBO
 				invoke SelectCombo
 			.endif
@@ -2042,25 +2067,34 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke PostQuitMessage,NULL
 	.elseif eax==WM_CONTEXTMENU
+		mov		eax,lParam
+		.if eax==-1
+			invoke GetCaretPos,addr pt
+			invoke GetFocus
+			mov		edx,eax
+			invoke ClientToScreen,edx,addr pt
+		.else
+			and		eax,0FFFFh
+			mov		pt.x,eax
+			mov		eax,lParam
+			shr		eax,16
+			mov		pt.y,eax
+		.endif
 		mov		eax,wParam
 		.if eax==hREd
-			mov		eax,lParam
-			.if eax==-1
-				invoke GetCaretPos,addr pt
-				invoke GetFocus
-				mov		edx,eax
-				invoke ClientToScreen,edx,addr pt
-			.else
-				and		eax,0FFFFh
-				mov		pt.x,eax
-				mov		eax,lParam
-				shr		eax,16
-				mov		pt.y,eax
-			.endif
 			invoke GetMenu,hWin
 			invoke GetSubMenu,eax,1
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			jmp		Ex
+		.elseif eax==hTab
+			invoke GetSubMenu,hContextMnu,0
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+		.elseif eax==hOut
+			invoke GetSubMenu,hContextMnu,1
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+		.elseif eax==hBrowse
+			invoke GetSubMenu,hContextMnu,2
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		movzx	eax,word ptr lParam

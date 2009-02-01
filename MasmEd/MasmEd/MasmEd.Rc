@@ -1,5 +1,6 @@
 #define IDM_HELPF1 500
 #include "Res/MasmEdMnu.rc"
+#include "Res/ContextMnu.rc"
 #include "Res/UnicodeDlg.rc"
 #include "Res/MasmEdDlg.rc"
 #include "Res/FindDlg.rc"

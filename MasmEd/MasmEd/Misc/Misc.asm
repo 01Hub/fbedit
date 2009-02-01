@@ -919,24 +919,28 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_REPAINT,0,0
 				.endif
 			.elseif eax==WM_CLOSE
-				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
-				.if eax
-					invoke TabToolGetInx,[ebx].TABMEM.hwnd
-					invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
-					invoke TabToolActivate
-					invoke SetFocus,hREd
-					invoke WantToSave,hREd,offset FileName
-					or		eax,eax
-					jne		Ex
+				mov		eax,nInx
+				.if eax!=nTabInx
+					invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+					.if eax
+						invoke TabToolGetInx,[ebx].TABMEM.hwnd
+						invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+						invoke TabToolActivate
+						invoke SetFocus,hREd
+						invoke WantToSave,hREd,offset FileName
+						or		eax,eax
+						jne		Ex
+					.endif
 				.endif
 			.elseif eax==CLOSE_ALL
-				mov		eax,[ebx].TABMEM.hwnd
-				.if eax!=hRes
-					invoke DestroyWindow,[ebx].TABMEM.hwnd
+				mov		eax,nInx
+				.if eax!=nTabInx
+					mov		eax,[ebx].TABMEM.hwnd
+					.if eax!=hRes
+						invoke DestroyWindow,[ebx].TABMEM.hwnd
+					.endif
+					invoke TabToolDel,[ebx].TABMEM.hwnd
 				.endif
-				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
-				invoke GetProcessHeap
-				invoke HeapFree,eax,NULL,ebx
 			.elseif eax==WM_DESTROY
 				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
 				invoke DestroyWindow,[ebx].TABMEM.hwnd

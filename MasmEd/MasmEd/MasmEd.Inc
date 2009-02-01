@@ -223,6 +223,13 @@ IDM_OPTION_TOOLS		equ 10031
 IDM_OPTION_HELP			equ 10032
 IDM_HELP_ABOUT			equ 10201
 
+IDR_MENUCONTEXT			equ 21000
+IDM_TABTOOL				equ 21001
+IDM_FILE_CLOSE_ALL_BUT	equ 21002
+IDM_OUTPUT_CLEAR		equ 21004
+IDM_BROWSER_OPEN		equ 21006
+IDM_BROWSE_COPY			equ 21007
+
 TABMEM struct
 	hwnd		dd ?
 	filename	db MAX_PATH dup (?)
@@ -544,6 +551,7 @@ hBtn					dd ?
 hCbo					dd ?
 hFind					dd ?
 hMnu					dd ?
+hContextMnu				dd ?
 hTbr					dd ?
 hShp					dd ?
 hOut					dd ?
@@ -611,3 +619,4 @@ hCCTT					dd ?
 lpOldTabProc			dd ?
 tabinx					dd ?
 fUnicode				dd ?
+nTabInx					dd ?

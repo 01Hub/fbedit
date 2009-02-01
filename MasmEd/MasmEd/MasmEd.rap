@@ -56,6 +56,7 @@ MinorFiles=*.res;*.obj;
 41=Res\Types.bmp
 42=..\Readme.txt
 43=Misc\Unicode.dlg
+44=Context.mnu
 
 [MakeFiles]
 0=MasmEd.rap
@@ -242,18 +243,19 @@ Group=Assembly,Resources,Misc,Include
 41=3
 42=3
 43=2
+44=2
 
 [Find]
-1="STYLEEX_BLOCKGUIDE"
-2="col"
-3="COLOR"
-4="CCM_SETCOLOR"
-5="print"
-6="RACOLOR"
-7="DEFSTYLESCOL"
-8="hMnuIml"
-9="GetSelText"
-10="TabToolActivate"
+1="WM_CONTEXTMENU"
+2="hMnu"
+3="STYLEEX_BLOCKGUIDE"
+4="col"
+5="COLOR"
+6="CCM_SETCOLOR"
+7="print"
+8="RACOLOR"
+9="DEFSTYLESCOL"
+10="hMnuIml"
 
 [VersionControl]
 Settings=1246
@@ -265,7 +267,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -300,9 +302,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,20641
-1=0,0,0,0,24097
-11=0,0,0,0,17581
+2=0,0,687,524,5556
+1=0,0,0,0,52191
+11=0,0,0,0,18568
 22=0,0,0,0,7506
 10=0,0,0,0,2423
 23=0,0,0,0,197
@@ -323,11 +325,11 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,10655
+14=0,0,0,0,2138
 12=0,0,0,0,7074
 31=0,0,0,0,64
 32=0,0,0,0
-33=0,0,0,0,165
+33=0,0,0,0,78
 35=0,0,0,0,51
 34=0,0,0,0
 37=0,0,0,0,303
@@ -357,7 +359,7 @@ ProductVer4Range=0
 1=1
 [Collapse]
 2=
-1=,,,,262144,
+1=,,,,1048576,
 31=
 23=
 3=

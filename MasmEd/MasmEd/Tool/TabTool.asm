@@ -495,7 +495,6 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax!=tabinx && sdword ptr eax>=0 && sdword ptr tabinx>=0
 				push	eax
 				mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
-
 				lea		eax,buffer
 				mov		tci.pszText,eax
 				mov		tci.cchTextMax,MAX_PATH
