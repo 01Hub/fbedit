@@ -295,6 +295,7 @@ Sub WriteTheFile(ByVal hWin As HWND,ByVal szFileName As String)
 		If GetWindowLong(hWin,GWL_ID)<>IDC_HEXED Then
 			SendMessage(hWin,REM_SETCHANGEDSTATE,TRUE,0)
 		EndIf
+		CallAddins(ah.hwnd,AIM_FILESAVED,0,Cast(LPARAM,szFileName),HOOK_FILESAVED)
 	EndIf
 
 End Sub
