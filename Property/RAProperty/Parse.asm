@@ -571,6 +571,8 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	nline:DWORD
 	LOCAL	lpdatatype:DWORD
 	LOCAL	lendatatype:DWORD
+	LOCAL	lpdatatype2:DWORD
+	LOCAL	lendatatype2:DWORD
 	LOCAL	rpnmespc:DWORD
 	LOCAL	rpwithblock[4]:DWORD
 	LOCAL	nNest:DWORD
@@ -595,6 +597,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		fParam,0
 		mov		fdim,0
 		mov		lpdatatype,0
+		mov		lpdatatype2,0
 	  Nxtwrd:
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -620,6 +623,7 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 			mov		len1,ecx
 			lea		esi,[esi+ecx]
 			mov		lpdatatype,0
+			mov		lpdatatype2,0
 			mov		fPtr,0
 		  Nxtwrd1:
 			invoke GetWord,esi,addr npos
@@ -1158,6 +1162,7 @@ NxtWordProc:
 					jmp		NxtWordProc
 				.endif
 				mov		lpdatatype,0
+				mov		lpdatatype2,0
 			.elseif edx==DEFTYPE_WITHBLOCK
 				push	eax
 				push	edi
@@ -1343,30 +1348,28 @@ ParseData:
 	call	AddNamespace
 	call	SaveName
 ParseData1:
-;	.if !lpdatatype
-		call	SkipBrace
+	call	SkipBrace
+	invoke GetWord,esi,addr npos
+	mov		esi,edx
+	invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
+	.if eax
+		mov		fPtr,0
+		lea		esi,[esi+ecx]
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
-		invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
+		mov		lpdatatype,esi
+		mov		lendatatype,ecx
+		lea		esi,[esi+ecx]
+	  @@:
+		invoke GetWord,esi,addr npos
+		mov		esi,edx
+		invoke IsIgnore,IGNORE_PTR,ecx,esi
 		.if eax
-			mov		fPtr,0
 			lea		esi,[esi+ecx]
-			invoke GetWord,esi,addr npos
-			mov		esi,edx
-			mov		lpdatatype,esi
-			mov		lendatatype,ecx
-			lea		esi,[esi+ecx]
-		  @@:
-			invoke GetWord,esi,addr npos
-			mov		esi,edx
-			invoke IsIgnore,IGNORE_PTR,ecx,esi
-			.if eax
-				lea		esi,[esi+ecx]
-				inc		fPtr
-				jmp		@b
-			.endif
+			inc		fPtr
+			jmp		@b
 		.endif
-;	.endif
+	.endif
 	.if lpdatatype
 		mov		eax,lendatatype
 		inc		eax
@@ -1404,9 +1407,14 @@ ParseParamData1:
 	.endif
 	invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
 	.if eax
+	  @@:
 		lea		esi,[esi+ecx]
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
+		invoke IsIgnore,IGNORE_DATATYPE,ecx,esi
+		.if eax
+			jmp		@b
+		.endif
 		mov		lpdatatype,esi
 		mov		lendatatype,ecx
 		lea		esi,[esi+ecx]
@@ -1419,6 +1427,27 @@ ParseParamData1:
 			inc		fPtr
 			jmp		@b
 		.endif
+		.if !ecx
+			.if byte ptr [esi]=="="
+				inc		esi
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				.if ecx
+					mov		lpdatatype2,esi
+					mov		lendatatype2,ecx
+					lea		esi,[esi+ecx]
+				.elseif byte ptr [esi]=='-' || byte ptr [esi]=='+' || byte ptr [esi]=='&'
+					mov		lpdatatype2,esi
+					inc		esi
+					invoke GetWord,esi,addr npos
+					mov		esi,edx
+					lea		esi,[esi+ecx]
+					mov		eax,esi
+					sub		eax,lpdatatype2
+					mov		lendatatype2,eax
+				.endif
+			.endif
+		.endif
 	.endif
 	.if lpdatatype
 		mov		byte ptr [edi],':'
@@ -1428,6 +1457,18 @@ ParseParamData1:
 		lea		edi,[edi+eax]
 		inc		eax
 		invoke lstrcpyn,edx,lpdatatype,eax
+		.if lpdatatype2
+			mov		byte ptr [edi],'['
+			inc		edi
+			mov		edx,edi
+			mov		eax,lendatatype2
+			lea		edi,[edi+eax]
+			inc		eax
+			invoke lstrcpyn,edx,lpdatatype2,eax
+			mov		byte ptr [edi],']'
+			inc		edi
+			mov		lpdatatype2,0
+		.endif
 	.else
 		mov		byte ptr [edi],':'
 		inc		edi

@@ -112,6 +112,7 @@ End Type
 #Define IGNORE_STRUCTITEMINIT			12
 #Define IGNORE_PTR						13
 #Define IGNORE_STRUCTLINEFIRSTWORD	14
+#Define IGNORE_DATATYPE					15
 
 ' Character table types
 #Define CT_NONE					0

@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=2
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -133,12 +133,12 @@ ProductVer4Range=0
 8=
 7=
 9=
-10=,,,,,,
+10=,,,,,,,
 11=,
 12=
 13=
 [Size]
-2=0,0,699,490,139
+2=0,0,699,490,3148
 <<<<<<< .mine
 1=0,0,699,490,25631
 =======
@@ -149,7 +149,7 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2172
 9=0,0,0,0,2899
-10=0,0,589,494,3446
+10=0,0,589,494,29041
 11=0,0,746,498,10368
 12=0,0,0,0,2850
 13=0,0,0,0,0
@@ -172,16 +172,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="globalfree"
-2="getcurrentdirectory"
-3="ecx,2"
-4="shr	ecx,2"
-5="shr		ecx,2"
-6="shr^i^iecx,2"
-7="sht^i^iecx,2"
-8="REM_SETCOLOR"
-9="DEM_SETCOL"
-10="SetChanged"
+1="lpdatatype"
+2="globalfree"
+3="getcurrentdirectory"
+4="ecx,2"
+5="shr	ecx,2"
+6="shr		ecx,2"
+7="shr^i^iecx,2"
+8="sht^i^iecx,2"
+9="REM_SETCOLOR"
+10="DEM_SETCOL"
 
 [Exports]
 1=GetDefEx

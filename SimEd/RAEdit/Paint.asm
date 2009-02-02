@@ -1030,6 +1030,8 @@ BlockRoot:
 SetBlockMarkers endp
 
 DrawChangedState proc uses ebx edi,hMem:DWORD,hDC:HDC,lpLine:DWORD,x:DWORD,y:DWORD
+	LOCAL	hBr:HBRUSH
+	LOCAL	rect:RECT
 
 	mov		ebx,hMem
 	test	[ebx].EDIT.fstyleex,STILEEX_LINECHANGED
@@ -1037,43 +1039,39 @@ DrawChangedState proc uses ebx edi,hMem:DWORD,hDC:HDC,lpLine:DWORD,x:DWORD,y:DWO
 		mov		edi,lpLine
 		test	[edi].CHARS.state,STATE_CHANGESAVED
 		.if !ZERO?
-			invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changesaved
-			invoke SelectObject,hDC,eax
-			push	eax
+			invoke CreateSolidBrush,[ebx].EDIT.clr.changesaved
+			mov		hBr,eax
 			xor		eax,eax
 			sub		eax,x
 			add		eax,[ebx].EDIT.linenrwt
-			add		eax,24
-			mov		edx,y
-			push	eax
-			invoke MoveToEx,hDC,eax,edx,NULL
-			pop		eax
-			mov		edx,[ebx].EDIT.fntinfo.fntht
-			add		edx,y
-			invoke LineTo,hDC,eax,edx
-			pop		eax
-			invoke SelectObject,hDC,eax
-			invoke DeleteObject,eax
+			add		eax,20
+			mov		rect.left,eax
+			add		eax,5
+			mov		rect.right,eax
+			mov		eax,y
+			mov		rect.top,eax
+			add		eax,[ebx].EDIT.fntinfo.fntht
+			mov		rect.bottom,eax
+			invoke FillRect,hDC,addr rect,hBr
+			invoke DeleteObject,hBr
 		.else
 			test	[edi].CHARS.state,STATE_CHANGED
 			.if !ZERO?
-				invoke CreatePen,PS_SOLID,2,[ebx].EDIT.clr.changed
-				invoke SelectObject,hDC,eax
-				push	eax
+				invoke CreateSolidBrush,[ebx].EDIT.clr.changed
+				mov		hBr,eax
 				xor		eax,eax
 				sub		eax,x
 				add		eax,[ebx].EDIT.linenrwt
-				add		eax,24
-				mov		edx,y
-				push	eax
-				invoke MoveToEx,hDC,eax,edx,NULL
-				pop		eax
-				mov		edx,[ebx].EDIT.fntinfo.fntht
-				add		edx,y
-				invoke LineTo,hDC,eax,edx
-				pop		eax
-				invoke SelectObject,hDC,eax
-				invoke DeleteObject,eax
+				add		eax,20
+				mov		rect.left,eax
+				add		eax,5
+				mov		rect.right,eax
+				mov		eax,y
+				mov		rect.top,eax
+				add		eax,[ebx].EDIT.fntinfo.fntht
+				mov		rect.bottom,eax
+				invoke FillRect,hDC,addr rect,hBr
+				invoke DeleteObject,hBr
 			.endif
 		.endif
 	.endif
