@@ -2082,10 +2082,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		mov		eax,wParam
 		.if eax==hREd
-			invoke GetMenu,hWin
-			invoke GetSubMenu,eax,1
-			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-			jmp		Ex
+			.if eax==hRes
+				invoke GetSubMenu,hContextMnu,3
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+			.else
+				invoke GetSubMenu,hMnu,1
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+			.endif
 		.elseif eax==hTab
 			invoke GetSubMenu,hContextMnu,0
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
