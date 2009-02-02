@@ -64,7 +64,7 @@ Const szSecBlock=			!"[Block]\13\10"_
 								!"14=do!loop,Loop,,,0\13\10"_
 								!"15=while $ !wend,Wend,,,0\13\10"_
 								!"16=for $ !next,Next,,,0\13\10"_
-								!"17=operator!type,End Operator,,,6\13\10"_
+								!"17=operator#(,End Operator,,,6\13\10"_
 								!"18=with $,End With,,,0\13\10"_
 								!"19=asm,End Asm,,,192\13\10"
 Const szSecAutoFormat=	!"[AutoFormat]\13\10"_
@@ -88,7 +88,7 @@ Const szSecAutoFormat=	!"[AutoFormat]\13\10"_
 								!"17=end sub,16,0,0\13\10"_
 								!"18=%private %public function $,18,0,1\13\10"_
 								!"19=end function,18,0,0\13\10"_
-								!"20=operator,20,0,1\13\10"_
+								!"20=operator#(,20,0,1\13\10"_
 								!"21=end operator,20,0,0\13\10"_
 								!"22=namespace $,22,0,1\13\10"_
 								!"23=end namespace,22,0,0\13\10"_
@@ -319,7 +319,7 @@ Sub CheckIniFile()
 			MoveFile(@ad.IniFile,@buff)
 			CheckIniFile
 			MessageBox(NULL,"Your FbEdit.ini file was too old to be updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)
-		ElseIf lret<>ad.version Then
+		ElseIf lret<ad.version Then
 			CopyFile(@ad.IniFile,@buff,FALSE)
 			If lret<1063 Then
 				UpdateSection("Block",szSecBlock)
@@ -330,6 +330,8 @@ Sub CheckIniFile()
 				UpdateColorsTo1067
 			ElseIf lret<1067 Then
 				UpdateColorsTo1067
+				UpdateSection("Block",szSecBlock)
+				UpdateSection("AutoFormat",szSecAutoFormat)
 			EndIf
 			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)
 			MessageBox(NULL,"The FbEdit.ini file has been updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)

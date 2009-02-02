@@ -627,6 +627,17 @@ TestWord:
 			dec		eax
 			retn
 		.endif
+	.elseif ax=='(#'
+		inc		esi
+		.while ecx<[edi].CHARS.len
+			.break .if byte ptr [edi+ecx+sizeof CHARS]=='('
+			inc		ecx
+		.endw
+		xor		eax,eax
+		.if byte ptr [edi+ecx+sizeof CHARS]!='('
+			dec		eax
+		.endif
+		retn
 	.elseif ax=='$$'
 		add		esi,3
 		.while ecx<[edi].CHARS.len
