@@ -365,16 +365,16 @@ CoolMenu proc
 		jmp		@b
 	.endif
 	mov		nInx,0
-;  @@:
-;	invoke GetSubMenu,hContextMenu,nInx
-;	.if eax
-;		push	eax
-;		invoke SetupMenu,eax
-;		pop		edx
-;		invoke SetMenuInfo,edx,addr MInfo
-;		inc		nInx
-;		jmp		@b
-;	.endif
+  @@:
+	invoke GetSubMenu,hContextMnu,nInx
+	.if eax
+		push	eax
+		invoke SetupMenu,eax
+		pop		edx
+		invoke SetMenuInfo,edx,addr MInfo
+		inc		nInx
+		jmp		@b
+	.endif
 	ret
 
 CoolMenu endp
@@ -399,33 +399,8 @@ ResetMenu proc uses esi edi
 	invoke DestroyMenu,hMnu
 	pop		eax
 	mov		hMnu,eax
-;	invoke DestroyMenu,hContextMenu
-;	invoke LoadMenu,hInstance,IDR_CONTEXT
-;	mov		hContextMenu,eax
-;	invoke GetSubMenu,eax,0
-;	mov		hContextMenuPopup,eax
 	invoke SetToolMenu
 	invoke SetHelpMenu
-;	xor		edi,edi
-;	mov		esi,offset mruproject
-;	.while edi<=9
-;		.if byte ptr [esi]
-;			mov		eax,edi
-;			shl		eax,8
-;			or		eax,' 0&'
-;			mov		dword ptr buffer,eax
-;			invoke lstrcpy,offset tmpbuff,esi
-;			invoke GetStrItem,offset tmpbuff,addr buffer1
-;			invoke PathCompactPathEx,addr buffer[3],addr buffer1,30,0
-;			invoke GetSubMenu,hMnu,0
-;			mov		edx,eax
-;			mov		ecx,edi
-;			add		ecx,21000
-;			invoke AppendMenu,edx,MF_STRING,ecx,addr buffer
-;			add		esi,MAX_PATH*2
-;		.endif
-;		inc		edi
-;	.endw
 	invoke CoolMenu
 	ret
 

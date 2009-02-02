@@ -267,7 +267,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=2
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -303,8 +303,8 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,687,524,5556
-1=0,0,0,0,52191
-11=0,0,0,0,18568
+1=0,0,0,0,34015
+11=0,0,0,0,6765
 22=0,0,0,0,7506
 10=0,0,0,0,2423
 23=0,0,0,0,197

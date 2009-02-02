@@ -536,6 +536,29 @@ FileTreeViewProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		pop		eax
+		xor		eax,eax
+		jmp		Ex
+	.elseif	eax==WM_RBUTTONDOWN
+		invoke GetParent,hWin
+		invoke GetWindowLong,eax,0
+		mov		ebx,eax
+		mov		eax,lParam
+		and		eax,0FFFFh
+		mov		lpht.pt.x,eax
+		mov		eax,lParam
+		shr		eax,16
+		mov		lpht.pt.y,eax
+		invoke SendMessage,hWin,TVM_HITTEST,0,addr lpht
+		.if	eax
+			mov		hTvi,eax
+			mov		eax,lpht.flags
+			and		eax,TVHT_ONITEM
+			.if	eax
+				invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_CARET,hTvi
+			.endif
+		.endif
+		invoke SetFocus,hWin
+		xor		eax,eax
 		jmp		Ex
 	.elseif	eax==WM_CHAR
 		mov		eax,wParam
