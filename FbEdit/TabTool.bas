@@ -273,6 +273,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
 		lpOldParEditProc=Cast(Any Ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
 		lpOldEditProc=Cast(Any Ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
+		CallAddins(ah.hwnd,AIM_CREATEEDIT,hTmp,0,HOOK_CREATEEDIT)
 	EndIf
 	If edtopt.linenumbers Then
 		CheckDlgButton(hTmp,-2,TRUE)
