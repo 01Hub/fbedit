@@ -796,7 +796,12 @@ EnableDisable:
 	.else
 		mov		eax,MF_BYCOMMAND or MF_GRAYED
 	.endif
+	push	eax
+	push	edx
 	invoke EnableMenuItem,hMnu,edx,eax
+	pop		edx
+	pop		eax
+	invoke EnableMenuItem,hContextMnu,edx,eax
 	pop		edx
 	pop		eax
 	push	eax

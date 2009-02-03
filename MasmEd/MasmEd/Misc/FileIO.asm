@@ -46,7 +46,10 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 			invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
 			;Set the modify state to false
 			invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
-			invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
+			.endif
 		.endif
 		invoke CloseHandle,hFile
 		invoke TabToolGetMem,hWin
@@ -98,17 +101,15 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
 	invoke GetWindowLong,hWin,GWL_ID
-	.if eax!=IDC_RAE
-		xor		eax,eax
-		mov		fUnicode,eax
-	.endif
-	.if eax
+	.if eax==IDC_RAE
 		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
 		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
 		mov		ofn.lpfnHook,offset UnicodeProc
 		invoke SendMessage,hWin,REM_GETUNICODE,0,0
 		mov		fUnicode,eax
 	.else
+		xor		eax,eax
+		mov		fUnicode,eax
 		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
 	.endif
     mov		ofn.lpstrDefExt,NULL

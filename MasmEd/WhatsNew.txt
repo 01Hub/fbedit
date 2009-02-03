@@ -5,9 +5,11 @@ MasmEd
 o Code editor now indicates lines that have changed. Yellow: Unsaved change. Green: Saved change.
 o You can close a tab by clicking the middle mouse button.
 o You can rearrange tab order by dragging a tab to a new position.
+o Added context menu to resource editor, tab tool, output and filebrowser.
 o MasmEd can handle unicode files. You can use the Save As to convert to / from unicode.
-  NOTE! The WideCharToMultiByte and MultiByteToWideChar api's are used to implement unicode support.
-o Added context menu to tab, output and filebrowser.
+  NOTE! The code editor does not handle unicode so convertion is done on load / save.
+        The WideCharToMultiByte api is used when loding a file and the MultiByteToWideChar api
+        is used when saving a file.
 
 1.0.5.2 - 2008.12.04
 --------------------

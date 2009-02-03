@@ -246,16 +246,16 @@ Group=Assembly,Resources,Misc,Include
 44=2
 
 [Find]
-1="WM_CONTEXTMENU"
-2="hMnu"
-3="STYLEEX_BLOCKGUIDE"
-4="col"
-5="COLOR"
-6="CCM_SETCOLOR"
-7="print"
-8="RACOLOR"
-9="DEFSTYLESCOL"
-10="hMnuIml"
+1="REM_SETCHANGEDSTATE"
+2="WM_CONTEXTMENU"
+3="hMnu"
+4="STYLEEX_BLOCKGUIDE"
+5="col"
+6="COLOR"
+7="CCM_SETCOLOR"
+8="print"
+9="RACOLOR"
+10="DEFSTYLESCOL"
 
 [VersionControl]
 Settings=1246
@@ -302,11 +302,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,5556
-1=0,0,0,0,58912
+2=0,0,687,524,4228
+1=0,0,0,0,21184
 11=0,0,0,0,6765
 22=0,0,0,0,7506
-10=0,0,0,0,2423
+10=0,0,0,0,1370
 23=0,0,0,0,197
 9=0,0,0,0,160
 4=0,0,0,0
