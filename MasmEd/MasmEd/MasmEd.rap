@@ -112,6 +112,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 16=,32108,0,Res\CollapseBM.bmp
 17=,110,0,Res\Types.bmp
 18=,111,0,Res\Close.bmp
+19=,101,1,Res\SplitH.cur
 
 [StringTable]
 1="IDM_FILE_PRINT,0,Print"
@@ -267,7 +268,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
