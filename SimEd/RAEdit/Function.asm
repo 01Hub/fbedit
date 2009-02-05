@@ -1597,6 +1597,7 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	nreminding:DWORD
 	LOCAL	fUnicode:DWORD
 	LOCAL	fNewLine:DWORD
+	LOCAL	fCR:DWORD
 
 	mov		ebx,hMem
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*2
@@ -1665,21 +1666,36 @@ ReadChars:
 GetLineLen:
 	xor		edx,edx
 	xor		eax,eax
+	mov		fCR,edx
 	.if fUnicode==2
 		.while word ptr [esi+ecx]!=0Ah && ecx<dwRead
+			.if word ptr [esi+ecx]==0Dh
+				inc		fCR
+			.endif
 			lea		ecx,[ecx+2]
 			lea		edx,[edx+1]
 		.endw
 		.if word ptr [esi+ecx]==0Ah
+			.if !fCR
+				mov		word ptr [esi+ecx],0Dh
+				lea		edx,[edx+1]
+			.endif
 			lea		ecx,[ecx+2]
 			inc		eax
 		.endif
 	.else
 		.while byte ptr [esi+ecx]!=0Ah && ecx<dwRead
+			.if byte ptr [esi+ecx]==0Dh
+				inc		fCR
+			.endif
 			lea		ecx,[ecx+1]
 			lea		edx,[edx+1]
 		.endw
 		.if byte ptr [esi+ecx]==0Ah
+			.if !fCR
+				mov		byte ptr [esi+ecx],0Dh
+				lea		edx,[edx+1]
+			.endif
 			lea		ecx,[ecx+1]
 			inc		eax
 		.endif
