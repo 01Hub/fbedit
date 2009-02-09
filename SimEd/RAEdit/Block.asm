@@ -659,11 +659,11 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 	invoke TestBlockStart,ebx,edi
 	.if eax!=-1
 		mov		esi,eax
+		mov		eax,[ebx].EDIT.rpLineFree
+		shr		eax,2
+		mov		nMax,eax
 		test	[esi].RABLOCKDEF.flag,BD_SEGMENTBLOCK
 		.if !ZERO?
-			mov		eax,[ebx].EDIT.rpLineFree
-			shr		eax,2
-			mov		nMax,eax
 			invoke SetBookMark,ebx,edi,2
 			mov		edx,eax
 			inc		edi
@@ -684,9 +684,6 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 				inc		edi
 			.endw
 		.else
-			mov		eax,[ebx].EDIT.rpLineFree
-			shr		eax,2
-			mov		nMax,eax
 			inc		nNest
 			inc		edi
 			test	[esi].RABLOCKDEF.flag,BD_LOOKAHEAD
@@ -1056,7 +1053,7 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 						.endif
 					.endif
 				.endif
-					inc		ecx
+				inc		ecx
 			.endw
 			and		[esi].CHARS.state,-1 xor STATE_COMMENT or STATE_COMMENTNEST
 			.if nCmnt>1 || fCmnt

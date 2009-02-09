@@ -346,7 +346,9 @@ FindTextEx endp
 IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 	LOCAL	tmpesi:DWORD
 	LOCAL	fCmnt:DWORD
+	LOCAL	espsave:DWORD
 
+	mov		espsave,esp
 	mov		ebx,hMem
 	mov		edi,nLine
 	shl		edi,2
@@ -532,11 +534,11 @@ SkipSpc:
 					mov		edi,[edi].LINE.rpChars
 					add		edi,[ebx].EDIT.hChars
 					test	[edi].CHARS.state,STATE_COMMENT
-					jne		Nf
+					jne		SkipSpcNf
 					xor		ecx,ecx
 					jmp		SkipSpc
 				.else
-					jmp		Nf
+					jmp		SkipSpcNf
 				.endif
 			.endif
 		.endif
@@ -546,6 +548,9 @@ SkipSpc:
 		dec		eax
 	.endif
 	retn
+SkipSpcNf:
+	mov		esp,espsave
+	jmp		Nf
 
 OptSkipWord:
 	push	ecx
