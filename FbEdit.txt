@@ -3,6 +3,8 @@ Whats new:
 1.0.6.7
 o Added line changed indicator. The default yellow for unsaved line and green for saved line can be changed.
 o FbEdit can now read Linux files with LF line termination (Windows uses CR+LF).
+o Added Chinese translation. Thanks esir.
+o Fixed bug with line continuation. Would cause a crash if line continuation was combined with comment block.
 1.0.6.6c
 o Updated fbConst.api file. Cast datatype codecomplete list was lost.
 o Fixed bug with comment blocks.
