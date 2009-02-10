@@ -2000,10 +2000,10 @@ IsCharPos proc uses ebx esi,hMem:DWORD,cp:DWORD
 			.if word ptr [esi+ecx+sizeof CHARS]=="'/"
 				add		ecx,2
 				.while ecx<nMax
-					.break .if word ptr [edi+ecx+sizeof CHARS]=="/'"
+					.break .if word ptr [esi+ecx+sizeof CHARS]=="/'"
 					inc		ecx
 				.endw
-				.if word ptr [edi+ecx+sizeof CHARS]=="/'"
+				.if word ptr [esi+ecx+sizeof CHARS]=="/'"
 					add		ecx,2
 				.else
 					;On comment block
