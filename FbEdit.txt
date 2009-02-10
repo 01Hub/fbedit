@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.8
+o Fixed bug with build options. Moving an item abowe first item created duplicate items.
+1.0.6.7b
+o Fixed comment block bug that could cause FbEdit to crash.
 1.0.6.7
 o Added line changed indicator. The default yellow for unsaved line and green for saved line can be changed.
 o FbEdit can now read Linux files with LF line termination (Windows uses CR+LF).

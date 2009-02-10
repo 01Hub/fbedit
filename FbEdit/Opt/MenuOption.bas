@@ -276,7 +276,7 @@ Function MenuOptionDlgProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam 
 							'
 						Case IDC_BTNMEU
 							nInx=SendDlgItemMessage(hWin,IDC_LSTME,LB_GETCURSEL,0,0)
-							If nInx<>LB_ERR Then
+							If nInx>0 Then
 								SendDlgItemMessage(hWin,IDC_LSTME,LB_GETTEXT,nInx,Cast(Integer,@buff))
 								SendDlgItemMessage(hWin,IDC_LSTME,LB_DELETESTRING,nInx,0)
 								nInx=nInx-1
