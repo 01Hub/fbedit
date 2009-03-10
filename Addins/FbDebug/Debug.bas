@@ -420,8 +420,8 @@ Sub ParseDebugInfo()
 						EndIf
 					Case 100
 						' Main Source
-						'PutString("Main " & recup)
-						If Right(recup,1)="/" Then
+						PutString("Main " & recup)
+						If Right(recup,1)="/" Or Right(recup,1)="\" Then
 							source(0).file=recup
 						Else
 							sourcenb+=1
@@ -440,7 +440,7 @@ Sub ParseDebugInfo()
 						'PutString("include RAS " & recup)
 					Case 132
 						' Include
-						'PutString("Include: " & Str(recup))
+						PutString("Include: " & Str(recup))
 						sourcenb+=1
 						source(sourcenb).file=recup
 						sourceix=sourcenb

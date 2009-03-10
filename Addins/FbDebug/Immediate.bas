@@ -1432,6 +1432,18 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf UCase(buff)="FILES" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			For x=1 To sourcenb
+				recup=source(x).file & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
 	ElseIf UCase(buff)="STAT" Then
 		If hThread Then
 			' Only in debug mode
