@@ -14,6 +14,12 @@ DEFSELBARCOLOR			equ 00C0C0C0h
 DEFSELBARPEN			equ 00808080h
 DEFLNRCOLOR				equ 00800000h
 DEFNUMCOLOR				equ 00808080h
+DEFCMNTBCK				equ 00C0F0F0h
+DEFSTRBCK				equ 00C0F0F0h
+DEFNUMBCK				equ 00C0F0F0h
+DEFOPRBCK				equ 00C0F0F0h
+DEFCHANGEDCLR			equ 0000F0F0h
+DEFCHANGESAVEDCLR		equ 0000F000h
 
 ;Window styles
 STYLE_NOSPLITT			equ 0001h			;No splitt button
@@ -34,8 +40,10 @@ STYLE_HILITECOMMENT		equ 4000h			;Comments are hilited
 STYLE_AUTOSIZELINENUM	equ 8000h			;Line number column autosizes
 
 ;Styles used with REM_SETSTYLEEX message
+;Styles used with REM_SETSTYLEEX message
 STYLEEX_LOCK			equ 0001h			;Show lock button
 STYLEEX_BLOCKGUIDE		equ 0002h			;Show block guiders
+STILEEX_LINECHANGED		equ 0004h			;Show line changed state
 
 ;Edit modes
 MODE_NORMAL				equ 0				;Normal
@@ -146,6 +154,9 @@ REM_NEXTERROR			equ REM_BASE+80		;wParam=nLine, lParam=0
 REM_CHARTABINIT			equ REM_BASE+81		;wParam=0, lParam=0
 REM_LINEREDTEXT			equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
 REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
+REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
+REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
+REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -185,6 +196,9 @@ STATE_BLOCKSTART		equ 10000h
 STATE_BLOCK				equ 20000h
 STATE_BLOCKEND			equ 40000h
 STATE_REDTEXT			equ 80000h
+STATE_COMMENTNEST		equ 00100000h
+STATE_CHANGED			equ 00200000h
+STATE_CHANGESAVED		equ 00400000h
 STATE_GARBAGE			equ 80000000h
 
 ;Character table types
@@ -225,6 +239,8 @@ RACOLOR struct
 	strback		dd ?						;String back color
 	numback		dd ?						;Numbers & hex back color
 	oprback		dd ?						;Operator back color
+	changed		dd ?						;Line changed indicator
+	changesaved	dd ?						;Line saved chane indicator
 RACOLOR ends
 
 RASELCHANGE struct
@@ -377,6 +393,8 @@ RAEDIT struct
 	cpselbar	dd ?
 	fLock		dd ?
 	nCursorWordType	dd ?
+	fstyleex	dd ?
+	funicode	dd ?
 RAEDIT ends
 
 .const

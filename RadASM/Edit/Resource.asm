@@ -14,7 +14,7 @@ RESROW ends
 
 .data
 
-szResourceType			db 'BITMAP   ,CURSOR   ,ICON     ,IMAGE    ,MIDI     ,WAVE     ,AVI      ,RCDATA   ,MANIFEST ,FONT     ,ANICURSOR',0
+szResourceType			db 'BITMAP   ,CURSOR   ,ICON     ,IMAGE    ,MIDI     ,WAVE     ,AVI      ,RCDATA   ,MANIFEST ,FONT     ,ANICURSOR,RT_HTML  ',0
 szManifest				db 'MANIFEST ',0
 szResRc					db 'Res.rc',0
 
@@ -455,6 +455,8 @@ ResourceProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,offset FNTFilterString
 				.elseif eax==10
 					mov		eax,offset ANIFilterString
+				.elseif eax==11
+					mov		eax,offset HTMLFilterString
 				.else
 					xor		eax,eax
 				.endif

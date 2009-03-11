@@ -1,8 +1,7 @@
 ;#########################################################################
-comment ~
 
-	RadASM (C) KetilO 2006
-~
+;	RadASM (C) KetilO 2006
+
 .code
 
 start:
@@ -4597,7 +4596,8 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			mov		OldEditProc,eax
 			;Set font & format
 			invoke SetFormat,hEdt,hFont[0],hFont[4],hFont[8],TRUE
-			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
+			;invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
 		.else
 			;Subclass the RAEdit control
 			invoke SendMessage,hEdt,REM_SUBCLASS,0,addr EditTxtProc

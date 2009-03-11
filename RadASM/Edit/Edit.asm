@@ -2012,6 +2012,7 @@ SaveEdit proc hWin:HWND
 			invoke SendMessage,hCld,EM_STREAMOUT,SF_TEXT,addr editstream
 			;Initialize the modify state to false
 			invoke SendMessage,hCld,EM_SETMODIFY,FALSE,0
+			invoke SendMessage,hCld,REM_SETCHANGEDSTATE,TRUE,0
 			invoke InvalidateRect,hCld,NULL,TRUE
 			invoke CloseHandle,hFile
 			invoke GetFileImg,addr FileName
@@ -2076,6 +2077,7 @@ SaveEditAs proc hWin:HWND
 			invoke TabToolAdd,hWin,offset FileName
 			;Initialize the modify state to false
 			invoke SendMessage,hEdt,EM_SETMODIFY,FALSE,0
+			invoke SendMessage,hEdt,REM_SETCHANGEDSTATE,TRUE,0
 			invoke CloseHandle,hFile
 			invoke DllProc,hWin,AIM_EDITSAVED,hEdt,addr FileName,RAM_EDITSAVED
 			xor		eax,eax

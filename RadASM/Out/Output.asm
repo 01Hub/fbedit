@@ -39,7 +39,7 @@ OldOutREdProc		dd ?
 hOutREd1			dd ?
 hOutREd2			dd ?
 hOutREd3			dd ?
-outbuffer			db 1024 dup(?)
+outbuffer			db 2048 dup(?)
 make				MAKE <>
 identify			db 64 dup(?)
 identify1			db 64 dup(?)
@@ -1122,7 +1122,7 @@ AcceptDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 AcceptDlgProc endp
 
-GetCommand proc uses esi edi,lpCommand:DWORD
+GetCommand proc uses esi edi,lpCommand:DWORD,Param:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		esi,lpCommand
@@ -1162,16 +1162,26 @@ GetCommand proc uses esi edi,lpCommand:DWORD
 	.endif
 	invoke iniInStr,addr szaccept,addr buffer
 	.if eax==-1
+		invoke iniInStr,addr sztempaccept,addr buffer
+	.endif
+	.if eax==-1
 		invoke LoadCursor,0,IDC_ARROW
 		invoke SetCursor,eax
-		invoke ModalDialog,hInstance,IDD_DLGACCEPT,hWnd,offset AcceptDlgProc,addr buffer
+		invoke ModalDialog,hInstance,IDD_DLGACCEPT,hWnd,offset AcceptDlgProc,lpCommand
 		push	eax
 		.if eax==2
-			.if szaccept
-				invoke strcat,addr szaccept,addr szComma
+			.if !Param
+				.if szaccept
+					invoke strcat,addr szaccept,addr szComma
+				.endif
+				invoke strcat,addr szaccept,addr buffer
+				invoke WritePrivateProfileString,addr iniAccept,addr iniAccept,addr szaccept,addr iniFile
+			.else
+				.if sztempaccept
+					invoke strcat,addr sztempaccept,addr szComma
+				.endif
+				invoke strcat,addr sztempaccept,addr buffer
 			.endif
-			invoke strcat,addr szaccept,addr buffer
-			invoke WritePrivateProfileString,addr iniAccept,addr iniAccept,addr szaccept,addr iniFile
 		.endif
 		invoke LoadCursor,0,IDC_WAIT
 		invoke SetCursor,eax
@@ -1189,7 +1199,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetCommand,addr outbuffer
+	invoke GetCommand,addr outbuffer,Param
 	or		eax,eax
 	je		Ex
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr outbuffer
@@ -1305,7 +1315,7 @@ OutputText:
 MakeThreadProc endp
 
 OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
+;	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	iNbr:DWORD
@@ -1342,16 +1352,16 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		invoke GetPrivateProfileString,addr iniMakeDefNoPro,lpCommandLine,addr szNULL,addr iniBuffer,SizeOf iniBuffer,addr iniAsmFile
 	.endif
 	;Get file to delete
-	invoke iniGetItem,addr iniBuffer,addr buffer
-	movzx	eax,buffer
+	invoke iniGetItem,addr iniBuffer,addr tempbuff
+	movzx	eax,tempbuff
 	push	eax
 	.if al!='0'
 		;Get filename
 		push	eax
-		mov		edx,dword ptr buffer[1]
+		mov		edx,dword ptr tempbuff[1]
 		push	edx
 		.if al>='0' && al<='9'
-			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,SizeOf buffer,addr ProjectFile
+			invoke GetPrivateProfileString,addr iniMakeFile,addr tempbuff,addr szNULL,addr tempbuff,SizeOf tempbuff,addr ProjectFile
 		.else
 			call AddFile
 		.endif
@@ -1359,15 +1369,15 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		and		edx,5F5F5FFFh
 		pop		eax
 		.if al=='*' && edx=='JBO.'
-			invoke strlen,addr buffer
-			.while byte ptr buffer[eax-1]!='\' && eax
+			invoke strlen,addr tempbuff
+			.while byte ptr tempbuff[eax-1]!='\' && eax
 				dec		eax
 			.endw
 		.else
 			xor		eax,eax
 		.endif
 		;Save it for delete and 'exist on exit test'
-		invoke strcpy,addr buffer2,addr buffer[eax]
+		invoke strcpy,addr buffer2,addr tempbuff[eax]
 		mov		eax,lpFileName
 		.if dword ptr [eax]=='9999'
 			xor		eax,eax
@@ -1375,8 +1385,8 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		.endif
 	.endif
 	;Get (O)utput or (C)onsole
-	invoke iniGetItem,addr iniBuffer,addr buffer
-	movzx	ebx,word ptr buffer
+	invoke iniGetItem,addr iniBuffer,addr tempbuff
+	movzx	ebx,word ptr tempbuff
 	.if bl=='0'
 		invoke iniGetItem,addr iniBuffer,addr prnbuff
 		invoke iniPathFix,addr prnbuff
@@ -1389,9 +1399,9 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 	.endif
   @@:
 	;Get file nbr
-	mov		buffer[1],0
-	invoke iniGetItem,addr iniBuffer,addr buffer
-	mov		ax,word ptr buffer
+	mov		tempbuff[1],0
+	invoke iniGetItem,addr iniBuffer,addr tempbuff
+	mov		ax,word ptr tempbuff
 	.if ax
 		.if bh=='N' || bh==';'
 			mov		fQuote,0
@@ -1401,7 +1411,7 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 		.if (al>='1' && al<='9' && ah==0) || (ah>='0' && ah<='9' && al=='1')
 			push	eax
 			;Get filename
-			invoke GetPrivateProfileString,addr iniMakeFile,addr buffer,addr szNULL,addr buffer,SizeOf buffer,addr ProjectFile
+			invoke GetPrivateProfileString,addr iniMakeFile,addr tempbuff,addr szNULL,addr tempbuff,SizeOf tempbuff,addr ProjectFile
 			call AddFile
 			pop		eax
 			.if ax=='3' || ax=='31'
@@ -1409,8 +1419,8 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 				.while iNbr<PRO_START_OBJ
 					invoke GetFileNameFromID,iNbr
 					.if eax
-						invoke strcpy,addr buffer,eax
-						invoke iniInStr,addr buffer,addr FTObj
+						invoke strcpy,addr tempbuff,eax
+						invoke iniInStr,addr tempbuff,addr FTObj
 						.if eax!=-1
 							call AddFile
 						.endif
@@ -1483,19 +1493,19 @@ OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
 				.else
 					mov		ax,'"'
 				.endif
-				mov		word ptr buffer,ax
+				mov		word ptr tempbuff,ax
 				.if outbuffer[3]!=':'
-					invoke strcat,addr buffer,addr ProjectPath
+					invoke strcat,addr tempbuff,addr ProjectPath
 				.endif
 				mov		eax,2
 				.if bh=='N' || bh==';'
 					dec		eax
 				.endif
-				invoke strcat,addr buffer,addr outbuffer[eax]
+				invoke strcat,addr tempbuff,addr outbuffer[eax]
 				.if byte ptr prnbuff
 					invoke strcat,addr prnbuff,addr szSpace
 				.endif
-				invoke strcat,addr prnbuff,addr buffer
+				invoke strcat,addr prnbuff,addr tempbuff
 			.endif
 			invoke strcpy,addr outbuffer,addr prnbuff
 			call	ParsePipe
@@ -1596,9 +1606,9 @@ ExecThread:
 		.if iNbr==10
 			invoke MessageBox,hWnd,addr CreatePipeError,addr AppName,MB_ICONERROR+MB_OK
 		.elseif iNbr==11
-			invoke lstrcpy,addr buffer,addr CreateProcessError
-			invoke lstrcat,addr buffer,addr outbuffer
-			invoke MessageBox,hWnd,addr buffer,addr AppName,MB_ICONERROR+MB_OK
+			invoke lstrcpy,addr tempbuff,addr CreateProcessError
+			invoke lstrcat,addr tempbuff,addr outbuffer
+			invoke MessageBox,hWnd,addr tempbuff,addr AppName,MB_ICONERROR+MB_OK
 		.endif
 		mov		eax,iNbr
 	.else
@@ -1608,7 +1618,7 @@ ExecThread:
 	retn
 
 AddFile:
-	invoke iniPathFix,addr buffer
+	invoke iniPathFix,addr tempbuff
 	;Quote String
 	.if fQuote
 		mov		ax,'"'
@@ -1616,9 +1626,9 @@ AddFile:
 		xor		ax,ax
 	.endif
 	mov		word ptr buffer1,ax
-	invoke strcat,addr buffer,addr buffer1
-	invoke strcat,addr buffer1,addr buffer
-	invoke strcpy,addr buffer,addr buffer1
+	invoke strcat,addr tempbuff,addr buffer1
+	invoke strcat,addr buffer1,addr tempbuff
+	invoke strcpy,addr tempbuff,addr buffer1
 	;Add filename to command
 	invoke strlen,addr outbuffer
 	lea		edx,outbuffer[eax]
@@ -1628,41 +1638,41 @@ AddFile:
 	.endif
 	push	edx
 	mov		eax,fQuote
-	mov		eax,dword ptr buffer[eax]
+	mov		eax,dword ptr tempbuff[eax]
 	push	eax
 	.if ax=='.$'
 		.if hMdiCld
 			mov		edx,fQuote
 			inc		edx
-			invoke strcpy,addr buffer1,addr buffer[edx]
+			invoke strcpy,addr buffer1,addr tempbuff[edx]
 			mov		edx,fQuote
-			invoke GetWindowText,hMdiCld,addr buffer[edx],sizeof buffer-1
-			invoke iniRStripStr,addr buffer,'.'
-			invoke strcat,addr buffer,addr buffer1
+			invoke GetWindowText,hMdiCld,addr tempbuff[edx],sizeof tempbuff-1
+			invoke iniRStripStr,addr tempbuff,'.'
+			invoke strcat,addr tempbuff,addr buffer1
 		.endif
 	.elseif al=='$'
 		.if hMdiCld
 			mov		edx,fQuote
 			inc		edx
-			invoke strcpy,addr buffer1,addr buffer[edx]
+			invoke strcpy,addr buffer1,addr tempbuff[edx]
 			mov		edx,fQuote
-			invoke GetWindowText,hMdiCld,addr buffer[edx],sizeof buffer-1
-			invoke strcat,addr buffer,addr buffer1
+			invoke GetWindowText,hMdiCld,addr tempbuff[edx],sizeof tempbuff-1
+			invoke strcat,addr tempbuff,addr buffer1
 		.endif
 	.elseif al=='*'
 		mov		edx,fQuote
 		inc		edx
-		invoke strcpy,addr buffer1,addr buffer[edx]
+		invoke strcpy,addr buffer1,addr tempbuff[edx]
 		mov		edx,fQuote
-		invoke strcpy,addr buffer[edx],lpFileName
-		invoke strcat,addr buffer,addr buffer1
+		invoke strcpy,addr tempbuff[edx],lpFileName
+		invoke strcat,addr tempbuff,addr buffer1
 	.endif
 	.if fQuote
-		invoke strlen,addr buffer
+		invoke strlen,addr tempbuff
 		dec		eax
-		invoke lstrcpyn,addr buffer1,addr buffer[1],eax
+		invoke lstrcpyn,addr buffer1,addr tempbuff[1],eax
 	.else
-		invoke strcpy,addr buffer1,addr buffer
+		invoke strcpy,addr buffer1,addr tempbuff
 	.endif
 	pop		edx
 	.if dl!='*' && dl!='$' && edx!='crsr'
@@ -1679,7 +1689,7 @@ AddFile:
 			.endif
 		.endif
 	.endif
-	invoke iniInStr,addr buffer,addr FTRes
+	invoke iniInStr,addr tempbuff,addr FTRes
 	.if eax!=-1
 		.if !fProject
 			invoke GetFileAttributes,addr buffer1
@@ -1689,7 +1699,7 @@ AddFile:
 	.endif
 	pop		edx
 	.if eax!=-1
-		invoke strcpy,edx,addr buffer
+		invoke strcpy,edx,addr tempbuff
 	.endif
 	retn
 

@@ -1185,7 +1185,7 @@ iniRead proc
 		mov		PosProWizLeft,eax
 		invoke DecToBin,addr iniBuffer
 		mov		PosProWizTop,eax
-		invoke GetPrivateProfileString,addr iniAccept,addr iniAccept,addr szNULL,addr szaccept,64,addr iniFile
+		invoke GetPrivateProfileString,addr iniAccept,addr iniAccept,addr szNULL,addr szaccept,sizeof szaccept,addr iniFile
 		;Project options
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinProOpt,addr iniDefProOpt,addr iniBuffer,64,addr iniFile
 		invoke iniGetItem,addr iniBuffer,addr buffer

@@ -1,9 +1,17 @@
-RadASM 2.2.1.5
+RadASM 2.2.1.6
 --------------
+2.2.1.6
+o Added resource type RT_HTML
+o Code lines now has a yellow indicator if unsaved chanees, green for saved changes.
+0 Added protection against malicious project files (.rap). A dialog shows the command that will be
+  executed. It is up to you to accept the command or not. There is also a 'Don't ask again' option.
+  Even with this added protection you should always open a project file from a non trusted source
+  in text edit mode (File / Open File) and verify that it not executes any suspicious commands.
+o Fixed RadASM Project File (.rap) Stack-Based Buffer Overflow Vulnerability.
 2.2.1.5
 o Option to set syntax backcolor on strings, comments, operators and numbers & hex values.
 o Api files can now have commented lines. A commented line must start with ; or //
-o Ini files are now has a version.
+o Ini files now has a version.
 o Updated addins to latest version. This fixess several bugs.
 o Fixed bug with split screen.
 2.2.1.4

@@ -950,6 +950,7 @@ RCDFilterString			db 'RC data (*.*)',0,'*.*',0,0
 XMLFilterString			db 'XML file (*.xml)',0,'*.xml',0,0
 FNTFilterString			db 'Font (*.fon, *.ttc, *.ttf)',0,'*.fon;*.ttc;*.ttf',0,0
 ANIFilterString			db 'Ani Cursor (*.ani)',0,'*.ani',0,0
+HTMLFilterString		db 'HTML (*.htm, *.html)',0,'*.htm;*.html',0,0
 INIFilterString			db 'Inifile (*.ini)',0,'*.ini',0,0
 DLLFilterString			db 'CustomControl (*.dll)',0,'*.dll',0,0
 
@@ -1153,14 +1154,14 @@ lpAddWordToWordList		dd offset AddWordToWordList
 lpRefreshProperty		dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName					db 'RadASM version 2.2.1.5',0
+AppName					db 'RadASM version 2.2.1.6',0
 DisplayName				db 'RadASM',0
-AboutMsg				db 'RadASM (C) KetilO 2001-2008',13,10,13,10,'radasmide@hotmail.com',0
+AboutMsg				db 'RadASM (C) KetilO 2001-2009',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1				db 'http://www.radasm.com',0
-;AboutUrl2				db 'http://radasm.assembler.ca',0
+AboutUrl2				db 'http://www.oby.ro/rad_asm',0
 
 ;Do not insert or move, just add
-nRadASMVer				dd 2215
+nRadASMVer				dd 2216
 fMaximized				dd 0
 lpIniFile				dd offset iniFile
 lpProject				dd offset ProjectFile
@@ -1911,4 +1912,5 @@ fNewDialog				dd ?
 hTabSet					dd ?
 nTabSet					dd ?
 fProExp					dd ?
-szaccept				db 4096 dup(?)
+szaccept				db 16384 dup(?)
+sztempaccept			db 8192 dup(?)
