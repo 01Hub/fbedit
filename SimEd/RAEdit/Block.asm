@@ -1059,21 +1059,13 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			mov		eax,nCmnt
 			mov		fCmnt,eax
 			.while ecx<[esi].CHARS.len
-				movzx	eax,byte ptr [esi+ecx+sizeof CHARS-1]
-				.if byte ptr [eax+offset CharTab]==CT_STRING
-					.while ecx<[esi].CHARS.len
-						inc		ecx
-						.break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
-					.endw
-				.else
-					.if word ptr [esi+ecx+sizeof CHARS-1]=="*/"
-						inc		ecx
-						inc		nCmnt
-					.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/*"
-						inc		ecx
-						.if nCmnt
-							dec		nCmnt
-						.endif
+				.if word ptr [esi+ecx+sizeof CHARS-1]=="*/"
+					inc		ecx
+					inc		nCmnt
+				.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/*"
+					inc		ecx
+					.if nCmnt
+						dec		nCmnt
 					.endif
 				.endif
 				inc		ecx
@@ -1116,21 +1108,13 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			mov		eax,nCmnt
 			mov		fCmnt,eax
 			.while ecx<[esi].CHARS.len
-				movzx	eax,byte ptr [esi+ecx+sizeof CHARS-1]
-				.if byte ptr [eax+offset CharTab]==CT_STRING
-					.while ecx<[esi].CHARS.len
-						inc		ecx
-						.break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
-					.endw
-				.else
-					.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
-						inc		ecx
-						inc		nCmnt
-					.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/'"
-						inc		ecx
-						.if nCmnt
-							dec		nCmnt
-						.endif
+				.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
+					inc		ecx
+					inc		nCmnt
+				.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/'"
+					inc		ecx
+					.if nCmnt
+						dec		nCmnt
 					.endif
 				.endif
 				inc		ecx

@@ -2263,14 +2263,14 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						sub		edx,7
 						shr		edx,1
 						sub		eax,edx
-						.if eax<9
+						.if eax<12
 							mov		eax,lParam
 							and		eax,0FFFFh
 							cwde
 							sub		eax,[ebx].EDIT.linenrwt
 							sub		eax,[ebx].EDIT.selbarwt
-							add		eax,9+2
-							.if eax<9
+							add		eax,15
+							.if eax<12
 								invoke LoadCursor,0,IDC_ARROW
 								mov		hCur,eax
 								mov		fOnBM,TRUE

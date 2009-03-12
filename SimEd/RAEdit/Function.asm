@@ -354,6 +354,8 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 	shl		edi,2
 	mov		esi,lpszTest
 	.if edi<[ebx].EDIT.rpLineFree && byte ptr [esi]
+		xor		ecx,ecx
+		mov		fCmnt,ecx
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
@@ -365,12 +367,11 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 			.elseif [ebx].EDIT.ccmntblocks==2 && ax!="/'" && ax!="'/"
 				jmp		Nf
 			.endif
+		.else
+			call	SkipSpc
+			or		eax,eax
+			jne		Nf
 		.endif
-		xor		ecx,ecx
-		mov		fCmnt,ecx
-		call	SkipSpc
-		or		eax,eax
-		jne		Nf
 	  Nxt:
 		mov		ax,[esi]
 		.if ah
@@ -437,11 +438,7 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 			.elseif ax=="/'"
 				; Comment end
 				.while ecx<[edi].CHARS.len
-					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	esi,byte ptr [esi+offset CharTab]
-					.if esi==CT_STRING
-						call	SkipString
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
+					.if word ptr [edi+ecx+sizeof CHARS]=="/'"
 						dec		fCmnt
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
 						inc		fCmnt
@@ -477,11 +474,7 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 			.elseif ax=="/*"
 				; Comment end
 				.while ecx<[edi].CHARS.len
-					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	esi,byte ptr [esi+offset CharTab]
-					.if esi==CT_STRING
-						call	SkipString
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="/*"
+					.if word ptr [edi+ecx+sizeof CHARS]=="/*"
 						dec		fCmnt
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
 						inc		fCmnt
@@ -730,24 +723,24 @@ TestWord:
 			pop		esi
 			inc		ecx
 		.endw
-	.elseif ax=='*/'
-		xor		eax,eax
-		push	ecx
-		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
-		.if cx!='*/'
-			dec		eax
-		.endif
-		pop		ecx
-		retn
-	.elseif ax=='/*'
-		xor		eax,eax
-		push	ecx
-		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
-		.if cx!='/*'
-			dec		eax
-		.endif
-		pop		ecx
-		retn
+;	.elseif ax=='*/'
+;		xor		eax,eax
+;		push	ecx
+;		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
+;		.if cx!='*/'
+;			dec		eax
+;		.endif
+;		pop		ecx
+;		retn
+;	.elseif ax=='/*'
+;		xor		eax,eax
+;		push	ecx
+;		movzx	ecx,word ptr [edi+ecx+sizeof CHARS]
+;		.if cx!='/*'
+;			dec		eax
+;		.endif
+;		pop		ecx
+;		retn
 	.elseif al=='*'
 		xor		eax,eax
 		push	ecx
