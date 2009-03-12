@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.262
-PV=1.2.0.262
+FV=1.2.0.308
+PV=1.2.0.308
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.262
+ProductVersion=1.2.0.308
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.262
+FileVersion=1.2.0.308
 CompanyName=
 
 [Resource]
@@ -103,12 +103,12 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,63
-16=0,0,810,411,37381
+16=0,0,810,411,6392
 22=0,0,0,0,4317
-23=0,0,0,0,3173
+23=0,0,0,0,14829
 24=0,0,0,0,713
-19=0,0,0,0,617
-2=0,0,0,0,8441
+19=0,0,0,0,1667
+2=0,0,0,0,4687
 9=0,0,0,0,685
 10=0,0,0,0,3557
 11=0,0,0,0,5553
@@ -117,8 +117,8 @@ CompanyName=
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,810
-26=0,0,0,0,21395
-21=0,0,0,0,175
+26=0,0,0,0,14512
+21=0,0,0,0,18226
 14=0,0,0,0,8065
 
 [BookMark]
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="'/"
-2="/'"
-3="STATE_COMMENT"
-4="STATE_COMMENTNEST"
-5="_REM_GETCOLOR"
-6="SkipCmnt"
-7="print"
-8="BD_COMMENTBLOCK"
-9="BD_NOBLOCK"
-10="REM_SETCOMMENTBLOCKS"
+1="REM_SETCOMMENTBLOCKS"
+2="Print"
+3="'/"
+4="/'"
+5="STATE_COMMENT"
+6="STATE_COMMENTNEST"
+7="_REM_GETCOLOR"
+8="SkipCmnt"
+9="BD_COMMENTBLOCK"
+10="BD_NOBLOCK"
 
 [AutoLoad]
 1=1
@@ -155,6 +155,7 @@ CompanyName=
 23=0
 24=0
 10=1
+26=1
 
 [Version-Inc]
 Options=52

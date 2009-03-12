@@ -1,3 +1,9 @@
+comment -
+a
+a
+a
+-
+
 .386
 .model flat,stdcall
 option casemap:none

@@ -651,10 +651,13 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 	LOCAL	nLines:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	nMax:DWORD
+	LOCAL	fmasmcomment:DWORD
 
 	mov		ebx,hMem
-	mov		nLines,0
-	mov		nNest,0
+	xor		eax,eax
+	mov		nLines,eax
+	mov		nNest,eax
+	mov		fmasmcomment,eax
 	mov		edi,nLine
 	invoke TestBlockStart,ebx,edi
 	.if eax!=-1
@@ -740,11 +743,17 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 					inc		edi
 				.endw
 			.else
+				test	[esi].RABLOCKDEF.flag,BD_COMMENTBLOCK
+				.if !ZERO? && [ebx].EDIT.ccmntblocks==4
+					inc		fmasmcomment
+				.endif
 				.while edi<nMax
 					mov		eax,-1
-					test	[esi].RABLOCKDEF.flag,BD_NOBLOCK
-					.if ZERO?
-						invoke TestBlockStart,ebx,edi
+					.if !fmasmcomment
+						test	[esi].RABLOCKDEF.flag,BD_NOBLOCK
+						.if ZERO?
+							invoke TestBlockStart,ebx,edi
+						.endif
 					.endif
 					.if eax!=-1
 						test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
@@ -752,7 +761,20 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 							inc		nNest
 						.endif
 					.else
-						invoke TestBlockEnd,ebx,edi
+						.if fmasmcomment
+							mov		edx,edi
+							inc		edx
+							shl		edx,2
+							add		edx,[ebx].EDIT.hLine
+							mov		edx,[edx].LINE.rpChars
+							add		edx,[ebx].EDIT.hChars
+							test	[edx].CHARS.state,STATE_COMMENT
+							.if ZERO?
+								xor		eax,eax
+							.endif
+						.else
+							invoke TestBlockEnd,ebx,edi
+						.endif
 						.if eax!=-1
 							dec		nNest
 							.if ZERO?
@@ -766,30 +788,33 @@ Collapse proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 								mov		edx,eax
 								inc		edi
 								.while edi<=nLines
-									push	edx
-									invoke TestBlockStart,ebx,edi
-									.if eax!=-1
-										inc		nNest
-									.else
-										invoke TestBlockEnd,ebx,edi
-										.if eax!=-1
-											dec		nNest
-										.endif
-									.endif
-									pop		edx
-									xor		eax,eax
-									dec		eax
-									.if !nNest
+									mov		eax,-1
+									.if !fmasmcomment
 										push	edx
-										.if [esi].RABLOCKDEF.lpszNot1
-											invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
-											.if eax==-1
-												.if [esi].RABLOCKDEF.lpszNot2
-													invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
-												.endif
+										invoke TestBlockStart,ebx,edi
+										.if eax!=-1
+											inc		nNest
+										.else
+											invoke TestBlockEnd,ebx,edi
+											.if eax!=-1
+												dec		nNest
 											.endif
 										.endif
 										pop		edx
+										xor		eax,eax
+										dec		eax
+										.if !nNest
+											push	edx
+											.if [esi].RABLOCKDEF.lpszNot1
+												invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot1
+												.if eax==-1
+													.if [esi].RABLOCKDEF.lpszNot2
+														invoke IsLine,ebx,edi,[esi].RABLOCKDEF.lpszNot2
+													.endif
+												.endif
+											.endif
+											pop		edx
+										.endif
 									.endif
 									.if eax==-1
 										push	edi
@@ -1130,6 +1155,8 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		ret
 	.elseif word ptr [eax]=='{' && word ptr [edx]=='}'
 		mov		[ebx].EDIT.ccmntblocks,3
+	.elseif dword ptr [eax]=='mmoc' && word ptr [edx]=='-'
+		mov		[ebx].EDIT.ccmntblocks,4
 	.endif
 	mov		al,byte ptr [eax]
 	.if al
@@ -1154,6 +1181,8 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			.if !eax
 				inc		nCmnt
 				inc		fCmnt
+			.else
+				xor		ecx,ecx
 			.endif
 			.if nCmnt>1 || (nCmnt && !fCmnt)
 				or		[esi].CHARS.state,STATE_COMMENT

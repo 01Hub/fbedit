@@ -559,7 +559,7 @@ SkipCmnt:
 SkipSpc:
 	.if ecx<[edi].CHARS.len
 		mov		al,[edi+ecx+sizeof CHARS]
-		.if al==VK_TAB || al==' ' || al==':' || al=='*'
+		.if al==VK_TAB || al==' ' || al==':' || (al=='*' && [ebx].EDIT.ccmntblocks!=1)
 			inc		ecx
 			jmp		SkipSpc
 		.elseif al=='"'
