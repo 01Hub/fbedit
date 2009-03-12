@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=RadASM V2.2.1.5
+Description=RadASM V2.2.1.6
 Backup=$P\Bak\
 Debug=0
 Group=0
@@ -177,11 +177,11 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,102
-2=0,416,869,416,31352
+2=0,416,869,416,47242
 3=154,154,590,413,749
-4=0,0,590,413,36538
+4=0,0,590,413,40843
 5=132,132,536,413,31314
-6=12,26,869,416,78495
+6=12,26,869,416,85681
 7=132,132,536,413,23106
 8=44,44,536,413,18247
 9=88,88,536,413,34523
@@ -277,7 +277,7 @@ MinorFiles=*.res;*.obj;
 101=0,0,0,0,1886
 104=0,0,728,518
 105=0,0,728,518,3448
-106=0,0,0,0,5011
+106=0,0,0,0,5012
 107=0,0,0,0,739
 108=0,0,0,0
 110=0,0,0,0,195
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="2.2.1.5"
-2="2215"
-3="buffer"
-4="MakeThreadProc"
-5="szaccept"
-6="OutPutMake"
-7="EM_STREAMOUT"
-8="'Make'"
-9="GetCommand"
-10="DlgBPVarProc"
+1="WM_COPYDATA"
+2="2.2.1.5"
+3="2215"
+4="buffer"
+5="MakeThreadProc"
+6="szaccept"
+7="OutPutMake"
+8="EM_STREAMOUT"
+9="'Make'"
+10="GetCommand"
 
 [BreakPoint]
 0=
@@ -541,7 +541,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -678,7 +678,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 125=1
 126=1
 [Collapse]
-6=,,,,,,,,,,,,,,,,,,,,,,
+6=,,,,,131072,,,,,,,,,,,,,,,,,
 2=
 11=,,,,,
 8=,,,,,,,,

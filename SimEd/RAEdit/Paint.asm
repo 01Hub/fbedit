@@ -1607,7 +1607,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 					.if !ZERO?
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13+12
+						sub		eax,15+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
 						shr		edx,1
@@ -1617,7 +1617,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 					.if [edi].CHARS.errid
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13+12
+						sub		eax,15+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
 						shr		edx,1
@@ -1641,7 +1641,7 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 						dec		ecx
 						mov		eax,[ebx].EDIT.selbarwt
 						add		eax,[ebx].EDIT.linenrwt
-						sub		eax,13
+						sub		eax,15
 						mov		edx,[ebx].EDIT.fntinfo.fntht
 						sub		edx,7
 						shr		edx,1

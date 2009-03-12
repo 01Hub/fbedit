@@ -357,10 +357,14 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 		add		edi,[ebx].EDIT.hLine
 		mov		edi,[edi].LINE.rpChars
 		add		edi,[ebx].EDIT.hChars
-		mov		ax,[esi]
-		.if ax!="/'" && ax!="'/"
-			test	[edi].CHARS.state,STATE_COMMENT
-			jne		Nf
+		test	[edi].CHARS.state,STATE_COMMENT
+		.if !ZERO?
+			mov		ax,[esi]
+			.if [ebx].EDIT.ccmntblocks==1 && ax!="/*" && ax!="*/"
+				jmp		Nf
+			.elseif [ebx].EDIT.ccmntblocks==2 && ax!="/'" && ax!="'/"
+				jmp		Nf
+			.endif
 		.endif
 		xor		ecx,ecx
 		mov		fCmnt,ecx
@@ -440,6 +444,46 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
 						dec		fCmnt
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
+						inc		fCmnt
+					.endif
+					inc		ecx
+				.endw
+				.if sdword ptr fCmnt<0
+					xor		eax,eax
+					jmp		Found
+				.endif
+				jmp		Nf
+			.elseif ax=="*/"
+				; comment init
+				.while ecx<[edi].CHARS.len
+					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	esi,byte ptr [esi+offset CharTab]
+					.if esi==CT_STRING
+						call	SkipString
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
+						inc		ecx
+						inc		fCmnt
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="/*"
+						inc		ecx
+						dec		fCmnt
+					.endif
+					inc		ecx
+				.endw
+				.if sdword ptr fCmnt>0
+					xor		eax,eax
+					jmp		Found
+				.endif
+				jmp		Nf
+			.elseif ax=="/*"
+				; Comment end
+				.while ecx<[edi].CHARS.len
+					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	esi,byte ptr [esi+offset CharTab]
+					.if esi==CT_STRING
+						call	SkipString
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="/*"
+						dec		fCmnt
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
 						inc		fCmnt
 					.endif
 					inc		ecx
@@ -1992,12 +2036,24 @@ IsCharPos proc uses ebx esi,hMem:DWORD,cp:DWORD
 	mov		nMax,eax
 	mov		esi,[ebx].EDIT.rpChars
 	add		esi,[ebx].EDIT.hChars
-	mov		eax,[esi].CHARS.state
-	test	eax,STATE_COMMENT
+	test	[esi].CHARS.state,STATE_COMMENT
 	.if ZERO?
 		xor		ecx,ecx
 		.while ecx<nMax
-			.if word ptr [esi+ecx+sizeof CHARS]=="'/"
+			.if [ebx].EDIT.ccmntblocks==1 && word ptr [esi+ecx+sizeof CHARS]=="*/"
+				add		ecx,2
+				.while ecx<nMax
+					.break .if word ptr [esi+ecx+sizeof CHARS]=="/*"
+					inc		ecx
+				.endw
+				.if word ptr [esi+ecx+sizeof CHARS]=="/*"
+					add		ecx,2
+				.else
+					;On comment block
+					mov		eax,1
+					jmp		Ex
+				.endif
+			.elseif [ebx].EDIT.ccmntblocks==2 && word ptr [esi+ecx+sizeof CHARS]=="'/"
 				add		ecx,2
 				.while ecx<nMax
 					.break .if word ptr [esi+ecx+sizeof CHARS]=="/'"

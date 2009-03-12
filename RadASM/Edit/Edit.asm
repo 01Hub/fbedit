@@ -1922,8 +1922,9 @@ OpenEditFile proc uses esi
 				invoke GetWindowLong,hEdt,GWL_ID
 				.if eax==ID_EDIT
 					invoke SetFormat,hEdt,hFont[0],hFont[4],hFont[8],TRUE
-					mov		esi,offset rablkdef
+					;mov		esi,offset rablkdef
 					invoke SendMessage,hEdt,REM_SETBLOCKS,0,0
+					invoke SendMessage,hEdt,REM_SETCOMMENTBLOCKS,offset CmntBlockStart,offset CmntBlockEnd
 ;					.while [esi].RABLOCKDEF.lpszStart
 ;						invoke SendMessage,hEdt,REM_SETBLOCKS,0,esi
 ;						lea		esi,[esi+sizeof RABLOCKDEF]

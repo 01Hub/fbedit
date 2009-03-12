@@ -1,5 +1,8 @@
 ;KetilO (C) 2002 - 2008
 ;radasmide@hotmail.com
+comment *
+ aaa
+*
 
 .386
 

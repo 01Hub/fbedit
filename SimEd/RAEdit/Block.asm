@@ -1016,6 +1016,61 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	mov		edx,lpEnd
 	.if word ptr [eax]=='*/' && word ptr [edx]=='/*'
 		mov		[ebx].EDIT.ccmntblocks,1
+		xor		ecx,ecx
+		mov		nLine,ecx
+		mov		nCmnt,ecx
+		mov		fChanged,ecx
+		mov		edi,[ebx].EDIT.rpLineFree
+		shr		edi,2
+		.while nLine<edi
+			mov		esi,nLine
+			shl		esi,2
+			add		esi,[ebx].EDIT.hLine
+			mov		esi,[esi]
+			add		esi,[ebx].EDIT.hChars
+			push	[esi].CHARS.state
+			xor		ecx,ecx
+			inc		ecx
+			mov		eax,nCmnt
+			mov		fCmnt,eax
+			.while ecx<[esi].CHARS.len
+				movzx	eax,byte ptr [esi+ecx+sizeof CHARS-1]
+				.if byte ptr [eax+offset CharTab]==CT_STRING
+					.while ecx<[esi].CHARS.len
+						inc		ecx
+						.break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
+					.endw
+				.else
+					.if word ptr [esi+ecx+sizeof CHARS-1]=="*/"
+						inc		ecx
+						inc		nCmnt
+					.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/*"
+						inc		ecx
+						.if nCmnt
+							dec		nCmnt
+						.endif
+					.endif
+				.endif
+				inc		ecx
+			.endw
+			and		[esi].CHARS.state,-1 xor STATE_COMMENT or STATE_COMMENTNEST
+			.if nCmnt>1 || fCmnt
+				or		[esi].CHARS.state,STATE_COMMENT
+				.if nCmnt && fCmnt
+					or		[esi].CHARS.state,STATE_COMMENT or STATE_COMMENTNEST
+				.endif
+			.endif
+			pop		eax
+			.if eax!=[esi].CHARS.state
+				inc		fChanged
+			.endif
+			inc		nLine
+		.endw
+		.if fChanged
+			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
+			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
+		.endif
+		ret
 	.elseif word ptr [eax]=="'/" && word ptr [edx]=="/'"
 		mov		[ebx].EDIT.ccmntblocks,2
 		xor		ecx,ecx

@@ -2811,6 +2811,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL   chrg:CHARRANGE
 	LOCAL	nInx:DWORD
+	LOCAL	hMem:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_SIZE
@@ -2885,9 +2886,15 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,[esi].COPYDATASTRUCT.cbData
 		mov		esi,[esi].COPYDATASTRUCT.lpData
 		.if !wParam
-			mov		edi,offset prnbuff
+			push	ecx
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
+			mov		edi,eax
+			pop		ecx
+			push	edi
 			rep movsb
-			invoke OpenCommandLine,offset prnbuff
+			pop		edi
+			invoke OpenCommandLine,edi
+			invoke GlobalFree,edi
 		.elseif wParam==-1
 			mov		edi,offset FileName
 			rep movsb
