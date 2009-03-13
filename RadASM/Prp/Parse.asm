@@ -2569,15 +2569,55 @@ TestIt:
 FindProcPos endp
 
 FindProc proc hWin:HWND
+	LOCAL chrg:CHARRANGE
+	LOCAL	iNbr:DWORD
+	LOCAL	lpProc:DWORD
+	LOCAL	buffer[64]:BYTE
+	LOCAL	buffer1[32]:BYTE
 
 	.if fProcInSBar
 		pushad
-		invoke LoadEdit,hWin
-		invoke FindProcPos,hWin
-		invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
-		invoke GlobalUnlock,hSrcMem
-		invoke GlobalFree,hSrcMem
-		mov		hSrcMem,0
+		.if nAsm==nCPP
+			invoke GetParent,hWin
+			invoke GetWindowLong,eax,16
+			mov		iNbr,eax
+			invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+			mov		esi,lpWordList
+			.while [esi].PROPERTIES.nSize
+				mov		eax,iNbr
+				.if [esi].PROPERTIES.nType=='l' && eax==[esi].PROPERTIES.Owner
+					push	esi
+					;Point to the proc name
+					lea		esi,[esi+sizeof PROPERTIES]
+					mov		lpProc,esi
+					invoke strlen,esi
+					;Point to the procs start,end position
+					lea		esi,[esi+eax+1]
+					.if byte ptr [esi]
+						invoke strcpy,addr buffer,esi
+						invoke iniGetItem,addr buffer,addr buffer1
+						invoke DecToBin,addr buffer1
+						.if eax<=chrg.cpMin
+							invoke DecToBin,addr buffer
+							.if eax>=chrg.cpMin
+invoke TextToOutput,lpProc
+							.endif
+						.endif
+					.endif
+					pop		esi
+				.endif
+				;Move to next word
+				mov		eax,[esi].PROPERTIES.nSize
+				lea		esi,[esi+eax+sizeof PROPERTIES]
+			.endw
+		.else
+			invoke LoadEdit,hWin
+			invoke FindProcPos,hWin
+			invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
+			invoke GlobalUnlock,hSrcMem
+			invoke GlobalFree,hSrcMem
+			mov		hSrcMem,0
+		.endif
 		popad
 	.endif
 	ret
