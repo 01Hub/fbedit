@@ -174,8 +174,6 @@ ParseLineDef proc uses ecx edx esi edi,lpSrc:DWORD,lpDest:DWORD
 		.endif
 		mov		eax,[esi]
 		and		eax,5F5F5F5Fh
-;		mov		ecx,[esi+4]
-;		and		ecx,5F5F5Fh
 		.if eax=='SESU' && (byte ptr [esi+4]==VK_SPACE || byte ptr [esi+4]==VK_TAB)
 			call	SkpLn
 			jmp		Nxx
@@ -184,10 +182,6 @@ ParseLineDef proc uses ecx edx esi edi,lpSrc:DWORD,lpDest:DWORD
 			call	SkpLn
 			jmp		Nxx
 		.endif
-;		.if eax=='CDTS' && ecx=='LLA'
-;			add		esi,5
-;			jmp		Nxx
-;		.endif
 		shl		eax,8
 		shr		eax,8
 		.if eax=='GRA' && (byte ptr [esi+3]==VK_SPACE || byte ptr [esi+3]==VK_TAB)
@@ -565,7 +559,6 @@ FindStructData proc uses ebx esi edi,lpBuff:DWORD,lpMSt:DWORD,lpMEnd:DWORD
 		jmp		Nx
 	.endif
 	mov		esi,lpMEnd
-;	call	SkpLn
 	mov		al,0
 	stosb
 	mov		eax,esi
@@ -917,7 +910,6 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 	LOCAL	fbyte:DWORD
 
 	mov		fbyte,0
-	;mov		fwword,0
 	mov		esi,lpMem
 	invoke strcpy,addr buffer,offset CmntBlockStart
 	invoke strlen,addr buffer
@@ -1099,7 +1091,6 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD
 	LOCAL	nNest:DWORD
 
 	.if hCodeDefs
-		;mov		fConst,0
 		mov		esi,hSrcMem
 		invoke DestroyCmntBlock,esi
 		invoke DllProc,hWnd,AIM_PREPARSE,iNbr,esi,RAM_PREPARSE
@@ -1197,7 +1188,6 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD
 				call	SkpLn
 			.endw
 		.endif
-;PrintDec iNbr
 		invoke DllProc,hWnd,AIM_PARSEDONE,iNbr,hSrcMem,RAM_PARSEDONE
 	.endif
 	ret
@@ -1254,20 +1244,12 @@ ParseST:
 			.if eax
 				mov		eax,[eax].PARSEDEF.nType
 				.if eax==edi
-;invoke lstrcpyn,offset prnbuff,lpWord1,len1
-;PrintStringByAddr offset prnbuff
-;invoke lstrcpyn,offset prnbuff,lpWord2,len2
-;PrintStringByAddr offset prnbuff
 					retn
 				.endif
 			.endif
 		.endif
 		jmp		@b
 	.endif
-;invoke lstrcpyn,offset prnbuff,lpWord1,len1
-;PrintStringByAddr offset prnbuff
-;invoke lstrcpyn,offset prnbuff,lpWord2,len2
-;PrintStringByAddr offset prnbuff
 	retn
 
 ParseFPData:
@@ -2170,8 +2152,6 @@ FindStruct:
 			.endif
 		  FindStruct1:
 		.endif
-;		mov		eax,[edi].PROPERTIES.nSize
-;		lea		edi,[edi+eax+sizeof PROPERTIES]
 		lea		ebx,[ebx+4]
 	.endw
 	retn
@@ -2259,8 +2239,6 @@ AddCodeDef:
 	mov		[edi+ecx+sizeof PARSEDEF],al
 	or		al,al
 	jne		@b
-;lea eax,[edi+sizeof PARSEDEF]
-;PrintStringByAddr eax
 	mov		[edi].PARSEDEF.nLen,ecx
 	.if ah
 	  @@:
@@ -2327,6 +2305,7 @@ GetCodeDefs endp
 
 FindProcPos proc hWin:HWND
 	LOCAL	buffer[1024]:BYTE
+	LOCAL	buffer1[64]:BYTE
 	LOCAL	chrg:CHARRANGE
 	LOCAL	lpSPos:DWORD
 	LOCAL	lpMPos:DWORD
@@ -2335,40 +2314,85 @@ FindProcPos proc hWin:HWND
 	LOCAL	fFound:DWORD
 	LOCAL	fNameEnd:DWORD
 	LOCAL	nNest:DWORD
+	LOCAL	iNbr:DWORD
+	LOCAL	lpProc:DWORD
+	LOCAL	cpProc:DWORD
 
 	pushad
 	mov		fFound,FALSE
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
-	invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
-	invoke SendMessage,hWin,EM_LINEINDEX,eax,0
-	add		eax,hSrcMem
-	mov		lpMPos,eax
-	.if hParseDll
-		invoke GetProcAddress,hParseDll,offset szFindProcPos
-		.if eax
-			push	lpCharTab
-			push	lpMPos
-			push	hSrcMem
-			call	eax
-			mov		lpSPos,eax
-			mov		fFound,eax
-			.if eax
-				mov		esi,eax
-				mov		edx,offset szProcName
-				.while byte ptr [esi]!='('
-					mov		al,[esi]
-					.if al==VK_SPACE || al==VK_TAB
-						mov		edx,offset szProcName
-					.else
-						mov		[edx],al
-						inc		edx
-						mov		byte ptr [edx],0
-					.endif
-					inc		esi
-				.endw
-			.endif
+	mov		ProcPos,0
+	mov		byte ptr LineTxt,0
+	.if nAsm==nCPP
+		invoke GetParent,hWin
+		.if fProject
+			invoke GetWindowLong,eax,16
+		.else
+			neg		eax
 		.endif
+		mov		iNbr,eax
+		mov		esi,lpWordList
+		.while [esi].PROPERTIES.nSize
+			mov		eax,iNbr
+			.if [esi].PROPERTIES.nType=='l' && eax==[esi].PROPERTIES.Owner
+				push	esi
+				;Point to the proc name
+				lea		esi,[esi+sizeof PROPERTIES]
+				mov		lpProc,esi
+				invoke strlen,esi
+				;Point to the procs start,end position
+				lea		esi,[esi+eax+1]
+				.if byte ptr [esi]
+					invoke strcpy,addr buffer,esi
+					invoke iniGetItem,addr buffer,addr buffer1
+					invoke DecToBin,addr buffer1
+					.if eax<chrg.cpMin
+						mov		cpProc,eax
+						invoke DecToBin,addr buffer
+						.if eax>chrg.cpMin
+							mov		esi,lpWordList
+							.while [esi].PROPERTIES.nSize
+								mov		eax,iNbr
+								.if [esi].PROPERTIES.nType=='p' && eax==[esi].PROPERTIES.Owner
+									push	esi
+									;Point to the proc name
+									lea		esi,[esi+sizeof PROPERTIES]
+									invoke strcmp,lpProc,esi
+									.if !eax
+										invoke strcpy,addr szProcName,esi
+										mov		eax,cpProc
+										mov		ProcPos,eax
+										invoke strcpy,offset LineTxt,esi
+										invoke strcat,offset LineTxt,offset szLPA
+										invoke strlen,esi
+										lea		esi,[esi+eax+1]
+										invoke strcat,offset LineTxt,esi
+										invoke strcat,offset LineTxt,offset szRPA
+										pop		esi
+										.break
+									.endif
+									pop		esi
+								.endif
+								;Move to next word
+								mov		eax,[esi].PROPERTIES.nSize
+								lea		esi,[esi+eax+sizeof PROPERTIES]
+							.endw
+							pop		esi
+							.break
+						.endif
+					.endif
+				.endif
+				pop		esi
+			.endif
+			;Move to next word
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
 	.else
+		invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		invoke SendMessage,hWin,EM_LINEINDEX,eax,0
+		add		eax,hSrcMem
+		mov		lpMPos,eax
 		invoke strcpy,addr buffer,addr szCPCode
 		invoke iniGetItem,addr buffer,addr szSrcEnd
 		mov		eax,offset szSrcEnd
@@ -2393,16 +2417,13 @@ FindProcPos proc hWin:HWND
 			invoke iniGetItem,addr buffer,addr szSrc
 			call	TestIt
 		.endif
-	.endif
-	.if fFound
-		invoke ParseLineDef,lpSPos,offset LineTxt
-		mov		eax,lpSPos
-		sub		eax,hSrcMem
-		inc		eax
-		mov		ProcPos,eax
-	.else
-		mov		ProcPos,0
-		mov		byte ptr LineTxt,0
+		.if fFound
+			invoke ParseLineDef,lpSPos,offset LineTxt
+			mov		eax,lpSPos
+			sub		eax,hSrcMem
+			inc		eax
+			mov		ProcPos,eax
+		.endif
 	.endif
 	popad
 	ret
@@ -2569,55 +2590,15 @@ TestIt:
 FindProcPos endp
 
 FindProc proc hWin:HWND
-	LOCAL chrg:CHARRANGE
-	LOCAL	iNbr:DWORD
-	LOCAL	lpProc:DWORD
-	LOCAL	buffer[64]:BYTE
-	LOCAL	buffer1[32]:BYTE
 
 	.if fProcInSBar
 		pushad
-		.if nAsm==nCPP
-			invoke GetParent,hWin
-			invoke GetWindowLong,eax,16
-			mov		iNbr,eax
-			invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
-			mov		esi,lpWordList
-			.while [esi].PROPERTIES.nSize
-				mov		eax,iNbr
-				.if [esi].PROPERTIES.nType=='l' && eax==[esi].PROPERTIES.Owner
-					push	esi
-					;Point to the proc name
-					lea		esi,[esi+sizeof PROPERTIES]
-					mov		lpProc,esi
-					invoke strlen,esi
-					;Point to the procs start,end position
-					lea		esi,[esi+eax+1]
-					.if byte ptr [esi]
-						invoke strcpy,addr buffer,esi
-						invoke iniGetItem,addr buffer,addr buffer1
-						invoke DecToBin,addr buffer1
-						.if eax<=chrg.cpMin
-							invoke DecToBin,addr buffer
-							.if eax>=chrg.cpMin
-invoke TextToOutput,lpProc
-							.endif
-						.endif
-					.endif
-					pop		esi
-				.endif
-				;Move to next word
-				mov		eax,[esi].PROPERTIES.nSize
-				lea		esi,[esi+eax+sizeof PROPERTIES]
-			.endw
-		.else
-			invoke LoadEdit,hWin
-			invoke FindProcPos,hWin
-			invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
-			invoke GlobalUnlock,hSrcMem
-			invoke GlobalFree,hSrcMem
-			mov		hSrcMem,0
-		.endif
+		invoke LoadEdit,hWin
+		invoke FindProcPos,hWin
+		invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
+		invoke GlobalUnlock,hSrcMem
+		invoke GlobalFree,hSrcMem
+		mov		hSrcMem,0
 		popad
 	.endif
 	ret

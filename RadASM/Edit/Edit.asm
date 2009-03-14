@@ -59,21 +59,6 @@ HideSelection proc
 
 HideSelection endp
 
-;CollapseBlock proc uses esi,hWin:HWND,nLine:DWORD
-;
-;	mov		esi,offset rablkdef
-;	.while [esi].RABLOCKDEF.lpszStart
-;		invoke SendMessage,hWin,REM_ISLINE,nLine,[esi].RABLOCKDEF.lpszStart
-;		.if eax!=-1
-;			invoke SendMessage,hWin,REM_COLLAPSE,nLine,esi
-;		  .break
-;		.endif
-;		add		esi,sizeof RABLOCKDEF
-;	.endw
-;	ret
-;
-;CollapseBlock endp
-;
 GetSelText proc lpBuff:DWORD
 	LOCAL	chrg:CHARRANGE
 
@@ -1512,7 +1497,6 @@ GoToProc proc hDlg:DWORD,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke SaveWinPos,hDlg,offset PosGotoLeft
 		mov		hGoTo,0
-;		invoke EndDialog,hDlg,0
 		invoke DestroyWindow,hDlg
 		.if hEdit
 			invoke SetFocus,hEdit
@@ -1550,11 +1534,8 @@ SetFormat proc hWin:HWND,hFnt:DWORD,hIFnt:DWORD,hLFnt:DWORD,fCode:DWORD
 		mov		eax,AutoIndent
 	.endif
 	invoke SendMessage,hWin,REM_AUTOINDENT,0,eax
-;	mov		eax,LnrWidth
-;	mov		edx,7
-;	mul		edx
-;	invoke SendMessage,hWin,REM_LINENUMBERWIDTH,eax,0
 	invoke SendMessage,hWin,REM_SETPAGESIZE,nPageSize,0
+	invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
 	ret
 
 SetFormat endp
@@ -1653,7 +1634,7 @@ SaveEditOutAs proc hWin:HWND
 	mov		byte ptr [AltFileName],0
 	mov		ofn.nMaxFile,sizeof AltFileName
 	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
-	mov		ofn.lpstrDefExt,NULL; offset DefSrcExt
+	mov		ofn.lpstrDefExt,NULL
 	invoke GetSaveFileName,addr ofn
 	.if eax!=0
 		invoke CreateFile,addr AltFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
@@ -1858,7 +1839,7 @@ OpenEditFile proc uses esi
 					invoke OpenProject,TRUE
 					mov		eax,FALSE
 					ret
-				.elseif ftp==33 || ftp==34	; && fFileBrowserOpen
+				.elseif ftp==33 || ftp==34
 					.if ftp==34
 						;.bat
 						invoke GetKBState
@@ -1922,20 +1903,10 @@ OpenEditFile proc uses esi
 				invoke GetWindowLong,hEdt,GWL_ID
 				.if eax==ID_EDIT
 					invoke SetFormat,hEdt,hFont[0],hFont[4],hFont[8],TRUE
-					;mov		esi,offset rablkdef
 					invoke SendMessage,hEdt,REM_SETBLOCKS,0,0
 					invoke SendMessage,hEdt,REM_SETCOMMENTBLOCKS,offset CmntBlockStart,offset CmntBlockEnd
-;					.while [esi].RABLOCKDEF.lpszStart
-;						invoke SendMessage,hEdt,REM_SETBLOCKS,0,esi
-;						lea		esi,[esi+sizeof RABLOCKDEF]
-;					.endw
 					.if fOpenCollapsed
 						invoke SendMessage,hEdt,REM_COLLAPSEALL,0,0
-;						mov		esi,offset rablkdef
-;						.while [esi].RABLOCKDEF.lpszStart
-;							invoke SendMessage,hEdt,REM_COLLAPSEALL,0,esi
-;							lea		esi,[esi+sizeof RABLOCKDEF]
-;						.endw
 					.endif
 				.else
 					invoke SetFormat,hEdt,hFontTxt,hFontTxt,hFont[8],FALSE

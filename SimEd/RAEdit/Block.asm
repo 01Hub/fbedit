@@ -1260,7 +1260,7 @@ IsLineStart:
 	movzx	eax,byte ptr [eax+offset CharTab]
 	cmp		eax,CT_CMNTCHAR
 	je		@f
-	.if [ebx].EDIT.ccmntblocks
+	.if [ebx].EDIT.ccmntblocks && [ebx].EDIT.ccmntblocks!=4
 		.while ecx<[esi].CHARS.len
 			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
 			movzx	eax,byte ptr [eax+offset CharTab]

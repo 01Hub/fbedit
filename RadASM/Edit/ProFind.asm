@@ -212,14 +212,34 @@ LineSkip proc
 
 LineSkip endp
 
+IsCodeFile proc uses esi,lpFileName:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	mov		esi,lpFileName
+	invoke strlen,esi
+	mov		ecx,eax
+	.while ecx
+		dec		ecx
+		.if byte ptr [esi+ecx]=='.'
+			invoke strcpy,addr buffer,addr [esi+ecx]
+			invoke strcat,addr buffer,addr szPoint
+			invoke iniInStr,addr szCodeFiles,addr buffer
+			inc		eax
+			.break
+		.endif
+	.endw
+	ret
+
+IsCodeFile endp
+
 Scan proc uses esi,FileNo:DWORD,fMCase:DWORD,fWWord:DWORD,fWhiteSpace:DWORD
 	LOCAL	lpf:DWORD
 
 	invoke GetFileNameFromID,FileNo
 	.if eax
 		mov		esi,eax
-		invoke GetFileImg,esi
-		.if eax==2 || eax==3
+		invoke IsCodeFile,esi
+		.if eax
 			invoke strcpy,addr FileName,addr ProjectPath
 			invoke strcat,addr FileName,esi
 			invoke GetFullPathName,addr FileName,sizeof FileName,addr FileName,addr lpf

@@ -267,6 +267,9 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 					.elseif al==CT_CMNTDBLCHAR
 						movzx	eax,word ptr [esi+edi]
 						.if al==ah || ah=='*'
+							.if ah=='*'
+								inc		nCmnt
+							.endif
 							mov		fCmnt,eax
 							mov		eax,[ebx].EDIT.clr.cmntback
 							call	SetBack

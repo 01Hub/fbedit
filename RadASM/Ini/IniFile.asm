@@ -219,14 +219,6 @@ SetRecentFilesMenu proc uses esi
 			push	eax
 			invoke strcpy,addr buffer,esi
 			.if byte ptr buffer
-;				invoke strlen,addr buffer
-;				.if eax>35
-;					sub		eax,35-6
-;					lea		edx,buffer
-;					add		edx,eax
-;					mov		dword ptr buffer[3],'...'
-;					invoke strcat,addr buffer,edx
-;				.endif
 				invoke AppendMenu,hMnuRecent,MF_STRING,nID,addr buffer
 			.endif
 			pop		eax
@@ -454,14 +446,6 @@ iniSetCodeBlocks proc uses ebx esi edi
 					or		[edi+ebx*4],eax
 				.else
 					invoke strlen,esi
-;					push	esi
-;					.while byte ptr [esi]
-;						.if byte ptr [esi]=='|'
-;							mov		byte ptr [esi],0
-;						.endif
-;						inc		esi
-;					.endw
-;					pop		esi
 					mov		[edi+ebx*4],esi
 					mov		byte ptr [esi+eax+1],0
 					lea		esi,[esi+eax+2]
@@ -827,9 +811,6 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		mov		ApiShiftSpace,eax
 		;Code Files
 		invoke GetPrivateProfileString,addr iniEdit,addr iniEditCodeFiles,addr iniDefCodeFiles,addr szCodeFiles,64,addr iniAsmFile
-		;Linenumber width
-;		invoke GetPrivateProfileInt,addr iniEdit,addr iniEditLnrWidth,4,addr iniAsmFile
-;		mov		LnrWidth,eax
 		;Linenumbers on open
 		invoke GetPrivateProfileInt,addr iniEdit,addr iniEditLnrOnOpen,0,addr iniAsmFile
 		and		eax,1
@@ -1469,7 +1450,6 @@ UpdateAccelOption proc uses ebx esi edi,hMnu:DWORD
 	LOCAL	buffer1[128]:BYTE
 	LOCAL	nInx:DWORD
 	LOCAL	mii:MENUITEMINFO
-;	LOCAL	hAcl:DWORD
 	LOCAL	nAccel:DWORD
 	LOCAL	hMem:DWORD
 
@@ -2037,8 +2017,6 @@ iniEditSave proc
 	invoke BinToDec,fProcInSBar,addr iniBuffer
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditProcInSBar,addr iniBuffer,addr iniAsmFile
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditCodeFiles,addr szCodeFiles,addr iniAsmFile
-;	invoke BinToDec,LnrWidth,addr iniBuffer
-;	invoke WritePrivateProfileString,addr iniEdit,addr iniEditLnrWidth,addr iniBuffer,addr iniAsmFile
 	invoke BinToDec,LnrOnOpen,addr iniBuffer
 	invoke WritePrivateProfileString,addr iniEdit,addr iniEditLnrOnOpen,addr iniBuffer,addr iniAsmFile
 	invoke BinToDec,nPageSize,addr iniBuffer

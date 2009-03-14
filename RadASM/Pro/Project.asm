@@ -2257,14 +2257,6 @@ ProjectOpenFile	proc fErr:DWORD
 		inc		eax
 	.endw
 	invoke GetFullPathName,offset FileName,sizeof FileName,offset FileName,addr fb
-;	mov		eax,offset FileName
-;	.while byte ptr [eax]
-;		.if word ptr [eax]=='.\'
-;			invoke GetFullPathName,offset FileName,sizeof FileName,offset FileName,addr fb
-;			.break
-;		.endif
-;		inc		eax
-;	.endw
 	mov		fb,0
   @@:
 	invoke FindFirstFile,offset FileName,addr fd

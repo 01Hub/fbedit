@@ -1916,7 +1916,6 @@ CmdEdit proc hWin:HWND
 				jmp		Nxt
 			.endif
 			.if eax==1
-				;invoke CollapseBlock,hEdit,ebx
 				invoke SendMessage,hEdit,REM_COLLAPSE,ebx,0
 				call	SetSel
 			.elseif eax==2
@@ -2073,7 +2072,6 @@ CmdView proc hWin:HWND
 			.if !hFullScreen
 				invoke CreateWindowEx,NULL,addr FullScreenClassName,NULL,WS_POPUP or WS_VISIBLE or WS_MAXIMIZE,0,0,0,0,hWnd,NULL,hInstance,NULL
 				mov     hFullScreen,eax
-				;invoke ShowWindow,hFullScreen,SW_SHOWMAXIMIZED
 				push	ebx
 				mov		ebx,hEdit
 				.if !ebx
@@ -2438,7 +2436,8 @@ CmdWindow proc hWin:HWND
 		push	esi
 		push	edi
 		invoke SendMessage,hClient,WM_MDIGETACTIVE,0,0
-		mov		esi,eax; get active mdi handle in esi
+		; get active mdi handle in esi
+		mov		esi,eax
 		invoke SendMessage,hClient,WM_MDINEXT,NULL,0; go to next
 	  @@:
 		invoke SendMessage,hClient,WM_MDIGETACTIVE,0,0
@@ -3424,7 +3423,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateSolidBrush,radcol.dialogedit
 		mov		hBrDlg,eax
 		invoke MakeGridBrush
-
 		;Create the imagelist
 		invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR8,16,0
 		mov		hTypeIml,eax
@@ -3434,7 +3432,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke DeleteObject,eax
 		;Api listbox unsorted
-;		invoke CreateWindowEx,0,addr szListBox,NULL,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
 		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
 		mov		hLBU,eax
 		mov		hLB,eax
@@ -3446,7 +3443,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hLBU,GWL_WNDPROC, addr ListBoxProc
 		mov		OldListBoxProc,eax
 		;Api listbox sorted
-;		invoke CreateWindowEx,WS_EX_TOPMOST,addr szListBox,NULL,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_SORT or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
 		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_SORT or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
 		mov		hLBS,eax
 		INVOKE GetDesktopWindow
@@ -3465,7 +3461,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,200,100,addr TimerProc
 		invoke ToolBarStatus
 		invoke SendMessage,hStatus,SB_SETTEXT,2,addr szAssembler
-;		invoke SendMessage,hTab,WM_SETFONT,hTTFont,TRUE
 		invoke iniSetAsmMenu
 		invoke FileDir,offset FilePath
 	.elseif eax==WM_MEASUREITEM
@@ -3516,8 +3511,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[esi].rcItem.left,18
 			invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr buffer
 			invoke ExtTextOut,[esi].hdc,20,[esi].rcItem.top,ETO_OPAQUE,addr [esi].rcItem,addr buffer,eax,NULL
-;mov		edx,eax
-;invoke DrawText,[esi].hdc,addr buffer,edx,addr [esi].rcItem,DT_SINGLELINE
 		.endif
 		assume esi:nothing
 		pop		esi
@@ -3779,21 +3772,12 @@ DialogChildProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	assume eax:nothing
 	mov		eax,uMsg
 	.if eax==WM_CREATE
-;		push	hMdiCld
-;		push	hDialog
-;		push	hEdit
-;		mov		hEdit,0
-;		m2m     hMdiCld,hWin
 		invoke SetWindowLong,hWin,0,MdiID			;ID
 		invoke SetWindowLong,hWin,GWL_USERDATA,0	;hDialog
 		invoke SetWindowLong,hWin,4,0				;hMem
 		invoke GetProcessHeap
 		invoke xHeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof RADMEM
 		invoke SetWindowLong,hWin,28,eax			;RADMEM
-		;invoke CreateNewDialog,fNewDialog,hWin
-;		pop		hEdit
-;		pop		hDialog
-;		pop		hMdiCld
 	.elseif eax==WM_KEYDOWN
 		invoke GetWindowLong,hWin,8
 		mov		ro,eax
@@ -4049,8 +4033,6 @@ DialogChildProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				.if hFullScreen
 					invoke ShowWindow,hFullScreen,SW_HIDE
-					;invoke SetParent,hDialog,hFullScreen
-					;invoke SetFocus,hDialog
 				.endif
 			.elseif eax==wParam
 				invoke SendMessage,hDlg,WM_NCACTIVATE,0,0
@@ -4131,7 +4113,6 @@ DialogChildProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetProcessHeap
 		pop		edx
 		invoke HeapFree,eax,0,edx
-;		invoke SendMessage,hWin,WM_DESTROY,0,0
 	.elseif eax==WM_PAINT
 		invoke BeginPaint,hWin,addr ps
 		mov		hDC,eax
@@ -4978,10 +4959,6 @@ HexEdChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		mov		eax,hFont[8]
 		mov		hef.hLnrFont,eax
 		invoke SendMessage,hEdt,HEM_SETFONT,0,addr hef
-;		mov		eax,LnrWidth
-;		mov		edx,7
-;		mul		edx
-;		invoke SendMessage,hEdt,HEM_LINENUMBERWIDTH,eax,0
 		invoke GetProcessHeap
 		invoke xHeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof RADMEM
 		invoke SetWindowLong,hWin,28,eax			;RADMEM
@@ -5098,8 +5075,6 @@ HexEdChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				.endif
 			.endif
 		.endif
-;	.elseif eax==WM_COMMAND
-;	.elseif eax==WM_MOVE
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
 	ret
@@ -5944,48 +5919,6 @@ ListBoxProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		xor		eax,eax
 		ret
-;	.elseif eax==WM_KEYDOWN
-;		mov		eax,wParam
-;		.if eax==VK_ESCAPE
-;			invoke PostMessage,hEdit,WM_KEYUP,eax,0
-;			xor		eax,eax
-;			ret
-;		.elseif eax==VK_SPACE
-;			invoke GetKBState
-
-;			.if !eax && !edx
-;				invoke PostMessage,hEdit,WM_KEYDOWN,VK_TAB,0
-;			.else
-;				invoke PostMessage,hEdit,WM_KEYDOWN,VK_SPACE,0
-;			.endif
-;			xor		eax,eax
-;			ret
-;		.elseif eax==VK_TAB || eax==VK_RETURN
-;			invoke PostMessage,hEdit,WM_KEYDOWN,VK_TAB,0
-;			xor		eax,eax
-;			ret
-;		.elseif eax=='I' || eax=='U'
-;			invoke SendMessage,hWin,LB_GETCURSEL,0,0
-;			.if eax && eax!=LB_ERR
-;				dec		eax
-;				invoke SendMessage,hWin,LB_SETCURSEL,eax,0
-;			.endif
-;			xor		eax,eax
-;			ret
-;		.elseif eax=='K' || eax=='D'
-;			invoke SendMessage,hWin,LB_GETCURSEL,0,0
-;			.if eax!=LB_ERR
-;				inc		eax
-;				invoke SendMessage,hWin,LB_SETCURSEL,eax,0
-;			.endif
-;			xor		eax,eax
-;			ret
-;		.endif
-;	.elseif eax==WM_KEYUP
-;		xor		eax,eax
-;		ret
-;	.elseif eax==WM_SETFOCUS
-;		invoke SendMessage,hWnd,WM_NCACTIVATE,TRUE,0
 	.endif
 	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
 	ret

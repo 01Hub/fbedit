@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.318
-PV=1.2.0.318
+FV=1.2.0.320
+PV=1.2.0.320
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.318
+ProductVersion=1.2.0.320
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.318
+FileVersion=1.2.0.320
 CompanyName=
 
 [Resource]
@@ -110,14 +110,14 @@ CompanyName=
 19=0,0,0,0,1667
 2=0,0,0,0,4687
 9=0,0,0,0,685
-10=0,0,0,0,3557
+10=0,0,0,0,6171
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,8393
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,810
-26=0,0,0,0,13509
+26=0,0,0,0,24993
 21=0,0,0,0,18226
 14=0,0,0,0,8065
 

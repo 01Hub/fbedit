@@ -15,7 +15,6 @@
 
 ;	libraries
 ;	~~~~~~~~~
-;	includelib unicows.lib
 	includelib gdi32.lib
 	includelib user32.lib
 	includelib kernel32.lib
@@ -916,14 +915,6 @@ ALLFilterString			db 'Assembly Files (*.asm)',0,'*.asm',0
 						db 'All Files (*.*)',0,'*.*',0,0
 						db 256 dup (0)
 ANYFilterString			db 'All Files (*.*)',0,'*.*',0,0
-;ASMFilterString		db 'Assembly (*.asm)',0,'*.asm',0,0
-;DefAsmExt				db 'asm',0
-;HLAFilterString		db 'Hla (*.hla)',0,'*.hla',0,0
-;DefHlaExt				db 'hla',0
-;INCFilterString		db 'Include (*.inc)',0,'*.inc',0,0
-;DefIncExt				db 'inc',0
-;HHFFilterString		db 'Hhf (*.hhf)',0,'*.hhf',0,0
-;DefHhfExt				db 'hhf',0
 RCFilterString			db 'Resource (*.rc)',0,'*.rc',0,0
 DefRcExt				db 'rc',0
 DLGFilterString			db 'Dialog (*.dlg)',0,'*.dlg',0,0
@@ -931,7 +922,6 @@ DefDlgExt				db 'dlg',0
 MNUFilterString			db 'Menu (*.mnu)',0,'*.mnu',0,0
 DefMnuExt				db 'mnu',0
 OBJFilterString			db 'Object (*.obj)',0,'*.obj',0,0
-;DefObjExt				db 'obj',0
 TPLFilterString			db 'Template (*.tpl)',0,'*.tpl',0,0
 DefTplExt				db 'tpl',0
 PROFilterString			db 'Project (*.rap)',0,'*.rap',0,0
@@ -1013,6 +1003,7 @@ szBackSlash				db '\',0
 szPoint					db '.',0
 szPipe					db '|',0
 szLPA					db '(',0
+szRPA					db ')',0
 szTab					db VK_TAB,0,0,0
 szAPA					db '*.*',0
 szINS					db 'INS',0
@@ -1027,11 +1018,7 @@ DatePic					db "yyyy'-'MM'-'dd' '",0
 TimePic					db "hh':'mm':'ss' - '",0
 
 ;FileTypes
-;FTAsm					db '.asm',0
-;FTInc					db '.inc',0
 FTRc					db '.rc',0
-;FTHla					db '.hla',0
-;FTHhf					db '.hhf',0
 FTDlg					db '.dlg',0
 FTMnu					db '.mnu',0
 FTRap					db '.rap',0
@@ -1573,7 +1560,6 @@ fAutoBrackets			dd ?
 szTltSel				dd 64 dup(?)
 szApiEnd				db 2 dup(?)
 szCodeFiles				db 64 dup(?)
-;LnrWidth				dd ?
 LnrOnOpen				dd ?
 nPageSize				dd ?
 
