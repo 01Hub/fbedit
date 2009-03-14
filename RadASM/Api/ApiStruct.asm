@@ -119,7 +119,7 @@ ApiStructSrc proc lpSrc:DWORD
 			cmp		al,[ecx]
 			je		@b
 		.endif
-		.if	al=='.'	|| al==' ' || al==VK_TAB ||	!al
+		.if	al=='.'	|| al==' ' || al==VK_TAB || al=='*' ||	!al
 			mov		al,[ecx]
 			.if	!al
 				inc		ecx
@@ -233,10 +233,20 @@ ApiStructCheck proc	hWin:HWND
 		je		@f
 		cmp		ax,'>-'
 		jne		@b
-		inc		edx
 	  @@:
 		mov		al,byte	ptr	[edx]
+		.if al==VK_SPACE || al==VK_TAB
+			dec		edx
+			jmp		@b
+		.endif
 		.if	al==')'
+			.if nAsm==nCPP
+				;((NMHDR*)lParam)->code
+				dec		edx
+				.while byte ptr [edx-1] && byte ptr [edx]!=')'
+					dec		edx
+				.endw
+			.endif
 			;(RECT ptr [edx]).left
 		  @@:
 			dec		edx
@@ -248,6 +258,9 @@ ApiStructCheck proc	hWin:HWND
 			jmp		Ex
 		  @@:
 			inc		edx
+			.while byte ptr [edx]==VK_SPACE || byte ptr [edx]==VK_TAB
+				inc		edx
+			.endw
 			invoke ApiStructSrc,edx
 		.elseif	al==']'
 			;assume	edx:ptr	RECT

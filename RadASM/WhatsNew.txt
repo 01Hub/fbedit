@@ -2,7 +2,8 @@ RadASM 2.2.1.6
 --------------
 2.2.1.6
 o Added resource type RT_HTML
-o Code lines now has a yellow indicator if unsaved chanees, green for saved changes.
+o Code lines now has a yellow indicator for unsaved chanees, green for saved changes.
+o Better code complete support for C/C++ (locals (Ctrl+Shift+Space) and casted structures). 
 0 Added protection against malicious project files (.rap). A dialog shows the command that will be
   executed. It is up to you to accept the command or not. There is also a 'Don't ask again' option.
   Even with this added protection you should always open a project file from a non trusted source
