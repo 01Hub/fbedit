@@ -188,6 +188,10 @@ LoadFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SendMessage,hWin,EM_STREAMIN,SF_TEXT,addr editstream
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
+		.if !ebx
+			invoke SendMessage,hWin,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+		.endif
 		mov		chrg.cpMin,0
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg

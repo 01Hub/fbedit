@@ -110,25 +110,6 @@ GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 				inc		nLine
 				inc		nLines
 			.endw
-;		.else
-;			test	flag,BD_COMMENTBLOCK
-;			.if !ZERO?
-;				mov		esi,[ebx].EDIT.rpLineFree
-;				sub		esi,4
-;				inc		nLine
-;				.while TRUE
-;					mov		edi,nLine
-;					shl		edi,2
-;					.break .if edi>=esi
-;					add		edi,[ebx].EDIT.hLine
-;					mov		edi,[edi].LINE.rpChars
-;					add		edi,[ebx].EDIT.hChars
-;					test	[edi].CHARS.state,STATE_COMMENT
-;					.break .if ZERO?
-;					inc		nLine
-;					inc		nLines
-;				.endw
-;			.endif
 		.endif
 		mov		eax,nLines
 	.endif

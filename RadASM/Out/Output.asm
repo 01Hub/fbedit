@@ -45,6 +45,7 @@ identify			db 64 dup(?)
 identify1			db 64 dup(?)
 nSkip				dd ?
 nErrAsm				dd ?
+fThreadWait			dd ?
 
 .code
 
@@ -150,8 +151,6 @@ OutputDblClick proc uses esi edi,hWin:HWND,fSkipBS:DWORD
 			jmp		@b
 		.endif
 		mov		[edi],al
-;		cmp		al,20h
-;		je		@f
 		cmp		al,09h
 		je		@f
 		cmp		al,0Dh
@@ -1199,7 +1198,9 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
+	mov		fThreadWait,TRUE
 	invoke GetCommand,addr outbuffer,Param
+	mov		fThreadWait,FALSE
 	or		eax,eax
 	je		Ex
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr outbuffer
@@ -1213,8 +1214,6 @@ MakeThreadProc proc uses ebx,Param:DWORD
 		invoke CreatePipe,addr make.hRead,addr make.hWrite,addr sat,NULL
 		.if eax==NULL
 			;CreatePipe failed
-;			invoke LoadCursor,0,IDC_ARROW
-;			invoke SetCursor,eax
 			mov		eax,10
 		.else
 			mov startupinfo.cb,sizeof STARTUPINFO
@@ -1236,8 +1235,6 @@ MakeThreadProc proc uses ebx,Param:DWORD
 				;CreateProcess failed
 				invoke CloseHandle,make.hRead
 				invoke CloseHandle,make.hWrite
-;				invoke LoadCursor,0,IDC_ARROW
-;				invoke SetCursor,eax
 				mov		eax,11
 			.else
 				.if make.fRun
@@ -1301,7 +1298,6 @@ MakeThreadProc proc uses ebx,Param:DWORD
 		.endif
 		mov		make.uExit,eax
 	.endif
-;	invoke ExitThread,eax
   Ex:
 	ret
 
@@ -1315,7 +1311,6 @@ OutputText:
 MakeThreadProc endp
 
 OutPutMake proc uses ebx esi,lpCommandLine:DWORD,lpFileName:DWORD
-;	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	iNbr:DWORD
@@ -1570,8 +1565,10 @@ ExecThread:
 		.while TRUE
 			invoke GetExitCodeThread,make.hThread,addr iNbr
 			.break .if iNbr!=STILL_ACTIVE
-			invoke LoadCursor,0,IDC_WAIT
-			invoke SetCursor,eax
+			.if !fThreadWait
+				invoke LoadCursor,0,IDC_WAIT
+				invoke SetCursor,eax
+			.endif
 			invoke GetMessage,addr msg,NULL,0,0
 			mov		eax,msg.message
 			.if eax==WM_CHAR

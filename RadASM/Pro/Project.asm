@@ -1115,7 +1115,7 @@ ResFileExist proc
 ResFileExist endp
 
 GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
-	LOCAL	buffer1[8]:BYTE
+	LOCAL	buffer1[16]:BYTE
 	LOCAL	buffer2[128]:BYTE
 	LOCAL	buffer4[256]:BYTE
 	LOCAL	iNbr:DWORD
@@ -1127,18 +1127,20 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		invoke RtlZeroMemory,esi,sizeof	szGroupBuff
 		mov		edi,offset progrp
 		invoke RtlZeroMemory,edi,sizeof	progrp
-		invoke GetPrivateProfileString,addr	iniProjectGroup,addr iniProjectGroup,addr szNULL,addr prnbuff,sizeof prnbuff,addr ProjectFile
+		invoke GetPrivateProfileString,addr	iniProjectGroup,addr iniProjectGroup,addr szNULL,addr prnbuff,sizeof szGroups,addr ProjectFile
 		.if	!eax
 			mov		fNoGroups,TRUE
 			invoke WritePrivateProfileString,addr iniProjectGroup,addr iniProjectGroup,addr	szGroups,addr ProjectFile
 			invoke strcpy,offset prnbuff,offset szGroups
 		.endif
-		.while byte	ptr	prnbuff
+		mov		iNbr,0
+		.while byte	ptr	prnbuff && iNbr<64
 			invoke iniGetItem,offset prnbuff,esi
 			mov		[edi].PROGROUP.lpszGrp,esi
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			lea		edi,[edi+sizeof	PROGROUP]
+			inc		iNbr
 		.endw
 		invoke Do_TreeViewAddNode,hPbrTrv,TVI_ROOT,NULL,addr ProjectDescr,IML_START+0,IML_START+0,0
 		mov		hRoot,eax
@@ -1159,7 +1161,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 			.if	byte ptr [esi] && eax
 				mov		iNbr,eax
 				invoke BinToDec,iNbr,addr buffer1
-				invoke strcpy,addr	buffer2,esi
+				invoke strcpy,addr buffer2,esi
 				;See if	it is main RC file
 				invoke lstrcmpi,addr buffer2,addr buffer4
 				.if	!eax
@@ -1171,15 +1173,15 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 					invoke ProAddNode,addr buffer2,iNbr,TRUE
 				.endif
 				.if	fAutoOpen
-					invoke strlen,addr	buffer1
+					invoke strlen,addr buffer1
 					mov		dword ptr buffer1[eax],'1='
 					push	esi
 					mov		esi,offset tempbuff
 					.while byte	ptr	[esi]
-						invoke strcmp,esi,addr	buffer1
+						invoke strcmp,esi,addr buffer1
 						.if	!eax
-							invoke strcpy,addr	FileName,addr ProjectPath
-							invoke strcat,addr	FileName,addr buffer2
+							invoke strcpy,addr FileName,addr ProjectPath
+							invoke strcat,addr FileName,addr buffer2
 							invoke ProjectOpenFile,TRUE
 							jmp		@f
 						.endif
@@ -1207,8 +1209,8 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,12,fGroup
 		ret
 	.else
-		invoke strcpy,addr	LineTxt,addr OpenFileFail
-		invoke strcat,addr	LineTxt,addr ProjectFile
+		invoke strcpy,addr LineTxt,addr OpenFileFail
+		invoke strcat,addr LineTxt,addr ProjectFile
 		invoke MessageBox,hWnd,addr	LineTxt,addr AppName,MB_OK or MB_ICONERROR
 	.endif
 	mov		eax,TRUE

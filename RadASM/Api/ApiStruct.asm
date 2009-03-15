@@ -382,6 +382,8 @@ ApiStructCheck proc	hWin:HWND
 			je		@f
 			cmp		al,'*'
 			je		@f
+			cmp		al,'&'
+			je		@f
 			cmp		al,VK_TAB
 			je		@f
 			cmp		al,0

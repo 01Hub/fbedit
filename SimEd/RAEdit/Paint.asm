@@ -994,6 +994,12 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 				inc		esi
 			.endw
 			.if esi<nLnMax && nLines
+				mov		edx,lpBlockDef
+				test	[edx].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+				.if !ZERO?
+					dec		esi
+					inc		nLines
+				.endif
 				dec		esi
 				jmp		Nxt
 			.endif

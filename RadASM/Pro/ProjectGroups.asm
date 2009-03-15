@@ -79,7 +79,7 @@ GroupUpdateTrv proc uses ebx esi edi,fInitial:DWORD
 	mov		edi,offset groupgrp
 	invoke RtlZeroMemory,edi,sizeof groupgrp
 	mov		iNbr,0
-	.while byte ptr [esi]
+	.while byte ptr [esi] && iNbr<64
 		invoke Do_TreeViewAddNode,hGrpTrv,hGrpRoot,NULL,esi,IML_START+0,IML_START+0,0
 		mov		[edi].PROGROUP.hGrp,eax
 		mov		[edi].PROGROUP.lpszGrp,esi
