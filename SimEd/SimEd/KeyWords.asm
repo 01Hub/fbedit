@@ -218,6 +218,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hBr:DWORD
 	LOCAL	cc:CHOOSECOLOR
 	LOCAL	pt:POINT
+	LOCAL	fback:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -246,11 +247,11 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		ecx
 		add		esi,eax
 		inc		esi
-		add		edi,4
-		inc		ecx
 		.if ecx==13
 			add		edi,16
 		.endif
+		add		edi,4
+		inc		ecx
 		mov		al,[esi]
 		or		al,al
 		jne		@b
@@ -475,20 +476,19 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lpfnHook,0
 				mov		cc.lpTemplateName,0
 				invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
-				xor		ecx,ecx
+				mov		fback,0
 				.if (eax>=4 && eax<=6) || eax==13
 					push	eax
 					invoke GetCursorPos,addr pt
 					invoke GetDlgItem,hWin,IDC_LSTCOLORS
 					mov		edx,eax
 					invoke ScreenToClient,edx,addr pt
-					xor		ecx,ecx
 					.if pt.x>30 && pt.x<60
-						inc		ecx
+						inc		fback
 					.endif
 					pop		eax
 				.endif
-				.if ecx
+				.if fback
 					.if eax==4
 						mov		eax,tempcol.cmntback
 					.elseif eax==5
@@ -512,14 +512,16 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETCURSEL,0,0
 					pop		ecx
 					mov		edx,cc.rgbResult
-					.if eax==4
-						mov		tempcol.cmntback,edx
-					.elseif eax==5
-						mov		tempcol.strback,edx
-					.elseif eax==6
-						mov		tempcol.oprback,edx
-					.elseif eax==13
-						mov		tempcol.numback,edx
+					.if fback
+						.if eax==4 && ecx
+							mov		tempcol.cmntback,edx
+						.elseif eax==5
+							mov		tempcol.strback,edx
+						.elseif eax==6
+							mov		tempcol.oprback,edx
+						.elseif eax==13
+							mov		tempcol.numback,edx
+						.endif
 					.else
 						;Font
 						and		ecx,0FF000000h
@@ -643,10 +645,10 @@ Update:
 	invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_GETITEMDATA,eax,0
 	mov		[edi],eax
 	pop		eax
-	inc		eax
 	.if eax==13
 		add		edi,16
 	.endif
+	inc		eax
 	add		edi,4
 	cmp		edi,offset col+sizeof col
 	jc		@b

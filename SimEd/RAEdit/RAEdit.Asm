@@ -1,7 +1,6 @@
-;KetilO (C) 2002 - 2008
-;radasmide@hotmail.com
 comment *
- aaa
+	KetilO (C) 2002 - 2009
+	radasmide@hotmail.com
 *
 
 .386

@@ -226,7 +226,7 @@ szTab					db VK_TAB,0
 szSpc					db ' ',0
 szCr					db 0Dh,0
 szQuote					db '"',0
-szCmntStart				db 'comment+',0
+szCmntStart				db 'comment +',0
 szCmntEnd				db '-',0
 szBracketMatch			db '[({,])},\,',0
 ;szBracketMatch			db '[({,])},',0Dh,0

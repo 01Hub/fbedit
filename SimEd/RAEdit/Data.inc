@@ -204,6 +204,7 @@ szW						db 'W',0
 szI						db 'I',0
 szSpace					db ' ',0
 szTab					db VK_TAB,0
+szComment				db 'comment +',0
 szInclude				db 'include',0
 szIncludelib			db 'includelib',0
 szMemFailLine			db 'Memory allocation failed! (Line)',0

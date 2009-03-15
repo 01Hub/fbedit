@@ -93,8 +93,7 @@ GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 		.endif
 	.else
 		mov		nLines,0
-		test	flag,BD_SEGMENTBLOCK
-		.if !ZERO?
+		.if flag & BD_SEGMENTBLOCK
 			mov		esi,[ebx].EDIT.rpLineFree
 			sub		esi,4
 			inc		nLine
@@ -107,6 +106,22 @@ GetBlock proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpBlockDef:DWORD
 				add		edi,[ebx].EDIT.hChars
 				test	[edi].CHARS.state,STATE_SEGMENTBLOCK
 				.break .if !ZERO?
+				inc		nLine
+				inc		nLines
+			.endw
+		.elseif flag & BD_COMMENTBLOCK
+			mov		esi,[ebx].EDIT.rpLineFree
+			sub		esi,4
+			inc		nLine
+			.while TRUE
+				mov		edi,nLine
+				shl		edi,2
+				.break .if edi>=esi
+				add		edi,[ebx].EDIT.hLine
+				mov		edi,[edi].LINE.rpChars
+				add		edi,[ebx].EDIT.hChars
+				test	[edi].CHARS.state,STATE_COMMENT
+				.break .if ZERO?
 				inc		nLine
 				inc		nLines
 			.endw
@@ -1017,7 +1032,7 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 
 	mov		ebx,hMem
 	mov		cmntchar,0
-	mov		[ebx].EDIT.ccmntblocks,FALSE
+	mov		[ebx].EDIT.ccmntblocks,0
 	mov		eax,lpStart
 	mov		edx,lpEnd
 	.if word ptr [eax]=='*/' && word ptr [edx]=='/*'
@@ -1120,8 +1135,13 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 		ret
 	.elseif word ptr [eax]=='{' && word ptr [edx]=='}'
 		mov		[ebx].EDIT.ccmntblocks,3
-	.elseif dword ptr [eax]=='mmoc' && word ptr [edx]=='-'
-		mov		[ebx].EDIT.ccmntblocks,4
+	.else
+		invoke lstrcmpi,lpStart,offset szComment
+		mov		edx,lpEnd
+		.if !eax && word ptr [edx]=='-'
+			mov		[ebx].EDIT.ccmntblocks,4
+		.endif
+		mov		eax,lpStart
 	.endif
 	mov		al,byte ptr [eax]
 	.if al
@@ -1175,15 +1195,15 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	.endif
 	ret
 
-SkipString:
-	mov		al,[esi+ecx+sizeof CHARS]
-	inc		ecx
-	.while ecx<[esi].CHARS.len
-		inc		ecx
-	  .break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
-	.endw
-	retn
-
+;SkipString:
+;	mov		al,[esi+ecx+sizeof CHARS]
+;	inc		ecx
+;	.while ecx<[esi].CHARS.len
+;		inc		ecx
+;	  .break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
+;	.endw
+;	retn
+;
 TestWrd:
 	push	ecx
 	push	edx
@@ -1243,11 +1263,11 @@ IsLineStart:
 	je		@f
 	.if [ebx].EDIT.ccmntblocks && [ebx].EDIT.ccmntblocks!=4
 		.while ecx<[esi].CHARS.len
-			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-			movzx	eax,byte ptr [eax+offset CharTab]
-			.if eax==CT_STRING
-				call SkipString
-			.endif
+;			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+;			movzx	eax,byte ptr [eax+offset CharTab]
+;			.if eax==CT_STRING
+;				call SkipString
+;			.endif
 			call	TestWrd
 			inc		ecx
 		  .break .if !eax
@@ -1261,11 +1281,11 @@ IsLineStart:
 
 IsLineEnd:
 	.while ecx<[esi].CHARS.len
-		movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-		movzx	eax,byte ptr [eax+offset CharTab]
-		.if eax==CT_STRING
-			call SkipString
-		.endif
+;		movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
+;		movzx	eax,byte ptr [eax+offset CharTab]
+;		.if eax==CT_STRING
+;			call SkipString
+;		.endif
 		call	TestWrd
 		inc		ecx
 	  .break .if !eax

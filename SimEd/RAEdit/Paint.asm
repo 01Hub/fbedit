@@ -925,7 +925,7 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 	mov		ebx,hMem
 	test	[ebx].EDIT.fstyleex,STYLEEX_BLOCKGUIDE
 	.if !ZERO?
-		mov		fcmnt,FALSE
+		mov		fcmnt,0
 		;Clear block markers
 		mov		edx,[ebx].EDIT.rpLineFree
 		shr		edx,2
@@ -999,6 +999,14 @@ SetBlockMarkers proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nMax:DWORD
 				.if !ZERO?
 					dec		esi
 					inc		nLines
+					mov		edi,esi
+					dec		edi
+					shl		edi,2
+					add		edi,[ebx].EDIT.hLine
+					mov		edi,[edi]
+					add		edi,[ebx].EDIT.hChars
+					and		[edi].CHARS.state,-1 xor (STATE_BLOCKSTART or STATE_BLOCK or STATE_BLOCKEND)
+					or		[edi].CHARS.state,STATE_BLOCKEND
 				.endif
 				dec		esi
 				jmp		Nxt
@@ -1029,6 +1037,10 @@ BlockRoot:
 			.else
 				.if sdword ptr eax>esi
 					mov		esi,eax
+				.endif
+				test	[edx].RABLOCKDEF.flag,BD_SEGMENTBLOCK
+				.if !ZERO?
+					dec		esi
 				.endif
 				jmp		BlockRoot
 			.endif
