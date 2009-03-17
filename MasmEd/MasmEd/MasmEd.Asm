@@ -149,6 +149,7 @@ start:
 	invoke ResEdInstall,hInstance,FALSE
 	invoke InstallFileBrowser,hInstance,FALSE
 	invoke InstallRACodeComplete,hInstance,FALSE
+	invoke InstallRAProperty,hInstance,FALSE
 	invoke ParseApiFile,addr szApiCallFile
 	mov		hApiCallMem,eax
 	invoke ParseApiFile,addr szApiConstFile
@@ -161,6 +162,7 @@ start:
 	invoke ResEdUninstall
 	invoke UnInstallFileBrowser
 	invoke UnInstallRACodeComplete
+	invoke UnInstallRAProperty
 	.if hApiCallMem
 		invoke GlobalFree,hApiCallMem
 	.endif
@@ -1130,7 +1132,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ecx,rect.right
 			add		ecx,RESIZEHT
 			sub		eax,RESIZEHT
+			shr		edx,1
+			push	edx
 			invoke MoveWindow,hBrowse,ecx,rect.top,eax,edx,TRUE
+			pop		edx
+			;Resize project browser
+			push	rect.top
+			add		edx,RESIZEHT
+			add		rect.top,edx
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			mov		ecx,rect.right
+			add		ecx,RESIZEHT
+			mov		eax,wpos.wtfile
+			sub		eax,RESIZEHT
+			invoke MoveWindow,hProperty,ecx,rect.top,eax,edx,TRUE
+			pop		rect.top
 		.endif
 		test	wpos.fView,4
 		.if !ZERO?
@@ -1217,6 +1234,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
 		mov		hBrowse,eax
+		;Create property
+		invoke CreateWindowEx,0,addr szPropertyClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or PRSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_PROPERTY,hInstance,0
+		mov		hProperty,eax
 		invoke SendMessage,hSbr,WM_GETFONT,0,0
 		push	eax
 		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
@@ -1707,8 +1727,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				test	wpos.fView,8
 				.if !ZERO?
 					invoke ShowWindow,hBrowse,SW_SHOWNA
+					invoke ShowWindow,hProperty,SW_SHOWNA
 				.else
 					invoke ShowWindow,hBrowse,SW_HIDE
+					invoke ShowWindow,hProperty,SW_HIDE
 				.endif
 			.elseif eax==IDM_VIEW_DIALOG
 				invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0

@@ -35,6 +35,9 @@ includelib ..\Lib\RAFile.lib
 include Inc\RACodeComplete.Inc
 includelib ..\Lib\RACodeComplete.lib
 
+include Inc\RAProperty.Inc
+includelib ..\Lib\RAProperty.lib
+
 include masm32.inc
 include \RadASM\Masm\Inc\Debug.Inc
 includelib masm32.lib
@@ -118,12 +121,13 @@ IDC_RAE					equ 1011
 IDC_RES					equ 1012
 IDC_HEX					equ 1013
 IDC_FILE				equ 1014
+IDC_PROPERTY			equ 1015
 IDC_BTNTABCLOSE			equ 1002
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
-IDC_PROPERTY			equ 1103
-IDC_PROJECT				equ 1106
+;IDC_PROPERTY			equ 1103
+;IDC_PROJECT				equ 1106
 
 IDD_DLGSAVEUNICODE		equ 9000
 IDC_CHKUNICODE			equ 1001
@@ -556,6 +560,7 @@ hTbr					dd ?
 hShp					dd ?
 hOut					dd ?
 hBrowse					dd ?
+hProperty				dd ?
 hSbr					dd ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?

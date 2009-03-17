@@ -277,6 +277,21 @@ IsFileResource proc lpFile:DWORD
 
 IsFileResource endp
 
+IsFileCodeFile proc lpFile:DWORD
+
+	invoke lstrlen,lpFile
+	mov		edx,lpFile
+	lea		edx,[edx+eax-4]
+	mov		edx,[edx]
+	and		edx,05f5F5Fffh
+	xor		eax,eax
+	.if edx=='MSA.' || edx=='CNI.'
+		inc		eax
+	.endif
+	ret
+
+IsFileCodeFile endp
+
 LoadRCFile proc lpFileName:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
@@ -383,7 +398,11 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					invoke TabToolAdd,hREd,offset FileName
 					invoke LoadEditFile,hREd,offset FileName
 					invoke SendMessage,hREd,REM_LINENUMBERWIDTH,32,0
-					invoke SendMessage,hREd,REM_SETBLOCKS,0,0
+					invoke IsFileCodeFile,offset FileName
+					.if eax
+						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+						invoke SendMessage,hREd,REM_SETBLOCKS,0,0
+					.endif
 				.else
 					invoke CreateRAHexEd
 					invoke TabToolAdd,hREd,offset FileName

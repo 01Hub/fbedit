@@ -57,6 +57,7 @@ MinorFiles=*.res;*.obj;
 42=..\Readme.txt
 43=Misc\Unicode.dlg
 44=Context.mnu
+45=Inc\RAProperty.Inc
 
 [MakeFiles]
 0=MasmEd.rap
@@ -113,6 +114,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 17=,110,0,Res\Types.bmp
 18=,111,0,Res\Close.bmp
 19=,101,1,Res\SplitH.cur
+20=,101,0,Res\PropertyToolbar.bmp
 
 [StringTable]
 1="IDM_FILE_PRINT,0,Print"
@@ -245,18 +247,19 @@ Group=Assembly,Resources,Misc,Include
 42=3
 43=2
 44=2
+45=1
 
 [Find]
-1="REM_SETCHANGEDSTATE"
-2="WM_CONTEXTMENU"
-3="hMnu"
-4="STYLEEX_BLOCKGUIDE"
-5="col"
-6="COLOR"
-7="CCM_SETCOLOR"
-8="print"
-9="RACOLOR"
-10="DEFSTYLESCOL"
+1="OpenEditFile"
+2="notify"
+3="hBrowse"
+4="IDC_PROPERTY"
+5="1015"
+6="szFBClassName"
+7="REM_SETCHANGEDSTATE"
+8="WM_CONTEXTMENU"
+9="hMnu"
+10="STYLEEX_BLOCKGUIDE"
 
 [VersionControl]
 Settings=1246
@@ -268,7 +271,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -303,11 +306,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,4228
-1=0,0,0,0,21184
+2=0,0,687,524,2758
+1=0,0,0,0,61804
 11=0,0,0,0,6765
-22=0,0,0,0,7506
-10=0,0,0,0,1370
+22=0,0,0,0,16
+10=0,0,0,0,7407
 23=0,0,0,0,197
 9=0,0,0,0,160
 4=0,0,0,0
@@ -330,7 +333,7 @@ ProductVer4Range=0
 12=0,0,0,0,7074
 31=0,0,0,0,64
 32=0,0,0,0
-33=0,0,0,0,78
+33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
 37=0,0,0,0,303
@@ -341,6 +344,7 @@ ProductVer4Range=0
 40=0,0,0,0,29
 42=0,0,0,0,1241
 43=0,0,0,0
+45=0,0,0,0,2527
 
 [BookMark]
 0=
@@ -384,5 +388,6 @@ ProductVer4Range=0
 38=
 40=
 42=
+45=
 [PTimer]
 PTimer=40486153
