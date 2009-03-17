@@ -629,9 +629,11 @@ ScanWord proc uses esi,lpWord:DWORD,lpLine:DWORD
 	LOCAL	fFirst:DWORD
 	LOCAL	lPos:DWORD
 	LOCAL	nInx:DWORD
+	LOCAL	lpData:DWORD
 
 	mov		fRet,FALSE
 	mov		hMem,0
+	mov		lpData,0
 	mov		eax,-1
 	.if lpLine
 		invoke strcpy,addr buffer2,addr szCmntChar
@@ -660,11 +662,12 @@ ScanWord proc uses esi,lpWord:DWORD,lpLine:DWORD
 			.endif
 			mov		eax,offset szCPConst
 			call	GetDef
-			mov		eax,offset szCPData
-			call	GetDef
 			mov		eax,offset szCPLabel
 			call	GetDef
 			mov		eax,offset szCPLocal
+			call	GetDef
+			mov		lpData,esi
+			mov		eax,offset szCPData
 			call	GetDef
 		.endif
 		;Prepare label
@@ -714,6 +717,7 @@ ScanWord proc uses esi,lpWord:DWORD,lpLine:DWORD
 			.endif
 		.endif
 	.endif
+	mov		lpData,0
 	mov		nMiss,0
 	mov		iNbr,PRO_START_FILE
 	.if !fTLink && fProject
@@ -872,6 +876,7 @@ ScanTheFile:
 				or		eax,eax
 				jne		@f
 				add		esi,64
+				.break .if esi==lpData
 			.endw
 			call	TestData
 			or		eax,eax
