@@ -5,6 +5,7 @@ option casemap:none
 include MasmEd.inc
 include Tool\CboTool.asm
 include Tool\TabTool.asm
+include Tool\PropertyTool.asm
 include Misc\Misc.asm
 include Misc\FileIO.asm
 include Misc\Find.asm
@@ -1241,6 +1242,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	eax
 		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
 		pop		eax
+		invoke SendMessage,hProperty,WM_SETFONT,eax,FALSE
 		;Create ResEd
 		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
 		mov		hRes,eax
@@ -1310,7 +1312,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
-		INVOKE SetBlockDefs,hREd
+		invoke SetBlockDefs,hREd
+		invoke SetPropertyDefs
 		invoke ResetMenu
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
@@ -1916,6 +1919,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if [edi].RASELCHANGE.fchanged
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+invoke ParseEdit,hREd
 					.endif
 				  OnceMore:
 					invoke SendMessage,hREd,REM_GETBOOKMARK,nLastLine,0
@@ -2008,8 +2012,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke OpenEditFile,[edx].FBNOTIFY.lpfile,0
 		.elseif eax==TTN_NEEDTEXT
 			;Toolbar tooltip
-			mov		edx,(NMHDR ptr [edx]).idFrom
-			invoke LoadString,hInstance,edx,addr buffer,sizeof buffer
+			invoke LoadString,hInstance,ecx,addr buffer,sizeof buffer
 			lea		eax,buffer
 			mov		edx,lParam
 			mov		(TOOLTIPTEXT ptr [edx]).lpszText,eax

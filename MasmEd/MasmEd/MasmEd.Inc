@@ -386,6 +386,9 @@ ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',
 ANYFilterString			db 'All Files (*.*)',0,'*.*',0,0
 MESFilterString			db 'Session (*.mes)',0,'*.mes',0,0
 
+szApiCallFile			db 'masmApiCall.api',0
+szApiConstFile			db 'masmApiConst.api',0
+
 .data
 
 szRichEdit				db 'riched20.dll',0
@@ -438,10 +441,11 @@ szData					db '.data',0
 szDataU					db '.data?',0
 szConst					db '.const',0
 szCode					db '.code',0
+szComment				db 'comment',0
 szBegin					db 'BEGIN',0
 szEnd					db 'END',0
 
-szCmntStart				db 'comment+',0
+szCmntStart				db 'comment +',0
 szCmntEnd				db '-',0
 szBracketMatch			db '[({,])},\,',0
 
@@ -456,9 +460,10 @@ rabddata				RABLOCKDEF <offset szData,0,0,0,BD_SEGMENTBLOCK>
 rabddatau				RABLOCKDEF <offset szDataU,0,0,0,BD_SEGMENTBLOCK>
 rabdconst				RABLOCKDEF <offset szConst,0,0,0,BD_SEGMENTBLOCK>
 rabdcode				RABLOCKDEF <offset szCode,0,0,0,BD_SEGMENTBLOCK>
+rabdcomment				RABLOCKDEF <offset szComment,0,0,0,BD_COMMENTBLOCK>
 rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,1 SHL 16>
 
-blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdstruct,offset rabdstruc,offset rabdunion,offset rabdmacro,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
+blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdstruct,offset rabdstruc,offset rabdunion,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
 
 szREG_SZ				db 'REG_SZ',0
 szSimEd					db 'Software\MasmEd1000\',0

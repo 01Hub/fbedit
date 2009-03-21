@@ -9,8 +9,6 @@ CHARS ends
 
 .const
 
-szApiCallFile	db 'masmApiCall.api',0
-szApiConstFile	db 'masmApiConst.api',0
 szInvoke		db 'INVOKE',0
 
 .data?

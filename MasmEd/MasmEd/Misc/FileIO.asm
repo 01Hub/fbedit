@@ -222,6 +222,9 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
 		invoke SetWinCaption,offset FileName
+		.if !ebx
+			invoke ParseEdit,hWin
+		.endif
 		mov		eax,FALSE
 	.else
 		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR

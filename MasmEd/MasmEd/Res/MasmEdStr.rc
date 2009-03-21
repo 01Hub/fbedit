@@ -29,4 +29,7 @@ BEGIN
   IDM_EDIT_OUTDENT			"Outdent"
   IDM_EDIT_COMMENT			"Comment"
   IDM_EDIT_UNCOMMENT		"Uncomment"
+  11						"Current file"
+  12						"Open files"
+  15						"Refresh"
 END
