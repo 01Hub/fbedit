@@ -9,6 +9,7 @@ o Better code complete support for C/C++ (locals (Ctrl+Shift+Space) and casted s
   Even with this added protection you should always open a project file from a non trusted source
   in text edit mode (File / Open File) and verify that it not executes any suspicious commands.
 o Fixed RadASM Project File (.rap) Stack-Based Buffer Overflow Vulnerability.
+o Fixed bug with environment variable that caused crash on win 2000.
 2.2.1.5
 o Option to set syntax backcolor on strings, comments, operators and numbers & hex values.
 o Api files can now have commented lines. A commented line must start with ; or //
