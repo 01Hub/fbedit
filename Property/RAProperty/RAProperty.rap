@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -138,19 +138,19 @@ ProductVer4Range=0
 12=
 13=
 [Size]
-2=0,0,699,490,3148
+2=0,0,699,490,4138
 <<<<<<< .mine
-1=0,0,699,490,25631
+1=0,0,699,490,17515
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2172
-9=0,0,0,0,2899
-10=0,0,589,494,29041
-11=0,0,746,498,10368
+7=0,0,0,0,2280
+9=0,0,0,0,4267
+10=0,0,589,494,22544
+11=0,0,746,498,2471
 12=0,0,0,0,2850
 13=0,0,0,0,0
 [BookMark]
@@ -172,16 +172,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="lpdatatype"
-2="globalfree"
-3="getcurrentdirectory"
-4="ecx,2"
-5="shr	ecx,2"
-6="shr		ecx,2"
-7="shr^i^iecx,2"
-8="sht^i^iecx,2"
-9="REM_SETCOLOR"
-10="DEM_SETCOL"
+1="ebx"
+2="PRM_GETTOOLTIP"
+3="PRM_ADDPROPERTYFILE"
+4="lpdatatype"
+5="globalfree"
+6="getcurrentdirectory"
+7="ecx,2"
+8="shr	ecx,2"
+9="shr		ecx,2"
+10="shr^i^iecx,2"
 
 [Exports]
 1=GetDefEx

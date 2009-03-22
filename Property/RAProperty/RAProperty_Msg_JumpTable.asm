@@ -28,7 +28,6 @@
 			mov		eax,2
 		.endif
 		invoke AddFileToWordList,edx,lParam,eax
-		xor		eax,eax
 		ret
 	align 4 
 	_PRM_SETGENDEF:
@@ -546,6 +545,11 @@
 	_PRM_ISTOOLTIPMESSAGE:
 		invoke IsTooltipMessage,hWin,wParam,lParam
 		ret
+	align 4
+	_PRM_SETLANGUAGE:
+		mov		eax,wParam
+		mov		[ebx].RAPROPERTY.nlanguage,eax
+		ret
 
 .data
 align 4
@@ -589,7 +593,8 @@ _RAPROPERTY_BASE \
 	dd _PRM_GETSELTEXT			;equ WM_USER+36		;wParam=0, lParam=lpBuff
 	dd _PRM_GETSORTEDLIST		;equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 	dd _PRM_FINDINSORTEDLIST	;equ WM_USER+38		;wParam=0, lParam=lpWord
-	dd _PRM_ISTOOLTIPMESSAGE	;equ WM_USER+38		;wParam=lpMESSAGE, lParam=lpTOOLTIP
+	dd _PRM_ISTOOLTIPMESSAGE	;equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
+	dd _PRM_SETLANGUAGE			;equ WM_USER+40		;wParam=nLanguage, lParam=0
 
 .code
 align 4

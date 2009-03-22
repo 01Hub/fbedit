@@ -85,6 +85,7 @@ DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Set colors
 		invoke SendMessage,hCtl,PRM_SETBACKCOLOR,0,0C0C0E0h
 		invoke SendMessage,hCtl,PRM_SETTEXTCOLOR,0,0800000h
+		invoke SendMessage,hCtl,PRM_SETLANGUAGE,nMASM,0
 	.elseif	eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

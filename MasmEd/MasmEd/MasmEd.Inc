@@ -240,6 +240,7 @@ TABMEM struct
 	ft			FILETIME <?>
 	nchange		dd ?
 	fchanged	dd ?
+	fupdate		dd ?
 TABMEM ends
 
 FILENOTIFYPATH struct
@@ -385,9 +386,6 @@ ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',
 						db 'Text Files (*.txt)',0,'*.txt',0
 ANYFilterString			db 'All Files (*.*)',0,'*.*',0,0
 MESFilterString			db 'Session (*.mes)',0,'*.mes',0,0
-
-szApiCallFile			db 'masmApiCall.api',0
-szApiConstFile			db 'masmApiConst.api',0
 
 .data
 
@@ -574,6 +572,7 @@ hReg					dd ?
 lpdwDisp				dd ?
 lpType					dd ?
 lpcbData				dd ?
+AppPath					db MAX_PATH dup(?)
 FileName				db MAX_PATH dup(?)
 MainFile				db MAX_PATH dup(?)
 hFont					dd ?

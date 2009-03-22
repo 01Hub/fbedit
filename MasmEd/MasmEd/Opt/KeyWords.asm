@@ -471,8 +471,11 @@ UpdateToolColors proc
 	mov		eax,col.tooltext
 	mov		racol.txtcol,eax
 	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
+	;Set tool colors
 	invoke SendMessage,hBrowse,FBM_SETBACKCOLOR,0,col.toolback
 	invoke SendMessage,hBrowse,FBM_SETTEXTCOLOR,0,col.tooltext
+	invoke SendMessage,hProperty,PRM_SETBACKCOLOR,0,col.toolback
+	invoke SendMessage,hProperty,PRM_SETTEXTCOLOR,0,col.tooltext
 	mov		eax,col.dialogback
 	mov		rescol.back,eax
 	mov		eax,col.dialogtext

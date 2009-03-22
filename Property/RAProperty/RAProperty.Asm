@@ -883,13 +883,15 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ISTOOLTIPMESSAGE
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_SETLANGUAGE
 		push		eax
 		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
-		pop		eax
-		sub		eax,PRM_SELECTPROPERTY
-		jmp 	DWORD PTR [offset _RAPROPERTY_BASE+eax*4]
+		.if eax
+			mov		ebx,eax
+			pop		eax
+			sub		eax,PRM_SELECTPROPERTY
+			jmp 	DWORD PTR [offset _RAPROPERTY_BASE+eax*4]
+		.endif
 		include RAProperty_Msg_JumpTable.asm
 	.endif
 	.if eax==WM_CREATE
@@ -1152,6 +1154,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GlobalFree,[ebx].RAPROPERTY.lpdeftype
 		.endif
 		invoke GlobalFree,ebx
+		invoke SetWindowLong,hWin,0,0
 	.elseif eax==WM_SETFONT
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax

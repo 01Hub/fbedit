@@ -42,6 +42,11 @@ PRM_GETSELTEXT			equ WM_USER+36		;wParam=0, lParam=lpBuff
 PRM_GETSORTEDLIST		equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 PRM_FINDINSORTEDLIST	equ WM_USER+38		;wParam=nCount, lParam=lpMEMSEARCH
 PRM_ISTOOLTIPMESSAGE	equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
+PRM_SETLANGUAGE			equ WM_USER+40		;wParam=nLanguage, lParam=0
+
+;Languages
+nFREEBASIC				equ 0
+nMASM					equ 1
 
 ;Styles
 PRSTYLE_FLATTOOLBAR		equ 1

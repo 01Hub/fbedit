@@ -559,25 +559,25 @@ SetKeyWords proc uses esi edi
 		invoke SetHiliteWords,kwcol[edx],ecx
 		inc		nInx
 	.endw
-	mov		esi,hApiCallMem
-	.if esi
-		mov		edi,hMem
-		.while byte ptr [esi]
-			mov		byte ptr [edi],'^'
-			inc		edi
-			invoke lstrcpy,edi,esi
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			lea		edi,[edi+eax]
-			mov		byte ptr [edi],' '
-			inc		edi
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
-		mov		byte ptr [edi],0
-		invoke SetHiliteWords,kwcol[15*4],hMem
-		invoke GlobalFree,hMem
-	.endif
+;	mov		esi,hApiCallMem
+;	.if esi
+;		mov		edi,hMem
+;		.while byte ptr [esi]
+;			mov		byte ptr [edi],'^'
+;			inc		edi
+;			invoke lstrcpy,edi,esi
+;			invoke lstrlen,esi
+;			lea		esi,[esi+eax+1]
+;			lea		edi,[edi+eax]
+;			mov		byte ptr [edi],' '
+;			inc		edi
+;			invoke lstrlen,esi
+;			lea		esi,[esi+eax+1]
+;		.endw
+;		mov		byte ptr [edi],0
+;		invoke SetHiliteWords,kwcol[15*4],hMem
+;	.endif
+	invoke GlobalFree,hMem
 	invoke SendMessage,hResEd,PRO_SETHIGHLIGHT,col.styles,col.words
 	ret
 

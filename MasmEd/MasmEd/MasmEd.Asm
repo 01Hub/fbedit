@@ -53,6 +53,7 @@ start:
 	inc		edx
 	invoke lstrcat,offset szSimEd,edx
 	invoke SetCurrentDirectory,offset FileName
+	invoke lstrcpy,addr AppPath,addr FileName
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof ver
@@ -151,10 +152,6 @@ start:
 	invoke InstallFileBrowser,hInstance,FALSE
 	invoke InstallRACodeComplete,hInstance,FALSE
 	invoke InstallRAProperty,hInstance,FALSE
-	invoke ParseApiFile,addr szApiCallFile
-	mov		hApiCallMem,eax
-	invoke ParseApiFile,addr szApiConstFile
-	mov		hApiConstMem,eax
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	push	eax
 	invoke UnInstallRAEdit
@@ -164,12 +161,6 @@ start:
 	invoke UnInstallFileBrowser
 	invoke UnInstallRACodeComplete
 	invoke UnInstallRAProperty
-	.if hApiCallMem
-		invoke GlobalFree,hApiCallMem
-	.endif
-	.if hApiConstMem
-		invoke GlobalFree,hApiConstMem
-	.endif
 	.if hRichEd
 		invoke FreeLibrary,hRichEd
 	.endif
@@ -1347,7 +1338,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					mov		eax,hREd
 					.if eax!=hRes
-						invoke DestroyWindow,eax
+						invoke DestroyWindow,hREd
+						invoke SendMessage,hProperty,PRM_DELPROPERTY,hREd,0
+						invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
 					.endif
 					invoke TabToolDel,hREd
 				.endif
@@ -1919,7 +1912,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if [edi].RASELCHANGE.fchanged
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
-invoke ParseEdit,hREd
 					.endif
 				  OnceMore:
 					invoke SendMessage,hREd,REM_GETBOOKMARK,nLastLine,0
@@ -1981,21 +1973,28 @@ invoke ParseEdit,hREd
 						dec		nLastLine
 						jmp		OnceMore
 					.endif
-				.endif
-				.if [edi].RASELCHANGE.fchanged
+					invoke GetWindowLong,hREd,GWL_USERDATA
+					mov		esi,eax
+					.if ![esi].TABMEM.fchanged
+						invoke TabToolSetChanged,hREd,TRUE
+					.endif
 					invoke ApiListBox,edi
+					.if ![edi].RASELCHANGE.nWordGroup
+						mov		[esi].TABMEM.fupdate,TRUE
+					.endif
 				.endif
 				mov		eax,[edi].RASELCHANGE.line
 				.if eax!=nLastLine
 					mov		nLastLine,eax
 					invoke ShowWindow,hCCLB,SW_HIDE
 					invoke ShowWindow,hCCTT,SW_HIDE
-				.endif
-			.endif
-			.if [edi].RASELCHANGE.fchanged
-				invoke GetWindowLong,hREd,GWL_USERDATA
-				.if ![eax].TABMEM.fchanged
-					invoke TabToolSetChanged,hREd,TRUE
+					.if ![edi].RASELCHANGE.nWordGroup
+						invoke GetWindowLong,hREd,GWL_USERDATA
+						.if [eax].TABMEM.fupdate
+							mov		[eax].TABMEM.fupdate,FALSE
+							invoke ParseEdit,hREd
+						.endif
+					.endif
 				.endif
 			.endif
 			mov		fTimer,2
@@ -2010,6 +2009,31 @@ invoke ParseEdit,hREd
 			mov		fTimer,2
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
 			invoke OpenEditFile,[edx].FBNOTIFY.lpfile,0
+		.elseif eax==BN_CLICKED && ecx==IDC_PROPERTY
+			mov		eax,[edx].RAPNOTIFY.nid
+			.if eax==1
+				invoke SendMessage,hProperty,PRM_SELOWNER,hREd,0
+			.elseif eax==2
+				invoke SendMessage,hProperty,PRM_SELOWNER,0,0
+			.elseif eax==5
+				invoke SendMessage,hProperty,PRM_GETSELBUTTON,0,0
+				.if eax==1
+					invoke SendMessage,hProperty,PRM_SELOWNER,hREd,0
+				.endif
+				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+			.endif
+		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
+			push	[edx].RAPNOTIFY.nline
+			invoke TabToolGetInx,[edx].RAPNOTIFY.nid
+			invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+			pop		eax
+			invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+			mov		chrg.cpMin,eax
+			mov		chrg.cpMax,eax
+			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+			invoke SendMessage,hREd,REM_VCENTER,0,0
+			invoke SetFocus,hREd
 		.elseif eax==TTN_NEEDTEXT
 			;Toolbar tooltip
 			invoke LoadString,hInstance,ecx,addr buffer,sizeof buffer

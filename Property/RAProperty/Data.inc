@@ -55,6 +55,7 @@ RAPROPERTY struct
 	topindex		dd ?
 	selindex		dd ?
 	htooltip		dd ?
+	nlanguage		dd ?
 RAPROPERTY ends
 
 IDB_TRV					equ 101
@@ -80,6 +81,7 @@ szRpa					db ')',0
 szSpc					db ' ',0
 szPtr					db ' Ptr',0
 szInteger				db 'Integer',0
+szDword					db ':DWORD',0
 szColon					db ':',0
 szSub					db 'SUB',0
 szFunction				db 'FUNCTION',0

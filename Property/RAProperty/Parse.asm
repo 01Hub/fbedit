@@ -561,7 +561,55 @@ IsFunction proc uses esi ecx,lpWord:DWORD,len:DWORD
 
 IsFunction endp
 
-ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
+FixUnknown proc uses ebx esi edi
+
+	mov		esi,[ebx].RAPROPERTY.lpmem
+	.if esi
+		add		esi,[ebx].RAPROPERTY.rpproject
+		.while [esi].PROPERTIES.nSize
+			.if [esi].PROPERTIES.nType=='U'
+				mov		edi,[ebx].RAPROPERTY.lpmem
+				.while [edi].PROPERTIES.nSize
+					movzx	eax,[edi].PROPERTIES.nType
+					.if eax=='S' || eax=='T' || eax=='s'
+						call	CompareIt
+						.if !eax
+							mov		[esi].PROPERTIES.nType,'d'
+							.break
+						.endif
+					.endif
+					mov		eax,[edi].PROPERTIES.nSize
+					lea		edi,[edi+eax+sizeof PROPERTIES]
+				.endw
+			.endif
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+	.endif
+	ret
+
+CompareIt:
+	lea		ecx,[esi+sizeof PROPERTIES]
+	lea		edx,[edi+sizeof PROPERTIES]
+	.while byte ptr [ecx]
+		inc		ecx
+	.endw
+	inc		ecx
+	xor		eax,eax
+	.while TRUE
+		mov		al,[ecx]
+		mov		ah,[edx]
+		.break .if !al || !ah
+		sub		al,ah
+		.break .if al
+		inc		ecx
+		inc		edx
+	.endw
+	retn
+
+FixUnknown endp
+
+ParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpword1:DWORD
 	LOCAL	len1:DWORD
 	LOCAL	lpword2:DWORD
@@ -838,6 +886,13 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		rpwithblock[12],-1
 					.endif
 				.endif
+			.elseif [ebx].RAPROPERTY.nlanguage==nMASM
+				mov		edi,offset szname
+				call	ParseUnknown
+				.if eax
+					mov		edx,'U'
+					invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
+				.endif
 			.endif
 		.endif
 	  Nxt:
@@ -845,6 +900,9 @@ ParseFile proc uses esi edi,nOwner:DWORD,lpMem:DWORD
 		inc		npos
 		mov		esi,eax
 	.endw
+	.if [ebx].RAPROPERTY.nlanguage==nMASM
+		invoke FixUnknown
+	.endif
 	ret
 
 AddNamespace:
@@ -1039,6 +1097,18 @@ ParseMacro:
 	xor		eax,eax
 	retn
 
+ParseUnknown:
+	.if len1 && len2
+		mov		eax,TYPE_NAMEFIRST
+		call	SaveName
+		mov		eax,TYPE_NAMESECOND
+		call	SaveName
+		mov		eax,TRUE
+	.else
+		xor		eax,eax
+	.endif
+	retn
+
 ParseConstructor:
 	call	AddNamespace
 	call	SaveName
@@ -1226,7 +1296,7 @@ SaveParam:
 			.if byte ptr [esi]=='"'
 				inc		esi
 				jmp		SaveParam
-			.endif			
+			.endif
 		.endif
 	.endif
 SaveParam1:
@@ -1244,6 +1314,9 @@ SaveParam1:
 			jmp		SaveParam1
 		.endif
 	.else
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			inc		fParam
+		.endif
 		.if fParam
 			invoke IsIgnore,IGNORE_PROCPARAM,ecx,esi
 			.if eax
@@ -1385,8 +1458,13 @@ ParseData1:
 			pop		fPtr
 		.endif
 	.else
-		invoke lstrcpy,edi,addr szInteger
-		lea		edi,[edi+sizeof szInteger]
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke lstrcpy,edi,addr szDword
+			lea		edi,[edi+sizeof szDword]
+		.else
+			invoke lstrcpy,edi,addr szInteger
+			lea		edi,[edi+sizeof szInteger]
+		.endif
 	.endif
 	mov		byte ptr [edi],0
 	xor		eax,eax
@@ -1403,6 +1481,9 @@ ParseParamData1:
 		.if byte ptr [esi]=='('
 			call	SkipBrace
 			jmp		ParseParamData1
+		.elseif byte ptr [esi]==':'
+			inc		esi
+			jmp		@f
 		.endif
 	.endif
 	invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
@@ -1472,8 +1553,13 @@ ParseParamData1:
 	.else
 		mov		byte ptr [edi],':'
 		inc		edi
-		invoke lstrcpy,edi,addr szInteger
-		lea		edi,[edi+sizeof szInteger-1]
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke lstrcpy,edi,addr szDword
+			lea		edi,[edi+sizeof szDword-1]
+		.else
+			invoke lstrcpy,edi,addr szInteger
+			lea		edi,[edi+sizeof szInteger-1]
+		.endif
 	.endif
 	.if fPtr
 	  @@:
