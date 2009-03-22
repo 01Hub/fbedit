@@ -13,13 +13,11 @@ pNextVal	dd ?
 
 .code
 
-EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+EnvironmentOptionsProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[512]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		push	ebx
-		push	edi
 		invoke SetLanguage,hWin,IDD_ENVIRONMENTOPTION,FALSE
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 		mov		hEnvMem,eax
@@ -43,8 +41,6 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_SETCURSEL,0,0
 		call	SetEdit
-		pop		edi
-		pop		ebx
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -53,8 +49,6 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				mov		dword ptr buffer,0
 				invoke WritePrivateProfileSection,addr iniEnv,addr buffer,addr iniAsmFile
-				push	ebx
-				push	edi
 				xor		ebx,ebx
 				xor		eax,eax
 				.while eax!=LB_ERR
@@ -71,8 +65,6 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					inc		ebx
 				.endw
-				pop		edi
-				pop		ebx
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 				invoke SetEnvironment
 			.elseif eax==IDCANCEL
@@ -98,7 +90,6 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	SetEdit
 			.endif
 		.elseif edx==EN_CHANGE
-			push	ebx
 			push	eax
 			invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_GETCURSEL,0,0
 			mov		ebx,eax
@@ -116,7 +107,6 @@ EnvironmentOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendDlgItemMessage,hWin,IDC_LSTENVIRONMENT,LB_GETITEMDATA,ebx,0
 				invoke GetDlgItemText,hWin,IDC_EDTENVIRONMENTVALUE,eax,384
 			.endif
-			pop		ebx
 		.elseif edx==LBN_SELCHANGE
 			call	SetEdit
 		.endif
