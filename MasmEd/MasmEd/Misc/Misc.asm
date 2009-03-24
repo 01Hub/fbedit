@@ -439,10 +439,6 @@ SetFormat proc hWin:HWND
 	;Set number of lines mouse wheel will scroll
 	;NOTE! If you have mouse software installed, set to 0
 	invoke SendMessage,hWin,REM_MOUSEWHEEL,3,0
-	;Set selection bar width
-;	invoke SendMessage,hWin,REM_SELBARWIDTH,20,0
-	;Set linenumber width
-;	invoke SendMessage,hWin,REM_LINENUMBERWIDTH,40,0
 	ret
 
 SetFormat endp
@@ -541,14 +537,14 @@ SetKeyWords proc uses esi edi
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[64]:BYTE
 
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*4
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*8
 	mov		hMem,eax
 	invoke SetHiliteWords,0,0
 	mov		nInx,0
 	.while nInx<16
-		invoke RtlZeroMemory,hMem,65536*4
+		invoke RtlZeroMemory,hMem,65536*8
 		invoke MakeKey,offset szGroup,nInx,addr buffer
-		mov		lpcbData,65536*4
+		mov		lpcbData,65536*8
 		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
 		mov		ecx,hMem
 		mov		edx,nInx
@@ -559,24 +555,107 @@ SetKeyWords proc uses esi edi
 		invoke SetHiliteWords,kwcol[edx],ecx
 		inc		nInx
 	.endw
-;	mov		esi,hApiCallMem
-;	.if esi
-;		mov		edi,hMem
-;		.while byte ptr [esi]
-;			mov		byte ptr [edi],'^'
-;			inc		edi
-;			invoke lstrcpy,edi,esi
-;			invoke lstrlen,esi
-;			lea		esi,[esi+eax+1]
-;			lea		edi,[edi+eax]
-;			mov		byte ptr [edi],' '
-;			inc		edi
-;			invoke lstrlen,esi
-;			lea		esi,[esi+eax+1]
-;		.endw
-;		mov		byte ptr [edi],0
-;		invoke SetHiliteWords,kwcol[15*4],hMem
-;	.endif
+	; Add api calls
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'P'
+	mov		edi,hMem
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke lstrcpy,edi,eax
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,kwcol[15*4],hMem
+	; Add api constants
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'C'
+	mov		edi,hMem
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	mov		esi,eax
+	.while esi
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		mov		byte ptr [edi],'^'
+		inc		edi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al==','
+				mov		byte ptr [edi],' '
+				inc		edi
+				mov		al,'^'
+			.endif
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		mov		esi,eax
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,kwcol[14*4],hMem
+	; Add api words
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'W'
+	mov		edi,hMem
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke lstrcpy,edi,eax
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,kwcol[14*4],hMem
+	; Add api structs
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'S'
+	mov		edi,hMem
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke lstrcpy,edi,eax
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,kwcol[13*4],hMem
+	; Add api types
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'S'
+	mov		edi,hMem
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		cl,[eax]
+		mov		ch,cl
+		and		cl,5Fh
+		.if cl==ch
+			; Case sensitive
+			mov		byte ptr [edi],'^'
+			inc		edi
+		.endif
+		invoke lstrcpy,edi,eax
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,kwcol[12*4],hMem
 	invoke GlobalFree,hMem
 	invoke SendMessage,hResEd,PRO_SETHIGHLIGHT,col.styles,col.words
 	ret

@@ -1,12 +1,4 @@
 
-CHARS struct
-	len			dd ?		;String len
-	max			dd ?		;Max size
-	state		dd ?		;Line state
-	bmid		dd ?		;Bookmark ID
-	errid		dd ?		;Error ID
-CHARS ends
-
 .const
 
 szInvoke		db 'INVOKE',0
@@ -89,26 +81,7 @@ UpdateApiCallList proc uses esi edi,lpWord:DWORD
 					mov		ecx,1
 				.endif
 				pop		edx
-push	edx
 				invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
-pop		edx
-.if dword ptr [edx]=='oToD'
-	push	edx
-	invoke lstrlen,edx
-	pop		edx
-	lea		edx,[edx+eax+1]
-	PrintStringByAddr edx
-	push	edx
-	invoke lstrlen,edx
-	pop		edx
-	lea		edx,[edx+eax+1]
-	PrintStringByAddr edx
-	push	edx
-	invoke lstrlen,edx
-	pop		edx
-	lea		edx,[edx+eax+1]
-	PrintStringByAddr edx
-.endif
 				inc		nCount
 			.endw
 		.endif

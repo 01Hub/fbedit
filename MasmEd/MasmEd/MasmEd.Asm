@@ -1237,8 +1237,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create ResEd
 		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
 		mov		hRes,eax
-		;Set hilite words
-		invoke SetKeyWords
 		;Set colors
 		invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
 		;and give it focus
@@ -1305,6 +1303,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
 		invoke SetBlockDefs,hREd
 		invoke SetPropertyDefs
+		;Set hilite words
+		invoke SetKeyWords
 		invoke ResetMenu
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND

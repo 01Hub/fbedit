@@ -288,6 +288,14 @@ BLOCKRANGE struct
 	clMax		dd ?						;Ending column
 BLOCKRANGE ends
 
+CHARS struct
+	len			dd ?		;String len
+	max			dd ?		;Max size
+	state		dd ?		;Line state
+	bmid		dd ?		;Bookmark ID
+	errid		dd ?		;Error ID
+CHARS ends
+
 .const
 
 szRAEditClass	db 'RAEdit',0
