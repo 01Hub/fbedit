@@ -282,7 +282,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	eax
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
 				pop		eax
-				.if !fLBConst
+				.if !fLBConst && !fAllList
 					push	eax
 					invoke lstrlen,eax
 					pop		edx
@@ -295,12 +295,42 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,hCCLB,SW_HIDE
 				xor		eax,eax
 				mov		fLBConst,eax
+				mov		fAllList,eax
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
 			invoke ShowWindow,hCCLB,SW_HIDE
 			xor		eax,eax
+			mov		fLBConst,eax
+			mov		fAllList,eax
 			jmp		Ex
+		.elseif eax==VK_SPACE
+			invoke GetKeyState,VK_CONTROL
+			test		eax,80h
+			.if !ZERO?
+				invoke IsWindowVisible,hCCLB
+				.if !eax
+					invoke ShowCCList
+				.endif
+				xor		eax,eax
+				jmp		Ex
+			.endif
+		.elseif eax=='.'
+			mov		fStuctList,eax
+			invoke ShowCCList
+		.elseif fAllList || fStuctList
+			push	eax
+			invoke IsCharAlphaNumeric,eax
+			pop		edx
+			.if eax || edx=='_'
+				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
+				invoke ShowCCList
+				jmp		Ex
+			.else
+				mov		fAllList,eax
+				mov		fStuctList,eax
+				invoke ShowWindow,hCCLB,SW_HIDE
+			.endif
 		.endif
 	.elseif eax==WM_KEYDOWN
 		mov		edx,wParam
@@ -1988,6 +2018,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		nLastLine,eax
 					invoke ShowWindow,hCCLB,SW_HIDE
 					invoke ShowWindow,hCCTT,SW_HIDE
+					xor		eax,eax
+					mov		fLBConst,eax
+					mov		fAllList,eax
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke GetWindowLong,hREd,GWL_USERDATA
 						.if [eax].TABMEM.fupdate

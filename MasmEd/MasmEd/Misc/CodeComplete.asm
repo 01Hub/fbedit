@@ -3,12 +3,16 @@
 
 szInvoke		db 'INVOKE',0
 szPp			db 'Pp',0
+szp				db 'p',0
 szC				db 'C',0
+szAll			db	'WScds',0
 
 .data?
 
 lpOldCCProc		dd ?
 ccchrg			CHARRANGE <?>
+fAllList		dd ?
+fStuctList		dd ?
 
 .code
 
@@ -51,48 +55,169 @@ CreateCodeComplete proc
 
 CreateCodeComplete endp
 
-UpdateApiCallList proc uses esi edi,lpWord:DWORD
+UpdateApiCallList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
+	LOCAL	isinproc:ISINPROC
 
 	mov		nCount,0
+	mov		edi,hCCLB
+	invoke SendMessage,edi,CCM_CLEAR,0,0
+	invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
 	mov		eax,lpWord
-	.if byte ptr [eax]
-		mov		edi,hCCLB
-		invoke SendMessage,edi,CCM_CLEAR,0,0
-		invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
-		invoke SendMessage,hProperty,PRM_FINDFIRST,addr szPp,lpWord
-		.if eax
+	mov		edx,lpApiType
+	.if byte ptr [eax] || edx==offset szAll
+		invoke SendMessage,hProperty,PRM_FINDFIRST,lpApiType,lpWord
+		.while TRUE
+			.break .if !eax
 			push	eax
 			invoke SendMessage,hProperty,PRM_FINDGETTYPE,0,0
 			xor		ecx,ecx
 			.if eax=='p'
 				mov		ecx,1
+			.elseif eax=='W'
+				mov		ecx,2
+			.elseif eax=='c'
+				mov		ecx,3
+			.elseif eax=='d'
+				mov		ecx,14
+			.elseif eax=='S'
+				mov		ecx,4
+			.elseif eax=='s'
+				mov		ecx,5
 			.endif
 			pop		edx
 			invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
 			inc		nCount
-			.while TRUE
-				invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
-				.break .if !eax
-				push	eax
-				invoke SendMessage,hProperty,PRM_FINDGETTYPE,0,0
-				xor		ecx,ecx
-				.if eax=='p'
-					mov		ecx,1
+			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		.endw
+		mov		edx,lpApiType
+		.if edx==offset szAll
+			mov		eax,nLastLine
+			mov		isinproc.nLine,eax
+			mov		eax,hREd
+			mov		isinproc.nOwner,eax
+			mov		isinproc.lpszType,offset szp
+			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+			.if eax
+				mov		esi,eax
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				push	esi
+				invoke lstrcpy,addr tmpbuff,esi
+				invoke lstrcat,addr tmpbuff,addr szComma
+				mov		esi,offset tmpbuff
+				mov		edx,esi
+				.while byte ptr [esi]
+					.if byte ptr [esi]==','
+						mov		byte ptr [esi],0
+						call Filter
+						.if !eax
+							invoke SendMessage,edi,CCM_ADDITEM,8,edx
+							inc		nCount
+						.endif
+						lea		edx,[esi+1]
+					.elseif byte ptr [esi]==':'
+						mov		byte ptr [esi],0
+					.endif
+					inc		esi
+				.endw
+				pop		esi
+				; Skip return type
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				invoke lstrlen,esi
+				; Point to local
+				lea		esi,[esi+eax+1]
+				invoke lstrcpy,addr tmpbuff,esi
+				invoke lstrcat,addr tmpbuff,addr szComma
+				mov		esi,offset tmpbuff
+				mov		edx,esi
+				.while byte ptr [esi]
+					.if byte ptr [esi]==','
+						mov		byte ptr [esi],0
+						call Filter
+						.if !eax
+							invoke SendMessage,edi,CCM_ADDITEM,9,edx
+							inc		nCount
+						.endif
+						lea		edx,[esi+1]
+					.elseif byte ptr [esi]==':'
+						mov		byte ptr [esi],0
+					.endif
+					inc		esi
+				.endw
+			.endif
+		.endif
+	.elseif !edx
+		mov		eax,nLastLine
+		mov		isinproc.nLine,eax
+		mov		eax,hREd
+		mov		isinproc.nOwner,eax
+		mov		isinproc.lpszType,offset szp
+		invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+		.if eax
+			mov		esi,eax
+			; Skip proc name
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			; Skip proc parameters
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			; Skip return type
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			; Point to local
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			invoke lstrcpy,addr tmpbuff,esi
+			invoke lstrcat,addr tmpbuff,addr szComma
+			mov		esi,offset tmpbuff
+			mov		edx,esi
+			.while byte ptr [esi]
+				.if byte ptr [esi]==','
+					mov		byte ptr [esi],0
+					call Filter
+					.if !eax
+						invoke SendMessage,edi,CCM_ADDITEM,9,edx
+						inc		nCount
+					.endif
+					lea		edx,[esi+1]
+				.elseif byte ptr [esi]==':'
+					mov		byte ptr [esi],0
 				.endif
-				pop		edx
-				invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
-				inc		nCount
+				inc		esi
 			.endw
 		.endif
-		.if nCount
-			invoke SendMessage,edi,CCM_SORT,FALSE,0
-		.endif
-		invoke SendMessage,edi,WM_SETREDRAW,TRUE,0
+	.endif
+	.if nCount
+		invoke SendMessage,edi,CCM_SORT,FALSE,0
 		invoke SendMessage,edi,CCM_SETCURSEL,0,0
 	.endif
+	invoke SendMessage,edi,WM_SETREDRAW,TRUE,0
 	mov		eax,nCount
 	ret
+
+Filter:
+	push	edx
+	mov		ecx,lpWord
+  @@:
+	mov		al,[ecx]
+	.if al
+		mov		ah,[edx]
+		.if al>='a' && al<='z'
+			and		al,5Fh
+		.endif
+		.if ah>='a' && ah<='z'
+			and		ah,5Fh
+		.endif
+		inc		edx
+		inc		ecx
+		sub		al,ah
+		je		@b
+	.endif
+	movsx	eax,al
+	pop		edx
+	retn
 
 UpdateApiCallList endp
 
@@ -283,7 +408,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 		lea		esi,LineTxt[eax]
 		mov		eax,cpline
 		mov		byte ptr LineTxt[eax],0
-		invoke UpdateApiCallList,esi 
+		invoke UpdateApiCallList,esi,offset szPp
 		.if eax
 			invoke ShowWindow,hCCTT,SW_HIDE
 			invoke GetCaretPos,addr pt
@@ -301,6 +426,9 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 			invoke ShowWindow,hCCLB,SW_SHOWNA
 		.else
 			invoke ShowWindow,hCCLB,SW_HIDE
+			xor		eax,eax
+			mov		fLBConst,eax
+			mov		fAllList,eax
 			invoke UpdateApiToolTip,esi
 			.if eax
 				mov		tti.lpszRetType,0
@@ -369,6 +497,9 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 					mov		fLBConst,TRUE
 				.else
 					invoke ShowWindow,hCCLB,SW_HIDE
+					xor		eax,eax
+					mov		fLBConst,eax
+					mov		fAllList,eax
 					invoke GetCaretPos,addr pt
 					invoke ClientToScreen,hREd,addr pt
 					add		pt.y,20
@@ -393,3 +524,41 @@ HideAll:
 	retn
 
 ApiListBox endp
+
+ShowCCList proc
+	LOCAL	pt:POINT
+	LOCAL	rect:RECT
+
+	invoke IsFileCodeFile,addr FileName
+	.if eax
+		invoke SendMessage,hREd,REM_GETWORD,sizeof LineTxt,offset LineTxt
+		.if fStuctList
+			invoke UpdateApiCallList,offset LineTxt,0
+		.else
+			invoke UpdateApiCallList,offset LineTxt,offset szAll
+		.endif
+		.if eax
+			invoke ShowWindow,hCCTT,SW_HIDE
+			invoke GetCaretPos,addr pt
+			invoke ClientToScreen,hREd,addr pt
+			invoke ScreenToClient,hWnd,addr pt
+			invoke GetClientRect,hWnd,addr rect
+			mov		eax,pt.y
+			add		eax,150+20
+			.if eax>rect.bottom
+				sub		pt.y,155
+			.else
+				add		pt.y,20
+			.endif
+			invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
+			invoke ShowWindow,hCCLB,SW_SHOWNA
+			.if !fStuctList
+				mov		fAllList,TRUE
+			.endif
+		.else
+			invoke ShowWindow,hCCLB,SW_HIDE
+		.endif
+	.endif
+	ret
+
+ShowCCList endp

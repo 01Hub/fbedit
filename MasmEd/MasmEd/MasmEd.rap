@@ -255,16 +255,16 @@ Group=Assembly,Resources,Misc,Include
 46=1
 
 [Find]
-1="SetKeyWords"
-2="lpCPos"
-3="UpdateApiToolTip"
-4="fchanged"
-5="chartab"
-6="ParseApiFile"
-7="masmapicall"
-8="masmcall"
-9="1015"
-10="1001"
+1="hCCLB,SW_HIDE"
+2="SetKeyWords"
+3="lpCPos"
+4="UpdateApiToolTip"
+5="fchanged"
+6="chartab"
+7="ParseApiFile"
+8="masmapicall"
+9="masmcall"
+10="1015"
 
 [VersionControl]
 Settings=1246
@@ -276,7 +276,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -311,11 +311,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9805
-1=0,0,0,0,34608
+2=0,0,687,524,21115
+1=0,0,0,0,8675
 11=0,0,0,0,8872
-22=0,0,0,0,11397
-10=0,0,0,0,5924
+22=0,0,0,0,3202
+10=0,0,0,0,11726
 23=0,0,0,0,197
 9=0,0,0,0,160
 4=0,0,0,0
@@ -341,7 +341,7 @@ ProductVer4Range=0
 33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,1535
+37=0,0,0,0,12084
 36=0,0,661,490,157
 20=0,0,0,0,0
 38=0,0,0,0,517
@@ -349,8 +349,8 @@ ProductVer4Range=0
 40=0,0,0,0,29
 42=0,0,0,0,1241
 43=0,0,0,0
-45=0,0,0,0,641
-46=0,0,0,0,0
+45=0,0,0,0,1402
+46=0,0,0,0,2318
 
 [BookMark]
 0=
@@ -370,12 +370,12 @@ ProductVer4Range=0
 1=1
 [Collapse]
 2=
-1=,,,2147482624,16777217,
+1=,,,2147482624,16777217,,
 31=
 23=
 3=
 22=
-37=,
+37=,,
 11=,,,
 36=
 10=,,
