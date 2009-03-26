@@ -63,9 +63,27 @@ CreateCodeComplete proc
 
 CreateCodeComplete endp
 
+IsWordStruct proc uses esi,lpWord:DWORD
+
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szSs,lpWord
+	.while TRUE
+		.break .if !eax
+		mov		esi,eax
+		invoke lstrcmp,esi,lpWord
+		.if !eax
+			mov		eax,esi
+			ret
+		.endif
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	ret
+
+IsWordStruct endp
+
 UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
 	LOCAL	isinproc:ISINPROC
+	LOCAL	nWords:DWORD
 
 	mov		nCount,0
 	mov		edi,hCCLB
@@ -165,13 +183,89 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 		; (RECT ptr [edx]).left
 		; assume edx:ptr RECT
 		; [edx].left
+		mov		esi,offset LineTxt
+		mov		edi,esi
+		xor		edx,edx
+		mov		nWords,edx
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al==VK_SPACE || al==VK_TAB
+				.if !edx
+					mov		edi,offset LineTxt
+					mov		nWords,0
+				.elseif byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='('
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al==')'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='['
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al==']'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='+'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='.'
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.else
+				mov		[edi],al
+				inc		edi
+			.endif
+			inc		esi
+		.endw
+		.if byte ptr [edi-1]
+			inc		nWords
+		.endif
+		mov		word ptr [edi],0
 
-		invoke lstrlen,addr LineTxt
-PrintDec eax
-dec		eax
-dec		eax
-		invoke SendMessage,hProperty,PRM_GETSTRUCTSTART,eax,offset LineTxt
-PrintStringByAddr offset LineTxt
+;		PrintDec nWords
+;		mov		esi,offset LineTxt
+;		.while byte ptr [esi]
+;			PrintStringByAddr esi
+;			invoke lstrlen,esi
+;			lea		esi,[esi+eax+1]
+;		.endw
+;		xor eax,eax
+;		ret
+
+		.if nWords==1
+			invoke IsWordStruct,offset LineTxt
+			PrintHex eax
+		.endif
+xor		eax,eax
+ret
 		mov		eax,nLastLine
 		mov		isinproc.nLine,eax
 		mov		eax,hREd
@@ -180,9 +274,27 @@ PrintStringByAddr offset LineTxt
 		invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
 		.if eax
 			mov		esi,eax
+
+PrintStringByAddr offset LineTxt
+
+			invoke lstrlen,offset LineTxt
+			mov		ecx,eax
+			.while ecx
+				mov		al,LineTxt[ecx-1]
+				.break .if al=='.' || al==' ' || al==VK_TAB 
+				dec		ecx
+			.endw
+lea		edi,LineTxt[ecx]
+PrintStringByAddr edi
+
 			; Skip proc name
 			invoke lstrlen,esi
 			lea		esi,[esi+eax+1]
+			; Point to parameters
+;			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,edi,esi
+;.if eax
+;	PrintStringByAddr eax
+;.endif
 			; Skip proc parameters
 			invoke lstrlen,esi
 			lea		esi,[esi+eax+1]
@@ -190,8 +302,13 @@ PrintStringByAddr offset LineTxt
 			invoke lstrlen,esi
 			lea		esi,[esi+eax+1]
 			; Point to local
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
+PrintStringByAddr esi
+			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,edi,esi
+.if eax
+	PrintHex eax
+	PrintStringByAddr edi
+.endif
+
 			invoke lstrcpy,addr tmpbuff,esi
 			invoke lstrcat,addr tmpbuff,addr szComma
 			mov		esi,offset tmpbuff
@@ -430,9 +547,13 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	.elseif cctype==CCTYPE_STRUCT
 		invoke SendMessage,hREd,REM_GETWORD,sizeof tmpbuff,offset tmpbuff
 		invoke lstrlen,offset tmpbuff
+		mov		edx,cpline
+		sub		edx,eax
+		mov		byte ptr LineTxt[edx-1],0
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
 		mov		ccchrg.cpMin,edx
+
 		invoke UpdateApiList,offset tmpbuff,offset szSs
 		.if eax
 			call	ShowList

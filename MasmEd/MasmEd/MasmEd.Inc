@@ -594,8 +594,11 @@ findtabs				dd 256 dup(?)
 nLastLine				dd ?
 fTimer					dd ?
 hMnuIml					dd ?
+						dd ?
 LineTxt					db 16384 dup(?)
+						dd ?
 tmpbuff					db 16384 dup(?)
+						dd ?
 prvline					dd ?
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>
