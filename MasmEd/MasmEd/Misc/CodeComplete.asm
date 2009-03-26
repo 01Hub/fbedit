@@ -1,18 +1,26 @@
 
+CCTYPE_NONE				equ 0
+CCTYPE_PROC				equ 1
+CCTYPE_TOOLTIP			equ 2
+CCTYPE_CONST			equ 3
+CCTYPE_ALL				equ 4
+CCTYPE_STRUCT			equ 5
+
 .const
 
-szInvoke		db 'INVOKE',0
-szPp			db 'Pp',0
-szp				db 'p',0
-szC				db 'C',0
-szAll			db	'WScds',0
+szInvoke				db 'INVOKE',0
+szPp					db 'Pp',0
+szp						db 'p',0
+szC						db 'C',0
+szAll					db 'WScds',0
+szSs					db 'Ss',0
 
 .data?
 
-lpOldCCProc		dd ?
-ccchrg			CHARRANGE <?>
-fAllList		dd ?
-fStuctList		dd ?
+lpOldCCProc				dd ?
+ccchrg					CHARRANGE <?>
+cctype					dd ?
+ConstData				db 8192 dup(?)
 
 .code
 
@@ -55,7 +63,7 @@ CreateCodeComplete proc
 
 CreateCodeComplete endp
 
-UpdateApiCallList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
+UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
 	LOCAL	isinproc:ISINPROC
 
@@ -65,7 +73,7 @@ UpdateApiCallList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
 	mov		eax,lpWord
 	mov		edx,lpApiType
-	.if byte ptr [eax] || edx==offset szAll
+	.if (byte ptr [eax] || cctype==CCTYPE_ALL) && !cctype==CCTYPE_STRUCT
 		invoke SendMessage,hProperty,PRM_FINDFIRST,lpApiType,lpWord
 		.while TRUE
 			.break .if !eax
@@ -90,8 +98,7 @@ UpdateApiCallList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			inc		nCount
 			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
 		.endw
-		mov		edx,lpApiType
-		.if edx==offset szAll
+		.if cctype==CCTYPE_ALL
 			mov		eax,nLastLine
 			mov		isinproc.nLine,eax
 			mov		eax,hREd
@@ -148,7 +155,23 @@ UpdateApiCallList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.endw
 			.endif
 		.endif
-	.elseif !edx
+	.elseif cctype==CCTYPE_STRUCT
+		; rect.left
+		; [edx].RECT.left
+		; RECT.left[edx]
+		; [edx][RECT.left]
+		; [edx + RECT.left]
+		; [edx.RECT.left]
+		; (RECT ptr [edx]).left
+		; assume edx:ptr RECT
+		; [edx].left
+
+		invoke lstrlen,addr LineTxt
+PrintDec eax
+dec		eax
+dec		eax
+		invoke SendMessage,hProperty,PRM_GETSTRUCTSTART,eax,offset LineTxt
+PrintStringByAddr offset LineTxt
 		mov		eax,nLastLine
 		mov		isinproc.nLine,eax
 		mov		eax,hREd
@@ -219,7 +242,7 @@ Filter:
 	pop		edx
 	retn
 
-UpdateApiCallList endp
+UpdateApiList endp
 
 UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 	LOCAL	nCount:DWORD
@@ -384,181 +407,161 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		esi,lpRASELCHANGE
-	mov		edx,[esi].RASELCHANGE.lpLine
-	xor		ecx,ecx
-	.while ecx<[edx].CHARS.len && ecx<16384
-		mov		al,[edx+ecx+sizeof CHARS]
-		.if al==VK_RETURN
-			xor		al,al
-		.endif
-		mov		LineTxt[ecx],al
-		inc		ecx
-	.endw
-	xor		al,al
-	mov		LineTxt[ecx],al
 	mov		eax,[esi].RASELCHANGE.chrg.cpMin
 	mov		edx,[esi].RASELCHANGE.cpLine
 	mov		ccchrg.cpMin,edx
 	mov		ccchrg.cpMax,eax
 	sub		eax,edx
 	mov		cpline,eax
-	invoke IsLineInvoke,eax
-	.if eax
-		add		ccchrg.cpMin,eax
-		lea		esi,LineTxt[eax]
-		mov		eax,cpline
-		mov		byte ptr LineTxt[eax],0
-		invoke UpdateApiCallList,esi,offset szPp
+	inc		eax
+	mov		edx,[esi].RASELCHANGE.lpLine
+	lea		edx,[edx+sizeof CHARS]
+	invoke lstrcpyn,offset LineTxt,edx,eax
+	.if cctype==CCTYPE_ALL
+		invoke SendMessage,hREd,REM_GETWORD,sizeof tmpbuff,offset tmpbuff
+		invoke lstrlen,offset tmpbuff
+		mov		edx,ccchrg.cpMax
+		sub		edx,eax
+		mov		ccchrg.cpMin,edx
+		invoke UpdateApiList,offset tmpbuff,offset szAll
 		.if eax
-			invoke ShowWindow,hCCTT,SW_HIDE
-			invoke GetCaretPos,addr pt
-			invoke ClientToScreen,hREd,addr pt
-			invoke ScreenToClient,hWnd,addr pt
-			invoke GetClientRect,hWnd,addr rect
-			mov		eax,pt.y
-			add		eax,150+20
-			.if eax>rect.bottom
-				sub		pt.y,155
-			.else
-				add		pt.y,20
-			.endif
-			invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
-			invoke ShowWindow,hCCLB,SW_SHOWNA
-		.else
-			invoke ShowWindow,hCCLB,SW_HIDE
-			xor		eax,eax
-			mov		fLBConst,eax
-			mov		fAllList,eax
-			invoke UpdateApiToolTip,esi
-			.if eax
-				mov		tti.lpszRetType,0
-				mov		tti.lpszDesc,0
-				mov		tti.novr,0
-				mov		tti.nsel,0
-				mov		tti.nwidth,0
-				mov		tti.lpszApi,edx
-				mov		tti.lpszParam,eax
-				mov		tti.nitem,ecx
-				inc		ecx
-				invoke DwToAscii,ecx,addr buffer
-				invoke lstrcat,addr buffer,tti.lpszApi
-				mov		eax,cpline
-				add		eax,offset LineTxt
-				sub		eax,esi
-				xor		ecx,ecx
-				xor		edx,edx
-				.while edx<eax
-					.if byte ptr [esi+edx]=="'"
-						inc		edx
-						.while edx<eax && byte ptr [esi+edx]!="'"
-							inc		edx
-						.endw
-					.elseif byte ptr [esi+edx]=='"'
-						inc		edx
-						.while edx<eax && byte ptr [esi+edx]!='"'
-							inc		edx
-						.endw
-					.elseif byte ptr [esi+edx]==','
-						inc		ecx
-						lea		edi,[esi+edx+1]
-					.endif
-					inc		edx
-				.endw
-				mov		eax,cpline
-				add		eax,offset LineTxt
-				invoke UpdateApiConstList,addr buffer,edi,eax
-				.if eax
-					mov		edi,eax
-					sub		edi,offset LineTxt
-					mov		esi,lpRASELCHANGE
-					add		edi,[esi].RASELCHANGE.cpLine
-					mov		ccchrg.cpMin,edi
-					mov		eax,[esi].RASELCHANGE.chrg.cpMin
-					sub		eax,[esi].RASELCHANGE.cpLine
-					.while byte ptr LineTxt[eax] && byte ptr LineTxt[eax]!=VK_SPACE && byte ptr LineTxt[eax]!=VK_TAB && byte ptr LineTxt[eax]!=','
-						inc		eax
-					.endw
-					add		eax,[esi].RASELCHANGE.cpLine
-					mov		ccchrg.cpMax,eax
-					invoke ShowWindow,hCCTT,SW_HIDE
-					invoke GetCaretPos,addr pt
-					invoke ClientToScreen,hREd,addr pt
-					invoke ScreenToClient,hWnd,addr pt
-					invoke GetClientRect,hWnd,addr rect
-					mov		eax,pt.y
-					add		eax,150+20
-					.if eax>rect.bottom
-						sub		pt.y,155
-					.else
-						add		pt.y,20
-					.endif
-					invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
-					invoke ShowWindow,hCCLB,SW_SHOWNA
-					mov		fLBConst,TRUE
-				.else
-					invoke ShowWindow,hCCLB,SW_HIDE
-					xor		eax,eax
-					mov		fLBConst,eax
-					mov		fAllList,eax
-					invoke GetCaretPos,addr pt
-					invoke ClientToScreen,hREd,addr pt
-					add		pt.y,20
-					invoke SendMessage,hCCTT,TTM_SETITEM,0,addr tti
-					sub		pt.x,eax
-					invoke SetWindowPos,hCCTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
-					invoke ShowWindow,hCCTT,SW_SHOWNA
-					invoke InvalidateRect,hCCTT,NULL,TRUE
-				.endif
-			.else
-				call	HideAll
-			.endif
+			call	ShowList
+		.endif
+	.elseif cctype==CCTYPE_STRUCT
+		invoke SendMessage,hREd,REM_GETWORD,sizeof tmpbuff,offset tmpbuff
+		invoke lstrlen,offset tmpbuff
+		mov		edx,ccchrg.cpMax
+		sub		edx,eax
+		mov		ccchrg.cpMin,edx
+		invoke UpdateApiList,offset tmpbuff,offset szSs
+		.if eax
+			call	ShowList
 		.endif
 	.else
-		call	HideAll
+		invoke IsLineInvoke,cpline
+		.if eax
+			add		ccchrg.cpMin,eax
+			lea		esi,LineTxt[eax]
+			invoke UpdateApiList,esi,offset szPp
+			.if eax
+				mov		cctype,CCTYPE_PROC
+				call	ShowList
+			.else
+				invoke ShowWindow,hCCLB,SW_HIDE
+				mov		cctype,CCTYPE_NONE
+				lea		edx,buffer
+				xor		ecx,ecx
+				push	esi
+				.while byte ptr [esi]
+					mov		al,[esi]
+					.if !ecx || al==','
+						.if al==','
+							inc		ecx
+						.endif
+						mov		[edx],al
+						inc		edx
+					.endif
+					inc		esi
+				.endw
+				pop		esi
+				mov		byte ptr [edx],0
+				invoke UpdateApiToolTip,addr buffer
+				.if eax
+					mov		cctype,CCTYPE_TOOLTIP
+					mov		tti.lpszRetType,0
+					mov		tti.lpszDesc,0
+					mov		tti.novr,0
+					mov		tti.nsel,0
+					mov		tti.nwidth,0
+					mov		tti.lpszApi,edx
+					mov		tti.lpszParam,eax
+					mov		tti.nitem,ecx
+					inc		ecx
+					invoke DwToAscii,ecx,addr buffer
+					invoke lstrcat,addr buffer,tti.lpszApi
+					mov		eax,cpline
+					add		eax,offset LineTxt
+					sub		eax,esi
+					xor		ecx,ecx
+					xor		edx,edx
+					.while edx<eax
+						.if byte ptr [esi+edx]=="'"
+							inc		edx
+							.while edx<eax && byte ptr [esi+edx]!="'"
+								inc		edx
+							.endw
+						.elseif byte ptr [esi+edx]=='"'
+							inc		edx
+							.while edx<eax && byte ptr [esi+edx]!='"'
+								inc		edx
+							.endw
+						.elseif byte ptr [esi+edx]==','
+							inc		ecx
+							lea		edi,[esi+edx+1]
+						.endif
+						inc		edx
+					.endw
+					mov		eax,cpline
+					add		eax,offset LineTxt
+					invoke UpdateApiConstList,addr buffer,edi,eax
+					.if eax
+						mov		cctype,CCTYPE_CONST
+						mov		edi,eax
+						sub		edi,offset LineTxt
+						mov		esi,lpRASELCHANGE
+						add		edi,[esi].RASELCHANGE.cpLine
+						mov		ccchrg.cpMin,edi
+						mov		eax,[esi].RASELCHANGE.chrg.cpMin
+						sub		eax,[esi].RASELCHANGE.cpLine
+						.while byte ptr LineTxt[eax] && byte ptr LineTxt[eax]!=VK_SPACE && byte ptr LineTxt[eax]!=VK_TAB && byte ptr LineTxt[eax]!=','
+							inc		eax
+						.endw
+						add		eax,[esi].RASELCHANGE.cpLine
+						mov		ccchrg.cpMax,eax
+						call	ShowList
+					.else
+						mov		cctype,CCTYPE_TOOLTIP
+						invoke ShowWindow,hCCLB,SW_HIDE
+						invoke GetCaretPos,addr pt
+						invoke ClientToScreen,hREd,addr pt
+						add		pt.y,20
+						invoke SendMessage,hCCTT,TTM_SETITEM,0,addr tti
+						sub		pt.x,eax
+						invoke SetWindowPos,hCCTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
+						invoke ShowWindow,hCCTT,SW_SHOWNA
+						invoke InvalidateRect,hCCTT,NULL,TRUE
+					.endif
+				.else
+					call	HideAll
+				.endif
+			.endif
+		.else
+			call	HideAll
+		.endif
 	.endif
 	ret
 
 HideAll:
+	mov		cctype,CCTYPE_NONE
 	invoke ShowWindow,hCCTT,SW_HIDE
 	invoke ShowWindow,hCCLB,SW_HIDE
 	retn
 
-ApiListBox endp
-
-ShowCCList proc
-	LOCAL	pt:POINT
-	LOCAL	rect:RECT
-
-	invoke IsFileCodeFile,addr FileName
-	.if eax
-		invoke SendMessage,hREd,REM_GETWORD,sizeof LineTxt,offset LineTxt
-		.if fStuctList
-			invoke UpdateApiCallList,offset LineTxt,0
-		.else
-			invoke UpdateApiCallList,offset LineTxt,offset szAll
-		.endif
-		.if eax
-			invoke ShowWindow,hCCTT,SW_HIDE
-			invoke GetCaretPos,addr pt
-			invoke ClientToScreen,hREd,addr pt
-			invoke ScreenToClient,hWnd,addr pt
-			invoke GetClientRect,hWnd,addr rect
-			mov		eax,pt.y
-			add		eax,150+20
-			.if eax>rect.bottom
-				sub		pt.y,155
-			.else
-				add		pt.y,20
-			.endif
-			invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
-			invoke ShowWindow,hCCLB,SW_SHOWNA
-			.if !fStuctList
-				mov		fAllList,TRUE
-			.endif
-		.else
-			invoke ShowWindow,hCCLB,SW_HIDE
-		.endif
+ShowList:
+	invoke ShowWindow,hCCTT,SW_HIDE
+	invoke GetCaretPos,addr pt
+	invoke ClientToScreen,hREd,addr pt
+	invoke ScreenToClient,hWnd,addr pt
+	invoke GetClientRect,hWnd,addr rect
+	mov		eax,pt.y
+	add		eax,150+20
+	.if eax>rect.bottom
+		sub		pt.y,155
+	.else
+		add		pt.y,20
 	.endif
-	ret
+	invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
+	invoke ShowWindow,hCCLB,SW_SHOWNA
+	retn
 
-ShowCCList endp
+ApiListBox endp

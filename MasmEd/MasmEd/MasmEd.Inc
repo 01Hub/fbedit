@@ -605,8 +605,6 @@ hResEd					dd ?
 hCustDll				dd 32 dup(?)
 hBrBack					dd ?
 lpOldRAEditProc			dd ?
-ConstData				db 8192 dup(?)
-fLBConst				dd ?
 winsize					WINSIZE <?>
 szInitFolder			db MAX_PATH dup(?)
 szSessionFile			db MAX_PATH dup(?)

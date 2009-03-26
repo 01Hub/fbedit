@@ -268,6 +268,7 @@ SetBlockDefs proc uses esi,hWin:HWND
 SetBlockDefs endp
 
 RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	chrg:CHARRANGE
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
@@ -275,6 +276,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==VK_TAB || eax==VK_RETURN
 			invoke IsWindowVisible,hCCLB
 			.if eax
+				mov		cctype,CCTYPE_NONE
 				invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
 				invoke SendMessage,hREd,EM_EXSETSEL,0,addr ccchrg
 				invoke SendMessage,hCCLB,CCM_GETCURSEL,0,0
@@ -282,7 +284,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	eax
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
 				pop		eax
-				.if !fLBConst && !fAllList
+				.if cctype==CCTYPE_PROC
 					push	eax
 					invoke lstrlen,eax
 					pop		edx
@@ -294,41 +296,39 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
 				invoke ShowWindow,hCCLB,SW_HIDE
 				xor		eax,eax
-				mov		fLBConst,eax
-				mov		fAllList,eax
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
 			invoke ShowWindow,hCCLB,SW_HIDE
+			mov		cctype,CCTYPE_NONE
 			xor		eax,eax
-			mov		fLBConst,eax
-			mov		fAllList,eax
 			jmp		Ex
 		.elseif eax==VK_SPACE
 			invoke GetKeyState,VK_CONTROL
 			test		eax,80h
 			.if !ZERO?
-				invoke IsWindowVisible,hCCLB
-				.if !eax
-					invoke ShowCCList
-				.endif
+				mov		cctype,CCTYPE_ALL
+				; Force a WM_NOTIFY
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 				xor		eax,eax
 				jmp		Ex
 			.endif
 		.elseif eax=='.'
-			mov		fStuctList,eax
-			invoke ShowCCList
-		.elseif fAllList || fStuctList
+			mov		cctype,CCTYPE_STRUCT
+		.elseif cctype==CCTYPE_ALL || cctype==CCTYPE_STRUCT
 			push	eax
 			invoke IsCharAlphaNumeric,eax
 			pop		edx
-			.if eax || edx=='_'
+			.if eax || edx=='_' || edx==VK_BACK
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
-				invoke ShowCCList
+				; Force a WM_NOTIFY
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+				xor		eax,eax
 				jmp		Ex
 			.else
-				mov		fAllList,eax
-				mov		fStuctList,eax
+				mov		cctype,CCTYPE_NONE
 				invoke ShowWindow,hCCLB,SW_HIDE
 			.endif
 		.endif
@@ -345,6 +345,17 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		eax,eax
 				jmp		Ex
 			.endif
+		.elseif (edx==25h && eax==14Bh) || (edx==27h && eax==14Dh)
+			;Left / Right
+			invoke IsWindowVisible,hCCLB
+			.if eax
+				invoke ShowWindow,hCCLB,SW_HIDE
+			.endif
+			invoke IsWindowVisible,hCCTT
+			.if eax
+				invoke ShowWindow,hCCTT,SW_HIDE
+			.endif
+			mov		cctype,CCTYPE_NONE
 		.endif
 	.elseif eax==WM_KILLFOCUS
 		invoke ShowWindow,hCCTT,SW_HIDE
@@ -2008,8 +2019,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if ![esi].TABMEM.fchanged
 						invoke TabToolSetChanged,hREd,TRUE
 					.endif
-					invoke ApiListBox,edi
 					.if ![edi].RASELCHANGE.nWordGroup
+						invoke ApiListBox,edi
 						mov		[esi].TABMEM.fupdate,TRUE
 					.endif
 				.endif
@@ -2018,9 +2029,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		nLastLine,eax
 					invoke ShowWindow,hCCLB,SW_HIDE
 					invoke ShowWindow,hCCTT,SW_HIDE
-					xor		eax,eax
-					mov		fLBConst,eax
-					mov		fAllList,eax
+					mov		cctype,CCTYPE_NONE
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke GetWindowLong,hREd,GWL_USERDATA
 						.if [eax].TABMEM.fupdate
@@ -2028,6 +2037,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke ParseEdit,hREd
 						.endif
 					.endif
+				.elseif cctype==CCTYPE_ALL
+					invoke ApiListBox,edi
 				.endif
 			.endif
 			mov		fTimer,2
