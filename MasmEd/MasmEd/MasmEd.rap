@@ -255,16 +255,16 @@ Group=Assembly,Resources,Misc,Include
 46=1
 
 [Find]
-1=")."
-2="hCCLB,SW_HIDE"
-3="SetKeyWords"
-4="lpCPos"
-5="UpdateApiToolTip"
-6="fchanged"
-7="chartab"
-8="ParseApiFile"
-9="masmapicall"
-10="masmcall"
+1="WM_NO"
+2="ConstData"
+3=")."
+4="hCCLB,SW_HIDE"
+5="SetKeyWords"
+6="lpCPos"
+7="UpdateApiToolTip"
+8="fchanged"
+9="chartab"
+10="ParseApiFile"
 
 [VersionControl]
 Settings=1246
@@ -312,7 +312,7 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,687,524,14230
-1=0,0,0,0,59305
+1=0,0,0,0,8179
 11=0,0,0,0,8872
 22=0,0,0,0,3202
 10=0,0,0,0,11726
@@ -341,7 +341,7 @@ ProductVer4Range=0
 33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,6995
+37=0,0,0,0,8118
 36=0,0,661,490,157
 20=0,0,0,0,0
 38=0,0,0,0,517
@@ -371,12 +371,12 @@ ProductVer4Range=0
 37=1
 [Collapse]
 2=
-1=,,,2147482624,16777217,,
+1=,,,2147479552,67108871,,
 31=
 23=
 3=
 22=
-37=,,
+37=,,,
 11=,,,
 36=
 10=,,

@@ -14,13 +14,15 @@ szp						db 'p',0
 szC						db 'C',0
 szAll					db 'WScds',0
 szSs					db 'Ss',0
+szd						db 'd',0
 
 .data?
 
 lpOldCCProc				dd ?
 ccchrg					CHARRANGE <?>
 cctype					dd ?
-ConstData				db 8192 dup(?)
+ccinprogress			dd ?
+ConstData				db 16384 dup(?)
 
 .code
 
@@ -62,6 +64,64 @@ CreateCodeComplete proc
 	ret
 
 CreateCodeComplete endp
+
+AddList proc uses esi edi,lplist:DWORD,lpWord:DWORD
+	LOCAL	nCount:DWORD
+
+	mov		nCount,0
+	mov		edi,offset ConstData
+	.while byte ptr [esi]
+		call	Filter
+		.if !eax
+			push	edi
+			.while byte ptr [esi] && byte ptr [esi]!=','
+				mov		al,[esi]
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endw
+			mov		byte ptr [edi],0
+			inc		edi
+			pop		eax
+			invoke SendMessage,hCCLB,CCM_ADDITEM,2,eax
+			inc		nCount
+		.else
+			.while byte ptr [esi] && byte ptr [esi]!=','
+				inc		esi
+			.endw
+		.endif
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+	.endw
+	mov		eax,nCount
+	ret
+
+Filter:
+	mov		edx,lpWord
+	mov		ecx,esi
+  @@:
+	mov		al,[edx]
+	.if al==VK_SPACE || al==VK_TAB || al==','
+		xor		al,al
+	.endif
+	.if al
+		mov		ah,[ecx]
+		.if al>='a' && al<='z'
+			and		al,5Fh
+		.endif
+		.if ah>='a' && ah<='z'
+			and		ah,5Fh
+		.endif
+		inc		edx
+		inc		ecx
+		sub		al,ah
+		je		@b
+	.endif
+	movsx	eax,al
+	retn
+
+AddList endp
 
 IsWordReg proc lpWord:DWORD
 
@@ -117,11 +177,88 @@ IsWordStruct proc uses esi,lpWord:DWORD
 
 IsWordStruct endp
 
+IsWordLocalStruct proc uses esi edi,lpLocal:DWORD,lpWord:DWORD,lpBuff:DWORD
+
+	mov		eax,lpBuff
+	mov		byte ptr [eax],0
+	mov		edi,lpWord
+	mov		esi,lpLocal
+	; Skip proc name
+	invoke lstrlen,esi
+	lea		esi,[esi+eax+1]
+	; Point to parameters
+	invoke lstrcpy,lpBuff,edi
+	invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
+	mov		eax,lpBuff
+	.if !byte ptr [eax]
+		; Skip proc parameters
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		; Skip return type
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		; Point to local
+		invoke lstrcpy,lpBuff,edi
+		invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
+	.endif
+	mov		eax,lpBuff
+	movzx	eax,byte ptr [eax]
+	ret
+
+IsWordLocalStruct endp
+
+IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
+
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szd,lpWord
+	.while TRUE
+		.break .if !eax
+		mov		esi,eax
+		invoke lstrcmp,esi,lpWord
+		.if !eax
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			invoke lstrcpy,lpBuff,esi
+			mov		eax,esi
+			.break
+		.endif
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	ret
+
+IsWordDataStruct endp
+
+IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		buffer,0
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szSs,lpStruct
+	.while TRUE
+		.break .if !eax
+		mov		esi,eax
+		invoke lstrcmp,esi,lpStruct
+		.if !eax
+			invoke lstrlen,esi
+			lea		esi,[esi+eax+1]
+			invoke lstrcpy,addr buffer,lpItem
+			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
+			.if buffer
+				invoke lstrcpy,lpStruct,addr buffer
+			.endif
+			movzx	eax,buffer
+			.break
+		.endif
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	ret
+
+IsStructItemStruct endp
+
 UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
-	LOCAL	isinproc:ISINPROC
 	LOCAL	nWords:DWORD
 	LOCAL	buffer[256]:BYTE
+	LOCAL	isinproc:ISINPROC
+	LOCAL	lpLineWord:DWORD
 
 	mov		nCount,0
 	mov		edi,hCCLB
@@ -129,7 +266,157 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
 	mov		eax,lpWord
 	mov		edx,lpApiType
-	.if (byte ptr [eax] || cctype==CCTYPE_ALL) && !cctype==CCTYPE_STRUCT
+	.if cctype==CCTYPE_STRUCT
+		; rect.left
+		; [edx].RECT.left
+		; RECT.left[edx]
+		; [edx][RECT.left]
+		; [edx + RECT.left]
+		; [edx.RECT.left]
+		; (RECT ptr [edx]).left
+		; assume edx:ptr RECT
+		; [edx].left
+		mov		esi,offset LineTxt
+		mov		edi,esi
+		xor		edx,edx
+		mov		nWords,edx
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al==VK_SPACE || al==VK_TAB || al==','
+				.if !edx
+					mov		edi,offset LineTxt
+					mov		nWords,0
+				.elseif byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='('
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al==')'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='['
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al==']'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='+'
+				inc		edx
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.elseif al=='.'
+				.if byte ptr [edi-1]
+					inc		nWords
+					mov		byte ptr [edi],0
+					inc		edi
+				.endif
+			.else
+				mov		[edi],al
+				inc		edi
+			.endif
+			inc		esi
+		.endw
+		mov		word ptr [edi],0
+		.if byte ptr [edi-1]
+			inc		nWords
+		.endif
+		.if nWords
+			mov		lpLineWord,0
+			mov		buffer,0
+			mov		edi,offset LineTxt
+			.while byte ptr [edi]
+				invoke IsWordReg,edi
+				.if eax==1
+					; reg
+				.elseif eax==2
+					; ptr
+				.else
+					.if !lpLineWord
+						mov		lpLineWord,edi
+					.endif
+					invoke IsWordStruct,edi
+					.break .if eax
+				.endif
+				invoke lstrlen,edi
+				lea		edi,[edi+eax+1]
+				xor		eax,eax
+			.endw
+			.if eax
+				; [edx].RECT.left
+				; RECT.left[edx]
+				; [edx][RECT.left]
+				; [edx + RECT.left]
+				; [edx.RECT.left]
+				; (RECT ptr [edx]).left
+				invoke lstrcpy,addr buffer,edi
+			.elseif lpLineWord
+				;LOCAL rect:RECT
+				; rect.left
+				mov		edi,lpLineWord
+				mov		eax,nLastLine
+				mov		isinproc.nLine,eax
+				mov		eax,hREd
+				mov		isinproc.nOwner,eax
+				mov		isinproc.lpszType,offset szp
+				invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+				.if eax
+					mov		edx,eax
+					invoke IsWordLocalStruct,edx,edi,addr buffer
+				.endif
+				.if !eax
+					; rect	RECT <>
+					; rect.left
+					invoke IsWordDataStruct,edi,addr buffer
+				.endif
+			.endif
+			.if buffer
+				invoke lstrlen,edi
+				inc		eax
+				lea		edi,[edi+eax]
+				.while byte ptr [edi]
+					invoke IsWordReg,edi
+					.if !eax
+						invoke IsStructItemStruct,addr buffer,edi
+						.break .if eax
+					.endif
+					invoke lstrlen,edi
+					lea		edi,[edi+eax+1]
+					xor		eax,eax
+				.endw
+				.if eax
+					invoke IsWordStruct,addr buffer
+					.if eax
+						invoke lstrlen,eax
+						lea		eax,[eax+1]
+						invoke AddList,eax,lpWord
+						mov		nCount,eax
+					.endif
+				.endif
+			.endif
+		.endif
+	.elseif byte ptr [eax] || cctype==CCTYPE_ALL
 		invoke SendMessage,hProperty,PRM_FINDFIRST,lpApiType,lpWord
 		.while TRUE
 			.break .if !eax
@@ -211,142 +498,6 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.endw
 			.endif
 		.endif
-	.elseif cctype==CCTYPE_STRUCT
-		; rect.left
-		; [edx].RECT.left
-		; RECT.left[edx]
-		; [edx][RECT.left]
-		; [edx + RECT.left]
-		; [edx.RECT.left]
-		; (RECT ptr [edx]).left
-		; assume edx:ptr RECT
-		; [edx].left
-		mov		esi,offset LineTxt
-		mov		edi,esi
-		xor		edx,edx
-		mov		nWords,edx
-		.while byte ptr [esi]
-			mov		al,[esi]
-			.if al==VK_SPACE || al==VK_TAB
-				.if !edx
-					mov		edi,offset LineTxt
-					mov		nWords,0
-				.elseif byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='('
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al==')'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='['
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al==']'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='+'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='.'
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.else
-				mov		[edi],al
-				inc		edi
-			.endif
-			inc		esi
-		.endw
-		.if byte ptr [edi-1]
-			inc		nWords
-		.endif
-		.if nWords
-			mov		buffer,0
-			mov		word ptr [edi],0
-			mov		edi,offset LineTxt
-			.while byte ptr [edi]
-				invoke IsWordReg,edi
-				.if eax==1
-					; reg
-				.elseif eax==2
-					; ptr
-				.else
-					invoke IsWordStruct,edi
-					.break .if eax
-				.endif
-				invoke lstrlen,edi
-				lea		edi,[edi+eax+1]
-				xor		eax,eax
-			.endw
-			.if eax
-				; [edx].RECT.left
-				; RECT.left[edx]
-				; [edx][RECT.left]
-				; [edx + RECT.left]
-				; [edx.RECT.left]
-				; (RECT ptr [edx]).left
-				invoke lstrcpy,addr buffer,edi
-			.else
-				; rect.left
-				mov		edi,offset LineTxt
-				mov		eax,nLastLine
-				mov		isinproc.nLine,eax
-				mov		eax,hREd
-				mov		isinproc.nOwner,eax
-				mov		isinproc.lpszType,offset szp
-				invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
-				.if eax
-					mov		esi,eax
-					; Skip proc name
-					invoke lstrlen,esi
-					lea		esi,[esi+eax+1]
-					; Point to parameters
-					invoke lstrcpy,addr buffer,edi
-					invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
-					.if !buffer
-						; Skip proc parameters
-						invoke lstrlen,esi
-						lea		esi,[esi+eax+1]
-						; Skip return type
-						invoke lstrlen,esi
-						lea		esi,[esi+eax+1]
-						; Point to local
-						invoke lstrcpy,addr buffer,edi
-						invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
-					.endif
-				.endif
-			.endif
-			.if buffer
-				lea		eax,buffer
-				PrintStringByAddr eax
-			.endif
-		.endif
 	.endif
 	.if nCount
 		invoke SendMessage,edi,CCM_SORT,FALSE,0
@@ -381,7 +532,6 @@ Filter:
 UpdateApiList endp
 
 UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
-	LOCAL	nCount:DWORD
 
 	invoke SendMessage,hCCLB,CCM_CLEAR,0,0
 	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szC,lpApi
@@ -389,7 +539,6 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 		mov		esi,eax
 		invoke lstrlen,esi
 		lea		esi,[esi+eax+1]
-		mov		nCount,0
 		mov		eax,lpWord
 	  @@:
 		.while (byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB) && eax<lpCPos
@@ -402,66 +551,16 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 			.endif
 			inc		eax
 		.endw
-		mov		edi,offset ConstData
-		.while byte ptr [esi]
-			mov		edx,lpWord
-			call	Filter
-			.if !eax
-				push	edi
-				.while byte ptr [esi] && byte ptr [esi]!=','
-					mov		al,[esi]
-					mov		[edi],al
-					inc		esi
-					inc		edi
-				.endw
-				mov		byte ptr [edi],0
-				inc		edi
-				pop		eax
-				invoke SendMessage,hCCLB,CCM_ADDITEM,2,eax
-				inc		nCount
-			.else
-				.while byte ptr [esi] && byte ptr [esi]!=','
-					inc		esi
-				.endw
-			.endif
-			.if byte ptr [esi]
-				inc		esi
-			.endif
-		.endw
-		.if nCount
+		invoke AddList,esi,lpWord
+		.if eax
 			invoke SendMessage,edi,CCM_SORT,FALSE,0
 			invoke SendMessage,hCCLB,CCM_SETCURSEL,0,0
 			mov		eax,lpWord
-		.else
-			xor		eax,eax
 		.endif
 		ret
 	.endif
 	xor		eax,eax
 	ret
-
-Filter:
-	mov		ecx,esi
-  @@:
-	mov		al,[edx]
-	.if al==VK_SPACE || al==VK_TAB || al==','
-		xor		al,al
-	.endif
-	.if al
-		mov		ah,[ecx]
-		.if al>='a' && al<='z'
-			and		al,5Fh
-		.endif
-		.if ah>='a' && ah<='z'
-			and		ah,5Fh
-		.endif
-		inc		edx
-		inc		ecx
-		sub		al,ah
-		je		@b
-	.endif
-	movsx	eax,al
-	retn
 
 UpdateApiConstList endp
 
@@ -572,10 +671,11 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
 		mov		ccchrg.cpMin,edx
-
 		invoke UpdateApiList,offset tmpbuff,offset szSs
 		.if eax
 			call	ShowList
+		.else
+			call	HideAll
 		.endif
 	.else
 		invoke IsLineInvoke,cpline

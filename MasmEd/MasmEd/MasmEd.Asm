@@ -276,7 +276,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==VK_TAB || eax==VK_RETURN
 			invoke IsWindowVisible,hCCLB
 			.if eax
-				mov		cctype,CCTYPE_NONE
+				mov		ccinprogress,eax
 				invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
 				invoke SendMessage,hREd,EM_EXSETSEL,0,addr ccchrg
 				invoke SendMessage,hCCLB,CCM_GETCURSEL,0,0
@@ -284,18 +284,21 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	eax
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
 				pop		eax
-				.if cctype==CCTYPE_PROC
+				.if cctype==CCTYPE_PROC || cctype==CCTYPE_STRUCT
 					push	eax
 					invoke lstrlen,eax
 					pop		edx
 					.if byte ptr [edx+eax+1]
-						mov		word ptr LineTxt,','
-						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset LineTxt
+						mov		ccinprogress,0
+						mov		eax,','
+						invoke SendMessage,hREd,WM_CHAR,eax,0
 					.endif
 				.endif
 				invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
 				invoke ShowWindow,hCCLB,SW_HIDE
+				mov		cctype,CCTYPE_NONE
 				xor		eax,eax
+				mov		ccinprogress,eax
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
@@ -2020,7 +2023,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke TabToolSetChanged,hREd,TRUE
 					.endif
 					.if ![edi].RASELCHANGE.nWordGroup
-						invoke ApiListBox,edi
+						.if !ccinprogress
+							invoke ApiListBox,edi
+						.endif
 						mov		[esi].TABMEM.fupdate,TRUE
 					.endif
 				.endif
@@ -2038,7 +2043,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 					.endif
 				.elseif cctype==CCTYPE_ALL
-					invoke ApiListBox,edi
+					.if !ccinprogress
+						invoke ApiListBox,edi
+					.endif
 				.endif
 			.endif
 			mov		fTimer,2
