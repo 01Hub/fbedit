@@ -276,7 +276,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -311,7 +311,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,20445
+2=0,0,687,524,14230
 1=0,0,0,0,59305
 11=0,0,0,0,8872
 22=0,0,0,0,3202
@@ -341,7 +341,7 @@ ProductVer4Range=0
 33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,5697
+37=0,0,0,0,6995
 36=0,0,661,490,157
 20=0,0,0,0,0
 38=0,0,0,0,517
@@ -368,6 +368,7 @@ ProductVer4Range=0
 0=
 [AutoLoad]
 1=1
+37=1
 [Collapse]
 2=
 1=,,,2147482624,16777217,,

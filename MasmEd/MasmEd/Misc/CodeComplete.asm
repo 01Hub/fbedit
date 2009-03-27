@@ -63,6 +63,43 @@ CreateCodeComplete proc
 
 CreateCodeComplete endp
 
+IsWordReg proc lpWord:DWORD
+
+	invoke lstrlen,lpWord
+	.if eax==3
+		mov		eax,lpWord
+		mov		eax,[eax]
+		and		eax,5F5F5Fh
+		.if eax=='RTP'
+			mov		eax,2
+		.elseif eax=='XAE'
+			mov		eax,1
+		.elseif eax=='XBE'
+			mov		eax,1
+		.elseif eax=='XCE'
+			mov		eax,1
+		.elseif eax=='XDE'
+			mov		eax,1
+		.elseif eax=='ISE'
+			mov		eax,1
+		.elseif eax=='IDE'
+			mov		eax,1
+		.elseif eax=='PBE'
+			mov		eax,1
+		.elseif eax=='PSE'
+			mov		eax,1
+		.elseif eax=='RTP'
+			mov		eax,1
+		.else
+			xor		eax,eax
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+IsWordReg endp
+
 IsWordStruct proc uses esi,lpWord:DWORD
 
 	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szSs,lpWord
@@ -84,6 +121,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
 	LOCAL	isinproc:ISINPROC
 	LOCAL	nWords:DWORD
+	LOCAL	buffer[256]:BYTE
 
 	mov		nCount,0
 	mov		edi,hCCLB
@@ -248,85 +286,66 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 		.if byte ptr [edi-1]
 			inc		nWords
 		.endif
-		mov		word ptr [edi],0
-
-;		PrintDec nWords
-;		mov		esi,offset LineTxt
-;		.while byte ptr [esi]
-;			PrintStringByAddr esi
-;			invoke lstrlen,esi
-;			lea		esi,[esi+eax+1]
-;		.endw
-;		xor eax,eax
-;		ret
-
-		.if nWords==1
-			invoke IsWordStruct,offset LineTxt
-			PrintHex eax
-		.endif
-xor		eax,eax
-ret
-		mov		eax,nLastLine
-		mov		isinproc.nLine,eax
-		mov		eax,hREd
-		mov		isinproc.nOwner,eax
-		mov		isinproc.lpszType,offset szp
-		invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
-		.if eax
-			mov		esi,eax
-
-PrintStringByAddr offset LineTxt
-
-			invoke lstrlen,offset LineTxt
-			mov		ecx,eax
-			.while ecx
-				mov		al,LineTxt[ecx-1]
-				.break .if al=='.' || al==' ' || al==VK_TAB 
-				dec		ecx
-			.endw
-lea		edi,LineTxt[ecx]
-PrintStringByAddr edi
-
-			; Skip proc name
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			; Point to parameters
-;			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,edi,esi
-;.if eax
-;	PrintStringByAddr eax
-;.endif
-			; Skip proc parameters
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			; Skip return type
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			; Point to local
-PrintStringByAddr esi
-			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,edi,esi
-.if eax
-	PrintHex eax
-	PrintStringByAddr edi
-.endif
-
-			invoke lstrcpy,addr tmpbuff,esi
-			invoke lstrcat,addr tmpbuff,addr szComma
-			mov		esi,offset tmpbuff
-			mov		edx,esi
-			.while byte ptr [esi]
-				.if byte ptr [esi]==','
-					mov		byte ptr [esi],0
-					call Filter
-					.if !eax
-						invoke SendMessage,edi,CCM_ADDITEM,9,edx
-						inc		nCount
-					.endif
-					lea		edx,[esi+1]
-				.elseif byte ptr [esi]==':'
-					mov		byte ptr [esi],0
+		.if nWords
+			mov		buffer,0
+			mov		word ptr [edi],0
+			mov		edi,offset LineTxt
+			.while byte ptr [edi]
+				invoke IsWordReg,edi
+				.if eax==1
+					; reg
+				.elseif eax==2
+					; ptr
+				.else
+					invoke IsWordStruct,edi
+					.break .if eax
 				.endif
-				inc		esi
+				invoke lstrlen,edi
+				lea		edi,[edi+eax+1]
+				xor		eax,eax
 			.endw
+			.if eax
+				; [edx].RECT.left
+				; RECT.left[edx]
+				; [edx][RECT.left]
+				; [edx + RECT.left]
+				; [edx.RECT.left]
+				; (RECT ptr [edx]).left
+				invoke lstrcpy,addr buffer,edi
+			.else
+				; rect.left
+				mov		edi,offset LineTxt
+				mov		eax,nLastLine
+				mov		isinproc.nLine,eax
+				mov		eax,hREd
+				mov		isinproc.nOwner,eax
+				mov		isinproc.lpszType,offset szp
+				invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+				.if eax
+					mov		esi,eax
+					; Skip proc name
+					invoke lstrlen,esi
+					lea		esi,[esi+eax+1]
+					; Point to parameters
+					invoke lstrcpy,addr buffer,edi
+					invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
+					.if !buffer
+						; Skip proc parameters
+						invoke lstrlen,esi
+						lea		esi,[esi+eax+1]
+						; Skip return type
+						invoke lstrlen,esi
+						lea		esi,[esi+eax+1]
+						; Point to local
+						invoke lstrcpy,addr buffer,edi
+						invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
+					.endif
+				.endif
+			.endif
+			.if buffer
+				lea		eax,buffer
+				PrintStringByAddr eax
+			.endif
 		.endif
 	.endif
 	.if nCount
