@@ -777,7 +777,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
-							If Len(f.findbuff)<>0 And fEditFocus<>0 Then
+							If findvisible Then
+								SendMessage(findvisible,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
+							ElseIf Len(f.findbuff)<>0 And fEditFocus<>0 Then
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
 								If f.fres<>-1 Then
 									f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
@@ -787,8 +789,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								f.fdir=1
 								Find(hWin,f.fr Or FR_DOWN)
 								f.fdir=x
-							ElseIf findvisible Then
-								SendMessage(findvisible,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
 							EndIf
 							'
 						Case IDM_EDIT_FINDPREVIOUS
