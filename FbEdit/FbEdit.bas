@@ -7,7 +7,7 @@
 	-------
 	FbEdit and all sources are free to use in any way you see fit.
 	Sources for the custom controls used by FbEdit can be found at:
-	www.radasm.com
+	radasm.110mb.com
 
 '/
 

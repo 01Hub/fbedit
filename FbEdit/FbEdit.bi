@@ -380,7 +380,7 @@ Dim hFbEditDll As HMODULE
 
 ' Addins
 Dim Shared ah As ADDINHANDLES
-Dim Shared ad As ADDINDATA=(1067)
+Dim Shared ad As ADDINDATA=(1068)
 Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate)
 
 ' Custom controls
@@ -433,7 +433,7 @@ Dim Shared fincliblist As Boolean
 Dim Shared fenumlist As Boolean
 Dim Shared sEditFileName As ZString*260
 Dim Shared ccpos As ZString Ptr
-Dim Shared ccstring As ZString*32768
+Dim Shared ccstring As ZString*65536
 Dim Shared sCodeFiles As ZString*260
 
 ' Hilite words

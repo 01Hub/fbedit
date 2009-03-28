@@ -8,13 +8,14 @@ CCTYPE_STRUCT			equ 5
 
 .const
 
-szInvoke				db 'INVOKE',0
-szPp					db 'Pp',0
-szp						db 'p',0
-szC						db 'C',0
-szAll					db 'WScds',0
-szSs					db 'Ss',0
-szd						db 'd',0
+szCCInvoke				db 'INVOKE',0
+szCCPp					db 'Pp',0
+szCCp					db 'p',0
+szCCC					db 'C',0
+szCCAll					db 'WScds',0
+szCCSs					db 'Ss',0
+szCCd					db 'd',0
+szCCAssume				db 'assume ',0
 
 .data?
 
@@ -22,7 +23,7 @@ lpOldCCProc				dd ?
 ccchrg					CHARRANGE <?>
 cctype					dd ?
 ccinprogress			dd ?
-ConstData				db 16384 dup(?)
+cclist					db 16384 dup(?)
 
 .code
 
@@ -65,11 +66,12 @@ CreateCodeComplete proc
 
 CreateCodeComplete endp
 
-AddList proc uses esi edi,lplist:DWORD,lpWord:DWORD
+AddList proc uses esi edi,lpList:DWORD,lpWord:DWORD,nImg:DWORD
 	LOCAL	nCount:DWORD
 
 	mov		nCount,0
-	mov		edi,offset ConstData
+	mov		esi,lpList
+	mov		edi,offset cclist
 	.while byte ptr [esi]
 		call	Filter
 		.if !eax
@@ -83,7 +85,7 @@ AddList proc uses esi edi,lplist:DWORD,lpWord:DWORD
 			mov		byte ptr [edi],0
 			inc		edi
 			pop		eax
-			invoke SendMessage,hCCLB,CCM_ADDITEM,2,eax
+			invoke SendMessage,hCCLB,CCM_ADDITEM,nImg,eax
 			inc		nCount
 		.else
 			.while byte ptr [esi] && byte ptr [esi]!=','
@@ -162,7 +164,7 @@ IsWordReg endp
 
 IsWordStruct proc uses esi,lpWord:DWORD
 
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szSs,lpWord
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -209,7 +211,7 @@ IsWordLocalStruct endp
 
 IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szd,lpWord
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCd,lpWord
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -231,7 +233,7 @@ IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szSs,lpStruct
+	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpStruct
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -259,6 +261,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	isinproc:ISINPROC
 	LOCAL	lpLineWord:DWORD
+	LOCAL	lpReg:DWORD
+	LOCAL	ccft:FINDTEXTEX
 
 	mov		nCount,0
 	mov		edi,hCCLB
@@ -280,6 +284,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 		mov		edi,esi
 		xor		edx,edx
 		mov		nWords,edx
+		mov		lpReg,edx
 		.while byte ptr [esi]
 			mov		al,[esi]
 			.if al==VK_SPACE || al==VK_TAB || al==','
@@ -350,6 +355,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				invoke IsWordReg,edi
 				.if eax==1
 					; reg
+					mov		lpReg,edi
 				.elseif eax==2
 					; ptr
 				.else
@@ -371,7 +377,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				; [edx.RECT.left]
 				; (RECT ptr [edx]).left
 				invoke lstrcpy,addr buffer,edi
-			.elseif lpLineWord
+			.elseif lpLineWord && !lpReg
 				;LOCAL rect:RECT
 				; rect.left
 				mov		edi,lpLineWord
@@ -379,7 +385,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		isinproc.nLine,eax
 				mov		eax,hREd
 				mov		isinproc.nOwner,eax
-				mov		isinproc.lpszType,offset szp
+				mov		isinproc.lpszType,offset szCCp
 				invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
 				.if eax
 					mov		edx,eax
@@ -389,6 +395,85 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					; rect	RECT <>
 					; rect.left
 					invoke IsWordDataStruct,edi,addr buffer
+				.endif
+			.elseif lpReg
+				; assume edx:ptr RECT
+				; [edx].left
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr ccft.chrg
+				mov		ccft.chrg.cpMax,0
+				invoke lstrcpy,addr buffer,offset szCCAssume
+				invoke lstrcat,addr buffer,lpReg
+				lea		eax,buffer
+				mov		ccft.lpstrText,eax
+			  @@:
+				invoke SendMessage,hREd,EM_FINDTEXTEX,FR_IGNOREWHITESPACE,addr ccft
+				.if eax!=-1
+					invoke SendMessage,hREd,REM_ISCHARPOS,ccft.chrgText.cpMax,0
+					.if eax
+						mov		eax,ccft.chrgText.cpMin
+						dec		eax
+						mov		ccft.chrg.cpMin,eax
+						jmp		@b
+					.endif
+					invoke SendMessage,hREd,EM_LINEFROMCHAR,ccft.chrgText.cpMin,0
+					mov		edx,eax
+					invoke SendMessage,hREd,EM_GETLINE,edx,addr buffer
+					mov		buffer[eax],0
+					xor		eax,eax
+					.while buffer[eax] && buffer[eax]!=':'
+						inc		eax
+					.endw
+					.if buffer[eax]!=':'
+						jmp		@b
+					.endif
+					inc		eax
+					.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+						inc		eax
+					.endw
+					.if !buffer[eax]
+						jmp		@b
+					.endif
+					mov		edx,dword ptr buffer[eax]
+					and		edx,5F5F5Fh
+					.if edx!='RTP'
+						jmp		@b
+					.endif
+					add		eax,3
+					.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+						inc		eax
+					.endw
+					lea		esi,buffer[eax]
+					lea		edi,buffer
+					.while TRUE
+						movzx	eax,byte ptr [esi]
+						invoke IsCharAlphaNumeric,eax
+						.break .if !eax && byte ptr [esi]!='_'
+						mov		al,[esi]
+						mov		[edi],al
+						inc		esi
+						inc		edi
+					.endw
+					mov		byte ptr [edi],0
+					mov		edi,lpReg
+				.else
+					; [edx].RECT
+					mov		buffer,0
+					mov		edi,hCCLB
+					invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
+					.while TRUE
+						.break .if !eax
+						push	eax
+						invoke SendMessage,hProperty,PRM_FINDGETTYPE,0,0
+						.if eax=='S'
+							mov		ecx,4
+						.else
+							mov		ecx,5
+						.endif
+						pop		edx
+						invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
+						inc		nCount
+						invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+					.endw
 				.endif
 			.endif
 			.if buffer
@@ -408,9 +493,11 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.if eax
 					invoke IsWordStruct,addr buffer
 					.if eax
+						push	eax
 						invoke lstrlen,eax
-						lea		eax,[eax+1]
-						invoke AddList,eax,lpWord
+						pop		edx
+						lea		edx,[edx+eax+1]
+						invoke AddList,edx,lpWord,15
 						mov		nCount,eax
 					.endif
 				.endif
@@ -446,28 +533,31 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			mov		isinproc.nLine,eax
 			mov		eax,hREd
 			mov		isinproc.nOwner,eax
-			mov		isinproc.lpszType,offset szp
+			mov		isinproc.lpszType,offset szCCp
 			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
 			.if eax
 				mov		esi,eax
+				; Skip proc name
 				invoke lstrlen,esi
 				lea		esi,[esi+eax+1]
 				push	esi
 				invoke lstrcpy,addr tmpbuff,esi
 				invoke lstrcat,addr tmpbuff,addr szComma
 				mov		esi,offset tmpbuff
+				mov		ebx,offset cclist
 				mov		edx,esi
 				.while byte ptr [esi]
 					.if byte ptr [esi]==','
 						mov		byte ptr [esi],0
 						call Filter
 						.if !eax
-							invoke SendMessage,edi,CCM_ADDITEM,8,edx
+							invoke lstrcpy,ebx,edx
+							invoke SendMessage,edi,CCM_ADDITEM,8,ebx
+							invoke lstrlen,ebx
+							lea		ebx,[ebx+eax+1]
 							inc		nCount
 						.endif
 						lea		edx,[esi+1]
-					.elseif byte ptr [esi]==':'
-						mov		byte ptr [esi],0
 					.endif
 					inc		esi
 				.endw
@@ -487,20 +577,24 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 						mov		byte ptr [esi],0
 						call Filter
 						.if !eax
-							invoke SendMessage,edi,CCM_ADDITEM,9,edx
+							invoke lstrcpy,ebx,edx
+							invoke SendMessage,edi,CCM_ADDITEM,9,ebx
+							invoke lstrlen,ebx
+							lea		ebx,[ebx+eax+1]
 							inc		nCount
 						.endif
 						lea		edx,[esi+1]
-					.elseif byte ptr [esi]==':'
-						mov		byte ptr [esi],0
 					.endif
 					inc		esi
 				.endw
 			.endif
 		.endif
 	.endif
+	mov		edi,hCCLB
 	.if nCount
-		invoke SendMessage,edi,CCM_SORT,FALSE,0
+		.if cctype!=CCTYPE_STRUCT
+			invoke SendMessage,edi,CCM_SORT,FALSE,0
+		.endif
 		invoke SendMessage,edi,CCM_SETCURSEL,0,0
 	.endif
 	invoke SendMessage,edi,WM_SETREDRAW,TRUE,0
@@ -534,7 +628,7 @@ UpdateApiList endp
 UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 
 	invoke SendMessage,hCCLB,CCM_CLEAR,0,0
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szC,lpApi
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCC,lpApi
 	.if eax
 		mov		esi,eax
 		invoke lstrlen,esi
@@ -551,7 +645,7 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 			.endif
 			inc		eax
 		.endw
-		invoke AddList,esi,lpWord
+		invoke AddList,esi,lpWord,2
 		.if eax
 			invoke SendMessage,edi,CCM_SORT,FALSE,0
 			invoke SendMessage,hCCLB,CCM_SETCURSEL,0,0
@@ -570,7 +664,7 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 	mov		eax,lpWord
 	.if byte ptr [eax]
 		invoke RtlZeroMemory,addr tt,sizeof TOOLTIP
-		mov		tt.lpszType,offset szPp
+		mov		tt.lpszType,offset szCCPp
 		mov		eax,lpWord
 		mov		tt.lpszLine,eax
 		invoke SendMessage,hProperty,PRM_GETTOOLTIP,FALSE,addr tt
@@ -596,7 +690,7 @@ IsLineInvoke proc uses ebx,cpline:DWORD
 	mov		edx,offset LineTxt
 	mov		ebx,cpline
 	call	SkipWhiteSpace
-	mov		ecx,offset szInvoke
+	mov		ecx,offset szCCInvoke
 	dec		ecx
 	dec		edx
 	inc		ebx
@@ -653,25 +747,25 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	lea		edx,[edx+sizeof CHARS]
 	invoke lstrcpyn,offset LineTxt,edx,eax
 	.if cctype==CCTYPE_ALL
-		invoke SendMessage,hREd,REM_GETWORD,sizeof tmpbuff,offset tmpbuff
-		invoke lstrlen,offset tmpbuff
+		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		invoke lstrlen,addr buffer
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
 		mov		ccchrg.cpMin,edx
-		invoke UpdateApiList,offset tmpbuff,offset szAll
+		invoke UpdateApiList,addr buffer,offset szCCAll
 		.if eax
 			call	ShowList
 		.endif
 	.elseif cctype==CCTYPE_STRUCT
-		invoke SendMessage,hREd,REM_GETWORD,sizeof tmpbuff,offset tmpbuff
-		invoke lstrlen,offset tmpbuff
+		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		invoke lstrlen,addr buffer
 		mov		edx,cpline
 		sub		edx,eax
 		mov		byte ptr LineTxt[edx-1],0
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
 		mov		ccchrg.cpMin,edx
-		invoke UpdateApiList,offset tmpbuff,offset szSs
+		invoke UpdateApiList,addr buffer,offset szCCSs
 		.if eax
 			call	ShowList
 		.else
@@ -682,7 +776,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 		.if eax
 			add		ccchrg.cpMin,eax
 			lea		esi,LineTxt[eax]
-			invoke UpdateApiList,esi,offset szPp
+			invoke UpdateApiList,esi,offset szCCPp
 			.if eax
 				mov		cctype,CCTYPE_PROC
 				call	ShowList

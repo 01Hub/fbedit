@@ -648,7 +648,7 @@ Function ExtractDirFile(ByVal lpsrc As ZString Ptr, ByVal lpdst As ZString Ptr) 
 End Function
 
 Sub UpdateIncludeList()
-	Dim As Integer sFind,nType
+	Dim As Integer sFind,nType,nLen
 	Dim As ZString*260 buffer,txt
 	Dim As ZString Ptr p
 	
@@ -658,11 +658,12 @@ Sub UpdateIncludeList()
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 '	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
-	While sFind
+	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
 		If Right(buffer,3)=".bi" Then
 			lstrcpy(ccpos,@buffer+2)
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
+			nLen+=Len(*ccpos)+1
 			ccpos=ccpos+Len(*ccpos)+1
 		EndIf
 		sFind=InStr(sFind+1,dirlist,txt)
@@ -675,11 +676,11 @@ Sub UpdateIncludeList()
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
 		MoveList
 	EndIf
-	
+
 End Sub
 
 Sub UpdateInclibList()
-	Dim As Integer sFind,nType
+	Dim As Integer sFind,nType,nLen
 	Dim As ZString*260 buffer,txt
 	Dim As ZString Ptr p
 	
@@ -689,11 +690,12 @@ Sub UpdateInclibList()
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
 '	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
-	While sFind
+	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
 		If Right(buffer,2)=".a" Then
 			lstrcpy(ccpos,@buffer+2)
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
+			nLen+=Len(*ccpos)+1
 			ccpos=ccpos+Len(*ccpos)+1
 		EndIf
 		sFind=InStr(sFind+1,dirlist,txt)

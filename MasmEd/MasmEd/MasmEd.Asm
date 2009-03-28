@@ -282,9 +282,17 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hCCLB,CCM_GETCURSEL,0,0
 				invoke SendMessage,hCCLB,CCM_GETITEM,eax,0
 				push	eax
-				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
+				invoke lstrcpy,offset tmpbuff,eax
+				xor		eax,eax
+				.while tmpbuff[eax]
+					.if tmpbuff[eax]==':'
+						mov		tmpbuff[eax],0
+					.endif
+					inc		eax
+				.endw
+				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset tmpbuff
 				pop		eax
-				.if cctype==CCTYPE_PROC || cctype==CCTYPE_STRUCT
+				.if cctype==CCTYPE_PROC || cctype==CCTYPE_CONST
 					push	eax
 					invoke lstrlen,eax
 					pop		edx
