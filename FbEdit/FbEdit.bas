@@ -226,6 +226,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 	Dim sFile As String
 	Dim pt As Point
 	Dim hebm As HEBMK
+	Dim fEditFocus As Integer
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -572,6 +573,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			If CallAddins(hWin,AIM_COMMAND,wParam,lParam,HOOK_COMMAND) Then
 				Return 0
 			EndIf
+			fEditFocus=(ah.hred=GetParent(GetFocus()))
 			id=LoWord(wParam)
 			Select Case HiWord(wParam)
 				Case BN_CLICKED,1
@@ -775,7 +777,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDNEXT
-							If Len(f.findbuff) Then
+							If Len(f.findbuff)<>0 And fEditFocus<>0 Then
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
 								If f.fres<>-1 Then
 									f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
@@ -785,10 +787,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								f.fdir=1
 								Find(hWin,f.fr Or FR_DOWN)
 								f.fdir=x
+							ElseIf findvisible Then
+								SendMessage(findvisible,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
 							EndIf
 							'
 						Case IDM_EDIT_FINDPREVIOUS
-							If Len(f.findbuff) Then
+							If Len(f.findbuff)<>0 And fEditFocus<>0 Then
 								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
 								f.ft.chrg.cpMax=0
 								f.ft.chrg.cpMin-=1
@@ -833,185 +837,223 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							'
 						Case IDM_EDIT_FINDDECLARE
-							SendMessage(ah.hred,REM_GETWORD,260,Cast(Integer,@buff))
-							lret=Cast(Integer,FindExact(StrPtr("pdcs"),@buff,TRUE))
-							If lret Then
-								hCtl=ah.hred
-								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
-								nLine=chrg.cpMin
-								lret=SendMessage(ah.hpr,PRM_FINDGETOWNER,0,0)
-								If fProject Then
-									OpenProjectFile(lret)
-								Else
-									SelectTab(hWin,Cast(HWND,lret),0)
+							If fEditFocus Then
+								SendMessage(ah.hred,REM_GETWORD,260,Cast(Integer,@buff))
+								lret=Cast(Integer,FindExact(StrPtr("pdcs"),@buff,TRUE))
+								If lret Then
+									hCtl=ah.hred
+									SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+									nLine=chrg.cpMin
+									lret=SendMessage(ah.hpr,PRM_FINDGETOWNER,0,0)
+									If fProject Then
+										OpenProjectFile(lret)
+									Else
+										SelectTab(hWin,Cast(HWND,lret),0)
+										SetFocus(ah.hred)
+									EndIf
+									lret=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
+									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
+									chrg.cpMax=chrg.cpMin
+									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									SendMessage(ah.hred,REM_VCENTER,0,0)
 									SetFocus(ah.hred)
+									fdcpos=(fdcpos+1) And 31
+									fdc(fdcpos).npos=nLine
+									fdc(fdcpos).hwnd=hCtl
 								EndIf
-								lret=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
-								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
-								chrg.cpMax=chrg.cpMin
-								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-								SendMessage(ah.hred,REM_VCENTER,0,0)
-								SetFocus(ah.hred)
-								fdcpos=(fdcpos+1) And 31
-								fdc(fdcpos).npos=nLine
-								fdc(fdcpos).hwnd=hCtl
+								fTimer=1
 							EndIf
-							fTimer=1
 							'
 						Case IDM_EDIT_RETURN
-							If IsWindow(fdc(fdcpos).hwnd) Then
-								SelectTab(hWin,fdc(fdcpos).hwnd,0)
-								chrg.cpMin=fdc(fdcpos).npos
-								chrg.cpMax=chrg.cpMin
-								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-								SetFocus(ah.hred)
+							If fEditFocus Then
+								If IsWindow(fdc(fdcpos).hwnd) Then
+									SelectTab(hWin,fdc(fdcpos).hwnd,0)
+									chrg.cpMin=fdc(fdcpos).npos
+									chrg.cpMax=chrg.cpMin
+									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									SetFocus(ah.hred)
+								EndIf
+								If fdcpos Then
+									fdcpos=fdcpos-1
+								Else
+									fdcpos=31
+								EndIf
+								fTimer=1
 							EndIf
-							If fdcpos Then
-								fdcpos=fdcpos-1
-							Else
-								fdcpos=31
-							EndIf
-							fTimer=1
 							'
 						Case IDM_EDIT_BLOCKINDENT
-							IndentComment(Chr(9),FALSE)
+							If fEditFocus Then
+								IndentComment(Chr(9),FALSE)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCKOUTDENT
-							IndentComment(Chr(9),TRUE)
+							If fEditFocus Then
+								IndentComment(Chr(9),TRUE)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCKCOMMENT
-							IndentComment("'" & szNULL,FALSE)
+							If fEditFocus Then
+								IndentComment("'" & szNULL,FALSE)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCKUNCOMMENT
-							IndentComment("'" & szNULL,TRUE)
+							If fEditFocus Then
+								IndentComment("'" & szNULL,TRUE)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCKTRIM
-							TrimTrailingSpaces
+							If fEditFocus Then
+								TrimTrailingSpaces
+							EndIf
 							'
 						Case IDM_EDIT_CONVERTTAB
-							SendMessage(ah.hred,REM_CONVERT,CONVERT_TABTOSPACE,0)
+							If fEditFocus Then
+								SendMessage(ah.hred,REM_CONVERT,CONVERT_TABTOSPACE,0)
+							EndIf
 							'
 						Case IDM_EDIT_CONVERTSPACE
-							SendMessage(ah.hred,REM_CONVERT,CONVERT_SPACETOTAB,0)
+							If fEditFocus Then
+								SendMessage(ah.hred,REM_CONVERT,CONVERT_SPACETOTAB,0)
+							EndIf
 							'
 						Case IDM_EDIT_CONVERTUPPER
-							SendMessage(ah.hred,REM_CONVERT,CONVERT_UPPERCASE,0)
+							If fEditFocus Then
+								SendMessage(ah.hred,REM_CONVERT,CONVERT_UPPERCASE,0)
+							EndIf
 							'
 						Case IDM_EDIT_CONVERTLOWER
-							SendMessage(ah.hred,REM_CONVERT,CONVERT_LOWERCASE,0)
+							If fEditFocus Then
+								SendMessage(ah.hred,REM_CONVERT,CONVERT_LOWERCASE,0)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCKMODE
-							bm=SendMessage(ah.hred,REM_GETMODE,0,0) Xor MODE_BLOCK
-							SendMessage(ah.hred,REM_SETMODE,bm,0)
+							If fEditFocus Then
+								bm=SendMessage(ah.hred,REM_GETMODE,0,0) Xor MODE_BLOCK
+								SendMessage(ah.hred,REM_SETMODE,bm,0)
+							EndIf
 							'
 						Case IDM_EDIT_BLOCK_INSERT
 							DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_BLOCKDLG),GetOwner,@BlockDlgProc,NULL)
 							'
 						Case IDM_EDIT_BOOKMARKTOGGLE
-							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_HEXED Then
-								SendMessage(ah.hred,HEM_TOGGLEBOOKMARK,0,0)
-							Else
-								lret=SendMessage(ah.hred,REM_GETBOOKMARK,nLastLine,0)
-								If lret=0 Then
-									SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,3)
-								ElseIf lret=3 Then
-									SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,0)
+							If fEditFocus Then
+								id=GetWindowLong(ah.hred,GWL_ID)
+								If id=IDC_HEXED Then
+									SendMessage(ah.hred,HEM_TOGGLEBOOKMARK,0,0)
+								Else
+									lret=SendMessage(ah.hred,REM_GETBOOKMARK,nLastLine,0)
+									If lret=0 Then
+										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,3)
+									ElseIf lret=3 Then
+										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,0)
+									EndIf
 								EndIf
+								fTimer=1
 							EndIf
-							fTimer=1
 							'
 						Case IDM_EDIT_BOOKMARKNEXT
-							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_HEXED Then
-								If SendMessage(ah.hred,HEM_NEXTBOOKMARK,0,Cast(LPARAM,@hebm)) Then
-									SelectTab(ah.hwnd,hebm.hWin,0)
-									chrg.cpMin=hebm.nLine Shl 5
-									chrg.cpMax=chrg.cpMin
-									SetFocus(ah.hred)
-									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-								EndIf
-							Else
-								nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)
-								If nLine<>-1 Then
-									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
-									chrg.cpMax=chrg.cpMin
-									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+							If fEditFocus Then
+								id=GetWindowLong(ah.hred,GWL_ID)
+								If id=IDC_HEXED Then
+									If SendMessage(ah.hred,HEM_NEXTBOOKMARK,0,Cast(LPARAM,@hebm)) Then
+										SelectTab(ah.hwnd,hebm.hWin,0)
+										chrg.cpMin=hebm.nLine Shl 5
+										chrg.cpMax=chrg.cpMin
+										SetFocus(ah.hred)
+										SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									EndIf
+								Else
+									nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLastLine,3)
+									If nLine<>-1 Then
+										chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+										chrg.cpMax=chrg.cpMin
+										SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									EndIf
 								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_BOOKMARKPREVIOUS
-							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_HEXED Then
-								If SendMessage(ah.hred,HEM_PREVIOUSBOOKMARK,0,Cast(LPARAM,@hebm)) Then
-									SelectTab(ah.hwnd,hebm.hWin,0)
-									chrg.cpMin=hebm.nLine Shl 5
-									chrg.cpMax=chrg.cpMin
-									SetFocus(ah.hred)
-									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
-								EndIf
-							Else
-								nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)
-								If nLine<>-1 Then
-									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
-									chrg.cpMax=chrg.cpMin
-									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+							If fEditFocus Then
+								id=GetWindowLong(ah.hred,GWL_ID)
+								If id=IDC_HEXED Then
+									If SendMessage(ah.hred,HEM_PREVIOUSBOOKMARK,0,Cast(LPARAM,@hebm)) Then
+										SelectTab(ah.hwnd,hebm.hWin,0)
+										chrg.cpMin=hebm.nLine Shl 5
+										chrg.cpMax=chrg.cpMin
+										SetFocus(ah.hred)
+										SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									EndIf
+								Else
+									nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLastLine,3)
+									If nLine<>-1 Then
+										chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+										chrg.cpMax=chrg.cpMin
+										SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+									EndIf
 								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_BOOKMARKDELETE
-							id=GetWindowLong(ah.hred,GWL_ID)
-							If id=IDC_HEXED Then
-								SendMessage(ah.hred,HEM_CLEARBOOKMARKS,0,0)
-							Else
-								SendMessage(ah.hred,REM_CLRBOOKMARKS,0,3)
+							If fEditFocus Then
+								id=GetWindowLong(ah.hred,GWL_ID)
+								If id=IDC_HEXED Then
+									SendMessage(ah.hred,HEM_CLEARBOOKMARKS,0,0)
+								Else
+									SendMessage(ah.hred,REM_CLRBOOKMARKS,0,3)
+								EndIf
+								fTimer=1
 							EndIf
-							fTimer=1
 							'
 						Case IDM_EDIT_ERRORCLEAR
-							UpdateAllTabs(2)
+							If fEditFocus Then
+								UpdateAllTabs(2)
+							EndIf
 							'
 						Case IDM_EDIT_ERRORNEXT
-							nLine=SendMessage(ah.hred,REM_NEXTERROR,nLastLine,0)
-							If nLine=-1 Then
-								nLine=SendMessage(ah.hred,REM_NEXTERROR,-1,7)
-							EndIf
-							If nLine<>-1 Then
-								chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
-								chrg.cpMax=chrg.cpMin
-								SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
-								SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+							If fEditFocus Then
+								nLine=SendMessage(ah.hred,REM_NEXTERROR,nLastLine,0)
+								If nLine=-1 Then
+									nLine=SendMessage(ah.hred,REM_NEXTERROR,-1,7)
+								EndIf
+								If nLine<>-1 Then
+									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nLine,0)
+									chrg.cpMax=chrg.cpMin
+									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_EXPAND
-							SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-							i=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
-							bm=SendMessage(ah.hred,REM_GETBOOKMARK,i,0)
-							If bm=1 Then
-								' Collapse
-								SendMessage(ah.hred,REM_COLLAPSE,i,0)
-							ElseIf bm=2 Then
-								' Expand
-								SendMessage(ah.hred,REM_EXPAND,i,0)
-							ElseIf SendMessage(ah.hred,REM_ISLINEHIDDEN,i+1,0) Then
-								While SendMessage(ah.hred,REM_ISLINEHIDDEN,i+1,0)
-									SendMessage(ah.hred,REM_HIDELINE,i+1,FALSE)
-									i=i+1
-								Wend
-								SendMessage(ah.hred,REM_REPAINT,0,0)
-							ElseIf SendMessage(ah.hred,REM_ISLINEHIDDEN,i-1,0)<>0 Or SendMessage(ah.hred,REM_GETBOOKMARK,i-1,0)=2 Then
-								i=i-1
-								While SendMessage(ah.hred,REM_ISLINEHIDDEN,i,0)And i>0
-									i=SendMessage(ah.hred,REM_PRVBOOKMARK,i,2)
-								Wend
-								SendMessage(ah.hred,REM_EXPAND,i,0)
-								SendMessage(ah.hred,REM_COLLAPSE,i,0)
+							If fEditFocus Then
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+								i=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
+								bm=SendMessage(ah.hred,REM_GETBOOKMARK,i,0)
+								If bm=1 Then
+									' Collapse
+									SendMessage(ah.hred,REM_COLLAPSE,i,0)
+								ElseIf bm=2 Then
+									' Expand
+									SendMessage(ah.hred,REM_EXPAND,i,0)
+								ElseIf SendMessage(ah.hred,REM_ISLINEHIDDEN,i+1,0) Then
+									While SendMessage(ah.hred,REM_ISLINEHIDDEN,i+1,0)
+										SendMessage(ah.hred,REM_HIDELINE,i+1,FALSE)
+										i=i+1
+									Wend
+									SendMessage(ah.hred,REM_REPAINT,0,0)
+								ElseIf SendMessage(ah.hred,REM_ISLINEHIDDEN,i-1,0)<>0 Or SendMessage(ah.hred,REM_GETBOOKMARK,i-1,0)=2 Then
+									i=i-1
+									While SendMessage(ah.hred,REM_ISLINEHIDDEN,i,0)And i>0
+										i=SendMessage(ah.hred,REM_PRVBOOKMARK,i,2)
+									Wend
+									SendMessage(ah.hred,REM_EXPAND,i,0)
+									SendMessage(ah.hred,REM_COLLAPSE,i,0)
+								EndIf
 							EndIf
 							'
 						Case IDM_FORMAT_LOCK
@@ -1075,10 +1117,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							SendMessage(ah.hraresed,DEM_AUTOID,0,0)
 							'
 						Case IDM_FORMAT_CASECONVERT
-							CaseConvert(ah.hred)
+							If fEditFocus Then
+								CaseConvert(ah.hred)
+							EndIf
 							'
 						Case IDM_FORMAT_INDENT
-							FormatIndent(ah.hred)
+							If fEditFocus Then
+								FormatIndent(ah.hred)
+							EndIf
 							'
 						Case IDM_VIEW_OUTPUT
 							wpos.fview=wpos.fview Xor VIEW_OUTPUT
