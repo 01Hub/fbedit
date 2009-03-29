@@ -13,6 +13,12 @@ DoUndo proc uses ebx edi,hMem:DWORD
 		mov		[ebx].EDIT.rpUndo,edx
 		mov		eax,[edi+edx].RAUNDO.undoid
 		mov		undoid,eax
+		mov		eax,[edi+edx].RAUNDO.cp
+		mov		[ebx].EDIT.cpMin,eax
+		mov		[ebx].EDIT.cpMax,eax
+		push	edx
+		invoke SelChange,ebx,SEL_TEXT
+		pop		edx
 		mov		al,[edi+edx].RAUNDO.fun
 		.if al==UNDO_INSERT
 			mov		eax,[edi+edx].RAUNDO.cp
@@ -128,6 +134,12 @@ DoRedo proc uses ebx edi,hMem:DWORD
 	.if eax
 		mov		eax,[edi+edx].RAUNDO.undoid
 		mov		undoid,eax
+		mov		eax,[edi+edx].RAUNDO.cp
+		mov		[ebx].EDIT.cpMin,eax
+		mov		[ebx].EDIT.cpMax,eax
+		push	edx
+		invoke SelChange,ebx,SEL_TEXT
+		pop		edx
 		mov		al,[edi+edx].RAUNDO.fun
 		.if al==UNDO_INSERT
 			push	[ebx].EDIT.fOvr
@@ -254,61 +266,63 @@ DoRedo endp
 
 SaveUndo proc uses ebx esi edi,hMem:DWORD,nFun:DWORD,cp:DWORD,lp:DWORD,cb:DWORD
 
-	mov		ebx,hMem
-	invoke ExpandUndoMem,ebx,cb
-	mov		edi,[ebx].EDIT.hUndo
-	mov		edx,[ebx].EDIT.rpUndo
-	mov		eax,nFun
-	.if eax==UNDO_INSERT || eax==UNDO_OVERWRITE || eax==UNDO_DELETE || eax==UNDO_BACKDELETE
-		mov		[edi+edx].RAUNDO.fun,al
-		mov		eax,[ebx].EDIT.lockundoid
-		.if !eax
-			mov		eax,nUndoid
-		.endif
-		mov		[edi+edx].RAUNDO.undoid,eax
-		mov		eax,cp
-		mov		[edi+edx].RAUNDO.cp,eax
-		mov		[edi+edx].RAUNDO.cb,1
-		mov		eax,lp
-		mov		[edi+edx+sizeof RAUNDO],al
-		mov		eax,edx
-		add		edx,sizeof RAUNDO+1
-		mov		[edi+edx].RAUNDO.rpPrev,eax
-		xor		eax,eax
-		mov		[edi+edx].RAUNDO.cp,eax
-		mov		[edi+edx].RAUNDO.cb,eax
-		mov		[edi+edx].RAUNDO.fun,al
-		mov		[ebx].EDIT.rpUndo,edx
-	.elseif eax==UNDO_INSERTBLOCK || eax==UNDO_DELETEBLOCK
-		mov		[edi+edx].RAUNDO.fun,al
-		mov		eax,[ebx].EDIT.lockundoid
-		.if !eax
-			mov		eax,nUndoid
-		.endif
-		mov		[edi+edx].RAUNDO.undoid,eax
-		mov		eax,cp
-		mov		[edi+edx].RAUNDO.cp,eax
-		mov		ecx,cb
-		mov		[edi+edx].RAUNDO.cb,ecx
-		mov		esi,lp
-		push	edx
-		add		edx,sizeof RAUNDO
-		.while ecx
-			mov		al,[esi]
-			inc		esi
-			.if al!=0Ah
-				mov		[edi+edx],al
-				inc		edx
-				dec		ecx
+	.if !fNoSaveUndo
+		mov		ebx,hMem
+		invoke ExpandUndoMem,ebx,cb
+		mov		edi,[ebx].EDIT.hUndo
+		mov		edx,[ebx].EDIT.rpUndo
+		mov		eax,nFun
+		.if eax==UNDO_INSERT || eax==UNDO_OVERWRITE || eax==UNDO_DELETE || eax==UNDO_BACKDELETE
+			mov		[edi+edx].RAUNDO.fun,al
+			mov		eax,[ebx].EDIT.lockundoid
+			.if !eax
+				mov		eax,nUndoid
 			.endif
-		.endw
-		pop		eax
-		mov		[edi+edx].RAUNDO.rpPrev,eax
-		xor		eax,eax
-		mov		[edi+edx].RAUNDO.cp,eax
-		mov		[edi+edx].RAUNDO.cb,eax
-		mov		[edi+edx].RAUNDO.fun,al
-		mov		[ebx].EDIT.rpUndo,edx
+			mov		[edi+edx].RAUNDO.undoid,eax
+			mov		eax,cp
+			mov		[edi+edx].RAUNDO.cp,eax
+			mov		[edi+edx].RAUNDO.cb,1
+			mov		eax,lp
+			mov		[edi+edx+sizeof RAUNDO],al
+			mov		eax,edx
+			add		edx,sizeof RAUNDO+1
+			mov		[edi+edx].RAUNDO.rpPrev,eax
+			xor		eax,eax
+			mov		[edi+edx].RAUNDO.cp,eax
+			mov		[edi+edx].RAUNDO.cb,eax
+			mov		[edi+edx].RAUNDO.fun,al
+			mov		[ebx].EDIT.rpUndo,edx
+		.elseif eax==UNDO_INSERTBLOCK || eax==UNDO_DELETEBLOCK
+			mov		[edi+edx].RAUNDO.fun,al
+			mov		eax,[ebx].EDIT.lockundoid
+			.if !eax
+				mov		eax,nUndoid
+			.endif
+			mov		[edi+edx].RAUNDO.undoid,eax
+			mov		eax,cp
+			mov		[edi+edx].RAUNDO.cp,eax
+			mov		ecx,cb
+			mov		[edi+edx].RAUNDO.cb,ecx
+			mov		esi,lp
+			push	edx
+			add		edx,sizeof RAUNDO
+			.while ecx
+				mov		al,[esi]
+				inc		esi
+				.if al!=0Ah
+					mov		[edi+edx],al
+					inc		edx
+					dec		ecx
+				.endif
+			.endw
+			pop		eax
+			mov		[edi+edx].RAUNDO.rpPrev,eax
+			xor		eax,eax
+			mov		[edi+edx].RAUNDO.cp,eax
+			mov		[edi+edx].RAUNDO.cb,eax
+			mov		[edi+edx].RAUNDO.fun,al
+			mov		[ebx].EDIT.rpUndo,edx
+		.endif
 	.endif
 	ret
 

@@ -123,6 +123,7 @@ Sub ReadTextFile(ByVal hWin As HWND,ByVal hFile As HANDLE,ByVal lpFilename As ZS
 	editstream.dwCookie=Cast(Integer,hFile)
 	editstream.pfnCallback=Cast(Any Ptr,@StreamIn)
 	SendMessage(hWin,EM_STREAMIN,SF_TEXT,Cast(Integer,@editstream))
+	nLastSize=SendMessage(hWin,WM_GETTEXTLENGTH,0,0)+1
 	SendMessage(hWin,EM_SETMODIFY,FALSE,0)
 	SendMessage(hWin,REM_SETCHANGEDSTATE,FALSE,0)
 	lstrcpy(@szItem,lpFilename)

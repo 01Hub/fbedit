@@ -53,7 +53,7 @@ FindTheText proc uses ebx esi edi,hMem:DWORD,pFind:DWORD,fMC:DWORD,fWW:DWORD,fWh
 		sub		cpMin,ecx
 		mov		edx,cpMin
 		mov		eax,-1
-		.while edx<cpMax
+		.while edx<=cpMax
 			mov		nIgnore,0
 			push	nLine
 			xor		esi,esi

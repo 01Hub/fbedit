@@ -97,8 +97,8 @@ End Sub
 
 Sub TextToOutput(ByVal sText As String)
 
-	SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sText))
-	SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,StrPtr(CR)))
+	SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@sText))
+	SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,StrPtr(CR)))
 
 End Sub
 

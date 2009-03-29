@@ -485,10 +485,13 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.if !eax
 						invoke IsStructItemStruct,addr buffer,edi
 						.break .if eax
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
+						xor		eax,eax
+					.else
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
 					.endif
-					invoke lstrlen,edi
-					lea		edi,[edi+eax+1]
-					xor		eax,eax
 				.endw
 				.if eax
 					invoke IsWordStruct,addr buffer

@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.6.8b
+o There is now a focus check on edit commands. They will only work if the editor has focus.
+o Return (Ctrl+F2) from Find Declare (F2) now returns to the correct position even if file is edited.
+o Find Next (F3) now works with find in All Open Files and All Project Files.
 1.0.6.8
 o Fixed bug with build options. Moving an item abowe first item created duplicate items.
 o Fixed a buffer overrun bug with #Include / #Inclib code complete list.

@@ -198,8 +198,8 @@ Function MakeProc(ByVal Param As Integer) As Integer
 		Else
 			CloseHandle(hwr)
 			SetFocus(ah.hout)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buff))
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@buff))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@CR))
 			lret=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)-1
 			SendMessage(ah.hout,REM_SETBOOKMARK,lret,8)
 			SendMessage(ah.hout,REM_SETBMID,lret,0)
@@ -210,7 +210,7 @@ Function MakeProc(ByVal Param As Integer) As Integer
 				If lret=0 Then
 					Exit While
 				ElseIf Asc(rd)=10 Then
-					SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buffer))
+					SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@buffer))
 					buffer=""
 				Else
 					buffer=buffer & rd
@@ -219,7 +219,7 @@ Function MakeProc(ByVal Param As Integer) As Integer
 			CloseHandle(pinfo.hProcess)
 			CloseHandle(pinfo.hThread)
 			CloseHandle(hrd)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@buffer))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@buffer))
 			Return 0
 		EndIf
 	EndIf
@@ -483,10 +483,10 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 		Wend
 		If nErr Then
 			sItem=CR & "Build error(s)" & CR
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sItem))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@sItem))
 			MessageBeep(MB_ICONERROR)
 		Else
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@CR))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@CR))
 			sTmp=ProjectDeleteFiles
 			While Len(sTmp)
 				lret=InStr(sTmp,";")
@@ -500,7 +500,7 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 				DeleteFiles(sFile)
 			Wend
 			sItem="Make done" & CR
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(Integer,@sItem))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@sItem))
 			If ah.hred Then
 				SetFocus(ah.hred)
 			Else

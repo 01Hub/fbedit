@@ -429,7 +429,7 @@ CreateNew proc
 	invoke CreateRAEdit
 	invoke TabToolAdd,hREd,offset FileName
 	invoke SetWinCaption,offset FileName
-	invoke RefreshCombo,hREd
+;	invoke RefreshCombo,hREd
 	invoke SetFocus,hREd
 	ret
 
@@ -450,7 +450,7 @@ CreateNewRes proc
 	invoke SetWinCaption,offset FileName
 	invoke ShowWindow,hREd,SW_SHOW
 	invoke SendMessage,hWnd,WM_SIZE,0,0
-	invoke RefreshCombo,hREd
+;	invoke RefreshCombo,hREd
 	invoke SetFocus,hREd
 	ret
 
@@ -1026,10 +1026,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fVSplit,0
 			mov		eax,pt.x
 			mov		edx,pt.y
+			mov		ecx,rect.right
+			add		ecx,4
 			.if eax<rect.right && edx>rect.bottom
 				invoke SetCursor,hHSplitCur
 				mov		fVSplit,1
-			.elseif eax>=rect.right && edx>rect.top
+			.elseif eax>=rect.right && eax<=ecx && edx>rect.top
 				invoke SetCursor,hVSplitCur
 				mov		fVSplit,3
 			.endif
@@ -1144,28 +1146,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Add height of toolbar to top
 		pop		eax
 		add		rect.top,eax
-		.if lParam
-			;Resize tab window
-			mov		edx,rect.right
-			sub		edx,CBOWT
-			push	edx
-			sub		edx,17
-			push	edx
-			mov		eax,rect.top
-			add		eax,5
-			invoke MoveWindow,hBtn,edx,eax,16,16,TRUE
-			pop		edx
-			invoke MoveWindow,hTab,-1,rect.top,edx,TABHT,TRUE
-			invoke UpdateWindow,hTab
-			pop		edx
-			;Resize combobox
-			mov		eax,rect.right
-			sub		eax,edx
-			invoke MoveWindow,hCbo,edx,rect.top,eax,CBOWT,TRUE
-			invoke UpdateWindow,hCbo
+		;Resize tab window
+		mov		edx,rect.right
+		test	wpos.fView,8
+		.if !ZERO?
+			sub		edx,wpos.wtfile
 		.endif
-		;Add height of tab window to top
-		add		rect.top,TABHT
+		push	edx
+		sub		edx,17
+		push	edx
+		mov		eax,rect.top
+		add		eax,5
+		invoke MoveWindow,hBtn,edx,eax,16,16,TRUE
+		pop		edx
+		invoke MoveWindow,hTab,-1,rect.top,edx,TABHT,TRUE
+		invoke UpdateWindow,hTab
+		pop		edx
 		test	wpos.fView,8
 		.if !ZERO?
 			;Resize file browser
@@ -1193,6 +1189,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,hProperty,ecx,rect.top,eax,edx,TRUE
 			pop		rect.top
 		.endif
+		;Add height of tab window to top
+		add		rect.top,TABHT
 		test	wpos.fView,4
 		.if !ZERO?
 			;Subtract height of resize from bottom
@@ -1242,9 +1240,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_SBR
 		mov		hSbr,eax
 		invoke DoStatusBar,eax
-		;ComboBox
-		invoke GetDlgItem,hWin,IDC_CBO
-		mov		hCbo,eax
 		;Shape
 		invoke GetDlgItem,hWin,IDC_SHP
 		mov		hShp,eax
@@ -1925,8 +1920,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
 				invoke SetFocus,hREd
-			.elseif eax==IDC_CBO
-				invoke SelectCombo
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY

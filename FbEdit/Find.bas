@@ -24,14 +24,13 @@
 Sub InitFindDir
 	
 	Select Case f.fdir
-		Case 0
-			' All
-			f.ft.chrg.cpMin=f.chrginit.cpMin
-			f.ft.chrg.cpMax=f.chrgrange.cpMax
-			f.fr=f.fr Or FR_DOWN
-		Case 1
-			' Down
-			f.ft.chrg.cpMin=f.chrginit.cpMin
+		Case 0,1
+			' All, Down
+			If f.fsearch=4 Then
+				f.ft.chrg.cpMin=f.chrginit.cpMin
+			Else
+				f.ft.chrg.cpMin=f.chrginit.cpMax
+			EndIf
 			f.ft.chrg.cpMax=f.chrgrange.cpMax
 			f.fr=f.fr Or FR_DOWN
 		Case 2
@@ -254,9 +253,10 @@ Function FindInFile(hWin As HWND,frType As Integer) As Integer
 	Else
 		If f.fdir=0 And f.fsearch<>4 Then
 			' All
-			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMin Then
+			If f.chrginit.cpMin<>0 And f.ft.chrg.cpMax>f.chrginit.cpMax Then
 				f.ft.chrg.cpMin=f.chrgrange.cpMin
-				f.ft.chrg.cpMax=f.chrginit.cpMin-1
+				f.ft.chrg.cpMax=f.chrginit.cpMax-1
+				f.chrginit.cpMin=0
 				res=FindInFile(hWin,frType)
 			EndIf
 		EndIf
@@ -392,6 +392,7 @@ TheNextFile:
 			EndIf
 			'
 		Case 4
+			' Current selection
 			f.fres=FindInFile(ah.hred,frType)
 			'
 	End Select
@@ -409,8 +410,8 @@ TheNextFile:
 		EndIf
 		If f.flogfind Then
 			If f.fonlyonetime=0 Then
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@ad.filename))
-				SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+				SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@ad.filename))
+				SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@CR))
 				SendMessage(ah.hout,REM_SETBOOKMARK,f.nlinesout,5)
 				SendMessage(ah.hout,REM_SETBMID,f.nlinesout,0)
 				f.fonlyonetime=1
@@ -425,8 +426,8 @@ TheNextFile:
 			lstrcat(@s,Str(nLine+1))
 			lstrcat(@s,") ")
 			lstrcat(@s,@buff)
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@s))
-			SendMessage(ah.hout,EM_REPLACESEL,0,Cast(LPARAM,@CR))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@s))
+			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(LPARAM,@CR))
 			i=SendMessage(ah.hred,REM_GETBOOKMARK,nLine,0)
 			If i<>3 Then
 				SendMessage(ah.hout,REM_SETBOOKMARK,f.nlinesout,3)
@@ -445,20 +446,20 @@ TheNextFile:
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 	Else
 		Select Case f.fsearch
-			Case 0,1,2
-				' Region searched
-				buff=GetInternalString(IS_REGION_SEARCHED)
 			Case 3
 				' Project Files searched
 				buff=GetInternalString(IS_PROJECT_FILES_SEARCHED)
+			Case Else
+				' Region searched
+				buff=GetInternalString(IS_REGION_SEARCHED)
 		End Select
 		If f.nreplacecount Then
-			buff &=CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
+			buff &=CR & CR & Str(f.nreplacecount) & " " & GetInternalString(IS_REPLACEMENTS_DONE)
 		EndIf
 		If f.flogfind Then
 			ShowStat()
 		Else
-			MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+			MessageBox(hWin,@buff,@szAppName,MB_OK Or MB_ICONINFORMATION)
 		EndIf
 		ResetFind
 	EndIf
@@ -494,6 +495,51 @@ Sub UpdateFindHistory(ByVal hWin As HWND)
 	If Len(f.findbuff) And SendMessage(hWin,CB_FINDSTRINGEXACT,-1,Cast(LPARAM,@f.findbuff))=CB_ERR Then
 		SendMessage(hWin,CB_INSERTSTRING,0,Cast(LPARAM,@f.findbuff))
 	EndIf
+
+End Sub
+
+Sub UpDateFind(ByVal hWin As HWND,ByVal cpMin As Integer,ByVal fChanged As Integer)
+	Dim As Integer nSize,i
+
+	If hWin<>nLasthWin Then
+		nSize=SendMessage(hWin,WM_GETTEXTLENGTH,0,0)
+		nLastSize=nSize
+		nLasthWin=hWin
+	ElseIf fchanged Then
+		nSize=SendMessage(hWin,WM_GETTEXTLENGTH,0,0)
+		nSize-=nLastSize
+		If nSize Then
+			' Update find
+			If nLastCp<=f.ft.chrg.cpMin Then
+				f.ft.chrg.cpMin+=nSize
+				f.ft.chrg.cpMax+=nSize
+			ElseIf nLastCp<=f.ft.chrg.cpMax Then
+				f.ft.chrg.cpMax+=nSize
+			EndIf
+			If nLastCp<=f.chrginit.cpMin Then
+				f.chrginit.cpMin+=nSize
+				f.chrginit.cpMax+=nSize
+			ElseIf nLastCp<=f.chrginit.cpMax Then
+				f.chrginit.cpMax+=nSize
+			EndIf
+			If nLastCp<=f.chrgrange.cpMin Then
+				f.chrgrange.cpMin+=nSize
+				f.chrgrange.cpMax+=nSize
+			ElseIf nLastCp<=f.chrgrange.cpMax Then
+				f.chrgrange.cpMax+=nSize
+			EndIf
+			' Update find declare
+			For i=0 To 31
+				If fdc(i).hwnd=hWin Then
+					If nLastCp<=fdc(i).npos Then
+						fdc(i).npos+=nSize
+					EndIf
+				EndIf
+			Next
+		EndIf
+		nLastSize+=nSize
+	EndIf
+	nLastCp=cpMin
 
 End Sub
 
@@ -613,17 +659,6 @@ Function FindDlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 								If f.fdir=2 Then
 									' Up
 									f.ft.chrg.cpMin=f.ft.chrg.cpMin-1
-								Else
-									' Down, All
-									lret=Len(f.replacebuff)-Len(f.findbuff)
-									f.ft.chrg.cpMin+=lret
-									f.ft.chrg.cpMax+=lret
-									'update real end
-									f.chrgrange.cpMax+=lret
-									If f.chrginit.cpMin<>0 And f.chrginit.cpMin>f.ft.chrg.cpMin Then
-										f.chrginit.cpMin+=lret
-										f.chrginit.cpMax+=lret
-									EndIf
 								EndIf
 							EndIf
 							Find(hWin,f.fr)

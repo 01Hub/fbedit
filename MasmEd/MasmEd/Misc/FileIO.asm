@@ -374,7 +374,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 							invoke TabToolSetText,eax,lpFileName
 							invoke SetWinCaption,lpFileName
 							invoke lstrcpy,offset FileName,lpFileName
-							invoke RefreshCombo,hREd
+;							invoke RefreshCombo,hREd
 							call	CloseIt
 						.endif
 					.endif
@@ -389,7 +389,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 						invoke ShowWindow,hREd,SW_SHOW
 						invoke SetWinCaption,lpFileName
 						invoke lstrcpy,offset FileName,lpFileName
-						invoke RefreshCombo,hREd
+;						invoke RefreshCombo,hREd
 						call	CloseIt
 					.endif
 				.endif
@@ -411,7 +411,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					invoke TabToolAdd,hREd,offset FileName
 					invoke LoadHexFile,hREd,offset FileName
 				.endif
-				invoke RefreshCombo,hREd
+;				invoke RefreshCombo,hREd
 				call	CloseIt
 				invoke TabToolSetChanged,hREd,FALSE
 				invoke LoadCursor,0,IDC_ARROW

@@ -323,3 +323,4 @@ blockdefs				db 4096 dup(?)
 bracketstart			db 16 dup(?)
 bracketend				db 16 dup(?)
 bracketcont				db 16 dup(?)
+fNoSaveUndo				dd ?

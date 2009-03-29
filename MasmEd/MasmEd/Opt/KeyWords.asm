@@ -486,7 +486,6 @@ UpdateToolColors proc
 	.endif
 	invoke CreateSolidBrush,col.toolback
 	mov		hBrBack,eax
-	invoke InvalidateRect,hCbo,NULL,TRUE
 	mov		eax,col.ccback
 	mov		cccol.back,eax
 	mov		eax,col.cctext

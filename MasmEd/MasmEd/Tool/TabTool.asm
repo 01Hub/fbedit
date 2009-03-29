@@ -315,7 +315,7 @@ TabToolActivate proc uses ebx
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	invoke ShowWindow,hREd,SW_SHOW
 	mov		fTimer,1
-	invoke RefreshCombo,hREd
+;	invoke RefreshCombo,hREd
 	pop		eax
 	.if eax!=hREd
 		invoke ShowWindow,eax,SW_HIDE

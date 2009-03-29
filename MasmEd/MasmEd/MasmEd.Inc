@@ -74,7 +74,7 @@ SAVE_SESSION			equ -8
 CLEAR_ERRORS			equ -9
 FIND_ERROR				equ -10
 
-TABHT					equ 21
+TABHT					equ 23
 CBOWT					equ 175
 RESIZEHT				equ 3
 
@@ -109,10 +109,9 @@ IDC_RBN_UP				equ 2006
 IDC_RBN_HEX				equ 2003
 IDC_RBN_ASCII			equ 2004
 
-;RAEditDemo.dlg
+;MasmEd.dlg
 IDD_DLG					equ 3000
 IDC_TBR					equ 1001
-IDC_CBO					equ 1008
 IDC_TAB					equ 1004
 IDC_SBR					equ 1003
 IDC_SHP					equ 1005
@@ -126,8 +125,6 @@ IDC_BTNTABCLOSE			equ 1002
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
-;IDC_PROPERTY			equ 1103
-;IDC_PROJECT				equ 1106
 
 IDD_DLGSAVEUNICODE		equ 9000
 IDC_CHKUNICODE			equ 1001
@@ -135,7 +132,7 @@ IDC_CHKUNICODE			equ 1001
 IDM_HELPF1				equ 500
 IDM_MENU				equ 10000
 
-;RAEditDemo.mnu
+;MasmEd.mnu
 IDM_FILE_NEW			equ 10001
 IDM_FILE_NEW_RES		equ 10007
 IDM_FILE_OPEN			equ 10002
@@ -555,7 +552,6 @@ hWnd					dd ?
 hREd					dd ?
 hTab					dd ?
 hBtn					dd ?
-hCbo					dd ?
 hFind					dd ?
 hMnu					dd ?
 hContextMnu				dd ?

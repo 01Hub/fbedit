@@ -483,7 +483,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ImageList_AddMasked(ah.hmnuiml,hBmp,&HC0C0C0)
 			DeleteObject(hBmp)
 			' Resource editor child dialog
-			ah.hres=CreateDialogParam(hInstance,Cast(zstring ptr,IDD_DLGRESED),hWin,@ResEdProc,0)
+			ah.hres=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_DLGRESED),hWin,@ResEdProc,0)
 			SetToolsColors(hWin)
 			SetToolMenu(hWin)
 			SetHelpMenu(hWin)
@@ -779,27 +779,26 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_EDIT_FINDNEXT
 							If findvisible Then
 								SendMessage(findvisible,WM_COMMAND,(BN_CLICKED Shl 16) Or IDOK,0)
-							ElseIf Len(f.findbuff)<>0 And fEditFocus<>0 Then
-								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
-								If f.fres<>-1 Then
-									f.ft.chrg.cpMin=f.ft.chrg.cpMin+f.ft.chrg.cpMax-f.ft.chrg.cpMin
+								SetFocus(findvisible)
+							Else
+								If Len(f.findbuff)<>0 And fEditFocus<>0 Then
+									Find(hWin,f.fr Or FR_DOWN)
+									SetFocus(ah.hred)
 								EndIf
-								f.ft.chrg.cpMax=-1
-								x=f.fdir
-								f.fdir=1
-								Find(hWin,f.fr Or FR_DOWN)
-								f.fdir=x
 							EndIf
 							'
 						Case IDM_EDIT_FINDPREVIOUS
 							If Len(f.findbuff)<>0 And fEditFocus<>0 Then
-								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.ft.chrg))
-								f.ft.chrg.cpMax=0
-								f.ft.chrg.cpMin-=1
-								x=f.fdir
-								f.fdir=2
-								Find(hWin,f.fr And (-1 Xor FR_DOWN))
-								f.fdir=x
+								Dim ft As FINDTEXTEX
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@ft.chrg))
+								ft.chrg.cpMax=0
+								ft.chrg.cpMin-=1
+								ft.lpstrText=@f.findbuff
+								If SendMessage(ah.hred,EM_FINDTEXTEX,f.fr Xor FR_DOWN,Cast(LPARAM,@ft))=-1 Then
+									MessageBox(hWin,GetInternalString(IS_REGION_SEARCHED),@szAppName,MB_OK Or MB_ICONINFORMATION)
+								Else
+									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@ft.chrgText))
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_REPLACE
@@ -1837,7 +1836,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 											SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
 										EndIf
 										SendMessage(ah.hred,REM_REPAINT,0,TRUE)
-									ElseIf y then
+									ElseIf y Then
 										' Set althilite flag
 										SendMessage(ah.hred,REM_SETALTHILITELINE,nLastLine,TRUE)
 									Else
@@ -1856,6 +1855,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							Loop While bm
 						EndIf
 					EndIf
+					UpDateFind(ah.hred,lpRASELCHANGE->chrg.cpMin,lpRASELCHANGE->fchanged)
 				EndIf
 				nLastLine=lpRASELCHANGE->Line
 				fTimer=1
@@ -2364,7 +2364,7 @@ Dim CharTab As Function() As Any Ptr
 	hInstance=GetModuleHandle(NULL)
 	hRichEditDll=LoadLibrary("riched20.dll")
 	hFbEditDll=LoadLibrary("FbEdit.dll")
-	If hFbEditDll then
+	If hFbEditDll Then
 		CharTab=Cast(Any Ptr,GetProcAddress(hFbEditDll,StrPtr("GetCharTabPtr")))
 		ad.lpCharTab=CharTab()
 		ah.haccel=LoadAccelerators(hInstance,Cast(ZString Ptr,IDA_ACCEL))

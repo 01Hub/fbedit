@@ -197,6 +197,9 @@
 		_EM_REPLACESEL:
 			;wParam=TRUE/FALSE
 			;lParam=lpText
+			.if !wParam
+				inc		fNoSaveUndo
+			.endif
 			invoke IsSelectionLocked,ebx,[ebx].EDIT.cpMin,[ebx].EDIT.cpMax
 			or		eax,eax
 			jne		ErrBeep
@@ -224,6 +227,7 @@
 			invoke SelChange,ebx,SEL_TEXT
 			inc		nUndoid
 			xor		eax,eax
+			mov		fNoSaveUndo,eax
 			ret
 		align 4 
 		_EM_GETLINECOUNT:

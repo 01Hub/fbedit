@@ -399,8 +399,11 @@ Dim Shared lpOldCCProc As Any Ptr
 Dim Shared lpOldSplashProc As Any Ptr
 
 ' Misc
-Dim Shared nLastLine As Long
-Dim Shared nCaretPos As Long
+Dim Shared nLastLine As Integer
+Dim Shared nLastSize As Integer
+Dim Shared nLastCp As Integer
+Dim Shared nLasthWin As HWND
+Dim Shared nCaretPos As Integer
 Dim Shared buff As ZString*20*1024
 Dim Shared s As ZString*20*1024
 Dim Shared CommandLine As ZString Ptr
@@ -662,12 +665,12 @@ Dim Shared ttmsg As MESSAGE
 
 Type FIND
 	fdir					As Integer						' 0=All,1=Up,2=Down
-	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project
+	fsearch				As Integer						' 0=Procedure,1=Module,2=Open Files,3=Project,4=Selected text
 	fpro					As Integer
 	ffileno				As Integer
 	chrginit				As CHARRANGE					' Position at startup
 	chrgrange			As CHARRANGE					' Range to search
-	fr						As Integer
+	fr						As Integer						' Find flags
 	ft						As FINDTEXTEX
 	findbuff				As ZString*260
 	replacebuff			As ZString*260
@@ -675,11 +678,11 @@ Type FIND
 	fskipcommentline	As Integer
 	flogfind				As Integer
 	fonlyonetime		As Integer
-	fnoproc				As Boolean
-	fnoreset				As Boolean
+	fnoproc				As Boolean						' Flag to handle no procedure
+	fnoreset				As Boolean						' Flag to handle opening a new file
 	listoffiles			As String
 	nlinesout			As Integer
-	fres					As Integer
+	fres					As Integer						' Find result
 End Type
 
 Dim Shared f As FIND
