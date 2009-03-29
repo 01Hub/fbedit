@@ -315,7 +315,6 @@ TabToolActivate proc uses ebx
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	invoke ShowWindow,hREd,SW_SHOW
 	mov		fTimer,1
-;	invoke RefreshCombo,hREd
 	pop		eax
 	.if eax!=hREd
 		invoke ShowWindow,eax,SW_HIDE
@@ -403,19 +402,20 @@ TabToolDel proc uses ebx,hWin:HWND
 		.endif
 	.endw
 	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
-	.if !eax
-		invoke CreateNew
-		mov		nInx,0
+	.if eax
+	  @@:
+		invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+		.if eax==-1
+			dec		nInx
+			jmp		@b
+		.endif
+		invoke TabToolActivate
+		invoke SetFocus,hREd
+	.else
+		mov		hREd,0
+		invoke SendMessage,hWnd,WM_SIZE,0,0
 	.endif
-  @@:
-	invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
-	invoke SendMessage,hTab,TCM_GETCURSEL,0,0
-	.if eax==-1
-		dec		nInx
-		jmp		@b
-	.endif
-	invoke TabToolActivate
-	invoke SetFocus,hREd
 	ret
 
 TabToolDel endp

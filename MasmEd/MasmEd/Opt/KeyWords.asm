@@ -628,40 +628,6 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,TRUE
 					call	EnButton
 				.endif
-;				push	esi
-;				xor		esi,esi
-;				.while esi<16
-;					mov		eax,offset kwcol
-;					lea		eax,[eax+esi*4]
-;					mov		edx,dword ptr [eax]
-;					invoke DwToHex,edx,addr buffer
-;					mov		dword ptr buffer[8],',h'
-;					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
-;					inc		esi
-;				.endw
-;				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
-;				xor		esi,esi
-;				.while esi<18
-;					mov		eax,offset col
-;					lea		eax,[eax+esi*4]
-;					mov		edx,dword ptr [eax]
-;					invoke DwToHex,edx,addr buffer
-;					mov		dword ptr buffer[8],',h'
-;					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
-;					inc		esi
-;				.endw
-;				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
-;				.while esi<18+12
-;					mov		eax,offset col
-;					lea		eax,[eax+esi*4]
-;					mov		edx,dword ptr [eax]
-;					invoke DwToHex,edx,addr buffer
-;					mov		dword ptr buffer[8],',h'
-;					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
-;					inc		esi
-;				.endw
-;				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCrLf
-;				pop		esi
 			.elseif eax==IDC_BTNHOLD
 				invoke MoveKeyWords,hWin,IDC_LSTKWACTIVE,IDC_LSTKWHOLD
 				mov		eax,IDC_BTNHOLD
@@ -1127,7 +1093,6 @@ Update:
 			invoke CreateFontIndirect,offset lfnt
 			mov     hIFont,eax
 			mov		lfnt.lfItalic,FALSE
-;			invoke UpdateAll,WM_SETFONT
 			invoke RegSetValueEx,hReg,addr szCodeFont,0,REG_BINARY,addr lfnt,sizeof lfnt
 			mov		hCFnt,0
 		.endif
@@ -1136,7 +1101,6 @@ Update:
 			invoke GetObject,hLFnt,sizeof lfntlnr,offset lfntlnr
 			mov		eax,hLFnt
 			mov     hLnrFont,eax
-;			invoke UpdateAll,WM_SETFONT
 			invoke RegSetValueEx,hReg,addr szLnrFont,0,REG_BINARY,addr lfntlnr,sizeof lfntlnr
 			mov		hLFnt,0
 		.endif

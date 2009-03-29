@@ -3,7 +3,6 @@
 option casemap:none
 
 include MasmEd.inc
-include Tool\CboTool.asm
 include Tool\TabTool.asm
 include Tool\PropertyTool.asm
 include Misc\Misc.asm
@@ -429,7 +428,6 @@ CreateNew proc
 	invoke CreateRAEdit
 	invoke TabToolAdd,hREd,offset FileName
 	invoke SetWinCaption,offset FileName
-;	invoke RefreshCombo,hREd
 	invoke SetFocus,hREd
 	ret
 
@@ -450,7 +448,6 @@ CreateNewRes proc
 	invoke SetWinCaption,offset FileName
 	invoke ShowWindow,hREd,SW_SHOW
 	invoke SendMessage,hWnd,WM_SIZE,0,0
-;	invoke RefreshCombo,hREd
 	invoke SetFocus,hREd
 	ret
 
@@ -477,8 +474,14 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		edx,IDM_FILE_CLOSESESSION
 			call	EnableDisable
-			invoke GetWindowLong,hREd,GWL_ID
-			.if eax==IDC_RES
+			.if hREd
+				invoke GetWindowLong,hREd,GWL_ID
+			.else
+				mov		eax,-1
+			.endif
+			.if eax==-1
+				call	DisableRes
+			.elseif eax==IDC_RES
 				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
@@ -589,57 +592,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_FORMAT_FRONT
 				call	EnableDisable
 			.elseif eax==IDC_RAE
-				xor		eax,eax
-				mov		edx,IDM_FORMAT_LOCK
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_BACK
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_FRONT
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_GRID
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SNAP
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_ALIGN
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SIZE
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_CENTER
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_TABINDEX
-				call	EnableDisable
-				mov		edx,IDM_VIEW_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MENU
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_ACCEL
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_VERINF
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MANIFEST
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RCDATA
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_TOOLBAR
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_LANGUAGE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_INCLUDE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RESOURCE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_STRING
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_NAME
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_EXPORT
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_REMOVE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_UNDO
-				call	EnableDisable
+				call	DisableRes
 				mov		eax,TRUE
 				mov		edx,IDM_FILE_PRINT
 				call	EnableDisable
@@ -709,55 +662,6 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_EDIT_CLEARBM
 				call	EnableDisable
 			.elseif eax==IDC_HEX
-				xor		eax,eax
-				mov		edx,IDM_FORMAT_LOCK
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_BACK
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_FRONT
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_GRID
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SNAP
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_ALIGN
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SIZE
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_CENTER
-				call	EnableDisable
-				mov		edx,IDM_VIEW_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MENU
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_ACCEL
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_VERINF
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MANIFEST
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RCDATA
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_TOOLBAR
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_LANGUAGE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_INCLUDE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RESOURCE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_STRING
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_NAME
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_EXPORT
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_REMOVE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_UNDO
-				call	EnableDisable
 				mov		edx,IDM_FILE_PRINT
 				call	EnableDisable
 				mov		edx,IDM_EDIT_INDENT
@@ -833,6 +737,60 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	ret
+
+DisableRes:
+	xor		eax,eax
+	mov		edx,IDM_FORMAT_LOCK
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_BACK
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_FRONT
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_GRID
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_SNAP
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_ALIGN
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_SIZE
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_CENTER
+	call	EnableDisable
+	mov		edx,IDM_FORMAT_TABINDEX
+	call	EnableDisable
+	mov		edx,IDM_VIEW_DIALOG
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_DIALOG
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_MENU
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_ACCEL
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_VERINF
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_MANIFEST
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_RCDATA
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_TOOLBAR
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_LANGUAGE
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_INCLUDE
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_RESOURCE
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_STRING
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_NAME
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_EXPORT
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_REMOVE
+	call	EnableDisable
+	mov		edx,IDM_RESOURCE_UNDO
+	call	EnableDisable
+	retn
 
 EnableDisable:
 	push	eax
@@ -964,6 +922,7 @@ ResProc endp
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
+	LOCAL	rect1:RECT
 	LOCAL	tmprect:RECT
 	LOCAL	ht:DWORD
 	LOCAL	chrg:CHARRANGE
@@ -1074,7 +1033,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax!=wpos.htout
 				mov		wpos.htout,eax
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				invoke UpdateWindow,hREd
+				.if hREd
+					invoke UpdateWindow,hREd
+				.endif
 				invoke UpdateWindow,hOut
 			.endif
 		.elseif fVSplit==4
@@ -1095,7 +1056,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax!=wpos.wtfile
 				mov		wpos.wtfile,eax
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				invoke UpdateWindow,hREd
+				.if hREd
+					invoke UpdateWindow,hREd
+				.endif
 				invoke UpdateWindow,hOut
 			.endif
 		.endif
@@ -1157,9 +1120,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	edx
 		mov		eax,rect.top
 		add		eax,5
-		invoke MoveWindow,hBtn,edx,eax,16,16,TRUE
+		invoke MoveWindow,hBtn,edx,eax,15,15,TRUE
+		invoke GetClientRect,hTab,addr rect1
+		invoke SendMessage,hTab,TCM_GETROWCOUNT,0,0
+		.if !eax
+			inc		eax
+		.endif
+		mov		edx,24
+		mul		edx
+		mov		rect1.bottom,eax
 		pop		edx
-		invoke MoveWindow,hTab,-1,rect.top,edx,TABHT,TRUE
+		invoke MoveWindow,hTab,-1,rect.top,edx,rect1.bottom,TRUE
 		invoke UpdateWindow,hTab
 		pop		edx
 		test	wpos.fView,8
@@ -1190,7 +1161,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		rect.top
 		.endif
 		;Add height of tab window to top
-		add		rect.top,TABHT
+		mov		eax,rect1.bottom
+		add		rect.top,eax
 		test	wpos.fView,4
 		.if !ZERO?
 			;Subtract height of resize from bottom
@@ -1204,7 +1176,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		eax,rect.top
 		mov		ht,eax
 		;Resize RAEdit window
-		invoke MoveWindow,hREd,0,rect.top,rect.right,ht,TRUE
+		mov		eax,hREd
+		.if !hREd
+			invoke ShowWindow,hClient,SW_SHOWNA
+			invoke MoveWindow,hClient,0,rect.top,rect.right,ht,TRUE
+		.else
+			invoke ShowWindow,hClient,SW_HIDE
+			invoke MoveWindow,hREd,0,rect.top,rect.right,ht,TRUE
+		.endif
 		test	wpos.fView,4
 		.if !ZERO?
 			mov		eax,ht
@@ -1248,9 +1227,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hBtn,eax
 		invoke LoadBitmap,hInstance,111
 		invoke SendMessage,hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
-		;Set FileName to NewFile
-		invoke lstrcpy,offset FileName,offset szNewFile
-		invoke SetWinCaption,offset FileName
+		;Client
+		invoke GetDlgItem,hWin,IDC_CLIENT
+		mov		hClient,eax
+		;Window caption
+		invoke SetWinCaption,0
 		;Create line number font
 		invoke CreateFontIndirect,offset lfntlnr
 		mov     hLnrFont,eax
@@ -1269,7 +1250,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_OUT,hInstance,0
 		mov		hOut,eax
 		invoke SendMessage,hOut,WM_SETFONT,hFont,FALSE
-		invoke CreateRAEdit
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
 		mov		hBrowse,eax
@@ -1284,10 +1264,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create ResEd
 		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
 		mov		hRes,eax
-		;Set colors
-		invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
-		;and give it focus
-		invoke SetFocus,hREd
 		;Get handle of tab window
 		invoke GetDlgItem,hWin,IDC_TAB
 		mov		hTab,eax
@@ -1295,7 +1271,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpOldTabProc,eax
 		invoke SendMessage,hBrowse,FBM_GETIMAGELIST,0,0
 		invoke SendMessage,hTab,TCM_SETIMAGELIST,0,eax
-		invoke TabToolAdd,hREd,offset FileName
 		invoke GetMenu,hWin
 		mov		hMnu,eax
 		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,4,0
@@ -1348,7 +1323,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
-		invoke SetBlockDefs,hREd
+		invoke SetBlockDefs,hOut
 		invoke SetPropertyDefs
 		;Set hilite words
 		invoke SetKeyWords
@@ -1374,12 +1349,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke OpenHex
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_SAVE
-				invoke SaveEdit,hREd,offset FileName
-				invoke SetFocus,hREd
+				.if hREd
+					invoke SaveEdit,hREd,offset FileName
+					invoke SetFocus,hREd
+				.endif
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,SAVE_ALL
 			.elseif eax==IDM_FILE_SAVEAS
-				invoke SaveEditAs,hREd,offset FileName
+				.if hREd
+					invoke SaveEditAs,hREd,offset FileName
+				.endif
 			.elseif eax==IDM_FILE_CLOSE || eax==IDC_BTNTABCLOSE
 				invoke WantToSave,hREd,offset FileName
 				.if !eax
@@ -1399,7 +1378,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke UpdateAll,CLOSE_ALL
 					mov		szSessionFile,0
 					invoke CloseNotify
-					invoke CreateNew
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL_BUT
@@ -1417,6 +1395,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SaveSessionFile
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSESESSION
+				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
 					invoke AskSaveSessionFile
@@ -1425,7 +1404,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		MainFile,0
 						invoke CloseNotify
 						invoke UpdateAll,CLOSE_ALL
-						invoke CreateNew
 					.endif
 				.endif
 				mov		fTimer,1
@@ -1484,7 +1462,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax!=chrg.cpMax
 					mov		eax,PD_RETURNDC or PD_SELECTION
 				.else
-					mov		eax,PD_RETURNDC or PD_NOSELECTION; or PD_PAGENUMS
+					mov		eax,PD_RETURNDC or PD_NOSELECTION
 				.endif
 				mov		pd.Flags,eax
 				invoke PrintDlg,addr pd
@@ -2097,8 +2075,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetFocus,hREd
 		.endif
 	.elseif eax==WM_SETFOCUS
-		invoke SetFocus,hREd
+		.if hREd
+			invoke SetFocus,hREd
+		.endif
 	.elseif eax==WM_CLOSE
+		mov		nTabInx,-1
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
 			invoke AskSaveSessionFile

@@ -324,7 +324,6 @@ LoadRCFile proc lpFileName:DWORD
 LoadRCFile endp
 
 OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
-	LOCAL	fClose:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	fCtrl:DWORD
 
@@ -345,15 +344,6 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 		.endif
 	.endif
 	mov		fCtrl,eax
-	mov		fClose,0
-	invoke lstrcmp,offset FileName,offset szNewFile
-	.if !eax
-		invoke SendMessage,hREd,EM_GETMODIFY,0,0
-		.if !eax
-			mov		eax,hREd
-			mov		fClose,eax
-		.endif
-	.endif
 	invoke lstrcpy,offset FileName,lpFileName
 	invoke UpdateAll,IS_OPEN
 	.if !eax
@@ -374,8 +364,6 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 							invoke TabToolSetText,eax,lpFileName
 							invoke SetWinCaption,lpFileName
 							invoke lstrcpy,offset FileName,lpFileName
-;							invoke RefreshCombo,hREd
-							call	CloseIt
 						.endif
 					.endif
 				.else
@@ -389,8 +377,6 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 						invoke ShowWindow,hREd,SW_SHOW
 						invoke SetWinCaption,lpFileName
 						invoke lstrcpy,offset FileName,lpFileName
-;						invoke RefreshCombo,hREd
-						call	CloseIt
 					.endif
 				.endif
 			.else
@@ -411,8 +397,6 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					invoke TabToolAdd,hREd,offset FileName
 					invoke LoadHexFile,hREd,offset FileName
 				.endif
-;				invoke RefreshCombo,hREd
-				call	CloseIt
 				invoke TabToolSetChanged,hREd,FALSE
 				invoke LoadCursor,0,IDC_ARROW
 				invoke SetCursor,eax
@@ -423,16 +407,6 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 	.endif
 	invoke SetFocus,hREd
 	ret
-
-CloseIt:
-	.if fClose
-		invoke TabToolDel,fClose
-		invoke GetWindowLong,fClose,GWL_ID
-		.if eax!=IDC_RES
-			invoke DestroyWindow,fClose
-		.endif
-	.endif
-	retn
 
 OpenEditFile endp
 
@@ -688,13 +662,13 @@ OpenSessionFile proc
 	;Show the Open dialog
 	invoke GetOpenFileName,addr ofn
 	.if eax
+		mov		nTabInx,-1
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
 			invoke AskSaveSessionFile
 			.if !eax
 				invoke CloseNotify
 				invoke UpdateAll,CLOSE_ALL
-				invoke CreateNew
 				invoke ReadSessionFile,addr buffer
 			.endif
 		.endif

@@ -412,10 +412,12 @@ SetWinCaption proc lpFileName:DWORD
 
 	;Add filename to windows caption
 	invoke lstrcpy,addr buffer,offset szAppName
-	mov		eax,' - '
-	mov		dword ptr buffer1,eax
-	invoke lstrcat,addr buffer,addr buffer1
-	invoke lstrcat,addr buffer,lpFileName
+	.if lpFileName
+		mov		eax,' - '
+		mov		dword ptr buffer1,eax
+		invoke lstrcat,addr buffer,addr buffer1
+		invoke lstrcat,addr buffer,lpFileName
+	.endif
 	invoke SetWindowText,hWnd,addr buffer
 	ret
 

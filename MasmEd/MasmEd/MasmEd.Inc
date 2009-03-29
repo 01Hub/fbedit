@@ -48,7 +48,6 @@ WndProc					PROTO :DWORD,:DWORD,:DWORD,:DWORD
 UpdateAll				PROTO :DWORD
 CreateRAEdit			PROTO
 CreateRAHexEd			PROTO
-CreateNew				PROTO
 TabToolAdd				PROTO :DWORD,:DWORD
 
 DwToAscii				PROTO :DWORD,:DWORD
@@ -122,6 +121,7 @@ IDC_HEX					equ 1013
 IDC_FILE				equ 1014
 IDC_PROPERTY			equ 1015
 IDC_BTNTABCLOSE			equ 1002
+IDC_CLIENT				equ 1016
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
@@ -548,19 +548,20 @@ CommandLine				dd ?
 hRichEd					dd ?
 hIcon					dd ?
 hAccel					dd ?
-hWnd					dd ?
-hREd					dd ?
-hTab					dd ?
-hBtn					dd ?
-hFind					dd ?
+hWnd					HWND ?
+hClient					HWND ?
+hREd					HWND ?
+hTab					HWND ?
+hBtn					HWND ?
+hFind					HWND ?
 hMnu					dd ?
 hContextMnu				dd ?
-hTbr					dd ?
-hShp					dd ?
-hOut					dd ?
-hBrowse					dd ?
-hProperty				dd ?
-hSbr					dd ?
+hTbr					HWND ?
+hShp					HWND ?
+hOut					HWND ?
+hBrowse					HWND ?
+hProperty				HWND ?
+hSbr					HWND ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?
 fVSplit					dd ?
@@ -599,8 +600,8 @@ prvline					dd ?
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>
 icex					INITCOMMONCONTROLSEX <?>
-hRes					dd ?
-hResEd					dd ?
+hRes					HWND ?
+hResEd					HWND ?
 hCustDll				dd 32 dup(?)
 hBrBack					dd ?
 lpOldRAEditProc			dd ?
@@ -620,8 +621,8 @@ mnubuff					db 8192 dup(?)
 hMenuBrushA				dd ?
 hMenuBrushB				dd ?
 hMnuFont				dd ?
-hCCLB					dd ?
-hCCTT					dd ?
+hCCLB					HWND ?
+hCCTT					HWND ?
 lpOldTabProc			dd ?
 tabinx					dd ?
 fUnicode				dd ?
