@@ -569,36 +569,40 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	.while byte ptr [esi]
 		call	GetItem
 		.if nInx==-2
-			invoke AsciiToDw,addr buffer
-			mov		nInx,eax
+			.if buffer
+				invoke AsciiToDw,addr buffer
+				mov		nInx,eax
+			.endif
 		.else
 			invoke AsciiToDw,addr buffer
 			mov		nLn,eax
 			call	GetItem
-			.if sdword ptr nLn<=-2
-				mov		eax,nLn
-				neg		eax
-				sub		eax,2
-				mov		nLn,eax
-				invoke OpenEditFile,addr buffer,IDC_HEX
-			.elseif sdword ptr nLn==-1
-				invoke OpenEditFile,addr buffer,IDC_RES
-			.else
-				invoke OpenEditFile,addr buffer,IDC_RAE
-			.endif
-			mov		eax,hREd
-			.if nLn!=-1 && eax!=hRes
-				invoke SendMessage,hREd,EM_LINEINDEX,nLn,0
-				mov		chrg.cpMin,eax
-				mov		chrg.cpMax,eax
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-				invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-				invoke SendMessage,hREd,REM_VCENTER,0,0
-				invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+			.if buffer
+				.if sdword ptr nLn<=-2
+					mov		eax,nLn
+					neg		eax
+					sub		eax,2
+					mov		nLn,eax
+					invoke OpenEditFile,addr buffer,IDC_HEX
+				.elseif sdword ptr nLn==-1
+					invoke OpenEditFile,addr buffer,IDC_RES
+				.else
+					invoke OpenEditFile,addr buffer,IDC_RAE
+				.endif
+				mov		eax,hREd
+				.if nLn!=-1 && eax!=hRes
+					invoke SendMessage,hREd,EM_LINEINDEX,nLn,0
+					mov		chrg.cpMin,eax
+					mov		chrg.cpMax,eax
+					invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+					invoke SendMessage,hREd,REM_VCENTER,0,0
+					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+				.endif
 			.endif
 		.endif
 	.endw
-	.if nInx!=-2
+	.if sdword ptr nInx>=0
 		invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
 		invoke TabToolActivate
 		invoke SetFocus,hREd

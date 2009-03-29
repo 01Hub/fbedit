@@ -481,7 +481,9 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			.if eax==-1
 				call	DisableRes
+				call	DisableEdit
 			.elseif eax==IDC_RES
+				call	DisableEdit
 				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
@@ -511,40 +513,6 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				invoke SendMessage,hResEd,DEM_CANPASTE,0,0
 				mov		edx,IDM_EDIT_PASTE
-				call	EnableDisable
-				xor		eax,eax
-				mov		edx,IDM_FILE_PRINT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_SELECTALL
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FIND
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDNEXT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDPREV
-				call	EnableDisable
-				mov		edx,IDM_EDIT_REPLACE
-				call	EnableDisable
-				xor		eax,eax
-				mov		edx,IDM_EDIT_BLOCKMODE
-				call	EnableDisable
-				mov		edx,IDM_EDIT_BLOCKINSERT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_TOGGLEBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_NEXTBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_PREVBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_CLEARBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_INDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_OUTDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COMMENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_UNCOMMENT
 				call	EnableDisable
 				mov		eax,TRUE
 				mov		edx,IDM_FORMAT_LOCK
@@ -737,6 +705,55 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	ret
+
+DisableEdit:
+	xor		eax,eax
+	mov		edx,IDM_EDIT_CUT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_COPY
+	call	EnableDisable
+	mov		edx,IDM_EDIT_PASTE
+	call	EnableDisable
+	mov		edx,IDM_EDIT_DELETE
+	call	EnableDisable
+	mov		edx,IDM_EDIT_UNDO
+	call	EnableDisable
+	mov		edx,IDM_EDIT_REDO
+	call	EnableDisable
+	mov		edx,IDM_FILE_PRINT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_SELECTALL
+	call	EnableDisable
+	mov		edx,IDM_EDIT_FIND
+	call	EnableDisable
+	mov		edx,IDM_EDIT_FINDNEXT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_FINDPREV
+	call	EnableDisable
+	mov		edx,IDM_EDIT_REPLACE
+	call	EnableDisable
+	xor		eax,eax
+	mov		edx,IDM_EDIT_BLOCKMODE
+	call	EnableDisable
+	mov		edx,IDM_EDIT_BLOCKINSERT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_TOGGLEBM
+	call	EnableDisable
+	mov		edx,IDM_EDIT_NEXTBM
+	call	EnableDisable
+	mov		edx,IDM_EDIT_PREVBM
+	call	EnableDisable
+	mov		edx,IDM_EDIT_CLEARBM
+	call	EnableDisable
+	mov		edx,IDM_EDIT_INDENT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_OUTDENT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_COMMENT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_UNCOMMENT
+	call	EnableDisable
+	retn
 
 DisableRes:
 	xor		eax,eax

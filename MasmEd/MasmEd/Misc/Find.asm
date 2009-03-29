@@ -6,7 +6,7 @@ FindInit proc uses ebx esi edi,hWin:HWND
 
 	mov		fres,-1
 	invoke SendMessage,hWin,EM_EXGETSEL,0,offset findchrg
-	mov		findchrg.cpMax,-1
+	mov		findchrg.cpMax,-2
 	.if fallfiles
 		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
 		mov		esi,eax
@@ -66,7 +66,7 @@ FindSetup proc hWin:HWND
 			mov		ft.chrg.cpMin,eax
 		.else
 			mov		eax,findchrg.cpMax
-			.if eax!=-1
+			.if eax!=-2
 				mov		ft.chrg.cpMin,0
 			.endif
 		.endif
@@ -78,7 +78,7 @@ FindSetup proc hWin:HWND
 			mov		eax,ft.chrgText.cpMax
 			mov		ft.chrg.cpMin,eax
 		.endif
-		mov		ft.chrg.cpMax,-1
+		mov		ft.chrg.cpMax,-2
 	.else
 		;Up
 		.if fres!=-1
@@ -95,6 +95,8 @@ Find proc hWin:HWND,frType:DWORD
 
 FindNext:
 	invoke FindSetup,hWin
+PrintDec findchrg.cpMin
+PrintDec findchrg.cpMax
 	;Do the find
 	invoke SendMessage,hWin,EM_FINDTEXTEX,frType,offset ft
 	mov		fres,eax
