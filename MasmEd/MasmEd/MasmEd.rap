@@ -188,20 +188,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.5.3
-PV=1.0.5.3
+FV=1.0.5.4
+PV=1.0.5.4
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.5.3
+ProductVersion=1.0.5.4
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2009
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.0.5.3
+FileVersion=1.0.5.4
 CompanyName=
 
 [Group]
@@ -255,16 +255,16 @@ Group=Assembly,Resources,Misc,Include
 46=1
 
 [Find]
-1="CreateNew"
-2="hOut"
-3="1016"
-4="SetHiliteWords"
-5="UpdateAll"
-6="UpdateAll,WM_CLOSE"
-7="IDC_PROPERTY"
-8="IDC_CBO"
-9="hCFbo"
-10="hCbo"
+1="1053"
+2="CreateNew"
+3="hOut"
+4="1016"
+5="SetHiliteWords"
+6="UpdateAll"
+7="UpdateAll,WM_CLOSE"
+8="IDC_PROPERTY"
+9="IDC_CBO"
+10="hCFbo"
 
 [VersionControl]
 Settings=1246
@@ -311,8 +311,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,1030
-1=0,0,0,0,36766
+2=0,0,687,524,9899
+1=0,0,0,0,3786
 11=0,0,0,0,18154
 22=0,0,0,0,2294
 10=0,0,0,0,13546
@@ -324,18 +324,18 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,538
 18=0,0,0,0
-15=0,0,687,524,29675
+15=0,0,687,524,4019
 30=0,0,0,0
 13=0,0,0,0,3265
 21=0,0,0,0,1661
-29=0,0,0,0,63
+29=0,0,0,0,1443
 28=0,0,0,0,2148
 26=0,0,665,480
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
 14=0,0,0,0,8956
-12=0,0,0,0,6
+12=0,0,0,0,1712
 31=0,0,0,0,64
 32=0,0,0,0
 33=0,0,0,0,1124

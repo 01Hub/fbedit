@@ -95,8 +95,6 @@ Find proc hWin:HWND,frType:DWORD
 
 FindNext:
 	invoke FindSetup,hWin
-PrintDec findchrg.cpMin
-PrintDec findchrg.cpMax
 	;Do the find
 	invoke SendMessage,hWin,EM_FINDTEXTEX,frType,offset ft
 	mov		fres,eax
