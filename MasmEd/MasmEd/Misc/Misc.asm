@@ -397,8 +397,10 @@ ResetMenu proc uses esi edi
 	push	eax
 	invoke SetMenu,hWnd,eax
 	invoke DestroyMenu,hMnu
-	pop		eax
-	mov		hMnu,eax
+	pop		hMnu
+	invoke DestroyMenu,hContextMnu
+	invoke LoadMenu,hInstance,IDR_MENUCONTEXT
+	mov		hContextMnu,eax
 	invoke SetToolMenu
 	invoke SetHelpMenu
 	invoke CoolMenu

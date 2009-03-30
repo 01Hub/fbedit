@@ -1911,10 +1911,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					invoke SendMessage,hBrowse,FBM_SETPATH,TRUE,addr buffer
 				.endif
-			.elseif eax==IDM_BROWSE_COPY
+			.elseif eax==IDM_BROWSER_COPY
 				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
 				invoke SetFocus,hREd
+			.elseif eax==IDM_PROPERTY_GOTODECLARE
+				invoke SendMessage,hProperty,WM_COMMAND,(LBN_DBLCLK shl 16) or 1003,0
+			.elseif eax==IDM_PROPERTY_COPYTOCODE
+				invoke SendMessage,hProperty,PRM_GETSELTEXT,0,offset tmpbuff
+				.if eax
+					invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset tmpbuff
+					invoke SetFocus,hREd
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -2201,6 +2209,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.elseif eax==hBrowse
 			invoke GetSubMenu,hContextMnu,2
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+		.elseif eax==hProperty
+			invoke GetSubMenu,hContextMnu,4
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.endif
 	.elseif eax==WM_INITMENUPOPUP

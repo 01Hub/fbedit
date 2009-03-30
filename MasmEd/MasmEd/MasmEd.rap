@@ -255,16 +255,16 @@ Group=Assembly,Resources,Misc,Include
 46=1
 
 [Find]
-1="1053"
-2="CreateNew"
-3="hOut"
-4="1016"
-5="SetHiliteWords"
-6="UpdateAll"
-7="UpdateAll,WM_CLOSE"
-8="IDC_PROPERTY"
-9="IDC_CBO"
-10="hCFbo"
+1="IDM_BROWSE_COPY"
+2="1053"
+3="CreateNew"
+4="hOut"
+5="1016"
+6="SetHiliteWords"
+7="UpdateAll"
+8="UpdateAll,WM_CLOSE"
+9="IDC_PROPERTY"
+10="IDC_CBO"
 
 [VersionControl]
 Settings=1246
@@ -276,7 +276,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -311,9 +311,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9899
-1=0,0,0,0,3786
-11=0,0,0,0,18154
+2=0,0,687,524,5586
+1=0,0,0,0,40205
+11=0,0,0,0,7935
 22=0,0,0,0,2294
 10=0,0,0,0,13546
 23=0,0,0,0,197
@@ -371,7 +371,7 @@ ProductVer4Range=0
 37=1
 [Collapse]
 2=
-1=,,,,2048,,
+1=,,,,,,
 31=
 23=
 3=
