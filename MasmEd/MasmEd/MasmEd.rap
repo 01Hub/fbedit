@@ -18,7 +18,7 @@ Debug=0
 6=Misc\Find.dlg
 7=MasmEd.tbr
 8=Res\Toolbar.bmp
-9=
+9=Inc\RAGrid.Inc
 10=Misc\FileIO.asm
 11=Misc\Misc.asm
 12=Misc\Find.asm
@@ -59,6 +59,8 @@ MinorFiles=*.res;*.obj;
 44=Context.mnu
 45=Inc\RAProperty.Inc
 46=Tool\PropertyTool.asm
+47=Opt\TabOpt4.dlg
+48=Opt\TabOpt5.dlg
 
 [MakeFiles]
 0=MasmEd.rap
@@ -214,7 +216,7 @@ Group=Assembly,Resources,Misc,Include
 6=2
 7=3
 8=3
-9=
+9=4
 10=1
 11=1
 12=1
@@ -253,18 +255,20 @@ Group=Assembly,Resources,Misc,Include
 44=2
 45=4
 46=1
+47=2
+48=2
 
 [Find]
-1="IDM_BROWSE_COPY"
-2="1053"
-3="CreateNew"
-4="hOut"
-5="1016"
-6="SetHiliteWords"
-7="UpdateAll"
-8="UpdateAll,WM_CLOSE"
-9="IDC_PROPERTY"
-10="IDC_CBO"
+1="2500"
+2="DEM_GETSIZE"
+3="DEM_SETSIZE"
+4="winsize"
+5="wtpro"
+6="wtprop"
+7="IDM_BROWSE_COPY"
+8="1053"
+9="CreateNew"
+10="hOut"
 
 [VersionControl]
 Settings=1246
@@ -311,12 +315,12 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,5586
-1=0,0,0,0,40205
-11=0,0,0,0,7935
+2=0,0,687,524,777
+1=0,0,0,0,24750
+11=0,0,0,0,1114
 22=0,0,0,0,2294
 10=0,0,0,0,13546
-23=0,0,0,0,197
+23=0,0,0,0,4914
 9=0,0,0,0,0
 4=0,0,0,0
 17=0,0,0,0,2086
@@ -324,12 +328,12 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,538
 18=0,0,0,0
-15=0,0,687,524,4019
+15=0,0,687,524,11765
 30=0,0,0,0
 13=0,0,0,0,3265
 21=0,0,0,0,1661
 29=0,0,0,0,1443
-28=0,0,0,0,2148
+28=0,0,0,0,22407
 26=0,0,665,480
 25=0,0,0,0
 27=0,0,0,0
@@ -344,13 +348,15 @@ ProductVer4Range=0
 37=0,0,0,0,922
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,517
+38=0,0,0,0,474
 39=0,0,0,0
 40=0,0,0,0,29
-42=0,0,0,0,1241
+42=0,0,0,0,881
 43=0,0,0,0
 45=0,0,0,0,1045
 46=0,0,0,0,0
+47=0,0,0,0
+48=0,0,0,0
 
 [BookMark]
 0=

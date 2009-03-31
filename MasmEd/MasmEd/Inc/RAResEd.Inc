@@ -17,45 +17,33 @@ MaxName				equ 64
 
 ;Dialog structures
 DLGHEAD struct
-	changed			dd ?				;Set to FALSE
+	locked			dd ?				;Set to TRUE or FALSE
 	class			db 32 dup(?)		;Set to Null string
 	menuid			db MaxName dup(?)	;Set to Null string
 	font			db 32 dup(?)		;Set to "MS Sans Serif"
 	fontsize		dd ?				;Set to 8
-	fontht			dd ?				;Set to -10
+	charset			db ?				;Set to NULL
+	italic			db ?				;Set to NULL
+	weight			dw ?				;Set to NULL
 	lang			dd ?				;Set to NULL
 	sublang			dd ?				;Set to NULL
-	undo			dd ?				;Set to NULL
 	ctlid			dd ?				;Set to 1001
 	hmnu			dd ?				;Set to NULL
 	lpmnu			dd ?				;Set to NULL
 	htlb			dd ?				;Set to NULL
 	hstb			dd ?				;Set to NULL
-	locked			dd ?				;Set to TRUE or FALSE
-	hfont			dd ?				;Set to NULL
-	charset			db ?				;Set to NULL
-	italic			db ?				;Set to NULL
-	weight			dw ?				;Set to NULL
 	hred			dd ?				;Set to NULL
 	ftextmode		dd ?				;Set to NULL
 DLGHEAD ends
 
 DIALOG struct
 	hwnd			dd ?				;Set to TRUE
-	hdmy			dd ?				;Handle of transparent window
-	oldproc			dd ?				;Set to NULL
-	hpar			dd ?				;Set to NULL
-	hcld			dd ?				;Set to NULL
 	style			dd ?				;Set to desired style
 	exstyle			dd ?				;Set to desired ex style
 	dux				dd ?				;X position in dialog units
 	duy				dd ?				;Y position in dialog units
 	duccx			dd ?				;Width in dialog units
 	duccy			dd ?				;Height in dialog units
-	x				dd ?				;X position in pixels
-	y				dd ?				;Y position in pixels
-	ccx				dd ?				;Width in pixels
-	ccy				dd ?				;Height in pixels
 	caption			db MaxCap dup(?)	;Caption max 255+1 char
 	class			db 32 dup(?)		;Set to Null string
 	ntype			dd ?				;Follows ToolBox buttons Dialog=0, Edit=1, Static=2, GroupBox=3
@@ -64,7 +52,6 @@ DIALOG struct
 	id				dd ?				;Dialog / Controls ID
 	idname			db MaxName dup(?)	;ID Name, max 63+1 chars
 	helpid			dd ?				;Help ID
-	undo			dd ?				;Set to NULL
 	himg			dd ?				;Set to NULL
 DIALOG ends
 
@@ -72,7 +59,7 @@ DIALOG ends
 TYPES struct
 	ID				dd ?
 	lpclass			dd ?
-	partype			dd ?
+	keepsize		dd ?
 	style			dd ?
 	typemask		dd ?
 	exstyle			dd ?
@@ -115,6 +102,8 @@ MNUITEM ends
 RESCOLOR struct
 	back			dd ?
 	text			dd ?
+	styles			dd ?
+	words			dd ?
 RESCOLOR ends
 
 RESID struct
@@ -383,3 +372,4 @@ szToolBoxClass		db 'TOOLBOXCLASS',0
 szPropertyClass		db 'PROPERTYCLASS',0
 szProjectClass		db 'PROJECTCLASS',0
 szDlgEditDummyClass	db 'DlgEditDummy',0
+szDlgEditInvisible	db 'DlgEditInvisible',0

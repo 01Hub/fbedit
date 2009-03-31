@@ -94,6 +94,9 @@ start:
 			invoke UpdateTheme1053
 			mov		ver,1053
 			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
+		.elseif ver<1054
+			mov		ver,1054
+			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
@@ -121,7 +124,7 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		ver,1053
+		mov		ver,1054
 		invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 	.endif
 	.if wpos.wtfile<50
@@ -882,7 +885,7 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_DESTROY
 		invoke SendMessage,hResEd,DEM_GETSIZE,0,addr winsize
 		mov		eax,winsize.htpro
-		mov		eax,wpos.htprop
+		mov		wpos.htprop,eax
 		mov		eax,winsize.wtpro
 		mov		wpos.wtprop,eax
 		mov		eax,winsize.ptstyle.x
@@ -952,6 +955,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	min:DWORD
 	LOCAL	max:DWORD
 	LOCAL	mDC:HDC
+	LOCAL	cust:CUSTSTYLE
+	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -1275,10 +1280,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hProperty,eax
 		invoke SendMessage,hSbr,WM_GETFONT,0,0
 		push	eax
+		push	eax
 		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
 		pop		eax
 		invoke SendMessage,hProperty,WM_SETFONT,eax,FALSE
 		;Create ResEd
+		pop		eax
 		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
 		mov		hRes,eax
 		;Get handle of tab window
@@ -1315,6 +1322,33 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[ebx],eax
 					add		ebx,4
 				.endif
+			.endif
+			inc		nInx
+		.endw
+		;Add custom styles
+		mov		nInx,1
+		.while nInx<=64
+			invoke MakeKey,addr szCustStyle,nInx,addr buffer1
+			mov		lpcbData,sizeof CUSTSTYLE
+			mov		cust.szStyle,0
+			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr cust,addr lpcbData
+			.if cust.szStyle
+				invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
+			.endif
+			inc		nInx
+		.endw
+		;Add resource types
+		mov		nInx,1
+		mov		ebx,offset hCustDll
+		.while nInx<=32
+			invoke MakeKey,addr szCustType,nInx,addr buffer1
+			mov		lpcbData,sizeof RARSTYPE
+			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
+			.if rarstype.sztype || rarstype.nid
+				mov		edx,nInx
+				dec		edx
+				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
 			.endif
 			inc		nInx
 		.endw
@@ -2143,6 +2177,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		wpos.fMax,TRUE
 				.endif
+				invoke DestroyWindow,hRes
 				invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
 				invoke DestroyWindow,hCCLB
 				invoke DestroyWindow,hCCTT

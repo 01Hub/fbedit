@@ -1126,3 +1126,51 @@ UpdateAll proc uses ebx,nFunction:DWORD
 
 UpdateAll endp
 
+ConvertDpiSize proc nPix:DWORD
+	LOCAL	lpx:DWORD
+
+	invoke GetDC,NULL
+	push	eax
+	invoke GetDeviceCaps,eax,LOGPIXELSX
+	mov		lpx,eax
+	pop		eax
+	invoke ReleaseDC,NULL,eax
+	mov		eax,nPix
+	shl		eax,16
+	cdq
+	mov		ecx,96
+	div		ecx
+	mov		ecx,lpx
+	mul		ecx
+	shr		eax,16
+	ret
+
+ConvertDpiSize endp
+
+HexToDw proc uses esi,lpAscii:DWORD
+
+	mov		esi,lpAscii
+	xor		edx,edx
+	xor		ecx,ecx
+	xor		eax,eax
+	.while ecx<8
+		shl		edx,4
+		mov		al,[esi+ecx]
+		.if al<='9'
+			and		al,0Fh
+		.elseif al>='A' && al<="F"
+			sub		al,41h-10
+		.elseif al>='a' && al<="f"
+			and		al,5Fh
+			sub		al,41h-10
+		.else
+			xor		eax,eax
+		.endif
+		or		edx,eax
+		inc		ecx
+	.endw
+	mov		eax,edx
+	ret
+
+HexToDw endp
+

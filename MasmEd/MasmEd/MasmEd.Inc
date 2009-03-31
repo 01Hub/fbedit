@@ -38,6 +38,8 @@ includelib ..\Lib\RACodeComplete.lib
 include Inc\RAProperty.Inc
 includelib ..\Lib\RAProperty.lib
 
+include Inc\RAGrid.Inc
+
 include masm32.inc
 include \RadASM\Masm\Inc\Debug.Inc
 includelib masm32.lib
