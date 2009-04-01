@@ -466,6 +466,37 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 
 ShowPos endp
 
+ShowProc proc uses esi,nLine:DWORD
+	LOCAL	isinproc:ISINPROC
+	LOCAL	buffer[512]:BYTE
+
+	mov		buffer,0
+	.if hREd
+		invoke GetWindowLong,hREd,GWL_ID
+		.if eax==IDC_RAE
+			mov		eax,nLine
+			mov		isinproc.nLine,eax
+			mov		eax,hREd
+			mov		isinproc.nOwner,eax
+			mov		isinproc.lpszType,offset szCCp
+			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+			.if eax
+				mov		esi,eax
+				invoke lstrcpy,addr buffer,esi
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				.if byte ptr [esi]
+					invoke lstrcat,addr buffer,addr szComma
+					invoke lstrcat,addr buffer,esi
+				.endif
+			.endif
+		.endif
+	.endif
+	invoke SendMessage,hSbr,SB_SETTEXT,3,addr buffer
+	ret
+
+ShowProc endp
+
 ShowSession proc
 	LOCAL	buffer[MAX_PATH]:BYTE
 

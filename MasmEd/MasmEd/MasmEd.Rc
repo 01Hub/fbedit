@@ -1,5 +1,6 @@
 #define IDM_HELPF1 500
 #include "Res/MasmEdMnu.rc"
+#include "Res/PathOptionDlg.rc"
 #include "Res/TabOpt5Dlg.rc"
 #include "Res/TabOpt4Dlg.rc"
 #include "Res/ContextMnu.rc"

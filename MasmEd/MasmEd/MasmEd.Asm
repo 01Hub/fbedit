@@ -485,6 +485,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==-1
 				call	DisableRes
 				call	DisableEdit
+				invoke SendMessage,hSbr,SB_SETTEXT,0,addr szNULL
 			.elseif eax==IDC_RES
 				call	DisableEdit
 				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
@@ -562,6 +563,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				xor		eax,TRUE
 				mov		edx,IDM_FORMAT_FRONT
 				call	EnableDisable
+				invoke SendMessage,hSbr,SB_SETTEXT,0,addr szNULL
 			.elseif eax==IDC_RAE
 				call	DisableRes
 				mov		eax,TRUE
@@ -691,6 +693,11 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_CLEARBM
 				call	EnableDisable
+				mov		eax,chrg.cpMin
+				mov		edx,eax
+				shr		edx,5
+				and		eax,31
+				invoke ShowPos,edx,eax
 			.endif
 			xor		eax,eax
 			test	wpos.fView,4
@@ -706,6 +713,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fTimer,2
 			.endif
 		.endif
+		invoke ShowProc,nLastLine
 	.endif
 	ret
 
@@ -1871,6 +1879,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_DIALOG
 				invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
+			.elseif eax==IDM_OPTION_PATH
+				invoke DialogBoxParam,hInstance,IDD_PATHOPTION,hWin,offset PathOptionDialogProc,0
 			.elseif eax==IDM_OPTION_BUILD
 				invoke DialogBoxParam,hInstance,IDD_BUILDOPTION,hWin,offset BuildOptionDialogProc,0
 			.elseif eax==IDM_OPTION_TOOLS
