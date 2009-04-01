@@ -43,4 +43,19 @@ Adding a new color theme:
 
 There can be max 10 themes.
 
+Adding help files to Help menu:
+-------------------------------
+Use Option / Help menu to add help files.
+NOTE!
+The first help file must be the Win32.hlp file for F1 to work properly.
+Example:
+Menu item: Win32 api
+Command: C:\masm32\help\WIN32.HLP
+
+Adding tools to Tools menu:
+---------------------------
+Example:
+Menu item: Calculator
+Command: calc.exe
+
 KetilO

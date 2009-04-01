@@ -205,12 +205,13 @@ DoToolBar proc hInst:DWORD,hToolBar:HWND
 DoToolBar endp
 
 DoStatusBar proc hWin:DWORD
-	LOCAL	sbParts[3]:DWORD
+	LOCAL	sbParts[4]:DWORD
 
 	mov [sbParts+0],100				; pixels from left
-	mov [sbParts+4],400				; pixels from left
-	mov [sbParts+8],-1				; last part
-	invoke SendMessage,hWin,SB_SETPARTS,3,addr sbParts
+	mov [sbParts+4],250				; pixels from left
+	mov [sbParts+8],400				; pixels from left
+	mov [sbParts+12],-1				; last part
+	invoke SendMessage,hWin,SB_SETPARTS,4,addr sbParts
 	ret
 
 DoStatusBar endp

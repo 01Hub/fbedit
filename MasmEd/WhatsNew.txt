@@ -5,6 +5,7 @@ MasmEd
 o Added code properties list. Double click in list to jump to the declaration in your code.
 o Added auto code complete on procs and structures.
 o Added code complete list (Ctrl+Space). If you are in a proc then parameters and locals will be included in the list.
+o Added multiline tab select.
 o Added Style mask to Custom controls in dialog editor options.
 o Added Custom styles to dialog editor options.
 o Added Resource types to dialog editor options.
