@@ -532,6 +532,9 @@ nmeexp					NAMEEXPORT <0,'rsrc.inc',0>
 szGrid					db 'Grid',0
 grdsize					GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,TRUE>
 
+szPathBin				db 'PathBin',0
+szPathInc				db 'PathInc',0
+szPathLib				db 'PathLib',0
 szMainFile				db 'MainFile',0
 szCompileRC				db 'CompileRC',0
 szAssemble				db 'Assemble',0
@@ -615,6 +618,9 @@ szInitFolder			db MAX_PATH dup(?)
 szSessionFile			db MAX_PATH dup(?)
 nErrID					dd ?
 ErrID					dd 128 dup(?)
+PathBin					db 256 dup(?)
+PathInc					db 256 dup(?)
+PathLib					db 256 dup(?)
 CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)

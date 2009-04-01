@@ -8,10 +8,13 @@ MAKE struct
 MAKE ends
 
 .data
+defPathBin				db 'C:\masm32\bin',0
+defPathInc				db 'C:\masm32\include',0
+defPathLib				db 'C:\masm32\lib',0
 
-defCompileRC			db '\masm32\bin\rc /v',0
-defAssemble				db '\masm32\bin\ml /c /coff /Cp /I\masm32\include',0
-defLink					db '\masm32\bin\link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:\masm32\lib',0
+defCompileRC			db 'rc /v',0
+defAssemble				db 'ml /c /coff /Cp /I\masm32\include',0
+defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:\masm32\lib',0
 
 ExtRC					db '.rc',0
 ExtRes					db '.res',0

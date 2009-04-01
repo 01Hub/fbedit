@@ -1360,6 +1360,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
+
+		invoke lstrcpy,addr PathBin,addr defPathBin
+		mov		lpcbData,sizeof PathBin
+		invoke RegQueryValueEx,hReg,addr szPathBin,0,addr lpType,addr PathBin,addr lpcbData
+		invoke lstrcpy,addr PathInc,addr defPathInc
+		mov		lpcbData,sizeof PathInc
+		invoke RegQueryValueEx,hReg,addr szPathInc,0,addr lpType,addr PathInc,addr lpcbData
+		invoke lstrcpy,addr PathLib,addr defPathLib
+		mov		lpcbData,sizeof PathLib
+		invoke RegQueryValueEx,hReg,addr szPathLib,0,addr lpType,addr PathLib,addr lpcbData
 		invoke lstrcpy,addr CompileRC,addr defCompileRC
 		mov		lpcbData,sizeof CompileRC
 		invoke RegQueryValueEx,hReg,addr szCompileRC,0,addr lpType,addr CompileRC,addr lpcbData
