@@ -1370,6 +1370,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr PathLib,addr defPathLib
 		mov		lpcbData,sizeof PathLib
 		invoke RegQueryValueEx,hReg,addr szPathLib,0,addr lpType,addr PathLib,addr lpcbData
+		invoke SetEnvironment
 		invoke lstrcpy,addr CompileRC,addr defCompileRC
 		mov		lpcbData,sizeof CompileRC
 		invoke RegQueryValueEx,hReg,addr szCompileRC,0,addr lpType,addr CompileRC,addr lpcbData
@@ -2232,6 +2233,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DeleteObject,hMenuBrushB
 			invoke DeleteObject,hMnuFont
 		.endif
+		invoke ResetEnvironment
 		invoke PostQuitMessage,NULL
 	.elseif eax==WM_CONTEXTMENU
 		mov		eax,lParam

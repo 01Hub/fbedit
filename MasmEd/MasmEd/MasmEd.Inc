@@ -422,6 +422,7 @@ szCrLf					db 0Dh,0Ah,0
 szQuote					db '"',0
 szBackSlash				db '\',0
 szComma					db ',',0
+szSemi					db ';',0
 szError					db ' error ',0
 szProc					db '$ proc',0
 szEndp					db '? endp',0
