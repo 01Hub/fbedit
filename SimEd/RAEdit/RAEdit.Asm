@@ -3102,37 +3102,29 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		.if eax
 			mov		chrg.cpMin,0
-			dec		eax
 			mov		chrg.cpMax,eax
-			invoke GetCharPtr,ebx,chrg.cpMax
-			mov		chrg.cpMax,ecx
-			invoke GetCharPtr,ebx,chrg.cpMin
-			mov		chrg.cpMin,ecx
-			mov		ecx,eax
-			push	edi
+			mov		edx,[ebx].EDIT.hLine
+			mov		eax,edx
+			add		eax,[ebx].EDIT.rpLineFree
 			mov		edi,lParam
-			mov		edx,chrg.cpMin
-			mov		esi,[ebx].EDIT.hLine
-			add		esi,[ebx].EDIT.rpLine
-			.while edx<chrg.cpMax
-				mov		eax,[ebx].EDIT.hChars
-				add		eax,[esi].LINE.rpChars
-				push	eax
-				mov		al,[eax+ecx+sizeof CHARS]
-				inc		ecx
-				mov		[edi],al
-				inc		edi
-				pop		eax
-				.if ecx==[eax].CHARS.len
-					xor		ecx,ecx
-					add		esi,sizeof LINE
+			.while edx<eax
+				mov		esi,[edx].LINE.rpChars
+				add		esi,[ebx].EDIT.hChars
+				mov		ecx,[esi].CHARS.len
+				add		esi,sizeof CHARS
+				sub		chrg.cpMax,ecx
+				.if CARRY?
+					mov		ecx,chrg.cpMax
+					neg		ecx
+					add		chrg.cpMin,ecx
+					rep movsb
+					.break
 				.endif
-				inc		edx
+				add		chrg.cpMin,ecx
+				rep movsb
+				add		edx,sizeof LINE
 			.endw
-			mov		byte ptr [edi],0
-			pop		edi
-			mov		eax,chrg.cpMax
-			sub		eax,chrg.cpMin
+			mov		eax,chrg.cpMin
 		.endif
 		ret
 	.elseif eax==WM_GETTEXTLENGTH
