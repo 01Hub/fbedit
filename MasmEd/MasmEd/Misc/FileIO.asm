@@ -60,7 +60,9 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 		invoke TabToolSetChanged,hWin,FALSE
    		mov		eax,FALSE
 	.else
-		invoke MessageBox,hWnd,offset szSaveFileFail,offset szAppName,MB_OK
+		invoke lstrcpy,offset tmpbuff,offset szSaveFileFail
+		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
 	ret
@@ -227,7 +229,9 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		.endif
 		mov		eax,FALSE
 	.else
-		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
+		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
 	ret
@@ -258,7 +262,9 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SetWinCaption,offset FileName
 		mov		eax,FALSE
 	.else
-		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
+		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
 	ret
@@ -316,7 +322,9 @@ LoadRCFile proc lpFileName:DWORD
 		invoke SendMessage,hResEd,PRO_OPEN,lpFileName,hMem
 		mov		eax,TRUE
 	.else
-		invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
+		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
 	ret
@@ -402,7 +410,9 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 				invoke SetCursor,eax
 			.endif
 		.else
-			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
+			invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
+			invoke lstrcat,offset tmpbuff,lpFileName
+			invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		.endif
 	.endif
 	invoke SetFocus,hREd

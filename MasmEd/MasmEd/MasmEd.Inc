@@ -396,19 +396,19 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 szAppName				db 'MasmEd',0
 szVersion				db 'MasmEd version 1.0.5.4',0
-szAboutMsg				db 'MasmEd code & resource editor',13,10,13,10,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
+szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
 szAboutUrl				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0
 
 szReplace				db 'Replace ..',0
 szRegionSearched		db 'Region searched.',0
-szOpenFileFail        	db 'Cannot open the file',0
-szSaveFileFail			db 'Cannot save the file',0
+szOpenFileFail        	db 'Cannot open the file.',0Dh,0
+szSaveFileFail			db 'Cannot save the file.',0Dh,0
 szWannaSave           	db 'Want to save changes to',0Dh,0
 szNewFile             	db '(Untitled)',0
-szChanged				db 'File is changed outside editor',0Dh,0Ah,0
-szReopen				db 0Dh,0Ah,0Dh,0Ah,'Reopen the file?',0
-szSaveSession			db 'Save current session to?',0Dh,0Ah,0
+szChanged				db 'File is changed outside editor',0Dh,0
+szReopen				db 0Dh,0Dh,'Reopen the file?',0
+szSaveSession			db 'Save current session to?',0Dh,0
 szNoMain				db 'No main file selected.',0Dh,'Use Make / Set Current as Mainfile.',0Dh,0
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
@@ -462,7 +462,7 @@ rabddatau				RABLOCKDEF <offset szDataU,0,0,0,BD_SEGMENTBLOCK>
 rabdconst				RABLOCKDEF <offset szConst,0,0,0,BD_SEGMENTBLOCK>
 rabdcode				RABLOCKDEF <offset szCode,0,0,0,BD_SEGMENTBLOCK>
 rabdcomment				RABLOCKDEF <offset szComment,0,0,0,BD_COMMENTBLOCK>
-rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,1 SHL 16>
+rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,2 SHL 16>
 
 blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdstruct,offset rabdstruc,offset rabdunion,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
 
@@ -619,9 +619,9 @@ szInitFolder			db MAX_PATH dup(?)
 szSessionFile			db MAX_PATH dup(?)
 nErrID					dd ?
 ErrID					dd 128 dup(?)
-PathBin					db 256 dup(?)
-PathInc					db 256 dup(?)
-PathLib					db 256 dup(?)
+PathBin					db MAX_PATH dup(?)
+PathInc					db MAX_PATH dup(?)
+PathLib					db MAX_PATH dup(?)
 CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)

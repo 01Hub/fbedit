@@ -9,6 +9,7 @@ o Added multiline tab select.
 o Added Style mask to Custom controls in dialog editor options.
 o Added Custom styles to dialog editor options.
 o Added Resource types to dialog editor options.
+o Added path options to set binary, include and library paths.
 o The current proc now shows in statusbar.
 
 1.0.5.3 - 2009.02.04

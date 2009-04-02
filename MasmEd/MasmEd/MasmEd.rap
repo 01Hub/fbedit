@@ -261,16 +261,16 @@ Group=Assembly,Resources,Misc,Include
 49=2
 
 [Find]
-1="szCompileRC"
-2="2500"
-3="DEM_GETSIZE"
-4="DEM_SETSIZE"
-5="winsize"
-6="wtpro"
-7="wtprop"
-8="IDM_BROWSE_COPY"
-9="1053"
-10="CreateNew"
+1="LoadEditFile"
+2="szSaveFileFail"
+3="szOpenFileFail"
+4="szCompileRC"
+5="2500"
+6="DEM_GETSIZE"
+7="DEM_SETSIZE"
+8="winsize"
+9="wtpro"
+10="wtprop"
 
 [VersionControl]
 Settings=1246
@@ -282,7 +282,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=3
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -317,11 +317,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,11015
+2=0,0,687,524,12656
 1=0,0,0,0,59208
 11=0,0,0,0,18240
 22=0,0,0,0,2294
-10=0,0,0,0,13546
+10=0,0,0,0,10722
 23=0,0,0,0,4914
 9=0,0,0,0,0
 4=0,0,0,0
@@ -350,7 +350,7 @@ ProductVer4Range=0
 37=0,0,0,0,7514
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,547
+38=0,0,0,0,566
 39=0,0,0,0
 40=0,0,0,0,238
 42=0,0,0,0,1590
