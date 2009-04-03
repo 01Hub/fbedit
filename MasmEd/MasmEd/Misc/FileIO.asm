@@ -335,13 +335,13 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	fCtrl:DWORD
 
+	invoke lstrcpy,addr buffer,lpFileName
+	invoke CharUpper,addr buffer
 	xor		eax,eax
 	.if fType==0
 		invoke GetKeyState,VK_CONTROL
 		and		eax,80h
 		.if !eax
-			invoke lstrcpy,addr buffer,lpFileName
-			invoke CharUpper,addr buffer
 			invoke lstrlen,addr buffer
 			mov		eax,dword ptr buffer[eax-4]
 			.if eax=='EXE.' || eax=='TAB.' || eax=='MOC.'
@@ -390,7 +390,9 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 			.else
 				invoke LoadCursor,0,IDC_WAIT
 				invoke SetCursor,eax
-				.if fType==0 || fType==IDC_RAE
+				invoke lstrlen,addr buffer
+				mov		eax,dword ptr buffer[eax-4]
+				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.'
 					invoke CreateRAEdit
 					invoke TabToolAdd,hREd,offset FileName
 					invoke LoadEditFile,hREd,offset FileName

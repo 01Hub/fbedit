@@ -1211,21 +1211,22 @@ RemoveFromRegistry proc uses ebx
 	LOCAL	cbSize:DWORD
 	LOCAL	ftm:FILETIME
 
-	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
-	.if lpdwDisp==REG_OPENED_EXISTING_KEY
-		;mov		hReg,eax
+	invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szMasmEd,NULL,KEY_READ or KEY_WRITE,addr hReg
+	.if eax==ERROR_SUCCESS
 		xor		ebx,ebx
 		.while TRUE
 			mov		cbSize,sizeof buffer
 			invoke RegEnumKeyEx,hReg,ebx,addr buffer,addr cbSize,NULL,NULL,NULL,addr ftm
-PrintHex eax
 			.break .if eax!=ERROR_SUCCESS
 			invoke RegDeleteKey,hReg,addr buffer
-PrintHex eax
-			invoke MessageBox,0,addr buffer,addr szAppName,MB_OK
 			inc		ebx
 		.endw
 		invoke RegCloseKey,hReg
+		invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szSoftware,NULL,KEY_READ or KEY_WRITE,addr hReg
+		.if eax==ERROR_SUCCESS
+			invoke RegDeleteKey,hReg,addr szMasmEd1000
+			invoke RegCloseKey,hReg
+		.endif
 	.endif
 	ret
 

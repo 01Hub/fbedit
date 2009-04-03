@@ -11,6 +11,7 @@ o Added Custom styles to dialog editor options.
 o Added Resource types to dialog editor options.
 o Added path options to set binary, include and library paths.
 o The current proc now shows in statusbar.
+o You can remove MasmEd from registry by typing the command line masmed /remove
 
 1.0.5.3 - 2009.02.04
 --------------------

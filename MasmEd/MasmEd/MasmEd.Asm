@@ -66,10 +66,10 @@ start:
 		jmp		@b
 	.endif
 	inc		edx
-	invoke lstrcat,offset szSimEd,edx
+	invoke lstrcat,offset szMasmEd,edx
 	invoke SetCurrentDirectory,offset FileName
 	invoke lstrcpy,addr AppPath,addr FileName
-	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
+	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szMasmEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof ver
 		invoke RegQueryValueEx,hReg,addr szVer,0,addr lpType,addr ver,addr lpcbData
@@ -246,9 +246,11 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.if byte ptr [edx]
 		invoke OpenCommandLine,CommandLine
 	.else
+		mov		tmpbuff,0
 		mov		lpcbData,sizeof tmpbuff
 		invoke RegQueryValueEx,hReg,addr szSession,0,addr lpType,addr tmpbuff,addr lpcbData
 		.if byte ptr tmpbuff && edopt.session
+			mov		MainFile,0
 			mov		lpcbData,sizeof MainFile
 			invoke RegQueryValueEx,hReg,addr szMainFile,0,addr lpType,addr MainFile,addr lpcbData
 			invoke RestoreSession,TRUE
