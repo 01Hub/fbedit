@@ -1206,3 +1206,27 @@ HexToDw proc uses esi,lpAscii:DWORD
 
 HexToDw endp
 
+RemoveFromRegistry proc uses ebx
+	LOCAL	buffer[256]:BYTE
+	LOCAL	cbSize:DWORD
+	LOCAL	ftm:FILETIME
+
+	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
+	.if lpdwDisp==REG_OPENED_EXISTING_KEY
+		;mov		hReg,eax
+		xor		ebx,ebx
+		.while TRUE
+			mov		cbSize,sizeof buffer
+			invoke RegEnumKeyEx,hReg,ebx,addr buffer,addr cbSize,NULL,NULL,NULL,addr ftm
+PrintHex eax
+			.break .if eax!=ERROR_SUCCESS
+			invoke RegDeleteKey,hReg,addr buffer
+PrintHex eax
+			invoke MessageBox,0,addr buffer,addr szAppName,MB_OK
+			inc		ebx
+		.endw
+		invoke RegCloseKey,hReg
+	.endif
+	ret
+
+RemoveFromRegistry endp

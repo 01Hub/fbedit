@@ -261,16 +261,16 @@ Group=Assembly,Resources,Misc,Include
 49=2
 
 [Find]
-1="LoadEditFile"
-2="szSaveFileFail"
-3="szOpenFileFail"
-4="szCompileRC"
-5="2500"
-6="DEM_GETSIZE"
-7="DEM_SETSIZE"
-8="winsize"
-9="wtpro"
-10="wtprop"
+1="ERROR_"
+2="LoadEditFile"
+3="szSaveFileFail"
+4="szOpenFileFail"
+5="szCompileRC"
+6="2500"
+7="DEM_GETSIZE"
+8="DEM_SETSIZE"
+9="winsize"
+10="wtpro"
 
 [VersionControl]
 Settings=1246
@@ -317,11 +317,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,12656
-1=0,0,0,0,59208
-11=0,0,0,0,18240
+2=0,0,687,524,15
+1=0,0,0,0,894
+11=0,0,0,0,25871
 22=0,0,0,0,2294
-10=0,0,0,0,10722
+10=0,0,0,0,18435
 23=0,0,0,0,4914
 9=0,0,0,0,0
 4=0,0,0,0

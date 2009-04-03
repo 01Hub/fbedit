@@ -389,6 +389,9 @@ ALLFilterString			db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',
 ANYFilterString			db 'All Files (*.*)',0,'*.*',0,0
 MESFilterString			db 'Session (*.mes)',0,'*.mes',0,0
 
+szRemoveMasmEd			db '/remove',0
+szAskRemove				db 'Remove MasmEd from registry?',0
+
 .data
 
 szRichEdit				db 'riched20.dll',0

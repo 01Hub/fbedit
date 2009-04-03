@@ -29,6 +29,22 @@ start:
 	;Get command line filename
 	invoke PathGetArgs,CommandLine
 	mov		CommandLine,eax
+	.if byte ptr [eax]
+		push	ebx
+		mov		ebx,eax
+		.while byte ptr [ebx]==VK_SPACE
+			inc		ebx
+		.endw
+		invoke lstrcmpi,ebx,addr szRemoveMasmEd
+		.if !eax
+			invoke MessageBox,0,addr szAskRemove,addr szAppName,MB_YESNO or MB_ICONQUESTION
+			.if eax==IDYES
+				invoke RemoveFromRegistry
+				invoke ExitProcess,0
+			.endif
+		.endif
+		pop		ebx
+	.endif
 	invoke InitCommonControls
 	;prepare common control structure
 	mov		icex.dwSize,sizeof INITCOMMONCONTROLSEX
