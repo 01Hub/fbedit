@@ -184,8 +184,8 @@ FileTrvDir proc	hLBS:HWND,lpPth:DWORD,lpFilter:DWORD
 		and		eax,FILE_ATTRIBUTE_DIRECTORY
 		.if	eax
 			;Do	not	include	'.'	and	'..'
-			mov		al,wfd.cFileName
-			.if	al!='.'
+			mov		ax,word ptr wfd.cFileName
+			.if	ax!='.' && ax!='..'
 				mov		word ptr buffer,'D'
 				invoke lstrcat,addr	buffer,addr	wfd.cFileName
 				invoke SendMessage,hLBS,LB_ADDSTRING,0,addr	buffer

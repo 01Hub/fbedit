@@ -123,8 +123,8 @@ FileTrvDir proc	lpPth:DWORD,lpSel:DWORD
 		and		eax,FILE_ATTRIBUTE_DIRECTORY
 		.if	eax
 			;Do	not	include	'.'	and	'..'
-			mov		al,wfd.cFileName
-			.if	al!='.' && lpSel==NULL
+			mov		ax,word ptr wfd.cFileName
+			.if	ax!='.' && ax!='..' && lpSel==NULL
 				mov		word ptr buffer,'D'
 				invoke strcat,addr	buffer,addr	wfd.cFileName
 				invoke SendMessage,hLBS,LB_ADDSTRING,0,addr	buffer
