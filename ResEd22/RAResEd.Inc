@@ -155,7 +155,7 @@ DEM_COMPACT			equ DEM_BASE+19		;wParam=0, lParam=0, Returns memory size of compa
 DEM_EXPORTTORC		equ DEM_BASE+20		;wParam=0, lParam=0, Returns memory handle
 DEM_SETPOSSTATUS	equ DEM_BASE+21		;wParam=Handle of status window, lParam=Pane
 DEM_SETGRIDSIZE		equ DEM_BASE+22		;wParam=y-size,x-size, lParam=color
-DEM_ADDCONTROL		equ DEM_BASE+23		;wParam=handle of toolbox, lParam=lpCCDEF
+DEM_ADDCONTROL		equ DEM_BASE+23		;wParam=0, lParam=lpCCDEF
 DEM_GETCOLOR		equ DEM_BASE+24		;wParam=0, lParam=lpCOLOR
 DEM_SETCOLOR		equ DEM_BASE+25		;wParam=0, lParam=lpCOLOR
 DEM_SHOWDIALOG		equ DEM_BASE+26		;wParam=0, lParam=0

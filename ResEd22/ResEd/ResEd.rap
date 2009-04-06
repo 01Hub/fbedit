@@ -98,7 +98,7 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,2884
+1=580,0,290,688,2464
 6=
 2=0,0,0,0,7169
 7=0,0,699,490,9218
@@ -142,16 +142,16 @@ Options=52
 0=
 
 [Find]
-1="DEM_SETSIZE"
+1="DEM_ADDCONTROL"
 2="DEM_SETCOLOR"
-3="REM_SETCOL"
-4="REM_SETC"
-5="DEM_COMPACT"
-6="UpdateCtl"
-7="SizeingRect"
-8="GetCtrlMem"
-9="DEWM_MEM"
-10="PrintHex"
+3="REM_SETCOLOR"
+4="DEM_SETCOL"
+5="SetChanged"
+6="DEM_SETGRIDSIZE"
+7="show"
+8="SetWindowPos,hInvisible"
+9="VK_CONTROL"
+10="PRO_SETMODIFY"
 
 [VersionControl]
 Settings=1278
@@ -178,7 +178,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

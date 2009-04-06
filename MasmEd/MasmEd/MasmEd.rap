@@ -261,16 +261,16 @@ Group=Assembly,Resources,Misc,Include
 49=2
 
 [Find]
-1="OpenEditFile"
-2="szSessionFile"
-3="szSimEd"
-4="ERROR_"
-5="LoadEditFile"
-6="szSaveFileFail"
-7="szOpenFileFail"
-8="szCompileRC"
-9="2500"
-10="DEM_GETSIZE"
+1="winpos"
+2="OpenEditFile"
+3="szSessionFile"
+4="szSimEd"
+5="ERROR_"
+6="LoadEditFile"
+7="szSaveFileFail"
+8="szOpenFileFail"
+9="szCompileRC"
+10="2500"
 
 [VersionControl]
 Settings=1246
@@ -282,7 +282,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -317,8 +317,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,21014
-1=0,0,0,0,66112
+2=0,0,687,524,13228
+1=0,0,0,0,23975
 11=0,0,0,0,18959
 22=0,0,0,0,2294
 10=0,0,0,0,8565

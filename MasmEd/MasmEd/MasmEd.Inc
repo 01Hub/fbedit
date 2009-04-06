@@ -271,6 +271,7 @@ WINPOS struct
 	htprop		dd ?
 	left		dd ?
 	top			dd ?
+	wttoolbox	dd ?
 WINPOS ends
 
 EDITOPT struct
@@ -474,7 +475,7 @@ szMasmEd				db 'Software\MasmEd1000\',64 dup(0)
 szSoftware				db 'Software',0
 szMasmEd1000			db 'MasmEd1000',0
 szWinPos				db 'WinPos',0
-wpos					WINPOS <0,15,10,10,620,460,100,175,175,200,100,100>
+wpos					WINPOS <0,15,10,10,620,460,100,175,175,200,100,100,52>
 szEditOpt				db 'EditOpt',0
 edopt					EDITOPT <4,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE>
 szCodeFont				db 'CodeFont',0

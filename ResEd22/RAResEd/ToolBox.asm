@@ -249,7 +249,7 @@ AddCustomControl proc uses ebx esi edi,lpszDLL:DWORD
 	ret
 
 InstallClass:
-	; "dll,class,name.caption,tooltip,width,height,style,exstyle"
+	; "dll,class,name,caption,tooltip,width,height,style,exstyle"
 	mov		idi,-1
 	push	ebx
 	lea		esi,buffer

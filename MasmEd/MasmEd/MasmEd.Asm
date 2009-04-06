@@ -157,7 +157,8 @@ start:
 	mov		winsize.wtpro,eax
 	mov		eax,wpos.htprop
 	mov		winsize.htpro,eax
-	mov		winsize.wttbx,52
+	mov		eax,wpos.wttoolbox
+	mov		winsize.wttbx,eax
 	mov		eax,wpos.left
 	mov		winsize.ptstyle.x,eax
 	mov		eax,wpos.top
@@ -918,6 +919,8 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.left,eax
 		mov		eax,winsize.ptstyle.y
 		mov		wpos.top,eax
+		mov		eax,winsize.wttbx
+		mov		wpos.wttoolbox,eax
 		invoke DestroyWindow,hResEd
 	.elseif eax==EM_GETMODIFY
 		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
