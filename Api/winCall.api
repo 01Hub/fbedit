@@ -306,7 +306,7 @@ ber_printf,pBerElement:BerElement Ptr,fmt:ZString Ptr,arglist:va_list|Integer
 ber_scanf,pBerElement:BerElement Ptr,fmt:ZString Ptr,arglist:va_list|ber_tag_t
 ber_skip_tag,pBerElement:BerElement Ptr,pLen:ber_len_t Ptr|ber_tag_t
 BinarySDToSecurityDescriptor,pSecurityDescriptor:PSECURITY_DESCRIPTOR,pVarsec:VARIANT Ptr,pszServerName:LPCWSTR,userName:LPCWSTR,passWord:LPCWSTR,dwFlags:DWORD|HRESULT
-bind,s:SOCKET,name:sockaddr Ptr,namelen:Integer|Integer
+Bind,s:SOCKET,name:sockaddr Ptr,namelen:Integer|Integer
 BindImage,ImageName:LPSTR,DllPath:LPSTR,SymbolPath:LPSTR|BOOL
 BindImageEx,Flags:DWORD,ImageName:LPSTR,DllPath:LPSTR,SymbolPath:LPSTR,StatusRoutine:PIMAGEHLP_STATUS_ROUTINE|BOOL
 BindIoCompletionCallback,FileHandle:HANDLE,Function:LPOVERLAPPED_COMPLETION_ROUTINE,Flags:ULONG|BOOL
@@ -2138,6 +2138,17 @@ LZInit,hfSource:Integer|Integer
 LZOpenFile,lpFileName:LPTSTR,lpReOpenBuf:LPOFSTRUCT,wStyle:WORD|Integer
 LZRead,hFile:Integer,lpBuffer:LPSTR,cbRead:Integer|Integer
 LZSeek,hFile:Integer,lOffset:LONG,iOrigin:Integer|LONG
+MAKEINTATOM,wInteger:WORD|LPTSTR
+MAKEINTRESOURCE,wInteger:WORD|LPTSTR
+MAKELANGID,usPrimaryLanguage:USHORT,usSubLanguage:USHORT|WORD
+MAKELCID,wLanguageID:WORD,wSortID:WORD|DWORD
+MAKELONG,wLow:WORD,wHigh:WORD|DWORD
+MAKELPARAM,wLow:WORD,wHigh:WORD|LPARAM
+MAKELRESULT,wLow:WORD,wHigh:WORD|LRESULT
+MAKEPOINTS,dwValue:DWORD|POINTS
+MAKEROP4,fore:DWORD,back:DWORD|DWORD
+MAKEWORD,bLow:BYTE,bHigh:BYTE|WORD
+MAKEWPARAM,wLow:WORD,wHigh:WORD|LPARAM
 MapUserPhysicalPages,lpAddress:PVOID,NumberOfPages:ULONG_PTR,UserPfnArray:PULONG_PTR|BOOL
 MapUserPhysicalPagesScatter,*VirtualAddresses:PVOID,NumberOfPages:ULONG_PTR,PageArray:PULONG_PTR|BOOL
 MapViewOfFile,hFileMappingObject:HANDLE,dwDesiredAccess:DWORD,dwFileOffsetHigh:DWORD,dwFileOffsetLow:DWORD,dwNumberOfBytesToMap:SIZE_T|LPVOID
@@ -2441,6 +2452,7 @@ PostQuitMessage,nExitCode:Integer
 PostThreadMessage,idThread:DWORD,Msg:UINT,wParam:WPARAM,lParam:LPARAM|BOOL
 PreFetchCacheLine,Level:Integer,Address:PCVOID
 PrepareTape,hDevice:HANDLE,dwOperation:DWORD,bImmediate:BOOL|DWORD
+PRIMARYLANGID,lgid:WORD|WORD
 PrinterProperties,hWnd:HWND,hPrinter:HANDLE|BOOL
 PrintWindow,hwnd:HWND,hdcBlt:HDC,nFlags:UINT|BOOL
 PrivateExtractIcons,lpszFile:LPCTSTR,nIconIndex:Integer,cxIcon:Integer,cyIcon:Integer,*phicon:HICON,*piconid:UINT,nIcons:UINT,flags:UINT|UINT
@@ -3012,6 +3024,7 @@ StringCchVPrintf,pszDest:LPTSTR,cchDest:DWORD,pszFormat:LPCTSTR,argList:va_list|
 StringCchVPrintfEx,pszDest:LPTSTR,cchDest:DWORD,ppszDestEnd:LPTSTR Ptr,pcchRemaining:DWORD Ptr,dwFlags:DWORD,pszFormat:LPCTSTR,argList:va_list|HRESULT
 StrokeAndFillPath,hdc:HDC|BOOL
 StrokePath,hdc:HDC|BOOL
+SUBLANGID,lgid:WORD|WORD
 SubmitNtmsOperatorRequest,hSession:HANDLE,dwRequest:DWORD,lpMessage:LPCTSTR,lpArg1Id:LPNTMS_GUID,lpArg2Id:LPNTMS_GUID,lpRequestId:LPNTMS_GUID|DWORD
 SubmitThreadpoolWork,pwk:PTP_WORK
 SubtractRect,lprcDst:LPRECT,lprcSrc1:LPCRECT,lprcSrc2:LPCRECT|BOOL
@@ -6010,7 +6023,6 @@ SnmpUtilVarBindCpy,pVbDst,pVbSrc
 SnmpUtilVarBindFree,pVb
 SnmpUtilVarBindListCpy,pVblDst,pVblSrc
 SnmpUtilVarBindListFree,pVbl
-Socket,af,lType,protocol
 SoftwareUpdateMessageBox,hWnd,szDistUnit,dwFlags,psdi
 SplitSymbols,ImageName,SymbolsPath,SymbolFilePath,Flags
 SQLAllocConnect,henv,phdbc
