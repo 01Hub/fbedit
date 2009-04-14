@@ -1371,6 +1371,12 @@ ParseControl proc uses ebx esi edi,lpRCMem:DWORD,lpDlgMem:DWORD,nTab:DWORD,lpPro
 		mov		[edi].DIALOG.ntype,32
 		jmp		Ex
 	.endif
+	invoke strcmpi,offset namebuff,offset szSysLinkClass
+	.if !eax
+		;SysLink
+		mov		[edi].DIALOG.ntype,33
+		jmp		Ex
+	.endif
 	mov		ebx,offset custtypes
 	.while [ebx].TYPES.ID
 		invoke strcmpi,offset namebuff,[ebx].TYPES.lpclass

@@ -1,11 +1,11 @@
-NoOfButtons		equ	33
+NoOfButtons		equ	34
 ButtonSize		equ	26
 
 .data
 
 nButtons			dd NoOfButtons
 szToolBoxTlt		db 'Pointer,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,'
-					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header',0
+					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header,Syslink',0
 					db 512 dup(?)
 .data?
 
@@ -586,7 +586,7 @@ AddCustomControl endp
 
 Do_ToolBox proc	hWin:HWND
 
-	invoke ResEdDo_ImageList,hInstance,IDB_TOOLBOX,20,32,0,0C0C0C0h,0
+	invoke ResEdDo_ImageList,hInstance,IDB_TOOLBOX,20,33,0,0C0C0C0h,0
 	mov		hBoxIml,eax
 	invoke CreateWindowEx,NULL,addr	szToolTipsClass,NULL,\
 		   TTS_ALWAYSTIP,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,

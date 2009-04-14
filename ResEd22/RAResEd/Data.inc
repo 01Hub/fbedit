@@ -215,6 +215,7 @@ szHotKeyClass		db 'msctls_hotkey32',0
 szPagerClass		db 'SysPager',0
 szReBarClass		db 'ReBarWindow32',0
 szHeaderClass		db 'SysHeader32',0
+szSysLinkClass		db 'SysLink',0
 
 szComma				db ',',0
 szOR				db '|',0

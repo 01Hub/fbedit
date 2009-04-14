@@ -373,7 +373,9 @@ DlgEnumProc proc uses esi,hWin:HWND,lParam:LPARAM
 			mov		hdi.pszText,eax
 			mov		hdi.fmt,HDF_STRING
 			invoke SendMessage,hWin,HDM_INSERTITEM,0,addr hdi
-		.elseif eax>=33
+		.elseif eax==33
+			;SysLink
+		.elseif eax>=34
 			invoke SendMessage,hWin,WM_USER+9999,0,0
 		.endif
 	.endif

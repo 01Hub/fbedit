@@ -72,6 +72,7 @@ HotID				db 'IDC_HOT',0
 PgrID				db 'IDC_PGR',0
 RebID				db 'IDC_REB',0
 HdrID				db 'IDC_HDR',0
+LnkID				db 'IDC_LNK',0
 
 szMnu				db '  &File  ,	&Edit  ,  &Help  ',0
 nPr					dd 32+32+8
@@ -794,6 +795,28 @@ ctltypes			dd 0
 					dd 0	;Typemask
 					dd 0	;ExStyle
 					dd offset HdrID
+					dd offset szNULL
+					dd offset szCONTROL
+					dd 82	;xsize
+					dd 19	;ysize
+					dd 0	;nMethod
+					dd 0	;Methods
+					dd 11111101000111000000000000000000b
+					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
+					dd 00010000000000011001000000000001b
+					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+					dd 00001000000000000000000000000000b
+					;  SELHHFMS
+					dd 00000000000000000000000000000000b
+					;  
+				;33-SysLink
+					dd 33
+					dd offset szSysLinkClass
+					dd 0	;Keep size
+					dd WS_VISIBLE or WS_CHILD
+					dd 0	;Typemask
+					dd 0	;ExStyle
+					dd offset LnkID
 					dd offset szNULL
 					dd offset szCONTROL
 					dd 82	;xsize
