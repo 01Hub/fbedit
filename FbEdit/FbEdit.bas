@@ -1709,9 +1709,13 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				If ad.fNoNotify Then
+					nCaretPos=lpRASELCHANGE->chrg.cpMin-lpRASELCHANGE->cpLine
+					UpDateFind(ah.hred,lpRASELCHANGE->chrg.cpMin,lpRASELCHANGE->fchanged)
+					nLastLine=lpRASELCHANGE->Line
+					fTimer=1
 					Return 0
 				EndIf
-				nCaretPos=lpRASELCHANGE->chrg.cpMax-lpRASELCHANGE->cpLine
+				nCaretPos=lpRASELCHANGE->chrg.cpMin-lpRASELCHANGE->cpLine
 				If lpRASELCHANGE->seltyp=SEL_OBJECT Then
 					SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)

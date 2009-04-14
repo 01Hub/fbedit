@@ -403,8 +403,11 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 	Dim lx As Integer
 	Dim lz As Integer
 	Dim chrg As CHARRANGE
+	Dim x As Integer
 
 	' Get indent
+	x=ad.fNoNotify
+	ad.fNoNotify=TRUE
 	szIndent=Chr(255) & Chr(1)
 	lx=SendMessage(hWin,EM_GETLINE,ln,Cast(LPARAM,@szIndent))
 	szIndent[lx]=NULL
@@ -428,6 +431,7 @@ Function SetIndent(ByVal hWin As HWND,ByVal ln As Integer,ByVal lpszIndent As ZS
 		SendMessage(hWin,EM_SCROLLCARET,0,0)
 		lz=0
 	EndIf
+	ad.fNoNotify=x
 	Return lz
 
 End Function
@@ -1240,6 +1244,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			EndIf
 			If wParam=VK_INSERT Then
 				fTimer=1
+			ElseIf (wParam=Asc("Z") Or wParam=Asc("Y")) And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
+				lret=ad.fNoNotify
+				ad.fNoNotify=TRUE
+				CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+				ad.fNoNotify=lret
+				Return 0
 			ElseIf wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
 				If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 Then
 					' Show code complete list
@@ -1338,7 +1348,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 End Function
 
 Function ParEditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-	Dim pt As POINT
+	Dim pt As Point
+	Dim lret As Integer
 
 	Select Case uMsg
 		Case WM_SHOWWINDOW
@@ -1369,6 +1380,12 @@ Function ParEditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				MoveList
 				Return 0
 			End If
+		Case EM_UNDO,EM_REDO
+			lret=ad.fNoNotify
+			ad.fNoNotify=TRUE
+			CallWindowProc(lpOldParEditProc,hWin,uMsg,wParam,lParam)
+			ad.fNoNotify=lret
+			Return 0
 	End Select
 	Return CallWindowProc(lpOldParEditProc,hWin,uMsg,wParam,lParam)
 
@@ -1534,7 +1551,10 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 	Dim tmp As Integer
 	Dim nmin As Integer
 	Dim n As Integer
+	Dim x As Integer
 
+	x=ad.fNoNotify
+	ad.fNoNotify=TRUE
 	nmin=999
 	SendMessage(ah.hred,WM_SETREDRAW,FALSE,0)
 	SendMessage(ah.hred,REM_LOCKUNDOID,TRUE,0)
@@ -1714,6 +1734,7 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 	SendMessage(ah.hred,WM_SETREDRAW,TRUE,0)
 	SendMessage(ah.hred,REM_REPAINT,0,0)
 	SetFocus(ah.hred)
+	ad.fNoNotify=x
 
 End Sub
 

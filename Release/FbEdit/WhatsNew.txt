@@ -1,3 +1,5 @@
+1.0.6.8c
+o Fixed bugs related to Smart Indent.
 1.0.6.8b
 o There is now a focus check on edit commands. They will only work if the editor has focus.
 o Return (Ctrl+F2) from Find Declare (F2) now returns to the correct position even if file is edited.

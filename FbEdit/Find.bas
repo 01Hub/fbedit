@@ -441,9 +441,11 @@ TheNextFile:
 			f.nlinesout+=1
 		EndIf
 		' Mark the foud text
+		ad.fNoNotify=TRUE
 		SendMessage(ah.hred,EM_EXSETSEL,0,Cast(LPARAM,@f.ft.chrgText))
 		SendMessage(ah.hred,REM_VCENTER,0,0)
 		SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+		ad.fNoNotify=FALSE
 	Else
 		Select Case f.fsearch
 			Case 3
