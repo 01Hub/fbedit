@@ -1290,8 +1290,9 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 						sub		eax,15+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,3,mDC,eax,edx,ILD_TRANSPARENT
 					.endif
@@ -1301,8 +1302,9 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 						sub		eax,15+12
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,6,mDC,eax,edx,ILD_TRANSPARENT
 					.endif
@@ -1326,8 +1328,9 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 						sub		eax,15
 						sub		eax,ps.rcPaint.left
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,ecx,mDC,eax,edx,ILD_NORMAL
 					.endif
@@ -1630,8 +1633,9 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 						add		eax,[ebx].EDIT.linenrwt
 						sub		eax,15+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,3,ps.hdc,eax,edx,ILD_TRANSPARENT
 					.endif
@@ -1640,8 +1644,9 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 						add		eax,[ebx].EDIT.linenrwt
 						sub		eax,15+12
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,6,ps.hdc,eax,edx,ILD_TRANSPARENT
 					.endif
@@ -1664,8 +1669,9 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 						add		eax,[ebx].EDIT.linenrwt
 						sub		eax,15
 						mov		edx,[ebx].EDIT.fntinfo.fntht
-						sub		edx,7
+						;sub		edx,7
 						shr		edx,1
+						sub		edx,5
 						add		edx,rect1.top
 						invoke ImageList_Draw,hIml,ecx,ps.hdc,eax,edx,ILD_NORMAL
 					.endif

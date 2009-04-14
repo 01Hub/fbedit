@@ -318,7 +318,11 @@ FindTextEx proc uses ebx esi edi,hMem:DWORD,fFlag:DWORD,lpFindTextEx:DWORD
 			.if !ZERO?
 				inc		eax
 			.endif
-			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,[esi].FINDTEXTEX.chrg.cpMax,1
+			mov		ecx,[esi].FINDTEXTEX.chrg.cpMax
+			.if ecx==-1
+				mov		ecx,-2
+			.endif
+			invoke FindTheText,ebx,lpText,fMC,fWW,eax,[esi].FINDTEXTEX.chrg.cpMin,ecx,1
 			add		len,edx
 		.else
 			;Up
