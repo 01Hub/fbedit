@@ -1287,7 +1287,7 @@ SnapPtDu endp
 GetTypePtr proc nType:DWORD
 
 	push	edx
-	mov		eax,size TYPES
+	mov		eax,sizeof TYPES
 	mov		edx,nType
 	mul		edx
 	add		eax,offset ctltypes
@@ -1424,3 +1424,38 @@ CreateGridBrush proc hWin:HWND
 
 CreateGridBrush endp
 
+GetLangString proc uses ebx esi edi,nLang:DWORD,nSubLang:DWORD,lpBuff:DWORD
+
+	.if nLang
+		mov		edi,lpBuff
+		mov		esi,offset langdef
+		.while byte ptr [esi+4]
+			mov		eax,[esi]
+			shr		eax,16
+			.if eax==nLang
+				invoke lstrcat,edi,addr szSPACE
+				invoke lstrcat,edi,addr szLSQ
+				invoke lstrcat,edi,addr [esi+4+5]
+				invoke lstrlen,addr [esi+4]
+				lea		esi,[esi+eax+5]
+				.while byte ptr [esi+4] && dword ptr [esi]<10000h
+					mov		eax,[esi]
+					.if eax==nSubLang
+						invoke lstrcat,edi,addr szLPA
+						invoke lstrcat,edi,addr [esi+4+8]
+						invoke lstrcat,edi,addr szRPA
+						.break
+					.endif
+					invoke lstrlen,addr [esi+4]
+					lea		esi,[esi+eax+5]
+				.endw
+				invoke lstrcat,edi,addr szRSQ
+				.break
+			.endif
+			invoke lstrlen,addr [esi+4]
+			lea		esi,[esi+eax+5]
+		.endw
+	.endif
+	ret
+
+GetLangString endp

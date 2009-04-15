@@ -584,6 +584,7 @@ types				RSTYPES <0,'WS_','DS_',>				;Dialog
 					RSTYPES <30,'WS_','PGS_',>				;V-Pager
 					RSTYPES <31,'WS_','RBS_',>				;ReBar
 					RSTYPES <32,'WS_','HDS_',>				;Header
+					RSTYPES <33,'WS_','LWS_',>				;SysLink
 					RSTYPES <260,'WS_','RAES_',>			;RAEdit
 					RSTYPES <280,'WS_','RAGS_',>			;RAGrid
 					RSTYPES <256,'WS_','SPS_',>				;SpreadSheet

@@ -74,6 +74,8 @@ RebID				db 'IDC_REB',0
 HdrID				db 'IDC_HDR',0
 LnkID				db 'IDC_LNK',0
 
+LnkCAP				db '<a></a>',0
+
 szMnu				db '  &File  ,	&Edit  ,  &Help  ',0
 nPr					dd 32+32+8
 PrAll				db '(Name),(ID),Left,Top,Width,Height,Caption,Border,SysMenu,MaxButton,MinButton,Enabled,Visible,Clipping,ScrollBar,Default,Auto,Alignment,Mnemonic,WordWrap,MultiLine,Type,Locked,Child,SizeBorder,TabStop,Font,Menu,Class,Notify,AutoScroll,WantCr,'
@@ -813,19 +815,19 @@ ctltypes			dd 0
 					dd 33
 					dd offset szSysLinkClass
 					dd 0	;Keep size
-					dd WS_VISIBLE or WS_CHILD
+					dd WS_VISIBLE or WS_CHILD or LWS_TRANSPARENT
 					dd 0	;Typemask
 					dd 0	;ExStyle
 					dd offset LnkID
-					dd offset szNULL
+					dd offset LnkCAP
 					dd offset szCONTROL
 					dd 82	;xsize
 					dd 19	;ysize
 					dd 0	;nMethod
 					dd 0	;Methods
-					dd 11111101000111000000000000000000b
+					dd 11111111000111000000000001000000b
 					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
-					dd 00010000000000011001000000000001b
+					dd 00010000000000011000000000000000b
 					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 					dd 00001000000000000000000000000000b
 					;  SELHHFMS
@@ -3735,7 +3737,6 @@ GetType proc uses ebx esi,lpDlg:DWORD
 	mov		eax,[esi].DIALOG.ntypeid
 	.if eax
 		mov		ebx,offset ctltypes
-		mov		ecx,nButtons
 		xor		ecx,ecx
 		.while ecx<nButtons
 			.if eax==[ebx].TYPES.ID

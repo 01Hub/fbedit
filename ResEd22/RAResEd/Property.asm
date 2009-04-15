@@ -2898,6 +2898,15 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							mov		esi,eax
 							sub		esi,sizeof DLGHEAD
 							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,addr [esi].DLGHEAD.lang
+							.if [esi+DLGHEAD].DIALOG.idname
+								invoke lstrcpy,addr buffer,addr [esi+DLGHEAD].DIALOG.idname
+							.else
+								mov		edx,[esi+DLGHEAD].DIALOG.id
+								invoke ResEdBinToDec,edx,addr buffer
+							.endif
+							invoke GetWindowLong,hDEd,DEWM_PROJECT
+							mov		edx,eax
+							invoke SetProjectItemName,edx,addr buffer
 						.endif
 						.if eax
 							invoke PropertyList,hCtl

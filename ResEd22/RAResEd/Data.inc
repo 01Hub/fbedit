@@ -306,6 +306,11 @@ szENDSHORT			db '}',0
 szBS				db '\',0
 szDots				db '...',0
 
+szLSQ				db '[',0
+szRSQ				db ']',0
+szLPA				db '(',0
+szRPA				db ')',0
+
 szBITMAP			db 'BITMAP',0
 szCURSOR			db 'CURSOR',0
 szICON				db 'ICON',0
@@ -455,7 +460,7 @@ szCustInfo			db 'CustomControlInfoA',0
 .data
 
 szCtlText			db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,'
-					db 'MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header',0
+					db 'MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header,SysLink',0
 					db 512 dup(?)
 
 szErrorParse		db 'Errors while parsing at line ',0

@@ -220,7 +220,7 @@ ExpandProjectNodes endp
 
 OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 	LOCAL	hProMem:DWORD
-	LOCAL	buffer[16]:BYTE
+	LOCAL	buffer[256]:BYTE
 
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768
 	mov     hProMem,eax
@@ -258,18 +258,24 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 			.if !byte ptr [edx]
 				lea		edx,buffer
 				invoke ResEdBinToDec,[eax+sizeof DLGHEAD].DIALOG.id,edx
-				lea		edx,buffer
+			.else
+				invoke lstrcpy,addr buffer,edx
 			.endif
-			invoke AddProjectNode,TPE_DIALOG,edx,esi
+			mov		edx,[esi].PROJECT.hmem
+			invoke GetLangString,[edx].DLGHEAD.lang,[edx].DLGHEAD.sublang,addr buffer
+			invoke AddProjectNode,TPE_DIALOG,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_MENU
 			mov		eax,[esi].PROJECT.hmem
 			lea		edx,[eax].MNUHEAD.menuname
 			.if !byte ptr [edx]
 				lea		edx,buffer
 				invoke ResEdBinToDec,[eax].MNUHEAD.menuid,edx
-				lea		edx,buffer
+			.else
+				invoke lstrcpy,addr buffer,edx
 			.endif
-			invoke AddProjectNode,TPE_MENU,edx,esi
+			mov		edx,[esi].PROJECT.hmem
+			invoke GetLangString,[edx].MNUHEAD.lang.lang,[edx].MNUHEAD.lang.sublang,addr buffer
+			invoke AddProjectNode,TPE_MENU,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_INCLUDE
 			invoke AddProjectNode,TPE_INCLUDE,offset szIncludeFile,esi
 		.elseif [esi].PROJECT.ntype==TPE_ACCEL
@@ -278,22 +284,29 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 			.if !byte ptr [edx]
 				lea		edx,buffer
 				invoke ResEdBinToDec,[eax].ACCELMEM.value,edx
-				lea		edx,buffer
+			.else
+				invoke lstrcpy,addr buffer,edx
 			.endif
-			invoke AddProjectNode,TPE_ACCEL,edx,esi
+			mov		edx,[esi].PROJECT.hmem
+			invoke GetLangString,[edx].ACCELMEM.lang.lang,[edx].ACCELMEM.lang.sublang,addr buffer
+			invoke AddProjectNode,TPE_ACCEL,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_VERSION
 			mov		eax,[esi].PROJECT.hmem
 			lea		edx,[eax].VERSIONMEM.szname
 			.if !byte ptr [edx]
 				lea		edx,buffer
 				invoke ResEdBinToDec,[eax].VERSIONMEM.value,edx
-				lea		edx,buffer
+			.else
+				invoke lstrcpy,addr buffer,edx
 			.endif
-			invoke AddProjectNode,TPE_VERSION,edx,esi
+			invoke AddProjectNode,TPE_VERSION,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_RESOURCE
 			invoke AddProjectNode,TPE_RESOURCE,offset szResource,esi
 		.elseif [esi].PROJECT.ntype==TPE_STRING
-			invoke AddProjectNode,TPE_STRING,offset szStringTable,esi
+			invoke lstrcpy,addr buffer,offset szStringTable
+			mov		edx,[esi].PROJECT.hmem
+			invoke GetLangString,[edx].STRINGMEM.lang.lang,[edx].STRINGMEM.lang.sublang,addr buffer
+			invoke AddProjectNode,TPE_STRING,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_LANGUAGE
 			invoke AddProjectNode,TPE_LANGUAGE,offset szLanguage,esi
 		.elseif [esi].PROJECT.ntype==TPE_XPMANIFEST
@@ -871,6 +884,7 @@ GetProjectItemName endp
 
 SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 	LOCAL	tvi:TV_ITEMEX
+	LOCAL	buffer[256]:BYTE
 
 	invoke GetWindowLong,hPrj,0
 	.if eax
@@ -894,7 +908,11 @@ SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 				mov		eax,tvi.lParam
 				.if eax==lpProItemMem
 					mov		tvi.imask,TVIF_TEXT
-					mov		eax,lpName
+					invoke lstrcpy,addr buffer,lpName
+					mov		edx,lpProItemMem
+					mov		edx,[edx].PROJECT.hmem
+					invoke GetLangString,[edx].DLGHEAD.lang,[edx].DLGHEAD.sublang,addr buffer
+					lea		eax,buffer
 					mov		tvi.pszText,eax
 					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
 					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeDlg
@@ -911,7 +929,11 @@ SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 				mov		eax,tvi.lParam
 				.if eax==lpProItemMem
 					mov		tvi.imask,TVIF_TEXT
-					mov		eax,lpName
+					invoke lstrcpy,addr buffer,lpName
+					mov		edx,lpProItemMem
+					mov		edx,[edx].PROJECT.hmem
+					invoke GetLangString,[edx].MNUHEAD.lang.lang,[edx].MNUHEAD.lang.sublang,addr buffer
+					lea		eax,buffer
 					mov		tvi.pszText,eax
 					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
 					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeMnu
@@ -928,7 +950,32 @@ SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 				mov		eax,tvi.lParam
 				.if eax==lpProItemMem
 					mov		tvi.imask,TVIF_TEXT
-					mov		eax,lpName
+					invoke lstrcpy,addr buffer,lpName
+					mov		edx,lpProItemMem
+					mov		edx,[edx].PROJECT.hmem
+					invoke GetLangString,[edx].ACCELMEM.lang.lang,[edx].ACCELMEM.lang.sublang,addr buffer
+					lea		eax,buffer
+					mov		tvi.pszText,eax
+					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
+					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeMisc
+					jmp		Ex
+				.endif
+				invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+			.endw
+		.elseif eax==TPE_STRING
+			mov		tvi.imask,TVIF_HANDLE or TVIF_PARAM
+			invoke SendMessage,hPrjTrv,TVM_GETNEXTITEM,TVGN_CHILD,hNodeMisc
+			.while eax
+				mov		tvi.hItem,eax
+				invoke SendMessage,hPrjTrv,TVM_GETITEM,0,addr tvi
+				mov		eax,tvi.lParam
+				.if eax==lpProItemMem
+					mov		tvi.imask,TVIF_TEXT
+					invoke lstrcpy,addr buffer,lpName
+					mov		edx,lpProItemMem
+					mov		edx,[edx].PROJECT.hmem
+					invoke GetLangString,[edx].STRINGMEM.lang.lang,[edx].STRINGMEM.lang.sublang,addr buffer
+					lea		eax,buffer
 					mov		tvi.pszText,eax
 					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
 					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeMisc
@@ -1513,4 +1560,5 @@ NameExists proc uses ebx esi,lpName:DWORD,lpItem:DWORD
 	ret
 
 NameExists endp
+
 

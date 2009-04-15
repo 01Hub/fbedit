@@ -169,6 +169,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	row[3]:DWORD
 	LOCAL	rect:RECT
 	LOCAL	fChanged:DWORD
+	LOCAL	buffer[256]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -258,6 +259,10 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hGrd,GM_GETCURSEL,0,0
 				invoke SendMessage,hGrd,GM_ENDEDIT,eax,FALSE
 				invoke SaveStringEdit,hWin
+				invoke GetWindowLong,hWin,GWL_USERDATA
+				mov		esi,eax
+				invoke GetProjectItemName,esi,addr buffer
+				invoke SetProjectItemName,esi,addr buffer
 				.if fDialogChanged
 					invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					mov		fDialogChanged,FALSE
