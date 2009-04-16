@@ -1144,7 +1144,7 @@ lpRefreshProperty		dd offset RefreshProperty
 AppName					db 'RadASM version 2.2.1.6',0
 DisplayName				db 'RadASM',0
 AboutMsg				db 'RadASM (C) KetilO 2001-2009',13,10,13,10,'radasmide@hotmail.com',0
-AboutUrl1				db 'http://www.radasm.com',0
+AboutUrl1				db 'http://radasm.110mb.com',0
 AboutUrl2				db 'http://www.oby.ro/rad_asm',0
 
 ;Do not insert or move, just add

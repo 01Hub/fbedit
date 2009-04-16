@@ -4459,7 +4459,6 @@ LineNo proc hWin:HWND
 		invoke SendMessage,hStatus,SB_SETTEXT,0,addr buffer
 		mov		eax,Line
 		.if eax!=LastLine
-			invoke FindProc,hWin
 			mov		eax,hWin
 			.if eax==fCodeMacro
 				invoke CodeMacro,hWin,LastLine
@@ -4497,6 +4496,7 @@ LineNo proc hWin:HWND
 					mov		nUpdated,0
 				.endif
 			.endif
+			invoke FindProc,hWin
 		.endif
 		invoke GetParent,hWin
 		mov		hMdi,eax
