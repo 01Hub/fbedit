@@ -5,6 +5,14 @@ IDC_GRDSTR								equ 1001
 IDC_BTNSTRADD							equ 1002
 IDC_BTNSTRDEL							equ 1003
 
+.const
+
+IStrGrdSize		dd 100,40,230
+
+.data?
+
+StrGrdSize		dd 3 dup(?)
+
 .code
 
 ExportStringNames proc uses esi edi,hMem:DWORD
@@ -173,6 +181,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke InitGridSize,3,offset IStrGrdSize,offset StrGrdSize
 		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
@@ -186,7 +195,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;Name
-		invoke ConvertDpiSize,100
+		mov		eax,StrGrdSize
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -198,7 +207,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;ID
-		invoke ConvertDpiSize,40
+		mov		eax,StrGrdSize[4]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrID
 		mov		col.halign,GA_ALIGN_RIGHT
@@ -210,7 +219,7 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;String
-		invoke ConvertDpiSize,230
+		mov		eax,StrGrdSize[8]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrString
 		mov		col.halign,GA_ALIGN_LEFT
@@ -306,8 +315,10 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetDlgItem,hWin,IDC_GRDSTR
+		mov		hGrd,eax
+		invoke SaveGrdSize,hGrd,3,offset StrGrdSize
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
@@ -318,11 +329,22 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
+		.if rect.right<470
+			mov		rect.right,470
+		.endif
+		invoke GetDlgItem,hWin,IDC_BTNSTRADD
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNSTRDEL
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6,64,22,TRUE
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,397
+		sub		rect.right,3+64+6
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else

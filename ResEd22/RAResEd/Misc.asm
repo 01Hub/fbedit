@@ -1459,3 +1459,33 @@ GetLangString proc uses ebx esi edi,nLang:DWORD,nSubLang:DWORD,lpBuff:DWORD
 	ret
 
 GetLangString endp
+
+InitGridSize proc uses ebx esi edi,nSize:DWORD,lpInit:DWORD,lpSize:DWORD
+
+	mov		edi,lpSize
+	.if !dword ptr [edi]
+		xor		ebx,ebx
+		mov		esi,lpInit
+		.while ebx<nSize
+			mov		eax,[esi+ebx*4]
+			invoke ConvertDpiSize,eax 
+			mov		[edi+ebx*4],eax
+			inc		ebx
+		.endw
+	.endif
+	ret
+
+InitGridSize endp
+
+SaveGrdSize proc uses ebx edi,hGrd:HWND,nSize:DWORD,lpSize:DWORD
+
+	xor		ebx,ebx
+	mov		edi,lpSize
+	.while ebx<nSize
+		invoke SendMessage,hGrd,GM_GETCOLWIDTH,ebx,0
+		mov		[edi+ebx*4],eax
+		inc		ebx
+	.endw
+	ret
+
+SaveGrdSize endp

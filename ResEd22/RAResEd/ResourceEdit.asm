@@ -39,6 +39,7 @@ ICONDEF ends
 
 szRESOURCE				db 'RESOURCE',0
 szX						db ' x ',0
+IResGrdSize				dd 90,100,40,140
 
 .data?
 
@@ -49,6 +50,7 @@ hPrvBmp					dd ?
 hPrvIcon				dd ?
 hPrvCursor				dd ?
 icondef					ICONDEF <>
+ResGrdSize				dd 4 dup(?)
 
 .code
 
@@ -525,6 +527,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke InitGridSize,4,offset IResGrdSize,offset ResGrdSize
 		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
@@ -538,7 +541,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;Type
-		invoke ConvertDpiSize,90
+		mov		eax,ResGrdSize
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrType
 		mov		col.halign,GA_ALIGN_LEFT
@@ -561,7 +564,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		esi,sizeof RARSTYPE
 		.endw
 		;Name
-		invoke ConvertDpiSize,100
+		mov		eax,ResGrdSize[4]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -573,7 +576,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;ID
-		invoke ConvertDpiSize,40
+		mov		eax,ResGrdSize[8]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrID
 		mov		col.halign,GA_ALIGN_RIGHT
@@ -585,7 +588,7 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Filename
-		invoke ConvertDpiSize,140
+		mov		eax,ResGrdSize[12]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrFileName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -787,6 +790,9 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetDlgItem,hWin,IDC_GRDRES
+		mov		hGrd,eax
+		invoke SaveGrdSize,hGrd,4,offset ResGrdSize
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
@@ -798,11 +804,33 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
+		.if rect.right<470
+			mov		rect.right,470
+		.endif
+		invoke GetDlgItem,hWin,IDC_BTNRESADD
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNRESDEL
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6,64,22,TRUE
+
+		invoke GetDlgItem,hWin,IDC_BTNRESPREVIEW
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6+22+6,64,22,TRUE
+
+		invoke GetDlgItem,hWin,IDC_BTNRESEDIT
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6+22+6+22+6,64,22,TRUE
+
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,397
+		sub		rect.right,3+64+6
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else

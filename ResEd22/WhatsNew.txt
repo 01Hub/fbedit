@@ -1,10 +1,11 @@
 ResEd
 
-2.2.0.2 -2009-04-15
+2.2.0.2 -2009-04-18
 -------------------
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
 o Added language (if any) to project items.
 o Added SysLink control.
+o Grids now resizes to window.
 o Fixed some minor bugs.
 
 2.2.0.1 -2008-12-21

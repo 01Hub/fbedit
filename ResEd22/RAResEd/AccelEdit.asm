@@ -5,6 +5,10 @@ IDC_GRDACL			equ 1001
 IDC_BTNACLADD		equ 1002
 IDC_BTNACLDEL		equ 1003
 
+.const
+
+IAclGrdSize			dd 110,40,76,36,36,36,36
+
 .data
 
 szAccelName			db 'IDR_ACCEL',0
@@ -13,6 +17,7 @@ defacl				ACCELMEM <,1,0,0,0,<0,0>>
 .data?
 
 fNoUpdate			dd ?
+AclGrdSize			dd 7 dup(?)
 
 .code
 
@@ -265,6 +270,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke InitGridSize,7,offset IAclGrdSize,offset AclGrdSize
 		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDACL
 		mov		hGrd,eax
@@ -278,7 +284,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;Name
-		invoke ConvertDpiSize,110
+		mov		eax,AclGrdSize
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -290,7 +296,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;ID
-		invoke ConvertDpiSize,40
+		mov		eax,AclGrdSize[4]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrID
 		mov		col.halign,GA_ALIGN_RIGHT
@@ -302,7 +308,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Keys
-		invoke ConvertDpiSize,76
+		mov		eax,AclGrdSize[8]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrKey
 		mov		col.halign,GA_ALIGN_LEFT
@@ -322,7 +328,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+eax+1]
 		.endw
 		;Ascii
-		invoke ConvertDpiSize,36
+		mov		eax,AclGrdSize[12]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrAscii
 		mov		col.halign,GA_ALIGN_CENTER
@@ -334,7 +340,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Ctrl
-		invoke ConvertDpiSize,36
+		mov		eax,AclGrdSize[16]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrCtrl
 		mov		col.halign,GA_ALIGN_CENTER
@@ -346,7 +352,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Shift
-		invoke ConvertDpiSize,36
+		mov		eax,AclGrdSize[20]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrShift
 		mov		col.halign,GA_ALIGN_CENTER
@@ -358,7 +364,7 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Alt
-		invoke ConvertDpiSize,36
+		mov		eax,AclGrdSize[24]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrAlt
 		mov		col.halign,GA_ALIGN_CENTER
@@ -503,8 +509,10 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetDlgItem,hWin,IDC_GRDACL
+		mov		hGrd,eax
+		invoke SaveGrdSize,hGrd,7,offset AclGrdSize
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
@@ -515,11 +523,22 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
+		.if rect.right<470
+			mov		rect.right,470
+		.endif
+		invoke GetDlgItem,hWin,IDC_BTNACLADD
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNACLDEL
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6,64,22,TRUE
 		invoke GetDlgItem,hWin,IDC_GRDACL
 		mov		hGrd,eax
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,397
+		sub		rect.right,3+64+6
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else

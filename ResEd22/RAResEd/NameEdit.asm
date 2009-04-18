@@ -9,11 +9,13 @@ IDC_BTNNMEEXPORT	equ 1004
 .const
 
 szExportAs			db 'Export Names As',0
+INmeGrdSize			dd 0,0,18,122,40
 
 .data?
 
 nExportType			dd ?
 szExportFileName	db MAX_PATH dup(?)
+NmeGrdSize			dd 5 dup(?)
 
 .code
 
@@ -363,6 +365,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke InitGridSize,5,offset INmeGrdSize,offset NmeGrdSize
 		invoke GetDlgItem,hWin,IDC_GRDNME
 		mov		hGrd,eax
 		invoke SendMessage,hWin,WM_GETFONT,0,0
@@ -397,7 +400,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Image
-		invoke ConvertDpiSize,18
+		mov		eax,NmeGrdSize[8]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,NULL
 		mov		col.halign,GA_ALIGN_CENTER
@@ -410,7 +413,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;Name
-		invoke ConvertDpiSize,122
+		mov		eax,NmeGrdSize[12]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -422,7 +425,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 		;ID
-		invoke ConvertDpiSize,40
+		mov		eax,NmeGrdSize[16]
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrID
 		mov		col.halign,GA_ALIGN_RIGHT
@@ -683,6 +686,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SaveNamesToFile,hWin,lParam
 			invoke DestroyWindow,hWin
 		.else
+			invoke SendMessage,hWin,WM_SIZE,0,0
 			invoke SendMessage,hGrd,GM_SETCURSEL,3,0
 			invoke SetFocus,hGrd
 		.endif
@@ -792,14 +796,33 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
+		.if rect.right<470
+			mov		rect.right,470
+		.endif
+		invoke GetDlgItem,hWin,IDC_BTNNMEADD
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNNMEDEL
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNNMEEXPORT
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6+22+6+6,64,22,TRUE
 		invoke GetDlgItem,hWin,IDC_GRDNME
 		mov		hGrd,eax
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,202+3
+		sub		rect.right,3+64+6
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CLOSE
+		invoke GetDlgItem,hWin,IDC_GRDNME
+		mov		hGrd,eax
+		invoke SaveGrdSize,hGrd,5,offset NmeGrdSize
+		mov		NmeGrdSize,1
 		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE

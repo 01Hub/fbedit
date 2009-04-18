@@ -5,6 +5,14 @@ IDC_GRDINC			equ 1001
 IDC_BTNINCADD		equ 1002
 IDC_BTNINCDEL		equ 1003
 
+.const
+
+IIncGrdSize		dd 370
+
+.data?
+
+IncGrdSize		dd 1 dup(?)
+
 .code
 
 ExportInclude proc uses esi edi,hMem:DWORD
@@ -100,6 +108,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke InitGridSize,1,offset IIncGrdSize,offset IncGrdSize
 		mov		fChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
@@ -113,7 +122,7 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke SendMessage,hGrd,GM_SETROWHEIGHT,0,eax
 		;File
-		invoke ConvertDpiSize,370
+		mov		eax,IncGrdSize
 		mov		col.colwt,eax
 		mov		col.lpszhdrtext,offset szHdrFileName
 		mov		col.halign,GA_ALIGN_LEFT
@@ -272,8 +281,10 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetDlgItem,hWin,IDC_GRDINC
+		mov		hGrd,eax
+		invoke SaveGrdSize,hGrd,1,offset IncGrdSize
 		invoke DestroyWindow,hWin
-		;invoke EndDialog,hWin,wParam
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
 		invoke SendMessage,hDEd,WM_HSCROLL,SB_THUMBTRACK,0
@@ -284,11 +295,22 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		rect.bottom,6
 		invoke MoveWindow,hWin,rect.left,rect.top,rect.right,rect.bottom,TRUE
 		invoke GetClientRect,hWin,addr rect
+		.if rect.right<470
+			mov		rect.right,470
+		.endif
+		invoke GetDlgItem,hWin,IDC_BTNINCADD
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3,64,22,TRUE
+		invoke GetDlgItem,hWin,IDC_BTNINCDEL
+		mov		edx,rect.right
+		sub		edx,64+3
+		invoke MoveWindow,eax,edx,3+22+6,64,22,TRUE
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
 		mov		rect.left,3
 		mov		rect.top,3
-		mov		rect.right,397
+		sub		rect.right,3+64+6
 		sub		rect.bottom,6
 		invoke MoveWindow,hGrd,rect.left,rect.top,rect.right,rect.bottom,TRUE
 	.else
