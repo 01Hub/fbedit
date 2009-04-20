@@ -1,5 +1,12 @@
 MasmEd
 
+1.0.5.5 - 2009.04.20
+--------------------
+o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
+o Added language (if any) to resource editor project items.
+o Added SysLink control to resource editor.
+o Resource editor grids now resizes to window.
+
 1.0.5.4 - 2009.04.01
 --------------------
 o Added code properties list. Double click in list to jump to the declaration in your code.

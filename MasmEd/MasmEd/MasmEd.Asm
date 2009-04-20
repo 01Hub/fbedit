@@ -113,6 +113,8 @@ start:
 		.elseif ver<1054
 			mov		ver,1054
 			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
+		.elseif ver<1055
+			mov		ver,1055
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
@@ -140,7 +142,7 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		ver,1054
+		mov		ver,1055
 		invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 	.endif
 	.if wpos.wtfile<50
