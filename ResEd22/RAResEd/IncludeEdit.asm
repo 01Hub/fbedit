@@ -155,6 +155,9 @@ IncludeEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
+		invoke SetFocus,hGrd
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_COMMAND
 		invoke GetDlgItem,hWin,IDC_GRDINC
 		mov		hGrd,eax
