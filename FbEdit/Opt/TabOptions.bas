@@ -255,8 +255,8 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			clmn.lpszhdrtext=StrPtr("Style")
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
-			clmn.ctype=TYPE_EDITBUTTON
-			clmn.ctextmax=64
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=63
 			clmn.lpszformat=0
 			clmn.himl=0
 			clmn.hdrflag=0
@@ -290,14 +290,46 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				LoadFromIni(StrPtr("CustStyle"),Str(nInx),"044",@cust,FALSE)
 				If Len(buff) Then
 					row(0)=@buff
-					buff[100]=Right("0000000" & Hex(cust.nValue),8)
+					buff[100]=Hex(cust.nValue,8)
 					row(1)=@buff[100]
-					buff[150]=Right("0000000" & Hex(cust.nMask),8)
+					buff[150]=Hex(cust.nMask,8)
 					row(2)=@buff[150]
 					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
 				EndIf
 				nInx=nInx+1
 			Wend
+			'
+		Case WM_COMMAND
+			hGrd=GetDlgItem(hWin,IDC_GRDSTYLE)
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case Event
+				Case BN_CLICKED
+					Select Case id
+						Case IDC_BTNSTYLEADD
+							nInx=SendMessage(hGrd,GM_ADDROW,0,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
+							'
+						Case IDC_BTNSTYLEDEL
+							nInx=SendMessage(hGrd,GM_GETCURROW,0,0)
+							SendMessage(hGrd,GM_DELROW,nInx,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
+							'
+					End Select
+					'
+			End Select
+			'
+		Case WM_NOTIFY
+			hGrd=GetDlgItem(hWin,IDC_GRDSTYLE)
+			lpGRIDNOTIFY=Cast(GRIDNOTIFY Ptr,lParam)
+			If lpGRIDNOTIFY->nmhdr.hwndFrom=hGrd Then
+				If lpGRIDNOTIFY->nmhdr.code=GN_HEADERCLICK Then
+					' Sort the grid by column, invert sorting order
+					SendMessage(hGrd,GM_COLUMNSORT,lpGRIDNOTIFY->col,SORT_INVERT)
+				EndIf
+			EndIf
 			'
 		Case Else
 			Return FALSE
@@ -348,6 +380,10 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 	Dim ts As TCITEM
 	Dim nInx As Integer
 	Dim lpNMHDR As NMHDR Ptr
+	Dim cust As FBCUSTSTYLE
+	Dim sStyle As ZString*64
+	Dim sValue As ZString*32
+	Dim sMask As ZString*32
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -440,6 +476,18 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 						SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@buff[Len(buff)]))
 						nInx=nInx+1
 						WritePrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@buff,@ad.IniFile)
+					Wend
+					WritePrivateProfileSection(StrPtr("CustStyle"),szNULL & szNULL,@ad.IniFile)
+					nInx=0
+					While SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETROWCOUNT,0,0)>nInx
+						SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@sStyle))
+						SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@sValue))
+						SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCELLDATA,(nInx Shl 16)+2,Cast(LPARAM,@sMask))
+						nInx=nInx+1
+						cust.lpszStyle=@sStyle
+						cust.nValue=Val("&H" & sValue)
+						cust.nMask=Val("&H" & sMask)
+						SaveToIni(StrPtr("CustStyle"),Str(nInx),StrPtr("044"),@cust,FALSE)
 					Wend
 					SendMessage(hWin,WM_CLOSE,0,0)
 					'
