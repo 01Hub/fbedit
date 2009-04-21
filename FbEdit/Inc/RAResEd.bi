@@ -104,6 +104,12 @@ Type RARESEDCOLOR
 	words		As Integer
 End Type
 
+Type CUSTSTYLE
+	szStyle	As ZString*64
+	nValue	As Integer
+	nMask		As Integer
+End Type
+
 ' Resource ID's
 Type RESID
 	startid	As Integer

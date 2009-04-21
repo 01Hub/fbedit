@@ -37,8 +37,20 @@
 #Define IDC_CHKSIMPLEPROPERTY				4012
 #Define IDC_CHKDEFSTATIC					4013
 
+'TabOpt4.dlg
+#Define IDD_TABOPT4							2400
+#Define IDC_BTNSTYLEADD						2402
+#Define IDC_BTNSTYLEDEL						2401
+#Define IDC_GRDSTYLE							2403
+
+Type FBCUSTSTYLE
+	lpszStyle	As ZString Ptr
+	nValue		As Integer
+	nMask			As Integer
+End Type
+
 Dim Shared hTabOpt As HWND
-Dim Shared hTabDlg(3) As HWND
+Dim Shared hTabDlg(4) As HWND
 Dim Shared SelTab As Integer
 Dim Shared grdcol As Integer
 Dim Shared hGrdBr As HBRUSH
@@ -223,6 +235,78 @@ Function TabOpt3Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 
 End Function
 
+Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim As Long id,Event
+	Dim nInx As Integer
+	Dim ofn As OPENFILENAME
+	Dim hGrd As HWND
+	Dim clmn As COLUMN
+	Dim row(2) As ZString Ptr
+	Dim x As Integer
+	Dim lpGRIDNOTIFY As GRIDNOTIFY Ptr
+	Dim cust As FBCUSTSTYLE
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPT4)
+			hGrd=GetDlgItem(hWin,IDC_GRDSTYLE)
+			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
+			clmn.colwt=240
+			clmn.lpszhdrtext=StrPtr("Style")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITBUTTON
+			clmn.ctextmax=64
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Style value
+			clmn.colwt=70
+			clmn.lpszhdrtext=StrPtr("Value")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=8
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Style mask
+			clmn.colwt=70
+			clmn.lpszhdrtext=StrPtr("Mask")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=8
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			nInx=1
+			While nInx<=64
+				cust.lpszStyle=@buff
+				buff=""
+				LoadFromIni(StrPtr("CustStyle"),Str(nInx),"044",@cust,FALSE)
+				If Len(buff) Then
+					row(0)=@buff
+					buff[100]=Right("0000000" & Hex(cust.nValue),8)
+					row(1)=@buff[100]
+					buff[150]=Right("0000000" & Hex(cust.nMask),8)
+					row(2)=@buff[150]
+					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
+				EndIf
+				nInx=nInx+1
+			Wend
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
 Sub SetDialogOptions(ByVal hWin As HWND)
 	Dim st As Integer
 
@@ -278,14 +362,17 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 			ts.lParam=0
 			ts.pszText=StrPtr("Exports")
 			SendMessage(hTabOpt,TCM_INSERTITEM,0,Cast(Integer,@ts))
-			ts.pszText=StrPtr("Custom controls")
-			SendMessage(hTabOpt,TCM_INSERTITEM,1,Cast(Integer,@ts))
 			ts.pszText=StrPtr("Behaviour")
+			SendMessage(hTabOpt,TCM_INSERTITEM,1,Cast(Integer,@ts))
+			ts.pszText=StrPtr("Custom controls")
 			SendMessage(hTabOpt,TCM_INSERTITEM,2,Cast(Integer,@ts))
+			ts.pszText=StrPtr("Custom styles")
+			SendMessage(hTabOpt,TCM_INSERTITEM,3,Cast(Integer,@ts))
 			' Create the tab dialogs
 			hTabDlg(0)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT1),hTabOpt,@TabOpt1Proc,0)
-			hTabDlg(1)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT2),hTabOpt,@TabOpt2Proc,0)
-			hTabDlg(2)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT3),hTabOpt,@TabOpt3Proc,0)
+			hTabDlg(1)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT3),hTabOpt,@TabOpt3Proc,0)
+			hTabDlg(2)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT2),hTabOpt,@TabOpt2Proc,0)
+			hTabDlg(3)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT4),hTabOpt,@TabOpt4Proc,0)
 			SelTab=0
 			'
 		Case WM_NOTIFY
@@ -330,16 +417,16 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 					lstrcpyn(nmeexp.szFileName,buff,32)
 					nmeexp.fAuto=IsDlgButtonChecked(hTabDlg(0),IDC_CHKAUTOEXPORT)
 					SaveToIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
-					grdsize.x=GetDlgItemInt(hTabDlg(2),IDC_EDTX,NULL,FALSE)
-					grdsize.y=GetDlgItemInt(hTabDlg(2),IDC_EDTY,NULL,FALSE)
-					grdsize.show=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSHOWGRID)
-					grdsize.snap=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSNAPGRID)
-					grdsize.tips=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSHOWTIP)
-					grdsize.line=IsDlgButtonChecked(hTabDlg(2),IDC_CHKGRIDLINE)
-					grdsize.stylehex=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSTYLEHEX)
-					grdsize.sizetofont=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSIZETOFONT)
-					grdsize.simple=IsDlgButtonChecked(hTabDlg(2),IDC_CHKSIMPLEPROPERTY)
-					grdsize.defstatic=IsDlgButtonChecked(hTabDlg(2),IDC_CHKDEFSTATIC)
+					grdsize.x=GetDlgItemInt(hTabDlg(1),IDC_EDTX,NULL,FALSE)
+					grdsize.y=GetDlgItemInt(hTabDlg(1),IDC_EDTY,NULL,FALSE)
+					grdsize.show=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSHOWGRID)
+					grdsize.snap=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSNAPGRID)
+					grdsize.tips=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSHOWTIP)
+					grdsize.line=IsDlgButtonChecked(hTabDlg(1),IDC_CHKGRIDLINE)
+					grdsize.stylehex=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSTYLEHEX)
+					grdsize.sizetofont=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSIZETOFONT)
+					grdsize.simple=IsDlgButtonChecked(hTabDlg(1),IDC_CHKSIMPLEPROPERTY)
+					grdsize.defstatic=IsDlgButtonChecked(hTabDlg(1),IDC_CHKDEFSTATIC)
 					grdsize.color=grdcol
 					SaveToIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
 					SetDialogOptions(ah.hres)
@@ -347,10 +434,10 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 					WritePrivateProfileSection(StrPtr("CustCtrl"),@buff,@ad.IniFile)
 					WritePrivateProfileSection(StrPtr("CustCtrl"),szNULL & szNULL,@ad.IniFile)
 					nInx=0
-					While SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETROWCOUNT,0,0)>nInx
-						SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@buff))
+					While SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_GETROWCOUNT,0,0)>nInx
+						SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@buff))
 						buff &=","
-						SendDlgItemMessage(hTabDlg(1),IDC_GRDCUST,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@buff[Len(buff)]))
+						SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@buff[Len(buff)]))
 						nInx=nInx+1
 						WritePrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@buff,@ad.IniFile)
 					Wend
