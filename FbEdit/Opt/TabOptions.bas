@@ -367,6 +367,7 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim sType As ZString*32
 	Dim sExt As ZString*64
 	Dim sEdit As ZString*128
+	Dim buffer As ZString*MAX_PATH
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -473,7 +474,33 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			If lpGRIDNOTIFY->nmhdr.hwndFrom=hGrd Then
 				If lpGRIDNOTIFY->nmhdr.code=GN_HEADERCLICK Then
 					' Sort the grid by column, invert sorting order
-					SendMessage(hGrd,GM_COLUMNSORT,lpGRIDNOTIFY->col,SORT_INVERT)
+					'SendMessage(hGrd,GM_COLUMNSORT,lpGRIDNOTIFY->col,SORT_INVERT)
+				ElseIf lpGRIDNOTIFY->nmhdr.code=GN_BUTTONCLICK Then
+					ofn.lStructSize=SizeOf(OPENFILENAME)
+					ofn.hwndOwner=hWin
+					ofn.hInstance=hInstance
+					ofn.lpstrFilter=@EXEFilterString
+					ofn.lpstrFile=@buffer
+					lstrcpy(@buffer,lpGRIDNOTIFY->lpdata)
+					ofn.nMaxFile=SizeOf(buffer)
+					ofn.Flags=OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+					' Show the Open dialog
+					If GetOpenFileName(@ofn) Then
+						lstrcpy(lpGRIDNOTIFY->lpdata,@buffer)
+						lpGRIDNOTIFY->fcancel=FALSE
+					Else
+						lpGRIDNOTIFY->fcancel=TRUE
+					EndIf
+				ElseIf lpGRIDNOTIFY->nmhdr.code=GN_BEFOREEDIT Then
+					If lpGRIDNOTIFY->row<=10 And lpGRIDNOTIFY->col<=2 Then
+						lpGRIDNOTIFY->fcancel=TRUE
+					EndIf
+				ElseIf lpGRIDNOTIFY->nmhdr.code=GN_AFTERSELCHANGE Then
+					If lpGRIDNOTIFY->row<=10 Then
+						EnableWindow(GetDlgItem(hWin,IDC_BTNTYPEDEL),FALSE)
+					Else
+						EnableWindow(GetDlgItem(hWin,IDC_BTNTYPEDEL),TRUE)
+					EndIf
 				EndIf
 			EndIf
 			'
