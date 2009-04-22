@@ -3,7 +3,9 @@ Whats new:
 1.0.6.9
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
 o Added language (if any) to resource editor project items.
-o Added SysLink control to resource editor.
+o Added SysLink control to dialog editor.
+o Added option for custom styles to dialog editor.
+o Added option for resource to resource editor.
 o Resource editor grids now resizes to window.
 1.0.6.8c
 o Fixed bugs related to Smart Indent.
