@@ -43,10 +43,23 @@
 #Define IDC_BTNSTYLEDEL						2401
 #Define IDC_GRDSTYLE							2403
 
+'TabOpt5.dlg
+#Define IDD_TABOPT5							2410
+#Define IDC_BTNTYPEADD						2502
+#Define IDC_BTNTYPEDEL						2501
+#Define IDC_GRDTYPE							2503
+
 Type FBCUSTSTYLE
 	lpszStyle	As ZString Ptr
 	nValue		As Integer
 	nMask			As Integer
+End Type
+
+Type FBRSTYPE
+	lpsztype		As ZString Ptr
+	nid			As Integer
+	lpszext		As ZString Ptr
+	lpszedit		As ZString Ptr
 End Type
 
 Dim Shared hTabOpt As HWND
@@ -244,7 +257,7 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim row(2) As ZString Ptr
 	Dim x As Integer
 	Dim lpGRIDNOTIFY As GRIDNOTIFY Ptr
-	Dim cust As FBCUSTSTYLE
+	Dim fbcust As FBCUSTSTYLE
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -285,18 +298,18 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			nInx=1
 			While nInx<=64
-				cust.lpszStyle=@buff
+				fbcust.lpszStyle=@buff
 				buff=""
-				LoadFromIni(StrPtr("CustStyle"),Str(nInx),"044",@cust,FALSE)
+				LoadFromIni(StrPtr("CustStyle"),Str(nInx),"044",@fbcust,FALSE)
 				If Len(buff) Then
 					row(0)=@buff
-					buff[100]=Hex(cust.nValue,8)
+					buff[100]=Hex(fbcust.nValue,8)
 					row(1)=@buff[100]
-					buff[150]=Hex(cust.nMask,8)
+					buff[150]=Hex(fbcust.nMask,8)
 					row(2)=@buff[150]
 					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
 				EndIf
-				nInx=nInx+1
+				nInx+=1
 			Wend
 			'
 		Case WM_COMMAND
@@ -323,6 +336,139 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			'
 		Case WM_NOTIFY
 			hGrd=GetDlgItem(hWin,IDC_GRDSTYLE)
+			lpGRIDNOTIFY=Cast(GRIDNOTIFY Ptr,lParam)
+			If lpGRIDNOTIFY->nmhdr.hwndFrom=hGrd Then
+				If lpGRIDNOTIFY->nmhdr.code=GN_HEADERCLICK Then
+					' Sort the grid by column, invert sorting order
+					SendMessage(hGrd,GM_COLUMNSORT,lpGRIDNOTIFY->col,SORT_INVERT)
+				EndIf
+			EndIf
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
+Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+	Dim As Long id,Event
+	Dim nInx As Integer
+	Dim ofn As OPENFILENAME
+	Dim hGrd As HWND
+	Dim clmn As COLUMN
+	Dim row(3) As ZString Ptr
+	Dim x As Integer
+	Dim lpGRIDNOTIFY As GRIDNOTIFY Ptr
+	Dim rarstype As RARSTYPE
+	Dim lpRARSTYPE As RARSTYPE Ptr
+	Dim fbrstype As FBRSTYPE
+	Dim sType As ZString*32
+	Dim sExt As ZString*64
+	Dim sEdit As ZString*128
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			TranslateDialog(hWin,IDD_TABOPT5)
+			hGrd=GetDlgItem(hWin,IDC_GRDTYPE)
+			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
+			clmn.colwt=110
+			clmn.lpszhdrtext=StrPtr("Name")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=31
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Type value
+			clmn.colwt=50
+			clmn.lpszhdrtext=StrPtr("Value")
+			clmn.halign=GA_ALIGN_RIGHT
+			clmn.calign=GA_ALIGN_RIGHT
+			clmn.ctype=TYPE_EDITLONG
+			clmn.ctextmax=5
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Files
+			clmn.colwt=115
+			clmn.lpszhdrtext=StrPtr("Files")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITTEXT
+			clmn.ctextmax=63
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			' Editor
+			clmn.colwt=115
+			clmn.lpszhdrtext=StrPtr("Editor")
+			clmn.halign=GA_ALIGN_LEFT
+			clmn.calign=GA_ALIGN_LEFT
+			clmn.ctype=TYPE_EDITBUTTON
+			clmn.ctextmax=127
+			clmn.lpszformat=0
+			clmn.himl=0
+			clmn.hdrflag=0
+			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
+			fbrstype.lpsztype=@sType
+			fbrstype.lpszext=@sExt
+			fbrstype.lpszedit=@sEdit
+			nInx=1
+			While nInx<=32
+				sType=""
+				fbrstype.nid=0
+				LoadFromIni(StrPtr("ResType"),Str(nInx),"0400",@fbrstype,FALSE)
+				If Len(sType)<>0 Or fbrstype.nid<>0 Then
+					ZStrReplace(@sExt,Asc("!"),Asc(","))
+					row(0)=@sType
+					row(1)=Cast(ZString Ptr,fbrstype.nid)
+					row(2)=@sExt
+					row(3)=@sEdit
+					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
+				ElseIf nInx<=11 Then
+					lpRARSTYPE=Cast(RARSTYPE Ptr,SendMessage(ah.hraresed,PRO_GETCUSTOMTYPE,nInx-1,0))
+					sType=lpRARSTYPE->sztype
+					sExt=lpRARSTYPE->szext
+					sEdit=lpRARSTYPE->szedit
+					row(0)=@sType
+					row(1)=Cast(ZString Ptr,lpRARSTYPE->nid)
+					row(2)=@sExt
+					row(3)=@sEdit
+					SendMessage(hGrd,GM_ADDROW,0,Cast(LPARAM,@row(0)))
+				EndIf
+				nInx+=1
+			Wend
+			'
+		Case WM_COMMAND
+			hGrd=GetDlgItem(hWin,IDC_GRDTYPE)
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case Event
+				Case BN_CLICKED
+					Select Case id
+						Case IDC_BTNTYPEADD
+							nInx=SendMessage(hGrd,GM_ADDROW,0,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
+							'
+						Case IDC_BTNTYPEDEL
+							nInx=SendMessage(hGrd,GM_GETCURROW,0,0)
+							SendMessage(hGrd,GM_DELROW,nInx,0)
+							SendMessage(hGrd,GM_SETCURSEL,0,nInx)
+							SetFocus(hGrd)
+							'
+					End Select
+					'
+			End Select
+			'
+		Case WM_NOTIFY
+			hGrd=GetDlgItem(hWin,IDC_GRDTYPE)
 			lpGRIDNOTIFY=Cast(GRIDNOTIFY Ptr,lParam)
 			If lpGRIDNOTIFY->nmhdr.hwndFrom=hGrd Then
 				If lpGRIDNOTIFY->nmhdr.code=GN_HEADERCLICK Then
@@ -380,10 +526,16 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 	Dim ts As TCITEM
 	Dim nInx As Integer
 	Dim lpNMHDR As NMHDR Ptr
-	Dim cust As FBCUSTSTYLE
+	Dim fbcust As FBCUSTSTYLE
+	Dim cust As CUSTSTYLE
 	Dim sStyle As ZString*64
 	Dim sValue As ZString*32
 	Dim sMask As ZString*32
+	Dim fbrstype As FBRSTYPE
+	Dim rarstype As RARSTYPE
+	Dim sType As ZString*32
+	Dim sExt As ZString*64
+	Dim sEdit As ZString*128
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -404,11 +556,14 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 			SendMessage(hTabOpt,TCM_INSERTITEM,2,Cast(Integer,@ts))
 			ts.pszText=StrPtr("Custom styles")
 			SendMessage(hTabOpt,TCM_INSERTITEM,3,Cast(Integer,@ts))
+			ts.pszText=StrPtr("Resource types")
+			SendMessage(hTabOpt,TCM_INSERTITEM,4,Cast(Integer,@ts))
 			' Create the tab dialogs
 			hTabDlg(0)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT1),hTabOpt,@TabOpt1Proc,0)
 			hTabDlg(1)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT3),hTabOpt,@TabOpt3Proc,0)
 			hTabDlg(2)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT2),hTabOpt,@TabOpt2Proc,0)
 			hTabDlg(3)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT4),hTabOpt,@TabOpt4Proc,0)
+			hTabDlg(4)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT5),hTabOpt,@TabOpt5Proc,0)
 			SelTab=0
 			'
 		Case WM_NOTIFY
@@ -477,6 +632,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 						nInx=nInx+1
 						WritePrivateProfileString(StrPtr("CustCtrl"),Str(nInx),@buff,@ad.IniFile)
 					Wend
+					SendMessage(ah.hraresed,DEM_CLEARCUSTSTYLE,0,0)
 					WritePrivateProfileSection(StrPtr("CustStyle"),szNULL & szNULL,@ad.IniFile)
 					nInx=0
 					While SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETROWCOUNT,0,0)>nInx
@@ -484,10 +640,28 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 						SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@sValue))
 						SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCELLDATA,(nInx Shl 16)+2,Cast(LPARAM,@sMask))
 						nInx=nInx+1
-						cust.lpszStyle=@sStyle
-						cust.nValue=Val("&H" & sValue)
-						cust.nMask=Val("&H" & sMask)
-						SaveToIni(StrPtr("CustStyle"),Str(nInx),StrPtr("044"),@cust,FALSE)
+						fbcust.lpszStyle=@sStyle
+						fbcust.nValue=Val("&H" & sValue)
+						fbcust.nMask=Val("&H" & sMask)
+						SaveToIni(StrPtr("CustStyle"),Str(nInx),"044",@fbcust,FALSE)
+						cust.szStyle=sStyle
+						cust.nValue=fbcust.nValue
+						cust.nMask=fbcust.nMask
+						SendMessage(ah.hraresed,DEM_ADDCUSTSTYLE,0,Cast(LPARAM,@cust))
+					Wend
+					nInx=0
+					While SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETROWCOUNT,0,0)>nInx
+						SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@sType))
+						SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCELLDATA,(nInx Shl 16)+1,Cast(LPARAM,@rarstype.nid))
+						SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCELLDATA,(nInx Shl 16)+2,Cast(LPARAM,@sExt))
+						SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCELLDATA,(nInx Shl 16)+3,Cast(LPARAM,@sEdit))
+						nInx=nInx+1
+						ZStrReplace(@sExt,Asc(","),Asc("!"))
+						fbrstype.lpsztype=@sType
+						fbrstype.nid=rarstype.nid
+						fbrstype.lpszext=@sExt
+						fbrstype.lpszedit=@sEdit
+						SaveToIni(StrPtr("ResType"),Str(nInx),"0400",@fbrstype,FALSE)
 					Wend
 					SendMessage(hWin,WM_CLOSE,0,0)
 					'

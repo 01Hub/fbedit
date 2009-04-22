@@ -12,6 +12,13 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 	Dim nBtn As Integer
 	Dim tbxwt As Integer
 	Dim lpCTLDBLCLICK As CTLDBLCLICK Ptr
+	Dim fbcust As FBCUSTSTYLE
+	Dim cust As CUSTSTYLE
+	Dim fbrstype As FBRSTYPE
+	Dim sType As ZString*32
+	Dim sExt As ZString*64
+	Dim sEdit As ZString*128
+	Dim rarstype As RARSTYPE
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -31,6 +38,37 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 					EndIf
 				EndIf
 				nInx=nInx+1
+			Wend
+			nInx=1
+			While nInx<=64
+				fbcust.lpszStyle=@buff
+				buff=""
+				LoadFromIni(StrPtr("CustStyle"),Str(nInx),"044",@fbcust,FALSE)
+				If Len(buff) Then
+					cust.szStyle=buff
+					cust.nValue=fbcust.nValue
+					cust.nMask=IIf(fbcust.nMask,fbcust.nMask,fbcust.nValue)
+					SendMessage(ah.hraresed,DEM_ADDCUSTSTYLE,0,Cast(LPARAM,@cust))
+				EndIf
+				nInx+=1
+			Wend
+			nInx=1
+			While nInx<=32
+				fbcust.lpszStyle=@buff
+				fbrstype.lpsztype=@sType
+				fbrstype.nid=0
+				fbrstype.lpszext=@sExt
+				fbrstype.lpszedit=@sEdit
+				LoadFromIni(StrPtr("ResType"),Str(nInx),"0400",@fbrstype,FALSE)
+				If Len(sType)<>0 Or fbrstype.nid<>0 Then
+					ZStrReplace(@sExt,Asc("!"),Asc(","))
+					rarstype.sztype=sType
+					rarstype.nid=fbrstype.nid
+					rarstype.szext=sExt
+					rarstype.szedit=sEdit
+					SendMessage(ah.hraresed,PRO_SETCUSTOMTYPE,nInx-1,@rarstype)
+				EndIf
+				nInx+=1
 			Wend
 			'
 		Case WM_CLOSE

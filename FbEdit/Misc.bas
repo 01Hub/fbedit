@@ -2492,3 +2492,14 @@ Sub CenterOwner(ByVal hWin As HWND)
 	MoveWindow(hWin,rect1.left,rect1.top,rect1.right,rect1.bottom,FALSE)
 	
 End Sub
+
+Sub ZStrReplace(ByVal lpszStr As ZString Ptr,ByVal nByte As Integer,ByVal nReplace As Integer)
+	Dim i As Integer
+
+	For i=0 To Len(*lpszStr)-1
+		If Asc(lpszStr[i])=nByte Then
+			lpszStr[i]=nReplace
+		EndIf
+	Next
+
+End Sub
