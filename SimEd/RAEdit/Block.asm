@@ -1104,7 +1104,14 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 			mov		eax,nCmnt
 			mov		fCmnt,eax
 			.while ecx<[esi].CHARS.len
-				.if word ptr [esi+ecx+sizeof CHARS-1]=="'/"
+				.if byte ptr [esi+ecx+sizeof CHARS-1]=="'" &&  word ptr [esi+ecx+sizeof CHARS-1]!="/'"
+					mov		ecx,[esi].CHARS.len
+				.elseif byte ptr [esi+ecx+sizeof CHARS-1]=='"'
+					inc		ecx
+					.while ecx<[esi].CHARS.len && byte ptr [esi+ecx+sizeof CHARS-1]!='"'
+						inc		ecx
+					.endw
+				.elseif word ptr [esi+ecx+sizeof CHARS-1]=="'/"
 					inc		ecx
 					inc		nCmnt
 				.elseif word ptr [esi+ecx+sizeof CHARS-1]=="/'"

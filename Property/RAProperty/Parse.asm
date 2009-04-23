@@ -127,6 +127,19 @@ DestroyToEol proc lpMem:DWORD
 
 DestroyToEol endp
 
+DestroyToEof proc lpMem:DWORD
+
+	mov		eax,lpMem
+	.while byte ptr [eax]
+		.if byte ptr [eax]!=0Dh && byte ptr [eax]!=0Ah
+			mov		byte ptr [eax],20h
+		.endif
+		inc		eax
+	.endw
+	ret
+
+DestroyToEof endp
+
 DestroyString proc lpMem:DWORD
 
 	mov		eax,lpMem
@@ -170,25 +183,62 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 		.endif
 	  @@:
 		.if word ptr buffer=="'/"
-			invoke SearchMemDown,esi,addr buffer,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
-			.if eax
-				mov		esi,eax
-				invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
-				.if eax
-					mov		edx,eax
-					.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
-						inc		edx
-					.endif
-					.while esi<=edx
-						mov		al,[esi]
-						.if al!=0Dh && al!=0Ah
-							mov		byte ptr [esi],' '
+			.while byte ptr [esi]
+				.if byte ptr [esi]=='"'
+					invoke DestroyString,esi
+					mov		esi,eax
+				.elseif byte ptr [esi]=="'"
+					invoke DestroyToEol,esi
+					mov		esi,eax
+				.elseif word ptr [esi]=="'/"
+					invoke SearchMemDown,addr [esi+2],addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
+					.if eax
+						mov		edx,eax
+						.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
+							inc		edx
 						.endif
-						inc		esi
-					.endw
-					jmp		@b
+						.while esi<=edx
+							mov		al,[esi]
+							.if al!=0Dh && al!=0Ah
+								mov		byte ptr [esi],' '
+							.endif
+							inc		esi
+						.endw
+					.else
+						invoke DestroyToEof,esi
+						mov		esi,eax
+					.endif
+				.else
+					inc		esi
 				.endif
-			.endif
+			.endw
+;			mov		word ptr buffer[4],"'"
+;			invoke SearchMemDown,esi,addr buffer[4],FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
+;			.if eax
+;				.if byte ptr [eax-1]=='/'
+;					lea		esi,[eax+1]
+;					invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
+;					.if eax
+;						mov		edx,eax
+;						.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
+;							inc		edx
+;						.endif
+;						.while esi<=edx
+;							mov		al,[esi]
+;							.if al!=0Dh && al!=0Ah
+;								mov		byte ptr [esi],' '
+;							.endif
+;							inc		esi
+;						.endw
+;						jmp		@b
+;					.endif
+;				.else
+;					;Comment
+;					invoke DestroyToEol,eax
+;					mov		esi,eax
+;					jmp		@b
+;				.endif
+;			.endif
 		.else
 			invoke SearchMemDown,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
 			.if eax
@@ -291,7 +341,7 @@ DestroyCommentsStrings endp
 PreParse proc uses esi,lpMem:DWORD
 
 	invoke DestroyCmntBlock,lpMem
-	invoke DestroyCommentsStrings,lpMem
+	;invoke DestroyCommentsStrings,lpMem
 	ret
 
 PreParse endp

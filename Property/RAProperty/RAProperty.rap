@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -149,8 +149,8 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2280
 9=0,0,0,0,4267
-10=0,0,589,494,22544
-11=0,0,746,498,2471
+10=0,0,589,494,2313
+11=0,0,746,498,2442
 12=0,0,0,0,2850
 13=0,0,0,0,0
 [BookMark]
@@ -169,6 +169,7 @@ ProductVer4Range=0
 
 [AutoLoad]
 1=1
+10=1
 [PTimer]
 PTimer=122121012
 [Find]

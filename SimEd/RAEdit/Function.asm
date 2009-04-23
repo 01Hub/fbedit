@@ -421,9 +421,9 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 			.elseif ax=="'/"
 				; comment init
 				.while ecx<[edi].CHARS.len
-					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	esi,byte ptr [esi+offset CharTab]
-					.if esi==CT_STRING
+					movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	eax,byte ptr [eax+offset CharTab]
+					.if eax==CT_STRING
 						call	SkipString
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
 						inc		ecx
@@ -431,6 +431,8 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
 						inc		ecx
 						dec		fCmnt
+					.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
+						mov		ecx,[edi].CHARS.len
 					.endif
 					inc		ecx
 				.endw
@@ -442,10 +444,21 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 			.elseif ax=="/'"
 				; Comment end
 				.while ecx<[edi].CHARS.len
-					.if word ptr [edi+ecx+sizeof CHARS]=="/'"
-						dec		fCmnt
+					movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
+					movzx	eax,byte ptr [eax+offset CharTab]
+					.if eax==CT_STRING
+						call	SkipString
+					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
+						test	[edi].CHARS.state,STATE_COMMENT
+						.if !ZERO?
+							dec		fCmnt
+						.endif
+						inc		ecx
 					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
 						inc		fCmnt
+						inc		ecx
+					.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
+						mov		ecx,[edi].CHARS.len
 					.endif
 					inc		ecx
 				.endw
@@ -2298,3 +2311,5 @@ BracketMatch proc uses ebx,hMem:DWORD,nChr:DWORD,cp:DWORD
 	ret
 
 BracketMatch endp
+
+

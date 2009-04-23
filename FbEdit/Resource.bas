@@ -66,7 +66,7 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 					rarstype.nid=fbrstype.nid
 					rarstype.szext=sExt
 					rarstype.szedit=sEdit
-					SendMessage(ah.hraresed,PRO_SETCUSTOMTYPE,nInx-1,@rarstype)
+					SendMessage(ah.hraresed,PRO_SETCUSTOMTYPE,nInx-1,Cast(LPARAM,@rarstype))
 				EndIf
 				nInx+=1
 			Wend
