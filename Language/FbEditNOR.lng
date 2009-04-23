@@ -53,6 +53,15 @@ Lang=Norwegian, By KetilO
 4012=Enkel Property
 4013=Definer IDC_STATIC
 ;--------------------------------------------------------------------------
+[2400]
+2402=Legg til
+2401=Slett
+;--------------------------------------------------------------------------
+[2410]
+2502=Legg til
+2501=Slett
+2504=Endringer vil oppdateres når FbEdit restartes.
+;--------------------------------------------------------------------------
 [2500]
 2500=Finn ...
 2216=Finn hva:
@@ -569,6 +578,20 @@ Lang=Norwegian, By KetilO
 3006=Lagre endringene?
 3007=Filen endret utenfor editoren!
 3008=Gjenåpne filen?
+4010=Eksport
+4020=Utseende
+4030=Custom kontroller
+4031=Custom kontroll
+4032=Style maske
+4040=Custom styles
+4041=Style
+4042=Verdi
+4043=Maske
+4050=Resurs typer
+4051=Navn
+4052=Vedi
+4053=Filer
+4054=Editor
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Kode biter

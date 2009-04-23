@@ -6,8 +6,8 @@
 #define IDC_EDTLNGLANG          30005
 #Define IDC_LSTLNGDIALOG        30006
 
-#Define IDD_DLGMENU				30100
-#Define IDD_DLGTEST				30200
+#Define IDD_DLGMENU				  30100
+#Define IDD_DLGTEST				  30200
 
 Dim Shared hInstance As HINSTANCE
 Dim Shared hWnd As HWND
@@ -27,8 +27,10 @@ Const szList As String=!"[1100] Goto Line\0" _
 							  !"[1200] Language\0" _
 							  !"[2000] Options\0" _
 							  !"[2100] Dialog Options Page#1\0" _
-							  !"[2200] Dialog Options Page#2\0" _
-							  !"[2300] Dialog Options Page#3\0" _
+							  !"[2300] Dialog Options Page#2\0" _
+							  !"[2200] Dialog Options Page#3\0" _
+							  !"[2400] Dialog Options Page#4\0" _
+							  !"[2410] Dialog Options Page#5\0" _
 							  !"[2500] Find ...\0" _
 							  !"[3000] About dialog\0" _
 							  !"[3200] Menu Options\0" _

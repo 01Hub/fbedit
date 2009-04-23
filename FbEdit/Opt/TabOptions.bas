@@ -575,15 +575,20 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 			ts.mask=TCIF_TEXT
 			ts.iImage=-1
 			ts.lParam=0
-			ts.pszText=StrPtr("Exports")
+			buff=GetInternalString(IS_RESOURCEOPT1)
+			ts.pszText=StrPtr(buff)
 			SendMessage(hTabOpt,TCM_INSERTITEM,0,Cast(Integer,@ts))
-			ts.pszText=StrPtr("Behaviour")
+			buff=GetInternalString(IS_RESOURCEOPT2)
+			ts.pszText=StrPtr(buff)
 			SendMessage(hTabOpt,TCM_INSERTITEM,1,Cast(Integer,@ts))
-			ts.pszText=StrPtr("Custom controls")
+			buff=GetInternalString(IS_RESOURCEOPT3)
+			ts.pszText=StrPtr(buff)
 			SendMessage(hTabOpt,TCM_INSERTITEM,2,Cast(Integer,@ts))
-			ts.pszText=StrPtr("Custom styles")
+			buff=GetInternalString(IS_RESOURCEOPT4)
+			ts.pszText=StrPtr(buff)
 			SendMessage(hTabOpt,TCM_INSERTITEM,3,Cast(Integer,@ts))
-			ts.pszText=StrPtr("Resource types")
+			buff=GetInternalString(IS_RESOURCEOPT5)
+			ts.pszText=StrPtr(buff)
 			SendMessage(hTabOpt,TCM_INSERTITEM,4,Cast(Integer,@ts))
 			' Create the tab dialogs
 			hTabDlg(0)=CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_TABOPT1),hTabOpt,@TabOpt1Proc,0)

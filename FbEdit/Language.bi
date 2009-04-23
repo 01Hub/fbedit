@@ -50,6 +50,20 @@
 #DEFINE IS_WANT_TO_SAVE_CHANGES         3006
 #DEFINE IS_FILE_CHANGED_OUTSIDE_EDITOR  3007
 #DEFINE IS_REOPEN_THE_FILE              3008
+#DEFINE IS_RESOURCEOPT1                 4010
+#DEFINE IS_RESOURCEOPT2                 4020
+#DEFINE IS_RESOURCEOPT3                 4030
+#DEFINE IS_RESOURCEOPT3HDR1             4031
+#DEFINE IS_RESOURCEOPT3HDR2             4032
+#Define IS_RESOURCEOPT4                 4040
+#DEFINE IS_RESOURCEOPT4HDR1             4041
+#DEFINE IS_RESOURCEOPT4HDR2             4042
+#DEFINE IS_RESOURCEOPT4HDR3             4043
+#Define IS_RESOURCEOPT5                 4050
+#DEFINE IS_RESOURCEOPT5HDR1             4051
+#DEFINE IS_RESOURCEOPT5HDR2             4052
+#DEFINE IS_RESOURCEOPT5HDR3             4053
+#DEFINE IS_RESOURCEOPT5HDR4             4054
 
 Const InternalStrings=	!"\13\10" & _
 								!"[Internal]\13\10" & _
@@ -91,4 +105,18 @@ Const InternalStrings=	!"\13\10" & _
 								!"3005=Failed to create the file:\13\10" & _
 								!"3006=Want to save changes?\13\10" & _
 								!"3007=File changed outside editor!\13\10" & _
-								!"3008=Reopen the file?\13\10"
+								!"3008=Reopen the file?\13\10" & _
+								!"4010=Exports\13\10" & _
+								!"4020=Behaviour\13\10" & _
+								!"4030=Custom controls\13\10" & _
+								!"4031=Custom control\13\10" & _
+								!"4032=Style mask\13\10" & _
+								!"4040=Custom styles\13\10" & _
+								!"4041=Style\13\10" & _
+								!"4042=Value\13\10" & _
+								!"4043=Mask\13\10" & _
+								!"4050=Resource types\13\10" & _
+								!"4051=Name\13\10" & _
+								!"4052=Value\13\10" & _
+								!"4053=Files\13\10" & _
+								!"4054=Editor\13\10"
