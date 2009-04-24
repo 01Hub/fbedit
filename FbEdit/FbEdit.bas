@@ -1709,6 +1709,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lpRASELCHANGE=Cast(RASELCHANGE Ptr,lParam)
 			If lpRASELCHANGE->nmhdr.hwndFrom=ah.hred And lpRASELCHANGE->nmhdr.idFrom=IDC_RAEDIT Then
 				If ad.fNoNotify Then
+					If lpRASELCHANGE->Line<>nLastLine Then
+						ShowWindow(ah.htt,SW_HIDE)
+						HideList()
+					EndIf
 					nCaretPos=lpRASELCHANGE->chrg.cpMin-lpRASELCHANGE->cpLine
 					UpDateFind(ah.hred,lpRASELCHANGE->chrg.cpMin,lpRASELCHANGE->fchanged)
 					nLastLine=lpRASELCHANGE->Line
