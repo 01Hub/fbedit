@@ -103,7 +103,8 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			hGrd=GetDlgItem(hWin,IDC_GRDCUST)
 			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
 			clmn.colwt=300
-			clmn.lpszhdrtext=StrPtr("Custom control")
+			buff=GetInternalString(IS_RESOURCEOPT3HDR1)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITBUTTON
@@ -114,7 +115,8 @@ Function TabOpt2Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Style mask
 			clmn.colwt=80
-			clmn.lpszhdrtext=StrPtr("Style mask")
+			buff=GetInternalString(IS_RESOURCEOPT3HDR2)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -265,7 +267,8 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			hGrd=GetDlgItem(hWin,IDC_GRDSTYLE)
 			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
 			clmn.colwt=240
-			clmn.lpszhdrtext=StrPtr("Style")
+			buff=GetInternalString(IS_RESOURCEOPT4HDR1)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -276,7 +279,8 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Style value
 			clmn.colwt=70
-			clmn.lpszhdrtext=StrPtr("Value")
+			buff=GetInternalString(IS_RESOURCEOPT4HDR2)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -287,7 +291,8 @@ Function TabOpt4Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Style mask
 			clmn.colwt=70
-			clmn.lpszhdrtext=StrPtr("Mask")
+			buff=GetInternalString(IS_RESOURCEOPT4HDR3)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -375,7 +380,8 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			hGrd=GetDlgItem(hWin,IDC_GRDTYPE)
 			SendMessage(hGrd,WM_SETFONT,SendMessage(hWin,WM_GETFONT,0,0),FALSE)
 			clmn.colwt=110
-			clmn.lpszhdrtext=StrPtr("Name")
+			buff=GetInternalString(IS_RESOURCEOPT5HDR1)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -386,7 +392,8 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Type value
 			clmn.colwt=50
-			clmn.lpszhdrtext=StrPtr("Value")
+			buff=GetInternalString(IS_RESOURCEOPT5HDR2)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_RIGHT
 			clmn.calign=GA_ALIGN_RIGHT
 			clmn.ctype=TYPE_EDITLONG
@@ -397,7 +404,8 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Files
 			clmn.colwt=115
-			clmn.lpszhdrtext=StrPtr("Files")
+			buff=GetInternalString(IS_RESOURCEOPT5HDR3)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITTEXT
@@ -408,7 +416,8 @@ Function TabOpt5Proc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 			SendMessage(hGrd,GM_ADDCOL,0,Cast(LPARAM,@clmn))
 			' Editor
 			clmn.colwt=115
-			clmn.lpszhdrtext=StrPtr("Editor")
+			buff=GetInternalString(IS_RESOURCEOPT5HDR4)
+			clmn.lpszhdrtext=StrPtr(buff)
 			clmn.halign=GA_ALIGN_LEFT
 			clmn.calign=GA_ALIGN_LEFT
 			clmn.ctype=TYPE_EDITBUTTON

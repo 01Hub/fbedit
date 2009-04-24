@@ -23,7 +23,7 @@ Function InstallDll Cdecl Alias "InstallDll" ( ByVal hWin As HWND, ByVal hInst A
 	lpOldMain = Cast( Any ptr, SetWindowLong( lpHandles->hwnd, GWL_WNDPROC, Cast( Integer, @FBEProc ) ) )
 
 	hMenu = CreatePopupMenu( )
-	AppendMenu( GetSubMenu( lpHANDLES->hmenu, 1 ), MF_STRING Or MF_POPUP, Cast( Integer,hMenu ), StrPtr( "ShowVars" ) )
+	AppendMenu( GetSubMenu( lpHANDLES->hmenu, 1 ), MF_STRING Or MF_POPUP, Cast( Integer,hMenu ), GetString( 999, "ShowVars" ) )
 	IDM_SHOWVARS_HIDE = SendMessage( hWin, AIM_GETMENUID, 0, 0 )
 	IDM_SHOWVARS_NEXT = SendMessage( hWin, AIM_GETMENUID, 0, 0 )
 	IDM_SHOWVARS_PREV = SendMessage( hWin, AIM_GETMENUID, 0, 0 )

@@ -678,6 +678,7 @@ Toolbar=Toolbar Verktøy
 10002=SVN Lagre
 ;--------------------------------------------------------------------------
 [ShowVars]
+999=Vis variable
 1000=Skjul
 1001=Neste Tab\tCtrl+F6
 1002=Forrige Tab\tShift+Ctrl+F6

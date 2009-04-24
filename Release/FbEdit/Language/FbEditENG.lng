@@ -56,6 +56,15 @@ Lang=English (default), By FbEdit team
 4012=Simple Property
 4013=Define IDC_STATIC
 ;--------------------------------------------------------------------------
+[2400]
+2402=Add
+2401=Delete
+;--------------------------------------------------------------------------
+[2410]
+2502=Add
+2501=Delete
+2504=Changes will take place when FbEdit is restarted.
+;--------------------------------------------------------------------------
 [2500]
 2500=Find ...
 2216=Find what:
@@ -575,6 +584,20 @@ Lang=English (default), By FbEdit team
 3006=Want to save changes?
 3007=File changed outside editor!
 3008=Reopen the file?
+4010=Exports
+4020=Behaviour
+4030=Custom controls
+4031=Custom control
+4032=Style mask
+4040=Custom styles
+4041=Style
+4042=Value
+4043=Mask
+4050=Resource types
+4051=Name
+4052=Value
+4053=Files
+4054=Editor
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Code Sniplets
@@ -661,6 +684,7 @@ Toolbar=Toolbar Creator
 10002=SVN Commit
 ;--------------------------------------------------------------------------
 [ShowVars]
+999=ShowVars
 1000=Hide
 1001=Next Tab\tCtrl+F6
 1002=Prev Tab\tShift+Ctrl+F6

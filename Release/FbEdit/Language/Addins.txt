@@ -83,6 +83,7 @@ Toolbar=Toolbar Creator
 10002=SVN Commit
 ;--------------------------------------------------------------------------
 [ShowVars]
+999=ShowVars
 1000=Hide
 1001=Next Tab\tCtrl+F6
 1002=Prev Tab\tShift+Ctrl+F6
