@@ -410,6 +410,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hfib,FBM_SETPATH,FALSE,Cast(Integer,@ad.DefProjectPath))
 			SendMessage(ah.hfib,FBM_SETFILTERSTRING,FALSE,Cast(Integer,StrPtr(".bas.bi.rc.txt.fbp.")))
 			SendMessage(ah.hfib,FBM_SETFILTER,TRUE,TRUE)
+			buff=GetInternalString(IS_RAFILE1)
+			SendMessage(ah.hfib,FBM_SETTOOLTIP,1,Cast(LPARAM,@buff))
+			buff=GetInternalString(IS_RAFILE2)
+			SendMessage(ah.hfib,FBM_SETTOOLTIP,2,Cast(LPARAM,@buff))
 			' Property definitions
 			ah.hpr=GetDlgItem(hWin,IDC_PROPERTY)
 			SetupProperty

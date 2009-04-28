@@ -2971,7 +2971,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	mov		eax,uMsg
-	.if eax>=REM_BASE && eax<=REM_SETCHANGEDSTATE
+	.if eax>=REM_BASE && eax<=REM_SETTOOLTIP
 		sub		eax,REM_BASE
 		jmp 	DWORD PTR [offset _REM_BASE+eax*4]
 		include RAEdit_REM_Msg_JumpTable.asm
@@ -3568,6 +3568,7 @@ SetToolTip:
 	mov		ti.uId,eax
 	mov		ti.hInst,0
 	mov		ti.lpszText,edx
+	invoke SendMessage,[ebx].EDIT.htt,TTM_DELTOOL,NULL,addr ti
 	invoke SendMessage,[ebx].EDIT.htt,TTM_ADDTOOL,NULL,addr ti
 	retn
 

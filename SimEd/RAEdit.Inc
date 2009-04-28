@@ -156,6 +156,7 @@ REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
 REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
 REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
 REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
+REM_SETTOOLTIP			equ REM_BASE+87		;wParam=n (1-6), lParam=lpText
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

@@ -48,3 +48,5 @@ btns					TBBUTTON <8,1,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 hInstance				dd ?
 wfd						WIN32_FIND_DATA <?>
+szUpOneLevel			db 64 dup(?)
+szFileFilter			db 64 dup(?)

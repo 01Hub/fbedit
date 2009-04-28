@@ -8,7 +8,9 @@
 	1300-		Project tab main window
 	2000-		File open / save dialogs
 	3000-		Messageboxes
-
+	4000-		Resource editor options
+	5000-		RAEdit tooltips
+	5010-		RAFile tooltips
 '/
 
 #DEFINE IS_COULD_NOT_FIND               1
@@ -64,6 +66,14 @@
 #DEFINE IS_RESOURCEOPT5HDR2             4052
 #DEFINE IS_RESOURCEOPT5HDR3             4053
 #DEFINE IS_RESOURCEOPT5HDR4             4054
+#DEFINE IS_RAEDIT1                      5001
+#DEFINE IS_RAEDIT2                      5002
+#DEFINE IS_RAEDIT3                      5003
+#DEFINE IS_RAEDIT4                      5004
+#DEFINE IS_RAEDIT5                      5005
+#DEFINE IS_RAEDIT6                      5006
+#DEFINE IS_RAFILE1                      5011
+#DEFINE IS_RAFILE2                      5012
 
 Const InternalStrings=	!"\13\10" & _
 								!"[Internal]\13\10" & _
@@ -119,4 +129,12 @@ Const InternalStrings=	!"\13\10" & _
 								!"4051=Name\13\10" & _
 								!"4052=Value\13\10" & _
 								!"4053=Files\13\10" & _
-								!"4054=Editor\13\10"
+								!"4054=Editor\13\10" & _
+								!"5001=Changed state\13\10" & _
+								!"5002=Splitter Bar\13\10" & _
+								!"5003=Show/Hide Linenumbers\13\10" & _
+								!"5004=Expand all\13\10" & _
+								!"5005=Collapse all\13\10" & _
+								!"5006=Lock/Unlock Tab\13\10" & _
+								!"5011=Up One Level\13\10" & _
+								!"5012=File Filter\13\10"

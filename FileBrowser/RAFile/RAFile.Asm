@@ -802,6 +802,13 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		mov		eax,[ebx].FILEBROWSER.himl
 		jmp		Ex
+	.elseif eax==FBM_SETTOOLTIP
+		mov		eax,wParam
+		.if eax==1
+			invoke lstrcpyn,addr szUpOneLevel,lParam,64
+		.elseif eax==2
+			invoke lstrcpyn,addr szFileFilter,lParam,64
+		.endif
 	.elseif eax==WM_USER+9999
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -814,9 +821,15 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		eax,eax
 		.if [ebx].NMHDR.code==TTN_NEEDTEXT
 			;Toolbar tooltip
-			invoke LoadString,hInstance,(NMHDR ptr [ebx]).idFrom,addr buffer,sizeof buffer
-			.if eax
-				lea		eax,buffer
+			mov		eax,offset szFileFilter
+			.if [ebx].NMHDR.idFrom==1
+				mov		eax,offset szUpOneLevel
+			.endif
+			.if !byte ptr [eax]
+				invoke LoadString,hInstance,(NMHDR ptr [ebx]).idFrom,addr buffer,sizeof buffer
+				.if eax
+					lea		eax,buffer
+				.endif
 			.endif
 			mov		(TOOLTIPTEXT ptr [ebx]).lpszText,eax
 			xor		eax,eax

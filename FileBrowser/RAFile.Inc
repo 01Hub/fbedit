@@ -12,6 +12,7 @@ FBM_GETBACKCOLOR	equ WM_USER+10	;wParam=0, lParam=0
 FBM_SETTEXTCOLOR	equ WM_USER+11	;wParam=0, lParam=nColor
 FBM_GETTEXTCOLOR	equ WM_USER+12	;wParam=0, lParam=0
 FBM_GETIMAGELIST	equ WM_USER+13	;wParam=0, lParam=0
+FBM_SETTOOLTIP		equ WM_USER+14	;wParam=n (1 or 2), lParam=lpszText
 
 ;Notifications
 FBN_PATHCHANGE		equ 1

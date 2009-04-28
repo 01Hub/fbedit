@@ -1331,6 +1331,28 @@
 		_REM_SETCHANGEDSTATE:
 			invoke SetChangedState,ebx,wParam
 			ret
+		_REM_SETTOOLTIP:
+			mov		eax,wParam
+			.if eax==1
+				mov		eax,[ebx].EDIT.hsta
+			.elseif eax==2
+				mov		eax,[ebx].EDIT.hsbtn
+			.elseif eax==3
+				mov		eax,[ebx].EDIT.hlin
+			.elseif eax==4
+				mov		eax,[ebx].EDIT.hexp
+			.elseif eax==5
+				mov		eax,[ebx].EDIT.hcol
+			.elseif eax==6
+				mov		eax,[ebx].EDIT.hlock
+			.else
+				xor		eax,eax
+			.endif
+			.if eax
+				mov		edx,lParam
+				call SetToolTip
+			.endif
+			ret
 
 .data
 
@@ -1423,6 +1445,7 @@ _REM_BASE \
 	dd _REM_GETUNICODE			;equ REM_BASE+84
 	dd _REM_SETUNICODE			;equ REM_BASE+85
 	dd _REM_SETCHANGEDSTATE		;equ REM_BASE+86
+	dd _REM_SETTOOLTIP			;equ REM_BASE+87
 
 .code
 align 4

@@ -598,6 +598,14 @@ Lang=English (default), By FbEdit team
 4052=Value
 4053=Files
 4054=Editor
+5001=Changed state
+5002=Splitter Bar
+5003=Show/Hide Linenumbers
+5004=Expand all
+5005=Collapse all
+5006=Lock/Unlock Tab
+5011=Up One Level
+5012=File Filter
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Code Sniplets

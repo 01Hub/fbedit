@@ -592,6 +592,14 @@ Lang=Norwegian, By KetilO
 4052=Vedi
 4053=Filer
 4054=Editor
+5001=Endret status
+5002=Splitt Bar
+5003=Vis/Skjul Linjenummer
+5004=Ekspander alle
+5005=Kollaps alle
+5006=Låa/Lås opp Tab
+5011=Opp Ett Nivå
+5012=Fil Filter
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Kode biter

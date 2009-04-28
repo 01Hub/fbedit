@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.373
-PV=1.2.0.373
+FV=1.2.0.374
+PV=1.2.0.374
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.373
+ProductVersion=1.2.0.374
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.373
+FileVersion=1.2.0.374
 CompanyName=
 
 [Resource]
@@ -102,13 +102,13 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,76390
+1=0,0,0,0,76466
 16=0,0,810,411,6873
 22=0,0,0,0,236
-23=0,0,0,0,14829
+23=0,0,0,0,31178
 24=0,0,0,0,713
 19=0,0,0,0,9309
-2=0,0,0,0,4687
+2=0,0,0,0,7581
 9=0,0,0,0,685
 10=0,0,0,0,23361
 11=0,0,0,0,5553
@@ -195,7 +195,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

@@ -11,6 +11,8 @@
 #Define FBM_GETBACKCOLOR		WM_USER+10	' wParam=0, lParam=0
 #Define FBM_SETTEXTCOLOR		WM_USER+11	' wParam=0, lParam=nColor
 #Define FBM_GETTEXTCOLOR		WM_USER+12	' wParam=0, lParam=0
+#Define FBM_GETIMAGELIST		WM_USER+13	' wParam=0, lParam=0
+#Define FBM_SETTOOLTIP			WM_USER+14	' wParam=n (1 or 2), lParam=lpszText
 
 ' Notifications
 #Define FBN_PATHCHANGE			1

@@ -238,6 +238,7 @@ Function CreateEdit(ByVal sFile As String) As HWND
 	Dim hTmp As HWND
 	Dim st As Integer
 	Dim tpe As Integer
+	Dim buffer As ZString*64
 
 	hCtl=ah.hred
 	tpe=FileType(sFile)
@@ -271,6 +272,20 @@ Function CreateEdit(ByVal sFile As String) As HWND
 		EndIf
 		SendMessage(hTmp,WM_SETTEXT,0,Cast(Integer,StrPtr("")))
 		SendMessage(hTmp,EM_SETMODIFY,FALSE,0)
+		' Set tooltips
+		buffer=GetInternalString(IS_RAEDIT1)
+		SendMessage(hTmp,REM_SETTOOLTIP,1,Cast(LPARAM,@buffer))
+		buffer=GetInternalString(IS_RAEDIT2)
+		SendMessage(hTmp,REM_SETTOOLTIP,2,Cast(LPARAM,@buffer))
+		buffer=GetInternalString(IS_RAEDIT3)
+		SendMessage(hTmp,REM_SETTOOLTIP,3,Cast(LPARAM,@buffer))
+		buffer=GetInternalString(IS_RAEDIT4)
+		SendMessage(hTmp,REM_SETTOOLTIP,4,Cast(LPARAM,@buffer))
+		buffer=GetInternalString(IS_RAEDIT5)
+		SendMessage(hTmp,REM_SETTOOLTIP,5,Cast(LPARAM,@buffer))
+		buffer=GetInternalString(IS_RAEDIT6)
+		SendMessage(hTmp,REM_SETTOOLTIP,6,Cast(LPARAM,@buffer))
+
 		lpOldParEditProc=Cast(Any Ptr,SetWindowLong(hTmp,GWL_WNDPROC,Cast(Integer,@ParEditProc)))
 		lpOldEditProc=Cast(Any Ptr,SendMessage(hTmp,REM_SUBCLASS,0,Cast(Integer,@EditProc)))
 		CallAddins(ah.hwnd,AIM_CREATEEDIT,Cast(WPARAM,hTmp),0,HOOK_CREATEEDIT)
