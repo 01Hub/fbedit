@@ -9,7 +9,7 @@ Sub InsertColumn( ByVal _hLvw As HWND, ByVal _iorder As Integer, ByVal _cx As In
 	lvc.pszText = @buff
 	lvc.iOrder = _iorder
 	lvc.cx = _cx
-	buff = _text
+	buff=_text
 	SendMessage( _hLvw, LVM_INSERTCOLUMN, _iorder, Cast( LPARAM, @lvc ) )
 
 End sub

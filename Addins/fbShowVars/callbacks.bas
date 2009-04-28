@@ -27,6 +27,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SetParent(lpHandles->himm,hTabs(TAB_0))
 			'tab var
 			hList(LSV_1)=GetDlgItem(hTabs(TAB_1),IDC_LSV01)
+			SendMessage( hList(LSV_1),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_1), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_1), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_1), 2,   0, GetString( 9002, "Path" ) )
@@ -41,6 +42,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SendMessage( hList(LSV_1), LVM_SETEXTENDEDLISTVIEWSTYLE, 0, wmId Or LVS_EX_FULLROWSELECT )
 			'tab float
 			hList(LSV_2)=GetDlgItem(hTabs(TAB_2),IDC_LSV02)
+			SendMessage( hList(LSV_2),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_2), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_2), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_2), 2,   0, GetString( 9002, "Path" ) )
@@ -51,6 +53,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SendMessage( hList(LSV_2), LVM_SETEXTENDEDLISTVIEWSTYLE, 0, wmId Or LVS_EX_FULLROWSELECT )
 			'tab string
 			hList(LSV_3)=GetDlgItem(hTabs(TAB_3),IDC_LSV03)
+			SendMessage( hList(LSV_3),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_3), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_3), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_3), 2,   0, GetString( 9002, "Path" ) )
@@ -62,6 +65,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SendMessage( hList(LSV_3), LVM_SETEXTENDEDLISTVIEWSTYLE, 0, wmId Or LVS_EX_FULLROWSELECT )
 			'tab memory
 			hList(LSV_4)=GetDlgItem(hTabs(TAB_4),IDC_LSV04)
+			SendMessage( hList(LSV_4),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_4), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_4), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_4), 2,   0, GetString( 9002, "Path" ) )
@@ -74,6 +78,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SendMessage( hList(LSV_4), LVM_SETEXTENDEDLISTVIEWSTYLE, 0, wmId Or LVS_EX_FULLROWSELECT )
 			'tab disassembler
 			hList(LSV_5)=GetDlgItem(hTabs(TAB_5),IDC_LSV05)
+			SendMessage( hList(LSV_5),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_5), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_5), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_5), 2,   0, GetString( 9002, "Path" ) )
@@ -86,6 +91,7 @@ Function DlgProc( ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM
 			SendMessage( hList(LSV_5), LVM_SETEXTENDEDLISTVIEWSTYLE, 0, wmId Or LVS_EX_FULLROWSELECT )
 			'tab logs
 			hList(LSV_6)=GetDlgItem(hTabs(TAB_6),IDC_LSV06)
+			SendMessage( hList(LSV_6),WM_SETFONT,Cast(WPARAM,lpHandles->rafnt.hFont),TRUE)
 			InsertColumn( hList(LSV_6), 0,   0, GetString( 9000, "Line" ) )
 			InsertColumn( hList(LSV_6), 1,   0, GetString( 9001, "Function" ) )
 			InsertColumn( hList(LSV_6), 2,   0, GetString( 9002, "Path" ) )
