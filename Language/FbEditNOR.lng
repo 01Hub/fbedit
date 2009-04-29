@@ -600,6 +600,9 @@ Lang=Norwegian, By KetilO
 5006=Låa/Lås opp Tab
 5011=Opp Ett Nivå
 5012=Fil Filter
+5021=Valgt fil
+5022=Åpne filer
+5023=Oppfrisk
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Kode biter

@@ -416,6 +416,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hfib,FBM_SETTOOLTIP,2,Cast(LPARAM,@buff))
 			' Property definitions
 			ah.hpr=GetDlgItem(hWin,IDC_PROPERTY)
+			buff=GetInternalString(IS_RAPROPERTY1)
+			SendMessage(ah.hpr,PRM_SETTOOLTIP,1,Cast(LPARAM,@buff))
+			buff=GetInternalString(IS_RAPROPERTY2)
+			SendMessage(ah.hpr,PRM_SETTOOLTIP,2,Cast(LPARAM,@buff))
+			buff=GetInternalString(IS_RAPROPERTY3)
+			SendMessage(ah.hpr,PRM_SETTOOLTIP,5,Cast(LPARAM,@buff))
 			SetupProperty
 			' Code complete list
 			ah.hcc=CreateWindowEx(NULL,@szCCLBClassName,NULL,WS_POPUP Or WS_THICKFRAME Or WS_CLIPSIBLINGS Or WS_CLIPCHILDREN Or STYLE_USEIMAGELIST,0,0,wpos.ptcclist.x,wpos.ptcclist.y,hWin,NULL,hInstance,0)

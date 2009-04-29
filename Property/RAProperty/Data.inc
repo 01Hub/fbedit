@@ -95,4 +95,8 @@ OldListBoxProc			dd ?
 OldItem					dd ?
 szname					db 32768 dup(?)
 itemht					dd ?
-
+szCurrentFile			db 64 dup(?)
+szOpenFiles				db 64 dup(?)
+szSelectedProjectFile	db 64 dup(?)
+szAllProjectFiles		db 64 dup(?)
+szRefresh				db 64 dup(?)

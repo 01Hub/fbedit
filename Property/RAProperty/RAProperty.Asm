@@ -883,7 +883,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_SETLANGUAGE
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_SETTOOLTIP
 		push		eax
 		invoke GetWindowLong,hWin,0
 		.if eax
@@ -1109,9 +1109,21 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		.if [edx].NMHDR.code==TTN_NEEDTEXT
 			mov		edx,[edx].NMHDR.idFrom
-			add		edx,10
-			invoke LoadString,hInstance,edx,addr buffer,sizeof buffer
-			lea		eax,buffer
+			mov		eax,offset szRefresh
+			.if edx==1
+				mov		eax,offset szCurrentFile
+			.elseif edx==2
+				mov		eax,offset szOpenFiles
+			.elseif edx==3
+				mov		eax,offset szSelectedProjectFile
+			.elseif edx==4
+				mov		eax,offset szAllProjectFiles
+			.endif
+			.if !byte ptr [eax]
+				add		edx,10
+				invoke LoadString,hInstance,edx,addr buffer,sizeof buffer
+				lea		eax,buffer
+			.endif
 			mov		edx,lParam
 			mov		[edx].TOOLTIPTEXT.lpszText,eax
 		.endif

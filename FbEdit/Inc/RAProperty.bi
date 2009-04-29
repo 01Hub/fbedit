@@ -40,6 +40,8 @@
 #Define PRM_GETSORTEDLIST		WM_USER+37		' wParam=lpTypes, lParam=lpCount
 #Define PRM_FINDINSORTEDLIST	WM_USER+38		' wParam=nCount, lParam=lpMEMSEARCH
 #Define PRM_ISTOOLTIPMESSAGE	WM_USER+39		' wParam=lpMESSAGE, lParam=lpTOOLTIP
+#Define PRM_SETLANGUAGE			WM_USER+40		' wParam=nLanguage, lParam=0
+#Define PRM_SETTOOLTIP			WM_USER+41		' wParam=n (1-5), lParam=lpszText
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR	1

@@ -550,13 +550,33 @@
 		mov		eax,wParam
 		mov		[ebx].RAPROPERTY.nlanguage,eax
 		ret
+	align 4
+	_PRM_SETTOOLTIP:
+		mov		eax,wParam
+		.if eax==1
+			mov		eax,offset szCurrentFile
+		.elseif eax==2
+			mov		eax,offset szOpenFiles
+		.elseif eax==3
+			mov		eax,offset szSelectedProjectFile
+		.elseif eax==4
+			mov		eax,offset szAllProjectFiles
+		.elseif eax==5
+			mov		eax,offset szRefresh
+		.else
+			xor		eax,eax
+		.endif
+		.if eax
+			invoke lstrcpyn,eax,lParam,64
+		.endif
+		ret
 
 .data
 align 4
 _RAPROPERTY_BASE \
-	dd _PRM_SELECTPROPERTY			;equ WM_USER+0		;wParam=dwType, lParam=0
-	dd _PRM_ADDPROPERTYTYPE			;equ WM_USER+1		;wParam=dwType, lParam=lpszType
-	dd _PRM_ADDPROPERTYFILE			;equ WM_USER+2		;wParam=dwType, lParam=lpszFile
+	dd _PRM_SELECTPROPERTY		;equ WM_USER+0		;wParam=dwType, lParam=0
+	dd _PRM_ADDPROPERTYTYPE		;equ WM_USER+1		;wParam=dwType, lParam=lpszType
+	dd _PRM_ADDPROPERTYFILE		;equ WM_USER+2		;wParam=dwType, lParam=lpszFile
 	dd _PRM_SETGENDEF			;equ WM_USER+3		;wParam=0, lParam=lpGENDEF
 	dd _PRM_ADDIGNORE			;equ WM_USER+4		;wParam=IgnoreType, lParam=lpszWord
 	dd _PRM_ADDDEFTYPE			;equ WM_USER+5		;wParam=0, lParam=lpTYPEDEF
@@ -565,36 +585,37 @@ _RAPROPERTY_BASE \
 	dd _PRM_DELPROPERTY			;equ WM_USER+8		;wParam=nOwner, lParam=0
 	dd _PRM_REFRESHLIST			;equ WM_USER+9		;wParam=0, lParam=0
 	dd _PRM_SELOWNER			;equ WM_USER+10		;wParam=nOwner, lParam=0
-	dd _PRM_GETSELBUTTON			;equ WM_USER+11		;wParam=0, lParam=0
-	dd _PRM_SETSELBUTTON			;equ WM_USER+12		;wParam=nButton, lParam=0
+	dd _PRM_GETSELBUTTON		;equ WM_USER+11		;wParam=0, lParam=0
+	dd _PRM_SETSELBUTTON		;equ WM_USER+12		;wParam=nButton, lParam=0
 	dd _PRM_FINDFIRST			;equ WM_USER+13		;wParam=lpszTypes, lParam=lpszText
 	dd _PRM_FINDNEXT			;equ WM_USER+14		;wParam=0, lParam=0
 	dd _PRM_FINDGETTYPE			;equ WM_USER+15		;wParam=0, lParam=0
 	dd _PRM_GETWORD				;equ WM_USER+16		;wParam=pos, lParam=lpszLine
 	dd _PRM_GETTOOLTIP			;equ WM_USER+17		;wParam=TRUE/FALSE (No case), lParam=lpTOOLTIP
-	dd _PRM_SETBACKCOLOR			;equ WM_USER+18		;wParam=0, lParam=nColor
-	dd _PRM_GETBACKCOLOR			;equ WM_USER+19		;wParam=0, lParam=0
-	dd _PRM_SETTEXTCOLOR			;equ WM_USER+20		;wParam=0, lParam=nColor
-	dd _PRM_GETTEXTCOLOR			;equ WM_USER+21		;wParam=0, lParam=0
+	dd _PRM_SETBACKCOLOR		;equ WM_USER+18		;wParam=0, lParam=nColor
+	dd _PRM_GETBACKCOLOR		;equ WM_USER+19		;wParam=0, lParam=0
+	dd _PRM_SETTEXTCOLOR		;equ WM_USER+20		;wParam=0, lParam=nColor
+	dd _PRM_GETTEXTCOLOR		;equ WM_USER+21		;wParam=0, lParam=0
 	dd _PRM_ISINPROC			;equ WM_USER+22		;wParam=0, lParam=lpISINPROC
-	dd _PRM_GETSTRUCTWORD			;equ WM_USER+23		;wParam=pos, lParam=lpszLine
-	dd _PRM_FINDITEMDATATYPE		;equ WM_USER+24		;wParam=lpszItemName, lParam=lpszItemList
+	dd _PRM_GETSTRUCTWORD		;equ WM_USER+23		;wParam=pos, lParam=lpszLine
+	dd _PRM_FINDITEMDATATYPE	;equ WM_USER+24		;wParam=lpszItemName, lParam=lpszItemList
 	dd _PRM_MEMSEARCH			;equ WM_USER+25		;wParam=0, lParam=lpMEMSEARCH
-	dd _PRM_FINDGETOWNER			;equ WM_USER+26		;wParam=0, lParam=0
+	dd _PRM_FINDGETOWNER		;equ WM_USER+26		;wParam=0, lParam=0
 	dd _PRM_FINDGETLINE			;equ WM_USER+27		;wParam=0, lParam=0
-	dd _PRM_ISINWITHBLOCK			;equ WM_USER+28		;wParam=nOwner, lParam=nLine
-	dd _PRM_FINDGETENDLINE			;equ WM_USER+29		;wParam=0, lParam=0
+	dd _PRM_ISINWITHBLOCK		;equ WM_USER+28		;wParam=nOwner, lParam=nLine
+	dd _PRM_FINDGETENDLINE		;equ WM_USER+29		;wParam=0, lParam=0
 	dd _PRM_ADDISWORD			;equ WM_USER+30		;wParam=IsWordType, lParam=lpszWord
 	dd _PRM_SETOPRCOLOR			;equ WM_USER+31		;wParam=0, lParam=nColor
 	dd _PRM_GETOPRCOLOR			;equ WM_USER+32		;wParam=0, lParam=0
-	dd _PRM_CLEARWORDLIST			;equ WM_USER+33		;wParam=0, lParam=0
-	dd _PRM_GETSTRUCTSTART			;equ WM_USER+34		;wParam=pos, lParam=lpszLine
+	dd _PRM_CLEARWORDLIST		;equ WM_USER+33		;wParam=0, lParam=0
+	dd _PRM_GETSTRUCTSTART		;equ WM_USER+34		;wParam=pos, lParam=lpszLine
 	dd _PRM_GETCURSEL			;equ WM_USER+35		;wParam=0, lParam=0
 	dd _PRM_GETSELTEXT			;equ WM_USER+36		;wParam=0, lParam=lpBuff
 	dd _PRM_GETSORTEDLIST		;equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 	dd _PRM_FINDINSORTEDLIST	;equ WM_USER+38		;wParam=0, lParam=lpWord
 	dd _PRM_ISTOOLTIPMESSAGE	;equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 	dd _PRM_SETLANGUAGE			;equ WM_USER+40		;wParam=nLanguage, lParam=0
+	dd _PRM_SETTOOLTIP			;equ WM_USER+41
 
 .code
 align 4

@@ -606,6 +606,9 @@ Lang=English (default), By FbEdit team
 5006=Lock/Unlock Tab
 5011=Up One Level
 5012=File Filter
+5021=Current file
+5022=Open files
+5023=Refresh
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Code Sniplets

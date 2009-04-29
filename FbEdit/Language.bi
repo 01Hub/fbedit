@@ -74,6 +74,9 @@
 #DEFINE IS_RAEDIT6                      5006
 #DEFINE IS_RAFILE1                      5011
 #DEFINE IS_RAFILE2                      5012
+#DEFINE IS_RAPROPERTY1                  5021
+#DEFINE IS_RAPROPERTY2                  5022
+#DEFINE IS_RAPROPERTY3                  5023
 
 Const InternalStrings=	!"\13\10" & _
 								!"[Internal]\13\10" & _
@@ -137,4 +140,7 @@ Const InternalStrings=	!"\13\10" & _
 								!"5005=Collapse all\13\10" & _
 								!"5006=Lock/Unlock Tab\13\10" & _
 								!"5011=Up One Level\13\10" & _
-								!"5012=File Filter\13\10"
+								!"5012=File Filter\13\10" & _
+								!"5021=Current file\13\10" & _
+								!"5022=Open files\13\10" & _
+								!"5023=Refresh\13\10"

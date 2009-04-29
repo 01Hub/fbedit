@@ -41,6 +41,7 @@ PRM_GETSORTEDLIST		equ WM_USER+37		;wParam=lpTypes, lParam=lpCount
 PRM_FINDINSORTEDLIST	equ WM_USER+38		;wParam=nCount, lParam=lpMEMSEARCH
 PRM_ISTOOLTIPMESSAGE	equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 PRM_SETLANGUAGE			equ WM_USER+40		;wParam=nLanguage, lParam=0
+PRM_SETTOOLTIP			equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
 
 ;Languages
 nFREEBASIC				equ 0
