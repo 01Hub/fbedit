@@ -6,6 +6,8 @@ o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK 
 o Added language (if any) to resource editor project items.
 o Added SysLink control to resource editor.
 o Resource editor grids now resizes to window.
+o Fixed bug with parsing structures.
+o Fixed bug with parsing unions.
 
 1.0.5.4 - 2009.04.01
 --------------------

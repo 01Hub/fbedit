@@ -1774,6 +1774,8 @@ ParseStruct:
 						.endif
 					.elseif eax==DEFTYPE_STRUCT
 						inc		nNest
+					.elseif eax==DEFTYPE_DATA && [ebx].RAPROPERTY.nlanguage==nMASM
+						jmp		ParseStruct3
 					.endif
 				.else
 		  		  ParseStruct3:
@@ -1828,3 +1830,4 @@ ParseStruct:
 	retn
 
 ParseFile endp
+

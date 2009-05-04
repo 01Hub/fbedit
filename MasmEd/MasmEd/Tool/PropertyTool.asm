@@ -6,6 +6,8 @@ szPrpConst		db 'Const',0
 szPrpData		db 'Data',0
 szPrpStruct		db 'Struct',0
 
+szCCs			db 's',0
+
 defgen			DEFGEN <'comment +',<0>,';',<27h,22h>,'\'>
 
 deftypeproc		DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_PROC,'p',4,'proc'>
@@ -15,7 +17,9 @@ deftypeconst	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_CONST,'c',3,'equ'>
 deftypelocal	DEFTYPE <TYPE_NAMESECOND,DEFTYPE_LOCALDATA,'l',5,'local'>
 
 deftypestruct	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',6,'struct'>
-deftypeends		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDSTRUCT,'p',4,'ends'>
+deftypeends		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDSTRUCT,'s',4,'ends'>
+
+deftypeunion	DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_STRUCT,'s',5,'union'>
 
 szApiCallFile	db 'masmApiCall.api',0
 szApiConstFile	db 'masmApiConst.api',0
@@ -66,6 +70,7 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeunion
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
 		invoke lstrcpy,addr deftypedata.szWord,esi
@@ -126,3 +131,21 @@ ParseEdit proc hWin:HWND
 	ret
 
 ParseEdit endp
+
+DumpStruct proc uses esi
+
+	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCs,addr szNULL
+	.while eax
+		mov		esi,eax
+		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
+		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szComma
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
+		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCr
+		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+	.endw
+	ret
+
+DumpStruct endp
