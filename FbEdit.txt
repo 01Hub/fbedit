@@ -7,6 +7,8 @@ o Added SysLink control to dialog editor.
 o Added option for custom styles to dialog editor.
 o Added option for resource types to resource editor.
 o Resource editor grids now resizes to window.
+o Added tool windows tooltips to language translations.
+o Updated help file.
 o Fixed comment block bug.
 1.0.6.8c
 o Fixed bugs related to Smart Indent.
