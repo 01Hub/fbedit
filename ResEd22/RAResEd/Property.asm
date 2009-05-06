@@ -2680,6 +2680,10 @@ PrpCboDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			.if eax
 				invoke SizeingRect,eax,FALSE
+				push	eax
+				invoke ShowWindow,hInvisible,SW_HIDE
+				invoke ShowWindow,hInvisible,SW_SHOWNA
+				pop		eax
 			.endif
 		.endif
 	.endif

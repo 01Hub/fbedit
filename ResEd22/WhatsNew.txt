@@ -1,8 +1,9 @@
 ResEd
 
-2.2.0.2 -2009-04-18
+2.2.0.2 -2009-05-06
 -------------------
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
+o Added TBS_REVERSED, TBS_DOWNISLEFT, TBS_NOTIFYBEFOREMOVE and TBS_TRANSPARENTBKGND trackbar styles.
 o Added language (if any) to project items.
 o Added SysLink control.
 o Grids now resizes to window.

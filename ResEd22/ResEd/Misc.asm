@@ -156,6 +156,7 @@ CopyQuoted:
 		.if al!='"'
 			.if al=='$'
 				call	CopyPro
+				jmp		CopyQuoted
 			.else
 				mov		[edi],al
 				inc		edi
@@ -174,6 +175,7 @@ CopyToSpace:
 		.if al!=' '
 			.if al=='$'
 				call	CopyPro
+				jmp		CopyToSpace
 			.else
 				mov		[edi],al
 				inc		edi
@@ -191,6 +193,7 @@ CopyAll:
 		inc		esi
 		.if al=='$'
 			call	CopyPro
+			jmp		CopyAll
 		.else
 			mov		[edi],al
 			inc		edi
@@ -204,25 +207,24 @@ CopyAll:
 CopyPro:
 	push	esi
 	mov		esi,offset ProjectFileName
-	.while al!='.' && al
-		mov		al,[esi]
-		.if al!='.' && al
-			mov		[edi],al
-			inc		esi
-			inc		edi
-		.endif
+	invoke lstrlen,esi
+	mov		ecx,eax
+	.while ecx
+		dec		ecx
+		.break .if byte ptr [esi+ecx]=='.'
 	.endw
-	pop		esi
-	.while byte ptr [esi]
+	.if byte ptr [esi+ecx]!='.'
+		invoke lstrlen,esi
+		mov		ecx,eax
+	.endif
+	.while ecx
 		mov		al,[esi]
-		.if al!='"'
-			mov		[edi],al
-		.endif
+		mov		[edi],al
 		inc		esi
 		inc		edi
+		dec		ecx
 	.endw
-	xor		al,al
-	mov		[edi],al
+	pop		esi
 	retn
 
 ParseCmnd endp
