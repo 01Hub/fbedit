@@ -19,6 +19,7 @@ deftypelocal	DEFTYPE <TYPE_NAMESECOND,DEFTYPE_LOCALDATA,'l',5,'local'>
 deftypestruct	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',6,'struct'>
 deftypeends		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDSTRUCT,'s',4,'ends'>
 
+deftypestruc	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',5,'struc'>
 deftypeunion	DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_STRUCT,'s',5,'union'>
 
 szApiCallFile	db 'masmApiCall.api',0
@@ -70,6 +71,7 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruc
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeunion
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
