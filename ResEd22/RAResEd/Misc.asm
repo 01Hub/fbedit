@@ -1489,3 +1489,12 @@ SaveGrdSize proc uses ebx edi,hGrd:HWND,nSize:DWORD,lpSize:DWORD
 	ret
 
 SaveGrdSize endp
+
+ConvFontToUnicode proc lpDest:DWORD,lpSource:DWORD
+
+	invoke RtlZeroMemory,lpDest,64
+	invoke strlen,lpSource
+	invoke MultiByteToWideChar,CP_ACP,0,lpSource,eax,lpDest,32
+	ret
+
+ConvFontToUnicode endp

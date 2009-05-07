@@ -3616,14 +3616,15 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 
 	mov		eax,nOldSize
 	mov		dlgps,ax
-	mov		esi,lpOldFont
-	mov		edi,offset dlgfn
-	xor		eax,eax
-	mov		ecx,32
-  @@:
-	lodsb
-	stosw
-	loop	@b
+;	mov		esi,lpOldFont
+;	mov		edi,offset dlgfn
+;	xor		eax,eax
+;	mov		ecx,32
+;  @@:
+;	lodsb
+;	stosw
+;	loop	@b
+	invoke ConvFontToUnicode,offset dlgfn,lpOldFont
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 	invoke DestroyWindow,eax
 	push	fntwt
@@ -3632,14 +3633,15 @@ DlgResize proc uses esi edi,hMem:DWORD,lpOldFont:DWORD,nOldSize:DWORD,lpNewFont:
 	pop		dfntht
 	mov		eax,nNewSize
 	mov		dlgps,ax
-	mov		esi,lpNewFont
-	mov		edi,offset dlgfn
-	xor		eax,eax
-	mov		ecx,32
-  @@:
-	lodsb
-	stosw
-	loop	@b
+;	mov		esi,lpNewFont
+;	mov		edi,offset dlgfn
+;	xor		eax,eax
+;	mov		ecx,32
+;  @@:
+;	lodsb
+;	stosw
+;	loop	@b
+	invoke ConvFontToUnicode,offset dlgfn,lpNewFont
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 	invoke DestroyWindow,eax
 	mov		esi,hMem
@@ -4148,14 +4150,15 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 	mov		esi,hMem
 	mov		eax,[esi].DLGHEAD.fontsize
 	mov		dlgps,ax
-	lea		esi,[esi].DLGHEAD.font
-	mov		edi,offset dlgfn
-	xor		eax,eax
-	mov		ecx,32
-  @@:
-	lodsb
-	stosw
-	loop	@b
+;	lea		esi,[esi].DLGHEAD.font
+;	mov		edi,offset dlgfn
+;	xor		eax,eax
+;	mov		ecx,32
+;  @@:
+;	lodsb
+;	stosw
+;	loop	@b
+	invoke ConvFontToUnicode,offset dlgfn,addr [esi].DLGHEAD.font
 	invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 	invoke DestroyWindow,eax
 	.if nSelID==-1

@@ -1679,18 +1679,19 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		.endw
 		mov		eax,[edi].DLGHEAD.fontsize
 		mov		dlgps,ax
-		push	esi
-		push	edi
-		lea		esi,[edi].DLGHEAD.font
-		mov		edi,offset dlgfn
-		xor		eax,eax
-		mov		ecx,32
-	  Nx:
-		lodsb
-		stosw
-		loop	Nx
-		pop		edi
-		pop		esi
+;		push	esi
+;		push	edi
+;		lea		esi,[edi].DLGHEAD.font
+;		mov		edi,offset dlgfn
+;		xor		eax,eax
+;		mov		ecx,32
+;	  Nx:
+;		lodsb
+;		stosw
+;		loop	Nx
+;		pop		edi
+;		pop		esi
+		invoke ConvFontToUnicode,offset dlgfn,addr [edi].DLGHEAD.font
 		invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 		invoke DestroyWindow,eax
 		jmp		@b

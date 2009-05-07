@@ -152,13 +152,13 @@ Options=52
 1=0,0,718,485,38321
 7=0,0,718,485,77067
 6=0,0,0,0,404
-9=0,0,718,485,56520
+9=0,0,718,485,94634
 2=0,0,584,498,8136
-8=0,0,0,0,24554
+8=0,0,0,0,25040
 10=0,0,0,0,0
 16=0,0,718,485,16697
 15=0,0,0,0
-17=0,0,0,0,36942
+17=0,0,0,0,36976
 18=0,0,0,0,27390
 21=0,0,0,0,33262
 23=0,0,0,0
@@ -197,16 +197,16 @@ Options=52
 
 
 [Find]
-1="messagebox"
-2="mess"
-3="PRO_SETMODIFY"
-4="PropEditUpdList"
-5="PRP_STR_NAME"
-6="GetLangString"
-7="SetProjectItemName"
-8="lang"
-9="AddProjectNode"
-10="32"
+1="dlgfn"
+2="offset dlgfn"
+3="messagebox"
+4="mess"
+5="PRO_SETMODIFY"
+6="PropEditUpdList"
+7="PRP_STR_NAME"
+8="GetLangString"
+9="SetProjectItemName"
+10="lang"
 
 [AutoLoad]
 1=1
@@ -216,20 +216,20 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.73
-PV=2.1.0.73
+FV=2.1.0.74
+PV=2.1.0.74
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.73
+ProductVersion=2.1.0.74
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.73
+FileVersion=2.1.0.74
 CompanyName=
 
 [VersionControl]
@@ -257,7 +257,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
