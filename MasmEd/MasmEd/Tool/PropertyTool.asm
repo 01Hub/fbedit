@@ -17,10 +17,13 @@ deftypeconst	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_CONST,'c',3,'equ'>
 deftypelocal	DEFTYPE <TYPE_NAMESECOND,DEFTYPE_LOCALDATA,'l',5,'local'>
 
 deftypestruct	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',6,'struct'>
+deftypestruc	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',5,'struc'>
+deftypeunion	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',5,'union'>
+deftypestructo	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',6,'struct'>
+deftypestruco	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',5,'struc'>
+deftypeuniono	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',5,'union'>
 deftypeends		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDSTRUCT,'s',4,'ends'>
 
-deftypestruc	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_STRUCT,'s',5,'struc'>
-deftypeunion	DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_STRUCT,'s',5,'union'>
 
 szApiCallFile	db 'masmApiCall.api',0
 szApiConstFile	db 'masmApiConst.api',0
@@ -70,9 +73,12 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeconst
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruc
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeunion
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestructo
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruco
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeuniono
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
 		invoke lstrcpy,addr deftypedata.szWord,esi

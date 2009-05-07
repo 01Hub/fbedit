@@ -169,7 +169,7 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 
 	mov		fbyte,0
 	mov		esi,lpMem
-	invoke lstrcpy,addr buffer,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt
+	invoke strcpy,addr buffer,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt
 	invoke strlen,addr buffer
 	.if eax
 		dec		eax
@@ -960,7 +960,7 @@ AddNamespace:
 	.if rpnmespc!=-1
 		mov		edx,[ebx].RAPROPERTY.lpmem
 		add		edx,rpnmespc
-		invoke lstrcpy,edi,addr [edx+sizeof PROPERTIES]
+		invoke strcpy,edi,addr [edx+sizeof PROPERTIES]
 		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		word ptr [edi],'.'
@@ -975,12 +975,12 @@ SaveName:
 		mov		eax,len1
 		inc		eax
 		lea		edi,[edx+eax]
-		invoke lstrcpyn,edx,lpword1,eax
+		invoke strcpyn,edx,lpword1,eax
 	.elseif eax==TYPE_NAMESECOND || eax==TYPE_OPTNAMESECOND
 		mov		eax,len2
 		inc		eax
 		lea		edi,[edx+eax]
-		invoke lstrcpyn,edx,lpword2,eax
+		invoke strcpyn,edx,lpword2,eax
 	.endif
 	retn
 
@@ -1077,7 +1077,7 @@ ParseEnum:
 			.endif
 			mov		eax,len1
 			inc		eax
-			invoke lstrcpyn,edi,lpword1,eax
+			invoke strcpyn,edi,lpword1,eax
 			add		edi,len1
 			mov		word ptr [edi],','
 		.endif
@@ -1110,7 +1110,7 @@ ParseMacro:
 		mov		eax,len1
 		inc		eax
 		lea		edi,[edx+eax]
-		invoke lstrcpyn,edx,lpword1,eax
+		invoke strcpyn,edx,lpword1,eax
 		mov		byte ptr [edi],','
 		inc		edi
 		call	SkipToComma
@@ -1190,12 +1190,12 @@ ParseOperator:
 		mov		eax,len1
 		inc		eax
 		lea		edi,[edx+eax]
-		invoke lstrcpyn,edx,lpword1,eax
+		invoke strcpyn,edx,lpword1,eax
 	.elseif eax==TYPE_NAMESECOND
 		mov		eax,len2
 		inc		eax
 		lea		edi,[edx+eax]
-		invoke lstrcpyn,edx,lpword2,eax
+		invoke strcpyn,edx,lpword2,eax
 	.elseif eax==TYPE_OPTNAMESECOND
 		mov		edx,lpword2
 	  @@:
@@ -1428,7 +1428,7 @@ SaveRetType:
 			mov		eax,esi
 			lea		esi,[esi+ecx]
 			inc		ecx
-			invoke lstrcpyn,edx,eax,ecx
+			invoke strcpyn,edx,eax,ecx
 			inc		fRetType
 		  @@:
 			invoke GetWord,esi,addr npos
@@ -1436,7 +1436,7 @@ SaveRetType:
 			invoke IsIgnore,IGNORE_PTR,ecx,esi
 			.if eax
 				lea		esi,[esi+ecx]
-				invoke lstrcpyn,edi,addr szPtr,5
+				invoke strcpyn,edi,addr szPtr,5
 				lea		edi,[edi+4]
 				jmp		@b
 			.endif
@@ -1496,12 +1496,12 @@ ParseData1:
 	.if lpdatatype
 		mov		eax,lendatatype
 		inc		eax
-		invoke lstrcpyn,edi,lpdatatype,eax
+		invoke strcpyn,edi,lpdatatype,eax
 		add		edi,lendatatype
 		.if fPtr
 			push	fPtr
 		  @@:
-			invoke lstrcpyn,edi,addr szPtr,5
+			invoke strcpyn,edi,addr szPtr,5
 			lea		edi,[edi+4]
 			dec		fPtr
 			jne		@b
@@ -1509,10 +1509,10 @@ ParseData1:
 		.endif
 	.else
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
-			invoke lstrcpy,edi,addr szDword
+			invoke strcpy,edi,addr szDword
 			lea		edi,[edi+sizeof szDword]
 		.else
-			invoke lstrcpy,edi,addr szInteger
+			invoke strcpy,edi,addr szInteger
 			lea		edi,[edi+sizeof szInteger]
 		.endif
 	.endif
@@ -1587,7 +1587,7 @@ ParseParamData1:
 		mov		eax,lendatatype
 		lea		edi,[edi+eax]
 		inc		eax
-		invoke lstrcpyn,edx,lpdatatype,eax
+		invoke strcpyn,edx,lpdatatype,eax
 		.if lpdatatype2
 			mov		byte ptr [edi],'['
 			inc		edi
@@ -1595,7 +1595,7 @@ ParseParamData1:
 			mov		eax,lendatatype2
 			lea		edi,[edi+eax]
 			inc		eax
-			invoke lstrcpyn,edx,lpdatatype2,eax
+			invoke strcpyn,edx,lpdatatype2,eax
 			mov		byte ptr [edi],']'
 			inc		edi
 			mov		lpdatatype2,0
@@ -1604,16 +1604,16 @@ ParseParamData1:
 		mov		byte ptr [edi],':'
 		inc		edi
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
-			invoke lstrcpy,edi,addr szDword
+			invoke strcpy,edi,addr szDword
 			lea		edi,[edi+sizeof szDword-1]
 		.else
-			invoke lstrcpy,edi,addr szInteger
+			invoke strcpy,edi,addr szInteger
 			lea		edi,[edi+sizeof szInteger-1]
 		.endif
 	.endif
 	.if fPtr
 	  @@:
-		invoke lstrcpyn,edi,addr szPtr,5
+		invoke strcpyn,edi,addr szPtr,5
 		lea		edi,[edi+4]
 		dec		fPtr
 		jne		@b
@@ -1632,6 +1632,7 @@ ParseConst:
 	retn
 
 ParseStruct:
+	mov		byte ptr szstructnest,0
 	mov		nNest,1
 	call	AddNamespace
 	call	SaveName
@@ -1773,6 +1774,14 @@ ParseStruct:
 							retn
 						.endif
 					.elseif eax==DEFTYPE_STRUCT
+						.if len2!=0 && [ebx].RAPROPERTY.nlanguage==nMASM
+							mov		eax,len2
+							inc		eax
+							invoke strcpyn,offset szstructnest,lpword2,eax
+							invoke strcat,offset szstructnest,offset szDot
+						.else
+							mov		byte ptr szstructnest,0
+						.endif
 						inc		nNest
 					.elseif eax==DEFTYPE_DATA && [ebx].RAPROPERTY.nlanguage==nMASM
 						jmp		ParseStruct3
@@ -1782,19 +1791,24 @@ ParseStruct:
 					.if byte ptr [edi]==','
 						inc		edi
 					.endif
+					.if [ebx].RAPROPERTY.nlanguage==nMASM && byte ptr szstructnest
+						invoke strcpy,edi,offset szstructnest
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+					.endif
 					mov		eax,len1
 					inc		eax
-					invoke lstrcpyn,edi,lpword1,eax
+					invoke strcpyn,edi,lpword1,eax
 					add		edi,len1
 					mov		word ptr [edi],':'
 					inc		edi
 					mov		eax,len2
 					inc		eax
-					invoke lstrcpyn,edi,lpword2,eax
+					invoke strcpyn,edi,lpword2,eax
 					add		edi,len2
 					.if fPtr
 					  @@:
-						invoke lstrcpyn,edi,addr szPtr,5
+						invoke strcpyn,edi,addr szPtr,5
 						lea		edi,[edi+4]
 						dec		fPtr
 						jne		@b

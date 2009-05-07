@@ -4,6 +4,7 @@ option casemap:none
 option proc:private
 
 include Data.inc
+include Misc.asm
 include WordList.asm
 include Parse.asm
 include Sort.asm
@@ -147,31 +148,31 @@ UpdateList proc uses esi,dwType:DWORD
 AddItem:
 	.if ah==1
 		; Proc
-		invoke lstrcpy,addr szname,addr [esi+sizeof PROPERTIES]
-		invoke lstrcat,addr szname,addr szLpa
+		invoke strcpy,addr szname,addr [esi+sizeof PROPERTIES]
+		invoke strcat,addr szname,addr szLpa
 		push	esi
 		lea		esi,[esi+sizeof PROPERTIES]
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
-		invoke lstrcat,addr szname,esi
-		invoke lstrcat,addr szname,addr szRpa
+		invoke strcat,addr szname,esi
+		invoke strcat,addr szname,addr szRpa
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		.if byte ptr [esi]
-			invoke lstrcat,addr szname,addr szSpc
-			invoke lstrcat,addr szname,esi
+			invoke strcat,addr szname,addr szSpc
+			invoke strcat,addr szname,esi
 		.endif
 		pop		esi
 		invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_ADDSTRING,0,addr szname
 	.elseif ah==2
 		; Data
-		invoke lstrcpy,addr szname,addr [esi+sizeof PROPERTIES]
-		invoke lstrcat,addr szname,addr szColon
+		invoke strcpy,addr szname,addr [esi+sizeof PROPERTIES]
+		invoke strcat,addr szname,addr szColon
 		push	esi
 		lea		esi,[esi+sizeof PROPERTIES]
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
-		invoke lstrcat,addr szname,esi
+		invoke strcat,addr szname,esi
 		pop		esi
 		invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_ADDSTRING,0,addr szname
 	.else
@@ -482,7 +483,7 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		lea		eax,[edx+eax]
 		mov		edx,lParam
 		mov		edx,[edx].TOOLTIP.lpszLine
-		invoke lstrcpy,edx,eax
+		invoke strcpy,edx,eax
 		mov		eax,lParam
 		mov		edx,fNoCase
 		and		edx,TT_NOMATCHCASE
@@ -687,7 +688,7 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 	.while [esi].MSGAPI.lpszApi
 		mov		edx,[esi].MSGAPI.lpszApi
 		mov		edi,lParam
-		invoke lstrcmp,edx,[edi].TOOLTIP.lpszApi
+		invoke strcmp,edx,[edi].TOOLTIP.lpszApi
 		.if !eax
 			mov		edi,lParam
 			mov		edi,[edi].TOOLTIP.ovr.lpszParam
@@ -758,11 +759,11 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 	  @@:
 		.if eax
 			mov		edi,eax
-			invoke lstrcmp,edi,addr buffer
+			invoke strcmp,edi,addr buffer
 			.if !eax
-				invoke lstrlen,edi
+				invoke strlen,edi
 				lea		edi,[edi+eax+1]
-				invoke lstrlen,offset szname
+				invoke strlen,offset szname
 				mov		edx,eax
 				xor		ebx,ebx
 				push	edi
@@ -798,10 +799,10 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 					.endif
 				.endw
 				pop		edi
-				invoke lstrlen,edi
+				invoke strlen,edi
 				lea		edi,[edi+eax+1]
 				.if byte ptr [edi]
-					invoke lstrcpy,offset szname+1000,edi
+					invoke strcpy,offset szname+1000,edi
 				.else
 					mov		szname+1000,0
 				.endif

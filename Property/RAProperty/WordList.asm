@@ -11,47 +11,6 @@ PROPERTIES ends
 
 .code
 
-strlen proc lpSource:DWORD
-
-	mov	eax,lpSource
-	sub	eax,4
-align 4
-@@:
-	add	eax, 4
-	movzx	edx,word ptr [eax]
-	test	dl,dl
-	je	@lb1
-	
-	test	dh, dh
-	je	@lb2
-	
-	movzx	edx,word ptr [eax+2]
-	test	dl, dl
-	je	@lb3
-
-	test	dh, dh
-	jne	@B
-	
-	sub	eax,lpSource
-	add	eax,3
-	ret
-
-@lb3:
-	sub	eax,lpSource
-	add	eax,2
-	ret
-
-@lb2:
-	sub	eax,lpSource
-	add	eax,1
-	ret
-
-@lb1:
-	sub	eax,lpSource
-	ret
-
-strlen endp
-
 ClearWordList proc
 
 	.if [ebx].RAPROPERTY.cbsize
@@ -151,7 +110,7 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		mov		hList,eax
 		invoke ReadFile,hFile,hList,nBytes,addr	nBytes,FALSE
 		invoke CloseHandle,hFile
-		invoke lstrcat,hList,addr szCRLF
+		invoke strcat,hList,addr szCRLF
 		mov		esi,hList
 		mov		al,[esi]
 		or		al,al

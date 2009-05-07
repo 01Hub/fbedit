@@ -20,7 +20,7 @@ Debug=1
 10=Parse.asm
 11=RAProperty_Msg_JumpTable.asm
 12=Sort.asm
-13=
+13=Misc.asm
 AutoDelete=1
 AskMe=0
 MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
@@ -82,7 +82,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 10=2
 11=2
 12=2
-13=
+13=1
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -140,19 +140,19 @@ ProductVer4Range=0
 [Size]
 2=0,0,699,490,2581
 <<<<<<< .mine
-1=0,0,699,490,24434
+1=0,0,699,490,15097
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2336
-9=0,0,0,0,4267
-10=0,0,589,494,35996
-11=0,0,746,498,12346
+7=0,0,0,0,2327
+9=0,0,0,0,2485
+10=0,0,589,494,36082
+11=0,0,746,498,12597
 12=0,0,0,0,2850
-13=0,0,0,0,0
+13=0,0,0,0,59
 [BookMark]
 0=
 1=
@@ -173,16 +173,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="ebx"
-2="PRM_GETTOOLTIP"
-3="PRM_ADDPROPERTYFILE"
-4="lpdatatype"
-5="globalfree"
-6="getcurrentdirectory"
-7="ecx,2"
-8="shr	ecx,2"
-9="shr		ecx,2"
-10="shr^i^iecx,2"
+1="lstrcmpi"
+2="lstrcmp"
+3="lstrcat"
+4="lstrcpyn"
+5="lstrcpy"
+6="lstrlen"
+7="strlen"
+8="ebx"
+9="PRM_GETTOOLTIP"
+10="PRM_ADDPROPERTYFILE"
 
 [Exports]
 1=GetDefEx

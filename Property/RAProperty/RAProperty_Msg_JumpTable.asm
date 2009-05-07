@@ -33,11 +33,11 @@
 	_PRM_SETGENDEF:
 		push	esi
 		mov		esi,lParam
-		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt,addr [esi].DEFGEN.szCmntBlockSt
-		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,addr [esi].DEFGEN.szCmntBlockEn
-		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szCmntChar,addr [esi].DEFGEN.szCmntChar
-		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szString,addr [esi].DEFGEN.szString
-		invoke lstrcpy,addr [ebx].RAPROPERTY.defgen.szLineCont,addr [esi].DEFGEN.szLineCont
+		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szCmntBlockSt,addr [esi].DEFGEN.szCmntBlockSt
+		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,addr [esi].DEFGEN.szCmntBlockEn
+		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szCmntChar,addr [esi].DEFGEN.szCmntChar
+		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szString,addr [esi].DEFGEN.szString
+		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szLineCont,addr [esi].DEFGEN.szLineCont
 ;lea		eax,[ebx].RAPROPERTY.defgen.szCmntBlockSt
 ;PrintStringByAddr eax
 ;lea		eax,[ebx].RAPROPERTY.defgen.szCmntBlockEn
@@ -67,7 +67,7 @@
 		push	eax
 		mov		[esi],al
 		inc		esi
-		invoke lstrcpy,esi,lParam
+		invoke strcpy,esi,lParam
 		pop		eax
 		add		eax,3
 		add		[ebx].RAPROPERTY.rpignorefree,eax
@@ -137,8 +137,8 @@
 		ret
 	align 4 
 	_PRM_FINDFIRST:
-		invoke lstrcpyn,addr [ebx].RAPROPERTY.szFindTypes,wParam,sizeof RAPROPERTY.szFindTypes
-		invoke lstrcpyn,addr [ebx].RAPROPERTY.szFindText,lParam,sizeof RAPROPERTY.szFindText
+		invoke strcpyn,addr [ebx].RAPROPERTY.szFindTypes,wParam,sizeof RAPROPERTY.szFindTypes
+		invoke strcpyn,addr [ebx].RAPROPERTY.szFindText,lParam,sizeof RAPROPERTY.szFindText
 		mov		[ebx].RAPROPERTY.rpFindPos,0
 		invoke Find
 		.if eax
@@ -446,7 +446,7 @@
 		push	eax
 		mov		[esi],al
 		inc		esi
-		invoke lstrcpy,esi,lParam
+		invoke strcpy,esi,lParam
 		pop		eax
 		add		eax,3
 		add		[ebx].RAPROPERTY.rpiswordfree,eax
@@ -567,7 +567,7 @@
 			xor		eax,eax
 		.endif
 		.if eax
-			invoke lstrcpyn,eax,lParam,64
+			invoke strcpyn,eax,lParam,64
 		.endif
 		ret
 

@@ -76,6 +76,7 @@ btnsnopro				TBBUTTON <0,1,TBSTATE_ENABLED or TBSTATE_CHECKED,TBSTYLE_BUTTON or 
 szComboBox				db 'ComboBox',0
 szListBox				db 'ListBox',0
 szToolTipClass			db 'tooltips_class32',0
+szDot					db '.',0
 szLpa					db '(',0
 szRpa					db ')',0
 szSpc					db ' ',0
@@ -93,7 +94,9 @@ szCRLF					db 0Dh,0Ah,0
 hInstance				dd ?
 OldListBoxProc			dd ?
 OldItem					dd ?
+;Casetab					db 256 dup(?)
 szname					db 32768 dup(?)
+szstructnest			db 1024 dup(?)
 itemht					dd ?
 szCurrentFile			db 64 dup(?)
 szOpenFiles				db 64 dup(?)
