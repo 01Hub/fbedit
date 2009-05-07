@@ -1768,6 +1768,7 @@ ParseStruct:
 				.if eax
 					movzx	eax,[eax].DEFTYPE.nDefType
 					.if eax==DEFTYPE_ENDSTRUCT
+						mov		byte ptr szstructnest,0
 						dec		nNest
 						.if ZERO?
 							mov		byte ptr [edi],0
