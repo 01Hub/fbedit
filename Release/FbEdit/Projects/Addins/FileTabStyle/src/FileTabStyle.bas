@@ -119,9 +119,9 @@ Sub ClearIndicators
 			TabItem.mask = TCIF_TEXT
 			TabItem.pszText = StrPtr(TabText)
 		End If
-		If TabImage > 6 Then
+		If TabImage > 7 Then
 			TabItem.mask Or= TCIF_IMAGE
-			TabItem.iImage = TabImage - 7
+			TabItem.iImage = TabImage - 8
 		End If
 		SendMessage lpHandles->htabtool, TCM_SETITEM, TabIndex, Cast(LPARAM,VarPtr(TabItem))
 	Next
@@ -144,9 +144,9 @@ Sub UpdateTab(ByRef theTab As TABMEM, index As Integer)
 		End If
 		If item.mask And TCIF_IMAGE Then
 			If changed Then 
-				image += 7
+				image += 8
 			Else
-				image -= 7
+				image -= 8
 			End If
 			item.iImage = image
 		
@@ -168,6 +168,7 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	Dim mnuView	As HMENU
 	Dim hBmp	As HBITMAP
 	Dim buff As ZString*256
+	Dim mii As MENUITEMINFO
 
 	' Get pointer to ADDINHANDLES
 	lpHandles = Cast(ADDINHANDLES Pointer, SendMessage(hWin, AIM_GETHANDLES, 0, 0))
@@ -189,7 +190,10 @@ Function InstallDll CDecl Alias "InstallDll" (ByVal hWin As HWND, ByVal hInst As
 	mnuTabStyle = CreateMenu
 	mnuModType = CreateMenu
 	' get View menu
-	mnuView = GetSubMenu(lpHandles->hmenu, 3)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10091,FALSE,@mii)
+	mnuView = mii.hSubMenu
 	' add menu item to View menu
 	buff=GetString(10000)
 	If buff="" Then

@@ -185,6 +185,7 @@ end function
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
 	Dim buff As ZString*256
+	Dim mii As MENUITEMINFO
 
 	' The dll's instance
 	hInstance=hInst
@@ -194,17 +195,18 @@ function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	lpData=Cast(ADDINDATA ptr,SendMessage(hWin,AIM_GETDATA,0,0))
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
-	dim hMnu as HMENU
 	
 	' Get handle to 'Tools' popup
-	hMnu=GetSubMenu(lpHANDLES->hmenu,8)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10161,FALSE,@mii)
 	' Add our menu item to Tools menu
 	IDM_FILEASSOC=SendMessage(hWin,AIM_GETMENUID,0,0)
 	buff=lpFunctions->FindString(lpData->hLangMem,"FBFileAssociation","10000")
 	If buff="" Then
 		buff="File Association"
 	EndIf
-	AppendMenu(hMnu,MF_STRING,IDM_FILEASSOC,StrPtr(buff))
+	AppendMenu(mii.hSubMenu,MF_STRING,IDM_FILEASSOC,StrPtr(buff))
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_COMMAND
 	hooks.hook2=0

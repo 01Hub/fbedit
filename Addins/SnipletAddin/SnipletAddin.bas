@@ -9,17 +9,19 @@
 #include "SnipletAddin.bi"
 
 sub AddToMenu(byval id as integer)
-	dim hMnu as HMENU
+	Dim mii As MENUITEMINFO
 	Dim buff As ZString*256
 
 	' Get handle to 'Tools' popup
-	hMnu=GetSubMenu(lpHANDLES->hmenu,7)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10151,FALSE,@mii)
 	' Add our menu item to Tools menu
 	buff=lpFunctions->FindString(lpData->hLangMem,"SnipletAddin","10000")
 	If buff="" Then
 		buff="Code &Sniplets	F11"
 	EndIf
-	AppendMenu(hMnu,MF_STRING,id,@buff)
+	AppendMenu(mii.hSubMenu,MF_STRING,id,@buff)
 
 end sub
 

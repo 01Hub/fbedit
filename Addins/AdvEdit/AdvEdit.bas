@@ -87,6 +87,7 @@ End Function
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS ptr Export
 	Dim buff As ZString*256
+	Dim mii As MENUITEMINFO
 
 	' The dll's instance
 	hInstance=hInst
@@ -102,7 +103,10 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	If buff="" Then
 		buff="Advanced Edit"
 	EndIf
-	AppendMenu(GetSubMenu(lpHANDLES->hmenu,1),MF_STRING Or MF_POPUP,Cast(Integer,hSubMnu),buff)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10021,FALSE,@mii)
+	AppendMenu(mii.hSubMenu,MF_STRING Or MF_POPUP,Cast(Integer,hSubMnu),buff)
 
 	' Add menu items to "Advanced" sub menu
 	' Word commands

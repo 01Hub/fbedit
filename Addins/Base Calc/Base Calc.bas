@@ -11,6 +11,7 @@ Declare Function HexSubclassProc( Byval hWnd As HWND, Byval uMsg As UINT, Byval 
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
+	Dim mii As MENUITEMINFO
 
 	' The dll's instance
 	hInstance=hInst
@@ -21,13 +22,14 @@ Function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	
-	dim hMnu as HMENU
 	
 	' Get handle to 'Tools' popup
-	hMnu=GetSubMenu(lpHANDLES->hmenu,7)
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10151,FALSE,@mii)
 	' Add our menu item to Tools menu
 	IDM_BASECALC=SendMessage(hWin,AIM_GETMENUID,0,0)
-	AppendMenu(hMnu,MF_STRING,IDM_BASECALC,StrPtr("Base Calc"))	
+	AppendMenu(mii.hSubMenu,MF_STRING,IDM_BASECALC,StrPtr("Base Calc"))	
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_COMMAND
 	hooks.hook2=0

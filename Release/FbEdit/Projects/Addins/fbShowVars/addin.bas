@@ -15,6 +15,7 @@
 
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" ( ByVal hWin As HWND, ByVal hInst As HINSTANCE ) As ADDINHOOKS ptr Export
+	Dim mii As MENUITEMINFO
 
 	hInstance = hInst
 	lpData = Cast( ADDINDATA ptr, SendMessage( hWin, AIM_GETDATA, 0, 0 ) )
@@ -23,7 +24,10 @@ Function InstallDll Cdecl Alias "InstallDll" ( ByVal hWin As HWND, ByVal hInst A
 	lpOldMain = Cast( Any ptr, SetWindowLong( lpHandles->hwnd, GWL_WNDPROC, Cast( Integer, @FBEProc ) ) )
 
 	hMenu = CreatePopupMenu( )
-	AppendMenu( GetSubMenu( lpHANDLES->hmenu, 1 ), MF_STRING Or MF_POPUP, Cast( Integer,hMenu ), StrPtr( "ShowVars" ) )
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10021,FALSE,@mii)
+	AppendMenu( mii.hSubMenu, MF_STRING Or MF_POPUP, Cast( Integer,hMenu ), GetString( 999, "ShowVars" ) )
 	IDM_SHOWVARS_HIDE = SendMessage( hWin, AIM_GETMENUID, 0, 0 )
 	IDM_SHOWVARS_NEXT = SendMessage( hWin, AIM_GETMENUID, 0, 0 )
 	IDM_SHOWVARS_PREV = SendMessage( hWin, AIM_GETMENUID, 0, 0 )

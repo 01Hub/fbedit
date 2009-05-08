@@ -1299,6 +1299,16 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf UCase(buff)="UDT" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			For x=1 To udtnb
+				buff=Str(x) & " " & udt(x).nm & Chr(9) & Str(udt(x).typ)
+				buff=buff & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@buff))
+			Next
+		EndIf
 	ElseIf UCase(buff)="DUMP" Then
 		If hThread Then
 			' Only in debug mode
@@ -1416,6 +1426,18 @@ Function Immediate() As Integer
 			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
 			For x=1 To stabnb
 				recup=stab(x) & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
+	ElseIf UCase(buff)="FILES" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			For x=1 To sourcenb
+				recup=source(x).file & szCRLF
 				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
 			Next
 		Else

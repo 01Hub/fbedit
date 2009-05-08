@@ -1205,8 +1205,10 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	lpOldImmediateProc=Cast(Any Ptr,SendMessage(lpHandles->himm,REM_SUBCLASS,0,Cast(LPARAM,@ImmediateProc)))
 	If lpData->version>=1062 Then
+		CreateToolTip
+		CreateDebugMenu
 		' Messages this addin will hook into
-		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
+		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
 	EndIf
 	Return @hooks
 
@@ -1417,14 +1419,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						EndIf
 					EndIf
 				EndIf
-			EndIf
-			'
-		Case AIM_ADDINSLOADED
-			If fDone=0 Then
-				fDone=1
-				CreateToolTip
-				CreateDebugMenu
-				lpFunctions->CallAddins(lpHandles->hwnd,AIM_MENUREFRESH,0,0,HOOK_MENUREFRESH)
 			EndIf
 			'
 		Case AIM_MENUENABLE

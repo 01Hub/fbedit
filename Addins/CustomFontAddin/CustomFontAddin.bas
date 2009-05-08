@@ -1,4 +1,4 @@
-#include once "windows.bi"
+#Include once "windows.bi"
 #include once "win/commctrl.bi"
 #Include Once "win/commdlg.bi"
 
@@ -13,6 +13,7 @@ Declare Function DlgProc(ByVal hWnd As HWND, ByVal uMsg As UINT, ByVal wParam As
 
 function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as HINSTANCE) as ADDINHOOKS ptr EXPORT
 	Dim buff As ZString*256
+	Dim mii As MENUITEMINFO
 
 	' The dll's instance
 	hInstance=hInst
@@ -23,17 +24,17 @@ function InstallDll CDECL alias "InstallDll" (byval hWin as HWND,byval hInst as 
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	
-	dim hMnu as HMENU
-	
-	' Get handle to 'Tools' popup
-	hMnu=GetSubMenu(lpHANDLES->hmenu,8)
-	' Add our menu item to Tools menu
+	' Get handle to 'Options' popup
+	mii.cbSize=SizeOf(MENUITEMINFO)
+	mii.fMask=MIIM_SUBMENU
+	GetMenuItemInfo(lpHANDLES->hmenu,10161,FALSE,@mii)
+	' Add our menu item to Options menu
 	IDM_CUSTOMFONT=SendMessage(hWin,AIM_GETMENUID,0,0)
 	buff=lpFunctions->FindString(lpData->hLangMem,"CustomFontAddin","10000")
 	If buff="" Then
 		buff="Custom Font"
 	EndIf
-	AppendMenu(hMnu,MF_STRING,IDM_CUSTOMFONT,StrPtr(buff))	
+	AppendMenu(mii.hSubMenu,MF_STRING,IDM_CUSTOMFONT,StrPtr(buff))	
 	
 	' Messages this addin will hook into
 	hooks.hook1=HOOK_ADDINSLOADED Or HOOK_CLOSE Or HOOK_COMMAND

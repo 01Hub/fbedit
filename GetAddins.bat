@@ -1,3 +1,6 @@
+Copy Addins\Beautify\Beautify.dll \FbEdit\Addins
+Copy Addins\Beautify\Beautify.txt \FbEdit\Addins\Help
+
 Copy Addins\AdvEdit\AdvEdit.dll \FbEdit\Addins
 Copy Addins\AdvEdit\AdvEdit.txt \FbEdit\Addins\Help
 

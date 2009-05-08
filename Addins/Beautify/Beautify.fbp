@@ -1,5 +1,5 @@
 [Project]
-Version=2
+Version=3
 Description=Beautify addin
 Api=fb (FreeBASIC),win (Windows)
 Grouping=1
@@ -22,7 +22,7 @@ Run=
 7=Res\Toolbar.bmp
 8=Res\MnuArrow.bmp
 [FileInfo]
-1=0,459,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+1=0,418,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 2=0,27,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 3=0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 4=0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -32,3 +32,5 @@ Run=
 2=
 3=
 5=
+[TabOrder]
+TabOrder=1,2,3,4,5

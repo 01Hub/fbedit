@@ -519,6 +519,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim As Integer i,j,n,dp,adr,fGlobal,fParam,nCursorLine,nSrc
 	Dim lpTOOLTIPTEXT As TOOLTIPTEXT Ptr
 	Dim lpArr As tarr Ptr
+	Dim lpNMHDR As NMHDR Ptr
 
 	Select Case uMsg
 		Case WM_MOUSEMOVE
@@ -526,9 +527,15 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 				SetCursor(LoadCursor(0,IDC_ARROW))
 				If nLnDebug<>-1 Then
 					GetCursorPos(@pt)
-					If Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3 Then
+					If (Abs(pt.x-ptcur.x)>3 Or Abs(pt.y-ptcur.y)>3) And fToolTip=0 Then
 						ptcur.x=pt.x
 						ptcur.y=pt.y
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
+						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
+						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
+						If Len(buff)=0 Then
+							Return 0
+						EndIf
 						' Find source
 						For nSrc=1 To sourcenb
 							If UCase(source(nSrc).file)=UCase(lpData->filename) Then
@@ -538,9 +545,6 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						If proc(procsv).sr<>nSrc And nSrc<>1 Then
 							Return 0
 						EndIf
-						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,2,0)
-						nCursorLine=SendMessage(GetParent(hWin),REM_GETCURSORWORD,SizeOf(buff),Cast(LPARAM,@buff))
-						SendMessage(GetParent(hWin),REM_SETCURSORWORDTYPE,0,0)
 						If Left(buff,1)="." Then
 							' With block, fixup buff
 							i=IsProjectFile(@lpData->filename)
@@ -704,6 +708,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							SendMessage(hTip,TTM_ADDTOOL,0,Cast(LPARAM,@ti))
 							SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
 							SendMessage(hTip,TTM_ACTIVATE,TRUE,0)
+							fToolTip=1
 							Return 0
 						EndIf
 					Else
@@ -712,12 +717,24 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					EndIf
 				EndIf
 				SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+				fToolTip=0
 				Return 0
+			Else
+				If fToolTip Then
+					SendMessage(hTip,TTM_ACTIVATE,FALSE,0)
+					fToolTip=0
+				EndIf
+			EndIf
+			'
+		Case WM_NOTIFY
+			lpNMHDR=Cast(NMHDR Ptr,lParam)
+			If lpNMHDR->code=TTN_POP Then
+				fToolTip=0
 			EndIf
 			'
 	End Select
 	Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-	
+
 End Function
 
 Function ImmediateProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
@@ -872,6 +889,13 @@ Sub CreateDebugMenu()
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRunToCaret,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT Or FCONTROL,VK_F7,nMnuRunToCaret)
 
+	nMnuNoDebug=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	buff=GetString(10007)
+	If buff="" Then
+		buff="Do not debug"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuNoDebug,@buff)
+
 	DrawMenuBar(lpHandles->hwnd)
 
 End Sub
@@ -883,16 +907,6 @@ Function GetLineNumber() As Integer
 	Return SendMessage(lpHandles->hred,EM_EXLINEFROMCHAR,0,chrg.cpMin)
 
 End Function
-
-Sub ClearDebugLine()
-
-	If nLnDebug<>-1 And hLnDebug<>0 Then
-		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
-		nLnDebug=-1
-		hLnDebug=0
-	EndIf
-
-End Sub
 
 Sub EnableDebugMenu()
 	Dim st As Integer
@@ -922,6 +936,11 @@ Sub EnableDebugMenu()
 	EnableMenuItem(lpHandles->hmenu,nMnuStop,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepInto,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepOver,st)
+	st=MF_BYCOMMAND Or MF_GRAYED
+	If lstrlen(@lpData->ProjectFile)>0 And hThread=0 Then
+		st=MF_BYCOMMAND Or MF_ENABLED
+	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuNoDebug,st)
 
 End Sub
 
@@ -1039,6 +1058,136 @@ Function CheckFileTime(ByVal lpszExe As ZString Ptr) As String
 
 End Function
 
+Function IsNoDebug(ByVal hWin As HWND, ByVal lpsz As ZString Ptr) As Boolean
+	Dim As Integer nInx,lret
+	Dim buff As ZString*260
+	
+	nInx=0
+	While nInx<300
+		lret=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+		If lret=LB_ERR Then
+			Return FALSE
+		ElseIf lstrcmpi(@buff,lpsz)=0 Then
+			Return TRUE
+		EndIf
+		nInx+=1
+	Wend
+
+End Function
+
+Function NoDebugProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+	Dim As Integer id,Event,nInx
+	Dim lret As ZString Ptr
+	Dim buff As ZString*260
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			lpFunctions->TranslateAddinDialog(hWin,"FbDebug")
+			If lstrlen(@lpData->ProjectFile) Then
+				nInx=0
+				While nInx<300
+					GetPrivateProfileString("NoDebug",Str(nInx),@szNULL,@buff,SizeOf(buff),@lpData->ProjectFile)
+					If lstrlen(buff) Then
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+					EndIf
+					nInx+=1
+				Wend
+			EndIf
+			buff="main"
+			If IsNoDebug(hWin,@buff)=FALSE Then
+				SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+			EndIf
+			lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("p")),Cast(Integer,StrPtr(""))))
+			Do While lret
+				If IsNoDebug(hWin,lret)=FALSE Then
+					SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,lret))
+				EndIf
+				lret=Cast(ZString Ptr,SendMessage(lpHandles->hpr,PRM_FINDNEXT,0,0))
+			Loop
+			SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0)
+			SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,0,0)
+			'
+		Case WM_CLOSE
+			EndDialog(hWin, 0)
+			'
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			Select Case id
+				Case IDOK
+					If lstrlen(@lpData->ProjectFile) Then
+						WritePrivateProfileSection("NoDebug",@szNULL,@lpData->ProjectFile)
+						nInx=0
+						While nInx<300
+							id=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+							If id=LB_ERR Then
+								Exit While
+							Else
+								WritePrivateProfileString("NoDebug",Str(nInx),@buff,@lpData->ProjectFile)
+							EndIf
+							nInx+=1
+						Wend
+					EndIf
+					EndDialog(hWin, 0)
+					'
+				Case IDC_BTNADD
+					nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETCURSEL,0,0)
+					If nInx<>LB_ERR Then
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_DELETESTRING,nInx,0)
+						If SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0)=LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx-1,0)
+						EndIf
+						nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx,0)
+					EndIf
+					'
+				Case IDC_BTNDEL
+					nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETCURSEL,0,0)
+					If nInx<>LB_ERR Then
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,nInx,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_DELETESTRING,nInx,0)
+						If SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx,0)=LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,nInx-1,0)
+						EndIf
+						nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+						SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0)
+					EndIf
+					'
+				Case IDC_BTNADDALL
+					While TRUE
+						nInx=SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_GETTEXT,0,Cast(WPARAM,@buff))
+						If nInx<>LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_DELETESTRING,0,0)
+						Else
+							Exit While
+						EndIf
+					Wend
+					SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_SETCURSEL,0,0)
+					'
+				Case IDC_BTNDELALL
+					While TRUE
+						nInx=SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_GETTEXT,0,Cast(WPARAM,@buff))
+						If nInx<>LB_ERR Then
+							SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,Cast(WPARAM,@buff))
+							SendDlgItemMessage(hWin,IDC_LSTNODEBUG,LB_DELETESTRING,0,0)
+						Else
+							Exit While
+						EndIf
+					Wend
+					SendDlgItemMessage(hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0)
+					'
+			End Select
+			'
+		Case Else
+			Return FALSE
+			'
+	End Select
+	Return TRUE
+
+End Function
+
 ' Returns info on what messages the addin hooks into (in an ADDINHOOKS type).
 Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As HINSTANCE) As ADDINHOOKS Ptr Export
 
@@ -1056,8 +1205,10 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	lpOldImmediateProc=Cast(Any Ptr,SendMessage(lpHandles->himm,REM_SUBCLASS,0,Cast(LPARAM,@ImmediateProc)))
 	If lpData->version>=1062 Then
+		CreateToolTip
+		CreateDebugMenu
 		' Messages this addin will hook into
-		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_ADDINSLOADED Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
+		hooks.hook1=HOOK_COMMAND Or HOOK_FILEOPENNEW Or HOOK_FILECLOSE Or HOOK_MENUENABLE Or HOOK_FILESTATE Or HOOK_QUERYCLOSE Or HOOK_CONTEXTMEMU
 	EndIf
 	Return @hooks
 
@@ -1130,10 +1281,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						ClearDebugLine
 						fRun=1
-						tid=1
-						While tid>0
-							tid=ResumeThread(threadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 						BringWindowToFront
 					Else
 						fExit=0
@@ -1193,10 +1341,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 					If hThread Then
 						nLnRunTo=-1
 						ClearDebugLine
-						tid=1
-						While tid>0
-							tid=ResumeThread(threadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
 					Return TRUE
 					'
@@ -1206,10 +1351,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						ClearDebugLine
 						ClearBreakAll(procsv)
 						SetBreakPoints(0)
-						tid=1
-						While tid>0
-							tid=ResumeThread(threadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
 					Return TRUE
 					'
@@ -1226,11 +1368,12 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 								EndIf
 							EndIf
 						EndIf
-						tid=1
-						While tid>0
-							tid=ResumeThread(threadcontext)
-						Wend
+						tid=ResumeThread(thisthreadcontext)
 					EndIf
+					Return TRUE
+					'
+				Case nMnuNoDebug
+					DialogBoxParam(hInstance, Cast(ZString Ptr,IDD_DLGNODEBUG), NULL, @NoDebugProc, NULL)
 					Return TRUE
 					'
 				Case IDM_MAKE_COMPILE,IDM_MAKE_RUN,IDM_MAKE_GO,IDM_MAKE_QUICKRUN,IDM_FILE_NEWPROJECT,IDM_FILE_OPENPROJECT,IDM_FILE_CLOSEPROJECT
@@ -1276,14 +1419,6 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						EndIf
 					EndIf
 				EndIf
-			EndIf
-			'
-		Case AIM_ADDINSLOADED
-			If fDone=0 Then
-				fDone=1
-				CreateToolTip
-				CreateDebugMenu
-				lpFunctions->CallAddins(lpHandles->hwnd,AIM_MENUREFRESH,0,0,HOOK_MENUREFRESH)
 			EndIf
 			'
 		Case AIM_MENUENABLE

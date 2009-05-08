@@ -111,12 +111,7 @@ End Function
 Function FindUdt(ByVal typ As Integer,ByVal sr As UByte) As Integer
 	Dim i As Integer
 
-	for i=udtnb To 1 Step -1
-		If typ=udt(i).typ And sr=udt(i).sr Then
-			Return i
-		EndIf
-	Next
-	for i=udtnb To 1 Step -1
+	For i=udtnb To 1 Step -1
 		If typ=udt(i).typ And sr=udt(i).sr Then
 			Return i
 		EndIf
@@ -130,7 +125,12 @@ Sub decoup2(gv As String,f As Byte)
 
 	If InStr(gv,"=")=0 Then
 		If f=TYUDT Then
-			cudt(cudtnb).typ=Val(Mid(gv,p))
+			typ=Val(Mid(gv,p))
+			If typ<=15 Then
+				cudt(cudtnb).typ=typ
+			Else
+				cudt(cudtnb).typ=FindUdt(typ,sourcenb)
+			EndIf
 		Else
 			typ=Val(Mid(gv,p))
 			If typ<=15 Then
@@ -200,6 +200,7 @@ Sub decoupudt(readl As String)
 	q=InStr(readl,"=")
 	udt(udtnb).nm=tnm
 	udt(udtnb).typ=Val(Mid(readl,p,q-p))
+'	udt(udtnb).typ=FindUdt(Val(Mid(readl,p,q-p)),sourcenb)
 	udt(udtnb).sr=sourcenb
 	p=q+2
 	q=p-1
@@ -364,6 +365,7 @@ End Function
 
 Sub ParseDebugInfo()
 	Dim As UInteger i,j
+	Dim As Boolean bNoDebug
 	
 	' Beginning of section area
 	pe=&h400086
@@ -403,6 +405,13 @@ Sub ParseDebugInfo()
 						' Return value
 						proc(procnb).rv=Val(Mid(recup,InStr(recup,":F")+2,5))
 						proc(procnb).nu=recupstab.nline
+						bNoDebug=FALSE
+						For i=0 To 299
+							If NoDebug(i)=UCase(proc(procnb).nm) Then
+								bNoDebug=TRUE
+								Exit For
+							EndIf
+						Next
 					Case 38,40,128,160
 						' Init var
 						decoup(recup)
@@ -412,7 +421,7 @@ Sub ParseDebugInfo()
 					Case 100
 						' Main Source
 						'PutString("Main " & recup)
-						If Right(recup,1)="/" Then
+						If Right(recup,1)="/" Or Right(recup,1)="\" Then
 							source(0).file=recup
 						Else
 							sourcenb+=1
@@ -452,7 +461,7 @@ Sub ParseDebugInfo()
 				Select Case recupstab.code
 					Case 68
 						' Avoid to stop on sub or function line
-						If recupstab.ad Then
+						If recupstab.ad And bNoDebug=FALSE Then
 							' Do not include label in asm block
 							If recupstab.ad<>linead Then
 								linead=recupstab.ad
@@ -577,32 +586,16 @@ Sub ClearBreakAll(ByVal nNotProc As Integer)
 
 End Sub
 
-'Sub SuspendAllThreads()
-'	Dim i As Integer
-'	Dim lret As Integer
-'
-'	For i=0 To threadnb
-'		If thread(i).thread Then
-'			lret=SuspendThread(thread(i).thread)
-'			'PutString("SuspendThread " & lret)
-'		EndIf
-'	Next i
-'
-'End Sub
-'
-Sub ResumeAllThreads()
+Sub ClearBreakProc(ByVal nProc As Integer)
 	Dim i As Integer
-	Dim lret As Integer
 
-	For i=0 To threadnb
-		If thread(i).thread Then
-			lret=1
-			While lret>0
-				lret=ResumeThread(thread(i).thread)
-				'PutString("ResumeThread " & lret)
-			Wend
+	For i=1 To linenb
+		If rLine(i).sv<>-1 And rline(i).pr=nProc Then
+			' Restore 1 byte
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rline(i).ad),@rLine(i).sv,1,0)
+			rLine(i).sv=-1
 		EndIf
-	Next i
+	Next
 
 End Sub
 
@@ -617,7 +610,19 @@ Sub seteip(ad As UInteger)
 
 End Sub
 
-Sub gestbrk(ad As UInteger)
+Function FindLine(ByVal ad As Integer) As Integer
+	Dim i As Integer
+
+	For i=1 To linenb
+		If rline(i).ad=ad Then
+			Exit For
+		EndIf
+	Next
+	Return i
+
+End Function
+
+Sub gestbrk(ByVal ad As UInteger,ByVal fRun As Integer)
 	Dim As UInteger i
 	Dim n As ZString Ptr
 	Dim chrg As CHARRANGE
@@ -628,24 +633,22 @@ Sub gestbrk(ad As UInteger)
 	i=linesav+1
 	proccurad=ad
 	If rline(i).ad<>ad Then
-		For i=1 To linenb
-			If rline(i).ad=ad Then
-				Exit For
-			EndIf
-		Next
+		i=FindLine(ad)
 		If i>linenb Then
 			Exit Sub
 		EndIf
 	End If
-	linesav=i
-	SetBreakAll
-	If rline(i).sv<>-1 Then
-		' Restore old value for execution
-		WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
-		rline(i).sv=-1
-	EndIf
 	' Get context
 	seteip(ad)
+	If fRun=99 Then
+		If rline(i).sv<>-1 Then
+			' Restore old value for execution
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+			rline(i).sv=-1
+		EndIf
+		Exit Sub
+	EndIf
+	linesav=i
 	If procrsk>procsk Then
 		' New proc
 		procrnb+=1
@@ -666,6 +669,15 @@ Sub gestbrk(ad As UInteger)
 		ClearBreakAll(0)
 		SetBreakPoints(-1)
 	Else
+		SetBreakAll
+		If rline(i).sv<>-1 Then
+			' Restore old value for execution
+			WriteProcessMemory(dbghand,Cast(Any Ptr,rLine(i).ad),@rLine(i).sv,1,0)
+			rline(i).sv=-1
+		EndIf
+		thisprocsv=procsv
+		thislinesav=i
+		thisthreadcontext=threadcontext
 		If lstrlen(lpData->ProjectFile) Then
 			szFileName=bp(source(proc(procsv).sr).pInx).sFile
 		Else
@@ -711,10 +723,20 @@ Sub gestbrk(ad As UInteger)
 		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,2)
 		SendMessage(hLnDebug,WM_SETREDRAW,TRUE,0)
 		SendMessage(hLnDebug,REM_REPAINT,0,TRUE)
-		SuspendThread(threadcontext)
+		SuspendThread(thisthreadcontext)
 		SetForegroundWindow(lpHandles->hwnd)
 		SetFocus(hLnDebug)
 		WatchVars
+	EndIf
+
+End Sub
+
+Sub ClearDebugLine()
+
+	If nLnDebug<>-1 And hLnDebug<>0 Then
+		SendMessage(hLnDebug,REM_SETHILITELINE,nLnDebug,0)
+		nLnDebug=-1
+		hLnDebug=0
 	EndIf
 
 End Sub
@@ -731,6 +753,22 @@ Sub findthread(tid As UInteger)
 			Exit Sub
 		EndIf
 	Next
+
+End Sub
+
+Sub ResumeAllThreads()
+	Dim i As Integer
+	Dim lret As Integer
+
+	For i=0 To threadnb
+		If thread(i).thread Then
+			lret=1
+			While lret>0
+				lret=ResumeThread(thread(i).thread)
+				'PutString("ResumeThread " & lret)
+			Wend
+		EndIf
+	Next i
 
 End Sub
 
@@ -911,6 +949,15 @@ Sub ClearVars()
 	nLnDebug=-1
 	hLnDebug=0
 	linead=-1
+	i=0
+	While i<300
+		NoDebug(i)=""
+		i+=1
+	Wend
+	mainthread=0
+	thisthreadcontext=0
+	debugthreadcontext=0
+	thislinesav=-1
 
 End Sub
 
@@ -938,6 +985,7 @@ Sub StopDebugging
 	lret=CloseHandle(hThread)
 	hThread=0
 	lpData->fDebug=FALSE
+	ClearDebugLine
 	LockFiles(FALSE)
 	ClearVars
 	EnableDebugMenu
@@ -948,11 +996,23 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 	Dim sinfo As STARTUPINFO
 	Dim As Integer lret,fContinue,i
 	Dim de As DEBUG_EVENT
-	Dim buffer As ZString*256
+	Dim buffer As ZString*260
 	Dim sException As String
 	Dim nln As Integer
 
 	ClearVars
+	If lstrlen(@lpData->ProjectFile) Then
+		i=0
+		While i<300
+			GetPrivateProfileString("NoDebug",Str(i),@szNULL,@buffer,SizeOf(buffer),@lpData->ProjectFile)
+			If lstrlen(buffer) Then
+				NoDebug(i)=UCase(buffer)
+			Else
+				NoDebug(i)=""
+			EndIf
+			i+=1
+		Wend
+	EndIf
 	sinfo.cb=SizeOf(STARTUPINFO)
 	sinfo.dwFlags=STARTF_USESHOWWINDOW
 	sinfo.wShowWindow=SW_NORMAL
@@ -977,7 +1037,16 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						Case EXCEPTION_BREAKPOINT
 							If fExit=0 Then
 								findthread(de.dwThreadId)
-								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								If debugthreadcontext=0 Then
+									If rline(FindLine(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))).nu Then
+										debugthreadcontext=threadcontext
+									EndIf
+								EndIf
+								If threadcontext=debugthreadcontext Then
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),fRun)
+								Else
+									gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),99)
+								EndIf
 							Else
 								' Stop
 								fContinue=DBG_EXCEPTION_NOT_HANDLED
@@ -1006,10 +1075,23 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							If fexit=0 Then
 								PutString(sException)
 								findthread(de.dwThreadId)
-								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress))
+								gestbrk(Cast(UInteger,de.Exception.ExceptionRecord.ExceptionAddress),0)
 							EndIf
 						EndIf
 					EndIf
+				Case CREATE_PROCESS_DEBUG_EVENT
+					'PutString("CREATE_PROCESS_DEBUG_EVENT")
+					With de.CreateProcessInfo
+						threadnb+=1
+						thread(threadnb).thread=.hThread
+						thread(threadnb).threadid=de.dwThreadId
+						thread(threadnb).threadres=0
+						threadcontext=.hThread
+						hDebugFile=.hFile
+						If mainthread=0 Then
+							mainthread=threadcontext
+						EndIf
+					End With
 				Case CREATE_THREAD_DEBUG_EVENT
 					PutString("CREATE_THREAD_DEBUG_EVENT Thread=" & de.CreateThread.hThread)
 					With de.CreateThread
@@ -1025,35 +1107,21 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 						thread(i).threadret=threadcontext
 						thread(i).threadid=de.dwThreadId
 						thread(i).threadres=99
-						For i=1 To linenb
-							If rline(i).ad=.lpStartAddress Then
-								SuspendThread(threadcontext)
-							EndIf
-						Next
 						threadcontext=.hThread
-						'Print "nb of thread";threadnb+1
-					End With
-				Case CREATE_PROCESS_DEBUG_EVENT
-					'PutString("CREATE_PROCESS_DEBUG_EVENT")
-					With de.CreateProcessInfo
-						threadnb+=1
-						thread(threadnb).thread=.hThread
-						thread(threadnb).threadid=de.dwThreadId
-						thread(threadnb).threadres=0
-						threadcontext=.hThread
-						hDebugFile=.hFile
 					End With
 				Case EXIT_THREAD_DEBUG_EVENT
 					For i=0 To threadnb
 						If thread(i).threadid=de.dwThreadId Then
+							If debugthreadcontext=thread(i).thread Then
+								ClearBreakAll(0)
+								SetBreakPoints(-1)
+								debugthreadcontext=0
+							EndIf
 							PutString("EXIT_THREAD_DEBUG_EVENT ExitCode=" & de.ExitThread.dwExitCode & " Exitthread=" & thread(i).thread & " Returnthread=" & thread(i).threadret)
 							thread(i).thread=0
 							threadcontext=thread(i).threadret
-							If threadcontext Then
-								lret=1
-								While lret>0
-									lret=ResumeThread(threadcontext)
-								Wend
+							If nLnDebug=-1 And threadcontext<>0 Then
+								lret=ResumeThread(threadcontext)
 							EndIf
 							Exit For
 						EndIf

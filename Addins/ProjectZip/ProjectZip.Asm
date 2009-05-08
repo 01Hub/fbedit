@@ -27,16 +27,16 @@ DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 DllEntry Endp
 
 AddMenu proc
+	LOCAL mii:MENUITEMINFO
 
-	mov		edx,4
 	;Get handle of Project popup
-	mov		eax,lpHandles
-	invoke GetSubMenu,[eax].ADDINHANDLES.hmenu,edx
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	mov		edx,lpHandles
+	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hmenu,10101,FALSE,addr mii
 	;Add our menuitem
-	push	eax
 	invoke GetLangString,10000,offset szProjectZip
-	pop		edx
-	invoke AppendMenu,edx,MF_STRING,IDAddIn,eax
+	invoke AppendMenu,mii.hSubMenu,MF_STRING,IDAddIn,eax
 	ret
 
 AddMenu endp
