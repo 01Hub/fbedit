@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.374
-PV=1.2.0.374
+FV=1.2.0.375
+PV=1.2.0.375
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.374
+ProductVersion=1.2.0.375
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.374
+FileVersion=1.2.0.375
 CompanyName=
 
 [Resource]
@@ -102,21 +102,21 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,76466
-16=0,0,810,411,6873
-22=0,0,0,0,236
-23=0,0,0,0,31178
-24=0,0,0,0,713
-19=0,0,0,0,9309
-2=0,0,0,0,7581
-9=0,0,0,0,685
+1=0,0,0,0,79470
+16=0,0,810,411,37175
+22=0,0,0,0,3164
+23=0,0,0,0,30974
+24=0,0,0,0,4001
+19=0,0,0,0,4771
+2=0,0,0,0,7709
+9=0,0,0,0,17441
 10=0,0,0,0,23361
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,6045
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,8750
+13=0,0,0,0,7028
 26=0,0,0,0,20414
 21=0,0,0,0,18226
 14=0,0,0,0,3157
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="SaveUndo"
-2="SetBlockMarkers"
-3="REM_SETCOMMENTBLOCKS"
-4="Print"
-5="'/"
-6="/'"
-7="STATE_COMMENT"
-8="STATE_COMMENTNEST"
-9="_REM_GETCOLOR"
-10="SkipCmnt"
+1="EDIT.line"
+2="SaveUndo"
+3="SetBlockMarkers"
+4="REM_SETCOMMENTBLOCKS"
+5="Print"
+6="'/"
+7="/'"
+8="STATE_COMMENT"
+9="STATE_COMMENTNEST"
+10="_REM_GETCOLOR"
 
 [AutoLoad]
 1=1
@@ -195,7 +195,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=11
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27

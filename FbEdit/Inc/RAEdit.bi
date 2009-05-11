@@ -152,6 +152,7 @@
 #Define REM_SETUNICODE						REM_BASE+85		' wParam=TRUE/FALSE, lParam=0
 #Define REM_SETCHANGEDSTATE				REM_BASE+86		' wParam=TRUE/FALSE, lParam=0
 #Define REM_SETTOOLTIP						REM_BASE+87		' wParam=n (1-6), lParam=lpText
+#Define REM_HILITEACTIVELINE				REM_BASE+88		' wParam=0, lParam=nColor (0-3)
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

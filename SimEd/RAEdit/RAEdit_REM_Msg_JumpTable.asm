@@ -174,20 +174,7 @@
 		_REM_SETHILITELINE:
 			;wParam=Line
 			;lParam=nColor
-			mov		edx,wParam
-			shl		edx,2
-			.if edx<[ebx].EDIT.rpLineFree
-				add		edx,[ebx].EDIT.hLine
-				mov		edx,[edx].LINE.rpChars
-				add		edx,[ebx].EDIT.hChars
-				and		[edx].CHARS.state,-1 xor STATE_HILITEMASK
-				mov		eax,lParam
-				and		eax,STATE_HILITEMASK
-				or		[edx].CHARS.state,eax
-				invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,wParam
-				invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,wParam
-			.endif
-			xor		eax,eax
+			invoke HiliteLine,ebx,wParam,lParam
 			ret
 		align 4
 		_REM_GETHILITELINE:
@@ -1328,9 +1315,11 @@
 			mov		eax,wParam
 			mov		[ebx].EDIT.funicode,eax
 			ret
+		align 4
 		_REM_SETCHANGEDSTATE:
 			invoke SetChangedState,ebx,wParam
 			ret
+		align 4
 		_REM_SETTOOLTIP:
 			mov		eax,wParam
 			.if eax==1
@@ -1352,6 +1341,12 @@
 				mov		edx,lParam
 				call SetToolTip
 			.endif
+			ret
+		align 4
+		_REM_HILITEACTIVELINE:
+			mov		eax,lParam
+			mov		[ebx].EDIT.fhilite,eax
+			invoke HiliteLine,ebx,[ebx].EDIT.line,[ebx].EDIT.fhilite
 			ret
 
 .data
@@ -1446,6 +1441,7 @@ _REM_BASE \
 	dd _REM_SETUNICODE			;equ REM_BASE+85
 	dd _REM_SETCHANGEDSTATE		;equ REM_BASE+86
 	dd _REM_SETTOOLTIP			;equ REM_BASE+87
+	dd _REM_HILITEACTIVELINE	;equ REM_BASE+88
 
 .code
 align 4

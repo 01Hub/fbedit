@@ -1156,7 +1156,7 @@ GetCommand proc uses esi edi,lpCommand:DWORD,Param:DWORD
 	.if eax>4
 		mov		eax,dword ptr buffer[eax-4]
 	.endif
-	.if eax!='exe.'
+	.if eax!='exe.' && eax!='tab.'
 		invoke strcat,addr buffer,addr szdotexe
 	.endif
 	invoke iniInStr,addr szaccept,addr buffer

@@ -11,7 +11,8 @@ o Resource editor grids now resizes to window.
 o Added tool windows tooltips to language translations.
 o Updated help file.
 o Fixed comment block bug.
-o Fixed dialog editor fontname bug.
+o Fixed dialog editor fontname bug (Chinese fontname).
+o Fixed bug with highlight active line.
 1.0.6.8c
 o Fixed bugs related to Smart Indent.
 1.0.6.8b
@@ -763,3 +764,4 @@ Case convert hidden setting.
 	CaseConvert=CWPp
 
 KetilO
+

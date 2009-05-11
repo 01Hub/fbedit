@@ -157,6 +157,7 @@ REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
 REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
 REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
 REM_SETTOOLTIP			equ REM_BASE+87		;wParam=n (1-6), lParam=lpText
+REM_HILITEACTIVELINE	equ REM_BASE+88		;wParam=0, lParam=nColor
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0

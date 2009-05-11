@@ -1929,6 +1929,27 @@ FillCMem:
 
 StreamOut endp
 
+HiliteLine proc uses ebx,hMem:DWORD,nLine:DWORD,nColor:DWORD
+
+	mov		ebx,hMem
+	mov		edx,nLine
+	shl		edx,2
+	.if edx<[ebx].EDIT.rpLineFree
+		add		edx,[ebx].EDIT.hLine
+		mov		edx,[edx].LINE.rpChars
+		add		edx,[ebx].EDIT.hChars
+		and		[edx].CHARS.state,-1 xor STATE_HILITEMASK
+		mov		eax,nColor
+		and		eax,STATE_HILITEMASK
+		or		[edx].CHARS.state,eax
+		invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,nLine
+		invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,nLine
+	.endif
+	xor		eax,eax
+	ret
+
+HiliteLine endp
+
 SelChange proc uses ebx,hMem:DWORD,nType:DWORD
 	LOCAL	sc:RASELCHANGE
 
@@ -1993,6 +2014,15 @@ SelChange proc uses ebx,hMem:DWORD,nType:DWORD
 		mov		eax,[ebx].EDIT.cpMin
 		mov		[ebx].EDIT.edta.cp,eax
 		mov		[ebx].EDIT.edtb.cp,eax
+	.endif
+	mov		eax,[ebx].EDIT.line
+	.if eax!=[ebx].EDIT.lastline
+		invoke HiliteLine,ebx,[ebx].EDIT.lastline,0
+		.if [ebx].EDIT.fhilite
+			invoke HiliteLine,ebx,[ebx].EDIT.line,[ebx].EDIT.fhilite
+		.endif
+		mov		eax,[ebx].EDIT.line
+		mov		[ebx].EDIT.lastline,eax
 	.endif
 	invoke SendMessage,[ebx].EDIT.hpar,WM_NOTIFY,[ebx].EDIT.ID,addr sc
 	ret

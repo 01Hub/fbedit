@@ -1432,6 +1432,11 @@ Sub UpdateEditOption(hEdt As HWND)
 	SendMessage(hEdt,REM_SETFONT,0,Cast(Integer,@ah.rafnt))
 	SendMessage(hEdt,REM_TABWIDTH,edtopt.tabsize,edtopt.expand)
 	SendMessage(hEdt,REM_AUTOINDENT,0,edtopt.autoindent)
+	If edtopt.hiliteline Then
+		SendMessage(hEdt,REM_HILITEACTIVELINE,0,2)
+	Else
+		SendMessage(hEdt,REM_HILITEACTIVELINE,0,0)
+	EndIf
 	style=GetWindowLong(hEdt,GWL_STYLE)
 	style=style And (-1 Xor STYLE_HILITECOMMENT)
 	If edtopt.hilitecmnt Then

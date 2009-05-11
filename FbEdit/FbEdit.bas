@@ -1767,12 +1767,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						lstpos.fchanged=lpRASELCHANGE->fchanged
 						lstpos.nline=lpRASELCHANGE->Line
 						SendMessage(ah.hred,REM_BRACKETMATCH,0,0)
-						If ad.fDebug=FALSE Then
-							SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
-							If edtopt.hiliteline Then
-								SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
-							EndIf
-						EndIf
+						'If ad.fDebug=FALSE Then
+						'	SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
+						'	If edtopt.hiliteline Then
+						'		SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
+						'	EndIf
+						'EndIf
 						If lpRASELCHANGE->Line<>nLastLine Then
 							ShowWindow(ah.htt,SW_HIDE)
 							HideList()
