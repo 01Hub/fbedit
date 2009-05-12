@@ -174,6 +174,7 @@ DEM_REDO			equ DEM_BASE+38		;wParam=0, lParam=0
 DEM_GETSHOWDIALOG	equ DEM_BASE+39		;wParam=0, lParam=0
 DEM_CLEARCUSTSTYLE	equ DEM_BASE+40		;wParam=0, lParam=0
 DEM_ADDCUSTSTYLE	equ DEM_BASE+41		;wParam=0, lParam=0
+DEM_GETOUTPUT		equ DEM_BASE+42		;wParam=0, lParam=0
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1

@@ -2193,6 +2193,9 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SortStyles
 		mov		eax,ebx
 		jmp		Ex
+	.elseif eax==DEM_GETOUTPUT
+		mov		eax,hOut
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.bottom

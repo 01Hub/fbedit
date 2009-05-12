@@ -105,6 +105,7 @@ IDM_PROJECT_DLGSAVE			equ 10046
 IDM_OPTION_TOOLS			equ 10036
 IDM_OPTION_HELP				equ 10037
 IDM_OPTION_OPTIONS			equ 10038
+IDM_TOOLS_COMPILE			equ 10058
 IDM_TOOLS_CLEAR				equ 10054
 IDM_HELP_ABOUT				equ 10101
 
@@ -227,6 +228,9 @@ szTab				db VK_TAB,0
 szComma				db ',',0
 szBS				db '\',0
 szAsterix			db '*',0
+szSpace				db ' ',0
+szQuote				db '"',0
+szCr				db VK_RETURN,0
 
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
@@ -263,6 +267,7 @@ IncludeFileName		db MAX_PATH dup(?)
 ProjectPath			db MAX_PATH dup(?)
 SystemPath			db MAX_PATH dup(?)
 AppPath				db MAX_PATH dup(?)
+CompileCommand		db MAX_PATH dup(?)
 icex				INITCOMMONCONTROLSEX <?>
 hReg				dd ?
 lpdwDisp			dd ?

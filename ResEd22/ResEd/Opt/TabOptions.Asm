@@ -63,6 +63,7 @@ IDC_EDTPROPATH		equ 1004
 IDC_BTNPROPATH		equ 1003
 IDC_EDTSYSPATH		equ 1001
 IDC_BTNSYSPATH		equ 1002
+IDC_EDTCOMPILE		equ 1005
 
 IDD_TABOPT7			equ 2440
 IDC_GRDTYPE			equ 1001
@@ -82,6 +83,7 @@ szInitID			db 'InitID',0
 szTextFont			db 'TextFont',0
 szProPath			db 'ProPath',0
 szSysPath			db 'SysPath',0
+szCompile			db 'Compile',0
 szCustType			db 'Type#',0
 
 TabTitle1			db 'Exports',0
@@ -597,6 +599,7 @@ TabOpt6Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		invoke SetDlgItemText,hWin,IDC_EDTPROPATH,addr ProjectPath
 		invoke SetDlgItemText,hWin,IDC_EDTSYSPATH,addr SystemPath
+		invoke SetDlgItemText,hWin,IDC_EDTCOMPILE,addr CompileCommand
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -1134,6 +1137,10 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szSysPath,0,REG_SZ,addr SystemPath,eax
 				invoke SendMessage,hResEd,PRO_SETSYSTEMPATH,0,addr SystemPath
+				invoke GetDlgItemText,hTabDlg[20],IDC_EDTCOMPILE,addr CompileCommand,sizeof CompileCommand
+				invoke lstrlen,addr CompileCommand
+				inc		eax
+				invoke RegSetValueEx,hReg,addr szCompile,0,REG_SZ,addr CompileCommand,eax
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif
@@ -1231,3 +1238,4 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 TabOptionsProc endp
+

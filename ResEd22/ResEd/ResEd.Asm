@@ -9,6 +9,7 @@ include About.asm
 include Opt\MenuOption.asm
 include Opt\TabOptions.asm
 include Find\Find.asm
+include Compile.asm
 
 .code
 
@@ -275,6 +276,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateFontIndirect,addr lf
 		invoke SendMessage,hResEd,PRO_SETTEXTFONT,eax,0
 		invoke SendMessage,hResEd,PRO_SETSYSTEMPATH,0,addr SystemPath
+		invoke SendMessage,hResEd,DEM_GETOUTPUT,0,0
+		mov		hOut,eax
 	.elseif eax==WM_NCACTIVATE
 		.if hResEd
 			invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
@@ -576,6 +579,15 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke EnableMenuItem,wParam,IDM_PROJECT_DLGSAVE,ebx
 			.endif
+		.elseif eax==6
+			;Tools
+			invoke SendMessage,hResEd,PRO_GETMEM,0,0
+			.if eax && byte ptr CompileCommand
+				xor		ebx,ebx
+			.else
+				mov		ebx,MF_GRAYED
+			.endif
+			invoke EnableMenuItem,wParam,IDM_TOOLS_COMPILE,ebx
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		edx,lParam
@@ -796,6 +808,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ResetMenu
 		.elseif eax==IDM_OPTION_OPTIONS
 			invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
+		.elseif eax==IDM_TOOLS_COMPILE
+			invoke Compile
 		.elseif eax==IDM_TOOLS_CLEAR
 			invoke MessageBox,hWin,addr szClearMRU,addr szAppName,MB_OKCANCEL or MB_ICONQUESTION
 			.if eax==IDOK
@@ -1212,6 +1226,8 @@ start:
 		invoke RegQueryValueEx,hReg,addr szProPath,0,addr lpType,addr ProjectPath,addr lpcbData
 		mov		lpcbData,sizeof SystemPath
 		invoke RegQueryValueEx,hReg,addr szSysPath,0,addr lpType,addr SystemPath,addr lpcbData
+		mov		lpcbData,sizeof CompileCommand
+		invoke RegQueryValueEx,hReg,addr szCompile,0,addr lpType,addr CompileCommand,addr lpcbData
 	.endif
 	.if wpos.wtpro<5
 		mov		wpos.wtpro,150

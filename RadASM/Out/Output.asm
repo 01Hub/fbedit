@@ -1144,7 +1144,7 @@ GetCommand proc uses esi edi,lpCommand:DWORD,Param:DWORD
 		inc		esi
 	.endif
 	lea		edi,buffer
-	.while byte ptr [esi]!='"' && byte ptr [esi]!=' '
+	.while byte ptr [esi]!='"' && byte ptr [esi]!=' ' && byte ptr [esi]
 		mov		al,[esi]
 		mov		[edi],al
 		inc		esi
