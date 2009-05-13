@@ -290,6 +290,7 @@ RCDATAMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	hred			dd ?
+	lang			LANGUAGEMEM <?>
 RCDATAMEM ends
 
 TOOLBARMEM struct

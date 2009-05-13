@@ -325,8 +325,12 @@ OpenProject proc uses esi,lpFileName:DWORD,hRCMem:DWORD
 				lea		edx,buffer
 				invoke ResEdBinToDec,[eax].RCDATAMEM.value,edx
 				lea		edx,buffer
+			.else
+				invoke lstrcpy,addr buffer,edx
 			.endif
-			invoke AddProjectNode,TPE_RCDATA,edx,esi
+			mov		edx,[esi].PROJECT.hmem
+			invoke GetLangString,[edx].RCDATAMEM.lang.lang,[edx].RCDATAMEM.lang.sublang,addr buffer
+			invoke AddProjectNode,TPE_RCDATA,addr buffer,esi
 		.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
 			mov		eax,[esi].PROJECT.hmem
 			lea		edx,[eax].TOOLBARMEM.szname
@@ -1026,7 +1030,11 @@ SetProjectItemName proc uses esi,lpProItemMem:DWORD,lpName:DWORD
 				mov		eax,tvi.lParam
 				.if eax==lpProItemMem
 					mov		tvi.imask,TVIF_TEXT
-					mov		eax,lpName
+					invoke lstrcpy,addr buffer,lpName
+					mov		edx,lpProItemMem
+					mov		edx,[edx].PROJECT.hmem
+					invoke GetLangString,[edx].RCDATAMEM.lang.lang,[edx].RCDATAMEM.lang.sublang,addr buffer
+					lea		eax,buffer
 					mov		tvi.pszText,eax
 					invoke SendMessage,hPrjTrv,TVM_SETITEM,0,addr tvi
 					invoke SendMessage,hPrjTrv,TVM_SORTCHILDREN,0,hNodeMisc

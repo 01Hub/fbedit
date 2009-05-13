@@ -1289,7 +1289,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke PropertyList,-1
 					invoke SetChanged,TRUE
 				.else
-					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7
+					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7 || hCtl==-8
 						mov		eax,lbid
 						.if eax==PRP_STR_NAME
 							invoke strcpy,lpResName,addr buffer1
@@ -1663,6 +1663,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			or		eax,eax
 			jne		@b
 		.elseif hCtl==-2
+			;Version
 			mov		fList1,11000000000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1673,6 +1674,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.elseif hCtl==-3
+			;XP Manifest
 			mov		fList1,11000000000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1683,6 +1685,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.elseif hCtl==-4
+			;Accelerator
 			mov		fList1,11000000000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1693,6 +1696,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.elseif hCtl==-5
+			;Stringtable
 			mov		fList1,00000000000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1703,6 +1707,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.elseif hCtl==-6
+			;Toolbar
 			mov		fList1,11001100000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00000000000000000000000000000000b
@@ -1713,11 +1718,23 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 						;
 			mov		nType,-2
 		.elseif hCtl==-7
+			;Menu
 			mov		fList1,11000000000000000000000000000000b
 						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
 			mov		fList2,00100000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00100010000000000000000000000000b
+						;  SELHHFM
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-8
+			;RCDATA
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00100000000000000000000000000000b
 						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
@@ -2539,7 +2556,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			.elseif edx==66
 				;Language
 				mov		lbid,PRP_FUN_LANG
-				.if hCtl==-4 || hCtl==-5 || hCtl==-7
+				.if hCtl==-4 || hCtl==-5 || hCtl==-7 || hCtl==-8
 					mov		esi,lpResLang
 					mov		eax,[esi].LANGUAGEMEM.lang
 					invoke ResEdBinToDec,eax,edi
@@ -2635,7 +2652,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		jmp		@b
 	  @@:
 		invoke SendMessage,hPrpLstDlg,LB_SETTOPINDEX,tInx,0
-		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6 || hCtl==-7
+		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6 || hCtl==-7 || hCtl==-8
 			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,lpResType
 			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
@@ -2895,7 +2912,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						;jmp		Ex
 					.elseif eax==PRP_FUN_LANG
 						;Language
-						.if hCtl==-4 || hCtl==-5 || hCtl==-7
+						.if hCtl==-4 || hCtl==-5 || hCtl==-7 || hCtl==-8
 							invoke DialogBoxParam,hInstance,IDD_LANGUAGE,hPrj,offset LanguageEditProc2,lpResLang
 						.else
 							invoke GetCtrlMem,hCtl
@@ -2914,7 +2931,7 @@ PrpLstDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						.if eax
 							invoke PropertyList,hCtl
-							.if hCtl==-4 || hCtl==-5
+							.if hCtl==-4 || hCtl==-5 || hCtl==-7 || hCtl==-8
 								invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 							.else
 								invoke SetChanged,TRUE

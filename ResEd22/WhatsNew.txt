@@ -8,6 +8,9 @@ o Added language (if any) to project items.
 o Added SysLink control.
 o Added Compile to tools menu. Use Option / Options / Path to define the compiler command.
 o Grids now resizes to window.
+o Updated help file.
+o Fixed bug with Chinese font names.
+o Fixed bug with RCDATA / RT_RCDATA.
 o Fixed some minor bugs.
 
 2.2.0.1 -2008-12-21

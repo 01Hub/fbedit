@@ -4,7 +4,7 @@ IDC_EDTRCDATA				equ 1003
 .data
 
 szRcdataName		db 'IDR_RCDATA',0
-defrcdata			RCDATAMEM	<,1>
+defrcdata			RCDATAMEM	<,1,0,<0,0>>
 					db 0
 
 .code
@@ -65,6 +65,10 @@ ExportRCData proc uses esi edi,hMem:DWORD
 	stosb
 	mov		al,0Ah
 	stosb
+	.if [esi].RCDATAMEM.lang.lang || [esi].RCDATAMEM.lang.sublang
+		invoke SaveLanguage,addr [esi].RCDATAMEM.lang,edi
+		add		edi,eax
+	.endif
 	invoke SaveStr,edi,addr szBEGIN
 	add		edi,eax
 	mov		al,0Dh
@@ -102,7 +106,10 @@ ExportRCData endp
 
 SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 	LOCAL	buffer[256]:BYTE
+	LOCAL	hMem:DWORD
 
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,54*1024
+	mov		hMem,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		ebx,eax
 	.if !ebx
@@ -112,7 +119,21 @@ SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 	.endif
 	push	ebx
 	mov		esi,[ebx].PROJECT.hmem
-	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,addr [esi+sizeof RCDATAMEM],64*1024
+;	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,addr [esi+sizeof RCDATAMEM],64*1024
+	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,hMem,64*1024
+	mov		ecx,hMem
+	lea		edx,[esi+sizeof RCDATAMEM]
+	.while byte ptr [ecx]
+		mov		al,[ecx]
+		mov		[edx],al
+		.if al==VK_RETURN
+			inc		edx
+			mov		byte ptr [edx],0Ah
+		.endif
+		inc		edx
+		inc		ecx
+	.endw
+	invoke GlobalFree,hMem
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
 	pop		eax
@@ -176,7 +197,9 @@ RCDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpResName,eax
 		lea		eax,[edi].RCDATAMEM.value
 		mov		lpResID,eax
-		invoke PropertyList,-2
+		lea		eax,[edi].RCDATAMEM.lang
+		mov		lpResLang,eax
+		invoke PropertyList,-8
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax

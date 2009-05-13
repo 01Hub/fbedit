@@ -931,6 +931,45 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 			invoke AddTypeMem,lpProMem,64*1024,TPE_RCDATA
 			mov		edi,eax
 			invoke GetName,lpProMem,offset namebuff,addr [edi].RCDATAMEM.szname,addr [edi].RCDATAMEM.value
+			invoke GetLoadOptions,esi
+			add		esi,eax
+		  @@:
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			mov		ebx,eax
+			invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
+			.if !eax
+				invoke GetNum,lpProMem
+				jmp		@b
+			.endif
+			invoke strcmpi,offset wordbuff,offset szVERSION
+			.if !eax
+				invoke GetNum,lpProMem
+				jmp		@b
+			.endif
+			invoke strcmpi,offset wordbuff,offset szLANGUAGE
+			.if !eax
+				invoke GetWord,offset wordbuff,esi
+				add		esi,eax
+				.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
+					invoke ConvNum,lpProMem,offset wordbuff
+				.else
+					invoke FindStyle,offset wordbuff,offset langdef
+					shr		eax,16
+				.endif
+				mov		[edi].RCDATAMEM.lang.lang,eax
+				invoke GetWord,offset wordbuff,esi
+				add		esi,eax
+				.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
+					invoke ConvNum,lpProMem,offset wordbuff
+				.else
+					invoke FindStyle,offset wordbuff,offset langdef
+					and		eax,0FFFFh
+				.endif
+				mov		[edi].RCDATAMEM.lang.sublang,eax
+				jmp		@b
+			.endif
+			sub		esi,ebx
 			invoke GetWord,offset wordbuff,esi
 			add		esi,eax
 			invoke strcmpi,offset wordbuff,offset szBEGIN
@@ -2958,6 +2997,15 @@ ParseRC proc uses esi edi,lpRCMem:DWORD,hRCMem:DWORD,lpProMem:DWORD
 	invoke strcmpi,offset wordbuff,offset szRT_MANIFEST
 	.if !eax
 		invoke ParseResource,esi,lpProMem,7
+		.if eax==-1
+			jmp		ExErr
+		.endif
+		add		esi,eax
+		jmp		Ex
+	.endif
+	invoke strcmpi,offset wordbuff,offset szRT_RCDATA
+	.if !eax
+		invoke ParseResource,esi,lpProMem,4
 		.if eax==-1
 			jmp		ExErr
 		.endif
