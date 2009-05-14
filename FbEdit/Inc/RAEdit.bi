@@ -264,10 +264,10 @@ End Type
 #Define BD_ALTHILITE							&H80				' wordgroup+1
 
 Type RABLOCKDEF Field=1
-	lpszStart	As ZString Ptr										' Block start
+	lpszStart	As ZString Ptr									' Block start
 	lpszEnd		As ZString Ptr									' Block end
 	lpszNot1		As ZString Ptr									' Dont hide line containing this or set to NULL
-	lpszNot2		As ZString Ptr										' Dont hide line containing this or set to NULL
+	lpszNot2		As ZString Ptr									' Dont hide line containing this or set to NULL
 	flag			As Long											' High word is WordGroup(0-15)
 End Type
 

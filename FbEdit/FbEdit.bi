@@ -289,36 +289,6 @@ Type EDITOPTION
 	smartmath		As Integer
 End Type
 
-Type KWCOLOR
-	C0					As COLORREF
-	C1					As COLORREF
-	C2					As COLORREF
-	C3					As COLORREF
-	C4					As COLORREF
-	C5					As COLORREF
-	C6					As COLORREF
-	C7					As COLORREF
-	C8					As COLORREF
-	C9					As COLORREF
-	C10				As COLORREF
-	C11				As COLORREF
-	C12				As COLORREF
-	C13				As COLORREF
-	C14				As COLORREF
-	C15				As COLORREF
-	C16				As COLORREF
-	C17				As COLORREF
-	C18				As COLORREF
-	C19				As COLORREF
-	C20				As COLORREF
-End Type
-
-Type THEME
-	lpszTheme		As ZString Ptr
-	kwc				As KWCOLOR
-	fbc				As FBCOLOR
-End Type
-
 '#define TTN_NEEDTEXTA			-520
 'included in freebasic 0.17 cvs
 #Ifndef TVN_BEGINLABELEDITA

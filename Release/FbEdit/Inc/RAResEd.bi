@@ -100,6 +100,21 @@ End Type
 Type RARESEDCOLOR
 	back		As Integer
 	text		As Integer
+	styles	As Integer
+	words		As Integer
+End Type
+
+Type CUSTSTYLE
+	szStyle	As ZString*64
+	nValue	As Integer
+	nMask		As Integer
+End Type
+
+Type RARSTYPE
+	sztype	As ZString*32
+	nid		As Integer
+	szext		As ZString*64	
+	szedit	As ZString*128
 End Type
 
 ' Resource ID's
@@ -115,6 +130,7 @@ Type INITID
 	ver		As RESID
 	man		As RESID
 	rcd		As RESID
+	tbr		As RESID
 	res		As RESID
 End Type
 

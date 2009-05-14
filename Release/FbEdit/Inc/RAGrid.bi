@@ -80,11 +80,12 @@
 #Define SORT_INVERT			2
 
 'Window styles
-#Define STYLE_NOSEL			01
-#Define STYLE_NOFOCUS		02
-#Define STYLE_HGRIDLINES	04
-#Define STYLE_VGRIDLINES	08
-#Define STYLE_GRIDFRAME		10
+#Define STYLE_NOSEL			&H01
+#Define STYLE_NOFOCUS		&H02
+#Define STYLE_HGRIDLINES	&H04
+#Define STYLE_VGRIDLINES	&H08
+#Define STYLE_GRIDFRAME		&H10
+#Define STYLE_NOCOLSIZE		&H20
 
 #Define ODT_GRID				6
 
@@ -95,7 +96,7 @@ Type COLUMN
 	calign As Integer							'Column text alignment.
 	ctype As Integer							'Column data type.
 	ctextmax As Integer						'Max text lenght for TYPE_EDITTEXT and TYPE_EDITLONG.
-	lpszformat As Integer					'Format string for TYPE_EDITLONG.
+	lpszformat As PTSTR						'Format string for TYPE_EDITLONG.
 	himl As Integer							'Handle of image list. For the image columns and combobox only.
 	hdrflag As Integer						'Header flags.
 	colxp As Integer							'Column position. Internally used.
@@ -113,8 +114,8 @@ Type GRIDNOTIFY
 	nmhdr As NMHDR
 	col As Integer								'Column
 	row As Integer								'Row
-	hwnd As Integer							'Handle of column edit control
-	lpdata As Integer							'Pointer to data
+	hwnd As HWND								'Handle of column edit control
+	lpdata As Any Ptr							'Pointer to data
 	fcancel As Integer						'Set to TRUE to cancel operation
 End Type
 
