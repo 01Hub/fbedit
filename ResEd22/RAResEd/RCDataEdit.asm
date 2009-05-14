@@ -108,7 +108,7 @@ SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 	LOCAL	buffer[256]:BYTE
 	LOCAL	hMem:DWORD
 
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,54*1024
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 	mov		hMem,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		ebx,eax
@@ -118,11 +118,10 @@ SaveRCDataEdit proc uses ebx esi edi, hWin:HWND
 		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset defrcdata,sizeof RCDATAMEM+1
 	.endif
 	push	ebx
-	mov		esi,[ebx].PROJECT.hmem
-;	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,addr [esi+sizeof RCDATAMEM],64*1024
-	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,hMem,64*1024
+	invoke GetDlgItemText,hWin,IDC_EDTRCDATA,hMem,60*1024
 	mov		ecx,hMem
-	lea		edx,[esi+sizeof RCDATAMEM]
+	mov		edx,[ebx].PROJECT.hmem
+	lea		edx,[edx+sizeof RCDATAMEM]
 	.while byte ptr [ecx]
 		mov		al,[ecx]
 		mov		[edx],al

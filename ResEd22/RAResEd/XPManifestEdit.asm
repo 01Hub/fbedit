@@ -21,7 +21,7 @@ defxpmanifest		XPMANIFESTMEM	<,1,"xpmanifest.xml">
 					db 09h,09h,09h,'type="win32"',0Dh,0Ah
 					db 09h,09h,09h,'name="Microsoft.Windows.Common-Controls"',0Dh,0Ah
 					db 09h,09h,09h,'version="6.0.0.0"',0Dh,0Ah
-					db 09h,09h,09h,'processorArchitecture="X86"',0Dh,0Ah
+					db 09h,09h,09h,'processorArchitecture="*"',0Dh,0Ah
 					db 09h,09h,09h,'publicKeyToken="6595b64144ccf1df"',0Dh,0Ah
 					db 09h,09h,09h,'language="*"',0Dh,0Ah
 					db 09h,09h,'/>',0Dh,0Ah
@@ -162,24 +162,38 @@ ExportXPManifest proc uses esi edi,hMem:DWORD
 
 ExportXPManifest endp
 
-XPManifestSave proc uses esi edi,hWin:HWND
+XPManifestSave proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hMem:DWORD
 
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	mov		hMem,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
-	.if !eax
+	mov		ebx,eax
+	.if !ebx
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_XPMANIFEST,FALSE
-		push	eax
-		invoke RtlMoveMemory,[eax].PROJECT.hmem,offset defxpmanifest,sizeof XPMANIFESTMEM+1024
+		mov		ebx,eax
+		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset defxpmanifest,sizeof XPMANIFESTMEM+1024
 		invoke SetDlgItemText,hWin,IDC_EDTXPMANIFEST,offset defxpmanifest+sizeof XPMANIFESTMEM
-		pop		eax
 	.endif
-	push	eax
-	mov		esi,[eax].PROJECT.hmem
-	invoke GetDlgItemText,hWin,IDC_EDTXPMANIFEST,addr [esi+sizeof XPMANIFESTMEM],8192
-	pop		esi
-	push	esi
-	invoke GetProjectItemName,esi,addr buffer
-	invoke SetProjectItemName,esi,addr buffer
+	push	ebx
+	invoke GetDlgItemText,hWin,IDC_EDTXPMANIFEST,hMem,8192
+	mov		ecx,hMem
+	mov		edx,[ebx].PROJECT.hmem
+	lea		edx,[edx+sizeof XPMANIFESTMEM]
+	.while byte ptr [ecx]
+		mov		al,[ecx]
+		mov		[edx],al
+		.if al==VK_RETURN
+			inc		edx
+			mov		byte ptr [edx],0Ah
+		.endif
+		inc		edx
+		inc		ecx
+	.endw
+	invoke GlobalFree,hMem
+	invoke GetProjectItemName,ebx,addr buffer
+	invoke SetProjectItemName,ebx,addr buffer
 	invoke GetWindowLong,hPrj,0
 	mov		esi,eax
 	invoke FindName,esi,addr szMANIFEST

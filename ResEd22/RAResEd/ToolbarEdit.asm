@@ -112,7 +112,10 @@ ExportToolbar endp
 
 SaveToolbarEdit proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[256]:BYTE
+	LOCAL	hMem:DWORD
 
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	mov		hMem,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		ebx,eax
 	.if !ebx
@@ -121,8 +124,21 @@ SaveToolbarEdit proc uses ebx esi edi,hWin:HWND
 		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset deftoolbar,sizeof TOOLBARMEM+1
 	.endif
 	push	ebx
-	mov		esi,[ebx].PROJECT.hmem
-	invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,addr [esi+sizeof TOOLBARMEM],64*1024
+	invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,hMem,60*1024
+	mov		ecx,hMem
+	mov		edx,[ebx].PROJECT.hmem
+	lea		edx,[edx+sizeof TOOLBARMEM]
+	.while byte ptr [ecx]
+		mov		al,[ecx]
+		mov		[edx],al
+		.if al==VK_RETURN
+			inc		edx
+			mov		byte ptr [edx],0Ah
+		.endif
+		inc		edx
+		inc		ecx
+	.endw
+	invoke GlobalFree,hMem
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
 	pop		eax

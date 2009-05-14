@@ -1,6 +1,6 @@
 ResEd
 
-2.2.0.2 -2009-05-12
+2.2.0.2 -2009-05-14
 -------------------
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
 o Added TBS_REVERSED, TBS_DOWNISLEFT, TBS_NOTIFYBEFOREMOVE and TBS_TRANSPARENTBKGND trackbar styles.
@@ -10,7 +10,7 @@ o Added Compile to tools menu. Use Option / Options / Path to define the compile
 o Grids now resizes to window.
 o Updated help file.
 o Fixed bug with Chinese font names.
-o Fixed bug with RCDATA / RT_RCDATA.
+o Fixed bug with RCDATA / RT_RCDATA,MANIFEST and TOOLBAR. Linefeeds was missing.
 o Fixed some minor bugs.
 
 2.2.0.1 -2008-12-21
