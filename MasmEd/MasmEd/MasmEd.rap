@@ -191,20 +191,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.5.5
-PV=1.0.5.5
+FV=1.0.5.6
+PV=1.0.5.6
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.5.5
+ProductVersion=1.0.5.6
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2009
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.0.5.5
+FileVersion=1.0.5.6
 CompanyName=
 
 [Group]
@@ -261,16 +261,16 @@ Group=Assembly,Resources,Misc,Include
 49=2
 
 [Find]
-1="prvline"
-2="deftypedata"
-3="1054"
-4="winpos"
-5="OpenEditFile"
-6="szSessionFile"
-7="szSimEd"
-8="ERROR_"
-9="LoadEditFile"
-10="szSaveFileFail"
+1="1055"
+2="prvline"
+3="deftypedata"
+4="1054"
+5="winpos"
+6="OpenEditFile"
+7="szSessionFile"
+8="szSimEd"
+9="ERROR_"
+10="LoadEditFile"
 
 [VersionControl]
 Settings=1246
@@ -317,8 +317,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,20778
-1=0,0,0,0,58052
+2=0,0,687,524,10121
+1=0,0,0,0,3281
 11=0,0,0,0,9027
 22=0,0,0,0,7856
 10=0,0,0,0,10825
