@@ -444,6 +444,11 @@ SetFormat proc hWin:HWND
 	;Set number of lines mouse wheel will scroll
 	;NOTE! If you have mouse software installed, set to 0
 	invoke SendMessage,hWin,REM_MOUSEWHEEL,3,0
+	mov		eax,edopt.hiliteline
+	.if eax
+		mov		eax,2
+	.endif
+	invoke SendMessage,hWin,REM_HILITEACTIVELINE,0,eax
 	ret
 
 SetFormat endp

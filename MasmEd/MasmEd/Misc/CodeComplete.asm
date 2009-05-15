@@ -540,36 +540,38 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
 			.if eax
 				mov		esi,eax
-				; Skip proc name
+				mov		ebx,offset cclist
+				; Skip proc name and point to parameters
 				invoke lstrlen,esi
 				lea		esi,[esi+eax+1]
-				push	esi
-				invoke lstrcpy,addr tmpbuff,esi
-				invoke lstrcat,addr tmpbuff,addr szComma
-				mov		esi,offset tmpbuff
-				mov		ebx,offset cclist
-				mov		edx,esi
-				.while byte ptr [esi]
-					.if byte ptr [esi]==','
-						mov		byte ptr [esi],0
-						call Filter
-						.if !eax
-							invoke lstrcpy,ebx,edx
-							invoke SendMessage,edi,CCM_ADDITEM,8,ebx
-							invoke lstrlen,ebx
-							lea		ebx,[ebx+eax+1]
-							inc		nCount
+				.if byte ptr [esi]
+					push	esi
+					invoke lstrcpy,addr tmpbuff,esi
+					invoke lstrcat,addr tmpbuff,addr szComma
+					mov		esi,offset tmpbuff
+					mov		edx,esi
+					.while byte ptr [esi]
+						.if byte ptr [esi]==','
+							mov		byte ptr [esi],0
+							call Filter
+							.if !eax
+								invoke lstrcpy,ebx,edx
+								invoke SendMessage,edi,CCM_ADDITEM,8,ebx
+								invoke lstrlen,ebx
+								lea		ebx,[ebx+eax+1]
+								inc		nCount
+							.endif
+							lea		edx,[esi+1]
 						.endif
-						lea		edx,[esi+1]
-					.endif
-					inc		esi
-				.endw
-				pop		esi
+						inc		esi
+					.endw
+					pop		esi
+				.endif
 				; Skip return type
 				invoke lstrlen,esi
 				lea		esi,[esi+eax+1]
+				; Point to locals
 				invoke lstrlen,esi
-				; Point to local
 				lea		esi,[esi+eax+1]
 				invoke lstrcpy,addr tmpbuff,esi
 				invoke lstrcat,addr tmpbuff,addr szComma

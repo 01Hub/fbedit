@@ -1258,7 +1258,7 @@ NxtWordProc:
 				call	ParseParamData
 				mov		byte ptr [edi],','
 				inc		edi
-			.elseif edx==DEFTYPE_DATA
+			.elseif edx==DEFTYPE_DATA && [ebx].RAPROPERTY.nlanguage!=nMASM
 				push	eax
 				invoke IsIgnore,IGNORE_DATATYPEINIT,len2,lpword2
 				.if eax
@@ -1529,6 +1529,9 @@ ParseParamData1:
 	mov		esi,edx
 	.if !ecx
 		.if byte ptr [esi]=='('
+			call	SkipBrace
+			jmp		ParseParamData1
+		.elseif byte ptr [esi]=='['
 			call	SkipBrace
 			jmp		ParseParamData1
 		.elseif byte ptr [esi]==':'

@@ -2029,12 +2029,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.else
 				invoke SendMessage,hREd,REM_BRACKETMATCH,0,0
-				invoke SendMessage,hREd,REM_SETHILITELINE,prvline,0
-				mov		eax,[edi].RASELCHANGE.line
-				mov		prvline,eax
-				.if edopt.hiliteline
-					invoke SendMessage,hREd,REM_SETHILITELINE,prvline,2
-				.endif
 				.if [edi].RASELCHANGE.fchanged
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd

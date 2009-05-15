@@ -1,5 +1,11 @@
 MasmEd
 
+1.0.5.6 - 2009.05.15
+--------------------
+o Fixed bug with dialog editor Chinese font names.
+o Fixed bug with resource editor RCDATA / RT_RCDATA,MANIFEST and TOOLBAR. Linefeeds was missing.
+o Fixed bug with locals code complete list.
+
 1.0.5.5 - 2009.05.07
 --------------------
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.

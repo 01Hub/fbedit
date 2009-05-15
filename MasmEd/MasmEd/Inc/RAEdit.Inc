@@ -24,23 +24,31 @@ OPRB					equ 00C0F0F0h
 CHCOL					equ 0000F0F0h
 CHSAVEDCOL				equ 0000F000h
 
+CHARS struct
+	len			dd ?		;String len
+	max			dd ?		;Max size
+	state		dd ?		;Line state
+	bmid		dd ?		;Bookmark ID
+	errid		dd ?		;Error ID
+CHARS ends
+
 ;Window styles
-STYLE_NOSPLITT			equ 00001h			;No splitt button
-STYLE_NOLINENUMBER		equ 00002h			;No linenumber button
-STYLE_NOCOLLAPSE		equ 00004h			;No expand/collapse buttons
-STYLE_NOHSCROLL			equ 00008h			;No horizontal scrollbar
-STYLE_NOVSCROLL			equ 00010h			;No vertical scrollbar
-STYLE_NOHILITE			equ 00020h			;No color hiliting
-STYLE_NOSIZEGRIP		equ 00040h			;No size grip
-STYLE_NODBLCLICK		equ 00080h			;No action on double clicks
-STYLE_READONLY			equ 00100h			;Text is locked
-STYLE_NODIVIDERLINE		equ 00200h			;Blocks are not divided by line
-STYLE_NOBACKBUFFER		equ 00400h			;Drawing directly to screen DC
-STYLE_NOSTATE			equ 00800h			;No state indicator
-STYLE_DRAGDROP			equ 01000h			;Drag & Drop support, app must load ole
-STYLE_SCROLLTIP			equ 02000h			;Scrollbar tooltip
-STYLE_HILITECOMMENT		equ 04000h			;Comments are hilited
-STYLE_AUTOSIZELINENUM	equ 08000h			;Line number column autosizes
+STYLE_NOSPLITT			equ 0001h			;No splitt button
+STYLE_NOLINENUMBER		equ 0002h			;No linenumber button
+STYLE_NOCOLLAPSE		equ 0004h			;No expand/collapse buttons
+STYLE_NOHSCROLL			equ 0008h			;No horizontal scrollbar
+STYLE_NOVSCROLL			equ 0010h			;No vertical scrollbar
+STYLE_NOHILITE			equ 0020h			;No color hiliting
+STYLE_NOSIZEGRIP		equ 0040h			;No size grip
+STYLE_NODBLCLICK		equ 0080h			;No action on double clicks
+STYLE_READONLY			equ 0100h			;Text is locked
+STYLE_NODIVIDERLINE		equ 0200h			;Blocks are not divided by line
+STYLE_NOBACKBUFFER		equ 0400h			;Drawing directly to screen DC
+STYLE_NOSTATE			equ 0800h			;No state indicator
+STYLE_DRAGDROP			equ 1000h			;Drag & Drop support, app must load ole
+STYLE_SCROLLTIP			equ 2000h			;Scrollbar tooltip
+STYLE_HILITECOMMENT		equ 4000h			;Comments are hilited
+STYLE_AUTOSIZELINENUM	equ 8000h			;Line number column autosizes
 
 ;Styles used with REM_SETSTYLEEX message
 STYLEEX_LOCK			equ 0001h			;Show lock button
@@ -159,6 +167,8 @@ REM_SETSTYLEEX			equ REM_BASE+83		;wParam=nStyleEx, lParam=0
 REM_GETUNICODE			equ REM_BASE+84		;wParam=0, lParam=0
 REM_SETUNICODE			equ REM_BASE+85		;wParam=TRUE/FALSE, lParam=0
 REM_SETCHANGEDSTATE		equ REM_BASE+86		;wParam=TRUE/FALSE, lParam=0
+REM_SETTOOLTIP			equ REM_BASE+87		;wParam=n (1-6), lParam=lpText
+REM_HILITEACTIVELINE	equ REM_BASE+88		;wParam=0, lParam=nColor
 
 ;Convert types
 CONVERT_TABTOSPACE		equ 0
@@ -186,18 +196,18 @@ STATE_BM8				equ 80h
 STATE_BMMASK			equ 0F0h
 
 ;Line states
-STATE_LOCKED			equ 00100h
-STATE_HIDDEN			equ 00200h
-STATE_COMMENT			equ 00400h
-STATE_DIVIDERLINE		equ 00800h
-STATE_SEGMENTBLOCK		equ 01000h
-STATE_NOBLOCK			equ 02000h
-STATE_ALTHILITE			equ 04000h
-STATE_BREAKPOINT		equ 08000h
-STATE_BLOCKSTART		equ 10000h
-STATE_BLOCK				equ 20000h
-STATE_BLOCKEND			equ 40000h
-STATE_REDTEXT			equ 80000h
+STATE_LOCKED			equ 00000100h
+STATE_HIDDEN			equ 00000200h
+STATE_COMMENT			equ 00000400h
+STATE_DIVIDERLINE		equ 00000800h
+STATE_SEGMENTBLOCK		equ 00001000h
+STATE_NOBLOCK			equ 00002000h
+STATE_ALTHILITE			equ 00004000h
+STATE_BREAKPOINT		equ 00008000h
+STATE_BLOCKSTART		equ 00010000h
+STATE_BLOCK				equ 00020000h
+STATE_BLOCKEND			equ 00040000h
+STATE_REDTEXT			equ 00080000h
 STATE_COMMENTNEST		equ 00100000h
 STATE_CHANGED			equ 00200000h
 STATE_CHANGESAVED		equ 00400000h
@@ -287,14 +297,6 @@ BLOCKRANGE struct
 	lnMax		dd ?						;Ending line
 	clMax		dd ?						;Ending column
 BLOCKRANGE ends
-
-CHARS struct
-	len			dd ?		;String len
-	max			dd ?		;Max size
-	state		dd ?		;Line state
-	bmid		dd ?		;Bookmark ID
-	errid		dd ?		;Error ID
-CHARS ends
 
 .const
 

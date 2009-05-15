@@ -402,6 +402,11 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
 						invoke SendMessage,hREd,REM_SETBLOCKS,0,0
 					.endif
+					mov		eax,edopt.hiliteline
+					.if eax
+						mov		eax,2
+					.endif
+					invoke SendMessage,hREd,REM_HILITEACTIVELINE,0,eax
 				.else
 					invoke CreateRAHexEd
 					invoke TabToolAdd,hREd,offset FileName
