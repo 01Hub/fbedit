@@ -154,7 +154,7 @@ Type ADDINHANDLES
 End Type
 
 Type ADDINDATA
-	version			As Integer						' FbEdit version (currently 1069)
+	version			As Integer						' FbEdit version (currently 1070)
 	AppPath			As ZString*260					' Path where FbEdit.exe is found
 	ProjectPath		As ZString*260					' Path to current project
 	DefProjectPath	As ZString*260					' Default project path

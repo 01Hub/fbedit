@@ -1,15 +1,5 @@
 Whats new:
 ----------
-1.0.6.9
-o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.
-o Added TBS_REVERSED, TBS_DOWNISLEFT, TBS_NOTIFYBEFOREMOVE and TBS_TRANSPARENTBKGND trackbar styles.
-o Added language (if any) to resource editor project items.
-o Added SysLink control to dialog editor.
-o Added option for custom styles to dialog editor.
-o Added option for resource types to resource editor.
-o Resource editor grids now resizes to window.
-o Added tool windows tooltips to language translations.
-o Updated help file.
-o Fixed comment block bug.
-o Fixed dialog editor fontname bug (Chinese fontname).
-o Fixed bug with highlight active line.
+1.0.7.0
+o Added FbEditLite addin. Lets you choose Lite or Full version of FbEdit.
+o Fixed resource editor bug. Selecting the .rc file did not activate the Resource menu.

@@ -1946,16 +1946,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 				EndIf
 				'
-			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htabtool Then
-				' Tab select
-				hCtl=ah.hred
-				tci.mask=TCIF_PARAM
-				SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETITEM,SendMessage(lpRASELCHANGE->nmhdr.hwndFrom,TCM_GETCURSEL,0,0),Cast(Integer,@tci))
-				lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
-				SelectTab(ah.hwnd,lpTABMEM->hedit,0)
-				SetFocus(ah.hred)
-				SelectProjectFile(ad.filename)
-				fTimer=1
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htab Then
 				' Project tab
 				ShowProjectTab
