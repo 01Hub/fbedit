@@ -317,7 +317,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endw
 				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset tmpbuff
 				pop		eax
-				.if cctype==CCTYPE_PROC || cctype==CCTYPE_CONST
+				.if cctype==CCTYPE_PROC
 					push	eax
 					invoke lstrlen,eax
 					pop		edx
@@ -442,7 +442,6 @@ CreateRAHexEd proc
 	;Set fonts
 	invoke SendMessage,hREd,HEM_SETFONT,0,addr hefnt
 	;Set colors
-;	invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	ret
 
