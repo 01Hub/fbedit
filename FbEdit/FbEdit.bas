@@ -264,6 +264,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				ad.HelpPath=Left(ad.AppPath,2) & ad.HelpPath
 			EndIf
 			FixPath(ad.HelpPath)
+			GetPrivateProfileString(StrPtr("Make"),StrPtr("QuickRun"),StrPtr("fbc -s console"),@ad.smakequickrun,SizeOf(ad.smakequickrun),@ad.IniFile)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Export"),"4440",@nmeexp,FALSE)
 			LoadFromIni(StrPtr("Resource"),StrPtr("Grid"),"444444444444",@grdsize,FALSE)
 			LoadFromIni(StrPtr("Win"),StrPtr("Colors"),"4444444444444444444444444444444",@fbcol,FALSE)
@@ -530,6 +531,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
+			KillQuickRun
 			If CallAddins(hWin,AIM_QUERYCLOSE,wParam,lParam,HOOK_QUERYCLOSE) Then
 				Return 0
 			EndIf
@@ -1403,6 +1405,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							CompileModules(ad.smakemodule)
 							'
 						Case IDM_MAKE_QUICKRUN
+							KillQuickRun
 							bm=wpos.fview And VIEW_OUTPUT
 							' Clear errors
 							UpdateAllTabs(2)
@@ -1423,15 +1426,14 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							EndIf
 							SaveTempFile(ah.hred,sItem)
 							sFile=sItem
-							GetPrivateProfileString(StrPtr("Make"),StrPtr("QuickRun"),StrPtr("fbc -s console"),@buff,255,@ad.IniFile)
-							fBuildErr=Make(ad.fbcPath & "\" & buff,sItem,FALSE,FALSE,TRUE)
+							fBuildErr=Make(ad.fbcPath & "\" & ad.smakequickrun,sItem,FALSE,FALSE,TRUE)
 							DeleteFile(StrPtr(sFile))
 							If fBuildErr=0 Then
 								If bm=0 Then
 									nHideOut=15
 								EndIf
 								szQuickRun=Left(sFile,Len(sFile)-3) & "exe"
-								CreateThread(NULL,NULL,Cast(Any Ptr,@MakeThreadProc),0,NORMAL_PRIORITY_CLASS,@x)
+								makeinf.hThread=CreateThread(NULL,NULL,Cast(Any Ptr,@MakeThreadProc),0,NORMAL_PRIORITY_CLASS,@x)
 							Else
 								fQR=TRUE
 								nHideOut=0

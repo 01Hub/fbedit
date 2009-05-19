@@ -177,10 +177,11 @@ Lang=English (default), By FbEdit team
 1002=Select all
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Option
-2=Cancel
-1=OK
+5100=Debug / Quick Run Option
 1002=Debugger:
+1004=Quick Run Compile Command:
+1=OK
+2=Cancel
 ;--------------------------------------------------------------------------
 [5200]
 5200=Block Insert
@@ -436,7 +437,7 @@ Lang=English (default), By FbEdit team
 10162=&Code Editor
 10163=&Dialog Editor
 10164=&Path Options
-10165=Deb&ug Options
+10165=Deb&ug / &Quick run Option
 10166=&Build Options
 10167=&External Files
 10168=&Addin Manager

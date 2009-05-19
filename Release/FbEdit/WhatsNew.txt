@@ -1,5 +1,8 @@
 Whats new:
 ----------
 1.0.7.0
+o Added Debug / Quick run Options. Lets you set the compile command for Quick run.
+o If the previous Quick run process is still running it will be killed.
 o Added FbEditLite addin. Lets you choose Lite or Full version of FbEdit.
 o Fixed resource editor bug. Selecting the .rc file did not activate the Resource menu.
+o Fixed bug with code complete list. Items could not be clicked.

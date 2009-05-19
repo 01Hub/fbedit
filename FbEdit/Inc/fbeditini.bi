@@ -342,6 +342,7 @@ Sub CheckIniFile()
 			ElseIf lret<1069 Then
 				'
 			ElseIf lret<1070 Then
+				WritePrivateProfileString("Make","QuickRun","fbc -s console",@ad.IniFile)
 				'
 			EndIf
 			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)

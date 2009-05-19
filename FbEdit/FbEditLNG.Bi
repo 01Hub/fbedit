@@ -37,7 +37,7 @@ Const szList As String=!"[1100] Goto Line\0" _
 							  !"[4000] Code Editor Options\0" _
 							  !"[4100] External Files Option\0" _
 							  !"[5000] Save Files\0" _
-							  !"[5100] Debug Option\0" _
+							  !"[5100] Debug / Quick Run Option\0" _
 							  !"[5200] Block Insert\0" _
 							  !"[5300] New Project\0" _
 							  !"[5360] New Project Options tab\0" _

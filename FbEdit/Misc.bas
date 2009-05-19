@@ -1298,7 +1298,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 			EndIf
 		Case WM_KILLFOCUS
 			ShowWindow(ah.htt,SW_HIDE)
-			HideList()
+			If wParam<>ah.hcc Then
+				HideList()
+			EndIf
 			hPar=GetParent(Cast(HWND,wParam))
 			If GetWindowLong(hPar,GWL_USERDATA)=1 Then
 				' Must be parsed

@@ -174,10 +174,11 @@ Lang=Norwegian, By KetilO
 1002=Velg alle
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Opsjoner
-2=Avbryt
+5100=Debug / Quick Run Opsjoner
+1002=Debugger:
+1004=Quick Run Kompilerings Kommando:
 1=OK
-;1002=Debugger:
+2=Avbryt
 ;--------------------------------------------------------------------------
 [5200]
 5200=Blokk Innstt
@@ -432,7 +433,7 @@ Lang=Norwegian, By KetilO
 10162=&Kode Editor
 10163=&Dialog Editor
 10164=&Sti Opsjoner
-10165=Deb&ug Opsjoner
+10165=Deb&ug / &Quick run Opsjoner
 10166=&Make Opsjoner
 10167=&Eksterne Filer
 10168=&Addin Manager

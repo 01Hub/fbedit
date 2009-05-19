@@ -84,8 +84,9 @@ Type Make
 	uExit		As Integer
 End Type
 
+Dim Shared makeinf As Make
+
 Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
-	Dim makeinf As Make
 	Dim sat As SECURITY_ATTRIBUTES
 	Dim startupinfo As STARTUPINFO
 	Dim lret As Integer
@@ -119,7 +120,9 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 			CloseHandle(makeinf.hwr)
 			CloseHandle(makeinf.hrd)
 			CloseHandle(makeinf.pInfo.hThread)
+			makeinf.pInfo.hThread=0
 			CloseHandle(makeinf.pInfo.hProcess)
+			makeinf.pInfo.hProcess=0
 		EndIf
 	EndIf
 	Do While i<1000
@@ -133,9 +136,31 @@ Function MakeThreadProc(ByVal Param As ZString Ptr) As Integer
 		lret=GetLastError
 		MessageBox(ah.hwnd,"Deleting " & buff & " failed! Error: " & Str(lret),"Quick run",MB_OK Or MB_ICONERROR)
 	EndIf
+	makeinf.hThread=0
 	Return makeinf.uExit
 
 End Function
+
+Sub KillQuickRun()
+	Dim msg As MSG
+
+	If makeinf.pInfo.hProcess Then
+		TerminateProcess(makeinf.pInfo.hProcess,0)
+		While makeinf.hThread
+			GetMessage(@msg,NULL,0,0)
+			If TranslateAccelerator(ah.hwnd,ah.haccel,@msg)=0 Then
+				If IsDialogMessage(ah.hfind,@msg)=0 Then
+					If IsDialogMessage(ah.hrareseddlg,@msg)=0 Then
+						TranslateMessage(@msg)
+						DispatchMessage(@msg)
+					EndIf
+				EndIf
+			EndIf
+		Wend
+		TextToOutput("Quick run Terminated")
+	EndIf
+
+End Sub
 
 Function MakeRun(ByVal sFile As String,ByVal fDebug As Boolean) As Integer
 	Dim fval As ZString Ptr

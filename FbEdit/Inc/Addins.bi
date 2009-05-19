@@ -177,6 +177,7 @@ Type ADDINDATA
 	HelpPath			As ZString*260					' Path to help files
 	fDebug			As Boolean						' Project is beeing debugged
 	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
+	smakequickrun	As ZString*260					' Quick Run
 End Type
 
 Type ADDINFUNCTIONS
