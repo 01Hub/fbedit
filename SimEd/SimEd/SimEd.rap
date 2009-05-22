@@ -123,7 +123,7 @@ CompanyName=
 [Size]
 14=0,0,0,0,583
 10=0,0,0,0,4911
-1=0,0,777,476,5321
+1=0,0,777,476,4055
 2=0,0,777,476,8769
 21=0,0,0,0,9445
 4=0,0,0,0
@@ -193,7 +193,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

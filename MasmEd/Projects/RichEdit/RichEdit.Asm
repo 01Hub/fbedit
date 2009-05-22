@@ -6,63 +6,6 @@ include RichEdit.Inc
 
 .code
 
-start:
-
-	invoke GetModuleHandle,NULL
-	mov		hInstance,eax
-	invoke GetCommandLine
-	mov		CommandLine,eax
-	invoke InitCommonControls
-	mov		iccex.dwSize,sizeof INITCOMMONCONTROLSEX    ;prepare common control structure
-	mov		iccex.dwICC,ICC_DATE_CLASSES
-	invoke InitCommonControlsEx,addr iccex
-	invoke LoadLibrary,addr RichEditDLL
-	mov		hRichEdDLL,eax
-	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
-	push	eax
-	invoke FreeLibrary,hRichEdDLL
-	pop		eax
-	invoke ExitProcess,eax
-
-WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
-	LOCAL	wc:WNDCLASSEX
-	LOCAL	msg:MSG
-
-	mov		wc.cbSize,SIZEOF WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-	mov		wc.lpfnWndProc,OFFSET WndProc
-	mov		wc.cbClsExtra,NULL
-	mov		wc.cbWndExtra,DLGWINDOWEXTRA
-	push	hInst
-	pop		wc.hInstance
-	mov		wc.hbrBackground,NULL
-	mov		wc.lpszMenuName,IDM_MENU
-	mov		wc.lpszClassName,OFFSET ClassName
-	invoke LoadIcon,NULL,IDI_APPLICATION
-	mov		hIcon,eax
-	mov		wc.hIcon,eax
-	mov		wc.hIconSm,eax
-	invoke LoadCursor,NULL,IDC_ARROW
-	mov		wc.hCursor,eax
-	invoke RegisterClassEx,addr wc
-	invoke CreateDialogParam,hInstance,IDD_DLG,NULL,addr WndProc,NULL
-	mov		hWnd,eax
-	invoke ShowWindow,hWnd,SW_SHOWNORMAL
-	invoke UpdateWindow,hWnd
-	.while TRUE
-		invoke GetMessage,addr msg,NULL,0,0
-	  .break .if !eax
-		invoke IsDialogMessage,hFind,addr msg
-		.if !eax
-			invoke TranslateMessage,addr msg
-			invoke DispatchMessage,addr msg
-		.endif
-	.endw
-	mov		eax,msg.wParam
-	ret
-
-WinMain endp
-
 StreamInProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesRead:DWORD
 
 	invoke ReadFile,hFile,pBuffer,NumBytes,pBytesRead,0
@@ -242,12 +185,12 @@ OpenEdit proc
 
 OpenEdit endp
 
-Find proc hWin:HWND
+Find proc hWin:HWND,frl:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	ft:FINDTEXTEX
 
 	invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-	test	fr,FR_DOWN
+	test	frl,FR_DOWN
 	.if ZERO?
 		mov		eax,chrg.cpMin
 		mov		ft.chrg.cpMin,eax
@@ -259,11 +202,15 @@ Find proc hWin:HWND
 	.endif
 	mov		eax,offset FindBuff
 	mov		ft.lpstrText,eax
-	invoke SendMessage,hREd,EM_FINDTEXTEX,fr,addr ft
+	invoke SendMessage,hREd,EM_FINDTEXTEX,frl,addr ft
+	mov		fres,eax
 	.if eax!=-1
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr ft.chrgText
 	.else
-		invoke MessageBox,hWin,offset NoMatches,offset AppName,MB_OK or MB_ICONINFORMATION
+		.if ReplaceCount
+		.else
+			invoke MessageBox,hWin,offset NoMatches,offset AppName,MB_OK or MB_ICONINFORMATION
+		.endif
 	.endif
 	ret
 
@@ -271,6 +218,8 @@ Find endp
 
 FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hCtl:DWORD
+	LOCAL	chrg:CHARRANGE
+	LOCAL	buffer[256]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -279,19 +228,15 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !lParam
 			;Disable replace
 			invoke GetDlgItem,hWin,IDC_REPLACETEXT
-			mov     hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_STYLE
-			xor     eax,WS_VISIBLE
-			invoke SetWindowLong,hCtl,GWL_STYLE,eax
+			invoke ShowWindow,eax,SW_HIDE
 			invoke GetDlgItem,hWin,IDC_REPLACESTATIC
-			mov     hCtl,eax
-			invoke GetWindowLong,hCtl,GWL_STYLE
-			xor     eax,WS_VISIBLE
-			invoke SetWindowLong,hCtl,GWL_STYLE,eax
+			invoke ShowWindow,eax,SW_HIDE
 			invoke GetDlgItem,hWin,IDC_BTN_REPLACEALL
 			invoke EnableWindow,eax,FALSE
 		.else
-			invoke SetWindowText,hWin, addr Replace
+			invoke SetWindowText,hWin,addr Replace
+			invoke GetDlgItem,hWin,IDC_BTN_REPLACEALL
+			invoke EnableWindow,eax,TRUE
 		.endif
 		mov		FindInit,TRUE
 		invoke SetDlgItemText,hWin,IDC_FINDTEXT,offset FindBuff
@@ -311,31 +256,75 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !ZERO?
 			invoke CheckDlgButton,hWin,IDC_CHK_WHOLEWORD,BST_CHECKED
 		.endif
+		mov		fres,-1
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke Find,hWin
+				invoke Find,hWin,fr
+			.elseif eax==IDC_BTN_REPLACE
+				invoke GetDlgItem,hWin,IDC_REPLACETEXT
+				invoke IsWindowVisible,eax
+				.if eax
+					.if fres!=-1
+						mov		eax,fres
+						mov		chrg.cpMin,eax
+						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr ReplaceBuff
+						invoke lstrlen,addr ReplaceBuff
+						add		eax,chrg.cpMin
+						mov		chrg.cpMax,eax
+						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+						inc		ReplaceCount
+					.endif
+					invoke Find,hWin,fr
+				.else
+					;Enable replace
+					invoke GetDlgItem,hWin,IDC_REPLACETEXT
+					invoke ShowWindow,eax,SW_SHOWNA
+					invoke GetDlgItem,hWin,IDC_REPLACESTATIC
+					invoke ShowWindow,eax,SW_SHOWNA
+					invoke GetDlgItem,hWin,IDC_BTN_REPLACEALL
+					invoke EnableWindow,eax,TRUE
+					invoke SetWindowText,hWin,addr Replace
+				.endif
+			.elseif eax==IDC_BTN_REPLACEALL
+				mov		ReplaceCount,0
+				.if fres==-1
+					invoke Find,hWin,fr
+				.endif
+				.while fres!=-1
+					invoke SendMessage,hWin,WM_COMMAND,(BN_CLICKED shl 16) or IDC_BTN_REPLACE,0
+				.endw
+				invoke wsprintf,addr buffer,addr ReplaceAllRes,ReplaceCount
+				invoke MessageBox,hWin,addr buffer,offset AppName,MB_OK or MB_ICONINFORMATION
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_CHK_MATCHCASE
 				xor		fr,FR_MATCHCASE
+				mov		fres,-1
 			.elseif eax==IDC_CHK_WHOLEWORD
 				xor		fr,FR_WHOLEWORD
+				mov		fres,-1
 			.elseif eax==IDC_RBN_UP
 				and		fr,-1 xor FR_DOWN
+				mov		fres,-1
 			.elseif eax==IDC_RBN_DOWN
 				or		fr,FR_DOWN
+				mov		fres,-1
 			.endif
 		.elseif edx==EN_CHANGE
 			.if !FindInit
 				invoke GetDlgItemText,hWin,IDC_FINDTEXT,offset FindBuff,sizeof FindBuff
 				invoke GetDlgItemText,hWin,IDC_REPLACETEXT,offset ReplaceBuff,sizeof ReplaceBuff
 			.endif
+			mov		fres,-1
 		.endif
+	.elseif eax==WM_ACTIVATE
+		mov		fres,-1
 	.elseif eax==WM_CLOSE
+		invoke SetFocus,hREd
 		mov		hFind,0
 		invoke EndDialog,hWin,NULL
 	.else
@@ -531,6 +520,14 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				invoke SetFocus,hFind
 			.endif
+		.elseif eax==IDM_EDIT_FINDNEXT
+			mov		eax,fr
+			or		eax,FR_DOWN
+			invoke Find,hWin,eax
+		.elseif eax==IDM_EDIT_FINDPREV
+			mov		eax,fr
+			and		eax,-1 xor FR_DOWN
+			invoke Find,hWin,eax
 		.elseif eax==IDM_EDIT_REPLACE
 			.if hFind==0
 				invoke CreateDialogParam,hInstance,IDD_FINDDLG,hWin,addr FindDlgProc,TRUE
@@ -655,5 +652,67 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 WndProc endp
+
+WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
+	LOCAL	wc:WNDCLASSEX
+	LOCAL	msg:MSG
+
+	mov		wc.cbSize,SIZEOF WNDCLASSEX
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	mov		wc.lpfnWndProc,OFFSET WndProc
+	mov		wc.cbClsExtra,NULL
+	mov		wc.cbWndExtra,DLGWINDOWEXTRA
+	push	hInst
+	pop		wc.hInstance
+	mov		wc.hbrBackground,NULL
+	mov		wc.lpszMenuName,IDM_MENU
+	mov		wc.lpszClassName,OFFSET ClassName
+	invoke LoadIcon,NULL,IDI_APPLICATION
+	mov		hIcon,eax
+	mov		wc.hIcon,eax
+	mov		wc.hIconSm,eax
+	invoke LoadCursor,NULL,IDC_ARROW
+	mov		wc.hCursor,eax
+	invoke RegisterClassEx,addr wc
+	invoke LoadAccelerators,hInstance,IDR_ACCEL
+	mov		hAccel,eax
+	invoke CreateDialogParam,hInstance,IDD_DLG,NULL,addr WndProc,NULL
+	mov		hWnd,eax
+	invoke ShowWindow,hWnd,SW_SHOWNORMAL
+	invoke UpdateWindow,hWnd
+	.while TRUE
+		invoke GetMessage,addr msg,NULL,0,0
+	  .break .if !eax
+		invoke IsDialogMessage,hFind,addr msg
+		.if !eax
+			invoke TranslateAccelerator,hWnd,hAccel,addr msg
+			.if !eax
+				invoke TranslateMessage,addr msg
+				invoke DispatchMessage,addr msg
+			.endif
+		.endif
+	.endw
+	mov		eax,msg.wParam
+	ret
+
+WinMain endp
+
+start:
+
+	invoke GetModuleHandle,NULL
+	mov		hInstance,eax
+	invoke GetCommandLine
+	mov		CommandLine,eax
+	invoke InitCommonControls
+	mov		iccex.dwSize,sizeof INITCOMMONCONTROLSEX    ;prepare common control structure
+	mov		iccex.dwICC,ICC_DATE_CLASSES
+	invoke InitCommonControlsEx,addr iccex
+	invoke LoadLibrary,addr RichEditDLL
+	mov		hRichEdDLL,eax
+	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	push	eax
+	invoke FreeLibrary,hRichEdDLL
+	pop		eax
+	invoke ExitProcess,eax
 
 end start

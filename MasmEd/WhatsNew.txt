@@ -1,7 +1,8 @@
 MasmEd
 
-1.0.5.6 - 2009.05.15
+1.0.5.6 - 2009.05.22
 --------------------
+o Included RichEdit editor project.
 o Fixed bug with dialog editor Chinese font names.
 o Fixed bug with resource editor RCDATA / RT_RCDATA,MANIFEST and TOOLBAR. Linefeeds was missing.
 o Fixed bug with locals code complete list.

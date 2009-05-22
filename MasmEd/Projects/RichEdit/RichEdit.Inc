@@ -14,10 +14,7 @@ includelib comctl32.lib
 includelib comdlg32.lib
 includelib gdi32.lib
 
-WinMain				PROTO :DWORD,:DWORD,:DWORD,:DWORD
-WndProc				PROTO :DWORD,:DWORD,:DWORD,:DWORD
-
-.const
+IDR_ACCEL			equ 1
 
 ;Find.dlg
 IDD_FINDDLG			equ 2000
@@ -62,6 +59,8 @@ IDM_VIEW_STATUSBAR	equ 10009
 IDM_OPTION_FONT		equ 10007
 IDM_HELP_ABOUT		equ 10201
 
+.const
+
 ;structure for ToolBar buttons
 tbrbtns				TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <6,IDM_FILE_NEW,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -95,6 +94,7 @@ OpenFileFail        db 'Cannot open the file',0
 SaveFileFail		db 'Cannot save the file',0
 WannaSave           db 'Want to save changes to',0Dh,0
 NoMatches			db 'No matches found.',0
+ReplaceAllRes		db '%d Replacements done.',0
 
 NewFile             db '(Untitled)',0
 szNULL				db 0
@@ -107,6 +107,7 @@ hInstance			dd ?
 CommandLine			dd ?
 hIcon				dd ?
 hWnd				HWND ?
+hAccel				dd ?
 hREd				HWND ?
 hFind				HWND ?
 FileName			db MAX_PATH dup(?)
@@ -123,3 +124,5 @@ FindBuff			db MAX_PATH dup(?)
 ReplaceBuff			db MAX_PATH dup(?)
 FindInit			dd ?
 fr					dd ?
+fres				dd ?
+ReplaceCount		dd ?
