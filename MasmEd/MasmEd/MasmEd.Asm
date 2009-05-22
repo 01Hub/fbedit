@@ -1123,17 +1123,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !ZERO?
 			;Resize toolbar
 			.if lParam
+				mov		eax,lParam
+				movzx	eax,ax
+				mov		rect.right,eax
+				invoke MoveWindow,hTbr,2,2,695,23,TRUE
+				invoke MoveWindow,hCbo,2,1,150,150,TRUE
+				mov		eax,rect.right
+				sub		eax,695+4
+				invoke MoveWindow,hStc,2+695,2,eax,23,TRUE
 				invoke MoveWindow,hShp,0,0,rect.right,27,TRUE
 				invoke ShowWindow,hShp,SW_SHOW
-				mov		eax,rect.right
-				sub		eax,4
-				invoke MoveWindow,hTbr,2,2,eax,23,TRUE
 				invoke ShowWindow,hTbr,SW_SHOW
+				invoke ShowWindow,hStc,SW_SHOW
 			.endif
 			mov		eax,27
 		.else
 			invoke ShowWindow,hShp,SW_HIDE
 			invoke ShowWindow,hTbr,SW_HIDE
+			invoke ShowWindow,hStc,SW_HIDE
 			xor		eax,eax
 		.endif
 		push	eax
@@ -1276,6 +1283,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Shape
 		invoke GetDlgItem,hWin,IDC_SHP
 		mov		hShp,eax
+		;Static
+		invoke GetDlgItem,hWin,IDC_STC
+		mov		hStc,eax
+		;Combo
+		invoke GetDlgItem,hWin,IDC_CBO
+		mov		hCbo,eax
+		invoke SetParent,hCbo,hStc
+		invoke SendMessage,hCbo,CB_ADDSTRING,0,addr szRelease
+		invoke SendMessage,hCbo,CB_ADDSTRING,0,addr szDebug
 		;Close button
 		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
 		mov		hBtn,eax
@@ -1404,6 +1420,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr Link,addr defLink
 		mov		lpcbData,sizeof Link
 		invoke RegQueryValueEx,hReg,addr szLink,0,addr lpType,addr Link,addr lpcbData
+		invoke lstrcpy,addr DbgLink,addr defDbgLink
+		mov		lpcbData,sizeof DbgLink
+		invoke RegQueryValueEx,hReg,addr szDbgLink,0,addr lpType,addr DbgLink,addr lpcbData
+		mov		lpcbData,sizeof nCboBuild
+		invoke RegQueryValueEx,hReg,addr szBuild,0,addr lpType,addr nCboBuild,addr lpcbData
+		invoke SendMessage,hCbo,CB_SETCURSEL,nCboBuild,0
+
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
 		invoke SendMessage,hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter
@@ -2194,6 +2217,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrcat,addr szInitFolder,addr szBackSlash
 				invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
 				invoke RegSetValueEx,hReg,addr szMainFile,0,REG_SZ,addr MainFile,sizeof MainFile
+				invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+				mov		dword ptr tmpbuff,eax
+				invoke RegSetValueEx,hReg,addr szBuild,0,REG_DWORD,addr tmpbuff,4
 				invoke CloseNotify
 				invoke GetWindowLong,hWin,GWL_STYLE
 				test	eax,WS_MAXIMIZE

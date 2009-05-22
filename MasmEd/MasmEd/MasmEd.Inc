@@ -124,6 +124,8 @@ IDC_FILE				equ 1014
 IDC_PROPERTY			equ 1015
 IDC_BTNTABCLOSE			equ 1002
 IDC_CLIENT				equ 1016
+IDC_STC					equ 1017
+IDC_CBO					equ 1018
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
@@ -404,6 +406,9 @@ szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 200
 szAboutUrl				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0
 
+szRelease				db 'Release',0
+szDebug					db 'Debug',0
+
 szReplace				db 'Replace ..',0
 szRegionSearched		db 'Region searched.',0
 szOpenFileFail        	db 'Cannot open the file.',0Dh,0
@@ -545,6 +550,8 @@ szMainFile				db 'MainFile',0
 szCompileRC				db 'CompileRC',0
 szAssemble				db 'Assemble',0
 szLink					db 'Link',0
+szDbgLink				db 'DbgLink',0
+szBuild					db 'Build',0
 
 szFolder				db 'Folder',0
 szSession				db 'Session',0
@@ -572,6 +579,8 @@ hMnu					dd ?
 hContextMnu				dd ?
 hTbr					HWND ?
 hShp					HWND ?
+hStc					HWND ?
+hCbo					HWND ?
 hOut					HWND ?
 hBrowse					HWND ?
 hProperty				HWND ?
@@ -629,6 +638,7 @@ PathLib					db MAX_PATH dup(?)
 CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)
+DbgLink					db 256 dup(?)
 fResNotify				dd ?
 hImlTbr					dd ?
 hImlTbrGray				dd ?
@@ -643,3 +653,4 @@ lpOldTabProc			dd ?
 tabinx					dd ?
 fUnicode				dd ?
 nTabInx					dd ?
+nCboBuild				dd ?

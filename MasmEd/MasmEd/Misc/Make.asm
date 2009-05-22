@@ -8,13 +8,15 @@ MAKE struct
 MAKE ends
 
 .data
+
 defPathBin				db 'C:\masm32\bin',0
 defPathInc				db 'C:\masm32\include',0
 defPathLib				db 'C:\masm32\lib',0
 
 defCompileRC			db 'rc /v',0
-defAssemble				db 'ml /c /coff /Cp /I\masm32\include',0
-defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:\masm32\lib',0
+defAssemble				db 'ml /c /coff /Cp',0
+defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
+defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
 
 ExtRC					db '.rc',0
 ExtRes					db '.res',0
@@ -126,7 +128,7 @@ OutputText:
 MakeThreadProc endp
 
 FindErrors proc uses ebx
-	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer[512]:BYTE
 	LOCAL	nLn:DWORD
 	LOCAL	nLnErr:DWORD
 	LOCAL	nLastLnErr:DWORD
@@ -164,7 +166,11 @@ TestLine:
 			invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
 			invoke SendMessage,hOut,REM_GETBMID,nLn,0
 			mov		nErr,eax
-			invoke OpenEditFile,addr buffer,0
+			invoke lstrlen,addr buffer
+			.while eax && word ptr buffer[eax+1]!='\:'
+				dec		eax
+			.endw
+			invoke OpenEditFile,addr buffer[eax],0
 			invoke GetWindowLong,hREd,GWL_ID
 			.if eax==IDC_RAE
 				invoke SendMessage,hREd,REM_SETERROR,nLnErr,nErr
@@ -240,7 +246,12 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke lstrcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtObj
 	.elseif eax==IDM_MAKE_LINK
-		invoke lstrcpy,addr make.buffer,offset Link
+		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+		.if eax
+			invoke lstrcpy,addr make.buffer,offset DbgLink
+		.else
+			invoke lstrcpy,addr make.buffer,offset Link
+		.endif
 		invoke lstrcat,addr make.buffer,addr szSpc
 		invoke lstrcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2

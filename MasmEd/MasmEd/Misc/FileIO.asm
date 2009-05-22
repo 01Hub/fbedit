@@ -510,6 +510,7 @@ MakeSession proc
 MakeSession endp
 
 WriteSessionFile proc lpszFile:DWORD
+	LOCAL	buffer[32]:BYTE
 
 	invoke SendMessage,hBrowse,FBM_GETPATH,0,addr tmpbuff
 	invoke WritePrivateProfileString,addr szSession,addr szFolder,addr tmpbuff,lpszFile
@@ -519,6 +520,11 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr CompileRC,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr Assemble,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szLink,addr Link,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr DbgLink,lpszFile
+	invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+	or		eax,30h
+	mov		dword ptr buffer,eax
+	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
 	invoke lstrcpy,addr szSessionFile,lpszFile
 	ret
 
@@ -652,6 +658,12 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr CompileRC,sizeof CompileRC,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr Assemble,sizeof Assemble,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr Link,sizeof Link,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr DbgLink,sizeof DbgLink,lpszFile
+	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
+	.if eax
+		mov		eax,1
+	.endif
+	invoke SendMessage,hCbo,CB_SETCURSEL,eax,0
 	invoke lstrcpy,addr szSessionFile,lpszFile
 	ret
 
