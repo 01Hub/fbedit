@@ -3,79 +3,13 @@
 option casemap :none  ;case sensitive
 
 include Debug.inc
+include Misc.asm
+include DebugPdb.asm
 
 .code
 
 
 ;########################################################################
-
-HexByte proc
-
-	mov		ah,al
-	shr		al,4
-	and		ah,0Fh
-	.if al<=9
-		add		al,30h
-	.else
-		add		al,41h-0Ah
-	.endif
-	.if ah<=9
-		add		ah,30h
-	.else
-		add		ah,41h-0Ah
-	.endif
-	ret
-
-HexByte endp
-
-DumpLine proc uses ebx esi edi,nAdr:DWORD,lpData:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	mov		ebx,nAdr
-	mov		esi,lpData
-	lea		edi,buffer
-	xor		ecx,ecx
-	.while ecx<4
-		rol		ebx,8
-		mov		eax,ebx
-		invoke HexByte
-		mov		[edi],ax
-		inc		edi
-		inc		edi
-		inc		ecx
-	.endw
-	mov		byte ptr [edi],' '
-	inc		edi
-	xor		ecx,ecx
-	.while ecx<16
-		mov		al,[esi+ecx]
-		invoke HexByte
-		mov		[edi],ax
-		inc		edi
-		inc		edi
-		.if ecx==7
-			mov		byte ptr [edi],'-'
-		.else
-			mov		byte ptr [edi],' '
-		.endif
-		inc		edi
-		inc		ecx
-	.endw
-	xor		ecx,ecx
-	.while ecx<16
-		mov		al,[esi+ecx]
-		.if al<20h || al>=80h
-			mov		al,'.'
-		.endif
-		mov		[edi],al
-		inc		edi
-		inc		ecx
-	.endw
-	mov		dword ptr [edi],0A0Dh
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
-	ret
-
-DumpLine endp
 
 Dump proc uses ebx esi edi,lpData:DWORD
 	LOCAL	dbgbuffer[256]:BYTE
@@ -295,6 +229,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke Debug,addr szFileName
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNOPEN_PDB
+				invoke OpenPdbFile,addr szPdbFileName
 			.endif
 		.endif
 	.elseif eax==WM_SIZE

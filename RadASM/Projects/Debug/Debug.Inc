@@ -18,6 +18,7 @@ includelib \RadASM\masm\lib\debug.lib
 ;Debug.dlg
 IDD_DIALOG1						equ 101
 IDC_EDT1						equ 1001
+IDC_BTNOPEN_PDB					equ 1002
 
 ;#########################################################################
 
@@ -40,6 +41,7 @@ szCRLF							db 0Dh,0Ah,0
 
 szFileName			db 'TestDebug.exe',0
 Courier_New_10		LOGFONT <-13,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
+szPage				db 'Page : %lu',0Dh,0Ah,0
 
 .data?
 

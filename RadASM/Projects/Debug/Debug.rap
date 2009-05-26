@@ -10,6 +10,8 @@ GroupExpand=1
 2=Debug.Inc
 3=Debug.Rc
 4=Debug.dlg
+5=DebugPdb.asm
+6=Misc.asm
 [MakeFiles]
 0=Debug.rap
 1=Debug.rc
@@ -49,6 +51,8 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=2
 3=3
 4=3
+5=2
+6=2
 [AutoLoad]
 1=1
 2=1
@@ -98,10 +102,14 @@ ProductVer4Range=0
 [Collapse]
 1=
 2=
+5=
+6=
 [Size]
-1=0,0,0,0,1430
-2=0,0,0,0,307
+1=0,0,0,0,227
+2=0,0,0,0,1195
 4=0,0,0,0
+5=0,0,0,0,3800
+6=0,0,0,0,874
 [BookMark]
 0=
 1=
