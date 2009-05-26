@@ -1,5 +1,9 @@
 MasmEd
 
+1.0.5.6b - 2009.05.26
+---------------------
+o Fixed bug where MasmEd would fail if a previous opened file was removed. 
+
 1.0.5.6 - 2009.05.22
 --------------------
 o Added combo to select Release or Debug build.
