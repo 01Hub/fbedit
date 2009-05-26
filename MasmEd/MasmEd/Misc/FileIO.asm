@@ -332,7 +332,7 @@ LoadRCFile proc lpFileName:DWORD
 LoadRCFile endp
 
 OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer[MAX_PATH*2]:BYTE
 	LOCAL	fCtrl:DWORD
 
 	invoke lstrcpy,addr buffer,lpFileName
@@ -417,9 +417,9 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 				invoke SetCursor,eax
 			.endif
 		.else
-			invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
-			invoke lstrcat,offset tmpbuff,lpFileName
-			invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
+			invoke lstrcpy,addr buffer,offset szOpenFileFail
+			invoke lstrcat,addr buffer,lpFileName
+			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_OK or MB_ICONERROR
 		.endif
 	.endif
 	invoke SetFocus,hREd
@@ -582,6 +582,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	nLn:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	fHex:DWORD
 
 	mov		esi,offset tmpbuff
 	.if fReg && byte ptr [esi]
@@ -601,26 +602,34 @@ RestoreSession proc uses esi edi,fReg:DWORD
 			mov		nLn,eax
 			call	GetItem
 			.if buffer
+				push	hREd
+				mov		fHex,FALSE
 				.if sdword ptr nLn<=-2
 					mov		eax,nLn
 					neg		eax
 					sub		eax,2
 					mov		nLn,eax
 					invoke OpenEditFile,addr buffer,IDC_HEX
+					mov		fHex,TRUE
 				.elseif sdword ptr nLn==-1
 					invoke OpenEditFile,addr buffer,IDC_RES
 				.else
 					invoke OpenEditFile,addr buffer,IDC_RAE
 				.endif
-				mov		eax,hREd
-				.if nLn!=-1 && eax!=hRes
-					invoke SendMessage,hREd,EM_LINEINDEX,nLn,0
-					mov		chrg.cpMin,eax
-					mov		chrg.cpMax,eax
-					invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-					invoke SendMessage,hREd,REM_VCENTER,0,0
-					invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+				pop		eax
+				.if eax!=hREd
+					mov		eax,hREd
+					.if nLn!=-1 && eax!=hRes
+						invoke SendMessage,hREd,EM_LINEINDEX,nLn,0
+						mov		chrg.cpMin,eax
+						mov		chrg.cpMax,eax
+						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+						.if !fHex
+							invoke SendMessage,hREd,REM_VCENTER,0,0
+							invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+						.endif
+					.endif
 				.endif
 			.endif
 		.endif
