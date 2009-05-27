@@ -22,7 +22,7 @@ Dump proc uses ebx esi edi,lpData:DWORD
 		xor		edx,edx
 		.while edx<16
 			push	edx
-			invoke DumpLine,ebx,esi
+			invoke DumpLine,ebx,esi,16
 			add		esi,16
 			add		ebx,16
 			pop		edx
@@ -37,7 +37,7 @@ Dump proc uses ebx esi edi,lpData:DWORD
 			invoke ReadProcessMemory,dbghand,ebx,addr dbgbuffer,1,0
 PrintHex eax
 			.break .if !eax
-			invoke DumpLine,ebx,addr dbgbuffer
+			invoke DumpLine,ebx,addr dbgbuffer,16
 			add		ebx,16
 		.endw
 		xor		eax,eax
@@ -209,48 +209,112 @@ ret
 
 Debug endp
 
-DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	rect:RECT
+CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke GetDlgItem,hWin,IDC_EDT1
-		mov		hEdt,eax
-		invoke CreateFontIndirect,addr Courier_New_10
-		mov		hFont,eax
-		invoke SendMessage,hEdt,WM_SETFONT,hFont,FALSE
+		mov		eax,hWin
+		mov		hCldDlg,eax
+		invoke SetCurrentStream
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDOK
-				mov		dbgdump,400000h
-				invoke Debug,addr szFileName
-			.elseif eax==IDCANCEL
-				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNOPEN_PDB
-				invoke OpenPdbFile,addr szPdbFileName
+			.if eax==IDCANCEL
+				invoke SendMessage,hWnd,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNBROWSE
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szPDBFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
+					invoke CloseStreams
+					invoke OpenPdbFile,addr buffer
+					invoke SetCurrentStream
+					invoke DumpStream,offset stream,0
+				.endif
+			.elseif eax==IDC_BTNPREVIOUS
+				.if nCurrentStream
+					dec		nCurrentStream
+					invoke SetCurrentStream
+					mov		eax,nCurrentStream
+					mov		edx,offset stream
+					lea		edx,[edx+eax*sizeof STREAM]
+					invoke DumpStream,edx,eax
+				.endif
+			.elseif eax==IDC_BTNNEXT
+				mov		eax,nCurrentStream
+				inc		eax
+				.if eax<nStreams
+					inc		nCurrentStream
+					invoke SetCurrentStream
+					mov		eax,nCurrentStream
+					mov		edx,offset stream
+					lea		edx,[edx+eax*sizeof STREAM]
+					invoke DumpStream,edx,eax
+				.endif
+			.elseif eax==IDC_BTNSAVE
+				.if nStreams
+					invoke SaveStream,nCurrentStream
+				.endif
 			.endif
 		.endif
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+CldDlgProc endp
+
+DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+	LOCAL	cldrect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hWnd,eax
+		invoke GetDlgItem,hWin,IDC_REDDEBUG
+		mov		hEdt,eax
+		invoke CreateFontIndirect,addr Courier_New_10
+		mov		hFont,eax
+		invoke SendMessage,hEdt,WM_SETFONT,hFont,FALSE
+		invoke SendMessage,hEdt,EM_EXLIMITTEXT,0,1024*1024
+		invoke CreateDialogParam,hInstance,IDD_DLGCHILD,hWin,addr CldDlgProc,0
 	.elseif eax==WM_SIZE
+		; Move and size the rich edit control
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.bottom
-		sub		eax,30
+		sub		eax,70
 		invoke MoveWindow,hEdt,0,0,rect.right,eax,TRUE
-		invoke GetDlgItem,hWin,1
-		mov		ecx,rect.right
-		sub		ecx,75
-		mov		edx,rect.bottom
-		sub		edx,26
-		invoke MoveWindow,eax,ecx,edx,70,24,TRUE
-		invoke GetDlgItem,hWin,2
-		mov		ecx,rect.right
-		sub		ecx,75+75+5
-		mov		edx,rect.bottom
-		sub		edx,26
-		invoke MoveWindow,eax,ecx,edx,70,24,TRUE
+		; Move the cild dialog
+		invoke GetClientRect,hCldDlg,addr cldrect
+		mov		eax,rect.bottom
+		sub		eax,65
+		mov		edx,rect.right
+		sub		edx,cldrect.right
+		invoke MoveWindow,hCldDlg,edx,eax,cldrect.right,cldrect.bottom,TRUE
 	.elseif eax==WM_CLOSE
+		invoke CloseStreams
 		invoke DeleteObject,hFont
 		invoke EndDialog,hWin,0
 	.else

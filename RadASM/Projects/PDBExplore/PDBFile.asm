@@ -1,22 +1,5 @@
 
-
-PDB_SIGNATURE_TEXT			equ 40
-
-PDB_PAGE_SIZE_1K			equ 0x0400		; bytes per page
-PDB_PAGE_SIZE_2K			equ 0x0800
-PDB_PAGE_SIZE_4K			equ 0x1000
-PDB_PAGE_SHIFT_1K			equ 10			; log2 (PDB_PAGE_SIZE_*)
-PDB_PAGE_SHIFT_2K			equ 11
-PDB_PAGE_SHIFT_4K			equ 12
-PDB_PAGE_COUNT_1K			equ 0xFFFF		; page number < PDB_PAGE_COUNT_*
-PDB_PAGE_COUNT_2K			equ 0xFFFF
-PDB_PAGE_COUNT_4K			equ 0x7FFF
-
-PDB_STREAM_DIRECTORY		equ 0
-PDB_STREAM_PDB				equ 1
-PDB_STREAM_PUBSYM			equ 7
-
-PDB_STREAM_FREE				equ -1
+PDB_SIGNATURE_TEXT		equ 40
 
 PDB_SIGNATURE struct
 	abSignature			db PDB_SIGNATURE_TEXT+4 dup(?)
@@ -41,78 +24,7 @@ PDB_ROOT struct
 	wReserved			WORD ?				; not used
 PDB_ROOT ends
 
-.data
-
-szPdbFileName			db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.pdb',0
-szWrite					db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\Stream.%.3lu'
-
-.data?
-
-
 .code
-
-ReadPage proc uses esi,lpHeader:DWORD,nPage:DWORD,hFile:HANDLE,lpMem:DWORD
-	LOCAL	BytesRead:DWORD
-
-	mov		esi,lpHeader
-	mov		eax,[esi].PDB_HEADER.dPageBytes
-	mov		edx,nPage
-	mul		edx
-	invoke SetFilePointer,hFile,eax,NULL,FILE_BEGIN
-	invoke ReadFile,hFile,lpMem,[esi].PDB_HEADER.dPageBytes,addr BytesRead,NULL
-	ret
-
-ReadPage endp
-
-DumpPage proc uses ebx esi edi,lpHeader:DWORD,nPage:DWORD,hFile:HANDLE
-	LOCAL	hMem:HGLOBAL
-	LOCAL	buffer[256]:BYTE
-
-	invoke wsprintf,addr buffer,addr szPage,nPage
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
-	mov		esi,lpHeader
-	invoke GlobalAlloc,GMEM_FIXED,[esi].PDB_HEADER.dPageBytes
-	mov		hMem,eax
-	invoke ReadPage,lpHeader,nPage,hFile,hMem
-	xor		ebx,ebx
-	mov		edi,hMem
-	.while ebx<[esi].PDB_HEADER.dPageBytes
-		invoke DumpLine,ebx,edi,16
-		add		ebx,16
-		add		edi,16
-	.endw
-	invoke GlobalFree,hMem
-	ret
-
-DumpPage endp
-
-DumpStream proc uses esi edi,lpStream:DWORD,nStream:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	invoke LoadCursor,0,IDC_WAIT
-	invoke SetCursor,eax
-	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-	invoke wsprintf,addr buffer,addr szStream,nStream
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
-	mov		esi,lpStream
-	mov		ebx,[esi].STREAM.dBytes
-	mov		edi,[esi].STREAM.hmem
-	xor		ebx,ebx
-	.while ebx<[esi].STREAM.dBytes
-		mov		ecx,[esi].STREAM.dBytes
-		sub		ecx,ebx
-		.if ecx>16
-			mov		ecx,16
-		.endif
-		invoke DumpLine,ebx,edi,ecx
-		add		ebx,16
-		add		edi,16
-	.endw
-	invoke LoadCursor,0,IDC_ARROW
-	invoke SetCursor,eax
-	ret
-
-DumpStream endp
 
 ReadStreamBytes proc uses esi,lpHeader:DWORD,nPage:DWORD,nBytes:DWORD,hFile:HANDLE,lpMem:DWORD
 	LOCAL	BytesRead:DWORD
@@ -152,6 +64,39 @@ ReadStream proc uses ebx esi edi,lpHeader:DWORD,lpPages:DWORD,nBytes:DWORD,hFile
 	ret
 
 ReadStream endp
+
+DumpStream proc uses esi edi,lpStream:DWORD,nStream:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	chrg:CHARRANGE
+
+	invoke LoadCursor,0,IDC_WAIT
+	invoke SetCursor,eax
+	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+	invoke wsprintf,addr buffer,addr szStream,nStream
+	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
+	mov		esi,lpStream
+	mov		ebx,[esi].STREAM.dBytes
+	mov		edi,[esi].STREAM.hmem
+	xor		ebx,ebx
+	.while ebx<[esi].STREAM.dBytes
+		mov		ecx,[esi].STREAM.dBytes
+		sub		ecx,ebx
+		.if ecx>16
+			mov		ecx,16
+		.endif
+		invoke DumpLine,ebx,edi,ecx
+		add		ebx,16
+		add		edi,16
+	.endw
+	mov		chrg.cpMin,0
+	mov		chrg.cpMax,0
+	invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
+	invoke SetFocus,hEdt
+	invoke LoadCursor,0,IDC_ARROW
+	invoke SetCursor,eax
+	ret
+
+DumpStream endp
 
 SaveStream proc uses esi,nStream:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -258,4 +203,3 @@ OpenPdbFile proc uses ebx esi edi,lpFileName:DWORD
 	ret
 
 OpenPdbFile endp
-
