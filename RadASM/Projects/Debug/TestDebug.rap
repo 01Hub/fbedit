@@ -8,6 +8,7 @@ GroupExpand=1
 Debug=1
 [Files]
 1=TestDebug.Asm
+2=TestMisc.asm
 [MakeFiles]
 0=TestDebug.rap
 1=TestDebug.rc
@@ -45,6 +46,7 @@ Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
+2=1
 [AutoLoad]
 1=1
 [VersionControl]
@@ -91,8 +93,10 @@ ProductVer4Range=0
 7=00FFFFFF
 [Collapse]
 1=
+2=
 [Size]
-1=0,0,0,0,287
+1=0,0,0,0,212
+2=0,0,0,0,55
 [BookMark]
 0=
 1=

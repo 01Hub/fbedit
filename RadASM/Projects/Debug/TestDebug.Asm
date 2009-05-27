@@ -6,6 +6,7 @@ include kernel32.inc
 include user32.inc
 includelib kernel32.lib
 includelib user32.lib
+include TestMisc.asm
 .data
 szTest		db 'Test',0
 .code
