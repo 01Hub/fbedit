@@ -5,6 +5,7 @@ option casemap :none  ;case sensitive
 include Debug.inc
 include Misc.asm
 include DebugPdb.asm
+include DbgHelp.asm
 
 .code
 
@@ -45,14 +46,6 @@ PrintHex eax
 	ret
 
 Dump endp
-
-PutString proc lpszStr:DWORD
-
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,lpszStr
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCRLF
-	ret
-
-PutString endp
 
 Debug proc lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
@@ -274,6 +267,8 @@ CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if nStreams
 					invoke SaveStream,nCurrentStream
 				.endif
+			.elseif eax==IDC_BTNDEBUG
+				invoke DbgHelp
 			.endif
 		.endif
 	.else
@@ -333,9 +328,16 @@ start:
 
     invoke InitCommonControls
 	invoke LoadLibrary,addr RichEditDLL
-	mov		hRichEdDLL,eax
-	invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
-	invoke FreeLibrary,hRichEdDLL
+	.if eax
+		mov		hRichEdDLL,eax
+		invoke LoadLibrary,addr DbgHelpDLL
+		.if eax
+			mov		hDbgHelpDLL,eax
+			invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
+			invoke FreeLibrary,hDbgHelpDLL
+		.endif
+		invoke FreeLibrary,hRichEdDLL
+	.endif
 	invoke ExitProcess,0
 
 end start

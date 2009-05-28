@@ -46,8 +46,10 @@ CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 					invoke CloseStreams
 					invoke OpenPdbFile,addr buffer
-					invoke SetCurrentStream
-					invoke DumpStream,offset stream,0
+					.if !eax
+						invoke SetCurrentStream
+						invoke DumpStream,offset stream,0
+					.endif
 				.endif
 			.elseif eax==IDC_BTNPREVIOUS
 				.if nCurrentStream

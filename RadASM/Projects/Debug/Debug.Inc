@@ -5,12 +5,14 @@ include user32.inc
 include gdi32.inc
 include comctl32.inc
 include comdlg32.inc
+include dbghelp.inc
 
 includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 includelib comctl32.lib
 includelib comdlg32.lib
+includelib dbghelp.lib
 
 include masm32.inc
 include \RadASM\masm\inc\debug.inc
@@ -29,6 +31,7 @@ IDC_BTNPREVIOUS					equ 1002
 IDC_BTNNEXT						equ 1004
 IDC_STCSTREAM					equ 1005
 IDC_BTNSAVE						equ 1006
+IDC_BTNDEBUG					equ 1007
 
 ;#########################################################################
 
@@ -40,6 +43,7 @@ STREAM ends
 .const
 
 RichEditDLL						db 'riched20.dll',0
+DbgHelpDLL						db 'DbgHelp.dll',0
 
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
@@ -67,6 +71,7 @@ szFileName						db 'TestDebug.exe',0
 
 hInstance			HINSTANCE ?
 hRichEdDLL			HMODULE ?
+hDbgHelpDLL			HMODULE ?
 hWnd				HWND ?
 hEdt				HWND ?
 hFont				HFONT ?

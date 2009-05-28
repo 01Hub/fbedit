@@ -1,6 +1,14 @@
 
 .code
 
+PutString proc lpString:DWORD
+
+	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,lpString
+	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCRLF
+	ret
+
+PutString endp
+
 HexByte proc
 
 	mov		ah,al

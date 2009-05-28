@@ -1,8 +1,8 @@
 
-PDB_SIGNATURE_TEXT		equ 40
+PDB_SIGNATURE_TEXT		equ 44
 
 PDB_SIGNATURE struct
-	abSignature			db PDB_SIGNATURE_TEXT+4 dup(?)
+	abSignature			db PDB_SIGNATURE_TEXT dup(?)
 PDB_SIGNATURE ends
 
 PDB_STREAM struct
@@ -23,6 +23,11 @@ PDB_ROOT struct
 	wStreams			WORD ?				; number of streams
 	wReserved			WORD ?				; not used
 PDB_ROOT ends
+
+.const
+
+szErrVersion			db 'Cannot handle the file',0Dh,0Ah,0
+szPdbVersion			db 'Microsoft C/C++ program database 2.00',0Dh,0Ah,1Ah,'JG',0
 
 .code
 
@@ -152,7 +157,9 @@ OpenPdbFile proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	pdbheader:PDB_HEADER
 	LOCAL	dirstream:STREAM
 	LOCAL	lpPages:DWORD
+	LOCAL	dErr:DWORD
 
+	mov		dErr,FALSE
 	invoke LoadCursor,0,IDC_WAIT
 	invoke SetCursor,eax
 	; Open the pdb file
@@ -161,45 +168,53 @@ OpenPdbFile proc uses ebx esi edi,lpFileName:DWORD
 		mov		hPdbFile,eax
 		; Get the pdb header
 		invoke ReadFile,hPdbFile,addr pdbheader,sizeof PDB_HEADER,addr BytesRead,NULL
-		; Get the stream directory
-		invoke GlobalAlloc,GMEM_FIXED,pdbheader.RootStream.dStreamBytes
-		mov		dirstream.hmem,eax
-		mov		eax,pdbheader.RootStream.dStreamBytes
-		mov		dirstream.dBytes,eax
-		lea		eax,pdbheader.awRootPages
-		invoke ReadStream,addr pdbheader,eax,dirstream.dBytes,hPdbFile,dirstream.hmem
-		; Read the streams
-		mov		esi,dirstream.hmem
-		; Get number of streams
-		movzx	eax,[esi].PDB_ROOT.wStreams
-		mov		nStreams,eax
-		; Point to PDB_STREAM array
-		lea		esi,[esi+sizeof PDB_ROOT]
-		; Get pointer to pages array
-		mov		eax,sizeof PDB_STREAM
-		mov		edx,nStreams
-		mul		edx
-		lea		edi,[esi+eax]
-		; Get pointer to STREAM array
-		mov		ebx,offset stream
-		push	nStreams
-		.while nStreams
-			mov		eax,[esi].PDB_STREAM.dStreamBytes
-			mov		[ebx].STREAM.dBytes,eax
-			invoke GlobalAlloc,GMEM_FIXED,eax
-			mov		[ebx].STREAM.hmem,eax
-			invoke ReadStream,addr pdbheader,edi,[ebx].STREAM.dBytes,hPdbFile,[ebx].STREAM.hmem
-			mov		edi,eax
-			add		ebx,sizeof STREAM
-			add		esi,sizeof PDB_STREAM
-			dec		nStreams
-		.endw
-		pop		nStreams
+		invoke lstrcmp,addr pdbheader,addr szPdbVersion
+		.if !eax
+			; Get the stream directory
+			invoke GlobalAlloc,GMEM_FIXED,pdbheader.RootStream.dStreamBytes
+			mov		dirstream.hmem,eax
+			mov		eax,pdbheader.RootStream.dStreamBytes
+			mov		dirstream.dBytes,eax
+			lea		eax,pdbheader.awRootPages
+			invoke ReadStream,addr pdbheader,eax,dirstream.dBytes,hPdbFile,dirstream.hmem
+			; Read the streams
+			mov		esi,dirstream.hmem
+			; Get number of streams
+			movzx	eax,[esi].PDB_ROOT.wStreams
+			mov		nStreams,eax
+			; Point to PDB_STREAM array
+			lea		esi,[esi+sizeof PDB_ROOT]
+			; Get pointer to pages array
+			mov		eax,sizeof PDB_STREAM
+			mov		edx,nStreams
+			mul		edx
+			lea		edi,[esi+eax]
+			; Get pointer to STREAM array
+			mov		ebx,offset stream
+			push	nStreams
+			.while nStreams
+				mov		eax,[esi].PDB_STREAM.dStreamBytes
+				mov		[ebx].STREAM.dBytes,eax
+				invoke GlobalAlloc,GMEM_FIXED,eax
+				mov		[ebx].STREAM.hmem,eax
+				invoke ReadStream,addr pdbheader,edi,[ebx].STREAM.dBytes,hPdbFile,[ebx].STREAM.hmem
+				mov		edi,eax
+				add		ebx,sizeof STREAM
+				add		esi,sizeof PDB_STREAM
+				dec		nStreams
+			.endw
+			pop		nStreams
+			invoke GlobalFree,dirstream.hmem
+		.else
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szErrVersion
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr pdbheader
+			mov		dErr,TRUE
+		.endif
 		invoke CloseHandle,hPdbFile
-		invoke GlobalFree,dirstream.hmem
 	.endif
 	invoke LoadCursor,0,IDC_ARROW
 	invoke SetCursor,eax
+	mov		eax,dErr
 	ret
 
 OpenPdbFile endp

@@ -13,6 +13,7 @@ GroupExpand=1
 5=DebugPdb.asm
 6=Misc.asm
 7=Child.dlg
+8=DbgHelp.asm
 [MakeFiles]
 0=Debug.rap
 1=Debug.rc
@@ -55,6 +56,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 5=2
 6=2
 7=3
+8=1
 [AutoLoad]
 1=1
 2=1
@@ -71,7 +73,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=25
@@ -108,13 +110,15 @@ ProductVer4Range=0
 2=
 5=
 6=
+8=
 [Size]
-1=0,0,0,0,9270
-2=0,0,0,0,1
+1=0,0,0,0,7929
+2=0,0,0,0,683
 4=0,0,0,0
 5=0,0,0,0,0
-6=0,0,0,0,0
+6=0,0,0,0,8
 7=0,0,0,0
+8=0,0,0,0,1679
 [BookMark]
 0=
 1=
@@ -128,3 +132,5 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
+[Find]
+1="SourceFiles"
