@@ -36,7 +36,6 @@ Dump proc uses ebx esi edi,lpData:DWORD
 	.else
 		.while TRUE
 			invoke ReadProcessMemory,dbghand,ebx,addr dbgbuffer,1,0
-PrintHex eax
 			.break .if !eax
 			invoke DumpLine,ebx,addr dbgbuffer,16
 			add		ebx,16
@@ -47,11 +46,46 @@ PrintHex eax
 
 Dump endp
 
+SetBreakPointsAll proc uses ebx edi
+
+	mov		edi,offset dbgline
+	xor		ebx,ebx
+	.while ebx<inxline
+		invoke ReadProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
+		invoke WriteProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
+		add		edi,sizeof DEBUGLINE
+		inc		ebx
+	.endw
+	ret
+
+SetBreakPointsAll endp
+
+RestoreSourceByte proc uses ebx edi,Address:DWORD
+
+	mov		edi,offset dbgline
+	mov		eax,Address
+	xor		ebx,ebx
+	.while ebx<inxline
+		.if eax==[edi].DEBUGLINE.Address
+			movzx		eax,[edi].DEBUGLINE.SourceByte
+			PrintHex eax
+			invoke WriteProcessMemory,dbghand,Address,addr [edi].DEBUGLINE.SourceByte,1,0
+			.break
+		.endif
+		add		edi,sizeof DEBUGLINE
+		inc		ebx
+	.endw
+	ret
+
+RestoreSourceByte endp
+
 Debug proc lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
 	LOCAL	fContinue:DWORD
 	LOCAL	buffer[256]:BYTE
+	LOCAL	Old1:DWORD
+	LOCAL	Old2:DWORD
 
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
 	mov		sinfo.cb,SizeOf STARTUPINFO
@@ -63,18 +97,54 @@ Debug proc lpFileName:DWORD
 		invoke WaitForSingleObject,pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,pinfo.dwProcessId
 		mov		dbghand,eax
-		.while eax
-			invoke Dump,dbgdump
-			.if eax
-				add		dbgdump,256
-			.endif
+		invoke DbgHelp,pinfo.hProcess
+		mov		edx,offset dbgsource
+		xor		ecx,ecx
+		.while ecx<inxsource
+			push	ecx
+			push	edx
+			invoke PutString,addr [edx].DEBUGSOURCE.FileName
+			pop		edx
+			pop		ecx
+			add		edx,sizeof DEBUGSOURCE
+			inc		ecx
 		.endw
-ret
+		mov		edx,offset dbgline
+		xor		ecx,ecx
+		.while ecx<inxline
+			push	ecx
+			push	edx
+			PrintHex [edx].DEBUGLINE.Address
+			pop		edx
+			pop		ecx
+			add		edx,sizeof DEBUGLINE
+			inc		ecx
+		.endw
+;		mov		dbgdump,400000h
+;		.while eax
+;			invoke Dump,dbgdump
+;			.if eax
+;				add		dbgdump,256
+;			.endif
+;		.endw
+		invoke SetBreakPointsAll
 		.while TRUE
 			invoke WaitForDebugEvent,addr de,INFINITE
 			mov		fContinue,DBG_CONTINUE
 			mov		eax,de.dwDebugEventCode
 			.if eax==EXCEPTION_DEBUG_EVENT
+				invoke PutString,addr szEXCEPTION_DEBUG_EVENT
+				mov		eax,de.u.Exception.pExceptionRecord.ExceptionCode
+				.if eax==EXCEPTION_BREAKPOINT
+					.if de.u.Exception.pExceptionRecord.ExceptionAddress<800000h
+						invoke PutString,addr szEXCEPTION_BREAKPOINT
+;						PrintHex de.u.Exception.pExceptionRecord.ExceptionAddress
+						invoke RestoreSourceByte,de.u.Exception.pExceptionRecord.ExceptionAddress
+						.while !fDbgContinue
+						.endw
+						mov		fDbgContinue,FALSE
+					.endif
+				.endif
 ;					Select Case de.Exception.ExceptionRecord.ExceptionCode
 ;						Case EXCEPTION_BREAKPOINT
 ;							If fExit=0 Then
@@ -205,6 +275,7 @@ Debug endp
 CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -268,7 +339,11 @@ CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SaveStream,nCurrentStream
 				.endif
 			.elseif eax==IDC_BTNDEBUG
-				invoke DbgHelp
+				mov			fDbgContinue,FALSE
+				invoke CreateThread,NULL,0,addr Debug,addr szFileName,NULL,addr tid
+;				invoke DbgHelp,0
+			.elseif eax==IDC_BTNDEBUGNEXT
+				mov			fDbgContinue,TRUE
 			.endif
 		.endif
 	.else

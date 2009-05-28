@@ -13,5 +13,7 @@ szTest		db 'Test',0
 start:
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
+	invoke MyProc1
+	invoke MyProc2
 	invoke ExitProcess,0
 end start

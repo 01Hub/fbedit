@@ -32,6 +32,7 @@ IDC_BTNNEXT						equ 1004
 IDC_STCSTREAM					equ 1005
 IDC_BTNSAVE						equ 1006
 IDC_BTNDEBUG					equ 1007
+IDC_BTNDEBUGNEXT				equ 1008
 
 ;#########################################################################
 
@@ -46,6 +47,7 @@ RichEditDLL						db 'riched20.dll',0
 DbgHelpDLL						db 'DbgHelp.dll',0
 
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
+szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
 szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
 szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT',0
 szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT',0
@@ -65,7 +67,9 @@ szSaving						db 0Dh,0Ah,'Saving stream to:',0Dh,0Ah,0
 
 .data
 
-szFileName						db 'TestDebug.exe',0
+szFileName						db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.exe',0
+szSourceFileName				db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.Asm',0
+szBP							db 0CCh
 
 .data?
 
@@ -82,5 +86,6 @@ dbgdump				dd ?
 nStreams			DWORD ?
 nCurrentStream		DWORD ?
 stream				STREAM 32 dup(<>)
+fDbgContinue		DWORD ?
 
 ;#########################################################################

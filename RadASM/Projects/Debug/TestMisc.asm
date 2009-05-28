@@ -1,16 +1,16 @@
+
 .code
 
-MyProc1 proc a:DWORD,b:DWORD
-	
-	mov		eax,1
+MyProc1 proc
+
+	mov		eax,'abcd'
 	ret
 
 MyProc1 endp
 
-MyProc2 proc b:DWORD
-	
-	mov		eax,2
+MyProc2 proc
+
+	mov		eax,'abcd'
 	ret
 
 MyProc2 endp
-
