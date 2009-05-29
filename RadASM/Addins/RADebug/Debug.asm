@@ -12,30 +12,111 @@ threadcontext	HANDLE ?
 
 .code
 
-PrintSourceByte proc Address:DWORD,SourceByte:DWORD
+PrintSourceByte proc Address:DWORD,SourceByte:DWORD,File:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke wsprintf,addr buffer,addr szSourceByte,Address,SourceByte
+	invoke wsprintf,addr buffer,addr szSourceByte,Address,SourceByte,File
 	invoke PutString,addr buffer
 	ret
 
 PrintSourceByte endp
+
+MapBreakPoints proc uses ebx esi edi
+
+	mov		esi,lpData
+	mov		esi,[esi].ADDINDATA.lpBreakPoint
+	xor		ecx,ecx
+	.while ecx<256
+		push	ecx
+		mov		eax,[esi].BREAKPOINT.BpID
+		.if sdword ptr eax<0
+			and eax,7FFFFFFFh
+			push	eax
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpGetFileNameFromID
+			mov		edi,eax
+			mov		ebx,offset dbgsource
+			xor		ecx,ecx
+			.while ecx<inxsource
+				push	ecx
+				invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+				.if !eax
+					pop		edx		;FileID
+					mov		eax,[esi].BREAKPOINT.LineNumber
+					inc		eax
+					mov		esi,offset dbgline
+					
+					.break
+				.endif
+				pop		ecx
+				inc		ecx
+			.endw
+;PrintStringByAddr eax
+;PrintDec [esi].BREAKPOINT.BpID
+;PrintDec [esi].BREAKPOINT.LineNumber
+		.elseif eax
+		.endif
+		pop		ecx
+		inc		ecx
+		add		esi,sizeof BREAKPOINT
+	.endw
+	ret
+
+MapBreakPoints endp
 
 SetBreakPointsAll proc uses ebx edi
 
 	mov		edi,offset dbgline
 	xor		ebx,ebx
 	.while ebx<inxline
-		invoke ReadProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
-		movzx		eax,[edi].DEBUGLINE.SourceByte
-		invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax
-		invoke WriteProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
+		.if [edi].DEBUGLINE.SourceByte==-1
+			mov		[edi].DEBUGLINE.SourceByte,0
+			invoke ReadProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
+			invoke WriteProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
+			movzx		eax,[edi].DEBUGLINE.SourceByte
+			invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax,[edi].DEBUGLINE.FileID
+		.endif
 		add		edi,sizeof DEBUGLINE
 		inc		ebx
 	.endw
 	ret
 
 SetBreakPointsAll endp
+
+SetBreakPoints proc uses ebx edi
+
+	mov		edi,offset dbgline
+	xor		ebx,ebx
+	.while ebx<inxline
+		.if [edi].DEBUGLINE.SourceByte==-1 && [edi].DEBUGLINE.BreakPoint
+			mov		[edi].DEBUGLINE.SourceByte,0
+			invoke ReadProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
+			invoke WriteProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
+			;movzx		eax,[edi].DEBUGLINE.SourceByte
+			;invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax
+		.endif
+		add		edi,sizeof DEBUGLINE
+		inc		ebx
+	.endw
+	ret
+
+SetBreakPoints endp
+
+ClearBreakPointsAll proc uses ebx edi
+
+	mov		edi,offset dbgline
+	xor		ebx,ebx
+	.while ebx<inxline
+		.if [edi].DEBUGLINE.SourceByte!=-1
+			invoke WriteProcessMemory,dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
+			mov		[edi].DEBUGLINE.SourceByte,-1
+		.endif
+		add		edi,sizeof DEBUGLINE
+		inc		ebx
+	.endw
+	ret
+
+ClearBreakPointsAll endp
 
 RestoreSourceByte proc uses ebx edi,Address:DWORD
 
@@ -44,9 +125,12 @@ RestoreSourceByte proc uses ebx edi,Address:DWORD
 	xor		ebx,ebx
 	.while ebx<inxline
 		.if eax==[edi].DEBUGLINE.Address
-			movzx		eax,[edi].DEBUGLINE.SourceByte
-			invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax
-			invoke WriteProcessMemory,dbghand,Address,addr [edi].DEBUGLINE.SourceByte,1,0
+			;movzx		eax,[edi].DEBUGLINE.SourceByte
+			;invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax
+			.if [edi].DEBUGLINE.SourceByte!=-1
+				invoke WriteProcessMemory,dbghand,Address,addr [edi].DEBUGLINE.SourceByte,1,0
+				mov		[edi].DEBUGLINE.SourceByte,-1
+			.endif
 			.break
 		.endif
 		add		edi,sizeof DEBUGLINE
@@ -76,19 +160,35 @@ FindLine proc uses ebx edi,Address:DWORD
 FindLine endp
 
 SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
+	LOCAL	chrg:CHARRANGE
 
+	mov		edi,lpHandles
 	mov		ebx,lpDEBUGLINE
+	.if prevline!=-1
+		invoke SendMessage,prevhwnd,REM_SETHILITELINE,prevline,0
+	.endif
+	mov		eax,[ebx].DEBUGLINE.LineNumber
+	dec		eax
+	mov		prevline,eax
 	mov		eax,[ebx].DEBUGLINE.FileID
 	mov		edx,sizeof DEBUGSOURCE
 	mul		edx
 	lea		esi,[eax+offset dbgsource]
 	mov		edx,lpData
-	mov		edx,[edx].ADDINDATA.lpFile
-	invoke lstrcpy,edx,addr [esi].DEBUGSOURCE.FileName
-	mov		eax,lpProc
-	mov		eax,[eax].ADDINPROCS.lpOpenProjectFile
-	push	TRUE
-	call	eax
+	invoke lstrcpy,addr szSourceName,[edx].ADDINDATA.lpProjectPath
+	invoke lstrcat,addr szSourceName,addr [esi].DEBUGSOURCE.FileName
+	invoke PostMessage,[edi].ADDINHANDLES.hWnd,WM_USER+998,0,addr szSourceName
+	invoke WaitForSingleObject,pinfo.hProcess,100
+	mov		eax,[edi].ADDINHANDLES.hEdit
+	mov		prevhwnd,eax
+	invoke SendMessage,prevhwnd,EM_LINEINDEX,prevline,0
+	mov		chrg.cpMin,eax
+	mov		chrg.cpMax,eax
+	invoke SendMessage,prevhwnd,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,prevhwnd,EM_SCROLLCARET,0,0
+	invoke SetForegroundWindow,[edi].ADDINHANDLES.hWnd
+	invoke SetFocus,prevhwnd
+	invoke SendMessage,prevhwnd,REM_SETHILITELINE,prevline,1
 	ret
 
 SelectLine endp
@@ -101,6 +201,7 @@ Debug proc lpFileName:DWORD
 	LOCAL	Old:BYTE
 	LOCAL	context:CONTEXT
 
+	mov		prevline,-1
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
 	mov		sinfo.cb,SizeOf STARTUPINFO
 	mov		sinfo.dwFlags,STARTF_USESHOWWINDOW
@@ -141,7 +242,8 @@ Debug proc lpFileName:DWORD
 ;				add		dbgdump,256
 ;			.endif
 ;		.endw
-		invoke SetBreakPointsAll
+		invoke MapBreakPoints
+		invoke SetBreakPoints
 		mov		eax,pinfo.hThread
 		mov		threadcontext,eax
 		.while TRUE
@@ -149,11 +251,11 @@ Debug proc lpFileName:DWORD
 			mov		fContinue,DBG_CONTINUE
 			mov		eax,de.dwDebugEventCode
 			.if eax==EXCEPTION_DEBUG_EVENT
-				invoke PutString,addr szEXCEPTION_DEBUG_EVENT
+				;invoke PutString,addr szEXCEPTION_DEBUG_EVENT
 				mov		eax,de.u.Exception.pExceptionRecord.ExceptionCode
 				.if eax==EXCEPTION_BREAKPOINT
 					.if de.u.Exception.pExceptionRecord.ExceptionAddress<800000h
-						invoke PutString,addr szEXCEPTION_BREAKPOINT
+						;invoke PutString,addr szEXCEPTION_BREAKPOINT
 ;						PrintHex de.u.Exception.pExceptionRecord.ExceptionAddress
 						invoke RestoreSourceByte,de.u.Exception.pExceptionRecord.ExceptionAddress
 						mov		context.ContextFlags,CONTEXT_CONTROL
@@ -184,8 +286,8 @@ Debug proc lpFileName:DWORD
 				.elseif eax==DBG_CONTROL_C
 				.else
 					invoke ReadProcessMemory,dbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr Old,1,0
-					movzx		eax,Old
-					invoke PrintSourceByte,de.u.Exception.pExceptionRecord.ExceptionAddress,eax
+;					movzx		eax,Old
+;					invoke PrintSourceByte,de.u.Exception.pExceptionRecord.ExceptionAddress,eax
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.endif
 			.elseif eax==CREATE_PROCESS_DEBUG_EVENT
@@ -227,6 +329,9 @@ Debug proc lpFileName:DWORD
 	invoke CloseHandle,dbghand
 	invoke CloseHandle,hDbgThread
 	mov		hDbgThread,0
+	.if prevline!=-1
+		invoke SendMessage,prevhwnd,REM_SETHILITELINE,prevline,0
+	.endif
 	ret
 
 Debug endp

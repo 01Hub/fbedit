@@ -7,25 +7,18 @@ include kernel32.inc
 include user32.inc
 include gdi32.inc
 include comctl32.inc
-;include comdlg32.inc
 include dbghelp.inc
-
-includelib kernel32.lib
-includelib user32.lib
-includelib gdi32.lib
-includelib comctl32.lib
-;includelib comdlg32.lib
-includelib dbghelp.lib
+include RAEdit.inc
 
 ;#########################################################################
 ; Libraries
 
 includelib kernel32.lib
 includelib user32.lib
-;includelib Comctl32.lib
-;includelib shell32.lib
-;includelib ComDlg32.lib
-;includelib Gdi32.lib
+includelib gdi32.lib
+includelib comctl32.lib
+includelib dbghelp.lib
+
 
 ;#########################################################################
 ; RadASM Add In Include
@@ -47,10 +40,21 @@ DBGWIN_EXT_INFO = 0		; include extra debug info into the program
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
 
-IDM_WINDOW_TILEHOR				equ 47005
-IDM_WINDOW_TILEVER				equ 47006
-IDM_WINDOW_CASCADE				equ 47007
-IDM_WINDOW_ARRANGEICONS			equ 47008
+IDM_EDIT_TOGGLEBP				equ 41013
+IDM_EDIT_CLEARBP				equ 41014
+
+tagACCEL struct
+	fVirt			db ?
+	dummy			db ?
+	key				dw ?
+	cmd				dw ?
+tagACCEL ends
+
+BREAKPOINT struct
+	BpID			DWORD ?		; Handle or project file id
+	LineNumber		DWORD ?		; Line number, zero based
+	Reserved		DWORD ?
+BREAKPOINT ends
 
 .const
 
@@ -69,10 +73,25 @@ szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
-szSourceByte					db 'Adress: %X Byte: %X',0
+szSourceByte					db 'Adress: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
 
-szFileName						db 'D:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.exe',0
+;szFileName						db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.exe',0
+
+DebugMenu						db '&Debug',0
+MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
+								db '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0
+								db '-',0
+								db '&Run',VK_TAB,'Shift+F7',0
+								db '&Stop',VK_TAB,'Alt+F7',0
+								db '-',0
+								db 'Step &Into',VK_TAB,'F7',0
+								db 'Step &Over',VK_TAB,'Ctrl+F7',0
+								db 'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0
+								db 'Do not Debug',0
+								db 0
+szMakeFiles						db 'MakeFiles',0
+szMakeFilesKey					db '5',0
 
 .data
 
@@ -83,5 +102,10 @@ hDbgHelpDLL						HMODULE ?		; Handle of DbgHelp.dll
 lpHandles						dd ?			; Pointer to handles struct
 lpProc							dd ?			; Pointer to proc struct
 lpData							dd ?			; Pointer to data struct
+hMnu							HMENU ?			; Debug popup
+IDAddIn							dd 32 dup(?)	; Unique ID's for this AddIn
 hOut							HWND ?			; Handle of output window
-IDAddIn							dd ?			; Unique ID for this AddIn
+szSourceName					db MAX_PATH dup(?)
+prevline						dd ?
+prevhwnd						dd ?
+szFileName						db MAX_PATH dup(?)

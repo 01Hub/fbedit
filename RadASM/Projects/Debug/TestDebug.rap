@@ -9,7 +9,7 @@ Debug=1
 [Files]
 1=TestDebug.Asm
 2=TestMisc.asm
-3=
+3=Src\TestMisc.asm
 [MakeFiles]
 0=TestDebug.rap
 1=TestDebug.rc
@@ -48,7 +48,7 @@ Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
 2=2
-3=
+3=1
 [AutoLoad]
 1=1
 [VersionControl]
@@ -98,9 +98,9 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,981,606,145
-2=0,0,0,0,109
-3=
+1=0,0,1278,774,440
+2=0,0,0,0,106
+3=0,0,0,0,149
 [BookMark]
 0=
 1=
@@ -113,4 +113,7 @@ ProductVer4Range=0
 8=
 9=
 [BreakPoint]
-0=
+0=1,26,
+1=2,12,
+[Find]
+1="118"

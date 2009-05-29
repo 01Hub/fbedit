@@ -25,7 +25,8 @@ DEBUGLINE struct
 	FileID					DWORD ?
 	LineNumber              DWORD ?
 	Address                 DWORD ?
-	SourceByte				BYTE ?
+	SourceByte				WORD ?
+	BreakPoint				WORD ?
 DEBUGLINE ends
 
 .const
@@ -105,6 +106,8 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 			mov		[edi].DEBUGLINE.LineNumber,eax
 			mov		eax,[ebx].SRCCODEINFO.Address
 			mov		[edi].DEBUGLINE.Address,eax
+			mov		[edi].DEBUGLINE.SourceByte,-1
+			mov		[edi].DEBUGLINE.BreakPoint,0
 			inc		inxline
 			pop		ecx
 			.break
