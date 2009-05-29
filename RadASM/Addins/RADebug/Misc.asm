@@ -3,10 +3,10 @@
 
 PutString proc lpString:DWORD
 
-	invoke SetFocus,hEdt
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,lpString
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCRLF
-	invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
+;	invoke SetFocus,hOut
+	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,lpString
+	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCRLF
+	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
 	ret
 
 PutString endp
@@ -30,11 +30,11 @@ HexByte proc
 
 HexByte endp
 
-DumpLine proc uses ebx esi edi,nAdr:DWORD,lpData:DWORD,nBytes:DWORD
+DumpLine proc uses ebx esi edi,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		ebx,nAdr
-	mov		esi,lpData
+	mov		esi,lpDumpData
 	lea		edi,buffer
 	xor		ecx,ecx
 	.while ecx<4
@@ -81,16 +81,8 @@ DumpLine proc uses ebx esi edi,nAdr:DWORD,lpData:DWORD,nBytes:DWORD
 		inc		ecx
 	.endw
 	mov		dword ptr [edi],0A0Dh
-	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
+	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
 	ret
 
 DumpLine endp
 
-SetCurrentStream proc
-	LOCAL	buffer[256]:BYTE
-
-	invoke wsprintf,addr buffer,addr szCurrentStream,nCurrentStream,nStreams
-	invoke SetDlgItemText,hCldDlg,IDC_STCSTREAM,addr buffer
-	ret
-
-SetCurrentStream endp

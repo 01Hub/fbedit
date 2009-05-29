@@ -1,56 +1,84 @@
 [Project]
 Assembler=masm
-Type=Console App
-Description=TestDebug
+Type=Dll Project
+Description=RadASM debug addin
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
 [Files]
-1=TestDebug.Asm
-2=TestMisc.asm
-3=
+1=RADebug.Asm
+2=RADebug.Inc
+3=RADebug.Def
+4=RADebug.Txt
+5=..\RadAsm.inc
+6=DbgHelp.asm
+7=Misc.asm
+8=Debug.asm
 [MakeFiles]
-0=TestDebug.rap
-1=TestDebug.rc
-2=TestDebug.asm
-3=TestDebug.obj
-4=TestDebug.res
-5=TestDebug.exe
-6=TestDebug.def
-7=TestDebug.dll
-8=TestDebug.txt
-9=TestDebug.lib
-10=TestDebug.mak
-11=TestDebug.hla
-12=TestDebug.com
-13=TestDebug.ocx
-14=TestDebug.idl
-15=TestDebug.tlb
-16=TestDebug.sys
+0=RADebug.rap
+1=RADebug.rc
+2=RADebug.asm
+3=RADebug.obj
+4=RADebug.res
+5=RADebug.exe
+6=RADebug.def
+7=RADebug.dll
+8=RADebug.txt
+9=RADebug.lib
+10=RADebug.mak
+11=RADebug.hla
+12=RADebug.com
+13=RADebug.ocx
+14=RADebug.idl
+15=RADebug.tlb
+16=RADebug.sys
 [MakeDef]
-Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
+Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
-3=5,O,$B\LINK.EXE /SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3
+3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 7=0,0,"$E\OllyDbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\ML.EXE /c /coff /Zd /Cp /nologo /I"$I",2
-13=5,O,$B\LINK.EXE /SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3
+12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 17=0,0,"$E\OllyDbg",5
+[Resource]
+[StringTable]
+[VerInf]
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
 2=2
+3=4
+4=4
+5=2
+6=2
+7=2
+8=2
+[Collapse]
+5=
+4=
+2=
+1=
+8=
+6=
+7=
 3=
-[AutoLoad]
-1=1
+[Size]
+5=0,0,0,0,11458
+4=0,0,0,0,19
+2=0,0,0,0,1317
+1=0,0,0,0,2213
+8=0,0,0,0,4140
+6=0,0,0,0,1123
+7=0,0,0,0,8
+3=0,0,0,0,24
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -64,10 +92,10 @@ MilestoneOnDateStatus=0
 MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
-MilestoneOnDateTimeDate=25
-MilestoneOnDateTimeHour=20
-MilestoneOnDateTimeMin=43
-MilestoneOnDateTimeSec=32
+MilestoneOnDateTimeDate=28
+MilestoneOnDateTimeHour=23
+MilestoneOnDateTimeMin=28
+MilestoneOnDateTimeSec=46
 MilestoneOnDateTimeStatus=0
 BackupLocation=D:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
@@ -93,14 +121,6 @@ ProductVer4Range=0
 5=00FFFFFF
 6=00FFFFFF
 7=00FFFFFF
-[Collapse]
-1=
-2=
-3=
-[Size]
-1=0,0,981,606,145
-2=0,0,0,0,109
-3=
 [BookMark]
 0=
 1=
@@ -114,3 +134,10 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
+[Exports]
+1=DllProc
+2=InstallDll
+[AutoLoad]
+1=1
+2=1
+8=1

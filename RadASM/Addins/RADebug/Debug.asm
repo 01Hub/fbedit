@@ -1,50 +1,16 @@
-.386
-.model flat, stdcall  ;32 bit memory model
-option casemap :none  ;case sensitive
 
-include Debug.inc
-include Misc.asm
-include DebugPdb.asm
-include DbgHelp.asm
+.const
+
+szBP			db 0CCh
+
+.data?
+
+hDbgThread		HANDLE ?
+dbghand			HANDLE ?
+pinfo			PROCESS_INFORMATION <>
+threadcontext	HANDLE ?
 
 .code
-
-
-;########################################################################
-
-Dump proc uses ebx esi edi,lpData:DWORD
-	LOCAL	dbgbuffer[256]:BYTE
-	LOCAL	buffer[256]:BYTE
-
-	mov		ebx,lpData
-	invoke ReadProcessMemory,dbghand,ebx,addr dbgbuffer,256,0
-	.if eax
-		lea		esi,dbgbuffer
-		xor		edx,edx
-		.while edx<16
-			push	edx
-			invoke DumpLine,ebx,esi,16
-			add		esi,16
-			add		ebx,16
-			pop		edx
-			inc		edx
-		.endw
-		mov		dword ptr buffer,0A0Dh
-		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr buffer
-		xor		eax,eax
-		inc		eax
-	.else
-		.while TRUE
-			invoke ReadProcessMemory,dbghand,ebx,addr dbgbuffer,1,0
-			.break .if !eax
-			invoke DumpLine,ebx,addr dbgbuffer,16
-			add		ebx,16
-		.endw
-		xor		eax,eax
-	.endif
-	ret
-
-Dump endp
 
 PrintSourceByte proc Address:DWORD,SourceByte:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -90,6 +56,43 @@ RestoreSourceByte proc uses ebx edi,Address:DWORD
 
 RestoreSourceByte endp
 
+FindLine proc uses ebx edi,Address:DWORD
+
+	mov		edi,offset dbgline
+	mov		eax,Address
+	xor		ebx,ebx
+	.while ebx<inxline
+		.if eax==[edi].DEBUGLINE.Address
+			mov		eax,edi
+			jmp		Ex
+		.endif
+		add		edi,sizeof DEBUGLINE
+		inc		ebx
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindLine endp
+
+SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
+
+	mov		ebx,lpDEBUGLINE
+	mov		eax,[ebx].DEBUGLINE.FileID
+	mov		edx,sizeof DEBUGSOURCE
+	mul		edx
+	lea		esi,[eax+offset dbgsource]
+	mov		edx,lpData
+	mov		edx,[edx].ADDINDATA.lpFile
+	invoke lstrcpy,edx,addr [esi].DEBUGSOURCE.FileName
+	mov		eax,lpProc
+	mov		eax,[eax].ADDINPROCS.lpOpenProjectFile
+	push	TRUE
+	call	eax
+	ret
+
+SelectLine endp
+
 Debug proc lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
@@ -108,7 +111,7 @@ Debug proc lpFileName:DWORD
 		invoke WaitForSingleObject,pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,pinfo.dwProcessId
 		mov		dbghand,eax
-		invoke DbgHelp,pinfo.hProcess
+		invoke DbgHelp,pinfo.hProcess,lpFileName
 ;		mov		edx,offset dbgsource
 ;		xor		ecx,ecx
 ;		.while ecx<inxsource
@@ -159,6 +162,10 @@ Debug proc lpFileName:DWORD
 						mov		context.regEip,eax
 						invoke SetThreadContext,threadcontext,addr context
 						invoke SuspendThread,threadcontext
+						invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
+						.if eax
+							invoke SelectLine,eax
+						.endif
 					.else
 						invoke PutString,addr szEXCEPTION_BREAKPOINT
 						mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
@@ -223,150 +230,3 @@ Debug proc lpFileName:DWORD
 	ret
 
 Debug endp
-
-CldDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	tid:DWORD
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		mov		eax,hWin
-		mov		hCldDlg,eax
-		invoke SetCurrentStream
-	.elseif eax==WM_COMMAND
-		mov		edx,wParam
-		movzx	eax,dx
-		shr		edx,16
-		.if edx==BN_CLICKED
-			.if eax==IDCANCEL
-				invoke SendMessage,hWnd,WM_CLOSE,NULL,NULL
-			.elseif eax==IDC_BTNBROWSE
-				;Zero out the ofn struct
-				invoke RtlZeroMemory,addr ofn,sizeof ofn
-				;Setup the ofn struct
-				mov		ofn.lStructSize,sizeof ofn
-				push	hWin
-				pop		ofn.hwndOwner
-				push	hInstance
-				pop		ofn.hInstance
-				mov		ofn.lpstrFilter,offset szPDBFilterString
-				mov		buffer[0],0
-				lea		eax,buffer
-				mov		ofn.lpstrFile,eax
-				mov		ofn.nMaxFile,sizeof buffer
-				mov		ofn.lpstrDefExt,NULL
-				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-				;Show the Open dialog
-				invoke GetOpenFileName,addr ofn
-				.if eax
-					invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
-					invoke CloseStreams
-					invoke OpenPdbFile,addr buffer
-					invoke SetCurrentStream
-					invoke DumpStream,offset stream,0
-				.endif
-			.elseif eax==IDC_BTNPREVIOUS
-				.if nCurrentStream
-					dec		nCurrentStream
-					invoke SetCurrentStream
-					mov		eax,nCurrentStream
-					mov		edx,offset stream
-					lea		edx,[edx+eax*sizeof STREAM]
-					invoke DumpStream,edx,eax
-				.endif
-			.elseif eax==IDC_BTNNEXT
-				mov		eax,nCurrentStream
-				inc		eax
-				.if eax<nStreams
-					inc		nCurrentStream
-					invoke SetCurrentStream
-					mov		eax,nCurrentStream
-					mov		edx,offset stream
-					lea		edx,[edx+eax*sizeof STREAM]
-					invoke DumpStream,edx,eax
-				.endif
-			.elseif eax==IDC_BTNSAVE
-				.if nStreams
-					invoke SaveStream,nCurrentStream
-				.endif
-			.elseif eax==IDC_BTNDEBUG
-				invoke CreateThread,NULL,0,addr Debug,addr szFileName,NULL,addr tid
-				mov		hDbgThread,eax
-;				invoke DbgHelp,0
-			.elseif eax==IDC_BTNDEBUGNEXT
-				.if hDbgThread
-					invoke ResumeThread,threadcontext
-				.endif
-			.endif
-		.endif
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-CldDlgProc endp
-
-DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	rect:RECT
-	LOCAL	cldrect:RECT
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		mov		eax,hWin
-		mov		hWnd,eax
-		invoke GetDlgItem,hWin,IDC_REDDEBUG
-		mov		hEdt,eax
-		invoke CreateFontIndirect,addr Courier_New_10
-		mov		hFont,eax
-		invoke SendMessage,hEdt,WM_SETFONT,hFont,FALSE
-		invoke SendMessage,hEdt,EM_EXLIMITTEXT,0,1024*1024
-		invoke CreateDialogParam,hInstance,IDD_DLGCHILD,hWin,addr CldDlgProc,0
-	.elseif eax==WM_SIZE
-		; Move and size the rich edit control
-		invoke GetClientRect,hWin,addr rect
-		mov		eax,rect.bottom
-		sub		eax,70
-		invoke MoveWindow,hEdt,0,0,rect.right,eax,TRUE
-		; Move the cild dialog
-		invoke GetClientRect,hCldDlg,addr cldrect
-		mov		eax,rect.bottom
-		sub		eax,65
-		mov		edx,rect.right
-		sub		edx,cldrect.right
-		invoke MoveWindow,hCldDlg,edx,eax,cldrect.right,cldrect.bottom,TRUE
-	.elseif eax==WM_CLOSE
-		invoke CloseStreams
-		invoke DeleteObject,hFont
-		invoke EndDialog,hWin,0
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-DlgProc endp
-
-start:
-
-	invoke GetModuleHandle,NULL
-	mov		hInstance,eax
-
-    invoke InitCommonControls
-	invoke LoadLibrary,addr RichEditDLL
-	.if eax
-		mov		hRichEdDLL,eax
-		invoke LoadLibrary,addr DbgHelpDLL
-		.if eax
-			mov		hDbgHelpDLL,eax
-			invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
-			invoke FreeLibrary,hDbgHelpDLL
-		.endif
-		invoke FreeLibrary,hRichEdDLL
-	.endif
-	invoke ExitProcess,0
-
-end start

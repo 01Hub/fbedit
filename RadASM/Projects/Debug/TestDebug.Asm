@@ -7,13 +7,27 @@ include user32.inc
 includelib kernel32.lib
 includelib user32.lib
 include TestMisc.asm
+
 .data
+
 szTest		db 'Test',0
+
 .code
+
+MyProc3 proc
+
+	mov		eax,'abcd'
+	ret
+
+MyProc3 endp
+
 start:
+
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
+	invoke MyProc3
 	invoke MyProc1
 	invoke MyProc2
 	invoke ExitProcess,0
+
 end start

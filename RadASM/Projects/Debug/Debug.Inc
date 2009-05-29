@@ -48,6 +48,7 @@ DbgHelpDLL						db 'DbgHelp.dll',0
 
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
+szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION',0
 szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
 szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT',0
 szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT',0
@@ -64,11 +65,12 @@ szPage							db 'Page : %lu',0Dh,0Ah,0
 szStream						db 'Stream : %d',0Dh,0Ah,0
 szCurrentStream					db 'Stream %d of %d',0
 szSaving						db 0Dh,0Ah,'Saving stream to:',0Dh,0Ah,0
+szSourceByte					db 'Adress: %X Byte: %X',0
 
 .data
 
-szFileName						db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.exe',0
-szSourceFileName				db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.Asm',0
+szFileName						db 'TestDebug.exe',0
+;szSourceFileName				db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.Asm',0
 szBP							db 0CCh
 
 .data?
@@ -80,12 +82,13 @@ hWnd				HWND ?
 hEdt				HWND ?
 hFont				HFONT ?
 hCldDlg				HWND ?
+hDbgThread			HANDLE ?
 pinfo 				PROCESS_INFORMATION <>
 dbghand				HANDLE ?
 dbgdump				dd ?
 nStreams			DWORD ?
 nCurrentStream		DWORD ?
 stream				STREAM 32 dup(<>)
-fDbgContinue		DWORD ?
+threadcontext		HANDLE ?
 
 ;#########################################################################
