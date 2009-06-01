@@ -2,3 +2,4 @@ LIBRARY RADebug
 EXPORTS
 	DllProc
 	InstallDll
+	GetOptions

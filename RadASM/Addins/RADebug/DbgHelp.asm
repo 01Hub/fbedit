@@ -54,8 +54,10 @@ dbgline			DEBUGLINE 65536 dup(<>)
 EnumerateSymbolsCallback proc uses esi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
-	invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
-	invoke PutString,addr buffer
+	.if fOptions & 1
+		invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
+		invoke PutString,addr buffer
+	.endif
 	mov		eax,TRUE
 	ret
 
@@ -65,8 +67,10 @@ EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,pSourceFile
-	invoke wsprintf,addr buffer,addr szSourceFile,[ebx].SOURCEFILE.FileName
-	invoke PutString,addr buffer
+	.if fOptions & 1
+		invoke wsprintf,addr buffer,addr szSourceFile,[ebx].SOURCEFILE.FileName
+		invoke PutString,addr buffer
+	.endif
 	mov		eax,inxsource
 	mov		edx,sizeof DEBUGSOURCE
 	mul		edx
@@ -84,8 +88,10 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,pLineInfo
-	invoke wsprintf,addr buffer,addr szSourceLine,addr [ebx].SRCCODEINFO.FileName,[ebx].SRCCODEINFO.Address,[ebx].SRCCODEINFO.LineNumber
-	invoke PutString,addr buffer
+	.if fOptions & 1
+		invoke wsprintf,addr buffer,addr szSourceLine,addr [ebx].SRCCODEINFO.FileName,[ebx].SRCCODEINFO.Address,[ebx].SRCCODEINFO.LineNumber
+		invoke PutString,addr buffer
+	.endif
 	; Find source file
 	xor		ecx,ecx
 	.while ecx<inxsource
@@ -135,7 +141,9 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 			mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
 			invoke SymGetModuleInfo,hProcess,dwModuleBase,addr im
 			.if im.SymType1!=SymNone
-				invoke PutString,addr szSymOk
+				.if fOptions & 1
+					invoke PutString,addr szSymOk
+				.endif
 				invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumerateSymbolsCallback,0
 				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 				invoke SymEnumSourceFiles,hProcess,dwModuleBase,0,0,offset EnumSourceFilesCallback,0
@@ -143,7 +151,9 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
 				.if eax
 					mov		ebx,eax
-					invoke PutString,addr szSymEnumSourceLines
+					.if fOptions & 1
+						invoke PutString,addr szSymEnumSourceLines
+					.endif
 					push	0
 					push	offset EnumLinesCallback
 					push	0

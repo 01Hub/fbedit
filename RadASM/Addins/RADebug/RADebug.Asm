@@ -12,6 +12,7 @@ include RADebug.inc
 include Misc.asm
 include DbgHelp.asm
 include Debug.asm
+include BreakPoint.asm
 
 .code
 
@@ -165,6 +166,8 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	invoke LoadLibrary,addr DbgHelpDLL
 	.if eax
 		mov		hDbgHelpDLL,eax
+		mov		eax,fOpt
+		mov		fOptions,eax
 		;Get pointer to handles struct
 		invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
 		mov		lpHandles,eax
@@ -180,7 +183,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke CreateDebugMenu,ebx
 		invoke UpdateAccelerators
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSE
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSE OR RAM_EDITOPEN
 	.endif
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
@@ -188,6 +191,13 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	ret 
 
 InstallDll Endp
+
+GetOptions proc
+
+	mov		eax,offset AddinOpt
+	ret
+
+GetOptions endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 ; This proc handles messages sent from RadASM to our dll
@@ -202,58 +212,71 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		shr eax, 16
 		.if edx==IDAddIn[4]
 			; Toggle &Breakpoint
-			invoke SendMessage,hWin,WM_COMMAND,IDM_EDIT_TOGGLEBP,0
-			.if hDbgThread
+			invoke ToggleBreakpoint
+			invoke SaveBreakPoints
+			.if dbg.hDbgThread
+				invoke LoadAllBreakPoints
 				invoke MapBreakPoints
 			.endif
 		.elseif edx==IDAddIn[8]
 			;&Clear Breakpoints
-			invoke SendMessage,hWin,WM_COMMAND,IDM_EDIT_CLEARBP,0
-			.if hDbgThread
+			invoke ClearBreakpoints
+			.if dbg.hDbgThread
 				invoke MapBreakPoints
 			.endif
 		.elseif edx==IDAddIn[12]
 			;&Run
-			.if hDbgThread
+			.if dbg.hDbgThread
 				invoke ClearBreakPointsAll
 				invoke SetBreakPoints
-				invoke ResumeThread,threadcontext
+				invoke ResumeThread,dbg.threadcontext
 			.else
 				mov		eax,lpData
 				.if [eax].ADDINDATA.fProject
+					invoke LoadAllBreakPoints
 					invoke PutString,addr szDebug
 					mov		edx,lpData
-					invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesKey,addr szNULL,addr szSourceName,sizeof szSourceName,[edx].ADDINDATA.lpProject
+					invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesObjKey,addr szNULL,addr szObjName,sizeof szObjName,[edx].ADDINDATA.lpProject
 					mov		edx,lpData
 					invoke lstrcpy,addr szFileName,[edx].ADDINDATA.lpProjectPath
-					invoke lstrcat,addr szFileName,addr szSourceName
-					invoke PutString,addr szFileName
-					invoke CreateThread,NULL,0,addr Debug,addr szFileName,NULL,addr tid
-					mov		hDbgThread,eax
+					invoke lstrcat,addr szFileName,addr szObjName
+					invoke lstrcpy,addr szObjName,addr szFileName
+					mov		edx,lpData
+					invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesExeKey,addr szNULL,addr szExeName,sizeof szExeName,[edx].ADDINDATA.lpProject
+					mov		edx,lpData
+					invoke lstrcpy,addr szFileName,[edx].ADDINDATA.lpProjectPath
+					invoke lstrcat,addr szFileName,addr szExeName
+					invoke lstrcpy,addr szExeName,addr szFileName
+					invoke PutString,addr szExeName
+					invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
+					mov		dbg.hDbgThread,eax
 				.endif
 			.endif
 		.elseif edx==IDAddIn[16]
 			;&Stop
-			.if hDbgThread
-				invoke TerminateProcess,pinfo.hProcess,0
+			.if dbg.hDbgThread
+				invoke TerminateProcess,dbg.pinfo.hProcess,0
 			.endif
 		.elseif edx==IDAddIn[20]
 			;Step &Into
-			.if hDbgThread
+			.if dbg.hDbgThread
 				invoke SetBreakPointsAll
-				invoke ResumeThread,threadcontext
+				invoke ResumeThread,dbg.threadcontext
 			.endif
 		.elseif edx==IDAddIn[24]
 			;Step &Over
-			.if hDbgThread
+			.if dbg.hDbgThread
 			.endif
 		.elseif edx==IDAddIn[28]
 			;Run &To Caret
-			.if hDbgThread
+			.if dbg.hDbgThread
 			.endif
 		.elseif edx==IDAddIn[32]
 			;Do not Debug
 		.endif
+	.elseif eax==AIM_EDITOPEN
+		invoke LoadBreakPoints
+		;
 	.elseif eax==AIM_CLOSE
 		invoke FreeLibrary,hDbgHelpDLL
 		;

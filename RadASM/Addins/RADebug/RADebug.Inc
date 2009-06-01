@@ -51,9 +51,8 @@ tagACCEL struct
 tagACCEL ends
 
 BREAKPOINT struct
-	BpID			DWORD ?		; Handle or project file id
+	ProjectFileID	DWORD ?		; Project file id
 	LineNumber		DWORD ?		; Line number, zero based
-	Reserved		DWORD ?
 BREAKPOINT ends
 
 .const
@@ -88,10 +87,15 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
 								db 'Step &Into',VK_TAB,'F7',0
 								db 'Step &Over',VK_TAB,'Ctrl+F7',0
 								db 'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0
-								db 'Do not Debug',0
+;								db 'Do not Debug',0
 								db 0
 szMakeFiles						db 'MakeFiles',0
-szMakeFilesKey					db '5',0
+szMakeFilesExeKey				db '5',0
+szMakeFilesObjKey				db '3',0
+
+szShowDbgHelp					db 'Show DbgHelp output',0
+AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
+								ADDINOPT <0,0,0>
 
 .data
 
@@ -99,13 +103,16 @@ szMakeFilesKey					db '5',0
 
 hInstance						HINSTANCE ?		; Dll's module handle
 hDbgHelpDLL						HMODULE ?		; Handle of DbgHelp.dll
+fOptions						dd ?
 lpHandles						dd ?			; Pointer to handles struct
 lpProc							dd ?			; Pointer to proc struct
 lpData							dd ?			; Pointer to data struct
 hMnu							HMENU ?			; Debug popup
 IDAddIn							dd 32 dup(?)	; Unique ID's for this AddIn
 hOut							HWND ?			; Handle of output window
+szTempName						db MAX_PATH dup(?)
+szExeName						db MAX_PATH dup(?)
+szObjName						db MAX_PATH dup(?)
 szSourceName					db MAX_PATH dup(?)
-prevline						dd ?
-prevhwnd						dd ?
 szFileName						db MAX_PATH dup(?)
+breakpoint						BREAKPOINT 512 dup(<>)

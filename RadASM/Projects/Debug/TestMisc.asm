@@ -8,7 +8,7 @@ MyProc1 proc
 
 MyProc1 endp
 
-MyProc2 proc
+MyProc2 proc uses esi
 
 	mov		eax,'abcd'
 	invoke MyProc4
