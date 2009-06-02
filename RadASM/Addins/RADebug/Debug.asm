@@ -2,17 +2,23 @@
 EnableMenu			PROTO
 LockFiles			PROTO	:DWORD
 
+THREAD struct
+	htread			HANDLE ?
+	lpline			DWORD ?
+	threadid		DWORD ?
+	htreadcaller	HANDLE ?
+THREAD ends
+
 DEBUG struct
 	hDbgThread		HANDLE ?					; Thread that runs the debugger
-	pinfo			PROCESS_INFORMATION <>
+	pinfo			PROCESS_INFORMATION <>		; Process information
 	dbghand			HANDLE ?					; Handle to read / write process memory
 	dbgfile			HANDLE ?					; File handle
-	threadcontext	HANDLE ?					; Current thread
 	lpline			DWORD ?						; Pointer to current line
-	prevline		DWORD ?
-	prevhwnd		DWORD ?
-	inxthread		DWORD ?
-	thread			DWORD 32 dup(?)
+	prevline		DWORD ?						; Previous hilited line
+	prevhwnd		DWORD ?						; Previous hilited line window handle
+	lpthread		DWORD ?						; Pointer to current thread
+	thread			THREAD 32 dup(<>)
 DEBUG ends
 
 .const
@@ -92,7 +98,7 @@ SetBreakPointsAll proc uses ebx edi
 	mov		edi,offset dbgline
 	xor		ebx,ebx
 	.while ebx<inxline
-		.if [edi].DEBUGLINE.SourceByte==-1 && edi!=dbg.lpline
+		.if [edi].DEBUGLINE.SourceByte==-1
 			mov		[edi].DEBUGLINE.SourceByte,0
 			invoke ReadProcessMemory,dbg.dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
 			invoke WriteProcessMemory,dbg.dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
@@ -111,7 +117,7 @@ SetBreakPoints proc uses ebx edi
 	mov		edi,offset dbgline
 	xor		ebx,ebx
 	.while ebx<inxline
-		.if [edi].DEBUGLINE.SourceByte==-1 && [edi].DEBUGLINE.BreakPoint==TRUE && edi!=dbg.lpline
+		.if [edi].DEBUGLINE.SourceByte==-1 && [edi].DEBUGLINE.BreakPoint==TRUE
 			mov		[edi].DEBUGLINE.SourceByte,0
 			invoke ReadProcessMemory,dbg.dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
 			invoke WriteProcessMemory,dbg.dbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
@@ -141,24 +147,13 @@ ClearBreakPointsAll proc uses ebx edi
 
 ClearBreakPointsAll endp
 
-RestoreSourceByte proc uses ebx edi,Address:DWORD
+RestoreSourceByte proc uses ebx edi,lpLine:DWORD
 
-	mov		edi,offset dbgline
-	mov		eax,Address
-	xor		ebx,ebx
-	.while ebx<inxline
-		.if eax==[edi].DEBUGLINE.Address
-			;movzx		eax,[edi].DEBUGLINE.SourceByte
-			;invoke PrintSourceByte,[edi].DEBUGLINE.Address,eax
-			.if [edi].DEBUGLINE.SourceByte!=-1
-				invoke WriteProcessMemory,dbg.dbghand,Address,addr [edi].DEBUGLINE.SourceByte,1,0
-				mov		[edi].DEBUGLINE.SourceByte,-1
-			.endif
-			.break
-		.endif
-		add		edi,sizeof DEBUGLINE
-		inc		ebx
-	.endw
+	mov		edi,lpLine
+	.if [edi].DEBUGLINE.SourceByte!=-1
+		invoke WriteProcessMemory,dbg.dbghand,[edi].DEBUGLINE.Address,addr [edi].DEBUGLINE.SourceByte,1,0
+		mov		[edi].DEBUGLINE.SourceByte,-1
+	.endif
 	ret
 
 RestoreSourceByte endp
@@ -217,7 +212,7 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 
 SelectLine endp
 
-Debug proc lpFileName:DWORD
+Debug proc uses ebx,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
 	LOCAL	fContinue:DWORD
@@ -225,11 +220,7 @@ Debug proc lpFileName:DWORD
 	LOCAL	Old:BYTE
 	LOCAL	context:CONTEXT
 
-	mov		dbg.prevline,-1
-	mov		dbg.lpline,0
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
-	invoke RtlZeroMemory,addr dbg.thread,sizeof dbg.thread
-	mov		dbg.inxthread,0
 	mov		sinfo.cb,SizeOf STARTUPINFO
 	mov		sinfo.dwFlags,STARTF_USESHOWWINDOW
 	mov		sinfo.wShowWindow,SW_NORMAL
@@ -269,11 +260,17 @@ Debug proc lpFileName:DWORD
 ;				add		dbgdump,256
 ;			.endif
 ;		.endw
+		mov		dbg.prevline,-1
+		mov		dbg.lpline,0
 		invoke MapBreakPoints
 		invoke SetBreakPoints
+		lea		edx,dbg.thread
+		mov		dbg.lpthread,edx
 		mov		eax,dbg.pinfo.hThread
-		mov		dbg.threadcontext,eax
-		mov		dbg.thread[0],eax
+		mov		dbg.thread.htread,eax
+		mov		eax,dbg.pinfo.dwThreadId
+		mov		dbg.thread.threadid,eax
+		mov		dbg.thread.htreadcaller,0
 		.while TRUE
 			invoke WaitForDebugEvent,addr de,INFINITE
 			mov		fContinue,DBG_CONTINUE
@@ -283,19 +280,29 @@ Debug proc lpFileName:DWORD
 				mov		eax,de.u.Exception.pExceptionRecord.ExceptionCode
 				.if eax==EXCEPTION_BREAKPOINT
 					.if de.u.Exception.pExceptionRecord.ExceptionAddress<800000h
-						;invoke PutString,addr szEXCEPTION_BREAKPOINT
-;						PrintHex de.u.Exception.pExceptionRecord.ExceptionAddress
-						invoke RestoreSourceByte,de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		context.ContextFlags,CONTEXT_CONTROL
-						invoke GetThreadContext,dbg.threadcontext,addr context
-						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		context.regEip,eax
-						invoke SetThreadContext,dbg.threadcontext,addr context
-						invoke SuspendThread,dbg.threadcontext
 						invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
 						.if eax
 							invoke SelectLine,eax
 						.endif
+						lea		ebx,dbg.thread
+						mov		eax,de.dwThreadId
+						.while [ebx].THREAD.htread
+							.if eax==[ebx].THREAD.threadid
+								.break
+							.endif
+							add		ebx,sizeof THREAD
+						.endw
+						mov		dbg.lpthread,ebx
+						mov		eax,dbg.lpline
+						mov		[ebx].THREAD.lpline,eax
+						;invoke PutString,addr szEXCEPTION_BREAKPOINT
+;						PrintHex de.u.Exception.pExceptionRecord.ExceptionAddress
+						mov		context.ContextFlags,CONTEXT_CONTROL
+						invoke GetThreadContext,[ebx].THREAD.htread,addr context
+						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+						mov		context.regEip,eax
+						invoke SetThreadContext,[ebx].THREAD.htread,addr context
+						invoke SuspendThread,[ebx].THREAD.htread
 					.else
 						invoke PutString,addr szEXCEPTION_BREAKPOINT
 						mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
@@ -324,8 +331,23 @@ Debug proc lpFileName:DWORD
 				mov		dbg.dbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+				invoke SuspendThread,de.u.CreateThread.hThread
+				mov		edx,dbg.lpthread
+				mov		eax,[edx].THREAD.htread
+				add		edx,sizeof THREAD
+				mov		[edx].THREAD.htreadcaller,eax
+				mov		eax,de.u.CreateThread.hThread
+				mov		[edx].THREAD.htread,eax
+				mov		eax,de.dwThreadId
+				mov		[edx].THREAD.threadid,eax
+				mov		dbg.lpthread,edx
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
+				mov		edx,dbg.lpthread
+				mov		[edx].THREAD.htread,0
+				mov		eax,[edx].THREAD.htreadcaller
+				sub		dbg.lpthread,sizeof THREAD
+				invoke ResumeThread,eax
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
 				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE

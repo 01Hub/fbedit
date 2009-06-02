@@ -329,10 +329,13 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			.if dbg.hDbgThread
 				invoke ClearBreakPointsAll
 				invoke SetBreakPoints
-				invoke ResumeThread,dbg.threadcontext
+				invoke RestoreSourceByte,dbg.lpline
+				mov		eax,dbg.lpthread
+				invoke ResumeThread,[eax].THREAD.htread
 			.else
 				mov		eax,lpData
 				.if [eax].ADDINDATA.fProject
+					invoke RtlZeroMemory,addr dbg,sizeof dbg
 					invoke LoadAllBreakPoints
 					invoke PutString,addr szDebug
 					mov		edx,lpData
@@ -362,8 +365,21 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[20]
 			;Step &Into
 			.if dbg.hDbgThread
+				mov		edx,dbg.lpthread
+				add		edx,sizeof THREAD
+				.if ![edx].THREAD.htread
+					lea		edx,dbg.thread
+					mov		dbg.lpthread,edx
+				.endif
+				mov		dbg.lpthread,edx
+				mov		eax,[edx].THREAD.lpline
+				mov		dbg.lpline,eax
+				mov		eax,[edx].THREAD.htread
+				push	eax
 				invoke SetBreakPointsAll
-				invoke ResumeThread,dbg.threadcontext
+				invoke RestoreSourceByte,dbg.lpline
+				pop		eax
+				invoke ResumeThread,eax
 			.endif
 		.elseif edx==IDAddIn[24]
 			;Step &Over

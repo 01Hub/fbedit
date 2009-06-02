@@ -1,7 +1,7 @@
 
 .code
 
-MyProc1 proc
+MyProc1 proc uses esi
 
 	mov		eax,'abcd'
 	ret

@@ -19,6 +19,9 @@ tid			dd ?
 MyProc3 proc lParam:DWORD
 
 	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
 	ret
 
 MyProc3 endp
@@ -27,7 +30,7 @@ start:
 
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
 	invoke MyProc1
 	invoke MyProc2
 	invoke MyProc4
