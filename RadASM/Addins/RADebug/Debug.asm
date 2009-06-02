@@ -1,12 +1,18 @@
 
+EnableMenu			PROTO
+LockFiles			PROTO	:DWORD
+
 DEBUG struct
 	hDbgThread		HANDLE ?					; Thread that runs the debugger
 	pinfo			PROCESS_INFORMATION <>
 	dbghand			HANDLE ?					; Handle to read / write process memory
+	dbgfile			HANDLE ?					; File handle
 	threadcontext	HANDLE ?					; Current thread
 	lpline			DWORD ?						; Pointer to current line
 	prevline		DWORD ?
 	prevhwnd		DWORD ?
+	inxthread		DWORD ?
+	thread			DWORD 32 dup(?)
 DEBUG ends
 
 .const
@@ -222,6 +228,8 @@ Debug proc lpFileName:DWORD
 	mov		dbg.prevline,-1
 	mov		dbg.lpline,0
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
+	invoke RtlZeroMemory,addr dbg.thread,sizeof dbg.thread
+	mov		dbg.inxthread,0
 	mov		sinfo.cb,SizeOf STARTUPINFO
 	mov		sinfo.dwFlags,STARTF_USESHOWWINDOW
 	mov		sinfo.wShowWindow,SW_NORMAL
@@ -265,6 +273,7 @@ Debug proc lpFileName:DWORD
 		invoke SetBreakPoints
 		mov		eax,dbg.pinfo.hThread
 		mov		dbg.threadcontext,eax
+		mov		dbg.thread[0],eax
 		.while TRUE
 			invoke WaitForDebugEvent,addr de,INFINITE
 			mov		fContinue,DBG_CONTINUE
@@ -311,6 +320,8 @@ Debug proc lpFileName:DWORD
 				.endif
 			.elseif eax==CREATE_PROCESS_DEBUG_EVENT
 				invoke PutString,addr szCREATE_PROCESS_DEBUG_EVENT
+				mov		eax,de.u.CreateProcessInfo.hFile
+				mov		dbg.dbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
@@ -342,15 +353,19 @@ Debug proc lpFileName:DWORD
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
+		invoke CloseHandle,dbg.dbgfile
+		invoke CloseHandle,dbg.dbghand
+		invoke CloseHandle,dbg.pinfo.hThread
+		invoke CloseHandle,dbg.pinfo.hProcess
 	.endif
-	invoke CloseHandle,dbg.dbghand
-	invoke CloseHandle,dbg.pinfo.hThread
-	invoke CloseHandle,dbg.pinfo.hProcess
 	invoke CloseHandle,dbg.hDbgThread
 	mov		dbg.hDbgThread,0
 	.if dbg.prevline!=-1
 		invoke SendMessage,dbg.prevhwnd,REM_SETHILITELINE,dbg.prevline,0
 	.endif
+	invoke EnableMenu
+	invoke LockFiles,FALSE
+	invoke PutString,addr szDebugStopped
 	ret
 
 Debug endp

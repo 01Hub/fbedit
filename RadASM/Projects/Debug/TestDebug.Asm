@@ -12,10 +12,11 @@ include TestMisc.asm
 .data
 
 szTest		db 'Test',0
+tid			dd ?
 
 .code
 
-MyProc3 proc uses esi
+MyProc3 proc lParam:DWORD
 
 	mov		eax,'abcd'
 	ret
@@ -26,7 +27,7 @@ start:
 
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
-	invoke MyProc3
+;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
 	invoke MyProc1
 	invoke MyProc2
 	invoke MyProc4

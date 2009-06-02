@@ -9,6 +9,75 @@ szCommaBP			db ',%u',0
 
 .code
 
+GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD
+
+	push	ProjectFileID
+	mov		eax,lpProc
+	call	[eax].ADDINPROCS.lpGetFileNameFromID
+	.if eax
+		mov		edi,eax
+		mov		ebx,offset dbgsource
+		xor		ecx,ecx
+		.while ecx<inxsource
+			push	ecx
+			invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+			.if !eax
+				pop		eax
+				ret
+			.endif
+			pop		ecx
+			inc		ecx
+			add		ebx,sizeof DEBUGSOURCE
+		.endw
+	.endif
+	xor		eax,eax
+	ret
+
+GetFileIDFromProjectFileID endp
+
+LockFiles proc fLock:DWORD
+	LOCAL	hTab:HWND
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TCITEM
+	LOCAL	hREd:HWND
+
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hTab
+	mov		hTab,eax
+	mov		tci.imask,TCIF_PARAM
+	mov		nInx,0
+	.while TRUE
+		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		.break .if !eax
+		invoke GetWindowLong,tci.lParam,0
+		.if eax==ID_EDIT
+			invoke GetWindowLong,tci.lParam,GWL_USERDATA
+			mov		hREd,eax
+			invoke SendMessage,hREd,REM_READONLY,0,fLock
+		.endif
+		inc		nInx
+	.endw
+	ret
+
+LockFiles endp
+
+AnyBreakPoints proc uses esi
+
+	mov		esi,offset breakpoint
+	mov		ecx,512
+	xor		eax,eax
+	.while ecx
+		.if [esi].BREAKPOINT.ProjectFileID
+			inc		eax
+			ret
+		.endif
+		inc		ecx
+		add		esi,sizeof BREAKPOINT
+	.endw
+	ret
+
+AnyBreakPoints endp
+
 ClearBreakpoints proc
 	LOCAL	hTab:HWND
 	LOCAL	nInx:DWORD
@@ -77,8 +146,7 @@ SaveBreakPoints proc uses ebx
 	LOCAL	szbp[8]:BYTE
 
 	mov		eax,lpHandles
-	mov		eax,[eax].ADDINHANDLES.hMdiCld
-	invoke GetWindowLong,eax,0
+	invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,0
 	.if eax==ID_EDIT
 		mov		eax,lpHandles
 		mov		eax,[eax].ADDINHANDLES.hEdit
@@ -104,44 +172,6 @@ SaveBreakPoints proc uses ebx
 	ret
 
 SaveBreakPoints endp
-
-DecToBin proc lpStr:DWORD
-	LOCAL	fNeg:DWORD
-
-    push    ebx
-    push    esi
-    mov     esi,lpStr
-    mov		fNeg,FALSE
-    mov		al,[esi]
-    .if al=='-'
-		inc		esi
-		mov		fNeg,TRUE
-    .endif
-    xor     eax,eax
-  @@:
-    cmp     byte ptr [esi],30h
-    jb      @f
-    cmp     byte ptr [esi],3Ah
-    jnb     @f
-    mov     ebx,eax
-    shl     eax,2
-    add     eax,ebx
-    shl     eax,1
-    xor     ebx,ebx
-    mov     bl,[esi]
-    sub     bl,30h
-    add     eax,ebx
-    inc     esi
-    jmp     @b
-  @@:
-	.if fNeg
-		neg		eax
-	.endif
-    pop     esi
-    pop     ebx
-    ret
-
-DecToBin endp
 
 LoadBreakPoints proc uses esi
 	LOCAL	hREd:HWND

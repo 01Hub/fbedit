@@ -159,6 +159,106 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 
 CreateDebugMenu endp
 
+EnableMenu proc uses esi edi
+	LOCAL	hREd:HWND
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nLine:DWORD
+	LOCAL	nInx:DWORD
+
+	mov		esi,offset IDAddIn+4
+	mov		eax,lpData
+	.if [eax].ADDINDATA.fProject
+		; Toggle &Breakpoint
+		invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
+		; Run &To Caret
+		invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+		mov		eax,lpHandles
+		.if [eax].ADDINHANDLES.hEdit
+			mov		edx,[eax].ADDINHANDLES.hEdit
+			mov		hREd,edx
+			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,0
+			.if eax==ID_EDIT
+				.if dbg.hDbgThread
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					mov		nLine,eax
+					mov		eax,lpHandles
+					invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
+					invoke GetFileIDFromProjectFileID,eax
+					.if eax
+						mov		edx,nLine
+						inc		edx
+						xor		ecx,ecx
+						mov		edi,offset dbgline
+						.while ecx<inxline
+							.if edx==[edi].DEBUGLINE.LineNumber
+								.if eax==[edi].DEBUGLINE.FileID
+									.break
+								.endif
+							.endif
+							inc		ecx
+							add		edi,sizeof DEBUGLINE
+						.endw
+						.if ecx!=inxline
+							; Toggle &Breakpoint
+							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+							; Run &To Caret
+							invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
+						.endif
+					.endif
+				.else
+					; Toggle &Breakpoint
+					invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+				.endif
+			.endif
+		.endif
+		; &Clear Breakpoints
+		invoke AnyBreakPoints
+		.if eax
+			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
+		.else
+			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
+		.endif
+		; &Run
+		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
+		; Do not Debug
+		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
+		.if dbg.hDbgThread
+			; &Stop
+			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
+			; Step &Into
+			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
+			; Step &Over
+			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_ENABLED
+		.else
+			; &Stop
+			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
+			; Step &Into
+			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_GRAYED
+			; Step &Over
+			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED
+			; Run &To Caret
+			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+		.endif
+	.else
+		; No project loaded, disable all
+		.while dword ptr [esi]
+			invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
+			add		esi,4
+		.endw
+	.endif
+	ret
+
+EnableMenu endp
+
+EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+
+	mov		eax,uMsg
+	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
+	ret
+
+EditProc endp
+
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 
@@ -183,7 +283,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke CreateDebugMenu,ebx
 		invoke UpdateAccelerators
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSE OR RAM_EDITOPEN
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE
 	.endif
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
@@ -250,6 +350,8 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke PutString,addr szExeName
 					invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 					mov		dbg.hDbgThread,eax
+					invoke EnableMenu
+					invoke LockFiles,TRUE
 				.endif
 			.endif
 		.elseif edx==IDAddIn[16]
@@ -275,17 +377,32 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			;Do not Debug
 		.endif
 	.elseif eax==AIM_EDITOPEN
+		invoke EnableMenu
 		invoke LoadBreakPoints
+		.if lParam==ID_EDIT
+			invoke SetWindowLong,wParam,GWL_WNDPROC,offset EditProc
+			mov		lpOldEditProc,eax
+		.endif
+		.if dbg.hDbgThread
+			invoke LockFiles,TRUE
+		.endif
+		;
+	.elseif eax==AIM_EDITSELCHANGE
+		.if dbg.hDbgThread
+			invoke EnableMenu
+		.endif
 		;
 	.elseif eax==AIM_CLOSE
 		invoke FreeLibrary,hDbgHelpDLL
 		;
 	.elseif eax==AIM_MENUREBUILD
 		;
-	.elseif eax==AIM_PROJECTCLOSE
+	.elseif eax==AIM_PROJECTCLOSED
+		invoke EnableMenu
 		;
 	.elseif eax==AIM_PROJECTOPENED
 		invoke UpdateAccelerators
+		invoke EnableMenu
 		;
 	.endif
 	mov eax,FALSE

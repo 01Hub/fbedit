@@ -70,6 +70,7 @@ szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT',0
 szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
 szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
+szDebugStopped					db 'Debuging ended',0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSourceByte					db 'Adress: %X Byte: %X File: %u',0
@@ -87,7 +88,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
 								db 'Step &Into',VK_TAB,'F7',0
 								db 'Step &Over',VK_TAB,'Ctrl+F7',0
 								db 'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0
-;								db 'Do not Debug',0
+								db 'Do not Debug',0
 								db 0
 szMakeFiles						db 'MakeFiles',0
 szMakeFilesExeKey				db '5',0
@@ -116,3 +117,4 @@ szObjName						db MAX_PATH dup(?)
 szSourceName					db MAX_PATH dup(?)
 szFileName						db MAX_PATH dup(?)
 breakpoint						BREAKPOINT 512 dup(<>)
+lpOldEditProc					dd ?
