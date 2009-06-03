@@ -1,11 +1,11 @@
 
-ID_EDIT					equ	65501
+ID_EDIT							equ	65501
 
 .const
 
-szRADebugBP			db 'RADebugBP',0
-szBPNULL			db 0,0
-szCommaBP			db ',%u',0
+szRADebugBP						db 'RADebugBP',0
+szBPNULL						db 0,0
+szCommaBP						db ',%u',0
 
 .code
 
@@ -34,6 +34,96 @@ GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD
 	ret
 
 GetFileIDFromProjectFileID endp
+
+UnsavedFiles proc
+	LOCAL	hTab:HWND
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TCITEM
+	LOCAL	hREd:HWND
+	LOCAL	Unsaved:DWORD
+
+	mov		Unsaved,0
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hTab
+	mov		hTab,eax
+	mov		tci.imask,TCIF_PARAM
+	mov		nInx,0
+	.while TRUE
+		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		.break .if !eax
+		invoke GetWindowLong,tci.lParam,0
+		.if eax==ID_EDIT
+			invoke GetWindowLong,tci.lParam,GWL_USERDATA
+			mov		hREd,eax
+			invoke SendMessage,hREd,EM_GETMODIFY,0,0
+			.if eax
+				inc		Unsaved
+			.endif
+		.endif
+		inc		nInx
+	.endw
+	mov		eax,Unsaved
+	ret
+
+UnsavedFiles endp
+
+NewerFiles proc
+	LOCAL	hTab:HWND
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TCITEM
+	LOCAL	hREd:HWND
+	LOCAL	hFile:HANDLE
+	LOCAL	ftexe:FILETIME
+	LOCAL	ftsource:FILETIME
+	LOCAL	Newer:DWORD
+
+	mov		Newer,0
+	invoke CreateFile,addr szExeName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileTime,hFile,NULL,NULL,addr ftexe
+		invoke CloseHandle,hFile
+		mov		eax,lpHandles
+		mov		eax,[eax].ADDINHANDLES.hTab
+		mov		hTab,eax
+		mov		tci.imask,TCIF_PARAM
+		mov		nInx,0
+		.while TRUE
+			invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+			.break .if !eax
+			invoke GetWindowLong,tci.lParam,0
+			.if eax==ID_EDIT
+				mov		eax,lpData
+				invoke lstrcpy,addr szTempName,[eax].ADDINDATA.lpProjectPath
+				invoke GetWindowLong,tci.lParam,16
+				push	eax
+				mov		eax,lpProc
+				call	[eax].ADDINPROCS.lpGetFileNameFromID
+				invoke lstrcat,addr szTempName,eax
+				invoke CreateFile,addr szTempName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+				.if eax!=INVALID_HANDLE_VALUE
+					mov		hFile,eax
+					invoke GetFileTime,hFile,NULL,NULL,addr ftsource
+					invoke CloseHandle,hFile
+					mov		eax,ftexe.dwLowDateTime
+					sub		eax,ftsource.dwLowDateTime
+					mov		eax,ftexe.dwHighDateTime
+					sbb		eax,ftsource.dwHighDateTime
+					.if CARRY?
+						inc		Newer
+					.endif
+				.endif
+			.endif
+			inc		nInx
+		.endw
+	.else
+		; File not found
+		mov		Newer,-1
+	.endif
+	mov		eax,Newer
+	ret
+
+NewerFiles endp
 
 LockFiles proc fLock:DWORD
 	LOCAL	hTab:HWND

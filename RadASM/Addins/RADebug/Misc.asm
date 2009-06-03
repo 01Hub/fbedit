@@ -41,7 +41,6 @@ DecToBin endp
 
 PutString proc lpString:DWORD
 
-;	invoke SetFocus,hOut
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,lpString
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCRLF
 	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
@@ -119,7 +118,9 @@ DumpLine proc uses ebx esi edi,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 		inc		ecx
 	.endw
 	mov		dword ptr [edi],0A0Dh
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
+lea		eax,buffer
+PrintStringByAddr eax
+;	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
 	ret
 
 DumpLine endp

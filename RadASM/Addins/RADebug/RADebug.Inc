@@ -7,6 +7,7 @@ include kernel32.inc
 include user32.inc
 include gdi32.inc
 include comctl32.inc
+include version.inc
 include dbghelp.inc
 include RAEdit.inc
 
@@ -18,7 +19,7 @@ includelib user32.lib
 includelib gdi32.lib
 includelib comctl32.lib
 includelib dbghelp.lib
-
+includelib version.lib
 
 ;#########################################################################
 ; RadASM Add In Include
@@ -44,15 +45,15 @@ IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
 
 tagACCEL struct
-	fVirt			db ?
-	dummy			db ?
-	key				dw ?
-	cmd				dw ?
+	fVirt					db ?
+	dummy					db ?
+	key						dw ?
+	cmd						dw ?
 tagACCEL ends
 
 BREAKPOINT struct
-	ProjectFileID	DWORD ?		; Project file id
-	LineNumber		DWORD ?		; Line number, zero based
+	ProjectFileID			DWORD ?		; Project file id
+	LineNumber				DWORD ?		; Line number, zero based
 BREAKPOINT ends
 
 .const
@@ -73,10 +74,13 @@ szRIP_EVENT						db 'RIP_EVENT',0
 szDebugStopped					db 'Debuging ended',0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
-szSourceByte					db 'Adress: %X Byte: %X File: %u',0
+szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
-
-;szFileName						db 'C:\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.exe',0
+szDebuggingStarted				db 'Debugging started',0
+szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
+szUnsavedFiles					db 'There are %u unsaved file(s).',0
+szNewerFiles					db '%u source files are newer than the exe.',0
+szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s'
 
 DebugMenu						db '&Debug',0
 MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
@@ -97,8 +101,6 @@ szMakeFilesObjKey				db '3',0
 szShowDbgHelp					db 'Show DbgHelp output',0
 AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
 								ADDINOPT <0,0,0>
-
-.data
 
 .data?
 

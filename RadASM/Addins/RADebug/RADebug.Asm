@@ -266,6 +266,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	invoke LoadLibrary,addr DbgHelpDLL
 	.if eax
 		mov		hDbgHelpDLL,eax
+invoke GetDbgHelpVersion
 		mov		eax,fOpt
 		mov		fOptions,eax
 		;Get pointer to handles struct
@@ -283,7 +284,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke CreateDebugMenu,ebx
 		invoke UpdateAccelerators
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
 	.endif
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
@@ -302,14 +303,15 @@ GetOptions endp
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 ; This proc handles messages sent from RadASM to our dll
 ; Return TRUE to prevent RadASM and other DLL's from
-DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	tid:DWORD
+	LOCAL	buffer[512]:BYTE
 
-	mov	eax, uMsg
-	.if eax == AIM_COMMAND
-		mov eax,wParam
-		movzx edx,ax
-		shr eax, 16
+	mov		eax,uMsg
+	.if eax==AIM_COMMAND
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax,16
 		.if edx==IDAddIn[4]
 			; Toggle &Breakpoint
 			invoke ToggleBreakpoint
@@ -327,34 +329,53 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[12]
 			;&Run
 			.if dbg.hDbgThread
+				mov		ebx,dbg.lpthread
 				invoke ClearBreakPointsAll
 				invoke SetBreakPoints
-				invoke RestoreSourceByte,dbg.lpline
-				mov		eax,dbg.lpthread
-				invoke ResumeThread,[eax].THREAD.htread
+				invoke RestoreSourceByte,[ebx].THREAD.lpline
+				invoke ResumeThread,[ebx].THREAD.htread
 			.else
-				mov		eax,lpData
-				.if [eax].ADDINDATA.fProject
-					invoke RtlZeroMemory,addr dbg,sizeof dbg
-					invoke LoadAllBreakPoints
-					invoke PutString,addr szDebug
-					mov		edx,lpData
-					invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesObjKey,addr szNULL,addr szObjName,sizeof szObjName,[edx].ADDINDATA.lpProject
-					mov		edx,lpData
-					invoke lstrcpy,addr szFileName,[edx].ADDINDATA.lpProjectPath
-					invoke lstrcat,addr szFileName,addr szObjName
-					invoke lstrcpy,addr szObjName,addr szFileName
-					mov		edx,lpData
-					invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesExeKey,addr szNULL,addr szExeName,sizeof szExeName,[edx].ADDINDATA.lpProject
-					mov		edx,lpData
-					invoke lstrcpy,addr szFileName,[edx].ADDINDATA.lpProjectPath
-					invoke lstrcat,addr szFileName,addr szExeName
-					invoke lstrcpy,addr szExeName,addr szFileName
-					invoke PutString,addr szExeName
-					invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
-					mov		dbg.hDbgThread,eax
-					invoke EnableMenu
-					invoke LockFiles,TRUE
+				mov		ebx,lpData
+				.if [ebx].ADDINDATA.fProject
+					invoke UnsavedFiles
+					.if eax
+						invoke wsprintf,addr buffer,addr szUnsavedFiles,eax
+						mov		edx,lpHandles
+						invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
+					.else
+						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesObjKey,addr szNULL,addr szObjName,sizeof szObjName,[ebx].ADDINDATA.lpProject
+						invoke lstrcpy,addr szFileName,[ebx].ADDINDATA.lpProjectPath
+						invoke lstrcat,addr szFileName,addr szObjName
+						invoke lstrcpy,addr szObjName,addr szFileName
+						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesExeKey,addr szNULL,addr szExeName,sizeof szExeName,[ebx].ADDINDATA.lpProject
+						invoke lstrcpy,addr szFileName,[ebx].ADDINDATA.lpProjectPath
+						invoke lstrcat,addr szFileName,addr szExeName
+						invoke lstrcpy,addr szExeName,addr szFileName
+						invoke NewerFiles
+						.if sdword ptr eax>0
+							invoke wsprintf,addr buffer,addr szNewerFiles,eax
+							mov		edx,lpHandles
+							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
+						.elseif sdword ptr eax<0
+							invoke wsprintf,addr buffer,addr szExeNotFound,addr szExeName
+							mov		edx,lpHandles
+							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
+						.else
+							push	1
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpOutputSelect
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpClearOut
+							invoke RtlZeroMemory,addr dbg,sizeof dbg
+							invoke LoadAllBreakPoints
+							invoke PutString,addr szDebuggingStarted
+							invoke PutString,addr szExeName
+							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
+							mov		dbg.hDbgThread,eax
+							invoke EnableMenu
+							invoke LockFiles,TRUE
+						.endif
+					.endif
 				.endif
 			.endif
 		.elseif edx==IDAddIn[16]
@@ -365,21 +386,15 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[20]
 			;Step &Into
 			.if dbg.hDbgThread
-				mov		edx,dbg.lpthread
-				add		edx,sizeof THREAD
-				.if ![edx].THREAD.htread
-					lea		edx,dbg.thread
-					mov		dbg.lpthread,edx
+				mov		ebx,dbg.lpthread
+				add		ebx,sizeof THREAD
+				.if ![ebx].THREAD.htread
+					lea		ebx,dbg.thread
 				.endif
-				mov		dbg.lpthread,edx
-				mov		eax,[edx].THREAD.lpline
-				mov		dbg.lpline,eax
-				mov		eax,[edx].THREAD.htread
-				push	eax
+				mov		dbg.lpthread,ebx
 				invoke SetBreakPointsAll
-				invoke RestoreSourceByte,dbg.lpline
-				pop		eax
-				invoke ResumeThread,eax
+				invoke RestoreSourceByte,[ebx].THREAD.lpline
+				invoke ResumeThread,[ebx].THREAD.htread
 			.endif
 		.elseif edx==IDAddIn[24]
 			;Step &Over
@@ -408,8 +423,13 @@ DllProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			invoke EnableMenu
 		.endif
 		;
+	.elseif eax==AIM_EDITSAVED
+		invoke SaveBreakPoints
+		;
 	.elseif eax==AIM_CLOSE
-		invoke FreeLibrary,hDbgHelpDLL
+		.if hDbgHelpDLL
+			invoke FreeLibrary,hDbgHelpDLL
+		.endif
 		;
 	.elseif eax==AIM_MENUREBUILD
 		;

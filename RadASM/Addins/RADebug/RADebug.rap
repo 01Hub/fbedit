@@ -5,6 +5,8 @@ Description=RadASM debug addin
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Ver.rc=1
+Debug=0
 [Files]
 1=RADebug.Asm
 2=RADebug.Inc
@@ -17,6 +19,7 @@ GroupExpand=1
 9=Test.bat
 10=RAEdit.Inc
 11=BreakPoint.asm
+12=RADebug.rc
 [MakeFiles]
 0=RADebug.rap
 1=RADebug.rc
@@ -36,7 +39,7 @@ GroupExpand=1
 15=RADebug.tlb
 16=RADebug.sys
 [MakeDef]
-Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
+Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
 3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
@@ -54,6 +57,23 @@ Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 [Resource]
 [StringTable]
 [VerInf]
+Nme=VERINF1
+ID=1
+FV=1.0.0.0
+PV=1.0.0.0
+VerOS=0x00000004
+VerFT=0x00000000
+VerLNG=0x00000409
+VerCHS=0x000004B0
+ProductVersion=1.0.0.0
+ProductName=
+OriginalFilename=RADebug.dll
+LegalTrademarks=
+LegalCopyright=KetilO (C) 2009
+InternalName=RADebug
+FileDescription=RadASM debug addin
+FileVersion=1.0.0.0
+CompanyName=
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
@@ -67,6 +87,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 9=1
 10=2
 11=2
+12=3
 [Collapse]
 5=
 4=
@@ -79,18 +100,20 @@ Group=Added files,Assembly,Resources,Misc,Modules
 9=
 10=
 11=,
+12=
 [Size]
-5=0,0,0,0,2953
+5=0,0,0,0,11343
 4=0,0,0,0,19
-2=0,0,0,0,1963
-1=0,0,0,0,9491
-8=0,0,0,0,7286
-6=0,0,0,0,3745
-7=0,0,0,0,596
+2=0,0,0,0,477
+1=0,0,0,0,6418
+8=0,0,0,0,9438
+6=0,0,0,0,5268
+7=0,0,0,0,1840
 3=0,0,0,0,56
 9=0,0,0,0,57
 10=0,0,0,0,6452
-11=0,0,0,0,1031
+11=0,0,0,0,2135
+12=0,0,0,0,29
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -101,7 +124,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=3
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=28
@@ -154,9 +177,11 @@ ProductVer4Range=0
 2=1
 8=1
 [Find]
-1="RestoreSourceByte"
-2="htreadcaller"
+1="dbg.lpline"
+2="OUTPUT_DEBUG_STRING_INFO"
 3="DEBUGSTRUCT"
 4="DEBUG_EVENT"
-5="EnableMenu"
-6="FCONTROL"
+5="RestoreSourceByte"
+6="htreadcaller"
+7="EnableMenu"
+8="FCONTROL"
