@@ -1,1 +1,2 @@
+#include "Res/DoNotDebugDlg.rc"
 #include "Res/RADebugVer.rc"

@@ -29,17 +29,28 @@ include ..\RadAsm.inc
 ;#########################################################################
 ; VKim's Debug
 
-include \RadASM\masm\inc\debug.inc
-includelib \RadASM\masm\lib\debug.lib
-
-DBGWIN_DEBUG_ON = 1		; include debug info into the program
-DBGWIN_EXT_INFO = 0		; include extra debug info into the program
+;include masm32.inc
+;includelib masm32.lib
+;include \RadASM\masm\inc\debug.inc
+;includelib \RadASM\masm\lib\debug.lib
+;
+;DBGWIN_DEBUG_ON = 1		; include debug info into the program
+;DBGWIN_EXT_INFO = 0		; include extra debug info into the program
 
 ;#########################################################################
 ;		Prototypes
 
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
+
+;DoNotDebug.dlg
+IDD_DLGDONOTDEBUG				equ 1000
+IDC_LSTDONOTDEBUG				equ 1001
+IDC_LSTDEBUG					equ 1002
+IDC_BTNDONOTDEBUG				equ 1003
+IDC_BTNDEBUG					equ 1004
+IDC_BTNDONOTDEBUGALL			equ 1005
+IDC_BTNDEBUGALL					equ 1006
 
 IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
@@ -55,6 +66,12 @@ BREAKPOINT struct
 	ProjectFileID			DWORD ?								; Project file id
 	LineNumber				DWORD ?								; Line number, zero based
 BREAKPOINT ends
+
+PROPERTIES struct
+	nSize			dd ?
+	Owner			dd ?
+	nType			db ?
+PROPERTIES ends
 
 .const
 
@@ -81,7 +98,11 @@ szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
 szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s',0
-szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd and /DEBUG command line options.',0
+szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd, /Zi and /DEBUG command line options.',0
+
+szRADebugBP						db 'RADebugBP',0
+szBPNULL						db 0,0
+szCommaBP						db ',%u',0
 
 DebugMenu						db 'Deb&ug',0
 MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
@@ -98,6 +119,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
 szMakeFiles						db 'MakeFiles',0
 szMakeFilesExeKey				db '5',0
 szMakeFilesObjKey				db '3',0
+szNoDebug						db 'NoDebug',0
 
 szShowDbgHelp					db 'Show DbgHelp output',0
 AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>

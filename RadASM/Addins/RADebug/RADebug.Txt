@@ -12,7 +12,7 @@ o Start RadASM and use Options/Addin Manager to activate addin.
 
 How to make (masm):
 -----------------------------------------------------------------------------
-o Assemble with the /Zd option.
+o Assemble with the /Zd and /Zi options.
 o Link with the /DEBUG option.
 
 How to debug:
@@ -38,11 +38,12 @@ Whats new:
 o Uploaded version 1.0.0.0
   - Step Over is disabled (Needs size of proc).
   - Do Not Debug is disabled (Needs size of proc).
-
+o Uploaded version 1.0.0.1
+  - Step Over is enabled.
+  - Do Not Debug is enabled.
 
 To do:
 -----------------------------------------------------------------------------
-o Find size of procs and enable Step Over and Do Not Debug.
 o Speed optimize. Sort lines using Address to an array of pointers.
   Use successive approximation to find a line.
 o Immediate window to inspect variables, proc parameters and locals.

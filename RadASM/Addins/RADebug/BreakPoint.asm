@@ -1,12 +1,6 @@
 
 ID_EDIT							equ	65501
 
-.const
-
-szRADebugBP						db 'RADebugBP',0
-szBPNULL						db 0,0
-szCommaBP						db ',%u',0
-
 .code
 
 GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD

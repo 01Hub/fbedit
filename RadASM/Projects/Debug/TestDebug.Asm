@@ -25,6 +25,21 @@ mystruct	MYSTRUCT <>
 
 .code
 
+MyProc1 proc uses esi
+
+	mov		eax,'abcd'
+	ret
+
+MyProc1 endp
+
+MyProc2 proc uses esi
+
+	mov		eax,'abcd'
+	invoke MyProc4
+	ret
+
+MyProc2 endp
+
 MyProc3 proc
 
 	mov		eax,'abcd'
@@ -40,12 +55,13 @@ start:
 
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-	invoke CloseHandle,eax
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-	invoke CloseHandle,eax
+;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+;	invoke CloseHandle,eax
+;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+;	invoke CloseHandle,eax
 	invoke MyProc1
 	invoke MyProc2
+	invoke MyProc3
 	invoke MyProc4
 	jmp		Ex
 Ex:

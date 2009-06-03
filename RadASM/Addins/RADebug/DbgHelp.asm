@@ -17,15 +17,16 @@ SRCCODEINFO struct DWORD
 SRCCODEINFO ends
 
 DEBUGSOURCE struct
-	FileID					DWORD ?
+	FileID					WORD ?
 	FileName				BYTE MAX_PATH dup(?)
 DEBUGSOURCE ends
 
 DEBUGLINE struct
-	FileID					DWORD ?
 	LineNumber              DWORD ?
 	Address                 DWORD ?
+	FileID					WORD ?
 	SourceByte				WORD ?
+	NoDebug					WORD ?
 	BreakPoint				WORD ?
 DEBUGLINE ends
 
@@ -33,6 +34,7 @@ DEBUGSYMBOL struct
 	Address                 DWORD ?
 	nSize					DWORD ?
 	szName					db 64 dup(?)
+	NoDebug					WORD ?
 DEBUGSYMBOL ends
 
 .const
@@ -57,9 +59,9 @@ im								IMAGEHLP_MODULE <>
 inxsource						DWORD ?
 dbgsource						DEBUGSOURCE 256 dup(<>)
 inxline							DWORD ?
-dbgline							DEBUGLINE 65536 dup(<>)
+dbgline							DEBUGLINE 8192 dup(<>)
 inxsymbol						DWORD ?
-dbgsymbol						DEBUGSYMBOL 8193 dup(<>)
+dbgsymbol						DEBUGSYMBOL 1024 dup(<>)
 
 .code
 
@@ -69,24 +71,26 @@ GetDbgHelpVersion proc
 	LOCAL	lpsize:DWORD
 
 	invoke GetFileVersionInfo,addr DbgHelpDLL,NULL,sizeof buffer,addr buffer
-	lea ebx,buffer
-	mov		ecx,32
-	invoke VerQueryValue,addr buffer,addr szVersionInfo,addr lpbuff,addr lpsize
-	mov		eax,lpbuff
-	invoke wsprintf,addr buffer,addr szVersion,eax
-	invoke PutString,addr buffer
+	.if eax
+		invoke VerQueryValue,addr buffer,addr szVersionInfo,addr lpbuff,addr lpsize
+		.if eax
+			mov		eax,lpbuff
+			invoke wsprintf,addr buffer,addr szVersion,eax
+			invoke PutString,addr buffer
+		.endif
+	.endif
 	ret
 
 GetDbgHelpVersion endp
 
-EnumerateSymbolsCallback proc SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
+EnumSymbolsCallback proc uses edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
-	.if fOptions & 1
-		invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
-		invoke PutString,addr buffer
-	.endif
 	.if SymbolSize
+		.if fOptions & 1
+			invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
+			invoke PutString,addr buffer
+		.endif
 		mov		eax,inxsymbol
 		mov		edx,sizeof DEBUGSYMBOL
 		mul		edx
@@ -101,7 +105,7 @@ EnumerateSymbolsCallback proc SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DW
 	mov		eax,TRUE
 	ret
 
-EnumerateSymbolsCallback endp
+EnumSymbolsCallback endp
 
 EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -116,7 +120,7 @@ EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	mul		edx
 	lea		edi,[eax+offset dbgsource]
 	mov		eax,inxsource
-	mov		[edi].DEBUGSOURCE.FileID,eax
+	mov		[edi].DEBUGSOURCE.FileID,ax
 	invoke lstrcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
 	inc		inxsource
 	mov		eax,TRUE
@@ -146,8 +150,8 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 			mov		edx,sizeof DEBUGLINE
 			mul		edx
 			lea		edi,[eax+offset dbgline]
-			mov		eax,[esi].DEBUGSOURCE.FileID
-			mov		[edi].DEBUGLINE.FileID,eax
+			mov		ax,[esi].DEBUGSOURCE.FileID
+			mov		[edi].DEBUGLINE.FileID,ax
 			mov		eax,[ebx].SRCCODEINFO.LineNumber
 			mov		[edi].DEBUGLINE.LineNumber,eax
 			mov		eax,[ebx].SRCCODEINFO.Address
@@ -175,6 +179,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 	mov		inxsymbol,0
 	invoke RtlZeroMemory,addr dbgsource,sizeof dbgsource
 	invoke RtlZeroMemory,addr dbgline,sizeof dbgline
+	invoke RtlZeroMemory,addr dbgsymbol,sizeof dbgsymbol
 	invoke SymInitialize,hProcess,0,FALSE
 	.if eax
 		invoke SymLoadModule,hProcess,0,lpFileName,0,0,0
@@ -186,7 +191,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 				.if fOptions & 1
 					invoke PutString,addr szSymOk
 				.endif
-				invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumerateSymbolsCallback,0
+				invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumSymbolsCallback,0
 				;invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 				.if fOptions & 1
 					invoke PutString,addr szSymEnumSourceFiles
@@ -215,15 +220,14 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 ;				push	hProcess
 ;				call SymFunctionTableAccess
 				;invoke SymEnumTypes,hProcess,dwModuleBase,EnumerateSymbolsCallback,0
-
 ;				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
 ;				.if eax
 ;					mov		ebx,eax
 ;					.if fOptions & 1
 ;						invoke PutString,addr szSymEnumTypes
 ;					.endif
-;					push	0
-;					push	offset EnumerateSymbolsCallback
+;					push	1
+;					push	offset EnumSymbolsCallback
 ;					push	0
 ;					push	dwModuleBase
 ;					push	hProcess

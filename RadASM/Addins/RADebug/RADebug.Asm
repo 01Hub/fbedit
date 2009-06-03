@@ -201,7 +201,7 @@ EnableMenu proc uses esi edi
 						mov		edi,offset dbgline
 						.while ecx<inxline
 							.if edx==[edi].DEBUGLINE.LineNumber
-								.if eax==[edi].DEBUGLINE.FileID
+								.if ax==[edi].DEBUGLINE.FileID
 									.break
 								.endif
 							.endif
@@ -231,14 +231,18 @@ EnableMenu proc uses esi edi
 		; &Run
 		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
 		; Do not Debug
-		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_GRAYED;MF_BYCOMMAND or MF_ENABLED
+		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
 		.if dbg.hDbgThread
 			; &Stop
 			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
 			; Step &Into
 			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
 			; Step &Over
-			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED;MF_BYCOMMAND or MF_ENABLED
+			mov		eax,MF_BYCOMMAND or MF_GRAYED
+			.if inxsource
+				mov		eax,MF_BYCOMMAND or MF_ENABLED
+			.endif
+			invoke EnableMenuItem,hMnu,[esi+20],eax
 		.else
 			; &Stop
 			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
@@ -268,6 +272,134 @@ EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 
 EditProc endp
 
+DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[8]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	hMem:HGLOBAL
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536
+		mov		hMem,eax
+		mov		edi,eax
+		mov		nInx,0
+		.while TRUE
+			invoke wsprintf,addr buffer1,addr szCommaBP[1],nInx
+			mov		eax,lpData
+			invoke GetPrivateProfileString,addr szNoDebug,addr buffer1,addr szNULL,addr buffer,sizeof buffer,[eax].ADDINDATA.lpProject
+			.break .if !eax
+			invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_ADDSTRING,0,addr buffer
+			invoke lstrcpy,edi,addr buffer
+			invoke lstrlen,edi
+			lea		edi,[edi+eax+1]
+			inc		nInx
+		.endw
+		mov		edx,lpData
+		;Get pointer to word list
+		mov		esi,[edx].ADDINDATA.lpWordList
+		;Skip the words loaded from .api files
+		add		esi,[edx].ADDINDATA.rpProjectWordList
+		;Loop trough the word list
+		.while [esi].PROPERTIES.nSize
+			;Check if it is a proc
+			.if [esi].PROPERTIES.nType=='p'
+				push	esi
+				;Point to the proc name
+				lea		esi,[esi+sizeof PROPERTIES]
+				mov		edi,hMem
+				.while byte ptr [edi]
+					invoke lstrcmp,edi,esi
+					.break .if !eax
+					invoke lstrlen,edi
+					lea		edi,[edi+eax+1]
+				.endw
+				.if eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,esi
+				.endif
+				pop		esi
+			.endif
+			;Move to next word
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+		invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0
+		invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,0,0
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				mov		eax,lpData
+				invoke WritePrivateProfileSection,addr szNoDebug,addr szBPNULL,[eax].ADDINDATA.lpProject
+				mov		nInx,0
+				.while TRUE
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_GETTEXT,nInx,addr buffer
+					.break .if eax==LB_ERR
+					invoke wsprintf,addr buffer1,addr szCommaBP[1],nInx
+					mov		eax,lpData
+					invoke WritePrivateProfileString,addr szNoDebug,addr buffer1,addr buffer,[eax].ADDINDATA.lpProject
+					inc		nInx
+				.endw
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNDONOTDEBUG
+				invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					mov		nInx,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_GETTEXT,nInx,addr buffer
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_DELETESTRING,nInx,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_ADDSTRING,0,addr buffer
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,eax,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0
+					.if eax==LB_ERR && nInx
+						dec		nInx
+						invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,nInx,0
+					.endif
+				.endif
+			.elseif eax==IDC_BTNDEBUG
+				invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					mov		nInx,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_GETTEXT,nInx,addr buffer
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_DELETESTRING,nInx,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,addr buffer
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,eax,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,nInx,0
+					.if eax==LB_ERR && nInx
+						dec		nInx
+						invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,nInx,0
+					.endif
+				.endif
+			.elseif eax==IDC_BTNDONOTDEBUGALL
+				.while TRUE
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_GETTEXT,0,addr buffer
+					.break .if eax==LB_ERR
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_DELETESTRING,0,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_ADDSTRING,0,addr buffer
+				.endw
+			.elseif eax==IDC_BTNDEBUGALL
+				.while TRUE
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_GETTEXT,0,addr buffer
+					.break .if eax==LB_ERR
+					invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_DELETESTRING,0,0
+					invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,addr buffer
+				.endw
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,0
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+DoNotDebugProc endp
+
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 
@@ -289,8 +421,6 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		mov		eax,lpHandles
 		mov		eax,[eax].ADDINHANDLES.hOut1
 		mov		hOut,eax
-;		invoke CreateDebugMenu,ebx
-;		invoke UpdateAccelerators
 		; Messages to hook into
 		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
 	.endif
@@ -400,7 +530,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					lea		ebx,dbg.thread
 				.endif
 				mov		dbg.lpthread,ebx
-				invoke SetBreakPointsAll
+				invoke SetBreakPointsAll,FALSE
 				invoke RestoreSourceByte,[ebx].THREAD.lpline
 				invoke ResumeThread,[ebx].THREAD.htread
 			.endif
@@ -408,6 +538,15 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			;Step &Over
 			.if dbg.hDbgThread
 				; Needs size of proc
+				mov		ebx,dbg.lpthread
+				add		ebx,sizeof THREAD
+				.if ![ebx].THREAD.htread
+					lea		ebx,dbg.thread
+				.endif
+				mov		dbg.lpthread,ebx
+				invoke SetBreakPointsAll,TRUE
+				invoke RestoreSourceByte,[ebx].THREAD.lpline
+				invoke ResumeThread,[ebx].THREAD.htread
 			.endif
 		.elseif edx==IDAddIn[28]
 			;Run &To Caret
@@ -419,7 +558,8 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			.endif
 		.elseif edx==IDAddIn[32]
 			;Do not Debug
-			; Needs size of proc
+			mov		eax,lpHandles
+			invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,[eax].ADDINHANDLES.hWnd,addr DoNotDebugProc,0
 		.endif
 	.elseif eax==AIM_EDITOPEN
 		invoke EnableMenu
