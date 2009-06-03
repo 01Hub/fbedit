@@ -59,9 +59,9 @@ im								IMAGEHLP_MODULE <>
 inxsource						DWORD ?
 dbgsource						DEBUGSOURCE 256 dup(<>)
 inxline							DWORD ?
-dbgline							DEBUGLINE 8192 dup(<>)
+dbgline							DEBUGLINE 65536 dup(<>)
 inxsymbol						DWORD ?
-dbgsymbol						DEBUGSYMBOL 1024 dup(<>)
+dbgsymbol						DEBUGSYMBOL 8192 dup(<>)
 
 .code
 
@@ -240,6 +240,9 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 			invoke PutString,addr szSymLoadModule
 		.endif
 		invoke SymCleanup,hProcess
+		PrintDec inxsource
+		PrintDec inxline
+		PrintDec inxsymbol
 	.else
 		invoke PutString,addr szSymInitialize
 	.endif

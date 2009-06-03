@@ -29,13 +29,13 @@ include ..\RadAsm.inc
 ;#########################################################################
 ; VKim's Debug
 
-;include masm32.inc
-;includelib masm32.lib
-;include \RadASM\masm\inc\debug.inc
-;includelib \RadASM\masm\lib\debug.lib
-;
-;DBGWIN_DEBUG_ON = 1		; include debug info into the program
-;DBGWIN_EXT_INFO = 0		; include extra debug info into the program
+include masm32.inc
+includelib masm32.lib
+include \RadASM\masm\inc\debug.inc
+includelib \RadASM\masm\lib\debug.lib
+
+DBGWIN_DEBUG_ON = 1		; include debug info into the program
+DBGWIN_EXT_INFO = 0		; include extra debug info into the program
 
 ;#########################################################################
 ;		Prototypes
