@@ -40,6 +40,8 @@ start:
 	invoke MyProc1
 	invoke MyProc2
 	invoke MyProc4
+	jmp		Ex
+Ex:
 	invoke ExitProcess,0
 
 end start

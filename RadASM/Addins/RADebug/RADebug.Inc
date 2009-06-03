@@ -52,8 +52,8 @@ tagACCEL struct
 tagACCEL ends
 
 BREAKPOINT struct
-	ProjectFileID			DWORD ?		; Project file id
-	LineNumber				DWORD ?		; Line number, zero based
+	ProjectFileID			DWORD ?								; Project file id
+	LineNumber				DWORD ?								; Line number, zero based
 BREAKPOINT ends
 
 .const
@@ -81,8 +81,9 @@ szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
 szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s'
+szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd and /DEBUG command line options.',0
 
-DebugMenu						db '&Debug',0
+DebugMenu						db 'Deb&ug',0
 MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
 								db '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0
 								db '-',0
@@ -104,19 +105,19 @@ AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
 
 .data?
 
-hInstance						HINSTANCE ?		; Dll's module handle
-hDbgHelpDLL						HMODULE ?		; Handle of DbgHelp.dll
-fOptions						dd ?
-lpHandles						dd ?			; Pointer to handles struct
-lpProc							dd ?			; Pointer to proc struct
-lpData							dd ?			; Pointer to data struct
-hMnu							HMENU ?			; Debug popup
-IDAddIn							dd 32 dup(?)	; Unique ID's for this AddIn
-hOut							HWND ?			; Handle of output window
+hInstance						HINSTANCE ?						; Dll's module handle
+hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
+fOptions						dd ?							; Options for RADebug
+lpHandles						dd ?							; Pointer to handles struct
+lpProc							dd ?							; Pointer to proc struct
+lpData							dd ?							; Pointer to data struct
+hMnu							HMENU ?							; Debug popup
+IDAddIn							dd 32 dup(?)					; Unique ID's for this AddIn
+hOut							HWND ?							; Handle of output window
 szTempName						db MAX_PATH dup(?)
 szExeName						db MAX_PATH dup(?)
 szObjName						db MAX_PATH dup(?)
 szSourceName					db MAX_PATH dup(?)
 szFileName						db MAX_PATH dup(?)
-breakpoint						BREAKPOINT 512 dup(<>)
+breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?

@@ -18,17 +18,83 @@ DEBUG struct
 	prevhwnd				DWORD ?					; Previous hilited line window handle
 	lpthread				DWORD ?					; Pointer to current thread
 	thread					THREAD 32 dup(<>)		; Threads
+	context					CONTEXT <>				; Context
+	prevcontext				CONTEXT <>				; Previous Context
 DEBUG ends
 
 .const
 
 szBP							db 0CCh
+szDump							db 'Reg     Hex       Dec',0Dh,'-------------------------------',0Dh,0
+szDec							db '  %u',0Dh,0
+szRegs							db 'EAX     ',0,'ECX     ',0,'EDX     ',0,'EBX     ',0,'ESP     ',0,'EBP     ',0,'ESI     ',0,'EDI     ',0,'EIP     ',0,'EFL     ',0
 
 .data?
 
 dbg								DEBUG <>
 
 .code
+
+ShowContext proc uses ebx esi edi
+	LOCAL	buffer[256]:BYTE
+	LOCAL	hOut2:HWND
+	LOCAL	nLine:DWORD
+
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hOut2
+	mov		hOut2,eax
+	invoke SetWindowText,hOut2,addr szNULL
+	invoke SendMessage,hOut2,EM_REPLACESEL,FALSE,addr szDump
+	mov		nLine,2
+	mov		esi,offset szRegs
+	mov		ebx,dbg.context.regEax
+	mov		edi,dbg.prevcontext.regEax
+	call	RegOut
+	mov		ebx,dbg.context.regEcx
+	mov		edi,dbg.prevcontext.regEcx
+	call	RegOut
+	mov		ebx,dbg.context.regEdx
+	mov		edi,dbg.prevcontext.regEdx
+	call	RegOut
+	mov		ebx,dbg.context.regEbx
+	mov		edi,dbg.prevcontext.regEbx
+	call	RegOut
+	mov		ebx,dbg.context.regEsp
+	mov		edi,dbg.prevcontext.regEsp
+	call	RegOut
+	mov		ebx,dbg.context.regEbp
+	mov		edi,dbg.prevcontext.regEbp
+	call	RegOut
+	mov		ebx,dbg.context.regEsi
+	mov		edi,dbg.prevcontext.regEsi
+	call	RegOut
+	mov		ebx,dbg.context.regEdi
+	mov		edi,dbg.prevcontext.regEdi
+	call	RegOut
+	mov		ebx,dbg.context.regEip
+	mov		edi,dbg.prevcontext.regEip
+	call	RegOut
+	mov		ebx,dbg.context.regFlag
+	mov		edi,dbg.prevcontext.regFlag
+	call	RegOut
+	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
+	ret
+
+RegOut:
+	invoke lstrcpy,addr buffer,esi
+;	invoke SendMessage,hOut2,EM_REPLACESEL,FALSE,esi
+	invoke HexDWORD,addr buffer[8],ebx
+	invoke wsprintf,addr buffer[16],addr szDec,ebx
+	invoke SendMessage,hOut2,EM_REPLACESEL,FALSE,addr buffer
+	.if ebx!=edi
+		invoke SendMessage,hOut2,REM_LINEREDTEXT,nLine,TRUE
+	.endif
+	invoke lstrlen,esi
+	lea		esi,[esi+eax+1]
+	inc		nLine
+	retn
+
+ShowContext endp
 
 PrintSourceByte proc Address:DWORD,SourceByte:DWORD,File:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -135,6 +201,57 @@ SetBreakPoints proc uses ebx edi
 
 SetBreakPoints endp
 
+SetBreakpointAtCurrentLine proc uses ebx esi edi
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nLine:DWORD
+	LOCAL	CountSource:DWORD
+
+	mov		ebx,lpHandles
+	; Get current line
+	invoke SendMessage,[ebx].ADDINHANDLES.hEdit,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,[ebx].ADDINHANDLES.hEdit,EM_LINEFROMCHAR,chrg.cpMin,0
+	inc		eax
+	mov		nLine,eax
+	; Get project file ID
+	invoke GetWindowLong,[ebx].ADDINHANDLES.hMdiCld,16
+	push	eax
+	mov		eax,lpProc
+	call	[eax].ADDINPROCS.lpGetFileNameFromID
+	mov		edi,eax
+	mov		eax,inxsource
+	mov		CountSource,eax
+	mov		ebx,offset dbgsource
+	.while CountSource
+		invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+		.if !eax
+			mov		edx,[ebx].DEBUGSOURCE.FileID
+			mov		eax,nLine		;LineNumber
+			mov		esi,offset dbgline
+			xor		ecx,ecx
+			.while ecx<inxline
+				.if eax==[esi].DEBUGLINE.LineNumber
+					.if edx==[esi].DEBUGLINE.FileID
+						.if [esi].DEBUGLINE.SourceByte==-1
+							mov		[esi].DEBUGLINE.SourceByte,0
+							invoke ReadProcessMemory,dbg.dbghand,[esi].DEBUGLINE.Address,addr [esi].DEBUGLINE.SourceByte,1,0
+							invoke WriteProcessMemory,dbg.dbghand,[esi].DEBUGLINE.Address,addr szBP,1,0
+						.endif
+						jmp		Ex
+					.endif
+				.endif
+				inc		ecx
+				add		esi,sizeof DEBUGLINE
+			.endw
+			.break
+		.endif
+		dec		CountSource
+		add		ebx,sizeof DEBUGSOURCE
+	.endw
+Ex:
+	ret
+
+SetBreakpointAtCurrentLine endp
+
 ClearBreakPointsAll proc uses ebx edi
 
 	mov		edi,offset dbgline
@@ -217,13 +334,23 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 
 SelectLine endp
 
+ResumeAllThreads proc uses ebx
+
+	lea		ebx,dbg.thread
+	.while [ebx].THREAD.htread
+		invoke ResumeThread,[ebx].THREAD.htread
+		add		ebx,sizeof THREAD
+	.endw
+	ret
+
+ResumeAllThreads endp
+
 Debug proc uses ebx,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
 	LOCAL	fContinue:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	Old:BYTE
-	LOCAL	context:CONTEXT
 
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
 	mov		sinfo.cb,SizeOf STARTUPINFO
@@ -236,6 +363,9 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.dbghand,eax
 		invoke DbgHelp,dbg.pinfo.hProcess,lpFileName
+		.if !inxline
+			invoke PutString,addr szNoDebugInfo
+		.endif
 ;		mov		edx,offset dbgsource
 ;		xor		ecx,ecx
 ;		.while ecx<inxsource
@@ -305,12 +435,13 @@ Debug proc uses ebx,lpFileName:DWORD
 						.endif
 						;invoke PutString,addr szEXCEPTION_BREAKPOINT
 						;PrintHex de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		context.ContextFlags,CONTEXT_CONTROL
-						invoke GetThreadContext,[ebx].THREAD.htread,addr context
-						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		context.regEip,eax
-						invoke SetThreadContext,[ebx].THREAD.htread,addr context
 						invoke SuspendThread,[ebx].THREAD.htread
+						mov		dbg.context.ContextFlags,CONTEXT_FULL;CONTEXT_CONTROL
+						invoke GetThreadContext,[ebx].THREAD.htread,addr dbg.context
+						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+						mov		dbg.context.regEip,eax
+						invoke SetThreadContext,[ebx].THREAD.htread,addr dbg.context
+						invoke ShowContext
 					.else
 						;invoke PutString,addr szEXCEPTION_BREAKPOINT
 						mov		fContinue,DBG_EXCEPTION_NOT_HANDLED

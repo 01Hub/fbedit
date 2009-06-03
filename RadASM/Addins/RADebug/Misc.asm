@@ -67,6 +67,25 @@ HexByte proc
 
 HexByte endp
 
+HexDWORD proc uses ebx edi,lpBuff:DWORD,Val:DWORD
+
+	mov		edi,lpBuff
+	mov		ebx,Val
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexByte
+		mov		[edi],ax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+HexDWORD endp
+
 DumpLine proc uses ebx esi edi,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 	LOCAL	buffer[256]:BYTE
 
@@ -118,9 +137,7 @@ DumpLine proc uses ebx esi edi,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 		inc		ecx
 	.endw
 	mov		dword ptr [edi],0A0Dh
-lea		eax,buffer
-PrintStringByAddr eax
-;	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
+	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer
 	ret
 
 DumpLine endp

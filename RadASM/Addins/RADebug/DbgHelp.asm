@@ -38,7 +38,10 @@ szSymEnumSourceFiles			db 'SymEnumSourceFiles',0
 szSourceFile					db 'FileName: %s',0
 szSymEnumSourceLines			db 'SymEnumSourceLines',0
 szSourceLine					db 'FileName: %s Adress: %X Line %u',0
-szVersion						db '\StringFileInfo\040904B0\FileVersion',0
+szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
+szVersion						db 'DbgHelp.dll version %s',0
+szSymLoadModule					db 'SymLoadModule failed.',0
+szSymInitialize					db 'SymInitialize failed.',0
 
 .data?
 
@@ -50,6 +53,22 @@ inxline							DWORD ?
 dbgline							DEBUGLINE 65536 dup(<>)
 
 .code
+
+GetDbgHelpVersion proc
+	LOCAL	buffer[2048]:BYTE
+	LOCAL	lpbuff:DWORD
+	LOCAL	lpsize:DWORD
+
+	invoke GetFileVersionInfo,addr DbgHelpDLL,NULL,sizeof buffer,addr buffer
+	lea ebx,buffer
+	mov		ecx,32
+	invoke VerQueryValue,addr buffer,addr szVersionInfo,addr lpbuff,addr lpsize
+	mov		eax,lpbuff
+	invoke wsprintf,addr buffer,addr szVersion,eax
+	invoke PutString,addr buffer
+	ret
+
+GetDbgHelpVersion endp
 
 EnumerateSymbolsCallback proc uses esi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -100,7 +119,7 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 		mov		edx,sizeof DEBUGSOURCE
 		mul		edx
 		lea		esi,[eax+offset dbgsource]
-		invoke lstrcmp,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
+		invoke lstrcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
 		.if !eax
 			mov		eax,inxline
 			mov		edx,sizeof DEBUGLINE
@@ -129,6 +148,7 @@ EnumLinesCallback endp
 DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke GetDbgHelpVersion
 	mov		inxsource,0
 	mov		inxline,0
 	invoke RtlZeroMemory,addr dbgsource,sizeof dbgsource
@@ -169,71 +189,13 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 				invoke SymUnloadModule,hProcess,dwModuleBase
 			.endif
 		.else
-			PrintText "SymLoadModule failed"
+			invoke PutString,addr szSymLoadModule
 		.endif
 		invoke SymCleanup,hProcess
 	.else
-		PrintText "SymInitialize failed"
+		invoke PutString,addr szSymInitialize
 	.endif
 	ret
 
 DbgHelp endp
 
-GetDbgHelpVersion proc uses ebx
-	LOCAL	buffer[2048]:BYTE
-	LOCAL	lpbuff:DWORD
-	LOCAL	lpsize:DWORD
-	invoke GetFileVersionInfoSize,addr DbgHelpDLL,addr lpsize
-PrintDec eax
-	invoke GetFileVersionInfo,addr DbgHelpDLL,NULL,sizeof buffer,addr buffer
-	lea ebx,buffer
-	mov		ecx,32
-	.while ecx
-		push	ecx
-invoke DumpLine,ebx,ebx,16
-		pop		ecx
-		dec		ecx
-		add		ebx,16
-	.endw
-	invoke VerQueryValue,addr buffer,addr szVersion,addr lpbuff,addr lpsize
-PrintDec eax
-mov		ebx,lpbuff
-;mov		ebx,[ebx]
-invoke DumpLine,ebx,ebx,16
-
-
-;	mov		ecx,1800
-;	.while ecx
-;		movzx	eax,byte ptr [ebx]
-;		PrintDec eax
-;		inc		ebx
-;		dec		ecx
-;	.endw
-;PrintDec eax
-
-;	mov		ebx,lpbuff
-;	mov		ebx,[ebx]
-;	mov		eax,[ebx].VS_FIXEDFILEINFO.dwProductVersionMS
-;PrintDec eax
-;	mov		eax,[ebx].VS_FIXEDFILEINFO.dwProductVersionLS
-;PrintDec eax
-;	mov		edx,lpbuff
-;	mov		edx,[edx]
-;	lea		ecx,buffer
-;	.while byte ptr [edx]
-;		mov		al,[edx]
-;		mov		[ecx],al
-;		add		edx,2
-;		inc		ecx
-;	.endw
-;	mov		byte ptr [ecx],0
-;
-;;	mov		ecx,lpsize
-;;
-;;	invoke WideCharToMultiByte,CP_ACP,0,edx,ecx,addr buffer,64,NULL,NULL
-;;	invoke PutString,addr buffer
-;lea		eax,buffer
-;PrintStringByAddr eax
-	ret
-
-GetDbgHelpVersion endp

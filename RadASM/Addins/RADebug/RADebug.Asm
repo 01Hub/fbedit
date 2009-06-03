@@ -109,52 +109,61 @@ UpdateAccelerators endp
 CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 	LOCAL	mii:MENUITEMINFO
 
-	.if !hMnu
-		invoke CreatePopupMenu
-		mov		hMnu,eax
-		;Edit menu
-		mov		edx,4
-		;Adjust topmost popup if maximized.
-		mov		eax,[lpData]
-		.if [eax].ADDINDATA.fMaximized
-			inc		edx
-		.endif
-		;Get handle of edit popup
+	.if hMnu
 		mov		eax,[lpHandles]
-		invoke GetSubMenu,[eax].ADDINHANDLES.hMenu,edx		;Edit menu
-		push	eax
-		;Add our menuitem
-		invoke AppendMenu,eax,MF_POPUP or MF_STRING,hMnu,addr DebugMenu
+		invoke RemoveMenu,[eax].ADDINHANDLES.hMenu,IDAddIn,MF_BYCOMMAND
+		invoke DestroyMenu,hMnu
+	.else
 		mov		edi,offset IDAddIn
-		; Allocate a new menu id
-		invoke SendMessage,hWin,AIM_GETMENUID,0,0
-		mov		[edi],eax
-		add		edi,4
-		mov		mii.cbSize,sizeof MENUITEMINFO
-		mov		mii.fMask,MIIM_ID
-		mov		mii.wID,eax
-		pop		eax
-		push	eax
-		invoke GetMenuItemCount,eax
-		lea		ecx,[eax-1]
-		pop		edx
-		invoke SetMenuItemInfo,edx,ecx,TRUE,addr mii
-		mov		esi,offset MenuItems
-		.while byte ptr [esi]
-			.if byte ptr [esi]=='-'
-				invoke AppendMenu,hMnu,MF_SEPARATOR,0,0
-			.else
-				; Allocate a new menu id
-				invoke SendMessage,hWin,AIM_GETMENUID,0,0
-				mov		[edi],eax
-				;Add our menuitem
-				invoke AppendMenu,hMnu,MF_STRING,[edi],esi
-				add		edi,4
-			.endif
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
+		xor		ecx,ecx
+		.while ecx<9
+			push	ecx
+			; Allocate a new menu id
+			invoke SendMessage,hWin,AIM_GETMENUID,0,0
+			pop		ecx
+			mov		[edi+ecx*4],eax
+			inc		ecx
 		.endw
 	.endif
+	invoke CreatePopupMenu
+	mov		hMnu,eax
+	;Make menu
+	mov		edx,5
+	;Adjust topmost popup if maximized.
+	mov		eax,[lpData]
+	.if [eax].ADDINDATA.fMaximized
+		inc		edx
+	.endif
+	;Get handle of edit popup
+	mov		eax,[lpHandles]
+	invoke GetSubMenu,[eax].ADDINHANDLES.hMenu,edx		;Edit menu
+	push	eax
+	;Add our menuitem
+	invoke AppendMenu,eax,MF_POPUP or MF_STRING,hMnu,addr DebugMenu
+	mov		edi,offset IDAddIn
+	mov		eax,[edi]
+	add		edi,4
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_ID
+	mov		mii.wID,eax
+	pop		eax
+	push	eax
+	invoke GetMenuItemCount,eax
+	lea		ecx,[eax-1]
+	pop		edx
+	invoke SetMenuItemInfo,edx,ecx,TRUE,addr mii
+	mov		esi,offset MenuItems
+	.while byte ptr [esi]
+		.if byte ptr [esi]=='-'
+			invoke AppendMenu,hMnu,MF_SEPARATOR,0,0
+		.else
+			;Add our menuitem
+			invoke AppendMenu,hMnu,MF_STRING,[edi],esi
+			add		edi,4
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
 	ret
 
 CreateDebugMenu endp
@@ -222,14 +231,14 @@ EnableMenu proc uses esi edi
 		; &Run
 		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
 		; Do not Debug
-		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
+		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_GRAYED;MF_BYCOMMAND or MF_ENABLED
 		.if dbg.hDbgThread
 			; &Stop
 			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
 			; Step &Into
 			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
 			; Step &Over
-			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_ENABLED
+			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED;MF_BYCOMMAND or MF_ENABLED
 		.else
 			; &Stop
 			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
@@ -266,7 +275,6 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	invoke LoadLibrary,addr DbgHelpDLL
 	.if eax
 		mov		hDbgHelpDLL,eax
-invoke GetDbgHelpVersion
 		mov		eax,fOpt
 		mov		fOptions,eax
 		;Get pointer to handles struct
@@ -281,8 +289,8 @@ invoke GetDbgHelpVersion
 		mov		eax,lpHandles
 		mov		eax,[eax].ADDINHANDLES.hOut1
 		mov		hOut,eax
-		invoke CreateDebugMenu,ebx
-		invoke UpdateAccelerators
+;		invoke CreateDebugMenu,ebx
+;		invoke UpdateAccelerators
 		; Messages to hook into
 		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
 	.endif
@@ -333,7 +341,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				invoke ClearBreakPointsAll
 				invoke SetBreakPoints
 				invoke RestoreSourceByte,[ebx].THREAD.lpline
-				invoke ResumeThread,[ebx].THREAD.htread
+				invoke ResumeAllThreads
 			.else
 				mov		ebx,lpData
 				.if [ebx].ADDINDATA.fProject
@@ -399,13 +407,19 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[24]
 			;Step &Over
 			.if dbg.hDbgThread
+				; Needs size of proc
 			.endif
 		.elseif edx==IDAddIn[28]
 			;Run &To Caret
 			.if dbg.hDbgThread
+				mov		ebx,dbg.lpthread
+				invoke ClearBreakPointsAll
+				invoke SetBreakpointAtCurrentLine
+				invoke ResumeThread,[ebx].THREAD.htread
 			.endif
 		.elseif edx==IDAddIn[32]
 			;Do not Debug
+			; Needs size of proc
 		.endif
 	.elseif eax==AIM_EDITOPEN
 		invoke EnableMenu
@@ -432,6 +446,9 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.endif
 		;
 	.elseif eax==AIM_MENUREBUILD
+		mov		eax,lpHandles
+		invoke CreateDebugMenu,[eax].ADDINHANDLES.hWnd
+		invoke UpdateAccelerators
 		;
 	.elseif eax==AIM_PROJECTCLOSED
 		invoke EnableMenu
