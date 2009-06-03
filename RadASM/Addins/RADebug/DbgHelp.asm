@@ -29,6 +29,12 @@ DEBUGLINE struct
 	BreakPoint				WORD ?
 DEBUGLINE ends
 
+DEBUGSYMBOL struct
+	Address                 DWORD ?
+	nSize					DWORD ?
+	szName					db 64 dup(?)
+DEBUGSYMBOL ends
+
 .const
 
 szSymOk							db 'Symbols OK',0
@@ -42,6 +48,7 @@ szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
 szVersion						db 'DbgHelp.dll version %s',0
 szSymLoadModule					db 'SymLoadModule failed.',0
 szSymInitialize					db 'SymInitialize failed.',0
+szSymEnumTypes					db 'SymEnumTypes',0
 
 .data?
 
@@ -51,6 +58,8 @@ inxsource						DWORD ?
 dbgsource						DEBUGSOURCE 256 dup(<>)
 inxline							DWORD ?
 dbgline							DEBUGLINE 65536 dup(<>)
+inxsymbol						DWORD ?
+dbgsymbol						DEBUGSYMBOL 8193 dup(<>)
 
 .code
 
@@ -70,12 +79,24 @@ GetDbgHelpVersion proc
 
 GetDbgHelpVersion endp
 
-EnumerateSymbolsCallback proc uses esi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
+EnumerateSymbolsCallback proc SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	.if fOptions & 1
 		invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
 		invoke PutString,addr buffer
+	.endif
+	.if SymbolSize
+		mov		eax,inxsymbol
+		mov		edx,sizeof DEBUGSYMBOL
+		mul		edx
+		lea		edi,[eax+offset dbgsymbol]
+		mov		eax,SymbolAddress
+		mov		[edi].DEBUGSYMBOL.Address,eax
+		mov		eax,SymbolSize
+		mov		[edi].DEBUGSYMBOL.nSize,eax
+		invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,SymbolName
+		inc		inxsymbol
 	.endif
 	mov		eax,TRUE
 	ret
@@ -151,6 +172,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 	invoke GetDbgHelpVersion
 	mov		inxsource,0
 	mov		inxline,0
+	mov		inxsymbol,0
 	invoke RtlZeroMemory,addr dbgsource,sizeof dbgsource
 	invoke RtlZeroMemory,addr dbgline,sizeof dbgline
 	invoke SymInitialize,hProcess,0,FALSE
@@ -165,7 +187,10 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 					invoke PutString,addr szSymOk
 				.endif
 				invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumerateSymbolsCallback,0
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
+				;invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
+				.if fOptions & 1
+					invoke PutString,addr szSymEnumSourceFiles
+				.endif
 				invoke SymEnumSourceFiles,hProcess,dwModuleBase,0,0,offset EnumSourceFilesCallback,0
 				;invoke SymEnumSourceLines,hProcess,dwModuleBase,0,0,0,0,0,offset EnumLinesCallback,0
 				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
@@ -185,7 +210,26 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 					push	hProcess
 					call	ebx
 				.endif
+;				push 0
+;				push	dwModuleBase
+;				push	hProcess
+;				call SymFunctionTableAccess
 				;invoke SymEnumTypes,hProcess,dwModuleBase,EnumerateSymbolsCallback,0
+
+;				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
+;				.if eax
+;					mov		ebx,eax
+;					.if fOptions & 1
+;						invoke PutString,addr szSymEnumTypes
+;					.endif
+;					push	0
+;					push	offset EnumerateSymbolsCallback
+;					push	0
+;					push	dwModuleBase
+;					push	hProcess
+;					call	ebx
+;				.endif
+
 				invoke SymUnloadModule,hProcess,dwModuleBase
 			.endif
 		.else

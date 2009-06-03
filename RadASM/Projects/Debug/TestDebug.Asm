@@ -11,14 +11,21 @@ includelib user32.lib
 include Src\TestMisc.asm
 include TestMisc.asm
 
+MYSTRUCT struct
+	a	DWORD ?
+	b	DWORD ?
+MYSTRUCT ends
+
 .data
 
 szTest		db 'Test',0
 tid			dd ?
+rect		RECT <>
+mystruct	MYSTRUCT <>
 
 .code
 
-MyProc3 proc lParam:DWORD
+MyProc3 proc
 
 	mov		eax,'abcd'
 	mov		eax,'abcd'

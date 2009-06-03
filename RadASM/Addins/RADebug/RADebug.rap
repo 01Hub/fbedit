@@ -107,7 +107,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=0,0,0,0,2485
 1=0,0,0,0,8279
 8=0,0,0,0,6398
-6=0,0,0,0,3236
+6=0,0,0,0,2668
 7=0,0,0,0,1224
 3=0,0,0,0,56
 9=0,0,0,0,57
@@ -187,3 +187,5 @@ ProductVer4Range=0
 8="DEBUG_EVENT"
 9="RestoreSourceByte"
 10="htreadcaller"
+[RADebugBP]
+6=
