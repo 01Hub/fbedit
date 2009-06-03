@@ -5,7 +5,7 @@ Description=TestDebug
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
+Debug=0
 [Files]
 1=TestDebug.Asm
 2=TestMisc.asm

@@ -80,7 +80,7 @@ szDebuggingStarted				db 'Debugging started',0
 szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
-szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s'
+szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s',0
 szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd and /DEBUG command line options.',0
 
 DebugMenu						db 'Deb&ug',0
