@@ -10,9 +10,9 @@ GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD
 	call	[eax].ADDINPROCS.lpGetFileNameFromID
 	.if eax
 		mov		edi,eax
-		mov		ebx,offset dbgsource
+		mov		ebx,dbg.hMemSource
 		xor		ecx,ecx
-		.while ecx<inxsource
+		.while ecx<dbg.inxsource
 			push	ecx
 			invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
 			.if !eax

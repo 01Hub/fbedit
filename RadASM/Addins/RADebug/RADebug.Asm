@@ -198,8 +198,8 @@ EnableMenu proc uses esi edi
 						mov		edx,nLine
 						inc		edx
 						xor		ecx,ecx
-						mov		edi,offset dbgline
-						.while ecx<inxline
+						mov		edi,dbg.hMemLine
+						.while ecx<dbg.inxline
 							.if edx==[edi].DEBUGLINE.LineNumber
 								.if ax==[edi].DEBUGLINE.FileID
 									.break
@@ -208,7 +208,7 @@ EnableMenu proc uses esi edi
 							inc		ecx
 							add		edi,sizeof DEBUGLINE
 						.endw
-						.if ecx!=inxline
+						.if ecx!=dbg.inxline
 							; Toggle &Breakpoint
 							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
 							; Run &To Caret
@@ -239,7 +239,7 @@ EnableMenu proc uses esi edi
 			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
 			; Step &Over
 			mov		eax,MF_BYCOMMAND or MF_GRAYED
-			.if inxsource
+			.if dbg.inxsource
 				mov		eax,MF_BYCOMMAND or MF_ENABLED
 			.endif
 			invoke EnableMenuItem,hMnu,[esi+20],eax
@@ -467,10 +467,11 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[12]
 			;&Run
 			.if dbg.hDbgThread
+				mov		dbg.func,FUNC_RUN
 				mov		ebx,dbg.lpthread
 				invoke ClearBreakPointsAll
 				invoke SetBreakPoints
-				invoke RestoreSourceByte,[ebx].THREAD.lpline
+				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 				invoke ResumeAllThreads
 			.else
 				mov		ebx,lpData
@@ -505,6 +506,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpClearOut
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
+							mov		dbg.func,FUNC_RUN
 							invoke LoadAllBreakPoints
 							invoke PutString,addr szDebuggingStarted
 							invoke PutString,addr szExeName
@@ -519,42 +521,63 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[16]
 			;&Stop
 			.if dbg.hDbgThread
+				mov		dbg.func,FUNC_STOP
 				invoke TerminateProcess,dbg.pinfo.hProcess,0
 			.endif
 		.elseif edx==IDAddIn[20]
 			;Step &Into
 			.if dbg.hDbgThread
+			  StepInto:
+				mov		dbg.func,FUNC_STEPINTO
 				mov		ebx,dbg.lpthread
-				add		ebx,sizeof THREAD
-				.if ![ebx].THREAD.htread
+				add		ebx,sizeof DEBUGTHREAD
+				.if ![ebx].DEBUGTHREAD.htread
 					lea		ebx,dbg.thread
 				.endif
 				mov		dbg.lpthread,ebx
 				invoke SetBreakPointsAll,FALSE
-				invoke RestoreSourceByte,[ebx].THREAD.lpline
-				invoke ResumeThread,[ebx].THREAD.htread
+				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+				.if [ebx].DEBUGTHREAD.suspended
+					mov		[ebx].DEBUGTHREAD.suspended,FALSE
+					invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+				.endif
 			.endif
 		.elseif edx==IDAddIn[24]
 			;Step &Over
 			.if dbg.hDbgThread
-				; Needs size of proc
-				mov		ebx,dbg.lpthread
-				add		ebx,sizeof THREAD
-				.if ![ebx].THREAD.htread
-					lea		ebx,dbg.thread
+				invoke IsLineCall
+				.if !eax
+					jmp		StepInto
 				.endif
-				mov		dbg.lpthread,ebx
-				invoke SetBreakPointsAll,TRUE
-				invoke RestoreSourceByte,[ebx].THREAD.lpline
-				invoke ResumeThread,[ebx].THREAD.htread
+				mov		ebx,dbg.lpthread
+				mov		ebx,[ebx].DEBUGTHREAD.lpline
+				mov		ax,[ebx].DEBUGLINE.FileID
+				lea		ebx,[ebx+sizeof DEBUGLINE]
+				.if ax==[ebx].DEBUGLINE.FileID
+					;Step &Over
+					mov		dbg.func,FUNC_STEPOVER
+					invoke ClearBreakPointsAll
+					invoke SetBreakpointAtCurrentLine,[ebx].DEBUGLINE.LineNumber
+					mov		ebx,dbg.lpthread
+					.if [ebx].DEBUGTHREAD.suspended
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+					.endif
+				.else
+					jmp		StepInto
+				.endif
 			.endif
 		.elseif edx==IDAddIn[28]
 			;Run &To Caret
 			.if dbg.hDbgThread
-				mov		ebx,dbg.lpthread
+				mov		dbg.func,FUNC_RUNTOCARET
 				invoke ClearBreakPointsAll
-				invoke SetBreakpointAtCurrentLine
-				invoke ResumeThread,[ebx].THREAD.htread
+				invoke SetBreakpointAtCurrentLine,0
+				mov		ebx,dbg.lpthread
+				.if [ebx].DEBUGTHREAD.suspended
+					mov		[ebx].DEBUGTHREAD.suspended,FALSE
+					invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+				.endif
 			.endif
 		.elseif edx==IDAddIn[32]
 			;Do not Debug

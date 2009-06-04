@@ -55,6 +55,12 @@ IDC_BTNDEBUGALL					equ 1006
 IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
 
+FUNC_RUN						equ 1
+FUNC_STEPINTO					equ 2
+FUNC_STEPOVER					equ 3
+FUNC_RUNTOCARET					equ 4
+FUNC_STOP						equ 5
+
 tagACCEL struct
 	fVirt					db ?
 	dummy					db ?
@@ -72,6 +78,55 @@ PROPERTIES struct
 	Owner			dd ?
 	nType			db ?
 PROPERTIES ends
+
+DEBUGSOURCE struct
+	FileID					WORD ?
+	FileName				BYTE MAX_PATH dup(?)
+DEBUGSOURCE ends
+
+DEBUGLINE struct
+	LineNumber              DWORD ?
+	Address                 DWORD ?
+	FileID					WORD ?
+	SourceByte				WORD ?
+	NoDebug					WORD ?
+	BreakPoint				WORD ?
+DEBUGLINE ends
+
+DEBUGSYMBOL struct
+	Address                 DWORD ?
+	nSize					DWORD ?
+	szName					db 64 dup(?)
+	NoDebug					WORD ?
+DEBUGSYMBOL ends
+
+DEBUGTHREAD struct
+	htread					HANDLE ?				; Thread handle
+	threadid				DWORD ?					; Thread ID
+	lpline					DWORD ?					; Pointer to line
+	suspended				DWORD ?					; TRUE if suspended
+DEBUGTHREAD ends
+
+DEBUG struct
+	hDbgThread				HANDLE ?				; Thread that runs the debugger
+	pinfo					PROCESS_INFORMATION <>	; Process information
+	hdbghand				HANDLE ?				; Handle to read / write process memory
+	hdbgfile				HANDLE ?				; File handle
+	prevline				DWORD ?					; Previous hilited line
+	prevhwnd				DWORD ?					; Previous hilited line window handle
+	szprevline				db 256 dup(?)			; Line text
+	lpthread				DWORD ?					; Pointer to current thread
+	thread					DEBUGTHREAD 32 dup(<>)		; Threads
+	context					CONTEXT <>				; Context
+	prevcontext				CONTEXT <>				; Previous Context
+	inxsource				DWORD ?					; Index to next free DEBUGSOURCE
+	hMemSource				HGLOBAL ?				; Handle to memory containing DEBUGSOURCE structures
+	inxsymbol				DWORD ?					; Index to next free DEBUGSYMBOL
+	hMemSymbol				HGLOBAL ?				; Handle to memory containing DEBUGSYMBOL structures
+	inxline					DWORD ?					; Index to next free DEBUGLINE
+	hMemLine				HGLOBAL ?				; Handle to memory containing DEBUGLINE structures
+	func					DWORD ?					; Current debug function
+DEBUG ends
 
 .const
 
@@ -91,6 +146,11 @@ szRIP_EVENT						db 'RIP_EVENT',0
 szDebugStopped					db 'Debuging ended',0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
+
+szCall							db 'invoke',0
+								db 'call',0
+								db 0
+
 szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
 szDebuggingStarted				db 'Debugging started',0
@@ -116,6 +176,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
 								db 'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0
 								db 'Do not Debug',0
 								db 0
+
 szMakeFiles						db 'MakeFiles',0
 szMakeFilesExeKey				db '5',0
 szMakeFilesObjKey				db '3',0
@@ -143,3 +204,4 @@ szSourceName					db MAX_PATH dup(?)
 szFileName						db MAX_PATH dup(?)
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
+dbg								DEBUG <>

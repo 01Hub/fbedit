@@ -40,7 +40,7 @@ MyProc2 proc uses esi
 
 MyProc2 endp
 
-MyProc3 proc
+MyProc3 proc uses esi
 
 	mov		eax,'abcd'
 	mov		eax,'abcd'
@@ -55,10 +55,24 @@ start:
 
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
+	mov		eax,'ABCD'
+	mov		eax,'EFGH'
 	invoke MyProc1
 	invoke MyProc2
 	invoke MyProc3

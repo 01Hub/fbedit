@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,936
+1=0,0,1278,774,1179
 2=0,0,0,0,8
 3=0,0,0,0,81
 [BookMark]
@@ -117,8 +117,5 @@ ProductVer4Range=0
 [Find]
 1="118"
 [RADebugBP]
-1=36,55,67
+1=55,81
 [NoDebug]
-0=MyProc1
-1=MyProc2
-2=MyProc3

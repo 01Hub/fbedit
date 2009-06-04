@@ -16,52 +16,25 @@ SRCCODEINFO struct DWORD
 	Address                 DWORD ?
 SRCCODEINFO ends
 
-DEBUGSOURCE struct
-	FileID					WORD ?
-	FileName				BYTE MAX_PATH dup(?)
-DEBUGSOURCE ends
-
-DEBUGLINE struct
-	LineNumber              DWORD ?
-	Address                 DWORD ?
-	FileID					WORD ?
-	SourceByte				WORD ?
-	NoDebug					WORD ?
-	BreakPoint				WORD ?
-DEBUGLINE ends
-
-DEBUGSYMBOL struct
-	Address                 DWORD ?
-	nSize					DWORD ?
-	szName					db 64 dup(?)
-	NoDebug					WORD ?
-DEBUGSYMBOL ends
-
 .const
 
+szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
+szVersion						db 'DbgHelp version %s',0
 szSymOk							db 'Symbols OK',0
-szAllFiles						db '*.*',0
 szSymbol						db 'Name: %s Adress: %X Size %u',0
 szSymEnumSourceFiles			db 'SymEnumSourceFiles',0
 szSourceFile					db 'FileName: %s',0
 szSymEnumSourceLines			db 'SymEnumSourceLines',0
 szSourceLine					db 'FileName: %s Adress: %X Line %u',0
-szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
-szVersion						db 'DbgHelp.dll version %s',0
 szSymLoadModule					db 'SymLoadModule failed.',0
 szSymInitialize					db 'SymInitialize failed.',0
 szSymEnumTypes					db 'SymEnumTypes',0
+szFinal							db 'DbgHelp found %u sources containing %u lines and %u symbols,',0Dh,0
 
 .data?
 
 dwModuleBase					DWORD ?
 im								IMAGEHLP_MODULE <>
-inxsource						DWORD ?
-dbgsource						DEBUGSOURCE 256 dup(<>)
-inxline							DWORD ?
-dbgline							DEBUGLINE 65536 dup(<>)
-inxsymbol						DWORD ?
-dbgsymbol						DEBUGSYMBOL 8192 dup(<>)
 
 .code
 
@@ -91,16 +64,17 @@ EnumSymbolsCallback proc uses edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSiz
 			invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
 			invoke PutString,addr buffer
 		.endif
-		mov		eax,inxsymbol
+		mov		eax,dbg.inxsymbol
 		mov		edx,sizeof DEBUGSYMBOL
 		mul		edx
-		lea		edi,[eax+offset dbgsymbol]
+		mov		edi,dbg.hMemSymbol
+		lea		edi,[edi+eax]
 		mov		eax,SymbolAddress
 		mov		[edi].DEBUGSYMBOL.Address,eax
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
 		invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,SymbolName
-		inc		inxsymbol
+		inc		dbg.inxsymbol
 	.endif
 	mov		eax,TRUE
 	ret
@@ -115,14 +89,15 @@ EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 		invoke wsprintf,addr buffer,addr szSourceFile,[ebx].SOURCEFILE.FileName
 		invoke PutString,addr buffer
 	.endif
-	mov		eax,inxsource
+	mov		eax,dbg.inxsource
 	mov		edx,sizeof DEBUGSOURCE
 	mul		edx
-	lea		edi,[eax+offset dbgsource]
-	mov		eax,inxsource
+	mov		edi,dbg.hMemSource
+	lea		edi,[edi+eax]
+	mov		eax,dbg.inxsource
 	mov		[edi].DEBUGSOURCE.FileID,ax
 	invoke lstrcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
-	inc		inxsource
+	inc		dbg.inxsource
 	mov		eax,TRUE
 	ret
 
@@ -138,18 +113,20 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 	.endif
 	; Find source file
 	xor		ecx,ecx
-	.while ecx<inxsource
+	.while ecx<dbg.inxsource
 		push	ecx
 		mov		eax,ecx
 		mov		edx,sizeof DEBUGSOURCE
 		mul		edx
-		lea		esi,[eax+offset dbgsource]
+		mov		esi,dbg.hMemSource
+		lea		esi,[esi+eax]
 		invoke lstrcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
 		.if !eax
-			mov		eax,inxline
+			mov		eax,dbg.inxline
 			mov		edx,sizeof DEBUGLINE
 			mul		edx
-			lea		edi,[eax+offset dbgline]
+			mov		edi,dbg.hMemLine
+			lea		edi,[edi+eax]
 			mov		ax,[esi].DEBUGSOURCE.FileID
 			mov		[edi].DEBUGLINE.FileID,ax
 			mov		eax,[ebx].SRCCODEINFO.LineNumber
@@ -158,7 +135,7 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 			mov		[edi].DEBUGLINE.Address,eax
 			mov		[edi].DEBUGLINE.SourceByte,-1
 			mov		[edi].DEBUGLINE.BreakPoint,0
-			inc		inxline
+			inc		dbg.inxline
 			pop		ecx
 			.break
 		.endif
@@ -174,12 +151,6 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke GetDbgHelpVersion
-	mov		inxsource,0
-	mov		inxline,0
-	mov		inxsymbol,0
-	invoke RtlZeroMemory,addr dbgsource,sizeof dbgsource
-	invoke RtlZeroMemory,addr dbgline,sizeof dbgline
-	invoke RtlZeroMemory,addr dbgsymbol,sizeof dbgsymbol
 	invoke SymInitialize,hProcess,0,FALSE
 	.if eax
 		invoke SymLoadModule,hProcess,0,lpFileName,0,0,0
@@ -233,16 +204,15 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 ;					push	hProcess
 ;					call	ebx
 ;				.endif
-
+				push 0
 				invoke SymUnloadModule,hProcess,dwModuleBase
 			.endif
 		.else
 			invoke PutString,addr szSymLoadModule
 		.endif
 		invoke SymCleanup,hProcess
-		PrintDec inxsource
-		PrintDec inxline
-		PrintDec inxsymbol
+		invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
+		invoke PutString,addr buffer
 	.else
 		invoke PutString,addr szSymInitialize
 	.endif
