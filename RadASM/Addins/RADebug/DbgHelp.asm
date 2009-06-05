@@ -133,8 +133,10 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 			mov		[edi].DEBUGLINE.LineNumber,eax
 			mov		eax,[ebx].SRCCODEINFO.Address
 			mov		[edi].DEBUGLINE.Address,eax
-			mov		[edi].DEBUGLINE.SourceByte,-1
-			mov		[edi].DEBUGLINE.BreakPoint,0
+;			mov		[edi].DEBUGLINE.SourceByte,0
+;			mov		[edi].DEBUGLINE.BpSet,FALSE
+;			mov		[edi].DEBUGLINE.NoDebug,FALSE
+;			mov		[edi].DEBUGLINE.BreakPoint,FALSE
 			inc		dbg.inxline
 			pop		ecx
 			.break

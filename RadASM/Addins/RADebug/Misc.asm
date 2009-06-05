@@ -1,3 +1,5 @@
+GetFileIDFromProjectFileID		PROTO	:DWORD
+AnyBreakPoints					PROTO
 
 .code
 
@@ -142,3 +144,98 @@ DumpLine proc uses ebx esi edi,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 
 DumpLine endp
 
+EnableMenu proc uses esi edi
+	LOCAL	hREd:HWND
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nLine:DWORD
+	LOCAL	nInx:DWORD
+
+	mov		esi,offset IDAddIn+4
+	mov		eax,lpData
+	.if [eax].ADDINDATA.fProject && !fNoDebugInfo
+		; Toggle &Breakpoint
+		invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
+		; Run &To Caret
+		invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+		mov		eax,lpHandles
+		.if [eax].ADDINHANDLES.hEdit
+			mov		edx,[eax].ADDINHANDLES.hEdit
+			mov		hREd,edx
+			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,0
+			.if eax==ID_EDIT
+				.if dbg.hDbgThread
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					mov		nLine,eax
+					mov		eax,lpHandles
+					invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
+					invoke GetFileIDFromProjectFileID,eax
+					.if eax
+						mov		edx,nLine
+						inc		edx
+						xor		ecx,ecx
+						mov		edi,dbg.hMemLine
+						.while ecx<dbg.inxline
+							.if edx==[edi].DEBUGLINE.LineNumber
+								.if ax==[edi].DEBUGLINE.FileID
+									.break
+								.endif
+							.endif
+							inc		ecx
+							add		edi,sizeof DEBUGLINE
+						.endw
+						.if ecx!=dbg.inxline
+							; Toggle &Breakpoint
+							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+							; Run &To Caret
+							invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
+						.endif
+					.endif
+				.else
+					; Toggle &Breakpoint
+					invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+				.endif
+			.endif
+		.endif
+		; &Clear Breakpoints
+		invoke AnyBreakPoints
+		.if eax
+			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
+		.else
+			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
+		.endif
+		; &Run
+		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
+		; Do not Debug
+		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
+		.if dbg.hDbgThread
+			; &Stop
+			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
+			; Step &Into
+			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
+			; Step &Over
+			mov		eax,MF_BYCOMMAND or MF_GRAYED
+			.if dbg.inxsource
+				mov		eax,MF_BYCOMMAND or MF_ENABLED
+			.endif
+			invoke EnableMenuItem,hMnu,[esi+20],eax
+		.else
+			; &Stop
+			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
+			; Step &Into
+			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_GRAYED
+			; Step &Over
+			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED
+			; Run &To Caret
+			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+		.endif
+	.else
+		; No project loaded, disable all
+		.while dword ptr [esi]
+			invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
+			add		esi,4
+		.endw
+	.endif
+	ret
+
+EnableMenu endp

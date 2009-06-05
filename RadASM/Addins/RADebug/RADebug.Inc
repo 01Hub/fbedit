@@ -69,8 +69,8 @@ tagACCEL struct
 tagACCEL ends
 
 BREAKPOINT struct
-	ProjectFileID			DWORD ?								; Project file id
-	LineNumber				DWORD ?								; Line number, zero based
+	ProjectFileID			DWORD ?					; Project file id
+	LineNumber				DWORD ?					; Line number, zero based
 BREAKPOINT ends
 
 PROPERTIES struct
@@ -88,9 +88,8 @@ DEBUGLINE struct
 	LineNumber              DWORD ?
 	Address                 DWORD ?
 	FileID					WORD ?
-	SourceByte				WORD ?
-	NoDebug					WORD ?
-	BreakPoint				WORD ?
+	NoDebug					BYTE ?
+	BreakPoint				BYTE ?
 DEBUGLINE ends
 
 DEBUGSYMBOL struct
@@ -116,7 +115,7 @@ DEBUG struct
 	prevhwnd				DWORD ?					; Previous hilited line window handle
 	szprevline				db 256 dup(?)			; Line text
 	lpthread				DWORD ?					; Pointer to current thread
-	thread					DEBUGTHREAD 32 dup(<>)		; Threads
+	thread					DEBUGTHREAD 32 dup(<>)	; Threads
 	context					CONTEXT <>				; Context
 	prevcontext				CONTEXT <>				; Previous Context
 	inxsource				DWORD ?					; Index to next free DEBUGSOURCE
@@ -125,7 +124,12 @@ DEBUG struct
 	hMemSymbol				HGLOBAL ?				; Handle to memory containing DEBUGSYMBOL structures
 	inxline					DWORD ?					; Index to next free DEBUGLINE
 	hMemLine				HGLOBAL ?				; Handle to memory containing DEBUGLINE structures
+	hMemNoBP				HGLOBAL ?
+	hMemBP					HGLOBAL ?
+	minadr					DWORD ?					; Lowest address
+	maxadr					DWORD ?					; Highest address
 	func					DWORD ?					; Current debug function
+	fHandled				DWORD ?
 DEBUG ends
 
 .const
@@ -205,3 +209,4 @@ szFileName						db MAX_PATH dup(?)
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
 dbg								DEBUG <>
+fNoDebugInfo					dd ?

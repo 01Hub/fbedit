@@ -1,7 +1,9 @@
-RadASM debug addin.
+RadASM source code debug addin.
 
 NOTE!
-The addin uses dbghelp,dll version 6.4 or higher.
+The addin uses dbghelp.dll version 6.4 or higher.
+http://msdn.microsoft.com/en-us/library/ms679294.aspx
+http://www.microsoft.com/whdc/devtools/debugging/default.mspx
 
 How to install:
 -----------------------------------------------------------------------------
@@ -23,30 +25,37 @@ o Set a breakpoint in your source using Make/Debug/Toggle Breakpoint
     on a line that does not produce any code.
   - You will get an error if there are unsaved source files.
   - You will get an error if any source files are newer than the exe.
-  - Execution will stop when a breakpoint is reached.
+  - Execution will halt when a breakpoint is reached.
     Output window #1 will show some debug info.
     Output window #2 will show registers.
   - Use Step Into, Step Over, Run To Caret or Run to continue execution.
-  - Use Toggle Breakpoint to set a new breakpoint or Clear Breakpoints to
-    clear all breakpoints.
+  - Use Toggle Breakpoint to set a new breakpoint or use Clear Breakpoints
+    to clear all breakpoints.
   - Use Stop to stop execution.
   - Multithreading is supported. Each thread gets to execute one line
     at a time, very confusing.
+  - Use Do Not Debug to select procs that you dont want to debug. Typically
+    you dont want to debug the WndProc and messageloop in a GUI application.
+o NOTE!
+  - The debug menu will be disabled if no project is open or the debugger
+    can not find any debug info.
+  - The addin will only work with RadASM 2.2.1.6 or higher.
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.1
+  - Step Over is enabled.
+  - Do Not Debug is enabled.
+  - Fixed bugs.
+  - Speed optimized breakpoint handling.
 o Uploaded version 1.0.0.0
   - Step Over is disabled (Needs size of proc).
   - Do Not Debug is disabled (Needs size of proc).
-o Uploaded version 1.0.0.1
-  - Step Over is enabled.
-  - Do Not Debug is enabled.
 
 To do:
 -----------------------------------------------------------------------------
-o Speed optimize. Sort lines using Address to an array of pointers.
-  Use successive approximation to find a line.
 o Immediate window to inspect variables, proc parameters and locals.
 o Tooltip on mouse over a variable, proc parameter or local.
+o Support for other assemblers / compilers than masm.
 
 KetilO

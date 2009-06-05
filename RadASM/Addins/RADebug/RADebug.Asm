@@ -168,102 +168,6 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 
 CreateDebugMenu endp
 
-EnableMenu proc uses esi edi
-	LOCAL	hREd:HWND
-	LOCAL	chrg:CHARRANGE
-	LOCAL	nLine:DWORD
-	LOCAL	nInx:DWORD
-
-	mov		esi,offset IDAddIn+4
-	mov		eax,lpData
-	.if [eax].ADDINDATA.fProject
-		; Toggle &Breakpoint
-		invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
-		; Run &To Caret
-		invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
-		mov		eax,lpHandles
-		.if [eax].ADDINHANDLES.hEdit
-			mov		edx,[eax].ADDINHANDLES.hEdit
-			mov		hREd,edx
-			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,0
-			.if eax==ID_EDIT
-				.if dbg.hDbgThread
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-					mov		nLine,eax
-					mov		eax,lpHandles
-					invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
-					invoke GetFileIDFromProjectFileID,eax
-					.if eax
-						mov		edx,nLine
-						inc		edx
-						xor		ecx,ecx
-						mov		edi,dbg.hMemLine
-						.while ecx<dbg.inxline
-							.if edx==[edi].DEBUGLINE.LineNumber
-								.if ax==[edi].DEBUGLINE.FileID
-									.break
-								.endif
-							.endif
-							inc		ecx
-							add		edi,sizeof DEBUGLINE
-						.endw
-						.if ecx!=dbg.inxline
-							; Toggle &Breakpoint
-							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
-							; Run &To Caret
-							invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
-						.endif
-					.endif
-				.else
-					; Toggle &Breakpoint
-					invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
-				.endif
-			.endif
-		.endif
-		; &Clear Breakpoints
-		invoke AnyBreakPoints
-		.if eax
-			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
-		.else
-			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
-		.endif
-		; &Run
-		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
-		; Do not Debug
-		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
-		.if dbg.hDbgThread
-			; &Stop
-			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
-			; Step &Into
-			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
-			; Step &Over
-			mov		eax,MF_BYCOMMAND or MF_GRAYED
-			.if dbg.inxsource
-				mov		eax,MF_BYCOMMAND or MF_ENABLED
-			.endif
-			invoke EnableMenuItem,hMnu,[esi+20],eax
-		.else
-			; &Stop
-			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
-			; Step &Into
-			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_GRAYED
-			; Step &Over
-			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED
-			; Run &To Caret
-			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
-		.endif
-	.else
-		; No project loaded, disable all
-		.while dword ptr [esi]
-			invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
-			add		esi,4
-		.endw
-	.endif
-	ret
-
-EnableMenu endp
-
 EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 
 	mov		eax,uMsg
@@ -325,6 +229,14 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0
 		invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,0,0
+		mov		eax,IDC_BTNDONOTDEBUG
+		call	Disable
+		mov		eax,IDC_BTNDEBUG
+		call	Disable
+		mov		eax,IDC_BTNDONOTDEBUGALL
+		call	Disable
+		mov		eax,IDC_BTNDEBUGALL
+		call	Disable
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -398,6 +310,11 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,TRUE
 	ret
 
+Disable:
+	invoke GetDlgItem,hWin,eax
+	invoke EnableWindow,eax,FALSE
+	retn
+
 DoNotDebugProc endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
@@ -467,12 +384,16 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[12]
 			;&Run
 			.if dbg.hDbgThread
-				mov		dbg.func,FUNC_RUN
-				mov		ebx,dbg.lpthread
-				invoke ClearBreakPointsAll
-				invoke SetBreakPoints
-				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
-				invoke ResumeAllThreads
+				.if dbg.fHandled
+					mov		dbg.fHandled,FALSE
+					invoke ResetSelectLine
+					mov		dbg.func,FUNC_RUN
+					mov		ebx,dbg.lpthread
+					invoke ClearBreakPointsAll
+					invoke SetBreakPoints
+					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+					invoke ResumeAllThreads
+				.endif
 			.else
 				mov		ebx,lpData
 				.if [ebx].ADDINDATA.fProject
@@ -521,62 +442,75 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[16]
 			;&Stop
 			.if dbg.hDbgThread
+				invoke ResetSelectLine
 				mov		dbg.func,FUNC_STOP
 				invoke TerminateProcess,dbg.pinfo.hProcess,0
 			.endif
 		.elseif edx==IDAddIn[20]
 			;Step &Into
 			.if dbg.hDbgThread
-			  StepInto:
-				mov		dbg.func,FUNC_STEPINTO
-				mov		ebx,dbg.lpthread
-				add		ebx,sizeof DEBUGTHREAD
-				.if ![ebx].DEBUGTHREAD.htread
-					lea		ebx,dbg.thread
-				.endif
-				mov		dbg.lpthread,ebx
-				invoke SetBreakPointsAll,FALSE
-				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
-				.if [ebx].DEBUGTHREAD.suspended
-					mov		[ebx].DEBUGTHREAD.suspended,FALSE
-					invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+				.if dbg.fHandled
+					mov		dbg.fHandled,FALSE
+					invoke ResetSelectLine
+				  StepInto:
+					mov		dbg.func,FUNC_STEPINTO
+					mov		ebx,dbg.lpthread
+					add		ebx,sizeof DEBUGTHREAD
+					.if ![ebx].DEBUGTHREAD.htread
+						lea		ebx,dbg.thread
+					.endif
+					mov		dbg.lpthread,ebx
+					invoke SetBreakPointsAll,FALSE
+					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+					.if [ebx].DEBUGTHREAD.suspended
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+					.endif
 				.endif
 			.endif
 		.elseif edx==IDAddIn[24]
 			;Step &Over
 			.if dbg.hDbgThread
-				invoke IsLineCall
-				.if !eax
-					jmp		StepInto
-				.endif
-				mov		ebx,dbg.lpthread
-				mov		ebx,[ebx].DEBUGTHREAD.lpline
-				mov		ax,[ebx].DEBUGLINE.FileID
-				lea		ebx,[ebx+sizeof DEBUGLINE]
-				.if ax==[ebx].DEBUGLINE.FileID
-					;Step &Over
-					mov		dbg.func,FUNC_STEPOVER
-					invoke ClearBreakPointsAll
-					invoke SetBreakpointAtCurrentLine,[ebx].DEBUGLINE.LineNumber
-					mov		ebx,dbg.lpthread
-					.if [ebx].DEBUGTHREAD.suspended
-						mov		[ebx].DEBUGTHREAD.suspended,FALSE
-						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+				.if dbg.fHandled
+					mov		dbg.fHandled,FALSE
+					invoke ResetSelectLine
+					invoke IsLineCall
+					.if !eax
+						jmp		StepInto
 					.endif
-				.else
-					jmp		StepInto
+					mov		ebx,dbg.lpthread
+					mov		ebx,[ebx].DEBUGTHREAD.lpline
+					mov		ax,[ebx].DEBUGLINE.FileID
+					lea		ebx,[ebx+sizeof DEBUGLINE]
+					.if ax==[ebx].DEBUGLINE.FileID
+						;Step &Over
+						mov		dbg.func,FUNC_STEPOVER
+						invoke ClearBreakPointsAll
+						invoke SetBreakpointAtCurrentLine,[ebx].DEBUGLINE.LineNumber
+						mov		ebx,dbg.lpthread
+						.if [ebx].DEBUGTHREAD.suspended
+							mov		[ebx].DEBUGTHREAD.suspended,FALSE
+							invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+						.endif
+					.else
+						jmp		StepInto
+					.endif
 				.endif
 			.endif
 		.elseif edx==IDAddIn[28]
 			;Run &To Caret
 			.if dbg.hDbgThread
-				mov		dbg.func,FUNC_RUNTOCARET
-				invoke ClearBreakPointsAll
-				invoke SetBreakpointAtCurrentLine,0
-				mov		ebx,dbg.lpthread
-				.if [ebx].DEBUGTHREAD.suspended
-					mov		[ebx].DEBUGTHREAD.suspended,FALSE
-					invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+				.if dbg.fHandled
+					mov		dbg.fHandled,FALSE
+					invoke ResetSelectLine
+					mov		dbg.func,FUNC_RUNTOCARET
+					invoke ClearBreakPointsAll
+					invoke SetBreakpointAtCurrentLine,0
+					mov		ebx,dbg.lpthread
+					.if [ebx].DEBUGTHREAD.suspended
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+					.endif
 				.endif
 			.endif
 		.elseif edx==IDAddIn[32]
