@@ -5,22 +5,34 @@ LockFiles						PROTO	:DWORD
 .const
 
 szBP							db 0CCh
-szDump							db 'Reg     Hex       Dec',0Dh,'-------------------------------',0Dh,0
-szDec							db '  %u',0Dh,0
+szDump							db 'Reg     Hex                 Dec',0Dh,'-------------------------------',0Dh,0
+szDec							db '%u',0Dh,0
 szRegs							db 'EAX     ',0,'ECX     ',0,'EDX     ',0,'EBX     ',0,'ESP     ',0,'EBP     ',0,'ESI     ',0,'EDI     ',0,'EIP     ',0,'EFL     ',0
+szDecSpace						db '                ',0
+
+.data?
+
+szContext						db 1024 dup(?)
+LineChanged						dd 32 dup(?)
 
 .code
 
 ShowContext proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
+	LOCAL	decbuff[32]:BYTE
 	LOCAL	hOut2:HWND
 	LOCAL	nLine:DWORD
+	LOCAL	szContextPtr:DWORD
+	LOCAL	LineChangedInx:DWORD
 
+	mov		szContextPtr,offset szContext
+	mov		LineChangedInx,0
+	mov		LineChanged,0
 	mov		eax,lpHandles
 	mov		eax,[eax].ADDINHANDLES.hOut2
 	mov		hOut2,eax
-	invoke SetWindowText,hOut2,addr szNULL
-	invoke SendMessage,hOut2,EM_REPLACESEL,FALSE,addr szDump
+	mov		eax,offset szDump
+	call	AddText
 	mov		nLine,2
 	mov		esi,offset szRegs
 	mov		ebx,dbg.context.regEax
@@ -54,15 +66,38 @@ ShowContext proc uses ebx esi edi
 	mov		edi,dbg.prevcontext.regFlag
 	call	RegOut
 	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
+	invoke SetWindowText,hOut2,addr szContext
+	mov		ebx,offset LineChanged
+	.while dword ptr [ebx]
+		invoke SendMessage,hOut2,REM_LINEREDTEXT,[ebx],TRUE
+		lea		ebx,[ebx+4]
+	.endw
 	ret
+
+AddText:
+	invoke lstrcpy,szContextPtr,eax
+	invoke lstrlen,szContextPtr
+	add		szContextPtr,eax
+	retn
 
 RegOut:
 	invoke lstrcpy,addr buffer,esi
 	invoke HexDWORD,addr buffer[8],ebx
-	invoke wsprintf,addr buffer[16],addr szDec,ebx
-	invoke SendMessage,hOut2,EM_REPLACESEL,FALSE,addr buffer
+	invoke lstrcat,addr buffer,addr szDecSpace
+	invoke wsprintf,addr decbuff,addr szDec,ebx
+	invoke lstrlen,addr decbuff
+	mov		edx,15
+	sub		edx,eax
+	invoke lstrcpy,addr buffer[edx+17],addr decbuff
+	lea		eax,buffer
+	call	AddText
 	.if ebx!=edi
-		invoke SendMessage,hOut2,REM_LINEREDTEXT,nLine,TRUE
+		mov		edx,LineChangedInx
+		lea		edx,[edx*4+offset LineChanged]
+		mov		eax,nLine
+		mov		[edx],eax
+		mov		dword ptr [edx+4],0
+		inc		LineChangedInx
 	.endif
 	invoke lstrlen,esi
 	lea		esi,[esi+eax+1]
@@ -337,66 +372,40 @@ ClearBreakPointsAll endp
 
 FindLine proc uses ebx esi edi,Address:DWORD
 	LOCAL	inx:DWORD
-	LOCAL	half:DWORD
 	LOCAL	lower:DWORD
 	LOCAL	upper:DWORD
 
-	.if eax<32
-		mov		ebx,dbg.inxline
-		mov		edi,dbg.hMemLine
-		call	Linear
-	.else
-
-;mov		esi,dbg.inxline
-;mov		lower,0
-;mov		upper,esi
-;shr		esi,1
-;mov		half,esi
-;mov		inx,esi
-;.while esi>32
-;	call	TestIt
-;	.if sdword ptr eax<0
-;		; Lower half
-;		sub		upper,esi
-;		shr		esi,1
-;		sub		inx,esi
-;	.elseif sdword ptr eax>0
-;		; Upper half
-;		add		lower,esi
-;		shr		esi,1
-;		sub		inx,esi
-;	.else
-;		; Found
-;		jmp		Ex
-;	.endif
-;.endw
-		mov		eax,dbg.inxline
-		mov		lower,0
-		mov		upper,eax
+	mov		eax,dbg.inxline
+	mov		lower,0
+	mov		upper,eax
+	.while TRUE
+		mov		eax,upper
+		sub		eax,lower
+		.break .if !eax
 		shr		eax,1
-		mov		half,eax
+		add		eax,lower
 		mov		inx,eax
-		call	TestIt
+		call	Compare
 		.if sdword ptr eax<0
-			; Lower half
-			mov		ebx,inx
-			mov		edi,dbg.hMemLine
-			call	Linear
+			; Smaller
+			mov		eax,inx
+			mov		upper,eax
 		.elseif sdword ptr eax>0
-			; Upper half
-			mov		ebx,dbg.inxline
-			sub		ebx,inx
-			call	Linear
+			; Larger
+			mov		eax,inx
+			mov		lower,eax
 		.else
 			; Found
 			jmp		Ex
 		.endif
-	.endif
+	.endw
+	; Not found, should never happend
+	call	Linear
   Ex:
 	mov		eax,edi
 	ret
 
-TestIt:
+Compare:
 	call	GetPointerFromInx
 	mov		eax,Address
 	sub		eax,[edi].DEBUGLINE.Address
@@ -411,6 +420,8 @@ GetPointerFromInx:
 	retn
 
 Linear:
+	mov		ebx,dbg.inxline
+	mov		edi,dbg.hMemLine
 	mov		eax,Address
 	.while ebx
 		.if eax==[edi].DEBUGLINE.Address
@@ -505,9 +516,11 @@ IsLineCall endp
 ResumeAllThreads proc uses ebx
 
 	lea		ebx,dbg.thread
-	.while [ebx].DEBUGTHREAD.htread && [ebx].DEBUGTHREAD.suspended
-		mov		[ebx].DEBUGTHREAD.suspended,FALSE
-		invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+	.while [ebx].DEBUGTHREAD.htread
+		.if [ebx].DEBUGTHREAD.suspended
+			mov		[ebx].DEBUGTHREAD.suspended,FALSE
+			invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+		.endif
 		add		ebx,sizeof DEBUGTHREAD
 	.endw
 	ret
@@ -561,6 +574,23 @@ RemoveThread proc uses esi edi,ThreadID:DWORD
 
 RemoveThread endp
 
+SwitchThread proc uses ebx
+
+	mov		ebx,dbg.lpthread
+	add		ebx,sizeof DEBUGTHREAD
+	.while [ebx].DEBUGTHREAD.htread
+		.if [ebx].DEBUGTHREAD.suspended
+			jmp		Ex
+		.endif
+		add		ebx,sizeof DEBUGTHREAD
+	.endw
+	lea		ebx,dbg.thread
+  Ex:
+	mov		eax,ebx
+	ret
+
+SwitchThread endp
+
 Debug proc uses ebx,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
@@ -606,6 +636,7 @@ Debug proc uses ebx,lpFileName:DWORD
 			mul		edx
 			lea		ebx,[ebx+eax]
 			mov		eax,[ebx].DEBUGLINE.Address
+			add		eax,4
 			mov		dbg.maxadr,eax
 			sub		eax,dbg.minadr
 			mov		ebx,eax
@@ -687,16 +718,13 @@ Debug proc uses ebx,lpFileName:DWORD
 				mov		eax,de.u.CreateProcessInfo.hFile
 				mov		dbg.hdbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
-				mov		eax,dbg.maxadr
-				.if eax>de.u.CreateThread.lpStartAddress
-					mov		ebx,dbg.lpthread
-					.if ![ebx].DEBUGTHREAD.suspended
-						mov		[ebx].DEBUGTHREAD.suspended,TRUE
-						invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-					.endif
-					invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
-					invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+				mov		ebx,dbg.lpthread
+				.if ![ebx].DEBUGTHREAD.suspended && dbg.func!=FUNC_RUN
+					mov		[ebx].DEBUGTHREAD.suspended,TRUE
+					invoke SuspendThread,[ebx].DEBUGTHREAD.htread
 				.endif
+				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
+				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax

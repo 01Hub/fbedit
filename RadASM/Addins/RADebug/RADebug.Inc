@@ -115,7 +115,7 @@ DEBUG struct
 	prevhwnd				DWORD ?					; Previous hilited line window handle
 	szprevline				db 256 dup(?)			; Line text
 	lpthread				DWORD ?					; Pointer to current thread
-	thread					DEBUGTHREAD 32 dup(<>)	; Threads
+	thread					DEBUGTHREAD 64 dup(<>)	; Threads
 	context					CONTEXT <>				; Context
 	prevcontext				CONTEXT <>				; Previous Context
 	inxsource				DWORD ?					; Index to next free DEBUGSOURCE
@@ -189,11 +189,13 @@ szNoDebug						db 'NoDebug',0
 szShowDbgHelp					db 'Show DbgHelp output',0
 AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
 								ADDINOPT <0,0,0>
+sztooltips_class32				db 'tooltips_class32',0
 
 .data?
 
 hInstance						HINSTANCE ?						; Dll's module handle
 hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
+hTip							HWND ?							; Tooltip
 fOptions						dd ?							; Options for RADebug
 lpHandles						dd ?							; Pointer to handles struct
 lpProc							dd ?							; Pointer to proc struct

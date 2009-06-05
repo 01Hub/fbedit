@@ -169,8 +169,29 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 CreateDebugMenu endp
 
 EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+	LOCAL	ti:TOOLINFO
 
 	mov		eax,uMsg
+	.if eax==WM_MOUSEMOVE
+		.if dbg.hDbgThread
+			mov		ti.cbSize,SizeOf TOOLINFO
+			invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
+			mov		eax,hWin
+			.if eax!=ti.hWnd
+				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+				mov		eax,hWin
+				mov		ti.hWnd,eax
+				mov		ti.uId,eax
+				mov		eax,hInstance
+				mov		ti.hInst,eax
+				mov		eax,offset sztooltips_class32
+				mov		ti.lpszText,eax
+				invoke SendMessage,hTip,TTM_ADDTOOL,0,addr ti
+			.endif
+;			invoke SendMessage,hTip,TTM_ACTIVATE,FALSE,0
+;			invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+		.endif
+	.endif
 	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
 	ret
 
@@ -229,14 +250,16 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0
 		invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,0,0
-		mov		eax,IDC_BTNDONOTDEBUG
-		call	Disable
-		mov		eax,IDC_BTNDEBUG
-		call	Disable
-		mov		eax,IDC_BTNDONOTDEBUGALL
-		call	Disable
-		mov		eax,IDC_BTNDEBUGALL
-		call	Disable
+		.if dbg.hDbgThread
+			mov		eax,IDC_BTNDONOTDEBUG
+			call	Disable
+			mov		eax,IDC_BTNDEBUG
+			call	Disable
+			mov		eax,IDC_BTNDONOTDEBUGALL
+			call	Disable
+			mov		eax,IDC_BTNDEBUGALL
+			call	Disable
+		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -338,6 +361,12 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		mov		eax,lpHandles
 		mov		eax,[eax].ADDINHANDLES.hOut1
 		mov		hOut,eax
+		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
+		mov		hTip,eax
+		invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
+		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,2000
+		invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
 		; Messages to hook into
 		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
 	.endif
@@ -384,7 +413,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[12]
 			;&Run
 			.if dbg.hDbgThread
-				.if dbg.fHandled
+				;.if dbg.fHandled
 					mov		dbg.fHandled,FALSE
 					invoke ResetSelectLine
 					mov		dbg.func,FUNC_RUN
@@ -393,7 +422,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke SetBreakPoints
 					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 					invoke ResumeAllThreads
-				.endif
+				;.endif
 			.else
 				mov		ebx,lpData
 				.if [ebx].ADDINDATA.fProject
@@ -421,6 +450,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							mov		edx,lpHandles
 							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.else
+							mov		dbg.func,FUNC_RUN
 							push	1
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpOutputSelect
@@ -454,12 +484,9 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke ResetSelectLine
 				  StepInto:
 					mov		dbg.func,FUNC_STEPINTO
-					mov		ebx,dbg.lpthread
-					add		ebx,sizeof DEBUGTHREAD
-					.if ![ebx].DEBUGTHREAD.htread
-						lea		ebx,dbg.thread
-					.endif
-					mov		dbg.lpthread,ebx
+					invoke SwitchThread
+					mov		dbg.lpthread,eax
+					mov		ebx,eax
 					invoke SetBreakPointsAll,FALSE
 					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 					.if [ebx].DEBUGTHREAD.suspended
@@ -520,9 +547,10 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.endif
 	.elseif eax==AIM_EDITOPEN
 		invoke EnableMenu
-		invoke LoadBreakPoints
 		.if lParam==ID_EDIT
-			invoke SetWindowLong,wParam,GWL_WNDPROC,offset EditProc
+			invoke LoadBreakPoints
+			invoke SendMessage,wParam,REM_SUBCLASS,0,offset EditProc
+			;invoke SetWindowLong,wParam,GWL_WNDPROC,offset EditProc
 			mov		lpOldEditProc,eax
 		.endif
 		.if dbg.hDbgThread
