@@ -35,7 +35,8 @@ o Set a breakpoint in your source using Make/Debug/Toggle Breakpoint
   - Multithreading is supported. Each thread gets to execute one line
     at a time, very confusing.
   - Use Do Not Debug to select procs that you dont want to debug. Typically
-    you dont want to debug the WndProc and messageloop in a GUI application.
+    you dont want to debug the WndProc and the messageloop (WinMain) in a GUI
+    application.
 o NOTE!
   - The debug menu will be disabled if no project is open or the debugger
     can not find any debug info.
@@ -57,6 +58,6 @@ To do:
 -----------------------------------------------------------------------------
 o Immediate window to inspect variables, proc parameters and locals.
 o Tooltip on mouse over a variable, proc parameter or local.
-o Support for other assemblers / compilers than masm.
+o Support for other assemblers / compilers besides masm.
 
 KetilO

@@ -233,68 +233,40 @@ MapNoDebug proc uses ebx esi edi
 
 MapNoDebug endp
 
-RestoreSourceByte proc uses ebx edi,lpLine:DWORD
-
-	mov		edi,lpLine
-	.if edi
-		mov		ebx,dbg.hMemNoBP
-		add		ebx,[edi].DEBUGLINE.Address
-		sub		ebx,dbg.minadr
-		invoke WriteProcessMemory,dbg.hdbghand,[edi].DEBUGLINE.Address,ebx,1,0
+RestoreSourceByte proc uses ebx edi,Address:DWORD
+	
+	mov		eax,Address
+	.if eax
+		call	Restore
+	.else
+		lea		ebx,dbg.thread
+		.while [ebx].DEBUGTHREAD.htread
+			mov		eax,[ebx].DEBUGTHREAD.address
+			.if eax
+				call	Restore
+			.endif
+			lea		ebx,[ebx+sizeof DEBUGTHREAD]
+		.endw
 	.endif
 	ret
+
+Restore:
+	mov		edi,dbg.hMemNoBP
+	add		edi,eax
+	sub		edi,dbg.minadr
+	invoke WriteProcessMemory,dbg.hdbghand,eax,edi,1,0
+	retn
 
 RestoreSourceByte endp
 
-SetBreakPointsAll proc uses ebx esi edi,fNoProc:DWORD
+SetBreakPointsAll proc uses ebx esi edi
 
-	mov		edi,dbg.hMemLine
-	xor		ebx,ebx
-	.if fNoProc
-		;Step Over
-		.while ebx<dbg.inxline
-			.if ![edi].DEBUGLINE.NoDebug
-				call	IsAddressProc
-				.if !eax
-					; Set BP
-					invoke WriteProcessMemory,dbg.hdbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
-				.else
-					.while [edi+sizeof DEBUGLINE].DEBUGLINE.Address<eax
-						; Reset BP
-						push	eax
-						invoke RestoreSourceByte,edi
-						pop		eax
-						lea		edi,[edi+sizeof DEBUGLINE]
-						inc		ebx
-					.endw
-				.endif
-			.endif
-			lea		edi,[edi+sizeof DEBUGLINE]
-			inc		ebx
-		.endw
-	.else
-		;Step Into
-		mov		edx,dbg.minadr
-		mov		ecx,dbg.maxadr
-		sub		ecx,edx
-		invoke WriteProcessMemory,dbg.hdbghand,edx,dbg.hMemBP,ecx,0
-	.endif
+	;Step Into
+	mov		edx,dbg.minadr
+	mov		ecx,dbg.maxadr
+	sub		ecx,edx
+	invoke WriteProcessMemory,dbg.hdbghand,edx,dbg.hMemBP,ecx,0
 	ret
-
-IsAddressProc:
-	mov		esi,dbg.hMemSymbol
-	mov		eax,[edi].DEBUGLINE.Address
-	mov		ecx,dbg.inxsymbol
-	.while ecx
-		.if eax==[esi].DEBUGSYMBOL.Address
-			add		eax,[esi].DEBUGSYMBOL.nSize
-			retn
-		.endif
-		lea		esi,[esi+sizeof DEBUGSYMBOL]
-		dec		ecx
-	.endw
-	xor		eax,eax
-	retn
 
 SetBreakPointsAll endp
 
@@ -606,23 +578,9 @@ Debug proc uses ebx,lpFileName:DWORD
 	;Create the process to be debugged
 	invoke CreateProcess,NULL,lpFileName,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS Or DEBUG_PROCESS Or DEBUG_ONLY_THIS_PROCESS,NULL,NULL,addr sinfo,addr dbg.pinfo
 	.if eax
-		; Allocate memory for DEBUGLINE, max 128K lines
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
-		mov		dbg.hMemLine,eax
-		; Allocate memory for DEBUGSYMBOL, max 16K symbols
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
-		mov		dbg.hMemSymbol,eax
-		; Allocate memory for DEBUGSOURCE, max 512 sources
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
-		mov		dbg.hMemSource,eax
-		; Zero the indexes
-		mov		dbg.inxsource,0
-		mov		dbg.inxline,0
-		mov		dbg.inxsymbol,0
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
-		invoke DbgHelp,dbg.pinfo.hProcess,lpFileName
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfo
 			invoke PutString,addr szExeName
@@ -702,6 +660,7 @@ Debug proc uses ebx,lpFileName:DWORD
 						invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
 						mov		dbg.context.regEip,eax
+						mov		[ebx].DEBUGTHREAD.address,eax
 						invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 						invoke ShowContext
 						mov		dbg.fHandled,TRUE
@@ -729,28 +688,24 @@ Debug proc uses ebx,lpFileName:DWORD
 				mov		dbg.hdbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
-				mov		ebx,dbg.lpthread
-				.if ![ebx].DEBUGTHREAD.suspended && [ebx].DEBUGTHREAD.isdebugged
-					mov		[ebx].DEBUGTHREAD.suspended,TRUE
-					invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-				.endif
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
 				mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
+					mov		dbg.lpthread,eax
 					invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
 					mov		ebx,eax
-					;lea		ebx,dbg.thread
 					.if [ebx].DEBUGTHREAD.suspended
-						;invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+						;invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						mov		dbg.lpthread,ebx
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
+				mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
 				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
@@ -781,9 +736,18 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke CloseHandle,dbg.pinfo.hThread
 		invoke CloseHandle,dbg.pinfo.hProcess
 		; Free debug memory
-		invoke GlobalFree,dbg.hMemLine
-		invoke GlobalFree,dbg.hMemSymbol
-		invoke GlobalFree,dbg.hMemSource
+		.if dbg.hMemLine
+			invoke GlobalFree,dbg.hMemLine
+			mov		dbg.hMemLine,0
+		.endif
+		.if dbg.hMemSymbol
+			invoke GlobalFree,dbg.hMemSymbol
+			mov		dbg.hMemSymbol,0
+		.endif
+		.if dbg.hMemSource
+			invoke GlobalFree,dbg.hMemSource
+			mov		dbg.hMemSource,0
+		.endif
 		invoke GlobalFree,dbg.hMemNoBP
 		invoke GlobalFree,dbg.hMemBP
 	.endif

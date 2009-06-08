@@ -471,7 +471,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					mov		ebx,dbg.lpthread
 					invoke ClearBreakPointsAll
 					invoke SetBreakPoints
-					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+					invoke RestoreSourceByte,0
 					invoke ResumeAllThreads
 				;.endif
 			.else
@@ -508,6 +508,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							call	[eax].ADDINPROCS.lpClearOut
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							mov		dbg.func,FUNC_RUN
+							invoke DbgHelp,0,addr szExeName
 							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 							mov		dbg.hDbgThread,eax
 						.endif
@@ -529,13 +530,17 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke ResetSelectLine
 				  StepInto:
 					mov		dbg.func,FUNC_STEPINTO
+					invoke SetBreakPointsAll
+					mov		ebx,dbg.lpthread
+					.if ![ebx].DEBUGTHREAD.suspended
+						mov		[ebx].DEBUGTHREAD.suspended,TRUE
+						invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+					.endif
 					invoke SwitchThread
-					mov		dbg.lpthread,eax
 					mov		ebx,eax
-					invoke SetBreakPointsAll,FALSE
-;					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+					mov		dbg.lpthread,ebx
 					.if [ebx].DEBUGTHREAD.suspended
-					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
@@ -596,7 +601,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.if lParam==ID_EDIT
 			invoke LoadBreakPoints
 			invoke SendMessage,wParam,REM_SUBCLASS,0,offset EditProc
-			;invoke SetWindowLong,wParam,GWL_WNDPROC,offset EditProc
 			mov		lpOldEditProc,eax
 		.endif
 		.if dbg.hDbgThread

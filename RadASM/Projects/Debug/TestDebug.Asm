@@ -75,7 +75,7 @@ start:
 	mov		eax,'EFGH'
 	invoke MyProc1
 	invoke MyProc2
-	invoke MyProc3
+;	invoke MyProc3
 	invoke MyProc4
 	jmp		Ex
 Ex:

@@ -103,6 +103,7 @@ DEBUGTHREAD struct
 	htread					HANDLE ?				; Thread handle
 	threadid				DWORD ?					; Thread ID
 	lpline					DWORD ?					; Pointer to line
+	address					DWORD ?					; Address
 	suspended				DWORD ?					; TRUE if suspended
 	isdebugged				DWORD ?
 DEBUGTHREAD ends

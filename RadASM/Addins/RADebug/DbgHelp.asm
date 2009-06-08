@@ -37,6 +37,7 @@ szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
 szSymEnumTypes					db 'SymEnumTypes',0
 szFinal							db 'DbgHelp found %u sources containing %u lines and %u symbols,',0Dh,0
+szDbgHelpFail					db 'Could not find DbgHelp.dll',0
 
 .data?
 
@@ -163,6 +164,20 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 	.if eax
 		mov		hDbgHelpDLL,eax
 		invoke GetDbgHelpVersion
+
+		; Allocate memory for DEBUGLINE, max 128K lines
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
+		mov		dbg.hMemLine,eax
+		; Allocate memory for DEBUGSYMBOL, max 16K symbols
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
+		mov		dbg.hMemSymbol,eax
+		; Allocate memory for DEBUGSOURCE, max 512 sources
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
+		mov		dbg.hMemSource,eax
+		; Zero the indexes
+		mov		dbg.inxsource,0
+		mov		dbg.inxline,0
+		mov		dbg.inxsymbol,0
 		;invoke SymInitialize,hProcess,0,FALSE
 		invoke GetProcAddress,hDbgHelpDLL,addr szSymInitialize
 		.if eax
@@ -200,27 +215,26 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 					call	ebx
 				.endif
 				.if im.SymType1!=SymNone
-					.if fOptions & 1
-						invoke PutString,addr szSymOk
-					.endif
 					;invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumSymbolsCallback,0
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
-					.if eax
-						mov		ebx,eax
-						push	0
-						push	offset EnumSymbolsCallback
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					;invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
-					.if fOptions & 1
-						invoke PutString,addr szSymEnumSourceFiles
-					.endif
+;					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
+;					.if eax
+;						mov		ebx,eax
+;						.if fOptions & 1
+;							invoke PutString,addr szSymOk
+;						.endif
+;						push	0
+;						push	offset EnumSymbolsCallback
+;						push	dwModuleBase
+;						push	hProcess
+;						call	ebx
+;					.endif
 					;invoke SymEnumSourceFiles,hProcess,dwModuleBase,0,0,offset EnumSourceFilesCallback,0
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 					.if eax
 						mov		ebx,eax
+						.if fOptions & 1
+							invoke PutString,addr szSymEnumSourceFiles
+						.endif
 						push	0
 						push	offset EnumSourceFilesCallback
 						push	0
@@ -289,6 +303,8 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 		.endif
 		invoke FreeLibrary,hDbgHelpDLL
 		mov		hDbgHelpDLL,0
+	.else
+		invoke PutString,addr szDbgHelpFail
 	.endif
 	ret
 
