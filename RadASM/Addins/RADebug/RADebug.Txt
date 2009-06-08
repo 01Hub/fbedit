@@ -46,6 +46,7 @@ Whats new:
 o Released version 1.0.0.1
   - Step Over is enabled.
   - Do Not Debug is enabled.
+  - Added tooltip to show register value when mouse is over a register.
   - Fixed bugs.
   - Speed optimized breakpoint handling.
 o Uploaded version 1.0.0.0

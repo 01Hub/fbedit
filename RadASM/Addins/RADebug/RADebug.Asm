@@ -170,26 +170,81 @@ CreateDebugMenu endp
 
 EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	ti:TOOLINFO
-
+	LOCAL	buffer[64]:BYTE
+	LOCAL	pt:POINT
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
+		mov		ti.cbSize,SizeOf TOOLINFO
+		mov		ti.uFlags,TTF_IDISHWND
+		mov		eax,hWin
+		mov		ti.hWnd,eax
+		mov		ti.uId,eax
+		mov		ti.lpszText,0
+		invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
 		.if dbg.hDbgThread
-			mov		ti.cbSize,SizeOf TOOLINFO
-			invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
-			mov		eax,hWin
-			.if eax!=ti.hWnd
+			.if !eax
 				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
 				mov		eax,hWin
 				mov		ti.hWnd,eax
 				mov		ti.uId,eax
 				mov		eax,hInstance
 				mov		ti.hInst,eax
-				mov		eax,offset sztooltips_class32
-				mov		ti.lpszText,eax
 				invoke SendMessage,hTip,TTM_ADDTOOL,0,addr ti
+			.else
+				invoke GetCursorPos,addr pt
+				mov		eax,pt.x
+				mov		edx,pt.y
+				sub		eax,dbg.pt.x
+				.if CARRY?
+					neg		eax
+				.endif
+				sub		edx,dbg.pt.y
+				.if CARRY?
+					neg		edx
+				.endif
+				.if eax>5 || edx>5
+					mov		eax,pt.x
+					mov		dbg.pt.x,eax
+					mov		eax,pt.y
+					mov		dbg.pt.y,eax
+					invoke GetParent,hWin
+					mov		edx,eax
+					invoke SendMessage,edx,REM_GETCURSORWORD,sizeof buffer,addr buffer
+					mov		edx,dword ptr buffer
+					and		edx,5F5F5Fh
+					.if edx=='XAE'
+						mov		eax,dbg.context.regEax
+					.elseif edx=='XBE'
+						mov		eax,dbg.context.regEbx
+					.elseif edx=='XCE'
+						mov		eax,dbg.context.regEcx
+					.elseif edx=='XDE'
+						mov		eax,dbg.context.regEdx
+					.elseif edx=='ISE'
+						mov		eax,dbg.context.regEsi
+					.elseif edx=='IDE'
+						mov		eax,dbg.context.regEdi
+					.elseif edx=='PBE'
+						mov		eax,dbg.context.regEbp
+					.elseif edx=='PSE'
+						mov		eax,dbg.context.regEsp
+					.else
+						invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
+						xor		edx,edx
+					.endif
+					.if edx
+						mov		dword ptr buffer[3],' = '
+						invoke HexDWORD,addr buffer[6],eax
+						lea		eax,buffer
+						mov		ti.lpszText,eax
+						invoke SendMessage,hTip,TTM_SETTOOLINFO,0,addr ti
+						invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
+						invoke SendMessage,hTip,TTM_ACTIVATE ,TRUE,0
+					.endif
+				.endif
 			.endif
-;			invoke SendMessage,hTip,TTM_ACTIVATE,FALSE,0
-;			invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+		.elseif eax
+			invoke SendMessage,hTip,TTM_DELTOOL,0,addr ti
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
@@ -344,32 +399,28 @@ DoNotDebugProc endp
 InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 
 	mov	ebx,hWin
-	invoke LoadLibrary,addr DbgHelpDLL
-	.if eax
-		mov		hDbgHelpDLL,eax
-		mov		eax,fOpt
-		mov		fOptions,eax
-		;Get pointer to handles struct
-		invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
-		mov		lpHandles,eax
-		;Get pointer to proc struct
-		invoke SendMessage,ebx,AIM_GETPROCS,0,0
-		mov		lpProc,eax
-		;Get pointer to data struct
-		invoke SendMessage,ebx,AIM_GETDATA,0,0	
-		mov		lpData,eax
-		mov		eax,lpHandles
-		mov		eax,[eax].ADDINHANDLES.hOut1
-		mov		hOut,eax
-		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
-		mov		hTip,eax
-		invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
-		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
-		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,2000
-		invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
-		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
-	.endif
+	mov		eax,fOpt
+	mov		fOptions,eax
+	;Get pointer to handles struct
+	invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
+	mov		lpHandles,eax
+	;Get pointer to proc struct
+	invoke SendMessage,ebx,AIM_GETPROCS,0,0
+	mov		lpProc,eax
+	;Get pointer to data struct
+	invoke SendMessage,ebx,AIM_GETDATA,0,0	
+	mov		lpData,eax
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hOut1
+	mov		hOut,eax
+	invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
+	mov		hTip,eax
+	invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+	invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
+	invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
+	invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
+	; Messages to hook into
+	mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
 	xor		edx,edx
@@ -450,7 +501,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							mov		edx,lpHandles
 							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.else
-							mov		dbg.func,FUNC_RUN
 							push	1
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpOutputSelect
@@ -458,13 +508,8 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							call	[eax].ADDINPROCS.lpClearOut
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							mov		dbg.func,FUNC_RUN
-							invoke LoadAllBreakPoints
-							invoke PutString,addr szDebuggingStarted
-							invoke PutString,addr szExeName
 							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 							mov		dbg.hDbgThread,eax
-							invoke EnableMenu
-							invoke LockFiles,TRUE
 						.endif
 					.endif
 				.endif
@@ -488,8 +533,9 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					mov		dbg.lpthread,eax
 					mov		ebx,eax
 					invoke SetBreakPointsAll,FALSE
-					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+;					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 					.if [ebx].DEBUGTHREAD.suspended
+					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
@@ -566,9 +612,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke SaveBreakPoints
 		;
 	.elseif eax==AIM_CLOSE
-		.if hDbgHelpDLL
-			invoke FreeLibrary,hDbgHelpDLL
-		.endif
 		;
 	.elseif eax==AIM_MENUREBUILD
 		mov		eax,lpHandles

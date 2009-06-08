@@ -1,6 +1,7 @@
 
 EnableMenu						PROTO
 LockFiles						PROTO	:DWORD
+LoadAllBreakPoints				PROTO
 
 .const
 
@@ -447,6 +448,7 @@ ResetSelectLine endp
 SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	LOCAL	chrg:CHARRANGE
 
+	invoke ResetSelectLine
 	mov		edi,lpHandles
 	mov		ebx,lpDEBUGLINE
 	mov		eax,[ebx].DEBUGLINE.LineNumber
@@ -623,9 +625,16 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke DbgHelp,dbg.pinfo.hProcess,lpFileName
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfo
+			invoke PutString,addr szExeName
 			mov		fNoDebugInfo,TRUE
+			invoke EnableMenu
 		.else
+			invoke PutString,addr szDebuggingStarted
+			invoke PutString,addr szExeName
 			mov		fNoDebugInfo,FALSE
+			invoke EnableMenu
+			invoke LockFiles,TRUE
+			invoke LoadAllBreakPoints
 			invoke MapNoDebug
 			mov		ebx,dbg.hMemLine
 			mov		eax,[ebx].DEBUGLINE.Address
@@ -681,6 +690,7 @@ Debug proc uses ebx,lpFileName:DWORD
 						mov		dbg.lpthread,ebx
 						.if ![ebx].DEBUGTHREAD.suspended
 							mov		[ebx].DEBUGTHREAD.suspended,TRUE
+							mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
 							invoke SuspendThread,[ebx].DEBUGTHREAD.htread
 						.endif
 						invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
@@ -718,24 +728,27 @@ Debug proc uses ebx,lpFileName:DWORD
 				mov		eax,de.u.CreateProcessInfo.hFile
 				mov		dbg.hdbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
+				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				mov		ebx,dbg.lpthread
-				.if ![ebx].DEBUGTHREAD.suspended && dbg.func!=FUNC_RUN
+				.if ![ebx].DEBUGTHREAD.suspended && [ebx].DEBUGTHREAD.isdebugged
 					mov		[ebx].DEBUGTHREAD.suspended,TRUE
 					invoke SuspendThread,[ebx].DEBUGTHREAD.htread
 				.endif
-				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+				mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
 					invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
 					invoke RemoveThread,de.dwThreadId
-					lea		ebx,dbg.thread
+					invoke SwitchThread
+					mov		ebx,eax
+					;lea		ebx,dbg.thread
 					.if [ebx].DEBUGTHREAD.suspended
-						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
+						;invoke RestoreSourceByte,[ebx].DEBUGTHREAD.lpline
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
-						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 						mov		dbg.lpthread,ebx
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT

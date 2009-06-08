@@ -18,7 +18,7 @@ includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 includelib comctl32.lib
-includelib dbghelp.lib
+;includelib dbghelp.lib
 includelib version.lib
 
 ;#########################################################################
@@ -104,6 +104,7 @@ DEBUGTHREAD struct
 	threadid				DWORD ?					; Thread ID
 	lpline					DWORD ?					; Pointer to line
 	suspended				DWORD ?					; TRUE if suspended
+	isdebugged				DWORD ?
 DEBUGTHREAD ends
 
 DEBUG struct
@@ -130,6 +131,7 @@ DEBUG struct
 	maxadr					DWORD ?					; Highest address
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?
+	pt						POINT <>
 DEBUG ends
 
 .const

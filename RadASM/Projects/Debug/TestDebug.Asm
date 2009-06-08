@@ -60,8 +60,8 @@ start:
 	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
 	invoke CloseHandle,eax
 	mov		eax,'ABCD'
-	mov		eax,'EFGH'
-	mov		eax,'ABCD'
+	mov		ecx,'EFGH'
+	mov		edx,'ABCD'
 	mov		eax,'EFGH'
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
