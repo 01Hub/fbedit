@@ -608,9 +608,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.endif
 		;
 	.elseif eax==AIM_EDITSELCHANGE
-		.if dbg.hDbgThread
-			invoke EnableMenu
-		.endif
+		invoke EnableMenu
 		;
 	.elseif eax==AIM_EDITSAVED
 		invoke SaveBreakPoints

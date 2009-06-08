@@ -665,7 +665,7 @@ Debug proc uses ebx,lpFileName:DWORD
 						invoke ShowContext
 						mov		dbg.fHandled,TRUE
 					.else
-						mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+						;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
@@ -689,7 +689,7 @@ Debug proc uses ebx,lpFileName:DWORD
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
-				mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+				;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
@@ -705,7 +705,7 @@ Debug proc uses ebx,lpFileName:DWORD
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
-				mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+				;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
 				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
@@ -756,6 +756,7 @@ Debug proc uses ebx,lpFileName:DWORD
 	.if dbg.prevline!=-1
 		invoke SendMessage,dbg.prevhwnd,REM_SETHILITELINE,dbg.prevline,0
 	.endif
+	mov		fNoDebugInfo,FALSE
 	invoke EnableMenu
 	invoke LockFiles,FALSE
 	invoke PutString,addr szDebugStopped
