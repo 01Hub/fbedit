@@ -96,6 +96,8 @@ DEBUGSYMBOL struct
 	Address                 DWORD ?
 	nSize					DWORD ?
 	szName					db 64 dup(?)
+	lpType					DWORD ?
+	nType					WORD ?
 	NoDebug					WORD ?
 DEBUGSYMBOL ends
 
@@ -130,6 +132,7 @@ DEBUG struct
 	hMemBP					HGLOBAL ?
 	minadr					DWORD ?					; Lowest address
 	maxadr					DWORD ?					; Highest address
+	lpProc					DWORD ?					; Current proc
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?
 	pt						POINT <>
@@ -153,10 +156,7 @@ szRIP_EVENT						db 'RIP_EVENT',0
 szDebugStopped					db 'Debuging ended',0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
-
-szCall							db 'invoke',0
-								db 'call',0
-								db 0
+szSpace							db ' ',0
 
 szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
@@ -194,6 +194,47 @@ AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
 								ADDINOPT <0,0,0>
 sztooltips_class32				db 'tooltips_class32',0
 
+szProc							db '%s PROC Size %u',0
+szData							db '%s %s Address %X Size %u',0
+szDataVal						db '%s %s Address %X Size %u Hex %X Dec %d',0
+szParam							db 'PARAM %s Offst %d Hex %X Dec %d',0
+szLocal							db 'LOCAL %s Offset %d Hex %X Dec %d',0
+
+szCall							db 'invoke',0
+								db 'call',0
+;								db 'Add other call types here',0
+								db 0
+
+szBYTE							db 'DB',0
+								db 'BYTE',0
+;								db 'Add other byte types here',0
+								db 0
+
+szWORD							db 'DW',0
+								db 'WORD',0
+;								db 'Add other word types here',0
+								db 0
+
+szDWORD							db 'DD',0
+								db 'DWORD',0
+								db 'HWND',0
+								db 'HINSTANCE',0
+								db 'HANDLE',0
+								db 'HMODULE',0
+								db 'HGLOBAL',0
+								db 'HMENU',0
+								db 'HBITMAP',0
+								db 'HBRUSH',0
+								db 'HDC',0
+								db 'LPARAM',0
+								db 'WPARAM',0
+								db 'UMSG',0
+								db 'PROC',0
+								db 'UINT',0
+								db 'HACCEL',0
+;								db 'Add other dword types here',0
+								db 0
+
 .data?
 
 hInstance						HINSTANCE ?						; Dll's module handle
@@ -215,3 +256,5 @@ breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
 dbg								DEBUG <>
 fNoDebugInfo					dd ?
+outbuffer						db 1024 dup(?)
+typeupper						db 64 dup(?)

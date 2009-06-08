@@ -16,67 +16,12 @@ SRCCODEINFO struct DWORD
 	Address                 DWORD ?
 SRCCODEINFO ends
 
-;typedef struct _SYMBOL_INFO {
-;  ULONG   SizeOfStruct;
-;  ULONG   TypeIndex;
-;  ULONG64 Reserved[2];
-;  ULONG   Index;
-;  ULONG   Size;
-;  ULONG64 ModBase;
-;  ULONG   Flags;
-;  ULONG64 Value;
-;  ULONG64 Address;
-;  ULONG   Register;
-;  ULONG   Scope;
-;  ULONG   Tag;
-;  ULONG   NameLen;
-;  ULONG   MaxNameLen;
-;  TCHAR   Name[1];
-;}SYMBOL_INFO, *PSYMBOL_INFO;
-
-SYMBOL_INFO struct QWORD
-	SizeOfStruct			DWORD ?
-	TypeIndex				DWORD ?
-	Reserved				QWORD 3 dup(?)
-	Index					DWORD ?
-	nSize					DWORD ?
-	ModBase					DWORD ?
-	Flags					DWORD ?
-	Value					QWORD ?
-	Address					DWORD ?
-	Register				DWORD ?
-	Scope					DWORD ?
-	Tag						DWORD ?
-	NameLen					DWORD ?
-	MaxNameLen				DWORD ?
-	szName					BYTE ?
-SYMBOL_INFO ends
-
-SYMBOL_INFO32 struct DWORD
-	SizeOfStruct			DWORD ?
-	TypeIndex				DWORD ?
-	Reserved				QWORD 3 dup(?)
-	Index					DWORD ?
-	nSize					DWORD ?
-	ModBase					DWORD ?
-	Flags					DWORD ?
-	Value					DWORD ?
-	Address					DWORD ?
-	Register				DWORD ?
-	Scope					DWORD ?
-	Tag						DWORD ?
-	NameLen					DWORD ?
-	MaxNameLen				DWORD ?
-	szName					BYTE ?
-SYMBOL_INFO32 ends
-
 .const
 
 szSymInitialize					db 'SymInitialize',0
 szSymLoadModule					db 'SymLoadModule',0
 szSymGetModuleInfo				db 'SymGetModuleInfo',0
 szSymEnumerateSymbols			db 'SymEnumerateSymbols',0
-szSymEnumSymbols				db 'SymEnumSymbols',0
 szSymEnumSourceFiles			db 'SymEnumSourceFiles',0
 szSymEnumSourceLines			db 'SymEnumSourceLines',0
 szSymFromAddr					db 'SymFromAddr',0
@@ -99,8 +44,7 @@ szDbgHelpFail					db 'Could not find DbgHelp.dll',0
 
 dwModuleBase					DWORD ?
 im								IMAGEHLP_MODULE <>
-syminf							SYMBOL_INFO <>
-								db 256 dup(?)
+
 .code
 
 GetDbgHelpVersion proc
@@ -121,6 +65,30 @@ GetDbgHelpVersion proc
 
 GetDbgHelpVersion endp
 
+FindWord proc uses esi,lpWord:DWORD
+
+	mov		edx,lpData
+	;Get pointer to word list
+	mov		esi,[edx].ADDINDATA.lpWordList
+	;Skip the words loaded from .api files
+	add		esi,[edx].ADDINDATA.rpProjectWordList
+	;Loop trough the word list
+	.while [esi].PROPERTIES.nSize
+		invoke lstrcmp,lpWord,addr [esi+sizeof PROPERTIES]
+		.if !eax
+			mov		eax,esi
+			jmp		Ex			
+		.endif
+		;Move to next word
+		mov		eax,[esi].PROPERTIES.nSize
+		lea		esi,[esi+eax+sizeof PROPERTIES]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindWord endp
+
 EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	Displacement:QWORD
@@ -140,48 +108,23 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
 		invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,SymbolName
-		;invoke SymFromAddr,hProcess,Address,Displacement,Symbol
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymFromAddr
+		invoke FindWord,SymbolName
 		.if eax
-			mov		ebx,eax
-			mov		syminf.SizeOfStruct,sizeof SYMBOL_INFO-1+256-8
-			mov		syminf.MaxNameLen,256
-			push	offset syminf
-			push	0
-			push	0
-;			lea		eax,Displacement
-;			push	eax
-			push	0
-			push	SymbolAddress
-			push	UserContext
-			call	ebx
-PrintHex eax
+			movzx	edx,[eax].PROPERTIES.nType
+			mov		[edi].DEBUGSYMBOL.nType,dx
+			lea		edx,[eax+sizeof PROPERTIES]
+			push	edx
+			invoke lstrlen,edx
+			pop		edx
+			lea		eax,[edx+eax+1]
+			mov		[edi].DEBUGSYMBOL.lpType,eax
 		.endif
-
 		inc		dbg.inxsymbol
 	.endif
 	mov		eax,TRUE
 	ret
 
 EnumerateSymbolsCallback endp
-
-EnumSymbolsCallback proc pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
-
-	mov		eax,pSymInfo
-;PrintDec SymbolSize
-;PrintDec [eax].SYMBOL_INFO.TypeIndex
-;PrintDec [eax].SYMBOL_INFO.NameLen
-;PrintDec [eax].SYMBOL_INFO.MaxNameLen
-PrintHex [eax].SYMBOL_INFO.Address
-
-lea		eax,[eax].SYMBOL_INFO.szName
-Mov		eax,[eax]
-PrintHex eax
-;PrintStringByAddr eax
-	mov		eax,TRUE
-	ret
-
-EnumSymbolsCallback endp
 
 EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -235,10 +178,6 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 			mov		[edi].DEBUGLINE.LineNumber,eax
 			mov		eax,[ebx].SRCCODEINFO.Address
 			mov		[edi].DEBUGLINE.Address,eax
-;			mov		[edi].DEBUGLINE.SourceByte,0
-;			mov		[edi].DEBUGLINE.BpSet,FALSE
-;			mov		[edi].DEBUGLINE.NoDebug,FALSE
-;			mov		[edi].DEBUGLINE.BreakPoint,FALSE
 			inc		dbg.inxline
 			pop		ecx
 			.break
@@ -322,23 +261,6 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 						push	hProcess
 						call	ebx
 					.endif
-
-					;invoke SymEnumSymbols,hProcess,dwModuleBase,addr EnumSymbolsCallback,0
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSymbols
-					.if eax
-						mov		ebx,eax
-						.if fOptions & 1
-							invoke PutString,addr szSymOk
-						.endif
-						push	0
-						push	offset EnumSymbolsCallback
-						push	0
-						push	0
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-
 					;invoke SymEnumSourceFiles,hProcess,dwModuleBase,0,0,offset EnumSourceFilesCallback,0
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 					.if eax

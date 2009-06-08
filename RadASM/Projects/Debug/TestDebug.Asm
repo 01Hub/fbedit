@@ -19,46 +19,65 @@ MYSTRUCT ends
 .data
 
 szTest		db 'Test',0
-tid			dd ?
+tid			dd   ?
 rect		RECT <>
 mystruct	MYSTRUCT <>
+valdd		DWORD 4
+valdw		WORD 2
+valdb		BYTE 1
 
 .code
 
-;MyProc1 proc uses esi
-;
-;	mov		eax,'abcd'
-;	ret
-;
-;MyProc1 endp
-;
-;MyProc2 proc uses esi
-;
-;	mov		eax,'abcd'
-;	invoke MyProc4
-;	ret
-;
-;MyProc2 endp
-;
-;MyProc3 proc uses esi
-;
-;	mov		eax,'abcd'
-;	mov		eax,'abcd'
-;	mov		eax,'abcd'
-;	mov		eax,'abcd'
-;	invoke OutputDebugString,addr szTest
-;	ret
-;
-;MyProc3 endp
-;
+MyProc1 proc
+
+	mov		eax,'abcd'
+	ret
+
+MyProc1 endp
+
+MyProc2 proc uses esi edi,var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
+	LOCAL	aa:DWORD; ebp-4
+	LOCAL	bb:DWORD; ebp-8
+	LOCAL	cc:DWORD; ebp-12
+
+	mov		aa,1
+	mov		bb,2
+	mov		cc,3
+	mov		eax,ebp
+	lea		eax,var
+	sub		eax,ebp
+	lea		ecx,var1
+	sub		ecx,ebp
+	lea		edx,var2
+	sub		edx,ebp
+	lea		eax,aa
+	lea		ecx,bb
+	lea		edx,cc
+	invoke MyProc4
+	ret
+
+MyProc2 endp
+
+MyProc3 proc uses esi
+
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	invoke OutputDebugString,addr szTest
+	ret
+
+MyProc3 endp
+
 start:
 
 	mov		eax,'ABCD'
-	mov		eax,'EFGH'
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
+	mov		eax,tid
+	mov		tid,1234
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
 	mov		eax,'ABCD'
 	mov		ecx,'EFGH'
 	mov		edx,'ABCD'
@@ -73,10 +92,10 @@ start:
 	mov		eax,'EFGH'
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
-;	invoke MyProc1
-;	invoke MyProc2
-;;	invoke MyProc3
-;	invoke MyProc4
+	invoke MyProc1
+	invoke MyProc2,123,456,789
+;	invoke MyProc3
+	invoke MyProc4
 	jmp		Ex
 Ex:
 	invoke ExitProcess,0

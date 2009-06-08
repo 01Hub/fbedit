@@ -59,6 +59,7 @@ o Released version 1.0.0.1
   - Step Over is enabled.
   - Do Not Debug is enabled.
   - Added tooltip to show register value when mouse is over a register.
+  - Added tooltip to show global variable value when mouse is over a variable.
   - Fixed bugs.
   - Speed optimized breakpoint handling.
 o Uploaded version 1.0.0.0
@@ -70,5 +71,10 @@ To do:
 o Immediate window to inspect variables, proc parameters and locals.
 o Tooltip on mouse over a variable, proc parameter or local.
 o Support for other assemblers / compilers besides masm.
+
+Known bugs:
+-----------------------------------------------------------------------------
+When a thread is created the debugger skips a line.
+A proc without a stack frame indicates the proc definition as the first code line.
 
 KetilO

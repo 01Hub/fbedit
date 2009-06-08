@@ -7,7 +7,7 @@ LoadAllBreakPoints				PROTO
 
 szBP							db 0CCh
 szDump							db 'Reg     Hex                 Dec',0Dh,'-------------------------------',0Dh,0
-szDec							db '%u',0Dh,0
+szDec							db '%d',0Dh,0
 szRegs							db 'EAX     ',0,'ECX     ',0,'EDX     ',0,'EBX     ',0,'ESP     ',0,'EBP     ',0,'ESI     ',0,'EDI     ',0,'EIP     ',0,'EFL     ',0
 szDecSpace						db '                ',0
 
@@ -565,6 +565,28 @@ SwitchThread proc uses ebx
 
 SwitchThread endp
 
+IsInProc proc uses esi,Address:DWORD
+
+	mov		esi,dbg.hMemSymbol
+	mov		eax,Address
+	.while [esi].DEBUGSYMBOL.szName
+		.if [esi].DEBUGSYMBOL.nType=='p'
+			mov		edx,[esi].DEBUGSYMBOL.Address
+			mov		ecx,[esi].DEBUGSYMBOL.nSize
+			lea		ecx,[edx+ecx]
+			.if eax>=edx && eax<ecx
+				mov		eax,esi
+				jmp		Ex
+			.endif
+		.endif
+		lea		esi,[esi+sizeof DEBUGSYMBOL]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsInProc endp
+
 Debug proc uses ebx,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
@@ -656,16 +678,16 @@ Debug proc uses ebx,lpFileName:DWORD
 						.if eax
 							invoke SelectLine,eax
 						.endif
-						mov		dbg.context.ContextFlags,CONTEXT_FULL;CONTEXT_CONTROL
+						mov		dbg.context.ContextFlags,CONTEXT_FULL
 						invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
 						mov		dbg.context.regEip,eax
 						mov		[ebx].DEBUGTHREAD.address,eax
 						invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+						invoke IsInProc,[ebx].DEBUGTHREAD.address
+						mov		dbg.lpProc,eax
 						invoke ShowContext
 						mov		dbg.fHandled,TRUE
-					.else
-						;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
@@ -689,7 +711,6 @@ Debug proc uses ebx,lpFileName:DWORD
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
-				;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
@@ -699,13 +720,11 @@ Debug proc uses ebx,lpFileName:DWORD
 					invoke SwitchThread
 					mov		ebx,eax
 					.if [ebx].DEBUGTHREAD.suspended
-						;invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						mov		dbg.lpthread,ebx
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
-				;mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
 				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE

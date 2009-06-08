@@ -168,10 +168,120 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 
 CreateDebugMenu endp
 
-EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+FindSymbol proc uses esi,lpWord:DWORD
+
+	;Get pointer to symbol list
+	mov		esi,dbg.hMemSymbol
+	;Loop trough the symbol list
+	.while [esi].DEBUGSYMBOL.szName
+		invoke lstrcmp,lpWord,addr [esi].DEBUGSYMBOL.szName
+		.if !eax
+			mov		eax,esi
+			jmp		Ex			
+		.endif
+		;Move to next word
+		lea		esi,[esi+sizeof DEBUGSYMBOL]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+	ret
+
+FindSymbol endp
+
+FindType proc uses esi
+
+	mov		esi,offset szDWORD
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,offset typeupper
+		.if !eax
+			mov		eax,4
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	mov		esi,offset szWORD
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,offset typeupper
+		.if !eax
+			mov		eax,2
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	mov		esi,offset szBYTE
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,offset typeupper
+		.if !eax
+			mov		eax,1
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindType endp
+
+FindLocal proc uses esi edi,lpWord:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
+
+	mov		esi,lpLocal
+	mov		edi,nOfs
+	.while byte ptr [esi]
+		call	Compare
+		.if eax
+			mov		eax,edi
+			jmp		Ex
+		.endif
+		.if sdword ptr nMove>0
+			add		edi,4
+		.else
+			sub		edi,4
+		.endif
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+Compare:
+	mov		edx,lpWord
+	.while TRUE
+		mov		ah,[edx]
+		mov		al,[esi]
+		.if !ah && (al==':' || al==',' || !al)
+			mov		eax,TRUE
+			jmp		ExCompare
+		.endif
+		.break .if !al
+		sub		al,ah
+		.break .if al
+		inc		esi
+		inc		edx
+	.endw
+	xor		eax,eax
+ExCompare:
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		inc		esi
+	.endw
+	.if byte ptr [esi]==','
+		inc		esi
+	.endif
+	retn
+
+FindLocal endp
+
+EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	ti:TOOLINFO
-	LOCAL	buffer[64]:BYTE
+	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
+	LOCAL	nLine:DWORD
+	LOCAL	nDWORD:DWORD
+	LOCAL	nOfs:DWORD
+
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
 		mov		ti.cbSize,SizeOf TOOLINFO
@@ -210,36 +320,127 @@ EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke GetParent,hWin
 					mov		edx,eax
 					invoke SendMessage,edx,REM_GETCURSORWORD,sizeof buffer,addr buffer
-					mov		edx,dword ptr buffer
-					and		edx,5F5F5Fh
-					.if edx=='XAE'
-						mov		eax,dbg.context.regEax
-					.elseif edx=='XBE'
-						mov		eax,dbg.context.regEbx
-					.elseif edx=='XCE'
-						mov		eax,dbg.context.regEcx
-					.elseif edx=='XDE'
-						mov		eax,dbg.context.regEdx
-					.elseif edx=='ISE'
-						mov		eax,dbg.context.regEsi
-					.elseif edx=='IDE'
-						mov		eax,dbg.context.regEdi
-					.elseif edx=='PBE'
-						mov		eax,dbg.context.regEbp
-					.elseif edx=='PSE'
-						mov		eax,dbg.context.regEsp
-					.else
-						invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
-						xor		edx,edx
-					.endif
+					mov		nLine,eax
+					call	IsReg
 					.if edx
 						mov		dword ptr buffer[3],' = '
 						invoke HexDWORD,addr buffer[6],eax
 						lea		eax,buffer
 						mov		ti.lpszText,eax
-						invoke SendMessage,hTip,TTM_SETTOOLINFO,0,addr ti
-						invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
-						invoke SendMessage,hTip,TTM_ACTIVATE ,TRUE,0
+						call	Activate
+					.elseif eax
+						invoke FindSymbol,addr buffer
+						.if eax
+							mov		esi,eax
+							.if [esi].DEBUGSYMBOL.nType=='p'
+								; PROC
+								invoke wsprintf,addr outbuffer,addr szProc,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.nSize
+								mov		ti.lpszText,offset outbuffer
+								call	Activate
+							.elseif [esi].DEBUGSYMBOL.nType=='d'
+								; GLOBAL
+								mov		edx,[esi].DEBUGSYMBOL.lpType
+								mov		ecx,offset typeupper
+								.while byte ptr [edx]!=' '
+									mov		al,[edx]
+									and		al,5Fh
+									mov		[ecx],al
+									inc		edx
+									inc		ecx
+								.endw
+								mov		byte ptr [ecx],0
+								mov		nDWORD,0
+								invoke FindType
+								.if eax==4 && [esi].DEBUGSYMBOL.Address
+									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,4,0
+									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
+								.elseif eax==2 && [esi].DEBUGSYMBOL.Address
+									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,2,0
+									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
+								.elseif eax==1 && [esi].DEBUGSYMBOL.Address
+									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,1,0
+									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
+								.else
+									invoke wsprintf,addr outbuffer,addr szData,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize
+								.endif
+								mov		ti.lpszText,offset outbuffer
+								call	Activate
+							.else
+								call	DeActivate
+							.endif
+						.else
+							.if dbg.lpProc
+								; PARAM
+								mov		esi,dbg.lpProc
+								invoke FindLocal,addr buffer,[esi].DEBUGSYMBOL.lpType,8,1
+								.if eax
+									mov		nOfs,eax
+									invoke FindLine,[esi].DEBUGSYMBOL.Address
+									push	eax
+									mov		eax,[esi].DEBUGSYMBOL.Address
+									add		eax,[esi].DEBUGSYMBOL.nSize
+									invoke FindLine,eax
+									pop		edx
+									.if edx && eax
+										mov		edx,[edx].DEBUGLINE.LineNumber
+										dec		edx
+										mov		ecx,[eax].DEBUGLINE.LineNumber
+										dec		ecx
+										.if nLine>=edx && nLine<ecx
+											mov		edx,dbg.context.regEbp
+											add		edx,nOfs
+											invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,4,0
+											invoke wsprintf,offset outbuffer,addr szParam,addr buffer,nOfs,nDWORD,nDWORD
+											mov		ti.lpszText,offset outbuffer
+											call	Activate
+										.else
+											call	DeActivate
+										.endif
+									.else
+										call	DeActivate
+									.endif
+								.else
+									; LOCAL
+									invoke lstrlen,[esi].DEBUGSYMBOL.lpType
+									add		eax,[esi].DEBUGSYMBOL.lpType
+									inc		eax
+									invoke FindLocal,addr buffer,eax,-4,-1
+									.if eax
+										mov		nOfs,eax
+										invoke FindLine,[esi].DEBUGSYMBOL.Address
+										push	eax
+										mov		eax,[esi].DEBUGSYMBOL.Address
+										add		eax,[esi].DEBUGSYMBOL.nSize
+										invoke FindLine,eax
+										pop		edx
+										.if edx && eax
+											mov		edx,[edx].DEBUGLINE.LineNumber
+											dec		edx
+											mov		ecx,[eax].DEBUGLINE.LineNumber
+											dec		ecx
+											.if nLine>=edx && nLine<ecx
+												mov		edx,dbg.context.regEbp
+												add		edx,nOfs
+												invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,4,0
+												invoke wsprintf,offset outbuffer,addr szLocal,addr buffer,nOfs,nDWORD,nDWORD
+												mov		ti.lpszText,offset outbuffer
+												call	Activate
+											.else
+												call	DeActivate
+											.endif
+										.else
+											call	DeActivate
+										.endif
+									.else
+										call	DeActivate
+									.endif
+								.endif
+							.else
+								call	DeActivate
+							.endif
+						.endif
+					.else
+						call	DeActivate
 					.endif
 				.endif
 			.endif
@@ -249,6 +450,45 @@ EditProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	.endif
 	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
 	ret
+
+Activate:
+	invoke SendMessage,hTip,TTM_SETTOOLINFO,0,addr ti
+	invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,hTip,TTM_ACTIVATE ,TRUE,0
+	retn
+
+DeActivate:
+	invoke SendMessage,hTip,TTM_ACTIVATE ,FALSE,0
+	retn
+
+IsReg:
+	invoke lstrlen,addr buffer
+	.if eax==3
+		mov		edx,dword ptr buffer
+		and		edx,5F5F5Fh
+		.if edx=='XAE'
+			mov		eax,dbg.context.regEax
+		.elseif edx=='XBE'
+			mov		eax,dbg.context.regEbx
+		.elseif edx=='XCE'
+			mov		eax,dbg.context.regEcx
+		.elseif edx=='XDE'
+			mov		eax,dbg.context.regEdx
+		.elseif edx=='ISE'
+			mov		eax,dbg.context.regEsi
+		.elseif edx=='IDE'
+			mov		eax,dbg.context.regEdi
+		.elseif edx=='PBE'
+			mov		eax,dbg.context.regEbp
+		.elseif edx=='PSE'
+			mov		eax,dbg.context.regEsp
+		.else
+			xor		edx,edx
+		.endif
+	.else
+		xor		edx,edx
+	.endif
+	retn
 
 EditProc endp
 
