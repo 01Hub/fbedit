@@ -1,7 +1,18 @@
 RadASM source code debug addin.
 
-NOTE!
-The addin uses dbghelp.dll version 6.4 or higher.
+NOTE! DbgHelp.dll hell.
+Vista:
+My Vista came with version 6.0.6001.18000. It works OK.
+XP:
+Download and install http://msdl.microsoft.com/download/symbols/debuggers/dbg_x86_6.11.1.404.msi
+The only thing you need is DbgHelp.dll in C:\Program Files\Debugging Tools for Windows (x86)\srcsrv
+Copy it to RadASM root (C:\RadASM).
+2000:
+Not tested.
+9x and Me:
+Not tested.
+
+Links:
 http://msdn.microsoft.com/en-us/library/ms679294.aspx
 http://www.microsoft.com/whdc/devtools/debugging/default.mspx
 
