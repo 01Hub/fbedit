@@ -105,8 +105,6 @@ ProcDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
-	;Clear the output window
-	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		;Check if it is a proc
@@ -150,8 +148,6 @@ StructDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
-	;Clear the output window
-	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		;Check if it is a struct
@@ -180,6 +176,41 @@ StructDump proc uses esi
 
 StructDump endp
 
+DataDump proc uses esi
+
+	mov		edx,lpData
+	;Get pointer to word list
+	mov		esi,[edx].ADDINDATA.lpWordList
+	;Skip the words loaded from .api files
+	add		esi,[edx].ADDINDATA.rpProjectWordList
+	;Loop trough the word list
+	.while [esi].PROPERTIES.nSize
+		;Check if it is a struct
+		.if [esi].PROPERTIES.nType=='d'
+			push	esi
+			;Point to the struct name
+			lea		esi,[esi+sizeof PROPERTIES]
+			invoke lstrcpy,addr buffer,esi
+			invoke lstrlen,esi
+			;Point to the struct items
+			lea		esi,[esi+eax+1]
+			.if byte ptr [esi]
+				invoke lstrlen,addr buffer
+				mov		word ptr buffer[eax],','
+				invoke lstrcat,addr buffer,esi
+			.endif
+			;Output the data definition
+			invoke TextOutput,addr buffer
+			pop		esi
+		.endif
+		;Move to next word
+		mov		eax,[esi].PROPERTIES.nSize
+		lea		esi,[esi+eax+sizeof PROPERTIES]
+	.endw
+	ret
+
+DataDump endp
+
 AllDump proc uses esi
 
 	mov		edx,lpData
@@ -187,8 +218,6 @@ AllDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
-	;Clear the output window
-	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		push	esi
@@ -220,9 +249,11 @@ DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		eax,16
 		.if edx==IDAddIn && eax==BN_CLICKED
 			; Your addin has been selected
-			;invoke ProcDump
+			;Clear the output window
+			invoke clrOutput
+			invoke ProcDump
 			invoke StructDump
-			;invoke AllDump
+			invoke DataDump
 		.endif
 	.elseif eax==AIM_CLOSE
 		; Delete menu item

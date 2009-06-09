@@ -747,8 +747,11 @@ PutItem:
 	je		PutEx
 	or		al,al
 	je		PutEx
+	cmp		al,'?'
+	je		PutEx1
 	cmp		al,'<'
 	jne		@b
+  PutEx1:
 	mov		al,':'
 	stosb
 	mov		esi,edx
@@ -1594,6 +1597,39 @@ ParseCode:
 						invoke CpyWrd,edi,lpWord2,len2
 						mov		eax,len2
 						lea		edi,[edi+eax]
+						.if nAsm==nMASM
+						  NxtL:
+							call	GetWrd
+							.if byte ptr [esi]==':'
+								inc		esi
+								call	GetWrd
+								mov		lpWord1,esi
+								mov		len1,ecx
+								lea		esi,[esi+ecx]
+								.if ecx
+									mov		byte ptr [edi],':'
+									inc		edi
+									invoke CpyWrd,edi,lpWord1,len1
+									mov		eax,len1
+									lea		edi,[edi+eax]
+								.endif
+							.elseif byte ptr [esi]=='['
+								xor		ecx,ecx
+								.while byte ptr [esi+ecx]!=']' && ecx<16
+									inc		ecx
+								.endw
+								.if ecx<16
+									inc		ecx
+									mov		lpWord1,esi
+									mov		len1,ecx
+									lea		esi,[esi+ecx]
+									invoke CpyWrd,edi,lpWord1,len1
+									mov		eax,len1
+									lea		edi,[edi+eax]
+									jmp		NxtL
+								.endif
+							.endif
+						.endif
 						mov		byte ptr [edi],','
 						call	SkpLocal
 						.if al==','
@@ -2125,6 +2161,9 @@ FindStruct:
 			inc		ecx
 			mov		al,[edi+ecx+sizeof PROPERTIES]
 			mov		ah,[edx+ecx]
+			.if al==':'
+				mov		al,0
+			.endif
 			or		al,al
 			je		@f
 			.if nAsm==nMASM

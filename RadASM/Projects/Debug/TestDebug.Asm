@@ -25,6 +25,7 @@ mystruct	MYSTRUCT <>
 valdd		DWORD 4
 valdw		WORD 2
 valdb		BYTE 1
+hInstance	HINSTANCE ?
 
 .code
 
@@ -39,6 +40,7 @@ MyProc2 proc uses esi edi,var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	aa:DWORD; ebp-4
 	LOCAL	bb:WORD; ebp-8
 	LOCAL	cc:WORD; ebp-12
+	LOCAL	s[256]:BYTE
 
 	mov		aa,1
 	mov		bb,2

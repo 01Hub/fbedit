@@ -5424,7 +5424,7 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		edx,eax
 						push	edx
 						invoke SendMessage,hLB,LB_GETTEXT,edx,addr buffer
-						.if fLBStruct
+						.if fLBStruct || fLBWord
 							lea		edx,buffer
 							dec		edx
 						  @@:
@@ -5432,8 +5432,11 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							mov		al,[edx]
 							or		al,al
 							je		@f
+							cmp		al,'['
+							je		En
 							cmp		al,':';VK_TAB
 							jne		@b
+						  En:
 							mov		al,0
 							mov		[edx],al
 							inc		edx

@@ -200,7 +200,7 @@ ApiWordConvert endp
 ApiWordList	proc hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	nbr:DWORD
-	LOCAL	buffer[64]:BYTE
+	LOCAL	buffer[256]:BYTE
 	LOCAL	nType:DWORD
 
 	pushad
@@ -346,7 +346,7 @@ AddWords:
 	.endif
 	mov		[edx],al
 	.if al==':'
-		mov		byte ptr [edx],0
+;		mov		byte ptr [edx],0
 	.endif
 	inc		edi
 	inc		edx

@@ -238,9 +238,9 @@ FindLocal proc uses esi edi,lpWord:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
 			jmp		Ex
 		.endif
 		.if sdword ptr nMove>0
-			add		edi,4
+			add		edi,edx
 		.else
-			sub		edi,4
+			sub		edi,edx
 		.endif
 	.endw
 	xor		eax,eax
@@ -252,7 +252,7 @@ Compare:
 	.while TRUE
 		mov		ah,[edx]
 		mov		al,[esi]
-		.if !ah && (al==':' || al==',' || !al)
+		.if !ah && (al==':' || al=='[' || al==',' || !al)
 			mov		eax,TRUE
 			jmp		ExCompare
 		.endif
@@ -264,8 +264,19 @@ Compare:
 	.endw
 	xor		eax,eax
 ExCompare:
+	xor		edx,edx
 	.while byte ptr [esi] && byte ptr [esi]!=','
 		inc		esi
+		.if byte ptr [esi-1]==':'
+			push	eax
+			invoke lstrcpy,offset typeupper,esi
+			invoke FindType
+			mov		edx,eax
+			.if !edx
+				mov		edx,4
+			.endif
+			pop		eax
+		.endif
 	.endw
 	.if byte ptr [esi]==','
 		inc		esi
@@ -281,6 +292,7 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	nLine:DWORD
 	LOCAL	nDWORD:DWORD
 	LOCAL	nOfs:DWORD
+	LOCAL	nSize:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
@@ -293,6 +305,7 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
 		.if dbg.hDbgThread
 			.if !eax
+				;Add the tooltip
 				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
 				mov		eax,hWin
 				mov		ti.hWnd,eax
@@ -352,12 +365,15 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 								mov		nDWORD,0
 								invoke FindType
 								.if eax==4 && [esi].DEBUGSYMBOL.Address
+									; DWORD
 									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,4,0
 									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
 								.elseif eax==2 && [esi].DEBUGSYMBOL.Address
+									; WORD
 									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,2,0
 									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
 								.elseif eax==1 && [esi].DEBUGSYMBOL.Address
+									; BYTE
 									invoke ReadProcessMemory,dbg.hdbghand,[esi].DEBUGSYMBOL.Address,addr nDWORD,1,0
 									invoke wsprintf,addr outbuffer,addr szDataVal,addr [esi].DEBUGSYMBOL.szName,[esi].DEBUGSYMBOL.lpType,[esi].DEBUGSYMBOL.Address,[esi].DEBUGSYMBOL.nSize,nDWORD,nDWORD
 								.else
@@ -369,13 +385,14 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 								call	DeActivate
 							.endif
 						.else
-							.if FALSE;dbg.lpProc
+							.if dbg.lpProc
 								; Will only work if all PARAMs and LOCALs are DWORD. RadADM needs to parse more info.
 								; PARAM
 								mov		esi,dbg.lpProc
 								invoke FindLocal,addr buffer,[esi].DEBUGSYMBOL.lpType,8,1
 								.if eax
 									mov		nOfs,eax
+									mov		nSize,edx
 									invoke FindLine,[esi].DEBUGSYMBOL.Address
 									push	eax
 									mov		eax,[esi].DEBUGSYMBOL.Address
@@ -390,7 +407,8 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 										.if nLine>=edx && nLine<ecx
 											mov		edx,dbg.context.regEbp
 											add		edx,nOfs
-											invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,4,0
+											mov		nDWORD,0
+											invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,nSize,0
 											invoke wsprintf,offset outbuffer,addr szParam,addr buffer,nOfs,nDWORD,nDWORD
 											mov		ti.lpszText,offset outbuffer
 											call	Activate
@@ -422,7 +440,8 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 											.if nLine>=edx && nLine<ecx
 												mov		edx,dbg.context.regEbp
 												add		edx,nOfs
-												invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,4,0
+												mov		nDWORD,0
+												invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,nSize,0
 												invoke wsprintf,offset outbuffer,addr szLocal,addr buffer,nOfs,nDWORD,nDWORD
 												mov		ti.lpszText,offset outbuffer
 												call	Activate
