@@ -369,7 +369,8 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 								call	DeActivate
 							.endif
 						.else
-							.if dbg.lpProc
+							.if FALSE;dbg.lpProc
+								; Will only work if all PARAMs and LOCALs are DWORD. RadADM needs to parse more info.
 								; PARAM
 								mov		esi,dbg.lpProc
 								invoke FindLocal,addr buffer,[esi].DEBUGSYMBOL.lpType,8,1
@@ -650,17 +651,27 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
-	mov		eax,lpHandles
-	mov		eax,[eax].ADDINHANDLES.hOut1
-	mov		hOut,eax
-	invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
-	mov		hTip,eax
-	invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
-	invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
-	invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
-	invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
-	; Messages to hook into
-	mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+	.if [eax].ADDINDATA.nRadASMVer>=2216
+		; Get handle to outputwindow #1, #2 and #3
+		mov		eax,lpHandles
+		mov		edx,[eax].ADDINHANDLES.hOut1
+		mov		hOut1,edx
+		mov		edx,[eax].ADDINHANDLES.hOut2
+		mov		hOut2,edx
+		mov		edx,[eax].ADDINHANDLES.hOut3
+		mov		hOut3,edx
+		; Create tooltip
+		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
+		mov		hTip,eax
+		invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
+		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
+		invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
+		; Messages to hook into
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+	.else
+		xor		eax,eax
+	.endif
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
 	xor		edx,edx

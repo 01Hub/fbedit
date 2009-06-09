@@ -21,7 +21,6 @@ LineChanged						dd 32 dup(?)
 ShowContext proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	decbuff[32]:BYTE
-	LOCAL	hOut2:HWND
 	LOCAL	nLine:DWORD
 	LOCAL	szContextPtr:DWORD
 	LOCAL	LineChangedInx:DWORD
@@ -29,9 +28,6 @@ ShowContext proc uses ebx esi edi
 	mov		szContextPtr,offset szContext
 	mov		LineChangedInx,0
 	mov		LineChanged,0
-	mov		eax,lpHandles
-	mov		eax,[eax].ADDINHANDLES.hOut2
-	mov		hOut2,eax
 	mov		eax,offset szDump
 	call	AddText
 	mov		nLine,2
@@ -194,8 +190,29 @@ MapNoDebug proc uses ebx esi edi
 	.while ecx
 		mov		[esi].DEBUGLINE.NoDebug,al
 		dec		ecx
-		add		esi,sizeof DEBUGLINE
+		lea		esi,[esi+sizeof DEBUGLINE]
 	.endw
+	; Do not debug the proc line
+	mov		esi,dbg.hMemSymbol
+	mov		ecx,dbg.inxsymbol
+	.while ecx
+		.if [esi].DEBUGSYMBOL.nType=='p'
+			mov		eax,[esi].DEBUGSYMBOL.Address
+			mov		ebx,dbg.inxline
+			mov		edi,dbg.hMemLine
+			.while ebx
+				.if eax==[edi].DEBUGLINE.Address
+					mov		[edi].DEBUGLINE.NoDebug,TRUE
+					.break
+				.endif
+				dec		ebx
+				lea		edi,[edi+sizeof DEBUGLINE]
+			.endw
+		.endif
+		dec		ecx
+		lea		esi,[esi+sizeof DEBUGSYMBOL]
+	.endw
+	; Map procs that sould not be debugged
 	mov		nInx,0
 	.while TRUE
 		invoke wsprintf,addr buffer1,addr szCommaBP[1],nInx
@@ -220,12 +237,12 @@ MapNoDebug proc uses ebx esi edi
 						.endif
 					.endif
 					dec		ecx
-					add		esi,sizeof DEBUGLINE
+					lea		esi,[esi+sizeof DEBUGLINE]
 				.endw
 				.break
 			.endif
 			dec		ebx
-			add		edi,sizeof DEBUGSYMBOL
+			lea		edi,[edi+sizeof DEBUGSYMBOL]
 		.endw
 		inc		nInx
 	.endw
@@ -328,7 +345,7 @@ SetBreakpointAtCurrentLine proc uses ebx esi edi,nLine:DWORD
 		dec		CountSource
 		add		ebx,sizeof DEBUGSOURCE
 	.endw
-Ex:
+  Ex:
 	ret
 
 SetBreakpointAtCurrentLine endp

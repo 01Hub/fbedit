@@ -1,15 +1,24 @@
 RadASM source code debug addin.
 
+The goal for this debugger.
+-----------------------------------------------------------------------------
+o The debugged program must run at full speed until a breakpoint is reached.
+o Procs that are not debugged must run at full speed.
+o It must be possible to use other assemblers / compilers than masm.
+- These goals exclude the use of hardware breakpoints.
+- The use of dbghelp must be minimized.
+
 NOTE! DbgHelp.dll hell.
-Vista:
+-----------------------------------------------------------------------------
+Windows Vista:
 My Vista came with version 6.0.6001.18000. It works OK.
-XP:
+Windows XP:
 Download and install http://msdl.microsoft.com/download/symbols/debuggers/dbg_x86_6.11.1.404.msi
 The only thing you need is DbgHelp.dll in C:\Program Files\Debugging Tools for Windows (x86)\srcsrv
 Copy it to RadASM root (C:\RadASM).
-2000:
+Windows 2000:
 Not tested.
-9x and Me:
+Windows 9x and Me:
 Not tested.
 
 Links:
@@ -59,7 +68,7 @@ o Released version 1.0.0.1
   - Step Over is enabled.
   - Do Not Debug is enabled.
   - Added tooltip to show register value when mouse is over a register.
-  - Added tooltip to show global variable value when mouse is over a variable.
+  - Added tooltip to show a global variables value when mouse is over a variable.
   - Fixed bugs.
   - Speed optimized breakpoint handling.
 o Uploaded version 1.0.0.0
@@ -69,12 +78,33 @@ o Uploaded version 1.0.0.0
 To do:
 -----------------------------------------------------------------------------
 o Immediate window to inspect variables, proc parameters and locals.
-o Tooltip on mouse over a variable, proc parameter or local.
+o Tooltip on mouse over a proc parameter or local.
 o Support for other assemblers / compilers besides masm.
 
 Known bugs:
 -----------------------------------------------------------------------------
 When a thread is created the debugger skips a line.
-A proc without a stack frame indicates the proc definition as the first code line.
+A proc without a stack frame will skip the first code line.
+Examples:
+MyProc proc
+
+	mov		eax,1
+	ret					; Wrong. The debugger will stop here
+
+MyProc endp
+
+MyProc proc uses ebx
+
+	mov		eax,1		; OK. The debugger will stop here
+	ret
+
+MyProc endp
+
+MyProc proc hWin:HWND
+
+	mov		eax,1		; OK. The debugger will stop here
+	ret
+
+MyProc endp
 
 KetilO

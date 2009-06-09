@@ -246,7 +246,9 @@ lpProc							dd ?							; Pointer to proc struct
 lpData							dd ?							; Pointer to data struct
 hMnu							HMENU ?							; Debug popup
 IDAddIn							dd 32 dup(?)					; Unique ID's for this AddIn
-hOut							HWND ?							; Handle of output window
+hOut1							HWND ?							; Handle of output window #1
+hOut2							HWND ?							; Handle of output window #2
+hOut3							HWND ?							; Handle of output window #3
 szTempName						db MAX_PATH dup(?)
 szExeName						db MAX_PATH dup(?)
 szObjName						db MAX_PATH dup(?)

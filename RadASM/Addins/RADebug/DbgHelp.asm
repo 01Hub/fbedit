@@ -1,5 +1,3 @@
-SymEnumSourceFiles				PROTO	:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
-;SymEnumSourceLines				PROTO	:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 
 SOURCEFILE struct DWORD
 	ModBase					QWORD ?
@@ -16,25 +14,7 @@ SRCCODEINFO struct DWORD
 	Address                 DWORD ?
 SRCCODEINFO ends
 
-;typedef struct _SYMBOL_INFO {
-;  ULONG   SizeOfStruct;
-;  ULONG   TypeIndex;
-;  ULONG64 Reserved[2];
-;  ULONG   Index;
-;  ULONG   Size;
-;  ULONG64 ModBase;
-;  ULONG   Flags;
-;  ULONG64 Value;
-;  ULONG64 Address;
-;  ULONG   Register;
-;  ULONG   Scope;
-;  ULONG   Tag;
-;  ULONG   NameLen;
-;  ULONG   MaxNameLen;
-;  TCHAR   Name[1];
-;}SYMBOL_INFO, *PSYMBOL_INFO;
-
-SYMBOL_INFO struct ;88
+SYMBOL_INFO struct
 	SizeOfStruct			DWORD ?
 	TypeIndex				DWORD ?
 	Reserved				QWORD 2 dup(?)
@@ -43,7 +23,7 @@ SYMBOL_INFO struct ;88
 	ModBase					QWORD ?
 	Flags					DWORD ?
 	Value					QWORD ?
-	Address					QWORD ?
+	Address					DWORD 2 dup(?)
 	Register				DWORD ?
 	Scope					DWORD ?
 	Tag						DWORD ?
@@ -162,24 +142,15 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 
 EnumerateSymbolsCallback endp
 
-EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
-
-	mov		esi,pSymInfo
-	mov		eax,dword ptr [esi].SYMBOL_INFO.SizeOfStruct
-
-xor		ecx,ecx
-.while ecx<20
-	mov		eax,[esi+ecx*4]
-	PrintDec ecx
-	PrintHex eax
-	inc		ecx
-.endw
-	mov		eax,dword ptr [esi].SYMBOL_INFO.Address
+;EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
+;
+;	mov		esi,pSymInfo
+;	mov		eax,[esi].SYMBOL_INFO.Address
 ;PrintHex eax
-	mov		eax,TRUE
-	ret
-
-EnumTypesCallback endp
+;	mov		eax,TRUE
+;	ret
+;
+;EnumTypesCallback endp
 
 EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -271,7 +242,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 		.if eax
 			mov		ebx,eax
 			push	FALSE
-			push	0
+			push	NULL
 			push	hProcess
 			call	ebx
 		.endif
@@ -316,21 +287,22 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 						push	hProcess
 						call	ebx
 					.endif
+					; Does not return anything useful
 					;invoke SymEnumTypes,hProcess,BaseOfDll,EnumSymbolsCallback,UserContext
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
-					.if eax
-						mov		ebx,eax
-						.if fOptions & 1
-							invoke PutString,addr szSymEnumTypes
-						.endif
-						push	0
-						push	offset EnumTypesCallback
-						push	0
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					;invoke SymEnumSourceFiles,hProcess,dwModuleBase,0,0,offset EnumSourceFilesCallback,0
+					;invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
+					;.if eax
+					;	mov		ebx,eax
+					;	.if fOptions & 1
+					;		invoke PutString,addr szSymEnumTypes
+					;	.endif
+					;	push	0
+					;	push	offset EnumTypesCallback
+					;	push	0
+					;	push	dwModuleBase
+					;	push	hProcess
+					;	call	ebx
+					;.endif
+					;invoke SymEnumSourceFiles,hProcess,dwModuleBase,Mask,offset EnumSourceFilesCallback,UserContext
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 					.if eax
 						mov		ebx,eax
