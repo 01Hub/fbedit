@@ -16,12 +16,49 @@ SRCCODEINFO struct DWORD
 	Address                 DWORD ?
 SRCCODEINFO ends
 
+;typedef struct _SYMBOL_INFO {
+;  ULONG   SizeOfStruct;
+;  ULONG   TypeIndex;
+;  ULONG64 Reserved[2];
+;  ULONG   Index;
+;  ULONG   Size;
+;  ULONG64 ModBase;
+;  ULONG   Flags;
+;  ULONG64 Value;
+;  ULONG64 Address;
+;  ULONG   Register;
+;  ULONG   Scope;
+;  ULONG   Tag;
+;  ULONG   NameLen;
+;  ULONG   MaxNameLen;
+;  TCHAR   Name[1];
+;}SYMBOL_INFO, *PSYMBOL_INFO;
+
+SYMBOL_INFO struct ;88
+	SizeOfStruct			DWORD ?
+	TypeIndex				DWORD ?
+	Reserved				QWORD 2 dup(?)
+	Index					DWORD ?
+	nSize					DWORD ?
+	ModBase					QWORD ?
+	Flags					DWORD ?
+	Value					QWORD ?
+	Address					QWORD ?
+	Register				DWORD ?
+	Scope					DWORD ?
+	Tag						DWORD ?
+	NameLen					DWORD ?
+	MaxNameLen				DWORD ?
+	szName					BYTE ?
+SYMBOL_INFO ends
+
 .const
 
 szSymInitialize					db 'SymInitialize',0
 szSymLoadModule					db 'SymLoadModule',0
 szSymGetModuleInfo				db 'SymGetModuleInfo',0
 szSymEnumerateSymbols			db 'SymEnumerateSymbols',0
+szSymEnumTypes					db 'SymEnumTypes',0
 szSymEnumSourceFiles			db 'SymEnumSourceFiles',0
 szSymEnumSourceLines			db 'SymEnumSourceLines',0
 szSymFromAddr					db 'SymFromAddr',0
@@ -36,7 +73,6 @@ szSourceFile					db 'FileName: %s',0
 szSourceLine					db 'FileName: %s Adress: %X Line %u',0
 szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
-szSymEnumTypes					db 'SymEnumTypes',0
 szFinal							db 'DbgHelp found %u sources containing %u lines and %u symbols,',0Dh,0
 szDbgHelpFail					db 'Could not find DbgHelp.dll',0
 
@@ -125,6 +161,25 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 	ret
 
 EnumerateSymbolsCallback endp
+
+EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
+
+	mov		esi,pSymInfo
+	mov		eax,dword ptr [esi].SYMBOL_INFO.SizeOfStruct
+
+xor		ecx,ecx
+.while ecx<20
+	mov		eax,[esi+ecx*4]
+	PrintDec ecx
+	PrintHex eax
+	inc		ecx
+.endw
+	mov		eax,dword ptr [esi].SYMBOL_INFO.Address
+;PrintHex eax
+	mov		eax,TRUE
+	ret
+
+EnumTypesCallback endp
 
 EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -255,8 +310,22 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 						.if fOptions & 1
 							invoke PutString,addr szSymOk
 						.endif
-						push	hProcess
+						push	0
 						push	offset EnumerateSymbolsCallback
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+					;invoke SymEnumTypes,hProcess,BaseOfDll,EnumSymbolsCallback,UserContext
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
+					.if eax
+						mov		ebx,eax
+						.if fOptions & 1
+							invoke PutString,addr szSymEnumTypes
+						.endif
+						push	0
+						push	offset EnumTypesCallback
+						push	0
 						push	dwModuleBase
 						push	hProcess
 						call	ebx
