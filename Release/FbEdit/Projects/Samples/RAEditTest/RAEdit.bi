@@ -16,6 +16,12 @@
 #Define DEFSELBARPEN							&H00808080
 #Define DEFLNRCOLOR							&H00800000
 #Define DEFNUMCOLOR							&H00808080
+#Define DEFCMNTBCK							&H00C0F0F0
+#Define DEFSTRBCK								&H00C0F0F0
+#Define DEFNUMBCK								&H00C0F0F0
+#Define DEFOPRBCK								&H00C0F0F0
+#Define DEFCHANGEDCLR						&H0000F0F0
+#Define DEFCHANGESAVEDCLR					&H0000F000
 
 ' Window styles
 #Define STYLE_NOSPLITT						&H0001			' No splitt button
@@ -143,6 +149,9 @@
 #Define REM_SETSTYLEEX						REM_BASE+83		' wParam=nStyleEx, lParam=0
 #Define REM_GETUNICODE						REM_BASE+84		' wParam=0, lParam=0
 #Define REM_SETUNICODE						REM_BASE+85		' wParam=TRUE/FALSE, lParam=0
+#Define REM_SETCHANGEDSTATE				REM_BASE+86		' wParam=TRUE/FALSE, lParam=0
+#Define REM_SETTOOLTIP						REM_BASE+87		' wParam=n (1-6), lParam=lpText
+#Define REM_HILITEACTIVELINE				REM_BASE+88		' wParam=0, lParam=nColor
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0
@@ -187,6 +196,9 @@
 #Define STATE_BLOCK							&H20000
 #Define STATE_BLOCKEND						&H40000
 #Define STATE_REDTEXT						&H80000
+#Define STATE_COMMENTNEST					&H00100000
+#Define STATE_CHANGED						&H00200000
+#Define STATE_CHANGESAVED					&H00400000
 #Define STATE_GARBAGE						&H80000000
 
 ' Character table types
@@ -224,6 +236,8 @@ Type RACOLOR Field=1
 	strback		As Long											' String back color
 	numback		As Long											' Numbers & hex back color
 	oprback		As Long											' Operator back color
+	changed		As Long											' Line changed indicator
+	changesaved	As Long											' Line saved chane indicator
 End Type
 
 Type RASELCHANGE Field=1
