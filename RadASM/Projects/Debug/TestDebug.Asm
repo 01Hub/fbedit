@@ -37,11 +37,14 @@ MyProc1 proc
 MyProc1 endp
 
 MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
-	LOCAL	aa:WORD; ebp-4
-	LOCAL	bb:WORD; ebp-8
-	LOCAL	cc:WORD; ebp-12
+	LOCAL	aa:SDWORD
+	LOCAL	bb:SWORD
+	LOCAL	cc:SBYTE
 	LOCAL	s[256]:BYTE
+	LOCAL	rc:RECT
 
+	mov		eax,1
+	mov		ecx,1
 	mov		aa,1
 	mov		bb,2
 	mov		cc,3
@@ -77,10 +80,10 @@ start:
 	mov		eax,'ABCD'
 	mov		eax,tid
 	mov		tid,1234
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-	invoke CloseHandle,eax
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-	invoke CloseHandle,eax
+;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+;	invoke CloseHandle,eax
+;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+;	invoke CloseHandle,eax
 	mov		eax,'ABCD'
 	mov		ecx,'EFGH'
 	mov		edx,'ABCD'

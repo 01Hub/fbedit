@@ -12,6 +12,7 @@ include RADebug.inc
 include Misc.asm
 include DbgHelp.asm
 include Debug.asm
+include Immediate.asm
 include BreakPoint.asm
 
 .code
@@ -172,7 +173,7 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
-	LOCAL	nDWORD:DWORD
+	LOCAL	hPar:HWND
 
 	mov		eax,uMsg
 	.if eax==WM_MOUSEMOVE
@@ -194,9 +195,13 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				mov		ti.hInst,eax
 				invoke SendMessage,hTip,TTM_ADDTOOL,0,addr ti
 			.endif
-			invoke GetCursorPos,addr pt
-			mov		eax,pt.x
-			mov		edx,pt.y
+			mov		eax,lParam
+			mov		edx,eax
+			shr		edx,16
+			movsx	edx,dx
+			movsx	eax,ax
+			mov		pt.x,eax
+			mov		pt.y,edx
 			sub		eax,dbg.pt.x
 			.if CARRY?
 				neg		eax
@@ -211,58 +216,22 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				mov		eax,pt.y
 				mov		dbg.pt.y,eax
 				invoke GetParent,hWin
-				mov		edx,eax
-				invoke SendMessage,edx,REM_GETCURSORWORD,sizeof buffer,addr buffer
-				invoke FindVar,addr buffer,eax
-				.if eax=='R'
-					; REGISTER
-					mov		eax,var.Address
-					mov		eax,dword ptr dbg.context[eax]
-					.if var.nSize==2
-						movzx	eax,ax
-					.elseif var.nSize==1
-						movzx	eax,al
-					.elseif var.nSize==3
-						movzx	eax,ah
-					.endif
-					invoke wsprintf,addr outbuffer,addr szReg,addr var.szName,eax
-					mov		ti.lpszText,offset outbuffer
-					call	Activate
-				.elseif eax=='p'
-					; PROC
-					invoke wsprintf,addr outbuffer,addr szProc,addr var.szName,var.nSize
-					mov		ti.lpszText,offset outbuffer
-					call	Activate
-				.elseif eax=='d'
-					; GLOBAL
-					.if var.nType
-						mov		nDWORD,0
-						invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr nDWORD,var.nSize,0
-						invoke wsprintf,addr outbuffer,addr szDataVal,addr var.szName,addr var.szType,var.Address,var.nSize,nDWORD,nDWORD
+				mov		hPar,eax
+				invoke SendMessage,hPar,EM_CHARFROMPOS,0,addr pt
+				invoke SendMessage,hPar,REM_ISCHARPOS,eax,0
+				.if !eax
+					invoke SendMessage,hPar,REM_GETCURSORWORD,sizeof buffer,addr buffer
+					invoke GetVarVal,addr buffer,eax,TRUE
+					.if eax
+						; Show tooltip
+						mov		ti.lpszText,offset outbuffer
+						call	Activate
 					.else
-						invoke wsprintf,addr outbuffer,addr szData,addr var.szName,addr var.szType,var.Address,var.nSize
+						; Hide tooltip
+						call	DeActivate
 					.endif
-					mov		ti.lpszText,offset outbuffer
-					call	Activate
-				.elseif eax=='P'
-					; PROC Parameter
-					mov		nDWORD,0
-					mov		edx,dbg.context.regEbp
-					add		edx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,var.nSize,0
-					invoke wsprintf,offset outbuffer,addr szParam,addr var.szName,var.Address,nDWORD,nDWORD
-					mov		ti.lpszText,offset outbuffer
-					call	Activate
-				.elseif eax=='L'
-					; LOCAL
-					mov		nDWORD,0
-					mov		edx,dbg.context.regEbp
-					add		edx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,var.nSize,0
-					invoke wsprintf,offset outbuffer,addr szLocal,addr var.szName,var.Address,nDWORD,nDWORD
-					mov		ti.lpszText,offset outbuffer
-					call	Activate
 				.else
+					; Hide tooltip
 					call	DeActivate
 				.endif
 			.endif
@@ -444,7 +413,9 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
-	.if [eax].ADDINDATA.nRadASMVer>=2216
+	mov		eax,[eax].ADDINDATA.nRadASMVer
+	.if eax>=2216
+		mov		nRadASMVer,eax
 		; Get handle to outputwindow #1, #2 and #3
 		mov		eax,lpHandles
 		mov		edx,[eax].ADDINHANDLES.hOut1
@@ -453,6 +424,8 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		mov		hOut2,edx
 		mov		edx,[eax].ADDINHANDLES.hOut3
 		mov		hOut3,edx
+		invoke SendMessage,hOut3,REM_SUBCLASS,0,addr ImmediateProc
+		mov		lpOldEditProc,eax
 		; Create tooltip
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
 		mov		hTip,eax
@@ -472,6 +445,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 
 InstallDll Endp
 
+; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 GetOptions proc
 
 	mov		eax,offset AddinOpt
@@ -479,9 +453,7 @@ GetOptions proc
 
 GetOptions endp
 
-; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 ; This proc handles messages sent from RadASM to our dll
-; Return TRUE to prevent RadASM and other DLL's from
 DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	LOCAL	tid:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -545,11 +517,49 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							mov		edx,lpHandles
 							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.else
+							.if fOptions & 4
+								; Pin output window
+								push	0
+								push	15						;TLM_GET_STRUCT
+								mov		eax,lpHandles
+								push	[eax].ADDINHANDLES.hOut
+								mov		eax,lpProc
+								call	[eax].ADDINPROCS.lpToolMessage
+								mov		edx,[eax+8]				;.Visible
+								.if !edx
+									; Show
+									mov		eax,lpHandles
+									mov		eax,[eax].ADDINHANDLES.hWnd
+									invoke SendMessage,eax,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,eax
+								.else
+									; Hide
+									mov		eax,lpHandles
+									mov		eax,[eax].ADDINHANDLES.hWnd
+									invoke SendMessage,eax,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,eax
+									; Show
+									mov		eax,lpHandles
+									mov		eax,[eax].ADDINHANDLES.hWnd
+									invoke SendMessage,eax,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,eax
+								.endif
+							.endif
+							; Clear output #2
+							push	2
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpOutputSelect
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpClearOut
+							; Clear output #1
 							push	1
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpOutputSelect
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpClearOut
+							.if fOptions & 8
+								; Show register window
+								push	2
+								mov		eax,lpProc
+								call	[eax].ADDINPROCS.lpOutputSelect
+							.endif
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							mov		dbg.func,FUNC_RUN
 							invoke DbgHelp,0,addr szExeName

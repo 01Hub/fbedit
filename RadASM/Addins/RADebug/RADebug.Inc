@@ -54,6 +54,7 @@ IDC_BTNDEBUGALL					equ 1006
 
 IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
+IDM_VIEW_OUTPUTWINDOW			equ 42003
 
 FUNC_RUN						equ 1
 FUNC_STEPINTO					equ 2
@@ -141,11 +142,13 @@ DEBUG ends
 VAR struct
 	szName					BYTE 256 dup(?)
 	szType					BYTE 256 dup(?)
+	szArray					BYTE 256 dup(?)
 	nType					DWORD ?
 	nArray					DWORD ?
 	nSize					DWORD ?
 	fPtr					DWORD ?
 	Address					DWORD ?
+	Value					DWORD ?
 VAR ends
 
 REG struct
@@ -194,6 +197,7 @@ szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
 szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
 szDebugStopped					db 'Debuging ended',0
+szCR							db 0Dh,0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSpace							db ' ',0
@@ -229,34 +233,49 @@ szMakeFilesExeKey				db '5',0
 szMakeFilesObjKey				db '3',0
 szNoDebug						db 'NoDebug',0
 
+; RADebug options
 szShowDbgHelp					db 'Show DbgHelp output',0
+szShowDebugEvents				db 'Show debug events',0
+szPinOutput						db 'Pin output window',0
+szOutput2						db 'Show register window',0
 AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
+								ADDINOPT <offset szShowDebugEvents,2,2>
+								ADDINOPT <offset szPinOutput,4,4>
+								ADDINOPT <offset szOutput2,8,8>
 								ADDINOPT <0,0,0>
+
 sztooltips_class32				db 'tooltips_class32',0
 
-szReg							db '%s = %X',0
-szProc							db '%s PROC Size %u',0
-szData							db '%s:%s Address %X Size %u',0
-szDataVal						db '%s:%s Address %X Size %u Hex %X Dec %d',0
-szParam							db 'PARAM %s Offst %d Hex %X Dec %d',0
-szLocal							db 'LOCAL %s Offset %d Hex %X Dec %d',0
+; Tooltip formatting
+szReg32							db '%s=%08Xh',0
+szReg16							db '%s=%04Xh',0
+szReg8							db '%s=%02Xh',0
+szProc							db 'PROC %s Size %u',0
+szData							db 'GLOBAL %s:%s Address %08Xh Size %u',0
+szDataVal						db 'GLOBAL %s:%s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szParam							db 'PARAM %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
+szLocal							db 'LOCAL %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
 
 szCall							db 'invoke',0
 								db 'call',0
 ;								db 'Add other call types here',0
 								db 0
 
+; Datatypes
 szBYTE							db 'BYTE',0
+								db 'SBYTE',0
 								db 'DB',0
 ;								db 'Add other byte types here',0
 								db 0
 
 szWORD							db 'WORD',0
+								db 'SWORD',0
 								db 'DW',0
 ;								db 'Add other word types here',0
 								db 0
 
 szDWORD							db 'DWORD',0
+								db 'SDWORD',0
 								db 'DD',0
 								db 'HWND',0
 								db 'HINSTANCE',0
@@ -302,3 +321,4 @@ var								VAR <>
 fNoDebugInfo					dd ?
 outbuffer						db 1024 dup(?)
 typeupper						db 64 dup(?)
+nRadASMVer						dd ?

@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=RadASM V2.2.1.6
+Description=RadASM V2.2.1.7
 Backup=$P\Bak\
 Debug=0
 Group=0
@@ -177,7 +177,7 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,102
-2=0,416,869,416,45363
+2=0,416,869,416,30724
 3=154,154,590,413,749
 4=0,0,590,413,46699
 5=132,132,536,413,44750
@@ -212,7 +212,7 @@ MinorFiles=*.res;*.obj;
 35=154,154,536,413,10265
 36=22,22,536,413
 37=0,0,536,413,1150
-38=0,0,0,0,192
+38=0,0,0,0,67
 39=176,176,590,413,2915
 40=110,110,536,413
 41=132,132,536,413,0
@@ -270,7 +270,7 @@ MinorFiles=*.res;*.obj;
 94=44,44,536,413
 95=66,66,536,413,1501
 96=88,88,536,413,11211
-97=22,22,536,413,0
+97=22,22,536,413,1945
 98=154,154,536,413
 99=176,176,536,413,53
 100=110,110,536,413
@@ -323,20 +323,20 @@ MinorFiles=*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.2.1.6
-PV=2.2.1.6
+FV=2.2.1.7
+PV=2.2.1.7
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.2.1.6
+ProductVersion=2.2.1.7
 ProductName=
 OriginalFilename=RadASM.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2001-2005
 InternalName=RadASM
 FileDescription=Assembly IDE
-FileVersion=2.2.1.6
+FileVersion=2.2.1.7
 CompanyName=
 
 [Accel]
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="IDM_EDIT_FINDPROC"
-2="iniProjectGroup"
-3="PROGROUP"
-4="szGroups"
-5="szGroup"
-6="szCodeFiles"
-7="FindProcPos"
-8="szRPA"
-9="DeleteProperties"
-10="PROPERTIES.Owner"
+1="2.2.1.6"
+2="2216"
+3="IDM_EDIT_FINDPROC"
+4="iniProjectGroup"
+5="PROGROUP"
+6="szGroups"
+7="szGroup"
+8="szCodeFiles"
+9="FindProcPos"
+10="szRPA"
 
 [BreakPoint]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=9
+MilestoneOnDateDate=10
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988

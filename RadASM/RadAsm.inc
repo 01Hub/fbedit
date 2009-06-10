@@ -1,6 +1,6 @@
 ;include file for building RadASM addins
 
-RadASM_Version			equ 2216
+RadASM_Version			equ 2217
 
 ;Assemblers
 nMASM					equ 1

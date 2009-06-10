@@ -276,7 +276,7 @@ Restore:
 
 RestoreSourceByte endp
 
-SetBreakPointsAll proc uses ebx esi edi
+SetBreakPointsAll proc
 
 	;Step Into
 	mov		edx,dbg.minadr
@@ -657,17 +657,23 @@ Debug proc uses ebx,lpFileName:DWORD
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.endif
 			.elseif eax==CREATE_PROCESS_DEBUG_EVENT
-				invoke PutString,addr szCREATE_PROCESS_DEBUG_EVENT
+				.if fOptions &2
+					invoke PutString,addr szCREATE_PROCESS_DEBUG_EVENT
+				.endif
 				mov		eax,de.u.CreateProcessInfo.hFile
 				mov		dbg.hdbgfile,eax
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
-				invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+				.if fOptions &2
+					invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+				.endif
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
-					invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
+					.if fOptions &2
+						invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
+					.endif
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
 					mov		ebx,eax
@@ -678,26 +684,34 @@ Debug proc uses ebx,lpFileName:DWORD
 					.endif
 				.endif
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
-				invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
+				.if fOptions &2
+					invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
+				.endif
 				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
 				.break
 			.elseif eax==LOAD_DLL_DEBUG_EVENT
-				mov		buffer,0
-				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
-				invoke PutString,addr szLOAD_DLL_DEBUG_EVENT
-				invoke PutString,addr buffer
+				.if fOptions &2
+					mov		buffer,0
+					invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
+					invoke PutString,addr szLOAD_DLL_DEBUG_EVENT
+					invoke PutString,addr buffer
+				.endif
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
-				mov		buffer,0
-				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
-				invoke PutString,addr szUNLOAD_DLL_DEBUG_EVENT
-				invoke PutString,addr buffer
+				.if fOptions &2
+					mov		buffer,0
+					invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
+					invoke PutString,addr szUNLOAD_DLL_DEBUG_EVENT
+					invoke PutString,addr buffer
+				.endif
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
 				invoke PutString,addr szOUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
 				invoke ReadProcessMemory,dbg.hdbghand,de.u.DebugString.lpDebugStringData,addr buffer,eax,0
 				invoke PutString,addr buffer
 			.elseif eax==RIP_EVENT
-				invoke PutString,addr szRIP_EVENT
+				.if fOptions &2
+					invoke PutString,addr szRIP_EVENT
+				.endif
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
@@ -731,6 +745,7 @@ Debug proc uses ebx,lpFileName:DWORD
 	invoke EnableMenu
 	invoke LockFiles,FALSE
 	invoke PutString,addr szDebugStopped
+	invoke SetWindowText,hOut2,addr szNULL
 	ret
 
 Debug endp
