@@ -240,6 +240,71 @@ EnableMenu proc uses esi edi
 
 EnableMenu endp
 
+FindLine proc uses ebx esi edi,Address:DWORD
+	LOCAL	inx:DWORD
+	LOCAL	lower:DWORD
+	LOCAL	upper:DWORD
+
+	mov		eax,dbg.inxline
+	mov		lower,0
+	mov		upper,eax
+	.while TRUE
+		mov		eax,upper
+		sub		eax,lower
+		.break .if !eax
+		shr		eax,1
+		add		eax,lower
+		mov		inx,eax
+		call	Compare
+		.if sdword ptr eax<0
+			; Smaller
+			mov		eax,inx
+			mov		upper,eax
+		.elseif sdword ptr eax>0
+			; Larger
+			mov		eax,inx
+			mov		lower,eax
+		.else
+			; Found
+			jmp		Ex
+		.endif
+	.endw
+	; Not found, should never happend
+	call	Linear
+  Ex:
+	mov		eax,edi
+	ret
+
+Compare:
+	call	GetPointerFromInx
+	mov		eax,Address
+	sub		eax,[edi].DEBUGLINE.Address
+	retn
+
+GetPointerFromInx:
+	mov		eax,inx
+	mov		edx,sizeof DEBUGLINE
+	mul		edx
+	mov		edi,dbg.hMemLine
+	lea		edi,[edi+eax]
+	retn
+
+Linear:
+	mov		ebx,dbg.inxline
+	mov		edi,dbg.hMemLine
+	mov		eax,Address
+	.while ebx
+		.if eax==[edi].DEBUGLINE.Address
+			retn
+		.endif
+		lea		edi,[edi+sizeof DEBUGLINE]
+		dec		ebx
+	.endw
+	xor		edi,edi
+	retn
+
+FindLine endp
+
 FindSymbol proc uses esi,lpName:DWORD
 
 	;Get pointer to symbol list
@@ -299,6 +364,201 @@ FindType proc uses esi,lpType:DWORD
 
 FindType endp
 
+FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
+	LOCAL	nArray:DWORD
+
+	mov		esi,lpLocal
+	mov		edi,nOfs
+	.while byte ptr [esi]
+		call	Compare
+		.if eax
+			.if sdword ptr nMove<0
+				sub		edi,edx
+			.endif
+			mov		eax,edi
+			jmp		Ex
+		.endif
+		.if sdword ptr nMove>0
+			add		edi,edx
+		.else
+			sub		edi,edx
+		.endif
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+Compare:
+	mov		edx,lpName
+	.while TRUE
+		mov		ah,[edx]
+		mov		al,[esi]
+		.if !ah && (al==':' || al=='[' || al==',' || !al)
+			mov		eax,TRUE
+			jmp		ExCompare
+		.endif
+		.break .if !al
+		sub		al,ah
+		.break .if al
+		inc		esi
+		inc		edx
+	.endw
+	xor		eax,eax
+ExCompare:
+	push	eax
+	mov		nArray,1
+	xor		edx,edx
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		inc		esi
+		.if byte ptr [esi-1]==':'
+			xor		ecx,ecx
+			.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=','
+				mov		al,[esi+ecx]
+				.if al>='a' && al<='z'
+					and		al,5Fh
+				.endif
+				mov		typeupper[ecx],al
+				inc		ecx
+			.endw
+			mov		typeupper[ecx],0
+			invoke FindType,offset typeupper
+			mov		edx,eax
+			.if !edx
+				mov		edx,4
+			.endif
+			mov		eax,nArray
+			mul		edx
+			mov		edx,eax
+		.elseif byte ptr [esi-1]=='['
+			invoke DecToBin,esi
+			mov		nArray,eax
+		.endif
+	.endw
+	.if byte ptr [esi]==','
+		inc		esi
+	.endif
+	pop		eax
+	retn
+
+FindLocalVar endp
+
+FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
+	LOCAL	nOfs:DWORD
+	LOCAL	nSize:DWORD
+
+	mov		esi,dbg.lpProc
+	invoke FindLine,[esi].DEBUGSYMBOL.Address
+	push	eax
+	mov		eax,[esi].DEBUGSYMBOL.Address
+	add		eax,[esi].DEBUGSYMBOL.nSize
+	invoke FindLine,eax
+	pop		edx
+	.if edx && eax
+		mov		edx,[edx].DEBUGLINE.LineNumber
+		dec		edx
+		mov		ecx,[eax].DEBUGLINE.LineNumber
+		dec		ecx
+		.if nLine>=edx && nLine<ecx
+			; PROC Parameter
+			invoke FindLocalVar,lpName,[esi].DEBUGSYMBOL.lpType,8,1
+			.if eax
+				mov		var.Address,eax
+				mov		var.nSize,edx
+				invoke lstrcpy,addr var.szName,lpName
+				invoke lstrcpy,addr var.szType,addr typeupper
+				mov		eax,'P'
+				jmp		Ex
+			.else
+				; LOCAL
+				invoke lstrlen,[esi].DEBUGSYMBOL.lpType
+				add		eax,[esi].DEBUGSYMBOL.lpType
+				inc		eax
+				invoke FindLocalVar,lpName,eax,0,-1
+				.if eax
+					mov		var.Address,eax
+					mov		var.nSize,edx
+					invoke lstrcpy,addr var.szName,lpName
+					invoke lstrcpy,addr var.szType,addr typeupper
+					mov		eax,'L'
+					jmp		Ex
+				.endif
+			.endif
+		.endif
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+;	invoke FindLocalVar,lpName,[esi].DEBUGSYMBOL.lpType,8,1
+;	.if eax
+;		mov		nOfs,eax
+;		mov		nSize,edx
+;		invoke FindLine,[esi].DEBUGSYMBOL.Address
+;		push	eax
+;		mov		eax,[esi].DEBUGSYMBOL.Address
+;		add		eax,[esi].DEBUGSYMBOL.nSize
+;		invoke FindLine,eax
+;		pop		edx
+;		.if edx && eax
+;			mov		edx,[edx].DEBUGLINE.LineNumber
+;			dec		edx
+;			mov		ecx,[eax].DEBUGLINE.LineNumber
+;			dec		ecx
+;			.if nLine>=edx && nLine<ecx
+;				mov		edx,dbg.context.regEbp
+;				add		edx,nOfs
+;;				mov		nDWORD,0
+;;				invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,nSize,0
+;;				invoke wsprintf,offset outbuffer,addr szParam,addr buffer,nOfs,nDWORD,nDWORD
+;;				mov		ti.lpszText,offset outbuffer
+;;				call	Activate
+;			.else
+;;				call	DeActivate
+;			.endif
+;		.else
+;;			call	DeActivate
+;		.endif
+;	.else
+;		; LOCAL
+;		invoke lstrlen,[esi].DEBUGSYMBOL.lpType
+;		add		eax,[esi].DEBUGSYMBOL.lpType
+;		inc		eax
+;		invoke FindLocalVar,lpName,eax,0,-1
+;		.if eax
+;			mov		nOfs,eax
+;			mov		nSize,edx
+;			invoke FindLine,[esi].DEBUGSYMBOL.Address
+;			push	eax
+;			mov		eax,[esi].DEBUGSYMBOL.Address
+;			add		eax,[esi].DEBUGSYMBOL.nSize
+;			invoke FindLine,eax
+;			pop		edx
+;			.if edx && eax
+;				mov		edx,[edx].DEBUGLINE.LineNumber
+;				dec		edx
+;				mov		ecx,[eax].DEBUGLINE.LineNumber
+;				dec		ecx
+;				.if nLine>=edx && nLine<ecx
+;					mov		edx,dbg.context.regEbp
+;					add		edx,nOfs
+;;					mov		nDWORD,0
+;;					invoke ReadProcessMemory,dbg.hdbghand,edx,addr nDWORD,nSize,0
+;;					invoke wsprintf,offset outbuffer,addr szLocal,addr buffer,nOfs,nDWORD,nDWORD
+;;					mov		ti.lpszText,offset outbuffer
+;;					call	Activate
+;				.else
+;;					call	DeActivate
+;				.endif
+;			.else
+;;				call	DeActivate
+;			.endif
+;		.else
+;;			call	DeActivate
+;		.endif
+;	.endif
+
+FindLocal endp
+
 FindReg proc uses esi,lpName:DWORD
 
 	mov		esi,offset reg32
@@ -316,26 +576,26 @@ FindReg proc uses esi,lpName:DWORD
 
 FindReg endp
 
-FindVar proc uses esi,lpName:DWORD
+FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 
 	invoke RtlZeroMemory,addr var,sizeof var
 	invoke FindReg,lpName
 	.if eax
 		mov		esi,eax
 		invoke lstrcpy,addr var.szName,lpName
-		mov		var.szType,0
-		mov		var.nType,0
-		mov		var.nArray,0
 		mov		eax,[esi].REG.nSize
 		mov		var.nSize,eax
-		mov		var.fPtr,0
 		mov		eax,[esi].REG.nOfs
 		mov		var.Address,eax
 		mov		eax,'R'
 		jmp		Ex
 	.endif
 	.if dbg.lpProc
-		; Is in a proc
+		; Is in a proc, find parameter or local
+		invoke FindLocal,lpName,nLine
+		.if eax
+			jmp		Ex
+		.endif
 	.endif
 	; Global
 	invoke FindSymbol,lpName
@@ -344,10 +604,7 @@ FindVar proc uses esi,lpName:DWORD
 		invoke lstrcpy,addr var.szName,lpName
 		.if [esi].DEBUGSYMBOL.nType=='p'
 			; PROC
-			mov		var.szType,0
 			mov		var.nType,99
-			mov		var.nArray,0
-			mov		var.fPtr,0
 			mov		eax,[esi].DEBUGSYMBOL.nSize
 			mov		var.nSize,eax
 			mov		eax,[esi].DEBUGSYMBOL.Address
@@ -369,10 +626,8 @@ FindVar proc uses esi,lpName:DWORD
 			mov		var.szType[ecx],0
 			invoke FindType,addr var.szType
 			mov		var.nType,eax
-			mov		var.nArray,0
 			mov		eax,[esi].DEBUGSYMBOL.nSize
 			mov		var.nSize,eax
-			mov		var.fPtr,0
 			mov		eax,[esi].DEBUGSYMBOL.Address
 			mov		var.Address,eax
 			mov		eax,'d'
