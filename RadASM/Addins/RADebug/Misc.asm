@@ -43,10 +43,10 @@ IsDec proc uses esi,lpStr:DWORD
 	.if byte ptr [esi]=='-'
 		inc		esi
 	.endif
-	.while byte ptr [esi]
+	.while TRUE
 		mov		al,[esi]
 		.if al>='0' && al<='9'
-		.elseif !al
+		.elseif !al || al==']'
 			mov		eax,esi
 			sub		eax,lpStr
 			jmp		Ex
@@ -92,7 +92,7 @@ IsHex proc uses esi,lpStr:DWORD
 	.while byte ptr [esi]
 		mov		al,[esi]
 		.if al>='0' && al<='9' || al>='A' && al<='F' || al>='a' && al<='f'
-		.elseif (al=='h' || al=='H') && !byte ptr [esi+1]
+		.elseif (al=='h' || al=='H') && (!byte ptr [esi+1] || byte ptr [esi+1]==']')
 			mov		eax,esi
 			sub		eax,lpStr
 			jmp		Ex
@@ -106,6 +106,30 @@ IsHex proc uses esi,lpStr:DWORD
 	ret
 
 IsHex endp
+
+AnyToBin proc lpStr:DWORD
+
+	invoke IsHex,lpStr
+	.if eax
+		invoke HexToBin,lpStr
+		mov		edx,eax
+		mov		eax,TRUE
+		jmp		Ex
+	.else
+		invoke IsDec,lpStr
+		.if eax
+			invoke DecToBin,lpStr
+			mov		edx,eax
+			mov		eax,TRUE
+			jmp		Ex
+		.endif
+	.endif
+	xor		edx,edx
+	xor		eax,eax
+  Ex:
+	ret
+
+AnyToBin endp
 
 PutString proc lpString:DWORD
 
@@ -320,6 +344,10 @@ FindLine proc uses ebx esi edi,Address:DWORD
 	LOCAL	lower:DWORD
 	LOCAL	upper:DWORD
 
+	mov		eax,dbg.lastadr
+	.if Address>eax
+		mov		Address,eax
+	.endif
 	mov		eax,dbg.inxline
 	mov		lower,0
 	mov		upper,eax
@@ -371,11 +399,14 @@ Linear:
 	.while ebx
 		.if eax==[edi].DEBUGLINE.Address
 			retn
+		.elseif eax<[edi].DEBUGLINE.Address
+			lea		edi,[edi-sizeof DEBUGLINE]
+			retn
 		.endif
 		lea		edi,[edi+sizeof DEBUGLINE]
 		dec		ebx
 	.endw
-	xor		edi,edi
+	lea		edi,[edi-sizeof DEBUGLINE]
 	retn
 
 FindLine endp
@@ -518,8 +549,8 @@ ExCompare:
 				.break .if ecx>32 || al==']'
 			.endw
 			mov		szArray[ecx],0
-			invoke DecToBin,esi
-			mov		nArray,eax
+			invoke AnyToBin,esi
+			mov		nArray,edx
 		.endif
 	.endw
 	.if byte ptr [esi]==','
@@ -544,9 +575,9 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 	.if edx && eax
 		mov		edx,[edx].DEBUGLINE.LineNumber
 		dec		edx
-		mov		ecx,[eax].DEBUGLINE.LineNumber
-		dec		ecx
-		.if nLine>=edx && nLine<ecx
+		mov		eax,[eax].DEBUGLINE.LineNumber
+		dec		eax
+		.if nLine>=edx && nLine<eax
 			; PROC Parameter
 			invoke FindLocalVar,lpName,[esi].DEBUGSYMBOL.lpType,8,1
 			.if eax
@@ -657,6 +688,22 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 			mov		eax,'d'
 			jmp		Ex
 		.endif
+	.else
+		invoke IsHex,lpName
+		.if eax
+			invoke HexToBin,lpName
+			mov		var.Value,eax
+			mov		eax,'H'
+			jmp		Ex
+		.else
+			invoke IsDec,lpName
+			.if eax
+				invoke DecToBin,lpName
+				mov		var.Value,eax
+				mov		eax,'D'
+				jmp		Ex
+			.endif
+		.endif
 	.endif
 	xor		eax,eax
   Ex:
@@ -727,6 +774,10 @@ GetVarVal proc lpName:DWORD,nLine:DWORD,fShow:DWORD
 		.if fShow
 			invoke wsprintf,offset outbuffer,addr szLocal,addr var.szName,addr var.szArray,addr var.szType,var.Address,var.Value,var.Value
 		.endif
+	.elseif eax=='H' || eax=='D'
+		.if fShow
+			invoke wsprintf,offset outbuffer,addr szValue,var.Value,var.Value
+		.endif
 	.else
 		xor		eax,eax
 		jmp		Ex
@@ -740,26 +791,13 @@ GetVarVal endp
 GetVarAdr proc lpName:DWORD,nLine:DWORD
 
 	invoke FindVar,lpName,nLine
-	.if eax=='R'
-		; REGISTER
-		mov		edx,var.Address
-		lea		edx,dbg.context[edx]
-		mov		var.Address,edx
+	.if eax=='R' || eax=='P' || eax=='L'
+		; REGISTER, PROC Parameter or LOCAL
 	.elseif eax=='d'
 		; GLOBAL
 		.if !var.nType
 			xor		eax,eax
 		.endif
-	.elseif eax=='P'
-		; PROC Parameter
-		mov		edx,dbg.context.regEbp
-		add		edx,var.Address
-		mov		var.Address,edx
-	.elseif eax=='L'
-		; LOCAL
-		mov		edx,dbg.context.regEbp
-		add		edx,var.Address
-		mov		var.Address,edx
 	.else
 		xor		eax,eax
 		jmp		Ex

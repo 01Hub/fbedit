@@ -114,7 +114,8 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 		mov		eax,[lpHandles]
 		invoke RemoveMenu,[eax].ADDINHANDLES.hMenu,IDAddIn,MF_BYCOMMAND
 		invoke DestroyMenu,hMnu
-	.else
+		mov		hMnu,0
+	.elseif !IDAddIn
 		mov		edi,offset IDAddIn
 		xor		ecx,ecx
 		.while ecx<9
@@ -184,7 +185,7 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		mov		ti.uId,eax
 		mov		ti.lpszText,0
 		invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
-		.if dbg.hDbgThread
+		.if dbg.hDbgThread && dbg.fHandled
 			.if !eax
 				;Add the tooltip
 				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
@@ -221,11 +222,16 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				invoke SendMessage,hPar,REM_ISCHARPOS,eax,0
 				.if !eax
 					invoke SendMessage,hPar,REM_GETCURSORWORD,sizeof buffer,addr buffer
-					invoke GetVarVal,addr buffer,eax,TRUE
-					.if eax
-						; Show tooltip
-						mov		ti.lpszText,offset outbuffer
-						call	Activate
+					.if buffer
+						invoke GetVarVal,addr buffer,eax,TRUE
+						.if eax
+							; Show tooltip
+							mov		ti.lpszText,offset outbuffer
+							call	Activate
+						.else
+							; Hide tooltip
+							call	DeActivate
+						.endif
 					.else
 						; Hide tooltip
 						call	DeActivate
@@ -425,7 +431,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		mov		edx,[eax].ADDINHANDLES.hOut3
 		mov		hOut3,edx
 		invoke SendMessage,hOut3,REM_SUBCLASS,0,addr ImmediateProc
-		mov		lpOldEditProc,eax
+		mov		lpOldOutProc3,eax
 		; Create tooltip
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
 		mov		hTip,eax
@@ -433,13 +439,15 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
 		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
 		invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
+		invoke CreateDebugMenu,hWin
+		invoke UpdateAccelerators
 		; Messages to hook into
 		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+		mov		ecx,RAM_UNHOOK
 	.else
 		xor		eax,eax
+		xor		ecx,ecx
 	.endif
-	; ECX and EDX must be null before we return
-	xor		ecx,ecx
 	xor		edx,edx
 	ret 
 
@@ -452,6 +460,26 @@ GetOptions proc
 	ret
 
 GetOptions endp
+
+UnHook proc hWin:HWND,lpThisProc:DWORD,lpOldProc:DWORD
+
+	invoke GetWindowLong,hWin,GWL_WNDPROC
+	.if eax==lpThisProc
+		;Last in chain, just unhook
+		invoke SetWindowLong,hWin,GWL_WNDPROC,lpOldProc
+	.else
+		;Let the next in the chain unhook me
+		push	RAM_UNHOOK
+		push	lpOldProc
+		push	lpThisProc
+		push	AIM_UNHOOK
+		push	hWin
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpDllProc
+	.endif
+	ret
+
+UnHook endp
 
 ; This proc handles messages sent from RadASM to our dll
 DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
@@ -668,6 +696,17 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke SaveBreakPoints
 		;
 	.elseif eax==AIM_CLOSE
+		.if lpOldOutProc3
+			;UnHook Output3 WndProc
+			invoke UnHook,hOut3,offset ImmediateProc,lpOldOutProc3
+			mov		lpOldOutProc3,0
+		.endif
+		.if hMnu
+			mov		eax,[lpHandles]
+			invoke RemoveMenu,[eax].ADDINHANDLES.hMenu,IDAddIn,MF_BYCOMMAND
+			invoke DestroyMenu,hMnu
+			mov		hMnu,0
+		.endif
 		;
 	.elseif eax==AIM_MENUREBUILD
 		mov		eax,lpHandles
@@ -681,8 +720,21 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke UpdateAccelerators
 		invoke EnableMenu
 		;
+	.elseif eax==AIM_UNHOOK
+		mov		eax,hWin
+		.if eax==hOut3
+			mov		eax,wParam
+			.if eax==lpOldOutProc3
+				;Remove the hook from the chain
+				mov		eax,lParam
+				mov		lpOldOutProc3,eax
+				mov		eax,TRUE
+				jmp		Ex
+			.endif
+		.endif
 	.endif
 	mov eax,FALSE
+  Ex:
 	ret
 
 DllProc Endp

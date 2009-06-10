@@ -40,7 +40,7 @@ MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+1
 	LOCAL	aa:SDWORD
 	LOCAL	bb:SWORD
 	LOCAL	cc:SBYTE
-	LOCAL	s[256]:BYTE
+	LOCAL	s [ 256 ] : BYTE
 	LOCAL	rc:RECT
 
 	mov		eax,1

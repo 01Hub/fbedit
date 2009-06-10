@@ -30,15 +30,12 @@ include ..\RadAsm.inc
 ; VKim's Debug
 
 include masm32.inc
+include Debug.Inc
 includelib masm32.lib
-include \RadASM\masm\inc\debug.inc
-includelib \RadASM\masm\lib\debug.lib
-
-DBGWIN_DEBUG_ON = 1		; include debug info into the program
-DBGWIN_EXT_INFO = 0		; include extra debug info into the program
+includelib Debug.lib
 
 ;#########################################################################
-;		Prototypes
+; Prototypes
 
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
@@ -133,6 +130,7 @@ DEBUG struct
 	hMemBP					HGLOBAL ?
 	minadr					DWORD ?					; Lowest address
 	maxadr					DWORD ?					; Highest address
+	lastadr					DWORD ?					; Address of last line
 	lpProc					DWORD ?					; Current proc
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?
@@ -255,6 +253,7 @@ szData							db 'GLOBAL %s:%s Address %08Xh Size %u',0
 szDataVal						db 'GLOBAL %s:%s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szParam							db 'PARAM %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
 szLocal							db 'LOCAL %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
+szValue							db 'Hex %08Xh Dec %d',0
 
 szCall							db 'invoke',0
 								db 'call',0
@@ -316,6 +315,7 @@ szSourceName					db MAX_PATH dup(?)
 szFileName						db MAX_PATH dup(?)
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
+lpOldOutProc3					dd ?
 dbg								DEBUG <>
 var								VAR <>
 fNoDebugInfo					dd ?

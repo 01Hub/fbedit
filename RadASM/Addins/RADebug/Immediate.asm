@@ -6,16 +6,28 @@ szImmUnknown					db 'Unknown command.',0
 
 .code
 
-GetImmediateVal proc lpVal:DWORD
+ParseBuff proc uses esi edi,lpBuff:DWORD
 
+	mov		esi,lpBuff
+	mov		edi,esi
+	.while TRUE
+		mov		al,[esi]
+		.if al!=VK_SPACE && al!=VK_TAB
+			mov		[edi],al
+			inc		edi
+		.endif
+		.break .if !al
+		inc		esi
+	.endw
 	ret
 
-GetImmediateVal endp
+ParseBuff endp
 
 Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[256]:BYTE
 	LOCAL	val:DWORD
+	LOCAL	tmpvar:VAR
 
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
 	invoke SendMessage,hWin,EM_LINEFROMCHAR,chrg.cpMin,0
@@ -24,6 +36,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	invoke SendMessage,hWin,EM_GETLINE,edx,addr buffer
 	mov		buffer[eax],0
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
+	invoke ParseBuff,addr buffer
 	.if buffer=='?'
 		invoke GetVarVal,addr buffer[1],dbg.prevline,TRUE
 		.if eax
@@ -32,24 +45,30 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			invoke PutStringOut,addr szImmNotFound,hOut3
 		.endif
 	.else
-		xor ecx,ecx
-		.while buffer[ecx]
-			.if buffer[ecx]=='='
-				mov		buffer[ecx],0
-				push	ecx
+		xor ebx,ebx
+		.while buffer[ebx]
+			.if buffer[ebx]=='='
+				mov		buffer[ebx],0
+				inc		ebx
 				invoke GetVarAdr,addr buffer,dbg.prevline
-				pop		ecx
-				.if eax=='d' || eax=='P' || eax=='L'
-					; GLOBAL, PROC Parameter or LOCAL
-					invoke DecToBin,addr buffer[ecx+1]
+				.if eax
+					push	eax
+					invoke RtlMoveMemory,addr tmpvar,addr var,sizeof VAR
+					invoke GetVarVal,addr buffer[ebx],dbg.prevline,FALSE
+					push	eax
+					mov		eax,var.Value
 					mov		val,eax
+					invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
+					pop		edx
+					pop		eax
+				.endif
+				.if (eax=='d' || eax=='P' || eax=='L') && edx
+					; GLOBAL, PROC Parameter or LOCAL
 					invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
 					invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 					invoke PutStringOut,addr outbuffer,hOut3
-				.elseif eax=='R'
+				.elseif eax=='R' && edx
 					; REGISTER
-					invoke DecToBin,addr buffer[ecx+1]
-					mov		val,eax
 					mov		eax,var.Address
 					mov		eax,[eax]
 					mov		edx,var.nSize
@@ -67,12 +86,14 @@ Immediate proc uses ebx esi edi,hWin:HWND
 					mov		ebx,dbg.lpthread
 					invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 					invoke ShowContext
+					invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+					invoke PutStringOut,addr outbuffer,hOut3
 				.else
 					invoke PutStringOut,addr szImmNotFound,hOut3
 				.endif
 				jmp		Ex
 			.endif
-			inc		ecx
+			inc		ebx
 		.endw
 		invoke lstrcmpi,addr buffer,addr szImmDump
 		.if !eax
@@ -99,7 +120,7 @@ ImmediateProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
-		.if dbg.hDbgThread
+		.if dbg.hDbgThread && dbg.fHandled
 			mov		eax,wParam
 			.if eax==VK_RETURN
 				invoke Immediate,hOut3
@@ -108,7 +129,7 @@ ImmediateProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			.endif
 		.endif
 	.endif
-	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
+	invoke CallWindowProc,lpOldOutProc3,hWin,uMsg,wParam,lParam
 	ret
 
 ImmediateProc endp

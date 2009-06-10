@@ -1623,9 +1623,16 @@ ParseCode:
 									mov		lpWord1,esi
 									mov		len1,ecx
 									lea		esi,[esi+ecx]
-									invoke CpyWrd,edi,lpWord1,len1
-									mov		eax,len1
-									lea		edi,[edi+eax]
+									mov		edx,lpWord1
+									xor		ecx,ecx
+									.while ecx<len1
+										mov		al,[edx+ecx]
+										.if al!=' '
+											mov		[edi],al
+											inc		edi
+										.endif
+										inc		ecx
+									.endw
 									jmp		NxtL
 								.endif
 							.endif
@@ -2643,3 +2650,4 @@ FindProc proc hWin:HWND
 	ret
 
 FindProc endp
+

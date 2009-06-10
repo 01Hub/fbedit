@@ -577,6 +577,7 @@ Debug proc uses ebx,lpFileName:DWORD
 			mul		edx
 			lea		ebx,[ebx+eax]
 			mov		eax,[ebx].DEBUGLINE.Address
+			mov		dbg.lastadr,eax
 			add		eax,4
 			mov		dbg.maxadr,eax
 			sub		eax,dbg.minadr
@@ -742,6 +743,7 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke SendMessage,dbg.prevhwnd,REM_SETHILITELINE,dbg.prevline,0
 	.endif
 	mov		fNoDebugInfo,FALSE
+	mov		dbg.fHandled,FALSE
 	invoke EnableMenu
 	invoke LockFiles,FALSE
 	invoke PutString,addr szDebugStopped
