@@ -239,3 +239,148 @@ EnableMenu proc uses esi edi
 	ret
 
 EnableMenu endp
+
+FindSymbol proc uses esi,lpName:DWORD
+
+	;Get pointer to symbol list
+	mov		esi,dbg.hMemSymbol
+	;Loop trough the symbol list
+	.while [esi].DEBUGSYMBOL.szName
+		invoke lstrcmp,lpName,addr [esi].DEBUGSYMBOL.szName
+		.if !eax
+			mov		eax,esi
+			jmp		Ex			
+		.endif
+		;Move to next word
+		lea		esi,[esi+sizeof DEBUGSYMBOL]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+	ret
+
+FindSymbol endp
+
+FindType proc uses esi,lpType:DWORD
+
+	mov		esi,offset szDWORD
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,lpType
+		.if !eax
+			mov		eax,4
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	mov		esi,offset szWORD
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,lpType
+		.if !eax
+			mov		eax,2
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	mov		esi,offset szBYTE
+	.while byte ptr [esi]
+		invoke lstrcmp,esi,lpType
+		.if !eax
+			mov		eax,1
+			jmp		Ex
+		.endif
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindType endp
+
+FindReg proc uses esi,lpName:DWORD
+
+	mov		esi,offset reg32
+	.while [esi].REG.szName
+		invoke lstrcmpi,lpName,addr [esi].REG.szName
+		.if !eax
+			mov		eax,esi
+			jmp		Ex
+		.endif
+		lea		esi,[esi+sizeof REG]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindReg endp
+
+FindVar proc uses esi,lpName:DWORD
+
+	invoke RtlZeroMemory,addr var,sizeof var
+	invoke FindReg,lpName
+	.if eax
+		mov		esi,eax
+		invoke lstrcpy,addr var.szName,lpName
+		mov		var.szType,0
+		mov		var.nType,0
+		mov		var.nArray,0
+		mov		eax,[esi].REG.nSize
+		mov		var.nSize,eax
+		mov		var.fPtr,0
+		mov		eax,[esi].REG.nOfs
+		mov		var.Address,eax
+		mov		eax,'R'
+		jmp		Ex
+	.endif
+	.if dbg.lpProc
+		; Is in a proc
+	.endif
+	; Global
+	invoke FindSymbol,lpName
+	.if eax
+		mov		esi,eax
+		invoke lstrcpy,addr var.szName,lpName
+		.if [esi].DEBUGSYMBOL.nType=='p'
+			; PROC
+			mov		var.szType,0
+			mov		var.nType,99
+			mov		var.nArray,0
+			mov		var.fPtr,0
+			mov		eax,[esi].DEBUGSYMBOL.nSize
+			mov		var.nSize,eax
+			mov		eax,[esi].DEBUGSYMBOL.Address
+			mov		var.Address,eax
+			mov		eax,'p'
+			jmp		Ex
+		.elseif [esi].DEBUGSYMBOL.nType=='d'
+			; GLOBAL
+			mov		edx,[esi].DEBUGSYMBOL.lpType
+			xor		ecx,ecx
+			.while byte ptr [edx+ecx]!=' ' && byte ptr [edx+ecx] && ecx<64
+				mov		al,[edx+ecx]
+				.if al>='a' && al<='z'
+					and		al,5Fh
+				.endif
+				mov		var.szType[ecx],al
+				inc		ecx
+			.endw
+			mov		var.szType[ecx],0
+			invoke FindType,addr var.szType
+			mov		var.nType,eax
+			mov		var.nArray,0
+			mov		eax,[esi].DEBUGSYMBOL.nSize
+			mov		var.nSize,eax
+			mov		var.fPtr,0
+			mov		eax,[esi].DEBUGSYMBOL.Address
+			mov		var.Address,eax
+			mov		eax,'d'
+			jmp		Ex
+		.endif
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+FindVar endp

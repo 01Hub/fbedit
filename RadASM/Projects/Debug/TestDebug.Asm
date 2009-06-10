@@ -36,8 +36,8 @@ MyProc1 proc
 
 MyProc1 endp
 
-MyProc2 proc uses esi edi,var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
-	LOCAL	aa:DWORD; ebp-4
+MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
+	LOCAL	aa:WORD; ebp-4
 	LOCAL	bb:WORD; ebp-8
 	LOCAL	cc:WORD; ebp-12
 	LOCAL	s[256]:BYTE
@@ -45,6 +45,7 @@ MyProc2 proc uses esi edi,var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	mov		aa,1
 	mov		bb,2
 	mov		cc,3
+	mov		s,'A'
 	mov		eax,ebp
 	lea		eax,var
 	sub		eax,ebp
@@ -94,6 +95,9 @@ start:
 	mov		eax,'EFGH'
 	mov		eax,'ABCD'
 	mov		eax,'EFGH'
+	mov		al,'B'
+	mov		ah,'C'
+	mov		ax,'DE'
 	invoke MyProc1
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3

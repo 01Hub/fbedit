@@ -138,7 +138,47 @@ DEBUG struct
 	pt						POINT <>
 DEBUG ends
 
+VAR struct
+	szName					BYTE 256 dup(?)
+	szType					BYTE 256 dup(?)
+	nType					DWORD ?
+	nArray					DWORD ?
+	nSize					DWORD ?
+	fPtr					DWORD ?
+	Address					DWORD ?
+VAR ends
+
+REG struct
+	szName					BYTE 16 dup(?)
+	nSize					DWORD ?
+	nOfs					DWORD ?
+REG ends
+
 .const
+
+reg32							REG 10 dup(<'EAX',4,CONTEXT.regEax>,
+										   <'EBX',4,CONTEXT.regEbx>,
+										   <'ECX',4,CONTEXT.regEcx>,
+										   <'EDX',4,CONTEXT.regEdx>,
+										   <'ESI',4,CONTEXT.regEsi>,
+										   <'EDI',4,CONTEXT.regEdi>,
+										   <'EBP',4,CONTEXT.regEbp>,
+										   <'ESP',4,CONTEXT.regEsp>,
+										   <'EIP',4,CONTEXT.regEip>,
+										   <'EFL',4,CONTEXT.regFlag>)
+reg16							REG 4  dup(<'AX',2,CONTEXT.regEax>,
+										   <'BX',2,CONTEXT.regEbx>,
+										   <'CX',2,CONTEXT.regEcx>,
+										   <'DX',2,CONTEXT.regEdx>)
+reg8							REG 10 dup(<'AL',1,CONTEXT.regEax>,
+										   <'AH',3,CONTEXT.regEax>,
+										   <'BL',1,CONTEXT.regEbx>,
+										   <'BH',3,CONTEXT.regEbx>,
+										   <'CL',1,CONTEXT.regEcx>,
+										   <'CH',3,CONTEXT.regEcx>,
+										   <'DL',1,CONTEXT.regEdx>,
+										   <'DH',3,CONTEXT.regEdx>,
+										   <,0,0>)
 
 DbgHelpDLL						db 'DbgHelp.dll',0
 
@@ -194,9 +234,10 @@ AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
 								ADDINOPT <0,0,0>
 sztooltips_class32				db 'tooltips_class32',0
 
+szReg							db '%s = %X',0
 szProc							db '%s PROC Size %u',0
-szData							db '%s %s Address %X Size %u',0
-szDataVal						db '%s %s Address %X Size %u Hex %X Dec %d',0
+szData							db '%s:%s Address %X Size %u',0
+szDataVal						db '%s:%s Address %X Size %u Hex %X Dec %d',0
 szParam							db 'PARAM %s Offst %d Hex %X Dec %d',0
 szLocal							db 'LOCAL %s Offset %d Hex %X Dec %d',0
 
@@ -205,18 +246,18 @@ szCall							db 'invoke',0
 ;								db 'Add other call types here',0
 								db 0
 
-szBYTE							db 'DB',0
-								db 'BYTE',0
+szBYTE							db 'BYTE',0
+								db 'DB',0
 ;								db 'Add other byte types here',0
 								db 0
 
-szWORD							db 'DW',0
-								db 'WORD',0
+szWORD							db 'WORD',0
+								db 'DW',0
 ;								db 'Add other word types here',0
 								db 0
 
-szDWORD							db 'DD',0
-								db 'DWORD',0
+szDWORD							db 'DWORD',0
+								db 'DD',0
 								db 'HWND',0
 								db 'HINSTANCE',0
 								db 'HANDLE',0
@@ -257,6 +298,7 @@ szFileName						db MAX_PATH dup(?)
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
 dbg								DEBUG <>
+var								VAR <>
 fNoDebugInfo					dd ?
 outbuffer						db 1024 dup(?)
 typeupper						db 64 dup(?)
