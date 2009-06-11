@@ -145,8 +145,11 @@ VAR struct
 	nArray					DWORD ?
 	nSize					DWORD ?
 	fPtr					DWORD ?
+	nOfs					DWORD ?
 	Address					DWORD ?
+	IsSZ					DWORD ?
 	Value					DWORD ?
+	szValue					BYTE 256 dup(?)
 VAR ends
 
 REG struct
@@ -171,7 +174,7 @@ reg16							REG 4  dup(<'AX',2,CONTEXT.regEax>,
 										   <'BX',2,CONTEXT.regEbx>,
 										   <'CX',2,CONTEXT.regEcx>,
 										   <'DX',2,CONTEXT.regEdx>)
-reg8							REG 10 dup(<'AL',1,CONTEXT.regEax>,
+reg8							REG 9 dup(<'AL',1,CONTEXT.regEax>,
 										   <'AH',3,CONTEXT.regEax>,
 										   <'BL',1,CONTEXT.regEbx>,
 										   <'BH',3,CONTEXT.regEbx>,
@@ -214,17 +217,16 @@ szBPNULL						db 0,0
 szCommaBP						db ',%u',0
 
 DebugMenu						db 'Deb&ug',0
-MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0
-								db '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0
-								db '-',0
-								db '&Run',VK_TAB,'Shift+F7',0
-								db '&Stop',VK_TAB,'Alt+F7',0
-								db '-',0
-								db 'Step &Into',VK_TAB,'F7',0
-								db 'Step &Over',VK_TAB,'Ctrl+F7',0
-								db 'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0
-								db 'Do not Debug',0
-								db 0
+MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
+								   '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0,
+								   '-',0,
+								   '&Run',VK_TAB,'Shift+F7',0,
+								   '&Stop',VK_TAB,'Alt+F7',0,
+								   '-',0,
+								   'Step &Into',VK_TAB,'F7',0,
+								   'Step &Over',VK_TAB,'Ctrl+F7',0,
+								   'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0,
+								   'Do not Debug',0,0
 
 szMakeFiles						db 'MakeFiles',0
 szMakeFilesExeKey				db '5',0
@@ -236,11 +238,11 @@ szShowDbgHelp					db 'Show DbgHelp output',0
 szShowDebugEvents				db 'Show debug events',0
 szPinOutput						db 'Pin output window',0
 szOutput2						db 'Show register window',0
-AddinOpt						ADDINOPT <offset szShowDbgHelp,1,1>
-								ADDINOPT <offset szShowDebugEvents,2,2>
-								ADDINOPT <offset szPinOutput,4,4>
-								ADDINOPT <offset szOutput2,8,8>
-								ADDINOPT <0,0,0>
+AddinOpt						ADDINOPT 5 dup(<offset szShowDbgHelp,1,1>,
+											   <offset szShowDebugEvents,2,2>,
+											   <offset szPinOutput,4,4>,
+											   <offset szOutput2,8,8>,
+											   <0,0,0>)
 
 sztooltips_class32				db 'tooltips_class32',0
 
@@ -249,8 +251,11 @@ szReg32							db '%s=%08Xh',0
 szReg16							db '%s=%04Xh',0
 szReg8							db '%s=%02Xh',0
 szProc							db 'PROC %s Size %u',0
-szData							db 'GLOBAL %s:%s Address %08Xh Size %u',0
-szDataVal						db 'GLOBAL %s:%s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szData							db 'GLOBAL %s Address %08Xh Size %u',0
+szData32						db 'GLOBAL %s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szData16						db 'GLOBAL %s Address %08Xh Size %u Hex %04Xh Dec %d',0
+szData8							db 'GLOBAL %s Address %08Xh Size %u Hex %02Xh Dec %d',0
+szDataSZ						db 'GLOBAL %s Address %08Xh Size %u "%s"',0
 szParam							db 'PARAM %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
 szLocal							db 'LOCAL %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
 szValue							db 'Hex %08Xh Dec %d',0
@@ -320,5 +325,5 @@ dbg								DEBUG <>
 var								VAR <>
 fNoDebugInfo					dd ?
 outbuffer						db 1024 dup(?)
-typeupper						db 64 dup(?)
+szvartype						db 64 dup(?)
 nRadASMVer						dd ?

@@ -923,16 +923,38 @@ TestLine:
   @@:
 	retn
 
+Compare:
+	push	ecx
+	push	edx
+	mov		ecx,lpWord
+	lea		edx,[edx+sizeof PROPERTIES]
+	.while TRUE
+		mov		al,[ecx]
+		mov		ah,[edx]
+		.if !al && (ah=='[' || ah==':')
+			jmp		@f
+		.endif
+		.if al!=ah
+			.break
+		.endif
+		inc		ecx
+		inc		edx
+	.endw
+	xor		eax,eax
+  @@:
+	pop		edx
+	pop		ecx
+	retn
+
 TestData:
 	mov		edx,lpWordList
 	.while [edx].PROPERTIES.nSize
 		.if [edx].PROPERTIES.nType=='d'
 			mov		eax,[edx].PROPERTIES.Owner
 			.if eax==iNbr
-				invoke strcmp,addr [edx+sizeof PROPERTIES],lpWord
-				.if !eax
+				call	Compare
+				.if eax
 					mov		nInx,1
-					inc		eax
 					retn
 				.endif
 			.endif
@@ -946,8 +968,8 @@ TestData:
 TestAny:
 	mov		edx,lpWordList
 	.while [edx].PROPERTIES.nSize
-		invoke strcmp,addr [edx+sizeof PROPERTIES],lpWord
-		.if !eax
+		call	Compare
+		.if eax
 			movzx	eax,[edx].PROPERTIES.nType
 			.if eax=='p'
 				mov		nInx,0

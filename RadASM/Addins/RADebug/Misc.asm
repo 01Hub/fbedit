@@ -417,8 +417,8 @@ FindSymbol proc uses esi,lpName:DWORD
 	mov		esi,dbg.hMemSymbol
 	;Loop trough the symbol list
 	.while [esi].DEBUGSYMBOL.szName
-		invoke lstrcmp,lpName,addr [esi].DEBUGSYMBOL.szName
-		.if !eax
+		call	TestName
+		.if eax
 			mov		eax,esi
 			jmp		Ex			
 		.endif
@@ -430,13 +430,33 @@ FindSymbol proc uses esi,lpName:DWORD
 	ret
 	ret
 
+TestName:
+	lea		ecx,[esi].DEBUGSYMBOL.szName
+	mov		edx,lpName
+	.while TRUE
+		mov		al,[ecx]
+		mov		ah,[edx]
+		.if !ah || ah=='['
+			.if al!='[' && al!=':'
+				xor		eax,eax
+			.endif
+			retn
+		.elseif al!=ah
+			xor		eax,eax
+			retn
+		.endif
+		inc		ecx
+		inc		edx
+	.endw
+	retn
+
 FindSymbol endp
 
 FindType proc uses esi,lpType:DWORD
 
 	mov		esi,offset szDWORD
 	.while byte ptr [esi]
-		invoke lstrcmp,esi,lpType
+		invoke lstrcmpi,esi,lpType
 		.if !eax
 			mov		eax,4
 			jmp		Ex
@@ -446,7 +466,7 @@ FindType proc uses esi,lpType:DWORD
 	.endw
 	mov		esi,offset szWORD
 	.while byte ptr [esi]
-		invoke lstrcmp,esi,lpType
+		invoke lstrcmpi,esi,lpType
 		.if !eax
 			mov		eax,2
 			jmp		Ex
@@ -456,7 +476,7 @@ FindType proc uses esi,lpType:DWORD
 	.endw
 	mov		esi,offset szBYTE
 	.while byte ptr [esi]
-		invoke lstrcmp,esi,lpType
+		invoke lstrcmpi,esi,lpType
 		.if !eax
 			mov		eax,1
 			jmp		Ex
@@ -527,11 +547,11 @@ ExCompare:
 				.if al>='a' && al<='z'
 					and		al,5Fh
 				.endif
-				mov		typeupper[ecx],al
+				mov		szvartype[ecx],al
 				inc		ecx
 			.endw
-			mov		typeupper[ecx],0
-			invoke FindType,offset typeupper
+			mov		szvartype[ecx],0
+			invoke FindType,offset szvartype
 			mov		edx,eax
 			.if !edx
 				mov		edx,4
@@ -585,7 +605,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 				add		eax,edx
 				mov		var.Address,eax
 				invoke lstrcpy,addr var.szName,lpName
-				invoke lstrcpy,addr var.szType,addr typeupper
+				invoke lstrcpy,addr var.szType,addr szvartype
 				mov		eax,'P'
 				jmp		Ex
 			.else
@@ -599,7 +619,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 					add		eax,edx
 					mov		var.Address,eax
 					invoke lstrcpy,addr var.szName,lpName
-					invoke lstrcpy,addr var.szType,addr typeupper
+					invoke lstrcpy,addr var.szType,addr szvartype
 					mov		eax,'L'
 					jmp		Ex
 				.endif
@@ -653,10 +673,15 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 		.endif
 	.endif
 	; Global
-	invoke FindSymbol,lpName
+	mov		eax,lpName
+	.if word ptr [eax]==':z' || word ptr [eax]==':Z'
+		mov		var.IsSZ,TRUE
+		add		eax,2
+	.endif
+	invoke FindSymbol,eax
 	.if eax
 		mov		esi,eax
-		invoke lstrcpy,addr var.szName,lpName
+		invoke lstrcpy,addr var.szName,addr [esi].DEBUGSYMBOL.szName
 		.if [esi].DEBUGSYMBOL.nType=='p'
 			; PROC
 			mov		var.nType,99
@@ -681,10 +706,32 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 			mov		var.szType[ecx],0
 			invoke FindType,addr var.szType
 			mov		var.nType,eax
+			lea		edx,[esi].DEBUGSYMBOL.szName
+			.while byte ptr [edx]
+				.if byte ptr [edx]=='['
+					inc		edx
+					invoke AnyToBin,edx
+					mov		var.nArray,edx
+					.break
+				.endif
+				inc		edx
+			.endw
 			mov		eax,[esi].DEBUGSYMBOL.nSize
 			mov		var.nSize,eax
 			mov		eax,[esi].DEBUGSYMBOL.Address
 			mov		var.Address,eax
+			mov		edx,lpName
+			.while TRUE
+				.break .if !byte ptr [edx]
+				.if byte ptr [edx]=='['
+					inc		edx
+					invoke AnyToBin,edx
+					mov		var.nOfs,edx
+					add		var.Address,edx
+					.break
+				.endif
+				inc		edx
+			.endw
 			mov		eax,'d'
 			jmp		Ex
 		.endif
@@ -746,17 +793,40 @@ GetVarVal proc lpName:DWORD,nLine:DWORD,fShow:DWORD
 		.endif
 	.elseif eax=='d'
 		; GLOBAL
-		.if var.nType
-			.if eax>4
-				mov		eax,4
-			.endif
-			invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,eax,0
-			.if fShow
-				invoke wsprintf,addr outbuffer,addr szDataVal,addr var.szName,addr var.szType,var.Address,var.nSize,var.Value,var.Value
+		mov		eax,var.nType
+		.if eax
+			; Known type
+			.if var.IsSZ
+				mov		eax,var.nArray
+				sub		eax,var.nOfs
+				.if eax>256
+					mov		eax,256
+				.endif
+				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
+				.if fShow
+					invoke wsprintf,addr outbuffer,addr szDataSZ,addr var.szName,var.Address,var.nSize,addr var.szValue
+				.endif
+			.else
+				.if eax>4
+					mov		eax,4
+				.endif
+				push	eax
+				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,eax,0
+				pop		eax
+				.if fShow
+					mov		edx,offset szData32
+					.if eax==1
+						mov		edx,offset szData8
+					.elseif eax==2
+						mov		edx,offset szData16
+					.endif
+					invoke wsprintf,addr outbuffer,edx,addr var.szName,var.Address,var.nSize,var.Value,var.Value
+				.endif
 			.endif
 		.else
+			; Unknown type
 			.if fShow
-				invoke wsprintf,addr outbuffer,addr szData,addr var.szName,addr var.szType,var.Address,var.nSize
+				invoke wsprintf,addr outbuffer,addr szData,addr var.szName,var.Address,var.nSize
 			.else
 				xor		eax,eax
 				jmp		Ex

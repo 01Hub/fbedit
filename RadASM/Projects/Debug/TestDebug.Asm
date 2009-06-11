@@ -21,11 +21,11 @@ MYSTRUCT ends
 szTest		db 'Test',0
 tid			dd   ?
 rect		RECT <>
-mystruct	MYSTRUCT <>
+mystruct	MYSTRUCT 4 dup(<>)
 valdd		DWORD 4
 valdw		WORD 2
 valdb		BYTE 1
-hInstance	HINSTANCE ?
+hInstance	HINSTANCE 8 dup(?)
 
 .code
 
@@ -76,7 +76,9 @@ MyProc3 proc uses esi
 MyProc3 endp
 
 start:
-
+	mov		hInstance[0],1
+	mov		hInstance[4],2
+	mov		hInstance[8],3
 	mov		eax,'ABCD'
 	mov		eax,tid
 	mov		tid,1234

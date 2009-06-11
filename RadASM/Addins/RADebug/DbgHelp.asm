@@ -90,8 +90,8 @@ FindWord proc uses esi,lpWord:DWORD
 	add		esi,[edx].ADDINDATA.rpProjectWordList
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
-		invoke lstrcmp,lpWord,addr [esi+sizeof PROPERTIES]
-		.if !eax
+		call	TestWord
+		.if eax
 			mov		eax,esi
 			jmp		Ex			
 		.endif
@@ -102,6 +102,26 @@ FindWord proc uses esi,lpWord:DWORD
 	xor		eax,eax
   Ex:
 	ret
+
+TestWord:
+	lea		ecx,[esi+sizeof PROPERTIES]
+	mov		edx,lpWord
+	.while TRUE
+		mov		al,[ecx]
+		mov		ah,[edx]
+		.if !ah
+			.if al!='[' && al!=':'
+				xor		eax,eax
+			.endif
+			retn
+		.elseif al!=ah
+			xor		eax,eax
+			retn
+		.endif
+		inc		ecx
+		inc		edx
+	.endw
+	retn
 
 FindWord endp
 
@@ -128,11 +148,10 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 		.if eax
 			movzx	edx,[eax].PROPERTIES.nType
 			mov		[edi].DEBUGSYMBOL.nType,dx
-			lea		edx,[eax+sizeof PROPERTIES]
-			push	edx
-			invoke lstrlen,edx
-			pop		edx
-			lea		eax,[edx+eax+1]
+			lea		ebx,[eax+sizeof PROPERTIES]
+			invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,ebx
+			invoke lstrlen,ebx
+			lea		eax,[ebx+eax+1]
 			mov		[edi].DEBUGSYMBOL.lpType,eax
 		.endif
 		inc		dbg.inxsymbol

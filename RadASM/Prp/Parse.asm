@@ -749,6 +749,9 @@ PutItem:
 	je		PutEx
 	cmp		al,'?'
 	je		PutEx1
+	.if al>='0' && al<='9'
+		jmp		PutEx1
+	.endif
 	cmp		al,'<'
 	jne		@b
   PutEx1:
@@ -1083,6 +1086,189 @@ TestWord:
 	retn
 
 IsWordEnd endp
+
+GetDup proc uses esi edi
+	LOCAL	lpType:DWORD
+	LOCAL	lpDup:DWORD
+
+	mov		edi,offset prnbuff
+	lea		esi,[edi+2048]
+	call	CopyData
+	; Copy name
+	.while byte ptr [esi]
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	inc		esi
+	call	IsDup
+	.if edx
+		; Copy dup
+		mov		byte ptr [edi],'['
+		inc		edi
+		push	esi
+		mov		esi,lpDup
+		.while byte ptr [esi]!=' '
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		pop		esi
+		mov		byte ptr [edi],']'
+		inc		edi
+	.else
+		call	IsArray
+		.if edx>1
+			mov		byte ptr [edi],'['
+			inc		edi
+			invoke BinToDec,edx,edi
+			invoke strlen,edi
+			lea		edi,[edi+eax]
+			mov		byte ptr [edi],']'
+			inc		edi
+		.endif
+	.endif
+	; Copy datatype
+	mov		byte ptr [edi],':'
+	inc		edi
+	push	esi
+	mov		esi,lpType
+	.while byte ptr [esi]!=' '
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	inc		edi
+	pop		esi
+	; Copy the rest
+	.while byte ptr [esi]
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		dword ptr [edi],0
+	ret
+
+CopyData:
+	xor		ecx,ecx
+	.while ecx<1024/4
+		mov		eax,[edi+ecx*4]
+		mov		[esi+ecx*4],eax
+		inc		ecx
+	.endw
+	retn
+
+IsArray:
+	xor		edx,edx
+	push	esi
+	mov		esi,lpDup
+	.while TRUE
+		mov		al,[esi]
+		.if al=='"' || al=="'"
+			call	GetStr
+		.elseif al=='<'
+			mov		ah,'>'
+			call	SkipIt
+			inc		edx
+		.elseif al==','
+			inc		esi
+		.elseif al
+			inc		edx
+			.while byte ptr [esi]!=',' && byte ptr [esi]
+				inc		esi
+			.endw
+		.else
+			.break
+		.endif
+	.endw
+	pop		esi
+	retn
+
+SkipIt:
+	xor		ecx,ecx
+	.while TRUE
+		.if al==[esi]
+			inc		ecx
+			inc		esi
+		.elseif ah==[esi]
+			dec		ecx
+			inc		esi
+		.elseif byte ptr [esi]=='"' || byte ptr [esi]=="'"
+			push	eax
+			push	edx
+			mov		al,[esi]
+			call	GetStr
+			pop		edx
+			pop		eax
+		.elseif !byte ptr [esi]
+			xor		ecx,ecx
+		.else
+			inc		esi
+		.endif
+		.break .if !ecx
+	.endw
+	.while al!=[esi] && byte ptr [esi]
+		inc		edx
+		inc		esi
+	.endw
+	.if al==[esi]
+		inc		esi
+	.endif
+	retn
+
+GetStr:
+	inc		esi
+	.while TRUE
+		.if word ptr [esi]=='""' || word ptr [esi]=="''"
+			inc		edx
+			inc		esi
+		.elseif al==[esi]
+			.break
+		.elseif byte ptr [esi]
+			inc		edx
+		.else
+			.break
+		.endif
+		inc		esi
+	.endw
+	.if al==[esi]
+		inc		esi
+	.endif
+	retn
+
+IsDup:
+	xor		edx,edx
+	push	esi
+	mov		lpType,esi
+	; Skip type
+	.while byte ptr [esi]!=' ' && byte ptr [esi]
+		inc		esi
+	.endw
+	.if byte ptr [esi]==' '
+		inc		esi
+		mov		lpDup,esi
+		; Skip dup
+		.while byte ptr [esi]!=' ' && byte ptr [esi]
+			inc		esi
+		.endw
+		.if byte ptr [esi]==' '
+			inc		esi
+			mov		eax,[esi]
+			and		eax,5F5F5fh
+			.if eax=='PUD'
+				inc		edx
+			.endif
+		.endif
+	.endif
+	pop		esi
+	retn
+
+GetDup endp
 
 ParseFile proc uses ebx esi edi,iNbr:DWORD
 	LOCAL	lpWord1:DWORD
@@ -1732,6 +1918,9 @@ ParseData:
 	.endif
 	.if nAsm!=nBCET
 		invoke ParseLineDef,esi,edi
+		.if nAsm==nMASM
+			invoke GetDup
+		.endif
 		invoke AddWordToWordList,'d',iNbr,offset prnbuff,2
 		retn
 	.endif
@@ -1985,6 +2174,9 @@ ParseUnknown:
 	invoke strlen,edi
 	.if byte ptr [edi+eax-1]==VK_SPACE
 		mov		byte ptr [edi+eax-1],0
+	.endif
+	.if nAsm==nMASM
+		invoke GetDup
 	.endif
 	invoke AddWordToWordList,'u',iNbr,offset prnbuff,2
 	retn

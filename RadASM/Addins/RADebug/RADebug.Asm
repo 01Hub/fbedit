@@ -442,7 +442,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke CreateDebugMenu,hWin
 		invoke UpdateAccelerators
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED or RAM_MDIACTIVATE
 		mov		ecx,RAM_UNHOOK
 	.else
 		xor		eax,eax
@@ -678,6 +678,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			mov		eax,lpHandles
 			invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,[eax].ADDINHANDLES.hWnd,addr DoNotDebugProc,0
 		.endif
+		;
 	.elseif eax==AIM_EDITOPEN
 		invoke EnableMenu
 		.if lParam==ID_EDIT
@@ -720,6 +721,27 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke UpdateAccelerators
 		invoke EnableMenu
 		;
+	.elseif eax==AIM_MDIACTIVATE
+		;A new edit window is selected
+		.if hWin
+			invoke GetWindowLong,hWin,0                           ;Get editor type
+			.if eax==ID_EDIT
+				mov		eax,wParam
+				.if eax==hWin
+;					.if OldMdiChildProc
+;						;Unsubclass the MdiChild window
+;						invoke SetWindowLong,wParam,GWL_WNDPROC,OldMdiChildProc
+;					.endif
+				.else
+					;Subclass the Mdi Child window
+;					invoke SetWindowLong,lParam,GWL_WNDPROC,offset MdiChildProc
+;					mov OldMdiChildProc,eax
+;					mov		eax,lParam
+;					mov		hMdi,eax
+				.endif
+			.endif
+		.endif
+		;
 	.elseif eax==AIM_UNHOOK
 		mov		eax,hWin
 		.if eax==hOut3
@@ -732,6 +754,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				jmp		Ex
 			.endif
 		.endif
+		;
 	.endif
 	mov eax,FALSE
   Ex:
