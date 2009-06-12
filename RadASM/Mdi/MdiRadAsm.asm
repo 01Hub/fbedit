@@ -4351,7 +4351,26 @@ FindTooltipWord proc hWin:HWND,fCaret:DWORD
 					mov		esi,lpWordList
 					.while [esi].PROPERTIES.nSize
 						.if [esi].PROPERTIES.nType!='C'
-							invoke strcmp,addr buffer,addr [esi+sizeof PROPERTIES]
+							.if [esi].PROPERTIES.nType=='d'
+								lea		ecx,buffer
+								lea		edx,[esi+sizeof PROPERTIES]
+								.while TRUE
+									mov		al,[ecx]
+									mov		ah,[edx]
+									.if !al
+										.if ah==':' || ah=='[' || !ah
+											xor		eax,eax
+											.break
+										.endif
+									.elseif al!=ah
+										.break
+									.endif
+									inc		ecx
+									inc		edx
+								.endw
+							.else
+								invoke strcmp,addr buffer,addr [esi+sizeof PROPERTIES]
+							.endif
 							.if !eax
 								invoke strcpy,offset tempbuff,addr buffer
 								.if [esi].PROPERTIES.nType!='l'

@@ -106,21 +106,29 @@ FindWord proc uses esi,lpWord:DWORD
 TestWord:
 	lea		ecx,[esi+sizeof PROPERTIES]
 	mov		edx,lpWord
-	.while TRUE
-		mov		al,[ecx]
-		mov		ah,[edx]
-		.if !ah
-			.if al!='[' && al!=':'
-				xor		eax,eax
-			.endif
-			retn
-		.elseif al!=ah
-			xor		eax,eax
+	.if [esi].PROPERTIES.nType=='p'
+		invoke lstrcmp,ecx,edx
+		.if !eax
+			inc		eax
 			retn
 		.endif
-		inc		ecx
-		inc		edx
-	.endw
+	.else
+		.while TRUE
+			mov		al,[ecx]
+			mov		ah,[edx]
+			.if !ah
+				.if al!='[' && al!=':'
+					xor		eax,eax
+				.endif
+				retn
+			.elseif al!=ah
+				xor		eax,eax
+				retn
+			.endif
+			inc		ecx
+			inc		edx
+		.endw
+	.endif
 	retn
 
 FindWord endp

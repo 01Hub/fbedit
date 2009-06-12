@@ -931,7 +931,8 @@ Compare:
 	.while TRUE
 		mov		al,[ecx]
 		mov		ah,[edx]
-		.if !al && (ah=='[' || ah==':')
+		.if !al && (ah=='[' || ah==':' || !ah)
+			mov		eax,TRUE
 			jmp		@f
 		.endif
 		.if al!=ah

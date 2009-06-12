@@ -417,11 +417,16 @@ FindSymbol proc uses esi,lpName:DWORD
 	mov		esi,dbg.hMemSymbol
 	;Loop trough the symbol list
 	.while [esi].DEBUGSYMBOL.szName
-		call	TestName
-		.if eax
+		invoke lstrcmp,lpName,addr [esi].DEBUGSYMBOL.szName
+		.if !eax
 			mov		eax,esi
 			jmp		Ex			
 		.endif
+;		call	TestName
+;		.if eax
+;			mov		eax,esi
+;			jmp		Ex			
+;		.endif
 		;Move to next word
 		lea		esi,[esi+sizeof DEBUGSYMBOL]
 	.endw
@@ -430,26 +435,43 @@ FindSymbol proc uses esi,lpName:DWORD
 	ret
 	ret
 
-TestName:
-	lea		ecx,[esi].DEBUGSYMBOL.szName
-	mov		edx,lpName
-	.while TRUE
-		mov		al,[ecx]
-		mov		ah,[edx]
-		.if !ah || ah=='['
-			.if al!='[' && al!=':'
-				xor		eax,eax
-			.endif
-			retn
-		.elseif al!=ah
-			xor		eax,eax
-			retn
-		.endif
-		inc		ecx
-		inc		edx
-	.endw
-	retn
-
+;TestName:
+;	movzx	eax,[esi].DEBUGSYMBOL.nType
+;	lea		ecx,[esi].DEBUGSYMBOL.szName
+;	mov		edx,lpName
+;	.if eax=='p'
+;		.while TRUE
+;			mov		al,[ecx]
+;			mov		ah,[edx]
+;			.if !ah && !ah
+;				inc		eax
+;				retn
+;			.elseif al!=ah
+;				xor		eax,eax
+;				retn
+;			.endif
+;			inc		ecx
+;			inc		edx
+;		.endw
+;	.else
+;		.while TRUE
+;			mov		al,[ecx]
+;			mov		ah,[edx]
+;			.if !ah || ah=='['
+;				.if al!='[' && al!=':'
+;					xor		eax,eax
+;				.endif
+;				retn
+;			.elseif al!=ah
+;				xor		eax,eax
+;				retn
+;			.endif
+;			inc		ecx
+;			inc		edx
+;		.endw
+;	.endif
+;	retn
+;
 FindSymbol endp
 
 FindType proc uses esi,lpType:DWORD
@@ -665,13 +687,13 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 		mov		eax,'R'
 		jmp		Ex
 	.endif
-	.if dbg.lpProc && nRadASMVer>=2217
-		; Is in a proc, find parameter or local
-		invoke FindLocal,lpName,nLine
-		.if eax
-			jmp		Ex
-		.endif
-	.endif
+;	.if dbg.lpProc && nRadASMVer>=2217
+;		; Is in a proc, find parameter or local
+;		invoke FindLocal,lpName,nLine
+;		.if eax
+;			jmp		Ex
+;		.endif
+;	.endif
 	; Global
 	mov		eax,lpName
 	.if word ptr [eax]==':z' || word ptr [eax]==':Z'

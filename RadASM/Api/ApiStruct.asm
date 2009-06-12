@@ -121,7 +121,7 @@ ApiStructSrc proc lpSrc:DWORD
 		.endif
 		.if	al=='.'	|| al==' ' || al==VK_TAB || al=='*' ||	!al
 			mov		al,[ecx]
-			.if	!al
+			.if	!al; || al==':' || al=='['
 				inc		ecx
 				movzx	eax,[edi].PROPERTIES.nType
 				invoke ApiStructListBox,ecx,eax
@@ -195,7 +195,7 @@ ApiStructGet proc uses esi edi,lpSrc:DWORD
 			cmp		al,[ecx]
 			je		@b
 		.endif
-		.if	!al && !byte ptr [ecx]
+		.if	!al && (!byte ptr [ecx] || byte ptr [ecx]==':' || byte ptr [ecx]=='[')
 			mov		eax,edi
 			jmp		Ex
 		.endif

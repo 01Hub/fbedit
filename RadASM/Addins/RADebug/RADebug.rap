@@ -23,6 +23,9 @@ Res.rc=1
 12=RADebug.rc
 13=DoNotDebug.dlg
 14=Immediate.asm
+AutoDelete=1
+AskMe=0
+MinorFiles=*.res;*.obj;*.lib;*.exp;
 [MakeFiles]
 0=RADebug.rap
 1=RADebug.rc
@@ -110,11 +113,11 @@ Group=Added files,Assembly,Resources,Misc,Modules
 [Size]
 5=0,0,0,0,17115
 4=0,0,0,0,434
-2=0,0,0,0,602
-1=0,0,0,0,0
+2=0,0,0,0,1821
+1=0,0,0,0,4819
 8=0,0,0,0,107
-6=0,0,0,0,4438
-7=0,0,0,0,14763
+6=0,0,0,0,2430
+7=0,0,0,0,8099
 3=0,0,0,0,56
 9=0,0,0,0,57
 10=0,0,0,0,5569

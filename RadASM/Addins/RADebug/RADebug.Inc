@@ -71,28 +71,27 @@ BREAKPOINT struct
 BREAKPOINT ends
 
 PROPERTIES struct
-	nSize					DWORD ?
-	Owner					DWORD ?
-	nType					BYTE ?
+	nSize					DWORD ?					; Size of property, excluding size of PROPERTIES struct
+	Owner					DWORD ?					; Project file ID or handle of window if file is open.
+	nType					BYTE ?					; Type d,p,S,s,T
 PROPERTIES ends
 
 DEBUGSOURCE struct
-	FileID					WORD ?
-	FileName				BYTE MAX_PATH dup(?)
+	FileID					WORD ?					; The id of the file
+	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGSOURCE ends
 
 DEBUGLINE struct
-	LineNumber              DWORD ?
-	Address                 DWORD ?
-	FileID					WORD ?
-	NoDebug					BYTE ?
-	BreakPoint				BYTE ?
+	LineNumber              DWORD ?					; Line number, 1 based
+	Address                 DWORD ?					; Address
+	FileID					WORD ?					; ID of file containing line (DEBUGSOURCE)
+	NoDebug					BYTE ?					; Line shold not be debugged
+	BreakPoint				BYTE ?					; There is a breakpoint on this line
 DEBUGLINE ends
 
 DEBUGVAR struct
-	nSize					DWORD ?
-	nArray					DWORD ?
-	;Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
+	nSize					DWORD ?					; Size in bytes
+	nArray					DWORD ?					; Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
 DEBUGVAR ends
 
 DEBUGSYMBOL struct
