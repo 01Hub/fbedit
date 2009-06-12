@@ -29,13 +29,6 @@ hInstance	HINSTANCE 8 dup(?)
 
 .code
 
-MyProc1 proc
-
-	mov		eax,'abcd'
-	ret
-
-MyProc1 endp
-
 MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	aa:SDWORD
 	LOCAL	bb:SWORD
@@ -63,6 +56,13 @@ MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+1
 	ret
 
 MyProc2 endp
+
+MyProc1 proc
+
+	mov		eax,'abcd'
+	ret
+
+MyProc1 endp
 
 MyProc3 proc uses esi
 

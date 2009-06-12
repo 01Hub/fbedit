@@ -118,5 +118,5 @@ ProductVer4Range=0
 1="ecx = 13"
 2="118"
 [RADebugBP]
-1=46,56,59,101
+1=39,49,52,101
 [NoDebug]

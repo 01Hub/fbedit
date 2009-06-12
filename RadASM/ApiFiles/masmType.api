@@ -11,7 +11,9 @@ APPLET_PROC,4,Pointer to a library-defined callback function that is the entry p
 ATOM,2,Atom (a reference to a character string in an atom table).
 BOOL,4,Boolean variable (should be TRUE or FALSE).
 BOOLEAN,1,Boolean variable (should be TRUE or FALSE).
-BYTE,1,Byte (8 bits).
+DB,1,Unsigned byte (8 bits).
+BYTE,1,Unsigned byte (8 bits).
+SBYTE,1,Signed byte (8 bits).
 CCHAR,0,Windows character.
 CHAR,1,Windows character.
 COLORREF,4,Red, green, blue (RGB) color value (32 bits).
@@ -19,7 +21,9 @@ CONST,0,Variable whose value is to remain constant during execution.
 CRITICAL_SECTION,24,Critical-section object.
 CTRYID,4,Country identifier.
 DLGPROC,4,Pointer to an application-defined dialog box callback procedure.
-DWORD,4,Doubleword (32 bits).
+DD,4,Unsigned doubleword (32 bits).
+DWORD,4,Unsigned doubleword (32 bits).
+SDWORD,4,Signed doubleword (32 bits).
 DWORDLONG,0,Double (64 bits).
 EDITWORDBREAKPROC,4,Pointer to an application-defined callback function that the operating system calls when a multiline edit control needs to break a line of text. See EditWordBreakProc for information on functions of this type.
 ENHMFENUMPROC,4,Pointer to an application-defined callback function that enumerates enhanced-metafile records.
@@ -159,7 +163,8 @@ SENDASYNCPROC,4,Pointer to an application-defined callback function that the ope
 SERVICE_STATUS_HANDLE,4,Handle of a service status value.
 SHORT,0,Short integer.
 SPHANDLE,0,Pointer to a handle.
-TBYTE,10,Windows or Unicode character.
+DT,10,Ten bytes float.
+TBYTE,10,Ten bytes float.
 TCHAR,1,Unicode character or Windows character.
 TIMERPROC,4,Pointer to an application-defined timer callback function.
 UCHAR,1,Unsigned Windows character.
@@ -170,6 +175,10 @@ VOID,0,Any type.
 WCHAR,2,Unicode character.
 WNDENUMPROC,4,Pointer to an application-defined callback function that enumerates windows.
 WNDPROC,4,Pointer to an application-defined window procedure.
+DW,2,Unsigned word (16 bits).
 WORD,2,Unsigned word (16 bits).
+SWORD,2,Signed word (16 bits).
 WPARAM,4,32-bit message parameter.
 YIELDPROC,4,Pointer to a yield callback function.
+DQ,8,Unsigned (64 bits.)
+QWORD,8,Unsigned (64 bits.)

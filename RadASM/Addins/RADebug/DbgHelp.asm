@@ -135,6 +135,7 @@ FindWord endp
 
 FindTypeSize proc lpType:DWORD
 
+PrintStringByAddr lpType
 	ret
 
 FindTypeSize endp
@@ -183,14 +184,20 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		lea		ebx,[ebx+eax]
 	.endif
 	.if lpType
-		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpType
-		invoke lstrlen,lpType
+		invoke GetPredefinedDatatype,lpType
+		.if !eax
+			mov		eax,lpType
+		.endif
+		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],eax
+		invoke lstrlen,addr [edi+ebx+sizeof DEBUGVAR]
 		lea		ebx,[ebx+eax]
 	.endif
 	mov		byte ptr [edi+ebx+sizeof DEBUGVAR],0
 	mov		eax,lpArray
 	.if eax
 		invoke AnyToBin,addr [eax+1]
+	.else
+		mov		eax,1
 	.endif
 	mov		[edi].DEBUGVAR.nArray,eax
 	.if nSize
@@ -274,6 +281,8 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 				invoke AddVarList,esi
 			.elseif edx=='d'
 				; Variable
+				mov		eax,dbg.lpvar
+				mov		[edi].DEBUGSYMBOL.lpType,eax
 				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
 			.endif
 		.endif

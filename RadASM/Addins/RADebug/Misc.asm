@@ -411,6 +411,23 @@ Linear:
 
 FindLine endp
 
+GetPredefinedDatatype proc uses esi edi,lpType:DWORD
+
+	mov		edi,offset datatype
+	.while [edi].DATATYPE.lpszType
+		invoke lstrcmpi,[edi].DATATYPE.lpszType,lpType
+		.if !eax
+			mov		eax,[edi].DATATYPE.lpszConvertType
+			jmp		Ex
+		.endif
+		lea		edi,[edi+sizeof DATATYPE]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+GetPredefinedDatatype endp
+
 FindSymbol proc uses esi,lpName:DWORD
 
 	;Get pointer to symbol list
@@ -422,95 +439,15 @@ FindSymbol proc uses esi,lpName:DWORD
 			mov		eax,esi
 			jmp		Ex			
 		.endif
-;		call	TestName
-;		.if eax
-;			mov		eax,esi
-;			jmp		Ex			
-;		.endif
-		;Move to next word
+		;Move to next symbol
 		lea		esi,[esi+sizeof DEBUGSYMBOL]
 	.endw
+	; Not found
 	xor		eax,eax
   Ex:
 	ret
-	ret
 
-;TestName:
-;	movzx	eax,[esi].DEBUGSYMBOL.nType
-;	lea		ecx,[esi].DEBUGSYMBOL.szName
-;	mov		edx,lpName
-;	.if eax=='p'
-;		.while TRUE
-;			mov		al,[ecx]
-;			mov		ah,[edx]
-;			.if !ah && !ah
-;				inc		eax
-;				retn
-;			.elseif al!=ah
-;				xor		eax,eax
-;				retn
-;			.endif
-;			inc		ecx
-;			inc		edx
-;		.endw
-;	.else
-;		.while TRUE
-;			mov		al,[ecx]
-;			mov		ah,[edx]
-;			.if !ah || ah=='['
-;				.if al!='[' && al!=':'
-;					xor		eax,eax
-;				.endif
-;				retn
-;			.elseif al!=ah
-;				xor		eax,eax
-;				retn
-;			.endif
-;			inc		ecx
-;			inc		edx
-;		.endw
-;	.endif
-;	retn
-;
 FindSymbol endp
-
-FindType proc uses esi,lpType:DWORD
-
-	mov		esi,offset szDWORD
-	.while byte ptr [esi]
-		invoke lstrcmpi,esi,lpType
-		.if !eax
-			mov		eax,4
-			jmp		Ex
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	mov		esi,offset szWORD
-	.while byte ptr [esi]
-		invoke lstrcmpi,esi,lpType
-		.if !eax
-			mov		eax,2
-			jmp		Ex
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	mov		esi,offset szBYTE
-	.while byte ptr [esi]
-		invoke lstrcmpi,esi,lpType
-		.if !eax
-			mov		eax,1
-			jmp		Ex
-		.endif
-		invoke lstrlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	xor		eax,eax
-  Ex:
-	ret
-
-FindType endp
 
 FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
 	LOCAL	nArray:DWORD
@@ -518,13 +455,18 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
 
 	mov		esi,lpLocal
 	mov		edi,nOfs
-	.while byte ptr [esi]
-		call	Compare
-		.if eax
+	.while byte ptr [esi+sizeof DEBUGVAR]
+		invoke lstrcmp,addr [esi+sizeof DEBUGVAR],lpName
+		.if !eax
 			.if sdword ptr nMove<0
 				sub		edi,edx
 			.endif
-			invoke lstrcpy,addr var.szArray,addr szArray
+			invoke lstrlen,addr [esi+sizeof DEBUGVAR]
+			invoke lstrcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]
+			mov		eax,[esi].DEBUGVAR.nSize
+			mov		var.nSize,eax
+			mov		eax,[esi].DEBUGVAR.nArray
+			mov		var.nArray,eax
 			; Return offset
 			mov		eax,edi
 			jmp		Ex
@@ -534,72 +476,15 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
 		.else
 			sub		edi,edx
 		.endif
+		lea		esi,[esi+sizeof DEBUGVAR]
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
 	.endw
 	xor		eax,eax
   Ex:
 	ret
-
-Compare:
-	mov		edx,lpName
-	.while TRUE
-		mov		ah,[edx]
-		mov		al,[esi]
-		.if !ah && (al==':' || al=='[' || al==',' || !al)
-			mov		eax,TRUE
-			jmp		ExCompare
-		.endif
-		.break .if !al
-		sub		al,ah
-		.break .if al
-		inc		esi
-		inc		edx
-	.endw
-	xor		eax,eax
-ExCompare:
-	push	eax
-	mov		nArray,1
-	mov		szArray,0
-	xor		edx,edx
-	.while byte ptr [esi] && byte ptr [esi]!=','
-		inc		esi
-		.if byte ptr [esi-1]==':'
-			xor		ecx,ecx
-			.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=','
-				mov		al,[esi+ecx]
-				.if al>='a' && al<='z'
-					and		al,5Fh
-				.endif
-				mov		szvartype[ecx],al
-				inc		ecx
-			.endw
-			mov		szvartype[ecx],0
-			invoke FindType,offset szvartype
-			mov		edx,eax
-			.if !edx
-				mov		edx,4
-			.endif
-			mov		var.nSize,edx
-			mov		eax,nArray
-			mul		edx
-			mov		edx,eax
-		.elseif byte ptr [esi-1]=='['
-			xor		ecx,ecx
-			.while TRUE
-				mov		al,[esi+ecx-1]
-				mov		szArray[ecx],al
-				inc		ecx
-				.break .if ecx>32 || al==']'
-			.endw
-			mov		szArray[ecx],0
-			invoke AnyToBin,esi
-			mov		nArray,edx
-		.endif
-	.endw
-	.if byte ptr [esi]==','
-		inc		esi
-	.endif
-	pop		eax
-	retn
 
 FindLocalVar endp
 
@@ -671,7 +556,7 @@ FindReg proc uses esi,lpName:DWORD
 
 FindReg endp
 
-FindVar proc uses esi,lpName:DWORD,nLine:DWORD
+FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 
 	invoke RtlZeroMemory,addr var,sizeof var
 	invoke FindReg,lpName
@@ -687,13 +572,13 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 		mov		eax,'R'
 		jmp		Ex
 	.endif
-;	.if dbg.lpProc && nRadASMVer>=2217
-;		; Is in a proc, find parameter or local
-;		invoke FindLocal,lpName,nLine
-;		.if eax
-;			jmp		Ex
-;		.endif
-;	.endif
+	.if dbg.lpProc && nRadASMVer>=2217
+		; Is in a proc, find parameter or local
+		invoke FindLocal,lpName,nLine
+		.if eax
+			jmp		Ex
+		.endif
+	.endif
 	; Global
 	mov		eax,lpName
 	.if word ptr [eax]==':z' || word ptr [eax]==':Z'
@@ -715,45 +600,19 @@ FindVar proc uses esi,lpName:DWORD,nLine:DWORD
 			jmp		Ex
 		.elseif [esi].DEBUGSYMBOL.nType=='d'
 			; GLOBAL
-			mov		edx,[esi].DEBUGSYMBOL.lpType
-			xor		ecx,ecx
-			.while byte ptr [edx+ecx]!=' ' && byte ptr [edx+ecx] && ecx<64
-				mov		al,[edx+ecx]
-				.if al>='a' && al<='z'
-					and		al,5Fh
-				.endif
-				mov		var.szType[ecx],al
-				inc		ecx
-			.endw
-			mov		var.szType[ecx],0
-			invoke FindType,addr var.szType
-			mov		var.nType,eax
-			lea		edx,[esi].DEBUGSYMBOL.szName
-			.while byte ptr [edx]
-				.if byte ptr [edx]=='['
-					inc		edx
-					invoke AnyToBin,edx
-					mov		var.nArray,edx
-					.break
-				.endif
-				inc		edx
-			.endw
-			mov		eax,[esi].DEBUGSYMBOL.nSize
-			mov		var.nSize,eax
 			mov		eax,[esi].DEBUGSYMBOL.Address
 			mov		var.Address,eax
-			mov		edx,lpName
-			.while TRUE
-				.break .if !byte ptr [edx]
-				.if byte ptr [edx]=='['
-					inc		edx
-					invoke AnyToBin,edx
-					mov		var.nOfs,edx
-					add		var.Address,edx
-					.break
-				.endif
-				inc		edx
-			.endw
+			mov		eax,[esi].DEBUGSYMBOL.nSize
+			mov		var.nSize,eax
+			mov		eax,[esi].DEBUGSYMBOL.nArray
+			mov		var.nArray,eax
+			movzx	eax,[esi].DEBUGSYMBOL.nType
+			mov		var.nType,eax
+			mov		esi,[esi].DEBUGSYMBOL.lpType
+			; Point to type
+			invoke lstrlen,addr [esi+sizeof DEBUGVAR]
+			lea		edi,[esi+eax+1+sizeof DEBUGVAR]
+			invoke lstrcat,addr var.szName,edi
 			mov		eax,'d'
 			jmp		Ex
 		.endif

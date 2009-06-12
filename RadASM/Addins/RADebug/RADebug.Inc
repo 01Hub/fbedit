@@ -144,6 +144,11 @@ DEBUG struct
 	pt						POINT <>
 DEBUG ends
 
+DATATYPE struct
+	lpszType				DWORD ?
+	lpszConvertType			DWORD ?
+DATATYPE ends
+
 VAR struct
 	szName					BYTE 256 dup(?)
 	szType					BYTE 256 dup(?)
@@ -190,6 +195,37 @@ reg8							REG 9 dup(<'AL',1,CONTEXT.regEax>,
 										   <'DL',1,CONTEXT.regEdx>,
 										   <'DH',3,CONTEXT.regEdx>,
 										   <,0,0>)
+
+; Predefined datatypes
+szBYTE							db ':BYTE',0
+szSBYTE							db ':SBYTE',0
+szDB							db ':DB',0
+szWORD							db ':WORD',0
+szSWORD							db ':SWORD',0
+szDW							db ':DW',0
+szDWORD							db ':DWORD',0
+szSDWORD						db ':SDWORD',0
+szDD							db ':DD',0
+szQWORD							db ':QWORD',0
+szDQ							db ':DQ',0
+szTBYTE							db ':TBYTE',0
+szDT							db ':DT',0
+								db 0
+
+datatype						DATATYPE 14 dup(<szBYTE,szBYTE>,
+												<szSBYTE,szSBYTE>,
+												<szDB,szBYTE>,
+												<szWORD,szWORD>,
+												<szSWORD,szSWORD>,
+												<szDW,szWORD>,
+												<szDWORD,szDWORD>,
+												<szSDWORD,szSDWORD>,
+												<szDD,szDWORD>,
+												<szQWORD,szQWORD>,
+												<szDQ,szQWORD>,
+												<szTBYTE,szTBYTE>,
+												<szDT,szTBYTE>,
+												<0,0>)
 
 DbgHelpDLL						db 'DbgHelp.dll',0
 
@@ -272,39 +308,39 @@ szCall							db 'invoke',0
 ;								db 'Add other call types here',0
 								db 0
 
-; Datatypes
-szBYTE							db 'BYTE',0
-								db 'SBYTE',0
-								db 'DB',0
-;								db 'Add other byte types here',0
-								db 0
-
-szWORD							db 'WORD',0
-								db 'SWORD',0
-								db 'DW',0
-;								db 'Add other word types here',0
-								db 0
-
-szDWORD							db 'DWORD',0
-								db 'SDWORD',0
-								db 'DD',0
-								db 'HWND',0
-								db 'HINSTANCE',0
-								db 'HANDLE',0
-								db 'HMODULE',0
-								db 'HGLOBAL',0
-								db 'HMENU',0
-								db 'HBITMAP',0
-								db 'HBRUSH',0
-								db 'HDC',0
-								db 'LPARAM',0
-								db 'WPARAM',0
-								db 'UMSG',0
-								db 'PROC',0
-								db 'UINT',0
-								db 'HACCEL',0
-;								db 'Add other dword types here',0
-								db 0
+;; Datatypes
+;szBYTE							db 'BYTE',0
+;								db 'SBYTE',0
+;								db 'DB',0
+;;								db 'Add other byte types here',0
+;								db 0
+;
+;szWORD							db 'WORD',0
+;								db 'SWORD',0
+;								db 'DW',0
+;;								db 'Add other word types here',0
+;								db 0
+;
+;szDWORD							db 'DWORD',0
+;								db 'SDWORD',0
+;								db 'DD',0
+;								db 'HWND',0
+;								db 'HINSTANCE',0
+;								db 'HANDLE',0
+;								db 'HMODULE',0
+;								db 'HGLOBAL',0
+;								db 'HMENU',0
+;								db 'HBITMAP',0
+;								db 'HBRUSH',0
+;								db 'HDC',0
+;								db 'LPARAM',0
+;								db 'WPARAM',0
+;								db 'UMSG',0
+;								db 'PROC',0
+;								db 'UINT',0
+;								db 'HACCEL',0
+;;								db 'Add other dword types here',0
+;								db 0
 
 .data?
 
