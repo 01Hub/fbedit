@@ -125,6 +125,109 @@ TestWord:
 
 FindWord endp
 
+FindTypeSize proc lpType:DWORD
+
+	ret
+
+FindTypeSize endp
+
+AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	lpArray:DWORD
+	LOCAL	lpType:DWORD
+
+	mov		lpArray,0
+	mov		lpType,0
+	mov		esi,lpName
+	lea		edi,buffer
+	.while TRUE
+		mov		al,[esi]
+		.if al=='['
+			mov		byte ptr [edi],0
+			inc		edi
+			mov		lpArray,edi
+			mov		[edi],al
+			inc		edi
+		.elseif al==':'
+			mov		byte ptr [edi],0
+			inc		edi
+			mov		lpType,edi
+			mov		[edi],al
+			inc		edi
+		.elseif al
+			mov		[edi],al
+			inc		edi
+		.else
+			xor		eax,eax
+			mov		[edi],ax
+			.break
+		.endif
+		inc		esi
+	.endw
+	mov		edi,dbg.lpvar
+	; Add name
+	invoke lstrcpy,addr [edi+sizeof DEBUGVAR],addr buffer
+	invoke lstrlen,addr buffer
+	lea		ebx,[eax+1]
+	.if lpArray
+		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpArray
+		invoke lstrlen,lpArray
+		lea		ebx,[ebx+eax]
+	.endif
+	.if lpType
+		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpType
+		invoke lstrlen,lpType
+		lea		ebx,[ebx+eax]
+	.endif
+	mov		byte ptr [edi+ebx+sizeof DEBUGVAR],0
+	mov		eax,lpArray
+	.if eax
+		invoke AnyToBin,addr [eax+1]
+	.endif
+	mov		[edi].DEBUGVAR.nArray,eax
+	.if nSize
+		mov		eax,nSize
+		mov		[edi].DEBUGVAR.nSize,eax
+	.elseif lpType
+		mov		eax,lpType
+		lea		eax,[eax+1]
+		invoke FindTypeSize,eax
+		mov		[edi].DEBUGVAR.nSize,eax
+	.endif
+	lea		eax,[edi+ebx+1+sizeof DEBUGVAR]
+	mov		dbg.lpvar,eax
+	ret
+
+AddVar endp
+
+AddVarList proc uses esi edi,lpList:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		esi,lpList
+	.while byte ptr [esi]
+		lea		edi,buffer
+		.while TRUE
+			mov		al,[esi]
+			.if !al
+				mov		[edi],al
+				invoke AddVar,addr buffer,0
+				.break
+			.elseif al==','
+				mov		byte ptr [edi],0
+				invoke AddVar,addr buffer,0
+				inc		esi
+				.break
+			.else
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endif
+		.endw
+	.endw
+	ret
+
+AddVarList endp
+
 EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	Displacement:QWORD
@@ -146,13 +249,25 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 		invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,SymbolName
 		invoke FindWord,SymbolName
 		.if eax
-			movzx	edx,[eax].PROPERTIES.nType
+			mov		esi,eax
+			movzx	edx,[esi].PROPERTIES.nType
 			mov		[edi].DEBUGSYMBOL.nType,dx
-			lea		ebx,[eax+sizeof PROPERTIES]
-			invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,ebx
-			invoke lstrlen,ebx
-			lea		eax,[ebx+eax+1]
-			mov		[edi].DEBUGSYMBOL.lpType,eax
+			.if edx=='p'
+				; Proc
+				mov		eax,dbg.lpvar
+				mov		[edi].DEBUGSYMBOL.lpType,eax
+				; Point to parameters
+				invoke lstrlen,addr [esi+sizeof PROPERTIES]
+				lea		esi,[esi+eax+1+sizeof PROPERTIES]
+				invoke AddVarList,esi
+				; Point to locals
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+				invoke AddVarList,esi
+			.elseif edx=='d'
+				; Variable
+				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
+			.endif
 		.endif
 		inc		dbg.inxsymbol
 	.endif
@@ -252,6 +367,10 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName
 		; Allocate memory for DEBUGSOURCE, max 512 sources
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
 		mov		dbg.hMemSource,eax
+		; Allocate memory for var definitions
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		dbg.hMemVar,eax
+		mov		dbg.lpvar,eax
 		; Zero the indexes
 		mov		dbg.inxsource,0
 		mov		dbg.inxline,0

@@ -59,11 +59,10 @@ FUNC_STEPOVER					equ 3
 FUNC_RUNTOCARET					equ 4
 FUNC_STOP						equ 5
 
-tagACCEL struct
-	fVirt					db ?
-	dummy					db ?
-	key						dw ?
-	cmd						dw ?
+tagACCEL struct WORD
+	fVirt					BYTE ?
+	key						WORD ?
+	cmd						WORD ?
 tagACCEL ends
 
 BREAKPOINT struct
@@ -72,9 +71,9 @@ BREAKPOINT struct
 BREAKPOINT ends
 
 PROPERTIES struct
-	nSize			dd ?
-	Owner			dd ?
-	nType			db ?
+	nSize					DWORD ?
+	Owner					DWORD ?
+	nType					BYTE ?
 PROPERTIES ends
 
 DEBUGSOURCE struct
@@ -90,13 +89,20 @@ DEBUGLINE struct
 	BreakPoint				BYTE ?
 DEBUGLINE ends
 
-DEBUGSYMBOL struct
-	Address                 DWORD ?
+DEBUGVAR struct
 	nSize					DWORD ?
-	szName					db 64 dup(?)
-	lpType					DWORD ?
-	nType					WORD ?
-	NoDebug					WORD ?
+	nArray					DWORD ?
+	;Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
+DEBUGVAR ends
+
+DEBUGSYMBOL struct
+	szName					db 64 dup(?)			; Name of proc / global var
+	Address                 DWORD ?					; Adress
+	nSize					DWORD ?					; Size in bytes
+	nArray					DWORD ?					; Number of elements
+	lpType					DWORD ?					; PROC: pointer to szParam + szLocals, GLOBAL: pointer to szArray + szDatatype
+	nType					WORD ?					; PROC: 'p', GLOBAL: 'd'
+	NoDebug					WORD ?					; PROC should not be debugged
 DEBUGSYMBOL ends
 
 DEBUGTHREAD struct
@@ -124,10 +130,12 @@ DEBUG struct
 	hMemSource				HGLOBAL ?				; Handle to memory containing DEBUGSOURCE structures
 	inxsymbol				DWORD ?					; Index to next free DEBUGSYMBOL
 	hMemSymbol				HGLOBAL ?				; Handle to memory containing DEBUGSYMBOL structures
+	lpvar					DWORD ?					; Pointer to next free var
+	hMemVar					HGLOBAL ?				; Variables definitions
 	inxline					DWORD ?					; Index to next free DEBUGLINE
 	hMemLine				HGLOBAL ?				; Handle to memory containing DEBUGLINE structures
-	hMemNoBP				HGLOBAL ?
-	hMemBP					HGLOBAL ?
+	hMemNoBP				HGLOBAL ?				; Copy of code with no breakpoints
+	hMemBP					HGLOBAL ?				; Copy of code with all breakpoints set
 	minadr					DWORD ?					; Lowest address
 	maxadr					DWORD ?					; Highest address
 	lastadr					DWORD ?					; Address of last line
