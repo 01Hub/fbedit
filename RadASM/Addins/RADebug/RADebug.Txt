@@ -64,6 +64,7 @@ o NOTE!
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.2
 o Released version 1.0.0.1
   - Step Over is enabled.
   - Do Not Debug is enabled.
@@ -77,13 +78,10 @@ o Uploaded version 1.0.0.0
 
 To do:
 -----------------------------------------------------------------------------
-o Immediate window to inspect variables, proc parameters and locals.
-o Tooltip on mouse over a proc parameter or local.
 o Support for other assemblers / compilers besides masm.
 
 Known bugs:
 -----------------------------------------------------------------------------
-When a thread is created the debugger skips a line.
 A proc without a stack frame will skip the first code line.
 Examples:
 MyProc proc

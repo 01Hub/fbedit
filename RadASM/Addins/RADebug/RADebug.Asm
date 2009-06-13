@@ -570,6 +570,12 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 									invoke SendMessage,eax,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,eax
 								.endif
 							.endif
+							; Clear output #3
+							push	3
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpOutputSelect
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpClearOut
 							; Clear output #2
 							push	2
 							mov		eax,lpProc
@@ -582,15 +588,22 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							call	[eax].ADDINPROCS.lpOutputSelect
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpClearOut
-							.if fOptions & 8
-								; Show register window
-								push	2
-								mov		eax,lpProc
-								call	[eax].ADDINPROCS.lpOutputSelect
-							.endif
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							mov		dbg.func,FUNC_RUN
+							; Show debug info window
+							push	1
+							mov		eax,lpProc
+							call	[eax].ADDINPROCS.lpOutputSelect
 							invoke DbgHelp,0,addr szExeName
+							.if dbg.inxline
+								.if fOptions & 8
+									; Show register window
+									push	2
+									mov		eax,lpProc
+									call	[eax].ADDINPROCS.lpOutputSelect
+								.endif
+								invoke ImmPrompt
+							.endif
 							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 							mov		dbg.hDbgThread,eax
 						.endif

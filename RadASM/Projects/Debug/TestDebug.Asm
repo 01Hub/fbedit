@@ -29,20 +29,24 @@ hInstance	HINSTANCE 8 dup(?)
 
 .code
 
-MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
-	LOCAL	aa:SDWORD
-	LOCAL	bb:SWORD
-	LOCAL	cc:SBYTE
-	LOCAL	s [ 256 ] : BYTE
+MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
+	LOCAL	aa:BYTE
+	LOCAL	bb:WORD
+	LOCAL	cc:BYTE
+	LOCAL	ddd:DWORD
+	LOCAL	s[256]:BYTE
 	LOCAL	rc:RECT
 
-	mov		eax,1
-	mov		ecx,1
 	mov		aa,1
 	mov		bb,2
 	mov		cc,3
-	mov		s,'A'
+	mov		ddd,4
 	mov		eax,ebp
+	lea		eax,aa
+	lea		ecx,bb
+	lea		edx,cc
+	lea		eax,ddd
+	mov		s,'A'
 	lea		eax,var
 	sub		eax,ebp
 	lea		ecx,var1
@@ -57,14 +61,17 @@ MyProc2 proc uses esi edi,var:DWORD,var1:PTR DWORD,var2:DWORD;ebp+8,ebp+12,ebp+1
 
 MyProc2 endp
 
-MyProc1 proc
+MyProc1 proc uses esi edi,var:DWORD
+	LOCAL	aa:SDWORD
+	LOCAL	bb:SWORD
 
 	mov		eax,'abcd'
 	ret
 
 MyProc1 endp
 
-MyProc3 proc uses esi
+MyProc3 proc uses esi,Param:DWORD
+	LOCAL	tst[4]:sdword
 
 	mov		eax,'abcd'
 	mov		eax,'abcd'
@@ -103,7 +110,7 @@ start:
 	mov		al,'B'
 	mov		ah,'C'
 	mov		ax,'DE'
-	invoke MyProc1
+	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3
 	invoke MyProc4

@@ -449,32 +449,23 @@ FindSymbol proc uses esi,lpName:DWORD
 
 FindSymbol endp
 
-FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
-	LOCAL	nArray:DWORD
-	LOCAL	szArray[64]:BYTE
+FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 
-	mov		esi,lpLocal
-	mov		edi,nOfs
+	mov		esi,lplpLocal
+	mov		esi,[esi]
 	.while byte ptr [esi+sizeof DEBUGVAR]
 		invoke lstrcmp,addr [esi+sizeof DEBUGVAR],lpName
 		.if !eax
-			.if sdword ptr nMove<0
-				sub		edi,edx
-			.endif
 			invoke lstrlen,addr [esi+sizeof DEBUGVAR]
 			invoke lstrcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]
 			mov		eax,[esi].DEBUGVAR.nSize
 			mov		var.nSize,eax
 			mov		eax,[esi].DEBUGVAR.nArray
 			mov		var.nArray,eax
-			; Return offset
-			mov		eax,edi
+			mov		eax,[esi].DEBUGVAR.nOfs
+			mov		var.nOfs,eax
+			mov		eax,TRUE
 			jmp		Ex
-		.endif
-		.if sdword ptr nMove>0
-			add		edi,edx
-		.else
-			sub		edi,edx
 		.endif
 		lea		esi,[esi+sizeof DEBUGVAR]
 		invoke lstrlen,esi
@@ -482,6 +473,8 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lpLocal:DWORD,nOfs:DWORD,nMove:DWORD
 		invoke lstrlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
+	mov		eax,lplpLocal
+	mov		[eax],esi
 	xor		eax,eax
   Ex:
 	ret
@@ -491,6 +484,7 @@ FindLocalVar endp
 FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 	LOCAL	nOfs:DWORD
 	LOCAL	nSize:DWORD
+	LOCAL	lpLocal:DWORD
 
 	mov		esi,dbg.lpProc
 	invoke FindLine,[esi].DEBUGSYMBOL.Address
@@ -506,10 +500,13 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 		dec		eax
 		.if nLine>=edx && nLine<eax
 			; PROC Parameter
-			invoke FindLocalVar,lpName,[esi].DEBUGSYMBOL.lpType,8,1
+			mov		eax,[esi].DEBUGSYMBOL.lpType
+			mov		lpLocal,eax
+			invoke FindLocalVar,lpName,addr lpLocal
 			.if eax
-				mov		edx,dbg.context.regEbp
-				add		eax,edx
+				mov		eax,dbg.context.regEbp
+				add		eax,var.nOfs
+				add		eax,4
 				mov		var.Address,eax
 				invoke lstrcpy,addr var.szName,lpName
 				invoke lstrcpy,addr var.szType,addr szvartype
@@ -517,13 +514,13 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 				jmp		Ex
 			.else
 				; LOCAL
-				invoke lstrlen,[esi].DEBUGSYMBOL.lpType
-				add		eax,[esi].DEBUGSYMBOL.lpType
-				inc		eax
-				invoke FindLocalVar,lpName,eax,0,-1
+				mov		eax,lpLocal
+				lea		eax,[eax+sizeof DEBUGVAR+2]
+				mov		lpLocal,eax
+				invoke FindLocalVar,lpName,addr lpLocal
 				.if eax
-					mov		edx,dbg.context.regEbp
-					add		eax,edx
+					mov		eax,dbg.context.regEbp
+					sub		eax,var.nOfs
 					mov		var.Address,eax
 					invoke lstrcpy,addr var.szName,lpName
 					invoke lstrcpy,addr var.szType,addr szvartype

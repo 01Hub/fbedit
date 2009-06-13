@@ -112,6 +112,7 @@ TestWord:
 			inc		eax
 			retn
 		.endif
+		xor		eax,eax
 	.else
 		.while TRUE
 			mov		al,[ecx]
@@ -133,9 +134,33 @@ TestWord:
 
 FindWord endp
 
-FindTypeSize proc lpType:DWORD
+FindTypeSize proc uses esi,lpType:DWORD
 
-PrintStringByAddr lpType
+	mov		edx,lpData
+	;Get pointer to word list
+	mov		esi,[edx].ADDINDATA.lpWordList
+	;Loop trough the word list
+	.while [esi].PROPERTIES.nSize
+		.if [esi].PROPERTIES.nType=='T'
+			invoke lstrcmp,addr [esi+sizeof PROPERTIES],lpType
+			.if !eax
+				invoke lstrlen,addr [esi+sizeof PROPERTIES]
+				lea		edx,[esi+eax+1+sizeof PROPERTIES]
+				.if byte ptr [edx]>='0' && byte ptr [edx]<='9'
+					invoke DecToBin,edx
+					jmp		Ex
+				.else
+					mov		eax,4
+					jmp		Ex
+				.endif
+			.endif
+		.endif
+		;Move to next word
+		mov		eax,[esi].PROPERTIES.nSize
+		lea		esi,[esi+eax+sizeof PROPERTIES]
+	.endw
+	xor		eax,eax
+  Ex:
 	ret
 
 FindTypeSize endp
@@ -192,7 +217,7 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke lstrlen,addr [edi+ebx+sizeof DEBUGVAR]
 		lea		ebx,[ebx+eax]
 	.endif
-	mov		byte ptr [edi+ebx+sizeof DEBUGVAR],0
+	inc		ebx
 	mov		eax,lpArray
 	.if eax
 		invoke AnyToBin,addr [eax+1]
@@ -209,17 +234,20 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke FindTypeSize,eax
 		mov		[edi].DEBUGVAR.nSize,eax
 	.endif
-	lea		eax,[edi+ebx+1+sizeof DEBUGVAR]
+	lea		eax,[edi+ebx+sizeof DEBUGVAR]
 	mov		dbg.lpvar,eax
 	ret
 
 AddVar endp
 
-AddVarList proc uses esi edi,lpList:DWORD
+AddVarList proc uses ebx esi edi,lpList:DWORD
 	LOCAL	buffer[256]:BYTE
+	LOCAL	nOfs:DWORD
 
+	mov		nOfs,0
 	mov		esi,lpList
 	.while byte ptr [esi]
+		mov		ebx,dbg.lpvar
 		lea		edi,buffer
 		.while TRUE
 			mov		al,[esi]
@@ -238,7 +266,28 @@ AddVarList proc uses esi edi,lpList:DWORD
 				inc		edi
 			.endif
 		.endw
+		mov		ecx,[ebx].DEBUGVAR.nSize
+		mov		eax,[ebx].DEBUGVAR.nArray
+		mul		ecx
+		mov		edx,nOfs
+		add		edx,eax
+		.if !(eax & 1) && (edx & 1)
+			; Word align
+			shr		edx,1
+			inc		edx
+			shl		edx,1
+		.elseif  !(eax & 3) && (edx & 3)
+			; DWord align
+			shr		edx,2
+			inc		edx
+			shl		edx,2
+		.endif
+		mov		nOfs,edx
+		mov		[ebx].DEBUGVAR.nOfs,edx
 	.endw
+	mov		eax,dbg.lpvar
+	lea		eax,[eax+sizeof DEBUGVAR+2]
+	mov		dbg.lpvar,eax
 	ret
 
 AddVarList endp

@@ -92,6 +92,7 @@ DEBUGLINE ends
 DEBUGVAR struct
 	nSize					DWORD ?					; Size in bytes
 	nArray					DWORD ?					; Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
+	nOfs					DWORD ?					; Offset for proc parameter or local
 DEBUGVAR ends
 
 DEBUGSYMBOL struct
@@ -245,6 +246,7 @@ szCR							db 0Dh,0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSpace							db ' ',0
+szComma							db ',',0
 
 szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
@@ -299,8 +301,8 @@ szData32						db 'GLOBAL %s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szData16						db 'GLOBAL %s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szData8							db 'GLOBAL %s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szDataSZ						db 'GLOBAL %s Address %08Xh Size %u "%s"',0
-szParam							db 'PARAM %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
-szLocal							db 'LOCAL %s%s:%s Address %08Xh Hex %08Xh Dec %d',0
+szParam							db 'PARAM %s%s%s Address %08Xh Hex %08Xh Dec %d',0
+szLocal							db 'LOCAL %s%s%s Address %08Xh Hex %08Xh Dec %d',0
 szValue							db 'Hex %08Xh Dec %d',0
 
 szCall							db 'invoke',0

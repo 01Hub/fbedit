@@ -610,6 +610,7 @@ Debug proc uses ebx,lpFileName:DWORD
 		.endif
 		mov		dbg.prevline,-1
 		invoke AddThread,dbg.pinfo.hThread,dbg.pinfo.dwThreadId
+		mov		[eax].DEBUGTHREAD.isdebugged,TRUE
 		.while TRUE
 			invoke WaitForDebugEvent,addr de,INFINITE
 			mov		fContinue,DBG_CONTINUE
@@ -620,27 +621,44 @@ Debug proc uses ebx,lpFileName:DWORD
 					.if de.u.Exception.pExceptionRecord.ExceptionAddress<800000h
 						invoke FindThread,de.dwThreadId
 						mov		ebx,eax
-						mov		dbg.lpthread,ebx
-						.if ![ebx].DEBUGTHREAD.suspended
+						.if ![ebx].DEBUGTHREAD.isdebugged
+							invoke SuspendThread,[ebx].DEBUGTHREAD.htread
 							mov		[ebx].DEBUGTHREAD.suspended,TRUE
 							mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
-							invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+							invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
+							mov		[ebx].DEBUGTHREAD.lpline,eax
+							mov		dbg.context.ContextFlags,CONTEXT_FULL
+							invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+							mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+							mov		dbg.context.regEip,eax
+							mov		[ebx].DEBUGTHREAD.address,eax
+							invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+							invoke IsInProc,[ebx].DEBUGTHREAD.address
+							mov		dbg.lpProc,eax
+							mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+						.else
+							mov		dbg.lpthread,ebx
+							.if ![ebx].DEBUGTHREAD.suspended
+								invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+								mov		[ebx].DEBUGTHREAD.suspended,TRUE
+								mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
+							.endif
+							invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
+							mov		[ebx].DEBUGTHREAD.lpline,eax
+							.if eax
+								invoke SelectLine,eax
+							.endif
+							mov		dbg.context.ContextFlags,CONTEXT_FULL
+							invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+							mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+							mov		dbg.context.regEip,eax
+							mov		[ebx].DEBUGTHREAD.address,eax
+							invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+							invoke IsInProc,[ebx].DEBUGTHREAD.address
+							mov		dbg.lpProc,eax
+							invoke ShowContext
+							mov		dbg.fHandled,TRUE
 						.endif
-						invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		[ebx].DEBUGTHREAD.lpline,eax
-						.if eax
-							invoke SelectLine,eax
-						.endif
-						mov		dbg.context.ContextFlags,CONTEXT_FULL
-						invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-						mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-						mov		dbg.context.regEip,eax
-						mov		[ebx].DEBUGTHREAD.address,eax
-						invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-						invoke IsInProc,[ebx].DEBUGTHREAD.address
-						mov		dbg.lpProc,eax
-						invoke ShowContext
-						mov		dbg.fHandled,TRUE
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
@@ -679,9 +697,10 @@ Debug proc uses ebx,lpFileName:DWORD
 					invoke SwitchThread
 					mov		ebx,eax
 					.if [ebx].DEBUGTHREAD.suspended
-						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						mov		dbg.lpthread,ebx
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 					.endif
 				.endif
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT

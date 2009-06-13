@@ -1,15 +1,29 @@
 .const
 
 szImmDump						db 'DUMP',0
+szImmVars						db 'VARS',0
+szImmLocal						db 0Dh,'LOCAL: ',0
 szImmNotFound					db 'Variable not found.',0
 szImmUnknown					db 'Unknown command.',0
+szImmPrompt						db '>',0
 
 .code
+
+ImmPrompt proc
+
+	invoke SendMessage,hOut3,EM_REPLACESEL,FALSE,addr szImmPrompt
+	invoke SendMessage,hOut3,EM_SCROLLCARET,0,0
+	ret
+
+ImmPrompt endp
 
 ParseBuff proc uses esi edi,lpBuff:DWORD
 
 	mov		esi,lpBuff
 	mov		edi,esi
+	.if byte ptr [esi]=='>'
+		inc		esi
+	.endif
 	.while TRUE
 		mov		al,[esi]
 		.if al!=VK_SPACE && al!=VK_TAB
@@ -37,6 +51,72 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	mov		buffer[eax],0
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
 	invoke ParseBuff,addr buffer
+	invoke lstrcmpi,addr buffer,addr szImmDump
+	.if !eax
+		invoke ClearBreakPointsAll
+		mov		esi,400000h
+		.while TRUE
+			invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
+			.break .if !eax
+			invoke DumpLine,hOut3,esi,addr buffer,16
+			add		esi,16
+		.endw
+		invoke SetBreakPointsAll
+		jmp		Ex
+	.endif
+	invoke lstrcmpi,addr buffer,addr szImmVars
+	.if !eax
+		mov		esi,dbg.hMemSymbol
+		mov		ecx,dbg.inxsymbol
+		.while ecx
+			push	ecx
+			.if [esi].DEBUGSYMBOL.nType=='d'
+				mov		edi,[esi].DEBUGSYMBOL.lpType
+				.if edi
+					invoke lstrcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
+					invoke lstrlen,addr [edi+sizeof DEBUGVAR]
+					invoke lstrcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
+					invoke PutStringOut,addr outbuffer,hOut3
+				.endif
+			.elseif [esi].DEBUGSYMBOL.nType=='p'
+				invoke lstrcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
+				mov		edi,[esi].DEBUGSYMBOL.lpType
+				.if edi
+					mov		ebx,offset szSpace
+					lea		edi,[edi+sizeof DEBUGVAR]
+					.while byte ptr [edi]
+						invoke lstrcat,addr outbuffer,ebx
+						invoke lstrcat,addr outbuffer,edi
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
+						invoke lstrcat,addr outbuffer,edi
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
+						lea		edi,[edi+sizeof DEBUGVAR]
+						mov		ebx,offset szComma
+					.endw
+					mov		ebx,offset szImmLocal
+					lea		edi,[edi+sizeof DEBUGVAR+2]
+					.while byte ptr [edi]
+						invoke lstrcat,addr outbuffer,ebx
+						invoke lstrcat,addr outbuffer,edi
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
+						invoke lstrcat,addr outbuffer,edi
+						invoke lstrlen,edi
+						lea		edi,[edi+eax+1]
+						lea		edi,[edi+sizeof DEBUGVAR]
+						mov		ebx,offset szComma
+					.endw
+				.endif
+				invoke PutStringOut,addr outbuffer,hOut3
+			.endif
+			pop		ecx
+			lea		esi,[esi+sizeof DEBUGSYMBOL]
+			dec		ecx
+		.endw
+		jmp		Ex
+	.endif
 	.if buffer=='?'
 		invoke GetVarVal,addr buffer[1],dbg.prevline,TRUE
 		.if eax
@@ -44,74 +124,63 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.else
 			invoke PutStringOut,addr szImmNotFound,hOut3
 		.endif
-	.else
-		xor ebx,ebx
-		.while buffer[ebx]
-			.if buffer[ebx]=='='
-				mov		buffer[ebx],0
-				inc		ebx
-				invoke GetVarAdr,addr buffer,dbg.prevline
-				.if eax
-					push	eax
-					invoke RtlMoveMemory,addr tmpvar,addr var,sizeof VAR
-					invoke GetVarVal,addr buffer[ebx],dbg.prevline,FALSE
-					push	eax
-					mov		eax,var.Value
-					mov		val,eax
-					invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
-					pop		edx
-					pop		eax
-				.endif
-				.if (eax=='d' || eax=='P' || eax=='L') && edx
-					; GLOBAL, PROC Parameter or LOCAL
-					invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
-					invoke GetVarVal,addr buffer,dbg.prevline,TRUE
-					invoke PutStringOut,addr outbuffer,hOut3
-				.elseif eax=='R' && edx
-					; REGISTER
-					mov		eax,var.Address
-					mov		eax,[eax]
-					mov		edx,var.nSize
-					.if edx==2
-						mov		ax,word ptr val
-					.elseif edx==1
-						mov		al,byte ptr val
-					.elseif edx==3
-						mov		ah,byte ptr val
-					.else
-						mov		eax,val
-					.endif
-					mov		edx,var.Address
-					mov		[edx],eax
-					mov		ebx,dbg.lpthread
-					invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-					invoke ShowContext
-					invoke GetVarVal,addr buffer,dbg.prevline,TRUE
-					invoke PutStringOut,addr outbuffer,hOut3
-				.else
-					invoke PutStringOut,addr szImmNotFound,hOut3
-				.endif
-				jmp		Ex
-			.endif
+		jmp		Ex
+	.endif
+	xor ebx,ebx
+	.while buffer[ebx]
+		.if buffer[ebx]=='='
+			mov		buffer[ebx],0
 			inc		ebx
-		.endw
-		invoke lstrcmpi,addr buffer,addr szImmDump
-		.if !eax
-			invoke ClearBreakPointsAll
-			mov		esi,400000h
-			.while TRUE
-				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
-				.break .if !eax
-				invoke DumpLine,hOut3,esi,addr buffer,16
-				add		esi,16
-			.endw
-			invoke SetBreakPointsAll
+			invoke GetVarAdr,addr buffer,dbg.prevline
+			.if eax
+				push	eax
+				invoke RtlMoveMemory,addr tmpvar,addr var,sizeof VAR
+				invoke GetVarVal,addr buffer[ebx],dbg.prevline,FALSE
+				push	eax
+				mov		eax,var.Value
+				mov		val,eax
+				invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
+				pop		edx
+				pop		eax
+			.endif
+			.if (eax=='d' || eax=='P' || eax=='L') && edx
+				; GLOBAL, PROC Parameter or LOCAL
+				invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
+				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+				invoke PutStringOut,addr outbuffer,hOut3
+			.elseif eax=='R' && edx
+				; REGISTER
+				mov		eax,var.Address
+				mov		eax,[eax]
+				mov		edx,var.nSize
+				.if edx==2
+					mov		ax,word ptr val
+				.elseif edx==1
+					mov		al,byte ptr val
+				.elseif edx==3
+					mov		ah,byte ptr val
+				.else
+					mov		eax,val
+				.endif
+				mov		edx,var.Address
+				mov		[edx],eax
+				mov		ebx,dbg.lpthread
+				invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+				invoke ShowContext
+				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+				invoke PutStringOut,addr outbuffer,hOut3
+			.else
+				invoke PutStringOut,addr szImmNotFound,hOut3
+			.endif
 			jmp		Ex
-		.else
-			invoke PutStringOut,addr szImmUnknown,hOut3
 		.endif
+		inc		ebx
+	.endw
+	.if buffer
+		invoke PutStringOut,addr szImmUnknown,hOut3
 	.endif
   Ex:
+	invoke ImmPrompt
 	ret
 
 Immediate endp
