@@ -51,8 +51,14 @@ ApiStructListBox proc lpList:DWORD,nType:DWORD
 	invoke SendMessage,hLB,LB_RESETCONTENT,0,0
 	invoke SendMessage,hLB,LB_SETTABSTOPS,1,addr lpTabs
 	invoke lstrcpyn,addr LineTxt,lpList,8192
+	invoke iniGetItem,addr LineTxt,addr	buffer
+	mov		al,buffer[0]
+	.if al<'0' || al>'9'
+		jmp		Skip
+	.endif
   @@:
 	invoke iniGetItem,addr LineTxt,addr	buffer
+  Skip:
 	mov		al,buffer[0]
 	.if	al
 		lea		esi,buffer

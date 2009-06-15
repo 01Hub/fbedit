@@ -134,14 +134,24 @@ TestWord:
 
 FindWord endp
 
-FindTypeSize proc uses esi,lpType:DWORD
+FindTypeSize proc uses esi edi,lpType:DWORD
 
+	mov		eax,lpType
+	mov		eax,[eax]
+	and		eax,0FF5F5F5Fh
+	.if eax==' RTP'
+		; PTR to any
+		mov		eax,4
+		jmp		Ex
+	.endif
 	mov		edx,lpData
 	;Get pointer to word list
 	mov		esi,[edx].ADDINDATA.lpWordList
+	mov		eax,[edx].ADDINDATA.rpProjectWordList
+	lea		edi,[esi+eax]
 	;Loop trough the word list
-	.while [esi].PROPERTIES.nSize
-		.if [esi].PROPERTIES.nType=='T'
+	.while [esi].PROPERTIES.nSize && esi<edi
+		.if [esi].PROPERTIES.nType=='T' || [esi].PROPERTIES.nType=='S'
 			invoke lstrcmp,addr [esi+sizeof PROPERTIES],lpType
 			.if !eax
 				invoke lstrlen,addr [esi+sizeof PROPERTIES]
@@ -207,6 +217,8 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpArray
 		invoke lstrlen,lpArray
 		lea		ebx,[ebx+eax]
+		add		eax,lpArray
+		mov		byte ptr [eax-1],0
 	.endif
 	.if lpType
 		invoke GetPredefinedDatatype,lpType
@@ -220,7 +232,7 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	inc		ebx
 	mov		eax,lpArray
 	.if eax
-		invoke AnyToBin,addr [eax+1]
+		invoke DecToBin,addr [eax+1]
 	.else
 		mov		eax,1
 	.endif
@@ -266,24 +278,24 @@ AddVarList proc uses ebx esi edi,lpList:DWORD
 				inc		edi
 			.endif
 		.endw
-		mov		ecx,[ebx].DEBUGVAR.nSize
-		mov		eax,[ebx].DEBUGVAR.nArray
-		mul		ecx
-		mov		edx,nOfs
-		add		edx,eax
-		.if !(eax & 1) && (edx & 1)
-			; Word align
-			shr		edx,1
-			inc		edx
-			shl		edx,1
-		.elseif  !(eax & 3) && (edx & 3)
+		mov		eax,[ebx].DEBUGVAR.nSize
+		mov		ecx,nOfs
+		mov		edx,[ebx].DEBUGVAR.nArray
+		.if  !(eax & 3) && (ecx & 3)
 			; DWord align
-			shr		edx,2
-			inc		edx
-			shl		edx,2
+			shr		ecx,2
+			inc		ecx
+			shl		ecx,2
+		.elseif !(eax & 1) && (ecx & 1)
+			; Word align
+			shr		ecx,1
+			inc		ecx
+			shl		ecx,1
 		.endif
-		mov		nOfs,edx
-		mov		[ebx].DEBUGVAR.nOfs,edx
+		mul		edx
+		add		eax,ecx
+		mov		nOfs,eax
+		mov		[ebx].DEBUGVAR.nOfs,eax
 	.endw
 	mov		eax,dbg.lpvar
 	lea		eax,[eax+sizeof DEBUGVAR+2]

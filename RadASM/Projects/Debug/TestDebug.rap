@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,663
+1=0,0,1278,774,986
 2=0,0,0,0,8
 3=0,0,0,0,81
 [BookMark]
@@ -115,8 +115,12 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="ecx = 13"
-2="118"
+1="RECT,left"
+2="RECT,"
+3="RECT"
+4="ecx = 13"
+5="118"
 [RADebugBP]
-1=43
+1=48
+0=
 [NoDebug]

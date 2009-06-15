@@ -34,20 +34,25 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	bb:WORD
 	LOCAL	cc:BYTE
 	LOCAL	ddd:DWORD
+	LOCAL	eee:BYTE
 	LOCAL	s[256]:BYTE
+	LOCAL	fff:BYTE
 	LOCAL	rc:RECT
 
 	mov		aa,1
 	mov		bb,2
 	mov		cc,3
 	mov		ddd,4
+	mov		eee,5
+	mov		fff,6
+	mov		rc.left,99
 	mov		eax,ebp
 	lea		eax,aa
 	lea		ecx,bb
 	lea		edx,cc
 	lea		eax,ddd
-	mov		s,'A'
-	lea		eax,var
+	mov		dword ptr s,'ABCD'
+	lea		eax,s
 	sub		eax,ebp
 	lea		ecx,var1
 	sub		ecx,ebp
