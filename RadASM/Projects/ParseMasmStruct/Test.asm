@@ -11,11 +11,11 @@
 ;TST ends
 ;
 TST struct DWORD
-	a		DWORD ?
-	b		BYTE ?
+	b		HWND ?
+	a		BYTE ?
 	struct tstsub
 		a		BYTE ?
-		b		DWORD ?
+		b		WORD ?
 	ends
 TST ends
 
@@ -25,3 +25,11 @@ TST ends
 ;	cc		DWORD ?
 ;	aa		BYTE ?
 ;TST ends
+
+PrintDec sizeof TST
+PrintDec TST.a
+PrintDec TST.b
+PrintDec TST.tstsub
+PrintDec TST.tstsub.a
+PrintDec TST.tstsub.b
+PrintDec sizeof szOutput

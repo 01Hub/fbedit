@@ -16,7 +16,11 @@ ResultProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		; Set edit box font
 		invoke SendDlgItemMessage,hWin,IDC_EDTRESULT,WM_SETFONT,hEditFont,FALSE
 		; Set edit box text
-		invoke SetDlgItemText,hWin,IDC_EDTRESULT,addr szOutput
+		mov		eax,offset szOutput
+		.if nErr
+			mov		eax,offset szError
+		.endif
+		invoke SetDlgItemText,hWin,IDC_EDTRESULT,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -45,6 +49,7 @@ ParseMasmStruct proc uses ebx esi edi,hWin:HWND
 	; Get the struct text
 	invoke GetDlgItemText,hWin,IDC_EDT1,addr szstruct,sizeof szstruct
 	.if eax
+		mov		nErr,0
 		mov		szOutput,0
 		lea		esi,szstruct
 		invoke PreParse,esi
@@ -68,7 +73,7 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ReadTheFile,addr szStructSizeFileName,hMemFile
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 		mov		hMemStructSize,eax
-		invoke ParseSizeFile,hMemFile,hMemStructSize
+		invoke ParseStructSizeFile,hMemFile,hMemStructSize
 		; Size of types
 		invoke ReadTheFile,addr szTypeSizeFileName,hMemFile
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
@@ -133,12 +138,6 @@ DlgProc endp
 start:
 
 include Test.asm
-PrintDec sizeof TST
-PrintDec TST.a
-PrintDec TST.b
-PrintDec TST.tstsub
-PrintDec TST.tstsub.a
-PrintDec TST.tstsub.b
 
 	invoke GetModuleHandle,NULL
 	mov		hInstance,eax

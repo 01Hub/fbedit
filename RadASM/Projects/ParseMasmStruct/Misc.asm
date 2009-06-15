@@ -154,6 +154,50 @@ ReadTheFile proc lpFileName:DWORD,hMem:HGLOBAL
 
 ReadTheFile endp
 
+ParseStructSizeFile proc uses ebx esi edi,hMemFile:HGLOBAL,hMemSize:HGLOBAL
+
+	mov		esi,hMemFile
+	mov		edi,hMemSize
+	.while byte ptr [esi]
+		; Skip empty line
+		.while byte ptr [esi]==0Dh || byte ptr [esi]==0Ah
+			inc		esi
+		.endw
+		; Get name
+		xor		eax,eax
+		xor		ebx,ebx
+		.while byte ptr [esi]!=',' && byte ptr [esi]
+			mov		al,[esi]
+			.if al==':'
+				mov		ah,al
+				xor		al,al
+			.endif
+			mov		[edi].STRUCTSIZE.szName[ebx],al
+			inc		esi
+			inc		ebx
+		.endw
+		; Zero terminate name / alignment
+		mov		[edi].STRUCTSIZE.szName[ebx],0
+		.if ah!=':'
+			; No alignment
+			inc		ebx
+			mov		[edi].STRUCTSIZE.szName[ebx],0
+		.endif
+		; Get size
+		inc		esi
+		invoke DecToBin,esi
+		mov		[edi].STRUCTSIZE.nSize,eax
+		; Move to next line
+		.while byte ptr [esi-1]!=0Ah && byte ptr [esi]
+			inc		esi
+		.endw
+		; Pont to next STRUCTSIZE
+		lea		edi,[edi+ebx+sizeof STRUCTSIZE]
+	.endw
+	ret
+
+ParseStructSizeFile endp
+
 ParseSizeFile proc uses ebx esi edi,hMemFile:HGLOBAL,hMemSize:HGLOBAL
 
 	mov		esi,hMemFile
@@ -167,9 +211,6 @@ ParseSizeFile proc uses ebx esi edi,hMemFile:HGLOBAL,hMemSize:HGLOBAL
 		xor		ebx,ebx
 		.while byte ptr [esi]!=',' && byte ptr [esi]
 			mov		al,[esi]
-			.if al==':'
-				xor		al,al
-			.endif
 			mov		[edi].STRUCTSIZE.szName[ebx],al
 			inc		esi
 			inc		ebx
@@ -275,13 +316,15 @@ FindTypeSize proc uses esi,lpszType:DWORD
 
 FindTypeSize endp
 
-; Pre parse. Destroys comments
+; Pre parse. Destroys comments and replace tab with space
 PreParse proc uses esi,lpszStruct:DWORD
 
 	mov		esi,lpszStruct
 	.while byte ptr [esi]
 		.if byte ptr [esi]==';'
 			call	DestroyToEol
+		.elseif byte ptr [esi]==VK_TAB
+			mov		byte ptr [esi],' '
 		.endif
 		inc		esi
 	.endw
@@ -305,7 +348,10 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 	LOCAL	szout[512]:BYTE
 	LOCAL	nsize:DWORD
 
+	mov		nsize,0
+	mov		szout,0
   Nxt:
+	call	SkipCrLf
 	lea		ebx,szitem1
 	call	GetItem
 	lea		ebx,szitem2
@@ -314,105 +360,90 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 	call	GetItem
 	lea		ebx,szitem4
 	call	GetItem
-	call	SkipCrLf
-	invoke strcmpi,addr szitem1,addr szUnion
+	call	SkipToEol
+	invoke strcmpi,addr szitem2,addr szUnion
 	.if !eax
-		; Sub union. Sub unions can not have an alignment and will not inherit parent alignment
-		mov		szout,0
-		mov		edx,lpSize
-		mov		eax,[edx]
-		mov		nsize,eax
-		.if !szitem2
-			invoke ParseStruct,NULL,addr nsize,addr szout,1,0
-		.else
-			invoke ParseStruct,addr szitem2,addr nsize,addr szout,1,0
+		; Main Union
+		.if szitem3
+			invoke FindPredefinedTypeSize,addr szitem3
 		.endif
-		mov		eax,nsize
-		mov		edx,lpSize
-		mov		[edx],eax
-		invoke strcat,lpOut,addr szout
-		jmp		Nxt
-	.else
-		invoke strcmpi,addr szitem1,addr szStruct
-		.if !eax
-			; Sub struct. Sub structures can not have an alignment but will inherit parent alignment.
-			; The structure itself is not aligned. nVeird takes care of this.
-			mov		szout,0
-			mov		edx,lpSize
-			mov		eax,[edx]
-			mov		nsize,eax
-			.if !szitem2
-				; Anonymus
-				invoke ParseStruct,NULL,addr nsize,addr szout,0,nAlign
-			.else
-				; Named
-				invoke ParseStruct,addr szitem2,addr nsize,addr szout,0,nAlign
-			.endif
-			mov		eax,nsize
-			mov		edx,lpSize
-			mov		[edx],eax
-			invoke strcat,lpOut,addr szout
-			jmp		Nxt
+		mov		nAlign,eax
+		invoke ParseStruct,NULL,addr nsize,addr szout,0,eax
+		; Union name
+		invoke strcat,lpOut,addr szitem1
+		; Alignment
+		invoke strcat,lpOut,addr szColon
+		.if szitem3
+			invoke strcat,lpOut,addr szitem3
 		.else
-			invoke strcmpi,addr szitem2,addr szUnion
-			.if !eax
-				; Main Union
-				mov		szout,0
-				xor		eax,eax
-				mov		nsize,eax
-				.if szitem3
-					invoke FindPredefinedTypeSize,addr szitem3
-				.endif
-				mov		nAlign,eax
-				invoke ParseStruct,NULL,addr nsize,addr szout,0,eax
-				; Union name
-				invoke strcat,lpOut,addr szitem1
-				; Alignment
+			invoke strcat,lpOut,addr szBYTE
+		.endif
+		; Size
+		invoke strcat,lpOut,addr szComma
+		mov		eax,nsize
+		call	AlignIt
+		mov		nsize,eax
+		invoke BinToDec,addr szTemp,nsize
+		invoke strcat,lpOut,addr szTemp
+		; Itsms
+		invoke strcat,lpOut,addr szout
+		mov		eax,esi
+		jmp		Ex
+	.else
+		invoke strcmpi,addr szitem2,addr szStruct
+		.if !eax
+			; Main Struct
+			.if szitem3
+				invoke FindPredefinedTypeSize,addr szitem3
+			.endif
+			mov		nAlign,eax
+			invoke ParseStruct,NULL,addr nsize,addr szout,0,eax
+			; Struct name
+			invoke strcat,lpOut,addr szitem1
+			; Alignment
+			.if szitem3
 				invoke strcat,lpOut,addr szColon
-				.if szitem3
-					invoke strcat,lpOut,addr szitem3
-				.else
-					invoke strcat,lpOut,addr szBYTE
-				.endif
-				; Size
-				invoke strcat,lpOut,addr szComma
-				mov		eax,nsize
-				call	AlignIt
+				invoke strcat,lpOut,addr szitem3
+			.endif
+			; Size
+			invoke strcat,lpOut,addr szComma
+			mov		eax,nAlign
+			call	AlignIt
+			invoke BinToDec,addr szTemp,nsize
+			invoke strcat,lpOut,addr szTemp
+			; Itsms
+			invoke strcat,lpOut,addr szout
+			mov		eax,esi
+			jmp		Ex
+		.else
+			invoke strcmpi,addr szitem1,addr szUnion
+			.if !eax
+				; Sub union. Sub unions can not have an alignment but will inherit parent alignment
+				mov		edx,lpSize
+				mov		eax,[edx]
 				mov		nsize,eax
-				invoke BinToDec,addr szitem4,nsize
-				invoke strcat,lpOut,addr szitem4
-				; Itsms
+				.if !szitem2
+					; Anonymus
+					invoke ParseStruct,NULL,addr nsize,addr szout,1,0
+				.else
+					; Named
+					invoke ParseStruct,addr szitem2,addr nsize,addr szout,1,0
+				.endif
 				invoke strcat,lpOut,addr szout
+				jmp		Nxt
 			.else
-				invoke strcmpi,addr szitem2,addr szStruct
+				invoke strcmpi,addr szitem1,addr szStruct
 				.if !eax
-					; Main Struct
-					mov		szout,0
-					xor		eax,eax
-					mov		nsize,eax
-					.if szitem3
-						invoke FindPredefinedTypeSize,addr szitem3
-					.endif
-					mov		nAlign,eax
-					invoke ParseStruct,NULL,addr nsize,addr szout,0,eax
-					; Struct name
-					invoke strcat,lpOut,addr szitem1
-					; Alignment
-					invoke strcat,lpOut,addr szColon
-					.if szitem3
-						invoke strcat,lpOut,addr szitem3
+					; Sub struct. Sub structures can not have an alignment but will inherit parent alignment
+					.if !szitem2
+						; Anonymus
+						invoke ParseStruct,NULL,addr nsize,addr szout,0,nAlign
 					.else
-						invoke strcat,lpOut,addr szBYTE
+						; Named
+						invoke ParseStruct,addr szitem2,addr nsize,addr szout,0,nAlign
 					.endif
-					; Size
-					invoke strcat,lpOut,addr szComma
-					mov		eax,nsize
-					call	AlignIt
-					mov		nsize,eax
-					invoke BinToDec,addr szitem4,nsize
-					invoke strcat,lpOut,addr szitem4
-					; Itsms
 					invoke strcat,lpOut,addr szout
+					jmp		Nxt
 				.else
 					invoke strcmpi,addr szitem1,addr szEnds
 					.if !eax
@@ -421,7 +452,12 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 							mov		eax,nUnion
 							mov		edx,lpSize
 							add		[edx],eax
+						.else
+							mov		eax,nsize
+							mov		edx,lpSize
+							add		[edx],eax
 						.endif
+						mov		eax,esi
 						jmp		Ex
 					.else
 						invoke strcmpi,addr szitem2,addr szEnds
@@ -431,54 +467,91 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 								mov		eax,nUnion
 								mov		edx,lpSize
 								add		[edx],eax
-							.endif
-							jmp		Ex
-						.else
-							; Item
-							invoke strcat,lpOut,addr szComma
-							invoke strcat,lpOut,addr szCrLf
-							.if lpszName
-								invoke strcat,lpOut,lpszName
-								invoke strcat,lpOut,addr szDot
-							.endif
-							invoke strcat,lpOut,addr szitem1
-							invoke strcat,lpOut,addr szColon
-							invoke strcat,lpOut,addr szitem2
-							invoke strcat,lpOut,addr szComma
-							mov		edx,lpSize
-							mov		eax,[edx]
-							call	AlignIt
-							mov		[edx],eax
-							invoke BinToDec,addr szitem4,eax
-							invoke strcat,lpOut,addr szitem4
-							invoke FindTypeSize,addr szitem2
-							.if nUnion
-								.if eax>nUnion
-									mov		nUnion,eax
-								.endif
 							.else
+								mov		eax,nsize
 								mov		edx,lpSize
 								add		[edx],eax
 							.endif
-							jmp		Nxt
+							mov		eax,esi
+							jmp		Ex
+						.elseif szitem1 && szitem2
+							; Item
+							invoke FindTypeSize,addr szitem2
+							.if eax
+								mov		ebx,eax
+								invoke strcat,lpOut,addr szComma
+								invoke strcat,lpOut,addr szCrLf
+								.if lpszName
+									invoke strcat,lpOut,lpszName
+									invoke strcat,lpOut,addr szDot
+								.endif
+								invoke strcat,lpOut,addr szitem1
+								; Array
+								mov		eax,dword ptr szitem4
+								and		eax,5F5F5Fh
+								.if eax=='PUD'
+									invoke DecToBin,addr szitem3
+									.if eax
+										push	eax
+										invoke BinToDec,addr szTemp,eax
+										invoke strcat,lpOut,addr szLPA
+										invoke strcat,lpOut,addr szTemp
+										invoke strcat,lpOut,addr szRPA
+										pop		eax
+										mul		ebx
+										mov		ebx,eax
+									.endif
+								.endif
+								invoke strcat,lpOut,addr szColon
+								invoke strcat,lpOut,addr szitem2
+								invoke strcat,lpOut,addr szComma
+								call	AlignIt
+								mov		eax,nsize
+								mov		edx,lpSize
+								add		eax,[edx]
+								invoke BinToDec,addr szTemp,eax
+								invoke strcat,lpOut,addr szTemp
+								add		nsize,ebx
+;								.if nUnion
+;									.if eax>nUnion
+;										mov		nUnion,eax
+;									.endif
+;								.else
+;									mov		edx,lpSize
+;									add		[edx],eax
+;								.endif
+								jmp		Nxt
+							.endif
 						.endif
 					.endif
 				.endif
 			.endif
 		.endif
 	.endif
+	inc		nErr
 	xor		eax,eax
   Ex:
 	ret
 
-SkipCrLf:
-	.while byte ptr [esi]==VK_RETURN || byte ptr [esi]==0Ah
+SkipWhiteSpace:
+	.while byte ptr [esi]==VK_SPACE
 		inc		esi
 	.endw
 	retn
 
-SkipWhiteSpace:
-	.while byte ptr [esi]==VK_TAB || byte ptr [esi]==VK_SPACE
+SkipCrLf:
+	call	SkipWhiteSpace
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+		.if byte ptr [esi]==0Ah
+			inc		esi
+			jmp		SkipCrLf
+		.endif
+	.endif
+	retn
+
+SkipToEol:
+	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
 		inc		esi
 	.endw
 	retn
@@ -486,7 +559,7 @@ SkipWhiteSpace:
 GetItem:
 	push	ebx
 	call	SkipWhiteSpace
-	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_TAB && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
 		mov		al,[esi]
 		mov		[ebx],al
 		inc		esi
@@ -499,16 +572,16 @@ GetItem:
 AlignIt:
 	.if nAlign
 		mov		ecx,nAlign
-		.if  !(ecx & 3) && (eax & 3)
+		.if  !(ecx & 3) && !(eax & 3) && (nsize && 3)
 			; DWord align
-			shr		eax,2
-			inc		eax
-			shl		eax,2
-		.elseif !(ecx & 1) && (eax & 1)
+			shr		nsize,2
+			inc		nsize
+			shl		nsize,2
+		.elseif !(ecx & 1) && !(eax & 1) && (nsize && 3)
 			; Word align
-			shr		eax,1
-			inc		eax
-			shl		eax,1
+			shr		nsize,1
+			inc		nsize
+			shl		nsize,1
 		.endif
 	.endif
 	retn

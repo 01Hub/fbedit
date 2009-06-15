@@ -52,6 +52,8 @@ Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
 szColon					db ':',0
 szComma					db ',',0
 szDot					db '.',0
+szLPA					db '[',0
+szRPA					db ']',0
 szCrLf					db 0Dh,0Ah,0
 szFmtDec				db '%u',0
 
@@ -63,6 +65,7 @@ szConstSizeFileName		db 'ConstSize.txt',0
 szStruct				db 'struct',0
 szUnion					db 'union',0
 szEnds					db 'ends',0
+szError					db 'Error',0
 
 ; Predefined datatypes
 szBYTE					db 'BYTE',0
@@ -168,7 +171,9 @@ hMemStructSize			HGLOBAL ?
 hMemTypeSize			HGLOBAL ?
 hMemConstSize			HGLOBAL ?
 hEditFont				HFONT ?
+nErr					DWORD ?
 nSize					DWORD ?
-szOutput				BYTE 16384 dub(?)
+szTemp					BYTE 256 dup(?)
+szOutput				BYTE 16384 dup(?)
 
 ;#########################################################################
