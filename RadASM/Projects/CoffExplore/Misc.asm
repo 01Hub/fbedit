@@ -121,10 +121,25 @@ ReadTheFile proc lpFileName:DWORD,hMem:HGLOBAL
 	LOCAL	BytesRead:DWORD
 
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-	mov		hFile,eax
-	invoke ReadFile,hFile,hMem,200*1024,addr BytesRead,NULL
-	invoke CloseHandle,hFile
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke ReadFile,hFile,hMem,200*1024,addr BytesRead,NULL
+		invoke CloseHandle,hFile
+		xor		eax,eax
+	.endif
 	ret
 
 ReadTheFile endp
+
+CloseOBJ proc uses esi
+
+	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+	.if hMemFile
+		; Free the file memory
+		invoke GlobalFree,hMemFile
+		mov		hMemFile,0
+	.endif
+	ret
+
+CloseOBJ endp
 
