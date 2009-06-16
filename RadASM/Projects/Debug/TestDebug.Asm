@@ -12,8 +12,8 @@ include Src\TestMisc.asm
 include TestMisc.asm
 
 MYSTRUCT struct
-	a	DWORD ?
-	b	DWORD ?
+	aaaaa	DWORD ?
+	bbbbb	DWORD ?
 MYSTRUCT ends
 
 .data
@@ -24,7 +24,7 @@ rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
 valdd		DWORD 4
 valdw		WORD 2
-valdb		BYTE 1
+valdbabcdefgh		BYTE 1
 hInstance	HINSTANCE 8 dup(?)
 
 .code
@@ -61,7 +61,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	lea		eax,aa
 	lea		ecx,bb
 	lea		edx,cc
-	invoke MyProc4
+	invoke M4
 	ret
 
 MyProc2 endp
@@ -118,7 +118,7 @@ start:
 	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3
-	invoke MyProc4
+	invoke M4
 	jmp		Ex
 Ex:
 	invoke ExitProcess,0

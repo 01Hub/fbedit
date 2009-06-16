@@ -1,11 +1,12 @@
+.data
+
+szMyProc4		db 'MyProc4',0
+
 .code
 
-MyProc4 proc uses ebx
+M4 proc uses ebx
 
-	mov		eax,'abcd'
-	mov		eax,'abcd'
-	mov		eax,'abcd'
 	ret
 
-MyProc4 endp
+M4 endp
 

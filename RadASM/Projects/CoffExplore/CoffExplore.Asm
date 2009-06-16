@@ -9,7 +9,7 @@ include Misc.asm
 
 ;########################################################################
 
-CldDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -17,6 +17,8 @@ CldDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hCldDlg,eax
+		invoke GetDlgItem,hWin,IDC_STCSECTION
+		mov		hStc,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -52,39 +54,76 @@ CldDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax
 						invoke ShowCoffHeader,hMemFile
 						mov		ebx,hMemFile
+						movzx	eax,[ebx].COFFHEADER.NumberOfSections
+						mov		nCoffHeaders,eax
 						movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
 						lea		ebx,[ebx+eax+sizeof COFFHEADER]
-						mov		eax,nCoffHeader
-						mov		edx,sizeof SECTIONHEADER
-						mul		edx
-						lea		ebx,[ebx+eax]
-						invoke DumpSection,ebx,sizeof SECTIONHEADER
+						invoke SendMessage,hStc,WM_SETTEXT,0,addr [ebx].COFFSECTIONHEADER.sName
+						invoke ReadSectionHeaders
 					.endif
 				.endif
 			.elseif eax==IDC_BTNPREVIOUS
-;				.if nCurrentStream
-;					dec		nCurrentStream
-;					invoke SetCurrentStream
-;					mov		eax,nCurrentStream
-;					mov		edx,offset stream
-;					lea		edx,[edx+eax*sizeof STREAM]
-;					invoke DumpStream,edx,eax
-;				.endif
+				.if nCoffHeader
+					dec		nCoffHeader
+					mov		ebx,hMemFile
+					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
+					lea		ebx,[ebx+eax+sizeof COFFHEADER]
+					mov		eax,nCoffHeader
+					mov		edx,sizeof COFFSECTIONHEADER
+					mul		edx
+					lea		ebx,[ebx+eax]
+					invoke lstrcpyn,addr szSection,addr [ebx].COFFSECTIONHEADER.sName,9
+					invoke SendMessage,hStc,WM_SETTEXT,0,addr szSection
+				.endif
 			.elseif eax==IDC_BTNNEXT
-;				mov		eax,nCurrentStream
-;				inc		eax
-;				.if eax<nStreams
-;					inc		nCurrentStream
-;					invoke SetCurrentStream
-;					mov		eax,nCurrentStream
-;					mov		edx,offset stream
-;					lea		edx,[edx+eax*sizeof STREAM]
-;					invoke DumpStream,edx,eax
-;				.endif
+				mov		eax,nCoffHeader
+				inc		eax
+				.if eax<nCoffHeaders
+					inc		nCoffHeader
+					mov		ebx,hMemFile
+					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
+					lea		ebx,[ebx+eax+sizeof COFFHEADER]
+					mov		eax,nCoffHeader
+					mov		edx,sizeof COFFSECTIONHEADER
+					mul		edx
+					lea		ebx,[ebx+eax]
+					invoke lstrcpyn,addr szSection,addr [ebx].COFFSECTIONHEADER.sName,9
+					invoke SendMessage,hStc,WM_SETTEXT,0,addr szSection
+				.endif
 			.elseif eax==IDC_BTNDUMP
-;				.if nStreams
-;					invoke SaveStream,nCurrentStream
-;				.endif
+				.if nCoffHeaders
+					mov		ebx,hMemFile
+					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
+					lea		ebx,[ebx+eax+sizeof COFFHEADER]
+					mov		eax,nCoffHeader
+					mov		edx,sizeof COFFSECTIONHEADER
+					mul		edx
+					lea		ebx,[ebx+eax]
+					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+					invoke DumpSection,ebx,sizeof COFFSECTIONHEADER
+					mov		eax,[ebx].COFFSECTIONHEADER.SizeOfRawData
+					mov		ebx,[ebx].COFFSECTIONHEADER.PointerToRawData
+					add		ebx,hMemFile
+					invoke DumpSection,ebx,eax
+				.endif
+			.elseif eax==IDC_BTNDUMPSYMBOLS
+				.if nCoffHeaders
+					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+					mov		ebx,hMemFile
+					mov		eax,[ebx].COFFHEADER.NumberOfSymbols
+					mov		ebx,[ebx].COFFHEADER.PointerToSymbolTable
+					add		ebx,hMemFile
+					invoke DumpSymbols,ebx,eax
+				.endif
+			.elseif eax==IDC_BTNDUMPPROCS
+				.if nCoffHeaders
+					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+					mov		ebx,hMemFile
+					mov		eax,[ebx].COFFHEADER.NumberOfSymbols
+					mov		ebx,[ebx].COFFHEADER.PointerToSymbolTable
+					add		ebx,hMemFile
+					invoke DumpProcs,ebx,eax
+				.endif
 			.endif
 		.endif
 	.else
