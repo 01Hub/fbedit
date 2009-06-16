@@ -33,13 +33,19 @@ DlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hMemFile,eax
 		; Size of structures
 		invoke ReadTheFile,addr szFileName,hMemFile
+		mov		nCoffHeader,-1
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
-			.if eax==IDC_BTNDUMP
+			.if eax==IDC_BTNDUMPHEADER
+				inc		nCoffHeader
 				mov		ebx,hMemFile
+				movzx	eax,[ebx].COFFHEADER.NumberOfSections
+				.if eax==nCoffHeader
+					mov		nCoffHeader,0
+				.endif
 				movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
 				lea		ebx,[ebx+eax+sizeof COFFHEADER]
 				mov		eax,nCoffHeader
@@ -47,12 +53,18 @@ DlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mul		edx
 				lea		ebx,[ebx+eax]
 				invoke DumpSection,ebx,sizeof SECTIONHEADER
-				inc		nCoffHeader
+			.elseif eax==IDC_BTNDUMPSECTION
 				mov		ebx,hMemFile
-				movzx	eax,[ebx].COFFHEADER.NumberOfSections
-				.if eax==nCoffHeader
-					mov		nCoffHeader,0
-				.endif
+				movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
+				lea		ebx,[ebx+eax+sizeof COFFHEADER]
+				mov		eax,nCoffHeader
+				mov		edx,sizeof SECTIONHEADER
+				mul		edx
+				lea		ebx,[ebx+eax]
+				mov		eax,[ebx].SECTIONHEADER.SizeOfRawData
+				mov		edx,[ebx].SECTIONHEADER.PointerToRawData
+				lea		ebx,[ebx+edx]
+				invoke DumpSection,ebx,eax
 			.elseif eax==IDC_BTNCOFFHEADER
 				invoke ShowCoffHeader,hMemFile
 			.elseif eax==IDCANCEL
