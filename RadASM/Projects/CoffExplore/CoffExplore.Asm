@@ -47,82 +47,40 @@ CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke SetDlgItemText,hWin,IDC_EDTFILE,addr buffer
 					invoke CloseOBJ
-					; Allocate memory for file
-					invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-					mov		hMemFile,eax
-					invoke ReadTheFile,addr buffer,hMemFile
+					invoke ReadTheFile,addr buffer
 					.if !eax
-						invoke ShowCoffHeader,hMemFile
-						mov		ebx,hMemFile
-						movzx	eax,[ebx].COFFHEADER.NumberOfSections
-						mov		nCoffHeaders,eax
-						movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
-						lea		ebx,[ebx+eax+sizeof COFFHEADER]
-						invoke SendMessage,hStc,WM_SETTEXT,0,addr [ebx].COFFSECTIONHEADER.sName
+						invoke ShowCoffHeader
 						invoke ReadSectionHeaders
+						invoke SetSection
 					.endif
 				.endif
 			.elseif eax==IDC_BTNPREVIOUS
 				.if nCoffHeader
 					dec		nCoffHeader
-					mov		ebx,hMemFile
-					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
-					lea		ebx,[ebx+eax+sizeof COFFHEADER]
-					mov		eax,nCoffHeader
-					mov		edx,sizeof COFFSECTIONHEADER
-					mul		edx
-					lea		ebx,[ebx+eax]
-					invoke lstrcpyn,addr szSection,addr [ebx].COFFSECTIONHEADER.sName,9
-					invoke SendMessage,hStc,WM_SETTEXT,0,addr szSection
+					invoke SetSection
 				.endif
 			.elseif eax==IDC_BTNNEXT
 				mov		eax,nCoffHeader
 				inc		eax
 				.if eax<nCoffHeaders
 					inc		nCoffHeader
-					mov		ebx,hMemFile
-					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
-					lea		ebx,[ebx+eax+sizeof COFFHEADER]
-					mov		eax,nCoffHeader
-					mov		edx,sizeof COFFSECTIONHEADER
-					mul		edx
-					lea		ebx,[ebx+eax]
-					invoke lstrcpyn,addr szSection,addr [ebx].COFFSECTIONHEADER.sName,9
-					invoke SendMessage,hStc,WM_SETTEXT,0,addr szSection
+					invoke SetSection
 				.endif
-			.elseif eax==IDC_BTNDUMP
+			.elseif eax==IDC_BTNDUMPSECTION
 				.if nCoffHeaders
-					mov		ebx,hMemFile
-					movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
-					lea		ebx,[ebx+eax+sizeof COFFHEADER]
-					mov		eax,nCoffHeader
-					mov		edx,sizeof COFFSECTIONHEADER
-					mul		edx
-					lea		ebx,[ebx+eax]
-					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-					invoke DumpSection,ebx,sizeof COFFSECTIONHEADER
-					mov		eax,[ebx].COFFSECTIONHEADER.SizeOfRawData
-					mov		ebx,[ebx].COFFSECTIONHEADER.PointerToRawData
-					add		ebx,hMemFile
-					invoke DumpSection,ebx,eax
+					invoke DumpSection
 				.endif
 			.elseif eax==IDC_BTNDUMPSYMBOLS
 				.if nCoffHeaders
-					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-					mov		ebx,hMemFile
-					mov		eax,[ebx].COFFHEADER.NumberOfSymbols
-					mov		ebx,[ebx].COFFHEADER.PointerToSymbolTable
-					add		ebx,hMemFile
-					invoke DumpSymbols,ebx,eax
+					invoke DumpSymbols
 				.endif
 			.elseif eax==IDC_BTNDUMPPROCS
 				.if nCoffHeaders
-					invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-					mov		ebx,hMemFile
-					mov		eax,[ebx].COFFHEADER.NumberOfSymbols
-					mov		ebx,[ebx].COFFHEADER.PointerToSymbolTable
-					add		ebx,hMemFile
-					invoke DumpProcs,ebx,eax
+					invoke DumpProcs
+				.endif
+			.elseif eax==IDC_BTNDUMPGLOBALS
+				.if nCoffHeaders
+					invoke DumpGlobals
 				.endif
 			.endif
 		.endif

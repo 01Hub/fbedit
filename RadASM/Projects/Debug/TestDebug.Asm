@@ -3,11 +3,11 @@
 
 option casemap :none  ;case sensitive
 
-include windows.inc
-include kernel32.inc
-include user32.inc
-includelib kernel32.lib
-includelib user32.lib
+;include windows.inc
+;include kernel32.inc
+;include user32.inc
+;includelib kernel32.lib
+;includelib user32.lib
 include Src\TestMisc.asm
 include TestMisc.asm
 
@@ -20,12 +20,12 @@ MYSTRUCT ends
 
 szTest		db 'Test',0
 tid			dd   ?
-rect		RECT <>
+;rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
 valdd		DWORD 4
 valdw		WORD 2
 valdbabcdefgh		BYTE 1
-hInstance	HINSTANCE 8 dup(?)
+;hInstance	HINSTANCE 8 dup(?)
 
 .code
 
@@ -37,7 +37,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	eee:BYTE
 	LOCAL	s[256]:BYTE
 	LOCAL	fff:BYTE
-	LOCAL	rc:RECT
+	;LOCAL	rc:RECT
 
 	mov		aa,1
 	mov		bb,2
@@ -45,7 +45,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	mov		ddd,4
 	mov		eee,5
 	mov		fff,6
-	mov		rc.left,99
+;	mov		rc.left,99
 	mov		eax,ebp
 	lea		eax,aa
 	lea		ecx,bb
@@ -61,7 +61,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	lea		eax,aa
 	lea		ecx,bb
 	lea		edx,cc
-	invoke M4
+	invoke MyProc4
 	ret
 
 MyProc2 endp
@@ -82,15 +82,15 @@ MyProc3 proc uses esi,Param:DWORD
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-	invoke OutputDebugString,addr szTest
+;	invoke OutputDebugString,addr szTest
 	ret
 
 MyProc3 endp
 
 start:
-	mov		hInstance[0],1
-	mov		hInstance[4],2
-	mov		hInstance[8],3
+;	mov		hInstance[0],1
+;	mov		hInstance[4],2
+;	mov		hInstance[8],3
 	mov		eax,'ABCD'
 	mov		eax,tid
 	mov		tid,1234
@@ -118,9 +118,9 @@ start:
 	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3
-	invoke M4
+	invoke MyProc4
 	jmp		Ex
 Ex:
-	invoke ExitProcess,0
+	;invoke ExitProcess,0
 
 end start

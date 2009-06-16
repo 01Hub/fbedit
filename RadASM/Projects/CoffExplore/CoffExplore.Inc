@@ -22,19 +22,21 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
+;#########################################################################
+
 IDD_DIALOG1						equ 101
 IDC_EDT1						equ 1001
 
-;Child.dlg
 IDD_DLGCHILD					equ 1100
 IDC_EDTFILE						equ 1001
 IDC_BTNBROWSE					equ 1003
 IDC_BTNPREVIOUS					equ 1002
 IDC_BTNNEXT						equ 1004
 IDC_STCSECTION					equ 1005
-IDC_BTNDUMP						equ 1006
+IDC_BTNDUMPSECTION				equ 1006
 IDC_BTNDUMPSYMBOLS				equ 1007
 IDC_BTNDUMPPROCS				equ 1008
+IDC_BTNDUMPGLOBALS				equ 1009
 
 IMAGE_SYM_UNDEFINED				equ 0
 IMAGE_SYM_ABSOLUTE				equ -1
@@ -44,13 +46,13 @@ STATIC							equ 3
 FUNCTION						equ 101
 
 COFFHEADER struct
-	Machine					WORD ?			; 0
-	NumberOfSections		WORD ?			; 2
-	TimeDateStamp			DWORD ?			; 4
-	PointerToSymbolTable	DWORD ?			; 8
-	NumberOfSymbols			DWORD ?			; 12
-	SizeOfOptionalHeader	WORD ?			; 16
-	Characteristics			WORD ?			; 18
+	Machine					WORD ?
+	NumberOfSections		WORD ?
+	TimeDateStamp			DWORD ?
+	PointerToSymbolTable	DWORD ?
+	NumberOfSymbols			DWORD ?
+	SizeOfOptionalHeader	WORD ?
+	Characteristics			WORD ?
 COFFHEADER ends
 
 COFFSECTIONHEADER struct
@@ -133,6 +135,17 @@ COFFAUX5 struct
 	Unused					BYTE 3 dup(?)
 COFFAUX5 ends
 
+DBGPROC struct
+	szFile					BYTE MAX_PATH dup(?)
+	szName					BYTE 256 dup(?)
+	bfad					DWORD ?
+	bfln					DWORD ?
+	lfln					DWORD ?
+	lfad					DWORD ?
+	efln					DWORD ?
+	efad					DWORD ?
+DBGPROC ends
+
 .const
 
 szRichEditDLL			db 'riched20.dll',0
@@ -142,6 +155,7 @@ szOBJFilterString		db 'OBJ Files (*.obj)',0,'*.obj',0,0
 Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
 szNULL					db 0
 szCrLf					db 0Dh,0Ah,0
+
 szCoffHeader			db 'COFF Header:',0Dh,0Ah
 						db '------------------------------',0Dh,0Ah
 						db 'Machine              %04Xh',0Dh,0Ah
@@ -151,8 +165,23 @@ szCoffHeader			db 'COFF Header:',0Dh,0Ah
 						db 'NumberOfSymbols      %08Xh',0Dh,0Ah
 						db 'SizeOfOptionalHeader %04Xh',0Dh,0Ah
 						db 'Characteristics      %04Xh',0Dh,0Ah,0
+
+szSectionHeader			db 'Section Header:',0Dh,0Ah
+						db '------------------------------',0Dh,0Ah
+						db 'Name                 %s',0Dh,0Ah
+						db 'VirtualSize          %08Xh',0Dh,0Ah
+						db 'VirtualAddress       %08Xh',0Dh,0Ah
+						db 'SizeOfRawData        %08Xh',0Dh,0Ah
+						db 'PointerToRawData     %08Xh',0Dh,0Ah
+						db 'PointerToRelocations %08Xh',0Dh,0Ah
+						db 'PointerToLinenumbers %08Xh',0Dh,0Ah
+						db 'NumberOfRelocations  %04Xh',0Dh,0Ah
+						db 'NumberOfLinenumbers  %04Xh',0Dh,0Ah
+						db 'Characteristics      %08Xh',0Dh,0Ah,0Dh,0Ah,0
+
 szCoffSymbol			db 'Name:%s Value:%08Xh SectionNumber:%04Xh Type:%04Xh StorageClass:%02Xh NumberOfAuxSymbols:%02Xh',0Dh,0Ah,0
-szFileName				db 'CoffExplore.obj',0
+szCoffProc				db 'File:%s Name:%s bfad:%08Xh  bfln:%u efad:%08Xh  efln:%u',0Dh,0Ah,0
+szCoffGlobal			db 'Name:%s Address:%08Xh',0Dh,0Ah,0
 
 ;#########################################################################
 
