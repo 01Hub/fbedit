@@ -63,29 +63,38 @@ ParseMasmStruct endp
 
 DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hMemFile:HGLOBAL
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		; Allocate memory for files
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-		mov		hMemFile,eax
 		; Size of structures
-		invoke ReadTheFile,addr szStructSizeFileName,hMemFile
+		invoke ReadTheFile,addr szStructSizeFileName
+		mov		hMemFile,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 		mov		hMemStructSize,eax
 		invoke ParseStructSizeFile,hMemFile,hMemStructSize
+		; Free the file memory
+		invoke GlobalFree,hMemFile
+
 		; Size of types
-		invoke ReadTheFile,addr szTypeSizeFileName,hMemFile
+		invoke ReadTheFile,addr szTypeSizeFileName
+		mov		hMemFile,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 		mov		hMemTypeSize,eax
 		invoke ParseSizeFile,hMemFile,hMemTypeSize
+		; Free the file memory
+		invoke GlobalFree,hMemFile
+
 		; Size of constants
-		invoke ReadTheFile,addr szConstSizeFileName,hMemFile
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		invoke ReadTheFile,addr szConstSizeFileName
+		mov		hMemFile,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*1024
 		mov		hMemConstSize,eax
 		invoke ParseSizeFile,hMemFile,hMemConstSize
 		; Free the file memory
 		invoke GlobalFree,hMemFile
+
 		; Create font and set it to edit box
 		invoke CreateFontIndirect,addr Courier_New_9
 		mov		hEditFont,eax
@@ -107,6 +116,48 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				; Do the parsing
 				invoke ParseMasmStruct,hWin
+			.elseif eax==IDC_BTNSTRUCT
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szINCFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					invoke FromInc,addr buffer,addr szStruct,addr szEnds
+				.endif
+			.elseif eax==IDC_BTNUNION
+				;Zero out the ofn struct
+				invoke RtlZeroMemory,addr ofn,sizeof ofn
+				;Setup the ofn struct
+				mov		ofn.lStructSize,sizeof ofn
+				push	hWin
+				pop		ofn.hwndOwner
+				push	hInstance
+				pop		ofn.hInstance
+				mov		ofn.lpstrFilter,offset szINCFilterString
+				mov		buffer[0],0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.lpstrDefExt,NULL
+				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+				;Show the Open dialog
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					invoke FromInc,addr buffer,addr szUnion,addr szEnds
+				.endif
 			.elseif eax==IDCANCEL
 				; Exit
 				invoke SendMessage,hWin,WM_CLOSE,0,0

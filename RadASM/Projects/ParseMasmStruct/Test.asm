@@ -26,10 +26,10 @@ TST ends
 ;	aa		BYTE ?
 ;TST ends
 
-PrintDec sizeof TST
-PrintDec TST.a
-PrintDec TST.b
-PrintDec TST.tstsub
-PrintDec TST.tstsub.a
-PrintDec TST.tstsub.b
-PrintDec sizeof szOutput
+;PrintDec sizeof TST
+;PrintDec TST.a
+;PrintDec TST.b
+;PrintDec TST.tstsub
+;PrintDec TST.tstsub.a
+;PrintDec TST.tstsub.b
+;PrintDec sizeof szOutput

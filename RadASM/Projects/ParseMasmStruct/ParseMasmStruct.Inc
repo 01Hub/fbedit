@@ -5,12 +5,14 @@ include user32.inc
 include Comctl32.inc
 include shell32.inc
 include gdi32.inc
+include comdlg32.inc
 
 includelib kernel32.lib
 includelib user32.lib
 includelib Comctl32.lib
 includelib shell32.lib
 includelib gdi32.lib
+includelib comdlg32.lib
 
 ;#########################################################################
 ; VKim's Debug
@@ -23,6 +25,8 @@ includelib Debug.lib
 IDD_DIALOG1				equ 101
 IDC_EDT1				equ 1001
 IDC_CBO1				equ 1003
+IDC_BTNSTRUCT			equ 1004
+IDC_BTNUNION			equ 1005
 
 IDD_DLGRESULT			equ 2000
 IDC_EDTRESULT			equ 2001
@@ -61,6 +65,7 @@ szFmtDec				db '%u',0
 szStructSizeFileName	db 'StructSize.txt',0
 szTypeSizeFileName		db 'TypeSize.txt',0
 szConstSizeFileName		db 'ConstSize.txt',0
+szINCFilterString		db 'INC Files (*.inc)',0,'*.inc',0,0
 
 szStruct				db 'struct',0
 szUnion					db 'union',0

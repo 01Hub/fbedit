@@ -142,14 +142,27 @@ BinToDec proc lpszDec:DWORD,nVal:DWORD
 BinToDec endp
 
 ; File handling
-ReadTheFile proc lpFileName:DWORD,hMem:HGLOBAL
+ReadTheFile proc uses ebx,lpFileName:DWORD
+	LOCAL	hMem:HGLOBAL
 	LOCAL	hFile:HANDLE
 	LOCAL	BytesRead:DWORD
 
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-	mov		hFile,eax
-	invoke ReadFile,hFile,hMem,200*1024,addr BytesRead,NULL
-	invoke CloseHandle,hFile
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,NULL
+		mov		ebx,eax
+		inc		ebx
+		; Allocate memory for files
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,ebx
+		mov		hMem,eax
+		dec		ebx
+		invoke ReadFile,hFile,hMem,ebx,addr BytesRead,NULL
+		invoke CloseHandle,hFile
+		mov		eax,hMem
+	.else
+		xor		eax,eax
+	.endif
 	ret
 
 ReadTheFile endp
@@ -587,3 +600,137 @@ AlignIt:
 	retn
 
 ParseStruct endp
+
+FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
+	LOCAL	hMemInc:HGLOBAL
+	LOCAL	lentypestart:DWORD
+	LOCAL	lentypeend:DWORD
+	LOCAL	lpword1:DWORD
+	LOCAL	len1:DWORD
+	LOCAL	lpword2:DWORD
+	LOCAL	len2:DWORD
+	LOCAL	lpstart:DWORD
+	LOCAL	lpend:DWORD
+	LOCAL	nfound:DWORD
+
+	mov		nfound,0
+	invoke strlen,lpTypeStart
+	mov		lentypestart,eax
+	invoke strlen,lpTypeEnd
+	mov		lentypeend,eax
+	; Read the inc file
+	invoke ReadTheFile,lpFileName
+	mov		hMemInc,eax
+	mov		esi,hMemInc
+	invoke PreParse,esi
+  @@:
+	call	SkipWhiteSpace
+	call	GetWord
+	.if edx!=esi
+		mov		lpword1,edx
+		mov		eax,esi
+		sub		eax,edx
+		mov		len1,eax
+		call	GetWord
+		.if edx!=esi
+			mov		lpword2,edx
+			mov		eax,esi
+			sub		eax,edx
+			mov		len2,eax
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	.if eax
+		mov		edx,lpTypeStart
+		mov		ebx,lpword2
+		mov		edi,lentypestart
+		call	Compare
+		.if eax
+			mov		eax,lpword1
+			mov		lpstart,eax
+
+			inc		nfound
+			call	SkipToEol
+			call	SkipCrLf
+			.if byte ptr [esi]
+				jmp		@b
+			.endif
+
+		.else
+			call	SkipToEol
+			call	SkipCrLf
+			.if byte ptr [esi]
+				jmp		@b
+			.endif
+		.endif
+	.else
+		call	SkipToEol
+		call	SkipCrLf
+		.if byte ptr [esi]
+			jmp		@b
+		.endif
+	.endif
+	; Free the file memory
+	invoke GlobalFree,hMemInc
+PrintDec nfound
+	ret
+
+Compare:
+	.if edi==len2
+		xor		ecx,ecx
+		.while ecx<edi
+			mov		al,[ebx+ecx]
+			.if al>='A' && al<='Z'
+				or		al,20h
+			.endif
+			.break .if al!=[edx+ecx]
+			inc		ecx
+		.endw
+		xor		eax,eax
+		.if ecx==edi
+			inc		eax
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	retn
+
+GetWord:
+	call	SkipWhiteSpace
+	mov		edx,esi
+GetWord1:
+	mov		al,[esi]
+	.if (al>='0' && al<='9') || (al>='A' && al<='Z') || (al>='a' && al<='z')
+		inc		esi
+		jmp		GetWord1
+	.endif
+	retn
+
+SkipWhiteSpace:
+	.while byte ptr [esi]==VK_SPACE
+		inc		esi
+	.endw
+	retn
+
+SkipCrLf:
+	call	SkipWhiteSpace
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+		.if byte ptr [esi]==0Ah
+			inc		esi
+			jmp		SkipCrLf
+		.endif
+	.endif
+	retn
+
+SkipToEol:
+	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+		inc		esi
+	.endw
+	retn
+
+FromInc endp
