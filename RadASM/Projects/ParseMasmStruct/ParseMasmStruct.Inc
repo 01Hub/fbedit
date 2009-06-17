@@ -58,7 +58,6 @@ szComma					db ',',0
 szDot					db '.',0
 szLPA					db '[',0
 szRPA					db ']',0
-szCrLf					db 0Dh,0Ah,0
 szFmtDec				db '%u',0
 
 ; Files to load
@@ -104,8 +103,8 @@ predatatype				PREDATATYPE 14 dup(<szBYTE,szBYTE,1>,
 										   <0,0>)
 
 ; Combobox items
-ComboItems				COMBOITEM 5 dup(<'Simple',szTestStruct1>,
-										 <'Struct datatypes',szTestStruct2>,
+ComboItems				COMBOITEM 5 dup(<'RECT (Simple)',szTestStruct1>,
+										 <'ACCEL (WORD Alignment)',szTestStruct2>,
 										 <'Sub structures',szTestStruct3>,
 										 <'Sub unions',szTestStruct4>,
 										 <'Alignment',szTestStruct5>,
@@ -119,12 +118,11 @@ szTestStruct1			db 'RECT struct',0Dh,0Ah
 						db '	bottom		DWORD ?',0Dh,0Ah
 						db 'RECT ends',0Dh,0Ah,0
 
-szTestStruct2			db 'TEST struct',0Dh,0Ah
-						db '	rect		RECT <>',0Dh,0Ah
-						db '	nmhdr		NMHDR <>',0Dh,0Ah
-						db '	var1		DWORD ?',0Dh,0Ah
-						db '	var2		DWORD ?',0Dh,0Ah
-						db 'TEST ends',0Dh,0Ah,0
+szTestStruct2			db 'ACCEL struct WORD',0Dh,0Ah
+						db '	fVirt		BYTE ?',0Dh,0Ah
+						db '	key		WORD ?',0Dh,0Ah
+						db '	cmd		WORD ?',0Dh,0Ah
+						db 'ACCEL ends',0Dh,0Ah,0
 
 szTestStruct3			db 'TEST struct',0Dh,0Ah
 						db '	rect		RECT <>',0Dh,0Ah
@@ -162,16 +160,21 @@ szTestStruct5			db 'TST struct DWORD',0Dh,0Ah
 						db '	a		DWORD ?',0Dh,0Ah
 						db '	b		BYTE ?',0Dh,0Ah
 						db '	struct TSTSUB',0Dh,0Ah
-						db '		a		BYTE ?',0Dh,0Ah
-						db '		b		DWORD ?',0Dh,0Ah
+						db '		a		DWORD ?',0Dh,0Ah
+						db '		b		BYTE ?',0Dh,0Ah
 						db '	ends',0Dh,0Ah
 						db 'TST ends',0Dh,0Ah,0
 
 ;#########################################################################
+.data
+
+szCrLf					db 0Dh,0Ah,0
 
 .data?
 
 hInstance				HINSTANCE ?
+hWnd					HWND ?
+hEdt					HWND ?
 hMemStructSize			HGLOBAL ?
 hMemTypeSize			HGLOBAL ?
 hMemConstSize			HGLOBAL ?
@@ -180,5 +183,7 @@ nErr					DWORD ?
 nSize					DWORD ?
 szTemp					BYTE 256 dup(?)
 szOutput				BYTE 16384 dup(?)
+szInput					BYTE 16384 dup(?)
+fShowResult				DWORD ?
 
 ;#########################################################################

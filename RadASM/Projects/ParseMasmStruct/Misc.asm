@@ -329,6 +329,61 @@ FindTypeSize proc uses esi,lpszType:DWORD
 
 FindTypeSize endp
 
+FindConstSize proc uses ebx esi edi,lpszConst:DWORD
+
+	; Check constants
+	mov		esi,hMemConstSize
+	.while [esi].STRUCTSIZE.szName
+		invoke strcmp,lpszConst,addr [esi].STRUCTSIZE.szName
+		.if !eax
+			; Get size
+			mov		eax,[esi].STRUCTSIZE.nSize
+			jmp		Ex
+		.endif
+		; Point to next STRUCTSIZE
+		; Name lenght
+		invoke strlen,addr [esi].STRUCTSIZE.szName
+		lea		esi,[esi+eax+sizeof STRUCTSIZE]
+	.endw
+	; Check types
+	mov		esi,hMemTypeSize
+	.while [esi].STRUCTSIZE.szName
+		invoke strcmp,lpszConst,addr [esi].STRUCTSIZE.szName
+		.if !eax
+			; Get size
+			mov		eax,[esi].STRUCTSIZE.nSize
+			jmp		Ex
+		.endif
+		; Point to next STRUCTSIZE
+		; Name lenght
+		invoke strlen,addr [esi].STRUCTSIZE.szName
+		lea		esi,[esi+eax+sizeof STRUCTSIZE]
+	.endw
+	; Check structures
+	mov		esi,hMemStructSize
+	.while [esi].STRUCTSIZE.szName
+		invoke strcmp,lpszConst,addr [esi].STRUCTSIZE.szName
+		.if !eax
+			; Get size
+			mov		eax,[esi].STRUCTSIZE.nSize
+			jmp		Ex
+		.endif
+		; Point to next STRUCTSIZE
+		; Name lenght
+		invoke strlen,addr [esi].STRUCTSIZE.szName
+		push	eax
+		; Alignment lenght
+		invoke strlen,addr [esi+eax+1].STRUCTSIZE.szName
+		pop		edx
+		lea		eax,[edx+eax+1]
+		lea		esi,[esi+eax+sizeof STRUCTSIZE]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindConstSize endp
+
 ; Pre parse. Destroys comments and replace tab with space
 PreParse proc uses esi,lpszStruct:DWORD
 
@@ -354,17 +409,16 @@ PreParse endp
 
 ; Parse the structure. esi is a pointer to the structure
 ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWORD
-	LOCAL	szitem1[64]:BYTE
-	LOCAL	szitem2[64]:BYTE
-	LOCAL	szitem3[64]:BYTE
-	LOCAL	szitem4[64]:BYTE
-	LOCAL	szout[512]:BYTE
+	LOCAL	szitem1[128]:BYTE
+	LOCAL	szitem2[128]:BYTE
+	LOCAL	szitem3[128]:BYTE
+	LOCAL	szitem4[128]:BYTE
+	LOCAL	szout[2048]:BYTE
 	LOCAL	nsize:DWORD
 
 	mov		nsize,0
 	mov		szout,0
   Nxt:
-	call	SkipCrLf
 	lea		ebx,szitem1
 	call	GetItem
 	lea		ebx,szitem2
@@ -374,6 +428,7 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 	lea		ebx,szitem4
 	call	GetItem
 	call	SkipToEol
+	call	SkipCrLf
 	invoke strcmpi,addr szitem2,addr szUnion
 	.if !eax
 		; Main Union
@@ -393,9 +448,8 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 		.endif
 		; Size
 		invoke strcat,lpOut,addr szComma
-		mov		eax,nsize
+		mov		ebx,nAlign
 		call	AlignIt
-		mov		nsize,eax
 		invoke BinToDec,addr szTemp,nsize
 		invoke strcat,lpOut,addr szTemp
 		; Itsms
@@ -420,7 +474,7 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 			.endif
 			; Size
 			invoke strcat,lpOut,addr szComma
-			mov		eax,nAlign
+			mov		ebx,nAlign
 			call	AlignIt
 			invoke BinToDec,addr szTemp,nsize
 			invoke strcat,lpOut,addr szTemp
@@ -432,17 +486,15 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 			invoke strcmpi,addr szitem1,addr szUnion
 			.if !eax
 				; Sub union. Sub unions can not have an alignment but will inherit parent alignment
-				mov		edx,lpSize
-				mov		eax,[edx]
-				mov		nsize,eax
 				.if !szitem2
 					; Anonymus
-					invoke ParseStruct,NULL,addr nsize,addr szout,1,0
+					invoke ParseStruct,NULL,addr nsize,addr szout,1,nAlign
 				.else
 					; Named
-					invoke ParseStruct,addr szitem2,addr nsize,addr szout,1,0
+					invoke ParseStruct,addr szitem2,addr nsize,addr szout,1,nAlign
 				.endif
 				invoke strcat,lpOut,addr szout
+				mov		szout,0
 				jmp		Nxt
 			.else
 				invoke strcmpi,addr szitem1,addr szStruct
@@ -456,6 +508,7 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 						invoke ParseStruct,addr szitem2,addr nsize,addr szout,0,nAlign
 					.endif
 					invoke strcat,lpOut,addr szout
+					mov		szout,0
 					jmp		Nxt
 				.else
 					invoke strcmpi,addr szitem1,addr szEnds
@@ -463,13 +516,11 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 						; Anonymus ends
 						.if nUnion
 							mov		eax,nUnion
-							mov		edx,lpSize
-							add		[edx],eax
-						.else
-							mov		eax,nsize
-							mov		edx,lpSize
-							add		[edx],eax
+							add		nsize,eax
 						.endif
+						mov		eax,nsize
+						mov		edx,lpSize
+						add		[edx],eax
 						mov		eax,esi
 						jmp		Ex
 					.else
@@ -478,13 +529,11 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 							; Named ends
 							.if nUnion
 								mov		eax,nUnion
-								mov		edx,lpSize
-								add		[edx],eax
-							.else
-								mov		eax,nsize
-								mov		edx,lpSize
-								add		[edx],eax
+								add		nsize,eax
 							.endif
+							mov		eax,nsize
+							mov		edx,lpSize
+							add		[edx],eax
 							mov		eax,esi
 							jmp		Ex
 						.elseif szitem1 && szitem2
@@ -503,7 +552,12 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 								mov		eax,dword ptr szitem4
 								and		eax,5F5F5Fh
 								.if eax=='PUD'
-									invoke DecToBin,addr szitem3
+									mov		al,szitem3
+									.if al>='0' && al<='9'
+										invoke DecToBin,addr szitem3
+									.else
+										invoke FindConstSize,addr szitem3
+									.endif
 									.if eax
 										push	eax
 										invoke BinToDec,addr szTemp,eax
@@ -518,21 +572,24 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 								invoke strcat,lpOut,addr szColon
 								invoke strcat,lpOut,addr szitem2
 								invoke strcat,lpOut,addr szComma
-								call	AlignIt
-								mov		eax,nsize
-								mov		edx,lpSize
-								add		eax,[edx]
+								.if nUnion
+									mov		edx,lpSize
+									mov		eax,[edx]
+								.else
+									call	AlignIt
+									mov		eax,nsize
+									mov		edx,lpSize
+									add		eax,[edx]
+								.endif
 								invoke BinToDec,addr szTemp,eax
 								invoke strcat,lpOut,addr szTemp
-								add		nsize,ebx
-;								.if nUnion
-;									.if eax>nUnion
-;										mov		nUnion,eax
-;									.endif
-;								.else
-;									mov		edx,lpSize
-;									add		[edx],eax
-;								.endif
+								.if nUnion
+									.if ebx>nUnion
+										mov		nUnion,ebx
+									.endif
+								.else
+									add		nsize,ebx
+								.endif
 								jmp		Nxt
 							.endif
 						.endif
@@ -545,6 +602,31 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 	xor		eax,eax
   Ex:
 	ret
+
+AlignIt:
+	mov		ecx,nAlign
+	.if ecx==4
+		; DWord align
+		.if ebx==4
+			test	nsize,3
+			.if !ZERO?
+				shr		nsize,2
+				inc		nsize
+				shl		nsize,2
+			.endif
+		.endif
+	.elseif ecx==2
+		; Word align
+		.if ebx==2 || ebx==4
+			test	nsize,1
+			.if !ZERO?
+				shr		nsize,1
+				inc		nsize
+				shl		nsize,1
+			.endif
+		.endif
+	.endif
+	retn
 
 SkipWhiteSpace:
 	.while byte ptr [esi]==VK_SPACE
@@ -582,27 +664,67 @@ GetItem:
 	pop		eax
 	retn
 
-AlignIt:
-	.if nAlign
-		mov		ecx,nAlign
-		.if  !(ecx & 3) && !(eax & 3) && (nsize && 3)
-			; DWord align
-			shr		nsize,2
-			inc		nsize
-			shl		nsize,2
-		.elseif !(ecx & 1) && !(eax & 1) && (nsize && 3)
-			; Word align
-			shr		nsize,1
-			inc		nsize
-			shl		nsize,1
+ParseStruct endp
+
+ResultProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		; Set edit box font
+		invoke SendDlgItemMessage,hWin,IDC_EDTRESULT,WM_SETFONT,hEditFont,FALSE
+		; Set edit box text
+		mov		eax,offset szOutput
+		.if nErr
+			mov		eax,offset szError
+		.endif
+		invoke SetDlgItemText,hWin,IDC_EDTRESULT,eax
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDCANCEL
+				; Exit
+				invoke SendMessage,hWin,WM_CLOSE,0,0
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		; End the dialog
+		invoke EndDialog,hWin,0
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ResultProc endp
+
+ParseMasmStruct proc uses ebx esi edi
+	LOCAL	hWin:HWND
+
+	mov		hWin,0
+	; Get the struct text
+	invoke GetWindowText,hEdt,addr szInput,sizeof szInput
+	.if eax
+		mov		nErr,0
+		mov		szOutput,0
+		mov		esi,offset szInput
+		invoke PreParse,esi
+		invoke ParseStruct,NULL,addr nSize,addr szOutput,0,1
+		.if fShowResult
+			; Show result
+			invoke DialogBoxParam,hInstance,IDD_DLGRESULT,NULL,addr ResultProc,NULL
+			mov		hWin,eax
 		.endif
 	.endif
-	retn
+	ret
 
-ParseStruct endp
+ParseMasmStruct endp
 
 FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 	LOCAL	hMemInc:HGLOBAL
+	LOCAL	hMemTxt:HGLOBAL
 	LOCAL	lentypestart:DWORD
 	LOCAL	lentypeend:DWORD
 	LOCAL	lpword1:DWORD
@@ -610,10 +732,12 @@ FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 	LOCAL	lpword2:DWORD
 	LOCAL	len2:DWORD
 	LOCAL	lpstart:DWORD
+	LOCAL	lenstart:DWORD
 	LOCAL	lpend:DWORD
 	LOCAL	nfound:DWORD
 
 	mov		nfound,0
+	mov		fShowResult,FALSE
 	invoke strlen,lpTypeStart
 	mov		lentypestart,eax
 	invoke strlen,lpTypeEnd
@@ -621,9 +745,47 @@ FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 	; Read the inc file
 	invoke ReadTheFile,lpFileName
 	mov		hMemInc,eax
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*1024
+	mov		hMemTxt,eax
 	mov		esi,hMemInc
 	invoke PreParse,esi
   @@:
+	call	FindStart
+	.if eax
+		call	FindEnd
+		.if eax
+			mov		eax,lpend
+			sub		eax,lpstart
+			inc		eax
+			invoke lstrcpyn,addr szInput,lpstart,eax
+			invoke SetWindowText,hEdt,addr szInput
+			mov		szCrLf,0
+			invoke ParseMasmStruct
+			mov		szCrLf,0Dh
+			.if !nErr
+				invoke strcat,addr szOutput,addr szCrLf
+				invoke strcat,hMemTxt,addr szOutput
+				inc		nfound
+				.if byte ptr [esi]
+					jmp		@b
+				.endif
+			.else
+				; Error
+				invoke MessageBox,hWnd,addr szError,addr szError,MB_OK
+			.endif
+		.else
+			; Error
+			invoke MessageBox,hWnd,addr szError,addr szError,MB_OK
+		.endif
+	.endif
+	invoke SetWindowText,hEdt,hMemTxt
+	; Free the inc memory
+	invoke GlobalFree,hMemInc
+	; Free the txt memory
+	invoke GlobalFree,hMemTxt
+	ret
+
+FindEnd:
 	call	SkipWhiteSpace
 	call	GetWord
 	.if edx!=esi
@@ -637,50 +799,129 @@ FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 			mov		eax,esi
 			sub		eax,edx
 			mov		len2,eax
-			mov		eax,TRUE
-		.else
-			xor		eax,eax
-		.endif
-	.else
-		xor		eax,eax
-	.endif
-	.if eax
-		mov		edx,lpTypeStart
-		mov		ebx,lpword2
-		mov		edi,lentypestart
-		call	Compare
-		.if eax
-			mov		eax,lpword1
-			mov		lpstart,eax
-
-			inc		nfound
-			call	SkipToEol
-			call	SkipCrLf
-			.if byte ptr [esi]
-				jmp		@b
+			mov		edx,lpTypeEnd
+			mov		edi,lentypeend
+			mov		ebx,lpword2
+			mov		eax,len2
+			call	Compare
+			.if eax
+				mov		edx,lpstart
+				mov		edi,lenstart
+				mov		ebx,lpword1
+				mov		eax,len1
+				call	CompareCase
+				.if eax
+					; End found
+					call	SkipToEol
+					call	SkipCrLf
+					mov		eax,esi
+					mov		lpend,eax
+					mov		eax,TRUE
+					retn
+				.else
+					call	SkipToEol
+					call	SkipCrLf
+					.if byte ptr [esi]
+						jmp		FindEnd
+					.endif
+				.endif
+			.else
+				call	SkipToEol
+				call	SkipCrLf
+				.if byte ptr [esi]
+					jmp		FindEnd
+				.endif
 			.endif
-
 		.else
 			call	SkipToEol
 			call	SkipCrLf
 			.if byte ptr [esi]
-				jmp		@b
+				jmp		FindEnd
 			.endif
 		.endif
 	.else
 		call	SkipToEol
 		call	SkipCrLf
 		.if byte ptr [esi]
-			jmp		@b
+			jmp		FindEnd
 		.endif
 	.endif
-	; Free the file memory
-	invoke GlobalFree,hMemInc
-PrintDec nfound
-	ret
+	; End not found
+	xor		eax,eax
+	retn
+
+FindStart:
+	call	SkipWhiteSpace
+	call	GetWord
+	.if edx!=esi
+		mov		lpword1,edx
+		mov		eax,esi
+		sub		eax,edx
+		mov		len1,eax
+		call	GetWord
+		.if edx!=esi
+			mov		lpword2,edx
+			mov		eax,esi
+			sub		eax,edx
+			mov		len2,eax
+			mov		edx,lpTypeStart
+			mov		ebx,lpword2
+			mov		edi,lentypestart
+			call	Compare
+			.if eax
+				; Start found
+				mov		eax,lpword1
+				mov		lpstart,eax
+				mov		eax,len1
+				mov		lenstart,eax
+				call	SkipToEol
+				call	SkipCrLf
+				mov		eax,TRUE
+				retn
+			.else
+				call	SkipToEol
+				call	SkipCrLf
+				.if byte ptr [esi]
+					jmp		FindStart
+				.endif
+			.endif
+		.else
+			call	SkipToEol
+			call	SkipCrLf
+			.if byte ptr [esi]
+				jmp		FindStart
+			.endif
+		.endif
+	.else
+		call	SkipToEol
+		call	SkipCrLf
+		.if byte ptr [esi]
+			jmp		FindStart
+		.endif
+	.endif
+	; Start not found
+	xor		eax,eax
+	retn
+
+CompareCase:
+	.if edi==eax
+		xor		ecx,ecx
+		.while ecx<edi
+			mov		al,[ebx+ecx]
+			.break .if al!=[edx+ecx]
+			inc		ecx
+		.endw
+		xor		eax,eax
+		.if ecx==edi
+			inc		eax
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	retn
 
 Compare:
-	.if edi==len2
+	.if edi==eax
 		xor		ecx,ecx
 		.while ecx<edi
 			mov		al,[ebx+ecx]

@@ -9,58 +9,6 @@ include Misc.asm
 
 ;########################################################################
 
-ResultProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-
-	mov		eax,uMsg
-	.if eax==WM_INITDIALOG
-		; Set edit box font
-		invoke SendDlgItemMessage,hWin,IDC_EDTRESULT,WM_SETFONT,hEditFont,FALSE
-		; Set edit box text
-		mov		eax,offset szOutput
-		.if nErr
-			mov		eax,offset szError
-		.endif
-		invoke SetDlgItemText,hWin,IDC_EDTRESULT,eax
-	.elseif eax==WM_COMMAND
-		mov		edx,wParam
-		movzx	eax,dx
-		shr		edx,16
-		.if edx==BN_CLICKED
-			.if eax==IDCANCEL
-				; Exit
-				invoke SendMessage,hWin,WM_CLOSE,0,0
-			.endif
-		.endif
-	.elseif eax==WM_CLOSE
-		; End the dialog
-		invoke EndDialog,hWin,0
-	.else
-		mov		eax,FALSE
-		ret
-	.endif
-	mov		eax,TRUE
-	ret
-
-ResultProc endp
-
-ParseMasmStruct proc uses ebx esi edi,hWin:HWND
-	LOCAL	szstruct[1024]:BYTE
-
-	; Get the struct text
-	invoke GetDlgItemText,hWin,IDC_EDT1,addr szstruct,sizeof szstruct
-	.if eax
-		mov		nErr,0
-		mov		szOutput,0
-		lea		esi,szstruct
-		invoke PreParse,esi
-		invoke ParseStruct,NULL,addr nSize,addr szOutput,0,1
-		; Show result
-		invoke DialogBoxParam,hInstance,IDD_DLGRESULT,NULL,addr ResultProc,NULL
-	.endif
-	ret
-
-ParseMasmStruct endp
-
 DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hMemFile:HGLOBAL
 	LOCAL	ofn:OPENFILENAME
@@ -68,6 +16,10 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hWnd,eax
+		invoke GetDlgItem,hWin,IDC_EDT1
+		mov		hEdt,eax
 		; Size of structures
 		invoke ReadTheFile,addr szStructSizeFileName
 		mov		hMemFile,eax
@@ -115,7 +67,8 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				; Do the parsing
-				invoke ParseMasmStruct,hWin
+				mov		fShowResult,TRUE
+				invoke ParseMasmStruct
 			.elseif eax==IDC_BTNSTRUCT
 				;Zero out the ofn struct
 				invoke RtlZeroMemory,addr ofn,sizeof ofn
