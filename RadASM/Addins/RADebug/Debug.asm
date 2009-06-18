@@ -555,6 +555,10 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
+		invoke DbgHelpInit
+		.if eax
+			invoke DbgHelp,dbg.pinfo.hProcess,addr szExeName
+		.endif
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfo
 			invoke PutString,addr szExeName
@@ -735,6 +739,7 @@ Debug proc uses ebx,lpFileName:DWORD
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
+		invoke DbgHelpExit,dbg.pinfo.hProcess
 		; Close debug handles
 		invoke CloseHandle,dbg.hdbgfile
 		invoke CloseHandle,dbg.hdbghand

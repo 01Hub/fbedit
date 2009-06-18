@@ -3,11 +3,11 @@
 
 option casemap :none  ;case sensitive
 
-;include windows.inc
-;include kernel32.inc
-;include user32.inc
-;includelib kernel32.lib
-;includelib user32.lib
+include windows.inc
+include kernel32.inc
+include user32.inc
+includelib kernel32.lib
+includelib user32.lib
 include Src\TestMisc.asm
 include TestMisc.asm
 
@@ -37,8 +37,11 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	eee:BYTE
 	LOCAL	s[256]:BYTE
 	LOCAL	fff:BYTE
-	;LOCAL	rc:RECT
+	LOCAL	rc:RECT
+	LOCAL	ggg:WORD
 
+	mov		rc.left,123
+	mov		ggg,999
 	mov		aa,1
 	mov		bb,2
 	mov		cc,3
@@ -121,6 +124,6 @@ start:
 	invoke MyProc4
 	jmp		Ex
 Ex:
-	;invoke ExitProcess,0
+	invoke ExitProcess,0
 
 end start

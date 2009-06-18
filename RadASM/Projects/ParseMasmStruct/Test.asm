@@ -25,8 +25,8 @@ TST ends
 ;	aa		BYTE ?
 ;TST ends
 
-PrintDec sizeof TST
-PrintDec TST.TSTSUB.a
-PrintDec TST.TSTSUB.b
+;PrintDec sizeof TST
+;PrintDec TST.TSTSUB.a
+;PrintDec TST.TSTSUB.b
 ;PrintDec TST.bb
 ;PrintDec TST.cc

@@ -384,6 +384,169 @@ FindConstSize proc uses ebx esi edi,lpszConst:DWORD
 
 FindConstSize endp
 
+;DestroyCommentBlock proc uses esi,lpszStruct:DWORD
+;	LOCAL	szitem[256]:BYTE
+;
+;  @@:
+;	lea		ebx,szitem
+;	call	GetItem
+;	invoke strcmp,addr szitem,addr szComment
+;	.if !eax
+;		push	esi
+;		call	SkipWhiteSpace
+;		mov		al,[esi]
+;		mov		byte ptr [esi],' '
+;		.while al!=byte ptr [esi]
+;			.if byte ptr [esi]!=0Dh && byte ptr [esi]!=0Ah
+;				mov		byte ptr [esi],' '
+;			.endif
+;			inc		esi
+;		.endw
+;		call	DestroyToEol
+;		pop		eax
+;		push	esi
+;		mov		esi,eax
+;		call	DestroyToEol
+;		pop		esi
+;	.endif
+;	call	SkipToEol
+;	call	SkipCrLf
+;	.if byte ptr [esi]
+;		jmp		@b
+;	.endif
+;	ret
+;
+;SkipWhiteSpace:
+;	.while byte ptr [esi]==VK_SPACE
+;		inc		esi
+;	.endw
+;	retn
+;
+;SkipCrLf:
+;	call	SkipWhiteSpace
+;	.if byte ptr [esi]==VK_RETURN
+;		inc		esi
+;		.if byte ptr [esi]==0Ah
+;			inc		esi
+;			jmp		SkipCrLf
+;		.endif
+;	.endif
+;	retn
+;
+;SkipToEol:
+;	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+;		inc		esi
+;	.endw
+;	retn
+;
+;GetItem:
+;	call	SkipWhiteSpace
+;	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+;		mov		al,[esi]
+;		mov		[ebx],al
+;		inc		esi
+;		inc		ebx
+;	.endw
+;	mov		byte ptr [ebx],0
+;	retn
+;
+;DestroyToEol:
+;	.while byte ptr [esi] && byte ptr [esi]!=0Dh
+;		mov		byte ptr [esi],' '
+;		inc		esi
+;	.endw
+;	retn
+;
+;DestroyCommentBlock endp
+;
+DestroyWords proc uses esi edi,lpszStruct:DWORD
+	LOCAL	szitem1[256]:BYTE
+	LOCAL	szitem2[256]:BYTE
+	LOCAL	lpline:DWORD
+
+	mov		esi,lpszStruct
+  @@:
+	mov		lpline,esi
+	lea		ebx,szitem1
+	call	GetItem
+	lea		ebx,szitem2
+	call	GetItem
+	lea		ebx,szitem1
+	mov		edi,offset szFirstWord
+	call	TestWords
+	.if !eax
+		lea		ebx,szitem2
+		mov		edi,offset szSecondWord
+		call	TestWords
+	.endif
+	.if eax
+		mov		esi,lpline
+		call	DestroyToEol
+	.endif
+	call	SkipToEol
+	call	SkipCrLf
+	.if byte ptr [esi]
+		jmp		@b
+	.endif
+	ret
+
+TestWords:
+	.while byte ptr [edi]
+		invoke strcmpi,ebx,edi
+		.if eax
+			invoke strlen,edi
+			lea		edi,[edi+eax+1]
+		.else
+			inc		eax
+			retn
+		.endif
+	.endw
+	xor		eax,eax
+	retn
+
+SkipWhiteSpace:
+	.while byte ptr [esi]==VK_SPACE
+		inc		esi
+	.endw
+	retn
+
+SkipCrLf:
+	call	SkipWhiteSpace
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+		.if byte ptr [esi]==0Ah
+			inc		esi
+			jmp		SkipCrLf
+		.endif
+	.endif
+	retn
+
+SkipToEol:
+	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+		inc		esi
+	.endw
+	retn
+
+GetItem:
+	call	SkipWhiteSpace
+	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+		mov		al,[esi]
+		mov		[ebx],al
+		inc		esi
+		inc		ebx
+	.endw
+	mov		byte ptr [ebx],0
+	retn
+
+DestroyToEol:
+	.while byte ptr [esi] && byte ptr [esi]!=0Dh
+		mov		byte ptr [esi],' '
+		inc		esi
+	.endw
+	retn
+
+DestroyWords endp
+
 ; Pre parse. Destroys comments and replace tab with space
 PreParse proc uses esi,lpszStruct:DWORD
 
@@ -396,6 +559,8 @@ PreParse proc uses esi,lpszStruct:DWORD
 		.endif
 		inc		esi
 	.endw
+;	invoke DestroyCommentBlock,lpszStruct
+	invoke DestroyWords,lpszStruct
 	ret
 
 DestroyToEol:
@@ -539,6 +704,14 @@ ParseStruct proc lpszName:DWORD,lpSize:DWORD,lpOut:DWORD,nUnion:DWORD,nAlign:DWO
 						.elseif szitem1 && szitem2
 							; Item
 							invoke FindTypeSize,addr szitem2
+							.if !eax
+								invoke FindTypeSize,addr szitem1
+								.if eax
+									invoke strcpy,addr szitem2,addr szitem1
+									mov		szitem1,0
+									mov		eax,TRUE
+								.endif
+							.endif
 							.if eax
 								mov		ebx,eax
 								invoke strcat,lpOut,addr szComma
@@ -652,7 +825,6 @@ SkipToEol:
 	retn
 
 GetItem:
-	push	ebx
 	call	SkipWhiteSpace
 	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
 		mov		al,[esi]
@@ -661,7 +833,6 @@ GetItem:
 		inc		ebx
 	.endw
 	mov		byte ptr [ebx],0
-	pop		eax
 	retn
 
 ParseStruct endp
@@ -749,6 +920,8 @@ FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 	mov		hMemTxt,eax
 	mov		esi,hMemInc
 	invoke PreParse,esi
+;	invoke SetWindowText,hEdt,esi
+;	ret
   @@:
 	call	FindStart
 	.if eax
@@ -783,6 +956,7 @@ FromInc proc uses ebx esi edi,lpFileName:DWORD,lpTypeStart:DWORD,lpTypeEnd:DWORD
 	invoke GlobalFree,hMemInc
 	; Free the txt memory
 	invoke GlobalFree,hMemTxt
+PrintDec nfound
 	ret
 
 FindEnd:

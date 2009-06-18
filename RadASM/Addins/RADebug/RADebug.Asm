@@ -594,7 +594,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							push	1
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpOutputSelect
-							invoke DbgHelp,0,addr szExeName
 							.if dbg.inxline
 								.if fOptions & 8
 									; Show register window

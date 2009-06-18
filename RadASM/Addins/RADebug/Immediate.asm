@@ -2,6 +2,7 @@
 
 szImmDump						db 'DUMP',0
 szImmVars						db 'VARS',0
+szImmLocalCmnd					db 'LOCAL',0
 szImmLocal						db 0Dh,'LOCAL: ',0
 szImmNotFound					db 'Variable not found.',0
 szImmUnknown					db 'Unknown command.',0
@@ -62,6 +63,11 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			add		esi,16
 		.endw
 		invoke SetBreakPointsAll
+		jmp		Ex
+	.endif
+	invoke lstrcmpi,addr buffer,addr szImmLocalCmnd
+	.if !eax
+		invoke DbgHelpGetLocals,dbg.pinfo.hProcess
 		jmp		Ex
 	.endif
 	invoke lstrcmpi,addr buffer,addr szImmVars

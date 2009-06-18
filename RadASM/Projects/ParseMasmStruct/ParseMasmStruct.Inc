@@ -69,6 +69,21 @@ szINCFilterString		db 'INC Files (*.inc)',0,'*.inc',0,0
 szStruct				db 'struct',0
 szUnion					db 'union',0
 szEnds					db 'ends',0
+szComment				db 'comment',0
+
+szFirstWord				db 'IFNDEF',0,
+						   'IFDEF',0,
+						   'ELSE',0,
+						   'ENDIF',0,
+						   'echo',0,
+						   'include',0,
+						   'includelib',0,
+						   'externdef',0,0
+
+szSecondWord			db 'PROTO',0,
+						   'equ',0,
+						   'typedef',0,0
+
 szError					db 'Error',0
 
 ; Predefined datatypes
@@ -179,11 +194,11 @@ hMemStructSize			HGLOBAL ?
 hMemTypeSize			HGLOBAL ?
 hMemConstSize			HGLOBAL ?
 hEditFont				HFONT ?
+fShowResult				DWORD ?
 nErr					DWORD ?
 nSize					DWORD ?
 szTemp					BYTE 256 dup(?)
-szOutput				BYTE 16384 dup(?)
-szInput					BYTE 16384 dup(?)
-fShowResult				DWORD ?
+szOutput				BYTE 32*1024 dup(?)
+szInput					BYTE 32*1024 dup(?)
 
 ;#########################################################################
