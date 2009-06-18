@@ -1,7 +1,6 @@
 
 ;#########################################################################
 ; Include files
-
 include windows.inc
 include kernel32.inc
 include user32.inc
@@ -13,22 +12,18 @@ include RAEdit.inc
 
 ;#########################################################################
 ; Libraries
-
 includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 includelib comctl32.lib
-;includelib dbghelp.lib
 includelib version.lib
 
 ;#########################################################################
 ; RadASM Add In Include
-
 include ..\RadAsm.inc
 
 ;#########################################################################
 ; VKim's Debug
-
 include masm32.inc
 include Debug.Inc
 includelib masm32.lib
@@ -39,6 +34,9 @@ includelib Debug.lib
 
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
+
+;#########################################################################
+; Constants
 
 ;DoNotDebug.dlg
 IDD_DLGDONOTDEBUG				equ 1000
@@ -59,28 +57,29 @@ FUNC_STEPOVER					equ 3
 FUNC_RUNTOCARET					equ 4
 FUNC_STOP						equ 5
 
-tagACCEL struct WORD
-	fVirt					BYTE ?
-	key						WORD ?
-	cmd						WORD ?
-tagACCEL ends
+;#########################################################################
+; Structures
 
+; Breakpoints
 BREAKPOINT struct
 	ProjectFileID			DWORD ?					; Project file id
 	LineNumber				DWORD ?					; Line number, zero based
 BREAKPOINT ends
 
+; RadASM properties
 PROPERTIES struct
 	nSize					DWORD ?					; Size of property, excluding size of PROPERTIES struct
 	Owner					DWORD ?					; Project file ID or handle of window if file is open.
 	nType					BYTE ?					; Type d,p,S,s,T
 PROPERTIES ends
 
+; Source files
 DEBUGSOURCE struct
 	FileID					WORD ?					; The id of the file
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGSOURCE ends
 
+; Line numbers
 DEBUGLINE struct
 	LineNumber              DWORD ?					; Line number, 1 based
 	Address                 DWORD ?					; Address
@@ -89,12 +88,13 @@ DEBUGLINE struct
 	BreakPoint				BYTE ?					; There is a breakpoint on this line
 DEBUGLINE ends
 
-DEBUGVAR struct
+; Datatypes
+DEBUGTYPE struct
+	szName					db 64 dup(?)			; Name of type
 	nSize					DWORD ?					; Size in bytes
-	nArray					DWORD ?					; Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
-	nOfs					DWORD ?					; Offset for proc parameter or local
-DEBUGVAR ends
+DEBUGTYPE ends
 
+; Symbols
 DEBUGSYMBOL struct
 	szName					db 64 dup(?)			; Name of proc / global var
 	Address                 DWORD ?					; Adress
@@ -105,6 +105,14 @@ DEBUGSYMBOL struct
 	NoDebug					WORD ?					; PROC should not be debugged
 DEBUGSYMBOL ends
 
+; Variables. Global, parameters and locals
+DEBUGVAR struct
+	nSize					DWORD ?					; Size in bytes
+	nArray					DWORD ?					; Followed by szName and szArray+Type 'MyVar',0,'[256]:BYTE',0
+	nOfs					DWORD ?					; Offset for proc parameter or local
+DEBUGVAR ends
+
+; Threads
 DEBUGTHREAD struct
 	htread					HANDLE ?				; Thread handle
 	threadid				DWORD ?					; Thread ID
@@ -128,6 +136,8 @@ DEBUG struct
 	prevcontext				CONTEXT <>				; Previous Context
 	inxsource				DWORD ?					; Index to next free DEBUGSOURCE
 	hMemSource				HGLOBAL ?				; Handle to memory containing DEBUGSOURCE structures
+	inxtype					DWORD ?					; Index to next free DEBUGTYPE
+	hMemType				HGLOBAL ?				; Handle to memory containing DEBUGTYPE structures
 	inxsymbol				DWORD ?					; Index to next free DEBUGSYMBOL
 	hMemSymbol				HGLOBAL ?				; Handle to memory containing DEBUGSYMBOL structures
 	lpvar					DWORD ?					; Pointer to next free var
@@ -145,14 +155,17 @@ DEBUG struct
 	pt						POINT <>
 DEBUG ends
 
+; Predefined datatypes
 DATATYPE struct
 	lpszType				DWORD ?
 	lpszConvertType			DWORD ?
+	nSize					WORD ?
+	nSigned					WORD ?
 DATATYPE ends
 
+; Current variable. Used by tooltip and immediate
 VAR struct
 	szName					BYTE 256 dup(?)
-	szType					BYTE 256 dup(?)
 	szArray					BYTE 256 dup(?)
 	nType					DWORD ?
 	nArray					DWORD ?
@@ -165,14 +178,19 @@ VAR struct
 	szValue					BYTE 256 dup(?)
 VAR ends
 
+; Register. Used by tooltip and immediate
 REG struct
 	szName					BYTE 16 dup(?)
 	nSize					DWORD ?
 	nOfs					DWORD ?
 REG ends
 
+;#########################################################################
+; Text and predefined structures
+
 .const
 
+; Registers
 reg32							REG 10 dup(<'EAX',4,CONTEXT.regEax>,
 										   <'EBX',4,CONTEXT.regEbx>,
 										   <'ECX',4,CONTEXT.regEcx>,
@@ -198,35 +216,39 @@ reg8							REG 9 dup(<'AL',1,CONTEXT.regEax>,
 										   <,0,0>)
 
 ; Predefined datatypes
-szBYTE							db ':BYTE',0
-szSBYTE							db ':SBYTE',0
-szDB							db ':DB',0
-szWORD							db ':WORD',0
-szSWORD							db ':SWORD',0
-szDW							db ':DW',0
-szDWORD							db ':DWORD',0
-szSDWORD						db ':SDWORD',0
-szDD							db ':DD',0
-szQWORD							db ':QWORD',0
-szDQ							db ':DQ',0
-szTBYTE							db ':TBYTE',0
-szDT							db ':DT',0
+szBYTE							db 'BYTE',0
+szSBYTE							db 'SBYTE',0
+szDB							db 'DB',0
+szWORD							db 'WORD',0
+szSWORD							db 'SWORD',0
+szDW							db 'DW',0
+szDWORD							db 'DWORD',0
+szSDWORD						db 'SDWORD',0
+szDD							db 'DD',0
+szQWORD							db 'QWORD',0
+szDQ							db 'DQ',0
+szREAL4							db 'REAL4',0
+szREAL8							db 'REAL8',0
+szTBYTE							db 'TBYTE',0
+szDT							db 'DT',0
 								db 0
 
-datatype						DATATYPE 14 dup(<szBYTE,szBYTE>,
-												<szSBYTE,szSBYTE>,
-												<szDB,szBYTE>,
-												<szWORD,szWORD>,
-												<szSWORD,szSWORD>,
-												<szDW,szWORD>,
-												<szDWORD,szDWORD>,
-												<szSDWORD,szSDWORD>,
-												<szDD,szDWORD>,
-												<szQWORD,szQWORD>,
-												<szDQ,szQWORD>,
-												<szTBYTE,szTBYTE>,
-												<szDT,szTBYTE>,
-												<0,0>)
+datatype						DATATYPE 9	dup(<szBYTE,szBYTE,1>,
+												<szSBYTE,szSBYTE,1>,
+												<szDB,szBYTE,1>,
+												<szWORD,szWORD,2>,
+												<szSWORD,szSWORD,2>,
+												<szDW,szWORD,2>,
+												<szDWORD,szDWORD,4>,
+												<szSDWORD,szSDWORD,4>,
+												<szDD,szDWORD,4>)
+datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8>,
+												<szDQ,szQWORD,8>,
+												<szREAL4,szREAL4,4>,
+												<szREAL8,szREAL8,8>,
+												<szTBYTE,szTBYTE,10>,
+												<szDT,szTBYTE,10>,
+												<0,0,0>)
 
 DbgHelpDLL						db 'DbgHelp.dll',0
 
@@ -247,6 +269,8 @@ szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSpace							db ' ',0
 szComma							db ',',0
+szColon							db ':',0
+szImmPrompt						db '>',0
 
 szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
@@ -300,49 +324,30 @@ szData							db 'GLOBAL %s Address %08Xh Size %u',0
 szData32						db 'GLOBAL %s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szData16						db 'GLOBAL %s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szData8							db 'GLOBAL %s Address %08Xh Size %u Hex %02Xh Dec %d',0
-szDataSZ						db 'GLOBAL %s Address %08Xh Size %u "%s"',0
-szParam							db 'PARAM %s%s%s Address %08Xh Hex %08Xh Dec %d',0
-szLocal							db 'LOCAL %s%s%s Address %08Xh Hex %08Xh Dec %d',0
+szDataSZ						db 'GLOBAL %s Address %08Xh Size %u ZString "%s"',0
+szParam							db 'PARAM %s%s Address %08Xh Size %u',0
+szParam32						db 'PARAM %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szParam16						db 'PARAM %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
+szParam8						db 'PARAM %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
+szLocal							db 'LOCAL %s%s Address %08Xh Size %u',0
+szLocal32						db 'LOCAL %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szLocal16						db 'LOCAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
+szLocal8						db 'LOCAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
+szLocalSZ						db 'LOCAL %s%s Address %08Xh Size %u ZString "%s"',0
 szValue							db 'Hex %08Xh Dec %d',0
+
+szType							db 'Type: %s Size: %u',0
+
+szImmNotFound					db 'Variable not found.',0
+szImmUnknown					db 'Unknown command.',0
 
 szCall							db 'invoke',0
 								db 'call',0
 ;								db 'Add other call types here',0
 								db 0
 
-;; Datatypes
-;szBYTE							db 'BYTE',0
-;								db 'SBYTE',0
-;								db 'DB',0
-;;								db 'Add other byte types here',0
-;								db 0
-;
-;szWORD							db 'WORD',0
-;								db 'SWORD',0
-;								db 'DW',0
-;;								db 'Add other word types here',0
-;								db 0
-;
-;szDWORD							db 'DWORD',0
-;								db 'SDWORD',0
-;								db 'DD',0
-;								db 'HWND',0
-;								db 'HINSTANCE',0
-;								db 'HANDLE',0
-;								db 'HMODULE',0
-;								db 'HGLOBAL',0
-;								db 'HMENU',0
-;								db 'HBITMAP',0
-;								db 'HBRUSH',0
-;								db 'HDC',0
-;								db 'LPARAM',0
-;								db 'WPARAM',0
-;								db 'UMSG',0
-;								db 'PROC',0
-;								db 'UINT',0
-;								db 'HACCEL',0
-;;								db 'Add other dword types here',0
-;								db 0
+;#########################################################################
+; Globals
 
 .data?
 
@@ -353,16 +358,15 @@ fOptions						dd ?							; Options for RADebug
 lpHandles						dd ?							; Pointer to handles struct
 lpProc							dd ?							; Pointer to proc struct
 lpData							dd ?							; Pointer to data struct
-hMnu							HMENU ?							; Debug popup
+hMnu							HMENU ?							; Debug popup menu
 IDAddIn							dd 32 dup(?)					; Unique ID's for this AddIn
 hOut1							HWND ?							; Handle of output window #1
 hOut2							HWND ?							; Handle of output window #2
 hOut3							HWND ?							; Handle of output window #3
-szTempName						db MAX_PATH dup(?)
-szExeName						db MAX_PATH dup(?)
-szObjName						db MAX_PATH dup(?)
-szSourceName					db MAX_PATH dup(?)
-szFileName						db MAX_PATH dup(?)
+szTempName						db MAX_PATH dup(?)				; Temporary path
+szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged
+szObjName						db MAX_PATH dup(?)				; Path to obj to be debugged
+szSourceName					db MAX_PATH dup(?)				; Path to a source file
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
 lpOldEditProc					dd ?
 lpOldOutProc3					dd ?
@@ -370,5 +374,5 @@ dbg								DEBUG <>
 var								VAR <>
 fNoDebugInfo					dd ?
 outbuffer						db 1024 dup(?)
-szvartype						db 64 dup(?)
 nRadASMVer						dd ?
+szWatchList						db 512 dup(?)

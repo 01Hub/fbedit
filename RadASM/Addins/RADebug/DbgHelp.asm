@@ -14,7 +14,7 @@ SRCCODEINFO struct DWORD
 	Address                 DWORD ?
 SRCCODEINFO ends
 
-SYMBOL_INFO struct
+SYMBOL_INFO struct QWORD
 	SizeOfStruct			DWORD ?
 	TypeIndex				DWORD ?
 	Reserved				QWORD 2 dup(?)
@@ -23,7 +23,7 @@ SYMBOL_INFO struct
 	ModBase					QWORD ?
 	Flags					DWORD ?
 	Value					QWORD ?
-	Address					DWORD 2 dup(?)
+	Address					QWORD ?
 	Register				DWORD ?
 	Scope					DWORD ?
 	Tag						DWORD ?
@@ -31,32 +31,6 @@ SYMBOL_INFO struct
 	MaxNameLen				DWORD ?
 	szName					BYTE ?
 SYMBOL_INFO ends
-
-;typedef struct _IMAGEHLP_STACK_FRAME {
-;  ULONG64 InstructionOffset	;
-;  ULONG64 ReturnOffset		;
-;  ULONG64 FrameOffset		;
-;  ULONG64 StackOffset		;
-;  ULONG64 BackingStoreOffset;
-;  ULONG64 FuncTableEntry	;
-;  ULONG64 Params[4]			;
-;  ULONG64 Reserved[5]		;
-;  BOOL    Virtual			;
-;  ULONG   Reserved2			;
-;}IMAGEHLP_STACK_FRAME, *PIMAGEHLP_STACK_FRAME;
-;
-IMAGEHLP_STACK_FRAME struct
-	InstructionOffset	QWORD ?
-	ReturnOffset		QWORD ?
-	FrameOffset			QWORD ?
-	StackOffset			QWORD ?
-	BackingStoreOffset	QWORD ?
-	FuncTableEntry		QWORD ?
-	Params				QWORD 4 dup(?)
-	Reserved			QWORD 5 dup(?)
-	Virtual				DWORD ?
-	Reserved2			DWORD ?
-IMAGEHLP_STACK_FRAME ends
 
 .const
 
@@ -162,41 +136,52 @@ TestWord:
 
 FindWord endp
 
-FindTypeSize proc uses esi edi,lpType:DWORD
+FindTypeSize proc uses ebx esi edi,lpType:DWORD
 
 	mov		eax,lpType
 	mov		eax,[eax]
 	and		eax,0FF5F5F5Fh
 	.if eax==' RTP'
-		; PTR to any
 		mov		eax,4
 		jmp		Ex
 	.endif
+	mov		esi,dbg.hMemType
+	xor		ebx,ebx
+	.while ebx<dbg.inxtype
+		invoke lstrcmp,addr [esi].DEBUGTYPE.szName,lpType
+		.if !eax
+			; Found
+			mov		eax,[esi].DEBUGTYPE.nSize
+			jmp		Ex
+		.endif
+		lea		esi,[esi+sizeof DEBUGTYPE]
+		inc		ebx
+	.endw
 	mov		edx,lpData
 	;Get pointer to word list
 	mov		esi,[edx].ADDINDATA.lpWordList
-	mov		eax,[edx].ADDINDATA.rpProjectWordList
-	lea		edi,[esi+eax]
+	;Skip the words loaded from .api files
+	mov		edi,[edx].ADDINDATA.rpProjectWordList
+	lea		edi,[edi+esi]
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize && esi<edi
-		.if [esi].PROPERTIES.nType=='T' || [esi].PROPERTIES.nType=='S'
-			invoke lstrcmp,addr [esi+sizeof PROPERTIES],lpType
+		.if [esi].PROPERTIES.nType=='T'
+			invoke lstrcmpi,addr [esi+sizeof PROPERTIES],lpType
 			.if !eax
-				invoke lstrlen,addr [esi+sizeof PROPERTIES]
-				lea		edx,[esi+eax+1+sizeof PROPERTIES]
-				.if byte ptr [edx]>='0' && byte ptr [edx]<='9'
-					invoke DecToBin,edx
-					jmp		Ex
-				.else
-					mov		eax,4
-					jmp		Ex
-				.endif
+				; Found
+				lea		edi,[esi+sizeof PROPERTIES]
+				invoke lstrlen,edi
+				lea		edi,[edi+eax+1]
+				invoke DecToBin,edi
+				jmp		Ex
 			.endif
 		.endif
 		;Move to next word
 		mov		eax,[esi].PROPERTIES.nSize
 		lea		esi,[esi+eax+sizeof PROPERTIES]
 	.endw
+	; Type size not found
+PrintStringByAddr lpType
 	xor		eax,eax
   Ex:
 	ret
@@ -249,11 +234,18 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		byte ptr [eax-1],0
 	.endif
 	.if lpType
-		invoke GetPredefinedDatatype,lpType
-		.if !eax
+		mov		eax,lpType
+		inc		eax
+		invoke GetPredefinedDatatype,eax
+		.if eax
+			push	eax
+			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],addr szColon
+			pop		eax
+			invoke lstrcat,addr [edi+ebx+sizeof DEBUGVAR],eax
+		.else
 			mov		eax,lpType
+			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],eax
 		.endif
-		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],eax
 		invoke lstrlen,addr [edi+ebx+sizeof DEBUGVAR]
 		lea		ebx,[ebx+eax]
 	.endif
@@ -332,15 +324,31 @@ AddVarList proc uses ebx esi edi,lpList:DWORD
 
 AddVarList endp
 
+EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
+
+	mov		esi,pSymInfo
+	.if fOptions & 1
+		invoke wsprintf,addr outbuffer,addr szType,addr [esi].SYMBOL_INFO.szName,[esi].SYMBOL_INFO.nSize
+		invoke PutString,addr outbuffer
+	.endif
+	mov		eax,dbg.inxtype
+	mov		edx,sizeof DEBUGTYPE
+	mul		edx
+	mov		edi,dbg.hMemType
+	lea		edi,[edi+eax]
+	invoke lstrcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
+	mov		eax,[esi].SYMBOL_INFO.nSize
+	mov		[edi].DEBUGTYPE.nSize,eax
+	inc		dbg.inxtype
+	mov		eax,TRUE
+	ret
+
+EnumTypesCallback endp
+
 EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	Displacement:QWORD
 
-	.if UserContext
-		invoke PutString,SymbolName
-		mov		eax,TRUE
-		ret
-	.endif
 	.if SymbolSize
 		.if fOptions & 1
 			invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
@@ -355,7 +363,7 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 		mov		[edi].DEBUGSYMBOL.Address,eax
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
-		invoke lstrcpy,addr [edi].DEBUGSYMBOL.szName,SymbolName
+		invoke lstrcpyn,addr [edi].DEBUGSYMBOL.szName,SymbolName,sizeof DEBUGSYMBOL.szName
 		invoke FindWord,SymbolName
 		.if eax
 			mov		esi,eax
@@ -386,19 +394,6 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 	ret
 
 EnumerateSymbolsCallback endp
-
-EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
-
-	mov		esi,pSymInfo
-	mov		eax,dword ptr [esi].SYMBOL_INFO.Value
-;PrintHex SymbolSize
-lea	eax,[esi].SYMBOL_INFO.szName
-add		eax,4
-invoke PutStringOut,eax,hOut3
-	mov		eax,TRUE
-	ret
-
-EnumTypesCallback endp
 
 EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
@@ -464,222 +459,148 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 
 EnumLinesCallback endp
 
-DbgHelpInit proc
+DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke LoadLibrary,addr DbgHelpDLL
 	.if eax
 		mov		hDbgHelpDLL,eax
+		invoke GetDbgHelpVersion
+		; Allocate memory for DEBUGTYPE, max 16K types
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGTYPE
+		mov		dbg.hMemType,eax
+		; Allocate memory for DEBUGSYMBOL, max 16K symbols
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
+		mov		dbg.hMemSymbol,eax
+		; Allocate memory for DEBUGSOURCE, max 512 sources
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
+		mov		dbg.hMemSource,eax
+		; Allocate memory for DEBUGLINE, max 128K lines
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
+		mov		dbg.hMemLine,eax
+		; Allocate memory for var definitions
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		dbg.hMemVar,eax
+		mov		dbg.lpvar,eax
+		; Zero the indexes
+		mov		dbg.inxtype,0
+		mov		dbg.inxsymbol,0
+		mov		dbg.inxsource,0
+		mov		dbg.inxline,0
+		invoke GetProcAddress,hDbgHelpDLL,addr szSymInitialize
+		.if eax
+			mov		ebx,eax
+			push	FALSE
+			push	NULL
+			push	hProcess
+			call	ebx
+		.endif
+		.if eax
+			invoke GetProcAddress,hDbgHelpDLL,addr szSymLoadModule
+			.if eax
+				mov		ebx,eax
+				push	0
+				push	0
+				push	0
+				push	lpFileName
+				push	0
+				push	hProcess
+				call	ebx
+			.endif
+			.if eax
+				mov		dwModuleBase,eax
+				mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
+				mov		im.SymType1,SymNone
+				invoke GetProcAddress,hDbgHelpDLL,addr szSymGetModuleInfo
+				.if eax
+					mov		ebx,eax
+					lea		eax,im
+					push	eax
+					push	dwModuleBase
+					push	hProcess
+					call	ebx
+				.endif
+				.if im.SymType1==SymPdb
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
+					.if eax
+						mov		ebx,eax
+						push	0
+						push	offset EnumTypesCallback
+						push	0
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
+					.if eax
+						mov		ebx,eax
+						.if fOptions & 1
+							invoke PutString,addr szSymOk
+						.endif
+						push	0
+						push	offset EnumerateSymbolsCallback
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
+					.if eax
+						mov		ebx,eax
+						.if fOptions & 1
+							invoke PutString,addr szSymEnumSourceFiles
+						.endif
+						push	0
+						push	offset EnumSourceFilesCallback
+						push	0
+						push	0
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
+					.if eax
+						mov		ebx,eax
+						.if fOptions & 1
+							invoke PutString,addr szSymEnumSourceLines
+						.endif
+						push	0
+						push	offset EnumLinesCallback
+						push	0
+						push	0
+						push	0
+						push	0
+						push	0
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+				.endif
+				invoke GetProcAddress,hDbgHelpDLL,addr szSymUnloadModule
+				.if eax
+					mov		ebx,eax
+					push	dwModuleBase
+					push	hProcess
+					call	ebx
+				.endif
+				invoke GetProcAddress,hDbgHelpDLL,addr szSymCleanup
+				.if eax
+					mov		ebx,eax
+					push	hProcess
+					call	ebx
+				.endif
+			.else
+				invoke PutString,addr szSymLoadModuleFailed
+			.endif
+			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
+			invoke PutString,addr buffer
+		.else
+			invoke PutString,addr szSymInitializeFailed
+		.endif
+		invoke FreeLibrary,hDbgHelpDLL
+		mov		hDbgHelpDLL,0
 	.else
 		invoke PutString,addr szDbgHelpFail
 	.endif
 	ret
 
-DbgHelpInit endp
-
-DbgHelpExit proc uses ebx,hProcess:DWORD
-
-	.if hDbgHelpDLL
-		;invoke SymCleanup,hProcess
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymCleanup
-		.if eax
-			mov		ebx,eax
-			push	hProcess
-			call	ebx
-		.endif
-		;invoke SymUnloadModule,hProcess,dwModuleBase
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymUnloadModule
-		.if eax
-			mov		ebx,eax
-			push	dwModuleBase
-			push	hProcess
-			call	ebx
-		.endif
-		invoke FreeLibrary,hDbgHelpDLL
-		mov		hDbgHelpDLL,0
-	.endif
-	ret
-
-DbgHelpExit endp
-
-DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
-
-	invoke GetDbgHelpVersion
-	; Allocate memory for DEBUGLINE, max 128K lines
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
-	mov		dbg.hMemLine,eax
-	; Allocate memory for DEBUGSYMBOL, max 16K symbols
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
-	mov		dbg.hMemSymbol,eax
-	; Allocate memory for DEBUGSOURCE, max 512 sources
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
-	mov		dbg.hMemSource,eax
-	; Allocate memory for var definitions
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-	mov		dbg.hMemVar,eax
-	mov		dbg.lpvar,eax
-	; Zero the indexes
-	mov		dbg.inxsource,0
-	mov		dbg.inxline,0
-	mov		dbg.inxsymbol,0
-	;invoke SymInitialize,hProcess,0,FALSE
-	invoke GetProcAddress,hDbgHelpDLL,addr szSymInitialize
-	.if eax
-		mov		ebx,eax
-		push	FALSE
-		push	NULL
-		push	hProcess
-		call	ebx
-	.endif
-	.if eax
-		;invoke SymLoadModule,hProcess,0,lpFileName,0,0,0
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymLoadModule
-		.if eax
-			mov		ebx,eax
-			push	0
-			push	0
-			push	0
-			push	lpFileName
-			push	0
-			push	hProcess
-			call	ebx
-		.endif
-		.if eax
-			mov		dwModuleBase,eax
-			mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
-			mov		im.SymType1,SymNone
-			;invoke SymGetModuleInfo,hProcess,dwModuleBase,addr im
-			invoke GetProcAddress,hDbgHelpDLL,addr szSymGetModuleInfo
-			.if eax
-				mov		ebx,eax
-				lea		eax,im
-				push	eax
-				push	dwModuleBase
-				push	hProcess
-				call	ebx
-			.endif
-			.if im.SymType1==SymPdb
-				;invoke SymEnumerateSymbols,hProcess,dwModuleBase,addr EnumerateSymbolsCallback,0
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
-				.if eax
-					mov		ebx,eax
-					.if fOptions & 1
-						invoke PutString,addr szSymOk
-					.endif
-					push	0
-					push	offset EnumerateSymbolsCallback
-					push	dwModuleBase
-					push	hProcess
-					call	ebx
-				.endif
-				; Does not return anything useful
-				;invoke SymEnumTypes,hProcess,BaseOfDll,EnumSymbolsCallback,UserContext
-				;invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
-				;.if eax
-				;	mov		ebx,eax
-				;	.if fOptions & 1
-				;		invoke PutString,addr szSymEnumTypes
-				;	.endif
-				;	push	0
-				;	push	offset EnumTypesCallback
-				;	push	0
-				;	push	dwModuleBase
-				;	push	hProcess
-				;	call	ebx
-				;.endif
-				;invoke SymEnumSourceFiles,hProcess,dwModuleBase,Mask,offset EnumSourceFilesCallback,UserContext
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
-				.if eax
-					mov		ebx,eax
-					.if fOptions & 1
-						invoke PutString,addr szSymEnumSourceFiles
-					.endif
-					push	0
-					push	offset EnumSourceFilesCallback
-					push	0
-					push	0
-					push	dwModuleBase
-					push	hProcess
-					call	ebx
-				.endif
-				;invoke SymEnumSourceLines,hProcess,dwModuleBase,0,0,0,0,0,offset EnumLinesCallback,0
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
-				.if eax
-					mov		ebx,eax
-					.if fOptions & 1
-						invoke PutString,addr szSymEnumSourceLines
-					.endif
-					push	0
-					push	offset EnumLinesCallback
-					push	0
-					push	0
-					push	0
-					push	0
-					push	0
-					push	dwModuleBase
-					push	hProcess
-					call	ebx
-				.endif
-			.endif
-		.else
-			invoke PutString,addr szSymLoadModuleFailed
-		.endif
-		invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
-		invoke PutString,addr buffer
-	.else
-		invoke PutString,addr szSymInitializeFailed
-	.endif
-	ret
-
 DbgHelp endp
-
-DbgHelpGetLocals proc uses esi,hProcess:DWORD
-	LOCAL	isf:IMAGEHLP_STACK_FRAME
-
-	invoke GetProcAddress,hDbgHelpDLL,addr szSymSetContext
-	.if eax
-		mov		ebx,eax
-		invoke RtlZeroMemory,addr isf,sizeof IMAGEHLP_STACK_FRAME
-		mov		eax,dbg.context.regEip
-		mov		dword ptr isf.InstructionOffset,eax
-		mov		dword ptr isf.ReturnOffset,0
-		mov		eax,dbg.context.regEbp
-		mov		dword ptr isf.FrameOffset,eax
-		mov		eax,dbg.context.regEsp
-		mov		dword ptr isf.StackOffset,eax
-		mov		dword ptr isf.BackingStoreOffset,0
-		mov		dword ptr isf.FuncTableEntry,0
-		mov		dword ptr isf.Params,0
-		mov		dword ptr isf.Virtual,TRUE
-		push	0
-		lea		eax,isf
-		push	eax
-		push	hProcess
-		call	ebx
-PrintHex eax
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
-		.if eax
-			mov		ebx,eax
-			push	1
-			push	offset EnumerateSymbolsCallback
-			push	dwModuleBase
-			push	hProcess
-			call	ebx
-PrintHex eax
-		.endif
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
-		.if eax
-			mov		ebx,eax
-			push	1
-			push	offset EnumTypesCallback
-			push	0
-;			push	0
-			push	dwModuleBase
-			push	hProcess
-			call	ebx
-PrintHex eax
-		.endif
-	.endif
-	ret
-
-DbgHelpGetLocals endp

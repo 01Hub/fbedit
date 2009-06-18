@@ -1,22 +1,15 @@
 .const
 
+; Commands
 szImmDump						db 'DUMP',0
 szImmVars						db 'VARS',0
-szImmLocalCmnd					db 'LOCAL',0
+szImmTypes						db 'TYPES',0
+szImmCls						db 'CLS',0
+szImmWatch						db 'WATCH',0
+
 szImmLocal						db 0Dh,'LOCAL: ',0
-szImmNotFound					db 'Variable not found.',0
-szImmUnknown					db 'Unknown command.',0
-szImmPrompt						db '>',0
 
 .code
-
-ImmPrompt proc
-
-	invoke SendMessage,hOut3,EM_REPLACESEL,FALSE,addr szImmPrompt
-	invoke SendMessage,hOut3,EM_SCROLLCARET,0,0
-	ret
-
-ImmPrompt endp
 
 ParseBuff proc uses esi edi,lpBuff:DWORD
 
@@ -37,6 +30,50 @@ ParseBuff proc uses esi edi,lpBuff:DWORD
 	ret
 
 ParseBuff endp
+
+ParseWatch proc uses ebx esi edi,lpList:DWORD
+
+	mov		edi,offset szWatchList
+	invoke RtlZeroMemory,edi,sizeof szWatchList
+	mov		esi,lpList
+	.while byte ptr [esi]
+		call	SkipWhiteSpace
+		call	AddWatchVar
+	.endw
+;	mov		edi,offset szWatchList
+;	.while byte ptr [edi]
+;		PrintStringByAddr edi
+;		invoke lstrlen,edi
+;		lea		edi,[edi+eax+1]
+;	.endw
+	ret
+
+AddWatchVar:
+	xor		ecx,ecx
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		.if al!=VK_SPACE && al!=VK_TAB
+			inc		ecx
+			mov		[edi],al
+			inc		edi
+		.endif
+		inc		esi
+	.endw
+	.if byte ptr [esi]==','
+		inc		esi
+	.endif
+	.if ecx
+		inc		edi
+	.endif
+	retn
+
+SkipWhiteSpace:
+	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+		inc		esi
+	.endw
+	retn
+
+ParseWatch endp
 
 Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
@@ -65,9 +102,16 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		invoke SetBreakPointsAll
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,addr buffer,addr szImmLocalCmnd
+	invoke lstrcmpi,addr buffer,addr szImmTypes
 	.if !eax
-		invoke DbgHelpGetLocals,dbg.pinfo.hProcess
+		mov		esi,dbg.hMemType
+		xor		ebx,ebx
+		.while ebx<dbg.inxtype
+			invoke wsprintf,addr outbuffer,addr szType,addr [esi].DEBUGTYPE.szName,[esi].DEBUGTYPE.nSize
+			invoke PutStringOut,addr outbuffer,hOut3
+			lea		esi,[esi+sizeof DEBUGTYPE]
+			inc		ebx
+		.endw
 		jmp		Ex
 	.endif
 	invoke lstrcmpi,addr buffer,addr szImmVars
@@ -121,6 +165,16 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			lea		esi,[esi+sizeof DEBUGSYMBOL]
 			dec		ecx
 		.endw
+		jmp		Ex
+	.endif
+	invoke lstrcmpi,addr buffer,addr szImmCls
+	.if !eax
+		invoke SetWindowText,hOut3,addr szNULL
+		jmp		Ex
+	.endif
+	invoke strcmpin,addr buffer,addr szImmWatch,5
+	.if !eax
+		invoke ParseWatch,addr buffer[5]
 		jmp		Ex
 	.endif
 	.if buffer=='?'

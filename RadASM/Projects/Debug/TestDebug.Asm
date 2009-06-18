@@ -20,16 +20,16 @@ MYSTRUCT ends
 
 szTest		db 'Test',0
 tid			dd   ?
-;rect		RECT <>
+rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
 valdd		DWORD 4
 valdw		WORD 2
 valdbabcdefgh		BYTE 1
-;hInstance	HINSTANCE 8 dup(?)
+hInstance	HINSTANCE 8 dup(?)
 
 .code
 
-MyProc2 proc var:DWORD,var1:DWORD,var2:DWORD;ebp+8,ebp+12,ebp+16
+MyProc2 proc var:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	aa:BYTE
 	LOCAL	bb:WORD
 	LOCAL	cc:BYTE

@@ -555,10 +555,7 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
-		invoke DbgHelpInit
-		.if eax
-			invoke DbgHelp,dbg.pinfo.hProcess,addr szExeName
-		.endif
+		invoke DbgHelp,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfo
 			invoke PutString,addr szExeName
@@ -611,6 +608,13 @@ Debug proc uses ebx,lpFileName:DWORD
 				invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
 			.endif
 			invoke SetBreakPoints
+			invoke ImmPrompt
+			.if fOptions & 8
+				; Show register window
+				push	2
+				mov		eax,lpProc
+				call	[eax].ADDINPROCS.lpOutputSelect
+			.endif
 		.endif
 		mov		dbg.prevline,-1
 		invoke AddThread,dbg.pinfo.hThread,dbg.pinfo.dwThreadId
@@ -661,6 +665,7 @@ Debug proc uses ebx,lpFileName:DWORD
 							invoke IsInProc,[ebx].DEBUGTHREAD.address
 							mov		dbg.lpProc,eax
 							invoke ShowContext
+							invoke WatchVars
 							mov		dbg.fHandled,TRUE
 						.endif
 					.endif
@@ -739,7 +744,6 @@ Debug proc uses ebx,lpFileName:DWORD
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
-		invoke DbgHelpExit,dbg.pinfo.hProcess
 		; Close debug handles
 		invoke CloseHandle,dbg.hdbgfile
 		invoke CloseHandle,dbg.hdbghand
@@ -749,6 +753,10 @@ Debug proc uses ebx,lpFileName:DWORD
 		.if dbg.hMemLine
 			invoke GlobalFree,dbg.hMemLine
 			mov		dbg.hMemLine,0
+		.endif
+		.if dbg.hMemType
+			invoke GlobalFree,dbg.hMemType
+			mov		dbg.hMemType,0
 		.endif
 		.if dbg.hMemSymbol
 			invoke GlobalFree,dbg.hMemSymbol

@@ -29,8 +29,13 @@ How to install:
 -----------------------------------------------------------------------------
 o Copy RADebug.dll to C:\RadASM\Addins
 o Copy RADebug.txt to C:\RadASM\Addins\Help
+o Optional: Copy dbghelp.dll to RadASM root (C:\RadASM).
 o Start RadASM and use Options/Addin Manager to activate addin.
-  - There is an option to show DbgHelp output.
+  - Option to show DbgHelp output.
+    NOTE! This option slows down debug startup considerably.
+  - Option to show debug events.
+  - Option to pin output window.
+  - Option to by default show register window.
 
 How to make (masm):
 -----------------------------------------------------------------------------
@@ -46,12 +51,13 @@ o Set a breakpoint in your source using Make/Debug/Toggle Breakpoint
   - You will get an error if there are unsaved source files.
   - You will get an error if any source files are newer than the exe.
   - Execution will halt when a breakpoint is reached.
-    Output window #1 will show some debug info.
+    Output window #1 will show some debug info if the option is enabled.
     Output window #2 will show registers.
+    Output window #3 is the immediate window.
   - Use Step Into, Step Over, Run To Caret or Run to continue execution.
   - Use Toggle Breakpoint to set a new breakpoint or use Clear Breakpoints
     to clear all breakpoints.
-  - Use Stop to stop execution.
+  - Use Stop to end execution.
   - Multithreading is supported. Each thread gets to execute one line
     at a time, very confusing.
   - Use Do Not Debug to select procs that you dont want to debug. Typically
@@ -60,11 +66,36 @@ o Set a breakpoint in your source using Make/Debug/Toggle Breakpoint
 o NOTE!
   - The debug menu will be disabled if no project is open or the debugger
     can not find any debug info.
-  - The addin will only work with RadASM 2.2.1.6 or higher.
+  - The addin will only work with RadASM 2.2.1.7 or higher.
+
+Immediate window (Output window #3):
+-----------------------------------------------------------------------------
+o Inspect variable or register.
+  - ?MyVar to show info about a variable local or parameter.
+  - ?Z:MyZString to show a ZString.
+  - ?reg To show a register (reg: eax, ebx ...).
+o Change variable or register.
+  - MyVar=2 to change the variable MyVar.
+  - reg=4 to change a register (reg: eax, ebx ...).
+o Commands.
+  - Dump to hex dump the exe.
+  - Vars to show a list of variables.
+  - Types to show a list of types.
+  - Watch var1,var2,....,var8 to watch variables.
+  - Cls to clear the immediate window.
 
 Whats new:
 -----------------------------------------------------------------------------
 o Released version 1.0.0.2
+  - Added option to show debug events.
+  - Added option to pin output window.
+  - Added option to by default show register window.
+  - Added tooltip to show a local variables value when mouse is over a local.
+    The local must be in current scope.
+  - Added tooltip to show a proc parameters value when mouse is over a parameter.
+    The parameter must be in current scope.
+  - Added immediate window (output window #3). 
+  - Fixed bugs.
 o Released version 1.0.0.1
   - Step Over is enabled.
   - Do Not Debug is enabled.

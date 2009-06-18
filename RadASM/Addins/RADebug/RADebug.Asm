@@ -90,17 +90,17 @@ UpdateAccel:
 	mov		ecx,nAccel
 	inc		ecx
 	.while ecx
-		.if ax==[ebx].tagACCEL.cmd || [ebx].tagACCEL.cmd==0 || (dl==byte ptr [ebx].tagACCEL.key && dh==[ebx].tagACCEL.fVirt)
-			.if ![ebx].tagACCEL.cmd
+		.if ax==[ebx].ACCEL.cmd || [ebx].ACCEL.cmd==0 || (dl==byte ptr [ebx].ACCEL.key && dh==[ebx].ACCEL.fVirt)
+			.if ![ebx].ACCEL.cmd
 				; Add new
 				inc		nAccel
 			.endif
-			mov		[ebx].tagACCEL.cmd,ax
-			mov		byte ptr [ebx].tagACCEL.key,dl
-			mov		[ebx].tagACCEL.fVirt,dh
+			mov		[ebx].ACCEL.cmd,ax
+			mov		byte ptr [ebx].ACCEL.key,dl
+			mov		[ebx].ACCEL.fVirt,dh
 			.break
 		.endif
-		add		ebx,sizeof tagACCEL
+		add		ebx,sizeof ACCEL
 		dec		ecx
 	.endw
 	retn
@@ -528,13 +528,13 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 						invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 					.else
 						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesObjKey,addr szNULL,addr szObjName,sizeof szObjName,[ebx].ADDINDATA.lpProject
-						invoke lstrcpy,addr szFileName,[ebx].ADDINDATA.lpProjectPath
-						invoke lstrcat,addr szFileName,addr szObjName
-						invoke lstrcpy,addr szObjName,addr szFileName
+						invoke lstrcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
+						invoke lstrcat,addr szTempName,addr szObjName
+						invoke lstrcpy,addr szObjName,addr szTempName
 						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesExeKey,addr szNULL,addr szExeName,sizeof szExeName,[ebx].ADDINDATA.lpProject
-						invoke lstrcpy,addr szFileName,[ebx].ADDINDATA.lpProjectPath
-						invoke lstrcat,addr szFileName,addr szExeName
-						invoke lstrcpy,addr szExeName,addr szFileName
+						invoke lstrcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
+						invoke lstrcat,addr szTempName,addr szExeName
+						invoke lstrcpy,addr szExeName,addr szTempName
 						invoke NewerFiles
 						.if sdword ptr eax>0
 							invoke wsprintf,addr buffer,addr szNewerFiles,eax
@@ -594,15 +594,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							push	1
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpOutputSelect
-							.if dbg.inxline
-								.if fOptions & 8
-									; Show register window
-									push	2
-									mov		eax,lpProc
-									call	[eax].ADDINPROCS.lpOutputSelect
-								.endif
-								invoke ImmPrompt
-							.endif
 							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 							mov		dbg.hDbgThread,eax
 						.endif
