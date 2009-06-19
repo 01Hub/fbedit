@@ -19,6 +19,7 @@ szRegs							db 'EAX     ',0,
 								   'EDI     ',0,
 								   'EIP     ',0,
 								   'EFL     ',0
+
 szDecSpace						db '                ',0
 
 .data?

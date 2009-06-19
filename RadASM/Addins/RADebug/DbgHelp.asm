@@ -155,58 +155,6 @@ AddPredefinedTypes proc uses esi edi
 
 AddPredefinedTypes endp
 
-FindTypeSize proc uses ebx esi edi,lpType:DWORD
-
-	mov		eax,lpType
-	mov		eax,[eax]
-	and		eax,0FF5F5F5Fh
-	.if eax==' RTP'
-		mov		eax,4
-		jmp		Ex
-	.endif
-	mov		esi,dbg.hMemType
-	xor		ebx,ebx
-	.while ebx<dbg.inxtype
-		invoke lstrcmp,addr [esi].DEBUGTYPE.szName,lpType
-		.if !eax
-			; Found
-			mov		eax,[esi].DEBUGTYPE.nSize
-			jmp		Ex
-		.endif
-		lea		esi,[esi+sizeof DEBUGTYPE]
-		inc		ebx
-	.endw
-	mov		edx,lpData
-	;Get pointer to word list
-	mov		esi,[edx].ADDINDATA.lpWordList
-	;Skip the words loaded from .api files
-	mov		edi,[edx].ADDINDATA.rpProjectWordList
-	lea		edi,[edi+esi]
-	;Loop trough the word list
-	.while [esi].PROPERTIES.nSize && esi<edi
-		.if [esi].PROPERTIES.nType=='T'
-			invoke lstrcmpi,addr [esi+sizeof PROPERTIES],lpType
-			.if !eax
-				; Found
-				lea		edi,[esi+sizeof PROPERTIES]
-				invoke lstrlen,edi
-				lea		edi,[edi+eax+1]
-				invoke DecToBin,edi
-				jmp		Ex
-			.endif
-		.endif
-		;Move to next word
-		mov		eax,[esi].PROPERTIES.nSize
-		lea		esi,[esi+eax+sizeof PROPERTIES]
-	.endw
-	; Type size not found
-PrintStringByAddr lpType
-	xor		eax,eax
-  Ex:
-	ret
-
-FindTypeSize endp
-
 AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	lpArray:DWORD
@@ -289,7 +237,6 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 					inc		ecx
 				.endw
 				invoke FindTypeSize,ebx
-PrintDec eax
 			.endif
 		.endif
 		pop		ebx

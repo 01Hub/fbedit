@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,1355
+1=0,0,1278,774,2025
 2=0,0,0,0,8
 3=0,0,0,0,64
 [BookMark]
@@ -128,4 +128,4 @@ ProductVer4Range=0
 3=
 [NoDebug]
 [Watch]
-Watch=
+Watch=tid,hInstance

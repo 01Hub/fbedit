@@ -1,5 +1,5 @@
 ;#########################################################################
-;		Assembler directives
+; Assembler directives
 
 .486
 .model flat,stdcall
@@ -10,6 +10,7 @@ option casemap:none
 
 include RADebug.inc
 include Misc.asm
+include Math.asm
 include DbgHelp.asm
 include Debug.asm
 include Immediate.asm
@@ -18,7 +19,7 @@ include BreakPoint.asm
 .code
 
 ;#########################################################################
-;		Common AddIn Procedures
+; Common AddIn Procedures
 
 DllEntry proc hInst:HINSTANCE, reason:DWORD, reserved1:DWORD
 

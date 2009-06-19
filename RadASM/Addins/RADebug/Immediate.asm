@@ -60,12 +60,6 @@ AddWatchVar:
 	.endif
 	retn
 
-SkipWhiteSpace:
-	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
-		inc		esi
-	.endw
-	retn
-
 ParseWatch endp
 
 SaveWatch proc lpWatch:DWORD
@@ -220,13 +214,15 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		jmp		Ex
 	.endif
 	.if buffer=='?'
-		invoke GetVarVal,addr buffer[1],dbg.prevline,TRUE
-		.if eax
-			invoke PutStringOut,addr outbuffer,hOut3
-		.else
-			invoke wsprintf,addr outbuffer,addr szImmNotFound,addr buffer[1]
-			invoke PutStringOut,addr outbuffer,hOut3
-		.endif
+		invoke DoMath,addr buffer[1]
+		invoke PutStringOut,addr outbuffer,hOut3
+		;invoke GetVarVal,addr buffer[1],dbg.prevline,TRUE
+;		.if eax
+;			invoke PutStringOut,addr outbuffer,hOut3
+;		.else
+;			invoke wsprintf,addr outbuffer,addr szImmNotFound,addr buffer[1]
+;			invoke PutStringOut,addr outbuffer,hOut3
+;		.endif
 		jmp		Ex
 	.endif
 	xor ebx,ebx

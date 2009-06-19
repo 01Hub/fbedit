@@ -19,7 +19,7 @@ includelib comctl32.lib
 includelib version.lib
 
 ;#########################################################################
-; RadASM Add In Include
+; RadASM AddIn Include
 include ..\RadAsm.inc
 
 ;#########################################################################
@@ -47,10 +47,12 @@ IDC_BTNDEBUG					equ 1004
 IDC_BTNDONOTDEBUGALL			equ 1005
 IDC_BTNDEBUGALL					equ 1006
 
+; RadASM menu items
 IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
 IDM_VIEW_OUTPUTWINDOW			equ 42003
 
+; Debug functions
 FUNC_RUN						equ 1
 FUNC_STEPINTO					equ 2
 FUNC_STEPOVER					equ 3
@@ -119,9 +121,10 @@ DEBUGTHREAD struct
 	lpline					DWORD ?					; Pointer to line
 	address					DWORD ?					; Address
 	suspended				DWORD ?					; TRUE if suspended
-	isdebugged				DWORD ?
+	isdebugged				DWORD ?					; The thread is debugged
 DEBUGTHREAD ends
 
+; Holds important data while debugging
 DEBUG struct
 	hDbgThread				HANDLE ?				; Thread that runs the debugger
 	pinfo					PROCESS_INFORMATION <>	; Process information
@@ -151,45 +154,45 @@ DEBUG struct
 	lastadr					DWORD ?					; Address of last line
 	lpProc					DWORD ?					; Current proc
 	func					DWORD ?					; Current debug function
-	fHandled				DWORD ?
-	pt						POINT <>
+	fHandled				DWORD ?					; Set to TRUE when a breakpoint is reached
+	pt						POINT <>				; Used by tooltip
 DEBUG ends
 
 ; Predefined datatypes
 DATATYPE struct
-	lpszType				DWORD ?
-	lpszConvertType			DWORD ?
-	nSize					WORD ?
-	fSigned					WORD ?
+	lpszType				DWORD ?					; The datatype
+	lpszConvertType			DWORD ?					; The datatype it shoukd be converted to. DD, DW and DB is converted
+	nSize					WORD ?					; Size in bytes
+	fSigned					WORD ?					; TRUE if signed
 DATATYPE ends
 
 ; Current variable. Used by tooltip and immediate
 VAR struct
-	szName					BYTE 256 dup(?)
-	szArray					BYTE 256 dup(?)
-	nType					DWORD ?
-	nArray					DWORD ?
-	nSize					DWORD ?
-	fPtr					DWORD ?
-	nOfs					DWORD ?
-	Address					DWORD ?
-	nInx					DWORD ?
-	IsSZ					DWORD ?
-	Value					DWORD ?
-	szValue					BYTE 256 dup(?)
+	szName					BYTE 256 dup(?)			; Variable name MyVar
+	szArray					BYTE 256 dup(?)			; Array size and type [256]:BYTE
+	nType					DWORD ?					; Proc=99
+	nArray					DWORD ?					; Array size (1 based index)
+	nSize					DWORD ?					; Size in bytes
+	fPtr					DWORD ?					; Not used yet
+	nOfs					DWORD ?					; Offset from ebp for local and parameter
+	Address					DWORD ?					; Address
+	nInx					DWORD ?					; Current index, used by immediate
+	IsSZ					DWORD ?					; Show as ZString, used by immediate
+	Value					DWORD ?					; Current value, used by immediate and tooltip
+	szValue					BYTE 256 dup(?)			; Current ZString value, used by immediate
 VAR ends
 
 ; Register. Used by tooltip and immediate
 REG struct
-	szName					BYTE 16 dup(?)
-	nSize					DWORD ?
-	nOfs					DWORD ?
+	szName					BYTE 16 dup(?)			; Name of register
+	nSize					DWORD ?					; Size in bytes
+	nOfs					DWORD ?					; Offset into CONTEXT
 REG ends
+
+.const
 
 ;#########################################################################
 ; Text and predefined structures
-
-.const
 
 ; Registers
 reg32							REG 10 dup(<'EAX',4,CONTEXT.regEax>,
@@ -251,11 +254,14 @@ datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8,0>,
 												<szDT,szTBYTE,10,0>,
 												<0,0,0,0>)
 
+; Predefined constants to evaluate array sizees
 indextype						DEBUGTYPE 2 dup(<'MAX_PATH',260>,
 												<,0>)
 
+; The dbghelp dll
 DbgHelpDLL						db 'DbgHelp.dll',0
 
+; Debug events
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
 szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION',0
@@ -267,6 +273,8 @@ szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT',0
 szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
 szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
+
+; Some useful text constants
 szCR							db 0Dh,0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
@@ -275,7 +283,7 @@ szComma							db ',',0
 szColon							db ':',0
 szImmPrompt						db '>',0
 
-szSourceByte					db 'Address: %X Byte: %X File: %u',0
+; Debug startup texts
 szDebug							db 'Debug',0
 szDebuggingStarted				db 'Debugging started',0
 szDebugStopped					db 'Debugging ended',0
@@ -285,10 +293,12 @@ szNewerFiles					db '%u source files are newer than the exe.',0
 szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s',0
 szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd, /Zi and /DEBUG command line options.',0
 
+; Breakpoint save / load
 szRADebugBP						db 'RADebugBP',0
 szBPNULL						db 0,0
 szCommaBP						db ',%u',0
 
+; Debug menu items
 DebugMenu						db 'Deb&ug',0
 MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
 								   '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0,
@@ -301,6 +311,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
 								   'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0,
 								   'Do not Debug',0,0
 
+; Project file save / load
 szMakeFiles						db 'MakeFiles',0
 szMakeFilesExeKey				db '5',0
 szMakeFilesObjKey				db '3',0
@@ -317,9 +328,10 @@ AddinOpt						ADDINOPT 5 dup(<offset szShowDbgHelp,1,1>,
 											   <offset szOutput2,8,8>,
 											   <0,0,0>)
 
+; Tooltip window class
 sztooltips_class32				db 'tooltips_class32',0
 
-; Tooltip formatting
+; Tooltip / immediate window formatting
 szReg32							db '%s=%08Xh',0
 szReg16							db '%s=%04Xh',0
 szReg8							db '%s=%02Xh',0
@@ -339,6 +351,7 @@ szLocal16						db 'LOCAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szLocal8						db 'LOCAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szLocalSZ						db 'LOCAL %s%s Address %08Xh Size %u ZString "%s"',0
 szValue							db 'Hex %08Xh Dec %d',0
+szSourceByte					db 'Address: %X Byte: %X File: %u',0
 
 szType							db 'Type: %s Size: %u',0
 
@@ -372,11 +385,16 @@ szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged
 szObjName						db MAX_PATH dup(?)				; Path to obj to be debugged
 szSourceName					db MAX_PATH dup(?)				; Path to a source file
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
-lpOldEditProc					dd ?
-lpOldOutProc3					dd ?
-dbg								DEBUG <>
-var								VAR <>
-fNoDebugInfo					dd ?
-outbuffer						db 1024 dup(?)
-nRadASMVer						dd ?
-szWatchList						db 512 dup(?)
+lpOldEditProc					dd ?							; RAEdot callback
+lpOldOutProc3					dd ?							; Immediate window callback
+dbg								DEBUG <>						; Holds info while debugging
+var								VAR <>							; Current variable info
+fNoDebugInfo					dd ?							; No debug info found
+outbuffer						db 1024 dup(?)					; Buffer for wsprintf
+nRadASMVer						dd ?							; RadASM version
+szWatchList						db 512 dup(?)					; List of variables to watch
+mFunc							dd ?
+nError							dd ?
+szError							db 256 dup(?)
+lpFormat						dd ?
+
