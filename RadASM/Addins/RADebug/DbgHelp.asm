@@ -136,6 +136,25 @@ TestWord:
 
 FindWord endp
 
+AddPredefinedTypes proc uses esi edi
+
+	mov		esi,offset indextype
+	.while [esi].DEBUGTYPE.szName
+		mov		eax,dbg.inxtype
+		mov		edx,sizeof DEBUGTYPE
+		mul		edx
+		mov		edi,dbg.hMemType
+		lea		edi,[edi+eax]
+		invoke lstrcpy,addr [edi].DEBUGTYPE.szName,addr [esi].DEBUGTYPE.szName
+		mov		eax,[esi].DEBUGTYPE.nSize
+		mov		[edi].DEBUGTYPE.nSize,eax
+		inc		dbg.inxtype
+		lea esi,[esi+DEBUGTYPE]
+	.endw
+	ret
+
+AddPredefinedTypes endp
+
 FindTypeSize proc uses ebx esi edi,lpType:DWORD
 
 	mov		eax,lpType
@@ -243,8 +262,7 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 			pop		eax
 			invoke lstrcat,addr [edi+ebx+sizeof DEBUGVAR],eax
 		.else
-			mov		eax,lpType
-			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],eax
+			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpType
 		.endif
 		invoke lstrlen,addr [edi+ebx+sizeof DEBUGVAR]
 		lea		ebx,[ebx+eax]
@@ -252,7 +270,29 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	inc		ebx
 	mov		eax,lpArray
 	.if eax
-		invoke DecToBin,addr [eax+1]
+		push	ebx
+		lea		ebx,[eax+1]
+		invoke IsDec,ebx
+		.if eax
+			invoke DecToBin,ebx
+		.else
+			invoke IsHex,ebx
+			.if eax
+				invoke HexToBin,ebx
+			.else
+				xor		ecx,ecx
+				.while byte ptr [ebx+ecx]
+					.if byte ptr [ebx+ecx]==']'
+						mov		byte ptr [ebx+ecx],0
+						.break
+					.endif
+					inc		ecx
+				.endw
+				invoke FindTypeSize,ebx
+PrintDec eax
+			.endif
+		.endif
+		pop		ebx
 	.else
 		mov		eax,1
 	.endif
@@ -531,6 +571,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
 						push	hProcess
 						call	ebx
 					.endif
+					invoke AddPredefinedTypes
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
 					.if eax
 						mov		ebx,eax

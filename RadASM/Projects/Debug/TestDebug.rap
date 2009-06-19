@@ -61,7 +61,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=25
@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,2004
+1=0,0,1278,774,1355
 2=0,0,0,0,8
 3=0,0,0,0,64
 [BookMark]
@@ -115,14 +115,17 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="RECT"
-2="MYSTRUCT"
-3="RECT,left"
-4="RECT,"
-5="ecx = 13"
-6="118"
+1="MAX_PATH"
+2="RECT"
+3="MYSTRUCT"
+4="RECT,left"
+5="RECT,"
+6="ecx = 13"
+7="118"
 [RADebugBP]
-1=51,96,121
+1=52,97,122
 0=
 3=
 [NoDebug]
+[Watch]
+Watch=

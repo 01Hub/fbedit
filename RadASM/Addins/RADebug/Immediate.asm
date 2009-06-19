@@ -1,11 +1,12 @@
+
 .const
 
 ; Commands
-szImmDump						db 'DUMP',0
-szImmVars						db 'VARS',0
-szImmTypes						db 'TYPES',0
-szImmCls						db 'CLS',0
-szImmWatch						db 'WATCH',0
+szImmDump						db 'Dump',0
+szImmVars						db 'Vars',0
+szImmTypes						db 'Types',0
+szImmCls						db 'Cls',0
+szImmWatch						db 'Watch',0
 
 szImmLocal						db 0Dh,'LOCAL: ',0
 
@@ -35,28 +36,20 @@ ParseWatch proc uses ebx esi edi,lpList:DWORD
 
 	mov		edi,offset szWatchList
 	invoke RtlZeroMemory,edi,sizeof szWatchList
+	xor		edx,edx
 	mov		esi,lpList
-	.while byte ptr [esi]
-		call	SkipWhiteSpace
+	.while byte ptr [esi] && edx<8
 		call	AddWatchVar
 	.endw
-;	mov		edi,offset szWatchList
-;	.while byte ptr [edi]
-;		PrintStringByAddr edi
-;		invoke lstrlen,edi
-;		lea		edi,[edi+eax+1]
-;	.endw
 	ret
 
 AddWatchVar:
 	xor		ecx,ecx
 	.while byte ptr [esi] && byte ptr [esi]!=','
 		mov		al,[esi]
-		.if al!=VK_SPACE && al!=VK_TAB
-			inc		ecx
-			mov		[edi],al
-			inc		edi
-		.endif
+		mov		[edi],al
+		inc		ecx
+		inc		edi
 		inc		esi
 	.endw
 	.if byte ptr [esi]==','
@@ -75,6 +68,24 @@ SkipWhiteSpace:
 
 ParseWatch endp
 
+SaveWatch proc lpWatch:DWORD
+
+	mov		eax,lpData
+	invoke WritePrivateProfileString,addr szImmWatch,addr szImmWatch,lpWatch,[eax].ADDINDATA.lpProject
+	ret
+
+SaveWatch endp
+
+LoadWatch proc
+	LOCAL	buffer[256]:BYTE
+
+	mov		eax,lpData
+	invoke GetPrivateProfileString,addr szImmWatch,addr szImmWatch,addr szNULL,addr buffer,sizeof buffer,[eax].ADDINDATA.lpProject
+	invoke ParseWatch,addr buffer
+	ret
+
+LoadWatch endp
+
 Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[256]:BYTE
@@ -89,7 +100,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	mov		buffer[eax],0
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
 	invoke ParseBuff,addr buffer
-	invoke lstrcmpi,addr buffer,addr szImmDump
+	invoke strcmpi,addr buffer,addr szImmDump
 	.if !eax
 		invoke ClearBreakPointsAll
 		mov		esi,400000h
@@ -102,7 +113,33 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		invoke SetBreakPointsAll
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,addr buffer,addr szImmTypes
+	invoke strcmpin,addr buffer,addr szImmDump,4
+	.if !eax
+		invoke GetVarAdr,addr buffer[4],dbg.prevline
+		.if eax
+			mov		eax,var.nSize
+			mov		edx,var.nArray
+			mul		edx
+			mov		edi,eax
+			mov		esi,var.Address
+			.while edi>=16
+				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
+				.if eax
+					invoke DumpLine,hOut3,esi,addr buffer,16
+				.endif
+				sub		edi,16
+				add		esi,16
+			.endw
+			.if edi
+				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
+				.if eax
+					invoke DumpLine,hOut3,esi,addr buffer,edi
+				.endif
+			.endif
+		.endif
+		jmp		Ex
+	.endif
+	invoke strcmpi,addr buffer,addr szImmTypes
 	.if !eax
 		mov		esi,dbg.hMemType
 		xor		ebx,ebx
@@ -114,7 +151,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.endw
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,addr buffer,addr szImmVars
+	invoke strcmpi,addr buffer,addr szImmVars
 	.if !eax
 		mov		esi,dbg.hMemSymbol
 		mov		ecx,dbg.inxsymbol
@@ -123,24 +160,24 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.if [esi].DEBUGSYMBOL.nType=='d'
 				mov		edi,[esi].DEBUGSYMBOL.lpType
 				.if edi
-					invoke lstrcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
-					invoke lstrlen,addr [edi+sizeof DEBUGVAR]
-					invoke lstrcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
+					invoke strcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
+					invoke strlen,addr [edi+sizeof DEBUGVAR]
+					invoke strcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
 					invoke PutStringOut,addr outbuffer,hOut3
 				.endif
 			.elseif [esi].DEBUGSYMBOL.nType=='p'
-				invoke lstrcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
+				invoke strcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
 				mov		edi,[esi].DEBUGSYMBOL.lpType
 				.if edi
 					mov		ebx,offset szSpace
 					lea		edi,[edi+sizeof DEBUGVAR]
 					.while byte ptr [edi]
-						invoke lstrcat,addr outbuffer,ebx
-						invoke lstrcat,addr outbuffer,edi
-						invoke lstrlen,edi
+						invoke strcat,addr outbuffer,ebx
+						invoke strcat,addr outbuffer,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
-						invoke lstrcat,addr outbuffer,edi
-						invoke lstrlen,edi
+						invoke strcat,addr outbuffer,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
 						lea		edi,[edi+sizeof DEBUGVAR]
 						mov		ebx,offset szComma
@@ -148,12 +185,12 @@ Immediate proc uses ebx esi edi,hWin:HWND
 					mov		ebx,offset szImmLocal
 					lea		edi,[edi+sizeof DEBUGVAR+2]
 					.while byte ptr [edi]
-						invoke lstrcat,addr outbuffer,ebx
-						invoke lstrcat,addr outbuffer,edi
-						invoke lstrlen,edi
+						invoke strcat,addr outbuffer,ebx
+						invoke strcat,addr outbuffer,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
-						invoke lstrcat,addr outbuffer,edi
-						invoke lstrlen,edi
+						invoke strcat,addr outbuffer,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
 						lea		edi,[edi+sizeof DEBUGVAR]
 						mov		ebx,offset szComma
@@ -167,14 +204,19 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.endw
 		jmp		Ex
 	.endif
-	invoke lstrcmpi,addr buffer,addr szImmCls
+	invoke strcmpi,addr buffer,addr szImmCls
 	.if !eax
 		invoke SetWindowText,hOut3,addr szNULL
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmWatch,5
 	.if !eax
+		invoke SaveWatch,addr buffer[5]
 		invoke ParseWatch,addr buffer[5]
+		.if szWatchList
+			invoke WatchVars
+			ret
+		.endif
 		jmp		Ex
 	.endif
 	.if buffer=='?'
@@ -182,7 +224,8 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.if eax
 			invoke PutStringOut,addr outbuffer,hOut3
 		.else
-			invoke PutStringOut,addr szImmNotFound,hOut3
+			invoke wsprintf,addr outbuffer,addr szImmNotFound,addr buffer[1]
+			invoke PutStringOut,addr outbuffer,hOut3
 		.endif
 		jmp		Ex
 	.endif
@@ -230,7 +273,8 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else
-				invoke PutStringOut,addr szImmNotFound,hOut3
+				invoke wsprintf,addr outbuffer,addr szImmNotFound,addr buffer
+				invoke PutStringOut,addr outbuffer,hOut3
 			.endif
 			jmp		Ex
 		.endif

@@ -160,7 +160,7 @@ DATATYPE struct
 	lpszType				DWORD ?
 	lpszConvertType			DWORD ?
 	nSize					WORD ?
-	nSigned					WORD ?
+	fSigned					WORD ?
 DATATYPE ends
 
 ; Current variable. Used by tooltip and immediate
@@ -173,6 +173,7 @@ VAR struct
 	fPtr					DWORD ?
 	nOfs					DWORD ?
 	Address					DWORD ?
+	nInx					DWORD ?
 	IsSZ					DWORD ?
 	Value					DWORD ?
 	szValue					BYTE 256 dup(?)
@@ -233,22 +234,25 @@ szTBYTE							db 'TBYTE',0
 szDT							db 'DT',0
 								db 0
 
-datatype						DATATYPE 9	dup(<szBYTE,szBYTE,1>,
-												<szSBYTE,szSBYTE,1>,
-												<szDB,szBYTE,1>,
-												<szWORD,szWORD,2>,
-												<szSWORD,szSWORD,2>,
-												<szDW,szWORD,2>,
-												<szDWORD,szDWORD,4>,
-												<szSDWORD,szSDWORD,4>,
-												<szDD,szDWORD,4>)
-datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8>,
-												<szDQ,szQWORD,8>,
-												<szREAL4,szREAL4,4>,
-												<szREAL8,szREAL8,8>,
-												<szTBYTE,szTBYTE,10>,
-												<szDT,szTBYTE,10>,
-												<0,0,0>)
+datatype						DATATYPE 9	dup(<szBYTE,szBYTE,1,0>,
+												<szSBYTE,szSBYTE,1,1>,
+												<szDB,szBYTE,1,0>,
+												<szWORD,szWORD,2,0>,
+												<szSWORD,szSWORD,2,1>,
+												<szDW,szWORD,2,0>,
+												<szDWORD,szDWORD,4,0>,
+												<szSDWORD,szSDWORD,4,1>,
+												<szDD,szDWORD,4,0>)
+datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8,0>,
+												<szDQ,szQWORD,8,0>,
+												<szREAL4,szREAL4,4,0>,
+												<szREAL8,szREAL8,8,0>,
+												<szTBYTE,szTBYTE,10,0>,
+												<szDT,szTBYTE,10,0>,
+												<0,0,0,0>)
+
+indextype						DEBUGTYPE 2 dup(<'MAX_PATH',260>,
+												<,0>)
 
 DbgHelpDLL						db 'DbgHelp.dll',0
 
@@ -263,7 +267,6 @@ szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT',0
 szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
 szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
-szDebugStopped					db 'Debuging ended',0
 szCR							db 0Dh,0
 szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
@@ -275,6 +278,7 @@ szImmPrompt						db '>',0
 szSourceByte					db 'Address: %X Byte: %X File: %u',0
 szDebug							db 'Debug',0
 szDebuggingStarted				db 'Debugging started',0
+szDebugStopped					db 'Debugging ended',0
 szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
@@ -338,7 +342,7 @@ szValue							db 'Hex %08Xh Dec %d',0
 
 szType							db 'Type: %s Size: %u',0
 
-szImmNotFound					db 'Variable not found.',0
+szImmNotFound					db '%s Variable not found.',0
 szImmUnknown					db 'Unknown command.',0
 
 szCall							db 'invoke',0

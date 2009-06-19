@@ -6,9 +6,19 @@ LoadAllBreakPoints				PROTO
 .const
 
 szBP							db 0CCh
-szDump							db 'Reg     Hex                 Dec',0Dh,'-------------------------------',0Dh,0
+szDump							db 'Reg     Hex                 Dec',0Dh,
+								   '-------------------------------',0Dh,0
 szDec							db '%d',0Dh,0
-szRegs							db 'EAX     ',0,'ECX     ',0,'EDX     ',0,'EBX     ',0,'ESP     ',0,'EBP     ',0,'ESI     ',0,'EDI     ',0,'EIP     ',0,'EFL     ',0
+szRegs							db 'EAX     ',0,
+								   'ECX     ',0,
+								   'EDX     ',0,
+								   'EBX     ',0,
+								   'ESP     ',0,
+								   'EBP     ',0,
+								   'ESI     ',0,
+								   'EDI     ',0,
+								   'EIP     ',0,
+								   'EFL     ',0
 szDecSpace						db '                ',0
 
 .data?

@@ -19,6 +19,7 @@ MYSTRUCT ends
 .data
 
 szTest		db 'Test',0
+szBuff		db MAX_PATH dup(?)
 tid			dd   ?
 rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
@@ -48,7 +49,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	mov		ddd,4
 	mov		eee,5
 	mov		fff,6
-;	mov		rc.left,99
+	mov		rc.left,99
 	mov		eax,ebp
 	lea		eax,aa
 	lea		ecx,bb
@@ -85,22 +86,22 @@ MyProc3 proc uses esi,Param:DWORD
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-;	invoke OutputDebugString,addr szTest
+	invoke OutputDebugString,addr szTest
 	ret
 
 MyProc3 endp
 
 start:
-;	mov		hInstance[0],1
-;	mov		hInstance[4],2
-;	mov		hInstance[8],3
+	mov		hInstance[0],1
+	mov		hInstance[4],2
+	mov		hInstance[8],3
 	mov		eax,'ABCD'
 	mov		eax,tid
 	mov		tid,1234
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
-;	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
-;	invoke CloseHandle,eax
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
+	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CloseHandle,eax
 	mov		eax,'ABCD'
 	mov		ecx,'EFGH'
 	mov		edx,'ABCD'
@@ -120,7 +121,7 @@ start:
 	mov		ax,'DE'
 	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
-;	invoke MyProc3
+	invoke MyProc3,987
 	invoke MyProc4
 	jmp		Ex
 Ex:

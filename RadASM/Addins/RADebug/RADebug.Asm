@@ -723,6 +723,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	.elseif eax==AIM_PROJECTOPENED
 		invoke UpdateAccelerators
 		invoke EnableMenu
+		invoke LoadWatch
 		;
 	.elseif eax==AIM_MDIACTIVATE
 		;A new edit window is selected

@@ -53,6 +53,7 @@ ApiStructListBox proc lpList:DWORD,nType:DWORD
 	invoke lstrcpyn,addr LineTxt,lpList,8192
 	invoke iniGetItem,addr LineTxt,addr	buffer
   @@:
+	mov		buffer,0
 	invoke iniGetItem,addr LineTxt,addr	buffer
 	mov		al,buffer[0]
 	.if al>='0' && al<='9'

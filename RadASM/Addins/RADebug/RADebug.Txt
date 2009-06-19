@@ -70,19 +70,35 @@ o NOTE!
 
 Immediate window (Output window #3):
 -----------------------------------------------------------------------------
+NOTE!
+To inspect or change a proc parameter or local variable it must
+be in the current scope.
+Commands ,registers and hex values are case insensitive.
+Variables are case sensitive.
+
 o Inspect variable or register.
   - ?MyVar to show info about a variable local or parameter.
+  - ?MyVar(5) to show an array element. Index is zero based.
   - ?Z:MyZString to show a ZString.
   - ?reg To show a register (reg: eax, ebx ...).
+  - ?123 or ?0A5Fh to convert a number to hex and decimal.
 o Change variable or register.
   - MyVar=2 to change the variable MyVar.
-  - reg=4 to change a register (reg: eax, ebx ...).
+  - reg=4AB0h to change a register (reg: eax, ebx ...).
 o Commands.
-  - Dump to hex dump the exe.
-  - Vars to show a list of variables.
-  - Types to show a list of types.
-  - Watch var1,var2,....,var8 to watch variables.
-  - Cls to clear the immediate window.
+  - Dump
+    Shows a hex dump of the exe.
+  - Dump MyStruct
+    Shows a hex dump of an array, structure or union.
+  - Vars
+    Shows a list of all variables.
+  - Types
+    Show a list of all types.
+  - Watch var1,Z:MyZStr,....,var8
+    Adds a watch to specified variables.
+    To clear the watch list, type Watch without any variable list.
+  - Cls
+    Clears the immediate window.
 
 Whats new:
 -----------------------------------------------------------------------------
