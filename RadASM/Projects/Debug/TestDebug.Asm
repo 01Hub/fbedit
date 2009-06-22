@@ -16,10 +16,12 @@ MYSTRUCT struct
 	bbbbb	DWORD ?
 MYSTRUCT ends
 
+MYCONST			equ MAX_PATH
+
 .data
 
 szTest		db 'Test',0
-szBuff		db MAX_PATH dup(?)
+szBuff		db MYCONST dup(?)
 tid			dd   ?
 rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
@@ -27,6 +29,9 @@ valdd		DWORD 4
 valdw		WORD 2
 valdbabcdefgh		BYTE 1
 hInstance	HINSTANCE 8 dup(?)
+xtst1		tbyte ?
+xtst2		dword ?
+
 
 .code
 
@@ -40,6 +45,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	fff:BYTE
 	LOCAL	rc:RECT
 	LOCAL	ggg:WORD
+	LOCAL	hhh:tbyte
 
 	mov		rc.left,123
 	mov		ggg,999

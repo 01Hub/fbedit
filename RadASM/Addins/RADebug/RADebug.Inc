@@ -166,6 +166,7 @@ DEBUG struct
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?					; Set to TRUE when a breakpoint is reached
 	pt						POINT <>				; Used by tooltip
+	nErrors					DWORD ?					; Number of errors while parsing
 DEBUG ends
 
 ; Predefined datatypes
@@ -266,10 +267,6 @@ datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 												<szDT,szTBYTE,10,0>,
 												<0,0,0,0>)
 
-; Predefined constants to evaluate array sizees
-indextype						DEBUGTYPE 1 dup(<'MAX_PATH',260>,
-												<,0>)
-
 ; The dbghelp dll
 DbgHelpDLL						db 'DbgHelp.dll',0
 
@@ -292,7 +289,7 @@ szEventDec						db '%s %d',0
 
 ; Some useful text constants
 szCR							db 0Dh,0
-szCRLF							db 0Dh,0Ah,0
+;szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSpace							db ' ',0
 szComma							db ',',0
@@ -306,8 +303,8 @@ szDebugStopped					db 'Debugging ended',0
 szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
-szExeNotFound					db 'Could not open:',0Dh,0Ah,'%s',0
-szNoDebugInfo					db 'No debug info found.',0Dh,0Ah,'Use the /Zd, /Zi and /DEBUG command line options.',0
+szExeNotFound					db 'Could not open:',0Dh,'%s',0
+szNoDebugInfo					db 'No debug info found.',0Dh,'Use the /Zd, /Zi and /DEBUG command line options.',0
 
 ; Breakpoint save / load
 szRADebugBP						db 'RADebugBP',0
@@ -348,9 +345,9 @@ AddinOpt						ADDINOPT 5 dup(<offset szShowDbgHelp,1,1>,
 sztooltips_class32				db 'tooltips_class32',0
 
 ; Tooltip / immediate window formatting
-szReg32							db '%s=%08Xh',0
-szReg16							db '%s=%04Xh',0
-szReg8							db '%s=%02Xh',0
+szReg32							db 'REGISTER %s Hex %08Xh Dec %u',0
+szReg16							db 'REGISTER %s Hex %04Xh Dec %u',0
+szReg8							db 'REGISTER %s Hex %02Xh Dec %u',0
 szProc							db 'PROC %s Size %u',0
 szData							db 'GLOBAL %s Address %08Xh Size %u',0
 szData32						db 'GLOBAL %s Address %08Xh Size %u Hex %08Xh Dec %d',0
@@ -371,9 +368,14 @@ szSourceByte					db 'Address: %X Byte: %X File: %u',0
 
 szType							db 'Type: %s Size: %u',0
 
-szImmNotFound					db '%s Variable not found.',0
-szImmUnknown					db 'Unknown command.',0
-
+; Errors
+szErrSyntaxError				db 'Syntax error: %s',0
+szErrVariableNotFound			db 'Variable not found: %s',0
+szErrUnknownCommand				db 'Unknown command.',0
+szErrConstant					db 'Could not evaluate expression: %s',0
+szErrArray						db 'Could not evaluate array size: %s',0
+szErrType						db 'Could not find datatype: %s',0
+szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,'Variables, parameters and locals are disabled.',0
 szCall							db 'invoke',0
 								db 'call',0
 ;								db 'Add other call types here',0

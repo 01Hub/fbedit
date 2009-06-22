@@ -29,9 +29,6 @@ szFUNC							db 'SHL',0,
 								   'OR',0,
 								   'XOR',0,0
 
-szSyntaxError					db 'Syntax error: %s',0
-szVariableNotFound				db 'Variable not found: %s',0
-
 .code
 
 GetFunc proc uses ebx esi edi
@@ -62,14 +59,14 @@ GetFunc proc uses ebx esi edi
 	.while byte ptr [ebx]
 		inc		nFunc
 		push	ecx
-		invoke lstrcmpi,ebx,edi
+		invoke strcmpi,ebx,edi
 		pop		ecx
 		.if !eax
 			mov		eax,nFunc
 			jmp		Ex
 		.endif
 		push	ecx
-		invoke lstrlen,ebx
+		invoke strlen,ebx
 		pop		ecx
 		lea		ebx,[ebx+eax+1]
 	.endw
@@ -89,7 +86,7 @@ GetValue proc uses ebx edi
 	lea		edi,buffer
 	.while TRUE
 		mov		al,[esi]
-		.if (al>='0' && al<='9') || (al>='A' && al<='Z') || (al>='a' && al<='z')
+		.if (al>='0' && al<='9') || (al>='A' && al<='Z') || (al>='a' && al<='z') || al=='_'
 			mov		[edi],al
 			inc		edi
 			inc		esi
@@ -126,7 +123,7 @@ GetValue proc uses ebx edi
 		.endw
 		.if byte ptr [esi]=='('
 			lea		edi,buffer
-			invoke lstrlen,edi
+			invoke strlen,edi
 			lea		edi,[edi+eax]
 			xor		ecx,ecx
 			.while byte ptr [esi]
@@ -156,10 +153,14 @@ GetValue proc uses ebx edi
 			mov		eax,var.Value
 			jmp		Ex
 		.else
-			mov		nError,2
-			invoke strcpy,addr szError,addr buffer
-			xor		eax,eax
-			jmp		Ex
+			invoke FindTypeSize,addr buffer
+			.if !edx
+				mov		nError,2
+				invoke strcpy,addr szError,addr buffer
+				xor		eax,eax
+				jmp		Ex
+			.endif
+			mov		mFunc,'H'
 		.endif
 	.endif
   Ex:
@@ -310,17 +311,8 @@ DoMath proc uses ebx esi edi,lpMath:DWORD
 	invoke CalculateIt,0
 	.if !nError
 		mov		var.Value,eax
-		.if mFunc=='H'
-			invoke wsprintf,offset outbuffer,addr szValue,var.Value,var.Value
-		.else
-			invoke FormatOutput,addr outbuffer
-		.endif
 		mov		eax,TRUE
 		jmp		Ex
-	.elseif nError==1
-		invoke wsprintf,offset outbuffer,addr szSyntaxError,addr szError
-	.elseif nError==2
-		invoke wsprintf,offset outbuffer,addr szVariableNotFound,addr szError
 	.endif
 	xor		eax,eax
   Ex:

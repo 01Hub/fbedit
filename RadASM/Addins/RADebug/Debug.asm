@@ -83,20 +83,20 @@ ShowContext proc uses ebx esi edi
 	ret
 
 AddText:
-	invoke lstrcpy,szContextPtr,eax
-	invoke lstrlen,szContextPtr
+	invoke strcpy,szContextPtr,eax
+	invoke strlen,szContextPtr
 	add		szContextPtr,eax
 	retn
 
 RegOut:
-	invoke lstrcpy,addr buffer,esi
+	invoke strcpy,addr buffer,esi
 	invoke HexDWORD,addr buffer[8],ebx
-	invoke lstrcat,addr buffer,addr szDecSpace
+	invoke strcat,addr buffer,addr szDecSpace
 	invoke wsprintf,addr decbuff,addr szDec,ebx
-	invoke lstrlen,addr decbuff
+	invoke strlen,addr decbuff
 	mov		edx,15
 	sub		edx,eax
-	invoke lstrcpy,addr buffer[edx+17],addr decbuff
+	invoke strcpy,addr buffer[edx+17],addr decbuff
 	lea		eax,buffer
 	call	AddText
 	.if ebx!=edi
@@ -107,7 +107,7 @@ RegOut:
 		mov		dword ptr [edx+4],0
 		inc		LineChangedInx
 	.endif
-	invoke lstrlen,esi
+	invoke strlen,esi
 	lea		esi,[esi+eax+1]
 	inc		nLine
 	retn
@@ -153,7 +153,7 @@ MatchIt:
 	mov		CountSource,eax
 	mov		ebx,dbg.hMemSource
 	.while CountSource
-		invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+		invoke strcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
 		.if !eax
 			mov		dx,[ebx].DEBUGSOURCE.FileID
 			mov		eax,[esi].BREAKPOINT.LineNumber
@@ -233,7 +233,7 @@ MapNoDebug proc uses ebx esi edi
 		mov		edi,dbg.hMemSymbol
 		mov		ebx,dbg.inxsymbol
 		.while ebx
-			invoke lstrcmp,addr buffer,addr [edi].DEBUGSYMBOL.szName
+			invoke strcmp,addr buffer,addr [edi].DEBUGSYMBOL.szName
 			.if !eax
 				mov		[edi].DEBUGSYMBOL.NoDebug,1
 				mov		edx,[edi].DEBUGSYMBOL.Address
@@ -335,7 +335,7 @@ SetBreakpointAtCurrentLine proc uses ebx esi edi,nLine:DWORD
 	mov		CountSource,eax
 	mov		ebx,dbg.hMemSource
 	.while CountSource
-		invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+		invoke strcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
 		.if !eax
 			mov		dx,[ebx].DEBUGSOURCE.FileID
 			mov		eax,nLine		;LineNumber
@@ -395,8 +395,8 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	mov		esi,dbg.hMemSource
 	lea		esi,[esi+eax]
 	mov		edx,lpData
-	invoke lstrcpy,addr szSourceName,[edx].ADDINDATA.lpProjectPath
-	invoke lstrcat,addr szSourceName,addr [esi].DEBUGSOURCE.FileName
+	invoke strcpy,addr szSourceName,[edx].ADDINDATA.lpProjectPath
+	invoke strcat,addr szSourceName,addr [esi].DEBUGSOURCE.FileName
 	invoke PostMessage,[edi].ADDINHANDLES.hWnd,WM_USER+998,0,addr szSourceName
 	invoke WaitForSingleObject,dbg.pinfo.hProcess,100
 	mov		eax,[edi].ADDINHANDLES.hEdit
@@ -436,12 +436,12 @@ IsLineCall proc uses esi edi
 	mov		byte ptr [edi],0
 	pop		edi
 	.while byte ptr [esi]
-		invoke lstrcmpi,esi,edi
+		invoke strcmpi,esi,edi
 		.if !eax
 			inc		eax
 			jmp		Ex
 		.endif
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	xor		eax,eax
@@ -450,20 +450,6 @@ IsLineCall proc uses esi edi
 
 IsLineCall endp
 
-;ResumeAllThreads proc uses ebx
-;
-;	lea		ebx,dbg.thread
-;	.while [ebx].DEBUGTHREAD.htread
-;		.if [ebx].DEBUGTHREAD.suspended
-;			mov		[ebx].DEBUGTHREAD.suspended,FALSE
-;			invoke ResumeThread,[ebx].DEBUGTHREAD.htread
-;		.endif
-;		add		ebx,sizeof DEBUGTHREAD
-;	.endw
-;	ret
-;
-;ResumeAllThreads endp
-;
 FindThread proc uses ebx,ThreadID:DWORD
 
 	lea		ebx,dbg.thread
@@ -620,11 +606,19 @@ Debug proc uses ebx,lpFileName:DWORD
 			.endif
 			invoke SetBreakPoints
 			invoke ImmPrompt
-			.if fOptions & 8
-				; Show register window
-				push	2
-				mov		eax,lpProc
-				call	[eax].ADDINPROCS.lpOutputSelect
+			.if dbg.nErrors
+				mov		eax,dbg.hMemVar
+				mov		dbg.lpvar,eax
+				invoke RtlZeroMemory,eax,256*1024
+				invoke wsprintf,addr outbuffer,addr szErrorParsing,dbg.nErrors
+				invoke PutString,addr outbuffer
+			.else
+				.if fOptions & 8
+					; Show register window
+					push	2
+					mov		eax,lpProc
+					call	[eax].ADDINPROCS.lpOutputSelect
+				.endif
 			.endif
 		.endif
 		mov		dbg.prevline,-1
@@ -732,7 +726,6 @@ Debug proc uses ebx,lpFileName:DWORD
 					mov		ebx,eax
 					.if [ebx].DEBUGTHREAD.suspended
 						mov		dbg.lpthread,ebx
-						;invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif

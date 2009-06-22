@@ -19,6 +19,27 @@ strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
 strcpy endp
 
+strcpyn proc uses esi edi,lpDest:DWORD,lpSource:DWORD,nLen:DWORD
+
+	mov		esi,lpSource
+	mov		edx,nLen
+	dec		edx
+	xor		ecx,ecx
+	mov		edi,lpDest
+  @@:
+	.if sdword ptr ecx<edx
+		mov		al,[esi+ecx]
+		mov		[edi+ecx],al
+		inc		ecx
+		or		al,al
+		jne		@b
+	.else
+		mov		byte ptr [edi+ecx],0
+	.endif
+	ret
+
+strcpyn endp
+
 strcat proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
 	xor		eax,eax
@@ -495,37 +516,55 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	mov		eax,[eax]
 	and		eax,0FF5F5F5Fh
 	.if eax==' RTP'
+		; Found
+		mov		edx,TRUE
 		mov		eax,4
 		jmp		Ex
 	.endif
+	; Predefined datatypes, case insensitive.
+	mov		esi,offset datatype
+	.while [esi].DATATYPE.lpszType
+		invoke strcmpi,lpType,[esi].DATATYPE.lpszType
+		.if !eax
+			; Found
+			mov		edx,TRUE
+			movzx	eax,[esi].DATATYPE.nSize
+			jmp		Ex
+		.endif
+		lea		esi,[esi+sizeof DATATYPE]
+	.endw
+	; Datatypes from dbghelp, case sensitive
 	mov		esi,dbg.hMemType
 	xor		ebx,ebx
 	.while ebx<dbg.inxtype
-		invoke lstrcmp,addr [esi].DEBUGTYPE.szName,lpType
+		invoke strcmp,addr [esi].DEBUGTYPE.szName,lpType
 		.if !eax
 			; Found
+			mov		edx,TRUE
 			mov		eax,[esi].DEBUGTYPE.nSize
 			jmp		Ex
 		.endif
 		lea		esi,[esi+sizeof DEBUGTYPE]
 		inc		ebx
 	.endw
+	; Datatypes from RadASM, case sensitive
 	mov		edx,lpData
 	;Get pointer to word list
 	mov		esi,[edx].ADDINDATA.lpWordList
-	;Skip the words loaded from .api files
+	;Only words loaded from .api files
 	mov		edi,[edx].ADDINDATA.rpProjectWordList
 	lea		edi,[edi+esi]
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize && esi<edi
 		.if [esi].PROPERTIES.nType=='T'
-			invoke lstrcmpi,addr [esi+sizeof PROPERTIES],lpType
+			invoke strcmp,addr [esi+sizeof PROPERTIES],lpType
 			.if !eax
 				; Found
 				lea		edi,[esi+sizeof PROPERTIES]
-				invoke lstrlen,edi
+				invoke strlen,edi
 				lea		edi,[edi+eax+1]
 				invoke DecToBin,edi
+				mov		edx,TRUE
 				jmp		Ex
 			.endif
 		.endif
@@ -534,8 +573,8 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 		lea		esi,[esi+eax+sizeof PROPERTIES]
 	.endw
 	; Type size not found
-PrintStringByAddr lpType
 	xor		eax,eax
+	xor		edx,edx
   Ex:
 	ret
 
@@ -625,7 +664,7 @@ GetPredefinedDatatype proc uses esi edi,lpType:DWORD
 
 	mov		edi,offset datatype
 	.while [edi].DATATYPE.lpszType
-		invoke lstrcmpi,[edi].DATATYPE.lpszType,lpType
+		invoke strcmpi,[edi].DATATYPE.lpszType,lpType
 		.if !eax
 			movzx	edx,[edi].DATATYPE.nSize
 			movzx	ecx,[edi].DATATYPE.fSigned
@@ -646,7 +685,7 @@ FindSymbol proc uses esi,lpName:DWORD
 	mov		esi,dbg.hMemSymbol
 	;Loop trough the symbol list
 	.while [esi].DEBUGSYMBOL.szName
-		invoke lstrcmp,lpName,addr [esi].DEBUGSYMBOL.szName
+		invoke strcmp,lpName,addr [esi].DEBUGSYMBOL.szName
 		.if !eax
 			mov		eax,esi
 			jmp		Ex			
@@ -666,10 +705,10 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 	mov		esi,lplpLocal
 	mov		esi,[esi]
 	.while byte ptr [esi+sizeof DEBUGVAR]
-		invoke lstrcmp,addr [esi+sizeof DEBUGVAR],lpName
+		invoke strcmp,addr [esi+sizeof DEBUGVAR],lpName
 		.if !eax
-			invoke lstrlen,addr [esi+sizeof DEBUGVAR]
-			invoke lstrcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]
+			invoke strlen,addr [esi+sizeof DEBUGVAR]
+			invoke strcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]
 			mov		eax,[esi].DEBUGVAR.nSize
 			mov		var.nSize,eax
 			mov		eax,[esi].DEBUGVAR.nArray
@@ -680,9 +719,9 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 			jmp		Ex
 		.endif
 		lea		esi,[esi+sizeof DEBUGVAR]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	mov		eax,lplpLocal
@@ -724,7 +763,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 					add		eax,var.nOfs
 					add		eax,4
 					mov		var.Address,eax
-					invoke lstrcpy,addr var.szName,lpName
+					invoke strcpy,addr var.szName,lpName
 					mov		eax,'P'
 					jmp		Ex
 				.endif
@@ -742,7 +781,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 						add		eax,dbg.context.regEbp
 						sub		eax,var.nOfs
 						mov		var.Address,eax
-						invoke lstrcpy,addr var.szName,lpName
+						invoke strcpy,addr var.szName,lpName
 						mov		eax,'L'
 						jmp		Ex
 					.endif
@@ -760,7 +799,7 @@ FindReg proc uses esi,lpName:DWORD
 
 	mov		esi,offset reg32
 	.while [esi].REG.szName
-		invoke lstrcmpi,lpName,addr [esi].REG.szName
+		invoke strcmpi,lpName,addr [esi].REG.szName
 		.if !eax
 			mov		eax,esi
 			jmp		Ex
@@ -800,7 +839,7 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 	.if eax
 		; REGISTER
 		mov		esi,eax
-		invoke lstrcpy,addr var.szName,lpName
+		invoke strcpy,addr var.szName,lpName
 		mov		eax,[esi].REG.nSize
 		mov		var.nSize,eax
 		mov		eax,[esi].REG.nOfs
@@ -825,7 +864,7 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 	invoke FindSymbol,lpName
 	.if eax
 		mov		esi,eax
-		invoke lstrcpy,addr var.szName,addr [esi].DEBUGSYMBOL.szName
+		invoke strcpy,addr var.szName,addr [esi].DEBUGSYMBOL.szName
 		.if [esi].DEBUGSYMBOL.nType=='p'
 			; PROC
 			mov		var.nType,99
@@ -853,9 +892,9 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 			.if eax<[esi].DEBUGVAR.nArray
 				mov		eax,[esi].DEBUGVAR.nArray
 				mov		var.nArray,eax
-				invoke lstrlen,addr [esi+sizeof DEBUGVAR]
+				invoke strlen,addr [esi+sizeof DEBUGVAR]
 				lea		edi,[esi+eax+1+sizeof DEBUGVAR]
-				invoke lstrcat,addr var.szName,edi
+				invoke strcat,addr var.szName,edi
 				mov		eax,'d'
 				jmp		Ex
 			.endif
@@ -885,34 +924,36 @@ FindVar endp
 
 FormatOutput proc uses ebx,lpOutput:DWORD
 
-	mov		ebx,esp
-	mov		edx,var.nFormat
-	.if edx & FMT_SZ
-		lea		eax,var.szValue
-		push	eax
+	.if var.lpFormat
+		mov		ebx,esp
+		mov		edx,var.nFormat
+		.if edx & FMT_SZ
+			lea		eax,var.szValue
+			push	eax
+		.endif
+		.if edx & FMT_DEC
+			push	var.Value
+		.endif
+		.if edx & FMT_HEX
+			push	var.Value
+		.endif
+		.if edx & FMT_SIZE
+			push	var.nSize
+		.endif
+		.if edx & FMT_ADDRESS
+			push	var.Address
+		.endif
+		.if edx & FMT_TYPE
+			lea		eax,var.szArray
+			push	eax
+		.endif
+		.if edx & FMT_NAME
+			lea		eax,var.szName
+			push	eax
+		.endif
+		invoke wsprintf,lpOutput,var.lpFormat
+		mov		esp,ebx
 	.endif
-	.if edx & FMT_DEC
-		push	var.Value
-	.endif
-	.if edx & FMT_HEX
-		push	var.Value
-	.endif
-	.if edx & FMT_SIZE
-		push	var.nSize
-	.endif
-	.if edx & FMT_ADDRESS
-		push	var.Address
-	.endif
-	.if edx & FMT_TYPE
-		lea		eax,var.nArray
-		push	eax
-	.endif
-	.if edx & FMT_NAME
-		lea		eax,var.szName
-		push	eax
-	.endif
-	invoke wsprintf,lpOutput,var.lpFormat
-	mov		esp,ebx
 	ret
 
 FormatOutput endp
@@ -940,7 +981,7 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		.endif
 		mov		var.Value,eax
 		mov		var.lpFormat,edx
-		mov		var.nFormat,FMT_NAME or FMT_HEX
+		mov		var.nFormat,FMT_NAME or FMT_HEX or FMT_DEC
 	.elseif eax=='p'
 		; PROC
 		mov		var.lpFormat,offset szProc
@@ -1079,10 +1120,10 @@ WatchVars proc uses esi
 			.if eax
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else
-				invoke wsprintf,addr outbuffer,addr szImmNotFound,esi
+				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
 				invoke PutStringOut,addr outbuffer,hOut3
 			.endif
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
 		invoke ImmPrompt

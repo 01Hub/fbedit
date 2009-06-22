@@ -152,7 +152,7 @@ ToolPropertySize		PROTO :DWORD
 TabToolUpdate			PROTO :DWORD,:DWORD
 SetPropertyCbo			PROTO :DWORD
 
-wsprintfA				PROTO C :DWORD,:VARARG
+;wsprintfA				PROTO C :DWORD,:VARARG
 wsprintf				equ <wsprintfA>
 
 ;#########################################################################

@@ -164,7 +164,7 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 			invoke AppendMenu,hMnu,MF_STRING,[edi],esi
 			add		edi,4
 		.endif
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	ret
@@ -280,8 +280,8 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetPrivateProfileString,addr szNoDebug,addr buffer1,addr szNULL,addr buffer,sizeof buffer,[eax].ADDINDATA.lpProject
 			.break .if !eax
 			invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_ADDSTRING,0,addr buffer
-			invoke lstrcpy,edi,addr buffer
-			invoke lstrlen,edi
+			invoke strcpy,edi,addr buffer
+			invoke strlen,edi
 			lea		edi,[edi+eax+1]
 			inc		nInx
 		.endw
@@ -299,9 +299,9 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		esi,[esi+sizeof PROPERTIES]
 				mov		edi,hMem
 				.while byte ptr [edi]
-					invoke lstrcmp,edi,esi
+					invoke strcmp,edi,esi
 					.break .if !eax
-					invoke lstrlen,edi
+					invoke strlen,edi
 					lea		edi,[edi+eax+1]
 				.endw
 				.if eax
@@ -534,13 +534,13 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 						invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 					.else
 						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesObjKey,addr szNULL,addr szObjName,sizeof szObjName,[ebx].ADDINDATA.lpProject
-						invoke lstrcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
-						invoke lstrcat,addr szTempName,addr szObjName
-						invoke lstrcpy,addr szObjName,addr szTempName
+						invoke strcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
+						invoke strcat,addr szTempName,addr szObjName
+						invoke strcpy,addr szObjName,addr szTempName
 						invoke GetPrivateProfileString,addr szMakeFiles,addr szMakeFilesExeKey,addr szNULL,addr szExeName,sizeof szExeName,[ebx].ADDINDATA.lpProject
-						invoke lstrcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
-						invoke lstrcat,addr szTempName,addr szExeName
-						invoke lstrcpy,addr szExeName,addr szTempName
+						invoke strcpy,addr szTempName,[ebx].ADDINDATA.lpProjectPath
+						invoke strcat,addr szTempName,addr szExeName
+						invoke strcpy,addr szExeName,addr szTempName
 						invoke NewerFiles
 						.if sdword ptr eax>0
 							invoke wsprintf,addr buffer,addr szNewerFiles,eax
@@ -551,6 +551,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							mov		edx,lpHandles
 							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.else
+							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							.if fOptions & 4
 								; Pin output window
 								push	0
@@ -594,7 +595,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 							call	[eax].ADDINPROCS.lpOutputSelect
 							mov		eax,lpProc
 							call	[eax].ADDINPROCS.lpClearOut
-							invoke RtlZeroMemory,addr dbg,sizeof dbg
 							mov		dbg.func,FUNC_RUN
 							; Show debug info window
 							push	1

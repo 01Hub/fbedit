@@ -71,15 +71,16 @@ o NOTE!
 Immediate window (Output window #3):
 -----------------------------------------------------------------------------
 NOTE!
-Commands ,registers and hex values are case insensitive.
-Variables are case sensitive.
-To inspect or change a proc parameter or local variable it must
+Commands ,registers, hex values and predefined datatypes are case insensitive.
+Variables, datatypes and constants are case sensitive.
+To inspect or change a proc parameter or local variable the variable must
 be in the current scope.
 
 o Simple math.
   - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.
-  - Example: ?(((eax+1) SHL 2)*4) AND 0FFFFh
-o Inspect variable or register.
+  - An expression can contain any register, variable, datatype or constant.
+  - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH
+o Inspect variable, register, datatype, constant or a hex / dec value.
   - ?MyVar to show info about a variable local or parameter.
   - ?MyVar(inx) to show an array element. Index is zero based.
     (inx) can be any expression.
@@ -102,7 +103,7 @@ o Commands.
   - Vars
     Shows a list of all variables.
   - Types
-    Show a list of all types.
+    Show a list of all datatypes and constants.
   - Watch var1,Z:MyZStr,....,var8
     Adds a watch to specified variables.
     To clear the watch list, type Watch without any variable list.

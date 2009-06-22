@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,1821
+1=0,0,1278,774,1892
 2=0,0,0,0,8
 3=0,0,0,0,64
 [BookMark]
@@ -115,15 +115,18 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="MAX_PATH"
-2="RECT"
-3="MYSTRUCT"
-4="RECT,left"
-5="RECT,"
-6="ecx = 13"
-7="118"
+1="DT"
+2="TBYTE"
+3="WM_USER"
+4="MAX_PATH"
+5="RECT"
+6="MYSTRUCT"
+7="RECT,left"
+8="RECT,"
+9="ecx = 13"
+10="118"
 [RADebugBP]
-1=52,84,96,108,121
+1=58,90,102,114,127
 0=
 3=
 [NoDebug]

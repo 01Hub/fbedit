@@ -14,7 +14,7 @@ GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD
 		xor		ecx,ecx
 		.while ecx<dbg.inxsource
 			push	ecx
-			invoke lstrcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
+			invoke strcmpi,edi,addr [ebx].DEBUGSOURCE.FileName
 			.if !eax
 				pop		eax
 				ret
@@ -88,12 +88,12 @@ NewerFiles proc
 			invoke GetWindowLong,tci.lParam,0
 			.if eax==ID_EDIT
 				mov		eax,lpData
-				invoke lstrcpy,addr szTempName,[eax].ADDINDATA.lpProjectPath
+				invoke strcpy,addr szTempName,[eax].ADDINDATA.lpProjectPath
 				invoke GetWindowLong,tci.lParam,16
 				push	eax
 				mov		eax,lpProc
 				call	[eax].ADDINPROCS.lpGetFileNameFromID
-				invoke lstrcat,addr szTempName,eax
+				invoke strcat,addr szTempName,eax
 				invoke CreateFile,addr szTempName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 				.if eax!=INVALID_HANDLE_VALUE
 					mov		hFile,eax
@@ -246,7 +246,7 @@ SaveBreakPoints proc uses ebx
 			.break .if eax==-1
 			mov		nLine,eax
 			invoke wsprintf,addr szbp,addr szCommaBP,nLine
-			invoke lstrcat,addr buffer,addr szbp
+			invoke strcat,addr buffer,addr szbp
 			dec		ebx
 		.endw
 		invoke wsprintf,addr szbp,addr szCommaBP,nInx

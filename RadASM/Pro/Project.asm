@@ -723,6 +723,7 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 	mov		rpStructList,eax
 	invoke ApiStructLoad
 	invoke ApiTypeLoad
+	invoke ApiArrayLoad
 	mov		eax,rpWordListPos
 	mov		rpProjectWordList,eax
 	;Load the words	to be hilited

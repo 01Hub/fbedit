@@ -62,6 +62,7 @@ szDbgHelpFail					db 'Could not find DbgHelp.dll',0
 
 dwModuleBase					DWORD ?
 im								IMAGEHLP_MODULE <>
+nErrors							DWORD ?
 
 .code
 
@@ -109,7 +110,7 @@ TestWord:
 	lea		ecx,[esi+sizeof PROPERTIES]
 	mov		edx,lpWord
 	.if [esi].PROPERTIES.nType=='p'
-		invoke lstrcmp,ecx,edx
+		invoke strcmp,ecx,edx
 		.if !eax
 			inc		eax
 			retn
@@ -138,20 +139,6 @@ FindWord endp
 
 AddPredefinedTypes proc uses esi edi
 
-	; Constants
-	mov		esi,offset indextype
-	.while [esi].DEBUGTYPE.szName
-		mov		eax,dbg.inxtype
-		mov		edx,sizeof DEBUGTYPE
-		mul		edx
-		mov		edi,dbg.hMemType
-		lea		edi,[edi+eax]
-		invoke lstrcpy,addr [edi].DEBUGTYPE.szName,addr [esi].DEBUGTYPE.szName
-		mov		eax,[esi].DEBUGTYPE.nSize
-		mov		[edi].DEBUGTYPE.nSize,eax
-		inc		dbg.inxtype
-		lea esi,[esi+sizeof DEBUGTYPE]
-	.endw
 	; Datatypes
 	mov		esi,offset datatype
 	.while [esi].DATATYPE.lpszType
@@ -160,7 +147,7 @@ AddPredefinedTypes proc uses esi edi
 		mul		edx
 		mov		edi,dbg.hMemType
 		lea		edi,[edi+eax]
-		invoke lstrcpy,addr [edi].DEBUGTYPE.szName,[esi].DATATYPE.lpszType
+		invoke strcpy,addr [edi].DEBUGTYPE.szName,[esi].DATATYPE.lpszType
 		movzx	eax,[esi].DATATYPE.nSize
 		mov		[edi].DEBUGTYPE.nSize,eax
 		inc		dbg.inxtype
@@ -170,13 +157,69 @@ AddPredefinedTypes proc uses esi edi
 
 AddPredefinedTypes endp
 
+AddConstants proc uses esi edi
+	LOCAL	lpszName:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	; Constants from RadASM, case sensitive
+	mov		edx,lpData
+	;Get pointer to word list
+	mov		esi,[edx].ADDINDATA.lpWordList
+	; Loop trough the word list
+	.while [esi].PROPERTIES.nSize
+		.if [esi].PROPERTIES.nType=='c' || [esi].PROPERTIES.nType=='R'
+			; Found
+			push	esi
+			lea		edi,[esi+sizeof PROPERTIES]
+			mov		lpszName,edi
+			invoke strlen,edi
+			lea		edi,[edi+eax+1]
+			mov		eax,[edi]
+			and		eax,0FF5F5F5Fh
+			.if eax==' UQE'
+				lea		edi,[edi+4]
+			.endif
+			invoke strcpy,addr buffer,edi
+			lea		esi,buffer
+			mov		nError,0
+			invoke CalculateIt,0
+			.if !nError
+				push	eax
+				mov		eax,dbg.inxtype
+				mov		edx,sizeof DEBUGTYPE
+				mul		edx
+				mov		edi,dbg.hMemType
+				lea		edi,[edi+eax]
+				invoke strcpy,addr [edi].DEBUGTYPE.szName,lpszName
+				pop		eax
+				mov		[edi].DEBUGTYPE.nSize,eax
+				inc		dbg.inxtype
+;			.else
+;				invoke wsprintf,addr outbuffer,addr szErrConstant,addr buffer
+;				invoke PutString,addr outbuffer
+			.endif
+			pop		esi
+		.endif
+		;Move to next word
+		mov		eax,[esi].PROPERTIES.nSize
+		lea		esi,[esi+eax+sizeof PROPERTIES]
+	.endw
+  Ex:
+	ret
+
+AddConstants endp
+
 AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	lpArray:DWORD
 	LOCAL	lpType:DWORD
+	LOCAL	fErrArray:DWORD
+	LOCAL	fErrType:DWORD
 
 	mov		lpArray,0
 	mov		lpType,0
+	mov		fErrArray,0
+	mov		fErrType,0
 	mov		esi,lpName
 	lea		edi,buffer
 	.while TRUE
@@ -205,12 +248,12 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	.endw
 	mov		edi,dbg.lpvar
 	; Add name
-	invoke lstrcpy,addr [edi+sizeof DEBUGVAR],addr buffer
-	invoke lstrlen,addr buffer
+	invoke strcpy,addr [edi+sizeof DEBUGVAR],addr buffer
+	invoke strlen,addr buffer
 	lea		ebx,[eax+1]
 	.if lpArray
-		invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpArray
-		invoke lstrlen,lpArray
+		invoke strcpy,addr [edi+ebx+sizeof DEBUGVAR],lpArray
+		invoke strlen,lpArray
 		lea		ebx,[ebx+eax]
 		add		eax,lpArray
 		mov		byte ptr [eax-1],0
@@ -221,13 +264,13 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke GetPredefinedDatatype,eax
 		.if eax
 			push	eax
-			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],addr szColon
+			invoke strcpy,addr [edi+ebx+sizeof DEBUGVAR],addr szColon
 			pop		eax
-			invoke lstrcat,addr [edi+ebx+sizeof DEBUGVAR],eax
+			invoke strcat,addr [edi+ebx+sizeof DEBUGVAR],eax
 		.else
-			invoke lstrcpy,addr [edi+ebx+sizeof DEBUGVAR],lpType
+			invoke strcpy,addr [edi+ebx+sizeof DEBUGVAR],lpType
 		.endif
-		invoke lstrlen,addr [edi+ebx+sizeof DEBUGVAR]
+		invoke strlen,addr [edi+ebx+sizeof DEBUGVAR]
 		lea		ebx,[ebx+eax]
 	.endif
 	inc		ebx
@@ -252,6 +295,9 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 					inc		ecx
 				.endw
 				invoke FindTypeSize,ebx
+				.if !edx
+					mov		fErrArray,TRUE
+				.endif
 			.endif
 		.endif
 		pop		ebx
@@ -266,7 +312,24 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		eax,lpType
 		lea		eax,[eax+1]
 		invoke FindTypeSize,eax
-		mov		[edi].DEBUGVAR.nSize,eax
+		.if !edx
+			mov		fErrType,TRUE
+		.else
+			mov		[edi].DEBUGVAR.nSize,eax
+		.endif
+	.endif
+	.if fErrArray
+		invoke strlen,addr [edi+sizeof DEBUGVAR]
+		invoke strcat,addr buffer,addr [edi+eax+1+sizeof DEBUGVAR]
+		invoke wsprintf,addr outbuffer,addr szErrArray,addr buffer
+		invoke PutString,addr outbuffer
+		inc		dbg.nErrors
+	.elseif fErrType
+		invoke strlen,addr [edi+sizeof DEBUGVAR]
+		invoke strcat,addr buffer,addr [edi+eax+1+sizeof DEBUGVAR]
+		invoke wsprintf,addr outbuffer,addr szErrType,addr buffer
+		invoke PutString,addr outbuffer
+		inc		dbg.nErrors
 	.endif
 	lea		eax,[edi+ebx+sizeof DEBUGVAR]
 	mov		dbg.lpvar,eax
@@ -338,7 +401,7 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 	mul		edx
 	mov		edi,dbg.hMemType
 	lea		edi,[edi+eax]
-	invoke lstrcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
+	invoke strcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
 	mov		eax,[esi].SYMBOL_INFO.nSize
 	mov		[edi].DEBUGTYPE.nSize,eax
 	inc		dbg.inxtype
@@ -365,7 +428,7 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 		mov		[edi].DEBUGSYMBOL.Address,eax
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
-		invoke lstrcpyn,addr [edi].DEBUGSYMBOL.szName,SymbolName,sizeof DEBUGSYMBOL.szName
+		invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,SymbolName,sizeof DEBUGSYMBOL.szName
 		invoke FindWord,SymbolName
 		.if eax
 			mov		esi,eax
@@ -376,11 +439,11 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
 				; Point to parameters
-				invoke lstrlen,addr [esi+sizeof PROPERTIES]
+				invoke strlen,addr [esi+sizeof PROPERTIES]
 				lea		esi,[esi+eax+1+sizeof PROPERTIES]
 				invoke AddVarList,esi
 				; Point to locals
-				invoke lstrlen,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				invoke AddVarList,esi
 			.elseif edx=='d'
@@ -412,7 +475,7 @@ EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
 	lea		edi,[edi+eax]
 	mov		eax,dbg.inxsource
 	mov		[edi].DEBUGSOURCE.FileID,ax
-	invoke lstrcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
+	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
 	inc		dbg.inxsource
 	mov		eax,TRUE
 	ret
@@ -436,7 +499,7 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 		mul		edx
 		mov		esi,dbg.hMemSource
 		lea		esi,[esi+eax]
-		invoke lstrcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
+		invoke strcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
 		.if !eax
 			mov		eax,dbg.inxline
 			mov		edx,sizeof DEBUGLINE
@@ -534,6 +597,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
 						push	hProcess
 						call	ebx
 					.endif
+					invoke AddConstants
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
 					.if eax
 						mov		ebx,eax

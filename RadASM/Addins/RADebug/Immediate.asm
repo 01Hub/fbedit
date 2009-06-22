@@ -12,45 +12,46 @@ szImmWatch						db 'Watch',0
 
 szImmLocal						db 0Dh,'LOCAL: ',0
 
-szHelp							db 'Immediate window (Output window #3):',0Dh,0Ah
-								db '-----------------------------------------------------------------------------',0Dh,0Ah
-								db 'NOTE!',0Dh,0Ah
-								db 'Commands ,registers and hex values are case insensitive.',0Dh,0Ah
-								db 'Variables are case sensitive.',0Dh,0Ah
-								db 'To inspect or change a proc parameter or local variable it must',0Dh,0Ah
-								db 'be in the current scope.',0Dh,0Ah
-								db 0Dh,0Ah
-								db 'o Simple math.',0Dh,0Ah
-								db '  - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.',0Dh,0Ah
-								db '  - Example: ?(((eax+1) SHL 2)*4) AND 0FFFFh',0Dh,0Ah
-								db 'o Inspect variable or register.',0Dh,0Ah
-								db '  - ?MyVar to show info about a variable local or parameter.',0Dh,0Ah
-								db '  - ?MyVar(inx) to show an array element. Index is zero based.',0Dh,0Ah
-								db '    (inx) can be any expression.',0Dh,0Ah
-								db '  - ?Z:MyZString to show a ZString. Use Z:MyZString(inx) to start',0Dh,0Ah
-								db '    at an offset. (inx) can be any expression.',0Dh,0Ah
-								db '  - ?reg To show a register (reg: eax, ebx ...).',0Dh,0Ah
-								db '  - ?123 or ?0A5Fh to convert a number to hex and decimal.',0Dh,0Ah
-								db 'o Change variable or register.',0Dh,0Ah
-								db '  - MyVar=ebx+2 to change the variable MyVar.',0Dh,0Ah
-								db '  - reg=4AB0h to change a register (reg: eax, ebx ...).',0Dh,0Ah
-								db 'o Commands.',0Dh,0Ah
-								db '  - Help, or /H or /?',0Dh,0Ah
-								db '    Shows this help screen.',0Dh,0Ah
-								db '  - Dump',0Dh,0Ah
-								db '    Shows a hex dump of the exe.',0Dh,0Ah
-								db '  - Dump MyStruct',0Dh,0Ah
-								db '    Shows a hex dump of an array, structure or union.',0Dh,0Ah
-								db '  - Memdump Address,Count',0Dh,0Ah
-								db '    Shows a memory dump. Address and Count can be any expression.',0Dh,0Ah
-								db '  - Vars',0Dh,0Ah
-								db '    Shows a list of all variables.',0Dh,0Ah
-								db '  - Types',0Dh,0Ah
-								db '    Show a list of all types.',0Dh,0Ah
-								db '  - Watch var1,Z:MyZStr,....,var8',0Dh,0Ah
-								db '    Adds a watch to specified variables.',0Dh,0Ah
-								db '    To clear the watch list, type Watch without any variable list.',0Dh,0Ah
-								db '  - Cls',0Dh,0Ah
+szHelp							db 'Immediate window (Output window #3):',0Dh
+								db '-----------------------------------------------------------------------------',0Dh
+								db 'NOTE!',0Dh
+								db 'Commands ,registers, hex values and predefined datatypes are case insensitive.',0Dh
+								db 'Variables, datatypes and constants are case sensitive.',0Dh
+								db 'To inspect or change a proc parameter or local variable the variable must',0Dh
+								db 'be in the current scope.',0Dh
+								db 0Dh
+								db 'o Simple math.',0Dh
+								db '  - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.',0Dh
+								db '  - An expression can contain any register, variable, datatype or constant.',0Dh
+								db '  - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH',0Dh
+								db 'o Inspect variable, register, datatype, constant or a hex / dec value.',0Dh
+ 								db ' - ?MyVar to show info about a variable local or parameter.',0Dh
+								db '  - ?MyVar(inx) to show an array element. Index is zero based.',0Dh
+								db '    (inx) can be any expression.',0Dh
+								db '  - ?Z:MyZString to show a ZString. Use Z:MyZString(inx) to start',0Dh
+								db '    at an offset. (inx) can be any expression.',0Dh
+								db '  - ?reg To show a register (reg: eax, ebx ...).',0Dh
+								db '  - ?123 or ?0A5Fh to convert a number to hex and decimal.',0Dh
+								db 'o Change variable or register.',0Dh
+								db '  - MyVar=ebx+2 to change the variable MyVar.',0Dh
+								db '  - reg=4AB0h to change a register (reg: eax, ebx ...).',0Dh
+								db 'o Commands.',0Dh
+								db '  - Help, or /H or /?',0Dh
+								db '    Shows this help screen.',0Dh
+								db '  - Dump',0Dh
+								db '    Shows a hex dump of the exe.',0Dh
+								db '  - Dump MyStruct',0Dh
+								db '    Shows a hex dump of an array, structure or union.',0Dh
+								db '  - Memdump Address,Count',0Dh
+								db '    Shows a memory dump. Address and Count can be any expression.',0Dh
+								db '  - Vars',0Dh
+								db '    Shows a list of all variables.',0Dh
+								db '  - Types',0Dh
+								db '    Show a list of all datatypes and constants.',0Dh
+								db '  - Watch var1,Z:MyZStr,....,var8',0Dh
+								db '    Adds a watch to specified variables.',0Dh
+								db '    To clear the watch list, type Watch without any variable list.',0Dh
+								db '  - Cls',0Dh
 								db '    Clears the immediate window.',0
 
 .code
@@ -240,7 +241,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				mov		ebx,TRUE
 			.endif
 		.else
-			invoke wsprintf,offset outbuffer,addr szSyntaxError,addr szError
+			invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
 			mov		ebx,TRUE
 		.endif
 		.if ebx
@@ -334,6 +335,17 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
 		.else
 			invoke DoMath,addr buffer[1]
+			.if !nError
+				.if mFunc=='H'
+					invoke wsprintf,offset outbuffer,addr szValue,var.Value,var.Value
+				.else
+					invoke FormatOutput,addr outbuffer
+				.endif
+			.elseif nError==1
+				invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
+			.elseif nError==2
+				invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
+			.endif
 		.endif
 		invoke PutStringOut,addr outbuffer,hOut3
 		jmp		Ex
@@ -347,20 +359,29 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.if eax
 				push	eax
 				invoke RtlMoveMemory,addr tmpvar,addr var,sizeof VAR
-				invoke GetVarVal,addr buffer[ebx],dbg.prevline,FALSE
-				push	eax
-				mov		eax,var.Value
-				mov		val,eax
-				invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
-				pop		edx
+				invoke DoMath,addr buffer[ebx]
+				.if eax
+					mov		eax,var.Value
+					mov		val,eax
+					invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
+				.else
+					pop		eax
+					.if nError==1
+						invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
+					.elseif nError==2
+						invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
+					.endif
+					invoke PutStringOut,addr outbuffer,hOut3
+					jmp		Ex
+				.endif
 				pop		eax
 			.endif
-			.if (eax=='d' || eax=='P' || eax=='L') && edx
+			.if (eax=='d' || eax=='P' || eax=='L')
 				; GLOBAL, PROC Parameter or LOCAL
 				invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
 				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
-			.elseif eax=='R' && edx
+			.elseif eax=='R'
 				; REGISTER
 				mov		eax,var.Address
 				mov		eax,[eax]
@@ -382,7 +403,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else
-				invoke wsprintf,addr outbuffer,addr szImmNotFound,addr buffer
+				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,addr buffer
 				invoke PutStringOut,addr outbuffer,hOut3
 			.endif
 			jmp		Ex
@@ -390,7 +411,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		inc		ebx
 	.endw
 	.if buffer
-		invoke PutStringOut,addr szImmUnknown,hOut3
+		invoke PutStringOut,addr szErrUnknownCommand,hOut3
 	.endif
   Ex:
 	invoke ImmPrompt

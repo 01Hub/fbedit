@@ -9,6 +9,7 @@ iniApiStruct	db 'Struct',0
 iniApiType		db 'Type',0
 iniApiWord		db 'Word',0
 iniApiMessage	db 'Message',0
+iniApiArray		db 'Array',0
 iniApiInc		db 'Inc',0
 iniApiLib		db 'Lib',0
 
