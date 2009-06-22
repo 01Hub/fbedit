@@ -120,7 +120,7 @@ start:
 	mov		ah,'C'
 	mov		ax,'DE'
 	invoke MyProc1,1234
-	invoke MyProc2,123,456,789
+;	invoke MyProc2,123,456,789
 	invoke MyProc3,987
 	invoke MyProc4
 	jmp		Ex

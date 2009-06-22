@@ -61,7 +61,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=25
@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,2025
+1=0,0,1278,774,2026
 2=0,0,0,0,8
 3=0,0,0,0,64
 [BookMark]
@@ -123,9 +123,9 @@ ProductVer4Range=0
 6="ecx = 13"
 7="118"
 [RADebugBP]
-1=52,97,122
+1=52,84,97,123
 0=
 3=
 [NoDebug]
 [Watch]
-Watch=tid,hInstance
+Watch=

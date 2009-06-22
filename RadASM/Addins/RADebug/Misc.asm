@@ -780,7 +780,7 @@ GetIndex proc uses esi,lpVar:DWORD
 		.if byte ptr [esi]=='('
 			mov		byte ptr [esi],0
 			inc		esi
-			invoke DecToBin,esi
+			invoke CalculateIt,'('
 			jmp		Ex
 		.endif
 		inc		esi
@@ -883,6 +883,40 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 
 FindVar endp
 
+FormatOutput proc uses ebx,lpOutput:DWORD
+
+	mov		ebx,esp
+	mov		edx,var.nFormat
+	.if edx & FMT_SZ
+		lea		eax,var.szValue
+		push	eax
+	.endif
+	.if edx & FMT_DEC
+		push	var.Value
+	.endif
+	.if edx & FMT_HEX
+		push	var.Value
+	.endif
+	.if edx & FMT_SIZE
+		push	var.nSize
+	.endif
+	.if edx & FMT_ADDRESS
+		push	var.Address
+	.endif
+	.if edx & FMT_TYPE
+		lea		eax,var.nArray
+		push	eax
+	.endif
+	.if edx & FMT_NAME
+		lea		eax,var.szName
+		push	eax
+	.endif
+	invoke wsprintf,lpOutput,var.lpFormat
+	mov		esp,ebx
+	ret
+
+FormatOutput endp
+
 GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 
 	mov		var.Value,0
@@ -905,20 +939,12 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 			mov		edx,offset szReg32
 		.endif
 		mov		var.Value,eax
-		mov		lpFormat,edx
-		.if fShow
-			push	var.Value
-			lea		eax,var.szName
-			push	eax
-		.endif
+		mov		var.lpFormat,edx
+		mov		var.nFormat,FMT_NAME or FMT_HEX
 	.elseif eax=='p'
 		; PROC
-		mov		lpFormat,offset szProc
-		.if fShow
-			push	var.nSize
-			lea		eax,var.szName
-			push	eax
-		.endif
+		mov		var.lpFormat,offset szProc
+		mov		var.nFormat,FMT_NAME or FMT_SIZE
 	.elseif eax=='d'
 		; GLOBAL
 		mov		eax,var.nSize
@@ -931,71 +957,38 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 					mov		eax,256
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
-				mov		lpFormat,offset szDataSZ
-				.if fShow
-					lea		eax,var.szValue
-					push	eax
-					push	var.nSize
-					push	var.Address
-					lea		eax,var.szName
-					push	eax
-				.endif
+				mov		var.lpFormat,offset szDataSZ
+				mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE or FMT_SZ
 			.else
 				.if eax==3 || eax>4
 					; Struct ,union ,QWORD or TBYTE
-					mov		lpFormat,offset szData
-					.if fShow
-						push	var.nSize
-						push	var.Address
-						lea		eax,var.szName
-						push	eax
-					.endif
+					mov		var.lpFormat,offset szData
+					mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE
 				.else
 					invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
 					mov		eax,var.nSize
-					.if fShow
-						mov		edx,offset szData32
-						.if eax==1
-							mov		edx,offset szData8
-						.elseif eax==2
-							mov		edx,offset szData16
-						.endif
-						mov		lpFormat,edx
-						.if fShow
-							push	var.Value
-							push	var.Value
-							push	var.nSize
-							push	var.Address
-							lea		eax,var.szName
-							push	eax
-						.endif
+					mov		edx,offset szData32
+					.if eax==1
+						mov		edx,offset szData8
+					.elseif eax==2
+						mov		edx,offset szData16
 					.endif
+					mov		var.lpFormat,edx
+					mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 				.endif
 			.endif
 		.else
 			; Unknown size
-			mov		lpFormat,offset szData
-			.if fShow
-				push	var.nSize
-				push	var.Address
-				lea		eax,var.szName
-				push	eax
-			.endif
+			mov		var.lpFormat,offset szData
+			mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE
 		.endif
 	.elseif eax=='P'
 		; PROC Parameter
 		mov		eax,var.nSize
 		.if eax==3 || eax>4
 			; Struct ,union ,QWORD or TBYTE
-			mov		lpFormat,offset szParam
-			.if fShow
-				push	var.nSize
-				push	var.Address
-				lea		eax,var.szArray
-				push	eax
-				lea		eax,var.szName
-				push	eax
-			.endif
+			mov		var.lpFormat,offset szParam
+			mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
 		.else
 			invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
 			mov		eax,var.nSize
@@ -1005,32 +998,16 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 			.elseif eax==1
 				mov		edx,offset szParam8
 			.endif
-			mov		lpFormat,edx
-			.if fShow
-				push	var.Value
-				push	var.Value
-				push	var.nSize
-				push	var.Address
-				lea		eax,var.szArray
-				push	eax
-				lea		eax,var.szName
-				push	eax
-			.endif
+			mov		var.lpFormat,edx
+			mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 		.endif
 	.elseif eax=='L'
 		; LOCAL
 		mov		eax,var.nSize
 		.if eax==3 || eax>4
 			; Struct ,union ,QWORD or TBYTE
-			mov		lpFormat, offset szLocal
-			.if fShow
-				push	var.nSize
-				push	var.Address
-				lea		eax,var.szArray
-				push	eax
-				lea		eax,var.szName
-				push	eax
-			.endif
+			mov		var.lpFormat, offset szLocal
+			mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
 		.else
 			.if var.IsSZ
 				mov		eax,var.nArray
@@ -1039,17 +1016,8 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 					mov		eax,256
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
-				mov		lpFormat,offset szLocalSZ
-				.if fShow
-					lea		eax,var.szValue
-					push	eax
-					push	var.nSize
-					push	var.Address
-					lea		eax,var.szArray
-					push	eax
-					lea		eax,var.szName
-					push	eax
-				.endif
+				mov		var.lpFormat,offset szLocalSZ
+				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
 			.else
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
 				mov		eax,var.nSize
@@ -1059,32 +1027,20 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 				.elseif eax==1
 					mov		edx,offset szLocal8
 				.endif
-				mov		lpFormat,edx
-				.if fShow
-					push	var.Value
-					push	var.Value
-					push	var.nSize
-					push	var.Address
-					lea		eax,var.szArray
-					push	eax
-					lea		eax,var.szName
-					push	eax
-				.endif
+				mov		var.lpFormat,edx
+				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 			.endif
 		.endif
 	.elseif eax=='H' || eax=='D'
 		; Hex or Decimal value
-		mov		lpFormat,offset szValue
-		.if fShow
-			push	var.Value
-			push	var.Value
-		.endif
+		mov		var.lpFormat,offset szValue
+		mov		var.nFormat,FMT_HEX or FMT_DEC
 	.else
 		xor		eax,eax
 		jmp		Ex
 	.endif
 	.if fShow
-		invoke wsprintf,addr outbuffer,lpFormat
+		invoke FormatOutput,addr outbuffer
 	.endif
 	mov		eax,TRUE
   Ex:

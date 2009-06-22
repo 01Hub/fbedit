@@ -513,11 +513,16 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					mov		dbg.fHandled,FALSE
 					invoke ResetSelectLine
 					mov		dbg.func,FUNC_RUN
-					mov		ebx,dbg.lpthread
 					invoke ClearBreakPointsAll
 					invoke SetBreakPoints
-					invoke RestoreSourceByte,0
-					invoke ResumeAllThreads
+;					invoke RestoreSourceByte,0
+;					invoke ResumeAllThreads
+					mov		ebx,dbg.lpthread
+					.if [ebx].DEBUGTHREAD.suspended
+						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+					.endif
 				;.endif
 			.else
 				mov		ebx,lpData

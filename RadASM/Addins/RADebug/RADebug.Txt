@@ -71,25 +71,34 @@ o NOTE!
 Immediate window (Output window #3):
 -----------------------------------------------------------------------------
 NOTE!
-To inspect or change a proc parameter or local variable it must
-be in the current scope.
 Commands ,registers and hex values are case insensitive.
 Variables are case sensitive.
+To inspect or change a proc parameter or local variable it must
+be in the current scope.
 
+o Simple math.
+  - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.
+  - Example: ?(((eax+1) SHL 2)*4) AND 0FFFFh
 o Inspect variable or register.
   - ?MyVar to show info about a variable local or parameter.
-  - ?MyVar(5) to show an array element. Index is zero based.
-  - ?Z:MyZString to show a ZString.
+  - ?MyVar(inx) to show an array element. Index is zero based.
+    (inx) can be any expression.
+  - ?Z:MyZString to show a ZString. Use Z:MyZString(inx) to start
+    at an offset. (inx) can be any expression.
   - ?reg To show a register (reg: eax, ebx ...).
   - ?123 or ?0A5Fh to convert a number to hex and decimal.
 o Change variable or register.
-  - MyVar=2 to change the variable MyVar.
+  - MyVar=ebx+2 to change the variable MyVar.
   - reg=4AB0h to change a register (reg: eax, ebx ...).
 o Commands.
+  - Help, or /H or /?
+    Shows this help screen.
   - Dump
     Shows a hex dump of the exe.
   - Dump MyStruct
     Shows a hex dump of an array, structure or union.
+  - Memdump Address,Count
+    Shows a memory dump. Address and Count can be any expression.
   - Vars
     Shows a list of all variables.
   - Types

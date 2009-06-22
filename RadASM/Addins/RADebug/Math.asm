@@ -119,6 +119,11 @@ GetValue proc uses ebx edi
 		xor		eax,eax
 		jmp		Ex
 	.else
+		; Variable
+		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+			inc		esi
+			inc		nLen
+		.endw
 		.if byte ptr [esi]=='('
 			lea		edi,buffer
 			invoke lstrlen,edi
@@ -126,9 +131,11 @@ GetValue proc uses ebx edi
 			xor		ecx,ecx
 			.while byte ptr [esi]
 				mov		al,[esi]
-				mov		[edi],al
+				.if al!=VK_SPACE && al!=VK_TAB
+					mov		[edi],al
+					inc		edi
+				.endif
 				inc		esi
-				inc		edi
 				inc		nLen
 				.if al=='('
 					inc		ecx
@@ -137,9 +144,11 @@ GetValue proc uses ebx edi
 					.break .if ZERO?
 				.endif
 			.endw
+			mov		byte ptr [edi],0
 		.endif
-		lea		edi,buffer
-		invoke GetVarVal,edi,dbg.prevline,FALSE
+		push	mFunc
+		invoke GetVarVal,addr buffer,dbg.prevline,FALSE
+		pop		mFunc
 		.if eax
 			.if !mFunc
 				mov		mFunc,eax
@@ -167,9 +176,9 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
   	.if nError
   		ret
   	.endif
-  	.while byte ptr [esi]==' '
-  		inc		esi
-  	.endw
+	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+		inc		esi
+	.endw
 	push	eax
 	invoke GetFunc
 	mov		edx,ecx
@@ -284,9 +293,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		invoke GetValue
 		pop		edx
 		.if esi==edx
-			inc		fError
-			inc		esi
-			mov		eax,1
+			mov		nError,1
 			ret
 		.endif
 	.endif
@@ -303,7 +310,11 @@ DoMath proc uses ebx esi edi,lpMath:DWORD
 	invoke CalculateIt,0
 	.if !nError
 		mov		var.Value,eax
-		invoke wsprintf,offset outbuffer,addr szValue,var.Value,var.Value
+		.if mFunc=='H'
+			invoke wsprintf,offset outbuffer,addr szValue,var.Value,var.Value
+		.else
+			invoke FormatOutput,addr outbuffer
+		.endif
 		mov		eax,TRUE
 		jmp		Ex
 	.elseif nError==1

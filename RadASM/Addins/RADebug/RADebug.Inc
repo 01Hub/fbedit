@@ -34,6 +34,7 @@ includelib Debug.lib
 
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
+CalculateIt						PROTO	:DWORD
 
 ;#########################################################################
 ; Constants
@@ -58,6 +59,15 @@ FUNC_STEPINTO					equ 2
 FUNC_STEPOVER					equ 3
 FUNC_RUNTOCARET					equ 4
 FUNC_STOP						equ 5
+
+; Format items
+FMT_NAME						equ 1
+FMT_TYPE						equ 2
+FMT_ADDRESS						equ 4
+FMT_SIZE						equ 8
+FMT_HEX							equ 16
+FMT_DEC							equ 32
+FMT_SZ							equ 64
 
 ;#########################################################################
 ; Structures
@@ -180,6 +190,8 @@ VAR struct
 	IsSZ					DWORD ?					; Show as ZString, used by immediate
 	Value					DWORD ?					; Current value, used by immediate and tooltip
 	szValue					BYTE 256 dup(?)			; Current ZString value, used by immediate
+	lpFormat				DWORD ?
+	nFormat					DWORD ?
 VAR ends
 
 ; Register. Used by tooltip and immediate
@@ -396,5 +408,3 @@ szWatchList						db 512 dup(?)					; List of variables to watch
 mFunc							dd ?
 nError							dd ?
 szError							db 256 dup(?)
-lpFormat						dd ?
-
