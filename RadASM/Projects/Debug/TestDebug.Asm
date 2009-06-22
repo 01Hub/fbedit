@@ -91,6 +91,30 @@ MyProc3 proc uses esi,Param:DWORD
 
 MyProc3 endp
 
+ThreadProc1 proc uses esi,Param:DWORD
+	LOCAL	tst[4]:sdword
+
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	invoke OutputDebugString,addr szTest
+	ret
+
+ThreadProc1 endp
+
+ThreadProc2 proc uses esi,Param:DWORD
+	LOCAL	tst[4]:sdword
+
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	mov		eax,'abcd'
+	invoke OutputDebugString,addr szTest
+	ret
+
+ThreadProc2 endp
+
 start:
 	mov		hInstance[0],1
 	mov		hInstance[4],2
@@ -98,9 +122,9 @@ start:
 	mov		eax,'ABCD'
 	mov		eax,tid
 	mov		tid,1234
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CreateThread,NULL,0,addr ThreadProc1,0,NULL,addr tid
 	invoke CloseHandle,eax
-	invoke CreateThread,NULL,0,addr MyProc3,0,NULL,addr tid
+	invoke CreateThread,NULL,0,addr ThreadProc2,0,NULL,addr tid
 	invoke CloseHandle,eax
 	mov		eax,'ABCD'
 	mov		ecx,'EFGH'
@@ -120,8 +144,8 @@ start:
 	mov		ah,'C'
 	mov		ax,'DE'
 	invoke MyProc1,1234
-;	invoke MyProc2,123,456,789
-	invoke MyProc3,987
+	invoke MyProc2,123,456,789
+;	invoke MyProc3,987
 	invoke MyProc4
 	jmp		Ex
 Ex:

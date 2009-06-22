@@ -138,6 +138,7 @@ FindWord endp
 
 AddPredefinedTypes proc uses esi edi
 
+	; Constants
 	mov		esi,offset indextype
 	.while [esi].DEBUGTYPE.szName
 		mov		eax,dbg.inxtype
@@ -149,7 +150,21 @@ AddPredefinedTypes proc uses esi edi
 		mov		eax,[esi].DEBUGTYPE.nSize
 		mov		[edi].DEBUGTYPE.nSize,eax
 		inc		dbg.inxtype
-		lea esi,[esi+DEBUGTYPE]
+		lea esi,[esi+sizeof DEBUGTYPE]
+	.endw
+	; Datatypes
+	mov		esi,offset datatype
+	.while [esi].DATATYPE.lpszType
+		mov		eax,dbg.inxtype
+		mov		edx,sizeof DEBUGTYPE
+		mul		edx
+		mov		edi,dbg.hMemType
+		lea		edi,[edi+eax]
+		invoke lstrcpy,addr [edi].DEBUGTYPE.szName,[esi].DATATYPE.lpszType
+		movzx	eax,[esi].DATATYPE.nSize
+		mov		[edi].DEBUGTYPE.nSize,eax
+		inc		dbg.inxtype
+		lea		esi,[esi+sizeof DATATYPE]
 	.endw
 	ret
 
@@ -508,6 +523,7 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
 					call	ebx
 				.endif
 				.if im.SymType1==SymPdb
+					invoke AddPredefinedTypes
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
 					.if eax
 						mov		ebx,eax
@@ -518,7 +534,6 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
 						push	hProcess
 						call	ebx
 					.endif
-					invoke AddPredefinedTypes
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
 					.if eax
 						mov		ebx,eax

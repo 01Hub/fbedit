@@ -51,7 +51,6 @@ ApiStructListBox proc lpList:DWORD,nType:DWORD
 	invoke SendMessage,hLB,LB_RESETCONTENT,0,0
 	invoke SendMessage,hLB,LB_SETTABSTOPS,1,addr lpTabs
 	invoke lstrcpyn,addr LineTxt,lpList,8192
-	invoke iniGetItem,addr LineTxt,addr	buffer
   @@:
 	mov		buffer,0
 	invoke iniGetItem,addr LineTxt,addr	buffer

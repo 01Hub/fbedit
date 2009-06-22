@@ -229,7 +229,7 @@ MinorFiles=*.res;*.obj;
 52=0,0,536,413,4421
 54=88,88,536,413
 53=110,110,536,413,140
-55=44,44,536,413,1450
+55=44,44,536,413,1386
 56=66,66,536,413
 57=88,88,536,413,0
 58=110,110,536,413,6
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=18
+MilestoneOnDateDate=22
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988

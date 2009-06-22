@@ -249,7 +249,7 @@ szTBYTE							db 'TBYTE',0
 szDT							db 'DT',0
 								db 0
 
-datatype						DATATYPE 9	dup(<szBYTE,szBYTE,1,0>,
+datatype						DATATYPE 1 dup (<szBYTE,szBYTE,1,0>,
 												<szSBYTE,szSBYTE,1,1>,
 												<szDB,szBYTE,1,0>,
 												<szWORD,szWORD,2,0>,
@@ -258,7 +258,7 @@ datatype						DATATYPE 9	dup(<szBYTE,szBYTE,1,0>,
 												<szDWORD,szDWORD,4,0>,
 												<szSDWORD,szSDWORD,4,1>,
 												<szDD,szDWORD,4,0>)
-datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8,0>,
+datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 												<szDQ,szQWORD,8,0>,
 												<szREAL4,szREAL4,4,0>,
 												<szREAL8,szREAL8,8,0>,
@@ -267,7 +267,7 @@ datatype2						DATATYPE 7	dup(<szQWORD,szQWORD,8,0>,
 												<0,0,0,0>)
 
 ; Predefined constants to evaluate array sizees
-indextype						DEBUGTYPE 2 dup(<'MAX_PATH',260>,
+indextype						DEBUGTYPE 1 dup(<'MAX_PATH',260>,
 												<,0>)
 
 ; The dbghelp dll
@@ -285,6 +285,10 @@ szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT',0
 szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
 szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
 szRIP_EVENT						db 'RIP_EVENT',0
+
+; Debug events formatting
+szEventString					db '%s %s',0
+szEventDec						db '%s %d',0
 
 ; Some useful text constants
 szCR							db 0Dh,0

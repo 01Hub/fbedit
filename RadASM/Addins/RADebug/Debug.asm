@@ -695,22 +695,37 @@ Debug proc uses ebx,lpFileName:DWORD
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.endif
 			.elseif eax==CREATE_PROCESS_DEBUG_EVENT
-				.if fOptions &2
-					invoke PutString,addr szCREATE_PROCESS_DEBUG_EVENT
+				.if !dbg.hdbgfile
+					mov		eax,de.u.CreateProcessInfo.hFile
+					mov		dbg.hdbgfile,eax
 				.endif
-				mov		eax,de.u.CreateProcessInfo.hFile
-				mov		dbg.hdbgfile,eax
+				.if fOptions &2
+					invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId
+					invoke PutString,addr outbuffer
+				.endif
+			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
+				.if fOptions &2
+					invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId
+					invoke PutString,addr outbuffer
+				.endif
+				mov		eax,de.dwProcessId
+				.if eax==dbg.pinfo.dwProcessId
+					invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
+					.break
+				.endif
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				.if fOptions &2
-					invoke PutString,addr szCREATE_THREAD_DEBUG_EVENT
+					invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
+					invoke PutString,addr outbuffer
 				.endif
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
 					.if fOptions &2
-						invoke PutString,addr szEXIT_THREAD_DEBUG_EVENT
+						invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId
+						invoke PutString,addr outbuffer
 					.endif
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
@@ -722,31 +737,28 @@ Debug proc uses ebx,lpFileName:DWORD
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
-			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
-				.if fOptions &2
-					invoke PutString,addr szEXIT_PROCESS_DEBUG_EVENT
-				.endif
-				invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
-				.break
 			.elseif eax==LOAD_DLL_DEBUG_EVENT
 				.if fOptions &2
 					mov		buffer,0
 					invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
-					invoke PutString,addr szLOAD_DLL_DEBUG_EVENT
-					invoke PutString,addr buffer
+					invoke wsprintf,addr outbuffer,addr szEventString,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
+					invoke PutString,addr outbuffer
 				.endif
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
 				.if fOptions &2
 					mov		buffer,0
 					invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
-					invoke PutString,addr szUNLOAD_DLL_DEBUG_EVENT
-					invoke PutString,addr buffer
+					invoke wsprintf,addr outbuffer,addr szEventString,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
+					invoke PutString,addr outbuffer
 				.endif
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
-				invoke PutString,addr szOUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
+				.if eax>255
+					mov		eax,255
+				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,de.u.DebugString.lpDebugStringData,addr buffer,eax,0
-				invoke PutString,addr buffer
+				invoke wsprintf,addr outbuffer,addr szEventString,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
+				invoke PutString,addr outbuffer
 			.elseif eax==RIP_EVENT
 				.if fOptions &2
 					invoke PutString,addr szRIP_EVENT
