@@ -77,9 +77,10 @@ To inspect or change a proc parameter or local variable the variable must
 be in the current scope.
 
 o Simple math.
-  - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.
+  - Functions: +, -, *, /, SHL, SHR, AND, OR, XOR, ADDR() and SIZEOF().
   - An expression can contain any register, variable, datatype or constant.
   - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH
+  - Example: Memdump Addr(MyArray),Sizeof(MyArray),DWORD
 o Inspect variable, register, datatype, constant or a hex / dec value.
   - ?MyVar to show info about a variable local or parameter.
   - ?MyVar(inx) to show an array element. Index is zero based.
@@ -96,7 +97,7 @@ o Commands.
     Shows this help screen.
   - Dump
     Shows a hex dump of the exe.
-  - Dump MyStruct[,Size]
+  - Dump Var[,Size]
     Shows a hex dump of an array, structure or union.
     Size is optional and can be BYTE, WORD, DWORD or QWORD.
   - Memdump Address,Count[,Size]

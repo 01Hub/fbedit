@@ -402,13 +402,13 @@ Disable:
 DoNotDebugProc endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
-InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
+InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 
-	mov	ebx,hWin
+	mov		ebx,hWin
 	mov		eax,fOpt
 	mov		fOptions,eax
 	;Get pointer to handles struct
-	invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
+	invoke SendMessage,ebx,AIM_GETHANDLES,0,0
 	mov		lpHandles,eax
 	;Get pointer to proc struct
 	invoke SendMessage,ebx,AIM_GETPROCS,0,0

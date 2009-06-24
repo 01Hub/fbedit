@@ -715,6 +715,7 @@ EnableMenu proc uses esi edi
 EnableMenu endp
 
 FindTypeSize proc uses ebx esi edi,lpType:DWORD
+	LOCAL buffer[256]:BYTE
 
 	mov		eax,lpType
 	mov		eax,[eax]
@@ -742,6 +743,38 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	xor		ebx,ebx
 	.while ebx<dbg.inxtype
 		invoke strcmp,addr [esi].DEBUGTYPE.szName,lpType
+		.if !eax
+			; Found
+			mov		edx,TRUE
+			mov		eax,[esi].DEBUGTYPE.nSize
+			jmp		Ex
+		.endif
+		lea		esi,[esi+sizeof DEBUGTYPE]
+		inc		ebx
+	.endw
+	; Ansi version
+	invoke strcpy,addr buffer,lpType
+	invoke strcat,addr buffer,addr szA
+	mov		esi,dbg.hMemType
+	xor		ebx,ebx
+	.while ebx<dbg.inxtype
+		invoke strcmp,addr [esi].DEBUGTYPE.szName,addr buffer
+		.if !eax
+			; Found
+			mov		edx,TRUE
+			mov		eax,[esi].DEBUGTYPE.nSize
+			jmp		Ex
+		.endif
+		lea		esi,[esi+sizeof DEBUGTYPE]
+		inc		ebx
+	.endw
+	; Widechar version
+	invoke strcpy,addr buffer,lpType
+	invoke strcat,addr buffer,addr szW
+	mov		esi,dbg.hMemType
+	xor		ebx,ebx
+	.while ebx<dbg.inxtype
+		invoke strcmp,addr [esi].DEBUGTYPE.szName,addr buffer
 		.if !eax
 			; Found
 			mov		edx,TRUE

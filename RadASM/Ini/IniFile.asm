@@ -307,12 +307,35 @@ iniGetCharTab proc
 
 iniGetCharTab endp
 
-iniHook proc uses edi
+iniHook proc uses ebx edi
 	LOCAL	nInx:DWORD
 	LOCAL	buffer1[8]:BYTE
 	LOCAL	buffer2[128]:BYTE
 	LOCAL	buffer3[128]:BYTE
 
+	mov		nInx,1
+	mov		ebx,1
+	.while nInx<=MAX_ADDIN
+		invoke BinToDec,nInx,addr buffer1
+		invoke GetPrivateProfileString,addr iniAddIns,addr buffer1,addr szNULL,addr buffer2,128,addr iniFile
+		.if eax
+			mov		ebx,nInx
+			invoke iniGetItem,addr buffer2,addr buffer3
+			invoke strcmpi,addr buffer3,addr szRADebug
+			.if !eax
+				; Found
+				xor		ebx,ebx
+				.break
+			.endif
+		.endif
+		inc		nInx
+	.endw
+	.if ebx
+		invoke strcpy,addr buffer2,addr szRADebug
+		invoke strcat,addr buffer2,addr szRADebugParam
+		invoke BinToDec,ebx,addr buffer1
+		invoke WritePrivateProfileString,addr iniAddIns,addr buffer1,addr buffer2,addr iniFile
+	.endif
 	mov		nInx,1
 	mov		edi,offset hAddins
 	.while nInx<=MAX_ADDIN

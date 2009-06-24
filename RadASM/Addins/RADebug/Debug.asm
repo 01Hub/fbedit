@@ -114,6 +114,64 @@ RegOut:
 
 ShowContext endp
 
+MapSources proc uses ebx esi edi
+	LOCAL	nInx:DWORD
+	LOCAL	nMiss:DWORD
+
+	mov		nInx,1
+	mov		nMiss,0
+	.while TRUE
+		push	nInx
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpGetFileNameFromID
+		.if eax
+			mov		nMiss,0
+			call	MatchIt
+			.break
+		.else
+			inc		nMiss
+			.break .if nMiss==10
+		.endif
+		inc		nInx
+	.endw
+	.if nMiss
+		mov		nInx,1001
+		mov		nMiss,0
+		.while TRUE
+			push	nInx
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpGetFileNameFromID
+			.if eax
+				mov		nMiss,0
+				call	MatchIt
+				.break
+			.else
+				inc		nMiss
+				.break .if nMiss==10
+			.endif
+			inc		nInx
+		.endw
+	.endif
+	ret
+
+MatchIt:
+	mov		edi,eax
+	mov		esi,dbg.hMemSource
+	mov		ebx,dbg.inxsource
+	.while ebx
+		invoke strcmpi,edi,addr [esi].DEBUGSOURCE.FileName
+		.if !eax
+			mov		eax,nInx
+			mov		[esi].DEBUGSOURCE.ProjectFileID,eax
+			.break
+		.endif
+		dec		ebx
+		lea		esi,[esi+sizeof DEBUGSOURCE]
+	.endw
+	retn
+
+MapSources endp
+
 MapBreakPoints proc uses ebx esi edi
 	LOCAL	CountBP:DWORD
 	LOCAL	CountSource:DWORD
@@ -598,6 +656,7 @@ Debug proc uses ebx,lpFileName:DWORD
 				invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
 			.endif
 			invoke SetBreakPoints
+			invoke MapSources
 			invoke ImmPromptOn
 			.if dbg.nErrors
 				mov		eax,dbg.hMemVar

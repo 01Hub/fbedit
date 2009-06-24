@@ -4,6 +4,8 @@ FUNCSHR							equ 2
 FUNCAND							equ 3
 FUNCOR							equ 4
 FUNCXOR							equ 5
+FUNCADDR						equ 6
+FUNCSIZEOF						equ 7
 
 .const
 
@@ -11,7 +13,9 @@ szFUNC							db 'SHL',0,
 								   'SHR',0,
 								   'AND',0,
 								   'OR',0,
-								   'XOR',0,0
+								   'XOR',0,
+								   'ADDR',0,
+								   'SIZEOF',0,0
 
 .code
 
@@ -194,6 +198,43 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		pop		ecx
 		xchg	eax,ecx
 		shr		eax,cl
+	.elseif ecx==FUNCADDR
+		mov		mFunc,'H'
+		lea		esi,[esi+edx]
+		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+			inc		esi
+		.endw
+		.if byte ptr [esi]=='('
+			inc		esi
+			mov		ecx,'('
+			mov		var.Address,0
+			invoke CalculateIt,ecx
+			mov		eax,var.Address
+		.else
+			mov		nError,ERR_SYNTAX
+			ret
+		.endif
+	.elseif ecx==FUNCSIZEOF
+		mov		mFunc,'H'
+		lea		esi,[esi+edx]
+		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+			inc		esi
+		.endw
+		.if byte ptr [esi]=='('
+			inc		esi
+			mov		ecx,'('
+			mov		var.nArray,0
+			mov		var.nSize,0
+			mov		var.nInx,0
+			invoke CalculateIt,ecx
+			mov		eax,var.nArray
+			sub		eax,var.nInx
+			mov		edx,var.nSize
+			mul		edx
+		.else
+			mov		nError,ERR_SYNTAX
+			ret
+		.endif
 	.elseif ecx==FUNCAND
 		mov		mFunc,'H'
 		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR

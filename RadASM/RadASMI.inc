@@ -807,6 +807,9 @@ szAclKeys				db 00h,'(None)',0
 						db 28h,'Down',0
 						db 512 dup(0)
 
+szRADebug				db 'RADebug.dll',0
+szRADebugParam			db ',12,1',0
+
 ;#########################################################################
 
 .data

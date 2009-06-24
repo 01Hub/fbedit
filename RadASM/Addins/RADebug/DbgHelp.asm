@@ -137,7 +137,7 @@ TestWord:
 
 FindWord endp
 
-AddPredefinedTypes proc uses esi edi
+AddPredefinedTypes proc uses ebx esi edi
 
 	; Datatypes
 	mov		esi,offset datatype
@@ -157,7 +157,7 @@ AddPredefinedTypes proc uses esi edi
 
 AddPredefinedTypes endp
 
-AddConstants proc uses esi edi
+AddConstants proc uses ebx esi edi
 	LOCAL	lpszName:DWORD
 	LOCAL	buffer[256]:BYTE
 
@@ -310,13 +310,12 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		[edi].DEBUGVAR.nSize,eax
 	.elseif lpType
 		mov		eax,lpType
-		lea		eax,[eax+1]
-		invoke FindTypeSize,eax
+		invoke FindTypeSize,addr [eax+1]
 		.if !edx
+			xor		eax,eax
 			mov		fErrType,TRUE
-		.else
-			mov		[edi].DEBUGVAR.nSize,eax
 		.endif
+		mov		[edi].DEBUGVAR.nSize,eax
 	.endif
 	.if fErrArray
 		invoke strlen,addr [edi+sizeof DEBUGVAR]
@@ -410,9 +409,8 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 
 EnumTypesCallback endp
 
-EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
+EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
-	LOCAL	Displacement:QWORD
 
 	.if SymbolSize
 		.if fOptions & 1
@@ -460,7 +458,7 @@ EnumerateSymbolsCallback proc uses ebx edi,SymbolName:DWORD,SymbolAddress:DWORD,
 
 EnumerateSymbolsCallback endp
 
-EnumSourceFilesCallback proc uses ebx edi,pSourceFile:DWORD,UserContext:DWORD
+EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,pSourceFile
@@ -524,7 +522,7 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 
 EnumLinesCallback endp
 
-DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
+DbgHelp proc uses ebx esi edi,hProcess:DWORD,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke LoadLibrary,addr DbgHelpDLL

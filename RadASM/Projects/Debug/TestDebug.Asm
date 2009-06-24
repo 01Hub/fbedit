@@ -21,7 +21,7 @@ MYCONST			equ MAX_PATH
 .data
 
 szTest		db 'Test',0
-szBuff		db MYCONST dup(?)
+szBuff		db REBARBANDINFO dup(?)
 tid			dd   ?
 rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
@@ -35,7 +35,7 @@ xtst2		dword ?
 
 .code
 
-MyProc2 proc var:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
+MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	aa:BYTE
 	LOCAL	bb:WORD
 	LOCAL	cc:BYTE
@@ -71,7 +71,7 @@ MyProc2 proc var:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	lea		eax,aa
 	lea		ecx,bb
 	lea		edx,cc
-	invoke MyProc4
+	invoke MyProc4,1234
 	ret
 
 MyProc2 endp
@@ -153,7 +153,7 @@ start:
 	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3,987
-	invoke MyProc4
+	invoke MyProc4,112233
 	jmp		Ex
 Ex:
 	invoke ExitProcess,0

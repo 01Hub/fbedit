@@ -21,9 +21,10 @@ szHelp							db 'Immediate window (Output window #3):',0Dh
 								db 'be in the current scope.',0Dh
 								db 0Dh
 								db 'o Simple math.',0Dh
-								db '  - Functions: +, -, *, /, SHL, SHR, AND, OR and XOR.',0Dh
+								db '  - Functions: +, -, *, /, SHL, SHR, AND, OR, XOR, ADDR() and SIZEOF()',0Dh
 								db '  - An expression can contain any register, variable, datatype or constant.',0Dh
 								db '  - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH',0Dh
+								db '  - Example: Memdump Addr(MyArray),Sizeof(MyArray),DWORD',0Dh
 								db 'o Inspect variable, register, datatype, constant or a hex / dec value.',0Dh
  								db ' - ?MyVar to show info about a variable local or parameter.',0Dh
 								db '  - ?MyVar(inx) to show an array element. Index is zero based.',0Dh
@@ -37,7 +38,7 @@ szHelp							db 'Immediate window (Output window #3):',0Dh
 								db '  - reg=4AB0h to change a register (reg: eax, ebx ...).',0Dh
 								db 'o Commands.',0Dh
 								db '  - Help, or /H or /?',0Dh
-								db '    Shows this help screen.',0Dh
+								db '    Shows the help screen.',0Dh
 								db '  - Dump',0Dh
 								db '    Shows a hex dump of the exe.',0Dh
 								db '  - Dump MyStruct[,Size]',0Dh

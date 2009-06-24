@@ -92,6 +92,7 @@ PROPERTIES ends
 ; Source files
 DEBUGSOURCE struct
 	FileID					WORD ?					; The id of the file
+	ProjectFileID			DWORD ?					; Project file id
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGSOURCE ends
 
@@ -386,6 +387,9 @@ szCall							db 'invoke',0
 								db 'call',0
 ;								db 'Add other call types here',0
 								db 0
+; Ansi / Widechar
+szA								db 'A',0
+szW								db 'W',0
 
 ;#########################################################################
 ; Globals
