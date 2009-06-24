@@ -171,7 +171,7 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 
 CreateDebugMenu endp
 
-EditProc proc uses esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
+EditProc proc uses ebx esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
@@ -224,9 +224,21 @@ EditProc proc uses esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
 				.if buffer
 					invoke GetVarVal,addr buffer,eax,TRUE
 					.if eax
-						; Show tooltip
-						mov		ti.lpszText,offset outbuffer
-						call	Activate
+						mov		edx,var.ProjectFileID
+						.if edx
+							invoke GetParent,hPar
+							invoke GetWindowLong,eax,16
+							mov		edx,var.ProjectFileID
+							sub		edx,eax
+						.endif
+						.if !edx
+							; Show tooltip
+							mov		ti.lpszText,offset outbuffer
+							call	Activate
+						.else
+							; Hide tooltip
+							call	DeActivate
+						.endif
 					.else
 						; Hide tooltip
 						call	DeActivate
@@ -440,7 +452,7 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 		invoke UpdateAccelerators
 		; Messages to hook into
 		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
-		mov		ecx,RAM_UNHOOK or RAM_EDITMOUSEMOVE
+		mov		ecx,RAM_EDITMOUSEMOVE
 	.else
 		xor		eax,eax
 		xor		ecx,ecx
@@ -457,26 +469,6 @@ GetOptions proc
 	ret
 
 GetOptions endp
-
-UnHook proc hWin:HWND,lpThisProc:DWORD,lpOldProc:DWORD
-
-	invoke GetWindowLong,hWin,GWL_WNDPROC
-	.if eax==lpThisProc
-		;Last in chain, just unhook
-		invoke SetWindowLong,hWin,GWL_WNDPROC,lpOldProc
-	.else
-		;Let the next in the chain unhook me
-		push	RAM_UNHOOK
-		push	lpOldProc
-		push	lpThisProc
-		push	AIM_UNHOOK
-		push	hWin
-		mov		eax,lpProc
-		call	[eax].ADDINPROCS.lpDllProc
-	.endif
-	ret
-
-UnHook endp
 
 ; This proc handles messages sent from RadASM to our dll
 DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
@@ -702,7 +694,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	.elseif eax==AIM_CLOSE
 		.if lpOldOutProc3
 			;UnHook Output3 WndProc
-			invoke UnHook,hOut3,offset ImmediateProc,lpOldOutProc3
+			invoke SendMessage,hOut3,REM_SUBCLASS,0,lpOldOutProc3
 			mov		lpOldOutProc3,0
 		.endif
 		.if hMnu

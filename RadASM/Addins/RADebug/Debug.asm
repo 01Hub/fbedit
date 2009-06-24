@@ -127,7 +127,6 @@ MapSources proc uses ebx esi edi
 		.if eax
 			mov		nMiss,0
 			call	MatchIt
-			.break
 		.else
 			inc		nMiss
 			.break .if nMiss==10
@@ -144,7 +143,6 @@ MapSources proc uses ebx esi edi
 			.if eax
 				mov		nMiss,0
 				call	MatchIt
-				.break
 			.else
 				inc		nMiss
 				.break .if nMiss==10

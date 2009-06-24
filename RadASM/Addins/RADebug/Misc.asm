@@ -1004,11 +1004,17 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 	invoke FindLine,eax
 	pop		edx
 	.if edx && eax
-		mov		edx,[edx].DEBUGLINE.LineNumber
-		dec		edx
-		mov		eax,[eax].DEBUGLINE.LineNumber
+		mov		ecx,[edx].DEBUGLINE.LineNumber
+		dec		ecx
+		mov		eax,[eax-sizeof DEBUGLINE].DEBUGLINE.LineNumber
 		dec		eax
-		.if nLine>=edx && nLine<eax
+		.if nLine>=ecx && nLine<=eax
+			movzx	eax,[edx].DEBUGLINE.FileID
+			mov		edx,sizeof DEBUGSOURCE
+			mul		edx
+			add		eax,dbg.hMemSource
+			mov		eax,[eax].DEBUGSOURCE.ProjectFileID
+			mov		var.ProjectFileID,eax
 			mov		eax,[esi].DEBUGSYMBOL.lpType
 			mov		lpLocal,eax
 			invoke FindLocalVar,lpName,addr lpLocal
@@ -1116,6 +1122,7 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 			jmp		Ex
 		.endif
 	.endif
+	mov		var.ProjectFileID,0
 	; Global
 	invoke FindSymbol,lpName
 	.if eax

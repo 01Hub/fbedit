@@ -61,7 +61,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=25
@@ -98,9 +98,9 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,1905
+1=0,0,1278,774,2523
 2=0,0,0,0,8
-3=0,0,0,0,64
+3=0,0,0,0,285
 [BookMark]
 0=
 1=
@@ -131,4 +131,4 @@ ProductVer4Range=0
 3=
 [NoDebug]
 [Watch]
-Watch=hInstance(1),tid,ggg
+Watch=

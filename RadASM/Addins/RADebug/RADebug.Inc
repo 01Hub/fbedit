@@ -191,6 +191,7 @@ VAR struct
 	nSize					DWORD ?					; Size in bytes
 	fPtr					DWORD ?					; Not used yet
 	nOfs					DWORD ?					; Offset from ebp for local and parameter
+	ProjectFileID			DWORD ?					; ProjectFileID for locals
 	Address					DWORD ?					; Address
 	nInx					DWORD ?					; Current index, used by immediate
 	IsSZ					DWORD ?					; Show as ZString, used by immediate
