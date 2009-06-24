@@ -114,15 +114,6 @@ RegOut:
 
 ShowContext endp
 
-PrintSourceByte proc Address:DWORD,SourceByte:DWORD,File:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	invoke wsprintf,addr buffer,addr szSourceByte,Address,SourceByte,File
-	invoke PutString,addr buffer
-	ret
-
-PrintSourceByte endp
-
 MapBreakPoints proc uses ebx esi edi
 	LOCAL	CountBP:DWORD
 	LOCAL	CountSource:DWORD
@@ -559,6 +550,8 @@ Debug proc uses ebx,lpFileName:DWORD
 			mov		fNoDebugInfo,TRUE
 			invoke EnableMenu
 		.else
+			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
+			invoke PutString,addr buffer
 			invoke PutString,addr szDebuggingStarted
 			invoke PutString,addr szExeName
 			mov		fNoDebugInfo,FALSE
@@ -605,7 +598,7 @@ Debug proc uses ebx,lpFileName:DWORD
 				invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
 			.endif
 			invoke SetBreakPoints
-			invoke ImmPrompt
+			invoke ImmPromptOn
 			.if dbg.nErrors
 				mov		eax,dbg.hMemVar
 				mov		dbg.lpvar,eax
@@ -795,6 +788,7 @@ Debug proc uses ebx,lpFileName:DWORD
 	invoke LockFiles,FALSE
 	invoke PutString,addr szDebugStopped
 	invoke SetWindowText,hOut2,addr szNULL
+	invoke ImmPromptOff
 	ret
 
 Debug endp

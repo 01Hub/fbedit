@@ -640,6 +640,7 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 		mov		eax,nOTHER
 	.endif
 	mov		nAsm,eax
+;	invoke UpDateAssemblerIni
 	invoke iniReadPaths,lpAssembler
 	invoke GetPrivateProfileInt,addr szIniCode,addr ininAsm,0,addr iniAsmFile
 	.if eax

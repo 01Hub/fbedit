@@ -92,14 +92,16 @@ o Change variable or register.
   - MyVar=ebx+2 to change the variable MyVar.
   - reg=4AB0h to change a register (reg: eax, ebx ...).
 o Commands.
-  - Help, or /H or /?
+  - Help, /H or /?
     Shows this help screen.
   - Dump
     Shows a hex dump of the exe.
-  - Dump MyStruct
+  - Dump MyStruct[,Size]
     Shows a hex dump of an array, structure or union.
-  - Memdump Address,Count
+    Size is optional and can be BYTE, WORD, DWORD or QWORD.
+  - Memdump Address,Count[,Size]
     Shows a memory dump. Address and Count can be any expression.
+    Size is optional and can be BYTE, WORD, DWORD or QWORD.
   - Vars
     Shows a list of all variables.
   - Types

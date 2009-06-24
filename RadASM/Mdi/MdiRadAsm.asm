@@ -5754,7 +5754,6 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_NCLBUTTONDOWN
 		invoke SetFocus,hWin
 		invoke GetParent,hWin
-
 		mov		hEdit,eax
 	.elseif eax==WM_LBUTTONDOWN
 		mov		fCodeMacro,-1
@@ -5764,7 +5763,7 @@ EditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			ret
 		.endif
 	.elseif eax==WM_MOUSEMOVE
-
+		invoke DllProc,hWin,AIM_EDITMOUSEMOVE,wParam,lParam,RAM_EDITMOUSEMOVE
 		.if fCodeTooltip
 			invoke CallWindowProc,OldEditProc,hWin,uMsg,wParam,lParam
 			push	eax

@@ -171,68 +171,62 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 
 CreateDebugMenu endp
 
-EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
+EditProc proc uses esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
 	LOCAL	hPar:HWND
 
-	mov		eax,uMsg
-	.if eax==WM_MOUSEMOVE
-		mov		ti.cbSize,SizeOf TOOLINFO
-		mov		ti.uFlags,TTF_IDISHWND
-		mov		eax,hWin
-		mov		ti.hWnd,eax
-		mov		ti.uId,eax
-		mov		ti.lpszText,0
-		invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
-		.if dbg.hDbgThread && dbg.fHandled
+	mov		ti.cbSize,SizeOf TOOLINFO
+	mov		ti.uFlags,TTF_IDISHWND
+	mov		eax,hWin
+	mov		ti.hWnd,eax
+	mov		ti.uId,eax
+	mov		ti.lpszText,0
+	invoke SendMessage,hTip,TTM_GETTOOLINFO,0,addr ti
+	.if dbg.hDbgThread && dbg.fHandled
+		.if !eax
+			;Add the tooltip
+			mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+			mov		eax,hWin
+			mov		ti.hWnd,eax
+			mov		ti.uId,eax
+			mov		eax,hInstance
+			mov		ti.hInst,eax
+			invoke SendMessage,hTip,TTM_ADDTOOL,0,addr ti
+		.endif
+		mov		eax,lParam
+		mov		edx,eax
+		shr		edx,16
+		movsx	edx,dx
+		movsx	eax,ax
+		mov		pt.x,eax
+		mov		pt.y,edx
+		sub		eax,dbg.pt.x
+		.if CARRY?
+			neg		eax
+		.endif
+		sub		edx,dbg.pt.y
+		.if CARRY?
+			neg		edx
+		.endif
+		.if eax>5 || edx>5
+			mov		eax,pt.x
+			mov		dbg.pt.x,eax
+			mov		eax,pt.y
+			mov		dbg.pt.y,eax
+			invoke GetParent,hWin
+			mov		hPar,eax
+			invoke SendMessage,hPar,EM_CHARFROMPOS,0,addr pt
+			invoke SendMessage,hPar,REM_ISCHARPOS,eax,0
 			.if !eax
-				;Add the tooltip
-				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
-				mov		eax,hWin
-				mov		ti.hWnd,eax
-				mov		ti.uId,eax
-				mov		eax,hInstance
-				mov		ti.hInst,eax
-				invoke SendMessage,hTip,TTM_ADDTOOL,0,addr ti
-			.endif
-			mov		eax,lParam
-			mov		edx,eax
-			shr		edx,16
-			movsx	edx,dx
-			movsx	eax,ax
-			mov		pt.x,eax
-			mov		pt.y,edx
-			sub		eax,dbg.pt.x
-			.if CARRY?
-				neg		eax
-			.endif
-			sub		edx,dbg.pt.y
-			.if CARRY?
-				neg		edx
-			.endif
-			.if eax>5 || edx>5
-				mov		eax,pt.x
-				mov		dbg.pt.x,eax
-				mov		eax,pt.y
-				mov		dbg.pt.y,eax
-				invoke GetParent,hWin
-				mov		hPar,eax
-				invoke SendMessage,hPar,EM_CHARFROMPOS,0,addr pt
-				invoke SendMessage,hPar,REM_ISCHARPOS,eax,0
-				.if !eax
-					invoke SendMessage,hPar,REM_GETCURSORWORD,sizeof buffer,addr buffer
-					.if buffer
-						invoke GetVarVal,addr buffer,eax,TRUE
-						.if eax
-							; Show tooltip
-							mov		ti.lpszText,offset outbuffer
-							call	Activate
-						.else
-							; Hide tooltip
-							call	DeActivate
-						.endif
+				invoke SendMessage,hPar,REM_GETCURSORWORD,sizeof buffer,addr buffer
+				.if buffer
+					invoke GetVarVal,addr buffer,eax,TRUE
+					.if eax
+						; Show tooltip
+						mov		ti.lpszText,offset outbuffer
+						call	Activate
 					.else
 						; Hide tooltip
 						call	DeActivate
@@ -241,13 +235,15 @@ EditProc proc uses esi,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					; Hide tooltip
 					call	DeActivate
 				.endif
+			.else
+				; Hide tooltip
+				call	DeActivate
 			.endif
-		.elseif eax
-			; Delete the tool
-			invoke SendMessage,hTip,TTM_DELTOOL,0,addr ti
 		.endif
+	.elseif eax
+		; Delete the tool
+		invoke SendMessage,hTip,TTM_DELTOOL,0,addr ti
 	.endif
-	invoke CallWindowProc,lpOldEditProc,hWin,uMsg,wParam,lParam
 	ret
 
 Activate:
@@ -421,7 +417,7 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
 	mov		eax,[eax].ADDINDATA.nRadASMVer
-	.if eax>=2216
+	.if eax>=2217
 		mov		nRadASMVer,eax
 		; Get handle to outputwindow #1, #2 and #3
 		mov		eax,lpHandles
@@ -443,8 +439,8 @@ InstallDll proc uses ebx hWin:DWORD, fOpt:DWORD
 		invoke CreateDebugMenu,hWin
 		invoke UpdateAccelerators
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED or RAM_MDIACTIVATE
-		mov		ecx,RAM_UNHOOK
+		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+		mov		ecx,RAM_UNHOOK or RAM_EDITMOUSEMOVE
 	.else
 		xor		eax,eax
 		xor		ecx,ecx
@@ -503,7 +499,9 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[8]
 			;&Clear Breakpoints
 			invoke ClearBreakpoints
+			invoke SaveBreakPoints
 			.if dbg.hDbgThread
+				invoke LoadAllBreakPoints
 				invoke MapBreakPoints
 			.endif
 		.elseif edx==IDAddIn[12]
@@ -515,8 +513,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					mov		dbg.func,FUNC_RUN
 					invoke ClearBreakPointsAll
 					invoke SetBreakPoints
-;					invoke RestoreSourceByte,0
-;					invoke ResumeAllThreads
 					mov		ebx,dbg.lpthread
 					.if [ebx].DEBUGTHREAD.suspended
 						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
@@ -692,8 +688,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke EnableMenu
 		.if lParam==ID_EDIT
 			invoke LoadBreakPoints
-			invoke SendMessage,wParam,REM_SUBCLASS,0,offset EditProc
-			mov		lpOldEditProc,eax
 		.endif
 		.if dbg.hDbgThread
 			invoke LockFiles,TRUE
@@ -731,27 +725,6 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke EnableMenu
 		invoke LoadWatch
 		;
-	.elseif eax==AIM_MDIACTIVATE
-		;A new edit window is selected
-		.if hWin
-			invoke GetWindowLong,hWin,0                           ;Get editor type
-			.if eax==ID_EDIT
-				mov		eax,wParam
-				.if eax==hWin
-;					.if OldMdiChildProc
-;						;Unsubclass the MdiChild window
-;						invoke SetWindowLong,wParam,GWL_WNDPROC,OldMdiChildProc
-;					.endif
-				.else
-					;Subclass the Mdi Child window
-;					invoke SetWindowLong,lParam,GWL_WNDPROC,offset MdiChildProc
-;					mov OldMdiChildProc,eax
-;					mov		eax,lParam
-;					mov		hMdi,eax
-				.endif
-			.endif
-		.endif
-		;
 	.elseif eax==AIM_UNHOOK
 		mov		eax,hWin
 		.if eax==hOut3
@@ -765,6 +738,8 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			.endif
 		.endif
 		;
+	.elseif eax==AIM_EDITMOUSEMOVE
+		invoke EditProc,hWin,wParam,lParam
 	.endif
 	mov eax,FALSE
   Ex:

@@ -40,10 +40,12 @@ szHelp							db 'Immediate window (Output window #3):',0Dh
 								db '    Shows this help screen.',0Dh
 								db '  - Dump',0Dh
 								db '    Shows a hex dump of the exe.',0Dh
-								db '  - Dump MyStruct',0Dh
+								db '  - Dump MyStruct[,Size]',0Dh
 								db '    Shows a hex dump of an array, structure or union.',0Dh
-								db '  - Memdump Address,Count',0Dh
+								db '    Size is optional and can be BYTE, WORD, DWORD or QWORD.',0Dh
+								db '  - Memdump Address,Count[,Size]',0Dh
 								db '    Shows a memory dump. Address and Count can be any expression.',0Dh
+								db '    Size is optional and can be BYTE, WORD, DWORD or QWORD.',0Dh
 								db '  - Vars',0Dh
 								db '    Shows a list of all variables.',0Dh
 								db '  - Types',0Dh
@@ -139,6 +141,7 @@ LoadWatch endp
 Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
 	LOCAL	val:DWORD
 	LOCAL	tmpvar:VAR
 
@@ -168,7 +171,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.while TRUE
 			invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 			.break .if !eax
-			invoke DumpLine,hOut3,esi,addr buffer,16
+			invoke DumpLineBYTE,hOut3,esi,addr buffer,16
 			add		esi,16
 		.endw
 		invoke SetBreakPointsAll
@@ -176,17 +179,50 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpin,addr buffer,addr szImmDump,4
 	.if !eax
-		invoke GetVarAdr,addr buffer[4],dbg.prevline
+		lea		esi,buffer[4]
+		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+			inc		esi
+		.endw
+		xor		ebx,ebx
+		.while byte ptr [esi]
+			.if byte ptr [esi]==','
+				.if !ebx
+					lea		ebx,[esi+1]
+					mov		byte ptr [esi],0
+				.endif
+			.endif
+			inc		esi
+		.endw
+		invoke GetVarAdr,esi,dbg.prevline
 		.if eax
 			mov		eax,var.nSize
 			mov		edx,var.nArray
+			sub		edx,var.nInx
 			mul		edx
 			mov		edi,eax
+			.if ebx
+				invoke DoMath,ebx
+				.if eax
+					mov		ebx,var.Value
+				.else
+					mov		ebx,1
+				.endif
+			.else
+				mov		ebx,1
+			.endif
 			mov		esi,var.Address
 			.while edi>=16
 				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 				.if eax
-					invoke DumpLine,hOut3,esi,addr buffer,16
+					.if ebx==1
+						invoke DumpLineBYTE,hOut3,esi,addr buffer,16
+					.elseif ebx==2
+						invoke DumpLineWORD,hOut3,esi,addr buffer,16
+					.elseif ebx==4
+						invoke DumpLineDWORD,hOut3,esi,addr buffer,16
+					.elseif ebx==8
+						invoke DumpLineQWORD,hOut3,esi,addr buffer,16
+					.endif
 				.endif
 				sub		edi,16
 				add		esi,16
@@ -194,21 +230,41 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.if edi
 				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
 				.if eax
-					invoke DumpLine,hOut3,esi,addr buffer,edi
+					.if ebx==1
+						invoke DumpLineBYTE,hOut3,esi,addr buffer,edi
+					.elseif ebx==2
+						invoke DumpLineWORD,hOut3,esi,addr buffer,edi
+					.elseif ebx==4
+						invoke DumpLineDWORD,hOut3,esi,addr buffer,edi
+					.elseif ebx==8
+						invoke DumpLineQWORD,hOut3,esi,addr buffer,edi
+					.endif
 				.endif
 			.endif
+		.else
+			.if var.nErr==ERR_INDEX
+				invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,esi
+			.else
+				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
+			.endif
+			invoke PutStringOut,addr outbuffer,hOut3
 		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmMemdump,7
 	.if !eax
 		xor		edi,edi
+		xor		ebx,ebx
 		lea		esi,buffer[7]
 		.while byte ptr [esi]
 			.if byte ptr [esi]==','
-				lea		edi,[esi+1]
-				mov		byte ptr [esi],0
-				.break
+				.if !edi
+					lea		edi,[esi+1]
+					mov		byte ptr [esi],0
+				.elseif !ebx
+					lea		ebx,[esi+1]
+					mov		byte ptr [esi],0
+				.endif
 			.endif
 			inc		esi
 		.endw
@@ -219,17 +275,43 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke DoMath,edi
 				.if eax
 					mov		edi,var.Value
+					.if ebx
+						invoke DoMath,ebx
+						.if eax
+							mov		ebx,var.Value
+						.else
+							mov		ebx,1
+						.endif
+					.else
+						mov		ebx,1
+					.endif
 					.while edi
 						.if edi>=16
 							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 							.break .if !eax
-							invoke DumpLine,hOut3,esi,addr buffer,16
+							.if ebx==1
+								invoke DumpLineBYTE,hOut3,esi,addr buffer,16
+							.elseif ebx==2
+								invoke DumpLineWORD,hOut3,esi,addr buffer,16
+							.elseif ebx==4
+								invoke DumpLineDWORD,hOut3,esi,addr buffer,16
+							.elseif ebx==8
+								invoke DumpLineQWORD,hOut3,esi,addr buffer,16
+							.endif
 							add		esi,16
 							sub		edi,16
 						.else
 							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
 							.break .if !eax
-							invoke DumpLine,hOut3,esi,addr buffer,edi
+							.if ebx==1
+								invoke DumpLineBYTE,hOut3,esi,addr buffer,edi
+							.elseif ebx==2
+								invoke DumpLineWORD,hOut3,esi,addr buffer,edi
+							.elseif ebx==4
+								invoke DumpLineDWORD,hOut3,esi,addr buffer,edi
+							.elseif ebx==8
+								invoke DumpLineQWORD,hOut3,esi,addr buffer,edi
+							.endif
 							.break
 						.endif
 					.endw
@@ -331,7 +413,8 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	.if buffer=='?'
 		movzx	eax,word ptr buffer[1]
-		.if eax==':z' || eax==';Z'
+		.if eax==':z' || eax==':Z'
+			mov		var.IsSZ,TRUE
 			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
 		.else
 			invoke DoMath,addr buffer[1]
@@ -341,10 +424,12 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				.else
 					invoke FormatOutput,addr outbuffer
 				.endif
-			.elseif nError==1
+			.elseif nError==ERR_SYNTAX
 				invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
-			.elseif nError==2
+			.elseif nError==ERR_NOTFOUND
 				invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
+			.elseif nError==ERR_INDEX
+				invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,addr szError
 			.endif
 		.endif
 		invoke PutStringOut,addr outbuffer,hOut3
@@ -355,6 +440,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.if buffer[ebx]=='='
 			mov		buffer[ebx],0
 			inc		ebx
+			invoke strcpy,addr buffer1,addr buffer
 			invoke GetVarAdr,addr buffer,dbg.prevline
 			.if eax
 				push	eax
@@ -379,7 +465,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.if (eax=='d' || eax=='P' || eax=='L')
 				; GLOBAL, PROC Parameter or LOCAL
 				invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
-				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
 			.elseif eax=='R'
 				; REGISTER
@@ -400,10 +486,14 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				mov		ebx,dbg.lpthread
 				invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 				invoke ShowContext
-				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else
-				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,addr buffer
+				.if var.nErr==ERR_INDEX
+					invoke wsprintf,addr outbuffer,addr szErrIndexOutOfRange,addr buffer
+				.else
+					invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,addr buffer
+				.endif
 				invoke PutStringOut,addr outbuffer,hOut3
 			.endif
 			jmp		Ex
@@ -414,7 +504,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		invoke PutStringOut,addr szErrUnknownCommand,hOut3
 	.endif
   Ex:
-	invoke ImmPrompt
+	invoke ImmPromptOn
 	ret
 
 Immediate endp

@@ -126,6 +126,7 @@ start:
 	mov		hInstance[4],2
 	mov		hInstance[8],3
 	mov		eax,'ABCD'
+	mov		eax,400000h
 	mov		eax,tid
 	mov		tid,1234
 	invoke CreateThread,NULL,0,addr ThreadProc1,0,NULL,addr tid

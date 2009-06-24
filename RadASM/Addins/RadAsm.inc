@@ -69,6 +69,7 @@ AIM_PREPARSE			equ WM_USER+139			;hWnd=handle of mdi frame, wParam=project file 
 AIM_PARSEDONE			equ WM_USER+140			;hWnd=handle of mdi frame, wParam=project file number,lParam=pointer to file content
 AIM_IMPORTED			equ WM_USER+141			;hWnd=handle of mdi frame, wParam=project file,lParam=string of zero terminated file names
 AIM_RCSAVED				equ WM_USER+142			;hWnd=handle of mdi frame, wParam=nType,lParam=string of zero terminated file name
+AIM_EDITMOUSEMOVE		equ WM_USER+143			;hWnd=handle of edit window, wParam and lParam as WM_MOUSEMOVE
 
 ;Return values (eax) from InstallDll procedure which tell RadASM which messages to send to your DllProc procedure,can be OR'ed
 RAM_COMMAND				equ 00000001h			;AIM_COOMAND equ WM_COMMAND
@@ -119,6 +120,7 @@ RAM_PREPARSE			equ 00000400h			;AIM_PREPARSE
 RAM_PARSEDONE			equ 00000800h			;AIM_PARSEDONE
 RAM_IMPORTED			equ 00001000h			;AIM_IMPORTED
 RAM_RCSAVED				equ 00002000h			;AIM_RCSAVED
+RAM_EDITMOUSEMOVE		equ 00004000h			;AIM_EDITMOUSEMOVE
 
 ;Structure pointed to on return from AIM_GETHANDLES 
 ADDINHANDLES struct

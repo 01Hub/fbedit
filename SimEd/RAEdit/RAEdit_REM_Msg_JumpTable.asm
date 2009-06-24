@@ -812,7 +812,7 @@
 			invoke GetCursorPos,addr pt
 			invoke ScreenToClient,hWin,addr pt
 			mov		eax,[ebx].EDIT.selbarwt
-			add		eax,[ebx].EDIT.nlinenrwt
+			add		eax,[ebx].EDIT.linenrwt
 			.if eax<=pt.x
 				invoke ChildWindowFromPoint,hWin,pt.x,pt.y
 				.if eax==[ebx].EDIT.edta.hwnd

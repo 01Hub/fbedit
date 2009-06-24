@@ -34,7 +34,7 @@ includelib Debug.lib
 
 DLLProc							PROTO :DWORD, :DWORD, :DWORD, :DWORD
 InstallDLL						PROTO :DWORD, :DWORD
-CalculateIt						PROTO	:DWORD
+CalculateIt						PROTO :DWORD
 
 ;#########################################################################
 ; Constants
@@ -68,6 +68,10 @@ FMT_SIZE						equ 8
 FMT_HEX							equ 16
 FMT_DEC							equ 32
 FMT_SZ							equ 64
+
+ERR_NOTFOUND					equ 1
+ERR_INDEX						equ 2
+ERR_SYNTAX						equ 3
 
 ;#########################################################################
 ; Structures
@@ -191,8 +195,9 @@ VAR struct
 	IsSZ					DWORD ?					; Show as ZString, used by immediate
 	Value					DWORD ?					; Current value, used by immediate and tooltip
 	szValue					BYTE 256 dup(?)			; Current ZString value, used by immediate
-	lpFormat				DWORD ?
-	nFormat					DWORD ?
+	lpFormat				DWORD ?					; Pointer to format string
+	nFormat					DWORD ?					; Format flags
+	nErr					DWORD ?					; Error
 VAR ends
 
 ; Register. Used by tooltip and immediate
@@ -289,7 +294,6 @@ szEventDec						db '%s %d',0
 
 ; Some useful text constants
 szCR							db 0Dh,0
-;szCRLF							db 0Dh,0Ah,0
 szNULL							db 0
 szSpace							db ' ',0
 szComma							db ',',0
@@ -349,11 +353,11 @@ szReg32							db 'REGISTER %s Hex %08Xh Dec %u',0
 szReg16							db 'REGISTER %s Hex %04Xh Dec %u',0
 szReg8							db 'REGISTER %s Hex %02Xh Dec %u',0
 szProc							db 'PROC %s Size %u',0
-szData							db 'GLOBAL %s Address %08Xh Size %u',0
-szData32						db 'GLOBAL %s Address %08Xh Size %u Hex %08Xh Dec %d',0
-szData16						db 'GLOBAL %s Address %08Xh Size %u Hex %04Xh Dec %d',0
-szData8							db 'GLOBAL %s Address %08Xh Size %u Hex %02Xh Dec %d',0
-szDataSZ						db 'GLOBAL %s Address %08Xh Size %u ZString "%s"',0
+szData							db 'GLOBAL %s%s Address %08Xh Size %u',0
+szData32						db 'GLOBAL %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
+szData16						db 'GLOBAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
+szData8							db 'GLOBAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
+szDataSZ						db 'GLOBAL %s%s Address %08Xh Size %u ZString "%s"',0
 szParam							db 'PARAM %s%s Address %08Xh Size %u',0
 szParam32						db 'PARAM %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szParam16						db 'PARAM %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
@@ -364,18 +368,20 @@ szLocal16						db 'LOCAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szLocal8						db 'LOCAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szLocalSZ						db 'LOCAL %s%s Address %08Xh Size %u ZString "%s"',0
 szValue							db 'Hex %08Xh Dec %d',0
-szSourceByte					db 'Address: %X Byte: %X File: %u',0
 
 szType							db 'Type: %s Size: %u',0
 
 ; Errors
 szErrSyntaxError				db 'Syntax error: %s',0
 szErrVariableNotFound			db 'Variable not found: %s',0
+szErrIndexOutOfRange			db 'Index out of range: %s',0
 szErrUnknownCommand				db 'Unknown command.',0
+
 szErrConstant					db 'Could not evaluate expression: %s',0
 szErrArray						db 'Could not evaluate array size: %s',0
 szErrType						db 'Could not find datatype: %s',0
 szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,'Variables, parameters and locals are disabled.',0
+
 szCall							db 'invoke',0
 								db 'call',0
 ;								db 'Add other call types here',0
@@ -403,7 +409,6 @@ szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged
 szObjName						db MAX_PATH dup(?)				; Path to obj to be debugged
 szSourceName					db MAX_PATH dup(?)				; Path to a source file
 breakpoint						BREAKPOINT 512 dup(<>)			; Breakpoints
-lpOldEditProc					dd ?							; RAEdot callback
 lpOldOutProc3					dd ?							; Immediate window callback
 dbg								DEBUG <>						; Holds info while debugging
 var								VAR <>							; Current variable info

@@ -658,8 +658,6 @@ DbgHelp proc uses ebx,hProcess:DWORD,lpFileName:DWORD
 			.else
 				invoke PutString,addr szSymLoadModuleFailed
 			.endif
-			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
-			invoke PutString,addr buffer
 		.else
 			invoke PutString,addr szSymInitializeFailed
 		.endif

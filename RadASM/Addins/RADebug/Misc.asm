@@ -320,8 +320,10 @@ PutStringOut proc lpString:DWORD,hWin:HWND
 
 PutStringOut endp
 
-HexByte proc
+HexBYTE proc uses ebx edi,lpBuff:DWORD,Val:DWORD
 
+	mov		edi,lpBuff
+	mov		eax,Val
 	mov		ah,al
 	shr		al,4
 	and		ah,0Fh
@@ -335,11 +337,31 @@ HexByte proc
 	.else
 		add		ah,41h-0Ah
 	.endif
+	mov		[edi],ax
 	ret
 
-HexByte endp
+HexBYTE endp
 
-HexDWORD proc uses ebx edi,lpBuff:DWORD,Val:DWORD
+HexWORD proc uses ecx ebx edi,lpBuff:DWORD,Val:DWORD
+
+	mov		edi,lpBuff
+	mov		ebx,Val
+	rol		ebx,16
+	xor		ecx,ecx
+	.while ecx<2
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+HexWORD endp
+
+HexDWORD proc uses ecx ebx edi,lpBuff:DWORD,Val:DWORD
 
 	mov		edi,lpBuff
 	mov		ebx,Val
@@ -347,8 +369,7 @@ HexDWORD proc uses ebx edi,lpBuff:DWORD,Val:DWORD
 	.while ecx<4
 		rol		ebx,8
 		mov		eax,ebx
-		invoke HexByte
-		mov		[edi],ax
+		invoke HexBYTE,edi,eax
 		inc		edi
 		inc		edi
 		inc		ecx
@@ -358,7 +379,35 @@ HexDWORD proc uses ebx edi,lpBuff:DWORD,Val:DWORD
 
 HexDWORD endp
 
-DumpLine proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
+HexQWORD proc uses ecx ebx edi,lpBuff:DWORD,Val:QWORD
+
+	mov		edi,lpBuff
+	mov		ebx,dword ptr Val[4]
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		ebx,dword ptr Val
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+HexQWORD endp
+
+DumpLineBYTE proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		ebx,nAdr
@@ -368,8 +417,7 @@ DumpLine proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWOR
 	.while ecx<4
 		rol		ebx,8
 		mov		eax,ebx
-		invoke HexByte
-		mov		[edi],ax
+		invoke HexBYTE,edi,eax
 		inc		edi
 		inc		edi
 		inc		ecx
@@ -379,17 +427,15 @@ DumpLine proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWOR
 	xor		ecx,ecx
 	.while ecx<nBytes
 		mov		al,[esi+ecx]
-		invoke HexByte
-		mov		[edi],ax
-		inc		edi
-		inc		edi
-		.if ecx==7
+		invoke HexBYTE,edi,eax
+		add		edi,2
+		inc		ecx
+		.if ecx==8
 			mov		byte ptr [edi],'-'
 		.else
 			mov		byte ptr [edi],' '
 		.endif
 		inc		edi
-		inc		ecx
 	.endw
 	mov		ecx,16
 	sub		ecx,nBytes
@@ -408,11 +454,169 @@ DumpLine proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWOR
 		inc		edi
 		inc		ecx
 	.endw
-	mov		dword ptr [edi],0A0Dh
+	mov		word ptr [edi],0Dh
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr buffer
 	ret
 
-DumpLine endp
+DumpLineBYTE endp
+
+DumpLineWORD proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		ebx,nAdr
+	mov		esi,lpDumpData
+	lea		edi,buffer
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],' '
+	inc		edi
+	xor		ecx,ecx
+	.while ecx<nBytes
+		mov		ax,[esi+ecx]
+		invoke HexWORD,edi,eax
+		add		edi,4
+		add		ecx,2
+		.if ecx==8
+			mov		byte ptr [edi],'-'
+		.else
+			mov		byte ptr [edi],' '
+		.endif
+		inc		edi
+	.endw
+	mov		ecx,16
+	sub		ecx,nBytes
+	.while ecx
+		mov		dword ptr [edi],'   '
+		add		edi,3
+		dec		ecx
+	.endw
+	xor		ecx,ecx
+	.while ecx<nBytes
+		mov		al,[esi+ecx]
+		.if al<20h || al>=80h
+			mov		al,'.'
+		.endif
+		mov		[edi],al
+		inc		edi
+		inc		ecx
+	.endw
+	mov		word ptr [edi],0Dh
+	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr buffer
+	ret
+
+DumpLineWORD endp
+
+DumpLineDWORD proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		ebx,nAdr
+	mov		esi,lpDumpData
+	lea		edi,buffer
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],' '
+	inc		edi
+	xor		ecx,ecx
+	.while ecx<nBytes
+		mov		eax,[esi+ecx]
+		invoke HexDWORD,edi,eax
+		add		edi,8
+		add		ecx,4
+		.if ecx==8
+			mov		byte ptr [edi],'-'
+		.else
+			mov		byte ptr [edi],' '
+		.endif
+		inc		edi
+	.endw
+	mov		ecx,16
+	sub		ecx,nBytes
+	.while ecx
+		mov		dword ptr [edi],'   '
+		add		edi,3
+		dec		ecx
+	.endw
+	xor		ecx,ecx
+	.while ecx<nBytes
+		mov		al,[esi+ecx]
+		.if al<20h || al>=80h
+			mov		al,'.'
+		.endif
+		mov		[edi],al
+		inc		edi
+		inc		ecx
+	.endw
+	mov		word ptr [edi],0Dh
+	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr buffer
+	ret
+
+DumpLineDWORD endp
+
+DumpLineQWORD proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	mov		ebx,nAdr
+	mov		esi,lpDumpData
+	lea		edi,buffer
+	xor		ecx,ecx
+	.while ecx<4
+		rol		ebx,8
+		mov		eax,ebx
+		invoke HexBYTE,edi,eax
+		inc		edi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],' '
+	inc		edi
+	xor		ecx,ecx
+	.while ecx<nBytes
+		invoke HexQWORD,edi,qword ptr[esi+ecx]
+		add		edi,16
+		add		ecx,8
+		.if ecx==8
+			mov		byte ptr [edi],'-'
+		.else
+			mov		byte ptr [edi],' '
+		.endif
+		inc		edi
+	.endw
+	mov		ecx,16
+	sub		ecx,nBytes
+	.while ecx
+		mov		dword ptr [edi],'   '
+		add		edi,3
+		dec		ecx
+	.endw
+	xor		ecx,ecx
+	.while ecx<nBytes
+		mov		al,[esi+ecx]
+		.if al<20h || al>=80h
+			mov		al,'.'
+		.endif
+		mov		[edi],al
+		inc		edi
+		inc		ecx
+	.endw
+	mov		word ptr [edi],0Dh
+	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr buffer
+	ret
+
+DumpLineQWORD endp
 
 EnableMenu proc uses esi edi
 	LOCAL	hREd:HWND
@@ -580,13 +784,35 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 
 FindTypeSize endp
 
-ImmPrompt proc
+ImmPromptOn proc
 
 	invoke SendMessage,hOut3,EM_REPLACESEL,FALSE,addr szImmPrompt
 	invoke SendMessage,hOut3,EM_SCROLLCARET,0,0
 	ret
 
-ImmPrompt endp
+ImmPromptOn endp
+
+ImmPromptOff proc
+	LOCAL	chrg:CHARRANGE
+	LOCAL	buffer[32]:BYTE
+
+	invoke SendMessage,hOut3,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,hOut3,EM_LINEFROMCHAR,chrg.cpMin,0
+	mov		word ptr buffer,16
+	mov		edx,eax
+	invoke SendMessage,hOut3,EM_GETLINE,edx,addr buffer
+	mov		buffer[eax],0
+	.if word ptr buffer==0D3Eh || word ptr buffer==003Eh
+		mov		eax,chrg.cpMin
+		mov		chrg.cpMax,eax
+		dec		chrg.cpMin
+		invoke SendMessage,hOut3,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,hOut3,EM_REPLACESEL,FALSE,addr szNULL
+		invoke SendMessage,hOut3,EM_SCROLLCARET,0,0
+	.endif
+	ret
+
+ImmPromptOff endp
 
 FindLine proc uses ebx esi edi,Address:DWORD
 	LOCAL	inx:DWORD
@@ -832,7 +1058,9 @@ GetIndex endp
 
 FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 
+	push	var.IsSZ
 	invoke RtlZeroMemory,addr var,sizeof var
+	pop		var.IsSZ
 	invoke GetIndex,lpName
 	mov		var.nInx,eax
 	invoke FindReg,lpName
@@ -848,12 +1076,7 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 		mov		eax,'R'
 		jmp		Ex
 	.endif
-	mov		eax,lpName
-	.if word ptr [eax]==':z' || word ptr [eax]==':Z'
-		mov		var.IsSZ,TRUE
-		add		lpName,2
-	.endif
-	.if dbg.lpProc && nRadASMVer>=2217
+	.if dbg.lpProc
 		; Is in a proc, find parameter or local
 		invoke FindLocal,lpName,nLine
 		.if eax
@@ -894,8 +1117,12 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 				mov		var.nArray,eax
 				invoke strlen,addr [esi+sizeof DEBUGVAR]
 				lea		edi,[esi+eax+1+sizeof DEBUGVAR]
-				invoke strcat,addr var.szName,edi
+				invoke strcpy,addr var.szArray,edi
 				mov		eax,'d'
+				jmp		Ex
+			.else
+				mov		var.nErr,ERR_INDEX
+				xor		eax,eax
 				jmp		Ex
 			.endif
 		.endif
@@ -916,6 +1143,7 @@ FindVar proc uses esi edi,lpName:DWORD,nLine:DWORD
 			.endif
 		.endif
 	.endif
+	mov		var.nErr,ERR_NOTFOUND
 	xor		eax,eax
   Ex:
 	ret
@@ -999,12 +1227,12 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
 				mov		var.lpFormat,offset szDataSZ
-				mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE or FMT_SZ
+				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
 			.else
 				.if eax==3 || eax>4
 					; Struct ,union ,QWORD or TBYTE
 					mov		var.lpFormat,offset szData
-					mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
 				.else
 					invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
 					mov		eax,var.nSize
@@ -1015,13 +1243,13 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 						mov		edx,offset szData16
 					.endif
 					mov		var.lpFormat,edx
-					mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 				.endif
 			.endif
 		.else
 			; Unknown size
 			mov		var.lpFormat,offset szData
-			mov		var.nFormat,FMT_NAME or FMT_ADDRESS or FMT_SIZE
+			mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
 		.endif
 	.elseif eax=='P'
 		; PROC Parameter
@@ -1077,6 +1305,16 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		mov		var.lpFormat,offset szValue
 		mov		var.nFormat,FMT_HEX or FMT_DEC
 	.else
+		.if var.nErr==ERR_NOTFOUND
+			mov		var.lpFormat,offset szErrVariableNotFound
+			mov		var.nFormat,FMT_NAME
+		.elseif var.nErr==ERR_INDEX
+			mov		var.lpFormat,offset szErrIndexOutOfRange
+			mov		var.nFormat,FMT_NAME
+		.endif
+		.if fShow
+			invoke FormatOutput,addr outbuffer
+		.endif
 		xor		eax,eax
 		jmp		Ex
 	.endif
@@ -1126,7 +1364,7 @@ WatchVars proc uses esi
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
-		invoke ImmPrompt
+		invoke ImmPromptOn
 	.endif
 	ret
 

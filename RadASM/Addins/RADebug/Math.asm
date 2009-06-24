@@ -1,20 +1,4 @@
 
-.const
-
-szSHL							db 'SHL',0
-szSHR							db 'SHL',0
-szAND							db 'AND',0
-szOR							db 'OR',0
-szXOR							db 'XOR',0
-szNOT							db 'NOT',0
-
-.data?
-
-fError							DWORD ?
-
-.code
-
-
 FUNCSHL							equ 1
 FUNCSHR							equ 2
 FUNCAND							equ 3
@@ -111,7 +95,7 @@ GetValue proc uses ebx edi
 				jmp		Ex
 			.endif
 		.endif
-		mov		nError,1
+		mov		nError,ERR_SYNTAX
 		invoke strcpy,addr szError,addr buffer
 		xor		eax,eax
 		jmp		Ex
@@ -155,11 +139,17 @@ GetValue proc uses ebx edi
 		.else
 			invoke FindTypeSize,addr buffer
 			.if !edx
-				mov		nError,2
+				.if var.nErr
+					mov		eax,var.nErr
+					mov		nError,eax
+				.else
+					mov		nError,ERR_NOTFOUND
+				.endif
 				invoke strcpy,addr szError,addr buffer
 				xor		eax,eax
 				jmp		Ex
 			.endif
+			mov		var.nErr,0
 			mov		mFunc,'H'
 		.endif
 	.endif
@@ -294,7 +284,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		invoke GetValue
 		pop		edx
 		.if esi==edx
-			mov		nError,1
+			mov		nError,ERR_SYNTAX
 			ret
 		.endif
 	.endif

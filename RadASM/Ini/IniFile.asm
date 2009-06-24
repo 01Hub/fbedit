@@ -100,7 +100,51 @@ iniDefMod			db 'Module (*.asm),*.asm,asm',0
 
 iniAccept			db 'Accept',0
 
+szCodeData			db '{C},$ db,$ dw,$ dd,$ dq,$ df,$ dt,$ byte,$ word,$ dword,$ qword,$ real4,$ real8,$ tbyte',0
+szApiArray			db 'Masm\masmArray.api',0
+
 .code
+
+UpDateAssemblerIni proc
+	LOCAL Version:DWORD
+	LOCAL	buffer[32]:BYTE
+	LOCAL	nInx:DWORD
+
+	invoke GetPrivateProfileInt,addr iniVersion,addr iniVersion,0,addr iniAsmFile
+	mov		Version,eax
+	.if eax<2215
+		invoke GetPrivateProfileInt,addr iniColor,addr iniColors+8,0,addr iniAsmFile
+		invoke BinToDec,eax,addr iniBuffer
+		mov		esi,offset iniColorsBack
+		.while dword ptr [esi]
+			lea		esi,[esi+8]
+			invoke WritePrivateProfileString,addr iniColor,esi,addr iniBuffer,addr iniAsmFile
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+		mov		nInx,0
+		mov		buffer,'B'
+		.while nInx<16
+			invoke BinToDec,nInx,addr buffer[1]
+			invoke WritePrivateProfileString,addr iniColor,addr buffer,addr iniBuffer,addr iniAsmFile
+			inc		nInx
+		.endw
+	.endif
+	mov		eax,nAsm
+	.if eax
+		mov		edx,nRadASMVer
+		.if eax==nMASM
+			.if Version<edx
+				invoke WritePrivateProfileString,addr szIniCode,addr szIniData,addr szCodeData,addr iniAsmFile
+				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szApiArray,addr iniAsmFile
+			.endif
+		.endif
+		invoke BinToDec,nRadASMVer,addr iniBuffer
+		invoke WritePrivateProfileString,addr iniVersion,addr iniVersion,addr iniBuffer,addr iniAsmFile
+	.endif
+	ret
+
+UpDateAssemblerIni endp
 
 GetRecentFiles proc uses esi
 	LOCAL buffer[4]:BYTE
@@ -879,29 +923,8 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		mov		DlgIDN,eax
 		invoke GetPrivateProfileInt,addr iniDialog,addr iniDialogCtrlID,1001,addr iniAsmFile
 		mov		CtrlIDN,eax
-
 		;Color
-		invoke GetPrivateProfileInt,addr iniVersion,addr iniVersion,0,addr iniAsmFile
-		.if eax<2215
-			invoke GetPrivateProfileInt,addr iniColor,addr iniColors+8,0,addr iniAsmFile
-			invoke BinToDec,eax,addr iniBuffer
-			mov		esi,offset iniColorsBack
-			.while dword ptr [esi]
-				lea		esi,[esi+8]
-				invoke WritePrivateProfileString,addr iniColor,esi,addr iniBuffer,addr iniAsmFile
-				invoke strlen,esi
-				lea		esi,[esi+eax+1]
-			.endw
-			mov		nInx,0
-			mov		buffer,'B'
-			.while nInx<16
-				invoke BinToDec,nInx,addr buffer[1]
-				invoke WritePrivateProfileString,addr iniColor,addr buffer,addr iniBuffer,addr iniAsmFile
-				inc		nInx
-			.endw
-		.endif
-		invoke BinToDec,nRadASMVer,addr iniBuffer
-		invoke WritePrivateProfileString,addr iniVersion,addr iniVersion,addr iniBuffer,addr iniAsmFile
+		invoke UpDateAssemblerIni
 		invoke GetPrivateProfileInt,addr iniColor,addr iniUseColor,1,addr iniAsmFile
 		and		eax,1
 		mov 	fUseHighLight,eax
