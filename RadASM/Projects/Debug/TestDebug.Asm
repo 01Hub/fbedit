@@ -16,12 +16,12 @@ MYSTRUCT struct
 	bbbbb	DWORD ?
 MYSTRUCT ends
 
-MYCONST			equ MAX_PATH
+MYCONST			equ sizeof RECT
 
 .data
 
 szTest		db 'Test',0
-szBuff		db REBARBANDINFO dup(?)
+szBuff		db MYCONST dup(?)
 tid			dd   ?
 rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)

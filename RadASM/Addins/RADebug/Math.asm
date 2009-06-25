@@ -206,10 +206,14 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		.endw
 		.if byte ptr [esi]=='('
 			inc		esi
-			mov		ecx,'('
 			mov		var.Address,0
 			invoke CalculateIt,ecx
-			mov		eax,var.Address
+			.if byte ptr [esi]==')' && !nError
+				mov		eax,var.Address
+			.else
+				mov		nError,ERR_SYNTAX
+				ret
+			.endif
 		.else
 			mov		nError,ERR_SYNTAX
 			ret
@@ -222,22 +226,42 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		.endw
 		.if byte ptr [esi]=='('
 			inc		esi
-			mov		ecx,'('
 			mov		var.nArray,0
 			mov		var.nSize,0
 			mov		var.nInx,0
 			invoke CalculateIt,ecx
-			mov		eax,var.nArray
-			sub		eax,var.nInx
-			mov		edx,var.nSize
-			mul		edx
+			.if byte ptr [esi]==')' && !nError
+				inc		esi
+				.if var.nArray
+					mov		eax,var.nArray
+					sub		eax,var.nInx
+					mov		edx,var.nSize
+					mul		edx
+				.endif
+			.else
+				mov		nError,ERR_SYNTAX
+				ret
+			.endif
 		.else
-			mov		nError,ERR_SYNTAX
-			ret
+			mov		var.nArray,0
+			mov		var.nSize,0
+			mov		var.nInx,0
+			invoke CalculateIt,ecx
+			.if !nError
+				.if var.nArray
+					mov		eax,var.nArray
+					sub		eax,var.nInx
+					mov		edx,var.nSize
+					mul		edx
+				.endif
+			.else
+				mov		nError,ERR_SYNTAX
+				ret
+			.endif
 		.endif
 	.elseif ecx==FUNCAND
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR
+		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		lea		esi,[esi+edx]
@@ -248,7 +272,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		and		eax,ecx
 	.elseif ecx==FUNCOR
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCAND
+		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCAND || ebx==FUNCSIZEOF
 			ret
 		.endif
 		lea		esi,[esi+edx]
@@ -259,7 +283,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		or		eax,ecx
 	.elseif ecx==FUNCXOR
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCAND || ebx==FUNCOR
+		.if ebx=='*' || ebx=='/' || ebx=='+' || ebx=='-' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCAND || ebx==FUNCOR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		lea		esi,[esi+edx]
@@ -274,11 +298,14 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		invoke CalculateIt,ecx
 	.elseif ecx==')'
 		mov		mFunc,'H'
+		.if  ebx==FUNCSIZEOF || ebx==FUNCADDR
+			ret
+		.endif
 		inc		esi
 		ret
 	.elseif ecx=='+'
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR
+		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		inc		esi
@@ -289,7 +316,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		add		eax,ecx
 	.elseif ecx=='-'
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR
+		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		inc		esi
@@ -300,7 +327,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		sub		eax,ecx
 	.elseif ecx=='*'
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR
+		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		inc		esi
@@ -310,7 +337,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		mul		ecx
 	.elseif ecx=='/'
 		mov		mFunc,'H'
-		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR
+		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
 			ret
 		.endif
 		inc		esi

@@ -859,6 +859,7 @@ FindLine proc uses ebx esi edi,Address:DWORD
 	mov		eax,dbg.inxline
 	mov		lower,0
 	mov		upper,eax
+	xor		ebx,ebx
 	.while TRUE
 		mov		eax,upper
 		sub		eax,lower
@@ -867,7 +868,10 @@ FindLine proc uses ebx esi edi,Address:DWORD
 		add		eax,lower
 		mov		inx,eax
 		call	Compare
-		.if sdword ptr eax<0
+		.if !eax || ebx>30
+			; Found
+			jmp		Ex
+		.elseif sdword ptr eax<0
 			; Smaller
 			mov		eax,inx
 			mov		upper,eax
@@ -875,10 +879,8 @@ FindLine proc uses ebx esi edi,Address:DWORD
 			; Larger
 			mov		eax,inx
 			mov		lower,eax
-		.else
-			; Found
-			jmp		Ex
 		.endif
+		inc		ebx
 	.endw
 	; Not found, should never happend
 	call	Linear

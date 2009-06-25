@@ -58,6 +58,8 @@ szSymInitializeFailed			db 'SymInitialize failed.',0
 szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
 szDbgHelpFail					db 'Could not find DbgHelp.dll',0
 
+CombSort_Const					REAL4 1.3
+
 .data?
 
 dwModuleBase					DWORD ?
@@ -65,6 +67,105 @@ im								IMAGEHLP_MODULE <>
 nErrors							DWORD ?
 
 .code
+
+CombSort PROC uses ebx esi edi,lpArr:DWORD,count:DWORD
+	LOCAL	Gap:DWORD
+	LOCAL	eFlag:DWORD
+
+	mov		eax,count
+	mov		Gap,eax
+	mov		ebx,lpArr
+	dec		count
+  @Loop1:
+	fild	Gap								; load integer memory operand to divide
+	fdiv	CombSort_Const					; divide number by 1.3
+	fistp	Gap								; store result back in integer memory operand
+	dec		Gap
+	jnz		@F
+	mov		Gap,1
+  @@:
+	mov		eFlag,0
+	mov		esi,count
+	sub		esi,Gap
+	xor		ecx,ecx							; low value index
+  @Loop2:
+	mov 	edx,ecx
+	add 	edx,Gap							; high value index
+	;Get offsets to row data
+	push	edx
+	mov		edx,[ebx+edx*4]
+	mov		edi,[ebx+ecx*4]
+	;Get cell data
+	mov		eax,[edi].DEBUGLINE.Address
+	sub		eax,[edx].DEBUGLINE.Address
+	pop		edx
+	cmp		eax,0
+	jle 	@F
+	mov 	eax,[ebx+ecx*4]					; lower value
+	mov 	edi,[ebx+edx*4]					; higher value
+	mov 	[ebx+edx*4],eax
+	mov 	[ebx+ecx*4],edi
+	inc 	eFlag
+  @@:
+	inc 	ecx
+	cmp 	ecx,esi
+	jle 	@Loop2
+	cmp 	eFlag,0
+	jg		@Loop1
+	cmp 	Gap,1
+	jg		@Loop1
+	ret
+
+CombSort ENDP
+
+SortLinesByAddress proc uses ebx esi edi
+	LOCAL	hMemIndex:HGLOBAL
+	LOCAL	hMemLinesSorted:HGLOBAL
+
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*4
+	mov		hMemIndex,eax
+	; Allocate memory for DEBUGLINE, max 128K lines
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
+	mov		hMemLinesSorted,eax
+	mov		ebx,dbg.inxline
+	mov		edi,hMemIndex
+	mov		eax,dbg.hMemLine
+
+	.while ebx
+		mov		[edi],eax
+		lea		eax,[eax+sizeof DEBUGLINE]
+		lea		edi,[edi+4]
+		dec		ebx
+	.endw
+	invoke CombSort,hMemIndex,dbg.inxline
+
+	mov		ebx,dbg.inxline
+	mov		esi,hMemIndex
+	mov		edi,hMemLinesSorted
+	.while ebx
+		mov		eax,[esi]
+		invoke RtlMoveMemory,edi,eax,sizeof DEBUGLINE
+		lea		edi,[edi+sizeof DEBUGLINE]
+		lea		esi,[esi+4]
+		dec		ebx
+	.endw
+	
+;	mov		ebx,dbg.inxline
+;	mov		edi,hMemLinesSorted
+;	.while ebx
+;mov		eax,[edi].DEBUGLINE.Address
+;PrintHex eax
+;		lea		edi,[edi+sizeof DEBUGLINE]
+;		dec		ebx
+;	.endw
+
+	invoke GlobalFree,hMemIndex
+	invoke GlobalFree,dbg.hMemLine
+	mov		eax,hMemLinesSorted
+	mov		dbg.hMemLine,eax
+	ret
+
+SortLinesByAddress endp
 
 GetDbgHelpVersion proc
 	LOCAL	buffer[2048]:BYTE
@@ -278,27 +379,11 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	.if eax
 		push	ebx
 		lea		ebx,[eax+1]
-		invoke IsDec,ebx
+		invoke DoMath,ebx
 		.if eax
-			invoke DecToBin,ebx
+			mov		eax,var.Value
 		.else
-			invoke IsHex,ebx
-			.if eax
-				invoke HexToBin,ebx
-			.else
-				xor		ecx,ecx
-				.while byte ptr [ebx+ecx]
-					.if byte ptr [ebx+ecx]==']'
-						mov		byte ptr [ebx+ecx],0
-						.break
-					.endif
-					inc		ecx
-				.endw
-				invoke FindTypeSize,ebx
-				.if !edx
-					mov		fErrArray,TRUE
-				.endif
-			.endif
+			mov		fErrArray,TRUE
 		.endif
 		pop		ebx
 	.else
@@ -638,6 +723,9 @@ DbgHelp proc uses ebx esi edi,hProcess:DWORD,lpFileName:DWORD
 						push	dwModuleBase
 						push	hProcess
 						call	ebx
+						.if dbg.inxline
+							invoke SortLinesByAddress
+						.endif
 					.endif
 				.endif
 				invoke GetProcAddress,hDbgHelpDLL,addr szSymUnloadModule
