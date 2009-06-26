@@ -86,7 +86,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=16
@@ -119,7 +119,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,18499
+1=0,0,0,0,3220
 2=0,0,0,0,294
 4=0,0,0,0,88
 6=0,0,0,0,0
@@ -160,3 +160,5 @@ ProductVer4Range=0
 3=ParseFile
 [PTimer]
 PTimer=712187
+[RADebugBP]
+1=

@@ -213,7 +213,6 @@ SearchType endp
 
 IsWord proc lpSrc:DWORD,nLen:DWORD,lpWord:DWORD,lpCharTab:DWORD
 
-
 	invoke strlen,lpWord
 	.if eax==nLen
 		push	esi
@@ -754,14 +753,14 @@ _Struct:
 								inc		ecx
 								invoke strcpyn,edi,esi,ecx
 								invoke SearchType,offset buffer2
-								.if eax
+;								.if eax
 									;Type not found, must be struct
 									invoke strlen,edi
 									lea		edi,[edi+eax]
 									mov		word ptr [edi],':'
 									inc		edi
 									invoke strcpy,edi,offset buffer2
-								.endif
+;								.endif
 								invoke strlen,edi
 								lea		edi,[edi+eax]
 								mov		word ptr [edi],','
