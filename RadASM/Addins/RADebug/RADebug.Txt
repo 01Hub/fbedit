@@ -115,6 +115,12 @@ o Commands.
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.3
+  - Improved array size calculations.
+  - The line numbers array is now sorted.
+    This adds suport for multimodule projects.
+  - Fixed a bug in the linenumbers seach algo.
+    The bug could cause the debugger to freeze.
 o Released version 1.0.0.2
   - Added option to show debug events.
   - Added option to pin output window.
@@ -142,27 +148,29 @@ o Support for other assemblers / compilers besides masm.
 
 Known bugs:
 -----------------------------------------------------------------------------
-A proc without a stack frame will skip the first code line.
-Examples:
-MyProc proc
+o In multimodule projects global variables can have the same name.
+  Currently the debugger can not distinguish between them.
+o A proc without a stack frame will skip the first code line.
+  Examples:
+  MyProc proc
 
 	mov		eax,1
 	ret					; Wrong. The debugger will stop here
 
-MyProc endp
+  MyProc endp
 
-MyProc proc uses ebx
-
-	mov		eax,1		; OK. The debugger will stop here
-	ret
-
-MyProc endp
-
-MyProc proc hWin:HWND
+  MyProc proc uses ebx
 
 	mov		eax,1		; OK. The debugger will stop here
 	ret
 
-MyProc endp
+  MyProc endp
+
+  MyProc proc hWin:HWND
+
+	mov		eax,1		; OK. The debugger will stop here
+	ret
+
+  MyProc endp
 
 KetilO
