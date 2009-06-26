@@ -1116,6 +1116,7 @@ _Function:
 
 _Unknown:
 ;PrintText "Unknown"
+	; Datatype
 	mov		ecx,len
 	inc		ecx
 	invoke strcpyn,offset buffer1,esi,ecx
@@ -1131,11 +1132,12 @@ _Unknown1:
 	call	GetWrd
 	.if ecx
 		; Unknown (might be global data)
+		; Name
 		inc		ecx
-		lea		edi,buffer[ecx]
-		invoke strcpyn,offset buffer,esi,ecx
-		invoke strcpy,edi,offset buffer1
+		mov		edi,offset buffer
+		invoke strcpyn,edi,esi,ecx
 		add		esi,len
+		add		edi,len
 		call	SkipSpc
 		.if byte ptr [esi]==VK_RETURN
 			inc		esi
@@ -1146,6 +1148,32 @@ _Unknown1:
 		call	GetWrd
 		mov		al,[esi]
 		.if !ecx && al!='('
+			.if byte ptr [esi]=='['
+				mov		ebx,esi
+				call	SkipScope
+				.while ebx<esi
+					mov		al,[ebx]
+					mov		[edi],al
+					inc		ebx
+					inc		edi
+				.endw
+				call	SkipSpc
+			.endif
+			mov		byte ptr [edi],':'
+			inc		edi
+			xor		ecx,ecx
+			.while buffer1[ecx]
+				mov		al,buffer1[ecx]
+				.if al>='a' && al<='z'
+					and		al,5Fh
+				.endif
+				mov		[edi],al
+				inc		ecx
+				inc		edi
+			.endw
+			mov		byte ptr [edi],0
+			inc		edi
+			invoke strcpy,edi,offset buffer1
 			.if lpAddProperty
 				push	2
 				push	offset buffer
@@ -1153,9 +1181,6 @@ _Unknown1:
 				push	'u'
 				mov		eax,lpAddProperty
 				call	eax
-			.endif
-			.if byte ptr [esi]=='['
-				call	SkipScope
 			.endif
 			.if byte ptr [esi]=='='
 				inc		esi
