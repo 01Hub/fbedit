@@ -931,38 +931,67 @@ _Function:
 		push	ebx
 		mov		len,0
 		.while esi<lpParamEn
+			call	GetWrd
 			mov		ebx,esi
 			add		esi,len
 			push	len
 			call	GetWrd
-			pop		eax
-			.if !ecx
-				.if byte ptr [esi]==',' || byte ptr [esi]==')'
-					.while eax
-						mov		cl,[ebx]
-						mov		[edi],cl
-						inc		ebx
-						inc		edi
-						dec		eax
-					.endw
-					.if byte ptr [esi]==','
-						mov		byte ptr [edi],','
-						inc		edi
-						inc		esi
-						call	SkipSpc
-						.if byte ptr [esi]==0Dh
-							inc		esi
-						.endif
-						.if byte ptr [esi]==0Ah
-							inc		esi
-						.endif
-					.else
-						inc		esi
-					.endif
-				.else
+			pop		edx
+			.if eax && len
+				.while ecx
+					mov		al,[esi]
+					mov		[edi],al
 					inc		esi
+					inc		edi
+					dec		ecx
+				.endw
+				mov		byte ptr [edi],':'
+				inc		edi
+				.while edx
+					mov		al,[ebx]
+					mov		[edi],al
+					inc		ebx
+					inc		edi
+					dec		edx
+				.endw
+				call	GetWrd
+				.if byte ptr [esi]==','
+					inc		esi
+					mov		byte ptr [edi],','
+					inc		edi
 				.endif
+			.else
+				.break
 			.endif
+;			.if !ecx
+;				.if byte ptr [esi]==',' || byte ptr [esi]==')'
+;					.while eax
+;						mov		dl,[ebx]
+;						mov		[edi],dl
+;						inc		ebx
+;						inc		edi
+;						dec		eax
+;					.endw
+;					mov		byte ptr [edi],':'
+;					inc		edi
+;					.if byte ptr [esi]==','
+;						mov		byte ptr [edi],','
+;						inc		edi
+;						inc		esi
+;						call	SkipSpc
+;						.if byte ptr [esi]==0Dh
+;							inc		esi
+;						.endif
+;						.if byte ptr [esi]==0Ah
+;							inc		esi
+;						.endif
+;					.else
+;						inc		esi
+;					.endif
+;				.else
+;					inc		esi
+;				.endif
+;			.endif
 		.endw
 		pop		ebx
 		mov		word ptr [edi],0
@@ -1001,6 +1030,11 @@ _Function:
 								invoke strcpyn,edi,esi,ecx
 								add		edi,len
 								add		esi,len
+								mov		byte ptr [edi],':'
+								inc		edi
+								invoke strcpy,edi,offset buffer2
+								invoke strlen,edi
+								lea		edi,[edi+eax]
 								mov		word ptr [edi],','
 								inc		edi
 								call	SkipSpc
