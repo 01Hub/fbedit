@@ -753,16 +753,20 @@ _Struct:
 								inc		ecx
 								invoke strcpyn,edi,esi,ecx
 								invoke SearchType,offset buffer2
-;								.if eax
-									;Type not found, must be struct
-									invoke strlen,edi
-									lea		edi,[edi+eax]
-									mov		word ptr [edi],':'
-									inc		edi
-									invoke strcpy,edi,offset buffer2
-;								.endif
 								invoke strlen,edi
 								lea		edi,[edi+eax]
+								mov		word ptr [edi],':'
+								inc		edi
+								xor		ecx,ecx
+								.while buffer2[ecx]
+									mov		al,buffer2[ecx]
+									.if al>='a' && al<='z'
+										and		al,5Fh
+									.endif
+									mov		[edi],al
+									inc		ecx
+									inc		edi
+								.endw
 								mov		word ptr [edi],','
 								inc		edi
 								add		esi,len
@@ -949,6 +953,9 @@ _Function:
 				inc		edi
 				.while edx
 					mov		al,[ebx]
+					.if al>='a' && al<='z'
+						and		al,5Fh
+					.endif
 					mov		[edi],al
 					inc		ebx
 					inc		edi
@@ -963,35 +970,6 @@ _Function:
 			.else
 				.break
 			.endif
-;			.if !ecx
-;				.if byte ptr [esi]==',' || byte ptr [esi]==')'
-;					.while eax
-;						mov		dl,[ebx]
-;						mov		[edi],dl
-;						inc		ebx
-;						inc		edi
-;						dec		eax
-;					.endw
-;					mov		byte ptr [edi],':'
-;					inc		edi
-;					.if byte ptr [esi]==','
-;						mov		byte ptr [edi],','
-;						inc		edi
-;						inc		esi
-;						call	SkipSpc
-;						.if byte ptr [esi]==0Dh
-;							inc		esi
-;						.endif
-;						.if byte ptr [esi]==0Ah
-;							inc		esi
-;						.endif
-;					.else
-;						inc		esi
-;					.endif
-;				.else
-;					inc		esi
-;				.endif
-;			.endif
 		.endw
 		pop		ebx
 		mov		word ptr [edi],0
@@ -1032,9 +1010,16 @@ _Function:
 								add		esi,len
 								mov		byte ptr [edi],':'
 								inc		edi
-								invoke strcpy,edi,offset buffer2
-								invoke strlen,edi
-								lea		edi,[edi+eax]
+								xor		ecx,ecx
+								.while buffer2[ecx]
+									mov		al,buffer2[ecx]
+									.if al>='a' && al<='z'
+										and		al,5Fh
+									.endif
+									mov		[edi],al
+									inc		ecx
+									inc		edi
+								.endw
 								mov		word ptr [edi],','
 								inc		edi
 								call	SkipSpc
