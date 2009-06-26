@@ -513,7 +513,7 @@ GetLineNo:
 
 FindInFile endp
 
-ParseFile proc uses esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCharTab:DWORD
+ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCharTab:DWORD
 	LOCAL	len:DWORD
 	LOCAL	lpFun:DWORD
 	LOCAL	lpParamSt:DWORD
@@ -752,9 +752,20 @@ _Struct:
 							.if ecx
 								inc		ecx
 								invoke strcpyn,edi,esi,ecx
-								invoke SearchType,offset buffer2
 								invoke strlen,edi
 								lea		edi,[edi+eax]
+								call	SkipSpc
+								.if byte ptr [esi]=='['
+									mov		ebx,esi
+									call	SkipScope
+									.while ebx<esi
+										mov		al,[ebx]
+										mov		[edi],al
+										inc		ebx
+										inc		edi
+									.endw
+									call	SkipSpc
+								.endif
 								mov		word ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
@@ -932,8 +943,6 @@ _Function:
 		mov		esi,lpParamSt
 		inc		esi
 		dec		lpParamEn
-		push	ebx
-		mov		len,0
 		.while esi<lpParamEn
 			call	GetWrd
 			mov		ebx,esi
@@ -941,7 +950,7 @@ _Function:
 			push	len
 			call	GetWrd
 			pop		edx
-			.if eax && len
+			.if edx && len
 				.while ecx
 					mov		al,[esi]
 					mov		[edi],al
@@ -971,7 +980,6 @@ _Function:
 				.break
 			.endif
 		.endw
-		pop		ebx
 		mov		word ptr [edi],0
 		inc		edi
 		mov		esi,lpTemp
@@ -1008,6 +1016,18 @@ _Function:
 								invoke strcpyn,edi,esi,ecx
 								add		edi,len
 								add		esi,len
+								call	SkipSpc
+								.if byte ptr [esi]=='['
+									mov		ebx,esi
+									call	SkipScope
+									.while ebx<esi
+										mov		al,[ebx]
+										mov		[edi],al
+										inc		ebx
+										inc		edi
+									.endw
+									call	SkipSpc
+								.endif
 								mov		byte ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
@@ -1022,11 +1042,6 @@ _Function:
 								.endw
 								mov		word ptr [edi],','
 								inc		edi
-								call	SkipSpc
-								.if byte ptr [esi]=='['
-									call	SkipScope
-									call	SkipSpc
-								.endif
 								.if byte ptr [esi]==','
 									inc		esi
 									jmp		NxtLocal
