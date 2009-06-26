@@ -222,6 +222,7 @@ EditProc proc uses ebx esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
 			.if !eax
 				invoke SendMessage,hPar,REM_GETCURSORWORD,sizeof buffer,addr buffer
 				.if buffer
+					mov		var.IsSZ,0
 					invoke GetVarVal,addr buffer,eax,TRUE
 					.if eax
 						mov		edx,var.ProjectFileID

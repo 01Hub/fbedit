@@ -146,6 +146,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	val:DWORD
 	LOCAL	tmpvar:VAR
 
+	mov		var.IsSZ,0
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
 	invoke SendMessage,hWin,EM_LINEFROMCHAR,chrg.cpMin,0
 	mov		edx,eax

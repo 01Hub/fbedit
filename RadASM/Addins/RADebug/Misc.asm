@@ -993,6 +993,29 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 
 FindLocalVar endp
 
+FindLastLineNumber proc uses ebx esi,lpLine:DWORD,Address:DWORD
+
+	mov		esi,lpLine
+	mov		eax,Address
+	xor		ecx,ecx
+	xor		ebx,ebx
+	.while [esi].DEBUGLINE.LineNumber
+		.if eax<[esi].DEBUGLINE.Address
+			mov		eax,ebx
+			jmp		Ex
+		.endif
+		.if [esi].DEBUGLINE.LineNumber>ecx
+			mov		ecx,[esi].DEBUGLINE.LineNumber
+			mov		ebx,esi
+		.endif
+		lea		esi,[esi+sizeof DEBUGLINE]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+FindLastLineNumber endp
+
 FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 	LOCAL	nOfs:DWORD
 	LOCAL	nSize:DWORD
@@ -1001,14 +1024,14 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 	mov		esi,dbg.lpProc
 	invoke FindLine,[esi].DEBUGSYMBOL.Address
 	push	eax
-	mov		eax,[esi].DEBUGSYMBOL.Address
-	add		eax,[esi].DEBUGSYMBOL.nSize
-	invoke FindLine,eax
+	mov		edx,[esi].DEBUGSYMBOL.Address
+	add		edx,[esi].DEBUGSYMBOL.nSize
+	invoke FindLastLineNumber,eax,edx
 	pop		edx
 	.if edx && eax
 		mov		ecx,[edx].DEBUGLINE.LineNumber
 		dec		ecx
-		mov		eax,[eax-sizeof DEBUGLINE].DEBUGLINE.LineNumber
+		mov		eax,[eax].DEBUGLINE.LineNumber
 		dec		eax
 		.if nLine>=ecx && nLine<=eax
 			movzx	eax,[edx].DEBUGLINE.FileID
