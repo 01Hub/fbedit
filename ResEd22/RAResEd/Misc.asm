@@ -740,6 +740,7 @@ CombSort endp
 
 SortStyles proc uses ebx esi edi
 
+	; Dialog / window styles
 	mov		edi,offset srtstyledefdlg
 	mov		esi,offset rsstyledefdlg
 	xor		ecx,ecx
@@ -753,6 +754,7 @@ SortStyles proc uses ebx esi edi
 		inc		ecx
 	.endw
 	invoke CombSort,offset srtstyledefdlg,ecx
+	; Control styles
 	mov		edi,offset srtstyledef
 	mov		esi,offset rsstyledef
 	xor		ecx,ecx
@@ -765,17 +767,8 @@ SortStyles proc uses ebx esi edi
 		pop		ecx
 		inc		ecx
 	.endw
-	mov		esi,offset rscuststyledef
-	.while byte ptr [esi+8]
-		push	ecx
-		mov		[edi],esi
-		invoke strlen,addr [esi+8]
-		lea		edi,[edi+4]
-		lea		esi,[esi+eax+8+1]
-		pop		ecx
-		inc		ecx
-	.endw
 	invoke CombSort,offset srtstyledef,ecx
+	; Extended styles
 	mov		edi,offset srtexstyledef
 	mov		esi,offset rsexstyledef
 	xor		ecx,ecx

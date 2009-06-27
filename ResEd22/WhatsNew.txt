@@ -1,5 +1,10 @@
 ResEd
 
+2.2.0.2b -2009-06-27
+--------------------
+o Added PBS_MARQUEE progress bar style.
+o Fixed bug with custom styles.
+
 2.2.0.2 -2009-05-14
 -------------------
 o Added BS_SPLITBUTTON, BS_DEFSPLITBUTTON, BS_COMMANDLINK and BS_DEFCOMMANDLINK button styles.

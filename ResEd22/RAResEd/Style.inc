@@ -554,44 +554,44 @@ RSTYPES struct
 	style3		db 8 dup(?)
 RSTYPES ends
 
-types				RSTYPES <0,'WS_','DS_',>				;Dialog
-					RSTYPES <1,'WS_','ES_',>				;Edit
-					RSTYPES <2,'WS_','SS_',>				;Static
-					RSTYPES <3,'WS_','BS_',>				;GroupBox
-					RSTYPES <4,'WS_','BS_',>				;Button
-					RSTYPES <5,'WS_','BS_',>				;CheckBox
-					RSTYPES <6,'WS_','BS_',>				;RadioButton
-					RSTYPES <7,'WS_','CBS_',>				;ComboBox
-					RSTYPES <8,'WS_','LBS_',>				;ListBox
-					RSTYPES <9,'WS_','SBS_',>				;H-ScrollBar
-					RSTYPES <10,'WS_','SBS_',>				;V-ScrollBar
-					RSTYPES <11,'WS_','TCS_',>				;Tab control
-					RSTYPES <12,'WS_','PBS_',>				;Progress bar
-					RSTYPES <13,'WS_','TVS_',>				;Tree view
-					RSTYPES <14,'WS_','LVS_',>				;List view
-					RSTYPES <15,'WS_','TBS_',>				;Track bar
-					RSTYPES <16,'WS_','UDS_',>				;UpDown
-					RSTYPES <17,'WS_','SS_',>				;Image
-					RSTYPES <18,'WS_','TBSTYLE','CCS_'>		;ToolBar
-					RSTYPES <19,'WS_','SBARS_','CCS_'>		;Status bar
-					RSTYPES <20,'WS_','DTS_',>				;DateTimp picker
-					RSTYPES <21,'WS_','MCS_',>				;Month view
-					RSTYPES <22,'WS_','ES_',>				;Rich edit
-					RSTYPES <23,'WS_',,>					;User defined
-					RSTYPES <24,'WS_',,>					;ComboBoxEx
-					RSTYPES <25,'WS_','SS_',>				;Shape
-					RSTYPES <26,'WS_',,>					;IPAddress
-					RSTYPES <27,'WS_','ACS_',>				;Animate
-					RSTYPES <28,'WS_',,>					;Hotkey
-					RSTYPES <29,'WS_','PGS_',>				;H-Pager
-					RSTYPES <30,'WS_','PGS_',>				;V-Pager
-					RSTYPES <31,'WS_','RBS_',>				;ReBar
-					RSTYPES <32,'WS_','HDS_',>				;Header
-					RSTYPES <33,'WS_','LWS_',>				;SysLink
-					RSTYPES <260,'WS_','RAES_',>			;RAEdit
-					RSTYPES <280,'WS_','RAGS_',>			;RAGrid
-					RSTYPES <256,'WS_','SPS_',>				;SpreadSheet
-					RSTYPES <-1,'WS_',>
+types			RSTYPES <0,'WS_','DS_',>				;Dialog
+				RSTYPES <1,'WS_','ES_',>				;Edit
+				RSTYPES <2,'WS_','SS_',>				;Static
+				RSTYPES <3,'WS_','BS_',>				;GroupBox
+				RSTYPES <4,'WS_','BS_',>				;Button
+				RSTYPES <5,'WS_','BS_',>				;CheckBox
+				RSTYPES <6,'WS_','BS_',>				;RadioButton
+				RSTYPES <7,'WS_','CBS_',>				;ComboBox
+				RSTYPES <8,'WS_','LBS_',>				;ListBox
+				RSTYPES <9,'WS_','SBS_',>				;H-ScrollBar
+				RSTYPES <10,'WS_','SBS_',>				;V-ScrollBar
+				RSTYPES <11,'WS_','TCS_',>				;Tab control
+				RSTYPES <12,'WS_','PBS_',>				;Progress bar
+				RSTYPES <13,'WS_','TVS_',>				;Tree view
+				RSTYPES <14,'WS_','LVS_',>				;List view
+				RSTYPES <15,'WS_','TBS_',>				;Track bar
+				RSTYPES <16,'WS_','UDS_',>				;UpDown
+				RSTYPES <17,'WS_','SS_',>				;Image
+				RSTYPES <18,'WS_','TBSTYLE','CCS_'>		;ToolBar
+				RSTYPES <19,'WS_','SBARS_','CCS_'>		;Status bar
+				RSTYPES <20,'WS_','DTS_',>				;DateTimp picker
+				RSTYPES <21,'WS_','MCS_',>				;Month view
+				RSTYPES <22,'WS_','ES_',>				;Rich edit
+				RSTYPES <23,'WS_',,>					;User defined
+				RSTYPES <24,'WS_',,>					;ComboBoxEx
+				RSTYPES <25,'WS_','SS_',>				;Shape
+				RSTYPES <26,'WS_',,>					;IPAddress
+				RSTYPES <27,'WS_','ACS_',>				;Animate
+				RSTYPES <28,'WS_',,>					;Hotkey
+				RSTYPES <29,'WS_','PGS_',>				;H-Pager
+				RSTYPES <30,'WS_','PGS_',>				;V-Pager
+				RSTYPES <31,'WS_','RBS_',>				;ReBar
+				RSTYPES <32,'WS_','HDS_',>				;Header
+				RSTYPES <33,'WS_','LWS_',>				;SysLink
+				RSTYPES <260,'WS_','RAES_',>			;RAEdit
+				RSTYPES <280,'WS_','RAGS_',>			;RAGrid
+				RSTYPES <256,'WS_','SPS_',>				;SpreadSheet
+				RSTYPES <-1,'WS_',>
 
 rsstyledefdlg	dd DS_3DLOOK
 				dd DS_3DLOOK
@@ -715,6 +715,85 @@ rsstyledefdlg	dd DS_3DLOOK
 				db 'WS_VSCROLL',0
 				dd 0,0
 				db 0
+
+rsexstyledef	dd WS_EX_ACCEPTFILES
+				dd WS_EX_ACCEPTFILES
+				db 'WS_EX_ACCEPTFILES',0
+				dd WS_EX_APPWINDOW
+				dd WS_EX_APPWINDOW
+				db 'WS_EX_APPWINDOW',0
+				dd WS_EX_CLIENTEDGE
+				dd WS_EX_CLIENTEDGE
+				db 'WS_EX_CLIENTEDGE',0
+				dd WS_EX_CONTEXTHELP
+				dd WS_EX_CONTEXTHELP
+				db 'WS_EX_CONTEXTHELP',0
+				dd WS_EX_CONTROLPARENT
+				dd WS_EX_CONTROLPARENT
+				db 'WS_EX_CONTROLPARENT',0
+				dd WS_EX_DLGMODALFRAME
+				dd WS_EX_DLGMODALFRAME
+				db 'WS_EX_DLGMODALFRAME',0
+				dd WS_EX_LAYERED
+				dd WS_EX_LAYERED
+				db 'WS_EX_LAYERED',0
+				dd WS_EX_LEFT
+				dd WS_EX_RIGHT
+				db 'WS_EX_LEFT',0
+				dd WS_EX_LEFTSCROLLBAR
+				dd WS_EX_LEFTSCROLLBAR
+				db 'WS_EX_LEFTSCROLLBAR',0
+				dd WS_EX_LTRREADING
+				dd WS_EX_RTLREADING
+				db 'WS_EX_LTRREADING',0
+				dd WS_EX_MDICHILD
+				dd WS_EX_MDICHILD
+				db 'WS_EX_MDICHILD',0
+				dd WS_EX_NOPARENTNOTIFY
+				dd WS_EX_NOPARENTNOTIFY
+				db 'WS_EX_NOPARENTNOTIFY',0
+				dd WS_EX_OVERLAPPEDWINDOW
+				dd WS_EX_OVERLAPPEDWINDOW
+				db 'WS_EX_OVERLAPPEDWINDOW',0
+				dd WS_EX_PALETTEWINDOW
+				dd WS_EX_PALETTEWINDOW
+				db 'WS_EX_PALETTEWINDOW',0
+				dd WS_EX_RIGHT
+				dd WS_EX_RIGHT
+				db 'WS_EX_RIGHT',0
+				dd WS_EX_RIGHTSCROLLBAR
+				dd WS_EX_LEFTSCROLLBAR
+				db 'WS_EX_RIGHTSCROLLBAR',0
+				dd WS_EX_RTLREADING
+				dd WS_EX_RTLREADING
+				db 'WS_EX_RTLREADING',0
+				dd WS_EX_STATICEDGE
+				dd WS_EX_STATICEDGE
+				db 'WS_EX_STATICEDGE',0
+				dd WS_EX_TOOLWINDOW
+				dd WS_EX_TOOLWINDOW
+				db 'WS_EX_TOOLWINDOW',0
+				dd WS_EX_TOPMOST
+				dd WS_EX_TOPMOST
+				db 'WS_EX_TOPMOST',0
+				dd WS_EX_TRANSPARENT
+				dd WS_EX_TRANSPARENT
+				db 'WS_EX_TRANSPARENT',0
+				dd WS_EX_WINDOWEDGE
+				dd WS_EX_WINDOWEDGE
+				db 'WS_EX_WINDOWEDGE',0
+				dd 0,0
+				db 0
+
+editnot			db 'ES_DISABLENOSCROLL',0
+				db 0
+richednot		db 'ES_LOWERCASE',0
+				db 'ES_OEMCONVERT',0
+				db 'ES_UPPERCASE',0
+				db 'ES_NUMBER',0
+				db 0
+
+.data
 
 rsstyledef		dd ACS_CENTER
 				dd ACS_CENTER
@@ -1127,6 +1206,9 @@ rsstyledef		dd ACS_CENTER
 				dd MCS_WEEKNUMBERS
 				dd MCS_WEEKNUMBERS
 				db 'MCS_WEEKNUMBERS',0
+				dd PBS_MARQUEE
+				dd PBS_MARQUEE
+				db 'PBS_MARQUEE',0
 				dd PBS_SMOOTH
 				dd PBS_SMOOTH
 				db 'PBS_SMOOTH',0
@@ -1688,89 +1770,10 @@ rsstyledef		dd ACS_CENTER
 				dd 0400h			;Allow multiselect
 				dd 0400h
 				db 'SPS_MULTISELECT',0
-				dd 0,0
-				db 0
-
-rsexstyledef	dd WS_EX_ACCEPTFILES
-				dd WS_EX_ACCEPTFILES
-				db 'WS_EX_ACCEPTFILES',0
-				dd WS_EX_APPWINDOW
-				dd WS_EX_APPWINDOW
-				db 'WS_EX_APPWINDOW',0
-				dd WS_EX_CLIENTEDGE
-				dd WS_EX_CLIENTEDGE
-				db 'WS_EX_CLIENTEDGE',0
-				dd WS_EX_CONTEXTHELP
-				dd WS_EX_CONTEXTHELP
-				db 'WS_EX_CONTEXTHELP',0
-				dd WS_EX_CONTROLPARENT
-				dd WS_EX_CONTROLPARENT
-				db 'WS_EX_CONTROLPARENT',0
-				dd WS_EX_DLGMODALFRAME
-				dd WS_EX_DLGMODALFRAME
-				db 'WS_EX_DLGMODALFRAME',0
-				dd WS_EX_LAYERED
-				dd WS_EX_LAYERED
-				db 'WS_EX_LAYERED',0
-				dd WS_EX_LEFT
-				dd WS_EX_RIGHT
-				db 'WS_EX_LEFT',0
-				dd WS_EX_LEFTSCROLLBAR
-				dd WS_EX_LEFTSCROLLBAR
-				db 'WS_EX_LEFTSCROLLBAR',0
-				dd WS_EX_LTRREADING
-				dd WS_EX_RTLREADING
-				db 'WS_EX_LTRREADING',0
-				dd WS_EX_MDICHILD
-				dd WS_EX_MDICHILD
-				db 'WS_EX_MDICHILD',0
-				dd WS_EX_NOPARENTNOTIFY
-				dd WS_EX_NOPARENTNOTIFY
-				db 'WS_EX_NOPARENTNOTIFY',0
-				dd WS_EX_OVERLAPPEDWINDOW
-				dd WS_EX_OVERLAPPEDWINDOW
-				db 'WS_EX_OVERLAPPEDWINDOW',0
-				dd WS_EX_PALETTEWINDOW
-				dd WS_EX_PALETTEWINDOW
-				db 'WS_EX_PALETTEWINDOW',0
-				dd WS_EX_RIGHT
-				dd WS_EX_RIGHT
-				db 'WS_EX_RIGHT',0
-				dd WS_EX_RIGHTSCROLLBAR
-				dd WS_EX_LEFTSCROLLBAR
-				db 'WS_EX_RIGHTSCROLLBAR',0
-				dd WS_EX_RTLREADING
-				dd WS_EX_RTLREADING
-				db 'WS_EX_RTLREADING',0
-				dd WS_EX_STATICEDGE
-				dd WS_EX_STATICEDGE
-				db 'WS_EX_STATICEDGE',0
-				dd WS_EX_TOOLWINDOW
-				dd WS_EX_TOOLWINDOW
-				db 'WS_EX_TOOLWINDOW',0
-				dd WS_EX_TOPMOST
-				dd WS_EX_TOPMOST
-				db 'WS_EX_TOPMOST',0
-				dd WS_EX_TRANSPARENT
-				dd WS_EX_TRANSPARENT
-				db 'WS_EX_TRANSPARENT',0
-				dd WS_EX_WINDOWEDGE
-				dd WS_EX_WINDOWEDGE
-				db 'WS_EX_WINDOWEDGE',0
-				dd 0,0
-				db 0
-
-editnot			db 'ES_DISABLENOSCROLL',0
-				db 0
-richednot		db 'ES_LOWERCASE',0
-				db 'ES_OEMCONVERT',0
-				db 'ES_UPPERCASE',0
-				db 'ES_NUMBER',0
-				db 0
+rscuststyledef	db 2048 dup(?)
 
 .data?
 
-rscuststyledef	db 2048 dup(?)
 srtstyledefdlg	dd 512 dup(?)
 srtstyledef		dd 512 dup(?)
 srtexstyledef	dd 512 dup(?)
