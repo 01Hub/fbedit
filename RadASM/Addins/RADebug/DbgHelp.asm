@@ -149,16 +149,6 @@ SortLinesByAddress proc uses ebx esi edi
 		lea		esi,[esi+4]
 		dec		ebx
 	.endw
-	
-;	mov		ebx,dbg.inxline
-;	mov		edi,hMemLinesSorted
-;	.while ebx
-;mov		eax,[edi].DEBUGLINE.Address
-;PrintHex eax
-;		lea		edi,[edi+sizeof DEBUGLINE]
-;		dec		ebx
-;	.endw
-
 	invoke GlobalFree,hMemIndex
 	invoke GlobalFree,dbg.hMemLine
 	mov		eax,hMemLinesSorted
@@ -391,7 +381,14 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	.endif
 	mov		[edi].DEBUGVAR.nArray,eax
 	.if nSize
+		mov		edx,lpData
+		mov		edx,[edx].ADDINDATA.nAsm
 		mov		eax,nSize
+		.if [edi].DEBUGVAR.nArray>1 && edx==nCPP
+			xor		edx,edx
+			mov		ecx,[edi].DEBUGVAR.nArray
+			div		ecx
+		.endif
 		mov		[edi].DEBUGVAR.nSize,eax
 	.elseif lpType
 		mov		eax,lpType
@@ -415,8 +412,9 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke PutString,addr outbuffer
 		inc		dbg.nErrors
 	.endif
-	lea		eax,[edi+ebx+sizeof DEBUGVAR]
-	mov		dbg.lpvar,eax
+	mov		eax,[edi].DEBUGVAR.nSize
+	lea		edi,[edi+ebx+sizeof DEBUGVAR]
+	mov		dbg.lpvar,edi
 	ret
 
 AddVar endp
@@ -534,6 +532,7 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
 				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
+				mov		[edi].DEBUGSYMBOL.nSize,eax
 			.endif
 		.endif
 		inc		dbg.inxsymbol

@@ -2224,6 +2224,7 @@ BracketMatchLeft proc uses ebx esi edi,hMem:DWORD,nChr:DWORD,nMatch:DWORD,cp:DWO
 
 	mov		ebx,hMem
 	mov		nCount,0
+	push	cp
 	invoke GetCharPtr,ebx,cp
 	mov		edx,eax
 	mov		edi,[ebx].EDIT.hChars
@@ -2240,7 +2241,7 @@ BracketMatchLeft proc uses ebx esi edi,hMem:DWORD,nChr:DWORD,nMatch:DWORD,cp:DWO
 				.if ZERO?
 					mov		eax,edx
 					add		eax,[ebx].EDIT.cpLine
-					ret
+					jmp		Ex
 				.endif
 			.endif
 		.elseif ah==byte ptr [edi+edx+sizeof CHARS]
@@ -2283,6 +2284,11 @@ BracketMatchLeft proc uses ebx esi edi,hMem:DWORD,nChr:DWORD,nMatch:DWORD,cp:DWO
 	.endw
 	xor		eax,eax
 	dec		eax
+  Ex:
+	pop		cp
+	push	eax
+	invoke GetCharPtr,ebx,cp
+	pop		eax
 	ret
 
 BracketMatchLeft endp

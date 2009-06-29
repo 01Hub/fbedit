@@ -465,7 +465,6 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	invoke SetForegroundWindow,[edi].ADDINHANDLES.hWnd
 	invoke SetFocus,dbg.prevhwnd
 	invoke SendMessage,dbg.prevhwnd,REM_SETHILITELINE,dbg.prevline,1
-	invoke SendMessage,dbg.prevhwnd,EM_SCROLLCARET,0,0
 	ret
 
 SelectLine endp
