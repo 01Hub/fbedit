@@ -100,8 +100,10 @@ iniDefMod			db 'Module (*.asm),*.asm,asm',0
 
 iniAccept			db 'Accept',0
 
-szCodeData			db '{C},$ db,$ dw,$ dd,$ dq,$ df,$ dt,$ byte,$ word,$ dword,$ qword,$ real4,$ real8,$ tbyte',0
-szApiArray			db 'Masm\masmArray.api',0
+; Assembler.ini updates
+szMasmCodeData		db '{C},$ db,$ dw,$ dd,$ dq,$ df,$ dt,$ byte,$ word,$ dword,$ qword,$ real4,$ real8,$ tbyte',0
+szMasmApiArray		db 'Masm\masmArray.api',0
+szCppApiArray		db 'Cpp\cppArray.api',0
 
 .code
 
@@ -134,9 +136,13 @@ UpDateAssemblerIni proc
 	.if eax
 		mov		edx,nRadASMVer
 		.if eax==nMASM
-			.if Version<edx
-				invoke WritePrivateProfileString,addr szIniCode,addr szIniData,addr szCodeData,addr iniAsmFile
-				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szApiArray,addr iniAsmFile
+			.if Version<2217
+				invoke WritePrivateProfileString,addr szIniCode,addr szIniData,addr szMasmCodeData,addr iniAsmFile
+				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szMasmApiArray,addr iniAsmFile
+			.endif
+		.elseif eax==nCPP
+			.if Version<2217
+				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szCppApiArray,addr iniAsmFile
 			.endif
 		.endif
 		invoke BinToDec,nRadASMVer,addr iniBuffer
