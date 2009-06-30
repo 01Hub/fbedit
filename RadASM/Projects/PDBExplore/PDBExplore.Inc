@@ -44,7 +44,8 @@ Courier_New_10			LOGFONT <-13,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
 
 szCRLF					db 0Dh,0Ah,0
 szNULL					db 0
-szPDBFilterString		db 'PDB Files (*.pdb)',0,'*.pdb',0,0
+szPDBFilterString		db 'PDB Files (*.pdb)',0,'*.pdb',0
+						db 'All Files (*.*)',0,'*.*',0,0
 szSaving				db 0Dh,0Ah,'Saving stream to:',0Dh,0Ah,0
 ; Format strings
 szPage					db 'Page : %lu',0Dh,0Ah,0

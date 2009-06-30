@@ -1,34 +1,31 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=PDB Explorer
+Description=Stabs explorer
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
 [Files]
-1=PDBExplore.Asm
-2=PDBExplore.Inc
-3=PDBExplore.Rc
-4=PDBExplore.dlg
-5=Child.dlg
-6=Misc.asm
-7=PDBFile.asm
-8=PDBParse.asm
+1=StabsExplore.Asm
+2=StabsExplore.Inc
+3=StabsExplore.Rc
+4=StabsExplore.dlg
+5=Misc.asm
+6=Child.dlg
 [MakeFiles]
-0=PDBExplore.rap
-1=PDBExplore.rc
-2=PDBExplore.asm
-3=PDBExplore.obj
-4=PDBExplore.res
-5=PDBExplore.exe
-6=PDBExplore.def
-7=PDBExplore.dll
-8=PDBExplore.txt
-9=PDBExplore.lib
-10=PDBExplore.mak
-11=PDBExplore.hla
-12=PDBExplore.com
+0=StabsExplore.rap
+1=StabsExplore.rc
+2=StabsExplore.asm
+3=StabsExplore.obj
+4=StabsExplore.res
+5=StabsExplore.exe
+6=StabsExplore.def
+7=StabsExplore.dll
+8=StabsExplore.txt
+9=StabsExplore.lib
+10=StabsExplore.mak
+11=StabsExplore.hla
+12=StabsExplore.com
 [MakeDef]
 Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
@@ -36,7 +33,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 3=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
-7=0,0,$E\OllyDbg,5
+7=0,0,"$E\OllyDbg",5
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\ML.EXE /c /coff /Cp /Zd /Zi /nologo /I"$I",2
@@ -44,9 +41,10 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
-17=0,0,$E\OllyDbg,5
+17=0,0,"$E\OllyDbg",5
 [Resource]
 [StringTable]
+[Accel]
 [VerInf]
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
@@ -54,19 +52,29 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=2
 3=3
 4=3
-5=3
-6=2
-7=2
-8=2
+5=2
+6=3
+7=
+[AutoLoad]
+1=1
+2=1
+[Find]
+1="CloseOBJ"
+[RADebugBP]
+1=
+5=
+2=
+[Collapse]
+3=
+5=
+1=
+2=
 [Size]
-5=0,0,0,0
-4=0,0,0,0
-3=0,0,0,0,59
-7=0,0,0,0,5807
-1=0,0,0,0,3919
-2=0,0,0,0,1012
-6=0,0,0,0,1253
-8=0,0,0,0,400
+3=0,0,0,0,0
+5=0,0,0,0,3029
+1=0,0,0,0,1877
+2=0,0,0,0,4471
+6=0,0,0,0
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -79,11 +87,11 @@ MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2009
-MilestoneOnDateTimeMonth=5
-MilestoneOnDateTimeDate=27
-MilestoneOnDateTimeHour=14
-MilestoneOnDateTimeMin=39
-MilestoneOnDateTimeSec=42
+MilestoneOnDateTimeMonth=6
+MilestoneOnDateTimeDate=30
+MilestoneOnDateTimeHour=15
+MilestoneOnDateTimeMin=7
+MilestoneOnDateTimeSec=10
 MilestoneOnDateTimeStatus=0
 BackupLocation=C:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
@@ -109,13 +117,6 @@ ProductVer4Range=0
 5=00FFFFFF
 6=00FFFFFF
 7=00FFFFFF
-[Collapse]
-3=
-7=
-1=
-2=
-6=
-8=
 [BookMark]
 0=
 1=
@@ -129,10 +130,3 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
-[AutoLoad]
-1=1
-2=1
-4=1
-[RADebugBP]
-1=43,44,178
-2=
