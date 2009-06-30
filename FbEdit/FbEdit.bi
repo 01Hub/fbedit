@@ -47,6 +47,7 @@ Declare Sub TranslateDialog(ByVal hWin As HWND,ByVal id As Integer)
 Declare Function GetInternalString(ByVal id As Integer) As String
 Declare Sub TranslateAddinDialog(ByVal hWin As HWND,ByVal sID As String)
 Declare Sub SelectProjectFile(ByVal sFile As String)
+Declare Sub HH_Help()
 
 ' Main dialog
 #Define IDD_MAIN 								1000
@@ -350,8 +351,8 @@ Dim hFbEditDll As HMODULE
 
 ' Addins
 Dim Shared ah As ADDINHANDLES
-Dim Shared ad As ADDINDATA=(1070)
-Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate)
+Dim Shared ad As ADDINDATA=(1071)
+Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate,@MakeProjectFileName,@HH_Help)
 
 ' Custom controls
 Dim Shared hCustDll(32) As HMODULE

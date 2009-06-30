@@ -154,7 +154,7 @@ Type ADDINHANDLES
 End Type
 
 Type ADDINDATA
-	version			As Integer						' FbEdit version (currently 1070)
+	version			As Integer						' FbEdit version (currently 1071)
 	AppPath			As ZString*260					' Path where FbEdit.exe is found
 	ProjectPath		As ZString*260					' Path to current project
 	DefProjectPath	As ZString*260					' Default project path
@@ -178,6 +178,7 @@ Type ADDINDATA
 	fDebug			As Boolean						' Project is beeing debugged
 	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
 	smakequickrun	As ZString*260					' Quick Run
+	lpBuff			As ZString Ptr					' Pointer to internal ZString buffer
 End Type
 
 Type ADDINFUNCTIONS
@@ -191,6 +192,8 @@ Type ADDINFUNCTIONS
 	FindString As Function(ByVal hMem As HGLOBAL,ByVal szApp As String,ByVal szKey As String) As String
 	CallAddins As Function(ByVal hWin As HWND,ByVal uMsg As UINT,wParam As WPARAM,lParam As LPARAM,ByVal hook1 As UINT) As Integer
 	ShowImmediate As Sub(ByVal bShow As Boolean)
+	MakeProjectFileName As Function(ByVal sFile As String) As String
+	HH_Help As Sub()
 End Type
 
 ' Addin messages you can send to FbEdit main window

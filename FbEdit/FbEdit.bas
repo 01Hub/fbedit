@@ -2250,7 +2250,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			'
 		Case AIM_GETMENUID
 			mnuid=mnuid+1
-			Return mnuid
+			x=mnuid
+			If wParam Then
+				mnuid+=wParam-1
+			EndIf
+			Return x
 			'
 		Case AIM_OPENFILE
 			lstrcpy(@buff,Cast(ZString Ptr,lParam))

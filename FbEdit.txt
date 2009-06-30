@@ -1,5 +1,11 @@
 Whats new:
 ----------
+1.0.7.1
+o It is now possible to reserve more than one menuid with AIM_GETMENUID.
+  wParam specifies the number of menuid's to reserve.
+o Added MakeProjectFileName to ADDINFUNCTIONS.
+  In: Filename, Returns:Full path.
+o Added HH_Help to ADDINFUNCTIONS. The lpBuff in ADDINDATA contains the word to seach for.
 1.0.7.0
 o Added Debug / Quick run Options. Lets you set the compile command for Quick run.
 o If the previous Quick run process is still running it will be killed.
