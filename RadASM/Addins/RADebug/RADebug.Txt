@@ -4,7 +4,7 @@ The goal for this debugger.
 -----------------------------------------------------------------------------
 o The debugged program must run at full speed until a breakpoint is reached.
 o Procs that are not debugged must run at full speed.
-o It must be possible to use other assemblers / compilers than masm.
+o It must be possible to use other assemblers / compilers than masm and VC6.
 - These goals exclude the use of hardware breakpoints.
 - The use of dbghelp must be minimized.
 
@@ -40,6 +40,11 @@ o Start RadASM and use Options/Addin Manager to activate addin.
 How to make (masm):
 -----------------------------------------------------------------------------
 o Assemble with the /Zd and /Zi options.
+o Link with the /DEBUG option.
+
+How to make (VC6 C/C++):
+-----------------------------------------------------------------------------
+o Compile with the /Zd and /Zi options.
 o Link with the /DEBUG option.
 
 How to debug:
@@ -121,6 +126,7 @@ o Released version 1.0.0.3
     This adds suport for multimodule projects.
   - Fixed a bug in the linenumbers seach algo.
     The bug could cause the debugger to freeze.
+  - Added support for VC6 C/C++.
 o Released version 1.0.0.2
   - Added option to show debug events.
   - Added option to pin output window.
@@ -144,7 +150,7 @@ o Uploaded version 1.0.0.0
 
 To do:
 -----------------------------------------------------------------------------
-o Support for other assemblers / compilers besides masm.
+o Support for other assemblers / compilers besides masm and VC6.
 
 Known bugs:
 -----------------------------------------------------------------------------

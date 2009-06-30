@@ -1151,13 +1151,37 @@ _Unknown1:
 			.if byte ptr [esi]=='['
 				mov		ebx,esi
 				call	SkipScope
-				.while ebx<esi
-					mov		al,[ebx]
-					mov		[edi],al
-					inc		ebx
+				mov		eax,esi
+				sub		eax,ebx
+				.if eax==2
+					mov		byte ptr [edi],'['
 					inc		edi
-				.endw
-				call	SkipSpc
+					call	SkipSpc
+					.if byte ptr [esi]=='='
+						inc		esi
+						call	SkipSpc
+						.if byte ptr [esi]=='"' || byte ptr [esi]=="'"
+							mov		ebx,esi
+							call	SkipScope
+							mov		eax,esi
+							sub		eax,ebx
+							dec		eax
+							invoke BinToDec,eax,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax]
+						.endif
+					.endif
+					mov		byte ptr [edi],']'
+					inc		edi
+				.else
+					.while ebx<esi
+						mov		al,[ebx]
+						mov		[edi],al
+						inc		ebx
+						inc		edi
+					.endw
+					call	SkipSpc
+				.endif
 			.endif
 			mov		byte ptr [edi],':'
 			inc		edi

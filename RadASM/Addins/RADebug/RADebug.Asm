@@ -414,6 +414,34 @@ Disable:
 
 DoNotDebugProc endp
 
+EnumProc proc uses ebx,hWin:HWND,lParam:LPARAM
+	LOCAL	pid:DWORD
+	LOCAL	tid:DWORD
+
+	invoke GetWindowThreadProcessId,hWin,addr pid
+	mov		tid,eax
+	mov		ebx,dbg.lpthread
+	.if ebx
+		mov		eax,[ebx].DEBUGTHREAD.threadid
+		.if eax==tid
+			invoke SetForegroundWindow,hWin
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.endif
+	mov		eax,TRUE
+  Ex:
+	ret
+
+EnumProc endp
+
+BringWindowToFront proc
+
+	invoke EnumWindows,offset EnumProc,0
+	ret
+
+BringWindowToFront endp
+
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 
@@ -511,6 +539,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+						invoke BringWindowToFront
 					.endif
 				;.endif
 			.else
@@ -632,26 +661,15 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				.if dbg.fHandled
 					mov		dbg.fHandled,FALSE
 					invoke ResetSelectLine
-					invoke IsLineCall
-					.if !eax
-						jmp		StepInto
-					.endif
+					mov		dbg.func,FUNC_STEPOVER
+					invoke SetBreakPointsAll
 					mov		ebx,dbg.lpthread
-					mov		ebx,[ebx].DEBUGTHREAD.lpline
-					mov		ax,[ebx].DEBUGLINE.FileID
-					lea		ebx,[ebx+sizeof DEBUGLINE]
-					.if ax==[ebx].DEBUGLINE.FileID
-						;Step &Over
-						mov		dbg.func,FUNC_STEPOVER
-						invoke ClearBreakPointsAll
-						invoke SetBreakpointAtCurrentLine,[ebx].DEBUGLINE.LineNumber
-						mov		ebx,dbg.lpthread
-						.if [ebx].DEBUGTHREAD.suspended
-							mov		[ebx].DEBUGTHREAD.suspended,FALSE
-							invoke ResumeThread,[ebx].DEBUGTHREAD.htread
-						.endif
-					.else
-						jmp		StepInto
+					.if [ebx].DEBUGTHREAD.suspended
+						mov		eax,dbg.lpProc
+						mov		dbg.lpStepOver,eax
+						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+						mov		[ebx].DEBUGTHREAD.suspended,FALSE
+						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 					.endif
 				.endif
 			.endif
@@ -663,8 +681,10 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					invoke ResetSelectLine
 					mov		dbg.func,FUNC_RUNTOCARET
 					invoke ClearBreakPointsAll
-					invoke SetBreakpointAtCurrentLine,0
+					invoke SetBreakPoints
 					mov		ebx,dbg.lpthread
+					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+					invoke SetBreakpointAtCurrentLine,0
 					.if [ebx].DEBUGTHREAD.suspended
 						mov		[ebx].DEBUGTHREAD.suspended,FALSE
 						invoke ResumeThread,[ebx].DEBUGTHREAD.htread

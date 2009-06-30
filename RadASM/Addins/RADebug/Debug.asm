@@ -452,9 +452,6 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	mov		chrg.cpMin,eax
 	mov		chrg.cpMax,eax
 	invoke SendMessage,dbg.prevhwnd,EM_EXSETSEL,0,addr chrg
-	mov		word ptr dbg.szprevline,255
-	invoke SendMessage,dbg.prevhwnd,EM_GETLINE,dbg.prevline,addr dbg.szprevline
-	mov		dbg.szprevline[eax],0
 	invoke SendMessage,dbg.prevhwnd,EM_SCROLLCARET,0,0
 	invoke SendMessage,dbg.prevhwnd,EM_GETFIRSTVISIBLELINE,0,0
 	.if eax==dbg.prevline
@@ -468,34 +465,6 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	ret
 
 SelectLine endp
-
-IsLineCall proc uses esi edi
-
-	mov		esi,offset szCall
-	lea		edi,dbg.szprevline
-	.while byte ptr [edi] && (byte ptr [edi]==VK_TAB || byte ptr [edi]==VK_SPACE)
-		inc		edi
-	.endw
-	push	edi
-	.while byte ptr [edi] && ((byte ptr [edi]>='A' && byte ptr [edi]<='Z') || (byte ptr [edi]>='a' && byte ptr [edi]<='z'))
-		inc		edi
-	.endw
-	mov		byte ptr [edi],0
-	pop		edi
-	.while byte ptr [esi]
-		invoke strcmpi,esi,edi
-		.if !eax
-			inc		eax
-			jmp		Ex
-		.endif
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	xor		eax,eax
-  Ex:
-	ret
-
-IsLineCall endp
 
 FindThread proc uses ebx,ThreadID:DWORD
 
@@ -582,6 +551,16 @@ IsInProc proc uses esi,Address:DWORD
 	ret
 
 IsInProc endp
+
+IsOnBP proc uses esi,Address:DWORD
+
+	mov		esi,dbg.hMemLine
+	mov		eax,Address
+	invoke FindLine,Address
+	movzx	eax,[eax].DEBUGLINE.BreakPoint
+	ret
+
+IsOnBP endp
 
 Debug proc uses ebx,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
@@ -691,35 +670,49 @@ Debug proc uses ebx,lpFileName:DWORD
 							mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 						.else
 							mov		dbg.lpthread,ebx
-							.if ![ebx].DEBUGTHREAD.suspended
-								mov		[ebx].DEBUGTHREAD.suspended,TRUE
-								mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
-								invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-							.endif
-							invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
-							mov		edx,[ebx].DEBUGTHREAD.lpline
-							mov		[ebx].DEBUGTHREAD.lpline,eax
-							.if eax!=edx
-								push	TRUE
+							invoke IsOnBP,de.u.Exception.pExceptionRecord.ExceptionAddress
+							push	eax
+							invoke IsInProc,de.u.Exception.pExceptionRecord.ExceptionAddress
+							pop		edx
+							.if dbg.func==FUNC_STEPOVER && eax!=dbg.lpStepOver && !edx
+								mov		dbg.context.ContextFlags,CONTEXT_FULL
+								invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+								mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+								mov		dbg.context.regEip,eax
+								mov		[ebx].DEBUGTHREAD.address,eax
+								invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+								invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 							.else
-								push	FALSE
+								.if ![ebx].DEBUGTHREAD.suspended
+									mov		[ebx].DEBUGTHREAD.suspended,TRUE
+									mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
+									invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+								.endif
+								invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
+								mov		edx,[ebx].DEBUGTHREAD.lpline
+								mov		[ebx].DEBUGTHREAD.lpline,eax
+								.if eax!=edx
+									push	TRUE
+								.else
+									push	FALSE
+								.endif
+								.if eax
+									invoke SelectLine,eax
+								.endif
+								mov		dbg.context.ContextFlags,CONTEXT_FULL
+								invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+								mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+								mov		dbg.context.regEip,eax
+								mov		[ebx].DEBUGTHREAD.address,eax
+								invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+								invoke IsInProc,[ebx].DEBUGTHREAD.address
+								mov		dbg.lpProc,eax
+								pop		eax
+								.if eax
+									invoke ShowContext
+								.endif
+								invoke WatchVars
 							.endif
-							.if eax
-								invoke SelectLine,eax
-							.endif
-							mov		dbg.context.ContextFlags,CONTEXT_FULL
-							invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-							mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-							mov		dbg.context.regEip,eax
-							mov		[ebx].DEBUGTHREAD.address,eax
-							invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-							invoke IsInProc,[ebx].DEBUGTHREAD.address
-							mov		dbg.lpProc,eax
-							pop		eax
-							.if eax
-								invoke ShowContext
-							.endif
-							invoke WatchVars
 							mov		dbg.fHandled,TRUE
 						.endif
 					.endif

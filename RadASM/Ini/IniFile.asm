@@ -136,12 +136,12 @@ UpDateAssemblerIni proc
 	.if eax
 		mov		edx,nRadASMVer
 		.if eax==nMASM
-			.if Version<2217
+			.if Version<=2217
 				invoke WritePrivateProfileString,addr szIniCode,addr szIniData,addr szMasmCodeData,addr iniAsmFile
 				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szMasmApiArray,addr iniAsmFile
 			.endif
 		.elseif eax==nCPP
-			.if Version<2217
+			.if Version<=2217
 				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szCppApiArray,addr iniAsmFile
 			.endif
 		.endif

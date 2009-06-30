@@ -147,7 +147,6 @@ DEBUG struct
 	hdbgfile				HANDLE ?				; File handle
 	prevline				DWORD ?					; Previous hilited line
 	prevhwnd				DWORD ?					; Previous hilited line window handle
-	szprevline				db 256 dup(?)			; Line text
 	lpthread				DWORD ?					; Pointer to current thread
 	thread					DEBUGTHREAD 64 dup(<>)	; Threads
 	context					CONTEXT <>				; Context
@@ -168,6 +167,7 @@ DEBUG struct
 	maxadr					DWORD ?					; Highest address
 	lastadr					DWORD ?					; Address of last line
 	lpProc					DWORD ?					; Current proc
+	lpStepOver				DWORD ?					; Proc to return to
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?					; Set to TRUE when a breakpoint is reached
 	pt						POINT <>				; Used by tooltip
@@ -384,10 +384,6 @@ szErrArray						db 'Could not evaluate array size: %s',0
 szErrType						db 'Could not find datatype: %s',0
 szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,'Variables, parameters and locals are disabled.',0
 
-szCall							db 'invoke',0
-								db 'call',0
-;								db 'Add other call types here',0
-								db 0
 ; Ansi / Widechar
 szA								db 'A',0
 szW								db 'W',0
