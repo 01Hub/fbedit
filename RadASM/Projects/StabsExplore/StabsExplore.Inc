@@ -187,6 +187,8 @@ szCoffProc				db 'File:%s Name:%s bfad:%08Xh  bfln:%u efad:%08Xh  efln:%u',0Dh,0
 szCoffGlobal			db 'Name:%s Address:%08Xh',0Dh,0Ah,0
 
 szSecStab				db '.stab',0
+szSecStabstr			db '.stabstr',0
+szFmtStab				db 'Stabs: %4u Code: %3u Line: %5u Address: %08Xh Str: %s',0Dh,0Ah,0
 
 ;#########################################################################
 
@@ -205,6 +207,7 @@ hMemFile				HGLOBAL ?
 nCoffHeaders			DWORD ?
 nCoffHeader				DWORD ?
 SectionHeader			COFFSECTIONHEADER 96 dup(<>)
-stab					STAB <>
+rpstab					DWORD ?
+rpstabs					DWORD ?
 
 ;#########################################################################

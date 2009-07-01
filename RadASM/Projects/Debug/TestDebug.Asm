@@ -77,10 +77,9 @@ MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 MyProc2 endp
 
 MyProc1 proc uses esi edi,var:DWORD
-	LOCAL	aa:SDWORD
-	LOCAL	bb:SWORD
+	LOCAL	buffer[256]:BYTE
 
-	mov		eax,'abcd'
+	invoke lstrcpy,addr buffer,addr szTest
 	ret
 
 MyProc1 endp

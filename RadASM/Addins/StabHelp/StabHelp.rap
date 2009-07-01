@@ -1,56 +1,61 @@
 [Project]
 Assembler=masm
-Type=Console App
-Description=TestDebug
+Type=Dll Project
+Description=StabHelp
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
 [Files]
-1=TestDebug.Asm
-2=TestMisc.asm
-3=Src\TestMisc.asm
+1=StabHelp.Asm
+2=StabHelp.Inc
+3=StabHelp.Def
+4=StabHelp.Txt
 [MakeFiles]
-0=TestDebug.rap
-1=TestDebug.rc
-2=TestDebug.asm
-3=TestDebug.obj
-4=TestDebug.res
-5=TestDebug.exe
-6=TestDebug.def
-7=TestDebug.dll
-8=TestDebug.txt
-9=TestDebug.lib
-10=TestDebug.mak
-11=TestDebug.hla
-12=TestDebug.com
-13=TestDebug.ocx
-14=TestDebug.idl
-15=TestDebug.tlb
-16=TestDebug.sys
+0=StabHelp.rap
+1=StabHelp.rc
+2=StabHelp.asm
+3=StabHelp.obj
+4=StabHelp.res
+5=StabHelp.exe
+6=StabHelp.def
+7=StabHelp.dll
+8=StabHelp.txt
+9=StabHelp.lib
+10=StabHelp.mak
+11=StabHelp.hla
+12=StabHelp.com
+13=StabHelp.ocx
+14=StabHelp.idl
+15=StabHelp.tlb
+16=StabHelp.sys
 [MakeDef]
-Menu=0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
+Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
-3=5,O,$B\LINK.EXE /SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3
+3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 7=0,0,"$E\OllyDbg",5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\ML.EXE /c /coff /Zd /Zi /Cp /nologo /I"$I",2
-13=5,O,$B\LINK.EXE /SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3
+12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 17=0,0,"$E\OllyDbg",5
+[Resource]
+[StringTable]
+[VerInf]
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
 2=2
-3=2
-[AutoLoad]
-1=1
+3=4
+4=4
+[RADebugBP]
+1=
+2=
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -61,13 +66,13 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=1
 MilestoneOnDateTimeYear=2009
-MilestoneOnDateTimeMonth=5
-MilestoneOnDateTimeDate=25
-MilestoneOnDateTimeHour=20
-MilestoneOnDateTimeMin=43
-MilestoneOnDateTimeSec=32
+MilestoneOnDateTimeMonth=7
+MilestoneOnDateTimeDate=1
+MilestoneOnDateTimeHour=1
+MilestoneOnDateTimeMin=46
+MilestoneOnDateTimeSec=51
 MilestoneOnDateTimeStatus=0
 BackupLocation=D:\RadASM\Masm\Projects\VCBackups\
 CompressionLevel=0
@@ -98,9 +103,9 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,2498
-2=0,0,0,0,8
-3=0,0,0,0,285
+1=0,0,0,0,191
+2=0,0,0,0,190
+3=0,0,0,0,0
 [BookMark]
 0=
 1=
@@ -114,21 +119,3 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
-[Find]
-1="DT"
-2="TBYTE"
-3="WM_USER"
-4="MAX_PATH"
-5="RECT"
-6="MYSTRUCT"
-7="RECT,left"
-8="RECT,"
-9="ecx = 13"
-10="118"
-[RADebugBP]
-1=82,141,154
-0=
-3=
-[NoDebug]
-[Watch]
-Watch=

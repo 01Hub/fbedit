@@ -129,24 +129,22 @@ SetSection proc uses ebx esi edi
 SetSection endp
 
 ReadStabs proc uses ebx esi edi
+	LOCAL	buffer[256]:BYTE
 
-	mov		ebx,offset SectionHeader
-	.while [ebx].COFFSECTIONHEADER.sName
-		invoke lstrcmp,addr [ebx].COFFSECTIONHEADER.sName,addr szSecStab
-		.if !eax
-			mov		esi,[ebx].COFFSECTIONHEADER.PointerToRawData
-			add		esi,hMemFile
-			.while [esi].STAB.stabs
-			invoke RtlMoveMemory,addr stab,esi,sizeof STAB
-PrintHex stab.stabs
-PrintDec stab.code
-PrintDec stab.nline
-PrintHex stab.ad
-				lea		esi,[esi+sizeof STAB]
-			.endw
-			.break
-		.endif
-		lea		ebx,[ebx+sizeof COFFSECTIONHEADER]
+	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+	mov		esi,rpstab
+	add		esi,hMemFile
+	movzx	ebx,[esi].STAB.nline
+	.while ebx
+		movzx	eax,[esi].STAB.code
+		movzx	edx,[esi].STAB.nline
+		mov		edi,rpstabs
+		add		edi,hMemFile
+		add		edi,[esi].STAB.stabs
+		invoke wsprintf,addr szOutput,addr szFmtStab,[esi].STAB.stabs,eax,edx,[esi].STAB.ad,edi
+		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+		lea		esi,[esi+sizeof STAB]
+		dec		ebx
 	.endw
 	ret
 
@@ -372,6 +370,16 @@ ShowSectionHeaders proc uses ebx esi edi
 	.while ebx
 		invoke RtlMoveMemory,edi,esi,sizeof COFFSECTIONHEADER
 		invoke lstrcpyn,addr buffer,esi,9
+		invoke lstrcmp,addr buffer,addr szSecStab
+		.if !eax
+			mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
+			mov		rpstab,eax
+		.endif
+		invoke lstrcmp,addr buffer,addr szSecStabstr
+		.if !eax
+			mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
+			mov		rpstabs,eax
+		.endif
 		invoke lstrcat,addr buffer,addr szAlign
 		invoke lstrcpyn,addr buffer,addr buffer,14
 		mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
