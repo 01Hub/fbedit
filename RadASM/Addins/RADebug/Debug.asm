@@ -578,7 +578,14 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
-		invoke DbgHelp,dbg.pinfo.hProcess,addr szExeName
+		mov		eax,lpData
+		mov		eax,[eax].ADDINDATA.nAsm
+		.if eax==nBCET || eax==nFP
+			mov		edx,offset StabHelpDLL
+		.else
+			mov		edx,offset DbgHelpDLL
+		.endif
+		invoke DbgHelp,edx,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfo
 			invoke PutString,addr szExeName

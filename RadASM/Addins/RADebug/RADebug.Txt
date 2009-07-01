@@ -120,6 +120,8 @@ o Commands.
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.4
+  - Fixed bug with showing local ZString.
 o Released version 1.0.0.3
   - Improved array size calculations.
   - The line numbers array is now sorted.

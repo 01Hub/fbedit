@@ -606,10 +606,10 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 
 EnumLinesCallback endp
 
-DbgHelp proc uses ebx esi edi,hProcess:DWORD,lpFileName:DWORD
+DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke LoadLibrary,addr DbgHelpDLL
+	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax
 		invoke GetDbgHelpVersion

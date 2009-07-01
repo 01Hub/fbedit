@@ -276,6 +276,7 @@ datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 
 ; The dbghelp dll
 DbgHelpDLL						db 'DbgHelp.dll',0
+StabHelpDLL						db 'Addins\StabHelp.dll',0
 
 ; Debug events
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0

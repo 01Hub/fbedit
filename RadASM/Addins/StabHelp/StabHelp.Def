@@ -1,0 +1,11 @@
+LIBRARY StabHelp.dll
+EXPORTS
+	SymInitialize
+	SymLoadModule
+	SymGetModuleInfo
+	SymEnumTypes
+	SymEnumerateSymbols
+	SymEnumSourceFiles
+	SymEnumSourceLines
+	SymUnloadModule
+	SymCleanup

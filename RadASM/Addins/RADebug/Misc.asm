@@ -1286,7 +1286,7 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 			; Known size
 			.if var.IsSZ
 				mov		eax,var.nArray
-				sub		eax,var.nOfs
+				sub		eax,var.nInx
 				.if eax>256
 					mov		eax,256
 				.endif
@@ -1338,31 +1338,33 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 	.elseif eax=='L'
 		; LOCAL
 		mov		eax,var.nSize
-		.if eax==3 || eax>4
-			; Struct ,union ,QWORD or TBYTE
-			mov		var.lpFormat, offset szLocal
-			mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
-		.else
+		.if eax
 			.if var.IsSZ
 				mov		eax,var.nArray
-				sub		eax,var.nOfs
-				.if eax>256
-					mov		eax,256
+				sub		eax,var.nInx
+				.if eax>255
+					mov		eax,255
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
 				mov		var.lpFormat,offset szLocalSZ
 				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
 			.else
-				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
-				mov		eax,var.nSize
-				mov		edx,offset szLocal32
-				.if eax==2
-					mov		edx,offset szLocal16
-				.elseif eax==1
-					mov		edx,offset szLocal8
+				.if eax==3 || eax>4
+					; Struct ,union ,QWORD or TBYTE
+					mov		var.lpFormat, offset szLocal
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE
+				.else
+					invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.Value,var.nSize,0
+					mov		eax,var.nSize
+					mov		edx,offset szLocal32
+					.if eax==2
+						mov		edx,offset szLocal16
+					.elseif eax==1
+						mov		edx,offset szLocal8
+					.endif
+					mov		var.lpFormat,edx
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 				.endif
-				mov		var.lpFormat,edx
-				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_HEX or FMT_DEC
 			.endif
 		.endif
 	.elseif eax=='H' || eax=='D'
