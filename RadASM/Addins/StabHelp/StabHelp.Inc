@@ -1,15 +1,17 @@
 
-	include windows.inc
-	include kernel32.inc
-	include user32.inc
+include windows.inc
+include kernel32.inc
+include user32.inc
+include dbghelp.inc
 
-	includelib kernel32.lib
-	includelib user32.lib
+includelib kernel32.lib
+includelib user32.lib
 
-	include \RadASM\masm\inc\debug.inc
-	includelib \RadASM\masm\lib\debug.lib
+include \RadASM\masm\inc\debug.inc
+includelib \RadASM\masm\lib\debug.lib
 
 .data?
 
-hInstance			dd ?	;Dll's module handle
-
+hInstance			HMODULE ?	;Dll's module handle
+hProcessDbg			HANDLE ?
+hMemFile			HGLOBAL ?
