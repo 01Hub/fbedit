@@ -13,6 +13,7 @@ GroupExpand=1
 AutoDelete=1
 AskMe=0
 MinorFiles=*.res;*.obj;*.lib;*.exp;
+5=Test.bat
 [MakeFiles]
 0=StabHelp.rap
 1=StabHelp.rc
@@ -56,6 +57,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=2
 3=4
 4=4
+5=1
 [RADebugBP]
 1=
 2=
@@ -70,7 +72,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=2
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=1
@@ -107,7 +109,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,0,0,7211
+1=0,0,0,0,7880
 2=0,0,0,0,659
 3=0,0,0,0,181
 [BookMark]

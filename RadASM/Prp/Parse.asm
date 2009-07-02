@@ -1456,12 +1456,58 @@ ParseFPData:
 			inc		esi
 			call	GetWrd
 			.if ecx
+				.if ecx==5
+					mov		eax,dword ptr [esi]
+					mov		edx,dword ptr [esi+4]
+					and		eax,5F5F5F5Fh
+					and		edx,5Fh
+					.if eax=='ARRA' && edx=='Y'
+						lea		esi,[esi+ecx]
+						.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+							inc		esi
+						.endw
+						mov		edi,offset prnbuff
+						invoke CpyWrd,edi,lpWord1,len1
+						mov		eax,len1
+						lea		edi,[edi+eax]
+						.if byte ptr [esi]=='['
+							.while byte ptr [esi] && byte ptr [esi]!=0Dh
+								mov		al,[esi]
+								mov		[edi],al
+								inc		esi
+								inc		edi
+								.break .if al==']'
+							.endw
+							; Skip Of
+							call	GetWrd
+							lea		esi,[esi+ecx]
+							call	GetWrd
+							mov		lpWord2,esi
+							mov		len2,ecx
+							mov		byte ptr [edi],':'
+							inc		edi
+							invoke CpyWrd,edi,lpWord2,len2
+							mov		eax,len2
+							lea		edi,[edi+eax]
+							mov		byte ptr [edi],0
+							inc		edi
+							invoke CpyWrd,edi,lpWord2,len2
+							invoke AddWordToWordList,'d',iNbr,offset prnbuff,2
+						.endif
+						jmp		ParseFPData
+					.endif
+				.endif
 				mov		lpWord2,esi
 				mov		len2,ecx
 				lea		esi,[esi+ecx]
 				mov		edi,offset prnbuff
 				invoke CpyWrd,edi,lpWord1,len1
 				mov		eax,len1
+				lea		edi,[edi+eax]
+				mov		byte ptr [edi],':'
+				inc		edi
+				invoke CpyWrd,edi,lpWord2,len2
+				mov		eax,len2
 				lea		edi,[edi+eax]
 				mov		byte ptr [edi],0
 				inc		edi
@@ -1483,6 +1529,11 @@ ParseFPData:
 						mov		edi,offset prnbuff
 						invoke CpyWrd,edi,lpWord1,len1
 						mov		eax,len1
+						lea		edi,[edi+eax]
+						mov		byte ptr [edi],':'
+						inc		edi
+						invoke CpyWrd,edi,lpWord2,len2
+						mov		eax,len2
 						lea		edi,[edi+eax]
 						mov		byte ptr [edi],0
 						inc		edi

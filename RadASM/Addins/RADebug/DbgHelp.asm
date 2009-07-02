@@ -175,7 +175,7 @@ GetDbgHelpVersion proc
 
 GetDbgHelpVersion endp
 
-FindWord proc uses esi,lpWord:DWORD
+FindWord proc uses esi,lpWord:DWORD,fCase:DWORD
 
 	mov		edx,lpData
 	;Get pointer to word list
@@ -201,7 +201,11 @@ TestWord:
 	lea		ecx,[esi+sizeof PROPERTIES]
 	mov		edx,lpWord
 	.if [esi].PROPERTIES.nType=='p'
-		invoke strcmp,ecx,edx
+		.if fCase
+			invoke strcmp,ecx,edx
+		.else
+			invoke strcmpi,ecx,edx
+		.endif
 		.if !eax
 			inc		eax
 			retn
@@ -216,9 +220,19 @@ TestWord:
 					xor		eax,eax
 				.endif
 				retn
-			.elseif al!=ah
-				xor		eax,eax
-				retn
+			.else
+				.if !fCase
+					.if al>='a' && al<='z'
+						and		al,5Fh
+					.endif
+					.if ah>='a' && ah<='z'
+						and		ah,5Fh
+					.endif
+				.endif
+				.if al!=ah
+					xor		eax,eax
+					retn
+				.endif
 			.endif
 			inc		ecx
 			inc		edx
@@ -381,10 +395,8 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	.endif
 	mov		[edi].DEBUGVAR.nArray,eax
 	.if nSize
-		mov		edx,lpData
-		mov		edx,[edx].ADDINDATA.nAsm
 		mov		eax,nSize
-		.if [edi].DEBUGVAR.nArray>1 && edx==nCPP
+		.if [edi].DEBUGVAR.nArray>1 && nAsm==nCPP
 			xor		edx,edx
 			mov		ecx,[edi].DEBUGVAR.nArray
 			div		ecx
@@ -419,11 +431,12 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 
 AddVar endp
 
-AddVarList proc uses ebx esi edi,lpList:DWORD
+AddVarList proc uses ebx esi edi,lpList:DWORD,nDisp:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	nOfs:DWORD
 
-	mov		nOfs,0
+	mov		eax,nDisp
+	mov		nOfs,eax
 	mov		esi,lpList
 	.while byte ptr [esi]
 		mov		ebx,dbg.lpvar
@@ -496,10 +509,6 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 	LOCAL	buffer[512]:BYTE
 
 	.if SymbolSize
-		.if fOptions & 1
-			invoke wsprintf,addr buffer,addr szSymbol,SymbolName,SymbolAddress,SymbolSize
-			invoke PutString,addr buffer
-		.endif
 		mov		eax,dbg.inxsymbol
 		mov		edx,sizeof DEBUGSYMBOL
 		mul		edx
@@ -510,29 +519,47 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
 		invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,SymbolName,sizeof DEBUGSYMBOL.szName
-		invoke FindWord,SymbolName
+		invoke FindWord,SymbolName,fCaseSensitive
 		.if eax
 			mov		esi,eax
 			movzx	edx,[esi].PROPERTIES.nType
 			mov		[edi].DEBUGSYMBOL.nType,dx
 			.if edx=='p'
 				; Proc
+				invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,addr [esi+sizeof PROPERTIES],sizeof DEBUGSYMBOL.szName
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
 				; Point to parameters
 				invoke strlen,addr [esi+sizeof PROPERTIES]
 				lea		esi,[esi+eax+1+sizeof PROPERTIES]
-				invoke AddVarList,esi
+				invoke AddVarList,esi,0
 				; Point to locals
 				invoke strlen,esi
 				lea		esi,[esi+eax+1]
-				invoke AddVarList,esi
+;PrintDec UserContext
+				invoke AddVarList,esi,UserContext
 			.elseif edx=='d'
 				; Variable
+				.if [edi].DEBUGSYMBOL.nSize==-1
+					mov		[edi].DEBUGSYMBOL.nSize,0
+				.endif
+				lea		edx,[esi+sizeof PROPERTIES]
+				lea		ecx,[edi].DEBUGSYMBOL.szName
+				.while byte ptr [edx]!=':' && byte ptr [edx]!='['
+					mov		al,[edx]
+					mov		[ecx],al
+					inc		edx
+					inc		ecx
+				.endw
+				mov		byte ptr [ecx],0
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
 				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
 				mov		[edi].DEBUGSYMBOL.nSize,eax
+			.endif
+			.if fOptions & 1
+				invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
+				invoke PutString,addr buffer
 			.endif
 		.endif
 		inc		dbg.inxsymbol

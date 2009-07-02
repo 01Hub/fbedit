@@ -417,6 +417,8 @@ var								VAR <>							; Current variable info
 fNoDebugInfo					dd ?							; No debug info found
 outbuffer						db 1024 dup(?)					; Buffer for wsprintf
 nRadASMVer						dd ?							; RadASM version
+nAsm							dd ?							; Assembler / Compiler
+fCaseSensitive					dd ?
 szWatchList						db 512 dup(?)					; List of variables to watch
 mFunc							dd ?
 nError							dd ?

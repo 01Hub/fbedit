@@ -357,6 +357,17 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 				lea		eax,src
 				push	eax
 				call	EnumTypesCallback
+;			.elseif byte ptr [edi]=='r'
+;				inc		edi
+;				invoke DecToBin,edi
+;				.if eax==1
+;				.elseif eax==2
+;				.elseif eax==3
+;				.elseif eax==4
+;				.elseif eax==5
+;				.elseif eax==6
+;				.elseif eax==7
+;				.endif
 			.endif
 		.endif
 		lea		esi,[esi+sizeof STAB]
@@ -368,14 +379,16 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 SymEnumTypes endp
 
 SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWORD,UserContext:DWORD
-
 	LOCAL	szname[128]:BYTE
 	LOCAL	src:SYMBOL_INFO
+	LOCAL	fproc:DWORD
 
 	invoke RtlZeroMemory,addr src,sizeof SYMBOL_INFO
+	mov		src.SizeOfStruct,sizeof SYMBOL_INFO+127
 	mov		esi,rpstab
 	add		esi,hMemFile
 	movzx	ebx,[esi].STAB.nline
+	mov		fproc,FALSE
 	.while ebx
 		movzx	eax,[esi].STAB.code
 		movzx	edx,[esi].STAB.nline
@@ -383,18 +396,8 @@ SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWO
 		add		edi,hMemFile
 		add		edi,[esi].STAB.stabs
 		.if eax==40
-			mov		src.SizeOfStruct,sizeof SYMBOL_INFO
-			lea		edx,src.szName
-			xor		ecx,ecx
-			.while byte ptr [edi]!=':' && byte ptr [edi]
-				mov		al,[edi]
-				mov		[edx+ecx],al
-				inc		ecx
-				inc		edi
-			.endw
-			mov		byte ptr [edx+ecx],0
-			mov		src.NameLen,ecx
-			mov		src.MaxNameLen,32
+			; Global
+			call	GetName
 			inc		edi
 			.if byte ptr [edi]=='S'
 				inc		edi
@@ -404,14 +407,44 @@ SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWO
 				mul		edx
 				lea		edi,[eax+offset vartype]
 				mov		eax,[edi].VARTYPE.nSize
+				.if !eax
+					dec		eax
+				.endif
 				mov		src.nSize,eax
-				mov		eax,dword ptr BaseOfDll
-				mov		dword ptr src.ModBase,eax
-				mov		eax,dword ptr BaseOfDll[4]
-				mov		dword ptr src.ModBase[4],eax
 				push	UserContext
 				push	src.nSize
 				push	[esi].STAB.ad
+				lea		eax,src.szName
+				push	eax
+				call	EnumSymbolsCallback
+			.endif
+		.elseif eax==36
+			; Proc
+			xor		ecx,ecx
+			.while byte ptr [edi+ecx-1]!=':' && byte ptr [edi+ecx]
+				inc		ecx
+			.endw
+			.if byte ptr [edi+ecx]=='F'
+				call	GetName
+				mov		fproc,TRUE
+			.endif
+		.elseif eax==160
+			; Param or Local
+			mov		eax,[edi]
+			.if dword ptr [edi]=='user' && word ptr [edi+4]=='tl'
+				mov		eax,[esi].STAB.ad
+				neg		eax
+				mov		UserContext,eax
+			.endif
+		.elseif eax==224
+			; Block end
+			.if fproc
+				mov		fproc,FALSE
+				mov		eax,[esi].STAB.ad
+				mov		src.nSize,eax
+				push	UserContext
+				push	src.nSize
+				push	dword ptr src.Address
 				lea		eax,src.szName
 				push	eax
 				call	EnumSymbolsCallback
@@ -422,6 +455,26 @@ SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWO
 	.endw
 	mov		eax,TRUE
 	ret
+
+GetName:
+	lea		edx,src.szName
+	xor		ecx,ecx
+	.while byte ptr [edi]!=':' && byte ptr [edi]
+		mov		al,[edi]
+		mov		[edx+ecx],al
+		inc		ecx
+		inc		edi
+	.endw
+	mov		byte ptr [edx+ecx],0
+	mov		src.NameLen,ecx
+	mov		src.MaxNameLen,128
+	mov		eax,[esi].STAB.ad
+	mov		dword ptr src.Address,eax
+	mov		eax,dword ptr BaseOfDll
+	mov		dword ptr src.ModBase,eax
+	mov		eax,dword ptr BaseOfDll[4]
+	mov		dword ptr src.ModBase[4],eax
+	retn
 
 SymEnumerateSymbols endp
 

@@ -737,6 +737,13 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke UpdateAccelerators
 		invoke EnableMenu
 		invoke LoadWatch
+		mov		eax,lpData
+		mov		eax,[eax].ADDINDATA.nAsm
+		mov		nAsm,eax
+		mov		fCaseSensitive,TRUE
+		.if nAsm==nBCET || nAsm==nFP
+			mov		fCaseSensitive,FALSE
+		.endif
 		;
 	.elseif eax==AIM_UNHOOK
 		mov		eax,hWin
