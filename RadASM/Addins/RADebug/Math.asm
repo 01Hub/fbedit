@@ -347,6 +347,12 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		xor		edx,edx
 		xchg	eax,ecx
 		div		ecx
+	.elseif word ptr [esi]=='..'
+		add		esi,2
+		push	eax
+		invoke CalculateIt,ecx
+		pop		ecx
+		sub		eax,ecx
 	.else
 		push	esi
 		invoke GetValue

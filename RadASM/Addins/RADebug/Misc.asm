@@ -742,7 +742,11 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	mov		esi,dbg.hMemType
 	xor		ebx,ebx
 	.while ebx<dbg.inxtype
-		invoke strcmp,addr [esi].DEBUGTYPE.szName,lpType
+		.if fCaseSensitive
+			invoke strcmp,addr [esi].DEBUGTYPE.szName,lpType
+		.else
+			invoke strcmpi,addr [esi].DEBUGTYPE.szName,lpType
+		.endif
 		.if !eax
 			; Found
 			mov		edx,TRUE
@@ -794,7 +798,11 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize && esi<edi
 		.if [esi].PROPERTIES.nType=='T'
-			invoke strcmp,addr [esi+sizeof PROPERTIES],lpType
+			.if fCaseSensitive
+				invoke strcmp,addr [esi+sizeof PROPERTIES],lpType
+			.else
+				invoke strcmpi,addr [esi+sizeof PROPERTIES],lpType
+			.endif
 			.if !eax
 				; Found
 				lea		edi,[esi+sizeof PROPERTIES]
