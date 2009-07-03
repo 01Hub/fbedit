@@ -578,8 +578,8 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
-		.if nAsm==nBCET || nAsm==nFP
-			mov		edx,offset StabHelpDLL
+		.if nAsm==nFP
+			mov		edx,offset FpHelpDLL
 		.else
 			mov		edx,offset DbgHelpDLL
 		.endif

@@ -34,28 +34,11 @@ IDC_BTNPREVIOUS					equ 1002
 IDC_BTNNEXT						equ 1004
 IDC_STCSECTION					equ 1005
 IDC_BTNDUMPSECTION				equ 1006
-IDC_BTNDUMPSYMBOLS				equ 1007
+IDC_BTNDUMPSTABS				equ 1007
 IDC_BTNDUMPPROCS				equ 1008
 IDC_BTNDUMPGLOBALS				equ 1009
 
-IMAGE_SYM_UNDEFINED				equ 0
-IMAGE_SYM_ABSOLUTE				equ -1
-IMAGE_SYM_DEBUG					equ -2
-EXTERNAL						equ 2
-STATIC							equ 3
-FUNCTION						equ 101
-
-COFFHEADER struct
-	Machine					WORD ?
-	NumberOfSections		WORD ?
-	TimeDateStamp			DWORD ?
-	PointerToSymbolTable	DWORD ?
-	NumberOfSymbols			DWORD ?
-	SizeOfOptionalHeader	WORD ?
-	Characteristics			WORD ?
-COFFHEADER ends
-
-COFFSECTIONHEADER struct
+SECTIONHEADER struct
 	sName					BYTE 8 dup(?)
 	VirtualSize				DWORD ?
 	VirtualAddress			DWORD ?
@@ -66,7 +49,7 @@ COFFSECTIONHEADER struct
 	NumberOfRelocations		WORD ?
 	NumberOfLinenumbers		WORD ?
 	Characteristics			DWORD ?
-COFFSECTIONHEADER ends
+SECTIONHEADER ends
 
 STAB struct
 	stabs					DWORD ?
@@ -75,83 +58,10 @@ STAB struct
 	ad						DWORD ?
 STAB ends
 
-COFFLINENUMBERS struct
-	union
-		SymbolTableIndex	DWORD ?
-		VirtualAddress		DWORD ?
-	ends
-	Linenumber				WORD ?
-COFFLINENUMBERS ends
-
-COFFSYMBOL struct
-	union
-		szShortName			BYTE 8 dup(?)
-		Zeroes				DWORD ?
-		nOffset				DWORD 2 dup(?)
-	ends
-	Value					DWORD ?
-	SectionNumber			WORD ?
-	nType					WORD ?
-	StorageClass			BYTE ?
-	NumberOfAuxSymbols		BYTE ?
-COFFSYMBOL ends
-
-;Function Definitions
-;StorageClass=2, nType=20h, SectionNumber>0
-COFFAUX1 struct
-	TagIndex				DWORD ?
-	TotalSize				DWORD ?
-	PointerToLinenumber		DWORD ?
-	PointerToNextFunction	DWORD ?
-	Unused					WORD ?
-COFFAUX1 ends
-
-;.bf and .ef Symbols
-;StorageClass=101 (.bf and .ef)
-COFFAUX2 struct
-	Unused					BYTE 4 dup(?)
-	Linenumber				WORD ?
-	Unused2					BYTE 6 dup(?)
-	PointerToNextFunction	DWORD ?
-	Unused3					BYTE 2 dup(?)
-COFFAUX2 ends
-
-;Weak Externals
-;StorageClass=2, SectionNumber=0, Value=0
-COFFAUX3 struct
-	TagIndex				DWORD ?
-	Characteristics			DWORD ?
-	Unused					BYTE 10 dup(?)
-COFFAUX3 ends
-
-;Files
-;StorageClass=103, szShortName=.file
-COFFAUX4 struct
-	FileName				BYTE 18 dup(?)
-COFFAUX4 ends
-
-;Section Definitions
-;StorageClass=3, szShortName=.text or .drectve etc.
-COFFAUX5 struct
-	nLength					DWORD ?
-	NumberOfRelocations		WORD ?
-	NumberOfLinenumbers		WORD ?
-	CheckSum				DWORD ?
-	Number					WORD ?
-	Selection				BYTE ?
-	Unused					BYTE 3 dup(?)
-COFFAUX5 ends
-
-DBGPROC struct
-	szFile					BYTE MAX_PATH dup(?)
-	szName					BYTE 256 dup(?)
-	bfad					DWORD ?
-	bfln					DWORD ?
-	lfln					DWORD ?
-	lfad					DWORD ?
-	efln					DWORD ?
-	efad					DWORD ?
-DBGPROC ends
+DATATYPE struct
+	szname					BYTE 64 dup(?)
+	nsize					DWORD ?
+DATATYPE ends
 
 .const
 
@@ -182,13 +92,14 @@ szSectionHeader			db 'Section Header:',0Dh,0Ah
 						db 'NumberOfLinenumbers  %04Xh',0Dh,0Ah
 						db 'Characteristics      %08Xh',0Dh,0Ah,0Dh,0Ah,0
 
-szCoffSymbol			db 'Name:%s Value:%08Xh SectionNumber:%04Xh Type:%04Xh StorageClass:%02Xh NumberOfAuxSymbols:%02Xh',0Dh,0Ah,0
-szCoffProc				db 'File:%s Name:%s bfad:%08Xh  bfln:%u efad:%08Xh  efln:%u',0Dh,0Ah,0
-szCoffGlobal			db 'Name:%s Address:%08Xh',0Dh,0Ah,0
-
 szSecStab				db '.stab',0
 szSecStabstr			db '.stabstr',0
 szFmtStab				db 'Stabs: %4u Code: %3u Line: %5u Address: %08Xh Str: %s',0Dh,0Ah,0
+szFmtFile				db 'File: %s',0Dh,0Ah,0
+szFmtProc				db 'Name: %-50s Line: %5u Address: %08Xh Size: %5u',0Dh,0Ah,0
+szFmtParam				db 'Parameters: %s',0Dh,0Ah,0
+szFmtLocal				db 'Locals: %s',0Dh,0Ah,0
+szFmtArray				db '[%u..%u]',0
 
 ;#########################################################################
 
@@ -204,10 +115,11 @@ hEditFont				HFONT ?
 szOutput				BYTE 2048 dup(?)
 szSection				BYTE 16 dup(?)
 hMemFile				HGLOBAL ?
-nCoffHeaders			DWORD ?
-nCoffHeader				DWORD ?
-SectionHeader			COFFSECTIONHEADER 96 dup(<>)
+nHeaders				DWORD ?
+nHeader					DWORD ?
+SectionHeader			SECTIONHEADER 96 dup(<>)
 rpstab					DWORD ?
 rpstabs					DWORD ?
+datatype				DATATYPE 256 dup(<>)
 
 ;#########################################################################

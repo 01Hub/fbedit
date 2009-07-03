@@ -55,31 +55,31 @@ CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDC_BTNPREVIOUS
-				.if nCoffHeader
-					dec		nCoffHeader
+				.if nHeader
+					dec		nHeader
 					invoke SetSection
 				.endif
 			.elseif eax==IDC_BTNNEXT
-				mov		eax,nCoffHeader
+				mov		eax,nHeader
 				inc		eax
-				.if eax<nCoffHeaders
-					inc		nCoffHeader
+				.if eax<nHeaders
+					inc		nHeader
 					invoke SetSection
 				.endif
 			.elseif eax==IDC_BTNDUMPSECTION
-				.if nCoffHeaders
+				.if nHeaders
 					invoke DumpSection
 				.endif
-			.elseif eax==IDC_BTNDUMPSYMBOLS
-				.if nCoffHeaders
-					invoke ReadStabs
+			.elseif eax==IDC_BTNDUMPSTABS
+				.if nHeaders
+					invoke DumpStabs
 				.endif
 			.elseif eax==IDC_BTNDUMPPROCS
-				.if nCoffHeaders
-;					invoke DumpProcs
+				.if nHeaders
+					invoke DumpProcs
 				.endif
 			.elseif eax==IDC_BTNDUMPGLOBALS
-				.if nCoffHeaders
+				.if nHeaders
 ;					invoke DumpGlobals
 				.endif
 			.endif

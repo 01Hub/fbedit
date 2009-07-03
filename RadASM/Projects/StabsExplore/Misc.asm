@@ -1,6 +1,40 @@
 
 .code
 
+DecToBin proc uses ebx esi,lpStr:DWORD
+	LOCAL	fNeg:DWORD
+
+    mov     esi,lpStr
+    mov		fNeg,FALSE
+    mov		al,[esi]
+    .if al=='-'
+		inc		esi
+		mov		fNeg,TRUE
+    .endif
+    xor     eax,eax
+  @@:
+    cmp     byte ptr [esi],30h
+    jb      @f
+    cmp     byte ptr [esi],3Ah
+    jnb     @f
+    mov     ebx,eax
+    shl     eax,2
+    add     eax,ebx
+    shl     eax,1
+    xor     ebx,ebx
+    mov     bl,[esi]
+    sub     bl,30h
+    add     eax,ebx
+    inc     esi
+    jmp     @b
+  @@:
+	.if fNeg
+		neg		eax
+	.endif
+    ret
+
+DecToBin endp
+
 HexByte proc
 
 	mov		ah,al
@@ -98,18 +132,18 @@ DumpSection proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 
 	mov		ebx,offset SectionHeader
-	mov		eax,nCoffHeader
-	mov		edx,sizeof COFFSECTIONHEADER
+	mov		eax,nHeader
+	mov		edx,sizeof SECTIONHEADER
 	mul		edx
 	lea		ebx,[ebx+eax]
-	invoke lstrcpyn,addr buffer,addr [ebx].COFFSECTIONHEADER.sName,9
-	movzx	eax,[ebx].COFFSECTIONHEADER.NumberOfRelocations
-	movzx	edx,[ebx].COFFSECTIONHEADER.NumberOfLinenumbers
-	invoke wsprintf,addr szOutput,addr szSectionHeader,addr buffer,[ebx].COFFSECTIONHEADER.VirtualSize,[ebx].COFFSECTIONHEADER.VirtualAddress,[ebx].COFFSECTIONHEADER.SizeOfRawData,[ebx].COFFSECTIONHEADER.PointerToRawData,[ebx].COFFSECTIONHEADER.PointerToRelocations,[ebx].COFFSECTIONHEADER.PointerToLinenumbers,eax,edx,[ebx].COFFSECTIONHEADER.Characteristics
+	invoke lstrcpyn,addr buffer,addr [ebx].SECTIONHEADER.sName,9
+	movzx	eax,[ebx].SECTIONHEADER.NumberOfRelocations
+	movzx	edx,[ebx].SECTIONHEADER.NumberOfLinenumbers
+	invoke wsprintf,addr szOutput,addr szSectionHeader,addr buffer,[ebx].SECTIONHEADER.VirtualSize,[ebx].SECTIONHEADER.VirtualAddress,[ebx].SECTIONHEADER.SizeOfRawData,[ebx].SECTIONHEADER.PointerToRawData,[ebx].SECTIONHEADER.PointerToRelocations,[ebx].SECTIONHEADER.PointerToLinenumbers,eax,edx,[ebx].SECTIONHEADER.Characteristics
 	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szOutput
 	invoke SendMessage,hEdt,EM_SETSEL,-1,-1
-	mov		eax,[ebx].COFFSECTIONHEADER.SizeOfRawData
-	mov		ebx,[ebx].COFFSECTIONHEADER.PointerToRawData
+	mov		eax,[ebx].SECTIONHEADER.SizeOfRawData
+	mov		ebx,[ebx].SECTIONHEADER.PointerToRawData
 	add		ebx,hMemFile
 	invoke DumpData,ebx,eax
 	ret
@@ -118,243 +152,296 @@ DumpSection endp
 
 SetSection proc uses ebx esi edi
 
-	mov		eax,nCoffHeader
-	mov		edx,sizeof COFFSECTIONHEADER
+	mov		eax,nHeader
+	mov		edx,sizeof SECTIONHEADER
 	mul		edx
 	add		eax,offset SectionHeader
-	invoke lstrcpyn,addr szSection,addr [eax].COFFSECTIONHEADER.sName,9
+	invoke lstrcpyn,addr szSection,addr [eax].SECTIONHEADER.sName,9
 	invoke SendMessage,hStc,WM_SETTEXT,0,addr szSection
 	ret
 
 SetSection endp
 
-ReadStabs proc uses ebx esi edi
+DumpStabs proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 
-	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-	mov		esi,rpstab
-	add		esi,hMemFile
-	movzx	ebx,[esi].STAB.nline
-	.while ebx
-		movzx	eax,[esi].STAB.code
-		movzx	edx,[esi].STAB.nline
-		mov		edi,rpstabs
-		add		edi,hMemFile
-		add		edi,[esi].STAB.stabs
-		invoke wsprintf,addr szOutput,addr szFmtStab,[esi].STAB.stabs,eax,edx,[esi].STAB.ad,edi
-		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-		lea		esi,[esi+sizeof STAB]
-		dec		ebx
-	.endw
+	.if rpstab && rpstabs
+		invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ebx,[esi].STAB.nline
+		.while ebx
+			movzx	eax,[esi].STAB.code
+			movzx	edx,[esi].STAB.nline
+			mov		edi,rpstabs
+			add		edi,hMemFile
+			add		edi,[esi].STAB.stabs
+			invoke wsprintf,addr szOutput,addr szFmtStab,[esi].STAB.stabs,eax,edx,[esi].STAB.ad,edi
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+			lea		esi,[esi+sizeof STAB]
+			dec		ebx
+		.endw
+	.endif
 	ret
 
-ReadStabs endp
+DumpStabs endp
 
-;DumpSymbols proc uses ebx esi edi
-;	LOCAL	SectionNumber:DWORD
-;	LOCAL	nType:DWORD
-;	LOCAL	StorageClass:DWORD
-;	LOCAL	NumberOfAuxSymbols:DWORD
-;
-;	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-;	mov		eax,hMemFile
-;	mov		edi,[eax].COFFHEADER.NumberOfSymbols
-;	mov		esi,[eax].COFFHEADER.PointerToSymbolTable
-;	add		esi,eax
-;	xor		ebx,ebx
-;	.while ebx<edi
-;		movzx	eax,[esi].COFFSYMBOL.SectionNumber
-;		mov		SectionNumber,eax
-;		movzx	eax,[esi].COFFSYMBOL.nType
-;		mov		nType,eax
-;		movzx	eax,[esi].COFFSYMBOL.StorageClass
-;		mov		StorageClass,eax
-;		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
-;		mov		NumberOfAuxSymbols,eax
-;		mov		eax,[esi].COFFSYMBOL.Zeroes
-;		.if !eax
-;			mov		ecx,hMemFile
-;			mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-;			mov		edx,sizeof COFFSYMBOL
-;			mul		edx
-;			add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-;			add		eax,[esi].COFFSYMBOL.nOffset[4]
-;			add		eax,ecx
-;		.else
-;			invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
-;			mov		eax,offset szSection
-;		.endif
-;		invoke wsprintf,addr szOutput,addr szCoffSymbol,eax,[esi].COFFSYMBOL.Value,SectionNumber,nType,StorageClass,NumberOfAuxSymbols
-;		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-;		lea		esi,[esi+sizeof COFFSYMBOL]
-;		inc		ebx
-;		.if NumberOfAuxSymbols
-;			.if word ptr SectionNumber==IMAGE_SYM_DEBUG
-;				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr [esi].COFFSYMBOL.szShortName
-;				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCrLf
-;			.endif
-;			mov		eax,NumberOfAuxSymbols
-;			add		ebx,eax
-;			mov		edx,sizeof COFFSYMBOL
-;			mul		edx
-;			lea		esi,[esi+eax]
-;		.endif
-;	.endw
-;	ret
-;
-;DumpSymbols endp
-;
-;DumpProcs proc uses ebx esi edi
-;	LOCAL	SectionNumber:DWORD
-;	LOCAL	nType:DWORD
-;	LOCAL	StorageClass:DWORD
-;	LOCAL	NumberOfAuxSymbols:DWORD
-;	LOCAL	dbgproc:DBGPROC
-;
-;	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-;	mov		eax,hMemFile
-;	mov		edi,[eax].COFFHEADER.NumberOfSymbols
-;	mov		esi,[eax].COFFHEADER.PointerToSymbolTable
-;	add		esi,eax
-;	xor		ebx,ebx
-;	.while ebx<edi
-;		movzx	eax,[esi].COFFSYMBOL.SectionNumber
-;		mov		SectionNumber,eax
-;		movzx	eax,[esi].COFFSYMBOL.nType
-;		mov		nType,eax
-;		movzx	eax,[esi].COFFSYMBOL.StorageClass
-;		mov		StorageClass,eax
-;		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
-;		mov		NumberOfAuxSymbols,eax
-;		.if StorageClass==EXTERNAL && nType==20h && SectionNumber>0
-;			mov		eax,[esi].COFFSYMBOL.Zeroes
-;			.if !eax
-;				mov		ecx,hMemFile
-;				mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-;				mov		edx,sizeof COFFSYMBOL
-;				mul		edx
-;				add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-;				add		eax,[esi].COFFSYMBOL.nOffset[4]
-;				add		eax,hMemFile
-;			.else
-;				invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
-;				mov		eax,offset szSection
-;			.endif
-;			invoke lstrcpy,addr dbgproc.szName,eax
-;			.while NumberOfAuxSymbols
-;				lea		esi,[esi+sizeof COFFSYMBOL]
-;				inc		ebx
-;				dec		NumberOfAuxSymbols
-;			.endw
-;		.elseif StorageClass==FUNCTION
-;			;.bf, .lf and .ef Symbols
-;			;StorageClass=101 (.bf and .ef)
-;			mov		eax,[esi].COFFSYMBOL.Zeroes
-;			.if !eax
-;				mov		ecx,hMemFile
-;				mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-;				mov		edx,sizeof COFFSYMBOL
-;				mul		edx
-;				add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-;				add		eax,[esi].COFFSYMBOL.nOffset[4]
-;				add		eax,hMemFile
-;			.else
-;				invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
-;				mov		eax,offset szSection
-;			.endif
-;			mov		edx,[esi].COFFSYMBOL.Value
-;			mov		eax,dword ptr szSection
-;			and		eax,0FFFFFFh
-;			.if eax=='fb.'
-;				mov		dbgproc.bfad,edx
-;			.elseif eax=='fl.'
-;				mov		dbgproc.lfad,edx
-;			.elseif eax=='fe.'
-;				mov		dbgproc.efad,edx
-;			.endif
-;			.if NumberOfAuxSymbols
-;				lea		esi,[esi+sizeof COFFSYMBOL]
-;				inc		ebx
-;				movzx	edx,[esi].COFFAUX2.Linenumber
-;				mov		eax,dword ptr szSection
-;				and		eax,0FFFFFFh
-;				.if eax=='fb.'
-;					mov		dbgproc.bfln,edx
-;				.elseif eax=='fe.'
-;					mov		dbgproc.efln,edx
-;					invoke wsprintf,addr szOutput,addr szCoffProc,addr dbgproc.szFile,addr dbgproc.szName,dbgproc.bfad,dbgproc.bfln,dbgproc.efad,dbgproc.efln
-;					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-;				.endif
-;			.endif
-;		.elseif NumberOfAuxSymbols
-;			.if word ptr SectionNumber==IMAGE_SYM_DEBUG
-;				; File name
-;				invoke lstrcpy,addr dbgproc.szFile,addr [esi+sizeof COFFSYMBOL]
-;			.endif
-;			mov		eax,NumberOfAuxSymbols
-;			add		ebx,eax
-;			mov		edx,sizeof COFFSYMBOL
-;			mul		edx
-;			lea		esi,[esi+eax]
-;		.endif
-;		lea		esi,[esi+sizeof COFFSYMBOL]
-;		inc		ebx
-;	.endw
-;	ret
-;
-;DumpProcs endp
-;
-;DumpGlobals proc uses ebx esi edi
-;	LOCAL	buffer[256]:BYTE
-;	LOCAL	SectionNumber:DWORD
-;	LOCAL	nType:DWORD
-;	LOCAL	StorageClass:DWORD
-;	LOCAL	NumberOfAuxSymbols:DWORD
-;
-;	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
-;	mov		eax,hMemFile
-;	mov		edi,[eax].COFFHEADER.NumberOfSymbols
-;	mov		esi,[eax].COFFHEADER.PointerToSymbolTable
-;	add		esi,eax
-;	xor		ebx,ebx
-;	.while ebx<edi
-;		movzx	eax,[esi].COFFSYMBOL.SectionNumber
-;		mov		SectionNumber,eax
-;		movzx	eax,[esi].COFFSYMBOL.nType
-;		mov		nType,eax
-;		movzx	eax,[esi].COFFSYMBOL.StorageClass
-;		mov		StorageClass,eax
-;		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
-;		mov		NumberOfAuxSymbols,eax
-;		.if StorageClass==STATIC && nType==0 && NumberOfAuxSymbols==0 && SectionNumber>0
-;			mov		eax,[esi].COFFSYMBOL.Zeroes
-;			.if !eax
-;				mov		ecx,hMemFile
-;				mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-;				mov		edx,sizeof COFFSYMBOL
-;				mul		edx
-;				add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-;				add		eax,[esi].COFFSYMBOL.nOffset[4]
-;				add		eax,ecx
-;				invoke lstrcpy,addr buffer,eax
-;			.else
-;				invoke lstrcpyn,addr buffer,addr [esi].COFFSYMBOL.szShortName,9
-;			.endif
-;			invoke wsprintf,addr szOutput,addr szCoffGlobal,addr buffer,[esi].COFFSYMBOL.Value
-;			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-;		.endif
-;		.while NumberOfAuxSymbols
-;			lea		esi,[esi+sizeof COFFSYMBOL]
-;			inc		ebx
-;			dec		NumberOfAuxSymbols
-;		.endw
-;		lea		esi,[esi+sizeof COFFSYMBOL]
-;		inc		ebx
-;	.endw
-;	ret
-;
-;DumpGlobals endp
-;
+GetDatatypes proc
+	LOCAL	szname[1024]:BYTE
+	LOCAL	buffer[256]:BYTE
+	LOCAL	ninx:DWORD
+	LOCAL	nsize:DWORD
+	LOCAL	arstart:DWORD
+	LOCAL	arend:DWORD
+
+	invoke RtlZeroMemory,offset datatype,sizeof datatype
+	.if rpstab && rpstabs
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ebx,[esi].STAB.nline
+		.while ebx
+			movzx	eax,[esi].STAB.code
+			.if eax==128
+				xor		eax,eax
+				mov		ninx,eax
+				mov		nsize,eax
+				mov		arstart,eax
+				mov		arend,eax
+				mov		edi,rpstabs
+				add		edi,hMemFile
+				add		edi,[esi].STAB.stabs
+				invoke lstrcpy,addr szname,edi
+				lea		edi,szname
+				.while byte ptr [edi]
+					.if byte ptr [edi]==':'
+						mov		byte ptr [edi],0
+						inc		edi
+						.break
+					.endif
+					inc		edi
+				.endw
+				.if word ptr [edi]=='tT'
+					add		edi,2
+					invoke DecToBin,edi
+					mov		ninx,eax
+					.while byte ptr [edi]
+						.if byte ptr [edi]=='='
+							inc		edi
+							.if byte ptr [edi]=='s'
+								inc		edi
+								invoke DecToBin,edi
+								mov		nsize,eax
+							.endif
+							.break
+						.endif
+						inc		edi
+					.endw
+				.elseif byte ptr [edi]=='t'
+					inc		edi
+					invoke DecToBin,edi
+					mov		ninx,eax
+					.while byte ptr [edi]
+						.if byte ptr [edi]=='='
+							inc		edi
+							.if word ptr [edi]=='ra'
+								add		edi,2
+								push	edi
+								.while byte ptr [edi]
+									.if byte ptr [edi]==';'
+										inc		edi
+										invoke DecToBin,edi
+										mov		arstart,eax
+										.break
+									.endif
+									inc		edi
+								.endw
+								.while byte ptr [edi]
+									.if byte ptr [edi]==';'
+										inc		edi
+										invoke DecToBin,edi
+										mov		arend,eax
+										.break
+									.endif
+									inc		edi
+								.endw
+								pop		edi
+								.if !szname
+									invoke DecToBin,edi
+									mov		edx,sizeof DATATYPE
+									mul		edx
+									invoke lstrcpy,addr szname,addr [eax+offset datatype].DATATYPE.szname[1]
+								.endif
+							.endif
+							.break
+						.endif
+						inc		edi
+					.endw
+				.endif
+				.if ninx
+					mov		word ptr buffer,':'
+					invoke lstrcat,addr buffer,addr szname
+					invoke lstrcpy,addr szname,addr buffer
+					.if arend
+						invoke wsprintf,addr buffer,addr szFmtArray,arstart,arend
+						invoke lstrcat,addr buffer,addr szname
+						invoke lstrcpy,addr szname,addr buffer
+					.endif
+					mov		eax,ninx
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					mov		edi,offset datatype
+					lea		edi,[edi+eax]
+					invoke lstrcpy,addr [edi].DATATYPE.szname,addr szname
+					mov		eax,nsize
+					mov		[edi].DATATYPE.nsize,eax
+				.endif
+			.endif
+			lea		esi,[esi+sizeof STAB]
+			dec		ebx
+		.endw
+	.endif
+	ret
+
+GetDatatypes endp
+
+DumpProcs proc uses ebx esi edi
+	LOCAL	szfile[MAX_PATH]:BYTE
+	LOCAL	szname[256]:BYTE
+	LOCAL	szparam[512]:BYTE
+	LOCAL	szlocal[512]:BYTE
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nline:DWORD
+	LOCAL	nadr:DWORD
+	LOCAL	nblock:DWORD
+	LOCAL	nstart:DWORD
+	LOCAL	nend:DWORD
+
+	.if rpstab && rpstabs
+		invoke GetDatatypes
+		invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ebx,[esi].STAB.nline
+		.while ebx
+			movzx	eax,[esi].STAB.code
+			mov		edi,rpstabs
+			add		edi,hMemFile
+			add		edi,[esi].STAB.stabs
+			.if eax==36
+				mov		edx,edi
+				.while byte ptr [edx] && byte ptr [edx]!=':'
+					inc		edx
+				.endw
+				.if byte ptr [edx+1]=='F'
+					mov		szparam,0
+					mov		szlocal,0
+					mov		nblock,0
+					; Proc
+					movzx	eax,[esi].STAB.nline
+					mov		nline,eax
+					mov		eax,[esi].STAB.ad
+					mov		nadr,eax
+					invoke lstrcpy,addr szname,edi
+					; Get return datatype
+					lea		edi,szname
+					.while byte ptr [edi]
+						.if byte ptr [edi]==':'
+							invoke DecToBin,addr [edi+2]
+							.if eax
+								mov		edx,sizeof DATATYPE
+								mul		edx
+								lea		eax,[eax+offset datatype]
+								invoke lstrcpy,addr [edi],addr [eax].DATATYPE.szname
+								.break
+							.endif
+							mov		byte ptr [edi],0
+							.break
+						.endif
+						inc		edi
+					.endw
+				.endif
+			.elseif eax==132
+				; FileName
+				invoke lstrcpy,addr szfile,edi
+			.elseif eax==160
+				; Param / Local
+				invoke lstrcpy,addr buffer,edi
+				lea		edi,buffer
+				.while byte ptr [edi]
+					.if byte ptr [edi]==':'
+						.if byte ptr [edi+1]=='p' || byte ptr [edi+1]=='v'
+							invoke DecToBin,addr [edi+2]
+							.if eax
+								mov		edx,sizeof DATATYPE
+								mul		edx
+								lea		eax,[eax+offset datatype]
+								invoke lstrcpy,addr [edi],addr [eax].DATATYPE.szname
+								lea		edi,szparam
+								.if byte ptr [edi]
+									invoke lstrlen,edi
+									lea		edi,[edi+eax]
+									mov		byte ptr [edi],','
+									inc		edi
+								.endif
+								invoke lstrcpy,edi,addr buffer
+								.break
+							.endif
+						.elseif byte ptr [edi+1]>='0' && byte ptr [edi+1]<='9'
+							invoke DecToBin,addr [edi+1]
+							.if eax
+								mov		edx,sizeof DATATYPE
+								mul		edx
+								lea		eax,[eax+offset datatype]
+								invoke lstrcpy,addr [edi],addr [eax].DATATYPE.szname
+								lea		edi,szlocal
+								.if byte ptr [edi]
+									invoke lstrlen,edi
+									lea		edi,[edi+eax]
+									mov		byte ptr [edi],','
+									inc		edi
+								.endif
+								invoke lstrcpy,edi,addr buffer
+								.break
+							.endif
+						.endif
+						mov		byte ptr [edi],0
+						.break
+					.endif
+					inc		edi
+				.endw
+			.elseif eax==192
+				; Block start
+				inc		nblock
+				mov		eax,[esi].STAB.ad
+				mov		nstart,eax
+			.elseif eax==224
+				; Block end
+				dec		nblock
+				.if !nblock
+					mov		eax,[esi].STAB.ad
+					mov		nend,eax
+					invoke wsprintf,addr szOutput,addr szFmtFile,addr szfile
+					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+					invoke wsprintf,addr szOutput,addr szFmtProc,addr szname,nline,nadr,nend
+					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+					.if byte ptr szparam
+						invoke wsprintf,addr szOutput,addr szFmtParam,addr szparam
+						invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+					.endif
+					.if byte ptr szlocal
+						invoke wsprintf,addr szOutput,addr szFmtLocal,addr szlocal
+						invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+					.endif
+				.endif
+			.endif
+			lea		esi,[esi+sizeof STAB]
+			dec		ebx
+		.endw
+	.endif
+	ret
+
+DumpProcs endp
+
 ShowSectionHeaders proc uses ebx esi edi
 	LOCAL	buffer[32]:BYTE
 
@@ -362,31 +449,31 @@ ShowSectionHeaders proc uses ebx esi edi
 	invoke SetWindowText,hEdt,addr szOutput
 	mov		esi,hMemFile
 	movzx	ebx,word ptr [esi+86h]
-	mov		nCoffHeaders,ebx
+	mov		nHeaders,ebx
 	invoke wsprintf,addr szOutput,addr szStabsHeader,ebx
 	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
 	lea		esi,[esi+178h]
 	mov		edi,offset SectionHeader
 	.while ebx
-		invoke RtlMoveMemory,edi,esi,sizeof COFFSECTIONHEADER
+		invoke RtlMoveMemory,edi,esi,sizeof SECTIONHEADER
 		invoke lstrcpyn,addr buffer,esi,9
 		invoke lstrcmp,addr buffer,addr szSecStab
 		.if !eax
-			mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
+			mov		eax,[esi].SECTIONHEADER.PointerToRawData
 			mov		rpstab,eax
 		.endif
 		invoke lstrcmp,addr buffer,addr szSecStabstr
 		.if !eax
-			mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
+			mov		eax,[esi].SECTIONHEADER.PointerToRawData
 			mov		rpstabs,eax
 		.endif
 		invoke lstrcat,addr buffer,addr szAlign
 		invoke lstrcpyn,addr buffer,addr buffer,14
-		mov		eax,[esi].COFFSECTIONHEADER.PointerToRawData
+		mov		eax,[esi].SECTIONHEADER.PointerToRawData
 		invoke wsprintf,addr szOutput,addr szStab,addr buffer,eax
 		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-		lea		esi,[esi+sizeof COFFSECTIONHEADER]
-		lea		edi,[edi+sizeof COFFSECTIONHEADER]
+		lea		esi,[esi+sizeof SECTIONHEADER]
+		lea		edi,[edi+sizeof SECTIONHEADER]
 		dec		ebx
 	.endw
 	ret
@@ -423,8 +510,10 @@ CloseEXE proc uses esi
 		invoke GlobalFree,hMemFile
 		xor		eax,eax
 		mov		hMemFile,eax
-		mov		nCoffHeader,eax
-		mov		nCoffHeaders,eax
+		mov		nHeader,eax
+		mov		nHeaders,eax
+		mov		rpstab,eax
+		mov		rpstabs,eax
 	.endif
 	ret
 
