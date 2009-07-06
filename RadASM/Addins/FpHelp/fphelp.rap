@@ -5,15 +5,18 @@ Description=DbgHelp.dll emulator for FreePASCAL
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Ver.rc=1
+Debug=0
 [Files]
 1=fphelp.Asm
 2=fphelp.Inc
 3=fphelp.Def
-4=fphelp.Txt
+4=
 AutoDelete=1
 AskMe=0
 MinorFiles=*.res;*.obj;*.lib;*.exp;
 5=Test.bat
+6=fphelp.rc
 [MakeFiles]
 0=fphelp.rap
 1=fphelp.rc
@@ -33,10 +36,10 @@ MinorFiles=*.res;*.obj;*.lib;*.exp;
 15=fphelp.tlb
 16=fphelp.sys
 [MakeDef]
-Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
+Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
-3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
+3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3,4
 4=0,0,,5
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
@@ -52,13 +55,31 @@ Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 [StringTable]
 [Accel]
 [VerInf]
+Nme=VERINF1
+ID=1
+FV=1.0.0.0
+PV=1.0.0.0
+VerOS=0x00000004
+VerFT=0x00000002
+VerLNG=0x00000409
+VerCHS=0x000004E4
+ProductVersion=1.0.0.0
+ProductName=
+OriginalFilename=fphelp.dll
+LegalTrademarks=
+LegalCopyright=KetilO (C) 2009
+InternalName=fphelp.dll
+FileDescription=FreePASCAL dbghelp emulator
+FileVersion=1.0.0.0
+CompanyName=
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
 2=2
 3=4
-4=4
+4=
 5=1
+6=4
 [AutoLoad]
 1=1
 2=1
@@ -66,10 +87,12 @@ Group=Added files,Assembly,Resources,Misc,Modules
 5=
 2=
 1=,,
+4=
 [Size]
 5=0,0,0,0,56
 2=0,0,0,0,1549
 1=0,0,0,0,8340
+4=0,0,0,0,0
 [VersionControl]
 Settings=1246
 Milestones=129
