@@ -32,10 +32,12 @@ STAB struct
 	ad						DWORD ?
 STAB ends
 
-VARTYPE struct
-	szName					BYTE 32 dup(?)
+DATATYPE struct
+	szName					BYTE 64 dup(?)
 	nSize					DWORD ?
-VARTYPE ends
+	inxmin					DWORD ?
+	inxmax					DWORD ?
+DATATYPE ends
 
 SOURCEFILE struct DWORD
 	ModBase					QWORD ?
@@ -74,6 +76,8 @@ SYMBOL_INFO ends
 
 szSecStab					db '.stab',0
 szSecStabstr				db '.stabstr',0
+szfmtdword					db ',%d',0
+szfmtarray					db '[%u..%u]',0
 
 .data?
 
@@ -84,4 +88,6 @@ nHeaders					DWORD ?
 rpstab						DWORD ?
 rpstabs						DWORD ?
 source						BYTE 8192 dup(?)
-vartype						VARTYPE 256 dup(<>)
+datatype					DATATYPE 256 dup(<>)
+syminf						SYMBOL_INFO <>
+szname						db 8192 dup(?)

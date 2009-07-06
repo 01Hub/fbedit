@@ -300,181 +300,244 @@ SourceExist proc uses esi,lpName:DWORD
 SourceExist endp
 
 SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCallback:DWORD,UserContext:DWORD
-	LOCAL	szname[128]:BYTE
-	LOCAL	src:SYMBOL_INFO
+	LOCAL	ninx:DWORD
+	LOCAL	nsize:DWORD
+	LOCAL	arstart:DWORD
+	LOCAL	arend:DWORD
 
-	invoke RtlZeroMemory,addr src,sizeof SYMBOL_INFO
-	mov		esi,rpstab
-	add		esi,hMemFile
-	movzx	ebx,[esi].STAB.nline
-	.while ebx
-		movzx	eax,[esi].STAB.code
-		movzx	edx,[esi].STAB.nline
-		mov		edi,rpstabs
-		add		edi,hMemFile
-		add		edi,[esi].STAB.stabs
-		.if eax==128 && !edx
-			mov		src.SizeOfStruct,sizeof SYMBOL_INFO
-			lea		edx,src.szName
-			xor		ecx,ecx
-			.while byte ptr [edi]!=':' && byte ptr [edi]
-				mov		al,[edi]
-				mov		[edx+ecx],al
-				inc		ecx
-				inc		edi
-			.endw
-			mov		byte ptr [edx+ecx],0
-			mov		src.NameLen,ecx
-			mov		src.MaxNameLen,32
-			inc		edi
-			.if word ptr [edi]=='tT'
-				add		edi,2
-			.elseif byte ptr [edi]=='t'
-				inc		edi
+	invoke RtlZeroMemory,offset datatype,sizeof datatype
+	.if rpstab && rpstabs
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ecx,[esi].STAB.nline
+		.while ecx
+			push	ecx
+			movzx	eax,[esi].STAB.code
+			.if eax==128
+				xor		eax,eax
+				mov		ninx,eax
+				mov		nsize,eax
+				mov		arstart,eax
+				mov		arend,eax
+				mov		edi,rpstabs
+				add		edi,hMemFile
+				add		edi,[esi].STAB.stabs
+				invoke lstrcpy,addr szname,edi
+				mov		edi,offset szname
+				.while byte ptr [edi]
+					.if byte ptr [edi]==':'
+						mov		byte ptr [edi],0
+						inc		edi
+						.break
+					.endif
+					inc		edi
+				.endw
+				.if word ptr [edi]=='tT'
+					add		edi,2
+					invoke DecToBin,edi
+					mov		ninx,eax
+					.while byte ptr [edi]
+						.if byte ptr [edi]=='='
+							inc		edi
+							.if byte ptr [edi]=='s'
+								inc		edi
+								invoke DecToBin,edi
+								mov		nsize,eax
+							.endif
+							.break
+						.endif
+						inc		edi
+					.endw
+				.elseif byte ptr [edi]=='t'
+					inc		edi
+					invoke DecToBin,edi
+					mov		ninx,eax
+					.while byte ptr [edi]
+						.if byte ptr [edi]=='='
+							inc		edi
+							.if word ptr [edi]=='ra'
+								add		edi,2
+								push	edi
+								.while byte ptr [edi]
+									.if byte ptr [edi]==';'
+										inc		edi
+										invoke DecToBin,edi
+										mov		arstart,eax
+										.break
+									.endif
+									inc		edi
+								.endw
+								.while byte ptr [edi]
+									.if byte ptr [edi]==';'
+										inc		edi
+										invoke DecToBin,edi
+										mov		arend,eax
+										.break
+									.endif
+									inc		edi
+								.endw
+								pop		edi
+								.if !szname
+									invoke DecToBin,edi
+									mov		edx,sizeof DATATYPE
+									mul		edx
+									invoke strcpy,addr szname,addr [eax+offset datatype].DATATYPE.szName
+								.endif
+							.endif
+							.break
+						.endif
+						inc		edi
+					.endw
+				.endif
+				.if ninx
+					invoke RtlZeroMemory,addr syminf,sizeof SYMBOL_INFO
+					mov		eax,nsize
+					mov		syminf.nSize,eax
+					mov		eax,ninx
+					mov		syminf.TypeIndex,eax
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		edi,[eax+offset datatype]
+					invoke strcpy,addr [edi].DATATYPE.szName,addr szname
+					mov		eax,nsize
+					mov		[edi].DATATYPE.nSize,eax
+					mov		eax,arstart
+					mov		[edi].DATATYPE.inxmin,eax
+					mov		eax,arend
+					mov		[edi].DATATYPE.inxmax,eax
+					mov		syminf.SizeOfStruct,sizeof SYMBOL_INFO+sizeof szname
+					invoke strlen,addr szname
+					mov		syminf.NameLen,eax
+					mov		syminf.MaxNameLen,sizeof szname+1
+					invoke strcpy,addr syminf.szName,addr szname
+					push	UserContext
+					push	nsize
+					push	offset syminf
+					call	EnumTypesCallback
+				.endif
 			.endif
-			invoke DecToBin,edi
-			mov		src.TypeIndex,eax
-			.while byte ptr [edi-1]!='=' && byte ptr [edi]
-				inc		edi
-			.endw
-			.if byte ptr [edi]=='s'
-				inc		edi
-				invoke DecToBin,edi
-				mov		src.nSize,eax
-				mov		eax,dword ptr BaseOfDll
-				mov		dword ptr src.ModBase,eax
-				mov		eax,dword ptr BaseOfDll[4]
-				mov		dword ptr src.ModBase[4],eax
-				mov		eax,src.TypeIndex
-				mov		edx,sizeof VARTYPE
-				mul		edx
-				lea		edi,[eax+offset vartype]
-				invoke strcpy,addr [edi].VARTYPE.szName,addr src.szName
-				mov		eax,src.nSize
-				mov		[edi].VARTYPE.nSize,eax
-				push	UserContext
-				push	src.nSize
-				lea		eax,src
-				push	eax
-				call	EnumTypesCallback
-;			.elseif byte ptr [edi]=='r'
-;				inc		edi
-;				invoke DecToBin,edi
-;				.if eax==1
-;				.elseif eax==2
-;				.elseif eax==3
-;				.elseif eax==4
-;				.elseif eax==5
-;				.elseif eax==6
-;				.elseif eax==7
-;				.endif
-			.endif
-		.endif
-		lea		esi,[esi+sizeof STAB]
-		dec		ebx
-	.endw
+			pop		ecx
+			lea		esi,[esi+sizeof STAB]
+			dec		ecx
+		.endw
+	.endif
 	mov		eax,TRUE
 	ret
 
 SymEnumTypes endp
 
-SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWORD,UserContext:DWORD
-	LOCAL	szname[128]:BYTE
-	LOCAL	src:SYMBOL_INFO
+EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 	LOCAL	fproc:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nline:DWORD
+	LOCAL	nadr:DWORD
+	LOCAL	nblock:DWORD
 
-	invoke RtlZeroMemory,addr src,sizeof SYMBOL_INFO
-	mov		src.SizeOfStruct,sizeof SYMBOL_INFO+127
-	mov		esi,rpstab
-	add		esi,hMemFile
-	movzx	ebx,[esi].STAB.nline
-	mov		fproc,FALSE
-	.while ebx
-		movzx	eax,[esi].STAB.code
-		movzx	edx,[esi].STAB.nline
-		mov		edi,rpstabs
-		add		edi,hMemFile
-		add		edi,[esi].STAB.stabs
-		.if eax==40
-			; Global
-			call	GetName
-			inc		edi
-			.if byte ptr [edi]=='S'
-				inc		edi
-				invoke DecToBin,edi
-				mov		src.TypeIndex,eax
-				mov		edx,sizeof VARTYPE
-				mul		edx
-				lea		edi,[eax+offset vartype]
-				mov		eax,[edi].VARTYPE.nSize
-				.if !eax
-					dec		eax
+	.if rpstab && rpstabs
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ecx,[esi].STAB.nline
+		mov		fproc,FALSE
+		.while ecx
+			push	ecx
+			movzx	eax,[esi].STAB.code
+			mov		edi,rpstabs
+			add		edi,hMemFile
+			add		edi,[esi].STAB.stabs
+			.if eax==36 && !fproc
+				; Proc
+				mov		edx,edi
+				mov		ecx,1
+				.while byte ptr [edx] && byte ptr [edx]!=':'
+					inc		ecx
+					inc		edx
+				.endw
+				.if byte ptr [edx+1]=='F'
+					mov		nblock,0
+					mov		fproc,TRUE
+					movzx	eax,[esi].STAB.nline
+					mov		nline,eax
+					mov		eax,[esi].STAB.ad
+					mov		nadr,eax
+					mov		ebx,offset szname
+					invoke strcpyn,ebx,edi,ecx
+					invoke strlen,ebx
+					lea		ebx,[ebx+eax+1]
+					mov		byte ptr [ebx],0
 				.endif
-				mov		src.nSize,eax
-				push	UserContext
-				push	src.nSize
-				push	[esi].STAB.ad
-				lea		eax,src.szName
-				push	eax
-				call	EnumSymbolsCallback
+			.elseif eax==160 && fproc
+				; Param / Local
+				xor		ecx,ecx
+				.while byte ptr [edi+ecx]
+					.if byte ptr [edi+ecx]==':'
+						.if byte ptr [ebx]
+							push	ecx
+							invoke strlen,ebx
+							lea		ebx,[ebx+eax]
+							mov		byte ptr [ebx],','
+							inc		ebx
+							pop		ecx
+						.endif
+						inc		ecx
+						invoke strcpyn,ebx,edi,ecx
+						invoke strlen,ebx
+						lea		ebx,[ebx+eax]
+						lea		edi,[edi+eax]
+						xor		eax,eax
+						.if byte ptr [edi+1]=='p' || byte ptr [edi+1]=='v'
+							invoke DecToBin,addr [edi+2]
+						.elseif byte ptr [edi+1]>='0' && byte ptr [edi+1]<='9'
+							invoke DecToBin,addr [edi+1]
+						.endif
+						.if eax
+							mov		edx,sizeof DATATYPE
+							mul		edx
+							lea		edi,[eax+offset datatype]
+							.if [edi].DATATYPE.inxmax
+								invoke wsprintf,ebx,addr szfmtarray,[edi].DATATYPE.inxmin,[edi].DATATYPE.inxmax
+								invoke strlen,ebx
+								lea		ebx,[ebx+eax]
+							.endif
+							mov		byte ptr [ebx],':'
+							inc		ebx
+							invoke strcpy,ebx,addr [edi].DATATYPE.szName
+							invoke strlen,ebx
+							lea		ebx,[ebx+eax]
+							invoke wsprintf,ebx,addr szfmtdword,[esi].STAB.ad
+						.endif
+						.break
+					.endif
+					inc		ecx
+				.endw
+			.elseif eax==192 && fproc
+				; Block start
+				inc		nblock
+			.elseif eax==224 && fproc
+				; Block end
+				dec		nblock
+				.if !nblock
+					mov		fproc,FALSE
+					push	UserContext
+					push	[esi].STAB.ad				; Size
+					push	nadr
+					push	offset szname
+					call	EnumSymbolsCallback
+				.endif
 			.endif
-		.elseif eax==36
-			; Proc
-			xor		ecx,ecx
-			.while byte ptr [edi+ecx-1]!=':' && byte ptr [edi+ecx]
-				inc		ecx
-			.endw
-			.if byte ptr [edi+ecx]=='F'
-				call	GetName
-				mov		fproc,TRUE
-			.endif
-		.elseif eax==160
-			; Param or Local
-			mov		eax,[edi]
-			.if dword ptr [edi]=='user' && word ptr [edi+4]=='tl'
-				mov		eax,[esi].STAB.ad
-				neg		eax
-				mov		UserContext,eax
-			.endif
-		.elseif eax==224
-			; Block end
-			.if fproc
-				mov		fproc,FALSE
-				mov		eax,[esi].STAB.ad
-				mov		src.nSize,eax
-				push	UserContext
-				push	src.nSize
-				push	dword ptr src.Address
-				lea		eax,src.szName
-				push	eax
-				call	EnumSymbolsCallback
-			.endif
-		.endif
-		lea		esi,[esi+sizeof STAB]
-		dec		ebx
-	.endw
-	mov		eax,TRUE
+			pop		ecx
+			lea		esi,[esi+sizeof STAB]
+			dec		ecx
+		.endw
+	.endif
 	ret
 
-GetName:
-	lea		edx,src.szName
-	xor		ecx,ecx
-	.while byte ptr [edi]!=':' && byte ptr [edi]
-		mov		al,[edi]
-		mov		[edx+ecx],al
-		inc		ecx
-		inc		edi
-	.endw
-	mov		byte ptr [edx+ecx],0
-	mov		src.NameLen,ecx
-	mov		src.MaxNameLen,128
-	mov		eax,[esi].STAB.ad
-	mov		dword ptr src.Address,eax
-	mov		eax,dword ptr BaseOfDll
-	mov		dword ptr src.ModBase,eax
-	mov		eax,dword ptr BaseOfDll[4]
-	mov		dword ptr src.ModBase[4],eax
-	retn
+EnumProcs endp
+
+SymEnumerateSymbols proc hProcess:HANDLE,BaseOfDll:DWORD,EnumSymbolsCallback:DWORD,UserContext:DWORD
+
+	invoke EnumProcs,EnumSymbolsCallback,UserContext
+	mov		eax,TRUE
+	ret
 
 SymEnumerateSymbols endp
 

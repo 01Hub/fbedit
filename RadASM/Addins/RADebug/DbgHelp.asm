@@ -431,12 +431,11 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 
 AddVar endp
 
-AddVarList proc uses ebx esi edi,lpList:DWORD,nDisp:DWORD
+AddVarList proc uses ebx esi edi,lpList:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	nOfs:DWORD
 
-	mov		eax,nDisp
-	mov		nOfs,eax
+	mov		nOfs,0
 	mov		esi,lpList
 	.while byte ptr [esi]
 		mov		ebx,dbg.lpvar
@@ -484,6 +483,56 @@ AddVarList proc uses ebx esi edi,lpList:DWORD,nDisp:DWORD
 
 AddVarList endp
 
+AddVarListFp proc uses ebx esi edi,lpList:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	flocal:DWORD
+
+	mov		flocal,0
+	mov		esi,lpList
+	.while byte ptr [esi]
+		mov		ebx,dbg.lpvar
+		lea		edi,buffer
+		.while TRUE
+			mov		al,[esi]
+			.if !al
+				mov		[edi],al
+				.break
+			.elseif al==','
+				mov		byte ptr [edi],0
+				inc		esi
+				.break
+			.else
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endif
+		.endw
+		invoke DecToBin,esi
+		.while byte ptr [esi]
+			.if byte ptr [esi]==','
+				inc		esi
+				.break
+			.endif
+			inc		esi
+		.endw
+		push	eax
+		.if !flocal && sdword ptr eax<0
+			inc		flocal
+			mov		eax,dbg.lpvar
+			lea		eax,[eax+sizeof DEBUGVAR+2]
+			mov		dbg.lpvar,eax
+		.endif
+		invoke AddVar,addr buffer,0
+		pop		eax
+		mov		[ebx].DEBUGVAR.nOfs,eax
+	.endw
+	mov		eax,dbg.lpvar
+	lea		eax,[eax+sizeof DEBUGVAR+2]
+	mov		dbg.lpvar,eax
+	ret
+
+AddVarListFp endp
+
 EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
 
 	mov		esi,pSymInfo
@@ -498,6 +547,9 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 	lea		edi,[edi+eax]
 	invoke strcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
 	mov		eax,[esi].SYMBOL_INFO.nSize
+	.if !eax
+		invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
+	.endif
 	mov		[edi].DEBUGTYPE.nSize,eax
 	inc		dbg.inxtype
 	mov		eax,TRUE
@@ -529,15 +581,22 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 				invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,addr [esi+sizeof PROPERTIES],sizeof DEBUGSYMBOL.szName
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
-				; Point to parameters
-				invoke strlen,addr [esi+sizeof PROPERTIES]
-				lea		esi,[esi+eax+1+sizeof PROPERTIES]
-				invoke AddVarList,esi,0
-				; Point to locals
-				invoke strlen,esi
-				lea		esi,[esi+eax+1]
-;PrintDec UserContext
-				invoke AddVarList,esi,UserContext
+				.if nAsm==nFP
+					; Point to parameters / locals
+					mov		esi,SymbolName
+					invoke strlen,esi
+					lea		esi,[esi+eax+1]
+					invoke AddVarListFp,esi
+				.else
+					; Point to parameters
+					invoke strlen,addr [esi+sizeof PROPERTIES]
+					lea		esi,[esi+eax+1+sizeof PROPERTIES]
+					invoke AddVarList,esi
+					; Point to locals
+					invoke strlen,esi
+					lea		esi,[esi+eax+1]
+					invoke AddVarList,esi
+				.endif
 			.elseif edx=='d'
 				; Variable
 				.if [edi].DEBUGSYMBOL.nSize==-1

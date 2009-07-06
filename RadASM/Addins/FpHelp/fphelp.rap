@@ -65,11 +65,11 @@ Group=Added files,Assembly,Resources,Misc,Modules
 [Collapse]
 5=
 2=
-1=,
+1=,,
 [Size]
 5=0,0,0,0,56
-2=0,0,0,0,0
-1=0,0,0,0,64
+2=0,0,0,0,1549
+1=0,0,0,0,9698
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -80,7 +80,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=3
@@ -125,3 +125,8 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
+[RADebugBP]
+1=
+2=
+[Find]
+1="vartype"

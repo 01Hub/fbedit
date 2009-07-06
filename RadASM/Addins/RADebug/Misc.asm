@@ -954,7 +954,11 @@ FindSymbol proc uses esi,lpName:DWORD
 	mov		esi,dbg.hMemSymbol
 	;Loop trough the symbol list
 	.while [esi].DEBUGSYMBOL.szName
-		invoke strcmp,lpName,addr [esi].DEBUGSYMBOL.szName
+		.if fCaseSensitive
+			invoke strcmp,lpName,addr [esi].DEBUGSYMBOL.szName
+		.else
+			invoke strcmpi,lpName,addr [esi].DEBUGSYMBOL.szName
+		.endif
 		.if !eax
 			mov		eax,esi
 			jmp		Ex			
@@ -974,7 +978,11 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 	mov		esi,lplpLocal
 	mov		esi,[esi]
 	.while byte ptr [esi+sizeof DEBUGVAR]
-		invoke strcmp,addr [esi+sizeof DEBUGVAR],lpName
+		.if fCaseSensitive
+			invoke strcmp,addr [esi+sizeof DEBUGVAR],lpName
+		.else
+			invoke strcmpi,addr [esi+sizeof DEBUGVAR],lpName
+		.endif
 		.if !eax
 			invoke strlen,addr [esi+sizeof DEBUGVAR]
 			invoke strcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]
@@ -1059,7 +1067,9 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 					mul		edx
 					add		eax,dbg.context.regEbp
 					add		eax,var.nOfs
-					add		eax,4
+					.if nAsm!=nFP
+						add		eax,4
+					.endif
 					mov		var.Address,eax
 					invoke strcpy,addr var.szName,lpName
 					mov		eax,'P'
@@ -1077,7 +1087,11 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 						mov		eax,var.nSize
 						mul		edx
 						add		eax,dbg.context.regEbp
-						sub		eax,var.nOfs
+						.if nAsm==nFP
+							add		eax,var.nOfs
+						.else
+							sub		eax,var.nOfs
+						.endif
 						mov		var.Address,eax
 						invoke strcpy,addr var.szName,lpName
 						mov		eax,'L'
