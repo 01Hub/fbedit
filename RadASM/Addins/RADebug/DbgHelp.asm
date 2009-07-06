@@ -599,22 +599,41 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 				.endif
 			.elseif edx=='d'
 				; Variable
-				.if [edi].DEBUGSYMBOL.nSize==-1
-					mov		[edi].DEBUGSYMBOL.nSize,0
+				.if nAsm==nFP
+					.if [edi].DEBUGSYMBOL.nSize==-1
+						mov		[edi].DEBUGSYMBOL.nSize,0
+					.endif
+					lea		edx,[esi+sizeof PROPERTIES]
+					lea		ecx,[edi].DEBUGSYMBOL.szName
+					.while byte ptr [edx]!=':' && byte ptr [edx]!='['
+						mov		al,[edx]
+						mov		[ecx],al
+						inc		edx
+						inc		ecx
+					.endw
+					mov		byte ptr [ecx],0
+					mov		eax,dbg.lpvar
+					mov		[edi].DEBUGSYMBOL.lpType,eax
+					invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
+					mov		[edi].DEBUGSYMBOL.nSize,eax
+				.else
+					.if [edi].DEBUGSYMBOL.nSize==-1
+						mov		[edi].DEBUGSYMBOL.nSize,0
+					.endif
+					lea		edx,[esi+sizeof PROPERTIES]
+					lea		ecx,[edi].DEBUGSYMBOL.szName
+					.while byte ptr [edx]!=':' && byte ptr [edx]!='['
+						mov		al,[edx]
+						mov		[ecx],al
+						inc		edx
+						inc		ecx
+					.endw
+					mov		byte ptr [ecx],0
+					mov		eax,dbg.lpvar
+					mov		[edi].DEBUGSYMBOL.lpType,eax
+					invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
+					mov		[edi].DEBUGSYMBOL.nSize,eax
 				.endif
-				lea		edx,[esi+sizeof PROPERTIES]
-				lea		ecx,[edi].DEBUGSYMBOL.szName
-				.while byte ptr [edx]!=':' && byte ptr [edx]!='['
-					mov		al,[edx]
-					mov		[ecx],al
-					inc		edx
-					inc		ecx
-				.endw
-				mov		byte ptr [ecx],0
-				mov		eax,dbg.lpvar
-				mov		[edi].DEBUGSYMBOL.lpType,eax
-				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
-				mov		[edi].DEBUGSYMBOL.nSize,eax
 			.endif
 			.if fOptions & 1
 				invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize

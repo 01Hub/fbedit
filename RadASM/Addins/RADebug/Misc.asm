@@ -1307,6 +1307,12 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		.if eax
 			; Known size
 			.if var.IsSZ
+				.if nAsm==nFP
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
+				.endif
 				mov		eax,var.nArray
 				sub		eax,var.nInx
 				.if eax>256
@@ -1362,6 +1368,12 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		mov		eax,var.nSize
 		.if eax
 			.if var.IsSZ
+				.if nAsm==nFP
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
+				.endif
 				mov		eax,var.nArray
 				sub		eax,var.nInx
 				.if eax>255

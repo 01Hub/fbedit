@@ -444,7 +444,45 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 			mov		edi,rpstabs
 			add		edi,hMemFile
 			add		edi,[esi].STAB.stabs
-			.if eax==36 && !fproc
+			.if eax==40 && !fproc
+				mov		ebx,offset szname
+				mov		edx,edi
+				mov		ecx,1
+				.while byte ptr [edx] && byte ptr [edx]!=':'
+					inc		ecx
+					inc		edx
+				.endw
+				invoke strcpyn,ebx,edi,ecx
+				invoke strlen,ebx
+				lea		ebx,[ebx+eax+1]
+				lea		edi,[edi+eax]
+				xor		eax,eax
+				.if byte ptr [edi+1]=='S'
+					invoke DecToBin,addr [edi+2]
+				.endif
+				.if eax
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		edi,[eax+offset datatype]
+					.if [edi].DATATYPE.inxmax
+						invoke wsprintf,ebx,addr szfmtarray,[edi].DATATYPE.inxmin,[edi].DATATYPE.inxmax
+						invoke strlen,ebx
+						lea		ebx,[ebx+eax]
+					.endif
+					mov		byte ptr [ebx],':'
+					inc		ebx
+					invoke strcpy,ebx,addr [edi].DATATYPE.szName
+					mov		eax,[edi].DATATYPE.nSize
+					.if !eax
+						dec		eax
+					.endif
+					push	UserContext
+					push	eax							; Size
+					push	[esi].STAB.ad				; Address
+					push	offset szname
+					call	EnumSymbolsCallback
+				.endif
+			.elseif eax==36 && !fproc
 				; Proc
 				mov		edx,edi
 				mov		ecx,1
