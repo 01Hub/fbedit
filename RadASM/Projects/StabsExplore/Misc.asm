@@ -442,6 +442,104 @@ DumpProcs proc uses ebx esi edi
 
 DumpProcs endp
 
+DumpGlobals proc uses ebx esi edi
+	LOCAL	szname[256]:BYTE
+
+	.if rpstab && rpstabs
+		invoke GetDatatypes
+		invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ecx,[esi].STAB.nline
+		.while ecx
+			push	ecx
+			movzx	eax,[esi].STAB.code
+			.if eax==40
+				mov		edi,rpstabs
+				add		edi,hMemFile
+				add		edi,[esi].STAB.stabs
+				lea		ebx,szname
+				.while byte ptr [edi] && byte ptr [edi]!=':'
+					mov		al,[edi]
+					mov		[ebx],al
+					inc		edi
+					inc		ebx
+				.endw
+				.if byte ptr [edi+1]=='S'
+					invoke DecToBin,addr [edi+2]
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		edi,[eax+offset datatype]
+					invoke lstrcpy,ebx,addr [edi].DATATYPE.szname
+					invoke wsprintf,addr szOutput,addr szFmtGlobal,addr szname,[esi].STAB.ad,[edi].DATATYPE.nsize
+					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+				.endif
+			.endif
+			pop		ecx
+			lea		esi,[esi+sizeof STAB]
+			dec		ecx
+		.endw
+	.endif
+	ret
+
+DumpGlobals endp
+
+DumpLines proc uses ebx esi edi
+	LOCAL	szfile[MAX_PATH]:BYTE
+
+	.if rpstab && rpstabs
+		invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+		mov		esi,rpstab
+		add		esi,hMemFile
+		movzx	ecx,[esi].STAB.nline
+		.while ecx
+			push	ecx
+			movzx	eax,[esi].STAB.code
+			mov		edi,rpstabs
+			add		edi,hMemFile
+			add		edi,[esi].STAB.stabs
+			.if eax==68
+				mov		eax,[esi].STAB.ad
+				add		eax,ebx
+				movzx	edx,[esi].STAB.nline
+				invoke wsprintf,addr szOutput,addr szFmtLine,addr szfile,edx,eax
+				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+			.elseif eax==132
+				; FileName
+				invoke lstrcpyn,addr szfile,edi,MAX_PATH
+				mov		ebx,[esi].STAB.ad
+			.endif
+			pop		ecx
+			lea		esi,[esi+sizeof STAB]
+			dec		ecx
+		.endw
+	.endif
+	ret
+
+DumpLines endp
+
+DumpTypes proc uses ebx esi edi
+
+	.if rpstab && rpstabs
+		invoke GetDatatypes
+		invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+		mov		esi,offset datatype
+		mov		ecx,256
+		.while ecx
+			push	ecx
+			.if [esi].DATATYPE.szname
+				invoke wsprintf,addr szOutput,addr szFmtType,addr [esi].DATATYPE.szname,[esi].DATATYPE.nsize
+				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+			.endif
+			pop		ecx
+			lea		esi,[esi+sizeof DATATYPE]
+			dec		ecx
+		.endw
+	.endif
+	ret
+
+DumpTypes endp
+
 ShowSectionHeaders proc uses ebx esi edi
 	LOCAL	buffer[32]:BYTE
 

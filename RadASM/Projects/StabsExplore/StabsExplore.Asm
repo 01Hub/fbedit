@@ -50,7 +50,6 @@ CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ReadTheFile,addr buffer
 					.if !eax
 						invoke ShowSectionHeaders
-;						invoke ReadSectionHeaders
 						invoke SetSection
 					.endif
 				.endif
@@ -80,7 +79,15 @@ CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDC_BTNDUMPGLOBALS
 				.if nHeaders
-;					invoke DumpGlobals
+					invoke DumpGlobals
+				.endif
+			.elseif eax==IDC_BTNLIMES
+				.if nHeaders
+					invoke DumpLines
+				.endif
+			.elseif eax==IDC_BTNTYPES
+				.if nHeaders
+					invoke DumpTypes
 				.endif
 			.endif
 		.endif
@@ -112,12 +119,12 @@ DlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		; Move and size the rich edit control
 		invoke GetClientRect,hWin,addr rect
 		mov		eax,rect.bottom
-		sub		eax,70
+		sub		eax,100
 		invoke MoveWindow,hEdt,0,0,rect.right,eax,TRUE
 		; Move the cild dialog
 		invoke GetClientRect,hCldDlg,addr cldrect
 		mov		eax,rect.bottom
-		sub		eax,65
+		sub		eax,97
 		mov		edx,rect.right
 		sub		edx,cldrect.right
 		invoke MoveWindow,hCldDlg,edx,eax,cldrect.right,cldrect.bottom,TRUE

@@ -78,9 +78,9 @@ Group=Added files,Assembly,Resources,Misc,Modules
 2=
 [Size]
 3=0,0,0,0,0
-5=102,0,1036,532,7565
-1=0,0,0,0,1914
-2=0,0,0,0,2723
+5=102,0,1036,532,11247
+1=0,0,0,0,3008
+2=0,0,0,0,2908
 6=0,0,0,0
 4=0,0,0,0
 [VersionControl]
@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=30

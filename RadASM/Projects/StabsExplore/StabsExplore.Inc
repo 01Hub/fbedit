@@ -37,6 +37,8 @@ IDC_BTNDUMPSECTION				equ 1006
 IDC_BTNDUMPSTABS				equ 1007
 IDC_BTNDUMPPROCS				equ 1008
 IDC_BTNDUMPGLOBALS				equ 1009
+IDC_BTNTYPES					equ 1010
+IDC_BTNLIMES					equ 1011
 
 SECTIONHEADER struct
 	sName					BYTE 8 dup(?)
@@ -96,10 +98,13 @@ szSecStab				db '.stab',0
 szSecStabstr			db '.stabstr',0
 szFmtStab				db 'Stabs: %4u Code: %3u Line: %5u Address: %08Xh Str: %s',0Dh,0Ah,0
 szFmtFile				db 'File: %s',0Dh,0Ah,0
-szFmtProc				db 'Name: %-50s Line: %5u Address: %08Xh Size: %5u',0Dh,0Ah,0
+szFmtProc				db 'Proc: %-50s Line: %5u Address: %08Xh Size: %5u',0Dh,0Ah,0
 szFmtParam				db 'Parameters: %s',0Dh,0Ah,0
 szFmtLocal				db 'Locals: %s',0Dh,0Ah,0
+szFmtGlobal				db 'Global: %-50s Address: %08Xh Size: %5u',0Dh,0Ah,0
 szFmtArray				db '[%u..%u]',0
+szFmtLine				db 'File: %-50s Line: %5u Address: %08Xh',0Dh,0Ah,0
+szFmtType				db 'Type: %-50s Size: %5u',0Dh,0Ah,0
 
 ;#########################################################################
 
