@@ -3,14 +3,16 @@ RadASM 2.2.1.7
 2.2.1.7
 o The code parser for masm has been enhanced to include datatypes and array sizes.
 o The code parser (cppparse.dll) for VC6 C/C++ has been enhanced to include datatypes and array sizes.
-o Included RADebug addin. It adds sourcecode debugging capabilities to masm and VC6 C/C++ projects.
-  See the RADebug.txt for more info.
+o The code parser for FreePASCAL has been enhanced to include datatypes and array sizes.
+o Included RADebug addin. It adds sourcecode debugging capabilities to masm, VC6 C/C++ and
+  FreePASCAL projects. See the RADebug.txt for more info.
 o Added masmArray.api file. It contains constants often used to specify array sizes.
   Currently it only contains MAX_PATH and MAXIMUM_WAIT_OBJECTS.
 o Updated masmType.api file to include the size of each data type.
 o Added cppArray.api file. It contains constants often used to specify array sizes.
   Currently it only contains MAX_PATH and MAXIMUM_WAIT_OBJECTS.
 o Updated cppType.api file to include the size of each data type.
+o Updated fpType.api file to include the size of each data type.
 o Fixed a minor bug in RAEdit. REM_GETCURSORWORD did not include the size of the
   line number bar.
 o Fixed a minor bug in RAEdit. Bracematching caused wrong selection on EM_SCROLLCARET.
