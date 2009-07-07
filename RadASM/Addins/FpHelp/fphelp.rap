@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=DbgHelp.dll emulator for FreePASCAL
+Description=FreePASCAL dbghelp emulator
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -90,7 +90,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=
 [Size]
 5=
-2=0,0,0,0,1549
+2=0,0,0,0,1564
 1=0,0,0,0,8340
 4=0,0,0,0,0
 [VersionControl]
@@ -103,7 +103,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=3

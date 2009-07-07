@@ -5,6 +5,7 @@ Description=FreeBASIC dbghelp emulator
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
+Ver.rc=1
 [Files]
 1=FbHelp.Asm
 2=FbHelp.Inc
@@ -62,11 +63,11 @@ VerLNG=0x00000409
 VerCHS=0x000004E4
 ProductVersion=1.0.0.0
 ProductName=
-OriginalFilename=fphelp.dll
+OriginalFilename=fbhelp.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2009
-InternalName=fphelp.dll
-FileDescription=FreePASCAL dbghelp emulator
+InternalName=fbhelp.dll
+FileDescription=FreeBASIC dbghelp emulator
 FileVersion=1.0.0.0
 CompanyName=
 [Group]

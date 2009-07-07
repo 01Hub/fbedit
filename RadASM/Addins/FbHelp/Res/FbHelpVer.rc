@@ -10,10 +10,10 @@ BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "FileVersion", "1.0.0.0\0"
-      VALUE "FileDescription", "FreePASCAL dbghelp emulator\0"
-      VALUE "InternalName", "FbHelp.dll\0"
+      VALUE "FileDescription", "FreeBASIC dbghelp emulator\0"
+      VALUE "InternalName", "fbhelp.dll\0"
       VALUE "LegalCopyright", "KetilO (C) 2009\0"
-      VALUE "OriginalFilename", "FbHelp.dll\0"
+      VALUE "OriginalFilename", "fbhelp.dll\0"
       VALUE "ProductVersion", "1.0.0.0\0"
     END
   END

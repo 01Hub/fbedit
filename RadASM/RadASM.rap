@@ -180,12 +180,12 @@ MinorFiles=*.res;*.obj;
 2=0,416,869,416,39096
 3=154,154,590,413,749
 4=0,0,590,413,25314
-5=132,132,536,413,4046
-6=12,26,869,416,3628
+5=132,132,536,413,57931
+6=12,26,869,416,164208
 7=132,132,536,413,29552
 8=44,44,536,413,15718
 9=88,88,536,413,34523
-10=110,110,536,413,206
+10=110,110,536,413,17362
 11=88,88,536,413,12390
 12=154,154,590,413,1082
 13=176,176,590,413,1067
@@ -291,7 +291,7 @@ MinorFiles=*.res;*.obj;
 118=0,0,559,521,913
 102=0,0,0,0,0
 67=0,0,0,0,0
-119=0,0,0,0,245
+119=0,0,0,0,37
 120=0,0,0,0,4554
 121=0,0,0,0
 122=0,0,0,0,873
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="hParseDLL"
-2="iniReadPaths"
-3="iniVersion"
-4="2217"
-5="nRadASMVer"
-6="'Api'"
-7="strlen proc"
-8="REM_GETWORD"
-9="REM_WORD"
-10="hSearch"
+1="iniWindow"
+2="hLB"
+3="hParseDLL"
+4="iniReadPaths"
+5="iniVersion"
+6="2217"
+7="nRadASMVer"
+8="'Api'"
+9="strlen proc"
+10="REM_GETWORD"
 
 [BreakPoint]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=7
+MilestoneOnDateDate=8
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -768,3 +768,4 @@ PTimer=385940000
 55=
 2=
 5=
+6=

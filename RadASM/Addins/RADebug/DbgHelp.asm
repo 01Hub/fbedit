@@ -48,7 +48,7 @@ szSymSetContext					db 'SymSetContext',0
 szSymEnumTypesByName			db 'SymEnumTypesByName',0
 
 szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
-szVersion						db 'DbgHelp version %s',0
+szVersion						db '%s version %s',0
 szSymOk							db 'Symbols OK',0
 szSymbol						db 'Name: %s Adress: %X Size %u',0
 szSourceFile					db 'FileName: %s',0
@@ -157,17 +157,17 @@ SortLinesByAddress proc uses ebx esi edi
 
 SortLinesByAddress endp
 
-GetDbgHelpVersion proc
+GetDbgHelpVersion proc lpDll:DWORD
 	LOCAL	buffer[2048]:BYTE
 	LOCAL	lpbuff:DWORD
 	LOCAL	lpsize:DWORD
 
-	invoke GetFileVersionInfo,addr DbgHelpDLL,NULL,sizeof buffer,addr buffer
+	invoke GetFileVersionInfo,lpDll,NULL,sizeof buffer,addr buffer
 	.if eax
 		invoke VerQueryValue,addr buffer,addr szVersionInfo,addr lpbuff,addr lpsize
 		.if eax
 			mov		eax,lpbuff
-			invoke wsprintf,addr buffer,addr szVersion,eax
+			invoke wsprintf,addr buffer,addr szVersion,lpDll,eax
 			invoke PutString,addr buffer
 		.endif
 	.endif
@@ -718,7 +718,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax
-		invoke GetDbgHelpVersion
+		invoke GetDbgHelpVersion,lpDll
 		; Allocate memory for DEBUGTYPE, max 16K types
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGTYPE
 		mov		dbg.hMemType,eax

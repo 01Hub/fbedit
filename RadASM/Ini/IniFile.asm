@@ -25,6 +25,7 @@ iniWinTop			db 'Top',0
 iniWinLeft			db 'Left',0
 iniWinHeight		db 'Height',0
 iniWinWidth 		db 'Width',0
+iniWinCCList		db 'CCList',0
 iniWinFind			db 'Find',0
 iniWinGoto			db 'Goto',0
 iniWinProWiz		db 'ProWiz',0
@@ -76,6 +77,7 @@ iniKeyHelpCF1		db 'CF1',0
 iniKeyHelpSF1		db 'SF1',0
 iniKeyHelpCSF1		db 'CSF1',0
 
+iniDefCCList		db '200,150',0
 iniDefPrnPagemm		db '20990,29690,1000,1000,1000,1000,0',0
 iniDefPrnPageInch	db '8500,11000,500,500,500,500,0',0
 iniDefPrnOption		db '2,0,1,1,1',0
@@ -1143,6 +1145,19 @@ iniRead proc
 		invoke GetPrivateProfileInt,addr iniWindow,addr iniWinStatusBar,1,addr iniFile
 		and		eax,1
 		mov 	winSbr,eax
+		;Code complete list
+		invoke GetPrivateProfileString,addr iniWindow,addr iniWinCCList,addr iniDefCCList,addr iniBuffer,sizeof iniBuffer,addr iniFile
+		invoke DecToBin,offset iniBuffer
+		.if eax>600 || eax<100
+			mov		eax,100
+		.endif
+		mov		apilbwt,eax
+		invoke iniGetItem,offset iniBuffer,addr buffer
+		invoke DecToBin,offset iniBuffer
+		.if eax>600 || eax<100
+			mov		eax,100
+		.endif
+		mov		apilbht,eax
 		;Tool Windows
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinToolBox,addr iniDefTool,addr ToolBox,64,addr iniFile
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinProject,addr iniDefTool,addr Project,64,addr iniFile
@@ -1152,7 +1167,6 @@ iniRead proc
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinInfoTool,addr iniDefTool,addr InfoTool,64,addr iniFile
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinTool1,addr iniDefTool,addr Tool1,64,addr iniFile
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinTool2,addr iniDefTool,addr Tool2,64,addr iniFile
-
 		invoke GetPrivateProfileString,addr iniWindow,addr iniWinClipping,addr iniDefClipping,addr Clipping,64,addr iniFile
 		invoke strlen,addr Clipping
 		.if eax==9
@@ -1174,7 +1188,6 @@ iniRead proc
 		mov		fAutoLoadPro,eax
 		;Dialog font
 		invoke GetPrivateProfileString,addr iniWindow,addr iniEditFont,offset szNULL,offset iniBuffer,sizeof iniBuffer,offset iniFile
-
 		.if eax
 			invoke iniGetItem,addr iniBuffer,addr lfntide.lfFaceName
 			invoke DecToBin,offset iniBuffer
@@ -1847,7 +1860,6 @@ iniWinSavePos proc
 	invoke iniToolSave,hInf,addr iniWinInfoTool
 	invoke iniToolSave,hTl1,addr iniWinTool1
 	invoke iniToolSave,hTl2,addr iniWinTool2
-
 	mov		eax,fRightCaption
 	or		al,30h
 	mov		dword ptr iniBuffer,eax
@@ -1860,9 +1872,7 @@ iniWinSavePos proc
 	or		al,30h
 	mov		dword ptr iniBuffer,eax
 	invoke WritePrivateProfileString,addr iniWindow,addr iniWinMultiLine,addr iniBuffer,addr iniFile
-
 	invoke WritePrivateProfileString,addr iniWindow,addr iniWinClipping,addr Clipping,addr iniFile
-
 	;Find
 	mov		iniBuffer,0
 	invoke iniPutItem,PosFindLeft,addr iniBuffer,TRUE
@@ -1884,6 +1894,11 @@ iniWinSavePos proc
 	invoke iniPutItem,PosProOptTop,addr iniBuffer,TRUE
 	invoke iniPutItem,PosProOptWt,addr iniBuffer,FALSE
 	invoke WritePrivateProfileString,addr iniWindow,addr iniWinProOpt,addr iniBuffer,addr iniFile
+	;Code complete list
+	mov		iniBuffer,0
+	invoke iniPutItem,apilbwt,addr iniBuffer,TRUE
+	invoke iniPutItem,apilbht,addr iniBuffer,FALSE
+	invoke WritePrivateProfileString,addr iniWindow,addr iniWinCCList,addr iniBuffer,addr iniFile
 	ret
 
 iniWinSavePos endp

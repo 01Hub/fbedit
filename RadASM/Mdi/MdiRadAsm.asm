@@ -3432,7 +3432,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke DeleteObject,eax
 		;Api listbox unsorted
-		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
+		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_OWNERDRAWVARIABLE,0,0,apilbwt,apilbht,hWin,NULL,hInstance,NULL
 		mov		hLBU,eax
 		mov		hLB,eax
 		INVOKE GetDesktopWindow
@@ -3443,7 +3443,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowLong,hLBU,GWL_WNDPROC, addr ListBoxProc
 		mov		OldListBoxProc,eax
 		;Api listbox sorted
-		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_SORT or LBS_OWNERDRAWVARIABLE,0,0,200,150,hWin,NULL,hInstance,NULL
+		invoke CreateWindowEx,WS_EX_PALETTEWINDOW or WS_EX_TOPMOST,addr szListBox,NULL,WS_CHILD or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_SIZEBOX or WS_VSCROLL or LBS_HASSTRINGS or LBS_USETABSTOPS or LBS_SORT or LBS_OWNERDRAWVARIABLE,0,0,apilbwt,apilbht,hWin,NULL,hInstance,NULL
 		mov		hLBS,eax
 		INVOKE GetDesktopWindow
 		invoke SetWindowLong,hLBS,GWL_HWNDPARENT,eax
@@ -5912,6 +5912,7 @@ EditTxtProc endp
 
 ListBoxProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDBLCLK
@@ -5940,6 +5941,14 @@ ListBoxProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		xor		eax,eax
 		ret
+	.elseif eax==WM_SIZE
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.right
+		sub		eax,rect.left
+		mov		apilbwt,eax
+		mov		eax,rect.bottom
+		sub		eax,rect.top
+		mov		apilbht,eax
 	.endif
 	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
 	ret
