@@ -56,7 +56,7 @@ szSourceLine					db 'FileName: %s Adress: %X Line %u',0
 szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
 szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
-szDbgHelpFail					db 'Could not find DbgHelp.dll',0
+szDbgHelpFail					db 'Could not find %s.',0
 
 CombSort_Const					REAL4 1.3
 
@@ -521,6 +521,7 @@ AddVarListFp proc uses ebx esi edi,lpList:DWORD
 			mov		eax,dbg.lpvar
 			lea		eax,[eax+sizeof DEBUGVAR+2]
 			mov		dbg.lpvar,eax
+			mov		ebx,dbg.lpvar
 		.endif
 		invoke AddVar,addr buffer,0
 		pop		eax
@@ -581,7 +582,7 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 				invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,addr [esi+sizeof PROPERTIES],sizeof DEBUGSYMBOL.szName
 				mov		eax,dbg.lpvar
 				mov		[edi].DEBUGSYMBOL.lpType,eax
-				.if nAsm==nFP
+				.if nAsm==nFP || nAsm==nBCET
 					; Point to parameters / locals
 					mov		esi,SymbolName
 					invoke strlen,esi
@@ -599,7 +600,7 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 				.endif
 			.elseif edx=='d'
 				; Variable
-				.if nAsm==nFP
+				.if nAsm==nFP || nAsm==nBCET
 					.if [edi].DEBUGSYMBOL.nSize==-1
 						mov		[edi].DEBUGSYMBOL.nSize,0
 					.endif
@@ -854,7 +855,8 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 		invoke FreeLibrary,hDbgHelpDLL
 		mov		hDbgHelpDLL,0
 	.else
-		invoke PutString,addr szDbgHelpFail
+		invoke wsprintf,addr outbuffer,addr szDbgHelpFail,lpDll
+		invoke PutString,addr outbuffer
 	.endif
 	ret
 

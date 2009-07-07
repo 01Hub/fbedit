@@ -580,12 +580,18 @@ Debug proc uses ebx,lpFileName:DWORD
 		mov		dbg.hdbghand,eax
 		.if nAsm==nFP
 			mov		edx,offset FpHelpDLL
+		.elseif nAsm==nBCET
+			mov		edx,offset FbHelpDLL
 		.else
 			mov		edx,offset DbgHelpDLL
 		.endif
 		invoke DbgHelp,edx,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
-			invoke PutString,addr szNoDebugInfo
+			.if nAsm==nMASM || nAsm==nCPP
+				invoke PutString,addr szNoDebugInfoMasm
+			.elseif nAsm==nFP || nAsm==nBCET
+				invoke PutString,addr szNoDebugInfoFp
+			.endif
 			invoke PutString,addr szExeName
 			mov		fNoDebugInfo,TRUE
 			invoke EnableMenu

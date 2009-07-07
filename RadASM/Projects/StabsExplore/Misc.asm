@@ -360,7 +360,7 @@ DumpProcs proc uses ebx esi edi
 						inc		edi
 					.endw
 				.endif
-			.elseif eax==132
+			.elseif eax==132 || eax==130 || eax==100
 				; FileName
 				invoke lstrcpy,addr szfile,edi
 			.elseif eax==160
@@ -504,10 +504,12 @@ DumpLines proc uses ebx esi edi
 				movzx	edx,[esi].STAB.nline
 				invoke wsprintf,addr szOutput,addr szFmtLine,addr szfile,edx,eax
 				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-			.elseif eax==132
+			.elseif eax==132 || eax==100 || eax==130
+				.if eax==132 || eax==100
+					mov		ebx,[esi].STAB.ad
+				.endif
 				; FileName
 				invoke lstrcpyn,addr szfile,edi,MAX_PATH
-				mov		ebx,[esi].STAB.ad
 			.endif
 			pop		ecx
 			lea		esi,[esi+sizeof STAB]

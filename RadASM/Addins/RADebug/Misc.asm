@@ -1067,7 +1067,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 					mul		edx
 					add		eax,dbg.context.regEbp
 					add		eax,var.nOfs
-					.if nAsm!=nFP
+					.if nAsm!=nFP && nAsm!=nBCET
 						add		eax,4
 					.endif
 					mov		var.Address,eax
@@ -1087,7 +1087,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 						mov		eax,var.nSize
 						mul		edx
 						add		eax,dbg.context.regEbp
-						.if nAsm==nFP
+						.if nAsm==nFP || nAsm==nBCET
 							add		eax,var.nOfs
 						.else
 							sub		eax,var.nOfs

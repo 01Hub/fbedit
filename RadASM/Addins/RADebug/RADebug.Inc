@@ -279,6 +279,8 @@ datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 DbgHelpDLL						db 'DbgHelp.dll',0
 ; FreePASCAL
 FpHelpDLL						db 'Addins\FpHelp.dll',0
+; FreeBASIC
+FbHelpDLL						db 'Addins\FbHelp.dll',0
 
 ; Debug events
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
@@ -313,7 +315,8 @@ szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
 szExeNotFound					db 'Could not open:',0Dh,'%s',0
-szNoDebugInfo					db 'No debug info found.',0Dh,'Use the /Zd, /Zi and /DEBUG command line options.',0
+szNoDebugInfoMasm				db 'No debug info found.',0Dh,'Use the /Zd, /Zi and /DEBUG command line options.',0
+szNoDebugInfoFp					db 'No debug info found.',0Dh,'Use the -g command line option.',0
 
 ; Breakpoint save / load
 szRADebugBP						db 'RADebugBP',0
