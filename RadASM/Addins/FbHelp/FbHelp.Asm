@@ -305,6 +305,52 @@ SourceExist proc uses esi,lpName:DWORD
 
 SourceExist endp
 
+GetArray proc uses ebx esi edi,lpStab:DWORD,lpName:DWORD
+
+	mov		esi,lpStab
+	mov		edi,lpName
+	mov		byte ptr [edi],'['
+	inc		edi
+	.while word ptr [esi]=='ra'
+		inc		esi
+		call	SkipSemi
+		.while byte ptr [esi] && byte ptr [esi]!=';'
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		mov		word ptr [edi],'..'
+		add		edi,2
+		call	SkipSemi
+		.while byte ptr [esi] && byte ptr [esi]!=';'
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		mov		byte ptr [edi],';'
+		inc		edi
+		call	SkipSemi
+	.endw
+	dec		edi
+	mov		word ptr [edi],':]'
+	add		edi,2
+	invoke DecToBin,esi
+	mov		edx,sizeof DATATYPE
+	mul		edx
+	lea		esi,[eax+offset datatype]
+	invoke strcpy,edi,esi
+	ret
+
+SkipSemi:
+	.while byte ptr [esi] && byte ptr [esi-1]!=';'
+		inc		esi
+	.endw
+	retn
+
+GetArray endp
+
 SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCallback:DWORD,UserContext:DWORD
 	LOCAL	ninx:DWORD
 	LOCAL	nsize:DWORD
@@ -319,7 +365,7 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 		.while ecx
 			push	ecx
 			movzx	eax,[esi].STAB.code
-			.if eax==128
+			.if eax==128 || eax==40 || eax==160
 				xor		eax,eax
 				mov		ninx,eax
 				mov		nsize,eax
@@ -365,38 +411,85 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 						.if byte ptr [edi]=='='
 							inc		edi
 							.if word ptr [edi]=='ra'
-								add		edi,2
-								push	edi
-								.while byte ptr [edi]
-									.if byte ptr [edi]==';'
-										inc		edi
-										invoke DecToBin,edi
-										mov		arstart,eax
-										.break
-									.endif
-									inc		edi
-								.endw
-								.while byte ptr [edi]
-									.if byte ptr [edi]==';'
-										inc		edi
-										invoke DecToBin,edi
-										mov		arend,eax
-										.break
-									.endif
-									inc		edi
-								.endw
-								pop		edi
-								.if !szname
-									invoke DecToBin,edi
-									mov		edx,sizeof DATATYPE
-									mul		edx
-									invoke strcpy,addr szname,addr [eax+offset datatype].DATATYPE.szName
-								.endif
+								invoke GetArray,edi,addr szname
 							.endif
 							.break
 						.endif
 						inc		edi
 					.endw
+				.elseif byte ptr [edi]=='S'
+					inc		edi
+					invoke DecToBin,edi
+					mov		ecx,eax
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		eax,[eax+offset datatype]
+					.if ![eax].DATATYPE.szName
+						mov		ninx,ecx
+						.while byte ptr [edi]
+							.if byte ptr [edi]=='='
+								inc		edi
+								.if word ptr [edi]=='ra'
+									invoke GetArray,edi,addr szname
+								.endif
+								.break
+							.endif
+							inc		edi
+						.endw
+					.endif
+				.elseif  (byte ptr [edi]>='0' && byte ptr [edi]<='9')
+					invoke DecToBin,edi
+					mov		ecx,eax
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		eax,[eax+offset datatype]
+					.if ![eax].DATATYPE.szName
+						mov		ninx,ecx
+						.while byte ptr [edi]
+							.if byte ptr [edi]=='='
+								inc		edi
+								.if byte ptr [edi]=='*'
+									inc		edi
+									invoke DecToBin,edi
+									mov		edx,sizeof DATATYPE
+									mul		edx
+									lea		edi,[eax+offset datatype]
+									invoke strcpy,addr szname,addr [edi].DATATYPE.szName
+								.elseif word ptr [edi]=='ra'
+									invoke GetArray,edi,addr szname
+								.endif
+								.break
+							.endif
+							inc		edi
+						.endw
+					.endif
+				.elseif  byte ptr [edi]=='p'
+					inc		edi
+					invoke DecToBin,edi
+					mov		ecx,eax
+					mov		edx,sizeof DATATYPE
+					mul		edx
+					lea		eax,[eax+offset datatype]
+					.if ![eax].DATATYPE.szName
+						mov		ninx,ecx
+						.while byte ptr [edi]
+							.if byte ptr [edi]=='='
+								inc		edi
+								.if byte ptr [edi]=='*'
+									inc		edi
+									invoke DecToBin,edi
+									mov		edx,sizeof DATATYPE
+									mul		edx
+									lea		edi,[eax+offset datatype]
+									invoke strcpy,addr szname,addr [edi].DATATYPE.szName
+								.elseif word ptr [edi]=='ra'
+									invoke GetArray,edi,addr szname
+								.endif
+								.break
+							.endif
+							inc		edi
+						.endw
+					.endif
 				.endif
 				.if ninx
 					invoke RtlZeroMemory,addr syminf,sizeof SYMBOL_INFO
@@ -410,10 +503,6 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 					invoke strcpy,addr [edi].DATATYPE.szName,addr szname
 					mov		eax,nsize
 					mov		[edi].DATATYPE.nSize,eax
-					mov		eax,arstart
-					mov		[edi].DATATYPE.inxmin,eax
-					mov		eax,arend
-					mov		[edi].DATATYPE.inxmax,eax
 					mov		syminf.SizeOfStruct,sizeof SYMBOL_INFO+sizeof szname
 					invoke strlen,addr szname
 					mov		syminf.NameLen,eax
@@ -474,13 +563,10 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 					mov		edx,sizeof DATATYPE
 					mul		edx
 					lea		edi,[eax+offset datatype]
-					.if [edi].DATATYPE.inxmax
-						invoke wsprintf,ebx,addr szfmtarray,[edi].DATATYPE.inxmin,[edi].DATATYPE.inxmax
-						invoke strlen,ebx
-						lea		ebx,[ebx+eax]
+					.if byte ptr [edi]!='['
+						mov		byte ptr [ebx],':'
+						inc		ebx
 					.endif
-					mov		byte ptr [ebx],':'
-					inc		ebx
 					invoke strcpy,ebx,addr [edi].DATATYPE.szName
 					mov		eax,[edi].DATATYPE.nSize
 					.if !eax
@@ -545,8 +631,15 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 							.if ![eax].DATATYPE.szName
 								.while byte ptr [edi] && byte ptr [edi]!='='
 									inc		edi
-									.if byte ptr [edi+1]=='*'
+									.if byte ptr [edi]=='*'
 										invoke DecToBin,addr [edi+2]
+										mov		edx,sizeof DATATYPE
+										mul		edx
+										lea		eax,[eax+offset datatype]
+										.break
+									.elseif word ptr [edi]=='ra'
+										inc		edi
+										invoke DecToBin,addr [edi+3]
 										mov		edx,sizeof DATATYPE
 										mul		edx
 										lea		eax,[eax+offset datatype]
@@ -555,13 +648,10 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 								.endw
 							.endif
 							mov		edi,eax
-							.if [edi].DATATYPE.inxmax
-								invoke wsprintf,ebx,addr szfmtarray,[edi].DATATYPE.inxmin,[edi].DATATYPE.inxmax
-								invoke strlen,ebx
-								lea		ebx,[ebx+eax]
+							.if [edi].DATATYPE.szName!='['
+								mov		byte ptr [ebx],':'
+								inc		ebx
 							.endif
-							mov		byte ptr [ebx],':'
-							inc		ebx
 							invoke strcpy,ebx,addr [edi].DATATYPE.szName
 							invoke strlen,ebx
 							lea		ebx,[ebx+eax]
@@ -584,6 +674,9 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 					push	nadr
 					push	offset szname
 					call	EnumSymbolsCallback
+invoke strlen,offset szname
+lea	eax,szname[eax+1]
+PrintStringByAddr eax
 				.endif
 			.endif
 			pop		ecx

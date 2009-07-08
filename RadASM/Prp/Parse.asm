@@ -1311,7 +1311,11 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD
 							.elseif eax==TPE_STCONST
 								call	ParseConst
 							.elseif eax==TPE_STDATA
-								call	ParseData
+								.if nAsm==nBCET
+									call	ParseFBData
+								.else
+									call	ParseData
+								.endif
 							.elseif eax==TPE_STMACRO
 								call	ParseMacro
 							.elseif eax==TPE_STSTRUCT
@@ -1431,6 +1435,152 @@ ParseST:
 			.endif
 		.endif
 		jmp		@b
+	.endif
+	retn
+
+ParseFBData:
+	mov		edi,offset prnbuff
+	mov		eax,lpWord2
+	mov		edx,[eax]
+	and		edx,5F5F5F5Fh
+	.if len2==6
+		.if edx=='RAHS'
+			movzx	edx,word ptr [eax+4]
+			and		edx,5F5Fh
+			.if edx=='DE'
+				call	GetWrd
+				mov		lpWord2,esi
+				mov		len2,ecx
+				lea		esi,[esi+ecx]
+				jmp		ParseFBData
+			.endif
+		.endif
+	.elseif len2==2
+		movzx	edx,dx
+		.if edx=='SA'
+			; List of vars, get type
+			call	GetWrd
+			.if ecx
+				mov		lptype,esi
+				mov		lentype,ecx
+				lea		esi,[esi+ecx]
+				.while byte ptr [esi]!=0Dh
+					call GetWrd
+					.if ecx
+						; var name
+						mov		lpWord2,esi
+						mov		len2,ecx
+						lea		esi,[esi+ecx]
+						invoke CpyWrd,edi,lpWord2,len2
+						mov		eax,len2
+						lea		edi,[edi+eax]
+						call	GetWrd
+						.if al=='('
+							; array
+							xor		edx,edx
+							.while TRUE
+								mov		eax,[esi]
+								inc		esi
+								.if al=='('
+									mov		byte ptr [edi],'['
+									inc		edi
+									inc		edx
+								.elseif al==')'
+									mov		byte ptr [edi],']'
+									inc		edi
+									dec		edx
+									.break .if !edx
+								.elseif eax==' ot ' || eax==' oT ' || eax==' OT ' || eax==' Ot '
+									mov		word ptr [edi],'..'
+									add		edi,2
+									add		esi,3
+								.elseif al!=VK_SPACE && al!=VK_TAB
+									mov		[edi],al
+									inc		edi
+								.elseif al==0Dh
+									.break
+								.endif
+							.endw
+						.elseif al==','
+							inc		esi
+						.endif
+						mov		byte ptr [edi],':'
+						inc		edi
+						invoke CpyWrd,edi,lptype,lentype
+						mov		eax,lentype
+						lea		edi,[edi+eax]
+						mov		word ptr [edi],0
+						invoke AddWordToWordList,'d',iNbr,offset prnbuff,2
+						mov		edi,offset prnbuff
+					.else
+						inc		esi
+					.endif
+				.endw
+			.endif
+		.endif
+	.endif
+  @@:
+	invoke CpyWrd,edi,lpWord2,len2
+	mov		eax,len2
+	lea		edi,[edi+eax]
+  NxtFB:
+	call	GetWrd
+	.if !ecx
+		.if al=='('
+			; array
+			xor		edx,edx
+			.while TRUE
+				mov		eax,[esi]
+				inc		esi
+				.if al=='('
+					mov		byte ptr [edi],'['
+					inc		edi
+					inc		edx
+				.elseif al==')'
+					mov		byte ptr [edi],']'
+					inc		edi
+					dec		edx
+					.break .if !edx
+				.elseif eax==' ot ' || eax==' oT ' || eax==' OT ' || eax==' Ot '
+					mov		word ptr [edi],'..'
+					add		edi,2
+					add		esi,3
+				.elseif al!=VK_SPACE && al!=VK_TAB
+					mov		[edi],al
+					inc		edi
+				.elseif al==0Dh
+					.break
+				.endif
+			.endw
+			jmp		NxtFB
+		.endif
+	.elseif ecx==2
+		movzx	eax,word ptr [esi]
+		and		eax,5F5Fh
+		.if eax=='SA'
+			add		esi,2
+			call	GetWrd
+			mov		lptype,esi
+			mov		lentype,ecx
+			lea		esi,[esi+ecx]
+			mov		byte ptr [edi],':'
+			inc		edi
+			invoke CpyWrd,edi,lptype,lentype
+			mov		eax,lentype
+			lea		edi,[edi+eax]
+			mov		word ptr [edi],0
+			invoke AddWordToWordList,'d',iNbr,offset prnbuff,2
+			mov		edi,offset prnbuff
+			call	GetWrd
+			.if al==','
+				inc		esi
+				call	GetWrd
+				mov		lpWord2,esi
+				mov		len2,ecx
+				lea		esi,[esi+ecx]
+				jmp		@b
+			.endif
+		.endif
 	.endif
 	retn
 
@@ -1627,6 +1777,7 @@ ParseFPConst:
 	retn
 
 ParseCode:
+	mov		lptype,0
 	mov		edi,offset prnbuff
 	mov		eax,[ebx].PARSEDEF.nName
 	.if eax==NME_START
@@ -1854,8 +2005,8 @@ ParseCode:
 							and		eax,0FF5F5Fh
 							.if eax==' SA'
 								call	GetWrd
-								mov		lpWord1,esi
-								mov		len1,ecx
+								mov		lptype,esi
+								mov		lentype,ecx
 								lea		esi,[esi+ecx]
 								call	GetWrd
 								mov		lpWord2,esi
@@ -1870,11 +2021,27 @@ ParseCode:
 						mov		eax,len2
 						lea		edi,[edi+eax]
 						.if nAsm==nBCET
-							mov		byte ptr [edi],':'
-							inc		edi
-							invoke CpyWrd,edi,lpWord1,len1
-							mov		eax,len1
-							lea		edi,[edi+eax]
+							.if !lptype
+								call	GetWrd
+								.if ecx==2
+									mov		eax,[esi]
+									and		eax,5F5Fh
+									.if eax=='SA'
+										lea		esi,[esi+ecx]
+										call	GetWrd
+										mov		lptype,esi
+										mov		lentype,ecx
+										lea		esi,[esi+ecx]
+									.endif
+								.endif
+							.endif
+							.if lptype
+								mov		byte ptr [edi],':'
+								inc		edi
+								invoke CpyWrd,edi,lptype,lentype
+								mov		eax,len1
+								lea		edi,[edi+eax+1]
+							.endif
 						.elseif nAsm==nMASM
 						  NxtL:
 							call	GetWrd
@@ -1927,6 +2094,7 @@ ParseCode:
 						.endif
 					.endif
 				.endif
+				mov		lptype,0
 				jmp		Nxt
 			.endif
 		.elseif byte ptr [esi]
@@ -2087,8 +2255,6 @@ ParseData:
 			inc		esi
 			inc		edi
 		.endw
-;		mov		byte ptr [edi],0
-;		inc		edi
 		.if byte ptr [esi]==' '
 			inc		esi
 		.endif
