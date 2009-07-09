@@ -2021,6 +2021,23 @@ ParseCode:
 						mov		eax,len2
 						lea		edi,[edi+eax]
 						.if nAsm==nBCET
+							call	GetWrd
+							.if !ecx
+								.if byte ptr [esi]=='('
+									mov		byte ptr [edi],'['
+									inc		edi
+									.while byte ptr [esi] && byte ptr [esi-1]!=')'
+										mov		al,[esi]
+										.if al!=VK_SPACE && al!=VK_TAB && al!='(' && al!=')'
+											mov		[edi],al
+											inc		edi
+										.endif
+										inc		esi
+									.endw
+									mov		byte ptr [edi],']'
+									inc		edi
+								.endif
+							.endif
 							.if !lptype
 								call	GetWrd
 								.if ecx==2
@@ -2039,8 +2056,8 @@ ParseCode:
 								mov		byte ptr [edi],':'
 								inc		edi
 								invoke CpyWrd,edi,lptype,lentype
-								mov		eax,len1
-								lea		edi,[edi+eax+1]
+								mov		eax,lentype
+								lea		edi,[edi+eax]
 							.endif
 						.elseif nAsm==nMASM
 						  NxtL:

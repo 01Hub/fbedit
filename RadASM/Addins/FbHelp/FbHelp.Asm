@@ -674,9 +674,6 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 					push	nadr
 					push	offset szname
 					call	EnumSymbolsCallback
-invoke strlen,offset szname
-lea	eax,szname[eax+1]
-PrintStringByAddr eax
 				.endif
 			.endif
 			pop		ecx

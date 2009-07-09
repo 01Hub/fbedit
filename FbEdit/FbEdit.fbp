@@ -143,4 +143,4 @@ Delete=*.obj
 [NoDebug]
 0=DlgProc
 [TabOrder]
-TabOrder=1,2,3,35,41,21,12,32,14,13,0,0,0
+TabOrder=1,2,3,35,41,21,12,32,14,13
