@@ -168,7 +168,7 @@ GetValue endp
 CalculateIt proc uses ebx edi,PrevFunc:DWORD
 
   Nxt:
-  	.if nError
+  	.if nError || byte ptr [esi]==';'
   		ret
   	.endif
 	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
@@ -348,6 +348,7 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		xchg	eax,ecx
 		div		ecx
 	.elseif word ptr [esi]=='..'
+		; Array 1..2
 		add		esi,2
 		push	eax
 		invoke CalculateIt,ecx
@@ -375,7 +376,8 @@ DoMath proc uses ebx esi edi,lpMath:DWORD
 	invoke CalculateIt,0
 	.if !nError
 		mov		var.Value,eax
-		mov		eax,TRUE
+		mov		eax,esi
+		sub		eax,lpMath
 		jmp		Ex
 	.endif
 	xor		eax,eax

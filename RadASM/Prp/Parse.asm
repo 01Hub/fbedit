@@ -1494,6 +1494,9 @@ ParseFBData:
 									mov		word ptr [edi],'..'
 									add		edi,2
 									add		esi,3
+								.elseif al==','
+									mov		byte ptr [edi],';'
+									inc		edi
 								.elseif al!=VK_SPACE && al!=VK_TAB
 									mov		[edi],al
 									inc		edi
@@ -1545,6 +1548,9 @@ ParseFBData:
 					mov		word ptr [edi],'..'
 					add		edi,2
 					add		esi,3
+				.elseif al==','
+					mov		byte ptr [edi],';'
+					inc		edi
 				.elseif al!=VK_SPACE && al!=VK_TAB
 					mov		[edi],al
 					inc		edi
@@ -1616,9 +1622,14 @@ ParseFPData:
 						.if byte ptr [esi]=='['
 							.while byte ptr [esi] && byte ptr [esi]!=0Dh
 								mov		al,[esi]
-								mov		[edi],al
 								inc		esi
-								inc		edi
+								.if al==','
+									mov		byte ptr [edi],';'
+									inc		edi
+								.elseif al!=VK_SPACE && al!=VK_TAB
+									mov		[edi],al
+									inc		edi
+								.endif
 								.break .if al==']'
 							.endw
 							; Skip Of
@@ -2039,6 +2050,7 @@ ParseCode:
 								.endif
 							.endif
 							.if !lptype
+							  NxtLocalFB:
 								call	GetWrd
 								.if ecx==2
 									mov		eax,[esi]
@@ -2049,6 +2061,38 @@ ParseCode:
 										mov		lptype,esi
 										mov		lentype,ecx
 										lea		esi,[esi+ecx]
+									.endif
+								.elseif !ecx
+									.if al=='('
+										; array
+										xor		edx,edx
+										.while TRUE
+											mov		eax,[esi]
+											inc		esi
+											.if al=='('
+												mov		byte ptr [edi],'['
+												inc		edi
+												inc		edx
+											.elseif al==')'
+												mov		byte ptr [edi],']'
+												inc		edi
+												dec		edx
+												.break .if !edx
+											.elseif eax==' ot ' || eax==' oT ' || eax==' OT ' || eax==' Ot '
+												mov		word ptr [edi],'..'
+												add		edi,2
+												add		esi,3
+											.elseif al==','
+												mov		byte ptr [edi],';'
+												inc		edi
+											.elseif al!=VK_SPACE && al!=VK_TAB
+												mov		[edi],al
+												inc		edi
+											.elseif al==0Dh
+												.break
+											.endif
+										.endw
+										jmp		NxtLocalFB
 									.endif
 								.endif
 							.endif

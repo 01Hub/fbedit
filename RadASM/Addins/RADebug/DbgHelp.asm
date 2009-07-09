@@ -385,7 +385,26 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		lea		ebx,[eax+1]
 		invoke DoMath,ebx
 		.if eax
+			lea		ebx,[ebx+eax]
 			mov		eax,var.Value
+			.if nAsm==nFP || nAsm==nBCET
+				inc		eax
+				.while byte ptr [ebx]==';'
+					push	eax
+					inc		ebx
+					invoke DoMath,ebx
+					.if !eax
+						mov		fErrArray,TRUE
+						pop		edx
+						.break
+					.endif
+					lea		ebx,[ebx+eax]
+					mov		eax,var.Value
+					inc		eax
+					pop		edx
+					mul		edx
+				.endw
+			.endif
 		.else
 			mov		fErrArray,TRUE
 		.endif

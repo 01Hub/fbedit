@@ -35,8 +35,6 @@ STAB ends
 DATATYPE struct
 	szName					BYTE 64 dup(?)
 	nSize					DWORD ?
-	inxmin					DWORD ?
-	inxmax					DWORD ?
 DATATYPE ends
 
 SOURCEFILE struct DWORD
