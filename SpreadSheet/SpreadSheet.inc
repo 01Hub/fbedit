@@ -9,10 +9,10 @@ SPRM_GETLOCKCOL			equ WM_USER+106		;Get lock cols in active splitt. wParam=0, lP
 SPRM_SETLOCKCOL			equ WM_USER+107		;Lock cols in active splitt. wParam=0, lParam=cols
 SPRM_GETLOCKROW			equ WM_USER+108		;Get lock rows in active splitt. wParam=0, lParam=0
 SPRM_SETLOCKROW			equ WM_USER+109		;Lock rows in active splitt. wParam=0, lParam=rows
-SPRM_DELETECOL			equ WM_USER+110		;Delete col. wParam=col, lParam=0
-SPRM_INSERTCOL			equ WM_USER+111		;Insert col. wParam=col, lParam=0
-SPRM_DELETEROW			equ WM_USER+112		;Delete row. wParam=row, lParam=0
-SPRM_INSERTROW			equ WM_USER+113		;Insert row. wParam=row, lParam=0
+SPRM_DELETECOL			equ WM_USER+110		;Delete col. wParam=col, lParam=Number of colums to delete
+SPRM_INSERTCOL			equ WM_USER+111		;Insert col. wParam=col, lParam=Number of colums to insert
+SPRM_DELETEROW			equ WM_USER+112		;Delete row. wParam=row, lParam=Number of rows to delete
+SPRM_INSERTROW			equ WM_USER+113		;Insert row. wParam=row, lParam=Number of rows to insert
 SPRM_GETCOLCOUNT		equ WM_USER+114		;Get number of columns. wParam=0, lParam=0
 SPRM_SETCOLCOUNT		equ WM_USER+115		;Set number of columns. wParam=nCols, lParam=0
 SPRM_GETROWCOUNT		equ WM_USER+116		;Get number of rows. wParam=0, lParam=0

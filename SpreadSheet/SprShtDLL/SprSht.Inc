@@ -255,3 +255,4 @@ exdouble			tbyte ?
 fEditCancel			dd ?
 OldComboProc		dd ?
 hfocus				dd ?
+nErrCalc			dd ?

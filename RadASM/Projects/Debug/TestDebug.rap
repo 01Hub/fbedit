@@ -61,7 +61,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=25
@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,2269
+1=0,0,1278,774,2534
 2=0,0,0,0,8
 3=0,0,0,0,285
 [BookMark]
@@ -115,16 +115,16 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="DT"
-2="TBYTE"
-3="WM_USER"
-4="MAX_PATH"
-5="RECT"
-6="MYSTRUCT"
-7="RECT,left"
-8="RECT,"
-9="ecx = 13"
-10="118"
+1="MAXIMUM_SUPPORTED_EXTENSION"
+2="context"
+3="DT"
+4="TBYTE"
+5="WM_USER"
+6="MAX_PATH"
+7="RECT"
+8="MYSTRUCT"
+9="RECT,left"
+10="RECT,"
 [RADebugBP]
 1=82,141,154
 0=

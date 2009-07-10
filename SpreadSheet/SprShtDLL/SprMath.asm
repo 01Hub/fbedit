@@ -581,23 +581,28 @@ RefEx:
 	mov		esp,espSave
 	xor		eax,eax
 	inc		eax
+	mov		nErrCalc,eax
 	ret
 ErrEx:
 	mov		esp,espSave
 	xor		eax,eax
 	dec		eax
+	mov		nErrCalc,eax
 	ret
 DivEx:
 	mov		esp,espSave
 	mov		eax,STATE_DIV0
+	mov		nErrCalc,eax
 	ret
 OvfEx:
 	mov		esp,espSave
 	mov		eax,STATE_OVERFLOW
+	mov		nErrCalc,eax
 	ret
 UvfEx:
 	mov		esp,espSave
 	mov		eax,STATE_UNDERFLOW
+	mov		nErrCalc,eax
 	ret
 
 DoMath:
@@ -1360,6 +1365,7 @@ RecalcSheet proc uses ebx esi edi,lpSheet:DWORD
 	LOCAL	nLastCalcCells:DWORD
 
 	mov		nCalcCells,0
+	mov		nErrCalc,0
 	mov		ebx,lpSheet
 	xor		eax,eax
 	.while eax<=[ebx].SHEET.gfmt.nrows
@@ -1421,6 +1427,9 @@ RecalcSheet proc uses ebx esi edi,lpSheet:DWORD
 					lea		esi,[esi+sizeof COLDTA+10]
 					invoke CalculateCell,ebx,0,offset acmltr0
 					pop		esi
+					.if !eax
+						mov		eax,nErrCalc
+					.endif
 					.if !eax
 						dec		nCalcCells
 						and		[esi].COLDTA.state,03h

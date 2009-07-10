@@ -420,6 +420,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax==TPE_HYPERLINK
 					;Cancel the edit operation
 ;					mov		[edx].SPR_EDIT.fcancel,TRUE
+				.elseif eax==TPE_CHECKBOX
+					mov		[edx].SPR_EDIT.fcancel,TRUE
 				.endif
 			.elseif eax==SPRN_HYPERLINKENTER
 				;Get pointer to SPR_ITEM
@@ -442,6 +444,10 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,[ecx].SPR_ITEM.lpdta
 				PrintStringByAddr eax
 			.elseif eax==SPRN_BEFOREUPDATE
+
+PrintHex eax
+mov		[edx].SPR_EDIT.fcancel,TRUE
+
 ;PrintText "SPRN_BEFOREUPDATE"
 				mov		edx,lParam
 				mov		ecx,[edx].SPR_EDIT.lpspri
@@ -455,6 +461,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,[ecx].SPR_ITEM.lpdta
 					mov		eax,[eax]
 ;PrintHex eax
+					mov		[edx].SPR_EDIT.fcancel,TRUE
 				.endif
 			.elseif eax==SPRN_AFTERUPDATE
 ;PrintText "SPRN_AFTERUPDATE"

@@ -496,14 +496,15 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetRealCellRect,ebx,esi,addr rect
 				mov		eax,pt.x
 				mov		edx,pt.y
-				.if edx<rect.bottom
+				add		edx,4
+				.if edx<=rect.bottom
 					;On col header
 					mov		ecx,[ebx].SHEET.winst
 					and		ecx,SPS_COLSIZE
 					.if ecx
 					  @@:
 						mov		ecx,rect.right
-						dec		ecx
+						sub		ecx,4
 						.if eax>=ecx && eax<=rect.right
 							mov		edx,1
 							mov		eax,hCurVSplit
@@ -527,9 +528,10 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		ecx,[ebx].SHEET.winst
 					and		ecx,SPS_ROWSIZE
 					.if ecx
+						mov		edx,pt.y
 					  @@:
 						mov		ecx,rect.bottom
-						dec		ecx
+						sub		ecx,4
 						.if edx>=ecx && edx<=rect.bottom
 							mov		edx,2
 							mov		eax,hCurHSplit
@@ -1702,57 +1704,85 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke InvalidateRect,hWin,NULL,TRUE
 		jmp		ExRet
 	.elseif eax==SPRM_DELETECOL
-		invoke UpdateExpanded,ebx,TRUE
-		invoke DeleteCol,ebx,wParam
-		mov		eax,[ebx].SHEET.winst
-		and		eax,SPS_GRIDMODE
-		.if !eax
-			mov		eax,[ebx].SHEET.gfmt.ncols
-			inc		eax
-			invoke InsertCol,ebx,eax
+		mov		edi,lParam
+		.if !edi
+			inc		edi
 		.endif
-		invoke UpdateSheetRef,ebx,wParam,0,-1,0
-		invoke UpdateExpanded,ebx,FALSE
+		.while edi
+			invoke UpdateExpanded,ebx,TRUE
+			invoke DeleteCol,ebx,wParam
+			mov		eax,[ebx].SHEET.winst
+			and		eax,SPS_GRIDMODE
+			.if !eax
+				mov		eax,[ebx].SHEET.gfmt.ncols
+				inc		eax
+				invoke InsertCol,ebx,eax
+			.endif
+			invoke UpdateSheetRef,ebx,wParam,0,-1,0
+			invoke UpdateExpanded,ebx,FALSE
+			dec		edi
+		.endw
 		invoke InvalidateRect,hWin,NULL,FALSE
 		jmp		ExRet
 	.elseif eax==SPRM_INSERTCOL
-		invoke UpdateExpanded,ebx,TRUE
-		mov		eax,[ebx].SHEET.winst
-		and		eax,SPS_GRIDMODE
-		.if !eax
-			mov		eax,[ebx].SHEET.gfmt.ncols
-			invoke DeleteCol,ebx,eax
+		mov		edi,lParam
+		.if !edi
+			inc		edi
 		.endif
-		invoke InsertCol,ebx,wParam
-		invoke UpdateSheetRef,ebx,wParam,0,1,0
-		invoke UpdateExpanded,ebx,FALSE
+		.while edi
+			invoke UpdateExpanded,ebx,TRUE
+			mov		eax,[ebx].SHEET.winst
+			and		eax,SPS_GRIDMODE
+			.if !eax
+				mov		eax,[ebx].SHEET.gfmt.ncols
+				invoke DeleteCol,ebx,eax
+			.endif
+			invoke InsertCol,ebx,wParam
+			invoke UpdateSheetRef,ebx,wParam,0,1,0
+			invoke UpdateExpanded,ebx,FALSE
+			dec		edi
+		.endw
 		invoke InvalidateRect,hWin,NULL,FALSE
 		jmp		ExRet
 	.elseif eax==SPRM_DELETEROW
-		invoke UpdateExpanded,ebx,TRUE
-		invoke DeleteRow,ebx,wParam
-		mov		eax,[ebx].SHEET.winst
-		and		eax,SPS_GRIDMODE
-		.if !eax
-			mov		eax,[ebx].SHEET.gfmt.nrows
-			inc		eax
-			invoke InsertRow,ebx,eax
+		mov		edi,lParam
+		.if !edi
+			inc		edi
 		.endif
-		invoke UpdateSheetRef,ebx,0,wParam,0,-1
-		invoke UpdateExpanded,ebx,FALSE
+		.while edi
+			invoke UpdateExpanded,ebx,TRUE
+			invoke DeleteRow,ebx,wParam
+			mov		eax,[ebx].SHEET.winst
+			and		eax,SPS_GRIDMODE
+			.if !eax
+				mov		eax,[ebx].SHEET.gfmt.nrows
+				inc		eax
+				invoke InsertRow,ebx,eax
+			.endif
+			invoke UpdateSheetRef,ebx,0,wParam,0,-1
+			invoke UpdateExpanded,ebx,FALSE
+			dec		edi
+		.endw
 		invoke InvalidateRect,hWin,NULL,FALSE
 		jmp		ExRet
 	.elseif eax==SPRM_INSERTROW
-		invoke UpdateExpanded,ebx,TRUE
-		mov		eax,[ebx].SHEET.winst
-		and		eax,SPS_GRIDMODE
-		.if !eax
-			mov		eax,[ebx].SHEET.gfmt.nrows
-			invoke DeleteRow,ebx,eax
+		mov		edi,lParam
+		.if !edi
+			inc		edi
 		.endif
-		invoke InsertRow,ebx,wParam
-		invoke UpdateSheetRef,ebx,0,wParam,0,1
-		invoke UpdateExpanded,ebx,FALSE
+		.while edi
+			invoke UpdateExpanded,ebx,TRUE
+			mov		eax,[ebx].SHEET.winst
+			and		eax,SPS_GRIDMODE
+			.if !eax
+				mov		eax,[ebx].SHEET.gfmt.nrows
+				invoke DeleteRow,ebx,eax
+			.endif
+			invoke InsertRow,ebx,wParam
+			invoke UpdateSheetRef,ebx,0,wParam,0,1
+			invoke UpdateExpanded,ebx,FALSE
+			dec		edi
+		.endw
 		invoke InvalidateRect,hWin,NULL,FALSE
 		jmp		ExRet
 	.elseif eax==SPRM_GETCOLCOUNT
