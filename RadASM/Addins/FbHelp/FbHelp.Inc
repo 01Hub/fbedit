@@ -75,7 +75,6 @@ SYMBOL_INFO ends
 szSecStab					db '.stab',0
 szSecStabstr				db '.stabstr',0
 szfmtdword					db ',%d',0
-szfmtarray					db '[%u..%u]',0
 
 .data?
 

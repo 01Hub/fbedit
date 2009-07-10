@@ -211,7 +211,7 @@ TestWord:
 			retn
 		.endif
 		xor		eax,eax
-	.else
+	.elseif [esi].PROPERTIES.nType=='d'
 		.while TRUE
 			mov		al,[ecx]
 			mov		ah,[edx]
@@ -238,6 +238,7 @@ TestWord:
 			inc		edx
 		.endw
 	.endif
+	xor		eax,eax
 	retn
 
 FindWord endp

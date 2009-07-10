@@ -33,7 +33,7 @@ STAB struct
 STAB ends
 
 DATATYPE struct
-	szName					BYTE 64 dup(?)
+	szName					BYTE 128 dup(?)
 	nSize					DWORD ?
 DATATYPE ends
 
@@ -86,6 +86,6 @@ nHeaders					DWORD ?
 rpstab						DWORD ?
 rpstabs						DWORD ?
 source						BYTE 8192 dup(?)
-datatype					DATATYPE 256 dup(<>)
+datatype					DATATYPE 512 dup(<>)
 syminf						SYMBOL_INFO <>
 szname						db 8192 dup(?)

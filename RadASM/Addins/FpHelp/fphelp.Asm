@@ -429,6 +429,7 @@ GetArray proc uses ebx esi edi,lpStab:DWORD,lpName:DWORD
 			.break
 		.endif
 	.endw
+	mov		eax,[esi].DATATYPE.nSize
 	ret
 
 SkipSemi:
@@ -467,7 +468,7 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 				.endw
 				invoke strcpyn,ebx,edi,ecx
 				invoke strlen,ebx
-				lea		ebx,[ebx+eax]
+				lea		ebx,[ebx+eax+1]
 				lea		edi,[edi+eax]
 				xor		eax,eax
 				.if byte ptr [edi+1]=='S'
@@ -484,11 +485,10 @@ EnumProcs proc uses ebx esi edi,EnumSymbolsCallback:DWORD,UserContext:DWORD
 						inc		ebx
 						invoke strcpy,ebx,addr [edi].DATATYPE.szName
 						mov		eax,[edi].DATATYPE.nSize
-						.if !eax
-							dec		eax
-						.endif
 					.endif
-PrintStringByAddr offset szname
+					.if !eax
+						dec		eax
+					.endif
 					push	UserContext
 					push	eax							; Size
 					push	[esi].STAB.ad				; Address
@@ -544,11 +544,6 @@ PrintStringByAddr offset szname
 							mov		edx,sizeof DATATYPE
 							mul		edx
 							lea		edi,[eax+offset datatype]
-;							.if [edi].DATATYPE.inxmax
-;								invoke wsprintf,ebx,addr szfmtarray,[edi].DATATYPE.inxmin,[edi].DATATYPE.inxmax
-;								invoke strlen,ebx
-;								lea		ebx,[ebx+eax]
-;							.endif
 							mov		byte ptr [ebx],':'
 							inc		ebx
 							invoke strcpy,ebx,addr [edi].DATATYPE.szName
