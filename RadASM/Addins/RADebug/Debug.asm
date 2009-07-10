@@ -850,6 +850,10 @@ Debug proc uses ebx,lpFileName:DWORD
 	invoke PutString,addr szDebugStopped
 	invoke SetWindowText,hOut2,addr szNULL
 	invoke ImmPromptOff
+	; Show output window #1
+	push	1
+	mov		eax,lpProc
+	call	[eax].ADDINPROCS.lpOutputSelect
 	ret
 
 Debug endp

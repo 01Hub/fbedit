@@ -1306,13 +1306,7 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		mov		eax,var.nSize
 		.if eax
 			; Known size
-			.if var.IsSZ
-				.if nAsm==nFP
-					mov		ebx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
-					mov		ebx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
-				.endif
+			.if var.IsSZ==1
 				mov		eax,var.nArray
 				sub		eax,var.nInx
 				.if eax>256
@@ -1321,6 +1315,23 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
 				mov		var.lpFormat,offset szDataSZ
 				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
+			.elseif var.IsSZ==2
+				.if nAsm==nFP || nAsm==nBCET
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
+					mov		eax,var.nArray
+					sub		eax,var.nInx
+					.if eax>256
+						mov		eax,256
+					.endif
+					invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
+					mov		var.lpFormat,offset szDataS
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
+				.else
+					mov		var.nErr,ERR_SYNTAX
+				.endif
 			.else
 				.if eax==3 || eax>4
 					; Struct ,union ,QWORD or TBYTE
@@ -1367,13 +1378,7 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 		; LOCAL
 		mov		eax,var.nSize
 		.if eax
-			.if var.IsSZ
-				.if nAsm==nFP
-					mov		ebx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
-					mov		ebx,var.Address
-					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
-				.endif
+			.if var.IsSZ==1
 				mov		eax,var.nArray
 				sub		eax,var.nInx
 				.if eax>255
@@ -1382,6 +1387,23 @@ GetVarVal proc uses ebx esi edi,lpName:DWORD,nLine:DWORD,fShow:DWORD
 				invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
 				mov		var.lpFormat,offset szLocalSZ
 				mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
+			.elseif var.IsSZ==2
+				.if nAsm==nFP || nAsm==nBCET
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,ebx,addr var.Address,4,0
+					mov		ebx,var.Address
+					invoke ReadProcessMemory,dbg.hdbghand,addr [ebx-4],addr var.nArray,4,0
+					mov		eax,var.nArray
+					sub		eax,var.nInx
+					.if eax>255
+						mov		eax,255
+					.endif
+					invoke ReadProcessMemory,dbg.hdbghand,var.Address,addr var.szValue,eax,0
+					mov		var.lpFormat,offset szLocalS
+					mov		var.nFormat,FMT_NAME or FMT_TYPE or FMT_ADDRESS or FMT_SIZE or FMT_SZ
+				.else
+					mov		var.nErr,ERR_SYNTAX
+				.endif
 			.else
 				.if eax==3 || eax>4
 					; Struct ,union ,QWORD or TBYTE
@@ -1455,7 +1477,15 @@ WatchVars proc uses esi
 		invoke SetWindowText,hOut3,addr szNULL
 		.while byte ptr [esi]
 			invoke strcpy,addr buffer,esi
-			invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+			.if word ptr buffer==':z' || word ptr buffer==':Z'
+				mov		var.IsSZ,1
+				invoke GetVarVal,addr buffer[2],dbg.prevline,TRUE
+			.elseif word ptr buffer==':s' || word ptr buffer==':S'
+				mov		var.IsSZ,2
+				invoke GetVarVal,addr buffer[2],dbg.prevline,TRUE
+			.else
+				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
+			.endif
 			.if eax
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else

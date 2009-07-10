@@ -88,10 +88,11 @@ o Simple math.
   - Example: Memdump Addr(MyArray),Sizeof(MyArray),DWORD
 o Inspect variable, register, datatype, constant or a hex / dec value.
   - ?MyVar to show info about a variable local or parameter.
-  - ?MyVar(inx) to show an array element. Index is zero based.
-    (inx) can be any expression.
+  - ?MyVar(inx) to show an array element. Index is zero based and single
+    dimension. (inx) can be any expression.
   - ?Z:MyZString to show a ZString. Use Z:MyZString(inx) to start
     at an offset. (inx) can be any expression.
+  - ?S:MyString to show a String.
   - ?reg To show a register (reg: eax, ebx ...).
   - ?123 or ?0A5Fh to convert a number to hex and decimal.
 o Change variable or register.
@@ -120,6 +121,9 @@ o Commands.
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.5
+  - Added ?S:MyString command to immediate window to show strings.
+  - Added support for FreeBASIC.
 o Released version 1.0.0.4
   - Fixed bug with showing local ZString.
   - Added support for FreePASCAL.

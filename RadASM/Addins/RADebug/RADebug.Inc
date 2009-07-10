@@ -309,8 +309,8 @@ szImmPrompt						db '>',0
 
 ; Debug startup texts
 szDebug							db 'Debug',0
-szDebuggingStarted				db 'Debugging started',0
-szDebugStopped					db 'Debugging ended',0
+szDebuggingStarted				db '** Debugging started **',0
+szDebugStopped					db 0Dh,'** Debugging ended **',0
 szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
@@ -366,6 +366,7 @@ szData32						db 'GLOBAL %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szData16						db 'GLOBAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szData8							db 'GLOBAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szDataSZ						db 'GLOBAL %s%s Address %08Xh Size %u ZString "%s"',0
+szDataS							db 'GLOBAL %s%s Address %08Xh Size %u String "%s"',0
 szParam							db 'PARAM %s%s Address %08Xh Size %u',0
 szParam32						db 'PARAM %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szParam16						db 'PARAM %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
@@ -375,6 +376,7 @@ szLocal32						db 'LOCAL %s%s Address %08Xh Size %u Hex %08Xh Dec %d',0
 szLocal16						db 'LOCAL %s%s Address %08Xh Size %u Hex %04Xh Dec %d',0
 szLocal8						db 'LOCAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szLocalSZ						db 'LOCAL %s%s Address %08Xh Size %u ZString "%s"',0
+szLocalS						db 'LOCAL %s%s Address %08Xh Size %u String "%s"',0
 szValue							db 'Hex %08Xh Dec %d',0
 
 szType							db 'Type: %s Size: %u',0

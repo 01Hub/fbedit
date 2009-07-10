@@ -416,8 +416,15 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.if buffer=='?'
 		movzx	eax,word ptr buffer[1]
 		.if eax==':z' || eax==':Z'
-			mov		var.IsSZ,TRUE
+			mov		var.IsSZ,1
 			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
+			mov		eax,var.nErr
+			mov		nError,eax
+		.elseif eax==':s' || eax==':S'
+			mov		var.IsSZ,2
+			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
+			mov		eax,var.nErr
+			mov		nError,eax
 		.else
 			invoke DoMath,addr buffer[1]
 			.if !nError
@@ -426,14 +433,9 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				.else
 					invoke FormatOutput,addr outbuffer
 				.endif
-			.elseif nError==ERR_SYNTAX
-				invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
-			.elseif nError==ERR_NOTFOUND
-				invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
-			.elseif nError==ERR_INDEX
-				invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,addr szError
 			.endif
 		.endif
+		call	Error
 		invoke PutStringOut,addr outbuffer,hOut3
 		jmp		Ex
 	.endif
@@ -508,6 +510,16 @@ Immediate proc uses ebx esi edi,hWin:HWND
   Ex:
 	invoke ImmPromptOn
 	ret
+
+Error:
+	.if nError==ERR_SYNTAX
+		invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
+	.elseif nError==ERR_NOTFOUND
+		invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
+	.elseif nError==ERR_INDEX
+		invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,addr szError
+	.endif
+	retn
 
 Immediate endp
 
