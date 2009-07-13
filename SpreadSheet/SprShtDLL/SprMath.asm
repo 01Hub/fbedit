@@ -144,6 +144,7 @@ SumFun proc uses esi,lpRef:DWORD,lpAcm:DWORD
 	.if eax
 		mov		esi,eax
 		mov		al,[esi].COLDTA.fmt.tpe
+		and		al,TPE_TYPEMASK
 		.if al==TPE_FLOAT
 			lea		ecx,[esi].COLDTA.fmt.tpe[1]
 			mov		edx,lpAcm
@@ -250,6 +251,7 @@ MinMaxFun proc uses esi,lpRef:DWORD,lpAcm:DWORD,fMax:DWORD
 	.if eax
 		mov		esi,eax
 		mov		al,[esi].COLDTA.fmt.tpe
+		and		al,TPE_TYPEMASK
 		.if al==TPE_FLOAT
 			lea		ecx,[esi].COLDTA.fmt.tpe[1]
 			mov		edx,lpAcm
@@ -417,6 +419,7 @@ VarFun proc uses esi,lpRef:DWORD,lpAcm:DWORD
 	.if eax
 		mov		esi,eax
 		mov		al,[esi].COLDTA.fmt.tpe
+		and		al,TPE_TYPEMASK
 		.if al==TPE_FLOAT
 			lea		ecx,[esi].COLDTA.fmt.tpe[1]
 			fld		tbyte ptr [ecx]

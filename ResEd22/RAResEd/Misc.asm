@@ -558,27 +558,6 @@ AddTypeMem proc uses esi,lpProMem:DWORD,nSize:DWORD,nType:DWORD
 
 AddTypeMem endp
 
-AddName proc uses esi edi,lpProMem:DWORD,lpName:DWORD,lpValue:DWORD
-
-	invoke GetTypeMem,lpProMem,TPE_NAME
-	mov		esi,[eax].PROJECT.hmem
-	.while [esi].NAMEMEM.szname || [esi].NAMEMEM.value
-		add		esi,sizeof NAMEMEM
-	.endw
-	invoke strcpyn,addr [esi].NAMEMEM.szname,lpName,MaxName
-	mov		[esi].NAMEMEM.delete,FALSE
-	mov		eax,lpValue
-	.if word ptr [eax]=='x0'
-		add		eax,2
-		invoke HexToBin,eax
-	.else
-		invoke ResEdDecToBin,eax
-	.endif
-	mov		[esi].NAMEMEM.value,eax
-	ret
-
-AddName endp
-
 FindName proc uses esi,lpProMem:DWORD,lpName:DWORD
 
 	invoke GetTypeMem,lpProMem,TPE_NAME
@@ -601,6 +580,26 @@ FindName proc uses esi,lpProMem:DWORD,lpName:DWORD
 	ret
 
 FindName endp
+
+AddName proc uses esi,lpProMem:DWORD,lpName:DWORD,lpValue:DWORD
+
+	invoke GetTypeMem,lpProMem,TPE_NAME
+	mov		esi,[eax].PROJECT.hmem
+	.while [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+		add		esi,sizeof NAMEMEM
+	.endw
+	invoke strcpyn,addr [esi].NAMEMEM.szname,lpName,MaxName
+	mov		eax,lpValue
+	.if word ptr [eax]=='x0'
+		invoke HexToBin,addr [eax+2]
+	.else
+		invoke ResEdDecToBin,eax
+	.endif
+	mov		[esi].NAMEMEM.value,eax
+	mov		[esi].NAMEMEM.delete,FALSE
+	ret
+
+AddName endp
 
 ClipDataSet proc lpData:LPSTR,dwSize:dword
 	LOCAL	hMem:HANDLE

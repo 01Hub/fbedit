@@ -347,6 +347,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
+		mov		fTimer,1
 		mov		eax,lParam
 		and		eax,0FFFFh
 		mov		pt.x,eax
@@ -477,6 +478,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[esi].WIN.sflag,0
 		.endif
 		invoke ReleaseCapture
+		mov		fTimer,0
 	.elseif eax==WM_MOUSEMOVE
 		mov		eax,lParam
 		and		eax,0FFFFh
@@ -645,80 +647,123 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		[esi].WIN.ccol
 			.elseif wParam==MK_LBUTTON
 				;Multiselect
-				invoke GetCapture
-				mov		edx,[ebx].SHEET.winst
-				and		edx,SPS_MULTISELECT
-				.if eax==hWin && edx
-					invoke GetClientRect,hWin,addr rect
-					invoke FindRow,ebx,0
-					mov		ax,[eax].ROWDTA.rowht
-					cwde
-					.if eax==-1
-						mov		eax,[ebx].SHEET.gfmt.ghdrht
-					.endif
-					mov		rect.top,eax
-					invoke FindCell,ebx,0,0
-					mov		ax,word ptr [eax].COLDTA.fmt.tpe[1]
-					cwde
-					.if eax==-1
-						mov		eax,[ebx].SHEET.gfmt.ghdrwt
-					.endif
-					mov		rect.left,eax
-					mov		eax,pt.y
-					.if sdword ptr eax>rect.bottom
-						mov		eax,rect.bottom
-						mov		pt.y,eax
-						mov		eax,[ebx].SHEET.gfmt.nrows
-						.if eax>[esi].WIN.trow
-							inc		[esi].WIN.trow
+				.if fTimer==1
+					mov		eax,hWin
+					mov		fTimer,eax
+					invoke GetCapture
+					mov		edx,[ebx].SHEET.winst
+					and		edx,SPS_MULTISELECT
+					.if eax==hWin && edx
+						invoke GetClientRect,hWin,addr rect
+						invoke FindCell,ebx,0,0
+						movsx	eax,word ptr [eax].COLDTA.fmt.tpe[1]
+						.if eax==-1
+							mov		eax,[ebx].SHEET.gfmt.ghdrwt
 						.endif
-					.elseif sdword ptr eax<rect.top
-						mov		eax,rect.top
-						inc		eax
-						mov		pt.y,eax
-						.if [esi].WIN.trow>1
-							dec		[esi].WIN.trow
-						.endif
-					.endif
-					mov		eax,pt.x
-					.if sdword ptr eax>rect.right
-						mov		eax,rect.right
-						mov		pt.x,eax
-						mov		eax,[ebx].SHEET.gfmt.ncols
-						.if eax>[esi].WIN.tcol
-							inc		[esi].WIN.tcol
-						.endif
-					.elseif sdword ptr eax<rect.left
-						mov		eax,rect.left
-						inc		eax
-						mov		pt.x,eax
-						.if [esi].WIN.tcol>1
-							dec		[esi].WIN.tcol
-						.endif
-					.endif
-					push	[esi].WIN.ccol
-					push	[esi].WIN.crow
-					invoke GetCellFromPt,ebx,esi,addr pt
-					pop		[esi].WIN.crow
-					pop		[esi].WIN.ccol
-					mov		edx,eax
-					shr		edx,16
-					and		eax,0FFFFh
-					.if eax && edx
-						.if eax!=[esi].WIN.mcol || edx!=[esi].WIN.mrow
-							push	eax
-							push	edx
-							mov		edx,SPRN_SELCHANGE
-							call	SelChange
-							pop		edx
-							pop		eax
-							.if !sprsc.fcancel
-								mov		[esi].WIN.mcol,eax
-								mov		[esi].WIN.mrow,edx
+						mov		edx,pt.x
+						.if sdword ptr edx>rect.right
+							sub		edx,rect.right
+							mov		eax,edx
+						.elseif sdword ptr edx<eax
+							sub		eax,edx
+						.else
+							invoke FindRow,ebx,0
+							movsx	eax,[eax].ROWDTA.rowht
+							.if eax==-1
+								mov		eax,[ebx].SHEET.gfmt.ghdrht
+							.endif
+							mov		edx,pt.y
+							.if sdword ptr edx>rect.bottom
+								sub		edx,rect.bottom
+								mov		eax,edx
+							.elseif sdword ptr edx<eax
+								sub		eax,edx
+							.else
+								xor		eax,eax
 							.endif
 						.endif
+						.if sdword ptr eax>0
+							.if eax>15
+								mov		eax,15
+							.endif
+							neg		eax
+							add		eax,15
+							.if eax>10
+								mov		eax,10
+							.endif
+							mov		nTimer,eax
+						.else
+							mov		nTimer,0
+						.endif
+						invoke FindRow,ebx,0
+						movsx	eax,[eax].ROWDTA.rowht
+						.if eax==-1
+							mov		eax,[ebx].SHEET.gfmt.ghdrht
+						.endif
+						mov		rect.top,eax
+						invoke FindCell,ebx,0,0
+						mov		ax,word ptr [eax].COLDTA.fmt.tpe[1]
+						cwde
+						.if eax==-1
+							mov		eax,[ebx].SHEET.gfmt.ghdrwt
+						.endif
+						mov		rect.left,eax
+						mov		eax,pt.y
+						.if sdword ptr eax>rect.bottom
+							mov		eax,rect.bottom
+							mov		pt.y,eax
+							mov		eax,[ebx].SHEET.gfmt.nrows
+							.if eax>[esi].WIN.trow
+								inc		[esi].WIN.trow
+							.endif
+						.elseif sdword ptr eax<rect.top
+							mov		eax,rect.top
+							inc		eax
+							mov		pt.y,eax
+							.if [esi].WIN.trow>1
+								dec		[esi].WIN.trow
+							.endif
+						.endif
+						mov		eax,pt.x
+						.if sdword ptr eax>rect.right
+							mov		eax,rect.right
+							mov		pt.x,eax
+							mov		eax,[ebx].SHEET.gfmt.ncols
+							.if eax>[esi].WIN.tcol
+								inc		[esi].WIN.tcol
+							.endif
+						.elseif sdword ptr eax<rect.left
+							mov		eax,rect.left
+							inc		eax
+							mov		pt.x,eax
+							.if [esi].WIN.tcol>1
+								dec		[esi].WIN.tcol
+							.endif
+						.endif
+						push	[esi].WIN.ccol
+						push	[esi].WIN.crow
+						invoke GetCellFromPt,ebx,esi,addr pt
+						pop		[esi].WIN.crow
+						pop		[esi].WIN.ccol
+						mov		edx,eax
+						shr		edx,16
+						and		eax,0FFFFh
+						.if eax && edx
+							.if eax!=[esi].WIN.mcol || edx!=[esi].WIN.mrow
+								push	eax
+								push	edx
+								mov		edx,SPRN_SELCHANGE
+								call	SelChange
+								pop		edx
+								pop		eax
+								.if !sprsc.fcancel
+									mov		[esi].WIN.mcol,eax
+									mov		[esi].WIN.mrow,edx
+								.endif
+							.endif
+						.endif
+						invoke InvalidateRect,hWin,NULL,TRUE
 					.endif
-					invoke InvalidateRect,hWin,NULL,TRUE
 				.endif
 			.endif
 		.elseif [esi].WIN.sflag==101h
@@ -1531,6 +1576,28 @@ ComboProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ComboProc endp
 
+MyTimerProc proc hWin:HWND,uMsg:UINT,idEvent:DWORD,dwTime:DWORD
+	LOCAL	pt:POINT
+
+	.if fTimer>1
+		.if nTimer
+			dec		nTimer
+		.else
+			invoke GetCursorPos,addr pt
+			invoke ScreenToClient,fTimer,addr pt
+			mov		eax,pt.x
+			mov		edx,pt.y
+			shl		edx,16
+			mov		dx,ax
+			mov		eax,fTimer
+			mov		fTimer,1
+			invoke PostMessage,eax,WM_MOUSEMOVE,MK_LBUTTON,edx
+		.endif
+	.endif
+	ret
+
+MyTimerProc endp
+
 TestExpand proc uses ebx esi edi,lpSheet:DWORD,lpRect:DWORD
 
 	mov		ebx,lpSheet
@@ -1884,12 +1951,18 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			and		edx,TPE_TYPEMASK
 			.if edx==TPE_TEXT || edx==TPE_TEXTMULTILINE || edx==TPE_HYPERLINK
 				lea		eax,[eax].COLDTA.fmt.tpe[1]
-			.elseif edx==TPE_INTEGER
+			.elseif edx==TPE_INTEGER || edx==TPE_CHECKBOX || edx==TPE_COMBOBOX
 				mov		eax,dword ptr [eax].COLDTA.fmt.tpe[1]
 				invoke DwToAscii,eax,offset buff
 				mov		eax,offset buff
 			.elseif edx==TPE_FLOAT
 				invoke FpToAscii,addr [eax].COLDTA.fmt.tpe[1],offset buff,FALSE
+				mov		eax,offset buff
+			.elseif edx==TPE_FORMULA
+				invoke DecompFormula,addr [eax].COLDTA.fmt.tpe[1+10],offset buff
+				mov		eax,offset buff
+			.elseif edx==TPE_GRAPH
+				invoke DecompFormula,addr [eax].COLDTA.fmt.tpe[1+4],offset buff
 				mov		eax,offset buff
 			.else
 				xor		eax,eax
@@ -2052,6 +2125,7 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		lea		edi,[ebx].SHEET.gfmt
 		mov		ecx,sizeof GLOBAL
 		rep movsb
+		invoke RecalcSheet,ebx
 		invoke InvalidateRect,hWin,NULL,TRUE
 		xor		eax,eax
 		jmp		ExRet
@@ -2381,7 +2455,9 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWin,ebx,esi
 		invoke SetFocus,eax
 		invoke StrCpy,addr [ebx].SHEET.szDateFormat,addr szDefDateFormat
+		invoke SetTimer,hWin,1000,25,addr MyTimerProc
 	.elseif eax==WM_DESTROY
+		invoke KillTimer,hWin,1000
 		invoke DestroyFonts,ebx
 		invoke DestroyRowMem,ebx
 		invoke GlobalFree,[ebx].SHEET.lprowmem

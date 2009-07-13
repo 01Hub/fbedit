@@ -256,3 +256,5 @@ fEditCancel			dd ?
 OldComboProc		dd ?
 hfocus				dd ?
 nErrCalc			dd ?
+nTimer				dd ?
+fTimer				dd ?

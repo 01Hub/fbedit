@@ -593,7 +593,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
 		.if eax==hResEd
-
 			.if !fNotify
 				mov		fNotify,1
 				.if !hResEdSave

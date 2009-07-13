@@ -236,14 +236,12 @@ DrawGraph proc uses ebx esi edi,lpSheet:DWORD,lpCell:DWORD,hDC:HDC,mDC:HDC,lpRec
 	LOCAL	rect:RECT
 	LOCAL	dwval:DWORD
 	LOCAL	fpval:TBYTE
-
 	LOCAL	lpgtxt:DWORD
 	LOCAL	gtxt[17]:GTEXT
 	LOCAL	lpggx:DWORD
 	LOCAL	ggx[16]:GGX
 	LOCAL	lpgfx:DWORD
 	LOCAL	gfx[16]:GFX
-
 	LOCAL	nCol:DWORD
 	LOCAL	nRow:DWORD
 	LOCAL	xval:DWORD
@@ -980,7 +978,6 @@ DrawCell proc uses ebx esi edi,lpSheet:DWORD,lpWin:DWORD,nCol:DWORD,nRow:DWORD,l
 	LOCAL	hBr:DWORD
 	LOCAL	hPen:DWORD
 	LOCAL	buffer[1024]:BYTE
-
 	LOCAL	sbsv:DWORD
 	LOCAL	sbsh:DWORD
 	LOCAL	fGrd:DWORD
@@ -1715,10 +1712,12 @@ DrawCellTxt:
 		.elseif cl==FMTA_AUTO
 			or		eax,DT_LEFT
 		.endif
+		xor		edx,edx
 		mov		ecx,fmt
 		and		cl,FMTA_YMASK
 		.if cl==FMTA_TOP
 			or		eax,DT_TOP
+			inc		edx
 		.elseif cl==FMTA_MIDDLE
 			or		eax,DT_VCENTER
 		.elseif cl==FMTA_BOTTOM
@@ -1726,7 +1725,7 @@ DrawCellTxt:
 		.endif
 		mov		cl,[edi].COLDTA.fmt.tpe
 		and		cl,TPE_TYPEMASK
-		.if cl==TPE_TEXTMULTILINE || cl==TPE_COLHDR
+		.if cl==TPE_TEXTMULTILINE || (cl==TPE_COLHDR && edx)
 			xor		eax,DT_SINGLELINE
 			or		eax,DT_WORDBREAK
 		.endif
