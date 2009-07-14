@@ -214,10 +214,10 @@ Whats new since 0.0.0.1
 - lParam on SPRM_DELETECOL, SPRM_INSERTCOL, SPRM_DELETEROW and SPRM_INSERTROW specifies the number of rows / columns.
 - Improved row / column resizing.
 - Variable speed selection scrolling by mouse.
-- Selection change by using keyboard now jumps over canceled SPRN_SELCHANGE cells.
+- Selection change by using keyboard now jumps over cancelled SPRN_SELCHANGE cells.
 - SPRM_GETCELLSTRING can now be used to get a formula or graph.
 - Fixed bug with reporting cell calculation errors.
-- Fixed bug with column header formattin.
+- Fixed bug with column header formatting.
   NOTE! A multiline column header must have the FMTA_TOP alignment.
 - Fixed bug with graph global back color.
 - Fixed bug with long column header text.
