@@ -191,6 +191,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	spredt:SPR_EDIT
 	LOCAL	spri:SPR_ITEM
 	LOCAL	CellClick:DWORD
+	LOCAL	savepos[64]:BYTE
 
 	invoke GetParent,hWin
 	invoke GetWindowLong,eax,0
@@ -200,6 +201,8 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,sizeof WIN
 		mul		edx
 		lea		esi,[ebx].SHEET.owin[eax]
+	.else
+		jmp		ExDef
 	.endif
 	mov		eax,uMsg
 	.if eax==WM_PAINT
@@ -281,45 +284,52 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,wParam
 		test	edx,MK_CONTROL
 		.if ZERO?
-			mov		eax,[esi].WIN.trow
-			.if SDWORD ptr edx>0
-				.if eax>3
-					sub		eax,3
+			test	[ebx].SHEET.winst,SPS_LOCKVSCROLL
+			.if ZERO?
+				mov		eax,[esi].WIN.trow
+				.if SDWORD ptr edx>0
+					.if eax>3
+						sub		eax,3
+					.else
+						mov		eax,1
+					.endif
+					.if eax<=[esi].WIN.lrow
+						mov		eax,[esi].WIN.lrow
+						inc		eax
+					.endif
 				.else
-					mov		eax,1
+					add		eax,3
+					.if eax>[ebx].SHEET.gfmt.nrows
+						mov		eax,[ebx].SHEET.gfmt.nrows
+					.endif
 				.endif
-				.if eax<=[esi].WIN.lrow
-					mov		eax,[esi].WIN.lrow
-					inc		eax
-				.endif
-			.else
-				add		eax,3
-				.if eax>[ebx].SHEET.gfmt.nrows
-					mov		eax,[ebx].SHEET.gfmt.nrows
-				.endif
+				mov		[esi].WIN.trow,eax
+				invoke InvalidateRect,hWin,NULL,FALSE
 			.endif
-			mov		[esi].WIN.trow,eax
 		.else
-			mov		eax,[esi].WIN.tcol
-			.if SDWORD ptr edx>0
-				.if eax>3
-					sub		eax,3
+			test	[ebx].SHEET.winst,SPS_LOCKVSCROLL
+			.if ZERO?
+				mov		eax,[esi].WIN.tcol
+				.if SDWORD ptr edx>0
+					.if eax>3
+						sub		eax,3
+					.else
+						mov		eax,1
+					.endif
+					.if eax<=[esi].WIN.lcol
+						mov		eax,[esi].WIN.lcol
+						inc		eax
+					.endif
 				.else
-					mov		eax,1
+					add		eax,3
+					.if eax>[ebx].SHEET.gfmt.ncols
+						mov		eax,[ebx].SHEET.gfmt.ncols
+					.endif
 				.endif
-				.if eax<=[esi].WIN.lcol
-					mov		eax,[esi].WIN.lcol
-					inc		eax
-				.endif
-			.else
-				add		eax,3
-				.if eax>[ebx].SHEET.gfmt.ncols
-					mov		eax,[ebx].SHEET.gfmt.ncols
-				.endif
+				mov		[esi].WIN.tcol,eax
+				invoke InvalidateRect,hWin,NULL,FALSE
 			.endif
-			mov		[esi].WIN.tcol,eax
 		.endif
-		invoke InvalidateRect,hWin,NULL,FALSE
 	.elseif eax==WM_LBUTTONDBLCLK
 		mov		eax,lParam
 		and		eax,0FFFFh
@@ -916,15 +926,17 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ch,al
 		mov		eax,wParam
 		.if eax==VK_RIGHT || eax==VK_LEFT || eax==VK_DOWN || eax==VK_UP || eax==VK_PGDN || eax==VK_PGUP || eax==VK_END || eax==VK_HOME
-			push	[esi].WIN.tcol
-			push	[esi].WIN.trow
-			push	[esi].WIN.ccol
-			push	[esi].WIN.crow
-			push	[esi].WIN.mcol
-			push	[esi].WIN.mrow
+			push	eax
+			push	ecx
+			invoke RtlMoveMemory,addr savepos,addr [esi].WIN.tcol,6*4
+			pop		ecx
+			pop		eax
 			.if eax==VK_RIGHT
+				push	[esi].WIN.ccol
+			  Right:
 				mov		eax,[esi].WIN.ccol
 				.if eax<[ebx].SHEET.gfmt.ncols
+					push	ecx
 					.if ch
 						mov		eax,[ebx].SHEET.gfmt.ncols
 						mov		[esi].WIN.ccol,eax
@@ -932,30 +944,66 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.else
 						invoke CurMove,ebx,esi,1,0,ecx
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						inc		[esi].WIN.ccol
+						jmp		Right
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.ccol
 				.endif
 			.elseif eax==VK_LEFT
+				push	[esi].WIN.ccol
+			  Left:
 				mov		eax,[esi].WIN.ccol
 				.if eax>1
+					push	ecx
 					.if ch
 						mov		[esi].WIN.ccol,1
 						invoke CurMove,ebx,esi,0,0,ecx
 					.else
 						invoke CurMove,ebx,esi,-1,0,ecx
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						dec		[esi].WIN.ccol
+						jmp		Left
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.ccol
 				.endif
 			.elseif eax==VK_UP
+				push	[esi].WIN.crow
+			  Up:
 				mov		eax,[esi].WIN.crow
 				.if eax>1
+					push	ecx
 					.if ch
 						mov		[esi].WIN.crow,1
 						invoke CurMove,ebx,esi,0,0,ecx
 					.else
 						invoke CurMove,ebx,esi,0,-1,ecx
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						dec		[esi].WIN.crow
+						jmp		Up
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.crow
 				.endif
 			.elseif eax==VK_DOWN
+				push	[esi].WIN.crow
+			  Dn:
 				mov		eax,[esi].WIN.crow
 				.if eax<[ebx].SHEET.gfmt.nrows
+					push	ecx
 					.if ch
 						mov		eax,[ebx].SHEET.gfmt.nrows
 						mov		[esi].WIN.crow,eax
@@ -968,10 +1016,22 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.else
 						invoke CurMove,ebx,esi,0,1,ecx
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						inc		[esi].WIN.crow
+						jmp		Dn
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.crow
 				.endif
 			.elseif eax==VK_PGDN
+				push	[esi].WIN.crow
+			  PgDn:
 				mov		eax,[esi].WIN.crow
 				.if eax<[ebx].SHEET.gfmt.nrows
+					push	ecx
 					push	ecx
 					invoke CurMove,ebx,esi,0,0,ecx
 					mov		edx,[esi].WIN.crow
@@ -998,10 +1058,22 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,[esi].WIN.crow
 						mov		[esi].WIN.mrow,eax
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						inc		[esi].WIN.crow
+						jmp		PgDn
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.crow
 				.endif
 			.elseif eax==VK_PGUP
+				push	[esi].WIN.crow
+			  PgUp:
 				mov		eax,[esi].WIN.crow
 				.if eax>1
+					push	ecx
 					push	ecx
 					invoke CurMove,ebx,esi,0,0,ecx
 					mov		edx,[esi].WIN.trow
@@ -1031,6 +1103,15 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,[esi].WIN.crow
 						mov		[esi].WIN.mrow,eax
 					.endif
+					call	MoveIt
+					pop		ecx
+					.if eax
+						dec		[esi].WIN.crow
+						jmp		PgUp
+					.endif
+					pop		eax
+				.else
+					pop		[esi].WIN.crow
 				.endif
 			.elseif eax==VK_HOME
 				.if [esi].WIN.ccol!=1 || [esi].WIN.crow!=1
@@ -1040,6 +1121,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		[esi].WIN.mcol,1
 						mov		[esi].WIN.mrow,1
 					.endif
+					call	MoveIt
 				.endif
 			.elseif eax==VK_END
 				mov		eax,[ebx].SHEET.gfmt.ncols
@@ -1061,39 +1143,9 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,1
 				  @@:
 					mov		[esi].WIN.trow,edx
+					call	MoveIt
 				.endif
 			.endif
-			mov		eax,[ebx].SHEET.hwnd
-			mov		sprsc.hdr.hwndFrom,eax
-			mov		eax,[ebx].SHEET.nid
-			mov		sprsc.hdr.idFrom,eax
-			mov		sprsc.hdr.code,SPRN_SELCHANGE
-			mov		eax,[esi].WIN.nwin
-			mov		sprsc.nwin,eax
-			mov		eax,[esi].WIN.ccol
-			mov		sprsc.col,eax
-			mov		eax,[esi].WIN.crow
-			mov		sprsc.row,eax
-			mov		sprsc.fcancel,FALSE
-			invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr sprsc
-			.if !sprsc.fcancel
-				pop		eax
-				pop		eax
-				pop		eax
-				pop		eax
-				pop		eax
-				pop		eax
-			.else
-				pop		[esi].WIN.mrow
-				pop		[esi].WIN.mcol
-				pop		[esi].WIN.crow
-				pop		[esi].WIN.ccol
-				pop		[esi].WIN.trow
-				pop		[esi].WIN.tcol
-			.endif
-			invoke TestCurPos,ebx,esi
-			invoke TestSync,esi
-			invoke InvalidateRect,hWin,NULL,TRUE
 		.elseif eax==VK_TAB
 			mov		eax,esi
 			add		esi,sizeof WIN
@@ -1150,97 +1202,103 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[esi].WIN.act,0
 		invoke InvalidateRect,hWin,NULL,TRUE
 	.elseif eax==WM_VSCROLL
-		.if hCtrl
-			invoke ShowWindow,hCtrl,SW_HIDE
-			mov		hCtrl,0
-		.endif
-		invoke ShowWindow,[ebx].SHEET.hedt,SW_HIDE
-		invoke SetParent,[ebx].SHEET.hedt,[ebx].SHEET.hwnd
-		mov		sinf.cbSize,sizeof sinf
-		mov		sinf.fMask,SIF_ALL
-		invoke GetScrollInfo,hWin,SB_VERT,addr sinf
-		mov		eax,wParam
-		and		eax,0FFFFh
-		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-			invoke GetRowFromY,ebx,sinf.nTrackPos
-			mov		[esi].WIN.trow,eax
-		.elseif eax==SB_LINEDOWN
-			mov		eax,[esi].WIN.trow
-			.if eax<[ebx].SHEET.gfmt.nrows
-				inc		[esi].WIN.trow
+		test	[ebx].SHEET.winst,SPS_LOCKVSCROLL
+		.if ZERO?
+			.if hCtrl
+				invoke ShowWindow,hCtrl,SW_HIDE
+				mov		hCtrl,0
 			.endif
-		.elseif eax==SB_LINEUP
-			mov		eax,[esi].WIN.lrow
-			inc		eax
-			.if eax<[esi].WIN.trow
-				dec		[esi].WIN.trow
+			invoke ShowWindow,[ebx].SHEET.hedt,SW_HIDE
+			invoke SetParent,[ebx].SHEET.hedt,[ebx].SHEET.hwnd
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_ALL
+			invoke GetScrollInfo,hWin,SB_VERT,addr sinf
+			mov		eax,wParam
+			and		eax,0FFFFh
+			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+				invoke GetRowFromY,ebx,sinf.nTrackPos
+				mov		[esi].WIN.trow,eax
+			.elseif eax==SB_LINEDOWN
+				mov		eax,[esi].WIN.trow
+				.if eax<[ebx].SHEET.gfmt.nrows
+					inc		[esi].WIN.trow
+				.endif
+			.elseif eax==SB_LINEUP
+				mov		eax,[esi].WIN.lrow
+				inc		eax
+				.if eax<[esi].WIN.trow
+					dec		[esi].WIN.trow
+				.endif
+			.elseif eax==SB_PAGEDOWN
+				mov		eax,sinf.nPos
+				add		eax,sinf.nPage
+				invoke GetRowFromY,ebx,eax
+				mov		[esi].WIN.trow,eax
+			.elseif eax==SB_PAGEUP
+				mov		eax,sinf.nPos
+				sub		eax,sinf.nPage
+				jnb		@f
+				mov		eax,sinf.nMin
+			  @@:
+				cmp		eax,sinf.nMin
+				jnb		@f
+				mov		eax,sinf.nMin
+			  @@:
+				invoke GetRowFromY,ebx,eax
+				mov		[esi].WIN.trow,eax
 			.endif
-		.elseif eax==SB_PAGEDOWN
-			mov		eax,sinf.nPos
-			add		eax,sinf.nPage
-			invoke GetRowFromY,ebx,eax
-			mov		[esi].WIN.trow,eax
-		.elseif eax==SB_PAGEUP
-			mov		eax,sinf.nPos
-			sub		eax,sinf.nPage
-			jnb		@f
-			mov		eax,sinf.nMin
-		  @@:
-			cmp		eax,sinf.nMin
-			jnb		@f
-			mov		eax,sinf.nMin
-		  @@:
-			invoke GetRowFromY,ebx,eax
-			mov		[esi].WIN.trow,eax
+			invoke InvalidateRect,hWin,NULL,TRUE
 		.endif
-		invoke InvalidateRect,hWin,NULL,TRUE
 		xor eax,eax
 		jmp		Ex
 	.elseif eax==WM_HSCROLL
-		.if hCtrl
-			invoke ShowWindow,hCtrl,SW_HIDE
-			mov		hCtrl,0
-		.endif
-		invoke ShowWindow,[ebx].SHEET.hedt,SW_HIDE
-		invoke SetParent,[ebx].SHEET.hedt,[ebx].SHEET.hwnd
-		mov		sinf.cbSize,sizeof sinf
-		mov		sinf.fMask,SIF_ALL
-		invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
-		mov		eax,wParam
-		and		eax,0FFFFh
-		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-			invoke GetColFromX,ebx,sinf.nTrackPos
-			mov		[esi].WIN.tcol,eax
-		.elseif eax==SB_LINELEFT
-			mov		eax,[esi].WIN.lcol
-			inc		eax
-			.if eax<[esi].WIN.tcol
-				dec		[esi].WIN.tcol
+		test	[ebx].SHEET.winst,SPS_LOCKHSCROLL
+		.if ZERO?
+			.if hCtrl
+				invoke ShowWindow,hCtrl,SW_HIDE
+				mov		hCtrl,0
 			.endif
-		.elseif eax==SB_LINERIGHT
-			mov		eax,[esi].WIN.tcol
-			.if eax<[ebx].SHEET.gfmt.ncols
-				inc		[esi].WIN.tcol
+			invoke ShowWindow,[ebx].SHEET.hedt,SW_HIDE
+			invoke SetParent,[ebx].SHEET.hedt,[ebx].SHEET.hwnd
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_ALL
+			invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
+			mov		eax,wParam
+			and		eax,0FFFFh
+			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+				invoke GetColFromX,ebx,sinf.nTrackPos
+				mov		[esi].WIN.tcol,eax
+			.elseif eax==SB_LINELEFT
+				mov		eax,[esi].WIN.lcol
+				inc		eax
+				.if eax<[esi].WIN.tcol
+					dec		[esi].WIN.tcol
+				.endif
+			.elseif eax==SB_LINERIGHT
+				mov		eax,[esi].WIN.tcol
+				.if eax<[ebx].SHEET.gfmt.ncols
+					inc		[esi].WIN.tcol
+				.endif
+			.elseif eax==SB_PAGELEFT
+				mov		eax,sinf.nPos
+				sub		eax,sinf.nPage
+				jnb		@f
+				mov		eax,sinf.nMin
+			  @@:
+				cmp		eax,sinf.nMin
+				jnb		@f
+				mov		eax,sinf.nMin
+			  @@:
+				invoke GetColFromX,ebx,eax
+				mov		[esi].WIN.tcol,eax
+			.elseif eax==SB_PAGERIGHT
+				mov		eax,sinf.nPos
+				add		eax,sinf.nPage
+				invoke GetColFromX,ebx,eax
+				mov		[esi].WIN.tcol,eax
 			.endif
-		.elseif eax==SB_PAGELEFT
-			mov		eax,sinf.nPos
-			sub		eax,sinf.nPage
-			jnb		@f
-			mov		eax,sinf.nMin
-		  @@:
-			cmp		eax,sinf.nMin
-			jnb		@f
-			mov		eax,sinf.nMin
-		  @@:
-			invoke GetColFromX,ebx,eax
-			mov		[esi].WIN.tcol,eax
-		.elseif eax==SB_PAGERIGHT
-			mov		eax,sinf.nPos
-			add		eax,sinf.nPage
-			invoke GetColFromX,ebx,eax
-			mov		[esi].WIN.tcol,eax
+			invoke InvalidateRect,hWin,NULL,TRUE
 		.endif
-		invoke InvalidateRect,hWin,NULL,TRUE
 		xor eax,eax
 		jmp		Ex
 	.elseif eax==WM_GETDLGCODE
@@ -1251,6 +1309,29 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
+
+MoveIt:
+	mov		eax,[ebx].SHEET.hwnd
+	mov		sprsc.hdr.hwndFrom,eax
+	mov		eax,[ebx].SHEET.nid
+	mov		sprsc.hdr.idFrom,eax
+	mov		sprsc.hdr.code,SPRN_SELCHANGE
+	mov		eax,[esi].WIN.nwin
+	mov		sprsc.nwin,eax
+	mov		eax,[esi].WIN.ccol
+	mov		sprsc.col,eax
+	mov		eax,[esi].WIN.crow
+	mov		sprsc.row,eax
+	mov		sprsc.fcancel,FALSE
+	invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr sprsc
+	.if sprsc.fcancel
+		invoke RtlMoveMemory,addr [esi].WIN.tcol,addr savepos,6*4
+	.endif
+	invoke TestCurPos,ebx,esi
+	invoke TestSync,esi
+	invoke InvalidateRect,hWin,NULL,TRUE
+	mov		eax,sprsc.fcancel
+	retn
 
 HyperLink:
 	mov		edx,eax
@@ -2482,4 +2563,6 @@ IFDEF DLL
 ELSE
 	include SprShtLib.asm
 ENDIF
+
+
 

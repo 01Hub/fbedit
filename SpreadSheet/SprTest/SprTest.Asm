@@ -45,23 +45,20 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+eax+1]
 		.endw
 		pop		esi
-;		;Set up an item struct
-;		;flag specify valid struct items
-;		mov		spri.flag,SPRIF_DATA or SPRIF_TYPE or SPRIF_WIDTH or SPRIF_IMAGEALIGN or SPRIF_TEXTALIGN
-;		mov		spri.fmt.imgal,FMTA_LEFT
-;		mov		spri.fmt.txtal,FMTA_LEFT
-;		;Plain text
-;		mov		spri.fmt.tpe,TPE_TEXT
-;		;Col 1
-;		mov		spri.col,1
-;		;Row 1
-;		mov		spri.row,1
-;		;And a pointer to text
-;		mov		spri.lpdta,offset szSomeText1
-;		;Width
-;		mov		spri.wt,200
-;		;Insert the item
-;		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
+		;Set up an item struct
+		;flag specify valid struct items
+		mov		spri.flag,SPRIF_DATA or SPRIF_WIDTH or SPRIF_TEXTALIGN
+		mov		spri.fmt.txtal,FMTA_LEFT
+		;Col 1
+		mov		spri.col,1
+		;Row 0
+		mov		spri.row,0
+		;And a pointer to text
+		mov		spri.lpdta,offset szHyperlink
+		;Width
+		mov		spri.wt,200
+		;Insert the item
+		invoke SendMessage,hSpr,SPRM_SETCELLDATA,0,addr spri
 ;		;Col 1
 ;		mov		spri.col,1
 ;		;Row 2

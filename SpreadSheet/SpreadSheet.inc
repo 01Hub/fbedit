@@ -63,6 +63,8 @@ SPS_COLSIZE				equ 0080h			;Allow col width sizeing by mouse
 SPS_ROWSIZE				equ 0100h			;Allow row height sizeing by mouse
 SPS_WINSIZE				equ 0200h			;Allow splitt window sizeing by mouse
 SPS_MULTISELECT			equ 0400h			;Allow multiselect
+SPS_LOCKVSCROLL			equ 0800h			;Vertical scrolling is locked
+SPS_LOCKHSCROLL			equ 1000h			;Horizontal scrolling is locked
 
 ;Cell data types
 TPE_EMPTY				equ 000h			;The cell contains formatting only
@@ -229,28 +231,28 @@ SPRN_BUTTONCLICK		equ 9				;Button clicked
 
 ;SPRN_SELCHANGE
 SPR_SELCHANGE struct dword
-	hdr				NMHDR <?>
-	nwin			dd ?
-	col				dd ?
-	row				dd ?
-	fcancel			dd ?
+	hdr				NMHDR <?>				;NMHDR
+	nwin			dd ?					;Splitt window number
+	col				dd ?					;Column
+	row				dd ?					;Row
+	fcancel			dd ?					;Set to TRUE to cancel selection change
 SPR_SELCHANGE ends
 
 ;SPRN_BEFOREEDIT, SPRN_AFTEREDIT, SPRN_BEFOREUPDATE and SPRN_AFTERUPDATE
 SPR_EDIT struct dword
-	hdr				NMHDR <?>
-	lpspri			dd ?
-	fcancel			dd ?
+	hdr				NMHDR <?>				;NMHDR
+	lpspri			dd ?					;Pointer to SPR_ITEM structure
+	fcancel			dd ?					;Set to TRUE to cancel
 SPR_EDIT ends
 
 ;SPRN_HYPERLINKENTER, SPRN_HYPERLINKLEAVE and SPRN_HYPERLINKCLICK
 SPR_HYPERLINK struct dword
-	hdr				NMHDR <?>
-	lpspri			dd ?
+	hdr				NMHDR <?>				;NMHDR
+	lpspri			dd ?					;Pointer to SPR_ITEM structure
 SPR_HYPERLINK ends
 
 ;SPRN_BUTTONCLICK
 SPR_BUTTON struct dword
-	hdr				NMHDR <?>
-	lpspri			dd ?
+	hdr				NMHDR <?>				;NMHDR
+	lpspri			dd ?					;Pointer to SPR_ITEM structure
 SPR_BUTTON ends

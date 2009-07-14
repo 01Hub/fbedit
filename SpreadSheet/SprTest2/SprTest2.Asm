@@ -31,6 +31,21 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,1001
 		mov		hSht,eax
 
+		;Set column header text.
+		;NOTE! A multiline column header must have FMTA_TOP alignment
+		mov		spri.flag,SPRIF_TEXTALIGN Or SPRIF_DATA Or SPRIF_WIDTH Or SPRIF_HEIGHT
+		mov		spri.col,1
+		mov		spri.row,0
+		mov		spri.fmt.txtal,FMTA_CENTER Or FMTA_TOP
+		mov		spri.wt,80
+		mov		spri.ht,42
+		mov		spri.lpdta,offset szColhdr
+		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
+		mov		rect.left,1
+		mov		rect.right,3
+		mov		rect.top,0
+		mov		rect.bottom,0
+		invoke SendMessage,hSht,SPRM_EXPANDCELL,0,addr rect
 		;Create ComboBox
 		invoke SendMessage,hSht,SPRM_CREATECOMBO,80,0
 		mov		cbo.hcbo,eax
@@ -168,22 +183,6 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Insert the item
 		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
 
-		;Set column header text.
-		;NOTE! A multiline column header must have FMTA_TOP alignment
-		mov		spri.flag,SPRIF_TEXTALIGN Or SPRIF_DATA Or SPRIF_WIDTH Or SPRIF_HEIGHT
-		mov		spri.col,1
-		mov		spri.row,0
-		mov		spri.fmt.txtal,FMTA_CENTER Or FMTA_TOP
-		mov		spri.wt,80
-		mov		spri.ht,42
-		mov		spri.lpdta,offset szColhdr
-		invoke SendMessage,hSht,SPRM_SETCELLDATA,0,addr spri
-		mov		rect.left,1
-		mov		rect.right,3
-		mov		rect.top,0
-		mov		rect.bottom,0
-		invoke SendMessage,hSht,SPRM_EXPANDCELL,0,addr rect
-
 		mov		spri.flag,SPRIF_TEXTALIGN
 		mov		spri.col,4
 		mov		spri.row,0
@@ -232,18 +231,26 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
-;		mov		edx,lParam
-;		mov		eax,[edx].NMHDR.hwndFrom
-;		.if eax==hSht
-;			mov		eax,[edx].NMHDR.code
-;			.if eax==SPRN_SELCHANGE
-;				PrintText "SPRN_SELCHANGE"
+		mov		edx,lParam
+		mov		eax,[edx].NMHDR.hwndFrom
+		.if eax==hSht
+			mov		eax,[edx].NMHDR.code
+			.if eax==SPRN_SELCHANGE
+				PrintText "SPRN_SELCHANGE"
 ;				mov		eax,[edx].SPR_SELCHANGE.col
 ;				PrintDec eax
-;				mov		eax,[edx].SPR_SELCHANGE.row
-;				PrintDec eax
-;				;Cancel the selection change
-;				;mov		[edx].SPR_SELCHANGE.fcancel,TRUE
+				mov		eax,[edx].SPR_SELCHANGE.row
+				PrintDec eax
+				.if eax==5
+					;Cancel the selection change
+					mov		[edx].SPR_SELCHANGE.fcancel,TRUE
+				.endif
+				mov		eax,[edx].SPR_SELCHANGE.col
+				PrintDec eax
+				.if eax==5
+					;Cancel the selection change
+					mov		[edx].SPR_SELCHANGE.fcancel,TRUE
+				.endif
 ;			.elseif eax==SPRN_BEFOREEDIT
 ;				PrintText "SPRN_BEFOREEDIT"
 ;				;Get pointer to SPR_ITEM
@@ -313,8 +320,8 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;					mov		eax,[eax]
 ;					PrintHex eax
 ;				.endif
-;			.endif
-;		.endif
+			.endif
+		.endif
 	.elseif	eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
 		sub		rect.bottom,35

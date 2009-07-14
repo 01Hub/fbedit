@@ -1,7 +1,7 @@
 .code
 
 DrawCurPos proc uses ebx esi,lpSheet:DWORD,lpWin:DWORD,hDC:HDC,lpRect:DWORD
-	LOCAL	buffer[16]:BYTE
+	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,lpSheet
 	mov		esi,lpWin

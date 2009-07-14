@@ -1212,6 +1212,8 @@ SetCellData proc uses ebx esi edi,lpSheet:DWORD,lpSpri:DWORD
 			lea		edx,buff
 			pop		eax
 		.else
+			mov		dword ptr exdouble[4],0
+			mov		word ptr exdouble[8],0
 			mov		edx,[edi].SPR_ITEM.lpdta
 			test	[edi].SPR_ITEM.flag,SPRIF_DOUBLE
 			.if !ZERO?
