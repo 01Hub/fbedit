@@ -18,7 +18,7 @@ SPRM_SETCOLCOUNT		equ WM_USER+115		;Set number of columns. wParam=nCols, lParam=
 SPRM_GETROWCOUNT		equ WM_USER+116		;Get number of rows. wParam=0, lParam=0
 SPRM_SETROWCOUNT		equ WM_USER+117		;Set number of rows. wParam=nRows, lParam=0
 SPRM_RECALC				equ WM_USER+118		;Recalculates the sheet
-SPRM_BLANKCELL			equ WM_USER+119		;Blank a cell. wParam=col, lParam=row
+SPRM_BLANKCELL			equ WM_USER+119		;Blank a cell. wParam=col, lParam=row. Content is deleted, formatting is preserved.
 SPRM_GETCURRENTWIN		equ WM_USER+120		;Get active splitt window. wParam=0, lParam=0
 SPRM_SETCURRENTWIN		equ WM_USER+121		;Set active splitt window. wParam=0, lParam=nWin (0-7)
 SPRM_GETCURRENTCELL		equ WM_USER+122		;Get current col/row in active window. wParam=0, lParam=0. Returns Hiword=row, Loword=col
@@ -46,7 +46,7 @@ SPRM_GETCELLTYPE		equ WM_USER+143		;Get cell data type. wParam=col, lParam=row. 
 SPRM_ADJUSTCELLREF		equ WM_USER+144		;Adjust cell refs in formula. wParam=pointer to cell, lParam=pointer to RECT.
 SPRM_CREATECOMBO		equ WM_USER+145		;Creates a ComboBox. wPatam=Height, lParam=0
 SPRM_SCROLLCELL			equ WM_USER+146		;Scrolls current cell into view
-SPRM_DELETECELL			equ WM_USER+147		;Deletes a cell. wParam=col, lParam=row
+SPRM_DELETECELL			equ WM_USER+147		;Deletes a cell. wParam=col, lParam=row. Content and formatting is deleted.
 SPRM_GETDATEFORMAT		equ WM_USER+148		;Returns date format string. wParam=0, lParam=0
 SPRM_SETDATEFORMAT		equ WM_USER+149		;Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
 SPRM_CALCROWHEIGHT		equ WM_USER+150		;Calculate row height. wParam=row, lParam=Update TRUE/FALSE. Returns max row height needed.
@@ -59,7 +59,7 @@ SPS_GRIDLINES			equ 0008h			;Show grid lines
 SPS_ROWSELECT			equ 0010h			;Selection by row
 SPS_CELLEDIT			equ 0020h			;Cell editing
 SPS_GRIDMODE			equ 0040h			;Inserting and deleting row/col adjusts max row/col
-SPS_COLSIZE				equ 0080h			;Allow col widt sizeing by mouse
+SPS_COLSIZE				equ 0080h			;Allow col width sizeing by mouse
 SPS_ROWSIZE				equ 0100h			;Allow row height sizeing by mouse
 SPS_WINSIZE				equ 0200h			;Allow splitt window sizeing by mouse
 SPS_MULTISELECT			equ 0400h			;Allow multiselect
@@ -86,40 +86,40 @@ TPE_TYPEMASK			equ 00Fh			;Type mask
 
 TPE_BUTTON				equ 010h			;Small button
 TPE_WIDEBUTTON			equ 020h			;Button, covers the cell
-TPE_DATE				equ 030h			;Combine with type integer
-TPE_FORCETYPE			equ 040h			;Forced type
+TPE_DATE				equ 030h			;Must be combined with type integer
+TPE_FORCETYPE			equ 040h			;Forced type. Celltype is preserved when cell is edited
 TPE_FIXEDSIZE			equ 080h			;Fixed size for CheckBox, ComboBox and Button image
 
 ;Format Alignment & Decimals
 FMTA_AUTO				equ 000h			;Text left middle, numbers right middle
-FMTA_LEFT				equ 010h
-FMTA_CENTER				equ 020h
-FMTA_RIGHT				equ 030h
-FMTA_TOP				equ 000h
-FMTA_MIDDLE				equ 040h
-FMTA_BOTTOM				equ 080h
-FMTA_GLOBAL				equ 0F0h
+FMTA_LEFT				equ 010h			;Left aligned
+FMTA_CENTER				equ 020h			;Centered
+FMTA_RIGHT				equ 030h			;Right aligned
+FMTA_TOP				equ 000h			;Top aligned
+FMTA_MIDDLE				equ 040h			;Vertically centered
+FMTA_BOTTOM				equ 080h			;Bottom aligned
+FMTA_GLOBAL				equ 0F0h			;Use global alignment setting
 FMTA_MASK				equ 0F0h			;Alignment mask
 FMTA_XMASK				equ 030h			;Alignment x-mask
 FMTA_YMASK				equ 0C0h			;Alignment y-mask
 
-FMTD_0					equ 00h
-FMTD_1					equ 01h
-FMTD_2					equ 02h
-FMTD_3					equ 03h
-FMTD_4					equ 04h
-FMTD_5					equ 05h
-FMTD_6					equ 06h
-FMTD_7					equ 07h
-FMTD_8					equ 08h
-FMTD_9					equ 09h
-FMTD_10					equ 0Ah
-FMTD_11					equ 0Bh
-FMTD_12					equ 0Ch
-FMTD_ALL				equ 0Dh
-FMTD_SCI				equ 0Eh
-FMTD_GLOBAL				equ 0Fh
-FMTD_MASK				equ 0Fh
+FMTD_0					equ 00h				;Zero decimals
+FMTD_1					equ 01h				;1 decimal
+FMTD_2					equ 02h				;2 decimals
+FMTD_3					equ 03h				;3 decimals
+FMTD_4					equ 04h				;4 decimals
+FMTD_5					equ 05h				;5 decimals
+FMTD_6					equ 06h				;6 decimals
+FMTD_7					equ 07h				;7 decimals
+FMTD_8					equ 08h				;8 decimals
+FMTD_9					equ 09h				;9 decimals
+FMTD_10					equ 0Ah				;10 decimals
+FMTD_11					equ 0Bh				;11 decimals
+FMTD_12					equ 0Ch				;12 decimals
+FMTD_ALL				equ 0Dh				;Shows all decimals
+FMTD_SCI				equ 0Eh				;Scientific
+FMTD_GLOBAL				equ 0Fh				;Use global setting
+FMTD_MASK				equ 0Fh				;Decimals mask
 
 FORMAT struct dword
 	bckcol			dd ?					;Back color
@@ -131,9 +131,9 @@ FORMAT struct dword
 FORMAT ends
 
 GLOBAL struct dword
-	colhdrbtn		dd ?
-	rowhdrbtn		dd ?
-	winhdrbtn		dd ?
+	colhdrbtn		dd ?					;Column header is button
+	rowhdrbtn		dd ?					;Row header is button
+	winhdrbtn		dd ?					;Window header is button
 	lockcol			dd ?					;Back color of locked cell
 	hdrgrdcol		dd ?					;Header grid color
 	grdcol			dd ?					;Cell grid color
@@ -141,12 +141,12 @@ GLOBAL struct dword
 	txtnfcol		dd ?					;Text color of active cell, lost focus
 	bckfocol		dd ?					;Back color of active cell, has focus
 	txtfocol		dd ?					;Text color of active cell, has focus
-	ncols			dd ?
-	nrows			dd ?
-	ghdrwt			dd ?
-	ghdrht			dd ?
-	gcellwt			dd ?
-	gcellht			dd ?
+	ncols			dd ?					;Number of columns
+	nrows			dd ?					;Number of rows
+	ghdrwt			dd ?					;Global Header width
+	ghdrht			dd ?					;Global Header height
+	gcellwt			dd ?					;Global cell width
+	gcellht			dd ?					;Global cell height
 	colhdr			FORMAT <?>				;Column header formatting
 	rowhdr			FORMAT <?>				;Row header formatting
 	winhdr			FORMAT <?>				;Window header formatting
@@ -168,12 +168,12 @@ STATE_LOCKED			equ 001h			;Cell is locked for editing
 STATE_HIDDEN			equ 002h			;Cell content is not displayed
 STATE_AUTOSIZEHEIGHT	equ 004h			;Cell forces autosize height for the row when data is entered in a multiline cell
 STATE_REDRAW			equ 008h			;Internally used
-STATE_ERROR				equ 010h
-STATE_DIV0				equ 020h
-STATE_UNDERFLOW			equ 030h
-STATE_OVERFLOW			equ 040h
+STATE_ERROR				equ 010h			;Circular reference
+STATE_DIV0				equ 020h			;Division by zero
+STATE_UNDERFLOW			equ 030h			;Underflow
+STATE_OVERFLOW			equ 040h			;Overflow
 STATE_RECALC			equ 080h			;Internally used
-STATE_ERRMASK			equ 0F0h
+STATE_ERRMASK			equ 0F0h			;Error mask
 
 SPRIF_BACKCOLOR			equ 00000001h		;Back color is valid
 SPRIF_TEXTCOLOR			equ 00000002h		;Text color is valid
