@@ -5,7 +5,7 @@ Contents file=ResEd.hhc
 Default topic=Intro.htm
 Display compile progress=No
 Index file=ResEd.hhk
-Language=0x414 Norwegian (Bokmal)
+Language=0x414 Norsk, bokmål (Norge)
 
 
 [FILES]
@@ -22,6 +22,10 @@ EdtMenu.htm
 EdtStyleManager.htm
 HelpMenu.htm
 ToolsMenu.htm
+EditAccel.htm
+EditVersion.htm
+EditString.htm
+EditManifest.htm
 
 [INFOTYPES]
 
