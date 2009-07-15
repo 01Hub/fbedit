@@ -124,6 +124,7 @@ Whats new:
 o Released version 1.0.0.5
   - Added ?S:MyString command to immediate window to show strings.
   - Added support for FreeBASIC.
+  - Added support for multi dimension arrays.
 o Released version 1.0.0.4
   - Fixed bug with showing local ZString.
   - Added support for FreePASCAL.
