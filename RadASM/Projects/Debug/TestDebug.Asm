@@ -46,6 +46,7 @@ MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	LOCAL	rc:RECT
 	LOCAL	ggg:WORD
 	LOCAL	hhh:tbyte
+	LOCAL	x[8]:DWORD
 
 	mov		rc.left,123
 	mov		ggg,999

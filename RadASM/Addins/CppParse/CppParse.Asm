@@ -577,6 +577,59 @@ _Begin:
 	.endif
 	retn
 
+GetArray:
+	call	SkipSpc
+	.if byte ptr [esi]=='['
+		mov		ebx,esi
+		call	SkipScope
+		mov		eax,esi
+		sub		eax,ebx
+		.if eax==2
+			mov		byte ptr [edi],'['
+			inc		edi
+			call	SkipSpc
+			.if byte ptr [esi]=='='
+				inc		esi
+				call	SkipSpc
+				.if byte ptr [esi]=='"' || byte ptr [esi]=="'"
+					;szTest[]="Test";
+					mov		ebx,esi
+					call	SkipScope
+					mov		eax,esi
+					sub		eax,ebx
+					dec		eax
+					invoke BinToDec,eax,edi
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+				.endif
+			.endif
+			mov		byte ptr [edi],']'
+			inc		edi
+		.else
+			.while ebx<esi
+				mov		al,[ebx]
+				mov		[edi],al
+				inc		ebx
+				inc		edi
+			.endw
+		  @@:
+			call	SkipSpc
+			.if byte ptr [esi]=='['
+				mov		byte ptr [edi-1],';'
+				lea		ebx,[esi+1]
+				call	SkipScope
+				.while ebx<esi
+					mov		al,[ebx]
+					mov		[edi],al
+					inc		ebx
+					inc		edi
+				.endw
+				jmp		@b
+			.endif
+		.endif
+	.endif
+	retn
+
 _Skip:
 ;PrintText "Skip"
 	invoke IsWord,esi,len,offset szInline,lpCharTab
@@ -754,18 +807,7 @@ _Struct:
 								invoke strcpyn,edi,esi,ecx
 								invoke strlen,edi
 								lea		edi,[edi+eax]
-								call	SkipSpc
-								.if byte ptr [esi]=='['
-									mov		ebx,esi
-									call	SkipScope
-									.while ebx<esi
-										mov		al,[ebx]
-										mov		[edi],al
-										inc		ebx
-										inc		edi
-									.endw
-									call	SkipSpc
-								.endif
+								call	GetArray
 								mov		word ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
@@ -1016,18 +1058,7 @@ _Function:
 								invoke strcpyn,edi,esi,ecx
 								add		edi,len
 								add		esi,len
-								call	SkipSpc
-								.if byte ptr [esi]=='['
-									mov		ebx,esi
-									call	SkipScope
-									.while ebx<esi
-										mov		al,[ebx]
-										mov		[edi],al
-										inc		ebx
-										inc		edi
-									.endw
-									call	SkipSpc
-								.endif
+								call	GetArray
 								mov		byte ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
@@ -1148,41 +1179,7 @@ _Unknown1:
 		call	GetWrd
 		mov		al,[esi]
 		.if !ecx && al!='('
-			.if byte ptr [esi]=='['
-				mov		ebx,esi
-				call	SkipScope
-				mov		eax,esi
-				sub		eax,ebx
-				.if eax==2
-					mov		byte ptr [edi],'['
-					inc		edi
-					call	SkipSpc
-					.if byte ptr [esi]=='='
-						inc		esi
-						call	SkipSpc
-						.if byte ptr [esi]=='"' || byte ptr [esi]=="'"
-							mov		ebx,esi
-							call	SkipScope
-							mov		eax,esi
-							sub		eax,ebx
-							dec		eax
-							invoke BinToDec,eax,edi
-							invoke strlen,edi
-							lea		edi,[edi+eax]
-						.endif
-					.endif
-					mov		byte ptr [edi],']'
-					inc		edi
-				.else
-					.while ebx<esi
-						mov		al,[ebx]
-						mov		[edi],al
-						inc		ebx
-						inc		edi
-					.endw
-					call	SkipSpc
-				.endif
-			.endif
+			call	GetArray
 			mov		byte ptr [edi],':'
 			inc		edi
 			xor		ecx,ecx

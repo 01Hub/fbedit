@@ -98,7 +98,7 @@ ProductVer4Range=0
 2=
 3=
 [Size]
-1=0,0,1278,774,2534
+1=0,0,1278,774,799
 2=0,0,0,0,8
 3=0,0,0,0,285
 [BookMark]
@@ -126,7 +126,7 @@ ProductVer4Range=0
 9="RECT,left"
 10="RECT,"
 [RADebugBP]
-1=82,141,154
+1=83,142,155
 0=
 3=
 [NoDebug]

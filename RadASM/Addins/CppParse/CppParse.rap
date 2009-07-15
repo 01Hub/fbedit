@@ -57,7 +57,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 3=3
 4=4
 5=4
-6=1
+6=2
 [VerInf]
 Nme=VERINF1
 ID=1
@@ -86,7 +86,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=16
@@ -119,7 +119,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,20511
+1=0,0,0,0,10017
 2=0,0,0,0,1151
 4=0,0,0,0,88
 6=0,0,0,0,0
