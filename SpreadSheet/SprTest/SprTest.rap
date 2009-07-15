@@ -19,7 +19,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 7=0,0,\OllyDbg\OllyDbg,5
 11=4,O,$B\RC.EXE /v,1
-12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
+12=3,O,$B\ML.EXE /c /coff /Zd /Zi /Cp /nologo /I"$I",2
 13=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
@@ -49,7 +49,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 5=..\SpreadSheet.inc
 
 [Size]
-1=0,0,0,0,1409
+1=0,0,0,0,12652
 5=0,0,0,0,10643
 2=0,0,0,0,733
 4=0,0,0,0
@@ -86,13 +86,13 @@ Options=52
 Settings=1151
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=1
+MilestoneEveryCurrent=4
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=28
@@ -123,10 +123,10 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=3
 5=2
 [VerInf]
-FV=0.2.8.9
-FileVersion=0.2.8.9
-PV=0.2.8.9
-ProductVersion=0.2.8.9
+FV=0.2.9.2
+FileVersion=0.2.9.2
+PV=0.2.9.2
+ProductVersion=0.2.9.2
 [Find]
 1="SPRM_CREATECOMBO"
 2="COLDTA.fmt.tpe"
@@ -153,4 +153,4 @@ PTimer=7441673
 3=,101,1,Res\SplitH.cur
 4=,102,1,Res\SplitV.cur
 [RADebugBP]
-1=
+1=28
