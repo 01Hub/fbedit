@@ -229,7 +229,7 @@ DumpProcs proc uses ebx esi edi
 				inc		ebx
 				dec		NumberOfAuxSymbols
 			.endw
-		.elseif StorageClass==FUNCTION
+		.elseif StorageClass==FUNCTION || StorageClass==EXTERNAL
 			;.bf, .lf and .ef Symbols
 			;StorageClass=101 (.bf and .ef)
 			mov		eax,[esi].COFFSYMBOL.Zeroes
@@ -309,7 +309,7 @@ DumpGlobals proc uses ebx esi edi
 		mov		StorageClass,eax
 		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
 		mov		NumberOfAuxSymbols,eax
-		.if StorageClass==STATIC && nType==0 && NumberOfAuxSymbols==0 && SectionNumber>0
+		.if ((StorageClass==STATIC && nType==0) || (StorageClass==2 && nType==2000h)) && NumberOfAuxSymbols==0 && SectionNumber>0
 			mov		eax,[esi].COFFSYMBOL.Zeroes
 			.if !eax
 				mov		ecx,hMemFile

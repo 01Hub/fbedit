@@ -150,6 +150,7 @@ DBGPROC ends
 
 szRichEditDLL			db 'riched20.dll',0
 szOBJFilterString		db 'OBJ Files (*.obj)',0,'*.obj',0,0
+;szOBJFilterString		db 'OBJ Files (*.obj)',0,'*.obj',0,'EXE Files (*.exe)',0,'*.exe',0,0
 
 ; Font
 Courier_New_9 			LOGFONT <-12,0,0,0,400,0,0,0,0,3,2,1,49,"Courier New">
