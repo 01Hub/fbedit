@@ -175,7 +175,7 @@ GridAddRowData proc uses ebx esi edi,hMem:DWORD,lpData:DWORD
 	.while ecx<[ebx].GRID.cols
 		push	ecx
 		mov		eax,[edi].COLUMN.ctype
-		.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON
+		.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || eax==TYPE_EDITCOMBOBOX
 			xor		eax,eax
 			.if esi
 				mov		eax,[esi]
@@ -227,7 +227,7 @@ GridGetCellData proc uses ebx esi edi,hMem:DWORD,rpData:DWORD,nCol:DWORD,lpData:
 	lea		edi,[ebx+eax+sizeof GRID]
 	mov		eax,[edi].COLUMN.ctype
 	push	eax
-	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON
+	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || eax==TYPE_EDITCOMBOBOX
 		mov		eax,[esi]
 		invoke GridGetText,ebx,eax,lpData
 	.elseif eax==TYPE_USER
@@ -293,7 +293,7 @@ GridSetCellData proc uses ebx esi edi,hMem:DWORD,rpData:DWORD,nCol:DWORD,lpData:
 	mul		edx
 	lea		edi,[ebx+eax+sizeof GRID]
 	mov		eax,[edi].COLUMN.ctype
-	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON
+	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || eax==TYPE_EDITCOMBOBOX
 		call	UpdateText
 	.elseif eax==TYPE_USER
 		mov		ecx,[edi].COLUMN.ctextmax
@@ -456,7 +456,7 @@ GridSortColumn proc uses ebx esi,hMem:DWORD,nCol:DWORD,nSort:DWORD
 	lea		edx,[ebx+eax+sizeof GRID]
 	mov		eax,[edx].COLUMN.ctype
 	xor		ecx,ecx
-	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || (eax==TYPE_USER && ![edx].COLUMN.ctextmax)
+	.if eax==TYPE_EDITTEXT || eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || eax==TYPE_EDITCOMBOBOX || (eax==TYPE_USER && ![edx].COLUMN.ctextmax)
 		dec		ecx
 	.elseif eax==TYPE_USER && [edx].COLUMN.ctextmax
 		mov		ecx,[edx].COLUMN.ctextmax

@@ -107,12 +107,23 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
 
-		;Text column
+;		;Text column
+;		mov		col.colwt,130
+;		mov		col.lpszhdrtext,offset szName
+;		mov		col.halign,GA_ALIGN_LEFT
+;		mov		col.calign,GA_ALIGN_LEFT
+;		mov		col.ctype,TYPE_EDITTEXT
+;		mov		col.ctextmax,31
+;		mov		col.lpszformat,0
+;		mov		col.himl,0
+;		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+
+		;EditCombobox column
 		mov		col.colwt,130
 		mov		col.lpszhdrtext,offset szName
 		mov		col.halign,GA_ALIGN_LEFT
 		mov		col.calign,GA_ALIGN_LEFT
-		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctype,TYPE_EDITCOMBOBOX
 		mov		col.ctextmax,31
 		mov		col.lpszformat,0
 		mov		col.himl,0
@@ -492,6 +503,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					pop		edi
 					pop		ebx
 				.endif
+			.elseif eax==GN_EDITCHANGE
+				mov		eax,[esi].GRIDNOTIFY.lpdata
 			.endif
 		.endif
 		pop		esi

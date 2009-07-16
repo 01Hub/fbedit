@@ -43,6 +43,7 @@ GN_AFTEREDIT		equ 8			;Sendt when the cell edit control is about to close
 GN_BEFOREUPDATE		equ 9			;Sendt before a cell updates grid data
 GN_AFTERUPDATE		equ 10			;Sendt after grid data has been updated
 GN_USERCONVERT		equ 11			;Sendt when user cell needs to be converted.
+GN_EDITCHANGE		equ 12			;Sendt when user types text in the edit control.
 
 ;Messages
 GM_ADDCOL			equ WM_USER+1	;wParam=0, lParam=lpCOLUMN
@@ -107,6 +108,7 @@ TYPE_DATE			equ 7			;Long
 TYPE_TIME			equ 8			;Long
 TYPE_USER			equ 9			;0=String, 1 to 512 bytes binary data
 TYPE_EDITBUTTON		equ 10			;String
+TYPE_EDITCOMBOBOX	equ 11			;String
 
 ;Column sorting
 SORT_ASCENDING		equ 0

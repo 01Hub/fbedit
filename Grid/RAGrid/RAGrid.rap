@@ -78,15 +78,15 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.5
 CompanyName=
 [Size]
-2=0,0,0,0,35
-1=0,0,0,0,84309
+2=0,0,0,0,4894
+1=0,0,0,0,6140
 3=0,0,0,0,45
 4=0,0,0,0,51
-8=0,0,0,0,470
-7=0,0,0,0,1380
-9=0,0,0,0,499
+8=0,0,0,0,5861
+7=0,0,0,0,0
+9=0,0,0,0,3115
 6=0,0,0,0,42
-10=0,0,0,0,5431
+10=0,0,0,0,0
 12=0,0,0,0,6
 11=0,0,0,0,1300
 [Version-Inc]
@@ -115,16 +115,16 @@ Options=52
 0=
 
 [Find]
-1="CreateWindowEx"
-2="lpszformat"
-3="GM_SETHDRTEXT"
-4="GM_GETCOLDATA"
-5="GM_ENDEDIT"
-6="GN_BUTTONCLICK"
-7="GN_AFTERUPDATE"
-8="GN_BEFOREUPDATE"
-9="ShowHide"
-10="GM_ENTEREDIT"
+1="TYPE_EDITTEXT"
+2="GRIDNOTIFY"
+3="CreateWindowEx"
+4="lpszformat"
+5="GM_SETHDRTEXT"
+6="GM_GETCOLDATA"
+7="GM_ENDEDIT"
+8="GN_BUTTONCLICK"
+9="GN_AFTERUPDATE"
+10="GN_BEFOREUPDATE"
 
 [VersionControl]
 Settings=1278
@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=25
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -195,3 +195,6 @@ PTimer=5737219
 [Exports]
 1=GetDefEx
 2=GetDef
+[RADebugBP]
+1=
+8=

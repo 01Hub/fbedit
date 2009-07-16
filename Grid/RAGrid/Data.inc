@@ -104,6 +104,7 @@ PROP_STYLEMULTI			equ 3
 szStaticClass		db 'Static',0
 szListBoxClass		db 'ListBox',0
 szRAListClass		db 'RAList',0
+szRAComboClass		db 'RACombo',0
 szEditClass			db 'Edit',0
 szHotKeyClass		db 'msctls_hotkey32',0
 szButtonClass		db 'Button',0
