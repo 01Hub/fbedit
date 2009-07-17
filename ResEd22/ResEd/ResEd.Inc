@@ -151,15 +151,15 @@ GRIDSIZE struct
 	borlandcomp	dd ?
 GRIDSIZE ends
 
-;MENUINFO STRUCT
-;	cbSize			DWORD	?
-;	fmask			DWORD	?
-;	dwstyle			DWORD	?
-;	cyMax			DWORD	?
-;	hbrBack			DWORD	?
-;	dwContextHelpID	DWORD	?
-;	dwMenuData		DWORD	?
-;MENUINFO ends
+MENUINFO STRUCT
+	cbSize			DWORD	?
+	fMask			DWORD	?
+	dwstyle			DWORD	?
+	cyMax			DWORD	?
+	hbrBack			DWORD	?
+	dwContextHelpID	DWORD	?
+	dwMenuData		DWORD	?
+MENUINFO ends
 
 MENUDATA struct
 	img		dd ?
