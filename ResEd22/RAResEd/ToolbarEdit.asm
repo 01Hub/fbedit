@@ -107,9 +107,10 @@ SaveToolbarEdit proc uses ebx esi edi,hWin:HWND
 		invoke SendMessage,hRes,PRO_ADDITEM,TPE_TOOLBAR,FALSE
 		mov		ebx,eax
 		invoke RtlMoveMemory,[ebx].PROJECT.hmem,offset deftoolbar,sizeof TOOLBARMEM+1
+	.else
+		invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,hMem,60*1024
 	.endif
 	push	ebx
-	invoke GetDlgItemText,hWin,IDC_EDTTOOLBAR,hMem,60*1024
 	mov		ecx,hMem
 	mov		edx,[ebx].PROJECT.hmem
 	lea		edx,[edx+sizeof TOOLBARMEM]
