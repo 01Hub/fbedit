@@ -347,7 +347,7 @@ CoolMenu proc
 	mov		MInfo.hbrBack,eax
 	invoke DeleteObject,hBmp
 	mov		MInfo.cbSize,SizeOf MENUINFO
-	mov		MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
+	mov		MInfo.fMask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
 	invoke MakeMenuBitmap,20,0FFDFCFh-090909h
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp

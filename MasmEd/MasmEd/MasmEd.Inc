@@ -332,15 +332,15 @@ THEME struct
 	medcol		MEDCOLOR <>
 THEME ends
 
-MENUINFO STRUCT
-	cbSize			DWORD	?
-	fmask			DWORD	?
-	dwstyle			DWORD	?
-	cyMax			DWORD	?
-	hbrBack			DWORD	?
-	dwContextHelpID	DWORD	?
-	dwMenuData		DWORD	?
-MENUINFO ends
+;MENUINFO STRUCT
+;	cbSize			DWORD	?
+;	fMask			DWORD	?
+;	dwstyle			DWORD	?
+;	cyMax			DWORD	?
+;	hbrBack			DWORD	?
+;	dwContextHelpID	DWORD	?
+;	dwMenuData		DWORD	?
+;MENUINFO ends
 
 MENUDATA struct
 	img		dd ?
@@ -401,7 +401,7 @@ szRichEdit				db 'riched20.dll',0
 ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.0.5.6',0
+szVersion				db 'MasmEd version 1.0.5.6b',0
 szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
 szAboutUrl				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0
