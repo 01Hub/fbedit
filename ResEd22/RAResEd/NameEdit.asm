@@ -28,23 +28,11 @@ ExportNamesNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
 		.if ![esi].NAMEMEM.delete
-			invoke SaveStr,edi,offset szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,addr [esi].NAMEMEM.szname
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveVal,[esi].NAMEMEM.value,FALSE
-			mov		al,0Dh
-			stosb
-			mov		al,0Ah
-			stosb
+			invoke ExportName,addr [esi].NAMEMEM.szname,[esi].NAMEMEM.value,edi
+			lea		edi,[edi+eax]
 		.endif
 		add		esi,sizeof NAMEMEM
 	.endw
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 
@@ -732,7 +720,7 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetWindowLong,hPrj,0
 				mov		edx,eax
 				push	eax
-				invoke FindName,edx,addr buffer
+				invoke FindName,edx,addr buffer,FALSE
 				pop		edx
 				.if eax
 					mov		[eax].NAMEMEM.delete,TRUE

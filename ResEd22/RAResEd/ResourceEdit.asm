@@ -63,23 +63,11 @@ ExportResourceNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	.while byte ptr [esi].RESOURCEMEM.szfile
 		.if byte ptr [esi].RESOURCEMEM.szname && [esi].RESOURCEMEM.value
-			invoke SaveStr,edi,offset szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,addr [esi].RESOURCEMEM.szname
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveVal,[esi].RESOURCEMEM.value,FALSE
-			mov		al,0Dh
-			stosb
-			mov		al,0Ah
-			stosb
+			invoke ExportName,addr [esi].RESOURCEMEM.szname,[esi].RESOURCEMEM.value,edi
+			lea		edi,[edi+eax]
 		.endif
 		add		esi,sizeof RESOURCEMEM
 	.endw
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 
@@ -194,7 +182,7 @@ SaveResourceEdit proc uses esi edi,hWin:HWND
 		.if buffer
 			invoke strcpy,addr [edi].RESOURCEMEM.szfile,addr buffer
 			.if [edi].RESOURCEMEM.ntype==7
-				invoke FindName,lpProMem,addr szMANIFEST
+				invoke FindName,lpProMem,addr szMANIFEST,FALSE
 				.if !eax
 					invoke AddName,lpProMem,addr szMANIFEST,addr szManifestValue
 				.endif

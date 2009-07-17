@@ -409,8 +409,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 	.while [esi].PROJECT.hmem
 		.if ![esi].PROJECT.delete
 			.if [esi].PROJECT.ntype==TPE_NAME
-				mov		eax,[esi].PROJECT.hmem
-				invoke ExportNamesNames,eax
+				invoke ExportNamesNames,[esi].PROJECT.hmem
 				.if eax
 					mov		hMem,eax
 					invoke strcat,lpRCMem,hMem
@@ -418,8 +417,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 					invoke GlobalFree,hMem
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_DIALOG
-				mov		eax,[esi].PROJECT.hmem
-				invoke ExportDialogNames,eax
+				invoke ExportDialogNames,[esi].PROJECT.hmem
 				.if eax
 					mov		hMem,eax
 					invoke strcat,lpRCMem,hMem
@@ -427,8 +425,7 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 					invoke GlobalFree,hMem
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_MENU
-				mov		eax,[esi].PROJECT.hmem
-				invoke ExportMenuNames,eax
+				invoke ExportMenuNames,[esi].PROJECT.hmem
 				.if eax
 					mov		hMem,eax
 					invoke strcat,lpRCMem,hMem
@@ -1153,7 +1150,7 @@ RemoveProjectSelected proc uses esi
 						.endw
 						.if !ecx
 							invoke GetWindowLong,hPrj,0
-							invoke FindName,eax,addr szMANIFEST
+							invoke FindName,eax,addr szMANIFEST,FALSE
 							.if eax
 								mov		[eax].NAMEMEM.delete,TRUE
 							.endif
@@ -1232,7 +1229,7 @@ ProjectUndoDeleted proc uses ebx esi
 			.if [ebx].PROJECT.ntype==TPE_XPMANIFEST
 				invoke GetWindowLong,hPrj,0
 				mov		esi,eax
-				invoke FindName,esi,addr szMANIFEST
+				invoke FindName,esi,addr szMANIFEST,FALSE
 				.if !eax
 					invoke AddName,esi,addr szMANIFEST,addr szManifestValue
 				.endif

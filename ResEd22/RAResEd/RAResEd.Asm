@@ -1454,7 +1454,13 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==PRO_EXPORT
 		invoke GetWindowLong,hPrj,0
 		.if eax
+			push	eax
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+			mov		hMemExported,eax
+			pop		eax
 			invoke ExportProject,lParam,wParam,eax
+			invoke GlobalFree,hMemExported
+			mov		hMemExported,0
 		.endif
 		jmp		Ex
 	.elseif eax==PRO_GETMODIFY

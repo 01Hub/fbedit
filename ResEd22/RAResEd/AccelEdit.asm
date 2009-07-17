@@ -30,23 +30,11 @@ ExportAccelNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	.while byte ptr [esi].ACCELMEM.szname || [esi].ACCELMEM.value
 		.if byte ptr [esi].ACCELMEM.szname && [esi].ACCELMEM.value
-			invoke SaveStr,edi,offset szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,addr [esi].ACCELMEM.szname
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveVal,[esi].ACCELMEM.value,FALSE
-			mov		al,0Dh
-			stosb
-			mov		al,0Ah
-			stosb
+			invoke ExportName,addr [esi].ACCELMEM.szname,[esi].ACCELMEM.value,edi
+			lea		edi,[edi+eax]
 		.endif
 		add		esi,sizeof ACCELMEM
 	.endw
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 

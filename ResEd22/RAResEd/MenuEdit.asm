@@ -52,20 +52,8 @@ MnuSaveDefine proc uses esi,lpName:DWORD,lpID:DWORD
 		mov		esi,lpID
 		mov		eax,[esi]
 		.if eax
-			invoke SaveStr,edi,addr szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,lpName
-			add		edi,eax
-			mov		al,' '
-			stosb
-			m2m		val,[esi]
-			invoke ResEdBinToDec,val,addr buffer
-			invoke SaveStr,edi,addr buffer
-			add		edi,eax
-			mov		ax,0A0Dh
-			stosw
+			invoke ExportName,lpName,eax,edi
+			lea		edi,[edi+eax]
 		.endif
 	.endif
 	ret
@@ -144,7 +132,6 @@ ExportMenuNames proc uses esi edi,hMem:DWORD
 		add		esi,sizeof MNUITEM
 		jmp		@b
 	.endif
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 

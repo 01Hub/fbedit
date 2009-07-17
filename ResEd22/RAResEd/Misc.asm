@@ -558,7 +558,7 @@ AddTypeMem proc uses esi,lpProMem:DWORD,nSize:DWORD,nType:DWORD
 
 AddTypeMem endp
 
-FindName proc uses esi,lpProMem:DWORD,lpName:DWORD
+FindName proc uses esi,lpProMem:DWORD,lpName:DWORD,fDeleted:DWORD
 
 	invoke GetTypeMem,lpProMem,TPE_NAME
 	mov		eax,[eax].PROJECT.hmem
@@ -576,6 +576,22 @@ FindName proc uses esi,lpProMem:DWORD,lpName:DWORD
 		.endw
 		xor		eax,eax
 	.endif
+	.if fDeleted
+		invoke GetTypeMem,lpProMem,TPE_NAME
+		mov		eax,[eax].PROJECT.hmem
+		.if eax
+			mov		esi,eax
+			.while [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+				invoke strcmp,addr [esi].NAMEMEM.szname,lpName
+				.if !eax
+					mov		eax,esi
+					jmp		Ex
+				.endif
+				add		esi,sizeof NAMEMEM
+			.endw
+			xor		eax,eax
+		.endif
+	.endif
   Ex:
 	ret
 
@@ -590,10 +606,12 @@ AddName proc uses esi,lpProMem:DWORD,lpName:DWORD,lpValue:DWORD
 	.endw
 	invoke strcpyn,addr [esi].NAMEMEM.szname,lpName,MaxName
 	mov		eax,lpValue
-	.if word ptr [eax]=='x0'
-		invoke HexToBin,addr [eax+2]
-	.else
-		invoke ResEdDecToBin,eax
+	.if eax>65535
+		.if word ptr [eax]=='x0'
+			invoke HexToBin,addr [eax+2]
+		.else
+			invoke ResEdDecToBin,eax
+		.endif
 	.endif
 	mov		[esi].NAMEMEM.value,eax
 	mov		[esi].NAMEMEM.delete,FALSE
@@ -1490,3 +1508,90 @@ ConvFontToUnicode proc lpDest:DWORD,lpSource:DWORD
 	ret
 
 ConvFontToUnicode endp
+
+ExportName proc uses ebx esi edi,lpName:DWORD,nID:DWORD,lpExport:DWORD
+	LOCAL	buffer[16]:BYTE
+	LOCAL	fIFNDEF:DWORD
+
+	mov		ebx,lpExport
+	mov		eax,lpName
+	.if byte ptr [eax] && nID
+		mov		esi,hMemExported
+		.if !esi
+			call	Export
+		.else
+			.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+				mov		eax,nID
+				.if eax==[esi].NAMEMEM.value
+					invoke strcmp,lpName,addr [esi].NAMEMEM.szname
+					.if !eax
+						jmp		Ex
+					.endif
+				.endif
+				add		esi,sizeof NAMEMEM
+			.endw
+			call	Export
+			invoke strcpy,addr [esi].NAMEMEM.szname,lpName
+			mov		eax,nID
+			mov		[esi].NAMEMEM.value,eax
+		.endif
+	.endif
+  Ex:
+	sub		ebx,lpExport
+	mov		eax,ebx
+	ret
+
+Export:
+	mov		fIFNDEF,FALSE
+	invoke strcmp,lpName,offset szIDOK
+	.if eax
+		invoke strcmp,lpName,offset szIDCANCEL
+		.if eax
+			invoke strcmp,lpName,offset szIDC_STATIC
+		.endif
+	.endif
+	.if !eax
+		mov		fIFNDEF,TRUE
+		invoke SaveStr,ebx,offset szIFNDEF
+		add		ebx,eax
+		mov		byte ptr [ebx],' '
+		inc		ebx
+		invoke SaveStr,ebx,lpName
+		add		ebx,eax
+		mov		byte ptr [ebx],0Dh
+		inc		ebx
+		mov		byte ptr [ebx],0Ah
+		inc		ebx
+		mov		byte ptr [ebx],' '
+		inc		ebx
+		mov		byte ptr [ebx],' '
+		inc		ebx
+	.endif
+	invoke SaveStr,ebx,offset szDEFINE
+	add		ebx,eax
+	mov		byte ptr [ebx],' '
+	inc		ebx
+	invoke SaveStr,ebx,lpName
+	add		ebx,eax
+	mov		byte ptr [ebx],' '
+	inc		ebx
+	invoke ResEdBinToDec,nID,addr buffer
+	invoke strcpy,ebx,addr buffer
+	invoke strlen,addr buffer
+	add		ebx,eax
+	mov		byte ptr [ebx],0Dh
+	inc		ebx
+	mov		byte ptr [ebx],0Ah
+	inc		ebx
+	.if fIFNDEF
+		invoke SaveStr,ebx,offset szENDIF
+		add		ebx,eax
+		mov		byte ptr [ebx],0Dh
+		inc		ebx
+		mov		byte ptr [ebx],0Ah
+		inc		ebx
+	.endif
+	mov		byte ptr [ebx],0
+	retn
+
+ExportName endp

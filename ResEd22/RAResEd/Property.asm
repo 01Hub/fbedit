@@ -1399,7 +1399,6 @@ SetCtrlData:
 		mov		edx,esi
 		sub		edx,sizeof DLGHEAD
 		sub		esi,sizeof DLGHEAD
-;		invoke UpdateFont,hCtl
 		add		esi,sizeof DLGHEAD
 	.elseif eax==PRP_NUM_ID
 		push	val

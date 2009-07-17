@@ -547,3 +547,4 @@ fMenuErr			dd ?
 hDlgRed				dd ?
 hMnuFont			dd ?
 des					DESIGN <?>
+hMemExported		HGLOBAL ?

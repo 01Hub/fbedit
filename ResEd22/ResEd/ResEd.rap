@@ -99,9 +99,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,17085
+1=580,0,290,688,16788
 6=
-2=0,0,0,0,3470
+2=0,0,0,0,6179
 7=0,0,699,490,4744
 9=
 8=
@@ -189,10 +189,10 @@ MilestoneOnDateTimeMin=16
 MilestoneOnDateTimeSec=23
 MilestoneOnDateTimeStatus=0
 [VerInf]
-FV=2.2.0.2
-FileVersion=2.2.0.2
-PV=2.2.0.2
-ProductVersion=2.2.0.2
+FV=2.2.0.3
+FileVersion=2.2.0.3
+PV=2.2.0.3
+ProductVersion=2.2.0.3
 Nme=VERINF1
 ID=1
 VerOS=0x00000004

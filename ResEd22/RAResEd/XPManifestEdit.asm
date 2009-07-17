@@ -40,24 +40,9 @@ ExportXPManifestNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;#define
     .if [esi].XPMANIFESTMEM.szname && [esi].XPMANIFESTMEM.value
-		invoke SaveStr,edi,addr szDEFINE
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke SaveStr,edi,addr [esi].XPMANIFESTMEM.szname
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke ResEdBinToDec,[esi].XPMANIFESTMEM.value,edi
-		invoke strlen,edi
+		invoke ExportName,addr [esi].XPMANIFESTMEM.szname,[esi].XPMANIFESTMEM.value,edi
 		lea		edi,[edi+eax]
-		mov		al,0Dh
-		stosb
-		mov		al,0Ah
-		stosb
 	.endif
-	mov		al,0
-	stosb
 	pop		eax
 	ret
 
@@ -196,7 +181,7 @@ XPManifestSave proc uses ebx esi edi,hWin:HWND
 	invoke SetProjectItemName,ebx,addr buffer
 	invoke GetWindowLong,hPrj,0
 	mov		esi,eax
-	invoke FindName,esi,addr szMANIFEST
+	invoke FindName,esi,addr szMANIFEST,FALSE
 	.if !eax
 		invoke AddName,esi,addr szMANIFEST,addr szManifestValue
 	.endif

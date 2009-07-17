@@ -18,24 +18,9 @@ ExportToolbarNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;#define
     .if [esi].TOOLBARMEM.szname && [esi].TOOLBARMEM.value
-		invoke SaveStr,edi,addr szDEFINE
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke SaveStr,edi,addr [esi].TOOLBARMEM.szname
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke ResEdBinToDec,[esi].TOOLBARMEM.value,edi
-		invoke strlen,edi
+		invoke ExportName,addr [esi].TOOLBARMEM.szname,[esi].TOOLBARMEM.value,edi
 		lea		edi,[edi+eax]
-		mov		al,0Dh
-		stosb
-		mov		al,0Ah
-		stosb
 	.endif
-	mov		al,0
-	stosb
 	pop		eax
 	ret
 

@@ -1,9 +1,11 @@
 ResEd
 
-2.2.0.2b -2009-06-27
---------------------
+2.2.0.3 -2009-07-17
+-------------------
 o Added PBS_MARQUEE progress bar style.
+o Updated help file.
 o Fixed bug with custom styles.
+o Fixed bug with duplicate #define
 
 2.2.0.2 -2009-05-14
 -------------------

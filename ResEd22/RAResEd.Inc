@@ -250,7 +250,6 @@ NAMEMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	delete			dd ?
-	exported		dd ?
 NAMEMEM ends
 
 INCLUDEMEM struct

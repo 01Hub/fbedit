@@ -45,57 +45,6 @@ SaveName proc uses esi edi
 
 SaveName endp
 
-SaveDefine proc
-	LOCAL	buffer[16]:BYTE
-
-	;Is ctl deleted
-	mov		eax,[esi].DIALOG.hwnd
-	.if eax!=-1
-		mov		al,[esi].DIALOG.idname
-		.if al && [esi].DIALOG.id
-			invoke strcmpi,addr [esi].DIALOG.idname,addr szIDOK
-			.if eax
-				invoke strcmpi,addr [esi].DIALOG.idname,addr szIDCANCEL
-				.if eax
-					invoke strcmpi,addr [esi].DIALOG.idname,addr szIDC_STATIC
-					.if !eax
-						invoke GetWindowLong,hRes,GWL_STYLE
-						test	eax,DES_DEFIDC_STATIC
-						.if !ZERO?
-							invoke GetWindowLong,hPrj,0
-							mov		edx,eax
-							push	eax
-							invoke FindName,edx,addr szIDC_STATIC
-							pop		edx
-							.if !eax
-								invoke AddName,edx,addr szIDC_STATIC,addr szIDC_STATICValue
-							.endif
-						.endif
-						xor		eax,eax
-					.endif
-				.endif
-			.endif
-			.if eax
-				invoke SaveStr,edi,addr szDEFINE
-				add		edi,eax
-				mov		al,' '
-				stosb
-				invoke SaveStr,edi,addr [esi].DIALOG.idname
-				add		edi,eax
-				mov		al,' '
-				stosb
-				invoke ResEdBinToDec,[esi].DIALOG.id,addr buffer
-				invoke SaveStr,edi,addr buffer
-				add		edi,eax
-				mov		ax,0A0Dh
-				stosw
-			.endif
-		.endif
-	.endif
-	ret
-
-SaveDefine endp
-
 SaveCaption proc
 
 	mov		al,22h
@@ -651,67 +600,26 @@ SaveCtl proc uses ebx esi edi
 SaveCtl endp
 
 ExportDialogNames proc uses ebx esi edi,hMem:DWORD
+	LOCAL	buffer[16]:BYTE
 
 	mov		esi,hMem
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 	mov		edi,eax
 	invoke GlobalLock,edi
 	push	edi
-	.if [esi].DLGHEAD.ftextmode
-;		invoke SendMessage,[esi].DLGHEAD.hred,EM_GETMODIFY,0,0
-;		.if eax
-;			invoke GetWindowLong,hPrj,0
-;			mov		ebx,eax
-;			.while esi!=[ebx].PROJECT.hmem
-;				add		ebx,sizeof PROJECT
-;			.endw
-;			mov		[ebx].PROJECT.hmem,0
-;			push	[esi].DLGHEAD.hred
-;			push	[esi].DLGHEAD.ftextmode
-;			invoke SaveToMem,[esi].DLGHEAD.hred,edi
-;			invoke GetWindowLong,hPrj,0
-;			invoke ParseRCMem,edi,eax
-;			.if fParseError
-;				.if [ebx].PROJECT.hmem
-;					invoke GlobalUnlock,[ebx].PROJECT.hmem
-;					invoke GlobalFree,[ebx].PROJECT.hmem
-;				.endif
-;				mov		[ebx].PROJECT.hmem,esi
-;				pop		eax
-;				pop		eax
-;			.else
-;				invoke GetWindowLong,hDEd,DEWM_MEMORY
-;				.if eax==esi
-;;					invoke DestroySizeingRect
-;					invoke DestroyWindow,[esi+sizeof DLGHEAD].DIALOG.hwnd
-;;					.if [esi].DLGHEAD.hfont
-;;						invoke DeleteObject,[esi].DLGHEAD.hfont
-;;						mov		[esi].DLGHEAD.hfont,0
-;;					.endif
-;					invoke SetWindowLong,hDEd,DEWM_MEMORY,0
-;					invoke SetWindowLong,hDEd,DEWM_DIALOG,0
-;					invoke SetWindowLong,hDEd,DEWM_PROJECT,0
-;					invoke GlobalUnlock,esi
-;					invoke GlobalFree,esi
-;;					invoke CreateDlg,hDEd,ebx,TRUE
-;				.endif
-;				mov		esi,[ebx].PROJECT.hmem
-;				mov		hMem,esi
-;				pop		[esi].DLGHEAD.ftextmode
-;				pop		[esi].DLGHEAD.hred
-;				invoke SendMessage,[esi].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
-;			.endif
-;		.endif
-	.endif
 	mov		esi,hMem
 	add		esi,sizeof DLGHEAD
   @@:
-	invoke SaveDefine
+	;Is ctl deleted
+	.if [esi].DIALOG.hwnd!=-1
+		.if byte ptr [esi].DIALOG.idname && [esi].DIALOG.id
+			invoke ExportName,addr [esi].DIALOG.idname,[esi].DIALOG.id,edi
+			lea		edi,[edi+eax]
+		.endif
+	.endif
 	add		esi,size DIALOG
-	mov		eax,[esi].DIALOG.hwnd
-	or		eax,eax
+	cmp		[esi].DIALOG.hwnd,0
 	jne		@b
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 

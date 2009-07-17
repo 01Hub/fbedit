@@ -18,24 +18,9 @@ ExportRCDataNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;#define
     .if [esi].RCDATAMEM.szname && [esi].RCDATAMEM.value
-		invoke SaveStr,edi,addr szDEFINE
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke SaveStr,edi,addr [esi].RCDATAMEM.szname
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke ResEdBinToDec,[esi].RCDATAMEM.value,edi
-		invoke strlen,edi
+		invoke ExportName,addr [esi].RCDATAMEM.szname,[esi].RCDATAMEM.value,edi
 		lea		edi,[edi+eax]
-		mov		al,0Dh
-		stosb
-		mov		al,0Ah
-		stosb
 	.endif
-	mov		al,0
-	stosb
 	pop		eax
 	ret
 

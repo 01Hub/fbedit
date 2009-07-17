@@ -238,24 +238,9 @@ ExportVersionNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	;#define
     .if [esi].VERSIONMEM.szname && [esi].VERSIONMEM.value
-		invoke SaveStr,edi,addr szDEFINE
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke SaveStr,edi,addr [esi].VERSIONMEM.szname
-		add		edi,eax
-		mov		al,' '
-		stosb
-		invoke ResEdBinToDec,[esi].VERSIONMEM.value,edi
-		invoke strlen,edi
-		lea		edi,[edi+eax]
-		mov		al,0Dh
-		stosb
-		mov		al,0Ah
-		stosb
+    	invoke ExportName,addr [esi].VERSIONMEM.szname,[esi].VERSIONMEM.value,edi
+    	lea		edi,[edi+eax]
 	.endif
-	mov		al,0
-	stosb
 	pop		eax
 	ret
 

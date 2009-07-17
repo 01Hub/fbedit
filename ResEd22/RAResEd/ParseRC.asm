@@ -170,7 +170,7 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 		;Name
 		invoke strcpyn,lpName,lpBuff,MaxName
 		;ID
-		invoke FindName,lpProMem,lpName
+		invoke FindName,lpProMem,lpName,TRUE
 		.if eax
 			mov		[eax].NAMEMEM.delete,TRUE
 			mov		eax,[eax].NAMEMEM.value
@@ -494,7 +494,7 @@ ConvNum proc lpProMem:DWORD,lpBuff:DWORD
 	.elseif (byte ptr [eax]>='0' && byte ptr [eax]<='9') || byte ptr [eax]=='-'
 		invoke ResEdDecToBin,eax
 	.else
-		invoke FindName,lpProMem,eax
+		invoke FindName,lpProMem,eax,FALSE
 	.endif
 	ret
 
@@ -1718,18 +1718,6 @@ ParseDialogEx proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		.endw
 		mov		eax,[edi].DLGHEAD.fontsize
 		mov		dlgps,ax
-;		push	esi
-;		push	edi
-;		lea		esi,[edi].DLGHEAD.font
-;		mov		edi,offset dlgfn
-;		xor		eax,eax
-;		mov		ecx,32
-;	  Nx:
-;		lodsb
-;		stosw
-;		loop	Nx
-;		pop		edi
-;		pop		esi
 		invoke ConvFontToUnicode,offset dlgfn,addr [edi].DLGHEAD.font
 		invoke CreateDialogIndirectParam,hInstance,offset dlgdata,hDEd,offset TestProc,0
 		invoke DestroyWindow,eax

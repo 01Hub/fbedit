@@ -24,23 +24,11 @@ ExportStringNames proc uses esi edi,hMem:DWORD
 	mov		esi,hMem
 	.while byte ptr [esi].STRINGMEM.szname || [esi].STRINGMEM.value
 		.if byte ptr [esi].STRINGMEM.szname && [esi].STRINGMEM.value
-			invoke SaveStr,edi,offset szDEFINE
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveStr,edi,addr [esi].STRINGMEM.szname
-			add		edi,eax
-			mov		al,' '
-			stosb
-			invoke SaveVal,[esi].STRINGMEM.value,FALSE
-			mov		al,0Dh
-			stosb
-			mov		al,0Ah
-			stosb
+			invoke ExportName,addr [esi].STRINGMEM.szname,[esi].STRINGMEM.value,edi
+			lea		edi,[edi+eax]
 		.endif
 		add		esi,sizeof STRINGMEM
 	.endw
-	mov		byte ptr [edi],0
 	pop		eax
 	ret
 
