@@ -82,7 +82,6 @@
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Accelerator table">
-			<param name="Local" value="EditAccel.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
@@ -92,7 +91,6 @@
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Version info">
-			<param name="Local" value="EditVersion.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
@@ -102,7 +100,6 @@
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="String table">
-			<param name="Local" value="EditString.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
@@ -112,7 +109,6 @@
 		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Manifest">
-			<param name="Local" value="EditManifest.htm">
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
