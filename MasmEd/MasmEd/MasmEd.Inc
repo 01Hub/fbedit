@@ -332,15 +332,15 @@ THEME struct
 	medcol		MEDCOLOR <>
 THEME ends
 
-;MENUINFO STRUCT
-;	cbSize			DWORD	?
-;	fMask			DWORD	?
-;	dwstyle			DWORD	?
-;	cyMax			DWORD	?
-;	hbrBack			DWORD	?
-;	dwContextHelpID	DWORD	?
-;	dwMenuData		DWORD	?
-;MENUINFO ends
+MENUINFO STRUCT
+	cbSize			DWORD	?
+	fMask			DWORD	?
+	dwstyle			DWORD	?
+	cyMax			DWORD	?
+	hbrBack			DWORD	?
+	dwContextHelpID	DWORD	?
+	dwMenuData		DWORD	?
+MENUINFO ends
 
 MENUDATA struct
 	img		dd ?
@@ -476,7 +476,8 @@ rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,2 SHL 16>
 blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdstruct,offset rabdstruc,offset rabdunion,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
 
 szREG_SZ				db 'REG_SZ',0
-szMasmEd				db 'Software\MasmEd1000\',64 dup(0)
+szMasmEd				db 'Software\MasmEd1000\'
+						db 64 dup(0)
 szSoftware				db 'Software',0
 szMasmEd1000			db 'MasmEd1000',0
 szWinPos				db 'WinPos',0

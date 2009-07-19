@@ -973,7 +973,7 @@ iniInStr endp
 
 UpdateAll proc uses ebx,nFunction:DWORD
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 	LOCAL	hefnt:HEFONT
 	LOCAL	chrg:CHARRANGE
 	LOCAL	nLn:DWORD

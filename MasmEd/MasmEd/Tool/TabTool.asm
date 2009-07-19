@@ -18,7 +18,7 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	filet:FILETIME
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		esi,fn.lpPath
 	mov		edi,fn.lpHandle
@@ -197,7 +197,7 @@ DelPath endp
 
 TabToolGetMem proc uses ebx,hWin:DWORD
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
@@ -218,7 +218,7 @@ TabToolGetMem endp
 
 TabToolGetInx proc uses ebx,hWin:DWORD
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
@@ -238,7 +238,7 @@ TabToolGetInx proc uses ebx,hWin:DWORD
 TabToolGetInx endp
 
 TabToolSetText proc nInx:DWORD,lpFileName:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		tci.imask,TCIF_PARAM
 	invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
@@ -262,7 +262,7 @@ TabToolSetText endp
 
 TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 	LOCAL buffer[256]:BYTE
 
 	mov		nInx,-1
@@ -300,7 +300,7 @@ TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 TabToolSetChanged endp
 
 TabToolActivate proc uses ebx
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	invoke SendMessage,hTab,TCM_GETCURSEL,0,0
 	mov		tci.imask,TCIF_PARAM
@@ -325,7 +325,7 @@ TabToolActivate proc uses ebx
 TabToolActivate endp
 
 TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 	LOCAL	ThreadID:DWORD
 	LOCAL	msg:MSG
 	LOCAL	buffer[32]:BYTE
@@ -381,7 +381,7 @@ TabToolAdd endp
 
 TabToolDel proc uses ebx,hWin:HWND
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
@@ -421,8 +421,8 @@ TabToolDel proc uses ebx,hWin:HWND
 TabToolDel endp
 
 TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	ht:TCHITTESTINFO
-	LOCAL	tci:TCITEM
+	LOCAL	ht:TC_HITTESTINFO
+	LOCAL	tci:TC_ITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg

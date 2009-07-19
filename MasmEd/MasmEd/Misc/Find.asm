@@ -2,7 +2,7 @@
 
 FindInit proc uses ebx esi edi,hWin:HWND
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		fres,-1
 	invoke SendMessage,hWin,EM_EXGETSEL,0,offset findchrg
