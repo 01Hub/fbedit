@@ -230,9 +230,9 @@ EdtCboProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CHAR
 		mov		eax,wParam
 		.if eax==VK_RETURN
-			call	Update
 			invoke GetParent,hWin
-			invoke ShowWindow,eax,SW_HIDE
+			invoke GetParent,eax
+			invoke SetFocus,eax
 			xor		eax,eax
 			jmp		Ex
 		.elseif eax==VK_ESCAPE
@@ -265,16 +265,13 @@ EdtCboProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		Ex
 		.endif
 	.elseif eax==WM_KILLFOCUS
-			call	Update
-			invoke GetWindowLong,hWin,GWL_USERDATA
-			invoke CallWindowProc,eax,hWin,uMsg,wParam,lParam
-			invoke GetParent,hWin
-			mov		ebx,eax
-			invoke ShowWindow,ebx,SW_HIDE
-			invoke GetParent,ebx
-			invoke SetFocus,eax
-			xor		eax,eax
-			jmp		Ex
+		call	Update
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		invoke CallWindowProc,eax,hWin,uMsg,wParam,lParam
+		invoke GetParent,hWin
+		invoke ShowWindow,eax,SW_HIDE
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_GETDLGCODE
  		mov		eax,DLGC_CODE
 		jmp		Ex
@@ -326,7 +323,11 @@ RAComboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SetWindowLong,ebx,GWL_WNDPROC,offset EdtCboProc
 		invoke SetWindowLong,ebx,GWL_USERDATA,eax
 		invoke CreateWindowEx,WS_EX_TOOLWINDOW,offset szListBoxClass,NULL,WS_CHILD or WS_VISIBLE or WS_BORDER or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_HASSTRINGS or LBS_SORT or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,NULL,hInstance,0
-		invoke SetWindowLong,hWin,4,eax
+		mov		ebx,eax
+		invoke SetWindowLong,hWin,4,ebx
+		invoke GetDesktopWindow
+		invoke SetParent,ebx,eax
+		invoke SetWindowLong,ebx,GWL_STYLE,WS_POPUP or WS_BORDER or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_HASSTRINGS or LBS_SORT or LBS_OWNERDRAWFIXED
 	.elseif eax==WM_SIZE
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -1274,7 +1275,7 @@ RAListProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hWin
 			invoke ReleaseCapture
 			.if fonbtn && fsame
-				.if fonbtn==TYPE_COMBOBOX
+				.if fonbtn==TYPE_COMBOBOX || fonbtn==TYPE_EDITCOMBOBOX
 					mov		ncol,-1
 					mov		nrow,-1
 				.endif
@@ -1308,7 +1309,7 @@ RAListProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.while ecx<[ebx].GRID.cols
 				add		edx,[edi].COLUMN.colwt
 				.if sdword ptr eax>=[edi].COLUMN.colxp && sdword ptr eax<=edx
-					.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_BUTTON || [edi].COLUMN.ctype==TYPE_EDITBUTTON
+					.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX || [edi].COLUMN.ctype==TYPE_BUTTON || [edi].COLUMN.ctype==TYPE_EDITBUTTON
 						add		eax,[ebx].GRID.rowht
 						.if eax>=edx
 							mov		eax,[edi].COLUMN.ctype
@@ -1669,7 +1670,27 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.endif
 							call	DrawItemText
 							call	DrawItemLine
-						.elseif eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON || eax==TYPE_EDITCOMBOBOX
+						.elseif eax==TYPE_EDITCOMBOBOX
+							invoke GridGetCellData,ebx,edx,ecx,addr buffer
+							call	DrawItemLine
+							test	[esi].itemState,ODS_SELECTED
+							.if !ZERO?
+								mov		ecx,curcol
+								.if ecx==[ebx].GRID.col
+									invoke CopyRect,addr rect,addr rect2
+									sub		rect2.right,17
+									mov		eax,rect.right
+									sub		eax,17
+									mov		rect.left,eax
+									mov		eax,DFCS_SCROLLDOWN
+									.if fonbtn && fsame
+										or		eax,DFCS_PUSHED
+									.endif
+									invoke DrawFrameControl,mDC,addr rect,DFC_SCROLL,eax
+								.endif
+							.endif
+							call	DrawItemText
+						.elseif eax==TYPE_BUTTON || eax==TYPE_EDITBUTTON
 							invoke GridGetCellData,ebx,edx,ecx,addr buffer
 							call	DrawItemLine
 							test	[esi].itemState,ODS_SELECTED
@@ -1694,7 +1715,6 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 									push	eax
 									mov		val,'...'
 									mov		edx,rect.left
-									;add		edx,4
 									add		edx,2
 									invoke TextOut,mDC,edx,0,addr val,3
 									pop		eax
@@ -2396,12 +2416,15 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,sizeof COLUMN
 			mul		edx
 			lea		edi,[ebx+eax+sizeof GRID]
-			.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+			.if [edi].COLUMN.ctype==TYPE_COMBOBOX
 				invoke SendMessage,[edi].COLUMN.edthwnd,LB_GETCOUNT,0,0
 				push	eax
 				invoke SendMessage,[edi].COLUMN.edthwnd,LB_ADDSTRING,0,lParam
 				pop		edx
 				invoke SendMessage,[edi].COLUMN.edthwnd,LB_SETITEMDATA,eax,edx
+			.elseif [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+				invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+				invoke SendMessage,eax,LB_ADDSTRING,0,lParam
 			.endif
 		.endif
 		call	RelMem
@@ -2414,8 +2437,12 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,sizeof COLUMN
 			mul		edx
 			lea		edi,[ebx+eax+sizeof GRID]
-			.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+			.if [edi].COLUMN.ctype==TYPE_COMBOBOX
 				invoke SendMessage,[edi].COLUMN.edthwnd,LB_RESETCONTENT,0,0
+				invoke InvalidateRect,[ebx].GRID.hlst,NULL,TRUE
+			.elseif [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+				invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+				invoke SendMessage,eax,LB_RESETCONTENT,0,0
 				invoke InvalidateRect,[ebx].GRID.hlst,NULL,TRUE
 			.endif
 		.endif
@@ -2843,6 +2870,48 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,edx,WM_SETTEXT,0,addr buffer
 						pop		edx
 						invoke SendMessage,edx,EM_SETSEL,0,-1
+
+						mov		edx,[ebx].GRID.rowht
+						inc		edx
+						mov		eax,[edi].COLUMN.colxp
+						mov		rect.left,eax
+						add		rect.top,edx
+						invoke GetDesktopWindow
+						mov		edx,eax
+						invoke GetClientRect,edx,addr rect1
+						invoke ScreenToClient,[ebx].GRID.hgrd,addr rect1.right
+						invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+						push	eax
+						invoke SendMessage,eax,LB_GETCOUNT,0,0
+						push	eax
+						invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+						invoke SendMessage,eax,LB_GETITEMHEIGHT,0,0
+						pop		ecx
+						.if ecx>10
+							mov		ecx,10
+						.elseif !ecx
+							mov		ecx,1
+						.endif
+						mul		ecx
+						add		eax,2
+						mov		edx,eax
+						add		eax,rect.top
+						add		eax,[ebx].GRID.rowht
+						inc		eax
+						.if eax>rect1.bottom
+							sub		rect.top,edx
+							mov		eax,[ebx].GRID.rowht
+							inc		eax
+							sub		rect.top,eax
+						.endif
+						push	edx
+						invoke ClientToScreen,[ebx].GRID.hlst,addr rect
+						pop		edx
+						pop		eax
+						push	eax
+						invoke MoveWindow,eax,rect.left,rect.top,[edi].COLUMN.colwt,edx,TRUE
+						pop		eax
+						invoke ShowWindow,eax,SW_SHOWNA
 					.endif
 					invoke ShowWindow,[edi].COLUMN.edthwnd,SW_SHOW
 					invoke SetFocus,[edi].COLUMN.edthwnd
@@ -2912,6 +2981,8 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,[ebx].GRID.hedt,0
 						mov		edx,eax
 						invoke SendMessage,edx,WM_GETTEXT,sizeof buffer,addr buffer
+						invoke GetWindowLong,[ebx].GRID.hedt,4
+						invoke ShowWindow,eax,SW_HIDE
 					.elseif eax==TYPE_EDITLONG
 						invoke SendMessage,[ebx].GRID.hedt,WM_GETTEXT,sizeof buffer,addr buffer
 						invoke DecToBin,addr buffer

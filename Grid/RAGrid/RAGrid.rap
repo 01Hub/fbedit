@@ -78,8 +78,8 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.5
 CompanyName=
 [Size]
-2=0,0,0,0,4894
-1=0,0,0,0,6140
+2=0,0,0,0,3289
+1=0,0,0,0,77305
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,5861
@@ -115,16 +115,16 @@ Options=52
 0=
 
 [Find]
-1="TYPE_EDITTEXT"
-2="GRIDNOTIFY"
-3="CreateWindowEx"
-4="lpszformat"
-5="GM_SETHDRTEXT"
-6="GM_GETCOLDATA"
-7="GM_ENDEDIT"
-8="GN_BUTTONCLICK"
-9="GN_AFTERUPDATE"
-10="GN_BEFOREUPDATE"
+1="GM_ENTEREDIT"
+2="GM_COMBOADDSTRING"
+3="fonbtn"
+4="TYPE_EDITTEXT"
+5="GRIDNOTIFY"
+6="CreateWindowEx"
+7="lpszformat"
+8="GM_SETHDRTEXT"
+9="GM_GETCOLDATA"
+10="GM_ENDEDIT"
 
 [VersionControl]
 Settings=1278
@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -179,7 +179,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 
 
 [Collapse]
-1=,,,,,,,,
+1=,,,,,,,,,
 9=
 2=
 11=

@@ -128,6 +128,21 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		;Fill in some data in the combo
+		push	esi
+		mov		esi,offset szComboBoxText
+		.while TRUE
+			invoke lstrlen,esi
+			.if eax
+				push	eax
+				invoke SendMessage,hGrd,GM_COMBOADDSTRING,1,esi
+				pop		eax
+				lea		esi,[esi+eax+1]
+			.else
+				.break
+			.endif
+		.endw
+		pop		esi
 
 		;Number column
 		mov		col.colwt,42
