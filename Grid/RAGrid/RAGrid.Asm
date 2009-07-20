@@ -222,7 +222,7 @@ Update:
 
 LstProc endp
 
-CboProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+CboProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	buffer[512]:BYTE
 
@@ -236,6 +236,12 @@ CboProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,edi,WM_SETTEXT,0,addr buffer
 		invoke SendMessage,edi,EM_SETSEL,0,-1
 		invoke ShowWindow,hWin,SW_HIDE
+		call	GetMem
+		mov		eax,[ebx].GRID.col
+		mov		ncol,eax
+		mov		eax,[ebx].GRID.row
+		mov		nrow,eax
+		call	RelMem
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
@@ -254,6 +260,23 @@ CboProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
   Ex:
 	ret
 
+RelMem:
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	invoke GetParent,eax
+	invoke GetParent,eax
+	invoke GetWindowLong,eax,0
+	invoke GlobalUnlock,eax
+	retn
+
+GetMem:
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	invoke GetParent,eax
+	invoke GetParent,eax
+	invoke GetWindowLong,eax,0
+	invoke GlobalLock,eax
+	mov		ebx,eax
+	retn
+
 CboProc endp
 
 EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
@@ -267,6 +290,12 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetParent,hWin
 			invoke GetParent,eax
 			invoke SetFocus,eax
+			call	GetMem
+			mov		eax,[ebx].GRID.col
+			mov		ncol,eax
+			mov		eax,[ebx].GRID.row
+			mov		nrow,eax
+			call	RelMem
 			xor		eax,eax
 			jmp		Ex
 		.elseif eax==VK_ESCAPE
@@ -278,6 +307,12 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetParent,hWin
 			invoke GetWindowLong,eax,4
 			invoke ShowWindow,eax,SW_HIDE
+			call	GetMem
+			mov		eax,[ebx].GRID.col
+			mov		ncol,eax
+			mov		eax,[ebx].GRID.row
+			mov		nrow,eax
+			call	RelMem
 			xor		eax,eax
 			jmp		Ex
 		.else
@@ -1455,7 +1490,6 @@ RAListProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.while ecx<[ebx].GRID.cols
 				add		edx,[edi].COLUMN.colwt
 				.if sdword ptr eax>=[edi].COLUMN.colxp && sdword ptr eax<=edx
-;					.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_BUTTON || [edi].COLUMN.ctype==TYPE_EDITBUTTON
 					.if [edi].COLUMN.ctype==TYPE_COMBOBOX || [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
 						add		eax,[ebx].GRID.rowht
 						.if eax>=edx

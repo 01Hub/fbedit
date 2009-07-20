@@ -1,4 +1,4 @@
-KetilO (C) 2003-2006
+KetilO (C) 2003-2009
 radasmide@hotmail.com
 
 To build RAGrid.dll use Release build option

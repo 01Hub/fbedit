@@ -79,7 +79,7 @@ FileVersion=2.0.1.5
 CompanyName=
 [Size]
 2=0,0,0,0,3334
-1=0,0,0,0,34872
+1=0,0,0,0,10605
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,5861
@@ -130,7 +130,7 @@ Options=52
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=3
+MilestoneEveryCurrent=9
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0
