@@ -162,6 +162,7 @@ nSizeCol			dd ?
 nSizeMin			dd ?
 nSizeOfs			dd ?
 lplstproc			dd ?
+lpcboproc			dd ?
 ncol				dd ?
 nrow				dd ?
 fsame				dd ?

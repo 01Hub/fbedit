@@ -7,7 +7,7 @@ Group=1
 GroupExpand=1
 Res.rc=1
 Ver.rc=1
-Debug=1
+Debug=0
 
 [Files]
 1=MasmEd.Asm
@@ -91,7 +91,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\ML.EXE /Zi /Zd /c /coff /Cp /nologo /I"$I",2
-13=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /LIBPATH:"$L",3,4
+13=5,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /LIBPATH:"$L" /OUT:"$5",3,4
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
@@ -317,11 +317,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,13171
-1=0,0,0,0,25444
+2=0,0,687,524,7078
+1=0,0,0,0,7351
 11=0,0,0,0,24807
 22=0,0,0,0,7856
-10=0,0,0,0,16715
+10=0,0,0,0,16826
 23=0,0,0,0,4914
 9=0,0,0,0,0
 4=0,0,0,0

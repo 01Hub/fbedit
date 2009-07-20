@@ -332,16 +332,16 @@ THEME struct
 	medcol		MEDCOLOR <>
 THEME ends
 
-MENUINFO STRUCT
-	cbSize			DWORD	?
-	fMask			DWORD	?
-	dwstyle			DWORD	?
-	cyMax			DWORD	?
-	hbrBack			DWORD	?
-	dwContextHelpID	DWORD	?
-	dwMenuData		DWORD	?
-MENUINFO ends
-
+;MENUINFO STRUCT
+;	cbSize			DWORD	?
+;	fMask			DWORD	?
+;	dwstyle			DWORD	?
+;	cyMax			DWORD	?
+;	hbrBack			DWORD	?
+;	dwContextHelpID	DWORD	?
+;	dwMenuData		DWORD	?
+;MENUINFO ends
+;
 MENUDATA struct
 	img		dd ?
 	tpe		dd ?
