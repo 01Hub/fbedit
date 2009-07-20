@@ -64,20 +64,18 @@ SetVar proc uses edi,lpSave:DWORD,lpName:DWORD,lpValue:DWORD
 		invoke lstrcat,addr tmpbuff,addr tmpbuff[4096]
 	.endif
 	invoke SetEnvironmentVariable,lpName,addr tmpbuff
+	mov		eax,edi
 	ret
 
 SetVar endp
 
 SetEnvironment proc uses edi
-	LOCAL	lpEnv:DWORD
 
 	;Environment
 	invoke ResetEnvironment
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
 	mov		hEnv,eax
 	mov		edi,eax
-	invoke GetEnvironmentStrings
-	mov		lpEnv,eax
 	invoke SetVar,edi,addr szPath,addr PathBin
 	mov		edi,eax
 	invoke SetVar,edi,addr szInclude,addr PathInc
