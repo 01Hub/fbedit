@@ -718,6 +718,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 	Dim lz As Integer
 	Dim isinp As ISINPROC
 	Dim buffer As ZString*256
+	Dim i As Integer
+	Dim fnoret As Integer
 
 	Select Case uMsg
 		Case WM_CHAR
@@ -1092,7 +1094,20 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						trng.chrg.cpMax=chrg.cpMin+255
 						trng.lpstrText=@buffer
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						buffer=Trim(buffer)
+						i=0
+						While buffer[i]<>0 And buffer[i]<>VK_RETURN
+							i+=1
+						Wend
+						If buffer[i]=0 Then
+							fnoret=1
+						Else
+							buffer[i]=0
+						EndIf
+						tp=0
+						While buffer[tp]=VK_SPACE Or buffer[tp]=VK_TAB
+							tp+=1
+						Wend
+						buffer=Mid(buffer,tp+1)
 						ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
 						If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
 							wp=0
@@ -1133,9 +1148,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 										EndIf
 										lz=lz+1
 									Wend
-									' Insert the text
 									buff=CR & buff & szEn(wp)
-									If Asc(buffer)<>13 Then
+									If fnoret Then
 										buff &=CR
 									EndIf
 									If edtopt.autocase=2 Then
@@ -1143,10 +1157,21 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									ElseIf edtopt.autocase=3 Then
 										buff=UCase(buff)
 									EndIf
+									If i Then
+										chrg.cpMax+=i
+										SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										chrg.cpMax=chrg.cpMin
+									EndIf
+									SendMessage(hPar,REM_LOCKUNDOID,TRUE,0)
 									SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 									SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+									SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
+									SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
 									SendMessage(hPar,EM_SCROLLCARET,0,0)
-									Exit While
+									AutoFormatLine(hPar,0)
+									lstpos.fnohandling=0
+									SendMessage(hPar,REM_LOCKUNDOID,FALSE,0)
+									Return lret
 								EndIf
 								wp=wp+1
 							Wend
