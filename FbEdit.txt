@@ -6,6 +6,12 @@ o It is now possible to reserve more than one menuid with AIM_GETMENUID.
 o Added MakeProjectFileName to ADDINFUNCTIONS.
   In: Filename, Returns:Full path.
 o Added HH_Help to ADDINFUNCTIONS. The lpBuff in ADDINDATA contains the word to seach for.
+o FbEdit now jumps to first compile error.
+o Accelerator table and string table now has an edit combo in its name column.
+  The combo items are names from menues. This might save you some typing.
+o Added PBS_MARQUEE progress bar style to dialog editor.
+o Fixed bug with dialog editor custom styles.
+o Fixed bug with dialog editor duplicate #define
 1.0.7.0
 o Added Debug / Quick run Options. Lets you set the compile command for Quick run.
 o If the previous Quick run process is still running it will be killed.

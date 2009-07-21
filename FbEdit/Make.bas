@@ -341,6 +341,8 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 	Dim msg As MSG
 	Dim bm As Integer
 	Dim sTmp As String
+	Dim sErrFile As String
+	Dim nErrLine As Integer
 
 	CallAddins(ah.hwnd,AIM_MAKEBEGIN,Cast(WPARAM,@sFile),Cast(LPARAM,@sMakeOpt),HOOK_MAKEBEGIN)
 	nErr=0
@@ -487,6 +489,10 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 							SendMessage(ah.hred,EM_SCROLLCARET,0,0)
 							x=SendMessage(ah.hout,REM_GETBMID,nLine,0)
 							SendMessage(ah.hred,REM_SETERROR,y,x)
+							If nErr=1 Then
+								sErrFile=ad.filename
+								nErrLine=y
+							EndIf
 						EndIf
 						SetFocus(ah.hred)
 					EndIf
@@ -510,6 +516,13 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			sItem=CR & "Build error(s)" & CR
 			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@sItem))
 			MessageBeep(MB_ICONERROR)
+			If Len(sErrFile) Then
+				OpenTheFile(sErrFile,FALSE)
+				chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nErrLine,0)
+				chrg.cpMax=chrg.cpMin
+				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
+				SendMessage(ah.hred,EM_SCROLLCARET,0,0)
+			EndIf
 		Else
 			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@CR))
 			sTmp=ProjectDeleteFiles

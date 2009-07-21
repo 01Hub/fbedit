@@ -1,8 +1,16 @@
 #define MANIFEST 24
 #define SBARS_SIZEGRIP 256
-#define IDC_STATIC -1
+#ifndef IDC_STATIC
+  #define IDC_STATIC -1
+#endif
 #define IDD_TABOPTIONS 2000
 #define IDC_TABOPT 2001
+#ifndef IDOK
+  #define IDOK 1
+#endif
+#ifndef IDCANCEL
+  #define IDCANCEL 2
+#endif
 #define IDD_DLGABOUT 3000
 #define IDC_EDTABOUT 1001
 #define IDC_URL 1002
