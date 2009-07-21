@@ -90,6 +90,7 @@ GM_RESETCOLUMNS		equ WM_USER+41	;wParam=0, lParam=0
 GM_GETROWCOLOR		equ WM_USER+42	;wParam=nRow, lParam=lpROWCOLOR
 GM_SETROWCOLOR		equ WM_USER+43	;wParam=nRow, lParam=lpROWCOLOR
 GM_GETCOLDATA		equ WM_USER+44	;wParam=nCol, lParam=lpCOLUMN
+GM_COMBOFINDSTRING	equ WM_USER+45	;wParam=nCol, lParam=lpszString
 
 ;Column alignment
 GA_ALIGN_LEFT		equ 0

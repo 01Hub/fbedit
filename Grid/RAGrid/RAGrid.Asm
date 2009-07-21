@@ -3659,6 +3659,26 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		call	RelMem
 		jmp		Ex
+	.elseif eax==GM_COMBOFINDSTRING
+		call	GetMem
+		mov		esi,-1
+		mov		eax,wParam
+		.if eax<[ebx].GRID.cols
+			mov		edx,sizeof COLUMN
+			mul		edx
+			lea		edi,[ebx+eax+sizeof GRID]
+			.if [edi].COLUMN.ctype==TYPE_COMBOBOX
+				invoke SendMessage,[edi].COLUMN.edthwnd,LB_FINDSTRINGEXACT,-1,lParam
+				mov		esi,eax
+			.elseif [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+				invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+				invoke SendMessage,eax,LB_FINDSTRINGEXACT,-1,lParam
+				mov		esi,eax
+			.endif
+		.endif
+		call	RelMem
+		mov		eax,esi
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		xor		eax,eax
 		mov		col.colwt,100

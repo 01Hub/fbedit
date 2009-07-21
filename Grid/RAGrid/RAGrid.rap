@@ -78,8 +78,8 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.6
 CompanyName=
 [Size]
-2=0,0,0,0,3334
-1=0,0,0,0,19257
+2=0,0,0,0,2194
+1=0,0,0,0,94268
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,5861
@@ -115,22 +115,22 @@ Options=52
 0=
 
 [Find]
-1="EM_LIM"
-2="GetKeyState"
-3="ParseRCMem"
-4="FindName"
-5="szIDOK"
-6="IDOK"
-7="ExportDialogNames"
-8="PRO_EXPORT"
-9="PBS_"
-10="rscuststyledef"
+1="GM_COMBOADDSTRING"
+2="GM_GETCOLDATA"
+3="EM_LIM"
+4="GetKeyState"
+5="ParseRCMem"
+6="FindName"
+7="szIDOK"
+8="IDOK"
+9="ExportDialogNames"
+10="PRO_EXPORT"
 
 [VersionControl]
 Settings=1278
 Milestones=129
 MilestoneEvery=10
-MilestoneEveryCurrent=2
+MilestoneEveryCurrent=4
 MilestoneOnBuild=0.0.0.0
 MilestoneOnTime=2
 MilestoneOnDate=0

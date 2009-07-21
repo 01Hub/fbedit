@@ -292,9 +292,26 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		esi,[esi+sizeof MNUHEAD]
 				.while [esi].MNUITEM.itemflag
 					.if [esi].MNUITEM.itemname
-						invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].MNUITEM.itemname
+						invoke SendMessage,hGrd,GM_COMBOFINDSTRING,0,addr [esi].MNUITEM.itemname
+						.if eax==-1
+							invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].MNUITEM.itemname
+						.endif
 					.endif
 					lea		esi,[esi+sizeof MNUITEM]
+				.endw
+				pop		esi
+			.elseif [esi].PROJECT.ntype==TPE_ACCEL && ![esi].PROJECT.delete
+				push	esi
+				mov		esi,[esi].PROJECT.hmem
+				lea		esi,[esi+sizeof ACCELMEM]
+				.while [esi].ACCELMEM.szname || [esi].ACCELMEM.value
+					.if [esi].ACCELMEM.szname
+						invoke SendMessage,hGrd,GM_COMBOFINDSTRING,0,addr [esi].ACCELMEM.szname
+						.if eax==-1
+							invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].ACCELMEM.szname
+						.endif
+					.endif
+					lea		esi,[esi+sizeof ACCELMEM]
 				.endw
 				pop		esi
 			.endif

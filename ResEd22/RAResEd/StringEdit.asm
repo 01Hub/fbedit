@@ -203,9 +203,25 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				lea		esi,[esi+sizeof MNUHEAD]
 				.while [esi].MNUITEM.itemflag
 					.if [esi].MNUITEM.itemname
-						invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].MNUITEM.itemname
+						invoke SendMessage,hGrd,GM_COMBOFINDSTRING,0,addr [esi].MNUITEM.itemname
+						.if eax==-1
+							invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].MNUITEM.itemname
+						.endif
 					.endif
 					lea		esi,[esi+sizeof MNUITEM]
+				.endw
+				pop		esi
+			.elseif [esi].PROJECT.ntype==TPE_STRING && ![esi].PROJECT.delete
+				push	esi
+				mov		esi,[esi].PROJECT.hmem
+				.while [esi].STRINGMEM.szname || [esi].STRINGMEM.value
+					.if [esi].STRINGMEM.szname
+						invoke SendMessage,hGrd,GM_COMBOFINDSTRING,0,addr [esi].STRINGMEM.szname
+						.if eax==-1
+							invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].STRINGMEM.szname
+						.endif
+					.endif
+					lea		esi,[esi+sizeof STRINGMEM] 
 				.endw
 				pop		esi
 			.endif
