@@ -242,6 +242,7 @@ CboProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,[ebx].GRID.row
 		mov		nrow,eax
 		call	RelMem
+		invoke SetFocus,edi
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
@@ -347,35 +348,32 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		Ex
 		.endif
 	.elseif eax==WM_KEYDOWN
+		invoke GetKeyState,VK_CONTROL
+		and		eax,80h
+		mov		ecx,eax
 		mov		edx,wParam
 		mov		eax,lParam
 		shr		eax,16
 		and		eax,3FFh
 		.if edx==28h && (eax==150h || eax==50h)
 			;Down
-			invoke GetParent,hWin
-			invoke GetWindowLong,eax,4
-			mov		edi,eax
-			invoke SendMessage,edi,LB_GETCURSEL,0,0
-			inc		eax
-			push	eax
-			invoke SendMessage,edi,LB_SETCURSEL,eax,0
-			pop		edx
-			.if eax!=LB_ERR
-				invoke SendMessage,edi,LB_GETTEXT,edx,addr buffer
-				invoke SendMessage,hWin,WM_SETTEXT,0,addr buffer
-				invoke SendMessage,hWin,EM_SETSEL,0,-1
-			.endif
-			xor		eax,eax
-			jmp		Ex
-		.elseif edx==26h && (eax==148h || eax==48h)
-			;Up
-			invoke GetParent,hWin
-			invoke GetWindowLong,eax,4
-			mov		edi,eax
-			invoke SendMessage,edi,LB_GETCURSEL,0,0
-			.if sdword ptr eax>0
-				dec		eax
+			.if ecx
+				invoke GetParent,hWin
+				invoke GetWindowLong,eax,4
+				mov		edi,eax
+				invoke IsWindowVisible,edi
+				.if eax
+					mov		eax,SW_HIDE
+				.else
+					mov		eax,SW_SHOWNA
+				.endif
+				invoke ShowWindow,edi,eax
+			.else
+				invoke GetParent,hWin
+				invoke GetWindowLong,eax,4
+				mov		edi,eax
+				invoke SendMessage,edi,LB_GETCURSEL,0,0
+				inc		eax
 				push	eax
 				invoke SendMessage,edi,LB_SETCURSEL,eax,0
 				pop		edx
@@ -383,6 +381,38 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,edi,LB_GETTEXT,edx,addr buffer
 					invoke SendMessage,hWin,WM_SETTEXT,0,addr buffer
 					invoke SendMessage,hWin,EM_SETSEL,0,-1
+				.endif
+			.endif
+			xor		eax,eax
+			jmp		Ex
+		.elseif edx==26h && (eax==148h || eax==48h)
+			;Up
+			.if ecx
+				invoke GetParent,hWin
+				invoke GetWindowLong,eax,4
+				mov		edi,eax
+				invoke IsWindowVisible,edi
+				.if eax
+					mov		eax,SW_HIDE
+				.else
+					mov		eax,SW_SHOWNA
+				.endif
+				invoke ShowWindow,edi,eax
+			.else
+				invoke GetParent,hWin
+				invoke GetWindowLong,eax,4
+				mov		edi,eax
+				invoke SendMessage,edi,LB_GETCURSEL,0,0
+				.if sdword ptr eax>0
+					dec		eax
+					push	eax
+					invoke SendMessage,edi,LB_SETCURSEL,eax,0
+					pop		edx
+					.if eax!=LB_ERR
+						invoke SendMessage,edi,LB_GETTEXT,edx,addr buffer
+						invoke SendMessage,hWin,WM_SETTEXT,0,addr buffer
+						invoke SendMessage,hWin,EM_SETSEL,0,-1
+					.endif
 				.endif
 			.endif
 			xor		eax,eax
@@ -2444,6 +2474,13 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateWindowEx,WS_EX_TOOLWINDOW,offset szRAComboClass,NULL,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,[ebx].GRID.hlst,NULL,hInstance,0
 				mov		[edi].COLUMN.edthwnd,eax
 				invoke SetWindowLong,[edi].COLUMN.edthwnd,GWL_USERDATA,[ebx].GRID.hgrd
+				invoke GetWindowLong,[edi].COLUMN.edthwnd,0
+				mov		edx,[edi].COLUMN.ctextmax
+				.if !edx || edx>511
+					mov		edx,511
+					mov		[edi].COLUMN.ctextmax,edx
+				.endif
+				invoke SendMessage,eax,EM_LIMITTEXT,edx,0
 			.endif
 			mov		eax,[edi].COLUMN.edthwnd
 			.if eax
@@ -3002,47 +3039,47 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,edx,LB_FINDSTRINGEXACT,-1,addr buffer
 						pop		edx
 						invoke SendMessage,edx,LB_SETCURSEL,eax,0
-						.if fonbtn
-							mov		edx,[ebx].GRID.rowht
-							inc		edx
-							mov		eax,[edi].COLUMN.colxp
-							mov		rect.left,eax
-							add		rect.top,edx
-							invoke GetDesktopWindow
-							mov		edx,eax
-							invoke GetClientRect,edx,addr rect1
-							invoke ScreenToClient,[ebx].GRID.hgrd,addr rect1.right
-							invoke GetWindowLong,[edi].COLUMN.edthwnd,4
-							push	eax
-							invoke SendMessage,eax,LB_GETCOUNT,0,0
-							push	eax
-							invoke GetWindowLong,[edi].COLUMN.edthwnd,4
-							invoke SendMessage,eax,LB_GETITEMHEIGHT,0,0
-							pop		ecx
-							.if ecx>10
-								mov		ecx,10
-							.elseif !ecx
-								mov		ecx,1
-							.endif
-							mul		ecx
-							add		eax,2
-							mov		edx,eax
-							add		eax,rect.top
-							add		eax,[ebx].GRID.rowht
+						mov		edx,[ebx].GRID.rowht
+						inc		edx
+						mov		eax,[edi].COLUMN.colxp
+						mov		rect.left,eax
+						add		rect.top,edx
+						invoke GetDesktopWindow
+						mov		edx,eax
+						invoke GetClientRect,edx,addr rect1
+						invoke ScreenToClient,[ebx].GRID.hgrd,addr rect1.right
+						invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+						push	eax
+						invoke SendMessage,eax,LB_GETCOUNT,0,0
+						push	eax
+						invoke GetWindowLong,[edi].COLUMN.edthwnd,4
+						invoke SendMessage,eax,LB_GETITEMHEIGHT,0,0
+						pop		ecx
+						.if ecx>10
+							mov		ecx,10
+						.elseif !ecx
+							mov		ecx,1
+						.endif
+						mul		ecx
+						add		eax,2
+						mov		edx,eax
+						add		eax,rect.top
+						add		eax,[ebx].GRID.rowht
+						inc		eax
+						.if eax>rect1.bottom
+							sub		rect.top,edx
+							mov		eax,[ebx].GRID.rowht
 							inc		eax
-							.if eax>rect1.bottom
-								sub		rect.top,edx
-								mov		eax,[ebx].GRID.rowht
-								inc		eax
-								sub		rect.top,eax
-							.endif
-							push	edx
-							invoke ClientToScreen,[ebx].GRID.hlst,addr rect
-							pop		edx
-							pop		eax
-							push	eax
-							invoke MoveWindow,eax,rect.left,rect.top,[edi].COLUMN.colwt,edx,TRUE
-							pop		eax
+							sub		rect.top,eax
+						.endif
+						push	edx
+						invoke ClientToScreen,[ebx].GRID.hlst,addr rect
+						pop		edx
+						pop		eax
+						push	eax
+						invoke MoveWindow,eax,rect.left,rect.top,[edi].COLUMN.colwt,edx,TRUE
+						pop		eax
+						.if fonbtn
 							invoke ShowWindow,eax,SW_SHOWNA
 						.endif
 					.endif

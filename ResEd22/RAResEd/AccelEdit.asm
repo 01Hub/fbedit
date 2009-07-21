@@ -7,7 +7,7 @@ IDC_BTNACLDEL		equ 1003
 
 .const
 
-IAclGrdSize			dd 110,40,76,36,36,36,36
+IAclGrdSize			dd 130,40,76,36,36,36,36
 
 .data
 
@@ -277,12 +277,29 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		col.lpszhdrtext,offset szHdrName
 		mov		col.halign,GA_ALIGN_LEFT
 		mov		col.calign,GA_ALIGN_LEFT
-		mov		col.ctype,TYPE_EDITTEXT
+		mov		col.ctype,TYPE_EDITCOMBOBOX
 		mov		col.ctextmax,MaxName-1
 		mov		col.lpszformat,0
 		mov		col.himl,0
 		mov		col.hdrflag,0
 		invoke SendMessage,hGrd,GM_ADDCOL,0,addr col
+		invoke GetWindowLong,hPrj,0
+		mov		esi,eax
+		.while [esi].PROJECT.hmem
+			.if [esi].PROJECT.ntype==TPE_MENU && ![esi].PROJECT.delete
+				push	esi
+				mov		esi,[esi].PROJECT.hmem
+				lea		esi,[esi+sizeof MNUHEAD]
+				.while [esi].MNUITEM.itemflag
+					.if [esi].MNUITEM.itemname
+						invoke SendMessage,hGrd,GM_COMBOADDSTRING,0,addr [esi].MNUITEM.itemname
+					.endif
+					lea		esi,[esi+sizeof MNUITEM]
+				.endw
+				pop		esi
+			.endif
+			lea		esi,[esi+sizeof PROJECT]
+		.endw
 		;ID
 		mov		eax,AclGrdSize[4]
 		mov		col.colwt,eax
