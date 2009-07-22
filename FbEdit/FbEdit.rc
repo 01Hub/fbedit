@@ -628,8 +628,8 @@ BEGIN
         MENUITEM "Uppercase\tCtrl+U",IDM_EDIT_CONVERTUPPER
         MENUITEM "Lowercase\tCtrl+L",IDM_EDIT_CONVERTLOWER
       END
-      MENUITEM "Block Mode\tCtrl+B",IDM_EDIT_BLOCKMODE
-      MENUITEM "Block Insert\tShift+Ctrl+B",IDM_EDIT_BLOCK_INSERT
+      MENUITEM "Block Mode\tShift+Ctrl+B",IDM_EDIT_BLOCKMODE
+      MENUITEM "Block Insert\tCtrl+B",IDM_EDIT_BLOCK_INSERT
     END
     POPUP "Bookmark",IDM_EDIT_BOOKMARK
     BEGIN
