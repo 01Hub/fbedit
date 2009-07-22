@@ -109,23 +109,25 @@ start:
 			invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
 			invoke UpdateTheme1053
 			mov		ver,1053
-			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
-		.elseif ver<1054
+		.endif
+		.if ver<1054
 			mov		ver,1054
-			invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
-		.elseif ver<1055
+		.endif
+		.if ver<1055
 			mov		ver,1055
-		.elseif ver<1056
+		.endif
+		.if ver<1056
 			mov		ver,1056
+		.endif
+		.if ver<1057
+			mov		ver,1057
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
-
 		mov		lpcbData,sizeof nmeexp
 		invoke RegQueryValueEx,hReg,addr szNmeExp,0,addr lpType,addr nmeexp,addr lpcbData
 		mov		lpcbData,sizeof grdsize
 		invoke RegQueryValueEx,hReg,addr szGrid,0,addr lpType,addr grdsize,addr lpcbData
-
 		mov		lpcbData,16*4
 		invoke RegQueryValueEx,hReg,addr szKeyWordColor,0,addr lpType,addr kwcol,addr lpcbData
 		mov		lpcbData,sizeof ppos
@@ -144,9 +146,9 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		ver,1056
-		invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
+		mov		ver,1057
 	.endif
+	invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 	.if wpos.wtfile<50
 		mov		wpos.wtfile,175
 	.endif

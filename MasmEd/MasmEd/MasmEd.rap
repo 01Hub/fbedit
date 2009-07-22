@@ -191,20 +191,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.5.6
-PV=1.0.5.6
+FV=1.0.5.7
+PV=1.0.5.7
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.5.6
+ProductVersion=1.0.5.7
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2009
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.0.5.6
+FileVersion=1.0.5.7
 CompanyName=
 
 [Group]
@@ -261,16 +261,16 @@ Group=Assembly,Resources,Misc,Include
 49=2
 
 [Find]
-1="TCHIT"
-2="TC_HIT"
-3="TCITEM"
-4="TC_ITEM"
-5="TCHITTESTINFO"
-6="szDbgLink"
-7="Link"
-8="WM_SIZE"
-9="1055"
-10="prvline"
+1="1056"
+2="TCHIT"
+3="TC_HIT"
+4="TCITEM"
+5="TC_ITEM"
+6="TCHITTESTINFO"
+7="szDbgLink"
+8="Link"
+9="WM_SIZE"
+10="1055"
 
 [VersionControl]
 Settings=1246
@@ -282,7 +282,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -317,8 +317,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,7078
-1=0,0,0,0,7949
+2=0,0,687,524,1193
+1=0,0,0,0,6859
 11=0,0,0,0,24807
 22=0,0,0,0,7856
 10=0,0,0,0,16826
@@ -350,7 +350,7 @@ ProductVer4Range=0
 37=0,0,0,0,12040
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,29
+38=0,0,0,0,356
 39=0,0,0,0
 40=0,0,0,0,1479
 42=0,0,0,0,1590
@@ -409,10 +409,5 @@ ProductVer4Range=0
 [PTimer]
 PTimer=40486153
 [RADebugBP]
+1=
 2=
-1=260
-0=
-28=
-14=
-10=424,618
-40=
