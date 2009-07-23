@@ -66,7 +66,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -113,13 +113,15 @@ ProductVer4Range=0
 0=
 [Size]
 4=0,0,0,0
-1=0,0,0,0,3050
-2=0,0,728,518,613
+1=0,0,0,0,626
+2=0,0,728,518,661
 5=0,0,728,518,2452
+3=0,0,0,0,0
 [Collapse]
 1=
 2=
 5=
+3=
 [PTimer]
 PTimer=2020204
 [Find]
@@ -135,3 +137,5 @@ PTimer=2020204
 10="PRM_CLEARWORDLIST"
 [AutoLoad]
 1=1
+[RADebugBP]
+2=

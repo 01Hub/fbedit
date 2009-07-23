@@ -74,7 +74,8 @@ ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hDC:HDC
 	LOCAL	rect:RECT
 
-	.if uMsg==WM_NOTIFY
+		mov		eax,uMsg
+	.if eax==WM_NOTIFY
 		mov		ebx,lParam
 		.if [ebx].NMHDR.code==TTN_NEEDTEXT
 			mov		szname,0
@@ -95,8 +96,11 @@ ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax<rect.right
 				mov		[ebx].TOOLTIPTEXT.lpszText,offset szname
 			.endif
+		.else
+			xor		eax,eax
+			jmp		Ex
 		.endif
-	.elseif uMsg==WM_MOUSEMOVE
+	.elseif eax==WM_MOUSEMOVE
 		invoke SendMessage,hWin,LB_ITEMFROMPOINT,0,lParam
 		.IF eax!=OldItem
 			mov		OldItem,eax
@@ -108,7 +112,8 @@ ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.endif
 	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
-	RET
+  Ex:
+	ret
 
 ListBoxProc endp
 
@@ -944,8 +949,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,0,addr szComboBox,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or CBS_HASSTRINGS,0,0,0,0,hWin,1002,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hcbo,eax
 		;Create ListBox
-;		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,1003,hInstance,NULL
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWVARIABLE,0,0,0,0,hWin,1003,hInstance,NULL
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWVARIABLE,0,0,0,0,hWin,1003,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hlst,eax
 		invoke SetWindowLong,[ebx].RAPROPERTY.hlst,GWL_WNDPROC,offset ListBoxProc
 		mov		OldListBoxProc,eax
@@ -1222,7 +1226,6 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		invoke GetCursorPos,addr pt
-;		invoke ScreenToClient,[ebx].RAPROPERTY.hpar,addr pt
 		mov		eax,pt.x
 		mov		edx,pt.y
 		shl		edx,16
