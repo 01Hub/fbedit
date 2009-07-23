@@ -82,7 +82,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 10=2
 11=2
 12=2
-13=1
+13=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -138,7 +138,7 @@ ProductVer4Range=0
 12=
 13=
 [Size]
-2=0,0,699,490,2581
+2=0,0,699,490,2837
 <<<<<<< .mine
 1=0,0,699,490,15097
 =======
@@ -149,8 +149,8 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2327
 9=0,0,0,0,2485
-10=0,0,589,494,30899
-11=0,0,746,498,12597
+10=0,0,589,494,13769
+11=0,0,746,498,1474
 12=0,0,0,0,2850
 13=0,0,0,0,59
 [BookMark]
@@ -173,16 +173,18 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="lstrcmpi"
-2="lstrcmp"
-3="lstrcat"
-4="lstrcpyn"
-5="lstrcpy"
-6="lstrlen"
-7="strlen"
-8="ebx"
-9="PRM_GETTOOLTIP"
-10="PRM_ADDPROPERTYFILE"
+1="szLineCont"
+2="lstrcmpi"
+3="lstrcmp"
+4="lstrcat"
+5="lstrcpyn"
+6="lstrcpy"
+7="lstrlen"
+8="strlen"
+9="ebx"
+10="PRM_GETTOOLTIP"
 
 [Exports]
 1=GetDefEx
+[RADebugBP]
+10=

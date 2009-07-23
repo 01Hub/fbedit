@@ -525,18 +525,20 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 			EndIf
 		Else
 			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@CR))
-			sTmp=ProjectDeleteFiles
-			While Len(sTmp)
-				lret=InStr(sTmp,";")
-				If lret Then
-					sFile=Trim(Left(sTmp,lret-1))
-					sTmp=Mid(sTmp,lret+1)
-				Else
-					sFile=Trim(sTmp)
-					sTmp=""
-				EndIf
-				DeleteFiles(sFile)
-			Wend
+			If fModule=FALSE Then
+				sTmp=ProjectDeleteFiles
+				While Len(sTmp)
+					lret=InStr(sTmp,";")
+					If lret Then
+						sFile=Trim(Left(sTmp,lret-1))
+						sTmp=Mid(sTmp,lret+1)
+					Else
+						sFile=Trim(sTmp)
+						sTmp=""
+					EndIf
+					DeleteFiles(sFile)
+				Wend
+			EndIf
 			sItem="Make done" & CR
 			SendMessage(ah.hout,EM_REPLACESEL,FALSE,Cast(Integer,@sItem))
 			If ah.hred Then

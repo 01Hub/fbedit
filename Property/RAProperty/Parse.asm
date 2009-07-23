@@ -346,12 +346,20 @@ PreParse proc uses esi,lpMem:DWORD
 
 PreParse endp
 
-SkipLine proc lpMem:DWORD,lpnpos:DWORD
+SkipLine proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		eax,lpMem
 	movzx	ecx,byte ptr [ebx].RAPROPERTY.defgen.szLineCont
+	mov		esi,[ebx].RAPROPERTY.lpchartab
 	.while byte ptr [eax] && byte ptr [eax]!=0Dh
 		.if cl==byte ptr [eax] && byte ptr [eax+1]==0Dh
+			.if cl=='_'
+				movzx	edx,byte ptr [eax-1]
+				.if byte ptr [esi+edx]==CT_CHAR
+					inc eax
+					.break
+				.endif
+			.endif
 			mov		edx,lpnpos
 			inc		dword ptr [edx]
 			.if byte ptr [eax+2]==0Ah
@@ -375,6 +383,7 @@ GetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		edx,lpMem
 	movzx	ecx,byte ptr [ebx].RAPROPERTY.defgen.szLineCont
+	mov		esi,[ebx].RAPROPERTY.lpchartab
 	.while byte ptr [edx]==VK_SPACE || byte ptr [edx]==VK_TAB || (cl==byte ptr [edx] && (byte ptr [edx+1]==VK_RETURN || byte ptr [edx+1]==VK_SPACE || byte ptr [edx+1]==VK_TAB))
 		.if cl==byte ptr [edx]
 			.while byte ptr [edx+1]==VK_SPACE || byte ptr [edx+1]==VK_TAB
@@ -391,7 +400,6 @@ GetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 		inc		edx
 	.endw
 	xor		ecx,ecx
-	mov		esi,[ebx].RAPROPERTY.lpchartab
   @@:
 	movzx	eax,byte ptr [edx+ecx]
 	.if byte ptr [esi+eax]==CT_CHAR || eax=='.'

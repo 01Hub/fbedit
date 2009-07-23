@@ -1,14 +1,17 @@
 Whats new:
 ----------
 1.0.7.1
+o FbEdit now jumps to first compile error.
+o Auto delete files after build is only performed after build of the main file.
+o Accelerator table and string table now has an edit combo in its name column.
+  The combo items are names from menues. This might save you some typing.
+o Added PBS_MARQUEE progress bar style to dialog editor.
 o It is now possible to reserve more than one menuid with AIM_GETMENUID.
   wParam specifies the number of menuid's to reserve.
 o Added MakeProjectFileName to ADDINFUNCTIONS.
   In: Filename, Returns:Full path.
 o Added HH_Help to ADDINFUNCTIONS. The lpBuff in ADDINDATA contains the word to seach for.
-o FbEdit now jumps to first compile error.
-o Accelerator table and string table now has an edit combo in its name column.
-  The combo items are names from menues. This might save you some typing.
-o Added PBS_MARQUEE progress bar style to dialog editor.
-o Fixed bug with dialog editor custom styles.
-o Fixed bug with dialog editor duplicate #define
+o Fixed block complete bug in code editor.
+o Fixed line continuation bug in code parser.
+o Fixed custom styles bug in dialog editor.
+o Fixed duplicate #define bug in  dialog editor.
