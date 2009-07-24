@@ -1,5 +1,175 @@
 .code
 
+; String handling
+strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
+
+	mov		esi,lpSource
+	xor		ecx,ecx
+	mov		edi,lpDest
+  @@:
+	mov		al,[esi+ecx]
+	mov		[edi+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcpy endp
+
+strcpyn proc uses esi edi,lpDest:DWORD,lpSource:DWORD,nLen:DWORD
+
+	mov		esi,lpSource
+	mov		edx,nLen
+	dec		edx
+	xor		ecx,ecx
+	mov		edi,lpDest
+  @@:
+	.if sdword ptr ecx<edx
+		mov		al,[esi+ecx]
+		mov		[edi+ecx],al
+		inc		ecx
+		or		al,al
+		jne		@b
+	.else
+		mov		byte ptr [edi+ecx],0
+	.endif
+	ret
+
+strcpyn endp
+
+strcat proc uses esi edi,lpDest:DWORD,lpSource:DWORD
+
+	xor		eax,eax
+	xor		ecx,ecx
+	dec		eax
+	mov		edi,lpDest
+  @@:
+	inc		eax
+	cmp		[edi+eax],cl
+	jne		@b
+	mov		esi,lpSource
+	lea		edi,[edi+eax]
+  @@:
+	mov		al,[esi+ecx]
+	mov		[edi+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcat endp
+
+strlen proc uses esi,lpSource:DWORD
+
+	xor		eax,eax
+	dec		eax
+	mov		esi,lpSource
+  @@:
+	inc		eax
+	cmp		byte ptr [esi+eax],0
+	jne		@b
+	ret
+
+strlen endp
+
+strcmp proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	mov		al,[esi+ecx]
+	sub		al,[edi+ecx]
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmp endp
+
+strcmpn proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	cmp		ecx,nCount
+	je		@f
+	mov		al,[esi+ecx]
+	sub		al,[edi+ecx]
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpn endp
+
+strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	mov		al,[esi+ecx]
+	mov		ah,[edi+ecx]
+	.if al>='a' && al<='z'
+		and		al,5Fh
+	.endif
+	.if ah>='a' && ah<='z'
+		and		ah,5Fh
+	.endif
+	sub		al,ah
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpi endp
+
+strcmpin proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	cmp		ecx,nCount
+	je		@f
+	mov		al,[esi+ecx]
+	mov		ah,[edi+ecx]
+	.if al>='a' && al<='z'
+		and		al,5Fh
+	.endif
+	.if ah>='a' && ah<='z'
+		and		ah,5Fh
+	.endif
+	sub		al,ah
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpin endp
+
 DwToAscii proc uses ebx esi edi,dwVal:DWORD,lpAscii:DWORD
 
 	mov		eax,dwVal
@@ -1125,7 +1295,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 						invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTERROR,eax,0
 						.break .if eax==-1
 						push	eax
-						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETERROR,eax,0
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETERROR,eax,FALSE
 						pop		eax
 					.endw
 				.endif
@@ -1152,6 +1322,31 @@ UpdateAll proc uses ebx,nFunction:DWORD
 							mov		eax,TRUE
 							ret
 						.endif
+					.endw
+				.endif
+			.elseif eax==CLEAR_BREAKPOINTS
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTBREAKPOINT,eax,0
+						.break .if eax==-1
+						push	eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETBREAKPOINT,eax,FALSE
+						pop		eax
+					.endw
+				.endif
+			.elseif eax==SET_BREAKPOINTS
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTBREAKPOINT,eax,0
+						.break .if eax==-1
+						push	eax
+						lea		edx,[eax+1]
+						invoke DebugCommand,FUNC_BPADDLINE,edx,addr [ebx].TABMEM.filename
+						pop		eax
 					.endw
 				.endif
 			.endif
@@ -1236,3 +1431,9 @@ RemoveFromRegistry proc uses ebx
 	ret
 
 RemoveFromRegistry endp
+
+PutString proc lpString:DWORD
+
+	ret
+
+PutString endp

@@ -973,6 +973,24 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ResProc endp
 
+DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	mov		eax,nFunc
+	.if eax==CB_BREAK
+		invoke OpenEditFile,lParam,0
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+		mov		chrg.cpMin,eax
+		mov		chrg.cpMax,eax
+		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+	.endif
+	ret
+
+DebugCallback endp
+
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
@@ -1932,6 +1950,44 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				or		eax,eax
 				jne		Ex
 				invoke OutputMake,IDM_MAKE_RUN,offset MainFile,4
+			.elseif eax==IDM_DEBUG_TOGGLE
+				invoke GetWindowLong,hREd,GWL_ID
+				.if eax==IDC_RAE
+					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					mov		ebx,eax
+					invoke SendMessage,hREd,REM_GETLINESTATE,ebx,0
+					and		eax,STATE_BREAKPOINT
+					xor		eax,STATE_BREAKPOINT
+					invoke SendMessage,hREd,REM_SETBREAKPOINT,ebx,eax
+					invoke DebugCommand,FUNC_BPCLEARALL,0,0
+					invoke UpdateAll,SET_BREAKPOINTS
+				.endif
+			.elseif eax==IDM_DEBUG_CLEAR
+				invoke UpdateAll,CLEAR_BREAKPOINTS
+				invoke DebugCommand,FUNC_BPCLEARALL,0,0
+			.elseif eax==IDM_DEBUG_RUN
+				mov		eax,hWnd
+				mov		dbginf.hWnd,eax
+				mov		eax,hOut
+				mov		dbginf.hOut,eax
+				mov		eax,offset DebugCallback
+				mov		dbginf.lpCallBack,eax
+				invoke lstrcpy,addr dbginf.FileName,offset MainFile
+				invoke RemoveFileExt,addr dbginf.FileName
+				invoke lstrcat,addr dbginf.FileName,offset ExtExe
+				invoke SetDebugInfo,addr dbginf
+				invoke DebugCommand,FUNC_BPCLEARALL,0,0
+				invoke UpdateAll,SET_BREAKPOINTS
+				invoke DebugCommand,FUNC_RUN,0,0
+			.elseif eax==IDM_DEBUG_STOP
+				invoke DebugCommand,FUNC_STOP,0,0
+			.elseif eax==IDM_DEBUG_INTO
+				invoke DebugCommand,FUNC_STEPINTO,0,0
+			.elseif eax==IDM_DEBUG_OVER
+				invoke DebugCommand,FUNC_STEPOVER,0,0
+			.elseif eax==IDM_DEBUG_CARET
+				invoke DebugCommand,FUNC_RUNTOCARET,0,0
 			.elseif eax==IDM_MAKE_MAINFILE
 				invoke lstrcpy,addr MainFile,addr FileName
 				mov		fTimer,1

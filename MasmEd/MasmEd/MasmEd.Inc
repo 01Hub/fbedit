@@ -38,6 +38,8 @@ includelib ..\Lib\RACodeComplete.lib
 include Inc\RAProperty.Inc
 includelib ..\Lib\RAProperty.lib
 
+includelib ..\Lib\Debug.lib
+
 include Inc\RAGrid.Inc
 
 include masm32.inc
@@ -64,6 +66,22 @@ SetHiliteWords				PROTO :DWORD,:DWORD
 SetToolMenu					PROTO
 SetHelpMenu					PROTO
 
+; Debug proto
+SetDebugInfo				PROTO :DWORD
+DebugCommand				PROTO :DWORD,:DWORD,:DWORD
+
+; Debug functions
+FUNC_RUN					equ 1
+FUNC_STEPINTO				equ 2
+FUNC_STEPOVER				equ 3
+FUNC_RUNTOCARET				equ 4
+FUNC_STOP					equ 5
+FUNC_BPCLEARALL				equ 6
+FUNC_BPADDLINE				equ 7
+
+; Callback functions
+CB_BREAK					equ 1
+
 IS_OPEN						equ -1
 SAVE_ALL					equ -2
 IS_RESOURCE					equ -3
@@ -74,6 +92,8 @@ CLEAR_CHANGED				equ -7
 SAVE_SESSION				equ -8
 CLEAR_ERRORS				equ -9
 FIND_ERROR					equ -10
+CLEAR_BREAKPOINTS			equ -11
+SET_BREAKPOINTS				equ -12
 
 TABHT						equ 23
 CBOWT						equ 175
@@ -237,6 +257,21 @@ IDM_BROWSER_OPEN			equ 21006
 IDM_BROWSER_COPY			equ 21007
 IDM_PROPERTY_GOTODECLARE	equ 21010
 IDM_PROPERTY_COPYTOCODE		equ 21011
+
+IDM_DEBUG_TOGGLE			equ 10082
+IDM_DEBUG_CLEAR				equ 10083
+IDM_DEBUG_RUN				equ 10081
+IDM_DEBUG_STOP				equ 10084
+IDM_DEBUG_INTO				equ 10085
+IDM_DEBUG_OVER				equ 10086
+IDM_DEBUG_CARET				equ 10087
+
+DEBUGINFO struct
+	hWnd					HWND ?					; Handle of main window
+	hOut					HWND ?					; Handle of output window
+	lpCallBack				DWORD ?					; Callback
+	FileName				BYTE MAX_PATH dup(?)	; Filename
+DEBUGINFO ends
 
 TABMEM struct
 	hwnd		dd ?
@@ -655,3 +690,4 @@ tabinx					dd ?
 fUnicode				dd ?
 nTabInx					dd ?
 nCboBuild				dd ?
+dbginf					DEBUGINFO <>
