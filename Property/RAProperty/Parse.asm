@@ -144,7 +144,6 @@ DestroyString proc lpMem:DWORD
 
 	mov		eax,lpMem
 	movzx	ecx,byte ptr [eax]
-	mov		byte ptr [eax],20h
 	inc		eax
 	.while byte ptr [eax]!=0 && byte ptr [eax]!=0Dh
 		mov		dx,[eax]
@@ -154,9 +153,9 @@ DestroyString proc lpMem:DWORD
 			mov		byte ptr [eax],20h
 			inc		eax
 		.else
-			mov		byte ptr [eax],20h
 			inc		eax
 			.break .if dl==cl
+			mov		byte ptr [eax-1],20h
 		.endif
 	.endw
 	ret
@@ -212,39 +211,11 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 					inc		esi
 				.endif
 			.endw
-;			mov		word ptr buffer[4],"'"
-;			invoke SearchMemDown,esi,addr buffer[4],FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
-;			.if eax
-;				.if byte ptr [eax-1]=='/'
-;					lea		esi,[eax+1]
-;					invoke SearchMemDown,esi,addr [ebx].RAPROPERTY.defgen.szCmntBlockEn,FALSE,FALSE,[ebx].RAPROPERTY.lpchartab
-;					.if eax
-;						mov		edx,eax
-;						.if [ebx].RAPROPERTY.defgen.szCmntBlockEn[1]
-;							inc		edx
-;						.endif
-;						.while esi<=edx
-;							mov		al,[esi]
-;							.if al!=0Dh && al!=0Ah
-;								mov		byte ptr [esi],' '
-;							.endif
-;							inc		esi
-;						.endw
-;						jmp		@b
-;					.endif
-;				.else
-;					;Comment
-;					invoke DestroyToEol,eax
-;					mov		esi,eax
-;					jmp		@b
-;				.endif
-;			.endif
 		.else
 			invoke SearchMemDown,esi,addr buffer,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
 			.if eax
 				mov		esi,eax
 				mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
-	;			dec		eax
 				.while eax>lpMem
 					.break .if byte ptr [eax-1]==0Dh || byte ptr [eax-1]==0Ah
 					dec		eax
@@ -341,7 +312,7 @@ DestroyCommentsStrings endp
 PreParse proc uses esi,lpMem:DWORD
 
 	invoke DestroyCmntBlock,lpMem
-	;invoke DestroyCommentsStrings,lpMem
+	invoke DestroyCommentsStrings,lpMem
 	ret
 
 PreParse endp
@@ -687,6 +658,7 @@ ParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	fParam:DWORD
 	LOCAL	endtype:DWORD
 	LOCAL	fdim:DWORD
+	LOCAL	narray:DWORD
 
 	mov		npos,0
 	mov		rpnmespc,-1
@@ -1516,9 +1488,7 @@ ConvDataType:
 	retn
 
 ArraySize:
-	mov		byte ptr szname[16384],0
-	push	ebx
-	xor		ebx,ebx
+	mov		narray,0
 	.while TRUE
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
@@ -1535,44 +1505,73 @@ ArraySize:
 				.if ecx==3
 					invoke strcmpin,addr szDup,lpword2,ecx
 					.if !eax
-						invoke strcat,addr szname[16384],addr szAdd
-						invoke strcatn,addr szname[16384],lpword1,len1
+						.if byte ptr szname[16384]
+							invoke strcat,addr szname[16384],addr szAdd
+						.endif
+						mov		eax,len1
+						inc		eax
+						invoke strcatn,addr szname[16384],lpword1,eax
+						invoke GetWord,esi,addr npos
+						mov		esi,edx
+						.if byte ptr [esi]=='('
+							.while byte ptr [esi-1]!=')' && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+								inc		esi
+							.endw
+						.endif
 					.endif
 				.endif
+			.elseif byte ptr [esi]=='+' || byte ptr [esi]=='-' ||byte ptr [esi]=='*' || byte ptr [esi]=='/'
+				mov		eax,len1
+				inc		eax
+				invoke strcatn,addr szname[16384],lpword1,eax
+				invoke strcatn,addr szname[16384],esi,1
+				inc		esi
+			.elseif byte ptr [esi]==','
+				inc		narray
+				inc		esi
+			.elseif byte ptr [esi]==VK_RETURN
+				inc		narray
 			.endif
-		.elseif byte ptr [esi]=='+'
-			invoke strcat,addr szname[16384],addr szAdd
+		.elseif byte ptr [esi]=='?'
 			inc		esi
-		.elseif byte ptr [esi]=='-'
-			invoke strcat,addr szname[16384],addr szMSub
-			inc		esi
-		.elseif byte ptr [esi]=='*'
-			invoke strcat,addr szname[16384],addr szMul
-			inc		esi
-		.elseif byte ptr [esi]=='/'
-			invoke strcat,addr szname[16384],addr szDiv
-			inc		esi
+			inc		narray
 		.elseif byte ptr [esi]=="'" || byte ptr [esi]=='"'
 			mov		al,[esi]
 			inc		esi
-			.while al!=[esi]
+			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
 				inc		esi
-				inc		ebx
+				inc		narray
 			.endw
-			inc		esi
+			.if al==[esi]
+				inc		esi
+			.endif
+		.elseif byte ptr [esi]=="<"
+			xor		ecx,ecx
+			.while TRUE
+				.if byte ptr [esi]=='<'
+					inc		ecx
+				.elseif byte ptr [esi-1]=='>'
+					dec		ecx
+					.break .if !ecx
+				.elseif byte ptr [esi]==VK_RETURN
+					.break
+				.endif
+				inc		esi
+			.endw
+			inc		narray
 		.elseif byte ptr [esi]==','
-			inc		ebx
 			inc		esi
-		.elseif byte ptr [esi]==VK_RETURN
+		.else
 			.break
 		.endif
 	.endw
-	.if ebx
-		invoke strcat,addr szname[16384],addr szAdd
-		invoke DwToAscii,ebx,addr szname[16384+1024]
+	.if narray>1 || (byte ptr szname[16384] && narray)
+		.if byte ptr szname[16384]
+			invoke strcat,addr szname[16384],addr szAdd
+		.endif
+		invoke DwToAscii,narray,addr szname[16384+1024]
 		invoke strcat,addr szname[16384],addr szname[16384+1024]
 	.endif
-	pop		ebx
 	retn
 
 ParseData:
@@ -1585,12 +1584,16 @@ ParseData1:
 		mov		eax,len2
 		mov		lendatatype,eax
 		call	ConvDataType
+		mov		byte ptr szname[16384],0
 		call	ArraySize
 		.if byte ptr szname[16384]
-			mov		byte ptr [edi],'['
-			inc		edi
-			invoke strcpy,edi,addr szname[16385]
+			mov		byte ptr [edi-1],'['
+			invoke strcpy,edi,addr szname[16384]
+			invoke strlen,edi
+			lea		edi,[edi+eax]
 			mov		byte ptr [edi],']'
+			inc		edi
+			mov		byte ptr [edi],0
 			inc		edi
 		.endif
 	.else

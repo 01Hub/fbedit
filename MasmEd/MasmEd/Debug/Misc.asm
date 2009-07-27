@@ -717,110 +717,25 @@ EnableMenu endp
 FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	LOCAL buffer[256]:BYTE
 
-;	mov		eax,lpType
-;	mov		eax,[eax]
-;	and		eax,0FF5F5F5Fh
-;	.if eax==' RTP'
-;		; Found
-;		mov		edx,TRUE
-;		mov		eax,4
-;		jmp		Ex
-;	.endif
-;	; Predefined datatypes, case insensitive.
-;	mov		esi,offset datatype
-;	.while [esi].DATATYPE.lpszType
-;		invoke strcmpi,lpType,[esi].DATATYPE.lpszType
-;		.if !eax
-;			; Found
-;			mov		edx,TRUE
-;			movzx	eax,[esi].DATATYPE.nSize
-;			jmp		Ex
-;		.endif
-;		lea		esi,[esi+sizeof DATATYPE]
-;	.endw
-;	; Datatypes from dbghelp, case sensitive
-;	mov		esi,dbg.hMemType
-;	xor		ebx,ebx
-;	.while ebx<dbg.inxtype
-;		.if fCaseSensitive
-;			invoke strcmp,addr [esi].DEBUGTYPE.szName,lpType
-;		.else
-;			invoke strcmpi,addr [esi].DEBUGTYPE.szName,lpType
-;		.endif
-;		.if !eax
-;			; Found
-;			mov		edx,TRUE
-;			mov		eax,[esi].DEBUGTYPE.nSize
-;			jmp		Ex
-;		.endif
-;		lea		esi,[esi+sizeof DEBUGTYPE]
-;		inc		ebx
-;	.endw
-;	; Ansi version
-;	invoke strcpy,addr buffer,lpType
-;	invoke strcat,addr buffer,addr szA
-;	mov		esi,dbg.hMemType
-;	xor		ebx,ebx
-;	.while ebx<dbg.inxtype
-;		invoke strcmp,addr [esi].DEBUGTYPE.szName,addr buffer
-;		.if !eax
-;			; Found
-;			mov		edx,TRUE
-;			mov		eax,[esi].DEBUGTYPE.nSize
-;			jmp		Ex
-;		.endif
-;		lea		esi,[esi+sizeof DEBUGTYPE]
-;		inc		ebx
-;	.endw
-;	; Widechar version
-;	invoke strcpy,addr buffer,lpType
-;	invoke strcat,addr buffer,addr szW
-;	mov		esi,dbg.hMemType
-;	xor		ebx,ebx
-;	.while ebx<dbg.inxtype
-;		invoke strcmp,addr [esi].DEBUGTYPE.szName,addr buffer
-;		.if !eax
-;			; Found
-;			mov		edx,TRUE
-;			mov		eax,[esi].DEBUGTYPE.nSize
-;			jmp		Ex
-;		.endif
-;		lea		esi,[esi+sizeof DEBUGTYPE]
-;		inc		ebx
-;	.endw
-;	; Datatypes from RadASM, case sensitive
-;	mov		edx,lpData
-;	;Get pointer to word list
-;	mov		esi,[edx].ADDINDATA.lpWordList
-;	;Only words loaded from .api files
-;	mov		edi,[edx].ADDINDATA.rpProjectWordList
-;	lea		edi,[edi+esi]
-;	;Loop trough the word list
-;	.while [esi].PROPERTIES.nSize && esi<edi
-;		.if [esi].PROPERTIES.nType=='T'
-;			.if fCaseSensitive
-;				invoke strcmp,addr [esi+sizeof PROPERTIES],lpType
-;			.else
-;				invoke strcmpi,addr [esi+sizeof PROPERTIES],lpType
-;			.endif
-;			.if !eax
-;				; Found
-;				lea		edi,[esi+sizeof PROPERTIES]
-;				invoke strlen,edi
-;				lea		edi,[edi+eax+1]
-;				invoke DecToBin,edi
-;				mov		edx,TRUE
-;				jmp		Ex
-;			.endif
-;		.endif
-;		;Move to next word
-;		mov		eax,[esi].PROPERTIES.nSize
-;		lea		esi,[esi+eax+sizeof PROPERTIES]
-;	.endw
-	; Type size not found
-	xor		eax,eax
-	xor		edx,edx
-  Ex:
+	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpT,lpType
+PrintHex eax
+	.if eax
+		mov		esi,eax
+PrintStringByAddr lpType
+PrintStringByAddr esi
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+PrintStringByAddr esi
+		invoke CalculateIt,esi
+		mov		edx,eax
+		.if eax
+			mov		eax,var.Value
+		.endif
+	.else
+		; Type size not found
+		xor		eax,eax
+		xor		edx,edx
+	.endif
 	ret
 
 FindTypeSize endp

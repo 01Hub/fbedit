@@ -230,7 +230,7 @@ reg16							REG 4  dup(<'AX',2,CONTEXT.regEax>,
 										   <'BX',2,CONTEXT.regEbx>,
 										   <'CX',2,CONTEXT.regEcx>,
 										   <'DX',2,CONTEXT.regEdx>)
-reg8							REG 9 dup(<'AL',1,CONTEXT.regEax>,
+reg8							REG 9  dup(<'AL',1,CONTEXT.regEax>,
 										   <'AH',3,CONTEXT.regEax>,
 										   <'BL',1,CONTEXT.regEbx>,
 										   <'BH',3,CONTEXT.regEbx>,
@@ -354,7 +354,8 @@ szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,
 ; Ansi / Widechar
 szA								db 'A',0
 szW								db 'W',0
-szPrp							db 'pdl',0
+szPrppdl						db 'pdl',0
+szPrpT							db 'T',0
 
 ;#########################################################################
 ; Globals

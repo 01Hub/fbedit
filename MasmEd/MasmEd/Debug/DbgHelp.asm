@@ -177,7 +177,7 @@ GetDbgHelpVersion endp
 
 FindWord proc uses esi,lpWord:DWORD
 
-	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrp,lpWord
+	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrppdl,lpWord
 	ret
 
 FindWord endp
@@ -340,7 +340,7 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		[edi].DEBUGVAR.nSize,eax
 	.elseif lpType
 		mov		eax,lpType
-		invoke FindTypeSize,addr [eax+1]
+;		invoke FindTypeSize,addr [eax+1]
 		.if !edx
 			xor		eax,eax
 			mov		fErrType,TRUE
@@ -380,6 +380,8 @@ AddVarList proc uses ebx esi edi,lpList:DWORD
 			mov		al,[esi]
 			.if !al
 				mov		[edi],al
+lea	eax,buffer
+PrintStringByAddr eax
 				invoke AddVar,addr buffer,0
 				.break
 			.elseif al==','
@@ -418,57 +420,6 @@ AddVarList proc uses ebx esi edi,lpList:DWORD
 	ret
 
 AddVarList endp
-
-AddVarListFp proc uses ebx esi edi,lpList:DWORD
-	LOCAL	buffer[256]:BYTE
-	LOCAL	flocal:DWORD
-
-	mov		flocal,0
-	mov		esi,lpList
-	.while byte ptr [esi]
-		mov		ebx,dbg.lpvar
-		lea		edi,buffer
-		.while TRUE
-			mov		al,[esi]
-			.if !al
-				mov		[edi],al
-				.break
-			.elseif al==','
-				mov		byte ptr [edi],0
-				inc		esi
-				.break
-			.else
-				mov		[edi],al
-				inc		esi
-				inc		edi
-			.endif
-		.endw
-		invoke DecToBin,esi
-		.while byte ptr [esi]
-			.if byte ptr [esi]==','
-				inc		esi
-				.break
-			.endif
-			inc		esi
-		.endw
-		push	eax
-		.if !flocal && sdword ptr eax<0
-			inc		flocal
-			mov		eax,dbg.lpvar
-			lea		eax,[eax+sizeof DEBUGVAR+2]
-			mov		dbg.lpvar,eax
-			mov		ebx,dbg.lpvar
-		.endif
-		invoke AddVar,addr buffer,0
-		pop		eax
-		mov		[ebx].DEBUGVAR.nOfs,eax
-	.endw
-	mov		eax,dbg.lpvar
-	lea		eax,[eax+sizeof DEBUGVAR+2]
-	mov		dbg.lpvar,eax
-	ret
-
-AddVarListFp endp
 
 EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
 

@@ -7,7 +7,7 @@ Group=1
 GroupExpand=1
 Res.rc=1
 Ver.rc=1
-Debug=1
+Debug=0
 
 [Files]
 1=MasmEd.Asm
@@ -294,7 +294,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -359,7 +359,7 @@ ProductVer4Range=0
 33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,19217
+37=0,0,0,0,18791
 36=0,0,661,490,157
 20=0,0,0,0,0
 38=0,0,0,0,356
