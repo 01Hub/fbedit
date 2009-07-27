@@ -986,7 +986,10 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		chrg.cpMax,eax
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+		invoke SetFocus,hREd
+	.elseif eax==CB_RESET
 	.endif
+	mov		eax,hREd
 	ret
 
 DebugCallback endp

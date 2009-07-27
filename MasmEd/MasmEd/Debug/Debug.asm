@@ -420,7 +420,10 @@ ClearBreakPointsAll endp
 ResetSelectLine proc
 
 	.if dbg.prevline!=-1
-;		invoke SendMessage,dbg.prevhwnd,REM_SETHILITELINE,dbg.prevline,0
+		push	0
+		push	0
+		push	CB_RESET
+		call	lpCallBack
 	.endif
 	ret
 
@@ -435,7 +438,8 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	mul		edx
 	mov		esi,dbg.hMemSource
 	lea		esi,[esi+eax]
-	push	esi
+	lea		eax,[esi].DEBUGSOURCE.FileName
+	push	eax
 	push	[ebx].DEBUGLINE.LineNumber
 	push	CB_BREAK
 	call	lpCallBack
@@ -539,7 +543,7 @@ IsOnBP proc uses esi,Address:DWORD
 
 IsOnBP endp
 
-Debug proc uses ebx,lpFileName:DWORD
+Debug proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	sinfo:STARTUPINFO
 	LOCAL	de:DEBUG_EVENT
 	LOCAL	fContinue:DWORD
@@ -555,8 +559,7 @@ Debug proc uses ebx,lpFileName:DWORD
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax
-		mov		edx,offset DbgHelpDLL
-		invoke DbgHelp,edx,dbg.pinfo.hProcess,addr szExeName
+		invoke DbgHelp,offset DbgHelpDLL,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
 			invoke PutString,addr szNoDebugInfoMasm
 			invoke PutString,addr szExeName

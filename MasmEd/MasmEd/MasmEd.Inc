@@ -81,6 +81,7 @@ FUNC_BPADDLINE				equ 7
 
 ; Callback functions
 CB_BREAK					equ 1
+CB_RESET					equ 2
 
 IS_OPEN						equ -1
 SAVE_ALL					equ -2
@@ -367,16 +368,18 @@ THEME struct
 	medcol		MEDCOLOR <>
 THEME ends
 
-;MENUINFO STRUCT
-;	cbSize			DWORD	?
-;	fMask			DWORD	?
-;	dwstyle			DWORD	?
-;	cyMax			DWORD	?
-;	hbrBack			DWORD	?
-;	dwContextHelpID	DWORD	?
-;	dwMenuData		DWORD	?
-;MENUINFO ends
-;
+ifndef
+MENUINFO STRUCT
+	cbSize			DWORD	?
+	fMask			DWORD	?
+	dwstyle			DWORD	?
+	cyMax			DWORD	?
+	hbrBack			DWORD	?
+	dwContextHelpID	DWORD	?
+	dwMenuData		DWORD	?
+MENUINFO ends
+endif
+
 MENUDATA struct
 	img		dd ?
 	tpe		dd ?

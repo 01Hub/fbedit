@@ -39,7 +39,8 @@ FUNC_BPCLEARALL					equ 6
 FUNC_BPADDLINE					equ 7
 
 ; Callback functions
-CB_BREAK					equ 1
+CB_BREAK						equ 1
+CB_RESET						equ 2
 
 ; Format items
 FMT_NAME						equ 1
