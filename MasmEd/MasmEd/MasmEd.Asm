@@ -312,7 +312,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrcpy,offset tmpbuff,eax
 				xor		eax,eax
 				.while tmpbuff[eax]
-					.if tmpbuff[eax]==':'
+					.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
 						mov		tmpbuff[eax],0
 					.endif
 					inc		eax
@@ -979,6 +979,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 	mov		eax,nFunc
 	.if eax==CB_BREAK
 		invoke OpenEditFile,lParam,0
+		invoke SendMessage,hREd,REM_HILITEACTIVELINE,0,2
 		mov		eax,wParam
 		dec		eax
 		invoke SendMessage,hREd,EM_LINEINDEX,eax,0
@@ -988,6 +989,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 		invoke SetFocus,hREd
 	.elseif eax==CB_RESET
+		invoke SendMessage,hREd,REM_HILITEACTIVELINE,0,0
 	.endif
 	mov		eax,hREd
 	ret
@@ -1974,6 +1976,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		dbginf.hWnd,eax
 				mov		eax,hOut
 				mov		dbginf.hOut,eax
+				mov		eax,hProperty
+				mov		dbginf.hPrp,eax
 				mov		eax,offset DebugCallback
 				mov		dbginf.lpCallBack,eax
 				invoke lstrcpy,addr dbginf.FileName,offset MainFile
@@ -1990,7 +1994,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_OVER
 				invoke DebugCommand,FUNC_STEPOVER,0,0
 			.elseif eax==IDM_DEBUG_CARET
-				invoke DebugCommand,FUNC_RUNTOCARET,0,0
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				inc		eax
+				invoke DebugCommand,FUNC_RUNTOCARET,eax,offset FileName
 			.elseif eax==IDM_MAKE_MAINFILE
 				invoke lstrcpy,addr MainFile,addr FileName
 				mov		fTimer,1

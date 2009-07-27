@@ -2,6 +2,7 @@
 .const
 
 szPrpCode		db 'Code',0
+szPrpLabel		db 'Label',0
 szPrpConst		db 'Const',0
 szPrpData		db 'Data',0
 szPrpStruct		db 'Struct',0
@@ -12,6 +13,7 @@ defgen			DEFGEN <'comment +',<0>,';',<27h,22h>,'\'>
 
 deftypeproc		DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_PROC,'p',4,'proc'>
 deftypeendp		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDPROC,'p',4,'endp'>
+deftypelabel	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_LABEL,'l',1,':'>
 
 deftypeconst	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_CONST,'c',3,'equ'>
 deftypelocal	DEFTYPE <TYPE_NAMESECOND,DEFTYPE_LOCALDATA,'l',5,'local'>
@@ -49,6 +51,7 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_SETCHARTAB,0,eax
 	;Combo items
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'p',addr szPrpCode
+	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'l',addr szPrpLabel
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'c',addr szPrpConst
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'d',addr szPrpData
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'s',addr szPrpStruct
@@ -70,6 +73,7 @@ SetPropertyDefs proc uses esi
 	;Def types
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeproc
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeendp
+	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelabel
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeconst
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
@@ -102,7 +106,7 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiTypeFile
 	call	MakePath
-	mov		edx,2 shl 8 or 'T'
+	mov		edx,3 shl 8 or 'T'
 	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiWordFile
 	call	MakePath

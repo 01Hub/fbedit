@@ -52,8 +52,12 @@ BringWindowToFront endp
 SetDebugInfo proc public lpDEBUGINFO:DWORD
 
 	mov		edx,lpDEBUGINFO
+	mov		eax,[edx].DEBUGINFO.hWnd
+	mov		hWnd,eax
 	mov		eax,[edx].DEBUGINFO.hOut
 	mov		hOut,eax
+	mov		eax,[edx].DEBUGINFO.hPrp
+	mov		hPrp,eax
 	mov		eax,[edx].DEBUGINFO.lpCallBack
 	mov		lpCallBack,eax
 	invoke strcpy,addr szExeName,addr [edx].DEBUGINFO.FileName
@@ -79,6 +83,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 			invoke ResetSelectLine
 			mov		dbg.func,FUNC_RUN
 			invoke ClearBreakPointsAll
+			invoke MapBreakPoints
 			invoke SetBreakPoints
 			mov		ebx,dbg.lpthread
 			.if [ebx].DEBUGTHREAD.suspended
@@ -142,7 +147,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 				invoke SetBreakPoints
 				mov		ebx,dbg.lpthread
 				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
-				invoke SetBreakpointAtCurrentLine,0
+				invoke SetBreakpointAtCurrentLine,wParam,lParam
 				.if [ebx].DEBUGTHREAD.suspended
 					mov		[ebx].DEBUGTHREAD.suspended,FALSE
 					invoke ResumeThread,[ebx].DEBUGTHREAD.htread

@@ -175,71 +175,10 @@ GetDbgHelpVersion proc lpDll:DWORD
 
 GetDbgHelpVersion endp
 
-FindWord proc uses esi,lpWord:DWORD,fCase:DWORD
+FindWord proc uses esi,lpWord:DWORD
 
-;	mov		edx,lpData
-;	;Get pointer to word list
-;	mov		esi,[edx].ADDINDATA.lpWordList
-;	;Skip the words loaded from .api files
-;	add		esi,[edx].ADDINDATA.rpProjectWordList
-;	;Loop trough the word list
-;	.while [esi].PROPERTIES.nSize
-;		call	TestWord
-;		.if eax
-;			mov		eax,esi
-;			jmp		Ex			
-;		.endif
-;		;Move to next word
-;		mov		eax,[esi].PROPERTIES.nSize
-;		lea		esi,[esi+eax+sizeof PROPERTIES]
-;	.endw
-;	xor		eax,eax
-;  Ex:
+	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrp,lpWord
 	ret
-
-TestWord:
-	lea		ecx,[esi+sizeof PROPERTIES]
-	mov		edx,lpWord
-	.if [esi].PROPERTIES.nType=='p'
-		.if fCase
-			invoke strcmp,ecx,edx
-		.else
-			invoke strcmpi,ecx,edx
-		.endif
-		.if !eax
-			inc		eax
-			retn
-		.endif
-		xor		eax,eax
-	.elseif [esi].PROPERTIES.nType=='d'
-		.while TRUE
-			mov		al,[ecx]
-			mov		ah,[edx]
-			.if !ah
-				.if al!='[' && al!=':'
-					xor		eax,eax
-				.endif
-				retn
-			.else
-				.if !fCase
-					.if al>='a' && al<='z'
-						and		al,5Fh
-					.endif
-					.if ah>='a' && ah<='z'
-						and		ah,5Fh
-					.endif
-				.endif
-				.if al!=ah
-					xor		eax,eax
-					retn
-				.endif
-			.endif
-			inc		ecx
-			inc		edx
-		.endw
-	.endif
-	xor		eax,eax
-	retn
 
 FindWord endp
 
@@ -536,9 +475,6 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 ;	mov		esi,pSymInfo
 ;	invoke wsprintf,addr outbuffer,addr szType,addr [esi].SYMBOL_INFO.szName,[esi].SYMBOL_INFO.nSize
 ;	invoke PutString,addr outbuffer
-
-ret
-
 	mov		eax,dbg.inxtype
 	mov		edx,sizeof DEBUGTYPE
 	mul		edx
@@ -559,11 +495,10 @@ EnumTypesCallback endp
 EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
-	invoke PutString,SymbolName
-ret
-
-
-	.if SymbolSize
+	invoke FindWord,SymbolName
+	.if eax
+		mov		esi,eax
+		sub		esi,sizeof PROPERTIES
 		mov		eax,dbg.inxsymbol
 		mov		edx,sizeof DEBUGSYMBOL
 		mul		edx
@@ -574,49 +509,46 @@ ret
 		mov		eax,SymbolSize
 		mov		[edi].DEBUGSYMBOL.nSize,eax
 		invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,SymbolName,sizeof DEBUGSYMBOL.szName
-		invoke FindWord,SymbolName,TRUE
-		.if eax
-			mov		esi,eax
-			movzx	edx,[esi].PROPERTIES.nType
-			mov		[edi].DEBUGSYMBOL.nType,dx
-			.if edx=='p'
-				; Proc
-				invoke strcpyn,addr [edi].DEBUGSYMBOL.szName,addr [esi+sizeof PROPERTIES],sizeof DEBUGSYMBOL.szName
-				mov		eax,dbg.lpvar
-				mov		[edi].DEBUGSYMBOL.lpType,eax
-				; Point to parameters
-				invoke strlen,addr [esi+sizeof PROPERTIES]
-				lea		esi,[esi+eax+1+sizeof PROPERTIES]
-				invoke AddVarList,esi
-				; Point to locals
-				invoke strlen,esi
-				lea		esi,[esi+eax+1]
-				invoke AddVarList,esi
-			.elseif edx=='d'
-				; Variable
-				.if [edi].DEBUGSYMBOL.nSize==-1
-					mov		[edi].DEBUGSYMBOL.nSize,0
-				.endif
-				lea		edx,[esi+sizeof PROPERTIES]
-				lea		ecx,[edi].DEBUGSYMBOL.szName
-				.while byte ptr [edx]!=':' && byte ptr [edx]!='['
-					mov		al,[edx]
-					mov		[ecx],al
-					inc		edx
-					inc		ecx
-				.endw
-				mov		byte ptr [ecx],0
-				mov		eax,dbg.lpvar
-				mov		[edi].DEBUGSYMBOL.lpType,eax
-				invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
-				mov		[edi].DEBUGSYMBOL.nSize,eax
+		movzx	edx,[esi].PROPERTIES.nType
+		mov		[edi].DEBUGSYMBOL.nType,dx
+		.if edx=='p'
+			; Proc
+			mov		eax,dbg.lpvar
+			mov		[edi].DEBUGSYMBOL.lpType,eax
+			; Point to parameters
+			invoke strlen,addr [esi+sizeof PROPERTIES]
+			lea		esi,[esi+eax+1+sizeof PROPERTIES]
+			invoke AddVarList,esi
+			; Point to locals
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke AddVarList,esi
+		.elseif edx=='d'
+			; Variable
+			.if [edi].DEBUGSYMBOL.nSize==-1
+				mov		[edi].DEBUGSYMBOL.nSize,0
 			.endif
-;			.if fOptions & 1
-;				invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
-;				invoke PutString,addr buffer
-;			.endif
+			lea		edx,[esi+sizeof PROPERTIES]
+			lea		ecx,[edi].DEBUGSYMBOL.szName
+			.while byte ptr [edx]!=':' && byte ptr [edx]!='['
+				mov		al,[edx]
+				mov		[ecx],al
+				inc		edx
+				inc		ecx
+			.endw
+			mov		byte ptr [ecx],0
+			mov		eax,dbg.lpvar
+			mov		[edi].DEBUGSYMBOL.lpType,eax
+			invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
+			mov		[edi].DEBUGSYMBOL.nSize,eax
+			invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
+			invoke PutString,addr buffer
 		.endif
 		inc		dbg.inxsymbol
+;		.if fOptions & 1
+;			invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
+;			invoke PutString,addr buffer
+;		.endif
 	.endif
 	mov		eax,TRUE
 	ret

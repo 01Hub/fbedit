@@ -270,6 +270,7 @@ IDM_DEBUG_CARET				equ 10087
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
@@ -368,7 +369,7 @@ THEME struct
 	medcol		MEDCOLOR <>
 THEME ends
 
-ifndef
+ifndef MENUINFO
 MENUINFO STRUCT
 	cbSize			DWORD	?
 	fMask			DWORD	?

@@ -57,28 +57,39 @@ ERR_SYNTAX						equ 3
 
 fCaseSensitive					equ TRUE
 
+; RAEdit message
+REM_BASE						equ WM_USER+1000
+REM_LINEREDTEXT					equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
+
+; RAProperties messages
+PRM_FINDFIRST					equ WM_USER+13		;wParam=lpszTypes, lParam=lpszText
+PRM_FINDNEXT					equ WM_USER+14		;wParam=0, lParam=0
+PRM_FINDGETTYPE					equ WM_USER+15		;wParam=0, lParam=0
+
 ;#########################################################################
 ; Structures
 
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
+
+PROPERTIES	struct
+	nSize					DWORD ?
+	nOwner					DWORD ?
+	nLine					DWORD ?
+	nEnd					DWORD ?
+	nType					BYTE ?
+PROPERTIES ends
 
 ; Breakpoints
 BREAKPOINT struct
 	FileID					DWORD ?					; File id, 1 based
 	LineNumber				DWORD ?					; Line number, 1 based
 BREAKPOINT ends
-
-; RadASM properties
-PROPERTIES struct
-	nSize					DWORD ?					; Size of property, excluding size of PROPERTIES struct
-	Owner					DWORD ?					; Project file ID or handle of window if file is open.
-	nType					BYTE ?					; Type d,p,S,s,T
-PROPERTIES ends
 
 ; Source files
 DEBUGSOURCE struct
@@ -343,6 +354,7 @@ szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,
 ; Ansi / Widechar
 szA								db 'A',0
 szW								db 'W',0
+szPrp							db 'pdl',0
 
 ;#########################################################################
 ; Globals
@@ -352,6 +364,7 @@ szW								db 'W',0
 hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
 hWnd							HWND ?							; Handle of main window
 hOut							HWND ?							; Handle of output window
+hPrp							HWND ?							; Handle of properties window
 lpCallBack						dd ?
 szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged
 

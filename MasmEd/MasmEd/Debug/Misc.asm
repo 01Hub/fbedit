@@ -817,10 +817,10 @@ FindTypeSize proc uses ebx esi edi,lpType:DWORD
 ;		mov		eax,[esi].PROPERTIES.nSize
 ;		lea		esi,[esi+eax+sizeof PROPERTIES]
 ;	.endw
-;	; Type size not found
-;	xor		eax,eax
-;	xor		edx,edx
-;  Ex:
+	; Type size not found
+	xor		eax,eax
+	xor		edx,edx
+  Ex:
 	ret
 
 FindTypeSize endp

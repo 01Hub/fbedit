@@ -774,6 +774,8 @@ ParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 				mov		esi,edx
 				lea		esi,[esi+ecx]
 				jmp		Nxtwrd1
+			.elseif byte ptr [esi]==':'
+				inc		ecx
 			.endif
 			mov		lpword2,esi
 			mov		len2,ecx
@@ -792,6 +794,13 @@ ParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
+					.endif
+				.elseif edx==DEFTYPE_LABEL
+					call	ParseLabel
+					.if eax
+						mov		edx,lpdef
+						movzx	edx,[edx].DEFTYPE.Def
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,1
 					.endif
 				.elseif edx==DEFTYPE_MACRO
 					call	ParseMacro
@@ -1159,6 +1168,9 @@ ParseUnknown:
 	.if len1 && len2
 		mov		eax,TYPE_NAMEFIRST
 		call	SaveName
+		mov		byte ptr [edi-1],':'
+		mov		eax,TYPE_NAMESECOND
+		call	SaveName
 		mov		eax,TYPE_NAMESECOND
 		call	SaveName
 		mov		eax,TRUE
@@ -1235,6 +1247,12 @@ ParseProcNoNamespace:
 		retn
 	.endif
 	call	SaveLocal
+	retn
+
+ParseLabel:
+	call	SaveName
+	xor		eax,eax
+	inc		eax
 	retn
 
 NxtWordProc:
@@ -1475,33 +1493,138 @@ SaveLocal:
 	xor		eax,eax
 	retn
 
+ConvDataType:
+	.if lendatatype==2
+		push	esi
+		mov		esi,offset szMasmDataConv
+		.while byte ptr [esi]
+			invoke strcmpin,esi,lpdatatype,2
+			.if !eax
+				lea		esi,[esi+3]
+				mov		lpdatatype,esi
+				invoke strlen,esi
+				mov		lendatatype,eax
+				.break
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+		pop		esi
+	.endif
+	retn
+
+ArraySize:
+	mov		byte ptr szname[16384],0
+	push	ebx
+	xor		ebx,ebx
+	.while TRUE
+		invoke GetWord,esi,addr npos
+		mov		esi,edx
+		.if ecx
+			mov		len1,ecx
+			mov		lpword1,esi
+			lea		esi,[esi+ecx]
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			.if ecx
+				mov		len2,ecx
+				mov		lpword2,esi
+				lea		esi,[esi+ecx]
+				.if ecx==3
+					invoke strcmpin,addr szDup,lpword2,ecx
+					.if !eax
+						invoke strcat,addr szname[16384],addr szAdd
+						invoke strcatn,addr szname[16384],lpword1,len1
+					.endif
+				.endif
+			.endif
+		.elseif byte ptr [esi]=='+'
+			invoke strcat,addr szname[16384],addr szAdd
+			inc		esi
+		.elseif byte ptr [esi]=='-'
+			invoke strcat,addr szname[16384],addr szMSub
+			inc		esi
+		.elseif byte ptr [esi]=='*'
+			invoke strcat,addr szname[16384],addr szMul
+			inc		esi
+		.elseif byte ptr [esi]=='/'
+			invoke strcat,addr szname[16384],addr szDiv
+			inc		esi
+		.elseif byte ptr [esi]=="'" || byte ptr [esi]=='"'
+			mov		al,[esi]
+			inc		esi
+			.while al!=[esi]
+				inc		esi
+				inc		ebx
+			.endw
+			inc		esi
+		.elseif byte ptr [esi]==','
+			inc		ebx
+			inc		esi
+		.elseif byte ptr [esi]==VK_RETURN
+			.break
+		.endif
+	.endw
+	.if ebx
+		invoke strcat,addr szname[16384],addr szAdd
+		invoke DwToAscii,ebx,addr szname[16384+1024]
+		invoke strcat,addr szname[16384],addr szname[16384+1024]
+	.endif
+	pop		ebx
+	retn
+
 ParseData:
 	call	AddNamespace
 	call	SaveName
 ParseData1:
-	call	SkipBrace
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
-	.if eax
-		mov		fPtr,0
-		lea		esi,[esi+ecx]
+	.if [ebx].RAPROPERTY.nlanguage==nMASM
+		mov		eax,lpword2
+		mov		lpdatatype,eax
+		mov		eax,len2
+		mov		lendatatype,eax
+		call	ConvDataType
+		call	ArraySize
+		.if byte ptr szname[16384]
+			mov		byte ptr [edi],'['
+			inc		edi
+			invoke strcpy,edi,addr szname[16385]
+			mov		byte ptr [edi],']'
+			inc		edi
+		.endif
+	.else
+		call	SkipBrace
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
-		mov		lpdatatype,esi
-		mov		lendatatype,ecx
-		lea		esi,[esi+ecx]
-	  @@:
-		invoke GetWord,esi,addr npos
-		mov		esi,edx
-		invoke IsIgnore,IGNORE_PTR,ecx,esi
+		invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
 		.if eax
+			mov		fPtr,0
 			lea		esi,[esi+ecx]
-			inc		fPtr
-			jmp		@b
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			mov		lpdatatype,esi
+			mov		lendatatype,ecx
+			lea		esi,[esi+ecx]
+		  @@:
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			invoke IsIgnore,IGNORE_PTR,ecx,esi
+			.if eax
+				lea		esi,[esi+ecx]
+				inc		fPtr
+				jmp		@b
+			.endif
 		.endif
 	.endif
 	.if lpdatatype
+		mov		byte ptr [edi-1],':'
+		mov		eax,lendatatype
+		inc		eax
+		invoke strcpyn,edi,lpdatatype,eax
+		add		edi,lendatatype
+		mov		byte ptr [edi],0
+		inc		edi
 		mov		eax,lendatatype
 		inc		eax
 		invoke strcpyn,edi,lpdatatype,eax
@@ -1517,6 +1640,11 @@ ParseData1:
 		.endif
 	.else
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			dec		edi
+			invoke strcpy,edi,addr szDword
+			lea		edi,[edi+sizeof szDword]
+			mov		byte ptr [edi],0
+			inc		edi
 			invoke strcpy,edi,addr szDword
 			lea		edi,[edi+sizeof szDword]
 		.else
@@ -1540,6 +1668,18 @@ ParseParamData1:
 			call	SkipBrace
 			jmp		ParseParamData1
 		.elseif byte ptr [esi]=='['
+			.if [ebx].RAPROPERTY.nlanguage==nMASM
+				push	esi
+				.while byte ptr [esi] && byte ptr [esi-1]!=']'
+					mov		al,[esi]
+					.if al!=VK_SPACE && al!=VK_TAB
+						mov		[edi],al
+						inc		edi
+					.endif
+					inc		esi
+				.endw
+				pop		esi
+			.endif
 			call	SkipBrace
 			jmp		ParseParamData1
 		.elseif byte ptr [esi]==':'

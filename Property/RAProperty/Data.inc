@@ -88,6 +88,18 @@ szSub					db 'SUB',0
 szFunction				db 'FUNCTION',0
 szAs					db ' As ',0
 szCRLF					db 0Dh,0Ah,0
+szMasmDataConv			db 'DB',0,'BYTE',0
+						db 'DW',0,'WORD',0
+						db 'DD',0,'DWORD',0
+						db 'DQ',0,'QWORD',0
+						db 'DT',0,'TBYTE',0
+						db 'DF',0,'FLOAT',0
+						db 0,0
+szDup					db 'DUP',0
+szAdd					db '+',0
+szMSub					db '-',0
+szMul					db '*',0
+szDiv					db '-',0
 
 .data?
 

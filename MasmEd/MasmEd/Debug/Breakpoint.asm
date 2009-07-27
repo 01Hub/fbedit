@@ -177,13 +177,14 @@ AddBreakpoint proc uses ebx esi,nLine:DWORD,lpFileName:DWORD
 	.while byte ptr [esi]
 		invoke strcmpi,esi,lpFileName
 		.break .if !eax
+		inc		ebx
 		lea		esi,[esi+MAX_PATH]
 	.endw
 	.if !byte ptr [esi]
 		invoke strcpy,esi,lpFileName
 	.endif
 	mov		esi,offset breakpoint
-	.while [esi].BREAKPOINT.FileID
+	.while [esi].BREAKPOINT.LineNumber
 		lea		esi,[esi+sizeof BREAKPOINT]
 	.endw
 	mov		[esi].BREAKPOINT.FileID,ebx
