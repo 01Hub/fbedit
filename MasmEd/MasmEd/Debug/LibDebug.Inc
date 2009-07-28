@@ -25,6 +25,7 @@ includelib masm32.lib
 includelib Debug.lib
 
 CalculateIt						PROTO :DWORD
+DoMath							PROTO :DWORD
 
 ;#########################################################################
 ; Constants

@@ -717,25 +717,21 @@ EnableMenu endp
 FindTypeSize proc uses ebx esi edi,lpType:DWORD
 	LOCAL buffer[256]:BYTE
 
-	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpT,lpType
-PrintHex eax
-	.if eax
-		mov		esi,eax
-PrintStringByAddr lpType
-PrintStringByAddr esi
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-PrintStringByAddr esi
-		invoke CalculateIt,esi
-		mov		edx,eax
-		.if eax
-			mov		eax,var.Value
-		.endif
-	.else
+;	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpT,lpType
+;	.if eax
+;		mov		esi,eax
+;		invoke strlen,esi
+;		lea		esi,[esi+eax+1]
+;		invoke DoMath,esi
+;		mov		edx,eax
+;		.if eax
+;			mov		eax,var.Value
+;		.endif
+;	.else
 		; Type size not found
 		xor		eax,eax
 		xor		edx,edx
-	.endif
+;	.endif
 	ret
 
 FindTypeSize endp

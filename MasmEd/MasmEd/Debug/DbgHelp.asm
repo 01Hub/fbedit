@@ -340,7 +340,7 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		[edi].DEBUGVAR.nSize,eax
 	.elseif lpType
 		mov		eax,lpType
-;		invoke FindTypeSize,addr [eax+1]
+		invoke FindTypeSize,addr [eax+1]
 		.if !edx
 			xor		eax,eax
 			mov		fErrType,TRUE
@@ -386,6 +386,8 @@ PrintStringByAddr eax
 				.break
 			.elseif al==','
 				mov		byte ptr [edi],0
+lea	eax,buffer
+PrintStringByAddr eax
 				invoke AddVar,addr buffer,0
 				inc		esi
 				.break
@@ -434,7 +436,7 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 	invoke strcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
 	mov		eax,[esi].SYMBOL_INFO.nSize
 	.if !eax
-		invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
+;		invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
 	.endif
 	mov		[edi].DEBUGTYPE.nSize,eax
 	inc		dbg.inxtype
