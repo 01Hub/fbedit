@@ -342,8 +342,18 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		mov		eax,lpType
 		invoke FindTypeSize,addr [eax+1]
 		.if !edx
-			xor		eax,eax
-			mov		fErrType,TRUE
+			invoke strcpy,offset outbuffer,lpType
+			invoke strcat,offset outbuffer,addr szA
+			invoke FindTypeSize,offset outbuffer[1]
+			.if !edx
+				invoke strcpy,offset outbuffer,lpType
+				invoke strcat,offset outbuffer,addr szW
+				invoke FindTypeSize,offset outbuffer[1]
+				.if !edx
+					xor		eax,eax
+					mov		fErrType,TRUE
+				.endif
+			.endif
 		.endif
 		mov		[edi].DEBUGVAR.nSize,eax
 	.endif
@@ -380,14 +390,10 @@ AddVarList proc uses ebx esi edi,lpList:DWORD
 			mov		al,[esi]
 			.if !al
 				mov		[edi],al
-lea	eax,buffer
-PrintStringByAddr eax
 				invoke AddVar,addr buffer,0
 				.break
 			.elseif al==','
 				mov		byte ptr [edi],0
-lea	eax,buffer
-PrintStringByAddr eax
 				invoke AddVar,addr buffer,0
 				inc		esi
 				.break
@@ -425,7 +431,7 @@ AddVarList endp
 
 EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
 
-;	mov		esi,pSymInfo
+	mov		esi,pSymInfo
 ;	invoke wsprintf,addr outbuffer,addr szType,addr [esi].SYMBOL_INFO.szName,[esi].SYMBOL_INFO.nSize
 ;	invoke PutString,addr outbuffer
 	mov		eax,dbg.inxtype
@@ -436,7 +442,7 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 	invoke strcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
 	mov		eax,[esi].SYMBOL_INFO.nSize
 	.if !eax
-;		invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
+		;invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
 	.endif
 	mov		[edi].DEBUGTYPE.nSize,eax
 	inc		dbg.inxtype
@@ -472,6 +478,9 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			invoke strlen,addr [esi+sizeof PROPERTIES]
 			lea		esi,[esi+eax+1+sizeof PROPERTIES]
 			invoke AddVarList,esi
+			; Point to return type
+			invoke strlen,addr [esi+sizeof PROPERTIES]
+			lea		esi,[esi+eax+1+sizeof PROPERTIES]
 			; Point to locals
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]

@@ -5,21 +5,17 @@ LockFiles						PROTO	:DWORD
 .const
 
 szBP							db 0CCh
-szDump							db 'Reg     Hex                 Dec',0Dh,
-								   '-------------------------------',0Dh,0
-szDec							db '%d',0Dh,0
-szRegs							db 'EAX     ',0,
-								   'ECX     ',0,
-								   'EDX     ',0,
-								   'EBX     ',0,
-								   'ESP     ',0,
-								   'EBP     ',0,
-								   'ESI     ',0,
-								   'EDI     ',0,
-								   'EIP     ',0,
-								   'EFL     ',0
-
-szDecSpace						db '                ',0
+szDump							db 'Reg Hex              Dec',0Dh,0
+szRegs							db 'EAX %08Xh %10d',0Dh,0,
+								   'ECX %08Xh %10d',0Dh,0,
+								   'EDX %08Xh %10d',0Dh,0,
+								   'EBX %08Xh %10d',0Dh,0,
+								   'ESP %08Xh %10d',0Dh,0,
+								   'EBP %08Xh %10d',0Dh,0,
+								   'ESI %08Xh %10d',0Dh,0,
+								   'EDI %08Xh %10d',0Dh,0,
+								   'EIP %08Xh %10d',0Dh,0,
+								   'EFL %08Xh %10d',0
 
 .data?
 
@@ -40,7 +36,7 @@ ShowContext proc uses ebx esi edi
 	mov		LineChanged,0
 	mov		eax,offset szDump
 	call	AddText
-	mov		nLine,2
+	mov		nLine,1
 	mov		esi,offset szRegs
 	mov		ebx,dbg.context.regEax
 	mov		edi,dbg.prevcontext.regEax
@@ -73,10 +69,11 @@ ShowContext proc uses ebx esi edi
 	mov		edi,dbg.prevcontext.regFlag
 	call	RegOut
 	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
-	invoke SetWindowText,hOut,addr szContext
+	invoke SetWindowText,hDbg,addr szContext
+	invoke SendMessage,hDbg,REM_SETHILITELINE,0,1
 	mov		ebx,offset LineChanged
 	.while dword ptr [ebx]
-		invoke SendMessage,hOut,REM_LINEREDTEXT,[ebx],TRUE
+		invoke SendMessage,hDbg,REM_LINEREDTEXT,[ebx],TRUE
 		lea		ebx,[ebx+4]
 	.endw
 	ret
@@ -88,14 +85,7 @@ AddText:
 	retn
 
 RegOut:
-	invoke strcpy,addr buffer,esi
-	invoke HexDWORD,addr buffer[8],ebx
-	invoke strcat,addr buffer,addr szDecSpace
-	invoke wsprintf,addr decbuff,addr szDec,ebx
-	invoke strlen,addr decbuff
-	mov		edx,15
-	sub		edx,eax
-	invoke strcpy,addr buffer[edx+17],addr decbuff
+	invoke wsprintf,addr buffer,esi,ebx,ebx
 	lea		eax,buffer
 	call	AddText
 	.if ebx!=edi
@@ -347,9 +337,9 @@ ClearBreakPointsAll endp
 ResetSelectLine proc
 
 	.if dbg.prevline!=-1
-		push	0
-		push	0
-		push	CB_RESET
+		push	dbg.prevhwnd
+		push	dbg.prevline
+		push	CB_DESELECTLINE
 		call	lpCallBack
 	.endif
 	ret
@@ -370,7 +360,7 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	mov		eax,[ebx].DEBUGLINE.LineNumber
 	mov		dbg.prevline,eax
 	push	eax
-	push	CB_BREAK
+	push	CB_SELECTLINE
 	call	lpCallBack
 	mov		dbg.prevhwnd,eax
 	ret
@@ -494,8 +484,15 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			invoke PutString,addr szNoDebugInfoMasm
 			invoke PutString,addr szExeName
 			mov		fNoDebugInfo,TRUE
-			invoke EnableMenu
+			push	0
+			push	FALSE
+			push	CB_DEBUG
+			call	lpCallBack
 		.else
+			push	0
+			push	TRUE
+			push	CB_DEBUG
+			call	lpCallBack
 			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
 			invoke PutString,addr buffer
 			invoke PutString,addr szDebuggingStarted
@@ -724,6 +721,10 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	invoke PutString,addr szDebugStopped
 	invoke ImmPromptOff
 	invoke RtlZeroMemory,addr dbg,sizeof DEBUG
+	push	0
+	push	FALSE
+	push	CB_DEBUG
+	call	lpCallBack
 	ret
 
 Debug endp

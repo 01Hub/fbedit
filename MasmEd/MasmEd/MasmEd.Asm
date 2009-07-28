@@ -658,7 +658,26 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		eax
 				mov		edx,IDM_EDIT_CLEARBM
 				call	EnableDisable
+
+				mov		eax,TRUE
+				mov		edx,IDM_DEBUG_TOGGLE
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_CLEAR
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_RUN
+				call	EnableDisable
+				mov		eax,fDebugging
+				mov		edx,IDM_DEBUG_STOP
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_INTO
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_OVER
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_CARET
+				call	EnableDisable
+
 			.elseif eax==IDC_HEX
+				xor		eax,eax
 				mov		edx,IDM_FILE_PRINT
 				call	EnableDisable
 				mov		edx,IDM_EDIT_INDENT
@@ -716,6 +735,24 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_EDIT_PREVBM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_CLEARBM
+				call	EnableDisable
+
+				mov		eax,FALSE
+				mov		edx,IDM_DEBUG_TOGGLE
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_CLEAR
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_CARET
+				call	EnableDisable
+
+				mov		eax,fDebugging
+				mov		edx,IDM_DEBUG_RUN
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_STOP
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_INTO
+				call	EnableDisable
+				mov		edx,IDM_DEBUG_OVER
 				call	EnableDisable
 				mov		eax,chrg.cpMin
 				mov		edx,eax
@@ -787,6 +824,23 @@ DisableEdit:
 	mov		edx,IDM_EDIT_COMMENT
 	call	EnableDisable
 	mov		edx,IDM_EDIT_UNCOMMENT
+	call	EnableDisable
+
+	mov		edx,IDM_DEBUG_TOGGLE
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_CLEAR
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_CARET
+	call	EnableDisable
+
+	mov		eax,fDebugging
+	mov		edx,IDM_DEBUG_RUN
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_STOP
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_INTO
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_OVER
 	call	EnableDisable
 	retn
 
@@ -977,9 +1031,11 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 	LOCAL	chrg:CHARRANGE
 
 	mov		eax,nFunc
-	.if eax==CB_BREAK
+	.if eax==CB_SELECTLINE
 		invoke OpenEditFile,lParam,0
-		invoke SendMessage,hREd,REM_HILITEACTIVELINE,0,2
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,hREd,REM_SETHILITELINE,eax,2
 		mov		eax,wParam
 		dec		eax
 		invoke SendMessage,hREd,EM_LINEINDEX,eax,0
@@ -988,8 +1044,22 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 		invoke SetFocus,hREd
-	.elseif eax==CB_RESET
-		invoke SendMessage,hREd,REM_HILITEACTIVELINE,0,0
+	.elseif eax==CB_DESELECTLINE
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,lParam,REM_SETHILITELINE,eax,0
+	.elseif eax==CB_DEBUG
+		mov		eax,wParam
+		mov		fDebugging,eax
+		mov		fTimer,1
+		.if eax
+			invoke UpdateAll,LOCK_SOURCE_FILES
+			invoke ShowWindow,hDbg,SW_SHOWNA
+		.else
+			invoke UpdateAll,UNLOCK_SOURCE_FILES
+			invoke ShowWindow,hDbg,SW_HIDE
+		.endif
+		invoke SendMessage,hWnd,WM_SIZE,0,0
 	.endif
 	mov		eax,hREd
 	ret
@@ -1014,6 +1084,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	cust:CUSTSTYLE
 	LOCAL	rarstype:RARSTYPE
+	LOCAL	hFile:HANDLE
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -1226,6 +1297,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		rect.right,eax
 			mov		edx,rect.bottom
 			sub		edx,rect.top
+			.if fDebugging
+				sub		edx,HT_DEBUG
+				.if CARRY?
+					xor		edx,edx
+				.endif
+			.endif
 			mov		ecx,rect.right
 			add		ecx,RESIZEHT
 			sub		eax,RESIZEHT
@@ -1239,11 +1316,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		rect.top,edx
 			mov		edx,rect.bottom
 			sub		edx,rect.top
+			.if fDebugging
+				sub		edx,HT_DEBUG
+				.if CARRY?
+					xor		edx,edx
+				.endif
+			.endif
 			mov		ecx,rect.right
 			add		ecx,RESIZEHT
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
+			push	edx
 			invoke MoveWindow,hProperty,ecx,rect.top,eax,edx,TRUE
+			pop		edx
+			add		edx,RESIZEHT
+			add		rect.top,edx
+
+			mov		edx,rect.bottom
+			sub		edx,rect.top
+			mov		ecx,rect.right
+			add		ecx,RESIZEHT
+			mov		eax,wpos.wtfile
+			sub		eax,RESIZEHT
+			invoke MoveWindow,hDbg,ecx,rect.top,eax,edx,TRUE
+
 			pop		rect.top
 		.endif
 		;Add height of tab window to top
@@ -1345,6 +1441,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_OUT,hInstance,0
 		mov		hOut,eax
 		invoke SendMessage,hOut,WM_SETFONT,hFont,FALSE
+		;Create debug window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBG,hInstance,0
+		mov		hDbg,eax
+		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
 		mov		hBrowse,eax
@@ -1967,25 +2067,57 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hREd,REM_SETBREAKPOINT,ebx,eax
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
 					invoke UpdateAll,SET_BREAKPOINTS
+					invoke DebugCommand,FUNC_BPUPDATE,0,0
 				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
 				invoke UpdateAll,CLEAR_BREAKPOINTS
 				invoke DebugCommand,FUNC_BPCLEARALL,0,0
+				invoke DebugCommand,FUNC_BPUPDATE,0,0
 			.elseif eax==IDM_DEBUG_RUN
-				mov		eax,hWnd
-				mov		dbginf.hWnd,eax
-				mov		eax,hOut
-				mov		dbginf.hOut,eax
-				mov		eax,hProperty
-				mov		dbginf.hPrp,eax
-				mov		eax,offset DebugCallback
-				mov		dbginf.lpCallBack,eax
-				invoke lstrcpy,addr dbginf.FileName,offset MainFile
-				invoke RemoveFileExt,addr dbginf.FileName
-				invoke lstrcat,addr dbginf.FileName,offset ExtExe
-				invoke SetDebugInfo,addr dbginf
-				invoke DebugCommand,FUNC_BPCLEARALL,0,0
-				invoke UpdateAll,SET_BREAKPOINTS
+				.if !fDebugging
+					mov		nUnsaved,0
+					invoke UpdateAll,UNSAVED_SOURCE_FILES
+					.if nUnsaved
+						invoke wsprintf,addr buffer,addr szUnsaved,nUnsaved
+						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+						jmp		Ex
+					.endif
+					invoke lstrcpy,addr dbginf.FileName,offset MainFile
+					invoke RemoveFileExt,addr dbginf.FileName
+					invoke lstrcat,addr dbginf.FileName,offset ExtExe
+					invoke CreateFile,addr dbginf.FileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+					.if eax!=INVALID_HANDLE_VALUE
+						mov		hFile,eax
+						invoke GetFileTime,hFile,NULL,NULL,addr ftexe
+						invoke CloseHandle,hFile
+						mov		nNewer,0
+						invoke UpdateAll,NEWER_SOURCE_FILES
+						.if nNewer
+							invoke wsprintf,addr buffer,addr szNewer,nNewer
+							invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+							jmp		Ex
+						.endif
+					.else
+						invoke strcpy,addr buffer,addr szOpenFileFail
+						invoke strcat,addr buffer,addr dbginf.FileName
+						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
+						jmp		Ex
+					.endif
+
+					mov		eax,hWnd
+					mov		dbginf.hWnd,eax
+					mov		eax,hOut
+					mov		dbginf.hOut,eax
+					mov		eax,hDbg
+					mov		dbginf.hDbg,eax
+					mov		eax,hProperty
+					mov		dbginf.hPrp,eax
+					mov		eax,offset DebugCallback
+					mov		dbginf.lpCallBack,eax
+					invoke SetDebugInfo,addr dbginf
+					invoke DebugCommand,FUNC_BPCLEARALL,0,0
+					invoke UpdateAll,SET_BREAKPOINTS
+				.endif
 				invoke DebugCommand,FUNC_RUN,0,0
 			.elseif eax==IDM_DEBUG_STOP
 				invoke DebugCommand,FUNC_STOP,0,0

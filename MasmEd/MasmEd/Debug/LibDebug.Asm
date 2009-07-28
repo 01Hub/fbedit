@@ -56,6 +56,8 @@ SetDebugInfo proc public lpDEBUGINFO:DWORD
 	mov		hWnd,eax
 	mov		eax,[edx].DEBUGINFO.hOut
 	mov		hOut,eax
+	mov		eax,[edx].DEBUGINFO.hDbg
+	mov		hDbg,eax
 	mov		eax,[edx].DEBUGINFO.hPrp
 	mov		hPrp,eax
 	mov		eax,[edx].DEBUGINFO.lpCallBack
@@ -73,6 +75,12 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 		invoke ClearBreakpoints
 	.elseif eax==FUNC_BPADDLINE
 		invoke AddBreakpoint,wParam,lParam
+	.elseif eax==FUNC_BPUPDATE
+		.if dbg.hDbgThread
+			invoke ClearBreakPointsAll
+			invoke MapBreakPoints
+			invoke SetBreakPoints
+		.endif
 	.elseif eax==FUNC_RUN
 		mov		dbg.func,FUNC_RUN
 		.if !dbg.hDbgThread
@@ -81,10 +89,9 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 		.else
 			mov		dbg.fHandled,FALSE
 			invoke ResetSelectLine
-			mov		dbg.func,FUNC_RUN
 			invoke ClearBreakPointsAll
-			invoke MapBreakPoints
 			invoke SetBreakPoints
+			mov		dbg.func,FUNC_RUN
 			mov		ebx,dbg.lpthread
 			.if [ebx].DEBUGTHREAD.suspended
 				invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
@@ -95,6 +102,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 		.endif
 	.elseif eax==FUNC_STOP
 		.if dbg.hDbgThread
+			invoke ResetSelectLine
 			mov		dbg.func,FUNC_STOP
 			invoke TerminateProcess,dbg.pinfo.hProcess,0
 		.endif

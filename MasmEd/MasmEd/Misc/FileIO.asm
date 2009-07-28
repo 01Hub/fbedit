@@ -286,21 +286,6 @@ IsFileResource proc lpFile:DWORD
 
 IsFileResource endp
 
-IsFileCodeFile proc lpFile:DWORD
-
-	invoke lstrlen,lpFile
-	mov		edx,lpFile
-	lea		edx,[edx+eax-4]
-	mov		edx,[edx]
-	and		edx,05f5F5Fffh
-	xor		eax,eax
-	.if edx=='MSA.' || edx=='CNI.'
-		inc		eax
-	.endif
-	ret
-
-IsFileCodeFile endp
-
 LoadRCFile proc lpFileName:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
@@ -401,6 +386,9 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					.if eax
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
 						invoke SendMessage,hREd,REM_SETBLOCKS,0,0
+						.if fDebugging
+							invoke SendMessage,hREd,REM_READONLY,0,TRUE
+						.endif
 					.endif
 					mov		eax,edopt.hiliteline
 					.if eax

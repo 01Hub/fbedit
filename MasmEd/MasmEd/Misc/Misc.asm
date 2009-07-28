@@ -1141,6 +1141,21 @@ iniInStr9:
 
 iniInStr endp
 
+IsFileCodeFile proc lpFile:DWORD
+
+	invoke lstrlen,lpFile
+	mov		edx,lpFile
+	lea		edx,[edx+eax-4]
+	mov		edx,[edx]
+	and		edx,05f5F5Fffh
+	xor		eax,eax
+	.if edx=='MSA.' || edx=='CNI.'
+		inc		eax
+	.endif
+	ret
+
+IsFileCodeFile endp
+
 UpdateAll proc uses ebx,nFunction:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
@@ -1248,7 +1263,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke lstrcat,addr LineTxt,addr [ebx].TABMEM.filename
 					invoke lstrcat,addr LineTxt,addr szReopen
 					invoke MessageBox,hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
-					.if eax==6
+					.if eax==IDYES
 						invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 						.if eax==IDC_RAE
 							invoke LoadEditFile,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
@@ -1348,6 +1363,44 @@ UpdateAll proc uses ebx,nFunction:DWORD
 						invoke DebugCommand,FUNC_BPADDLINE,edx,addr [ebx].TABMEM.filename
 						pop		eax
 					.endw
+				.endif
+			.elseif eax==LOCK_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke IsFileCodeFile,addr [ebx].TABMEM.filename
+					.if eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_READONLY,0,TRUE
+					.endif
+				.endif
+			.elseif eax==UNLOCK_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke IsFileCodeFile,addr [ebx].TABMEM.filename
+					.if eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_READONLY,0,FALSE
+					.endif
+				.endif
+			.elseif eax==UNSAVED_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke IsFileCodeFile,addr [ebx].TABMEM.filename
+					.if eax
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+						.if eax
+							inc		nUnsaved
+						.endif
+					.endif
+				.endif
+			.elseif eax==NEWER_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_RAE
+					invoke IsFileCodeFile,addr [ebx].TABMEM.filename
+					.if eax
+						invoke CompareFileTime,addr [ebx].TABMEM.ft,addr ftexe
+						.if sdword ptr eax>0
+							inc		nNewer
+						.endif
+					.endif
 				.endif
 			.endif
 		.endif

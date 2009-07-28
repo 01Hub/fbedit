@@ -132,10 +132,6 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		.if	al
 			.if	nParts>1
 				call	ZeroTerminateParts
-;invoke strlen,esi
-;.if eax<50
-;PrintStringByAddr esi
-;.endif
 			.endif
 			invoke AddWordToWordList,nType,0,0,0,esi,nParts
 			add		esi,eax
@@ -148,9 +144,6 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		invoke GlobalFree,hList
 		xor		eax,eax
 	.else
-;		invoke strcpy,addr LineTxt,addr OpenFileFail
-;		invoke strcat,addr LineTxt,lpFileName
-;		invoke MessageBox,NULL,addr	LineTxt,addr AppName,MB_OK or MB_ICONERROR
 		xor		eax,eax
 		dec		eax
 	.endif

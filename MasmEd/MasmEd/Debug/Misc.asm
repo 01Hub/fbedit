@@ -714,24 +714,37 @@ EnableMenu proc uses esi edi
 
 EnableMenu endp
 
-FindTypeSize proc uses ebx esi edi,lpType:DWORD
+FindTypeSize proc uses ebx esi,lpType:DWORD
 	LOCAL buffer[256]:BYTE
 
-;	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpT,lpType
-;	.if eax
-;		mov		esi,eax
-;		invoke strlen,esi
-;		lea		esi,[esi+eax+1]
-;		invoke DoMath,esi
-;		mov		edx,eax
-;		.if eax
-;			mov		eax,var.Value
-;		.endif
-;	.else
+	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpTWc,lpType
+	.if eax
+		mov		esi,eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		invoke DoMath,esi
+		mov		edx,eax
+		.if eax
+			mov		eax,var.Value
+		.endif
+	.else
+		mov		ebx,dbg.inxtype
+		mov		esi,dbg.hMemType
+		.while ebx
+			invoke strcmp,lpType,addr [esi].DEBUGTYPE.szName
+			.if !eax
+				mov		eax,[esi].DEBUGTYPE.nSize
+				mov		edx,TRUE
+				jmp		Ex
+			.endif
+			dec		ebx
+			lea		esi,[esi+sizeof DEBUGTYPE]
+		.endw
 		; Type size not found
 		xor		eax,eax
 		xor		edx,edx
-;	.endif
+	.endif
+  Ex:
 	ret
 
 FindTypeSize endp

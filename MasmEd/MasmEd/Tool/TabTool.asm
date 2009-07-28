@@ -263,7 +263,7 @@ TabToolSetText endp
 TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
-	LOCAL buffer[256]:BYTE
+	LOCAL	buffer[256]:BYTE
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM or TCIF_TEXT

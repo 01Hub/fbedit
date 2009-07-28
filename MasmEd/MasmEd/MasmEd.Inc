@@ -70,6 +70,8 @@ SetHelpMenu					PROTO
 SetDebugInfo				PROTO :DWORD
 DebugCommand				PROTO :DWORD,:DWORD,:DWORD
 
+HT_DEBUG					equ 175
+
 ; Debug functions
 FUNC_RUN					equ 1
 FUNC_STEPINTO				equ 2
@@ -78,10 +80,12 @@ FUNC_RUNTOCARET				equ 4
 FUNC_STOP					equ 5
 FUNC_BPCLEARALL				equ 6
 FUNC_BPADDLINE				equ 7
+FUNC_BPUPDATE				equ 8
 
 ; Callback functions
-CB_BREAK					equ 1
-CB_RESET					equ 2
+CB_SELECTLINE				equ 1
+CB_DESELECTLINE				equ 2
+CB_DEBUG					equ 3
 
 IS_OPEN						equ -1
 SAVE_ALL					equ -2
@@ -95,6 +99,10 @@ CLEAR_ERRORS				equ -9
 FIND_ERROR					equ -10
 CLEAR_BREAKPOINTS			equ -11
 SET_BREAKPOINTS				equ -12
+LOCK_SOURCE_FILES			equ -13
+UNLOCK_SOURCE_FILES			equ -14
+UNSAVED_SOURCE_FILES		equ -15
+NEWER_SOURCE_FILES			equ -16
 
 TABHT						equ 23
 CBOWT						equ 175
@@ -138,6 +146,7 @@ IDC_TAB						equ 1004
 IDC_SBR						equ 1003
 IDC_SHP						equ 1005
 IDC_OUT						equ 1006
+IDC_DBG						equ 1020
 IDC_RAE						equ 1011
 IDC_RES						equ 1012
 IDC_HEX						equ 1013
@@ -270,6 +279,7 @@ IDM_DEBUG_CARET				equ 10087
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hDbg					HWND ?					; Handle of debug window
 	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
@@ -458,6 +468,9 @@ szChanged				db 'File is changed outside editor',0Dh,0
 szReopen				db 0Dh,0Dh,'Reopen the file?',0
 szSaveSession			db 'Save current session to?',0Dh,0
 szNoMain				db 'No main file selected.',0Dh,'Use Make / Set Current as Mainfile.',0Dh,0
+szUnsaved				db 'There are %d unsaved source files.',0
+szNewer					db 'There are %d source files newer than the .exe.',0
+
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
 szFtRc					db '.rc',0
@@ -625,6 +638,7 @@ hOut					HWND ?
 hBrowse					HWND ?
 hProperty				HWND ?
 hSbr					HWND ?
+hDbg					HWND ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?
 fVSplit					dd ?
@@ -695,3 +709,7 @@ fUnicode				dd ?
 nTabInx					dd ?
 nCboBuild				dd ?
 dbginf					DEBUGINFO <>
+fDebugging				DWORD ?
+nUnsaved				DWORD ?
+ftexe					FILETIME <>
+nNewer					DWORD ?

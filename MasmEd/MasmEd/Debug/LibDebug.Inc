@@ -38,10 +38,12 @@ FUNC_RUNTOCARET					equ 4
 FUNC_STOP						equ 5
 FUNC_BPCLEARALL					equ 6
 FUNC_BPADDLINE					equ 7
+FUNC_BPUPDATE					equ 8
 
 ; Callback functions
-CB_BREAK						equ 1
-CB_RESET						equ 2
+CB_SELECTLINE					equ 1
+CB_DESELECTLINE					equ 2
+CB_DEBUG						equ 3
 
 ; Format items
 FMT_NAME						equ 1
@@ -60,6 +62,7 @@ fCaseSensitive					equ TRUE
 
 ; RAEdit message
 REM_BASE						equ WM_USER+1000
+REM_SETHILITELINE				equ REM_BASE+5		;wParam=Line, lParam=Color
 REM_LINEREDTEXT					equ REM_BASE+82		;wParam=nLine, lParam=TRUE/FALSE
 
 ; RAProperties messages
@@ -73,6 +76,7 @@ PRM_FINDGETTYPE					equ WM_USER+15		;wParam=0, lParam=0
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hDbg					HWND ?					; Handle of debug window
 	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
@@ -356,7 +360,7 @@ szErrorParsing					db 'WARNING!',0Dh,'There was %d error(s) while parsing.',0Dh,
 szA								db 'A',0
 szW								db 'W',0
 szPrppdl						db 'pdl',0
-szPrpT							db 'T',0
+szPrpTWc						db 'TWc',0
 
 ;#########################################################################
 ; Globals
@@ -366,6 +370,7 @@ szPrpT							db 'T',0
 hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
 hWnd							HWND ?							; Handle of main window
 hOut							HWND ?							; Handle of output window
+hDbg							HWND ?							; Handle of debug window
 hPrp							HWND ?							; Handle of properties window
 lpCallBack						dd ?
 szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged

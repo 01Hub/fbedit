@@ -471,6 +471,7 @@ UpdateToolColors proc
 	mov		eax,col.tooltext
 	mov		racol.txtcol,eax
 	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,hDbg,REM_SETCOLOR,0,addr racol
 	;Set tool colors
 	invoke SendMessage,hBrowse,FBM_SETBACKCOLOR,0,col.toolback
 	invoke SendMessage,hBrowse,FBM_SETTEXTCOLOR,0,col.tooltext
@@ -1106,6 +1107,8 @@ Update:
 		.endif
 		invoke UpdateAll,WM_SETFONT
 		invoke UpdateToolColors
+		invoke SendMessage,hOut,WM_SETFONT,hFont,TRUE
+		invoke SendMessage,hDbg,WM_SETFONT,hFont,TRUE
 		invoke RegSetValueEx,hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
 		invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
 		invoke RegSetValueEx,hReg,addr szCustColors,0,REG_BINARY,addr CustColors,sizeof CustColors
