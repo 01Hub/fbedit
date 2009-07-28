@@ -81,6 +81,7 @@ FUNC_STOP					equ 5
 FUNC_BPCLEARALL				equ 6
 FUNC_BPADDLINE				equ 7
 FUNC_BPUPDATE				equ 8
+FUNC_GETTOOLTIP				equ 9
 
 ; Callback functions
 CB_SELECTLINE				equ 1
@@ -449,6 +450,7 @@ szAskRemove				db 'Remove MasmEd from registry?',0
 szRichEdit				db 'riched20.dll',0
 ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
+sztooltips_class32		db 'tooltips_class32',0
 szAppName				db 'MasmEd',0
 szVersion				db 'MasmEd version 1.0.5.7',0
 szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
@@ -639,6 +641,7 @@ hBrowse					HWND ?
 hProperty				HWND ?
 hSbr					HWND ?
 hDbg					HWND ?
+hDbgTip					HWND ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?
 fVSplit					dd ?
@@ -713,3 +716,4 @@ fDebugging				DWORD ?
 nUnsaved				DWORD ?
 ftexe					FILETIME <>
 nNewer					DWORD ?
+dbgpt					POINT <>

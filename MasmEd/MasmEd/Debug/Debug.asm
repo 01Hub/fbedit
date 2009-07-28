@@ -633,11 +633,11 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					mov		eax,de.u.CreateProcessInfo.hFile
 					mov		dbg.hdbgfile,eax
 				.endif
-;				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId
-;				invoke PutString,addr outbuffer
+				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId
+				invoke PutString,addr outbuffer
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
-;				invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId
-;				invoke PutString,addr outbuffer
+				invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId
+				invoke PutString,addr outbuffer
 				mov		eax,de.dwProcessId
 				.if eax==dbg.pinfo.dwProcessId
 					invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
@@ -645,14 +645,14 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				.endif
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
-;				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
-;				invoke PutString,addr outbuffer
+				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
+				invoke PutString,addr outbuffer
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
-;					invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId
-;					invoke PutString,addr outbuffer
+					invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId
+					invoke PutString,addr outbuffer
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
 					mov		ebx,eax
@@ -663,15 +663,15 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					.endif
 				.endif
 			.elseif eax==LOAD_DLL_DEBUG_EVENT
-;				mov		buffer,0
-;				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
-;				invoke wsprintf,addr outbuffer,addr szEventString,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
-;				invoke PutString,addr outbuffer
+				mov		buffer,0
+				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
+				invoke wsprintf,addr outbuffer,addr szEventString,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
+				invoke PutString,addr outbuffer
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
-;				mov		buffer,0
-;				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
-;				invoke wsprintf,addr outbuffer,addr szEventString,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
-;				invoke PutString,addr outbuffer
+				mov		buffer,0
+				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
+				invoke wsprintf,addr outbuffer,addr szEventString,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
+				invoke PutString,addr outbuffer
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
 				.if eax>255
@@ -681,7 +681,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				invoke wsprintf,addr outbuffer,addr szEventString,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
 				invoke PutString,addr outbuffer
 			.elseif eax==RIP_EVENT
-;				invoke PutString,addr szRIP_EVENT
+				invoke PutString,addr szRIP_EVENT
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
@@ -717,7 +717,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	mov		dbg.fHandled,FALSE
 	invoke EnableMenu
 	invoke LockFiles,FALSE
-	invoke SetWindowText,hOut,addr szNULL
+;	invoke SetWindowText,hOut,addr szNULL
 	invoke PutString,addr szDebugStopped
 	invoke ImmPromptOff
 	invoke RtlZeroMemory,addr dbg,sizeof DEBUG

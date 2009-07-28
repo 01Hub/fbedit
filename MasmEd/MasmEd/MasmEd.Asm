@@ -296,6 +296,9 @@ SetBlockDefs endp
 
 RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
+	LOCAL	ti:TOOLINFO
+	LOCAL	buffer[256]:BYTE
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
@@ -397,10 +400,105 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_KILLFOCUS
 		invoke ShowWindow,hCCTT,SW_HIDE
+	.elseif eax==WM_MOUSEMOVE
+		mov		ti.cbSize,SizeOf TOOLINFO
+		mov		ti.uFlags,TTF_IDISHWND
+		mov		eax,hWin
+		mov		ti.hWnd,eax
+		mov		ti.uId,eax
+		mov		ti.lpszText,0
+		invoke SendMessage,hDbgTip,TTM_GETTOOLINFO,0,addr ti
+		.if fDebugging
+			.if !eax
+				;Add the tooltip
+				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+				mov		eax,hWin
+				mov		ti.hWnd,eax
+				mov		ti.uId,eax
+				mov		eax,hInstance
+				mov		ti.hInst,eax
+				invoke SendMessage,hDbgTip,TTM_ADDTOOL,0,addr ti
+			.endif
+			mov		eax,lParam
+			mov		edx,eax
+			shr		edx,16
+			movsx	edx,dx
+			movsx	eax,ax
+			mov		pt.x,eax
+			mov		pt.y,edx
+			sub		eax,dbgpt.x
+			.if CARRY?
+				neg		eax
+			.endif
+			sub		edx,dbgpt.y
+			.if CARRY?
+				neg		edx
+			.endif
+			.if eax>5 || edx>5
+				mov		eax,pt.x
+				mov		dbgpt.x,eax
+				mov		eax,pt.y
+				mov		dbgpt.y,eax
+				invoke SendMessage,hREd,EM_CHARFROMPOS,0,addr pt
+				invoke SendMessage,hREd,REM_ISCHARPOS,eax,0
+				.if !eax
+					invoke SendMessage,hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
+					.if buffer
+						invoke DebugCommand,FUNC_GETTOOLTIP,0,0
+
+						lea		eax,buffer
+						mov		ti.lpszText,eax
+						call	Activate
+
+;						mov		var.IsSZ,0
+;						invoke GetVarVal,addr buffer,eax,TRUE
+;						.if eax
+;							mov		edx,var.ProjectFileID
+;							.if edx
+;								invoke GetParent,hPar
+;								invoke GetWindowLong,eax,16
+;								mov		edx,var.ProjectFileID
+;								sub		edx,eax
+;							.endif
+;							.if !edx
+;								; Show tooltip
+;								mov		ti.lpszText,offset outbuffer
+;								call	Activate
+;							.else
+;								; Hide tooltip
+;								call	DeActivate
+;							.endif
+;						.else
+;							; Hide tooltip
+;							call	DeActivate
+;						.endif
+					.else
+						; Hide tooltip
+						call	DeActivate
+					.endif
+				.else
+					; Hide tooltip
+					call	DeActivate
+				.endif
+			.endif
+		.elseif eax
+			; Delete the tool
+			invoke SendMessage,hDbgTip,TTM_DELTOOL,0,addr ti
+		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
+
+Activate:
+	invoke SendMessage,hDbgTip,TTM_SETTOOLINFO,0,addr ti
+	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,TRUE,0
+	retn
+
+DeActivate:
+	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,FALSE,0
+	retn
 
 RAEditProc endp
 
@@ -1444,6 +1542,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create debug window
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBG,hInstance,0
 		mov		hDbg,eax
+		; Create debug tooltip
+		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
+		mov		hDbgTip,eax
 		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0

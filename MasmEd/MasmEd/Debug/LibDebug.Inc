@@ -39,6 +39,7 @@ FUNC_STOP						equ 5
 FUNC_BPCLEARALL					equ 6
 FUNC_BPADDLINE					equ 7
 FUNC_BPUPDATE					equ 8
+FUNC_GETTOOLTIP					equ 9
 
 ; Callback functions
 CB_SELECTLINE					equ 1
