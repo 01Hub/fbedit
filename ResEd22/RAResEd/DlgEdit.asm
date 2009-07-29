@@ -1259,35 +1259,37 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetFocus
 				.if eax==hPrpEdtDlgCld
 					invoke SetFocus,hDEd
-					invoke PostMessage,hWin,uMsg,wParam,lParam
-					xor		eax,eax
-					ret
+					mov		eax,nInx
+					mov		edi,offset hSizeing
+					mov		eax,[edi+eax*4]
+					invoke PostMessage,eax,uMsg,wParam,lParam
+				.else
+					mov		des.fmode,MODE_SIZEING
+					invoke PropertyList,0
+					mov		eax,lParam
+					movsx	edx,ax
+					mov		MousePtDown.x,edx
+					shr		eax,16
+					cwde
+					mov		MousePtDown.y,eax
+					invoke GetWindowRect,hReSize,addr des.ctlrect
+					invoke ScreenToClient,hInvisible,addr des.ctlrect.left
+					invoke ScreenToClient,hInvisible,addr des.ctlrect.right
+					invoke GetCtrlMem,hReSize
+					mov		edi,eax
+					mov		eax,[edi].DIALOG.ntype
+					invoke GetTypePtr,eax
+					mov		eax,[eax].TYPES.keepsize
+					and		eax,1
+					.if eax
+						invoke ConvertDuyToPix,[edi].DIALOG.duccy
+						add		eax,des.ctlrect.top
+						mov		des.ctlrect.bottom,eax
+					.endif
+					invoke CaptureWin
+					invoke SetCapture,hWin
+					invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
 				.endif
-				mov		des.fmode,MODE_SIZEING
-				invoke PropertyList,0
-				mov		eax,lParam
-				movsx	edx,ax
-				mov		MousePtDown.x,edx
-				shr		eax,16
-				cwde
-				mov		MousePtDown.y,eax
-				invoke GetWindowRect,hReSize,addr des.ctlrect
-				invoke ScreenToClient,hInvisible,addr des.ctlrect.left
-				invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-				invoke GetCtrlMem,hReSize
-				mov		edi,eax
-				mov		eax,[edi].DIALOG.ntype
-				invoke GetTypePtr,eax
-				mov		eax,[eax].TYPES.keepsize
-				and		eax,1
-				.if eax
-					invoke ConvertDuyToPix,[edi].DIALOG.duccy
-					add		eax,des.ctlrect.top
-					mov		des.ctlrect.bottom,eax
-				.endif
-				invoke CaptureWin
-				invoke SetCapture,hWin
-				invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
 			.elseif eax==WM_LBUTTONUP && des.fmode==MODE_SIZEING
 				mov		eax,hReSize
 				mov		des.hselected,eax
