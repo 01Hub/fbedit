@@ -36,6 +36,7 @@ szApiWordFile	db 'masmApiWord.api',0
 ignorefirstword	db 'option',0,'include',0,'includelib',0,'invoke',0,'mov',0,0
 ignoreparam		db 'private',0,'public',0,'uses',0,'eax',0,'ebx',0,'ecx',0,'edx',0,'esi',0,'edi',0,'ebp',0,'esp',0,0
 datatypes		db 'db',0,'dw',0,'dd',0,'dq',0,'df',0,'dt',0,'byte',0,'word',0,'dword',0,'qword',0,'real4',0,'real8',0,0
+datatypeptr		db 'ptr',0
 
 .data
 
@@ -70,6 +71,7 @@ SetPropertyDefs proc uses esi
 		invoke lstrlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
+	invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_PTR,offset datatypeptr
 	;Def types
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeproc
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeendp

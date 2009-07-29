@@ -175,13 +175,6 @@ GetDbgHelpVersion proc lpDll:DWORD
 
 GetDbgHelpVersion endp
 
-FindWord proc uses esi,lpWord:DWORD
-
-	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrppdl,lpWord
-	ret
-
-FindWord endp
-
 AddPredefinedTypes proc uses ebx esi edi
 
 	; Datatypes
@@ -454,7 +447,7 @@ EnumTypesCallback endp
 EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DWORD,SymbolSize:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
-	invoke FindWord,SymbolName
+	invoke FindWord,SymbolName,addr szPrppdl
 	.if eax
 		mov		esi,eax
 		sub		esi,sizeof PROPERTIES
@@ -532,6 +525,11 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	mov		[edi].DEBUGSOURCE.FileID,eax
 	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
 	inc		dbg.inxsource
+	lea		eax,[edi].DEBUGSOURCE.FileName
+	push	eax
+	push	0
+	push	CB_OPENFILE
+	call	lpCallBack
 	mov		eax,TRUE
 	ret
 
@@ -639,6 +637,21 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 					call	ebx
 				.endif
 				.if im.SymType1==SymPdb
+					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
+					.if eax
+						mov		ebx,eax
+;						.if fOptions & 1
+;							invoke PutString,addr szSymEnumSourceFiles
+;						.endif
+						push	0
+						push	offset EnumSourceFilesCallback
+						push	0
+						push	0
+						push	dwModuleBase
+						push	hProcess
+						call	ebx
+					.endif
+					invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 					invoke AddPredefinedTypes
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
 					.if eax
@@ -659,20 +672,6 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 ;						.endif
 						push	0
 						push	offset EnumerateSymbolsCallback
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
-					.if eax
-						mov		ebx,eax
-;						.if fOptions & 1
-;							invoke PutString,addr szSymEnumSourceFiles
-;						.endif
-						push	0
-						push	offset EnumSourceFilesCallback
-						push	0
-						push	0
 						push	dwModuleBase
 						push	hProcess
 						call	ebx

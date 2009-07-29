@@ -36,7 +36,7 @@ xtst2		dword ?
 .code
 
 MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
-	LOCAL	aa:BYTE
+	LOCAL	aa:PTR BYTE
 	LOCAL	bb:WORD
 	LOCAL	cc:BYTE
 	LOCAL	ddd:DWORD

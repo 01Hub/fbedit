@@ -1490,3 +1490,12 @@ PutString proc lpString:DWORD
 	ret
 
 PutString endp
+
+OutputSelect proc nSel:DWORD
+
+	invoke SendMessage,hTabOut,TCM_SETCURSEL,nSel,0
+	mov		eax,nSel
+	mov		nOutSel,eax
+	ret
+
+OutputSelect endp

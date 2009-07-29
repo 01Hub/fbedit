@@ -82,11 +82,13 @@ FUNC_BPCLEARALL				equ 6
 FUNC_BPADDLINE				equ 7
 FUNC_BPUPDATE				equ 8
 FUNC_GETTOOLTIP				equ 9
+FUNC_IMMEDIATE				equ 10
 
 ; Callback functions
 CB_SELECTLINE				equ 1
 CB_DESELECTLINE				equ 2
 CB_DEBUG					equ 3
+CB_OPENFILE					equ 4
 
 IS_OPEN						equ -1
 SAVE_ALL					equ -2
@@ -147,6 +149,7 @@ IDC_TAB						equ 1004
 IDC_SBR						equ 1003
 IDC_SHP						equ 1005
 IDC_OUT						equ 1006
+IDC_IMMOUT					equ 1022
 IDC_DBG						equ 1020
 IDC_RAE						equ 1011
 IDC_RES						equ 1012
@@ -157,6 +160,7 @@ IDC_BTNTABCLOSE				equ 1002
 IDC_CLIENT					equ 1016
 IDC_STC						equ 1017
 IDC_CBO						equ 1018
+IDC_TABOUT					equ 1021
 
 IDC_TOOLBOX					equ 1101
 IDC_DLGEDIT					equ 1102
@@ -280,6 +284,7 @@ IDM_DEBUG_CARET				equ 10087
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hImmOut					HWND ?					; Handle of immediate window
 	hDbg					HWND ?					; Handle of debug window
 	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
@@ -451,6 +456,9 @@ MESFilterString			db 'Session (*.mes)',0,'*.mes',0,0
 
 szRemoveMasmEd			db '/remove',0
 szAskRemove				db 'Remove MasmEd from registry?',0
+
+szOutput				db 'Output',0
+szImmediate				db 'Immediate',0
 
 .data
 
@@ -644,6 +652,9 @@ hShp					HWND ?
 hStc					HWND ?
 hCbo					HWND ?
 hOut					HWND ?
+hImmOut					HWND ?
+nOutSel					DWORD ?
+hTabOut					HWND ?
 hBrowse					HWND ?
 hProperty				HWND ?
 hSbr					HWND ?
@@ -659,6 +670,7 @@ lpcbData				dd ?
 AppPath					db MAX_PATH dup(?)
 FileName				db MAX_PATH dup(?)
 MainFile				db MAX_PATH dup(?)
+DbgFileName				db MAX_PATH dup(?)
 hFont					dd ?
 hIFont					dd ?
 hLnrFont				dd ?
@@ -724,3 +736,4 @@ nUnsaved				DWORD ?
 ftexe					FILETIME <>
 nNewer					DWORD ?
 dbgpt					POINT <>
+lpOldImmediateProc		DWORD ?

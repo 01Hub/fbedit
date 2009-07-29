@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -138,7 +138,7 @@ ProductVer4Range=0
 12=
 13=
 [Size]
-2=0,0,699,490,1968
+2=0,0,699,490,2835
 <<<<<<< .mine
 1=0,0,699,490,4944
 =======
@@ -147,9 +147,9 @@ ProductVer4Range=0
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2454
+7=0,0,0,0,2083
 9=0,0,0,0,3523
-10=0,0,589,494,6181
+10=0,0,589,494,36860
 11=0,0,746,498,643
 12=0,0,0,0,2850
 13=0,0,0,0,1617
@@ -173,16 +173,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="szLineCont"
-2="lstrcmpi"
-3="lstrcmp"
-4="lstrcat"
-5="lstrcpyn"
-6="lstrcpy"
-7="lstrlen"
-8="strlen"
-9="ebx"
-10="PRM_GETTOOLTIP"
+1="ParseConst"
+2="szPtr"
+3="szLineCont"
+4="lstrcmpi"
+5="lstrcmp"
+6="lstrcat"
+7="lstrcpyn"
+8="lstrcpy"
+9="lstrlen"
+10="strlen"
 
 [Exports]
 1=GetDefEx
@@ -191,3 +191,4 @@ PTimer=122121012
 1=
 13=
 9=
+7=

@@ -1700,6 +1700,21 @@ ParseParamData1:
 		.if eax
 			jmp		@b
 		.endif
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke IsIgnore,IGNORE_PTR,ecx,esi
+			.if eax
+				push	ecx
+				.if !fPtr
+					mov		byte ptr [edi],':'
+					inc		edi
+				.endif
+				invoke strcpy,edi,addr szMasmPtr
+				lea		edi,[edi+sizeof szMasmPtr-1]
+				inc		fPtr
+				pop		ecx
+				jmp		@b
+			.endif
+		.endif
 		mov		lpdatatype,esi
 		mov		lendatatype,ecx
 		lea		esi,[esi+ecx]
@@ -1709,8 +1724,13 @@ ParseParamData1:
 		invoke IsIgnore,IGNORE_PTR,ecx,esi
 		.if eax
 			lea		esi,[esi+ecx]
-			inc		fPtr
-			jmp		@b
+			.if [ebx].RAPROPERTY.nlanguage==nMASM
+				invoke strcpy,edi,addr szPtr
+				lea		edi,[edi+sizeof szPtr-1]
+			.else
+				inc		fPtr
+				jmp		@b
+			.endif
 		.endif
 		.if !ecx
 			.if byte ptr [esi]=="="
@@ -1735,8 +1755,10 @@ ParseParamData1:
 		.endif
 	.endif
 	.if lpdatatype
-		mov		byte ptr [edi],':'
-		inc		edi
+		.if !fPtr || [ebx].RAPROPERTY.nlanguage!=nMASM
+			mov		byte ptr [edi],':'
+			inc		edi
+		.endif
 		mov		edx,edi
 		mov		eax,lendatatype
 		lea		edi,[edi+eax]
@@ -1755,8 +1777,10 @@ ParseParamData1:
 			mov		lpdatatype2,0
 		.endif
 	.else
-		mov		byte ptr [edi],':'
-		inc		edi
+		.if !fPtr || [ebx].RAPROPERTY.nlanguage!=nMASM
+			mov		byte ptr [edi],':'
+			inc		edi
+		.endif
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
 			invoke strcpy,edi,addr szDword
 			lea		edi,[edi+sizeof szDword-1]
@@ -1765,13 +1789,14 @@ ParseParamData1:
 			lea		edi,[edi+sizeof szInteger-1]
 		.endif
 	.endif
-	.if fPtr
+	.if fPtr && [ebx].RAPROPERTY.nlanguage!=nMASM
 	  @@:
 		invoke strcpyn,edi,addr szPtr,5
 		lea		edi,[edi+4]
 		dec		fPtr
 		jne		@b
 	.endif
+	mov		fPtr,0
 	mov		byte ptr [edi],0
 	xor		eax,eax
 	inc		eax
@@ -1780,6 +1805,25 @@ ParseParamData1:
 ParseConst:
 	call	AddNamespace
 	call	SaveName
+	invoke GetWord,esi,addr npos
+	mov		esi,edx
+	.if ecx
+		mov		lpword2,esi
+		mov		len2,ecx
+		invoke IsIgnore,IGNORE_CONSTANT,ecx,esi
+		.if eax
+			lea		esi,[esi+ecx]
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+		.endif
+	.endif
+	.if ecx
+		push	ecx
+		inc		ecx
+		invoke strcpyn,edi,esi,ecx
+		pop		ecx
+		add		edi,ecx
+	.endif
 	mov		byte ptr [edi],0
 	xor		eax,eax
 	inc		eax

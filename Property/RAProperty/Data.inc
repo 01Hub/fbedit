@@ -81,6 +81,7 @@ szLpa					db '(',0
 szRpa					db ')',0
 szSpc					db ' ',0
 szPtr					db ' Ptr',0
+szMasmPtr				db 'PTR ',0
 szInteger				db 'Integer',0
 szDword					db ':DWORD',0
 szColon					db ':',0

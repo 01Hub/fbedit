@@ -1125,7 +1125,6 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 
 	mov		eax,nFunc
 	.if eax==CB_SELECTLINE
-		invoke OpenEditFile,lParam,0
 		mov		eax,wParam
 		dec		eax
 		invoke SendMessage,hREd,REM_SETHILITELINE,eax,2
@@ -1152,12 +1151,40 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 			invoke UpdateAll,UNLOCK_SOURCE_FILES
 			invoke ShowWindow,hDbg,SW_HIDE
 		.endif
+		invoke OutputSelect,0
+		test	wpos.fView,4
+		.if ZERO?
+			or		wpos.fView,4
+		.endif
+		invoke ShowWindow,hOut,SW_SHOWNA
+		invoke ShowWindow,hImmOut,SW_HIDE
 		invoke SendMessage,hWnd,WM_SIZE,0,0
+	.elseif eax==CB_OPENFILE
+		invoke lstrcpy,offset DbgFileName,lParam
+		invoke PostMessage,hWnd,WM_USER+998,0,offset DbgFileName
 	.endif
 	mov		eax,hREd
 	ret
 
 DebugCallback endp
+
+ImmediateProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		.if fDebugging
+			mov		eax,wParam
+			.if eax==VK_RETURN
+				invoke DebugCommand,FUNC_IMMEDIATE,hImmOut,0
+				xor		eax,eax
+				ret
+			.endif
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldImmediateProc,hWin,uMsg,wParam,lParam
+	ret
+
+ImmediateProc endp
 
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
@@ -1178,6 +1205,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	cust:CUSTSTYLE
 	LOCAL	rarstype:RARSTYPE
 	LOCAL	hFile:HANDLE
+	LOCAL	tci:TC_ITEM
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -1230,7 +1258,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edx,pt.y
 			mov		ecx,rect.right
 			add		ecx,4
-			.if eax<rect.right && edx>rect.bottom
+			.if eax>20 && eax<rect.right && edx>rect.bottom
 				invoke SetCursor,hHSplitCur
 				mov		fVSplit,1
 			.elseif eax>=rect.right && eax<=ecx && edx>rect.top
@@ -1465,11 +1493,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,RESIZEHT
 			add		rect.top,eax
 			;Resize Output window
-			invoke MoveWindow,hOut,0,rect.top,rect.right,wpos.htout,TRUE
-			invoke UpdateWindow,hOut
-			invoke ShowWindow,hOut,SW_SHOW
+			invoke MoveWindow,hTabOut,0,rect.top,20,wpos.htout,TRUE
+			invoke ShowWindow,hTabOut,SW_SHOWNA
+			invoke UpdateWindow,hTabOut
+			sub		rect.right,20
+			invoke MoveWindow,hOut,20,rect.top,rect.right,wpos.htout,TRUE
+			invoke MoveWindow,hImmOut,20,rect.top,rect.right,wpos.htout,TRUE
+			.if nOutSel==1
+				invoke ShowWindow,hOut,SW_HIDE
+				invoke UpdateWindow,hImmOut
+			.else
+				invoke ShowWindow,hImmOut,SW_HIDE
+				invoke UpdateWindow,hOut
+			.endif
 		.else
 			invoke ShowWindow,hOut,SW_HIDE
+			invoke ShowWindow,hImmOut,SW_HIDE
+			invoke ShowWindow,hTabOut,SW_HIDE
 		.endif
 	.elseif eax==WM_INITDIALOG
 		push	hWin
@@ -1514,6 +1554,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Client
 		invoke GetDlgItem,hWin,IDC_CLIENT
 		mov		hClient,eax
+		; Output tab
+		invoke GetDlgItem,hWin,IDC_TABOUT
+		mov		hTabOut,eax
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.pszText,offset szOutput
+		invoke SendMessage,hTabOut,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,hTabOut,TCM_SETCURSEL,eax,0
+		mov		tci.pszText,offset szImmediate
+		invoke SendMessage,hTabOut,TCM_INSERTITEM,999,addr tci
 		;Window caption
 		invoke SetWinCaption,0
 		;Create line number font
@@ -1534,14 +1583,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_OUT,hInstance,0
 		mov		hOut,eax
 		invoke SendMessage,hOut,WM_SETFONT,hFont,FALSE
+		;Create immediate window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_IMMOUT,hInstance,0
+		mov		hImmOut,eax
+		invoke SendMessage,hImmOut,WM_SETFONT,hFont,FALSE
+		invoke SendMessage,hImmOut,REM_SUBCLASS,0,offset ImmediateProc
+		mov		lpOldImmediateProc,eax
 		;Create debug window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBG,hInstance,0
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBG,hInstance,0
 		mov		hDbg,eax
+		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		; Create debug tooltip
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
 		mov		hDbgTip,eax
 		invoke SendMessage,hDbgTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
-		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
 		mov		hBrowse,eax
@@ -2073,12 +2128,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hOut,REM_REPAINT,0,0
 			.elseif eax==IDM_VIEW_OUTPUT
 				xor		wpos.fView,4
-				invoke SendMessage,hWin,WM_SIZE,0,1
+				invoke SendMessage,hWin,WM_SIZE,0,0
 				test	wpos.fView,4
 				.if !ZERO?
-					invoke ShowWindow,hOut,SW_SHOWNA
+					invoke ShowWindow,hTabOut,SW_SHOWNA
+					.if nOutSel==1
+						invoke ShowWindow,hImmOut,SW_SHOWNA
+						invoke ShowWindow,hOut,SW_HIDE
+					.else
+						invoke ShowWindow,hOut,SW_SHOWNA
+						invoke ShowWindow,hImmOut,SW_HIDE
+					.endif
 				.else
 					invoke ShowWindow,hOut,SW_HIDE
+					invoke ShowWindow,hImmOut,SW_HIDE
+					invoke ShowWindow,hTabOut,SW_HIDE
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_VIEW_FILEBROWSER
@@ -2205,6 +2269,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.hWnd,eax
 					mov		eax,hOut
 					mov		dbginf.hOut,eax
+					mov		eax,hImmOut
+					mov		dbginf.hImmOut,eax
 					mov		eax,hDbg
 					mov		dbginf.hDbg,eax
 					mov		eax,hProperty
@@ -2488,9 +2554,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		eax,buffer
 			mov		edx,lParam
 			mov		(TOOLTIPTEXT ptr [edx]).lpszText,eax
-		.elseif eax==TCN_SELCHANGE
+		.elseif eax==TCN_SELCHANGE && ecx==IDC_TAB
 			invoke TabToolActivate
 			invoke SetFocus,hREd
+		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABOUT
+			invoke SendMessage,hTabOut,TCM_GETCURSEL,0,0
+			mov		nOutSel,eax
+			.if wpos.fView & 4
+				.if nOutSel==1
+					invoke ShowWindow,hImmOut,SW_SHOWNA
+					invoke ShowWindow,hOut,SW_HIDE
+				.else
+					invoke ShowWindow,hOut,SW_SHOWNA
+					invoke ShowWindow,hImmOut,SW_HIDE
+				.endif
+			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
 		.if hREd
@@ -2664,6 +2742,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke CheckMenuItem,wParam,IDM_VIEW_FILEBROWSER,edx
 		.endif
+	.elseif eax==WM_USER+998
+		invoke OpenEditFile,lParam,0
 	.elseif eax==WM_DROPFILES
 		xor		ebx,ebx
 	  @@:

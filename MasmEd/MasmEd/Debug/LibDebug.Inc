@@ -40,11 +40,13 @@ FUNC_BPCLEARALL					equ 6
 FUNC_BPADDLINE					equ 7
 FUNC_BPUPDATE					equ 8
 FUNC_GETTOOLTIP					equ 9
+FUNC_IMMEDIATE					equ 10
 
 ; Callback functions
 CB_SELECTLINE					equ 1
 CB_DESELECTLINE					equ 2
 CB_DEBUG						equ 3
+CB_OPENFILE						equ 4
 
 ; Format items
 FMT_NAME						equ 1
@@ -58,8 +60,6 @@ FMT_SZ							equ 64
 ERR_NOTFOUND					equ 1
 ERR_INDEX						equ 2
 ERR_SYNTAX						equ 3
-
-fCaseSensitive					equ TRUE
 
 ; RAEdit message
 REM_BASE						equ WM_USER+1000
@@ -77,6 +77,7 @@ PRM_FINDGETTYPE					equ WM_USER+15		;wParam=0, lParam=0
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
+	hImmOut					HWND ?					; Handle of immediate window
 	hDbg					HWND ?					; Handle of debug window
 	hPrp					HWND ?					; Handle of properties window
 	lpCallBack				DWORD ?					; Callback
@@ -292,6 +293,9 @@ datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 ; Masm and VC6 C/C++
 DbgHelpDLL						db 'DbgHelp.dll',0
 
+; Int3
+szBP							db 0CCh
+
 ; Debug events
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
@@ -378,6 +382,7 @@ szPrpTWc						db 'TWc',0
 hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
 hWnd							HWND ?							; Handle of main window
 hOut							HWND ?							; Handle of output window
+hImmOut							HWND ?							; Handle of immediate window
 hDbg							HWND ?							; Handle of debug window
 hPrp							HWND ?							; Handle of properties window
 lpCallBack						dd ?

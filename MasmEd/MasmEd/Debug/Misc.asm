@@ -303,7 +303,11 @@ AnyToBin proc lpStr:DWORD
 AnyToBin endp
 
 PutString proc lpString:DWORD
+	LOCAL	chrg:CHARRANGE
 
+	mov		chrg.cpMin,-1
+	mov		chrg.cpMax,-1
+	invoke SendMessage,hOut,EM_EXSETSEL,0,addr chrg
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,lpString
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCR
 	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
@@ -618,131 +622,76 @@ DumpLineQWORD proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes
 
 DumpLineQWORD endp
 
-EnableMenu proc uses esi edi
-	LOCAL	hREd:HWND
-	LOCAL	chrg:CHARRANGE
-	LOCAL	nLine:DWORD
-	LOCAL	nInx:DWORD
+FindWord proc uses esi,lpWord:DWORD,lpType:DWORD
 
-;	mov		esi,offset IDAddIn+4
-;	mov		eax,lpData
-;	.if [eax].ADDINDATA.fProject && !fNoDebugInfo
-;		; Toggle &Breakpoint
-;		invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
-;		; Run &To Caret
-;		invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
-;		mov		eax,lpHandles
-;		.if [eax].ADDINHANDLES.hEdit
-;			mov		edx,[eax].ADDINHANDLES.hEdit
-;			mov		hREd,edx
-;			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,0
-;			.if eax==ID_EDIT
-;				.if dbg.hDbgThread
-;					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-;					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-;					mov		nLine,eax
-;					mov		eax,lpHandles
-;					invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
-;					invoke GetFileIDFromProjectFileID,eax
-;					.if eax
-;						mov		edx,nLine
-;						inc		edx
-;						xor		ecx,ecx
-;						mov		edi,dbg.hMemLine
-;						.while ecx<dbg.inxline
-;							.if edx==[edi].DEBUGLINE.LineNumber
-;								.if ax==[edi].DEBUGLINE.FileID
-;									.break
-;								.endif
-;							.endif
-;							inc		ecx
-;							add		edi,sizeof DEBUGLINE
-;						.endw
-;						.if ecx!=dbg.inxline
-;							; Toggle &Breakpoint
-;							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
-;							; Run &To Caret
-;							invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
-;						.endif
-;					.endif
-;				.else
-;					; Toggle &Breakpoint
-;					invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
-;				.endif
-;			.endif
-;		.endif
-;		; &Clear Breakpoints
-;		invoke AnyBreakPoints
-;		.if eax
-;			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
-;		.else
-;			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
-;		.endif
-;		; &Run
-;		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
-;		; Do not Debug
-;		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
-;		.if dbg.hDbgThread
-;			; &Stop
-;			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
-;			; Step &Into
-;			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
-;			; Step &Over
-;			mov		eax,MF_BYCOMMAND or MF_GRAYED
-;			.if dbg.inxsource
-;				mov		eax,MF_BYCOMMAND or MF_ENABLED
-;			.endif
-;			invoke EnableMenuItem,hMnu,[esi+20],eax
-;		.else
-;			; &Stop
-;			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
-;			; Step &Into
-;			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_GRAYED
-;			; Step &Over
-;			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED
-;			; Run &To Caret
-;			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
-;		.endif
-;	.else
-;		; No project loaded, disable all
-;		.while dword ptr [esi]
-;			invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
-;			add		esi,4
-;		.endw
-;	.endif
+	invoke SendMessage,hPrp,PRM_FINDFIRST,lpType,lpWord
+	mov		esi,eax
+	.if esi
+		call	GetLen
+		invoke strcmpn,esi,lpWord,eax
+		.if eax
+		  @@:
+			invoke SendMessage,hPrp,PRM_FINDNEXT,0,0
+			mov		esi,eax
+			.if esi
+				call	GetLen
+				invoke strcmpn,esi,lpWord,eax
+				.if eax
+					jmp		@b
+				.endif
+			.endif
+		.endif
+	.endif
+	mov		eax,esi
 	ret
 
-EnableMenu endp
+GetLen:
+	xor		eax,eax
+	.while byte ptr [esi+eax]!=':' && byte ptr [esi+eax]!='['
+		inc		eax
+	.endw
+	retn
+
+FindWord endp
 
 FindTypeSize proc uses ebx esi,lpType:DWORD
 	LOCAL buffer[256]:BYTE
 
-	invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpTWc,lpType
-	.if eax
-		mov		esi,eax
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-		invoke DoMath,esi
-		mov		edx,eax
-		.if eax
-			mov		eax,var.Value
-		.endif
+	mov		eax,lpType
+	mov		eax,[eax]
+	and		eax,0FF5F5F5Fh
+	.if eax==' RTP'
+		mov		eax,4
+		mov		edx,TRUE
 	.else
-		mov		ebx,dbg.inxtype
-		mov		esi,dbg.hMemType
-		.while ebx
-			invoke strcmp,lpType,addr [esi].DEBUGTYPE.szName
-			.if !eax
-				mov		eax,[esi].DEBUGTYPE.nSize
-				mov		edx,TRUE
-				jmp		Ex
+		invoke FindWord,lpType,addr szPrpTWc
+		invoke SendMessage,hPrp,PRM_FINDFIRST,addr szPrpTWc,lpType
+		.if eax
+			mov		esi,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke DoMath,esi
+			mov		edx,eax
+			.if eax
+				mov		eax,var.Value
 			.endif
-			dec		ebx
-			lea		esi,[esi+sizeof DEBUGTYPE]
-		.endw
-		; Type size not found
-		xor		eax,eax
-		xor		edx,edx
+		.else
+			mov		ebx,dbg.inxtype
+			mov		esi,dbg.hMemType
+			.while ebx
+				invoke strcmp,lpType,addr [esi].DEBUGTYPE.szName
+				.if !eax
+					mov		eax,[esi].DEBUGTYPE.nSize
+					mov		edx,TRUE
+					jmp		Ex
+				.endif
+				dec		ebx
+				lea		esi,[esi+sizeof DEBUGTYPE]
+			.endw
+			; Type size not found
+			xor		eax,eax
+			xor		edx,edx
+		.endif
 	.endif
   Ex:
 	ret
@@ -751,8 +700,8 @@ FindTypeSize endp
 
 ImmPromptOn proc
 
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szImmPrompt
-	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+	invoke SendMessage,hImmOut,EM_REPLACESEL,FALSE,addr szImmPrompt
+	invoke SendMessage,hImmOut,EM_SCROLLCARET,0,0
 	ret
 
 ImmPromptOn endp
@@ -761,19 +710,19 @@ ImmPromptOff proc
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[32]:BYTE
 
-	invoke SendMessage,hOut,EM_EXGETSEL,0,addr chrg
-	invoke SendMessage,hOut,EM_LINEFROMCHAR,chrg.cpMin,0
+	invoke SendMessage,hImmOut,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,hImmOut,EM_LINEFROMCHAR,chrg.cpMin,0
 	mov		word ptr buffer,16
 	mov		edx,eax
-	invoke SendMessage,hOut,EM_GETLINE,edx,addr buffer
+	invoke SendMessage,hImmOut,EM_GETLINE,edx,addr buffer
 	mov		buffer[eax],0
 	.if word ptr buffer==0D3Eh || word ptr buffer==003Eh
 		mov		eax,chrg.cpMin
 		mov		chrg.cpMax,eax
 		dec		chrg.cpMin
-		invoke SendMessage,hOut,EM_EXSETSEL,0,addr chrg
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szNULL
-		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+		invoke SendMessage,hImmOut,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,hImmOut,EM_REPLACESEL,FALSE,addr szNULL
+		invoke SendMessage,hImmOut,EM_SCROLLCARET,0,0
 	.endif
 	ret
 
@@ -878,11 +827,7 @@ FindSymbol proc uses esi,lpName:DWORD
 	mov		esi,dbg.hMemSymbol
 	;Loop trough the symbol list
 	.while [esi].DEBUGSYMBOL.szName
-		.if fCaseSensitive
-			invoke strcmp,lpName,addr [esi].DEBUGSYMBOL.szName
-		.else
-			invoke strcmpi,lpName,addr [esi].DEBUGSYMBOL.szName
-		.endif
+		invoke strcmp,lpName,addr [esi].DEBUGSYMBOL.szName
 		.if !eax
 			mov		eax,esi
 			jmp		Ex			
@@ -902,11 +847,7 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 	mov		esi,lplpLocal
 	mov		esi,[esi]
 	.while byte ptr [esi+sizeof DEBUGVAR]
-		.if fCaseSensitive
-			invoke strcmp,addr [esi+sizeof DEBUGVAR],lpName
-		.else
-			invoke strcmpi,addr [esi+sizeof DEBUGVAR],lpName
-		.endif
+		invoke strcmp,addr [esi+sizeof DEBUGVAR],lpName
 		.if !eax
 			invoke strlen,addr [esi+sizeof DEBUGVAR]
 			invoke strcpy,addr var.szArray,addr [esi+eax+1+sizeof DEBUGVAR]

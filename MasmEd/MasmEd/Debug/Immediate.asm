@@ -12,7 +12,7 @@ szImmWatch						db 'Watch',0
 
 szImmLocal						db 0Dh,'LOCAL: ',0
 
-szHelp							db 'Immediate window (Output window #3):',0Dh
+szHelp							db 'Immediate window:',0Dh
 								db '-----------------------------------------------------------------------------',0Dh
 								db 'NOTE!',0Dh
 								db 'Commands ,registers, hex values and predefined datatypes are case insensitive.',0Dh
@@ -158,12 +158,12 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	mov		eax,dword ptr buffer
 	and		eax,0FFFFFFh
 	.if eax=='H/' || eax=='h/' || eax=='?/'
-		invoke PutStringOut,addr szHelp,hOut
+		invoke PutStringOut,addr szHelp,hWin
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmHelp
 	.if !eax
-		invoke PutStringOut,addr szHelp,hOut
+		invoke PutStringOut,addr szHelp,hWin
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmDump
@@ -173,7 +173,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		.while TRUE
 			invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 			.break .if !eax
-			invoke DumpLineBYTE,hOut,esi,addr buffer,16
+			invoke DumpLineBYTE,hWin,esi,addr buffer,16
 			add		esi,16
 		.endw
 		invoke SetBreakPointsAll
@@ -217,13 +217,13 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 				.if eax
 					.if ebx==1
-						invoke DumpLineBYTE,hOut,esi,addr buffer,16
+						invoke DumpLineBYTE,hWin,esi,addr buffer,16
 					.elseif ebx==2
-						invoke DumpLineWORD,hOut,esi,addr buffer,16
+						invoke DumpLineWORD,hWin,esi,addr buffer,16
 					.elseif ebx==4
-						invoke DumpLineDWORD,hOut,esi,addr buffer,16
+						invoke DumpLineDWORD,hWin,esi,addr buffer,16
 					.elseif ebx==8
-						invoke DumpLineQWORD,hOut,esi,addr buffer,16
+						invoke DumpLineQWORD,hWin,esi,addr buffer,16
 					.endif
 				.endif
 				sub		edi,16
@@ -233,13 +233,13 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
 				.if eax
 					.if ebx==1
-						invoke DumpLineBYTE,hOut,esi,addr buffer,edi
+						invoke DumpLineBYTE,hWin,esi,addr buffer,edi
 					.elseif ebx==2
-						invoke DumpLineWORD,hOut,esi,addr buffer,edi
+						invoke DumpLineWORD,hWin,esi,addr buffer,edi
 					.elseif ebx==4
-						invoke DumpLineDWORD,hOut,esi,addr buffer,edi
+						invoke DumpLineDWORD,hWin,esi,addr buffer,edi
 					.elseif ebx==8
-						invoke DumpLineQWORD,hOut,esi,addr buffer,edi
+						invoke DumpLineQWORD,hWin,esi,addr buffer,edi
 					.endif
 				.endif
 			.endif
@@ -249,7 +249,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.else
 				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
 			.endif
-			invoke PutStringOut,addr outbuffer,hOut
+			invoke PutStringOut,addr outbuffer,hWin
 		.endif
 		jmp		Ex
 	.endif
@@ -292,13 +292,13 @@ Immediate proc uses ebx esi edi,hWin:HWND
 							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 							.break .if !eax
 							.if ebx==1
-								invoke DumpLineBYTE,hOut,esi,addr buffer,16
+								invoke DumpLineBYTE,hWin,esi,addr buffer,16
 							.elseif ebx==2
-								invoke DumpLineWORD,hOut,esi,addr buffer,16
+								invoke DumpLineWORD,hWin,esi,addr buffer,16
 							.elseif ebx==4
-								invoke DumpLineDWORD,hOut,esi,addr buffer,16
+								invoke DumpLineDWORD,hWin,esi,addr buffer,16
 							.elseif ebx==8
-								invoke DumpLineQWORD,hOut,esi,addr buffer,16
+								invoke DumpLineQWORD,hWin,esi,addr buffer,16
 							.endif
 							add		esi,16
 							sub		edi,16
@@ -306,13 +306,13 @@ Immediate proc uses ebx esi edi,hWin:HWND
 							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
 							.break .if !eax
 							.if ebx==1
-								invoke DumpLineBYTE,hOut,esi,addr buffer,edi
+								invoke DumpLineBYTE,hWin,esi,addr buffer,edi
 							.elseif ebx==2
-								invoke DumpLineWORD,hOut,esi,addr buffer,edi
+								invoke DumpLineWORD,hWin,esi,addr buffer,edi
 							.elseif ebx==4
-								invoke DumpLineDWORD,hOut,esi,addr buffer,edi
+								invoke DumpLineDWORD,hWin,esi,addr buffer,edi
 							.elseif ebx==8
-								invoke DumpLineQWORD,hOut,esi,addr buffer,edi
+								invoke DumpLineQWORD,hWin,esi,addr buffer,edi
 							.endif
 							.break
 						.endif
@@ -329,7 +329,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			mov		ebx,TRUE
 		.endif
 		.if ebx
-			invoke PutStringOut,addr outbuffer,hOut
+			invoke PutStringOut,addr outbuffer,hWin
 		.endif
 		jmp		Ex
 	.endif
@@ -339,7 +339,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		xor		ebx,ebx
 		.while ebx<dbg.inxtype
 			invoke wsprintf,addr outbuffer,addr szType,addr [esi].DEBUGTYPE.szName,[esi].DEBUGTYPE.nSize
-			invoke PutStringOut,addr outbuffer,hOut
+			invoke PutStringOut,addr outbuffer,hWin
 			lea		esi,[esi+sizeof DEBUGTYPE]
 			inc		ebx
 		.endw
@@ -357,7 +357,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 					invoke strcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
 					invoke strlen,addr [edi+sizeof DEBUGVAR]
 					invoke strcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
-					invoke PutStringOut,addr outbuffer,hOut
+					invoke PutStringOut,addr outbuffer,hWin
 				.endif
 			.elseif [esi].DEBUGSYMBOL.nType=='p'
 				invoke strcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
@@ -390,7 +390,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 						mov		ebx,offset szComma
 					.endw
 				.endif
-				invoke PutStringOut,addr outbuffer,hOut
+				invoke PutStringOut,addr outbuffer,hWin
 			.endif
 			pop		ecx
 			lea		esi,[esi+sizeof DEBUGSYMBOL]
@@ -400,7 +400,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpi,addr buffer,addr szImmCls
 	.if !eax
-		invoke SetWindowText,hOut,addr szNULL
+		invoke SetWindowText,hWin,addr szNULL
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmWatch,5
@@ -420,11 +420,6 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
 			mov		eax,var.nErr
 			mov		nError,eax
-		.elseif eax==':s' || eax==':S'
-			mov		var.IsSZ,2
-			invoke GetVarVal,addr buffer[3],dbg.prevline,TRUE
-			mov		eax,var.nErr
-			mov		nError,eax
 		.else
 			invoke DoMath,addr buffer[1]
 			.if !nError
@@ -436,7 +431,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.endif
 		.endif
 		call	Error
-		invoke PutStringOut,addr outbuffer,hOut
+		invoke PutStringOut,addr outbuffer,hWin
 		jmp		Ex
 	.endif
 	xor ebx,ebx
@@ -461,7 +456,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 					.elseif nError==2
 						invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
 					.endif
-					invoke PutStringOut,addr outbuffer,hOut
+					invoke PutStringOut,addr outbuffer,hWin
 					jmp		Ex
 				.endif
 				pop		eax
@@ -470,7 +465,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				; GLOBAL, PROC Parameter or LOCAL
 				invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
 				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
-				invoke PutStringOut,addr outbuffer,hOut
+				invoke PutStringOut,addr outbuffer,hWin
 			.elseif eax=='R'
 				; REGISTER
 				mov		eax,var.Address
@@ -491,21 +486,21 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 				invoke ShowContext
 				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
-				invoke PutStringOut,addr outbuffer,hOut
+				invoke PutStringOut,addr outbuffer,hWin
 			.else
 				.if var.nErr==ERR_INDEX
 					invoke wsprintf,addr outbuffer,addr szErrIndexOutOfRange,addr buffer
 				.else
 					invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,addr buffer
 				.endif
-				invoke PutStringOut,addr outbuffer,hOut
+				invoke PutStringOut,addr outbuffer,hWin
 			.endif
 			jmp		Ex
 		.endif
 		inc		ebx
 	.endw
 	.if buffer
-		invoke PutStringOut,addr szErrUnknownCommand,hOut
+		invoke PutStringOut,addr szErrUnknownCommand,hWin
 	.endif
   Ex:
 	invoke ImmPromptOn
@@ -522,21 +517,3 @@ Error:
 	retn
 
 Immediate endp
-
-ImmediateProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
-
-;	mov		eax,uMsg
-;	.if eax==WM_CHAR
-;		.if dbg.hDbgThread && dbg.fHandled
-;			mov		eax,wParam
-;			.if eax==VK_RETURN
-;				invoke Immediate,hOut
-;				xor		eax,eax
-;				ret
-;			.endif
-;		.endif
-;	.endif
-;	invoke CallWindowProc,lpOldOutProc3,hWin,uMsg,wParam,lParam
-	ret
-
-ImmediateProc endp

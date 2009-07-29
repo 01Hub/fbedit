@@ -471,6 +471,7 @@ UpdateToolColors proc
 	mov		eax,col.tooltext
 	mov		racol.txtcol,eax
 	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,hImmOut,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,hDbg,REM_SETCOLOR,0,addr racol
 	;Set tool colors
 	invoke SendMessage,hBrowse,FBM_SETBACKCOLOR,0,col.toolback

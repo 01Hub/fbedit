@@ -13,9 +13,9 @@ include LibDebug.inc
 include Misc.asm
 include Math.asm
 include DbgHelp.asm
+include BreakPoint.asm
 include Debug.asm
 include Immediate.asm
-include BreakPoint.asm
 
 .code
 
@@ -168,6 +168,8 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 		.if eax
 			mov		eax,offset outbuffer
 		.endif
+	.elseif eax==FUNC_IMMEDIATE
+		invoke Immediate,wParam
 	.endif
 	ret
 

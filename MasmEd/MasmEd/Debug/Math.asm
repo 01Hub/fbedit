@@ -24,12 +24,12 @@ GetFunc proc uses ebx esi edi
 	LOCAL	nFunc:DWORD
 	LOCAL	nLen:DWORD
 
+	xor		ecx,ecx
 	mov		al,[esi]
-	.if al<'A'
+	.if (al<'A' || al>'z') || (al>'Z' && al<'a')
 		jmp		Ex
 	.endif
 	lea		edi,buffer
-	xor		ecx,ecx
 	mov		nFunc,ecx
 	.while TRUE
 		mov		al,[esi+ecx]
@@ -58,6 +58,7 @@ GetFunc proc uses ebx esi edi
 		pop		ecx
 		lea		ebx,[ebx+eax+1]
 	.endw
+	xor		ecx,ecx
 	mov		al,[esi]
   Ex:
 	ret
@@ -378,6 +379,9 @@ DoMath proc uses ebx esi edi,lpMath:DWORD
 		mov		var.Value,eax
 		mov		eax,esi
 		sub		eax,lpMath
+		.if !eax
+			mov		nError,ERR_SYNTAX
+		.endif
 		jmp		Ex
 	.endif
 	xor		eax,eax
