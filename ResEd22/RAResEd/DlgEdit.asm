@@ -1256,6 +1256,13 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx
 			mov		eax,uMsg
 			.if eax==WM_LBUTTONDOWN
+				invoke GetFocus
+				.if eax==hPrpEdtDlgCld
+					invoke SetFocus,hDEd
+					invoke PostMessage,hWin,uMsg,wParam,lParam
+					xor		eax,eax
+					ret
+				.endif
 				mov		des.fmode,MODE_SIZEING
 				invoke PropertyList,0
 				mov		eax,lParam
@@ -4427,3 +4434,4 @@ UndoRedo proc uses ebx esi edi,fRedo:DWORD
 	ret
 
 UndoRedo endp
+

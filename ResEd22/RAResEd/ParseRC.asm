@@ -2564,6 +2564,9 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		jmp		@b
 	.endif
 	invoke strcmpi,offset wordbuff,offset szBEGIN
+	.if eax
+		invoke strcmp,offset wordbuff,offset szBEGINSHORT
+	.endif
 	.if !eax
 		mov		ebx,edi
 		add		edi,sizeof VERSIONMEM
@@ -2624,7 +2627,7 @@ ParseVersioninfo proc uses ebx esi edi,lpRCMem:DWORD,lpProMem:DWORD
 		.endif
 		invoke strcmpi,offset wordbuff,offset szEND
 		.if eax
-			invoke strcmpi,offset wordbuff,offset szENDSHORT
+			invoke strcmp,offset wordbuff,offset szENDSHORT
 		.endif
 		.if !eax
 			dec		nNest
