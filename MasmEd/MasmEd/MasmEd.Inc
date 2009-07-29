@@ -286,6 +286,13 @@ DEBUGINFO struct
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
 
+DEBUGTIP struct
+	lpWord					DWORD ?
+	lpProc					DWORD ?
+	lpFileName				DWORD ?
+	nLine					DWORD ?
+DEBUGTIP ends
+
 TABMEM struct
 	hwnd		dd ?
 	filename	db MAX_PATH dup (?)

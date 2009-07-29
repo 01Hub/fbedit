@@ -299,6 +299,8 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
+	LOCAL	dbgtip:DEBUGTIP
+	LOCAL	isinproc:ISINPROC
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
@@ -444,34 +446,27 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					invoke SendMessage,hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
 					.if buffer
-						invoke DebugCommand,FUNC_GETTOOLTIP,0,0
-
 						lea		eax,buffer
-						mov		ti.lpszText,eax
-						call	Activate
-
-;						mov		var.IsSZ,0
-;						invoke GetVarVal,addr buffer,eax,TRUE
-;						.if eax
-;							mov		edx,var.ProjectFileID
-;							.if edx
-;								invoke GetParent,hPar
-;								invoke GetWindowLong,eax,16
-;								mov		edx,var.ProjectFileID
-;								sub		edx,eax
-;							.endif
-;							.if !edx
-;								; Show tooltip
-;								mov		ti.lpszText,offset outbuffer
-;								call	Activate
-;							.else
-;								; Hide tooltip
-;								call	DeActivate
-;							.endif
-;						.else
-;							; Hide tooltip
-;							call	DeActivate
-;						.endif
+						mov		dbgtip.lpWord,eax
+						invoke SendMessage,hREd,EM_CHARFROMPOS,0,addr pt
+						invoke SendMessage,hREd,EM_LINEFROMCHAR,eax,0
+						mov		isinproc.nLine,eax
+						mov		dbgtip.nLine,eax
+						mov		eax,hREd
+						mov		isinproc.nOwner,eax
+						mov		isinproc.lpszType,offset szCCp
+						invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+						mov		dbgtip.lpProc,eax
+						mov		dbgtip.lpFileName,offset FileName
+						invoke DebugCommand,FUNC_GETTOOLTIP,hREd,addr dbgtip
+						.if eax
+							; Show tooltip
+							mov		ti.lpszText,eax
+							call	Activate
+						.else
+							; Hide tooltip
+							call	DeActivate
+						.endif
 					.else
 						; Hide tooltip
 						call	DeActivate
@@ -1545,6 +1540,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		; Create debug tooltip
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
 		mov		hDbgTip,eax
+		invoke SendMessage,hDbgTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
 		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0

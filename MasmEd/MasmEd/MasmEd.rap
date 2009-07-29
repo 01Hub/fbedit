@@ -273,16 +273,16 @@ Group=Assembly,Resources,Misc,Include
 52=
 
 [Find]
-1="szNoMain"
-2="REM_HILITEACTIVELINE"
-3="REM_SETHILITELINE"
-4="WM_NOT"
-5="WM_SIZE"
-6="WM_SI"
-7="MessageBox"
-8="szAppName"
-9="szVersion"
-10="hinst"
+1="PRM_ISINPROC"
+2="szNoMain"
+3="REM_HILITEACTIVELINE"
+4="REM_SETHILITELINE"
+5="WM_NOT"
+6="WM_SIZE"
+7="WM_SI"
+8="MessageBox"
+9="szAppName"
+10="szVersion"
 
 [VersionControl]
 Settings=1246
@@ -329,9 +329,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,1749
-1=0,0,0,0,11841
-11=0,0,0,0,27814
+2=0,0,687,524,7165
+1=0,0,0,0,38620
+11=0,0,0,0,11907
 22=0,0,0,0,7856
 10=0,0,0,0,10688
 23=0,0,0,0,4914
@@ -367,7 +367,7 @@ ProductVer4Range=0
 40=0,0,0,0,1479
 42=0,0,0,0,1590
 43=0,0,0,0
-45=0,0,0,0,4226
+45=0,0,0,0,1451
 46=0,0,0,0,4123
 47=0,0,0,0
 48=0,0,0,0

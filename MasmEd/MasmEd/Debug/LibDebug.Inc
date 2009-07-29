@@ -83,6 +83,13 @@ DEBUGINFO struct
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
 
+DEBUGTIP struct
+	lpWord					DWORD ?
+	lpProc					DWORD ?
+	lpFileName				DWORD ?
+	nLine					DWORD ?
+DEBUGTIP ends
+
 PROPERTIES	struct
 	nSize					DWORD ?
 	nOwner					DWORD ?

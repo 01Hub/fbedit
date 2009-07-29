@@ -162,7 +162,12 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 				.endif
 			.endif
 		.endif
-;	.elseif eax==
+	.elseif eax==FUNC_GETTOOLTIP
+		mov		esi,lParam
+		invoke GetVarVal,[esi].DEBUGTIP.lpWord,[esi].DEBUGTIP.nLine,TRUE
+		.if eax
+			mov		eax,offset outbuffer
+		.endif
 	.endif
 	ret
 
