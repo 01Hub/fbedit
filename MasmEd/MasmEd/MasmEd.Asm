@@ -2144,6 +2144,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hImmOut,SW_HIDE
 					invoke ShowWindow,hTabOut,SW_HIDE
 				.endif
+				invoke SetFocus,hWin
 				mov		fTimer,1
 			.elseif eax==IDM_VIEW_FILEBROWSER
 				xor		wpos.fView,8
@@ -2495,8 +2496,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 				mov		eax,[edi].RASELCHANGE.line
-				.if eax!=nLastLine
-					mov		nLastLine,eax
+				mov		nLastLine,eax
+				.if eax!=nLastPropLine
+					mov		nLastPropLine,eax
 					invoke ShowWindow,hCCLB,SW_HIDE
 					invoke ShowWindow,hCCTT,SW_HIDE
 					mov		cctype,CCTYPE_NONE
@@ -2566,9 +2568,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if nOutSel==1
 					invoke ShowWindow,hImmOut,SW_SHOWNA
 					invoke ShowWindow,hOut,SW_HIDE
+					invoke SetFocus,hImmOut
 				.else
 					invoke ShowWindow,hOut,SW_SHOWNA
 					invoke ShowWindow,hImmOut,SW_HIDE
+					invoke SetFocus,hOut
 				.endif
 			.endif
 		.endif

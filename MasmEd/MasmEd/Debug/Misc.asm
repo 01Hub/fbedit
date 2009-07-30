@@ -932,6 +932,7 @@ FindLocal proc uses esi,lpName:DWORD,nLine:DWORD
 					mul		edx
 					add		eax,dbg.context.regEbp
 					add		eax,var.nOfs
+					add		eax,4
 					mov		var.Address,eax
 					invoke strcpy,addr var.szName,lpName
 					mov		eax,'P'

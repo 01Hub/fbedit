@@ -35,7 +35,7 @@ szMyProc4		db 'MyProc4',0
 
 
 
-MyProc4 proc uses ebx,Param:DWORD
+MyProc4 proc uses ebx,abc:DWORD,Param:DWORD
 	LOCAL	aa:BYTE
 	LOCAL	bb:WORD
 	LOCAL	cc:BYTE

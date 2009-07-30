@@ -185,7 +185,6 @@ DEBUG struct
 	lpStepOver				DWORD ?					; Proc to return to
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?					; Set to TRUE when a breakpoint is reached
-;	pt						POINT <>				; Used by tooltip
 	nErrors					DWORD ?					; Number of errors while parsing
 DEBUG ends
 

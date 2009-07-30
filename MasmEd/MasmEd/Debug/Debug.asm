@@ -350,6 +350,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	;Create the process to be debugged
 	invoke CreateProcess,NULL,lpFileName,NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS Or DEBUG_PROCESS Or DEBUG_ONLY_THIS_PROCESS,NULL,NULL,addr sinfo,addr dbg.pinfo
 	.if eax
+		invoke SendMessage,hOut,WM_SETTEXT,0,addr szNULL
 		invoke WaitForSingleObject,dbg.pinfo.hProcess,10
 		invoke OpenProcess,PROCESS_ALL_ACCESS,TRUE,dbg.pinfo.dwProcessId
 		mov		dbg.hdbghand,eax

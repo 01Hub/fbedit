@@ -689,6 +689,7 @@ ntab					dd ?
 findtabs				dd 256 dup(?)
 
 nLastLine				dd ?
+nLastPropLine			dd ?
 fTimer					dd ?
 hMnuIml					dd ?
 						dd ?

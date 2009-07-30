@@ -20,7 +20,7 @@ szHelp							db 'Immediate window:',0Dh
 								db 'To inspect or change a proc parameter or local variable the variable must',0Dh
 								db 'be in the current scope.',0Dh
 								db 0Dh
-								db 'o Simple math.',0Dh
+								db 'o Simple integer math.',0Dh
 								db '  - Functions: +, -, *, /, SHL, SHR, AND, OR, XOR, ADDR() and SIZEOF()',0Dh
 								db '  - An expression can contain any register, variable, datatype or constant.',0Dh
 								db '  - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH',0Dh
@@ -147,6 +147,10 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	tmpvar:VAR
 
 	mov		var.IsSZ,0
+	invoke RtlZeroMemory,addr buffer,sizeof buffer
+	invoke RtlZeroMemory,addr buffer1,sizeof buffer1
+	invoke RtlZeroMemory,addr tmpvar,sizeof VAR
+	mov		val,0
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
 	invoke SendMessage,hWin,EM_LINEFROMCHAR,chrg.cpMin,0
 	mov		edx,eax
@@ -158,16 +162,19 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	mov		eax,dword ptr buffer
 	and		eax,0FFFFFFh
 	.if eax=='H/' || eax=='h/' || eax=='?/'
+		; Help
 		invoke PutStringOut,addr szHelp,hWin
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmHelp
 	.if !eax
+		; Help
 		invoke PutStringOut,addr szHelp,hWin
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmDump
 	.if !eax
+		; Dump
 		invoke ClearBreakPointsAll
 		mov		esi,400000h
 		.while TRUE
@@ -181,6 +188,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpin,addr buffer,addr szImmDump,4
 	.if !eax
+		; Dump var[,Size]
 		lea		esi,buffer[4]
 		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
 			inc		esi
@@ -255,6 +263,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpin,addr buffer,addr szImmMemdump,7
 	.if !eax
+		; Memdump Address,Count[,Size]
 		xor		edi,edi
 		xor		ebx,ebx
 		lea		esi,buffer[7]
@@ -335,6 +344,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpi,addr buffer,addr szImmTypes
 	.if !eax
+		; Types
 		mov		esi,dbg.hMemType
 		xor		ebx,ebx
 		.while ebx<dbg.inxtype
@@ -347,6 +357,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpi,addr buffer,addr szImmVars
 	.if !eax
+		; Vars
 		mov		esi,dbg.hMemSymbol
 		mov		ecx,dbg.inxsymbol
 		.while ecx
@@ -400,11 +411,13 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	.endif
 	invoke strcmpi,addr buffer,addr szImmCls
 	.if !eax
+		; Cls
 		invoke SetWindowText,hWin,addr szNULL
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmWatch,5
 	.if !eax
+		; Watch Var1[,Var2,....,Var8]
 		invoke SaveWatch,addr buffer[5]
 		invoke ParseWatch,addr buffer[5]
 		.if szWatchList
@@ -414,6 +427,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		jmp		Ex
 	.endif
 	.if buffer=='?'
+		; ?
 		movzx	eax,word ptr buffer[1]
 		.if eax==':z' || eax==':Z'
 			mov		var.IsSZ,1
@@ -437,6 +451,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	xor ebx,ebx
 	.while buffer[ebx]
 		.if buffer[ebx]=='='
+			; var=reg
 			mov		buffer[ebx],0
 			inc		ebx
 			invoke strcpy,addr buffer1,addr buffer

@@ -93,7 +93,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -133,24 +133,24 @@ ProductVer4Range=0
 8=
 7=
 9=
-10=,,,,,,,,
+10=,,,,,,,,,
 11=,
 12=
 13=
 [Size]
-2=0,0,699,490,2835
+2=0,0,699,490,517
 <<<<<<< .mine
-1=0,0,699,490,4944
+1=0,0,699,490,28140
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2083
-9=0,0,0,0,3523
-10=0,0,589,494,36860
-11=0,0,746,498,643
+7=0,0,0,0,2594
+9=0,0,0,0,3608
+10=0,0,589,494,25597
+11=0,0,746,498,2653
 12=0,0,0,0,2850
 13=0,0,0,0,1617
 [BookMark]
@@ -173,16 +173,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="ParseConst"
-2="szPtr"
-3="szLineCont"
-4="lstrcmpi"
-5="lstrcmp"
-6="lstrcat"
-7="lstrcpyn"
-8="lstrcpy"
-9="lstrlen"
-10="strlen"
+1="ParseUnknown"
+2="PRM_DELPROPERTY"
+3="ConvDataType"
+4="szMasmDataConv"
+5="PrintStringByAddr"
+6="ArraySize"
+7="edi"
+8="skipbrace"
+9="ParseConst"
+10="szPtr"
 
 [Exports]
 1=GetDefEx

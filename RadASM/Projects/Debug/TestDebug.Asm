@@ -16,28 +16,29 @@ MYSTRUCT struct
 	bbbbb	DWORD ?
 MYSTRUCT ends
 
-MYCONST			equ sizeof RECT
+MYCONST			equ sizeof RECT * 2 ;Test
 
 .data
 
+xtst1		tbyte ?
+xtst2		dword ?
 szTest		db 'Test',0
-szBuff		db MYCONST dup(?)
+szBuff		db MYCONST*2 dup(?)
 tid			dd   ?
+r			real10 ?
 rect		RECT <>
 mystruct	MYSTRUCT 4 dup(<>)
 valdd		DWORD 4
 valdw		WORD 2
 valdbabcdefgh		BYTE 1
 hInstance	HINSTANCE 8 dup(?)
-xtst1		tbyte ?
-xtst2		dword ?
-
+m byte ?
 
 .code
 
-MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
+MyProc2 proc uses esi Param:dword,var1:DWORD,var2:PTR dword;ebp+8,ebp+12,ebp+16
 	LOCAL	aa:PTR BYTE
-	LOCAL	bb:WORD
+	LOCAL	bb:word
 	LOCAL	cc:BYTE
 	LOCAL	ddd:DWORD
 	LOCAL	eee:BYTE
@@ -72,7 +73,7 @@ MyProc2 proc Param:DWORD,var1:DWORD,var2:PTR DWORD;ebp+8,ebp+12,ebp+16
 	lea		eax,aa
 	lea		ecx,bb
 	lea		edx,cc
-	invoke MyProc4,1234
+	invoke MyProc4,1234,5678
 	ret
 
 MyProc2 endp
@@ -153,7 +154,7 @@ start:
 	invoke MyProc1,1234
 	invoke MyProc2,123,456,789
 ;	invoke MyProc3,987
-	invoke MyProc4,112233
+	invoke MyProc4,112233,223344
 	jmp		Ex
 Ex:
 	invoke ExitProcess,0
