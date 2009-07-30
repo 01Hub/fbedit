@@ -2367,6 +2367,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_OUTPUT_CLEAR
 				invoke SendMessage,hOut,WM_SETTEXT,0,addr szNULL
+			.elseif eax==IDM_IMMEDIATE_CLEAR
+				invoke SendMessage,hImmOut,WM_SETTEXT,0,addr szNULL
 			.elseif eax==IDM_BROWSER_OPEN
 				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
 				invoke GetFileAttributes,addr buffer
@@ -2671,7 +2673,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		.if eax==hREd
 			.if eax==hRes
-				invoke GetSubMenu,hContextMnu,3
+				invoke GetSubMenu,hContextMnu,4
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			.else
 				invoke GetSubMenu,hMnu,1
@@ -2683,11 +2685,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==hOut
 			invoke GetSubMenu,hContextMnu,1
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==hBrowse
+		.elseif eax==hImmOut
 			invoke GetSubMenu,hContextMnu,2
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+		.elseif eax==hBrowse
+			invoke GetSubMenu,hContextMnu,3
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.elseif eax==hProperty
-			invoke GetSubMenu,hContextMnu,4
+			invoke GetSubMenu,hContextMnu,5
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.endif
 	.elseif eax==WM_INITMENUPOPUP

@@ -95,7 +95,6 @@ MapBreakPoints endp
 
 SetBreakPointsAll proc
 
-	;Step Into
 	mov		edx,dbg.minadr
 	mov		ecx,dbg.maxadr
 	sub		ecx,edx
@@ -109,7 +108,7 @@ SetBreakPoints proc uses ebx edi
 	mov		edi,dbg.hMemLine
 	mov		ebx,dbg.inxline
 	.while ebx
-		.if [edi].DEBUGLINE.BreakPoint; && ![edi].DEBUGLINE.NoDebug
+		.if [edi].DEBUGLINE.BreakPoint && ![edi].DEBUGLINE.NoDebug
 			invoke WriteProcessMemory,dbg.hdbghand,[edi].DEBUGLINE.Address,addr szBP,1,0
 		.endif
 		lea		edi,[edi+sizeof DEBUGLINE]
@@ -127,7 +126,7 @@ SetBreakpointAtCurrentLine proc uses ebx esi edi,nLine:DWORD,lpFileName:DWORD
 		invoke strcmpi,lpFileName,addr [ebx].DEBUGSOURCE.FileName
 		.if !eax
 			mov		edx,[ebx].DEBUGSOURCE.FileID
-			mov		eax,nLine		;LineNumber
+			mov		eax,nLine
 			mov		esi,dbg.hMemLine
 			xor		ecx,ecx
 			.while ecx<dbg.inxline

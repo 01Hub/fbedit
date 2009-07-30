@@ -130,7 +130,6 @@ SortLinesByAddress proc uses ebx esi edi
 	mov		ebx,dbg.inxline
 	mov		edi,hMemIndex
 	mov		eax,dbg.hMemLine
-
 	.while ebx
 		mov		[edi],eax
 		lea		eax,[eax+sizeof DEBUGLINE]
@@ -138,7 +137,6 @@ SortLinesByAddress proc uses ebx esi edi
 		dec		ebx
 	.endw
 	invoke CombSort,hMemIndex,dbg.inxline
-
 	mov		ebx,dbg.inxline
 	mov		esi,hMemIndex
 	mov		edi,hMemLinesSorted
@@ -425,8 +423,6 @@ AddVarList endp
 EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserContext:DWORD
 
 	mov		esi,pSymInfo
-;	invoke wsprintf,addr outbuffer,addr szType,addr [esi].SYMBOL_INFO.szName,[esi].SYMBOL_INFO.nSize
-;	invoke PutString,addr outbuffer
 	mov		eax,dbg.inxtype
 	mov		edx,sizeof DEBUGTYPE
 	mul		edx
@@ -496,14 +492,8 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			mov		[edi].DEBUGSYMBOL.lpType,eax
 			invoke AddVar,addr [esi+sizeof PROPERTIES],[edi].DEBUGSYMBOL.nSize
 			mov		[edi].DEBUGSYMBOL.nSize,eax
-			invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
-			invoke PutString,addr buffer
 		.endif
 		inc		dbg.inxsymbol
-;		.if fOptions & 1
-;			invoke wsprintf,addr buffer,addr szSymbol,addr [edi].DEBUGSYMBOL.szName,[edi].DEBUGSYMBOL.Address,[edi].DEBUGSYMBOL.nSize
-;			invoke PutString,addr buffer
-;		.endif
 	.endif
 	mov		eax,TRUE
 	ret
@@ -539,8 +529,6 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,pLineInfo
-	invoke wsprintf,addr buffer,addr szSourceLine,addr [ebx].SRCCODEINFO.FileName,[ebx].SRCCODEINFO.Address,[ebx].SRCCODEINFO.LineNumber
-;	invoke PutString,addr buffer
 	; Find source file
 	xor		ecx,ecx
 	.while ecx<dbg.inxsource
@@ -640,9 +628,6 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
 					.if eax
 						mov		ebx,eax
-;						.if fOptions & 1
-;							invoke PutString,addr szSymEnumSourceFiles
-;						.endif
 						push	0
 						push	offset EnumSourceFilesCallback
 						push	0
@@ -667,9 +652,6 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
 					.if eax
 						mov		ebx,eax
-;						.if fOptions & 1
-;							invoke PutString,addr szSymOk
-;						.endif
 						push	0
 						push	offset EnumerateSymbolsCallback
 						push	dwModuleBase
@@ -679,9 +661,6 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
 					.if eax
 						mov		ebx,eax
-;						.if fOptions & 1
-;							invoke PutString,addr szSymEnumSourceLines
-;						.endif
 						push	0
 						push	offset EnumLinesCallback
 						push	0

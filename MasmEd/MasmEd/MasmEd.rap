@@ -273,16 +273,16 @@ Group=Assembly,Resources,Misc,Include
 52=
 
 [Find]
-1="ShowWindow,hOut"
-2="PRM_ISINPROC"
-3="szNoMain"
-4="REM_HILITEACTIVELINE"
-5="REM_SETHILITELINE"
-6="WM_NOT"
-7="WM_SIZE"
-8="WM_SI"
-9="MessageBox"
-10="szAppName"
+1="GetSubMenu,hContextMnu"
+2="ShowWindow,hOut"
+3="PRM_ISINPROC"
+4="szNoMain"
+5="REM_HILITEACTIVELINE"
+6="REM_SETHILITELINE"
+7="WM_NOT"
+8="WM_SIZE"
+9="WM_SI"
+10="MessageBox"
 
 [VersionControl]
 Settings=1246
@@ -294,7 +294,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -329,8 +329,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,22481
-1=0,0,0,0,39994
+2=0,0,687,524,6579
+1=0,0,0,0,75349
 11=0,0,0,0,30268
 22=0,0,0,0,4185
 10=0,0,0,0,10133
@@ -344,7 +344,7 @@ ProductVer4Range=0
 18=0,0,0,0
 15=0,0,687,524,12137
 30=0,0,0,0
-13=0,0,0,0,4888
+13=0,0,0,0,5002
 21=0,0,0,0,1661
 29=0,0,0,0,1293
 28=0,0,0,0,15667
