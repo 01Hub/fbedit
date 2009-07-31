@@ -49,14 +49,16 @@ szSymEnumTypesByName			db 'SymEnumTypesByName',0
 
 szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
 szVersion						db '%s version %s',0
-szSymOk							db 'Symbols OK',0
-szSymbol						db 'Name: %s Adress: %X Size %u',0
-szSourceFile					db 'FileName: %s',0
-szSourceLine					db 'FileName: %s Adress: %X Line %u',0
+;szSymOk							db 'Symbols OK',0
+;szSymbol						db 'Name: %s Adress: %X Size %u',0
+;szSourceFile					db 'FileName: %s',0
+;szSourceLine					db 'FileName: %s Adress: %X Line %u',0
 szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
 szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
 szDbgHelpFail					db 'Could not find %s.',0
+szDbgHelpFuncFail				db 'Could not find function %s in %s.',0
+szDbgHelpOld					db '&s is to old. Get a newer version.',0
 
 CombSort_Const					REAL4 1.3
 
@@ -504,8 +506,6 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	LOCAL	buffer[512]:BYTE
 
 	mov		ebx,pSourceFile
-	invoke wsprintf,addr buffer,addr szSourceFile,[ebx].SOURCEFILE.FileName
-	invoke PutString,addr buffer
 	mov		eax,dbg.inxsource
 	mov		edx,sizeof DEBUGSOURCE
 	mul		edx
@@ -564,136 +564,148 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 EnumLinesCallback endp
 
 DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	lpSymInitialize:DWORD
+	LOCAL	lpSymLoadModule:DWORD
+	LOCAL	lpSymGetModuleInfo:DWORD
+	LOCAL	lpSymEnumerateSymbols:DWORD
+	LOCAL	lpSymEnumTypes:DWORD
+	LOCAL	lpSymEnumSourceFiles:DWORD
+	LOCAL	lpSymEnumSourceLines:DWORD
+	LOCAL	lpSymFromAddr:DWORD
+	LOCAL	lpSymUnloadModule:DWORD
+	LOCAL	lpSymCleanup:DWORD
+	LOCAL	lpSymSetContext:DWORD
+	LOCAL	lpSymEnumTypesByName:DWORD
+	LOCAL	nErr:DWORD
 
+	mov		nErr,0
+	; Allocate memory for DEBUGTYPE, max 16K types
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGTYPE
+	mov		dbg.hMemType,eax
+	; Allocate memory for DEBUGSYMBOL, max 16K symbols
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
+	mov		dbg.hMemSymbol,eax
+	; Allocate memory for DEBUGSOURCE, max 512 sources
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
+	mov		dbg.hMemSource,eax
+	; Allocate memory for DEBUGLINE, max 128K lines
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
+	mov		dbg.hMemLine,eax
+	; Allocate memory for var definitions
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+	mov		dbg.hMemVar,eax
+	mov		dbg.lpvar,eax
+	; Zero the indexes
+	mov		dbg.inxtype,0
+	mov		dbg.inxsymbol,0
+	mov		dbg.inxsource,0
+	mov		dbg.inxline,0
 	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax
 		invoke GetDbgHelpVersion,lpDll
-		; Allocate memory for DEBUGTYPE, max 16K types
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGTYPE
-		mov		dbg.hMemType,eax
-		; Allocate memory for DEBUGSYMBOL, max 16K symbols
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGSYMBOL
-		mov		dbg.hMemSymbol,eax
-		; Allocate memory for DEBUGSOURCE, max 512 sources
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof DEBUGSOURCE
-		mov		dbg.hMemSource,eax
-		; Allocate memory for DEBUGLINE, max 128K lines
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,128*1024*sizeof DEBUGLINE
-		mov		dbg.hMemLine,eax
-		; Allocate memory for var definitions
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-		mov		dbg.hMemVar,eax
-		mov		dbg.lpvar,eax
-		; Zero the indexes
-		mov		dbg.inxtype,0
-		mov		dbg.inxsymbol,0
-		mov		dbg.inxsource,0
-		mov		dbg.inxline,0
-		invoke GetProcAddress,hDbgHelpDLL,addr szSymInitialize
-		.if eax
-			mov		ebx,eax
+		; Get functions from the dll
+		mov		esi,offset szSymInitialize
+		lea		edi,lpSymInitialize
+		call	GetDllFunc
+		mov		esi,offset szSymLoadModule
+		lea		edi,lpSymLoadModule
+		call	GetDllFunc
+		mov		esi,offset szSymGetModuleInfo
+		lea		edi,lpSymGetModuleInfo
+		call	GetDllFunc
+		mov		esi,offset szSymEnumSourceFiles
+		lea		edi,lpSymEnumSourceFiles
+		call	GetDllFunc
+		mov		esi,offset szSymEnumTypes
+		lea		edi,lpSymEnumTypes
+		call	GetDllFunc
+		mov		esi,offset szSymEnumerateSymbols
+		lea		edi,lpSymEnumerateSymbols
+		call	GetDllFunc
+		mov		esi,offset szSymEnumSourceLines
+		lea		edi,lpSymEnumSourceLines
+		call	GetDllFunc
+		mov		esi,offset szSymUnloadModule
+		lea		edi,lpSymUnloadModule
+		call	GetDllFunc
+		mov		esi,offset szSymCleanup
+		lea		edi,lpSymCleanup
+		call	GetDllFunc
+		.if !nErr
+			; All Dll functions found
 			push	FALSE
 			push	NULL
 			push	hProcess
-			call	ebx
-		.endif
-		.if eax
-			invoke GetProcAddress,hDbgHelpDLL,addr szSymLoadModule
-			.if eax
-				mov		ebx,eax
-				push	0
-				push	0
-				push	0
-				push	lpFileName
-				push	0
-				push	hProcess
-				call	ebx
+			call	lpSymInitialize
+			.if !eax
+				invoke PutString,addr szSymInitializeFailed
+				jmp		Ex
 			.endif
-			.if eax
-				mov		dwModuleBase,eax
-				mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
-				mov		im.SymType1,SymNone
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymGetModuleInfo
-				.if eax
-					mov		ebx,eax
-					lea		eax,im
-					push	eax
-					push	dwModuleBase
-					push	hProcess
-					call	ebx
-				.endif
-				.if im.SymType1==SymPdb
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceFiles
-					.if eax
-						mov		ebx,eax
-						push	0
-						push	offset EnumSourceFilesCallback
-						push	0
-						push	0
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					invoke WaitForSingleObject,dbg.pinfo.hProcess,50
-					invoke AddPredefinedTypes
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumTypes
-					.if eax
-						mov		ebx,eax
-						push	0
-						push	offset EnumTypesCallback
-						push	0
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					invoke AddConstants
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumerateSymbols
-					.if eax
-						mov		ebx,eax
-						push	0
-						push	offset EnumerateSymbolsCallback
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-					.endif
-					invoke GetProcAddress,hDbgHelpDLL,addr szSymEnumSourceLines
-					.if eax
-						mov		ebx,eax
-						push	0
-						push	offset EnumLinesCallback
-						push	0
-						push	0
-						push	0
-						push	0
-						push	0
-						push	dwModuleBase
-						push	hProcess
-						call	ebx
-						.if dbg.inxline
-							invoke SortLinesByAddress
-						.endif
-					.endif
-				.endif
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymUnloadModule
-				.if eax
-					mov		ebx,eax
-					push	dwModuleBase
-					push	hProcess
-					call	ebx
-				.endif
-				invoke GetProcAddress,hDbgHelpDLL,addr szSymCleanup
-				.if eax
-					mov		ebx,eax
-					push	hProcess
-					call	ebx
-				.endif
-			.else
+			push	0
+			push	0
+			push	0
+			push	lpFileName
+			push	0
+			push	hProcess
+			call	lpSymLoadModule
+			.if !eax
 				invoke PutString,addr szSymLoadModuleFailed
+				jmp		Ex
 			.endif
+			mov		dwModuleBase,eax
+			mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
+			mov		im.SymType1,SymNone
+			lea		eax,im
+			push	eax
+			push	dwModuleBase
+			push	hProcess
+			call	lpSymGetModuleInfo
+			.if im.SymType1==SymPdb
+				push	0
+				push	offset EnumSourceFilesCallback
+				push	0
+				push	0
+				push	dwModuleBase
+				push	hProcess
+				call	lpSymEnumSourceFiles
+				invoke WaitForSingleObject,dbg.pinfo.hProcess,50
+				invoke AddPredefinedTypes
+				push	0
+				push	offset EnumTypesCallback
+				push	0
+				push	dwModuleBase
+				push	hProcess
+				call	lpSymEnumTypes
+				invoke AddConstants
+				push	0
+				push	offset EnumerateSymbolsCallback
+				push	dwModuleBase
+				push	hProcess
+				call	lpSymEnumerateSymbols
+				push	0
+				push	offset EnumLinesCallback
+				push	0
+				push	0
+				push	0
+				push	0
+				push	0
+				push	dwModuleBase
+				push	hProcess
+				call	lpSymEnumSourceLines
+				.if dbg.inxline
+					invoke SortLinesByAddress
+				.endif
+			.endif
+		Ex:
+			push	dwModuleBase
+			push	hProcess
+			call	lpSymUnloadModule
+			push	hProcess
+			call	lpSymCleanup
 		.else
-			invoke PutString,addr szSymInitializeFailed
+			; Dll functions not found
+			invoke PutString,addr szDbgHelpOld
 		.endif
 		invoke FreeLibrary,hDbgHelpDLL
 		mov		hDbgHelpDLL,0
@@ -702,5 +714,16 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 		invoke PutString,addr outbuffer
 	.endif
 	ret
+
+GetDllFunc:
+	invoke GetProcAddress,hDbgHelpDLL,esi
+	.if eax
+		mov		[edi],eax
+	.else
+		invoke wsprintf,addr outbuffer,addr szDbgHelpFuncFail,esi,lpDll
+		invoke PutString,addr outbuffer
+		inc		nErr
+	.endif
+	retn
 
 DbgHelp endp
