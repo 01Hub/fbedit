@@ -175,238 +175,258 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	invoke strcmpi,addr buffer,addr szImmDump
 	.if !eax
 		; Dump
-		invoke ClearBreakPointsAll
-		mov		esi,400000h
-		.while TRUE
-			invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
-			.break .if !eax
-			invoke DumpLineBYTE,hWin,esi,addr buffer,16
-			add		esi,16
-		.endw
-		invoke SetBreakPointsAll
+		.if dbg.hDbgThread
+			invoke ClearBreakPointsAll
+			mov		esi,400000h
+			.while TRUE
+				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
+				.break .if !eax
+				invoke DumpLineBYTE,hWin,esi,addr buffer,16
+				add		esi,16
+			.endw
+			invoke SetBreakPointsAll
+		.else
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmDump,4
 	.if !eax
 		; Dump var[,Size]
-		lea		esi,buffer[4]
-		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
-			inc		esi
-		.endw
-		xor		ebx,ebx
-		.while byte ptr [esi]
-			.if byte ptr [esi]==','
-				.if !ebx
-					lea		ebx,[esi+1]
-					mov		byte ptr [esi],0
+		.if dbg.hDbgThread
+			lea		esi,buffer[4]
+			.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+				inc		esi
+			.endw
+			xor		ebx,ebx
+			.while byte ptr [esi]
+				.if byte ptr [esi]==','
+					.if !ebx
+						lea		ebx,[esi+1]
+						mov		byte ptr [esi],0
+					.endif
 				.endif
-			.endif
-			inc		esi
-		.endw
-		invoke GetVarAdr,esi,dbg.prevline
-		.if eax
-			mov		eax,var.nSize
-			mov		edx,var.nArray
-			sub		edx,var.nInx
-			mul		edx
-			mov		edi,eax
-			.if ebx
-				invoke DoMath,ebx
-				.if eax
-					mov		ebx,var.Value
+				inc		esi
+			.endw
+			invoke GetVarAdr,esi,dbg.prevline
+			.if eax
+				mov		eax,var.nSize
+				mov		edx,var.nArray
+				sub		edx,var.nInx
+				mul		edx
+				mov		edi,eax
+				.if ebx
+					invoke DoMath,ebx
+					.if eax
+						mov		ebx,var.Value
+					.else
+						mov		ebx,1
+					.endif
 				.else
 					mov		ebx,1
 				.endif
+				mov		esi,var.Address
+				.while edi>=16
+					invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
+					.if eax
+						.if ebx==1
+							invoke DumpLineBYTE,hWin,esi,addr buffer,16
+						.elseif ebx==2
+							invoke DumpLineWORD,hWin,esi,addr buffer,16
+						.elseif ebx==4
+							invoke DumpLineDWORD,hWin,esi,addr buffer,16
+						.elseif ebx==8
+							invoke DumpLineQWORD,hWin,esi,addr buffer,16
+						.endif
+					.endif
+					sub		edi,16
+					add		esi,16
+				.endw
+				.if edi
+					invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
+					.if eax
+						.if ebx==1
+							invoke DumpLineBYTE,hWin,esi,addr buffer,edi
+						.elseif ebx==2
+							invoke DumpLineWORD,hWin,esi,addr buffer,edi
+						.elseif ebx==4
+							invoke DumpLineDWORD,hWin,esi,addr buffer,edi
+						.elseif ebx==8
+							invoke DumpLineQWORD,hWin,esi,addr buffer,edi
+						.endif
+					.endif
+				.endif
 			.else
-				mov		ebx,1
-			.endif
-			mov		esi,var.Address
-			.while edi>=16
-				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
-				.if eax
-					.if ebx==1
-						invoke DumpLineBYTE,hWin,esi,addr buffer,16
-					.elseif ebx==2
-						invoke DumpLineWORD,hWin,esi,addr buffer,16
-					.elseif ebx==4
-						invoke DumpLineDWORD,hWin,esi,addr buffer,16
-					.elseif ebx==8
-						invoke DumpLineQWORD,hWin,esi,addr buffer,16
-					.endif
+				.if var.nErr==ERR_INDEX
+					invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,esi
+				.else
+					invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
 				.endif
-				sub		edi,16
-				add		esi,16
-			.endw
-			.if edi
-				invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
-				.if eax
-					.if ebx==1
-						invoke DumpLineBYTE,hWin,esi,addr buffer,edi
-					.elseif ebx==2
-						invoke DumpLineWORD,hWin,esi,addr buffer,edi
-					.elseif ebx==4
-						invoke DumpLineDWORD,hWin,esi,addr buffer,edi
-					.elseif ebx==8
-						invoke DumpLineQWORD,hWin,esi,addr buffer,edi
-					.endif
-				.endif
+				invoke PutStringOut,addr outbuffer,hWin
 			.endif
 		.else
-			.if var.nErr==ERR_INDEX
-				invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,esi
-			.else
-				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
-			.endif
-			invoke PutStringOut,addr outbuffer,hWin
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
 		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpin,addr buffer,addr szImmMemdump,7
 	.if !eax
 		; Memdump Address,Count[,Size]
-		xor		edi,edi
-		xor		ebx,ebx
-		lea		esi,buffer[7]
-		.while byte ptr [esi]
-			.if byte ptr [esi]==','
-				.if !edi
-					lea		edi,[esi+1]
-					mov		byte ptr [esi],0
-				.elseif !ebx
-					lea		ebx,[esi+1]
-					mov		byte ptr [esi],0
+		.if dbg.hDbgThread
+			xor		edi,edi
+			xor		ebx,ebx
+			lea		esi,buffer[7]
+			.while byte ptr [esi]
+				.if byte ptr [esi]==','
+					.if !edi
+						lea		edi,[esi+1]
+						mov		byte ptr [esi],0
+					.elseif !ebx
+						lea		ebx,[esi+1]
+						mov		byte ptr [esi],0
+					.endif
 				.endif
-			.endif
-			inc		esi
-		.endw
-		.if edi
-			invoke DoMath,addr buffer[7]
-			.if eax
-				mov		esi,var.Value
-				invoke DoMath,edi
+				inc		esi
+			.endw
+			.if edi
+				invoke DoMath,addr buffer[7]
 				.if eax
-					mov		edi,var.Value
-					.if ebx
-						invoke DoMath,ebx
-						.if eax
-							mov		ebx,var.Value
+					mov		esi,var.Value
+					invoke DoMath,edi
+					.if eax
+						mov		edi,var.Value
+						.if ebx
+							invoke DoMath,ebx
+							.if eax
+								mov		ebx,var.Value
+							.else
+								mov		ebx,1
+							.endif
 						.else
 							mov		ebx,1
 						.endif
+						.while edi
+							.if edi>=16
+								invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
+								.break .if !eax
+								.if ebx==1
+									invoke DumpLineBYTE,hWin,esi,addr buffer,16
+								.elseif ebx==2
+									invoke DumpLineWORD,hWin,esi,addr buffer,16
+								.elseif ebx==4
+									invoke DumpLineDWORD,hWin,esi,addr buffer,16
+								.elseif ebx==8
+									invoke DumpLineQWORD,hWin,esi,addr buffer,16
+								.endif
+								add		esi,16
+								sub		edi,16
+							.else
+								invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
+								.break .if !eax
+								.if ebx==1
+									invoke DumpLineBYTE,hWin,esi,addr buffer,edi
+								.elseif ebx==2
+									invoke DumpLineWORD,hWin,esi,addr buffer,edi
+								.elseif ebx==4
+									invoke DumpLineDWORD,hWin,esi,addr buffer,edi
+								.elseif ebx==8
+									invoke DumpLineQWORD,hWin,esi,addr buffer,edi
+								.endif
+								.break
+							.endif
+						.endw
+						xor		ebx,ebx
 					.else
-						mov		ebx,1
+						mov		ebx,TRUE
 					.endif
-					.while edi
-						.if edi>=16
-							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
-							.break .if !eax
-							.if ebx==1
-								invoke DumpLineBYTE,hWin,esi,addr buffer,16
-							.elseif ebx==2
-								invoke DumpLineWORD,hWin,esi,addr buffer,16
-							.elseif ebx==4
-								invoke DumpLineDWORD,hWin,esi,addr buffer,16
-							.elseif ebx==8
-								invoke DumpLineQWORD,hWin,esi,addr buffer,16
-							.endif
-							add		esi,16
-							sub		edi,16
-						.else
-							invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,edi,NULL
-							.break .if !eax
-							.if ebx==1
-								invoke DumpLineBYTE,hWin,esi,addr buffer,edi
-							.elseif ebx==2
-								invoke DumpLineWORD,hWin,esi,addr buffer,edi
-							.elseif ebx==4
-								invoke DumpLineDWORD,hWin,esi,addr buffer,edi
-							.elseif ebx==8
-								invoke DumpLineQWORD,hWin,esi,addr buffer,edi
-							.endif
-							.break
-						.endif
-					.endw
-					xor		ebx,ebx
 				.else
 					mov		ebx,TRUE
 				.endif
 			.else
+				invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
 				mov		ebx,TRUE
 			.endif
+			.if ebx
+				invoke PutStringOut,addr outbuffer,hWin
+			.endif
 		.else
-			invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
-			mov		ebx,TRUE
-		.endif
-		.if ebx
-			invoke PutStringOut,addr outbuffer,hWin
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
 		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmTypes
 	.if !eax
 		; Types
-		mov		esi,dbg.hMemType
-		xor		ebx,ebx
-		.while ebx<dbg.inxtype
-			invoke wsprintf,addr outbuffer,addr szType,addr [esi].DEBUGTYPE.szName,[esi].DEBUGTYPE.nSize
-			invoke PutStringOut,addr outbuffer,hWin
-			lea		esi,[esi+sizeof DEBUGTYPE]
-			inc		ebx
-		.endw
+		.if dbg.hDbgThread
+			mov		esi,dbg.hMemType
+			xor		ebx,ebx
+			.while ebx<dbg.inxtype
+				invoke wsprintf,addr outbuffer,addr szType,addr [esi].DEBUGTYPE.szName,[esi].DEBUGTYPE.nSize
+				invoke PutStringOut,addr outbuffer,hWin
+				lea		esi,[esi+sizeof DEBUGTYPE]
+				inc		ebx
+			.endw
+		.else
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmVars
 	.if !eax
 		; Vars
-		mov		esi,dbg.hMemSymbol
-		mov		ecx,dbg.inxsymbol
-		.while ecx
-			push	ecx
-			.if [esi].DEBUGSYMBOL.nType=='d'
-				mov		edi,[esi].DEBUGSYMBOL.lpType
-				.if edi
-					invoke strcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
-					invoke strlen,addr [edi+sizeof DEBUGVAR]
-					invoke strcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
+		.if dbg.hDbgThread
+			mov		esi,dbg.hMemSymbol
+			mov		ecx,dbg.inxsymbol
+			.while ecx
+				push	ecx
+				.if [esi].DEBUGSYMBOL.nType=='d'
+					mov		edi,[esi].DEBUGSYMBOL.lpType
+					.if edi
+						invoke strcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
+						invoke strlen,addr [edi+sizeof DEBUGVAR]
+						invoke strcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
+						invoke PutStringOut,addr outbuffer,hWin
+					.endif
+				.elseif [esi].DEBUGSYMBOL.nType=='p'
+					invoke strcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
+					mov		edi,[esi].DEBUGSYMBOL.lpType
+					.if edi
+						mov		ebx,offset szSpace
+						lea		edi,[edi+sizeof DEBUGVAR]
+						.while byte ptr [edi]
+							invoke strcat,addr outbuffer,ebx
+							invoke strcat,addr outbuffer,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+							invoke strcat,addr outbuffer,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+							lea		edi,[edi+sizeof DEBUGVAR]
+							mov		ebx,offset szComma
+						.endw
+						mov		ebx,offset szImmLocal
+						lea		edi,[edi+sizeof DEBUGVAR+2]
+						.while byte ptr [edi]
+							invoke strcat,addr outbuffer,ebx
+							invoke strcat,addr outbuffer,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+							invoke strcat,addr outbuffer,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+							lea		edi,[edi+sizeof DEBUGVAR]
+							mov		ebx,offset szComma
+						.endw
+					.endif
 					invoke PutStringOut,addr outbuffer,hWin
 				.endif
-			.elseif [esi].DEBUGSYMBOL.nType=='p'
-				invoke strcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
-				mov		edi,[esi].DEBUGSYMBOL.lpType
-				.if edi
-					mov		ebx,offset szSpace
-					lea		edi,[edi+sizeof DEBUGVAR]
-					.while byte ptr [edi]
-						invoke strcat,addr outbuffer,ebx
-						invoke strcat,addr outbuffer,edi
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-						invoke strcat,addr outbuffer,edi
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-						lea		edi,[edi+sizeof DEBUGVAR]
-						mov		ebx,offset szComma
-					.endw
-					mov		ebx,offset szImmLocal
-					lea		edi,[edi+sizeof DEBUGVAR+2]
-					.while byte ptr [edi]
-						invoke strcat,addr outbuffer,ebx
-						invoke strcat,addr outbuffer,edi
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-						invoke strcat,addr outbuffer,edi
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-						lea		edi,[edi+sizeof DEBUGVAR]
-						mov		ebx,offset szComma
-					.endw
-				.endif
-				invoke PutStringOut,addr outbuffer,hWin
-			.endif
-			pop		ecx
-			lea		esi,[esi+sizeof DEBUGSYMBOL]
-			dec		ecx
-		.endw
+				pop		ecx
+				lea		esi,[esi+sizeof DEBUGSYMBOL]
+				dec		ecx
+			.endw
+		.else
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+		.endif
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmCls
@@ -518,7 +538,6 @@ Immediate proc uses ebx esi edi,hWin:HWND
 		invoke PutStringOut,addr szErrUnknownCommand,hWin
 	.endif
   Ex:
-	invoke ImmPromptOn
 	ret
 
 Error:
@@ -528,6 +547,10 @@ Error:
 		invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
 	.elseif nError==ERR_INDEX
 		invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,addr szError
+	.elseif nError==ERR_DIV0
+		invoke strcpy,offset outbuffer,addr szErrDiv0
+	.elseif nError==ERR_OVERFLOW
+		invoke strcpy,offset outbuffer,addr szErrOverflow
 	.endif
 	retn
 

@@ -49,16 +49,12 @@ szSymEnumTypesByName			db 'SymEnumTypesByName',0
 
 szVersionInfo					db '\StringFileInfo\040904B0\FileVersion',0
 szVersion						db '%s version %s',0
-;szSymOk							db 'Symbols OK',0
-;szSymbol						db 'Name: %s Adress: %X Size %u',0
-;szSourceFile					db 'FileName: %s',0
-;szSourceLine					db 'FileName: %s Adress: %X Line %u',0
 szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
-szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
 szDbgHelpFail					db 'Could not find %s.',0
 szDbgHelpFuncFail				db 'Could not find function %s in %s.',0
 szDbgHelpOld					db '&s is to old. Get a newer version.',0
+szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
 
 CombSort_Const					REAL4 1.3
 
@@ -66,7 +62,6 @@ CombSort_Const					REAL4 1.3
 
 dwModuleBase					DWORD ?
 im								IMAGEHLP_MODULE <>
-nErrors							DWORD ?
 
 .code
 
@@ -520,6 +515,8 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	push	0
 	push	CB_OPENFILE
 	call	lpCallBack
+	; Let MasmEd do its things
+	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 	mov		eax,TRUE
 	ret
 
@@ -576,9 +573,8 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	LOCAL	lpSymCleanup:DWORD
 	LOCAL	lpSymSetContext:DWORD
 	LOCAL	lpSymEnumTypesByName:DWORD
-	LOCAL	nErr:DWORD
+	LOCAL	nErrDll:DWORD
 
-	mov		nErr,0
 	; Allocate memory for DEBUGTYPE, max 16K types
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16*1024*sizeof DEBUGTYPE
 	mov		dbg.hMemType,eax
@@ -596,10 +592,12 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	mov		dbg.hMemVar,eax
 	mov		dbg.lpvar,eax
 	; Zero the indexes
-	mov		dbg.inxtype,0
-	mov		dbg.inxsymbol,0
-	mov		dbg.inxsource,0
-	mov		dbg.inxline,0
+	xor		eax,eax
+	mov		dbg.inxtype,eax
+	mov		dbg.inxsymbol,eax
+	mov		dbg.inxsource,eax
+	mov		dbg.inxline,eax
+	mov		nErrDll,eax
 	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax
@@ -632,7 +630,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 		mov		esi,offset szSymCleanup
 		lea		edi,lpSymCleanup
 		call	GetDllFunc
-		.if !nErr
+		.if !nErrDll
 			; All Dll functions found
 			push	FALSE
 			push	NULL
@@ -669,7 +667,6 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 				push	dwModuleBase
 				push	hProcess
 				call	lpSymEnumSourceFiles
-				invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 				invoke AddPredefinedTypes
 				push	0
 				push	offset EnumTypesCallback
@@ -704,7 +701,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 			push	hProcess
 			call	lpSymCleanup
 		.else
-			; Dll functions not found
+			; Dll function(s) not found
 			invoke PutString,addr szDbgHelpOld
 		.endif
 		invoke FreeLibrary,hDbgHelpDLL
@@ -722,7 +719,7 @@ GetDllFunc:
 	.else
 		invoke wsprintf,addr outbuffer,addr szDbgHelpFuncFail,esi,lpDll
 		invoke PutString,addr outbuffer
-		inc		nErr
+		inc		nErrDll
 	.endif
 	retn
 

@@ -54,6 +54,7 @@ Command: C:\masm32\help\WIN32.HLP
 
 Adding tools to Tools menu:
 ---------------------------
+Use Option / Tools menu to add tools.
 Example:
 Menu item: Calculator
 Command: calc.exe

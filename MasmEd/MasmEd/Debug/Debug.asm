@@ -488,16 +488,19 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke PutString,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_INT_DIVIDE_BY_ZERO
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke PutString,addr szEXCEPTION_INT_DIVIDE_BY_ZERO
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_DATATYPE_MISALIGNMENT
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==EXCEPTION_SINGLE_STEP
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==DBG_CONTROL_C
+					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.else
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.endif
@@ -589,7 +592,6 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	mov		fNoDebugInfo,FALSE
 	mov		dbg.fHandled,FALSE
 	invoke PutString,addr szDebugStopped
-	invoke ImmPromptOff
 	invoke RtlZeroMemory,addr dbg,sizeof DEBUG
 	push	0
 	push	FALSE

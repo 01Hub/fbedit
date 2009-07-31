@@ -13,11 +13,6 @@ defPathBin				db 'C:\masm32\bin',0
 defPathInc				db 'C:\masm32\include',0
 defPathLib				db 'C:\masm32\lib',0
 
-defCompileRC			db 'rc /v',0
-defAssemble				db 'ml /c /coff /Cp',0
-defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
-defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
-
 ExtRC					db '.rc',0
 ExtRes					db '.res',0
 ExtObj					db '.obj',0
@@ -240,7 +235,12 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke lstrcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtRes
 	.elseif eax==IDM_MAKE_ASSEMBLE
-		invoke lstrcpy,addr make.buffer,offset Assemble
+		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+		.if eax
+			invoke lstrcpy,addr make.buffer,offset DbgAssemble
+		.else
+			invoke lstrcpy,addr make.buffer,offset Assemble
+		.endif
 		invoke lstrcat,addr make.buffer,addr szSpc
 		invoke lstrcat,addr make.buffer,offset szQuote
 		invoke lstrcat,addr make.buffer,lpFileName

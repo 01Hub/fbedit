@@ -196,6 +196,7 @@ ID=200
 34=IDM_DEBUG_STOP,0,118,16
 35=IDM_DEBUG_INTO,0,118,0
 36=IDM_DEBUG_OVER,0,118,8
+37=IDM_DEBUG_CARET,0,118,12
 
 [VerInf]
 Nme=VERINF1
@@ -273,16 +274,16 @@ Group=Assembly,Resources,Misc,Include
 52=
 
 [Find]
-1="ParseEdit"
-2="nLastLine"
-3="PRM_PARSEFILE"
-4="GetSubMenu,hContextMnu"
-5="ShowWindow,hOut"
-6="PRM_ISINPROC"
-7="szNoMain"
-8="REM_HILITEACTIVELINE"
-9="REM_SETHILITELINE"
-10="WM_NOT"
+1="MAXIMUM_WAIT_OBJECTS"
+2="FWORD"
+3="szDbgLink"
+4="ParseEdit"
+5="nLastLine"
+6="PRM_PARSEFILE"
+7="GetSubMenu,hContextMnu"
+8="ShowWindow,hOut"
+9="PRM_ISINPROC"
+10="szNoMain"
 
 [VersionControl]
 Settings=1246
@@ -329,11 +330,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,22820
-1=0,0,0,0,57778
+2=0,0,687,524,14
+1=0,0,0,0,45287
 11=0,0,0,0,21491
 22=0,0,0,0,4185
-10=0,0,0,0,6086
+10=0,0,0,0,18114
 23=0,0,0,0,4914
 9=0,0,0,0,0
 4=0,0,0,0
@@ -344,7 +345,7 @@ ProductVer4Range=0
 18=0,0,0,0
 15=0,0,687,524,12137
 30=0,0,0,0
-13=0,0,0,0,5002
+13=0,0,0,0,250
 21=0,0,0,0,1661
 29=0,0,0,0,1293
 28=0,0,0,0,15667
@@ -362,10 +363,10 @@ ProductVer4Range=0
 37=0,0,0,0,11165
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,356
+38=0,0,0,0,7
 39=0,0,0,0
-40=0,0,0,0,1479
-42=0,0,0,0,1590
+40=0,0,0,0,4665
+42=0,0,0,0,1576
 43=0,0,0,0
 45=0,0,0,0,458
 46=0,0,0,0,4977
@@ -439,3 +440,4 @@ PTimer=40486153
 45=
 13=
 10=
+40=

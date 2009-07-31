@@ -91,11 +91,13 @@ GetValue proc uses ebx edi
 		; Hex or Decimal
 		invoke IsDec,edi
 		.if eax
+			mov		mFunc,'H'
 			invoke DecToBin,edi
 			jmp		Ex
 		.else
 			invoke IsHex,edi
 			.if eax
+				mov		mFunc,'H'
 				invoke HexToBin,edi
 				jmp		Ex
 			.endif
@@ -169,7 +171,7 @@ GetValue endp
 CalculateIt proc uses ebx edi,PrevFunc:DWORD
 
   Nxt:
-  	.if nError || byte ptr [esi]==';'
+  	.if nError || byte ptr [esi]==';' || !byte ptr [esi]
   		ret
   	.endif
 	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
@@ -315,6 +317,9 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		pop		ecx
 		xchg	eax,ecx
 		add		eax,ecx
+		.if CARRY?
+			mov		nError,ERR_OVERFLOW
+		.endif
 	.elseif ecx=='-'
 		mov		mFunc,'H'
 		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
@@ -326,6 +331,9 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		pop		ecx
 		xchg	eax,ecx
 		sub		eax,ecx
+		.if CARRY?
+			mov		nError,ERR_OVERFLOW
+		.endif
 	.elseif ecx=='*'
 		mov		mFunc,'H'
 		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
@@ -336,6 +344,9 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		invoke CalculateIt,ecx
 		pop		ecx
 		mul		ecx
+		.if edx
+			mov		nError,ERR_OVERFLOW
+		.endif
 	.elseif ecx=='/'
 		mov		mFunc,'H'
 		.if ebx=='*' || ebx=='/' || ebx==FUNCSHL || ebx==FUNCSHR || ebx==FUNCSIZEOF
@@ -347,7 +358,11 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		pop		ecx
 		xor		edx,edx
 		xchg	eax,ecx
-		div		ecx
+		.if !ecx
+			mov		nError,ERR_DIV0
+		.else
+			div		ecx
+		.endif
 	.elseif word ptr [esi]=='..'
 		; Array 1..2
 		add		esi,2
@@ -361,7 +376,6 @@ CalculateIt proc uses ebx edi,PrevFunc:DWORD
 		pop		edx
 		.if esi==edx
 			mov		nError,ERR_SYNTAX
-			ret
 		.endif
 	.endif
 	jmp		Nxt

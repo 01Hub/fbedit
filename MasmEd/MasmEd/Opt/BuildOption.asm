@@ -9,6 +9,7 @@ IDD_BUILDOPTION		equ 3400
 IDC_EDTRES			equ 1001
 IDC_EDTASM			equ 1002
 IDC_EDTLNK			equ 1003
+IDC_EDTDBGASM		equ 1006
 IDC_EDTDBGLNK		equ 1005
 IDC_BTNRESTORE		equ 1004
 
@@ -142,10 +143,12 @@ BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_EDTRES,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTASM,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTLNK,EM_LIMITTEXT,240,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTDBGASM,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTDBGLNK,EM_LIMITTEXT,240,0
 		invoke SetDlgItemText,hWin,IDC_EDTRES,addr CompileRC
 		invoke SetDlgItemText,hWin,IDC_EDTASM,addr Assemble
 		invoke SetDlgItemText,hWin,IDC_EDTLNK,addr Link
+		invoke SetDlgItemText,hWin,IDC_EDTDBGASM,addr DbgAssemble
 		invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr DbgLink
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -165,6 +168,10 @@ BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrlen,addr Link
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szLink,0,REG_SZ,addr Link,eax
+				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr DbgAssemble,240
+				invoke lstrlen,addr DbgAssemble
+				inc		eax
+				invoke RegSetValueEx,hReg,addr szDbgAssemble,0,REG_SZ,addr DbgAssemble,eax
 				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr DbgLink,240
 				invoke lstrlen,addr DbgLink
 				inc		eax

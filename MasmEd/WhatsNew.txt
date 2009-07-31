@@ -2,11 +2,17 @@ MasmEd
 
 1.0.5.7 - 2009.07.22
 ---------------------
+o Added internal debugger.
+o Added immediate window.
+o Added register window (shown while debugging).
+o Added Debug Assemble to Make Options.
 o Accelerator table and string table now has an edit combo in its name column.
   The combo items are names from menues. This might save you some typing.
 o Added PBS_MARQUEE progress bar style to dialog editor.
 o Fixed bug with dialog editor custom styles.
 o Fixed bug with dialog editor duplicate #define
+o Fixed dialog editor bug with sizing while caption is changed.
+o Fixed resource editor bug with parsing versioninfo using { and } instead of BEGIN and END.
 
 1.0.5.6b - 2009.05.26
 ---------------------

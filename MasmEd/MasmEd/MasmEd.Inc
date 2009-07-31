@@ -461,6 +461,12 @@ szAskRemove				db 'Remove MasmEd from registry?',0
 szOutput				db 'Output',0
 szImmediate				db 'Immediate',0
 
+defCompileRC			db 'rc /v',0
+defAssemble				db 'ml /c /coff /Cp',0
+defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
+defDbgAssemble			db 'ml /c /coff /Cp /Zi /Zd',0
+defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
+
 .data
 
 szRichEdit				db 'riched20.dll',0
@@ -621,6 +627,7 @@ szMainFile				db 'MainFile',0
 szCompileRC				db 'CompileRC',0
 szAssemble				db 'Assemble',0
 szLink					db 'Link',0
+szDbgAssemble			db 'DbgAssemble',0
 szDbgLink				db 'DbgLink',0
 szBuild					db 'Build',0
 
@@ -716,6 +723,7 @@ PathLib					db MAX_PATH dup(?)
 CompileRC				db 256 dup(?)
 Assemble				db 256 dup(?)
 Link					db 256 dup(?)
+DbgAssemble				db 256 dup(?)
 DbgLink					db 256 dup(?)
 fResNotify				dd ?
 hImlTbr					dd ?

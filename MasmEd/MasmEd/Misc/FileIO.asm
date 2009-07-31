@@ -510,6 +510,7 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr CompileRC,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr Assemble,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szLink,addr Link,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szDbgAssemble,addr DbgAssemble,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr DbgLink,lpszFile
 	invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 	or		eax,30h
@@ -659,7 +660,23 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr CompileRC,sizeof CompileRC,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr Assemble,sizeof Assemble,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr Link,sizeof Link,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr DbgAssemble,sizeof DbgAssemble,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr DbgLink,sizeof DbgLink,lpszFile
+	.if !CompileRC
+		invoke lstrcpy,addr CompileRC,addr defCompileRC
+	.endif
+	.if !Assemble
+		invoke lstrcpy,addr Assemble,addr defAssemble
+	.endif
+	.if !Link
+		invoke lstrcpy,addr Link,addr defLink
+	.endif
+	.if !DbgAssemble
+		invoke lstrcpy,addr DbgAssemble,addr defDbgAssemble
+	.endif
+	.if !DbgLink
+		invoke lstrcpy,addr DbgLink,addr defDbgLink
+	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	.if eax
 		mov		eax,1

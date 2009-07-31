@@ -1172,13 +1172,11 @@ ImmediateProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
-		.if fDebugging
-			mov		eax,wParam
-			.if eax==VK_RETURN
-				invoke DebugCommand,FUNC_IMMEDIATE,hImmOut,0
-				xor		eax,eax
-				ret
-			.endif
+		mov		eax,wParam
+		.if eax==VK_RETURN
+			invoke DebugCommand,FUNC_IMMEDIATE,hImmOut,0
+			xor		eax,eax
+			ret
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldImmediateProc,hWin,uMsg,wParam,lParam
@@ -1697,6 +1695,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr Link,addr defLink
 		mov		lpcbData,sizeof Link
 		invoke RegQueryValueEx,hReg,addr szLink,0,addr lpType,addr Link,addr lpcbData
+		invoke lstrcpy,addr DbgAssemble,addr defDbgAssemble
+		mov		lpcbData,sizeof DbgAssemble
+		invoke RegQueryValueEx,hReg,addr szDbgAssemble,0,addr lpType,addr DbgAssemble,addr lpcbData
 		invoke lstrcpy,addr DbgLink,addr defDbgLink
 		mov		lpcbData,sizeof DbgLink
 		invoke RegQueryValueEx,hReg,addr szDbgLink,0,addr lpType,addr DbgLink,addr lpcbData
@@ -1722,6 +1723,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Set hilite words
 		invoke SetKeyWords
 		invoke ResetMenu
+		mov		eax,hWin
+		mov		dbginf.hWnd,eax
+		mov		eax,hOut
+		mov		dbginf.hOut,eax
+		mov		eax,hImmOut
+		mov		dbginf.hImmOut,eax
+		mov		eax,hDbg
+		mov		dbginf.hDbg,eax
+		mov		eax,hProperty
+		mov		dbginf.hPrp,eax
+		mov		eax,offset DebugCallback
+		mov		dbginf.lpCallBack,eax
+		invoke SetDebugInfo,addr dbginf
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
 		;Menu and toolbar has the same ID's

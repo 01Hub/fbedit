@@ -60,6 +60,8 @@ FMT_SZ							equ 64
 ERR_NOTFOUND					equ 1
 ERR_INDEX						equ 2
 ERR_SYNTAX						equ 3
+ERR_DIV0						equ 4
+ERR_OVERFLOW					equ 5
 
 ; RAEdit message
 REM_BASE						equ WM_USER+1000
@@ -299,6 +301,8 @@ szBP							db 0CCh
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
 szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION',0
+szEXCEPTION_FLT_DIVIDE_BY_ZERO	db 'EXCEPTION_FLT_DIVIDE_BY_ZERO',0
+szEXCEPTION_INT_DIVIDE_BY_ZERO	db 'EXCEPTION_INT_DIVIDE_BY_ZERO',0
 szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
 szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT',0
 szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT',0
@@ -329,7 +333,6 @@ szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
 szExeNotFound					db 'Could not open:',0Dh,'%s',0
 szNoDebugInfoMasm				db 'No debug info found.',0Dh,'Use the /Zd, /Zi and /DEBUG command line options.',0
-szNoDebugInfoFp					db 'No debug info found.',0Dh,'Use the -g command line option.',0
 
 ; Tooltip / immediate window formatting
 szReg32							db 'REGISTER %s Hex %08Xh Dec %u',0
@@ -353,6 +356,8 @@ szLocal8						db 'LOCAL %s%s Address %08Xh Size %u Hex %02Xh Dec %d',0
 szLocalSZ						db 'LOCAL %s%s Address %08Xh Size %u ZString "%s"',0
 szLocalS						db 'LOCAL %s%s Address %08Xh Size %u String "%s"',0
 szValue							db 'Hex %08Xh Dec %d',0
+szConst							db 'CONST %s Hex %08Xh Dec %d',0
+szTypeSize						db 'TYPESIZE %s Hex %08Xh Dec %d',0
 
 szType							db 'Type: %s Size: %u',0
 
@@ -360,7 +365,11 @@ szType							db 'Type: %s Size: %u',0
 szErrSyntaxError				db 'Syntax error: %s',0
 szErrVariableNotFound			db 'Variable not found: %s',0
 szErrIndexOutOfRange			db 'Index out of range: %s',0
+szErrDiv0						db 'Division by zero.',0
+szErrOverflow					db 'Overflow.',0
+
 szErrUnknownCommand				db 'Unknown command.',0
+szOnlyInDebugMode				db 'Only in debug mode.',0
 
 szErrConstant					db 'Could not evaluate expression: %s',0
 szErrArray						db 'Could not evaluate array size: %s',0

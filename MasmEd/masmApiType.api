@@ -33,6 +33,7 @@ ENUMRESTYPEPROC,4|Pointer to an application-defined callback function that enume
 FARPROC,4|Pointer to a callback function.
 FLOAT,4|Floating-point variable.
 FONTENUMPROC,4|Pointer to an application-defined callback function that enumerates fonts.
+FWORD,6
 GLOBALHANDLE,0|Handle of a global memory block.
 GOBJENUMPROC,4|Pointer to an application-defined callback function that enumerates graphics device interface (GDI) objects.
 GRAYSTRINGPROC,4|Pointer to an application-defined callback function that draws gray text.
