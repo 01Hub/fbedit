@@ -1788,6 +1788,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		szSessionFile,0
 					invoke CloseNotify
 				.endif
+				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL_BUT
 				invoke SendMessage,hTab,TCM_GETCURSEL,0,0
@@ -1796,6 +1797,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL
 				.endif
+				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_OPENSESSION
 				invoke OpenSessionFile
@@ -1815,6 +1817,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke UpdateAll,CLOSE_ALL
 					.endif
 				.endif
+				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_PAGESETUP
 				invoke GetPrnCaps

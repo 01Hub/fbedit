@@ -149,7 +149,7 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2594
 9=0,0,0,0,373
-10=0,0,589,494,23486
+10=0,0,589,494,25200
 11=0,0,746,498,2653
 12=0,0,0,0,2850
 13=0,0,0,0,1617
@@ -173,12 +173,12 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="ParseUnknown"
-2="PRM_DELPROPERTY"
-3="ConvDataType"
-4="szMasmDataConv"
-5="PrintStringByAddr"
-6="ArraySize"
+1="ArraySize"
+2="ParseUnknown"
+3="PRM_DELPROPERTY"
+4="ConvDataType"
+5="szMasmDataConv"
+6="PrintStringByAddr"
 7="edi"
 8="skipbrace"
 9="ParseConst"

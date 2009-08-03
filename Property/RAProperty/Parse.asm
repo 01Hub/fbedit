@@ -1696,7 +1696,13 @@ ParseParamData1:
 				push	esi
 				.while byte ptr [esi] && byte ptr [esi-1]!=']'
 					mov		al,[esi]
-					.if al!=VK_SPACE && al!=VK_TAB
+					.if al==VK_TAB
+						mov		al,VK_SPACE
+					.endif
+					.if al!=VK_SPACE
+						mov		[edi],al
+						inc		edi
+					.elseif byte ptr [edi-1]!=VK_SPACE
 						mov		[edi],al
 						inc		edi
 					.endif

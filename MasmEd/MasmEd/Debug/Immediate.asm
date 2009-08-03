@@ -199,6 +199,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				inc		esi
 			.endw
 			xor		ebx,ebx
+			push	esi
 			.while byte ptr [esi]
 				.if byte ptr [esi]==','
 					.if !ebx
@@ -208,6 +209,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				.endif
 				inc		esi
 			.endw
+			pop		esi
 			invoke GetVarAdr,esi,dbg.prevline
 			.if eax
 				mov		eax,var.nSize
@@ -215,6 +217,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				sub		edx,var.nInx
 				mul		edx
 				mov		edi,eax
+				mov		esi,var.Address
 				.if ebx
 					invoke DoMath,ebx
 					.if eax
@@ -225,7 +228,6 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				.else
 					mov		ebx,1
 				.endif
-				mov		esi,var.Address
 				.while edi>=16
 					invoke ReadProcessMemory,dbg.hdbghand,esi,addr buffer,16,NULL
 					.if eax

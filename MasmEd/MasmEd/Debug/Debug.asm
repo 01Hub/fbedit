@@ -1,17 +1,18 @@
 
 .const
 
-szDump							db 'Reg Hex              Dec',0Dh,0
-szRegs							db 'EAX %08Xh %10d',0Dh,0,
-								   'ECX %08Xh %10d',0Dh,0,
-								   'EDX %08Xh %10d',0Dh,0,
-								   'EBX %08Xh %10d',0Dh,0,
-								   'ESP %08Xh %10d',0Dh,0,
-								   'EBP %08Xh %10d',0Dh,0,
-								   'ESI %08Xh %10d',0Dh,0,
-								   'EDI %08Xh %10d',0Dh,0,
-								   'EIP %08Xh %10d',0Dh,0,
-								   'EFL %08Xh %10d',0
+szDump							db 'Reg Hex               Dec Bin',0Dh,0
+szRegs							db 'EAX %08Xh %11d ',0,
+								   'ECX %08Xh %11d ',0,
+								   'EDX %08Xh %11d ',0,
+								   'EBX %08Xh %11d ',0,
+								   'ESP %08Xh %11d ',0,
+								   'EBP %08Xh %11d ',0,
+								   'ESI %08Xh %11d ',0,
+								   'EDI %08Xh %11d ',0,
+								   'EIP %08Xh %11d ',0,
+								   '    AV-R NIODIT-SZ A P C',0Dh,
+								   'EFL ',0
 
 .data?
 
@@ -36,37 +37,51 @@ ShowContext proc uses ebx esi edi
 	mov		esi,offset szRegs
 	mov		ebx,dbg.context.regEax
 	mov		edi,dbg.prevcontext.regEax
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEcx
 	mov		edi,dbg.prevcontext.regEcx
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEdx
 	mov		edi,dbg.prevcontext.regEdx
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEbx
 	mov		edi,dbg.prevcontext.regEbx
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEsp
 	mov		edi,dbg.prevcontext.regEsp
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEbp
 	mov		edi,dbg.prevcontext.regEbp
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEsi
 	mov		edi,dbg.prevcontext.regEsi
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEdi
 	mov		edi,dbg.prevcontext.regEdi
+	mov		eax,32
 	call	RegOut
 	mov		ebx,dbg.context.regEip
 	mov		edi,dbg.prevcontext.regEip
+	mov		eax,32
 	call	RegOut
+	inc		nLine
 	mov		ebx,dbg.context.regFlag
 	mov		edi,dbg.prevcontext.regFlag
+	shl		ebx,32-18
+	shl		edi,32-18
+	mov		eax,18
 	call	RegOut
 	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
 	invoke SetWindowText,hDbg,addr szContext
 	invoke SendMessage,hDbg,REM_SETHILITELINE,0,1
+	invoke SendMessage,hDbg,REM_SETHILITELINE,10,1
 	mov		ebx,offset LineChanged
 	.while dword ptr [ebx]
 		invoke SendMessage,hDbg,REM_LINEREDTEXT,[ebx],TRUE
@@ -81,7 +96,12 @@ AddText:
 	retn
 
 RegOut:
+	push	eax
 	invoke wsprintf,addr buffer,esi,ebx,ebx
+	invoke strlen,addr buffer
+	pop		edx
+	invoke BinOut,addr buffer[eax],ebx,edx
+	invoke strcat,addr buffer,addr szCR
 	lea		eax,buffer
 	call	AddText
 	.if ebx!=edi
@@ -356,8 +376,8 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 		mov		dbg.hdbghand,eax
 		invoke DbgHelp,offset DbgHelpDLL,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
-			invoke PutString,addr szNoDebugInfoMasm
-			invoke PutString,addr szExeName
+			invoke PutString,addr szNoDebugInfoMasm,TRUE
+			invoke PutString,addr szExeName,TRUE
 			mov		fNoDebugInfo,TRUE
 			push	0
 			push	FALSE
@@ -369,9 +389,9 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			push	CB_DEBUG
 			call	lpCallBack
 			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
-			invoke PutString,addr buffer
-			invoke PutString,addr szDebuggingStarted
-			invoke PutString,addr szExeName
+			invoke PutString,addr buffer,FALSE
+			invoke wsprintf,offset outbuffer,addr szDebuggingStarted,addr szExeName
+			invoke PutString,offset outbuffer,FALSE
 			mov		fNoDebugInfo,FALSE
 			invoke MapNoDebug
 			mov		ebx,dbg.hMemLine
@@ -417,7 +437,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				mov		dbg.lpvar,eax
 				invoke RtlZeroMemory,eax,256*1024
 				invoke wsprintf,addr outbuffer,addr szErrorParsing,dbg.nErrors
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,TRUE
 			.endif
 		.endif
 		mov		dbg.prevline,-1
@@ -487,13 +507,13 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 						.endif
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
-					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
+					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
-					invoke PutString,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO
+					invoke PutString,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_INT_DIVIDE_BY_ZERO
-					invoke PutString,addr szEXCEPTION_INT_DIVIDE_BY_ZERO
+					invoke PutString,addr szEXCEPTION_INT_DIVIDE_BY_ZERO,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_DATATYPE_MISALIGNMENT
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
@@ -510,10 +530,10 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					mov		dbg.hdbgfile,eax
 				.endif
 				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 				mov		eax,de.dwProcessId
 				.if eax==dbg.pinfo.dwProcessId
 					invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
@@ -522,13 +542,13 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
 					invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId
-					invoke PutString,addr outbuffer
+					invoke PutString,addr outbuffer,FALSE
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
 					mov		ebx,eax
@@ -542,12 +562,12 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
 				invoke wsprintf,addr outbuffer,addr szEventString,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
 				invoke wsprintf,addr outbuffer,addr szEventString,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
 				.if eax>255
@@ -555,9 +575,9 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,de.u.DebugString.lpDebugStringData,addr buffer,eax,0
 				invoke wsprintf,addr outbuffer,addr szEventString,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
-				invoke PutString,addr outbuffer
+				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==RIP_EVENT
-				invoke PutString,addr szRIP_EVENT
+				invoke PutString,addr szRIP_EVENT,TRUE
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
@@ -591,7 +611,8 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	invoke ResetSelectLine
 	mov		fNoDebugInfo,FALSE
 	mov		dbg.fHandled,FALSE
-	invoke PutString,addr szDebugStopped
+	invoke wsprintf,offset outbuffer,addr szDebugStopped,addr szExeName
+	invoke PutString,offset outbuffer,FALSE
 	invoke RtlZeroMemory,addr dbg,sizeof DEBUG
 	push	0
 	push	FALSE

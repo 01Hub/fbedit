@@ -302,12 +302,21 @@ AnyToBin proc lpStr:DWORD
 
 AnyToBin endp
 
-PutString proc lpString:DWORD
+PutString proc lpString:DWORD,fRed:DWORD
 	LOCAL	chrg:CHARRANGE
 
 	mov		chrg.cpMin,-1
 	mov		chrg.cpMax,-1
 	invoke SendMessage,hOut,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,hOut,EM_LINELENGTH,-1,0
+	.if eax
+		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCR
+	.endif
+	.if fRed
+		invoke SendMessage,hOut,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,hOut,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		invoke SendMessage,hOut,REM_LINEREDTEXT,eax,TRUE
+	.endif
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,lpString
 	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCR
 	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
@@ -410,6 +419,31 @@ HexQWORD proc uses ecx ebx edi,lpBuff:DWORD,Val:QWORD
 	ret
 
 HexQWORD endp
+
+BinOut proc  uses ecx edi,lpBuff:DWORD,Val:DWORD,nSize:DWORD
+
+	xor		ecx,ecx
+	mov		eax,Val
+	mov		edi,lpBuff
+	.while ecx<nSize
+		mov		edx,nSize
+		sub		edx,ecx
+		.if edx==8 || edx==16 || edx==24
+			mov		byte ptr [edi+ecx],'-'
+			inc		edi
+		.endif
+		shl		eax,1
+		mov		byte ptr [edi+ecx],'0'
+		.if CARRY?
+			mov		byte ptr [edi+ecx],'1'
+		.endif
+		inc		ecx
+	.endw
+	mov		byte ptr [edi+ecx],'b'
+	mov		byte ptr [edi+ecx+1],0
+	ret
+
+BinOut endp
 
 DumpLineBYTE proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 	LOCAL	buffer[256]:BYTE

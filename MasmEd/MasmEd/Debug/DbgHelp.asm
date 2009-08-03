@@ -163,7 +163,7 @@ GetDbgHelpVersion proc lpDll:DWORD
 		.if eax
 			mov		eax,lpbuff
 			invoke wsprintf,addr buffer,addr szVersion,lpDll,eax
-			invoke PutString,addr buffer
+			invoke PutString,addr buffer,FALSE
 		.endif
 	.endif
 	ret
@@ -349,13 +349,13 @@ AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 		invoke strlen,addr [edi+sizeof DEBUGVAR]
 		invoke strcat,addr buffer,addr [edi+eax+1+sizeof DEBUGVAR]
 		invoke wsprintf,addr outbuffer,addr szErrArray,addr buffer
-		invoke PutString,addr outbuffer
+		invoke PutString,addr outbuffer,TRUE
 		inc		dbg.nErrors
 	.elseif fErrType
 		invoke strlen,addr [edi+sizeof DEBUGVAR]
 		invoke strcat,addr buffer,addr [edi+eax+1+sizeof DEBUGVAR]
 		invoke wsprintf,addr outbuffer,addr szErrType,addr buffer
-		invoke PutString,addr outbuffer
+		invoke PutString,addr outbuffer,TRUE
 		inc		dbg.nErrors
 	.endif
 	mov		eax,[edi].DEBUGVAR.nSize
@@ -470,7 +470,6 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			; Point to locals
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-PrintStringByAddr esi
 			invoke AddVarList,esi
 		.elseif edx=='d'
 			; Variable
@@ -638,7 +637,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 			push	hProcess
 			call	lpSymInitialize
 			.if !eax
-				invoke PutString,addr szSymInitializeFailed
+				invoke PutString,addr szSymInitializeFailed,TRUE
 				jmp		Ex
 			.endif
 			push	0
@@ -649,7 +648,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 			push	hProcess
 			call	lpSymLoadModule
 			.if !eax
-				invoke PutString,addr szSymLoadModuleFailed
+				invoke PutString,addr szSymLoadModuleFailed,TRUE
 				jmp		Ex
 			.endif
 			mov		dwModuleBase,eax
@@ -703,13 +702,13 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 			call	lpSymCleanup
 		.else
 			; Dll function(s) not found
-			invoke PutString,addr szDbgHelpOld
+			invoke PutString,addr szDbgHelpOld,TRUE
 		.endif
 		invoke FreeLibrary,hDbgHelpDLL
 		mov		hDbgHelpDLL,0
 	.else
 		invoke wsprintf,addr outbuffer,addr szDbgHelpFail,lpDll
-		invoke PutString,addr outbuffer
+		invoke PutString,addr outbuffer,TRUE
 	.endif
 	ret
 
@@ -719,7 +718,7 @@ GetDllFunc:
 		mov		[edi],eax
 	.else
 		invoke wsprintf,addr outbuffer,addr szDbgHelpFuncFail,esi,lpDll
-		invoke PutString,addr outbuffer
+		invoke PutString,addr outbuffer,TRUE
 		inc		nErrDll
 	.endif
 	retn

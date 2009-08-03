@@ -70,7 +70,7 @@ SetHelpMenu					PROTO
 SetDebugInfo				PROTO :DWORD
 DebugCommand				PROTO :DWORD,:DWORD,:DWORD
 
-HT_DEBUG					equ 175
+HT_DEBUG					equ 185
 
 ; Debug functions
 FUNC_RUN					equ 1

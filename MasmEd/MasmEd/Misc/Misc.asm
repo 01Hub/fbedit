@@ -1219,6 +1219,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					.if eax!=hRes
 						invoke DestroyWindow,[ebx].TABMEM.hwnd
 					.endif
+					invoke SendMessage,hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
 					invoke TabToolDel,[ebx].TABMEM.hwnd
 				.endif
 			.elseif eax==WM_DESTROY
