@@ -62,8 +62,8 @@ MinorFiles=*.res;*.obj;
 47=Opt\TabOpt4.dlg
 48=Opt\TabOpt5.dlg
 49=Opt\PathOption.dlg
-50=
-51=
+50=Misc\DoNotDebug.dlg
+51=Opt\Debug.asm
 52=
 
 [MakeFiles]
@@ -269,21 +269,21 @@ Group=Assembly,Resources,Misc,Include
 47=2
 48=2
 49=2
-50=
-51=
+50=2
+51=1
 52=
 
 [Find]
-1="CHARFORMAT"
-2="MAXIMUM_WAIT_OBJECTS"
-3="FWORD"
-4="szDbgLink"
-5="ParseEdit"
-6="nLastLine"
-7="PRM_PARSEFILE"
-8="GetSubMenu,hContextMnu"
-9="ShowWindow,hOut"
-10="PRM_ISINPROC"
+1="IDM_DEB"
+2="dbginf"
+3="1023"
+4="1022"
+5="CHARFORMAT"
+6="MAXIMUM_WAIT_OBJECTS"
+7="FWORD"
+8="szDbgLink"
+9="ParseEdit"
+10="nLastLine"
 
 [VersionControl]
 Settings=1246
@@ -330,8 +330,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,1394
-1=0,0,0,0,35010
+2=0,0,687,524,7317
+1=0,0,0,0,64505
 11=0,0,0,0,23405
 22=0,0,0,0,4185
 10=0,0,0,0,18114
@@ -343,7 +343,7 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,111
 18=0,0,0,0
-15=0,0,687,524,12137
+15=0,0,687,524,12292
 30=0,0,0,0
 13=0,0,0,0,250
 21=0,0,0,0,1661
@@ -373,8 +373,8 @@ ProductVer4Range=0
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
-50=
-51=
+50=0,0,0,0
+51=0,0,0,0,940
 52=
 
 [BookMark]
@@ -422,7 +422,7 @@ ProductVer4Range=0
 42=
 45=
 46=
-51=,,
+51=
 50=
 52=
 [PTimer]

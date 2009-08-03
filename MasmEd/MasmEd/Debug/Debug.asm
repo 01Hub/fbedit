@@ -79,12 +79,12 @@ ShowContext proc uses ebx esi edi
 	mov		eax,18
 	call	RegOut
 	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
-	invoke SetWindowText,hDbg,addr szContext
-	invoke SendMessage,hDbg,REM_SETHILITELINE,0,1
-	invoke SendMessage,hDbg,REM_SETHILITELINE,10,1
+	invoke SetWindowText,hDbgReg,addr szContext
+	invoke SendMessage,hDbgReg,REM_SETHILITELINE,0,1
+	invoke SendMessage,hDbgReg,REM_SETHILITELINE,10,1
 	mov		ebx,offset LineChanged
 	.while dword ptr [ebx]
-		invoke SendMessage,hDbg,REM_LINEREDTEXT,[ebx],TRUE
+		invoke SendMessage,hDbgReg,REM_LINEREDTEXT,[ebx],TRUE
 		lea		ebx,[ebx+4]
 	.endw
 	ret
@@ -159,40 +159,39 @@ MapNoDebug proc uses ebx esi edi
 		dec		ecx
 		lea		esi,[esi+sizeof DEBUGSYMBOL]
 	.endw
-;	; Map procs that sould not be debugged
-;	mov		nInx,0
-;	.while TRUE
-;		invoke wsprintf,addr buffer1,addr szCommaBP[1],nInx
-;		mov		eax,lpData
-;		invoke GetPrivateProfileString,addr szNoDebug,addr buffer1,addr szNULL,addr buffer,sizeof buffer,[eax].ADDINDATA.lpProject
-;		.break .if !eax
-;		mov		edi,dbg.hMemSymbol
-;		mov		ebx,dbg.inxsymbol
-;		.while ebx
-;			invoke strcmp,addr buffer,addr [edi].DEBUGSYMBOL.szName
-;			.if !eax
-;				mov		[edi].DEBUGSYMBOL.NoDebug,1
-;				mov		edx,[edi].DEBUGSYMBOL.Address
-;				mov		eax,edx
-;				add		edx,[edi].DEBUGSYMBOL.nSize
-;				mov		ecx,dbg.inxline
-;				mov		esi,dbg.hMemLine
-;				.while ecx
-;					.if [esi].DEBUGLINE.Address>=eax
-;						.if [esi].DEBUGLINE.Address<edx
-;							mov		[esi].DEBUGLINE.NoDebug,1
-;						.endif
-;					.endif
-;					dec		ecx
-;					lea		esi,[esi+sizeof DEBUGLINE]
-;				.endw
-;				.break
-;			.endif
-;			dec		ebx
-;			lea		edi,[edi+sizeof DEBUGSYMBOL]
-;		.endw
-;		inc		nInx
-;	.endw
+	; Map procs that sould not be debugged
+	mov		esi,lpNoDebug
+	.while TRUE
+		.break .if !byte ptr [esi]
+		mov		edi,dbg.hMemSymbol
+		mov		ebx,dbg.inxsymbol
+		.while ebx
+			invoke strcmp,esi,addr [edi].DEBUGSYMBOL.szName
+			.if !eax
+				mov		[edi].DEBUGSYMBOL.NoDebug,1
+				mov		edx,[edi].DEBUGSYMBOL.Address
+				mov		eax,edx
+				add		edx,[edi].DEBUGSYMBOL.nSize
+				mov		ecx,dbg.inxline
+				push	esi
+				mov		esi,dbg.hMemLine
+				.while ecx
+					.if [esi].DEBUGLINE.Address>=eax
+						.if [esi].DEBUGLINE.Address<edx
+							mov		[esi].DEBUGLINE.NoDebug,1
+						.endif
+					.endif
+					dec		ecx
+					lea		esi,[esi+sizeof DEBUGLINE]
+				.endw
+				pop		esi
+			.endif
+			dec		ebx
+			lea		edi,[edi+sizeof DEBUGSYMBOL]
+		.endw
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
 	ret
 
 MapNoDebug endp

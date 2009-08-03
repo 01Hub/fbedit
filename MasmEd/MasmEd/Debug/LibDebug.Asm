@@ -56,10 +56,14 @@ SetDebugInfo proc public lpDEBUGINFO:DWORD
 	mov		hWnd,eax
 	mov		eax,[edx].DEBUGINFO.hOut
 	mov		hOut,eax
-	mov		eax,[edx].DEBUGINFO.hDbg
-	mov		hDbg,eax
+	mov		eax,[edx].DEBUGINFO.hDbgReg
+	mov		hDbgReg,eax
+	mov		eax,[edx].DEBUGINFO.hDbgWatch
+	mov		hDbgWatch,eax
 	mov		eax,[edx].DEBUGINFO.hPrp
 	mov		hPrp,eax
+	mov		eax,[edx].DEBUGINFO.lpNoDebug
+	mov		lpNoDebug,eax
 	mov		eax,[edx].DEBUGINFO.lpCallBack
 	mov		lpCallBack,eax
 	invoke strcpy,addr szExeName,addr [edx].DEBUGINFO.FileName

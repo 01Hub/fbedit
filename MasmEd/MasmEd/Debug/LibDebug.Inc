@@ -80,8 +80,10 @@ DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
 	hImmOut					HWND ?					; Handle of immediate window
-	hDbg					HWND ?					; Handle of debug window
+	hDbgReg					HWND ?					; Handle of debug register window
+	hDbgWatch				HWND ?					; Handle of debug watch window
 	hPrp					HWND ?					; Handle of properties window
+	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
@@ -391,7 +393,8 @@ hDbgHelpDLL						HMODULE ?						; Handle of DbgHelp.dll
 hWnd							HWND ?							; Handle of main window
 hOut							HWND ?							; Handle of output window
 hImmOut							HWND ?							; Handle of immediate window
-hDbg							HWND ?							; Handle of debug window
+hDbgReg							HWND ?							; Handle of debug register window
+hDbgWatch						HWND ?							; Handle of debug watch window
 hPrp							HWND ?							; Handle of properties window
 lpCallBack						dd ?
 szExeName						db MAX_PATH dup(?)				; Path to exe to be debugged
@@ -404,6 +407,8 @@ var								VAR <>							; Current variable info
 fNoDebugInfo					dd ?							; No debug info found
 outbuffer						db 1024 dup(?)					; Buffer for wsprintf
 szWatchList						db 512 dup(?)					; List of variables to watch
+szWatchResult					db 2048 dup(?)
 mFunc							dd ?
 nError							dd ?
 szError							db 256 dup(?)
+lpNoDebug						dd ?

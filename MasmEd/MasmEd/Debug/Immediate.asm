@@ -110,35 +110,6 @@ AddWatchVar:
 
 ParseWatch endp
 
-SaveWatch proc uses esi edi,lpWatch:DWORD
-
-;	mov		esi,lpWatch
-;	mov		edi,esi
-;	.while TRUE
-;		mov		al,[esi]
-;		.if al!=VK_SPACE && al!=VK_TAB
-;			mov		[edi],al
-;			inc		edi
-;		.endif
-;		.break .if !al
-;		inc		esi
-;	.endw
-;	mov		eax,lpData
-;	invoke WritePrivateProfileString,addr szImmWatch,addr szImmWatch,lpWatch,[eax].ADDINDATA.lpProject
-	ret
-
-SaveWatch endp
-
-LoadWatch proc
-	LOCAL	buffer[256]:BYTE
-
-;	mov		eax,lpData
-;	invoke GetPrivateProfileString,addr szImmWatch,addr szImmWatch,addr szNULL,addr buffer,sizeof buffer,[eax].ADDINDATA.lpProject
-;	invoke ParseWatch,addr buffer
-	ret
-
-LoadWatch endp
-
 Immediate proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[256]:BYTE
@@ -440,11 +411,9 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	invoke strcmpin,addr buffer,addr szImmWatch,5
 	.if !eax
 		; Watch Var1[,Var2,....,Var8]
-		invoke SaveWatch,addr buffer[5]
 		invoke ParseWatch,addr buffer[5]
 		.if szWatchList
 			invoke WatchVars
-			ret
 		.endif
 		jmp		Ex
 	.endif

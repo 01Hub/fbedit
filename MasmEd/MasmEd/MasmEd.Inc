@@ -70,7 +70,7 @@ SetHelpMenu					PROTO
 SetDebugInfo				PROTO :DWORD
 DebugCommand				PROTO :DWORD,:DWORD,:DWORD
 
-HT_DEBUG					equ 185
+HT_DEBUG					equ 206
 
 ; Debug functions
 FUNC_RUN					equ 1
@@ -150,7 +150,8 @@ IDC_SBR						equ 1003
 IDC_SHP						equ 1005
 IDC_OUT						equ 1006
 IDC_IMMOUT					equ 1022
-IDC_DBG						equ 1020
+IDC_DBGREG					equ 1020
+IDC_DBGWATCH				equ 1024
 IDC_RAE						equ 1011
 IDC_RES						equ 1012
 IDC_HEX						equ 1013
@@ -161,6 +162,7 @@ IDC_CLIENT					equ 1016
 IDC_STC						equ 1017
 IDC_CBO						equ 1018
 IDC_TABOUT					equ 1021
+IDC_TABWATCH				equ 1023
 
 IDC_TOOLBOX					equ 1101
 IDC_DLGEDIT					equ 1102
@@ -281,13 +283,16 @@ IDM_DEBUG_STOP				equ 10084
 IDM_DEBUG_INTO				equ 10085
 IDM_DEBUG_OVER				equ 10086
 IDM_DEBUG_CARET				equ 10087
+IDM_DEBUG_NODEBUG			equ 10088
 
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
 	hOut					HWND ?					; Handle of output window
 	hImmOut					HWND ?					; Handle of immediate window
-	hDbg					HWND ?					; Handle of debug window
+	hDbgReg					HWND ?					; Handle of debug register window
+	hDbgWatch				HWND ?					; Handle of debug watch window
 	hPrp					HWND ?					; Handle of properties window
+	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
@@ -460,6 +465,9 @@ szAskRemove				db 'Remove MasmEd from registry?',0
 
 szOutput				db 'Output',0
 szImmediate				db 'Immediate',0
+
+szRegister				db 'Register',0
+szWatch					db 'Watch',0
 
 defCompileRC			db 'rc /v',0
 defAssemble				db 'ml /c /coff /Cp',0
@@ -666,7 +674,10 @@ hTabOut					HWND ?
 hBrowse					HWND ?
 hProperty				HWND ?
 hSbr					HWND ?
-hDbg					HWND ?
+hDbgReg					HWND ?
+hDbgWatch				HWND ?
+nDbgSel					DWORD ?
+hTabDbg					HWND ?
 hDbgTip					HWND ?
 hVSplitCur				dd ?
 hHSplitCur				dd ?

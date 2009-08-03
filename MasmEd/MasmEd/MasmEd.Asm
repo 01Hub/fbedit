@@ -17,6 +17,7 @@ include Misc\Print.asm
 include Misc\CodeComplete.asm
 include About\About.asm
 include Block\Block.asm
+include Opt\Debug.asm
 
 .code
 
@@ -1147,10 +1148,12 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		fTimer,1
 		.if eax
 			invoke UpdateAll,LOCK_SOURCE_FILES
-			invoke ShowWindow,hDbg,SW_SHOWNA
+			invoke ShowWindow,hDbgReg,SW_SHOWNA
+			invoke ShowWindow,hTabDbg,SW_SHOWNA
 		.else
 			invoke UpdateAll,UNLOCK_SOURCE_FILES
-			invoke ShowWindow,hDbg,SW_HIDE
+			invoke ShowWindow,hDbgReg,SW_HIDE
+			invoke ShowWindow,hTabDbg,SW_HIDE
 		.endif
 		invoke OutputSelect,0
 		test	wpos.fView,4
@@ -1452,14 +1455,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		edx,RESIZEHT
 			add		rect.top,edx
 
+			mov		ecx,rect.right
+			add		ecx,RESIZEHT
+			mov		eax,wpos.wtfile
+			sub		eax,RESIZEHT
+			invoke MoveWindow,hTabDbg,ecx,rect.top,eax,20,TRUE
+
+
+			add		rect.top,20
 			mov		edx,rect.bottom
 			sub		edx,rect.top
 			mov		ecx,rect.right
 			add		ecx,RESIZEHT
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
-			invoke MoveWindow,hDbg,ecx,rect.top,eax,edx,TRUE
-
+			pushad
+			invoke MoveWindow,hDbgReg,ecx,rect.top,eax,edx,TRUE
+			popad
+			invoke MoveWindow,hDbgWatch,ecx,rect.top,eax,edx,TRUE
 			pop		rect.top
 		.endif
 		;Add height of tab window to top
@@ -1562,6 +1575,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hTabOut,TCM_SETCURSEL,eax,0
 		mov		tci.pszText,offset szImmediate
 		invoke SendMessage,hTabOut,TCM_INSERTITEM,999,addr tci
+		; Debug tab
+		invoke GetDlgItem,hWin,IDC_TABWATCH
+		mov		hTabDbg,eax
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.pszText,offset szRegister
+		invoke SendMessage,hTabDbg,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,hTabDbg,TCM_SETCURSEL,eax,0
+		mov		tci.pszText,offset szWatch
+		invoke SendMessage,hTabDbg,TCM_INSERTITEM,999,addr tci
 		;Window caption
 		invoke SetWinCaption,0
 		;Create line number font
@@ -1588,10 +1610,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hImmOut,WM_SETFONT,hFont,FALSE
 		invoke SendMessage,hImmOut,REM_SUBCLASS,0,offset ImmediateProc
 		mov		lpOldImmediateProc,eax
-		;Create debug window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBG,hInstance,0
-		mov		hDbg,eax
-		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
+		;Create debug register window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBGREG,hInstance,0
+		mov		hDbgReg,eax
+		invoke SendMessage,hDbgReg,WM_SETFONT,hFont,FALSE
+		;Create debug watch window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,hWnd,IDC_DBGWATCH,hInstance,0
+		mov		hDbgWatch,eax
+		invoke SendMessage,hDbgWatch,WM_SETFONT,hFont,FALSE
 		; Create debug tooltip
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
 		mov		hDbgTip,eax
@@ -1730,8 +1756,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.hOut,eax
 		mov		eax,hImmOut
 		mov		dbginf.hImmOut,eax
-		mov		eax,hDbg
-		mov		dbginf.hDbg,eax
+		mov		eax,hDbgReg
+		mov		dbginf.hDbgReg,eax
+		mov		eax,hDbgWatch
+		mov		dbginf.hDbgWatch,eax
 		mov		eax,hProperty
 		mov		dbginf.hPrp,eax
 		mov		eax,offset DebugCallback
@@ -2290,12 +2318,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.hOut,eax
 					mov		eax,hImmOut
 					mov		dbginf.hImmOut,eax
-					mov		eax,hDbg
-					mov		dbginf.hDbg,eax
+					mov		eax,hDbgReg
+					mov		dbginf.hDbgReg,eax
+					mov		eax,hDbgWatch
+					mov		dbginf.hDbgWatch,eax
 					mov		eax,hProperty
 					mov		dbginf.hPrp,eax
-					mov		eax,offset DebugCallback
-					mov		dbginf.lpCallBack,eax
+					mov		dbginf.lpNoDebug,offset NoDebug
+					mov		dbginf.lpCallBack,offset DebugCallback
 					invoke SetDebugInfo,addr dbginf
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
 					invoke UpdateAll,SET_BREAKPOINTS
@@ -2315,6 +2345,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_MAKE_MAINFILE
 				invoke lstrcpy,addr MainFile,addr FileName
 				mov		fTimer,1
+			.elseif eax==IDM_DEBUG_NODEBUG
+				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
 			.elseif eax==IDM_OPTION_CODE
 				invoke DialogBoxParam,hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_DIALOG
@@ -2592,6 +2624,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,hImmOut,SW_HIDE
 					invoke SetFocus,hOut
 				.endif
+			.endif
+		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABWATCH
+			invoke SendMessage,hTabDbg,TCM_GETCURSEL,0,0
+			mov		nDbgSel,eax
+			.if nDbgSel==1
+				invoke ShowWindow,hDbgWatch,SW_SHOWNA
+				invoke ShowWindow,hDbgReg,SW_HIDE
+			.else
+				invoke ShowWindow,hDbgReg,SW_SHOWNA
+				invoke ShowWindow,hDbgWatch,SW_HIDE
 			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS

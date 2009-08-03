@@ -1338,29 +1338,29 @@ WatchVars proc uses esi
 	LOCAL	buffer[256]:BYTE
 
 	mov		esi,offset szWatchList
+	.while byte ptr [esi]==VK_SPACE
+		inc		esi
+	.endw
+	mov		szWatchResult,0
 	.if byte ptr [esi]
-		invoke SetWindowText,hOut,addr szNULL
 		.while byte ptr [esi]
 			invoke strcpy,addr buffer,esi
 			.if word ptr buffer==':z' || word ptr buffer==':Z'
 				mov		var.IsSZ,1
 				invoke GetVarVal,addr buffer[2],dbg.prevline,TRUE
-			.elseif word ptr buffer==':s' || word ptr buffer==':S'
-				mov		var.IsSZ,2
-				invoke GetVarVal,addr buffer[2],dbg.prevline,TRUE
 			.else
 				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 			.endif
-			.if eax
-				invoke PutStringOut,addr outbuffer,hOut
-			.else
+			.if !eax
 				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
-				invoke PutStringOut,addr outbuffer,hOut
 			.endif
+			invoke strcat,addr szWatchResult,addr outbuffer
+			invoke strcat,addr szWatchResult,addr szCR
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
 	.endif
+	invoke SetWindowText,hDbgWatch,addr szWatchResult
 	ret
 
 WatchVars endp
