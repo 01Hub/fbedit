@@ -1124,9 +1124,12 @@ ResProc endp
 
 DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	nFirst:DWORD
 
 	mov		eax,nFunc
 	.if eax==CB_SELECTLINE
+		invoke SendMessage,hREd,EM_GETFIRSTVISIBLELINE,0,0
+		mov		nFirst,eax
 		mov		eax,wParam
 		dec		eax
 		invoke SendMessage,hREd,REM_SETHILITELINE,eax,2
@@ -1137,6 +1140,11 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		chrg.cpMax,eax
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+		invoke SendMessage,hREd,EM_GETFIRSTVISIBLELINE,0,0
+		.if eax!=nFirst
+			invoke SendMessage,hREd,REM_VCENTER,0,0
+			invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+		.endif
 		invoke SetFocus,hREd
 	.elseif eax==CB_DESELECTLINE
 		mov		eax,wParam

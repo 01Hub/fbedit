@@ -119,83 +119,6 @@ RegOut:
 
 ShowContext endp
 
-MapNoDebug proc uses ebx esi edi
-	LOCAL	buffer[256]:BYTE
-	LOCAL	buffer1[8]:BYTE
-	LOCAL	nInx:DWORD
-
-	mov		edi,dbg.hMemSymbol
-	mov		ebx,dbg.inxsymbol
-	xor		eax,eax
-	.while ebx
-		mov		[edi].DEBUGSYMBOL.NoDebug,ax
-		dec		ebx
-		add		edi,sizeof DEBUGSYMBOL
-	.endw
-	mov		ecx,dbg.inxline
-	mov		esi,dbg.hMemLine
-	.while ecx
-		mov		[esi].DEBUGLINE.NoDebug,al
-		dec		ecx
-		lea		esi,[esi+sizeof DEBUGLINE]
-	.endw
-	; Do not debug the proc line
-	mov		esi,dbg.hMemSymbol
-	mov		ecx,dbg.inxsymbol
-	.while ecx
-		.if [esi].DEBUGSYMBOL.nType=='p'
-			mov		eax,[esi].DEBUGSYMBOL.Address
-			mov		ebx,dbg.inxline
-			mov		edi,dbg.hMemLine
-			.while ebx
-				.if eax==[edi].DEBUGLINE.Address
-					mov		[edi].DEBUGLINE.NoDebug,TRUE
-					.break
-				.endif
-				dec		ebx
-				lea		edi,[edi+sizeof DEBUGLINE]
-			.endw
-		.endif
-		dec		ecx
-		lea		esi,[esi+sizeof DEBUGSYMBOL]
-	.endw
-	; Map procs that sould not be debugged
-	mov		esi,lpNoDebug
-	.while TRUE
-		.break .if !byte ptr [esi]
-		mov		edi,dbg.hMemSymbol
-		mov		ebx,dbg.inxsymbol
-		.while ebx
-			invoke strcmp,esi,addr [edi].DEBUGSYMBOL.szName
-			.if !eax
-				mov		[edi].DEBUGSYMBOL.NoDebug,1
-				mov		edx,[edi].DEBUGSYMBOL.Address
-				mov		eax,edx
-				add		edx,[edi].DEBUGSYMBOL.nSize
-				mov		ecx,dbg.inxline
-				push	esi
-				mov		esi,dbg.hMemLine
-				.while ecx
-					.if [esi].DEBUGLINE.Address>=eax
-						.if [esi].DEBUGLINE.Address<edx
-							mov		[esi].DEBUGLINE.NoDebug,1
-						.endif
-					.endif
-					dec		ecx
-					lea		esi,[esi+sizeof DEBUGLINE]
-				.endw
-				pop		esi
-			.endif
-			dec		ebx
-			lea		edi,[edi+sizeof DEBUGSYMBOL]
-		.endw
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-	.endw
-	ret
-
-MapNoDebug endp
-
 RestoreSourceByte proc uses ebx edi,Address:DWORD
 	
 	mov		eax,Address
@@ -413,6 +336,11 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			mov		dbg.hMemBP,eax
 			invoke ReadProcessMemory,dbg.hdbghand,dbg.minadr,dbg.hMemNoBP,ebx,0
 			invoke ReadProcessMemory,dbg.hdbghand,dbg.minadr,dbg.hMemBP,ebx,0
+			invoke MapBreakPoints
+			.if eax
+				invoke wsprintf,addr buffer,addr szUnhanfledBreakpoints,eax
+				invoke MessageBox,hOut,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
+			.endif
 			mov		ebx,dbg.hMemLine
 			mov		ecx,dbg.inxline
 			mov		edx,dbg.hMemBP
@@ -425,11 +353,6 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				lea		ebx,[ebx+sizeof DEBUGLINE]
 				dec		ecx
 			.endw
-			invoke MapBreakPoints
-			.if eax
-				invoke wsprintf,addr buffer,addr szUnhanfledBreakpoints,eax
-				invoke MessageBox,hOut,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
-			.endif
 			invoke SetBreakPoints
 			.if dbg.nErrors
 				mov		eax,dbg.hMemVar
