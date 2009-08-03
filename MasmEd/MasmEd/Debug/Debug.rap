@@ -72,12 +72,12 @@ Group=Added files,Assembly,Resources,Misc,Modules
 5=,,
 6=,
 [Size]
-2=0,0,0,0,14364
+2=0,0,0,0,13290
 1=0,0,0,0,1285
 3=0,0,0,0,2645
 4=0,0,0,0,16927
 7=0,0,0,0,24711
-8=0,0,0,0,4863
+8=0,0,0,0,4450
 5=0,0,0,0,11330
 6=0,0,0,0,2428
 [RADebugBP]
@@ -100,7 +100,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=3
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=24

@@ -79,8 +79,8 @@ MakeThreadProc proc uses ebx,Param:DWORD
 				invoke CloseHandle,make.hWrite
 				invoke LoadCursor,0,IDC_ARROW
 				invoke SetCursor,eax
-				invoke lstrcpy,addr buffer,addr CreateProcessError
-				invoke lstrcat,addr buffer,addr make.buffer
+				invoke strcpy,addr buffer,addr CreateProcessError
+				invoke strcat,addr buffer,addr make.buffer
 				invoke MessageBox,hWnd,addr buffer,addr szAppName,MB_ICONERROR+MB_OK
 				xor		eax,eax
 			.else
@@ -161,7 +161,7 @@ TestLine:
 			invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
 			invoke SendMessage,hOut,REM_GETBMID,nLn,0
 			mov		nErr,eax
-			invoke lstrlen,addr buffer
+			invoke strlen,addr buffer
 			.while eax && word ptr buffer[eax+1]!='\:'
 				dec		eax
 			.endw
@@ -210,18 +210,18 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.endif
 	mov		eax,nCommand
 	.if eax==IDM_MAKE_COMPILE
-		invoke lstrcpy,addr make.buffer,offset CompileRC
-		invoke lstrcat,addr make.buffer,addr szSpc
+		invoke strcpy,addr make.buffer,offset CompileRC
+		invoke strcat,addr make.buffer,addr szSpc
 		;Try FileName.rc
-		invoke lstrcpy,addr buffer2,lpFileName
+		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2
-		invoke lstrcat,addr buffer2,offset ExtRC
+		invoke strcat,addr buffer2,offset ExtRC
 		invoke GetFileAttributes,addr buffer2
 		.if eax==-1
 			;FileName.rc not found, try rsrc.rc
 			mov		lpFileName,offset rsrcrc
 			invoke RemoveFileName,addr buffer2
-			invoke lstrcat,addr buffer2,lpFileName
+			invoke strcat,addr buffer2,lpFileName
 			invoke GetFileAttributes,addr buffer2
 			.if eax==-1
 				;FileName.rc nor rsrc.rc found, give message and exit
@@ -230,64 +230,64 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 				jmp		Ex
 			.endif
 		.endif
-		invoke lstrcat,addr make.buffer,offset szQuote
-		invoke lstrcat,addr make.buffer,addr buffer2
-		invoke lstrcat,addr make.buffer,offset szQuote
+		invoke strcat,addr make.buffer,offset szQuote
+		invoke strcat,addr make.buffer,addr buffer2
+		invoke strcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtRes
 	.elseif eax==IDM_MAKE_ASSEMBLE
 		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 		.if eax
-			invoke lstrcpy,addr make.buffer,offset DbgAssemble
+			invoke strcpy,addr make.buffer,offset DbgAssemble
 		.else
-			invoke lstrcpy,addr make.buffer,offset Assemble
+			invoke strcpy,addr make.buffer,offset Assemble
 		.endif
-		invoke lstrcat,addr make.buffer,addr szSpc
-		invoke lstrcat,addr make.buffer,offset szQuote
-		invoke lstrcat,addr make.buffer,lpFileName
-		invoke lstrcat,addr make.buffer,offset szQuote
+		invoke strcat,addr make.buffer,addr szSpc
+		invoke strcat,addr make.buffer,offset szQuote
+		invoke strcat,addr make.buffer,lpFileName
+		invoke strcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtObj
 	.elseif eax==IDM_MAKE_LINK
 		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 		.if eax
-			invoke lstrcpy,addr make.buffer,offset DbgLink
+			invoke strcpy,addr make.buffer,offset DbgLink
 		.else
-			invoke lstrcpy,addr make.buffer,offset Link
+			invoke strcpy,addr make.buffer,offset Link
 		.endif
-		invoke lstrcat,addr make.buffer,addr szSpc
-		invoke lstrcpy,addr buffer2,lpFileName
+		invoke strcat,addr make.buffer,addr szSpc
+		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2
-		invoke lstrcat,addr buffer2,offset ExtObj
-		invoke lstrcat,addr make.buffer,offset szQuote
-		invoke lstrcat,addr make.buffer,addr buffer2
-		invoke lstrcat,addr make.buffer,offset szQuote
+		invoke strcat,addr buffer2,offset ExtObj
+		invoke strcat,addr make.buffer,offset szQuote
+		invoke strcat,addr make.buffer,addr buffer2
+		invoke strcat,addr make.buffer,offset szQuote
 		invoke RemoveFileExt,addr buffer2
-		invoke lstrcat,addr buffer2,offset ExtRes
+		invoke strcat,addr buffer2,offset ExtRes
 		invoke GetFileAttributes,addr buffer2
 		.if eax==-1
 			;FileName.res not found, try if rsrc.res exist
 			invoke RemoveFileName,addr buffer2
-			invoke lstrcat,addr buffer2,offset rsrcres
+			invoke strcat,addr buffer2,offset rsrcres
 			invoke GetFileAttributes,addr buffer2
 			.if eax!=-1
 				;rsrc.res found
-				invoke lstrcat,addr make.buffer,offset szSpc
-				invoke lstrcat,addr make.buffer,offset szQuote
-				invoke lstrcat,addr make.buffer,addr buffer2
-				invoke lstrcat,addr make.buffer,offset szQuote
+				invoke strcat,addr make.buffer,offset szSpc
+				invoke strcat,addr make.buffer,offset szQuote
+				invoke strcat,addr make.buffer,addr buffer2
+				invoke strcat,addr make.buffer,offset szQuote
 			.endif
 		.else
 			;FileName.res found
-			invoke lstrcat,addr make.buffer,offset szSpc
-			invoke lstrcat,addr make.buffer,offset szQuote
-			invoke lstrcat,addr make.buffer,addr buffer2
-			invoke lstrcat,addr make.buffer,offset szQuote
+			invoke strcat,addr make.buffer,offset szSpc
+			invoke strcat,addr make.buffer,offset szQuote
+			invoke strcat,addr make.buffer,addr buffer2
+			invoke strcat,addr make.buffer,offset szQuote
 		.endif
 		mov		eax,offset ExtExe
 	.elseif eax==IDM_MAKE_RUN
 		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Exec
-		invoke lstrcpy,addr make.buffer,lpFileName
+		invoke strcpy,addr make.buffer,lpFileName
 		invoke RemoveFileExt,addr make.buffer
-		invoke lstrcat,addr make.buffer,offset ExtExe
+		invoke strcat,addr make.buffer,offset ExtExe
 		xor		eax,eax
 	.else
 		jmp		Ex
@@ -295,10 +295,10 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.if eax
 		;Delete old file
 		push	eax
-		invoke lstrcpy,addr buffer2,lpFileName
+		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2
 		pop		eax
-		invoke lstrcat,addr buffer2,eax
+		invoke strcat,addr buffer2,eax
 		invoke GetFileAttributes,addr buffer2
 		.if eax!=INVALID_HANDLE_VALUE
 			invoke DeleteFile,addr buffer2

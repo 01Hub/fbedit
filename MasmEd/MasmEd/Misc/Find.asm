@@ -37,11 +37,11 @@ AddCodeFile:
 	mov		ebx,tci.lParam
 	push	esi
 	lea		esi,[ebx].TABMEM.filename
-	invoke lstrlen,esi
+	invoke strlen,esi
 	lea		esi,[esi+eax-4]
-	invoke lstrcmpi,esi,offset szFtAsm
+	invoke strcmpi,esi,offset szFtAsm
 	.if eax
-		invoke lstrcmpi,esi,offset szFtInc
+		invoke strcmpi,esi,offset szFtInc
 	.endif
 	.if !eax
 		mov		eax,[ebx].TABMEM.hwnd
@@ -211,12 +211,12 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if fres!=-1
 						invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
 						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset replacebuff
-						invoke lstrlen,offset replacebuff
+						invoke strlen,offset replacebuff
 						push	eax
 						add		eax,ft.chrgText.cpMin
 						mov		ft.chrgText.cpMax,eax
 						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
-						invoke lstrlen,offset findbuff
+						invoke strlen,offset findbuff
 						pop		edx
 						sub		edx,eax
 						.if ndir==0
@@ -410,7 +410,7 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						and		eax,FR_HEX
 						or		eax,TRUE
 						invoke SendMessage,hREd,EM_REPLACESEL,eax,offset replacebuff
-						invoke lstrlen,offset replacebuff
+						invoke strlen,offset replacebuff
 						test	fr,FR_HEX
 						.if ZERO?
 							add		eax,eax

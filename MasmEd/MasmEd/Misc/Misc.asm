@@ -584,12 +584,12 @@ SetWinCaption proc lpFileName:DWORD
 	LOCAL	buffer1[4]:BYTE
 
 	;Add filename to windows caption
-	invoke lstrcpy,addr buffer,offset szAppName
+	invoke strcpy,addr buffer,offset szAppName
 	.if lpFileName
 		mov		eax,' - '
 		mov		dword ptr buffer1,eax
-		invoke lstrcat,addr buffer,addr buffer1
-		invoke lstrcat,addr buffer,lpFileName
+		invoke strcat,addr buffer,addr buffer1
+		invoke strcat,addr buffer,lpFileName
 	.endif
 	invoke SetWindowText,hWnd,addr buffer
 	ret
@@ -630,7 +630,7 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 	inc		edx
 	invoke DwToAscii,edx,addr buffer[4]
 	mov		dword ptr buffer,' :nL'
-	invoke lstrlen,addr buffer
+	invoke strlen,addr buffer
 	mov		dword ptr buffer[eax],'soP '
 	mov		dword ptr buffer[eax+4],' :'
 	mov		edx,nPos
@@ -657,12 +657,12 @@ ShowProc proc uses esi,nLine:DWORD
 			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
 			.if eax
 				mov		esi,eax
-				invoke lstrcpy,addr buffer,esi
-				invoke lstrlen,esi
+				invoke strcpy,addr buffer,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				.if byte ptr [esi]
-					invoke lstrcat,addr buffer,addr szComma
-					invoke lstrcat,addr buffer,esi
+					invoke strcat,addr buffer,addr szComma
+					invoke strcat,addr buffer,esi
 				.endif
 			.endif
 		.endif
@@ -676,25 +676,25 @@ ShowSession proc
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	.if MainFile
-		invoke lstrcpy,addr buffer,addr szMainFile
+		invoke strcpy,addr buffer,addr szMainFile
 		mov		dword ptr buffer[4],' :'
-		invoke lstrlen,addr MainFile
+		invoke strlen,addr MainFile
 		.while MainFile[eax-1]!='\'
 			dec		eax
 		.endw
-		invoke lstrcat,addr buffer,addr MainFile[eax]
+		invoke strcat,addr buffer,addr MainFile[eax]
 	.else
 		mov		buffer,0
 	.endif
 	invoke SendMessage,hSbr,SB_SETTEXT,1,addr buffer
 	.if szSessionFile
-		invoke lstrcpy,addr buffer,addr szSession
+		invoke strcpy,addr buffer,addr szSession
 		mov		dword ptr buffer[7],' :'
-		invoke lstrlen,addr szSessionFile
+		invoke strlen,addr szSessionFile
 		.while szSessionFile[eax-1]!='\'
 			dec		eax
 		.endw
-		invoke lstrcat,addr buffer,addr szSessionFile[eax]
+		invoke strcat,addr buffer,addr szSessionFile[eax]
 	.else
 		mov		buffer,0
 	.endif
@@ -705,7 +705,7 @@ ShowSession endp
 
 RemoveFileExt proc lpFileName:DWORD
 
-	invoke lstrlen,lpFileName
+	invoke strlen,lpFileName
 	mov		edx,lpFileName
 	.while eax
 		dec		eax
@@ -720,7 +720,7 @@ RemoveFileExt endp
 
 RemoveFileName proc lpFileName:DWORD
 
-	invoke lstrlen,lpFileName
+	invoke strlen,lpFileName
 	mov		edx,lpFileName
 	.while eax
 		dec		eax
@@ -735,8 +735,8 @@ RemoveFileName endp
 
 MakeKey proc lpszStr:DWORD,nInx:DWORD,lpszKey:DWORD
 
-	invoke lstrcpy,lpszKey,lpszStr
-	invoke lstrlen,lpszKey
+	invoke strcpy,lpszKey,lpszStr
+	invoke strlen,lpszKey
 	add		eax,lpszKey
 	invoke DwToAscii,nInx,eax
 	ret
@@ -774,8 +774,8 @@ SetKeyWords proc uses esi edi
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
-		invoke lstrcpy,edi,eax
-		invoke lstrlen,edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
@@ -790,7 +790,7 @@ SetKeyWords proc uses esi edi
 	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	mov		esi,eax
 	.while esi
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		mov		byte ptr [edi],'^'
 		inc		edi
@@ -818,8 +818,8 @@ SetKeyWords proc uses esi edi
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
-		invoke lstrcpy,edi,eax
-		invoke lstrlen,edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
@@ -835,8 +835,8 @@ SetKeyWords proc uses esi edi
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
-		invoke lstrcpy,edi,eax
-		invoke lstrlen,edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
@@ -858,8 +858,8 @@ SetKeyWords proc uses esi edi
 			mov		byte ptr [edi],'^'
 			inc		edi
 		.endif
-		invoke lstrcpy,edi,eax
-		invoke lstrlen,edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
@@ -906,7 +906,7 @@ IndentComment proc uses esi,nChr:DWORD,fN:DWORD
 			mov		chr.cpMax,eax
 			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chr
 			invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
-			invoke lstrlen,addr buffer
+			invoke strlen,addr buffer
 			add		ochr.cpMax,eax
 			jmp		nxt
 		.else
@@ -965,7 +965,7 @@ GetSelText proc lpBuff:DWORD
 	.if !eax
 		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
 		.if buffer
-			invoke lstrcpy,lpBuff,addr buffer
+			invoke strcpy,lpBuff,addr buffer
 		.endif
 	.elseif eax<256
 		invoke SendMessage,hREd,EM_GETSELTEXT,0,lpBuff
@@ -1143,7 +1143,7 @@ iniInStr endp
 
 IsFileCodeFile proc lpFile:DWORD
 
-	invoke lstrlen,lpFile
+	invoke strlen,lpFile
 	mov		edx,lpFile
 	lea		edx,[edx+eax-4]
 	mov		edx,[edx]
@@ -1260,9 +1260,9 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				.if [ebx].TABMEM.nchange
 					invoke ReleaseCapture
 					mov		[ebx].TABMEM.nchange,0
-					invoke lstrcpy,addr LineTxt,addr szChanged
-					invoke lstrcat,addr LineTxt,addr [ebx].TABMEM.filename
-					invoke lstrcat,addr LineTxt,addr szReopen
+					invoke strcpy,addr LineTxt,addr szChanged
+					invoke strcat,addr LineTxt,addr [ebx].TABMEM.filename
+					invoke strcat,addr LineTxt,addr szReopen
 					invoke MessageBox,hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
 					.if eax==IDYES
 						invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
@@ -1280,9 +1280,9 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					mov		[ebx].TABMEM.nchange,0
 				.endif
 			.elseif eax==SAVE_SESSION
-				invoke lstrcmp,addr [ebx].TABMEM.filename, addr szNewFile
+				invoke strcmp,addr [ebx].TABMEM.filename, addr szNewFile
 				.if eax
-					invoke lstrcpy,addr LineTxt,addr tmpbuff
+					invoke strcpy,addr LineTxt,addr tmpbuff
 					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 					.if eax==IDC_RAE
 						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
@@ -1297,10 +1297,10 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					.endif
 					mov		edx,eax
 					invoke DwToAscii,edx,addr tmpbuff
-					invoke lstrcat,addr tmpbuff,addr szComma
-					invoke lstrcat,addr tmpbuff,addr [ebx].TABMEM.filename
-					invoke lstrcat,addr tmpbuff,addr szComma
-					invoke lstrcat,addr tmpbuff,addr LineTxt
+					invoke strcat,addr tmpbuff,addr szComma
+					invoke strcat,addr tmpbuff,addr [ebx].TABMEM.filename
+					invoke strcat,addr tmpbuff,addr szComma
+					invoke strcat,addr tmpbuff,addr LineTxt
 				.endif
 			.elseif eax==CLEAR_ERRORS
 				mov		ErrID,0

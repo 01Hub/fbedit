@@ -70,6 +70,11 @@ SetHelpMenu					PROTO
 SetDebugInfo				PROTO :DWORD
 DebugCommand				PROTO :DWORD,:DWORD,:DWORD
 
+strcpy						PROTO :DWORD,:DWORD
+strcat						PROTO :DWORD,:DWORD
+strcmp						PROTO :DWORD,:DWORD
+strlen						PROTO :DWORD
+
 HT_DEBUG					equ 206
 
 ; Debug functions

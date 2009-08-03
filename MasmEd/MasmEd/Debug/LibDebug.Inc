@@ -383,6 +383,7 @@ szA								db 'A',0
 szW								db 'W',0
 szPrppdl						db 'pdl',0
 szPrpTWc						db 'TWc',0
+szPrpp							db 'p',0
 
 ;#########################################################################
 ; Globals

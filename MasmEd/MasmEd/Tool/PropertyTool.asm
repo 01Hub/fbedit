@@ -62,13 +62,13 @@ SetPropertyDefs proc uses esi
 	mov		esi,offset ignorefirstword
 	.while byte ptr [esi]
 		invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_LINEFIRSTWORD,esi
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	mov		esi,offset ignoreparam
 	.while byte ptr [esi]
 		invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_PROCPARAM,esi
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_PTR,offset datatypeptr
@@ -87,8 +87,8 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeuniono
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
-		invoke lstrcpy,addr deftypedata.szWord,esi
-		invoke lstrlen,esi
+		invoke strcpy,addr deftypedata.szWord,esi
+		invoke strlen,esi
 		mov		deftypedata.len,al
 		lea		esi,[esi+eax+1]
 		invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypedata
@@ -121,9 +121,9 @@ SetPropertyDefs proc uses esi
 	ret
 
 MakePath:
-	invoke lstrcpy,addr buffer,addr AppPath
-	invoke lstrcat,addr buffer,addr szBackSlash
-	invoke lstrcat,addr buffer,esi
+	invoke strcpy,addr buffer,addr AppPath
+	invoke strcat,addr buffer,addr szBackSlash
+	invoke strcat,addr buffer,esi
 	retn
 
 SetPropertyDefs endp
@@ -155,7 +155,7 @@ DumpStruct proc uses esi
 		mov		esi,eax
 		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
 		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szComma
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
 		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCr

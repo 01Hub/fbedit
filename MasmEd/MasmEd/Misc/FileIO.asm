@@ -30,7 +30,7 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
 			mov		hMem,eax
 			invoke SendMessage,hResEd,PRO_EXPORT,0,hMem
-			invoke lstrlen,hMem
+			invoke strlen,hMem
 			mov		nSize,eax
 			invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
 			invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
@@ -60,8 +60,8 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 		invoke TabToolSetChanged,hWin,FALSE
    		mov		eax,FALSE
 	.else
-		invoke lstrcpy,offset tmpbuff,offset szSaveFileFail
-		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke strcpy,offset tmpbuff,offset szSaveFileFail
+		invoke strcat,offset tmpbuff,lpFileName
 		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
@@ -98,7 +98,7 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	push	hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
-	invoke lstrcpy,addr buffer,addr FileName
+	invoke strcpy,addr buffer,addr FileName
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -125,7 +125,7 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 		invoke SaveFile,hWin,addr buffer
 		.if !eax
 			;The file was saved
-			invoke lstrcpy,offset FileName,addr buffer
+			invoke strcpy,offset FileName,addr buffer
 			invoke SetWinCaption,offset FileName
 			invoke TabToolGetInx,hWin
 			invoke TabToolSetText,eax,offset FileName
@@ -141,7 +141,7 @@ SaveEditAs endp
 SaveEdit proc hWin:DWORD,lpFileName:DWORD
 
 	;Check if filrname is (Untitled)
-	invoke lstrcmp,lpFileName,offset szNewFile
+	invoke strcmp,lpFileName,offset szNewFile
 	.if eax
 		invoke SaveFile,hWin,lpFileName
 	.else
@@ -157,11 +157,11 @@ WantToSave proc hWin:DWORD,lpFileName:DWORD
 
 	invoke SendMessage,hWin,EM_GETMODIFY,0,0
 	.if eax
-		invoke lstrcpy,addr buffer,offset szWannaSave
-		invoke lstrcat,addr buffer,lpFileName
+		invoke strcpy,addr buffer,offset szWannaSave
+		invoke strcat,addr buffer,lpFileName
 		mov		ax,'?'
 		mov		word ptr buffer1,ax
-		invoke lstrcat,addr buffer,addr buffer1
+		invoke strcat,addr buffer,addr buffer1
 		invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_YESNOCANCEL or MB_ICONQUESTION
 		.if eax==IDYES
 			invoke SaveEdit,hWin,lpFileName
@@ -185,18 +185,18 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
 		;Copy buffer to FileName
-		invoke lstrcpy,offset FileName,lpFileName
+		invoke strcpy,offset FileName,lpFileName
 		;Set word group
-		invoke lstrlen,offset FileName
+		invoke strlen,offset FileName
 		mov		ebx,15
 		.if eax>3
 			mov		esi,eax
 			xor		ebx,ebx
-			invoke lstrcmpi,addr [esi+offset FileName-4],offset szFtAsm
+			invoke strcmpi,addr [esi+offset FileName-4],offset szFtAsm
 			.if eax
-				invoke lstrcmpi,addr [esi+offset FileName-4],offset szFtInc
+				invoke strcmpi,addr [esi+offset FileName-4],offset szFtInc
 				.if eax
-					invoke lstrcmpi,addr [esi+offset FileName-3],offset szFtRc
+					invoke strcmpi,addr [esi+offset FileName-3],offset szFtRc
 					.if !eax
 						;RC File
 						mov		ebx,2
@@ -231,8 +231,8 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		.endif
 		mov		eax,FALSE
 	.else
-		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
-		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke strcpy,offset tmpbuff,offset szOpenFileFail
+		invoke strcat,offset tmpbuff,lpFileName
 		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
@@ -250,7 +250,7 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
 		;Copy buffer to FileName
-		invoke lstrcpy,offset FileName,lpFileName
+		invoke strcpy,offset FileName,lpFileName
 		;stream the text into the RAHexEd control
 		push	hFile
 		pop		editstream.dwCookie
@@ -264,8 +264,8 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SetWinCaption,offset FileName
 		mov		eax,FALSE
 	.else
-		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
-		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke strcpy,offset tmpbuff,offset szOpenFileFail
+		invoke strcat,offset tmpbuff,lpFileName
 		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
@@ -275,7 +275,7 @@ LoadHexFile endp
 
 IsFileResource proc lpFile:DWORD
 
-	invoke lstrlen,lpFile
+	invoke strlen,lpFile
 	mov		edx,lpFile
 	lea		edx,[edx+eax-3]
 	mov		edx,[edx]
@@ -309,8 +309,8 @@ LoadRCFile proc lpFileName:DWORD
 		invoke SendMessage,hResEd,PRO_OPEN,lpFileName,hMem
 		mov		eax,TRUE
 	.else
-		invoke lstrcpy,offset tmpbuff,offset szOpenFileFail
-		invoke lstrcat,offset tmpbuff,lpFileName
+		invoke strcpy,offset tmpbuff,offset szOpenFileFail
+		invoke strcat,offset tmpbuff,lpFileName
 		invoke MessageBox,hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
@@ -322,14 +322,14 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 	LOCAL	buffer[MAX_PATH*2]:BYTE
 	LOCAL	fCtrl:DWORD
 
-	invoke lstrcpy,addr buffer,lpFileName
+	invoke strcpy,addr buffer,lpFileName
 	invoke CharUpper,addr buffer
 	xor		eax,eax
 	.if fType==0
 		invoke GetKeyState,VK_CONTROL
 		and		eax,80h
 		.if !eax
-			invoke lstrlen,addr buffer
+			invoke strlen,addr buffer
 			mov		eax,dword ptr buffer[eax-4]
 			.if eax=='EXE.' || eax=='TAB.' || eax=='MOC.'
 				invoke WinExec,lpFileName,SW_SHOWNORMAL
@@ -339,7 +339,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 		.endif
 	.endif
 	mov		fCtrl,eax
-	invoke lstrcpy,offset FileName,lpFileName
+	invoke strcpy,offset FileName,lpFileName
 	invoke UpdateAll,IS_OPEN
 	.if !eax
 		invoke GetFileAttributes,lpFileName
@@ -358,7 +358,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 							invoke TabToolGetInx,hREd
 							invoke TabToolSetText,eax,lpFileName
 							invoke SetWinCaption,lpFileName
-							invoke lstrcpy,offset FileName,lpFileName
+							invoke strcpy,offset FileName,lpFileName
 						.endif
 					.endif
 				.else
@@ -371,13 +371,13 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 						invoke SendMessage,hWnd,WM_SIZE,0,0
 						invoke ShowWindow,hREd,SW_SHOW
 						invoke SetWinCaption,lpFileName
-						invoke lstrcpy,offset FileName,lpFileName
+						invoke strcpy,offset FileName,lpFileName
 					.endif
 				.endif
 			.else
 				invoke LoadCursor,0,IDC_WAIT
 				invoke SetCursor,eax
-				invoke lstrlen,addr buffer
+				invoke strlen,addr buffer
 				mov		eax,dword ptr buffer[eax-4]
 				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.'
 					invoke CreateRAEdit
@@ -407,8 +407,8 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 				invoke SetCursor,eax
 			.endif
 		.else
-			invoke lstrcpy,addr buffer,offset szOpenFileFail
-			invoke lstrcat,addr buffer,lpFileName
+			invoke strcpy,addr buffer,offset szOpenFileFail
+			invoke strcat,addr buffer,lpFileName
 			invoke MessageBox,hWnd,addr buffer,offset szAppName,MB_OK or MB_ICONERROR
 		.endif
 	.endif
@@ -485,16 +485,16 @@ MakeSession proc
 
 	mov		byte ptr tmpbuff,0
 	invoke UpdateAll,SAVE_SESSION
-	invoke lstrlen,addr tmpbuff
+	invoke strlen,addr tmpbuff
 	.if eax
 		mov		byte ptr tmpbuff[eax-1],0
 	.endif
-	invoke lstrcpy,addr LineTxt,addr tmpbuff
+	invoke strcpy,addr LineTxt,addr tmpbuff
 	invoke SendMessage,hTab,TCM_GETCURSEL,0,0
 	mov		edx,eax
 	invoke DwToAscii,edx,addr tmpbuff
-	invoke lstrcat,addr tmpbuff,addr szComma
-	invoke lstrcat,addr tmpbuff,addr LineTxt
+	invoke strcat,addr tmpbuff,addr szComma
+	invoke strcat,addr tmpbuff,addr LineTxt
 	ret
 
 MakeSession endp
@@ -516,7 +516,7 @@ WriteSessionFile proc lpszFile:DWORD
 	or		eax,30h
 	mov		dword ptr buffer,eax
 	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
-	invoke lstrcpy,addr szSessionFile,lpszFile
+	invoke strcpy,addr szSessionFile,lpszFile
 	ret
 
 WriteSessionFile endp
@@ -524,8 +524,8 @@ WriteSessionFile endp
 AskSaveSessionFile proc
 
 	.if byte ptr szSessionFile
-		invoke lstrcpy,addr tmpbuff,addr szSaveSession
-		invoke lstrcat,addr tmpbuff,addr szSessionFile
+		invoke strcpy,addr tmpbuff,addr szSaveSession
+		invoke strcat,addr tmpbuff,addr szSessionFile
 		invoke MessageBox,hWnd,addr tmpbuff,addr szSession,MB_YESNOCANCEL or MB_ICONEXCLAMATION
 		.if eax==IDYES
 			invoke WriteSessionFile,addr szSessionFile
@@ -553,7 +553,7 @@ SaveSessionFile proc
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
 	mov		ofn.lpstrFilter,offset MESFilterString
-	invoke lstrcpy,addr buffer,addr szSessionFile
+	invoke strcpy,addr buffer,addr szSessionFile
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -578,7 +578,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	mov		esi,offset tmpbuff
 	.if fReg && byte ptr [esi]
 		call	GetItem
-		invoke lstrcpy,addr szSessionFile,addr buffer
+		invoke strcpy,addr szSessionFile,addr buffer
 	.endif
 	mov		nInx,-2
 	.while byte ptr [esi]
@@ -663,26 +663,26 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr DbgAssemble,sizeof DbgAssemble,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr DbgLink,sizeof DbgLink,lpszFile
 	.if !CompileRC
-		invoke lstrcpy,addr CompileRC,addr defCompileRC
+		invoke strcpy,addr CompileRC,addr defCompileRC
 	.endif
 	.if !Assemble
-		invoke lstrcpy,addr Assemble,addr defAssemble
+		invoke strcpy,addr Assemble,addr defAssemble
 	.endif
 	.if !Link
-		invoke lstrcpy,addr Link,addr defLink
+		invoke strcpy,addr Link,addr defLink
 	.endif
 	.if !DbgAssemble
-		invoke lstrcpy,addr DbgAssemble,addr defDbgAssemble
+		invoke strcpy,addr DbgAssemble,addr defDbgAssemble
 	.endif
 	.if !DbgLink
-		invoke lstrcpy,addr DbgLink,addr defDbgLink
+		invoke strcpy,addr DbgLink,addr defDbgLink
 	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	.if eax
 		mov		eax,1
 	.endif
 	invoke SendMessage,hCbo,CB_SETCURSEL,eax,0
-	invoke lstrcpy,addr szSessionFile,lpszFile
+	invoke strcpy,addr szSessionFile,lpszFile
 	ret
 
 ReadSessionFile endp
@@ -731,8 +731,8 @@ OpenSessionFile endp
 SetCurDir proc lpFileName:DWORD,fFileBrowse:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke lstrcpy,addr buffer,lpFileName
-	invoke lstrlen,addr buffer
+	invoke strcpy,addr buffer,lpFileName
+	invoke strlen,addr buffer
 	.while byte ptr buffer[eax]!='\' && eax
 		dec		eax
 	.endw
@@ -773,7 +773,7 @@ OpenCommandLine proc uses ebx,lpCmnd:DWORD
 		.endif
 		mov		byte ptr [edx],0
 		.if buffer
-			invoke lstrlen,addr buffer
+			invoke strlen,addr buffer
 			lea		eax,buffer[eax-4]
 			mov		eax,[eax]
 			and		eax,05F5F5FFFh

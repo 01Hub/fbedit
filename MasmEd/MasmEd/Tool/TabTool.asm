@@ -50,8 +50,8 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 				invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
 				.break .if !eax
 				mov		ebx,tci.lParam
-				invoke lstrcpy,addr buffer,addr [ebx].TABMEM.filename
-				invoke lstrlen,addr buffer
+				invoke strcpy,addr buffer,addr [ebx].TABMEM.filename
+				invoke strlen,addr buffer
 				.while eax
 					.if byte ptr buffer[eax]=='\'
 						mov		byte ptr buffer[eax],0
@@ -124,8 +124,8 @@ SetNotify endp
 AddPath proc uses esi edi,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke lstrcpy,addr buffer,lpFileName
-	invoke lstrlen,addr buffer
+	invoke strcpy,addr buffer,lpFileName
+	invoke strlen,addr buffer
 	.while eax
 		.if byte ptr buffer[eax]=='\'
 			mov		byte ptr buffer[eax],0
@@ -139,7 +139,7 @@ AddPath proc uses esi edi,lpFileName:DWORD
 		mov		esi,fn.lpPath
 		.while [esi].FILENOTIFYPATH.path
 			.if [esi].FILENOTIFYPATH.nCount
-				invoke lstrcmp,addr [esi].FILENOTIFYPATH.path,addr buffer
+				invoke strcmp,addr [esi].FILENOTIFYPATH.path,addr buffer
 				or		eax,eax
 				je		Found
 			.elseif !edi
@@ -150,7 +150,7 @@ AddPath proc uses esi edi,lpFileName:DWORD
 		.if edi
 			mov		esi,edi
 		.endif
-		invoke lstrcpy,addr [esi].FILENOTIFYPATH.path,addr buffer
+		invoke strcpy,addr [esi].FILENOTIFYPATH.path,addr buffer
 	  Found:
 		inc		[esi].FILENOTIFYPATH.nCount
 		.if [esi].FILENOTIFYPATH.nCount==1
@@ -164,8 +164,8 @@ AddPath endp
 DelPath proc uses esi,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke lstrcpy,addr buffer,lpFileName
-	invoke lstrlen,addr buffer
+	invoke strcpy,addr buffer,lpFileName
+	invoke strlen,addr buffer
 	.while eax
 		.if byte ptr buffer[eax]=='\'
 			mov		byte ptr buffer[eax],0
@@ -178,7 +178,7 @@ DelPath proc uses esi,lpFileName:DWORD
 		mov		esi,fn.lpPath
 		.while [esi].FILENOTIFYPATH.path
 			.if [esi].FILENOTIFYPATH.nCount
-				invoke lstrcmp,addr [esi].FILENOTIFYPATH.path,addr buffer
+				invoke strcmp,addr [esi].FILENOTIFYPATH.path,addr buffer
 				or		eax,eax
 				je		Found
 			.endif
@@ -243,8 +243,8 @@ TabToolSetText proc nInx:DWORD,lpFileName:DWORD
 	mov		tci.imask,TCIF_PARAM
 	invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
 	mov		eax,tci.lParam
-	invoke lstrcpy,addr [eax].TABMEM.filename,lpFileName
-	invoke lstrlen,lpFileName
+	invoke strcpy,addr [eax].TABMEM.filename,lpFileName
+	invoke strlen,lpFileName
 	mov		ecx,eax
 	mov		edx,lpFileName
 	.while ecx
@@ -280,7 +280,7 @@ TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 			.break .if eax==hWin
 		.endif
 	.endw
-	invoke lstrlen,addr buffer
+	invoke strlen,addr buffer
 	.if fChanged
 		.if buffer[eax-1]!='*'
 			mov		word ptr buffer[eax],'*'
@@ -310,7 +310,7 @@ TabToolActivate proc uses ebx
 	mov		ebx,tci.lParam
 	mov		eax,[ebx].TABMEM.hwnd
 	mov		hREd,eax
-	invoke lstrcpy,offset FileName,addr [ebx].TABMEM.filename
+	invoke strcpy,offset FileName,addr [ebx].TABMEM.filename
 	invoke SetWinCaption,offset FileName
 	invoke SendMessage,hWnd,WM_SIZE,0,0
 	invoke ShowWindow,hREd,SW_SHOW
@@ -335,8 +335,8 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	mov		ebx,eax
 	mov		eax,hWin
 	mov		[ebx].TABMEM.hwnd,eax
-	invoke lstrcpy,addr [ebx].TABMEM.filename,lpFileName
-	invoke lstrlen,lpFileName
+	invoke strcpy,addr [ebx].TABMEM.filename,lpFileName
+	invoke strlen,lpFileName
 	mov		ecx,eax
 	mov		edx,lpFileName
 	.while ecx
@@ -348,7 +348,7 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	lea		eax,[edx+ecx]
 	mov		tci.pszText,eax
 	mov		tci.cchTextMax,20
-	invoke lstrlen,lpFileName
+	invoke strlen,lpFileName
 	add		eax,lpFileName
 	sub		eax,4
 	mov		eax,[eax]

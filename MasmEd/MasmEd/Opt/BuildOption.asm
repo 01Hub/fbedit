@@ -33,10 +33,10 @@ ResetEnvironment proc uses esi edi
 	.if	edi
 		.while byte	ptr	[edi]
 			mov		esi,edi
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			invoke SetEnvironmentVariable,edi,esi
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			mov		edi,esi
 		.endw
@@ -53,16 +53,16 @@ SetVar proc uses edi,lpSave:DWORD,lpName:DWORD,lpValue:DWORD
 	mov		edi,lpSave
 	mov		byte ptr tmpbuff[4096],0
 	invoke GetEnvironmentVariable,lpName,addr tmpbuff[4096],1024
-	invoke lstrcpy,edi,lpName
-	invoke lstrlen,edi
+	invoke strcpy,edi,lpName
+	invoke strlen,edi
 	lea		edi,[edi+eax+1]
-	invoke lstrcpy,edi,addr tmpbuff[4096]
-	invoke lstrlen,edi
+	invoke strcpy,edi,addr tmpbuff[4096]
+	invoke strlen,edi
 	lea		edi,[edi+eax+1]
-	invoke lstrcpy,addr tmpbuff,lpValue
+	invoke strcpy,addr tmpbuff,lpValue
 	.if byte ptr tmpbuff[4096]
-		invoke lstrcat,addr tmpbuff,addr szSemi
-		invoke lstrcat,addr tmpbuff,addr tmpbuff[4096]
+		invoke strcat,addr tmpbuff,addr szSemi
+		invoke strcat,addr tmpbuff,addr tmpbuff[4096]
 	.endif
 	invoke SetEnvironmentVariable,lpName,addr tmpbuff
 	mov		eax,edi
@@ -104,15 +104,15 @@ PathOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke GetDlgItemText,hWin,IDC_EDTBIN,addr PathBin,240
-				invoke lstrlen,addr PathBin
+				invoke strlen,addr PathBin
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szPathBin,0,REG_SZ,addr PathBin,eax
 				invoke GetDlgItemText,hWin,IDC_EDTINC,addr PathInc,240
-				invoke lstrlen,addr PathInc
+				invoke strlen,addr PathInc
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szPathInc,0,REG_SZ,addr PathInc,eax
 				invoke GetDlgItemText,hWin,IDC_EDTLIB,addr PathLib,240
-				invoke lstrlen,addr PathLib
+				invoke strlen,addr PathLib
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szPathLib,0,REG_SZ,addr PathLib,eax
 				invoke SetEnvironment
@@ -157,23 +157,23 @@ BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke GetDlgItemText,hWin,IDC_EDTRES,addr CompileRC,240
-				invoke lstrlen,addr CompileRC
+				invoke strlen,addr CompileRC
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szCompileRC,0,REG_SZ,addr CompileRC,eax
 				invoke GetDlgItemText,hWin,IDC_EDTASM,addr Assemble,240
-				invoke lstrlen,addr Assemble
+				invoke strlen,addr Assemble
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szAssemble,0,REG_SZ,addr Assemble,eax
 				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr Link,240
-				invoke lstrlen,addr Link
+				invoke strlen,addr Link
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szLink,0,REG_SZ,addr Link,eax
 				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr DbgAssemble,240
-				invoke lstrlen,addr DbgAssemble
+				invoke strlen,addr DbgAssemble
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szDbgAssemble,0,REG_SZ,addr DbgAssemble,eax
 				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr DbgLink,240
-				invoke lstrlen,addr DbgLink
+				invoke strlen,addr DbgLink
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szDbgLink,0,REG_SZ,addr DbgLink,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

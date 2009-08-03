@@ -147,7 +147,7 @@ EditUpdate proc uses esi,hWin:HWND
 
 	.if fUpdate
 		invoke GetDlgItemText,hWin,IDC_EDTMEITEM,addr buffer,256
-		invoke lstrlen,addr buffer
+		invoke strlen,addr buffer
 		lea		esi,buffer
 		add		esi,eax
 		mov		byte ptr [esi],09h
@@ -189,8 +189,8 @@ MenuOptionSave proc uses esi edi,hWin:HWND
 			.else
 				jmp		@b
 			.endif
-			invoke lstrcpy,addr mnu.szcap,addr buffer
-			invoke lstrcpy,addr mnu.szcmnd,esi
+			invoke strcpy,addr mnu.szcap,addr buffer
+			invoke strcpy,addr mnu.szcmnd,esi
 			invoke MakeKey,lpAppName,nReg,addr buffer1
 			invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr mnu,sizeof mnu
 			inc		nReg
@@ -242,9 +242,9 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr mnu,addr lpcbData
 			movzx	eax,mnu.szcap
 			.if eax
-				invoke lstrcpy,addr buffer1,addr mnu.szcap
-				invoke lstrcat,addr buffer1,addr szTab
-				invoke lstrcat,addr buffer1,addr mnu.szcmnd
+				invoke strcpy,addr buffer1,addr mnu.szcap
+				invoke strcat,addr buffer1,addr szTab
+				invoke strcat,addr buffer1,addr mnu.szcmnd
 				invoke SendDlgItemMessage,hWin,IDC_LSTME,LB_ADDSTRING,0,addr buffer1
 			.endif
 			inc		nInx

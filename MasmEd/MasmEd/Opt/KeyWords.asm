@@ -140,8 +140,8 @@ GetThemes proc uses esi edi
 			invoke MakeKey,addr szTheme,0,addr buffer
 			mov		esi,offset thme0
 			mov		edi,offset theme+sizeof THEME*0
-			invoke lstrcpy,addr [edi].THEME.szname,esi
-			invoke lstrlen,esi
+			invoke strcpy,addr [edi].THEME.szname,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			lea		edi,[edi+sizeof THEME.szname]
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
@@ -152,8 +152,8 @@ GetThemes proc uses esi edi
 			invoke MakeKey,addr szTheme,1,addr buffer
 			mov		esi,offset thme1
 			mov		edi,offset theme+sizeof THEME*1
-			invoke lstrcpy,addr [edi].THEME.szname,esi
-			invoke lstrlen,esi
+			invoke strcpy,addr [edi].THEME.szname,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			lea		edi,[edi+sizeof THEME.szname]
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
@@ -164,8 +164,8 @@ GetThemes proc uses esi edi
 			invoke MakeKey,addr szTheme,2,addr buffer
 			mov		esi,offset thme2
 			mov		edi,offset theme+sizeof THEME*2
-			invoke lstrcpy,addr [edi].THEME.szname,esi
-			invoke lstrlen,esi
+			invoke strcpy,addr [edi].THEME.szname,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			lea		edi,[edi+sizeof THEME.szname]
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
@@ -235,7 +235,7 @@ AddTheme proc uses ebx esi edi,hWin:HWND
 		.if !byte ptr [esi].THEME.szname
 			invoke SendDlgItemMessage,hWin,IDC_EDTTHEME,WM_GETTEXT,sizeof buffer,addr buffer
 			.if byte ptr buffer
-				invoke lstrcpy,addr [esi].THEME.szname,addr buffer
+				invoke strcpy,addr [esi].THEME.szname,addr buffer
 				xor		ebx,ebx
 				.while ebx<16
 					invoke SendDlgItemMessage,hWin,IDC_LSTKWCOLORS,LB_GETITEMDATA,ebx,0
@@ -377,7 +377,7 @@ SaveKeyWordList proc uses esi edi,hWin:HWND,idLst:DWORD,nInx:DWORD
   @@:
 	invoke SendDlgItemMessage,hWin,idLst,LB_GETTEXT,esi,edi
 	.if eax!=LB_ERR
-		invoke lstrlen,edi
+		invoke strlen,edi
 		add		edi,eax
 		mov		byte ptr [edi],VK_SPACE
 		inc		edi
@@ -540,7 +540,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	ecx
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_ADDSTRING,0,esi
 		invoke SendDlgItemMessage,hWin,IDC_LSTCOLORS,LB_SETITEMDATA,eax,[edi]
-		invoke lstrlen,esi
+		invoke strlen,esi
 		add		esi,eax
 		inc		esi
 		add		edi,4
@@ -1008,7 +1008,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr buffer
-		invoke lstrlen,addr buffer
+		invoke strlen,addr buffer
 		mov		edx,[esi].rcItem.left
 		mov		ecx,[esi].itemID
 		.if [esi].CtlID==IDC_LSTCOLORS

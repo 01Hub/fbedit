@@ -85,7 +85,7 @@ Print proc uses ebx
 	invoke ConvToPix,ebx,psd.rtMargin.bottom
 	mov		pMB,eax
 	invoke RtlZeroMemory,addr lf,sizeof lf
-	invoke lstrcpy,addr lf.lfFaceName,addr lfnt.lfFaceName
+	invoke strcpy,addr lf.lfFaceName,addr lfnt.lfFaceName
 	invoke GetDeviceCaps,pd.hDC,LOGPIXELSY
 	mov		ecx,lfnt.lfHeight
 	neg		ecx
@@ -199,7 +199,7 @@ Print proc uses ebx
 	inc		nLine
 	or		eax,eax
 	je		El
-	invoke lstrlen,addr LineTxt
+	invoke strlen,addr LineTxt
 	mov		ecx,eax
 	invoke TabbedTextOut,pd.hDC,ptX,ptY,addr LineTxt,ecx,1,addr tWt,ptX
   El:

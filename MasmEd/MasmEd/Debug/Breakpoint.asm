@@ -183,17 +183,38 @@ MapNoDebug proc uses ebx esi edi
 	mov		ecx,dbg.inxsymbol
 	.while ecx
 		.if [esi].DEBUGSYMBOL.nType=='p'
-			mov		eax,[esi].DEBUGSYMBOL.Address
-			mov		ebx,dbg.inxline
-			mov		edi,dbg.hMemLine
-			.while ebx
-				.if eax==[edi].DEBUGLINE.Address
-					mov		[edi].DEBUGLINE.NoDebug,TRUE
-					.break
+			push	ecx
+			invoke FindWord,addr [esi].DEBUGSYMBOL.szName,addr szPrpp
+			.if eax
+				mov		edi,eax
+				; Point to parameters
+				invoke strlen,edi
+				lea		edi,[edi+eax+1]
+				movzx	eax,byte ptr [edi]
+				.if !eax
+					; Point to return type
+					invoke strlen,edi
+					lea		edi,[edi+eax+1]
+					; Point to locals
+					invoke strlen,edi
+					lea		edi,[edi+eax+1]
+					movzx	eax,byte ptr [edi]
 				.endif
-				dec		ebx
-				lea		edi,[edi+sizeof DEBUGLINE]
-			.endw
+				.if eax
+					mov		eax,[esi].DEBUGSYMBOL.Address
+					mov		ebx,dbg.inxline
+					mov		edi,dbg.hMemLine
+					.while ebx
+						.if eax==[edi].DEBUGLINE.Address
+							mov		[edi].DEBUGLINE.NoDebug,TRUE
+							.break
+						.endif
+						dec		ebx
+						lea		edi,[edi+sizeof DEBUGLINE]
+					.endw
+				.endif
+			.endif
+			pop		ecx
 		.endif
 		dec		ecx
 		lea		esi,[esi+sizeof DEBUGSYMBOL]

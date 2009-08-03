@@ -36,7 +36,7 @@ start:
 		.while byte ptr [ebx]==VK_SPACE
 			inc		ebx
 		.endw
-		invoke lstrcmpi,ebx,addr szRemoveMasmEd
+		invoke strcmpi,ebx,addr szRemoveMasmEd
 		.if !eax
 			invoke MessageBox,0,addr szAskRemove,addr szAppName,MB_YESNO or MB_ICONQUESTION
 			.if eax==IDYES
@@ -54,7 +54,7 @@ start:
 	invoke LoadLibrary,offset szRichEdit
 	mov		hRichEd,eax
 	invoke GetModuleFileName,0,offset FileName,sizeof FileName
-	invoke lstrlen,offset FileName
+	invoke strlen,offset FileName
 	mov		edx,offset FileName
 	add		edx,eax
   @@:
@@ -67,9 +67,9 @@ start:
 		jmp		@b
 	.endif
 	inc		edx
-	invoke lstrcat,offset szMasmEd,edx
+	invoke strcat,offset szMasmEd,edx
 	invoke SetCurrentDirectory,offset FileName
-	invoke lstrcpy,addr AppPath,addr FileName
+	invoke strcpy,addr AppPath,addr FileName
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szMasmEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof ver
@@ -315,7 +315,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hCCLB,CCM_GETCURSEL,0,0
 				invoke SendMessage,hCCLB,CCM_GETITEM,eax,0
 				push	eax
-				invoke lstrcpy,offset tmpbuff,eax
+				invoke strcpy,offset tmpbuff,eax
 				xor		eax,eax
 				.while tmpbuff[eax]
 					.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
@@ -327,7 +327,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		eax
 				.if cctype==CCTYPE_PROC
 					push	eax
-					invoke lstrlen,eax
+					invoke strlen,eax
 					pop		edx
 					.if byte ptr [edx+eax+1]
 						mov		ccinprogress,0
@@ -546,7 +546,7 @@ CreateRAHexEd endp
 
 CreateNew proc
 
-	invoke lstrcpy,offset FileName,offset szNewFile
+	invoke strcpy,offset FileName,offset szNewFile
 	invoke CreateRAEdit
 	invoke TabToolAdd,hREd,offset FileName
 	invoke SetWinCaption,offset FileName
@@ -558,7 +558,7 @@ CreateNew endp
 CreateNewRes proc
 	LOCAL	hMem:DWORD
 
-	invoke lstrcpy,offset FileName,offset szNewFile
+	invoke strcpy,offset FileName,offset szNewFile
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		hMem,eax
 	invoke GlobalLock,hMem
@@ -1172,7 +1172,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		invoke ShowWindow,hImmOut,SW_HIDE
 		invoke SendMessage,hWnd,WM_SIZE,0,0
 	.elseif eax==CB_OPENFILE
-		invoke lstrcpy,offset DbgFileName,lParam
+		invoke strcpy,offset DbgFileName,lParam
 		invoke PostMessage,hWnd,WM_USER+998,0,offset DbgFileName
 	.endif
 	mov		eax,hREd
@@ -1711,29 +1711,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		nInx
 		.endw
 
-		invoke lstrcpy,addr PathBin,addr defPathBin
+		invoke strcpy,addr PathBin,addr defPathBin
 		mov		lpcbData,sizeof PathBin
 		invoke RegQueryValueEx,hReg,addr szPathBin,0,addr lpType,addr PathBin,addr lpcbData
-		invoke lstrcpy,addr PathInc,addr defPathInc
+		invoke strcpy,addr PathInc,addr defPathInc
 		mov		lpcbData,sizeof PathInc
 		invoke RegQueryValueEx,hReg,addr szPathInc,0,addr lpType,addr PathInc,addr lpcbData
-		invoke lstrcpy,addr PathLib,addr defPathLib
+		invoke strcpy,addr PathLib,addr defPathLib
 		mov		lpcbData,sizeof PathLib
 		invoke RegQueryValueEx,hReg,addr szPathLib,0,addr lpType,addr PathLib,addr lpcbData
 		invoke SetEnvironment
-		invoke lstrcpy,addr CompileRC,addr defCompileRC
+		invoke strcpy,addr CompileRC,addr defCompileRC
 		mov		lpcbData,sizeof CompileRC
 		invoke RegQueryValueEx,hReg,addr szCompileRC,0,addr lpType,addr CompileRC,addr lpcbData
-		invoke lstrcpy,addr Assemble,addr defAssemble
+		invoke strcpy,addr Assemble,addr defAssemble
 		mov		lpcbData,sizeof Assemble
 		invoke RegQueryValueEx,hReg,addr szAssemble,0,addr lpType,addr Assemble,addr lpcbData
-		invoke lstrcpy,addr Link,addr defLink
+		invoke strcpy,addr Link,addr defLink
 		mov		lpcbData,sizeof Link
 		invoke RegQueryValueEx,hReg,addr szLink,0,addr lpType,addr Link,addr lpcbData
-		invoke lstrcpy,addr DbgAssemble,addr defDbgAssemble
+		invoke strcpy,addr DbgAssemble,addr defDbgAssemble
 		mov		lpcbData,sizeof DbgAssemble
 		invoke RegQueryValueEx,hReg,addr szDbgAssemble,0,addr lpType,addr DbgAssemble,addr lpcbData
-		invoke lstrcpy,addr DbgLink,addr defDbgLink
+		invoke strcpy,addr DbgLink,addr defDbgLink
 		mov		lpcbData,sizeof DbgLink
 		invoke RegQueryValueEx,hReg,addr szDbgLink,0,addr lpType,addr DbgLink,addr lpcbData
 		mov		lpcbData,sizeof nCboBuild
@@ -1747,7 +1747,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpcbData,sizeof szInitFolder
 		invoke RegQueryValueEx,hReg,addr szFolder,0,addr lpType,addr szInitFolder,addr lpcbData
 		.if byte ptr szInitFolder
-			invoke lstrcpy,addr buffer,addr szInitFolder
+			invoke strcpy,addr buffer,addr szInitFolder
 		.else
 			invoke GetModuleFileName,0,addr buffer,sizeof buffer
 		.endif
@@ -2298,9 +2298,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 						jmp		Ex
 					.endif
-					invoke lstrcpy,addr dbginf.FileName,offset MainFile
+					invoke strcpy,addr dbginf.FileName,offset MainFile
 					invoke RemoveFileExt,addr dbginf.FileName
-					invoke lstrcat,addr dbginf.FileName,offset ExtExe
+					invoke strcat,addr dbginf.FileName,offset ExtExe
 					invoke CreateFile,addr dbginf.FileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 					.if eax!=INVALID_HANDLE_VALUE
 						mov		hFile,eax
@@ -2351,7 +2351,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		eax
 				invoke DebugCommand,FUNC_RUNTOCARET,eax,offset FileName
 			.elseif eax==IDM_MAKE_MAINFILE
-				invoke lstrcpy,addr MainFile,addr FileName
+				invoke strcpy,addr MainFile,addr FileName
 				mov		fTimer,1
 			.elseif eax==IDM_DEBUG_NODEBUG
 				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
@@ -2387,8 +2387,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;F1-Help key pressed
 				mov		mnu.szcap,0
 				mov		mnu.szcmnd,0
-				invoke lstrcpy,addr buffer,addr szMenuHelp
-				invoke lstrlen,addr buffer
+				invoke strcpy,addr buffer,addr szMenuHelp
+				invoke strlen,addr buffer
 				mov		word ptr buffer[eax],'1'
 				mov		lpcbData,sizeof mnu
 				invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
@@ -2655,15 +2655,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke AskSaveSessionFile
 			.if !eax
 				invoke MakeSession
-				invoke lstrcpy,addr LineTxt,addr tmpbuff
-				invoke lstrcpy,addr tmpbuff,addr szSessionFile
-				invoke lstrcat,addr tmpbuff,addr szComma
-				invoke lstrcat,addr tmpbuff,addr LineTxt
-				invoke lstrlen,addr tmpbuff
+				invoke strcpy,addr LineTxt,addr tmpbuff
+				invoke strcpy,addr tmpbuff,addr szSessionFile
+				invoke strcat,addr tmpbuff,addr szComma
+				invoke strcat,addr tmpbuff,addr LineTxt
+				invoke strlen,addr tmpbuff
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szSession,0,REG_SZ,addr tmpbuff,eax
 				invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
-				invoke lstrcat,addr szInitFolder,addr szBackSlash
+				invoke strcat,addr szInitFolder,addr szBackSlash
 				invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
 				invoke RegSetValueEx,hReg,addr szMainFile,0,REG_SZ,addr MainFile,sizeof MainFile
 				invoke SendMessage,hCbo,CB_GETCURSEL,0,0
@@ -2859,7 +2859,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
 					mov		eax,rect.right
 					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
-					invoke lstrlen,esi
+					invoke strlen,esi
 					lea		esi,[esi+eax+1]
 					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
 					pop		eax
@@ -2948,7 +2948,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					invoke SetTextColor,mDC,eax
 					lea		esi,[esi+sizeof MENUDATA]
-					invoke lstrlen,esi
+					invoke strlen,esi
 					push	eax
 					add		rect.left,22
 					add		rect.top,2

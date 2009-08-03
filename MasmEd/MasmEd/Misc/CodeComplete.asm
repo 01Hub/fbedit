@@ -127,7 +127,7 @@ AddList endp
 
 IsWordReg proc lpWord:DWORD
 
-	invoke lstrlen,lpWord
+	invoke strlen,lpWord
 	.if eax==3
 		mov		eax,lpWord
 		mov		eax,[eax]
@@ -168,7 +168,7 @@ IsWordStruct proc uses esi,lpWord:DWORD
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
-		invoke lstrcmp,esi,lpWord
+		invoke strcmp,esi,lpWord
 		.if !eax
 			mov		eax,esi
 			ret
@@ -186,21 +186,21 @@ IsWordLocalStruct proc uses esi edi,lpLocal:DWORD,lpWord:DWORD,lpBuff:DWORD
 	mov		edi,lpWord
 	mov		esi,lpLocal
 	; Skip proc name
-	invoke lstrlen,esi
+	invoke strlen,esi
 	lea		esi,[esi+eax+1]
 	; Point to parameters
-	invoke lstrcpy,lpBuff,edi
+	invoke strcpy,lpBuff,edi
 	invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
 	mov		eax,lpBuff
 	.if !byte ptr [eax]
 		; Skip proc parameters
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		; Skip return type
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		; Point to local
-		invoke lstrcpy,lpBuff,edi
+		invoke strcpy,lpBuff,edi
 		invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
 	.endif
 	mov		eax,lpBuff
@@ -215,11 +215,11 @@ IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
-		invoke lstrcmp,esi,lpWord
+		invoke strcmp,esi,lpWord
 		.if !eax
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-			invoke lstrcpy,lpBuff,esi
+			invoke strcpy,lpBuff,esi
 			mov		eax,esi
 			.break
 		.endif
@@ -237,14 +237,14 @@ IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
-		invoke lstrcmp,esi,lpStruct
+		invoke strcmp,esi,lpStruct
 		.if !eax
-			invoke lstrlen,esi
+			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-			invoke lstrcpy,addr buffer,lpItem
+			invoke strcpy,addr buffer,lpItem
 			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
 			.if buffer
-				invoke lstrcpy,lpStruct,addr buffer
+				invoke strcpy,lpStruct,addr buffer
 			.endif
 			movzx	eax,buffer
 			.break
@@ -365,7 +365,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					invoke IsWordStruct,edi
 					.break .if eax
 				.endif
-				invoke lstrlen,edi
+				invoke strlen,edi
 				lea		edi,[edi+eax+1]
 				xor		eax,eax
 			.endw
@@ -376,7 +376,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				; [edx + RECT.left]
 				; [edx.RECT.left]
 				; (RECT ptr [edx]).left
-				invoke lstrcpy,addr buffer,edi
+				invoke strcpy,addr buffer,edi
 			.elseif lpLineWord && !lpReg
 				;LOCAL rect:RECT
 				; rect.left
@@ -401,8 +401,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				; [edx].left
 				invoke SendMessage,hREd,EM_EXGETSEL,0,addr ccft.chrg
 				mov		ccft.chrg.cpMax,0
-				invoke lstrcpy,addr buffer,offset szCCAssume
-				invoke lstrcat,addr buffer,lpReg
+				invoke strcpy,addr buffer,offset szCCAssume
+				invoke strcat,addr buffer,lpReg
 				lea		eax,buffer
 				mov		ccft.lpstrText,eax
 			  @@:
@@ -477,7 +477,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.endif
 			.endif
 			.if buffer
-				invoke lstrlen,edi
+				invoke strlen,edi
 				inc		eax
 				lea		edi,[edi+eax]
 				.while byte ptr [edi]
@@ -485,11 +485,11 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.if !eax
 						invoke IsStructItemStruct,addr buffer,edi
 						.break .if eax
-						invoke lstrlen,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
 						xor		eax,eax
 					.else
-						invoke lstrlen,edi
+						invoke strlen,edi
 						lea		edi,[edi+eax+1]
 					.endif
 				.endw
@@ -497,7 +497,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					invoke IsWordStruct,addr buffer
 					.if eax
 						push	eax
-						invoke lstrlen,eax
+						invoke strlen,eax
 						pop		edx
 						lea		edx,[edx+eax+1]
 						invoke AddList,edx,lpWord,15
@@ -542,12 +542,12 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		esi,eax
 				mov		ebx,offset cclist
 				; Skip proc name and point to parameters
-				invoke lstrlen,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				.if byte ptr [esi]
 					push	esi
-					invoke lstrcpy,addr tmpbuff,esi
-					invoke lstrcat,addr tmpbuff,addr szComma
+					invoke strcpy,addr tmpbuff,esi
+					invoke strcat,addr tmpbuff,addr szComma
 					mov		esi,offset tmpbuff
 					mov		edx,esi
 					.while byte ptr [esi]
@@ -555,9 +555,9 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 							mov		byte ptr [esi],0
 							call Filter
 							.if !eax
-								invoke lstrcpy,ebx,edx
+								invoke strcpy,ebx,edx
 								invoke SendMessage,edi,CCM_ADDITEM,8,ebx
-								invoke lstrlen,ebx
+								invoke strlen,ebx
 								lea		ebx,[ebx+eax+1]
 								inc		nCount
 							.endif
@@ -568,13 +568,13 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					pop		esi
 				.endif
 				; Skip return type
-				invoke lstrlen,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				; Point to locals
-				invoke lstrlen,esi
+				invoke strlen,esi
 				lea		esi,[esi+eax+1]
-				invoke lstrcpy,addr tmpbuff,esi
-				invoke lstrcat,addr tmpbuff,addr szComma
+				invoke strcpy,addr tmpbuff,esi
+				invoke strcat,addr tmpbuff,addr szComma
 				mov		esi,offset tmpbuff
 				mov		edx,esi
 				.while byte ptr [esi]
@@ -582,9 +582,9 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 						mov		byte ptr [esi],0
 						call Filter
 						.if !eax
-							invoke lstrcpy,ebx,edx
+							invoke strcpy,ebx,edx
 							invoke SendMessage,edi,CCM_ADDITEM,9,ebx
-							invoke lstrlen,ebx
+							invoke strlen,ebx
 							lea		ebx,[ebx+eax+1]
 							inc		nCount
 						.endif
@@ -636,7 +636,7 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCC,lpApi
 	.if eax
 		mov		esi,eax
-		invoke lstrlen,esi
+		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		mov		eax,lpWord
 	  @@:
@@ -674,7 +674,7 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 		mov		tt.lpszLine,eax
 		invoke SendMessage,hProperty,PRM_GETTOOLTIP,FALSE,addr tt
 		.if tt.lpszApi
-			invoke lstrlen,tt.lpszApi
+			invoke strlen,tt.lpszApi
 			add		eax,tt.lpszApi
 			inc		eax
 			mov		edx,tt.lpszApi
@@ -750,10 +750,10 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	inc		eax
 	mov		edx,[esi].RASELCHANGE.lpLine
 	lea		edx,[edx+sizeof CHARS]
-	invoke lstrcpyn,offset LineTxt,edx,eax
+	invoke strcpyn,offset LineTxt,edx,eax
 	.if cctype==CCTYPE_ALL
 		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
-		invoke lstrlen,addr buffer
+		invoke strlen,addr buffer
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
 		mov		ccchrg.cpMin,edx
@@ -763,7 +763,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 		.endif
 	.elseif cctype==CCTYPE_STRUCT
 		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
-		invoke lstrlen,addr buffer
+		invoke strlen,addr buffer
 		mov		edx,cpline
 		sub		edx,eax
 		mov		byte ptr LineTxt[edx-1],0
@@ -817,7 +817,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 					mov		tti.nitem,ecx
 					inc		ecx
 					invoke DwToAscii,ecx,addr buffer
-					invoke lstrcat,addr buffer,tti.lpszApi
+					invoke strcat,addr buffer,tti.lpszApi
 					mov		eax,cpline
 					add		eax,offset LineTxt
 					sub		eax,esi

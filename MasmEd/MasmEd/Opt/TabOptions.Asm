@@ -226,14 +226,14 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lpstrTitle,0
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
-				invoke lstrcpy,eax,[esi].GRIDNOTIFY.lpdata
+				invoke strcpy,eax,[esi].GRIDNOTIFY.lpdata
 				mov		ofn.nMaxFile,sizeof buffer
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
 					mov		edx,[esi].GRIDNOTIFY.lpdata
-					invoke lstrcpy,edx,addr buffer
+					invoke strcpy,edx,addr buffer
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
@@ -560,14 +560,14 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lpstrTitle,0
 				lea		eax,buffer
 				mov		ofn.lpstrFile,eax
-				invoke lstrcpy,eax,[esi].GRIDNOTIFY.lpdata
+				invoke strcpy,eax,[esi].GRIDNOTIFY.lpdata
 				mov		ofn.nMaxFile,sizeof buffer
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 				;Show the Open dialog
 				invoke GetOpenFileName,addr ofn
 				.if eax
 					mov		edx,[esi].GRIDNOTIFY.lpdata
-					invoke lstrcpy,edx,addr buffer
+					invoke strcpy,edx,addr buffer
 					mov		[esi].GRIDNOTIFY.fcancel,FALSE
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
@@ -678,15 +678,15 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		ecx,nInx
 						shl		ecx,16
 						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
-						invoke lstrcat,addr buffer,addr szComma
-						invoke lstrlen,addr buffer
+						invoke strcat,addr buffer,addr szComma
+						invoke strlen,addr buffer
 						mov		ecx,nInx
 						shl		ecx,16
 						or		ecx,1
 						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer[eax]
 						inc		nInx
 						invoke MakeKey,addr szCust,nInx,addr buffer1
-						invoke lstrlen,addr buffer
+						invoke strlen,addr buffer
 						inc		eax
 						invoke RegSetValueEx,hReg,addr buffer1,0,REG_SZ,addr buffer,eax
 					.else
@@ -706,7 +706,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		ecx,nInx
 						shl		ecx,16
 						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
-						invoke lstrcpy,addr cust.szStyle,addr buffer
+						invoke strcpy,addr cust.szStyle,addr buffer
 						mov		buffer,0
 						mov		ecx,nInx
 						shl		ecx,16
