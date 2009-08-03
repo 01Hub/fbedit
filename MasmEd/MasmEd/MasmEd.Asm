@@ -451,6 +451,7 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,hREd,EM_CHARFROMPOS,0,addr pt
 						invoke SendMessage,hREd,EM_LINEFROMCHAR,eax,0
 						mov		isinproc.nLine,eax
+						inc		eax
 						mov		dbgtip.nLine,eax
 						mov		eax,hREd
 						mov		isinproc.nOwner,eax

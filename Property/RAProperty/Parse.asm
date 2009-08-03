@@ -1141,7 +1141,7 @@ ArraySize:
 	push		ebx
 	mov		ebx,offset szname[16384]
 	mov		word ptr [ebx-1],0
-	mov		byte ptr szname[8192],0
+	mov		word ptr szname[8192-1],0
 	mov		narray,0
 	.while TRUE
 		mov		al,[esi]
@@ -1498,44 +1498,46 @@ SaveParam1:
 	.if byte ptr [edi-1]==','
 		dec		edi
 	.endif
-	mov		word ptr [edi],0
+	mov		dword ptr [edi],0
 	inc		edi
 	retn
 
 SaveRetType:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if ecx
-		invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-		.endif
+	.if [ebx].RAPROPERTY.nlanguage!=nMASM
 		invoke GetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
-			dec		edi
-			mov		word ptr [edi],0
-			inc		edi
-			mov		edx,edi
-			lea		edi,[edi+ecx]
-			mov		eax,esi
-			lea		esi,[esi+ecx]
-			inc		ecx
-			invoke strcpyn,edx,eax,ecx
-			inc		fRetType
-		  @@:
-			invoke GetWord,esi,addr npos
-			mov		esi,edx
-			invoke IsIgnore,IGNORE_PTR,ecx,esi
+			invoke IsIgnore,IGNORE_DATATYPEINIT,ecx,esi
 			.if eax
 				lea		esi,[esi+ecx]
-				invoke strcpyn,edi,addr szPtr,5
-				lea		edi,[edi+4]
-				jmp		@b
+			.endif
+			invoke GetWord,esi,addr npos
+			mov		esi,edx
+			.if ecx
+				dec		edi
+				mov		word ptr [edi],0
+				inc		edi
+				mov		edx,edi
+				lea		edi,[edi+ecx]
+				mov		eax,esi
+				lea		esi,[esi+ecx]
+				inc		ecx
+				invoke strcpyn,edx,eax,ecx
+				inc		fRetType
+			  @@:
+				invoke GetWord,esi,addr npos
+				mov		esi,edx
+				invoke IsIgnore,IGNORE_PTR,ecx,esi
+				.if eax
+					lea		esi,[esi+ecx]
+					invoke strcpyn,edi,addr szPtr,5
+					lea		edi,[edi+4]
+					jmp		@b
+				.endif
 			.endif
 		.endif
 	.endif
-	mov		word ptr [edi],0
+	mov		dword ptr [edi],0
 	inc		edi
 	retn
 

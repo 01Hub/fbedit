@@ -465,11 +465,12 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			lea		esi,[esi+eax+1+sizeof PROPERTIES]
 			invoke AddVarList,esi
 			; Point to return type
-			invoke strlen,addr [esi+sizeof PROPERTIES]
-			lea		esi,[esi+eax+1+sizeof PROPERTIES]
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
 			; Point to locals
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
+PrintStringByAddr esi
 			invoke AddVarList,esi
 		.elseif edx=='d'
 			; Variable

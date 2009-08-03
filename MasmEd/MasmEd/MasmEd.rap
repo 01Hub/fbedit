@@ -274,16 +274,16 @@ Group=Assembly,Resources,Misc,Include
 52=
 
 [Find]
-1="MAXIMUM_WAIT_OBJECTS"
-2="FWORD"
-3="szDbgLink"
-4="ParseEdit"
-5="nLastLine"
-6="PRM_PARSEFILE"
-7="GetSubMenu,hContextMnu"
-8="ShowWindow,hOut"
-9="PRM_ISINPROC"
-10="szNoMain"
+1="CHARFORMAT"
+2="MAXIMUM_WAIT_OBJECTS"
+3="FWORD"
+4="szDbgLink"
+5="ParseEdit"
+6="nLastLine"
+7="PRM_PARSEFILE"
+8="GetSubMenu,hContextMnu"
+9="ShowWindow,hOut"
+10="PRM_ISINPROC"
 
 [VersionControl]
 Settings=1246
@@ -295,7 +295,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=31
+MilestoneOnDateDate=3
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -331,7 +331,7 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,687,524,14
-1=0,0,0,0,45287
+1=0,0,0,0,12078
 11=0,0,0,0,21491
 22=0,0,0,0,4185
 10=0,0,0,0,18114
