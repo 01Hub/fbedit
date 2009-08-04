@@ -762,6 +762,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_DEBUG_RUN
 				call	EnableDisable
 				mov		eax,fDebugging
+				mov		edx,IDM_DEBUG_BREAK
+				call	EnableDisable
 				mov		edx,IDM_DEBUG_STOP
 				call	EnableDisable
 				mov		edx,IDM_DEBUG_INTO
@@ -843,6 +845,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,fDebugging
 				mov		edx,IDM_DEBUG_RUN
 				call	EnableDisable
+				mov		edx,IDM_DEBUG_BREAK
+				call	EnableDisable
 				mov		edx,IDM_DEBUG_STOP
 				call	EnableDisable
 				mov		edx,IDM_DEBUG_INTO
@@ -866,7 +870,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !eax
 				invoke UpdateAll,IS_CHANGED
 			.else
-				mov		fTimer,2
+				mov		fTimer,1
 			.endif
 		.endif
 		invoke ShowProc,nLastLine
@@ -930,6 +934,8 @@ DisableEdit:
 
 	mov		eax,fDebugging
 	mov		edx,IDM_DEBUG_RUN
+	call	EnableDisable
+	mov		edx,IDM_DEBUG_BREAK
 	call	EnableDisable
 	mov		edx,IDM_DEBUG_STOP
 	call	EnableDisable
@@ -1145,6 +1151,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 			invoke SendMessage,hREd,REM_VCENTER,0,0
 			invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 		.endif
+		invoke SetForegroundWindow,hWnd
 		invoke SetFocus,hREd
 	.elseif eax==CB_DESELECTLINE
 		mov		eax,wParam
@@ -1164,10 +1171,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 			invoke ShowWindow,hTabDbg,SW_HIDE
 		.endif
 		invoke OutputSelect,0
-		test	wpos.fView,4
-		.if ZERO?
-			or		wpos.fView,4
-		.endif
+		or		wpos.fView,4
 		invoke ShowWindow,hOut,SW_SHOWNA
 		invoke ShowWindow,hImmOut,SW_HIDE
 		invoke SendMessage,hWnd,WM_SIZE,0,0
@@ -1462,14 +1466,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		edx
 			add		edx,RESIZEHT
 			add		rect.top,edx
-
 			mov		ecx,rect.right
 			add		ecx,RESIZEHT
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
 			invoke MoveWindow,hTabDbg,ecx,rect.top,eax,20,TRUE
-
-
 			add		rect.top,20
 			mov		edx,rect.bottom
 			sub		edx,rect.top
@@ -2207,9 +2208,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !ZERO?
 					invoke ShowWindow,hBrowse,SW_SHOWNA
 					invoke ShowWindow,hProperty,SW_SHOWNA
+					.if fDebugging
+						invoke ShowWindow,hTabDbg,SW_SHOWNA
+						.if nDbgSel
+							invoke ShowWindow,hDbgWatch,SW_SHOWNA
+						.else
+							invoke ShowWindow,hDbgReg,SW_SHOWNA
+						.endif
+					.endif
 				.else
 					invoke ShowWindow,hBrowse,SW_HIDE
 					invoke ShowWindow,hProperty,SW_HIDE
+					invoke ShowWindow,hDbgReg,SW_HIDE
+					invoke ShowWindow,hDbgWatch,SW_HIDE
+					invoke ShowWindow,hTabDbg,SW_HIDE
 				.endif
 			.elseif eax==IDM_VIEW_DIALOG
 				invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
@@ -2319,7 +2331,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 						jmp		Ex
 					.endif
-
 					mov		eax,hWnd
 					mov		dbginf.hWnd,eax
 					mov		eax,hOut
@@ -2333,12 +2344,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,hProperty
 					mov		dbginf.hPrp,eax
 					mov		dbginf.lpNoDebug,offset NoDebug
+					mov		eax,fMainThread
+					mov		dbginf.fMainThread,eax
 					mov		dbginf.lpCallBack,offset DebugCallback
 					invoke SetDebugInfo,addr dbginf
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
 					invoke UpdateAll,SET_BREAKPOINTS
 				.endif
 				invoke DebugCommand,FUNC_RUN,0,0
+			.elseif eax==IDM_DEBUG_BREAK
+				invoke DebugCommand,FUNC_BREAK,0,0
 			.elseif eax==IDM_DEBUG_STOP
 				invoke DebugCommand,FUNC_STOP,0,0
 			.elseif eax==IDM_DEBUG_INTO
@@ -2350,11 +2365,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 				inc		eax
 				invoke DebugCommand,FUNC_RUNTOCARET,eax,offset FileName
+			.elseif eax==IDM_DEBUG_NODEBUG
+				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
 			.elseif eax==IDM_MAKE_MAINFILE
 				invoke strcpy,addr MainFile,addr FileName
 				mov		fTimer,1
-			.elseif eax==IDM_DEBUG_NODEBUG
-				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
 			.elseif eax==IDM_OPTION_CODE
 				invoke DialogBoxParam,hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_DIALOG
@@ -2623,7 +2638,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hTabOut,TCM_GETCURSEL,0,0
 			mov		nOutSel,eax
 			.if wpos.fView & 4
-				.if nOutSel==1
+				.if nOutSel
 					invoke ShowWindow,hImmOut,SW_SHOWNA
 					invoke ShowWindow,hOut,SW_HIDE
 					invoke SetFocus,hImmOut
@@ -2636,7 +2651,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABWATCH
 			invoke SendMessage,hTabDbg,TCM_GETCURSEL,0,0
 			mov		nDbgSel,eax
-			.if nDbgSel==1
+			.if nDbgSel
 				invoke ShowWindow,hDbgWatch,SW_SHOWNA
 				invoke ShowWindow,hDbgReg,SW_HIDE
 			.else

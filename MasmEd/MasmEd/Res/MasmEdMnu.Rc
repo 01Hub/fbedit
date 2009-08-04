@@ -86,6 +86,7 @@
 #define IDM_DEBUG_TOGGLE 10082
 #define IDM_DEBUG_CLEAR 10083
 #define IDM_DEBUG_RUN 10081
+#define IDM_DEBUG_BREAK 10089
 #define IDM_DEBUG_STOP 10084
 #define IDM_DEBUG_INTO 10085
 #define IDM_DEBUG_OVER 10086
@@ -229,17 +230,18 @@ BEGIN
     MENUITEM "",,0x00000800
     POPUP "&Debug"
     BEGIN
-      MENUITEM "Toggle Breakpoint\tCtrl+T",IDM_DEBUG_TOGGLE
-      MENUITEM "Clear Breakpoints\tCtrl+Shift+T",IDM_DEBUG_CLEAR
+      MENUITEM "&Toggle Breakpoint\tCtrl+T",IDM_DEBUG_TOGGLE
+      MENUITEM "&Clear Breakpoints\tCtrl+Shift+T",IDM_DEBUG_CLEAR
       MENUITEM "",,0x00000800
       MENUITEM "&Run\tShift+F7",IDM_DEBUG_RUN
-      MENUITEM "Stop\tAlt+F7",IDM_DEBUG_STOP
+      MENUITEM "&Break\tAlt+Ctrl+F7",IDM_DEBUG_BREAK
+      MENUITEM "&Stop\tAlt+F7",IDM_DEBUG_STOP
       MENUITEM "",,0x00000800
-      MENUITEM "Step Into\tF7",IDM_DEBUG_INTO
-      MENUITEM "Step Over\tCtrl+F7",IDM_DEBUG_OVER
-      MENUITEM "Run To Caret\tCtrl+Shift+F7",IDM_DEBUG_CARET
+      MENUITEM "Step &Into\tF7",IDM_DEBUG_INTO
+      MENUITEM "Step &Over\tCtrl+F7",IDM_DEBUG_OVER
+      MENUITEM "R&un To Caret\tCtrl+Shift+F7",IDM_DEBUG_CARET
       MENUITEM "",,0x00000800
-      MENUITEM "Do Not Debug",IDM_DEBUG_NODEBUG
+      MENUITEM "&Do Not Debug",IDM_DEBUG_NODEBUG
     END
     MENUITEM "",,0x00000800
     MENUITEM "Set Current as &Mainfile",IDM_MAKE_MAINFILE

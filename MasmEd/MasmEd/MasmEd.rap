@@ -197,6 +197,7 @@ ID=200
 35=IDM_DEBUG_INTO,0,118,0
 36=IDM_DEBUG_OVER,0,118,8
 37=IDM_DEBUG_CARET,0,118,12
+38=IDM_DEBUG_BREAK,0,118,24
 
 [VerInf]
 Nme=VERINF1
@@ -274,16 +275,16 @@ Group=Assembly,Resources,Misc,Include
 52=
 
 [Find]
-1="lstrcmpi"
-2="lstrcmp"
-3="lstrcpyn"
-4="lstrlen"
-5="lstrcat"
-6="lstrcpy"
-7="IDM_DEB"
-8="dbginf"
-9="1023"
-10="1022"
+1="IDM_DEBUG_RUN"
+2="lstrcmpi"
+3="lstrcmp"
+4="lstrcpyn"
+5="lstrlen"
+6="lstrcat"
+7="lstrcpy"
+8="IDM_DEB"
+9="dbginf"
+10="1023"
 
 [VersionControl]
 Settings=1246
@@ -330,8 +331,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,1597
-1=0,0,0,0,741
+2=0,0,687,524,24818
+1=0,0,0,0,64418
 11=0,0,0,0,23600
 22=0,0,0,0,4185
 10=0,0,0,0,5143
@@ -374,7 +375,7 @@ ProductVer4Range=0
 48=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0
-51=0,0,0,0,940
+51=0,0,0,0,2107
 52=
 
 [BookMark]

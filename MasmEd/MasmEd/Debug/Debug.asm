@@ -284,6 +284,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	de:DEBUG_EVENT
 	LOCAL	fContinue:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fOnBP:DWORD
 
 	invoke RtlZeroMemory,addr sinfo,sizeof STARTUPINFO
 	mov		sinfo.cb,SizeOf STARTUPINFO
@@ -375,73 +376,91 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					.if de.u.Exception.pExceptionRecord.ExceptionAddress<800000h
 						invoke FindThread,de.dwThreadId
 						mov		ebx,eax
-						.if ![ebx].DEBUGTHREAD.isdebugged
-							mov		[ebx].DEBUGTHREAD.suspended,TRUE
-							mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
+						invoke IsOnBP,de.u.Exception.pExceptionRecord.ExceptionAddress
+						mov		fOnBP,eax
+						mov		edx,de.dwThreadId
+						.if fMainThread && edx!=dbg.thread.threadid && !fOnBP
 							invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-							mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+							mov		dbg.tmpcontext.ContextFlags,CONTEXT_FULL
+							invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.tmpcontext
+							mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+							mov		dbg.tmpcontext.regEip,eax
+							mov		[ebx].DEBUGTHREAD.address,eax
+							invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+							invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.tmpcontext
+							invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 						.else
-							mov		dbg.lpthread,ebx
-							invoke IsOnBP,de.u.Exception.pExceptionRecord.ExceptionAddress
-							push	eax
-							invoke IsInProc,de.u.Exception.pExceptionRecord.ExceptionAddress
-							pop		edx
-							.if dbg.func==FUNC_STEPOVER && eax!=dbg.lpStepOver && !edx
-								mov		dbg.context.ContextFlags,CONTEXT_FULL
-								invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-								mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-								mov		dbg.context.regEip,eax
-								mov		[ebx].DEBUGTHREAD.address,eax
-								invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-								invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+							.if ![ebx].DEBUGTHREAD.isdebugged
+								mov		[ebx].DEBUGTHREAD.suspended,TRUE
+								mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
+								invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+								mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 							.else
-								.if ![ebx].DEBUGTHREAD.suspended
-									mov		[ebx].DEBUGTHREAD.suspended,TRUE
-									mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
-									invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-								.endif
-								invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
-								mov		edx,[ebx].DEBUGTHREAD.lpline
-								mov		[ebx].DEBUGTHREAD.lpline,eax
-								.if eax!=edx
-									push	TRUE
+								mov		dbg.lpthread,ebx
+								invoke IsInProc,de.u.Exception.pExceptionRecord.ExceptionAddress
+								.if dbg.func==FUNC_STEPOVER && eax!=dbg.lpStepOver && !fOnBP
+									mov		dbg.context.ContextFlags,CONTEXT_FULL
+									invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+									mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+									mov		dbg.context.regEip,eax
+									mov		[ebx].DEBUGTHREAD.address,eax
+									invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+									invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
 								.else
-									push	FALSE
+									.if ![ebx].DEBUGTHREAD.suspended
+										mov		[ebx].DEBUGTHREAD.suspended,TRUE
+										mov		[ebx].DEBUGTHREAD.isdebugged,TRUE
+										invoke SuspendThread,[ebx].DEBUGTHREAD.htread
+									.endif
+									invoke FindLine,de.u.Exception.pExceptionRecord.ExceptionAddress
+									mov		edx,[ebx].DEBUGTHREAD.lpline
+									mov		[ebx].DEBUGTHREAD.lpline,eax
+									.if eax!=edx
+										push	TRUE
+									.else
+										push	FALSE
+									.endif
+									.if eax
+										invoke SelectLine,eax
+									.endif
+									mov		dbg.context.ContextFlags,CONTEXT_FULL
+									invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+									mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
+									mov		dbg.context.regEip,eax
+									mov		[ebx].DEBUGTHREAD.address,eax
+									invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
+									invoke IsInProc,[ebx].DEBUGTHREAD.address
+									mov		dbg.lpProc,eax
+									pop		eax
+									.if eax
+										invoke ShowContext
+									.endif
+									invoke WatchVars
 								.endif
-								.if eax
-									invoke SelectLine,eax
-								.endif
-								mov		dbg.context.ContextFlags,CONTEXT_FULL
-								invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-								mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
-								mov		dbg.context.regEip,eax
-								mov		[ebx].DEBUGTHREAD.address,eax
-								invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-								invoke IsInProc,[ebx].DEBUGTHREAD.address
-								mov		dbg.lpProc,eax
-								pop		eax
-								.if eax
-									invoke ShowContext
-								.endif
-								invoke WatchVars
+								mov		dbg.fHandled,TRUE
 							.endif
-							mov		dbg.fHandled,TRUE
 						.endif
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
-					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION,TRUE
+					invoke wsprintf,addr outbuffer,addr szEXCEPTION_ACCESS_VIOLATION,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
+					invoke PutString,addr outbuffer,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
-					invoke PutString,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO,TRUE
+					invoke wsprintf,addr outbuffer,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
+					invoke PutString,addr outbuffer,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_INT_DIVIDE_BY_ZERO
-					invoke PutString,addr szEXCEPTION_INT_DIVIDE_BY_ZERO,TRUE
+					invoke wsprintf,addr outbuffer,addr szEXCEPTION_INT_DIVIDE_BY_ZERO,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
+					invoke PutString,addr outbuffer,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_DATATYPE_MISALIGNMENT
+					invoke PutString,addr szEXCEPTION_DATATYPE_MISALIGNMENT,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==EXCEPTION_SINGLE_STEP
+					invoke PutString,addr szEXCEPTION_SINGLE_STEP,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==DBG_CONTROL_C
+					invoke PutString,addr szDBG_CONTROL_C,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.else
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
@@ -451,10 +470,10 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					mov		eax,de.u.CreateProcessInfo.hFile
 					mov		dbg.hdbgfile,eax
 				.endif
-				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId
+				invoke wsprintf,addr outbuffer,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId,de.dwThreadId
 				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
-				invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId
+				invoke wsprintf,addr outbuffer,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId,de.dwThreadId,de.u.ExitProcess.dwExitCode
 				invoke PutString,addr outbuffer,FALSE
 				mov		eax,de.dwProcessId
 				.if eax==dbg.pinfo.dwProcessId
@@ -463,14 +482,14 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				.endif
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
-				invoke wsprintf,addr outbuffer,addr szEventDec,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
+				invoke wsprintf,addr outbuffer,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
 				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
+				invoke wsprintf,addr outbuffer,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId,de.u.ExitThread.dwExitCode
+				invoke PutString,addr outbuffer,FALSE
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
-					invoke wsprintf,addr outbuffer,addr szEventDec,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId
-					invoke PutString,addr outbuffer,FALSE
 					invoke RemoveThread,de.dwThreadId
 					invoke SwitchThread
 					mov		ebx,eax
@@ -483,12 +502,12 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			.elseif eax==LOAD_DLL_DEBUG_EVENT
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
-				invoke wsprintf,addr outbuffer,addr szEventString,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
+				invoke wsprintf,addr outbuffer,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
 				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
-				invoke wsprintf,addr outbuffer,addr szEventString,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
+				invoke wsprintf,addr outbuffer,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
 				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
@@ -496,7 +515,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					mov		eax,255
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,de.u.DebugString.lpDebugStringData,addr buffer,eax,0
-				invoke wsprintf,addr outbuffer,addr szEventString,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
+				invoke wsprintf,addr outbuffer,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
 				invoke PutString,addr outbuffer,FALSE
 			.elseif eax==RIP_EVENT
 				invoke PutString,addr szRIP_EVENT,TRUE

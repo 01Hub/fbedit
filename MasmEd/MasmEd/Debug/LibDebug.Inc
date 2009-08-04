@@ -41,6 +41,7 @@ FUNC_BPADDLINE					equ 7
 FUNC_BPUPDATE					equ 8
 FUNC_GETTOOLTIP					equ 9
 FUNC_IMMEDIATE					equ 10
+FUNC_BREAK						equ 11
 
 ; Callback functions
 CB_SELECTLINE					equ 1
@@ -84,6 +85,7 @@ DEBUGINFO struct
 	hDbgWatch				HWND ?					; Handle of debug watch window
 	hPrp					HWND ?					; Handle of properties window
 	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
+	fMainThread				DWORD ?					; Only main thread
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
@@ -170,6 +172,7 @@ DEBUG struct
 	thread					DEBUGTHREAD 64 dup(<>)	; Threads
 	context					CONTEXT <>				; Context
 	prevcontext				CONTEXT <>				; Previous Context
+	tmpcontext				CONTEXT <>				; Temp Context
 	inxsource				DWORD ?					; Index to next free DEBUGSOURCE
 	hMemSource				HGLOBAL ?				; Handle to memory containing DEBUGSOURCE structures
 	inxtype					DWORD ?					; Index to next free DEBUGTYPE
@@ -293,7 +296,6 @@ datatype2						DATATYPE 1	dup(<szQWORD,szQWORD,8,0>,
 												<0,0,0,0>)
 
 ; The dbghelp dll
-; Masm and VC6 C/C++
 DbgHelpDLL						db 'DbgHelp.dll',0
 
 ; Int3
@@ -302,21 +304,21 @@ szBP							db 0CCh
 ; Debug events
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
-szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION',0
-szEXCEPTION_FLT_DIVIDE_BY_ZERO	db 'EXCEPTION_FLT_DIVIDE_BY_ZERO',0
-szEXCEPTION_INT_DIVIDE_BY_ZERO	db 'EXCEPTION_INT_DIVIDE_BY_ZERO',0
-szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
-szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT',0
-szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT',0
-szEXIT_PROCESS_DEBUG_EVENT		db 'EXIT_PROCESS_DEBUG_EVENT',0
-szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT',0
-szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT',0
-szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT',0
-szRIP_EVENT						db 'RIP_EVENT',0
+szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION Address: %08Xh ThreadID: %d',0
+szEXCEPTION_FLT_DIVIDE_BY_ZERO	db 'EXCEPTION_FLT_DIVIDE_BY_ZERO Address: %08Xh ThreadID: %d',0
+szEXCEPTION_INT_DIVIDE_BY_ZERO	db 'EXCEPTION_INT_DIVIDE_BY_ZERO Address: %08Xh ThreadID: %d',0
+szEXCEPTION_DATATYPE_MISALIGNMENT	db 'EXCEPTION_DATATYPE_MISALIGNMENT Address: %08Xh ThreadID: %d',0
+szEXCEPTION_SINGLE_STEP			db 'EXCEPTION_SINGLE_STEP',0
+szDBG_CONTROL_C					db 'DBG_CONTROL_C',0
 
-; Debug events formatting
-szEventString					db '%s %s',0
-szEventDec						db '%s %d',0
+szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT ProcessID: %d ThreadID: %d',0
+szEXIT_PROCESS_DEBUG_EVENT		db 'EXIT_PROCESS_DEBUG_EVENT ProcessID: %d ThreadID: %d Exit code: %d',0
+szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT ThreadID: %d',0
+szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT ThreadID: %d Exit code: %d',0
+szLOAD_DLL_DEBUG_EVENT			db 'LOAD_DLL_DEBUG_EVENT %s',0
+szUNLOAD_DLL_DEBUG_EVENT		db 'UNLOAD_DLL_DEBUG_EVENT %s',0
+szOUTPUT_DEBUG_STRING_EVENT		db 'OUTPUT_DEBUG_STRING_EVENT %s',0
+szRIP_EVENT						db 'RIP_EVENT',0
 
 ; Some useful text constants
 szCR							db 0Dh,0
@@ -362,6 +364,7 @@ szConst							db 'CONST %s Hex %08Xh Dec %d',0
 szTypeSize						db 'TYPESIZE %s Hex %08Xh Dec %d',0
 
 szType							db 'Type: %s Size: %u',0
+szLine							db 'File: %s Line: %u Address: %08Xh',0
 
 ; Errors
 szErrSyntaxError				db 'Syntax error: %s',0
@@ -413,3 +416,4 @@ mFunc							dd ?
 nError							dd ?
 szError							db 256 dup(?)
 lpNoDebug						dd ?
+fMainThread						dd ?

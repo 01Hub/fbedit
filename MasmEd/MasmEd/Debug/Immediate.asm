@@ -9,6 +9,7 @@ szImmVars						db 'Vars',0
 szImmTypes						db 'Types',0
 szImmCls						db 'Cls',0
 szImmWatch						db 'Watch',0
+szImmLines						db 'Lines',0
 
 szImmLocal						db 0Dh,'LOCAL: ',0
 
@@ -51,6 +52,8 @@ szHelp							db 'Immediate window:',0Dh
 								db '    Shows a list of all variables.',0Dh
 								db '  - Types',0Dh
 								db '    Show a list of all datatypes and constants.',0Dh
+								db '  - Lines',0Dh
+								db '    Show a list of all lines that produces code.',0Dh
 								db '  - Watch var1,Z:MyZStr,....,var8',0Dh
 								db '    Adds a watch to specified variables.',0Dh
 								db '    To clear the watch list, type Watch without any variable list.',0Dh
@@ -63,9 +66,6 @@ ParseBuff proc uses esi edi,lpBuff:DWORD
 
 	mov		esi,lpBuff
 	mov		edi,esi
-	.if byte ptr [esi]=='>'
-		inc		esi
-	.endif
 	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
 		inc		esi
 	.endw
@@ -396,6 +396,27 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				pop		ecx
 				lea		esi,[esi+sizeof DEBUGSYMBOL]
 				dec		ecx
+			.endw
+		.else
+			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+		.endif
+		jmp		Ex
+	.endif
+	invoke strcmpi,addr buffer,addr szImmLines
+	.if !eax
+		; Lines
+		.if dbg.hDbgThread
+			mov		esi,dbg.hMemLine
+			xor		ebx,ebx
+			.while ebx<dbg.inxline
+				movzx	eax,[esi].DEBUGLINE.FileID
+				mov		edx,sizeof DEBUGSOURCE
+				mul		edx
+				add		eax,dbg.hMemSource
+				invoke wsprintf,addr outbuffer,addr szLine,addr [eax].DEBUGSOURCE.FileName,[esi].DEBUGLINE.LineNumber,[esi].DEBUGLINE.Address
+				invoke PutStringOut,addr outbuffer,hWin
+				lea		esi,[esi+sizeof DEBUGLINE]
+				inc		ebx
 			.endw
 		.else
 			invoke PutStringOut,addr szOnlyInDebugMode,hWin

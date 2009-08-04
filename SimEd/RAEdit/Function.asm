@@ -2017,8 +2017,8 @@ SelChange proc uses ebx,hMem:DWORD,nType:DWORD
 	.endif
 	mov		eax,[ebx].EDIT.line
 	.if eax!=[ebx].EDIT.lastline
-		invoke HiliteLine,ebx,[ebx].EDIT.lastline,0
 		.if [ebx].EDIT.fhilite
+			invoke HiliteLine,ebx,[ebx].EDIT.lastline,0
 			invoke HiliteLine,ebx,[ebx].EDIT.line,[ebx].EDIT.fhilite
 		.endif
 		mov		eax,[ebx].EDIT.line

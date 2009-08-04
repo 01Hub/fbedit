@@ -22,7 +22,8 @@ MYCONST			equ sizeof RECT * 2 ;Test
 
 xtst1		tbyte ?
 xtst2		dword ?
-szTest		db 'Test',0
+szTest1		db 'Test1',0
+szTest2		db 'Test2',0
 szBuff		db MYCONST*2 dup(?)
 tid			dd   ?
 r			real10 ?
@@ -81,7 +82,7 @@ MyProc2 endp
 MyProc1 proc uses esi edi,var:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke lstrcpy,addr buffer,addr szTest
+	invoke lstrcpy,addr buffer,addr szTest1
 	ret
 
 MyProc1 endp
@@ -93,19 +94,22 @@ MyProc3 proc uses esi,Param:DWORD
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-	invoke OutputDebugString,addr szTest
+	invoke OutputDebugString,addr szTest1
 	ret
 
 MyProc3 endp
 
-ThreadProc1 proc uses esi,Param:DWORD
-	LOCAL	tst[4]:sdword
+ThreadProc1 proc Param:DWORD
 
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-	invoke OutputDebugString,addr szTest
+	.while TRUE
+		inc		eax
+;		invoke OutputDebugString,addr szTest1
+	.endw
+	xor		eax,eax
 	ret
 
 ThreadProc1 endp
@@ -117,7 +121,7 @@ ThreadProc2 proc uses esi,Param:DWORD
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-	invoke OutputDebugString,addr szTest
+	invoke OutputDebugString,addr szTest2
 	ret
 
 ThreadProc2 endp
@@ -131,6 +135,10 @@ start:
 	mov		eax,tid
 	mov		tid,1234
 	invoke CreateThread,NULL,0,addr ThreadProc1,0,NULL,addr tid
+	push	eax
+	mov		eax,'ABCD'
+	mov		ecx,'EFGH'
+	pop		eax
 	invoke CloseHandle,eax
 	invoke CreateThread,NULL,0,addr ThreadProc2,0,NULL,addr tid
 	invoke CloseHandle,eax

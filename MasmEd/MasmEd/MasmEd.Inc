@@ -88,6 +88,7 @@ FUNC_BPADDLINE				equ 7
 FUNC_BPUPDATE				equ 8
 FUNC_GETTOOLTIP				equ 9
 FUNC_IMMEDIATE				equ 10
+FUNC_BREAK					equ 11
 
 ; Callback functions
 CB_SELECTLINE				equ 1
@@ -284,6 +285,7 @@ IDM_PROPERTY_COPYTOCODE		equ 21011
 IDM_DEBUG_TOGGLE			equ 10082
 IDM_DEBUG_CLEAR				equ 10083
 IDM_DEBUG_RUN				equ 10081
+IDM_DEBUG_BREAK				equ 10089
 IDM_DEBUG_STOP				equ 10084
 IDM_DEBUG_INTO				equ 10085
 IDM_DEBUG_OVER				equ 10086
@@ -298,6 +300,7 @@ DEBUGINFO struct
 	hDbgWatch				HWND ?					; Handle of debug watch window
 	hPrp					HWND ?					; Handle of properties window
 	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
+	fMainThread				DWORD ?					; Only main thread
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
@@ -758,6 +761,7 @@ nTabInx					dd ?
 nCboBuild				dd ?
 dbginf					DEBUGINFO <>
 fDebugging				DWORD ?
+fMainThread				DWORD ?
 nUnsaved				DWORD ?
 ftexe					FILETIME <>
 nNewer					DWORD ?

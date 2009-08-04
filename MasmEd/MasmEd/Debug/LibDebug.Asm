@@ -27,14 +27,10 @@ EnumProc proc uses ebx,hWin:HWND,lParam:LPARAM
 
 	invoke GetWindowThreadProcessId,hWin,addr pid
 	mov		tid,eax
-	mov		ebx,dbg.lpthread
-	.if ebx
-		mov		eax,[ebx].DEBUGTHREAD.threadid
-		.if eax==tid
-			invoke SetForegroundWindow,hWin
-			xor		eax,eax
-			jmp		Ex
-		.endif
+	.if eax==dbg.thread.threadid
+		invoke SetForegroundWindow,hWin
+		xor		eax,eax
+		jmp		Ex
 	.endif
 	mov		eax,TRUE
   Ex:
@@ -44,6 +40,7 @@ EnumProc endp
 
 BringWindowToFront proc
 
+	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 	invoke EnumWindows,offset EnumProc,0
 	ret
 
@@ -64,6 +61,8 @@ SetDebugInfo proc public lpDEBUGINFO:DWORD
 	mov		hPrp,eax
 	mov		eax,[edx].DEBUGINFO.lpNoDebug
 	mov		lpNoDebug,eax
+	mov		eax,[edx].DEBUGINFO.fMainThread
+	mov		fMainThread,eax
 	mov		eax,[edx].DEBUGINFO.lpCallBack
 	mov		lpCallBack,eax
 	invoke strcpy,addr szExeName,addr [edx].DEBUGINFO.FileName
@@ -102,6 +101,17 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 				mov		[ebx].DEBUGTHREAD.suspended,FALSE
 				invoke ResumeThread,[ebx].DEBUGTHREAD.htread
 				invoke BringWindowToFront
+			.endif
+		.endif
+	.elseif eax==FUNC_BREAK
+		.if dbg.hDbgThread
+			.if !dbg.fHandled
+				mov		dbg.func,FUNC_BREAK
+				invoke SetBreakPointsAll
+				invoke WaitForSingleObject,dbg.pinfo.hProcess,50
+				.if !dbg.fHandled
+					invoke BringWindowToFront
+				.endif
 			.endif
 		.endif
 	.elseif eax==FUNC_STOP

@@ -6,6 +6,7 @@ IDC_BTNDONOTDEBUGALL			equ 1005
 IDC_BTNDEBUGALL					equ 1006
 IDC_LSTDONOTDEBUG				equ 1001
 IDC_LSTDEBUG					equ 1002
+IDC_CHKMAINTHREAD				equ 1007
 
 .const
 
@@ -50,6 +51,11 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0
 		invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,0,0
+		mov		eax,BST_UNCHECKED
+		.if fMainThread
+			mov		eax,BST_CHECKED
+		.endif
+		invoke CheckDlgButton,hWin,IDC_CHKMAINTHREAD,eax
 		.if fDebugging
 			mov		eax,IDC_BTNDONOTDEBUG
 			call	Disable
@@ -59,6 +65,8 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			call	Disable
 			mov		eax,IDC_BTNDEBUGALL
 			call	Disable
+			mov		eax,IDC_CHKMAINTHREAD
+			call	Disable
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -66,8 +74,6 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-;				mov		eax,lpData
-;				invoke WritePrivateProfileSection,addr szNoDebug,addr szBPNULL,[eax].ADDINDATA.lpProject
 				mov		nInx,0
 				mov		edi,offset NoDebug
 				mov		byte ptr [edi],0
@@ -79,6 +85,8 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					mov		byte ptr [edi],0
 					inc		nInx
 				.endw
+				invoke IsDlgButtonChecked,hWin,IDC_CHKMAINTHREAD
+				mov		fMainThread,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
