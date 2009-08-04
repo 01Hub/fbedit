@@ -1295,7 +1295,7 @@ WIN32_FILE_ATTRIBUTE_DATA,dwFileAttributes,ftCreationTime:FILETIME,ftLastAccessT
 WIN32_FIND_DATA,dwFileAttributes,ftCreationTime:FILETIME,ftLastAccessTime:FILETIME,ftLastWriteTime:FILETIME,nFileSizeHigh,nFileSizeLow,dwReserved0,dwReserved1,cFileName,cAlternate
 WIN32_STREAM_ID,dwStreamID,dwStreamAttributes,dwSize:LARGE_INTEGER,dwStreamNameSize,cStreamName
 WINDOWPLACEMENT,iLength,flags,showCmd,ptMinPosition:POINT,ptMaxPosition:POINT,rcNormalPosition:RECT
-WINDOWPOS,hwnd,hWndInsertAfter,x,y,lx,cy,flags
+WINDOWPOS,hwnd,hWndInsertAfter,x,y,cx,cy,flags
 WINDOW_BUFFER_SIZE_RECORD,dwSize:COORD
 WIN_CERTIFICATE,dwLength,wRevision,wCertificateType,bCertificate
 WKSTA_INFO_100,wki100_platform_id,wki100_computername,wki100_langroup,wki100_ver_major,wki100_ver_minor
