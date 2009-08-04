@@ -228,7 +228,7 @@ DestroyCmntBlock proc uses esi,lpMem:DWORD
 						invoke DestroyString,eax
 						mov		esi,eax
 						jmp		@b
-					.elseif (byte ptr [eax]==cl && ch==0) || word ptr [eax]==dx
+					.elseif (byte ptr [eax]==dl && dh==0) || word ptr [eax]==dx
 						;Comment
 						invoke DestroyToEol,eax
 						mov		esi,eax
@@ -994,6 +994,10 @@ SkipBrace1:
 		push	eax
 		mov		ah,']'
 		jmp		SkipBrace1
+	.elseif al=='<'
+		push	eax
+		mov		ah,'>'
+		jmp		SkipBrace1
 	.elseif al=='"'
 		push	eax
 		mov		ah,'"'
@@ -1157,6 +1161,9 @@ ArraySize:
 				inc		esi
 			.endif
 			mov		al,[esi]
+		.elseif al=='<'
+			call	SkipBrace
+			inc		narray
 		.endif
 		mov		ah,[ebx-1]
 		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
