@@ -6,7 +6,7 @@ Backup=$P\Bak\
 Group=1
 GroupExpand=1
 Res.rc=1
-Debug=1
+Debug=0
 [Files]
 1=RAProperty.Asm
 2=..\RAProperty.Inc
@@ -139,11 +139,11 @@ ProductVer4Range=0
 11=,
 12=
 13=
-14=,,,,,,
+14=,,,,,,,
 [Size]
 2=0,0,699,490,396
 <<<<<<< .mine
-1=0,0,699,490,178
+1=0,0,699,490,65
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101

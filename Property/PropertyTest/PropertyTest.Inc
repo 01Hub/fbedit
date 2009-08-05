@@ -29,8 +29,8 @@ szConst			db 'Const',0
 szData			db 'Data',0
 szStruct		db 'Struct',0
 
-szApiFile		db 'C:\RadASM\masm\masmApiCall.api',0
-szParseFile		db '\FbEdit\Projects\Applications\FbEdit\RadASM\Mdi\MdiRadAsm.asm',0
+szApiFile		db '\RadASM\masm\masmApiCall.api',0
+szParseFile		db '\FbEdit\Projects\Applications\FbEdit\RadASM\Projects\Debug\TestDebug.asm',0
 defgen			DEFGEN <'comment+',<0>,';',<27h,22h>,'\'>
 szIgnore1		db 'option',0
 szIgnore2		db 'include',0
