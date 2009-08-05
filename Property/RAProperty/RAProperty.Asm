@@ -7,6 +7,7 @@ include Data.inc
 include Misc.asm
 include WordList.asm
 include Parse.asm
+include MasmParse.asm
 include Sort.asm
 
 .code

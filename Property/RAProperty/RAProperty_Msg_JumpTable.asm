@@ -88,8 +88,13 @@
 		ret
 	align 4 
 	_PRM_PARSEFILE:
-		invoke PreParse,lParam
-		invoke ParseFile,wParam,lParam
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke MPreParse,lParam
+			invoke MParseFile,wParam,lParam
+		.else
+			invoke PreParse,lParam
+			invoke ParseFile,wParam,lParam
+		.endif
 		xor		eax,eax
 		ret
 	align 4 
