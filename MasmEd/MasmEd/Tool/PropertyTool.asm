@@ -33,7 +33,7 @@ szApiStructFile	db 'masmApiStruct.api',0
 szApiTypeFile	db 'masmApiType.api',0
 szApiWordFile	db 'masmApiWord.api',0
 
-ignorefirstword	db 'option',0,'include',0,'includelib',0,'invoke',0,'mov',0,'cmp',0,'.if',0,'.while',0,0
+ignorefirstword	db 'option',0,'include',0,'includelib',0,'invoke',0,0
 ignoreparam		db 'private',0,'public',0,'uses',0,'eax',0,'ebx',0,'ecx',0,'edx',0,'esi',0,'edi',0,'ebp',0,'esp',0,0
 datatypes		db 'db',0,'dw',0,'dd',0,'dq',0,'df',0,'dt',0,'byte',0,'word',0,'dword',0,'qword',0,'real4',0,'real8',0,'real10',0,'tbyte',0,0
 datatypeptr		db 'ptr',0
@@ -148,20 +148,20 @@ ParseEdit proc hWin:HWND
 
 ParseEdit endp
 
-DumpStruct proc uses esi
-
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCs,addr szNULL
-	.while eax
-		mov		esi,eax
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szComma
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCr
-		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
-	.endw
-	ret
-
-DumpStruct endp
+;DumpStruct proc uses esi
+;
+;	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCs,addr szNULL
+;	.while eax
+;		mov		esi,eax
+;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
+;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szComma
+;		invoke strlen,esi
+;		lea		esi,[esi+eax+1]
+;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
+;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCr
+;		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+;		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+;	.endw
+;	ret
+;
+;DumpStruct endp

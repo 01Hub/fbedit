@@ -424,63 +424,15 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 			.if eax
 				jmp		Nxt
 			.endif
-			invoke MIsIgnore,IGNORE_FIRSTWORD,ecx,esi
-			.if eax
-				lea		esi,[esi+ecx]
-				jmp		Nxtwrd
-			.endif
-			invoke MIsIgnore,IGNORE_FIRSTWORDTWOWORDS,ecx,esi
-			.if eax
-				lea		esi,[esi+ecx]
-				invoke GetWord,esi,addr npos
-				mov		esi,edx
-				lea		esi,[esi+ecx]
-				jmp		Nxtwrd
-			.endif
 			mov		lpword1,esi
 			mov		len1,ecx
 			lea		esi,[esi+ecx]
 			mov		lpdatatype,0
 			mov		lpdatatype2,0
 			mov		fPtr,0
-		  Nxtwrd1:
 			invoke MGetWord,esi,addr npos
 			mov		esi,edx
-			.if ecx
-				invoke MIsIgnore,IGNORE_LINESECONDWORD,ecx,esi
-				.if eax
-					jmp		Nxt
-				.endif
-				invoke MIsIgnore,IGNORE_SECONDWORD,ecx,esi
-				.if eax
-					lea		esi,[esi+ecx]
-					jmp		Nxtwrd1
-				.endif
-				invoke MIsIgnore,IGNORE_PTR,ecx,esi
-				.if eax
-					lea		esi,[esi+ecx]
-					inc		fPtr
-					jmp		Nxtwrd1
-				.endif
-				invoke MIsIgnore,IGNORE_SECONDWORDTWOWORDS,ecx,esi
-				.if eax
-					lea		esi,[esi+ecx]
-					invoke GetWord,esi,addr npos
-					mov		esi,edx
-					lea		esi,[esi+ecx]
-					jmp		Nxtwrd1
-				.endif
-				invoke MIsIgnore,IGNORE_DATATYPEINIT,ecx,esi
-				.if eax
-					lea		esi,[esi+ecx]
-					invoke GetWord,esi,addr npos
-					mov		esi,edx
-					mov		lpdatatype,esi
-					mov		lendatatype,ecx
-					lea		esi,[esi+ecx]
-					jmp		Nxtwrd1
-				.endif
-			.elseif byte ptr [esi]==':'
+			.if byte ptr [esi]==':'
 				inc		ecx
 			.endif
 			mov		lpword2,esi
@@ -520,11 +472,6 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
-						call	SkipToComma
-						.if byte ptr [esi]==','
-							inc		esi
-							jmp		Nxtwrd1
-						.endif
 					.endif
 				.elseif edx==DEFTYPE_CONST
 					call	ParseConst
@@ -807,7 +754,6 @@ ParseUnknown:
 ParseProc:
 	call	SaveName
 	call	SaveParam
-	;call	SaveRetType
 	call	SaveLocal
 	retn
 
@@ -1026,6 +972,13 @@ ParseData1:
 	mov		lpdatatype,eax
 	mov		eax,len2
 	mov		lendatatype,eax
+	invoke MGetWord,esi,addr npos
+	mov		esi,edx
+	invoke MIsIgnore,IGNORE_PTR,ecx,esi
+	.if eax
+		xor		eax,eax
+		retn
+	.endif
 	call	ConvDataType
 	call	ArraySize
 	.if byte ptr szname[8192]

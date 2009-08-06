@@ -6,7 +6,7 @@ Backup=$P\Bak\
 Group=1
 GroupExpand=1
 Res.rc=1
-Debug=0
+Debug=1
 [Files]
 1=RAProperty.Asm
 2=..\RAProperty.Inc
@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=5
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -139,7 +139,7 @@ ProductVer4Range=0
 11=,
 12=
 13=
-14=,,,,,,,
+14=,,,,,,
 [Size]
 2=0,0,699,490,396
 <<<<<<< .mine
@@ -156,7 +156,7 @@ ProductVer4Range=0
 11=0,0,746,498,2530
 12=0,0,0,0,2850
 13=0,0,0,0,1617
-14=0,0,0,0,16198
+14=0,0,0,0,15018
 [BookMark]
 0=
 1=
