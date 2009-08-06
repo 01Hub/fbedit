@@ -2,10 +2,13 @@ MasmEd
 
 1.0.5.7 - 2009.08.03
 ---------------------
-o Added internal debugger.
-o Added immediate window.
-o Added register window (shown while debugging).
+o Added internal source code debugger. See Debug.txt for more info.
+o Added immediate window. Can be used for integer calculations.
+  While debugging you can inspect or set registers, variables or memory.
+o Added register and watch windows (shown while debugging).
 o Added Debug Assemble to Make Options.
+o Improved code parser.
+o Code complete window can now be resized.
 o Resource editor accelerator table and string table now has an edit combo in its name column.
   The combo items are names from menues. This might save you some typing.
 o Added PBS_MARQUEE progress bar style to dialog editor.

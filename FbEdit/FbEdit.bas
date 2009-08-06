@@ -2063,6 +2063,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					' Size the divider
 					hCtl=GetDlgItem(hWin,IDC_DIVIDER2)
 					MoveWindow(hCtl,0,0,rect.right+1,2,TRUE)
+					' Get width of toolbar
+					hgt=SendMessage(ah.htoolbar,TB_BUTTONCOUNT,0,0)-1
+					SendMessage(ah.htoolbar,TB_GETITEMRECT,hgt,Cast(LPARAM,@rect1))
+					ad.tbwt=rect1.right+5
 					' Get height of toolbar
 					GetClientRect(ah.htoolbar,@rect1)
 					hgt=rect1.bottom+3

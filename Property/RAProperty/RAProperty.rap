@@ -143,20 +143,20 @@ ProductVer4Range=0
 [Size]
 2=0,0,699,490,396
 <<<<<<< .mine
-1=0,0,699,490,65
+1=0,0,699,490,18878
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2594
+7=0,0,0,0,1088
 9=0,0,0,0,373
 10=0,0,589,494,4452
 11=0,0,746,498,2530
 12=0,0,0,0,2850
 13=0,0,0,0,1617
-14=0,0,0,0,15018
+14=0,0,0,0,1606
 [BookMark]
 0=
 1=
@@ -178,16 +178,16 @@ ProductVer4Range=0
 [PTimer]
 PTimer=122121012
 [Find]
-1="ParseFile"
-2="ArraySize"
-3="ParseUnknown"
-4="PRM_DELPROPERTY"
-5="ConvDataType"
-6="szMasmDataConv"
-7="PrintStringByAddr"
-8="edi"
-9="skipbrace"
-10="ParseConst"
+1="VK_TAB"
+2="btnspro"
+3="ParseFile"
+4="ArraySize"
+5="ParseUnknown"
+6="PRM_DELPROPERTY"
+7="ConvDataType"
+8="szMasmDataConv"
+9="PrintStringByAddr"
+10="edi"
 
 [Exports]
 1=GetDefEx

@@ -57,6 +57,8 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKMAINTHREAD,eax
 		.if fDebugging
+			mov		eax,IDOK
+			call	Disable
 			mov		eax,IDC_BTNDONOTDEBUG
 			call	Disable
 			mov		eax,IDC_BTNDEBUG

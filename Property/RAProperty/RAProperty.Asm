@@ -1072,6 +1072,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETCURSEL,0,0
 				invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETITEMDATA,eax,0
 				invoke UpdateList,eax
+				invoke SetFocus,[ebx].RAPROPERTY.hlst
 			.elseif edx==LBN_SELCHANGE && eax==1003
 				;Selchange
 				invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETCURSEL,0,0

@@ -299,8 +299,8 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 		mov		dbg.hdbghand,eax
 		invoke DbgHelp,offset DbgHelpDLL,dbg.pinfo.hProcess,addr szExeName
 		.if !dbg.inxline
-			invoke PutString,addr szNoDebugInfoMasm,TRUE
-			invoke PutString,addr szExeName,TRUE
+			invoke PutString,addr szNoDebugInfo,hOut,TRUE
+			invoke PutString,addr szExeName,hOut,TRUE
 			mov		fNoDebugInfo,TRUE
 			push	0
 			push	FALSE
@@ -312,9 +312,9 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			push	CB_DEBUG
 			call	lpCallBack
 			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
-			invoke PutString,addr buffer,FALSE
+			invoke PutString,addr buffer,hOut,FALSE
 			invoke wsprintf,offset outbuffer,addr szDebuggingStarted,addr szExeName
-			invoke PutString,offset outbuffer,FALSE
+			invoke PutString,offset outbuffer,hOut,FALSE
 			mov		fNoDebugInfo,FALSE
 			invoke MapNoDebug
 			mov		ebx,dbg.hMemLine
@@ -360,7 +360,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				mov		dbg.lpvar,eax
 				invoke RtlZeroMemory,eax,256*1024
 				invoke wsprintf,addr outbuffer,addr szErrorParsing,dbg.nErrors
-				invoke PutString,addr outbuffer,TRUE
+				invoke PutString,addr outbuffer,hOut,TRUE
 			.endif
 		.endif
 		mov		dbg.prevline,-1
@@ -443,24 +443,24 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke wsprintf,addr outbuffer,addr szEXCEPTION_ACCESS_VIOLATION,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
-					invoke PutString,addr outbuffer,TRUE
+					invoke PutString,addr outbuffer,hOut,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
 					invoke wsprintf,addr outbuffer,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
-					invoke PutString,addr outbuffer,TRUE
+					invoke PutString,addr outbuffer,hOut,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_INT_DIVIDE_BY_ZERO
 					invoke wsprintf,addr outbuffer,addr szEXCEPTION_INT_DIVIDE_BY_ZERO,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
-					invoke PutString,addr outbuffer,TRUE
+					invoke PutString,addr outbuffer,hOut,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_DATATYPE_MISALIGNMENT
-					invoke PutString,addr szEXCEPTION_DATATYPE_MISALIGNMENT,TRUE
+					invoke PutString,addr szEXCEPTION_DATATYPE_MISALIGNMENT,hOut,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==EXCEPTION_SINGLE_STEP
-					invoke PutString,addr szEXCEPTION_SINGLE_STEP,TRUE
+					invoke PutString,addr szEXCEPTION_SINGLE_STEP,hOut,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==DBG_CONTROL_C
-					invoke PutString,addr szDBG_CONTROL_C,TRUE
+					invoke PutString,addr szDBG_CONTROL_C,hOut,TRUE
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.else
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
@@ -471,10 +471,10 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					mov		dbg.hdbgfile,eax
 				.endif
 				invoke wsprintf,addr outbuffer,addr szCREATE_PROCESS_DEBUG_EVENT,de.dwProcessId,de.dwThreadId
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 			.elseif eax==EXIT_PROCESS_DEBUG_EVENT
 				invoke wsprintf,addr outbuffer,addr szEXIT_PROCESS_DEBUG_EVENT,de.dwProcessId,de.dwThreadId,de.u.ExitProcess.dwExitCode
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 				mov		eax,de.dwProcessId
 				.if eax==dbg.pinfo.dwProcessId
 					invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,DBG_CONTINUE
@@ -483,10 +483,10 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			.elseif eax==CREATE_THREAD_DEBUG_EVENT
 				invoke AddThread,de.u.CreateThread.hThread,de.dwThreadId
 				invoke wsprintf,addr outbuffer,addr szCREATE_THREAD_DEBUG_EVENT,de.dwThreadId
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 			.elseif eax==EXIT_THREAD_DEBUG_EVENT
 				invoke wsprintf,addr outbuffer,addr szEXIT_THREAD_DEBUG_EVENT,de.dwThreadId,de.u.ExitThread.dwExitCode
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 				invoke FindThread,de.dwThreadId
 				.if eax
 					mov		dbg.lpthread,eax
@@ -503,12 +503,12 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.LoadDll.lpBaseOfDll,addr buffer,sizeof buffer
 				invoke wsprintf,addr outbuffer,addr szLOAD_DLL_DEBUG_EVENT,addr buffer
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 			.elseif eax==UNLOAD_DLL_DEBUG_EVENT
 				mov		buffer,0
 				invoke GetModuleFileName,de.u.UnloadDll.lpBaseOfDll,addr buffer,sizeof buffer
 				invoke wsprintf,addr outbuffer,addr szUNLOAD_DLL_DEBUG_EVENT,addr buffer
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 			.elseif eax==OUTPUT_DEBUG_STRING_EVENT
 				movzx	eax,de.u.DebugString.nDebugStringiLength
 				.if eax>255
@@ -516,9 +516,9 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 				.endif
 				invoke ReadProcessMemory,dbg.hdbghand,de.u.DebugString.lpDebugStringData,addr buffer,eax,0
 				invoke wsprintf,addr outbuffer,addr szOUTPUT_DEBUG_STRING_EVENT,addr buffer
-				invoke PutString,addr outbuffer,FALSE
+				invoke PutString,addr outbuffer,hOut,FALSE
 			.elseif eax==RIP_EVENT
-				invoke PutString,addr szRIP_EVENT,TRUE
+				invoke PutString,addr szRIP_EVENT,hOut,TRUE
 			.endif
 			invoke ContinueDebugEvent,de.dwProcessId,de.dwThreadId,fContinue
 		.endw
@@ -553,7 +553,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 	mov		fNoDebugInfo,FALSE
 	mov		dbg.fHandled,FALSE
 	invoke wsprintf,offset outbuffer,addr szDebugStopped,addr szExeName
-	invoke PutString,offset outbuffer,FALSE
+	invoke PutString,offset outbuffer,hOut,FALSE
 	invoke RtlZeroMemory,addr dbg,sizeof DEBUG
 	push	0
 	push	FALSE

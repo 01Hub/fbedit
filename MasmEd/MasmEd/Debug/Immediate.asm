@@ -6,6 +6,7 @@ szImmHelp						db 'Help',0
 szImmDump						db 'Dump',0
 szImmMemdump					db 'Memdump',0
 szImmVars						db 'Vars',0
+szImmProcs						db 'Procs',0
 szImmTypes						db 'Types',0
 szImmCls						db 'Cls',0
 szImmWatch						db 'Watch',0
@@ -27,7 +28,7 @@ szHelp							db 'Immediate window:',0Dh
 								db '  - Example: ?((((eax+1) SHL 2)*4) AND 0FFFFh)+MAX_PATH',0Dh
 								db '  - Example: Memdump Addr(MyArray),Sizeof(MyArray),DWORD',0Dh
 								db 'o Inspect variable, register, datatype, constant or a hex / dec value.',0Dh
- 								db ' - ?MyVar to show info about a variable local or parameter.',0Dh
+ 								db '  - ?MyVar to show info about a variable local or parameter.',0Dh
 								db '  - ?MyVar(inx) to show an array element. Index is zero based.',0Dh
 								db '    (inx) can be any expression.',0Dh
 								db '  - ?Z:MyZString to show a ZString. Use Z:MyZString(inx) to start',0Dh
@@ -49,7 +50,9 @@ szHelp							db 'Immediate window:',0Dh
 								db '    Shows a memory dump. Address and Count can be any expression.',0Dh
 								db '    Size is optional and can be BYTE, WORD, DWORD or QWORD.',0Dh
 								db '  - Vars',0Dh
-								db '    Shows a list of all variables.',0Dh
+								db '    Shows a list of all global variables.',0Dh
+								db '  - Procs',0Dh
+								db '    Shows a list of all procs.',0Dh
 								db '  - Types',0Dh
 								db '    Show a list of all datatypes and constants.',0Dh
 								db '  - Lines',0Dh
@@ -124,23 +127,31 @@ Immediate proc uses ebx esi edi,hWin:HWND
 	mov		val,0
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
 	invoke SendMessage,hWin,EM_LINEFROMCHAR,chrg.cpMin,0
-	mov		edx,eax
+	mov		ebx,eax
 	mov		word ptr buffer,255
-	invoke SendMessage,hWin,EM_GETLINE,edx,addr buffer
+	invoke SendMessage,hWin,EM_GETLINE,ebx,addr buffer
 	mov		buffer[eax],0
-	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
+	push	eax
+	invoke SendMessage,hWin,EM_LINEINDEX,ebx,0
+	mov		chrg.cpMin,eax
+	pop		edx
+	lea		eax,[eax+edx+1]
+	mov		chrg.cpMax,eax
+	invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szNULL
+	invoke PutString,addr buffer,hWin,FALSE
 	invoke ParseBuff,addr buffer
 	mov		eax,dword ptr buffer
 	and		eax,0FFFFFFh
 	.if eax=='H/' || eax=='h/' || eax=='?/'
 		; Help
-		invoke PutStringOut,addr szHelp,hWin
+		invoke PutString,addr szHelp,hWin,FALSE
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmHelp
 	.if !eax
 		; Help
-		invoke PutStringOut,addr szHelp,hWin
+		invoke PutString,addr szHelp,hWin,FALSE
 		jmp		Ex
 	.endif
 	invoke strcmpi,addr buffer,addr szImmDump
@@ -157,7 +168,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.endw
 			invoke SetBreakPointsAll
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -235,10 +246,10 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				.else
 					invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
 				.endif
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,TRUE
 			.endif
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -320,10 +331,10 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				mov		ebx,TRUE
 			.endif
 			.if ebx
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,TRUE
 			.endif
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -335,12 +346,12 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			xor		ebx,ebx
 			.while ebx<dbg.inxtype
 				invoke wsprintf,addr outbuffer,addr szType,addr [esi].DEBUGTYPE.szName,[esi].DEBUGTYPE.nSize
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,FALSE
 				lea		esi,[esi+sizeof DEBUGTYPE]
 				inc		ebx
 			.endw
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -358,9 +369,27 @@ Immediate proc uses ebx esi edi,hWin:HWND
 						invoke strcpy,addr outbuffer,addr [edi+sizeof DEBUGVAR]
 						invoke strlen,addr [edi+sizeof DEBUGVAR]
 						invoke strcat,addr outbuffer,addr [edi+eax+1+sizeof DEBUGVAR]
-						invoke PutStringOut,addr outbuffer,hWin
+						invoke PutString,addr outbuffer,hWin,FALSE
 					.endif
-				.elseif [esi].DEBUGSYMBOL.nType=='p'
+				.endif
+				pop		ecx
+				lea		esi,[esi+sizeof DEBUGSYMBOL]
+				dec		ecx
+			.endw
+		.else
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
+		.endif
+		jmp		Ex
+	.endif
+	invoke strcmpi,addr buffer,addr szImmProcs
+	.if !eax
+		; Procs
+		.if dbg.hDbgThread
+			mov		esi,dbg.hMemSymbol
+			mov		ecx,dbg.inxsymbol
+			.while ecx
+				push	ecx
+				.if [esi].DEBUGSYMBOL.nType=='p'
 					invoke strcpy,addr outbuffer,addr [esi].DEBUGSYMBOL.szName
 					mov		edi,[esi].DEBUGSYMBOL.lpType
 					.if edi
@@ -391,14 +420,14 @@ Immediate proc uses ebx esi edi,hWin:HWND
 							mov		ebx,offset szComma
 						.endw
 					.endif
-					invoke PutStringOut,addr outbuffer,hWin
+					invoke PutString,addr outbuffer,hWin,FALSE
 				.endif
 				pop		ecx
 				lea		esi,[esi+sizeof DEBUGSYMBOL]
 				dec		ecx
 			.endw
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -414,12 +443,12 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				mul		edx
 				add		eax,dbg.hMemSource
 				invoke wsprintf,addr outbuffer,addr szLine,addr [eax].DEBUGSOURCE.FileName,[esi].DEBUGLINE.LineNumber,[esi].DEBUGLINE.Address
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,FALSE
 				lea		esi,[esi+sizeof DEBUGLINE]
 				inc		ebx
 			.endw
 		.else
-			invoke PutStringOut,addr szOnlyInDebugMode,hWin
+			invoke PutString,addr szOnlyInDebugMode,hWin,TRUE
 		.endif
 		jmp		Ex
 	.endif
@@ -457,7 +486,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 			.endif
 		.endif
 		call	Error
-		invoke PutStringOut,addr outbuffer,hWin
+		invoke PutString,addr outbuffer,hWin,eax
 		jmp		Ex
 	.endif
 	xor ebx,ebx
@@ -478,12 +507,15 @@ Immediate proc uses ebx esi edi,hWin:HWND
 					invoke RtlMoveMemory,addr var,addr tmpvar,sizeof VAR
 				.else
 					pop		eax
-					.if nError==1
+					mov		eax,nError
+					push	eax
+					.if eax==1
 						invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
-					.elseif nError==2
+					.elseif eax==2
 						invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
 					.endif
-					invoke PutStringOut,addr outbuffer,hWin
+					pop		eax
+					invoke PutString,addr outbuffer,hWin,eax
 					jmp		Ex
 				.endif
 				pop		eax
@@ -492,7 +524,7 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				; GLOBAL, PROC Parameter or LOCAL
 				invoke WriteProcessMemory,dbg.hdbghand,var.Address,addr val,var.nSize,0
 				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,FALSE
 			.elseif eax=='R'
 				; REGISTER
 				mov		eax,var.Address
@@ -513,37 +545,40 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 				invoke ShowContext
 				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,FALSE
 			.else
 				.if var.nErr==ERR_INDEX
 					invoke wsprintf,addr outbuffer,addr szErrIndexOutOfRange,addr buffer
 				.else
 					invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,addr buffer
 				.endif
-				invoke PutStringOut,addr outbuffer,hWin
+				invoke PutString,addr outbuffer,hWin,TRUE
 			.endif
 			jmp		Ex
 		.endif
 		inc		ebx
 	.endw
 	.if buffer
-		invoke PutStringOut,addr szErrUnknownCommand,hWin
+		invoke PutString,addr szErrUnknownCommand,hWin,TRUE
 	.endif
   Ex:
 	ret
 
 Error:
-	.if nError==ERR_SYNTAX
+	mov		eax,nError
+	push	eax
+	.if eax==ERR_SYNTAX
 		invoke wsprintf,offset outbuffer,addr szErrSyntaxError,addr szError
-	.elseif nError==ERR_NOTFOUND
+	.elseif eax==ERR_NOTFOUND
 		invoke wsprintf,offset outbuffer,addr szErrVariableNotFound,addr szError
-	.elseif nError==ERR_INDEX
+	.elseif eax==ERR_INDEX
 		invoke wsprintf,offset outbuffer,addr szErrIndexOutOfRange,addr szError
-	.elseif nError==ERR_DIV0
+	.elseif eax==ERR_DIV0
 		invoke strcpy,offset outbuffer,addr szErrDiv0
-	.elseif nError==ERR_OVERFLOW
+	.elseif eax==ERR_OVERFLOW
 		invoke strcpy,offset outbuffer,addr szErrOverflow
 	.endif
+	pop		eax
 	retn
 
 Immediate endp

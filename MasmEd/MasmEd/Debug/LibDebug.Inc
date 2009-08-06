@@ -335,8 +335,8 @@ szDebugStopped					db '** Debugging ended: %s',0
 szUnhanfledBreakpoints			db 'There are %u unhandled breakpoint(s).',0
 szUnsavedFiles					db 'There are %u unsaved file(s).',0
 szNewerFiles					db '%u source files are newer than the exe.',0
-szExeNotFound					db 'Could not open:',0Dh,'%s',0
-szNoDebugInfoMasm				db 'No debug info found.',0Dh,'Use the /Zd, /Zi and /DEBUG command line options.',0
+szExeNotFound					db 'Could not open: %s.',0
+szNoDebugInfo					db 'No debug info found. Use the /Zd, /Zi and /DEBUG command line options.',0
 
 ; Tooltip / immediate window formatting
 szReg32							db 'REGISTER %s Hex %08Xh Dec %u',0
@@ -366,7 +366,7 @@ szTypeSize						db 'TYPESIZE %s Hex %08Xh Dec %d',0
 szType							db 'Type: %s Size: %u',0
 szLine							db 'File: %s Line: %u Address: %08Xh',0
 
-; Errors
+; Immesdiate window errors
 szErrSyntaxError				db 'Syntax error: %s',0
 szErrVariableNotFound			db 'Variable not found: %s',0
 szErrIndexOutOfRange			db 'Index out of range: %s',0

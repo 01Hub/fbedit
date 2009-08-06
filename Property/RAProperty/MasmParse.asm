@@ -399,10 +399,8 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lendatatype2:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	fPtr:DWORD
-	LOCAL	fRetType:DWORD
 	LOCAL	fParam:DWORD
 	LOCAL	endtype:DWORD
-	LOCAL	fdim:DWORD
 	LOCAL	narray:DWORD
 
 	mov		npos,0
@@ -411,9 +409,7 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		eax,npos
 		mov		nline,eax
 		mov		fPtr,0
-		mov		fRetType,0
 		mov		fParam,0
-		mov		fdim,0
 		mov		lpdatatype,0
 		mov		lpdatatype2,0
 	  Nxtwrd:
@@ -583,59 +579,38 @@ SkipSpc:
 	.endw
 	retn
 
-ParseMacro:
-	call	SaveName
-  @@:
-	invoke GetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==',' || byte ptr [esi]=='('
-			inc		esi
-			jmp		@b
-		.endif
-	.else
-		mov		lpword1,esi
-		mov		len1,ecx
-		lea		esi,[esi+ecx]
-		mov		edx,edi
-		mov		eax,len1
-		inc		eax
-		lea		edi,[edx+eax]
-		invoke strcpyn,edx,lpword1,eax
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		@b
-		.endif
-	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		word ptr [edi],0
-	.while byte ptr [esi]
-		invoke MSkipLine,esi,addr npos
-		inc		npos
-		mov		esi,eax
-		invoke MGetWord,esi,addr npos
-		mov		esi,edx
-		.if ecx
-			mov		lpword1,esi
-			mov		len1,ecx
-			mov		lpword2,esi
-			mov		len2,ecx
-			lea		esi,[esi+ecx]
-			invoke MWhatIsIt,lpword1,len1,lpword2,len2
-			.if eax
-				movzx	eax,[eax].DEFTYPE.nDefType
-				.if eax==DEFTYPE_ENDMACRO
-					retn
-				.endif
+ConvDataType:
+	push	esi
+	mov		esi,offset szMasmDataConv
+	.if lendatatype==2
+		.while byte ptr [esi]
+			invoke strcmpin,esi,lpdatatype,2
+			.if !eax
+				lea		esi,[esi+3]
+				mov		lpdatatype,esi
+				invoke strlen,esi
+				mov		lendatatype,eax
+				jmp		ExConvDataType
 			.endif
-		.endif
-	.endw
-	xor		eax,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.elseif lendatatype==4 || lendatatype==5 || lendatatype==6
+		.while byte ptr [esi]
+			lea		esi,[esi+3]
+			invoke strcmpin,esi,lpdatatype,lendatatype
+			.if !eax
+				mov		lpdatatype,esi
+				jmp		ExConvDataType
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.endif
+  ExConvDataType:
+	pop		esi
 	retn
 
 ArraySize:
@@ -647,9 +622,7 @@ ArraySize:
 	mov		narray,0
 	.while TRUE
 		mov		al,[esi]
-		.if al==VK_TAB
-			mov		al,' '
-		.elseif al=='"' || al=="'"
+		.if al=='"' || al=="'"
 			inc		esi
 			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
 				inc		esi
@@ -719,6 +692,61 @@ ArraySize:
 	.endif
 	retn
 
+ParseMacro:
+	call	SaveName
+  @@:
+	invoke GetWord,esi,addr npos
+	mov		esi,edx
+	.if !ecx
+		.if byte ptr [esi]==',' || byte ptr [esi]=='('
+			inc		esi
+			jmp		@b
+		.endif
+	.else
+		mov		lpword1,esi
+		mov		len1,ecx
+		lea		esi,[esi+ecx]
+		mov		edx,edi
+		mov		eax,len1
+		inc		eax
+		lea		edi,[edx+eax]
+		invoke strcpyn,edx,lpword1,eax
+		mov		byte ptr [edi],','
+		inc		edi
+		call	SkipToComma
+		.if byte ptr [esi]==','
+			inc		esi
+			jmp		@b
+		.endif
+	.endif
+	.if byte ptr [edi-1]==','
+		dec		edi
+	.endif
+	mov		word ptr [edi],0
+	.while byte ptr [esi]
+		invoke MSkipLine,esi,addr npos
+		inc		npos
+		mov		esi,eax
+		invoke MGetWord,esi,addr npos
+		mov		esi,edx
+		.if ecx
+			mov		lpword1,esi
+			mov		len1,ecx
+			mov		lpword2,esi
+			mov		len2,ecx
+			lea		esi,[esi+ecx]
+			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			.if eax
+				movzx	eax,[eax].DEFTYPE.nDefType
+				.if eax==DEFTYPE_ENDMACRO
+					retn
+				.endif
+			.endif
+		.endif
+	.endw
+	xor		eax,eax
+	retn
+
 ParseUnknown:
 	mov		szname,0
 	.if len1 && len2
@@ -751,16 +779,19 @@ ParseUnknown:
 	.endif
 	retn
 
-ParseProc:
-	call	SaveName
-	call	SaveParam
-	call	SaveLocal
-	retn
-
 ParseLabel:
 	call	SaveName
 	xor		eax,eax
 	inc		eax
+	retn
+
+ParseProc:
+	call	SaveName
+	call	SaveParam
+	; Return type
+	mov		byte ptr [edi],0
+	inc		edi
+	call	SaveLocal
 	retn
 
 NxtWordProc:
@@ -931,101 +962,6 @@ SaveLocal:
 	xor		eax,eax
 	retn
 
-ConvDataType:
-	push	esi
-	mov		esi,offset szMasmDataConv
-	.if lendatatype==2
-		.while byte ptr [esi]
-			invoke strcmpin,esi,lpdatatype,2
-			.if !eax
-				lea		esi,[esi+3]
-				mov		lpdatatype,esi
-				invoke strlen,esi
-				mov		lendatatype,eax
-				jmp		ExConvDataType
-			.endif
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
-	.elseif lendatatype==4 || lendatatype==5 || lendatatype==6
-		.while byte ptr [esi]
-			lea		esi,[esi+3]
-			invoke strcmpin,esi,lpdatatype,lendatatype
-			.if !eax
-				mov		lpdatatype,esi
-				jmp		ExConvDataType
-			.endif
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
-	.endif
-  ExConvDataType:
-	pop		esi
-	retn
-
-ParseData:
-	call	SaveName
-ParseData1:
-	mov		eax,lpword2
-	mov		lpdatatype,eax
-	mov		eax,len2
-	mov		lendatatype,eax
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	invoke MIsIgnore,IGNORE_PTR,ecx,esi
-	.if eax
-		xor		eax,eax
-		retn
-	.endif
-	call	ConvDataType
-	call	ArraySize
-	.if byte ptr szname[8192]
-		mov		byte ptr [edi-1],'['
-		invoke strcpy,edi,addr szname[8192]
-		invoke strlen,edi
-		lea		edi,[edi+eax]
-		mov		byte ptr [edi],']'
-		inc		edi
-		mov		byte ptr [edi],0
-		inc		edi
-	.endif
-	.if lpdatatype
-		mov		byte ptr [edi-1],':'
-		mov		eax,lendatatype
-		inc		eax
-		invoke strcpyn,edi,lpdatatype,eax
-		add		edi,lendatatype
-		mov		byte ptr [edi],0
-		inc		edi
-		mov		eax,lendatatype
-		inc		eax
-		invoke strcpyn,edi,lpdatatype,eax
-		add		edi,lendatatype
-		.if fPtr
-			push	fPtr
-		  @@:
-			invoke strcpyn,edi,addr szPtr,5
-			lea		edi,[edi+4]
-			dec		fPtr
-			jne		@b
-			pop		fPtr
-		.endif
-	.else
-		dec		edi
-		invoke strcpy,edi,addr szDword
-		lea		edi,[edi+sizeof szDword]
-		mov		byte ptr [edi],0
-		inc		edi
-		invoke strcpy,edi,addr szDword
-		lea		edi,[edi+sizeof szDword]
-	.endif
-	mov		byte ptr [edi],0
-	xor		eax,eax
-	inc		eax
-	retn
-
 ParseParamData:
 	call	SaveName
 	dec		edi
@@ -1172,25 +1108,68 @@ ParseParamData1:
 	inc		eax
 	retn
 
+ParseData:
+	call	SaveName
+ParseData1:
+	mov		eax,lpword2
+	mov		lpdatatype,eax
+	mov		eax,len2
+	mov		lendatatype,eax
+	; Check for mov	dword ptr [eax],1
+	invoke MGetWord,esi,addr npos
+	mov		esi,edx
+	invoke MIsIgnore,IGNORE_PTR,ecx,esi
+	.if eax
+		xor		eax,eax
+		retn
+	.endif
+	call	ConvDataType
+	call	ArraySize
+	.if byte ptr szname[8192]
+		mov		byte ptr [edi-1],'['
+		invoke strcpy,edi,addr szname[8192]
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],']'
+		inc		edi
+		mov		byte ptr [edi],0
+		inc		edi
+	.endif
+	.if lpdatatype
+		mov		byte ptr [edi-1],':'
+		mov		eax,lendatatype
+		inc		eax
+		invoke strcpyn,edi,lpdatatype,eax
+		add		edi,lendatatype
+		mov		byte ptr [edi],0
+		inc		edi
+		mov		eax,lendatatype
+		inc		eax
+		invoke strcpyn,edi,lpdatatype,eax
+		add		edi,lendatatype
+	.else
+		dec		edi
+		invoke strcpy,edi,addr szDword
+		lea		edi,[edi+sizeof szDword]
+		mov		byte ptr [edi],0
+		inc		edi
+		invoke strcpy,edi,addr szDword
+		lea		edi,[edi+sizeof szDword]
+	.endif
+	mov		byte ptr [edi],0
+	xor		eax,eax
+	inc		eax
+	retn
+
 ParseConst:
 	call	SaveName
 	invoke MGetWord,esi,addr npos
 	mov		esi,edx
 	.if ecx
-		mov		lpword2,esi
-		mov		len2,ecx
-		invoke MIsIgnore,IGNORE_CONSTANT,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			invoke GetWord,esi,addr npos
-			mov		esi,edx
-		.endif
 		.while TRUE
 			mov		al,[esi]
 			.if !al || al==VK_RETURN
 				.break
-			.elseif al==VK_TAB
-				mov		al,' '
 			.endif
 			mov		ah,[edi-1]
 			.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')'
@@ -1221,15 +1200,6 @@ ParseStruct:
 	mov		byte ptr szstructnest,0
 	mov		nNest,1
 	call	SaveName
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	.if ecx
-		invoke MIsIgnore,IGNORE_STRUCTTHIRDWORD,ecx,esi
-		.if eax
-			xor		eax,eax
-			retn
-		.endif
-	.endif
 	mov		byte ptr [edi],0
 	.while byte ptr [esi]
 		invoke MSkipLine,esi,addr npos
@@ -1239,180 +1209,77 @@ ParseStruct:
 		invoke MGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
-			invoke MIsIgnore,IGNORE_STRUCTLINEFIRSTWORD,ecx,esi
-			.if !eax
-				invoke MIsIgnore,IGNORE_STRUCTITEMFIRSTWORD,ecx,esi
-				.if eax
-					; As Integer x
-					lea		esi,[esi+ecx]
-					invoke MGetWord,esi,addr npos
-					mov		esi,edx
-					mov		lpword2,esi
-					mov		len2,ecx
-					lea		esi,[esi+ecx]
-				  @@:
-					invoke MGetWord,esi,addr npos
-					mov		esi,edx
-					.if !ecx
-						.if byte ptr [esi]=='*'
-							inc		esi
-							invoke GetWord,esi,addr npos
-							mov		esi,edx
-							lea		esi,[esi+ecx]
-							jmp		@b
-						.endif
+			mov		lpword1,esi
+			mov		len1,ecx
+			lea		esi,[esi+ecx]
+		  ParseStruct2:
+			invoke MGetWord,esi,addr npos
+			mov		esi,edx
+			mov		lpword2,esi
+			mov		len2,ecx
+			lea		esi,[esi+ecx]
+			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			.if eax
+				movzx	eax,[eax].DEFTYPE.nDefType
+				.if eax==DEFTYPE_ENDSTRUCT
+					mov		byte ptr szstructnest,0
+					dec		nNest
+					.if ZERO?
+						mov		byte ptr [edi],0
+						retn
 					.endif
-					invoke MIsIgnore,IGNORE_PTR,ecx,esi
-					.if eax
-						; ptr
-						inc		fPtr
-						lea		esi,[esi+ecx]
-						jmp		@b
-					.endif
-					mov		lpword1,esi
-					mov		len1,ecx
-					lea		esi,[esi+ecx]
-					jmp		ParseStruct3
-				.endif
-				invoke MIsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
-				.if eax
-					; Declare MySub 
-					lea		esi,[esi+ecx]
-					invoke GetWord,esi,addr npos
-					mov		esi,edx
-					invoke MIsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
-					.if eax
-						lea		esi,[esi+ecx]
-						invoke GetWord,esi,addr npos
-						mov		esi,edx
-					.endif
-					mov		lpword2,esi
-					mov		len2,ecx
-					lea		esi,[esi+ecx]
-					invoke MGetWord,esi,addr npos
-					mov		esi,edx
-					mov		lpword1,esi
-					xor		ecx,ecx
-					.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]!=VK_TAB && byte ptr [esi]!=VK_RETURN && byte ptr [esi]!='('
-						inc		esi
-						inc		ecx
-					.endw
-					mov		len1,ecx
-					jmp		ParseStruct3
-				.else
-					mov		lpword1,esi
-					mov		len1,ecx
-					lea		esi,[esi+ecx]
-				.endif
-			  ParseStruct2:
-				invoke MGetWord,esi,addr npos
-				mov		esi,edx
-				.if byte ptr [esi]=='('
-					; MyItem(0 To 7) As Integer
-					.while byte ptr [esi] && byte ptr [esi]!=0Dh && byte ptr [esi]!=')'
-						inc		esi
-					.endw
-					.if byte ptr [esi]==')'
-						inc		esi
-					.endif
-					jmp		ParseStruct2
-				.elseif byte ptr [esi]==':'
-					inc		esi
-					invoke MGetWord,esi,addr npos
-					mov		esi,edx
-					lea		esi,[esi+ecx]
-					jmp		ParseStruct2
-				.endif
-				.if ecx
-					invoke MIsIgnore,IGNORE_STRUCTITEMSECONDWORD,ecx,esi
-					.if eax
-						; As Integer
-						lea		esi,[esi+ecx]
-						invoke GetWord,esi,addr npos
-						mov		esi,edx
-						mov		lpword2,esi
-						mov		len2,ecx
-						lea		esi,[esi+ecx]
-					  @@:
-						invoke MGetWord,esi,addr npos
-						mov		esi,edx
-						invoke MIsIgnore,IGNORE_PTR,ecx,esi
-						.if eax
-							; ptr
-							inc		fPtr
-							lea		esi,[esi+ecx]
-							jmp		@b
-						.endif
-						jmp		ParseStruct3
-					.endif
-				.endif
-				mov		lpword2,esi
-				mov		len2,ecx
-				lea		esi,[esi+ecx]
-				invoke MWhatIsIt,lpword1,len1,lpword2,len2
-				.if eax
-					movzx	eax,[eax].DEFTYPE.nDefType
-					.if eax==DEFTYPE_ENDSTRUCT
+				.elseif eax==DEFTYPE_STRUCT
+					.if len2!=0
+						mov		eax,len2
+						inc		eax
+						invoke strcpyn,offset szstructnest,lpword2,eax
+						invoke strcat,offset szstructnest,offset szDot
+					.else
 						mov		byte ptr szstructnest,0
-						dec		nNest
-						.if ZERO?
-							mov		byte ptr [edi],0
-							retn
-						.endif
-					.elseif eax==DEFTYPE_STRUCT
-						.if len2!=0 && [ebx].RAPROPERTY.nlanguage==nMASM
-							mov		eax,len2
-							inc		eax
-							invoke strcpyn,offset szstructnest,lpword2,eax
-							invoke strcat,offset szstructnest,offset szDot
-						.else
-							mov		byte ptr szstructnest,0
-						.endif
-						inc		nNest
-					.elseif eax==DEFTYPE_DATA && [ebx].RAPROPERTY.nlanguage==nMASM
-						jmp		ParseStruct3
 					.endif
-				.else
-		  		  ParseStruct3:
-					.if byte ptr [edi]==','
-						inc		edi
-					.endif
-					.if [ebx].RAPROPERTY.nlanguage==nMASM && byte ptr szstructnest
-						invoke strcpy,edi,offset szstructnest
-						invoke strlen,edi
-						lea		edi,[edi+eax]
-					.endif
-					mov		eax,len1
-					inc		eax
-					invoke strcpyn,edi,lpword1,eax
-					add		edi,len1
-					mov		word ptr [edi],':'
-					inc		edi
-					mov		eax,len2
-					inc		eax
-					invoke strcpyn,edi,lpword2,eax
-					add		edi,len2
-					.if fPtr
-					  @@:
-						invoke strcpyn,edi,addr szPtr,5
-						lea		edi,[edi+4]
-						dec		fPtr
-						jne		@b
-					.endif
-					mov		word ptr [edi],','
-					call	SkipToComma
-					.if byte ptr [esi]==','
-						inc		esi
-						invoke GetWord,esi,addr npos
-						mov		esi,edx
-						.if ecx
-							mov		lpword1,esi
-							mov		len1,ecx
-							lea		esi,[esi+ecx]
-							jmp		ParseStruct3
-						.endif
-					.endif
+					inc		nNest
+				.elseif eax==DEFTYPE_DATA
+					jmp		ParseStruct3
 				.endif
+			.else
+	  		  ParseStruct3:
+				.if byte ptr [edi]==','
+					inc		edi
+				.endif
+				.if byte ptr szstructnest
+					invoke strcpy,edi,offset szstructnest
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+				.endif
+				mov		eax,len1
+				inc		eax
+				invoke strcpyn,edi,lpword1,eax
+				add		edi,len1
+
+				call	ArraySize
+				.if byte ptr szname[8192]
+					mov		byte ptr [edi],'['
+					inc		edi
+					invoke strcpy,edi,addr szname[8192]
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+					mov		byte ptr [edi],']'
+					inc		edi
+				.endif
+
+				mov		word ptr [edi],':'
+				inc		edi
+				mov		eax,lpword2
+				mov		lpdatatype,eax
+				mov		eax,len2
+				mov		lendatatype,eax
+				call	ConvDataType
+				mov		edx,edi
+				mov		eax,lendatatype
+				lea		edi,[edi+eax]
+				inc		eax
+				invoke strcpyn,edx,lpdatatype,eax
+				mov		word ptr [edi],','
 			.endif
 		.endif
 	.endw

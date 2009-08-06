@@ -1422,6 +1422,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mul		edx
 		mov		rect1.bottom,eax
 		pop		edx
+		push	edx
+		invoke MoveWindow,hTab,-1,rect.top,edx,rect1.bottom,TRUE
+		invoke SendMessage,hTab,TCM_GETROWCOUNT,0,0
+		.if !eax
+			inc		eax
+		.endif
+		mov		edx,24
+		mul		edx
+		mov		rect1.bottom,eax
+		pop		edx
 		invoke MoveWindow,hTab,-1,rect.top,edx,rect1.bottom,TRUE
 		invoke UpdateWindow,hTab
 		pop		edx
@@ -1711,7 +1721,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			inc		nInx
 		.endw
-
 		invoke strcpy,addr PathBin,addr defPathBin
 		mov		lpcbData,sizeof PathBin
 		invoke RegQueryValueEx,hReg,addr szPathBin,0,addr lpType,addr PathBin,addr lpcbData
@@ -1740,7 +1749,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpcbData,sizeof nCboBuild
 		invoke RegQueryValueEx,hReg,addr szBuild,0,addr lpType,addr nCboBuild,addr lpcbData
 		invoke SendMessage,hCbo,CB_SETCURSEL,nCboBuild,0
-
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
 		invoke SendMessage,hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter

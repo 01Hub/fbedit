@@ -2394,30 +2394,50 @@ CmdWindow proc hWin:HWND
 	.elseif eax==IDM_WINDOW_ARRANGEICONS
 		invoke SendMessage,hClient,WM_MDIICONARRANGE,0,0
 	.elseif eax==IDM_WINDOW_NEXTWINDOW
-		invoke SendMessage,hClient,WM_MDINEXT,NULL,TRUE
-		xor		eax,eax
-		.if hEdit
-			mov		eax,hEdit
-		.elseif hDialog
-			mov		eax,hMdiCld
-		.elseif hHexEd
-			mov		eax,hHexEd
-		.endif
-		.if eax
-			invoke SetFocus,eax
+		invoke GetFocus
+		invoke GetParent,eax
+		.if eax==hOut1
+			invoke OutputSelect,2
+		.elseif eax==hOut2
+			invoke OutputSelect,3
+		.elseif eax==hOut3
+			invoke OutputSelect,1
+		.else
+			invoke SendMessage,hClient,WM_MDINEXT,NULL,TRUE
+			xor		eax,eax
+			.if hEdit
+				mov		eax,hEdit
+			.elseif hDialog
+				mov		eax,hMdiCld
+			.elseif hHexEd
+				mov		eax,hHexEd
+			.endif
+			.if eax
+				invoke SetFocus,eax
+			.endif
 		.endif
 	.elseif eax==IDM_WINDOW_PREVIOUS
-		invoke SendMessage,hClient,WM_MDINEXT,NULL,FALSE
-		xor		eax,eax
-		.if hEdit
-			mov		eax,hEdit
-		.elseif hDialog
-			mov		eax,hMdiCld
-		.elseif hHexEd
-			mov		eax,hHexEd
-		.endif
-		.if eax
-			invoke SetFocus,eax
+		invoke GetFocus
+		invoke GetParent,eax
+		.if eax==hOut1
+			invoke OutputSelect,3
+		.elseif eax==hOut2
+			invoke OutputSelect,1
+		.elseif eax==hOut3
+			invoke OutputSelect,2
+		.else
+			invoke SendMessage,hClient,WM_MDINEXT,NULL,FALSE
+			xor		eax,eax
+			.if hEdit
+				mov		eax,hEdit
+			.elseif hDialog
+				mov		eax,hMdiCld
+			.elseif hHexEd
+				mov		eax,hHexEd
+			.endif
+			.if eax
+				invoke SetFocus,eax
+			.endif
 		.endif
 	.elseif eax==IDM_WINDOW_CLOSE
 		invoke SendMessage,hMdiCld,WM_CLOSE,0,0

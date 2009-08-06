@@ -181,7 +181,7 @@ MinorFiles=*.res;*.obj;
 3=154,154,590,413,749
 4=0,0,590,413,25314
 5=132,132,536,413,57931
-6=12,26,869,416,164208
+6=12,26,869,416,72886
 7=132,132,536,413,29552
 8=44,44,536,413,15718
 9=88,88,536,413,34523
@@ -495,16 +495,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="array"
-2="ParseFPData"
-3="iniWindow"
-4="hLB"
-5="hParseDLL"
-6="iniReadPaths"
-7="iniVersion"
-8="2217"
-9="nRadASMVer"
-10="'Api'"
+1="IDM_WINDOW_P"
+2="array"
+3="ParseFPData"
+4="iniWindow"
+5="hLB"
+6="hParseDLL"
+7="iniReadPaths"
+8="iniVersion"
+9="2217"
+10="nRadASMVer"
 
 [BreakPoint]
 0=
@@ -546,7 +546,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=9
+MilestoneOnDateDate=6
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988

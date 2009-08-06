@@ -24,6 +24,8 @@ ccchrg					CHARRANGE <?>
 cctype					dd ?
 ccinprogress			dd ?
 cclist					db 16384 dup(?)
+ccwt					dd ?
+ccht					dd ?
 
 .code
 
@@ -42,6 +44,12 @@ CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_LBUTTONDBLCLK
 		invoke SendMessage,hREd,WM_CHAR,VK_TAB,0
 		jmp		Ex
+	.elseif eax==WM_SIZE
+		mov		eax,lParam
+		movsx	edx,ax
+		shr		eax,16
+		mov		ccwt,edx
+		mov		ccht,eax
 	.endif
 	invoke CallWindowProc,lpOldCCProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -51,7 +59,9 @@ CodeCompleteProc endp
 
 CreateCodeComplete proc
 
-	invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,hWnd,NULL,hInstance,0
+	mov		ccwt,200
+	mov		ccht,150
+	invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,hWnd,NULL,hInstance,0
 	mov		hCCLB,eax
 	invoke SetWindowLong,hCCLB,GWL_WNDPROC,offset CodeCompleteProc
 	mov		lpOldCCProc,eax
@@ -893,13 +903,16 @@ ShowList:
 	invoke ScreenToClient,hWnd,addr pt
 	invoke GetClientRect,hWnd,addr rect
 	mov		eax,pt.y
-	add		eax,150+20
+	add		eax,ccht
+	add		eax,20
 	.if eax>rect.bottom
-		sub		pt.y,155
+		mov		eax,ccht
+		add		eax,5
+		sub		pt.y,eax
 	.else
 		add		pt.y,20
 	.endif
-	invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,200,150,SWP_SHOWWINDOW or SWP_NOACTIVATE
+	invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,ccwt,ccht,SWP_SHOWWINDOW or SWP_NOACTIVATE
 	invoke ShowWindow,hCCLB,SW_SHOWNA
 	retn
 

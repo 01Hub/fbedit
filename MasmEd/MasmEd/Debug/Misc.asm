@@ -302,37 +302,37 @@ AnyToBin proc lpStr:DWORD
 
 AnyToBin endp
 
-PutString proc lpString:DWORD,fRed:DWORD
+PutString proc lpString:DWORD,hWin:HWND,fRed:DWORD
 	LOCAL	chrg:CHARRANGE
 
 	mov		chrg.cpMin,-1
 	mov		chrg.cpMax,-1
-	invoke SendMessage,hOut,EM_EXSETSEL,0,addr chrg
-	invoke SendMessage,hOut,EM_LINELENGTH,-1,0
+	invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,hWin,EM_LINELENGTH,-1,0
 	.if eax
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCR
+		invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
 	.endif
 	.if fRed
-		invoke SendMessage,hOut,EM_EXGETSEL,0,addr chrg
-		invoke SendMessage,hOut,EM_EXLINEFROMCHAR,0,chrg.cpMin
-		invoke SendMessage,hOut,REM_LINEREDTEXT,eax,TRUE
+		invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		invoke SendMessage,hWin,REM_LINEREDTEXT,eax,TRUE
 	.endif
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,lpString
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCR
-	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-	ret
-
-PutString endp
-
-PutStringOut proc lpString:DWORD,hWin:HWND
-
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,lpString
 	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
 	invoke SendMessage,hWin,EM_SCROLLCARET,0,0
 	ret
 
-PutStringOut endp
+PutString endp
 
+;PutString proc lpString:DWORD,hWin:HWND
+;
+;	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,lpString
+;	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
+;	invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+;	ret
+;
+;PutString endp
+;
 HexBYTE proc uses ebx edi,lpBuff:DWORD,Val:DWORD
 
 	mov		edi,lpBuff
