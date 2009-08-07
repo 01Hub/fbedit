@@ -2297,13 +2297,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
 					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 					mov		ebx,eax
+					inc		eax
+					invoke DebugCommand,FUNC_ISCODELINE,eax,addr FileName
+					mov		edi,eax
 					invoke SendMessage,hREd,REM_GETLINESTATE,ebx,0
 					and		eax,STATE_BREAKPOINT
 					xor		eax,STATE_BREAKPOINT
-					invoke SendMessage,hREd,REM_SETBREAKPOINT,ebx,eax
-					invoke DebugCommand,FUNC_BPCLEARALL,0,0
-					invoke UpdateAll,SET_BREAKPOINTS
-					invoke DebugCommand,FUNC_BPUPDATE,0,0
+					.if !eax || edi
+						invoke SendMessage,hREd,REM_SETBREAKPOINT,ebx,eax
+						invoke DebugCommand,FUNC_BPCLEARALL,0,0
+						invoke UpdateAll,SET_BREAKPOINTS
+						invoke DebugCommand,FUNC_BPUPDATE,0,0
+					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
 				invoke UpdateAll,CLEAR_BREAKPOINTS
@@ -2371,8 +2376,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_CARET
 				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
 				invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-				inc		eax
-				invoke DebugCommand,FUNC_RUNTOCARET,eax,offset FileName
+				lea		ebx,[eax+1]
+				invoke DebugCommand,FUNC_ISCODELINE,ebx,offset FileName
+				.if eax
+					invoke DebugCommand,FUNC_RUNTOCARET,ebx,offset FileName
+				.endif
 			.elseif eax==IDM_DEBUG_NODEBUG
 				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
 			.elseif eax==IDM_MAKE_MAINFILE
@@ -2844,6 +2852,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_USER+998
 		invoke OpenEditFile,lParam,0
+		invoke DebugCommand,FUNC_FILEOPEN,0,0
 	.elseif eax==WM_DROPFILES
 		xor		ebx,ebx
 	  @@:

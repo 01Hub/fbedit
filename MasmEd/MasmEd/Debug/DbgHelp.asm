@@ -54,7 +54,8 @@ szSymInitializeFailed			db 'SymInitialize failed.',0
 szDbgHelpFail					db 'Could not find %s.',0
 szDbgHelpFuncFail				db 'Could not find function %s in %s.',0
 szDbgHelpOld					db '&s is to old. Get a newer version.',0
-szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
+szSymNotFound					db 'The symbol %s was not found. Addrss: %08Xh Size: %u',0
+szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols. %u symbols was not found.',0Dh,0
 
 CombSort_Const					REAL4 1.3
 
@@ -62,6 +63,7 @@ CombSort_Const					REAL4 1.3
 
 dwModuleBase					DWORD ?
 im								IMAGEHLP_MODULE <>
+nNotFound						DWORD ?
 
 .code
 
@@ -491,6 +493,10 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			mov		[edi].DEBUGSYMBOL.nSize,eax
 		.endif
 		inc		dbg.inxsymbol
+	.elseif SymbolSize
+		invoke wsprintf,addr outbuffer,addr szSymNotFound,SymbolName,SymbolAddress,SymbolSize
+		invoke PutString,addr outbuffer,hOut,TRUE
+		inc		dbg.nNotFound
 	.endif
 	mov		eax,TRUE
 	ret
@@ -516,7 +522,12 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	push	CB_OPENFILE
 	call	lpCallBack
 	; Let MasmEd do its things
-	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
+	xor		ebx,ebx
+	mov		fDoneOpen,ebx
+	.while ebx<10 && !fDoneOpen
+		invoke Sleep,10
+		inc		ebx
+	.endw
 	mov		eax,TRUE
 	ret
 
@@ -598,6 +609,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	mov		dbg.inxsource,eax
 	mov		dbg.inxline,eax
 	mov		nErrDll,eax
+	mov		nNotFound,eax
 	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax

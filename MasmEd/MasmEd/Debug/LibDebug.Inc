@@ -42,6 +42,8 @@ FUNC_BPUPDATE					equ 8
 FUNC_GETTOOLTIP					equ 9
 FUNC_IMMEDIATE					equ 10
 FUNC_BREAK						equ 11
+FUNC_FILEOPEN					equ 12
+FUNC_ISCODELINE					equ 13
 
 ; Callback functions
 CB_SELECTLINE					equ 1
@@ -193,6 +195,8 @@ DEBUG struct
 	func					DWORD ?					; Current debug function
 	fHandled				DWORD ?					; Set to TRUE when a breakpoint is reached
 	nErrors					DWORD ?					; Number of errors while parsing
+	nNotFound				DWORD ?					; Numbers of symbols not found
+	hWnd					DWORD ?					; Handle of debugged window
 DEBUG ends
 
 ; Predefined datatypes
@@ -380,6 +384,7 @@ szErrConstant					db 'Could not evaluate expression: %s',0
 szErrArray						db 'Could not evaluate array size: %s',0
 szErrType						db 'Could not find datatype: %s',0
 szErrorParsing					db 'WARNING! There was %d error(s) while parsing. Variables, parameters and locals are disabled.',0
+szNotCodeLine					db 'Not a code line.',0
 
 ; Ansi / Widechar
 szA								db 'A',0
@@ -417,3 +422,4 @@ nError							dd ?
 szError							db 256 dup(?)
 lpNoDebug						dd ?
 fMainThread						dd ?
+fDoneOpen						dd ?

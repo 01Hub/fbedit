@@ -21,14 +21,17 @@ include Immediate.asm
 
 ;#########################################################################
 
-EnumProc proc uses ebx,hWin:HWND,lParam:LPARAM
+EnumProc proc hWin:HWND,lParam:LPARAM
 	LOCAL	pid:DWORD
-	LOCAL	tid:DWORD
 
 	invoke GetWindowThreadProcessId,hWin,addr pid
-	mov		tid,eax
 	.if eax==dbg.thread.threadid
-		invoke SetForegroundWindow,hWin
+		mov		eax,hWin
+		.while eax
+			mov		dbg.hWnd,eax
+			invoke GetParent,eax
+		.endw
+		invoke SetForegroundWindow,dbg.hWnd
 		xor		eax,eax
 		jmp		Ex
 	.endif
@@ -38,10 +41,18 @@ EnumProc proc uses ebx,hWin:HWND,lParam:LPARAM
 
 EnumProc endp
 
-BringWindowToFront proc
+BringWindowToFront proc uses ebx
 
-	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
-	invoke EnumWindows,offset EnumProc,0
+	xor		ebx,ebx
+	.while ebx<20
+		invoke EnumWindows,offset EnumProc,0
+		.if dbg.hWnd
+			invoke GetForegroundWindow
+			.break .if eax==dbg.hWnd
+		.endif
+		invoke Sleep,50
+		inc		ebx
+	.endw
 	ret
 
 BringWindowToFront endp
@@ -77,14 +88,17 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 	.if eax==FUNC_BPCLEARALL
 		invoke ClearBreakpoints
 	.elseif eax==FUNC_BPADDLINE
+		; wParan=nLine, lParam=lpFileName
 		invoke AddBreakpoint,wParam,lParam
 	.elseif eax==FUNC_BPUPDATE
+		; wParam=0, lParam=0
 		.if dbg.hDbgThread
 			invoke ClearBreakPointsAll
 			invoke MapBreakPoints
 			invoke SetBreakPoints
 		.endif
 	.elseif eax==FUNC_RUN
+		; wParam=0, lParam=0
 		mov		dbg.func,FUNC_RUN
 		.if !dbg.hDbgThread
 			invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
@@ -104,23 +118,30 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 			.endif
 		.endif
 	.elseif eax==FUNC_BREAK
+		; wParam=0, lParam=0
 		.if dbg.hDbgThread
 			.if !dbg.fHandled
 				mov		dbg.func,FUNC_BREAK
 				invoke SetBreakPointsAll
-				invoke WaitForSingleObject,dbg.pinfo.hProcess,50
+				invoke Sleep,50
 				.if !dbg.fHandled
-					invoke BringWindowToFront
+					.if dbg.hWnd
+						invoke SetForegroundWindow,dbg.hWnd
+					.else
+						invoke BringWindowToFront
+					.endif
 				.endif
 			.endif
 		.endif
 	.elseif eax==FUNC_STOP
+		; wParam=0, lParam=0
 		.if dbg.hDbgThread
 			invoke ResetSelectLine
 			mov		dbg.func,FUNC_STOP
 			invoke TerminateProcess,dbg.pinfo.hProcess,0
 		.endif
 	.elseif eax==FUNC_STEPINTO
+		; wParam=0, lParam=0
 		.if dbg.hDbgThread
 			.if dbg.fHandled
 				mov		dbg.func,FUNC_STEPINTO
@@ -143,6 +164,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 			.endif
 		.endif
 	.elseif eax==FUNC_STEPOVER
+		; wParam=0, lParam=0
 		.if dbg.hDbgThread
 			.if dbg.fHandled
 				mov		dbg.func,FUNC_STEPOVER
@@ -160,6 +182,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 			.endif
 		.endif
 	.elseif eax==FUNC_RUNTOCARET
+		; wParan=nLine, lParam=lpFileName
 		.if dbg.hDbgThread
 			.if dbg.fHandled
 				mov		dbg.func,FUNC_RUNTOCARET
@@ -177,13 +200,29 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 			.endif
 		.endif
 	.elseif eax==FUNC_GETTOOLTIP
+		; wParam=hREd, lParam=lpDEBUGTIP
 		mov		esi,lParam
 		invoke GetVarVal,[esi].DEBUGTIP.lpWord,[esi].DEBUGTIP.nLine,TRUE
 		.if eax
 			mov		eax,offset outbuffer
 		.endif
 	.elseif eax==FUNC_IMMEDIATE
+		; wParam=hImmOut, lParam=0
 		invoke Immediate,wParam
+	.elseif eax==FUNC_FILEOPEN
+		; wParam=0, lParam=0
+		mov		fDoneOpen,TRUE
+	.elseif eax==FUNC_ISCODELINE
+		; wParan=nLine, lParam=lpFileName
+		.if dbg.hDbgThread
+			invoke IsLineCode,wParam,lParam
+			.if !eax
+				invoke PutString,addr szNotCodeLine,hOut,TRUE
+				xor		eax,eax
+			.endif
+		.else
+			mov		eax,TRUE
+		.endif
 	.endif
 	ret
 

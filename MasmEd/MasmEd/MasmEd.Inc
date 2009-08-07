@@ -89,6 +89,8 @@ FUNC_BPUPDATE				equ 8
 FUNC_GETTOOLTIP				equ 9
 FUNC_IMMEDIATE				equ 10
 FUNC_BREAK					equ 11
+FUNC_FILEOPEN				equ 12
+FUNC_ISCODELINE				equ 13
 
 ; Callback functions
 CB_SELECTLINE				equ 1

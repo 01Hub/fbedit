@@ -117,6 +117,38 @@ SetBreakPoints proc uses ebx edi
 
 SetBreakPoints endp
 
+IsLineCode proc uses ebx esi edi,nLine:DWORD,lpFileName:DWORD
+
+	mov		edi,dbg.inxsource
+	mov		ebx,dbg.hMemSource
+	.while edi
+		invoke strcmpi,lpFileName,addr [ebx].DEBUGSOURCE.FileName
+		.if !eax
+			mov		edx,[ebx].DEBUGSOURCE.FileID
+			mov		eax,nLine
+			mov		esi,dbg.hMemLine
+			xor		ecx,ecx
+			.while ecx<dbg.inxline
+				.if eax==[esi].DEBUGLINE.LineNumber
+					.if dx==[esi].DEBUGLINE.FileID
+						mov		eax,TRUE
+						jmp		Ex
+					.endif
+				.endif
+				inc		ecx
+				add		esi,sizeof DEBUGLINE
+			.endw
+			.break
+		.endif
+		dec		edi
+		lea		ebx,[ebx+sizeof DEBUGSOURCE]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsLineCode endp
+
 SetBreakpointAtCurrentLine proc uses ebx esi edi,nLine:DWORD,lpFileName:DWORD
 
 	mov		edi,dbg.inxsource

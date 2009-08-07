@@ -275,16 +275,16 @@ Group=Assembly,Resources,Misc,Include
 52=3
 
 [Find]
-1="DumpStruct"
-2="IDM_DEBUG_RUN"
-3="lstrcmpi"
-4="lstrcmp"
-5="lstrcpyn"
-6="lstrlen"
-7="lstrcat"
-8="lstrcpy"
-9="IDM_DEB"
-10="dbginf"
+1="BREAK"
+2="FUNC_IMM"
+3="FUNC_GET"
+4="WM_USER+998"
+5="abowe"
+6="DumpStruct"
+7="IDM_DEBUG_RUN"
+8="lstrcmpi"
+9="lstrcmp"
+10="lstrcpyn"
 
 [VersionControl]
 Settings=1246
@@ -296,7 +296,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -331,9 +331,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,24818
-1=0,0,0,0,35433
-11=0,0,0,0,23600
+2=0,0,687,524,1967
+1=0,0,0,0,66411
+11=0,0,0,0,21461
 22=0,0,0,0,4185
 10=0,0,0,0,5143
 23=0,0,0,0,4914
@@ -376,7 +376,7 @@ ProductVer4Range=0
 49=0,0,0,0
 50=0,0,0,0
 51=0,0,0,0,1410
-52=0,0,0,0,4250
+52=0,0,0,0,5186
 
 [BookMark]
 0=

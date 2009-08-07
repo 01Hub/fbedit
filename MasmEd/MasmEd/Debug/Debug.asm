@@ -311,8 +311,8 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			push	TRUE
 			push	CB_DEBUG
 			call	lpCallBack
-			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol
-			invoke PutString,addr buffer,hOut,FALSE
+			invoke wsprintf,addr buffer,addr szFinal,dbg.inxsource,dbg.inxline,dbg.inxsymbol,dbg.nNotFound
+			invoke PutString,addr buffer,hOut,dbg.nNotFound
 			invoke wsprintf,offset outbuffer,addr szDebuggingStarted,addr szExeName
 			invoke PutString,offset outbuffer,hOut,FALSE
 			mov		fNoDebugInfo,FALSE
