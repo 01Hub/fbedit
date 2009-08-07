@@ -794,41 +794,41 @@ ParseProc:
 	call	SaveLocal
 	retn
 
-NxtWordProc:
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	.if ecx
-		mov		lpword2,esi
-		mov		len2,ecx
-		lea		esi,[esi+ecx]
-		invoke MIsIgnore,IGNORE_PTR,len2,lpword2
-		.if eax
-			inc		fPtr
-			jmp		NxtWordProc
-		.endif
-		invoke MWhatIsIt,lpword1,len1,lpword2,len2
-		.if eax
-			movzx	edx,[eax].DEFTYPE.nDefType
-			.if edx==endtype
-				.if byte ptr [edi-1]==','
-					dec		edi
-				.endif
-				mov		byte ptr [edi],0
-				xor		eax,eax
-				inc		eax
-				retn
-			.elseif edx==DEFTYPE_LOCALDATA
-				movzx	edx,[eax].DEFTYPE.nDefType
-				movzx	eax,[eax].DEFTYPE.nType
-				call	ParseParamData
-				mov		byte ptr [edi],','
-				inc		edi
-			.endif
-		.endif
-	.endif
-	xor		eax,eax
-	retn
-
+;NxtWordProc:
+;	invoke MGetWord,esi,addr npos
+;	mov		esi,edx
+;	.if ecx
+;		mov		lpword2,esi
+;		mov		len2,ecx
+;		lea		esi,[esi+ecx]
+;		invoke MIsIgnore,IGNORE_PTR,len2,lpword2
+;		.if eax
+;			inc		fPtr
+;			jmp		NxtWordProc
+;		.endif
+;		invoke MWhatIsIt,lpword1,len1,lpword2,len2
+;		.if eax
+;			movzx	edx,[eax].DEFTYPE.nDefType
+;			.if edx==endtype
+;				.if byte ptr [edi-1]==','
+;					dec		edi
+;				.endif
+;				mov		byte ptr [edi],0
+;				xor		eax,eax
+;				inc		eax
+;				retn
+;			.elseif edx==DEFTYPE_LOCALDATA
+;				movzx	edx,[eax].DEFTYPE.nDefType
+;				movzx	eax,[eax].DEFTYPE.nType
+;				call	ParseParamData
+;				mov		byte ptr [edi],','
+;				inc		edi
+;			.endif
+;		.endif
+;	.endif
+;	xor		eax,eax
+;	retn
+;
 SaveParam:
 	invoke MGetWord,esi,addr npos
 	mov		esi,edx
@@ -838,44 +838,110 @@ SaveParam:
 			lea		esi,[esi+ecx]
 			jmp		SaveParam
 		.endif
+	.elseif byte ptr [esi]==','
+		inc		esi
+		jmp		SaveParam
+	.elseif byte ptr [esi]==VK_RETURN
+		mov		dword ptr [edi],0
+		inc		edi
+		retn
 	.endif
 SaveParam1:
 	invoke MGetWord,esi,addr npos
 	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		SaveParam1
-		.elseif byte ptr [esi]!=VK_RETURN
-			inc		esi
-			jmp		SaveParam1
-		.endif
-	.else
-		invoke MIsIgnore,IGNORE_PROCPARAM,ecx,esi
-		.if eax
-			lea		esi,[esi+ecx]
-			jmp		SaveParam1
-		.endif
+	.if ecx
 		mov		lpword1,esi
 		mov		len1,ecx
 		lea		esi,[esi+ecx]
 		mov		eax,TYPE_NAMEFIRST
-		call	ParseParamData
-		mov		byte ptr [edi],','
-		inc		edi
-		call	SkipSpc
-		call	SkipToComma
-		.if byte ptr [esi]==','
-			inc		esi
-			jmp		SaveParam1
+		call	SaveName
+		mov		byte ptr [edi-1],':'
+		invoke MGetWord,esi,addr npos
+		mov		esi,edx
+		.if !ecx
+			.if byte ptr [esi]==','
+				inc		esi
+				invoke strcpy,edi,addr szDword
+				lea		edi,[edi+sizeof szDword]
+				mov		byte ptr [edi],0
+				inc		edi
+				invoke strcpy,edi,addr szDword
+				lea		edi,[edi+sizeof szDword]
+				mov		byte ptr [edi],','
+				inc		edi
+				jmp		SaveParam1
+			.elseif byte ptr [esi]==':'
+				inc		esi
+			  @@:
+				invoke MGetWord,esi,addr npos
+				mov		esi,edx
+				invoke MIsIgnore,IGNORE_PTR,ecx,esi
+				.if eax
+					lea		esi,[esi+ecx]
+					invoke strcpy,edi,addr szPtr
+					lea		edi,[edi+sizeof szPtr-1]
+					mov		byte ptr [edi],' '
+					inc		edi
+					jmp		@b
+				.endif
+				mov		lpdatatype,esi
+				mov		lendatatype,ecx
+				call	ConvDataType
+				mov		edx,edi
+				mov		eax,lendatatype
+				lea		edi,[edi+eax]
+				inc		eax
+				invoke strcpyn,edx,lpdatatype,eax
+				mov		byte ptr [edi],','
+				inc		edi
+				jmp		SaveParam1
+			.endif
 		.endif
 	.endif
 	.if byte ptr [edi-1]==','
 		dec		edi
 	.endif
-	mov		dword ptr [edi],0
+	mov		byte ptr [edi],0
 	inc		edi
 	retn
+
+;SaveParam1:
+;	invoke MGetWord,esi,addr npos
+;	mov		esi,edx
+;	.if !ecx
+;		.if byte ptr [esi]==','
+;			inc		esi
+;			jmp		SaveParam1
+;		.elseif byte ptr [esi]!=VK_RETURN
+;			inc		esi
+;			jmp		SaveParam1
+;		.endif
+;	.else
+;		invoke MIsIgnore,IGNORE_PROCPARAM,ecx,esi
+;		.if eax
+;			lea		esi,[esi+ecx]
+;			jmp		SaveParam1
+;		.endif
+;		mov		lpword1,esi
+;		mov		len1,ecx
+;		lea		esi,[esi+ecx]
+;		mov		eax,TYPE_NAMEFIRST
+;		call	ParseParamData
+;		mov		byte ptr [edi],','
+;		inc		edi
+;		call	SkipSpc
+;		call	SkipToComma
+;		.if byte ptr [esi]==','
+;			inc		esi
+;			jmp		SaveParam1
+;		.endif
+;	.endif
+;	.if byte ptr [edi-1]==','
+;		dec		edi
+;	.endif
+;	mov		dword ptr [edi],0
+;	inc		edi
+;	retn
 
 SaveLocal:
 	.while byte ptr [esi]
@@ -898,98 +964,98 @@ SaveLocal:
 	xor		eax,eax
 	retn
 
-ParseParamData:
-	call	SaveName
-	dec		edi
-ParseParamData1:
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	.if !ecx
-		.if byte ptr [esi]=='['
-			push	esi
-			.while byte ptr [esi] && byte ptr [esi-1]!=']'
-				mov		al,[esi]
-				.if al!=VK_SPACE
-					mov		[edi],al
-					inc		edi
-				.elseif byte ptr [edi-1]!=VK_SPACE
-					mov		[edi],al
-					inc		edi
-				.endif
-				inc		esi
-			.endw
-			pop		esi
-			call	SkipBrace
-			jmp		ParseParamData1
-		.elseif byte ptr [esi]==':'
-			inc		esi
-		.endif
-	.endif
-  @@:
-	lea		esi,[esi+ecx]
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	invoke MIsIgnore,IGNORE_PTR,ecx,esi
-	.if eax
-		push	ecx
-		.if !fPtr
-			mov		byte ptr [edi],':'
-			inc		edi
-		.endif
-		invoke strcpy,edi,addr szMasmPtr
-		lea		edi,[edi+sizeof szMasmPtr-1]
-		inc		fPtr
-		pop		ecx
-		jmp		@b
-	.endif
-	mov		lpdatatype,esi
-	mov		lendatatype,ecx
-	lea		esi,[esi+ecx]
-  @@:
-	invoke MGetWord,esi,addr npos
-	mov		esi,edx
-	invoke MIsIgnore,IGNORE_PTR,ecx,esi
-	.if eax
-		lea		esi,[esi+ecx]
-		invoke strcpy,edi,addr szPtr
-		lea		edi,[edi+sizeof szPtr-1]
-	.endif
-	.if lpdatatype
-		.if !fPtr
-			mov		byte ptr [edi],':'
-			inc		edi
-		.endif
-		call	ConvDataType
-		mov		edx,edi
-		mov		eax,lendatatype
-		lea		edi,[edi+eax]
-		inc		eax
-		invoke strcpyn,edx,lpdatatype,eax
-		.if lpdatatype2
-			mov		byte ptr [edi],'['
-			inc		edi
-			mov		edx,edi
-			mov		eax,lendatatype2
-			lea		edi,[edi+eax]
-			inc		eax
-			invoke strcpyn,edx,lpdatatype2,eax
-			mov		byte ptr [edi],']'
-			inc		edi
-			mov		lpdatatype2,0
-		.endif
-	.else
-		.if !fPtr
-			mov		byte ptr [edi],':'
-			inc		edi
-		.endif
-		invoke strcpy,edi,addr szDword
-		lea		edi,[edi+sizeof szDword-1]
-	.endif
-	mov		fPtr,0
-	mov		byte ptr [edi],0
-	xor		eax,eax
-	inc		eax
-	retn
+;ParseParamData:
+;	call	SaveName
+;	dec		edi
+;ParseParamData1:
+;	invoke MGetWord,esi,addr npos
+;	mov		esi,edx
+;	.if !ecx
+;		.if byte ptr [esi]=='['
+;			push	esi
+;			.while byte ptr [esi] && byte ptr [esi-1]!=']'
+;				mov		al,[esi]
+;				.if al!=VK_SPACE
+;					mov		[edi],al
+;					inc		edi
+;				.elseif byte ptr [edi-1]!=VK_SPACE
+;					mov		[edi],al
+;					inc		edi
+;				.endif
+;				inc		esi
+;			.endw
+;			pop		esi
+;			call	SkipBrace
+;			jmp		ParseParamData1
+;		.elseif byte ptr [esi]==':'
+;			inc		esi
+;		.endif
+;	.endif
+;  @@:
+;	lea		esi,[esi+ecx]
+;	invoke MGetWord,esi,addr npos
+;	mov		esi,edx
+;	invoke MIsIgnore,IGNORE_PTR,ecx,esi
+;	.if eax
+;		push	ecx
+;		.if !fPtr
+;			mov		byte ptr [edi],':'
+;			inc		edi
+;		.endif
+;		invoke strcpy,edi,addr szMasmPtr
+;		lea		edi,[edi+sizeof szMasmPtr-1]
+;		inc		fPtr
+;		pop		ecx
+;		jmp		@b
+;	.endif
+;	mov		lpdatatype,esi
+;	mov		lendatatype,ecx
+;	lea		esi,[esi+ecx]
+;  @@:
+;	invoke MGetWord,esi,addr npos
+;	mov		esi,edx
+;	invoke MIsIgnore,IGNORE_PTR,ecx,esi
+;	.if eax
+;		lea		esi,[esi+ecx]
+;		invoke strcpy,edi,addr szPtr
+;		lea		edi,[edi+sizeof szPtr-1]
+;	.endif
+;	.if lpdatatype
+;		.if !fPtr
+;			mov		byte ptr [edi],':'
+;			inc		edi
+;		.endif
+;		call	ConvDataType
+;		mov		edx,edi
+;		mov		eax,lendatatype
+;		lea		edi,[edi+eax]
+;		inc		eax
+;		invoke strcpyn,edx,lpdatatype,eax
+;		.if lpdatatype2
+;			mov		byte ptr [edi],'['
+;			inc		edi
+;			mov		edx,edi
+;			mov		eax,lendatatype2
+;			lea		edi,[edi+eax]
+;			inc		eax
+;			invoke strcpyn,edx,lpdatatype2,eax
+;			mov		byte ptr [edi],']'
+;			inc		edi
+;			mov		lpdatatype2,0
+;		.endif
+;	.else
+;		.if !fPtr
+;			mov		byte ptr [edi],':'
+;			inc		edi
+;		.endif
+;		invoke strcpy,edi,addr szDword
+;		lea		edi,[edi+sizeof szDword-1]
+;	.endif
+;	mov		fPtr,0
+;	mov		byte ptr [edi],0
+;	xor		eax,eax
+;	inc		eax
+;	retn
 
 ParseData:
 	call	SaveName
