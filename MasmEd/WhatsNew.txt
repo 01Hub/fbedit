@@ -1,6 +1,6 @@
 MasmEd
 
-1.0.5.7 - 2009.08.03
+1.0.5.7 - 2009.08.10
 ---------------------
 o Added internal source code debugger. See Debug.txt for more info.
 o Added immediate window. Can be used for integer calculations.
