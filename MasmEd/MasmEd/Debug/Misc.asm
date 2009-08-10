@@ -324,15 +324,6 @@ PutString proc lpString:DWORD,hWin:HWND,fRed:DWORD
 
 PutString endp
 
-;PutString proc lpString:DWORD,hWin:HWND
-;
-;	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,lpString
-;	invoke SendMessage,hWin,EM_REPLACESEL,FALSE,addr szCR
-;	invoke SendMessage,hWin,EM_SCROLLCARET,0,0
-;	ret
-;
-;PutString endp
-;
 HexBYTE proc uses ebx edi,lpBuff:DWORD,Val:DWORD
 
 	mov		edi,lpBuff

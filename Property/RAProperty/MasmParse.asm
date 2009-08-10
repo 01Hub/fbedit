@@ -250,26 +250,6 @@ MWhatIsIt proc uses esi,lpWord1:DWORD,len1:DWORD,lpWord2:DWORD,len2:DWORD
 				or		eax,eax
 				je		Ex
 			.endif
-;		.elseif eax==TYPE_TWOWORDS
-;			.if ecx==len1
-;				invoke Compare,lpWord1,addr [esi].DEFTYPE.szWord,ecx
-;				or		eax,eax
-;				.if ZERO?
-;					mov		eax,ecx
-;					movzx	ecx,[esi+eax].DEFTYPE.szWord
-;					.if ecx==len2
-;						invoke Compare,lpWord2,addr [esi+eax+1].DEFTYPE.szWord,ecx
-;						or		eax,eax
-;						je		Ex
-;					.endif
-;				.endif
-;			.endif
-;		.elseif eax==TYPE_ONEWORD
-;			.if ecx==len1
-;				invoke Compare,lpWord1,addr [esi].DEFTYPE.szWord,ecx
-;				or		eax,eax
-;				je		Ex
-;			.endif
 		.endif
 		add		esi,sizeof DEFTYPE
 		jmp		@b
@@ -436,14 +416,6 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
-;						mov		edi,offset szname
-;						PrintStringByAddr edi
-;						invoke strlen,edi
-;						lea		edi,[edi+eax+1]
-;						PrintStringByAddr edi
-;						invoke strlen,edi
-;						lea		edi,[edi+eax+2]
-;						PrintStringByAddr edi
 					.endif
 				.elseif edx==DEFTYPE_LABEL
 					call	ParseLabel

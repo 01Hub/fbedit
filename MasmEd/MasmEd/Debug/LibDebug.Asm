@@ -86,6 +86,7 @@ DebugCommand proc public uses ebx esi edi,nCmnd:DWORD,wParam:DWORD,lParam:DWORD
 
 	mov		eax,nCmnd
 	.if eax==FUNC_BPCLEARALL
+		; wParam=0, lParam=0
 		invoke ClearBreakpoints
 	.elseif eax==FUNC_BPADDLINE
 		; wParan=nLine, lParam=lpFileName
