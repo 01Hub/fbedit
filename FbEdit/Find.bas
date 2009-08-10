@@ -360,26 +360,30 @@ TheNextFile:
 					f.ffileno=Val(Left(f.listoffiles,i-1))
 					f.listoffiles=Mid(f.listoffiles,i+1)
 					sFile=GetProjectFileName(f.ffileno)
-					hMem=GetFileMem(sFile)
-					ms.lpMem=hMem
-					ms.lpFind=@f.findbuff
-					ms.lpCharTab=ad.lpCharTab
-					' Memory search down is faster
-					ms.fr=f.fr Or FR_DOWN
-					f.fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
-					GlobalFree(hMem)
-					If f.fres Then
-						f.fnoreset=TRUE
-						OpenProjectFile(f.ffileno)
-						SetFocus(ah.hfind)
-						f.fnoreset=FALSE
-						SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
-						f.chrgrange.cpMin=0
-						f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
-						InitFindDir
-						f.fpro=2
-						f.fonlyonetime=0
-						GoTo TheNextFile
+					If Len(sFile) Then
+						hMem=GetFileMem(sFile)
+						If hMem Then
+							ms.lpMem=hMem
+							ms.lpFind=@f.findbuff
+							ms.lpCharTab=ad.lpCharTab
+							' Memory search down is faster
+							ms.fr=f.fr Or FR_DOWN
+							f.fres=SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(Integer,@ms))
+							GlobalFree(hMem)
+							If f.fres Then
+								f.fnoreset=TRUE
+								OpenProjectFile(f.ffileno)
+								SetFocus(ah.hfind)
+								f.fnoreset=FALSE
+								SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@f.chrginit))
+								f.chrgrange.cpMin=0
+								f.chrgrange.cpMax=SendMessage(ah.hred,WM_GETTEXTLENGTH,0,0)+1
+								InitFindDir
+								f.fpro=2
+								f.fonlyonetime=0
+								GoTo TheNextFile
+							EndIf
+						EndIf
 					EndIf
 				Wend
 				f.fres=-1
