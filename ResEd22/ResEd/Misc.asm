@@ -578,7 +578,8 @@ ResetMenu proc uses ebx esi edi
 			invoke lstrcpy,addr buffer,addr szAdd
 			invoke lstrcat,addr buffer,addr rarstype.sztype
 			mov		ebx,nInx
-			invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,addr [ebx+22000],addr buffer
+			lea		ebx,[ebx+22000]
+			invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,ebx,addr buffer
 		.endif
 		inc		nInx
 	.endw

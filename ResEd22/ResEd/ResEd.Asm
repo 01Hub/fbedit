@@ -235,7 +235,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !rarstype.szext && rarstype.sztype
 					invoke lstrcpy,addr buffer,addr szAdd
 					invoke lstrcat,addr buffer,addr rarstype.sztype
-					invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,addr [ebx+22000+1],addr buffer
+					mov		ebx,nInx
+					lea		ebx,[ebx+22000]
+					invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,ebx,addr buffer
 				.endif
 			.endif
 			inc		nInx
@@ -829,7 +831,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DialogBoxParam,hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 		.elseif eax>22000 && eax<=22032
 			;User resource type
-			lea		eax,[eax-22000+TPE_USERDATA-1]
+			lea		eax,[eax-22000+32]
 			invoke SendMessage,hResEd,PRO_ADDITEM,eax,TRUE
 		.elseif eax>=20000 && eax<=20020
 			;Tool
