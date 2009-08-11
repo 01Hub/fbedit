@@ -121,6 +121,10 @@ o Commands.
 
 Whats new:
 -----------------------------------------------------------------------------
+o Released version 1.0.0.6
+  - Added Break to debug menu.
+  - Access violation and division by zero is now handled by the debugger.
+  - Fixed bugs with immediate window.
 o Released version 1.0.0.5
   - Added ?S:MyString command to immediate window to show strings.
   - Added support for FreeBASIC.

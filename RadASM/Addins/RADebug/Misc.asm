@@ -624,13 +624,13 @@ EnableMenu proc uses esi edi
 	LOCAL	nLine:DWORD
 	LOCAL	nInx:DWORD
 
-	mov		esi,offset IDAddIn+4
+	mov		esi,offset IDAddIn
 	mov		eax,lpData
 	.if [eax].ADDINDATA.fProject && !fNoDebugInfo
 		; Toggle &Breakpoint
-		invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_GRAYED
+		invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
 		; Run &To Caret
-		invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+		invoke EnableMenuItem,hMnu,[esi+32],MF_BYCOMMAND or MF_GRAYED
 		mov		eax,lpHandles
 		.if [eax].ADDINHANDLES.hEdit
 			mov		edx,[eax].ADDINHANDLES.hEdit
@@ -660,48 +660,52 @@ EnableMenu proc uses esi edi
 						.endw
 						.if ecx!=dbg.inxline
 							; Toggle &Breakpoint
-							invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+							invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
 							; Run &To Caret
-							invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
+							invoke EnableMenuItem,hMnu,[esi+32],MF_BYCOMMAND or MF_ENABLED
 						.endif
 					.endif
 				.else
 					; Toggle &Breakpoint
-					invoke EnableMenuItem,hMnu,[esi],MF_BYCOMMAND or MF_ENABLED
+					invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
 				.endif
 			.endif
 		.endif
 		; &Clear Breakpoints
 		invoke AnyBreakPoints
 		.if eax
-			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_ENABLED
+			invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
 		.else
-			invoke EnableMenuItem,hMnu,[esi+4],MF_BYCOMMAND or MF_GRAYED
+			invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_GRAYED
 		.endif
 		; &Run
-		invoke EnableMenuItem,hMnu,[esi+8],MF_BYCOMMAND or MF_ENABLED
+		invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
 		; Do not Debug
-		invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_ENABLED
+		invoke EnableMenuItem,hMnu,[esi+36],MF_BYCOMMAND or MF_ENABLED
 		.if dbg.hDbgThread
-			; &Stop
-			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_ENABLED
-			; Step &Into
+			; Brea&k
 			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_ENABLED
+			; &Stop
+			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_ENABLED
+			; Step &Into
+			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_ENABLED
 			; Step &Over
 			mov		eax,MF_BYCOMMAND or MF_GRAYED
 			.if dbg.inxsource
 				mov		eax,MF_BYCOMMAND or MF_ENABLED
 			.endif
-			invoke EnableMenuItem,hMnu,[esi+20],eax
+			invoke EnableMenuItem,hMnu,[esi+28],eax
 		.else
-			; &Stop
-			invoke EnableMenuItem,hMnu,[esi+12],MF_BYCOMMAND or MF_GRAYED
-			; Step &Into
+			; Brea&k
 			invoke EnableMenuItem,hMnu,[esi+16],MF_BYCOMMAND or MF_GRAYED
-			; Step &Over
+			; &Stop
 			invoke EnableMenuItem,hMnu,[esi+20],MF_BYCOMMAND or MF_GRAYED
-			; Run &To Caret
+			; Step &Into
 			invoke EnableMenuItem,hMnu,[esi+24],MF_BYCOMMAND or MF_GRAYED
+			; Step &Over
+			invoke EnableMenuItem,hMnu,[esi+28],MF_BYCOMMAND or MF_GRAYED
+			; Run &To Caret
+			invoke EnableMenuItem,hMnu,[esi+32],MF_BYCOMMAND or MF_GRAYED
 		.endif
 	.else
 		; No project loaded, disable all

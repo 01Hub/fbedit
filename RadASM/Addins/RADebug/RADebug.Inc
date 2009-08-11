@@ -59,6 +59,7 @@ FUNC_STEPINTO					equ 2
 FUNC_STEPOVER					equ 3
 FUNC_RUNTOCARET					equ 4
 FUNC_STOP						equ 5
+FUNC_BREAK						equ 6
 
 ; Format items
 FMT_NAME						equ 1
@@ -286,6 +287,8 @@ FbHelpDLL						db 'Addins\FbHelp.dll',0
 szEXCEPTION_DEBUG_EVENT			db 'EXCEPTION_DEBUG_EVENT',0
 szEXCEPTION_BREAKPOINT			db 'EXCEPTION_BREAKPOINT',0
 szEXCEPTION_ACCESS_VIOLATION	db 'EXCEPTION_ACCESS_VIOLATION',0
+szEXCEPTION_FLT_DIVIDE_BY_ZERO	db 'EXCEPTION_FLT_DIVIDE_BY_ZERO',0
+szEXCEPTION_INT_DIVIDE_BY_ZERO	db 'EXCEPTION_INT_DIVIDE_BY_ZERO',0
 szCREATE_PROCESS_DEBUG_EVENT	db 'CREATE_PROCESS_DEBUG_EVENT',0
 szCREATE_THREAD_DEBUG_EVENT		db 'CREATE_THREAD_DEBUG_EVENT',0
 szEXIT_THREAD_DEBUG_EVENT		db 'EXIT_THREAD_DEBUG_EVENT',0
@@ -329,6 +332,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
 								   '&Clear Breakpoints',VK_TAB,'Ctrl+Shift+T',0,
 								   '-',0,
 								   '&Run',VK_TAB,'Shift+F7',0,
+								   'Brea&k',VK_TAB,'Ctrl+Alt+F7',0,
 								   '&Stop',VK_TAB,'Alt+F7',0,
 								   '-',0,
 								   'Step &Into',VK_TAB,'F7',0,

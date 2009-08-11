@@ -429,6 +429,7 @@ ResetSelectLine endp
 
 SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	nFirst:DWORD
 
 	invoke ResetSelectLine
 	mov		edi,lpHandles
@@ -448,15 +449,16 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	invoke WaitForSingleObject,dbg.pinfo.hProcess,100
 	mov		eax,[edi].ADDINHANDLES.hEdit
 	mov		dbg.prevhwnd,eax
+	invoke SendMessage,dbg.prevhwnd,EM_GETFIRSTVISIBLELINE,0,0
+	mov		nFirst,eax
 	invoke SendMessage,dbg.prevhwnd,EM_LINEINDEX,dbg.prevline,0
 	mov		chrg.cpMin,eax
 	mov		chrg.cpMax,eax
 	invoke SendMessage,dbg.prevhwnd,EM_EXSETSEL,0,addr chrg
 	invoke SendMessage,dbg.prevhwnd,EM_SCROLLCARET,0,0
 	invoke SendMessage,dbg.prevhwnd,EM_GETFIRSTVISIBLELINE,0,0
-	.if eax==dbg.prevline
-		invoke SendMessage,dbg.prevhwnd,EM_LINESCROLL,0,-1
-		invoke SendMessage,dbg.prevhwnd,EM_EXSETSEL,0,addr chrg
+	.if eax!=nFirst
+		invoke SendMessage,dbg.prevhwnd,REM_VCENTER,0,0
 		invoke SendMessage,dbg.prevhwnd,EM_SCROLLCARET,0,0
 	.endif
 	invoke SetForegroundWindow,[edi].ADDINHANDLES.hWnd
@@ -729,11 +731,13 @@ Debug proc uses ebx,lpFileName:DWORD
 					.endif
 				.elseif eax==EXCEPTION_ACCESS_VIOLATION
 					invoke PutString,addr szEXCEPTION_ACCESS_VIOLATION
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke PutString,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_INT_DIVIDE_BY_ZERO
-					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
+					invoke PutString,addr szEXCEPTION_INT_DIVIDE_BY_ZERO
+					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
 				.elseif eax==EXCEPTION_DATATYPE_MISALIGNMENT
 					mov		fContinue,DBG_EXCEPTION_NOT_HANDLED
 				.elseif eax==EXCEPTION_SINGLE_STEP

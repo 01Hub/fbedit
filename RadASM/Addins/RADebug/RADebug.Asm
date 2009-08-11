@@ -59,23 +59,28 @@ UpdateAccelerators proc uses ebx esi edi
 	mov		dl,76h
 	mov		dh,FSHIFT
 	call	UpdateAccel
-	;&Stop
+	;Brea&k
 	mov		eax,IDAddIn[16]
+	mov		dl,76h
+	mov		dh,FCONTROL or FALT
+	call	UpdateAccel
+	;&Stop
+	mov		eax,IDAddIn[20]
 	mov		dl,76h
 	mov		dh,FALT
 	call	UpdateAccel
 	;Step &Into
-	mov		eax,IDAddIn[20]
+	mov		eax,IDAddIn[24]
 	mov		dl,76h
 	mov		dh,0
 	call	UpdateAccel
 	;Step &Over
-	mov		eax,IDAddIn[24]
+	mov		eax,IDAddIn[28]
 	mov		dl,76h
 	mov		dh,FCONTROL
 	call	UpdateAccel
 	;Run &To Caret
-	mov		eax,IDAddIn[28]
+	mov		eax,IDAddIn[32]
 	mov		dl,76h
 	mov		dh,FCONTROL or FSHIFT
 	call	UpdateAccel
@@ -119,7 +124,7 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 	.elseif !IDAddIn
 		mov		edi,offset IDAddIn
 		xor		ecx,ecx
-		.while ecx<9
+		.while ecx<10
 			push	ecx
 			; Allocate a new menu id
 			invoke SendMessage,hWin,AIM_GETMENUID,0,0
@@ -332,6 +337,8 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,IDC_BTNDONOTDEBUGALL
 			call	Disable
 			mov		eax,IDC_BTNDEBUGALL
+			call	Disable
+			mov		eax,IDOK
 			call	Disable
 		.endif
 	.elseif eax==WM_COMMAND
@@ -625,13 +632,25 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 				.endif
 			.endif
 		.elseif edx==IDAddIn[16]
+			;Brea&k
+			.if dbg.hDbgThread
+				.if !dbg.fHandled
+					mov		dbg.func,FUNC_BREAK
+					invoke SetBreakPointsAll
+					invoke Sleep,50
+					.if !dbg.fHandled
+						invoke BringWindowToFront
+					.endif
+				.endif
+			.endif
+		.elseif edx==IDAddIn[20]
 			;&Stop
 			.if dbg.hDbgThread
 				invoke ResetSelectLine
 				mov		dbg.func,FUNC_STOP
 				invoke TerminateProcess,dbg.pinfo.hProcess,0
 			.endif
-		.elseif edx==IDAddIn[20]
+		.elseif edx==IDAddIn[24]
 			;Step &Into
 			.if dbg.hDbgThread
 				.if dbg.fHandled
@@ -655,7 +674,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					.endif
 				.endif
 			.endif
-		.elseif edx==IDAddIn[24]
+		.elseif edx==IDAddIn[28]
 			;Step &Over
 			.if dbg.hDbgThread
 				.if dbg.fHandled
@@ -673,7 +692,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					.endif
 				.endif
 			.endif
-		.elseif edx==IDAddIn[28]
+		.elseif edx==IDAddIn[32]
 			;Run &To Caret
 			.if dbg.hDbgThread
 				.if dbg.fHandled
@@ -691,7 +710,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 					.endif
 				.endif
 			.endif
-		.elseif edx==IDAddIn[32]
+		.elseif edx==IDAddIn[36]
 			;Do not Debug
 			mov		eax,lpHandles
 			invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,[eax].ADDINHANDLES.hWnd,addr DoNotDebugProc,0

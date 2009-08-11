@@ -90,11 +90,13 @@ GetValue proc uses ebx edi
 		; Hex or Decimal
 		invoke IsDec,edi
 		.if eax
+			mov		mFunc,'H'
 			invoke DecToBin,edi
 			jmp		Ex
 		.else
 			invoke IsHex,edi
 			.if eax
+				mov		mFunc,'H'
 				invoke HexToBin,edi
 				jmp		Ex
 			.endif

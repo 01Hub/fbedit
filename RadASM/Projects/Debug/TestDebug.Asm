@@ -105,10 +105,10 @@ ThreadProc1 proc Param:DWORD
 	mov		eax,'abcd'
 	mov		eax,'abcd'
 	mov		eax,'abcd'
-	.while TRUE
-		inc		eax
+;	.while TRUE
+;		inc		eax
 ;		invoke OutputDebugString,addr szTest1
-	.endw
+;	.endw
 	xor		eax,eax
 	ret
 
