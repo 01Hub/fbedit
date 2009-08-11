@@ -84,7 +84,6 @@ szTextFont			db 'TextFont',0
 szProPath			db 'ProPath',0
 szSysPath			db 'SysPath',0
 szCompile			db 'Compile',0
-szCustType			db 'Type#',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0

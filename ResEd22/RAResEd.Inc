@@ -236,6 +236,7 @@ TPE_LANGUAGE		equ 9
 TPE_XPMANIFEST		equ 10
 TPE_RCDATA			equ 11
 TPE_TOOLBAR			equ 12
+TPE_USERDATA		equ 32
 
 PROJECT struct
 	hmem			dd ?
@@ -292,6 +293,15 @@ RCDATAMEM struct
 	hred			dd ?
 	lang			LANGUAGEMEM <?>
 RCDATAMEM ends
+
+USERDATAMEM struct
+	szname			db MaxName dup(?)
+	value			dd ?
+	hred			dd ?
+	lang			LANGUAGEMEM <?>
+	sztype			db MaxName dup(?)
+	ntype			dd ?
+USERDATAMEM ends
 
 TOOLBARMEM struct
 	szname			db MaxName dup(?)

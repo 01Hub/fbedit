@@ -674,7 +674,7 @@ SetProjectModify proc uses esi,lpProMem:DWORD,fChanged:DWORD
 
 SetProjectModify endp
 
-AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
+AddProjectItem proc uses ebx esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		esi,lpProMem
@@ -823,6 +823,18 @@ AddProjectItem proc uses esi,lpProMem:DWORD,nType:DWORD,fOpen:DWORD
 		.else
 			invoke AddTypeMem,lpProMem,64*1024,TPE_TOOLBAR
 			invoke AddProjectNode,TPE_TOOLBAR,offset szTOOLBAR,esi
+			invoke ExpandProjectNodes,hNodeMisc
+		.endif
+	.elseif eax>=TPE_USERDATA && eax<=TPE_USERDATA+32
+		mov		ebx,eax
+		.if fOpen
+			invoke CloseDialog
+			invoke CreateDialogParam,hInstance,IDD_USERDATA,hDEd,offset UserDataEditProc,ebx
+			mov		hDialog,eax
+			invoke NotifyParent
+		.else
+			invoke AddTypeMem,lpProMem,64*1024,ebx
+			invoke AddProjectNode,ebx,offset szUSERDATA,esi
 			invoke ExpandProjectNodes,hNodeMisc
 		.endif
 	.endif

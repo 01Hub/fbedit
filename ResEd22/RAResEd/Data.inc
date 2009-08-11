@@ -316,6 +316,7 @@ szCURSOR			db 'CURSOR',0
 szICON				db 'ICON',0
 szAVI				db 'AVI',0
 szRCDATA			db 'RCDATA',0
+szUSERDATA			db 'USERDATA',0
 szRT_RCDATA			db 'RT_RCDATA',0
 szWAVE				db 'WAVE',0
 szIMAGE				db 'IMAGE',0

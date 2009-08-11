@@ -223,16 +223,20 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		;Set resource types
 		mov		nInx,1
-		mov		ebx,offset hCustDll
 		.while nInx<=32
 			invoke MakeKey,addr szCustType,nInx,addr buffer1
 			mov		lpcbData,sizeof RARSTYPE
 			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
 			.if rarstype.sztype || rarstype.nid
-				mov		edx,nInx
-				dec		edx
-				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
+				mov		ebx,nInx
+				dec		ebx
+				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,ebx,addr rarstype
+				.if !rarstype.szext && rarstype.sztype
+					invoke lstrcpy,addr buffer,addr szAdd
+					invoke lstrcat,addr buffer,addr rarstype.sztype
+					invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,addr [ebx+22000+1],addr buffer
+				.endif
 			.endif
 			inc		nInx
 		.endw
@@ -555,6 +559,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableMenuItem,wParam,IDM_PROJECT_RESOURCE,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_NAMES,ebx
 			invoke EnableMenuItem,wParam,IDM_PROJECT_EXPORT,ebx
+			push	esi
+			mov		esi,22000
+			.while esi<22000+32
+				invoke EnableMenuItem,wParam,esi,ebx
+				inc		esi
+			.endw
+			pop		esi
 			.if hResEdSave
 				invoke EnableMenuItem,wParam,IDM_PROJECT_REMOVE,ebx
 				invoke EnableMenuItem,wParam,IDM_PROJECT_UNDO,ebx
@@ -816,6 +827,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==IDM_HELP_ABOUT
 			invoke DialogBoxParam,hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
+		.elseif eax>22000 && eax<=22032
+			;User resource type
+			lea		eax,[eax-22000+TPE_USERDATA-1]
+			invoke SendMessage,hResEd,PRO_ADDITEM,eax,TRUE
 		.elseif eax>=20000 && eax<=20020
 			;Tool
 			mov		mnu.szcap,0

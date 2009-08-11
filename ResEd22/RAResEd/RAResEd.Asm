@@ -23,6 +23,7 @@ include StringEdit.asm
 include AccelEdit.asm
 include XPManifestEdit.asm
 include RCDataEdit.asm
+include UserDataEdit.asm
 include ToolbarEdit.asm
 include NameEdit.asm
 include ToolBox.asm

@@ -93,7 +93,7 @@ Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 49=MnuPreview.dlg
 50=LanguageEditChild.dlg
 51=DlgExport.asm
-52=
+52=UserDataEdit.asm
 AutoDelete=1
 AskMe=0
 MinorFiles=..\Dll\*.exp;*.res;*.obj;
@@ -149,17 +149,17 @@ Options=52
 5=0,0,0,0,5994
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,11811
+1=0,0,718,485,525
 7=0,0,718,485,42065
 6=0,0,0,0,404
 9=0,0,718,485,31078
-2=0,0,584,498,2032
+2=0,0,584,498,7686
 8=0,0,0,0,8860
-10=0,0,0,0,15022
+10=0,0,0,0,13986
 16=0,0,718,485,28401
 15=0,0,0,0
 17=0,0,0,0,59595
-18=0,0,0,0,34193
+18=0,0,0,0,22897
 21=0,0,0,0,30103
 23=0,0,0,0
 24=0,0,0,0,3617
@@ -193,20 +193,20 @@ Options=52
 49=0,0,0,0
 50=0,0,0,0
 51=0,0,0,0,0
-52=
+52=0,0,0,0,3319
 
 
 [Find]
-1="AclGrdSize"
-2="ParseRCMem"
-3="FindName"
-4="szIDOK"
-5="IDOK"
-6="ExportDialogNames"
-7="PRO_EXPORT"
-8="PBS_"
-9="rscuststyledef"
-10="DEM_ADDCUSTSTYLE"
+1="PRO_ADDITEM"
+2="AclGrdSize"
+3="ParseRCMem"
+4="FindName"
+5="szIDOK"
+6="IDOK"
+7="ExportDialogNames"
+8="PRO_EXPORT"
+9="PBS_"
+10="rscuststyledef"
 
 [AutoLoad]
 1=1
@@ -257,7 +257,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=11
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -319,7 +319,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 49=2
 50=2
 51=1
-52=
+52=1
 
 
 [Collapse]
@@ -380,3 +380,4 @@ PTimer=330867960
 22=
 29=
 10=
+52=

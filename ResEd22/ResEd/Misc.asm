@@ -518,9 +518,11 @@ CoolMenu proc
 
 CoolMenu endp
 
-ResetMenu proc uses esi edi
+ResetMenu proc uses ebx esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	rarstype:RARSTYPE
 
 	; Standard menu
 	.if hMnuFont
@@ -564,6 +566,21 @@ ResetMenu proc uses esi edi
 			add		esi,MAX_PATH*2
 		.endif
 		inc		edi
+	.endw
+	;Set resource types
+	mov		nInx,1
+	.while nInx<=32
+		invoke MakeKey,addr szCustType,nInx,addr buffer1
+		mov		lpcbData,sizeof RARSTYPE
+		invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+		invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
+		.if !rarstype.szext && rarstype.sztype
+			invoke lstrcpy,addr buffer,addr szAdd
+			invoke lstrcat,addr buffer,addr rarstype.sztype
+			mov		ebx,nInx
+			invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,addr [ebx+22000],addr buffer
+		.endif
+		inc		nInx
 	.endw
 	.if !grdsize.standardmnu
 		invoke CoolMenu
