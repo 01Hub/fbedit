@@ -53,7 +53,7 @@ szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
 szDbgHelpFail					db 'Could not find %s.',0
 szDbgHelpFuncFail				db 'Could not find function %s in %s.',0
-szDbgHelpOld					db '&s is to old. Get a newer version.',0
+szDbgHelpOld					db '%s is to old. Get a newer version.',0
 szSymNotFound					db 'The symbol %s was not found. Addrss: %08Xh Size: %u',0
 szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols. %u symbols was not found.',0Dh,0
 
@@ -191,58 +191,6 @@ AddPredefinedTypes proc uses ebx esi edi
 	ret
 
 AddPredefinedTypes endp
-
-AddConstants proc uses ebx esi edi
-	LOCAL	lpszName:DWORD
-	LOCAL	buffer[256]:BYTE
-
-;	; Constants from RadASM, case sensitive
-;	mov		edx,lpData
-;	;Get pointer to word list
-;	mov		esi,[edx].ADDINDATA.lpWordList
-;	; Loop trough the word list
-;	.while [esi].PROPERTIES.nSize
-;		.if [esi].PROPERTIES.nType=='c' || [esi].PROPERTIES.nType=='R'
-;			; Found
-;			push	esi
-;			lea		edi,[esi+sizeof PROPERTIES]
-;			mov		lpszName,edi
-;			invoke strlen,edi
-;			lea		edi,[edi+eax+1]
-;			mov		eax,[edi]
-;			and		eax,0FF5F5F5Fh
-;			.if eax==' UQE'
-;				lea		edi,[edi+4]
-;			.endif
-;			invoke strcpy,addr buffer,edi
-;			lea		esi,buffer
-;			mov		nError,0
-;			invoke CalculateIt,0
-;			.if !nError
-;				push	eax
-;				mov		eax,dbg.inxtype
-;				mov		edx,sizeof DEBUGTYPE
-;				mul		edx
-;				mov		edi,dbg.hMemType
-;				lea		edi,[edi+eax]
-;				invoke strcpy,addr [edi].DEBUGTYPE.szName,lpszName
-;				pop		eax
-;				mov		[edi].DEBUGTYPE.nSize,eax
-;				inc		dbg.inxtype
-;;			.else
-;;				invoke wsprintf,addr outbuffer,addr szErrConstant,addr buffer
-;;				invoke PutString,addr outbuffer
-;			.endif
-;			pop		esi
-;		.endif
-;		;Move to next word
-;		mov		eax,[esi].PROPERTIES.nSize
-;		lea		esi,[esi+eax+sizeof PROPERTIES]
-;	.endw
-;  Ex:
-	ret
-
-AddConstants endp
 
 AddVar proc uses ebx esi edi,lpName:DWORD,nSize:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -429,9 +377,6 @@ EnumTypesCallback proc uses ebx esi edi,pSymInfo:DWORD,SymbolSize:DWORD,UserCont
 	lea		edi,[edi+eax]
 	invoke strcpyn,addr [edi].DEBUGTYPE.szName,addr [esi].SYMBOL_INFO.szName,sizeof DEBUGTYPE.szName
 	mov		eax,[esi].SYMBOL_INFO.nSize
-	.if !eax
-		;invoke FindTypeSize,addr [edi].DEBUGTYPE.szName
-	.endif
 	mov		[edi].DEBUGTYPE.nSize,eax
 	inc		dbg.inxtype
 	mov		eax,TRUE
@@ -610,6 +555,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 	mov		dbg.inxline,eax
 	mov		nErrDll,eax
 	mov		nNotFound,eax
+	; Load dll
 	invoke LoadLibrary,lpDll
 	.if eax
 		mov		hDbgHelpDLL,eax
@@ -644,6 +590,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 		call	GetDllFunc
 		.if !nErrDll
 			; All Dll functions found
+			; Initialize
 			push	FALSE
 			push	NULL
 			push	hProcess
@@ -652,6 +599,7 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 				invoke PutString,addr szSymInitializeFailed,hOut,TRUE
 				jmp		Ex
 			.endif
+			; Load module
 			push	0
 			push	0
 			push	0
@@ -667,11 +615,13 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 			mov		im.SizeOfStruct,sizeof IMAGEHLP_MODULE
 			mov		im.SymType1,SymNone
 			lea		eax,im
+			; GetModuleInfo
 			push	eax
 			push	dwModuleBase
 			push	hProcess
 			call	lpSymGetModuleInfo
 			.if im.SymType1==SymPdb
+				; Files
 				push	0
 				push	offset EnumSourceFilesCallback
 				push	0
@@ -680,13 +630,14 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 				push	hProcess
 				call	lpSymEnumSourceFiles
 				invoke AddPredefinedTypes
+				; Types
 				push	0
 				push	offset EnumTypesCallback
 				push	0
 				push	dwModuleBase
 				push	hProcess
 				call	lpSymEnumTypes
-				invoke AddConstants
+				; Lines
 				push	0
 				push	offset EnumerateSymbolsCallback
 				push	dwModuleBase
@@ -707,15 +658,18 @@ DbgHelp proc uses ebx esi edi,lpDll:DWORD,hProcess:DWORD,lpFileName:DWORD
 				.endif
 			.endif
 		Ex:
+			; Unload module
 			push	dwModuleBase
 			push	hProcess
 			call	lpSymUnloadModule
+			; Cleanup
 			push	hProcess
 			call	lpSymCleanup
 		.else
 			; Dll function(s) not found
 			invoke PutString,addr szDbgHelpOld,hOut,TRUE
 		.endif
+		; Free dll
 		invoke FreeLibrary,hDbgHelpDLL
 		mov		hDbgHelpDLL,0
 	.else
