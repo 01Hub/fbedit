@@ -407,6 +407,8 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			; Proc
 			mov		eax,dbg.lpvar
 			mov		[edi].DEBUGSYMBOL.lpType,eax
+lea eax,[esi+sizeof PROPERTIES]
+push	eax
 			; Point to parameters
 			invoke strlen,addr [esi+sizeof PROPERTIES]
 			lea		esi,[esi+eax+1+sizeof PROPERTIES]
@@ -417,6 +419,11 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 			; Point to locals
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
+pop		eax
+.if byte ptr [eax]=='W'
+	PrintStringByAddr eax
+	PrintStringByAddr esi
+.endif
 			invoke AddVarList,esi
 		.elseif edx=='d'
 			; Variable

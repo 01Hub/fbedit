@@ -43,9 +43,9 @@ includelib ..\Lib\Debug.lib
 include Inc\RAGrid.Inc
 
 include masm32.inc
-include \RadASM\Masm\Inc\Debug.Inc
+include Debug.Inc
 includelib masm32.lib
-includelib \RadASM\Masm\Lib\Debug.lib
+includelib Debug.lib
 
 WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
 WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
