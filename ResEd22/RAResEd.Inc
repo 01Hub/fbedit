@@ -115,6 +115,7 @@ INITID struct
 	rcd				RESID <>
 	tbr				RESID <>
 	res				RESID <>
+	usr				RESID <>
 INITID ends
 
 WINSIZE struct
@@ -298,7 +299,6 @@ USERDATAMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	hred			dd ?
-	lang			LANGUAGEMEM <?>
 	sztype			db MaxName dup(?)
 	ntype			dd ?
 USERDATAMEM ends

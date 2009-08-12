@@ -99,9 +99,9 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,25442
+1=580,0,290,688,4686
 6=
-2=0,0,0,0,502
+2=0,0,0,0,6302
 7=0,0,699,490,7676
 9=
 8=
@@ -113,7 +113,7 @@ Options=52
 15=0,0,0,0
 16=0,0,0,0
 17=0,0,0,0
-18=0,0,0,0,10399
+18=0,0,0,0,10318
 12=0,0,0,0,1241
 19=0,0,0,0
 21=0,0,0,0,329
@@ -144,16 +144,16 @@ Options=52
 0=
 
 [Find]
-1="SystemPath"
-2="IDM_TOOLS_CLEAR"
-3="MENU"
-4="DEM_ADDCONTROL"
-5="DEM_SETCOLOR"
-6="REM_SETCOLOR"
-7="DEM_SETCOL"
-8="SetChanged"
-9="DEM_SETGRIDSIZE"
-10="show"
+1="PRO_SETINITID"
+2="SystemPath"
+3="IDM_TOOLS_CLEAR"
+4="MENU"
+5="DEM_ADDCONTROL"
+6="DEM_SETCOLOR"
+7="REM_SETCOLOR"
+8="DEM_SETCOL"
+9="SetChanged"
+10="DEM_SETGRIDSIZE"
 
 [VersionControl]
 Settings=1278
@@ -180,7 +180,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

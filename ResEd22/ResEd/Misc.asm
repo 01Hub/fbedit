@@ -574,11 +574,11 @@ ResetMenu proc uses ebx esi edi
 		mov		lpcbData,sizeof RARSTYPE
 		invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
 		invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
-		.if !rarstype.szext && rarstype.sztype
+		.if !rarstype.szext && rarstype.sztype && nInx>11
 			invoke lstrcpy,addr buffer,addr szAdd
 			invoke lstrcat,addr buffer,addr rarstype.sztype
 			mov		ebx,nInx
-			lea		ebx,[ebx+22000]
+			lea		ebx,[ebx+22000-12]
 			invoke InsertMenu,hMnu,IDM_PROJRCT_ADD_TOOLBAR,MF_BYCOMMAND,ebx,addr buffer
 		.endif
 		inc		nInx

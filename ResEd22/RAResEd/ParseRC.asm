@@ -1017,6 +1017,106 @@ ParseResource proc uses esi edi,lpRCMem:DWORD,lpProMem:DWORD,nType:DWORD
 				mov		al,0
 				stosb
 			.endif
+		.elseif nType>=11
+			invoke AddTypeMem,lpProMem,64*1024,TPE_USERDATA
+			mov		edi,eax
+			invoke GetName,lpProMem,offset namebuff,addr [edi].USERDATAMEM.szname,addr [edi].USERDATAMEM.value
+			mov		eax,nType
+			mov		edx,sizeof RARSTYPE
+			mul		edx
+			push	esi
+			mov		esi,offset rarstype
+			lea		esi,[esi+eax]
+			invoke strcpy,addr [edi].USERDATAMEM.sztype,addr [esi].RARSTYPE.sztype
+			mov		eax,[esi].RARSTYPE.nid
+			mov		[edi].USERDATAMEM.ntype,eax
+			pop		esi
+			invoke GetLoadOptions,esi
+			add		esi,eax
+		  @@:
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			mov		ebx,eax
+			invoke strcmpi,offset wordbuff,offset szCHARACTERISTICS
+			.if !eax
+				invoke GetNum,lpProMem
+				jmp		@b
+			.endif
+			invoke strcmpi,offset wordbuff,offset szVERSION
+			.if !eax
+				invoke GetNum,lpProMem
+				jmp		@b
+			.endif
+;			invoke strcmpi,offset wordbuff,offset szLANGUAGE
+;			.if !eax
+;				invoke GetWord,offset wordbuff,esi
+;				add		esi,eax
+;				.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
+;					invoke ConvNum,lpProMem,offset wordbuff
+;				.else
+;					invoke FindStyle,offset wordbuff,offset langdef
+;					shr		eax,16
+;				.endif
+;				mov		[edi].USERDATAMEM.lang.lang,eax
+;				invoke GetWord,offset wordbuff,esi
+;				add		esi,eax
+;				.if byte ptr wordbuff>='0' && byte ptr wordbuff<='9'
+;					invoke ConvNum,lpProMem,offset wordbuff
+;				.else
+;					invoke FindStyle,offset wordbuff,offset langdef
+;					and		eax,0FFFFh
+;				.endif
+;				mov		[edi].USERDATAMEM.lang.sublang,eax
+;				jmp		@b
+;			.endif
+			sub		esi,ebx
+			invoke GetWord,offset wordbuff,esi
+			add		esi,eax
+			invoke strcmpi,offset wordbuff,offset szBEGIN
+			.if eax
+				invoke strcmpi,offset wordbuff,offset szBEGINSHORT
+			.endif
+			.if !eax
+				lea		edi,[edi+sizeof USERDATAMEM]
+			  @@:
+				call	SkipSpace
+				.if byte ptr [esi]==0Dh
+					inc		esi
+				.endif
+				.if byte ptr [esi]==0Ah
+					inc		esi
+				.endif
+				mov		edx,offset wordbuff
+				.while byte ptr [esi] && byte ptr [esi]!=0Dh
+					mov		al,[esi]
+					mov		[edx],al
+					inc		esi
+					inc		edx
+				.endw
+				mov		byte ptr [edx],0
+				invoke strcmpi,offset wordbuff,offset szEND
+				.if eax
+					invoke strcmpi,offset wordbuff,offset szENDSHORT
+				.endif
+				.if eax
+					mov		edx,offset wordbuff
+					.while byte ptr [edx]
+						mov		al,[edx]
+						stosb
+						inc		edx
+					.endw
+					mov		al,0Dh
+					stosb
+					mov		al,0Ah
+					stosb
+					jmp		@b
+				.endif
+				.if byte ptr [edi-1]==0Ah
+					sub		edi,2
+				.endif
+				mov		al,0
+				stosb
+			.endif
 		.else
 			mov		ecx,nType
 			mov		eax,1

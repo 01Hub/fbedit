@@ -1289,7 +1289,7 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					invoke PropertyList,-1
 					invoke SetChanged,TRUE
 				.else
-					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7 || hCtl==-8
+					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7 || hCtl==-8 || hCtl==-9
 						mov		eax,lbid
 						.if eax==PRP_STR_NAME
 							invoke strcpy,lpResName,addr buffer1
@@ -1734,6 +1734,17 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 			mov		fList2,00000000000000000000000000000000b
 						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 			mov		fList3,00100000000000000000000000000000b
+						;  SELHHFM
+			mov		fList4,00000000000000000000000000000000b
+						;
+			mov		nType,-2
+		.elseif hCtl==-9
+			;USERDATA
+			mov		fList1,11000000000000000000000000000000b
+						;  NILTWHCBSMMEVCSDAAMWMTLCSTFMCNAW
+			mov		fList2,00000000000000000000000000000000b
+						;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+			mov		fList3,00000000000000000000000000000000b
 						;  SELHHFM
 			mov		fList4,00000000000000000000000000000000b
 						;
@@ -2651,7 +2662,7 @@ PropertyList proc uses ebx esi edi,hCtl:DWORD
 		jmp		@b
 	  @@:
 		invoke SendMessage,hPrpLstDlg,LB_SETTOPINDEX,tInx,0
-		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6 || hCtl==-7 || hCtl==-8
+		.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-5 || hCtl==-6 || hCtl==-7 || hCtl==-8 || hCtl==-9
 			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,lpResType
 			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0

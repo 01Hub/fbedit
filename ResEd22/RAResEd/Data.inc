@@ -22,7 +22,6 @@ ToolBoxReset			PROTO
 PropListSetPos			PROTO
 
 DrawingRect				PROTO	:DWORD,:DWORD,:DWORD
-;UpdateCtl				PROTO	:DWORD
 SetProjectItemName		PROTO	:DWORD,:DWORD
 GetProjectItemName		PROTO	:DWORD,:DWORD
 Do_TreeViewAddNode		PROTO	:HWND,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:LPARAM
@@ -33,8 +32,6 @@ NameExists				PROTO	:DWORD,:DWORD
 ShowEditDialog			PROTO	:HWND,:DWORD
 GetWord					PROTO	:HWND,:DWORD
 ParseRCMem				PROTO	:DWORD,:DWORD
-;FindName				PROTO	:DWORD,:DWORD
-;SetHiliteWords			PROTO	:DWORD,:DWORD
 
 m2m MACRO M1, M2
 	push M2
@@ -60,34 +57,34 @@ DS_SHELLFONT		equ DS_SETFONT or DS_FIXEDSYS
 SIZEBAR				equ 4
 
 CCDEF struct
-	ID			dd ?	;Controls uniqe ID
-	lptooltip	dd ?	;Pointer to tooltip text
-	hbmp		dd ?	;Handle of bitmap
-	lpcaption	dd ?	;Pointer to default caption text
-	lpname		dd ?	;Pointer to default id-name text
-	lpclass		dd ?	;Pointer to class text
-	style		dd ?	;Default style
-	exstyle		dd ?	;Default ex-style
-	flist1		dd ?	;Property listbox 1
-	flist2		dd ?	;Property listbox 2
-	disable		dd ?	;Disable controls child windows. 0=No, 1=Use method 1, 2=Use method 2
+	ID				dd ?				;Controls uniqe ID
+	lptooltip		dd ?				;Pointer to tooltip text
+	hbmp			dd ?				;Handle of bitmap
+	lpcaption		dd ?				;Pointer to default caption text
+	lpname			dd ?				;Pointer to default id-name text
+	lpclass			dd ?				;Pointer to class text
+	style			dd ?				;Default style
+	exstyle			dd ?				;Default ex-style
+	flist1			dd ?				;Property listbox 1
+	flist2			dd ?				;Property listbox 2
+	disable			dd ?				;Disable controls child windows. 0=No, 1=Use method 1, 2=Use method 2
 CCDEF ends
 
 CCDEFEX struct
-	ID			dd ?	;Controls uniqe ID
-	lptooltip	dd ?	;Pointer to tooltip text
-	hbmp		dd ?	;Handle of bitmap
-	lpcaption	dd ?	;Pointer to default caption text
-	lpname		dd ?	;Pointer to default id-name text
-	lpclass		dd ?	;Pointer to class text
-	style		dd ?	;Default style
-	exstyle		dd ?	;Default ex-style
-	flist1		dd ?	;Property listbox 1
-	flist2		dd ?	;Property listbox 2
-	flist3		dd ?	;Property listbox 3
-	flist4		dd ?	;Property listbox 4
-	lpproperty	dd ?
-	lpmethod	dd ?
+	ID				dd ?				;Controls uniqe ID
+	lptooltip		dd ?				;Pointer to tooltip text
+	hbmp			dd ?				;Handle of bitmap
+	lpcaption		dd ?				;Pointer to default caption text
+	lpname			dd ?				;Pointer to default id-name text
+	lpclass			dd ?				;Pointer to class text
+	style			dd ?				;Default style
+	exstyle			dd ?				;Default ex-style
+	flist1			dd ?				;Property listbox 1
+	flist2			dd ?				;Property listbox 2
+	flist3			dd ?				;Property listbox 3
+	flist4			dd ?				;Property listbox 4
+	lpproperty		dd ?
+	lpmethod		dd ?
 CCDEFEX ends
 
 WS_EX_LAYERED	equ 80000h
@@ -359,18 +356,8 @@ szHdrCtrl			db 'Ctrl',0
 szHdrShift			db 'Shift',0
 szHdrAlt			db 'Alt',0
 
-;szFilterBitmap		db 'Bitmap (*.bmp)',0,'*.bmp',0,0
-;szFilterCursor		db 'Cursor (*.cur)',0,'*.cur',0,0
-;szFilterIcon		db 'Icon (*.ico)',0,'*.ico',0,0
-;szFilterAvi			db 'Avi (*.avi)',0,'*.avi',0,0
-;szFilterAny			db 'All Files (*.*)',0,'*.*',0,0
-;szFilterWave		db 'Wave (*.wav)',0,'*.wav',0,0
-;szFilterImage		db 'Image (*.jpg, *.gif)',0,'*.jpg;*.gif',0,0
 szFilterManifest	db 'Manifest (*.xml)',0,'*.xml',0,0
-;szFilterAniCursor	db 'Ani Cursor (*.ani)',0,'*.ani',0,0
-;szFilterFont		db 'Font (*.fon, *.ttc, *.ttf)',0,'*.fon;*.ttc;*.ttf',0,0
-;szFilterBin			db 'Messagetable (*.bin)',0,'*.bin',0,0
-;
+
 szAclKeys			db 01h,'.Ascii',0
 					db 30h,'0',0
 					db 31h,'1',0
@@ -476,7 +463,7 @@ szCrLf				db 0Dh,0Ah,0
 
 ccdef				CCDEF <271,offset szToolTip,0,offset szCap,offset szName,offset szResEdClass,STYLE,EXSTYLE,11111101000111100000000000000000b,00010000000000011000000000000000b,2>
 
-initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>>
+initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>,<100,1>>
 
 rarstype			RARSTYPE <'BITMAP',0,'Bitmap (*.bmp)|*.bmp','mspaint.exe'>
 					RARSTYPE <'CURSOR',0,'Cursor (*.cur)|*.cur'>
