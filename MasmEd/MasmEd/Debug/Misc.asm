@@ -874,25 +874,25 @@ FindLocalVar proc uses esi edi,lpName:DWORD,lplpLocal:DWORD
 
 FindLocalVar endp
 
-FindLastLineNumber proc uses ebx esi,lpLine:DWORD,Address:DWORD
+FindLastLineNumber proc uses ebx esi edi,lpLine:DWORD,Address:DWORD
 
 	mov		esi,lpLine
 	mov		eax,Address
 	xor		ecx,ecx
-	xor		ebx,ebx
+	xor		edi,edi
+	movzx	ebx,[esi].DEBUGLINE.FileID
 	.while [esi].DEBUGLINE.LineNumber
 		.if eax<[esi].DEBUGLINE.Address
-			mov		eax,ebx
 			jmp		Ex
 		.endif
-		.if [esi].DEBUGLINE.LineNumber>ecx
+		.if [esi].DEBUGLINE.LineNumber>ecx && bx==[esi].DEBUGLINE.FileID
 			mov		ecx,[esi].DEBUGLINE.LineNumber
-			mov		ebx,esi
+			mov		edi,esi
 		.endif
 		lea		esi,[esi+sizeof DEBUGLINE]
 	.endw
-	xor		eax,eax
   Ex:
+	mov		eax,edi
 	ret
 
 FindLastLineNumber endp
