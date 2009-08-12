@@ -2,8 +2,9 @@
 
 [Tbr]
 Tbr=IDC_MDITBR,1000,5
-Bmp=C:\RadASM\Masm\Projects\RadASM20\RadASM20\Res\MdiTbr.bmp,IDB_MDITBR,30
-Mnu=C:\RadASM\Masm\Projects\RadASM20\RadASM20\Mdi\MdiMenu.mnu
+Bmp=C:\FbEdit\Projects\Applications\FbEdit\RadASM\Res\MdiTbr.bmp,IDB_MDITBR,30
+Mnu=C:\FbEdit\Projects\Applications\FbEdit\RadASM\Menus\MdiMenu.mnu
+Size=16
 0=-,0,0,0
 1=IDM_FILE_PRINT,0,0,24
 2=-,0,0,0
