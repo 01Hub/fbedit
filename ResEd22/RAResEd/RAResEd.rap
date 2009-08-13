@@ -216,20 +216,20 @@ Options=52
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.100
-PV=2.1.0.100
+FV=2.1.0.101
+PV=2.1.0.101
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.100
+ProductVersion=2.1.0.101
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.100
+FileVersion=2.1.0.101
 CompanyName=
 
 [VersionControl]
@@ -257,7 +257,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=12
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
