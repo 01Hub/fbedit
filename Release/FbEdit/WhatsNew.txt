@@ -6,6 +6,7 @@ o Auto delete files after build is only performed after build of the main file.
 o Accelerator table and string table now has an edit combo in its name column.
   The combo items are names from menues. This might save you some typing.
 o Added PBS_MARQUEE progress bar style to dialog editor.
+o Added custom resource types with embedded data (leave files filter blank in resource types option).
 o It is now possible to reserve more than one menuid with AIM_GETMENUID.
   wParam specifies the number of menuid's to reserve.
 o Added MakeProjectFileName to ADDINFUNCTIONS.
