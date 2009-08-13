@@ -1880,6 +1880,9 @@ Sub EnableMenu()
 		EnableDisable(TRUE,IDM_RESOURCE_VERSION)
 		EnableDisable(TRUE,IDM_RESOURCE_XPMANIFEST)
 		EnableDisable(TRUE,IDM_RESOURCE_RCDATA)
+		For id=22000 To 22032
+			EnableDisable(TRUE,id)
+		Next
 		EnableDisable(TRUE,IDM_RESOURCE_LANGUAGE)
 		EnableDisable(TRUE,IDM_RESOURCE_INCLUDE)
 		EnableDisable(TRUE,IDM_RESOURCE_RES)
@@ -1950,6 +1953,9 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_RESOURCE_VERSION)
 		EnableDisable(FALSE,IDM_RESOURCE_XPMANIFEST)
 		EnableDisable(FALSE,IDM_RESOURCE_RCDATA)
+		For id=22000 To 22032
+			EnableDisable(FALSE,id)
+		Next
 		EnableDisable(FALSE,IDM_RESOURCE_LANGUAGE)
 		EnableDisable(FALSE,IDM_RESOURCE_INCLUDE)
 		EnableDisable(FALSE,IDM_RESOURCE_RES)
@@ -2062,6 +2068,9 @@ Sub EnableMenu()
 		EnableDisable(FALSE,IDM_RESOURCE_VERSION)
 		EnableDisable(FALSE,IDM_RESOURCE_XPMANIFEST)
 		EnableDisable(FALSE,IDM_RESOURCE_RCDATA)
+		For id=22000 To 22032
+			EnableDisable(FALSE,id)
+		Next
 		EnableDisable(FALSE,IDM_RESOURCE_LANGUAGE)
 		EnableDisable(FALSE,IDM_RESOURCE_INCLUDE)
 		EnableDisable(FALSE,IDM_RESOURCE_RES)

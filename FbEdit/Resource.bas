@@ -19,6 +19,7 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 	Dim sExt As ZString*64
 	Dim sEdit As ZString*128
 	Dim rarstype As RARSTYPE
+	Dim buffer As ZString*256
 
 	Select Case uMsg
 		Case WM_INITDIALOG
@@ -59,6 +60,7 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 				fbrstype.nid=0
 				fbrstype.lpszext=@sExt
 				fbrstype.lpszedit=@sEdit
+				sType=""
 				LoadFromIni(StrPtr("ResType"),Str(nInx),"0400",@fbrstype,FALSE)
 				If Len(sType)<>0 Or fbrstype.nid<>0 Then
 					ZStrReplace(@sExt,Asc("!"),Asc(","))
@@ -67,6 +69,10 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 					rarstype.szext=sExt
 					rarstype.szedit=sEdit
 					SendMessage(ah.hraresed,PRO_SETCUSTOMTYPE,nInx-1,Cast(LPARAM,@rarstype))
+					If Len(sExt)=0 And nInx>11 Then
+						buffer="Add " & sType
+						InsertMenu(ah.hmenu,IDM_RESOURCE_LANGUAGE,MF_BYCOMMAND,nInx+22000-12,@buffer)
+					EndIf
 				EndIf
 				nInx+=1
 			Wend

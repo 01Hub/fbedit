@@ -57,7 +57,7 @@ Const szSecBlock=			!"[Block]\13\10"_
 								!"7=constructor $,End Constructor,,,6\13\10"_
 								!"8=destructor $,End Destructor,,,6\13\10"_
 								!"9=property $,End Property,,,6\13\10"_
-								!"10=enum $,End Enum,,,6\13\10"_
+								!"10=enum $,End Enum,,,4\13\10"_
 								!"11=#macro $,#EndMacro,,,6\13\10"_
 								!"12=select case !end select,End Select,case,,0\13\10"_
 								!"13=if $! then,EndIf|End If,elseif,else,0\13\10"_
@@ -344,6 +344,8 @@ Sub CheckIniFile()
 			ElseIf lret<1070 Then
 				WritePrivateProfileString("Make","QuickRun","fbc -s console",@ad.IniFile)
 				'
+			ElseIf lret<1071 Then
+				UpdateSection("Block",szSecBlock)
 			EndIf
 			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)
 			MessageBox(NULL,"The FbEdit.ini file has been updated." & CR & "A backup is saved as FbEditOld.ini","FbEdit",MB_OK Or MB_ICONINFORMATION)

@@ -1680,6 +1680,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								If x Then
 									OpenTheFile(Mid(MruFile(id-15001),x+1),FALSE)
 								EndIf
+							ElseIf id>=22000 And id<=22032 Then
+								' Custom resource
+								SendMessage(ah.hraresed,PRO_ADDITEM,id-22000+32,TRUE)
 							EndIf
 							'
 					End Select
