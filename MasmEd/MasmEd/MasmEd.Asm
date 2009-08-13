@@ -656,6 +656,11 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_RCDATA
 				call	EnableDisable
+				mov		edx,22000
+				.while edx<22000+32
+					call	EnableDisable
+					inc		edx
+				.endw
 				mov		edx,IDM_RESOURCE_TOOLBAR
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_LANGUAGE
@@ -774,6 +779,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 
 			.elseif eax==IDC_HEX
+				call	DisableRes
 				xor		eax,eax
 				mov		edx,IDM_FILE_PRINT
 				call	EnableDisable
@@ -979,6 +985,11 @@ DisableRes:
 	call	EnableDisable
 	mov		edx,IDM_RESOURCE_RCDATA
 	call	EnableDisable
+	mov		edx,22000
+	.while edx<22000+32
+		call	EnableDisable
+		inc		edx
+	.endw
 	mov		edx,IDM_RESOURCE_TOOLBAR
 	call	EnableDisable
 	mov		edx,IDM_RESOURCE_LANGUAGE
@@ -2448,7 +2459,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ParseCmnd,addr mnu.szcmnd,addr buffer,addr buffer1
 					invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
 				.endif
+			.elseif eax>=22000 && eax<22032
+				;User resource type
+				lea		eax,[eax-22000+32]
+				invoke SendMessage,hResEd,PRO_ADDITEM,eax,TRUE
 			.elseif eax>=30000 && eax<=30020
+				;Help
 				mov		mnu.szcap,0
 				mov		mnu.szcmnd,0
 				mov		edx,eax
