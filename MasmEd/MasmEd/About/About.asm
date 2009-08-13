@@ -1,6 +1,7 @@
 IDD_DLGABOUT	equ 4900
 IDC_EDTABOUT	equ 1001
-IDC_URL			equ 1002
+IDC_URL1		equ 1002
+IDC_URL2		equ 1003
 
 .data?
 
@@ -58,10 +59,13 @@ AboutProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		invoke SetWindowText,hWin,addr szVersion
 		invoke SendDlgItemMessage,hWin,IDC_EDTABOUT,WM_SETTEXT,0,addr szAboutMsg
-		invoke SendDlgItemMessage,hWin,IDC_URL,WM_SETTEXT,0,addr szAboutUrl
-		invoke GetDlgItem,hWin,IDC_URL
+		invoke SendDlgItemMessage,hWin,IDC_URL1,WM_SETTEXT,0,addr szAboutUrl1
+		invoke SendDlgItemMessage,hWin,IDC_URL2,WM_SETTEXT,0,addr szAboutUrl2
+		invoke GetDlgItem,hWin,IDC_URL1
 		invoke SetWindowLong,eax,GWL_WNDPROC,addr UrlProc
 		mov		OldUrlProc,eax
+		invoke GetDlgItem,hWin,IDC_URL2
+		invoke SetWindowLong,eax,GWL_WNDPROC,addr UrlProc
 		invoke SendMessage,hWin,WM_GETFONT,0,0
 		mov		hUrlFont,eax
 		invoke GetObject,hUrlFont,sizeof LOGFONT,addr lf
@@ -82,10 +86,13 @@ AboutProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CTLCOLORSTATIC
-		invoke GetDlgItem,hWin,IDC_URL
-		mov		edx,eax
+		invoke GetDlgItem,hWin,IDC_URL1
+		push	eax
+		invoke GetDlgItem,hWin,IDC_URL2
+		pop		edx
+		mov		ecx,eax
 		xor		eax,eax
-		.if edx==lParam
+		.if edx==lParam || ecx==lParam
 			.if fMouseOver
 				mov		eax,0FF0000h
 			.endif
