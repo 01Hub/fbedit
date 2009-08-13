@@ -1708,7 +1708,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		;Add resource types
 		mov		nInx,1
-		mov		ebx,offset hCustDll
 		.while nInx<=32
 			invoke MakeKey,addr szCustType,nInx,addr buffer1
 			mov		lpcbData,sizeof RARSTYPE
@@ -1718,6 +1717,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,nInx
 				dec		edx
 				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
+				.if !rarstype.szext && rarstype.sztype && nInx>11
+					invoke lstrcpy,addr buffer,addr szAdd
+					invoke lstrcat,addr buffer,addr rarstype.sztype
+					mov		edx,nInx
+					lea		edx,[edx+22000-12]
+					invoke InsertMenu,hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
+				.endif
 			.endif
 			inc		nInx
 		.endw

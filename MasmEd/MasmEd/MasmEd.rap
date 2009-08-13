@@ -275,16 +275,16 @@ Group=Assembly,Resources,Misc,Include
 52=3
 
 [Find]
-1="WndProc"
-2="BREAK"
-3="FUNC_IMM"
-4="FUNC_GET"
-5="WM_USER+998"
-6="abowe"
-7="DumpStruct"
-8="IDM_DEBUG_RUN"
-9="lstrcmpi"
-10="lstrcmp"
+1="hMnu"
+2="WndProc"
+3="BREAK"
+4="FUNC_IMM"
+5="FUNC_GET"
+6="WM_USER+998"
+7="abowe"
+8="DumpStruct"
+9="IDM_DEBUG_RUN"
+10="lstrcmpi"
 
 [VersionControl]
 Settings=1246
@@ -331,9 +331,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,877
-1=0,0,0,0,66411
-11=0,0,0,0,21461
+2=0,0,687,524,14433
+1=0,0,0,0,30774
+11=0,0,0,0,9965
 22=0,0,0,0,4185
 10=0,0,0,0,5143
 23=0,0,0,0,4914
@@ -349,7 +349,7 @@ ProductVer4Range=0
 13=0,0,0,0,4162
 21=0,0,0,0,3857
 29=0,0,0,0,1293
-28=0,0,0,0,18248
+28=0,0,0,0,20758
 26=0,0,665,480
 25=0,0,0,0
 27=0,0,0,0
@@ -443,3 +443,4 @@ PTimer=40486153
 10=
 40=
 37=
+28=

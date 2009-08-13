@@ -548,6 +548,8 @@ szCode					db '.code',0
 szComment				db 'comment',0
 szBegin					db 'BEGIN',0
 szEnd					db 'END',0
+szAdd					db 'Add ',0
+szCustType				db 'Type#',0
 
 szCmntStart				db 'comment +',0
 szCmntEnd				db '-',0

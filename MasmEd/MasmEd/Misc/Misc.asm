@@ -276,6 +276,16 @@ DwToHex proc uses edi,dwVal:DWORD,lpAscii:DWORD
 	
 DwToHex endp
 
+MakeKey proc lpszStr:DWORD,nInx:DWORD,lpszKey:DWORD
+
+	invoke strcpy,lpszKey,lpszStr
+	invoke strlen,lpszKey
+	add		eax,lpszKey
+	invoke DwToAscii,nInx,eax
+	ret
+
+MakeKey endp
+
 GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	LOCAL	hDC:HDC
 	LOCAL	mDC:HDC
@@ -553,6 +563,8 @@ CoolMenu endp
 ResetMenu proc uses esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	rarstype:RARSTYPE
 
 	; Standard menu
 	.if hMnuFont
@@ -569,6 +581,24 @@ ResetMenu proc uses esi edi
 	invoke SetMenu,hWnd,eax
 	invoke DestroyMenu,hMnu
 	pop		hMnu
+	mov		nInx,1
+	mov		ebx,offset hCustDll
+	.while nInx<=32
+		invoke MakeKey,addr szCustType,nInx,addr buffer1
+		mov		lpcbData,sizeof RARSTYPE
+		invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+		invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
+		.if rarstype.sztype || rarstype.nid
+			.if !rarstype.szext && rarstype.sztype && nInx>11
+				invoke lstrcpy,addr buffer,addr szAdd
+				invoke lstrcat,addr buffer,addr rarstype.sztype
+				mov		edx,nInx
+				lea		edx,[edx+22000-12]
+				invoke InsertMenu,hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
+			.endif
+		.endif
+		inc		nInx
+	.endw
 	invoke DestroyMenu,hContextMnu
 	invoke LoadMenu,hInstance,IDR_MENUCONTEXT
 	mov		hContextMnu,eax
@@ -732,16 +762,6 @@ RemoveFileName proc lpFileName:DWORD
 	ret
 
 RemoveFileName endp
-
-MakeKey proc lpszStr:DWORD,nInx:DWORD,lpszKey:DWORD
-
-	invoke strcpy,lpszKey,lpszStr
-	invoke strlen,lpszKey
-	add		eax,lpszKey
-	invoke DwToAscii,nInx,eax
-	ret
-
-MakeKey endp
 
 SetKeyWords proc uses esi edi
 	LOCAL	hMem:DWORD

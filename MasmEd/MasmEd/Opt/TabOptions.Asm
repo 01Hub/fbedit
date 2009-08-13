@@ -47,7 +47,6 @@ szCust				db 'Cust#',0
 szFilterDLL			db 'Dll (*.dll)',0,'*.dll',0,0
 szFilterEXE			db 'Exe (*.exe)',0,'*.exe',0,0
 szCustStyle			db 'Style#',0
-szCustType			db 'Type#',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
@@ -601,6 +600,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[64]:BYTE
 	LOCAL	cust:CUSTSTYLE
+	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_COMMAND
@@ -728,6 +728,46 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
+						invoke RegDeleteValue,hReg,addr buffer1
+					.endif
+				.endw
+				; Custom types
+				mov		nInx,0
+				.while nInx<32
+					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.sztype,addr buffer
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
+						mov		eax,dword ptr buffer
+						mov		rarstype.nid,eax
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,2
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.szext,addr buffer
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,3
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
+						invoke lstrcpy,addr rarstype.szedit,addr buffer
+						invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
+						inc		nInx
+						invoke MakeKey,addr szCustType,nInx,addr buffer1
+						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
+					.else
+						inc		nInx
+						invoke MakeKey,addr szCustType,nInx,addr buffer1
 						invoke RegDeleteValue,hReg,addr buffer1
 					.endif
 				.endw
