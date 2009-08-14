@@ -596,7 +596,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		invoke SendDlgItemMessage,hWin,IDC_EDTMENUNAME,EM_LIMITTEXT,31,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTITEMCAPTION,EM_LIMITTEXT,31,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTITEMCAPTION,EM_LIMITTEXT,63,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTITEMNAME,EM_LIMITTEXT,31,0
 		invoke MnuSetCbo,hWin,IDC_CBOMNU
 		invoke GetDlgItem,hWin,IDC_BTNL
@@ -696,7 +696,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				.if eax
 					mov		esi,eax
 					mov		eax,(MNUITEM ptr[esi]).level
-					.if eax<5
+					.if eax<9
 						inc		(MNUITEM ptr[esi]).level
 						mov		eax,EN_CHANGE
 						shl		eax,16
@@ -846,6 +846,10 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_DELETESTRING,nMnuInx,0
 					lea		edi,buffer1
 					mov		ecx,(MNUITEM ptr [esi]).level
+					.if ecx>8
+						mov		ecx,8
+						mov		(MNUITEM ptr [esi]).level,ecx
+					.endif
 					.if ecx
 						mov		al,'.'
 					  @@:
@@ -929,8 +933,10 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 						inc		val
 					.endw
 					invoke SendDlgItemMessage,hWin,IDC_CBOMNU,CB_SETCURSEL,val,0
-					invoke SetDlgItemText,hWin,IDC_EDTITEMNAME,addr (MNUITEM ptr [esi]).itemname
-					invoke SetDlgItemText,hWin,IDC_EDTITEMCAPTION,addr (MNUITEM ptr [esi]).itemcaption
+					invoke lstrcpyn,addr buffer1,addr (MNUITEM ptr [esi]).itemname,32
+					invoke SetDlgItemText,hWin,IDC_EDTITEMNAME,addr buffer1
+					invoke lstrcpyn,addr buffer1,addr (MNUITEM ptr [esi]).itemcaption,64
+					invoke SetDlgItemText,hWin,IDC_EDTITEMCAPTION,addr buffer1
 					invoke SetDlgItemInt,hWin,IDC_EDTITEMID,(MNUITEM ptr [esi]).itemid,FALSE
 					test	(MNUITEM ptr [esi]).flag,1
 					.if !ZERO?
