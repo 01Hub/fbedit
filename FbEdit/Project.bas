@@ -54,6 +54,29 @@ Dim Shared hTabNewProject1 	As HWND
 Dim Shared hTabNewProject2 	As HWND
 Dim Shared lpOldApiListProc	As Any Ptr
 
+' ---------------------------------------------------------------------
+' TYPE: MODULEPATH
+' helper to handle the paths in project panel in folder view
+' ---------------------------------------------------------------------
+
+Type MODULEPATH
+  	Public:
+  		Declare Sub SetPath(path As String, setmembers As Integer)
+	   Declare Function GetNextFolder() As String
+	   Declare Function GetPathFromProjectFile(hwndtv As HWND, itemid As HTREEITEM) As String
+	   Declare Function GetPathName() As String
+	Private:
+		relpath As String
+		currentpath As String
+		currentdepth As Integer
+		maxdepth As Integer
+End Type
+
+Dim Shared ModPath As MODULEPATH
+
+' ---------------------------------------------------------------------
+
+
 Function BrowseCallbackProc(ByVal hwnd As HWND,ByVal uMsg As UINT,ByVal lParam As LPARAM,ByVal lpData As Integer) As Integer
 
 	If uMsg=BFFM_INITIALIZED Then
@@ -219,48 +242,48 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 	Dim sPath As ZString*260
 	Dim sItem As ZString*260
 	Dim As Integer x,y
-	'dim hRoot as HTREEITEM
 	Dim hCld As HTREEITEM
+	Dim As String currentPath, nextPath
 
 	lstrcpy(@sPath,lpPth)
 	If nProjectGroup=1 Then
-		While TRUE
-			y=InStr(y+1,sPath,"\")
-			If y>x Then
-				x=y
-			Else
-				Exit While
-			EndIf
-		Wend
-		If x Then
-			sPath=Left(sPath,x-1)
-			'hRoot=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_ROOT,NULL))
-			hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CHILD,Cast(LPARAM,hPar)))
-			While hCld
-				tvi.hItem=hCld
-				tvi.mask=TVIF_HANDLE Or TVIF_PARAM Or TVIF_TEXT
-				tvi.pszText=@sItem
-				tvi.cchTextMax=SizeOf(sItem)
-				SendMessage(ah.hprj,TVM_GETITEM,0,Cast(LPARAM,@tvi))
-				If tvi.lParam=0 Then
-					If sItem=sPath Then
-						hPar=hCld
-						Exit While
+		
+		currentPath = sPath
+		ModPath.SetPath(currentPath, 1)
+		Do
+			nextPath = ModPath.GetNextFolder()
+			If nextPath<>"" Then
+				sPath = nextPath
+				
+				hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CHILD,Cast(LPARAM,hPar)))
+				While hCld
+					tvi.hItem=hCld
+					tvi.mask=TVIF_HANDLE Or TVIF_PARAM Or TVIF_TEXT
+					tvi.pszText=@sItem
+					tvi.cchTextMax=SizeOf(sItem)
+					SendMessage(ah.hprj,TVM_GETITEM,0,Cast(LPARAM,@tvi))
+					If tvi.lParam=0 Then
+						If sItem=sPath Then
+							hPar=hCld
+							Exit While
+						EndIf
 					EndIf
+					hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_NEXT,Cast(LPARAM,hCld)))
+				Wend
+				If hCld=0 Then
+					tvins.hParent=hPar
+					tvins.item.lParam=0
+					tvins.hInsertAfter=0
+					tvins.item.mask=TVIF_TEXT Or TVIF_PARAM Or TVIF_IMAGE Or TVIF_SELECTEDIMAGE
+					tvins.item.pszText=@sPath
+					tvins.item.iImage=0
+					tvins.item.iSelectedImage=0
+					hPar=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_INSERTITEM,0,Cast(Integer,@tvins)))
 				EndIf
-				hCld=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_NEXT,Cast(LPARAM,hCld)))
-			Wend
-			If hCld=0 Then
-				tvins.hParent=hPar
-				tvins.item.lParam=0
-				tvins.hInsertAfter=0
-				tvins.item.mask=TVIF_TEXT Or TVIF_PARAM Or TVIF_IMAGE Or TVIF_SELECTEDIMAGE
-				tvins.item.pszText=@sPath
-				tvins.item.iImage=0
-				tvins.item.iSelectedImage=0
-				hPar=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_INSERTITEM,0,Cast(Integer,@tvins)))
+				
 			EndIf
-		EndIf
+		Loop While nextPath<>""
+		
 	ElseIf nProjectGroup=2 And hPar<>0 Then
 		x=GetFileImg(sPath)
 		If x=5 Then
@@ -305,11 +328,17 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 			hPar=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_INSERTITEM,0,Cast(Integer,@tvins)))
 		EndIf
 	EndIf
+	
 	tvins.hParent=hPar
 	tvins.item.lParam=lParam
 	tvins.hInsertAfter=0
 	tvins.item.mask=TVIF_TEXT Or TVIF_PARAM Or TVIF_IMAGE Or TVIF_SELECTEDIMAGE
-	tvins.item.pszText=lpPth
+	If nProjectGroup=1 Then
+		currentPath = ModPath.GetPathName()
+		tvins.item.pszText= StrPtr(currentPath)
+	Else
+		tvins.item.pszText=lpPth
+	EndIf
 	If lParam>=1001 And nImg=1 Then
 		' Module
 		nImg=6
@@ -322,7 +351,9 @@ Function TrvAddNode(ByVal hPar As HTREEITEM,ByVal lpPth As ZString Ptr,ByVal nIm
 	hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_INSERTITEM,0,Cast(Integer,@tvins)))
 	If hPar Then
 		SendMessage(ah.hprj,TVM_SORTCHILDREN,0,Cast(LPARAM,hPar))
-		SendMessage(ah.hprj,TVM_EXPAND,TVE_EXPAND,Cast(LPARAM,hPar))
+		If nProjectGroup<>1 Then
+			SendMessage(ah.hprj,TVM_EXPAND,TVE_EXPAND,Cast(LPARAM,hPar))
+		EndIf
 	EndIf
 	Return hItem
 
@@ -973,13 +1004,14 @@ Sub SetAsMainProjectFile
 	Dim nInx As Integer
 	Dim nMiss As Integer
 	Dim sItem As ZString*260
-
+	
+	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	
 	If tvi.hItem Then
-		tvi.Mask=TVIF_TEXT
-		tvi.pszText=@buff
-		tvi.cchTextMax=260
-		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+		buff = *StrPtr(path)
+		
 		nInx=1
 		nMiss=0
 		Do While nInx<256 And nMiss<MAX_MISS
@@ -1026,13 +1058,14 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 	Dim nMiss As Integer
 	Dim sItem As ZString*260
 	Dim buff As ZString*260
-
+	
+	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	
 	If tvi.hItem Then
-		tvi.Mask=TVIF_TEXT
-		tvi.pszText=@buff
-		tvi.cchTextMax=260
-		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+		buff = *StrPtr(path)
+		
 		nInx=1
 		nMiss=0
 		Do While nInx<256 And nMiss<MAX_MISS
@@ -1090,13 +1123,13 @@ End Sub
 Sub InsertInclude()
 	Dim tvi As TV_ITEM
 	Dim buffer As ZString*260
-
+	
+	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	
 	If tvi.hItem Then
-		tvi.Mask=TVIF_TEXT
-		tvi.pszText=@buffer
-		tvi.cchTextMax=260
-		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+		buffer = *StrPtr(path)
 		buffer="#Include " & Chr(34) & buffer & Chr(34) & CR
 		SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
 	EndIf	
@@ -1131,13 +1164,14 @@ Sub ToggleProjectFile
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
-
+	
+	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
+	
 	If tvi.hItem Then
-		tvi.Mask=TVIF_TEXT Or TVIF_PARAM
-		tvi.pszText=@buff
-		tvi.cchTextMax=260
-		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+		buff = *StrPtr(path)
+		
 		If tvi.lParam Then
 			' Remove the file from project
 			RemoveProjectFile(TRUE)
@@ -1987,11 +2021,21 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				tvi.cchTextMax=260
 				SendMessage(hWin,TVM_GETITEM,0,Cast(Integer,@tvi))
 				If tvi.lParam Then
-					If Mid(buff,2,2)=":\" Then
-						sFile=buff
+					If nProjectGroup<>1 Then
+						If Mid(buff,2,2)=":\" Then
+							sFile=buff
+						Else
+							sFile=MakeProjectFileName(buff)
+						EndIf
 					Else
-						sFile=MakeProjectFileName(buff)
-					EndIf
+						Dim path As String
+						path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+						sFile = *StrPtr(path)
+						If Mid(sFile,2,2)=":\" Then
+						Else
+							sFile=MakeProjectFileName(sFile)
+						EndIf
+					EndIf 
 					OpenTheFile(sFile,FALSE)
 					fTimer=1
 				EndIf
@@ -2032,4 +2076,70 @@ Function ProjectProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	End Select
 	Return 0
 
+End Function
+
+' ---------------------------------------------------------------------
+' TYPE: MODULEPATH
+' helper to handle the paths in project panel in folder view
+' ---------------------------------------------------------------------
+
+Sub MODULEPATH.SetPath(path As String, setmembers As Integer)
+	relpath = path
+	If setmembers = 1 Then 
+		currentpath = relpath
+		dim count As Integer = 0
+		Dim path_length As Integer = Len(relpath)
+		
+		For i As Integer = 0 To path_length-1
+			If Asc(relpath, i+1) = Asc("\") Then
+				count+=1
+			EndIf 
+		Next i
+		currentdepth = 0
+		maxdepth = count
+	EndIf
+End Sub
+
+Function MODULEPATH.GetNextFolder() As String
+	Dim As String fold, current
+	Dim position As Integer
+	
+	current = currentpath
+	If currentdepth < maxdepth Then
+		position = InStr(current, "\")
+		If position>0 Then 
+			fold = Left(current, position-1)
+			current = Mid(current, position+1)
+			currentpath = current
+		EndIf
+	EndIf
+
+	currentdepth+=1
+	Return fold
+End Function
+
+Function MODULEPATH.GetPathFromProjectFile(hwndtv As HWND, itemid As HTREEITEM) As String
+	Dim tvi As TVITEM
+	Dim As String spath
+	Dim As ZString *260 path
+	Dim As HTREEITEM hbase, hparent
+	
+	hparent = itemid
+	hbase = Cast(HTREEITEM,SendMessage(hwndtv,TVM_GETNEXTITEM,TVGN_CHILD, 0))
+	Do
+		tvi.hItem=hparent
+		tvi.mask=TVIF_HANDLE Or TVIF_TEXT
+		tvi.pszText=@path
+		tvi.cchTextMax=SizeOf(path)
+		SendMessage(hwndtv,TVM_GETITEM,0,Cast(LPARAM,@tvi))
+		
+		spath = path + "\" + spath
+		
+		hparent=Cast(HTREEITEM,SendMessage(hwndtv,TVM_GETNEXTITEM,TVGN_PARENT,Cast(LPARAM,hparent)))
+	Loop While hparent <> hbase
+	Return Left( spath, Len(spath)-1 )
+End Function 
+
+Function MODULEPATH.GetPathName() As String
+	Return currentpath
 End Function

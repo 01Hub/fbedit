@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.7.1
+o 4quiles made a nice change to Project browser.
 o FbEdit now jumps to first compile error.
 o Auto delete files after build is only performed after build of the main file.
 o Accelerator table and string table now has an edit combo in its name column.
