@@ -229,6 +229,8 @@ ProWizFinish proc uses ebx esi edi
 			.if eax==BST_CHECKED
 				invoke GetDlgItemText,hWin,ID,addr buffer,sizeof buffer
 				invoke WritePrivateProfileString,addr iniProject,addr iniProjectType,addr buffer,addr ProjectFile
+;				invoke GetPrivateProfileString,addr buffer,addr iniApi,addr iniApi,addr buffer4,sizeof buffer4,addr szAsmIni
+;				invoke WritePrivateProfileString,addr iniProject,addr iniApi,addr buffer4,addr ProjectFile
 			.endif
 			inc		ID
 			dec		ebx

@@ -3,7 +3,7 @@
 ApiTypeLoad proc
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetPrivateProfileString,addr	iniApi,addr	iniApiType,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr	iniAsmFile
+	invoke GetPrivateProfileString,addr	szIniApi,addr iniApiType,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr	iniAsmFile
 	.if	eax
 		.while iniBuffer
 			invoke strcpy,addr buffer,addr AppPath
@@ -20,7 +20,7 @@ ApiTypeLoad endp
 ApiArrayLoad proc
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetPrivateProfileString,addr	iniApi,addr	iniApiArray,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
+	invoke GetPrivateProfileString,addr	szIniApi,addr iniApiArray,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
 	.if	eax
 		.while iniBuffer
 			invoke strcpy,addr buffer,addr AppPath

@@ -14,7 +14,7 @@ StBuff			db 64 dup (?)
 ApiStructLoad proc
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetPrivateProfileString,addr	iniApi,addr	iniApiStruct,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr	iniAsmFile
+	invoke GetPrivateProfileString,addr	szIniApi,addr iniApiStruct,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr	iniAsmFile
 	.if	eax
 		.while iniBuffer
 			invoke strcpy,addr buffer,addr AppPath

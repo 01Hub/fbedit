@@ -4,7 +4,7 @@
 ApiMessageLoad proc
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetPrivateProfileString,addr	iniApi,addr	iniApiMessage,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
+	invoke GetPrivateProfileString,addr	szIniApi,addr iniApiMessage,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
 	.if	eax
 		.while iniBuffer
 			invoke strcpy,addr buffer,addr AppPath

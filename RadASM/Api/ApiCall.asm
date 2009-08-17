@@ -23,22 +23,23 @@ nCommaCont		dd ?
 fNoTrig			dd ?
 ApiOfs			dd ?
 szApiToolTip	db 16384 dup(?)
+szIniApi		db 256 dup(?)
 
 .code
 
 ApiCallLoad proc
 	LOCAL	buffer[256]:BYTE
 
-	invoke GetPrivateProfileString,addr iniApi,addr iniApiTrig,addr szNULL,addr szInvoke,sizeof szInvoke,addr iniAsmFile
-	invoke GetPrivateProfileString,addr iniApi,addr iniApiInc,addr	szNULL,addr iniBuffer,64,addr iniAsmFile
+	invoke GetPrivateProfileString,addr szIniApi,addr iniApiTrig,addr szNULL,addr szInvoke,sizeof szInvoke,addr iniAsmFile
+	invoke GetPrivateProfileString,addr szIniApi,addr iniApiInc,addr szNULL,addr iniBuffer,64,addr iniAsmFile
 	invoke iniGetItem,addr iniBuffer,addr szInclude
 	invoke iniGetItem,addr iniBuffer,addr szIncludeSt
 	invoke iniGetItem,addr iniBuffer,addr szIncludeEn
-	invoke GetPrivateProfileString,addr iniApi,addr iniApiLib,addr	szNULL,addr iniBuffer,64,addr iniAsmFile
+	invoke GetPrivateProfileString,addr szIniApi,addr iniApiLib,addr szNULL,addr iniBuffer,64,addr iniAsmFile
 	invoke iniGetItem,addr iniBuffer,addr szIncludeLib
 	invoke iniGetItem,addr iniBuffer,addr szIncludeLibSt
 	invoke iniGetItem,addr iniBuffer,addr szIncludeLibEn
-	invoke GetPrivateProfileString,addr iniApi,addr iniApiCall,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
+	invoke GetPrivateProfileString,addr szIniApi,addr iniApiCall,addr szNULL,addr iniBuffer,sizeof iniBuffer,addr iniAsmFile
 	.if eax
 		.while iniBuffer
 			invoke strcpy,addr buffer,addr AppPath

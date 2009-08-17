@@ -597,12 +597,12 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 	LOCAL	buffer[64]:BYTE
 
 	invoke SendMessage,hClient,WM_MDIGETACTIVE,0,addr fMaximized
-	invoke strcmpi,addr szAssembler,lpAssembler
-	.if !eax
-		invoke iniAddMenu
-		invoke iniDisMenu
-		ret
-	.endif
+;	invoke strcmpi,addr szAssembler,lpAssembler
+;	.if !eax
+;		invoke iniAddMenu
+;		invoke iniDisMenu
+;		ret
+;	.endif
 	.if hParseDll
 		invoke FreeLibrary,hParseDll
 		mov		hParseDll,0
@@ -642,6 +642,10 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 	mov		nAsm,eax
 ;	invoke UpDateAssemblerIni
 	invoke iniReadPaths,lpAssembler
+	invoke strcpy,addr szIniApi,addr iniApi
+	.if fProject
+		invoke GetPrivateProfileString,addr	ProjectType,addr iniApi,addr iniApi,addr szIniApi,128,addr iniAsmFile
+	.endif
 	invoke GetPrivateProfileInt,addr szIniCode,addr ininAsm,0,addr iniAsmFile
 	.if eax
 		mov		nAsm,eax
@@ -818,6 +822,7 @@ GetProject proc	uses edi
 		invoke GetPrivateProfileString,addr	iniProject,addr	iniProjectType,addr	szNULL,addr	ProjectType,64,addr	ProjectFile
 		invoke GetPrivateProfileString,addr	iniProject,addr	iniProjectDescription,addr szNULL,addr ProjectDescr,128,addr ProjectFile
 		invoke UpdateMRU
+		mov		fProject,TRUE
 		invoke SetAssembler,addr buffer
 		invoke GetPrivateProfileInt,addr iniProject,addr iniProjectGroup,1,addr	ProjectFile
 		and		eax,1
@@ -826,7 +831,6 @@ GetProject proc	uses edi
 		invoke GetPrivateProfileInt,addr iniProject,addr iniProjectGroupExpand,1,addr ProjectFile
 		and		eax,1
 		mov		fGroupExpand,eax
-		mov		fProject,TRUE
 		invoke LoadBookMarks
 		invoke GetProjectFiles,TRUE
 		invoke strlen,addr buffer
@@ -1238,7 +1242,7 @@ CloseProject proc
 			invoke UpdateWindow,hPrpLstCode
 			invoke SaveBookMarks
 			invoke UpdateMRU
-			mov		fProject,0
+			mov		fProject,FALSE
 			mov		ProjectFile,0
 			mov		CurPro,0
 			mov		fDebug,FALSE
