@@ -553,6 +553,9 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	LOCAL	lpword2:DWORD
 	LOCAL	lendt:DWORD
 	LOCAL	lpdt:DWORD
+	LOCAL	nnest:DWORD
+	LOCAL	lenname[8]:DWORD
+	LOCAL	lpname[8]:DWORD
 
 	mov		esi,lpMem
 	invoke PreParse,esi,lpCharTab
@@ -846,7 +849,29 @@ SaveLocal:
 	.endw
 	retn
 
+SaveStructNest:
+	xor		ebx,ebx
+	.while ebx<nnest
+		.if lpname[ebx*4]
+			mov		eax,lenname[ebx*4]
+			invoke strcpyn,edi,lpname[ebx*4],addr [eax+1]
+			add		edi,lenname[ebx*4]
+			mov		byte ptr [edi],'.'
+			inc		edi
+		.endif
+		inc		ebx
+	.endw
+	retn
+
 SaveStructItems:
+	xor		eax,eax
+	xor		ecx,ecx
+	mov		nnest,eax
+	.while ecx<8
+		mov		lenname[ecx*4],eax
+		mov		lpname[ecx*4],eax
+		inc		ecx
+	.endw
 	.while byte ptr [esi]
 		call	SkipLine
 		call	GetWord
@@ -855,12 +880,44 @@ SaveStructItems:
 			invoke strcmpin,esi,addr szends,4
 			pop		ecx
 			.if !eax
-				.if byte ptr [edi-1]==','
-					dec		edi
+				dec		nnest
+				.if SIGN?
+					.if byte ptr [edi-1]==','
+						dec		edi
+					.endif
+					mov		byte ptr [edi],0
+					inc		edi
+					retn
 				.endif
-				mov		byte ptr [edi],0
-				inc		edi
-				retn
+				mov		ecx,nnest
+				mov		lenname[ecx*4],0
+				mov		lpname[ecx*4],0
+				xor		ecx,ecx
+			.endif
+		.elseif ecx==5 || ecx==6
+			.if ecx==5
+				push	ecx
+				invoke strcmpin,esi,addr szunion,5
+				.if eax
+					invoke strcmpin,esi,addr szstruc,5
+				.endif
+				pop		ecx
+			.elseif ecx==6
+				push	ecx
+				invoke strcmpin,esi,addr szstruct,6
+				pop		ecx
+			.endif
+			.if !eax
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if ecx
+					mov		edx,nnest
+					mov		lenname[edx*4],ecx
+					mov		lpname[edx*4],esi
+					lea		esi,[esi+ecx]
+				.endif
+				inc		nnest
+				xor		ecx,ecx
 			.endif
 		.endif
 		.if ecx
@@ -873,15 +930,19 @@ SaveStructItems:
 				pop		ecx
 				.if !eax
 					pop		eax
-					.if byte ptr [edi-1]==','
-						dec		edi
+					dec		nnest
+					.if SIGN?
+						.if byte ptr [edi-1]==','
+							dec		edi
+						.endif
+						mov		byte ptr [edi],0
+						inc		edi
+						retn
 					.endif
-					mov		byte ptr [edi],0
-					inc		edi
-					retn
 				.endif
 			.endif
 			pop		esi
+			call	SaveStructNest
 			call	GetWord
 			call	SaveWord
 			lea		esi,[esi+ecx]
