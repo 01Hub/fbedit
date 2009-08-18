@@ -21,18 +21,20 @@ PROPERTIES ends
 
 .const
 
-szproc						db	'proc'
-szendp						db	'endp'
-szstruct					db	'struct'
-szstruc						db	'struc'
-szunion						db	'union'
-szends						db	'ends'
-szequ						db	'equ'
-szmacro						db	'macro'
-szendm						db	'endm'
-szlocal						db	'local'
-szdword						db	'dword'
-szptr						db	'PTR '
+szproc						db	'proc',0
+szlocal						db	'local',0
+szendp						db	'endp',0
+szstruct					db	'struct',0
+szstruc						db	'struc',0
+szunion						db	'union',0
+szends						db	'ends',0
+szequ						db	'equ',0
+szmacro						db	'macro',0
+szendm						db	'endm',0
+
+szdword						db	'DWORD',0
+szptr						db	'PTR ',0
+
 szskiplinefirstword			db 	6,'option',
 								7,'include',
 							   10,'includelib',
@@ -65,19 +67,20 @@ szdatatypes					db	2,'db',
 								2,'dq',
 								2,'df',
 								2,'dt',
-								4,'byte',
-								4,'word',
-								5,'dword',
-								5,'qword',
-								5,'real4',
-								5,'real8',
-								6,'real10',
-								5,'tbyte',
+								4,'BYTE',
+								5,'SBYTE',
+								4,'WORD',
+								5,'SWORD',
+								5,'FWORD',
+								5,'DWORD',
+								6,'SDWORD',
+								5,'QWORD',
+								5,'REAL4',
+								5,'REAL8',
+								6,'REAL10',
+								5,'TBYTE',
 								0,0
 
-szdatatypeptr				db	3,'ptr'
-
-szcolon						db	':',0
 szcomment					db 'comment',0
 szstring					db '"',"'",0,0
 
