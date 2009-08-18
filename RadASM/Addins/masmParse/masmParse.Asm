@@ -546,6 +546,55 @@ GetLineNo:
 
 FindInFile endp
 
+FixUnknown proc uses ebx esi edi
+
+	mov		ebx,lpData
+	mov		esi,[ebx].ADDINDATA.lpWordList
+	.if esi
+		add		esi,[ebx].ADDINDATA.rpProjectWordList
+		.while [esi].PROPERTIES.nSize
+			.if [esi].PROPERTIES.nType=='U'
+				mov		edi,[ebx].ADDINDATA.lpWordList
+				.while [edi].PROPERTIES.nSize
+					movzx	eax,[edi].PROPERTIES.nType
+					.if eax=='S' || eax=='T' || eax=='s'
+						call	CompareIt
+						.if !eax
+							mov		[esi].PROPERTIES.nType,'d'
+							.break
+						.endif
+					.endif
+					mov		eax,[edi].PROPERTIES.nSize
+					lea		edi,[edi+eax+sizeof PROPERTIES]
+				.endw
+			.endif
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+	.endif
+	ret
+
+CompareIt:
+	lea		ecx,[esi+sizeof PROPERTIES]
+	lea		edx,[edi+sizeof PROPERTIES]
+	.while byte ptr [ecx]
+		inc		ecx
+	.endw
+	inc		ecx
+	xor		eax,eax
+	.while TRUE
+		mov		al,[ecx]
+		mov		ah,[edx]
+		.break .if !al || !ah
+		sub		al,ah
+		.break .if al
+		inc		ecx
+		inc		edx
+	.endw
+	retn
+
+FixUnknown endp
+
 ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCharTab:DWORD
 	LOCAL	len1:DWORD
 	LOCAL	lpword1:DWORD
@@ -567,8 +616,8 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 			call	_Skip
 			or		eax,eax
 			jne		Nxt
-			mov		eax,len1
-			lea		esi,[esi+eax]
+			mov		ecx,len1
+			lea		esi,[esi+ecx]
 			call	GetWord
 			.if ecx
 				mov		len2,ecx
@@ -606,6 +655,15 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 						call	_Struct
 						jmp		Nxt
 					.endif
+					;macro
+					push	ecx
+					invoke strcmpin,offset szmacro,lpword2,5
+					pop		ecx
+					.if !eax
+						lea		esi,[esi+ecx]
+						call	_Macro
+						jmp		Nxt
+					.endif
 				.elseif ecx==6
 					;struct
 					push	ecx
@@ -624,6 +682,7 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	  Nxt:
 		call	SkipLine
 	.endw
+	invoke FixUnknown
 	ret
 
 SkipLine:
@@ -1036,6 +1095,47 @@ _Struct:
 	push	offset buffer
 	push	iNbr
 	push	's'
+	call	[lpAddProperty]
+	retn
+
+_Macro:
+	call	SaveName
+	call	SkipSpc
+	.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+		mov		al,[esi]
+		.if al!=VK_SPACE
+			mov		[edi],al
+			inc		edi
+		.endif
+		inc		esi
+	.endw
+	mov		byte ptr [edi],0
+	xor		edi,edi
+	mov		ebx,esi
+	.while byte ptr [esi] && edi<100
+		call	SkipLine
+		call	GetWord
+		.if ecx==4
+			push	ecx
+			invoke strcmpin,esi,addr szendm,4
+			pop		ecx
+			.if !eax
+				mov		ebx,esi
+			.endif
+		.endif
+		lea		esi,[esi+ecx]
+		call	GetWord
+		.if ecx==5
+			invoke strcmpin,esi,addr szmacro,5
+			.break .if !eax
+		.endif
+		inc		edi
+	.endw
+	mov		esi,ebx
+	push	2
+	push	offset buffer
+	push	iNbr
+	push	'm'
 	call	[lpAddProperty]
 	retn
 
