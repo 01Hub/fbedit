@@ -21,17 +21,18 @@ PROPERTIES ends
 
 .const
 
-szproc						db	4,'proc'
-szendp						db	4,'endp'
-szstruct					db	6,'struct'
-szstruc						db	5,'struc'
-szunion						db	5,'union'
-szends						db	4,'ends'
-szequ						db	3,'equ'
-szlocal						db	5,'local'
-szmacro						db	5,'macro'
-szendm						db	4,'endm'
-
+szproc						db	'proc'
+szendp						db	'endp'
+szstruct					db	'struct'
+szstruc						db	'struc'
+szunion						db	'union'
+szends						db	'ends'
+szequ						db	'equ'
+szmacro						db	'macro'
+szendm						db	'endm'
+szlocal						db	'local'
+szdword						db	'dword'
+szptr						db	'PTR '
 szskiplinefirstword			db 	6,'option',
 								7,'include',
 							   10,'includelib',
@@ -40,6 +41,7 @@ szskiplinefirstword			db 	6,'option',
 
 szskipwordprocparam			db	7,'private',
 								6,'public',
+								6,'export',
 								4,'uses',
 								3,'eax',
 								3,'ebx',
@@ -49,7 +51,7 @@ szskipwordprocparam			db	7,'private',
 								3,'edi',
 								3,'ebp',
 								3,'esp',
-								3,'c',
+								1,'c',
 								7,'stdcall',
 								6,'pascal',
 								7,'fortran',
