@@ -15,7 +15,8 @@ o Added MakeProjectFileName to ADDINFUNCTIONS.
 o Added HH_Help to ADDINFUNCTIONS. The lpBuff in ADDINDATA contains the word to seach for.
 o Fixed block complete bug in code editor.
 o Fixed line continuation bug in code parser.
-o Fixed custom styles bug in dialog editor.
+o Fixed custom resource types bug in resource editor.
+o Fixed custom styles bug in resource editor.
 o Fixed duplicate #define bug in  dialog editor.
 1.0.7.0
 o Added Debug / Quick run Options. Lets you set the compile command for Quick run.
