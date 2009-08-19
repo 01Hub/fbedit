@@ -38,7 +38,7 @@ PrintWord proc lpWord:DWORD,l:DWORD
 
 PrintWord endp
 
-BinToDec proc dwVal:DWORD,lpAscii:DWORD
+AsciiToDw proc dwVal:DWORD,lpAscii:DWORD
 
     push    ebx
     push    ecx
@@ -83,7 +83,44 @@ BinToDec proc dwVal:DWORD,lpAscii:DWORD
     pop     ebx
     ret
 
-BinToDec endp
+AsciiToDw endp
+
+DwToAscii proc uses ebx esi edi,dwVal:DWORD,lpAscii:DWORD
+
+	mov		eax,dwVal
+	mov		edi,lpAscii
+	or		eax,eax
+	jns		pos
+	mov		byte ptr [edi],'-'
+	neg		eax
+	inc		edi
+  pos:      
+	mov		ecx,429496730
+	mov		esi,edi
+  @@:
+	mov		ebx,eax
+	mul		ecx
+	mov		eax,edx
+	lea		edx,[edx*4+edx]
+	add		edx,edx
+	sub		ebx,edx
+	add		bl,'0'
+	mov		[edi],bl
+	inc		edi
+	or		eax,eax
+	jne		@b
+	mov		byte ptr [edi],al
+	.while esi<edi
+		dec		edi
+		mov		al,[esi]
+		mov		ah,[edi]
+		mov		[edi],al
+		mov		[esi],ah
+		inc		esi
+	.endw
+	ret
+
+DwToAscii endp
 
 strlen proc uses esi,lpSource:DWORD
 
@@ -132,6 +169,23 @@ strcpyn proc uses esi edi,lpDest:DWORD,lpSource:DWORD,len:DWORD
 	ret
 
 strcpyn endp
+
+strcat proc uses esi edi,lpword1:DWORD,lpword2:DWORD
+
+	mov		esi,lpword1
+	mov		edi,lpword2
+	invoke strlen,esi
+	xor		ecx,ecx
+	lea		esi,[esi+eax]
+  @@:
+	mov		al,[edi+ecx]
+	mov		[esi+ecx],al
+	inc		ecx
+	or		al,al
+	jne		@b
+	ret
+
+strcat endp
 
 strcmpin proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
 
@@ -605,6 +659,7 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	LOCAL	nnest:DWORD
 	LOCAL	lenname[8]:DWORD
 	LOCAL	lpname[8]:DWORD
+	LOCAL	narray:DWORD
 
 	mov		esi,lpMem
 	invoke PreParse,esi,lpCharTab
@@ -674,6 +729,25 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 						call	_Struct
 						jmp		Nxt
 					.endif
+				.endif
+				lea		esi,[esi+ecx]
+				.if len1 && (ecx==2 || ecx==4 || ecx==5 || ecx==6)
+					mov		ebx,offset szdataconv
+					.while byte ptr [ebx]
+						invoke strcmpin,lpword2,ebx,len2
+						.if !eax
+							;data
+							call	_Data
+							jmp		Nxt
+						.endif
+						invoke strlen,ebx
+						lea		ebx,[ebx+eax+1]
+					.endw
+				.endif
+				.if len1 && len2
+					;unknown
+					call	_Unknown
+					jmp		Nxt
 				.endif
 			.elseif !ecx && byte ptr [esi]==':'
 				call	_Label
@@ -1019,6 +1093,163 @@ SaveStructItems:
 	.endw
 	retn
 
+SkipBrace:
+	xor		eax,eax
+	dec		eax
+SkipBrace1:
+	.while byte ptr [esi]==VK_SPACE
+		inc		esi
+	.endw
+	mov		al,[esi]
+	inc		esi
+	.if al=='('
+		push	eax
+		mov		ah,')'
+		jmp		SkipBrace1
+	.elseif al=='{'
+		push	eax
+		mov		ah,'}'
+		jmp		SkipBrace1
+	.elseif al=='['
+		push	eax
+		mov		ah,']'
+		jmp		SkipBrace1
+	.elseif al=='<'
+		push	eax
+		mov		ah,'>'
+		jmp		SkipBrace1
+	.elseif al=='"'
+		push	eax
+		mov		ah,'"'
+		jmp		SkipBrace1
+	.elseif al=="'"
+		push	eax
+		mov		ah,"'"
+		jmp		SkipBrace1
+	.elseif al==ah
+		pop		eax
+	.elseif ah==0FFh
+		dec		esi
+		retn
+	.elseif al==VK_RETURN || al==0
+		dec		esi
+		pop		eax
+	.endif
+	jmp		SkipBrace1
+
+ConvDataType:
+	push	esi
+	mov		esi,offset szdataconv
+	.if lendt==2
+		.while byte ptr [esi]
+			invoke strcmpin,esi,lpdt,2
+			.if !eax
+				lea		esi,[esi+3]
+				mov		lpdt,esi
+				invoke strlen,esi
+				mov		lendt,eax
+				jmp		ExConvDataType
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.elseif lendt==4 || lendt==5 || lendt==6
+		.while byte ptr [esi]
+			lea		esi,[esi+3]
+			invoke strcmpin,esi,lpdt,lendt
+			.if !eax
+				mov		lpdt,esi
+				jmp		ExConvDataType
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.endif
+  ExConvDataType:
+	pop		esi
+	retn
+
+ArraySize:
+	call	SkipSpc
+	push	ebx
+	mov		ebx,offset buffer1[8192]
+	mov		word ptr [ebx-1],0
+	mov		word ptr buffer1[4096-1],0
+	mov		narray,0
+	.while TRUE
+		mov		al,[esi]
+		.if al=='"' || al=="'"
+			inc		esi
+			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+				inc		esi
+				inc		narray
+			.endw
+			.if al==[esi]
+				inc		esi
+			.endif
+			mov		al,[esi]
+		.elseif al=='<'
+			call	SkipBrace
+			inc		narray
+		.endif
+		mov		ah,[ebx-1]
+		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
+			.if ah==' ' || (al==',' && ah==',')
+				dec		ebx
+			.endif
+		.endif
+		.if al==' '
+			.if ah=='+' || ah=='-' || ah=='*' || ah=='/' || ah=='(' || ah==')' || ah==','
+				mov		al,ah
+				dec		ebx
+			.endif
+		.endif
+		.if al=='d' || al=='D'
+			.if byte ptr [esi+1]=='u' || byte ptr [esi+1]=='U'
+				.if byte ptr [esi+2]=='p' || byte ptr [esi+2]=='P'
+					.if byte ptr [esi+3]==' ' || byte ptr [esi+3]=='('
+						add		esi,3
+						call	SkipSpc
+						.if byte ptr [esi]=='('
+							call	SkipBrace
+						.endif
+						call	SkipSpc
+						.if byte ptr buffer1[4096]
+							invoke strcat,offset buffer1[4096],offset szadd
+						.endif
+						mov		byte ptr [ebx-1],0
+						invoke strcat,offset buffer1[4096],offset buffer1[8192]
+						mov		al,[esi]
+					.endif
+				.endif
+			.endif
+		.endif
+		.if al==',' || al==VK_RETURN || !al
+			.if byte ptr [ebx-1]
+				inc		narray
+			.endif
+			mov		ebx,offset buffer1[8192]
+			mov		byte ptr [ebx],0
+		  .break .if al==VK_RETURN || !al
+		.else
+			mov		[ebx],al
+			inc		ebx
+		.endif
+		inc		esi
+	.endw
+	mov		byte ptr [ebx],0
+	pop		ebx
+	.if narray>1 || (byte ptr buffer1[4096] && narray)
+		.if byte ptr buffer1[4096]
+			invoke strcat,addr buffer1[4096],addr szadd
+		.endif
+		invoke DwToAscii,narray,addr buffer1[8192+1024]
+		invoke strcat,addr buffer1[4096],addr buffer1[8192+1024]
+	.endif
+	retn
+
 _Skip:
 	mov		ebx,offset szskiplinefirstword
 	mov		edi,len1
@@ -1136,6 +1367,116 @@ _Macro:
 	push	offset buffer
 	push	iNbr
 	push	'm'
+	call	[lpAddProperty]
+	retn
+
+_Data:
+	call	SaveName
+	mov		eax,lpword2
+	mov		lpdt,eax
+	mov		eax,len2
+	mov		lendt,eax
+	; Check for mov	dword ptr [eax],1
+	call	GetWord
+	.if ecx==3
+		invoke strcmpin,esi,addr szptr,3
+		.if !eax
+			retn
+		.endif
+	.endif
+	call	ConvDataType
+	call	ArraySize
+	.if byte ptr buffer1[4096]
+		mov		byte ptr [edi-1],'['
+		invoke strcpy,edi,addr buffer1[4096]
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],']'
+		inc		edi
+		mov		byte ptr [edi],0
+		inc		edi
+	.endif
+	.if lpdt
+		mov		byte ptr [edi-1],':'
+		mov		eax,lendt
+		inc		eax
+		invoke strcpyn,edi,lpdt,eax
+		add		edi,lendt
+		mov		byte ptr [edi],0
+		inc		edi
+		mov		eax,lendt
+		inc		eax
+		invoke strcpyn,edi,lpdt,eax
+		add		edi,lendt
+	.else
+		dec		edi
+		invoke strcpy,edi,addr szdword
+		lea		edi,[edi+sizeof szdword]
+		mov		byte ptr [edi],0
+		inc		edi
+		invoke strcpy,edi,addr szdword
+		lea		edi,[edi+sizeof szdword]
+	.endif
+	mov		byte ptr [edi],0
+	push	2
+	push	offset buffer
+	push	iNbr
+	push	'd'
+	call	[lpAddProperty]
+	retn
+
+_Unknown:
+	call	SaveName
+	mov		eax,lpword2
+	mov		lpdt,eax
+	mov		eax,len2
+	mov		lendt,eax
+	; Check for mov	dword ptr [eax],1
+	call	GetWord
+	.if ecx==3
+		invoke strcmpin,esi,addr szptr,3
+		.if !eax
+			retn
+		.endif
+	.endif
+	call	ConvDataType
+	call	ArraySize
+	.if byte ptr buffer1[4096]
+		mov		byte ptr [edi-1],'['
+		invoke strcpy,edi,addr buffer1[4096]
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],']'
+		inc		edi
+		mov		byte ptr [edi],0
+		inc		edi
+	.endif
+	.if lpdt
+		mov		byte ptr [edi-1],':'
+		mov		eax,lendt
+		inc		eax
+		invoke strcpyn,edi,lpdt,eax
+		add		edi,lendt
+		mov		byte ptr [edi],0
+		inc		edi
+		mov		eax,lendt
+		inc		eax
+		invoke strcpyn,edi,lpdt,eax
+		add		edi,lendt
+	.else
+		dec		edi
+		invoke strcpy,edi,addr szdword
+		lea		edi,[edi+sizeof szdword]
+		mov		byte ptr [edi],0
+		inc		edi
+		invoke strcpy,edi,addr szdword
+		lea		edi,[edi+sizeof szdword]
+	.endif
+	mov		byte ptr [edi],0
+	push	2
+	push	offset buffer
+	push	iNbr
+	push	'U'
 	call	[lpAddProperty]
 	retn
 

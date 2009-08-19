@@ -81,8 +81,23 @@ szdatatypes					db	2,'db',
 								5,'TBYTE',
 								0,0
 
+szdataconv					db	'DB',0,'BYTE',0
+							db	'DW',0,'WORD',0
+							db	'DD',0,'DWORD',0
+							db	'DQ',0,'QWORD',0
+							db	'DT',0,'TBYTE',0
+							db	'DF',0,'FWORD',0
+							db	'DD',0,'REAL4',0
+							db	'DQ',0,'REAL8',0
+							db	'DT',0,'REAL10',0
+							db	'DB',0,'SBYTE',0
+							db	'DW',0,'SWORD',0
+							db	'DD',0,'SDWORD',0
+							db	0,0
+
 szcomment					db 'comment',0
 szstring					db '"',"'",0,0
+szadd						db '+',0
 
 .data?
 
