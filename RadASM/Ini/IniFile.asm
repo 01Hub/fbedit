@@ -58,6 +58,7 @@ iniTemplateBin		db 'Bin',0
 ;Addins
 iniAddIns			db 'AddIns',0
 iniParseDll			db 'ParseDll',0
+szMasmParseDll		db 'masmParse.dll',0
 
 ;Sniplet
 iniSniplet			db 'Sniplet',0
@@ -141,6 +142,9 @@ UpDateAssemblerIni proc
 			.if Version<=2217
 				invoke WritePrivateProfileString,addr szIniCode,addr szIniData,addr szMasmCodeData,addr iniAsmFile
 				invoke WritePrivateProfileString,addr iniApi,addr iniApiArray,addr szMasmApiArray,addr iniAsmFile
+			.endif
+			.if Version<2218
+				invoke WritePrivateProfileString,addr szIniCode,addr iniParseDll,addr szMasmParseDll,addr iniAsmFile
 			.endif
 		.elseif eax==nCPP
 			.if Version<=2217

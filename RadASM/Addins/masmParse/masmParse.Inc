@@ -61,12 +61,12 @@ szskipwordprocparam			db	7,'private',
 								7,'syscall',
 								0,0
 
-szdatatypes					db	2,'db',
-								2,'dw',
-								2,'dd',
-								2,'dq',
-								2,'df',
-								2,'dt',
+szdatatypes					db	2,'DB',
+								2,'DW',
+								2,'DD',
+								2,'DQ',
+								2,'DF',
+								2,'DT',
 								4,'BYTE',
 								5,'SBYTE',
 								4,'WORD',
@@ -98,12 +98,12 @@ szdataconv					db	'DB',0,'BYTE',0
 szcomment					db 'comment',0
 szstring					db '"',"'",0,0
 szadd						db '+',0
+szcolon						db ':',0
 
 .data?
 
 buffer						db	16384 dup(?)
 buffer1						db	16384 dup(?)
-buffer2						db	16384 dup(?)
 lpHandles					dd	?
 lpProcs						dd	?
 lpData						dd	?

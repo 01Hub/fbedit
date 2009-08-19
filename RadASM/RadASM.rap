@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Win32 App
-Description=RadASM V2.2.1.7
+Description=RadASM V2.2.1.8
 Backup=$P\Bak\
 Debug=0
 Group=0
@@ -82,7 +82,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 35=Edit\ExportID.asm
 36=Dialogs\StringTable.dlg
 37=Api\WordList.asm
-38=RadAsm.inc
+38=
 39=Edit\CodeWrite.asm
 40=Dialogs\SnipletOption.dlg
 41=Edit\SnipletOption.asm
@@ -177,22 +177,22 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,9352
+2=0,416,869,416,37226
 3=154,154,590,413,749
-4=0,0,590,413,25314
-5=132,132,536,413,12666
-6=12,26,869,416,44427
+4=0,0,590,413,21267
+5=132,132,536,413,3983
+6=12,26,869,416,3629
 7=132,132,536,413,29552
-8=44,44,536,413,15329
-9=88,88,536,413,34523
+8=44,44,536,413,15625
+9=88,88,536,413,50754
 10=110,110,536,413,1167
 11=88,88,536,413,12634
 12=154,154,590,413,1082
 13=176,176,590,413,1067
-14=176,176,536,413,5760
-15=22,22,590,413,14008
-16=66,66,536,413,39540
-17=0,0,536,413,28695
+14=176,176,536,413,1766
+15=22,22,590,413,20357
+16=66,66,536,413,9444
+17=0,0,536,413,24901
 18=176,176,536,413
 19=110,110,536,413
 20=0,0,536,413,15357
@@ -212,7 +212,7 @@ MinorFiles=*.res;*.obj;
 35=154,154,536,413,10265
 36=22,22,536,413
 37=0,0,536,413,209
-38=0,0,0,0,63
+38=0,0,0,0,0
 39=176,176,590,413,2915
 40=110,110,536,413
 41=132,132,536,413,0
@@ -225,10 +225,10 @@ MinorFiles=*.res;*.obj;
 47=154,154,536,413
 49=44,44,536,413
 50=
-51=0,0,590,413,1537
+51=0,0,590,413,163
 52=0,0,536,413,4421
 54=88,88,536,413
-53=110,110,536,413,140
+53=110,110,536,413,7228
 55=44,44,536,413,213
 56=66,66,536,413
 57=88,88,536,413,0
@@ -268,9 +268,9 @@ MinorFiles=*.res;*.obj;
 93=88,88,590,413,7274
 92=110,110,590,413
 94=44,44,536,413
-95=66,66,536,413,1501
+95=66,66,536,413,1159
 <<<<<<< .mine
-96=88,88,536,413,28643
+96=88,88,536,413,49589
 =======
 96=88,88,536,413,35580
 >>>>>>> .r1153
@@ -281,7 +281,7 @@ MinorFiles=*.res;*.obj;
 101=0,0,0,0,1886
 104=0,0,728,518
 105=0,0,728,518,3448
-106=0,0,0,0,5204
+106=0,0,0,0,407
 107=0,0,0,0,739
 108=0,0,0,0
 110=0,0,0,0,195
@@ -301,7 +301,7 @@ MinorFiles=*.res;*.obj;
 122=0,0,0,0,537
 123=0,0,0,0
 124=0,0,0,0
-125=0,0,0,0,8127
+125=0,0,0,0,11207
 126=0,0,0,0
 
 [AutoLoad]
@@ -327,20 +327,20 @@ MinorFiles=*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.2.1.7
-PV=2.2.1.7
+FV=2.2.1.8
+PV=2.2.1.8
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.2.1.7
+ProductVersion=2.2.1.8
 ProductName=
 OriginalFilename=RadASM.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2001-2005
 InternalName=RadASM
 FileDescription=Assembly IDE
-FileVersion=2.2.1.7
+FileVersion=2.2.1.8
 CompanyName=
 
 [Accel]
@@ -495,16 +495,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="SetAssembler"
-2="szIniApi"
-3=".ini"
-4="IDM_WINDOW_P"
-5="array"
-6="ParseFPData"
-7="iniWindow"
-8="hLB"
-9="hParseDLL"
-10="iniReadPaths"
+1="FixUnknown"
+2="ParseFile"
+3="IDM_EDIT_FINDPROC"
+4="WM_TOOLDBLCLICK"
+5="SRCFilterString"
+6="RadAsm.inc"
+7="SetAssembler"
+8="szIniApi"
+9=".ini"
+10="IDM_WINDOW_P"
 
 [BreakPoint]
 0=
@@ -546,7 +546,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=18
+MilestoneOnDateDate=19
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -596,7 +596,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 35=1
 36=2
 37=1
-38=1
+38=
 39=1
 40=2
 41=1
@@ -777,3 +777,4 @@ PTimer=385940000
 122=
 8=
 11=
+16=

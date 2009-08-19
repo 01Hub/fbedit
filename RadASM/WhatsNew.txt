@@ -1,5 +1,8 @@
-RadASM 2.2.1.7
+RadASM 2.2.1.8
 --------------
+2.2.1.8
+o Made it possible to load api files depending on project type.
+o Created a masm parser dll.
 2.2.1.7
 o The code parser for masm has been enhanced to include datatypes and array sizes.
 o The code parser for VC6 C/C++ (cppparse.dll) has been enhanced to include datatypes and array sizes.

@@ -14,8 +14,8 @@ PrintTheLine proc lpLine:DWORD
 	.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=VK_RETURN
 		inc		ecx
 	.endw
-	invoke lstrcpyn,offset buffer2,esi,addr [ecx+1]
-	PrintStringByAddr offset buffer2
+	invoke lstrcpyn,offset buffer1,esi,addr [ecx+1]
+	PrintStringByAddr offset buffer1
 	popad
 	ret
 
@@ -186,6 +186,29 @@ strcat proc uses esi edi,lpword1:DWORD,lpword2:DWORD
 	ret
 
 strcat endp
+
+strcmpn proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	cmp		ecx,nCount
+	je		@f
+	mov		al,[esi+ecx]
+	mov		ah,[edi+ecx]
+	sub		al,ah
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpn endp
 
 strcmpin proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
 
@@ -427,67 +450,7 @@ PreParse proc uses esi,lpMem:DWORD,lpCharTab:DWORD
 
 PreParse endp
 
-;SkipScope proc
-;
-;	xor		eax,eax
-;	xor		ecx,ecx
-;SkipScope1:
-;	mov		al,[esi]
-;	or		al,al
-;	je		@f
-;	inc		esi
-;	.if al==ah
-;		dec		ecx
-;		retn
-;	.elseif al=='['
-;		push	eax
-;		inc		ecx
-;		mov		ah,']'
-;		call	SkipScope1
-;		pop		eax
-;	.elseif al=='('
-;		push	eax
-;		inc		ecx
-;		mov		ah,')'
-;		call	SkipScope1
-;		pop		eax
-;	.elseif al=='{'
-;		; Begin / End
-;		push	eax
-;		inc		ecx
-;		mov		ah,'}'
-;		call	SkipScope1
-;		pop		eax
-;	.elseif al=='"' || al=="'"
-;		; String
-;		inc		ecx
-;		.while al!=[esi] && byte ptr [esi]
-;			inc		esi
-;		.endw
-;		.if al==[esi]
-;			inc		esi
-;			dec		ecx
-;		.endif
-;	.elseif word ptr [esi]=='//'
-;		; Comment
-;		.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
-;			inc		esi
-;		.endw
-;		.if byte ptr [esi]==VK_RETURN
-;			inc		esi
-;			.if byte ptr [esi]==0Ah
-;				inc		esi
-;			.endif
-;		.endif
-;	.endif
-;	or		ecx,ecx
-;	jne		SkipScope1
-;  @@:
-;	ret
-;
-;SkipScope endp
-;
-FindInFile proc uses esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DWORD,lpCharTab:DWORD
+FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DWORD,lpCharTab:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	lpPos:DWORD
 
@@ -521,30 +484,41 @@ FindInFile proc uses esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DWORD,
 			je		@b
 			call	GetLineNo
 		.endif
-;	.elseif nInx==2
-;		; Data
-;	  @@:
-;		invoke SearchMem,esi,lpFind2,FALSE,TRUE,lpCharTab
-;		.if eax
-;			mov		esi,eax
-;			call	CopyLine
-;			or		edx,edx
-;			jne		@b
-;			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
-;			or		eax,eax
-;			je		@b
-;			call	GetLineNo
-;		.endif
-	.elseif nInx==5
-		; Struct
-	  @@:
-		invoke SearchMem,esi,offset szstruct,FALSE,TRUE,lpCharTab
-		.if !eax
-			invoke SearchMem,esi,offset szunion,FALSE,TRUE,lpCharTab
-			.if !eax
-				invoke SearchMem,esi,offset szstruc,FALSE,TRUE,lpCharTab
+	.elseif nInx==2
+		; Data
+		mov		eax,lpFind1
+		.if eax==lpFind2
+			mov		ebx,lpData
+			mov		edi,[ebx].ADDINDATA.lpWordList
+			.if esi
+				add		edi,[ebx].ADDINDATA.rpProjectWordList
+				.while [edi].PROPERTIES.nSize
+					invoke strlen,lpFind1
+					mov		ebx,eax
+					.if [edi].PROPERTIES.nType=='d'
+						xor		ecx,ecx
+						lea		edx,[edi+sizeof PROPERTIES]
+						.while byte ptr [edx+ecx]
+							.break .if byte ptr [edx+ecx]==':' || byte ptr [edx+ecx]=='['
+							inc		ecx
+						.endw
+						.if ecx==ebx
+							invoke strcmpn,edx,lpFind1,ebx
+							.if !eax
+								invoke strlen,addr [edi+sizeof PROPERTIES]
+								lea		eax,[edi+eax+sizeof PROPERTIES+1]
+								mov		lpFind2,eax
+								.break
+							.endif
+						.endif
+					.endif
+					mov		eax,[edi].PROPERTIES.nSize
+					lea		edi,[edi+eax+sizeof PROPERTIES]
+				.endw
 			.endif
 		.endif
+	  @@:
+		invoke SearchMem,esi,lpFind2,FALSE,TRUE,lpCharTab
 		.if eax
 			mov		esi,eax
 			call	CopyLine
@@ -555,7 +529,81 @@ FindInFile proc uses esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DWORD,
 			je		@b
 			call	GetLineNo
 		.endif
+	.elseif nInx==3
+		; Macro
+	  @@:
+		invoke SearchMem,esi,offset szmacro,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+		.endif
+	.elseif nInx==4
+		; Label
+	  @@:
+		invoke SearchMem,esi,offset szcolon,FALSE,FALSE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+		.endif
+	.elseif nInx==5
+		; Struct
+	  @@:
+		invoke SearchMem,esi,offset szstruct,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
+		; Union
+		mov		esi,lpMem
+	  @@:
+		invoke SearchMem,esi,offset szunion,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
+		; Struc
+		mov		esi,lpMem
+	  @@:
+		invoke SearchMem,esi,offset szstruc,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
 	.endif
+  Ex:
 	mov		eax,nLine
 	mov		edx,lpPos
 	ret
@@ -601,31 +649,42 @@ GetLineNo:
 FindInFile endp
 
 FixUnknown proc uses ebx esi edi
+	LOCAL	hMem:HGLOBAL
 
 	mov		ebx,lpData
 	mov		esi,[ebx].ADDINDATA.lpWordList
 	.if esi
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+		mov		hMem,eax
+		mov		edi,eax
+		.while [esi].PROPERTIES.nSize
+			.if [esi].PROPERTIES.nType=='S' || [esi].PROPERTIES.nType=='T' || [esi].PROPERTIES.nType=='s'
+				mov		[edi],esi
+				lea		edi,[edi+4]
+			.endif
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+		mov		esi,[ebx].ADDINDATA.lpWordList
 		add		esi,[ebx].ADDINDATA.rpProjectWordList
 		.while [esi].PROPERTIES.nSize
-			.if [esi].PROPERTIES.nType=='U'
-				mov		edi,[ebx].ADDINDATA.lpWordList
-				.while [edi].PROPERTIES.nSize
-					movzx	eax,[edi].PROPERTIES.nType
-					.if eax=='S' || eax=='T' || eax=='s'
-						call	CompareIt
-						.if !eax
-							mov		[esi].PROPERTIES.nType,'d'
-							.break
-						.endif
+			.if [esi].PROPERTIES.nType=='u'
+				mov		ebx,hMem
+				.while dword ptr [ebx]
+					mov		edi,[ebx]
+					call	CompareIt
+					.if !eax
+						mov		[esi].PROPERTIES.nType,'d'
+						.break
 					.endif
-					mov		eax,[edi].PROPERTIES.nSize
-					lea		edi,[edi+eax+sizeof PROPERTIES]
+					lea		ebx,[ebx+4]
 				.endw
 			.endif
 			mov		eax,[esi].PROPERTIES.nSize
 			lea		esi,[esi+eax+sizeof PROPERTIES]
 		.endw
 	.endif
+	invoke GlobalFree,hMem
 	ret
 
 CompareIt:
@@ -756,7 +815,6 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	  Nxt:
 		call	SkipLine
 	.endw
-	invoke FixUnknown
 	ret
 
 SkipLine:
@@ -864,7 +922,7 @@ SaveParam:
 					lea		esi,[esi+ecx]
 					jmp		SaveParam
 				.endif
-				mov		eax,len1
+				mov		eax,ecx
 			.endif
 			lea		ebx,[ebx+eax+1]
 		.endw
@@ -1399,15 +1457,13 @@ _Data:
 	.if lpdt
 		mov		byte ptr [edi-1],':'
 		mov		eax,lendt
-		inc		eax
-		invoke strcpyn,edi,lpdt,eax
+		invoke strcpyn,edi,lpdt,addr [eax+1]
 		add		edi,lendt
 		mov		byte ptr [edi],0
 		inc		edi
-		mov		eax,lendt
-		inc		eax
-		invoke strcpyn,edi,lpdt,eax
-		add		edi,lendt
+		mov		eax,len2
+		invoke strcpyn,edi,lpword2,addr [eax+1]
+		add		edi,len2
 	.else
 		dec		edi
 		invoke strcpy,edi,addr szdword
@@ -1454,15 +1510,13 @@ _Unknown:
 	.if lpdt
 		mov		byte ptr [edi-1],':'
 		mov		eax,lendt
-		inc		eax
-		invoke strcpyn,edi,lpdt,eax
+		invoke strcpyn,edi,lpdt,addr [eax+1]
 		add		edi,lendt
 		mov		byte ptr [edi],0
 		inc		edi
-		mov		eax,lendt
-		inc		eax
-		invoke strcpyn,edi,lpdt,eax
-		add		edi,lendt
+		mov		eax,len2
+		invoke strcpyn,edi,lpword2,addr [eax+1]
+		add		edi,len2
 	.else
 		dec		edi
 		invoke strcpy,edi,addr szdword
@@ -1476,7 +1530,7 @@ _Unknown:
 	push	2
 	push	offset buffer
 	push	iNbr
-	push	'U'
+	push	'u'
 	call	[lpAddProperty]
 	retn
 

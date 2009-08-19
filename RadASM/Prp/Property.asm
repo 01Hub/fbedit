@@ -1309,6 +1309,14 @@ PropListCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 					invoke SendMessage,edx,EM_EXGETSEL,0,addr chrg
 				.endif
 				invoke SendMessage,hWin,LB_GETTEXT,nInx,addr lbbuffer
+				xor		eax,eax
+				.while lbbuffer[eax]
+					.if byte ptr lbbuffer[eax]==':' || byte ptr lbbuffer[eax]=='['
+						mov		byte ptr lbbuffer[eax],0
+						.break
+					.endif
+					inc		eax
+				.endw
 				invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
 				mov		esi,lpWordList
 				lea		esi,[esi+eax]

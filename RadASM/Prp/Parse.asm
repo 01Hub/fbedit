@@ -42,6 +42,7 @@ PARSEDEF ends
 
 ;Dll functions
 szParseFile		db 'ParseFile',0
+szFixUnknown	db 'FixUnknown',0
 szFindInFile	db 'FindInFile',0
 szFindProcPos	db 'FindProcPos',0
 szFindLocal		db 'FindLocal',0
@@ -1274,7 +1275,6 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD
 
 	.if hCodeDefs
 		mov		esi,hSrcMem
-		invoke DestroyCmntBlock,esi
 		invoke DllProc,hWnd,AIM_PREPARSE,iNbr,esi,RAM_PREPARSE
 		.if eax
 			xor		eax,eax
@@ -1290,6 +1290,7 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD
 				call	eax
 			.endif
 		.else
+			invoke DestroyCmntBlock,esi
 			.while byte ptr [esi]
 			  NxtParse:
 				call	GetWrd
@@ -2642,6 +2643,13 @@ CompactWordList endp
 FixUnknown proc uses ebx esi edi
 	LOCAL	hMem:DWORD
 
+	.if hParseDll
+		invoke GetProcAddress,hParseDll,offset szFixUnknown
+		.if eax
+			call	eax
+			jmp		Ex
+		.endif
+	.endif
 	invoke xGlobalAlloc,GMEM_FIXED,1024*1024
 	mov		ebx,eax
 	mov		hMem,eax
@@ -2656,6 +2664,7 @@ FixUnknown proc uses ebx esi edi
 		lea		esi,[esi+eax+sizeof PROPERTIES]
 	.endw
 	invoke GlobalFree,hMem
+  Ex:
 	ret
 
 FindPointers:
