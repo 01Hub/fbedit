@@ -818,7 +818,11 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	ret
 
 SkipLine:
+	xor		eax,eax
 	.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+		.if byte ptr [esi]!=VK_SPACE
+			mov		al,[esi]
+		.endif
 		inc		esi
 	.endw
 	.if byte ptr [esi]==VK_RETURN
@@ -826,6 +830,9 @@ SkipLine:
 	.endif
 	.if byte ptr [esi]==0Ah
 		inc		esi
+	.endif
+	.if al=='\' || al==','
+		jmp		SkipLine
 	.endif
 	retn
 
