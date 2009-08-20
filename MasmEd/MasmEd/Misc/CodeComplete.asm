@@ -30,6 +30,7 @@ ccht					dd ?
 .code
 
 CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
@@ -45,11 +46,13 @@ CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hREd,WM_CHAR,VK_TAB,0
 		jmp		Ex
 	.elseif eax==WM_SIZE
-		mov		eax,lParam
-		movsx	edx,ax
-		shr		eax,16
-		mov		ccwt,edx
-		mov		ccht,eax
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.right
+		sub		eax,rect.left
+		mov		edx,rect.bottom
+		sub		edx,rect.top
+		mov		ccwt,eax
+		mov		ccht,edx
 	.endif
 	invoke CallWindowProc,lpOldCCProc,hWin,uMsg,wParam,lParam
   Ex:

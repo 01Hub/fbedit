@@ -1,7 +1,11 @@
 MasmEd
 
-1.0.5.7 - 2009.08.10
+1.0.5.7b - 2009.08.20
 ---------------------
+o Fixed a bug where the codecomlete list wold get smaller and smeller for each time it is shown.
+
+1.0.5.7 - 2009.08.10
+--------------------
 o Added internal source code debugger. See Debug.txt for more info.
 o Added immediate window. Can be used for integer calculations.
   While debugging you can inspect or set registers, variables or memory.
