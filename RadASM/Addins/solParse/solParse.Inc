@@ -102,6 +102,12 @@ szdataconv					db	'DB',0,'BYTE',0
 							db	'DQ',0,'QWORD',0
 							db	'DT',0,'TBYTE',0
 							db	'DF',0,'FWORD',0
+							db	'DD',0,'REAL4',0
+							db	'DQ',0,'REAL8',0
+							db	'DT',0,'REAL10',0
+							db	'DB',0,'SBYTE',0
+							db	'DW',0,'SWORD',0
+							db	'DD',0,'SDWORD',0
 							db	0,0
 
 szcomment					db '/*',0
@@ -113,6 +119,7 @@ szcolon						db ':',0
 
 buffer						db	16384 dup(?)
 buffer1						db	16384 dup(?)
+buffer2						db	16384 dup(?)
 lpHandles					dd	?
 lpProcs						dd	?
 lpData						dd	?

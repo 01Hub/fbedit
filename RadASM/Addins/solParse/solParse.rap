@@ -1,11 +1,12 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=RadASM code parser for sol_asm
+Description=RadASM sol_asm parser
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
 Ver.rc=1
+Debug=0
 [Files]
 1=solParse.Asm
 2=solParse.Inc
@@ -42,6 +43,13 @@ Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 5=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 7=0,0,"$E\OllyDbg",5
+11=4,O,$B\RC.EXE /v,1
+12=3,O,$B\ML.EXE /c /coff /Cp /Zi /nologo /I"$I",2
+13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
+14=0,0,,5
+15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
+16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
+17=0,0,"$E\OllyDbg",5
 [Group]
 Group=Added files,Assembly,Resources,Misc,Modules
 1=2
@@ -123,8 +131,8 @@ ProductVer4Range=0
 5=
 [Size]
 4=0,0,0,0,11
-2=0,0,0,0,398
-1=0,0,0,0,13456
+2=0,0,0,0,2118
+1=0,0,0,0,20737
 5=0,0,0,0,0
 [BookMark]
 0=

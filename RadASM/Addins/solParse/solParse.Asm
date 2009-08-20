@@ -797,7 +797,11 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	ret
 
 SkipLine:
+	xor		eax,eax
 	.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+		.if byte ptr [esi]!=VK_SPACE
+			mov		al,[esi]
+		.endif
 		inc		esi
 	.endw
 	.if byte ptr [esi]==VK_RETURN
@@ -805,6 +809,9 @@ SkipLine:
 	.endif
 	.if byte ptr [esi]==0Ah
 		inc		esi
+	.endif
+	.if al=='\' || al==','
+		jmp		SkipLine
 	.endif
 	retn
 
@@ -896,138 +903,6 @@ SaveDataType:
 	lea		edi,[edi+ebx]
 	pop		esi
 	pop		ecx
-	retn
-
-SaveParam:
-	call	GetWord
-	.if ecx
-		mov		ebx,offset szskipwordprocparam
-		.while byte ptr [ebx]
-			movzx	eax,byte ptr [ebx]
-			.if eax==ecx
-				push	ecx
-				invoke strcmpin,esi,addr [ebx+1],ecx
-				pop		ecx
-				.if !eax
-					lea		esi,[esi+ecx]
-					jmp		SaveParam
-				.endif
-				mov		eax,ecx
-			.endif
-			lea		ebx,[ebx+eax+1]
-		.endw
-	.elseif byte ptr [esi]==','
-		inc		esi
-		jmp		SaveParam
-	.elseif byte ptr [esi]==VK_RETURN
-		mov		dword ptr [edi],0
-		inc		edi
-		retn
-	.endif
-SaveParam1:
-	call	GetWord
-	.if ecx
-		call	SaveWord
-		lea		esi,[esi+ecx]
-SaveParam2:
-		call	GetWord
-		.if !ecx
-			.if byte ptr [esi]==','
-				inc		esi
-				mov		byte ptr [edi],':'
-				inc		edi
-				invoke strcpyn,edi,addr szdword,6
-				lea		edi,[edi+5]
-				mov		byte ptr [edi],','
-				inc		edi
-				jmp		SaveParam1
-			.elseif byte ptr [esi]==VK_RETURN
-				mov		byte ptr [edi],':'
-				inc		edi
-				invoke strcpyn,edi,addr szdword,6
-				lea		edi,[edi+5]
-				mov		byte ptr [edi],','
-				inc		edi
-			.elseif byte ptr [esi]=='['
-				.while byte ptr [esi] && byte ptr [esi-1]!=']'
-					mov		al,[esi]
-					.if al!=VK_SPACE
-						mov		[edi],al
-						inc		edi
-					.elseif byte ptr [edi-1]!=VK_SPACE
-						mov		[edi],al
-						inc		edi
-					.endif
-					inc		esi
-				.endw
-				jmp		SaveParam2
-			.elseif byte ptr [esi]==':'
-				inc		esi
-				mov		byte ptr [edi],':'
-				inc		edi
-			  @@:
-				call	GetWord
-				.if ecx==3
-					push	ecx
-					invoke strcmpin,esi,addr szptr,3
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+3]
-						invoke strcpyn,edi,addr szptr,4
-						lea		edi,[edi+4]
-						jmp		@b
-					.endif
-				.endif
-				mov		lendt,ecx
-				mov		lpdt,esi
-				lea		esi,[esi+ecx]
-				call	SaveDataType
-				mov		byte ptr [edi],','
-				inc		edi
-				call	GetWord
-				.if byte ptr [esi]==','
-					inc		esi
-					jmp		SaveParam1
-				.endif
-			.endif
-		.endif
-	.endif
-	retn
-
-SaveLocal:
-	.while byte ptr [esi]
-		call	SkipLine
-		call	GetWord
-		.if ecx==5
-			push	ecx
-			invoke strcmpin,esi,addr szlocal,5
-			pop		ecx
-			.if !eax
-				lea		esi,[esi+ecx]
-				call	SaveParam1
-			.endif
-		.elseif ecx==4
-			push	ecx
-			invoke strcmpin,esi,addr szendp,4
-			pop		ecx
-			.if !eax
-				retn
-			.endif
-		.endif
-		push	esi
-		lea		esi,[esi+ecx]
-		call	GetWord
-		.if ecx==4
-			push	ecx
-			invoke strcmpin,esi,addr szendp,4
-			pop		ecx
-			.if !eax
-				pop		eax
-				retn
-			.endif
-		.endif
-		pop		esi
-	.endw
 	retn
 
 SaveStructNest:
@@ -1298,17 +1173,101 @@ ArraySize:
 	.endif
 	retn
 
+AddParam:
+	call	GetWord
+	.if ecx
+		mov		len1,ecx
+		mov		lpword1,esi
+		lea		esi,[esi+ecx]
+		push	ecx
+		invoke strcpyn,edi,lpword1,addr [ecx+1]
+		pop		ecx
+		lea		edi,[edi+ecx]
+		call	SkipSpc
+		.if byte ptr [esi]=='['
+			.while byte ptr [esi] && byte ptr [esi-1]!=']'
+				mov		al,[esi]
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endw
+			call	SkipSpc
+		.endif
+		mov		byte ptr [edi],':'
+		inc		edi
+		.if byte ptr [esi]==':'
+			inc		esi
+			call	GetWord
+			mov		lendt,ecx
+			mov		lpdt,esi
+			lea		esi,[esi+ecx]
+			call	ConvDataType
+			mov		ecx,lendt
+			push	ecx
+			invoke strcpyn,edi,lpdt,addr [ecx+1]
+			pop		ecx
+			lea		edi,[edi+ecx]
+			mov		byte ptr [edi],','
+			inc		edi
+		.else
+			invoke strcpy,edi,addr szdword
+			lea		edi,[edi+5]
+			mov		byte ptr [edi],','
+			inc		edi
+		.endif
+		jmp		AddParam
+	.elseif byte ptr [esi]==','
+		inc		esi
+		jmp		AddParam
+	.endif
+	retn
+
 _Proc:
 	mov		edi,offset buffer
 	call	SaveWord2
-	call	SaveParam
-	.if byte ptr [edi-1]==','
-		mov		byte ptr [edi-1],0
+	mov		buffer1,0
+	mov		buffer2,0
+	.while byte ptr [esi]
+		call	SkipLine
+		call	GetWord
+		.if ecx
+			mov		len1,ecx
+			mov		lpword1,esi
+			lea		esi,[esi+ecx]
+			invoke IsWord,lpword1,len1,offset szinproc
+			.if eax==10
+				;arg
+				mov		edi,offset buffer1
+				invoke strlen,edi
+				lea		edi,[edi+eax]
+				call	AddParam
+			.elseif eax==11
+				;local
+				mov		edi,offset buffer2
+				invoke strlen,edi
+				lea		edi,[edi+eax]
+				call	AddParam
+			.elseif eax==12
+				;endp
+				.break
+			.endif
+		.endif
+	.endw
+	invoke strlen,addr buffer1
+	.if byte ptr buffer1[eax-1]==','
+		mov		byte ptr buffer1[eax-1],0
 	.endif
-	call	SaveLocal
-	.if byte ptr [edi-1]==','
-		mov		byte ptr [edi-1],0
+	invoke strlen,addr buffer2
+	.if byte ptr buffer2[eax-1]==','
+		mov		byte ptr buffer2[eax-1],0
 	.endif
+	mov		edi,offset buffer
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	invoke strcpy,edi,addr buffer1
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	invoke strcpy,edi,addr buffer2
 	push	3
 	push	offset buffer
 	push	iNbr
