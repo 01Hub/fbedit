@@ -978,8 +978,16 @@ TestAny:
 				mov		nInx,1
 			.elseif eax=='d'
 				mov		nInx,2
+			.elseif eax=='m'
+				mov		nInx,3
+			.elseif eax=='l'
+				mov		nInx,4
 			.elseif eax=='s'
 				mov		nInx,5
+			.elseif eax==10
+				mov		nInx,6
+			.elseif eax==11
+				mov		nInx,7
 			.endif
 			mov		eax,[edx].PROPERTIES.Owner
 			retn

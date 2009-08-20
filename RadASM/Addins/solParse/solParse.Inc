@@ -31,15 +31,36 @@ szword1						db	10,4,'proc'
 							db	11,6,'struct'
 							db	11,5,'union'
 							db	12,5,'macro'
+							db	13,4,'enum'
+							db	0,0,0
+
+szword2						db	10,3,'equ'
 							db	0,0,0
 
 szinproc					db	10,3,'arg'
 							db	11,5,'local'
 							db	12,4,'endp'
+							db	13,4,'uses'
 							db	0,0,0
 
+szinstruct					db 10,5,'union'
+							db 11,4,'endu'
+							db 10,5,'struc'
+							db 10,6,'struct'
+							db 11,4,'ends'
+							db	0,0,0
 
-szword2						db	10,3,'equ'
+szinstructitem				db	10,2,'rs'
+							db	11,2,'rb'
+							db	11,2,'rw'
+							db	11,2,'rd'
+							db	0,0,0
+
+szinmacro					db	10,4,'marg'
+							db	11,4,'endm'
+							db	0,0,0
+
+szinenum					db	10,4,'ende'
 							db	0,0,0
 
 szdatatypes					db	10,2,'DB'
@@ -48,53 +69,32 @@ szdatatypes					db	10,2,'DB'
 							db	10,2,'DQ'
 							db	10,2,'DF'
 							db	10,2,'DT'
-							db	11,4,'BYTE'
-							db	11,5,'SBYTE'
-							db	11,4,'WORD'
-							db	11,5,'SWORD'
-							db	11,5,'FWORD'
-							db	11,5,'DWORD'
-							db	11,6,'SDWORD'
-							db	11,5,'QWORD'
-							db	11,5,'REAL4'
-							db	11,5,'REAL8'
-							db	11,6,'REAL10'
-							db	11,5,'TBYTE'
+							db	10,4,'BYTE'
+							db	10,5,'SBYTE'
+							db	10,4,'WORD'
+							db	10,5,'SWORD'
+							db	10,5,'FWORD'
+							db	10,5,'DWORD'
+							db	10,6,'SDWORD'
+							db	10,5,'QWORD'
+							db	10,5,'REAL4'
+							db	10,5,'REAL8'
+							db	10,6,'REAL10'
+							db	10,5,'TBYTE'
+							db	11,2,'RB'
+							db	11,2,'RW'
+							db	11,2,'RD'
+							db	12,2,'RS'
 							db	0,0,0
 
 szdword						db	'DWORD',0
-szptr						db	'PTR ',0
 szproc						db	'proc',0
-szlocal						db	'local',0
-szendp						db	'endp',0
+szequ						db	'equ',0
+szmacro						db	'macro',0
 szstruct					db	'struct',0
 szstruc						db	'struc',0
 szunion						db	'union',0
-szends						db	'ends',0
-szequ						db	'equ',0
-szmacro						db	'macro',0
-szendm						db	'endm',0
-
-
-szskipwordprocparam			db	7,'private'
-							db	6,'public'
-							db	6,'export'
-							db	4,'uses'
-							db	3,'eax'
-							db	3,'ebx'
-							db	3,'ecx'
-							db	3,'edx'
-							db	3,'esi'
-							db	3,'edi'
-							db	3,'ebp'
-							db	3,'esp'
-							db	1,'c'
-							db	7,'stdcall'
-							db	6,'pascal'
-							db	7,'fortran'
-							db	5,'basic'
-							db	7,'syscall'
-							db	0,0
+szenum						db	'enum',0
 
 szdataconv					db	'DB',0,'BYTE',0
 							db	'DW',0,'WORD',0
@@ -108,6 +108,9 @@ szdataconv					db	'DB',0,'BYTE',0
 							db	'DB',0,'SBYTE',0
 							db	'DW',0,'SWORD',0
 							db	'DD',0,'SDWORD',0
+							db	'RB',0,'BYTE',0
+							db	'RW',0,'WORD',0
+							db	'RD',0,'DWORD',0
 							db	0,0
 
 szcomment					db '/*',0
