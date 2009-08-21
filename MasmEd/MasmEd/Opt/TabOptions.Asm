@@ -670,6 +670,11 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IsDlgButtonChecked,hTabDlg[4],IDC_CHKSTYLEHEX
 				mov		grdsize.stylehex,eax
 				; Custom controls
+				invoke GetDlgItem,hTabDlg[8],IDC_GRDCUST
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
 				mov		nInx,0
 				.while nInx<32
 					invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETROWCOUNT,0,0
@@ -696,6 +701,11 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endw
 				; Custom styles
+				invoke GetDlgItem,hTabDlg[12],IDC_GRDCUSTSTYLE
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
 				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
 				mov		nInx,0
 				.while nInx<64
@@ -732,6 +742,12 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endw
 				; Custom types
+				invoke GetDlgItem,hTabDlg[16],IDC_GRDRESTYPE
+				push	eax
+				invoke SendMessage,eax,GM_GETCURSEL,0,0
+				pop		edx
+				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
+				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
 				mov		nInx,0
 				.while nInx<32
 					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETROWCOUNT,0,0

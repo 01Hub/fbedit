@@ -1,8 +1,14 @@
 MasmEd
 
-1.0.5.7b - 2009.08.20
+1.0.5.7b - 2009.08.21
 ---------------------
 o Fixed a bug where the codecomlete list wold get smaller and smeller for each time it is shown.
+o The resource editor work area scrollbars are now hidden when not needed.
+o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could leave
+  garbage at the end.
+o Fixed bug where changing the manifest file name did not work.
+o Fixed a bug where the resource editor properties combo would be set to '#define' when names
+  are exported.
 
 1.0.5.7 - 2009.08.10
 --------------------
