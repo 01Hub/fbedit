@@ -818,6 +818,14 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							Case Asc(","),Asc("("),Asc("."),34
 								HideList
 								ShowWindow(ah.htt,SW_HIDE)
+							Case Else
+								If fincludelist Then
+									lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+									GoTo IncList
+								ElseIf fincliblist Then
+									lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+									GoTo IncLibList
+								EndIf
 						End Select
 					EndIf
 				EndIf
@@ -990,6 +998,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 						ElseIf fstructlist Then
 							UpdateStructList(p)
 						ElseIf fincludelist Then
+IncList:
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
@@ -1004,6 +1013,7 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								UpdateIncludeList()
 							EndIf
 						ElseIf fincliblist Then
+IncLibList:
 							lret=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 							chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
 							buff=Chr(255) & Chr(1)
