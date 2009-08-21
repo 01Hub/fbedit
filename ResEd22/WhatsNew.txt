@@ -8,6 +8,8 @@ o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could lea
 o Fixed bug where changing the manifest file name did not work.
 o Fixed a bug where the properties combo would be set to '#define' when names are exported.
 
+Thanks to Cherry for reporting these bugs.
+
 2.2.0.3 - 2009-08-12
 --------------------
 o Accelerator table and string table now has an edit combo in its name column.
