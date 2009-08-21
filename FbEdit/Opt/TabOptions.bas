@@ -627,6 +627,12 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 			Event=HiWord(wParam)
 			Select Case id
 				Case IDOK
+					nInx=SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_GETCURSEL,0,0)
+					SendDlgItemMessage(hTabDlg(2),IDC_GRDCUST,GM_ENDEDIT,nInx,FALSE)
+					nInx=SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_GETCURSEL,0,0)
+					SendDlgItemMessage(hTabDlg(3),IDC_GRDSTYLE,GM_ENDEDIT,nInx,FALSE)
+					nInx=SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCURSEL,0,0)
+					SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_ENDEDIT,nInx,FALSE)
 					Select Case TRUE
 						Case IsDlgButtonChecked(hTabDlg(0),IDC_RBNEXPOPT1)
 							nmeexp.nType=0
@@ -690,6 +696,7 @@ Function TabOptionsProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WP
 						cust.nMask=fbcust.nMask
 						SendMessage(ah.hraresed,DEM_ADDCUSTSTYLE,0,Cast(LPARAM,@cust))
 					Wend
+					WritePrivateProfileSection(StrPtr("ResType"),szNULL & szNULL,@ad.IniFile)
 					nInx=0
 					While SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETROWCOUNT,0,0)>nInx
 						SendDlgItemMessage(hTabDlg(4),IDC_GRDTYPE,GM_GETCELLDATA,nInx Shl 16,Cast(LPARAM,@sType))

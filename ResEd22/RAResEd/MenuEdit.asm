@@ -775,12 +775,16 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		lea		eax,[esi].MNUHEAD.menuex
 		mov		lpResMenuEx,eax
 		invoke PropertyList,-7
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		fDialogChanged,FALSE
 		invoke GetDlgItem,hWin,IDC_HOTMENU
 		invoke SetWindowLong,eax,GWL_WNDPROC,offset HotProc
 		mov		lpOldHotProc,eax
     .elseif eax==WM_CLOSE
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam

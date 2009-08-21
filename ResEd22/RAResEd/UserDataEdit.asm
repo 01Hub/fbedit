@@ -121,6 +121,7 @@ SaveUserDataEdit proc uses ebx esi edi, hWin:HWND
 		inc		edx
 		inc		ecx
 	.endw
+	mov		byte ptr [edx],0
 	invoke GlobalFree,hMem
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
@@ -194,6 +195,8 @@ UserDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		lea		eax,[edi].USERDATAMEM.value
 		mov		lpResID,eax
 		invoke PropertyList,-9
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
@@ -222,6 +225,8 @@ UserDataEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke ShowWindow,hDlgRed,SW_HIDE
 		invoke SetParent,hDlgRed,hRes
 		mov		hDlgRed,0
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0

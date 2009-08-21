@@ -176,6 +176,7 @@ XPManifestSave proc uses ebx esi edi,hWin:HWND
 		inc		edx
 		inc		ecx
 	.endw
+	mov		byte ptr [edx],0
 	invoke GlobalFree,hMem
 	invoke GetProjectItemName,ebx,addr buffer
 	invoke SetProjectItemName,ebx,addr buffer
@@ -247,6 +248,8 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		lea		eax,[edi].XPMANIFESTMEM.szfilename
 		mov		lpResFile,eax
 		invoke PropertyList,-3
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
@@ -275,6 +278,8 @@ XPManifestEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		invoke ShowWindow,hDlgRed,SW_HIDE
 		invoke SetParent,hDlgRed,hRes
 		mov		hDlgRed,0
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke GetClientRect,hDEd,addr rect

@@ -504,6 +504,7 @@ hStatus				dd ?
 nStatus				dd ?
 hExportOut			dd ?
 fEditMode			dd ?
+fNoScroll			dd ?
 color				COLOR <?>
 hBrBack				dd ?
 icex				INITCOMMONCONTROLSEX <?>

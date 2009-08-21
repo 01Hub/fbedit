@@ -858,7 +858,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		ebx
 		xor		eax,eax
 	.elseif eax==WM_HSCROLL
-		.if fEditMode
+		.if fEditMode || fNoScroll
 			xor		eax,eax
 			ret
 		.endif
@@ -904,7 +904,7 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor eax,eax
 		ret
 	.elseif eax==WM_VSCROLL
-		.if fEditMode
+		.if fEditMode || fNoScroll
 			xor		eax,eax
 			ret
 		.endif

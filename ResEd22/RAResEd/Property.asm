@@ -631,7 +631,7 @@ PropListSetTxt proc uses esi,hWin:HWND
 		.elseif eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MaxName-1,0
 		.elseif eax==PRP_STR_FILE
-			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MAX_PATH,0
+			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,MAX_PATH-1,0
 		.elseif eax==PRP_FUN_STYLE || eax==PRP_FUN_EXSTYLE
 			invoke SendMessage,hPrpEdtDlgCld,EM_LIMITTEXT,8,0
 		.else
@@ -1316,6 +1316,12 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 							and		eax,[edi]
 							or		eax,[edi+4]
 							mov		[esi],eax
+						.elseif eax==PRP_STR_FILE
+							invoke GetFileAttributes,lpResFile
+							.if eax!=INVALID_HANDLE_VALUE
+								invoke MoveFile,lpResFile,addr buffer1
+							.endif
+							invoke strcpy,lpResFile,addr buffer1
 						.endif
 						invoke PropertyList,hCtl
 						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0

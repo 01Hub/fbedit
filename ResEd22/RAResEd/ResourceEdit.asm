@@ -612,6 +612,8 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szRESOURCE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
@@ -784,6 +786,8 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_GRDRES
 		mov		hGrd,eax
 		invoke SaveGrdSize,hGrd,4,offset ResGrdSize
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0

@@ -677,11 +677,13 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,WM_SIZE,0,0
 			invoke SendMessage,hGrd,GM_SETCURSEL,3,0
 			invoke SetFocus,hGrd
+			invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
+			invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szDEFINE
+			invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+			mov		 fNoScroll,TRUE
+	    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
+			invoke SendMessage,hWin,WM_SIZE,0,0
 		.endif
-		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
-		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szDEFINE
-		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
-		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		fDialogChanged,FALSE
 		xor		eax,eax
 		jmp		Ex
@@ -811,6 +813,8 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hGrd,eax
 		invoke SaveGrdSize,hGrd,5,offset NmeGrdSize
 		mov		NmeGrdSize,1
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.else
 		mov		eax,FALSE

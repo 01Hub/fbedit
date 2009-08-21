@@ -275,6 +275,8 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SendMessage,hGrd,GM_SETCURSEL,0,0
 		invoke PropertyList,-5
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
@@ -342,6 +344,8 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_GRDSTR
 		mov		hGrd,eax
 		invoke SaveGrdSize,hGrd,3,offset StrGrdSize
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0

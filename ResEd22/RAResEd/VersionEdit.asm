@@ -757,6 +757,8 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke SetWindowLong,hWin,GWL_USERDATA,eax
 		.endif
 		invoke PropertyList,-2
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 		mov		eax,fChanged
 		mov		fDialogChanged,eax
@@ -832,6 +834,8 @@ VersionEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke NotifyParent
 		.endif
 	.elseif eax==WM_CLOSE
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 		mov		hVerDlg,0
 	.elseif eax==WM_SIZE

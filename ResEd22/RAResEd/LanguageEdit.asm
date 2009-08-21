@@ -72,6 +72,8 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke SendMessage,hPrpCboDlg,CB_RESETCONTENT,0,0
 		invoke SendMessage,hPrpCboDlg,CB_ADDSTRING,0,offset szLANGUAGE
 		invoke SendMessage,hPrpCboDlg,CB_SETCURSEL,0,0
+		mov		 fNoScroll,TRUE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,FALSE
 		invoke SendMessage,hWin,WM_SIZE,0,0
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -120,6 +122,8 @@ LanguageEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		fDialogChanged,TRUE
 		.endif
 	.elseif eax==WM_CLOSE
+		mov		 fNoScroll,FALSE
+    	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE
 		invoke DestroyWindow,hWin
 	.elseif eax==WM_SIZE
 		invoke SendMessage,hDEd,WM_VSCROLL,SB_THUMBTRACK,0
