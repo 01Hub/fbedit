@@ -1,11 +1,11 @@
 ResEd
 
-2.2.0.3b - 2009-08-20
+2.2.0.3b - 2009-08-21
 ---------------------
 o The work area scrollbars are now hidden when not needed.
 o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could leave
   garbage at the end.
-o Fixed bug where changing the manifest file name did not work.
+o Fixed bug where changing the manifest filename did not work.
 o Fixed a bug where the properties combo would be set to '#define' when names are exported.
 
 Thanks to Cherry for reporting these bugs.
