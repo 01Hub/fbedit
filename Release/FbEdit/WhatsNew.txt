@@ -1,5 +1,13 @@
 Whats new:
 ----------
+1.0.7.1b
+o Improved code complete on #Include and #Inclib
+o The resource editor work area scrollbars are now hidden when not needed.
+o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could leave
+  garbage at the end.
+o Fixed bug where changing the manifest file name did not work.
+o Fixed a bug where the resource editor properties combo would be set to '#define' when names
+  are exported.
 1.0.7.1
 o 4quiles made a nice change to Project browser.
 o FbEdit now jumps to first compile error.

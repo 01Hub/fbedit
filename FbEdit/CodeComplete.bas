@@ -656,11 +656,10 @@ Sub UpdateIncludeList()
 	p=StrPtr(dirlist)
 	txt=","+LCase(buff)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-'	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
 	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
-		If Right(buffer,3)=".bi" Then
+		If Right(buffer,3)=".bi" Or Right(buffer,4)=".bas" Then
 			lstrcpy(ccpos,@buffer+2)
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 			nLen+=Len(*ccpos)+1
@@ -669,8 +668,6 @@ Sub UpdateIncludeList()
 		sFind=InStr(sFind+1,dirlist,txt)
 		fincludelist=TRUE
 	Wend
-'	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-'	UpdateWindow(ah.hcc)
 	If fincludelist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
@@ -688,7 +685,6 @@ Sub UpdateInclibList()
 	p=StrPtr(dirlist)
 	txt=","+LCase(buff)
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-'	SendMessage(ah.hcc,WM_SETREDRAW,FALSE,0)
 	sFind=InStr(dirlist,txt)
 	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
@@ -701,8 +697,6 @@ Sub UpdateInclibList()
 		sFind=InStr(sFind+1,dirlist,txt)
 		fincliblist=TRUE
 	Wend
-'	SendMessage(ah.hcc,WM_SETREDRAW,TRUE,0)
-'	UpdateWindow(ah.hcc)
 	If fincliblist Then
 		SendMessage(ah.hcc,CCM_SORT,0,0)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)

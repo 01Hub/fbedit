@@ -52,6 +52,15 @@ Lang=Deutsch (German), By B.Wiegmann
 4011=Dialog der Schriftgröße anpassen
 4012=Einfache Eigenschaften
 ;--------------------------------------------------------------------------
+[2400]
+2402=Hinzufügen
+2401=Entfernen
+;--------------------------------------------------------------------------
+[2410]
+2502=Hinzufügen
+2501=Entfernen
+2504=Änderungen werden nach dem Neustart von FbEdit übernommen.
+;--------------------------------------------------------------------------
 [2500]
 2500=Suchen ...
 2216=Suche dies:
@@ -162,10 +171,11 @@ Lang=Deutsch (German), By B.Wiegmann
 1002=Alles auswählen
 ;--------------------------------------------------------------------------
 [5100]
-5100=Debug Optionen
-2=Abbrechen
-1=OK
+5100=Debug /Schnellstart Optionen
 1002=Debugger:
+1004=Schnellstart Kommandozeile:
+1=OK
+2=Abbrechen
 ;--------------------------------------------------------------------------
 [5200]
 5200=Block einfügen
@@ -419,7 +429,7 @@ Lang=Deutsch (German), By B.Wiegmann
 10162=&Code Editor
 10163=&Dialog Editor
 10164=Ord&ner Optionen
-10165=Deb&ug Optionen
+10165=Deb&ug/Schnellstart Optionen
 10166=&Build Optionen
 10167=&Externe Dateien
 10168=&Addin Manager
@@ -567,6 +577,31 @@ Lang=Deutsch (German), By B.Wiegmann
 3006=Änderungen speichern?
 3007=Datei wurde ausserhalb des Editors geändert!
 3008=Datei erneut öffnen?
+4010=Exporte
+4020=Verhalten
+4030=Benutzerdefinierte Steuerelemente
+4031=Benutzerdefiniertes Steuerelement
+4032=Stil-Maske
+4040=Benutzerdefinierte Stile
+4041=Stil
+4042=Wert
+4043=Maske
+4050=Resource Typen
+4051=Name
+4052=Wert
+4053=Dateien
+4054=Editor
+5001=Geänderter Status
+5002=Trennleiste
+5003=Liniennummerierung anzeigen/ausblenden
+5004=Alles erweitern
+5005=Alles reduzieren
+5006=Tab sperren/entsperren
+5011=Aufwärts
+5012=Dateifilter
+5021=Aktuelle Datei
+5022=Dateien öffnen
+5023=Aktualisieren
 ;--------------------------------------------------------------------------
 [SnipletAddin]
 SnipletAddin=Code Sniplets
@@ -652,6 +687,7 @@ Toolbar=Werkzeugleisten Erstellung (Toolbar)
 10002=SVN Übergabe
 ;--------------------------------------------------------------------------
 [ShowVars]
+999=Variablen anzeigen
 1000=Verstecken
 1001=Nächster Tab\tStrg+F6
 1002=Vorheriger Tab\tShift+Strg+F6

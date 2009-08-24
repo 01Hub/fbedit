@@ -804,143 +804,165 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 
 	Select Case uMsg
 		Case WM_CHAR
-			hPar=GetParent(hWin)
-			If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 And SendMessage(hPar,REM_GETMODE,0,0)=0 Then
-				If wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
-					Return 0
-				EndIf
+			If SendMessage(hPar,REM_GETMODE,0,0)=0 Then
+				' Mode Normal
+				hPar=GetParent(hWin)
 				SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@prechrg))
-				i=SendMessage(hPar,REM_ISCHARPOS,prechrg.cpMin,0)
-				lret=12345
-				Select Case i
-					Case 0
-						' Normal
-						If edtopt.autobrace then
-							If wParam=Asc("(") Or wParam=Asc("{") Or wParam=Asc("[") Then
-								' Auto brace
-								lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-								TestCaseConvert(hPar,wParam)
-								AutoBrace(hPar,wParam)
-								Return lret
-							EndIf
+				If wParam=VK_TAB And IsWindowVisible(ah.hcc)=FALSE Then
+					' Indent / Outdent
+					If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
+						SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
+						Return 0
+					Else
+						If prechrg.cpMin<>prechrg.cpMax Then
+							SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+							Return 0
 						EndIf
-						If edtopt.smartmath Then
-							' Smart maths
-							If SmartMath(hPar,wParam) Then
-								Return 0
-							EndIf
-						EndIf
-						If wParam=VK_BACK Then
-							trng.chrg=prechrg
-							If trng.chrg.cpMin>0 And trng.chrg.cpMin=trng.chrg.cpMax Then
-								' Get the deleted character
-								trng.chrg.cpMin-=1
-								trng.lpstrText=@buff
-								SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-								Select Case As Const Asc(buff)
-									Case Asc("."),Asc(","),Asc("(")
-										HideList()
-										ShowWindow(ah.htt,SW_HIDE)
-									Case 34
-										HideList()
-										ShowWindow(ah.htt,SW_HIDE)
-										If edtopt.autoinclude Then
-											trng.chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,SendMessage(hPar,EM_EXLINEFROMCHAR,0,trng.chrg.cpMax),0)
-											trng.chrg.cpMax-=1
-											SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-											lret=InStr(buff,Chr(34))
-											lret=InStr(lret+1,buff,Chr(34))
-											If InStr(UCase(buff),"#INCLUDE")<>0 And lret=0 Then
-												buff=Mid(buff,InStr(buff,Chr(34))+1)
-												'reset last dir
-												dirlist=""
-												BuildDirList(ad.fbcPath & "\Inc",NULL,6)
-												If fProject Then
-													BuildDirList(ad.ProjectPath,NULL,7)
-												EndIf
-												UpdateIncludeList()
-												Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-											ElseIf InStr(UCase(buff),"#INCLIB")<>0 And lret=0 Then
-												buff=Mid(buff,InStr(buff,Chr(34))+1)
-												'reset last dir
-												dirlist=""
-												BuildDirList(ad.fbcPath & "\Lib",NULL,6)
-												If fProject Then
-													BuildDirList(ad.ProjectPath,NULL,7)
-												EndIf
-												UpdateInclibList()
-												Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-											EndIf
-										EndIf
-								End Select
-							EndIf
-						EndIf
-					Case 3
-						' String
-						If fincludelist Or fincliblist Then
-							If wParam=VK_TAB Or wParam=VK_RETURN Then
-								CodeComplete(hPar)
-								Return 0
-							EndIf
-							lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-							If wParam=34 Then
-								HideList()
-								Return lret
-							EndIf
-							GetLine(hPar,@buff)
-							i=InStr(buff,Chr(34))
-							If i Then
-								buff=Mid(buff,i+1)
-								If fincludelist Then
-									UpdateIncludeList()
-								ElseIf fincliblist Then
-									UpdateInclibList()
-								EndIf
-							Else
-								HideList()
-							EndIf
-							Return lret
-						EndIf
-					Case Else
-						' Comment or Comment Block
-						Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-				End Select
-
-				If (wParam=VK_TAB Or wParam=VK_RETURN) And IsWindowVisible(ah.hcc) Then
-					' Update edit from code complete list
-					CodeComplete(hPar)
-					Return 0
-				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc) Then
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
-					trng.chrg.cpMin-=1
-					trng.lpstrText=@buff
-					SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-					If SendMessage(ah.hcc,CCM_GETCOUNT,0,0)<=1 Then
-						HideList
-					ElseIf Asc(buff)=Asc(".") Then
+					EndIf
+					Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+				EndIf
+				If SendMessage(hPar,REM_GETWORDGROUP,0,0)=0 Then
+					' Code edit
+					If wParam=VK_SPACE And (GetKeyState(VK_CONTROL) And &H80)<>0 Then
 						Return 0
 					EndIf
-				ElseIf wParam=VK_SPACE Or wParam=VK_TAB Or wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
-					If wParam=VK_TAB Then
-						If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
-							SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
+					i=SendMessage(hPar,REM_ISCHARPOS,prechrg.cpMin,0)
+					lret=12345
+					Select Case i
+						Case 0
+							' Normal
+							If edtopt.autobrace then
+								If wParam=Asc("(") Or wParam=Asc("{") Or wParam=Asc("[") Then
+									' Auto brace
+									lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+									TestCaseConvert(hPar,wParam)
+									AutoBrace(hPar,wParam)
+									Return lret
+								EndIf
+							EndIf
+							If edtopt.smartmath Then
+								' Smart maths
+								If SmartMath(hPar,wParam) Then
+									Return 0
+								EndIf
+							EndIf
+							If wParam=VK_BACK Then
+								trng.chrg=prechrg
+								If trng.chrg.cpMin>0 And trng.chrg.cpMin=trng.chrg.cpMax Then
+									' Get the deleted character
+									trng.chrg.cpMin-=1
+									trng.lpstrText=@buff
+									SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+									Select Case As Const Asc(buff)
+										Case Asc("."),Asc(","),Asc("("),Asc(">")
+											HideList()
+											ShowWindow(ah.htt,SW_HIDE)
+										Case 34
+											HideList()
+											ShowWindow(ah.htt,SW_HIDE)
+											If edtopt.autoinclude Then
+												trng.chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,SendMessage(hPar,EM_EXLINEFROMCHAR,0,trng.chrg.cpMax),0)
+												trng.chrg.cpMax-=1
+												SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+												lret=InStr(buff,Chr(34))
+												lret=InStr(lret+1,buff,Chr(34))
+												If InStr(UCase(buff),"#INCLUDE")<>0 And lret=0 Then
+													buff=Mid(buff,InStr(buff,Chr(34))+1)
+													'reset last dir
+													dirlist=""
+													BuildDirList(ad.fbcPath & "\Inc",NULL,6)
+													If fProject Then
+														BuildDirList(ad.ProjectPath,NULL,7)
+													EndIf
+													UpdateIncludeList()
+													Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+												ElseIf InStr(UCase(buff),"#INCLIB")<>0 And lret=0 Then
+													buff=Mid(buff,InStr(buff,Chr(34))+1)
+													'reset last dir
+													dirlist=""
+													BuildDirList(ad.fbcPath & "\Lib",NULL,6)
+													If fProject Then
+														BuildDirList(ad.ProjectPath,NULL,7)
+													EndIf
+													UpdateInclibList()
+													Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+												EndIf
+											EndIf
+									End Select
+								EndIf
+							EndIf
+						Case 3
+							' String
+							If fincludelist Or fincliblist Then
+								If wParam=VK_TAB Or wParam=VK_RETURN Then
+									CodeComplete(hPar)
+									Return 0
+								EndIf
+								If wParam=VK_ESCAPE Then
+									HideList()
+									Return 0
+								EndIf
+								lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+								If wParam=34 Then
+									HideList()
+									Return lret
+								EndIf
+								GetLine(hPar,@buff)
+								i=InStr(buff,Chr(34))
+								If i Then
+									buff=Mid(buff,i+1)
+									If fincludelist Then
+										UpdateIncludeList()
+									ElseIf fincliblist Then
+										UpdateInclibList()
+									EndIf
+								Else
+									HideList()
+								EndIf
+								Return lret
+							EndIf
+							Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+						Case Else
+							' Comment or Comment Block
+							Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+					End Select
+					If IsWindowVisible(ah.hcc) Then
+						If (wParam=VK_TAB Or wParam=VK_RETURN) Then
+							' Update edit from code complete list
+							CodeComplete(hPar)
 							Return 0
-						Else
-							SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-							If chrg.cpMin<>chrg.cpMax Then
-								SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+						ElseIf wParam=Asc(".") Then
+							SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
+							trng.chrg.cpMin-=1
+							trng.lpstrText=@buff
+							SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+							If SendMessage(ah.hcc,CCM_GETCOUNT,0,0)<=1 Then
+								HideList
+							ElseIf Asc(buff)=Asc(".") Then
 								Return 0
 							EndIf
 						EndIf
 					EndIf
-					If lret=12345 Then
-						lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-					EndIf
-					TT:
-					ShowWindow(ah.htt,SW_HIDE)
-					TestCaseConvert(hPar,wParam)
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
+					If wParam=VK_SPACE Or wParam=VK_TAB Or wParam=Asc("(") Or wParam=Asc(",") Or wParam=VK_BACK Or fmessagelist Then
+						If wParam=VK_TAB Then
+							If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
+								SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
+								Return 0
+							Else
+								SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+								If chrg.cpMin<>chrg.cpMax Then
+									SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
+									Return 0
+								EndIf
+							EndIf
+						EndIf
+						If lret=12345 Then
+							lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+						EndIf
+						TT:
+						ShowWindow(ah.htt,SW_HIDE)
+						TestCaseConvert(hPar,wParam)
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						lp=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 						chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,lp,0)
 						buff=Chr(255) & Chr(1)
@@ -991,69 +1013,65 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							EndIf
 						EndIf
 						SendMessage(ah.hout,REM_SETCHARTAB,Asc("."),CT_HICHAR)
-					EndIf
-					Return lret
-				ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
-					' Hide list and tooltip
-					ShowWindow(ah.htt,SW_HIDE)
-					HideList
-					If wParam=VK_ESCAPE Then
-						Return 0
-					EndIf
-				EndIf
-				If wParam=VK_RETURN Then
-					lstpos.fnohandling=1
-				EndIf
-				lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-				TestCaseConvert(hPar,wParam)
-				If (wParam=Asc(".") Or wParam=Asc(">")) And fconstlist=TRUE Then
-					HideList
-				EndIf
-			TestUpdate:
-				If (IsWindowVisible(ah.hcc) Or fconstlist) Then
-					If fconstlist=TRUE Then
-						GetLine(hPar,@buff)
-						tt.lpszType=StrPtr("Pp")
-						tt.lpszLine=@buff
-						SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))
-						' Show tooltip
-						tti.lpszApi=tt.lpszApi
-						tti.lpszParam=tt.ovr(0).lpszParam
-						tti.lpszRetType=tt.ovr(0).lpszRetType
-						tti.nitem=tt.nPos
-						UpdateConstList(tti.lpszApi,tti.nitem+1)
-					Else
-						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-						isinp.nLine=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
-						isinp.nOwner=Cast(Integer,hPar)
-						If fProject Then
-							isinp.nOwner=GetProjectFileID(hPar)
+						Return lret
+					ElseIf wParam=VK_ESCAPE Or wParam=Asc(")") Then
+						' Hide list and tooltip
+						ShowWindow(ah.htt,SW_HIDE)
+						HideList
+						If wParam=VK_ESCAPE Then
+							Return 0
 						EndIf
-						isinp.lpszType=StrPtr("pxyzo")
-						p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
-						If ftypelist Then
-							If wParam=VK_SPACE Or wParam=VK_TAB Then
-								HideList
-							Else
-								UpdateTypeList
-							EndIf
-						ElseIf fstructlist Then
-							UpdateStructList(p)
+					EndIf
+					If wParam=VK_RETURN Then
+						lstpos.fnohandling=1
+					EndIf
+					lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
+					TestCaseConvert(hPar,wParam)
+					If (wParam=Asc(".") Or wParam=Asc(">")) And fconstlist=TRUE Then
+						HideList
+					EndIf
+				TestUpdate:
+					If (IsWindowVisible(ah.hcc) Or fconstlist) Then
+						If fconstlist=TRUE Then
+							GetLine(hPar,@buff)
+							tt.lpszType=StrPtr("Pp")
+							tt.lpszLine=@buff
+							SendMessage(ah.hpr,PRM_GETTOOLTIP,TT_NOMATCHCASE Or TT_PARANTESES,Cast(LPARAM,@tt))
+							' Show tooltip
+							tti.lpszApi=tt.lpszApi
+							tti.lpszParam=tt.ovr(0).lpszParam
+							tti.lpszRetType=tt.ovr(0).lpszRetType
+							tti.nitem=tt.nPos
+							UpdateConstList(tti.lpszApi,tti.nitem+1)
 						Else
-							UpdateList(p)
+							SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+							isinp.nLine=SendMessage(hPar,EM_EXLINEFROMCHAR,0,chrg.cpMax)
+							isinp.nOwner=Cast(Integer,hPar)
+							If fProject Then
+								isinp.nOwner=GetProjectFileID(hPar)
+							EndIf
+							isinp.lpszType=StrPtr("pxyzo")
+							p=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINPROC,0,Cast(LPARAM,@isinp)))
+							If ftypelist Then
+								If wParam=VK_SPACE Or wParam=VK_TAB Then
+									HideList
+								Else
+									UpdateTypeList
+								EndIf
+							ElseIf fstructlist Then
+								UpdateStructList(p)
+							Else
+								UpdateList(p)
+							EndIf
 						EndIf
-					EndIf
-					' Move code complete list
-					MoveList
-				ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
-					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+						' Move code complete list
+						MoveList
+					ElseIf wParam=Asc(".") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 						fconstlist=FALSE
 						IsStructList
-					EndIf
-				ElseIf wParam=Asc(">") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
-					If SendMessage(hPar,REM_ISCHARPOS,trng.chrg.cpMin,0)=0 Then
+					ElseIf wParam=Asc(">") And IsWindowVisible(ah.hcc)=FALSE And edtopt.codecomplete<>0 Then
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@trng.chrg))
 						trng.chrg.cpMin=trng.chrg.cpMin-2
 						trng.lpstrText=@s
 						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
@@ -1061,10 +1079,8 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							fconstlist=FALSE
 							IsStructList
 						EndIf
-					EndIf
-				ElseIf (wParam=VK_TAB Or wParam=VK_SPACE) And edtopt.codecomplete<>0 Then
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					If SendMessage(hPar,REM_ISCHARPOS,chrg.cpMin,0)=0 Then
+					ElseIf (wParam=VK_TAB Or wParam=VK_SPACE) And edtopt.codecomplete<>0 Then
+						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 						chrg.cpMin=chrg.cpMin-1
 						chrg.cpMax=chrg.cpMax-1
 						SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
@@ -1079,136 +1095,125 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							MoveList
 							ftypelist=TRUE
 						EndIf
-					EndIf
-				ElseIf wParam=34 And edtopt.autoinclude Then
-					GetLine(hPar,@s)
-					s=UCase(s)
-					lret=InStr(s,Chr(34))
-					lret=InStr(lret+1,s,Chr(34))
-					If InStr(s,"#INCLUDE")<>0 And lret=0 Then
-						'reset last dir
-						dirlist=""
-						BuildDirList(ad.fbcPath & "\Inc",NULL,6)
-						If fProject Then
-							BuildDirList(ad.ProjectPath,NULL,7)
+					ElseIf wParam=34 And edtopt.autoinclude Then
+						GetLine(hPar,@s)
+						s=UCase(s)
+						lret=InStr(s,Chr(34))
+						lret=InStr(lret+1,s,Chr(34))
+						If InStr(s,"#INCLUDE")<>0 And lret=0 Then
+							'reset last dir
+							dirlist=""
+							BuildDirList(ad.fbcPath & "\Inc",NULL,6)
+							If fProject Then
+								BuildDirList(ad.ProjectPath,NULL,7)
+							EndIf
+							UpdateIncludeList()
+						ElseIf InStr(s,"#INCLIB")<>0 And lret=0 Then
+							'reset last dir
+							dirlist=""
+							BuildDirList(ad.fbcPath & "\Lib",NULL,6)
+							If fProject Then
+								BuildDirList(ad.ProjectPath,NULL,7)
+							EndIf
+							UpdateInclibList()
+						ElseIf IsWindowVisible(ah.hcc) Then
+							HideList
 						EndIf
-						UpdateIncludeList()
-					ElseIf InStr(s,"#INCLIB")<>0 And lret=0 Then
-						'reset last dir
-						dirlist=""
-						BuildDirList(ad.fbcPath & "\Lib",NULL,6)
-						If fProject Then
-							BuildDirList(ad.ProjectPath,NULL,7)
-						EndIf
-						UpdateInclibList()
-					ElseIf IsWindowVisible(ah.hcc) Then
-						HideList
-					EndIf
-				ElseIf wParam=VK_RETURN Then
-					If edtopt.autoblock Then
-						' Block Complete
-						SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-						trng.chrg.cpMin=chrg.cpMin
-						trng.chrg.cpMax=chrg.cpMin+255
-						trng.lpstrText=@buffer
-						SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-						i=0
-						While buffer[i]<>0 And buffer[i]<>VK_RETURN
-							i+=1
-						Wend
-						If buffer[i]=0 Then
-							fnoret=1
-						Else
-							buffer[i]=0
-						EndIf
-						tp=0
-						While buffer[tp]=VK_SPACE Or buffer[tp]=VK_TAB
-							tp+=1
-						Wend
-						buffer=Mid(buffer,tp+1)
-						ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
-						If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
-							wp=0
-							While wp<32
-								If SendMessage(hPar,REM_ISLINE,ln,Cast(LPARAM,@szSt(wp)))>=0 Then
-									lx=ln+1
-									lz=0
-									While lx<>-1
-										lx=SendMessage(hPar,REM_PRVBOOKMARK,lx,1)
-										If lx<>-1 Then
-											lz=SendMessage(hPar,REM_GETBLOCKEND,lx,0)
-											tp=0
-											If lz=-1 Then
-												tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
-												Exit While
-											ElseIf lz>ln Then
-												tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
-												If tp=-1 Then
+					ElseIf wParam=VK_RETURN Then
+						If edtopt.autoblock Then
+							' Block Complete
+							SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
+							trng.chrg.cpMin=chrg.cpMin
+							trng.chrg.cpMax=chrg.cpMin+255
+							trng.lpstrText=@buffer
+							SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
+							i=0
+							While buffer[i]<>0 And buffer[i]<>VK_RETURN
+								i+=1
+							Wend
+							If buffer[i]=0 Then
+								fnoret=1
+							Else
+								buffer[i]=0
+							EndIf
+							tp=0
+							While buffer[tp]=VK_SPACE Or buffer[tp]=VK_TAB
+								tp+=1
+							Wend
+							buffer=Mid(buffer,tp+1)
+							ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
+							If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
+								wp=0
+								While wp<32
+									If SendMessage(hPar,REM_ISLINE,ln,Cast(LPARAM,@szSt(wp)))>=0 Then
+										lx=ln+1
+										lz=0
+										While lx<>-1
+											lx=SendMessage(hPar,REM_PRVBOOKMARK,lx,1)
+											If lx<>-1 Then
+												lz=SendMessage(hPar,REM_GETBLOCKEND,lx,0)
+												tp=0
+												If lz=-1 Then
+													tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
 													Exit While
+												ElseIf lz>ln Then
+													tp=SendMessage(hPar,REM_ISLINE,lx,Cast(LPARAM,@szSt(wp)))
+													If tp=-1 Then
+														Exit While
+													EndIf
 												EndIf
 											EndIf
-										EndIf
-									Wend
-									If lz<>-1 Or tp=-1 Then
-										SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-										SendMessage(hPar,EM_SCROLLCARET,0,0)
-										Exit While
-									EndIf
-									' Get indent
-									buff=Chr(255) & Chr(1)
-									lp=SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@buff))
-									buff[lp]=NULL
-									lz=1
-									While lz<lp
-										If Asc(buff,lz)<>VK_SPACE And Asc(buff,lz)<>VK_TAB Then
-											buff[lz-1]=NULL
+										Wend
+										If lz<>-1 Or tp=-1 Then
+											SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+											SendMessage(hPar,EM_SCROLLCARET,0,0)
 											Exit While
 										EndIf
-										lz=lz+1
-									Wend
-									buff=CR & buff & szEn(wp)
-									If fnoret Then
-										buff &=CR
-									EndIf
-									If edtopt.autocase=2 Then
-										buff=LCase(buff)
-									ElseIf edtopt.autocase=3 Then
-										buff=UCase(buff)
-									EndIf
-									If i Then
-										chrg.cpMax+=i
+										' Get indent
+										buff=Chr(255) & Chr(1)
+										lp=SendMessage(hPar,EM_GETLINE,ln,Cast(LPARAM,@buff))
+										buff[lp]=NULL
+										lz=1
+										While lz<lp
+											If Asc(buff,lz)<>VK_SPACE And Asc(buff,lz)<>VK_TAB Then
+												buff[lz-1]=NULL
+												Exit While
+											EndIf
+											lz=lz+1
+										Wend
+										buff=CR & buff & szEn(wp)
+										If fnoret Then
+											buff &=CR
+										EndIf
+										If edtopt.autocase=2 Then
+											buff=LCase(buff)
+										ElseIf edtopt.autocase=3 Then
+											buff=UCase(buff)
+										EndIf
+										If i Then
+											chrg.cpMax+=i
+											SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+											chrg.cpMax=chrg.cpMin
+										EndIf
+										SendMessage(hPar,REM_LOCKUNDOID,TRUE,0)
+										SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 										SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-										chrg.cpMax=chrg.cpMin
+										SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
+										SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
+										SendMessage(hPar,EM_SCROLLCARET,0,0)
+										AutoFormatLine(hPar,0)
+										lstpos.fnohandling=0
+										SendMessage(hPar,REM_LOCKUNDOID,FALSE,0)
+										Return lret
 									EndIf
-									SendMessage(hPar,REM_LOCKUNDOID,TRUE,0)
-									SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
-									SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(hPar,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
-									SendMessage(hPar,EM_EXSETSEL,0,Cast(LPARAM,@chrg))
-									SendMessage(hPar,EM_SCROLLCARET,0,0)
-									AutoFormatLine(hPar,0)
-									lstpos.fnohandling=0
-									SendMessage(hPar,REM_LOCKUNDOID,FALSE,0)
-									Return lret
-								EndIf
-								wp=wp+1
-							Wend
+									wp=wp+1
+								Wend
+							EndIf
 						EndIf
+						AutoFormatLine(hPar,0)
+						lstpos.fnohandling=0
 					EndIf
-					AutoFormatLine(hPar,0)
-					lstpos.fnohandling=0
-				EndIf
-				Return lret
-			ElseIf wParam=VK_TAB Then
-				If (GetKeyState(VK_SHIFT) And &H80)<>0 Then
-					SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKOUTDENT,0)
-					Return 0
-				Else
-					SendMessage(hPar,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-					If chrg.cpMin<>chrg.cpMax Then
-						SendMessage(ah.hwnd,WM_COMMAND,IDM_EDIT_BLOCKINDENT,0)
-						Return 0
-					EndIf
+					Return lret
 				EndIf
 			EndIf
 		Case WM_KEYDOWN
