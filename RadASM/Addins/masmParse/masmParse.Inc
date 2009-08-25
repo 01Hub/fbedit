@@ -108,6 +108,7 @@ szdataconv					db	'DB',0,'BYTE',0
 
 szproc						db	'proc',0
 szequ						db	'equ',0
+szequ2						db	'=',0
 szmacro						db	'macro',0
 szstruct					db	'struct',0
 szunion						db	'union',0

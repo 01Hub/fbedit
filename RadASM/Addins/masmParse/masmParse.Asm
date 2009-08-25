@@ -469,6 +469,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			or		eax,eax
 			je		@b
 			call	GetLineNo
+			jmp		Ex
 		.endif
 	.elseif nInx==1
 		; Constant
@@ -483,6 +484,20 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			or		eax,eax
 			je		@b
 			call	GetLineNo
+			jmp		Ex
+		.endif
+	  @@:
+		invoke SearchMem,esi,offset szequ2,FALSE,FALSE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
 		.endif
 	.elseif nInx==2
 		; Data
@@ -528,6 +543,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			or		eax,eax
 			je		@b
 			call	GetLineNo
+			jmp		Ex
 		.endif
 	.elseif nInx==3
 		; Macro
@@ -542,6 +558,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			or		eax,eax
 			je		@b
 			call	GetLineNo
+			jmp		Ex
 		.endif
 	.elseif nInx==4
 		; Label
@@ -556,6 +573,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			or		eax,eax
 			je		@b
 			call	GetLineNo
+			jmp		Ex
 		.endif
 	.elseif nInx==5
 		; Struct
@@ -803,7 +821,10 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 				;unknown
 				call	_Unknown
 				jmp		Nxt
-			.elseif !ecx && byte ptr [esi]==':'
+			.elseif byte ptr [esi]=='='
+				inc		esi
+				call	_Const
+			.elseif byte ptr [esi]==':'
 				call	_Label
 			.endif
 		.endif
