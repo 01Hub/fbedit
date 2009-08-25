@@ -21,65 +21,76 @@ PROPERTIES ends
 
 .const
 
-szproc						db	'proc',0
-szlocal						db	'local',0
-szendp						db	'endp',0
-szstruct					db	'struct',0
-szstruc						db	'struc',0
-szunion						db	'union',0
-szends						db	'ends',0
-szequ						db	'equ',0
-szmacro						db	'macro',0
-szendm						db	'endm',0
+szskiplinefirstword			db	10,6,'option',
+								10,7,'include',
+								10,10,'includelib',
+								10,6,'invoke',
+								0,0,0
+
+szword2						db	10,4,'proc',
+								11,6,'struct',
+								11,5,'struc',
+								11,5,'union',
+								12,6,'record',
+								13,3,'equ',
+								14,5,'macro',
+								0,0,0
+
+szdatatypes					db	10,2,'DB',
+								10,2,'DW',
+								10,2,'DD',
+								10.2,'DQ',
+								10,2,'DF',
+								10,2,'DT',
+								11,4,'BYTE',
+								11,5,'SBYTE',
+								11,4,'WORD',
+								11,5,'SWORD'
+							db	11,5,'FWORD',
+								11,5,'DWORD',
+								11,6,'SDWORD',
+								11,5,'QWORD',
+								11,5,'REAL4',
+								11,5,'REAL8',
+								11,6,'REAL10',
+								11,5,'TBYTE',
+								0,0,0
+
+szinprocparam				db	10,7,'private',
+								10,6,'public',
+								10,6,'export',
+								10,4,'uses',
+								10,3,'eax',
+								10,3,'ebx',
+								10,3,'ecx',
+								10,3,'edx',
+								10,3,'esi',
+								10,3,'edi',
+								10,3,'ebp',
+								10,3,'esp'
+							db	10,1,'c',
+								10,7,'stdcall',
+								10,6,'pascal',
+								10,7,'fortran',
+								10,5,'basic',
+								10,7,'syscall',
+								0,0,0
+
+szinproc					db	10,5,'local',
+								11,4,'endp',
+								0,0,0
+
+szinstruct					db	10,4,'ends',
+								11,6,'struct',
+								11,5,'struc',
+								11,5,'union',
+								0,0,0
+
+szinmacro					db	10,4,'endm',
+								0,0,0
 
 szdword						db	'DWORD',0
 szptr						db	'PTR ',0
-
-szskiplinefirstword			db 	6,'option',
-								7,'include',
-							   10,'includelib',
-								6,'invoke',
-								0,0
-
-szskipwordprocparam			db	7,'private',
-								6,'public',
-								6,'export',
-								4,'uses',
-								3,'eax',
-								3,'ebx',
-								3,'ecx',
-								3,'edx',
-								3,'esi',
-								3,'edi',
-								3,'ebp',
-								3,'esp',
-								1,'c',
-								7,'stdcall',
-								6,'pascal',
-								7,'fortran',
-								5,'basic',
-								7,'syscall',
-								0,0
-
-szdatatypes					db	2,'DB',
-								2,'DW',
-								2,'DD',
-								2,'DQ',
-								2,'DF',
-								2,'DT',
-								4,'BYTE',
-								5,'SBYTE',
-								4,'WORD',
-								5,'SWORD',
-								5,'FWORD',
-								5,'DWORD',
-								6,'SDWORD',
-								5,'QWORD',
-								5,'REAL4',
-								5,'REAL8',
-								6,'REAL10',
-								5,'TBYTE',
-								0,0
 
 szdataconv					db	'DB',0,'BYTE',0
 							db	'DW',0,'WORD',0
@@ -95,10 +106,18 @@ szdataconv					db	'DB',0,'BYTE',0
 							db	'DD',0,'SDWORD',0
 							db	0,0
 
-szcomment					db 'comment',0
-szstring					db '"',"'",0,0
-szadd						db '+',0
-szcolon						db ':',0
+szproc						db	'proc',0
+szequ						db	'equ',0
+szmacro						db	'macro',0
+szstruct					db	'struct',0
+szunion						db	'union',0
+szstruc						db	'struc',0
+szrecord					db 'record',0
+
+szcomment					db	'comment',0
+szstring					db	'"',"'",0,0
+szadd						db	'+',0
+szcolon						db	':',0
 
 .data?
 

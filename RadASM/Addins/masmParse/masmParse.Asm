@@ -602,6 +602,21 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			call	GetLineNo
 			jmp		Ex
 		.endif
+		; Record
+		mov		esi,lpMem
+	  @@:
+		invoke SearchMem,esi,offset szrecord,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
 	.endif
   Ex:
 	mov		eax,nLine
@@ -708,6 +723,27 @@ CompareIt:
 
 FixUnknown endp
 
+IsWord proc uses ebx esi edi,lpWord:DWORD,lenWord:DWORD,lpList:DWORD
+
+	mov		esi,lpList
+	mov		edi,lenWord
+	.while byte ptr [esi]
+		movzx	ebx,byte ptr [esi+1]
+		.if ebx==edi
+			invoke strcmpin,addr [esi+2],lpWord,edi
+			.if !eax
+				movzx	eax,byte ptr [esi]
+				jmp		Ex
+			.endif
+		.endif
+		lea		esi,[esi+ebx+2]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsWord endp
+
 ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCharTab:DWORD
 	LOCAL	len1:DWORD
 	LOCAL	lpword1:DWORD
@@ -727,87 +763,46 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 		.if ecx
 			mov		len1,ecx
 			mov		lpword1,esi
-			call	_Skip
+			lea		esi,[esi+ecx]
+			invoke IsWord,lpword1,len1,addr szskiplinefirstword
 			or		eax,eax
 			jne		Nxt
-			mov		ecx,len1
-			lea		esi,[esi+ecx]
 			call	GetWord
 			.if ecx
 				mov		len2,ecx
 				mov		lpword2,esi
-				.if ecx==4
-					;proc
-					push	ecx
-					invoke strcmpin,offset szproc,lpword2,4
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+ecx]
-						call	_Proc
-						jmp		Nxt
-					.endif
-				.elseif ecx==3
-					;equ
-					push	ecx
-					invoke strcmpin,offset szequ,lpword2,3
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+ecx]
-						call	_Const
-						jmp		Nxt
-					.endif
-				.elseif ecx==5
-					;union,struc
-					push	ecx
-					invoke strcmpin,offset szunion,lpword2,5
-					.if eax
-						invoke strcmpin,offset szstruc,lpword2,5
-					.endif
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+ecx]
-						call	_Struct
-						jmp		Nxt
-					.endif
-					;macro
-					push	ecx
-					invoke strcmpin,offset szmacro,lpword2,5
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+ecx]
-						call	_Macro
-						jmp		Nxt
-					.endif
-				.elseif ecx==6
-					;struct
-					push	ecx
-					invoke strcmpin,offset szstruct,lpword2,6
-					pop		ecx
-					.if !eax
-						lea		esi,[esi+ecx]
-						call	_Struct
-						jmp		Nxt
-					.endif
-				.endif
 				lea		esi,[esi+ecx]
-				.if len1 && (ecx==2 || ecx==4 || ecx==5 || ecx==6)
-					mov		ebx,offset szdataconv
-					.while byte ptr [ebx]
-						invoke strcmpin,lpword2,ebx,len2
-						.if !eax
-							;data
-							call	_Data
-							jmp		Nxt
-						.endif
-						invoke strlen,ebx
-						lea		ebx,[ebx+eax+1]
-					.endw
-				.endif
-				.if len1 && len2
-					;unknown
-					call	_Unknown
+				invoke IsWord,lpword2,len2,addr szword2
+				.if eax==10
+					;proc
+					call	_Proc
+					jmp		Nxt
+				.elseif eax==11
+					;struct
+					call	_Struct
+					jmp		Nxt
+				.elseif eax==12
+					;record
+					call	_Record
+					jmp		Nxt
+				.elseif eax==13
+					;equ
+					call	_Const
+					jmp		Nxt
+				.elseif eax==14
+					;macro
+					call	_Macro
 					jmp		Nxt
 				.endif
+				invoke IsWord,lpword2,len2,addr szdatatypes
+				.if eax
+					;data
+					call	_Data
+					jmp		Nxt
+				.endif
+				;unknown
+				call	_Unknown
+				jmp		Nxt
 			.elseif !ecx && byte ptr [esi]==':'
 				call	_Label
 			.endif
@@ -841,7 +836,7 @@ SkipSpc:
 		inc		esi
 	.endw
 	xor		ecx,ecx
-	.if byte ptr [esi]=='\' || byte ptr [esi]==','
+	.if byte ptr [esi]=='\'; || byte ptr [esi]==','
 		inc		ecx
 		.while byte ptr [esi+ecx]==VK_SPACE
 			inc		ecx
@@ -853,6 +848,16 @@ SkipSpc:
 			.endif
 			jmp		SkipSpc
 		.endif
+	.endif
+	retn
+
+SkipNewLine:
+	call	SkipSpc
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+	.endif
+	.if byte ptr [esi]==0Ah
+		inc		esi
 	.endif
 	retn
 
@@ -918,23 +923,16 @@ SaveDataType:
 SaveParam:
 	call	GetWord
 	.if ecx
-		mov		ebx,offset szskipwordprocparam
-		.while byte ptr [ebx]
-			movzx	eax,byte ptr [ebx]
-			.if eax==ecx
-				push	ecx
-				invoke strcmpin,esi,addr [ebx+1],ecx
-				pop		ecx
-				.if !eax
-					lea		esi,[esi+ecx]
-					jmp		SaveParam
-				.endif
-				mov		eax,ecx
-			.endif
-			lea		ebx,[ebx+eax+1]
-		.endw
+		push	ecx
+		invoke IsWord,esi,ecx,offset szinprocparam
+		pop		ecx
+		.if eax
+			lea		esi,[esi+ecx]
+			jmp		SaveParam
+		.endif
 	.elseif byte ptr [esi]==','
 		inc		esi
+		call	SkipNewLine
 		jmp		SaveParam
 	.elseif byte ptr [esi]==VK_RETURN
 		mov		dword ptr [edi],0
@@ -951,6 +949,7 @@ SaveParam2:
 		.if !ecx
 			.if byte ptr [esi]==','
 				inc		esi
+				call	SkipNewLine
 				mov		byte ptr [edi],':'
 				inc		edi
 				invoke strcpyn,edi,addr szdword,6
@@ -1004,6 +1003,7 @@ SaveParam2:
 				call	GetWord
 				.if byte ptr [esi]==','
 					inc		esi
+					call	SkipNewLine
 					jmp		SaveParam1
 				.endif
 			.endif
@@ -1015,35 +1015,29 @@ SaveLocal:
 	.while byte ptr [esi]
 		call	SkipLine
 		call	GetWord
-		.if ecx==5
+		.if ecx
 			push	ecx
-			invoke strcmpin,esi,addr szlocal,5
+			invoke IsWord,esi,ecx,offset szinproc
 			pop		ecx
-			.if !eax
+			.if eax==10
+				;local
 				lea		esi,[esi+ecx]
 				call	SaveParam1
-			.endif
-		.elseif ecx==4
-			push	ecx
-			invoke strcmpin,esi,addr szendp,4
-			pop		ecx
-			.if !eax
+			.elseif eax==11
+				;endp
 				retn
+			.else
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if ecx==4
+					invoke IsWord,esi,ecx,offset szinproc
+					.if eax==11
+						;endp
+						retn
+					.endif
+				.endif
 			.endif
 		.endif
-		push	esi
-		lea		esi,[esi+ecx]
-		call	GetWord
-		.if ecx==4
-			push	ecx
-			invoke strcmpin,esi,addr szendp,4
-			pop		ecx
-			.if !eax
-				pop		eax
-				retn
-			.endif
-		.endif
-		pop		esi
 	.endw
 	retn
 
@@ -1073,11 +1067,12 @@ SaveStructItems:
 	.while byte ptr [esi]
 		call	SkipLine
 		call	GetWord
-		.if ecx==4
+		.if ecx
 			push	ecx
-			invoke strcmpin,esi,addr szends,4
+			invoke IsWord,esi,ecx,offset szinstruct
 			pop		ecx
-			.if !eax
+			.if eax==10
+				;ends
 				dec		nnest
 				.if SIGN?
 					.if byte ptr [edi-1]==','
@@ -1091,21 +1086,7 @@ SaveStructItems:
 				mov		lenname[ecx*4],0
 				mov		lpname[ecx*4],0
 				xor		ecx,ecx
-			.endif
-		.elseif ecx==5 || ecx==6
-			.if ecx==5
-				push	ecx
-				invoke strcmpin,esi,addr szunion,5
-				.if eax
-					invoke strcmpin,esi,addr szstruc,5
-				.endif
-				pop		ecx
-			.elseif ecx==6
-				push	ecx
-				invoke strcmpin,esi,addr szstruct,6
-				pop		ecx
-			.endif
-			.if !eax
+			.elseif eax==11
 				lea		esi,[esi+ecx]
 				call	GetWord
 				.if ecx
@@ -1117,43 +1098,93 @@ SaveStructItems:
 				inc		nnest
 				xor		ecx,ecx
 			.endif
-		.endif
-		.if ecx
-			push	esi
-			lea		esi,[esi+ecx]
-			call	GetWord
-			.if ecx==4
-				push	ecx
-				invoke strcmpin,esi,addr szends,4
-				pop		ecx
-				.if !eax
-					pop		eax
-					dec		nnest
-					.if SIGN?
-						.if byte ptr [edi-1]==','
-							dec		edi
+			.if ecx
+				push	esi
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if ecx==4
+					push	ecx
+					invoke IsWord,esi,ecx,offset szinstruct
+					pop		ecx
+					.if eax==10
+						pop		eax
+						dec		nnest
+						.if SIGN?
+							.if byte ptr [edi-1]==','
+								dec		edi
+							.endif
+							mov		byte ptr [edi],0
+							inc		edi
+							retn
 						.endif
-						mov		byte ptr [edi],0
-						inc		edi
-						retn
 					.endif
 				.endif
+				pop		esi
+				call	SaveStructNest
+				call	GetWord
+				call	SaveWord
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if ecx
+					mov		byte ptr [edi],':'
+					inc		edi
+					mov		lendt,ecx
+					mov		lpdt,esi
+					call	SaveDataType
+				.endif
+				mov		byte ptr [edi],','
+				inc		edi
 			.endif
-			pop		esi
-			call	SaveStructNest
-			call	GetWord
+		.endif
+	.endw
+	retn
+
+SaveRecordItems:
+	.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+		call	GetWord
+		.if ecx
 			call	SaveWord
 			lea		esi,[esi+ecx]
 			call	GetWord
-			.if ecx
+			.if byte ptr [esi]==':'
 				mov		byte ptr [edi],':'
 				inc		edi
-				mov		lendt,ecx
-				mov		lpdt,esi
-				call	SaveDataType
+				inc		esi
+				call	GetWord
+				call	SaveWord
+				lea		esi,[esi+ecx]
+				mov		byte ptr [edi],','
+				inc		edi
+				call	GetWord
+				.if byte ptr [esi]=='='
+					inc		esi
+					.while byte ptr [esi] && byte ptr [esi]!=',' && byte ptr [esi]!=VK_RETURN
+						call	GetWord
+						.if ecx
+							lea		esi,[esi+ecx]
+						.elseif byte ptr [esi] && byte ptr [esi]!=',' && byte ptr [esi]!=VK_RETURN
+							inc		esi
+						.else
+							.break
+						.endif
+					.endw
+					.if byte ptr [esi]==','
+						inc		esi
+						call	SkipNewLine
+					.else
+						retn
+					.endif
+				.elseif byte ptr [esi]==','
+					inc		esi
+					call	SkipNewLine
+				.else
+					retn
+				.endif
+			.else
+				retn
 			.endif
-			mov		byte ptr [edi],','
-			inc		edi
+		.else
+			retn
 		.endif
 	.endw
 	retn
@@ -1302,7 +1333,12 @@ ArraySize:
 			mov		[ebx],al
 			inc		ebx
 		.endif
-		inc		esi
+		.if byte ptr [esi]==','
+			inc		esi
+			call	SkipNewLine
+		.else
+			inc		esi
+		.endif
 	.endw
 	mov		byte ptr [ebx],0
 	pop		ebx
@@ -1394,6 +1430,20 @@ _Struct:
 	call	[lpAddProperty]
 	retn
 
+_Record:
+	call	SaveName
+	call	SaveRecordItems
+	.if byte ptr [edi-1]==','
+		dec		edi
+	.endif
+	mov		byte ptr [edi],0
+	push	2
+	push	offset buffer
+	push	iNbr
+	push	's'
+	call	[lpAddProperty]
+	retn
+
 _Macro:
 	call	SaveName
 	call	SkipSpc
@@ -1413,9 +1463,9 @@ _Macro:
 		call	GetWord
 		.if ecx==4
 			push	ecx
-			invoke strcmpin,esi,addr szendm,4
+			invoke IsWord,esi,ecx,offset szinmacro
 			pop		ecx
-			.if !eax
+			.if eax
 				mov		ebx,esi
 			.endif
 		.endif
