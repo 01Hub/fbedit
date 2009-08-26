@@ -1,12 +1,11 @@
 
 GRPROW struct
-	nID			dd ?
 	lpszName	dd ?
 GRPROW ends
 
 IDD_DLGPROJECTGROUPS			equ 4500
-IDC_TRVGROUPS					equ 4501
-IDC_GRDGROUPS					equ 4502
+IDC_TRVPROJECT					equ 4501
+IDC_TRVGROUPS					equ 4502
 IDC_EDTGROUPS					equ 4503
 IDC_BTNADDGROUP					equ 4504
 IDC_BTNDELGROUP					equ 4505
@@ -14,10 +13,12 @@ IDC_EDTDEFGROUP					equ 4506
 
 .data?
 
-hGrpGrd				dd ?
 hGrpTrv				dd ?
+hProTrv				dd ?
+hProRoot			dd ?
 hGrpRoot			dd ?
-szGroupGroupBuff	db 1024 dup(?)
+lpGroupGroupBuff	dd ?
+szGroupGroupBuff	db 4096 dup(?)
 groupgrp			PROGROUP 64 dup(<>)
 groupexpand			dd 64 dup(?)
 nFileGroup			dd 2048 dup(?)
@@ -60,36 +61,83 @@ GroupAddNode proc uses esi,lpFileName:DWORD,iNbr:DWORD,fModule:DWORD,fInitial:DW
 	mul		edx
 	lea		esi,groupgrp[eax]
 	add		ftp,IML_START
-	invoke Do_TreeViewAddNode,hGrpTrv,[esi].PROGROUP.hGrp,NULL,lpFileName,ftp,ftp,iNbr
+	invoke Do_TreeViewAddNode,hProTrv,[esi].PROGROUP.hGrp,NULL,lpFileName,ftp,ftp,iNbr
 	ret
 
 GroupAddNode endp
 
-GroupUpdateTrv proc uses ebx esi edi,fInitial:DWORD
-	LOCAL	buffer1[8]:BYTE
-	LOCAL	iNbr:DWORD
-	LOCAL	row:GRPROW
+ExpandSort proc hTrv:HWND,hItem:DWORD
 
+  @@:
+	invoke SendMessage,hTrv,TVM_SORTCHILDREN,0,hItem
+	invoke SendMessage,hTrv,TVM_EXPAND,TVE_EXPAND,hItem
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
+	.if eax
+		invoke ExpandSort,hTrv,eax
+	.endif
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
+	.if eax
+		mov		hItem,eax
+		jmp		@b
+	.endif
+	ret
+
+ExpandSort endp
+
+GroupUpdateTrv proc uses ebx esi edi,fInitial:DWORD
+	LOCAL	iNbr:DWORD
+	LOCAL	iInx:DWORD
+	LOCAL	hPrevGrp[32]:DWORD
+	LOCAL	hPrevPro[32]:DWORD
+
+	.if hProRoot
+		invoke SendMessage,hProTrv,TVM_DELETEITEM,0,hProRoot
+	.endif
 	.if hGrpRoot
 		invoke SendMessage,hGrpTrv,TVM_DELETEITEM,0,hGrpRoot
 	.endif
+	invoke Do_TreeViewAddNode,hProTrv,TVI_ROOT,NULL,addr ProjectDescr,IML_START+0,IML_START+0,0
+	mov		hProRoot,eax
+	mov		hPrevPro[0],eax
 	invoke Do_TreeViewAddNode,hGrpTrv,TVI_ROOT,NULL,addr ProjectDescr,IML_START+0,IML_START+0,0
 	mov		hGrpRoot,eax
+	mov		hPrevGrp[0],eax
+
 	mov		esi,offset szGroupGroupBuff
 	mov		edi,offset groupgrp
 	invoke RtlZeroMemory,edi,sizeof groupgrp
 	mov		iNbr,0
 	.while byte ptr [esi] && iNbr<64
-		invoke Do_TreeViewAddNode,hGrpTrv,hGrpRoot,NULL,esi,IML_START+0,IML_START+0,0
+		inc		iNbr
+		mov		ebx,iNbr
+		neg		ebx
+		.if byte ptr [esi]=='.'
+			push	esi
+			xor		edx,edx
+			.while byte ptr [esi]=='.'
+				inc		esi
+				inc		edx
+			.endw
+			shr		edx,1
+			mov		iInx,edx
+			invoke Do_TreeViewAddNode,hGrpTrv,hPrevGrp[edx*4],NULL,esi,IML_START+0,IML_START+0,ebx
+			mov		edx,iInx
+			inc		edx
+			mov		hPrevGrp[edx*4],eax
+			mov		edx,iInx
+			invoke Do_TreeViewAddNode,hProTrv,hPrevPro[edx*4],NULL,esi,IML_START+0,IML_START+0,ebx
+			mov		edx,iInx
+			inc		edx
+			mov		hPrevPro[edx*4],eax
+			pop		esi
+		.else
+			invoke Do_TreeViewAddNode,hGrpTrv,hGrpRoot,NULL,esi,IML_START+0,IML_START+0,ebx
+			mov		hPrevGrp[4],eax
+			invoke Do_TreeViewAddNode,hProTrv,hProRoot,NULL,esi,IML_START+0,IML_START+0,ebx
+			mov		hPrevPro[4],eax
+		.endif
 		mov		[edi].PROGROUP.hGrp,eax
 		mov		[edi].PROGROUP.lpszGrp,esi
-		.if fInitial
-			inc		iNbr
-			mov		eax,iNbr
-			mov		row.nID,eax
-			mov		row.lpszName,esi
-			invoke SendMessage,hGrpGrd,GM_ADDROW,0,addr row
-		.endif
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		lea		edi,[edi+sizeof PROGROUP]
@@ -104,7 +152,6 @@ GroupUpdateTrv proc uses ebx esi edi,fInitial:DWORD
 		inc		esi
 		.if byte ptr [esi] && eax
 			mov		iNbr,eax
-			invoke BinToDec,iNbr,addr buffer1
 			.if iNbr<PRO_START_OBJ
 				invoke GroupAddNode,esi,iNbr,FALSE,fInitial
 			.else
@@ -122,17 +169,18 @@ GroupUpdateTrv proc uses ebx esi edi,fInitial:DWORD
 		mov		eax,[esi].PROGROUP.hGrp
 		.if eax
 			push	eax
-			invoke SendMessage,hGrpTrv,TVM_SORTCHILDREN,0,eax
+			invoke SendMessage,hProTrv,TVM_SORTCHILDREN,0,eax
 			pop		edx
 			.if groupexpand[ebx*4] || fInitial
-				invoke SendMessage,hGrpTrv,TVM_EXPAND,TVE_EXPAND,edx
+				invoke SendMessage,hProTrv,TVM_EXPAND,TVE_EXPAND,edx
 			.endif
 		.endif
 		lea		esi,[esi+sizeof PROGROUP]
 		inc		ebx
 	.endw
-	invoke SendMessage,hGrpTrv,TVM_SORTCHILDREN,0,hGrpRoot
-	invoke SendMessage,hGrpTrv,TVM_EXPAND,TVE_EXPAND,hGrpRoot
+	invoke ExpandSort,hGrpTrv,hGrpRoot
+	invoke SendMessage,hProTrv,TVM_SORTCHILDREN,0,hProRoot
+	invoke SendMessage,hProTrv,TVM_EXPAND,TVE_EXPAND,hProRoot
 	ret
 
 GroupUpdateTrv endp
@@ -146,7 +194,7 @@ GroupGetExpand proc uses ebx esi edi
 		mov		tvi.stateMask,TVIS_EXPANDED
 		mov		eax,[edi].PROGROUP.hGrp
 		mov		tvi.hItem,eax
-		invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+		invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
 		mov		esi,offset szGroupGroupBuff
 		xor		ebx,ebx
 		.while byte ptr [esi]
@@ -166,35 +214,49 @@ GroupGetExpand proc uses ebx esi edi
 
 GroupGetExpand endp
 
+GetItems proc uses edi,hTrv:HWND,hItem:DWORD,nInx:DWORD
+	LOCAL	tvi:TV_ITEM
+
+  @@:
+	.if nInx
+		mov		edi,lpGroupGroupBuff
+		mov		edx,nInx
+		.while edx>1
+			mov		word ptr [edi],'..'
+			add		edi,2
+			dec		edx
+		.endw
+		mov		tvi._mask,TVIF_TEXT
+		mov		tvi.pszText,edi
+		mov		tvi.cchTextMax,64
+		mov		eax,hItem
+		mov		tvi.hItem,eax
+		invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
+		invoke strlen,edi
+		lea		edi,[edi+eax+1]
+		mov		lpGroupGroupBuff,edi
+	.endif
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
+	.if eax
+		mov		edx,nInx
+		inc		edx
+		invoke GetItems,hTrv,eax,edx
+	.endif
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
+	.if eax
+		mov		hItem,eax
+		jmp		@b
+	.endif
+	ret
+
+GetItems endp
+
 GroupUpdateGroup proc uses ebx esi edi
-	LOCAL	nRows:DWORD
-	LOCAL	buffer[64]:BYTE
 
 	mov		edi,offset szGroupGroupBuff
+	mov		lpGroupGroupBuff,edi
 	invoke RtlZeroMemory,edi,sizeof szGroupGroupBuff
-	invoke SendMessage,hGrpGrd,GM_GETROWCOUNT,0,0
-	mov		nRows,eax
-	xor		esi,esi
-	inc		esi
-	.while esi<=nRows
-		xor		ebx,ebx
-		.while ebx<nRows
-			mov		ecx,ebx
-			shl		ecx,16
-			invoke SendMessage,hGrpGrd,GM_GETCELLDATA,ecx,addr buffer
-			.if esi==dword ptr buffer
-				mov		ecx,ebx
-				shl		ecx,16
-				inc		ecx
-				invoke SendMessage,hGrpGrd,GM_GETCELLDATA,ecx,edi
-				invoke strlen,edi
-				lea		edi,[edi+eax+1]
-				inc		esi
-				.break
-			.endif
-			inc		ebx
-		.endw
-	.endw
+	invoke GetItems,hGrpTrv,hGrpRoot,0
 	invoke GroupUpdateTrv,FALSE
 	ret
 
@@ -203,12 +265,12 @@ GroupUpdateGroup endp
 GroupGetFirstVisible proc
 	LOCAL	tvi:TVITEM
 
-	invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_FIRSTVISIBLE,0
+	invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_FIRSTVISIBLE,0
 	mov		tvi.hItem,eax
 	mov		tvi._mask,TVIF_HANDLE or TVIF_TEXT
 	mov		tvi.pszText,offset szFirstVisible
 	mov		tvi.cchTextMax,sizeof szFirstVisible
-	invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+	invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
 	ret
 
 GroupGetFirstVisible endp
@@ -220,23 +282,23 @@ GroupEnsureVisible proc
 	LOCAL	hVis:DWORD
 	LOCAL	hLast:DWORD
 
-	invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+	invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
 	mov		hVis,eax
 	.if eax
 		call	Compare
-		invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CHILD,tvi.hItem
+		invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_CHILD,tvi.hItem
 		.while eax
 			mov		hPar,eax
 			call	Compare
-			invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CHILD,tvi.hItem
+			invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_CHILD,tvi.hItem
 			.while eax
 				call	Compare
-				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+				invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
 			.endw
-			invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_NEXT,hPar
+			invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_NEXT,hPar
 		.endw
-		invoke SendMessage,hGrpTrv,TVM_ENSUREVISIBLE,0,hLast
-		invoke SendMessage,hGrpTrv,TVM_ENSUREVISIBLE,0,hVis
+		invoke SendMessage,hProTrv,TVM_ENSUREVISIBLE,0,hLast
+		invoke SendMessage,hProTrv,TVM_ENSUREVISIBLE,0,hVis
 	.endif
 	ret
 
@@ -247,7 +309,7 @@ Compare:
 	lea		eax,buffer
 	mov		tvi.pszText,eax
 	mov		tvi.cchTextMax,sizeof buffer
-	invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+	invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
 	invoke strcmp,addr buffer,addr szFirstVisible
 	.if !eax
 		mov		eax,tvi.hItem
@@ -261,7 +323,6 @@ GroupTreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lpht:TV_HITTESTINFO
 	LOCAL	tvi:TV_ITEMEX
 	LOCAL	hTvi:HWND
-	LOCAL	val:DWORD
 	LOCAL	buffer[64]:BYTE
 	LOCAL	buffer1[64]:BYTE
 	LOCAL	hChild:DWORD
@@ -271,64 +332,61 @@ GroupTreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_LBUTTONDBLCLK
 		invoke CallWindowProc,OldTreeViewProc,hWin,uMsg,wParam,lParam
 		push	eax
-		mov		eax,lParam
-		and		eax,0FFFFh
-		mov		lpht.pt.x,eax
-		mov		eax,lParam
-		shr		eax,16
-		mov		lpht.pt.y,eax
-		invoke SendMessage,hWin,TVM_HITTEST,0,addr lpht
-		.if eax
-			mov		hTvi,eax
-			mov		eax,lpht.flags
-			and		eax,TVHT_ONITEM
-			.if eax
-				m2m		tvi.hItem,lpht.hItem
-				mov		tvi.imask,TVIF_PARAM
-				invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
-				.if tvi.lParam
-					invoke SendMessage,hGrpGrd,GM_GETCURROW,0,0
-					.if sdword ptr eax>=0
-						mov		ecx,eax
-						shl		ecx,16
-						invoke SendMessage,hGrpGrd,GM_GETCELLDATA,ecx,addr val
-						mov		edx,tvi.lParam
-						shl		edx,2
-						mov		eax,val
-						mov		nFileGroup[edx],eax
-						invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_FIRSTVISIBLE,0
-						mov		tvi.hItem,eax
-						mov		tvi.imask,TVIF_TEXT
-						lea		eax,buffer
-						mov		tvi.pszText,eax
-						mov		tvi.cchTextMax,sizeof buffer
-						invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
-						invoke GroupGetExpand
-						invoke GroupUpdateTrv,FALSE
-						invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_CHILD,hGrpRoot
-						.while eax
-							mov		hItem,eax
-							invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_CHILD,eax
-							.while eax
-								mov		hChild,eax
-								mov		tvi.hItem,eax
-								mov		tvi.imask,TVIF_TEXT
-								lea		eax,buffer1
-								mov		tvi.pszText,eax
-								mov		tvi.cchTextMax,sizeof buffer1
-								invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
-								invoke strcmp,addr buffer,addr buffer1
-								.if !eax
-									invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_FIRSTVISIBLE,tvi.hItem
-								.endif
-								invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_NEXT,hChild
-							.endw
-							invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
-						.endw
-					.endif
-				.endif
-			.endif
-		.endif
+;		mov		eax,lParam
+;		and		eax,0FFFFh
+;		mov		lpht.pt.x,eax
+;		mov		eax,lParam
+;		shr		eax,16
+;		mov		lpht.pt.y,eax
+;		invoke SendMessage,hWin,TVM_HITTEST,0,addr lpht
+;		.if eax
+;			mov		hTvi,eax
+;			mov		eax,lpht.flags
+;			and		eax,TVHT_ONITEM
+;			.if eax
+;				m2m		tvi.hItem,lpht.hItem
+;				mov		tvi.imask,TVIF_PARAM
+;				invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
+;				.if tvi.lParam
+;					invoke SendMessage,hGrpGrd,GM_GETCURROW,0,0
+;					.if sdword ptr eax>=0
+;						mov		edx,tvi.lParam
+;						shl		edx,2
+;						inc		eax
+;						mov		nFileGroup[edx],eax
+;						invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_FIRSTVISIBLE,0
+;						mov		tvi.hItem,eax
+;						mov		tvi.imask,TVIF_TEXT
+;						lea		eax,buffer
+;						mov		tvi.pszText,eax
+;						mov		tvi.cchTextMax,sizeof buffer
+;						invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
+;						invoke GroupGetExpand
+;						invoke GroupUpdateTrv,FALSE
+;						invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_CHILD,hGrpRoot
+;						.while eax
+;							mov		hItem,eax
+;							invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_CHILD,eax
+;							.while eax
+;								mov		hChild,eax
+;								mov		tvi.hItem,eax
+;								mov		tvi.imask,TVIF_TEXT
+;								lea		eax,buffer1
+;								mov		tvi.pszText,eax
+;								mov		tvi.cchTextMax,sizeof buffer1
+;								invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
+;								invoke strcmp,addr buffer,addr buffer1
+;								.if !eax
+;									invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_FIRSTVISIBLE,tvi.hItem
+;								.endif
+;								invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_NEXT,hChild
+;							.endw
+;							invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
+;						.endw
+;					.endif
+;				.endif
+;			.endif
+;		.endif
 		pop		eax
 		ret
 	.endif
@@ -378,16 +436,16 @@ TVBeginDrag proc hWin:HWND,hParent:HWND,lParam:LPARAM
 	mov		TVDragItem,eax
 	mov		tvi.hItem,eax
 	mov		tvi._mask,TVIF_IMAGE
-	invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+	invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
 	mov		eax,tvi.iImage
 	cmp		eax,0
 	je		Ex
 	mov		tvi._mask,TVIF_STATE
 	mov		tvi.state,TVIS_DROPHILITED
-	invoke SendMessage,hGrpTrv,TVM_SETITEM,0,addr tvi
+	invoke SendMessage,hProTrv,TVM_SETITEM,0,addr tvi
 	invoke GetCursorPos,addr DragStart
-	invoke SendMessage,hGrpTrv,TVM_SELECTITEM,TVGN_DROPHILITE,TVDragItem
-	invoke SendMessage,hGrpTrv,TVM_CREATEDRAGIMAGE,0,TVDragItem
+	invoke SendMessage,hProTrv,TVM_SELECTITEM,TVGN_DROPHILITE,TVDragItem
+	invoke SendMessage,hProTrv,TVM_CREATEDRAGIMAGE,0,TVDragItem
 	mov		hDragIml,eax
 	invoke ImageList_BeginDrag,hDragIml,0,-8,-8
 	invoke GetDesktopWindow
@@ -405,25 +463,33 @@ TVEndDrag proc uses ebx esi,hWin:HWND
 	LOCAL	tvi:TVITEM
 	LOCAL	tvht:TV_HITTESTINFO
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	nGrp:DWORD
 
-	invoke SendMessage,hGrpTrv,TVM_SELECTITEM,TVGN_DROPHILITE,NULL
+	invoke SendMessage,hProTrv,TVM_SELECTITEM,TVGN_DROPHILITE,NULL
 	invoke ReleaseCapture
 	invoke GetDesktopWindow
 	invoke ImageList_DragLeave,eax
 	invoke ImageList_EndDrag
 	invoke ImageList_Destroy,hDragIml
-	invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_ROOT,NULL
+	invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_ROOT,NULL
 	mov		hroot,eax
 	invoke GetCursorPos,addr tvht.pt
-	invoke ScreenToClient,hGrpTrv,addr tvht.pt
-	invoke SendMessage,hGrpTrv,TVM_HITTEST,0,addr tvht
+	invoke ScreenToClient,hProTrv,addr tvht.pt
+	invoke SendMessage,hProTrv,TVM_HITTEST,0,addr tvht
 	.if !eax
-		invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_LASTVISIBLE,NULL
+		invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_LASTVISIBLE,NULL
 	.endif
 	.if eax!=hroot
-		invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_PARENT,eax
-		.if eax==hroot
-			mov		eax,tvht.hItem
+		mov		tvi._mask,TVIF_PARAM
+		mov		tvi.hItem,eax
+		invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
+		mov		edx,tvi.lParam
+		mov		eax,tvi.hItem
+		.if sdword ptr edx>=0
+			invoke SendMessage,hProTrv,TVM_GETNEXTITEM,TVGN_PARENT,eax
+			.if eax==hroot
+				mov		eax,tvht.hItem
+			.endif
 		.endif
 		; The group item number is here
 		mov		tvi.hItem,eax
@@ -432,25 +498,16 @@ TVEndDrag proc uses ebx esi,hWin:HWND
 		mov 	tvi.pszText,eax
 		mov		tvi.cchTextMax,sizeof buffer
 		mov		tvi._mask,TVIF_TEXT or TVIF_PARAM
-		invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+		invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
+		mov		ebx,tvi.lParam
+		neg		ebx
 		invoke lstrlen,addr buffer
 		.if eax
 			invoke GroupGetExpand
-			mov		esi,offset szGroupGroupBuff
-			xor		ebx,ebx
-			.while byte ptr [esi]
-				inc		ebx
-				invoke strcmp,esi,addr buffer
-				.if !eax
-					.break
-				.endif
-				invoke strlen,esi
-				lea		esi,[esi+eax+1]
-			.endw
 			mov		eax,TVDragItem
 			mov		tvi.hItem,eax
 			mov		tvi._mask,TVIF_PARAM
-			invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+			invoke SendMessage,hProTrv,TVM_GETITEM,0,addr tvi
 			mov		eax,tvi.lParam
 			mov		nFileGroup[eax*4],ebx
 			invoke GroupGetFirstVisible
@@ -463,50 +520,23 @@ TVEndDrag proc uses ebx esi,hWin:HWND
 
 TVEndDrag endp
 
-ProjectGroupsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	col:COLUMN
+ProjectGroupsProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[64]:BYTE
-	LOCAL	row:GRPROW
-	LOCAL	val:DWORD
-	LOCAL	val1:DWORD
 	LOCAL	pt:POINT
-	LOCAL	nRow:DWORD
+	LOCAL	tvis:TV_INSERTSTRUCT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke GetDlgItem,hWin,IDC_GRDGROUPS
-		mov		hGrpGrd,eax
 		invoke GetDlgItem,hWin,IDC_TRVGROUPS
 		mov		hGrpTrv,eax
-		invoke SendMessage,hGrpGrd,GM_SETBACKCOLOR,radcol.project,0
-		invoke SendMessage,hGrpGrd,GM_SETGRIDCOLOR,808080h,0
-		invoke SendMessage,hGrpGrd,GM_SETTEXTCOLOR,radcol.projecttext,0
+		invoke GetDlgItem,hWin,IDC_TRVPROJECT
+		mov		hProTrv,eax
 		invoke SendMessage,hGrpTrv,TVM_SETBKCOLOR,0,radcol.project
 		invoke SendMessage,hGrpTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
-
-		;Add ID column
-		mov		col.colwt,0
-		mov		col.lpszhdrtext,NULL
-		mov		col.halign,ALIGN_RIGHT
-		mov		col.calign,ALIGN_RIGHT
-		mov		col.ctype,TYPE_EDITLONG
-		mov		col.ctextmax,6
-		mov		col.lpszformat,0
-		mov		col.himl,0
-		mov		col.hdrflag,0
-		invoke SendMessage,hGrpGrd,GM_ADDCOL,0,addr col
-		;Add Name column
-		mov		col.colwt,150
-		mov		col.lpszhdrtext,offset szHdrGroup
-		mov		col.halign,ALIGN_LEFT
-		mov		col.calign,ALIGN_LEFT
-		mov		col.ctype,TYPE_EDITTEXT
-		mov		col.ctextmax,63
-		mov		col.lpszformat,0
-		mov		col.himl,0
-		mov		col.hdrflag,0
-		invoke SendMessage,hGrpGrd,GM_ADDCOL,0,addr col
 		invoke SendMessage,hGrpTrv,TVM_SETIMAGELIST,0,hTbrIml
+		invoke SendMessage,hProTrv,TVM_SETBKCOLOR,0,radcol.project
+		invoke SendMessage,hProTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
+		invoke SendMessage,hProTrv,TVM_SETIMAGELIST,0,hTbrIml
 		push	esi
 		push	edi
 		mov		edi,offset szGroupGroupBuff
@@ -516,8 +546,7 @@ ProjectGroupsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		edi
 		pop		esi
 		invoke GroupUpdateTrv,TRUE
-		invoke SetWindowLong,hGrpTrv,GWL_WNDPROC,offset GroupTreeViewProc
-		invoke SendMessage,hGrpGrd,GM_SETCURSEL,1,0
+		invoke SetWindowLong,hProTrv,GWL_WNDPROC,offset GroupTreeViewProc
 		invoke SetDlgItemText,hWin,IDC_EDTDEFGROUP,addr szGroups
 		invoke SetLanguage,hWin,IDD_DLGPROJECTGROUPS,FALSE
 	.elseif eax==WM_COMMAND
@@ -533,78 +562,56 @@ ProjectGroupsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNDELGROUP
-				invoke SendMessage,hGrpGrd,GM_GETROWCOUNT,0,0
-				.if eax>1
-					push	eax
-					invoke SendMessage,hGrpGrd,GM_GETCURROW,0,0
-					pop		edx
-					.if sdword ptr eax>=0 && eax<edx
-						mov		nRow,eax
-						push	eax
-						mov		ecx,eax
-						shl		ecx,16
-						invoke SendMessage,hGrpGrd,GM_GETCELLDATA,ecx,addr val
-						invoke SendMessage,hGrpGrd,GM_GETROWCOUNT,0,0
-						.if eax==val
-							dec		val
-						.endif
-						dec		eax
-						.if eax==nRow
-							dec		nRow
-						.endif
+				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CARET,0
+				.if eax
+					mov		tvis.item._mask,TVIF_PARAM
+					mov		tvis.item.hItem,eax
+					invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvis.item
+					mov		eax,tvis.item.lParam
+					neg		eax
+					.if eax>1
 						mov		ecx,2048
 						mov		edx,offset nFileGroup
-						mov		eax,val
 						.while ecx
-							.if dword ptr [edx]>eax && dword ptr [edx]>1
+							.if [edx]>=eax
 								dec		dword ptr [edx]
 							.endif
 							add		edx,4
 							dec		ecx
 						.endw
-						pop		eax
-						invoke SendMessage,hGrpGrd,GM_DELROW,eax,0
-						invoke SendMessage,hGrpGrd,GM_GETROWCOUNT,0,0
-						mov		ecx,eax
-						xor		eax,eax
-						.while eax<ecx
-							push	eax
-							push	ecx
-							mov		ecx,eax
-							shl		ecx,16
-							push	ecx
-							invoke SendMessage,hGrpGrd,GM_GETCELLDATA,ecx,addr val1
-							pop		ecx
-							mov		eax,val1
-							.if eax>val && eax>1
-								dec		val1
-								mov		fNoUpdate,TRUE
-								invoke SendMessage,hGrpGrd,GM_SETCELLDATA,ecx,addr val1
-								mov		fNoUpdate,FALSE
-							.endif
-							pop		ecx
-							pop		eax
-							inc		eax
-						.endw
-						invoke SendMessage,hGrpGrd,GM_SETCURSEL,0,nRow
-						invoke GroupGetExpand
+						invoke SendMessage,hGrpTrv,TVM_DELETEITEM,0,tvis.item.hItem
 						invoke GroupUpdateGroup
 					.endif
 				.endif
 			.elseif eax==IDC_BTNADDGROUP
-				invoke GetDlgItemText,hWin,IDC_EDTGROUPS,addr buffer,sizeof buffer
-				invoke SetDlgItemText,hWin,IDC_EDTGROUPS,addr szNULL
-				invoke SendMessage,hGrpGrd,GM_GETROWCOUNT,0,0
-				push	eax
-				inc		eax
-				mov		row.nID,eax
-				lea		eax,buffer
-				mov		row.lpszName,eax
-				invoke SendMessage,hGrpGrd,GM_ADDROW,0,addr row
-				pop		eax
-				invoke SendMessage,hGrpGrd,GM_SETCURSEL,1,eax
-				invoke GroupGetExpand
-				invoke GroupUpdateGroup
+				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CARET,0
+				.if eax
+					mov		tvis.item._mask,TVIF_PARAM
+					mov		tvis.item.hItem,eax
+					mov		tvis.hParent,eax
+					mov		tvis.hInsertAfter,TVI_FIRST
+					invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvis.item
+					mov		eax,tvis.item.lParam
+					neg		eax
+					.if eax
+						mov		ecx,2048
+						mov		edx,offset nFileGroup
+						.while ecx
+							.if [edx]>=eax
+								inc		dword ptr [edx]
+							.endif
+							add		edx,4
+							dec		ecx
+						.endw
+					.endif
+					invoke GetDlgItemText,hWin,IDC_EDTGROUPS,addr buffer,sizeof buffer
+					invoke SetDlgItemText,hWin,IDC_EDTGROUPS,addr szNULL
+					mov		tvis.item._mask,TVIF_PARAM or TVIF_TEXT
+					lea		eax,buffer
+					mov		tvis.item.pszText,eax
+					invoke SendMessage,hGrpTrv,TVM_INSERTITEM,0,addr tvis
+					invoke GroupUpdateGroup
+				.endif
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTGROUPS
@@ -618,12 +625,7 @@ ProjectGroupsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_NOTIFY
 		mov		edx,lParam
 		mov		eax,[edx].NMHDR.hwndFrom
-		.if eax==hGrpGrd
-			mov		eax,[edx].NMHDR.code
-			.if eax==GN_AFTERUPDATE && !fNoUpdate
-				invoke GroupUpdateGroup
-			.endif
-		.elseif eax==hGrpTrv
+		.if eax==hProTrv
 			.if [edx].NMHDR.code==TVN_BEGINDRAGW
 				invoke TVBeginDrag,hWin,[edx].NMHDR.hwndFrom,lParam
 			.endif

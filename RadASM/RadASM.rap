@@ -183,7 +183,7 @@ MinorFiles=*.res;*.obj;
 5=132,132,536,413,47744
 6=12,26,869,416,86419
 7=132,132,536,413,7072
-8=44,44,536,413,15625
+8=44,44,536,413,49284
 9=88,88,536,413,50503
 10=110,110,536,413,1167
 11=88,88,536,413,12634
@@ -256,13 +256,13 @@ MinorFiles=*.res;*.obj;
 80=154,154,536,413,2308
 81=0,0,536,413,3670
 82=176,176,536,413
-83=133,27,590,413,4312
+83=133,27,590,413,1828
 84=22,22,536,413
 85=44,44,536,413,0
 86=110,110,590,413,14619
 87=154,154,536,413,992
 89=0,0,536,413
-88=22,22,536,413,13080
+88=22,22,536,413,14978
 91=132,132,536,413
 90=154,154,536,413,76
 93=88,88,590,413,7274
@@ -495,16 +495,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="WM_TOOLDBLCLICK"
-2="FixUnknown"
-3="ParseFile"
-4="IDM_EDIT_FINDPROC"
-5="SRCFilterString"
-6="RadAsm.inc"
-7="SetAssembler"
-8="szIniApi"
-9=".ini"
-10="IDM_WINDOW_P"
+1="nFileGroup"
+2="hGrpTrv"
+3="GM_GETCELLDATA"
+4="WM_TOOLDBLCLICK"
+5="FixUnknown"
+6="ParseFile"
+7="IDM_EDIT_FINDPROC"
+8="SRCFilterString"
+9="RadAsm.inc"
+10="SetAssembler"
 
 [BreakPoint]
 0=
@@ -546,7 +546,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=25
+MilestoneOnDateDate=26
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -779,3 +779,4 @@ PTimer=385940000
 11=
 16=
 17=
+88=
