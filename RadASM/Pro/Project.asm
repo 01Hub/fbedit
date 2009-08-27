@@ -1047,7 +1047,7 @@ ProGetGroup	proc iNbr:DWORD,ftp:DWORD
 		.endif
 		push	eax
 		mov		edx,eax
-		invoke BinToDec,edx,addr	buffer1
+		invoke BinToDec,edx,addr buffer1
 		invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer,addr buffer1,addr	ProjectFile
 		pop		eax
 	.endif
