@@ -502,6 +502,7 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	LOCAL	pt:POINT
 	LOCAL	tvis:TV_INSERTSTRUCT
 	LOCAL	tvi:TV_ITEM
+	LOCAL	tvht:TV_HITTESTINFO
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -624,6 +625,11 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 						invoke EnableWindow,eax,FALSE
 					.endif
 				.endif
+			.elseif eax==IDM_GROUPEXPAND
+			.elseif eax==IDM_GROUPCOLLAPSE
+			.elseif eax==IDM_GROUPADD
+			.elseif eax==IDM_GROUPDELETE
+			.elseif eax==IDM_GROUPEDIT
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTGROUPS
@@ -633,8 +639,33 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				pop		edx
 				invoke EnableWindow,edx,eax
 			.endif
-		.elseif edx==NM_CLICK
-PrintHex eax
+		.endif
+	.elseif eax==WM_CONTEXTMENU
+		mov		eax,wParam
+		.if eax==hGrpTrv
+			invoke GetSubMenu,hToolMenu,5
+			mov		ebx,eax
+			mov		edx,lParam
+			movsx	eax,dx
+			shr		edx,16
+			movsx	edx,dx
+			mov		tvht.pt.x,eax
+			mov		tvht.pt.y,edx
+			invoke ScreenToClient,hGrpTrv,addr tvht.pt
+			invoke SendMessage,hGrpTrv,TVM_HITTEST,0,addr tvht
+			test	tvht.flags,TVHT_ONITEM
+			.if !ZERO?
+				invoke SendMessage,hGrpTrv,TVM_SELECTITEM,TVGN_CARET,tvht.hItem
+				mov		tvi._mask,TVIF_PARAM
+				mov		eax,tvht.hItem
+				mov		tvi.hItem,eax
+				invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
+				.if sdword ptr tvi.lParam<0
+					
+				.endif
+				invoke ClientToScreen,hGrpTrv,addr tvht.pt
+				invoke TrackPopupMenu,ebx,TPM_LEFTALIGN or TPM_RIGHTBUTTON,tvht.pt.x,tvht.pt.y,0,hWin,0
+			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		edx,lParam
@@ -658,12 +689,6 @@ PrintHex eax
 					invoke GetDlgItem,hWin,IDC_BTNADDGROUP
 					invoke EnableWindow,eax,FALSE
 				.endif
-			.elseif [edx].NMHDR.code==TVN_BEGINLABELEDITW
-				.if sdword ptr [edx].TV_DISPINFO.item.lParam>=0
-					invoke SendMessage,[edx].NMHDR.hwndFrom,TVM_ENDEDITLABELNOW,TRUE,0
-;					invoke SendMessage,[edx].NMHDR.hwndFrom,WM_CHAR,VK_RETURN,0
-				.endif
-			.elseif [edx].NMHDR.code==TVN_ENDLABELEDITW
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONUP

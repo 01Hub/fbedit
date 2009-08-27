@@ -177,11 +177,11 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,9260
+2=0,416,869,416,17550
 3=154,154,590,413,749
 4=0,0,590,413,25913
 5=132,132,536,413,47744
-6=12,26,869,416,86419
+6=12,26,869,416,117849
 7=132,132,536,413,7072
 8=44,44,536,413,57933
 9=88,88,536,413,47399
@@ -262,7 +262,7 @@ MinorFiles=*.res;*.obj;
 86=110,110,590,413,14619
 87=154,154,536,413,992
 89=0,0,536,413
-88=22,22,536,413,17252
+88=22,22,536,413,16645
 91=132,132,536,413
 90=154,154,536,413,76
 93=88,88,590,413,7274
@@ -495,16 +495,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="TVN_BEGINLABELEDIT"
-2="editlabel"
-3="fNoUpdate"
-4="hProRoot"
-5="hProTrv"
-6="PROGROUP"
-7="nFileGroup"
-8="hGrpTrv"
-9="GM_GETCELLDATA"
-10="WM_TOOLDBLCLICK"
+1="WM_CONTEXTMENU"
+2="TVN_BEGINLABELEDIT"
+3="editlabel"
+4="fNoUpdate"
+5="hProRoot"
+6="hProTrv"
+7="PROGROUP"
+8="nFileGroup"
+9="hGrpTrv"
+10="GM_GETCELLDATA"
 
 [BreakPoint]
 0=
@@ -546,7 +546,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -731,7 +731,7 @@ Group=Assembly,Resources,Misc,Modules,Include
 41=
 113=,
 90=
-88=,,
+88=,,,
 22=,
 97=
 79=,,
