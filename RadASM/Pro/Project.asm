@@ -1,14 +1,18 @@
 
-Do_ProjectTool		PROTO
-Do_TreeView			PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+Do_ProjectTool			PROTO
+Do_TreeView				PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 
-GetProject			PROTO
-ProjectDblClick		PROTO :DWORD,:DWORD
-ProSetPos			PROTO :DWORD
+GetProject				PROTO
+ProjectDblClick			PROTO :DWORD,:DWORD
+ProSetPos				PROTO :DWORD
+GroupGetProjectFiles	PROTO
+GroupUpdateTrv			PROTO :DWORD
+GroupExpandAll			PROTO :DWORD,:DWORD
+GroupFindItem			PROTO :HWND,:DWORD,:DWORD,:DWORD
 
 PROGROUP struct
-	hGrp	dd ?
-	lpszGrp	dd ?
+	hGrp			dd ?
+	lpszGrp			dd ?
 PROGROUP ends
 
 .const
@@ -31,8 +35,8 @@ iniEnv				db 'Environment',0
 
 .data?
 
-szGroupBuff			db 1024	dup(?)
-szGroups			db 1024	dup(?)
+szGroupBuff			db 4096	dup(?)
+szGroups			db 4096	dup(?)
 progrp				PROGROUP 64	dup(<>)
 OldTreeViewProc		dd ?
 hRoot				dd ?
@@ -1148,8 +1152,6 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 			lea		edi,[edi+sizeof	PROGROUP]
 			inc		iNbr
 		.endw
-		invoke Do_TreeViewAddNode,hPbrTrv,TVI_ROOT,NULL,addr ProjectDescr,IML_START+0,IML_START+0,0
-		mov		hRoot,eax
 		mov		word ptr buffer1,'1'
 		invoke GetPrivateProfileString,addr	iniMakeFile,addr buffer1,addr szNULL,addr buffer4,128,addr ProjectFile
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
@@ -1174,9 +1176,9 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 					mov		fResProject,TRUE
 				.endif
 				.if	iNbr<PRO_START_OBJ
-					invoke ProAddNode,addr buffer2,iNbr,FALSE
+;					invoke ProAddNode,addr buffer2,iNbr,FALSE
 				.else
-					invoke ProAddNode,addr buffer2,iNbr,TRUE
+;					invoke ProAddNode,addr buffer2,iNbr,TRUE
 				.endif
 				.if	fAutoOpen
 					invoke strlen,addr buffer1
@@ -1204,7 +1206,20 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 			inc		esi
 			jmp		Nxt
 		.endif
-		invoke ProSortExpand
+		.if fGroup
+			mov		edi,offset szGroupGroupBuff
+			mov		esi,offset szGroupBuff
+			mov		ecx,sizeof szGroupGroupBuff
+			rep		movsb
+		.else
+			mov		szGroupGroupBuff,0
+		.endif
+		invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,0
+		invoke GroupGetProjectFiles
+		invoke GroupUpdateTrv,hPbrTrv
+		invoke GroupExpandAll,hPbrTrv,0
+		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+		mov		hRoot,eax
 		invoke SendMessage,hPbrTrv,WM_SETREDRAW,TRUE,NULL
 		.if	hMdiCld
 			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
@@ -1213,6 +1228,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		mov		eax,FALSE
 		mov		fNoGroups,eax
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,12,fGroup
+		xor		eax,eax
 		ret
 	.else
 		invoke strcpy,addr LineTxt,addr OpenFileFail
@@ -1993,7 +2009,7 @@ ProjectDblClick	proc hWin:HWND,lParam:LPARAM
 			mov		lptvi.pszText,eax
 			mov		lptvi.cchTextMax,sizeof	buffer
 			invoke SendMessage,hWin,TVM_GETITEM,0,addr lptvi
-			.if	lptvi.lParam
+			.if	sdword ptr lptvi.lParam>0
 				invoke strcpy,addr FileName,addr ProjectPath
 				lea		edx,buffer
 				call	TestFileName
@@ -2118,42 +2134,12 @@ ProSavePos proc	hWin:HWND
 ProSavePos endp
 
 ProSetTrv proc hWin:HWND
-	LOCAL	hItem:DWORD
-	LOCAL	hChild:DWORD
-	LOCAL	iNbr:DWORD
-	LOCAL	tvi:TV_ITEMEX
 
 	invoke GetWindowLong,hWin,16
-	mov		iNbr,eax
-	invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_CHILD,hRoot
-	.while eax
-		mov		hItem,eax
-		.if	fGroup
-			invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_CHILD,eax
-			.while eax
-				mov		hChild,eax
-				mov		tvi.hItem,eax
-				mov		tvi.imask,TVIF_PARAM
-				invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
-				mov		eax,tvi.lParam
-				.if	eax==iNbr
-					invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hChild
-					ret
-				.endif
-				invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_NEXT,hChild
-			.endw
-		.else
-			mov		tvi.hItem,eax
-			mov		tvi.imask,TVIF_PARAM
-			invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
-			mov		eax,tvi.lParam
-			.if	eax==iNbr
-				invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hItem
-				ret
-			.endif
-		.endif
-		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
-	.endw
+	invoke GroupFindItem,hPbrTrv,0,0,eax
+	.if eax
+		invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,eax
+	.endif
 	ret
 
 ProSetTrv endp

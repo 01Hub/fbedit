@@ -1687,7 +1687,7 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		tvi.pszText,eax
 						mov		tvi.cchTextMax,sizeof buffer
 						invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
-						.if tvi.lParam
+						.if sdword ptr tvi.lParam>0
 							invoke GetFileImg,addr buffer
 							.if eax==2 || eax==3
 								invoke EnableMenuItem,hToolMenu,IDM_PROMNU_FILEPROP,MF_ENABLED
