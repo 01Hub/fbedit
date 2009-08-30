@@ -177,13 +177,13 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,4308
+2=0,416,869,416,1163
 3=154,154,590,413,749
 4=0,0,590,413,25913
 5=132,132,536,413,47744
-6=12,26,869,416,100750
+6=12,26,869,416,106471
 7=132,132,536,413,7072
-8=44,44,536,413,33880
+8=44,44,536,413,47381
 9=88,88,536,413,40828
 10=110,110,536,413,17527
 11=88,88,536,413,12634
@@ -270,7 +270,7 @@ MinorFiles=*.res;*.obj;
 94=44,44,536,413
 95=66,66,536,413,1504
 <<<<<<< .mine
-96=88,88,536,413,49589
+96=88,88,536,413,49421
 =======
 96=88,88,536,413,35580
 >>>>>>> .r1153
@@ -496,16 +496,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="hRoot"
-2="ProSetTrv"
-3="WM_TOOLRCLICK"
-4="WideCharToMultiByte"
-5="TVN_ENDLABELEDIT"
-6="WM_CONTEXTMENU"
-7="TVN_BEGINLABELEDIT"
-8="editlabel"
-9="fNoUpdate"
-10="hProRoot"
+1="Do_TreeView"
+2="fEdit"
+3="hRoot"
+4="ProSetTrv"
+5="WM_TOOLRCLICK"
+6="WideCharToMultiByte"
+7="TVN_ENDLABELEDIT"
+8="WM_CONTEXTMENU"
+9="TVN_BEGINLABELEDIT"
+10="editlabel"
 
 [BreakPoint]
 0=
@@ -547,7 +547,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=28
+MilestoneOnDateDate=30
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988

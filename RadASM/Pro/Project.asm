@@ -1,6 +1,6 @@
 
 Do_ProjectTool			PROTO
-Do_TreeView				PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+Do_TreeView				PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 
 GetProject				PROTO
 ProjectDblClick			PROTO :DWORD,:DWORD
@@ -1710,8 +1710,9 @@ Do_ImageList proc phInst:HINSTANCE,pidBmp:DWORD,nSize:DWORD,nImg:DWORD,fMap:DWOR
 
 Do_ImageList endp
 
-TreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+TreeViewProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if	eax==WM_LBUTTONDBLCLK
@@ -1744,6 +1745,23 @@ TreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	GetToolPtr
 		mov		(TOOL ptr [edx]).dFocus,FALSE
 		invoke ToolMsg,hPbr,TLM_CAPTION,0
+	.elseif eax==WM_DROPFILES
+PrintHex eax
+		xor		ebx,ebx
+	  @@:
+		invoke DragQueryFile,wParam,ebx,addr buffer,sizeof buffer
+		.if eax
+			invoke iniInStr,addr buffer,addr FTRap
+			.if eax==-1
+				invoke GetFileAttributes,addr buffer
+				test	eax,FILE_ATTRIBUTE_DIRECTORY
+				.if ZERO?
+					invoke AddProjectFile,addr buffer,TRUE,FALSE
+				.endif
+				inc		ebx
+				jmp		@b
+			.endif
+		.endif
 	.endif
 	invoke CallWindowProc,OldTreeViewProc,hWin,uMsg,wParam,lParam
 	ret
@@ -1856,7 +1874,7 @@ FileTreeViewProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 FileTreeViewProc endp
 
-Do_TreeView	proc phInst:HINSTANCE,phOwner:DWORD,pID_TV:DWORD,phIml:DWORD,fEdit:DWORD
+Do_TreeView	proc phInst:HINSTANCE,phOwner:DWORD,pID_TV:DWORD,phIml:DWORD,fEdit:DWORD,fDropFiles:DWORD
 	LOCAL	lhTrv:DWORD
 
 	mov		eax,WS_CHILD or	WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or	\
@@ -1864,7 +1882,11 @@ Do_TreeView	proc phInst:HINSTANCE,phOwner:DWORD,pID_TV:DWORD,phIml:DWORD,fEdit:D
 	.if	fEdit
 		or		eax,TVS_EDITLABELS
 	.endif
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr	szTreeView,NULL,eax,0,0,0,0,phOwner,NULL,phInst,NULL
+	mov		edx,WS_EX_CLIENTEDGE
+	.if fDropFiles
+		or		edx,WS_EX_ACCEPTFILES
+	.endif
+	invoke CreateWindowEx,edx,addr	szTreeView,NULL,eax,0,0,0,0,phOwner,NULL,phInst,NULL
 	mov		lhTrv,eax
 	invoke SendMessage,lhTrv,TVM_SETIMAGELIST,0,phIml
 	mov		eax,radcol.project
@@ -1920,11 +1942,11 @@ Do_ProjectTool proc
 			WS_CHILD or	WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,
 			0,0,0,0,hWnd,0,hInstance,0
 	mov		hWin,eax
-	invoke Do_TreeView,hInstance,hWin,0,hTbrIml,TRUE
+	invoke Do_TreeView,hInstance,hWin,0,hTbrIml,TRUE,TRUE
 	mov		hPbrTrv,eax
 	invoke SetWindowLong,hPbrTrv,GWL_WNDPROC,offset TreeViewProc
 	mov		OldTreeViewProc,eax
-	invoke Do_TreeView,hInstance,hWin,0,hTbrIml,TRUE
+	invoke Do_TreeView,hInstance,hWin,0,hTbrIml,TRUE,FALSE
 	mov		hFileTrv,eax
 	invoke SetWindowLong,hFileTrv,GWL_WNDPROC,offset FileTreeViewProc
 	invoke ShowWindow,hPbrTrv,SW_HIDE
