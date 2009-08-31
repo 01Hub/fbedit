@@ -10,11 +10,6 @@ GroupUpdateTrv			PROTO :DWORD
 GroupExpandAll			PROTO :DWORD,:DWORD
 GroupFindItem			PROTO :HWND,:DWORD,:DWORD,:DWORD
 
-PROGROUP struct
-	hGrp			dd ?
-	lpszGrp			dd ?
-PROGROUP ends
-
 .const
 
 pbrtbrbtns			TBBUTTON <10,11,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
@@ -37,7 +32,6 @@ iniEnv				db 'Environment',0
 
 szGroupBuff			db 4096	dup(?)
 szGroups			db 4096	dup(?)
-progrp				PROGROUP 64	dup(<>)
 OldTreeViewProc		dd ?
 hRoot				dd ?
 fNoGroups			dd ?
@@ -976,54 +970,54 @@ TestFile:
 
 GetFileImg endp
 
-ProExpandCollapse proc uses	esi,nType:DWORD
-
-	mov		esi,offset progrp
-	.while [esi].PROGROUP.lpszGrp
-		mov		eax,[esi].PROGROUP.hGrp
-		.if	eax
-			call	ExpColl
-		.endif
-		lea		esi,[esi+sizeof	PROGROUP]
-	.endw
-	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
-	ret
-
-ExpColl:
-	.if	fGroup && eax
-		invoke SendMessage,hPbrTrv,TVM_EXPAND,nType,eax
-	.endif
-	retn
-
-ProExpandCollapse endp
-
-ProSortExpand proc uses	esi
-
-	mov		esi,offset progrp
-	.while [esi].PROGROUP.lpszGrp
-		mov		eax,[esi].PROGROUP.hGrp
-		.if	eax
-			call	SortExp
-		.endif
-		lea		esi,[esi+sizeof	PROGROUP]
-	.endw
-	invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,hRoot
-	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
-	ret
-
-SortExp:
-	.if	fGroup && eax
-		push	eax
-		invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,eax
-		pop		eax
-		.if	fGroupExpand
-			invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,eax
-		.endif
-	.endif
-	retn
-
-ProSortExpand endp
-
+;ProExpandCollapse proc uses	esi,nType:DWORD
+;
+;	mov		esi,offset groupgrp
+;	.while [esi].PROGROUP.lpszGrp
+;		mov		eax,[esi].PROGROUP.hGrp
+;		.if	eax
+;			call	ExpColl
+;		.endif
+;		lea		esi,[esi+sizeof	PROGROUP]
+;	.endw
+;	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
+;	ret
+;
+;ExpColl:
+;	.if	fGroup && eax
+;		invoke SendMessage,hPbrTrv,TVM_EXPAND,nType,eax
+;	.endif
+;	retn
+;
+;ProExpandCollapse endp
+;
+;ProSortExpand proc uses	esi
+;
+;	mov		esi,offset groupgrp
+;	.while [esi].PROGROUP.lpszGrp
+;		mov		eax,[esi].PROGROUP.hGrp
+;		.if	eax
+;			call	SortExp
+;		.endif
+;		lea		esi,[esi+sizeof	PROGROUP]
+;	.endw
+;	invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,hRoot
+;	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
+;	ret
+;
+;SortExp:
+;	.if	fGroup && eax
+;		push	eax
+;		invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,eax
+;		pop		eax
+;		.if	fGroupExpand
+;			invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,eax
+;		.endif
+;	.endif
+;	retn
+;
+;ProSortExpand endp
+;
 ProGetGroup	proc iNbr:DWORD,ftp:DWORD
 	LOCAL	buffer[8]:BYTE
 	LOCAL	buffer1[8]:BYTE
@@ -1059,54 +1053,54 @@ ProGetGroup	proc iNbr:DWORD,ftp:DWORD
 
 ProGetGroup	endp
 
-ProAddNode proc	uses esi,lpFileName:DWORD,iNbr:DWORD,fModule:DWORD
-	LOCAL	ftp:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	;Find filetype
-	invoke GetFileImg,lpFileName
-	.if	fModule
-		.if	eax==9
-			mov		eax,1
-		.elseif	eax==3
-			mov		eax,10
-		.endif
-	.endif
-	.if	eax>=30
-		mov		eax,7
-	.endif
-	mov		ftp,eax
-	invoke ProGetGroup,iNbr,ftp
-	.if	fGroup
-		mov		edx,sizeof PROGROUP
-		dec		eax
-		mul		edx
-		lea		esi,progrp[eax]
-		mov		eax,[esi].PROGROUP.hGrp
-		.if	!eax
-			invoke Do_TreeViewAddNode,hPbrTrv,hRoot,NULL,[esi].PROGROUP.lpszGrp,IML_START+0,IML_START+0,0
-			mov		[esi].PROGROUP.hGrp,eax
-		.endif
-	.else
-		mov		eax,hRoot
-	.endif
-	push	eax
-	invoke strcpy,addr buffer,addr ProjectPath
-	invoke strcat,addr buffer,lpFileName
-	invoke GetFileAttributes,addr buffer
-	and		eax,FILE_ATTRIBUTE_READONLY
-	.if	eax
-		add		ftp,11
-	.endif
-	pop		eax
-	push	eax
-	add		ftp,IML_START
-	invoke Do_TreeViewAddNode,hPbrTrv,eax,NULL,lpFileName,ftp,ftp,iNbr
-	pop		eax
-	ret
-
-ProAddNode endp
-
+;ProAddNode proc	uses esi,lpFileName:DWORD,iNbr:DWORD,fModule:DWORD
+;	LOCAL	ftp:DWORD
+;	LOCAL	buffer[256]:BYTE
+;
+;	;Find filetype
+;	invoke GetFileImg,lpFileName
+;	.if	fModule
+;		.if	eax==9
+;			mov		eax,1
+;		.elseif	eax==3
+;			mov		eax,10
+;		.endif
+;	.endif
+;	.if	eax>=30
+;		mov		eax,7
+;	.endif
+;	mov		ftp,eax
+;	invoke ProGetGroup,iNbr,ftp
+;	.if	fGroup
+;		mov		edx,sizeof PROGROUP
+;		dec		eax
+;		mul		edx
+;		lea		esi,groupgrp[eax]
+;		mov		eax,[esi].PROGROUP.hGrp
+;		.if	!eax
+;			invoke Do_TreeViewAddNode,hPbrTrv,hRoot,NULL,[esi].PROGROUP.lpszGrp,IML_START+0,IML_START+0,0
+;			mov		[esi].PROGROUP.hGrp,eax
+;		.endif
+;	.else
+;		mov		eax,hRoot
+;	.endif
+;	push	eax
+;	invoke strcpy,addr buffer,addr ProjectPath
+;	invoke strcat,addr buffer,lpFileName
+;	invoke GetFileAttributes,addr buffer
+;	and		eax,FILE_ATTRIBUTE_READONLY
+;	.if	eax
+;		add		ftp,11
+;	.endif
+;	pop		eax
+;	push	eax
+;	add		ftp,IML_START
+;	invoke Do_TreeViewAddNode,hPbrTrv,eax,NULL,lpFileName,ftp,ftp,iNbr
+;	pop		eax
+;	ret
+;
+;ProAddNode endp
+;
 ResFileExist proc
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[4]:BYTE
@@ -1135,8 +1129,8 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		invoke SendMessage,hPbrTrv,WM_SETREDRAW,FALSE,NULL
 		mov		esi,offset szGroupBuff
 		invoke RtlZeroMemory,esi,sizeof	szGroupBuff
-		mov		edi,offset progrp
-		invoke RtlZeroMemory,edi,sizeof	progrp
+		mov		edi,offset groupgrp
+		invoke RtlZeroMemory,edi,sizeof	groupgrp
 		invoke GetPrivateProfileString,addr	iniProjectGroup,addr iniProjectGroup,addr szNULL,addr prnbuff,sizeof szGroups,addr ProjectFile
 		.if	!eax
 			mov		fNoGroups,TRUE
@@ -1406,17 +1400,18 @@ AddProjectFile proc	uses esi edi,lpszFileName:DWORD,fTree:DWORD,fModule:DWORD
 		jne		@b
 		invoke BinToDec,iFree,addr buffer1
 		invoke WritePrivateProfileString,addr iniProjectFiles,addr buffer1,lpFileName,addr ProjectFile
-		.if	fTree
-			invoke ProAddNode,lpFileName,iFree,fModule
-			invoke ProSortExpand
-		.endif
-		invoke strcpy,offset FileName,offset ProjectPath
-		invoke strcat,offset FileName,lpFileName
 		.if	!hMemPro
 			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
 			mov		hMemPro,eax
 		.endif
 		invoke GetPrivateProfileSection,addr iniProjectFiles,hMemPro,32*1024-1,addr	ProjectFile
+		.if	fTree
+			invoke GroupGetProjectFiles
+			invoke GroupUpdateTrv,hPbrTrv
+			invoke GroupExpandAll,hPbrTrv,0
+		.endif
+		invoke strcpy,offset FileName,offset ProjectPath
+		invoke strcat,offset FileName,lpFileName
 		mov		eax,FALSE
 		ret
 	.endif
@@ -1746,7 +1741,6 @@ TreeViewProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		(TOOL ptr [edx]).dFocus,FALSE
 		invoke ToolMsg,hPbr,TLM_CAPTION,0
 	.elseif eax==WM_DROPFILES
-PrintHex eax
 		xor		ebx,ebx
 	  @@:
 		invoke DragQueryFile,wParam,ebx,addr buffer,sizeof buffer
@@ -2315,4 +2309,3 @@ ProjectOpenFile	proc fErr:DWORD
 	ret
 
 ProjectOpenFile	endp
-

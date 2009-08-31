@@ -91,6 +91,7 @@ szinmacro					db	10,4,'endm',
 
 szdword						db	'DWORD',0
 szptr						db	'PTR ',0
+szproto						db	'PROTO',0
 
 szdataconv					db	'DB',0,'BYTE',0
 							db	'DW',0,'WORD',0

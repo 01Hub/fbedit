@@ -151,6 +151,8 @@ ConvertShortcut			PROTO :DWORD
 ToolPropertySize		PROTO :DWORD
 TabToolUpdate			PROTO :DWORD,:DWORD
 SetPropertyCbo			PROTO :DWORD
+GroupTVBeginDrag		PROTO :HWND,:HWND,:LPARAM
+GroupTVEndDrag			PROTO :HWND
 
 ;wsprintfA				PROTO C :DWORD,:VARARG
 wsprintf				equ <wsprintfA>
@@ -370,6 +372,17 @@ SCRNSIZE struct
 	fmax			dd ?
 	rect			RECT <?>
 SCRNSIZE ends
+
+PROGROUP struct
+	hGrp			dd ?
+	lpszGrp			dd ?
+PROGROUP ends
+
+PROFILE struct
+	lpszFile		dd ?
+	iNbr			dd ?
+	nGrp			dd ?
+PROFILE ends
 
 ;#########################################################################
 
@@ -815,6 +828,7 @@ szAclKeys				db 00h,'(None)',0
 
 szRADebug				db 'RADebug.dll',0
 szRADebugParam			db ',12,1',0
+szDragProp				db 'DragProp.dll',0
 
 ;#########################################################################
 
@@ -1909,3 +1923,5 @@ nTabSet					dd ?
 fProExp					dd ?
 szaccept				db 16384 dup(?)
 sztempaccept			db 8192 dup(?)
+IsDragging				dd ?
+groupgrp				PROGROUP 64 dup(<>)

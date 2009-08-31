@@ -1870,9 +1870,9 @@ CmdEdit proc hWin:HWND
 		invoke GetFocus
 		.if eax==hPbrTrv
 			.if fProExp
-				invoke ProExpandCollapse,TVE_COLLAPSE
+				invoke GroupExpandAll,hPbrTrv,0
 			.else
-				invoke ProExpandCollapse,TVE_EXPAND
+				invoke GroupCollapseAll,hPbrTrv,0
 			.endif
 			xor		fProExp,1
 		.elseif hEdit

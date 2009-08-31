@@ -1396,10 +1396,12 @@ _Proc:
 	.if byte ptr [edi-1]==','
 		mov		byte ptr [edi-1],0
 	.endif
+	mov		word ptr [edi],0
 	call	SaveLocal
 	.if byte ptr [edi-1]==','
 		mov		byte ptr [edi-1],0
 	.endif
+	mov		word ptr [edi],0
 	push	3
 	push	offset buffer
 	push	iNbr
@@ -1565,6 +1567,12 @@ _Unknown:
 	mov		lpdt,eax
 	mov		eax,len2
 	mov		lendt,eax
+	.if lendt==5
+		invoke strcmpin,lpdt,addr szproto,5
+		.if !eax
+			retn
+		.endif
+	.endif
 	; Check for mov	dword ptr [eax],1
 	call	GetWord
 	.if ecx==3
@@ -1653,6 +1661,8 @@ FindLocal proc uses esi,hMem:DWORD,lpProcName:DWORD,lpMSt:DWORD,lpWord:DWORD,lpC
 		mov		eax,[esi].PROPERTIES.nSize
 		lea		esi,[esi+eax+sizeof PROPERTIES]
 	.endw
+	xor		eax,eax
+	ret
   @@:
 	lea		esi,[esi+sizeof PROPERTIES]
 	invoke strlen,esi

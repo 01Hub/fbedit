@@ -968,6 +968,7 @@ TestData:
 
 TestAny:
 	mov		edx,lpWordList
+	add		edx,rpProjectWordList
 	.while [edx].PROPERTIES.nSize
 		call	Compare
 		.if eax

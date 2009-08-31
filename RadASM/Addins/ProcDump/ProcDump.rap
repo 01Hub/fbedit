@@ -62,7 +62,7 @@ Options=52
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,5708
+1=0,0,0,0,3901
 2=0,0,0,0,590
 3=0,0,0,0,62
 5=0,0,0,0,0
@@ -100,7 +100,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -138,3 +138,5 @@ ProductVer4Range=0
 1=", "
 [AutoLoad]
 1=1
+[RADebugBP]
+1=

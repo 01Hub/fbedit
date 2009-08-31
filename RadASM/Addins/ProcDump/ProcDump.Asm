@@ -98,6 +98,53 @@ GetOptions proc
 
 GetOptions endp
 
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+
+    push    ebx
+    push    ecx
+    push    edx
+    push    esi
+    push    edi
+	mov		eax,dwVal
+	mov		edi,lpAscii
+	or		eax,eax
+	jns		pos
+	mov		byte ptr [edi],'-'
+	neg		eax
+	inc		edi
+  pos:      
+	mov		ecx,429496730
+	mov		esi,edi
+  @@:
+	mov		ebx,eax
+	mul		ecx
+	mov		eax,edx
+	lea		edx,[edx*4+edx]
+	add		edx,edx
+	sub		ebx,edx
+	add		bl,'0'
+	mov		[edi],bl
+	inc		edi
+	or		eax,eax
+	jne		@b
+	mov		byte ptr [edi],al
+	.while esi<edi
+		dec		edi
+		mov		al,[esi]
+		mov		ah,[edi]
+		mov		[edi],al
+		mov		[esi],ah
+		inc		esi
+	.endw
+    pop     edi
+    pop     esi
+    pop     edx
+    pop     ecx
+    pop     ebx
+    ret
+
+BinToDec endp
+
 ProcDump proc uses esi
 
 	mov		edx,lpData
@@ -113,8 +160,10 @@ ProcDump proc uses esi
 		.if [esi].PROPERTIES.nType=='p'
 			push	esi
 			;Point to the proc name
+			mov		edx,[esi].PROPERTIES.Owner
+			invoke BinToDec,edx,addr buffer
 			lea		esi,[esi+sizeof PROPERTIES]
-			invoke lstrcpy,addr buffer,esi
+			invoke lstrcat,addr buffer,esi
 			invoke lstrlen,esi
 			;Point to the procs parameters
 			lea		esi,[esi+eax+1]
@@ -129,22 +178,6 @@ ProcDump proc uses esi
 			.if byte ptr [esi]
 				invoke lstrlen,addr buffer
 				mov		dword ptr buffer[eax],':L '
-				invoke lstrcat,addr buffer,esi
-			.endif
-			;Output the proc name
-			invoke TextOutput,addr buffer
-			pop		esi
-		.elseif [esi].PROPERTIES.nType=='l'
-			push	esi
-			;Point to the proc name
-			lea		esi,[esi+sizeof PROPERTIES]
-			invoke lstrcpy,addr buffer,esi
-			invoke lstrlen,esi
-			;Point to the procs start,end position
-			lea		esi,[esi+eax+1]
-			.if byte ptr [esi]
-				invoke lstrlen,addr buffer
-				mov		word ptr buffer[eax],','
 				invoke lstrcat,addr buffer,esi
 			.endif
 			;Output the proc name

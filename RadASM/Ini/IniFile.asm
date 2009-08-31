@@ -354,30 +354,35 @@ iniHook proc uses ebx edi
 		invoke BinToDec,nInx,addr buffer1
 		invoke GetPrivateProfileString,addr iniAddIns,addr buffer1,addr szNULL,addr buffer2,128,addr iniFile
 		.if eax
+			invoke iniGetItem,addr buffer2,addr buffer3
 			invoke strcpy,addr FileName,addr AddIn
 			invoke strcat,addr FileName,addr szBackSlash
-			invoke iniGetItem,addr buffer2,addr buffer3
 			invoke strcat,addr FileName,addr buffer3
-			invoke iniGetItem,addr buffer2,addr buffer3
-			mov		al,buffer2
-			.if al
-				invoke DecToBin,addr buffer2
-				or		eax,eax
-				jne		@f
+			invoke strcmpi,addr szDragProp,addr buffer3
+			.if !eax
+				invoke DeleteFile,addr FileName
 			.else
-			  @@:
-				invoke LoadLibrary,addr FileName
-				.if eax
-					mov		[edi].ADDIN.hDLL,eax
-					invoke DecToBin,addr buffer3
-					mov		[edi].ADDIN.fOpt,eax
-					mov		eax,nInx
-					mov		[edi].ADDIN.inx,eax
-					add		edi,sizeof ADDIN
+				invoke iniGetItem,addr buffer2,addr buffer3
+				mov		al,buffer2
+				.if al
+					invoke DecToBin,addr buffer2
+					or		eax,eax
+					jne		@f
 				.else
-					invoke strcpy,addr LineTxt,addr OpenFileFail
-					invoke strcat,addr LineTxt,addr FileName
-					invoke MessageBox,NULL,addr LineTxt,addr AppName,MB_OK or MB_ICONERROR
+				  @@:
+					invoke LoadLibrary,addr FileName
+					.if eax
+						mov		[edi].ADDIN.hDLL,eax
+						invoke DecToBin,addr buffer3
+						mov		[edi].ADDIN.fOpt,eax
+						mov		eax,nInx
+						mov		[edi].ADDIN.inx,eax
+						add		edi,sizeof ADDIN
+					.else
+						invoke strcpy,addr LineTxt,addr OpenFileFail
+						invoke strcat,addr LineTxt,addr FileName
+						invoke MessageBox,NULL,addr LineTxt,addr AppName,MB_OK or MB_ICONERROR
+					.endif
 				.endif
 			.endif
 		.endif

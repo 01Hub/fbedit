@@ -1480,7 +1480,11 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ToolWndProc endp
 
-ToolCldProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ToolCldProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	pt:POINT
+	LOCAL	rect:RECT
+	LOCAL	buffer[8]:BYTE
+	LOCAL	buffer1[8]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_CTLCOLORSTATIC
@@ -1488,8 +1492,53 @@ ToolCldProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetTextColor,wParam,radcol.infotext
 		mov		eax,hBrInfo
 		ret
+	.elseif eax==WM_NOTIFY
+		mov		ebx,lParam
+		mov		eax,(NMHDR ptr [ebx]).code
+		.if eax==TVN_BEGINDRAG
+			invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+		.endif
+	.elseif eax==WM_LBUTTONUP
+		.if IsDragging
+			mov		IsDragging,FALSE
+			invoke GroupTVEndDrag,hPbrTrv
+			mov		esi,offset profile
+			.while [esi].PROFILE.lpszFile
+				invoke BinToDec,[esi].PROFILE.iNbr,addr buffer
+				invoke BinToDec,[esi].PROFILE.nGrp,addr buffer1
+				invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer,addr buffer1,addr ProjectFile
+				lea		esi,[esi+sizeof PROFILE]
+			.endw
+		.endif
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==WM_MOUSEMOVE
+		.if IsDragging
+			invoke GetCursorPos,addr pt
+			invoke ImageList_DragMove,pt.x,pt.y
+			invoke GetWindowRect,hPbrTrv,addr rect
+			invoke GetScrollPos,hPbrTrv,SB_VERT
+			mov		ebx,eax
+			mov		edx,pt.y
+			.if sdword ptr edx<rect.top
+				dec		ebx
+				mov		eax,ebx
+				shl		eax,16
+				or		eax,SB_LINEUP
+				invoke SendMessage,hPbrTrv,WM_VSCROLL,eax,0
+			.elseif sdword ptr edx>rect.bottom
+				inc		ebx
+				mov		eax,ebx
+				shl		eax,16
+				or		eax,SB_LINEDOWN
+				invoke SendMessage,hPbrTrv,WM_VSCROLL,eax,0
+			.endif
+		.endif
+		xor		eax,eax
+		jmp		Ex
 	.endif
 	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
+  Ex:
 	ret
 
 ToolCldProc endp
