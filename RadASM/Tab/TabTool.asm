@@ -28,6 +28,7 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ht:TC_HITTESTINFO
 	LOCAL	tci:TC_ITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -56,17 +57,23 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			shr		eax,16
 			mov		ht.pt.x,edx
 			mov		ht.pt.y,eax
-			invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
-			.if eax!=tabinx && sdword ptr eax>=0 && sdword ptr tabinx>=0
-				push	eax
-				mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
-				lea		eax,buffer
-				mov		tci.pszText,eax
-				mov		tci.cchTextMax,MAX_PATH
-				invoke SendMessage,hWin,TCM_GETITEM,tabinx,addr tci
-				invoke SendMessage,hWin,TCM_DELETEITEM,tabinx,0
-				pop		tabinx
-				invoke SendMessage,hWin,TCM_INSERTITEM,tabinx,addr tci
+			invoke SendMessage,hWin,TCM_GETITEMRECT,tabinx,addr rect
+			sub		rect.left,30
+			add		rect.right,30
+			mov		eax,ht.pt.x
+			.if sdword ptr eax<rect.left || sdword ptr eax>rect.right
+				invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+				.if eax!=tabinx && sdword ptr eax>=0 && sdword ptr tabinx>=0
+					push	eax
+					mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+					lea		eax,buffer
+					mov		tci.pszText,eax
+					mov		tci.cchTextMax,MAX_PATH
+					invoke SendMessage,hWin,TCM_GETITEM,tabinx,addr tci
+					invoke SendMessage,hWin,TCM_DELETEITEM,tabinx,0
+					pop		tabinx
+					invoke SendMessage,hWin,TCM_INSERTITEM,tabinx,addr tci
+				.endif
 			.endif
 			xor		eax,eax
 			ret

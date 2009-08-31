@@ -2,7 +2,13 @@ RadASM 2.2.1.8
 --------------
 2.2.1.8
 o Made it possible to load api files depending on project type.
-o Created a masm parser dll.
+  This makes it easier to create projects for other OS'es than Windows.
+  Contributed api files welcome.
+o Created a masm parser dll. This makes parsing masm projects more reliable.
+o Auto Load is replaced by saving current open files to project file.
+o File tabs can be dragged to a new position. The tab order is saved to project file.
+o The project browser now supports sub groups. Use Project Groups to maintain groups.
+o The Project Groups dialog has been redesigned and is more user friendly.
 2.2.1.7
 o The code parser for masm has been enhanced to include datatypes and array sizes.
 o The code parser for VC6 C/C++ (cppparse.dll) has been enhanced to include datatypes and array sizes.

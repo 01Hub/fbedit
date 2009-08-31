@@ -1496,7 +1496,9 @@ ToolCldProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,lParam
 		mov		eax,(NMHDR ptr [ebx]).code
 		.if eax==TVN_BEGINDRAG
-			invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+			.if fGroup
+				invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+			.endif
 		.endif
 	.elseif eax==WM_LBUTTONUP
 		.if IsDragging

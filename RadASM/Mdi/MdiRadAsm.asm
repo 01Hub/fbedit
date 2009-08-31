@@ -3532,7 +3532,6 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_NOTIFY
 		mov		edx,lParam
-
 		mov		eax,(NMHDR ptr [edx]).code
 		.if eax==TTN_NEEDTEXTW || eax==TTN_NEEDTEXT
 			;Toolbar tooltip

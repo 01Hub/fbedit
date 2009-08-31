@@ -312,11 +312,9 @@ SetTextLink	proc nType:DWORD
 	invoke strcpy,addr buffer1,addr szCmntChar
 	invoke strcat,addr buffer1,addr szCross
 	invoke strcat,addr buffer1,addr szSee
-
 	invoke strcpy,addr buffer2,addr szCR
 	invoke strcat,addr buffer2,addr szCross
 	invoke strcat,addr buffer2,addr szSpc
-
 	mov		edi,offset szBug
 	.if	nType==2
 		mov		edi,offset szNote
@@ -327,20 +325,17 @@ SetTextLink	proc nType:DWORD
 	invoke strcat,addr	buffer1,edi
 	pop		edi
 	invoke strcat,addr	buffer2,edi
-
 	invoke BinToDec,nInx,addr buffer
 	invoke strcat,addr	buffer1,addr buffer
 	invoke strcat,addr	buffer1,addr szColon
 	invoke strcat,addr	buffer1,addr szSpc
 	invoke strcat,addr	buffer1,addr szCross
 	invoke strcat,addr	buffer1,addr szCR
-
 	invoke strcat,addr	buffer2,addr buffer
 	invoke strcat,addr	buffer2,addr szColon
 	invoke strcat,addr	buffer2,addr szSpc
 	invoke strcat,addr	buffer2,addr szCross
 	invoke strcat,addr	buffer2,addr szCR
-
 	invoke SendMessage,hEdit,EM_EXGETSEL,0,addr	chrg
 	invoke SendMessage,hEdit,EM_EXLINEFROMCHAR,0,chrg.cpMin
 	invoke SendMessage,hEdit,EM_LINEINDEX,eax,0
@@ -595,12 +590,6 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 	LOCAL	buffer[64]:BYTE
 
 	invoke SendMessage,hClient,WM_MDIGETACTIVE,0,addr fMaximized
-;	invoke strcmpi,addr szAssembler,lpAssembler
-;	.if !eax
-;		invoke iniAddMenu
-;		invoke iniDisMenu
-;		ret
-;	.endif
 	.if hParseDll
 		invoke FreeLibrary,hParseDll
 		mov		hParseDll,0
@@ -638,7 +627,6 @@ SetAssembler proc uses esi edi,lpAssembler:DWORD
 		mov		eax,nOTHER
 	.endif
 	mov		nAsm,eax
-;	invoke UpDateAssemblerIni
 	invoke iniReadPaths,lpAssembler
 	invoke strcpy,addr szIniApi,addr iniApi
 	.if fProject
@@ -970,54 +958,6 @@ TestFile:
 
 GetFileImg endp
 
-;ProExpandCollapse proc uses	esi,nType:DWORD
-;
-;	mov		esi,offset groupgrp
-;	.while [esi].PROGROUP.lpszGrp
-;		mov		eax,[esi].PROGROUP.hGrp
-;		.if	eax
-;			call	ExpColl
-;		.endif
-;		lea		esi,[esi+sizeof	PROGROUP]
-;	.endw
-;	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
-;	ret
-;
-;ExpColl:
-;	.if	fGroup && eax
-;		invoke SendMessage,hPbrTrv,TVM_EXPAND,nType,eax
-;	.endif
-;	retn
-;
-;ProExpandCollapse endp
-;
-;ProSortExpand proc uses	esi
-;
-;	mov		esi,offset groupgrp
-;	.while [esi].PROGROUP.lpszGrp
-;		mov		eax,[esi].PROGROUP.hGrp
-;		.if	eax
-;			call	SortExp
-;		.endif
-;		lea		esi,[esi+sizeof	PROGROUP]
-;	.endw
-;	invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,hRoot
-;	invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,hRoot
-;	ret
-;
-;SortExp:
-;	.if	fGroup && eax
-;		push	eax
-;		invoke SendMessage,hPbrTrv,TVM_SORTCHILDREN,0,eax
-;		pop		eax
-;		.if	fGroupExpand
-;			invoke SendMessage,hPbrTrv,TVM_EXPAND,TVE_EXPAND,eax
-;		.endif
-;	.endif
-;	retn
-;
-;ProSortExpand endp
-;
 ProGetGroup	proc iNbr:DWORD,ftp:DWORD
 	LOCAL	buffer[8]:BYTE
 	LOCAL	buffer1[8]:BYTE
@@ -1053,54 +993,6 @@ ProGetGroup	proc iNbr:DWORD,ftp:DWORD
 
 ProGetGroup	endp
 
-;ProAddNode proc	uses esi,lpFileName:DWORD,iNbr:DWORD,fModule:DWORD
-;	LOCAL	ftp:DWORD
-;	LOCAL	buffer[256]:BYTE
-;
-;	;Find filetype
-;	invoke GetFileImg,lpFileName
-;	.if	fModule
-;		.if	eax==9
-;			mov		eax,1
-;		.elseif	eax==3
-;			mov		eax,10
-;		.endif
-;	.endif
-;	.if	eax>=30
-;		mov		eax,7
-;	.endif
-;	mov		ftp,eax
-;	invoke ProGetGroup,iNbr,ftp
-;	.if	fGroup
-;		mov		edx,sizeof PROGROUP
-;		dec		eax
-;		mul		edx
-;		lea		esi,groupgrp[eax]
-;		mov		eax,[esi].PROGROUP.hGrp
-;		.if	!eax
-;			invoke Do_TreeViewAddNode,hPbrTrv,hRoot,NULL,[esi].PROGROUP.lpszGrp,IML_START+0,IML_START+0,0
-;			mov		[esi].PROGROUP.hGrp,eax
-;		.endif
-;	.else
-;		mov		eax,hRoot
-;	.endif
-;	push	eax
-;	invoke strcpy,addr buffer,addr ProjectPath
-;	invoke strcat,addr buffer,lpFileName
-;	invoke GetFileAttributes,addr buffer
-;	and		eax,FILE_ATTRIBUTE_READONLY
-;	.if	eax
-;		add		ftp,11
-;	.endif
-;	pop		eax
-;	push	eax
-;	add		ftp,IML_START
-;	invoke Do_TreeViewAddNode,hPbrTrv,eax,NULL,lpFileName,ftp,ftp,iNbr
-;	pop		eax
-;	ret
-;
-;ProAddNode endp
-;
 ResFileExist proc
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[4]:BYTE
@@ -1187,31 +1079,6 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 				.if	!eax
 					mov		fResProject,TRUE
 				.endif
-;				.if	iNbr<PRO_START_OBJ
-;					invoke ProAddNode,addr buffer2,iNbr,FALSE
-;				.else
-;					invoke ProAddNode,addr buffer2,iNbr,TRUE
-;				.endif
-;				.if	fAutoOpen
-;					invoke strlen,addr buffer1
-;					mov		dword ptr buffer1[eax],'1='
-;					push	esi
-;					mov		esi,offset tempbuff
-;					.while byte	ptr	[esi]
-;						invoke strcmp,esi,addr buffer1
-;						.if	!eax
-;							invoke strcpy,addr FileName,addr ProjectPath
-;							invoke strcat,addr FileName,addr buffer2
-;							invoke ProjectOpenFile,TRUE
-;							jmp		@f
-;						.endif
-;						invoke strlen,esi
-;						add		esi,eax
-;						inc		esi
-;					.endw
-;				  @@:
-;					pop		esi
-;				.endif
 			.endif
 			invoke strlen,esi
 			add		esi,eax
@@ -1245,17 +1112,16 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 				invoke strcat,addr FileName,eax
 				invoke ProjectOpenFile,TRUE
 			.endw
+			.if	hMdiCld
+				invoke SendMessage,hTab,TCM_SETCURSEL,0,0
+				mov		tci.imask,TCIF_PARAM
+				invoke SendMessage,hTab,TCM_GETITEM,0,addr tci
+				invoke TabToolSel,tci.lParam
+				invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
+				invoke ProSetTrv,hMdiCld
+			.endif
 		.endif
-		.if	hMdiCld
-			invoke SendMessage,hTab,TCM_SETCURSEL,0,0
-			mov		tci.imask,TCIF_PARAM
-			invoke SendMessage,hTab,TCM_GETITEM,0,addr tci
-			invoke TabToolSel,tci.lParam
-			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
-			invoke ProSetTrv,hMdiCld
-		.endif
-		mov		eax,FALSE
-		mov		fNoGroups,eax
+		mov		fNoGroups,FALSE
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,12,fGroup
 		xor		eax,eax
 		ret
@@ -1361,7 +1227,6 @@ RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 	dec		esi
 	dec		edi
   @@:
-
 	inc		esi
 	inc		edi
 	mov		al,[esi]
@@ -2184,7 +2049,7 @@ ProSavePos proc	hWin:HWND
 			invoke GetWindowLong,hWin,0
 			.if	eax==ID_EDIT ||	eax==ID_EDITTXT
 				invoke iniPutItem,rect.bottom,addr buffer2,TRUE
-				;Get handle	of RichEdit
+				;Get handle	of RAEdit
 				invoke GetWindowLong,hWin,GWL_USERDATA
 				mov		val,eax
 				invoke SendMessage,val,EM_EXGETSEL,0,addr chrg
