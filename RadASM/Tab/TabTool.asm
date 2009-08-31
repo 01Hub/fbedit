@@ -24,6 +24,59 @@ TCS_FOCUSNEVER          equ 8000h
 
 .code
 
+TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ht:TC_HITTESTINFO
+	LOCAL	tci:TC_ITEM
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax!=-1
+			mov		tabinx,eax
+			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
+			mov		tci.imask,TCIF_PARAM
+			invoke SendMessage,hTab,TCM_GETITEM,tabinx,addr tci
+			invoke TabToolSel,tci.lParam
+			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
+			invoke ProSetTrv,hMdiCld
+			xor		eax,eax
+			ret
+		.endif
+	.elseif eax==WM_MOUSEMOVE
+		test	wParam,MK_LBUTTON
+		.if !ZERO?
+			mov		eax,lParam
+			movzx	edx,ax
+			shr		eax,16
+			mov		ht.pt.x,edx
+			mov		ht.pt.y,eax
+			invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+			.if eax!=tabinx && sdword ptr eax>=0 && sdword ptr tabinx>=0
+				push	eax
+				mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+				lea		eax,buffer
+				mov		tci.pszText,eax
+				mov		tci.cchTextMax,MAX_PATH
+				invoke SendMessage,hWin,TCM_GETITEM,tabinx,addr tci
+				invoke SendMessage,hWin,TCM_DELETEITEM,tabinx,0
+				pop		tabinx
+				invoke SendMessage,hWin,TCM_INSERTITEM,tabinx,addr tci
+			.endif
+			xor		eax,eax
+			ret
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldTabProc,hWin,uMsg,wParam,lParam
+	ret
+
+TabProc endp
+
 Do_TabTool proc
 	LOCAL	buffer[64]:BYTE
 	LOCAL	buffer2[64]:BYTE
@@ -77,6 +130,8 @@ Do_TabTool proc
     mov     hWin, eax
     invoke ToolMessage,hWin,TLM_CREATE,addr sTool
 	invoke SendMessage,hWin,TCM_SETIMAGELIST,0,hTbrIml
+	invoke SetWindowLong,hWin,GWL_WNDPROC,offset TabProc
+	mov		lpOldTabProc,eax
     mov     eax, hWin
     ret
 

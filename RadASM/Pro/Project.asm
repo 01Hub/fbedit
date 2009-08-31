@@ -1123,6 +1123,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 	LOCAL	buffer2[128]:BYTE
 	LOCAL	buffer4[256]:BYTE
 	LOCAL	iNbr:DWORD
+	LOCAL	tci:TCITEM
 
 	invoke GetFileAttributes,addr ProjectFile
 	.if	eax!=-1
@@ -1152,7 +1153,24 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		mov		hMemPro,eax
 		invoke GetPrivateProfileSection,addr iniProjectFiles,hMemPro,32*1024-1,addr	ProjectFile
 		mov		esi,hMemPro
-		invoke GetPrivateProfileSection,addr iniAutoLoad,offset	tempbuff,sizeof	tempbuff,addr ProjectFile
+		invoke GetPrivateProfileSection,addr iniAutoLoad,offset tempbuff,sizeof tempbuff,addr ProjectFile
+		invoke iniInStr,offset tempbuff,addr iniAutoLoad
+		.if eax==-1
+			mov		iNbr,0
+			mov		tempbuff,0
+			.while iNbr<2048
+				invoke BinToDec,iNbr,addr buffer1
+				invoke GetPrivateProfileInt,addr iniAutoLoad,addr buffer1,0,addr ProjectFile
+				.if eax
+					invoke iniPutItem,iNbr,offset tempbuff,TRUE
+				.endif
+				inc		iNbr
+			.endw
+			invoke WritePrivateProfileSection,addr iniAutoLoad,offset szNULL,addr ProjectFile
+			invoke strlen,offset tempbuff
+			mov		tempbuff[eax-1],0
+			invoke WritePrivateProfileString,addr iniAutoLoad,addr iniAutoLoad,offset tempbuff,addr ProjectFile
+		.endif
 	  Nxt:
 		.if	 byte ptr [esi]
 			invoke DecToBin,esi
@@ -1169,31 +1187,31 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 				.if	!eax
 					mov		fResProject,TRUE
 				.endif
-				.if	iNbr<PRO_START_OBJ
+;				.if	iNbr<PRO_START_OBJ
 ;					invoke ProAddNode,addr buffer2,iNbr,FALSE
-				.else
+;				.else
 ;					invoke ProAddNode,addr buffer2,iNbr,TRUE
-				.endif
-				.if	fAutoOpen
-					invoke strlen,addr buffer1
-					mov		dword ptr buffer1[eax],'1='
-					push	esi
-					mov		esi,offset tempbuff
-					.while byte	ptr	[esi]
-						invoke strcmp,esi,addr buffer1
-						.if	!eax
-							invoke strcpy,addr FileName,addr ProjectPath
-							invoke strcat,addr FileName,addr buffer2
-							invoke ProjectOpenFile,TRUE
-							jmp		@f
-						.endif
-						invoke strlen,esi
-						add		esi,eax
-						inc		esi
-					.endw
-				  @@:
-					pop		esi
-				.endif
+;				.endif
+;				.if	fAutoOpen
+;					invoke strlen,addr buffer1
+;					mov		dword ptr buffer1[eax],'1='
+;					push	esi
+;					mov		esi,offset tempbuff
+;					.while byte	ptr	[esi]
+;						invoke strcmp,esi,addr buffer1
+;						.if	!eax
+;							invoke strcpy,addr FileName,addr ProjectPath
+;							invoke strcat,addr FileName,addr buffer2
+;							invoke ProjectOpenFile,TRUE
+;							jmp		@f
+;						.endif
+;						invoke strlen,esi
+;						add		esi,eax
+;						inc		esi
+;					.endw
+;				  @@:
+;					pop		esi
+;				.endif
 			.endif
 			invoke strlen,esi
 			add		esi,eax
@@ -1215,7 +1233,24 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
 		mov		hRoot,eax
 		invoke SendMessage,hPbrTrv,WM_SETREDRAW,TRUE,NULL
+		.if	fAutoOpen
+			invoke GetPrivateProfileString,addr iniAutoLoad,addr iniAutoLoad,offset szNULL,offset tempbuff,sizeof tempbuff,addr ProjectFile
+			.while byte ptr tempbuff
+				invoke iniGetItem,offset tempbuff,addr buffer4
+				invoke DecToBin,addr buffer4
+				invoke GetFileNameFromID,eax
+				push	eax
+				invoke strcpy,addr FileName,addr ProjectPath
+				pop		eax
+				invoke strcat,addr FileName,eax
+				invoke ProjectOpenFile,TRUE
+			.endw
+		.endif
 		.if	hMdiCld
+			invoke SendMessage,hTab,TCM_SETCURSEL,0,0
+			mov		tci.imask,TCIF_PARAM
+			invoke SendMessage,hTab,TCM_GETITEM,0,addr tci
+			invoke TabToolSel,tci.lParam
 			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
 			invoke ProSetTrv,hMdiCld
 		.endif
@@ -1235,15 +1270,30 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 GetProjectFiles	 endp
 
 CloseProject proc
+	LOCAL	tci:TCITEM
+	LOCAL	nInx:DWORD
 
 	.if	fProject
 		invoke DllProc,hWnd,AIM_PROJECTCLOSE,0,0,RAM_PROJECTCLOSE
 		.if	eax
 			ret
 		.endif
+		mov		nInx,0
+		mov		tempbuff,0
+		mov		tci.imask,TCIF_PARAM
+		.while TRUE
+			invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+			.break .if !eax
+			invoke GetWindowLong,tci.lParam,16
+			invoke iniPutItem,eax,offset tempbuff,TRUE
+			inc		nInx
+		.endw
+		invoke strlen,offset tempbuff
+		mov		tempbuff[eax-1],0
 		invoke ClearErrorBookMarks
 		invoke SendMessage,hWnd,WM_COMMAND,IDM_WINDOW_CLOSEALL,0
 		.if	hMdiCld==0
+			invoke WritePrivateProfileString,addr iniAutoLoad,addr iniAutoLoad,offset tempbuff,addr ProjectFile
 			invoke SetWindowText,hWnd,addr DisplayName
 			invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,hRoot
 			invoke UpdateWindow,hPbrTrv

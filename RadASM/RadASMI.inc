@@ -685,7 +685,6 @@ IDM_PROMNU_FILEPROP		equ 50001
 IDM_PROMNU_REMOVE		equ 50002
 IDM_PROMNU_RENAME		equ 50024
 IDM_PROMNU_LOCK			equ 50003
-IDM_PROMNU_AUTOLOAD		equ 50004
 IDM_PROMNU_COPY			equ 50014
 
 IDM_OUTPUT_OPEN			equ 50005
@@ -1925,3 +1924,5 @@ szaccept				db 16384 dup(?)
 sztempaccept			db 8192 dup(?)
 IsDragging				dd ?
 groupgrp				PROGROUP 64 dup(<>)
+lpOldTabProc			dd ?
+tabinx					dd ?

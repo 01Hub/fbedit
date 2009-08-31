@@ -1713,9 +1713,7 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke EnableMenuItem,hToolMenu,IDM_FILE_CLOSEPROJECT,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_FILE_DELETEPROJECT,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROJECT_REFRESH,MF_GRAYED
-				invoke EnableMenuItem,hToolMenu,IDM_PROMNU_AUTOLOAD,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROJECT_GROUPS,MF_GRAYED
-				invoke CheckMenuItem,hToolMenu,IDM_PROMNU_AUTOLOAD,MF_BYCOMMAND or MF_UNCHECKED
 				.if fProject
 					;Project
 					invoke EnableMenuItem,hToolMenu,IDM_PROJECT_ADDNEW,MF_ENABLED
@@ -1744,18 +1742,9 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke EnableMenuItem,hToolMenu,IDM_PROMNU_REMOVE,MF_ENABLED
 							invoke EnableMenuItem,hToolMenu,IDM_PROMNU_RENAME,MF_ENABLED
 							invoke EnableMenuItem,hToolMenu,IDM_PROMNU_LOCK,MF_ENABLED
-							invoke EnableMenuItem,hToolMenu,IDM_PROMNU_AUTOLOAD,MF_ENABLED
 							.if hEdit
 								invoke EnableMenuItem,hToolMenu,IDM_PROMNU_COPY,MF_ENABLED
 							.endif
-							invoke BinToDec,tvi.lParam,addr buffer
-							invoke GetPrivateProfileInt,addr iniAutoLoad,addr buffer,0,addr ProjectFile
-							.if eax
-								mov		eax,MF_BYCOMMAND or MF_CHECKED
-							.else
-								mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-							.endif
-							invoke CheckMenuItem,hToolMenu,IDM_PROMNU_AUTOLOAD,eax
 						.endif
 					.endif
 				.endif

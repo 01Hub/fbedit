@@ -2336,23 +2336,6 @@ CmdProject proc hWin:HWND
 				invoke UpdateSizeingRect,hFound,vTmp
 			.endif
 		.endif
-	.elseif eax==IDM_PROMNU_AUTOLOAD
-		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_CARET,0
-		mov		tvi.hItem,eax
-		mov		tvi.imask,TVIF_PARAM
-		invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
-		invoke GetMenuState,hToolMenu,IDM_PROMNU_AUTOLOAD,MF_BYCOMMAND
-		test	eax,MF_CHECKED
-		.if !ZERO?
-			mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-			mov		dword ptr buffer,'0'
-		.else
-			mov		eax,MF_BYCOMMAND or MF_CHECKED
-			mov		dword ptr buffer,'1'
-		.endif
-		invoke CheckMenuItem,hToolMenu,IDM_PROMNU_AUTOLOAD,eax
-		invoke BinToDec,tvi.lParam,addr buffer2
-		invoke WritePrivateProfileString,addr iniAutoLoad,addr buffer2,addr buffer,addr ProjectFile
 	.elseif eax>=23000 && eax<=23031
 		invoke GetMenuString,hMenu,eax,offset iniBuffer,16,MF_BYCOMMAND
 		invoke SetAssembler,addr iniBuffer
