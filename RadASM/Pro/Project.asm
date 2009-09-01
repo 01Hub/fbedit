@@ -1153,7 +1153,9 @@ CloseProject proc
 			invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
 			.break .if !eax
 			invoke GetWindowLong,tci.lParam,16
-			invoke iniPutItem,eax,offset tempbuff,TRUE
+			.if eax
+				invoke iniPutItem,eax,offset tempbuff,TRUE
+			.endif
 			inc		nInx
 		.endw
 		invoke strlen,offset tempbuff
