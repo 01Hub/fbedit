@@ -419,6 +419,7 @@ Sub RefreshProjectTree
 		If Len(sItem) Then
 			nMiss=0
 			TrvAddNode(hPar,@sItem,GetFileImg(sItem),nInx)
+			
 		Else
 			nMiss+=1
 		EndIf
@@ -1009,8 +1010,15 @@ Sub SetAsMainProjectFile
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
 	
 	If tvi.hItem Then
-		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
-		buff = *StrPtr(path)
+		If nProjectGroup=1 Then
+			path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+			buff = *StrPtr(path)
+		Else
+			tvi.Mask=TVIF_TEXT
+			tvi.pszText=@buff
+			tvi.cchTextMax=260
+			SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		EndIf 
 		
 		nInx=1
 		nMiss=0
@@ -1063,8 +1071,15 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
 	
 	If tvi.hItem Then
-		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
-		buff = *StrPtr(path)
+		If nProjectGroup=1 Then
+			path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+			buff = *StrPtr(path)
+		Else
+			tvi.Mask=TVIF_TEXT
+			tvi.pszText=@buff
+			tvi.cchTextMax=260
+			SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		EndIf 
 		
 		nInx=1
 		nMiss=0
@@ -1123,13 +1138,20 @@ End Sub
 Sub InsertInclude()
 	Dim tvi As TV_ITEM
 	Dim buffer As ZString*260
-	
+
 	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
-	
 	If tvi.hItem Then
-		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
-		buffer = *StrPtr(path)
+		If nProjectGroup=1 Then
+			path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+			buffer = *StrPtr(path)
+		Else
+			tvi.Mask=TVIF_TEXT
+			tvi.pszText=@buffer
+			tvi.cchTextMax=260
+			SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		EndIf 
+		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
 		buffer="#Include " & Chr(34) & buffer & Chr(34) & CR
 		SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buffer))
 	EndIf	
@@ -1169,8 +1191,15 @@ Sub ToggleProjectFile
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
 	
 	If tvi.hItem Then
-		path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
-		buff = *StrPtr(path)
+		tvi.Mask=TVIF_TEXT Or TVIF_PARAM
+		tvi.pszText=@buff
+		tvi.cchTextMax=260
+		SendMessage(ah.hprj,TVM_GETITEM,0,Cast(Integer,@tvi))
+		
+		If nProjectGroup=1 Then
+			path = ModPath.GetPathFromProjectFile(ah.hprj, tvi.hItem)
+			buff = *StrPtr(path)
+		EndIf
 		
 		If tvi.lParam Then
 			' Remove the file from project
