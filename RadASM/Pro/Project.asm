@@ -1281,10 +1281,12 @@ RemoveProjectPath endp
 AddProjectFile proc	uses esi edi,lpszFileName:DWORD,fTree:DWORD,fModule:DWORD
 	LOCAL	buffer[256+32]:BYTE
 	LOCAL	buffer1[8]:BYTE
+	LOCAL	buffer2[8]:BYTE
 	LOCAL	nMiss:DWORD
 	LOCAL	iNbr:DWORD
 	LOCAL	iFree:DWORD
 	LOCAL	lpFileName:DWORD
+	LOCAL	tvi:TVITEM
 
 	invoke GetFileAttributes,addr ProjectFile
 	.if	eax!=-1
@@ -1325,6 +1327,29 @@ AddProjectFile proc	uses esi edi,lpszFileName:DWORD,fTree:DWORD,fModule:DWORD
 		.endif
 		invoke GetPrivateProfileSection,addr iniProjectFiles,hMemPro,32*1024-1,addr	ProjectFile
 		.if	fTree
+			.if fGroup
+				invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_CARET,0
+				mov		tvi.hItem,eax
+				mov		tvi._mask,TVIF_PARAM
+				invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
+				.if sdword ptr tvi.lParam>0
+					invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_PARENT,tvi.hItem
+					mov		tvi.hItem,eax
+					mov		tvi._mask,TVIF_PARAM
+					invoke SendMessage,hPbrTrv,TVM_GETITEM,0,addr tvi
+					.if sdword ptr tvi.lParam>0
+						xor		edx,edx
+					.else
+						mov		edx,tvi.lParam
+						neg		edx
+					.endif
+				.else
+					mov		edx,tvi.lParam
+					neg		edx
+				.endif
+				invoke BinToDec,edx,addr buffer2
+				invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer1,addr buffer2,addr ProjectFile
+			.endif
 			invoke GroupGetProjectFiles
 			invoke GroupUpdateTrv,hPbrTrv
 			invoke GroupExpandAll,hPbrTrv,0
@@ -1458,11 +1483,18 @@ ProAddExist	proc  uses esi,hWin:HWND,lParam:LPARAM
 		mov		ofn.lpstrDefExt,NULL
 		mov		ofn.lpstrTitle,offset AddExistModule
 	.endif
-	mov		ofn.lpstrFile,offset tempbuff
-	mov		byte ptr [tempbuff],0
-	mov		ofn.nMaxFile,sizeof	tempbuff
-	mov		ofn.Flags,OFN_FILEMUSTEXIST	or OFN_HIDEREADONLY	or OFN_PATHMUSTEXIST or	OFN_ALLOWMULTISELECT or	OFN_EXPLORER
-	invoke GetOpenFileName,addr	ofn
+	.if lParam==5
+		invoke RtlZeroMemory,offset tempbuff,sizeof tempbuff
+		invoke GetWindowText,hMdiCld,offset tempbuff,MAX_PATH
+		mov		lParam,0
+		mov		eax,TRUE
+	.else
+		mov		ofn.lpstrFile,offset tempbuff
+		mov		byte ptr [tempbuff],0
+		mov		ofn.nMaxFile,sizeof	tempbuff
+		mov		ofn.Flags,OFN_FILEMUSTEXIST	or OFN_HIDEREADONLY	or OFN_PATHMUSTEXIST or	OFN_ALLOWMULTISELECT or	OFN_EXPLORER
+		invoke GetOpenFileName,addr	ofn
+	.endif
 	.if	eax
 		mov		nUpdated,0
 		mov		esi,offset tempbuff

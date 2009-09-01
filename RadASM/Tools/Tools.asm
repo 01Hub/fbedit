@@ -1707,6 +1707,7 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke EnableMenuItem,hToolMenu,IDM_PROJECT_ADDNEW,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROJECT_ADDEXISTING,MF_GRAYED
+				invoke EnableMenuItem,hToolMenu,IDM_PROJECT_ADDEXISTINGOPEN,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROMNU_FILEPROP,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROMNU_REMOVE,MF_GRAYED
 				invoke EnableMenuItem,hToolMenu,IDM_PROMNU_RENAME,MF_GRAYED
@@ -1747,6 +1748,12 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.if hEdit
 								invoke EnableMenuItem,hToolMenu,IDM_PROMNU_COPY,MF_ENABLED
 							.endif
+						.endif
+					.endif
+					.if hEdit || hDialog
+						invoke GetWindowLong,hMdiCld,16
+						.if !eax
+							invoke EnableMenuItem,hToolMenu,IDM_PROJECT_ADDEXISTINGOPEN,MF_ENABLED
 						.endif
 					.endif
 				.endif

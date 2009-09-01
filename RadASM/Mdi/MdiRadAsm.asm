@@ -557,6 +557,7 @@ MenuStatus proc uses ebx
 		invoke EnableMenuItem,hMenu,IDM_FILE_DELETEPROJECT,MF_ENABLED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_ADDNEW,MF_ENABLED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_ADDEXISTING,MF_ENABLED
+		invoke EnableMenuItem,hMenu,IDM_PROJECT_ADDEXISTINGOPEN,MF_GRAYED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_SET_ASSEMBLER,MF_GRAYED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_ACCELERATOR,MF_ENABLED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_RESOURCE,MF_ENABLED
@@ -566,6 +567,10 @@ MenuStatus proc uses ebx
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_GROUPS,MF_ENABLED
 		invoke EnableMenuItem,hMenu,IDM_PROJECT_SCANPROJECT,MF_ENABLED
 		.if hEdit || hDialog
+			invoke GetWindowLong,hMdiCld,16
+			.if !eax
+				invoke EnableMenuItem,hMenu,IDM_PROJECT_ADDEXISTINGOPEN,MF_ENABLED
+			.endif
 			invoke EnableMenuItem,hMenu,IDM_PROJECT_REMOVE,MF_ENABLED
 		.else
 			invoke EnableMenuItem,hMenu,IDM_PROJECT_REMOVE,MF_GRAYED
@@ -2227,6 +2232,8 @@ CmdProject proc hWin:HWND
 		invoke ProAddExist,hWin,3
 	.elseif eax==IDM_PROJECT_ADDEXISTINGMODULE
 		invoke ProAddExist,hWin,4
+	.elseif eax==IDM_PROJECT_ADDEXISTINGOPEN
+		invoke ProAddExist,hWin,5
 	.elseif eax==IDM_PROJECT_ACCELERATOR
 		invoke ModalDialog,hInstance,IDD_DLGACCELERATOR,hWin,addr AccelEditProc,NULL
 	.elseif eax==IDM_PROJECT_RESOURCE
