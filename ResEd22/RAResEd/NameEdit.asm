@@ -149,6 +149,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 	LOCAL	val:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	hFile:DWORD
+	LOCAL	hMem:HGLOBAL
 
 	mov		eax,nExportType
 	shr		eax,16
@@ -183,6 +184,8 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 		.endif
 	.endif
 	.if eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		hMem,eax
 		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 		mov		edi,eax
 		invoke GlobalLock,edi
@@ -205,6 +208,20 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 				add		ecx,4
 				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr val
 				.if val
+					mov		esi,hMem
+					.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+						mov		eax,val
+						.if eax==[esi].NAMEMEM.value
+							invoke strcmp,addr buffer,addr [esi].NAMEMEM.szname
+							.if !eax
+								jmp		Nxt
+							.endif
+						.endif
+						add		esi,sizeof NAMEMEM
+					.endw
+					invoke strcpy,addr [esi].NAMEMEM.szname,addr buffer
+					mov		eax,val
+					mov		[esi].NAMEMEM.value,eax
 					movzx	eax,word ptr nExportType
 					.if eax==0
 						;Asm
@@ -296,6 +313,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 					.endif
 				.endif
 			.endif
+		  Nxt:
 			inc		ebx
 		.endw
 		mov		byte ptr [edi],0
@@ -319,6 +337,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 		.endif
 		invoke GlobalUnlock,edi
 		invoke GlobalFree,edi
+		invoke GlobalFree,hMem
 	.endif
 	ret
 

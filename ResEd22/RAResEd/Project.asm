@@ -415,13 +415,8 @@ CloseProject proc uses esi,hProMem:DWORD
 
 CloseProject endp
 
-ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
-	LOCAL	hMem:DWORD
-	LOCAL	buff[32]:BYTE
+ExportNames proc uses ebx esi,lpRCMem:DWORD,lpProMem
 
-	.if hDialog
-		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
-	.endif
 	;Names
 	mov		esi,lpProMem
 	.while [esi].PROJECT.hmem
@@ -429,103 +424,115 @@ ExportProject proc lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
 			.if [esi].PROJECT.ntype==TPE_NAME
 				invoke ExportNamesNames,[esi].PROJECT.hmem
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_DIALOG
 				invoke ExportDialogNames,[esi].PROJECT.hmem
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_MENU
 				invoke ExportMenuNames,[esi].PROJECT.hmem
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_VERSION
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportVersionNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_ACCEL
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportAccelNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_RESOURCE
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportResourceNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_STRING
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportStringNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_XPMANIFEST
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportXPManifestNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_RCDATA
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportRCDataNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_TOOLBAR
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportToolbarNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.elseif [esi].PROJECT.ntype==TPE_USERDATA
 				mov		eax,[esi].PROJECT.hmem
 				invoke ExportUserDataNames,eax
 				.if eax
-					mov		hMem,eax
-					invoke strcat,lpRCMem,hMem
-					invoke GlobalUnlock,hMem
-					invoke GlobalFree,hMem
+					mov		ebx,eax
+					invoke strcat,lpRCMem,ebx
+					invoke GlobalUnlock,ebx
+					invoke GlobalFree,ebx
 				.endif
 			.endif
 		.endif
 		add		esi,sizeof PROJECT
 	.endw
+	ret
+
+ExportNames endp
+
+ExportProject proc uses esi,lpRCMem:DWORD,lpDEFMem:DWORD,lpProMem:DWORD
+	LOCAL	hMem:DWORD
+	LOCAL	buff[32]:BYTE
+
+	.if hDialog
+		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
+	.endif
+	invoke ExportNames,lpRCMem,lpProMem
 	.if fNoDefines
 		invoke strcpy,lpDEFMem,lpRCMem
 		mov		eax,lpRCMem

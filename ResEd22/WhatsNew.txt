@@ -1,5 +1,9 @@
 ResEd
 
+2.2.0.3c - 2009-09-01
+---------------------
+o Fixed bug where exported names could contain duplicates.
+
 2.2.0.3b - 2009-08-21
 ---------------------
 o The work area scrollbars are now hidden when not needed.
