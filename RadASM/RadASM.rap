@@ -177,14 +177,14 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,48209
+2=0,416,869,416,30104
 3=154,154,590,413,749
-4=0,0,590,413,36512
+4=0,0,590,413,44463
 5=132,132,536,413,83519
-6=12,26,869,416,102465
+6=12,26,869,416,85770
 7=132,132,536,413,7072
-8=44,44,536,413,26655
-9=88,88,536,413,34787
+8=44,44,536,413,42320
+9=88,88,536,413,50743
 10=110,110,536,413,17527
 11=88,88,536,413,12634
 12=154,154,590,413,1082
@@ -226,7 +226,7 @@ MinorFiles=*.res;*.obj;
 49=44,44,536,413
 50=
 51=0,0,590,413,163
-52=0,0,536,413,1596
+52=0,0,536,413,1742
 54=88,88,536,413
 53=110,110,536,413,7228
 55=44,44,536,413,213
@@ -254,7 +254,7 @@ MinorFiles=*.res;*.obj;
 78=66,66,536,413
 79=88,88,536,413,23863
 80=154,154,536,413,2308
-81=0,0,536,413,3670
+81=0,0,536,413,3854
 82=176,176,536,413
 83=133,27,590,413,4727
 84=22,22,536,413
@@ -284,7 +284,7 @@ MinorFiles=*.res;*.obj;
 109=0,0,0,0
 112=0,0,655,443
 111=0,0,0,0,3742
-113=0,0,717,449,6278
+113=0,0,717,449,5416
 115=0,0,0,0,2232
 116=0,0,0,0
 117=0,0,0,0
@@ -301,7 +301,7 @@ MinorFiles=*.res;*.obj;
 126=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,2,8,52,85,9,119
+AutoLoad=6,2,8,52,85,4,9
 
 [BookMark]
 0=
@@ -486,16 +486,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="IDM_PROMNU_AUTOLOAD"
-2="szNULL"
-3="iniGetItem"
-4="GroupUpdateTrv"
-5="AddProjectFile"
-6="addp"
-7="szToolCldClass"
-8="Do_TreeView"
-9="fEdit"
-10="hRoot"
+1="WM_TOOLDBLCLICK"
+2="TOOL_D"
+3="TabToolDel"
+4="IDM_PROMNU_AUTOLOAD"
+5="szNULL"
+6="iniGetItem"
+7="GroupUpdateTrv"
+8="AddProjectFile"
+9="addp"
+10="szToolCldClass"
 
 [BreakPoint]
 0=
@@ -537,7 +537,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=31
+MilestoneOnDateDate=1
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988

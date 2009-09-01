@@ -2039,6 +2039,7 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_LBUTTONDBLCLK
 		mov		eax, hWin
 		.if eax==hTab
+			mov		tabinx,-1
 			invoke GetCursorPos,addr tch.pt
 			invoke GetClientRect,hTab,addr rect
 			invoke ClientToScreen,hWin,addr rect

@@ -1106,11 +1106,13 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 				invoke iniGetItem,offset tempbuff,addr buffer4
 				invoke DecToBin,addr buffer4
 				invoke GetFileNameFromID,eax
-				push	eax
-				invoke strcpy,addr FileName,addr ProjectPath
-				pop		eax
-				invoke strcat,addr FileName,eax
-				invoke ProjectOpenFile,TRUE
+				.if eax
+					push	eax
+					invoke strcpy,addr FileName,addr ProjectPath
+					pop		eax
+					invoke strcat,addr FileName,eax
+					invoke ProjectOpenFile,TRUE
+				.endif
 			.endw
 			.if	hMdiCld
 				invoke SendMessage,hTab,TCM_SETCURSEL,0,0
