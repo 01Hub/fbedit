@@ -6,7 +6,7 @@ option proc:private
 include Data.inc
 include Misc.asm
 include WordList.asm
-include Parse.asm
+include FBParse.asm
 include MasmParse.asm
 include Sort.asm
 
@@ -456,10 +456,15 @@ IsWordType endp
 GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 	LOCAL	npos:DWORD
 
+	.if [ebx].RAPROPERTY.nlanguage==nMASM
+		; Masm
+		invoke MPreParse,lParam
+	.else
+		; FreeBASIC
+		invoke FBPreParse,lParam
+	.endif
 	xor		edi,edi
 	mov		esi,[ebx].RAPROPERTY.lpchartab
-	mov		edx,lParam
-	invoke PreParse,[edx].TOOLTIP.lpszLine
 	test	fNoCase,TT_PARANTESES
 	.if !ZERO?
 		mov		edx,lParam

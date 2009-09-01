@@ -286,3 +286,181 @@ AsciiToDw proc lpStr:DWORD
     ret
 
 AsciiToDw endp
+
+SearchMemDown proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWWord:DWORD,lpCharTab:DWORD
+
+	mov		cl,byte ptr fWWord
+	mov		ch,byte ptr fMCase
+	mov		edi,hMem
+	dec		edi
+	mov		esi,lpFind
+  Nx:
+	xor		edx,edx
+	inc		edi
+	dec		edx
+  Mr:
+	inc		edx
+	mov		al,[edi+edx]
+	mov		ah,[esi+edx]
+	.if ah && al
+		cmp		al,ah
+		je		Mr
+		.if !ch
+			;Try other case (upper/lower)
+			movzx	ebx,ah
+			add		ebx,lpCharTab
+			cmp		al,[ebx+256]
+			je		Mr
+		.endif
+		jmp		Nx					;Test next char
+	.else
+		.if !ah
+			or		cl,cl
+			je		@f
+			;Whole word
+			movzx	eax,al
+			add		eax,lpCharTab
+			mov		al,[eax]
+			dec		al
+			je		Nx				;Not found yet
+			lea		eax,[edi-1]
+			.if sdword ptr eax>=hMem
+				movzx	eax,byte ptr [eax]
+				add		eax,lpCharTab
+				mov		al,[eax]
+				dec		al
+				je		Nx			;Not found yet
+			.endif
+		  @@:
+			mov		eax,edi			;Found, return pos in eax
+		.else
+			xor		eax,eax			;Not found
+		.endif
+	.endif
+	ret
+
+SearchMemDown endp
+
+SearchMemUp proc uses ebx ecx edx esi edi,hMem:DWORD,lpFind:DWORD,fMCase:DWORD,fWWord:DWORD,lpCharTab:DWORD
+
+	mov		cl,byte ptr fWWord
+	mov		ch,byte ptr fMCase
+	mov		edi,hMem
+	.while byte ptr [edi]
+		inc		edi
+	.endw
+	mov		esi,lpFind
+  Nx:
+	xor		edx,edx
+	dec		edi
+	dec		edx
+	.if edi<hMem
+		; Not found
+		xor		eax,eax
+		ret
+	.endif
+  Mr:
+	inc		edx
+	mov		al,[edi+edx]
+	mov		ah,[esi+edx]
+	.if ah && al
+		cmp		al,ah
+		je		Mr
+		.if !ch
+			;Try other case (upper/lower)
+			movzx	ebx,ah
+			add		ebx,lpCharTab
+			cmp		al,[ebx+256]
+			je		Mr
+		.endif
+		jmp		Nx					;Test next char
+	.else
+		.if !ah
+			or		cl,cl
+			je		@f				;Found
+			;Whole word
+			movzx	eax,al
+			add		eax,lpCharTab
+			mov		al,[eax]
+			dec		al
+			je		Nx				;Not found yet
+			lea		eax,[edi-1]
+			.if eax>=hMem
+				movzx	eax,byte ptr [eax]
+				add		eax,lpCharTab
+				mov		al,[eax]
+				dec		al
+				je		Nx			;Not found yet
+			.endif
+		  @@:
+			mov		eax,edi			;Found, return pos in eax
+		.else
+			xor		eax,eax			;Not found
+		.endif
+	.endif
+	ret
+
+SearchMemUp endp
+
+DestroyToEol proc lpMem:DWORD
+
+	mov		eax,lpMem
+	.while byte ptr [eax]!=0 && byte ptr [eax]!=0Dh
+		mov		byte ptr [eax],20h
+		inc		eax
+	.endw
+	ret
+
+DestroyToEol endp
+
+DestroyToEof proc lpMem:DWORD
+
+	mov		eax,lpMem
+	.while byte ptr [eax]
+		.if byte ptr [eax]!=0Dh && byte ptr [eax]!=0Ah
+			mov		byte ptr [eax],20h
+		.endif
+		inc		eax
+	.endw
+	ret
+
+DestroyToEof endp
+
+Compare proc uses esi,lpWord1:DWORD,lpWord2:DWORD,len:DWORD
+
+	mov		esi,lpWord1
+	mov		edx,lpWord2
+	mov		ecx,len
+	.while ecx
+		dec		ecx
+		mov		al,[esi+ecx]
+		mov		ah,[edx+ecx]
+		.if al>='A' && al<='Z'
+			or		al,20h
+		.endif
+		.if ah>='A' && ah<='Z'
+			or		ah,20h
+		.endif
+		sub		al,ah
+		.break .if !ZERO?
+	.endw
+	mov		ecx,len
+	movsx	eax,al
+	ret
+
+Compare endp
+
+;PrintWord proc lpWord,len
+;	
+;	pushad
+;	mov		edx,lpWord
+;	mov		ecx,len
+;	mov		al,[edx+ecx]
+;	mov		byte ptr [edx+ecx],0
+;	PrintStringByAddr edx
+;	mov		[edx+ecx],al
+;	popad
+;	ret
+;
+;PrintWord endp
+;

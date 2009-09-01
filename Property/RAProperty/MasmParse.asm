@@ -289,34 +289,6 @@ MIsIgnore proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
 
 MIsIgnore endp
 
-MIsWord proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
-
-	mov		esi,[ebx].RAPROPERTY.lpignore
-	.if esi
-	  @@:
-		mov		al,byte ptr nType
-		mov		ah,byte ptr len
-		.if ax==word ptr [esi]
-			invoke Compare,addr [esi+2],lpWord,len
-			.if eax
-				movzx	eax,byte ptr [esi+1]
-				lea		esi,[esi+eax+3]
-				jmp		@b
-			.endif
-			inc		eax
-			jmp		Ex
-		.elseif word ptr [esi]
-			movzx	eax,byte ptr [esi+1]
-			lea		esi,[esi+eax+3]
-			jmp		@b
-		.endif
-	.endif
-	xor		eax,eax
-  Ex:
-	ret
-
-MIsWord endp
-
 MFixUnknown proc uses ebx esi edi
 
 	mov		esi,[ebx].RAPROPERTY.lpmem
@@ -464,7 +436,7 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 			.endif
 		.endif
 	  Nxt:
-		invoke SkipLine,esi,addr npos
+		invoke MSkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
 	.endw
@@ -584,7 +556,7 @@ ConvDataType:
 
 ArraySize:
 	call	SkipSpc
-	push		ebx
+	push	ebx
 	mov		ebx,offset szname[16384]
 	mov		word ptr [ebx-1],0
 	mov		word ptr szname[8192-1],0
@@ -664,7 +636,7 @@ ArraySize:
 ParseMacro:
 	call	SaveName
   @@:
-	invoke GetWord,esi,addr npos
+	invoke MGetWord,esi,addr npos
 	mov		esi,edx
 	.if !ecx
 		.if byte ptr [esi]==',' || byte ptr [esi]=='('

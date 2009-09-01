@@ -38,16 +38,6 @@
 		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szCmntChar,addr [esi].DEFGEN.szCmntChar
 		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szString,addr [esi].DEFGEN.szString
 		invoke strcpy,addr [ebx].RAPROPERTY.defgen.szLineCont,addr [esi].DEFGEN.szLineCont
-;lea		eax,[ebx].RAPROPERTY.defgen.szCmntBlockSt
-;PrintStringByAddr eax
-;lea		eax,[ebx].RAPROPERTY.defgen.szCmntBlockEn
-;PrintStringByAddr eax
-;lea		eax,[ebx].RAPROPERTY.defgen.szCmntChar
-;PrintStringByAddr eax
-;lea		eax,[ebx].RAPROPERTY.defgen.szString
-;PrintStringByAddr eax
-;lea		eax,[ebx].RAPROPERTY.defgen.szLineCont
-;PrintStringByAddr eax
 		pop		esi
 		xor		eax,eax
 		ret
@@ -89,11 +79,13 @@
 	align 4 
 	_PRM_PARSEFILE:
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			; Masm
 			invoke MPreParse,lParam
 			invoke MParseFile,wParam,lParam
 		.else
-			invoke PreParse,lParam
-			invoke ParseFile,wParam,lParam
+			; FreeBASIC
+			invoke FBPreParse,lParam
+			invoke FBParseFile,wParam,lParam
 		.endif
 		xor		eax,eax
 		ret
@@ -187,7 +179,11 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTWORD:
-		invoke DestroyCommentsStrings,lParam
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke MDestroyCommentsStrings,lParam
+		.else
+			invoke FBDestroyCommentsStrings,lParam
+		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
 		push	esi
@@ -472,7 +468,11 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTSTART:
-		invoke DestroyCommentsStrings,lParam
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			invoke MDestroyCommentsStrings,lParam
+		.else
+			invoke FBDestroyCommentsStrings,lParam
+		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
 		push	esi
