@@ -42,6 +42,7 @@ PRM_FINDINSORTEDLIST	equ WM_USER+38		;wParam=nCount, lParam=lpMEMSEARCH
 PRM_ISTOOLTIPMESSAGE	equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 PRM_SETLANGUAGE			equ WM_USER+40		;wParam=nLanguage, lParam=0
 PRM_SETTOOLTIP			equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
+PRM_PREPARSE			equ WM_USER+42		;wParam=fKeepStrings, lParam=lpFileData
 
 ;Languages
 nFREEBASIC				equ 0
@@ -117,6 +118,8 @@ DEFTYPE_ENDCONSTRUCTOR	equ 25
 DEFTYPE_DESTRUCTOR		equ 26
 DEFTYPE_ENDDESTRUCTOR	equ 27
 DEFTYPE_LABEL			equ 28
+DEFTYPE_FUNCTION		equ 29
+DEFTYPE_ENDFUNCTION		equ 30
 
 DEFTYPE struct
 	nType		db ?

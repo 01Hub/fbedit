@@ -553,6 +553,130 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 
 End Function
 
+Function FileCheck(ByVal sPaths As String,ByVal sFiles As String) As HANDLE
+	Dim As Integer ipath,ifile,i
+	Dim As ZString*MAX_PATH szPath,szFile,szFileName
+	Dim hFile As HANDLE
+
+'TextToOutput(sPaths)
+'TextToOutput(sFiles)
+	ifile=1
+	While iFile
+		i=InStr(iFile,sFiles,";")
+		If i=0 Then
+			szFile=Mid(sFiles,iFile)
+		Else
+			szFile=Mid(sFiles,iFile,i-iFile)
+			i+=1
+		EndIf
+		iFile=i
+		ipath=1
+		While iPath
+			i=InStr(iPath,sPaths,";")
+			If i=0 Then
+				szPath=Mid(sPaths,iPath)
+			Else
+				szPath=Mid(sPaths,iPath,i-Ipath)
+				i+=1
+			EndIf
+			iPath=i
+			szFileName=szPath & szFile
+TextToOutput(szPath)
+TextToOutput(szFile)
+'TextToOutput(szFileName)
+			hFile=CreateFile(@szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+			If hFile<>INVALID_HANDLE_VALUE Then
+				Return hFile
+			EndIf
+		Wend
+	Wend
+	Return Cast(HANDLE,INVALID_HANDLE_VALUE)
+
+End Function
+
+Sub IsNewer(ByVal sFile As String,ByVal fInc As Integer,ByRef ft1 As FILETIME)
+	Dim hFile As HANDLE
+	Dim ft As FILETIME
+	Dim hMem As HGLOBAL
+	Dim hPtr As HGLOBAL
+	Dim i As Integer
+	Dim ms As MEMSEARCH
+	Dim sz As ZString*512
+
+	If fInc Then
+		hFile=FileCheck(ad.fbcPath & "/inc/;",sFile)
+	Else
+		hFile=FileCheck(ad.fbcPath & "/lib/win32/;",sFile & ";" & sFile & ".a;" & "lib" & sFile & ".a;" & "lib" & sFile)
+	EndIf
+	'sz=sFile
+	'hFile=CreateFile(sFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	'If hFile=INVALID_HANDLE_VALUE Then
+	'	If fInc Then
+	'		sz=ad.fbcPath & "/Inc/" & sFile
+	'		hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	'	Else
+	'		sz=ad.fbcPath & "/Lib/win32/" & sFile
+	'		hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	'		If hFile=INVALID_HANDLE_VALUE And UCase(Left(sFile,3))<>"LIB" Then
+	'			sz=ad.fbcPath & "/Lib/win32/lib" & sFile
+	'			hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
+	'		EndIf
+	'	EndIf
+	'EndIf
+	If hFile<>INVALID_HANDLE_VALUE Then
+		GetFileTime(hFile,NULL,NULL,@ft)
+		If CompareFileTime(@ft,@ft1)>0 Then
+			CloseHandle(hFile)
+			ft1=ft
+		ElseIf fInc Then
+			' Check #Include and #Inclib
+			i=GetFileSize(hFile,NULL)
+			hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,i+1)
+			ReadFile(hFile,hMem,i,@i,NULL)
+			CloseHandle(hFile)
+			SendMessage(ah.hpr,PRM_PREPARSE,TRUE,Cast(LPARAM,hMem))
+			hPtr=hMem
+			While hPtr
+				ms.lpMem=hPtr
+				ms.lpFind=StrPtr("#include")
+				ms.lpCharTab=ad.lpCharTab
+				' Memory search down is faster
+				ms.fr=FR_WHOLEWORD Or FR_DOWN
+				hPtr=Cast(HGLOBAL,SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(LPARAM,@ms)))
+				If hPtr Then
+					lstrcpyn(@sz,hPtr,500)
+					i=InStr(sz,Chr(34))
+					sz=Mid(sz,i+1)
+					i=InStr(sz,Chr(34))
+					sz=Left(sz,i-1)
+					IsNewer(sz,TRUE,ft1)
+					hPtr+=1
+				EndIf
+			Wend
+			hPtr=hMem
+			While hPtr
+				ms.lpMem=hPtr
+				ms.lpFind=StrPtr("#inclib")
+				ms.lpCharTab=ad.lpCharTab
+				' Memory search down is faster
+				ms.fr=FR_WHOLEWORD Or FR_DOWN
+				hPtr=Cast(HGLOBAL,SendMessage(ah.hpr,PRM_MEMSEARCH,0,Cast(LPARAM,@ms)))
+				If hPtr Then
+					lstrcpyn(@sz,hPtr,500)
+					i=InStr(sz,Chr(34))
+					sz=Mid(sz,i+1)
+					i=InStr(sz,Chr(34))
+					sz=Left(sz,i-1)
+					IsNewer(sz,FALSE,ft1)
+					hPtr+=1
+				EndIf
+			Wend
+			GlobalFree(hMem)
+		EndIf
+	EndIf
+	
+End Sub
+
 Function CompileModules(ByVal sMake As String) As Integer
 	Dim bm As Integer
 	Dim id As Integer
@@ -589,9 +713,8 @@ Function CompileModules(ByVal sMake As String) As Integer
 						Else 
 							GetFileTime(hFile,NULL,NULL,@ft2)
 							CloseHandle(hFile)
-							hFile=CreateFile(sFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-							GetFileTime(hFile,NULL,NULL,@ft1)
-							CloseHandle(hFile)
+							ft1=ft2
+							IsNewer(sFile,TRUE,ft1)
 							If CompareFileTime(@ft1,@ft2)>0 Then
 								fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
 							Else

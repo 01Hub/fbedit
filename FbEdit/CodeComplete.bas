@@ -364,7 +364,7 @@ Sub UpdateStructList(ByVal lpProc As ZString Ptr)
 			EndIf
 		EndIf
 		If lpProc=0 Then
-			lret=FindExact(StrPtr("d"),p,FALSE)
+			lret=FindExact(StrPtr("df"),p,FALSE)
 			If lret Then
 				lret=lret+Len(*lret)+1
 				'Remove namespace from type
@@ -677,7 +677,7 @@ Sub UpdateIncludeList()
 End Sub
 
 Sub UpdateInclibList()
-	Dim As Integer sFind,nType,nLen
+	Dim As Integer sFind,nType,nLen,i
 	Dim As ZString*260 buffer,txt
 	Dim As ZString Ptr p
 	
@@ -689,7 +689,11 @@ Sub UpdateInclibList()
 	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
 		If Right(buffer,2)=".a" Then
-			lstrcpy(ccpos,@buffer+2)
+			buffer=Mid(buffer,3)
+			buffer=Left(buffer,Len(buffer)-2)
+			i=InStr(buffer,"/")
+			buffer=Mid(buffer,i+1)
+			lstrcpy(ccpos,@buffer)
 			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
 			nLen+=Len(*ccpos)+1
 			ccpos=ccpos+Len(*ccpos)+1

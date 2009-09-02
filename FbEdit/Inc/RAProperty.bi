@@ -42,6 +42,7 @@
 #Define PRM_ISTOOLTIPMESSAGE	WM_USER+39		' wParam=lpMESSAGE, lParam=lpTOOLTIP
 #Define PRM_SETLANGUAGE			WM_USER+40		' wParam=nLanguage, lParam=0
 #Define PRM_SETTOOLTIP			WM_USER+41		' wParam=n (1-5), lParam=lpszText
+#Define PRM_PREPARSE				WM_USER+42		' wParam=fKeepStrings, lParam=lpFileData
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR	1
@@ -90,6 +91,9 @@ End Type
 #Define DEFTYPE_ENDCONSTRUCTOR	25
 #Define DEFTYPE_DESTRUCTOR			26
 #Define DEFTYPE_ENDDESTRUCTOR		27
+#Define DEFTYPE_LABEL				28
+#Define DEFTYPE_FUNCTION			29
+#Define DEFTYPE_ENDFUNCTION		30
 
 Type DEFTYPE
 	nType				As UByte

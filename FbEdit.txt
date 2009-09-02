@@ -2,6 +2,7 @@ Whats new:
 ----------
 1.0.7.1c
 o Fixed bug where duplicate resource names could be exported.
+o Code complete on functions that return a type or a pointer to a type.
 1.0.7.1b
 o Improved code complete on #Include and #Inclib
 o The resource editor work area scrollbars are now hidden when not needed.
@@ -10,6 +11,8 @@ o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could lea
 o Fixed bug where changing the manifest file name did not work.
 o Fixed a bug where the resource editor properties combo would be set to '#define' when names
   are exported.
+o Compile modules only if newer now checks included header files recursively.
+  Included libraries are also checked.
 1.0.7.1
 o 4quiles made a nice change to Project browser.
 o FbEdit now jumps to first compile error.

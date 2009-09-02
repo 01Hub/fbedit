@@ -84,7 +84,7 @@
 			invoke MParseFile,wParam,lParam
 		.else
 			; FreeBASIC
-			invoke FBPreParse,lParam
+			invoke FBPreParse,lParam,FALSE
 			invoke FBParseFile,wParam,lParam
 		.endif
 		xor		eax,eax
@@ -182,7 +182,7 @@
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
 			invoke MDestroyCommentsStrings,lParam
 		.else
-			invoke FBDestroyCommentsStrings,lParam
+			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -471,7 +471,7 @@
 		.if [ebx].RAPROPERTY.nlanguage==nMASM
 			invoke MDestroyCommentsStrings,lParam
 		.else
-			invoke FBDestroyCommentsStrings,lParam
+			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -575,6 +575,17 @@
 			invoke strcpyn,eax,lParam,64
 		.endif
 		ret
+	align 4
+	_PRM_PREPARSE:
+		.if [ebx].RAPROPERTY.nlanguage==nMASM
+			; Masm
+			invoke MPreParse,lParam
+		.else
+			; FreeBASIC
+			invoke FBPreParse,lParam,wParam
+		.endif
+		xor		eax,eax
+		ret
 
 .data
 align 4
@@ -620,7 +631,8 @@ _RAPROPERTY_BASE \
 	dd _PRM_FINDINSORTEDLIST	;equ WM_USER+38		;wParam=0, lParam=lpWord
 	dd _PRM_ISTOOLTIPMESSAGE	;equ WM_USER+39		;wParam=lpMESSAGE, lParam=lpTOOLTIP
 	dd _PRM_SETLANGUAGE			;equ WM_USER+40		;wParam=nLanguage, lParam=0
-	dd _PRM_SETTOOLTIP			;equ WM_USER+41
+	dd _PRM_SETTOOLTIP			;equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
+	dd _PRM_PREPARSE			;equ WM_USER+42		;wParam=fKeepStrings, lParam=lpFileData
 
 .code
 align 4

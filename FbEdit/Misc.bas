@@ -804,6 +804,11 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 
 	Select Case uMsg
 		Case WM_CHAR
+			If wParam=VK_ESCAPE Then
+				ShowWindow(ah.htt,SW_HIDE)
+				HideList()
+				Return 0
+			EndIf
 			If SendMessage(hPar,REM_GETMODE,0,0)=0 Then
 				' Mode Normal
 				hPar=GetParent(hWin)

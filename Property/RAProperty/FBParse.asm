@@ -1,7 +1,7 @@
 
 .code
 
-FBDestroyString proc lpMem:DWORD
+FBDestroyString proc lpMem:DWORD,fKeepStrings:DWORD
 
 	mov		eax,lpMem
 	movzx	ecx,byte ptr [eax]
@@ -16,14 +16,16 @@ FBDestroyString proc lpMem:DWORD
 		.else
 			inc		eax
 			.break .if dl==cl
-			mov		byte ptr [eax-1],20h
+			.if !fKeepStrings
+				mov		byte ptr [eax-1],20h
+			.endif
 		.endif
 	.endw
 	ret
 
 FBDestroyString endp
 
-FBDestroyCmntBlock proc uses esi,lpMem:DWORD
+FBDestroyCmntBlock proc uses esi,lpMem:DWORD,fKeepStrings:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	fbyte:DWORD
 
@@ -45,7 +47,7 @@ FBDestroyCmntBlock proc uses esi,lpMem:DWORD
 		.if word ptr buffer=="'/"
 			.while byte ptr [esi]
 				.if byte ptr [esi]=='"'
-					invoke FBDestroyString,esi
+					invoke FBDestroyString,esi,fKeepStrings
 					mov		esi,eax
 				.elseif byte ptr [esi]=="'"
 					invoke DestroyToEol,esi
@@ -86,7 +88,7 @@ FBDestroyCmntBlock proc uses esi,lpMem:DWORD
 				.while eax<esi
 					.if byte ptr [eax]==cl || byte ptr [eax]==ch
 						;String
-						invoke FBDestroyString,eax
+						invoke FBDestroyString,eax,fKeepStrings
 						mov		esi,eax
 						jmp		@b
 					.elseif (byte ptr [eax]==dl && dh==0) || word ptr [eax]==dx
@@ -143,7 +145,7 @@ FBDestroyCmntBlock proc uses esi,lpMem:DWORD
 
 FBDestroyCmntBlock endp
 
-FBDestroyCommentsStrings proc uses esi,lpMem:DWORD
+FBDestroyCommentsStrings proc uses esi,lpMem:DWORD,fKeepStrings:DWORD
 
 	mov		esi,lpMem
 	mov		ecx,dword ptr [ebx].RAPROPERTY.defgen.szCmntChar
@@ -158,7 +160,7 @@ FBDestroyCommentsStrings proc uses esi,lpMem:DWORD
 		.elseif byte ptr [esi]==dl || byte ptr [esi]==dh
 			push	ecx
 			push	edx
-			invoke FBDestroyString,esi
+			invoke FBDestroyString,esi,fKeepStrings
 			mov		esi,eax
 			pop		edx
 			pop		ecx
@@ -170,10 +172,10 @@ FBDestroyCommentsStrings proc uses esi,lpMem:DWORD
 
 FBDestroyCommentsStrings endp
 
-FBPreParse proc uses esi,lpMem:DWORD
+FBPreParse proc uses esi,lpMem:DWORD,fKeepStrings:DWORD
 
-	invoke FBDestroyCmntBlock,lpMem
-	invoke FBDestroyCommentsStrings,lpMem
+	invoke FBDestroyCmntBlock,lpMem,fKeepStrings
+	invoke FBDestroyCommentsStrings,lpMem,fKeepStrings
 	ret
 
 FBPreParse endp
@@ -513,6 +515,18 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
+					.endif
+				.elseif edx==DEFTYPE_FUNCTION
+					mov		endtype,DEFTYPE_ENDFUNCTION
+					call	ParseFunction
+					.if eax
+						mov		edx,lpdef
+						movzx	edx,[edx].DEFTYPE.Def
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
+						invoke strlen,addr szname
+						invoke strcpy,addr szname[eax+1],edi
+						mov		edx,'f'
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 					.endif
 				.elseif edx==DEFTYPE_LABEL
 					call	ParseLabel
@@ -877,87 +891,87 @@ ParseMacro:
 	xor		eax,eax
 	retn
 
-ArraySize:
-	call	SkipSpc
-	push		ebx
-	mov		ebx,offset szname[16384]
-	mov		word ptr [ebx-1],0
-	mov		word ptr szname[8192-1],0
-	mov		narray,0
-	.while TRUE
-		mov		al,[esi]
-		.if al==VK_TAB
-			mov		al,' '
-		.elseif al=='"' || al=="'"
-			inc		esi
-			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
-				inc		esi
-				inc		narray
-			.endw
-			.if al==[esi]
-				inc		esi
-			.endif
-			mov		al,[esi]
-		.elseif al=='<'
-			call	SkipBrace
-			inc		narray
-		.endif
-		mov		ah,[ebx-1]
-		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
-			.if ah==' ' || (al==',' && ah==',')
-				dec		ebx
-			.endif
-		.endif
-		.if al==' '
-			.if ah=='+' || ah=='-' || ah=='*' || ah=='/' || ah=='(' || ah==')' || ah==','
-				mov		al,ah
-				dec		ebx
-			.endif
-		.endif
-		.if al=='d' || al=='D'
-			.if byte ptr [esi+1]=='u' || byte ptr [esi+1]=='U'
-				.if byte ptr [esi+2]=='p' || byte ptr [esi+2]=='P'
-					.if byte ptr [esi+3]==' ' || byte ptr [esi+3]==VK_TAB || byte ptr [esi+3]=='('
-						add		esi,3
-						call	SkipSpc
-						.if byte ptr [esi]=='('
-							call	SkipBrace
-						.endif
-						call	SkipSpc
-						.if byte ptr szname[8192]
-							invoke strcat,offset szname[8192],offset szAdd
-						.endif
-						mov		byte ptr [ebx-1],0
-						invoke strcat,offset szname[8192],offset szname[16384]
-						mov		al,[esi]
-					.endif
-				.endif
-			.endif
-		.endif
-		.if al==',' || al==VK_RETURN || !al
-			.if byte ptr [ebx-1]
-				inc		narray
-			.endif
-			mov		ebx,offset szname[16384]
-			mov		byte ptr [ebx],0
-		  .break .if al==VK_RETURN || !al
-		.else
-			mov		[ebx],al
-			inc		ebx
-		.endif
-		inc		esi
-	.endw
-	mov		byte ptr [ebx],0
-	pop		ebx
-	.if narray>1 || (byte ptr szname[8192] && narray)
-		.if byte ptr szname[8192]
-			invoke strcat,addr szname[8192],addr szAdd
-		.endif
-		invoke DwToAscii,narray,addr szname[16384+1024]
-		invoke strcat,addr szname[8192],addr szname[16384+1024]
-	.endif
-	retn
-
+;ArraySize:
+;	call	SkipSpc
+;	push		ebx
+;	mov		ebx,offset szname[16384]
+;	mov		word ptr [ebx-1],0
+;	mov		word ptr szname[8192-1],0
+;	mov		narray,0
+;	.while TRUE
+;		mov		al,[esi]
+;		.if al==VK_TAB
+;			mov		al,' '
+;		.elseif al=='"' || al=="'"
+;			inc		esi
+;			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+;				inc		esi
+;				inc		narray
+;			.endw
+;			.if al==[esi]
+;				inc		esi
+;			.endif
+;			mov		al,[esi]
+;		.elseif al=='<'
+;			call	SkipBrace
+;			inc		narray
+;		.endif
+;		mov		ah,[ebx-1]
+;		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
+;			.if ah==' ' || (al==',' && ah==',')
+;				dec		ebx
+;			.endif
+;		.endif
+;		.if al==' '
+;			.if ah=='+' || ah=='-' || ah=='*' || ah=='/' || ah=='(' || ah==')' || ah==','
+;				mov		al,ah
+;				dec		ebx
+;			.endif
+;		.endif
+;		.if al=='d' || al=='D'
+;			.if byte ptr [esi+1]=='u' || byte ptr [esi+1]=='U'
+;				.if byte ptr [esi+2]=='p' || byte ptr [esi+2]=='P'
+;					.if byte ptr [esi+3]==' ' || byte ptr [esi+3]==VK_TAB || byte ptr [esi+3]=='('
+;						add		esi,3
+;						call	SkipSpc
+;						.if byte ptr [esi]=='('
+;							call	SkipBrace
+;						.endif
+;						call	SkipSpc
+;						.if byte ptr szname[8192]
+;							invoke strcat,offset szname[8192],offset szAdd
+;						.endif
+;						mov		byte ptr [ebx-1],0
+;						invoke strcat,offset szname[8192],offset szname[16384]
+;						mov		al,[esi]
+;					.endif
+;				.endif
+;			.endif
+;		.endif
+;		.if al==',' || al==VK_RETURN || !al
+;			.if byte ptr [ebx-1]
+;				inc		narray
+;			.endif
+;			mov		ebx,offset szname[16384]
+;			mov		byte ptr [ebx],0
+;		  .break .if al==VK_RETURN || !al
+;		.else
+;			mov		[ebx],al
+;			inc		ebx
+;		.endif
+;		inc		esi
+;	.endw
+;	mov		byte ptr [ebx],0
+;	pop		ebx
+;	.if narray>1 || (byte ptr szname[8192] && narray)
+;		.if byte ptr szname[8192]
+;			invoke strcat,addr szname[8192],addr szAdd
+;		.endif
+;		invoke DwToAscii,narray,addr szname[16384+1024]
+;		invoke strcat,addr szname[8192],addr szname[16384+1024]
+;	.endif
+;	retn
+;
 ParseConstructor:
 	call	AddNamespace
 	call	SaveName
@@ -1023,9 +1037,25 @@ ParseProcNoNamespace:
 	.if fdim
 		xor		eax,eax
 		inc		eax
-		retn
+	.else
+		call	SaveLocal
 	.endif
-	call	SaveLocal
+	retn
+
+ParseFunction:
+	call	AddNamespace
+ParseFunctionNoNamespace:
+	call	SaveName
+	call	SaveParam
+	push	edi
+	call	SaveRetType
+	.if fdim
+		xor		eax,eax
+		inc		eax
+	.else
+		call	SaveLocal
+	.endif
+	pop		edi
 	retn
 
 ParseLabel:
@@ -1263,45 +1293,14 @@ SaveLocal:
 	xor		eax,eax
 	retn
 
-;ConvDataType:
-;	push	esi
-;	mov		esi,offset szMasmDataConv
-;	.if lendatatype==2
-;		.while byte ptr [esi]
-;			invoke strcmpin,esi,lpdatatype,2
-;			.if !eax
-;				lea		esi,[esi+3]
-;				mov		lpdatatype,esi
-;				invoke strlen,esi
-;				mov		lendatatype,eax
-;				jmp		ExConvDataType
-;			.endif
-;			invoke strlen,esi
-;			lea		esi,[esi+eax+1]
-;			invoke strlen,esi
-;			lea		esi,[esi+eax+1]
-;		.endw
-;	.elseif lendatatype==4 || lendatatype==5 || lendatatype==6
-;		.while byte ptr [esi]
-;			lea		esi,[esi+3]
-;			invoke strcmpin,esi,lpdatatype,lendatatype
-;			.if !eax
-;				mov		lpdatatype,esi
-;				jmp		ExConvDataType
-;			.endif
-;			invoke strlen,esi
-;			lea		esi,[esi+eax+1]
-;		.endw
-;	.endif
-;  ExConvDataType:
-;	pop		esi
-;	retn
-
 ParseData:
 	call	AddNamespace
 	call	SaveName
 ParseData1:
-	call	SkipBrace
+	call	SkipSpc
+	.if byte ptr [esi]=='('
+		call	SkipBrace
+	.endif
 	invoke FBGetWord,esi,addr npos
 	mov		esi,edx
 	invoke FBIsIgnore,IGNORE_DATATYPEINIT,ecx,esi
@@ -1324,26 +1323,15 @@ ParseData1:
 		.endif
 	.endif
 	.if lpdatatype
-		mov		byte ptr [edi-1],':'
 		mov		eax,lendatatype
 		inc		eax
 		invoke strcpyn,edi,lpdatatype,eax
 		add		edi,lendatatype
-		mov		byte ptr [edi],0
-		inc		edi
-		mov		eax,lendatatype
-		inc		eax
-		invoke strcpyn,edi,lpdatatype,eax
-		add		edi,lendatatype
-		.if fPtr
-			push	fPtr
-		  @@:
+		.while fPtr
 			invoke strcpyn,edi,addr szPtr,5
 			lea		edi,[edi+4]
 			dec		fPtr
-			jne		@b
-			pop		fPtr
-		.endif
+		.endw
 	.else
 		invoke strcpy,edi,addr szInteger
 		lea		edi,[edi+sizeof szInteger]
@@ -1438,14 +1426,11 @@ ParseParamData1:
 		invoke strcpy,edi,addr szInteger
 		lea		edi,[edi+sizeof szInteger-1]
 	.endif
-	.if fPtr
-	  @@:
+	.while fPtr
 		invoke strcpyn,edi,addr szPtr,5
 		lea		edi,[edi+4]
 		dec		fPtr
-		jne		@b
-	.endif
-	mov		fPtr,0
+	.endw
 	mov		byte ptr [edi],0
 	xor		eax,eax
 	inc		eax
@@ -1666,13 +1651,11 @@ ParseStruct:
 					inc		eax
 					invoke strcpyn,edi,lpword2,eax
 					add		edi,len2
-					.if fPtr
-					  @@:
+					.while fPtr
 						invoke strcpyn,edi,addr szPtr,5
 						lea		edi,[edi+4]
 						dec		fPtr
-						jne		@b
-					.endif
+					.endw
 					invoke FBIsFunction,lpword2,len2
 					.if !eax
 						inc		fdim

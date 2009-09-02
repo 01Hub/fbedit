@@ -461,7 +461,7 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		invoke MPreParse,lParam
 	.else
 		; FreeBASIC
-		invoke FBPreParse,lParam
+		invoke FBPreParse,lParam,FALSE
 	.endif
 	xor		edi,edi
 	mov		esi,[ebx].RAPROPERTY.lpchartab
@@ -895,7 +895,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_SETTOOLTIP
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_PREPARSE
 		push		eax
 		invoke GetWindowLong,hWin,0
 		.if eax
