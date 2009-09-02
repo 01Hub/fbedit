@@ -558,8 +558,6 @@ Function FileCheck(ByVal sPaths As String,ByVal sFiles As String) As HANDLE
 	Dim As ZString*MAX_PATH szPath,szFile,szFileName
 	Dim hFile As HANDLE
 
-'TextToOutput(sPaths)
-'TextToOutput(sFiles)
 	ifile=1
 	While iFile
 		i=InStr(iFile,sFiles,";")
@@ -581,11 +579,9 @@ Function FileCheck(ByVal sPaths As String,ByVal sFiles As String) As HANDLE
 			EndIf
 			iPath=i
 			szFileName=szPath & szFile
-TextToOutput(szPath)
-TextToOutput(szFile)
-'TextToOutput(szFileName)
 			hFile=CreateFile(@szFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
 			If hFile<>INVALID_HANDLE_VALUE Then
+				TextToOutput("Checking: " & szFileName)
 				Return hFile
 			EndIf
 		Wend
@@ -598,31 +594,17 @@ Sub IsNewer(ByVal sFile As String,ByVal fInc As Integer,ByRef ft1 As FILETIME)
 	Dim hFile As HANDLE
 	Dim ft As FILETIME
 	Dim hMem As HGLOBAL
+	Dim hMem1 As HGLOBAL
 	Dim hPtr As HGLOBAL
-	Dim i As Integer
+	Dim As Integer i,j
 	Dim ms As MEMSEARCH
 	Dim sz As ZString*512
 
 	If fInc Then
-		hFile=FileCheck(ad.fbcPath & "/inc/;",sFile)
+		hFile=FileCheck(";" & ad.fbcPath & "/inc/",sFile)
 	Else
-		hFile=FileCheck(ad.fbcPath & "/lib/win32/;",sFile & ";" & sFile & ".a;" & "lib" & sFile & ".a;" & "lib" & sFile)
+		hFile=FileCheck(";" & ad.fbcPath & "/lib/win32/",sFile & ";" & sFile & ".a;" & sFile & ".dll.a;" & "lib" & sFile & ";lib" & sFile & ".a;" & "lib" & sFile & ".dll.a")
 	EndIf
-	'sz=sFile
-	'hFile=CreateFile(sFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-	'If hFile=INVALID_HANDLE_VALUE Then
-	'	If fInc Then
-	'		sz=ad.fbcPath & "/Inc/" & sFile
-	'		hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-	'	Else
-	'		sz=ad.fbcPath & "/Lib/win32/" & sFile
-	'		hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-	'		If hFile=INVALID_HANDLE_VALUE And UCase(Left(sFile,3))<>"LIB" Then
-	'			sz=ad.fbcPath & "/Lib/win32/lib" & sFile
-	'			hFile=CreateFile(@sz,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0)
-	'		EndIf
-	'	EndIf
-	'EndIf
 	If hFile<>INVALID_HANDLE_VALUE Then
 		GetFileTime(hFile,NULL,NULL,@ft)
 		If CompareFileTime(@ft,@ft1)>0 Then
@@ -631,9 +613,16 @@ Sub IsNewer(ByVal sFile As String,ByVal fInc As Integer,ByRef ft1 As FILETIME)
 		ElseIf fInc Then
 			' Check #Include and #Inclib
 			i=GetFileSize(hFile,NULL)
-			hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,i+1)
-			ReadFile(hFile,hMem,i,@i,NULL)
+			hMem=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,i+2)
+			ReadFile(hFile,hMem,i,@j,NULL)
 			CloseHandle(hFile)
+			If Peek(WORD,hMem)=&HFEFF Then
+				' Unicode
+				hMem1=MyGlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,i+2)
+				WideCharToMultiByte(CP_ACP,0,hMem,-1,hMem1,i,NULL,NULL)
+				GlobalFree(hMem)
+				hMem=hMem1
+			EndIf
 			SendMessage(ah.hpr,PRM_PREPARSE,TRUE,Cast(LPARAM,hMem))
 			hPtr=hMem
 			While hPtr
@@ -680,6 +669,7 @@ End Sub
 Function CompileModules(ByVal sMake As String) As Integer
 	Dim bm As Integer
 	Dim id As Integer
+	Dim nLine As Integer
 	Dim nMiss As Integer
 	Dim sFile As String
 	Dim sOFile As String
@@ -718,7 +708,9 @@ Function CompileModules(ByVal sMake As String) As Integer
 							If CompareFileTime(@ft1,@ft2)>0 Then
 								fBuildErr=Make(sMake,sFile,TRUE,TRUE,FALSE)
 							Else
-								TextToOutput(sOFile & " is newer than " & sFile)
+								nLine=SendMessage(ah.hout,EM_GETLINECOUNT,0,0)
+								TextToOutput(sOFile & " is newer than any of the checked files." & CR)
+								SendMessage(ah.hout,REM_SETBOOKMARK,nLine,8)
 							EndIf
 						EndIf
 					Else

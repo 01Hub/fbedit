@@ -7,14 +7,12 @@
 ** Fixed: The resource editor displays scrollbars around all its child dialogs which let you scroll them away, which is senseless. 
 
 ** Bug in FbEdit
+** Fixed: Deleting custom resource types doesn't work. 
+** Fixed: Clearing the "Filter" field of custom resource types doesn't work, neither does adding one with a clear "Filter" field. 
+** Fixed: When pressing backspace while typing a #include file name, the auto-completion box disappears and doesn't reappear until deleting and re-typing the first doublequote. 
+
 The resource editor sometimes destroys menus when adding/deleting items in 
 the middle of it. I can't tell you the cause exactly. 
-
-** Fixed:Deleting custom resource types doesn't work. 
-** Fixed:Clearing the "Filter" field of custom resource types doesn't work, neither does adding one with a clear "Filter" field. 
-
-When pressing backspace while typing a #include file name, the auto-completion box disappears 
-and doesn't reappear until deleting and re-typing the first doublequote. 
 
 The auto-complete box doesn't handle With blocks inside Namespaces correctly. 
 

@@ -869,9 +869,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 												trng.chrg.cpMin=SendMessage(hPar,EM_LINEINDEX,SendMessage(hPar,EM_EXLINEFROMCHAR,0,trng.chrg.cpMax),0)
 												trng.chrg.cpMax-=1
 												SendMessage(hPar,EM_GETTEXTRANGE,0,Cast(LPARAM,@trng))
-												lret=InStr(buff,Chr(34))
-												lret=InStr(lret+1,buff,Chr(34))
-												If InStr(UCase(buff),"#INCLUDE")<>0 And lret=0 Then
+												lp=InStr(buff,Chr(34))
+												lp=InStr(lp+1,buff,Chr(34))
+												If InStr(UCase(buff),"#INCLUDE")<>0 And lp=0 Then
 													buff=Mid(buff,InStr(buff,Chr(34))+1)
 													'reset last dir
 													dirlist=""
@@ -881,13 +881,13 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 													EndIf
 													UpdateIncludeList()
 													Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
-												ElseIf InStr(UCase(buff),"#INCLIB")<>0 And lret=0 Then
+												ElseIf InStr(UCase(buff),"#INCLIB")<>0 And lp=0 Then
 													buff=Mid(buff,InStr(buff,Chr(34))+1)
 													'reset last dir
 													dirlist=""
-													BuildDirList(ad.fbcPath & "\Lib",NULL,6)
+													BuildDirList(ad.fbcPath & "\Lib",NULL,8)
 													If fProject Then
-														BuildDirList(ad.ProjectPath,NULL,7)
+														BuildDirList(ad.ProjectPath,NULL,9)
 													EndIf
 													UpdateInclibList()
 													Return CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
@@ -903,10 +903,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 									CodeComplete(hPar)
 									Return 0
 								EndIf
-								If wParam=VK_ESCAPE Then
-									HideList()
-									Return 0
-								EndIf
+								'If wParam=VK_ESCAPE Then
+								'	HideList()
+								'	Return 0
+								'EndIf
 								lret=CallWindowProc(lpOldEditProc,hWin,uMsg,wParam,lParam)
 								If wParam=34 Then
 									HideList()
@@ -1103,9 +1103,9 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 					ElseIf wParam=34 And edtopt.autoinclude Then
 						GetLine(hPar,@s)
 						s=UCase(s)
-						lret=InStr(s,Chr(34))
-						lret=InStr(lret+1,s,Chr(34))
-						If InStr(s,"#INCLUDE")<>0 And lret=0 Then
+						lp=InStr(s,Chr(34))
+						lp=InStr(lp+1,s,Chr(34))
+						If InStr(s,"#INCLUDE")<>0 And lp=0 Then
 							'reset last dir
 							dirlist=""
 							BuildDirList(ad.fbcPath & "\Inc",NULL,6)
@@ -1113,12 +1113,12 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 								BuildDirList(ad.ProjectPath,NULL,7)
 							EndIf
 							UpdateIncludeList()
-						ElseIf InStr(s,"#INCLIB")<>0 And lret=0 Then
+						ElseIf InStr(s,"#INCLIB")<>0 And lp=0 Then
 							'reset last dir
 							dirlist=""
-							BuildDirList(ad.fbcPath & "\Lib",NULL,6)
+							BuildDirList(ad.fbcPath & "\Lib",NULL,8+6)
 							If fProject Then
-								BuildDirList(ad.ProjectPath,NULL,7)
+								BuildDirList(ad.ProjectPath,NULL,8+7)
 							EndIf
 							UpdateInclibList()
 						ElseIf IsWindowVisible(ah.hcc) Then
