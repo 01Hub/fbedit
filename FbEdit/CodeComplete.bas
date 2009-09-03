@@ -620,14 +620,18 @@ Sub BuildDirList(ByVal lpDir As ZString Ptr,ByVal lpSub As ZString Ptr,ByVal nTy
 					Else
 						lstrcpy(@s,@wfd.cFileName)
 					EndIf
+					dirlist+=Str(nType)+","+LCase(s)+"#"
 				Else
 					lstrcpy(@s,@wfd.cFileName)
-					l=InStr(s,".")
-					'If l Then
-					'	s=Left(s,l-1)
-					'EndIf
+					s=LCase(s)
+					If Right(s,2)=".a" Then
+						s=Left(s,Len(s)-2)
+						If Right(s,4)=".dll" Then
+							s=Left(s,Len(s)-4)
+						EndIf
+						dirlist+=Str(nType And 7)+","+s+"#"
+					EndIf
 				EndIf
-				dirlist+=Str(nType And 7)+","+LCase(s)+"#"
 			EndIf
 			If FindNextFile(hwfd,@wfd)=FALSE Then
 				Exit While
@@ -696,19 +700,11 @@ Sub UpdateInclibList()
 	sFind=InStr(dirlist,txt)
 	While sFind<>0 And nLen<65450
 		nType=ExtractDirFile(p+sFind-2,@buffer)
-		If Right(buffer,2)=".a" Then
-			buffer=Mid(buffer,3)
-			'buffer=Left(buffer,Len(buffer)-2)
-			'If Right(buffer,4)=".dll" Then
-			'	buffer=Left(buffer,Len(buffer)-4)
-			'EndIf
-			'i=InStr(buffer,"/")
-			'buffer=Mid(buffer,i+1)
-			lstrcpy(ccpos,@buffer)
-			SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
-			nLen+=Len(*ccpos)+1
-			ccpos=ccpos+Len(*ccpos)+1
-		EndIf
+		buffer=Mid(buffer,3)
+		lstrcpy(ccpos,@buffer)
+		SendMessage(ah.hcc,CCM_ADDITEM,nType,Cast(LPARAM,ccpos))
+		nLen+=Len(*ccpos)+1
+		ccpos=ccpos+Len(*ccpos)+1
 		sFind=InStr(sFind+1,dirlist,txt)
 		fincliblist=TRUE
 	Wend

@@ -509,6 +509,10 @@ Function Make(ByVal sMakeOpt As String,ByVal sFile As String,ByVal fModule As Bo
 				SendMessage(ah.hout,REM_SETBOOKMARK,nLine,7)
 				SendMessage(ah.hout,REM_SETBMID,nLine,0)
 				nErr=nErr+1
+			ElseIf InStr(buffer,"cannot find") Then
+				SendMessage(ah.hout,REM_SETBOOKMARK,nLine,7)
+				SendMessage(ah.hout,REM_SETBMID,nLine,0)
+				nErr=nErr+1
 			EndIf
 			nLine=nLine+1
 		Wend
