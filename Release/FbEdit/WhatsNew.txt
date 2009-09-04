@@ -2,8 +2,10 @@ Whats new:
 ----------
 1.0.7.1c
 o Added code complete on functions that returns a type or a pointer to a type.
+o Added support for nested namespaces.
+o Improved codecomplete on namespaces and with blocks.
 o Compile modules only if newer now checks included header files recursively.
-  Included libraries are also checked.
+  Included libraries are also checked (not 100% reliable).
 o Fixed bug where duplicate resource names could be exported.
 O Fixed code complete bugs on #Include and #Inclib
 1.0.7.1b

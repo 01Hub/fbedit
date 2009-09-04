@@ -290,6 +290,15 @@ Sub CaseConvertWord(ByVal hWin As HWND,ByVal cp As Integer)
 				EndIf
 				SendMessage(hWin,REM_CASEWORD,cp,Cast(LPARAM,@buff))
 				SendMessage(hWin,REM_INVALIDATELINE,SendMessage(hWin,EM_LINEFROMCHAR,cp,0),0)
+			ElseIf Right(buff,1)="." Then
+				cp-=1
+				buff=Left(buff,Len(buff)-1)
+				lret=FindExact(StrPtr("n"),@buff,FALSE)
+				If lret Then
+					lstrcpy(@buff,lret)
+					SendMessage(hWin,REM_CASEWORD,cp,Cast(LPARAM,@buff))
+					SendMessage(hWin,REM_INVALIDATELINE,SendMessage(hWin,EM_LINEFROMCHAR,cp,0),0)
+				EndIf
 			EndIf
 		EndIf
 		SendMessage(hWin,REM_SETCHARTAB,Asc("."),CT_HICHAR)

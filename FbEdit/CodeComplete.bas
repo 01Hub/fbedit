@@ -238,277 +238,456 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 
 End Sub
 
-'Sub StructList(ByVal sStruct As String,ByVal sItem As String)
-'	Dim lpsz As ZString Ptr
-'	
-'	lpsz=FindExact(StrPtr("df"),sStruct,FALSE)
-'	If lpsz Then
-'		lpsz=lpsz+Len(*lpsz)+1
-'		lpsz=FindExact(StrPtr("Ss"),lpsz,TRUE)
-'		If lpsz Then
-'			lpsz=lpsz+Len(*lpsz)+1
-'			ccpos=@ccstring
-'			lstrcpy(@s,lpsz)
-'			If Asc(s)<>NULL Then
-'				buff=sItem
-'				GetItems(15)
-'			EndIf
-'			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-'			If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
-'				fstructlist=TRUE
-'			EndIf
-'		EndIf
-'	EndIf
-'
-'End Sub
-'
-'Sub UpdateStructList(ByVal lpProc As ZString Ptr)
-'	Dim chrg As CHARRANGE
-'	Dim As Integer nLine,nowner,x
-'	Dim sLine As ZString*1024
-'
-'	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-'	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
-'	If chrg.cpMin=chrg.cpMax Then
-'		nline=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
-'		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nline,0)
-'		x=chrg.cpMax-chrg.cpMin
-'		buff=String(1024,0)
-'		buff=Chr(x And 255) & Chr(x\256)
-'		x=SendMessage(ah.hred,EM_GETLINE,nline,Cast(LPARAM,@buff))
-'		buff[x]=NULL
-'		lstrcpy(@sLine,@buff)
-'		nowner=Cast(Integer,ah.hred)
-'		If fProject Then
-'			nowner=IsProjectFile(ad.filename)
-'		EndIf
-'		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
-'		If Left(sLine,1)="." Then
-'			x=SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline)
-'			If x Then
-'				lstrcpy(@s,Cast(ZString Ptr,x))
-'				StructList(s,Mid(sLine,2))
-'			EndIf
-'			Exit Sub
-'		EndIf
-'	EndIf
-'
-'End Sub
-'
-Sub UpdateStructList(ByVal lpProc As ZString Ptr)
-	Dim lret As ZString Ptr
-	Dim chrg As CHARRANGE
-	Dim ntype As Integer
-	Dim As Integer x,y
-	Dim sLine As ZString*1024
+Sub GetStructItemsFromList(ByVal lpsz As ZString Ptr)
+
+	ccpos=@ccstring
+	lstrcpy(@s,lpsz)
+	If s[0] Then
+		GetItems(15)
+	EndIf
+	SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+	If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+		fstructlist=TRUE
+	EndIf
+
+End Sub
+
+Sub GetStructItemsFromNamespace(ByVal lpsz As ZString Ptr)
 	Dim sItem As ZString*1024
+	Dim lret As ZString Ptr
+	Dim As Integer x,ntype
+
+	sItem=*lpsz & "." & buff
+	lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("psdcen")),Cast(LPARAM,@sItem)))
+	While lret
+		x=InStr(*lret,".")
+		lret=lret+x
+		ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+		Select Case Chr(ntype)
+			Case "p"
+				ntype=1
+			Case "c","e"
+				ntype=3
+			Case "s"
+				ntype=5
+			Case "d"
+				ntype=14
+			Case Else
+				ntype=0
+		End Select
+		SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,lret))
+		lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+	Wend
+	SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+	If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+		fstructlist=TRUE
+	EndIf
+
+End Sub
+
+Sub UpdateStructList(ByVal lpProc As ZString Ptr)
+	Dim chrg As CHARRANGE
+	Dim As Integer nLine,nowner,x,n,i
+	Dim sLine As ZString*1024
 	Dim sTemp As ZString*1024
-	Dim p As ZString Ptr
-	Dim nline As Integer
-	Dim nowner As Integer
+	Dim sz(32) As ZString*256
+	Dim As ZString Ptr p(32),lpsz
 
 	SendMessage(ah.hcc,CCM_CLEAR,0,0)
-	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(LPARAM,@chrg))
 	If chrg.cpMin=chrg.cpMax Then
-		' Get line
+		' Get the line
 		nline=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nline,0)
 		x=chrg.cpMax-chrg.cpMin
 		buff=String(1024,0)
 		buff=Chr(x And 255) & Chr(x\256)
-		lret=Cast(ZString Ptr,SendMessage(ah.hred,EM_GETLINE,nline,Cast(Integer,@buff)))
-		buff[Cast(Integer,lret)]=NULL
-		lstrcpyn(@sLine,@buff,1000)
-		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
-		' Get owner
+		x=SendMessage(ah.hred,EM_GETLINE,nline,Cast(LPARAM,@buff))
+		buff[x]=NULL
+		lstrcpy(@sLine,@buff)
 		nowner=Cast(Integer,ah.hred)
 		If fProject Then
 			nowner=IsProjectFile(ad.filename)
 		EndIf
-		If sLine[0]=Asc(".") Then
-			lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
-			If lret Then
-				lstrcpy(@s,lret)
-				sLine=s & Mid(sLine,InStr(sLine,"."))
-			EndIf
-		EndIf
-		' Get filter
-		While InStr(buff,"->")
-			buff=Mid(buff,InStr(buff,"->")+2)
-		Wend
-		While InStr(buff,".")
-			buff=Mid(buff,InStr(buff,".")+1)
-		Wend
-		If UCase(Left(sLine,5))="CAST(" Then
-			' Cast
-			sItem=Mid(sLine,6)
-			x=InStr(sItem,",")
+		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
+		If Left(sLine,1)="." Then
+			x=SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline)
 			If x Then
-				sItem=Left(sItem,x-1)
-				While sItem[0]=VK_SPACE Or sItem[0]=VK_TAB
-					sItem=Mid(sItem,2)
-				Wend
-				While Right(sItem,1)=Chr(VK_SPACE) Or Right(sItem,1)=Chr(VK_TAB)
-					sItem=Left(sItem,Len(sItem)-1)
-				Wend
-				x=InStr(sItem," ")
-				If x Then
-					sItem=Left(sItem,x-1)
+				sLine=*Cast(ZString Ptr,x) & sLine
+			Else
+				Exit Sub
+			EndIf
+		EndIf
+		' Split the line into words
+		lpsz=@sLine
+		p(0)=lpsz
+		n=1
+		While lpsz[0]
+			If Left(*lpsz,1)="." Then
+				lpsz[0]=0
+				p(n)=lpsz+1
+				n+=1
+			ElseIf Left(*lpsz,2)="->" Then
+				lpsz[0]=0
+				p(n)=lpsz+2
+				n+=1
+				lpsz+=1
+			EndIf
+			lpsz+=1
+		Wend
+		x=0
+		While x<n
+			sz(x)=*p(x)
+			x+=1
+		Wend
+		x=0
+		While x<n
+			If UCase(Left(sz(x),5))="CAST(" Then
+				' Cast(RECT,myrect).left=5
+				sz(x)=Mid(sz(x),6)
+				i=InStr(sz(x),",")
+				If i Then
+					sz(x)=Left(sz(x),i-1)
 				EndIf
-				p=@sLine
-				x=Len(sLine)
-				SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
-				GoTo TestNext2
+				' Remove leading whitespace
+				While sz(x)[0]=VK_SPACE Or sz(x)[0]=VK_TAB
+					sz(x)=Mid(sz(x),2)
+				Wend
+				' Remove trailing whitespace
+				i=0
+				While sz(x)[i]
+					If sz(x)[i]=VK_SPACE Or sz(x)[i]=VK_TAB Then
+						sz(x)[i]=0
+						Exit While
+					EndIf
+					i+=1
+				Wend
 			EndIf
-		EndIf
-		sTemp=sLine
-		x=Len(sLine)
-		SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
-		sItem=sLine
-		lret=FindExact(StrPtr("Ee"),@sItem,FALSE)
-		If lret Then
-			' Enum
-			lret=lret+Len(*lret)+1
-			ccpos=@ccstring
-			lstrcpy(@s,lret)
-			If Asc(s)<>NULL Then
-				GetItems(15)
-				GoTo Ex
+			If sz(x)[0] Then
+				sz(x)&="."
+				SendMessage(ah.hpr,PRM_GETSTRUCTWORD,Len(sz(x)),Cast(LPARAM,@sz(x)))
 			EndIf
-		EndIf
-		lret=FindExact(StrPtr("n"),@sItem,FALSE)
-		If lret Then
-			' Namespace
-			If Right(sTemp,1)="." Then
-				sLine=Left(sTemp,Len(sTemp)-1)
-			ElseIf Right(sTemp,2)="->" Then
-				sLine=Left(sTemp,Len(sTemp)-2)
-			EndIf
-		EndIf
-		p=@sLine
+			x+=1
+		Wend
 		If lpProc Then
-			If lstrcmpi(StrPtr("this"),@sLine)=0 Then
-				lstrcpyn(@sLine,lpProc,1000)
-				x=InStr(sLine,".")
-				x=InStr(x+1,sLine,".")
-				If x=0 Then
-					x=InStr(sLine,".")
-				EndIf
-				sLine=sLine & "  "
-				Mid(sLine,x,2)=szNULL & szNULL
-				GoTo TestNext1
-			EndIf
 			' Skip proc name
 			lpProc=lpProc+Len(*lpProc)+1
 			' Get parameters list
-			lstrcpyn(@sItem,p,1000)
-			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
-			If Len(sItem)=0 Then
+			sTemp=sz(0)
+			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sTemp),Cast(LPARAM,lpProc))
+			If sTemp[0]=0 Then
 				' Skip parameters list
 				lpProc=lpProc+Len(*lpProc)+1
 				' Skip return type
 				lpProc=lpProc+Len(*lpProc)+1
 				' Get local data list
-			TestNext:
-				lstrcpyn(@sItem,p,1000)
-				SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
+				sTemp=sz(0)
+				SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sTemp),Cast(LPARAM,lpProc))
 			EndIf
-		TestNext2:
-			If Len(sItem) Then
-				lret=FindExact(StrPtr("Ss"),@sItem,FALSE)
-				If lret Then
-					lret=lret+Len(*lret)+1
-					p=p+Len(*p)+1
-					If Len(*p) Then
-						lpProc=lret
-						GoTo TestNext
-					EndIf
-					ccpos=@ccstring
-					lstrcpy(@s,lret)
-					If Asc(s)<>NULL Then
-						GetItems(15)
-					EndIf
-				EndIf
-			Else
-				lpProc=0
+			If sTemp[0] Then
+				sz(0)=sTemp
 			EndIf
 		EndIf
-		If lpProc=0 Then
-			lret=FindExact(StrPtr("df"),p,FALSE)
-			If lret Then
-				lret=lret+Len(*lret)+1
-				lstrcpyn(@sItem,lret,1000)
-				If InStr(sItem," ") Then
-					sItem[InStr(sItem," ")-1]=NULL
-					lret=@sItem
-				EndIf
-				lret=FindExact(StrPtr("Ss"),lret,FALSE)
-				If lret Then
-					lret=lret+Len(*lret)+1
-					p=p+Len(*p)+1
-					If Len(*p) Then
-						lpProc=lret
-						GoTo TestNext
+		While TRUE
+			lpsz=FindExact(StrPtr("eEsSnfd"),sz(0),TRUE)
+			If lpsz=0 Then
+				Exit Sub
+			EndIf
+			x=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+			Select Case Chr(x)
+				Case "e","E"
+					' Enum
+					If n=2 Then
+						buff=sz(n-1)
+						lpsz+=Len(*lpsz)+1
+						GetStructItemsFromList(lpsz)
 					EndIf
-					ccpos=@ccstring
-					lstrcpy(@s,lret)
-					If Asc(s)<>NULL Then
-						GetItems(15)
-					EndIf
-				EndIf
-			Else
-			TestNext1:
-				lret=FindExact(StrPtr("s"),p,TRUE)
-				If lret Then
-					lret=lret+Len(*lret)+1
-					p=p+Len(*p)+1
-					If Len(*p) Then
-						lpProc=lret
-						GoTo TestNext
-					EndIf
-					ccpos=@ccstring
-					lstrcpy(@s,lret)
-					If Asc(s)<>NULL Then
-						GetItems(15)
-					EndIf
-				Else
-					lret=FindExact(StrPtr("n"),p,TRUE)
-					If lret Then
-						' Namespace
-						sItem=*p & "." & buff
-						lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
-						While lret
-							x=InStr(*lret,".")
-							lret=lret+x
-							ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
-							Select Case As Const ntype
-								Case Asc("p")
-									ntype=1
-								Case Asc("c")
-									ntype=3
-								Case Asc("s")
-									ntype=5
-								Case Asc("d")
-									ntype=14
-								Case Else
-									ntype=0
-							End Select
-							SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,lret))
-							lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+					Exit Sub
+				Case "s","S"
+					' Struct
+					lpsz+=Len(*lpsz)+1
+					If n=2 Then
+						buff=sz(n-1)
+						GetStructItemsFromList(lpsz)
+						Exit Sub
+					Else
+						SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sz(1)),Cast(LPARAM,lpsz))
+						sz(0)=sz(1)
+						i=InStr(sz(0)," ")
+						If i Then
+							sz(0)[i-1]=0
+						EndIf
+						x=1
+						While x<n
+							sz(x)=sz(x+1)
+							x+=1
 						Wend
+						n-=1
 					EndIf
-				EndIf
-			EndIf
-		EndIf
-	Ex:
-		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
-			fstructlist=TRUE
-		EndIf
+				Case "n"
+					' Namespace
+					If n=2 Then
+						buff=sz(n-1)
+						GetStructItemsFromNamespace(lpsz)
+						Exit Sub
+					Else
+						sz(0)&="." & sz(1)
+						x=1
+						While x<n
+							sz(x)=sz(x+1)
+							x+=1
+						Wend
+						n-=1
+					EndIf
+				Case "f"
+					' Function MyFunc(ByVal a As Integer) As RECT Ptr
+					lpsz+=Len(*lpsz)+1
+					sz(0)=*lpsz
+					i=InStr(sz(0)," ")
+					If i Then
+						sz(0)[i-1]=0
+					EndIf
+				Case "d"
+					' Dim rect As RECT
+					' rect.left
+					lpsz+=Len(*lpsz)+1
+					sz(0)=*lpsz
+					i=InStr(sz(0)," ")
+					If i Then
+						sz(0)[i-1]=0
+					EndIf
+			End Select
+		Wend
 	EndIf
 
 End Sub
 
+'Sub UpdateStructList(ByVal lpProc As ZString Ptr)
+'	Dim lret As ZString Ptr
+'	Dim chrg As CHARRANGE
+'	Dim ntype As Integer
+'	Dim As Integer x,y
+'	Dim sLine As ZString*1024
+'	Dim sItem As ZString*1024
+'	Dim sTemp As ZString*1024
+'	Dim p As ZString Ptr
+'	Dim nline As Integer
+'	Dim nowner As Integer
+'
+'	SendMessage(ah.hcc,CCM_CLEAR,0,0)
+'	SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+'	If chrg.cpMin=chrg.cpMax Then
+'		' Get line
+'		nline=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
+'		chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,nline,0)
+'		x=chrg.cpMax-chrg.cpMin
+'		buff=String(1024,0)
+'		buff=Chr(x And 255) & Chr(x\256)
+'		lret=Cast(ZString Ptr,SendMessage(ah.hred,EM_GETLINE,nline,Cast(Integer,@buff)))
+'		buff[Cast(Integer,lret)]=NULL
+'		lstrcpyn(@sLine,@buff,1000)
+'		SendMessage(ah.hpr,PRM_GETSTRUCTSTART,Len(sLine),Cast(LPARAM,@sLine))
+'		' Get owner
+'		nowner=Cast(Integer,ah.hred)
+'		If fProject Then
+'			nowner=IsProjectFile(ad.filename)
+'		EndIf
+'		If sLine[0]=Asc(".") Then
+'			lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_ISINWITHBLOCK,nowner,nline))
+'			If lret Then
+'				lstrcpy(@s,lret)
+'				sLine=s & Mid(sLine,InStr(sLine,"."))
+'			EndIf
+'		EndIf
+'		' Get filter
+'		While InStr(buff,"->")
+'			buff=Mid(buff,InStr(buff,"->")+2)
+'		Wend
+'		While InStr(buff,".")
+'			buff=Mid(buff,InStr(buff,".")+1)
+'		Wend
+'		If UCase(Left(sLine,5))="CAST(" Then
+'			' Cast
+'			sItem=Mid(sLine,6)
+'			x=InStr(sItem,",")
+'			If x Then
+'				sItem=Left(sItem,x-1)
+'				While sItem[0]=VK_SPACE Or sItem[0]=VK_TAB
+'					sItem=Mid(sItem,2)
+'				Wend
+'				While Right(sItem,1)=Chr(VK_SPACE) Or Right(sItem,1)=Chr(VK_TAB)
+'					sItem=Left(sItem,Len(sItem)-1)
+'				Wend
+'				x=InStr(sItem," ")
+'				If x Then
+'					sItem=Left(sItem,x-1)
+'				EndIf
+'				p=@sLine
+'				x=Len(sLine)
+'				SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
+'				GoTo TestNext2
+'			EndIf
+'		EndIf
+'		sTemp=sLine
+'		x=Len(sLine)
+'		SendMessage(ah.hpr,PRM_GETSTRUCTWORD,x,Cast(LPARAM,@sLine))
+'		sItem=sLine
+'		lret=FindExact(StrPtr("Ee"),@sItem,FALSE)
+'		If lret Then
+'			' Enum
+'			lret=lret+Len(*lret)+1
+'			ccpos=@ccstring
+'			lstrcpy(@s,lret)
+'			If s[0]<>NULL Then
+'				GetItems(15)
+'				GoTo Ex
+'			EndIf
+'		EndIf
+'		lret=FindExact(StrPtr("n"),@sItem,FALSE)
+'		If lret Then
+'			' Namespace
+'			x=0
+'			y=0
+'			sLine=sTemp
+'			While TRUE
+'				If InStr(x+1,sLine,".") Then
+'					x=InStr(x+1,sLine,".")
+'				ElseIf InStr(x+1,sLine,"->") Then
+'					x=InStr(x+1,sLine,"->")
+'				Else
+'					Exit While
+'				EndIf
+'			Wend
+'			If x Then
+'				sLine[x-1]=0
+'			EndIf
+'TextToOutput(sLine)
+'TextToOutput(buff)
+'		EndIf
+'		p=@sLine
+'		If lpProc Then
+'			If lstrcmpi(StrPtr("this"),@sLine)=0 Then
+'				lstrcpyn(@sLine,lpProc,1000)
+'				x=InStr(sLine,".")
+'				x=InStr(x+1,sLine,".")
+'				If x=0 Then
+'					x=InStr(sLine,".")
+'				EndIf
+'				sLine=sLine & "  "
+'				Mid(sLine,x,2)=szNULL & szNULL
+'				GoTo TestNext1
+'			EndIf
+'			' Skip proc name
+'			lpProc=lpProc+Len(*lpProc)+1
+'			' Get parameters list
+'			lstrcpyn(@sItem,p,1000)
+'			SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
+'			If Len(sItem)=0 Then
+'				' Skip parameters list
+'				lpProc=lpProc+Len(*lpProc)+1
+'				' Skip return type
+'				lpProc=lpProc+Len(*lpProc)+1
+'				' Get local data list
+'			TestNext:
+'				lstrcpyn(@sItem,p,1000)
+'				SendMessage(ah.hpr,PRM_FINDITEMDATATYPE,Cast(WPARAM,@sItem),Cast(LPARAM,lpProc))
+'			EndIf
+'		TestNext2:
+'			If Len(sItem) Then
+'				lret=FindExact(StrPtr("Ss"),@sItem,FALSE)
+'				If lret Then
+'					lret=lret+Len(*lret)+1
+'					p=p+Len(*p)+1
+'					If Len(*p) Then
+'						lpProc=lret
+'						GoTo TestNext
+'					EndIf
+'					ccpos=@ccstring
+'					lstrcpy(@s,lret)
+'					If Asc(s)<>NULL Then
+'						GetItems(15)
+'					EndIf
+'				EndIf
+'			Else
+'				lpProc=0
+'			EndIf
+'		EndIf
+'		If lpProc=0 Then
+'			lret=FindExact(StrPtr("df"),p,FALSE)
+'			If lret Then
+'				lret=lret+Len(*lret)+1
+'				lstrcpyn(@sItem,lret,1000)
+'				If InStr(sItem," ") Then
+'					sItem[InStr(sItem," ")-1]=NULL
+'					lret=@sItem
+'				EndIf
+'				lret=FindExact(StrPtr("Ss"),lret,FALSE)
+'				If lret Then
+'					lret=lret+Len(*lret)+1
+'					p=p+Len(*p)+1
+'					If Len(*p) Then
+'						lpProc=lret
+'						GoTo TestNext
+'					EndIf
+'					ccpos=@ccstring
+'					lstrcpy(@s,lret)
+'					If Asc(s)<>NULL Then
+'						GetItems(15)
+'					EndIf
+'				EndIf
+'			Else
+'			TestNext1:
+'				lret=FindExact(StrPtr("s"),p,TRUE)
+'				If lret Then
+'					lret=lret+Len(*lret)+1
+'					p=p+Len(*p)+1
+'					If Len(*p) Then
+'						lpProc=lret
+'						GoTo TestNext
+'					EndIf
+'					ccpos=@ccstring
+'					lstrcpy(@s,lret)
+'					If Asc(s)<>NULL Then
+'						GetItems(15)
+'					EndIf
+'				Else
+'					lret=FindExact(StrPtr("n"),p,TRUE)
+'					If lret Then
+'						' Namespace
+'						sItem=*p & "." & buff
+'						lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+'						While lret
+'							x=InStr(*lret,".")
+'							lret=lret+x
+'							ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
+'							Select Case As Const ntype
+'								Case Asc("p")
+'									ntype=1
+'								Case Asc("c")
+'									ntype=3
+'								Case Asc("s")
+'									ntype=5
+'								Case Asc("d")
+'									ntype=14
+'								Case Else
+'									ntype=0
+'							End Select
+'							SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(Integer,lret))
+'							lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,Cast(WPARAM,StrPtr("psdc")),Cast(LPARAM,@sItem)))
+'						Wend
+'					EndIf
+'				EndIf
+'			EndIf
+'		EndIf
+'	Ex:
+'		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+'		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
+'			fstructlist=TRUE
+'		EndIf
+'	EndIf
+'
+'End Sub
+'
 Sub UpdateTypeList()
 	Dim lret As Integer
 	Dim chrg As CHARRANGE

@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -135,13 +135,13 @@ ProductVer4Range=0
 8=
 7=
 9=
-10=,,,,,,
+10=,,,,,,,
 11=,
 12=
 13=,
 14=,,,,
 [Size]
-2=0,0,699,490,2631
+2=0,0,699,490,1396
 <<<<<<< .mine
 1=0,0,699,490,9399
 =======
@@ -152,8 +152,8 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2040
 9=0,0,0,0,373
-10=0,0,0,0,371
-11=0,0,746,498,15773
+10=0,0,0,0,16852
+11=0,0,746,498,4553
 12=0,0,0,0,2850
 13=0,0,0,0,6449
 14=0,0,0,0,5604
@@ -176,16 +176,16 @@ AutoLoad=1,10,14,11,13,2,7
 [PTimer]
 PTimer=122121012
 [Find]
-1="MIsWord"
-2="IsWord"
-3="GetWord"
-4="Compare"
-5="FBSkipLine"
-6="VK_TAB"
-7="btnspro"
-8="ParseFile"
-9="ArraySize"
-10="ParseUnknown"
+1="PRM_GETSTRUCTWORD"
+2="MIsWord"
+3="IsWord"
+4="GetWord"
+5="Compare"
+6="FBSkipLine"
+7="VK_TAB"
+8="btnspro"
+9="ParseFile"
+10="ArraySize"
 
 [Exports]
 1=GetDefEx

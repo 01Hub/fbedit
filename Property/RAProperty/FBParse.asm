@@ -399,7 +399,7 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lendatatype:DWORD
 	LOCAL	lpdatatype2:DWORD
 	LOCAL	lendatatype2:DWORD
-	LOCAL	rpnmespc:DWORD
+	LOCAL	rpnmespc[4]:DWORD
 	LOCAL	rpwithblock[4]:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	fPtr:DWORD
@@ -410,7 +410,10 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	narray:DWORD
 
 	mov		npos,0
-	mov		rpnmespc,-1
+	mov		rpnmespc[0],-1
+	mov		rpnmespc[4],-1
+	mov		rpnmespc[8],-1
+	mov		rpnmespc[12],-1
 	mov		rpwithblock[0],-1
 	mov		rpwithblock[4],-1
 	mov		rpwithblock[8],-1
@@ -628,18 +631,34 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 					call	ParseNameSpace
 					.if eax
 						mov		eax,[ebx].RAPROPERTY.rpfree
-						mov		rpnmespc,eax
+						push	ebx
+						xor		ebx,ebx
+						.while rpnmespc[ebx*4]!=-1
+							inc		ebx
+						.endw
+						.if ebx<=3
+							mov		rpnmespc[ebx*4],eax
+						.endif
+						pop		ebx
 						mov		edx,lpdef
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,-1,addr szname,1
 					.endif
 				.elseif edx==DEFTYPE_ENDNAMESPACE
 					.if rpnmespc!=-1
-						mov		edx,[ebx].RAPROPERTY.lpmem
-						add		edx,rpnmespc
-						mov		eax,npos
-						mov		[edx].PROPERTIES.nEnd,eax
-						mov		rpnmespc,-1
+						.if rpnmespc[0]!=-1
+							mov		edx,[ebx].RAPROPERTY.lpmem
+							push	ebx
+							mov		ebx,3
+							.while rpnmespc[ebx*4]==-1
+								dec		ebx
+							.endw
+							add		edx,rpnmespc[ebx*4]
+							mov		rpnmespc[ebx*4],-1
+							pop		ebx
+							mov		eax,npos
+							mov		[edx].PROPERTIES.nEnd,eax
+						.endif
 					.endif
 				.elseif edx==DEFTYPE_ENUM
 					call	ParseEnum
@@ -697,15 +716,20 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 
 AddNamespace:
 	push	eax
-	.if rpnmespc!=-1
+	push	esi
+	xor		esi,esi
+	.while esi<4
+		.break .if rpnmespc[esi*4]==-1
 		mov		edx,[ebx].RAPROPERTY.lpmem
-		add		edx,rpnmespc
+		add		edx,rpnmespc[esi*4]
 		invoke strcpy,edi,addr [edx+sizeof PROPERTIES]
 		invoke strlen,edi
 		lea		edi,[edi+eax]
 		mov		word ptr [edi],'.'
 		inc		edi
-	.endif
+		inc		esi
+	.endw
+	pop		esi
 	pop		eax
 	retn
 
