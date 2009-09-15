@@ -149,14 +149,14 @@ Options=52
 5=0,0,0,0,5994
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,36266
+1=0,0,718,485,1982
 7=0,0,718,485,41972
 6=0,0,0,0,404
-9=0,0,718,485,101420
-2=0,0,584,498,7830
-8=0,0,0,0,25542
+9=0,0,718,485,53837
+2=0,0,584,498,1904
+8=0,0,0,0,21604
 10=0,0,0,0,5282
-16=0,0,718,485,2306
+16=0,0,718,485,12510
 15=0,0,0,0
 17=0,0,0,0,20777
 18=0,0,0,0,15073
@@ -197,19 +197,19 @@ Options=52
 
 
 [Find]
-1="esi"
-2="PRP_STR_FILE"
-3="-3"
-4="fEditMode"
-5="PRO_EXPORTNAMES"
-6="PRO_EXPORT"
-7="-8"
-8=">=TPE_USERDATA"
-9="AddProjectNode"
-10="ParseRCMem"
+1="SnapPt"
+2="adc"
+3="MenuUpdate"
+4="MenuUpdateMem"
+5="esi"
+6="PRP_STR_FILE"
+7="-3"
+8="fEditMode"
+9="PRO_EXPORTNAMES"
+10="PRO_EXPORT"
 
 [AutoLoad]
-AutoLoad=1,8,18,32,10,2
+AutoLoad=1,16,9,8
 [VerInf]
 Nme=VERINF1
 ID=1
@@ -254,7 +254,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16

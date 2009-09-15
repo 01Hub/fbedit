@@ -99,7 +99,7 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,19633
+1=580,0,290,688,20263
 6=
 2=0,0,0,0,5978
 7=0,0,699,490,7676
@@ -180,7 +180,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18

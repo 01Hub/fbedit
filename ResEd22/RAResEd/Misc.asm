@@ -1130,7 +1130,8 @@ ConvertToDux proc uses ebx,px:DWORD
 	invoke GetDialogBaseUnits
 	movzx	ecx,ax
 	mov		eax,px
-	sal		eax,3
+;	sal		eax,3
+	sal		eax,2
 	mov		ebx,dfntwt
 	imul	ebx
 	cdq
@@ -1139,8 +1140,12 @@ ConvertToDux proc uses ebx,px:DWORD
 	cdq
 	mov		ebx,fntwt
 	idiv	ebx
-	sar		eax,1
-	adc		eax,0
+;	sar		eax,1
+;	.if SIGN?
+;		sbb		eax,0
+;	.else
+;		;adc		eax,0
+;	.endif
 	ret
 
 ConvertToDux endp
@@ -1151,17 +1156,22 @@ ConvertToDuy proc uses ebx,py:DWORD
 	shr		eax,16
 	mov		ecx,eax
 	mov		eax,py
-	sal		eax,4
+;	sal		eax,4
+	sal		eax,3
 	mov		ebx,dfntht
-	mul		ebx
+	imul	ebx
 	cdq
 	mov		ebx,ecx
 	idiv	ebx
 	cdq
 	mov		ebx,fntht
 	idiv	ebx
-	sar		eax,1
-	adc		eax,0
+;	sar		eax,1
+;	.if SIGN?
+;		sbb		eax,0
+;	.else
+;		;adc		eax,0
+;	.endif
 	ret
 
 ConvertToDuy endp
@@ -1172,7 +1182,6 @@ ConvertDuxToPix proc dux:DWORD
 	invoke GetDialogBaseUnits
 	and		eax,0FFFFh
 	mov		bux,eax
-
 	mov		eax,dux
 	sal		eax,1
 	cdq
@@ -1186,7 +1195,11 @@ ConvertDuxToPix proc dux:DWORD
 	mov		ecx,4
 	idiv	ecx
 	sar		eax,1
-	adc		eax,0
+	.if SIGN?
+		;sbb		eax,0
+	.else
+		adc		eax,0
+	.endif
 	ret
 
 ConvertDuxToPix endp
@@ -1197,7 +1210,6 @@ ConvertDuyToPix proc duy:DWORD
 	invoke GetDialogBaseUnits
 	shr		eax,16
 	mov		buy,eax
-
 	mov		eax,duy
 	sal		eax,1
 	cdq
@@ -1211,7 +1223,11 @@ ConvertDuyToPix proc duy:DWORD
 	mov		ecx,8
 	idiv	ecx
 	sar		eax,1
-	adc		eax,0
+	.if SIGN?
+		;sbb		eax,0
+	.else
+		adc		eax,0
+	.endif
 	ret
 
 ConvertDuyToPix endp
@@ -1251,7 +1267,11 @@ SizeX proc nInc:DWORD
 		sal		eax,1
 		idiv	Gridcx
 		sar		eax,1
+	.if SIGN?
+		sbb		eax,0
+	.else
 		adc		eax,0
+	.endif
 		imul	Gridcx
 		add		eax,nInc
 	.endif
@@ -1268,7 +1288,11 @@ SizeY proc nInc:DWORD
 		sal		eax,1
 		idiv	Gridcy
 		sar		eax,1
+	.if SIGN?
+		sbb		eax,0
+	.else
 		adc		eax,0
+	.endif
 		imul	Gridcy
 		add		eax,nInc
 	.endif
@@ -1278,18 +1302,21 @@ SizeY endp
 
 SnapPtDu proc uses ebx,lpPoint:ptr POINT
 
-	mov		ebx,lpPoint
-	invoke ConvertToDlgPt,ebx
-	invoke ConvertToDux,[ebx].POINT.x
-	invoke SizeX,0
-	invoke ConvertDuxToPix,eax
-	mov		[ebx].POINT.x,eax
-	invoke ConvertToDuy,[ebx].POINT.y
-	invoke SizeY,0
-	invoke ConvertDuyToPix,eax
-	mov		[ebx].POINT.y,eax
-	invoke ClientToScreen,des.hdlg,lpPoint
-	invoke MapWindowPoints,NULL,hInvisible,lpPoint,1
+	call RSnapToGrid
+	.if fRSnapToGrid
+		mov		ebx,lpPoint
+		invoke ConvertToDlgPt,ebx
+		invoke ConvertToDux,[ebx].POINT.x
+		invoke SizeX,0
+		invoke ConvertDuxToPix,eax
+		mov		[ebx].POINT.x,eax
+		invoke ConvertToDuy,[ebx].POINT.y
+		invoke SizeY,0
+		invoke ConvertDuyToPix,eax
+		mov		[ebx].POINT.y,eax
+		invoke ClientToScreen,des.hdlg,lpPoint
+		invoke MapWindowPoints,NULL,hInvisible,lpPoint,1
+	.endif
 	ret
 
 SnapPtDu endp

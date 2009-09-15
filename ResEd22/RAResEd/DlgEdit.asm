@@ -2006,13 +2006,16 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			sub		edx,rect.top
 			invoke DialogTltSize,eax,edx
 		.elseif des.fmode==MODE_MOVING
+PrintDec des.ctlrect.left
 			call	SnapPt
 			invoke RestoreWin
 			mov		eax,des.ctlrect.right
 			sub		eax,des.ctlrect.left
+			;Width
 			push	eax
 			mov		eax,des.ctlrect.bottom
 			sub		eax,des.ctlrect.top
+			;Height
 			push	eax
 			invoke SnapPtDu,addr des.ctlrect.left
 			pop		eax
@@ -2041,6 +2044,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ClientToScreen,hInvisible,addr rect.left
 			invoke ScreenToClient,des.hdlg,addr rect.left
 			invoke DialogTltSize,rect.left,rect.top
+PrintDec des.ctlrect.left
 		.elseif des.fmode==MODE_MULTISELMOVE
 			call	SnapPt
 			mov		eax,pt.x
@@ -2237,6 +2241,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 									invoke GetWindowRect,hCld,addr des.ctlrect
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.left
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.right
+PrintDec des.ctlrect.left
 									mov		des.fmode,MODE_MOVING
 								.endif
 							.endif
@@ -2711,7 +2716,7 @@ SnapPt:
 	cwde
 	mov		pt.x,edx
 	mov		pt.y,eax
-	invoke SnapPtDu,addr pt
+;	invoke SnapPtDu,addr pt
 	retn
 
 IsInWindow:
@@ -2720,7 +2725,7 @@ IsInWindow:
 	invoke ScreenToClient,hInvisible,addr rect.right
 	mov		eax,pt.x
 	mov		edx,pt.y
-	.if eax>=rect.left && eax<=rect.right && edx>=rect.top && edx<=rect.bottom
+	.if sdword ptr eax>=rect.left && sdword ptr eax<=rect.right && sdword ptr edx>=rect.top && sdword ptr edx<=rect.bottom
 		mov		hCld,ebx
 		mov		eax,TRUE
 	.else
@@ -3692,7 +3697,7 @@ getx:
 		xor		edx,edx
 		idiv	fntwt
 		shr		eax,1
-		adc		eax,0
+;		adc		eax,0
 		neg		eax
 	.else
 		shl		eax,1
@@ -3700,7 +3705,7 @@ getx:
 		xor		edx,edx
 		idiv	fntwt
 		shr		eax,1
-		adc		eax,0
+;		adc		eax,0
 	.endif
 	retn
 
@@ -3712,7 +3717,7 @@ gety:
 		xor		edx,edx
 		idiv	fntht
 		shr		eax,1
-		adc		eax,0
+;		adc		eax,0
 		neg		eax
 	.else
 		shl		eax,1
@@ -3720,7 +3725,7 @@ gety:
 		xor		edx,edx
 		idiv	fntht
 		shr		eax,1
-		adc		eax,0
+;		adc		eax,0
 	.endif
 	retn
 

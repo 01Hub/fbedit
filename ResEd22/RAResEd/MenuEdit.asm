@@ -628,6 +628,7 @@ MenuUpdateMem endp
 
 MenuUpdate proc uses esi edi,hWin:HWND
 	LOCAL	hMem:DWORD
+	LOCAL	nInx:DWORD
 
 	invoke MenuUpdateMem,hWin
 	mov		hMem,eax
@@ -637,6 +638,19 @@ MenuUpdate proc uses esi edi,hWin:HWND
 	rep movsd
 	invoke GlobalUnlock,hMem
 	invoke GlobalFree,hMem
+	mov		esi,hMnuMem
+	lea		esi,[esi+sizeof MNUHEAD]
+	mov		nInx,0
+  @@:
+	invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETITEMDATA,nInx,0
+	.if eax!=LB_ERR
+		.if eax && eax!=-1
+			invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_SETITEMDATA,nInx,esi
+			lea		esi,[esi+sizeof MNUITEM]
+		.endif
+		inc		nInx
+		jmp		@b
+	.endif
 	ret
 
 MenuUpdate endp
@@ -864,6 +878,7 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 				mov		fDialogChanged,TRUE
 			.elseif eax==IDC_BTNINSERT
 				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETCURSEL,0,0
+				mov		nMnuInx,eax
 				invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_GETITEMDATA,eax,0
 				.if eax
 					invoke SendDlgItemMessage,hWin,IDC_LSTMNU,LB_INSERTSTRING,nMnuInx,addr szNULL
