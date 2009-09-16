@@ -11,6 +11,7 @@ o The project browser now supports sub groups. Use Project Groups to maintain gr
 o The Project Groups dialog has been redesigned and is more user friendly.
 o When a file is added to the project it will be added to the current group.
 o Added Project / Add Existing / Current Open File. Adds the current open file to the project.
+o Added Expand / Collapse toolbar button to project browser.
 2.2.1.7
 o The code parser for masm has been enhanced to include datatypes and array sizes.
 o The code parser for VC6 C/C++ (cppparse.dll) has been enhanced to include datatypes and array sizes.

@@ -200,6 +200,8 @@ GroupCollapseAll proc hTrv:HWND,hItem:DWORD
 		mov		hItem,eax
 		jmp		@b
 	.endif
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+	invoke SendMessage,hTrv,TVM_EXPAND,TVE_EXPAND,eax
 	ret
 
 GroupCollapseAll endp

@@ -16,12 +16,13 @@ pbrtbrbtns			TBBUTTON <10,11,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0
 					TBBUTTON <34,13,TBSTATE_ENABLED	or TBSTATE_CHECKED or TBSTATE_HIDDEN,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
 					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <36,12,TBSTATE_ENABLED or TBSTATE_HIDDEN,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
+					TBBUTTON <10,18,TBSTATE_ENABLED or TBSTATE_HIDDEN,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <15,14,TBSTATE_ENABLED	or TBSTATE_CHECKED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
 					TBBUTTON <35,15,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <0,1,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <37,16,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <38,17,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
-npbrtbrbtns			equ	9
+npbrtbrbtns			equ	10
 
 .data
 
@@ -1096,7 +1097,13 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,0
 		invoke GroupGetProjectFiles
 		invoke GroupUpdateTrv,hPbrTrv
-		invoke GroupExpandAll,hPbrTrv,0
+		.if fGroupExpand
+			invoke GroupExpandAll,hPbrTrv,0
+			mov		fExpand,1
+		.else
+			mov		fExpand,0
+			invoke GroupCollapseAll,hPbrTrv,0
+		.endif
 		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
 		mov		hRoot,eax
 		invoke SendMessage,hPbrTrv,WM_SETREDRAW,TRUE,NULL

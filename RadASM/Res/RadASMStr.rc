@@ -45,4 +45,5 @@ BEGIN
   IDM_FORMAT_OUTDENT		"Outdent"
   IDM_FORMAT_COMMENT		"Comment"
   IDM_FORMAT_UNCOMMENT		"Uncomment"
+  18						"Expand / Collapse"
 END

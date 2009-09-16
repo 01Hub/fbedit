@@ -153,6 +153,8 @@ TabToolUpdate			PROTO :DWORD,:DWORD
 SetPropertyCbo			PROTO :DWORD
 GroupTVBeginDrag		PROTO :HWND,:HWND,:LPARAM
 GroupTVEndDrag			PROTO :HWND
+GroupExpandAll			PROTO :HWND,:DWORD
+GroupCollapseAll		PROTO :HWND,:DWORD
 
 ;wsprintfA				PROTO C :DWORD,:VARARG
 wsprintf				equ <wsprintfA>
@@ -1633,6 +1635,7 @@ ProjectDescr			db 128 dup(?)
 fDebug					dd ?
 fGroup					dd ?
 fGroupExpand			dd ?
+fExpand					dd ?
 
 iniBuffer				db MAX_PATH dup(?)
 

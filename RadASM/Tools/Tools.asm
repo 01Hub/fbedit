@@ -1561,6 +1561,7 @@ EnableProjectBrowser proc fFlag:DWORD
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,FALSE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,18,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,TRUE
@@ -1574,6 +1575,7 @@ EnableProjectBrowser proc fFlag:DWORD
 		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,TRUE
+		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,18,TRUE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,FALSE
 		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,FALSE
@@ -1874,6 +1876,15 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,eax
 					.endif
 				.endif
+			.elseif eax==18
+				.if fProject
+					xor		fExpand,1
+					.if fExpand
+						invoke GroupExpandAll,hPbrTrv,0
+					.else
+						invoke GroupCollapseAll,hPbrTrv,0
+					.endif
+				.endif
 			.elseif eax==13
 				invoke EnableProjectBrowser,FALSE
 			.elseif eax==14
@@ -2108,3 +2119,4 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 ToolCldWndProc endp
+
