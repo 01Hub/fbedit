@@ -1,5 +1,8 @@
 Whats new:
 ----------
+1.0.7.1d
+o Fixed menu editor bug if enter key was pressed.
+o Fixed dialog editor bug if a control was partially outside the tialog.
 1.0.7.1c
 o Added code complete on functions that returns a type or a pointer to a type.
 o Added support for nested namespaces.
