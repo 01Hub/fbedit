@@ -24,12 +24,14 @@ ID_DIALOG			equ	65502
 WS_ALWAYS			equ WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN
 MAXMULSEL			equ 256
 
+MODE_NOTHING		equ 0
 MODE_DRAWING		equ 1
 MODE_MOVING			equ 2
-MODE_SIZEING		equ 3
+MODE_SIZING			equ 3
 MODE_MULTISEL		equ 4
 MODE_MULTISELMOVE	equ 5
 MODE_SELECT			equ 6
+MODE_MOVINIT		equ 7
 
 .data
 
@@ -1264,7 +1266,7 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,[edi+eax*4]
 					invoke PostMessage,eax,uMsg,wParam,lParam
 				.else
-					mov		des.fmode,MODE_SIZEING
+					mov		des.fmode,MODE_SIZING
 					invoke PropertyList,0
 					mov		eax,lParam
 					movsx	edx,ax
@@ -1290,11 +1292,11 @@ SizeingProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetCapture,hWin
 					invoke SendMessage,hWin,WM_MOUSEMOVE,wParam,lParam
 				.endif
-			.elseif eax==WM_LBUTTONUP && des.fmode==MODE_SIZEING
+			.elseif eax==WM_LBUTTONUP && des.fmode==MODE_SIZING
 				mov		eax,hReSize
 				mov		des.hselected,eax
 				invoke SendMessage,hInvisible,WM_LBUTTONUP,0,0
-			.elseif eax==WM_MOUSEMOVE && des.fmode==MODE_SIZEING
+			.elseif eax==WM_MOUSEMOVE && des.fmode==MODE_SIZING
 				invoke CopyRect,addr SizeRect,addr des.ctlrect
 				mov		eax,lParam
 				movsx	edx,ax
@@ -2005,7 +2007,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		edx,rect.bottom
 			sub		edx,rect.top
 			invoke DialogTltSize,eax,edx
-		.elseif des.fmode==MODE_MOVING
+		.elseif des.fmode==MODE_MOVING || des.fmode==MODE_MOVINIT
 			call	SnapPt
 			invoke RestoreWin
 			mov		eax,des.ctlrect.right
@@ -2040,9 +2042,14 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			add		eax,rect.top
 			mov		rect.bottom,eax
 			call	DrawRect
-			invoke ClientToScreen,hInvisible,addr rect.left
-			invoke ScreenToClient,des.hdlg,addr rect.left
-			invoke DialogTltSize,rect.left,rect.top
+			mov		eax,pt.x
+			mov		edx,pt.y
+			.if eax!=MousePtDown.x || edx!=MousePtDown.y || des.fmode==MODE_MOVING
+				mov		des.fmode,MODE_MOVING
+				invoke ClientToScreen,hInvisible,addr rect.left
+				invoke ScreenToClient,des.hdlg,addr rect.left
+				invoke DialogTltSize,rect.left,rect.top
+			.endif
 		.elseif des.fmode==MODE_MULTISELMOVE
 			call	SnapPt
 			mov		eax,pt.x
@@ -2239,7 +2246,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 									invoke GetWindowRect,hCld,addr des.ctlrect
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.left
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-									mov		des.fmode,MODE_MOVING
+									mov		des.fmode,MODE_MOVINIT
 								.endif
 							.endif
 						.elseif !fShift && fControl
@@ -2283,7 +2290,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 							invoke DestroyMultiSel,hMultiSel
 							mov		hMultiSel,eax
 						.endw
-						mov		des.fmode,0
+						mov		des.fmode,MODE_NOTHING
 						mov		eax,hCld
 						.if eax==des.hselected || (fShift && !fControl)
 							invoke CaptureWin
@@ -2317,7 +2324,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
+			mov		des.fmode,MODE_NOTHING
 			invoke CopyRect,addr rect,addr des.ctlrect
 			mov		eax,rect.right
 			.if sdword ptr eax<rect.left
@@ -2355,38 +2362,42 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if !fNoResetToolbox
 				invoke ToolBoxReset
 			.endif
-		.elseif des.fmode==MODE_MOVING
+		.elseif des.fmode==MODE_MOVING || des.fmode==MODE_MOVINIT
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
+			mov		des.fmode,MODE_NOTHING
 			call	SnapPt
-			invoke CopyRect,addr rect,addr des.ctlrect
 			mov		eax,pt.x
-			sub		eax,MousePtDown.x
-			add		rect.left,eax
-			add		rect.right,eax
-			mov		eax,pt.y
-			sub		eax,MousePtDown.y
-			add		rect.top,eax
-			add		rect.bottom,eax
-			invoke ClientToScreen,hInvisible,addr rect.left
-			invoke ClientToScreen,hInvisible,addr rect.right
-			invoke ScreenToClient,des.hdlg,addr rect.left
-			invoke ScreenToClient,des.hdlg,addr rect.right
-			invoke GetCtrlMem,des.hselected
-			mov		ebx,eax
+			mov		edx,pt.y
 			mov		fChanged,FALSE
-	 		invoke ConvertToDux,rect.left
-	 		.if eax!=[ebx].DIALOG.dux
-				mov		[ebx].DIALOG.dux,eax
-				mov		fChanged,TRUE
-	 		.endif
-	 		invoke ConvertToDuy,rect.top
-	 		.if eax!=[ebx].DIALOG.duy
-				mov		[ebx].DIALOG.duy,eax
-				mov		fChanged,TRUE
-	 		.endif
+			.if eax!=MousePtDown.x || edx!=MousePtDown.y || des.fmode==MODE_MOVING
+				invoke CopyRect,addr rect,addr des.ctlrect
+				mov		eax,pt.x
+				sub		eax,MousePtDown.x
+				add		rect.left,eax
+				add		rect.right,eax
+				mov		eax,pt.y
+				sub		eax,MousePtDown.y
+				add		rect.top,eax
+				add		rect.bottom,eax
+				invoke ClientToScreen,hInvisible,addr rect.left
+				invoke ClientToScreen,hInvisible,addr rect.right
+				invoke ScreenToClient,des.hdlg,addr rect.left
+				invoke ScreenToClient,des.hdlg,addr rect.right
+				invoke GetCtrlMem,des.hselected
+				mov		ebx,eax
+		 		invoke ConvertToDux,rect.left
+		 		.if eax!=[ebx].DIALOG.dux
+					mov		[ebx].DIALOG.dux,eax
+					mov		fChanged,TRUE
+		 		.endif
+		 		invoke ConvertToDuy,rect.top
+		 		.if eax!=[ebx].DIALOG.duy
+					mov		[ebx].DIALOG.duy,eax
+					mov		fChanged,TRUE
+		 		.endif
+			.endif
 			.if fChanged
 				invoke GetWindowLong,des.hselected,GWL_ID
 				push	eax
@@ -2397,7 +2408,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.else
 				invoke SizeingRect,des.hselected,FALSE
 			.endif
-		.elseif des.fmode==MODE_SIZEING
+		.elseif des.fmode==MODE_SIZING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
@@ -2488,7 +2499,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 		.elseif des.fmode==MODE_MULTISEL
 			.if !hMultiSel
-				mov		des.fmode,0
+				mov		des.fmode,MODE_NOTHING
 			.endif
 		.elseif des.fmode==MODE_MULTISELMOVE
 			mov		OldPt.x,0FFFFh
@@ -2496,7 +2507,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,0
+			mov		des.fmode,MODE_NOTHING
 			call	SnapPt
 			mov		eax,pt.x
 			sub		eax,MousePtDown.x
@@ -2535,7 +2546,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.elseif des.fmode==MODE_SELECT
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
-			mov		des.fmode,0
+			mov		des.fmode,MODE_NOTHING
 			.while hMultiSel
 				invoke DestroyMultiSel,hMultiSel
 				mov		hMultiSel,eax
