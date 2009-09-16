@@ -33,8 +33,6 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
-;WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
-;WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
 SetToolMenu					PROTO
 SetHelpMenu					PROTO
 
@@ -112,43 +110,43 @@ IDM_HELP_ABOUT				equ 10101
 IDR_CONTEXT					equ 11000
 
 WINPOS struct
-	fMax		dd ?
-	fView		dd ?
-	x			dd ?
-	y			dd ?
-	wt			dd ?
-	ht			dd ?
-	htout		dd ?
-	wtpro		dd ?
-	htpro		dd ?
-	left		dd ?
-	top			dd ?
-	wttbx		dd ?
-	dummy		dd 3 dup(?)
+	fMax			dd ?
+	fView			dd ?
+	x				dd ?
+	y				dd ?
+	wt				dd ?
+	ht				dd ?
+	htout			dd ?
+	wtpro			dd ?
+	htpro			dd ?
+	left			dd ?
+	top				dd ?
+	wttbx			dd ?
+	dummy			dd 3 dup(?)
 WINPOS ends
 
 NAMEEXPORT struct
-	nType		dd ?
-	szFileName	db MAX_PATH dup(?)
-	nOutput		dd ?
-	fAuto		dd ?
+	nType			dd ?
+	szFileName		db MAX_PATH dup(?)
+	nOutput			dd ?
+	fAuto			dd ?
 NAMEEXPORT ends
 
 GRIDSIZE struct
-	x			dd ?
-	y			dd ?
-	show		dd ?
-	snap		dd ?
-	tips		dd ?
-	color		dd ?
-	line		dd ?
-	stylehex	dd ?
-	sizetofont	dd ?
-	defines		dd ?
-	simple		dd ?
-	defstatic	dd ?
-	standardmnu	dd ?
-	borlandcomp	dd ?
+	x				dd ?
+	y				dd ?
+	show			dd ?
+	snap			dd ?
+	tips			dd ?
+	color			dd ?
+	line			dd ?
+	stylehex		dd ?
+	sizetofont		dd ?
+	defines			dd ?
+	simple			dd ?
+	defstatic		dd ?
+	standardmnu		dd ?
+	borlandcomp		dd ?
 GRIDSIZE ends
 
 ifndef MENUINFO
@@ -164,8 +162,8 @@ MENUINFO ends
 endif
 
 MENUDATA struct
-	img		dd ?
-	tpe		dd ?
+	img				dd ?
+	tpe				dd ?
 MENUDATA ends
 
 TEXTFONT struct
@@ -222,7 +220,7 @@ ntbrbtns			equ 19
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 2.2.0.3c',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.2.0.4',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1			db 'http://radasm.cherrytree.at/',0
 szAboutUrl2			db 'http://radasm.cherrytree.at/',0
 szOpen				db 'Open',0

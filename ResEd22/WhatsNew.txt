@@ -1,5 +1,10 @@
 ResEd
 
+2.2.0.4 - 2009-09-16
+--------------------
+o Fixed menu editor bug if enter key was pressed.
+o Fixed dialog editor bug if a control was partially outside the tialog.
+
 2.2.0.3c - 2009-09-01
 ---------------------
 o Fixed bug where exported names could contain duplicates.

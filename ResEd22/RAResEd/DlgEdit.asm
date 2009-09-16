@@ -2006,7 +2006,6 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			sub		edx,rect.top
 			invoke DialogTltSize,eax,edx
 		.elseif des.fmode==MODE_MOVING
-PrintDec des.ctlrect.left
 			call	SnapPt
 			invoke RestoreWin
 			mov		eax,des.ctlrect.right
@@ -2044,7 +2043,6 @@ PrintDec des.ctlrect.left
 			invoke ClientToScreen,hInvisible,addr rect.left
 			invoke ScreenToClient,des.hdlg,addr rect.left
 			invoke DialogTltSize,rect.left,rect.top
-PrintDec des.ctlrect.left
 		.elseif des.fmode==MODE_MULTISELMOVE
 			call	SnapPt
 			mov		eax,pt.x
@@ -2241,7 +2239,6 @@ PrintDec des.ctlrect.left
 									invoke GetWindowRect,hCld,addr des.ctlrect
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.left
 									invoke ScreenToClient,hInvisible,addr des.ctlrect.right
-PrintDec des.ctlrect.left
 									mov		des.fmode,MODE_MOVING
 								.endif
 							.endif
@@ -2716,7 +2713,7 @@ SnapPt:
 	cwde
 	mov		pt.x,edx
 	mov		pt.y,eax
-;	invoke SnapPtDu,addr pt
+	invoke SnapPtDu,addr pt
 	retn
 
 IsInWindow:

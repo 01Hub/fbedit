@@ -1130,8 +1130,7 @@ ConvertToDux proc uses ebx,px:DWORD
 	invoke GetDialogBaseUnits
 	movzx	ecx,ax
 	mov		eax,px
-;	sal		eax,3
-	sal		eax,2
+	sal		eax,3
 	mov		ebx,dfntwt
 	imul	ebx
 	cdq
@@ -1140,11 +1139,11 @@ ConvertToDux proc uses ebx,px:DWORD
 	cdq
 	mov		ebx,fntwt
 	idiv	ebx
-;	sar		eax,1
+	sar		eax,1
 ;	.if SIGN?
 ;		sbb		eax,0
 ;	.else
-;		;adc		eax,0
+;		adc		eax,0
 ;	.endif
 	ret
 
@@ -1156,8 +1155,7 @@ ConvertToDuy proc uses ebx,py:DWORD
 	shr		eax,16
 	mov		ecx,eax
 	mov		eax,py
-;	sal		eax,4
-	sal		eax,3
+	sal		eax,4
 	mov		ebx,dfntht
 	imul	ebx
 	cdq
@@ -1166,7 +1164,7 @@ ConvertToDuy proc uses ebx,py:DWORD
 	cdq
 	mov		ebx,fntht
 	idiv	ebx
-;	sar		eax,1
+	sar		eax,1
 ;	.if SIGN?
 ;		sbb		eax,0
 ;	.else
@@ -1267,11 +1265,11 @@ SizeX proc nInc:DWORD
 		sal		eax,1
 		idiv	Gridcx
 		sar		eax,1
-	.if SIGN?
-		sbb		eax,0
-	.else
-		adc		eax,0
-	.endif
+		.if SIGN?
+			;sbb		eax,0
+		.else
+			adc		eax,0
+		.endif
 		imul	Gridcx
 		add		eax,nInc
 	.endif
@@ -1288,11 +1286,11 @@ SizeY proc nInc:DWORD
 		sal		eax,1
 		idiv	Gridcy
 		sar		eax,1
-	.if SIGN?
-		sbb		eax,0
-	.else
-		adc		eax,0
-	.endif
+		.if SIGN?
+			;sbb		eax,0
+		.else
+			adc		eax,0
+		.endif
 		imul	Gridcy
 		add		eax,nInc
 	.endif
