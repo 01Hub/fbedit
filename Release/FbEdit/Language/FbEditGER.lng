@@ -17,6 +17,9 @@ Lang=Deutsch (German), By B.Wiegmann
 ;--------------------------------------------------------------------------
 [1300]
 ;--------------------------------------------------------------------------
+[1400]
+1401=Als Unicode speichern
+;--------------------------------------------------------------------------
 [2000]
 2000=Optionen
 1=OK
@@ -51,6 +54,7 @@ Lang=Deutsch (German), By B.Wiegmann
 4010=Styles als Hex
 4011=Dialog der Schriftgröße anpassen
 4012=Einfache Eigenschaften
+4013=IDC_STATIC definieren
 ;--------------------------------------------------------------------------
 [2400]
 2402=Hinzufügen
@@ -77,6 +81,7 @@ Lang=Deutsch (German), By B.Wiegmann
 2502=Aktuelle Prozedur
 2503=Aktuelles Modul
 2504=Alle offenen Dateien
+2505=Aktuelle Auswahl
 2012=Alle Projekt Dateien
 1=Suchen
 2010=Ersetzen
@@ -134,6 +139,7 @@ Lang=Deutsch (German), By B.Wiegmann
 4026=Kommentare hervorheben
 4047=Schließen bei Dateischutz
 4061=Schriftarten
+4049=Smart Maths
 4024=Code
 4022=AaBbCc
 4025=Zeilenummer
@@ -239,6 +245,7 @@ Lang=Deutsch (German), By B.Wiegmann
 5522=Modul Dateien zum Build-Befehl hinzufügen
 5523=Versionsnummer nach dem Build erhöhen
 5525=Automatisches Löschen von Dateien nach dem Build (*.obj ; *.a):
+5526=Eingabeaufforderung ausführen (cmd.exe)
 1=OK
 2=Abbrechen
 ;--------------------------------------------------------------------------
@@ -257,6 +264,7 @@ Lang=Deutsch (German), By B.Wiegmann
 1009=Destruktoren
 1010=Eigenschaften
 1011=Operatoren
+5601=Nachrichten
 ;--------------------------------------------------------------------------
 [6000]
 6000=Vorlage erstellen
@@ -654,6 +662,7 @@ FBFileAssociation=Dateiverknüpfungen
 10006=Icon hervorheben
 10007=Stern-Zeichen
 10008=Keine Zustandsanzeige
+10009=Mehrzeilig
 ;--------------------------------------------------------------------------
 [Toolbar]
 Toolbar=Werkzeugleisten Erstellung (Toolbar)
@@ -744,6 +753,10 @@ ProjectZip=FbEdit Project Packer
 10000=Projekt Packer
 ;--------------------------------------------------------------------------
 [FbDebug]
+FbDebug=Debug
+1005=Nicht debuggen
+1006=Debuggen
+1=OK
 10010=&Debug
 10000=Haltepunkte &umschalten\tCtrl+T
 10001=&Haltepunkte leeren\tShift+Ctrl+T
@@ -752,4 +765,5 @@ ProjectZip=FbEdit Project Packer
 10004=Schritt &in\tF7
 10005=Schritt &über\tCtrl+F7
 10006=Ausführen &bis zur Markierung\tShift+Ctrl+F7
+10007=Nicht debuggen
 ;--------------------------------------------------------------------------
