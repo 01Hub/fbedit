@@ -1169,7 +1169,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hRes,eax
 		invoke GetWindowLong,hWin,GWL_STYLE
 		and		eax,0FFFFh
-		or		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or WS_VSCROLL or WS_HSCROLL
+		or		eax,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL; or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 		invoke CreateWindowEx,200h,addr szDlgEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
 		mov		hDEd,eax
 		invoke CreateWindowEx,200h,addr szProjectClass,0,56000000h,0,0,0,0,hWin,0,hInstance,0

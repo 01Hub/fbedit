@@ -1140,32 +1140,38 @@ SetChanged proc fChanged:DWORD
 
 SetChanged endp
 
-InvalidateSizeingRect proc uses edi
-	LOCAL	rect:RECT
-
-	mov		edi,offset hSizeing
-	mov		ecx,8
-  @@:
-	mov		eax,[edi]
-	.if eax
-		push	ecx
-		mov		ecx,eax
-		invoke GetWindowRect,ecx,addr rect
-		invoke ScreenToClient,des.hdlg,addr rect.left
-		invoke ScreenToClient,des.hdlg,addr rect.right
-		invoke InvalidateRect,des.hdlg,addr rect,TRUE
-		pop		ecx
-	.endif
-	add		edi,4
-	loop	@b
-	ret
-
-InvalidateSizeingRect endp
-
+;InvalidateSizeingRect proc uses edi
+;	LOCAL	rect:RECT
+;
+;	mov		edi,offset hSizeing
+;	mov		ecx,8
+;  @@:
+;	mov		eax,[edi]
+;	.if eax
+;		push	ecx
+;		mov		ecx,eax
+;		push	ecx
+;		invoke GetWindowRect,ecx,addr rect
+;		invoke ScreenToClient,des.hdlg,addr rect.left
+;		invoke ScreenToClient,des.hdlg,addr rect.right
+;		invoke InvalidateRect,des.hdlg,addr rect,TRUE
+;		pop		ecx
+;		invoke GetWindowRect,ecx,addr rect
+;		invoke ScreenToClient,hDEd,addr rect.left
+;		invoke ScreenToClient,hDEd,addr rect.right
+;		invoke InvalidateRect,hDEd,addr rect,TRUE
+;		pop		ecx
+;	.endif
+;	add		edi,4
+;	dec		ecx
+;	jne		@b
+;	ret
+;
+;InvalidateSizeingRect endp
+;
 DestroySizeingRect proc uses edi
-	LOCAL	rect:RECT
+;	LOCAL	rect:RECT
 
-	invoke InvalidateSizeingRect
 	mov		edi,offset hSizeing
 	mov		ecx,8
   @@:
@@ -1179,15 +1185,18 @@ DestroySizeingRect proc uses edi
 	mov		[edi],eax
 	add		edi,4
 	loop	@b
-	invoke UpdateWindow,des.hdlg
-	mov		rect.left,0
-	mov		rect.top,0
-	mov		rect.right,1234
-	mov		rect.bottom,1234
-	invoke RedrawWindow,des.hdlg,addr rect,NULL,RDW_FRAME or RDW_INVALIDATE
+	mov		hReSize,0
+;	invoke UpdateWindow,des.hdlg
+;	mov		rect.left,0
+;	mov		rect.top,0
+;	mov		rect.right,1234
+;	mov		rect.bottom,1234
+;	invoke RedrawWindow,hInvisible,addr rect,NULL,RDW_FRAME or RDW_INVALIDATE
+;	invoke RedrawWindow,des.hdlg,addr rect,NULL,RDW_FRAME or RDW_INVALIDATE; or RDW_UPDATENOW;or RDW_INTERNALPAINT or RDW_ERASE
+;	invoke InvalidateRect,des.hdlg,NULL,TRUE
+;	invoke UpdateWindow,des.hdlg
 	invoke InvalidateRect,hDEd,NULL,TRUE
 	invoke UpdateWindow,hDEd
-	mov		hReSize,0
 	invoke PropertyList,0
 	ret
 
@@ -1638,7 +1647,7 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	invoke DrawSizeingItem,pt.x,rect.bottom,6,IDC_SIZENS,hInvisible,fLocked
 	invoke DrawSizeingItem,rect.right,rect.bottom,7,IDC_SIZENWSE,hInvisible,fLocked
 	invoke PropertyList,hWin
-	invoke InvalidateSizeingRect
+;	invoke InvalidateSizeingRect
 	invoke UpdateWindow,des.hdlg
 	ret
 
