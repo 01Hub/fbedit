@@ -32,6 +32,7 @@ MODE_MULTISEL		equ 4
 MODE_MULTISELMOVE	equ 5
 MODE_SELECT			equ 6
 MODE_MOVINIT		equ 7
+MODE_MULTISELMOVEINIT	equ 8
 
 .data
 
@@ -856,7 +857,6 @@ dlgfn				dw 33 dup(0)									;face name
 .data?
 
 fGrid				dd ?
-;//Edit
 fRSnapToGrid		dd ?
 fSnapToGrid			dd ?
 fShowSizePos		dd ?
@@ -1146,27 +1146,24 @@ DestroySizeingRect proc uses edi
 	mov		edi,offset hSizeing
 	mov		ecx,8
   @@:
-	mov		eax,[edi]
-	.if eax
+	mov		edx,[edi]
+	.if edx
 		push	ecx
-		invoke DestroyWindow,eax
+		push	edx
+		invoke GetWindowRect,edx,addr rect
+		invoke ScreenToClient,hDEd,addr rect.left
+		invoke ScreenToClient,hDEd,addr rect.right
+		invoke InvalidateRect,hDEd,addr rect,TRUE
+		pop		edx
+		invoke DestroyWindow,edx
 		pop		ecx
 	.endif
 	xor		eax,eax
 	mov		[edi],eax
 	add		edi,4
 	loop	@b
-	mov		hReSize,0
-	invoke GetWindowRect,des.hdlg,addr rect
-	mov		eax,6
-	sub		rect.left,eax
-	sub		rect.top,eax
-	add		rect.right,eax
-	add		rect.bottom,eax
-	invoke ScreenToClient,hDEd,addr rect.left
-	invoke ScreenToClient,hDEd,addr rect.right
-	invoke InvalidateRect,hDEd,addr rect,TRUE
 	invoke UpdateWindow,hDEd
+	mov		hReSize,0
 	invoke PropertyList,0
 	ret
 
@@ -1452,23 +1449,21 @@ DrawMultiSelItem proc xP:DWORD,yP:DWORD,hPar:HWND,fLocked:DWORD,hPrv:HWND
 
 DrawMultiSelItem endp
 
-DestroyMultiSel proc hSel:HWND
+DestroyMultiSel proc uses ebx,hSel:HWND
 	LOCAL	rect:RECT
 
 	.if hSel
-		mov		eax,8
-		.while eax
-			push	eax
+		mov		ebx,8
+		.while ebx
 			invoke GetWindowRect,hSel,addr rect
-			invoke ScreenToClient,des.hdlg,addr rect.left
-			invoke ScreenToClient,des.hdlg,addr rect.right
-			invoke InvalidateRect,des.hdlg,addr rect,TRUE
+			invoke ScreenToClient,hDEd,addr rect.left
+			invoke ScreenToClient,hDEd,addr rect.right
+			invoke InvalidateRect,hDEd,addr rect,TRUE
 			invoke GetWindowLong,hSel,GWL_USERDATA
 			push	eax
 			invoke DestroyWindow,hSel
 			pop		hSel
-			pop		eax
-			dec		eax
+			dec		ebx
 		.endw
 	.endif
 	mov		eax,hSel
@@ -1617,7 +1612,6 @@ SizeingRect proc uses esi,hWin:HWND,fLocked:DWORD
 	invoke DrawSizeingItem,pt.x,rect.bottom,6,IDC_SIZENS,hInvisible,fLocked
 	invoke DrawSizeingItem,rect.right,rect.bottom,7,IDC_SIZENWSE,hInvisible,fLocked
 	invoke PropertyList,hWin
-	invoke UpdateWindow,des.hdlg
 	ret
 
 SizeingRect endp
@@ -1625,7 +1619,6 @@ SizeingRect endp
 SnapToGrid proc uses edi,hWin:HWND,lpRect:DWORD
 	LOCAL	hPar:HWND
 
-;//Edit
 	call RSnapToGrid
 	.if fRSnapToGrid
 		mov		edi,lpRect
@@ -1888,10 +1881,10 @@ CreateNewCtl proc uses esi edi,hOwner:DWORD,nType:DWORD,x:DWORD,y:DWORD,ccx:DWOR
 		mov		[edi].DIALOG.duy,eax
 		.if ccx<3 && ccy<3
 			invoke ConvertToDux,[esi].TYPES.xsize
-			invoke SizeX,0
+			invoke SizeX
 			mov		ccx,eax
 			invoke ConvertToDuy,[esi].TYPES.ysize
-			invoke SizeY,0
+			invoke SizeY
 			mov		ccy,eax
 		.endif
 		mov		eax,ccx
@@ -2021,55 +2014,25 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		rect.bottom,eax
 			call	DrawRect
 			mov		eax,pt.x
+			sub		eax,MousePtDown.x
 			mov		edx,pt.y
-			.if eax!=MousePtDown.x || edx!=MousePtDown.y || des.fmode==MODE_MOVING
+			sub		edx,MousePtDown.y
+			.if sdword ptr eax<-1 || sdword ptr eax>1 || sdword ptr edx<-1 ||  sdword ptr edx>1 || des.fmode==MODE_MOVING
 				mov		des.fmode,MODE_MOVING
 				invoke ClientToScreen,hInvisible,addr rect.left
 				invoke ScreenToClient,des.hdlg,addr rect.left
 				invoke DialogTltSize,rect.left,rect.top
 			.endif
-		.elseif des.fmode==MODE_MULTISELMOVE
+		.elseif des.fmode==MODE_MULTISELMOVE || des.fmode==MODE_MULTISELMOVEINIT
 			call	SnapPt
 			mov		eax,pt.x
 			mov		edx,pt.y
 			.if eax!=OldPt.x || edx!=OldPt.y
+				mov		des.fmode,MODE_MULTISELMOVE
 				mov		OldPt.x,eax
 				mov		OldPt.y,edx
 				invoke RestoreWin
-				mov		eax,hMultiSel
-			  @@:
-				push	eax
-				invoke GetParent,eax
-				push	eax
-				mov		edx,eax
-				invoke GetWindowRect,edx,addr rect
-				mov		eax,pt.x
-				sub		eax,MousePtDown.x
-				add		rect.left,eax
-				add		rect.right,eax
-				mov		eax,pt.y
-				sub		eax,MousePtDown.y
-				add		rect.top,eax
-				add		rect.bottom,eax
-				invoke ScreenToClient,hInvisible,addr rect.left
-				invoke ScreenToClient,hInvisible,addr rect.right
-				call	DrawRect
-				invoke GetParent,hMultiSel
-				pop		edx
-				.if eax==edx
-					invoke ConvertToDlgPt,addr rect.left
-					invoke DialogTltSize,rect.left,rect.top
-				.endif
-				mov		ecx,8
-				pop		eax
-				.while ecx
-					push	ecx
-					invoke GetWindowLong,eax,GWL_USERDATA
-					pop		ecx
-					dec		ecx
-				.endw
-				or		eax,eax
-				jne		@b
+				call	DrawMultisel
 			.endif
 		.elseif des.fmode==MODE_SELECT
 			call	SnapPt
@@ -2165,7 +2128,9 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.endif
 				mov		eax,hReSize
 				mov		des.hselected,eax
-				invoke DestroySizeingRect
+				.if hSizeing
+					invoke DestroySizeingRect
+				.endif
 				.if ToolBoxID
 					;Is readOnly
 					invoke GetWindowLong,hDEd,DEWM_READONLY
@@ -2197,19 +2162,21 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 								.if eax
 									call	IsMultisel
 									.if eax
-										mov		des.fmode,MODE_MULTISELMOVE
+										mov		des.fmode,MODE_MULTISELMOVEINIT
 										invoke CaptureWin
 										call	SnapPt
 										mov		eax,pt.x
 										mov		MousePtDown.x,eax
 										mov		eax,pt.y
 										mov		MousePtDown.y,eax
+										call	DrawMultisel
 										ret
 									.endif
 									.while hMultiSel
 										invoke DestroyMultiSel,hMultiSel
 										mov		hMultiSel,eax
 									.endw
+									invoke UpdateWindow,hDEd
 								.endif
 								invoke GetWindowLong,hDEd,DEWM_MEMORY
 								.if ![eax].DLGHEAD.locked
@@ -2248,6 +2215,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 								invoke DestroyMultiSel,hMultiSel
 								mov		hMultiSel,eax
 							.endw
+							invoke UpdateWindow,hDEd
 							invoke CaptureWin
 							call	SnapPt
 							mov		eax,pt.x
@@ -2264,10 +2232,13 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 						.endif
 					.else
 						; Dialog
-						.while hMultiSel
-							invoke DestroyMultiSel,hMultiSel
-							mov		hMultiSel,eax
-						.endw
+						.if hMultiSel
+							.while hMultiSel
+								invoke DestroyMultiSel,hMultiSel
+								mov		hMultiSel,eax
+							.endw
+							invoke UpdateWindow,hDEd
+						.endif
 						mov		des.fmode,MODE_NOTHING
 						mov		eax,hCld
 						.if eax==des.hselected || (fShift && !fControl)
@@ -2328,12 +2299,16 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			sub		eax,rect.top
 			mov		rect.bottom,eax
 	 		invoke ConvertToDux,rect.left
+	 		invoke SizeX
 			mov		rect.left,eax
 	 		invoke ConvertToDux,rect.right
+	 		invoke SizeX
 			mov		rect.right,eax
 	 		invoke ConvertToDuy,rect.top
+	 		invoke SizeY
 			mov		rect.top,eax
 	 		invoke ConvertToDuy,rect.bottom
+	 		invoke SizeY
 			mov		rect.bottom,eax
 			mov		edx,ToolBoxID
 			invoke CreateNewCtl,des.hdlg,edx,rect.left,rect.top,rect.right,rect.bottom
@@ -2344,12 +2319,11 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
 			invoke ShowWindow,hTlt,SW_HIDE
-			mov		des.fmode,MODE_NOTHING
 			call	SnapPt
 			mov		eax,pt.x
 			mov		edx,pt.y
 			mov		fChanged,FALSE
-			.if eax!=MousePtDown.x || edx!=MousePtDown.y || des.fmode==MODE_MOVING
+			.if (eax!=MousePtDown.x || edx!=MousePtDown.y) && des.fmode==MODE_MOVING
 				invoke CopyRect,addr rect,addr des.ctlrect
 				mov		eax,pt.x
 				sub		eax,MousePtDown.x
@@ -2366,11 +2340,13 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke GetCtrlMem,des.hselected
 				mov		ebx,eax
 		 		invoke ConvertToDux,rect.left
+		 		invoke SizeX
 		 		.if eax!=[ebx].DIALOG.dux
 					mov		[ebx].DIALOG.dux,eax
 					mov		fChanged,TRUE
 		 		.endif
 		 		invoke ConvertToDuy,rect.top
+		 		invoke SizeY
 		 		.if eax!=[ebx].DIALOG.duy
 					mov		[ebx].DIALOG.duy,eax
 					mov		fChanged,TRUE
@@ -2386,6 +2362,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.else
 				invoke SizeingRect,des.hselected,FALSE
 			.endif
+			mov		des.fmode,MODE_NOTHING
 		.elseif des.fmode==MODE_SIZING
 			invoke RestoreWin
 			invoke DeleteObject,hWinBmp
@@ -2443,12 +2420,14 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					inc		fChanged
 		 		.endif
 		 		invoke ConvertToDux,rect.right
+		 		invoke SizeX
 		 		sub		eax,[ebx].DIALOG.dux
 		 		.if eax!=[ebx].DIALOG.duccx
 					mov		[ebx].DIALOG.duccx,eax
 					inc		fChanged
 		 		.endif
 		 		invoke ConvertToDuy,rect.bottom
+		 		invoke SizeY
 		 		sub		eax,[ebx].DIALOG.duy
 		 		.if eax!=[ebx].DIALOG.duccy
 					mov		[ebx].DIALOG.duccy,eax
@@ -2457,11 +2436,13 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.else
 				;Dialog
 		 		invoke ConvertToDux,rect.right
+		 		invoke SizeX
 		 		.if eax!=[ebx].DIALOG.duccx
 					mov		[ebx].DIALOG.duccx,eax
 					inc		fChanged
 		 		.endif
 		 		invoke ConvertToDuy,rect.bottom
+		 		invoke SizeY
 		 		.if eax!=[ebx].DIALOG.duccy
 					mov		[ebx].DIALOG.duccy,eax
 					inc		fChanged
@@ -2479,7 +2460,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if !hMultiSel
 				mov		des.fmode,MODE_NOTHING
 			.endif
-		.elseif des.fmode==MODE_MULTISELMOVE
+		.elseif des.fmode==MODE_MULTISELMOVE || des.fmode==MODE_MULTISELMOVEINIT
 			mov		OldPt.x,0FFFFh
 			mov		OldPt.y,0FFFFh
 			invoke RestoreWin
@@ -2490,10 +2471,12 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			mov		eax,pt.x
 			sub		eax,MousePtDown.x
 			invoke ConvertToDux,eax
+	 		invoke SizeX
 			mov		pt.x,eax
 			mov		eax,pt.y
 			sub		eax,MousePtDown.y
 			invoke ConvertToDuy,eax
+	 		invoke SizeY
 			mov		pt.y,eax
 			.if pt.x || pt.y
 				mov		eax,hMultiSel
@@ -2529,6 +2512,7 @@ DesignInvisibleProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				invoke DestroyMultiSel,hMultiSel
 				mov		hMultiSel,eax
 			.endw
+			invoke UpdateWindow,hDEd
 			invoke CopyRect,addr rect,addr des.ctlrect
 			mov		eax,rect.right
 			.if sdword ptr eax<rect.left
@@ -2744,6 +2728,43 @@ GetCtrl:
 	.endw
 	pop		edi
 	pop		esi
+	retn
+
+DrawMultisel:
+	mov		eax,hMultiSel
+  @@:
+	push	eax
+	invoke GetParent,eax
+	push	eax
+	mov		edx,eax
+	invoke GetWindowRect,edx,addr rect
+	mov		eax,pt.x
+	sub		eax,MousePtDown.x
+	add		rect.left,eax
+	add		rect.right,eax
+	mov		eax,pt.y
+	sub		eax,MousePtDown.y
+	add		rect.top,eax
+	add		rect.bottom,eax
+	invoke ScreenToClient,hInvisible,addr rect.left
+	invoke ScreenToClient,hInvisible,addr rect.right
+	call	DrawRect
+	invoke GetParent,hMultiSel
+	pop		edx
+	.if eax==edx && des.fmode==MODE_MULTISELMOVE
+		invoke ConvertToDlgPt,addr rect.left
+		invoke DialogTltSize,rect.left,rect.top
+	.endif
+	mov		ecx,8
+	pop		eax
+	.while ecx
+		push	ecx
+		invoke GetWindowLong,eax,GWL_USERDATA
+		pop		ecx
+		dec		ecx
+	.endw
+	or		eax,eax
+	jne		@b
 	retn
 
 DrawRect:
@@ -3223,7 +3244,6 @@ AlignSizeCtl proc uses esi ebx,nFun:DWORD
 
 SnapGrid:
 retn
-;//Edit
 	call RSnapToGrid
 	.if fRSnapToGrid
 ;		mov		eax,[esi].x
@@ -3798,6 +3818,10 @@ CloseDialog proc uses esi
 		invoke SetWindowLong,hDEd,DEWM_DIALOG,0
 		invoke SetWindowLong,hDEd,DEWM_PROJECT,0
 		invoke ShowWindow,hInvisible,SW_HIDE
+		.if hTabSet
+			invoke DestroyWindow,hTabSet
+			mov		hTabSet,0
+		.endif
 	.elseif hDialog
 		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDOK,0
 		invoke SendMessage,hDialog,WM_COMMAND,BN_CLICKED shl 16 or IDCANCEL,0
@@ -4242,7 +4266,7 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 				mov		[ebx].MyDLGITEMTEMPLATEEX.helpID,0
 				mov		eax,[edi].DIALOG.style
 				or		eax,WS_ALWAYS
-				and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE)
+				and		eax,-1 xor (WS_POPUP or WS_DISABLED or WS_MINIMIZE or WS_MAXIMIZE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS)
 				.if [edi].DIALOG.ntype==14
 					or		eax,LVS_SHAREIMAGELISTS
 				.elseif [edi].DIALOG.ntype==16
@@ -4311,6 +4335,19 @@ MakeDialog proc uses esi edi ebx,hMem:DWORD,nSelID:DWORD
 		.endif
 		invoke SizeingRect,eax,FALSE
 	.endif
+	mov		esi,hMem
+	lea		esi,[esi+sizeof DLGHEAD+sizeof DIALOG]
+	xor		ebx,ebx
+	.while [esi].DIALOG.hwnd
+		inc		ebx
+		.if [esi].DIALOG.hwnd!=-1
+			invoke GetDlgItem,des.hdlg,ebx
+			.if eax
+				invoke SetWindowPos,eax,HWND_BOTTOM,0,0,0,0,SWP_NOACTIVATE or SWP_NOMOVE or SWP_NOSIZE
+			.endif
+		.endif
+		add		esi,sizeof DIALOG
+	.endw
 	invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
 	invoke InvalidateRect,hDEd,NULL,TRUE
 	invoke UpdateWindow,hDEd
@@ -4370,6 +4407,7 @@ CreateDlg proc uses esi edi,lpProItemMem:DWORD
 		pop		esi
 		invoke MakeDialog,esi,0
 	.endif
+	invoke ShowWindow,hDEd,SW_SHOWNA
 	mov		eax,esi
 	ret
 

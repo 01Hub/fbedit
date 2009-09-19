@@ -1127,6 +1127,16 @@ GetCtrlID endp
 
 ConvertToDux proc uses ebx,px:DWORD
 
+	.if sdword ptr px<0
+		neg		px
+		call	ConvertIt
+		neg		eax
+	.else
+		call	ConvertIt
+	.endif
+	ret
+
+ConvertIt:
 	invoke GetDialogBaseUnits
 	movzx	ecx,ax
 	mov		eax,px
@@ -1140,17 +1150,23 @@ ConvertToDux proc uses ebx,px:DWORD
 	mov		ebx,fntwt
 	idiv	ebx
 	sar		eax,1
-;	.if SIGN?
-;		sbb		eax,0
-;	.else
-;		adc		eax,0
-;	.endif
-	ret
+	adc		eax,0
+	retn
 
 ConvertToDux endp
 
 ConvertToDuy proc uses ebx,py:DWORD
 
+	.if sdword ptr py<0
+		neg		py
+		call	ConvertIt
+		neg		eax
+	.else
+		call	ConvertIt
+	.endif
+	ret
+
+ConvertIt:
 	invoke GetDialogBaseUnits
 	shr		eax,16
 	mov		ecx,eax
@@ -1165,18 +1181,24 @@ ConvertToDuy proc uses ebx,py:DWORD
 	mov		ebx,fntht
 	idiv	ebx
 	sar		eax,1
-;	.if SIGN?
-;		sbb		eax,0
-;	.else
-;		;adc		eax,0
-;	.endif
-	ret
+	adc		eax,0
+	retn
 
 ConvertToDuy endp
 
 ConvertDuxToPix proc dux:DWORD
 	LOCAL	bux:DWORD
 
+	.if sdword ptr dux<0
+		neg		dux
+		call	ConvertIt
+		neg		eax
+	.else
+		call	ConvertIt
+	.endif
+	ret
+
+ConvertIt:
 	invoke GetDialogBaseUnits
 	and		eax,0FFFFh
 	mov		bux,eax
@@ -1193,18 +1215,24 @@ ConvertDuxToPix proc dux:DWORD
 	mov		ecx,4
 	idiv	ecx
 	sar		eax,1
-	.if SIGN?
-		;sbb		eax,0
-	.else
-		adc		eax,0
-	.endif
-	ret
+	adc		eax,0
+	retn
 
 ConvertDuxToPix endp
 
 ConvertDuyToPix proc duy:DWORD
 	LOCAL	buy:DWORD
 
+	.if sdword ptr duy<0
+		neg		duy
+		call	ConvertIt
+		neg		eax
+	.else
+		call	ConvertIt
+	.endif
+	ret
+
+ConvertIt:
 	invoke GetDialogBaseUnits
 	shr		eax,16
 	mov		buy,eax
@@ -1221,12 +1249,8 @@ ConvertDuyToPix proc duy:DWORD
 	mov		ecx,8
 	idiv	ecx
 	sar		eax,1
-	.if SIGN?
-		;sbb		eax,0
-	.else
-		adc		eax,0
-	.endif
-	ret
+	adc		eax,0
+	retn
 
 ConvertDuyToPix endp
 
@@ -1256,45 +1280,53 @@ RSnapToGrid proc
 
 RSnapToGrid endp
 
-SizeX proc nInc:DWORD
+SizeX proc
 
-;//Edit
 	call RSnapToGrid
 	.if fRSnapToGrid
-		xor		edx,edx
-		sal		eax,1
-		idiv	Gridcx
-		sar		eax,1
-		.if SIGN?
-			;sbb		eax,0
+		.if sdword ptr eax<0
+			neg		eax
+			call	SnapIt
+			neg		eax
 		.else
-			adc		eax,0
+			call	SnapIt
 		.endif
-		imul	Gridcx
-		add		eax,nInc
 	.endif
 	ret
+
+SnapIt:
+	xor		edx,edx
+	sal		eax,1
+	idiv	Gridcx
+	sar		eax,1
+	adc		eax,0
+	imul	Gridcx
+	retn
 
 SizeX endp
 
-SizeY proc nInc:DWORD
+SizeY proc
 
-;//Edit
 	call RSnapToGrid
 	.if fRSnapToGrid
-		xor		edx,edx
-		sal		eax,1
-		idiv	Gridcy
-		sar		eax,1
-		.if SIGN?
-			;sbb		eax,0
+		.if sdword ptr eax<0
+			neg		eax
+			call	SnapIt
+			neg		eax
 		.else
-			adc		eax,0
+			call	SnapIt
 		.endif
-		imul	Gridcy
-		add		eax,nInc
 	.endif
 	ret
+
+SnapIt:
+	xor		edx,edx
+	sal		eax,1
+	idiv	Gridcy
+	sar		eax,1
+	adc		eax,0
+	imul	Gridcy
+	retn
 
 SizeY endp
 
@@ -1305,11 +1337,11 @@ SnapPtDu proc uses ebx,lpPoint:ptr POINT
 		mov		ebx,lpPoint
 		invoke ConvertToDlgPt,ebx
 		invoke ConvertToDux,[ebx].POINT.x
-		invoke SizeX,0
+		invoke SizeX
 		invoke ConvertDuxToPix,eax
 		mov		[ebx].POINT.x,eax
 		invoke ConvertToDuy,[ebx].POINT.y
-		invoke SizeY,0
+		invoke SizeY
 		invoke ConvertDuyToPix,eax
 		mov		[ebx].POINT.y,eax
 		invoke ClientToScreen,des.hdlg,lpPoint

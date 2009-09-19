@@ -40,6 +40,10 @@ Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 10=RAResEd.mak
 11=RAResEd.hla
 12=RAResEd.com
+13=RAResEd.ocx
+14=RAResEd.idl
+15=RAResEd.tlb
+16=RAResEd.sys
 
 [Files]
 1=RAResEd.Asm
@@ -146,16 +150,16 @@ Options=52
 16=,107,0,Res\Lock.bmp
 
 [Size]
-5=0,0,0,0,5994
+5=0,0,0,0,4212
 3=0,0,0,0,620
 4=0,0,0,0,8
-1=0,0,718,485,29012
+1=0,0,718,485,4869
 7=0,0,718,485,41972
 6=0,0,0,0,404
-9=0,0,718,485,102057
-2=0,0,584,498,1904
-8=0,0,0,0,21050
-10=0,0,0,0,5282
+9=0,0,718,485,101734
+2=0,0,584,498,10028
+8=0,0,0,0,18653
+10=0,0,0,0,14354
 16=0,0,718,485,12510
 15=0,0,0,0
 17=0,0,0,0,20777
@@ -178,7 +182,7 @@ Options=52
 35=0,0,0,0,140
 37=0,0,0,0,3000
 38=0,0,0,0
-39=0,0,0,0,0
+39=0,0,0,0,1875
 40=0,0,0,0,27027
 41=0,0,0,0
 42=0,0,0,0
@@ -197,36 +201,36 @@ Options=52
 
 
 [Find]
-1="DrawRect"
-2="MODE_MOVING"
-3="MODE_SELECT"
-4="mov^I^Ides.fmode,0"
-5="SnapPt"
-6="adc"
-7="MenuUpdate"
-8="MenuUpdateMem"
-9="esi"
-10="PRP_STR_FILE"
+1="szDlgEditDummyClass"
+2="DEM_SHOWTABINDEX"
+3=";//Edit"
+4="SizeY"
+5="SizeX"
+6="DestroyMultiSel"
+7="DestroySizeingRect"
+8="DrawRect"
+9="MODE_MOVING"
+10="MODE_SELECT"
 
 [AutoLoad]
 AutoLoad=1,16,9,8
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.107
-PV=2.1.0.107
+FV=2.1.0.112
+PV=2.1.0.112
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.107
+ProductVersion=2.1.0.112
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.107
+FileVersion=2.1.0.112
 CompanyName=
 
 [VersionControl]
@@ -264,17 +268,17 @@ MilestoneOnDateTimeSec=43
 MilestoneOnDateTimeStatus=0
 
 [Group]
-Group=Assembly,Resources,Misc,Modules,Include
+Group=Assembly,Resources,Misc,Include
 1=1
-2=5
+2=4
 3=2
 4=3
-5=5
+5=4
 6=1
 7=1
 8=1
 9=1
-10=5
+10=4
 11=3
 12=3
 13=1
@@ -285,8 +289,8 @@ Group=Assembly,Resources,Misc,Modules,Include
 18=1
 19=2
 20=3
-21=5
-22=5
+21=4
+22=4
 23=2
 24=1
 25=2

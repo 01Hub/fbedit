@@ -189,7 +189,7 @@ ResEdInstall proc public hInst:DWORD,fGlobal:DWORD
 	mov		wc.cbWndExtra,0
 	push	hInstance
 	pop		wc.hInstance
-	mov		wc.hbrBackground,COLOR_BTNFACE+1;NULL
+	mov		wc.hbrBackground,NULL
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset	szDlgEditDummyClass
 	mov		wc.hIcon,0
@@ -574,11 +574,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke FindTab,0,eax
 						.endif
 						.if eax
+							push	eax
+							invoke DestroySizeingRect
+							pop		eax
 							invoke SizeingRect,eax,FALSE
-							invoke ShowWindow,hInvisible,SW_HIDE
-							invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-							invoke InvalidateRect,hDEd,NULL,TRUE
-							invoke UpdateWindow,hDEd
 						.endif
 						pop		esi
 					.endif
@@ -605,11 +604,10 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.endif
 						.endif
 						.if eax
+							push	eax
+							invoke DestroySizeingRect
+							pop		eax
 							invoke SizeingRect,eax,FALSE
-							invoke ShowWindow,hInvisible,SW_HIDE
-							invoke SetWindowPos,hInvisible,HWND_TOP,0,0,0,0,SWP_NOACTIVATE or SWP_SHOWWINDOW or SWP_NOMOVE or SWP_NOSIZE
-							invoke InvalidateRect,hDEd,NULL,TRUE
-							invoke UpdateWindow,hDEd
 						.endif
 						pop		esi
 					.endif
@@ -625,7 +623,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		esi,eax
 					mov		eax,wParam
 					.if eax==VK_LEFT
-;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
 							mov		eax,(DIALOG ptr [esi]).dux
@@ -644,7 +641,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MakeDialog,eax,edx
 						invoke SetChanged,TRUE
 					.elseif eax==VK_RIGHT
-;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
 							mov		eax,(DIALOG ptr [esi]).dux
@@ -663,7 +659,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MakeDialog,eax,edx
 						invoke SetChanged,TRUE
 					.elseif eax==VK_UP
-;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
 							mov		eax,(DIALOG ptr [esi]).duy
@@ -682,7 +677,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MakeDialog,eax,edx
 						invoke SetChanged,TRUE
 					.elseif eax==VK_DOWN
-;//Edit				
 						call RSnapToGrid
 						.if fRSnapToGrid
 							mov		eax,(DIALOG ptr [esi]).duy
@@ -794,7 +788,6 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif hMultiSel
 			mov		ecx,wParam
 			.if eax && !edx
-;//Edit				
 				call RSnapToGrid
 				.if fRSnapToGrid
 					mov		eax,Gridcx
@@ -1169,7 +1162,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hRes,eax
 		invoke GetWindowLong,hWin,GWL_STYLE
 		and		eax,0FFFFh
-		or		eax,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL; or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
+		or		eax,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL
 		invoke CreateWindowEx,200h,addr szDlgEditClass,0,eax,0,0,0,0,hWin,0,hInstance,0
 		mov		hDEd,eax
 		invoke CreateWindowEx,200h,addr szProjectClass,0,56000000h,0,0,0,0,hWin,0,hInstance,0
@@ -2009,8 +2002,15 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		hMultiSel,eax
 				.endw
 				invoke DestroySizeingRect
-				invoke GetClientRect,hDEd,addr rect
-				invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditDummyClass,NULL,WS_CHILD or WS_VISIBLE,0,0,rect.right,rect.bottom,hDEd,123456789,hInstance,0
+				invoke GetWindowLong,hDEd,DEWM_SCROLLY
+				shl		eax,3
+				push	eax
+				invoke GetWindowLong,hDEd,DEWM_SCROLLX
+				shl		eax,3
+				pop		edx
+				neg		eax
+				neg		edx
+				invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditDummyClass,NULL,WS_CHILD or WS_VISIBLE,eax,edx,16384,16384,hDEd,123456789,hInstance,0
 				mov		hTabSet,eax
 				invoke ShowWindow,hInvisible,SW_HIDE
 				invoke ShowWindow,hTabSet,SW_HIDE
@@ -2157,6 +2157,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DestroyMultiSel,hMultiSel
 					mov		hMultiSel,eax
 				.endw
+				invoke ShowWindow,hDEd,SW_HIDE
 				invoke ShowWindow,[ebx].DLGHEAD.hred,SW_SHOW
 				invoke SendMessage,[ebx].DLGHEAD.hred,EM_SETMODIFY,FALSE,0
 				invoke SendMessage,[ebx].DLGHEAD.hred,REM_LOCKUNDOID,TRUE,0
@@ -2178,6 +2179,7 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke ShowWindow,[ebx].DLGHEAD.hred,SW_HIDE
 						mov		[ebx].DLGHEAD.ftextmode,FALSE
 						invoke SizeingRect,des.hdlg,FALSE
+						invoke ShowWindow,hDEd,SW_SHOWNA
 					.endif
 				.endif
 			.endif
