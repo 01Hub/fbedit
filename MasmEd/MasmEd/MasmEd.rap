@@ -296,7 +296,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -393,8 +393,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-1=1
-37=1
+AutoLoad=1,37
 [Collapse]
 2=
 1=,,,,,,,,
