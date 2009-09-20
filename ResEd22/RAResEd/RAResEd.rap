@@ -156,7 +156,7 @@ Options=52
 1=0,0,718,485,4869
 7=0,0,718,485,41972
 6=0,0,0,0,404
-9=0,0,718,485,101734
+9=0,0,718,485,94558
 2=0,0,584,498,10028
 8=0,0,0,0,18653
 10=0,0,0,0,14354
@@ -201,36 +201,36 @@ Options=52
 
 
 [Find]
-1="szDlgEditDummyClass"
-2="DEM_SHOWTABINDEX"
-3=";//Edit"
-4="SizeY"
-5="SizeX"
-6="DestroyMultiSel"
-7="DestroySizeingRect"
-8="DrawRect"
-9="MODE_MOVING"
-10="MODE_SELECT"
+1="WM_NCMOUSEMOVE"
+2="szDlgEditDummyClass"
+3="DEM_SHOWTABINDEX"
+4=";//Edit"
+5="SizeY"
+6="SizeX"
+7="DestroyMultiSel"
+8="DestroySizeingRect"
+9="DrawRect"
+10="MODE_MOVING"
 
 [AutoLoad]
 AutoLoad=1,16,9,8
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.112
-PV=2.1.0.112
+FV=2.1.0.113
+PV=2.1.0.113
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.112
+ProductVersion=2.1.0.113
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.112
+FileVersion=2.1.0.113
 CompanyName=
 
 [VersionControl]
@@ -258,7 +258,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16

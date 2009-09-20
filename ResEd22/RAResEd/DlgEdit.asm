@@ -4118,6 +4118,7 @@ MakeDlgClassProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_NCMOUSEMOVE
 		invoke SetWindowPos,hWin,0,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
+		invoke UpdateWindow,hWin
 	.elseif eax==WM_EXITMENULOOP
 		.if des.hmnu
 			invoke DestroyMenu,des.hmnu
@@ -4127,6 +4128,7 @@ MakeDlgClassProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		des.dlgpt.x,eax
 		mov		des.dlgpt.y,eax
 		invoke SetWindowPos,hWin,0,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE or SWP_NOZORDER or SWP_FRAMECHANGED
+		invoke UpdateWindow,hWin
 	.elseif eax==WM_ERASEBKGND
 		.if fGrid
 			invoke GetClientRect,hWin,addr rect
