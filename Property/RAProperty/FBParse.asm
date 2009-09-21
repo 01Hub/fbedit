@@ -915,87 +915,6 @@ ParseMacro:
 	xor		eax,eax
 	retn
 
-;ArraySize:
-;	call	SkipSpc
-;	push		ebx
-;	mov		ebx,offset szname[16384]
-;	mov		word ptr [ebx-1],0
-;	mov		word ptr szname[8192-1],0
-;	mov		narray,0
-;	.while TRUE
-;		mov		al,[esi]
-;		.if al==VK_TAB
-;			mov		al,' '
-;		.elseif al=='"' || al=="'"
-;			inc		esi
-;			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
-;				inc		esi
-;				inc		narray
-;			.endw
-;			.if al==[esi]
-;				inc		esi
-;			.endif
-;			mov		al,[esi]
-;		.elseif al=='<'
-;			call	SkipBrace
-;			inc		narray
-;		.endif
-;		mov		ah,[ebx-1]
-;		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
-;			.if ah==' ' || (al==',' && ah==',')
-;				dec		ebx
-;			.endif
-;		.endif
-;		.if al==' '
-;			.if ah=='+' || ah=='-' || ah=='*' || ah=='/' || ah=='(' || ah==')' || ah==','
-;				mov		al,ah
-;				dec		ebx
-;			.endif
-;		.endif
-;		.if al=='d' || al=='D'
-;			.if byte ptr [esi+1]=='u' || byte ptr [esi+1]=='U'
-;				.if byte ptr [esi+2]=='p' || byte ptr [esi+2]=='P'
-;					.if byte ptr [esi+3]==' ' || byte ptr [esi+3]==VK_TAB || byte ptr [esi+3]=='('
-;						add		esi,3
-;						call	SkipSpc
-;						.if byte ptr [esi]=='('
-;							call	SkipBrace
-;						.endif
-;						call	SkipSpc
-;						.if byte ptr szname[8192]
-;							invoke strcat,offset szname[8192],offset szAdd
-;						.endif
-;						mov		byte ptr [ebx-1],0
-;						invoke strcat,offset szname[8192],offset szname[16384]
-;						mov		al,[esi]
-;					.endif
-;				.endif
-;			.endif
-;		.endif
-;		.if al==',' || al==VK_RETURN || !al
-;			.if byte ptr [ebx-1]
-;				inc		narray
-;			.endif
-;			mov		ebx,offset szname[16384]
-;			mov		byte ptr [ebx],0
-;		  .break .if al==VK_RETURN || !al
-;		.else
-;			mov		[ebx],al
-;			inc		ebx
-;		.endif
-;		inc		esi
-;	.endw
-;	mov		byte ptr [ebx],0
-;	pop		ebx
-;	.if narray>1 || (byte ptr szname[8192] && narray)
-;		.if byte ptr szname[8192]
-;			invoke strcat,addr szname[8192],addr szAdd
-;		.endif
-;		invoke DwToAscii,narray,addr szname[16384+1024]
-;		invoke strcat,addr szname[8192],addr szname[16384+1024]
-;	.endif
-;	retn
-;
 ParseConstructor:
 	call	AddNamespace
 	call	SaveName
@@ -1270,9 +1189,7 @@ SaveRetType:
 		invoke FBGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
-			dec		edi
-			mov		word ptr [edi],0
-			inc		edi
+			mov		word ptr [edi-1],0
 			mov		edx,edi
 			lea		edi,[edi+ecx]
 			mov		eax,esi
@@ -1566,7 +1483,8 @@ ParseStruct:
 				.endif
 				invoke FBIsIgnore,IGNORE_STRUCTITEMINIT,ecx,esi
 				.if eax
-					; Declare MySub 
+					; Declare Sub MySub()
+					; Declare Function MyFunction() As Integer
 					lea		esi,[esi+ecx]
 					invoke FBGetWord,esi,addr npos
 					mov		esi,edx
@@ -1665,30 +1583,66 @@ ParseStruct:
 					.if byte ptr [edi]==','
 						inc		edi
 					.endif
-					mov		eax,len1
-					inc		eax
-					invoke strcpyn,edi,lpword1,eax
-					add		edi,len1
-					mov		word ptr [edi],':'
-					inc		edi
-					mov		eax,len2
-					inc		eax
-					invoke strcpyn,edi,lpword2,eax
-					add		edi,len2
-					.while fPtr
-						invoke strcpyn,edi,addr szPtr,5
-						lea		edi,[edi+4]
-						dec		fPtr
-					.endw
 					invoke FBIsFunction,lpword2,len2
 					.if !eax
 						inc		fdim
+						mov		fRetType,0
+						add		edi,32
 						push	edi
 						mov		eax,TYPE_NAMEFIRST
 						call	ParseProcNoNamespace
 						pop		edi
 						mov		edx,'t'
 						invoke AddWordToWordList,edx,nOwner,nline,npos,edi,4
+						push	ebx
+						lea		ebx,[edi-32]
+						invoke strcpy,ebx,edi
+						invoke strlen,edi
+						lea		edi,[edi+eax+1]
+						lea		ebx,[ebx+eax]
+						.if byte ptr [edi]
+;							mov		byte ptr [ebx],'('
+;							inc		ebx
+;							invoke strcpy,ebx,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+;							lea		ebx,[ebx+eax]
+;							mov		byte ptr [ebx],')'
+;							inc		ebx
+						.else
+							inc		edi
+						.endif
+						mov		byte ptr [ebx],':'
+						inc		ebx
+						.if fRetType
+							invoke strcpy,ebx,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax+1]
+							lea		ebx,[ebx+eax]
+						.else
+							mov		eax,len2
+							inc		eax
+							invoke strcpyn,ebx,lpword2,eax
+							add		ebx,len2
+						.endif
+						mov		edi,ebx
+						pop		ebx
+					.else
+						mov		eax,len1
+						inc		eax
+						invoke strcpyn,edi,lpword1,eax
+						add		edi,len1
+						mov		word ptr [edi],':'
+						inc		edi
+						mov		eax,len2
+						inc		eax
+						invoke strcpyn,edi,lpword2,eax
+						add		edi,len2
+						.while fPtr
+							invoke strcpyn,edi,addr szPtr,5
+							lea		edi,[edi+4]
+							dec		fPtr
+						.endw
 					.endif
 					mov		word ptr [edi],','
 					call	SkipToComma

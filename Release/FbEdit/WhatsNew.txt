@@ -1,6 +1,8 @@
 Whats new:
 ----------
 1.0.7.1d
+1.0.7.1d
+o Improved dialog editor control selection and moving with snap to grid.
 o Fixed menu editor bug if enter key was pressed.
 o Fixed dialog editor bug if a control was partially outside the tialog.
 
