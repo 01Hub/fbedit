@@ -538,7 +538,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=16
+MilestoneOnDateDate=21
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -675,7 +675,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 122=1
 123=5
 124=5
-125=3
+125=7
 126=5
 [Collapse]
 6=,,,,,,,,,,,,,,,,,,,,,,

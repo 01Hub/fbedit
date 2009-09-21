@@ -1,6 +1,6 @@
-;include file for building RadASM addins
+;include file for building RadASM plugins
 
-RadASM_Version			equ 2210
+RadASM_Version			equ 2207
 
 ;Assemblers
 nMASM					equ 1
@@ -66,8 +66,6 @@ AIM_EDITKEYDOWN			equ WM_USER+137			;hWnd=handle of edit window, wParam and lPar
 AIM_EDITCHAR			equ WM_USER+138			;hWnd=handle of edit window, wParam and lParam as WM_CHAR
 AIM_PREPARSE			equ WM_USER+139			;hWnd=handle of mdi frame, wParam=project file number,lParam=pointer to file content
 AIM_PARSEDONE			equ WM_USER+140			;hWnd=handle of mdi frame, wParam=project file number,lParam=pointer to file content
-AIM_IMPORTED			equ WM_USER+141			;hWnd=handle of mdi frame, wParam=project file,lParam=string of zero terminated file names
-AIM_RCSAVED				equ WM_USER+142			;hWnd=handle of mdi frame, wParam=nType,lParam=string of zero terminated file name
 
 ;Return values (eax) from InstallDll procedure which tell RadASM which messages to send to your DllProc procedure,can be OR'ed
 RAM_COMMAND				equ 00000001h			;AIM_COOMAND equ WM_COMMAND
@@ -116,8 +114,6 @@ RAM_EDITKEYDOWN			equ 00000100h			;AIM_EDITKEYDOWN
 RAM_EDITCHAR			equ 00000200h			;AIM_EDITCHAR
 RAM_PREPARSE			equ 00000400h			;AIM_PREPARSE
 RAM_PARSEDONE			equ 00000800h			;AIM_PARSEDONE
-RAM_IMPORTED			equ 00001000h			;AIM_IMPORTED
-RAM_RCSAVED				equ 00002000h			;AIM_RCSAVED
 
 ;Structure pointed to on return from AIM_GETHANDLES 
 ADDINHANDLES struct
@@ -175,8 +171,7 @@ ADDINHANDLES struct
 	hFont				dd 3 dup(0)				;Code edit Normal,Italic,Linenumber
 	hFontTxt			dd 0					;Text edit
 	hFontHex			dd 0					;Hex edit
-	hFullScreen			dd 0					;Handle of fullscreen editing popup
-	hFound				dd 0					;Handle of found mdi child
+	hFullScreen			dd 0					;Full screen parent
 ADDINHANDLES ends
 
 ;Structure pointed to on return from AIM_GETPROCS
@@ -208,7 +203,7 @@ ADDINPROCS struct
 	lpAddTab			dd 0					;hMdiChild,lpFileName
 	lpDelTab			dd 0					;hMdiChild
 	lpSelTab			dd 0					;hMdiChild
-	lpUpdateAll			dd 0					;Command (IDM_FILE_SAVEALLFILES, IDM_FILE_OPENFILE, IDM_FILE_CLOSEFILE, IDM_OPTION_COLORS, IDM_OPTION_FONT, IDM_OPTION_EDIT, WM_PAINT, IDM_FORMAT_SHOWGRID, FIND_OPEN_FILENAME(51000), IS_FILE_CHANGED(51001))
+	lpUpdateAll			dd 0					;Command (IDM_FILE_SAVEALLFILES, IDM_FILE_OPENFILE, IDM_FILE_CLOSEFILE, IDM_OPTION_COLORS, IDM_OPTION_FONT, IDM_OPTION_EDIT, WM_PAINT, IDM_FORMAT_SHOWGRID)
 	lpGetFileNameFromID	dd 0					;nProjectFileID
 	lpMenuRebuild		dd 0					;No parameters
 	lpUpdateMRU			dd 0					;No parameters
@@ -229,7 +224,6 @@ ADDINPROCS struct
 	lpSetTextLink		dd 0					;nType (1-3)
 	lpScanWord			dd 0					;lpWord, lpLine
 	lpAddWordToWordList	dd 0					;nType,nOwner,pWords,nParts
-	lpRefreshProperty	dd 0					;
 ADDINPROCS ends
 
 ;Structure pointed to on return from AIM_GETDATA
@@ -284,12 +278,6 @@ ADDINDATA struct
 	ShowApiToolTip		dd 0					;If TRUE RadASM will show tooltip on api's and procs.
 	fLB					dd 0					;RadASM is showing the listbox.
 	fTlt				dd 0					;RadASM is showing the tooltip.
-	lpSRCFilterString	dd 0
-	lpDefSrcExt			dd 0      
-	lpHDRFilterString	dd 0
-	lpDefHdrExt			dd 0      
-	lpMODFilterString	dd 0
-	lpDefModExt			dd 0      
 ADDINDATA ends
 
 ;Addin options
