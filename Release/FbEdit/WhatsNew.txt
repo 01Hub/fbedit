@@ -1,44 +1,20 @@
 Whats new:
 ----------
-1.0.7.1d
-1.0.7.1d
-o Improved dialog editor control selection and moving with snap to grid.
-o Fixed menu editor bug if enter key was pressed.
-o Fixed dialog editor bug if a control was partially outside the tialog.
-
-1.0.7.1c
+1.0.7.2
 o Added code complete on functions that returns a type or a pointer to a type.
 o Added support for nested namespaces.
-o Improved codecomplete on namespaces and with blocks.
+o Improved code complete on namespaces and with blocks.
+o Improved code complete on #Include and #Inclib
 o Compile modules only if newer now checks included header files recursively.
   Included libraries are also checked (not 100% reliable).
+o Improved dialog editor control selection and moving with snap to grid.
+o The resource editor work area scrollbars are now hidden when not needed.
+o Fixed menu editor bug if enter key was pressed.
+o Fixed dialog editor bug if a control was partially outside the tialog.
 o Fixed bug where duplicate resource names could be exported.
 O Fixed code complete bugs on #Include and #Inclib
-
-1.0.7.1b
-o Improved code complete on #Include and #Inclib
-o The resource editor work area scrollbars are now hidden when not needed.
 o Fixed bug where editing MANIFEST, TOOLBAR, RCDATA or custom resource could leave
   garbage at the end.
 o Fixed bug where changing the manifest file name did not work.
 o Fixed a bug where the resource editor properties combo would be set to '#define' when names
   are exported.
-
-1.0.7.1
-o 4quiles made a nice change to Project browser.
-o FbEdit now jumps to first compile error.
-o Auto delete files after build is only performed after build of the main file.
-o Accelerator table and string table now has an edit combo in its name column.
-  The combo items are names from menues. This might save you some typing.
-o Added PBS_MARQUEE progress bar style to dialog editor.
-o Added custom resource types with embedded data (leave files filter blank in resource types option).
-o It is now possible to reserve more than one menuid with AIM_GETMENUID.
-  wParam specifies the number of menuid's to reserve.
-o Added MakeProjectFileName to ADDINFUNCTIONS.
-  In: Filename, Returns:Full path.
-o Added HH_Help to ADDINFUNCTIONS. The lpBuff in ADDINDATA contains the word to seach for.
-o Fixed block complete bug in code editor.
-o Fixed line continuation bug in code parser.
-o Fixed custom resource types bug in resource editor.
-o Fixed custom styles bug in resource editor.
-o Fixed duplicate #define bug in  dialog editor.
