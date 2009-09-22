@@ -35,7 +35,7 @@ Sub AddApiFile(ByVal sFile As String,ByVal nType As Integer)
 		If fProject Then
 			sApi=ProjectApiFiles
 		Else
-			sApi=ApiFiles
+			sApi=DefApiFiles
 		EndIf
 		While Len(sApi)
 			sApiItem=GetTextItem(sApi)
