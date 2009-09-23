@@ -41,8 +41,11 @@ Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 2=ProcDump.Inc
 3=ProcDump.Def
 4=ProcDump.Txt
-5=..\..\RadAsm.inc
+5=..\RadAsm.inc
 6=ProcDump.rc
+AutoDelete=1
+AskMe=0
+MinorFiles=*.res;*.obj;*.lib;*.exp;
 [Resource]
 1=IDB_TOOLBAR,100,0,Res\ToolBar.bmp
 
@@ -59,8 +62,8 @@ Options=52
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,6042
-2=0,0,0,0,592
+1=0,0,0,0,3901
+2=0,0,0,0,590
 3=0,0,0,0,62
 5=0,0,0,0,0
 4=0,0,0,0,113
@@ -97,7 +100,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=31
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -133,3 +136,7 @@ ProductVer4Range=0
 5=
 [Find]
 1=", "
+[AutoLoad]
+1=1
+[RADebugBP]
+1=

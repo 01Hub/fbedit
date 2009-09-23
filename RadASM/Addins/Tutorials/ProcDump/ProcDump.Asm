@@ -98,6 +98,53 @@ GetOptions proc
 
 GetOptions endp
 
+BinToDec proc dwVal:DWORD,lpAscii:DWORD
+
+    push    ebx
+    push    ecx
+    push    edx
+    push    esi
+    push    edi
+	mov		eax,dwVal
+	mov		edi,lpAscii
+	or		eax,eax
+	jns		pos
+	mov		byte ptr [edi],'-'
+	neg		eax
+	inc		edi
+  pos:      
+	mov		ecx,429496730
+	mov		esi,edi
+  @@:
+	mov		ebx,eax
+	mul		ecx
+	mov		eax,edx
+	lea		edx,[edx*4+edx]
+	add		edx,edx
+	sub		ebx,edx
+	add		bl,'0'
+	mov		[edi],bl
+	inc		edi
+	or		eax,eax
+	jne		@b
+	mov		byte ptr [edi],al
+	.while esi<edi
+		dec		edi
+		mov		al,[esi]
+		mov		ah,[edi]
+		mov		[edi],al
+		mov		[esi],ah
+		inc		esi
+	.endw
+    pop     edi
+    pop     esi
+    pop     edx
+    pop     ecx
+    pop     ebx
+    ret
+
+BinToDec endp
+
 ProcDump proc uses esi
 
 	mov		edx,lpData
@@ -105,14 +152,18 @@ ProcDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
+	;Clear the output window
+	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		;Check if it is a proc
 		.if [esi].PROPERTIES.nType=='p'
 			push	esi
 			;Point to the proc name
+			mov		edx,[esi].PROPERTIES.Owner
+			invoke BinToDec,edx,addr buffer
 			lea		esi,[esi+sizeof PROPERTIES]
-			invoke lstrcpy,addr buffer,esi
+			invoke lstrcat,addr buffer,esi
 			invoke lstrlen,esi
 			;Point to the procs parameters
 			lea		esi,[esi+eax+1]
@@ -148,6 +199,8 @@ StructDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
+	;Clear the output window
+	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		;Check if it is a struct
@@ -176,41 +229,6 @@ StructDump proc uses esi
 
 StructDump endp
 
-DataDump proc uses esi
-
-	mov		edx,lpData
-	;Get pointer to word list
-	mov		esi,[edx].ADDINDATA.lpWordList
-	;Skip the words loaded from .api files
-	add		esi,[edx].ADDINDATA.rpProjectWordList
-	;Loop trough the word list
-	.while [esi].PROPERTIES.nSize
-		;Check if it is a struct
-		.if [esi].PROPERTIES.nType=='d'
-			push	esi
-			;Point to the struct name
-			lea		esi,[esi+sizeof PROPERTIES]
-			invoke lstrcpy,addr buffer,esi
-			invoke lstrlen,esi
-			;Point to the struct items
-			lea		esi,[esi+eax+1]
-			.if byte ptr [esi]
-				invoke lstrlen,addr buffer
-				mov		word ptr buffer[eax],','
-				invoke lstrcat,addr buffer,esi
-			.endif
-			;Output the data definition
-			invoke TextOutput,addr buffer
-			pop		esi
-		.endif
-		;Move to next word
-		mov		eax,[esi].PROPERTIES.nSize
-		lea		esi,[esi+eax+sizeof PROPERTIES]
-	.endw
-	ret
-
-DataDump endp
-
 AllDump proc uses esi
 
 	mov		edx,lpData
@@ -218,6 +236,8 @@ AllDump proc uses esi
 	mov		esi,[edx].ADDINDATA.lpWordList
 	;Skip the words loaded from .api files
 	add		esi,[edx].ADDINDATA.rpProjectWordList
+	;Clear the output window
+	invoke clrOutput
 	;Loop trough the word list
 	.while [esi].PROPERTIES.nSize
 		push	esi
@@ -249,11 +269,9 @@ DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		eax,16
 		.if edx==IDAddIn && eax==BN_CLICKED
 			; Your addin has been selected
-			;Clear the output window
-			invoke clrOutput
+			;invoke ProcDump
 			invoke ProcDump
-			invoke StructDump
-			invoke DataDump
+			;invoke AllDump
 		.endif
 	.elseif eax==AIM_CLOSE
 		; Delete menu item
