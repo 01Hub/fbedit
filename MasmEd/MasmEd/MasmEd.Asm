@@ -298,8 +298,40 @@ SetBlockDefs proc uses esi,hWin:HWND
 
 SetBlockDefs endp
 
+CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	invoke IsCharAlphaNumeric,wParam
+	.if !eax
+		invoke SendMessage,hREd,REM_ISCHARPOS,cp,0
+		.if !eax
+			invoke SendMessage,hREd,REM_SETCHARTAB,'.',CT_CHAR
+			invoke SendMessage,hREd,REM_GETWORDFROMPOS,cp,addr buffer
+			.if eax
+				invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
+				mov		ebx,eax
+				.while ebx
+					invoke strcmpi,ebx,addr buffer
+					.if !eax
+						invoke SendMessage,hREd,REM_CASEWORD,cp,ebx
+						invoke SendMessage,hREd,EM_LINEFROMCHAR,cp,0
+						invoke SendMessage,hREd,REM_INVALIDATELINE,eax,0
+						.break
+					.endif
+					invoke SendMessage,hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
+					mov		ebx,eax
+				.endw
+			.endif
+			invoke SendMessage,hREd,REM_SETCHARTAB,'.',CT_HICHAR
+		.endif
+	.endif
+	ret
+
+CaseConvertWord endp
+
 RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
+	LOCAL	chrg1:CHARRANGE
 	LOCAL	ln:DWORD
 	LOCAL	lx:DWORD
 	LOCAL	lz:DWORD
@@ -349,6 +381,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ccinprogress,eax
 				jmp		Ex
 			.elseif wParam==VK_RETURN
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke CaseConvertWord,wParam,chrg.cpMin
 				;Block complete
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
 				push	eax
@@ -391,7 +425,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
 							invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
 							mov		eax,[edi].RABLOCKDEF.lpszEnd
-							.if byte ptr [eax]=='?'
+							.if byte ptr [eax]=='?' || byte ptr [eax]=='$'
 								;Skip indent
 								mov		word ptr buffer,255
 								invoke SendMessage,hREd,EM_GETLINE,ln,addr buffer
@@ -407,13 +441,20 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								.endw
 								mov		buffer[ebx],0
 								pop		ebx
-								invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
-								mov		word ptr buffer,VK_SPACE
-								invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+								mov		eax,[edi].RABLOCKDEF.lpszStart
+								add		eax,2
+								invoke strcmpi,addr buffer[ebx],eax
+								.if eax
+									invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
+									mov		word ptr buffer,VK_SPACE
+									invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+								.endif
 								mov		eax,[edi].RABLOCKDEF.lpszEnd
 								add		eax,2
 							.endif
 							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
+							invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg1
+							invoke CaseConvertWord,wParam,chrg1.cpMin
 							invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
 							mov		word ptr buffer,VK_TAB
 							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
@@ -459,6 +500,14 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				mov		cctype,CCTYPE_NONE
 				invoke ShowWindow,hCCLB,SW_HIDE
+			.endif
+		.endif
+		invoke IsCharAlphaNumeric,wParam
+		.if cctype==CCTYPE_NONE || !eax
+			invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+			mov		eax,chrg.cpMin
+			.if eax==chrg.cpMax && wParam!=VK_BACK
+				invoke CaseConvertWord,wParam,chrg.cpMin
 			.endif
 		.endif
 	.elseif eax==WM_KEYDOWN

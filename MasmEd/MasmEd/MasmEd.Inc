@@ -536,9 +536,13 @@ szElse					db '.else',0
 szEndIf					db '.endif',0
 szWhile					db '.while',0
 szEndw					db '.endw',0
-szStruct				db '? struct',0
-szStruc					db '? struc',0
-szUnion					db '? union',0
+szNStruct				db 'struct',0
+szNStruc				db 'struc',0
+szNUnion				db 'union',0
+szNEnds					db 'ends',0
+szStruct				db '$ struct',0
+szStruc					db '$ struc',0
+szUnion					db '$ union',0
 szEnds					db '? ends',0
 szMacro					db '$ macro',0
 szEndm					db 'endm',0
@@ -547,6 +551,7 @@ szDataU					db '.data?',0
 szConst					db '.const',0
 szCode					db '.code',0
 szComment				db 'comment',0
+
 szBegin					db 'BEGIN',0
 szEnd					db 'END',0
 szAdd					db 'Add ',0
@@ -559,6 +564,9 @@ szBracketMatch			db '[({,])},\,',0
 rabdproc				RABLOCKDEF <offset szProc,offset szEndp,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdif					RABLOCKDEF <offset szIf,offset szEndIf,offset szElseIf,offset szElse,0>
 rabdwhile				RABLOCKDEF <offset szWhile,offset szEndw,0,0,0>
+rabdnstruct				RABLOCKDEF <offset szNStruct,offset szNEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
+rabdnstruc				RABLOCKDEF <offset szNStruc,offset szNEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
+rabdnunion				RABLOCKDEF <offset szNUnion,offset szNEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdstruct				RABLOCKDEF <offset szStruct,offset szEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdstruc				RABLOCKDEF <offset szStruc,offset szEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdunion				RABLOCKDEF <offset szUnion,offset szEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
@@ -570,7 +578,7 @@ rabdcode				RABLOCKDEF <offset szCode,0,0,0,BD_SEGMENTBLOCK>
 rabdcomment				RABLOCKDEF <offset szComment,0,0,0,BD_COMMENTBLOCK>
 rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,2 SHL 16>
 
-blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdstruct,offset rabdstruc,offset rabdunion,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
+blocks					dd offset rabdif,offset rabdwhile,offset rabdproc,offset rabdnstruc,offset rabdnstruct,offset rabdnunion,offset rabdstruc,offset rabdstruct,offset rabdunion,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
 
 szREG_SZ				db 'REG_SZ',0
 szMasmEd				db 'Software\MasmEd1000\'
@@ -657,6 +665,8 @@ szSession				db 'Session',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
+
+szCaseTypes				db 'WPpc',0
 
 .data?
 
