@@ -275,16 +275,16 @@ Group=Assembly,Resources,Misc,Include
 52=3
 
 [Find]
-1="1057"
-2="hMnu"
-3="WndProc"
-4="BREAK"
-5="FUNC_IMM"
-6="FUNC_GET"
-7="WM_USER+998"
-8="abowe"
-9="DumpStruct"
-10="IDM_DEBUG_RUN"
+1="REM_SUBCLASS"
+2="REM_SUB"
+3="1057"
+4="hMnu"
+5="WndProc"
+6="BREAK"
+7="FUNC_IMM"
+8="FUNC_GET"
+9="WM_USER+998"
+10="abowe"
 
 [VersionControl]
 Settings=1246
@@ -296,7 +296,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=25
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -331,10 +331,10 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,12921
-1=0,0,0,0,3258
+2=0,0,687,524,15248
+1=0,0,0,0,10488
 11=0,0,0,0,9965
-22=0,0,0,0,4185
+22=0,0,0,0,4195
 10=0,0,0,0,5143
 23=0,0,0,0,4914
 9=0,0,0,0,0
@@ -364,7 +364,7 @@ ProductVer4Range=0
 37=0,0,0,0,1011
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,247
+38=0,0,0,0,275
 39=0,0,0,0
 40=0,0,0,0,4916
 42=0,0,0,0,1576
@@ -393,7 +393,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,37,29,2,38
+AutoLoad=1,37,29,2,38,22
 [Collapse]
 2=
 1=,,,,,,,,

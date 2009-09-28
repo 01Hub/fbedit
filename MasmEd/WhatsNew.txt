@@ -1,7 +1,8 @@
 MasmEd
 
-1.0.5.8 - 2009.09.25
+1.0.5.8 - 2009.09.28
 --------------------
+o Added auto block complete.
 o Improved dialog editor control selection and moving with snap to grid.
 o Fixed menu editor bug if enter key was pressed.
 o Fixed dialog editor bug if a control was partially outside the tialog.

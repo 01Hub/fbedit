@@ -298,8 +298,12 @@ SetBlockDefs proc uses esi,hWin:HWND
 
 SetBlockDefs endp
 
-RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
+	LOCAL	ln:DWORD
+	LOCAL	lx:DWORD
+	LOCAL	lz:DWORD
+	LOCAL	tp:DWORD
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
@@ -343,6 +347,84 @@ RAEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cctype,CCTYPE_NONE
 				xor		eax,eax
 				mov		ccinprogress,eax
+				jmp		Ex
+			.elseif wParam==VK_RETURN
+				;Block complete
+				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
+				push	eax
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+				dec		eax
+				mov		ln,eax
+				invoke SendMessage,hREd,REM_GETBOOKMARK,ln,0
+				.if eax==1
+					mov		esi,offset blocks
+					.while dword ptr [esi]
+						mov		edi,[esi]
+						invoke SendMessage,hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
+						.if eax!=-1
+							.break .if ![edi].RABLOCKDEF.lpszEnd
+							mov		eax,ln
+							inc		eax
+							mov		lx,eax
+							mov		lz,0
+							.while lx!=-1
+								invoke SendMessage,hREd,REM_PRVBOOKMARK,lx,1
+								mov		lx,eax
+								.if lx!=-1
+									invoke SendMessage,hREd,REM_GETBLOCKEND,lx,0
+									mov		lz,eax
+									mov		tp,0
+									.if eax==-1
+										invoke SendMessage,hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+										mov		tp,eax
+										.break
+									.elseif eax>ln
+										invoke SendMessage,hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+										mov		tp,eax
+										.break .if tp==-1
+									.endif
+								.endif
+							.endw
+							.break .if lz!=-1 || tp==-1
+							;Do the block complete
+							invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
+							invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
+							mov		eax,[edi].RABLOCKDEF.lpszEnd
+							.if byte ptr [eax]=='?'
+								;Skip indent
+								mov		word ptr buffer,255
+								invoke SendMessage,hREd,EM_GETLINE,ln,addr buffer
+								mov		buffer[eax],0
+								xor		ebx,ebx
+								.while buffer[ebx] && (buffer[ebx]==VK_TAB || buffer[ebx]==VK_SPACE)
+									inc		ebx
+								.endw
+								;Get name
+								push	ebx
+								.while buffer[ebx] && buffer[ebx]!=VK_TAB && buffer[ebx]!=VK_SPACE
+									inc		ebx
+								.endw
+								mov		buffer[ebx],0
+								pop		ebx
+								invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
+								mov		word ptr buffer,VK_SPACE
+								invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+								mov		eax,[edi].RABLOCKDEF.lpszEnd
+								add		eax,2
+							.endif
+							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
+							invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+							mov		word ptr buffer,VK_TAB
+							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+							invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+							invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
+							.break
+						.endif
+						lea		esi,[esi+4]
+					.endw
+				.endif
+				pop		eax
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
