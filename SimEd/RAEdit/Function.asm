@@ -351,193 +351,211 @@ IsLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,lpszTest:DWORD
 	LOCAL	tmpesi:DWORD
 	LOCAL	fCmnt:DWORD
 	LOCAL	espsave:DWORD
+	LOCAL	esisave:DWORD
 
-	mov		espsave,esp
+	mov		eax,esp
+	sub		eax,4
+	mov		espsave,eax
 	mov		ebx,hMem
 	mov		edi,nLine
 	shl		edi,2
 	mov		esi,lpszTest
 	.if edi<[ebx].EDIT.rpLineFree && byte ptr [esi]
-		xor		ecx,ecx
-		mov		fCmnt,ecx
-		add		edi,[ebx].EDIT.hLine
-		mov		edi,[edi].LINE.rpChars
-		add		edi,[ebx].EDIT.hChars
-		test	[edi].CHARS.state,STATE_COMMENT
-		.if !ZERO?
-			mov		ax,[esi]
-			.if [ebx].EDIT.ccmntblocks==1 && ax!="/*" && ax!="*/"
-				jmp		Nf
-			.elseif [ebx].EDIT.ccmntblocks==2 && ax!="/'" && ax!="'/"
-				jmp		Nf
-			.endif
-		.else
-			call	SkipSpc
-			or		eax,eax
-			jne		Nf
-		.endif
-	  Nxt:
+		.while byte ptr [esi]
+			mov		esisave,esi
+			mov		edi,nLine
+			shl		edi,2
+			call	TestLine
+			.break .if eax!=-1
+			mov		esi,esisave
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			mov		eax,-1
+		.endw
+	.else
+		mov		eax,-1
+	.endif
+	ret
+
+TestLine:
+	xor		ecx,ecx
+	mov		fCmnt,ecx
+	add		edi,[ebx].EDIT.hLine
+	mov		edi,[edi].LINE.rpChars
+	add		edi,[ebx].EDIT.hChars
+	test	[edi].CHARS.state,STATE_COMMENT
+	.if !ZERO?
 		mov		ax,[esi]
-		.if ah
-			.if ax==' $'
-				call	SkipCmnt
-				inc		esi
-				call	SkipWord
-				or		eax,eax
-				jne		Nf
-				mov		al,[esi]
-				.if al==' '
-					inc		esi
-					call	SkipSpc
-					call	SkipCmnt
-					or		eax,eax
-					jne		Nf
-				.endif
-			.elseif ax==' ?'
-				call	SkipCmnt
-				add		esi,2
-				push	esi
-				call	TestWord
-				pop		esi
-				or		eax,eax
-				je		Found
-				dec		esi
-				call	SkipWord
-				or		eax,eax
-				jne		Nf
-				mov		al,[esi]
-				.if al==' '
-					inc		esi
-					call	SkipSpc
-					call	SkipCmnt
-					or		eax,eax
-					jne		Nf
-				.endif
-			.elseif al=='%'
-				call	SkipCmnt
-				inc		esi
-				call	OptSkipWord
-				jmp		Nxt
-			.elseif ax=="'/"
-				; comment init
-				.while ecx<[edi].CHARS.len
-					movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	eax,byte ptr [eax+offset CharTab]
-					.if eax==CT_STRING
-						call	SkipString
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
-						inc		ecx
-						inc		fCmnt
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
-						inc		ecx
-						dec		fCmnt
-					.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
-						mov		ecx,[edi].CHARS.len
-					.endif
-					inc		ecx
-				.endw
-				.if sdword ptr fCmnt>0
-					xor		eax,eax
-					jmp		Found
-				.endif
-				jmp		Nf
-			.elseif ax=="/'"
-				; Comment end
-				.while ecx<[edi].CHARS.len
-					movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	eax,byte ptr [eax+offset CharTab]
-					.if eax==CT_STRING
-						call	SkipString
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
-						test	[edi].CHARS.state,STATE_COMMENT
-						.if !ZERO?
-							dec		fCmnt
-						.endif
-						inc		ecx
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
-						inc		fCmnt
-						inc		ecx
-					.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
-						mov		ecx,[edi].CHARS.len
-					.endif
-					inc		ecx
-				.endw
-				.if sdword ptr fCmnt<0
-					xor		eax,eax
-					jmp		Found
-				.endif
-				jmp		Nf
-			.elseif ax=="*/"
-				; comment init
-				.while ecx<[edi].CHARS.len
-					movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
-					movzx	esi,byte ptr [esi+offset CharTab]
-					.if esi==CT_STRING
-						call	SkipString
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
-						inc		ecx
-						inc		fCmnt
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="/*"
-						inc		ecx
-						dec		fCmnt
-					.endif
-					inc		ecx
-				.endw
-				.if sdword ptr fCmnt>0
-					xor		eax,eax
-					jmp		Found
-				.endif
-				jmp		Nf
-			.elseif ax=="/*"
-				; Comment end
-				.while ecx<[edi].CHARS.len
-					.if word ptr [edi+ecx+sizeof CHARS]=="/*"
-						dec		fCmnt
-					.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
-						inc		fCmnt
-					.endif
-					inc		ecx
-				.endw
-				.if sdword ptr fCmnt<0
-					xor		eax,eax
-					jmp		Found
-				.endif
-				jmp		Nf
-			.endif
+		.if [ebx].EDIT.ccmntblocks==1 && ax!="/*" && ax!="*/"
+			jmp		Nf
+		.elseif [ebx].EDIT.ccmntblocks==2 && ax!="/'" && ax!="'/"
+			jmp		Nf
+		.endif
+	.else
+		call	SkipSpc
+		or		eax,eax
+		jne		Nf
+	.endif
+  Nxt:
+	mov		ax,[esi]
+	.if ah
+		.if ax==' $'
 			call	SkipCmnt
-			call	TestWord
+			inc		esi
+			call	SkipWord
 			or		eax,eax
 			jne		Nf
-			xor		edx,edx
-		.else
+			mov		al,[esi]
+			.if al==' '
+				inc		esi
+				call	SkipSpc
+				call	SkipCmnt
+				or		eax,eax
+				jne		Nf
+			.endif
+		.elseif ax==' ?'
 			call	SkipCmnt
+			add		esi,2
+			push	esi
+			call	TestWord
+			pop		esi
+			or		eax,eax
+			je		Found
+			dec		esi
+			call	SkipWord
+			or		eax,eax
+			jne		Nf
+			mov		al,[esi]
+			.if al==' '
+				inc		esi
+				call	SkipSpc
+				call	SkipCmnt
+				or		eax,eax
+				jne		Nf
+			.endif
+		.elseif al=='%'
+			call	SkipCmnt
+			inc		esi
+			call	OptSkipWord
+			jmp		Nxt
+		.elseif ax=="'/"
+			; comment init
 			.while ecx<[edi].CHARS.len
-				xor		edx,edx
-				cmp		al,[edi+ecx+sizeof CHARS]
-				.break .if ZERO?
-				dec		edx
-				movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
-				movzx	esi,byte ptr [esi+offset CharTab]
-				.if esi==CT_CMNTCHAR
-					.break
-				.elseif esi==CT_CMNTDBLCHAR
-					movzx	esi,byte ptr [edi+ecx+sizeof CHARS+1]
-					movzx	esi,byte ptr [esi+offset CharTab]
-					.break .if esi==CT_CMNTDBLCHAR
-				.elseif esi==CT_STRING
+				movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
+				movzx	eax,byte ptr [eax+offset CharTab]
+				.if eax==CT_STRING
 					call	SkipString
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
+					inc		ecx
+					inc		fCmnt
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
+					inc		ecx
+					dec		fCmnt
+				.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
+					mov		ecx,[edi].CHARS.len
 				.endif
 				inc		ecx
 			.endw
+			.if sdword ptr fCmnt>0
+				xor		eax,eax
+				jmp		Found
+			.endif
+			jmp		Nf
+		.elseif ax=="/'"
+			; Comment end
+			.while ecx<[edi].CHARS.len
+				movzx	eax,byte ptr [edi+ecx+sizeof CHARS]
+				movzx	eax,byte ptr [eax+offset CharTab]
+				.if eax==CT_STRING
+					call	SkipString
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="/'"
+					test	[edi].CHARS.state,STATE_COMMENT
+					.if !ZERO?
+						dec		fCmnt
+					.endif
+					inc		ecx
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="'/"
+					inc		fCmnt
+					inc		ecx
+				.elseif byte ptr [edi+ecx+sizeof CHARS]=="'" && !fCmnt
+					mov		ecx,[edi].CHARS.len
+				.endif
+				inc		ecx
+			.endw
+			.if sdword ptr fCmnt<0
+				xor		eax,eax
+				jmp		Found
+			.endif
+			jmp		Nf
+		.elseif ax=="*/"
+			; comment init
+			.while ecx<[edi].CHARS.len
+				movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+				movzx	esi,byte ptr [esi+offset CharTab]
+				.if esi==CT_STRING
+					call	SkipString
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
+					inc		ecx
+					inc		fCmnt
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="/*"
+					inc		ecx
+					dec		fCmnt
+				.endif
+				inc		ecx
+			.endw
+			.if sdword ptr fCmnt>0
+				xor		eax,eax
+				jmp		Found
+			.endif
+			jmp		Nf
+		.elseif ax=="/*"
+			; Comment end
+			.while ecx<[edi].CHARS.len
+				.if word ptr [edi+ecx+sizeof CHARS]=="/*"
+					dec		fCmnt
+				.elseif word ptr [edi+ecx+sizeof CHARS]=="*/"
+					inc		fCmnt
+				.endif
+				inc		ecx
+			.endw
+			.if sdword ptr fCmnt<0
+				xor		eax,eax
+				jmp		Found
+			.endif
+			jmp		Nf
 		.endif
-	.else
-	  Nf:
+		call	SkipCmnt
+		call	TestWord
+		or		eax,eax
+		jne		Nf
 		xor		edx,edx
-		dec		edx
+	.else
+		call	SkipCmnt
+		.while ecx<[edi].CHARS.len
+			xor		edx,edx
+			cmp		al,[edi+ecx+sizeof CHARS]
+			.break .if ZERO?
+			dec		edx
+			movzx	esi,byte ptr [edi+ecx+sizeof CHARS]
+			movzx	esi,byte ptr [esi+offset CharTab]
+			.if esi==CT_CMNTCHAR
+				.break
+			.elseif esi==CT_CMNTDBLCHAR
+				movzx	esi,byte ptr [edi+ecx+sizeof CHARS+1]
+				movzx	esi,byte ptr [esi+offset CharTab]
+				.break .if esi==CT_CMNTDBLCHAR
+			.elseif esi==CT_STRING
+				call	SkipString
+			.endif
+			inc		ecx
+		.endw
 	.endif
 	mov		eax,edx
   Found:
-	ret
+	retn
+  Nf:
+	mov		eax,-1
+	retn
 
 SkipString:
 	push	eax

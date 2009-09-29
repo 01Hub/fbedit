@@ -439,7 +439,10 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 									.endif
 								.endif
 							.endw
-							.break .if lz!=-1 || tp==-1
+							.if lz!=-1 || tp==-1
+								call	InsertTab
+								.break 
+							.endif
 							;Do the block complete
 							invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
 							invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
@@ -460,9 +463,16 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								.endw
 								mov		buffer[ebx],0
 								pop		ebx
-								mov		eax,[edi].RABLOCKDEF.lpszStart
-								add		eax,2
-								invoke strcmpi,addr buffer[ebx],eax
+								mov		esi,[edi].RABLOCKDEF.lpszStart
+								.while byte ptr [esi]
+									.if byte ptr [esi]=='?' || byte ptr [esi]=='$'
+										add		esi,2
+									.endif
+									invoke strcmpi,addr buffer[ebx],esi
+									.break .if !eax
+									invoke strlen,esi
+									lea		esi,[esi+eax+1]
+								.endw
 								.if eax
 									invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
 									mov		word ptr buffer,VK_SPACE
@@ -471,22 +481,11 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		eax,[edi].RABLOCKDEF.lpszEnd
 								add		eax,2
 							.endif
-							invoke strcpy,addr buffer,eax
-							xor		eax,eax
-							.while buffer[eax]
-								.if buffer[eax]=='|'
-									mov		buffer[eax],0
-									.break
-								.endif
-								inc		eax
-							.endw
-							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
 							invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg1
 							invoke CaseConvertWord,wParam,chrg1.cpMin
 							invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-							mov		word ptr buffer,VK_TAB
-							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
-							invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+							call	InsertTab
 							invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
 							.break
 						.endif
@@ -648,6 +647,21 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
+
+InsertTab:
+	.if edopt.exptabs
+		xor		ecx,ecx
+		.while ecx<edopt.tabsize
+			mov		buffer[ecx],' '
+			inc		ecx
+		.endw
+		mov		buffer[ecx],0
+	.else
+		mov		word ptr buffer,VK_TAB
+	.endif
+	invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+	invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+	retn
 
 Activate:
 	invoke SendMessage,hDbgTip,TTM_SETTOOLINFO,0,addr ti
@@ -2707,21 +2721,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		edx,[ecx].RABLOCKDEF.flag
 						shr		edx,16
 						.if edx==[edi].RASELCHANGE.nWordGroup
-							mov		ecx,[ecx].RABLOCKDEF.lpszStart
-				  OnceMore1:
-							push	ecx
-							invoke SendMessage,hREd,REM_ISLINE,nLastLine,ecx
-							pop		ecx
-							.if eax==-1
-								push	ecx
-								invoke strlen,ecx
-								pop		ecx
-								lea		ecx,[ecx+eax+1]
-								.if byte ptr [ecx]
-									jmp		OnceMore1
-								.endif
-								mov		eax,-1
-							.endif
+							invoke SendMessage,hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
 						.endif
 						.break .if eax!=-1
 						add		esi,4

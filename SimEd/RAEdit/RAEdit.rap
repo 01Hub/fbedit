@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.380
-PV=1.2.0.380
+FV=1.2.0.382
+PV=1.2.0.382
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.380
+ProductVersion=1.2.0.382
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.380
+FileVersion=1.2.0.382
 CompanyName=
 
 [Resource]
@@ -103,7 +103,7 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,8904
-16=0,0,810,411,6193
+16=0,0,810,411,6700
 22=0,0,0,0,3164
 23=0,0,0,0,7206
 24=0,0,0,0,4001
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="REM_ISLINE"
-2="REM_ADDBLOCKDEF"
-3="REM_HILITEACTIVELINE"
-4="REM_GETCURSORWORD"
-5="EDIT.line"
-6="SaveUndo"
-7="SetBlockMarkers"
-8="REM_SETCOMMENTBLOCKS"
-9="Print"
-10="'/"
+1="Nf"
+2="isline"
+3="REM_ISLINE"
+4="REM_ADDBLOCKDEF"
+5="REM_HILITEACTIVELINE"
+6="REM_GETCURSORWORD"
+7="EDIT.line"
+8="SaveUndo"
+9="SetBlockMarkers"
+10="REM_SETCOMMENTBLOCKS"
 
 [AutoLoad]
 AutoLoad=1,10,16,26,2,23
