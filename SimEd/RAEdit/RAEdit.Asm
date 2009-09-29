@@ -410,6 +410,11 @@ SetBlockDef proc public uses ebx esi edi,lpRABLOCKDEF:DWORD
 			pop		eax
 			invoke strlen,eax
 			pop		ecx
+
+			call	TestString
+			inc		eax
+			mov		byte ptr [ecx+eax],0
+
 			lea		ecx,[ecx+eax+1]
 		.endif
 		mov		eax,[ebx].RABLOCKDEF.lpszEnd

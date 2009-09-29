@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Ver.rc=1
 Res.rc=1
 
@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.378
-PV=1.2.0.378
+FV=1.2.0.380
+PV=1.2.0.380
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.378
+ProductVersion=1.2.0.380
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.378
+FileVersion=1.2.0.380
 CompanyName=
 
 [Resource]
@@ -102,13 +102,13 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,76350
-16=0,0,810,411,37129
+1=0,0,0,0,8904
+16=0,0,810,411,6193
 22=0,0,0,0,3164
-23=0,0,0,0,30834
+23=0,0,0,0,7206
 24=0,0,0,0,4001
 19=0,0,0,0,9258
-2=0,0,0,0,7646
+2=0,0,0,0,6726
 9=0,0,0,0,17441
 10=0,0,0,0,23361
 11=0,0,0,0,5553
@@ -137,25 +137,19 @@ CompanyName=
 0=
 
 [Find]
-1="REM_HILITEACTIVELINE"
-2="REM_GETCURSORWORD"
-3="EDIT.line"
-4="SaveUndo"
-5="SetBlockMarkers"
-6="REM_SETCOMMENTBLOCKS"
-7="Print"
-8="'/"
-9="/'"
-10="STATE_COMMENT"
+1="REM_ISLINE"
+2="REM_ADDBLOCKDEF"
+3="REM_HILITEACTIVELINE"
+4="REM_GETCURSORWORD"
+5="EDIT.line"
+6="SaveUndo"
+7="SetBlockMarkers"
+8="REM_SETCOMMENTBLOCKS"
+9="Print"
+10="'/"
 
 [AutoLoad]
-1=1
-16=1
-22=0
-23=0
-24=0
-10=1
-26=1
+AutoLoad=1,10,16,26,2,23
 
 [Version-Inc]
 Options=52
@@ -195,7 +189,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -266,3 +260,4 @@ PTimer=134906884
 7=SetBlockDef
 [RADebugBP]
 16=
+1=

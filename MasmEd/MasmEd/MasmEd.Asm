@@ -284,17 +284,33 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 
 WinMain endp
 
-SetBlockDefs proc uses esi,hWin:HWND
+SetBlockDefs proc uses esi edi,hWin:HWND
 
 	;Reset block defs
 	invoke SendMessage,hWin,REM_ADDBLOCKDEF,0,0
 	mov		esi,offset blocks
 	.while dword ptr [esi]
 		invoke SendMessage,hWin,REM_ADDBLOCKDEF,0,[esi]
+		mov		edi,[esi]
+		mov		eax,[edi].RABLOCKDEF.lpszStart
+		call	TestIt
+		mov		eax,[edi].RABLOCKDEF.lpszEnd
+		call	TestIt
 		add		esi,4
 	.endw
 	invoke SendMessage,hWin,REM_BRACKETMATCH,0,offset szBracketMatch
 	ret
+
+TestIt:
+	.if eax
+		.while byte ptr [eax]
+			.if byte ptr [eax]=='|'
+				mov		byte ptr [eax],0
+			.endif
+			inc		eax
+		.endw
+	.endif
+	retn
 
 SetBlockDefs endp
 
@@ -386,17 +402,20 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Block complete
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
 				push	eax
+				;Get linenumber where return was pressed
 				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
 				invoke SendMessage,hREd,EM_LINEFROMCHAR,chrg.cpMin,0
 				dec		eax
 				mov		ln,eax
 				invoke SendMessage,hREd,REM_GETBOOKMARK,ln,0
 				.if eax==1
+					;The line is a block, find block type
 					mov		esi,offset blocks
 					.while dword ptr [esi]
 						mov		edi,[esi]
 						invoke SendMessage,hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
 						.if eax!=-1
+							;Block type found
 							.break .if ![edi].RABLOCKDEF.lpszEnd
 							mov		eax,ln
 							inc		eax
@@ -452,7 +471,16 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		eax,[edi].RABLOCKDEF.lpszEnd
 								add		eax,2
 							.endif
-							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
+							invoke strcpy,addr buffer,eax
+							xor		eax,eax
+							.while buffer[eax]
+								.if buffer[eax]=='|'
+									mov		buffer[eax],0
+									.break
+								.endif
+								inc		eax
+							.endw
+							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
 							invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg1
 							invoke CaseConvertWord,wParam,chrg1.cpMin
 							invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
@@ -2679,7 +2707,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		edx,[ecx].RABLOCKDEF.flag
 						shr		edx,16
 						.if edx==[edi].RASELCHANGE.nWordGroup
-							invoke SendMessage,hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
+							mov		ecx,[ecx].RABLOCKDEF.lpszStart
+				  OnceMore1:
+							push	ecx
+							invoke SendMessage,hREd,REM_ISLINE,nLastLine,ecx
+							pop		ecx
+							.if eax==-1
+								push	ecx
+								invoke strlen,ecx
+								pop		ecx
+								lea		ecx,[ecx+eax+1]
+								.if byte ptr [ecx]
+									jmp		OnceMore1
+								.endif
+								mov		eax,-1
+							.endif
 						.endif
 						.break .if eax!=-1
 						add		esi,4
