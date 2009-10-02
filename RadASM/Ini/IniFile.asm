@@ -2354,10 +2354,25 @@ SetBlockDef proc uses ebx esi
 		.while [esi].RABLOCKDEF.lpszStart
 			push	esi
 			call	ebx
+			mov		edx,[esi].RABLOCKDEF.lpszStart
+			call	TestIt
+			mov		edx,[esi].RABLOCKDEF.lpszEnd
+			call	TestIt
 			lea		esi,[esi+sizeof RABLOCKDEF]
 		.endw
 	.endif
 	ret
+
+TestIt:
+	.if edx
+		.while byte ptr [edx]
+			.if byte ptr [edx]=='|'
+				mov		byte ptr [edx],0
+			.endif
+			inc		edx
+		.endw
+	.endif
+	retn
 
 SetBlockDef endp
 
