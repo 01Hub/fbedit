@@ -2853,6 +2853,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
 			.endif
 		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
+			push	edx
+			invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+			invoke PushGoto,hREd,chrg.cpMin
+			pop		edx
 			push	[edx].RAPNOTIFY.nline
 			invoke TabToolGetInx,[edx].RAPNOTIFY.nid
 			invoke SendMessage,hTab,TCM_SETCURSEL,eax,0

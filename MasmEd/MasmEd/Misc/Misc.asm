@@ -1602,8 +1602,53 @@ DeleteGoto proc uses esi edi,hWin:HWND
 
 DeleteGoto endp
 
-UpdateGoto proc uses edi,hWin:HWND,cp:DWORD,n:DWORD
+UpdateGoto proc uses ebx edi,hWin:HWND,cp:DWORD,n:DWORD
+	LOCAL	chrg:CHARRANGE
 
+	;Delete
+	mov		eax,cp
+	mov		chrg.cpMin,eax
+	mov		chrg.cpMax,eax
+	add		eax,n
+	.if eax<chrg.cpMin
+		mov		chrg.cpMin,eax
+	.else
+		mov		chrg.cpMax,eax
+	.endif
+	mov		ecx,32
+	mov		edi,offset gotostack
+	mov		edx,hWin
+	xor		ebx,ebx
+	.repeat
+		.if edx==[edi].DECLARE.hWin
+			mov		eax,[edi].DECLARE.cp
+			.if eax>chrg.cpMin && eax<chrg.cpMax
+				mov		[edi].DECLARE.hWin,0
+				mov		[edi].DECLARE.cp,0
+				inc		ebx
+			.endif
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	.if ebx
+		mov		esi,offset gotostack
+		mov		edi,offset gotostack
+		.repeat
+			.if [esi].DECLARE.hWin
+				.if esi!=edi
+					mov		eax,[esi].DECLARE.hWin
+					mov		[edi].DECLARE.hWin,eax
+					mov		eax,[esi].DECLARE.cp
+					mov		[edi].DECLARE.cp,eax
+					mov		[esi].DECLARE.hWin,0
+					mov		[esi].DECLARE.cp,0
+				.endif
+				lea		edi,[edi+sizeof DECLARE]
+			.endif
+			lea		esi,[esi+sizeof DECLARE]
+		.untilcxz
+	.endif
+	;Update
 	mov		ecx,32
 	mov		edi,offset gotostack
 	mov		edx,hWin
