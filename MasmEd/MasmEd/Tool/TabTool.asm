@@ -320,6 +320,11 @@ TabToolActivate proc uses ebx
 		invoke ShowWindow,eax,SW_HIDE
 	.endif
 	invoke SendMessage,hBrowse,FBM_SETSELECTED,0,addr [ebx].TABMEM.filename
+	invoke GetWindowLong,hREd,GWL_ID
+	.if eax==IDC_RAE
+		invoke SendMessage,hREd,WM_GETTEXTLENGTH,0,0
+		mov		nLastSize,eax
+	.endif
 	ret
 
 TabToolActivate endp
@@ -375,6 +380,11 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	invoke AddPath,lpFileName
 	invoke SendMessage,hBrowse,FBM_SETSELECTED,0,lpFileName
 	invoke SetWindowLong,hWin,GWL_USERDATA,ebx
+	invoke GetWindowLong,hWin,GWL_ID
+	.if eax==IDC_RAE
+		invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
+		mov		nLastSize,eax
+	.endif
 	ret
 
 TabToolAdd endp

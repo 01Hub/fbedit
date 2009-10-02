@@ -74,6 +74,7 @@ strcpy						PROTO :DWORD,:DWORD
 strcat						PROTO :DWORD,:DWORD
 strcmp						PROTO :DWORD,:DWORD
 strlen						PROTO :DWORD
+DeleteGoto					PROTO :DWORD
 
 HT_DEBUG					equ 206
 
@@ -208,6 +209,8 @@ IDM_EDIT_FIND				equ 10108
 IDM_EDIT_FINDNEXT			equ 10110
 IDM_EDIT_FINDPREV			equ 10111
 IDM_EDIT_REPLACE			equ 10109
+IDM_EDIT_GOTO				equ 10091
+IDM_EDIT_RETURN				equ 10092
 IDM_EDIT_INDENT				equ 10037
 IDM_EDIT_OUTDENT			equ 10038
 IDM_EDIT_COMMENT			equ 10035
@@ -294,6 +297,11 @@ IDM_DEBUG_INTO				equ 10085
 IDM_DEBUG_OVER				equ 10086
 IDM_DEBUG_CARET				equ 10087
 IDM_DEBUG_NODEBUG			equ 10088
+
+DECLARE struct
+	hWin					HWND ?
+	cp						DWORD ?
+DECLARE ends
 
 DEBUGINFO struct
 	hWnd					HWND ?					; Handle of main window
@@ -661,6 +669,7 @@ szFilter				db '.asm.inc.txt.def.rc.exe.bat.',0
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 
 szCaseTypes				db 'WPpc',0
+szGotoTypes				db 'pldcs',0
 
 .data?
 
@@ -724,6 +733,7 @@ ntab					dd ?
 findtabs				dd 256 dup(?)
 
 nLastLine				dd ?
+nLastSize				dd ?
 nLastPropLine			dd ?
 fTimer					dd ?
 hMnuIml					dd ?
@@ -776,3 +786,4 @@ ftexe					FILETIME <>
 nNewer					DWORD ?
 dbgpt					POINT <>
 lpOldImmediateProc		DWORD ?
+gotostack				DECLARE 32 dup(<?>)

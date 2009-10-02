@@ -1237,6 +1237,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				.if eax!=nTabInx
 					mov		eax,[ebx].TABMEM.hwnd
 					.if eax!=hRes
+						invoke DeleteGoto,[ebx].TABMEM.hwnd
 						invoke DestroyWindow,[ebx].TABMEM.hwnd
 					.endif
 					invoke SendMessage,hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
@@ -1520,3 +1521,157 @@ OutputSelect proc nSel:DWORD
 	ret
 
 OutputSelect endp
+
+PushGoto proc uses esi edi,hWin:HWND,cp:DWORD
+
+	mov		ecx,31
+	mov		esi,offset gotostack+30*sizeof DECLARE
+	mov		edi,offset gotostack+31*sizeof DECLARE
+	.repeat
+		mov		eax,[esi].DECLARE.hWin
+		mov		[edi].DECLARE.hWin,eax
+		mov		eax,[esi].DECLARE.cp
+		mov		[edi].DECLARE.cp,eax
+		lea		esi,[esi-sizeof DECLARE]
+		lea		edi,[edi-sizeof DECLARE]
+	.untilcxz
+	mov		edi,offset gotostack
+	mov		eax,hWin
+	mov		[edi].DECLARE.hWin,eax
+	mov		eax,cp
+	mov		[edi].DECLARE.cp,eax
+	ret
+
+PushGoto endp
+
+PopGoto proc uses esi edi
+
+	mov		ecx,31
+	mov		esi,offset gotostack+sizeof DECLARE
+	mov		edi,offset gotostack
+	.repeat
+		mov		eax,[esi].DECLARE.hWin
+		mov		[edi].DECLARE.hWin,eax
+		mov		eax,[esi].DECLARE.cp
+		mov		[edi].DECLARE.cp,eax
+		lea		esi,[esi+sizeof DECLARE]
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	mov		edi,offset gotostack+31*sizeof DECLARE
+	xor		eax,eax
+	mov		[edi].DECLARE.hWin,eax
+	mov		[edi].DECLARE.cp,eax
+	ret
+
+PopGoto endp
+
+DeleteGoto proc uses esi edi,hWin:HWND
+
+	mov		ecx,32
+	mov		edi,offset gotostack
+	xor		edx,edx
+	mov		eax,hWin
+	.repeat
+		.if eax==[edi].DECLARE.hWin
+			mov		[edi].DECLARE.hWin,0
+			mov		[edi].DECLARE.cp,0
+			inc		edx
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	.if edx
+		mov		ecx,32
+		mov		esi,offset gotostack
+		mov		edi,offset gotostack
+		.repeat
+			.if [esi].DECLARE.hWin
+				.if esi!=edi
+					mov		eax,[esi].DECLARE.hWin
+					mov		[edi].DECLARE.hWin,eax
+					mov		eax,[esi].DECLARE.cp
+					mov		[edi].DECLARE.cp,eax
+					mov		[esi].DECLARE.hWin,0
+					mov		[esi].DECLARE.cp,0
+				.endif
+				lea		edi,[edi+sizeof DECLARE]
+			.endif
+			lea		esi,[esi+sizeof DECLARE]
+		.untilcxz
+	.endif
+	ret
+
+DeleteGoto endp
+
+UpdateGoto proc uses edi,hWin:HWND,cp:DWORD,n:DWORD
+
+	mov		ecx,32
+	mov		edi,offset gotostack
+	mov		edx,hWin
+	.repeat
+		.if edx==[edi].DECLARE.hWin
+			mov		eax,cp
+			.if eax<[edi].DECLARE.cp
+				mov		eax,n
+				add		[edi].DECLARE.cp,eax
+			.endif
+			
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	ret
+
+UpdateGoto endp
+
+GotoDeclare proc
+	LOCAL	buffer[256]:BYTE
+	LOCAL	chrg:CHARRANGE
+
+	invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+	.if buffer
+		invoke SendMessage,hProperty,PRM_FINDFIRST,addr szGotoTypes,addr buffer
+		.while eax
+			mov		edx,eax
+			invoke strcmp,edx,addr buffer
+			.if !eax
+				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke PushGoto,hREd,chrg.cpMin
+				invoke SendMessage,hProperty,PRM_FINDGETOWNER,0,0
+				invoke TabToolGetInx,eax
+				invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+				invoke TabToolActivate
+				invoke SendMessage,hProperty,PRM_FINDGETLINE,0,0
+				invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+				mov		chrg.cpMin,eax
+				mov		chrg.cpMax,eax
+				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,hREd,REM_VCENTER,0,0
+				invoke SetFocus,hREd
+				.break
+			.endif
+			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		.endw
+	.endif
+	ret
+
+GotoDeclare endp
+
+ReturnDeclare proc
+	LOCAL	chrg:CHARRANGE
+
+	mov		edx,offset gotostack
+	.if [edx].DECLARE.hWin
+		invoke TabToolGetInx,[edx].DECLARE.hWin
+		invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+		invoke TabToolActivate
+		mov		edx,offset gotostack
+		mov		eax,[edx].DECLARE.cp
+		mov		chrg.cpMin,eax
+		mov		chrg.cpMax,eax
+		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,hREd,REM_VCENTER,0,0
+		invoke SetFocus,hREd
+		invoke PopGoto
+	.endif
+	ret
+
+ReturnDeclare endp

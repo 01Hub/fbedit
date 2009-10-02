@@ -2014,6 +2014,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					mov		eax,hREd
 					.if eax!=hRes
+						invoke DeleteGoto,hREd
 						invoke DestroyWindow,hREd
 						invoke SendMessage,hProperty,PRM_DELPROPERTY,hREd,0
 						invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
@@ -2214,6 +2215,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke HexFind,FR_HEX
 					.endif
 				.endif
+			.elseif eax==IDM_EDIT_GOTO
+				invoke GotoDeclare
+			.elseif eax==IDM_EDIT_RETURN
+				invoke ReturnDeclare
 			.elseif eax==IDM_EDIT_INDENT
 				invoke IndentComment,VK_TAB,TRUE
 			.elseif eax==IDM_EDIT_OUTDENT
@@ -2722,6 +2727,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if [edi].RASELCHANGE.fchanged
 					.if ![edi].RASELCHANGE.nWordGroup
 						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+					.endif
+					invoke SendMessage,hREd,WM_GETTEXTLENGTH,0,0
+					.if eax!=nLastSize
+						push	eax
+						sub		eax,nLastSize
+						invoke UpdateGoto,hREd,[edi].RASELCHANGE.chrg.cpMin,eax
+						pop		nLastSize
 					.endif
 				  OnceMore:
 					invoke SendMessage,hREd,REM_GETBOOKMARK,nLastLine,0
