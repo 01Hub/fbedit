@@ -1,5 +1,11 @@
 MasmEd
 
+1.0.5.9 2009.10.02
+--------------------
+o Added build command to make menu.
+o The 'Link' toolbar button has been changed to 'Build'.
+o The 'Edit/Next Error' and 'Edit/Clear Errors' menu now has the correct accelerator 'F6'.
+
 1.0.5.8 - 2009.09.28
 --------------------
 o Added auto case convert.

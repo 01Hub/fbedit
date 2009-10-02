@@ -143,7 +143,7 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 17="IDM_EDIT_CLEARBM,0,Clear bookmarks"
 18="IDM_VIEW_OUTPUT,0,Show / Hide Output"
 19="IDM_MAKE_ASSEMBLE,0,Assemble"
-20="IDM_MAKE_LINK,0,Link"
+20="IDM_MAKE_BUILD,0,Build"
 21="IDM_MAKE_RUN,0,Run"
 22="IDM_MAKE_GO,0,Go"
 23=",1,Up One Level"
@@ -198,6 +198,7 @@ ID=200
 36=IDM_DEBUG_OVER,0,118,8
 37=IDM_DEBUG_CARET,0,118,12
 38=IDM_DEBUG_BREAK,0,118,24
+39=IDM_MAKE_BUILD,0,116,16
 
 [VerInf]
 Nme=VERINF1
@@ -275,16 +276,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 52=8
 
 [Find]
-1="REM_SUBCLASS"
-2="REM_SUB"
-3="1057"
-4="hMnu"
-5="WndProc"
-6="BREAK"
-7="FUNC_IMM"
-8="FUNC_GET"
-9="WM_USER+998"
-10="abowe"
+1="1.0.5.8"
+2="1058"
+3="REM_SUBCLASS"
+4="REM_SUB"
+5="1057"
+6="hMnu"
+7="WndProc"
+8="BREAK"
+9="FUNC_IMM"
+10="FUNC_GET"
 
 [VersionControl]
 Settings=1246
@@ -331,8 +332,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,16039
-1=0,0,0,0,11803
+2=0,0,687,524,12699
+1=0,0,0,0,3299
 11=0,0,0,0,9965
 22=0,0,0,0,4195
 10=0,0,0,0,10169
@@ -364,7 +365,7 @@ ProductVer4Range=0
 37=0,0,0,0,1011
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,150
+38=0,0,0,0,27
 39=0,0,0,0
 40=0,0,0,0,4916
 42=0,0,0,0,1576

@@ -19,7 +19,7 @@ BEGIN
   IDM_EDIT_CLEARBM			"Clear bookmarks"
   IDM_VIEW_OUTPUT			"Show / Hide Output"
   IDM_MAKE_ASSEMBLE			"Assemble"
-  IDM_MAKE_LINK				"Link"
+  IDM_MAKE_BUILD			"Build"
   IDM_MAKE_RUN				"Run"
   IDM_MAKE_GO				"Go"
   1							"Up One Level"

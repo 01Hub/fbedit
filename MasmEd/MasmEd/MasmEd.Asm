@@ -126,6 +126,9 @@ start:
 		.if ver<1058
 			mov		ver,1058
 		.endif
+		.if ver<1059
+			mov		ver,1059
+		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
 		mov		lpcbData,sizeof nmeexp
@@ -150,7 +153,7 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		ver,1058
+		mov		ver,1059
 	.endif
 	invoke RegSetValueEx,hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
 	.if wpos.wtfile<50
@@ -2468,6 +2471,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_LINK,offset MainFile,TRUE
+			.elseif eax==IDM_MAKE_BUILD
+				invoke UpdateAll,CLEAR_ERRORS
+				invoke UpdateAll,SAVE_ALL
+				invoke OutputMake,IDM_MAKE_COMPILE,offset MainFile,2
+				or		eax,eax
+				jne		Ex
+				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset MainFile,0
+				or		eax,eax
+				jne		Ex
+				invoke OutputMake,IDM_MAKE_LINK,offset MainFile,3
 			.elseif eax==IDM_MAKE_RUN
 				invoke UpdateAll,SAVE_ALL
 				invoke OutputMake,IDM_MAKE_RUN,offset MainFile,2
