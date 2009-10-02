@@ -157,8 +157,8 @@ BEGIN
     MENUITEM "&Previous bookmark\tCtrl+F8",IDM_EDIT_PREVBM
     MENUITEM "Clear &bookmarks\tCtrl+Shift+F8",IDM_EDIT_CLEARBM
     MENUITEM "",,0x00000800
-    MENUITEM "Next Error\tF7",IDM_EDIT_NEXTERROR
-    MENUITEM "Clear Errors\tCtrl+F7",IDM_EDIT_CLEARERRORS
+    MENUITEM "Next Error\tF6",IDM_EDIT_NEXTERROR
+    MENUITEM "Clear Errors\tCtrl+F6",IDM_EDIT_CLEARERRORS
   END
   POPUP "&Format"
   BEGIN
