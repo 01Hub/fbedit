@@ -130,6 +130,7 @@ NAMEEXPORT struct
 	szFileName		db MAX_PATH dup(?)
 	nOutput			dd ?
 	fAuto			dd ?
+	szUserDefined	db MAX_PATH dup(?)
 NAMEEXPORT ends
 
 GRIDSIZE struct
@@ -220,7 +221,7 @@ ntbrbtns			equ 19
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 2.2.0.4',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.2.0.5',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1			db 'http://radasm.cherrytree.at/',0
 szAboutUrl2			db 'http://radasm.cherrytree.at/',0
 szOpen				db 'Open',0
@@ -241,7 +242,7 @@ szMruProject		db 'MruProject#',0
 .data
 
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
-nmeexp				NAMEEXPORT <0,'rsrc.inc'>
+nmeexp				NAMEEXPORT <0,'rsrc.inc',0,0,'%name %id'>
 grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE>
 col					COLOR <0FFFFFFh,0,804000h,0C00000h>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>,<100,1>>
@@ -288,4 +289,4 @@ mruproject			db MAX_PATH*2*11 dup(?)
 tmpbuff				db 1024 dup(?)
 fModify				dd ?
 fNotify				dd ?
-
+fUnicode			dd ?

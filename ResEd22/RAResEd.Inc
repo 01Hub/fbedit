@@ -223,6 +223,7 @@ PRO_SETDEFINE		equ PRO_BASE+25		;wPatam=0, lParam=lpszName
 PRO_GETDIALOG		equ PRO_BASE+26		;wPatam=0, lParam=0
 PRO_INCVERSION		equ PRO_BASE+27		;wPatam=0, lParam=0
 PRO_SETHIGHLIGHT	equ PRO_BASE+28		;wPatam=ColorStyles, lParam=ColorWords
+PRO_SETUSERDEFINED	equ PRO_BASE+29		;wPatam=0, lParam=szUserDefined
 
 ;Project item types
 TPE_NAME			equ 1

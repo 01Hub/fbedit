@@ -1643,6 +1643,10 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,lParam
 		and		edx,0FFFFFFh
 		invoke SetHilite,eax,edx
+	.elseif eax==PRO_SETUSERDEFINED
+		invoke strcpy,offset szUserDefined,lParam
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==MEM_OPEN
 		invoke CreateMnu,hDEd,lParam
 		jmp		Ex

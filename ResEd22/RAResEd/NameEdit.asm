@@ -15,6 +15,7 @@ INmeGrdSize			dd 0,0,18,122,40
 
 nExportType			dd ?
 szExportFileName	db MAX_PATH dup(?)
+szUserDefined		db MAX_PATH dup(?)
 NmeGrdSize			dd 5 dup(?)
 
 .code
@@ -306,6 +307,46 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 						stosd
 						dec		edi
 						invoke SaveVal,val,FALSE
+						mov		al,0Dh
+						stosb
+						mov		al,0Ah
+						stosb
+					.elseif eax==5
+						;User defined
+						push	esi
+						push	edi
+						mov		esi,offset szUserDefined
+						lea		edi,tmpbuffer
+						.while byte ptr [esi]
+							mov		al,[esi]
+							.if al=='%'
+								mov		edx,dword ptr [esi+1]
+								and		edx,5F5F5Fh
+								.if edx=='EMAN'
+									;Name
+									add		esi,5
+									invoke SaveStr,edi,addr buffer
+									add		edi,eax
+								.elseif dx=='DI'
+									;ID
+									add		esi,3
+									invoke SaveVal,val,FALSE
+								.else
+									mov		[edi],al
+									inc		esi
+									inc		edi
+								.endif
+							.else
+								mov		[edi],al
+								inc		esi
+								inc		edi
+							.endif
+						.endw
+						mov		byte ptr [edi],0
+						pop		edi
+						pop		esi
+						invoke SaveStr,edi,addr tmpbuffer
+						add		edi,eax
 						mov		al,0Dh
 						stosb
 						mov		al,0Ah

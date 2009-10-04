@@ -101,6 +101,7 @@ Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 AutoDelete=1
 AskMe=0
 MinorFiles=..\Dll\*.exp;*.res;*.obj;
+53=
 
 [Colref]
 0=00FFFFFF
@@ -151,14 +152,14 @@ Options=52
 
 [Size]
 5=0,0,0,0,4212
-3=0,0,0,0,620
+3=0,0,0,0,0
 4=0,0,0,0,8
-1=0,0,718,485,4869
+1=0,0,718,485,37783
 7=0,0,718,485,41972
 6=0,0,0,0,404
 9=0,0,718,485,94558
-2=0,0,584,498,10028
-8=0,0,0,0,18653
+2=0,0,584,498,7436
+8=0,0,0,0,448
 10=0,0,0,0,14354
 16=0,0,718,485,12510
 15=0,0,0,0
@@ -174,7 +175,7 @@ Options=52
 27=0,0,0,0
 29=0,0,0,0,307
 30=0,0,0,0
-32=0,0,718,485,5139
+32=0,0,718,485,7315
 31=0,0,0,0
 34=0,0,0,0,4332
 33=0,0,0,0
@@ -198,39 +199,40 @@ Options=52
 50=0,0,0,0
 51=0,0,0,0,11099
 52=0,0,0,0,143
+53=
 
 
 [Find]
-1="WM_NCMOUSEMOVE"
-2="szDlgEditDummyClass"
-3="DEM_SHOWTABINDEX"
-4=";//Edit"
-5="SizeY"
-6="SizeX"
-7="DestroyMultiSel"
-8="DestroySizeingRect"
-9="DrawRect"
-10="MODE_MOVING"
+1="tmpbuffer"
+2="WM_NCMOUSEMOVE"
+3="szDlgEditDummyClass"
+4="DEM_SHOWTABINDEX"
+5=";//Edit"
+6="SizeY"
+7="SizeX"
+8="DestroyMultiSel"
+9="DestroySizeingRect"
+10="DrawRect"
 
 [AutoLoad]
-AutoLoad=1,16,9,8
+AutoLoad=1,16,9,8,2,32,3
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.113
-PV=2.1.0.113
+FV=2.1.0.115
+PV=2.1.0.115
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.113
+ProductVersion=2.1.0.115
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.113
+FileVersion=2.1.0.115
 CompanyName=
 
 [VersionControl]
@@ -258,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -321,6 +323,7 @@ Group=Assembly,Resources,Misc,Include
 50=2
 51=1
 52=1
+53=
 
 
 [Collapse]
@@ -383,3 +386,4 @@ PTimer=330867960
 10=
 52=
 7=
+3=

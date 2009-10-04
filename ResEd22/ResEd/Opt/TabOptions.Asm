@@ -8,11 +8,13 @@ IDC_RBNEXPOPT2		equ 2102
 IDC_RBNEXPOPT3		equ 2103
 IDC_RBNEXPOPT4		equ 2104
 IDC_RBNEXPOPT5		equ 2105
+IDC_RBNEXPOPT6		equ 2106
 IDC_RBNEXPORTFILE	equ 2110
 IDC_RBNEXPORTCLIP	equ 2111
 IDC_RBNEXPORTOUT	equ 2112
 IDC_EDTEXPOPT		equ 2113
 IDC_CHKAUTOEXPORT	equ 2114
+IDC_EDTUSER			equ 2115
 
 IDD_TABOPT2			equ 2200
 IDC_GRDCUST			equ 2201
@@ -161,8 +163,14 @@ TabOpt1Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,nmeexp.nType
+		.if eax==5
+			invoke GetDlgItem,hWin,IDC_EDTUSER
+			invoke EnableWindow,eax,TRUE
+		.endif
+		mov		eax,nmeexp.nType
 		add		eax,IDC_RBNEXPOPT1
-		invoke CheckRadioButton,hWin,IDC_RBNEXPOPT1,IDC_RBNEXPOPT5,eax
+		invoke CheckRadioButton,hWin,IDC_RBNEXPOPT1,IDC_RBNEXPOPT6,eax
+		invoke SetDlgItemText,hWin,IDC_EDTUSER,addr nmeexp.szUserDefined
 		mov		eax,nmeexp.nOutput
 		add		eax,IDC_RBNEXPORTFILE
 		invoke CheckRadioButton,hWin,IDC_RBNEXPORTFILE,IDC_RBNEXPORTOUT,eax
@@ -175,6 +183,19 @@ TabOpt1Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,BST_UNCHECKED
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKAUTOEXPORT,eax
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDC_RBNEXPOPT6
+				invoke GetDlgItem,hWin,IDC_EDTUSER
+				invoke EnableWindow,eax,TRUE
+			.elseif eax>=IDC_RBNEXPOPT1 && eax<=IDC_RBNEXPOPT5
+				invoke GetDlgItem,hWin,IDC_EDTUSER
+				invoke EnableWindow,eax,FALSE
+			.endif
+		.endif
 	.else
 		mov		eax,FALSE
 		ret
@@ -885,11 +906,17 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.if eax
 								mov		nmeexp.nType,3
 							.else
-								mov		nmeexp.nType,4
+								invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPOPT5
+								.if eax
+									mov		nmeexp.nType,4
+								.else
+									mov		nmeexp.nType,5
+								.endif
 							.endif
 						.endif
 					.endif
 				.endif
+				invoke GetDlgItemText,hTabDlg,IDC_EDTUSER,addr nmeexp.szUserDefined,sizeof nmeexp.szUserDefined
 				invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPORTFILE
 				.if eax
 					mov		nmeexp.nOutput,0
@@ -913,6 +940,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shl		edx,16
 				add		edx,nmeexp.nType
 				invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+				invoke SendMessage,hResEd,PRO_SETUSERDEFINED,0,addr nmeexp.szUserDefined
 				; Custom controls
 				mov		nInx,0
 				.while nInx<32

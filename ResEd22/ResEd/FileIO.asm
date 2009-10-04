@@ -1,3 +1,7 @@
+
+IDD_DLGSAVEUNICODE	equ 2800
+IDC_CHKUNICODE		equ 1001
+
 .code
 
 StreamInProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesRead:DWORD
@@ -32,7 +36,7 @@ CloseProject proc
 
 CloseProject endp
 
-ReadProjectFile proc lpFileName:DWORD,fText:DWORD
+ReadProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
     LOCAL   hFile:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	hMemRes:DWORD
@@ -95,6 +99,8 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke lstrcpy,offset ProjectFileName,lpFileName
 			invoke SetWinCaption,offset ProjectFileName,fModify
 			invoke SetFocus,hResEd
+			invoke SendMessage,hResEd,REM_GETUNICODE,0,0
+			mov		fUnicode,eax
 			mov		eax,TRUE
 		.else
 			invoke MessageBox,hWnd,offset szOpenFileFail,offset szAppName,MB_OK or MB_ICONERROR
@@ -111,12 +117,22 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 			invoke GlobalLock,hMem
 			invoke GetFileSize,hFile,NULL
 			push	eax
-			inc		eax
+			add		eax,2
 			invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
 			mov     hMemRes,eax
 			pop		edx
 			invoke ReadFile,hFile,hMemRes,edx,addr dwRead,NULL
 			invoke CloseHandle,hFile
+			mov		eax,hMemRes
+			.if word ptr [eax]==0FEFFh
+				;Unicode
+				mov		fUnicode,TRUE
+				invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,dwRead
+				mov		edi,eax
+				invoke WideCharToMultiByte,CP_ACP,0,hMemRes,-1,edi,dwRead,0,0
+				invoke GlobalFree,hMemRes
+				mov		hMemRes,edi
+			.endif
 			;Copy buffer to ProjectFileName
 			invoke lstrcpy,offset ProjectFileName,lpFileName
 			.if grdsize.defines
@@ -127,6 +143,15 @@ ReadProjectFile proc lpFileName:DWORD,fText:DWORD
 					mov		edx,eax
 					invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
 					invoke CloseHandle,hFile
+					mov		eax,hMem
+					.if word ptr [eax]==0feffh
+						;Unicode
+						invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,dwRead
+						mov		edi,eax
+						invoke WideCharToMultiByte,CP_ACP,0,hMem,-1,edi,dwRead,0,0
+						invoke lstrcpyW,hMem,edi
+						invoke GlobalFree,edi
+					.endif
 				.endif
 			.endif
 			invoke lstrcat,hMem,hMemRes
@@ -263,7 +288,7 @@ OpenProject proc uses ebx,fText:DWORD
 
 OpenProject endp
 
-WriteProjectFile proc lpFileName:DWORD,fText:DWORD
+WriteProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	hMemDef:DWORD
 	LOCAL	hFile:DWORD
@@ -275,6 +300,7 @@ WriteProjectFile proc lpFileName:DWORD,fText:DWORD
 		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
+			invoke SendMessage,hResEd,REM_SETUNICODE,fUnicode,0
 			;stream the text to the file
 			mov		eax,hFile
 			mov		editstream.dwCookie,eax
@@ -303,7 +329,23 @@ WriteProjectFile proc lpFileName:DWORD,fText:DWORD
 				mov		hFile,eax
 				invoke lstrlen,hMem
 				mov		nSize,eax
-				invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+				.if fUnicode
+					shl		eax,1
+					add		eax,256
+					push	eax
+					invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+					mov		edi,eax
+					pop		eax
+					invoke MultiByteToWideChar,CP_ACP,0,hMem,nSize,addr [edi+2],eax
+					mov		edx,eax
+					inc		edx
+					shl		edx,1
+					mov		word ptr [edi],0feffh
+					invoke WriteFile,hFile,edi,edx,addr nSize,NULL
+					invoke GlobalFree,edi
+				.else
+					invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+				.endif
 				invoke CloseHandle,hFile
 				invoke SendMessage,hResEd,PRO_SETMODIFY,FALSE,0
 				.if grdsize.defines
@@ -312,7 +354,23 @@ WriteProjectFile proc lpFileName:DWORD,fText:DWORD
 						mov		hFile,eax
 						invoke lstrlen,hMemDef
 						mov		nSize,eax
-						invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
+						.if fUnicode
+							shl		eax,1
+							add		eax,256
+							push	eax
+							invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+							mov		edi,eax
+							pop		eax
+							invoke MultiByteToWideChar,CP_ACP,0,hMemDef,nSize,addr [edi+2],eax
+							mov		edx,eax
+							inc		edx
+							shl		edx,1
+							mov		word ptr [edi],0feffh
+							invoke WriteFile,hFile,edi,edx,addr nSize,NULL
+							invoke GlobalFree,edi
+						.else
+							invoke WriteFile,hFile,hMemDef,nSize,addr nSize,NULL
+						.endif
 						invoke CloseHandle,hFile
 					.endif
 				.endif
@@ -371,6 +429,24 @@ SaveIncludeFileAs proc lpFileName:DWORD
 
 SaveIncludeFileAs endp
 
+UnicodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		.if fUnicode
+			invoke CheckDlgButton,hWin,IDC_CHKUNICODE,BST_CHECKED
+		.endif
+	.elseif eax==WM_COMMAND
+		.if wParam==IDC_CHKUNICODE
+			invoke IsDlgButtonChecked,hWin,IDC_CHKUNICODE
+			mov		fUnicode,eax
+		.endif
+	.endif
+	mov		eax,FALSE
+	ret
+
+UnicodeProc endp
+
 SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -400,8 +476,10 @@ SaveProjectFileAs proc lpFileName:DWORD,fText:DWORD
 		lea		eax,buffer
 		mov		ofn.lpstrFile,eax
 		mov		ofn.nMaxFile,sizeof buffer
-		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+		mov		ofn.Flags,OFN_EXPLORER or OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
 		mov		ofn.lpstrDefExt,offset szDefRCExt
+		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
+		mov		ofn.lpfnHook,offset UnicodeProc
 		;Show save as dialog
 		invoke GetSaveFileName,addr ofn
 		.if eax
@@ -576,4 +654,3 @@ ExportDialog proc
 	ret
 
 ExportDialog endp
-
