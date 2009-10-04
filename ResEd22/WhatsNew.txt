@@ -1,5 +1,12 @@
 ResEd
 
+2.2.0.5 - 2009-10-04
+--------------------
+o Added user defined name export format. Uses %name and %id.
+o Added unicode support to file system. Use Save Project As to convert
+  to or from unicode. Since only the file system supports unicode you are
+  limitted to the language your computer is set to handle.
+
 2.2.0.4 - 2009-09-19
 --------------------
 o Improved dialog editor control selection and moving with snap to grid.

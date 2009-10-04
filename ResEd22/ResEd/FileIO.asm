@@ -73,7 +73,6 @@ ReadProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
 			sub		edx,25
 			invoke MoveWindow,hResEd,0,25,rect.right,edx,TRUE
 			invoke ShowWindow,hResEdSave,SW_HIDE
-
 			invoke SendMessage,hResEdSave,PRO_GETTEXTFONT,0,0
 			invoke SendMessage,hResEd,WM_SETFONT,eax,0
 			invoke SendMessage,hResEd,REM_GETCOLOR,0,addr racol
@@ -88,7 +87,6 @@ ReadProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
 			mov		racol.strcol,0
 			invoke SendMessage,hResEd,REM_SETCOLOR,0,addr racol
 			invoke SendMessage,hResEd,REM_SETWORDGROUP,0,2
-
 			;stream the text into the RAEdit control
 			mov		eax,hFile
 			mov		editstream.dwCookie,eax
@@ -129,7 +127,9 @@ ReadProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
 				mov		fUnicode,TRUE
 				invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,dwRead
 				mov		edi,eax
-				invoke WideCharToMultiByte,CP_ACP,0,hMemRes,-1,edi,dwRead,0,0
+				mov		eax,hMemRes
+				add		eax,2
+				invoke WideCharToMultiByte,CP_ACP,0,eax,-1,edi,dwRead,0,0
 				invoke GlobalFree,hMemRes
 				mov		hMemRes,edi
 			.endif
