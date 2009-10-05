@@ -321,7 +321,7 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 							mov		al,[esi]
 							.if al=='%'
 								mov		edx,dword ptr [esi+1]
-								and		edx,5F5F5Fh
+								and		edx,5F5F5F5Fh
 								.if edx=='EMAN'
 									;Name
 									add		esi,5
