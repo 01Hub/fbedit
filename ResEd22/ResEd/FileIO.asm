@@ -122,6 +122,7 @@ ReadProjectFile proc uses edi,lpFileName:DWORD,fText:DWORD
 			invoke ReadFile,hFile,hMemRes,edx,addr dwRead,NULL
 			invoke CloseHandle,hFile
 			mov		eax,hMemRes
+			mov		fUnicode,FALSE
 			.if word ptr [eax]==0FEFFh
 				;Unicode
 				mov		fUnicode,TRUE
