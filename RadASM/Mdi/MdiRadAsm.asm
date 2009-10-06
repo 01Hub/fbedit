@@ -3049,6 +3049,10 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax
 			jmp		Ex
 		.endif
+		.if hProjectGroup
+			invoke SendMessage,hProjectGroup,uMsg,wParam,lParam
+			jmp		Ex
+		.endif
 		mov		eax,wParam
 		shr		eax,16
 		.if eax==BN_CLICKED || eax==1

@@ -212,6 +212,8 @@ GetMenuItems:
 									.endif
 								.endif
 								invoke SetMenuItemInfoW,hMnu,nPos,TRUE,addr mii
+							.else
+								PrintHex eax
 							.endif
 						.endif
 					.else
@@ -551,30 +553,31 @@ PaintText:
 WndProc endp
 
 OSSpecific PROC uses ebx
-	LOCAL osvi				:OSVERSIONINFO
+	LOCAL	osvi:OSVERSIONINFO
 
-	invoke GetModuleHandle,OFFSET szUserLib
-	mov ebx,eax
-	mov osvi.dwOSVersionInfoSize,SIZEOF OSVERSIONINFO
-	invoke GetVersionEx,ADDR osvi
-	xor eax,eax
-	.IF osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS
-		.IF osvi.dwMinorVersion == 0 ; Win95
+	invoke GetModuleHandle,offset szUserLib
+	mov		ebx,eax
+	mov		osvi.dwOSVersionInfoSize,sizeof OSVERSIONINFO
+	invoke GetVersionEx,addr osvi
+	xor		eax,eax
+	.IF osvi.dwPlatformId==VER_PLATFORM_WIN32_WINDOWS
+		.IF osvi.dwMinorVersion==0 ; Win95
 		.ELSE
-			inc eax
+			inc		eax
 		.endif
-	.ELSEIF osvi.dwPlatformId == VER_PLATFORM_WIN32_NT
-		.IF osvi.dwMajorVersion < 5 ; NT3.51 NT4
+	.ELSEIF osvi.dwPlatformId==VER_PLATFORM_WIN32_NT
+		.IF osvi.dwMajorVersion<5 ; NT3.51 NT4
 		.ELSE
-			inc eax
+			inc		eax
 		.endif
-		mov fNT,TRUE
+		mov		fNT,TRUE
 	.ENDIF
 	.if eax
-		invoke GetProcAddress,ebx,OFFSET szSetMenuInfo
-		mov pSetMenuInfo,eax
+		invoke GetProcAddress,ebx,offset szSetMenuInfo
+		mov		pSetMenuInfo,eax
 	.endif
 	ret
+
 OSSpecific ENDP
 
 SetMenuInfo proc param1:DWORD,param2:DWORD
@@ -647,7 +650,7 @@ CoolMenus proc uses edi,BarColor:DWORD,BodyColor:DWORD,fReset:DWORD
 	.endif
 	mov MInfo.hbrBack,eax
 	mov MInfo.cbSize,SIZEOF MENUINFO
-	mov MInfo.fmask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
+	mov MInfo.fMask,MIM_BACKGROUND or MIM_APPLYTOSUBMENUS
 	xor edi,edi
   @@:
 	mov eax,lpHandles

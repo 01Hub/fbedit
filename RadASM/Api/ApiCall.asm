@@ -926,10 +926,10 @@ ShowListBox proc hWin:HWND
 		.endif
 		invoke MoveWindow,hLB,rect.left,rect.top,apilbwt,apilbht,TRUE
 		invoke ShowWindow,hLB,SW_SHOWNOACTIVATE
-PrintDec rect.left
-PrintDec rect.top
-PrintDec apilbwt
-PrintDec apilbht
+;PrintDec rect.left
+;PrintDec rect.top
+;PrintDec apilbwt
+;PrintDec apilbht
 	.else
 		invoke ShowWindow,hLB,SW_HIDE
 	.endif

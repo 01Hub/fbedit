@@ -10,6 +10,7 @@ CombSort_Const			REAL4 1.3
 
 .data?
 
+hProjectGroup			HWND ?
 hGrpTrv					dd ?
 hGrpRoot				dd ?
 szGroupGroupBuff		db 4096 dup(?)
@@ -211,8 +212,10 @@ GroupUpdateTrv proc uses ebx esi edi,hTrv:HWND
 	LOCAL	iInx:DWORD
 	LOCAL	hPrevPro[32]:DWORD
 
-	.if hGrpRoot
-		invoke SendMessage,hTrv,TVM_DELETEITEM,0,hGrpRoot
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+	.if eax
+		; Delete root
+		invoke SendMessage,hTrv,TVM_DELETEITEM,0,eax
 	.endif
 	; Add root
 	invoke Do_TreeViewAddNode,hTrv,TVI_ROOT,NULL,addr ProjectDescr,IML_START+0,IML_START+0,0
@@ -576,9 +579,11 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hProjectGroup,eax
 		invoke GetDlgItem,hWin,IDC_TRVPROJECT
 		mov		hGrpTrv,eax
-		invoke SendMessage,hGrpTrv,TVM_GETEDITCONTROL,0,0
+		;invoke SendMessage,hGrpTrv,TVM_GETEDITCONTROL,0,0
 		invoke SendMessage,hGrpTrv,TVM_SETBKCOLOR,0,radcol.project
 		invoke SendMessage,hGrpTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
 		invoke SendMessage,hGrpTrv,TVM_SETIMAGELIST,0,hTbrIml
@@ -601,8 +606,10 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke GetDlgItemText,hWin,IDC_EDTDEFGROUP,offset szGroups,sizeof szGroups
 				invoke WritePrivateProfileString,addr iniProjectGroup,addr iniProjectGroup,addr szGroups,addr iniAsmFile
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				mov		hProjectGroup,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				mov		hProjectGroup,0
 			.elseif eax==IDM_GROUPEXPAND
 				invoke GroupExpandAll,hGrpTrv,0
 			.elseif eax==IDM_GROUPCOLLAPSE
@@ -732,11 +739,14 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.else
 					mov		edi,MF_GRAYED or MF_BYCOMMAND
 				.endif
-				invoke EnableMenuItem,ebx,IDM_GROUPADD,edi
 				invoke EnableMenuItem,ebx,IDM_GROUPDELETE,edi
 				invoke EnableMenuItem,ebx,IDM_GROUPEDIT,edi
+				.if !tvi.lParam
+					mov		edi,MF_ENABLED or MF_BYCOMMAND
+				.endif
+				invoke EnableMenuItem,ebx,IDM_GROUPADD,edi
 				invoke ClientToScreen,hGrpTrv,addr tvht.pt
-				invoke TrackPopupMenu,ebx,TPM_LEFTALIGN or TPM_RIGHTBUTTON,tvht.pt.x,tvht.pt.y,0,hWin,0
+				invoke TrackPopupMenu,ebx,TPM_LEFTALIGN or TPM_RIGHTBUTTON,tvht.pt.x,tvht.pt.y,0,hWnd,0
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY

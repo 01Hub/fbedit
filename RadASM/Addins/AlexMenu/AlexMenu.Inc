@@ -10,7 +10,7 @@ includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 
-include \RadASM\Masm\Inc\radasm.inc
+include ..\radasm.inc
 
 ;#########################################################################
 ;		VKim's Debug
@@ -129,9 +129,9 @@ IDM_FILE_CUT					equ 50009
 IDM_FILE_COPY					equ 50010
 IDM_FILE_PASTE					equ 50011
 IDM_FILE_DELETE					equ 50012
-IDM_FILE_RENAME					equ 50013
-IDM_FILE_COPYNAME				equ 50015
-IDM_FILE_EXPLORE				equ 50023
+;IDM_FILE_RENAME					equ 50013
+;IDM_FILE_COPYNAME				equ 50015
+;IDM_FILE_EXPLORE				equ 50023
 
 IDM_PROPERTY_FIND				equ 50018
 
@@ -147,15 +147,15 @@ MNUDATA struct
 	wt			dd ?
 MNUDATA ends
 
-MENUINFO STRUCT
-	cbSize			DWORD	?
-	fmask			DWORD	?
-	dwstyle			DWORD	?
-	cyMax			DWORD	?
-	hbrBack			DWORD	?
-	dwContextHelpID	DWORD	?
-	dwMenuData		DWORD	?
-MENUINFO ends
+;MENUINFO STRUCT
+;	cbSize			DWORD	?
+;	fmask			DWORD	?
+;	dwstyle			DWORD	?
+;	cyMax			DWORD	?
+;	hbrBack			DWORD	?
+;	dwContextHelpID	DWORD	?
+;	dwMenuData		DWORD	?
+;MENUINFO ends
 
 .data
 
@@ -259,7 +259,7 @@ lpOldWndProc		dd ?
 hIml				dd ?
 hImlGray			dd ?
 pSetMenuInfo		dd ?
-mnudata				MNUDATA 350 dup(<>)
+mnudata				MNUDATA 512 dup(<>)
 fNT					dd ?
 hMnuFont			dd ?
 MnuFontHt			dd ?
