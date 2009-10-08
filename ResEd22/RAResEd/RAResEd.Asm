@@ -1387,6 +1387,11 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,winsize.wttbx
 		add		ecx,SIZEBAR
 		invoke MoveWindow,hOut,ecx,edx,eax,htout,TRUE
+		.if htout
+			invoke ShowWindow,hOut,SW_SHOWNA
+		.else
+			invoke ShowWindow,hOut,SW_HIDE
+		.endif
 		mov		eax,rect.right
 		sub		eax,winsize.wtpro
 		invoke MoveWindow,hPrj,eax,0,winsize.wtpro,winsize.htpro,TRUE
