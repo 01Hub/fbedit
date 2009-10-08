@@ -177,7 +177,7 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,40463
+2=0,416,869,416,21545
 3=154,154,590,413,749
 4=0,0,590,413,41444
 5=132,132,536,413,42632
@@ -189,9 +189,9 @@ MinorFiles=*.res;*.obj;
 11=88,88,536,413,12634
 12=154,154,590,413,1082
 13=176,176,590,413,1067
-14=176,176,536,413,1766
-15=22,22,590,413,52260
-16=66,66,536,413,42963
+14=176,176,536,413,0
+15=22,22,590,413,19756
+16=66,66,536,413,58429
 17=0,0,536,413,17931
 18=176,176,536,413
 19=110,110,536,413
@@ -291,7 +291,7 @@ MinorFiles=*.res;*.obj;
 118=0,0,559,521,913
 102=0,0,0,0,0
 67=0,0,0,0,0
-119=0,0,0,0,834
+119=0,0,0,0,1055
 120=0,0,0,0,4554
 121=0,0,0,0
 122=0,0,0,0,537
@@ -301,7 +301,7 @@ MinorFiles=*.res;*.obj;
 126=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,88
+AutoLoad=6,88,14,15,2,16,119
 
 [BookMark]
 0=
@@ -487,16 +487,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="TrackPopupMenu"
-2="MENUFILE"
-3="mru"
-4="hGrpTrv"
-5="hPbrTrv"
-6="TVN_ENDLABELEDIT"
-7="50025"
-8="iniSetCodeBlocks"
-9="RABLOCKDEF"
-10="12"
+1="StrCap"
+2="TrackPopupMenu"
+3="MENUFILE"
+4="mru"
+5="hGrpTrv"
+6="hPbrTrv"
+7="TVN_ENDLABELEDIT"
+8="50025"
+9="iniSetCodeBlocks"
+10="RABLOCKDEF"
 
 [BreakPoint]
 0=
@@ -538,7 +538,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=6
+MilestoneOnDateDate=8
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -775,3 +775,5 @@ PTimer=385940000
 10=
 9=
 52=
+14=
+15=

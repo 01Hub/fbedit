@@ -1,6 +1,6 @@
 .const
 
-NoOfButtons		equ 33
+NoOfButtons		equ 34
 ButtonSize		equ 26
 
 ;Used by RadASM 1.2.0.5
@@ -50,7 +50,8 @@ szGetDefEx			db 'GetDefEx',0
 nButtons			dd NoOfButtons
 hButtons			dd NoOfButtons+32 dup(0)
 szToolBoxTlt		db 'Pointer,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,'
-					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header',0
+					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,'
+					db 'Animate,HotKey,HPager,VPager,ReBar,Header,Syslink',0
 					db 512 dup(0)
 .data?
 

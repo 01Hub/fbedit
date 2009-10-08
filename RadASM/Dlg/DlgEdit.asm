@@ -14,8 +14,8 @@ DlgX				dd 10
 DlgY				dd 10
 szICODLG			db '#100',0
 
+;Control names
 DlgID				db 'IDD_DLG',0
-DlgRC				db 'DIALOGEX',0
 EdtID				db 'IDC_EDT',0
 StcID				db 'IDC_STC',0
 GrbID				db 'IDC_GRP',0
@@ -46,6 +46,13 @@ HotID				db 'IDC_HOT',0
 PgrID				db 'IDC_PGR',0
 RebID				db 'IDC_REB',0
 HdrID				db 'IDC_HDR',0
+LnkID				db 'IDC_LNK',0
+
+;Control caption
+LnkCAP				db '<a></a>',0
+
+;Resource type
+DlgRC				db 'DIALOGEX',0
 ConRC				db 'CONTROL',0
 
 szMnu				db '  &File  ,	&Edit  ,  &Help  ',0
@@ -742,6 +749,27 @@ ctltypes			dd 0
 					dd 11111101000111000000000000000000b
 					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
 					dd 00010000000000011001000000000001b
+					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
+					dd 00000000000000000000000000000000b
+					;  SELHH
+					dd 00000000000000000000000000000000b
+					;
+					dd 100
+					dd 21
+				;33-Syslink
+					dd 33
+					dd offset szSyslink
+					dd 0	;Not used
+					dd WS_VISIBLE or WS_CHILD or LWS_TRANSPARENT
+					dd 0	;ExStyle
+					dd offset LnkID
+					dd offset LnkCAP
+					dd offset ConRC
+					dd 0	;nMethod
+					dd 0	;Methods
+					dd 11111111000111000000000001000000b
+					;  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
+					dd 00010000000000011000000000000000b
 					;  SFSTFSGIUSOSMHTxxIIBPOTTAWAATWDD
 					dd 00000000000000000000000000000000b
 					;  SELHH
@@ -3321,6 +3349,20 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 		mov		rbbi.cyMinChild,eax
 		invoke SendMessage,hCtl,RB_INSERTBAND,0,addr rbbi
 		invoke SetWindowPos,hCtl,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
+	.elseif eax==33
+		invoke CreateWindowEx,0,addr szStatic,NULL,
+		WS_CHILD or WS_VISIBLE or SS_LEFT or SS_NOTIFY or WS_CLIPSIBLINGS,
+		[edi].x,[edi].y,[edi].ccx,[edi].ccy,
+		[edi].hpar,0,hInstance,0
+		mov		hCtl,eax
+		invoke SetWindowPos,hCtl,HWND_TOP,0,0,0,0,SWP_NOMOVE or SWP_NOSIZE
+		mov		eax,ws
+		or		eax,WS_DISABLED
+		invoke CreateWindowEx,wsex,lpclass,addr buffer,
+		eax,0,0,[edi].ccx,[edi].ccy,
+		hCtl,0,hInstance,0
+		mov		hCld,eax
+		mov		[edi].hcld,eax
 	.else
 		invoke CreateWindowEx,wsex,lpclass,addr buffer,
 		ws,[edi].x,[edi].y,[edi].ccx,[edi].ccy,

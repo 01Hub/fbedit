@@ -1983,7 +1983,7 @@ PropEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetWindowLong,hPrpLst,GWL_USERDATA
 			mov		hCtl,eax
 			invoke GetWindowLong,hCtl,GWL_USERDATA
-			.if [eax].DIALOG.ntype==3
+			.if [eax].DIALOG.ntype==3 || [eax].DIALOG.ntype==33
 				mov		edx,[eax].DIALOG.hcld
 				mov		hCtl,edx
 			.endif

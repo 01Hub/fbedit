@@ -23,7 +23,7 @@ includelib Gdi32.lib
 ;#########################################################################
 ;		RadASM Add In Include
 
-include \RadASM\Masm\Inc\radasm.inc
+include ..\radasm.inc
 
 ;#########################################################################
 ;		VKim's Debug
@@ -171,6 +171,7 @@ types				TYPES <'WS_','DS_',>			;Dialog
 					TYPES <'WS_','PGS_',>			;V-Pager
 					TYPES <'WS_','RBS_',>			;ReBar
 					TYPES <'WS_','HDS_',>			;Header
+					TYPES <'WS_','LWS_',>			;Syslink
 					TYPES <'WS_',,>					;Custom controls
 					TYPES <,,>
 
@@ -207,6 +208,7 @@ extypes				TYPES <'WS_',,>					;Dialog
 					TYPES <'WS_',,>					;V-Pager
 					TYPES <'WS_',,>					;ReBar
 					TYPES <'WS_',,>					;Header
+					TYPES <'WS_',,>					;Syslink
 					TYPES <'WS_',,>					;Custom controls
 					TYPES <,,>
 

@@ -876,9 +876,10 @@ szHotKey				db 'msctls_hotkey32',0
 szPager					db 'SysPager',0
 szReBar					db 'ReBarWindow32',0
 szHeader				db 'SysHeader32',0
+szSyslink				db 'SysLink',0
 
 szCtlText				db 'Dialog,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,'
-						db 'MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header',0
+						db 'MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header,SysLink',0
 						db 512 dup(0)
 
 RichEditDLL				db 'riched20.dll',0
