@@ -92,8 +92,22 @@ copy ..\RadLNG.exe Release\Language
 
 Pause
 
+echo Oppdaterer api filer
+copy ..\ApiFiles\masmApiStruct.api Release\Masm
+copy ..\ApiFiles\masmArray.api Release\Masm
+copy ..\ApiFiles\masmType.api Release\Masm
+copy ..\ApiFiles\cppArray.api Release\Cpp
+copy ..\ApiFiles\cppType.api Release\Cpp
+copy ..\ApiFiles\fbType.api Release\fb
+copy ..\ApiFiles\fpType.api Release\fp
+
+Pause
+
 echo Oppdaterer RadASM
 copy ..\RadASM.exe Release
 copy ..\WhatsNew.txt Release
+
+copy ..\RAHelp\RadASM.chm Release\Help
+copy ..\RAHelp\RadASMini.rtf Release\Help
 
 Pause
