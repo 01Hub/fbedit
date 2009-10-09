@@ -120,7 +120,9 @@ GroupGetProjectFiles proc uses ebx esi edi
 			jmp		Nxt
 		.endif
 	.endif
-	invoke CombSort,hMem,n
+	.if sdword ptr n>1
+		invoke CombSort,hMem,n
+	.endif
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,2048*sizeof PROFILE
 	push	eax
 	mov		edi,eax
