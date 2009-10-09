@@ -108,13 +108,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	hWin
 		pop		hWnd
 		mov		fr,FR_DOWN
-		invoke GetModuleFileName,0,addr AppPath,sizeof AppPath
-		invoke lstrlen,addr AppPath
-		.while byte ptr AppPath[eax]!='\' && eax
-			dec		eax
-		.endw
-		mov		AppPath[eax],0
-		invoke SetCurrentDirectory,addr AppPath
 		invoke GetDlgItem,hWin,IDC_SBR1
 		invoke SendMessage,eax,WM_GETFONT,0,0
 		mov		hFont,eax
@@ -1225,6 +1218,25 @@ start:
 	mov		icex.dwSize,sizeof INITCOMMONCONTROLSEX
 	mov		icex.dwICC,ICC_DATE_CLASSES or ICC_USEREX_CLASSES or ICC_INTERNET_CLASSES or ICC_ANIMATE_CLASS or ICC_HOTKEY_CLASS or ICC_PAGESCROLLER_CLASS or ICC_COOL_CLASSES
 	invoke InitCommonControlsEx,addr icex
+	invoke GetModuleFileName,0,addr AppPath,sizeof AppPath
+	invoke lstrlen,addr AppPath
+	.while byte ptr AppPath[eax]!='\' && eax
+		dec		eax
+	.endw
+	mov		AppPath[eax],0
+	invoke lstrcpy,addr szExeName,addr AppPath[eax+1]
+	invoke lstrlen,addr szExeName
+	.while byte ptr szExeName[eax]!='.' && eax
+		dec		eax
+	.endw
+	mov		szExeName[eax],0
+	invoke lstrcmpi,addr szExeName,addr szResEdExe
+	.if !eax
+		mov		szExeName,0
+	.else
+		invoke lstrcat,addr szExeName,addr szBS
+	.endif
+	invoke SetCurrentDirectory,addr AppPath
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szResEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof wpos

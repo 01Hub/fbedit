@@ -220,8 +220,8 @@ ntbrbtns			equ 19
 
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
-szResEd				db 'Software\ResEd1000\',0
-szAboutMsg			db 'Resource editor 2.2.0.5',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
+szResEdExe			db 'ResEd',0
+szAboutMsg			db 'Resource editor 2.2.0.5b',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1			db 'http://radasm.cherrytree.at/',0
 szAboutUrl2			db 'http://radasm.cherrytree.at/',0
 szOpen				db 'Open',0
@@ -247,6 +247,8 @@ grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FAL
 col					COLOR <0FFFFFFh,0,804000h,0C00000h>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>,<100,1>>
 textfont			TEXTFONT <'Courier New',-12,0,0,0>
+szResEd				db 'Software\ResEd1000\'
+szExeName			db 128 dup(?)
 
 .data?
 
