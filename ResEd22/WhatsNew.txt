@@ -1,10 +1,11 @@
 ResEd
 
-2.2.0.5b - 2009-10-09
+2.2.0.5b - 2009-10-13
 ---------------------
 o The exe filename is now part of the registry key.
   Just make a copy of ResEd.exe and name it ResEd2.exe or whatever.
   This makes it possible to have different configurations for each exe.
+o Resource names are now validated.
 
 2.2.0.5 - 2009-10-04
 --------------------

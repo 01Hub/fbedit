@@ -831,6 +831,13 @@ NameEditProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					inc		eax
 				.endif
 				invoke EnableWindow,edx,eax
+			.elseif eax==GN_BEFOREUPDATE
+				.if [esi].GRIDNOTIFY.col==3
+					invoke CheckName,[esi].GRIDNOTIFY.lpdata
+					.if eax
+						mov		[esi].GRIDNOTIFY.fcancel,TRUE
+					.endif
+				.endif
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
 				invoke NotifyParent

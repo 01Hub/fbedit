@@ -39,6 +39,7 @@ MnuTabs					dd 135,140,145,150,155,160
 
 lpOldHotProc			dd ?
 fHotFocus				dd ?
+lpOldNameEditProc		dd ?
 
 .code
 
@@ -680,6 +681,23 @@ HotProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 
 HotProc endp
 
+ItemNameEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
+	LOCAL	msg:MSG
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		invoke IsCharAlphaNumeric,wParam
+		.if !eax && wParam!='_' && wParam!=VK_BACK
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldNameEditProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+ItemNameEditProc endp
+
 DlgMnuPreviewProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 
 	mov		eax,uMsg
@@ -796,6 +814,9 @@ DlgMenuEditProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPAR
 		invoke GetDlgItem,hWin,IDC_HOTMENU
 		invoke SetWindowLong,eax,GWL_WNDPROC,offset HotProc
 		mov		lpOldHotProc,eax
+		invoke GetDlgItem,hWin,IDC_EDTITEMNAME
+		invoke SetWindowLong,eax,GWL_WNDPROC,offset ItemNameEditProc
+		mov		lpOldNameEditProc,eax
     .elseif eax==WM_CLOSE
 		mov		 fNoScroll,FALSE
     	invoke ShowScrollBar,hDEd,SB_BOTH,TRUE

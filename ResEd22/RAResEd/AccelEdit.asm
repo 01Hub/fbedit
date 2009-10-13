@@ -516,6 +516,13 @@ AccelEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		[esi].GRIDNOTIFY.fcancel,TRUE
 					.endif
 				.endif
+			.elseif eax==GN_BEFOREUPDATE
+				.if [esi].GRIDNOTIFY.col==0
+					invoke CheckName,[esi].GRIDNOTIFY.lpdata
+					.if eax
+						mov		[esi].GRIDNOTIFY.fcancel,TRUE
+					.endif
+				.endif
 			.elseif eax==GN_AFTERUPDATE
 				.if [esi].GRIDNOTIFY.col==2 && !fNoUpdate
 					mov		ecx,[esi].GRIDNOTIFY.row

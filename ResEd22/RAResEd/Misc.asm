@@ -1652,3 +1652,21 @@ Export:
 	retn
 
 ExportName endp
+
+CheckName proc uses ebx esi,lpName:DWORD
+
+	mov		esi,lpName
+	.while byte ptr [esi]
+		movzx	ebx,byte ptr[esi]
+		invoke IsCharAlphaNumeric,ebx
+		.if !eax && ebx!='_'
+			inc		eax
+			jmp		Ex
+		.endif
+		inc		esi
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+CheckName endp

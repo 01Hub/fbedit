@@ -155,27 +155,27 @@ Options=52
 3=0,0,0,0,0
 4=0,0,0,0,8
 1=0,0,718,485,34387
-7=0,0,718,485,41972
+7=0,0,718,485,43382
 6=0,0,0,0,404
 9=0,0,718,485,94558
 2=0,0,584,498,7436
-8=0,0,0,0,448
-10=0,0,0,0,14354
-16=0,0,718,485,12510
+8=0,0,0,0,27771
+10=0,0,0,0,9750
+16=0,0,718,485,13473
 15=0,0,0,0
 17=0,0,0,0,20777
 18=0,0,0,0,15073
 21=0,0,0,0,30103
 23=0,0,0,0
 24=0,0,0,0,3553
-26=0,0,0,0,900
+26=0,0,0,0,18902
 25=0,0,0,0
 22=0,0,0,0,4477
-28=0,0,0,0,208
+28=0,0,0,0,8384
 27=0,0,0,0
-29=0,0,0,0,307
+29=0,0,0,0,12410
 30=0,0,0,0
-32=0,0,718,485,7284
+32=0,0,718,485,8821
 31=0,0,0,0
 34=0,0,0,0,4332
 33=0,0,0,0
@@ -203,36 +203,36 @@ Options=52
 
 
 [Find]
-1="DEM_SHOWOUTPUT"
-2="tmpbuffer"
-3="WM_NCMOUSEMOVE"
-4="szDlgEditDummyClass"
-5="DEM_SHOWTABINDEX"
-6=";//Edit"
-7="SizeY"
-8="SizeX"
-9="DestroyMultiSel"
-10="DestroySizeingRect"
+1="PRP_STR_NAME"
+2="DEM_SHOWOUTPUT"
+3="tmpbuffer"
+4="WM_NCMOUSEMOVE"
+5="szDlgEditDummyClass"
+6="DEM_SHOWTABINDEX"
+7=";//Edit"
+8="SizeY"
+9="SizeX"
+10="DestroyMultiSel"
 
 [AutoLoad]
-AutoLoad=1,16,9,8,2,32,3
+AutoLoad=1,9,8,2,10,16,32
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.118
-PV=2.1.0.118
+FV=2.1.0.120
+PV=2.1.0.120
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.118
+ProductVersion=2.1.0.120
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.118
+FileVersion=2.1.0.120
 CompanyName=
 
 [VersionControl]
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=330867960
+PTimer=335674929
 
 [Exports]
 1=ResEdInstall
@@ -387,3 +387,4 @@ PTimer=330867960
 52=
 7=
 3=
+26=

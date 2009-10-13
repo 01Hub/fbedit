@@ -100,10 +100,10 @@ Options=52
 
 [Size]
 4=0,0,0,0
-1=580,0,290,688,36261
+1=580,0,290,688,25054
 6=
 2=0,0,0,0,5939
-7=0,0,699,490,10179
+7=0,0,699,490,7258
 9=
 8=
 3=0,0,0,0,0
@@ -117,7 +117,7 @@ Options=52
 18=0,0,0,0,10318
 12=0,0,0,0,1410
 19=0,0,0,0
-21=0,0,0,0,171
+21=0,0,0,0,29
 22=0,0,0,0
 24=0,0,0,0
 25=0,0,0,0,5060
@@ -146,16 +146,16 @@ Options=52
 0=
 
 [Find]
-1="addr nmeexp.szFileName"
-2="nmeexp"
-3="2204"
-4="IDM_FILE_NEW"
-5="PRO_SETINITID"
-6="SystemPath"
-7="IDM_TOOLS_CLEAR"
-8="MENU"
-9="DEM_ADDCONTROL"
-10="DEM_SETCOLOR"
+1="PRO_GETDIALOG"
+2="addr nmeexp.szFileName"
+3="nmeexp"
+4="2204"
+5="IDM_FILE_NEW"
+6="PRO_SETINITID"
+7="SystemPath"
+8="IDM_TOOLS_CLEAR"
+9="MENU"
+10="DEM_ADDCONTROL"
 
 [VersionControl]
 Settings=1278
@@ -182,7 +182,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -289,9 +289,9 @@ ID=105
 30=
 32=
 [PTimer]
-PTimer=309080798
+PTimer=312845555
 [AutoLoad]
-AutoLoad=
+AutoLoad=1,7,21
 [RADebugBP]
 1=
 2=

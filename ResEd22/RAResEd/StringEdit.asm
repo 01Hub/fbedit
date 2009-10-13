@@ -335,6 +335,13 @@ StringEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==GN_HEADERCLICK
 				;Sort the grid by column, invert sorting order
 				invoke SendMessage,hGrd,GM_COLUMNSORT,[esi].GRIDNOTIFY.col,SORT_INVERT
+			.elseif eax==GN_BEFOREUPDATE
+				.if [esi].GRIDNOTIFY.col==0
+					invoke CheckName,[esi].GRIDNOTIFY.lpdata
+					.if eax
+						mov		[esi].GRIDNOTIFY.fcancel,TRUE
+					.endif
+				.endif
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
 				invoke NotifyParent

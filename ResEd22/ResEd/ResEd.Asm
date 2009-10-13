@@ -725,6 +725,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,wpos.fView
 			and		eax,1
 			invoke SendMessage,hResEd,DEM_SHOWOUTPUT,eax,0
+			invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+			.if eax
+				invoke UpdateWindow,eax
+			.endif
 			invoke ToolBarEnable
 		.elseif eax==IDM_VIEW_PREVIEW
 			invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
@@ -816,6 +820,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
 		.elseif eax==IDM_TOOLS_COMPILE
 			invoke Compile
+			invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+			.if eax
+				invoke UpdateWindow,eax
+			.endif
 		.elseif eax==IDM_TOOLS_CLEAR
 			invoke MessageBox,hWin,addr szClearMRU,addr szAppName,MB_OKCANCEL or MB_ICONQUESTION
 			.if eax==IDOK
@@ -892,6 +900,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		edx,25
 		sub		edx,ebx
 		invoke MoveWindow,hResEd,0,25,ecx,edx,TRUE
+		invoke SendMessage,hResEd,PRO_GETDIALOG,0,0
+		.if eax
+			invoke UpdateWindow,eax
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke SetFocus,hResEd
 		invoke WantToSaveProject,offset ProjectFileName

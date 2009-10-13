@@ -1292,7 +1292,10 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 					.if hCtl==-2 || hCtl==-3 || hCtl==-4 || hCtl==-6 || hCtl==-7 || hCtl==-8 || hCtl==-9
 						mov		eax,lbid
 						.if eax==PRP_STR_NAME
-							invoke strcpy,lpResName,addr buffer1
+							invoke CheckName,addr buffer1
+							.if !eax
+								invoke strcpy,lpResName,addr buffer1
+							.endif
 						.elseif eax==PRP_NUM_ID
 							mov		eax,lpResID
 							push	val
@@ -1364,14 +1367,17 @@ SetCtrlData:
 			invoke strcat,addr buffer,addr buffer1
 			invoke MessageBox,hDEd,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 		.else
-			invoke strcpy,addr [esi].idname,addr buffer1
-			.if ![esi].ntype
-				invoke GetWindowLong,hDEd,DEWM_PROJECT
-				mov		edx,eax
-				push	edx
-				invoke GetProjectItemName,edx,addr buffer1
-				pop		edx
-				invoke SetProjectItemName,edx,addr buffer1
+			invoke CheckName,addr buffer1
+			.if !eax
+				invoke strcpy,addr [esi].idname,addr buffer1
+				.if ![esi].ntype
+					invoke GetWindowLong,hDEd,DEWM_PROJECT
+					mov		edx,eax
+					push	edx
+					invoke GetProjectItemName,edx,addr buffer1
+					pop		edx
+					invoke SetProjectItemName,edx,addr buffer1
+				.endif
 			.endif
 		.endif
 	.elseif eax==PRP_STR_FONT

@@ -774,6 +774,13 @@ ResourceEditProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		[esi].GRIDNOTIFY.fcancel,TRUE
 				.endif
+			.elseif eax==GN_BEFOREUPDATE
+				.if [esi].GRIDNOTIFY.col==1
+					invoke CheckName,[esi].GRIDNOTIFY.lpdata
+					.if eax
+						mov		[esi].GRIDNOTIFY.fcancel,TRUE
+					.endif
+				.endif
 			.elseif eax==GN_AFTERUPDATE
 				mov		fDialogChanged,TRUE
 				call Enable
