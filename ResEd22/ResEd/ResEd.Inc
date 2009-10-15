@@ -238,6 +238,7 @@ szCr				db VK_RETURN,0
 szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
 szMruProject		db 'MruProject#',0
+szDelete			db '/Delete',0
 
 .data
 

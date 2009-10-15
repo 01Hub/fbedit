@@ -1249,6 +1249,13 @@ start:
 		invoke lstrcat,addr szExeName,addr szBS
 	.endif
 	invoke SetCurrentDirectory,addr AppPath
+	invoke lstrcmpi,CommandLine,addr szDelete
+	.if !eax
+		invoke lstrlen,addr szResEd
+		mov		szResEd[eax-1],0
+		invoke RegDeleteKey,HKEY_CURRENT_USER,addr szResEd
+		jmp		Ex
+	.endif
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szResEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof wpos
@@ -1312,6 +1319,7 @@ start:
 		inc		ecx
 	.endw
 	invoke RegCloseKey,hReg
+  Ex:
 	invoke ResEdUninstall
 	invoke UnInstallRAEdit
 	.if hRichEd
