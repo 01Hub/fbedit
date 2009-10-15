@@ -1254,6 +1254,16 @@ start:
 		invoke lstrlen,addr szResEd
 		mov		szResEd[eax-1],0
 		invoke RegDeleteKey,HKEY_CURRENT_USER,addr szResEd
+		.if eax==ERROR_SUCCESS
+			invoke lstrcpy,addr mnubuff,addr szResEd
+			invoke lstrcat,addr mnubuff,addr szDeleted
+			mov		edx,MB_OK or MB_ICONINFORMATION
+		.else
+			invoke lstrcpy,addr mnubuff,addr szResEd
+			invoke lstrcat,addr mnubuff,addr szFailed
+			mov		edx,MB_OK or MB_ICONERROR
+		.endif
+		invoke MessageBox,0,addr mnubuff,addr szAppName,edx
 		jmp		Ex
 	.endif
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szResEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp

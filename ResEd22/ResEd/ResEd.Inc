@@ -239,6 +239,8 @@ szREG_SZ			db 'REG_SZ',0
 szWinPos			db 'WinPos',0
 szMruProject		db 'MruProject#',0
 szDelete			db '/Delete',0
+szDeleted			db ' Registry key deleted.',0
+szFailed			db ' Registry key delete failed.',0
 
 .data
 
