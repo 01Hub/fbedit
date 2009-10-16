@@ -11,7 +11,6 @@ AddIns\CodeSize.dll
 AddIns\CodeTemplates.dll
 AddIns\Collapse.dll
 AddIns\Colref.dll
-AddIns\CompileTime.dll
 AddIns\CppParse.dll
 AddIns\CreateProject.dll
 AddIns\CreateProtoEx.dll

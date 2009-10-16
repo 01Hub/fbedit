@@ -8,7 +8,6 @@ copy ..\Addins\AddinMana\AddinMana.dll Release\Addins
 copy ..\Addins\AdvEdit\AdvEdit.dll Release\Addins
 copy ..\Addins\AlexMenu\AlexMenu.dll Release\Addins
 copy ..\Addins\Collapse\Collapse.dll Release\Addins
-copy ..\Addins\CompileTime\CompileTime.dll Release\Addins
 copy ..\Addins\CppParse\CppParse.dll Release\Addins
 copy ..\Addins\CreateProtoEx\CreateProtoEx.dll Release\Addins
 copy ..\Addins\CtrlNames\CtrlNames.dll Release\Addins
@@ -40,7 +39,6 @@ copy ..\Addins\AddinMana\AddinMana.txt Release\Addins\Help
 copy ..\Addins\AdvEdit\AdvEdit.txt Release\Addins\Help
 copy ..\Addins\AlexMenu\AlexMenu.txt Release\Addins\Help
 copy ..\Addins\Collapse\Collapse.txt Release\Addins\Help
-copy ..\Addins\CompileTime\CompileTime.txt Release\Addins\Help
 copy ..\Addins\CreateProtoEx\CreateProtoEx.txt Release\Addins\Help
 copy ..\Addins\CtrlNames\CtrlNames.txt Release\Addins\Help
 copy ..\Addins\DlgToWin\DlgToWin.txt Release\Addins\Help
