@@ -1248,7 +1248,7 @@ start:
 	.else
 		invoke lstrcat,addr szExeName,addr szBS
 	.endif
-	invoke SetCurrentDirectory,addr AppPath
+;	invoke SetCurrentDirectory,addr AppPath
 	invoke lstrcmpi,CommandLine,addr szDelete
 	.if !eax
 		invoke lstrlen,addr szResEd
