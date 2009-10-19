@@ -687,25 +687,45 @@ FixUnknown proc uses ebx esi edi
 	mov		ebx,lpData
 	mov		esi,[ebx].ADDINDATA.lpWordList
 	.if esi
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+		invoke GlobalAlloc,GMEM_FIXED,1024*1024
 		mov		hMem,eax
 		mov		edi,eax
+		mov		dx,'TS'
+		mov		cl,'s'
 		.while [esi].PROPERTIES.nSize
-			.if [esi].PROPERTIES.nType=='S' || [esi].PROPERTIES.nType=='T' || [esi].PROPERTIES.nType=='s'
+			mov		al,[esi].PROPERTIES.nType
+			.if al==dl || al==dh || al==cl
 				mov		[edi],esi
 				lea		edi,[edi+4]
 			.endif
 			mov		eax,[esi].PROPERTIES.nSize
 			lea		esi,[esi+eax+sizeof PROPERTIES]
 		.endw
+		mov		dword ptr [edi],0
 		mov		esi,[ebx].ADDINDATA.lpWordList
 		add		esi,[ebx].ADDINDATA.rpProjectWordList
 		.while [esi].PROPERTIES.nSize
 			.if [esi].PROPERTIES.nType=='u'
+				mov		byte ptr [esi].PROPERTIES.nType,'x'
 				mov		ebx,hMem
+				lea		ecx,[esi+sizeof PROPERTIES]
+				.while byte ptr [ecx]
+					inc		ecx
+				.endw
+				inc		ecx
 				.while dword ptr [ebx]
+					xor		edx,edx
+					xor		eax,eax
 					mov		edi,[ebx]
-					call	CompareIt
+				  @@:
+					mov		al,[ecx+edx]
+					mov		ah,[edi+edx+sizeof PROPERTIES]
+					or		ah,ah
+					je		@f
+					inc		edx
+					sub		al,ah
+					je		@b
+				  @@:
 					.if !eax
 						mov		[esi].PROPERTIES.nType,'d'
 						.break
@@ -721,22 +741,17 @@ FixUnknown proc uses ebx esi edi
 	ret
 
 CompareIt:
-	lea		ecx,[esi+sizeof PROPERTIES]
-	lea		edx,[edi+sizeof PROPERTIES]
-	.while byte ptr [ecx]
-		inc		ecx
-	.endw
-	inc		ecx
+	xor		edx,edx
 	xor		eax,eax
-	.while TRUE
-		mov		al,[ecx]
-		mov		ah,[edx]
-		.break .if !al || !ah
-		sub		al,ah
-		.break .if al
-		inc		ecx
-		inc		edx
-	.endw
+  @@:
+	mov		al,[ecx+edx]
+	mov		ah,[edi+edx+sizeof PROPERTIES]
+	or		ah,ah
+	je		@f
+	inc		edx
+	sub		al,ah
+	je		@b
+  @@:
 	retn
 
 FixUnknown endp
