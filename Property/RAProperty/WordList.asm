@@ -225,10 +225,14 @@ CompactProperties proc uses esi edi
 			.if [esi].PROPERTIES.nType==255
 				mov		eax,[esi].PROPERTIES.nSize
 				lea		esi,[esi+eax+sizeof PROPERTIES]
-			.else
+			.elseif esi!=edi
 				mov		ecx,[esi].PROPERTIES.nSize
 				lea		ecx,[ecx+sizeof PROPERTIES]
 				rep movsb
+			.else
+				mov		eax,[esi].PROPERTIES.nSize
+				lea		esi,[esi+eax+sizeof PROPERTIES]
+				mov		edi,esi
 			.endif
 		.endw
 		mov		[edi].PROPERTIES.nSize,0

@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=19
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -141,9 +141,9 @@ ProductVer4Range=0
 13=,
 14=,,,,
 [Size]
-2=0,0,699,490,1396
+2=0,0,699,490,530
 <<<<<<< .mine
-1=0,0,699,490,9399
+1=0,0,699,490,17505
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -151,12 +151,12 @@ ProductVer4Range=0
 3=0,0,0,0,0
 8=0,0,0,0,1542
 7=0,0,0,0,2040
-9=0,0,0,0,373
+9=0,0,0,0,4491
 10=0,0,0,0,33401
-11=0,0,746,498,4553
+11=0,0,746,498,2501
 12=0,0,0,0,2850
 13=0,0,0,0,6449
-14=0,0,0,0,5604
+14=0,0,0,0,5849
 [BookMark]
 0=
 1=
@@ -172,7 +172,7 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,10,14,11,13,2,7
+AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
 PTimer=122121012
 [Find]

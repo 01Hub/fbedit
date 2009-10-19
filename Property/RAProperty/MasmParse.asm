@@ -296,11 +296,25 @@ MFixUnknown proc uses ebx esi edi
 		add		esi,[ebx].RAPROPERTY.rpproject
 		.while [esi].PROPERTIES.nSize
 			.if [esi].PROPERTIES.nType=='U'
+				lea		ecx,[esi+sizeof PROPERTIES]
+				.while byte ptr [ecx]
+					inc		ecx
+				.endw
+				inc		ecx
 				mov		edi,[ebx].RAPROPERTY.lpmem
 				.while [edi].PROPERTIES.nSize
 					movzx	eax,[edi].PROPERTIES.nType
 					.if eax=='S' || eax=='T' || eax=='s'
-						call	CompareIt
+						xor		edx,edx
+					  @@:
+						mov		al,[ecx+edx]
+						mov		ah,[edi+edx+sizeof PROPERTIES]
+						or		ah,ah
+						je		@f
+						inc		edx
+						sub		al,ah
+						je		@b
+					  @@:
 						.if !eax
 							mov		[esi].PROPERTIES.nType,'d'
 							.break
@@ -315,25 +329,6 @@ MFixUnknown proc uses ebx esi edi
 		.endw
 	.endif
 	ret
-
-CompareIt:
-	lea		ecx,[esi+sizeof PROPERTIES]
-	lea		edx,[edi+sizeof PROPERTIES]
-	.while byte ptr [ecx]
-		inc		ecx
-	.endw
-	inc		ecx
-	xor		eax,eax
-	.while TRUE
-		mov		al,[ecx]
-		mov		ah,[edx]
-		.break .if !al || !ah
-		sub		al,ah
-		.break .if al
-		inc		ecx
-		inc		edx
-	.endw
-	retn
 
 MFixUnknown endp
 
