@@ -468,6 +468,7 @@ IDR_MAINACCEL			equ 105
 
 FIND_OPEN_FILENAME		equ 51000
 IS_FILE_CHANGED			equ 51001
+QUERY_SAVE				equ 51002
 
 IDR_MDIMENU				equ 999
 IDM_FILE_NEWPROJECT		equ 40001
@@ -1931,3 +1932,5 @@ IsDragging				dd ?
 groupgrp				PROGROUP 64 dup(<>)
 lpOldTabProc			dd ?
 tabinx					dd ?
+fCancelSave				dd ?
+hNoSave					dd 128 dup(?)

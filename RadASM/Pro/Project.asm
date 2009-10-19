@@ -1094,7 +1094,6 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 		.else
 			mov		szGroupGroupBuff,0
 		.endif
-		invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,0
 		invoke GroupGetProjectFiles
 		invoke GroupUpdateTrv,hPbrTrv
 		.if fGroupExpand
@@ -1144,13 +1143,20 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 
 GetProjectFiles	 endp
 
-CloseProject proc
+CloseProject proc uses esi
 	LOCAL	tci:TCITEM
 	LOCAL	nInx:DWORD
 
 	.if	fProject
 		invoke DllProc,hWnd,AIM_PROJECTCLOSE,0,0,RAM_PROJECTCLOSE
 		.if	eax
+			ret
+		.endif
+		invoke RtlZeroMemory,offset hNoSave,sizeof hNoSave
+		mov		fCancelSave,0
+		invoke UpdateAll,QUERY_SAVE
+		mov		eax,fCancelSave
+		.if eax
 			ret
 		.endif
 		mov		nInx,0
@@ -1168,6 +1174,19 @@ CloseProject proc
 		invoke strlen,offset tempbuff
 		mov		tempbuff[eax-1],0
 		invoke ClearErrorBookMarks
+		mov		esi,offset hNoSave
+		.while dword ptr [esi]
+			invoke GetWindowLong,[esi],0
+			.if eax==ID_EDIT || eax==ID_EDITTXT || eax==ID_EDITHEX
+				invoke GetWindowLong,[esi],GWL_USERDATA
+				invoke SendMessage,eax,EM_SETMODIFY,0,0
+			.elseif eax==ID_DIALOG
+				invoke GetWindowLong,[esi],4
+				mov		(DLGHEAD ptr [eax]).changed,0
+			.endif
+			lea		esi,[esi+4]
+		.endw
+		invoke SendMessage,hWnd,WM_COMMAND,IDM_FILE_SAVEALLFILES,0
 		invoke SendMessage,hWnd,WM_COMMAND,IDM_WINDOW_CLOSEALL,0
 		.if	hMdiCld==0
 			invoke WritePrivateProfileString,addr iniAutoLoad,addr iniAutoLoad,offset tempbuff,addr ProjectFile

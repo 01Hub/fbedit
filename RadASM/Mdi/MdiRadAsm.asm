@@ -5116,7 +5116,7 @@ HexEdChildProc endp
 ;#########################################################################
 
 WinEnumProc proc hWin:HWND,lParam:LPARAM
-	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer[MAX_PATH*2]:BYTE
 	LOCAL	hef:HEFONT
 
 	invoke GetWindowLong,hWin,GWL_ID
@@ -5162,6 +5162,35 @@ WinEnumProc proc hWin:HWND,lParam:LPARAM
 				m2m		hFound,hWin
 				xor		eax,eax
 				ret
+			.endif
+		.elseif edx==QUERY_SAVE
+			.if eax==ID_EDIT || eax==ID_EDITTXT || eax==ID_EDITHEX
+				invoke GetWindowLong,hWin,GWL_USERDATA
+				invoke SendMessage,eax,EM_GETMODIFY,0,0
+			.elseif eax==ID_DIALOG
+				invoke GetWindowLong,hWin,4
+				mov		eax,(DLGHEAD ptr [eax]).changed
+			.endif
+			.if eax
+				invoke SendMessage,hClient,WM_MDIACTIVATE,hWin,0
+				invoke GetWindowText,hWin,addr buffer[MAX_PATH],sizeof buffer-MAX_PATH
+				invoke strcpy,addr buffer,addr WannaSave
+				invoke strcat,addr buffer,addr buffer[MAX_PATH]
+				mov		word ptr buffer[MAX_PATH],'?'
+				invoke strcat,addr buffer,addr buffer[MAX_PATH]
+				invoke MessageBox,hWin,addr buffer,addr AppName,MB_YESNOCANCEL or MB_ICONQUESTION
+				.if eax==IDNO
+					mov		edx,offset hNoSave
+					.while dword ptr [edx]
+						lea		edx,[edx+4]
+					.endw
+					mov		eax,hWin
+					mov		[edx],eax
+				.elseif eax==IDCANCEL
+					inc		fCancelSave
+					xor		eax,eax
+					ret
+				.endif
 			.endif
 		.elseif edx==IS_FILE_CHANGED
 			.if fChangeNotify
@@ -5971,4 +6000,5 @@ ListBoxProc endp
 ;#########################################################################
 
 end start
+
 

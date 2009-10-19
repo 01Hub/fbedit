@@ -143,7 +143,7 @@ GroupGetProjectFiles proc uses ebx esi edi
 GroupGetProjectFiles endp
 
 GroupAddNode proc uses esi,hTrv:HWND,lpFileName:DWORD,iNbr:DWORD,nGrp:DWORD,fModule:DWORD
-	LOCAL	ftp:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	; Get parent node
 	mov		eax,nGrp
@@ -162,6 +162,17 @@ GroupAddNode proc uses esi,hTrv:HWND,lpFileName:DWORD,iNbr:DWORD,nGrp:DWORD,fMod
 	.endif
 	.if eax>=30
 		mov		eax,7
+	.endif
+	; Check if read only
+	push	eax
+	invoke strcpy,addr buffer,addr ProjectPath
+	invoke strcat,addr buffer,lpFileName
+	invoke GetFileAttributes,addr buffer
+	mov		edx,eax
+	pop		eax
+	test	edx,FILE_ATTRIBUTE_READONLY
+	.if !ZERO?
+		add		eax,11
 	.endif
 	add		eax,IML_START
 	mov		edx,[esi].PROGROUP.hGrp
