@@ -61,7 +61,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=18
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=17
@@ -146,7 +146,7 @@ CompanyName=
 3=
 [Size]
 6=0,0,0,0,34
-1=0,0,0,0,12343
+1=0,0,0,0,11716
 2=0,0,0,0,1722
 5=0,0,0,0,17486
 4=0,0,0,0,31

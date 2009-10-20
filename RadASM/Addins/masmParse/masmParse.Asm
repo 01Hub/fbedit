@@ -687,6 +687,8 @@ FixUnknown proc uses ebx esi edi
 	mov		ebx,lpData
 	mov		esi,[ebx].ADDINDATA.lpWordList
 	.if esi
+		; Setup an array of pointers to S, T and s types
+		; This could be optimized by keeping the S and T array.
 		invoke GlobalAlloc,GMEM_FIXED,1024*1024
 		mov		hMem,eax
 		mov		edi,eax
@@ -701,18 +703,24 @@ FixUnknown proc uses ebx esi edi
 			mov		eax,[esi].PROPERTIES.nSize
 			lea		esi,[esi+eax+sizeof PROPERTIES]
 		.endw
+		; Find the u types and match it with the S, T or s types
+		; Change the u to x to have them deleted wnen the wordlist is compacted
+		; If found, change the x to d
 		mov		dword ptr [edi],0
 		mov		esi,[ebx].ADDINDATA.lpWordList
 		add		esi,[ebx].ADDINDATA.rpProjectWordList
 		.while [esi].PROPERTIES.nSize
 			.if [esi].PROPERTIES.nType=='u'
+				; Found change u to x
 				mov		byte ptr [esi].PROPERTIES.nType,'x'
 				mov		ebx,hMem
+				; Skip the name and point to datatype
 				lea		ecx,[esi+sizeof PROPERTIES]
 				.while byte ptr [ecx]
 					inc		ecx
 				.endw
 				inc		ecx
+				; Scan the array
 				.while dword ptr [ebx]
 					xor		edx,edx
 					xor		eax,eax
@@ -727,6 +735,7 @@ FixUnknown proc uses ebx esi edi
 					je		@b
 				  @@:
 					.if !eax
+						; Found, change x to d
 						mov		[esi].PROPERTIES.nType,'d'
 						.break
 					.endif
@@ -739,20 +748,6 @@ FixUnknown proc uses ebx esi edi
 	.endif
 	invoke GlobalFree,hMem
 	ret
-
-CompareIt:
-	xor		edx,edx
-	xor		eax,eax
-  @@:
-	mov		al,[ecx+edx]
-	mov		ah,[edi+edx+sizeof PROPERTIES]
-	or		ah,ah
-	je		@f
-	inc		edx
-	sub		al,ah
-	je		@b
-  @@:
-	retn
 
 FixUnknown endp
 
