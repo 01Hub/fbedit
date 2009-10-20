@@ -1709,9 +1709,10 @@ GotoDeclare proc uses esi
 					mov		ftxt.chrgText.cpMax,-1
 					invoke SendMessage,hREd,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
 					.if eax!=-1
-						mov		chrg.cpMin,eax
-						mov		chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+						mov		ftxt.chrg.cpMin,eax
+						mov		ftxt.chrg.cpMax,eax
+						invoke PushGoto,hREd,chrg.cpMin
+						invoke SendMessage,hREd,EM_EXSETSEL,0,addr ftxt.chrg
 						invoke SendMessage,hREd,REM_VCENTER,0,0
 						invoke SetFocus,hREd
 						jmp		Ex
