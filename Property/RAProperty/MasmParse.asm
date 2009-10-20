@@ -293,6 +293,26 @@ MFixUnknown proc uses ebx esi edi
 
 	mov		esi,[ebx].RAPROPERTY.lpmem
 	.if esi
+		.if ![ebx].RAPROPERTY.hMemArray
+			; Setup array of pointers to T and S types
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024*4
+			mov		[ebx].RAPROPERTY.hMemArray,eax
+		.endif
+		mov		edi,[ebx].RAPROPERTY.hMemArray
+		mov		edx,'TS'
+		mov		ecx,'s'
+		.while [esi].PROPERTIES.nSize
+			mov		al,[esi].PROPERTIES.nType
+			.if al==dl || al==dh || al==cl
+				mov		[edi],esi
+				lea		edi,[edi+4]
+			.endif
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+		mov		dword ptr [edi],0
+		; Find U types and change it to d if found in array
+		mov		esi,[ebx].RAPROPERTY.lpmem
 		add		esi,[ebx].RAPROPERTY.rpproject
 		.while [esi].PROPERTIES.nSize
 			.if [esi].PROPERTIES.nType=='U'
@@ -301,28 +321,28 @@ MFixUnknown proc uses ebx esi edi
 					inc		ecx
 				.endw
 				inc		ecx
-				mov		edi,[ebx].RAPROPERTY.lpmem
-				.while [edi].PROPERTIES.nSize
-					movzx	eax,[edi].PROPERTIES.nType
-					.if eax=='S' || eax=='T' || eax=='s'
-						xor		edx,edx
-					  @@:
-						mov		al,[ecx+edx]
-						mov		ah,[edi+edx+sizeof PROPERTIES]
-						or		ah,ah
-						je		@f
-						inc		edx
-						sub		al,ah
-						je		@b
-					  @@:
-						.if !eax
-							mov		[esi].PROPERTIES.nType,'d'
-							.break
-						.endif
+				push	ebx
+				mov		ebx,[ebx].RAPROPERTY.hMemArray
+				xor		eax,eax
+				.while dword ptr [ebx]
+					mov		edi,[ebx]
+					xor		edx,edx
+				  @@:
+					mov		al,[ecx+edx]
+					mov		ah,[edi+edx+sizeof PROPERTIES]
+					or		ah,ah
+					je		@f
+					inc		edx
+					sub		al,ah
+					je		@b
+				  @@:
+					.if !eax
+						mov		[esi].PROPERTIES.nType,'d'
+						.break
 					.endif
-					mov		eax,[edi].PROPERTIES.nSize
-					lea		edi,[edi+eax+sizeof PROPERTIES]
+					lea		ebx,[ebx+4]
 				.endw
+				pop		ebx
 			.endif
 			mov		eax,[esi].PROPERTIES.nSize
 			lea		esi,[esi+eax+sizeof PROPERTIES]

@@ -278,16 +278,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 52=8
 
 [Find]
-1="TabToolAdd"
-2="LoadEditFile"
-3="EM_STREAMIN"
-4="DestroyWindow"
-5="UpdateAll,WM_DESTROY"
-6="PRM_FIND"
-7="1.0.5.8"
-8="1058"
-9="REM_SUBCLASS"
-10="REM_SUB"
+1="FINDTEXT"
+2="TabToolAdd"
+3="LoadEditFile"
+4="EM_STREAMIN"
+5="DestroyWindow"
+6="UpdateAll,WM_DESTROY"
+7="PRM_FIND"
+8="1.0.5.8"
+9="1058"
+10="REM_SUBCLASS"
 
 [VersionControl]
 Settings=1246
@@ -299,7 +299,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -334,9 +334,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,1054
-1=0,0,0,0,81141
-11=0,0,0,0,34032
+2=0,0,687,524,23885
+1=0,0,0,0,9140
+11=0,0,0,0,36043
 22=0,0,0,0,3335
 10=0,0,0,0,10781
 23=0,0,0,0,4914
@@ -364,16 +364,16 @@ ProductVer4Range=0
 33=0,0,0,0,1124
 35=0,0,0,0,51
 34=0,0,0,0
-37=0,0,0,0,3438
+37=0,0,0,0,0
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,27
+38=0,0,0,0,309
 39=0,0,0,0
 40=0,0,0,0,4916
 42=0,0,0,0,1576
 43=0,0,0,0
-45=0,0,0,0,1721
-46=0,0,0,0,1569
+45=0,0,0,0,4743
+46=0,0,0,0,1278
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
@@ -396,7 +396,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,37,29,2,38,22,10,11,14
+AutoLoad=1,37,29,2,38,22,10,11,14,45,46
 [Collapse]
 2=
 1=,,,,,,,,

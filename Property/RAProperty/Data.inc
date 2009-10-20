@@ -56,6 +56,7 @@ RAPROPERTY struct
 	selindex		dd ?
 	htooltip		dd ?
 	nlanguage		dd ?
+	hMemArray		dd ?
 RAPROPERTY ends
 
 IDB_TRV					equ 101

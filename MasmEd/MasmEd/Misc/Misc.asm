@@ -1667,18 +1667,71 @@ UpdateGoto proc uses ebx edi,hWin:HWND,cp:DWORD,n:DWORD
 
 UpdateGoto endp
 
-GotoDeclare proc
+GotoDeclare proc uses esi
 	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
 	LOCAL	chrg:CHARRANGE
+	LOCAL	isinproc:ISINPROC
+	LOCAL	nln:DWORD
+	LOCAL	ftxt:FINDTEXTEX
 
 	invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
 	.if buffer
+		mov		eax,hREd
+		mov		isinproc.nOwner,eax
+		mov		isinproc.lpszType,offset szCCp
+		invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+		mov		isinproc.nLine,eax
+		invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+		.if eax
+			mov		esi,eax
+			mov		eax,[eax-sizeof PROPERTIES].PROPERTIES.nLine
+			mov		nln,eax
+			;Skip proc name and point to params
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke SendMessage,hProperty,PRM_ISINLIST,addr buffer,esi
+			.if !eax
+				;Skip params and point to locals
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke SendMessage,hProperty,PRM_ISINLIST,addr buffer,esi
+			.endif
+			.if eax
+				.if byte ptr [eax-1]!=':'
+					lea		eax,buffer
+					mov		ftxt.lpstrText,eax
+					invoke SendMessage,hREd,EM_LINEINDEX,nln,0
+					mov		ftxt.chrgText.cpMin,eax
+					mov		ftxt.chrgText.cpMax,-1
+					invoke SendMessage,hREd,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
+					.if eax!=-1
+						mov		chrg.cpMin,eax
+						mov		chrg.cpMax,eax
+						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,hREd,REM_VCENTER,0,0
+						invoke SetFocus,hREd
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+		.endif
 		invoke SendMessage,hProperty,PRM_FINDFIRST,addr szGotoTypes,addr buffer
 		.while eax
-			mov		edx,eax
-			invoke strcmp,edx,addr buffer
+			invoke strcpy,addr buffer1,eax
+			xor		ecx,ecx
+			.while buffer1[ecx]
+				.if buffer1[ecx]==':' || buffer1[ecx]=='['
+					mov		buffer1[ecx],0
+					.break
+				.endif
+				inc		ecx
+			.endw
+			invoke strcmp,addr buffer1,addr buffer
 			.if !eax
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
 				invoke PushGoto,hREd,chrg.cpMin
 				invoke SendMessage,hProperty,PRM_FINDGETOWNER,0,0
 				invoke TabToolGetInx,eax
@@ -1696,6 +1749,7 @@ GotoDeclare proc
 			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
 		.endw
 	.endif
+  Ex:
 	ret
 
 GotoDeclare endp

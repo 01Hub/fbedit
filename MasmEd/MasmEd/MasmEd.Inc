@@ -434,6 +434,14 @@ MENUDATA struct
 	tpe		dd ?
 MENUDATA ends
 
+PROPERTIES	struct
+	nSize			dd ?
+	nOwner			dd ?
+	nLine			dd ?
+	nEnd			dd ?
+	nType			db ?
+PROPERTIES ends
+
 .const
 
 tbrbtns					TBBUTTON <20,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>

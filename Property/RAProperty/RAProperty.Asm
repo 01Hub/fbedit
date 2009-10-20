@@ -895,7 +895,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_PREPARSE
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ISINLIST
 		push		eax
 		invoke GetWindowLong,hWin,0
 		.if eax
@@ -1176,6 +1176,9 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		.if [ebx].RAPROPERTY.lpdeftype
 			invoke GlobalFree,[ebx].RAPROPERTY.lpdeftype
+		.endif
+		.if [ebx].RAPROPERTY.hMemArray
+			invoke GlobalFree,[ebx].RAPROPERTY.hMemArray
 		.endif
 		invoke GlobalFree,ebx
 		invoke SetWindowLong,hWin,0,0

@@ -586,6 +586,10 @@
 		.endif
 		xor		eax,eax
 		ret
+	align 4
+	_PRM_ISINLIST:
+		invoke SearchMemDown,lParam,wParam,TRUE,TRUE,[ebx].RAPROPERTY.lpchartab
+		ret
 
 .data
 align 4
@@ -633,6 +637,7 @@ _RAPROPERTY_BASE \
 	dd _PRM_SETLANGUAGE			;equ WM_USER+40		;wParam=nLanguage, lParam=0
 	dd _PRM_SETTOOLTIP			;equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
 	dd _PRM_PREPARSE			;equ WM_USER+42		;wParam=fKeepStrings, lParam=lpFileData
+	dd _PRM_ISINLIST			;equ WM_USER+43		;wParam=lpWord, lParam=lpList
 
 .code
 align 4

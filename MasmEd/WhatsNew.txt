@@ -1,5 +1,11 @@
 MasmEd
 
+1.0.5.9b - 2009.10.20
+---------------------
+o Speed optimized the code parser. Editing large projects on older machines could be a little sluggish.
+o F2 - Goto Declare now finds proc parameters and local declarations.
+o Fixed a bug in F2 - Goto Declare. Finding global data declarations did not work.
+
 1.0.5.9 - 2009.10.16
 --------------------
 o Added 'Build' command to make menu.
