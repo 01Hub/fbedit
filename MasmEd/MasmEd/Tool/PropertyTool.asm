@@ -49,75 +49,75 @@ SetPropertyDefs proc uses esi
 
 	; Set character table
 	invoke GetCharTabPtr
-	invoke SendMessage,hProperty,PRM_SETCHARTAB,0,eax
+	invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,eax
 	;Combo items
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'p',addr szPrpCode
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'l',addr szPrpLabel
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'c',addr szPrpConst
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'d',addr szPrpData
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYTYPE,'s',addr szPrpStruct
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'p',addr szPrpCode
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'l',addr szPrpLabel
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'c',addr szPrpConst
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'d',addr szPrpData
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'s',addr szPrpStruct
 	;Set general definitions
-	invoke SendMessage,hProperty,PRM_SETGENDEF,0,addr defgen
+	invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
 	;Words to ignore
 	mov		esi,offset ignorefirstword
 	.while byte ptr [esi]
-		invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_LINEFIRSTWORD,esi
+		invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,IGNORE_LINEFIRSTWORD,esi
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
 	mov		esi,offset ignoreparam
 	.while byte ptr [esi]
-		invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_PROCPARAM,esi
+		invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,IGNORE_PROCPARAM,esi
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 	.endw
-	invoke SendMessage,hProperty,PRM_ADDIGNORE,IGNORE_PTR,offset datatypeptr
+	invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,IGNORE_PTR,offset datatypeptr
 	;Def types
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeproc
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeendp
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelabel
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeconst
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruc
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeunion
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestructo
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypestruco
-	invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypeuniono
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeproc
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeendp
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypelabel
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeconst
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypelocal
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestruct
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestruc
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeunion
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeends
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestructo
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestruco
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeuniono
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
 		invoke strcpy,addr deftypedata.szWord,esi
 		invoke strlen,esi
 		mov		deftypedata.len,al
 		lea		esi,[esi+eax+1]
-		invoke SendMessage,hProperty,PRM_ADDDEFTYPE,0,addr deftypedata
+		invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypedata
 	.endw
 	;Add api files
 	mov		esi,offset szApiCallFile
 	call	MakePath
 	mov		edx,2 shl 8 or 'P'
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiConstFile
 	call	MakePath
 	mov		edx,2 shl 8 or 'C'
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiStructFile
 	call	MakePath
 	mov		edx,2 shl 8 or 'S'
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiTypeFile
 	call	MakePath
 	mov		edx,3 shl 8 or 'T'
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	mov		esi,offset szApiWordFile
 	call	MakePath
 	mov		edx,2 shl 8 or 'W'
-	invoke SendMessage,hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	;Set default selection
-	invoke SendMessage,hProperty,PRM_SELECTPROPERTY,'p',0
-	invoke SendMessage,hProperty,PRM_SETSELBUTTON,2,0
-	invoke SendMessage,hProperty,PRM_SETLANGUAGE,nMASM,0
+	invoke SendMessage,ha.hProperty,PRM_SELECTPROPERTY,'p',0
+	invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
+	invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,nMASM,0
 	ret
 
 MakePath:
@@ -131,7 +131,7 @@ SetPropertyDefs endp
 ParseEdit proc hWin:HWND
 	LOCAL	hMem:HGLOBAL
 
-	invoke SendMessage,hProperty,PRM_DELPROPERTY,hWin,0
+	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hWin,0
 	invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
 	inc		eax
 	push	eax
@@ -141,26 +141,26 @@ ParseEdit proc hWin:HWND
 	mov		hMem,eax
 	pop		eax
 	invoke SendMessage,hWin,WM_GETTEXT,eax,hMem
-	invoke SendMessage,hProperty,PRM_PARSEFILE,hWin,hMem
+	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,hWin,hMem
 	invoke GlobalFree,hMem
-	invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 	ret
 
 ParseEdit endp
 
 ;DumpStruct proc uses esi
 ;
-;	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCs,addr szNULL
+;	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCCs,addr szNULL
 ;	.while eax
 ;		mov		esi,eax
-;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
-;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szComma
+;		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,esi
+;		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,addr szComma
 ;		invoke strlen,esi
 ;		lea		esi,[esi+eax+1]
-;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,esi
-;		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr szCr
-;		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-;		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+;		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,esi
+;		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,addr szCr
+;		invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
+;		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 ;	.endw
 ;	ret
 ;

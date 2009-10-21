@@ -39,7 +39,7 @@ UrlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ReleaseCapture
 		invoke SendMessage,hWin,WM_SETFONT,hUrlFont,TRUE
 		invoke GetWindowText,hWin,addr buffer,sizeof buffer
-		invoke ShellExecute,hWnd,addr szOpen,addr buffer,NULL,NULL,SW_SHOWNORMAL
+		invoke ShellExecute,ha.hWnd,addr szOpen,addr buffer,NULL,NULL,SW_SHOWNORMAL
 	.elseif eax==WM_SETCURSOR
 		invoke LoadCursor,NULL,IDC_HAND
 		invoke SetCursor,eax

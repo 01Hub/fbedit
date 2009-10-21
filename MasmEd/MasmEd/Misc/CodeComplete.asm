@@ -36,14 +36,14 @@ CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CHAR
 		mov		eax,wParam
 		.if eax==VK_TAB || eax==VK_RETURN
-			invoke SendMessage,hREd,WM_CHAR,VK_TAB,0
+			invoke SendMessage,ha.hREd,WM_CHAR,VK_TAB,0
 			jmp		Ex
 		.elseif eax==VK_ESCAPE
 			invoke ShowWindow,hWin,SW_HIDE
 			jmp		Ex
 		.endif
 	.elseif eax==WM_LBUTTONDBLCLK
-		invoke SendMessage,hREd,WM_CHAR,VK_TAB,0
+		invoke SendMessage,ha.hREd,WM_CHAR,VK_TAB,0
 		jmp		Ex
 	.elseif eax==WM_SIZE
 		invoke GetWindowRect,hWin,addr rect
@@ -64,17 +64,17 @@ CreateCodeComplete proc
 
 	mov		ccwt,200
 	mov		ccht,150
-	invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,hWnd,NULL,hInstance,0
-	mov		hCCLB,eax
-	invoke SetWindowLong,hCCLB,GWL_WNDPROC,offset CodeCompleteProc
+	invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+	mov		ha.hCCLB,eax
+	invoke SetWindowLong,ha.hCCLB,GWL_WNDPROC,offset CodeCompleteProc
 	mov		lpOldCCProc,eax
-	invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWnd,NULL,hInstance,0
-	mov		hCCTT,eax
-	invoke SendMessage,hTab,WM_GETFONT,0,0
+	invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+	mov		ha.hCCTT,eax
+	invoke SendMessage,ha.hTab,WM_GETFONT,0,0
 	push	eax
-	invoke SendMessage,hCCLB,WM_SETFONT,eax,FALSE
+	invoke SendMessage,ha.hCCLB,WM_SETFONT,eax,FALSE
 	pop		eax
-	invoke SendMessage,hCCTT,WM_SETFONT,eax,FALSE
+	invoke SendMessage,ha.hCCTT,WM_SETFONT,eax,FALSE
 	ret
 
 CreateCodeComplete endp
@@ -98,7 +98,7 @@ AddList proc uses esi edi,lpList:DWORD,lpWord:DWORD,nImg:DWORD
 			mov		byte ptr [edi],0
 			inc		edi
 			pop		eax
-			invoke SendMessage,hCCLB,CCM_ADDITEM,nImg,eax
+			invoke SendMessage,ha.hCCLB,CCM_ADDITEM,nImg,eax
 			inc		nCount
 		.else
 			.while byte ptr [esi] && byte ptr [esi]!=','
@@ -177,7 +177,7 @@ IsWordReg endp
 
 IsWordStruct proc uses esi,lpWord:DWORD
 
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -186,7 +186,7 @@ IsWordStruct proc uses esi,lpWord:DWORD
 			mov		eax,esi
 			ret
 		.endif
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	ret
 
@@ -203,7 +203,7 @@ IsWordLocalStruct proc uses esi edi,lpLocal:DWORD,lpWord:DWORD,lpBuff:DWORD
 	lea		esi,[esi+eax+1]
 	; Point to parameters
 	invoke strcpy,lpBuff,edi
-	invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
+	invoke SendMessage,ha.hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
 	mov		eax,lpBuff
 	.if !byte ptr [eax]
 		; Skip proc parameters
@@ -214,7 +214,7 @@ IsWordLocalStruct proc uses esi edi,lpLocal:DWORD,lpWord:DWORD,lpBuff:DWORD
 		lea		esi,[esi+eax+1]
 		; Point to local
 		invoke strcpy,lpBuff,edi
-		invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
+		invoke SendMessage,ha.hProperty,PRM_FINDITEMDATATYPE,lpBuff,esi
 	.endif
 	mov		eax,lpBuff
 	movzx	eax,byte ptr [eax]
@@ -224,7 +224,7 @@ IsWordLocalStruct endp
 
 IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCd,lpWord
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCd,lpWord
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -236,7 +236,7 @@ IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 			mov		eax,esi
 			.break
 		.endif
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	ret
 
@@ -246,7 +246,7 @@ IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	mov		buffer,0
-	invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpStruct
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCSs,lpStruct
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
@@ -255,14 +255,14 @@ IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 			invoke strcpy,addr buffer,lpItem
-			invoke SendMessage,hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
+			invoke SendMessage,ha.hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
 			.if buffer
 				invoke strcpy,lpStruct,addr buffer
 			.endif
 			movzx	eax,buffer
 			.break
 		.endif
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	ret
 
@@ -278,7 +278,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	ccft:FINDTEXTEX
 
 	mov		nCount,0
-	mov		edi,hCCLB
+	mov		edi,ha.hCCLB
 	invoke SendMessage,edi,CCM_CLEAR,0,0
 	invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
 	mov		eax,lpWord
@@ -396,10 +396,10 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		edi,lpLineWord
 				mov		eax,nLastLine
 				mov		isinproc.nLine,eax
-				mov		eax,hREd
+				mov		eax,ha.hREd
 				mov		isinproc.nOwner,eax
 				mov		isinproc.lpszType,offset szCCp
-				invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+				invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 				.if eax
 					mov		edx,eax
 					invoke IsWordLocalStruct,edx,edi,addr buffer
@@ -412,25 +412,25 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			.elseif lpReg
 				; assume edx:ptr RECT
 				; [edx].left
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr ccft.chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr ccft.chrg
 				mov		ccft.chrg.cpMax,0
 				invoke strcpy,addr buffer,offset szCCAssume
 				invoke strcat,addr buffer,lpReg
 				lea		eax,buffer
 				mov		ccft.lpstrText,eax
 			  @@:
-				invoke SendMessage,hREd,EM_FINDTEXTEX,FR_IGNOREWHITESPACE,addr ccft
+				invoke SendMessage,ha.hREd,EM_FINDTEXTEX,FR_IGNOREWHITESPACE,addr ccft
 				.if eax!=-1
-					invoke SendMessage,hREd,REM_ISCHARPOS,ccft.chrgText.cpMax,0
+					invoke SendMessage,ha.hREd,REM_ISCHARPOS,ccft.chrgText.cpMax,0
 					.if eax
 						mov		eax,ccft.chrgText.cpMin
 						dec		eax
 						mov		ccft.chrg.cpMin,eax
 						jmp		@b
 					.endif
-					invoke SendMessage,hREd,EM_LINEFROMCHAR,ccft.chrgText.cpMin,0
+					invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,ccft.chrgText.cpMin,0
 					mov		edx,eax
-					invoke SendMessage,hREd,EM_GETLINE,edx,addr buffer
+					invoke SendMessage,ha.hREd,EM_GETLINE,edx,addr buffer
 					mov		buffer[eax],0
 					xor		eax,eax
 					.while buffer[eax] && buffer[eax]!=':'
@@ -471,12 +471,12 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.else
 					; [edx].RECT
 					mov		buffer,0
-					mov		edi,hCCLB
-					invoke SendMessage,hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
+					mov		edi,ha.hCCLB
+					invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
 					.while TRUE
 						.break .if !eax
 						push	eax
-						invoke SendMessage,hProperty,PRM_FINDGETTYPE,0,0
+						invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
 						.if eax=='S'
 							mov		ecx,4
 						.else
@@ -485,7 +485,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 						pop		edx
 						invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
 						inc		nCount
-						invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+						invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 					.endw
 				.endif
 			.endif
@@ -520,11 +520,11 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			.endif
 		.endif
 	.elseif byte ptr [eax] || cctype==CCTYPE_ALL
-		invoke SendMessage,hProperty,PRM_FINDFIRST,lpApiType,lpWord
+		invoke SendMessage,ha.hProperty,PRM_FINDFIRST,lpApiType,lpWord
 		.while TRUE
 			.break .if !eax
 			push	eax
-			invoke SendMessage,hProperty,PRM_FINDGETTYPE,0,0
+			invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
 			xor		ecx,ecx
 			.if eax=='p'
 				mov		ecx,1
@@ -542,15 +542,15 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			pop		edx
 			invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
 			inc		nCount
-			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+			invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 		.endw
 		.if cctype==CCTYPE_ALL
 			mov		eax,nLastLine
 			mov		isinproc.nLine,eax
-			mov		eax,hREd
+			mov		eax,ha.hREd
 			mov		isinproc.nOwner,eax
 			mov		isinproc.lpszType,offset szCCp
-			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+			invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 			.if eax
 				mov		esi,eax
 				mov		ebx,offset cclist
@@ -608,7 +608,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			.endif
 		.endif
 	.endif
-	mov		edi,hCCLB
+	mov		edi,ha.hCCLB
 	.if nCount
 		.if cctype!=CCTYPE_STRUCT
 			invoke SendMessage,edi,CCM_SORT,FALSE,0
@@ -645,8 +645,8 @@ UpdateApiList endp
 
 UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 
-	invoke SendMessage,hCCLB,CCM_CLEAR,0,0
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCC,lpApi
+	invoke SendMessage,ha.hCCLB,CCM_CLEAR,0,0
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCCC,lpApi
 	.if eax
 		mov		esi,eax
 		invoke strlen,esi
@@ -666,7 +666,7 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 		invoke AddList,esi,lpWord,2
 		.if eax
 			invoke SendMessage,edi,CCM_SORT,FALSE,0
-			invoke SendMessage,hCCLB,CCM_SETCURSEL,0,0
+			invoke SendMessage,ha.hCCLB,CCM_SETCURSEL,0,0
 			mov		eax,lpWord
 		.endif
 		ret
@@ -685,7 +685,7 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 		mov		tt.lpszType,offset szCCPp
 		mov		eax,lpWord
 		mov		tt.lpszLine,eax
-		invoke SendMessage,hProperty,PRM_GETTOOLTIP,FALSE,addr tt
+		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,FALSE,addr tt
 		.if tt.lpszApi
 			invoke strlen,tt.lpszApi
 			add		eax,tt.lpszApi
@@ -765,7 +765,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	lea		edx,[edx+sizeof CHARS]
 	invoke strcpyn,offset LineTxt,edx,eax
 	.if cctype==CCTYPE_ALL
-		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 		invoke strlen,addr buffer
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
@@ -775,7 +775,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 			call	ShowList
 		.endif
 	.elseif cctype==CCTYPE_STRUCT
-		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 		invoke strlen,addr buffer
 		mov		edx,cpline
 		sub		edx,eax
@@ -799,7 +799,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 				mov		cctype,CCTYPE_PROC
 				call	ShowList
 			.else
-				invoke ShowWindow,hCCLB,SW_HIDE
+				invoke ShowWindow,ha.hCCLB,SW_HIDE
 				mov		cctype,CCTYPE_NONE
 				lea		edx,buffer
 				xor		ecx,ecx
@@ -873,15 +873,15 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 						call	ShowList
 					.else
 						mov		cctype,CCTYPE_TOOLTIP
-						invoke ShowWindow,hCCLB,SW_HIDE
+						invoke ShowWindow,ha.hCCLB,SW_HIDE
 						invoke GetCaretPos,addr pt
-						invoke ClientToScreen,hREd,addr pt
+						invoke ClientToScreen,ha.hREd,addr pt
 						add		pt.y,20
-						invoke SendMessage,hCCTT,TTM_SETITEM,0,addr tti
+						invoke SendMessage,ha.hCCTT,TTM_SETITEM,0,addr tti
 						sub		pt.x,eax
-						invoke SetWindowPos,hCCTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
-						invoke ShowWindow,hCCTT,SW_SHOWNA
-						invoke InvalidateRect,hCCTT,NULL,TRUE
+						invoke SetWindowPos,ha.hCCTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
+						invoke ShowWindow,ha.hCCTT,SW_SHOWNA
+						invoke InvalidateRect,ha.hCCTT,NULL,TRUE
 					.endif
 				.else
 					call	HideAll
@@ -895,16 +895,16 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 
 HideAll:
 	mov		cctype,CCTYPE_NONE
-	invoke ShowWindow,hCCTT,SW_HIDE
-	invoke ShowWindow,hCCLB,SW_HIDE
+	invoke ShowWindow,ha.hCCTT,SW_HIDE
+	invoke ShowWindow,ha.hCCLB,SW_HIDE
 	retn
 
 ShowList:
-	invoke ShowWindow,hCCTT,SW_HIDE
+	invoke ShowWindow,ha.hCCTT,SW_HIDE
 	invoke GetCaretPos,addr pt
-	invoke ClientToScreen,hREd,addr pt
-	invoke ScreenToClient,hWnd,addr pt
-	invoke GetClientRect,hWnd,addr rect
+	invoke ClientToScreen,ha.hREd,addr pt
+	invoke ScreenToClient,ha.hWnd,addr pt
+	invoke GetClientRect,ha.hWnd,addr rect
 	mov		eax,pt.y
 	add		eax,ccht
 	add		eax,20
@@ -915,8 +915,8 @@ ShowList:
 	.else
 		add		pt.y,20
 	.endif
-	invoke SetWindowPos,hCCLB,HWND_TOP,pt.x,pt.y,ccwt,ccht,SWP_SHOWWINDOW or SWP_NOACTIVATE
-	invoke ShowWindow,hCCLB,SW_SHOWNA
+	invoke SetWindowPos,ha.hCCLB,HWND_TOP,pt.x,pt.y,ccwt,ccht,SWP_SHOWWINDOW or SWP_NOACTIVATE
+	invoke ShowWindow,ha.hCCLB,SW_SHOWNA
 	retn
 
 ApiListBox endp

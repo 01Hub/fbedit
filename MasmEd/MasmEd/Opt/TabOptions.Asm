@@ -217,7 +217,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lStructSize,sizeof ofn
 				push	hWin
 				pop		ofn.hwndOwner
-				push	hInstance
+				push	ha.hInstance
 				pop		ofn.hInstance
 				mov		ofn.lpstrInitialDir,NULL
 				mov		ofn.lpstrFilter,offset szFilterDLL
@@ -269,7 +269,7 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		cc.lStructSize,sizeof CHOOSECOLOR
 			mov		eax,hWin
 			mov		cc.hwndOwner,eax
-			mov		eax,hInstance
+			mov		eax,ha.hInstance
 			mov		cc.hInstance,eax
 			mov		cc.lpCustColors,offset CustColors
 			mov		cc.Flags,CC_FULLOPEN or CC_RGBINIT
@@ -498,7 +498,7 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif nInx<=11
 				mov		edx,nInx
 				dec		edx
-				invoke SendMessage,hResEd,PRO_GETCUSTOMTYPE,edx,0
+				invoke SendMessage,ha.hResEd,PRO_GETCUSTOMTYPE,edx,0
 				mov		edx,eax
 				.if [edx].RARSTYPE.sztype
 					lea		eax,[edx].RARSTYPE.sztype
@@ -551,7 +551,7 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lStructSize,sizeof ofn
 				push	hWin
 				pop		ofn.hwndOwner
-				push	hInstance
+				push	ha.hInstance
 				pop		ofn.hInstance
 				mov		ofn.lpstrInitialDir,NULL
 				mov		ofn.lpstrFilter,offset szFilterEXE
@@ -654,7 +654,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,nmeexp.nOutput
 				shl		edx,16
 				add		edx,nmeexp.nType
-				invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+				invoke SendMessage,ha.hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
 				invoke GetDlgItemInt,hTabDlg[4],IDC_EDTX,NULL,FALSE
 				mov		grdsize.x,eax
 				invoke GetDlgItemInt,hTabDlg[4],IDC_EDTY,NULL,FALSE
@@ -706,7 +706,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
-				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
+				invoke SendMessage,ha.hResEd,DEM_CLEARCUSTSTYLE,0,0
 				mov		nInx,0
 				.while nInx<64
 					invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETROWCOUNT,0,0
@@ -734,7 +734,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
 						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr cust,sizeof CUSTSTYLE
-						invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
+						invoke SendMessage,ha.hResEd,DEM_ADDCUSTSTYLE,0,addr cust
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
@@ -747,7 +747,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
-				invoke SendMessage,hResEd,DEM_CLEARCUSTSTYLE,0,0
+				invoke SendMessage,ha.hResEd,DEM_CLEARCUSTSTYLE,0,0
 				mov		nInx,0
 				.while nInx<32
 					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETROWCOUNT,0,0
@@ -777,7 +777,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						add		ecx,3
 						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
 						invoke lstrcpy,addr rarstype.szedit,addr buffer
-						invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
+						invoke SendMessage,ha.hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
 						inc		nInx
 						invoke MakeKey,addr szCustType,nInx,addr buffer1
 						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
@@ -796,8 +796,8 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,grdsize.line
 				shl		edx,24
 				add		edx,grdsize.color
-				invoke SendMessage,hResEd,DEM_SETGRIDSIZE,eax,edx
-				invoke GetWindowLong,hResEd,GWL_STYLE
+				invoke SendMessage,ha.hResEd,DEM_SETGRIDSIZE,eax,edx
+				invoke GetWindowLong,ha.hResEd,GWL_STYLE
 				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX)
 				.if grdsize.show
 					or		eax,DES_GRID
@@ -811,7 +811,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if grdsize.stylehex
 					or		eax,DES_STYLEHEX
 				.endif
-				invoke SetWindowLong,hResEd,GWL_STYLE,eax
+				invoke SetWindowLong,ha.hResEd,GWL_STYLE,eax
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif
@@ -858,19 +858,19 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hTabOpt,TCM_INSERTITEM,4,addr ts
 		;Create the tab dialogs
 		;Exports
-		invoke CreateDialogParam,hInstance,IDD_TABOPT1,hTabOpt,addr TabOpt1Proc,0
+		invoke CreateDialogParam,ha.hInstance,IDD_TABOPT1,hTabOpt,addr TabOpt1Proc,0
 		mov		hTabDlg,eax
 		;Behaviour
-		invoke CreateDialogParam,hInstance,IDD_TABOPT3,hTabOpt,addr TabOpt3Proc,0
+		invoke CreateDialogParam,ha.hInstance,IDD_TABOPT3,hTabOpt,addr TabOpt3Proc,0
 		mov		hTabDlg[4],eax
 		;Custom controls
-		invoke CreateDialogParam,hInstance,IDD_TABOPT2,hTabOpt,addr TabOpt2Proc,0
+		invoke CreateDialogParam,ha.hInstance,IDD_TABOPT2,hTabOpt,addr TabOpt2Proc,0
 		mov		hTabDlg[8],eax
 		;Custom styles
-		invoke CreateDialogParam,hInstance,IDD_TABOPT4,hTabOpt,addr TabOpt4Proc,0
+		invoke CreateDialogParam,ha.hInstance,IDD_TABOPT4,hTabOpt,addr TabOpt4Proc,0
 		mov		hTabDlg[12],eax
 		;Resource types
-		invoke CreateDialogParam,hInstance,IDD_TABOPT5,hTabOpt,addr TabOpt5Proc,0
+		invoke CreateDialogParam,ha.hInstance,IDD_TABOPT5,hTabOpt,addr TabOpt5Proc,0
 		mov		hTabDlg[16],eax
 		mov		SelTab,0
 	.elseif eax==WM_CLOSE

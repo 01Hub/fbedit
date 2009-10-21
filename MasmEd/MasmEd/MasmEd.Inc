@@ -20,6 +20,8 @@ includelib gdi32.lib
 includelib ole32.lib
 includelib advapi32.lib
 
+include Inc\Addins.inc
+
 include Inc\RAEdit.inc
 includelib ..\Lib\RAEdit.lib
 
@@ -681,40 +683,15 @@ szGotoTypes				db 'pldcs',0
 
 .data?
 
+ha						ADDINHANDLES <?>
 fnpath					FILENOTIFYPATH MAXIMUM_WAIT_OBJECTS dup(<?>)
 fnhandle				dd MAXIMUM_WAIT_OBJECTS dup(?)
 fnptrpth				dd MAXIMUM_WAIT_OBJECTS dup(?)
-hInstance				dd ?
 CommandLine				dd ?
 hRichEd					dd ?
 hIcon					dd ?
-hAccel					dd ?
-hWnd					HWND ?
-hClient					HWND ?
-hREd					HWND ?
-hTab					HWND ?
-hBtn					HWND ?
-hFind					HWND ?
-hMnu					dd ?
-hContextMnu				dd ?
-hTbr					HWND ?
-hShp					HWND ?
-hStc					HWND ?
-hCbo					HWND ?
-hOut					HWND ?
-hImmOut					HWND ?
 nOutSel					DWORD ?
-hTabOut					HWND ?
-hBrowse					HWND ?
-hProperty				HWND ?
-hSbr					HWND ?
-hDbgReg					HWND ?
-hDbgWatch				HWND ?
 nDbgSel					DWORD ?
-hTabDbg					HWND ?
-hDbgTip					HWND ?
-hVSplitCur				dd ?
-hHSplitCur				dd ?
 fVSplit					dd ?
 hReg					dd ?
 lpdwDisp				dd ?
@@ -724,9 +701,6 @@ AppPath					db MAX_PATH dup(?)
 FileName				db MAX_PATH dup(?)
 MainFile				db MAX_PATH dup(?)
 DbgFileName				db MAX_PATH dup(?)
-hFont					dd ?
-hIFont					dd ?
-hLnrFont				dd ?
 ;Find
 findbuff				db 256 dup(?)
 replacebuff				db 256 dup(?)
@@ -744,7 +718,6 @@ nLastLine				dd ?
 nLastSize				dd ?
 nLastPropLine			dd ?
 fTimer					dd ?
-hMnuIml					dd ?
 						dd ?
 LineTxt					db 16384 dup(?)
 						dd ?
@@ -753,10 +726,7 @@ tmpbuff					db 16384 dup(?)
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>
 icex					INITCOMMONCONTROLSEX <?>
-hRes					HWND ?
-hResEd					HWND ?
 hCustDll				dd 32 dup(?)
-hBrBack					dd ?
 lpOldRAEditProc			dd ?
 winsize					WINSIZE <?>
 szInitFolder			db MAX_PATH dup(?)
@@ -772,15 +742,8 @@ Link					db 256 dup(?)
 DbgAssemble				db 256 dup(?)
 DbgLink					db 256 dup(?)
 fResNotify				dd ?
-hImlTbr					dd ?
-hImlTbrGray				dd ?
 mnupos					dd ?
 mnubuff					db 8192 dup(?)
-hMenuBrushA				dd ?
-hMenuBrushB				dd ?
-hMnuFont				dd ?
-hCCLB					HWND ?
-hCCTT					HWND ?
 lpOldTabProc			dd ?
 tabinx					dd ?
 fUnicode				dd ?

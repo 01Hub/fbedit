@@ -53,7 +53,7 @@ SetToolMenu proc
 	LOCAL	nInx:DWORD
 	LOCAL	nID:DWORD
 
-	invoke GetMenu,hWnd
+	invoke GetMenu,ha.hWnd
 	invoke GetSubMenu,eax,6
 	mov		hSubMnu,eax
 	mov		nID,20000
@@ -87,7 +87,7 @@ SetHelpMenu proc
 	LOCAL	nInx:DWORD
 	LOCAL	nID:DWORD
 
-	invoke GetMenu,hWnd
+	invoke GetMenu,ha.hWnd
 	invoke GetSubMenu,eax,8
 	mov		hSubMnu,eax
 	mov		nID,30000
@@ -229,9 +229,9 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		lpFilter,offset szFilterHelp
 		.endif
 		invoke SendMessage,hWin,WM_SETTEXT,0,eax
-		invoke ImageList_GetIcon,hMnuIml,2,ILD_NORMAL
+		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNMEU,BM_SETIMAGE,IMAGE_ICON,eax
-		invoke ImageList_GetIcon,hMnuIml,3,ILD_NORMAL
+		invoke ImageList_GetIcon,ha.hMnuIml,3,ILD_NORMAL
 		invoke SendDlgItemMessage,hWin,IDC_BTNMED,BM_SETIMAGE,IMAGE_ICON,eax
 		mov		nInx,1
 		.while nInx<20
@@ -319,7 +319,7 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.lStructSize,sizeof ofn
 				push	hWin
 				pop		ofn.hwndOwner
-				push	hInstance
+				push	ha.hInstance
 				pop		ofn.hInstance
 				mov		ofn.lpstrInitialDir,NULL
 				mov		eax,lpFilter

@@ -47,7 +47,7 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 			mov		tci.imask,TCIF_PARAM
 			.while TRUE
 				inc		nInx
-				invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+				invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 				.break .if !eax
 				mov		ebx,tci.lParam
 				invoke strcpy,addr buffer,addr [ebx].TABMEM.filename
@@ -204,7 +204,7 @@ TabToolGetMem proc uses ebx,hWin:DWORD
 	mov		eax,TRUE
 	.while eax
 		inc		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 		.if eax
 			mov		ebx,tci.lParam
 			mov		eax,[ebx].TABMEM.hwnd
@@ -225,7 +225,7 @@ TabToolGetInx proc uses ebx,hWin:DWORD
 	mov		eax,TRUE
 	.while eax
 		inc		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 		.if eax
 			mov		ebx,tci.lParam
 			mov		eax,[ebx].TABMEM.hwnd
@@ -241,7 +241,7 @@ TabToolSetText proc nInx:DWORD,lpFileName:DWORD
 	LOCAL	tci:TC_ITEM
 
 	mov		tci.imask,TCIF_PARAM
-	invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+	invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 	mov		eax,tci.lParam
 	invoke strcpy,addr [eax].TABMEM.filename,lpFileName
 	invoke strlen,lpFileName
@@ -255,7 +255,7 @@ TabToolSetText proc nInx:DWORD,lpFileName:DWORD
 	lea		eax,[edx+ecx]
 	mov		tci.pszText,eax
 	mov		tci.imask,TCIF_TEXT
-	invoke SendMessage,hTab,TCM_SETITEM,nInx,addr tci
+	invoke SendMessage,ha.hTab,TCM_SETITEM,nInx,addr tci
 	ret
 
 TabToolSetText endp
@@ -273,7 +273,7 @@ TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 	mov		eax,TRUE
 	.while eax
 		inc		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 		.if eax
 			mov		ebx,tci.lParam
 			mov		eax,[ebx].TABMEM.hwnd
@@ -293,7 +293,7 @@ TabToolSetChanged proc uses ebx,hWin:DWORD,fChanged:DWORD
 		mov		[ebx].TABMEM.fchanged,FALSE
 	.endif
 	mov		tci.imask,TCIF_TEXT
-	invoke SendMessage,hTab,TCM_SETITEM,nInx,addr tci
+	invoke SendMessage,ha.hTab,TCM_SETITEM,nInx,addr tci
 	mov		eax,nInx
 	ret
 
@@ -302,27 +302,27 @@ TabToolSetChanged endp
 TabToolActivate proc uses ebx
 	LOCAL	tci:TC_ITEM
 
-	invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+	invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 	mov		tci.imask,TCIF_PARAM
 	mov		edx,eax
-	invoke SendMessage,hTab,TCM_GETITEM,edx,addr tci
-	push	hREd
+	invoke SendMessage,ha.hTab,TCM_GETITEM,edx,addr tci
+	push	ha.hREd
 	mov		ebx,tci.lParam
 	mov		eax,[ebx].TABMEM.hwnd
-	mov		hREd,eax
+	mov		ha.hREd,eax
 	invoke strcpy,offset FileName,addr [ebx].TABMEM.filename
 	invoke SetWinCaption,offset FileName
-	invoke SendMessage,hWnd,WM_SIZE,0,0
-	invoke ShowWindow,hREd,SW_SHOW
+	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+	invoke ShowWindow,ha.hREd,SW_SHOW
 	mov		fTimer,1
 	pop		eax
-	.if eax!=hREd
+	.if eax!=ha.hREd
 		invoke ShowWindow,eax,SW_HIDE
 	.endif
-	invoke SendMessage,hBrowse,FBM_SETSELECTED,0,addr [ebx].TABMEM.filename
-	invoke GetWindowLong,hREd,GWL_ID
+	invoke SendMessage,ha.hBrowse,FBM_SETSELECTED,0,addr [ebx].TABMEM.filename
+	invoke GetWindowLong,ha.hREd,GWL_ID
 	.if eax==IDC_RAE
-		invoke SendMessage,hREd,WM_GETTEXTLENGTH,0,0
+		invoke SendMessage,ha.hREd,WM_GETTEXTLENGTH,0,0
 		mov		nLastSize,eax
 	.endif
 	ret
@@ -374,11 +374,11 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	.endif
 	mov		tci.iImage,edx
 	mov		tci.lParam,ebx
-	invoke SendMessage,hTab,TCM_INSERTITEM,999,addr tci
-	invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+	invoke SendMessage,ha.hTab,TCM_INSERTITEM,999,addr tci
+	invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 	invoke UpdateFileTime,ebx
 	invoke AddPath,lpFileName
-	invoke SendMessage,hBrowse,FBM_SETSELECTED,0,lpFileName
+	invoke SendMessage,ha.hBrowse,FBM_SETSELECTED,0,lpFileName
 	invoke SetWindowLong,hWin,GWL_USERDATA,ebx
 	invoke GetWindowLong,hWin,GWL_ID
 	.if eax==IDC_RAE
@@ -398,33 +398,33 @@ TabToolDel proc uses ebx,hWin:HWND
 	mov		eax,TRUE
 	.while eax
 		inc		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 		.if eax
 			mov		ebx,tci.lParam
 			mov		eax,[ebx].TABMEM.hwnd
 			.if eax==hWin
 				invoke DelPath,addr [ebx].TABMEM.filename
-				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
+				invoke SendMessage,ha.hTab,TCM_DELETEITEM,nInx,0
 				invoke GetProcessHeap
 				invoke HeapFree,eax,NULL,ebx
 				xor eax,eax
 			.endif
 		.endif
 	.endw
-	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
+	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
 	.if eax
 	  @@:
-		invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
-		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+		invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
+		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		.if eax==-1
 			dec		nInx
 			jmp		@b
 		.endif
 		invoke TabToolActivate
-		invoke SetFocus,hREd
+		invoke SetFocus,ha.hREd
 	.else
-		mov		hREd,0
-		invoke SendMessage,hWnd,WM_SIZE,0,0
+		mov		ha.hREd,0
+		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	.endif
 	ret
 
@@ -446,7 +446,7 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax!=-1
 			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
-			invoke SetFocus,hREd
+			invoke SetFocus,ha.hREd
 			xor		eax,eax
 			ret
 		.endif
@@ -461,7 +461,7 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		tabinx,eax
 			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
-			invoke SetFocus,hREd
+			invoke SetFocus,ha.hREd
 			xor		eax,eax
 			ret
 		.endif
@@ -473,7 +473,7 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ht.pt.y,eax
 		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
 		.if eax==tabinx
-			invoke SendMessage,hWnd,WM_COMMAND,IDM_FILE_CLOSE,0
+			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_FILE_CLOSE,0
 		.endif
 		mov		tabinx,-2
 		xor		eax,eax
@@ -489,7 +489,7 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		tabinx,eax
 			invoke SendMessage,hWin,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
-			invoke SetFocus,hREd
+			invoke SetFocus,ha.hREd
 			xor		eax,eax
 			ret
 		.endif

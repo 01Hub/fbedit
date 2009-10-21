@@ -126,13 +126,13 @@ Print proc uses ebx
 	mov		eax,pd.Flags
 	and		eax,PD_SELECTION
 	.if eax
-		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 		mov		nLine,eax
 		mov		ecx,ppos.nlinespage
 		xor		edx,edx
 		div		ecx
 		mov		nPageno,eax
-		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMax
+		invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMax
 		sub		eax,nLine
 		inc		eax
 		mov		nMLine,eax
@@ -144,7 +144,7 @@ Print proc uses ebx
 		mov		edx,ppos.nlinespage
 		mul		edx
 		mov		nLine,eax
-		invoke SendMessage,hREd,EM_GETLINECOUNT,0,0
+		invoke SendMessage,ha.hREd,EM_GETLINECOUNT,0,0
 		or		eax,eax
 		je		Ed
 		inc		eax
@@ -194,7 +194,7 @@ Print proc uses ebx
 	mov		eax,pML
 	mov		ptX,eax
 	mov		word ptr LineTxt,sizeof LineTxt-1
-	invoke SendMessage,hREd,EM_GETLINE,nLine,addr LineTxt
+	invoke SendMessage,ha.hREd,EM_GETLINE,nLine,addr LineTxt
 	mov		byte ptr LineTxt[eax],0
 	inc		nLine
 	or		eax,eax

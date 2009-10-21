@@ -34,7 +34,7 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			lea		esi,[esi+eax+1]
 			inc		nInx
 		.endw
-		invoke SendMessage,hProperty,PRM_FINDFIRST,addr szp,addr szNULL
+		invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szp,addr szNULL
 		.while eax
 			mov		esi,eax
 			mov		edi,offset NoDebug
@@ -47,7 +47,7 @@ NoDebugProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if !byte ptr [edi]
 				invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_ADDSTRING,0,esi
 			.endif
-			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+			invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_LSTDEBUG,LB_SETCURSEL,0,0
 		invoke SendDlgItemMessage,hWin,IDC_LSTDONOTDEBUG,LB_SETCURSEL,0,0

@@ -293,7 +293,7 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	LOCAL	nCount:DWORD
 	LOCAL	rect:RECT
 
-	invoke ImageList_GetImageCount,hImlTbr
+	invoke ImageList_GetImageCount,ha.hImlTbr
 	mov		nCount,eax
 	shl		eax,4
 	mov		rect.left,0
@@ -301,7 +301,7 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	mov		rect.right,eax
 	mov		rect.bottom,16
 	invoke ImageList_Create,16,16,ILC_MASK or ILC_COLOR24,nCount,10
-	mov		hImlTbrGray,eax
+	mov		ha.hImlTbrGray,eax
 	invoke GetDC,NULL
 	mov		hDC,eax
 	invoke CreateCompatibleDC,hDC
@@ -317,7 +317,7 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	xor		ecx,ecx
 	.while ecx<nCount
 		push	ecx
-		invoke ImageList_Draw,hImlTbr,ecx,mDC,rect.left,0,ILD_TRANSPARENT
+		invoke ImageList_Draw,ha.hImlTbr,ecx,mDC,rect.left,0,ILD_TRANSPARENT
 		pop		ecx
 		add		rect.left,16
 		inc		ecx
@@ -363,9 +363,9 @@ GrayedImageList proc uses ebx esi edi,hToolbar:DWORD
 	pop		eax
 	invoke SelectObject,mDC,eax
 	invoke DeleteDC,mDC
-	invoke ImageList_AddMasked,hImlTbrGray,hBmp,ebx
+	invoke ImageList_AddMasked,ha.hImlTbrGray,hBmp,ebx
 	invoke DeleteObject,hBmp
-	invoke SendMessage,hToolbar,TB_SETDISABLEDIMAGELIST,0,hImlTbrGray
+	invoke SendMessage,hToolbar,TB_SETDISABLEDIMAGELIST,0,ha.hImlTbrGray
 	ret
 
 GrayedImageList endp
@@ -376,8 +376,8 @@ DoToolBar proc hInst:DWORD,hToolBar:HWND
 	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
 	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
 	invoke ImageList_LoadImage,hInst,IDB_TBRBMP,16,29,0FF00FFh,IMAGE_BITMAP,LR_CREATEDIBSECTION
-	mov		hImlTbr,eax
-	invoke SendMessage,hToolBar,TB_SETIMAGELIST,0,hImlTbr
+	mov		ha.hImlTbr,eax
+	invoke SendMessage,hToolBar,TB_SETIMAGELIST,0,ha.hImlTbr
 	invoke GrayedImageList,hToolBar
 	mov		eax,hToolBar
 	ret
@@ -417,9 +417,9 @@ SetupMenu proc uses ebx esi edi,hSubMnu:HMENU
 		mov		[edi].MENUDATA.img,0
 		test	mii.fType,MFT_SEPARATOR
 		.if ZERO?
-			invoke SendMessage,hTbr,TB_COMMANDTOINDEX,mii.wID,0
+			invoke SendMessage,ha.hTbr,TB_COMMANDTOINDEX,mii.wID,0
 			.if sdword ptr eax>=0
-				invoke SendMessage,hTbr,TB_GETBITMAP,mii.wID,0
+				invoke SendMessage,ha.hTbr,TB_GETBITMAP,mii.wID,0
 				inc		eax
 				mov		[edi].MENUDATA.img,eax
 			.endif
@@ -519,11 +519,11 @@ CoolMenu proc
 	mov		ncm.cbSize,sizeof NONCLIENTMETRICS
 	invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
 	invoke CreateFontIndirect,addr ncm.lfMenuFont
-	mov		hMnuFont,eax
+	mov		ha.hMnuFont,eax
 	invoke MakeMenuBitmap,23,0FFDFCFh;0FFCEBEh
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
-	mov		hMenuBrushA,eax
+	mov		ha.hMenuBrushA,eax
 	mov		MInfo.hbrBack,eax
 	invoke DeleteObject,hBmp
 	mov		MInfo.cbSize,SizeOf MENUINFO
@@ -531,12 +531,12 @@ CoolMenu proc
 	invoke MakeMenuBitmap,20,0FFDFCFh-090909h
 	mov		hBmp,eax
 	invoke CreatePatternBrush,hBmp
-	mov		hMenuBrushB,eax
+	mov		ha.hMenuBrushB,eax
 	invoke DeleteObject,hBmp
 	mov		nInx,0
 	mov		mnupos,0
   @@:
-	invoke GetSubMenu,hMnu,nInx
+	invoke GetSubMenu,ha.hMnu,nInx
 	.if eax
 		push	eax
 		invoke SetupMenu,eax
@@ -547,7 +547,7 @@ CoolMenu proc
 	.endif
 	mov		nInx,0
   @@:
-	invoke GetSubMenu,hContextMnu,nInx
+	invoke GetSubMenu,ha.hContextMnu,nInx
 	.if eax
 		push	eax
 		invoke SetupMenu,eax
@@ -567,20 +567,20 @@ ResetMenu proc uses esi edi
 	LOCAL	rarstype:RARSTYPE
 
 	; Standard menu
-	.if hMnuFont
-		invoke DeleteObject,hMenuBrushA
-		invoke DeleteObject,hMenuBrushB
-		invoke DeleteObject,hMnuFont
+	.if ha.hMnuFont
+		invoke DeleteObject,ha.hMenuBrushA
+		invoke DeleteObject,ha.hMenuBrushB
+		invoke DeleteObject,ha.hMnuFont
 		xor		eax,eax
-		mov		hMenuBrushA,eax
-		mov		hMenuBrushB,eax
-		mov		hMnuFont,eax
+		mov		ha.hMenuBrushA,eax
+		mov		ha.hMenuBrushB,eax
+		mov		ha.hMnuFont,eax
 	.endif
-	invoke LoadMenu,hInstance,IDM_MENU
+	invoke LoadMenu,ha.hInstance,IDM_MENU
 	push	eax
-	invoke SetMenu,hWnd,eax
-	invoke DestroyMenu,hMnu
-	pop		hMnu
+	invoke SetMenu,ha.hWnd,eax
+	invoke DestroyMenu,ha.hMnu
+	pop		ha.hMnu
 	mov		nInx,1
 	mov		ebx,offset hCustDll
 	.while nInx<=32
@@ -594,14 +594,14 @@ ResetMenu proc uses esi edi
 				invoke lstrcat,addr buffer,addr rarstype.sztype
 				mov		edx,nInx
 				lea		edx,[edx+22000-12]
-				invoke InsertMenu,hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
+				invoke InsertMenu,ha.hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
 			.endif
 		.endif
 		inc		nInx
 	.endw
-	invoke DestroyMenu,hContextMnu
-	invoke LoadMenu,hInstance,IDR_MENUCONTEXT
-	mov		hContextMnu,eax
+	invoke DestroyMenu,ha.hContextMnu
+	invoke LoadMenu,ha.hInstance,IDR_MENUCONTEXT
+	mov		ha.hContextMnu,eax
 	invoke SetToolMenu
 	invoke SetHelpMenu
 	invoke CoolMenu
@@ -621,7 +621,7 @@ SetWinCaption proc lpFileName:DWORD
 		invoke strcat,addr buffer,addr buffer1
 		invoke strcat,addr buffer,lpFileName
 	.endif
-	invoke SetWindowText,hWnd,addr buffer
+	invoke SetWindowText,ha.hWnd,addr buffer
 	ret
 
 SetWinCaption endp
@@ -629,11 +629,11 @@ SetWinCaption endp
 SetFormat proc hWin:HWND
 	LOCAL	rafnt:RAFONT
 
-	mov		eax,hFont
+	mov		eax,ha.hFont
 	mov		rafnt.hFont,eax
-	mov		eax,hIFont
+	mov		eax,ha.hIFont
 	mov		rafnt.hIFont,eax
-	mov		eax,hLnrFont
+	mov		eax,ha.hLnrFont
 	mov		rafnt.hLnrFont,eax
 	;Set fonts
 	invoke SendMessage,hWin,REM_SETFONT,0,addr rafnt
@@ -666,7 +666,7 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 	mov		edx,nPos
 	inc		edx
 	invoke DwToAscii,edx,addr buffer[eax+6]
-	invoke SendMessage,hSbr,SB_SETTEXT,0,addr buffer
+	invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr buffer
 	ret
 
 ShowPos endp
@@ -676,15 +676,15 @@ ShowProc proc uses esi,nLine:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		buffer,0
-	.if hREd
-		invoke GetWindowLong,hREd,GWL_ID
+	.if ha.hREd
+		invoke GetWindowLong,ha.hREd,GWL_ID
 		.if eax==IDC_RAE
 			mov		eax,nLine
 			mov		isinproc.nLine,eax
-			mov		eax,hREd
+			mov		eax,ha.hREd
 			mov		isinproc.nOwner,eax
 			mov		isinproc.lpszType,offset szCCp
-			invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+			invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 			.if eax
 				mov		esi,eax
 				invoke strcpy,addr buffer,esi
@@ -697,7 +697,7 @@ ShowProc proc uses esi,nLine:DWORD
 			.endif
 		.endif
 	.endif
-	invoke SendMessage,hSbr,SB_SETTEXT,3,addr buffer
+	invoke SendMessage,ha.hSbr,SB_SETTEXT,3,addr buffer
 	ret
 
 ShowProc endp
@@ -716,7 +716,7 @@ ShowSession proc
 	.else
 		mov		buffer,0
 	.endif
-	invoke SendMessage,hSbr,SB_SETTEXT,1,addr buffer
+	invoke SendMessage,ha.hSbr,SB_SETTEXT,1,addr buffer
 	.if szSessionFile
 		invoke strcpy,addr buffer,addr szSession
 		mov		dword ptr buffer[7],' :'
@@ -728,7 +728,7 @@ ShowSession proc
 	.else
 		mov		buffer,0
 	.endif
-	invoke SendMessage,hSbr,SB_SETTEXT,2,addr buffer
+	invoke SendMessage,ha.hSbr,SB_SETTEXT,2,addr buffer
 	ret
 
 ShowSession endp
@@ -790,7 +790,7 @@ SetKeyWords proc uses esi edi
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'P'
 	mov		edi,hMem
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
@@ -799,7 +799,7 @@ SetKeyWords proc uses esi edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[15*4],hMem
@@ -807,7 +807,7 @@ SetKeyWords proc uses esi edi
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'C'
 	mov		edi,hMem
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	mov		esi,eax
 	.while esi
 		invoke strlen,esi
@@ -825,7 +825,7 @@ SetKeyWords proc uses esi edi
 			inc		esi
 			inc		edi
 		.endw
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 		mov		esi,eax
 	.endw
 	mov		byte ptr [edi],0
@@ -834,7 +834,7 @@ SetKeyWords proc uses esi edi
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'W'
 	mov		edi,hMem
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
@@ -843,7 +843,7 @@ SetKeyWords proc uses esi edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[14*4],hMem
@@ -851,7 +851,7 @@ SetKeyWords proc uses esi edi
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'S'
 	mov		edi,hMem
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	.while eax
 		mov		byte ptr [edi],'^'
 		inc		edi
@@ -860,7 +860,7 @@ SetKeyWords proc uses esi edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[13*4],hMem
@@ -868,7 +868,7 @@ SetKeyWords proc uses esi edi
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'S'
 	mov		edi,hMem
-	invoke SendMessage,hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	.while eax
 		mov		cl,[eax]
 		mov		ch,cl
@@ -883,12 +883,12 @@ SetKeyWords proc uses esi edi
 		lea		edi,[edi+eax]
 		mov		byte ptr [edi],' '
 		inc		edi
-		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[12*4],hMem
 	invoke GlobalFree,hMem
-	invoke SendMessage,hResEd,PRO_SETHIGHLIGHT,col.styles,col.words
+	invoke SendMessage,ha.hResEd,PRO_SETHIGHLIGHT,col.styles,col.words
 	ret
 
 SetKeyWords endp
@@ -900,47 +900,47 @@ IndentComment proc uses esi,nChr:DWORD,fN:DWORD
 	LOCAL	LnEn:DWORD
 	LOCAL	buffer[32]:BYTE
 
-	invoke SendMessage,hREd,WM_SETREDRAW,FALSE,0
-	invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
+	invoke SendMessage,ha.hREd,WM_SETREDRAW,FALSE,0
+	invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
 	.if fN
 		mov		eax,nChr
 		mov		dword ptr buffer[0],eax
 	.endif
-	invoke SendMessage,hREd,EM_EXGETSEL,0,addr ochr
-	invoke SendMessage,hREd,EM_EXGETSEL,0,addr chr
-	invoke SendMessage,hREd,EM_HIDESELECTION,TRUE,0
-	invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chr.cpMin
+	invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr ochr
+	invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chr
+	invoke SendMessage,ha.hREd,EM_HIDESELECTION,TRUE,0
+	invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chr.cpMin
 	mov		LnSt,eax
 	mov		eax,chr.cpMax
 	dec		eax
-	invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,eax
+	invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,eax
 	mov		LnEn,eax
   nxt:
 	mov		eax,LnSt
 	.if eax<=LnEn
-		invoke SendMessage,hREd,EM_LINEINDEX,LnSt,0
+		invoke SendMessage,ha.hREd,EM_LINEINDEX,LnSt,0
 		mov		chr.cpMin,eax
 		inc		LnSt
 		.if fN
 			; Indent / Comment
 			mov		chr.cpMax,eax
-			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chr
-			invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+			invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chr
+			invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
 			invoke strlen,addr buffer
 			add		ochr.cpMax,eax
 			jmp		nxt
 		.else
 			; Outdent / Uncomment
-			invoke SendMessage,hREd,EM_LINEINDEX,LnSt,0
+			invoke SendMessage,ha.hREd,EM_LINEINDEX,LnSt,0
 			mov		chr.cpMax,eax
-			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chr
-			invoke SendMessage,hREd,EM_GETSELTEXT,0,addr tmpbuff
+			invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chr
+			invoke SendMessage,ha.hREd,EM_GETSELTEXT,0,addr tmpbuff
 			mov		esi,offset tmpbuff
 			xor		eax,eax
 			mov		al,[esi]
 			.if eax==nChr
 				inc		esi
-				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,esi
+				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,esi
 				dec		ochr.cpMax
 			.elseif nChr==09h
 				mov		ecx,edopt.tabsize
@@ -960,17 +960,17 @@ IndentComment proc uses esi,nChr:DWORD,fN:DWORD
 				mov		eax,edopt.tabsize
 				sub		eax,ecx
 				sub		ochr.cpMax,eax
-				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,esi
+				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,esi
 			.endif
 			jmp		nxt
 		.endif
 	.endif
-	invoke SendMessage,hREd,EM_EXSETSEL,0,addr ochr
-	invoke SendMessage,hREd,EM_HIDESELECTION,FALSE,0
-	invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-	invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
-	invoke SendMessage,hREd,WM_SETREDRAW,TRUE,0
-	invoke SendMessage,hREd,REM_REPAINT,0,0
+	invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ochr
+	invoke SendMessage,ha.hREd,EM_HIDESELECTION,FALSE,0
+	invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
+	invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
+	invoke SendMessage,ha.hREd,WM_SETREDRAW,TRUE,0
+	invoke SendMessage,ha.hREd,REM_REPAINT,0,0
 	ret
 
 IndentComment endp
@@ -979,16 +979,16 @@ GetSelText proc lpBuff:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	buffer[256]:BYTE
 
-	invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 	mov		eax,chrg.cpMax
 	sub		eax,chrg.cpMin
 	.if !eax
-		invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+		invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 		.if buffer
 			invoke strcpy,lpBuff,addr buffer
 		.endif
 	.elseif eax<256
-		invoke SendMessage,hREd,EM_GETSELTEXT,0,lpBuff
+		invoke SendMessage,ha.hREd,EM_GETSELTEXT,0,lpBuff
 	.endif
 	ret
 
@@ -1183,12 +1183,12 @@ UpdateAll proc uses ebx,nFunction:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	nLn:DWORD
 
-	invoke SendMessage,hTab,TCM_GETITEMCOUNT,0,0
+	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
 	mov		nInx,eax
 	mov		tci.imask,TCIF_PARAM
 	.while nInx
 		dec		nInx
-		invoke SendMessage,hTab,TCM_GETITEM,nInx,addr tci
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
 		.if eax
 			mov		ebx,tci.lParam
 			mov		eax,nFunction
@@ -1205,9 +1205,9 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETCOLOR,0,addr col
 					invoke SetFormat,[ebx].TABMEM.hwnd
 				.elseif eax==IDC_HEX
-					mov		eax,hFont
+					mov		eax,ha.hFont
 					mov		hefnt.hFont,eax
-					mov		eax,hLnrFont
+					mov		eax,ha.hLnrFont
 					mov		hefnt.hLnrFont,eax
 					invoke SendMessage,[ebx].TABMEM.hwnd,HEM_SETFONT,0,addr hefnt
 				.endif
@@ -1224,10 +1224,10 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
 					.if eax
 						invoke TabToolGetInx,[ebx].TABMEM.hwnd
-						invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 						invoke TabToolActivate
-						invoke SetFocus,hREd
-						invoke WantToSave,hREd,offset FileName
+						invoke SetFocus,ha.hREd
+						invoke WantToSave,ha.hREd,offset FileName
 						or		eax,eax
 						jne		Ex
 					.endif
@@ -1236,39 +1236,39 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				mov		eax,nInx
 				.if eax!=nTabInx
 					mov		eax,[ebx].TABMEM.hwnd
-					.if eax!=hRes
+					.if eax!=ha.hRes
 						invoke DeleteGoto,[ebx].TABMEM.hwnd
 						invoke DestroyWindow,[ebx].TABMEM.hwnd
 					.endif
-					invoke SendMessage,hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
+					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
 					invoke TabToolDel,[ebx].TABMEM.hwnd
 				.endif
 			.elseif eax==WM_DESTROY
-				invoke SendMessage,hTab,TCM_DELETEITEM,nInx,0
+				invoke SendMessage,ha.hTab,TCM_DELETEITEM,nInx,0
 				invoke DestroyWindow,[ebx].TABMEM.hwnd
 				invoke GetProcessHeap
 				invoke HeapFree,eax,NULL,ebx
 			.elseif eax==IS_OPEN
 				invoke lstrcmpi,offset FileName,addr [ebx].TABMEM.filename
 				.if !eax
-					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
 					invoke TabToolActivate
-					invoke SetFocus,hREd
+					invoke SetFocus,ha.hREd
 					mov		eax,TRUE
 					jmp		Ex
 				.endif
 			.elseif eax==IS_RESOURCE
 				mov		eax,[ebx].TABMEM.hwnd
-				.if eax==hRes
-					invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
+				.if eax==ha.hRes
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
 					invoke TabToolActivate
-					invoke SetFocus,hREd
+					invoke SetFocus,ha.hREd
 					mov		eax,TRUE
 					jmp		Ex
 				.endif
 			.elseif eax==IS_RESOURCE_OPEN
 				mov		eax,[ebx].TABMEM.hwnd
-				.if eax==hRes
+				.if eax==ha.hRes
 					mov		eax,TRUE
 					jmp		Ex
 				.endif
@@ -1284,7 +1284,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 					invoke strcpy,addr LineTxt,addr szChanged
 					invoke strcat,addr LineTxt,addr [ebx].TABMEM.filename
 					invoke strcat,addr LineTxt,addr szReopen
-					invoke MessageBox,hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
+					invoke MessageBox,ha.hWnd,addr LineTxt,addr szAppName,MB_YESNO or MB_ICONQUESTION
 					.if eax==IDYES
 						invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 						.if eax==IDC_RAE
@@ -1348,7 +1348,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 						mov		edx,nErrID
 						.if eax==ErrID[edx*4]
 							invoke TabToolGetInx,[ebx].TABMEM.hwnd
-							invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+							invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 							invoke TabToolActivate
 							invoke SendMessage,[ebx].TABMEM.hwnd,EM_LINEINDEX,nLn,0
 							mov		chrg.cpMin,eax
@@ -1515,7 +1515,7 @@ PutString endp
 
 OutputSelect proc nSel:DWORD
 
-	invoke SendMessage,hTabOut,TCM_SETCURSEL,nSel,0
+	invoke SendMessage,ha.hTabOut,TCM_SETCURSEL,nSel,0
 	mov		eax,nSel
 	mov		nOutSel,eax
 	ret
@@ -1675,15 +1675,15 @@ GotoDeclare proc uses esi
 	LOCAL	nln:DWORD
 	LOCAL	ftxt:FINDTEXTEX
 
-	invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+	invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 	.if buffer
-		mov		eax,hREd
+		mov		eax,ha.hREd
 		mov		isinproc.nOwner,eax
 		mov		isinproc.lpszType,offset szCCp
-		invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-		invoke SendMessage,hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+		invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
 		mov		isinproc.nLine,eax
-		invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+		invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 		.if eax
 			mov		esi,eax
 			mov		eax,[eax-sizeof PROPERTIES].PROPERTIES.nLine
@@ -1691,36 +1691,36 @@ GotoDeclare proc uses esi
 			;Skip proc name and point to params
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-			invoke SendMessage,hProperty,PRM_ISINLIST,addr buffer,esi
+			invoke SendMessage,ha.hProperty,PRM_ISINLIST,addr buffer,esi
 			.if !eax
 				;Skip params and point to locals
 				invoke strlen,esi
 				lea		esi,[esi+eax+1]
 				invoke strlen,esi
 				lea		esi,[esi+eax+1]
-				invoke SendMessage,hProperty,PRM_ISINLIST,addr buffer,esi
+				invoke SendMessage,ha.hProperty,PRM_ISINLIST,addr buffer,esi
 			.endif
 			.if eax
 				.if byte ptr [eax-1]!=':'
 					lea		eax,buffer
 					mov		ftxt.lpstrText,eax
-					invoke SendMessage,hREd,EM_LINEINDEX,nln,0
+					invoke SendMessage,ha.hREd,EM_LINEINDEX,nln,0
 					mov		ftxt.chrgText.cpMin,eax
 					mov		ftxt.chrgText.cpMax,-1
-					invoke SendMessage,hREd,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
+					invoke SendMessage,ha.hREd,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
 					.if eax!=-1
 						mov		ftxt.chrg.cpMin,eax
 						mov		ftxt.chrg.cpMax,eax
-						invoke PushGoto,hREd,chrg.cpMin
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr ftxt.chrg
-						invoke SendMessage,hREd,REM_VCENTER,0,0
-						invoke SetFocus,hREd
+						invoke PushGoto,ha.hREd,chrg.cpMin
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ftxt.chrg
+						invoke SendMessage,ha.hREd,REM_VCENTER,0,0
+						invoke SetFocus,ha.hREd
 						jmp		Ex
 					.endif
 				.endif
 			.endif
 		.endif
-		invoke SendMessage,hProperty,PRM_FINDFIRST,addr szGotoTypes,addr buffer
+		invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szGotoTypes,addr buffer
 		.while eax
 			invoke strcpy,addr buffer1,eax
 			xor		ecx,ecx
@@ -1733,21 +1733,21 @@ GotoDeclare proc uses esi
 			.endw
 			invoke strcmp,addr buffer1,addr buffer
 			.if !eax
-				invoke PushGoto,hREd,chrg.cpMin
-				invoke SendMessage,hProperty,PRM_FINDGETOWNER,0,0
+				invoke PushGoto,ha.hREd,chrg.cpMin
+				invoke SendMessage,ha.hProperty,PRM_FINDGETOWNER,0,0
 				invoke TabToolGetInx,eax
-				invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 				invoke TabToolActivate
-				invoke SendMessage,hProperty,PRM_FINDGETLINE,0,0
-				invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+				invoke SendMessage,ha.hProperty,PRM_FINDGETLINE,0,0
+				invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 				mov		chrg.cpMin,eax
 				mov		chrg.cpMax,eax
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-				invoke SendMessage,hREd,REM_VCENTER,0,0
-				invoke SetFocus,hREd
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,REM_VCENTER,0,0
+				invoke SetFocus,ha.hREd
 				.break
 			.endif
-			invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
+			invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 		.endw
 	.endif
   Ex:
@@ -1761,15 +1761,15 @@ ReturnDeclare proc
 	mov		edx,offset gotostack
 	.if [edx].DECLARE.hWin
 		invoke TabToolGetInx,[edx].DECLARE.hWin
-		invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 		invoke TabToolActivate
 		mov		edx,offset gotostack
 		mov		eax,[edx].DECLARE.cp
 		mov		chrg.cpMin,eax
 		mov		chrg.cpMax,eax
-		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-		invoke SendMessage,hREd,REM_VCENTER,0,0
-		invoke SetFocus,hREd
+		invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,ha.hREd,REM_VCENTER,0,0
+		invoke SetFocus,ha.hREd
 		invoke PopGoto
 	.endif
 	ret

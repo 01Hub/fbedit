@@ -24,7 +24,7 @@ include Opt\Debug.asm
 start:
 
 	invoke GetModuleHandle,NULL
-	mov		hInstance,eax
+	mov		ha.hInstance,eax
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
@@ -177,14 +177,14 @@ start:
 	mov		eax,wpos.top
 	mov		winsize.ptstyle.y,eax
 	invoke OleInitialize,NULL
-	invoke InstallRAEdit,hInstance,FALSE
-	invoke RAHexEdInstall,hInstance,FALSE
-	invoke GridInstall,hInstance,FALSE
-	invoke ResEdInstall,hInstance,FALSE
-	invoke InstallFileBrowser,hInstance,FALSE
-	invoke InstallRACodeComplete,hInstance,FALSE
-	invoke InstallRAProperty,hInstance,FALSE
-	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	invoke InstallRAEdit,ha.hInstance,FALSE
+	invoke RAHexEdInstall,ha.hInstance,FALSE
+	invoke GridInstall,ha.hInstance,FALSE
+	invoke ResEdInstall,ha.hInstance,FALSE
+	invoke InstallFileBrowser,ha.hInstance,FALSE
+	invoke InstallRACodeComplete,ha.hInstance,FALSE
+	invoke InstallRAProperty,ha.hInstance,FALSE
+	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	push	eax
 	invoke UnInstallRAEdit
 	invoke RAHexEdUnInstall
@@ -240,21 +240,21 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 
-	invoke CreateDialogParam,hInstance,IDD_DLG,NULL,offset WndProc,NULL
-	mov		hWnd,eax
+	invoke CreateDialogParam,ha.hInstance,IDD_DLG,NULL,offset WndProc,NULL
+	mov		ha.hWnd,eax
 	.if wpos.fMax
 		mov		eax,SW_MAXIMIZE
 	.else
 		mov		eax,SW_SHOWNORMAL
 	.endif
-	invoke ShowWindow,hWnd,eax
+	invoke ShowWindow,ha.hWnd,eax
 	test	wpos.fView,4
 	.if !ZERO?
-		invoke ShowWindow,hOut,SW_SHOWNA
+		invoke ShowWindow,ha.hOut,SW_SHOWNA
 	.endif
-	invoke UpdateWindow,hWnd
-	invoke LoadAccelerators,hInstance,IDR_ACCEL
-	mov		hAccel,eax
+	invoke UpdateWindow,ha.hWnd
+	invoke LoadAccelerators,ha.hInstance,IDR_ACCEL
+	mov		ha.hAccel,eax
 	;Get command line filename
 	mov		edx,CmdLine
 	.if byte ptr [edx]
@@ -273,9 +273,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	.while TRUE
 		invoke GetMessage,addr msg,NULL,0,0
 	  .break .if !eax
-		invoke IsDialogMessage,hFind,addr msg
+		invoke IsDialogMessage,ha.hFind,addr msg
 		.if !eax
-			invoke TranslateAccelerator,hWnd,hAccel,addr msg
+			invoke TranslateAccelerator,ha.hWnd,ha.hAccel,addr msg
 			.if !eax
 				invoke TranslateMessage,addr msg
 				invoke DispatchMessage,addr msg
@@ -322,26 +322,26 @@ CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
 
 	invoke IsCharAlphaNumeric,wParam
 	.if !eax
-		invoke SendMessage,hREd,REM_ISCHARPOS,cp,0
+		invoke SendMessage,ha.hREd,REM_ISCHARPOS,cp,0
 		.if !eax
-			invoke SendMessage,hREd,REM_SETCHARTAB,'.',CT_CHAR
-			invoke SendMessage,hREd,REM_GETWORDFROMPOS,cp,addr buffer
+			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_CHAR
+			invoke SendMessage,ha.hREd,REM_GETWORDFROMPOS,cp,addr buffer
 			.if eax
-				invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
+				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
 				mov		ebx,eax
 				.while ebx
 					invoke strcmpi,ebx,addr buffer
 					.if !eax
-						invoke SendMessage,hREd,REM_CASEWORD,cp,ebx
-						invoke SendMessage,hREd,EM_LINEFROMCHAR,cp,0
-						invoke SendMessage,hREd,REM_INVALIDATELINE,eax,0
+						invoke SendMessage,ha.hREd,REM_CASEWORD,cp,ebx
+						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,cp,0
+						invoke SendMessage,ha.hREd,REM_INVALIDATELINE,eax,0
 						.break
 					.endif
-					invoke SendMessage,hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
+					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
 					mov		ebx,eax
 				.endw
 			.endif
-			invoke SendMessage,hREd,REM_SETCHARTAB,'.',CT_HICHAR
+			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_HICHAR
 		.endif
 	.endif
 	ret
@@ -365,13 +365,13 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CHAR
 		mov		eax,wParam
 		.if eax==VK_TAB || eax==VK_RETURN
-			invoke IsWindowVisible,hCCLB
+			invoke IsWindowVisible,ha.hCCLB
 			.if eax
 				mov		ccinprogress,eax
-				invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr ccchrg
-				invoke SendMessage,hCCLB,CCM_GETCURSEL,0,0
-				invoke SendMessage,hCCLB,CCM_GETITEM,eax,0
+				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ccchrg
+				invoke SendMessage,ha.hCCLB,CCM_GETCURSEL,0,0
+				invoke SendMessage,ha.hCCLB,CCM_GETITEM,eax,0
 				push	eax
 				invoke strcpy,offset tmpbuff,eax
 				xor		eax,eax
@@ -381,7 +381,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					inc		eax
 				.endw
-				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset tmpbuff
+				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
 				pop		eax
 				.if cctype==CCTYPE_PROC
 					push	eax
@@ -390,33 +390,33 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if byte ptr [edx+eax+1]
 						mov		ccinprogress,0
 						mov		eax,','
-						invoke SendMessage,hREd,WM_CHAR,eax,0
+						invoke SendMessage,ha.hREd,WM_CHAR,eax,0
 					.endif
 				.endif
-				invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
-				invoke ShowWindow,hCCLB,SW_HIDE
+				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
+				invoke ShowWindow,ha.hCCLB,SW_HIDE
 				mov		cctype,CCTYPE_NONE
 				xor		eax,eax
 				mov		ccinprogress,eax
 				jmp		Ex
 			.elseif wParam==VK_RETURN
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				invoke CaseConvertWord,wParam,chrg.cpMin
 				;Block complete
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
 				push	eax
 				;Get linenumber where return was pressed
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
 				dec		eax
 				mov		ln,eax
-				invoke SendMessage,hREd,REM_GETBOOKMARK,ln,0
+				invoke SendMessage,ha.hREd,REM_GETBOOKMARK,ln,0
 				.if eax==1
 					;The line is a block, find block type
 					mov		esi,offset blocks
 					.while dword ptr [esi]
 						mov		edi,[esi]
-						invoke SendMessage,hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
+						invoke SendMessage,ha.hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
 						.if eax!=-1
 							;Block type found
 							.break .if ![edi].RABLOCKDEF.lpszEnd
@@ -425,18 +425,18 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							mov		lx,eax
 							mov		lz,0
 							.while lx!=-1
-								invoke SendMessage,hREd,REM_PRVBOOKMARK,lx,1
+								invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,lx,1
 								mov		lx,eax
 								.if lx!=-1
-									invoke SendMessage,hREd,REM_GETBLOCKEND,lx,0
+									invoke SendMessage,ha.hREd,REM_GETBLOCKEND,lx,0
 									mov		lz,eax
 									mov		tp,0
 									.if eax==-1
-										invoke SendMessage,hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+										invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
 										mov		tp,eax
 										.break
 									.elseif eax>ln
-										invoke SendMessage,hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+										invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
 										mov		tp,eax
 										.break .if tp==-1
 									.endif
@@ -447,13 +447,13 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								.break 
 							.endif
 							;Do the block complete
-							invoke SendMessage,hREd,REM_LOCKUNDOID,TRUE,0
+							invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
 							invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
 							mov		eax,[edi].RABLOCKDEF.lpszEnd
 							.if byte ptr [eax]=='?' || byte ptr [eax]=='$'
 								;Skip indent
 								mov		word ptr buffer,255
-								invoke SendMessage,hREd,EM_GETLINE,ln,addr buffer
+								invoke SendMessage,ha.hREd,EM_GETLINE,ln,addr buffer
 								mov		buffer[eax],0
 								xor		ebx,ebx
 								.while buffer[ebx] && (buffer[ebx]==VK_TAB || buffer[ebx]==VK_SPACE)
@@ -477,19 +477,19 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 									lea		esi,[esi+eax+1]
 								.endw
 								.if eax
-									invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
+									invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
 									mov		word ptr buffer,VK_SPACE
-									invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
+									invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
 								.endif
 								mov		eax,[edi].RABLOCKDEF.lpszEnd
 								add		eax,2
 							.endif
-							invoke SendMessage,hREd,EM_REPLACESEL,TRUE,eax
-							invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg1
+							invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,eax
+							invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg1
 							invoke CaseConvertWord,wParam,chrg1.cpMin
-							invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
 							call	InsertTab
-							invoke SendMessage,hREd,REM_LOCKUNDOID,FALSE,0
+							invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
 							.break
 						.endif
 						lea		esi,[esi+4]
@@ -499,7 +499,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
-			invoke ShowWindow,hCCLB,SW_HIDE
+			invoke ShowWindow,ha.hCCLB,SW_HIDE
 			mov		cctype,CCTYPE_NONE
 			xor		eax,eax
 			jmp		Ex
@@ -509,8 +509,8 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !ZERO?
 				mov		cctype,CCTYPE_ALL
 				; Force a WM_NOTIFY
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
 				xor		eax,eax
 				jmp		Ex
 			.endif
@@ -523,18 +523,18 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax || edx=='_' || edx==VK_BACK
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
 				; Force a WM_NOTIFY
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
 				xor		eax,eax
 				jmp		Ex
 			.else
 				mov		cctype,CCTYPE_NONE
-				invoke ShowWindow,hCCLB,SW_HIDE
+				invoke ShowWindow,ha.hCCLB,SW_HIDE
 			.endif
 		.endif
 		invoke IsCharAlphaNumeric,wParam
 		.if cctype==CCTYPE_NONE || !eax
-			invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 			mov		eax,chrg.cpMin
 			.if eax==chrg.cpMax && wParam!=VK_BACK
 				invoke CaseConvertWord,wParam,chrg.cpMin
@@ -547,26 +547,26 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		and		eax,3FFh
 		.if (edx==28h && (eax==150h || eax==50h)) || (edx==26h && (eax==148h || eax==48h)) || (edx==21h && (eax==149h || eax==49h)) || (edx==22h && (eax==151h || eax==51h))
 			;Down / Up /PgUp / PgDn
-			invoke IsWindowVisible,hCCLB
+			invoke IsWindowVisible,ha.hCCLB
 			.if eax
-				invoke PostMessage,hCCLB,uMsg,wParam,lParam
+				invoke PostMessage,ha.hCCLB,uMsg,wParam,lParam
 				xor		eax,eax
 				jmp		Ex
 			.endif
 		.elseif (edx==25h && eax==14Bh) || (edx==27h && eax==14Dh)
 			;Left / Right
-			invoke IsWindowVisible,hCCLB
+			invoke IsWindowVisible,ha.hCCLB
 			.if eax
-				invoke ShowWindow,hCCLB,SW_HIDE
+				invoke ShowWindow,ha.hCCLB,SW_HIDE
 			.endif
-			invoke IsWindowVisible,hCCTT
+			invoke IsWindowVisible,ha.hCCTT
 			.if eax
-				invoke ShowWindow,hCCTT,SW_HIDE
+				invoke ShowWindow,ha.hCCTT,SW_HIDE
 			.endif
 			mov		cctype,CCTYPE_NONE
 		.endif
 	.elseif eax==WM_KILLFOCUS
-		invoke ShowWindow,hCCTT,SW_HIDE
+		invoke ShowWindow,ha.hCCTT,SW_HIDE
 	.elseif eax==WM_MOUSEMOVE
 		mov		ti.cbSize,SizeOf TOOLINFO
 		mov		ti.uFlags,TTF_IDISHWND
@@ -574,7 +574,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ti.hWnd,eax
 		mov		ti.uId,eax
 		mov		ti.lpszText,0
-		invoke SendMessage,hDbgTip,TTM_GETTOOLINFO,0,addr ti
+		invoke SendMessage,ha.hDbgTip,TTM_GETTOOLINFO,0,addr ti
 		.if fDebugging
 			.if !eax
 				;Add the tooltip
@@ -582,9 +582,9 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,hWin
 				mov		ti.hWnd,eax
 				mov		ti.uId,eax
-				mov		eax,hInstance
+				mov		eax,ha.hInstance
 				mov		ti.hInst,eax
-				invoke SendMessage,hDbgTip,TTM_ADDTOOL,0,addr ti
+				invoke SendMessage,ha.hDbgTip,TTM_ADDTOOL,0,addr ti
 			.endif
 			mov		eax,lParam
 			mov		edx,eax
@@ -606,25 +606,25 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		dbgpt.x,eax
 				mov		eax,pt.y
 				mov		dbgpt.y,eax
-				invoke SendMessage,hREd,EM_CHARFROMPOS,0,addr pt
-				invoke SendMessage,hREd,REM_ISCHARPOS,eax,0
+				invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
+				invoke SendMessage,ha.hREd,REM_ISCHARPOS,eax,0
 				.if !eax
-					invoke SendMessage,hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
+					invoke SendMessage,ha.hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
 					.if buffer
 						lea		eax,buffer
 						mov		dbgtip.lpWord,eax
-						invoke SendMessage,hREd,EM_CHARFROMPOS,0,addr pt
-						invoke SendMessage,hREd,EM_LINEFROMCHAR,eax,0
+						invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
+						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,eax,0
 						mov		isinproc.nLine,eax
 						inc		eax
 						mov		dbgtip.nLine,eax
-						mov		eax,hREd
+						mov		eax,ha.hREd
 						mov		isinproc.nOwner,eax
 						mov		isinproc.lpszType,offset szCCp
-						invoke SendMessage,hProperty,PRM_ISINPROC,0,addr isinproc
+						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 						mov		dbgtip.lpProc,eax
 						mov		dbgtip.lpFileName,offset FileName
-						invoke DebugCommand,FUNC_GETTOOLTIP,hREd,addr dbgtip
+						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hREd,addr dbgtip
 						.if eax
 							; Show tooltip
 							mov		ti.lpszText,eax
@@ -644,7 +644,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax
 			; Delete the tool
-			invoke SendMessage,hDbgTip,TTM_DELTOOL,0,addr ti
+			invoke SendMessage,ha.hDbgTip,TTM_DELTOOL,0,addr ti
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
@@ -662,43 +662,43 @@ InsertTab:
 	.else
 		mov		word ptr buffer,VK_TAB
 	.endif
-	invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
-	invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+	invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
+	invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
 	retn
 
 Activate:
-	invoke SendMessage,hDbgTip,TTM_SETTOOLINFO,0,addr ti
-	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,FALSE,0
-	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,TRUE,0
+	invoke SendMessage,ha.hDbgTip,TTM_SETTOOLINFO,0,addr ti
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,TRUE,0
 	retn
 
 DeActivate:
-	invoke SendMessage,hDbgTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
 	retn
 
 RAEditProc endp
 
 CreateRAEdit proc
 
-	push	hREd
+	push	ha.hREd
 	.if edopt.hilitecmnt
 		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM
 	.else
 		mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
 	.endif
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,eax,0,0,0,0,hWnd,IDC_RAE,hInstance,0
-	mov		hREd,eax
-	invoke SendMessage,hREd,REM_SUBCLASS,0,addr RAEditProc
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,eax,0,0,0,0,ha.hWnd,IDC_RAE,ha.hInstance,0
+	mov		ha.hREd,eax
+	invoke SendMessage,ha.hREd,REM_SUBCLASS,0,addr RAEditProc
 	mov		lpOldRAEditProc,eax
-	invoke SetFormat,hREd
+	invoke SetFormat,ha.hREd
 	;Set colors
-	invoke SendMessage,hREd,REM_SETCOLOR,0,addr col
+	invoke SendMessage,ha.hREd,REM_SETCOLOR,0,addr col
 	.if edopt.linenumber
-		invoke CheckDlgButton,hREd,-2,TRUE
-		invoke SendMessage,hREd,WM_COMMAND,-2,0
+		invoke CheckDlgButton,ha.hREd,-2,TRUE
+		invoke SendMessage,ha.hREd,WM_COMMAND,-2,0
 	.endif
-	invoke SendMessage,hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
-	invoke SendMessage,hWnd,WM_SIZE,0,0
+	invoke SendMessage,ha.hREd,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
+	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	pop		eax
 	invoke ShowWindow,eax,SW_HIDE
 	ret
@@ -708,17 +708,17 @@ CreateRAEdit endp
 CreateRAHexEd proc
 	LOCAL	hefnt:HEFONT
 
-	invoke ShowWindow,hREd,SW_HIDE
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWnd,IDC_HEX,hInstance,0
-	mov		hREd,eax
-	mov		eax,hFont
+	invoke ShowWindow,ha.hREd,SW_HIDE
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,ha.hWnd,IDC_HEX,ha.hInstance,0
+	mov		ha.hREd,eax
+	mov		eax,ha.hFont
 	mov		hefnt.hFont,eax
-	mov		eax,hLnrFont
+	mov		eax,ha.hLnrFont
 	mov		hefnt.hLnrFont,eax
 	;Set fonts
-	invoke SendMessage,hREd,HEM_SETFONT,0,addr hefnt
+	invoke SendMessage,ha.hREd,HEM_SETFONT,0,addr hefnt
 	;Set colors
-	invoke SendMessage,hWnd,WM_SIZE,0,0
+	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	ret
 
 CreateRAHexEd endp
@@ -727,9 +727,9 @@ CreateNew proc
 
 	invoke strcpy,offset FileName,offset szNewFile
 	invoke CreateRAEdit
-	invoke TabToolAdd,hREd,offset FileName
+	invoke TabToolAdd,ha.hREd,offset FileName
 	invoke SetWinCaption,offset FileName
-	invoke SetFocus,hREd
+	invoke SetFocus,ha.hREd
 	ret
 
 CreateNew endp
@@ -741,15 +741,15 @@ CreateNewRes proc
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
 	mov		hMem,eax
 	invoke GlobalLock,hMem
-	invoke SendMessage,hResEd,PRO_OPEN,offset FileName,hMem
-	invoke ShowWindow,hREd,SW_HIDE
-	mov		eax,hRes
-	mov		hREd,eax
-	invoke TabToolAdd,hREd,offset FileName
+	invoke SendMessage,ha.hResEd,PRO_OPEN,offset FileName,hMem
+	invoke ShowWindow,ha.hREd,SW_HIDE
+	mov		eax,ha.hRes
+	mov		ha.hREd,eax
+	invoke TabToolAdd,ha.hREd,offset FileName
 	invoke SetWinCaption,offset FileName
-	invoke ShowWindow,hREd,SW_SHOW
-	invoke SendMessage,hWnd,WM_SIZE,0,0
-	invoke SetFocus,hREd
+	invoke ShowWindow,ha.hREd,SW_SHOW
+	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+	invoke SetFocus,ha.hREd
 	ret
 
 CreateNewRes endp
@@ -775,29 +775,29 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		edx,IDM_FILE_CLOSESESSION
 			call	EnableDisable
-			.if hREd
-				invoke GetWindowLong,hREd,GWL_ID
+			.if ha.hREd
+				invoke GetWindowLong,ha.hREd,GWL_ID
 			.else
 				mov		eax,-1
 			.endif
 			.if eax==-1
 				call	DisableRes
 				call	DisableEdit
-				invoke SendMessage,hSbr,SB_SETTEXT,0,addr szNULL
+				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
 			.elseif eax==IDC_RES
 				call	DisableEdit
-				invoke SendMessage,hResEd,DEM_GETMEM,DEWM_DIALOG,0
+				invoke SendMessage,ha.hResEd,DEM_GETMEM,DEWM_DIALOG,0
 				mov		edx,IDM_VIEW_DIALOG
 				call	EnableDisable
 				mov		edx,IDM_FORMAT_TABINDEX
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_CANUNDO,0,0
+				invoke SendMessage,ha.hResEd,DEM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_CANREDO,0,0
+				invoke SendMessage,ha.hResEd,DEM_CANREDO,0,0
 				mov		edx,IDM_EDIT_REDO
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_ISSELECTION,0,0
+				invoke SendMessage,ha.hResEd,DEM_ISSELECTION,0,0
 				mov		edx,IDM_EDIT_CUT
 				call	EnableDisable
 				mov		edx,IDM_EDIT_COPY
@@ -813,7 +813,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_FORMAT_SIZE
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_CANPASTE,0,0
+				invoke SendMessage,ha.hResEd,DEM_CANPASTE,0,0
 				mov		edx,IDM_EDIT_PASTE
 				call	EnableDisable
 				mov		eax,TRUE
@@ -858,15 +858,15 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_RESOURCE_UNDO
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_ISBACK,0,0
+				invoke SendMessage,ha.hResEd,DEM_ISBACK,0,0
 				xor		eax,TRUE
 				mov		edx,IDM_FORMAT_BACK
 				call	EnableDisable
-				invoke SendMessage,hResEd,DEM_ISFRONT,0,0
+				invoke SendMessage,ha.hResEd,DEM_ISFRONT,0,0
 				xor		eax,TRUE
 				mov		edx,IDM_FORMAT_FRONT
 				call	EnableDisable
-				invoke SendMessage,hSbr,SB_SETTEXT,0,addr szNULL
+				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
 			.elseif eax==IDC_RAE
 				call	DisableRes
 				mov		eax,TRUE
@@ -884,13 +884,13 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_FINDPREV
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_CANUNDO,0,0
+				invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_CANREDO,0,0
+				invoke SendMessage,ha.hREd,EM_CANREDO,0,0
 				mov		edx,IDM_EDIT_REDO
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				mov		eax,chrg.cpMax
 				sub		eax,chrg.cpMin
 				mov		edx,IDM_EDIT_CUT
@@ -907,10 +907,10 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_UNCOMMENT
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_CANPASTE,CF_TEXT,0
+				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
 				mov		edx,IDM_EDIT_PASTE
 				call	EnableDisable
-				invoke SendMessage,hREd,REM_GETMODE,0,0
+				invoke SendMessage,ha.hREd,REM_GETMODE,0,0
 				and		eax,MODE_BLOCK
 				mov		edx,IDM_EDIT_BLOCKINSERT
 				call	EnableDisable
@@ -919,21 +919,21 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		eax,MF_BYCOMMAND or MF_CHECKED
 				.endif
-				invoke CheckMenuItem,hMnu,IDM_EDIT_BLOCKMODE,eax
+				invoke CheckMenuItem,ha.hMnu,IDM_EDIT_BLOCKMODE,eax
 				mov		eax,TRUE
 				mov		edx,IDM_EDIT_BLOCKMODE
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 				mov		ebx,eax
-				invoke SendMessage,hREd,REM_NXTBOOKMARK,ebx,3
+				invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,ebx,3
 				inc		eax
 				mov		edx,IDM_EDIT_NEXTBM
 				call	EnableDisable
-				invoke SendMessage,hREd,REM_PRVBOOKMARK,ebx,3
+				invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,ebx,3
 				inc		eax
 				mov		edx,IDM_EDIT_PREVBM
 				call	EnableDisable
-				invoke SendMessage,hREd,REM_NXTBOOKMARK,-1,3
+				invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,-1,3
 				inc		eax
 				mov		edx,IDM_EDIT_CLEARBM
 				call	EnableDisable
@@ -985,13 +985,13 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_EDIT_FINDPREV
 				call	EnableDisable
 
-				invoke SendMessage,hREd,EM_CANUNDO,0,0
+				invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_CANREDO,0,0
+				invoke SendMessage,ha.hREd,EM_CANREDO,0,0
 				mov		edx,IDM_EDIT_REDO
 				call	EnableDisable
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				mov		eax,chrg.cpMax
 				sub		eax,chrg.cpMin
 				mov		edx,IDM_EDIT_CUT
@@ -1001,7 +1001,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_EDIT_DELETE
 				call	EnableDisable
 
-				invoke SendMessage,hREd,EM_CANPASTE,CF_TEXT,0
+				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
 				mov		edx,IDM_EDIT_PASTE
 				call	EnableDisable
 
@@ -1011,7 +1011,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		edx,IDM_EDIT_BLOCKINSERT
 				call	EnableDisable
 
-				invoke SendMessage,hREd,HEM_ANYBOOKMARKS,0,0
+				invoke SendMessage,ha.hREd,HEM_ANYBOOKMARKS,0,0
 				mov		edx,IDM_EDIT_NEXTBM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_PREVBM
@@ -1049,7 +1049,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if !ZERO?
 				inc		eax
 			.endif
-			invoke SendMessage,hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
 			INVOKE ShowSession
 			invoke GetCapture
 			.if !eax
@@ -1199,10 +1199,10 @@ EnableDisable:
 	.endif
 	push	eax
 	push	edx
-	invoke EnableMenuItem,hMnu,edx,eax
+	invoke EnableMenuItem,ha.hMnu,edx,eax
 	pop		edx
 	pop		eax
-	invoke EnableMenuItem,hContextMnu,edx,eax
+	invoke EnableMenuItem,ha.hContextMnu,edx,eax
 	pop		edx
 	pop		eax
 	push	eax
@@ -1210,7 +1210,7 @@ EnableDisable:
 	.if eax
 		mov		eax,TRUE
 	.endif
-	invoke SendMessage,hTbr,TB_ENABLEBUTTON,edx,eax
+	invoke SendMessage,ha.hTbr,TB_ENABLEBUTTON,edx,eax
 	pop		edx
 	pop		eax
 	retn
@@ -1227,7 +1227,7 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_SIZE
 		invoke GetClientRect,hWin,addr rect
-		invoke MoveWindow,hResEd,0,0,rect.right,rect.bottom,TRUE
+		invoke MoveWindow,ha.hResEd,0,0,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_CREATE
 		mov		ebx,lParam
 		mov		ebx,[ebx].CREATESTRUCT.lpCreateParams
@@ -1244,23 +1244,23 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if grdsize.stylehex
 			or		edx,DES_STYLEHEX
 		.endif
-		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,hInstance,0
-		mov		hResEd,eax
+		invoke CreateWindowEx,0,addr szResEdClass,0,edx,0,0,0,0,hWin,IDC_DLGEDIT,ha.hInstance,0
+		mov		ha.hResEd,eax
 		invoke SendMessage,eax,WM_SETFONT,ebx,0
 		mov		edx,nmeexp.nOutput
 		shl		edx,16
 		add		edx,nmeexp.nType
-		invoke SendMessage,hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
-		invoke SendMessage,hResEd,DEM_SETSIZE,0,addr winsize
+		invoke SendMessage,ha.hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+		invoke SendMessage,ha.hResEd,DEM_SETSIZE,0,addr winsize
 		mov		eax,grdsize.y
 		shl		eax,16
 		add		eax,grdsize.x
 		mov		edx,grdsize.line
 		shl		edx,24
 		add		edx,grdsize.color
-		invoke SendMessage,hResEd,DEM_SETGRIDSIZE,eax,edx
+		invoke SendMessage,ha.hResEd,DEM_SETGRIDSIZE,eax,edx
 	.elseif eax==WM_DESTROY
-		invoke SendMessage,hResEd,DEM_GETSIZE,0,addr winsize
+		invoke SendMessage,ha.hResEd,DEM_GETSIZE,0,addr winsize
 		mov		eax,winsize.htpro
 		mov		wpos.htprop,eax
 		mov		eax,winsize.wtpro
@@ -1271,35 +1271,35 @@ ResProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		wpos.top,eax
 		mov		eax,winsize.wttbx
 		mov		wpos.wttoolbox,eax
-		invoke DestroyWindow,hResEd
+		invoke DestroyWindow,ha.hResEd
 	.elseif eax==EM_GETMODIFY
-		invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+		invoke SendMessage,ha.hResEd,PRO_GETMODIFY,0,0
 		jmp		Ex
 	.elseif eax==EM_SETMODIFY
-		invoke SendMessage,hResEd,PRO_SETMODIFY,wParam,0
+		invoke SendMessage,ha.hResEd,PRO_SETMODIFY,wParam,0
 		jmp		Ex
 	.elseif eax==EM_UNDO
-		invoke SendMessage,hResEd,DEM_UNDO,0,0
+		invoke SendMessage,ha.hResEd,DEM_UNDO,0,0
 		jmp		Ex
 	.elseif eax==EM_REDO
-		invoke SendMessage,hResEd,DEM_REDO,0,0
+		invoke SendMessage,ha.hResEd,DEM_REDO,0,0
 		jmp		Ex
 	.elseif eax==WM_CUT
-		invoke SendMessage,hResEd,DEM_CUT,0,0
+		invoke SendMessage,ha.hResEd,DEM_CUT,0,0
 		jmp		Ex
 	.elseif eax==WM_COPY
-		invoke SendMessage,hResEd,DEM_COPY,0,0
+		invoke SendMessage,ha.hResEd,DEM_COPY,0,0
 		jmp		Ex
 	.elseif eax==WM_PASTE
-		invoke SendMessage,hResEd,DEM_PASTE,0,0
+		invoke SendMessage,ha.hResEd,DEM_PASTE,0,0
 		jmp		Ex
 	.elseif eax==WM_CLEAR
-		invoke SendMessage,hResEd,DEM_DELETECONTROLS,0,0
+		invoke SendMessage,ha.hResEd,DEM_DELETECONTROLS,0,0
 		jmp		Ex
 	.elseif eax==WM_NOTIFY
 		.if !fResNotify
 			inc		fResNotify
-			invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+			invoke SendMessage,ha.hResEd,PRO_GETMODIFY,0,0
 			.if eax
 				invoke GetWindowLong,hWin,GWL_USERDATA
 				.if ![eax].TABMEM.fchanged
@@ -1324,25 +1324,25 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 
 	mov		eax,nFunc
 	.if eax==CB_SELECTLINE
-		invoke SendMessage,hREd,EM_GETFIRSTVISIBLELINE,0,0
+		invoke SendMessage,ha.hREd,EM_GETFIRSTVISIBLELINE,0,0
 		mov		nFirst,eax
 		mov		eax,wParam
 		dec		eax
-		invoke SendMessage,hREd,REM_SETHILITELINE,eax,2
+		invoke SendMessage,ha.hREd,REM_SETHILITELINE,eax,2
 		mov		eax,wParam
 		dec		eax
-		invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+		invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 		mov		chrg.cpMin,eax
 		mov		chrg.cpMax,eax
-		invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-		invoke SendMessage,hREd,EM_GETFIRSTVISIBLELINE,0,0
+		invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
+		invoke SendMessage,ha.hREd,EM_GETFIRSTVISIBLELINE,0,0
 		.if eax!=nFirst
-			invoke SendMessage,hREd,REM_VCENTER,0,0
-			invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+			invoke SendMessage,ha.hREd,REM_VCENTER,0,0
+			invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
 		.endif
-		invoke SetForegroundWindow,hWnd
-		invoke SetFocus,hREd
+		invoke SetForegroundWindow,ha.hWnd
+		invoke SetFocus,ha.hREd
 	.elseif eax==CB_DESELECTLINE
 		mov		eax,wParam
 		dec		eax
@@ -1353,23 +1353,23 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		fTimer,1
 		.if eax
 			invoke UpdateAll,LOCK_SOURCE_FILES
-			invoke ShowWindow,hDbgReg,SW_SHOWNA
-			invoke ShowWindow,hTabDbg,SW_SHOWNA
+			invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
+			invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
 		.else
 			invoke UpdateAll,UNLOCK_SOURCE_FILES
-			invoke ShowWindow,hDbgReg,SW_HIDE
-			invoke ShowWindow,hTabDbg,SW_HIDE
+			invoke ShowWindow,ha.hDbgReg,SW_HIDE
+			invoke ShowWindow,ha.hTabDbg,SW_HIDE
 		.endif
 		invoke OutputSelect,0
 		or		wpos.fView,4
-		invoke ShowWindow,hOut,SW_SHOWNA
-		invoke ShowWindow,hImmOut,SW_HIDE
-		invoke SendMessage,hWnd,WM_SIZE,0,0
+		invoke ShowWindow,ha.hOut,SW_SHOWNA
+		invoke ShowWindow,ha.hImmOut,SW_HIDE
+		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	.elseif eax==CB_OPENFILE
 		invoke strcpy,offset DbgFileName,lParam
-		invoke PostMessage,hWnd,WM_USER+998,0,offset DbgFileName
+		invoke PostMessage,ha.hWnd,WM_USER+998,0,offset DbgFileName
 	.endif
-	mov		eax,hREd
+	mov		eax,ha.hREd
 	ret
 
 DebugCallback endp
@@ -1380,7 +1380,7 @@ ImmediateProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CHAR
 		mov		eax,wParam
 		.if eax==VK_RETURN
-			invoke DebugCommand,FUNC_IMMEDIATE,hImmOut,0
+			invoke DebugCommand,FUNC_IMMEDIATE,ha.hImmOut,0
 			xor		eax,eax
 			ret
 		.endif
@@ -1415,11 +1415,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_LBUTTONDOWN
 		.if fVSplit==1
 			invoke SetCapture,hWin
-			invoke SetCursor,hHSplitCur
+			invoke SetCursor,ha.hHSplitCur
 			mov		fVSplit,2
 		.elseif fVSplit==3
 			invoke SetCapture,hWin
-			invoke SetCursor,hVSplitCur
+			invoke SetCursor,ha.hVSplitCur
 			mov		fVSplit,4
 		.endif
 	.elseif eax==WM_LBUTTONUP
@@ -1428,7 +1428,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		fVSplit,0
 		.endif
 	.elseif eax==WM_MOUSEMOVE
-		invoke GetWindowRect,hSbr,addr rect
+		invoke GetWindowRect,ha.hSbr,addr rect
 		mov		eax,rect.bottom
 		sub		eax,rect.top
 		push	eax
@@ -1463,10 +1463,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		ecx,rect.right
 			add		ecx,4
 			.if eax>20 && eax<rect.right && edx>rect.bottom
-				invoke SetCursor,hHSplitCur
+				invoke SetCursor,ha.hHSplitCur
 				mov		fVSplit,1
 			.elseif eax>=rect.right && eax<=ecx && edx>rect.top
-				invoke SetCursor,hVSplitCur
+				invoke SetCursor,ha.hVSplitCur
 				mov		fVSplit,3
 			.endif
 		.elseif fVSplit==2
@@ -1474,7 +1474,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			test	wpos.fView,2
 			.if !ZERO?
 				;Get height of statusbar
-				invoke GetWindowRect,hSbr,addr rect
+				invoke GetWindowRect,ha.hSbr,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
 			.endif
@@ -1483,7 +1483,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			test	wpos.fView,1
 			.if !ZERO?
 				;Get height of toolbar
-				invoke GetWindowRect,hTbr,addr rect
+				invoke GetWindowRect,ha.hTbr,addr rect
 				mov		eax,rect.bottom
 				sub		eax,rect.top
 			.endif
@@ -1508,10 +1508,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax!=wpos.htout
 				mov		wpos.htout,eax
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				.if hREd
-					invoke UpdateWindow,hREd
+				.if ha.hREd
+					invoke UpdateWindow,ha.hREd
 				.endif
-				invoke UpdateWindow,hOut
+				invoke UpdateWindow,ha.hOut
 			.endif
 		.elseif fVSplit==4
 			invoke GetClientRect,hWin,addr rect
@@ -1531,10 +1531,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax!=wpos.wtfile
 				mov		wpos.wtfile,eax
 				invoke SendMessage,hWin,WM_SIZE,0,0
-				.if hREd
-					invoke UpdateWindow,hREd
+				.if ha.hREd
+					invoke UpdateWindow,ha.hREd
 				.endif
-				invoke UpdateWindow,hOut
+				invoke UpdateWindow,ha.hOut
 			.endif
 		.endif
 	.elseif eax==WM_SIZE
@@ -1547,21 +1547,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,lParam
 				movzx	eax,ax
 				mov		rect.right,eax
-				invoke MoveWindow,hTbr,2,2,695,23,TRUE
-				invoke MoveWindow,hCbo,2,1,150,150,TRUE
+				invoke MoveWindow,ha.hTbr,2,2,695,23,TRUE
+				invoke MoveWindow,ha.hCbo,2,1,150,150,TRUE
 				mov		eax,rect.right
 				sub		eax,695+4
-				invoke MoveWindow,hStc,2+695,2,eax,23,TRUE
-				invoke MoveWindow,hShp,0,0,rect.right,27,TRUE
-				invoke ShowWindow,hShp,SW_SHOW
-				invoke ShowWindow,hTbr,SW_SHOW
-				invoke ShowWindow,hStc,SW_SHOW
+				invoke MoveWindow,ha.hStc,2+695,2,eax,23,TRUE
+				invoke MoveWindow,ha.hShp,0,0,rect.right,27,TRUE
+				invoke ShowWindow,ha.hShp,SW_SHOW
+				invoke ShowWindow,ha.hTbr,SW_SHOW
+				invoke ShowWindow,ha.hStc,SW_SHOW
 			.endif
 			mov		eax,27
 		.else
-			invoke ShowWindow,hShp,SW_HIDE
-			invoke ShowWindow,hTbr,SW_HIDE
-			invoke ShowWindow,hStc,SW_HIDE
+			invoke ShowWindow,ha.hShp,SW_HIDE
+			invoke ShowWindow,ha.hTbr,SW_HIDE
+			invoke ShowWindow,ha.hStc,SW_HIDE
 			xor		eax,eax
 		.endif
 		push	eax
@@ -1571,15 +1571,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if lParam
 				mov		eax,rect.bottom
 				sub		eax,21
-				invoke MoveWindow,hSbr,0,eax,rect.right,21,TRUE
-				invoke ShowWindow,hSbr,SW_SHOW
+				invoke MoveWindow,ha.hSbr,0,eax,rect.right,21,TRUE
+				invoke ShowWindow,ha.hSbr,SW_SHOW
 			.endif
 			;Get height of statusbar
-			invoke GetWindowRect,hSbr,addr tmprect
+			invoke GetWindowRect,ha.hSbr,addr tmprect
 			mov		eax,tmprect.bottom
 			sub		eax,tmprect.top
 		.else
-			invoke ShowWindow,hSbr,SW_HIDE
+			invoke ShowWindow,ha.hSbr,SW_HIDE
 			xor		eax,eax
 		.endif
 		push	eax
@@ -1602,9 +1602,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	edx
 		mov		eax,rect.top
 		add		eax,5
-		invoke MoveWindow,hBtn,edx,eax,15,15,TRUE
-		invoke GetClientRect,hTab,addr rect1
-		invoke SendMessage,hTab,TCM_GETROWCOUNT,0,0
+		invoke MoveWindow,ha.hBtn,edx,eax,15,15,TRUE
+		invoke GetClientRect,ha.hTab,addr rect1
+		invoke SendMessage,ha.hTab,TCM_GETROWCOUNT,0,0
 		.if !eax
 			inc		eax
 		.endif
@@ -1613,8 +1613,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		rect1.bottom,eax
 		pop		edx
 		push	edx
-		invoke MoveWindow,hTab,-1,rect.top,edx,rect1.bottom,TRUE
-		invoke SendMessage,hTab,TCM_GETROWCOUNT,0,0
+		invoke MoveWindow,ha.hTab,-1,rect.top,edx,rect1.bottom,TRUE
+		invoke SendMessage,ha.hTab,TCM_GETROWCOUNT,0,0
 		.if !eax
 			inc		eax
 		.endif
@@ -1622,8 +1622,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mul		edx
 		mov		rect1.bottom,eax
 		pop		edx
-		invoke MoveWindow,hTab,-1,rect.top,edx,rect1.bottom,TRUE
-		invoke UpdateWindow,hTab
+		invoke MoveWindow,ha.hTab,-1,rect.top,edx,rect1.bottom,TRUE
+		invoke UpdateWindow,ha.hTab
 		pop		edx
 		test	wpos.fView,8
 		.if !ZERO?
@@ -1643,7 +1643,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,RESIZEHT
 			shr		edx,1
 			push	edx
-			invoke MoveWindow,hBrowse,ecx,rect.top,eax,edx,TRUE
+			invoke MoveWindow,ha.hBrowse,ecx,rect.top,eax,edx,TRUE
 			pop		edx
 			;Resize project browser
 			push	rect.top
@@ -1662,7 +1662,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
 			push	edx
-			invoke MoveWindow,hProperty,ecx,rect.top,eax,edx,TRUE
+			invoke MoveWindow,ha.hProperty,ecx,rect.top,eax,edx,TRUE
 			pop		edx
 			add		edx,RESIZEHT
 			add		rect.top,edx
@@ -1670,7 +1670,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		ecx,RESIZEHT
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
-			invoke MoveWindow,hTabDbg,ecx,rect.top,eax,20,TRUE
+			invoke MoveWindow,ha.hTabDbg,ecx,rect.top,eax,20,TRUE
 			add		rect.top,20
 			mov		edx,rect.bottom
 			sub		edx,rect.top
@@ -1679,9 +1679,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,wpos.wtfile
 			sub		eax,RESIZEHT
 			pushad
-			invoke MoveWindow,hDbgReg,ecx,rect.top,eax,edx,TRUE
+			invoke MoveWindow,ha.hDbgReg,ecx,rect.top,eax,edx,TRUE
 			popad
-			invoke MoveWindow,hDbgWatch,ecx,rect.top,eax,edx,TRUE
+			invoke MoveWindow,ha.hDbgWatch,ecx,rect.top,eax,edx,TRUE
 			pop		rect.top
 		.endif
 		;Add height of tab window to top
@@ -1700,13 +1700,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		sub		eax,rect.top
 		mov		ht,eax
 		;Resize RAEdit window
-		mov		eax,hREd
-		.if !hREd
-			invoke ShowWindow,hClient,SW_SHOWNA
-			invoke MoveWindow,hClient,0,rect.top,rect.right,ht,TRUE
+		mov		eax,ha.hREd
+		.if !ha.hREd
+			invoke ShowWindow,ha.hClient,SW_SHOWNA
+			invoke MoveWindow,ha.hClient,0,rect.top,rect.right,ht,TRUE
 		.else
-			invoke ShowWindow,hClient,SW_HIDE
-			invoke MoveWindow,hREd,0,rect.top,rect.right,ht,TRUE
+			invoke ShowWindow,ha.hClient,SW_HIDE
+			invoke MoveWindow,ha.hREd,0,rect.top,rect.right,ht,TRUE
 		.endif
 		test	wpos.fView,4
 		.if !ZERO?
@@ -1714,27 +1714,27 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,RESIZEHT
 			add		rect.top,eax
 			;Resize Output window
-			invoke MoveWindow,hTabOut,0,rect.top,20,wpos.htout,TRUE
-			invoke ShowWindow,hTabOut,SW_SHOWNA
-			invoke UpdateWindow,hTabOut
+			invoke MoveWindow,ha.hTabOut,0,rect.top,20,wpos.htout,TRUE
+			invoke ShowWindow,ha.hTabOut,SW_SHOWNA
+			invoke UpdateWindow,ha.hTabOut
 			sub		rect.right,20
-			invoke MoveWindow,hOut,20,rect.top,rect.right,wpos.htout,TRUE
-			invoke MoveWindow,hImmOut,20,rect.top,rect.right,wpos.htout,TRUE
+			invoke MoveWindow,ha.hOut,20,rect.top,rect.right,wpos.htout,TRUE
+			invoke MoveWindow,ha.hImmOut,20,rect.top,rect.right,wpos.htout,TRUE
 			.if nOutSel==1
-				invoke ShowWindow,hOut,SW_HIDE
-				invoke UpdateWindow,hImmOut
+				invoke ShowWindow,ha.hOut,SW_HIDE
+				invoke UpdateWindow,ha.hImmOut
 			.else
-				invoke ShowWindow,hImmOut,SW_HIDE
-				invoke UpdateWindow,hOut
+				invoke ShowWindow,ha.hImmOut,SW_HIDE
+				invoke UpdateWindow,ha.hOut
 			.endif
 		.else
-			invoke ShowWindow,hOut,SW_HIDE
-			invoke ShowWindow,hImmOut,SW_HIDE
-			invoke ShowWindow,hTabOut,SW_HIDE
+			invoke ShowWindow,ha.hOut,SW_HIDE
+			invoke ShowWindow,ha.hImmOut,SW_HIDE
+			invoke ShowWindow,ha.hTabOut,SW_HIDE
 		.endif
 	.elseif eax==WM_INITDIALOG
 		push	hWin
-		pop		hWnd
+		pop		ha.hWnd
 		invoke MoveWindow,hWin,wpos.x,wpos.y,wpos.wt,wpos.ht,TRUE
 		mov		fr,FR_DOWN
 		mov		eax,wpos.x
@@ -1743,128 +1743,128 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wpos.y
 		add		eax,30
 		mov		findpt.y,eax
-		invoke LoadCursor,hInstance,IDC_HSPLIT
-		mov		hHSplitCur,eax
-		invoke LoadCursor,hInstance,IDC_VSPLIT
-		mov		hVSplitCur,eax
+		invoke LoadCursor,ha.hInstance,IDC_HSPLIT
+		mov		ha.hHSplitCur,eax
+		invoke LoadCursor,ha.hInstance,IDC_VSPLIT
+		mov		ha.hVSplitCur,eax
 		;Set the toolbar buttons
 		invoke GetDlgItem,hWin,IDC_TBR
-		mov		hTbr,eax
-		invoke DoToolBar,hInstance,eax
+		mov		ha.hTbr,eax
+		invoke DoToolBar,ha.hInstance,eax
 		;Statusbar
 		invoke GetDlgItem,hWin,IDC_SBR
-		mov		hSbr,eax
+		mov		ha.hSbr,eax
 		invoke DoStatusBar,eax
 		;Shape
 		invoke GetDlgItem,hWin,IDC_SHP
-		mov		hShp,eax
+		mov		ha.hShp,eax
 		;Static
 		invoke GetDlgItem,hWin,IDC_STC
-		mov		hStc,eax
+		mov		ha.hStc,eax
 		;Combo
 		invoke GetDlgItem,hWin,IDC_CBO
-		mov		hCbo,eax
-		invoke SetParent,hCbo,hStc
-		invoke SendMessage,hCbo,CB_ADDSTRING,0,addr szRelease
-		invoke SendMessage,hCbo,CB_ADDSTRING,0,addr szDebug
+		mov		ha.hCbo,eax
+		invoke SetParent,ha.hCbo,ha.hStc
+		invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr szRelease
+		invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr szDebug
 		;Close button
 		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
-		mov		hBtn,eax
-		invoke LoadBitmap,hInstance,111
-		invoke SendMessage,hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
+		mov		ha.hBtn,eax
+		invoke LoadBitmap,ha.hInstance,111
+		invoke SendMessage,ha.hBtn,BM_SETIMAGE,IMAGE_BITMAP,eax
 		;Client
 		invoke GetDlgItem,hWin,IDC_CLIENT
-		mov		hClient,eax
+		mov		ha.hClient,eax
 		; Output tab
 		invoke GetDlgItem,hWin,IDC_TABOUT
-		mov		hTabOut,eax
+		mov		ha.hTabOut,eax
 		mov		tci.imask,TCIF_TEXT
 		mov		tci.pszText,offset szOutput
-		invoke SendMessage,hTabOut,TCM_INSERTITEM,999,addr tci
-		invoke SendMessage,hTabOut,TCM_SETCURSEL,eax,0
+		invoke SendMessage,ha.hTabOut,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,ha.hTabOut,TCM_SETCURSEL,eax,0
 		mov		tci.pszText,offset szImmediate
-		invoke SendMessage,hTabOut,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,ha.hTabOut,TCM_INSERTITEM,999,addr tci
 		; Debug tab
 		invoke GetDlgItem,hWin,IDC_TABWATCH
-		mov		hTabDbg,eax
+		mov		ha.hTabDbg,eax
 		mov		tci.imask,TCIF_TEXT
 		mov		tci.pszText,offset szRegister
-		invoke SendMessage,hTabDbg,TCM_INSERTITEM,999,addr tci
-		invoke SendMessage,hTabDbg,TCM_SETCURSEL,eax,0
+		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,ha.hTabDbg,TCM_SETCURSEL,eax,0
 		mov		tci.pszText,offset szWatch
-		invoke SendMessage,hTabDbg,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		;Window caption
 		invoke SetWinCaption,0
 		;Create line number font
 		invoke CreateFontIndirect,offset lfntlnr
-		mov     hLnrFont,eax
+		mov     ha.hLnrFont,eax
 		;Create normal font
 		invoke CreateFontIndirect,offset lfnt
-		mov     hFont,eax
+		mov     ha.hFont,eax
 		mov		al,lfnt.lfItalic
 		push	eax
 		;Create italics font
 		mov		lfnt.lfItalic,TRUE
 		invoke CreateFontIndirect,offset lfnt
-		mov     hIFont,eax
+		mov     ha.hIFont,eax
 		pop		eax
 		mov		lfnt.lfItalic,al
 		;Create output window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_OUT,hInstance,0
-		mov		hOut,eax
-		invoke SendMessage,hOut,WM_SETFONT,hFont,FALSE
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,ha.hWnd,IDC_OUT,ha.hInstance,0
+		mov		ha.hOut,eax
+		invoke SendMessage,ha.hOut,WM_SETFONT,ha.hFont,FALSE
 		;Create immediate window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,hWnd,IDC_IMMOUT,hInstance,0
-		mov		hImmOut,eax
-		invoke SendMessage,hImmOut,WM_SETFONT,hFont,FALSE
-		invoke SendMessage,hImmOut,REM_SUBCLASS,0,offset ImmediateProc
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOSTATE,0,0,0,0,ha.hWnd,IDC_IMMOUT,ha.hInstance,0
+		mov		ha.hImmOut,eax
+		invoke SendMessage,ha.hImmOut,WM_SETFONT,ha.hFont,FALSE
+		invoke SendMessage,ha.hImmOut,REM_SUBCLASS,0,offset ImmediateProc
 		mov		lpOldImmediateProc,eax
 		;Create debug register window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hWnd,IDC_DBGREG,hInstance,0
-		mov		hDbgReg,eax
-		invoke SendMessage,hDbgReg,WM_SETFONT,hFont,FALSE
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hWnd,IDC_DBGREG,ha.hInstance,0
+		mov		ha.hDbgReg,eax
+		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,FALSE
 		;Create debug watch window
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,hWnd,IDC_DBGWATCH,hInstance,0
-		mov		hDbgWatch,eax
-		invoke SendMessage,hDbgWatch,WM_SETFONT,hFont,FALSE
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,ha.hWnd,IDC_DBGWATCH,ha.hInstance,0
+		mov		ha.hDbgWatch,eax
+		invoke SendMessage,ha.hDbgWatch,WM_SETFONT,ha.hFont,FALSE
 		; Create debug tooltip
-		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
-		mov		hDbgTip,eax
-		invoke SendMessage,hDbgTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
+		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,ha.hInstance,0
+		mov		ha.hDbgTip,eax
+		invoke SendMessage,ha.hDbgTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
 		;Create file browser
-		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,hInstance,0
-		mov		hBrowse,eax
+		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,ha.hInstance,0
+		mov		ha.hBrowse,eax
 		;Create property
-		invoke CreateWindowEx,0,addr szPropertyClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or PRSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_PROPERTY,hInstance,0
-		mov		hProperty,eax
-		invoke SendMessage,hSbr,WM_GETFONT,0,0
+		invoke CreateWindowEx,0,addr szPropertyClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or PRSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_PROPERTY,ha.hInstance,0
+		mov		ha.hProperty,eax
+		invoke SendMessage,ha.hSbr,WM_GETFONT,0,0
 		push	eax
 		push	eax
-		invoke SendMessage,hBrowse,WM_SETFONT,eax,FALSE
+		invoke SendMessage,ha.hBrowse,WM_SETFONT,eax,FALSE
 		pop		eax
-		invoke SendMessage,hProperty,WM_SETFONT,eax,FALSE
+		invoke SendMessage,ha.hProperty,WM_SETFONT,eax,FALSE
 		;Create ResEd
 		pop		eax
-		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,hInstance,eax
-		mov		hRes,eax
+		invoke CreateWindowEx,0,addr szResClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,hWin,IDC_RES,ha.hInstance,eax
+		mov		ha.hRes,eax
 		;Get handle of tab window
 		invoke GetDlgItem,hWin,IDC_TAB
-		mov		hTab,eax
-		invoke SetWindowLong,hTab,GWL_WNDPROC,offset TabProc
+		mov		ha.hTab,eax
+		invoke SetWindowLong,ha.hTab,GWL_WNDPROC,offset TabProc
 		mov		lpOldTabProc,eax
-		invoke SendMessage,hBrowse,FBM_GETIMAGELIST,0,0
-		invoke SendMessage,hTab,TCM_SETIMAGELIST,0,eax
+		invoke SendMessage,ha.hBrowse,FBM_GETIMAGELIST,0,0
+		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
 		invoke GetMenu,hWin
-		mov		hMnu,eax
+		mov		ha.hMnu,eax
 		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,4,0
-		mov     hMnuIml,eax
-		invoke LoadBitmap,hInstance,IDB_MNUARROW
+		mov     ha.hMnuIml,eax
+		invoke LoadBitmap,ha.hInstance,IDB_MNUARROW
 		push	eax
-		invoke ImageList_AddMasked,hMnuIml,eax,0C0C0C0h
+		invoke ImageList_AddMasked,ha.hMnuIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
-		invoke LoadMenu,hInstance,IDR_MENUCONTEXT
-		mov		hContextMnu,eax
+		invoke LoadMenu,ha.hInstance,IDR_MENUCONTEXT
+		mov		ha.hContextMnu,eax
 		invoke SetToolMenu
 		invoke SetHelpMenu
 		;Add custom controls
@@ -1876,7 +1876,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		buffer,0
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr buffer,addr lpcbData
 			.if buffer
-				invoke SendMessage,hResEd,DEM_ADDCONTROL,0,addr buffer
+				invoke SendMessage,ha.hResEd,DEM_ADDCONTROL,0,addr buffer
 				.if eax
 					mov		[ebx],eax
 					add		ebx,4
@@ -1892,7 +1892,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		cust.szStyle,0
 			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr cust,addr lpcbData
 			.if cust.szStyle
-				invoke SendMessage,hResEd,DEM_ADDCUSTSTYLE,0,addr cust
+				invoke SendMessage,ha.hResEd,DEM_ADDCUSTSTYLE,0,addr cust
 			.endif
 			inc		nInx
 		.endw
@@ -1906,13 +1906,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if rarstype.sztype || rarstype.nid
 				mov		edx,nInx
 				dec		edx
-				invoke SendMessage,hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
+				invoke SendMessage,ha.hResEd,PRO_SETCUSTOMTYPE,edx,addr rarstype
 				.if !rarstype.szext && rarstype.sztype && nInx>11
 					invoke lstrcpy,addr buffer,addr szAdd
 					invoke lstrcat,addr buffer,addr rarstype.sztype
 					mov		edx,nInx
 					lea		edx,[edx+22000-12]
-					invoke InsertMenu,hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
+					invoke InsertMenu,ha.hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
 				.endif
 			.endif
 			inc		nInx
@@ -1944,11 +1944,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke RegQueryValueEx,hReg,addr szDbgLink,0,addr lpType,addr DbgLink,addr lpcbData
 		mov		lpcbData,sizeof nCboBuild
 		invoke RegQueryValueEx,hReg,addr szBuild,0,addr lpType,addr nCboBuild,addr lpcbData
-		invoke SendMessage,hCbo,CB_SETCURSEL,nCboBuild,0
+		invoke SendMessage,ha.hCbo,CB_SETCURSEL,nCboBuild,0
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
-		invoke SendMessage,hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter
-		invoke SendMessage,hBrowse,FBM_SETFILTER,FALSE,TRUE
+		invoke SendMessage,ha.hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter
+		invoke SendMessage,ha.hBrowse,FBM_SETFILTER,FALSE,TRUE
 		mov		lpcbData,sizeof szInitFolder
 		invoke RegQueryValueEx,hReg,addr szFolder,0,addr lpType,addr szInitFolder,addr lpcbData
 		.if byte ptr szInitFolder
@@ -1958,22 +1958,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCurDir,addr buffer,TRUE
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
-		invoke SetBlockDefs,hOut
+		invoke SetBlockDefs,ha.hOut
 		invoke SetPropertyDefs
 		;Set hilite words
 		invoke SetKeyWords
 		invoke ResetMenu
 		mov		eax,hWin
 		mov		dbginf.hWnd,eax
-		mov		eax,hOut
+		mov		eax,ha.hOut
 		mov		dbginf.hOut,eax
-		mov		eax,hImmOut
+		mov		eax,ha.hImmOut
 		mov		dbginf.hImmOut,eax
-		mov		eax,hDbgReg
+		mov		eax,ha.hDbgReg
 		mov		dbginf.hDbgReg,eax
-		mov		eax,hDbgWatch
+		mov		eax,ha.hDbgWatch
 		mov		dbginf.hDbgWatch,eax
-		mov		eax,hProperty
+		mov		eax,ha.hProperty
 		mov		dbginf.hPrp,eax
 		mov		eax,offset DebugCallback
 		mov		dbginf.lpCallBack,eax
@@ -1999,27 +1999,27 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke OpenHex
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_SAVE
-				.if hREd
-					invoke SaveEdit,hREd,offset FileName
-					invoke SetFocus,hREd
+				.if ha.hREd
+					invoke SaveEdit,ha.hREd,offset FileName
+					invoke SetFocus,ha.hREd
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,SAVE_ALL
 			.elseif eax==IDM_FILE_SAVEAS
-				.if hREd
-					invoke SaveEditAs,hREd,offset FileName
+				.if ha.hREd
+					invoke SaveEditAs,ha.hREd,offset FileName
 				.endif
 			.elseif eax==IDM_FILE_CLOSE || eax==IDC_BTNTABCLOSE
-				invoke WantToSave,hREd,offset FileName
+				invoke WantToSave,ha.hREd,offset FileName
 				.if !eax
-					mov		eax,hREd
-					.if eax!=hRes
-						invoke DeleteGoto,hREd
-						invoke DestroyWindow,hREd
-						invoke SendMessage,hProperty,PRM_DELPROPERTY,hREd,0
-						invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+					mov		eax,ha.hREd
+					.if eax!=ha.hRes
+						invoke DeleteGoto,ha.hREd
+						invoke DestroyWindow,ha.hREd
+						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
+						invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 					.endif
-					invoke TabToolDel,hREd
+					invoke TabToolDel,ha.hREd
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL
@@ -2030,16 +2030,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		szSessionFile,0
 					invoke CloseNotify
 				.endif
-				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL_BUT
-				invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+				invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 				mov		nTabInx,eax
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL
 				.endif
-				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_OPENSESSION
 				invoke OpenSessionFile
@@ -2059,14 +2059,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke UpdateAll,CLOSE_ALL
 					.endif
 				.endif
-				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_PAGESETUP
 				invoke GetPrnCaps
 				mov		psd.lStructSize,sizeof psd
 				mov		eax,hWin
 				mov		psd.hwndOwner,eax
-				mov		eax,hInstance
+				mov		eax,ha.hInstance
 				mov		psd.hInstance,eax
 				.if prnInches
 					mov		eax,PSD_MARGINS or PSD_INTHOUSANDTHSOFINCHES
@@ -2094,9 +2094,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		pd.lStructSize,sizeof pd
 				mov		eax,hWin
 				mov		pd.hwndOwner,eax
-				mov		eax,hInstance
+				mov		eax,ha.hInstance
 				mov		pd.hInstance,eax
-				invoke SendMessage,hREd,EM_GETLINECOUNT,0,0
+				invoke SendMessage,ha.hREd,EM_GETLINECOUNT,0,0
 				inc		eax
 				mov		ecx,ppos.nlinespage
 				.if !ecx
@@ -2111,7 +2111,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		pd.nMaxPage,ax
 				mov		pd.nFromPage,1
 				mov		pd.nToPage,ax
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				mov		eax,chrg.cpMin
 				.if eax!=chrg.cpMax
 					mov		eax,PD_RETURNDC or PD_SELECTION
@@ -2126,50 +2126,50 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_EDIT_UNDO
-				invoke SendMessage,hREd,EM_UNDO,0,0
+				invoke SendMessage,ha.hREd,EM_UNDO,0,0
 			.elseif eax==IDM_EDIT_REDO
-				invoke SendMessage,hREd,EM_REDO,0,0
+				invoke SendMessage,ha.hREd,EM_REDO,0,0
 			.elseif eax==IDM_EDIT_DELETE
-				invoke SendMessage,hREd,WM_CLEAR,0,0
+				invoke SendMessage,ha.hREd,WM_CLEAR,0,0
 			.elseif eax==IDM_EDIT_CUT
-				invoke SendMessage,hREd,WM_CUT,0,0
+				invoke SendMessage,ha.hREd,WM_CUT,0,0
 			.elseif eax==IDM_EDIT_COPY
-				invoke SendMessage,hREd,WM_COPY,0,0
+				invoke SendMessage,ha.hREd,WM_COPY,0,0
 			.elseif eax==IDM_EDIT_PASTE
-				invoke SendMessage,hREd,WM_PASTE,0,0
+				invoke SendMessage,ha.hREd,WM_PASTE,0,0
 			.elseif eax==IDM_EDIT_SELECTALL
 				mov		chrg.cpMin,0
 				mov		chrg.cpMax,-1
-				invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
 			.elseif eax==IDM_EDIT_FIND
-				.if !hFind
-					invoke GetWindowLong,hREd,GWL_ID
+				.if !ha.hFind
+					invoke GetWindowLong,ha.hREd,GWL_ID
 					.if eax==IDC_RAE
 						invoke GetSelText,offset findbuff
-						invoke CreateDialogParam,hInstance,IDD_FINDDLG,hWin,offset FindDlgProc,FALSE
+						invoke CreateDialogParam,ha.hInstance,IDD_FINDDLG,hWin,offset FindDlgProc,FALSE
 					.elseif eax==IDC_HEX
-						invoke CreateDialogParam,hInstance,IDD_HEXFINDDLG,hWin,offset HexFindDlgProc,FALSE
+						invoke CreateDialogParam,ha.hInstance,IDD_HEXFINDDLG,hWin,offset HexFindDlgProc,FALSE
 					.endif
 				.else
-					invoke SetFocus,hFind
+					invoke SetFocus,ha.hFind
 				.endif
 			.elseif eax==IDM_EDIT_REPLACE
-				.if !hFind
-					invoke GetWindowLong,hREd,GWL_ID
+				.if !ha.hFind
+					invoke GetWindowLong,ha.hREd,GWL_ID
 					.if eax==IDC_RAE
 						invoke GetSelText,offset findbuff
-						invoke CreateDialogParam,hInstance,IDD_FINDDLG,hWin,addr FindDlgProc,TRUE
+						invoke CreateDialogParam,ha.hInstance,IDD_FINDDLG,hWin,addr FindDlgProc,TRUE
 					.elseif eax==IDC_HEX
-						invoke CreateDialogParam,hInstance,IDD_HEXFINDDLG,hWin,offset HexFindDlgProc,TRUE
+						invoke CreateDialogParam,ha.hInstance,IDD_HEXFINDDLG,hWin,offset HexFindDlgProc,TRUE
 					.endif
 				.else
-					invoke SetFocus,hFind
+					invoke SetFocus,ha.hFind
 				.endif
 			.elseif eax==IDM_EDIT_FINDNEXT
-				.if !hFind
+				.if !ha.hFind
 					invoke GetSelText,offset findbuff
 				.endif
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
 					mov		al,findbuff
 					.if al
@@ -2177,10 +2177,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						push	fallfiles
 						mov		ndir,1
 						mov		fallfiles,0
-						invoke FindInit,hREd
-						invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrgText
+						invoke FindInit,ha.hREd
+						invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr ft.chrgText
 						mov		fres,0
-						invoke Find,hREd,FR_DOWN
+						invoke Find,ha.hREd,FR_DOWN
 						pop		fallfiles
 						pop		ndir
 					.endif
@@ -2191,10 +2191,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FINDPREV
-				.if !hFind
+				.if !ha.hFind
 					invoke GetSelText,offset findbuff
 				.endif
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
 					mov		al,findbuff
 					.if al
@@ -2202,10 +2202,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						push	fallfiles
 						mov		ndir,2
 						mov		fallfiles,0
-						invoke FindInit,hREd
-						invoke SendMessage,hREd,EM_EXGETSEL,0,addr ft.chrgText
+						invoke FindInit,ha.hREd
+						invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr ft.chrgText
 						mov		fres,0
-						invoke Find,hREd,0
+						invoke Find,ha.hREd,0
 						pop		fallfiles
 						pop		ndir
 					.endif
@@ -2228,93 +2228,93 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_EDIT_UNCOMMENT
 				invoke IndentComment,';',FALSE
 			.elseif eax==IDM_EDIT_BLOCKMODE
-				invoke SendMessage,hREd,REM_GETMODE,0,0
+				invoke SendMessage,ha.hREd,REM_GETMODE,0,0
 				xor		eax,MODE_BLOCK
-				invoke SendMessage,hREd,REM_SETMODE,eax,0
+				invoke SendMessage,ha.hREd,REM_SETMODE,eax,0
 				mov		fTimer,1
 			.elseif eax==IDM_EDIT_BLOCKINSERT
-				invoke CreateDialogParam,hInstance,IDD_BLOCKDLG,hWin,addr BlockDlgProc,0
+				invoke CreateDialogParam,ha.hInstance,IDD_BLOCKDLG,hWin,addr BlockDlgProc,0
 			.elseif eax==IDM_EDIT_TOGGLEBM
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 					mov		ebx,eax
-					invoke SendMessage,hREd,REM_GETBOOKMARK,ebx,0
+					invoke SendMessage,ha.hREd,REM_GETBOOKMARK,ebx,0
 					.if !eax
-						invoke SendMessage,hREd,REM_SETBOOKMARK,ebx,3
+						invoke SendMessage,ha.hREd,REM_SETBOOKMARK,ebx,3
 					.elseif eax==3
-						invoke SendMessage,hREd,REM_SETBOOKMARK,ebx,0
+						invoke SendMessage,ha.hREd,REM_SETBOOKMARK,ebx,0
 					.endif
 				.elseif eax==IDC_HEX
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 					mov		eax,chrg.cpMin
 					shr		eax,5
-					invoke SendMessage,hREd,HEM_TOGGLEBOOKMARK,eax,0
+					invoke SendMessage,ha.hREd,HEM_TOGGLEBOOKMARK,eax,0
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_EDIT_NEXTBM
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-					invoke SendMessage,hREd,REM_NXTBOOKMARK,eax,3
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,eax,3
 					.if eax!=-1
-						invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+						invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 						mov		chrg.cpMin,eax
 						mov		chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-						invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
 					.endif
 				.elseif eax==IDC_HEX
-					invoke SendMessage,hREd,HEM_NEXTBOOKMARK,0,addr hebmk
+					invoke SendMessage,ha.hREd,HEM_NEXTBOOKMARK,0,addr hebmk
 					.if eax
 						invoke TabToolGetInx,hebmk.hWin
-						invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 						invoke TabToolActivate
 						mov		eax,hebmk.nLine
 						shl		eax,5
 						mov		chrg.cpMin,eax
 						mov		chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-						invoke SendMessage,hREd,HEM_VCENTER,0,0
-						invoke SetFocus,hREd
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,ha.hREd,HEM_VCENTER,0,0
+						invoke SetFocus,ha.hREd
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_PREVBM
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-					invoke SendMessage,hREd,REM_PRVBOOKMARK,eax,3
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,eax,3
 					.if eax!=-1
-						invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+						invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 						mov		chrg.cpMin,eax
 						mov		chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-						invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
 					.endif
 				.elseif eax==IDC_HEX
-					invoke SendMessage,hREd,HEM_PREVIOUSBOOKMARK,0,addr hebmk
+					invoke SendMessage,ha.hREd,HEM_PREVIOUSBOOKMARK,0,addr hebmk
 					.if eax
 						invoke TabToolGetInx,hebmk.hWin
-						invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 						invoke TabToolActivate
 						mov		eax,hebmk.nLine
 						shl		eax,5
 						mov		chrg.cpMin,eax
 						mov		chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-						invoke SendMessage,hREd,HEM_VCENTER,0,0
-						invoke SetFocus,hREd
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,ha.hREd,HEM_VCENTER,0,0
+						invoke SetFocus,ha.hREd
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_CLEARBM
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
-					invoke SendMessage,hREd,REM_CLRBOOKMARKS,0,3
+					invoke SendMessage,ha.hREd,REM_CLRBOOKMARKS,0,3
 				.elseif eax==IDC_HEX
-					invoke SendMessage,hREd,HEM_CLEARBOOKMARKS,0,0
+					invoke SendMessage,ha.hREd,HEM_CLEARBOOKMARKS,0,0
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_EDIT_CLEARERRORS
@@ -2331,82 +2331,82 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					inc		nErrID
 				.endif
 			.elseif eax==IDM_FORMAT_LOCK
-				invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
+				invoke SendMessage,ha.hResEd,DEM_ISLOCKED,0,0
 				xor		eax,TRUE
-				invoke SendMessage,hResEd,DEM_LOCKCONTROLS,0,eax
+				invoke SendMessage,ha.hResEd,DEM_LOCKCONTROLS,0,eax
 			.elseif eax==IDM_FORMAT_BACK
-				invoke SendMessage,hResEd,DEM_SENDTOBACK,0,0
+				invoke SendMessage,ha.hResEd,DEM_SENDTOBACK,0,0
 			.elseif eax==IDM_FORMAT_FRONT
-				invoke SendMessage,hResEd,DEM_BRINGTOFRONT,0,0
+				invoke SendMessage,ha.hResEd,DEM_BRINGTOFRONT,0,0
 			.elseif eax==IDM_FORMAT_GRID
-				invoke GetWindowLong,hResEd,GWL_STYLE
+				invoke GetWindowLong,ha.hResEd,GWL_STYLE
 				xor		eax,DES_GRID
-				invoke SetWindowLong,hResEd,GWL_STYLE,eax
+				invoke SetWindowLong,ha.hResEd,GWL_STYLE,eax
 			.elseif eax==IDM_FORMAT_SNAP
-				invoke GetWindowLong,hResEd,GWL_STYLE
+				invoke GetWindowLong,ha.hResEd,GWL_STYLE
 				xor		eax,DES_SNAPTOGRID
-				invoke SetWindowLong,hResEd,GWL_STYLE,eax
+				invoke SetWindowLong,ha.hResEd,GWL_STYLE,eax
 			.elseif eax==IDM_FORMAT_ALIGN_LEFT
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_LEFT
 			.elseif eax==IDM_FORMAT_ALIGN_CENTER
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_CENTER
 			.elseif eax==IDM_FORMAT_ALIGN_RIGHT
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_RIGHT
 			.elseif eax==IDM_FORMAT_ALIGN_TOP
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_TOP
 			.elseif eax==IDM_FORMAT_ALIGN_MIDDLE
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_MIDDLE
 			.elseif eax==IDM_FORMAT_ALIGN_BOTTOM
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_BOTTOM
 			.elseif eax==IDM_FORMAT_SIZE_WIDTH
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,SIZE_WIDTH
 			.elseif eax==IDM_FORMAT_SIZE_HEIGHT
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,SIZE_HEIGHT
 			.elseif eax==IDM_FORMAT_SIZE_BOTH
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,SIZE_BOTH
 			.elseif eax==IDM_FORMAT_CENTER_HOR
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER
 			.elseif eax==IDM_FORMAT_CENTER_VERT
-				invoke SendMessage,hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER
+				invoke SendMessage,ha.hResEd,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER
 			.elseif eax==IDM_FORMAT_TABINDEX
-				invoke SendMessage,hResEd,DEM_SHOWTABINDEX,0,0
+				invoke SendMessage,ha.hResEd,DEM_SHOWTABINDEX,0,0
 			.elseif eax==IDM_VIEW_TOOLBAR
 				xor		wpos.fView,1
 				test	wpos.fView,1
 				.if !ZERO?
-					invoke ShowWindow,hTbr,SW_SHOWNA
+					invoke ShowWindow,ha.hTbr,SW_SHOWNA
 				.else
-					invoke ShowWindow,hTbr,SW_HIDE
+					invoke ShowWindow,ha.hTbr,SW_HIDE
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,1
 			.elseif eax==IDM_VIEW_STATUSBAR
 				xor		wpos.fView,2
 				test	wpos.fView,2
 				.if !ZERO?
-					invoke ShowWindow,hSbr,SW_SHOWNA
+					invoke ShowWindow,ha.hSbr,SW_SHOWNA
 				.else
-					invoke ShowWindow,hSbr,SW_HIDE
+					invoke ShowWindow,ha.hSbr,SW_HIDE
 				.endif
 				invoke SendMessage,hWin,WM_SIZE,0,1
-				invoke SendMessage,hOut,WM_SIZE,0,0
-				invoke SendMessage,hOut,REM_REPAINT,0,0
+				invoke SendMessage,ha.hOut,WM_SIZE,0,0
+				invoke SendMessage,ha.hOut,REM_REPAINT,0,0
 			.elseif eax==IDM_VIEW_OUTPUT
 				xor		wpos.fView,4
 				invoke SendMessage,hWin,WM_SIZE,0,0
 				test	wpos.fView,4
 				.if !ZERO?
-					invoke ShowWindow,hTabOut,SW_SHOWNA
+					invoke ShowWindow,ha.hTabOut,SW_SHOWNA
 					.if nOutSel==1
-						invoke ShowWindow,hImmOut,SW_SHOWNA
-						invoke ShowWindow,hOut,SW_HIDE
+						invoke ShowWindow,ha.hImmOut,SW_SHOWNA
+						invoke ShowWindow,ha.hOut,SW_HIDE
 					.else
-						invoke ShowWindow,hOut,SW_SHOWNA
-						invoke ShowWindow,hImmOut,SW_HIDE
+						invoke ShowWindow,ha.hOut,SW_SHOWNA
+						invoke ShowWindow,ha.hImmOut,SW_HIDE
 					.endif
 				.else
-					invoke ShowWindow,hOut,SW_HIDE
-					invoke ShowWindow,hImmOut,SW_HIDE
-					invoke ShowWindow,hTabOut,SW_HIDE
+					invoke ShowWindow,ha.hOut,SW_HIDE
+					invoke ShowWindow,ha.hImmOut,SW_HIDE
+					invoke ShowWindow,ha.hTabOut,SW_HIDE
 				.endif
 				invoke SetFocus,hWin
 				mov		fTimer,1
@@ -2415,55 +2415,55 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_SIZE,0,1
 				test	wpos.fView,8
 				.if !ZERO?
-					invoke ShowWindow,hBrowse,SW_SHOWNA
-					invoke ShowWindow,hProperty,SW_SHOWNA
+					invoke ShowWindow,ha.hBrowse,SW_SHOWNA
+					invoke ShowWindow,ha.hProperty,SW_SHOWNA
 					.if fDebugging
-						invoke ShowWindow,hTabDbg,SW_SHOWNA
+						invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
 						.if nDbgSel
-							invoke ShowWindow,hDbgWatch,SW_SHOWNA
+							invoke ShowWindow,ha.hDbgWatch,SW_SHOWNA
 						.else
-							invoke ShowWindow,hDbgReg,SW_SHOWNA
+							invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
 						.endif
 					.endif
 				.else
-					invoke ShowWindow,hBrowse,SW_HIDE
-					invoke ShowWindow,hProperty,SW_HIDE
-					invoke ShowWindow,hDbgReg,SW_HIDE
-					invoke ShowWindow,hDbgWatch,SW_HIDE
-					invoke ShowWindow,hTabDbg,SW_HIDE
+					invoke ShowWindow,ha.hBrowse,SW_HIDE
+					invoke ShowWindow,ha.hProperty,SW_HIDE
+					invoke ShowWindow,ha.hDbgReg,SW_HIDE
+					invoke ShowWindow,ha.hDbgWatch,SW_HIDE
+					invoke ShowWindow,ha.hTabDbg,SW_HIDE
 				.endif
 			.elseif eax==IDM_VIEW_DIALOG
-				invoke SendMessage,hResEd,DEM_SHOWDIALOG,0,0
+				invoke SendMessage,ha.hResEd,DEM_SHOWDIALOG,0,0
 			.elseif eax==IDM_RESOURCE_DIALOG
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_DIALOG,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_DIALOG,TRUE
 			.elseif eax==IDM_RESOURCE_MENU
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_MENU,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_MENU,TRUE
 			.elseif eax==IDM_RESOURCE_ACCEL
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_ACCEL,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_ACCEL,TRUE
 			.elseif eax==IDM_RESOURCE_VERINF
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_VERSION,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_VERSION,TRUE
 			.elseif eax==IDM_RESOURCE_MANIFEST
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
 			.elseif eax==IDM_RESOURCE_RCDATA
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RCDATA,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_RCDATA,TRUE
 			.elseif eax==IDM_RESOURCE_TOOLBAR
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_TOOLBAR,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_TOOLBAR,TRUE
 			.elseif eax==IDM_RESOURCE_LANGUAGE
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_LANGUAGE,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_LANGUAGE,TRUE
 			.elseif eax==IDM_RESOURCE_INCLUDE
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_INCLUDE,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_INCLUDE,TRUE
 			.elseif eax==IDM_RESOURCE_RESOURCE
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_RESOURCE,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_RESOURCE,TRUE
 			.elseif eax==IDM_RESOURCE_STRING
-				invoke SendMessage,hResEd,PRO_ADDITEM,TPE_STRING,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_STRING,TRUE
 			.elseif eax==IDM_RESOURCE_NAME
-				invoke SendMessage,hResEd,PRO_SHOWNAMES,0,hOut
+				invoke SendMessage,ha.hResEd,PRO_SHOWNAMES,0,ha.hOut
 			.elseif eax==IDM_RESOURCE_EXPORT
-				invoke SendMessage,hResEd,PRO_EXPORTNAMES,0,hOut
+				invoke SendMessage,ha.hResEd,PRO_EXPORTNAMES,0,ha.hOut
 			.elseif eax==IDM_RESOURCE_REMOVE
-				invoke SendMessage,hResEd,PRO_DELITEM,0,0
+				invoke SendMessage,ha.hResEd,PRO_DELITEM,0,0
 			.elseif eax==IDM_RESOURCE_UNDO
-				invoke SendMessage,hResEd,PRO_UNDODELETED,0,0
+				invoke SendMessage,ha.hResEd,PRO_UNDODELETED,0,0
 			.elseif eax==IDM_MAKE_COMPILE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
@@ -2503,19 +2503,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				jne		Ex
 				invoke OutputMake,IDM_MAKE_RUN,offset MainFile,4
 			.elseif eax==IDM_DEBUG_TOGGLE
-				invoke GetWindowLong,hREd,GWL_ID
+				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
-					invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-					invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 					mov		ebx,eax
 					inc		eax
 					invoke DebugCommand,FUNC_ISCODELINE,eax,addr FileName
 					mov		edi,eax
-					invoke SendMessage,hREd,REM_GETLINESTATE,ebx,0
+					invoke SendMessage,ha.hREd,REM_GETLINESTATE,ebx,0
 					and		eax,STATE_BREAKPOINT
 					xor		eax,STATE_BREAKPOINT
 					.if !eax || edi
-						invoke SendMessage,hREd,REM_SETBREAKPOINT,ebx,eax
+						invoke SendMessage,ha.hREd,REM_SETBREAKPOINT,ebx,eax
 						invoke DebugCommand,FUNC_BPCLEARALL,0,0
 						invoke UpdateAll,SET_BREAKPOINTS
 						invoke DebugCommand,FUNC_BPUPDATE,0,0
@@ -2555,17 +2555,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
 						jmp		Ex
 					.endif
-					mov		eax,hWnd
+					mov		eax,ha.hWnd
 					mov		dbginf.hWnd,eax
-					mov		eax,hOut
+					mov		eax,ha.hOut
 					mov		dbginf.hOut,eax
-					mov		eax,hImmOut
+					mov		eax,ha.hImmOut
 					mov		dbginf.hImmOut,eax
-					mov		eax,hDbgReg
+					mov		eax,ha.hDbgReg
 					mov		dbginf.hDbgReg,eax
-					mov		eax,hDbgWatch
+					mov		eax,ha.hDbgWatch
 					mov		dbginf.hDbgWatch,eax
-					mov		eax,hProperty
+					mov		eax,ha.hProperty
 					mov		dbginf.hPrp,eax
 					mov		dbginf.lpNoDebug,offset NoDebug
 					mov		eax,fMainThread
@@ -2585,46 +2585,46 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_OVER
 				invoke DebugCommand,FUNC_STEPOVER,0,0
 			.elseif eax==IDM_DEBUG_CARET
-				invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
 				lea		ebx,[eax+1]
 				invoke DebugCommand,FUNC_ISCODELINE,ebx,offset FileName
 				.if eax
 					invoke DebugCommand,FUNC_RUNTOCARET,ebx,offset FileName
 				.endif
 			.elseif eax==IDM_DEBUG_NODEBUG
-				invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGDONOTDEBUG,hWin,offset NoDebugProc,0
 			.elseif eax==IDM_MAKE_MAINFILE
 				invoke strcpy,addr MainFile,addr FileName
 				mov		fTimer,1
 			.elseif eax==IDM_OPTION_CODE
-				invoke DialogBoxParam,hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_DIALOG
-				invoke DialogBoxParam,hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
 			.elseif eax==IDM_OPTION_PATH
-				invoke DialogBoxParam,hInstance,IDD_PATHOPTION,hWin,offset PathOptionDialogProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_PATHOPTION,hWin,offset PathOptionDialogProc,0
 			.elseif eax==IDM_OPTION_BUILD
-				invoke DialogBoxParam,hInstance,IDD_BUILDOPTION,hWin,offset BuildOptionDialogProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_BUILDOPTION,hWin,offset BuildOptionDialogProc,0
 			.elseif eax==IDM_OPTION_TOOLS
-				invoke DialogBoxParam,hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,1
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,1
 				invoke SetToolMenu
 				invoke ResetMenu
 			.elseif eax==IDM_OPTION_HELP
-				invoke DialogBoxParam,hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,2
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,2
 				invoke SetHelpMenu
 				invoke ResetMenu
 			.elseif eax==IDM_HELP_ABOUT
-				invoke DialogBoxParam,hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 			.elseif ax==-3
 				;Expand button clicked
-				invoke SendMessage,hREd,REM_EXPANDALL,0,0
-				invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-				invoke SendMessage,hREd,REM_REPAINT,0,0
+				invoke SendMessage,ha.hREd,REM_EXPANDALL,0,0
+				invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
+				invoke SendMessage,ha.hREd,REM_REPAINT,0,0
 			.elseif ax==-4
 				;Collapse button clicked
-				invoke SendMessage,hREd,REM_COLLAPSEALL,0,0
-				invoke SendMessage,hREd,EM_SCROLLCARET,0,0
-				invoke SendMessage,hREd,REM_REPAINT,0,0
+				invoke SendMessage,ha.hREd,REM_COLLAPSEALL,0,0
+				invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
+				invoke SendMessage,ha.hREd,REM_REPAINT,0,0
 			.elseif eax==IDM_HELPF1
 				;F1-Help key pressed
 				mov		mnu.szcap,0
@@ -2636,7 +2636,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
 				movzx	eax,mnu.szcmnd
 				.if eax
-					invoke SendMessage,hREd,REM_GETWORD,sizeof buffer,addr buffer
+					invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 					invoke WinHelp,hWin,addr mnu.szcmnd,HELP_KEY,addr buffer
 				.endif
 			.elseif eax>=20000 && eax<=20020
@@ -2656,7 +2656,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax>=22000 && eax<22032
 				;User resource type
 				lea		eax,[eax-22000+32]
-				invoke SendMessage,hResEd,PRO_ADDITEM,eax,TRUE
+				invoke SendMessage,ha.hResEd,PRO_ADDITEM,eax,TRUE
 			.elseif eax>=30000 && eax<=30020
 				;Help
 				mov		mnu.szcap,0
@@ -2672,29 +2672,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
 				.endif
 			.elseif eax==IDM_OUTPUT_CLEAR
-				invoke SendMessage,hOut,WM_SETTEXT,0,addr szNULL
+				invoke SendMessage,ha.hOut,WM_SETTEXT,0,addr szNULL
 			.elseif eax==IDM_IMMEDIATE_CLEAR
-				invoke SendMessage,hImmOut,WM_SETTEXT,0,addr szNULL
+				invoke SendMessage,ha.hImmOut,WM_SETTEXT,0,addr szNULL
 			.elseif eax==IDM_BROWSER_OPEN
-				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
+				invoke SendMessage,ha.hBrowse,FBM_GETSELECTED,0,addr buffer
 				invoke GetFileAttributes,addr buffer
 				test	eax,FILE_ATTRIBUTE_DIRECTORY
 				.if ZERO?
 					invoke OpenEditFile,addr buffer,0
 				.else
-					invoke SendMessage,hBrowse,FBM_SETPATH,TRUE,addr buffer
+					invoke SendMessage,ha.hBrowse,FBM_SETPATH,TRUE,addr buffer
 				.endif
 			.elseif eax==IDM_BROWSER_COPY
-				invoke SendMessage,hBrowse,FBM_GETSELECTED,0,addr buffer
-				invoke SendMessage,hREd,EM_REPLACESEL,TRUE,addr buffer
-				invoke SetFocus,hREd
+				invoke SendMessage,ha.hBrowse,FBM_GETSELECTED,0,addr buffer
+				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
+				invoke SetFocus,ha.hREd
 			.elseif eax==IDM_PROPERTY_GOTODECLARE
-				invoke SendMessage,hProperty,WM_COMMAND,(LBN_DBLCLK shl 16) or 1003,0
+				invoke SendMessage,ha.hProperty,WM_COMMAND,(LBN_DBLCLK shl 16) or 1003,0
 			.elseif eax==IDM_PROPERTY_COPYTOCODE
-				invoke SendMessage,hProperty,PRM_GETSELTEXT,0,offset tmpbuff
+				invoke SendMessage,ha.hProperty,PRM_GETSELTEXT,0,offset tmpbuff
 				.if eax
-					invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset tmpbuff
-					invoke SetFocus,hREd
+					invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
+					invoke SetFocus,ha.hREd
 				.endif
 			.endif
 		.endif
@@ -2708,35 +2708,35 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,[edi].RASELCHANGE.cpLine
 			invoke ShowPos,[edi].RASELCHANGE.line,eax
 			.if [edi].RASELCHANGE.seltyp==SEL_OBJECT
-				invoke SendMessage,hREd,REM_GETBOOKMARK,[edi].RASELCHANGE.line,0
+				invoke SendMessage,ha.hREd,REM_GETBOOKMARK,[edi].RASELCHANGE.line,0
 				.if eax==1
 					;Collapse
-					invoke SendMessage,hREd,REM_COLLAPSE,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_COLLAPSE,[edi].RASELCHANGE.line,0
 				.elseif eax==2
 					;Expand
-					invoke SendMessage,hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
 				.elseif eax==8
 					;Expand hidden lines
-					invoke SendMessage,hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
 				.else
 					;Clear bookmark
-					invoke SendMessage,hREd,REM_SETBOOKMARK,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_SETBOOKMARK,[edi].RASELCHANGE.line,0
 				.endif
 			.else
-				invoke SendMessage,hREd,REM_BRACKETMATCH,0,0
+				invoke SendMessage,ha.hREd,REM_BRACKETMATCH,0,0
 				.if [edi].RASELCHANGE.fchanged
 					.if ![edi].RASELCHANGE.nWordGroup
-						invoke SendMessage,hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+						invoke SendMessage,ha.hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
 					.endif
-					invoke SendMessage,hREd,WM_GETTEXTLENGTH,0,0
+					invoke SendMessage,ha.hREd,WM_GETTEXTLENGTH,0,0
 					.if eax!=nLastSize
 						push	eax
 						sub		eax,nLastSize
-						invoke UpdateGoto,hREd,[edi].RASELCHANGE.chrg.cpMin,eax
+						invoke UpdateGoto,ha.hREd,[edi].RASELCHANGE.chrg.cpMin,eax
 						pop		nLastSize
 					.endif
 				  OnceMore:
-					invoke SendMessage,hREd,REM_GETBOOKMARK,nLastLine,0
+					invoke SendMessage,ha.hREd,REM_GETBOOKMARK,nLastLine,0
 					mov		ebx,eax
 					mov		esi,offset blocks
 					mov		ecx,[esi]
@@ -2746,7 +2746,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		edx,[ecx].RABLOCKDEF.flag
 						shr		edx,16
 						.if edx==[edi].RASELCHANGE.nWordGroup
-							invoke SendMessage,hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
+							invoke SendMessage,ha.hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
 						.endif
 						.break .if eax!=-1
 						add		esi,4
@@ -2755,36 +2755,36 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax==-1
 						.if ebx==1 || ebx==2
 							.if ebx==2
-								invoke SendMessage,hREd,REM_EXPAND,nLastLine,0
+								invoke SendMessage,ha.hREd,REM_EXPAND,nLastLine,0
 							.endif
-							invoke SendMessage,hREd,REM_SETBOOKMARK,nLastLine,0
-							invoke SendMessage,hREd,REM_SETDIVIDERLINE,nLastLine,FALSE
-							invoke SendMessage,hREd,REM_SETSEGMENTBLOCK,nLastLine,FALSE
+							invoke SendMessage,ha.hREd,REM_SETBOOKMARK,nLastLine,0
+							invoke SendMessage,ha.hREd,REM_SETDIVIDERLINE,nLastLine,FALSE
+							invoke SendMessage,ha.hREd,REM_SETSEGMENTBLOCK,nLastLine,FALSE
 						.endif
 					.else
 						xor		eax,eax
 						mov		ecx,[esi]
 						test	[ecx].RABLOCKDEF.flag,BD_NONESTING
 						.if !ZERO?
-							invoke SendMessage,hREd,REM_ISINBLOCK,nLastLine,ecx
+							invoke SendMessage,ha.hREd,REM_ISINBLOCK,nLastLine,ecx
 						.endif
 						.if !eax
 							mov		edx,nLastLine
 							inc		edx
-							invoke SendMessage,hREd,REM_ISLINEHIDDEN,edx,0
+							invoke SendMessage,ha.hREd,REM_ISLINEHIDDEN,edx,0
 							.if eax
-								invoke SendMessage,hREd,REM_SETBOOKMARK,nLastLine,2
+								invoke SendMessage,ha.hREd,REM_SETBOOKMARK,nLastLine,2
 							.else
-								invoke SendMessage,hREd,REM_SETBOOKMARK,nLastLine,1
+								invoke SendMessage,ha.hREd,REM_SETBOOKMARK,nLastLine,1
 							.endif
 							mov		edx,[esi]
 							mov		edx,[edx].RABLOCKDEF.flag
 							and		edx,BD_DIVIDERLINE
-							invoke SendMessage,hREd,REM_SETDIVIDERLINE,nLastLine,edx
+							invoke SendMessage,ha.hREd,REM_SETDIVIDERLINE,nLastLine,edx
 							mov		edx,[esi]
 							mov		edx,[edx].RABLOCKDEF.flag
 							and		edx,BD_SEGMENTBLOCK
-							invoke SendMessage,hREd,REM_SETSEGMENTBLOCK,nLastLine,edx
+							invoke SendMessage,ha.hREd,REM_SETSEGMENTBLOCK,nLastLine,edx
 						.endif
 					.endif
 					mov		eax,[edi].RASELCHANGE.line
@@ -2795,10 +2795,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						dec		nLastLine
 						jmp		OnceMore
 					.endif
-					invoke GetWindowLong,hREd,GWL_USERDATA
+					invoke GetWindowLong,ha.hREd,GWL_USERDATA
 					mov		esi,eax
 					.if ![esi].TABMEM.fchanged
-						invoke TabToolSetChanged,hREd,TRUE
+						invoke TabToolSetChanged,ha.hREd,TRUE
 					.endif
 					.if ![edi].RASELCHANGE.nWordGroup
 						.if !ccinprogress
@@ -2811,14 +2811,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nLastLine,eax
 				.if eax!=nLastPropLine
 					mov		nLastPropLine,eax
-					invoke ShowWindow,hCCLB,SW_HIDE
-					invoke ShowWindow,hCCTT,SW_HIDE
+					invoke ShowWindow,ha.hCCLB,SW_HIDE
+					invoke ShowWindow,ha.hCCTT,SW_HIDE
 					mov		cctype,CCTYPE_NONE
 					.if ![edi].RASELCHANGE.nWordGroup
-						invoke GetWindowLong,hREd,GWL_USERDATA
+						invoke GetWindowLong,ha.hREd,GWL_USERDATA
 						.if [eax].TABMEM.fupdate
 							mov		[eax].TABMEM.fupdate,FALSE
-							invoke ParseEdit,hREd
+							invoke ParseEdit,ha.hREd
 						.endif
 					.endif
 				.elseif cctype==CCTYPE_ALL
@@ -2831,9 +2831,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==EN_SELCHANGE && ecx==IDC_HEX
 			mov		edi,edx
 			.if [edi].HESELCHANGE.fchanged
-				invoke GetWindowLong,hREd,GWL_USERDATA
+				invoke GetWindowLong,ha.hREd,GWL_USERDATA
 				.if ![eax].TABMEM.fchanged
-					invoke TabToolSetChanged,hREd,TRUE
+					invoke TabToolSetChanged,ha.hREd,TRUE
 				.endif
 			.endif
 			mov		fTimer,2
@@ -2842,69 +2842,69 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==BN_CLICKED && ecx==IDC_PROPERTY
 			mov		eax,[edx].RAPNOTIFY.nid
 			.if eax==1
-				invoke SendMessage,hProperty,PRM_SELOWNER,hREd,0
+				invoke SendMessage,ha.hProperty,PRM_SELOWNER,ha.hREd,0
 			.elseif eax==2
-				invoke SendMessage,hProperty,PRM_SELOWNER,0,0
+				invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
 			.elseif eax==5
-				invoke SendMessage,hProperty,PRM_GETSELBUTTON,0,0
+				invoke SendMessage,ha.hProperty,PRM_GETSELBUTTON,0,0
 				.if eax==1
-					invoke SendMessage,hProperty,PRM_SELOWNER,hREd,0
+					invoke SendMessage,ha.hProperty,PRM_SELOWNER,ha.hREd,0
 				.endif
-				invoke SendMessage,hProperty,PRM_REFRESHLIST,0,0
+				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 			.endif
 		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
 			push	edx
-			invoke SendMessage,hREd,EM_EXGETSEL,0,addr chrg
-			invoke PushGoto,hREd,chrg.cpMin
+			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+			invoke PushGoto,ha.hREd,chrg.cpMin
 			pop		edx
 			push	[edx].RAPNOTIFY.nline
 			invoke TabToolGetInx,[edx].RAPNOTIFY.nid
-			invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
 			pop		eax
-			invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+			invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 			mov		chrg.cpMin,eax
 			mov		chrg.cpMax,eax
-			invoke SendMessage,hREd,EM_EXSETSEL,0,addr chrg
-			invoke SendMessage,hREd,REM_VCENTER,0,0
-			invoke SetFocus,hREd
+			invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+			invoke SendMessage,ha.hREd,REM_VCENTER,0,0
+			invoke SetFocus,ha.hREd
 		.elseif eax==TTN_NEEDTEXT
 			;Toolbar tooltip
-			invoke LoadString,hInstance,ecx,addr buffer,sizeof buffer
+			invoke LoadString,ha.hInstance,ecx,addr buffer,sizeof buffer
 			lea		eax,buffer
 			mov		edx,lParam
 			mov		(TOOLTIPTEXT ptr [edx]).lpszText,eax
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TAB
 			invoke TabToolActivate
-			invoke SetFocus,hREd
+			invoke SetFocus,ha.hREd
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABOUT
-			invoke SendMessage,hTabOut,TCM_GETCURSEL,0,0
+			invoke SendMessage,ha.hTabOut,TCM_GETCURSEL,0,0
 			mov		nOutSel,eax
 			.if wpos.fView & 4
 				.if nOutSel
-					invoke ShowWindow,hImmOut,SW_SHOWNA
-					invoke ShowWindow,hOut,SW_HIDE
-					invoke SetFocus,hImmOut
+					invoke ShowWindow,ha.hImmOut,SW_SHOWNA
+					invoke ShowWindow,ha.hOut,SW_HIDE
+					invoke SetFocus,ha.hImmOut
 				.else
-					invoke ShowWindow,hOut,SW_SHOWNA
-					invoke ShowWindow,hImmOut,SW_HIDE
-					invoke SetFocus,hOut
+					invoke ShowWindow,ha.hOut,SW_SHOWNA
+					invoke ShowWindow,ha.hImmOut,SW_HIDE
+					invoke SetFocus,ha.hOut
 				.endif
 			.endif
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABWATCH
-			invoke SendMessage,hTabDbg,TCM_GETCURSEL,0,0
+			invoke SendMessage,ha.hTabDbg,TCM_GETCURSEL,0,0
 			mov		nDbgSel,eax
 			.if nDbgSel
-				invoke ShowWindow,hDbgWatch,SW_SHOWNA
-				invoke ShowWindow,hDbgReg,SW_HIDE
+				invoke ShowWindow,ha.hDbgWatch,SW_SHOWNA
+				invoke ShowWindow,ha.hDbgReg,SW_HIDE
 			.else
-				invoke ShowWindow,hDbgReg,SW_SHOWNA
-				invoke ShowWindow,hDbgWatch,SW_HIDE
+				invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
+				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
-		.if hREd
-			invoke SetFocus,hREd
+		.if ha.hREd
+			invoke SetFocus,ha.hREd
 		.endif
 	.elseif eax==WM_CLOSE
 		mov		nTabInx,-1
@@ -2920,11 +2920,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke strlen,addr tmpbuff
 				inc		eax
 				invoke RegSetValueEx,hReg,addr szSession,0,REG_SZ,addr tmpbuff,eax
-				invoke SendMessage,hBrowse,FBM_GETPATH,0,addr szInitFolder
+				invoke SendMessage,ha.hBrowse,FBM_GETPATH,0,addr szInitFolder
 				invoke strcat,addr szInitFolder,addr szBackSlash
 				invoke RegSetValueEx,hReg,addr szFolder,0,REG_SZ,addr szInitFolder,sizeof szInitFolder
 				invoke RegSetValueEx,hReg,addr szMainFile,0,REG_SZ,addr MainFile,sizeof MainFile
-				invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+				invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 				mov		dword ptr tmpbuff,eax
 				invoke RegSetValueEx,hReg,addr szBuild,0,REG_DWORD,addr tmpbuff,4
 				invoke CloseNotify
@@ -2949,10 +2949,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		wpos.fMax,TRUE
 				.endif
-				invoke DestroyWindow,hRes
+				invoke DestroyWindow,ha.hRes
 				invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
-				invoke DestroyWindow,hCCLB
-				invoke DestroyWindow,hCCTT
+				invoke DestroyWindow,ha.hCCLB
+				invoke DestroyWindow,ha.hCCTT
 				invoke DestroyWindow,hWin
 			.endif
 		.endif
@@ -2969,20 +2969,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke KillTimer,hWin,200
 		invoke UpdateAll,WM_DESTROY
-		invoke DeleteObject,hFont
-		invoke DeleteObject,hIFont
-		invoke DeleteObject,hLnrFont
-		invoke DestroyCursor,hVSplitCur
-		invoke DestroyCursor,hHSplitCur
+		invoke DeleteObject,ha.hFont
+		invoke DeleteObject,ha.hIFont
+		invoke DeleteObject,ha.hLnrFont
+		invoke DestroyCursor,ha.hVSplitCur
+		invoke DestroyCursor,ha.hHSplitCur
 		invoke DestroyIcon,hIcon
-		invoke ImageList_Destroy,hMnuIml
-		invoke ImageList_Destroy,hImlTbr
-		invoke ImageList_Destroy,hImlTbrGray
-		invoke DeleteObject,hBrBack
-		.if hMnuFont
-			invoke DeleteObject,hMenuBrushA
-			invoke DeleteObject,hMenuBrushB
-			invoke DeleteObject,hMnuFont
+		invoke ImageList_Destroy,ha.hMnuIml
+		invoke ImageList_Destroy,ha.hImlTbr
+		invoke ImageList_Destroy,ha.hImlTbrGray
+		invoke DeleteObject,ha.hBrBack
+		.if ha.hMnuFont
+			invoke DeleteObject,ha.hMenuBrushA
+			invoke DeleteObject,ha.hMenuBrushB
+			invoke DeleteObject,ha.hMnuFont
 		.endif
 		invoke ResetEnvironment
 		invoke PostQuitMessage,NULL
@@ -3001,41 +3001,41 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		pt.y,eax
 		.endif
 		mov		eax,wParam
-		.if eax==hREd
-			.if eax==hRes
-				invoke GetSubMenu,hContextMnu,4
+		.if eax==ha.hREd
+			.if eax==ha.hRes
+				invoke GetSubMenu,ha.hContextMnu,4
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			.else
-				invoke GetSubMenu,hMnu,1
+				invoke GetSubMenu,ha.hMnu,1
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			.endif
-		.elseif eax==hTab
-			invoke GetSubMenu,hContextMnu,0
+		.elseif eax==ha.hTab
+			invoke GetSubMenu,ha.hContextMnu,0
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==hOut
-			invoke GetSubMenu,hContextMnu,1
+		.elseif eax==ha.hOut
+			invoke GetSubMenu,ha.hContextMnu,1
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==hImmOut
-			invoke GetSubMenu,hContextMnu,2
+		.elseif eax==ha.hImmOut
+			invoke GetSubMenu,ha.hContextMnu,2
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==hBrowse
-			invoke GetSubMenu,hContextMnu,3
+		.elseif eax==ha.hBrowse
+			invoke GetSubMenu,ha.hContextMnu,3
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==hProperty
-			invoke GetSubMenu,hContextMnu,5
+		.elseif eax==ha.hProperty
+			invoke GetSubMenu,ha.hContextMnu,5
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		movzx	eax,word ptr lParam
 		.if eax==2
 			;Format
-			invoke SendMessage,hResEd,DEM_ISLOCKED,0,0
+			invoke SendMessage,ha.hResEd,DEM_ISLOCKED,0,0
 			mov		edx,MF_BYCOMMAND
 			.if eax
 				mov		edx,MF_BYCOMMAND or MF_CHECKED
 			.endif
 			invoke CheckMenuItem,wParam,IDM_FORMAT_LOCK,edx
-			invoke GetWindowLong,hResEd,GWL_STYLE
+			invoke GetWindowLong,ha.hResEd,GWL_STYLE
 			push	eax
 			test	eax,DES_GRID
 			mov		edx,MF_BYCOMMAND
@@ -3094,7 +3094,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CTLCOLORLISTBOX || eax==WM_CTLCOLOREDIT
 		invoke SetBkColor,wParam,col.toolback
 		invoke SetTextColor,wParam,col.tooltext
-		mov		eax,hBrBack
+		mov		eax,ha.hBrBack
 		jmp		ExRet
 	.elseif eax==WM_MEASUREITEM
 		mov		ebx,lParam
@@ -3111,7 +3111,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		mDC,eax
 					pop		eax
 					invoke ReleaseDC,NULL,eax
-					invoke SelectObject,mDC,hMnuFont
+					invoke SelectObject,mDC,ha.hMnuFont
 					push	eax
 					mov		rect.left,0
 					mov		rect.top,0
@@ -3157,11 +3157,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateCompatibleBitmap,[ebx].DRAWITEMSTRUCT.hdc,rect.right,rect.bottom
 				invoke SelectObject,mDC,eax
 				push	eax
-				invoke SelectObject,mDC,hMnuFont
+				invoke SelectObject,mDC,ha.hMnuFont
 				push	eax
 				invoke GetStockObject,WHITE_BRUSH
 				invoke FillRect,mDC,addr rect,eax
-				invoke FillRect,mDC,addr rect,hMenuBrushB
+				invoke FillRect,mDC,addr rect,ha.hMenuBrushB
 				.if ![esi].MENUDATA.tpe
 					invoke SetBkMode,mDC,TRANSPARENT
 					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
@@ -3181,7 +3181,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		edx,rect.bottom
 						sub		edx,16
 						shr		edx,1
-						invoke ImageList_Draw,hImlTbr,27,mDC,2,edx,ILD_TRANSPARENT
+						invoke ImageList_Draw,ha.hImlTbr,27,mDC,2,edx,ILD_TRANSPARENT
 					.else
 						; Image
 						mov		eax,[esi].MENUDATA.img
@@ -3192,9 +3192,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							dec		eax
 							test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
 							.if ZERO?
-								invoke ImageList_Draw,hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
+								invoke ImageList_Draw,ha.hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
 							.else
-								invoke ImageList_Draw,hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
+								invoke ImageList_Draw,ha.hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
 							.endif
 						.endif
 					.endif

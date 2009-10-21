@@ -16,7 +16,7 @@ BlockDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke SendDlgItemMessage,hWin,IDC_EDTBLOCKINSERT,WM_GETTEXT,sizeof buffer,addr buffer
-				invoke SendMessage,hREd,REM_BLOCKINSERT,0,addr buffer
+				invoke SendMessage,ha.hREd,REM_BLOCKINSERT,0,addr buffer
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

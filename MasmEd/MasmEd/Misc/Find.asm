@@ -8,21 +8,21 @@ FindInit proc uses ebx esi edi,hWin:HWND
 	invoke SendMessage,hWin,EM_EXGETSEL,0,offset findchrg
 	mov		findchrg.cpMax,-2
 	.if fallfiles
-		invoke SendMessage,hTab,TCM_GETCURSEL,0,0
+		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		mov		esi,eax
 		mov		nInx,eax
 		mov		tci.imask,TCIF_PARAM
 		mov		edi,offset findtabs
 		mov		eax,TRUE
 		.while TRUE
-			invoke SendMessage,hTab,TCM_GETITEM,esi,addr tci
+			invoke SendMessage,ha.hTab,TCM_GETITEM,esi,addr tci
 			.break .if !eax
 			call	AddCodeFile
 			inc		esi
 		.endw
 		xor		esi,esi
 		.while esi<nInx
-			invoke SendMessage,hTab,TCM_GETITEM,esi,addr tci
+			invoke SendMessage,ha.hTab,TCM_GETITEM,esi,addr tci
 			.break .if !eax
 			call	AddCodeFile
 			inc		esi
@@ -120,12 +120,12 @@ FindNext:
 			.endif
 		.endif
 		;Region searched
-		invoke MessageBox,hFind,addr szRegionSearched,addr szAppName,MB_OK or MB_ICONINFORMATION
+		invoke MessageBox,ha.hFind,addr szRegionSearched,addr szAppName,MB_OK or MB_ICONINFORMATION
 	.else
 		mov		eax,hWin
-		.if eax!=hREd
+		.if eax!=ha.hREd
 			invoke TabToolGetInx,hWin
-			invoke SendMessage,hTab,TCM_SETCURSEL,eax,0
+			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
 		.endif
 		;Mark the foud text
@@ -144,7 +144,7 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
-		mov		hFind,eax
+		mov		ha.hFind,eax
 		.if lParam
 			mov		eax,BN_CLICKED
 			shl		eax,16
@@ -189,7 +189,7 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				;Find the text
-				invoke Find,hREd,fr
+				invoke Find,ha.hREd,fr
 			.elseif eax==IDCANCEL
 				;Close the find dialog
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
@@ -209,13 +209,13 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,eax,SW_SHOWNA
 				.else
 					.if fres!=-1
-						invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
-						invoke SendMessage,hREd,EM_REPLACESEL,TRUE,offset replacebuff
+						invoke SendMessage,ha.hREd,EM_EXGETSEL,0,offset ft.chrg
+						invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset replacebuff
 						invoke strlen,offset replacebuff
 						push	eax
 						add		eax,ft.chrgText.cpMin
 						mov		ft.chrgText.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,offset ft.chrgText
 						invoke strlen,offset findbuff
 						pop		edx
 						sub		edx,eax
@@ -225,11 +225,11 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.endif
 						.endif
 					.endif
-					invoke Find,hREd,fr
+					invoke Find,ha.hREd,fr
 				.endif
 			.elseif eax==IDC_BTN_REPLACEALL
 				.if fres==-1
-					invoke Find,hREd,fr
+					invoke Find,ha.hREd,fr
 				.endif
 				.while fres!=-1
 					mov		eax,BN_CLICKED
@@ -241,17 +241,17 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Set find direction to down
 				or		fr,FR_DOWN
 				mov		ndir,0
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_RBN_DOWN
 				;Set find direction to down
 				or		fr,FR_DOWN
 				mov		ndir,1
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_RBN_UP
 				;Set find direction to up
 				and		fr,-1 xor FR_DOWN
 				mov		ndir,2
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_CHK_MATCHCASE
 				;Set match case mode
 				invoke IsDlgButtonChecked,hWin,IDC_CHK_MATCHCASE
@@ -260,7 +260,7 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					and		fr,-1 xor FR_MATCHCASE
 				.endif
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_CHK_WHOLEWORD
 				;Set whole word mode
 				invoke IsDlgButtonChecked,hWin,IDC_CHK_WHOLEWORD
@@ -269,34 +269,34 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					and		fr,-1 xor FR_WHOLEWORD
 				.endif
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_CHK_ALLFILES
 				;All Open Files
 				invoke IsDlgButtonChecked,hWin,IDC_CHK_ALLFILES
 				mov		fallfiles,eax
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.endif
 		.elseif edx==EN_CHANGE
 			;Update text buffers
 			.if eax==IDC_FINDTEXT
 				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof findbuff,offset findbuff
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.elseif eax==IDC_REPLACETEXT
 				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof replacebuff,offset replacebuff
-				invoke FindInit,hREd
+				invoke FindInit,ha.hREd
 			.endif
 		.endif
 	.elseif eax==WM_ACTIVATE
-		invoke FindInit,hREd
+		invoke FindInit,ha.hREd
 	.elseif eax==WM_CLOSE
 		invoke GetWindowRect,hWin,addr rect
 		mov		eax,rect.left
 		mov		findpt.x,eax
 		mov		eax,rect.top
 		mov		findpt.y,eax
-		mov		hFind,0
+		mov		ha.hFind,0
 		invoke DestroyWindow,hWin
-		invoke SetFocus,hREd
+		invoke SetFocus,ha.hREd
 	.else
 		mov eax,FALSE
 		ret
@@ -309,7 +309,7 @@ FindDlgProc endp
 HexFind proc frType:DWORD
 
 	;Get current selection
-	invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
+	invoke SendMessage,ha.hREd,EM_EXGETSEL,0,offset ft.chrg
 	;Setup find
 	mov		eax,frType
 	and		eax,FR_DOWN
@@ -328,12 +328,12 @@ HexFind proc frType:DWORD
 	.endif
 	mov		ft.lpstrText,offset findbuff
 	;Do the find
-	invoke SendMessage,hREd,EM_FINDTEXTEX,frType,offset ft
+	invoke SendMessage,ha.hREd,EM_FINDTEXTEX,frType,offset ft
 	mov		fres,eax
 	.if eax!=-1
 		;Mark the foud text
-		invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrgText
-		invoke SendMessage,hREd,HEM_VCENTER,0,0
+		invoke SendMessage,ha.hREd,EM_EXSETSEL,0,offset ft.chrgText
+		invoke SendMessage,ha.hREd,HEM_VCENTER,0,0
 	.else
 		;Region searched
 	.endif
@@ -347,7 +347,7 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
-		mov		hFind,eax
+		mov		ha.hFind,eax
 		.if lParam
 			mov		eax,BN_CLICKED
 			shl		eax,16
@@ -405,11 +405,11 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,eax,SW_SHOWNA
 				.else
 					.if fres!=-1
-						invoke SendMessage,hREd,EM_EXGETSEL,0,offset ft.chrg
+						invoke SendMessage,ha.hREd,EM_EXGETSEL,0,offset ft.chrg
 						mov		eax,fr
 						and		eax,FR_HEX
 						or		eax,TRUE
-						invoke SendMessage,hREd,EM_REPLACESEL,eax,offset replacebuff
+						invoke SendMessage,ha.hREd,EM_REPLACESEL,eax,offset replacebuff
 						invoke strlen,offset replacebuff
 						test	fr,FR_HEX
 						.if ZERO?
@@ -419,7 +419,7 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						add		eax,ft.chrg.cpMin
 						mov		ft.chrg.cpMin,eax
 						mov		ft.chrg.cpMax,eax
-						invoke SendMessage,hREd,EM_EXSETSEL,0,offset ft.chrg
+						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,offset ft.chrg
 					.endif
 					invoke HexFind,fr
 				.endif
@@ -463,9 +463,9 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_ACTIVATE
 		mov		fres,-1
 	.elseif eax==WM_CLOSE
-		mov		hFind,0
-		.if hREd
-			invoke SetFocus,hREd
+		mov		ha.hFind,0
+		.if ha.hREd
+			invoke SetFocus,ha.hREd
 		.endif
 		invoke DestroyWindow,hWin
 	.else

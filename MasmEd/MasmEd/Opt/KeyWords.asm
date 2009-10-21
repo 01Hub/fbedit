@@ -461,7 +461,7 @@ UpdateToolColors proc
 	LOCAL	cccol:CC_COLOR
 	LOCAL	ttcol:TT_COLOR
 
-	invoke SendMessage,hOut,REM_GETCOLOR,0,addr racol
+	invoke SendMessage,ha.hOut,REM_GETCOLOR,0,addr racol
 	mov		eax,col.toolback
 	mov		racol.bckcol,eax
 	mov		racol.cmntback,eax
@@ -470,30 +470,30 @@ UpdateToolColors proc
 	mov		racol.oprback,eax
 	mov		eax,col.tooltext
 	mov		racol.txtcol,eax
-	invoke SendMessage,hOut,REM_SETCOLOR,0,addr racol
-	invoke SendMessage,hImmOut,REM_SETCOLOR,0,addr racol
-	invoke SendMessage,hDbgReg,REM_SETCOLOR,0,addr racol
-	invoke SendMessage,hDbgWatch,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hOut,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hImmOut,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hDbgReg,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hDbgWatch,REM_SETCOLOR,0,addr racol
 	;Set tool colors
-	invoke SendMessage,hBrowse,FBM_SETBACKCOLOR,0,col.toolback
-	invoke SendMessage,hBrowse,FBM_SETTEXTCOLOR,0,col.tooltext
-	invoke SendMessage,hProperty,PRM_SETBACKCOLOR,0,col.toolback
-	invoke SendMessage,hProperty,PRM_SETTEXTCOLOR,0,col.tooltext
+	invoke SendMessage,ha.hBrowse,FBM_SETBACKCOLOR,0,col.toolback
+	invoke SendMessage,ha.hBrowse,FBM_SETTEXTCOLOR,0,col.tooltext
+	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,col.toolback
+	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,col.tooltext
 	mov		eax,col.dialogback
 	mov		rescol.back,eax
 	mov		eax,col.dialogtext
 	mov		rescol.text,eax
-	invoke SendMessage,hResEd,DEM_SETCOLOR,0,addr rescol
-	.if hBrBack
-		invoke DeleteObject,hBrBack
+	invoke SendMessage,ha.hResEd,DEM_SETCOLOR,0,addr rescol
+	.if ha.hBrBack
+		invoke DeleteObject,ha.hBrBack
 	.endif
 	invoke CreateSolidBrush,col.toolback
-	mov		hBrBack,eax
+	mov		ha.hBrBack,eax
 	mov		eax,col.ccback
 	mov		cccol.back,eax
 	mov		eax,col.cctext
 	mov		cccol.text,eax
-	invoke SendMessage,hCCLB,CCM_SETCOLOR,0,addr cccol
+	invoke SendMessage,ha.hCCLB,CCM_SETCOLOR,0,addr cccol
 	mov		eax,col.ttback
 	mov		ttcol.back,eax
 	mov		eax,col.tttext
@@ -502,7 +502,7 @@ UpdateToolColors proc
 	mov		ttcol.api,eax
 	mov		eax,col.ttsel
 	mov		ttcol.hilite,eax
-	invoke SendMessage,hCCTT,TTM_SETCOLOR,0,addr ttcol
+	invoke SendMessage,ha.hCCTT,TTM_SETCOLOR,0,addr ttcol
 	ret
 
 UpdateToolColors endp
@@ -584,8 +584,8 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	EnButton
 		pop		edi
 		pop		esi
-		invoke SendDlgItemMessage,hWin,IDC_STCCODEFONT,WM_SETFONT,hFont,FALSE
-		invoke SendDlgItemMessage,hWin,IDC_STCLNRFONT,WM_SETFONT,hLnrFont,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_STCCODEFONT,WM_SETFONT,ha.hFont,FALSE
+		invoke SendDlgItemMessage,hWin,IDC_STCLNRFONT,WM_SETFONT,ha.hLnrFont,FALSE
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		mov		edx,eax
@@ -726,7 +726,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_BTNCODEFONT
 				mov		edx,hCFnt
 				.if !edx
-					mov		edx,hFont
+					mov		edx,ha.hFont
 				.endif
 				invoke GetObject,edx,sizeof lf,addr lf
 				invoke RtlZeroMemory,addr cf,sizeof cf
@@ -748,7 +748,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_BTNLNRFONT
 				mov		edx,hLFnt
 				.if !edx
-					mov		edx,hLnrFont
+					mov		edx,ha.hLnrFont
 				.endif
 				invoke GetObject,edx,sizeof lf,addr lf
 				invoke RtlZeroMemory,addr cf,sizeof cf
@@ -824,7 +824,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lStructSize,sizeof CHOOSECOLOR
 				mov		eax,hWin
 				mov		cc.hwndOwner,eax
-				mov		eax,hInstance
+				mov		eax,ha.hInstance
 				mov		cc.hInstance,eax
 				mov		cc.lpCustColors,offset CustColors
 				mov		cc.Flags,CC_FULLOPEN or CC_RGBINIT
@@ -872,7 +872,7 @@ KeyWordsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		cc.lStructSize,sizeof CHOOSECOLOR
 				mov		eax,hWin
 				mov		cc.hwndOwner,eax
-				mov		eax,hInstance
+				mov		eax,ha.hInstance
 				mov		cc.hInstance,eax
 				mov		cc.lpCustColors,offset CustColors
 				mov		cc.Flags,CC_FULLOPEN or CC_RGBINIT
@@ -1087,31 +1087,31 @@ Update:
 		mov		col.racol.numback,eax
 		pop		edi
 		.if hCFnt
-			invoke DeleteObject,hFont
-			invoke DeleteObject,hIFont
+			invoke DeleteObject,ha.hFont
+			invoke DeleteObject,ha.hIFont
 			invoke GetObject,hCFnt,sizeof lfnt,offset lfnt
 			mov		eax,hCFnt
-			mov     hFont,eax
+			mov     ha.hFont,eax
 			mov		lfnt.lfItalic,TRUE
 			invoke CreateFontIndirect,offset lfnt
-			mov     hIFont,eax
+			mov     ha.hIFont,eax
 			mov		lfnt.lfItalic,FALSE
 			invoke RegSetValueEx,hReg,addr szCodeFont,0,REG_BINARY,addr lfnt,sizeof lfnt
 			mov		hCFnt,0
 		.endif
 		.if hLFnt
-			invoke DeleteObject,hLnrFont
+			invoke DeleteObject,ha.hLnrFont
 			invoke GetObject,hLFnt,sizeof lfntlnr,offset lfntlnr
 			mov		eax,hLFnt
-			mov     hLnrFont,eax
+			mov     ha.hLnrFont,eax
 			invoke RegSetValueEx,hReg,addr szLnrFont,0,REG_BINARY,addr lfntlnr,sizeof lfntlnr
 			mov		hLFnt,0
 		.endif
 		invoke UpdateAll,WM_SETFONT
 		invoke UpdateToolColors
-		invoke SendMessage,hOut,WM_SETFONT,hFont,TRUE
-		invoke SendMessage,hDbgReg,WM_SETFONT,hFont,TRUE
-		invoke SendMessage,hDbgWatch,WM_SETFONT,hFont,TRUE
+		invoke SendMessage,ha.hOut,WM_SETFONT,ha.hFont,TRUE
+		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,TRUE
+		invoke SendMessage,ha.hDbgWatch,WM_SETFONT,ha.hFont,TRUE
 		invoke RegSetValueEx,hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
 		invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
 		invoke RegSetValueEx,hReg,addr szCustColors,0,REG_BINARY,addr CustColors,sizeof CustColors

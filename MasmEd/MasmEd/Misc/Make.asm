@@ -43,10 +43,10 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset szCr
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr make.buffer
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset szCr
-	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+	invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset szCr
+	invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,addr make.buffer
+	invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset szCr
+	invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
 	.if Param==IDM_MAKE_RUN
 		invoke WinExec,addr make.buffer,SW_SHOWNORMAL
 		.if eax>=32
@@ -61,7 +61,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 			;CreatePipe failed
 			invoke LoadCursor,0,IDC_ARROW
 			invoke SetCursor,eax
-			invoke MessageBox,hWnd,addr CreatePipeError,addr szAppName,MB_ICONERROR+MB_OK
+			invoke MessageBox,ha.hWnd,addr CreatePipeError,addr szAppName,MB_ICONERROR+MB_OK
 			xor		eax,eax
 		.else
 			mov startupinfo.cb,sizeof STARTUPINFO
@@ -81,7 +81,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 				invoke SetCursor,eax
 				invoke strcpy,addr buffer,addr CreateProcessError
 				invoke strcat,addr buffer,addr make.buffer
-				invoke MessageBox,hWnd,addr buffer,addr szAppName,MB_ICONERROR+MB_OK
+				invoke MessageBox,ha.hWnd,addr buffer,addr szAppName,MB_ICONERROR+MB_OK
 				xor		eax,eax
 			.else
 				invoke CloseHandle,make.hWrite
@@ -115,8 +115,8 @@ MakeThreadProc proc uses ebx,Param:DWORD
 
 OutputText:
 	mov		make.buffer[ebx+1],0
-	invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr make.buffer
-	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+	invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,addr make.buffer
+	invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
 	xor		ebx,ebx
 	retn
 
@@ -129,7 +129,7 @@ FindErrors proc uses ebx
 	LOCAL	nLastLnErr:DWORD
 	LOCAL	nErr:DWORD
 
-	invoke SendMessage,hOut,EM_GETLINECOUNT,0,0
+	invoke SendMessage,ha.hOut,EM_GETLINECOUNT,0,0
 	xor		ebx,ebx
 	mov		nErrID,ebx
 	mov		nLn,ebx
@@ -145,7 +145,7 @@ FindErrors proc uses ebx
 
 TestLine:
 	mov		word ptr buffer,sizeof buffer-1
-	invoke SendMessage,hOut,EM_GETLINE,nLn,addr buffer
+	invoke SendMessage,ha.hOut,EM_GETLINE,nLn,addr buffer
 	mov		byte ptr buffer[eax],0
 	invoke iniInStr,addr buffer,addr szError
 	.if eax!=-1
@@ -158,17 +158,17 @@ TestLine:
 		.if eax!=nLastLnErr
 			mov		nLnErr,eax
 			mov		nLastLnErr,eax
-			invoke SendMessage,hOut,REM_SETBOOKMARK,nLn,6
-			invoke SendMessage,hOut,REM_GETBMID,nLn,0
+			invoke SendMessage,ha.hOut,REM_SETBOOKMARK,nLn,6
+			invoke SendMessage,ha.hOut,REM_GETBMID,nLn,0
 			mov		nErr,eax
 			invoke strlen,addr buffer
 			.while eax && word ptr buffer[eax+1]!='\:'
 				dec		eax
 			.endw
 			invoke OpenEditFile,addr buffer[eax],0
-			invoke GetWindowLong,hREd,GWL_ID
+			invoke GetWindowLong,ha.hREd,GWL_ID
 			.if eax==IDC_RAE
-				invoke SendMessage,hREd,REM_SETERROR,nLnErr,nErr
+				invoke SendMessage,ha.hREd,REM_SETERROR,nLnErr,nErr
 				mov		eax,nErr
 				mov		ErrID[ebx*4],eax
 				inc		ebx
@@ -191,22 +191,22 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.if ZERO?
 		or		wpos.fView,4
 	.endif
-	invoke ShowWindow,hOut,SW_SHOWNA
-	invoke SendMessage,hWnd,WM_SIZE,0,0
+	invoke ShowWindow,ha.hOut,SW_SHOWNA
+	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	movzx	eax,MainFile
 	.if !eax
-		invoke SendMessage,hOut,WM_SETTEXT,0,addr szNoMain
+		invoke SendMessage,ha.hOut,WM_SETTEXT,0,addr szNoMain
 		ret
 	.endif
 	invoke SetCurDir,lpFileName,FALSE
 	mov		fExitCode,0
 	invoke LoadCursor,0,IDC_WAIT
 	invoke SetCursor,eax
-	invoke SetFocus,hOut
+	invoke SetFocus,ha.hOut
 	mov		make.buffer,0
 	.if fClear==1 || fClear==2
-		invoke SendMessage,hOut,WM_SETTEXT,0,addr make.buffer
-		invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+		invoke SendMessage,ha.hOut,WM_SETTEXT,0,addr make.buffer
+		invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
 	.endif
 	mov		eax,nCommand
 	.if eax==IDM_MAKE_COMPILE
@@ -225,8 +225,8 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 			invoke GetFileAttributes,addr buffer2
 			.if eax==-1
 				;FileName.rc nor rsrc.rc found, give message and exit
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset NoRC
-				invoke SendMessage,hOut,EM_SCROLLCARET,0,0
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset NoRC
+				invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
 				jmp		Ex
 			.endif
 		.endif
@@ -235,7 +235,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke strcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtRes
 	.elseif eax==IDM_MAKE_ASSEMBLE
-		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 		.if eax
 			invoke strcpy,addr make.buffer,offset DbgAssemble
 		.else
@@ -247,7 +247,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke strcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtObj
 	.elseif eax==IDM_MAKE_LINK
-		invoke SendMessage,hCbo,CB_GETCURSEL,0,0
+		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 		.if eax
 			invoke strcpy,addr make.buffer,offset DbgLink
 		.else
@@ -284,7 +284,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		.endif
 		mov		eax,offset ExtExe
 	.elseif eax==IDM_MAKE_RUN
-		invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Exec
+		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Exec
 		invoke strcpy,addr make.buffer,lpFileName
 		invoke RemoveFileExt,addr make.buffer
 		invoke strcat,addr make.buffer,offset ExtExe
@@ -304,10 +304,10 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 			invoke DeleteFile,addr buffer2
 			.if !eax
 				mov		fExitCode,-1
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset NoDel
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,addr buffer2
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset szCr
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Errors
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset NoDel
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,addr buffer2
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset szCr
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Errors
 				jmp		Ex
 			.endif
 		.endif
@@ -333,7 +333,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	invoke CloseHandle,make.hThread
 	.if ThreadID
 		.if make.uExit==1234
-			invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Terminated
+			invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Terminated
 			invoke FindErrors
 		.else
 			mov		fExitCode,-1
@@ -341,20 +341,20 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 			invoke GetFileAttributes,addr buffer2
 			.if eax==-1
 				mov		fExitCode,eax
-				invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset Errors
+				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Errors
 				invoke FindErrors
 			.else
 				.if fClear==1 || fClear==3
-					invoke SendMessage,hOut,EM_REPLACESEL,FALSE,offset MakeDone
+					invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset MakeDone
 				.endif
 				mov		fExitCode,0
 			.endif
 		.endif
 		.if dword ptr [ErrID]
-			invoke SendMessage,hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
+			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
 		.else
-			invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-			invoke SetFocus,hOut
+			invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
+			invoke SetFocus,ha.hOut
 		.endif
 	.endif
   Ex:
