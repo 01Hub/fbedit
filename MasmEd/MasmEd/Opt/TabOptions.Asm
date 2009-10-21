@@ -153,7 +153,7 @@ TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MakeKey,addr szCust,nInx,addr buffer1
 			mov		lpcbData,MAX_PATH
 			mov		buffer,0
-			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr buffer,addr lpcbData
+			invoke RegQueryValueEx,ha.hReg,addr buffer1,0,addr lpType,addr buffer,addr lpcbData
 			.if buffer
 				lea		eax,buffer
 				mov		row[0],eax
@@ -359,7 +359,7 @@ TabOpt4Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MakeKey,addr szCustStyle,nInx,addr buffer
 			mov		lpcbData,sizeof CUSTSTYLE
 			mov		cust.szStyle,0
-			invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr cust,addr lpcbData
+			invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,addr cust,addr lpcbData
 			.if cust.szStyle
 				lea		eax,cust.szStyle
 				mov		row[0],eax
@@ -484,7 +484,7 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MakeKey,addr szCustType,nInx,addr buffer
 			mov		lpcbData,sizeof RARSTYPE
 			invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
-			invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr rarstype,addr lpcbData
+			invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,addr rarstype,addr lpcbData
 			.if rarstype.sztype || rarstype.nid
 				lea		eax,rarstype.sztype
 				mov		row[0],eax
@@ -650,7 +650,7 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					mov		nmeexp.fAuto,0
 				.endif
-				invoke RegSetValueEx,hReg,addr szNmeExp,0,REG_BINARY,addr nmeexp,sizeof nmeexp
+				invoke RegSetValueEx,ha.hReg,addr szNmeExp,0,REG_BINARY,addr nmeexp,sizeof nmeexp
 				mov		edx,nmeexp.nOutput
 				shl		edx,16
 				add		edx,nmeexp.nType
@@ -693,11 +693,11 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MakeKey,addr szCust,nInx,addr buffer1
 						invoke strlen,addr buffer
 						inc		eax
-						invoke RegSetValueEx,hReg,addr buffer1,0,REG_SZ,addr buffer,eax
+						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_SZ,addr buffer,eax
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCust,nInx,addr buffer1
-						invoke RegDeleteValue,hReg,addr buffer1
+						invoke RegDeleteValue,ha.hReg,addr buffer1
 					.endif
 				.endw
 				; Custom styles
@@ -733,12 +733,12 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		cust.nMask,eax
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
-						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr cust,sizeof CUSTSTYLE
+						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_BINARY,addr cust,sizeof CUSTSTYLE
 						invoke SendMessage,ha.hResEd,DEM_ADDCUSTSTYLE,0,addr cust
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
-						invoke RegDeleteValue,hReg,addr buffer1
+						invoke RegDeleteValue,ha.hReg,addr buffer1
 					.endif
 				.endw
 				; Custom types
@@ -780,16 +780,16 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,ha.hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
 						inc		nInx
 						invoke MakeKey,addr szCustType,nInx,addr buffer1
-						invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
+						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
 					.else
 						inc		nInx
 						invoke MakeKey,addr szCustType,nInx,addr buffer1
-						invoke RegDeleteValue,hReg,addr buffer1
+						invoke RegDeleteValue,ha.hReg,addr buffer1
 					.endif
 				.endw
 				mov		eax,color
 				mov		grdsize.color,eax
-				invoke RegSetValueEx,hReg,addr szGrid,0,REG_BINARY,addr grdsize,sizeof grdsize
+				invoke RegSetValueEx,ha.hReg,addr szGrid,0,REG_BINARY,addr grdsize,sizeof grdsize
 				mov		eax,grdsize.y
 				shl		eax,16
 				add		eax,grdsize.x

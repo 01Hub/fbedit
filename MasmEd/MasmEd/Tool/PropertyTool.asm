@@ -121,7 +121,7 @@ SetPropertyDefs proc uses esi
 	ret
 
 MakePath:
-	invoke strcpy,addr buffer,addr AppPath
+	invoke strcpy,addr buffer,addr da.AppPath
 	invoke strcat,addr buffer,addr szBackSlash
 	invoke strcat,addr buffer,esi
 	retn

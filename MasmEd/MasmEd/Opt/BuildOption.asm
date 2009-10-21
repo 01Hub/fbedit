@@ -77,11 +77,11 @@ SetEnvironment proc uses edi
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
 	mov		hEnv,eax
 	mov		edi,eax
-	invoke SetVar,edi,addr szPath,addr PathBin
+	invoke SetVar,edi,addr szPath,addr da.PathBin
 	mov		edi,eax
-	invoke SetVar,edi,addr szInclude,addr PathInc
+	invoke SetVar,edi,addr szInclude,addr da.PathInc
 	mov		edi,eax
-	invoke SetVar,edi,addr szIncludelib,addr PathLib
+	invoke SetVar,edi,addr szIncludelib,addr da.PathLib
 	mov		edi,eax
 	ret
 
@@ -94,27 +94,27 @@ PathOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_EDTBIN,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTINC,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTLIB,EM_LIMITTEXT,240,0
-		invoke SetDlgItemText,hWin,IDC_EDTBIN,addr PathBin
-		invoke SetDlgItemText,hWin,IDC_EDTINC,addr PathInc
-		invoke SetDlgItemText,hWin,IDC_EDTLIB,addr PathLib
+		invoke SetDlgItemText,hWin,IDC_EDTBIN,addr da.PathBin
+		invoke SetDlgItemText,hWin,IDC_EDTINC,addr da.PathInc
+		invoke SetDlgItemText,hWin,IDC_EDTLIB,addr da.PathLib
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke GetDlgItemText,hWin,IDC_EDTBIN,addr PathBin,240
-				invoke strlen,addr PathBin
+				invoke GetDlgItemText,hWin,IDC_EDTBIN,addr da.PathBin,240
+				invoke strlen,addr da.PathBin
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szPathBin,0,REG_SZ,addr PathBin,eax
-				invoke GetDlgItemText,hWin,IDC_EDTINC,addr PathInc,240
-				invoke strlen,addr PathInc
+				invoke RegSetValueEx,ha.hReg,addr szPathBin,0,REG_SZ,addr da.PathBin,eax
+				invoke GetDlgItemText,hWin,IDC_EDTINC,addr da.PathInc,240
+				invoke strlen,addr da.PathInc
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szPathInc,0,REG_SZ,addr PathInc,eax
-				invoke GetDlgItemText,hWin,IDC_EDTLIB,addr PathLib,240
-				invoke strlen,addr PathLib
+				invoke RegSetValueEx,ha.hReg,addr szPathInc,0,REG_SZ,addr da.PathInc,eax
+				invoke GetDlgItemText,hWin,IDC_EDTLIB,addr da.PathLib,240
+				invoke strlen,addr da.PathLib
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szPathLib,0,REG_SZ,addr PathLib,eax
+				invoke RegSetValueEx,ha.hReg,addr szPathLib,0,REG_SZ,addr da.PathLib,eax
 				invoke SetEnvironment
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
@@ -145,37 +145,37 @@ BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_EDTLNK,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTDBGASM,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTDBGLNK,EM_LIMITTEXT,240,0
-		invoke SetDlgItemText,hWin,IDC_EDTRES,addr CompileRC
-		invoke SetDlgItemText,hWin,IDC_EDTASM,addr Assemble
-		invoke SetDlgItemText,hWin,IDC_EDTLNK,addr Link
-		invoke SetDlgItemText,hWin,IDC_EDTDBGASM,addr DbgAssemble
-		invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr DbgLink
+		invoke SetDlgItemText,hWin,IDC_EDTRES,addr da.CompileRC
+		invoke SetDlgItemText,hWin,IDC_EDTASM,addr da.Assemble
+		invoke SetDlgItemText,hWin,IDC_EDTLNK,addr da.Link
+		invoke SetDlgItemText,hWin,IDC_EDTDBGASM,addr da.DbgAssemble
+		invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr da.DbgLink
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke GetDlgItemText,hWin,IDC_EDTRES,addr CompileRC,240
-				invoke strlen,addr CompileRC
+				invoke GetDlgItemText,hWin,IDC_EDTRES,addr da.CompileRC,240
+				invoke strlen,addr da.CompileRC
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szCompileRC,0,REG_SZ,addr CompileRC,eax
-				invoke GetDlgItemText,hWin,IDC_EDTASM,addr Assemble,240
-				invoke strlen,addr Assemble
+				invoke RegSetValueEx,ha.hReg,addr szCompileRC,0,REG_SZ,addr da.CompileRC,eax
+				invoke GetDlgItemText,hWin,IDC_EDTASM,addr da.Assemble,240
+				invoke strlen,addr da.Assemble
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szAssemble,0,REG_SZ,addr Assemble,eax
-				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr Link,240
-				invoke strlen,addr Link
+				invoke RegSetValueEx,ha.hReg,addr szAssemble,0,REG_SZ,addr da.Assemble,eax
+				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr da.Link,240
+				invoke strlen,addr da.Link
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szLink,0,REG_SZ,addr Link,eax
-				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr DbgAssemble,240
-				invoke strlen,addr DbgAssemble
+				invoke RegSetValueEx,ha.hReg,addr szLink,0,REG_SZ,addr da.Link,eax
+				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr da.DbgAssemble,240
+				invoke strlen,addr da.DbgAssemble
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szDbgAssemble,0,REG_SZ,addr DbgAssemble,eax
-				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr DbgLink,240
-				invoke strlen,addr DbgLink
+				invoke RegSetValueEx,ha.hReg,addr szDbgAssemble,0,REG_SZ,addr da.DbgAssemble,eax
+				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr da.DbgLink,240
+				invoke strlen,addr da.DbgLink
 				inc		eax
-				invoke RegSetValueEx,hReg,addr szDbgLink,0,REG_SZ,addr DbgLink,eax
+				invoke RegSetValueEx,ha.hReg,addr szDbgLink,0,REG_SZ,addr da.DbgLink,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

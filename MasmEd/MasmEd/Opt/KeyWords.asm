@@ -103,7 +103,7 @@ UpdateTheme1053 proc uses esi edi
 		mov		[edi].THEME.szname,0
 		invoke MakeKey,addr szTheme,nInx,addr buffer
 		mov		lpcbData,sizeof THEME
-		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,offset theme,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,offset theme,addr lpcbData
 		.if !eax
 			mov		esi,offset theme.medcol.tttext
 			mov		edi,offset theme.medcol.ttsel
@@ -117,7 +117,7 @@ UpdateTheme1053 proc uses esi edi
 			.endw
 			mov		theme.medcol.racol.changed,CHCOL
 			mov		theme.medcol.racol.changesaved,CHSAVEDCOL
-			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,offset theme,sizeof THEME
+			invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,offset theme,sizeof THEME
 		.endif
 		inc		nInx
 	.endw
@@ -135,7 +135,7 @@ GetThemes proc uses esi edi
 		mov		[edi].THEME.szname,0
 		invoke MakeKey,addr szTheme,nInx,addr buffer
 		mov		lpcbData,sizeof THEME
-		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,edi,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,edi,addr lpcbData
 		.if eax && !nInx
 			invoke MakeKey,addr szTheme,0,addr buffer
 			mov		esi,offset thme0
@@ -147,7 +147,7 @@ GetThemes proc uses esi edi
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
 			rep		movsb
 			mov		edi,offset theme+sizeof THEME*0
-			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+			invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
 
 			invoke MakeKey,addr szTheme,1,addr buffer
 			mov		esi,offset thme1
@@ -159,7 +159,7 @@ GetThemes proc uses esi edi
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
 			rep		movsb
 			mov		edi,offset theme+sizeof THEME*1
-			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+			invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
 
 			invoke MakeKey,addr szTheme,2,addr buffer
 			mov		esi,offset thme2
@@ -171,7 +171,7 @@ GetThemes proc uses esi edi
 			mov		ecx,sizeof THEME.kwcol+sizeof THEME.medcol
 			rep		movsb
 			mov		edi,offset theme+sizeof THEME*2
-			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
+			invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,edi,sizeof THEME
 			.break
 		.endif
 		add		edi,sizeof THEME
@@ -286,7 +286,7 @@ SaveTheme proc uses esi edi
 	.while nInx<10
 		.if byte ptr [esi].THEME.szname
 			invoke MakeKey,addr szTheme,nInx,addr buffer
-			invoke RegSetValueEx,hReg,addr buffer,0,REG_BINARY,esi,sizeof THEME
+			invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,esi,sizeof THEME
 		.endif
 		add		esi,sizeof THEME
 		inc		nInx
@@ -306,7 +306,7 @@ SetKeyWordList proc uses esi edi,hWin:HWND,idLst:DWORD,nInx:DWORD
 	mov		hMem,eax
 	invoke MakeKey,offset szGroup,nInx,addr buffer
 	mov		lpcbData,16384
-	invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
+	invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
 	mov		eax,hMem
 	mov		al,[eax]
 	mov		esi,nInx
@@ -389,7 +389,7 @@ SaveKeyWordList proc uses esi edi,hWin:HWND,idLst:DWORD,nInx:DWORD
 	.endif
 	sub		edi,hMem
 	invoke MakeKey,offset szGroup,nInx,addr buffer
-	invoke RegSetValueEx,hReg,addr buffer,0,REG_SZ,hMem,edi
+	invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_SZ,hMem,edi
 	invoke GlobalFree,hMem
 	ret
 
@@ -448,7 +448,7 @@ UpdateKeyWords proc uses ebx,hWin:HWND
 		mov		kwcol[ebx*4],eax
 		inc		ebx
 	.endw
-	invoke RegSetValueEx,hReg,addr szKeyWordColor,0,REG_BINARY,addr kwcol,sizeof kwcol
+	invoke RegSetValueEx,ha.hReg,addr szKeyWordColor,0,REG_BINARY,addr kwcol,sizeof kwcol
 	invoke SetKeyWords
 	invoke UpdateAll,WM_PAINT
 	ret
@@ -1096,7 +1096,7 @@ Update:
 			invoke CreateFontIndirect,offset lfnt
 			mov     ha.hIFont,eax
 			mov		lfnt.lfItalic,FALSE
-			invoke RegSetValueEx,hReg,addr szCodeFont,0,REG_BINARY,addr lfnt,sizeof lfnt
+			invoke RegSetValueEx,ha.hReg,addr szCodeFont,0,REG_BINARY,addr lfnt,sizeof lfnt
 			mov		hCFnt,0
 		.endif
 		.if hLFnt
@@ -1104,7 +1104,7 @@ Update:
 			invoke GetObject,hLFnt,sizeof lfntlnr,offset lfntlnr
 			mov		eax,hLFnt
 			mov     ha.hLnrFont,eax
-			invoke RegSetValueEx,hReg,addr szLnrFont,0,REG_BINARY,addr lfntlnr,sizeof lfntlnr
+			invoke RegSetValueEx,ha.hReg,addr szLnrFont,0,REG_BINARY,addr lfntlnr,sizeof lfntlnr
 			mov		hLFnt,0
 		.endif
 		invoke UpdateAll,WM_SETFONT
@@ -1112,9 +1112,9 @@ Update:
 		invoke SendMessage,ha.hOut,WM_SETFONT,ha.hFont,TRUE
 		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,TRUE
 		invoke SendMessage,ha.hDbgWatch,WM_SETFONT,ha.hFont,TRUE
-		invoke RegSetValueEx,hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
-		invoke RegSetValueEx,hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
-		invoke RegSetValueEx,hReg,addr szCustColors,0,REG_BINARY,addr CustColors,sizeof CustColors
+		invoke RegSetValueEx,ha.hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
+		invoke RegSetValueEx,ha.hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
+		invoke RegSetValueEx,ha.hReg,addr szCustColors,0,REG_BINARY,addr CustColors,sizeof CustColors
 		invoke SaveTheme
 	.endif
 	retn

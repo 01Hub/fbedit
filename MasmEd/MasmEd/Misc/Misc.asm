@@ -587,7 +587,7 @@ ResetMenu proc uses esi edi
 		invoke MakeKey,addr szCustType,nInx,addr buffer1
 		mov		lpcbData,sizeof RARSTYPE
 		invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
-		invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer1,0,addr lpType,addr rarstype,addr lpcbData
 		.if rarstype.sztype || rarstype.nid
 			.if !rarstype.szext && rarstype.sztype && nInx>11
 				invoke lstrcpy,addr buffer,addr szAdd
@@ -705,26 +705,26 @@ ShowProc endp
 ShowSession proc
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	.if MainFile
+	.if da.MainFile
 		invoke strcpy,addr buffer,addr szMainFile
 		mov		dword ptr buffer[4],' :'
-		invoke strlen,addr MainFile
-		.while MainFile[eax-1]!='\'
+		invoke strlen,addr da.MainFile
+		.while da.MainFile[eax-1]!='\'
 			dec		eax
 		.endw
-		invoke strcat,addr buffer,addr MainFile[eax]
+		invoke strcat,addr buffer,addr da.MainFile[eax]
 	.else
 		mov		buffer,0
 	.endif
 	invoke SendMessage,ha.hSbr,SB_SETTEXT,1,addr buffer
-	.if szSessionFile
+	.if da.szSessionFile
 		invoke strcpy,addr buffer,addr szSession
 		mov		dword ptr buffer[7],' :'
-		invoke strlen,addr szSessionFile
-		.while szSessionFile[eax-1]!='\'
+		invoke strlen,addr da.szSessionFile
+		.while da.szSessionFile[eax-1]!='\'
 			dec		eax
 		.endw
-		invoke strcat,addr buffer,addr szSessionFile[eax]
+		invoke strcat,addr buffer,addr da.szSessionFile[eax]
 	.else
 		mov		buffer,0
 	.endif
@@ -776,7 +776,7 @@ SetKeyWords proc uses esi edi
 		invoke RtlZeroMemory,hMem,65536*8
 		invoke MakeKey,offset szGroup,nInx,addr buffer
 		mov		lpcbData,65536*8
-		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
 		mov		ecx,hMem
 		mov		edx,nInx
 		shl		edx,2
@@ -1077,7 +1077,7 @@ CopyAll:
 
 CopyPro:
 	push	esi
-	mov		esi,offset FileName
+	mov		esi,offset da.FileName
 	.while al!='.' && al
 		mov		al,[esi]
 		.if al!='.' && al
@@ -1227,7 +1227,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 						invoke TabToolActivate
 						invoke SetFocus,ha.hREd
-						invoke WantToSave,ha.hREd,offset FileName
+						invoke WantToSave,ha.hREd,offset da.FileName
 						or		eax,eax
 						jne		Ex
 					.endif
@@ -1249,7 +1249,7 @@ UpdateAll proc uses ebx,nFunction:DWORD
 				invoke GetProcessHeap
 				invoke HeapFree,eax,NULL,ebx
 			.elseif eax==IS_OPEN
-				invoke lstrcmpi,offset FileName,addr [ebx].TABMEM.filename
+				invoke lstrcmpi,offset da.FileName,addr [ebx].TABMEM.filename
 				.if !eax
 					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
 					invoke TabToolActivate
@@ -1486,21 +1486,21 @@ RemoveFromRegistry proc uses ebx
 	LOCAL	cbSize:DWORD
 	LOCAL	ftm:FILETIME
 
-	invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szMasmEd,NULL,KEY_READ or KEY_WRITE,addr hReg
+	invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szMasmEd,NULL,KEY_READ or KEY_WRITE,addr ha.hReg
 	.if eax==ERROR_SUCCESS
 		xor		ebx,ebx
 		.while TRUE
 			mov		cbSize,sizeof buffer
-			invoke RegEnumKeyEx,hReg,ebx,addr buffer,addr cbSize,NULL,NULL,NULL,addr ftm
+			invoke RegEnumKeyEx,ha.hReg,ebx,addr buffer,addr cbSize,NULL,NULL,NULL,addr ftm
 			.break .if eax!=ERROR_SUCCESS
-			invoke RegDeleteKey,hReg,addr buffer
+			invoke RegDeleteKey,ha.hReg,addr buffer
 			inc		ebx
 		.endw
-		invoke RegCloseKey,hReg
-		invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szSoftware,NULL,KEY_READ or KEY_WRITE,addr hReg
+		invoke RegCloseKey,ha.hReg
+		invoke RegOpenKeyEx,HKEY_CURRENT_USER,addr szSoftware,NULL,KEY_READ or KEY_WRITE,addr ha.hReg
 		.if eax==ERROR_SUCCESS
-			invoke RegDeleteKey,hReg,addr szMasmEd1000
-			invoke RegCloseKey,hReg
+			invoke RegDeleteKey,ha.hReg,addr szMasmEd1000
+			invoke RegCloseKey,ha.hReg
 		.endif
 	.endif
 	ret

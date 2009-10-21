@@ -193,7 +193,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.endif
 	invoke ShowWindow,ha.hOut,SW_SHOWNA
 	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
-	movzx	eax,MainFile
+	movzx	eax,da.MainFile
 	.if !eax
 		invoke SendMessage,ha.hOut,WM_SETTEXT,0,addr szNoMain
 		ret
@@ -210,9 +210,9 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.endif
 	mov		eax,nCommand
 	.if eax==IDM_MAKE_COMPILE
-		invoke strcpy,addr make.buffer,offset CompileRC
+		invoke strcpy,addr make.buffer,offset da.CompileRC
 		invoke strcat,addr make.buffer,addr szSpc
-		;Try FileName.rc
+		;Try da.FileName.rc
 		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2
 		invoke strcat,addr buffer2,offset ExtRC
@@ -237,9 +237,9 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.elseif eax==IDM_MAKE_ASSEMBLE
 		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 		.if eax
-			invoke strcpy,addr make.buffer,offset DbgAssemble
+			invoke strcpy,addr make.buffer,offset da.DbgAssemble
 		.else
-			invoke strcpy,addr make.buffer,offset Assemble
+			invoke strcpy,addr make.buffer,offset da.Assemble
 		.endif
 		invoke strcat,addr make.buffer,addr szSpc
 		invoke strcat,addr make.buffer,offset szQuote
@@ -249,9 +249,9 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.elseif eax==IDM_MAKE_LINK
 		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 		.if eax
-			invoke strcpy,addr make.buffer,offset DbgLink
+			invoke strcpy,addr make.buffer,offset da.DbgLink
 		.else
-			invoke strcpy,addr make.buffer,offset Link
+			invoke strcpy,addr make.buffer,offset da.Link
 		.endif
 		invoke strcat,addr make.buffer,addr szSpc
 		invoke strcpy,addr buffer2,lpFileName

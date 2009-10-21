@@ -310,8 +310,8 @@ TabToolActivate proc uses ebx
 	mov		ebx,tci.lParam
 	mov		eax,[ebx].TABMEM.hwnd
 	mov		ha.hREd,eax
-	invoke strcpy,offset FileName,addr [ebx].TABMEM.filename
-	invoke SetWinCaption,offset FileName
+	invoke strcpy,offset da.FileName,addr [ebx].TABMEM.filename
+	invoke SetWinCaption,offset da.FileName
 	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	invoke ShowWindow,ha.hREd,SW_SHOW
 	mov		fTimer,1

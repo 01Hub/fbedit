@@ -98,7 +98,7 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	push	ha.hInstance
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
-	invoke strcpy,addr buffer,addr FileName
+	invoke strcpy,addr buffer,addr da.FileName
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -125,10 +125,10 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 		invoke SaveFile,hWin,addr buffer
 		.if !eax
 			;The file was saved
-			invoke strcpy,offset FileName,addr buffer
-			invoke SetWinCaption,offset FileName
+			invoke strcpy,offset da.FileName,addr buffer
+			invoke SetWinCaption,offset da.FileName
 			invoke TabToolGetInx,hWin
-			invoke TabToolSetText,eax,offset FileName
+			invoke TabToolSetText,eax,offset da.FileName
 			mov		eax,FALSE
 		.endif
 	.else
@@ -184,19 +184,19 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
-		;Copy buffer to FileName
-		invoke strcpy,offset FileName,lpFileName
+		;Copy buffer to da.FileName
+		invoke strcpy,offset da.FileName,lpFileName
 		;Set word group
-		invoke strlen,offset FileName
+		invoke strlen,offset da.FileName
 		mov		ebx,15
 		.if eax>3
 			mov		esi,eax
 			xor		ebx,ebx
-			invoke strcmpi,addr [esi+offset FileName-4],offset szFtAsm
+			invoke strcmpi,addr [esi+offset da.FileName-4],offset szFtAsm
 			.if eax
-				invoke strcmpi,addr [esi+offset FileName-4],offset szFtInc
+				invoke strcmpi,addr [esi+offset da.FileName-4],offset szFtInc
 				.if eax
-					invoke strcmpi,addr [esi+offset FileName-3],offset szFtRc
+					invoke strcmpi,addr [esi+offset da.FileName-3],offset szFtRc
 					.if !eax
 						;RC File
 						mov		ebx,2
@@ -223,7 +223,7 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		mov		chrg.cpMin,0
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
-		invoke SetWinCaption,offset FileName
+		invoke SetWinCaption,offset da.FileName
 		.if !ebx
 			mov		nLastLine,-1
 			mov		nLastPropLine,-1
@@ -249,8 +249,8 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
-		;Copy buffer to FileName
-		invoke strcpy,offset FileName,lpFileName
+		;Copy buffer to da.FileName
+		invoke strcpy,offset da.FileName,lpFileName
 		;stream the text into the RAHexEd control
 		push	hFile
 		pop		editstream.dwCookie
@@ -261,7 +261,7 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		mov		chrg.cpMin,0
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
-		invoke SetWinCaption,offset FileName
+		invoke SetWinCaption,offset da.FileName
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -339,7 +339,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 		.endif
 	.endif
 	mov		fCtrl,eax
-	invoke strcpy,offset FileName,lpFileName
+	invoke strcpy,offset da.FileName,lpFileName
 	invoke UpdateAll,IS_OPEN
 	.if !eax
 		invoke GetFileAttributes,lpFileName
@@ -351,14 +351,14 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 			.if eax && !fCtrl
 				invoke UpdateAll,IS_RESOURCE
 				.if eax
-					invoke WantToSave,ha.hREd,offset FileName
+					invoke WantToSave,ha.hREd,offset da.FileName
 					.if !eax
 						invoke LoadRCFile,lpFileName
 						.if eax
 							invoke TabToolGetInx,ha.hREd
 							invoke TabToolSetText,eax,lpFileName
 							invoke SetWinCaption,lpFileName
-							invoke strcpy,offset FileName,lpFileName
+							invoke strcpy,offset da.FileName,lpFileName
 						.endif
 					.endif
 				.else
@@ -371,7 +371,7 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 						invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 						invoke ShowWindow,ha.hREd,SW_SHOW
 						invoke SetWinCaption,lpFileName
-						invoke strcpy,offset FileName,lpFileName
+						invoke strcpy,offset da.FileName,lpFileName
 					.endif
 				.endif
 			.else
@@ -381,10 +381,10 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 				mov		eax,dword ptr buffer[eax-4]
 				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.'
 					invoke CreateRAEdit
-					invoke TabToolAdd,ha.hREd,offset FileName
-					invoke LoadEditFile,ha.hREd,offset FileName
+					invoke TabToolAdd,ha.hREd,offset da.FileName
+					invoke LoadEditFile,ha.hREd,offset da.FileName
 					invoke SendMessage,ha.hREd,REM_LINENUMBERWIDTH,32,0
-					invoke IsFileCodeFile,offset FileName
+					invoke IsFileCodeFile,offset da.FileName
 					.if eax
 						invoke SendMessage,ha.hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
 						invoke SendMessage,ha.hREd,REM_SETBLOCKS,0,0
@@ -399,8 +399,8 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 					invoke SendMessage,ha.hREd,REM_HILITEACTIVELINE,0,eax
 				.else
 					invoke CreateRAHexEd
-					invoke TabToolAdd,ha.hREd,offset FileName
-					invoke LoadHexFile,ha.hREd,offset FileName
+					invoke TabToolAdd,ha.hREd,offset da.FileName
+					invoke LoadHexFile,ha.hREd,offset da.FileName
 				.endif
 				invoke TabToolSetChanged,ha.hREd,FALSE
 				invoke LoadCursor,0,IDC_ARROW
@@ -506,29 +506,29 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke WritePrivateProfileString,addr szSession,addr szFolder,addr tmpbuff,lpszFile
 	invoke MakeSession
 	invoke WritePrivateProfileString,addr szSession,addr szSession,addr tmpbuff,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr MainFile,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr CompileRC,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr Assemble,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szLink,addr Link,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szDbgAssemble,addr DbgAssemble,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr DbgLink,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr da.MainFile,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr da.CompileRC,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr da.Assemble,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szLink,addr da.Link,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szDbgAssemble,addr da.DbgAssemble,lpszFile
+	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr da.DbgLink,lpszFile
 	invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 	or		eax,30h
 	mov		dword ptr buffer,eax
 	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
-	invoke strcpy,addr szSessionFile,lpszFile
+	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
 
 WriteSessionFile endp
 
 AskSaveSessionFile proc
 
-	.if byte ptr szSessionFile
+	.if byte ptr da.szSessionFile
 		invoke strcpy,addr tmpbuff,addr szSaveSession
-		invoke strcat,addr tmpbuff,addr szSessionFile
+		invoke strcat,addr tmpbuff,addr da.szSessionFile
 		invoke MessageBox,ha.hWnd,addr tmpbuff,addr szSession,MB_YESNOCANCEL or MB_ICONEXCLAMATION
 		.if eax==IDYES
-			invoke WriteSessionFile,addr szSessionFile
+			invoke WriteSessionFile,addr da.szSessionFile
 		.elseif eax==IDCANCEL
 			mov		eax,TRUE
 			ret
@@ -553,7 +553,7 @@ SaveSessionFile proc
 	pop		ofn.hInstance
 	mov		ofn.lpstrFilter,NULL
 	mov		ofn.lpstrFilter,offset MESFilterString
-	invoke strcpy,addr buffer,addr szSessionFile
+	invoke strcpy,addr buffer,addr da.szSessionFile
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
 	mov		ofn.nMaxFile,sizeof buffer
@@ -578,7 +578,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	mov		esi,offset tmpbuff
 	.if fReg && byte ptr [esi]
 		call	GetItem
-		invoke strcpy,addr szSessionFile,addr buffer
+		invoke strcpy,addr da.szSessionFile,addr buffer
 	.endif
 	mov		nInx,-2
 	.while byte ptr [esi]
@@ -656,33 +656,33 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke SendMessage,ha.hBrowse,FBM_SETPATH,TRUE,addr tmpbuff
 	invoke GetPrivateProfileString,addr szSession,addr szSession,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
 	invoke RestoreSession,FALSE
-	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr MainFile,sizeof MainFile,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr CompileRC,sizeof CompileRC,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr Assemble,sizeof Assemble,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr Link,sizeof Link,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr DbgAssemble,sizeof DbgAssemble,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr DbgLink,sizeof DbgLink,lpszFile
-	.if !CompileRC
-		invoke strcpy,addr CompileRC,addr defCompileRC
+	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr da.MainFile,sizeof da.MainFile,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr da.CompileRC,sizeof da.CompileRC,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr da.Assemble,sizeof da.Assemble,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr da.Link,sizeof da.Link,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr da.DbgAssemble,sizeof da.DbgAssemble,lpszFile
+	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr da.DbgLink,sizeof da.DbgLink,lpszFile
+	.if !da.CompileRC
+		invoke strcpy,addr da.CompileRC,addr defCompileRC
 	.endif
-	.if !Assemble
-		invoke strcpy,addr Assemble,addr defAssemble
+	.if !da.Assemble
+		invoke strcpy,addr da.Assemble,addr defAssemble
 	.endif
-	.if !Link
-		invoke strcpy,addr Link,addr defLink
+	.if !da.Link
+		invoke strcpy,addr da.Link,addr defLink
 	.endif
-	.if !DbgAssemble
-		invoke strcpy,addr DbgAssemble,addr defDbgAssemble
+	.if !da.DbgAssemble
+		invoke strcpy,addr da.DbgAssemble,addr defDbgAssemble
 	.endif
-	.if !DbgLink
-		invoke strcpy,addr DbgLink,addr defDbgLink
+	.if !da.DbgLink
+		invoke strcpy,addr da.DbgLink,addr defDbgLink
 	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	.if eax
 		mov		eax,1
 	.endif
 	invoke SendMessage,ha.hCbo,CB_SETCURSEL,eax,0
-	invoke strcpy,addr szSessionFile,lpszFile
+	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
 
 ReadSessionFile endp

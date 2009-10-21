@@ -64,7 +64,7 @@ SetToolMenu proc
 		mov		mnu.szcmnd,0
 		invoke MakeKey,addr szMenuTool,nInx,addr buffer
 		mov		lpcbData,sizeof mnu
-		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
 		movzx	eax,mnu.szcap
 		.if eax
 			.if eax=='-'
@@ -98,7 +98,7 @@ SetHelpMenu proc
 		mov		mnu.szcmnd,0
 		invoke MakeKey,addr szMenuHelp,nInx,addr buffer
 		mov		lpcbData,sizeof mnu
-		invoke RegQueryValueEx,hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
+		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
 		movzx	eax,mnu.szcap
 		.if eax
 			.if eax=='-'
@@ -192,14 +192,14 @@ MenuOptionSave proc uses esi edi,hWin:HWND
 			invoke strcpy,addr mnu.szcap,addr buffer
 			invoke strcpy,addr mnu.szcmnd,esi
 			invoke MakeKey,lpAppName,nReg,addr buffer1
-			invoke RegSetValueEx,hReg,addr buffer1,0,REG_BINARY,addr mnu,sizeof mnu
+			invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_BINARY,addr mnu,sizeof mnu
 			inc		nReg
 		.endif
 		inc		nInx
 	.endw
 	.while nReg<20
 		invoke MakeKey,lpAppName,nReg,addr buffer1
-		invoke RegDeleteValue,hReg,addr buffer1
+		invoke RegDeleteValue,ha.hReg,addr buffer1
 		inc		nReg
 	.endw
 	ret
@@ -239,7 +239,7 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		mnu.szcmnd,0
 			invoke MakeKey,lpAppName,nInx,addr buffer1
 			mov		lpcbData,sizeof mnu
-			invoke RegQueryValueEx,hReg,addr buffer1,0,addr lpType,addr mnu,addr lpcbData
+			invoke RegQueryValueEx,ha.hReg,addr buffer1,0,addr lpType,addr mnu,addr lpcbData
 			movzx	eax,mnu.szcap
 			.if eax
 				invoke strcpy,addr buffer1,addr mnu.szcap

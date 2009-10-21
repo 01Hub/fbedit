@@ -86,7 +86,7 @@ FindSetup proc hWin:HWND
 		.endif
 		mov		ft.chrg.cpMax,0
 	.endif
-	mov		ft.lpstrText,offset findbuff
+	mov		ft.lpstrText,offset da.findbuff
 	ret
 
 FindSetup endp
@@ -153,9 +153,9 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		;Put text in edit boxes
 		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,EM_LIMITTEXT,255,0
-		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,WM_SETTEXT,0,offset findbuff
+		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,WM_SETTEXT,0,offset da.findbuff
 		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,EM_LIMITTEXT,255,0
-		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,WM_SETTEXT,0,offset replacebuff
+		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,WM_SETTEXT,0,offset da.replacebuff
 		;Set check boxes
 		mov		eax,fr
 		and		eax,FR_MATCHCASE
@@ -210,13 +210,13 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.else
 					.if fres!=-1
 						invoke SendMessage,ha.hREd,EM_EXGETSEL,0,offset ft.chrg
-						invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset replacebuff
-						invoke strlen,offset replacebuff
+						invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset da.replacebuff
+						invoke strlen,offset da.replacebuff
 						push	eax
 						add		eax,ft.chrgText.cpMin
 						mov		ft.chrgText.cpMax,eax
 						invoke SendMessage,ha.hREd,EM_EXSETSEL,0,offset ft.chrgText
-						invoke strlen,offset findbuff
+						invoke strlen,offset da.findbuff
 						pop		edx
 						sub		edx,eax
 						.if ndir==0
@@ -279,10 +279,10 @@ FindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif edx==EN_CHANGE
 			;Update text buffers
 			.if eax==IDC_FINDTEXT
-				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof findbuff,offset findbuff
+				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof da.findbuff,offset da.findbuff
 				invoke FindInit,ha.hREd
 			.elseif eax==IDC_REPLACETEXT
-				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof replacebuff,offset replacebuff
+				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof da.replacebuff,offset da.replacebuff
 				invoke FindInit,ha.hREd
 			.endif
 		.endif
@@ -326,7 +326,7 @@ HexFind proc frType:DWORD
 		.endif
 		mov		ft.chrg.cpMax,0
 	.endif
-	mov		ft.lpstrText,offset findbuff
+	mov		ft.lpstrText,offset da.findbuff
 	;Do the find
 	invoke SendMessage,ha.hREd,EM_FINDTEXTEX,frType,offset ft
 	mov		fres,eax
@@ -356,9 +356,9 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		;Put text in edit boxes
 		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,EM_LIMITTEXT,255,0
-		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,WM_SETTEXT,0,offset findbuff
+		invoke SendDlgItemMessage,hWin,IDC_FINDTEXT,WM_SETTEXT,0,offset da.findbuff
 		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,EM_LIMITTEXT,255,0
-		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,WM_SETTEXT,0,offset replacebuff
+		invoke SendDlgItemMessage,hWin,IDC_REPLACETEXT,WM_SETTEXT,0,offset da.replacebuff
 		;Set find type
 		mov		eax,fr
 		and		eax,FR_HEX
@@ -409,8 +409,8 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,fr
 						and		eax,FR_HEX
 						or		eax,TRUE
-						invoke SendMessage,ha.hREd,EM_REPLACESEL,eax,offset replacebuff
-						invoke strlen,offset replacebuff
+						invoke SendMessage,ha.hREd,EM_REPLACESEL,eax,offset da.replacebuff
+						invoke strlen,offset da.replacebuff
 						test	fr,FR_HEX
 						.if ZERO?
 							add		eax,eax
@@ -453,10 +453,10 @@ HexFindDlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif edx==EN_CHANGE
 			;Update text buffers
 			.if eax==IDC_FINDTEXT
-				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof findbuff,offset findbuff
+				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof da.findbuff,offset da.findbuff
 				mov		fres,-1
 			.elseif eax==IDC_REPLACETEXT
-				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof replacebuff,offset replacebuff
+				invoke SendDlgItemMessage,hWin,eax,WM_GETTEXT,sizeof da.replacebuff,offset da.replacebuff
 				mov		fres,-1
 			.endif
 		.endif

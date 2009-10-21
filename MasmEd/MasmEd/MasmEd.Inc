@@ -163,9 +163,6 @@ IDC_OUT						equ 1006
 IDC_IMMOUT					equ 1022
 IDC_DBGREG					equ 1020
 IDC_DBGWATCH				equ 1024
-IDC_RAE						equ 1011
-IDC_RES						equ 1012
-IDC_HEX						equ 1013
 IDC_FILE					equ 1014
 IDC_PROPERTY				equ 1015
 IDC_BTNTABCLOSE				equ 1002
@@ -326,122 +323,122 @@ DEBUGTIP struct
 DEBUGTIP ends
 
 TABMEM struct
-	hwnd		dd ?
-	filename	db MAX_PATH dup (?)
-	ft			FILETIME <?>
-	nchange		dd ?
-	fchanged	dd ?
-	fupdate		dd ?
+	hwnd					HWND ?
+	filename				BYTE MAX_PATH dup (?)
+	ft						FILETIME <?>
+	nchange					DWORD ?
+	fchanged				DWORD ?
+	fupdate					DWORD ?
 TABMEM ends
 
 FILENOTIFYPATH struct
-	nCount		dd ?
-	path		db MAX_PATH dup(?)
+	nCount					DWORD ?
+	path					BYTE MAX_PATH dup(?)
 FILENOTIFYPATH ends
 
 FILENOTIFY struct
-	hThread		dd ?
-	lpPath		dd ?
-	nCount		dd ?
-	lpHandle	dd ?
-	lpPtrPth	dd ?
+	hThread					HANDLE ?
+	lpPath					DWORD ?
+	nCount					DWORD ?
+	lpHandle				DWORD ?
+	lpPtrPth				DWORD ?
 FILENOTIFY ends
 
 WINPOS struct
-	fMax		dd ?
-	fView		dd ?
-	x			dd ?
-	y			dd ?
-	wt			dd ?
-	ht			dd ?
-	htout		dd ?
-	wtfile		dd ?
-	wtprop		dd ?
-	htprop		dd ?
-	left		dd ?
-	top			dd ?
-	wttoolbox	dd ?
+	fMax					DWORD ?
+	fView					DWORD ?
+	x						DWORD ?
+	y						DWORD ?
+	wt						DWORD ?
+	ht						DWORD ?
+	htout					DWORD ?
+	wtfile					DWORD ?
+	wtprop					DWORD ?
+	htprop					DWORD ?
+	left					DWORD ?
+	top						DWORD ?
+	wttoolbox				DWORD ?
 WINPOS ends
 
 EDITOPT struct
-	tabsize		dd ?
-	exptabs		dd ?
-	indent		dd ?
-	hiliteline	dd ?
-	hilitecmnt	dd ?
-	session		dd ?
-	linenumber	dd ?
+	tabsize					DWORD ?
+	exptabs					DWORD ?
+	indent					DWORD ?
+	hiliteline				DWORD ?
+	hilitecmnt				DWORD ?
+	session					DWORD ?
+	linenumber				DWORD ?
 EDITOPT ends
 
 PRNPOS struct
-	margins		RECT <?>
-	pagesize	POINT <?>
-	nlinespage	dd ?
+	margins					RECT <?>
+	pagesize				POINT <?>
+	nlinespage				DWORD ?
 PRNPOS ends
 
 NAMEEXPORT struct
-	nType		dd ?
-	szFileName	db MAX_PATH dup(?)
-	nOutput		dd ?
-	fAuto		dd ?
+	nType					DWORD ?
+	szFileName				BYTE MAX_PATH dup(?)
+	nOutput					DWORD ?
+	fAuto					DWORD ?
 NAMEEXPORT ends
 
 GRIDSIZE struct
-	x			dd ?
-	y			dd ?
-	show		dd ?
-	snap		dd ?
-	tips		dd ?
-	color		dd ?
-	line		dd ?
-	stylehex	dd ?
+	x						DWORD ?
+	y						DWORD ?
+	show					DWORD ?
+	snap					DWORD ?
+	tips					DWORD ?
+	color					DWORD ?
+	line					DWORD ?
+	stylehex				DWORD ?
 GRIDSIZE ends
 
 MEDCOLOR struct
-	racol		RACOLOR <?>
-	toolback	dd ?
-	tooltext	dd ?
-	dialogback	dd ?
-	dialogtext	dd ?
-	styles		dd ?
-	words		dd ?
-	ccback		dd ?
-	cctext		dd ?
-	ttback		dd ?
-	tttext		dd ?
-	ttapi		dd ?
-	ttsel		dd ?
+	racol					RACOLOR <?>
+	toolback				DWORD ?
+	tooltext				DWORD ?
+	dialogback				DWORD ?
+	dialogtext				DWORD ?
+	styles					DWORD ?
+	words					DWORD ?
+	ccback					DWORD ?
+	cctext					DWORD ?
+	ttback					DWORD ?
+	tttext					DWORD ?
+	ttapi					DWORD ?
+	ttsel					DWORD ?
 MEDCOLOR ends
 
 THEME struct
-	szname		db 32 dup(?)
-	kwcol		dd 16 dup(?)
-	medcol		MEDCOLOR <>
+	szname					BYTE 32 dup(?)
+	kwcol					DWORD 16 dup(?)
+	medcol					MEDCOLOR <>
 THEME ends
 
 ifndef MENUINFO
 MENUINFO STRUCT
-	cbSize			DWORD	?
-	fMask			DWORD	?
-	dwstyle			DWORD	?
-	cyMax			DWORD	?
-	hbrBack			DWORD	?
-	dwContextHelpID	DWORD	?
-	dwMenuData		DWORD	?
+	cbSize					DWORD	?
+	fMask					DWORD	?
+	dwstyle					DWORD	?
+	cyMax					DWORD	?
+	hbrBack					DWORD	?
+	dwContextHelpID			DWORD	?
+	dwMenuData				DWORD	?
 MENUINFO ends
 endif
 
 MENUDATA struct
-	img		dd ?
-	tpe		dd ?
+	img						DWORD ?
+	tpe						DWORD ?
 MENUDATA ends
 
 PROPERTIES	struct
-	nSize			dd ?
-	nOwner			dd ?
-	nLine			dd ?
-	nEnd			dd ?
-	nType			db ?
+	nSize					DWORD ?
+	nOwner					DWORD ?
+	nLine					DWORD ?
+	nEnd					DWORD ?
+	nType					BYTE ?
 PROPERTIES ends
 
 .const
@@ -681,80 +678,74 @@ fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 szCaseTypes				db 'WPpc',0
 szGotoTypes				db 'pldcs',0
 
+pa						ADDINPROCS <OpenEditFile>
+
 .data?
 
-ha						ADDINHANDLES <?>
+ha						ADDINHANDLES <>
+da						ADDINDATA <>
+;File changed notifications
 fnpath					FILENOTIFYPATH MAXIMUM_WAIT_OBJECTS dup(<?>)
-fnhandle				dd MAXIMUM_WAIT_OBJECTS dup(?)
-fnptrpth				dd MAXIMUM_WAIT_OBJECTS dup(?)
-CommandLine				dd ?
-hRichEd					dd ?
-hIcon					dd ?
+fnhandle				DWORD MAXIMUM_WAIT_OBJECTS dup(?)
+fnptrpth				DWORD MAXIMUM_WAIT_OBJECTS dup(?)
+
+CommandLine				DWORD ?
+hRichEd					DWORD ?
+hIcon					DWORD ?
 nOutSel					DWORD ?
 nDbgSel					DWORD ?
-fVSplit					dd ?
-hReg					dd ?
-lpdwDisp				dd ?
-lpType					dd ?
-lpcbData				dd ?
-AppPath					db MAX_PATH dup(?)
-FileName				db MAX_PATH dup(?)
-MainFile				db MAX_PATH dup(?)
-DbgFileName				db MAX_PATH dup(?)
+fVSplit					DWORD ?
+lpdwDisp				DWORD ?
+lpType					DWORD ?
+lpcbData				DWORD ?
 ;Find
-findbuff				db 256 dup(?)
-replacebuff				db 256 dup(?)
 ft						FINDTEXTEX <>
-fr						dd ?
-fres					dd ?
-ndir					dd ?
+fr						DWORD ?
+fres					DWORD ?
+ndir					DWORD ?
 findchrg				CHARRANGE <>
 findpt					POINT <>
-fallfiles				dd ?
-ntab					dd ?
-findtabs				dd 256 dup(?)
-
-nLastLine				dd ?
-nLastSize				dd ?
-nLastPropLine			dd ?
-fTimer					dd ?
-						dd ?
-LineTxt					db 16384 dup(?)
-						dd ?
-tmpbuff					db 16384 dup(?)
-						dd ?
+fallfiles				DWORD ?
+ntab					DWORD ?
+findtabs				DWORD 256 dup(?)
+;RAEdit notification
+nLastLine				DWORD ?
+nLastSize				DWORD ?
+nLastPropLine			DWORD ?
+fTimer					DWORD ?
+;Subclassing
+lpOldRAEditProc			DWORD ?
+lpOldTabProc			DWORD ?
+lpOldImmediateProc		DWORD ?
+;Buffers and Arrays
+						DWORD ?
+LineTxt					BYTE 16384 dup(?)
+						DWORD ?
+tmpbuff					BYTE 16384 dup(?)
+						DWORD ?
+mnubuff					BYTE 8192 dup(?)
+ErrID					DWORD 128 dup(?)
+hCustDll				HMODULE 32 dup(?)
+;Print
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>
+
 icex					INITCOMMONCONTROLSEX <?>
-hCustDll				dd 32 dup(?)
-lpOldRAEditProc			dd ?
-winsize					WINSIZE <?>
-szInitFolder			db MAX_PATH dup(?)
-szSessionFile			db MAX_PATH dup(?)
-nErrID					dd ?
-ErrID					dd 128 dup(?)
-PathBin					db MAX_PATH dup(?)
-PathInc					db MAX_PATH dup(?)
-PathLib					db MAX_PATH dup(?)
-CompileRC				db 256 dup(?)
-Assemble				db 256 dup(?)
-Link					db 256 dup(?)
-DbgAssemble				db 256 dup(?)
-DbgLink					db 256 dup(?)
-fResNotify				dd ?
-mnupos					dd ?
-mnubuff					db 8192 dup(?)
-lpOldTabProc			dd ?
-tabinx					dd ?
-fUnicode				dd ?
-nTabInx					dd ?
-nCboBuild				dd ?
-dbginf					DEBUGINFO <>
+nErrID					DWORD ?
+fResNotify				DWORD ?
+mnupos					DWORD ?
+tabinx					DWORD ?
+fUnicode				DWORD ?
+nTabInx					DWORD ?
+nCboBuild				DWORD ?
+;Debug
 fDebugging				DWORD ?
 fMainThread				DWORD ?
 nUnsaved				DWORD ?
 ftexe					FILETIME <>
 nNewer					DWORD ?
 dbgpt					POINT <>
-lpOldImmediateProc		DWORD ?
+
+winsize					WINSIZE <?>
+dbginf					DEBUGINFO <>
 gotostack				DECLARE 32 dup(<?>)

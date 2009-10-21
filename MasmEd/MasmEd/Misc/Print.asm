@@ -101,7 +101,7 @@ Print proc uses ebx
 	xor		edx,edx
 	div		ecx
 	mov		ppos.nlinespage,eax
-	invoke RegSetValueEx,hReg,addr szPrnPos,0,REG_BINARY,addr ppos,sizeof ppos
+	invoke RegSetValueEx,ha.hReg,addr szPrnPos,0,REG_BINARY,addr ppos,sizeof ppos
 	mov		eax,lfnt.lfWeight
 	mov		lf.lfWeight,eax
 	invoke CreateFontIndirect,addr lf
