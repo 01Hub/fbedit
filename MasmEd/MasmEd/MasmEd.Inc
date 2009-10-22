@@ -20,7 +20,7 @@ includelib gdi32.lib
 includelib ole32.lib
 includelib advapi32.lib
 
-include Inc\Addins.inc
+include ..\Addins\Addins.inc
 
 include Inc\RAEdit.inc
 includelib ..\Lib\RAEdit.lib

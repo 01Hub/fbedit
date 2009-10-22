@@ -65,7 +65,7 @@ MinorFiles=*.res;*.obj;
 50=Misc\DoNotDebug.dlg
 51=Opt\Debug.asm
 52=..\Debug.txt
-53=Inc\Addins.inc
+53=..\Addins\Addins.inc
 54=Misc\Addins.asm
 
 [MakeFiles]
@@ -278,7 +278,7 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 50=7
 51=1
 52=8
-53=1
+53=9
 54=1
 
 [Find]
@@ -338,7 +338,7 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,17521
+2=0,0,687,524,426
 1=0,0,0,0,53959
 11=0,0,0,0,9715
 22=0,0,0,0,9221
@@ -384,7 +384,7 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,1087
 52=0,0,0,0,5186
-53=0,0,0,0,673
+53=0,0,0,0,0
 54=0,0,0,0,1997
 
 [BookMark]
@@ -402,7 +402,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,38,54
+AutoLoad=1,2,53
 [Collapse]
 2=
 1=,,,,,,,,
