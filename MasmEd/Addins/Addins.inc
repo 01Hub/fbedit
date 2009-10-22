@@ -94,6 +94,7 @@ ADDINPROCS struct
 	lpOutputSelect			DWORD ?
 	lpOutputShow			DWORD ?
 	lpOutputString			DWORD ?
+	lpOutputClear			DWORD ?
 ADDINPROCS ends
 
 ;Edit window ID

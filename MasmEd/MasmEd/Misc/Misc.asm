@@ -1522,6 +1522,18 @@ OutputString proc uses ebx,lpString:DWORD
 
 OutputString endp
 
+OutputClear proc uses ebx,lpString:DWORD
+
+	mov		ebx,ha.hOut
+	.if nOutSel
+		mov		ebx,ha.hImmOut
+	.endif
+	invoke SendMessage,ebx,WM_SETTEXT,0,0
+	invoke SendMessage,ebx,EM_SCROLLCARET,0,0
+	ret
+
+OutputClear endp
+
 OutputShow proc uses ebx edi,fShow:DWORD
 
 	mov		ebx,ha.hOut

@@ -129,6 +129,7 @@ LoadAddins proc uses esi,hWin:HWND
 				invoke GetProcAddress,hDll,addr szAddinProc
 				mov		[esi].ADDIN.lpAddinProc,eax
 				inc		nInx
+				lea		esi,[esi+sizeof ADDIN]
 			.endif
 			invoke FindNextFile,hwfd,addr wfd
 			or		eax,eax
