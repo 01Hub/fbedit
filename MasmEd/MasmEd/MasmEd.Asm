@@ -9,6 +9,7 @@ include Misc\Misc.asm
 include Misc\FileIO.asm
 include Misc\Find.asm
 include Misc\Make.asm
+include Misc\Addins.asm
 include Opt\KeyWords.asm
 include Opt\MenuOption.asm
 include Opt\TabOptions.Asm
@@ -1978,6 +1979,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,offset DebugCallback
 		mov		dbginf.lpCallBack,eax
 		invoke SetDebugInfo,addr dbginf
+		invoke LoadAddins,hWin
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
 		;Menu and toolbar has the same ID's

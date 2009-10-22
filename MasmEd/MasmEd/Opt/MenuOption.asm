@@ -52,9 +52,14 @@ SetToolMenu proc
 	LOCAL	mnu:MENU
 	LOCAL	nInx:DWORD
 	LOCAL	nID:DWORD
+	LOCAL	mii:MENUITEMINFO
 
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
 	invoke GetMenu,ha.hWnd
-	invoke GetSubMenu,eax,6
+	mov		edx,eax
+	invoke GetMenuItemInfo,edx,IDM_TOOLS,FALSE,addr mii
+	mov		eax,mii.hSubMenu
 	mov		hSubMnu,eax
 	mov		nID,20000
 	invoke ClearMenu,hSubMnu,nID
@@ -86,9 +91,14 @@ SetHelpMenu proc
 	LOCAL	mnu:MENU
 	LOCAL	nInx:DWORD
 	LOCAL	nID:DWORD
+	LOCAL	mii:MENUITEMINFO
 
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
 	invoke GetMenu,ha.hWnd
-	invoke GetSubMenu,eax,8
+	mov		edx,eax
+	invoke GetMenuItemInfo,edx,IDM_HELP,FALSE,addr mii
+	mov		eax,mii.hSubMenu
 	mov		hSubMnu,eax
 	mov		nID,30000
 	invoke ClearMenu,hSubMnu,nID

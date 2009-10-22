@@ -78,9 +78,9 @@ Options=52
 [Size]
 5=0,0,0,0
 3=0,0,0,0,30
-1=0,0,0,0,19465
+1=0,0,0,0,10086
 7=0,0,0,0,16656
-2=0,0,0,0,658
+2=0,0,0,0,2394
 4=0,0,0,0,1708
 6=0,0,0,0,62
 [BookMark]
@@ -98,7 +98,7 @@ Options=52
 0=
 
 [AutoLoad]
-1=1
+AutoLoad=1,2
 [Find]
 1="szInstallDllEx"
 2="GetOptions"
@@ -124,7 +124,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
