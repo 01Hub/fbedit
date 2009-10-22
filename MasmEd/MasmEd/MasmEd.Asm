@@ -1776,7 +1776,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Client
 		invoke GetDlgItem,hWin,IDC_CLIENT
 		mov		ha.hClient,eax
-		; Output tab
+		;Output tab
 		invoke GetDlgItem,hWin,IDC_TABOUT
 		mov		ha.hTabOut,eax
 		mov		tci.imask,TCIF_TEXT
@@ -1785,7 +1785,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTabOut,TCM_SETCURSEL,eax,0
 		mov		tci.pszText,offset szImmediate
 		invoke SendMessage,ha.hTabOut,TCM_INSERTITEM,999,addr tci
-		; Debug tab
+		;Debug tab
 		invoke GetDlgItem,hWin,IDC_TABWATCH
 		mov		ha.hTabDbg,eax
 		mov		tci.imask,TCIF_TEXT
@@ -1963,7 +1963,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetPropertyDefs
 		;Set hilite words
 		invoke SetKeyWords
-		invoke ResetMenu
 		mov		eax,hWin
 		mov		dbginf.hWnd,eax
 		mov		eax,ha.hOut
@@ -1980,8 +1979,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.lpCallBack,eax
 		invoke SetDebugInfo,addr dbginf
 		invoke LoadAddins,hWin
+		invoke ResetMenu
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
+		invoke PostAddinMessage,hWin,AIM_COMMAND,wParam,lParam,0,HOOK_COMMAND
+		.if eax
+			jmp		Ex
+		.endif
 		;Menu and toolbar has the same ID's
 		mov		eax,wParam
 		mov		edx,eax
@@ -2909,6 +2913,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetFocus,ha.hREd
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke PostAddinMessage,hWin,AIM_CLOSE,wParam,lParam,0,HOOK_CLOSE
+		.if eax
+			jmp		Ex
+		.endif
 		mov		nTabInx,-1
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
@@ -2959,6 +2967,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_DESTROY
+		invoke PostAddinMessage,hWin,AIM_DESTROY,wParam,lParam,0,HOOK_DESTROY
 		mov		nInx,1
 		mov		ebx,offset hCustDll
 		.while nInx<=32
@@ -3252,6 +3261,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif
+	.elseif eax==AIM_GETHANDLES
+		mov		eax,offset ha
+		jmp		ExRet
+	.elseif eax==AIM_GETPROCS
+		mov		eax,offset pa
+		jmp		ExRet
+	.elseif eax==AIM_GETDATA
+		mov		eax,offset da
+		jmp		ExRet
+	.elseif eax==AIM_GETMENUID
+		mov		edx,wParam
+		.if !edx
+			inc		edx
+		.endif
+		mov		eax,MenuIDAddins
+		add		MenuIDAddins,edx
+		jmp		ExRet
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		jmp		ExRet

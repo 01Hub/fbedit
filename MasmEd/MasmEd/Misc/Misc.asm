@@ -604,6 +604,7 @@ ResetMenu proc uses esi edi
 	mov		ha.hContextMnu,eax
 	invoke SetToolMenu
 	invoke SetHelpMenu
+	invoke PostAddinMessage,ha.hWnd,AIM_MENUUPDATE,ha.hMnu,ha.hContextMnu,0,HOOK_MENUUPDATE
 	invoke CoolMenu
 	ret
 
@@ -1507,11 +1508,46 @@ RemoveFromRegistry proc uses ebx
 
 RemoveFromRegistry endp
 
-PutString proc lpString:DWORD
+OutputString proc uses ebx,lpString:DWORD
 
+	mov		ebx,ha.hOut
+	.if nOutSel
+		mov		ebx,ha.hImmOut
+	.endif
+	invoke SendMessage,ebx,EM_SETSEL,-1,-1
+	invoke SendMessage,ebx,EM_REPLACESEL,FALSE,lpString
+	invoke SendMessage,ebx,EM_REPLACESEL,FALSE,addr szCr
+	invoke SendMessage,ebx,EM_SCROLLCARET,0,0
 	ret
 
-PutString endp
+OutputString endp
+
+OutputShow proc uses ebx edi,fShow:DWORD
+
+	mov		ebx,ha.hOut
+	mov		edi,ha.hImmOut
+	.if nOutSel
+		mov		ebx,ha.hImmOut
+		mov		edi,ha.hOut
+	.endif
+	.if fShow
+		or		wpos.fView,4
+		invoke ShowWindow,ebx,SW_SHOWNA
+		invoke ShowWindow,edi,SW_HIDE
+		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+	.else
+		test	wpos.fView,4
+		.if !ZERO?
+			xor		wpos.fView,4
+			invoke ShowWindow,ebx,SW_HIDE
+			invoke ShowWindow,edi,SW_HIDE
+			invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+		.endif
+	.endif
+	mov		fTimer,1
+	ret
+
+OutputShow endp
 
 OutputSelect proc nSel:DWORD
 

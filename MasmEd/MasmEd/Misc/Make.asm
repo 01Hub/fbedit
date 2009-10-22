@@ -187,12 +187,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	LOCAL	msg:MSG
 
 	invoke OutputSelect,0
-	test	wpos.fView,4
-	.if ZERO?
-		or		wpos.fView,4
-	.endif
-	invoke ShowWindow,ha.hOut,SW_SHOWNA
-	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+	invoke OutputShow,TRUE
 	movzx	eax,da.MainFile
 	.if !eax
 		invoke SendMessage,ha.hOut,WM_SETTEXT,0,addr szNoMain

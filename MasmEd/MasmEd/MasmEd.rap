@@ -282,16 +282,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 54=1
 
 [Find]
-1="GetSubMenu"
-2="IDC_FILE"
-3="hReg"
-4="DbgLink"
-5="DbgAssemble"
-6="Link"
-7="Assemble"
-8="CompileRC"
-9="PathLib"
-10="PathInc"
+1="GetMenuItemInfo"
+2="GetSubMenu"
+3="IDC_FILE"
+4="hReg"
+5="DbgLink"
+6="DbgAssemble"
+7="Link"
+8="Assemble"
+9="CompileRC"
+10="PathLib"
 
 [VersionControl]
 Settings=1246
@@ -338,22 +338,22 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,426
-1=0,0,0,0,53959
-11=0,0,0,0,9715
+2=0,0,687,524,11071
+1=0,0,0,0,67403
+11=0,0,0,0,32235
 22=0,0,0,0,9221
 10=0,0,0,0,10084
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
-17=0,0,0,0,1888
+17=0,0,0,0,1122
 16=0,0,0,0
 6=0,0,0,0
 3=0,0,0,0,111
 18=0,0,0,0
 15=0,0,687,524,8711
 30=0,0,0,0
-13=0,0,0,0,6744
+13=0,0,0,0,4777
 21=0,0,0,0,1822
 29=0,0,0,0,907
 28=0,0,0,0,21906
@@ -384,8 +384,8 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,1087
 52=0,0,0,0,5186
-53=0,0,0,0,0
-54=0,0,0,0,1997
+53=0,0,0,0,3349
+54=0,0,0,0,2796
 
 [BookMark]
 0=
@@ -402,10 +402,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53
+AutoLoad=1,2,53,54,11,17,13
 [Collapse]
 2=
-1=,,,,,,,,
+1=,,,,,,,,,
 31=
 23=
 3=
