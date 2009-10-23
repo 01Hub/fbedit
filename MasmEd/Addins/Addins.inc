@@ -3,7 +3,7 @@
 AIM_GETHANDLES				equ WM_USER+50			;returns a poiner to a struct containing all useful handles:see structures below
 AIM_GETPROCS				equ WM_USER+51			;returns a poiner to a struct containing some procs in RadASM:see structures below
 AIM_GETDATA					equ WM_USER+52			;returns a poiner to a struct comtaining data pointers:see structures below
-AIM_GETMENUID				equ WM_USER+53			;Returns a free menu id. If you need more than one wParam contains the number of id's.
+AIM_GETMENUID				equ WM_USER+53			;Returns a free menu id. If you need more than one wParam contains the number of id's to reserve.
 
 ;Messages sendt to addins
 AIM_ADDINSLOADED			equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. wParam=0, lParam=0
@@ -11,13 +11,35 @@ AIM_COMMAND					equ WM_USER+101			;This message is sendt to the addins when user
 AIM_CLOSE					equ WM_USER+102			;MasmEd requests closing. Return TRUE to prevent MasmEd from closing. wParam and lParam as for WM_CLOSE
 AIM_DESTROY					equ WM_USER+103			;MasmEd is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. wParam and lParam as for WM_DESTROY
 AIM_MENUUPDATE				equ WM_USER+104			;MasmEd has updated menues. Now is the time to add menu items. Always return FALSE. wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here.
+AIM_NEWFILE					equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent MasmEd from creating the file. wParam=IDC_RAE or IDC_RES, lParam=lpFileName
+AIM_FILEOPEN				equ WM_USER+106			;A file is about to be opened.. Return TRUE to prevent MasmEd from opening the file. wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
+AIM_FILEOPENED				equ WM_USER+107			;A file has ben opened.. Always return FALSE. wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
+AIM_FILECLOSE				equ WM_USER+108
+AIM_FILECLOSED				equ WM_USER+109
+AIM_FILESAVE				equ WM_USER+110
+AIM_FILESAVEAS				equ WM_USER+111
+AIM_FILESAVEED				equ WM_USER+112
+AIM_GETMODIFY				equ WM_USER+113
+AIM_MAKEBEGIN				equ WM_USER+114
+AIM_MAKEDONE				equ WM_USER+115
 
 ;HOOK flags returned in hook1 of HOOK structure
-HOOK_ADDINSLOADED			equ 1
-HOOK_COMMAND				equ 2
-HOOK_CLOSE					equ 4
-HOOK_DESTROY				equ 8
-HOOK_MENUUPDATE				equ 16
+HOOK_ADDINSLOADED			equ 0001h
+HOOK_COMMAND				equ 0002h
+HOOK_CLOSE					equ 0004h
+HOOK_DESTROY				equ 0008h
+HOOK_MENUUPDATE				equ 0010h
+HOOK_NEWFILE				equ 0020h
+HOOK_FILEOPEN				equ 0040h
+HOOK_FILEOPENED				equ 0080h
+HOOK_FILECLOSE				equ 0100h
+HOOK_FILECLOSED				equ 0200h
+HOOK_FILESAVE				equ 0400h
+HOOK_FILESAVEAS				equ 0800h
+HOOK_FILESAVEED				equ 1000h
+HOOK_GETMODIFY				equ 2000h
+HOOK_MAKESTART				equ 4000h
+HOOK_MAKEDONE				equ 8000h
 
 HOOK struct
 	hook1					DWORD ?					;Combinations of HOOK_ flags
@@ -95,12 +117,16 @@ ADDINPROCS struct
 	lpOutputShow			DWORD ?
 	lpOutputString			DWORD ?
 	lpOutputClear			DWORD ?
+	lpTabToolAdd			DWORD ?
+	lpTabToolActivate		DWORD ?
 ADDINPROCS ends
 
 ;Edit window ID
 IDC_RAE						equ 1011
 IDC_RES						equ 1012
 IDC_HEX						equ 1013
+IDC_EXECUTE					equ 1014
+IDC_USER					equ 1015
 
 ;MasmEd.mnu
 IDM_MENU					equ 10000

@@ -155,7 +155,12 @@ WantToSave proc hWin:DWORD,lpFileName:DWORD
 	LOCAL	buffer[512]:BYTE
 	LOCAL	buffer1[2]:BYTE
 
-	invoke SendMessage,hWin,EM_GETMODIFY,0,0
+	invoke GetWindowLong,hWin,GWL_ID
+	.if eax==IDC_USER
+		invoke PostAddinMessage,hWin,AIM_GETMODIFY,eax,lpFileName,0,HOOK_GETMODIFY
+	.else
+		invoke SendMessage,hWin,EM_GETMODIFY,0,0
+	.endif
 	.if eax
 		invoke strcpy,addr buffer,offset szWannaSave
 		invoke strcat,addr buffer,lpFileName
@@ -318,7 +323,7 @@ LoadRCFile proc lpFileName:DWORD
 
 LoadRCFile endp
 
-OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
+OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 	LOCAL	buffer[MAX_PATH*2]:BYTE
 	LOCAL	fCtrl:DWORD
 
@@ -332,7 +337,11 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 			invoke strlen,addr buffer
 			mov		eax,dword ptr buffer[eax-4]
 			.if eax=='EXE.' || eax=='TAB.' || eax=='MOC.'
-				invoke WinExec,lpFileName,SW_SHOWNORMAL
+				invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,IDC_EXECUTE,lpFileName,0,HOOK_FILEOPEN
+				.if !eax
+					invoke WinExec,lpFileName,SW_SHOWNORMAL
+					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_EXECUTE,lpFileName,0,HOOK_FILEOPENED
+				.endif
 				ret
 			.endif
 			xor		eax,eax
@@ -353,58 +362,74 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 				.if eax
 					invoke WantToSave,ha.hREd,offset da.FileName
 					.if !eax
-						invoke LoadRCFile,lpFileName
-						.if eax
-							invoke TabToolGetInx,ha.hREd
-							invoke TabToolSetText,eax,lpFileName
-							invoke SetWinCaption,lpFileName
-							invoke strcpy,offset da.FileName,lpFileName
+						invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,IDC_RES,lpFileName,0,HOOK_FILEOPEN
+						.if !eax
+							invoke LoadRCFile,lpFileName
+							.if eax
+								invoke TabToolGetInx,ha.hREd
+								invoke TabToolSetText,eax,lpFileName
+								invoke SetWinCaption,lpFileName
+								invoke strcpy,offset da.FileName,lpFileName
+							.endif
 						.endif
 					.endif
 				.else
-					invoke LoadRCFile,lpFileName
-					.if eax
-						invoke ShowWindow,ha.hREd,SW_HIDE
-						mov		eax,ha.hRes
-						mov		ha.hREd,eax
-						invoke TabToolAdd,ha.hREd,lpFileName
-						invoke SendMessage,ha.hWnd,WM_SIZE,0,0
-						invoke ShowWindow,ha.hREd,SW_SHOW
-						invoke SetWinCaption,lpFileName
-						invoke strcpy,offset da.FileName,lpFileName
+					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,IDC_RES,lpFileName,0,HOOK_FILEOPEN
+					.if !eax
+						invoke LoadRCFile,lpFileName
+						.if eax
+							invoke ShowWindow,ha.hREd,SW_HIDE
+							mov		eax,ha.hRes
+							mov		ha.hREd,eax
+							invoke TabToolAdd,ha.hREd,lpFileName
+							invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+							invoke ShowWindow,ha.hREd,SW_SHOW
+							invoke SetWinCaption,lpFileName
+							invoke strcpy,offset da.FileName,lpFileName
+							invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
+						.endif
 					.endif
 				.endif
 			.else
-				invoke LoadCursor,0,IDC_WAIT
-				invoke SetCursor,eax
 				invoke strlen,addr buffer
 				mov		eax,dword ptr buffer[eax-4]
 				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.'
-					invoke CreateRAEdit
-					invoke TabToolAdd,ha.hREd,offset da.FileName
-					invoke LoadEditFile,ha.hREd,offset da.FileName
-					invoke SendMessage,ha.hREd,REM_LINENUMBERWIDTH,32,0
-					invoke IsFileCodeFile,offset da.FileName
-					.if eax
-						invoke SendMessage,ha.hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
-						invoke SendMessage,ha.hREd,REM_SETBLOCKS,0,0
-						.if fDebugging
-							invoke SendMessage,ha.hREd,REM_READONLY,0,TRUE
-						.endif
-					.endif
-					mov		eax,edopt.hiliteline
-					.if eax
-						mov		eax,2
-					.endif
-					invoke SendMessage,ha.hREd,REM_HILITEACTIVELINE,0,eax
+					mov		ebx,IDC_RAE
 				.else
-					invoke CreateRAHexEd
-					invoke TabToolAdd,ha.hREd,offset da.FileName
-					invoke LoadHexFile,ha.hREd,offset da.FileName
+					mov		ebx,IDC_HEX
 				.endif
-				invoke TabToolSetChanged,ha.hREd,FALSE
-				invoke LoadCursor,0,IDC_ARROW
-				invoke SetCursor,eax
+				invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,ebx,lpFileName,0,HOOK_FILEOPEN
+				.if !eax
+					invoke LoadCursor,0,IDC_WAIT
+					invoke SetCursor,eax
+					.if ebx==IDC_RAE
+						invoke CreateRAEdit
+						invoke TabToolAdd,ha.hREd,offset da.FileName
+						invoke LoadEditFile,ha.hREd,offset da.FileName
+						invoke SendMessage,ha.hREd,REM_LINENUMBERWIDTH,32,0
+						invoke IsFileCodeFile,offset da.FileName
+						.if eax
+							invoke SendMessage,ha.hREd,REM_SETCOMMENTBLOCKS,addr szCmntStart,addr szCmntEnd
+							invoke SendMessage,ha.hREd,REM_SETBLOCKS,0,0
+							.if fDebugging
+								invoke SendMessage,ha.hREd,REM_READONLY,0,TRUE
+							.endif
+						.endif
+						mov		eax,edopt.hiliteline
+						.if eax
+							mov		eax,2
+						.endif
+						invoke SendMessage,ha.hREd,REM_HILITEACTIVELINE,0,eax
+					.else
+						invoke CreateRAHexEd
+						invoke TabToolAdd,ha.hREd,offset da.FileName
+						invoke LoadHexFile,ha.hREd,offset da.FileName
+					.endif
+					invoke TabToolSetChanged,ha.hREd,FALSE
+					invoke LoadCursor,0,IDC_ARROW
+					invoke SetCursor,eax
+					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,ebx,lpFileName,0,HOOK_FILEOPENED
+				.endif
 			.endif
 		.else
 			invoke strcpy,addr buffer,offset szOpenFileFail
@@ -412,7 +437,9 @@ OpenEditFile proc uses esi,lpFileName:DWORD,fType:DWORD
 			invoke MessageBox,ha.hWnd,addr buffer,offset szAppName,MB_OK or MB_ICONERROR
 		.endif
 	.endif
-	invoke SetFocus,ha.hREd
+	.if ha.hREd
+		invoke SetFocus,ha.hREd
+	.endif
 	ret
 
 OpenEditFile endp

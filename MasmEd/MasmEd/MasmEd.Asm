@@ -726,11 +726,14 @@ CreateRAHexEd endp
 
 CreateNew proc
 
-	invoke strcpy,offset da.FileName,offset szNewFile
-	invoke CreateRAEdit
-	invoke TabToolAdd,ha.hREd,offset da.FileName
-	invoke SetWinCaption,offset da.FileName
-	invoke SetFocus,ha.hREd
+	invoke PostAddinMessage,ha.hWnd,AIM_NEWFILE,IDC_RAE,offset szNewFile,0,HOOK_NEWFILE
+	.if !eax
+		invoke strcpy,offset da.FileName,offset szNewFile
+		invoke CreateRAEdit
+		invoke TabToolAdd,ha.hREd,offset da.FileName
+		invoke SetWinCaption,offset da.FileName
+		invoke SetFocus,ha.hREd
+	.endif
 	ret
 
 CreateNew endp
@@ -738,19 +741,22 @@ CreateNew endp
 CreateNewRes proc
 	LOCAL	hMem:DWORD
 
-	invoke strcpy,offset da.FileName,offset szNewFile
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
-	mov		hMem,eax
-	invoke GlobalLock,hMem
-	invoke SendMessage,ha.hResEd,PRO_OPEN,offset da.FileName,hMem
-	invoke ShowWindow,ha.hREd,SW_HIDE
-	mov		eax,ha.hRes
-	mov		ha.hREd,eax
-	invoke TabToolAdd,ha.hREd,offset da.FileName
-	invoke SetWinCaption,offset da.FileName
-	invoke ShowWindow,ha.hREd,SW_SHOW
-	invoke SendMessage,ha.hWnd,WM_SIZE,0,0
-	invoke SetFocus,ha.hREd
+	invoke PostAddinMessage,ha.hWnd,AIM_NEWFILE,IDC_RES,offset szNewFile,0,HOOK_NEWFILE
+	.if !eax
+		invoke strcpy,offset da.FileName,offset szNewFile
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4096
+		mov		hMem,eax
+		invoke GlobalLock,hMem
+		invoke SendMessage,ha.hResEd,PRO_OPEN,offset da.FileName,hMem
+		invoke ShowWindow,ha.hREd,SW_HIDE
+		mov		eax,ha.hRes
+		mov		ha.hREd,eax
+		invoke TabToolAdd,ha.hREd,offset da.FileName
+		invoke SetWinCaption,offset da.FileName
+		invoke ShowWindow,ha.hREd,SW_SHOW
+		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+		invoke SetFocus,ha.hREd
+	.endif
 	ret
 
 CreateNewRes endp
@@ -2016,18 +2022,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SaveEditAs,ha.hREd,offset da.FileName
 				.endif
 			.elseif eax==IDM_FILE_CLOSE || eax==IDC_BTNTABCLOSE
-				invoke WantToSave,ha.hREd,offset da.FileName
+				invoke strcpy,addr buffer,offset da.FileName
+				invoke GetWindowLong,ha.hREd,GWL_ID
+				mov		ebx,eax
+				invoke PostAddinMessage,ha.hREd,AIM_FILECLOSE,ebx,addr buffer,0,HOOK_FILECLOSE
 				.if !eax
-					mov		eax,ha.hREd
-					.if eax!=ha.hRes
-						invoke DeleteGoto,ha.hREd
-						invoke DestroyWindow,ha.hREd
-						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
-						invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+					invoke WantToSave,ha.hREd,offset da.FileName
+					.if !eax
+						invoke PostAddinMessage,ha.hREd,AIM_FILECLOSED,ebx,addr buffer,0,HOOK_FILECLOSED
+						.if ebx!=IDC_RES && ebx!=IDC_USER
+							.if ebx==IDC_RAE
+								invoke DeleteGoto,ha.hREd
+								invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
+								invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+							.endif
+							invoke DestroyWindow,ha.hREd
+						.endif
+						invoke TabToolDel,ha.hREd
 					.endif
-					invoke TabToolDel,ha.hREd
+					mov		fTimer,1
 				.endif
-				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSE_ALL
 				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE

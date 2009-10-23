@@ -560,7 +560,7 @@ fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 szCaseTypes				db 'WPpc',0
 szGotoTypes				db 'pldcs',0
 
-pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear>
+pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate>
 
 .data
 

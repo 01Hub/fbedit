@@ -282,16 +282,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 54=1
 
 [Find]
-1="GetMenuItemInfo"
-2="GetSubMenu"
-3="IDC_FILE"
-4="hReg"
-5="DbgLink"
-6="DbgAssemble"
-7="Link"
-8="Assemble"
-9="CompileRC"
-10="PathLib"
+1="AIM_FILECLOSE"
+2="heapal"
+3="UpdateAll,WM_DESTROY"
+4="GetMenuItemInfo"
+5="GetSubMenu"
+6="IDC_FILE"
+7="hReg"
+8="DbgLink"
+9="DbgAssemble"
+10="Link"
 
 [VersionControl]
 Settings=1246
@@ -303,7 +303,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -338,11 +338,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,19977
-1=0,0,0,0,67403
-11=0,0,0,0,31997
+2=0,0,687,524,20004
+1=0,0,0,0,56259
+11=0,0,0,0,25009
 22=0,0,0,0,9221
-10=0,0,0,0,10084
+10=0,0,0,0,8199
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -361,7 +361,7 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,6716
+14=0,0,0,0,9306
 12=0,0,0,0,11035
 31=0,0,0,0,2186
 32=0,0,0,0
@@ -384,8 +384,8 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,1087
 52=0,0,0,0,5186
-53=0,0,0,0,3358
-54=0,0,0,0,2687
+53=0,0,0,0,1894
+54=0,0,0,0,2828
 
 [BookMark]
 0=
@@ -402,7 +402,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,54,11,17,13
+AutoLoad=1,2,53,54,11,17,13,10,14
 [Collapse]
 2=
 1=,,,,,,,,,

@@ -1177,7 +1177,7 @@ IsFileCodeFile proc lpFile:DWORD
 
 IsFileCodeFile endp
 
-UpdateAll proc uses ebx,nFunction:DWORD
+UpdateAll proc uses ebx esi,nFunction:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	hefnt:HEFONT
@@ -1222,13 +1222,22 @@ UpdateAll proc uses ebx,nFunction:DWORD
 			.elseif eax==WM_CLOSE
 				mov		eax,nInx
 				.if eax!=nTabInx
-					invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_USER
+						invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_GETMODIFY,IDC_USER,[ebx].TABMEM.filename,0,HOOK_GETMODIFY
+					.else
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+					.endif
 					.if eax
 						invoke TabToolGetInx,[ebx].TABMEM.hwnd
 						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 						invoke TabToolActivate
 						invoke SetFocus,ha.hREd
-						invoke WantToSave,ha.hREd,offset da.FileName
+						invoke GetWindowLong,ha.hREd,GWL_ID
+						invoke PostAddinMessage,ha.hREd,AIM_FILECLOSE,eax,offset da.FileName,0,HOOK_FILECLOSE
+						.if !eax
+							invoke WantToSave,ha.hREd,offset da.FileName
+						.endif
 						or		eax,eax
 						jne		Ex
 					.endif
@@ -1236,12 +1245,16 @@ UpdateAll proc uses ebx,nFunction:DWORD
 			.elseif eax==CLOSE_ALL
 				mov		eax,nInx
 				.if eax!=nTabInx
-					mov		eax,[ebx].TABMEM.hwnd
-					.if eax!=ha.hRes
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					mov		esi,eax
+					.if esi==IDC_RAE
 						invoke DeleteGoto,[ebx].TABMEM.hwnd
+						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
+					.endif
+					invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_FILECLOSED,esi,[ebx].TABMEM.filename,0,HOOK_FILECLOSED
+					.if eax!=IDC_RES && eax!=IDC_USER
 						invoke DestroyWindow,[ebx].TABMEM.hwnd
 					.endif
-					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
 					invoke TabToolDel,[ebx].TABMEM.hwnd
 				.endif
 			.elseif eax==WM_DESTROY
