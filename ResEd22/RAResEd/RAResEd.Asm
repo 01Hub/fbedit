@@ -2067,6 +2067,18 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		[edi].RADIALOG.style,eax
 					mov		eax,[esi].DIALOG.exstyle
 					mov		[edi].RADIALOG.exstyle,eax
+					mov		eax,[esi].DIALOG.dux
+					invoke ConvertDuxToPix,eax
+					mov		[edi].RADIALOG.x,eax
+					mov		eax,[esi].DIALOG.duy
+					invoke ConvertDuyToPix,eax
+					mov		[edi].RADIALOG.y,eax
+					mov		eax,[esi].DIALOG.duccx
+					invoke ConvertDuxToPix,eax
+					mov		[edi].RADIALOG.ccx,eax
+					mov		eax,[esi].DIALOG.duccy
+					invoke ConvertDuyToPix,eax
+					mov		[edi].RADIALOG.ccy,eax
 					.if [esi].DIALOG.ntype==23
 						invoke strcpyn,addr [edi].RADIALOG.caption,addr [esi].DIALOG.class,32
 					.else
