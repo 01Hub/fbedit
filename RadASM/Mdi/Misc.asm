@@ -286,3 +286,44 @@ GetWinSize proc hWin:HWND,fDialog:DWORD
 
 GetWinSize endp
 
+DoHelp proc lpszHelpFile:DWORD,lpszWord:DWORD
+
+	invoke strlen,lpszHelpFile
+	mov		edx,lpszHelpFile
+	mov		edx,[edx+eax-4]
+	and		edx,5F5F5FFFh
+	.if edx=='MHC.'
+		.if !hHtmlOcx
+			invoke LoadLibrary,offset szhhctrl
+			mov		hHtmlOcx,eax
+			invoke GetProcAddress,hHtmlOcx,offset szHtmlHelpA
+			mov		pHtmlHelpProc,eax
+		.endif
+		.if hHtmlOcx
+			mov		hhaklink.cbStruct,SizeOf HH_AKLINK
+			mov		hhaklink.fReserved,FALSE
+			mov		eax,lpszWord
+			mov		hhaklink.pszKeywords,eax
+			mov		hhaklink.pszUrl,NULL
+			mov		hhaklink.pszMsgText,NULL
+			mov		hhaklink.pszMsgTitle,NULL
+			mov		hhaklink.pszWindow,NULL
+			mov		hhaklink.fIndexOnFail,TRUE
+			push	0
+			push	HH_DISPLAY_TOPIC
+			push	lpszHelpFile
+			push	0
+			Call	[pHtmlHelpProc]
+			mov		hHHwin,eax
+			push	offset hhaklink
+			push	HH_KEYWORD_LOOKUP
+			push	lpszHelpFile
+			push	0
+			Call	[pHtmlHelpProc]
+		.endif
+	.elseif edx=='PLH.'
+		invoke WinHelp,hWnd,lpszHelpFile,HELP_KEY,lpszWord
+	.endif
+	ret
+
+DoHelp endp

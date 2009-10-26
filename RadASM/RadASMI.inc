@@ -161,6 +161,21 @@ wsprintf				equ <wsprintfA>
 
 ;#########################################################################
 
+;Help
+HH_AKLINK struct
+	cbStruct		dd ?	;As Integer
+	fReserved		dd ?	;As Boolean
+	pszKeywords		dd ?	;As ZString Ptr
+	pszUrl			dd ?	;As ZString Ptr
+	pszMsgText		dd ?	;As ZString Ptr
+	pszMsgTitle		dd ?	;As ZString Ptr
+	pszWindow		dd ?	;As ZString Ptr
+	fIndexOnFail	dd ?	;As Boolean
+HH_AKLINK ends
+
+HH_DISPLAY_TOPIC	equ 0000h
+HH_KEYWORD_LOOKUP	equ 000Dh
+
 ;RadASM
 RADCOLOR struct
 	output			dd ?
@@ -1168,7 +1183,7 @@ lpAddWordToWordList		dd offset AddWordToWordList
 lpRefreshProperty		dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName					db 'RadASM version 2.2.1.8b',0
+AppName					db 'RadASM version 2.2.1.8c',0
 DisplayName				db 'RadASM',0
 AboutMsg				db 'RadASM (C) KetilO 2001-2009',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1				db 'http://radasm.cherrytree.at/',0
@@ -1482,6 +1497,9 @@ iniColorsBack			dd offset racol.cmntback
 						dd 0
 
 szStringsW				dw 'S','t','r','i','n','g','s',0
+
+szhhctrl				db 'hhctrl.ocx',0
+szHtmlHelpA				db 'HtmlHelpA',0
 
 ;#########################################################################
 
@@ -1934,3 +1952,7 @@ lpOldTabProc			dd ?
 tabinx					dd ?
 fCancelSave				dd ?
 hNoSave					dd 128 dup(?)
+hHtmlOcx 				HMODULE ?
+pHtmlHelpProc 			dd ?
+hHHwin					HWND ?
+hhaklink				HH_AKLINK <>

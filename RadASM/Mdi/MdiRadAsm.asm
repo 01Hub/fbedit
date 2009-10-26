@@ -3073,7 +3073,8 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWordFromPos,hEdit
 					.endif
 				.endif
-				invoke WinHelp,hWin,offset F1,HELP_KEY,offset LineWord
+				invoke DoHelp,offset F1,offset LineWord
+				;invoke WinHelp,hWin,offset F1,HELP_KEY,offset LineWord
 				inc		nF1
 				xor		eax,eax
 			.else
@@ -3139,21 +3140,24 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if hEdit
 						invoke GetWordFromPos,hEdit
 					.endif
-					invoke WinHelp,hWin,addr CF1,HELP_KEY,addr LineWord
+					invoke DoHelp,offset CF1,offset LineWord
+					;invoke WinHelp,hWin,addr CF1,HELP_KEY,addr LineWord
 					inc		nCF1
 				.elseif eax==IDM_HELPSF1
 					mov		LineWord[0],0
 					.if hEdit
 						invoke GetWordFromPos,hEdit
 					.endif
-					invoke WinHelp,hWin,addr SF1,HELP_KEY,addr LineWord
+					invoke DoHelp,offset SF1,offset LineWord
+					;invoke WinHelp,hWin,addr SF1,HELP_KEY,addr LineWord
 					inc		nSF1
 				.elseif eax==IDM_HELPCSF1
 					mov		LineWord[0],0
 					.if hEdit
 						invoke GetWordFromPos,hEdit
 					.endif
-					invoke WinHelp,hWin,addr CSF1,HELP_KEY,addr LineWord
+					invoke DoHelp,offset CSF1,offset LineWord
+					;invoke WinHelp,hWin,addr CSF1,HELP_KEY,addr LineWord
 					inc		nCSF1
 				.elseif eax==IDM_OUTPUT_OPEN
 					invoke OpenEditOut

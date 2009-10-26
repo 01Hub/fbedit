@@ -1,5 +1,7 @@
 RadASM 2.2.1.8
 --------------
+2.2.1.8c
+o Added support for chm help files if the radhelp addin is not used.
 2.2.1.8b
 o Fixed bug in masmParse.dll that caused sluggis editing on older machines.
 o Fixed bug where red dot was missing if file is readonly or missing.
