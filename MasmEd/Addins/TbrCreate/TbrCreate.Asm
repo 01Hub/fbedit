@@ -46,6 +46,7 @@ ShowToolbar proc hWin:HWND
 	.endif
 	mov		nInx,0
 	.while TRUE
+		invoke RtlZeroMemory,addr tbb,sizeof TBBUTTON
 		invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETTEXT,nInx,addr buff
 		.break .if eax==LB_ERR
 		invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETITEMDATA,nInx,0
@@ -171,6 +172,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 	LOCAL	nSize:DWORD
 	LOCAL	buff[32]:BYTE
 	LOCAL	nval:DWORD
+	LOCAL	ofn:OPENFILENAME
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -314,144 +316,181 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		edi,eax
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
 					invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
-					inc [ebx].TBRMEM.tbr.nBtn
+					inc		[ebx].TBRMEM.tbr.nBtn
 					invoke ShowToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-;				.elseif eax==IDC_BTNINSBTN
-;					buff="IDC_TBB"
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;					if i<>LB_ERR then
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_INSERTSTRING,i,Cast(LPARAM,@buff))
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,i,0)
-;						SendMessage(hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0)
-;						lpTBR->nBtn=lpTBR->nBtn+1
-;						ShowToolbar(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.elseif eax==IDC_BTNADDSEP
-;					buff="-"
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_ADDSTRING,0,Cast(LPARAM,@buff))
-;					SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,i,0)
-;					SendMessage(hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0)
-;					lpTBR->nBtn=lpTBR->nBtn+1
-;					ShowToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_BTNINSSEP
-;					buff="-"
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;					if i<>LB_ERR then
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_INSERTSTRING,i,Cast(LPARAM,@buff))
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,i,0)
-;						SendMessage(hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0)
-;						lpTBR->nBtn=lpTBR->nBtn+1
-;						ShowToolbar(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.elseif eax==IDC_BTNDEL
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;					if i<>LB_ERR then
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_DELETESTRING,i,0)
-;						if SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,i,0)=LB_ERR then
-;							SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,i-1,0)
-;						endif
-;						SendMessage(hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0)
-;						lpTBR->nBtn=lpTBR->nBtn-1
-;						ShowToolbar(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.elseif eax==IDC_CHKTBRFLAT
-;					x=0
-;					if IsDlgButtonChecked(hWin,IDC_CHKTBRFLAT) then
-;						x=1
-;					endif
-;					lpTBR->nStyle=(lpTBR->nStyle and (-1 xor 1)) or x
-;					NewToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_CHKTBRWRAP
-;					x=0
-;					if IsDlgButtonChecked(hWin,IDC_CHKTBRWRAP) then
-;						x=2
-;					endif
-;					lpTBR->nStyle=(lpTBR->nStyle and (-1 xor 2)) or x
-;					NewToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_CHKTBRDIVIDER
-;					x=0
-;					if IsDlgButtonChecked(hWin,IDC_CHKTBRDIVIDER) then
-;						x=4
-;					endif
-;					lpTBR->nStyle=(lpTBR->nStyle and (-1 xor 4)) or x
-;					NewToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_CHKTBRTIP
-;					x=0
-;					if IsDlgButtonChecked(hWin,IDC_CHKTBRTIP) then
-;						x=8
-;					endif
-;					lpTBR->nStyle=(lpTBR->nStyle and (-1 xor 8)) or x
-;					NewToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_CHKTBRLIST
-;					x=0
-;					if IsDlgButtonChecked(hWin,IDC_CHKTBRLIST) then
-;						x=16
-;					endif
-;					lpTBR->nStyle=(lpTBR->nStyle and (-1 xor 16)) or x
-;					NewToolbar(hWin)
-;					lpTBMEM->fChanged=TRUE
-;				.elseif eax==IDC_CHKBTNCHECK
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;					if i<>LB_ERR then
-;						nval=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETITEMDATA,i,0)
-;						nval=nval and (-1 xor 2^24)
-;						if IsDlgButtonChecked(hWin,IDC_CHKBTNCHECK) then
-;							nval=nval or 2^24
-;						endif
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETITEMDATA,i,nval)
-;						ShowToolbar(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.elseif eax==IDC_CHKBTNGROUP
-;					i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;					if i<>LB_ERR then
-;						nval=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETITEMDATA,i,0)
-;						nval=nval and (-1 xor 2^25)
-;						if IsDlgButtonChecked(hWin,IDC_CHKBTNGROUP) then
-;							nval=nval or 2^25
-;						endif
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETITEMDATA,i,nval)
-;						ShowToolbar(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.elseif eax==IDC_BTNBMP
-;					ofn.lStructSize=sizeof(OPENFILENAME)
-;					ofn.hwndOwner=hWin
-;					ofn.hInstance=hInstance
-;					ofn.lpstrFile=@buff
-;					ofn.nMaxFile=SizeOf(buff)
-;					ofn.lpstrFilter=StrPtr(BMPFilterString)
-;					ofn.Flags=OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
-;					if GetOpenFileName(@ofn) then
-;						SetDlgItemText(hWin,IDC_EDTBMPFILE,@buff)
-;						lstrcpy(@lpTBR->szBmpFile,@buff)
-;						SetImageList(hWin)
-;						lpTBMEM->fChanged=TRUE
-;					endif
-;				.else
-;					if loword(wParam)>=4000 then
-;						SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETCURSEL,loword(wParam)-4000,0)
-;						SendMessage(hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0)
-;					elseif loword(wParam)>=3000 then
-;						i=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETCURSEL,0,0)
-;						if i<>LB_ERR then
-;							nval=SendDlgItemMessage(hWin,IDC_LSTBTN,LB_GETITEMDATA,i,0)
-;							nval=nval and &HFF00FFFF
-;							nval=nval or ((loword(wParam)-3000) shl 16)
-;							SendDlgItemMessage(hWin,IDC_LSTBTN,LB_SETITEMDATA,i,nval)
-;							ShowToolbar(hWin)
-;							lpTBMEM->fChanged=TRUE
-;						endif
-;					endif
+				.elseif eax==IDC_BTNINSBTN
+					invoke lstrcpy,addr buff,offset szIDC_TBB
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+					mov		edi,eax
+					.if edi!=LB_ERR
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_INSERTSTRING,edi,addr buff
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
+						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
+						inc		[ebx].TBRMEM.tbr.nBtn
+						invoke ShowToolbar,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.elseif eax==IDC_BTNADDSEP
+					invoke lstrcpy,addr buff,offset szSEP
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_ADDSTRING,0,addr buff
+					mov		edi,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
+					invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
+					inc		[ebx].TBRMEM.tbr.nBtn
+					invoke ShowToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_BTNINSSEP
+					invoke lstrcpy,addr buff,offset szSEP
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+					mov		edi,eax
+					.if edi!=LB_ERR
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_INSERTSTRING,edi,addr buff
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
+						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
+						inc		[ebx].TBRMEM.tbr.nBtn
+						invoke ShowToolbar,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.elseif eax==IDC_BTNDEL
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+					mov		edi,eax
+					.if edi!=LB_ERR
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_DELETESTRING,edi,0
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
+						.if eax==LB_ERR
+							invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,addr [edi-1],0
+						.endif
+						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
+						invoke ShowToolbar,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.elseif eax==IDC_CHKTBRFLAT
+					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRFLAT
+					.if eax
+						mov		eax,1
+					.endif
+					mov		edx,[ebx].TBRMEM.tbr.nStyle
+					and		edx,-1 xor 1
+					or		edx,eax
+					mov		[ebx].TBRMEM.tbr.nStyle,edx
+					invoke NewToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_CHKTBRWRAP
+					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRWRAP
+					.if eax
+						mov		eax,2
+					.endif
+					mov		edx,[ebx].TBRMEM.tbr.nStyle
+					and		edx,-1 xor 2
+					or		edx,eax
+					mov		[ebx].TBRMEM.tbr.nStyle,edx
+					invoke NewToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_CHKTBRDIVIDER
+					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRDIVIDER
+					.if eax
+						mov		eax,4
+					.endif
+					mov		edx,[ebx].TBRMEM.tbr.nStyle
+					and		edx,-1 xor 4
+					or		edx,eax
+					mov		[ebx].TBRMEM.tbr.nStyle,edx
+					invoke NewToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_CHKTBRTIP
+					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRTIP
+					.if eax
+						mov		eax,8
+					.endif
+					mov		edx,[ebx].TBRMEM.tbr.nStyle
+					and		edx,-1 xor 8
+					or		edx,eax
+					mov		[ebx].TBRMEM.tbr.nStyle,edx
+					invoke NewToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_CHKTBRLIST
+					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRLIST
+					.if eax
+						mov		eax,16
+					.endif
+					mov		edx,[ebx].TBRMEM.tbr.nStyle
+					and		edx,-1 xor 16
+					or		edx,eax
+					mov		[ebx].TBRMEM.tbr.nStyle,edx
+					invoke NewToolbar,hWin
+					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+				.elseif eax==IDC_CHKBTNCHECK
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+					mov		edi,eax
+					.if edi!=LB_ERR
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETITEMDATA,edi,0
+						mov		nval,eax
+						and		nval,-1 xor 2 shl 24
+						invoke IsDlgButtonChecked,hWin,IDC_CHKBTNCHECK
+						.if eax
+							or		nval,2 shl 24
+						.endif
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
+						invoke ShowToolbar,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.elseif eax==IDC_CHKBTNGROUP
+					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+					mov		edi,eax
+					.if edi!=LB_ERR
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETITEMDATA,edi,0
+						mov		nval,eax
+						and		nval,-1 xor 2 shl 25
+						invoke IsDlgButtonChecked,hWin,IDC_CHKBTNCHECK
+						.if eax
+							or		nval,2 shl 25
+						.endif
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
+						invoke ShowToolbar,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.elseif eax==IDC_BTNBMP
+					invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
+					mov		ofn.lStructSize,sizeof OPENFILENAME
+					mov		eax,hWin
+					mov		ofn.hwndOwner,eax
+					mov		eax,hInstance
+					mov		ofn.hInstance,eax
+					mov		buff,0
+					lea		eax,buff
+					mov		ofn.lpstrFile,eax
+					mov		ofn.nMaxFile,sizeof buff
+					mov		ofn.lpstrFilter,offset szBMPFilterString
+					mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
+					invoke GetOpenFileName,addr ofn
+					.if eax
+						invoke SetDlgItemText,hWin,IDC_EDTBMPFILE,addr buff
+						invoke lstrcpy,addr [ebx].TBRMEM.tbr.szBmpFile,addr buff
+						invoke SetImageList,hWin
+						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+					.endif
+				.else
+					.if sdword ptr eax>=4000
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,addr [eax-4000],0
+						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
+					.elseif sdword ptr eax>=3000
+						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
+						mov		edi,eax
+						.if edi!=LB_ERR
+							invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETITEMDATA,edi,0
+							and		eax,0FF00FFFFh
+							mov		edx,wParam
+							movzx	edx,dx
+							lea		edx,[edx-3000]
+							shl		edx,16
+							or		eax,edx
+							mov		nval,eax
+							invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
+							invoke ShowToolbar,hWin
+							mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
+						.endif
+					.endif
 				.endif
 			.elseif edx==EN_CHANGE
 				.if eax==IDC_EDTTBRNAME

@@ -7,6 +7,7 @@ include kernel32.inc
 include user32.inc
 include gdi32.inc
 include comctl32.inc
+include comdlg32.inc
 
 ;#########################################################################
 ;Libraries
@@ -15,6 +16,7 @@ includelib kernel32.lib
 includelib user32.lib
 includelib gdi32.lib
 includelib comctl32.lib
+includelib comdlg32.lib
 
 ;#########################################################################
 ;MasmEd Addin Include
@@ -100,6 +102,8 @@ szSTD				db 'IDB_STD_SMALL_COLOR',0
 szToolbarWindow32	db 'ToolbarWindow32',0
 szNULL				db 0
 szIDC_TBB			db 'IDC_TBB',0
+szSEP				db '-',0
+szBMPFilterString	db 'Bitmap (*.bmp)',0,'*.bmp',0,0
 
 .data?
 
