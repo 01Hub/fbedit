@@ -22,48 +22,52 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	nSize:DWORD
 
-	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		mov		eax,hWin
-		.if eax==ha.hRes
-			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-			mov		hMem,eax
-			invoke SendMessage,ha.hResEd,PRO_EXPORT,0,hMem
-			invoke strlen,hMem
-			mov		nSize,eax
-			invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
-			invoke SendMessage,ha.hResEd,PRO_SETMODIFY,FALSE,0
-			invoke GlobalFree,hMem
-			.if nmeexp.fAuto
-				invoke SendMessage,ha.hResEd,PRO_EXPORTNAMES,1,ha.hOut
+	invoke GetWindowLong,hWin,GWL_ID
+	invoke PostAddinMessage,hWin,AIM_FILESAVE,eax,lpFileName,0,HOOK_FILESAVE
+	.if !eax
+		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			mov		eax,hWin
+			.if eax==ha.hRes
+				invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+				mov		hMem,eax
+				invoke SendMessage,ha.hResEd,PRO_EXPORT,0,hMem
+				invoke strlen,hMem
+				mov		nSize,eax
+				invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+				invoke SendMessage,ha.hResEd,PRO_SETMODIFY,FALSE,0
+				invoke GlobalFree,hMem
+				.if nmeexp.fAuto
+					invoke SendMessage,ha.hResEd,PRO_EXPORTNAMES,1,ha.hOut
+				.endif
+			.else
+				;stream the text to the file
+				mov		eax,hFile
+				mov		editstream.dwCookie,eax
+				mov		editstream.pfnCallback,offset StreamOutProc
+				invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+				;Set the modify state to false
+				invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+				invoke GetWindowLong,hWin,GWL_ID
+				.if eax==IDC_RAE
+					invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
+				.endif
 			.endif
+			invoke CloseHandle,hFile
+			invoke TabToolGetMem,hWin
+			mov		ebx,eax
+			mov		[ebx].TABMEM.nchange,0
+			mov		[ebx].TABMEM.fchanged,0
+			invoke UpdateFileTime,eax
+			invoke TabToolSetChanged,hWin,FALSE
+	   		mov		eax,FALSE
 		.else
-			;stream the text to the file
-			mov		eax,hFile
-			mov		editstream.dwCookie,eax
-			mov		editstream.pfnCallback,offset StreamOutProc
-			invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
-			;Set the modify state to false
-			invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
-			invoke GetWindowLong,hWin,GWL_ID
-			.if eax==IDC_RAE
-				invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
-			.endif
+			invoke strcpy,offset tmpbuff,offset szSaveFileFail
+			invoke strcat,offset tmpbuff,lpFileName
+			invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
+			mov		eax,TRUE
 		.endif
-		invoke CloseHandle,hFile
-		invoke TabToolGetMem,hWin
-		mov		ebx,eax
-		mov		[ebx].TABMEM.nchange,0
-		mov		[ebx].TABMEM.fchanged,0
-		invoke UpdateFileTime,eax
-		invoke TabToolSetChanged,hWin,FALSE
-   		mov		eax,FALSE
-	.else
-		invoke strcpy,offset tmpbuff,offset szSaveFileFail
-		invoke strcat,offset tmpbuff,lpFileName
-		invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
-		mov		eax,TRUE
 	.endif
 	ret
 

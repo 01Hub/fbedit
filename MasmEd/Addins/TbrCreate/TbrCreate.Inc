@@ -90,7 +90,7 @@ TBRDEF ends
 TBRMEM struct
 	tbrdef			TBRDEF <>
 	tbr				TBR <>
-	tbrbtn			TBRBTN 256 dup(<>)
+	tbrbtn			TBRBTN 80 dup(<>)
 TBRMEM ends
 
 .const
