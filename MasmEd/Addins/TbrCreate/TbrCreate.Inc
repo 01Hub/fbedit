@@ -5,12 +5,16 @@
 include windows.inc
 include kernel32.inc
 include user32.inc
+include gdi32.inc
+include comctl32.inc
 
 ;#########################################################################
 ;Libraries
 
 includelib kernel32.lib
 includelib user32.lib
+includelib gdi32.lib
+includelib comctl32.lib
 
 ;#########################################################################
 ;MasmEd Addin Include
@@ -93,6 +97,9 @@ szMenuItem			db 'Add new Toolbar',0
 szNewFile			db '(Untitled)',0
 szTbr				db '.tbr',0
 szSTD				db 'IDB_STD_SMALL_COLOR',0
+szToolbarWindow32	db 'ToolbarWindow32',0
+szNULL				db 0
+szIDC_TBB			db 'IDC_TBB',0
 
 .data?
 
