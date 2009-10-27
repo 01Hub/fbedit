@@ -131,24 +131,6 @@ szCODE				db '.code',0Dh,0Dh
 					db '	mov		eax,hToolBar',0Dh
 					db '	ret',0Dh,0Dh
 					db 'DoToolBar endp',0Dh,0Dh,0
-;
-;
-;DoToolBar proc hInst:DWORD,hToolBar:HWND
-;	LOCAL	tbab:TBADDBITMAP
-;
-;	;Set toolbar struct size
-;	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
-;	;Set toolbar bitmap
-;	push	hInst
-;	pop		tbab.hInst
-;	mov		tbab.nID,IDB_TBRBMP
-;	invoke SendMessage,hToolBar,TB_ADDBITMAP,15,addr tbab
-;	;Set toolbar buttons
-;	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
-;	mov		eax,hToolBar
-;	ret
-;
-;DoToolBar endp
 
 .data?
 

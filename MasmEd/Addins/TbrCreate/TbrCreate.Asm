@@ -340,7 +340,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 	LOCAL	tbb:TBBUTTON
 	LOCAL	hFile:HANDLE
 	LOCAL	nSize:DWORD
-	LOCAL	buff[32]:BYTE
+	LOCAL	buff[MAX_PATH]:BYTE
 	LOCAL	nval:DWORD
 	LOCAL	ofn:OPENFILENAME
 
@@ -538,6 +538,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		edi,eax
 					.if edi!=LB_ERR
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_DELETESTRING,edi,0
+						dec		[ebx].TBRMEM.tbr.nBtn
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
 						.if eax==LB_ERR
 							invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,addr [edi-1],0
