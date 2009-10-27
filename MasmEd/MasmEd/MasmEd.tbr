@@ -4,6 +4,7 @@
 Tbr=,0,5
 Bmp=Res\Toolbar.bmp,IDB_TBRBMP,15
 Mnu=MasmEd.mnu
+Size=16
 0=IDM_FILE_PRINT,0,0,20
 1=-,0,0,0
 2=IDM_FILE_NEW,0,0,6

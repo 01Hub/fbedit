@@ -282,16 +282,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 54=1
 
 [Find]
-1="AIM_FILECLOSE"
-2="heapal"
-3="UpdateAll,WM_DESTROY"
-4="GetMenuItemInfo"
-5="GetSubMenu"
-6="IDC_FILE"
-7="hReg"
-8="DbgLink"
-9="DbgAssemble"
-10="Link"
+1="2 shl"
+2="WM_CLOSE"
+3="saveall"
+4="AIM_FILECLOSE"
+5="heapal"
+6="UpdateAll,WM_DESTROY"
+7="GetMenuItemInfo"
+8="GetSubMenu"
+9="IDC_FILE"
+10="hReg"
 
 [VersionControl]
 Settings=1246
@@ -303,7 +303,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -338,11 +338,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,20004
-1=0,0,0,0,55213
-11=0,0,0,0,25009
+2=0,0,687,524,4624
+1=0,0,0,0,85516
+11=0,0,0,0,24410
 22=0,0,0,0,9221
-10=0,0,0,0,604
+10=0,0,0,0,2087
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -384,8 +384,8 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,1087
 52=0,0,0,0,5186
-53=0,0,0,0,1894
-54=0,0,0,0,2828
+53=0,0,0,0,4693
+54=0,0,0,0,560
 
 [BookMark]
 0=
@@ -437,7 +437,7 @@ AutoLoad=1,2,53,54,11,17,13,10,14
 53=
 54=
 [PTimer]
-PTimer=53733509
+PTimer=71310251
 [RADebugBP]
 1=
 2=

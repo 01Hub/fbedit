@@ -105,6 +105,51 @@ szIDC_TBB			db 'IDC_TBB',0
 szSEP				db '-',0
 szBMPFilterString	db 'Bitmap (*.bmp)',0,'*.bmp',0,0
 
+szCONST				db '.const',0Dh,0Dh
+					db 'tbrbtns',0
+szSEPARATOR			db '								TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>',0Dh,0
+szTBBUTTON			db '								TBBUTTON <%d,%s,%s,%s,0,0>',0Dh,0
+szNBTNS				db 'ntbrbtns						equ %d',0Dh,0Dh,0
+
+szTBSTATE_ENABLED	db 'TBSTATE_ENABLED',0
+szTBSTYLE_BUTTON	db 'TBSTYLE_BUTTON',0
+szTBSTYLE_CHECK		db ' or TBSTYLE_CHECK',0
+szTBSTYLE_GROUP		db ' or TBSTYLE_GROUP',0
+
+szCODE				db '.code',0Dh,0Dh
+					db 'DoToolBar proc hInst:DWORD,hToolBar:HWND',0Dh
+					db '	LOCAL	tbab:TBADDBITMAP',0Dh,0Dh
+					db '	;Set toolbar struct size',0Dh
+					db '	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0',0Dh
+					db '	;Set toolbar bitmap',0Dh
+					db '	push	hInst',0Dh
+					db '	pop		tbab.hInst',0Dh
+					db '	mov		tbab.nID,%s',0Dh
+					db '	invoke SendMessage,hToolBar,TB_ADDBITMAP,%d,addr tbab',0Dh
+					db '	;Set toolbar buttons',0Dh
+					db '	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns',0Dh
+					db '	mov		eax,hToolBar',0Dh
+					db '	ret',0Dh,0Dh
+					db 'DoToolBar endp',0Dh,0Dh,0
+;
+;
+;DoToolBar proc hInst:DWORD,hToolBar:HWND
+;	LOCAL	tbab:TBADDBITMAP
+;
+;	;Set toolbar struct size
+;	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
+;	;Set toolbar bitmap
+;	push	hInst
+;	pop		tbab.hInst
+;	mov		tbab.nID,IDB_TBRBMP
+;	invoke SendMessage,hToolBar,TB_ADDBITMAP,15,addr tbab
+;	;Set toolbar buttons
+;	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
+;	mov		eax,hToolBar
+;	ret
+;
+;DoToolBar endp
+
 .data?
 
 hInstance			dd ?	;Dll's module handle

@@ -1224,7 +1224,7 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 				.if eax!=nTabInx
 					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 					.if eax==IDC_USER
-						invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_GETMODIFY,IDC_USER,[ebx].TABMEM.filename,0,HOOK_GETMODIFY
+						invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_GETMODIFY,IDC_USER,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
 					.else
 						invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
 					.endif
@@ -1252,7 +1252,7 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
 					.endif
 					invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_FILECLOSED,esi,[ebx].TABMEM.filename,0,HOOK_FILECLOSED
-					.if eax!=IDC_RES && eax!=IDC_USER
+					.if esi!=IDC_RES && esi!=IDC_USER
 						invoke DestroyWindow,[ebx].TABMEM.hwnd
 					.endif
 					invoke TabToolDel,[ebx].TABMEM.hwnd
@@ -1287,7 +1287,13 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 					jmp		Ex
 				.endif
 			.elseif eax==SAVE_ALL
-				invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+				.if eax==IDC_USER
+					mov		edx,eax
+					invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_GETMODIFY,edx,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
+				.else
+					invoke SendMessage,[ebx].TABMEM.hwnd,EM_GETMODIFY,0,0
+				.endif
 				.if eax
 					invoke SaveEdit,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
 				.endif

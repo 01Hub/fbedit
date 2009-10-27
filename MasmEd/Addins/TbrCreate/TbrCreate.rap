@@ -64,7 +64,7 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,4,1,6,5
+AutoLoad=2,3,1,6,4,5
 [RADebugBP]
 2=
 1=
@@ -79,15 +79,12 @@ AutoLoad=2,3,4,1,6,5
 7=
 [Size]
 5=0,0,799,526,4640
-1=0,0,0,0,4265
-2=0,0,0,0,2025
+1=0,0,0,0,8096
+2=0,0,0,0,3361
 3=0,0,0,0,25
 4=0,0,0,0,27
 6=0,0,0,0
 7=0,0,0,0,14
-[Exports]
-1=AddinProc
-2=InstallAddin
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -98,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=27
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -144,6 +141,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=27255214
+PTimer=45652662
 [Find]
-1="SetWindowLong"
+1="2 shl"
+2="SetWindowLong"
+[Exports]
+1=AddinProc
+2=InstallAddin

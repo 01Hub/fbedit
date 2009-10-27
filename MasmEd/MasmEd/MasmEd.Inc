@@ -204,15 +204,6 @@ DEBUGTIP struct
 	nLine					DWORD ?
 DEBUGTIP ends
 
-TABMEM struct
-	hwnd					HWND ?
-	filename				BYTE MAX_PATH dup (?)
-	ft						FILETIME <?>
-	nchange					DWORD ?
-	fchanged				DWORD ?
-	fupdate					DWORD ?
-TABMEM ends
-
 FILENOTIFYPATH struct
 	nCount					DWORD ?
 	path					BYTE MAX_PATH dup(?)
@@ -560,7 +551,7 @@ fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 szCaseTypes				db 'WPpc',0
 szGotoTypes				db 'pldcs',0
 
-pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate>
+pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged>
 
 .data
 

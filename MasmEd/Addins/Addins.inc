@@ -119,7 +119,21 @@ ADDINPROCS struct
 	lpOutputClear			DWORD ?
 	lpTabToolAdd			DWORD ?
 	lpTabToolActivate		DWORD ?
+	lpTabToolGetMem			DWORD ?
+	lpUpdateFileTime		DWORD ?
+	lpTabToolSetChanged		DWORD ?
 ADDINPROCS ends
+
+;#########################################################################
+
+TABMEM struct
+	hwnd					HWND ?
+	filename				BYTE MAX_PATH dup (?)
+	ft						FILETIME <?>
+	nchange					DWORD ?
+	fchanged				DWORD ?
+	fupdate					DWORD ?
+TABMEM ends
 
 ;Edit window ID
 IDC_RAE						equ 1011

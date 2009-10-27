@@ -68,6 +68,8 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 			invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 			mov		eax,TRUE
 		.endif
+	.else
+		xor		eax,eax
 	.endif
 	ret
 
