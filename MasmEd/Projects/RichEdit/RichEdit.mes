@@ -1,0 +1,10 @@
+[Session]
+Folder=C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit
+Session=0,0,C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit\RichEdit.Asm,0,C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit\RichEdit.Inc,-1,C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit\RichEdit.Rc,-1,C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit\RichEdit.tbr
+MainFile=C:\FbEdit\Projects\Applications\FbEdit\MasmEd\Projects\RichEdit\RichEdit.Asm
+CompileRC=rc /v
+Assemble=ml /c /coff /Cp
+Link=link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0
+DbgLink=link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0
+Build=0
+DbgAssemble=ml /c /coff /Cp /Zi /Zd

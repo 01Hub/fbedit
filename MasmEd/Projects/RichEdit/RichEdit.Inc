@@ -80,7 +80,7 @@ tbrbtns				TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <14,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
-;Number of buttons in tbbtns
+;;Number of buttons in tbbtns
 ntbrbtns			equ 18
 
 .data
@@ -126,3 +126,5 @@ FindInit			dd ?
 fr					dd ?
 fres				dd ?
 ReplaceCount		dd ?
+fw					FWORD ?
+nn					dd ?
