@@ -58,7 +58,7 @@ Group=Assembly,Misc
 4=2
 5=1
 [AutoLoad]
-AutoLoad=1,2,3,4,5,4
+AutoLoad=1,2,3,4,5
 [RADebugBP]
 2=
 1=
@@ -134,4 +134,4 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=40076
+PTimer=46160

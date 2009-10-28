@@ -92,6 +92,12 @@ ADDINHANDLES struct
 	hReg					HKEY ?					;Handle to MasmEd's registry key.
 ADDINHANDLES ends
 
+MAKEOPT struct
+	szType			db 32 dup (?)
+	szAssemble		db 240 dup (?)
+	szLink			db 240 dup (?)
+MAKEOPT ends
+
 ADDINDATA struct
 	AppPath					BYTE MAX_PATH dup(?)	;Path to where MasmEd.exe was started.
 	FileName				BYTE MAX_PATH dup(?)	;Filename of current selected file.

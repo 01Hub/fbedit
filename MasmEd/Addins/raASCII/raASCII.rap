@@ -96,7 +96,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=25
@@ -170,3 +170,5 @@ AutoLoad=7,8,1,2,5,4,3
 [Exports]
 1=AddinProc
 2=InstallAddin
+[PTimer]
+PTimer=23774

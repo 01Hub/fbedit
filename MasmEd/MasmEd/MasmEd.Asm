@@ -1936,10 +1936,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strcpy,addr da.CompileRC,addr defCompileRC
 		mov		lpcbData,sizeof da.CompileRC
 		invoke RegQueryValueEx,ha.hReg,addr szCompileRC,0,addr lpType,addr da.CompileRC,addr lpcbData
-
 		mov		nInx,1
 		mov		esi,offset makeoptdef
-		lea		edi,[da.makeopt]
+		mov		edi,offset da.makeopt
 		.while nInx<=16
 			invoke MakeKey,addr szMakeType,nInx,addr buffer1
 			mov		lpcbData,sizeof MAKEOPT

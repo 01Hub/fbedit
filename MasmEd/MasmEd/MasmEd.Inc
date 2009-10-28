@@ -20,12 +20,6 @@ includelib gdi32.lib
 includelib ole32.lib
 includelib advapi32.lib
 
-MAKEOPT struct
-	szType			db 32 dup (?)
-	szAssemble		db 240 dup (?)
-	szLink			db 240 dup (?)
-MAKEOPT ends
-
 include ..\Addins\Addins.inc
 
 include Inc\RAEdit.inc
@@ -375,10 +369,6 @@ szRegister				db 'Register',0
 szWatch					db 'Watch',0
 
 defCompileRC			db 'rc /v',0
-;defAssemble				db 'ml /c /coff /Cp',0
-;defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
-;defDbgAssemble			db 'ml /c /coff /Cp /Zi /Zd',0
-;defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
 szFmtDec				db '%d',0
 
 .data
