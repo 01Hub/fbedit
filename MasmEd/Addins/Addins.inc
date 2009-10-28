@@ -105,10 +105,11 @@ ADDINDATA struct
 	PathInc					BYTE MAX_PATH dup(?)	;Path to include files.
 	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
 	CompileRC				BYTE 256 dup(?)			;Resource compiler command.
-	Assemble				BYTE 256 dup(?)			;Assemble command.
-	Link					BYTE 256 dup(?)			;Link command
-	DbgAssemble				BYTE 256 dup(?)			;Debug assemble command.
-	DbgLink					BYTE 256 dup(?)			;Debug link command
+;	Assemble				BYTE 256 dup(?)			;Assemble command.
+;	Link					BYTE 256 dup(?)			;Link command
+;	DbgAssemble				BYTE 256 dup(?)			;Debug assemble command.
+;	DbgLink					BYTE 256 dup(?)			;Debug link command
+	makeopt					MAKEOPT 16 dup(<>)
 ADDINDATA ends
 
 ADDINPROCS struct

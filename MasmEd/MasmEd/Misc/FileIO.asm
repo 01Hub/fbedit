@@ -552,13 +552,14 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke WritePrivateProfileString,addr szSession,addr szSession,addr tmpbuff,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr da.MainFile,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr da.CompileRC,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr da.Assemble,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szLink,addr da.Link,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szDbgAssemble,addr da.DbgAssemble,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr da.DbgLink,lpszFile
+;	invoke WritePrivateProfileString,addr szSession,addr szAssemble,addr da.Assemble,lpszFile
+;	invoke WritePrivateProfileString,addr szSession,addr szLink,addr da.Link,lpszFile
+;	invoke WritePrivateProfileString,addr szSession,addr szDbgAssemble,addr da.DbgAssemble,lpszFile
+;	invoke WritePrivateProfileString,addr szSession,addr szDbgLink,addr da.DbgLink,lpszFile
 	invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
-	or		eax,30h
-	mov		dword ptr buffer,eax
+	invoke wsprintf,addr buffer,addr szFmtDec,eax
+;	or		eax,30h
+;	mov		dword ptr buffer,eax
 	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
 	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
@@ -702,25 +703,25 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke RestoreSession,FALSE
 	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr da.MainFile,sizeof da.MainFile,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr da.CompileRC,sizeof da.CompileRC,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr da.Assemble,sizeof da.Assemble,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr da.Link,sizeof da.Link,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr da.DbgAssemble,sizeof da.DbgAssemble,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr da.DbgLink,sizeof da.DbgLink,lpszFile
+;	invoke GetPrivateProfileString,addr szSession,addr szAssemble,addr szNULL,addr da.Assemble,sizeof da.Assemble,lpszFile
+;	invoke GetPrivateProfileString,addr szSession,addr szLink,addr szNULL,addr da.Link,sizeof da.Link,lpszFile
+;	invoke GetPrivateProfileString,addr szSession,addr szDbgAssemble,addr szNULL,addr da.DbgAssemble,sizeof da.DbgAssemble,lpszFile
+;	invoke GetPrivateProfileString,addr szSession,addr szDbgLink,addr szNULL,addr da.DbgLink,sizeof da.DbgLink,lpszFile
 	.if !da.CompileRC
 		invoke strcpy,addr da.CompileRC,addr defCompileRC
 	.endif
-	.if !da.Assemble
-		invoke strcpy,addr da.Assemble,addr defAssemble
-	.endif
-	.if !da.Link
-		invoke strcpy,addr da.Link,addr defLink
-	.endif
-	.if !da.DbgAssemble
-		invoke strcpy,addr da.DbgAssemble,addr defDbgAssemble
-	.endif
-	.if !da.DbgLink
-		invoke strcpy,addr da.DbgLink,addr defDbgLink
-	.endif
+;	.if !da.Assemble
+;		invoke strcpy,addr da.Assemble,addr defAssemble
+;	.endif
+;	.if !da.Link
+;		invoke strcpy,addr da.Link,addr defLink
+;	.endif
+;	.if !da.DbgAssemble
+;		invoke strcpy,addr da.DbgAssemble,addr defDbgAssemble
+;	.endif
+;	.if !da.DbgLink
+;		invoke strcpy,addr da.DbgLink,addr defDbgLink
+;	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	.if eax
 		mov		eax,1

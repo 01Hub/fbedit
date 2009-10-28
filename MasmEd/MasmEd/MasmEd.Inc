@@ -20,6 +20,12 @@ includelib gdi32.lib
 includelib ole32.lib
 includelib advapi32.lib
 
+MAKEOPT struct
+	szType			db 32 dup (?)
+	szAssemble		db 240 dup (?)
+	szLink			db 240 dup (?)
+MAKEOPT ends
+
 include ..\Addins\Addins.inc
 
 include Inc\RAEdit.inc
@@ -369,10 +375,11 @@ szRegister				db 'Register',0
 szWatch					db 'Watch',0
 
 defCompileRC			db 'rc /v',0
-defAssemble				db 'ml /c /coff /Cp',0
-defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
-defDbgAssemble			db 'ml /c /coff /Cp /Zi /Zd',0
-defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
+;defAssemble				db 'ml /c /coff /Cp',0
+;defLink					db 'link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0
+;defDbgAssemble			db 'ml /c /coff /Cp /Zi /Zd',0
+;defDbgLink				db 'link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0
+szFmtDec				db '%d',0
 
 .data
 
@@ -386,9 +393,6 @@ szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 200
 szAboutUrl1				db 'http://radasm.cherrytree.at/',0
 szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0
-
-szRelease				db 'Release',0
-szDebug					db 'Debug',0
 
 szReplace				db 'Replace ..',0
 szRegionSearched		db 'Region searched.',0
@@ -461,7 +465,7 @@ szBracketMatch			db '[({,])},\,',0
 
 szAdd					db 'Add ',0
 szCustType				db 'Type#',0
-
+szMakeType				db 'Make#',0
 szREG_SZ				db 'REG_SZ',0
 szMasmEd				db 'Software\MasmEd1000\'
 						db 64 dup(0)

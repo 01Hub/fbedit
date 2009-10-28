@@ -1773,8 +1773,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetDlgItem,hWin,IDC_CBO
 		mov		ha.hCbo,eax
 		invoke SetParent,ha.hCbo,ha.hStc
-		invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr szRelease
-		invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr szDebug
 		;Close button
 		invoke GetDlgItem,hWin,IDC_BTNTABCLOSE
 		mov		ha.hBtn,eax
@@ -1938,18 +1936,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strcpy,addr da.CompileRC,addr defCompileRC
 		mov		lpcbData,sizeof da.CompileRC
 		invoke RegQueryValueEx,ha.hReg,addr szCompileRC,0,addr lpType,addr da.CompileRC,addr lpcbData
-		invoke strcpy,addr da.Assemble,addr defAssemble
-		mov		lpcbData,sizeof da.Assemble
-		invoke RegQueryValueEx,ha.hReg,addr szAssemble,0,addr lpType,addr da.Assemble,addr lpcbData
-		invoke strcpy,addr da.Link,addr defLink
-		mov		lpcbData,sizeof da.Link
-		invoke RegQueryValueEx,ha.hReg,addr szLink,0,addr lpType,addr da.Link,addr lpcbData
-		invoke strcpy,addr da.DbgAssemble,addr defDbgAssemble
-		mov		lpcbData,sizeof da.DbgAssemble
-		invoke RegQueryValueEx,ha.hReg,addr szDbgAssemble,0,addr lpType,addr da.DbgAssemble,addr lpcbData
-		invoke strcpy,addr da.DbgLink,addr defDbgLink
-		mov		lpcbData,sizeof da.DbgLink
-		invoke RegQueryValueEx,ha.hReg,addr szDbgLink,0,addr lpType,addr da.DbgLink,addr lpcbData
+
+		mov		nInx,1
+		mov		esi,offset makeoptdef
+		lea		edi,[da.makeopt]
+		.while nInx<=16
+			invoke MakeKey,addr szMakeType,nInx,addr buffer1
+			mov		lpcbData,sizeof MAKEOPT
+			invoke RtlMoveMemory,edi,esi,sizeof MAKEOPT
+			invoke RegQueryValueEx,ha.hReg,addr buffer1,0,addr lpType,edi,addr lpcbData
+			.if [edi].MAKEOPT.szType
+				invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr [edi].MAKEOPT.szType
+				invoke SendMessage,ha.hCbo,CB_SETITEMDATA,eax,edi
+			.endif
+			lea		esi,[esi+sizeof MAKEOPT]
+			lea		edi,[edi+sizeof MAKEOPT]
+			inc		nInx
+		.endw
 		mov		lpcbData,sizeof nCboBuild
 		invoke RegQueryValueEx,ha.hReg,addr szBuild,0,addr lpType,addr nCboBuild,addr lpcbData
 		invoke SendMessage,ha.hCbo,CB_SETCURSEL,nCboBuild,0

@@ -231,11 +231,9 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		mov		eax,offset ExtRes
 	.elseif eax==IDM_MAKE_ASSEMBLE
 		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
-		.if eax
-			invoke strcpy,addr make.buffer,offset da.DbgAssemble
-		.else
-			invoke strcpy,addr make.buffer,offset da.Assemble
-		.endif
+		mov		edx,sizeof MAKEOPT
+		mul		edx
+		invoke strcpy,addr make.buffer,addr da.makeopt.szAssemble[eax]
 		invoke strcat,addr make.buffer,addr szSpc
 		invoke strcat,addr make.buffer,offset szQuote
 		invoke strcat,addr make.buffer,lpFileName
@@ -243,11 +241,9 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		mov		eax,offset ExtObj
 	.elseif eax==IDM_MAKE_LINK
 		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
-		.if eax
-			invoke strcpy,addr make.buffer,offset da.DbgLink
-		.else
-			invoke strcpy,addr make.buffer,offset da.Link
-		.endif
+		mov		edx,sizeof MAKEOPT
+		mul		edx
+		invoke strcpy,addr make.buffer,addr da.makeopt.szLink[eax]
 		invoke strcat,addr make.buffer,addr szSpc
 		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2

@@ -5,25 +5,43 @@ IDC_EDTINC			equ 1002
 IDC_EDTLIB			equ 1003
 IDC_BTNPATHRESTORE	equ 1004
 
+;IDD_BUILDOPTION		equ 3400
+;IDC_EDTRES			equ 1001
+;IDC_EDTASM			equ 1002
+;IDC_EDTLNK			equ 1003
+;IDC_EDTDBGASM		equ 1006
+;IDC_EDTDBGLNK		equ 1005
+;IDC_BTNRESTORE		equ 1004
+
 IDD_BUILDOPTION		equ 3400
+IDC_TABBUILD		equ 1005
 IDC_EDTRES			equ 1001
 IDC_EDTASM			equ 1002
 IDC_EDTLNK			equ 1003
-IDC_EDTDBGASM		equ 1006
-IDC_EDTDBGLNK		equ 1005
 IDC_BTNRESTORE		equ 1004
+IDC_CBOTYPE			equ 1006
 
 .const
 
 szPath				db 'path',0
 szInclude			db 'include',0
 szIncludelib		db 'lib',0
+szMakeOption		db 'Make Commands',0
+makeoptdef			MAKEOPT <'Window Release','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0'>
+					MAKEOPT <'Window Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0'>
+					MAKEOPT <'Console Release','ml /c /coff /Cp','link /SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0'>
+					MAKEOPT <'Console Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0'>
+					MAKEOPT <'Dll Release','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$DEF'>
+					MAKEOPT <'Dll Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:$DEF'>
+					MAKEOPT <'Library','ml /c /coff /Cp','lib /VERBOSE /SUBSYSTEM:WINDOWS'>
+					MAKEOPT 9 dup(<,,>)
 
 .data?
 
 hEnv				dd ?
 hEnvMem				dd ?
 pNextVal			dd ?
+makeoptedit			MAKEOPT 16 dup(<>)
 
 .code
 
@@ -137,19 +155,19 @@ PathOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 PathOptionDialogProc endp
 
 BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	tci:TC_ITEM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.pszText,offset szMakeOption
+		invoke SendDlgItemMessage,hWin,IDC_TABBUILD,TCM_INSERTITEM,999,addr tci
 		invoke SendDlgItemMessage,hWin,IDC_EDTRES,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTASM,EM_LIMITTEXT,240,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTLNK,EM_LIMITTEXT,240,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTDBGASM,EM_LIMITTEXT,240,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTDBGLNK,EM_LIMITTEXT,240,0
 		invoke SetDlgItemText,hWin,IDC_EDTRES,addr da.CompileRC
-		invoke SetDlgItemText,hWin,IDC_EDTASM,addr da.Assemble
-		invoke SetDlgItemText,hWin,IDC_EDTLNK,addr da.Link
-		invoke SetDlgItemText,hWin,IDC_EDTDBGASM,addr da.DbgAssemble
-		invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr da.DbgLink
+		invoke SetDlgItemText,hWin,IDC_EDTASM,addr da.makeopt.szAssemble
+		invoke SetDlgItemText,hWin,IDC_EDTLNK,addr da.makeopt.szLink
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -160,30 +178,30 @@ BuildOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke strlen,addr da.CompileRC
 				inc		eax
 				invoke RegSetValueEx,ha.hReg,addr szCompileRC,0,REG_SZ,addr da.CompileRC,eax
-				invoke GetDlgItemText,hWin,IDC_EDTASM,addr da.Assemble,240
-				invoke strlen,addr da.Assemble
-				inc		eax
-				invoke RegSetValueEx,ha.hReg,addr szAssemble,0,REG_SZ,addr da.Assemble,eax
-				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr da.Link,240
-				invoke strlen,addr da.Link
-				inc		eax
-				invoke RegSetValueEx,ha.hReg,addr szLink,0,REG_SZ,addr da.Link,eax
-				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr da.DbgAssemble,240
-				invoke strlen,addr da.DbgAssemble
-				inc		eax
-				invoke RegSetValueEx,ha.hReg,addr szDbgAssemble,0,REG_SZ,addr da.DbgAssemble,eax
-				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr da.DbgLink,240
-				invoke strlen,addr da.DbgLink
-				inc		eax
-				invoke RegSetValueEx,ha.hReg,addr szDbgLink,0,REG_SZ,addr da.DbgLink,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTASM,addr da.Assemble,240
+;				invoke strlen,addr da.Assemble
+;				inc		eax
+;				invoke RegSetValueEx,ha.hReg,addr szAssemble,0,REG_SZ,addr da.Assemble,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr da.Link,240
+;				invoke strlen,addr da.Link
+;				inc		eax
+;				invoke RegSetValueEx,ha.hReg,addr szLink,0,REG_SZ,addr da.Link,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTDBGASM,addr da.DbgAssemble,240
+;				invoke strlen,addr da.DbgAssemble
+;				inc		eax
+;				invoke RegSetValueEx,ha.hReg,addr szDbgAssemble,0,REG_SZ,addr da.DbgAssemble,eax
+;				invoke GetDlgItemText,hWin,IDC_EDTDBGLNK,addr da.DbgLink,240
+;				invoke strlen,addr da.DbgLink
+;				inc		eax
+;				invoke RegSetValueEx,ha.hReg,addr szDbgLink,0,REG_SZ,addr da.DbgLink,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNRESTORE
 				invoke SetDlgItemText,hWin,IDC_EDTRES,addr defCompileRC
-				invoke SetDlgItemText,hWin,IDC_EDTASM,addr defAssemble
-				invoke SetDlgItemText,hWin,IDC_EDTLNK,addr defLink
-				invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr defDbgLink
+;				invoke SetDlgItemText,hWin,IDC_EDTASM,addr defAssemble
+;				invoke SetDlgItemText,hWin,IDC_EDTLNK,addr defLink
+;				invoke SetDlgItemText,hWin,IDC_EDTDBGLNK,addr defDbgLink
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
