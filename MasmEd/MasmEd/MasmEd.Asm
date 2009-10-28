@@ -19,6 +19,7 @@ include Misc\CodeComplete.asm
 include About\About.asm
 include Block\Block.asm
 include Opt\Debug.asm
+include Opt\AddinManager.asm
 
 .code
 
@@ -2487,41 +2488,65 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_MAKE_COMPILE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,TRUE
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,TRUE
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_ASSEMBLE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,TRUE
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,TRUE
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_LINK
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,TRUE
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,TRUE
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_BUILD
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
-				or		eax,eax
-				jne		Ex
-				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,0
-				or		eax,eax
-				jne		Ex
-				invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,3
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
+					or		eax,eax
+					jne		Ex
+					invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,0
+					or		eax,eax
+					jne		Ex
+					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,3
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_RUN
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,2
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,2
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_GO
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
-				invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
-				or		eax,eax
-				jne		Ex
-				invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,0
-				or		eax,eax
-				jne		Ex
-				invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,3
-				or		eax,eax
-				jne		Ex
-				invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,4
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_GO,offset da.MainFile,0,HOOK_MAKEBEGIN
+				.if !eax
+					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
+					or		eax,eax
+					jne		Ex
+					invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,0
+					or		eax,eax
+					jne		Ex
+					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,3
+					or		eax,eax
+					jne		Ex
+					invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,4
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_GO,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_DEBUG_TOGGLE
 				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
@@ -2625,6 +2650,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,ha.hInstance,IDD_PATHOPTION,hWin,offset PathOptionDialogProc,0
 			.elseif eax==IDM_OPTION_BUILD
 				invoke DialogBoxParam,ha.hInstance,IDD_BUILDOPTION,hWin,offset BuildOptionDialogProc,0
+			.elseif eax==IDM_OPTION_ADDINS
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGADDINMANAGER,hWin,offset AddinManagerProc,0
 			.elseif eax==IDM_OPTION_TOOLS
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,1
 				invoke SetToolMenu

@@ -10,7 +10,7 @@ Debug=0
 1=TbrCreate.Asm
 2=TbrCreate.Inc
 3=TbrCreate.Def
-4=TbrCreate.Txt
+4=..\Help\TbrCreate.Txt
 5=..\Addins.inc
 AutoDelete=1
 AskMe=0
@@ -64,7 +64,7 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,1,6,4,5
+AutoLoad=2,3,1,6,4,5,4
 [RADebugBP]
 2=
 1=
@@ -78,9 +78,9 @@ AutoLoad=2,3,1,6,4,5
 4=
 7=
 [Size]
-5=0,0,799,526,4640
-1=0,0,0,0,16331
-2=0,0,0,0,3361
+5=0,0,799,526,3478
+1=0,0,0,0,6238
+2=0,0,0,0,2248
 3=0,0,0,0,25
 4=0,0,0,0,27
 6=0,0,0,0
@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -141,10 +141,11 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=47163064
+PTimer=68686974
 [Find]
-1="2 shl"
-2="SetWindowLong"
+1="szNewFile"
+2="2 shl"
+3="SetWindowLong"
 [Exports]
 1=AddinProc
 2=InstallAddin

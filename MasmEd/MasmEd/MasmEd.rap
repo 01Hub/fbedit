@@ -67,6 +67,8 @@ MinorFiles=*.res;*.obj;
 52=..\Debug.txt
 53=..\Addins\Addins.inc
 54=Misc\Addins.asm
+55=Opt\AddinManager.dlg
+56=Opt\AddinManager.asm
 
 [MakeFiles]
 0=MasmEd.rap
@@ -280,18 +282,20 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 52=8
 53=9
 54=1
+55=1
+56=1
 
 [Find]
-1="2 shl"
-2="WM_CLOSE"
-3="saveall"
-4="AIM_FILECLOSE"
-5="heapal"
-6="UpdateAll,WM_DESTROY"
-7="GetMenuItemInfo"
-8="GetSubMenu"
-9="IDC_FILE"
-10="hReg"
+1="IDM_OPTION_BUILD"
+2="AIM_GETMODIFY"
+3="AIM_FILESAVEAS"
+4="AIM_FILESAVE"
+5="AIM_FILECLOSED"
+6="AIM_FILECLOSE"
+7="AIM_FILEOPENED"
+8="AIM_FILEOPEN"
+9="AIM_NEWFILE"
+10="AIM_MENUUPDATE"
 
 [VersionControl]
 Settings=1246
@@ -303,7 +307,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=27
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -338,11 +342,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,4624
-1=0,0,0,0,85516
-11=0,0,0,0,24410
+2=0,0,687,524,10039
+1=0,0,0,0,87835
+11=0,0,0,0,23922
 22=0,0,0,0,9221
-10=0,0,0,0,2087
+10=0,0,0,0,4597
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -353,7 +357,7 @@ ProductVer4Range=0
 18=0,0,0,0
 15=0,0,687,524,8711
 30=0,0,0,0
-13=0,0,0,0,4777
+13=0,0,0,0,4746
 21=0,0,0,0,1822
 29=0,0,0,0,907
 28=0,0,0,0,21906
@@ -361,11 +365,11 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,9306
-12=0,0,0,0,11035
+14=0,0,0,0,5558
+12=0,0,0,0,2434
 31=0,0,0,0,2186
 32=0,0,0,0
-33=0,0,0,0,1124
+33=0,0,0,0,248
 35=0,0,0,0,485
 34=0,0,0,0
 37=0,0,0,0,1622
@@ -373,7 +377,7 @@ ProductVer4Range=0
 20=0,0,0,0,0
 38=0,0,0,0,309
 39=0,0,0,0
-40=0,0,0,0,5097
+40=0,0,0,0,287
 42=0,0,0,0,1576
 43=0,0,0,0
 45=0,0,0,0,4743
@@ -384,8 +388,10 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,1087
 52=0,0,0,0,5186
-53=0,0,0,0,4693
-54=0,0,0,0,560
+53=0,0,0,0,12158
+54=0,0,0,0,1281
+55=0,0,0,0
+56=0,0,0,0,5410
 
 [BookMark]
 0=
@@ -402,7 +408,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,54,11,17,13,10,14
+AutoLoad=1,2,53,54,11,17,13,10,55,56
 [Collapse]
 2=
 1=,,,,,,,,,
@@ -436,8 +442,9 @@ AutoLoad=1,2,53,54,11,17,13,10,14
 52=
 53=
 54=
+56=
 [PTimer]
-PTimer=72652905
+PTimer=93473360
 [RADebugBP]
 1=
 2=
@@ -459,3 +466,4 @@ PTimer=72652905
 53=
 17=
 54=
+56=

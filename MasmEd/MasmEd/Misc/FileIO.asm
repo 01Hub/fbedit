@@ -91,54 +91,65 @@ UnicodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 UnicodeProc endp
 
+UpdateFileName proc hWin:DWORD,lpFileName:DWORD
+
+	invoke strcpy,offset da.FileName,lpFileName
+	invoke SetWinCaption,offset da.FileName
+	invoke TabToolGetInx,hWin
+	invoke TabToolSetText,eax,offset da.FileName
+	ret
+
+UpdateFileName endp
+
 SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	;Zero out the ofn struct
-    invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	ha.hWnd
-	pop		ofn.hwndOwner
-	push	ha.hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,NULL
-	invoke strcpy,addr buffer,addr da.FileName
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
 	invoke GetWindowLong,hWin,GWL_ID
-	.if eax==IDC_RAE
-		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
-		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
-		mov		ofn.lpfnHook,offset UnicodeProc
-		invoke SendMessage,hWin,REM_GETUNICODE,0,0
-		mov		fUnicode,eax
-	.else
-		xor		eax,eax
-		mov		fUnicode,eax
-		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
-	.endif
-    mov		ofn.lpstrDefExt,NULL
-    ;Show save as dialog
-	invoke GetSaveFileName,addr ofn
-	.if eax
+	invoke PostAddinMessage,hWin,AIM_FILESAVEAS,eax,lpFileName,0,HOOK_FILESAVEAS
+	.if !eax
+		;Zero out the ofn struct
+	    invoke RtlZeroMemory,addr ofn,sizeof ofn
+		;Setup the ofn struct
+		mov		ofn.lStructSize,sizeof ofn
+		push	ha.hWnd
+		pop		ofn.hwndOwner
+		push	ha.hInstance
+		pop		ofn.hInstance
+		mov		ofn.lpstrFilter,NULL
+		invoke strcpy,addr buffer,addr da.FileName
+		lea		eax,buffer
+		mov		ofn.lpstrFile,eax
+		mov		ofn.nMaxFile,sizeof buffer
 		invoke GetWindowLong,hWin,GWL_ID
-		.if eax!=IDC_RAE
-			invoke SendMessage,hWin,REM_SETUNICODE,fUnicode,0
+		.if eax==IDC_RAE
+			mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
+			mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
+			mov		ofn.lpfnHook,offset UnicodeProc
+			invoke SendMessage,hWin,REM_GETUNICODE,0,0
+			mov		fUnicode,eax
+		.else
+			xor		eax,eax
+			mov		fUnicode,eax
+			mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
 		.endif
-		invoke SaveFile,hWin,addr buffer
-		.if !eax
-			;The file was saved
-			invoke strcpy,offset da.FileName,addr buffer
-			invoke SetWinCaption,offset da.FileName
-			invoke TabToolGetInx,hWin
-			invoke TabToolSetText,eax,offset da.FileName
-			mov		eax,FALSE
+	    mov		ofn.lpstrDefExt,NULL
+	    ;Show save as dialog
+		invoke GetSaveFileName,addr ofn
+		.if eax
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax!=IDC_RAE
+				invoke SendMessage,hWin,REM_SETUNICODE,fUnicode,0
+			.endif
+			invoke SaveFile,hWin,addr buffer
+			.if !eax
+				;The file was saved
+				invoke UpdateFileName,hWin,addr buffer
+				mov		eax,FALSE
+			.endif
+		.else
+			mov		eax,TRUE
 		.endif
-	.else
-		mov		eax,TRUE
 	.endif
 	ret
 

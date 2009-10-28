@@ -241,6 +241,40 @@ SaveToolbar proc uses ebx esi edi,hWin:HWND
 
 SaveToolbar endp
 
+SaveToolbarAs proc uses ebx,hWin:HWND
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buff[MAX_PATH]:BYTE
+
+	invoke GetDlgItem,hWin,IDC_HMEM
+	invoke GetWindowLong,eax,GWL_USERDATA
+	mov		ebx,eax
+	invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
+	mov		ofn.lStructSize,sizeof OPENFILENAME
+	mov		eax,hWin
+	mov		ofn.hwndOwner,eax
+	mov		eax,hInstance
+	mov		ofn.hInstance,eax
+	invoke lstrcpy,addr buff,addr [ebx].TBRMEM.tbrdef.FileName
+	lea		eax,buff
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buff
+	mov		ofn.lpstrFilter,offset szTBRFilterString
+    mov		ofn.lpstrDefExt,offset szTbr
+	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
+	invoke GetSaveFileName,addr ofn
+	.if eax
+		invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,addr buff
+		lea		eax,buff
+		push	eax
+		push	hWin
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpUpdateFileName
+		invoke SaveToolbar,hWin
+	.endif
+	ret
+
+SaveToolbarAs endp
+
 ExportToolbar proc uses ebx esi edi,hWin:HWND
 	LOCAL	szLine[1024]:BYTE
 	LOCAL	szSTYLE[256]:BYTE
@@ -806,7 +840,7 @@ DllEntry Endp
 
 ; Export this proc
 InstallAddin proc uses ebx,hWin:DWORD
-	LOCAL	hook:HOOK
+	LOCAL	buffer[256]:BYTE
 
 	mov		ebx,hWin
 	;Get pointer to handles struct
@@ -820,7 +854,12 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		lpData,eax
 	invoke SendMessage,ebx,AIM_GETMENUID,0,0	
 	mov		MenuIDAddin,eax
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_FILECLOSED or HOOK_GETMODIFY
+	mov		ebx,lpHandles
+	;Update the file browser filter string to include .tbr files
+	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_GETFILTERSTRING,0,addr buffer
+	invoke lstrcat,addr buffer,offset szTbrFilter
+	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETFILTERSTRING,TRUE,addr buffer
+	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_FILESAVEAS or HOOK_FILECLOSED or HOOK_GETMODIFY
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -882,7 +921,24 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
 				.if dword ptr buffer=='CRBT'
-					invoke SaveToolbar,hWin
+					invoke lstrcmpi,offset szNewFile,addr [ebx].TBRMEM.tbrdef.FileName
+					.if !eax
+						invoke SaveToolbarAs,hWin
+					.else
+						invoke SaveToolbar,hWin
+					.endif
+					mov		eax,TRUE
+					jmp		ExRet
+				.endif
+			.endif
+		.endif
+	.elseif eax==AIM_FILESAVEAS
+		.if wParam==IDC_USER
+			invoke GetDlgItem,hWin,IDC_HMEM
+			.if eax
+				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
+				.if dword ptr buffer=='CRBT'
+					invoke SaveToolbarAs,hWin
 					mov		eax,TRUE
 					jmp		ExRet
 				.endif

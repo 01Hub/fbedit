@@ -6,22 +6,22 @@ AIM_GETDATA					equ WM_USER+52			;returns a poiner to a struct comtaining data p
 AIM_GETMENUID				equ WM_USER+53			;Returns a free menu id. If you need more than one wParam contains the number of id's to reserve.
 
 ;Messages sendt to addins
-AIM_ADDINSLOADED			equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. wParam=0, lParam=0
-AIM_COMMAND					equ WM_USER+101			;This message is sendt to the addins when user makes a menu selection or clicks a toolbar button. wParam and lParam as for WM_COMMAND
-AIM_CLOSE					equ WM_USER+102			;MasmEd requests closing. Return TRUE to prevent MasmEd from closing. wParam and lParam as for WM_CLOSE
-AIM_DESTROY					equ WM_USER+103			;MasmEd is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. wParam and lParam as for WM_DESTROY
-AIM_MENUUPDATE				equ WM_USER+104			;MasmEd has updated menues. Now is the time to add menu items. Always return FALSE. wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here.
-AIM_NEWFILE					equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent MasmEd from creating the file. wParam=IDC_RAE or IDC_RES, lParam=lpFileName
-AIM_FILEOPEN				equ WM_USER+106			;A file is about to be opened.. Return TRUE to prevent MasmEd from opening the file. wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
-AIM_FILEOPENED				equ WM_USER+107			;A file has ben opened.. Always return FALSE. wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
-AIM_FILECLOSE				equ WM_USER+108
-AIM_FILECLOSED				equ WM_USER+109
-AIM_FILESAVE				equ WM_USER+110
-AIM_FILESAVEAS				equ WM_USER+111
-AIM_FILESAVEED				equ WM_USER+112
-AIM_GETMODIFY				equ WM_USER+113
-AIM_MAKEBEGIN				equ WM_USER+114
-AIM_MAKEDONE				equ WM_USER+115
+AIM_ADDINSLOADED			equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. hWin=Main window, wParam=0, lParam=0
+AIM_COMMAND					equ WM_USER+101			;This message is sendt to the addins when user makes a menu selection or clicks a toolbar button. hWin=Main window, wParam and lParam as for WM_COMMAND
+AIM_CLOSE					equ WM_USER+102			;MasmEd requests closing. Return TRUE to prevent MasmEd from closing. hWin=Main window, wParam and lParam as for WM_CLOSE
+AIM_DESTROY					equ WM_USER+103			;MasmEd is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. hWin=Main window, wParam and lParam as for WM_DESTROY
+AIM_MENUUPDATE				equ WM_USER+104			;MasmEd has updated menues. Now is the time to add menu items. Always return FALSE. hWin=Main window, wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here.
+AIM_NEWFILE					equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent MasmEd from creating the file. hWin=Main window, wParam=IDC_RAE or IDC_RES, lParam=lpFileName
+AIM_FILEOPEN				equ WM_USER+106			;A file is about to be opened. Return TRUE to prevent MasmEd from opening the file. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX, IDC_EXECUTE or IDC_USER, lParam=lpFileName
+AIM_FILEOPENED				equ WM_USER+107			;A file has ben opened.. Always return FALSE. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
+AIM_FILECLOSE				equ WM_USER+108			;A file is about to be closed.. Return TRUE to prevent MasmEd from closing the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
+AIM_FILECLOSED				equ WM_USER+109			;A file has been closed.. Always return FALSE. hWin=Editor window, wParam=IDC_RAE, IDC_RES or IDC_HEX, lParam=lpFileName
+AIM_FILESAVE				equ WM_USER+110			;A file is about to be saved. Return TRUE to prevent MasmEd from saving the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
+AIM_FILESAVEAS				equ WM_USER+111			;A file is about to be saved with a new name. Return TRUE to prevent MasmEd from saving the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
+AIM_FILESAVEED				equ WM_USER+112			;A file has been saved. Always return FALSE. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
+AIM_GETMODIFY				equ WM_USER+113			;MasmEd requests if a file is changed, Return TRUE if it is your file and it has changed. hWin=Editor window, wParam=IDC_USER, lParam=lpFileName
+AIM_MAKEBEGIN				equ WM_USER+114			;MasmEd starts a make process.  Return TRUE to prevent MasmEd from running the make process. hWin=Main window, wParam=,lParam=Main file.
+AIM_MAKEDONE				equ WM_USER+115			;MasmEd finished the make process.  Always return FALSE. hWin=Main window, wParam=,lParam=Main file.
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED			equ 0001h
@@ -38,7 +38,7 @@ HOOK_FILESAVE				equ 0400h
 HOOK_FILESAVEAS				equ 0800h
 HOOK_FILESAVEED				equ 1000h
 HOOK_GETMODIFY				equ 2000h
-HOOK_MAKESTART				equ 4000h
+HOOK_MAKEBEGIN				equ 4000h
 HOOK_MAKEDONE				equ 8000h
 
 HOOK struct
@@ -49,100 +49,101 @@ HOOK struct
 HOOK ends
 
 ADDINHANDLES struct
-	hWnd					HWND ?					;Handle of main window
-	hClient					HWND ?
-	hREd					HWND ?
-	hTab					HWND ?
-	hBtn					HWND ?
-	hFind					HWND ?
-	hTbr					HWND ?
-	hShp					HWND ?
+	hWnd					HWND ?					;Handle of main window.
+	hClient					HWND ?					;Handle to window shown if no files are open.
+	hREd					HWND ?					;Handle to current selected editor.
+	hTab					HWND ?					;Handle to tab select tool.
+	hBtn					HWND ?					;Handle to close button.
+	hFind					HWND ?					;Handle to Find / Replace dialog.
+	hTbr					HWND ?					;Handle to toolbar.
+	hShp					HWND ?					;Handle to box surrounding toolbar.
 	hStc					HWND ?
-	hCbo					HWND ?
-	hCCLB					HWND ?
-	hCCTT					HWND ?
-	hRes					HWND ?
-	hResEd					HWND ?
-	hOut					HWND ?
-	hImmOut					HWND ?
-	hTabOut					HWND ?
-	hBrowse					HWND ?
-	hProperty				HWND ?
-	hSbr					HWND ?
-	hDbgReg					HWND ?
-	hDbgWatch				HWND ?
-	hTabDbg					HWND ?
-	hDbgTip					HWND ?
-	hInstance				HINSTANCE ?
-	hAccel					HACCEL ?
-	hMnu					HMENU ?
-	hContextMnu				HMENU ?
-	hVSplitCur				HCURSOR ?
-	hHSplitCur				HCURSOR ?
-	hFont					HFONT ?
-	hIFont					HFONT ?
-	hLnrFont				HFONT ?
-	hImlTbr					HIMAGELIST ?
-	hImlTbrGray				HIMAGELIST ?
-	hMnuIml					HIMAGELIST ?
-	hBrBack					HBRUSH ?
-	hMenuBrushA				HBRUSH ?
-	hMenuBrushB				HBRUSH ?
-	hMnuFont				HFONT ?
-	hReg					HKEY ?
+	hCbo					HWND ?					;Handle to Release / Debug combo box.
+	hCCLB					HWND ?					;Handle to code complete listbox.
+	hCCTT					HWND ?					;Handle to code tooltip.
+	hRes					HWND ?					;Handle to resource editor container.
+	hResEd					HWND ?					;Handle to resource editor work area.
+	hOut					HWND ?					;Handle to output window (RAEdit)
+	hImmOut					HWND ?					;Handle to immediate window (RAEdit)
+	hTabOut					HWND ?					;Handle to tab selectin output or immediate.
+	hBrowse					HWND ?					;Handle to file browser.
+	hProperty				HWND ?					;Handle to code property.
+	hSbr					HWND ?					;Handle to status bar.
+	hDbgReg					HWND ?					;Handle to debug register window (RAEdit).
+	hDbgWatch				HWND ?					;Handle to debug watch window (RAEdit).
+	hTabDbg					HWND ?					;Handle to tab selecting register or watch window.
+	hDbgTip					HWND ?					;Handle to debug tooltip.
+	hInstance				HINSTANCE ?				;MasmEd's instance.
+	hAccel					HACCEL ?				;Handle to accelerator table.
+	hMnu					HMENU ?					;Handle to MasmEd's menu.
+	hContextMnu				HMENU ?					;Handle to MasmEd's context menu.
+	hVSplitCur				HCURSOR ?				;Handle to cursor.
+	hHSplitCur				HCURSOR ?				;Handle to cursor.
+	hFont					HFONT ?					;RAEdit font.
+	hIFont					HFONT ?					;RAEdit italics font.
+	hLnrFont				HFONT ?					;RAEdit line number font.
+	hImlTbr					HIMAGELIST ?			;Handle to toolbar imagelist.
+	hImlTbrGray				HIMAGELIST ?			;Handle to toolbar grayed imagelist.
+	hMnuIml					HIMAGELIST ?			;Handle to menu imagelist.
+	hBrBack					HBRUSH ?				;Handle to background brush.
+	hMenuBrushA				HBRUSH ?				;Handle to menu background brush.
+	hMenuBrushB				HBRUSH ?				;Handle to menu background brush.
+	hMnuFont				HFONT ?					;Handle to menu font.
+	hReg					HKEY ?					;Handle to MasmEd's registry key.
 ADDINHANDLES ends
 
 ADDINDATA struct
-	AppPath					BYTE MAX_PATH dup(?)
-	FileName				BYTE MAX_PATH dup(?)
-	MainFile				BYTE MAX_PATH dup(?)
-	DbgFileName				BYTE MAX_PATH dup(?)
-	findbuff				BYTE 256 dup(?)
-	replacebuff				BYTE 256 dup(?)
-	szInitFolder			BYTE MAX_PATH dup(?)
-	szSessionFile			BYTE MAX_PATH dup(?)
-	PathBin					BYTE MAX_PATH dup(?)
-	PathInc					BYTE MAX_PATH dup(?)
-	PathLib					BYTE MAX_PATH dup(?)
-	CompileRC				BYTE 256 dup(?)
-	Assemble				BYTE 256 dup(?)
-	Link					BYTE 256 dup(?)
-	DbgAssemble				BYTE 256 dup(?)
-	DbgLink					BYTE 256 dup(?)
+	AppPath					BYTE MAX_PATH dup(?)	;Path to where MasmEd.exe was started.
+	FileName				BYTE MAX_PATH dup(?)	;Filename of current selected file.
+	MainFile				BYTE MAX_PATH dup(?)	;Filename of main file, if any.
+	DbgFileName				BYTE MAX_PATH dup(?)	;Fileneme of debugged file, if any.
+	findbuff				BYTE 256 dup(?)			;Find text.
+	replacebuff				BYTE 256 dup(?)			;Replace text.
+	szInitFolder			BYTE MAX_PATH dup(?)	;Initial folder.
+	szSessionFile			BYTE MAX_PATH dup(?)	;Current session file, if any.
+	PathBin					BYTE MAX_PATH dup(?)	;Path to assembler, linker and resource compiler.
+	PathInc					BYTE MAX_PATH dup(?)	;Path to include files.
+	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
+	CompileRC				BYTE 256 dup(?)			;Resource compiler command.
+	Assemble				BYTE 256 dup(?)			;Assemble command.
+	Link					BYTE 256 dup(?)			;Link command
+	DbgAssemble				BYTE 256 dup(?)			;Debug assemble command.
+	DbgLink					BYTE 256 dup(?)			;Debug link command
 ADDINDATA ends
 
 ADDINPROCS struct
-	lpOpenEditFile			DWORD ?
-	lpOutputSelect			DWORD ?
-	lpOutputShow			DWORD ?
-	lpOutputString			DWORD ?
-	lpOutputClear			DWORD ?
-	lpTabToolAdd			DWORD ?
-	lpTabToolActivate		DWORD ?
-	lpTabToolGetMem			DWORD ?
-	lpUpdateFileTime		DWORD ?
-	lpTabToolSetChanged		DWORD ?
+	lpOpenEditFile			DWORD ?					;Opens a file. lpFileName:DWORD,fType:DWORD
+	lpOutputSelect			DWORD ?					;Selects Output or Immediate. nSel:DWORD (0 or 1)
+	lpOutputShow			DWORD ?					;Shows or hides the selected output. fShow:DWORD (TRUE or FALSE)
+	lpOutputString			DWORD ?					;Outputs a string to selected output. lpString:DWORD
+	lpOutputClear			DWORD ?					;Clears the selected output.
+	lpTabToolAdd			DWORD ?					;Adds a new tab. hWin:HWND,lpFileName:DWORD
+	lpTabToolActivate		DWORD ?					;Activates the current tab.
+	lpTabToolGetMem			DWORD ?					;Gets a pointer to TABMEM. hWin:DWORD
+	lpUpdateFileTime		DWORD ?					;Updates the filetime. lpTABMEM:DWORD
+	lpTabToolSetChanged		DWORD ?					;Sets the tabs changed state. hWin:DWORD,fChanged:DWORD (TRUE or FALSE)
+	lpUpdateFileName		DWORD ?					;Changes the filename for current selected tab. hWin:DWORD,lpFileName:DWORD
 ADDINPROCS ends
 
 ;#########################################################################
 
 TABMEM struct
-	hwnd					HWND ?
-	filename				BYTE MAX_PATH dup (?)
-	ft						FILETIME <?>
+	hwnd					HWND ?					;Handle of the editor window.
+	filename				BYTE MAX_PATH dup (?)	;Filename including full path.
+	ft						FILETIME <?>			;Filetime for last write.
 	nchange					DWORD ?
 	fchanged				DWORD ?
 	fupdate					DWORD ?
 TABMEM ends
 
-;Edit window ID
-IDC_RAE						equ 1011
-IDC_RES						equ 1012
-IDC_HEX						equ 1013
-IDC_EXECUTE					equ 1014
-IDC_USER					equ 1015
+;Edit window ID's
+IDC_RAE						equ 1011				;Text editor
+IDC_RES						equ 1012				;Resource editor
+IDC_HEX						equ 1013				;Hex editor
+IDC_EXECUTE					equ 1014				;File can be executed. (.com, .bat or .exe)
+IDC_USER					equ 1015				;User defined editor
 
-;MasmEd.mnu
+;MasmEd menu ID's
 IDM_MENU					equ 10000
 IDM_HELPF1					equ 500
 IDM_FILE					equ 11000
@@ -260,6 +261,7 @@ IDM_OPTION_CODE				equ 10030
 IDM_OPTION_DIALOG			equ 10047
 IDM_OPTION_PATH				equ 10080
 IDM_OPTION_BUILD			equ 10070
+IDM_OPTION_ADDINS			equ 10093
 IDM_OPTION_TOOLS			equ 10031
 IDM_OPTION_HELP				equ 10032
 

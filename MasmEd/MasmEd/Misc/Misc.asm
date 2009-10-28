@@ -1541,7 +1541,7 @@ OutputString proc uses ebx,lpString:DWORD
 
 OutputString endp
 
-OutputClear proc uses ebx,lpString:DWORD
+OutputClear proc uses ebx
 
 	mov		ebx,ha.hOut
 	.if nOutSel

@@ -30,6 +30,9 @@ include masm32.inc
 include debug.inc
 includelib debug.lib
 
+FBM_SETFILTERSTRING	equ WM_USER+3	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to filter string
+FBM_GETFILTERSTRING	equ WM_USER+4	;wParam=0, lParam=Pointer to filter string
+
 IDD_TBRCREATE		equ 1015
 IDC_HMEM			equ 9999
 
@@ -98,11 +101,13 @@ TBRMEM ends
 szMenuItem			db 'Add new Toolbar',0
 szNewFile			db '(Untitled)',0
 szTbr				db '.tbr',0
+szTbrFilter			db '.tbr.',0
 szSTD				db 'IDB_STD_SMALL_COLOR',0
 szToolbarWindow32	db 'ToolbarWindow32',0
 szNULL				db 0
 szIDC_TBB			db 'IDC_TBB',0
 szSEP				db '-',0
+szTBRFilterString	db 'Toolbar (*.tbr)',0,'*.tbr',0,0
 szBMPFilterString	db 'Bitmap (*.bmp)',0,'*.bmp',0,0
 
 szCONST				db '.const',0Dh,0Dh
@@ -139,3 +144,4 @@ lpHandles			dd ?	;Pointer to handles struct
 lpProc				dd ?	;Pointer to proc struct
 lpData				dd ?	;Pointer to data struct
 MenuIDAddin			dd ?	;A MenuID allocated for this addin
+hook				HOOK <>	;A pointer to this is returned from InstallAddin

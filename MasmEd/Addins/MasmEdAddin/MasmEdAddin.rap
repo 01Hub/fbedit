@@ -9,7 +9,7 @@ GroupExpand=1
 1=MasmEdAddin.Asm
 2=MasmEdAddin.Inc
 3=MasmEdAddin.Def
-4=MasmEdAddin.Txt
+4=..\Help\MasmEdAddin.Txt
 5=..\Addins.inc
 AutoDelete=1
 AskMe=0
@@ -58,7 +58,7 @@ Group=Assembly,Misc
 4=2
 5=1
 [AutoLoad]
-AutoLoad=1,2,3,4,5
+AutoLoad=1,2,3,4,5,4
 [RADebugBP]
 2=
 1=
@@ -88,7 +88,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=28
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -133,3 +133,5 @@ ProductVer4Range=0
 9=
 [BreakPoint]
 0=
+[PTimer]
+PTimer=40076
