@@ -98,7 +98,7 @@ TBRMEM ends
 
 .const
 
-szMenuItem			db 'Add new Toolbar',0
+szMenuItem			db 'New Toolbar file',0
 szNewFile			db '(Untitled)',0
 szTbr				db '.tbr',0
 szTbrFilter			db '.tbr.',0
@@ -112,9 +112,9 @@ szBMPFilterString	db 'Bitmap (*.bmp)',0,'*.bmp',0,0
 
 szCONST				db '.const',0Dh,0Dh
 					db 'tbrbtns',0
-szSEPARATOR			db '								TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>',0Dh,0
-szTBBUTTON			db '								TBBUTTON <%d,%s,%s,%s,0,0>',0Dh,0
-szNBTNS				db 'ntbrbtns						equ %d',0Dh,0Dh,0
+szSEPARATOR			db '					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>',0Dh,0
+szTBBUTTON			db '					TBBUTTON <%d,%s,%s,%s,0,0>',0Dh,0
+szNBTNS				db 'ntbrbtns			equ %d',0Dh,0Dh,0
 
 szTBSTATE_ENABLED	db 'TBSTATE_ENABLED',0
 szTBSTYLE_BUTTON	db 'TBSTYLE_BUTTON',0

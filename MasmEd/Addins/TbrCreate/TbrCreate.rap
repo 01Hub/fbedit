@@ -64,7 +64,7 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,1,6,4,5,4
+AutoLoad=2,3,1,6,4,5
 [RADebugBP]
 2=
 1=
@@ -80,7 +80,7 @@ AutoLoad=2,3,1,6,4,5,4
 [Size]
 5=0,0,799,526,3478
 1=0,0,0,0,6238
-2=0,0,0,0,2248
+2=0,0,0,0,2778
 3=0,0,0,0,25
 4=0,0,0,0,27
 6=0,0,0,0
@@ -141,7 +141,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=68686974
+PTimer=68828685
 [Find]
 1="szNewFile"
 2="2 shl"
