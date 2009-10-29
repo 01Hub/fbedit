@@ -1933,23 +1933,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lpcbData,sizeof da.PathLib
 		invoke RegQueryValueEx,ha.hReg,addr szPathLib,0,addr lpType,addr da.PathLib,addr lpcbData
 		invoke SetEnvironment
-		invoke strcpy,addr da.CompileRC,addr defCompileRC
-		mov		lpcbData,sizeof da.CompileRC
-		invoke RegQueryValueEx,ha.hReg,addr szCompileRC,0,addr lpType,addr da.CompileRC,addr lpcbData
 		mov		nInx,1
 		mov		esi,offset makeoptdef
 		mov		edi,offset da.makeopt
 		.while nInx<=16
+			invoke RtlMoveMemory,edi,esi,sizeof MAKEOPT
 			invoke MakeKey,addr szMakeType,nInx,addr buffer1
 			mov		lpcbData,sizeof MAKEOPT
-			invoke RtlMoveMemory,edi,esi,sizeof MAKEOPT
 			invoke RegQueryValueEx,ha.hReg,addr buffer1,0,addr lpType,edi,addr lpcbData
 			.if [edi].MAKEOPT.szType
 				invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr [edi].MAKEOPT.szType
 				invoke SendMessage,ha.hCbo,CB_SETITEMDATA,eax,edi
+				lea		edi,[edi+sizeof MAKEOPT]
 			.endif
 			lea		esi,[esi+sizeof MAKEOPT]
-			lea		edi,[edi+sizeof MAKEOPT]
 			inc		nInx
 		.endw
 		mov		lpcbData,sizeof nCboBuild

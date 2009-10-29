@@ -78,6 +78,8 @@ strcmp						PROTO :DWORD,:DWORD
 strlen						PROTO :DWORD
 DeleteGoto					PROTO :DWORD
 PostAddinMessage			PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+AskSaveSessionFile			PROTO
+ReadSessionFile				PROTO :DWORD
 
 HT_DEBUG					equ 206
 
@@ -368,7 +370,6 @@ szImmediate				db 'Immediate',0
 szRegister				db 'Register',0
 szWatch					db 'Watch',0
 
-defCompileRC			db 'rc /v',0
 szFmtDec				db '%d',0
 
 .data
@@ -538,7 +539,7 @@ szBuild					db 'Build',0
 
 szFolder				db 'Folder',0
 szSession				db 'Session',0
-szFilter				db '.asm.inc.txt.def.rc.exe.bat.',0
+szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 

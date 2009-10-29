@@ -16,7 +16,11 @@ defPathLib				db 'C:\masm32\lib',0
 ExtRC					db '.rc',0
 ExtRes					db '.res',0
 ExtObj					db '.obj',0
+ExtDef					db '.def',0
 ExtExe					db '.exe',0
+ExtDll					db '.dll',0
+ExtLib					db '.lib',0
+ExtCom					db '.com',0
 
 rsrcrc					db 'rsrc.rc',0
 rsrcres					db 'rsrc.res',0
@@ -205,7 +209,14 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 	.endif
 	mov		eax,nCommand
 	.if eax==IDM_MAKE_COMPILE
-		invoke strcpy,addr make.buffer,offset da.CompileRC
+		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
+		mov		edx,sizeof MAKEOPT
+		mul		edx
+		lea		edx,da.makeopt.szCompileRC[eax]
+		.if !byte ptr [edx]
+			jmp		Ex
+		.endif
+		invoke strcpy,addr make.buffer,addr da.makeopt.szCompileRC[eax]
 		invoke strcat,addr make.buffer,addr szSpc
 		;Try da.FileName.rc
 		invoke strcpy,addr buffer2,lpFileName
@@ -240,40 +251,77 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke strcat,addr make.buffer,offset szQuote
 		mov		eax,offset ExtObj
 	.elseif eax==IDM_MAKE_LINK
+		lea		ebx,make.buffer
 		invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 		mov		edx,sizeof MAKEOPT
 		mul		edx
-		invoke strcpy,addr make.buffer,addr da.makeopt.szLink[eax]
-		invoke strcat,addr make.buffer,addr szSpc
+		push	da.makeopt.OutpuType[eax]
+		lea		edx,da.makeopt.szCompileRC[eax]
+		.if byte ptr [edx]
+			mov		edx,TRUE
+		.else
+			mov		edx,FALSE
+		.endif
+		push	edx
+		invoke strcpy,ebx,addr da.makeopt.szLink[eax]
+		invoke strlen,ebx
+		.if dword ptr [ebx+eax-4]==':FED'
+			invoke strcpy,addr buffer2,lpFileName
+			invoke RemoveFileExt,addr buffer2
+			invoke strcat,addr buffer2,offset ExtDef
+			invoke GetFileAttributes,addr buffer2
+			.if eax==INVALID_HANDLE_VALUE
+				invoke strlen,ebx
+				mov		byte ptr [ebx+eax-6],0
+			.else
+				invoke strcat,ebx,offset szQuote
+				invoke strcat,ebx,addr buffer2
+				invoke strcat,ebx,offset szQuote
+			.endif
+		.endif
+		invoke strcat,ebx,addr szSpc
 		invoke strcpy,addr buffer2,lpFileName
 		invoke RemoveFileExt,addr buffer2
 		invoke strcat,addr buffer2,offset ExtObj
-		invoke strcat,addr make.buffer,offset szQuote
-		invoke strcat,addr make.buffer,addr buffer2
-		invoke strcat,addr make.buffer,offset szQuote
-		invoke RemoveFileExt,addr buffer2
-		invoke strcat,addr buffer2,offset ExtRes
-		invoke GetFileAttributes,addr buffer2
-		.if eax==-1
-			;FileName.res not found, try if rsrc.res exist
-			invoke RemoveFileName,addr buffer2
-			invoke strcat,addr buffer2,offset rsrcres
+		invoke strcat,ebx,offset szQuote
+		invoke strcat,ebx,addr buffer2
+		invoke strcat,ebx,offset szQuote
+		pop		eax
+PrintHex eax
+		.if eax
+			invoke RemoveFileExt,addr buffer2
+			invoke strcat,addr buffer2,offset ExtRes
 			invoke GetFileAttributes,addr buffer2
-			.if eax!=-1
-				;rsrc.res found
+			.if eax==INVALID_HANDLE_VALUE
+				;FileName.res not found, try if rsrc.res exist
+				invoke RemoveFileName,addr buffer2
+				invoke strcat,addr buffer2,offset rsrcres
+				invoke GetFileAttributes,addr buffer2
+				.if eax!=-1
+					;rsrc.res found
+					invoke strcat,addr make.buffer,offset szSpc
+					invoke strcat,addr make.buffer,offset szQuote
+					invoke strcat,addr make.buffer,addr buffer2
+					invoke strcat,addr make.buffer,offset szQuote
+				.endif
+			.else
+				;FileName.res found
 				invoke strcat,addr make.buffer,offset szSpc
 				invoke strcat,addr make.buffer,offset szQuote
 				invoke strcat,addr make.buffer,addr buffer2
 				invoke strcat,addr make.buffer,offset szQuote
 			.endif
-		.else
-			;FileName.res found
-			invoke strcat,addr make.buffer,offset szSpc
-			invoke strcat,addr make.buffer,offset szQuote
-			invoke strcat,addr make.buffer,addr buffer2
-			invoke strcat,addr make.buffer,offset szQuote
 		.endif
-		mov		eax,offset ExtExe
+		pop		eax
+		.if !eax
+			mov		eax,offset ExtExe
+		.elseif eax==1
+			mov		eax,offset ExtDll
+		.elseif eax==2
+			mov		eax,offset ExtLib
+		.else
+			mov		eax,offset ExtCom
+		.endif
 	.elseif eax==IDM_MAKE_RUN
 		invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Exec
 		invoke strcpy,addr make.buffer,lpFileName
@@ -330,7 +378,7 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 			mov		fExitCode,-1
 			;Check if file exists
 			invoke GetFileAttributes,addr buffer2
-			.if eax==-1
+			.if eax==INVALID_HANDLE_VALUE
 				mov		fExitCode,eax
 				invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset Errors
 				invoke FindErrors

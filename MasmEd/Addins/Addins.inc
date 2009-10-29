@@ -93,9 +93,11 @@ ADDINHANDLES struct
 ADDINHANDLES ends
 
 MAKEOPT struct
-	szType			db 32 dup (?)
-	szAssemble		db 240 dup (?)
-	szLink			db 240 dup (?)
+	szType			db 32 dup(?)
+	szCompileRC		db 128 dup(?)
+	szAssemble		db 128 dup(?)
+	szLink			db 128 dup(?)
+	OutpuType		dd ?
 MAKEOPT ends
 
 ADDINDATA struct
@@ -110,11 +112,6 @@ ADDINDATA struct
 	PathBin					BYTE MAX_PATH dup(?)	;Path to assembler, linker and resource compiler.
 	PathInc					BYTE MAX_PATH dup(?)	;Path to include files.
 	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
-	CompileRC				BYTE 256 dup(?)			;Resource compiler command.
-;	Assemble				BYTE 256 dup(?)			;Assemble command.
-;	Link					BYTE 256 dup(?)			;Link command
-;	DbgAssemble				BYTE 256 dup(?)			;Debug assemble command.
-;	DbgLink					BYTE 256 dup(?)			;Debug link command
 	makeopt					MAKEOPT 16 dup(<>)
 ADDINDATA ends
 
@@ -149,6 +146,7 @@ IDC_RES						equ 1012				;Resource editor
 IDC_HEX						equ 1013				;Hex editor
 IDC_EXECUTE					equ 1014				;File can be executed. (.com, .bat or .exe)
 IDC_USER					equ 1015				;User defined editor
+IDC_MES						equ 1016				;Session file
 
 ;MasmEd menu ID's
 IDM_MENU					equ 10000

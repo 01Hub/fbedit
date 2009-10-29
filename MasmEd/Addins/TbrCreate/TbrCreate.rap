@@ -64,7 +64,7 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,1,6,4,5
+AutoLoad=2,3,1,6,4,5,7
 [RADebugBP]
 2=
 1=
@@ -84,7 +84,7 @@ AutoLoad=2,3,1,6,4,5
 3=0,0,0,0,25
 4=0,0,0,0,27
 6=0,0,0,0
-7=0,0,0,0,14
+7=0,0,0,0,3959
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -141,7 +141,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=68981706
+PTimer=69089346
 [Find]
 1="szNewFile"
 2="2 shl"

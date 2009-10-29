@@ -12,6 +12,7 @@ IDC_EDTASM			equ 1002
 IDC_EDTLNK			equ 1003
 IDC_BTNRESTORE		equ 1004
 IDC_CBOTYPE			equ 1006
+IDC_CBOOUT			equ 1007
 
 .const
 
@@ -19,14 +20,18 @@ szPath				db 'path',0
 szInclude			db 'include',0
 szIncludelib		db 'lib',0
 szMakeOption		db 'Make Commands',0
-makeoptdef			MAKEOPT <'Window Release','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0'>
-					MAKEOPT <'Window Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0'>
-					MAKEOPT <'Console Release','ml /c /coff /Cp','link /SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0'>
-					MAKEOPT <'Console Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0'>
-					MAKEOPT <'Dll Release','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$DEF'>
-					MAKEOPT <'Dll Debug','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:$DEF'>
-					MAKEOPT <'Library','ml /c /coff /Cp','lib /VERBOSE /SUBSYSTEM:WINDOWS'>
+makeoptdef			MAKEOPT <'Window Release','rc /v','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',0>
+					MAKEOPT <'Window Debug','rc /v','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',0>
+					MAKEOPT <'Console Release','rc /v','ml /c /coff /Cp','link /SUBSYSTEM:CONSOLE /RELEASE /VERSION:4.0',0>
+					MAKEOPT <'Console Debug','rc /v','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:CONSOLE /DEBUG /VERSION:4.0,0'>
+					MAKEOPT <'Dll Release','rc /v','ml /c /coff /Cp','link /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:',1>
+					MAKEOPT <'Dll Debug','rc /v','ml /c /coff /Cp /Zi /Zd','link /SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:',1>
+					MAKEOPT <'Library',,'ml /c /coff /Cp','lib /VERBOSE /SUBSYSTEM:WINDOWS',2>
 					MAKEOPT 9 dup(<,,>)
+szOutputType		db '.exe',0
+					db '.dll',0
+					db '.lib',0
+					db '.com',0,0
 
 .data?
 
@@ -155,10 +160,15 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 		mov		tci.imask,TCIF_TEXT
 		mov		tci.pszText,offset szMakeOption
 		invoke SendDlgItemMessage,hWin,IDC_TABBUILD,TCM_INSERTITEM,999,addr tci
-		invoke SendDlgItemMessage,hWin,IDC_EDTRES,EM_LIMITTEXT,240,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTASM,EM_LIMITTEXT,240,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTLNK,EM_LIMITTEXT,240,0
-		invoke SetDlgItemText,hWin,IDC_EDTRES,addr da.CompileRC
+		invoke SendDlgItemMessage,hWin,IDC_EDTRES,EM_LIMITTEXT,128,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTASM,EM_LIMITTEXT,128,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTLNK,EM_LIMITTEXT,128,0
+		mov		esi,offset szOutputType
+		.while byte ptr [esi]
+			invoke SendDlgItemMessage,hWin,IDC_CBOOUT,CB_ADDSTRING,0,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
 		mov		esi,offset da.makeopt
 		call	SetMakeOpt
 	.elseif eax==WM_COMMAND
@@ -167,10 +177,6 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
-				invoke GetDlgItemText,hWin,IDC_EDTRES,addr da.CompileRC,240
-				invoke strlen,addr da.CompileRC
-				inc		eax
-				invoke RegSetValueEx,ha.hReg,addr szCompileRC,0,REG_SZ,addr da.CompileRC,eax
 				mov		esi,offset makeoptedit
 				mov		edi,offset da.makeopt
 				invoke RtlZeroMemory,edi,sizeof MAKEOPT*16
@@ -192,7 +198,6 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNRESTORE
-				invoke SetDlgItemText,hWin,IDC_EDTRES,addr defCompileRC
 				mov		esi,offset makeoptdef
 				call	SetMakeOpt
 			.endif
@@ -202,17 +207,29 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 			invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
 			mov		edi,eax
 			pop		eax
-			.if eax==IDC_EDTASM
+			.if eax==IDC_EDTRES
+				invoke GetDlgItemText,hWin,IDC_EDTRES,addr [edi].MAKEOPT.szCompileRC,sizeof MAKEOPT.szCompileRC
+			.elseif eax==IDC_EDTASM
 				invoke GetDlgItemText,hWin,IDC_EDTASM,addr [edi].MAKEOPT.szAssemble,sizeof MAKEOPT.szAssemble
 			.elseif eax==IDC_EDTLNK
 				invoke GetDlgItemText,hWin,IDC_EDTLNK,addr [edi].MAKEOPT.szLink,sizeof MAKEOPT.szLink
 			.endif
 		.elseif edx==CBN_SELCHANGE
-			invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
-			invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
-			mov		esi,eax
-			invoke SetDlgItemText,hWin,IDC_EDTASM,addr [esi].MAKEOPT.szAssemble
-			invoke SetDlgItemText,hWin,IDC_EDTLNK,addr [esi].MAKEOPT.szLink
+			.if eax==IDC_CBOTYPE
+				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
+				mov		esi,eax
+				invoke SetDlgItemText,hWin,IDC_EDTRES,addr [esi].MAKEOPT.szCompileRC
+				invoke SetDlgItemText,hWin,IDC_EDTASM,addr [esi].MAKEOPT.szAssemble
+				invoke SetDlgItemText,hWin,IDC_EDTLNK,addr [esi].MAKEOPT.szLink
+				invoke SendDlgItemMessage,hWin,IDC_CBOOUT,CB_SETCURSEL,[esi].MAKEOPT.OutpuType,0
+			.elseif eax==IDC_CBOOUT
+				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
+				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
+				mov		edi,eax
+				invoke SendDlgItemMessage,hWin,IDC_CBOOUT,CB_GETCURSEL,0,0
+				mov		[edi].MAKEOPT.OutpuType,eax
+			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
@@ -237,6 +254,8 @@ SetMakeOpt:
 		inc		ebx
 	.endw
 	invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_SETCURSEL,0,0
+	invoke SendDlgItemMessage,hWin,IDC_CBOOUT,CB_SETCURSEL,makeoptedit.OutpuType,0
+	invoke SetDlgItemText,hWin,IDC_EDTRES,addr makeoptedit.szCompileRC
 	invoke SetDlgItemText,hWin,IDC_EDTASM,addr makeoptedit.szAssemble
 	invoke SetDlgItemText,hWin,IDC_EDTLNK,addr makeoptedit.szLink
 	retn

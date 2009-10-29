@@ -410,8 +410,14 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 			.else
 				invoke strlen,addr buffer
 				mov		eax,dword ptr buffer[eax-4]
-				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.'
+				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.' && eax!='SEM.'
 					mov		ebx,IDC_RAE
+				.elseif eax=='SEM.'
+					.if fCtrl
+						mov		ebx,IDC_RAE
+					.else
+						mov		ebx,IDC_MES
+					.endif
 				.else
 					mov		ebx,IDC_HEX
 				.endif
@@ -437,6 +443,17 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							mov		eax,2
 						.endif
 						invoke SendMessage,ha.hREd,REM_HILITEACTIVELINE,0,eax
+					.elseif ebx==IDC_MES
+						mov		nTabInx,-1
+						invoke UpdateAll,WM_CLOSE
+						.if !eax
+							invoke AskSaveSessionFile
+							.if !eax
+								invoke CloseNotify
+								invoke UpdateAll,CLOSE_ALL
+								invoke ReadSessionFile,lpFileName
+							.endif
+						.endif
 					.else
 						invoke CreateRAHexEd
 						invoke TabToolAdd,ha.hREd,offset da.FileName
@@ -551,7 +568,6 @@ WriteSessionFile proc lpszFile:DWORD
 	invoke MakeSession
 	invoke WritePrivateProfileString,addr szSession,addr szSession,addr tmpbuff,lpszFile
 	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr da.MainFile,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szCompileRC,addr da.CompileRC,lpszFile
 	invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 	invoke wsprintf,addr buffer,addr szFmtDec,eax
 	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
@@ -696,14 +712,7 @@ ReadSessionFile proc lpszFile:DWORD
 	invoke GetPrivateProfileString,addr szSession,addr szSession,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
 	invoke RestoreSession,FALSE
 	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr da.MainFile,sizeof da.MainFile,lpszFile
-	invoke GetPrivateProfileString,addr szSession,addr szCompileRC,addr szNULL,addr da.CompileRC,sizeof da.CompileRC,lpszFile
-	.if !da.CompileRC
-		invoke strcpy,addr da.CompileRC,addr defCompileRC
-	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
-	.if eax
-		mov		eax,1
-	.endif
 	invoke SendMessage,ha.hCbo,CB_SETCURSEL,eax,0
 	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
