@@ -57,8 +57,8 @@ ADDINHANDLES struct
 	hFind					HWND ?					;Handle to Find / Replace dialog.
 	hTbr					HWND ?					;Handle to toolbar.
 	hShp					HWND ?					;Handle to box surrounding toolbar.
-	hStc					HWND ?
-	hCbo					HWND ?					;Handle to Release / Debug combo box.
+	hStc					HWND ?					;Container for Make type combobox
+	hCbo					HWND ?					;Handle to Make type combobox.
 	hCCLB					HWND ?					;Handle to code complete listbox.
 	hCCTT					HWND ?					;Handle to code tooltip.
 	hRes					HWND ?					;Handle to resource editor container.
@@ -93,11 +93,11 @@ ADDINHANDLES struct
 ADDINHANDLES ends
 
 MAKEOPT struct
-	szType			db 32 dup(?)
-	szCompileRC		db 128 dup(?)
-	szAssemble		db 128 dup(?)
-	szLink			db 128 dup(?)
-	OutpuType		dd ?
+	szType					BYTE 32 dup(?)			;Build type
+	szCompileRC				BYTE 128 dup(?)			;Compile resource command
+	szAssemble				BYTE 128 dup(?)			;Assemble command
+	szLink					BYTE 128 dup(?)			;Link command
+	OutpuType				DWORD ?					;Output filetype
 MAKEOPT ends
 
 ADDINDATA struct
@@ -112,7 +112,8 @@ ADDINDATA struct
 	PathBin					BYTE MAX_PATH dup(?)	;Path to assembler, linker and resource compiler.
 	PathInc					BYTE MAX_PATH dup(?)	;Path to include files.
 	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
-	makeopt					MAKEOPT 16 dup(<>)
+	makeopt					MAKEOPT 16 dup(<>)		;Make options
+	nBuildOpt				DWORD ?					;Current make option
 ADDINDATA ends
 
 ADDINPROCS struct

@@ -1949,9 +1949,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+sizeof MAKEOPT]
 			inc		nInx
 		.endw
-		mov		lpcbData,sizeof nCboBuild
-		invoke RegQueryValueEx,ha.hReg,addr szBuild,0,addr lpType,addr nCboBuild,addr lpcbData
-		invoke SendMessage,ha.hCbo,CB_SETCURSEL,nCboBuild,0
+		mov		lpcbData,sizeof da.nBuildOpt
+		invoke RegQueryValueEx,ha.hReg,addr szBuild,0,addr lpType,addr da.nBuildOpt,addr lpcbData
+		invoke SendMessage,ha.hCbo,CB_SETCURSEL,da.nBuildOpt,0
 		invoke CreateCodeComplete
 		invoke UpdateToolColors
 		invoke SendMessage,ha.hBrowse,FBM_SETFILTERSTRING,FALSE,addr szFilter

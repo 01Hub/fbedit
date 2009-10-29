@@ -64,12 +64,13 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,1,6,4,5,7
+AutoLoad=2,3,6,1,4,5,7
 [RADebugBP]
 2=
 1=
 3=
 7=
+5=
 [Collapse]
 5=
 1=,,
@@ -78,13 +79,13 @@ AutoLoad=2,3,1,6,4,5,7
 4=
 7=
 [Size]
-5=0,0,799,526,7407
+5=0,0,799,526,7336
 1=0,0,0,0,6238
 2=0,0,0,0,2778
 3=0,0,0,0,25
 4=0,0,0,0,27
 6=0,0,0,0
-7=0,0,0,0,3959
+7=0,0,0,0,31
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -141,7 +142,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=69089346
+PTimer=69354142
 [Find]
 1="szNewFile"
 2="2 shl"

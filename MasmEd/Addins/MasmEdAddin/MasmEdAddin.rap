@@ -71,7 +71,7 @@ AutoLoad=1,2,3,4,5
 4=
 [Size]
 5=0,0,799,526,1519
-1=0,0,0,0,935
+1=0,0,0,0,270
 2=0,0,0,0,599
 3=0,0,0,0,20
 4=0,0,0,0,32
@@ -88,7 +88,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -134,4 +134,4 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=46160
+PTimer=457410

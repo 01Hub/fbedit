@@ -214,6 +214,8 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		mul		edx
 		lea		edx,da.makeopt.szCompileRC[eax]
 		.if !byte ptr [edx]
+			invoke SendMessage,ha.hOut,EM_REPLACESEL,FALSE,offset NoRC
+			invoke SendMessage,ha.hOut,EM_SCROLLCARET,0,0
 			jmp		Ex
 		.endif
 		invoke strcpy,addr make.buffer,addr da.makeopt.szCompileRC[eax]
@@ -287,7 +289,6 @@ OutputMake proc uses ebx,nCommand:DWORD,lpFileName:DWORD,fClear:DWORD
 		invoke strcat,ebx,addr buffer2
 		invoke strcat,ebx,offset szQuote
 		pop		eax
-PrintHex eax
 		.if eax
 			invoke RemoveFileExt,addr buffer2
 			invoke strcat,addr buffer2,offset ExtRes

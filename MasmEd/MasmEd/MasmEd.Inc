@@ -609,7 +609,6 @@ mnupos					DWORD ?
 tabinx					DWORD ?
 fUnicode				DWORD ?
 nTabInx					DWORD ?
-nCboBuild				DWORD ?
 ;Debug
 fDebugging				DWORD ?
 fMainThread				DWORD ?
