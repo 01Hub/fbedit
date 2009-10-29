@@ -58,7 +58,6 @@ OutputString endp
 
 ; Export this proc
 InstallAddin proc uses ebx,hWin:DWORD
-	LOCAL	hook:HOOK
 
 	mov		ebx,hWin
 	;Get pointer to handles struct
@@ -77,7 +76,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
 	mov		hook.hook4,eax
-	lea		eax,hook
+	mov		eax,offset hook
 	ret 
 
 InstallAddin endp

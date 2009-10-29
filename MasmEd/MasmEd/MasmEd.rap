@@ -209,20 +209,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.5.9
-PV=1.0.5.9
+FV=1.1.0.0
+PV=1.1.0.0
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.0.5.9
+ProductVersion=1.1.0.0
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2009
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.0.5.9
+FileVersion=1.1.0.0
 CompanyName=
 
 [Group]
@@ -286,16 +286,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 56=1
 
 [Find]
-1="defCompileRC"
-2="defcomp"
-3="RegQueryValueEx"
-4="IDM_OPTION_BUILD"
-5="AIM_GETMODIFY"
-6="AIM_FILESAVEAS"
-7="AIM_FILESAVE"
-8="AIM_FILECLOSED"
-9="AIM_FILECLOSE"
-10="AIM_FILEOPENED"
+1="1059"
+2="defCompileRC"
+3="defcomp"
+4="RegQueryValueEx"
+5="IDM_OPTION_BUILD"
+6="AIM_GETMODIFY"
+7="AIM_FILESAVEAS"
+8="AIM_FILESAVE"
+9="AIM_FILECLOSED"
+10="AIM_FILECLOSE"
 
 [VersionControl]
 Settings=1246
@@ -342,8 +342,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,20960
-1=0,0,0,0,52549
+2=0,0,687,524,9609
+1=0,0,0,0,4486
 11=0,0,0,0,23922
 22=0,0,0,0,9221
 10=0,0,0,0,12639
@@ -444,7 +444,7 @@ AutoLoad=1,2,53,13,39,10,40
 54=
 56=
 [PTimer]
-PTimer=1358506545
+PTimer=1358771356
 [RADebugBP]
 1=
 2=

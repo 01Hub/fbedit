@@ -35,3 +35,4 @@ lpHandles			dd ?	;Pointer to handles struct
 lpProc				dd ?	;Pointer to proc struct
 lpData				dd ?	;Pointer to data struct
 MenuIDAddin			dd ?	;A MenuID allocated for this addin
+hook				HOOK <>
