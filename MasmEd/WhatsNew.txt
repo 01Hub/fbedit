@@ -1,5 +1,14 @@
 MasmEd
 
+1.1.0.0 - 2009.10.29
+--------------------
+o Added addin support. The architecture is similar to RadASM. Some useful addins are converted.
+o Added TbrCreate addin. Helps you create toolbars.
+o Added raASCII addin. Shows an ascii table.
+o Added raBitMask addin. Lets you explore bits and bytes.
+o Added raGColor addin. Lets you choose colors.
+o Added more build options. Window (GUI), Console, Dll and Library build options.
+
 1.0.5.9b - 2009.10.20
 ---------------------
 o Speed optimized the code parser. Editing large projects on older machines could be a little sluggish.
