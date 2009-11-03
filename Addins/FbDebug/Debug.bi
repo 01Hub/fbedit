@@ -224,3 +224,8 @@ Dim Shared stab(STABMAX) As String
 
 Dim Shared breakvalue As Integer =&hCC
 Dim Shared linead As UInteger
+Dim Shared szContext As ZString*1024
+Dim Shared oldcontext As CONTEXT
+
+Const szDump	=!"Reg Hex              Dec Bin\13\0"
+Const szRegs	=!"EAX %08X %11d \0EBX %08X %11d \0ECX %08X %11d \0EDX %08X %11d \0ESP %08X %11d \0EBP %08X %11d \0ESI %08X %11d \0EDI %08X %11d \0EIP %08X %11d \0    AV-R NIODIT-SZ A P C\13EFL \0\0"

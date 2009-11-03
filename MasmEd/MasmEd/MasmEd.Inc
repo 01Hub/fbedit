@@ -371,6 +371,7 @@ szRegister				db 'Register',0
 szWatch					db 'Watch',0
 
 szFmtDec				db '%d',0
+szPROTO					db ' PROTO',0
 
 .data
 

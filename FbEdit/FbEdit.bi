@@ -68,6 +68,7 @@ Declare Sub HH_Help()
 #Define IDC_SHP								1014
 #Define IDC_CBOBUILD							1016
 #Define IDC_IMGSPLASH						1017
+#Define IDC_REGISTER							1019
 
 ' Menu and toolbar
 #Define IDR_MENU								10000

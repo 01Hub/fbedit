@@ -151,6 +151,7 @@ Type ADDINHANDLES
 	hrareseddlg		As HWND							' Handle of RAResEd dialog
 	himm				As HWND							' Handle of immediate window
 	hToolFont		As HFONT							' Tool windows font
+	hregister		As HWND							' Debug register window.
 End Type
 
 Type ADDINDATA

@@ -2745,6 +2745,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
 					invoke SetFocus,ha.hREd
 				.endif
+			.elseif eax==IDM_PROPERTY_COPYPROTO
+				invoke SendMessage,ha.hProperty,PRM_GETSELTEXT,0,offset tmpbuff
+				.if eax
+					invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szp,offset tmpbuff
+					.while eax
+						mov		ebx,eax
+						invoke strcmp,offset tmpbuff,ebx
+						.if !eax
+							invoke strcat,offset tmpbuff,offset szPROTO
+							invoke strlen,ebx
+							lea		ebx,[ebx+eax+1]
+							.if byte ptr [ebx]
+								invoke strcat,offset tmpbuff,offset szSpc
+								invoke strcat,offset tmpbuff,ebx
+							.endif
+							invoke strcat,offset tmpbuff,offset szCr
+							invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
+							invoke SetFocus,ha.hREd
+							.break
+						.endif
+						invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+					.endw
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY

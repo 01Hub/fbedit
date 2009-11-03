@@ -49,6 +49,7 @@ Dim Shared nMnuNoDebug As Integer
 Dim Shared lpOldEditProc As Any Ptr
 Dim Shared lpOldImmediateProc As Any Ptr
 
+Const szCR=!"\13"
 Const szCRLF=!"\13\10"
 Const szNULL=!"\0\0"
 ' Debug

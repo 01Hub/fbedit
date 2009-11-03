@@ -599,14 +599,95 @@ Sub ClearBreakProc(ByVal nProc As Integer)
 
 End Sub
 
+Sub BinOut(ByVal i As Integer,ByVal reg As Integer,ByVal buff As ZString Ptr)
+	Dim As Integer x
+	
+	For i=i To 31
+		If i=24 Or i=16 Or i=8 Then
+			buff[x]="-"
+			x+=1
+		EndIf
+		buff[x]="0"
+		If reg And 2^(31-i) Then
+			buff[x]="1"
+		EndIf
+		x+=1
+	Next
+	buff[x]=0
+
+End Sub
+
 Sub seteip(ad As UInteger)
 	Dim vcontext As CONTEXT
+	Dim i As Integer
+	Dim szptr As ZString Ptr
+	Dim szreg As ZString Ptr
+	Dim reg As Integer
+	Dim oldreg As Integer
+	Dim regptr(9) As Integer Ptr
+	Dim oldregptr(9) As Integer Ptr
+	Dim linered(9) As Integer
+	Dim binbuff As ZString*32
 
-	vcontext.contextflags=CONTEXT_CONTROL
+	vcontext.contextflags=CONTEXT_FULL
 	GetThreadContext(threadcontext,@vcontext)
 	procsk=vcontext.ebp
 	vcontext.Eip=ad
 	SetThreadContext(threadcontext,@vcontext)
+	regptr(0)=@vcontext.Eax
+	regptr(1)=@vcontext.Ebx
+	regptr(2)=@vcontext.Ecx
+	regptr(3)=@vcontext.Edx
+	regptr(4)=@vcontext.Esp
+	regptr(5)=@vcontext.Ebp
+	regptr(6)=@vcontext.Esi
+	regptr(7)=@vcontext.Edi
+	regptr(8)=@vcontext.Eip
+	regptr(9)=@vcontext.EFlags
+	oldregptr(0)=@oldcontext.Eax
+	oldregptr(1)=@oldcontext.Ebx
+	oldregptr(2)=@oldcontext.Ecx
+	oldregptr(3)=@oldcontext.Edx
+	oldregptr(4)=@oldcontext.Esp
+	oldregptr(5)=@oldcontext.Ebp
+	oldregptr(6)=@oldcontext.Esi
+	oldregptr(7)=@oldcontext.Edi
+	oldregptr(8)=@oldcontext.Eip
+	oldregptr(9)=@oldcontext.EFlags
+	szptr=@szContext
+	lstrcpy(szptr,@szDump)
+	szptr+=lstrlen(szptr)
+	szreg=@szRegs
+	For i=0 To 8
+		RtlMoveMemory(@reg,regptr(i),4)
+		RtlMoveMemory(@oldreg,oldregptr(i),4)
+		wsprintf(szptr,szreg,reg,reg)
+		BinOut(0,reg,@binbuff)
+		lstrcat(szptr,@binbuff)
+		lstrcat(szptr,@szCR)
+		szptr+=lstrlen(szptr)
+		szreg+=lstrlen(szreg)+1
+		linered(i)=reg<>oldreg
+	Next
+	RtlMoveMemory(@reg,regptr(i),4)
+	RtlMoveMemory(@oldreg,oldregptr(i),4)
+	lstrcat(szptr,szreg)
+	BinOut(14,reg,@binbuff)
+	lstrcat(szptr,@binbuff)
+	lstrcat(szptr,@szCR)
+	szptr+=lstrlen(szptr)
+	szreg+=lstrlen(szreg)+1
+	linered(i)=reg<>oldreg
+	SetWindowText(lpHandles->hregister,@szContext)
+	For i=0 To 8
+		SendMessage(lpHandles->hregister,REM_LINEREDTEXT,i+1,linered(i))
+	Next
+	If linered(9) Then
+		SendMessage(lpHandles->hregister,REM_LINEREDTEXT,11,TRUE)
+	EndIf
+	SendMessage(lpHandles->hregister,REM_SETHILITELINE,0,1)
+	SendMessage(lpHandles->hregister,REM_SETHILITELINE,10,1)
+	RtlMoveMemory(@oldcontext,@vcontext,SizeOf(CONTEXT))
 
 End Sub
 
@@ -958,6 +1039,16 @@ Sub ClearVars()
 	thisthreadcontext=0
 	debugthreadcontext=0
 	thislinesav=-1
+	oldcontext.Edi=0
+	oldcontext.Esi=0
+	oldcontext.Ebx=0
+	oldcontext.Edx=0
+	oldcontext.Ecx=0
+	oldcontext.Eax=0
+	oldcontext.Ebp=0
+	oldcontext.Eip=0
+	oldcontext.Esp=0
+	oldcontext.EFlags=0
 
 End Sub
 
@@ -989,6 +1080,7 @@ Sub StopDebugging
 	LockFiles(FALSE)
 	ClearVars
 	EnableDebugMenu
+	SendMessage(lpHandles->hwnd,WM_SIZE,0,0)
 
 End Sub
 
