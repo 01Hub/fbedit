@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.382
-PV=1.2.0.382
+FV=1.2.0.415
+PV=1.2.0.415
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.382
+ProductVersion=1.2.0.415
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.382
+FileVersion=1.2.0.415
 CompanyName=
 
 [Resource]
@@ -102,15 +102,15 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,8904
-16=0,0,810,411,6700
+1=0,0,0,0,70426
+16=0,0,810,411,35628
 22=0,0,0,0,3164
-23=0,0,0,0,7206
+23=0,0,0,0,30041
 24=0,0,0,0,4001
 19=0,0,0,0,9258
-2=0,0,0,0,6726
-9=0,0,0,0,17441
-10=0,0,0,0,23361
+2=0,0,0,0,1711
+9=0,0,0,0,10650
+10=0,0,0,0,6428
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,6045
@@ -118,7 +118,7 @@ CompanyName=
 4=0,0,0,0,0
 13=0,0,0,0,7028
 26=0,0,0,0,20414
-21=0,0,0,0,18226
+21=0,0,0,0,9173
 14=0,0,0,0,3157
 
 [BookMark]
@@ -137,19 +137,19 @@ CompanyName=
 0=
 
 [Find]
-1="Nf"
-2="isline"
-3="REM_ISLINE"
-4="REM_ADDBLOCKDEF"
-5="REM_HILITEACTIVELINE"
-6="REM_GETCURSORWORD"
-7="EDIT.line"
-8="SaveUndo"
-9="SetBlockMarkers"
-10="REM_SETCOMMENTBLOCKS"
+1="_REM_SETSTYLEEX"
+2="SetCaret"
+3="WM_SETFOCUS"
+4="HideCaret"
+5="PrintText"
+6="CreateCaret"
+7="ShowCaret"
+8="PrintHex"
+9="Nf"
+10="isline"
 
 [AutoLoad]
-AutoLoad=1,10,16,26,2,23
+AutoLoad=1,10,16,26,2
 
 [Version-Inc]
 Options=52
@@ -189,7 +189,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -199,33 +199,33 @@ MilestoneOnDateTimeSec=48
 MilestoneOnDateTimeStatus=0
 
 [Group]
-Group=Added files,Assembly,Resources,Misc,Modules
-1=2
-2=2
-3=3
-4=4
-5=4
-6=4
-7=4
-8=4
-9=2
-10=2
-11=2
-12=2
-13=2
-14=2
-15=2
-16=2
-17=4
-18=4
-19=2
-20=2
-21=2
-22=2
-23=2
-24=2
-25=4
-26=2
+Group=Assembly,Resources,Misc
+1=1
+2=1
+3=2
+4=3
+5=3
+6=3
+7=3
+8=3
+9=1
+10=1
+11=1
+12=1
+13=1
+14=1
+15=1
+16=1
+17=3
+18=3
+19=1
+20=1
+21=1
+22=1
+23=1
+24=1
+25=3
+26=1
 
 [Collapse]
 1=,,,,,,,,,,,
@@ -236,7 +236,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 19=
 2=
 9=,,
-10=,16777216,,,,
+10=,268435456,,,,
 11=,
 20=
 15=,
@@ -248,7 +248,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 14=
 
 [PTimer]
-PTimer=134906884
+PTimer=152531862
 
 [Exports]
 1=GetDef
@@ -261,3 +261,7 @@ PTimer=134906884
 [RADebugBP]
 16=
 1=
+9=
+21=
+10=
+23=

@@ -1569,7 +1569,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call	SetScroll
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_KEYDOWN
 		invoke GetKeyState,VK_MENU
 		and		eax,80h
@@ -1670,7 +1670,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExDef
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_CHAR
 		mov		[ebx].EDIT.cpselbar,-1
 		.if [ebx].EDIT.cpbrst!=-1 || [ebx].EDIT.cpbren!=-1
@@ -1933,7 +1933,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
 		mov		eax,wParam
 		and		eax,MK_SHIFT
@@ -2694,7 +2694,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		eax,eax
 		ret
 	.elseif eax==WM_SETFOCUS
-;		invoke HideCaret,hWin
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		mov		eax,hWin
 		mov		[ebx].EDIT.focus,eax
 		test	[ebx].EDIT.nMode,MODE_BLOCK
@@ -2706,8 +2706,9 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,[ebx].EDIT.fntinfo.fntht
 		invoke CreateCaret,hWin,NULL,eax,edx
 		invoke SetCaret,ebx,[esi].RAEDT.cpy
-;		invoke ShowCaret,hWin
 		invoke SelChange,ebx,SEL_TEXT
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_KILLFOCUS
 		invoke DestroyCaret
 	.elseif eax==WM_CREATE
@@ -2751,13 +2752,13 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetCaret,ebx,[esi].RAEDT.cpy
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_GETDLGCODE
  		mov		eax,DLGC_WANTCHARS or DLGC_WANTALLKEYS
-		ret
+		jmp		Ex
 	.elseif eax==WM_SETCURSOR
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.endif
   ExDef:
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
@@ -3001,14 +3002,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;lParam=0
 		invoke Copy,ebx
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_CUT
 		;wParam=0
 		;lParam=0
 		inc		nUndoid
 		invoke Cut,ebx,[esi].RAEDT.hwnd
 		inc		nUndoid
-		ret
+		jmp		Ex
 	.elseif eax==WM_PASTE
 		;wParam=0
 		;lParam=0
@@ -3019,7 +3020,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke Paste,ebx,[esi].RAEDT.hwnd,NULL
 		inc		nUndoid
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_CLEAR
 		;wParam=0
 		;lParam=0
@@ -3064,7 +3065,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_SETTEXT
 		;wParam=0
 		;lParam=lpszText
@@ -3100,7 +3101,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelChange,ebx,SEL_TEXT
 		inc		nUndoid
 		mov		eax,TRUE
-		ret
+		jmp		Ex
 	.elseif eax==WM_GETTEXT
 		;wParam=cbBuff
 		;lParam=lpBuff
@@ -3131,7 +3132,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endw
 			mov		eax,chrg.cpMin
 		.endif
-		ret
+		jmp		Ex
 	.elseif eax==WM_GETTEXTLENGTH
 		;wParam=0
 		;lParam=0
@@ -3148,7 +3149,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		eax,[ecx].CHARS.len
 			add		edx,sizeof LINE
 		.endw
-		ret
+		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
 		;Get mouse position
 		mov		eax,lParam
@@ -3182,10 +3183,10 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateWindow,[ebx].EDIT.edtb.hwnd
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_LBUTTONDOWN
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_LBUTTONUP
 		.if [ebx].EDIT.fresize
 			mov		[ebx].EDIT.fresize,0
@@ -3196,10 +3197,10 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_LBUTTONDBLCLK
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_CREATE
 		invoke GetSystemMetrics,SM_CXVSCROLL
 		mov		SBWT,eax
@@ -3366,10 +3367,10 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke SetFocus,eax
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_KEYDOWN || eax==WM_CHAR || eax==WM_KEYUP
 		invoke SendMessage,[ebx].EDIT.focus,eax,wParam,lParam
-		ret
+		jmp		Ex
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		and		eax,0FFFFh
@@ -3498,7 +3499,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
 		pop		edi
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.elseif eax==WM_HSCROLL
 		push	[ebx].EDIT.cpx
 		mov		sinf.cbSize,sizeof sinf
@@ -3554,7 +3555,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;to let the custom control fill in default design time values.
 		invoke SendMessage,hWin,WM_SETTEXT,0,offset szToolTip
 		xor		eax,eax
-		ret
+		jmp		Ex
 	.endif
   ExDef:
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam

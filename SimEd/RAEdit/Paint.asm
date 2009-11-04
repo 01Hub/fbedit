@@ -29,10 +29,15 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 	LOCAL	fCmntNest:DWORD
 	LOCAL	nStr:DWORD
 	LOCAL	nCmnt:DWORD
+	LOCAL	nStringMode:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.nWordGroup
 	mov		nGroup,eax
+	mov		eax,[ebx].EDIT.fstyleex
+	shr		eax,3
+	and		eax,3
+	mov		nStringMode,eax
 	mov		fRed,0
 	mov		eax,'.'
 	movzx	eax,byte ptr [eax+offset CharTab]
@@ -215,10 +220,22 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 				.elseif fStr
 					movzx	eax,byte ptr [esi+edi]
 					.if eax==fStr
-						mov		fStr,0
-						mov		eax,[ebx].EDIT.clr.oprback
-						call	SetBack
-						mov		eax,[ebx].EDIT.clr.oprcol
+						movzx	eax,byte ptr [esi+edi-1]
+						.if nStringMode==2 && eax=='\'
+							mov		eax,[ebx].EDIT.clr.strback
+							call	SetBack
+							mov		eax,[ebx].EDIT.clr.strcol
+							mov		wCol,eax
+						.else
+							mov		fStr,0
+							mov		eax,[ebx].EDIT.fstyleex
+							shr		eax,3
+							and		eax,3
+							mov		nStringMode,eax
+							mov		eax,[ebx].EDIT.clr.oprback
+							call	SetBack
+							mov		eax,[ebx].EDIT.clr.oprcol
+						.endif
 					.else
 						mov		eax,[ebx].EDIT.clr.strback
 						call	SetBack
@@ -258,6 +275,12 @@ DrawLine proc uses ebx esi edi,hMem:DWORD,lpChars:DWORD,nLine:DWORD,cp:DWORD,hDC
 						mov		eax,[ebx].EDIT.clr.cmntcol
 						call	DrawCmntBack
 					.elseif al==CT_STRING
+						.if edi && nStringMode==1
+							movzx	eax,byte ptr [esi+edi-1]
+							.if eax=='!'
+								mov		nStringMode,2
+							.endif
+						.endif
 						movzx	eax,byte ptr [esi+edi]
 						mov		fStr,eax
 						mov		fOpr,1
@@ -1111,14 +1134,17 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
 	LOCAL	rcRgn1:RECT
+	LOCAL	pt:POINT
 
-	invoke GetFocus
-	.if eax==hWin
-		invoke HideCaret,hWin
-	.endif
 	;Get the memory pointer
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
+	invoke GetFocus
+	.if eax==hWin
+		.if ![ebx].EDIT.fCaretHide
+			invoke HideCaret,hWin
+		.endif
+	.endif
 	invoke BeginPaint,hWin,addr ps
 	.if [ebx].EDIT.linenrwt
 		test	[ebx].EDIT.fstyle,STYLE_AUTOSIZELINENUM
@@ -1146,7 +1172,9 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 				.else
 					lea		esi,[ebx].EDIT.edtb
 				.endif
-				invoke SetCaret,ebx,[esi].RAEDT.cpy
+;				invoke SetCaret,ebx,[esi].RAEDT.cpy
+				invoke GetCaretPoint,ebx,[ebx].EDIT.cpMin,[esi].RAEDT.cpy,addr pt
+				invoke SetCaretPos,pt.x,pt.y
 			.endif
 		.endif
 	.endif
@@ -1389,7 +1417,9 @@ RAEditPaint proc uses ebx esi edi,hWin:HWND
 	invoke DeleteObject,hRgn1
 	invoke GetFocus
 	.if eax==hWin
-		invoke ShowCaret,hWin
+		.if ![ebx].EDIT.fCaretHide
+			invoke ShowCaret,hWin
+		.endif
 	.endif
 	ret
 
@@ -1468,14 +1498,17 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	LOCAL	cp:DWORD
 	LOCAL	buffer[32]:BYTE
 	LOCAL	hRgn1:DWORD
+	LOCAL	pt:POINT
 
-	invoke GetFocus
-	.if eax==hWin
-		invoke HideCaret,hWin
-	.endif
 	;Get the memory pointer
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
+	invoke GetFocus
+	.if eax==hWin
+		.if ![ebx].EDIT.fCaretHide
+			invoke HideCaret,hWin
+		.endif
+	.endif
 	invoke BeginPaint,hWin,addr ps
 	.if [ebx].EDIT.linenrwt
 		test	[ebx].EDIT.fstyle,STYLE_AUTOSIZELINENUM
@@ -1503,7 +1536,9 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 				.else
 					lea		esi,[ebx].EDIT.edtb
 				.endif
-				invoke SetCaret,ebx,[esi].RAEDT.cpy
+;				invoke SetCaret,ebx,[esi].RAEDT.cpy
+				invoke GetCaretPoint,ebx,[ebx].EDIT.cpMin,[esi].RAEDT.cpy,addr pt
+				invoke SetCaretPos,pt.x,pt.y
 			.endif
 		.endif
 	.endif
@@ -1717,7 +1752,9 @@ RAEditPaintNoBuff proc uses ebx esi edi,hWin:HWND
 	invoke DeleteObject,hRgn1
 	invoke GetFocus
 	.if eax==hWin
-		invoke ShowCaret,hWin
+		.if ![ebx].EDIT.fCaretHide
+			invoke ShowCaret,hWin
+		.endif
 	.endif
 	ret
 

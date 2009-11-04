@@ -545,12 +545,12 @@ SetCaret proc uses ebx,hMem:DWORD,cpy:DWORD
 		sub		edx,[ebx].EDIT.cpMin
 		.if sdword ptr eax<=pt.x && sdword ptr ecx<[ebx].EDIT.edtb.rc.right && !edx
 			invoke ShowCaret,[ebx].EDIT.focus
+			invoke ShowCaret,[ebx].EDIT.focus
 			mov		[ebx].EDIT.fCaretHide,FALSE
 		.elseif ![ebx].EDIT.fCaretHide
 			invoke HideCaret,[ebx].EDIT.focus
 			mov		[ebx].EDIT.fCaretHide,TRUE
 		.endif
-		mov		eax,pt.y
 	.endif
 	ret
 
