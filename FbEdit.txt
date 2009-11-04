@@ -3,6 +3,7 @@ Whats new:
 1.0.7.3
 o Added register window to debug.
 o Fixed bug where the string !"Hello \n\"world\"!!!!!" would not be highlighted correctly.
+o Fixed bug where Loop instruction in an Asm block caused collapse problems.
 1.0.7.2
 o Added code complete on functions that returns a type or a pointer to a type.
 o Added support for nested namespaces.

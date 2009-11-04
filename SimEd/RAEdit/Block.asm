@@ -524,15 +524,33 @@ TestBlockEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 		mov		eax,[edi].RABLOCKDEF.flag
 		shr		eax,16
 		.if [edi].RABLOCKDEF.lpszEnd && eax==[ebx].EDIT.nWordGroup
-			invoke IsLine,ebx,nLine,[edi].RABLOCKDEF.lpszEnd
-			.if eax!=-1
-				mov		eax,edi
-				jmp		Ex
-			.elseif lpSecond
-				invoke IsLine,ebx,nLine,lpSecond
+			mov		eax,nLine
+			shl		eax,2
+			add		eax,[ebx].EDIT.hLine
+			mov		eax,[eax].LINE.rpChars
+			add		eax,[ebx].EDIT.hChars
+			test	[eax].CHARS.state,STATE_ALTHILITE
+			.if !ZERO?
+				test	[edi].RABLOCKDEF.flag,BD_ALTHILITE
+				.if ZERO?
+					xor		eax,eax
+				.else
+					or		eax,1
+				.endif
+			.else
+				or		eax,1
+			.endif
+			.if eax
+				invoke IsLine,ebx,nLine,[edi].RABLOCKDEF.lpszEnd
 				.if eax!=-1
 					mov		eax,edi
 					jmp		Ex
+				.elseif lpSecond
+					invoke IsLine,ebx,nLine,lpSecond
+					.if eax!=-1
+						mov		eax,edi
+						jmp		Ex
+					.endif
 				.endif
 			.endif
 		.endif
@@ -607,12 +625,9 @@ CollapseGetEnd proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 					.if eax!=-1
 						test	[eax].RABLOCKDEF.flag,BD_SEGMENTBLOCK
 						.if ZERO?
-;							test	[eax].RABLOCKDEF.flag,BD_COMMENTBLOCK
-;							.if ZERO?
-								mov		edx,nNest
-								mov		Nest[edx*4],eax
-								inc		nNest
-;							.endif
+							mov		edx,nNest
+							mov		Nest[edx*4],eax
+							inc		nNest
 						.endif
 					.else
 						invoke TestBlockEnd,ebx,edi
@@ -1202,15 +1217,6 @@ SetCommentBlocks proc uses ebx esi edi,hMem:DWORD,lpStart:DWORD,lpEnd:DWORD
 	.endif
 	ret
 
-;SkipString:
-;	mov		al,[esi+ecx+sizeof CHARS]
-;	inc		ecx
-;	.while ecx<[esi].CHARS.len
-;		inc		ecx
-;	  .break .if al==byte ptr [esi+ecx+sizeof CHARS-1]
-;	.endw
-;	retn
-;
 TestWrd:
 	push	ecx
 	push	edx
@@ -1270,11 +1276,6 @@ IsLineStart:
 	je		@f
 	.if [ebx].EDIT.ccmntblocks && [ebx].EDIT.ccmntblocks!=4
 		.while ecx<[esi].CHARS.len
-;			movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-;			movzx	eax,byte ptr [eax+offset CharTab]
-;			.if eax==CT_STRING
-;				call SkipString
-;			.endif
 			call	TestWrd
 			inc		ecx
 		  .break .if !eax
@@ -1288,11 +1289,6 @@ IsLineStart:
 
 IsLineEnd:
 	.while ecx<[esi].CHARS.len
-;		movzx	eax,byte ptr [esi+ecx+sizeof CHARS]
-;		movzx	eax,byte ptr [eax+offset CharTab]
-;		.if eax==CT_STRING
-;			call SkipString
-;		.endif
 		call	TestWrd
 		inc		ecx
 	  .break .if !eax

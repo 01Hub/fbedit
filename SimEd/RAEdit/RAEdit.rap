@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.415
-PV=1.2.0.415
+FV=1.2.0.416
+PV=1.2.0.416
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.415
+ProductVersion=1.2.0.416
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.415
+FileVersion=1.2.0.416
 CompanyName=
 
 [Resource]
@@ -103,21 +103,21 @@ CompanyName=
 
 [Size]
 1=0,0,0,0,70426
-16=0,0,810,411,35628
+16=0,0,810,411,6859
 22=0,0,0,0,3164
 23=0,0,0,0,30041
 24=0,0,0,0,4001
 19=0,0,0,0,9258
-2=0,0,0,0,1711
+2=0,0,0,0,8592
 9=0,0,0,0,10650
-10=0,0,0,0,6428
+10=0,0,0,0,21248
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,6045
 18=0,0,0,0,1314
 4=0,0,0,0,0
 13=0,0,0,0,7028
-26=0,0,0,0,20414
+26=0,0,0,0,10393
 21=0,0,0,0,9173
 14=0,0,0,0,3157
 
@@ -137,16 +137,16 @@ CompanyName=
 0=
 
 [Find]
-1="_REM_SETSTYLEEX"
-2="SetCaret"
-3="WM_SETFOCUS"
-4="HideCaret"
-5="PrintText"
-6="CreateCaret"
-7="ShowCaret"
-8="PrintHex"
-9="Nf"
-10="isline"
+1="STATE_BLOCKEND"
+2="_REM_SETSTYLEEX"
+3="SetCaret"
+4="WM_SETFOCUS"
+5="HideCaret"
+6="PrintText"
+7="CreateCaret"
+8="ShowCaret"
+9="PrintHex"
+10="Nf"
 
 [AutoLoad]
 AutoLoad=1,10,16,26,2
@@ -248,7 +248,7 @@ Group=Assembly,Resources,Misc
 14=
 
 [PTimer]
-PTimer=152531862
+PTimer=155115519
 
 [Exports]
 1=GetDef
@@ -265,3 +265,4 @@ PTimer=152531862
 21=
 10=
 23=
+26=

@@ -3,3 +3,4 @@ Whats new:
 1.0.7.3
 o Added register window to debug.
 o Fixed bug where the string !"Hello \n\"world\"!!!!!" would not be highlighted correctly.
+o Fixed bug where Loop instruction in an Asm block caused collapse problems.
