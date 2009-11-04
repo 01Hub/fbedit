@@ -433,6 +433,8 @@ szDataU					db '.data?',0,0
 szConst					db '.const',0,0
 szCode					db '.code',0,0
 szComment				db 'comment',0,0
+szStart					db 'start:',0
+szEndStart				db 'end start',0
 szBegin					db 'BEGIN',0,0
 szEnd					db 'END',0,0
 
@@ -447,9 +449,10 @@ rabddatau				RABLOCKDEF <offset szDataU,0,0,0,BD_SEGMENTBLOCK>
 rabdconst				RABLOCKDEF <offset szConst,0,0,0,BD_SEGMENTBLOCK>
 rabdcode				RABLOCKDEF <offset szCode,0,0,0,BD_SEGMENTBLOCK>
 rabdcomment				RABLOCKDEF <offset szComment,0,0,0,BD_COMMENTBLOCK>
+rabdstart				RABLOCKDEF <offset szStart,offset szEndStart,0,0,0>
 rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,2 SHL 16>
 
-blocks					dd offset rabdif,offset rabdwhile,offset rabdrepeat,offset rabdproc,offset rabdstruct,offset rabdmacro,offset rabdcomment,offset rabddata,offset rabddatau,offset rabdconst,offset rabdcode,offset rabdbegin,0
+blocks					dd rabdif,rabdwhile,rabdrepeat,rabdproc,rabdstruct,rabdmacro,rabdcomment,rabddata,rabddatau,rabdconst,rabdcode,rabdstart,rabdbegin,0
 
 szCmntStart				db 'comment +',0
 szCmntEnd				db '-',0
@@ -547,6 +550,7 @@ fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 szCaseTypes				db 'WPpc',0
 szGotoTypes				db 'pldcs',0
 
+;Addin procs
 pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged,UpdateFileName>
 
 .data
@@ -555,6 +559,7 @@ MenuIDAddins			dd 40000
 
 .data?
 
+;Addin handles and dats
 ha						ADDINHANDLES <>
 da						ADDINDATA <>
 ;File changed notifications
@@ -599,6 +604,9 @@ tmpbuff					BYTE 16384 dup(?)
 mnubuff					BYTE 8192 dup(?)
 ErrID					DWORD 128 dup(?)
 hCustDll				HMODULE 32 dup(?)
+gotostack				DECLARE 32 dup(<?>)
+;Window sizes
+winsize					WINSIZE <?>
 ;Print
 psd						PAGESETUPDLG <?>
 pd						PRINTDLG <?>
@@ -617,7 +625,4 @@ nUnsaved				DWORD ?
 ftexe					FILETIME <>
 nNewer					DWORD ?
 dbgpt					POINT <>
-
-winsize					WINSIZE <?>
 dbginf					DEBUGINFO <>
-gotostack				DECLARE 32 dup(<?>)
