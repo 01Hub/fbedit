@@ -1842,3 +1842,84 @@ ReturnDeclare proc
 	ret
 
 ReturnDeclare endp
+
+DelMRU proc uses ebx esi edi,lpMRU:DWORD,lpFileName:DWORD
+
+	mov		esi,lpMRU
+	xor		ebx,ebx
+	.while ebx<10
+		.break .if !byte ptr [esi]
+		invoke strcmpi,esi,lpFileName
+		.if !eax
+			call	DelIt
+		.else
+			lea		esi,[esi+MAX_PATH]
+			inc		ebx
+		.endif
+	.endw
+	ret
+
+DelIt:
+	push	ebx
+	push	esi
+	mov		ebx,lpMRU
+	lea		ebx,[ebx+MAX_PATH*10]
+	mov		edi,esi
+	lea		esi,[esi+MAX_PATH]
+	.while esi<ebx
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	xor		eax,eax
+	.while edi<ebx
+		mov		[edi],al
+		inc		edi
+	.endw
+	pop		esi
+	pop		ebx
+	retn
+
+DelMRU endp
+
+AddMRU proc uses ebx esi edi,lpMRU:DWORD,lpFileName:DWORD
+
+	invoke DelMRU,lpMRU,lpFileName
+	mov		ebx,lpMRU
+	lea		esi,[ebx+MAX_PATH*9-1]
+	lea		edi,[ebx+MAX_PATH*10-1]
+	.while esi>=ebx
+		mov		al,[esi]
+		mov		[edi],al
+		dec		esi
+		dec		edi
+	.endw
+	invoke strcpy,ebx,lpFileName
+	ret
+
+AddMRU endp
+
+UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
+	LOCAL	mii:MENUITEMINFO
+
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	mov		esi,lpMRU
+	.if esi==offset mrufiles
+		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTFILES,FALSE,addr mii
+		mov		edi,25000
+	.else
+		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTSESSIONS,FALSE,addr mii
+		mov		edi,25100
+	.endif
+	.while TRUE
+		invoke DeleteMenu,mii.hSubMenu,0,MF_BYPOSITION
+		.break .if !eax
+	.endw
+	.while byte ptr [esi]
+		lea		esi,[esi+MAX_PATH]
+	.endw
+	ret
+
+UpdateMRUMenu endp

@@ -895,6 +895,12 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_FINDPREV
 				call	EnableDisable
+				mov		edx,IDM_EDIT_GOTO
+				call	EnableDisable
+				mov		eax,offset gotostack
+				mov		eax,[eax].DECLARE.hWin
+				mov		edx,IDM_EDIT_RETURN
+				call	EnableDisable
 				invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
 				mov		edx,IDM_EDIT_UNDO
 				call	EnableDisable
@@ -981,6 +987,10 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_UNCOMMENT
 				call	EnableDisable
+				mov		edx,IDM_EDIT_GOTO
+				call	EnableDisable
+				mov		edx,IDM_EDIT_RETURN
+				call	EnableDisable
 
 				mov		eax,TRUE
 				mov		edx,IDM_EDIT_SELECTALL
@@ -1054,6 +1064,10 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shr		edx,5
 				and		eax,31
 				invoke ShowPos,edx,eax
+			.elseif eax==IDC_USER
+				call	DisableRes
+				call	DisableEdit
+				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
 			.endif
 			xor		eax,eax
 			test	wpos.fView,4
@@ -1061,7 +1075,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				inc		eax
 			.endif
 			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
-			INVOKE ShowSession
+			invoke ShowSession
+			invoke ShowProc,nLastLine
 			invoke GetCapture
 			.if !eax
 				invoke UpdateAll,IS_CHANGED
@@ -1069,7 +1084,6 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fTimer,1
 			.endif
 		.endif
-		invoke ShowProc,nLastLine
 	.endif
 	ret
 
@@ -1099,7 +1113,10 @@ DisableEdit:
 	call	EnableDisable
 	mov		edx,IDM_EDIT_REPLACE
 	call	EnableDisable
-	xor		eax,eax
+	mov		edx,IDM_EDIT_GOTO
+	call	EnableDisable
+	mov		edx,IDM_EDIT_RETURN
+	call	EnableDisable
 	mov		edx,IDM_EDIT_BLOCKMODE
 	call	EnableDisable
 	mov		edx,IDM_EDIT_BLOCKINSERT

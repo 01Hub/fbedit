@@ -605,6 +605,8 @@ mnubuff					BYTE 8192 dup(?)
 ErrID					DWORD 128 dup(?)
 hCustDll				HMODULE 32 dup(?)
 gotostack				DECLARE 32 dup(<?>)
+mrufiles				BYTE 10*MAX_PATH dup(?)
+mrusessions				BYTE 10*MAX_PATH dup(?)
 ;Window sizes
 winsize					WINSIZE <?>
 ;Print

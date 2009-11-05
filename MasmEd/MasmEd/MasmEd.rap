@@ -286,16 +286,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 56=1
 
 [Find]
-1="IDM_PROPERTY_COPYTOCODE"
-2="1059"
-3="defCompileRC"
-4="defcomp"
-5="RegQueryValueEx"
-6="IDM_OPTION_BUILD"
-7="AIM_GETMODIFY"
-8="AIM_FILESAVEAS"
-9="AIM_FILESAVE"
-10="AIM_FILECLOSED"
+1="AIM_MAKEBEGIN"
+2="IDM_EDIT_RETURN"
+3="IDM_PROPERTY_COPYTOCODE"
+4="1059"
+5="defCompileRC"
+6="defcomp"
+7="RegQueryValueEx"
+8="IDM_OPTION_BUILD"
+9="AIM_GETMODIFY"
+10="AIM_FILESAVEAS"
 
 [VersionControl]
 Settings=1246
@@ -307,7 +307,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -342,9 +342,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,19630
-1=0,0,0,0,80470
-11=0,0,0,0,23922
+2=0,0,687,524,20985
+1=0,0,0,0,72443
+11=0,0,0,0,40788
 22=0,0,0,0,1921
 10=0,0,0,0,12639
 23=0,0,0,0,6917
@@ -388,7 +388,7 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,0,0,12748
+53=0,0,0,0,9824
 54=0,0,0,0,1281
 55=0,0,0,0
 56=0,0,0,0,5410
@@ -408,7 +408,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,13,39,10,40,45,51,38,22
+AutoLoad=1,2,53,13,39,10,40,45,51,38,22,11
 [Collapse]
 2=
 1=,,,,,,,,,
@@ -444,7 +444,7 @@ AutoLoad=1,2,53,13,39,10,40,45,51,38,22
 54=
 56=
 [PTimer]
-PTimer=1361928021
+PTimer=1382497252
 [RADebugBP]
 1=
 2=

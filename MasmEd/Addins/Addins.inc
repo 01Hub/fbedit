@@ -1,27 +1,27 @@
 
 ;Messages to MasmEd's main window
-AIM_GETHANDLES				equ WM_USER+50			;returns a poiner to a struct containing all useful handles:see structures below
-AIM_GETPROCS				equ WM_USER+51			;returns a poiner to a struct containing some procs in RadASM:see structures below
-AIM_GETDATA					equ WM_USER+52			;returns a poiner to a struct comtaining data pointers:see structures below
-AIM_GETMENUID				equ WM_USER+53			;Returns a free menu id. If you need more than one wParam contains the number of id's to reserve.
+AIM_GETHANDLES				equ WM_USER+50			;Returns a poiner to a struct containing all useful handles. See ADDINHANDLES structure below.
+AIM_GETPROCS				equ WM_USER+51			;Returns a poiner to a struct containing some procs in MasmEd. See ADDINPROCS structure below.
+AIM_GETDATA					equ WM_USER+52			;Returns a poiner to a struct comtaining data pointers. See ADDINDATA structure below.
+AIM_GETMENUID				equ WM_USER+53			;Returns a free menu id. If you need more than one, wParam contains the number of id's to reserve.
 
 ;Messages sendt to addins
 AIM_ADDINSLOADED			equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. hWin=Main window, wParam=0, lParam=0
 AIM_COMMAND					equ WM_USER+101			;This message is sendt to the addins when user makes a menu selection or clicks a toolbar button. hWin=Main window, wParam and lParam as for WM_COMMAND
 AIM_CLOSE					equ WM_USER+102			;MasmEd requests closing. Return TRUE to prevent MasmEd from closing. hWin=Main window, wParam and lParam as for WM_CLOSE
 AIM_DESTROY					equ WM_USER+103			;MasmEd is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. hWin=Main window, wParam and lParam as for WM_DESTROY
-AIM_MENUUPDATE				equ WM_USER+104			;MasmEd has updated menues. Now is the time to add menu items. Always return FALSE. hWin=Main window, wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here.
+AIM_MENUUPDATE				equ WM_USER+104			;MasmEd has updated menues. Now is the time to add menu items. Always return FALSE. hWin=Main window, wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here
 AIM_NEWFILE					equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent MasmEd from creating the file. hWin=Main window, wParam=IDC_RAE or IDC_RES, lParam=lpFileName
-AIM_FILEOPEN				equ WM_USER+106			;A file is about to be opened. Return TRUE to prevent MasmEd from opening the file. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX, IDC_EXECUTE or IDC_USER, lParam=lpFileName
-AIM_FILEOPENED				equ WM_USER+107			;A file has ben opened.. Always return FALSE. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_EXECUTE, lParam=lpFileName
+AIM_FILEOPEN				equ WM_USER+106			;A file is about to be opened. Return TRUE to prevent MasmEd from opening the file. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX, IDC_EXECUTE, IDC_USER or IDC_MES, lParam=lpFileName
+AIM_FILEOPENED				equ WM_USER+107			;A file has ben opened.. Always return FALSE. hWin=Main window, wParam=IDC_RAE, IDC_RES, IDC_HEX, IDC_EXECUTE or IDC_MES, lParam=lpFileName
 AIM_FILECLOSE				equ WM_USER+108			;A file is about to be closed.. Return TRUE to prevent MasmEd from closing the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
 AIM_FILECLOSED				equ WM_USER+109			;A file has been closed.. Always return FALSE. hWin=Editor window, wParam=IDC_RAE, IDC_RES or IDC_HEX, lParam=lpFileName
 AIM_FILESAVE				equ WM_USER+110			;A file is about to be saved. Return TRUE to prevent MasmEd from saving the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
 AIM_FILESAVEAS				equ WM_USER+111			;A file is about to be saved with a new name. Return TRUE to prevent MasmEd from saving the file. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
 AIM_FILESAVEED				equ WM_USER+112			;A file has been saved. Always return FALSE. hWin=Editor window, wParam=IDC_RAE, IDC_RES, IDC_HEX or IDC_USER, lParam=lpFileName
-AIM_GETMODIFY				equ WM_USER+113			;MasmEd requests if a file is changed, Return TRUE if it is your file and it has changed. hWin=Editor window, wParam=IDC_USER, lParam=lpFileName
-AIM_MAKEBEGIN				equ WM_USER+114			;MasmEd starts a make process.  Return TRUE to prevent MasmEd from running the make process. hWin=Main window, wParam=,lParam=Main file.
-AIM_MAKEDONE				equ WM_USER+115			;MasmEd finished the make process.  Always return FALSE. hWin=Main window, wParam=,lParam=Main file.
+AIM_GETMODIFY				equ WM_USER+113			;MasmEd requests if a file is changed. Return TRUE if it is your file and it has changed. hWin=Editor window, wParam=IDC_USER, lParam=lpFileName
+AIM_MAKEBEGIN				equ WM_USER+114			;MasmEd starts a make process. Return TRUE to prevent MasmEd from running the make process. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
+AIM_MAKEDONE				equ WM_USER+115			;MasmEd finished the make process. Always return FALSE. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED			equ 0001h
@@ -167,6 +167,8 @@ IDM_FILE_SAVESESSION		equ 10077
 IDM_FILE_CLOSESESSION		equ 10078
 IDM_FILE_PAGESETUP			equ 10029
 IDM_FILE_PRINT				equ 10005
+IDM_FILE_RECENTFILES		equ 10094
+IDM_FILE_RECENTSESSIONS		equ 10095
 IDM_FILE_EXIT				equ 10006
 
 IDM_EDIT					equ 11001
