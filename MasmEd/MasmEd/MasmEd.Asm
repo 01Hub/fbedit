@@ -2005,6 +2005,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.lpCallBack,eax
 		invoke SetDebugInfo,addr dbginf
 		invoke LoadAddins,hWin
+		invoke LoadMRU,offset szMRUFiles,offset mrufiles
+		invoke LoadMRU,offset szMRUSessions,offset mrusessions
 		invoke ResetMenu
 		mov		fTimer,1
 	.elseif eax==WM_COMMAND
@@ -2163,6 +2165,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke Print
 				.endif
+			.elseif eax>=25000 && eax<=25110
+				invoke OpenMRU,eax
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_EDIT_UNDO
@@ -3047,6 +3051,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DestroyWindow,ha.hCCLB
 				invoke DestroyWindow,ha.hCCTT
 				invoke DestroyWindow,hWin
+				invoke SaveMRU,offset szMRUFiles,offset mrufiles
+				invoke SaveMRU,offset szMRUSessions,offset mrusessions
 			.endif
 		.endif
 	.elseif eax==WM_DESTROY

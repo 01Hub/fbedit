@@ -1,6 +1,6 @@
 MasmEd
 
-1.1.0.0 - 2009.10.30
+1.1.0.0 - 2009.11.05
 --------------------
 o Added addin support. The architecture is similar to RadASM. Some useful addins are converted.
 o Added Addin Manager to Option menu.
@@ -10,6 +10,8 @@ o Added raBitMask addin. Lets you explore bits and bytes.
 o Added raGColor addin. Lets you choose colors.
 o Added more build options. Window (GUI), Console, Dll and Library build options.
 o Added 'Copy PROTO To Code' to property context menu.
+o Added 'Recent Files' to file menu.
+o Added 'Recent Sessions' to file menu.
 
 1.0.5.9b - 2009.10.20
 ---------------------

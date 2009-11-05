@@ -387,6 +387,9 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 								invoke TabToolSetText,eax,lpFileName
 								invoke SetWinCaption,lpFileName
 								invoke strcpy,offset da.FileName,lpFileName
+								invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
+								invoke AddMRU,offset mrufiles,lpFileName
+								invoke ResetMenu
 							.endif
 						.endif
 					.endif
@@ -404,6 +407,8 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							invoke SetWinCaption,lpFileName
 							invoke strcpy,offset da.FileName,lpFileName
 							invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
+							invoke AddMRU,offset mrufiles,lpFileName
+							invoke ResetMenu
 						.endif
 					.endif
 				.endif
@@ -459,7 +464,13 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 						invoke TabToolAdd,ha.hREd,offset da.FileName
 						invoke LoadHexFile,ha.hREd,offset da.FileName
 					.endif
-					invoke TabToolSetChanged,ha.hREd,FALSE
+					.if ebx==IDC_MES
+						invoke AddMRU,offset mrusessions,lpFileName
+					.else
+						invoke TabToolSetChanged,ha.hREd,FALSE
+						invoke AddMRU,offset mrufiles,lpFileName
+					.endif
+					invoke ResetMenu
 					invoke LoadCursor,0,IDC_ARROW
 					invoke SetCursor,eax
 					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,ebx,lpFileName,0,HOOK_FILEOPENED
@@ -753,6 +764,7 @@ OpenSessionFile proc
 				invoke CloseNotify
 				invoke UpdateAll,CLOSE_ALL
 				invoke ReadSessionFile,addr buffer
+				invoke AddMRU,offset mrusessions,addr buffer
 			.endif
 		.endif
 	.endif

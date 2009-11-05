@@ -560,6 +560,37 @@ CoolMenu proc
 
 CoolMenu endp
 
+UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
+	LOCAL	mii:MENUITEMINFO
+
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	mov		esi,lpMRU
+	.if esi==offset mrufiles
+		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTFILES,FALSE,addr mii
+		mov		edi,25000
+	.else
+		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTSESSIONS,FALSE,addr mii
+		mov		edi,25100
+	.endif
+	.while TRUE
+		invoke DeleteMenu,mii.hSubMenu,0,MF_BYPOSITION
+		.break .if !eax
+	.endw
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_ID or MIIM_TYPE
+	mov		mii.fType,MFT_STRING
+	.while byte ptr [esi]
+		mov		mii.wID,edi
+		mov		mii.dwTypeData,esi
+		invoke InsertMenuItem,mii.hSubMenu,edi,FALSE,addr mii
+		lea		esi,[esi+MAX_PATH]
+		inc		edi
+	.endw
+	ret
+
+UpdateMRUMenu endp
+
 ResetMenu proc uses esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
@@ -604,6 +635,8 @@ ResetMenu proc uses esi edi
 	mov		ha.hContextMnu,eax
 	invoke SetToolMenu
 	invoke SetHelpMenu
+	invoke UpdateMRUMenu,offset mrufiles
+	invoke UpdateMRUMenu,offset mrusessions
 	invoke PostAddinMessage,ha.hWnd,AIM_MENUUPDATE,ha.hMnu,ha.hContextMnu,0,HOOK_MENUUPDATE
 	invoke CoolMenu
 	ret
@@ -1900,26 +1933,78 @@ AddMRU proc uses ebx esi edi,lpMRU:DWORD,lpFileName:DWORD
 
 AddMRU endp
 
-UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
-	LOCAL	mii:MENUITEMINFO
+LoadMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
 
-	mov		mii.cbSize,sizeof MENUITEMINFO
-	mov		mii.fMask,MIIM_SUBMENU
-	mov		esi,lpMRU
-	.if esi==offset mrufiles
-		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTFILES,FALSE,addr mii
-		mov		edi,25000
-	.else
-		invoke GetMenuItemInfo,ha.hMnu,IDM_FILE_RECENTSESSIONS,FALSE,addr mii
-		mov		edi,25100
-	.endif
-	.while TRUE
-		invoke DeleteMenu,mii.hSubMenu,0,MF_BYPOSITION
-		.break .if !eax
-	.endw
+	invoke RtlZeroMemory,offset tmpbuff,sizeof tmpbuff
+	mov		lpcbData,sizeof tmpbuff
+	invoke RegQueryValueEx,ha.hReg,lpKey,0,addr lpType,addr tmpbuff,addr lpcbData
+	mov		edi,lpMRU
+	mov		esi,offset tmpbuff
 	.while byte ptr [esi]
-		lea		esi,[esi+MAX_PATH]
+		push	edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		pop		edi
+		invoke GetFileAttributes,edi
+		.if eax==INVALID_HANDLE_VALUE
+			mov byte ptr [edi],0
+		.else
+			lea		edi,[edi+MAX_PATH]
+		.endif
 	.endw
 	ret
 
-UpdateMRUMenu endp
+LoadMRU endp
+
+SaveMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
+
+	invoke RtlZeroMemory,offset tmpbuff,sizeof tmpbuff
+	mov		edi,offset tmpbuff
+	mov		esi,lpMRU
+	.while byte ptr [esi]
+		push	esi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		mov		byte ptr [edi],','
+		inc		edi
+		pop		esi
+		lea		esi,[esi+MAX_PATH]
+	.endw
+	mov		byte ptr [edi-1],0
+	invoke strlen,addr tmpbuff
+	inc		eax
+	invoke RegSetValueEx,ha.hReg,lpKey,0,REG_SZ,addr tmpbuff,eax
+	ret
+
+SaveMRU endp
+
+OpenMRU proc uses ebx esi edi,nID:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		ebx,nID
+	.if ebx<25100
+		sub		ebx,25000
+		mov		esi,offset mrufiles
+	.else
+		sub		ebx,25100
+		mov		esi,offset mrusessions
+	.endif
+	mov		eax,MAX_PATH
+	mul		ebx
+	lea		esi,[esi+eax]
+	invoke strcpy,addr buffer,esi
+	invoke OpenEditFile,addr buffer,0
+	ret
+
+OpenMRU endp

@@ -80,6 +80,7 @@ DeleteGoto					PROTO :DWORD
 PostAddinMessage			PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 AskSaveSessionFile			PROTO
 ReadSessionFile				PROTO :DWORD
+OpenEditFile				PROTO :DWORD,:DWORD
 
 HT_DEBUG					equ 206
 
@@ -543,6 +544,8 @@ szBuild					db 'Build',0
 
 szFolder				db 'Folder',0
 szSession				db 'Session',0
+szMRUFiles				db 'MRUFiles',0
+szMRUSessions			db 'MRUSessions',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
