@@ -387,9 +387,9 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 								invoke TabToolSetText,eax,lpFileName
 								invoke SetWinCaption,lpFileName
 								invoke strcpy,offset da.FileName,lpFileName
-								invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
 								invoke AddMRU,offset mrufiles,lpFileName
 								invoke ResetMenu
+								invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
 							.endif
 						.endif
 					.endif
@@ -406,9 +406,9 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							invoke ShowWindow,ha.hREd,SW_SHOW
 							invoke SetWinCaption,lpFileName
 							invoke strcpy,offset da.FileName,lpFileName
-							invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
 							invoke AddMRU,offset mrufiles,lpFileName
 							invoke ResetMenu
+							invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_RES,lpFileName,0,HOOK_FILEOPENED
 						.endif
 					.endif
 				.endif
@@ -426,11 +426,26 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 				.else
 					mov		ebx,IDC_HEX
 				.endif
-				invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,ebx,lpFileName,0,HOOK_FILEOPEN
+				invoke strcpy,addr buffer,lpFileName
+				invoke PostAddinMessage,ha.hWnd,AIM_FILEOPEN,ebx,addr buffer,0,HOOK_FILEOPEN
 				.if !eax
 					invoke LoadCursor,0,IDC_WAIT
 					invoke SetCursor,eax
-					.if ebx==IDC_RAE
+					.if ebx==IDC_MES
+						; Session
+						mov		nTabInx,-1
+						invoke UpdateAll,WM_CLOSE
+						.if !eax
+							invoke AskSaveSessionFile
+							.if !eax
+								invoke AddMRU,offset mrusessions,addr buffer
+								invoke CloseNotify
+								invoke UpdateAll,CLOSE_ALL
+								invoke ReadSessionFile,addr buffer
+							.endif
+						.endif
+					.elseif ebx==IDC_RAE
+						; Text Edit
 						invoke CreateRAEdit
 						invoke TabToolAdd,ha.hREd,offset da.FileName
 						invoke LoadEditFile,ha.hREd,offset da.FileName
@@ -448,32 +463,24 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							mov		eax,2
 						.endif
 						invoke SendMessage,ha.hREd,REM_HILITEACTIVELINE,0,eax
-					.elseif ebx==IDC_MES
-						mov		nTabInx,-1
-						invoke UpdateAll,WM_CLOSE
-						.if !eax
-							invoke AskSaveSessionFile
-							.if !eax
-								invoke CloseNotify
-								invoke UpdateAll,CLOSE_ALL
-								invoke ReadSessionFile,lpFileName
-							.endif
-						.endif
+						invoke TabToolSetChanged,ha.hREd,FALSE
+						invoke AddMRU,offset mrufiles,addr buffer
 					.else
+						; Hex Edit
 						invoke CreateRAHexEd
 						invoke TabToolAdd,ha.hREd,offset da.FileName
 						invoke LoadHexFile,ha.hREd,offset da.FileName
-					.endif
-					.if ebx==IDC_MES
-						invoke AddMRU,offset mrusessions,lpFileName
-					.else
 						invoke TabToolSetChanged,ha.hREd,FALSE
-						invoke AddMRU,offset mrufiles,lpFileName
+						invoke AddMRU,offset mrufiles,addr buffer
 					.endif
 					invoke ResetMenu
 					invoke LoadCursor,0,IDC_ARROW
 					invoke SetCursor,eax
-					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,ebx,lpFileName,0,HOOK_FILEOPENED
+					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,ebx,addr buffer,0,HOOK_FILEOPENED
+				.else
+					invoke AddMRU,offset mrufiles,addr buffer
+					invoke ResetMenu
+					invoke PostAddinMessage,ha.hWnd,AIM_FILEOPENED,IDC_USER,addr buffer,0,HOOK_FILEOPENED
 				.endif
 			.endif
 		.else
@@ -552,6 +559,38 @@ OpenHex proc
 	ret
 
 OpenHex endp
+
+OpenSessionFile proc
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+	invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	ha.hWnd
+	pop		ofn.hwndOwner
+	push	ha.hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset MESFilterString
+	mov		buffer[0],0
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.lpstrDefExt,NULL
+	invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
+	lea		eax,buffer1
+	mov		ofn.lpstrInitialDir,eax
+	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	;Show the Open dialog
+	invoke GetOpenFileName,addr ofn
+	.if eax
+		invoke OpenEditFile,addr buffer,IDC_MES
+	.endif
+	ret
+
+OpenSessionFile endp
 
 MakeSession proc
 
@@ -730,48 +769,6 @@ ReadSessionFile proc lpszFile:DWORD
 
 ReadSessionFile endp
 
-OpenSessionFile proc
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
-
-	;Zero out the ofn struct
-	invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	ha.hWnd
-	pop		ofn.hwndOwner
-	push	ha.hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset MESFilterString
-	mov		buffer[0],0
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.lpstrDefExt,NULL
-	invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
-	lea		eax,buffer1
-	mov		ofn.lpstrInitialDir,eax
-	mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
-	;Show the Open dialog
-	invoke GetOpenFileName,addr ofn
-	.if eax
-		mov		nTabInx,-1
-		invoke UpdateAll,WM_CLOSE
-		.if !eax
-			invoke AskSaveSessionFile
-			.if !eax
-				invoke CloseNotify
-				invoke UpdateAll,CLOSE_ALL
-				invoke ReadSessionFile,addr buffer
-				invoke AddMRU,offset mrusessions,addr buffer
-			.endif
-		.endif
-	.endif
-	ret
-
-OpenSessionFile endp
-
 SetCurDir proc lpFileName:DWORD,fFileBrowse:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -817,15 +814,7 @@ OpenCommandLine proc uses ebx,lpCmnd:DWORD
 		.endif
 		mov		byte ptr [edx],0
 		.if buffer
-			invoke strlen,addr buffer
-			lea		eax,buffer[eax-4]
-			mov		eax,[eax]
-			and		eax,05F5F5FFFh
-			.if eax=='SEM.'
-				invoke ReadSessionFile,addr buffer
-			.else
-				invoke OpenEditFile,addr buffer,0
-			.endif
+			invoke OpenEditFile,addr buffer,0
 		.endif
 	.endw
 	ret
