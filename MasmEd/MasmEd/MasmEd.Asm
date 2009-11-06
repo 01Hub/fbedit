@@ -3009,7 +3009,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !eax
 			invoke AskSaveSessionFile
 			.if !eax
-				invoke MakeSession
+				invoke MakeSession,TRUE
 				invoke strcpy,addr LineTxt,addr tmpbuff
 				invoke strcpy,addr tmpbuff,addr da.szSessionFile
 				invoke strcat,addr tmpbuff,addr szComma

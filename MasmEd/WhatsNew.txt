@@ -12,6 +12,10 @@ o Added more build options. Window (GUI), Console, Dll and Library build options
 o Added 'Copy PROTO To Code' to property context menu.
 o Added 'Recent Files' to file menu.
 o Added 'Recent Sessions' to file menu.
+o File paths in session files are now relative to the session file.
+  This makes it easier to share session files with sources.
+  It is also possible to have session files with sources on a memory stick,
+  even if the drive letter changes on different computers.
 
 1.0.5.9b - 2009.10.20
 ---------------------

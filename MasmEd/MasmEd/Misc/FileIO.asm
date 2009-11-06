@@ -592,10 +592,14 @@ OpenSessionFile proc
 
 OpenSessionFile endp
 
-MakeSession proc
+MakeSession proc fRegistry:DWORD
 
 	mov		byte ptr tmpbuff,0
-	invoke UpdateAll,SAVE_SESSION
+	mov		eax,SAVE_SESSIONFILE
+	.if fRegistry
+		mov		eax,SAVE_SESSIONREGISTRY
+	.endif
+	invoke UpdateAll,eax
 	invoke strlen,addr tmpbuff
 	.if eax
 		mov		byte ptr tmpbuff[eax-1],0
@@ -612,16 +616,26 @@ MakeSession endp
 
 WriteSessionFile proc lpszFile:DWORD
 	LOCAL	buffer[32]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
 
+	invoke strcpy,addr da.szSessionFile,lpszFile
 	invoke SendMessage,ha.hBrowse,FBM_GETPATH,0,addr tmpbuff
 	invoke WritePrivateProfileString,addr szSession,addr szFolder,addr tmpbuff,lpszFile
-	invoke MakeSession
+	invoke MakeSession,FALSE
 	invoke WritePrivateProfileString,addr szSession,addr szSession,addr tmpbuff,lpszFile
-	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr da.MainFile,lpszFile
+	invoke strcpy,addr buffer1,addr da.szSessionFile
+	invoke strlen,addr buffer1
+	.while eax && buffer1[eax-1]!='\'
+		dec		eax
+	.endw
+	mov		buffer1[eax],0
+	invoke RemovePath,addr da.MainFile,addr buffer1,addr buffer2
+	invoke strcpy,addr buffer1,eax
+	invoke WritePrivateProfileString,addr szSession,addr szMainFile,addr buffer1,lpszFile
 	invoke SendMessage,ha.hCbo,CB_GETCURSEL,0,0
 	invoke wsprintf,addr buffer,addr szFmtDec,eax
 	invoke WritePrivateProfileString,addr szSession,addr szBuild,addr buffer,lpszFile
-	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
 
 WriteSessionFile endp
@@ -675,6 +689,8 @@ SaveSessionFile endp
 
 RestoreSession proc uses esi edi,fReg:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	nInx:DWORD
 	LOCAL	nLn:DWORD
 	LOCAL	chrg:CHARRANGE
@@ -685,6 +701,12 @@ RestoreSession proc uses esi edi,fReg:DWORD
 		call	GetItem
 		invoke strcpy,addr da.szSessionFile,addr buffer
 	.endif
+	invoke strcpy,addr buffer1,addr da.szSessionFile
+	invoke strlen,addr buffer1
+	.while eax && buffer1[eax-1]!='\'
+		dec		eax
+	.endw
+	mov		buffer1[eax],0
 	mov		nInx,-2
 	.while byte ptr [esi]
 		call	GetItem
@@ -698,6 +720,12 @@ RestoreSession proc uses esi edi,fReg:DWORD
 			mov		nLn,eax
 			call	GetItem
 			.if buffer
+				.if buffer[1]!=':'
+					; Relative path
+					invoke strcpy,addr buffer2,addr buffer1
+					invoke strcat,addr buffer2,addr buffer
+					invoke strcpy,addr buffer,addr buffer2
+				.endif
 				push	ha.hREd
 				mov		fHex,FALSE
 				.if sdword ptr nLn<=-2
@@ -756,15 +784,27 @@ GetItem:
 RestoreSession endp
 
 ReadSessionFile proc lpszFile:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke strcpy,addr da.szSessionFile,lpszFile
 	invoke GetPrivateProfileString,addr szSession,addr szFolder,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
 	invoke SendMessage,ha.hBrowse,FBM_SETPATH,TRUE,addr tmpbuff
 	invoke GetPrivateProfileString,addr szSession,addr szSession,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
 	invoke RestoreSession,FALSE
 	invoke GetPrivateProfileString,addr szSession,addr szMainFile,addr szNULL,addr da.MainFile,sizeof da.MainFile,lpszFile
+	.if da.MainFile[1]!=':'
+		; Relative path
+		invoke strcpy,addr buffer,addr da.szSessionFile
+		invoke strlen,addr buffer
+		.while eax && buffer[eax-1]!='\'
+			dec		eax
+		.endw
+		mov		buffer[eax],0
+		invoke strcat,addr buffer,addr da.MainFile
+		invoke strcpy,addr da.MainFile,addr buffer
+	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	invoke SendMessage,ha.hCbo,CB_SETCURSEL,eax,0
-	invoke strcpy,addr da.szSessionFile,lpszFile
 	ret
 
 ReadSessionFile endp

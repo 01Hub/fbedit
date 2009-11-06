@@ -1210,12 +1210,63 @@ IsFileCodeFile proc lpFile:DWORD
 
 IsFileCodeFile endp
 
+RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
+
+	add		lpBuff,21
+	invoke strcpy,lpBuff,lpszFileName
+	mov		edi,lpBuff
+	mov		esi,lpPath
+	dec		esi
+	dec		edi
+  @@:
+	inc		esi
+	inc		edi
+	mov		al,[esi]
+	.if	al>='a'	&& al<='z'
+		and		al,5Fh
+	.endif
+	mov		ah,[edi]
+	.if	ah>='a'	&& ah<='z'
+		and		ah,5Fh
+	.endif
+	cmp		al,ah
+	je		@b
+	.if	al
+	  @@:
+		dec		esi
+		dec		edi
+		mov		al,[esi]
+		cmp		al,'\'
+		jne		@b
+		inc		esi
+		inc		edi
+	.endif
+  @@:
+	mov		al,[esi]
+	inc		esi
+	.if	al=='\'
+		dec		edi
+		mov		[edi],al
+		dec		edi
+		dec		edi
+		mov		word ptr [edi],'..'
+		jmp		@b
+	.elseif	al
+		jmp		@b
+	.endif
+	mov		eax,edi
+	ret
+
+RemovePath endp
+
 UpdateAll proc uses ebx esi,nFunction:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	hefnt:HEFONT
 	LOCAL	chrg:CHARRANGE
 	LOCAL	nLn:DWORD
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
 
 	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
 	mov		nInx,eax
@@ -1353,9 +1404,41 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 				.if [ebx].TABMEM.nchange
 					mov		[ebx].TABMEM.nchange,0
 				.endif
-			.elseif eax==SAVE_SESSION
-				invoke strcmp,addr [ebx].TABMEM.filename, addr szNewFile
+			.elseif eax==SAVE_SESSIONFILE
+				invoke strcmp,addr [ebx].TABMEM.filename,addr szNewFile
 				.if eax
+					invoke strcpy,addr buffer1,addr da.szSessionFile
+					invoke strlen,addr buffer1
+					.while eax && buffer1[eax-1]!='\'
+						dec		eax
+					.endw
+					mov		buffer1[eax],0
+					invoke RemovePath,addr [ebx].TABMEM.filename,addr buffer1,addr buffer2
+					invoke strcpy,addr buffer1,eax
+					invoke strcpy,addr LineTxt,addr tmpbuff
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_RAE
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					.elseif eax==IDC_HEX
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,[ebx].TABMEM.hwnd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						add		eax,2
+						neg		eax
+					.else
+						mov		eax,-1
+					.endif
+					mov		edx,eax
+					invoke DwToAscii,edx,addr tmpbuff
+					invoke strcat,addr tmpbuff,addr szComma
+					invoke strcat,addr tmpbuff,addr buffer1
+					invoke strcat,addr tmpbuff,addr szComma
+					invoke strcat,addr tmpbuff,addr LineTxt
+				.endif
+			.elseif eax==SAVE_SESSIONREGISTRY
+				invoke strcmp,addr [ebx].TABMEM.filename,addr szNewFile
+				.if eax
+					invoke strcpy,addr buffer1,addr da.szSessionFile
 					invoke strcpy,addr LineTxt,addr tmpbuff
 					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 					.if eax==IDC_RAE
