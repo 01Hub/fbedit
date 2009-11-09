@@ -4623,14 +4623,20 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 			mov		OldEditProc,eax
 			;Set font & format
 			invoke SetFormat,hEdt,hFont[0],hFont[4],hFont[8],TRUE
-			;invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE,0
-			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
+			mov		eax,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED
+			.if nAsm==nCPP
+				mov		eax,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED or STILEEX_STRINGMODEC
+			.elseif nAsm==nBCET
+				mov		eax,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED or STILEEX_STRINGMODEFB
+			.endif
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,eax,0
 		.else
 			;Subclass the RAEdit control
 			invoke SendMessage,hEdt,REM_SUBCLASS,0,addr EditTxtProc
 			mov		OldEditProc,eax
 			;Set font & format
 			invoke SetFormat,hEdt,hFontTxt,hFontTxt,hFont[8],FALSE
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,STILEEX_LINECHANGED,0
 		.endif
 		;Set the text/background color
 		invoke SetColor,hEdt

@@ -44,6 +44,8 @@ STYLE_AUTOSIZELINENUM	equ 8000h			;Line number column autosizes
 STYLEEX_LOCK			equ 0001h			;Show lock button
 STYLEEX_BLOCKGUIDE		equ 0002h			;Show block guiders
 STILEEX_LINECHANGED		equ 0004h			;Show line changed state
+STILEEX_STRINGMODEFB	equ 0008h			;FreeBasic
+STILEEX_STRINGMODEC		equ 0010h			;C/C++
 
 ;Edit modes
 MODE_NORMAL				equ 0				;Normal
