@@ -580,12 +580,14 @@ UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_ID or MIIM_TYPE
 	mov		mii.fType,MFT_STRING
-	.while byte ptr [esi]
+	mov		ebx,10
+	.while byte ptr [esi] && ebx
 		mov		mii.wID,edi
 		mov		mii.dwTypeData,esi
 		invoke InsertMenuItem,mii.hSubMenu,edi,FALSE,addr mii
 		lea		esi,[esi+MAX_PATH]
 		inc		edi
+		dec		ebx
 	.endw
 	ret
 
