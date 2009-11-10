@@ -2070,6 +2070,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL
 					mov		da.szSessionFile,0
+					mov		da.MainFile,0
 					invoke CloseNotify
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
