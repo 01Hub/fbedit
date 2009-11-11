@@ -1892,6 +1892,8 @@ GotoDeclare proc uses esi
 					invoke SendMessage,ha.hREd,EM_LINEINDEX,nln,0
 					mov		ftxt.chrgText.cpMin,eax
 					mov		ftxt.chrgText.cpMax,-1
+					mov		ftxt.chrg.cpMin,eax
+					mov		ftxt.chrg.cpMax,-1
 					invoke SendMessage,ha.hREd,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
 					.if eax!=-1
 						mov		ftxt.chrg.cpMin,eax
