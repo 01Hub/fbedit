@@ -1,0 +1,3 @@
+#include "Res/NewProject2Dlg.rc"
+#include "Res/NewProject1Dlg.rc"
+#include "Res/NewProjectDlg.rc"
