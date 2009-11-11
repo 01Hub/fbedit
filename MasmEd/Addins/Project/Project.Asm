@@ -97,6 +97,11 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		MenuIDAddin[8],eax
 	inc		eax
 	mov		MenuIDAddin[12],eax
+	mov		ebx,lpData
+	invoke lstrcpy,offset ProjectPath,addr [ebx].ADDINDATA.AppPath
+	invoke lstrcat,offset ProjectPath,offset szProjectsPath
+	invoke lstrcpy,offset TemplatePath,addr [ebx].ADDINDATA.AppPath
+	invoke lstrcat,offset TemplatePath,offset szTemplatesPath
 	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE
 	xor		eax,eax
 	mov		hook.hook2,eax
