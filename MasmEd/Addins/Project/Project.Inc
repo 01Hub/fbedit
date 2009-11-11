@@ -24,6 +24,8 @@ include masm32.inc
 include debug.inc
 includelib debug.lib
 
+FBM_SETPATH			equ WM_USER+1	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to path string
+
 .const
 
 szMenuItem			db 'Project',0
@@ -46,6 +48,7 @@ szAsmFile			db 'asm',0
 szIncFile			db 'inc',0
 szRcFile			db 'rc',0
 szTxtFile			db 'txt',0
+szMesFile			db 'mes',0
 
 ;Errors
 szErrDir			db 'Could not create directory!',0Dh,0

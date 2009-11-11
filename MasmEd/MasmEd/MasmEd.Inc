@@ -555,7 +555,7 @@ szCaseTypes				db 'WPpc',0
 szGotoTypes				db 'pldcs',0
 
 ;Addin procs
-pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged,UpdateFileName>
+pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged,UpdateFileName,WriteSessionFile>
 
 .data
 

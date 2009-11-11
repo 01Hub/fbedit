@@ -18,6 +18,7 @@ IDC_CHKASM						equ 1002
 IDC_CHKRC						equ 1003
 IDC_CHKTXT						equ 1004
 IDC_CHKINC						equ 1005
+IDC_CHKMES						equ 1006
 
 ;NewProject2.dlg
 IDD_DLGTAB2						equ 1200
@@ -41,6 +42,7 @@ Tab1Proc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		esi
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_CBOBUILD,CB_SETCURSEL,0,0
+		invoke CheckDlgButton,hWin,IDC_CHKMES,BST_CHECKED
 		invoke CheckDlgButton,hWin,IDC_CHKASM,BST_CHECKED
 		invoke CheckDlgButton,hWin,IDC_CHKINC,BST_CHECKED
 	.else
@@ -137,7 +139,7 @@ FolderCreate proc hWin:HWND,lpPath:DWORD,lpFolder:DWORD
 
 FolderCreate endp
 
-FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD
+FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,nFileType:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke lstrcpy,addr buffer,lpPath
@@ -164,6 +166,24 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD
 		ret
 	.endif
 	invoke CloseHandle,eax
+	mov		edx,lpHandles
+	invoke SendMessage,[edx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,lpPath
+	.if nFileType!=2
+		push	0
+		lea		eax,buffer
+		push	eax
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpOpenEditFile
+	.endif
+	.if nFileType==1
+		; Main file
+		mov		edx,lpData
+		invoke lstrcpy,addr [edx].ADDINDATA.MainFile,addr buffer
+	.elseif nFileType==2
+		;Session file
+		mov		edx,lpData
+		invoke lstrcpy,addr [edx].ADDINDATA.szSessionFile,addr buffer
+	.endif
 	mov		eax,TRUE
 	ret
 
@@ -173,6 +193,7 @@ CreateProject proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	propath[MAX_PATH]:BYTE
 
+	mov		ebx,lpHandles
 	; Create directories
 	invoke GetDlgItemText,hWin,IDC_EDTPATH,addr propath,sizeof propath
 	invoke IsDlgButtonChecked,hWin,IDC_CHKSUB
@@ -191,6 +212,7 @@ CreateProject proc uses ebx esi edi,hWin:HWND
 		xor		eax,eax
 		jmp		Ex
 	.endif
+	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,addr propath
 	invoke IsDlgButtonChecked,hWin,IDC_CHKBAK
 	.if eax
 		invoke FolderCreate,hWin,addr propath,offset szBakPath
@@ -215,35 +237,49 @@ CreateProject proc uses ebx esi edi,hWin:HWND
 		or		eax,eax
 		jz		Ex
 	.endif
+	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,addr propath
 	invoke SendDlgItemMessage,hDlg2,IDC_LSTTEMPLATE,LB_GETCURSEL,0,0
 	.if sdword ptr eax>0
 		; Template
 	.else
 		; No template
+		invoke SendDlgItemMessage,hDlg1,IDC_CBOBUILD,CB_GETCURSEL,0,0
+		invoke SendMessage,[ebx].ADDINHANDLES.hCbo,CB_SETCURSEL,eax,0
 		invoke GetDlgItemText,hWin,IDC_EDTNAME,addr buffer,sizeof buffer
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKASM
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szAsmFile
+			invoke FileCreate,hWin,addr propath,addr buffer,offset szAsmFile,1
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKINC
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szIncFile
+			invoke FileCreate,hWin,addr propath,addr buffer,offset szIncFile,0
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKRC
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szRcFile
+			invoke FileCreate,hWin,addr propath,addr buffer,offset szRcFile,0
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKTXT
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szTxtFile
+			invoke FileCreate,hWin,addr propath,addr buffer,offset szTxtFile,0
 			or		eax,eax
 			jz		Ex
+		.endif
+		invoke IsDlgButtonChecked,hDlg1,IDC_CHKMES
+		.if eax
+			invoke FileCreate,hWin,addr propath,addr buffer,offset szMesFile,2
+			or		eax,eax
+			jz		Ex
+			mov		eax,lpData
+			lea		eax,[eax].ADDINDATA.szSessionFile
+			push	eax
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpWriteSessionFile
 		.endif
 	.endif
 	mov		eax,TRUE
