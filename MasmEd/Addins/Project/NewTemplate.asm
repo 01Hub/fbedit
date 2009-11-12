@@ -17,9 +17,10 @@ ALLFilterString					db 'All files (*.*)',0,'*.*',0,0
 
 .code
 
-NewTemplateDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+NewTemplateDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	path[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -63,18 +64,33 @@ NewTemplateDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,hInstance
 				mov		ofn.hInstance,eax
 				mov		eax,lpData
-				invoke lstrcpy,offset tempbuff,addr [eax].ADDINDATA.szInitFolder
-				mov		ofn.lpstrInitialDir,offset tempbuff
+				lea		eax,[eax].ADDINDATA.szInitFolder
+				mov		ofn.lpstrInitialDir,eax
 				mov		ofn.lpstrFilter,offset ALLFilterString
-				;mov		ofn.lpstrDefExt,offset szTplFile
-				mov		buffer,0
-				lea		eax,buffer
-				mov		ofn.lpstrFile,eax
+				mov		tempbuff,0
+				mov		ofn.lpstrFile,offset tempbuff
 				mov		ofn.nMaxFile,sizeof buffer
 				mov		ofn.Flags,OFN_EXPLORER or OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_ALLOWMULTISELECT or OFN_EXPLORER
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					
+					mov		esi,offset tempbuff
+					invoke lstrlen,esi
+					lea		eax,[esi+eax+1]
+					.if byte ptr [eax]
+						push	eax
+						invoke lstrcpy,addr path,esi
+						pop		esi
+						.while byte ptr [esi]
+							invoke lstrcpy,addr buffer,addr path
+							invoke lstrcat,addr buffer,offset szBS
+							invoke lstrcat,addr buffer,esi
+							invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_ADDSTRING,0,addr buffer
+							invoke lstrlen,esi
+							lea		esi,[esi+eax+1]
+						.endw
+					.else
+						invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_ADDSTRING,0,esi
+					.endif
 				.endif
 			.elseif eax==IDC_BTNDEL
 			.endif
