@@ -139,16 +139,20 @@ FolderCreate proc hWin:HWND,lpPath:DWORD,lpFolder:DWORD
 
 FolderCreate endp
 
-FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,nFileType:DWORD
+FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD,nFileSize:DWORD,nFileType:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hFile:HANDLE
+	LOCAL	bytes:DWORD
 
 	invoke lstrcpy,addr buffer,lpPath
 	invoke lstrcat,addr buffer,offset szBS
 	invoke lstrcat,addr buffer,lpFile
 	invoke lstrcat,addr buffer,offset szDot
 	invoke lstrcat,addr buffer,lpExt
+	; Check if file exists
 	invoke GetFileAttributes,addr buffer
 	.if eax!=-1
+		; File exists
 		invoke lstrcpy,offset tempbuff,offset szErrOverwrite
 		invoke lstrcat,offset tempbuff,addr buffer
 		invoke MessageBox,hWin,offset tempbuff,offset szMenuItem,MB_YESNO or MB_ICONERROR
@@ -159,13 +163,19 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,nFileType:DWORD
 	.endif
 	invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax==INVALID_HANDLE_VALUE
+		; File could not be created
 		invoke lstrcpy,offset tempbuff,offset szErrCreate
 		invoke lstrcat,offset tempbuff,addr buffer
 		invoke MessageBox,hWin,offset tempbuff,offset szMenuItem,MB_YESNO or MB_ICONERROR
 		xor		eax,eax
 		ret
 	.endif
-	invoke CloseHandle,eax
+	mov		hFile,eax
+	.if lpFileData
+		; Write file data
+		invoke WriteFile,hFile,lpFileData,nFileSize,addr bytes,NULL
+	.endif
+	invoke CloseHandle,hFile
 	mov		edx,lpHandles
 	invoke SendMessage,[edx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,lpPath
 	.if nFileType!=2
@@ -189,90 +199,377 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,nFileType:DWORD
 
 FileCreate endp
 
+IsLine proc uses ebx esi edi,lpLine:DWORD,lpWord:DWORD
+
+	mov		esi,lpWord
+	mov		edi,lpLine
+	mov		ebx,TRUE
+	.while byte ptr [esi]
+		mov		al,[esi]
+		.if al!=byte ptr [edi]
+			xor		eax,eax
+			jmp		Ex
+		.endif
+		inc		esi
+		inc		edi
+	.endw
+	mov		eax,edi
+	sub		eax,lpLine
+  Ex:
+	ret
+
+IsLine endp
+
+TemplateCreate proc uses ebx esi edi,hWin:HWND,nTemplate:DWORD,lpPath:DWORD,lpFile:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hFile:HANDLE
+	LOCAL	bytes:DWORD
+	LOCAL	hTemplateMem:HGLOBAL
+	LOCAL	hOutMem:HGLOBAL
+	LOCAL	nFun:DWORD
+	LOCAL	nBuild:DWORD
+	LOCAL	filename[MAX_PATH]:BYTE
+	LOCAL	fileext[MAX_PATH]:BYTE
+	LOCAL	nFiles:DWORD
+
+	invoke SendDlgItemMessage,hDlg2,IDC_LSTTEMPLATE,LB_GETTEXT,nTemplate,addr buffer
+	mov		eax,lpData
+	invoke lstrcpy,offset tempbuff,addr [eax].ADDINDATA.AppPath
+	invoke lstrcat,offset tempbuff,offset szTemplatesPath
+	invoke lstrcat,offset tempbuff,offset szBS
+	invoke lstrcat,offset tempbuff,addr buffer
+	invoke lstrcpy,addr buffer,offset tempbuff
+	invoke GetFileAttributes,addr buffer
+	.if eax!=INVALID_HANDLE_VALUE
+		invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			invoke GetFileSize,hFile,NULL
+			mov		ebx,eax
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,addr [ebx+1]
+			mov		hTemplateMem,eax
+			invoke ReadFile,hFile,hTemplateMem,ebx,addr bytes,NULL
+			invoke CloseHandle,hFile
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+			mov		hOutMem,eax
+			mov		esi,hTemplateMem
+			call	Template
+			invoke GlobalFree,hTemplateMem
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+GetLine:
+	push	edi
+	mov		edi,offset tempbuff
+	.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+	.endif
+	.if byte ptr [esi]==0Ah
+		inc		esi
+	.endif
+	pop		edi
+	retn
+
+PutLine:
+	push	esi
+	mov		esi,offset tempbuff
+	.while byte ptr [esi]
+		invoke IsLine,esi,offset szPROJECTNAME
+		.if eax
+			lea		esi,[esi+eax]
+			invoke lstrcpy,edi,lpFile
+			invoke lstrlen,edi
+			lea		edi,[edi+eax]
+		.else
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endif
+	.endw
+	mov		dword ptr [edi],0A0Dh
+	add		edi,2
+	pop		esi
+	retn
+
+PutLineHex:
+	push	esi
+	mov		esi,offset tempbuff
+	.while byte ptr [esi]
+		mov		ax,[esi]
+		.if al<'A'
+			and		al,0Fh
+		.else
+			sub		al,'A'-10
+		.endif
+		.if ah<'A'
+			and		ah,0Fh
+		.else
+			sub		ah,'A'-10
+		.endif
+		add		esi,2
+		shl		al,4
+		or		al,ah
+		mov		[edi],al
+		inc		edi
+	.endw
+	pop		esi
+	retn
+
+GetFileName:
+	call	GetLine
+	push	esi
+	mov		esi,offset tempbuff
+	mov		filename,0
+	mov		fileext,0
+	lea		edi,filename
+	.while byte ptr [esi]
+		invoke IsLine,esi,offset szPROJECTNAME
+		.if eax
+			lea		esi,[esi+eax]
+			invoke lstrcpy,edi,lpFile
+			invoke lstrlen,edi
+			lea		edi,[edi+eax]
+		.elseif byte ptr [esi]=='.'
+			inc		esi
+			lea		edi,fileext
+		.else
+			movzx	eax,byte ptr [esi]
+			mov		[edi],ax
+			inc		esi
+			inc		edi
+		.endif
+	.endw
+	pop		esi
+	retn
+
+Template:
+	mov		nFun,0
+	mov		nBuild,0
+	mov		nFiles,0
+	.while byte ptr [esi]
+		call	GetLine
+		.if nFun==0
+			invoke IsLine,offset tempbuff,offset szBEGINPRO
+			.if eax
+				mov		nFun,1
+			.endif
+		.elseif nFun==1
+			invoke IsLine,offset tempbuff,offset szMAKE
+			.if eax
+				lea		ebx,tempbuff[eax]
+				movzx	eax,byte ptr [ebx]
+				and		eax,0Fh
+				mov		nBuild,eax
+			.else
+				invoke IsLine,offset tempbuff,offset szBEGINTXT
+				.if eax
+					call	GetFileName
+					mov		edi,hOutMem
+					mov		nFun,2
+				.else
+					invoke IsLine,offset tempbuff,offset szBEGINBIN
+					.if eax
+						call	GetFileName
+						mov		edi,hOutMem
+						mov		nFun,3
+					.else
+						invoke IsLine,offset tempbuff,offset szENDPRO
+						.if eax
+							mov		eax,lpHandles
+							invoke SendMessage,[eax].ADDINHANDLES.hCbo,CB_SETCURSEL,nBuild,0
+							mov		nFun,4
+						.endif
+					.endif
+				.endif
+			.endif
+		.elseif nFun==2
+			invoke IsLine,offset tempbuff,offset szENDTXT
+			.if eax
+				sub		edi,hOutMem
+				xor		eax,eax
+				.if !nFiles
+					mov		eax,1
+				.endif
+				invoke FileCreate,hWin,lpPath,addr filename,addr fileext,hOutMem,edi,eax
+				mov		nFun,1
+				inc		nFiles
+			.else
+				call	PutLine
+			.endif
+		.elseif nFun==3
+			invoke IsLine,offset tempbuff,offset szENDBIN
+			.if eax
+				sub		edi,hOutMem
+				invoke FileCreate,hWin,lpPath,addr filename,addr fileext,hOutMem,edi,0
+				mov		nFun,1
+				inc		nFiles
+			.else
+				call	PutLineHex
+			.endif
+		.elseif nFun==4
+			invoke IsLine,offset tempbuff,offset szBEGINTXT
+			.if eax
+				call	GetFileName
+				mov		edi,hOutMem
+				mov		nFun,5
+			.else
+				invoke IsLine,offset tempbuff,offset szBEGINBIN
+				.if eax
+					call	GetFileName
+					mov		edi,hOutMem
+					mov		nFun,6
+				.endif
+			.endif
+		.elseif nFun==5
+			invoke IsLine,offset tempbuff,offset szENDTXT
+			.if eax
+				mov		nFun,4
+			.else
+				call	PutLine
+			.endif
+		.elseif nFun==6
+			invoke IsLine,offset tempbuff,offset szENDBIN
+			.if eax
+				mov		nFun,4
+			.else
+				call	PutLineHex
+			.endif
+		.endif
+	.endw
+	retn
+
+TemplateCreate endp
+
 CreateProject proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	propath[MAX_PATH]:BYTE
+	LOCAL	proname[MAX_PATH]:BYTE
 
 	mov		ebx,lpHandles
-	; Create directories
+	; Get project path
 	invoke GetDlgItemText,hWin,IDC_EDTPATH,addr propath,sizeof propath
+	; Get project name
+	invoke GetDlgItemText,hWin,IDC_EDTNAME,addr proname,sizeof proname
+	; Create directories
 	invoke IsDlgButtonChecked,hWin,IDC_CHKSUB
 	.if eax
-		invoke GetDlgItemText,hWin,IDC_EDTNAME,addr buffer,sizeof buffer
-		invoke FolderCreate,hWin,addr propath,addr buffer
+		; Create project sub directory
+		invoke FolderCreate,hWin,addr propath,addr proname
 		or		eax,eax
 		jz		Ex
 		invoke lstrcpy,addr propath,eax
 	.endif
 	invoke SetCurrentDirectory,addr propath
 	.if !eax
+		; Error could not open directory
 		invoke lstrcpy,offset tempbuff,offset szErrOpenDir
 		invoke lstrcat,offset tempbuff,addr buffer
 		invoke MessageBox,hWin,offset tempbuff,offset szMenuItem,MB_OK or MB_ICONERROR
 		xor		eax,eax
 		jmp		Ex
 	.endif
+	; Update file browser
 	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,addr propath
+	; Create directories
 	invoke IsDlgButtonChecked,hWin,IDC_CHKBAK
 	.if eax
+		; Create Bak directory
 		invoke FolderCreate,hWin,addr propath,offset szBakPath
 		or		eax,eax
 		jz		Ex
 	.endif
 	invoke IsDlgButtonChecked,hWin,IDC_CHKMOD
 	.if eax
+		; Create Mod directory
 		invoke FolderCreate,hWin,addr propath,offset szModPath
 		or		eax,eax
 		jz		Ex
 	.endif
 	invoke IsDlgButtonChecked,hWin,IDC_CHKINC
 	.if eax
+		; Create Inc directory
 		invoke FolderCreate,hWin,addr propath,offset szIncPath
 		or		eax,eax
 		jz		Ex
 	.endif
 	invoke IsDlgButtonChecked,hWin,IDC_CHKRES
 	.if eax
+		; Create Res directory
 		invoke FolderCreate,hWin,addr propath,offset szResPath
 		or		eax,eax
 		jz		Ex
 	.endif
+	; Update file browser
 	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,addr propath
+	; Check if a template is selected
 	invoke SendDlgItemMessage,hDlg2,IDC_LSTTEMPLATE,LB_GETCURSEL,0,0
 	.if sdword ptr eax>0
 		; Template
+		mov		edx,eax
+		invoke TemplateCreate,hWin,edx,addr propath,addr proname
+		or		eax,eax
+		jz		Ex
+		; Create mes file
+		invoke FileCreate,hWin,addr propath,addr proname,offset szMesFile,0,0,2
+		or		eax,eax
+		jz		Ex
+		mov		eax,lpData
+		lea		eax,[eax].ADDINDATA.szSessionFile
+		push	eax
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpWriteSessionFile
 	.else
 		; No template
+		; Get build option
 		invoke SendDlgItemMessage,hDlg1,IDC_CBOBUILD,CB_GETCURSEL,0,0
 		invoke SendMessage,[ebx].ADDINHANDLES.hCbo,CB_SETCURSEL,eax,0
-		invoke GetDlgItemText,hWin,IDC_EDTNAME,addr buffer,sizeof buffer
+		; Create files
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKASM
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szAsmFile,1
+			; Create asm file
+			invoke FileCreate,hWin,addr propath,addr proname,offset szAsmFile,0,0,1
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKINC
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szIncFile,0
+			; Create inc file
+			invoke FileCreate,hWin,addr propath,addr proname,offset szIncFile,0,0,0
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKRC
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szRcFile,0
+			; Create rc file
+			invoke FileCreate,hWin,addr propath,addr proname,offset szRcFile,0,0,0
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKTXT
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szTxtFile,0
+			; Create txt file
+			invoke FileCreate,hWin,addr propath,addr proname,offset szTxtFile,0,0,0
 			or		eax,eax
 			jz		Ex
 		.endif
 		invoke IsDlgButtonChecked,hDlg1,IDC_CHKMES
 		.if eax
-			invoke FileCreate,hWin,addr propath,addr buffer,offset szMesFile,2
+			; Create mes file
+			invoke FileCreate,hWin,addr propath,addr proname,offset szMesFile,0,0,2
 			or		eax,eax
 			jz		Ex
 			mov		eax,lpData

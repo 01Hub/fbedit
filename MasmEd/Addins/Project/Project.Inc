@@ -5,12 +5,14 @@
 include windows.inc
 include kernel32.inc
 include user32.inc
+include comdlg32.inc
 
 ;#########################################################################
 ;Libraries
 
 includelib kernel32.lib
 includelib user32.lib
+includelib comdlg32.lib
 
 ;#########################################################################
 ;	MasmEd Addin Include
@@ -55,6 +57,16 @@ szErrDir			db 'Could not create directory!',0Dh,0
 szErrOpenDir		db 'Could not open directory!',0Dh,0
 szErrOverwrite		db 'Overwrite existing file?',0Dh,0
 szErrCreate			db 'Could not create the file!',0Dh,0
+
+;Template
+szPROJECTNAME		db '[*PROJECTNAME*]',0
+szMAKE				db '[*MAKE*]=',0
+szBEGINPRO			db '[*BEGINPRO*]',0
+szENDPRO			db '[*ENDPRO*]',0
+szBEGINTXT			db '[*BEGINTXT*]',0
+szENDTXT			db '[*ENDTXT*]',0
+szBEGINBIN			db '[*BEGINBIN*]',0
+szENDBIN			db '[*ENDBIN*]',0
 
 .data?
 

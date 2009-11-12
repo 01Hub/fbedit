@@ -10,6 +10,7 @@ option casemap:none
 
 include Project.inc
 include NewProject.asm
+include NewTemplate.asm
 
 .code
 
@@ -128,6 +129,7 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExRet
 		.elseif eax==[edx+8]
 			;The 'Create Project Template' menuitem we added has been selected
+			invoke DialogBoxParam,hInstance,IDD_DLGNEWTEMPLATE,hWin,offset NewTemplateDialogProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.elseif eax==[edx+12]
