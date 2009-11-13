@@ -1,5 +1,4 @@
 Dialog Application
-[*BEGINPRO*]
 [*MAKE*]=0
 [*BEGINTXT*]
 [*PROJECTNAME*].Asm
@@ -88,4 +87,3 @@ BEGIN
   CONTROL "Cancel",2,"Button",0x50010000,92,90,48,13,0x00000000
 END
 [*ENDTXT*]
-[*ENDPRO*]

@@ -1,5 +1,5 @@
 Dialog As Main Window
-[*BEGINPRO*]
+[*MAKE*]=0
 [*BEGINTXT*]
 [*PROJECTNAME*].Asm
 .386
@@ -146,4 +146,3 @@ BEGIN
   END
 END
 [*ENDTXT*]
-[*ENDPRO*]

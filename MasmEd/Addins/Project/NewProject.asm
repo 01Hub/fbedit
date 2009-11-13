@@ -178,19 +178,18 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD
 	invoke CloseHandle,hFile
 	mov		edx,lpHandles
 	invoke SendMessage,[edx].ADDINHANDLES.hBrowse,FBM_SETPATH,TRUE,lpPath
-	.if nFileType!=2
+	.if nFileType==1
+		; Main file
+		mov		edx,lpData
+		invoke lstrcpy,addr [edx].ADDINDATA.MainFile,addr buffer
+		; Open the file
 		push	0
 		lea		eax,buffer
 		push	eax
 		mov		eax,lpProc
 		call	[eax].ADDINPROCS.lpOpenEditFile
-	.endif
-	.if nFileType==1
-		; Main file
-		mov		edx,lpData
-		invoke lstrcpy,addr [edx].ADDINDATA.MainFile,addr buffer
 	.elseif nFileType==2
-		;Session file
+		; Session file
 		mov		edx,lpData
 		invoke lstrcpy,addr [edx].ADDINDATA.szSessionFile,addr buffer
 	.endif
@@ -199,14 +198,23 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD
 
 FileCreate endp
 
-IsLine proc uses ebx esi edi,lpLine:DWORD,lpWord:DWORD
+IsLine proc uses ebx esi edi,lpLine:DWORD,lpWord:DWORD,fIgnore:DWORD
 
 	mov		esi,lpWord
 	mov		edi,lpLine
 	mov		ebx,TRUE
 	.while byte ptr [esi]
 		mov		al,[esi]
-		.if al!=byte ptr [edi]
+		mov		ah,[edi]
+		.if fIgnore
+			.if al>='a' && al<='z'
+				and		al,5Fh
+			.endif
+			.if ah>='a' && ah<='z'
+				and		ah,5Fh
+			.endif
+		.endif
+		.if al!=ah
 			xor		eax,eax
 			jmp		Ex
 		.endif
@@ -255,6 +263,8 @@ TemplateCreate proc uses ebx esi edi,hWin:HWND,nTemplate:DWORD,lpPath:DWORD,lpFi
 			mov		esi,hTemplateMem
 			call	Template
 			invoke GlobalFree,hTemplateMem
+			mov		eax,lpHandles
+			invoke SendMessage,[eax].ADDINHANDLES.hCbo,CB_SETCURSEL,nBuild,0
 			mov		eax,TRUE
 		.else
 			xor		eax,eax
@@ -287,7 +297,7 @@ PutLine:
 	push	esi
 	mov		esi,offset tempbuff
 	.while byte ptr [esi]
-		invoke IsLine,esi,offset szPROJECTNAME
+		invoke IsLine,esi,offset szPROJECTNAME,FALSE
 		.if eax
 			lea		esi,[esi+eax]
 			invoke lstrcpy,edi,lpFile
@@ -337,7 +347,7 @@ GetFileName:
 	mov		fileext,0
 	lea		edi,filename
 	.while byte ptr [esi]
-		invoke IsLine,esi,offset szPROJECTNAME
+		invoke IsLine,esi,offset szPROJECTNAME,FALSE
 		.if eax
 			lea		esi,[esi+eax]
 			invoke lstrcpy,edi,lpFile
@@ -363,41 +373,30 @@ Template:
 	.while byte ptr [esi]
 		call	GetLine
 		.if nFun==0
-			invoke IsLine,offset tempbuff,offset szBEGINPRO
-			.if eax
-				mov		nFun,1
-			.endif
-		.elseif nFun==1
-			invoke IsLine,offset tempbuff,offset szMAKE
+			invoke IsLine,offset tempbuff,offset szMAKE,FALSE
 			.if eax
 				lea		ebx,tempbuff[eax]
 				movzx	eax,byte ptr [ebx]
 				and		eax,0Fh
 				mov		nBuild,eax
+				mov		nFun,1
+			.endif
+		.elseif nFun==1
+			invoke IsLine,offset tempbuff,offset szBEGINTXT,FALSE
+			.if eax
+				call	GetFileName
+				mov		edi,hOutMem
+				mov		nFun,2
 			.else
-				invoke IsLine,offset tempbuff,offset szBEGINTXT
+				invoke IsLine,offset tempbuff,offset szBEGINBIN,FALSE
 				.if eax
 					call	GetFileName
 					mov		edi,hOutMem
-					mov		nFun,2
-				.else
-					invoke IsLine,offset tempbuff,offset szBEGINBIN
-					.if eax
-						call	GetFileName
-						mov		edi,hOutMem
-						mov		nFun,3
-					.else
-						invoke IsLine,offset tempbuff,offset szENDPRO
-						.if eax
-							mov		eax,lpHandles
-							invoke SendMessage,[eax].ADDINHANDLES.hCbo,CB_SETCURSEL,nBuild,0
-							mov		nFun,4
-						.endif
-					.endif
+					mov		nFun,3
 				.endif
 			.endif
 		.elseif nFun==2
-			invoke IsLine,offset tempbuff,offset szENDTXT
+			invoke IsLine,offset tempbuff,offset szENDTXT,FALSE
 			.if eax
 				sub		edi,hOutMem
 				xor		eax,eax
@@ -411,40 +410,12 @@ Template:
 				call	PutLine
 			.endif
 		.elseif nFun==3
-			invoke IsLine,offset tempbuff,offset szENDBIN
+			invoke IsLine,offset tempbuff,offset szENDBIN,FALSE
 			.if eax
 				sub		edi,hOutMem
 				invoke FileCreate,hWin,lpPath,addr filename,addr fileext,hOutMem,edi,0
 				mov		nFun,1
 				inc		nFiles
-			.else
-				call	PutLineHex
-			.endif
-		.elseif nFun==4
-			invoke IsLine,offset tempbuff,offset szBEGINTXT
-			.if eax
-				call	GetFileName
-				mov		edi,hOutMem
-				mov		nFun,5
-			.else
-				invoke IsLine,offset tempbuff,offset szBEGINBIN
-				.if eax
-					call	GetFileName
-					mov		edi,hOutMem
-					mov		nFun,6
-				.endif
-			.endif
-		.elseif nFun==5
-			invoke IsLine,offset tempbuff,offset szENDTXT
-			.if eax
-				mov		nFun,4
-			.else
-				call	PutLine
-			.endif
-		.elseif nFun==6
-			invoke IsLine,offset tempbuff,offset szENDBIN
-			.if eax
-				mov		nFun,4
 			.else
 				call	PutLineHex
 			.endif

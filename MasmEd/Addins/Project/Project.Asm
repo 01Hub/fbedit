@@ -103,6 +103,8 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke lstrcat,offset ProjectPath,offset szProjectsPath
 	invoke lstrcpy,offset TemplatePath,addr [ebx].ADDINDATA.AppPath
 	invoke lstrcat,offset TemplatePath,offset szTemplatesPath
+	invoke lstrcpy,offset szTxt,offset szDefTxt
+	invoke lstrcpy,offset szBin,offset szDefBin
 	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE
 	xor		eax,eax
 	mov		hook.hook2,eax
