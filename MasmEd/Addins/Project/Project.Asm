@@ -11,6 +11,7 @@ option casemap:none
 include Project.inc
 include NewProject.asm
 include NewTemplate.asm
+include ProjectOption.asm
 
 .code
 
@@ -82,15 +83,15 @@ InstallAddin proc uses ebx,hWin:DWORD
 
 	mov		ebx,hWin
 	;Get pointer to handles struct
-	invoke SendMessage,ebx,AIM_GETHANDLES,0,0;	
+	invoke SendMessage,ebx,AIM_GETHANDLES,0,0
 	mov		lpHandles,eax
 	;Get pointer to proc struct
 	invoke SendMessage,ebx,AIM_GETPROCS,0,0
 	mov		lpProc,eax
 	;Get pointer to data struct
-	invoke SendMessage,ebx,AIM_GETDATA,0,0	
+	invoke SendMessage,ebx,AIM_GETDATA,0,0
 	mov		lpData,eax
-	invoke SendMessage,ebx,AIM_GETMENUID,4,0	
+	invoke SendMessage,ebx,AIM_GETMENUID,4,0
 	mov		MenuIDAddin[0],eax
 	inc		eax
 	mov		MenuIDAddin[4],eax
@@ -136,6 +137,7 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExRet
 		.elseif eax==[edx+12]
 			;The 'Options' menuitem we added has been selected
+			invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,offset ProjectOptionProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif

@@ -10,7 +10,7 @@ Debug=0
 1=Project.Asm
 2=Project.Inc
 3=Project.Def
-4=..\Help\Project.Txt
+4=..\Help\Project.txt
 5=..\Addins.inc
 AutoDelete=1
 AskMe=0
@@ -22,6 +22,8 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 10=NewProject2.dlg
 11=NewTemplate.asm
 12=NewTemplate.dlg
+13=ProjectOption.asm
+14=ProjectOption.dlg
 [MakeFiles]
 0=Project.rap
 1=Project.rc
@@ -41,7 +43,7 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 15=Project.tlb
 16=Project.sys
 [MakeDef]
-Menu=0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
+Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
 3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3,4
@@ -73,8 +75,10 @@ Group=Resources,Assembly,Misc
 10=1
 11=2
 12=1
+13=2
+14=1
 [AutoLoad]
-AutoLoad=1,2,5,6,8,12,11
+AutoLoad=1,2,5,6,8,12,11,14,13,4
 [RADebugBP]
 2=
 1=
@@ -83,6 +87,7 @@ AutoLoad=1,2,5,6,8,12,11
 8=
 0=
 11=
+13=
 [Collapse]
 5=
 1=
@@ -92,19 +97,22 @@ AutoLoad=1,2,5,6,8,12,11
 7=
 8=,,
 11=,,
+13=
 [Size]
 5=0,0,799,526,9732
-1=0,0,0,0,2675
+1=0,0,0,0,2214
 2=0,0,0,0,1504
 3=0,0,0,0,15
-4=0,0,0,0,32
+4=0,0,0,0,0
 7=0,0,0,0,32
 10=0,0,0,0
 9=0,0,0,0
-8=0,0,0,0,9652
+8=0,0,0,0,5205
 6=0,0,0,0
-11=0,0,0,0,6534
+11=0,0,0,0,756
 12=0,0,0,0
+14=0,0,0,0
+13=0,0,0,0,484
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -115,7 +123,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -161,7 +169,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=89341836
+PTimer=94956671
 [Exports]
 1=AddinProc
 2=InstallAddin
