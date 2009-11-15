@@ -619,10 +619,8 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke GetDlgItemText,hWin,IDC_EDTDEFGROUP,offset szGroups,sizeof szGroups
 				invoke WritePrivateProfileString,addr iniProjectGroup,addr iniProjectGroup,addr szGroups,addr iniAsmFile
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-				mov		hProjectGroup,0
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
-				mov		hProjectGroup,0
 			.elseif eax==IDM_GROUPEXPAND
 				invoke GroupExpandAll,hGrpTrv,0
 			.elseif eax==IDM_GROUPCOLLAPSE
@@ -826,6 +824,7 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		mov		hProjectGroup,0
 		invoke EndDialog,hWin,NULL
 	.else
 		mov eax,FALSE
