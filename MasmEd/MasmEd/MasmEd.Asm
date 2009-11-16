@@ -185,7 +185,7 @@ start:
 	mov		eax,wpos.top
 	mov		winsize.ptstyle.y,eax
 	invoke OleInitialize,NULL
-	invoke InstallRAEdit,ha.hInstance,FALSE
+	invoke InstallRAEdit,ha.hInstance,TRUE
 	invoke RAHexEdInstall,ha.hInstance,FALSE
 	invoke GridInstall,ha.hInstance,FALSE
 	invoke ResEdInstall,ha.hInstance,FALSE

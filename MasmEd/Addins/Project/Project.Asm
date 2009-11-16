@@ -12,6 +12,7 @@ include Project.inc
 include NewProject.asm
 include NewTemplate.asm
 include ProjectOption.asm
+include Sniplets.asm
 
 .code
 
@@ -27,7 +28,7 @@ UpdateMenu proc uses ebx,hMnu:HMENU
 	mov		mii.fType,MFT_STRING
 	lea		eax,[ebx+1]
 	mov		mii.wID,eax
-	mov		mii.dwTypeData,offset szNewProject
+	mov		mii.dwTypeData,offset szCreateProject
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	lea		eax,[ebx+2]
 	mov		mii.wID,eax
@@ -35,7 +36,11 @@ UpdateMenu proc uses ebx,hMnu:HMENU
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	lea		eax,[ebx+3]
 	mov		mii.wID,eax
-	mov		mii.dwTypeData,offset szOptions
+	mov		mii.dwTypeData,offset szTemplateOptions
+	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
+	lea		eax,[ebx+4]
+	mov		mii.wID,eax
+	mov		mii.dwTypeData,offset szSniplets
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
@@ -80,6 +85,8 @@ OutputString endp
 
 ; Export this proc
 InstallAddin proc uses ebx,hWin:DWORD
+	LOCAL	lpType:DWORD
+	LOCAL	lpcbData:DWORD
 
 	mov		ebx,hWin
 	;Get pointer to handles struct
@@ -91,7 +98,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0
 	mov		lpData,eax
-	invoke SendMessage,ebx,AIM_GETMENUID,4,0
+	invoke SendMessage,ebx,AIM_GETMENUID,5,0
 	mov		MenuIDAddin[0],eax
 	inc		eax
 	mov		MenuIDAddin[4],eax
@@ -99,13 +106,25 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		MenuIDAddin[8],eax
 	inc		eax
 	mov		MenuIDAddin[12],eax
+	inc		eax
+	mov		MenuIDAddin[16],eax
 	mov		ebx,lpData
 	invoke lstrcpy,offset ProjectPath,addr [ebx].ADDINDATA.AppPath
 	invoke lstrcat,offset ProjectPath,offset szProjectsPath
 	invoke lstrcpy,offset TemplatePath,addr [ebx].ADDINDATA.AppPath
 	invoke lstrcat,offset TemplatePath,offset szTemplatesPath
+	invoke lstrcpy,offset SnipletPath,addr [ebx].ADDINDATA.AppPath
+	invoke lstrcat,offset SnipletPath,offset szSnipletsPath
 	invoke lstrcpy,offset szTxt,offset szDefTxt
 	invoke lstrcpy,offset szBin,offset szDefBin
+	mov		ebx,lpHandles
+	mov		nBackup,3
+	mov		lpcbData,4
+	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szBackups,0,addr lpType,addr nBackup,addr lpcbData
+	mov		lpcbData,sizeof szTxt
+	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szTextFiles,0,addr lpType,addr szTxt,addr lpcbData
+	mov		lpcbData,sizeof szBin
+	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szBinaryFiles,0,addr lpType,addr szBin,addr lpcbData
 	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE
 	xor		eax,eax
 	mov		hook.hook2,eax
@@ -126,18 +145,23 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,wParam
 		mov		edx,offset MenuIDAddin
 		.if eax==[edx+4]
-			;The 'Create New Project' menuitem we added has been selected
+			;The 'Create Project' menuitem we added has been selected
 			invoke DialogBoxParam,hInstance,IDD_DLGNEWPROJECT,hWin,offset NewProjectDialogProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.elseif eax==[edx+8]
-			;The 'Create Project Template' menuitem we added has been selected
+			;The 'Create Template' menuitem we added has been selected
 			invoke DialogBoxParam,hInstance,IDD_DLGNEWTEMPLATE,hWin,offset NewTemplateDialogProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.elseif eax==[edx+12]
-			;The 'Options' menuitem we added has been selected
+			;The 'Template Options' menuitem we added has been selected
 			invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,offset ProjectOptionProc,0
+			mov		eax,TRUE
+			jmp		ExRet
+		.elseif eax==[edx+16]
+			;The 'Sniplets' menuitem we added has been selected
+			invoke DialogBoxParam,hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif

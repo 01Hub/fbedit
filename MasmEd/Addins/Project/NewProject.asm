@@ -139,6 +139,33 @@ FolderCreate proc hWin:HWND,lpPath:DWORD,lpFolder:DWORD
 
 FolderCreate endp
 
+FileFolderCreate proc uses ebx esi,lpFile:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr buffer,lpFile
+	lea		esi,buffer
+	xor		ebx,ebx
+	xor		ecx,ecx
+	.while byte ptr [esi+ecx]
+		.if byte ptr [esi+ecx]=='\'
+			mov		byte ptr [esi+ecx],0
+			inc		ebx
+		.endif
+		inc		ecx
+	.endw
+	.while ebx
+		invoke CreateDirectory,esi,NULL
+		xor		ecx,ecx
+		.while byte ptr [esi+ecx]
+			inc		ecx
+		.endw
+		mov		byte ptr [esi+ecx],'\'
+		dec		ebx
+	.endw
+	ret
+
+FileFolderCreate endp
+
 FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD,nFileSize:DWORD,nFileType:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	hFile:HANDLE
@@ -161,6 +188,7 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD
 			ret
 		.endif
 	.endif
+	invoke FileFolderCreate,addr buffer
 	invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax==INVALID_HANDLE_VALUE
 		; File could not be created
@@ -565,7 +593,7 @@ NewProjectDialogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_INITDIALOG
 		invoke SetDlgItemText,hWin,IDC_EDTPATH,offset ProjectPath
 		invoke CheckDlgButton,hWin,IDC_CHKSUB,BST_CHECKED
-		invoke CheckDlgButton,hWin,IDC_CHKBAK,BST_CHECKED
+		;invoke CheckDlgButton,hWin,IDC_CHKBAK,BST_CHECKED
 		; Get handle of tabstrip
 		invoke GetDlgItem,hWin,IDC_TAB1
 		mov		hTab,eax
