@@ -593,7 +593,7 @@ NewProjectDialogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_INITDIALOG
 		invoke SetDlgItemText,hWin,IDC_EDTPATH,offset ProjectPath
 		invoke CheckDlgButton,hWin,IDC_CHKSUB,BST_CHECKED
-		;invoke CheckDlgButton,hWin,IDC_CHKBAK,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_CHKBAK,BST_CHECKED
 		; Get handle of tabstrip
 		invoke GetDlgItem,hWin,IDC_TAB1
 		mov		hTab,eax

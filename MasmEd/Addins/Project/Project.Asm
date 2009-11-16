@@ -13,6 +13,7 @@ include NewProject.asm
 include NewTemplate.asm
 include ProjectOption.asm
 include Sniplets.asm
+include Backup.asm
 
 .code
 
@@ -36,11 +37,11 @@ UpdateMenu proc uses ebx,hMnu:HMENU
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	lea		eax,[ebx+3]
 	mov		mii.wID,eax
-	mov		mii.dwTypeData,offset szTemplateOptions
+	mov		mii.dwTypeData,offset szSniplets
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	lea		eax,[ebx+4]
 	mov		mii.wID,eax
-	mov		mii.dwTypeData,offset szSniplets
+	mov		mii.dwTypeData,offset szTemplateOptions
 	invoke InsertMenuItem,hSubMenu,9,TRUE,addr mii
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
@@ -125,7 +126,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szTextFiles,0,addr lpType,addr szTxt,addr lpcbData
 	mov		lpcbData,sizeof szBin
 	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szBinaryFiles,0,addr lpType,addr szBin,addr lpcbData
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE
+	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILESAVE
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -155,18 +156,20 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 			jmp		ExRet
 		.elseif eax==[edx+12]
-			;The 'Template Options' menuitem we added has been selected
-			invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,offset ProjectOptionProc,0
+			;The 'Sniplets' menuitem we added has been selected
+			invoke DialogBoxParam,hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.elseif eax==[edx+16]
-			;The 'Sniplets' menuitem we added has been selected
-			invoke DialogBoxParam,hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
+			;The 'Options' menuitem we added has been selected
+			invoke DialogBoxParam,hInstance,IDD_DLGOPTION,hWin,offset ProjectOptionProc,0
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif
 	.elseif eax==AIM_MENUUPDATE
 		invoke UpdateMenu,wParam
+	.elseif eax==AIM_FILESAVE
+		invoke BackupEdit,lParam,1
 	.endif
 	mov		eax,FALSE
   ExRet:

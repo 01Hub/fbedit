@@ -35,7 +35,7 @@ FBM_SETPATH			equ WM_USER+1	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to path 
 szMenuItem			db 'Project',0
 szCreateProject		db 'Create Project',0
 szCreateTemplate	db 'Create Template',0
-szTemplateOptions	db 'Template Options',0
+szTemplateOptions	db 'Options',0
 szSniplets			db 'Sniplets',0
 szFiles				db 'Files',0
 szTemplate			db 'Template',0
@@ -49,6 +49,7 @@ szIncPath			db 'Inc',0
 szNone				db '(None)',0
 szTpl				db '\*.tpl',0
 szAPA				db '*.*',0
+szBak				db '\Bak\',0
 szBS				db '\',0
 szDot				db '.',0
 szAsmFile			db 'asm',0
