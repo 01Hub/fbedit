@@ -23,14 +23,14 @@
 ;#########################################################################
 ;		RadASM Add In Include
 
-	include ..\..\..\Inc\RadAsm.inc
+	include ..\RadAsm.inc
 
 ;#########################################################################
 ;		VKim's Debug
 
-;	include masm32.inc
-;	include debug.inc
-;	includelib debug.lib
+	include masm32.inc
+	include debug.inc
+	includelib debug.lib
 ;
 ;	DBGWIN_DEBUG_ON = 1		; include debug info into the program
 ;	DBGWIN_EXT_INFO = 0		; include extra debug info into the program
@@ -136,6 +136,10 @@ VERINF1							equ 1
 	szFileName			db	'FileName',0
 	szDefault			db	"0",0	; 0 == OFF / 1 == ON
 	szProto				db	VK_TAB,'PROTO',0
+	szDWORD				db 'DWORD ',0
+	szLPA				db '(',0
+	szRPA				db ');',0
+	szCRLF				db 0Dh,0Ah,0
 	ofnFilter			db	"*.*",0,0
 	
 .data?

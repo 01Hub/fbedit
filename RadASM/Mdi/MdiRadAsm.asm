@@ -3305,6 +3305,15 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		mov		nLineTick,2
 	.elseif eax==WM_CONTEXTMENU
+		mov		eax,wParam
+		.if eax==hToolBar
+			invoke GetCapture
+			.if eax
+				invoke ReleaseCapture
+			.endif
+			xor		eax,eax
+			ret
+		.endif
 		invoke GetCapture
 		.if eax
 			xor		eax,eax

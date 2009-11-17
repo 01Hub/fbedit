@@ -1,2 +1,2 @@
-This addin creates masm prototypes for procedures.
+This addin creates masm and C/CPP prototypes for procedures.
 The prototypes can be sendt to output window or written to file.

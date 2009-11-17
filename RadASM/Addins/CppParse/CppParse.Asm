@@ -523,6 +523,8 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 	LOCAL	fTypedef:DWORD
 	LOCAL	lpBegin:DWORD
 	LOCAL	lpEnd:DWORD
+	LOCAL	lpRet:DWORD
+	LOCAL	lenRet:DWORD
 
 	mov		esi,lpMem
 	mov		nNest,0
@@ -530,6 +532,7 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 		mov		fTypedef,0
 		call	GetWrd
 		.if len
+			mov		lpRet,esi
 			call	_Skip
 			or		eax,eax
 			jne		Nxt
@@ -982,6 +985,7 @@ _Function:
 		invoke strcpyn,offset buffer,esi,ecx
 		invoke strlen,offset buffer
 		lea		edi,buffer[eax+1]
+		mov		dword ptr [edi],0
 		mov		esi,lpParamSt
 		inc		esi
 		dec		lpParamEn
@@ -991,6 +995,29 @@ _Function:
 			add		esi,len
 			push	len
 			call	GetWrd
+			invoke IsWord,esi,len,offset szFar,lpCharTab
+			.if eax
+				add		esi,len
+				pop		eax
+				mov		eax,esi
+				sub		eax,ebx
+				push	eax
+				call	GetWrd
+			.endif
+			.if !len
+				push	esi
+				xor		edx,edx
+				.while byte ptr [esi]=='*'
+					inc		edx
+					inc		esi
+				.endw
+				push	edx
+				call	GetWrd
+				pop		edx
+				pop		esi
+				add		len,edx
+				add		ecx,edx
+			.endif
 			pop		edx
 			.if edx && len
 				.while ecx
@@ -1022,7 +1049,7 @@ _Function:
 				.break
 			.endif
 		.endw
-		mov		word ptr [edi],0
+		mov		dword ptr [edi],0
 		inc		edi
 		mov		esi,lpTemp
 		call	SkipScope
@@ -1091,9 +1118,25 @@ _Function:
 					.endif
 				.endif
 			.endw
-			mov		byte ptr [edi-1],0
+			.if byte ptr [edi-1]==','
+				mov		dword ptr [edi-1],0
+			.else
+				mov		dword ptr [edi-1],0
+				inc		edi
+			.endif
+			mov		esi,lpRet
+			call	GetWrd
+			.while esi<lpFun
+				invoke strcpyn,edi,esi,addr [ecx+1]
+				add		edi,len
+				mov		byte ptr [edi],' '
+				inc		edi
+				add		esi,len
+				call	GetWrd
+			.endw
+			mov		dword ptr [edi],0
 			pop		esi
- 			push	3
+ 			push	4
 			push	offset buffer
 			push	iNbr
 			push	'p'

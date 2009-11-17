@@ -191,6 +191,124 @@ ProtoProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ProtoProc endp
 
+CreateProtoLine proc uses esi edi,lpProperty:DWORD,lpOut:DWORD,fCRLF:DWORD
+
+	mov		esi,lpProperty
+	lea		esi,[esi+sizeof PROPERTIES]
+	mov		edi,lpOut
+	mov		edx,lpData
+	mov		eax,[edx].ADDINDATA.nAsm
+	.if eax==nMASM || eax==nTASM
+		invoke lstrcpy,edi,esi
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		.while eax<32
+			mov		byte ptr [edi],' '
+			inc		edi
+			inc		eax
+		.endw
+		invoke lstrcpy,edi,addr szProto
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		;Point to proc parameters
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		mov		ah,VK_TAB
+		.while byte ptr [esi]
+			.if byte ptr [esi]==':'
+				mov		[edi],ah
+				inc		edi
+				.while byte ptr [esi] && byte ptr [esi]!=','
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		ah,','
+			.else
+				inc		esi
+			.endif
+		.endw
+		.if fCRLF
+			mov		dword ptr [edi],0A0Dh
+		.else
+			mov		byte ptr [edi],0
+		.endif
+	.elseif eax==nCPP
+		push	esi
+		;Point to proc parameters
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		;Point to locals
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		;Point to return type
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		.if byte ptr [esi]
+			invoke lstrcpy,edi,esi
+			invoke lstrlen,edi
+			mov		word ptr [edi+eax],' '
+		.else
+			invoke lstrcpy,edi,addr szDWORD
+		.endif
+		pop		esi
+		invoke lstrcat,edi,esi
+		invoke lstrcat,edi,addr szLPA
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		;Point to proc parameters
+		invoke lstrlen,esi
+		lea		esi,[esi+eax+1]
+		.while byte ptr [esi]
+			push	esi
+			.while byte ptr [esi] && byte ptr [esi]!=':' && byte ptr [esi]!=','
+				inc		esi
+			.endw
+			.if byte ptr [esi]==':'
+				inc		esi
+				.while byte ptr [esi] && byte ptr [esi]!=','
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		byte ptr [edi],0
+			.else
+				invoke lstrcpy,edi,addr szDWORD
+				invoke lstrlen,edi
+				lea		edi,[edi+eax]
+			.endif
+			mov		word ptr [edi],' '
+			inc		edi
+			pop		esi
+			.while byte ptr [esi] && byte ptr [esi]!=':' && byte ptr [esi]!=','
+				mov		al,[esi]
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endw
+			.while byte ptr [esi] && byte ptr [esi]!=','
+				inc		esi
+			.endw
+			.if byte ptr [esi]==','
+				inc		esi
+				mov		word ptr [edi],','
+				inc		edi
+			.else
+				mov		byte ptr [edi],0
+			.endif
+		.endw
+		invoke lstrcat,edi,addr szRPA
+		.if fCRLF
+			invoke lstrcat,edi,addr szCRLF
+		.else
+		.endif
+	.endif
+	ret
+
+CreateProtoLine endp
+
 SaveToFile proc uses edi esi ebx
 	LOCAL path[256]:BYTE
 	LOCAL hFile:DWORD
@@ -203,65 +321,27 @@ SaveToFile proc uses edi esi ebx
 	invoke lstrcat,a$ path, o$ szFileToSaveTo
 	invoke CreateFile,a$ path,GENERIC_WRITE,0,0,CREATE_ALWAYS,FILE_ATTRIBUTE_ARCHIVE,0
 	mov hFile, eax
-
-		mov		edx,lpData
-		.if [edx].ADDINDATA.fProject
-			;A project is loaded, dump the procs
-			;Get pointer to word list
-			mov		esi,[edx].ADDINDATA.lpWordList
-			;Skip the words loaded from .api files
-			add		esi,[edx].ADDINDATA.rpProjectWordList
-			;Loop trough the word list
-			.while [esi].PROPERTIES.nSize
-				;Check if it is a proc
-				.if [esi].PROPERTIES.nType=='p'
-				pushad
-					lea		esi,[esi+sizeof PROPERTIES]
-					lea		edi,buffer
-					invoke lstrcpy,edi,esi
-					invoke lstrlen,edi
-					lea		edi,[edi+eax]
-					.while eax<32
-						mov		byte ptr [edi],' '
-						inc		edi
-						inc		eax
-					.endw
-					invoke lstrcpy,edi,addr szProto
-					invoke lstrlen,edi
-					lea		edi,[edi+eax]
-					;Point to proc parameters
-					invoke lstrlen,esi
-					lea		esi,[esi+eax+1]
-					mov		ah,VK_TAB
-					.while byte ptr [esi]
-						.if byte ptr [esi]==':'
-							mov		[edi],ah
-							inc		edi
-							.while byte ptr [esi] && byte ptr [esi]!=','
-								mov		al,[esi]
-								mov		[edi],al
-								inc		esi
-								inc		edi
-							.endw
-							mov		ah,','
-						.else
-							inc		esi
-						.endif
-					.endw
-					mov		byte ptr [edi],13
-					mov		byte ptr [edi+1],10
-					mov		byte ptr [edi+2],0
-					invoke lstrlen,a$ buffer
-					invoke WriteFile,hFile,a$ buffer,eax,o$ dummy,0
-				popad
-					
-				.endif
-				;Move to next word
-				mov		eax,[esi].PROPERTIES.nSize
-				lea		esi,[esi+eax+sizeof PROPERTIES]
-			.endw
-			;invoke SendDlgItemMessage,hWnd,IDC_LSTPROTO,LB_SETCARETINDEX,0,0
-		.endif
+	mov		edx,lpData
+	.if [edx].ADDINDATA.fProject
+		;A project is loaded, dump the procs
+		;Get pointer to word list
+		mov		esi,[edx].ADDINDATA.lpWordList
+		;Skip the words loaded from .api files
+		add		esi,[edx].ADDINDATA.rpProjectWordList
+		;Loop trough the word list
+		.while [esi].PROPERTIES.nSize
+			;Check if it is a proc
+			.if [esi].PROPERTIES.nType=='p'
+				invoke CreateProtoLine,esi,addr buffer,TRUE
+				invoke lstrlen,a$ buffer
+				invoke WriteFile,hFile,a$ buffer,eax,o$ dummy,0
+			.endif
+			;Move to next word
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.endw
+		;invoke SendDlgItemMessage,hWnd,IDC_LSTPROTO,LB_SETCARETINDEX,0,0
+	.endif
 	invoke CloseHandle, hFile
 	ret
 SaveToFile endp
@@ -307,40 +387,8 @@ SendToOutput proc uses edi esi ebx
 		.break .if eax==LB_ERR
 		.if eax
 			invoke SendDlgItemMessage,hWnd,IDC_LSTPROTO,LB_GETITEMDATA,ebx,0
-			;Point to the proc name
-			lea		esi,[eax+sizeof PROPERTIES]
-			lea		edi,buffer
-			invoke lstrcpy,edi,esi
-			invoke lstrlen,edi
-			lea		edi,[edi+eax]
-			.while eax<32
-				mov		byte ptr [edi],' '
-				inc		edi
-				inc		eax
-			.endw
-			invoke lstrcpy,edi,addr szProto
-			invoke lstrlen,edi
-			lea		edi,[edi+eax]
-			;Point to proc parameters
-			invoke lstrlen,esi
-			lea		esi,[esi+eax+1]
-			mov		ah,VK_TAB
-			.while byte ptr [esi]
-				.if byte ptr [esi]==':'
-					mov		[edi],ah
-					inc		edi
-					.while byte ptr [esi] && byte ptr [esi]!=','
-						mov		al,[esi]
-						mov		[edi],al
-						inc		esi
-						inc		edi
-					.endw
-					mov		ah,','
-				.else
-					inc		esi
-				.endif
-			.endw
-			mov		byte ptr [edi],0
+			mov		esi,eax
+			invoke CreateProtoLine,esi,addr buffer,FALSE
 			invoke TextOutput,addr buffer
 		.endif
 		inc		ebx

@@ -31,6 +31,7 @@ szStruct					db 'struct',0
 szUnion						db 'union',0
 szStatic					db 'static',0
 szConst						db 'const',0
+szFar						db 'far',0
 
 ;Skip
 szUnaligned					db 'unaligned',0
