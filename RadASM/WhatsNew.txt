@@ -1,5 +1,11 @@
 RadASM 2.2.1.8
 --------------
+2.2.1.8d
+o Fixed bug where closing Project Groups dialog using [X] made RadASM menu not responding.
+o Fixed bug where clicking left and right mouse buttons at the same time on a toolbar button
+  made RadASM hang.
+o CreateProtoEx addin now supports C/CPP
+o Improved CppParse to better support CreateProtoEx addin.
 2.2.1.8c
 o Added support for chm help files if the radhelp addin is not used.
 2.2.1.8b
