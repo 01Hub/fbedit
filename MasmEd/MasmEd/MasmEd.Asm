@@ -248,6 +248,8 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 
+	invoke LoadAccelerators,ha.hInstance,IDR_ACCEL
+	mov		ha.hAccel,eax
 	invoke CreateDialogParam,ha.hInstance,IDD_DLG,NULL,offset WndProc,NULL
 	mov		ha.hWnd,eax
 	.if wpos.fMax
@@ -261,8 +263,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 		invoke ShowWindow,ha.hOut,SW_SHOWNA
 	.endif
 	invoke UpdateWindow,ha.hWnd
-	invoke LoadAccelerators,ha.hInstance,IDR_ACCEL
-	mov		ha.hAccel,eax
 	;Get command line filename
 	mov		edx,CmdLine
 	.if byte ptr [edx]

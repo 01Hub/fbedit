@@ -19,7 +19,7 @@ If a template is selected then startup code / files are generated.
    -------------
    a. Select the tamplate you want to have startup code generated.
       Selecting a template overrides all settings on the Files tab.
-5. Push OK to have your project created.
+5. Push 'OK' to have your project created.
 
 Create Template:
 ----------------
@@ -31,7 +31,7 @@ The project addin can also create new templates from existing project sources.
 3. Select the main file from the file list.
 4. Select the Project type from the combo box.
 5. Select a file name for your template.
-6. Push OK to have the template created.
+6. Push 'OK' to have the template created.
 
 Sniplets:
 ---------
@@ -39,18 +39,18 @@ Lets you copy often used sniplets to your code or to the output window.
 
 1. Select a file from the treeview.
 2. Optionaly select the part of the code you want to copy.
-3. Push To Output or push To Code
-4. Push Close to close the sniplet window.
+3. Push 'To Output' or push 'To Code'
+4. Push 'Close' to close the sniplet window.
 
 Options:
 --------
 Here you can specify which files are to be threated as text file and which files
 are to be threated as binary files. Note how dots are added before and after a file extention.
-You can also specify the number of backups of your files you want.
+You can also specify the number of backup versions of your files you want.
 
 1. Modify the Template text files.
 2. Modify the Template binary files.
 3. Change the number of backups you want (0 to 9).
-4. Push OK to save the changes.
+4. Push 'OK' to save the changes.
 
 KetilO

@@ -286,16 +286,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 56=1
 
 [Find]
-1="1100"
-2="AIM_MAKEBEGIN"
-3="IDM_EDIT_RETURN"
-4="IDM_PROPERTY_COPYTOCODE"
-5="1059"
-6="defCompileRC"
-7="defcomp"
-8="RegQueryValueEx"
-9="IDM_OPTION_BUILD"
-10="AIM_GETMODIFY"
+1="ha.hAccel"
+2="1100"
+3="AIM_MAKEBEGIN"
+4="IDM_EDIT_RETURN"
+5="IDM_PROPERTY_COPYTOCODE"
+6="1059"
+7="defCompileRC"
+8="defcomp"
+9="RegQueryValueEx"
+10="IDM_OPTION_BUILD"
 
 [VersionControl]
 Settings=1246
@@ -307,7 +307,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -343,7 +343,7 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,687,524,9704
-1=0,0,0,0,5085
+1=0,0,0,0,7699
 11=0,0,0,0,40524
 22=0,0,0,0,11637
 10=0,0,0,0,18869
@@ -444,7 +444,7 @@ AutoLoad=1,2,53,13,10,38,15
 54=
 56=
 [PTimer]
-PTimer=1412743131
+PTimer=1413592401
 [RADebugBP]
 1=
 2=

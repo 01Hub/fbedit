@@ -36,7 +36,7 @@ szMenuItem			db 'Project',0
 szCreateProject		db 'Create Project',0
 szCreateTemplate	db 'Create Template',0
 szTemplateOptions	db 'Options',0
-szSniplets			db 'Sniplets',0
+szSniplets			db 'Sniplets',VK_TAB,'F11',0
 szFiles				db 'Files',0
 szTemplate			db 'Template',0
 szProjectsPath		db '\Projects',0

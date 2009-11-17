@@ -110,10 +110,10 @@ AutoLoad=1,2,5,8,11,13,4,14,17
 17=
 [Size]
 5=0,0,799,526,293
-1=0,0,0,0,4616
-2=0,0,0,0,930
+1=0,0,0,0,3436
+2=0,0,0,0,104
 3=0,0,0,0,15
-4=0,0,0,0,2022
+4=0,0,0,0,861
 7=0,0,0,0,32
 10=0,0,0,0
 9=0,0,0,0
@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -182,9 +182,11 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=116438695
+PTimer=121283352
 [Exports]
 1=AddinProc
 2=InstallAddin
 [Find]
-1="ProjectPath"
+1="VK_F11"
+2="ACCEL"
+3="ProjectPath"

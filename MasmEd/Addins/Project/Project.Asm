@@ -59,6 +59,36 @@ UpdateMenu proc uses ebx,hMnu:HMENU
 
 UpdateMenu endp
 
+UpdateAccelerator proc uses ebx esi,nID:DWORD,nKey:DWORD,nMod:DWORD
+	LOCAL	hMem:HGLOBAL
+	LOCAL	nAccel:DWORD
+
+	mov		ebx,lpHandles
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
+	mov		hMem,eax
+	invoke CopyAcceleratorTable,[ebx].ADDINHANDLES.hAccel,NULL,0
+	mov		nAccel,eax
+	invoke CopyAcceleratorTable,[ebx].ADDINHANDLES.hAccel,hMem,nAccel
+	invoke DestroyAcceleratorTable,[ebx].ADDINHANDLES.hAccel
+	mov		eax,nAccel
+	mov		edx,sizeof ACCEL
+	mul		edx
+	mov		esi,hMem
+	lea		esi,[esi+eax]
+	mov		eax,nMod
+	mov		[esi].ACCEL.fVirt,al
+	mov		eax,nKey
+	mov		[esi].ACCEL.key,ax
+	mov		eax,nID
+	mov		[esi].ACCEL.cmd,ax
+	inc		nAccel
+	invoke CreateAcceleratorTable,hMem,nAccel
+	mov		[ebx].ADDINHANDLES.hAccel,eax
+	invoke GlobalFree,hMem
+	ret
+
+UpdateAccelerator endp
+
 ;#########################################################################
 ;Common AddIn Procedures
 
@@ -109,6 +139,8 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		MenuIDAddin[12],eax
 	inc		eax
 	mov		MenuIDAddin[16],eax
+	mov		eax,MenuIDAddin[12]
+	invoke UpdateAccelerator,eax,VK_F11,FVIRTKEY or FNOINVERT
 	mov		ebx,lpData
 	invoke lstrcpy,offset ProjectPath,addr [ebx].ADDINDATA.AppPath
 	invoke lstrcat,offset ProjectPath,offset szProjectsPath
@@ -144,6 +176,7 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==AIM_COMMAND
 		mov		eax,wParam
+		movzx	eax,ax
 		mov		edx,offset MenuIDAddin
 		.if eax==[edx+4]
 			;The 'Create Project' menuitem we added has been selected
