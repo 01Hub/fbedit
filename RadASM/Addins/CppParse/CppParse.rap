@@ -119,7 +119,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,19519
+1=0,0,0,0,19765
 2=0,0,0,0,1380
 4=0,0,0,0,88
 6=0,0,0,0,0
@@ -159,6 +159,6 @@ AutoLoad=1,2
 2=InstallDll
 3=ParseFile
 [PTimer]
-PTimer=4283390
+PTimer=4332406
 [RADebugBP]
 1=

@@ -1134,6 +1134,9 @@ _Function:
 				add		esi,len
 				call	GetWrd
 			.endw
+			.if byte ptr [edi-1]==' '
+				dec		edi
+			.endif
 			mov		dword ptr [edi],0
 			pop		esi
  			push	4
