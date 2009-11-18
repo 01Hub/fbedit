@@ -55,7 +55,6 @@ Tab1Proc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 Tab1Proc endp
 
 Tab2Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	wfd:WIN32_FIND_DATA
 	LOCAL	hwfd:HANDLE
 	LOCAL	nInx:DWORD
 	LOCAL	hFile:HANDLE

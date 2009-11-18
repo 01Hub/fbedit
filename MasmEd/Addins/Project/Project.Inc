@@ -28,6 +28,8 @@ include masm32.inc
 include debug.inc
 includelib debug.lib
 
+OutputString		PROTO	:DWORD
+
 FBM_SETPATH			equ WM_USER+1	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to path string
 
 .const
@@ -57,6 +59,9 @@ szIncFile			db 'inc',0
 szRcFile			db 'rc',0
 szTxtFile			db 'txt',0
 szMesFile			db 'mes',0
+szSession			db 'Session',0
+szMinorFiles		db 'MinorFiles',0
+szNULL				db 0
 
 ;Registry
 szBackups			db 'Backups',0
@@ -79,17 +84,19 @@ szENDBIN			db '[*ENDBIN*]',0
 
 .data?
 
-hInstance			dd ?		;Dll's module handle
-lpHandles			dd ?		;Pointer to handles struct
-lpProc				dd ?		;Pointer to proc struct
-lpData				dd ?		;Pointer to data struct
-MenuIDAddin			dd 5 dup(?)	;5 MenuID's allocated for this addin
-hSubMenu			dd ?		;The addins Project sub menu
+hInstance			HMODULE ?		;Dll's module handle
+lpHandles			DWORD ?			;Pointer to handles struct
+lpProc				DWORD ?			;Pointer to proc struct
+lpData				DWORD ?			;Pointer to data struct
+MenuIDAddin			DWORD 5 dup(?)	;5 MenuID's allocated for this addin
+hSubMenu			DWORD ?			;The addins Project sub menu
 hook				HOOK <>
-nBackup				dd ?
-ProjectPath			db MAX_PATH dup(?)
-TemplatePath		db MAX_PATH dup(?)
-SnipletPath			db MAX_PATH dup(?)
-tempbuff			db 16384 dup(?)
+nBackup				DWORD ?
+ProjectPath			BYTE MAX_PATH dup(?)
+TemplatePath		BYTE MAX_PATH dup(?)
+SnipletPath			BYTE MAX_PATH dup(?)
+tempbuff			BYTE 16384 dup(?)
 hDlg1				HWND ?
 hDlg2				HWND ?
+fDeleteMinor		DWORD ?
+wfd					WIN32_FIND_DATA <?>

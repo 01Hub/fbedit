@@ -114,6 +114,7 @@ ADDINDATA struct
 	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
 	makeopt					MAKEOPT 16 dup(<>)		;Make options
 	nBuildOpt				DWORD ?					;Current make option
+	ver						DWORD ?					;MasmEd version
 ADDINDATA ends
 
 ADDINPROCS struct

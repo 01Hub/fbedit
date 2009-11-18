@@ -1,5 +1,14 @@
 MasmEd
 
+1.1.0.1 - 2009.11.18
+--------------------
+o Added Project addin.
+  - Create a new project. You can specify a template to have files created.
+  - Create a tempate from existing sources.
+  - Sniplet browser. Use it to copy often used code sniplets to your code.
+  - Automatic backup of files that are saved. Just create a Bak folder in the path of the main file.
+  - Automatic deletion of minor files after a successful build.
+
 1.1.0.0 - 2009.11.09
 --------------------
 o Added addin support. The architecture is similar to RadASM. Some useful addins are converted.

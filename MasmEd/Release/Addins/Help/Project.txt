@@ -45,12 +45,16 @@ Lets you copy often used sniplets to your code or to the output window.
 Options:
 --------
 Here you can specify which files are to be threated as text file and which files
-are to be threated as binary files. Note how dots are added before and after a file extention.
-You can also specify the number of backup versions of your files you want.
+are to be threated as binary files when creating a template. Note how dots are added
+before and after a file extention.
+Specify the number of backup versions of your files you want.
+You can also specify minor files to delete after a successful build.
+Example: *.obj;*.res
 
 1. Modify the Template text files.
 2. Modify the Template binary files.
 3. Change the number of backups you want (0 to 9).
-4. Push 'OK' to save the changes.
+4. Modify the minor files to delete (only if a session file is open).
+5. Push 'OK' to save the changes.
 
 KetilO

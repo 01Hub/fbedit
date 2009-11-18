@@ -22,6 +22,7 @@ szErrNoMain						db 'No main file is selected or the selected file is not a .asm
 szErrNotInPath					db 'The file is not in the path of the main file.',0Dh,0Ah,0
 szErrUnknownType				db 'The file type is unknown.',0Dh,0Ah,0
 szInclude						db 'include',0
+szLibrary						db 'library',0
 
 .data?
 
@@ -280,6 +281,7 @@ AddTxtLine:
 	call	AddWhiteSpace
 	invoke IsLine,esi,offset szInclude,TRUE
 	.if eax
+	  @@:
 		call	AddWord
 		call	AddWhiteSpace
 		invoke IsLine,esi,addr main,TRUE
@@ -289,6 +291,10 @@ AddTxtLine:
 			invoke lstrlen,addr main
 			lea		esi,[esi+eax]
 		.endif
+	.else
+		invoke IsLine,esi,offset szLibrary,TRUE
+		or		eax,eax
+		jne		@b
 	.endif
 	call	AddLine
 	retn

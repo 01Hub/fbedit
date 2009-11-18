@@ -14,6 +14,7 @@ include NewTemplate.asm
 include ProjectOption.asm
 include Sniplets.asm
 include Backup.asm
+include DeleteMinor.asm
 
 .code
 
@@ -158,7 +159,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szTextFiles,0,addr lpType,addr szTxt,addr lpcbData
 	mov		lpcbData,sizeof szBin
 	invoke RegQueryValueEx,[ebx].ADDINHANDLES.hReg,addr szBinaryFiles,0,addr lpType,addr szBin,addr lpcbData
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILESAVE
+	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILESAVE or HOOK_MAKEBEGIN or HOOK_MAKEDONE
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -203,6 +204,16 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke UpdateMenu,wParam
 	.elseif eax==AIM_FILESAVE
 		invoke BackupEdit,lParam,1
+	.elseif eax==AIM_MAKEBEGIN
+		mov		fDeleteMinor,FALSE
+		.if wParam==IDM_MAKE_BUILD || wParam==IDM_MAKE_GO
+			mov		fDeleteMinor,TRUE
+		.endif
+	.elseif eax==AIM_MAKEDONE
+		.if fDeleteMinor && (wParam==IDM_MAKE_BUILD || wParam==IDM_MAKE_GO)
+			invoke DeleteMinorFiles
+			mov		fDeleteMinor,FALSE
+		.endif
 	.endif
 	mov		eax,FALSE
   ExRet:

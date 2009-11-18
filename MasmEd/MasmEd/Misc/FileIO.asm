@@ -699,6 +699,10 @@ RestoreSession proc uses esi edi,fReg:DWORD
 	mov		esi,offset tmpbuff
 	.if fReg && byte ptr [esi]
 		call	GetItem
+		invoke GetFileAttributes,addr buffer
+		.if eax==INVALID_HANDLE_VALUE
+			jmp		Ex
+		.endif
 		invoke strcpy,addr da.szSessionFile,addr buffer
 	.endif
 	invoke strcpy,addr buffer1,addr da.szSessionFile
@@ -765,6 +769,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 			invoke SetFocus,ha.hREd
 		.endif
 	.endif
+  Ex:
 	ret
 
 GetItem:
@@ -818,10 +823,10 @@ SetCurDir proc lpFileName:DWORD,fFileBrowse:DWORD
 		dec		eax
 	.endw
 	mov		buffer[eax],0
-	invoke SetCurrentDirectory,addr buffer
 	.if fFileBrowse
 		invoke SendMessage,ha.hBrowse,FBM_SETPATH,TRUE,addr buffer
 	.endif
+	invoke SetCurrentDirectory,addr buffer
 	ret
 
 SetCurDir endp

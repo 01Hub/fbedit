@@ -74,8 +74,8 @@ start:
 	invoke strcpy,addr da.AppPath,addr da.FileName
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szMasmEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr ha.hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
-		mov		lpcbData,sizeof ver
-		invoke RegQueryValueEx,ha.hReg,addr szVer,0,addr lpType,addr ver,addr lpcbData
+		mov		lpcbData,sizeof da.ver
+		invoke RegQueryValueEx,ha.hReg,addr szVer,0,addr lpType,addr da.ver,addr lpcbData
 		mov		lpcbData,sizeof wpos
 		invoke RegQueryValueEx,ha.hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
 		mov		lpcbData,sizeof edopt
@@ -92,7 +92,7 @@ start:
 		.if col.words==-1
 			mov		col.words,WORDSCOL
 		.endif
-		.if ver<1053
+		.if da.ver<1053
 			push	esi
 			push	edi
 			mov		esi,offset col.tttext
@@ -111,31 +111,31 @@ start:
 			pop		edi
 			invoke RegSetValueEx,ha.hReg,addr szColor,0,REG_BINARY,addr col,sizeof col
 			invoke UpdateTheme1053
-			mov		ver,1053
+			mov		da.ver,1053
 		.endif
-		.if ver<1054
-			mov		ver,1054
+		.if da.ver<1054
+			mov		da.ver,1054
 		.endif
-		.if ver<1055
-			mov		ver,1055
+		.if da.ver<1055
+			mov		da.ver,1055
 		.endif
-		.if ver<1056
-			mov		ver,1056
+		.if da.ver<1056
+			mov		da.ver,1056
 		.endif
-		.if ver<1057
-			mov		ver,1057
+		.if da.ver<1057
+			mov		da.ver,1057
 		.endif
-		.if ver<1058
-			mov		ver,1058
+		.if da.ver<1058
+			mov		da.ver,1058
 		.endif
-		.if ver<1059
-			mov		ver,1059
+		.if da.ver<1059
+			mov		da.ver,1059
 		.endif
-		.if ver<1100
-			mov		ver,1100
+		.if da.ver<1100
+			mov		da.ver,1100
 		.endif
-		.if ver<1101
-			mov		ver,1101
+		.if da.ver<1101
+			mov		da.ver,1101
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,ha.hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
@@ -161,9 +161,9 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		ver,1101
+		mov		da.ver,1101
 	.endif
-	invoke RegSetValueEx,ha.hReg,addr szVer,0,REG_BINARY,addr ver,sizeof ver
+	invoke RegSetValueEx,ha.hReg,addr szVer,0,REG_BINARY,addr da.ver,sizeof da.ver
 	.if wpos.wtfile<50
 		mov		wpos.wtfile,175
 	.endif
@@ -275,6 +275,12 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 			mov		da.MainFile,0
 			mov		lpcbData,sizeof da.MainFile
 			invoke RegQueryValueEx,ha.hReg,addr szMainFile,0,addr lpType,addr da.MainFile,addr lpcbData
+			.if da.MainFile
+				invoke GetFileAttributes,addr da.MainFile
+				.if eax==INVALID_HANDLE_VALUE
+					mov		da.MainFile,0
+				.endif
+			.endif
 			invoke RestoreSession,TRUE
 		.endif
 	.endif
@@ -1983,10 +1989,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke RegQueryValueEx,ha.hReg,addr szFolder,0,addr lpType,addr da.szInitFolder,addr lpcbData
 		.if byte ptr da.szInitFolder
 			invoke strcpy,addr buffer,addr da.szInitFolder
+			invoke SetCurDir,addr buffer,TRUE
+			.if !eax
+				invoke GetModuleFileName,0,addr buffer,sizeof buffer
+				invoke SetCurDir,addr buffer,TRUE
+			.endif
 		.else
 			invoke GetModuleFileName,0,addr buffer,sizeof buffer
+			invoke SetCurDir,addr buffer,TRUE
 		.endif
-		invoke SetCurDir,addr buffer,TRUE
+		invoke SendMessage,ha.hBrowse,FBM_GETPATH,0,addr da.szInitFolder
 		invoke SetTimer,hWin,200,200,addr MyTimerProc
 		invoke SetBlockDefs,ha.hOut
 		invoke SetPropertyDefs
@@ -2518,24 +2530,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,TRUE
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_ASSEMBLE
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,TRUE
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_LINK
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,TRUE
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_BUILD
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
@@ -2548,15 +2566,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		eax,eax
 					jne		Ex
 					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,3
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_RUN
 				invoke UpdateAll,SAVE_ALL
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,2
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_GO
 				invoke UpdateAll,CLEAR_ERRORS
 				invoke UpdateAll,SAVE_ALL
@@ -2572,8 +2594,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					or		eax,eax
 					jne		Ex
 					invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,4
+					or		eax,eax
+					jne		Ex
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_GO,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
-				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_GO,offset da.MainFile,0,HOOK_MAKEDONE
 			.elseif eax==IDM_DEBUG_TOGGLE
 				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE

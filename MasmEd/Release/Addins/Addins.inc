@@ -114,6 +114,7 @@ ADDINDATA struct
 	PathLib					BYTE MAX_PATH dup(?)	;Path to libraries.
 	makeopt					MAKEOPT 16 dup(<>)		;Make options
 	nBuildOpt				DWORD ?					;Current make option
+	ver						DWORD ?					;MasmEd version
 ADDINDATA ends
 
 ADDINPROCS struct
@@ -128,6 +129,7 @@ ADDINPROCS struct
 	lpUpdateFileTime		DWORD ?					;Updates the filetime. lpTABMEM:DWORD
 	lpTabToolSetChanged		DWORD ?					;Sets the tabs changed state. hWin:DWORD,fChanged:DWORD (TRUE or FALSE)
 	lpUpdateFileName		DWORD ?					;Changes the filename for current selected tab. hWin:DWORD,lpFileName:DWORD
+	lpWriteSessionFile		DWORD ?					;Saves session file. lpFileName:DWORD
 ADDINPROCS ends
 
 ;#########################################################################

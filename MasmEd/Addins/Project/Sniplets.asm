@@ -44,7 +44,6 @@ IDC_BTNOUTPUT					equ 1003
 
 .data?
 
-wfd								WIN32_FIND_DATA <?>
 szFile							db MAX_PATH dup(?)
 
 .code
