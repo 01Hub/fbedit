@@ -1,6 +1,6 @@
 MasmEd
 
-1.1.0.1 - 2009.11.18
+1.1.0.1 - 2009.11.19
 --------------------
 o Added Project addin.
   - Create a new project. You can specify a template to have files created.
