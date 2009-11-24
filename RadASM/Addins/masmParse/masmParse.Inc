@@ -125,6 +125,8 @@ szstruct					db	'struct',0
 szunion						db	'union',0
 szstruc						db	'struc',0
 szrecord					db	'record',0
+szmethod					db	'method',0
+szobject					db	'object',0
 
 szcomment					db	'comment',0
 szstring					db	'"',"'",0,0

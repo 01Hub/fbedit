@@ -635,6 +635,36 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			call	GetLineNo
 			jmp		Ex
 		.endif
+	.elseif nInx==6
+		; Method
+	  @@:
+		invoke SearchMem,esi,offset szmethod,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
+	.elseif nInx==7
+		; Object
+	  @@:
+		invoke SearchMem,esi,offset szobject,FALSE,TRUE,lpCharTab
+		.if eax
+			mov		esi,eax
+			call	CopyLine
+			or		edx,edx
+			jne		@b
+			invoke SearchMem,offset buffer,lpFind1,TRUE,TRUE,lpCharTab
+			or		eax,eax
+			je		@b
+			call	GetLineNo
+			jmp		Ex
+		.endif
 	.endif
   Ex:
 	mov		eax,nLine
@@ -795,16 +825,6 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 			invoke IsWord,lpword1,len1,addr szskiplinefirstword
 			or		eax,eax
 			jne		Nxt
-			invoke IsWord,lpword1,len1,addr szword1
-			.if eax==10
-				;method
-				call	_Method
-				jmp		Nxt
-			.elseif eax==11
-				;object
-				call	_Object
-				jmp		Nxt
-			.endif
 			call	GetWord
 			.if ecx
 				mov		len2,ecx
@@ -830,6 +850,16 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 				.elseif eax==14
 					;macro
 					call	_Macro
+					jmp		Nxt
+				.endif
+				invoke IsWord,lpword1,len1,addr szword1
+				.if eax==10
+					;method
+					call	_Method
+					jmp		Nxt
+				.elseif eax==11
+					;object
+					call	_Object
 					jmp		Nxt
 				.endif
 				invoke IsWord,lpword2,len2,addr szdatatypes
@@ -1411,22 +1441,29 @@ _Skip:
 	retn
 
 _Method:
-	call	GetWord
-	.if ecx
-		mov		lpword1,esi
+	mov		eax,lpword2
+	mov		lpword1,eax
+	mov		ecx,len2
+	mov		len1,ecx
+	.if byte ptr [esi]=='.'
+		inc		esi
+		inc		ecx
+		push	ecx
+		call	GetWord
 		lea		esi,[esi+ecx]
-		.if byte ptr [esi]=='.'
-			inc		esi
-			inc		ecx
-			push	ecx
-			call	GetWord
-			lea		esi,[esi+ecx]
-			pop		eax
-			lea		ecx,[ecx+eax]
-		.endif
-		mov		len1,ecx
-		call	SaveName
+		pop		eax
+		lea		ecx,[ecx+eax]
+	.endif
+	mov		len1,ecx
+	call	SaveName
+	call	SkipSpc
+	.if byte ptr [esi]==','
+		inc		esi
 		call	SkipSpc
+		;Skip uses
+		.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]!=','
+			inc		esi
+		.endw
 		.if byte ptr [esi]==','
 			inc		esi
 			call	SkipSpc
@@ -1439,68 +1476,66 @@ _Method:
 				inc		esi
 			.endw
 		.endif
-		mov		byte ptr [edi],0
-		.while byte ptr [esi]
-			call	SkipLine
-			call	GetWord
-			mov		len1,ecx
-			mov		lpword1,esi
-			lea		esi,[esi+ecx]
-			.if ecx==9
-				invoke IsWord,lpword1,len1,addr szinmethod
-				.if eax==10
-					push	2
-					push	offset buffer
-					push	iNbr
-					push	10
-					call	[lpAddProperty]
-					retn
-				.endif
-			.endif
-		.endw
 	.endif
+	mov		byte ptr [edi],0
+	.while byte ptr [esi]
+		call	SkipLine
+		call	GetWord
+		mov		len1,ecx
+		mov		lpword1,esi
+		lea		esi,[esi+ecx]
+		.if ecx==9
+			invoke IsWord,lpword1,len1,addr szinmethod
+			.if eax==10
+				push	2
+				push	offset buffer
+				push	iNbr
+				push	10
+				call	[lpAddProperty]
+				retn
+			.endif
+		.endif
+	.endw
 	retn
 
 _Object:
-	call	GetWord
-	.if ecx
+	mov		eax,len2
+	mov		len1,eax
+	mov		eax,lpword2
+	mov		lpword1,eax
+	call	SaveName
+	call	SkipSpc
+	.if byte ptr [esi]==','
+		inc		esi
+		call	SkipSpc
+		.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+			mov		al,[esi]
+			.if al!=VK_SPACE
+				mov		[edi],al
+				inc		edi
+			.endif
+			inc		esi
+		.endw
+	.endif
+	mov		byte ptr [edi],0
+	.while byte ptr [esi]
+		call	SkipLine
+		call	GetWord
 		mov		len1,ecx
 		mov		lpword1,esi
 		lea		esi,[esi+ecx]
-		call	SaveName
-		call	SkipSpc
-		.if byte ptr [esi]==','
-			inc		esi
-			call	SkipSpc
-			.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
-				mov		al,[esi]
-				.if al!=VK_SPACE
-					mov		[edi],al
-					inc		edi
-				.endif
-				inc		esi
-			.endw
-		.endif
-		mov		byte ptr [edi],0
-		.while byte ptr [esi]
-			call	SkipLine
-			call	GetWord
-			mov		len1,ecx
-			mov		lpword1,esi
-			lea		esi,[esi+ecx]
-			.if ecx==9
-				invoke IsWord,lpword1,len1,addr szinobject
-				.if eax==10
-					push	2
-					push	offset buffer
-					push	iNbr
-					push	11
-					call	[lpAddProperty]
-					retn
-				.endif
+		.if ecx==9
+			invoke IsWord,lpword1,len1,addr szinobject
+			.if eax==10
+				push	2
+				push	offset buffer
+				push	iNbr
+				push	11
+				call	[lpAddProperty]
+				retn
 			.endif
-		.endw
-	.endif
+		.endif
+	.endw
 	retn
 
 _Proc:
