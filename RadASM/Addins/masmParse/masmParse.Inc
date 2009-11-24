@@ -27,6 +27,16 @@ szskiplinefirstword			db	10,6,'option',
 								10,6,'invoke',
 								0,0,0
 
+szword1						db	10,6,'method',
+								11,6,'object',
+								0,0,0
+
+szinmethod					db	10,9,'methodend',
+								0,0,0
+
+szinobject					db	10,9,'objectend',
+								0,0,0
+
 szword2						db	10,4,'proc',
 								11,6,'struct',
 								11,5,'struc',
@@ -114,7 +124,7 @@ szmacro						db	'macro',0
 szstruct					db	'struct',0
 szunion						db	'union',0
 szstruc						db	'struc',0
-szrecord					db 'record',0
+szrecord					db	'record',0
 
 szcomment					db	'comment',0
 szstring					db	'"',"'",0,0

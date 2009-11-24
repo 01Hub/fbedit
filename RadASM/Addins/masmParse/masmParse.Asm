@@ -795,6 +795,16 @@ ParseFile proc uses ebx esi edi,iNbr:DWORD,lpMem:DWORD,lpAddProperty:DWORD,lpCha
 			invoke IsWord,lpword1,len1,addr szskiplinefirstword
 			or		eax,eax
 			jne		Nxt
+			invoke IsWord,lpword1,len1,addr szword1
+			.if eax==10
+				;method
+				call	_Method
+				jmp		Nxt
+			.elseif eax==11
+				;object
+				call	_Object
+				jmp		Nxt
+			.endif
 			call	GetWord
 			.if ecx
 				mov		len2,ecx
@@ -1398,6 +1408,99 @@ _Skip:
 		lea		ebx,[ebx+eax+1]
 	.endw
 	xor		eax,eax
+	retn
+
+_Method:
+	call	GetWord
+	.if ecx
+		mov		lpword1,esi
+		lea		esi,[esi+ecx]
+		.if byte ptr [esi]=='.'
+			inc		esi
+			inc		ecx
+			push	ecx
+			call	GetWord
+			lea		esi,[esi+ecx]
+			pop		eax
+			lea		ecx,[ecx+eax]
+		.endif
+		mov		len1,ecx
+		call	SaveName
+		call	SkipSpc
+		.if byte ptr [esi]==','
+			inc		esi
+			call	SkipSpc
+			.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+				mov		al,[esi]
+				.if al!=VK_SPACE
+					mov		[edi],al
+					inc		edi
+				.endif
+				inc		esi
+			.endw
+		.endif
+		mov		byte ptr [edi],0
+		.while byte ptr [esi]
+			call	SkipLine
+			call	GetWord
+			mov		len1,ecx
+			mov		lpword1,esi
+			lea		esi,[esi+ecx]
+			.if ecx==9
+				invoke IsWord,lpword1,len1,addr szinmethod
+				.if eax==10
+					push	2
+					push	offset buffer
+					push	iNbr
+					push	10
+					call	[lpAddProperty]
+					retn
+				.endif
+			.endif
+		.endw
+	.endif
+	retn
+
+_Object:
+	call	GetWord
+	.if ecx
+		mov		len1,ecx
+		mov		lpword1,esi
+		lea		esi,[esi+ecx]
+		call	SaveName
+		call	SkipSpc
+		.if byte ptr [esi]==','
+			inc		esi
+			call	SkipSpc
+			.while byte ptr [esi] && byte ptr [esi]!=VK_RETURN
+				mov		al,[esi]
+				.if al!=VK_SPACE
+					mov		[edi],al
+					inc		edi
+				.endif
+				inc		esi
+			.endw
+		.endif
+		mov		byte ptr [edi],0
+		.while byte ptr [esi]
+			call	SkipLine
+			call	GetWord
+			mov		len1,ecx
+			mov		lpword1,esi
+			lea		esi,[esi+ecx]
+			.if ecx==9
+				invoke IsWord,lpword1,len1,addr szinobject
+				.if eax==10
+					push	2
+					push	offset buffer
+					push	iNbr
+					push	11
+					call	[lpAddProperty]
+					retn
+				.endif
+			.endif
+		.endw
+	.endif
 	retn
 
 _Proc:
