@@ -1746,6 +1746,24 @@ CmdEdit proc hWin:HWND
 				.if eax
 					invoke PushRet,vTmp,chrg.cpMin
 					invoke VerticalCenter,hEdit,REM_VCENTER
+				.else
+					mov		edx,lpCharTab
+					lea		edx,[edx+'.']
+					push	edx
+					movzx	eax,byte ptr [edx]
+					push	eax
+					mov		byte ptr [edx],1
+					invoke SendMessage,hEdit,EM_EXGETSEL,0,addr chrg
+					invoke GetWordFromPos,hEdit
+					invoke lstrcpyn,addr FindBuffer,addr LineWord,sizeof FindBuffer
+					invoke ScanWord,addr LineWord,addr LineTxt
+					.if eax
+						invoke PushRet,vTmp,chrg.cpMin
+						invoke VerticalCenter,hEdit,REM_VCENTER
+					.endif
+					pop		eax
+					pop		edx
+					mov		[edx],al
 				.endif
 			.endif
 		.endif

@@ -3192,7 +3192,7 @@ FindProc proc hWin:HWND
 		pushad
 		invoke LoadEdit,hWin
 		invoke FindProcPos,hWin
-		invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
+		;invoke SendMessage,hStatus,SB_SETTEXT,3,addr LineTxt
 		invoke GlobalUnlock,hSrcMem
 		invoke GlobalFree,hSrcMem
 		mov		hSrcMem,0

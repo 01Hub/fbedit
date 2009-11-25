@@ -487,6 +487,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			call	GetLineNo
 			jmp		Ex
 		.endif
+		mov		esi,lpMem
 	  @@:
 		invoke SearchMem,esi,offset szequ2,FALSE,FALSE,lpCharTab
 		.if eax
@@ -1631,7 +1632,7 @@ _Macro:
 	mov		byte ptr [edi],0
 	xor		edi,edi
 	mov		ebx,esi
-	.while byte ptr [esi] && edi<100
+	.while byte ptr [esi] && edi<500
 		call	SkipLine
 		call	GetWord
 		.if ecx==4

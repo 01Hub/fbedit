@@ -1,5 +1,9 @@
 RadASM 2.2.1.8
 --------------
+2.2.1.8e
+o Improved 'Goto Declare' and double clicking in properties (better support for Obj32Asm).
+o Fixed bugs in masmParse (better support for Obj32Asm, macros and constants).
+o Fixed bug in RAEdit where trim trailing spaces did not update line changed state.
 2.2.1.8d
 o Fixed bug where closing Project Groups dialog using [X] made RadASM menu not responding.
 o Fixed bug where clicking left and right mouse buttons at the same time on a toolbar button
