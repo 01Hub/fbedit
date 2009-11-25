@@ -1374,6 +1374,7 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 		.if edx
 			.if fLeft
 				;Left trim (Not implemented)
+				xor		ecx,ecx
 			.else
 				;Right trim
 				push	edx
@@ -1395,15 +1396,21 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 				push	edx
 				lea		edx,[edi+ecx+sizeof CHARS]
 				pop		ecx
-				push	ecx
-				invoke SaveUndo,ebx,UNDO_DELETEBLOCK,eax,edx,ecx
-				pop		ecx
+				.if ecx
+					push	ecx
+					invoke SaveUndo,ebx,UNDO_DELETEBLOCK,eax,edx,ecx
+					pop		ecx
+				.endif
 			.endif
-			sub		[edi].CHARS.len,ecx
 			pop		eax
-			mov		ecx,[edi].CHARS.len
-			.if al==0Dh
-				mov		[edi+ecx+sizeof CHARS-1],al
+			.if ecx
+				sub		[edi].CHARS.len,ecx
+				mov		ecx,[edi].CHARS.len
+				.if al==0Dh
+					mov		[edi+ecx+sizeof CHARS-1],al
+				.endif
+				and		[edi].CHARS.state,-1 xor (STATE_CHANGED or STATE_CHANGESAVED)
+				or		[edi].CHARS.state,STATE_CHANGED
 			.endif
 			pop		edx
 			sub		edx,ecx
