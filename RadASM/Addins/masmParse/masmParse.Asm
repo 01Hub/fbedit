@@ -456,6 +456,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 
 	mov		nLine,-1
 	mov		esi,lpMem
+	invoke PreParse,esi,lpCharTab
 	.if nInx==0
 		; Proc
 	  @@:
@@ -635,7 +636,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			call	GetLineNo
 			jmp		Ex
 		.endif
-	.elseif nInx==6
+	.elseif nInx==6 || nInx==10
 		; Method
 	  @@:
 		invoke SearchMem,esi,offset szmethod,FALSE,TRUE,lpCharTab
@@ -650,7 +651,7 @@ FindInFile proc uses ebx esi edi,nInx:DWORD,lpMem:DWORD,lpFind1:DWORD,lpFind2:DW
 			call	GetLineNo
 			jmp		Ex
 		.endif
-	.elseif nInx==7
+	.elseif nInx==7 || nInx==11
 		; Object
 	  @@:
 		invoke SearchMem,esi,offset szobject,FALSE,TRUE,lpCharTab
@@ -1559,7 +1560,8 @@ _Proc:
 
 _Label:
 	call	SaveName
-	push	1
+	mov		byte ptr [edi],0
+	push	2
 	push	offset buffer
 	push	iNbr
 	push	'l'
@@ -1638,6 +1640,7 @@ _Macro:
 			pop		ecx
 			.if eax
 				mov		ebx,esi
+				xor		edi,edi
 			.endif
 		.endif
 		lea		esi,[esi+ecx]
