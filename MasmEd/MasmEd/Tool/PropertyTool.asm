@@ -6,6 +6,7 @@ szPrpLabel		db 'Label',0
 szPrpConst		db 'Const',0
 szPrpData		db 'Data',0
 szPrpStruct		db 'Struct',0
+szPrpMacro		db 'Macro',0
 
 szCCs			db 's',0
 
@@ -25,6 +26,8 @@ deftypestructo	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',6,'struct'>
 deftypestruco	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',5,'struc'>
 deftypeuniono	DEFTYPE <TYPE_OPTNAMESECOND,DEFTYPE_STRUCT,'s',5,'union'>
 deftypeends		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDSTRUCT,'s',4,'ends'>
+deftypemacro	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_MACRO,'m',5,'macro'>
+deftypeendm		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDMACRO,'m',4,'endm'>
 
 
 szApiCallFile	db 'masmApiCall.api',0
@@ -56,6 +59,7 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'c',addr szPrpConst
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'d',addr szPrpData
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'s',addr szPrpStruct
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'m',addr szPrpMacro
 	;Set general definitions
 	invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
 	;Words to ignore
@@ -85,6 +89,8 @@ SetPropertyDefs proc uses esi
 	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestructo
 	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypestruco
 	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeuniono
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypemacro
+	invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftypeendm
 	mov		esi,offset datatypes
 	.while byte ptr [esi]
 		invoke strcpy,addr deftypedata.szWord,esi

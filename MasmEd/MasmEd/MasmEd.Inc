@@ -382,7 +382,7 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 sztooltips_class32		db 'tooltips_class32',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.1.0.1',0
+szVersion				db 'MasmEd version 1.1.0.2',0
 szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
 szAboutUrl1				db 'http://radasm.cherrytree.at/',0
 szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
@@ -426,6 +426,8 @@ szWhile					db '.while',0,0
 szEndw					db '.endw',0,0
 szRepeat				db '.repeat',0,0
 szUntil					db '.until|.untilcxz',0,0
+szBreak					db '.break',0,0
+szContinue				db '.continue',0,0
 szStruct				db '? struct|? struc|? union',0,0
 szEnds					db '? ends',0,0
 szMacro					db '$ macro',0,0
@@ -442,8 +444,8 @@ szEnd					db 'END',0,0
 
 rabdproc				RABLOCKDEF <offset szProc,offset szEndp,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdif					RABLOCKDEF <offset szIf,offset szEndIf,offset szElseIf,offset szElse,0>
-rabdwhile				RABLOCKDEF <offset szWhile,offset szEndw,0,0,0>
-rabdrepeat				RABLOCKDEF <offset szRepeat,offset szUntil,0,0,0>
+rabdwhile				RABLOCKDEF <offset szWhile,offset szEndw,offset szBreak,offset szContinue,0>
+rabdrepeat				RABLOCKDEF <offset szRepeat,offset szUntil,offset szBreak,offset szContinue,0>
 rabdstruct				RABLOCKDEF <offset szStruct,offset szEnds,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdmacro				RABLOCKDEF <offset szMacro,offset szEndm,0,0,BD_DIVIDERLINE or BD_INCLUDELAST or BD_LOOKAHEAD>
 rabddata				RABLOCKDEF <offset szData,0,0,0,BD_SEGMENTBLOCK>
@@ -506,8 +508,7 @@ C4						db 'EMMS MOVD MOVQ PACKSSDW PACKSSWB PACKUSWB PADDB PADDD PADDSB PADDSW 
 C5						db '#DEFINE #INCLUDE ACCELERATORS ALT AUTOCHECKBOX AUTORADIOBUTTON BEGIN BITMAP BLOCK CAPTION CLASS COMBOBOX CONTROL CURSOR DIALOG DIALOGEX DISCARDABLE EDITTEXT END EXSTYLE FILEOS FILETYPE FILEVERSION FONT GROUPBOX ICON '
 						db 'LISTBOX LTEXT MENU MENUEX MENUITEM NOINVERT POPUP PRODUCTVERSION PUSHBUTTON SEPARATOR SHIFT STRINGTABLE STYLE VALUE VERSIONINFO VIRTKEY',0
 ;Misc
-C6						db '$ ? @@ @B @F ADDR BASIC BYTE C CARRY? DWORD FALSE FAR FAR16 FORTRAN FWORD ^HDC ^HWND ^LPARAM NEAR NEAR16 NULL OVERFLOW? OWORD PARITY? PASCAL QWORD REAL10 REAL4 REAL8 SBYTE SDWORD SIGN? STDCALL SWORD SYSCALL TBYTE '
-						db 'TRUE ^UINT USES VARARG WORD ^WPARAM ZERO?',0
+C6						db '$ ? @@ @B @F ADDR BASIC C CARRY? FAR FAR16 FORTRAN NEAR NEAR16 OVERFLOW? PARITY? PASCAL SIGN? STDCALL SYSCALL USES VARARG ZERO?',0
 ;MASM Keywords (non-code producing)
 C7						db '%OUT .186 .286 .286C .286P .287 .386 .386C .386P .387 .486 .486P .586 .686 .686p .8086 .8087 .ALPHA .CODE .CONST .CREF .DATA .DATA? .DOSSEG .ERR .ERR1 .ERR2 .ERRB .ERRDEF .ERRDIF .ERRDIFI .ERRE .ERRIDN '
 						db '.ERRIDNI .ERRNB .ERRNDEF .ERRNZ .EXIT .FARDATA .FARDATA? .K3D .LALL .LFCOND .LIST .LISTALL .LISTIF .LISTMACRO .LISTMACROALL .MMX .MODEL .MSFLOAT .NO87 .NOCREF .NOLIST .NOLISTIF .NOLISTMACRO .RADIX .SALL '

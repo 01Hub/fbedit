@@ -1,5 +1,11 @@
 MasmEd
 
+1.1.0.2 - 2009.11.26
+--------------------
+o Added Macro to code properties.
+o Defined $ as a character.
+o Added words in masmApiType.api to syntax highlighter Group#12.
+
 1.1.0.1 - 2009.11.19
 --------------------
 o Added Project addin.

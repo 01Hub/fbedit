@@ -364,6 +364,8 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lendatatype:DWORD
 	LOCAL	nNest:DWORD
 	LOCAL	narray:DWORD
+	LOCAL	nmacropos:DWORD
+	LOCAL	lpmacro:DWORD
 
 	mov		npos,0
 	mov		esi,lpMem
@@ -679,6 +681,9 @@ ParseMacro:
 		dec		edi
 	.endif
 	mov		word ptr [edi],0
+	mov		eax,npos
+	mov		nmacropos,eax
+	mov		lpmacro,esi
 	.while byte ptr [esi]
 		invoke MSkipLine,esi,addr npos
 		inc		npos
@@ -691,16 +696,30 @@ ParseMacro:
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
+			invoke MGetWord,esi,addr npos
+			mov		esi,edx
+			.if ecx
+				mov		lpword2,esi
+				mov		len2,ecx
+			.endif
 			invoke MWhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
+				mov		edx,npos
+				sub		edx,nmacropos
 				movzx	eax,[eax].DEFTYPE.nDefType
 				.if eax==DEFTYPE_ENDMACRO
-					retn
+					mov		eax,npos
+					mov		nmacropos,eax
+					mov		lpmacro,esi
+				.elseif eax==DEFTYPE_MACRO || edx>500
+					.break
 				.endif
 			.endif
 		.endif
 	.endw
-	xor		eax,eax
+	mov		eax,nmacropos
+	mov		npos,eax
+	mov		esi,lpmacro
 	retn
 
 ParseUnknown:

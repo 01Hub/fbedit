@@ -137,6 +137,9 @@ start:
 		.if da.ver<1101
 			mov		da.ver,1101
 		.endif
+		.if da.ver<1102
+			mov		da.ver,1102
+		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,ha.hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
 		mov		lpcbData,sizeof nmeexp
@@ -161,7 +164,7 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		da.ver,1101
+		mov		da.ver,1102
 	.endif
 	invoke RegSetValueEx,ha.hReg,addr szVer,0,REG_BINARY,addr da.ver,sizeof da.ver
 	.if wpos.wtfile<50
@@ -443,6 +446,9 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		lx,eax
 								.if lx!=-1
 									invoke SendMessage,ha.hREd,REM_GETBLOCKEND,lx,0
+									.if !eax
+										dec		eax
+									.endif
 									mov		lz,eax
 									mov		tp,0
 									.if eax==-1

@@ -209,20 +209,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.1.0.1
-PV=1.1.0.1
+FV=1.1.0.2
+PV=1.1.0.2
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.1.0.1
+ProductVersion=1.1.0.2
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2009
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.1.0.1
+FileVersion=1.1.0.2
 CompanyName=
 
 [Group]
@@ -286,16 +286,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 56=1
 
 [Find]
-1="szFolder"
-2="FBM_GET"
-3="SetCurDir"
-4="FBM_SET"
-5="ha.hBrowse"
-6="da.MainFile"
-7="tmpbuff"
-8="szSessionFile"
-9="ha.hAccel"
-10="1100"
+1="1101"
+2="da.ver"
+3="REM_SETCHARTAB"
+4="szFolder"
+5="FBM_GET"
+6="SetCurDir"
+7="FBM_SET"
+8="ha.hBrowse"
+9="da.MainFile"
+10="tmpbuff"
 
 [VersionControl]
 Settings=1246
@@ -307,7 +307,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -342,10 +342,10 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,19484
-1=0,0,0,0,73777
-11=0,0,0,0,29943
-22=0,0,0,0,11637
+2=0,0,687,524,19687
+1=0,0,0,0,12091
+11=0,0,0,0,15479
+22=0,0,0,0,4918
 10=0,0,0,0,21294
 23=0,0,0,0,6917
 9=0,0,0,0,0
@@ -355,7 +355,7 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,111
 18=0,0,0,0
-15=0,0,687,524,13616
+15=0,0,687,524,11673
 30=0,0,0,0
 13=0,0,0,0,4980
 21=0,0,0,0,1822
@@ -372,23 +372,23 @@ ProductVer4Range=0
 33=0,0,0,0,875
 35=0,0,0,0,485
 34=0,0,0,0
-37=0,0,0,0,1622
+37=0,0,0,0,1150
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,29
+38=0,0,0,0,177
 39=0,0,0,0
 40=0,0,0,0,5884
 42=0,0,0,0,1576
 43=0,0,0,0
-45=0,0,0,0,931
-46=0,0,0,0,4747
+45=0,0,0,0,3724
+46=0,0,0,0,1160
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,0,0,7419
+53=0,0,0,0,6973
 54=0,0,0,0,254
 55=0,0,0,0
 56=0,0,0,0,5410
@@ -408,7 +408,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,13,10,38,15,11
+AutoLoad=1,2,53,38
 [Collapse]
 2=
 1=,,,,,,,,,
@@ -444,7 +444,7 @@ AutoLoad=1,2,53,13,10,38,15,11
 54=
 56=
 [PTimer]
-PTimer=1426720914
+PTimer=1437305830
 [RADebugBP]
 1=
 2=

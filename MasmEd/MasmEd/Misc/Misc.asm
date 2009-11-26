@@ -807,6 +807,8 @@ SetKeyWords proc uses esi edi
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*8
 	mov		hMem,eax
 	invoke SetHiliteWords,0,0
+	;Define $ as a character
+	invoke SendMessage,ha.hOut,REM_SETCHARTAB,'$',CT_CHAR
 	mov		nInx,0
 	.while nInx<16
 		invoke RtlZeroMemory,hMem,65536*8
@@ -815,14 +817,13 @@ SetKeyWords proc uses esi edi
 		invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,hMem,addr lpcbData
 		mov		ecx,hMem
 		mov		edx,nInx
-		shl		edx,2
 		.if !byte ptr [ecx]
-			mov		ecx,kwofs[edx]
+			mov		ecx,kwofs[edx*4]
 		.endif
-		invoke SetHiliteWords,kwcol[edx],ecx
+		invoke SetHiliteWords,kwcol[edx*4],ecx
 		inc		nInx
 	.endw
-	; Add api calls
+	; Add api calls to Group#15
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'P'
 	mov		edi,hMem
@@ -839,7 +840,7 @@ SetKeyWords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[15*4],hMem
-	; Add api constants
+	; Add api constants to Group#14
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'C'
 	mov		edi,hMem
@@ -866,7 +867,7 @@ SetKeyWords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[14*4],hMem
-	; Add api words
+	; Add api words to Group#14
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'W'
 	mov		edi,hMem
@@ -883,7 +884,7 @@ SetKeyWords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[14*4],hMem
-	; Add api structs
+	; Add api structs to Group#13
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'S'
 	mov		edi,hMem
@@ -900,9 +901,9 @@ SetKeyWords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,kwcol[13*4],hMem
-	; Add api types
+	; Add api types to Group#12
 	invoke RtlZeroMemory,hMem,65536*8
-	mov		dword ptr buffer,'S'
+	mov		dword ptr buffer,'T'
 	mov		edi,hMem
 	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
 	.while eax
@@ -2095,3 +2096,4 @@ OpenMRU proc uses ebx esi edi,nID:DWORD
 	ret
 
 OpenMRU endp
+

@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -139,7 +139,7 @@ ProductVer4Range=0
 11=,
 12=
 13=,
-14=,,,,
+14=,,,,,
 [Size]
 2=0,0,699,490,4384
 <<<<<<< .mine
@@ -156,7 +156,7 @@ ProductVer4Range=0
 11=0,0,746,498,12890
 12=0,0,0,0,2850
 13=0,0,0,0,5066
-14=0,0,0,0,6040
+14=0,0,0,0,14235
 [BookMark]
 0=
 1=
@@ -174,7 +174,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
-PTimer=122121012
+PTimer=123632880
 [Find]
 1="MFixUnknown"
 2="PRM_SETCHARTAB"
