@@ -7,8 +7,8 @@ echo del HighLevel.zip
 del HighLevel.zip
 echo del Language.zip
 del Language.zip
-echo del RadASM.zip
-del RadASM.zip
+echo del RadASMIDE.zip
+del RadASMIDE.zip
 echo del RAHelp.zip
 del RAHelp.zip
 echo del Release.zip
@@ -19,9 +19,9 @@ pause
 
 echo off
 cls
-echo Lager RadASM.zip
+echo Lager RadASMIDE.zip
 cd Release
-"C:\Program Files\WinZip\winzip32.exe" -a -r -p ..\RadASM.zip @..\ReleaseRadASM.def
+"C:\Program Files\WinZip\winzip32.exe" -a -r -p ..\RadASMIDE.zip @..\ReleaseRadASMIDE.def
 cd ..
 pause
 
