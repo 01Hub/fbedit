@@ -341,6 +341,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	dbgtip:DEBUGTIP
 	LOCAL	isinproc:ISINPROC
+	LOCAL	trng:TEXTRANGE
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
@@ -351,6 +352,14 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ccinprogress,eax
 				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
 				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ccchrg
+				mov		eax,ccchrg.cpMin
+				inc		eax
+				mov		trng.chrg.cpMin,eax
+				add		eax,16
+				mov		trng.chrg.cpMax,eax
+				lea		eax,buffer
+				mov		trng.lpstrText,eax
+				invoke SendMessage,ha.hREd,EM_GETTEXTRANGE,0,addr trng
 				invoke SendMessage,ha.hCCLB,CCM_GETCURSEL,0,0
 				invoke SendMessage,ha.hCCLB,CCM_GETITEM,eax,0
 				push	eax
@@ -359,19 +368,30 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.while tmpbuff[eax]
 					.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
 						mov		tmpbuff[eax],0
+						.break
 					.endif
 					inc		eax
 				.endw
 				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
 				pop		eax
 				.if cctype==CCTYPE_PROC
-					push	eax
-					invoke strlen,eax
-					pop		edx
-					.if byte ptr [edx+eax+1]
-						mov		ccinprogress,0
-						mov		eax,','
-						invoke SendMessage,ha.hREd,WM_CHAR,eax,0
+					lea		edx,buffer
+					.while byte ptr [edx] && byte ptr [edx]!=VK_RETURN
+						.if byte ptr [edx]==','
+							xor		edx,edx
+							.break
+						.endif
+						inc		edx
+					.endw
+					.if edx
+						push	eax
+						invoke strlen,eax
+						pop		edx
+						.if byte ptr [edx+eax+1]
+							mov		ccinprogress,0
+							mov		eax,','
+							invoke SendMessage,ha.hREd,WM_CHAR,eax,0
+						.endif
 					.endif
 				.endif
 				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
@@ -408,24 +428,27 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax=='.'
 			mov		cctype,CCTYPE_STRUCT
+			invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
+			jmp		Ex
 		.elseif cctype==CCTYPE_ALL || cctype==CCTYPE_STRUCT
 			push	eax
-			invoke IsCharAlphaNumeric,eax
+			invoke GetCharType,eax
 			pop		edx
-			.if eax || edx=='_' || edx==VK_BACK
+			.if eax==1 || edx==VK_BACK
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
+				push	eax
 				; Force a WM_NOTIFY
 				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
-				xor		eax,eax
+				pop		eax
 				jmp		Ex
 			.else
 				mov		cctype,CCTYPE_NONE
 				invoke ShowWindow,ha.hCCLB,SW_HIDE
 			.endif
 		.endif
-		invoke IsCharAlphaNumeric,wParam
-		.if cctype==CCTYPE_NONE || !eax
+		invoke GetCharType,wParam
+		.if eax!=1
 			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 			mov		eax,chrg.cpMin
 			.if eax==chrg.cpMax && wParam!=VK_BACK
@@ -796,6 +819,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_UNCOMMENT
 				call	EnableDisable
+				mov		edx,IDM_EDIT_BLOCKCONVERT
+				call	EnableDisable
 				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
 				mov		edx,IDM_EDIT_PASTE
 				call	EnableDisable
@@ -1008,6 +1033,8 @@ DisableEdit:
 	mov		edx,IDM_EDIT_COMMENT
 	call	EnableDisable
 	mov		edx,IDM_EDIT_UNCOMMENT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_BLOCKCONVERT
 	call	EnableDisable
 
 	mov		edx,IDM_DEBUG_TOGGLE
@@ -2150,6 +2177,33 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke IndentComment,';',TRUE
 			.elseif eax==IDM_EDIT_UNCOMMENT
 				invoke IndentComment,';',FALSE
+			.elseif eax==IDM_EDIT_BLOCKUPPER
+				invoke SendMessage,ha.hREd,REM_CONVERT,CONVERT_UPPERCASE,0
+			.elseif eax==IDM_EDIT_BLOCKLOWER
+				invoke SendMessage,ha.hREd,REM_CONVERT,CONVERT_LOWERCASE,0
+			.elseif eax==IDM_EDIT_BLOCKTABTOSPC
+				invoke SendMessage,ha.hREd,REM_CONVERT,CONVERT_TABTOSPACE,0
+			.elseif eax==IDM_EDIT_BLOCKSPCTOTAB
+				invoke SendMessage,ha.hREd,REM_CONVERT,CONVERT_SPACETOTAB,0
+			.elseif eax==IDM_EDIT_BLOCKSPCTRIM
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				mov		ebx,eax
+				invoke SendMessage,ha.hREd,EM_LINEINDEX,ebx,0
+				mov		chrg.cpMin,eax
+				invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMax
+				mov		edi,eax
+				invoke SendMessage,ha.hREd,EM_LINEINDEX,edi,0
+				mov		chrg.cpMax,eax
+				xor		esi,esi
+				.while ebx<edi
+					invoke SendMessage,ha.hREd,REM_TRIMSPACE,ebx,0
+					lea		esi,[esi+eax]
+					inc		ebx
+				.endw
+				add		esi,chrg.cpMin
+				mov		chrg.cpMax,esi
+				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
 			.elseif eax==IDM_EDIT_BLOCKMODE
 				invoke SendMessage,ha.hREd,REM_GETMODE,0,0
 				xor		eax,MODE_BLOCK
@@ -2729,13 +2783,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						shr		edx,16
 						.if edx==[edi].RASELCHANGE.nWordGroup
 							invoke SendMessage,ha.hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
-;.if eax!=-1
-;	PrintHex eax
-;	mov		edx,[esi]
-;	PrintHex edx
-;	mov		edx,[edx].RABLOCKDEF.lpszStart
-;	PrintStringByAddr edx
-;.endif
 							.break .if eax!=-1
 						.endif
 						lea		esi,[esi+4]

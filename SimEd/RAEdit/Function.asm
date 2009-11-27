@@ -1401,22 +1401,23 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 					invoke SaveUndo,ebx,UNDO_DELETEBLOCK,eax,edx,ecx
 					pop		ecx
 				.endif
-			.endif
-			pop		eax
-			.if ecx
-				sub		[edi].CHARS.len,ecx
-				mov		ecx,[edi].CHARS.len
-				.if al==0Dh
-					mov		[edi+ecx+sizeof CHARS-1],al
+				pop		eax
+				.if ecx
+					sub		[edi].CHARS.len,ecx
+					mov		edx,[edi].CHARS.len
+					.if al==0Dh
+						mov		[edi+edx+sizeof CHARS-1],al
+					.endif
+					and		[edi].CHARS.state,-1 xor (STATE_CHANGED or STATE_CHANGESAVED)
+					or		[edi].CHARS.state,STATE_CHANGED
 				.endif
-				and		[edi].CHARS.state,-1 xor (STATE_CHANGED or STATE_CHANGESAVED)
-				or		[edi].CHARS.state,STATE_CHANGED
+				pop		edx
+				sub		edx,ecx
 			.endif
-			pop		edx
-			sub		edx,ecx
 		.endif
 	.endif
-	.if edx
+	.if ecx
+		push	edx
 		xor		eax,eax
 		mov		[ebx].EDIT.edta.topyp,eax
 		mov		[ebx].EDIT.edta.topln,eax
@@ -1424,16 +1425,16 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 		mov		[ebx].EDIT.edtb.topyp,eax
 		mov		[ebx].EDIT.edtb.topln,eax
 		mov		[ebx].EDIT.edtb.topcp,eax
-		push	edx
 		.if ![ebx].EDIT.fChanged
 			mov		[ebx].EDIT.fChanged,TRUE
 			invoke InvalidateRect,[ebx].EDIT.hsta,NULL,TRUE
 		.endif
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.edta.cpy
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
-		pop		edx
 		inc		[ebx].EDIT.nchange
+		pop		edx
 	.endif
+  Ex:
 	mov		eax,edx
 	ret
 

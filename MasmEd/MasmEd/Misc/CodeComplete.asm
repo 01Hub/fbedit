@@ -459,8 +459,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					lea		edi,buffer
 					.while TRUE
 						movzx	eax,byte ptr [esi]
-						invoke IsCharAlphaNumeric,eax
-						.break .if !eax && byte ptr [esi]!='_'
+						invoke GetCharType,eax
+						.break .if eax!=1
 						mov		al,[esi]
 						mov		[edi],al
 						inc		esi
@@ -926,8 +926,8 @@ ApiListBox endp
 CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke IsCharAlphaNumeric,wParam
-	.if !eax
+	invoke GetCharType,wParam
+	.if eax!=1
 		invoke SendMessage,ha.hREd,REM_ISCHARPOS,cp,0
 		.if !eax
 			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_CHAR

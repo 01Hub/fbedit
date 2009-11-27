@@ -2097,3 +2097,11 @@ OpenMRU proc uses ebx esi edi,nID:DWORD
 
 OpenMRU endp
 
+GetCharType proc nChar:DWORD
+	
+	mov		eax,nChar
+	add		eax,da.lpCharTab
+	movzx	eax,byte ptr [eax]
+	ret
+
+GetCharType endp

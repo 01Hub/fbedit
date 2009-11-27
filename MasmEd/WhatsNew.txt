@@ -1,10 +1,11 @@
 MasmEd
 
-1.1.0.2 - 2009.11.26
+1.1.0.2 - 2009.11.27
 --------------------
 o Added Macro to code properties.
 o Defined $ as a character.
 o Added words in masmApiType.api to syntax highlighter Group#12.
+o Added Uppercase, Lowercase, Tab to Spaces, Spaces to Tab and Trim Trailing Spaces to Edit/Block/Convert menu.
 
 1.1.0.1 - 2009.11.19
 --------------------

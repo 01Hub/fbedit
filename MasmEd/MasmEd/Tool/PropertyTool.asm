@@ -52,6 +52,7 @@ SetPropertyDefs proc uses esi
 
 	; Set character table
 	invoke GetCharTabPtr
+	mov		da.lpCharTab,eax
 	invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,eax
 	;Combo items
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,'p',addr szPrpCode
