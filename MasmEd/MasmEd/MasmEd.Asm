@@ -334,44 +334,8 @@ TestIt:
 
 SetBlockDefs endp
 
-CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
-	LOCAL	buffer[256]:BYTE
-
-	invoke IsCharAlphaNumeric,wParam
-	.if !eax
-		invoke SendMessage,ha.hREd,REM_ISCHARPOS,cp,0
-		.if !eax
-			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_CHAR
-			invoke SendMessage,ha.hREd,REM_GETWORDFROMPOS,cp,addr buffer
-			.if eax
-				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
-				mov		ebx,eax
-				.while ebx
-					invoke strcmpi,ebx,addr buffer
-					.if !eax
-						invoke SendMessage,ha.hREd,REM_CASEWORD,cp,ebx
-						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,cp,0
-						invoke SendMessage,ha.hREd,REM_INVALIDATELINE,eax,0
-						.break
-					.endif
-					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
-					mov		ebx,eax
-				.endw
-			.endif
-			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_HICHAR
-		.endif
-	.endif
-	ret
-
-CaseConvertWord endp
-
 RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
-	LOCAL	chrg1:CHARRANGE
-	LOCAL	ln:DWORD
-	LOCAL	lx:DWORD
-	LOCAL	lz:DWORD
-	LOCAL	tp:DWORD
 	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	pt:POINT
@@ -422,99 +386,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Block complete
 				invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
 				push	eax
-				;Get linenumber where return was pressed
-				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
-				dec		eax
-				mov		ln,eax
-				invoke SendMessage,ha.hREd,REM_GETBOOKMARK,ln,0
-				.if eax==1
-					;The line is a block, find block type
-					mov		esi,offset blocks
-					.while dword ptr [esi]
-						mov		edi,[esi]
-						invoke SendMessage,ha.hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
-						.if eax!=-1
-							;Block type found
-							.break .if ![edi].RABLOCKDEF.lpszEnd
-							mov		eax,ln
-							inc		eax
-							mov		lx,eax
-							mov		lz,0
-							.while lx!=-1
-								invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,lx,1
-								mov		lx,eax
-								.if lx!=-1
-									invoke SendMessage,ha.hREd,REM_GETBLOCKEND,lx,0
-									.if !eax
-										dec		eax
-									.endif
-									mov		lz,eax
-									mov		tp,0
-									.if eax==-1
-										invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
-										mov		tp,eax
-										.break
-									.elseif eax>ln
-										invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
-										mov		tp,eax
-										.break .if tp==-1
-									.endif
-								.endif
-							.endw
-							.if lz!=-1 || tp==-1
-								call	InsertTab
-								.break 
-							.endif
-							;Do the block complete
-							invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
-							invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
-							mov		eax,[edi].RABLOCKDEF.lpszEnd
-							.if byte ptr [eax]=='?' || byte ptr [eax]=='$'
-								;Skip indent
-								mov		word ptr buffer,255
-								invoke SendMessage,ha.hREd,EM_GETLINE,ln,addr buffer
-								mov		buffer[eax],0
-								xor		ebx,ebx
-								.while buffer[ebx] && (buffer[ebx]==VK_TAB || buffer[ebx]==VK_SPACE)
-									inc		ebx
-								.endw
-								;Get name
-								push	ebx
-								.while buffer[ebx] && buffer[ebx]!=VK_TAB && buffer[ebx]!=VK_SPACE
-									inc		ebx
-								.endw
-								mov		buffer[ebx],0
-								pop		ebx
-								mov		esi,[edi].RABLOCKDEF.lpszStart
-								.while byte ptr [esi]
-									.if byte ptr [esi]=='?' || byte ptr [esi]=='$'
-										add		esi,2
-									.endif
-									invoke strcmpi,addr buffer[ebx],esi
-									.break .if !eax
-									invoke strlen,esi
-									lea		esi,[esi+eax+1]
-								.endw
-								.if eax
-									invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
-									mov		word ptr buffer,VK_SPACE
-									invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
-								.endif
-								mov		eax,[edi].RABLOCKDEF.lpszEnd
-								add		eax,2
-							.endif
-							invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,eax
-							invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg1
-							invoke CaseConvertWord,wParam,chrg1.cpMin
-							invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
-							call	InsertTab
-							invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
-							.break
-						.endif
-						lea		esi,[esi+4]
-					.endw
-				.endif
+				invoke BlockComplete,hWin
 				pop		eax
 				jmp		Ex
 			.endif
@@ -670,21 +542,6 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	invoke CallWindowProc,lpOldRAEditProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
-
-InsertTab:
-	.if edopt.exptabs
-		xor		ecx,ecx
-		.while ecx<edopt.tabsize
-			mov		buffer[ecx],' '
-			inc		ecx
-		.endw
-		mov		buffer[ecx],0
-	.else
-		mov		word ptr buffer,VK_TAB
-	.endif
-	invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
-	invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
-	retn
 
 Activate:
 	invoke SendMessage,ha.hDbgTip,TTM_SETTOOLINFO,0,addr ti
@@ -2826,11 +2683,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
-		mov		edx,lParam
-		mov		eax,[edx].NMHDR.code
-		mov		ecx,[edx].NMHDR.idFrom
+		mov		edi,lParam
+		mov		eax,[edi].NMHDR.code
+		mov		ecx,[edi].NMHDR.idFrom
 		.if eax==EN_SELCHANGE && ecx==IDC_RAE
-			mov		edi,edx
 			mov		eax,[edi].RASELCHANGE.chrg.cpMin
 			sub		eax,[edi].RASELCHANGE.cpLine
 			invoke ShowPos,[edi].RASELCHANGE.line,eax
@@ -2867,20 +2723,27 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		ebx,eax
 					mov		esi,offset blocks
 					mov		ecx,[esi]
-					xor		eax,eax
-					dec		eax
+					or		eax,-1
 					.while ecx
 						mov		edx,[ecx].RABLOCKDEF.flag
 						shr		edx,16
 						.if edx==[edi].RASELCHANGE.nWordGroup
 							invoke SendMessage,ha.hREd,REM_ISLINE,nLastLine,[ecx].RABLOCKDEF.lpszStart
+;.if eax!=-1
+;	PrintHex eax
+;	mov		edx,[esi]
+;	PrintHex edx
+;	mov		edx,[edx].RABLOCKDEF.lpszStart
+;	PrintStringByAddr edx
+;.endif
+							.break .if eax!=-1
 						.endif
-						.break .if eax!=-1
-						add		esi,4
+						lea		esi,[esi+4]
 						mov		ecx,[esi]
 					.endw
 					.if eax==-1
 						.if ebx==1 || ebx==2
+							;Clear bookmark
 							.if ebx==2
 								invoke SendMessage,ha.hREd,REM_EXPAND,nLastLine,0
 							.endif
@@ -2896,6 +2759,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke SendMessage,ha.hREd,REM_ISINBLOCK,nLastLine,ecx
 						.endif
 						.if !eax
+							;Set bookmark
 							mov		edx,nLastLine
 							inc		edx
 							invoke SendMessage,ha.hREd,REM_ISLINEHIDDEN,edx,0
@@ -2956,7 +2820,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		fTimer,2
 		.elseif eax==EN_SELCHANGE && ecx==IDC_HEX
-			mov		edi,edx
 			.if [edi].HESELCHANGE.fchanged
 				invoke GetWindowLong,ha.hREd,GWL_USERDATA
 				.if ![eax].TABMEM.fchanged
@@ -2965,9 +2828,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		fTimer,2
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
-			invoke OpenEditFile,[edx].FBNOTIFY.lpfile,0
+			invoke OpenEditFile,[edi].FBNOTIFY.lpfile,0
 		.elseif eax==BN_CLICKED && ecx==IDC_PROPERTY
-			mov		eax,[edx].RAPNOTIFY.nid
+			mov		eax,[edi].RAPNOTIFY.nid
 			.if eax==1
 				invoke SendMessage,ha.hProperty,PRM_SELOWNER,ha.hREd,0
 			.elseif eax==2
@@ -2980,11 +2843,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 			.endif
 		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
-			push	edx
 			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 			invoke PushGoto,ha.hREd,chrg.cpMin
-			pop		edx
-			push	[edx].RAPNOTIFY.nline
+			push	[edi].RAPNOTIFY.nline
 			invoke TabToolGetInx,[edx].RAPNOTIFY.nid
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
@@ -2999,8 +2860,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Toolbar tooltip
 			invoke LoadString,ha.hInstance,ecx,addr buffer,sizeof buffer
 			lea		eax,buffer
-			mov		edx,lParam
-			mov		(TOOLTIPTEXT ptr [edx]).lpszText,eax
+			mov		(TOOLTIPTEXT ptr [edi]).lpszText,eax
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TAB
 			invoke TabToolActivate
 			invoke SetFocus,ha.hREd

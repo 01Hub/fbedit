@@ -12,7 +12,7 @@ szCCInvoke				db 'INVOKE',0
 szCCPp					db 'Pp',0
 szCCp					db 'p',0
 szCCC					db 'C',0
-szCCAll					db 'WScds',0
+szCCAll					db 'WScdsm',0
 szCCSs					db 'Ss',0
 szCCd					db 'd',0
 szCCAssume				db 'assume ',0
@@ -538,6 +538,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		ecx,4
 			.elseif eax=='s'
 				mov		ecx,5
+			.elseif eax=='m'
+				mov		ecx,6
 			.endif
 			pop		edx
 			invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
@@ -920,3 +922,159 @@ ShowList:
 	retn
 
 ApiListBox endp
+
+CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	invoke IsCharAlphaNumeric,wParam
+	.if !eax
+		invoke SendMessage,ha.hREd,REM_ISCHARPOS,cp,0
+		.if !eax
+			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_CHAR
+			invoke SendMessage,ha.hREd,REM_GETWORDFROMPOS,cp,addr buffer
+			.if eax
+				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
+				mov		ebx,eax
+				.while ebx
+					invoke strcmpi,ebx,addr buffer
+					.if !eax
+						invoke SendMessage,ha.hREd,REM_CASEWORD,cp,ebx
+						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,cp,0
+						invoke SendMessage,ha.hREd,REM_INVALIDATELINE,eax,0
+						.break
+					.endif
+					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
+					mov		ebx,eax
+				.endw
+			.endif
+			invoke SendMessage,ha.hREd,REM_SETCHARTAB,'.',CT_HICHAR
+		.endif
+	.endif
+	ret
+
+CaseConvertWord endp
+
+BlockComplete proc hWin:HWND
+	LOCAL	chrg:CHARRANGE
+	LOCAL	chrg1:CHARRANGE
+	LOCAL	ln:DWORD
+	LOCAL	lx:DWORD
+	LOCAL	lz:DWORD
+	LOCAL	tp:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	;Get linenumber where return was pressed
+	invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+	dec		eax
+	mov		ln,eax
+	invoke SendMessage,ha.hREd,REM_GETBOOKMARK,ln,0
+	.if eax==1
+		;The line is a block, find block type
+		mov		esi,offset blocks
+		.while dword ptr [esi]
+			mov		edi,[esi]
+			mov		eax,[edi].RABLOCKDEF.flag
+			and		eax,0F0000h
+			.if !eax
+				invoke SendMessage,ha.hREd,REM_ISLINE,ln,[edi].RABLOCKDEF.lpszStart
+				.if eax!=-1
+					;Block type found
+					.break .if ![edi].RABLOCKDEF.lpszEnd
+					mov		eax,ln
+					inc		eax
+					mov		lx,eax
+					mov		lz,0
+					.while lx!=-1
+						invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,lx,1
+						mov		lx,eax
+						.if lx!=-1
+							invoke SendMessage,ha.hREd,REM_GETBLOCKEND,lx,0
+							.if !eax
+								dec		eax
+							.endif
+							mov		lz,eax
+							mov		tp,0
+							.if eax==-1
+								invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+								mov		tp,eax
+								.break
+							.elseif eax>ln
+								invoke SendMessage,ha.hREd,REM_ISLINE,lx,[edi].RABLOCKDEF.lpszStart
+								mov		tp,eax
+								.break .if tp==-1
+							.endif
+						.endif
+					.endw
+					.if lz!=-1 || tp==-1
+						call	InsertTab
+						.break 
+					.endif
+					;Do the block complete
+					invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
+					invoke SendMessage,hWin,WM_CHAR,VK_RETURN,0
+					mov		eax,[edi].RABLOCKDEF.lpszEnd
+					.if byte ptr [eax]=='?' || byte ptr [eax]=='$'
+						;Skip indent
+						mov		word ptr buffer,255
+						invoke SendMessage,ha.hREd,EM_GETLINE,ln,addr buffer
+						mov		buffer[eax],0
+						xor		ebx,ebx
+						.while buffer[ebx] && (buffer[ebx]==VK_TAB || buffer[ebx]==VK_SPACE)
+							inc		ebx
+						.endw
+						;Get name
+						push	ebx
+						.while buffer[ebx] && buffer[ebx]!=VK_TAB && buffer[ebx]!=VK_SPACE
+							inc		ebx
+						.endw
+						mov		buffer[ebx],0
+						pop		ebx
+						mov		esi,[edi].RABLOCKDEF.lpszStart
+						.while byte ptr [esi]
+							.if byte ptr [esi]=='?' || byte ptr [esi]=='$'
+								add		esi,2
+							.endif
+							invoke strcmpi,addr buffer[ebx],esi
+							.break .if !eax
+							invoke strlen,esi
+							lea		esi,[esi+eax+1]
+						.endw
+						.if eax
+							invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer[ebx]
+							mov		word ptr buffer,VK_SPACE
+							invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
+						.endif
+						mov		eax,[edi].RABLOCKDEF.lpszEnd
+						add		eax,2
+					.endif
+					invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,eax
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg1
+					invoke CaseConvertWord,VK_RETURN,chrg1.cpMin
+					invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr chrg
+					call	InsertTab
+					invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
+					.break
+				.endif
+			.endif
+			lea		esi,[esi+4]
+		.endw
+	.endif
+	ret
+
+InsertTab:
+	.if edopt.exptabs
+		xor		ecx,ecx
+		.while ecx<edopt.tabsize
+			mov		buffer[ecx],' '
+			inc		ecx
+		.endw
+		mov		buffer[ecx],0
+	.else
+		mov		word ptr buffer,VK_TAB
+	.endif
+	invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,addr buffer
+	invoke SendMessage,ha.hREd,EM_SCROLLCARET,0,0
+	retn
+
+BlockComplete endp

@@ -437,11 +437,12 @@ szDataU					db '.data?',0,0
 szConst					db '.const',0,0
 szCode					db '.code',0,0
 szComment				db 'comment',0,0
-szStart					db 'start:',0
-szEndStart				db 'end start',0
+szStart					db 'start:',0,0
+szEndStart				db 'end start',0,0
 szBegin					db 'BEGIN',0,0
 szEnd					db 'END',0,0
 
+align 4
 rabdproc				RABLOCKDEF <offset szProc,offset szEndp,0,0,BD_DIVIDERLINE or BD_INCLUDELAST>
 rabdif					RABLOCKDEF <offset szIf,offset szEndIf,offset szElseIf,offset szElse,0>
 rabdwhile				RABLOCKDEF <offset szWhile,offset szEndw,offset szBreak,offset szContinue,0>
@@ -456,7 +457,7 @@ rabdcomment				RABLOCKDEF <offset szComment,0,0,0,BD_COMMENTBLOCK>
 rabdstart				RABLOCKDEF <offset szStart,offset szEndStart,0,0,0>
 rabdbegin				RABLOCKDEF <offset szBegin,offset szEnd,0,0,2 SHL 16>
 
-blocks					dd rabdif,rabdwhile,rabdrepeat,rabdproc,rabdstruct,rabdmacro,rabdcomment,rabddata,rabddatau,rabdconst,rabdcode,rabdstart,rabdbegin,0
+blocks					dd rabdif,rabdwhile,rabdrepeat,rabdproc,rabdstruct,rabdmacro,rabdcomment,rabddata,rabddatau,rabdconst,rabdcode,rabdstart,rabdbegin,0,0
 
 szCmntStart				db 'comment +',0
 szCmntEnd				db '-',0
@@ -551,7 +552,7 @@ szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 
-szCaseTypes				db 'WPpc',0
+szCaseTypes				db 'WPpcm',0
 szGotoTypes				db 'pldcs',0
 
 ;Addin procs
