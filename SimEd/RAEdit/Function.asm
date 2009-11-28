@@ -1431,6 +1431,8 @@ TrimSpace proc uses ebx edi,hMem:DWORD,nLine:DWORD,fLeft:DWORD
 		.endif
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edta.hwnd,[ebx].EDIT.edta.cpy
 		invoke GetTopFromYp,ebx,[ebx].EDIT.edtb.hwnd,[ebx].EDIT.edtb.cpy
+		invoke InvalidateLine,ebx,[ebx].EDIT.edta.hwnd,nLine
+		invoke InvalidateLine,ebx,[ebx].EDIT.edtb.hwnd,nLine
 		inc		[ebx].EDIT.nchange
 		pop		edx
 	.endif

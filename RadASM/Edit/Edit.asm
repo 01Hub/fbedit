@@ -19,10 +19,12 @@ TrimSpaces proc
 	pop		eax
 	sub		eax,nLine
 	add		eax,edx
+	mov		edx,chrg.cpMin
+	mov		chrg.cpMax,edx
 	.while eax
 		push	eax
 		invoke SendMessage,hEdit,REM_TRIMSPACE,nLine,FALSE
-		sub		chrg.cpMax,eax
+		add		chrg.cpMax,eax
 		inc		nLine
 		pop		eax
 		dec		eax

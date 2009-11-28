@@ -177,11 +177,11 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,31656
+2=0,416,869,416,13912
 3=154,154,590,413,270
-4=0,0,590,413,42167
+4=0,0,590,413,624
 5=132,132,536,413,9999
-6=12,26,869,416,128071
+6=12,26,869,416,64984
 7=132,132,536,413,10450
 8=44,44,536,413,32871
 9=88,88,536,413,45906
@@ -487,16 +487,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="SB_SETTEXT,3"
-2="lpCharTab"
-3="[*"
-4="WinHelp"
-5="IDM_HELPCF1"
-6="IDM_HELPF1"
-7="WM_COMMAND"
-8="fCancel"
-9="51002"
-10="GetProjectFiles"
+1="IDM_FORMAT_TRIM"
+2="indent"
+3="SB_SETTEXT,3"
+4="lpCharTab"
+5="[*"
+6="WinHelp"
+7="IDM_HELPCF1"
+8="IDM_HELPF1"
+9="WM_COMMAND"
+10="fCancel"
 
 [BreakPoint]
 0=
@@ -538,7 +538,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=26
+MilestoneOnDateDate=28
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -678,7 +678,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 125=7
 126=5
 [Collapse]
-6=,,,,,,,,,,,,,,,,,,,,,,
+6=,,,,,,,,,,,,,,,,,1073741824,,,,,
 2=
 11=,,,,,
 8=,,,,,,,,
@@ -758,7 +758,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1379605241
+PTimer=1380105770
 [RADebugBP]
 96=
 55=
@@ -779,3 +779,4 @@ PTimer=1379605241
 15=
 97=
 24=
+4=
