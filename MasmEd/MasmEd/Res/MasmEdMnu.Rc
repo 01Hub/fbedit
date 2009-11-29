@@ -189,8 +189,8 @@ BEGIN
         MENUITEM "&Lowercase\tCtrl+L",IDM_EDIT_BLOCKLOWER
         MENUITEM "Tab to Spaces",IDM_EDIT_BLOCKTABTOSPC
         MENUITEM "Spaces To Tab",IDM_EDIT_BLOCKSPCTOTAB
-        MENUITEM "Trim Trailing Spaces",IDM_EDIT_BLOCKSPCTRIM
       END
+      MENUITEM "Trim Trailing Spaces",IDM_EDIT_BLOCKSPCTRIM
       MENUITEM "&Block / Column Mode\tCtrl+B",IDM_EDIT_BLOCKMODE
       MENUITEM "Block Insert / &Replace\tCtrl+Shift+B",IDM_EDIT_BLOCKINSERT
     END

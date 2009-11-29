@@ -25,11 +25,11 @@ CHCOL					equ 0000F0F0h
 CHSAVEDCOL				equ 0000F000h
 
 CHARS struct
-	len			dd ?		;String len
-	max			dd ?		;Max size
-	state		dd ?		;Line state
-	bmid		dd ?		;Bookmark ID
-	errid		dd ?		;Error ID
+	len			dd ?						;String len
+	max			dd ?						;Max size
+	state		dd ?						;Line state
+	bmid		dd ?						;Bookmark ID
+	errid		dd ?						;Error ID
 CHARS ends
 
 ;Window styles

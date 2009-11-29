@@ -49,273 +49,273 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
-WinMain						PROTO :DWORD,:DWORD,:DWORD,:DWORD
-WndProc						PROTO :DWORD,:DWORD,:DWORD,:DWORD
-UpdateAll					PROTO :DWORD
-CreateRAEdit				PROTO
-CreateRAHexEd				PROTO
-TabToolAdd					PROTO :DWORD,:DWORD
+WinMain					PROTO :DWORD,:DWORD,:DWORD,:DWORD
+WndProc					PROTO :DWORD,:DWORD,:DWORD,:DWORD
+UpdateAll				PROTO :DWORD
+CreateRAEdit			PROTO
+CreateRAHexEd			PROTO
+TabToolAdd				PROTO :DWORD,:DWORD
 
-DwToAscii					PROTO :DWORD,:DWORD
-SetWinCaption				PROTO :DWORD
-WantToSave					PROTO :DWORD,:DWORD
-SaveEdit					PROTO :DWORD,:DWORD
-LoadEditFile				PROTO :DWORD,:DWORD
-LoadHexFile					PROTO :DWORD,:DWORD
-LoadRCFile					PROTO :DWORD
+DwToAscii				PROTO :DWORD,:DWORD
+SetWinCaption			PROTO :DWORD
+WantToSave				PROTO :DWORD,:DWORD
+SaveEdit				PROTO :DWORD,:DWORD
+LoadEditFile			PROTO :DWORD,:DWORD
+LoadHexFile				PROTO :DWORD,:DWORD
+LoadRCFile				PROTO :DWORD
 
-SetHiliteWords				PROTO :DWORD,:DWORD
-SetToolMenu					PROTO
-SetHelpMenu					PROTO
+SetHiliteWords			PROTO :DWORD,:DWORD
+SetToolMenu				PROTO
+SetHelpMenu				PROTO
 
 ; Debug proto
-SetDebugInfo				PROTO :DWORD
-DebugCommand				PROTO :DWORD,:DWORD,:DWORD
+SetDebugInfo			PROTO :DWORD
+DebugCommand			PROTO :DWORD,:DWORD,:DWORD
 
-strcpy						PROTO :DWORD,:DWORD
-strcat						PROTO :DWORD,:DWORD
-strcmp						PROTO :DWORD,:DWORD
-strlen						PROTO :DWORD
-DeleteGoto					PROTO :DWORD
-PostAddinMessage			PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
-AskSaveSessionFile			PROTO
-ReadSessionFile				PROTO :DWORD
-OpenEditFile				PROTO :DWORD,:DWORD
+strcpy					PROTO :DWORD,:DWORD
+strcat					PROTO :DWORD,:DWORD
+strcmp					PROTO :DWORD,:DWORD
+strlen					PROTO :DWORD
+DeleteGoto				PROTO :DWORD
+PostAddinMessage		PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+AskSaveSessionFile		PROTO
+ReadSessionFile			PROTO :DWORD
+OpenEditFile			PROTO :DWORD,:DWORD
 
-HT_DEBUG					equ 206
+HT_DEBUG				equ 206
 
 ; Debug functions
-FUNC_RUN					equ 1
-FUNC_STEPINTO				equ 2
-FUNC_STEPOVER				equ 3
-FUNC_RUNTOCARET				equ 4
-FUNC_STOP					equ 5
-FUNC_BPCLEARALL				equ 6
-FUNC_BPADDLINE				equ 7
-FUNC_BPUPDATE				equ 8
-FUNC_GETTOOLTIP				equ 9
-FUNC_IMMEDIATE				equ 10
-FUNC_BREAK					equ 11
-FUNC_FILEOPEN				equ 12
-FUNC_ISCODELINE				equ 13
+FUNC_RUN				equ 1
+FUNC_STEPINTO			equ 2
+FUNC_STEPOVER			equ 3
+FUNC_RUNTOCARET			equ 4
+FUNC_STOP				equ 5
+FUNC_BPCLEARALL			equ 6
+FUNC_BPADDLINE			equ 7
+FUNC_BPUPDATE			equ 8
+FUNC_GETTOOLTIP			equ 9
+FUNC_IMMEDIATE			equ 10
+FUNC_BREAK				equ 11
+FUNC_FILEOPEN			equ 12
+FUNC_ISCODELINE			equ 13
 
 ; Callback functions
-CB_SELECTLINE				equ 1
-CB_DESELECTLINE				equ 2
-CB_DEBUG					equ 3
-CB_OPENFILE					equ 4
+CB_SELECTLINE			equ 1
+CB_DESELECTLINE			equ 2
+CB_DEBUG				equ 3
+CB_OPENFILE				equ 4
 
-IS_OPEN						equ -1
-SAVE_ALL					equ -2
-IS_RESOURCE					equ -3
-IS_RESOURCE_OPEN			equ -4
-CLOSE_ALL					equ -5
-IS_CHANGED					equ -6
-CLEAR_CHANGED				equ -7
-SAVE_SESSIONFILE			equ -8
-CLEAR_ERRORS				equ -9
-FIND_ERROR					equ -10
-CLEAR_BREAKPOINTS			equ -11
-SET_BREAKPOINTS				equ -12
-LOCK_SOURCE_FILES			equ -13
-UNLOCK_SOURCE_FILES			equ -14
-UNSAVED_SOURCE_FILES		equ -15
-NEWER_SOURCE_FILES			equ -16
-SAVE_SESSIONREGISTRY		equ -17
+IS_OPEN					equ -1
+SAVE_ALL				equ -2
+IS_RESOURCE				equ -3
+IS_RESOURCE_OPEN		equ -4
+CLOSE_ALL				equ -5
+IS_CHANGED				equ -6
+CLEAR_CHANGED			equ -7
+SAVE_SESSIONFILE		equ -8
+CLEAR_ERRORS			equ -9
+FIND_ERROR				equ -10
+CLEAR_BREAKPOINTS		equ -11
+SET_BREAKPOINTS			equ -12
+LOCK_SOURCE_FILES		equ -13
+UNLOCK_SOURCE_FILES		equ -14
+UNSAVED_SOURCE_FILES	equ -15
+NEWER_SOURCE_FILES		equ -16
+SAVE_SESSIONREGISTRY	equ -17
 
-TABHT						equ 23
-CBOWT						equ 175
-RESIZEHT					equ 3
+TABHT					equ 23
+CBOWT					equ 175
+RESIZEHT				equ 3
 
-IDB_TBRBMP					equ 150
-IDR_ACCEL					equ 200
-IDC_HSPLIT					equ 32109
-IDC_VSPLIT					equ 32110
-IDB_MNUARROW				equ 32101
+IDB_TBRBMP				equ 150
+IDR_ACCEL				equ 200
+IDC_HSPLIT				equ 32109
+IDC_VSPLIT				equ 32110
+IDB_MNUARROW			equ 32101
 
 ;Find.dlg
-IDD_FINDDLG					equ 3100
-IDC_FINDTEXT				equ 2001
-IDC_BTN_REPLACE				equ 2007
-IDC_REPLACETEXT				equ 2002
-IDC_REPLACESTATIC			equ 2009
-IDC_BTN_REPLACEALL			equ 2008
-IDC_CHK_WHOLEWORD			equ 2004
-IDC_CHK_MATCHCASE			equ 2003
-IDC_CHK_ALLFILES			equ 2010
-IDC_RBN_ALL					equ 2011
-IDC_RBN_DOWN				equ 2005
-IDC_RBN_UP					equ 2006
+IDD_FINDDLG				equ 3100
+IDC_FINDTEXT			equ 2001
+IDC_BTN_REPLACE			equ 2007
+IDC_REPLACETEXT			equ 2002
+IDC_REPLACESTATIC		equ 2009
+IDC_BTN_REPLACEALL		equ 2008
+IDC_CHK_WHOLEWORD		equ 2004
+IDC_CHK_MATCHCASE		equ 2003
+IDC_CHK_ALLFILES		equ 2010
+IDC_RBN_ALL				equ 2011
+IDC_RBN_DOWN			equ 2005
+IDC_RBN_UP				equ 2006
 
-IDD_HEXFINDDLG				equ 4300
-IDC_FINDTEXT				equ 2001
-IDC_BTN_REPLACE				equ 2007
-IDC_REPLACETEXT				equ 2002
-IDC_HEXREPLACESTATIC		equ 2009
-IDC_BTN_REPLACEALL			equ 2008
-IDC_RBN_DOWN				equ 2005
-IDC_RBN_UP					equ 2006
-IDC_RBN_HEX					equ 2003
-IDC_RBN_ASCII				equ 2004
+IDD_HEXFINDDLG			equ 4300
+IDC_FINDTEXT			equ 2001
+IDC_BTN_REPLACE			equ 2007
+IDC_REPLACETEXT			equ 2002
+IDC_HEXREPLACESTATIC	equ 2009
+IDC_BTN_REPLACEALL		equ 2008
+IDC_RBN_DOWN			equ 2005
+IDC_RBN_UP				equ 2006
+IDC_RBN_HEX				equ 2003
+IDC_RBN_ASCII			equ 2004
 
 ;MasmEd.dlg
-IDD_DLG						equ 3000
-IDC_TBR						equ 1001
-IDC_TAB						equ 1004
-IDC_SBR						equ 1003
-IDC_SHP						equ 1005
-IDC_OUT						equ 1006
-IDC_IMMOUT					equ 1022
-IDC_DBGREG					equ 1020
-IDC_DBGWATCH				equ 1024
-IDC_FILE					equ 1014
-IDC_PROPERTY				equ 1015
-IDC_BTNTABCLOSE				equ 1002
-IDC_CLIENT					equ 1016
-IDC_STC						equ 1017
-IDC_CBO						equ 1018
-IDC_TABOUT					equ 1021
-IDC_TABWATCH				equ 1023
+IDD_DLG					equ 3000
+IDC_TBR					equ 1001
+IDC_TAB					equ 1004
+IDC_SBR					equ 1003
+IDC_SHP					equ 1005
+IDC_OUT					equ 1006
+IDC_IMMOUT				equ 1022
+IDC_DBGREG				equ 1020
+IDC_DBGWATCH			equ 1024
+IDC_FILE				equ 1014
+IDC_PROPERTY			equ 1015
+IDC_BTNTABCLOSE			equ 1002
+IDC_CLIENT				equ 1016
+IDC_STC					equ 1017
+IDC_CBO					equ 1018
+IDC_TABOUT				equ 1021
+IDC_TABWATCH			equ 1023
 
-IDC_TOOLBOX					equ 1101
-IDC_DLGEDIT					equ 1102
+IDC_TOOLBOX				equ 1101
+IDC_DLGEDIT				equ 1102
 
-IDD_DLGSAVEUNICODE			equ 9000
-IDC_CHKUNICODE				equ 1001
+IDD_DLGSAVEUNICODE		equ 9000
+IDC_CHKUNICODE			equ 1001
 
 DECLARE struct
-	hWin					HWND ?
-	cp						DWORD ?
+	hWin				HWND ?
+	cp					DWORD ?
 DECLARE ends
 
 DEBUGINFO struct
-	hWnd					HWND ?					; Handle of main window
-	hOut					HWND ?					; Handle of output window
-	hImmOut					HWND ?					; Handle of immediate window
-	hDbgReg					HWND ?					; Handle of debug register window
-	hDbgWatch				HWND ?					; Handle of debug watch window
-	hPrp					HWND ?					; Handle of properties window
-	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
-	fMainThread				DWORD ?					; Only main thread
-	lpCallBack				DWORD ?					; Callback
-	FileName				BYTE MAX_PATH dup(?)	; Filename
+	hWnd				HWND ?					; Handle of main window
+	hOut				HWND ?					; Handle of output window
+	hImmOut				HWND ?					; Handle of immediate window
+	hDbgReg				HWND ?					; Handle of debug register window
+	hDbgWatch			HWND ?					; Handle of debug watch window
+	hPrp				HWND ?					; Handle of properties window
+	lpNoDebug			DWORD ?					; Pointer to strings containing procs to not debug
+	fMainThread			DWORD ?					; Only main thread
+	lpCallBack			DWORD ?					; Callback
+	FileName			BYTE MAX_PATH dup(?)	; Filename
 DEBUGINFO ends
 
 DEBUGTIP struct
-	lpWord					DWORD ?
-	lpProc					DWORD ?
-	lpFileName				DWORD ?
-	nLine					DWORD ?
+	lpWord				DWORD ?
+	lpProc				DWORD ?
+	lpFileName			DWORD ?
+	nLine				DWORD ?
 DEBUGTIP ends
 
 FILENOTIFYPATH struct
-	nCount					DWORD ?
-	path					BYTE MAX_PATH dup(?)
+	nCount				DWORD ?
+	path				BYTE MAX_PATH dup(?)
 FILENOTIFYPATH ends
 
 FILENOTIFY struct
-	hThread					HANDLE ?
-	lpPath					DWORD ?
-	nCount					DWORD ?
-	lpHandle				DWORD ?
-	lpPtrPth				DWORD ?
+	hThread				HANDLE ?
+	lpPath				DWORD ?
+	nCount				DWORD ?
+	lpHandle			DWORD ?
+	lpPtrPth			DWORD ?
 FILENOTIFY ends
 
 WINPOS struct
-	fMax					DWORD ?
-	fView					DWORD ?
-	x						DWORD ?
-	y						DWORD ?
-	wt						DWORD ?
-	ht						DWORD ?
-	htout					DWORD ?
-	wtfile					DWORD ?
-	wtprop					DWORD ?
-	htprop					DWORD ?
-	left					DWORD ?
-	top						DWORD ?
-	wttoolbox				DWORD ?
+	fMax				DWORD ?
+	fView				DWORD ?
+	x					DWORD ?
+	y					DWORD ?
+	wt					DWORD ?
+	ht					DWORD ?
+	htout				DWORD ?
+	wtfile				DWORD ?
+	wtprop				DWORD ?
+	htprop				DWORD ?
+	left				DWORD ?
+	top					DWORD ?
+	wttoolbox			DWORD ?
 WINPOS ends
 
 EDITOPT struct
-	tabsize					DWORD ?
-	exptabs					DWORD ?
-	indent					DWORD ?
-	hiliteline				DWORD ?
-	hilitecmnt				DWORD ?
-	session					DWORD ?
-	linenumber				DWORD ?
+	tabsize				DWORD ?
+	exptabs				DWORD ?
+	indent				DWORD ?
+	hiliteline			DWORD ?
+	hilitecmnt			DWORD ?
+	session				DWORD ?
+	linenumber			DWORD ?
 EDITOPT ends
 
 PRNPOS struct
-	margins					RECT <?>
-	pagesize				POINT <?>
-	nlinespage				DWORD ?
+	margins				RECT <?>
+	pagesize			POINT <?>
+	nlinespage			DWORD ?
 PRNPOS ends
 
 NAMEEXPORT struct
-	nType					DWORD ?
-	szFileName				BYTE MAX_PATH dup(?)
-	nOutput					DWORD ?
-	fAuto					DWORD ?
+	nType				DWORD ?
+	szFileName			BYTE MAX_PATH dup(?)
+	nOutput				DWORD ?
+	fAuto				DWORD ?
 NAMEEXPORT ends
 
 GRIDSIZE struct
-	x						DWORD ?
-	y						DWORD ?
-	show					DWORD ?
-	snap					DWORD ?
-	tips					DWORD ?
-	color					DWORD ?
-	line					DWORD ?
-	stylehex				DWORD ?
+	x					DWORD ?
+	y					DWORD ?
+	show				DWORD ?
+	snap				DWORD ?
+	tips				DWORD ?
+	color				DWORD ?
+	line				DWORD ?
+	stylehex			DWORD ?
 GRIDSIZE ends
 
 MEDCOLOR struct
-	racol					RACOLOR <?>
-	toolback				DWORD ?
-	tooltext				DWORD ?
-	dialogback				DWORD ?
-	dialogtext				DWORD ?
-	styles					DWORD ?
-	words					DWORD ?
-	ccback					DWORD ?
-	cctext					DWORD ?
-	ttback					DWORD ?
-	tttext					DWORD ?
-	ttapi					DWORD ?
-	ttsel					DWORD ?
+	racol				RACOLOR <?>
+	toolback			DWORD ?
+	tooltext			DWORD ?
+	dialogback			DWORD ?
+	dialogtext			DWORD ?
+	styles				DWORD ?
+	words				DWORD ?
+	ccback				DWORD ?
+	cctext				DWORD ?
+	ttback				DWORD ?
+	tttext				DWORD ?
+	ttapi				DWORD ?
+	ttsel				DWORD ?
 MEDCOLOR ends
 
 THEME struct
-	szname					BYTE 32 dup(?)
-	kwcol					DWORD 16 dup(?)
-	medcol					MEDCOLOR <>
+	szname				BYTE 32 dup(?)
+	kwcol				DWORD 16 dup(?)
+	medcol				MEDCOLOR <>
 THEME ends
 
 ifndef MENUINFO
 MENUINFO STRUCT
-	cbSize					DWORD	?
-	fMask					DWORD	?
-	dwstyle					DWORD	?
-	cyMax					DWORD	?
-	hbrBack					DWORD	?
-	dwContextHelpID			DWORD	?
-	dwMenuData				DWORD	?
+	cbSize				DWORD	?
+	fMask				DWORD	?
+	dwstyle				DWORD	?
+	cyMax				DWORD	?
+	hbrBack				DWORD	?
+	dwContextHelpID		DWORD	?
+	dwMenuData			DWORD	?
 MENUINFO ends
 endif
 
 MENUDATA struct
-	img						DWORD ?
-	tpe						DWORD ?
+	img					DWORD ?
+	tpe					DWORD ?
 MENUDATA ends
 
 PROPERTIES	struct
-	nSize					DWORD ?
-	nOwner					DWORD ?
-	nLine					DWORD ?
-	nEnd					DWORD ?
-	nType					BYTE ?
+	nSize				DWORD ?
+	nOwner				DWORD ?
+	nLine				DWORD ?
+	nEnd				DWORD ?
+	nType				BYTE ?
 PROPERTIES ends
 
 .const

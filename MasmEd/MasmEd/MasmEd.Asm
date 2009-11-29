@@ -821,6 +821,8 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	EnableDisable
 				mov		edx,IDM_EDIT_BLOCKCONVERT
 				call	EnableDisable
+				mov		edx,IDM_EDIT_BLOCKSPCTRIM
+				call	EnableDisable
 				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
 				mov		edx,IDM_EDIT_PASTE
 				call	EnableDisable
@@ -1035,6 +1037,8 @@ DisableEdit:
 	mov		edx,IDM_EDIT_UNCOMMENT
 	call	EnableDisable
 	mov		edx,IDM_EDIT_BLOCKCONVERT
+	call	EnableDisable
+	mov		edx,IDM_EDIT_BLOCKSPCTRIM
 	call	EnableDisable
 
 	mov		edx,IDM_DEBUG_TOGGLE
