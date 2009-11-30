@@ -977,6 +977,10 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim buffer As ZString*260
+	Dim hrect As RECT
+	Dim mrect As RECT
+	Dim x As Integer
+	Dim fMove As Integer
 	Static i As Integer=-1
 
 	Select Case uMsg
@@ -1045,13 +1049,27 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				ht.pt.y=HiWord(lParam)
 				lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
 				If lret<>i And lret>=0 And i>=0 Then
-					tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
-					tci.pszText=@buffer
-					tci.cchTextMax=260
-					SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
-					SendMessage(hWin,TCM_DELETEITEM,i,0)
-					SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
-					i=lret
+					SendMessage(hWin,TCM_GETITEMRECT,lret,@hrect)
+					SendMessage(hWin,TCM_GETITEMRECT,i,@mrect)
+					x=hrect.left+(hrect.right-hrect.left)/2
+					If mrect.left>hrect.left Then
+						If ht.pt.x<x Then
+							fMove=TRUE
+						EndIf
+					Else
+						If ht.pt.x>x Then
+							fMove=TRUE
+						EndIf
+					EndIf
+					If fMove Then
+						tci.mask=TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
+						tci.pszText=@buffer
+						tci.cchTextMax=260
+						SendMessage(hWin,TCM_GETITEM,i,Cast(LPARAM,@tci))
+						SendMessage(hWin,TCM_DELETEITEM,i,0)
+						SendMessage(hWin,TCM_INSERTITEM,lret,Cast(LPARAM,@tci))
+						i=lret
+					EndIf
 				EndIf
 				Return 0
 			EndIf

@@ -1,6 +1,7 @@
 Whats new:
 ----------
 1.0.7.3b
+o Some improvement when moving a tab.
 o Fixed bug with Run. The file path was not quoted.
 o Fixed bug with trim trailing spaces. Line changed state was not updated.
 1.0.7.3
