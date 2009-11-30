@@ -1,5 +1,8 @@
 Whats new:
 ----------
+1.0.7.3b
+o Fixed bug with Run. The file path was not quoted.
+o Fixed bug with trim trailing spaces. Line changed state was not updated.
 1.0.7.3
 o Added register window to debug.
 o Fixed bug where the string !"Hello \n\"world\"!!!!!" would not be highlighted correctly.

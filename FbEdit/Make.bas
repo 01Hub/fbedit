@@ -166,9 +166,9 @@ Function MakeRun(ByVal sFile As String,ByVal fDebug As Boolean) As Integer
 	Dim fval As ZString Ptr
 
 	GetFullPathName(@sFile,260,@buff,@fval)
-	buff=RemoveFileExt(buff) & ".exe"
+	buff=!"\"" & RemoveFileExt(buff) & ".exe" & !"\""
 	If fDebug Then
-		buff=ad.smakerundebug & " " & """" & buff & """"
+		buff=ad.smakerundebug & " " & buff
 	EndIf
 	If Len(ad.smakerun) Then
 		buff=buff & " " & ad.smakerun
