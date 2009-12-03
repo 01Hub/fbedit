@@ -54,8 +54,8 @@ IDM_FILE_EXIT					equ 10003
 
 szBrowse			db 'Browse For Folder',0
 szBackSlash			db '\',0
-szJPG				db '*.jpg',0
-szFmt				db '\%d.jpg',0
+szJPG				db '*.*',0
+szFmt				db '\Img%d.jpg',0
 
 .data?
 

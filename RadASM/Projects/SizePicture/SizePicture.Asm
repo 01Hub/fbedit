@@ -103,6 +103,8 @@ ScanDir proc lpPth:DWORD
 				.endif
 				;Add new dir to path
 				invoke lstrcpy,addr buffer[edx],addr wfd.cFileName
+lea eax,buffer
+PrintStringByAddr eax
 				;Call myself again, thats recursive!
 				invoke ScanDir,addr buffer
 				pop		edx
