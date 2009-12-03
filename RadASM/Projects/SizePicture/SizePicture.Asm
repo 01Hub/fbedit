@@ -90,8 +90,6 @@ ScanDir proc lpPth:DWORD
 			;Do not include '.' and '..'
 			mov		al,wfd.cFileName
 			.if al!='.'
-				;invoke TrvAddNode,hTrv,hPar,addr wfd.cFileName,IML_START+0
-				;mov		hpar,eax
 				invoke lstrlen,addr buffer
 				mov		edx,eax
 				push	edx
@@ -103,8 +101,6 @@ ScanDir proc lpPth:DWORD
 				.endif
 				;Add new dir to path
 				invoke lstrcpy,addr buffer[edx],addr wfd.cFileName
-lea eax,buffer
-PrintStringByAddr eax
 				;Call myself again, thats recursive!
 				invoke ScanDir,addr buffer
 				pop		edx
@@ -112,22 +108,33 @@ PrintStringByAddr eax
 				mov		buffer[edx],0
 			.endif
 		.else
-			;Add file
-			invoke lstrcpy,offset OpenFileName,addr buffer
-			invoke lstrlen,offset OpenFileName
-			.while eax && OpenFileName[eax-1]!='\'
-				dec		eax
-			.endw
-			mov		OpenFileName[eax],0
-			invoke lstrcat,offset OpenFileName,addr wfd.cFileName
-PrintStringByAddr offset OpenFileName
-			invoke lstrcpy,offset SaveFileName,offset DestPath
-			invoke wsprintf,offset Temp,offset szFmt,Inx
-			invoke lstrcat,offset SaveFileName,offset Temp
-			inc		Inx
-PrintStringByAddr offset SaveFileName
-
-			;invoke GetImage,offset OpenFileName,640,426,0
+			invoke lstrlen,addr wfd.cFileName
+			.if eax>4
+				invoke lstrcmpi,addr wfd.cFileName[eax-3],offset DefJpgExt
+				.if !eax
+					;Add file
+					invoke lstrcpy,offset OpenFileName,addr buffer
+					invoke lstrlen,offset OpenFileName
+					.while eax && OpenFileName[eax-1]!='\'
+						dec		eax
+					.endw
+					mov		OpenFileName[eax],0
+					invoke lstrcat,offset OpenFileName,addr wfd.cFileName
+					.if DestPath
+						invoke lstrcpy,offset SaveFileName,offset DestPath
+						invoke wsprintf,offset Temp,offset szFmt,Inx
+						invoke lstrcat,offset SaveFileName,offset Temp
+						inc		Inx
+						invoke GetImage,offset OpenFileName,640,426,offset SaveFileName
+						invoke SendDlgItemMessage,hDlg,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+						invoke DeleteObject,eax
+					.else
+						invoke GetImage,offset OpenFileName,640,426,0
+						invoke SendDlgItemMessage,hDlg,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+						invoke DeleteObject,eax
+					.endif
+				.endif
+			.endif
 		.endif
 		;Any more matches?
 		invoke FindNextFile,hwfd,addr wfd
@@ -146,7 +153,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-
+		mov		eax,hWin
+		mov		hDlg,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx

@@ -260,9 +260,10 @@ Save_Image proc uses ebx,lpImage:DWORD,lpFileName:DWORD
 
 Save_Image endp
 
-Load_Image proc lpLoadFileName:DWORD,wt:DWORD,ht:DWORD,lpSaveFileName:DWORD
+Load_Image proc uses ebx,lpLoadFileName:DWORD,wt:DWORD,ht:DWORD,lpSaveFileName:DWORD
 	LOCAL	hBmp:DWORD
-
+	LOCAL	iwt:DWORD
+	LOCAL	iht:DWORD
 	; Tambien utiliza las variables globales Destinoimagenrec, grafico, hBitmap
 	; Convert Image Filename to Wide character other wise it will return error
 	invoke MultiByteToWideChar,CP_ACP,0,lpLoadFileName,-1,offset wbuffer,MAX_PATH
@@ -286,12 +287,24 @@ Load_Image proc lpLoadFileName:DWORD,wt:DWORD,ht:DWORD,lpSaveFileName:DWORD
 		invoke GdipGetImageVerticalResolution,imagen1,addr VerRes
 		; Set new image vertical and horizontal resolution to match orignal image resolution
 		invoke GdipBitmapSetResolution,imagen2,HorRes,VerRes
+		invoke GdipGetImageWidth,imagen1,addr iwt
+		invoke GdipGetImageHeight,imagen1,addr iht
+		mov		eax,iwt
+		shl		eax,8
+		mov		ecx,iht
+		xor		edx,edx
+		div		ecx
+		mov		ebx,eax
 		; Create new graphics object from new image
 		invoke GdipGetImageGraphicsContext,imagen2,addr grafico
 		;	 RGB 0,0,0
 		; Set image background to Black color
 		invoke GdipGraphicsClear,grafico,0
 		; Draw resized original image to graphic object of new bitmap
+		mov		eax,ht
+		mul		ebx
+		shr		eax,8
+		mov		wt,eax
 		invoke GdipDrawImageRectI,grafico,imagen1,0,0,wt,ht
 		; Destroy orignal image
 		invoke GdipDisposeImage,imagen1

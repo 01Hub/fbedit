@@ -68,6 +68,6 @@ Inx					dd ?
 pidl				dd ?
 bri					BROWSEINFO <?>
 wfd					WIN32_FIND_DATA <?>
-
+hDlg				HWND ?
 
 ;#########################################################################
