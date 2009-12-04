@@ -125,6 +125,7 @@ ScanDir proc lpPth:DWORD
 						invoke GetImage,offset OpenFileName,PIXWT,PIXHT,offset SaveFileName
 						invoke SendDlgItemMessage,hDlg,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
 						invoke DeleteObject,eax
+						invoke SetDlgItemInt,hDlg,IDC_EDTINDEX,Inx,FALSE
 					.else
 						invoke GetImage,offset OpenFileName,PIXWT,PIXHT,0
 						invoke SendDlgItemMessage,hDlg,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
@@ -146,11 +147,14 @@ ScanDir endp
 
 DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
+		invoke wsprintf,addr buffer,offset szFmtSize,PIXWT,PIXHT
+		invoke SetDlgItemText,hWin,IDC_STCSIZE,addr buffer
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -192,7 +196,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
 					invoke DeleteObject,eax
 				.endif
-			.elseif eax==IDM_FILE_EXIT
+			.elseif eax==IDM_FILE_EXIT || eax==IDCANCEL
 				invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,0
 				invoke DeleteObject,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

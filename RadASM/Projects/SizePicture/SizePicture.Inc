@@ -36,6 +36,7 @@ IDC_BTNDEST						equ 1004
 IDC_EDTDEST						equ 1005
 IDC_EDTINDEX					equ 1006
 IDC_BTNCONVERT					equ 1007
+IDC_STCSIZE						equ 1008
 
 ;SizePicture.mnu
 IDR_MENU						equ 10000
@@ -58,6 +59,7 @@ szBrowseDestination				db 'Browse For Destination Folder',0
 szBackSlash						db '\',0
 szJPG							db '*.*',0
 szFmt							db '\Img%d.jpg',0
+szFmtSize						db 'Converted picture size %d x %d',0
 
 .data?
 
