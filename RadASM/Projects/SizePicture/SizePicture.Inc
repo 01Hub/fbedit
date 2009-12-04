@@ -22,16 +22,7 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
-DlgProc				PROTO	:HWND,:UINT,:WPARAM,:LPARAM
-
-IDD_DIALOG1			equ 101
-
-.const
-
-JPGFilterString		db 'Picture (*.jpg)',0,'*.jpg',0,0
-DefJpgExt			db 'jpg',0
-
-;#########################################################################
+DlgProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 
 ;Res\SizePictureRes.rc
 IDB_BLACK						equ 100
@@ -52,22 +43,34 @@ IDM_FILE_OPEN					equ 10001
 IDM_FILE_SAVE					equ 10002
 IDM_FILE_EXIT					equ 10003
 
-szBrowse			db 'Browse For Folder',0
-szBackSlash			db '\',0
-szJPG				db '*.*',0
-szFmt				db '\Img%d.jpg',0
+; Size of frame 150x83 mm, 640*354px
+PIXWT							equ 640
+PIXHT							equ 426
+
+.const
+
+;#########################################################################
+
+JPGFilterString					db 'Picture (*.jpg)',0,'*.jpg',0,0
+DefJpgExt						db 'jpg',0
+szBrowseSource					db 'Browse For Source Folder',0
+szBrowseDestination				db 'Browse For Destination Folder',0
+szBackSlash						db '\',0
+szJPG							db '*.*',0
+szFmt							db '\Img%d.jpg',0
 
 .data?
 
-hInstance			dd ?
-OpenFileName		db MAX_PATH dup(?)
-DestPath			db MAX_PATH dup(?)
-SaveFileName		db MAX_PATH dup(?)
-Temp				db MAX_PATH dup(?)
-Inx					dd ?
-pidl				dd ?
-bri					BROWSEINFO <?>
-wfd					WIN32_FIND_DATA <?>
-hDlg				HWND ?
+hInstance						HINSTANCE ?
+hDlg							HWND ?
+OpenFileName					db MAX_PATH dup(?)
+SaveFileName					db MAX_PATH dup(?)
+SourcePath						db MAX_PATH dup(?)
+DestPath						db MAX_PATH dup(?)
+Temp							db MAX_PATH dup(?)
+Inx								dd ?
+pidl							dd ?
+bri								BROWSEINFO <?>
+wfd								WIN32_FIND_DATA <?>
 
 ;#########################################################################

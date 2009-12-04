@@ -1,4 +1,3 @@
-; Size of frame 150x83 mm, 640*354px
 .386
 .model flat, stdcall  ;32 bit memory model
 option casemap :none  ;case sensitive
@@ -20,13 +19,12 @@ start:
 
 ;########################################################################
 
-BrowseFolder proc hWin:HWND,nID:DWORD
+BrowseFolder proc hWin:HWND,nID:DWORD,lpCaption:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		bri.pidlRoot,0
 	mov		bri.pszDisplayName,0
-;	mov		eax,offset szBrowse
-	xor		eax,eax
+	mov		eax,lpCaption
 	mov		bri.lpszTitle,eax
 	mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
 	mov		bri.lpfn,BrowseCallbackProc
@@ -55,7 +53,6 @@ BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpData:DWORD
 	mov eax,uMsg
 	.if eax==BFFM_INITIALIZED
 		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpData
-		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
 	.endif
 	xor eax, eax
 	ret
@@ -125,12 +122,12 @@ ScanDir proc lpPth:DWORD
 						invoke wsprintf,offset Temp,offset szFmt,Inx
 						invoke lstrcat,offset SaveFileName,offset Temp
 						inc		Inx
-						invoke GetImage,offset OpenFileName,640,426,offset SaveFileName
-						invoke SendDlgItemMessage,hDlg,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+						invoke GetImage,offset OpenFileName,PIXWT,PIXHT,offset SaveFileName
+						invoke SendDlgItemMessage,hDlg,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
 						invoke DeleteObject,eax
 					.else
-						invoke GetImage,offset OpenFileName,640,426,0
-						invoke SendDlgItemMessage,hDlg,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+						invoke GetImage,offset OpenFileName,PIXWT,PIXHT,0
+						invoke SendDlgItemMessage,hDlg,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
 						invoke DeleteObject,eax
 					.endif
 				.endif
@@ -149,7 +146,6 @@ ScanDir endp
 
 DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
-	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -169,15 +165,13 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		ofn.hInstance,eax
 				mov		ofn.lpstrFilter,offset JPGFilterString
 				mov		ofn.lpstrFile,offset OpenFileName
-				;mov		byte ptr [OpenFileName],0
 				mov		ofn.nMaxFile,sizeof OpenFileName
-				mov		ofn.lpstrDefExt,0;offset DefJpgExt
+				mov		ofn.lpstrDefExt,0
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
 				invoke GetOpenFileName,addr ofn
 				.if eax
-					;invoke GetImage,offset OpenFileName,640,480,0
-					invoke GetImage,offset OpenFileName,640,426,0
-					invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
+					invoke GetImage,offset OpenFileName,PIXWT,PIXHT,0
+					invoke SendDlgItemMessage,hWin,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
 					invoke DeleteObject,eax
 				.endif
 			.elseif eax==IDM_FILE_SAVE
@@ -189,14 +183,12 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				pop		ofn.hInstance
 				mov		ofn.lpstrFilter,offset JPGFilterString
 				mov		ofn.lpstrFile,offset SaveFileName
-				;mov		byte ptr [SaveFileName],0
 				mov		ofn.nMaxFile,sizeof SaveFileName
 				mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
 				mov		ofn.lpstrDefExt,offset DefJpgExt
 				invoke GetSaveFileName,addr ofn
 				.if eax
-					;invoke GetImage,offset OpenFileName,640,480,offset SaveFileName
-					invoke GetImage,offset OpenFileName,640,426,offset SaveFileName
+					invoke GetImage,offset OpenFileName,PIXWT,PIXHT,offset SaveFileName
 					invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
 					invoke DeleteObject,eax
 				.endif
@@ -205,15 +197,17 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DeleteObject,eax
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNCONVERT
-				invoke GetDlgItemText,hWin,IDC_EDTDEST,addr DestPath,sizeof DestPath
-				invoke GetDlgItemText,hWin,IDC_EDTSOURCE,addr buffer,sizeof buffer
-				invoke GetDlgItemInt,hWin,IDC_EDTINDEX,NULL,FALSE
-				mov		Inx,eax
-				invoke ScanDir,addr buffer
+				invoke GetDlgItemText,hWin,IDC_EDTSOURCE,offset SourcePath,sizeof SourcePath
+				.if SourcePath
+					invoke GetDlgItemText,hWin,IDC_EDTDEST,offset DestPath,sizeof DestPath
+					invoke GetDlgItemInt,hWin,IDC_EDTINDEX,NULL,FALSE
+					mov		Inx,eax
+					invoke ScanDir,offset SourcePath
+				.endif
 			.elseif eax==IDC_BTNSOURCE
-				invoke BrowseFolder,hWin,IDC_EDTSOURCE
+				invoke BrowseFolder,hWin,IDC_EDTSOURCE,offset szBrowseSource
 			.elseif eax==IDC_BTNDEST
-				invoke BrowseFolder,hWin,IDC_EDTDEST
+				invoke BrowseFolder,hWin,IDC_EDTDEST,offset szBrowseDestination
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
