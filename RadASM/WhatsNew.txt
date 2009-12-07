@@ -3,8 +3,8 @@ RadASM 2.2.1.8
 2.2.1.8f
 o Adding a project file keeps the expanded / collapsed state of the project browser.
 o The expanded / collapsed state of the project browser is saved to the project file.
-o You can no longer delete a group with soub groups using the Project Groups tool.
-  You must delete the soub groups first. In previous versions this caused a group messup.
+o You can no longer delete a group with sub groups using the Project Groups tool.
+  You must delete the sub groups first. In previous versions this caused a group messup.
 o Fixed a bug in RAEdit when drawing the tab markers.
 2.2.1.8e
 o Improved 'Goto Declare' and double clicking in properties (better support for Obj32Asm).
