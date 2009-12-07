@@ -159,6 +159,8 @@ GroupGetExpand					PROTO :HWND
 GroupUpdateGroup				PROTO :HWND
 GroupSaveGroups					PROTO :HWND
 GroupGetGroups					PROTO :HWND
+GetGroupState					PROTO :HWND,:DWORD
+SetGroupState					PROTO :HWND,:DWORD
 
 ;wsprintfA						PROTO C :DWORD,:VARARG
 wsprintf						equ <wsprintfA>
@@ -1187,7 +1189,7 @@ lpAddWordToWordList				dd offset AddWordToWordList
 lpRefreshProperty				dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName							db 'RadASM version 2.2.1.8e',0
+AppName							db 'RadASM version 2.2.1.8f',0
 DisplayName						db 'RadASM',0
 AboutMsg						db 'RadASM (C) KetilO 2001-2009',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1						db 'http://radasm.cherrytree.at/',0
@@ -1383,6 +1385,7 @@ iniProjectBackup				db 'Backup',0
 iniProjectFiles					db 'Files',0
 iniProjectSize					db 'Size',0
 iniAutoLoad						db 'AutoLoad',0
+iniGroupExpand					db 'GroupExpand',0
 iniProjectBookMark				db 'BookMark',0
 iniProjectBreakPoint			db 'BreakPoint',0
 iniProjectGroup					db 'Group',0
@@ -1960,3 +1963,4 @@ hHtmlOcx 						HMODULE ?
 pHtmlHelpProc 					dd ?
 hHHwin							HWND ?
 hhaklink						HH_AKLINK <>
+groupstate						dd 128 dup(?)

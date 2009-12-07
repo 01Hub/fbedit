@@ -771,6 +771,7 @@ DeleteProject endp
 
 GetProject proc	uses edi
 	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[16]:BYTE
 
 	xor		eax,eax
 	mov		fResChanged,eax
@@ -847,11 +848,25 @@ GetProject proc	uses edi
 		invoke RefreshProperty
 		mov		fProperty,4
 		invoke SetProperty,0,0
+		invoke GroupCollapseAll,hPbrTrv,hRoot
 		.if	hMdiCld
 			invoke ProSetTrv,hMdiCld
 		.else
 			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
 		.endif
+
+		invoke GetPrivateProfileString,addr iniGroupExpand,addr iniGroupExpand,addr szNULL,addr buffer,sizeof buffer,addr ProjectFile
+		xor		edi,edi
+	  @@:
+		invoke iniGetItem,addr buffer,addr buffer1
+		.if buffer1
+			invoke DecToBin,addr buffer1
+			mov		groupstate[edi*4],eax
+			lea		edi,[edi+1]
+			jmp		@b
+		.endif
+		xor		edi,edi
+		invoke SetGroupState,hPbrTrv,hRoot
 		invoke EnableProjectBrowser,TRUE
 		invoke DllProc,hWnd,AIM_PROJECTOPENED,0,addr ProjectFile,RAM_PROJECTOPENED
 		invoke LoadCursor,0,IDC_ARROW
@@ -1143,7 +1158,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 
 GetProjectFiles	 endp
 
-CloseProject proc uses esi
+CloseProject proc uses esi edi
 	LOCAL	tci:TCITEM
 	LOCAL	nInx:DWORD
 
@@ -1190,6 +1205,21 @@ CloseProject proc uses esi
 		invoke SendMessage,hWnd,WM_COMMAND,IDM_WINDOW_CLOSEALL,0
 		.if	hMdiCld==0
 			invoke WritePrivateProfileString,addr iniAutoLoad,addr iniAutoLoad,offset tempbuff,addr ProjectFile
+			xor		edi,edi
+			invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+			invoke GetGroupState,hPbrTrv,eax
+			xor		esi,esi
+			mov		tempbuff,0
+			.while esi<edi
+				mov		eax,groupstate[esi*4]
+				.if eax
+					mov		eax,1
+				.endif
+				invoke iniPutItem,eax,offset tempbuff,TRUE
+				inc		esi
+			.endw
+			invoke iniPutItem,0,offset tempbuff,FALSE
+			invoke WritePrivateProfileString,addr iniGroupExpand,addr iniGroupExpand,offset tempbuff,addr ProjectFile
 			invoke SetWindowText,hWnd,addr DisplayName
 			invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,hRoot
 			invoke UpdateWindow,hPbrTrv
@@ -1375,9 +1405,21 @@ AddProjectFile proc	uses esi edi,lpszFileName:DWORD,fTree:DWORD,fModule:DWORD
 				.endif
 				invoke BinToDec,edx,addr buffer2
 				invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer1,addr buffer2,addr ProjectFile
+				invoke SendMessage,hPbrTrv,WM_SETREDRAW,FALSE,0
+				invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+				xor		edi,edi
+				invoke GetGroupState,hPbrTrv,eax
+				invoke GroupGetProjectFiles
+				invoke GroupUpdateTrv,hPbrTrv
+				invoke GroupCollapseAll,hPbrTrv,0
+				invoke SendMessage,hPbrTrv,WM_SETREDRAW,TRUE,0
+				invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+				xor		edi,edi
+				invoke SetGroupState,hPbrTrv,eax
+			.else
+				invoke GroupGetProjectFiles
+				invoke GroupUpdateTrv,hPbrTrv
 			.endif
-			invoke GroupGetProjectFiles
-			invoke GroupUpdateTrv,hPbrTrv
 		.endif
 		invoke strcpy,offset FileName,offset ProjectPath
 		invoke strcat,offset FileName,lpFileName

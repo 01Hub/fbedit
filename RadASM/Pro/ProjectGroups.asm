@@ -142,6 +142,49 @@ GroupGetProjectFiles proc uses ebx esi edi
 
 GroupGetProjectFiles endp
 
+GetGroupState proc hTrv:HWND,hItem:DWORD
+	LOCAL	tvi:TV_ITEM
+
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
+	.while eax
+		mov		tvi.hItem,eax
+		mov		tvi._mask,TVIF_PARAM or TVIF_STATE
+		invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
+		.if sdword ptr tvi.lParam<0 && eax
+			mov		eax,tvi.state
+			and		eax,TVIS_EXPANDED
+			mov		groupstate[edi*4],eax
+			lea		edi,[edi+1]
+			invoke GetGroupState,hTrv,tvi.hItem
+		.endif
+		invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+	.endw
+	ret
+
+GetGroupState endp
+
+SetGroupState proc hTrv:HWND,hItem:DWORD
+	LOCAL	tvi:TV_ITEM
+
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
+	.while eax
+		mov		tvi.hItem,eax
+		mov		tvi._mask,TVIF_PARAM or TVIF_STATE
+		invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
+		.if sdword ptr tvi.lParam<0 && eax
+			mov		eax,groupstate[edi*4]
+			.if eax
+				invoke SendMessage,hTrv,TVM_EXPAND,TVE_EXPAND,tvi.hItem
+			.endif
+			lea		edi,[edi+1]
+			invoke SetGroupState,hTrv,tvi.hItem
+		.endif
+		invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+	.endw
+	ret
+
+SetGroupState endp
+
 GroupAddNode proc uses esi,hTrv:HWND,lpFileName:DWORD,iNbr:DWORD,nGrp:DWORD,fModule:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -532,6 +575,7 @@ GroupTVEndDrag proc uses ebx esi,hWin:HWND
 	invoke GetParent,hWin
 	invoke ChildWindowFromPoint,eax,pt.x,pt.y
 	.if eax==hWin
+		invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
 		invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_DROPHILITE,NULL
 		invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_ROOT,NULL
 		mov		hroot,eax
@@ -584,6 +628,7 @@ GroupTVEndDrag proc uses ebx esi,hWin:HWND
 				invoke GroupEnsureVisible,hWin
 			.endif
 		.endif
+		invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
 	.endif
 	invoke GetDesktopWindow
 	invoke ImageList_DragLeave,eax
@@ -678,6 +723,9 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		mov		hProjectGroup,eax
 		invoke GetDlgItem,hWin,IDC_TRVPROJECT
 		mov		hGrpTrv,eax
+		invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+		xor		edi,edi
+		invoke GetGroupState,hPbrTrv,eax
 		invoke SendMessage,hGrpTrv,TVM_SETBKCOLOR,0,radcol.project
 		invoke SendMessage,hGrpTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
 		invoke SendMessage,hGrpTrv,TVM_SETIMAGELIST,0,hTbrIml
@@ -687,7 +735,12 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		rep movsb
 		invoke GroupGetProjectFiles
 		invoke GroupUpdateTrv,hGrpTrv
-		invoke GroupExpandAll,hGrpTrv,0
+		invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+		push	eax
+		invoke GroupCollapseAll,hGrpTrv,eax
+		pop		eax
+		xor		edi,edi
+		invoke SetGroupState,hGrpTrv,eax
 		invoke SetDlgItemText,hWin,IDC_EDTDEFGROUP,addr szGroups
 		invoke SetLanguage,hWin,IDD_DLGPROJECTGROUPS,FALSE
 	.elseif eax==WM_COMMAND
@@ -696,8 +749,17 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+				xor		edi,edi
+				invoke GetGroupState,hGrpTrv,eax
 				invoke GroupSaveGroups,hGrpTrv
 				invoke GetProjectFiles,FALSE
+				invoke SendMessage,hPbrTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
+				push	eax
+				invoke GroupCollapseAll,hPbrTrv,eax
+				pop		eax
+				xor		edi,edi
+				invoke SetGroupState,hPbrTrv,eax
 				invoke GetDlgItemText,hWin,IDC_EDTDEFGROUP,offset szGroups,sizeof szGroups
 				invoke WritePrivateProfileString,addr iniProjectGroup,addr iniProjectGroup,addr szGroups,addr iniAsmFile
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
