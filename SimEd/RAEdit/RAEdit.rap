@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=1
+Debug=0
 Ver.rc=1
 Res.rc=1
 
@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.421
-PV=1.2.0.421
+FV=1.2.0.423
+PV=1.2.0.423
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.421
+ProductVersion=1.2.0.423
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.421
+FileVersion=1.2.0.423
 CompanyName=
 
 [Resource]
@@ -110,7 +110,7 @@ CompanyName=
 19=0,0,0,0,9258
 2=0,0,0,0,5386
 9=0,0,0,0,10650
-10=0,0,0,0,21248
+10=0,0,0,0,7772
 11=0,0,0,0,5553
 20=0,0,0,0,3058
 15=0,0,0,0,6045
@@ -137,19 +137,19 @@ CompanyName=
 0=
 
 [Find]
-1="REM_TRIMSPACE"
-2="REM_ISINBLOCK"
-3="STATE_BLOCKEND"
-4="_REM_SETSTYLEEX"
-5="SetCaret"
-6="WM_SETFOCUS"
-7="HideCaret"
-8="PrintText"
-9="CreateCaret"
-10="ShowCaret"
+1=".while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len"
+2="REM_TRIMSPACE"
+3="REM_ISINBLOCK"
+4="STATE_BLOCKEND"
+5="_REM_SETSTYLEEX"
+6="SetCaret"
+7="WM_SETFOCUS"
+8="HideCaret"
+9="PrintText"
+10="CreateCaret"
 
 [AutoLoad]
-AutoLoad=1,10,16,26,2,23,14
+AutoLoad=1,16,26,2,23,10,14
 
 [Version-Inc]
 Options=52
@@ -189,7 +189,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -248,7 +248,7 @@ Group=Assembly,Resources,Misc
 14=
 
 [PTimer]
-PTimer=158996341
+PTimer=159801587
 
 [Exports]
 1=GetDef

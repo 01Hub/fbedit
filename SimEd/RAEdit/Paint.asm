@@ -383,7 +383,7 @@ DrawWord:
 		div		ecx
 		mul		ecx
 		add		eax,rcleft
-		.while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len
+		.while byte ptr [esi+edi]==VK_TAB && edi<[esi-sizeof CHARS].CHARS.len
 			call	DrawTabMarker
 			add		eax,ecx
 			inc		edi
@@ -413,7 +413,7 @@ DrawWord:
 		mov		edx,[ebx].EDIT.fntinfo.tabwt
 		add		edx,eax
 		mov		edx,eax
-		.while byte ptr [esi+edi]==VK_SPACE && edi<[esi].CHARS.len
+		.while byte ptr [esi+edi]==VK_SPACE && edi<[esi-sizeof CHARS].CHARS.len
 			.if eax==edx
 				add		edx,[ebx].EDIT.fntinfo.tabwt
 				call	DrawTabMarker
