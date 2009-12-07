@@ -1588,7 +1588,7 @@ EnableProjectBrowser proc fFlag:DWORD
 
 EnableProjectBrowser endp
 
-ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
 	LOCAL	tvi:TV_ITEMEX
@@ -2000,35 +2000,47 @@ ToolCldWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke strcpy,addr buffer,[ebx].NMTVDISPINFO.item.pszText
 					invoke strcmp,addr buffer,offset FileToCopy
 					.if eax
-						invoke SetCurrentDirectory,offset ProjectPath
-						invoke MoveFile,offset FileToCopy,addr buffer
-						.if eax
-							mov		eax,[ebx].NMTVDISPINFO.item.lParam
-							mov		edx,eax
-							invoke BinToDec,edx,addr buffer1
-							invoke WritePrivateProfileString,addr iniProjectFiles,addr buffer1,addr buffer,addr ProjectFile
-							invoke GetPrivateProfileSection,addr iniProjectFiles,hMemPro,32*1024-1,addr	ProjectFile
-							mov		hFound,0
-							invoke strcpy,offset FileName,offset ProjectPath
-							invoke strcat,offset FileName,offset FileToCopy
-							invoke GetFullPathName,addr FileName,sizeof FileName,addr FileName,addr buffer1
-							invoke UpdateAll,FIND_OPEN_FILENAME
-							.if hFound
-								invoke DelPath,hFound
+						.if sdword ptr [ebx].NMTVDISPINFO.item.lParam>0
+							; File
+							invoke SetCurrentDirectory,offset ProjectPath
+							invoke MoveFile,offset FileToCopy,addr buffer
+							.if eax
+								mov		eax,[ebx].NMTVDISPINFO.item.lParam
+								mov		edx,eax
+								invoke BinToDec,edx,addr buffer1
+								invoke WritePrivateProfileString,addr iniProjectFiles,addr buffer1,addr buffer,addr ProjectFile
+								invoke GetPrivateProfileSection,addr iniProjectFiles,hMemPro,32*1024-1,addr	ProjectFile
+								mov		hFound,0
 								invoke strcpy,offset FileName,offset ProjectPath
-								invoke strcat,offset FileName,addr buffer
+								invoke strcat,offset FileName,offset FileToCopy
 								invoke GetFullPathName,addr FileName,sizeof FileName,addr FileName,addr buffer1
-								invoke SetWindowText,hFound,addr FileName
-								invoke lstrlen,addr buffer
-								.while eax
-									.break .if buffer[eax-1]=='\'
-									dec		eax
-								.endw
-								invoke TabToolUpdate,hFound,addr buffer[eax]
-								invoke AddPath,hFound
+								invoke UpdateAll,FIND_OPEN_FILENAME
+								.if hFound
+									invoke DelPath,hFound
+									invoke strcpy,offset FileName,offset ProjectPath
+									invoke strcat,offset FileName,addr buffer
+									invoke GetFullPathName,addr FileName,sizeof FileName,addr FileName,addr buffer1
+									invoke SetWindowText,hFound,addr FileName
+									invoke strlen,addr buffer
+									.while eax
+										.break .if buffer[eax-1]=='\'
+										dec		eax
+									.endw
+									invoke TabToolUpdate,hFound,addr buffer[eax]
+									invoke AddPath,hFound
+								.endif
+								invoke DllProc,hWnd,AIM_PROJECTRENAME,offset FileToCopy,addr buffer,RAM_PROJECTRENAME
+								mov		eax,TRUE
+								jmp		Ex
 							.endif
-							invoke DllProc,hWnd,AIM_PROJECTRENAME,offset FileToCopy,addr buffer,RAM_PROJECTRENAME
-							mov		eax,TRUE
+;						.elseif sdword ptr [ebx].NMTVDISPINFO.item.lParam<0
+;							; Group
+;							invoke SendMessage,hPbrTrv,TVM_SETITEM,0,addr [ebx].NMTVDISPINFO.item
+;;							invoke GroupGetExpand,hPbrTrv
+;;							invoke GroupUpdateGroup,hPbrTrv
+;							invoke GroupSaveGroups,hPbrTrv
+;							mov		eax,TRUE
+;							jmp		Ex
 						.endif
 					.endif
 				.endif

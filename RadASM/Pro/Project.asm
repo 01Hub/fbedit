@@ -1378,7 +1378,6 @@ AddProjectFile proc	uses esi edi,lpszFileName:DWORD,fTree:DWORD,fModule:DWORD
 			.endif
 			invoke GroupGetProjectFiles
 			invoke GroupUpdateTrv,hPbrTrv
-			invoke GroupExpandAll,hPbrTrv,0
 		.endif
 		invoke strcpy,offset FileName,offset ProjectPath
 		invoke strcat,offset FileName,lpFileName

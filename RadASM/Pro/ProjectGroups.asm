@@ -359,6 +359,23 @@ GroupHasGroupItem proc hTrv:HWND,hItem:DWORD
 
 GroupHasGroupItem endp
 
+GroupHasGroupGroup proc hTrv:HWND,hItem:DWORD
+	LOCAL	tvi:TV_ITEM
+
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
+	.while eax
+		mov		tvi.hItem,eax
+		mov		tvi._mask,TVIF_PARAM
+		invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
+		.if sdword ptr tvi.lParam<0 && eax
+			.break
+		.endif
+		invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,tvi.hItem
+	.endw
+	ret
+
+GroupHasGroupGroup endp
+
 GroupFindItem proc hTrv:HWND,hItem:DWORD,nInx:DWORD,nGroup:DWORD
 	LOCAL	tvi:TV_ITEM
 
@@ -395,7 +412,7 @@ GroupFindItem proc hTrv:HWND,hItem:DWORD,nInx:DWORD,nGroup:DWORD
 
 GroupFindItem endp
 
-GroupUpdateGroup proc uses ebx esi edi,hTrv:HWND
+GroupGetGroups proc uses ebx esi edi,hTrv:HWND
 	LOCAL	tvi:TV_ITEM
 
 	mov		edi,offset szGroupGroupBuff
@@ -419,6 +436,13 @@ GroupUpdateGroup proc uses ebx esi edi,hTrv:HWND
 			lea		edi,[edi+eax+1]
 		.endif
 	.endw
+	ret
+
+GroupGetGroups endp
+
+GroupUpdateGroup proc uses ebx esi edi,hTrv:HWND
+
+	invoke GroupGetGroups,hTrv
 	invoke GroupUpdateTrv,hTrv
 	ret
 
@@ -460,7 +484,6 @@ GroupSaveGroups proc uses esi,hTrv:HWND
 		invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer,addr buffer1,addr ProjectFile
 		lea		esi,[esi+sizeof PROFILE]
 	.endw
-	invoke GetProjectFiles,FALSE
 	ret
 
 GroupSaveGroups endp
@@ -582,6 +605,65 @@ GroupTrvEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 
 GroupTrvEditProc endp
 
+GroupAddGroup proc hTrv:HWND
+	LOCAL	tvis:TV_INSERTSTRUCT
+	LOCAL	tvi:TV_ITEM
+
+	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CARET,0
+	.if eax
+		mov		tvis.item._mask,TVIF_PARAM
+		mov		tvis.item.hItem,eax
+		mov		tvis.hParent,eax
+		mov		tvis.hInsertAfter,TVI_FIRST
+		invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvis.item
+		mov		eax,tvis.item.lParam
+		mov		ebx,eax
+		mov		edi,eax
+		.if sdword ptr eax<=0
+			invoke GroupHasGroupItem,hTrv,tvis.item.hItem
+			.if eax
+				dec		edi
+			.endif
+			mov		eax,edi
+			neg		eax
+			mov		edx,offset profile
+			.while [edx].PROFILE.lpszFile
+				.if [edx].PROFILE.nGrp>=eax
+					inc		[edx].PROFILE.nGrp
+				.endif
+				lea		edx,[edx+sizeof PROFILE]
+			.endw
+			mov		edi,-32
+			.while edi!=ebx
+				invoke GroupFindItem,hTrv,hGrpRoot,0,edi
+				.if eax
+					mov		tvi._mask,TVIF_PARAM
+					mov		tvi.hItem,eax
+					invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
+					dec		tvi.lParam
+					invoke SendMessage,hTrv,TVM_SETITEM,0,addr tvi
+				.endif
+				inc		edi
+			.endw
+			mov		tvis.item._mask,TVIF_PARAM or TVIF_TEXT or TVIF_IMAGE or TVIF_SELECTEDIMAGE
+			mov		tvis.item.pszText,offset szNewGroup
+			mov		tvis.item.iImage,IML_START+0
+			mov		tvis.item.iSelectedImage,IML_START+0
+			dec		tvis.item.lParam
+			invoke SendMessage,hTrv,TVM_INSERTITEM,0,addr tvis
+			invoke GroupGetExpand,hTrv
+			invoke GroupUpdateGroup,hTrv
+			invoke GroupFindItem,hTrv,0,0,tvis.item.lParam
+			push	eax
+			invoke SendMessage,hTrv,TVM_ENSUREVISIBLE,0,eax
+			pop		eax
+			invoke SendMessage,hTrv,TVM_EDITLABEL,0,eax
+		.endif
+	.endif
+	ret
+
+GroupAddGroup endp
+
 ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[64]:BYTE
 	LOCAL	pt:POINT
@@ -596,7 +678,6 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		mov		hProjectGroup,eax
 		invoke GetDlgItem,hWin,IDC_TRVPROJECT
 		mov		hGrpTrv,eax
-		;invoke SendMessage,hGrpTrv,TVM_GETEDITCONTROL,0,0
 		invoke SendMessage,hGrpTrv,TVM_SETBKCOLOR,0,radcol.project
 		invoke SendMessage,hGrpTrv,TVM_SETTEXTCOLOR,0,radcol.projecttext
 		invoke SendMessage,hGrpTrv,TVM_SETIMAGELIST,0,hTbrIml
@@ -616,6 +697,7 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				invoke GroupSaveGroups,hGrpTrv
+				invoke GetProjectFiles,FALSE
 				invoke GetDlgItemText,hWin,IDC_EDTDEFGROUP,offset szGroups,sizeof szGroups
 				invoke WritePrivateProfileString,addr iniProjectGroup,addr iniProjectGroup,addr szGroups,addr iniAsmFile
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
@@ -626,54 +708,7 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 			.elseif eax==IDM_GROUPCOLLAPSE
 				invoke GroupCollapseAll,hGrpTrv,0
 			.elseif eax==IDM_GROUPADD
-				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CARET,0
-				.if eax
-					mov		tvis.item._mask,TVIF_PARAM
-					mov		tvis.item.hItem,eax
-					mov		tvis.hParent,eax
-					mov		tvis.hInsertAfter,TVI_FIRST
-					invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvis.item
-					mov		eax,tvis.item.lParam
-					mov		ebx,eax
-					mov		edi,eax
-					.if sdword ptr eax<=0
-						invoke GroupHasGroupItem,hGrpTrv,tvis.item.hItem
-						.if eax
-							dec		edi
-						.endif
-						mov		eax,edi
-						neg		eax
-						mov		edx,offset profile
-						.while [edx].PROFILE.lpszFile
-							.if [edx].PROFILE.nGrp>=eax
-								inc		[edx].PROFILE.nGrp
-							.endif
-							lea		edx,[edx+sizeof PROFILE]
-						.endw
-						mov		edi,-32
-						.while edi!=ebx
-							invoke GroupFindItem,hGrpTrv,hGrpRoot,0,edi
-							.if eax
-								mov		tvi._mask,TVIF_PARAM
-								mov		tvi.hItem,eax
-								invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvi
-								dec		tvi.lParam
-								invoke SendMessage,hGrpTrv,TVM_SETITEM,0,addr tvi
-							.endif
-							inc		edi
-						.endw
-						mov		tvis.item._mask,TVIF_PARAM or TVIF_TEXT or TVIF_IMAGE or TVIF_SELECTEDIMAGE
-						mov		tvis.item.pszText,offset szNewGroup
-						mov		tvis.item.iImage,IML_START+0
-						mov		tvis.item.iSelectedImage,IML_START+0
-						dec		tvis.item.lParam
-						invoke SendMessage,hGrpTrv,TVM_INSERTITEM,0,addr tvis
-						invoke GroupGetExpand,hGrpTrv
-						invoke GroupUpdateGroup,hGrpTrv
-						invoke GroupFindItem,hGrpTrv,0,0,tvis.item.lParam
-						invoke SendMessage,hGrpTrv,TVM_EDITLABEL,0,eax
-					.endif
-				.endif
+				invoke GroupAddGroup,hGrpTrv
 			.elseif eax==IDM_GROUPDELETE
 				invoke SendMessage,hGrpTrv,TVM_GETNEXTITEM,TVGN_CARET,0
 				.if eax
@@ -681,8 +716,8 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					mov		tvis.item.hItem,eax
 					invoke SendMessage,hGrpTrv,TVM_GETITEM,0,addr tvis.item
 					mov		eax,tvis.item.lParam
-					mov		ebx,eax
 					.if sdword ptr eax<0
+						mov		ebx,eax
 						invoke SendMessage,hGrpTrv,TVM_GETCOUNT,0,0
 						.if eax>1
 							mov		eax,ebx
@@ -750,9 +785,19 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				.else
 					mov		edi,MF_GRAYED or MF_BYCOMMAND
 				.endif
-				invoke EnableMenuItem,ebx,IDM_GROUPDELETE,edi
 				invoke EnableMenuItem,ebx,IDM_GROUPEDIT,edi
-				.if !tvi.lParam
+				.if sdword ptr tvi.lParam<0
+					invoke GroupHasGroupGroup,hGrpTrv,tvi.hItem
+					.if eax
+						mov		edi,MF_GRAYED or MF_BYCOMMAND
+					.else
+						mov		edi,MF_ENABLED or MF_BYCOMMAND
+					.endif
+				.else
+					mov		edi,MF_GRAYED or MF_BYCOMMAND
+				.endif
+				invoke EnableMenuItem,ebx,IDM_GROUPDELETE,edi
+				.if sdword ptr tvi.lParam<=0
 					mov		edi,MF_ENABLED or MF_BYCOMMAND
 				.endif
 				invoke EnableMenuItem,ebx,IDM_GROUPADD,edi
