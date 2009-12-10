@@ -1,6 +1,6 @@
 MasmEd
 
-1.1.0.2 - 2009.11.29
+1.1.0.2 - 2009.12.10
 --------------------
 o Added Macro to code properties.
 o Defined $ as a character.

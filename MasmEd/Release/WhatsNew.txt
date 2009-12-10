@@ -1,6 +1,14 @@
 MasmEd
 
-1.1.0.1 - 2009.11.18
+1.1.0.2 - 2009.12.10
+--------------------
+o Added Macro to code properties.
+o Defined $ as a character.
+o Added words in masmApiType.api to syntax highlighter Group#12.
+o Added Uppercase, Lowercase, Tab to Spaces and Spaces to Tab to Edit/Block/Convert menu.
+o Added Trim Trailing Spaces to Edit/Block menu.
+
+1.1.0.1 - 2009.11.19
 --------------------
 o Added Project addin.
   - Create a new project. You can specify a template to have files created.
@@ -9,7 +17,7 @@ o Added Project addin.
   - Automatic backup of files that are saved. Just create a Bak folder in the path of the main file.
   - Automatic deletion of minor files after a successful build.
 
-1.1.0.0 - 2009.11.09
+1.1.0.0 - 2009.11.05
 --------------------
 o Added addin support. The architecture is similar to RadASM. Some useful addins are converted.
 o Added Addin Manager to Option menu.
