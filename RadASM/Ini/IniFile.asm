@@ -557,7 +557,7 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		invoke strcat,addr iniAsmFile,addr FTIni
 	.endif
 	invoke GetFileAttributes,addr iniAsmFile
-	.if eax!=-1
+	.if eax!=INVALID_HANDLE_VALUE
 		invoke GetPrivateProfileString,addr iniPaths,addr iniFolderA,addr szNULL,addr App,128,addr iniAsmFile
 		.if !eax
 			invoke strcpy,addr App,addr AppPath
@@ -923,7 +923,6 @@ iniReadPaths proc uses edi,lpIni:DWORD
 		;Error
 		invoke GetPrivateProfileInt,addr iniError,addr iniErrBookMark,3,addr iniAsmFile
 		mov		fErrBookMark,eax
-
 		;Dialog
 		;Grid
 		invoke GetPrivateProfileInt,addr iniDialog,addr iniDialogGrid,1,addr iniAsmFile
@@ -1033,6 +1032,7 @@ iniReadPaths proc uses edi,lpIni:DWORD
 	.else
 		invoke strcpy,addr LineTxt,addr OpenFileFail
 		invoke strcat,addr LineTxt,addr iniAsmFile
+		invoke strcat,addr LineTxt,addr LanguagePack
 		invoke MessageBox,NULL,addr LineTxt,addr AppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 	.endif
@@ -1280,30 +1280,33 @@ iniRead proc
 		invoke GetPrivateProfileString,addr iniTemplate,addr iniTemplateTxt,addr szNULL,addr szFTTxt,256,addr iniFile
 		invoke GetPrivateProfileString,addr iniTemplate,addr iniTemplateBin,addr szNULL,addr szFTBin,256,addr iniFile
 		invoke GetPrivateProfileString,addr iniAssembler,addr iniAssembler,addr szNULL,addr iniBuffer,128,addr iniFile
-		invoke iniGetItem,addr iniBuffer,addr buffer
-		;Paths
-		invoke iniReadPaths,addr buffer
-		.if !eax
-			;File browser
-			invoke GetPrivateProfileString,offset iniFileBrowser,offset iniFileBrowserFilter,offset szNULL,offset FileFilter,sizeof FileFilter,offset iniFile
-			mov		byte ptr nFileBrowser,'0'
-			push	edi
-			mov		edi,offset FilePaths
-			.while byte ptr nFileBrowser<='9'
-				invoke GetPrivateProfileString,offset iniFileBrowser,offset nFileBrowser,offset szNULL,edi,sizeof FilePath,offset iniFile
-				.if !eax && byte ptr nFileBrowser=='0'
-					invoke strcpy,edi,offset Pro
-				.endif
-				invoke iniPathFix,edi
-				add		edi,MAX_PATH
-				inc		byte ptr nFileBrowser
-			.endw
-			mov		byte ptr nFileBrowser,'0'
-			invoke strcpy,offset FilePath,offset FilePaths
-			pop		edi
-			mov		eax,FALSE
-			ret
-		.endif
+		.while iniBuffer
+			invoke iniGetItem,addr iniBuffer,addr buffer
+			;Paths
+			invoke iniReadPaths,addr buffer
+			.if !eax
+				;File browser
+				invoke GetPrivateProfileString,offset iniFileBrowser,offset iniFileBrowserFilter,offset szNULL,offset FileFilter,sizeof FileFilter,offset iniFile
+				mov		byte ptr nFileBrowser,'0'
+				push	edi
+				mov		edi,offset FilePaths
+				.while byte ptr nFileBrowser<='9'
+					invoke GetPrivateProfileString,offset iniFileBrowser,offset nFileBrowser,offset szNULL,edi,sizeof FilePath,offset iniFile
+					.if !eax && byte ptr nFileBrowser=='0'
+						invoke strcpy,edi,offset Pro
+					.endif
+					invoke iniPathFix,edi
+					add		edi,MAX_PATH
+					inc		byte ptr nFileBrowser
+				.endw
+				mov		byte ptr nFileBrowser,'0'
+				invoke strcpy,offset FilePath,offset FilePaths
+				pop		edi
+				mov		eax,FALSE
+				ret
+			.endif
+		.endw
+		invoke MessageBox,NULL,addr NoLanguagePack,addr AppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
 		ret
 	.endif
@@ -2788,3 +2791,4 @@ iniWriteSection proc uses edi,lpKey:DWORD,lpValue:DWORD,lpSection:DWORD
 	ret
 
 iniWriteSection endp
+

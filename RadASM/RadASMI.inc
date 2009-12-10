@@ -1000,6 +1000,8 @@ szFilterMacro					db 'Macro (*.kbm)',0,'*.kbm',0
 								db 'All Files (*.*)',0,'*.*',0,0
 
 
+LanguagePack					db 0Dh,0Dh,'Yoy need to download and install the appropriate programming language pack.',0
+NoLanguagePack					db 'Yoy need to download and install at least one programming language pack.',0
 OpenFileFail					db 'Cannot open the file',0Dh,0
 SaveFileFail					db 'Cannot save the file',0Dh,0
 szCopyOf						db 'Copy Of ',0
@@ -1189,7 +1191,7 @@ lpAddWordToWordList				dd offset AddWordToWordList
 lpRefreshProperty				dd offset RefreshProperty
 ;Do not insert or move, just add
 
-AppName							db 'RadASM version 2.2.1.8f',0
+AppName							db 'RadASM version 2.2.1.8g',0
 DisplayName						db 'RadASM',0
 AboutMsg						db 'RadASM (C) KetilO 2001-2009',13,10,13,10,'radasmide@hotmail.com',0
 AboutUrl1						db 'http://radasm.cherrytree.at/',0

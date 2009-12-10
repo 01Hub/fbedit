@@ -2221,7 +2221,7 @@ CmdFormat endp
 CmdProject proc hWin:HWND
 	LOCAL	tvi:TV_ITEMEX
 	LOCAL	buffer[256]:BYTE
-	LOCAL	buffer2[256]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	vTmp:DWORD
 
 	.if eax==IDM_PROJECT_ADDNEWASM
@@ -2363,8 +2363,20 @@ CmdProject proc hWin:HWND
 		.endif
 	.elseif eax>=23000 && eax<=23031
 		invoke GetMenuString,hMenu,eax,offset iniBuffer,16,MF_BYCOMMAND
-		invoke SetAssembler,addr iniBuffer
-		invoke SendMessage,hStatus,SB_SETTEXT,2,addr szAssembler
+		invoke strcpy,addr buffer2,addr AppPath
+		invoke strcat,addr buffer2,addr szBackSlash
+		invoke strcat,addr buffer2,addr iniBuffer
+		invoke strcat,addr buffer2,addr FTIni
+		invoke GetFileAttributes,addr buffer2
+		.if eax!=INVALID_HANDLE_VALUE
+			invoke SetAssembler,addr iniBuffer
+			invoke SendMessage,hStatus,SB_SETTEXT,2,addr szAssembler
+		.else
+			invoke strcpy,addr LineTxt,addr OpenFileFail
+			invoke strcat,addr LineTxt,addr buffer2
+			invoke strcat,addr LineTxt,addr LanguagePack
+			invoke MessageBox,NULL,addr LineTxt,addr AppName,MB_OK or MB_ICONERROR
+		.endif
 	.else
 		ret
 	.endif
@@ -3442,7 +3454,18 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		@b
 		.endif
 		invoke GetPrivateProfileString,addr iniAssembler,addr iniAssembler,addr szNULL,addr iniBuffer,128,addr iniFile
-		invoke iniGetItem,addr iniBuffer,addr buffer
+		.while iniBuffer
+			invoke iniGetItem,addr iniBuffer,addr buffer
+			invoke strcpy,addr iniAsmFile,addr AppPath
+			invoke strcat,addr iniAsmFile,addr szBackSlash
+			invoke strcat,addr iniAsmFile,addr buffer
+			invoke strcat,addr iniAsmFile,addr FTIni
+			invoke GetFileAttributes,addr iniAsmFile
+			.break .if eax!=INVALID_HANDLE_VALUE
+		.endw
+		.if eax==INVALID_HANDLE_VALUE
+			invoke ExitProcess,1
+		.endif
 		invoke SetAssembler,addr buffer
 		;Set menu & toolbar
 		invoke MenuStatus

@@ -177,13 +177,13 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,4882
+2=0,416,869,416,33604
 3=154,154,590,413,270
-4=0,0,590,413,624
-5=132,132,536,413,82788
-6=12,26,869,416,64989
+4=0,0,590,413,41551
+5=132,132,536,413,41851
+6=12,26,869,416,71916
 7=132,132,536,413,10450
-8=44,44,536,413,23338
+8=44,44,536,413,14253
 9=88,88,536,413,45906
 10=110,110,536,413,17149
 11=88,88,536,413,14530
@@ -301,7 +301,7 @@ MinorFiles=*.res;*.obj;
 126=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,119,88,4,2,96,24,8,5,9
+AutoLoad=6,119,88,4,2,96,24,8,9,5
 
 [BookMark]
 0=
@@ -487,16 +487,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="PROGROUP"
-2="groupgrp"
-3="GroupSaveGroups"
-4="GroupUpdateGroup"
-5="IDM_PROJECT_ADDNEWFILE"
-6="TVN_ENDLABELEDIT"
-7="IDM_FORMAT_TRIM"
-8="indent"
-9="SB_SETTEXT,3"
-10="lpCharTab"
+1="iniRead"
+2="iniReadPaths"
+3="OpenFileFail"
+4="cannot open the file"
+5="PROGROUP"
+6="groupgrp"
+7="GroupSaveGroups"
+8="GroupUpdateGroup"
+9="IDM_PROJECT_ADDNEWFILE"
+10="TVN_ENDLABELEDIT"
 
 [BreakPoint]
 0=
@@ -538,7 +538,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=7
+MilestoneOnDateDate=10
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -678,7 +678,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 125=7
 126=5
 [Collapse]
-6=,,,,,,,,,,,,,,,,,1073741824,,,,,
+6=,,,,,,,,,,,,,,,,,,4,,,,
 2=
 11=,,,,,
 8=,,,,,,,,
@@ -758,7 +758,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1392630826
+PTimer=1398659578
 [RADebugBP]
 96=
 55=
@@ -780,3 +780,5 @@ PTimer=1392630826
 97=
 24=
 4=
+[GroupExpand]
+GroupExpand=1,1,1,0,0,0,0,0
