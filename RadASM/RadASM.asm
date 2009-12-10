@@ -67,4 +67,5 @@ include Opt\LanguageOption.asm
 include Opt\ProgLanguage.asm
 include Opt\CustomControls.asm
 include Opt\Environment.asm
+include Opt\UpdateChecker.asm
 include Mdi\MdiRadAsm.asm

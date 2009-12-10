@@ -12,6 +12,7 @@
 	include shlwapi.inc
 	include ole32.inc
 	include advapi32.inc
+	include wininet.inc
 
 ;	libraries
 ;	~~~~~~~~~
@@ -24,6 +25,7 @@
 	includelib shlwapi.lib
 	includelib ole32.lib
 	includelib advapi32.lib
+	includelib wininet.lib
 
 	include Addins\RadAsm.inc
 	include Inc\RAEdit.inc
@@ -669,6 +671,7 @@ IDM_WINDOW_RESTORE				equ 47011
 IDM_WINDOW_MINIMIZE				equ 47012
 IDM_WINDOW_CLOSEALLBUT			equ 44032
 
+IDM_OPTION_UPDATE				equ 44034
 IDM_OPTION_LANGUAGE				equ 44022
 IDM_OPTION_PROGLANGUAGE			equ 44024
 IDM_OPTION_EDIT					equ 48003

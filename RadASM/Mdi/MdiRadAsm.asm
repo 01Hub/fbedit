@@ -2535,7 +2535,9 @@ CmdWindow endp
 
 CmdOption proc hWin:HWND
 
-	.if eax==IDM_OPTION_LANGUAGE
+	.if eax==IDM_OPTION_UPDATE
+		invoke ModalDialog,hInstance,IDD_DLGCHECK_UPDATE,hWin,addr UpdateCheckerProc,0
+	.elseif eax==IDM_OPTION_LANGUAGE
 		invoke ModalDialog,hInstance,IDD_DLGLANGUAGE,hWin,addr LanguageOptionProc,0
 	.elseif eax==IDM_OPTION_PROGLANGUAGE
 		invoke ModalDialog,hInstance,IDD_DLGPROGLANGUAGE,hWin,addr ProgLanguageProc,0
