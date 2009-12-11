@@ -1,3 +1,4 @@
+#include "Res/DownloadDlg.rc"
 #include "Res/CheckUpdateDlg.rc"
 #define IDM_TAB1				41401
 #define IDM_TAB2				41402
