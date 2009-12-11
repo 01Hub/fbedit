@@ -1,50 +1,14 @@
+;#########################################################################
+; Assembler directives
 
-IDD_DLGCHECK_UPDATE				equ 8000
-IDC_STCVERSION					equ 1001
-IDC_CHKGETIDE					equ 1002
-IDC_CHKGETASM					equ 1003
-IDC_CHKGETHLL					equ 1004
-IDC_CHKGETLNG					equ 1005
-IDC_BTNDOWNLOAD					equ 1008
-IDC_EDTDLPATH					equ 1006
-IDC_BTNDLPATH					equ 1007
-IDC_BTNUPDATE					equ 1009
+.486
+.model flat,stdcall
+option casemap:none
 
-IDD_DLGDOWNLOAD					equ 8100
-IDC_STCDOWNLOADING				equ 1001
-IDC_STCFILESIZE					equ 1003
-IDC_PGB1						equ 1002
+;#########################################################################
+; Include file
 
-.const
-
-szFmtVersion					db 'Your current version:',9,'%s',13,'Version at sourceforge:',9,'%s',0
-szINetErr4						db 'Could not find:',13,10
-szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseVersion.txt',0
-szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseMake/',0
-
-szDownloading					db 'Downloading: ',0
-szFmtFilesize					db 'Filesize: %d bytes',0
-szIDEFile						db 'RadASMIDE.zip',0
-szASMFile						db 'Assembly.zip',0
-szHLLFile						db 'HighLevel.zip',0
-szLNGFile						db 'Language.zip',0
-szFmtDownloaded					db 'Downloded %s %s',13,0
-szSuccess						db 'successfully.',0
-szFailed						db 'failed.',0
-szCanceled						db 'canceled.',0
-
-szINetErr1						db 'InternetOpen failed.',0
-szINetErr2						db 'InternetOpenUrl failed.',0
-szINetErr3						db 'InternetReadFile failed',0
-
-.data?
-
-szDLFileName					db MAX_PATH dup(?)
-szDLPath						db MAX_PATH dup(?)
-hDLThread						dd ?
-nDLThread						dd ?
-fDLCancel						dd ?
-nDLErrors						dd ?
+include UpdateChecker.inc
 
 .code
 
@@ -60,14 +24,14 @@ InternetDownloadFile proc uses ebx,hWin:HWND
 	LOCAL	hFile:HANDLE
 	LOCAL	nRetry:DWORD
 
-	invoke strcpy,addr buffer,addr szDLPath
-	invoke strcat,addr buffer,addr szBackSlash
-	invoke strcat,addr buffer,addr szDLFileName
+	invoke lstrcpy,addr buffer,addr szDLPath
+	invoke lstrcat,addr buffer,addr szBackSlash
+	invoke lstrcat,addr buffer,addr szDLFileName
 	invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
-		invoke strcpy,addr buffer,addr szUrlFile
-		invoke strcat,addr buffer,addr szDLFileName
+		invoke lstrcpy,addr buffer,addr szUrlFile
+		invoke lstrcat,addr buffer,addr szDLFileName
 		invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
 		.if eax
 			mov		hInternet,eax
@@ -136,8 +100,8 @@ DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke strcpy,addr buffer,addr szDownloading
-		invoke strcat,addr buffer,addr szDLFileName
+		invoke lstrcpy,addr buffer,addr szDownloading
+		invoke lstrcat,addr buffer,addr szDLFileName
 		invoke SetDlgItemText,hWin,IDC_STCDOWNLOADING,addr buffer
 		invoke CreateThread,NULL,NULL,addr InternetDownloadFile,hWin,NORMAL_PRIORITY_CLASS,addr tid
 		mov		hDLThread,eax
@@ -164,8 +128,14 @@ DownloadProc endp
 InternetDownload proc hWin:HWND,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke strcpy,addr szDLFileName,lpFileName
-	invoke ModalDialog,hInstance,IDD_DLGDOWNLOAD,hWin,addr DownloadProc,0
+	invoke lstrcpy,addr szDLFileName,lpFileName
+	push	0
+	push	offset DownloadProc
+	push	hWin
+	push	IDD_DLGDOWNLOAD
+	push	hInstance
+	mov		edx,lpProc
+	call	[edx].ADDINPROCS.lpModalDialog
 	.if !eax
 		invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,addr szSuccess
 	.elseif eax==-4
@@ -176,7 +146,7 @@ InternetDownload proc hWin:HWND,lpFileName:DWORD
 		inc		nDLErrors
 	.endif
 	invoke GetDlgItemText,hWin,IDC_STCVERSION,addr tempbuff,1024
-	invoke strcat,addr tempbuff,addr buffer
+	invoke lstrcat,addr tempbuff,addr buffer
 	invoke SetDlgItemText,hWin,IDC_STCVERSION,addr tempbuff
 	ret
 
@@ -219,12 +189,11 @@ InternetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 InternetGetVersion endp
 
 UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke iniGetAppPath,addr buffer
-		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,addr buffer
+		mov		eax,lpData
+		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,[eax].ADDINDATA.lpLoadPath
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -259,7 +228,8 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke ShowWindow,eax,SW_HIDE
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_SHOW
-						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,addr AppName,addr tempbuff
+						mov		edx,lpData
+						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,[edx].ADDINDATA.lpszAppName,addr tempbuff
 						lea		eax,tempbuff[1024]
 					.endif
 				.endif
@@ -268,7 +238,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNDOWNLOAD
 				mov		nDLErrors,0
-				invoke SetDlgItemText,hWin,IDC_STCVERSION,addr szNULL
+				invoke SetDlgItemText,hWin,IDC_STCVERSION,0
 				invoke GetDlgItemText,hWin,IDC_EDTDLPATH,addr szDLPath,sizeof szDLPath
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
 				.if eax
@@ -326,3 +296,83 @@ Disable:
 	retn
 
 UpdateCheckerProc endp
+
+;#########################################################################
+; Common AddIn Procedures
+
+DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
+
+	mov		eax,hInst
+	mov		hInstance, eax
+	mov		eax,TRUE
+	ret
+
+DllEntry Endp
+
+; Export this proc (it is autoexported if MakeDef is enabled with option 2)
+InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
+	LOCAL	mnui:MENUITEMINFO
+
+	mov		ebx,hWin
+	;Get pointer to handles struct
+	invoke SendMessage,ebx,AIM_GETHANDLES,0,0
+	mov		lpHandles,eax
+	;Get pointer to proc struct
+	invoke SendMessage,ebx,AIM_GETPROCS,0,0
+	mov		lpProc,eax
+	;Get pointer to data struct
+	invoke SendMessage,ebx,AIM_GETDATA,0,0	
+	mov		lpData,eax
+	; Allocate a new menu id
+	invoke SendMessage,ebx,AIM_GETMENUID,0,0
+	mov		IDAddIn,eax
+	mov		mnui.cbSize,sizeof MENUITEMINFO
+	mov		mnui.fMask,MIIM_ID or MIIM_TYPE
+	mov		mnui.fType,MFT_STRING
+	mov		eax,IDAddIn
+	mov		mnui.wID,eax
+	mov		mnui.dwTypeData,offset szMenuCheck
+	mov		mnui.cch,10
+	;Insert our menuitem
+	mov		edx,[lpHandles]
+	invoke InsertMenuItem,(ADDINHANDLES ptr [edx]).hMenu,44022,FALSE,addr mnui
+	; Messages to hook into
+	mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD
+	; ECX and EDX must be null before we return
+	xor		ecx,ecx
+	xor		edx,edx
+	ret
+
+InstallDll Endp
+
+; Export this proc (it is autoexported if MakeDef is enabled with option 2)
+DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==AIM_COMMAND
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax, 16
+		.if edx==IDAddIn && eax==BN_CLICKED
+			; Your addin has been selected
+			push	0
+			push	offset UpdateCheckerProc
+			push	hWin
+			push	IDD_DLGCHECK_UPDATE
+			push	hInstance
+			mov		edx,lpProc
+			call	[edx].ADDINPROCS.lpModalDialog
+		.endif
+	.elseif eax==AIM_CLOSE
+		;
+	.elseif eax==AIM_MENUREBUILD
+		;
+	.endif
+	mov		eax,FALSE
+	ret
+
+DllProc Endp
+
+;#########################################################################
+
+End DllEntry
