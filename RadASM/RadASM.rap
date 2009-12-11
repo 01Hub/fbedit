@@ -82,7 +82,7 @@ Menu=1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0
 35=Edit\ExportID.asm
 36=Dialogs\StringTable.dlg
 37=Api\WordList.asm
-38=Dialogs\CheckUpdate.dlg
+38=
 39=Edit\CodeWrite.asm
 40=Dialogs\SnipletOption.dlg
 41=Edit\SnipletOption.asm
@@ -175,15 +175,15 @@ MinorFiles=*.res;*.obj;
 125=Addins\RadAsm.inc
 126=Dialogs\Accept.dlg
 127=Opt\UpdateChecker.asm
-128=Dialogs\Download.dlg
+128=
 
 [Size]
-1=22,22,536,413,1800
-2=0,416,869,416,578
-3=154,154,590,413,270
+1=22,22,536,413,1770
+2=0,416,869,416,17122
+3=154,154,590,413,0
 4=0,0,590,413,41551
 5=132,132,536,413,32142
-6=12,26,869,416,75527
+6=12,26,869,416,75486
 7=132,132,536,413,32661
 8=44,44,536,413,14253
 9=88,88,536,413,45906
@@ -305,7 +305,7 @@ MinorFiles=*.res;*.obj;
 128=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,119,88,4,2,38,127,128,5,113
+AutoLoad=6,119,88,4,2
 
 [BookMark]
 0=
@@ -592,7 +592,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 35=1
 36=5
 37=1
-38=5
+38=
 39=1
 40=5
 41=1
@@ -682,7 +682,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 125=7
 126=5
 127=1
-128=1
+128=
 [Collapse]
 6=,,,,,,,,,,,,,,,,,,4,,,,
 2=
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1427103053
+PTimer=1427402605
 [RADebugBP]
 96=
 55=
@@ -789,5 +789,6 @@ PTimer=1427103053
 4=
 127=
 1=
+3=
 [GroupExpand]
-GroupExpand=1,1,1,1,1,1,0,0
+GroupExpand=1,1,1,1,1,1,1,0
