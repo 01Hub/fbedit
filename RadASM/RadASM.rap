@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="CreateThread"
-2="iniRead"
-3="iniReadPaths"
-4="OpenFileFail"
-5="cannot open the file"
-6="PROGROUP"
-7="groupgrp"
-8="GroupSaveGroups"
-9="GroupUpdateGroup"
-10="IDM_PROJECT_ADDNEWFILE"
+1="AppPath"
+2="iniGetAppPath"
+3="CreateThread"
+4="iniRead"
+5="iniReadPaths"
+6="OpenFileFail"
+7="cannot open the file"
+8="PROGROUP"
+9="groupgrp"
+10="GroupSaveGroups"
 
 [BreakPoint]
 0=
