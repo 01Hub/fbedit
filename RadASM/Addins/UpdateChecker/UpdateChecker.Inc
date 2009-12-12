@@ -7,7 +7,7 @@ include kernel32.inc
 include user32.inc
 include wininet.inc
 include Comctl32.inc
-;include shell32.inc
+include shell32.inc
 ;include ComDlg32.inc
 ;include Gdi32.inc
 
@@ -18,7 +18,7 @@ includelib kernel32.lib
 includelib user32.lib
 includelib wininet.lib
 includelib Comctl32.lib
-;includelib shell32.lib
+includelib shell32.lib
 ;includelib ComDlg32.lib
 ;includelib Gdi32.lib
 
@@ -30,8 +30,9 @@ include ..\radasm.inc
 ;#########################################################################
 ; VKim's Debug
 
-include \RadASM\masm\inc\debug.inc
-includelib \RadASM\masm\lib\debug.lib
+include debug.inc
+includelib debug.lib
+include masm32.inc
 
 DBGWIN_DEBUG_ON = 1			; include debug info into the program
 DBGWIN_EXT_INFO = 0			; include extra debug info into the program
@@ -56,6 +57,8 @@ IDC_PGB1						equ 1002
 
 szMenuCheck						db 'Check for Updates',0
 szBackSlash						db '\',0
+szTemp							db '\Temp',0
+szAllFiles						db '\*.*',0
 AppName							db 'UpdateChecker',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,'Version at sourceforge:',9,'%s',0
@@ -77,6 +80,7 @@ szCanceled						db 'canceled.',0
 szINetErr1						db 'InternetOpen failed.',0
 szINetErr2						db 'InternetOpenUrl failed.',0
 szINetErr3						db 'InternetReadFile failed',0
+szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,'All files in the folder will be deleted.',13,13,'Continue?',0
 
 .data?
 
@@ -93,3 +97,4 @@ nDLThread						dd ?
 fDLCancel						dd ?
 nDLErrors						dd ?
 tempbuff						db 2048 dup(?)
+bri								BROWSEINFO <>

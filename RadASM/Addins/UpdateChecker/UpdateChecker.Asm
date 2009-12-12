@@ -12,6 +12,47 @@ include UpdateChecker.inc
 
 .code
 
+; set initial folder in browser
+BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpCBData:DWORD
+
+	mov eax,uMsg
+	.if eax==BFFM_INITIALIZED
+		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpCBData
+;		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
+	.endif
+	xor eax, eax
+	ret
+
+BrowseCallbackProc endp
+
+BrowseFolder proc hWin:HWND,nID:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		bri.pidlRoot,0
+	mov		bri.pszDisplayName,0
+;	mov		eax,offset szBrowse
+	xor		eax,eax
+	mov		bri.lpszTitle,eax
+	mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
+	mov		bri.lpfn,BrowseCallbackProc
+	; get path   
+	invoke SendDlgItemMessage,hWin,nID,WM_GETTEXT,sizeof buffer,addr buffer
+	lea		eax,buffer
+	mov		bri.lParam,eax 
+	mov		bri.iImage,0
+	invoke SHBrowseForFolder,offset bri
+	.if !eax
+		jmp		GetOut
+	.endif
+	mov		edx,eax
+	invoke SHGetPathFromIDList,edx,addr buffer
+	; set new path back to edit
+	invoke SetDlgItemText,hWin,nID,addr buffer
+  GetOut:
+	ret
+
+BrowseFolder endp
+
 InternetDownloadFile proc uses ebx,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
@@ -188,12 +229,119 @@ InternetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 
 InternetGetVersion endp
 
+IsFoderEmpty proc
+	LOCAL	wfd:WIN32_FIND_DATA
+	LOCAL	hWfd:HANDLE
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr buffer,addr szDLPath
+	invoke lstrcat,addr buffer,addr szAllFiles
+	invoke FindFirstFile,addr buffer,addr wfd
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hWfd,eax
+		.while eax
+			lea		eax,wfd.cFileName
+			.if word ptr [eax]!='.' && word ptr [eax]!='..'
+				invoke FindClose,hWfd
+				xor		eax,eax
+				ret
+			.endif
+			invoke FindNextFile,hWfd,addr wfd
+		.endw
+		invoke FindClose,hWfd
+		mov		eax,TRUE
+	.endif
+	ret
+
+IsFoderEmpty endp
+
+DeleteFiles proc hWin:HWND
+	LOCAL	sfo:SHFILEOPSTRUCT
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr buffer,addr szDLPath
+	invoke lstrcat,addr buffer,addr szAllFiles
+	mov		eax,hWin
+	mov		sfo.hwnd,eax
+	mov		sfo.wFunc,FO_DELETE
+	lea		eax,buffer
+	mov		sfo.pFrom,eax
+	mov		sfo.pTo,NULL
+	mov		sfo.fFlags,FOF_NOERRORUI or	FOF_SILENT or FOF_ALLOWUNDO
+	mov		sfo.fAnyOperationsAborted,0
+	mov		sfo.lpszProgressTitle,offset AppName
+	mov		sfo.hNameMappings,NULL
+	invoke SHFileOperation,ADDR	sfo
+	mov		eax,sfo.fAnyOperationsAborted
+	ret
+
+DeleteFiles endp
+
+
+CreateFolder proc uses ebx esi,hWin:HWND
+
+	mov		esi,offset szDLPath
+	invoke RtlZeroMemory,esi,sizeof szDLPath
+	invoke GetDlgItemText,hWin,IDC_EDTDLPATH,esi,sizeof szDLPath
+	invoke GetFileAttributes,esi
+	.if eax!=INVALID_HANDLE_VALUE
+		; Folder exist
+		invoke IsFoderEmpty
+		.if !eax
+			; Folder is not empty
+			invoke wsprintf,addr tempbuff,addr szFmtErrNotEmpty,addr szDLPath
+			invoke MessageBox,hWin,addr tempbuff,addr AppName,MB_YESNO or MB_ICONQUESTION
+			.if eax==IDYES
+				; Delete files
+				invoke DeleteFiles,hWin
+				.if eax
+					xor		eax,eax
+				.else
+					mov		eax,TRUE
+				.endif
+			.else
+				xor		eax,eax
+			.endif
+		.else
+			; Folder is empty
+			mov		eax,TRUE
+		.endif
+	.else
+		; Folder does not exist, create it.
+		invoke lstrlen,esi
+		mov		ebx,eax
+		.while ebx
+			.if byte ptr [esi+ebx]=='\'
+				mov		byte ptr [esi+ebx],0
+				invoke GetFileAttributes,esi
+				.if eax!=INVALID_HANDLE_VALUE
+					; Path exist
+					.while byte ptr [esi+ebx+1]
+						mov		byte ptr [esi+ebx],'\'
+						invoke CreateDirectory,esi,0
+						.while byte ptr [esi+ebx]
+							inc		ebx
+						.endw
+					.endw
+					.break
+				.endif
+			.endif
+			dec		ebx
+		.endw
+		mov		eax,TRUE
+	.endif
+	ret
+
+CreateFolder endp
+
 UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,lpData
-		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,[eax].ADDINDATA.lpLoadPath
+		invoke lstrcpy,addr szDLPath,[eax].ADDINDATA.lpLoadPath
+		invoke lstrcat,addr szDLPath,addr szTemp
+		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,addr szDLPath
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -236,43 +384,47 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SetDlgItemText,hWin,IDC_STCVERSION,eax
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNDLPATH
+				invoke BrowseFolder,hWin,IDC_EDTDLPATH
 			.elseif eax==IDC_BTNDOWNLOAD
 				mov		nDLErrors,0
-				invoke SetDlgItemText,hWin,IDC_STCVERSION,0
-				invoke GetDlgItemText,hWin,IDC_EDTDLPATH,addr szDLPath,sizeof szDLPath
-				invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
+				invoke CreateFolder,hWin
 				.if eax
-					invoke InternetDownload,hWin,addr szIDEFile
-				.endif
-				invoke IsDlgButtonChecked,hWin,IDC_CHKGETASM
-				.if eax
-					invoke InternetDownload,hWin,addr szASMFile
-				.endif
-				invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLL
-				.if eax
-					invoke InternetDownload,hWin,addr szHLLFile
-				.endif
-				invoke IsDlgButtonChecked,hWin,IDC_CHKGETLNG
-				.if eax
-					invoke InternetDownload,hWin,addr szLNGFile
-				.endif
-				.if !nDLErrors
-					invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
-					invoke ShowWindow,eax,SW_HIDE
-					invoke GetDlgItem,hWin,IDC_BTNUPDATE
-					invoke ShowWindow,eax,SW_SHOW
-					mov		eax,IDC_CHKGETIDE
-					call	Disable
-					mov		eax,IDC_CHKGETASM
-					call	Disable
-					mov		eax,IDC_CHKGETHLL
-					call	Disable
-					mov		eax,IDC_CHKGETLNG
-					call	Disable
-					mov		eax,IDC_EDTDLPATH
-					call	Disable
-					mov		eax,IDC_BTNDLPATH
-					call	Disable
+					invoke SetDlgItemText,hWin,IDC_STCVERSION,0
+					invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
+					.if eax
+						invoke InternetDownload,hWin,addr szIDEFile
+					.endif
+					invoke IsDlgButtonChecked,hWin,IDC_CHKGETASM
+					.if eax
+						invoke InternetDownload,hWin,addr szASMFile
+					.endif
+					invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLL
+					.if eax
+						invoke InternetDownload,hWin,addr szHLLFile
+					.endif
+					invoke IsDlgButtonChecked,hWin,IDC_CHKGETLNG
+					.if eax
+						invoke InternetDownload,hWin,addr szLNGFile
+					.endif
+					.if !nDLErrors
+						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
+						invoke ShowWindow,eax,SW_HIDE
+						invoke GetDlgItem,hWin,IDC_BTNUPDATE
+						invoke ShowWindow,eax,SW_SHOW
+						mov		eax,IDC_CHKGETIDE
+						call	Disable
+						mov		eax,IDC_CHKGETASM
+						call	Disable
+						mov		eax,IDC_CHKGETHLL
+						call	Disable
+						mov		eax,IDC_CHKGETLNG
+						call	Disable
+						mov		eax,IDC_EDTDLPATH
+						call	Disable
+						mov		eax,IDC_BTNDLPATH
+						call	Disable
+					.endif
 				.endif
 			.endif
 		.endif
