@@ -8,8 +8,7 @@ include user32.inc
 include wininet.inc
 include Comctl32.inc
 include shell32.inc
-;include ComDlg32.inc
-;include Gdi32.inc
+include zlib\zlibstat.inc
 
 ;#########################################################################
 ; Libraries
@@ -19,8 +18,7 @@ includelib user32.lib
 includelib wininet.lib
 includelib Comctl32.lib
 includelib shell32.lib
-;includelib ComDlg32.lib
-;includelib Gdi32.lib
+includelib zlib\zlibstat.lib
 
 ;#########################################################################
 ; RadASM Add In Include
@@ -38,7 +36,7 @@ DBGWIN_DEBUG_ON = 1			; include debug info into the program
 DBGWIN_EXT_INFO = 0			; include extra debug info into the program
 
 IDD_DLGCHECK_UPDATE				equ 8000
-IDC_STCVERSION					equ 1001
+IDC_EDTVERSION					equ 1001
 IDC_CHKGETIDE					equ 1002
 IDC_CHKGETASM					equ 1003
 IDC_CHKGETHLL					equ 1004
@@ -59,9 +57,10 @@ szMenuCheck						db 'Check for Updates',0
 szBackSlash						db '\',0
 szTemp							db '\Temp',0
 szAllFiles						db '\*.*',0
+szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
 
-szFmtVersion					db 'Your current version:',9,'%s',13,'Version at sourceforge:',9,'%s',0
+szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
 szINetErr4						db 'Could not find:',13,10
 szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseMake/',0
@@ -72,7 +71,7 @@ szIDEFile						db 'RadASMIDE.zip',0
 szASMFile						db 'Assembly.zip',0
 szHLLFile						db 'HighLevel.zip',0
 szLNGFile						db 'Language.zip',0
-szFmtDownloaded					db 'Downloded %s %s',13,0
+szFmtDownloaded					db 'Downloded %s %s',13,10,0
 szSuccess						db 'successfully.',0
 szFailed						db 'failed.',0
 szCanceled						db 'canceled.',0
@@ -80,7 +79,7 @@ szCanceled						db 'canceled.',0
 szINetErr1						db 'InternetOpen failed.',0
 szINetErr2						db 'InternetOpenUrl failed.',0
 szINetErr3						db 'InternetReadFile failed',0
-szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,'All files in the folder will be deleted.',13,13,'Continue?',0
+szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be deleted.',13,10,13,10,'Continue?',0
 
 .data?
 

@@ -186,9 +186,9 @@ InternetDownload proc hWin:HWND,lpFileName:DWORD
 		invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,addr szFailed
 		inc		nDLErrors
 	.endif
-	invoke GetDlgItemText,hWin,IDC_STCVERSION,addr tempbuff,1024
+	invoke GetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff,1024
 	invoke lstrcat,addr tempbuff,addr buffer
-	invoke SetDlgItemText,hWin,IDC_STCVERSION,addr tempbuff
+	invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 	ret
 
 InternetDownload endp
@@ -334,6 +334,108 @@ CreateFolder proc uses ebx esi,hWin:HWND
 
 CreateFolder endp
 
+CreateTheFile proc uses ebx esi,lpFileName:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr buffer,addr szDLPath
+	invoke lstrcat,addr buffer,addr szBackSlash
+	invoke lstrcat,addr buffer,lpFileName
+	invoke lstrlen,addr buffer
+	push	eax
+	.while eax
+		dec		eax
+		.if byte ptr buffer[eax]=='/'
+			mov		byte ptr buffer[eax],'\'
+		.endif
+	.endw
+	pop		eax
+	.while eax && byte ptr buffer[eax]!='\'
+		dec		eax
+	.endw
+	.if byte ptr buffer[eax]=='\'
+		mov		word ptr buffer[eax],0
+		call	MakeFolder
+		invoke lstrcpy,addr buffer,addr szDLPath
+		invoke lstrcat,addr buffer,addr szBackSlash
+		invoke lstrcat,addr buffer,lpFileName
+		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.else
+		mov		eax,INVALID_HANDLE_VALUE
+	.endif
+	ret
+
+MakeFolder:
+	lea		esi,buffer
+	invoke GetFileAttributes,esi
+	.if eax==INVALID_HANDLE_VALUE
+		invoke lstrlen,esi
+		mov		ebx,eax
+		.while ebx
+			.if byte ptr [esi+ebx]=='\'
+				mov		byte ptr [esi+ebx],0
+				invoke GetFileAttributes,esi
+				.if eax!=INVALID_HANDLE_VALUE
+					; Path exist
+					.while byte ptr [esi+ebx+1]
+						mov		byte ptr [esi+ebx],'\'
+						invoke CreateDirectory,esi,0
+						.while byte ptr [esi+ebx]
+							inc		ebx
+						.endw
+					.endw
+					.break
+				.endif
+			.endif
+			dec		ebx
+		.endw
+	.endif
+	retn
+
+CreateTheFile endp
+
+UnZip proc uses esi,hWin:HWND,lpFileName:DWORD
+	LOCAL	hz:DWORD
+	LOCAL	fi:unz_file_info
+	LOCAL	filename_inzip[MAX_PATH]:BYTE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hMem:HGLOBAL
+	LOCAL	hFile:HANDLE
+	LOCAL	dwwrite:DWORD
+
+	mov		esi,offset szDLPath
+	invoke RtlZeroMemory,esi,sizeof szDLPath
+	invoke GetDlgItemText,hWin,IDC_EDTDLPATH,esi,sizeof szDLPath
+	invoke lstrcpy,addr buffer,addr szDLPath
+	invoke lstrcat,addr buffer,addr szBackSlash
+	invoke lstrcat,addr buffer,lpFileName
+	invoke unzOpen,addr buffer
+	.if eax
+		mov		hz,eax
+		invoke unzGoToFirstFile,hz
+		.while !eax
+			invoke unzGetCurrentFileInfo,hz,addr fi,addr filename_inzip,sizeof filename_inzip,NULL,0,NULL,0
+			invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr filename_inzip
+			invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szCRLF
+			invoke unzOpenCurrentFile,hz
+			invoke GlobalAlloc,GMEM_FIXED,fi.uncompressed_size
+			mov		hMem,eax
+			invoke unzReadCurrentFile,hz,hMem,fi.uncompressed_size
+			invoke CreateTheFile,addr filename_inzip
+			.if eax!=INVALID_HANDLE_VALUE
+				mov		hFile,eax
+				invoke WriteFile,hFile,hMem,fi.uncompressed_size,addr dwwrite,NULL
+				invoke CloseHandle,hFile
+			.endif
+			invoke GlobalFree,hMem
+			invoke unzCloseCurrentFile,hz
+			invoke unzGoToNextFile,hz
+		.endw
+		invoke unzClose,hz
+	.endif
+	ret
+
+UnZip endp
+
 UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -342,6 +444,10 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr szDLPath,[eax].ADDINDATA.lpLoadPath
 		invoke lstrcat,addr szDLPath,addr szTemp
 		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,addr szDLPath
+		invoke CheckDlgButton,hWin,IDC_CHKGETIDE,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_CHKGETASM,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_CHKGETHLL,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_CHKGETLNG,BST_CHECKED
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -381,7 +487,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						lea		eax,tempbuff[1024]
 					.endif
 				.endif
-				invoke SetDlgItemText,hWin,IDC_STCVERSION,eax
+				invoke SetDlgItemText,hWin,IDC_EDTVERSION,eax
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNDLPATH
@@ -390,7 +496,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nDLErrors,0
 				invoke CreateFolder,hWin
 				.if eax
-					invoke SetDlgItemText,hWin,IDC_STCVERSION,0
+					invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
 					.if eax
 						invoke InternetDownload,hWin,addr szIDEFile
@@ -425,6 +531,24 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,IDC_BTNDLPATH
 						call	Disable
 					.endif
+				.endif
+			.elseif eax==IDC_BTNUPDATE
+				invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
+				.if eax
+					invoke UnZip,hWin,addr szIDEFile
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETASM
+				.if eax
+					invoke UnZip,hWin,addr szASMFile
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLL
+				.if eax
+					invoke UnZip,hWin,addr szHLLFile
+				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETLNG
+				.if eax
+					invoke UnZip,hWin,addr szLNGFile
 				.endif
 			.endif
 		.endif
