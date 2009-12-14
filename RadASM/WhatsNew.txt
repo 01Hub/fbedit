@@ -2,6 +2,7 @@ RadASM 2.2.1.8
 --------------
 2.2.1.8g
 o Better error message / handling if a programming language pack is missing.
+o Added UpdateChecker addin. It lets you check for RadASM updates, download and unzip files.
 2.2.1.8f
 o Adding a project file keeps the expanded / collapsed state of the project browser.
 o The expanded / collapsed state of the project browser is saved to the project file.
