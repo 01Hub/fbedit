@@ -408,29 +408,39 @@ UnZip proc uses esi,hWin:HWND,lpFileName:DWORD
 	invoke lstrcpy,addr buffer,addr szDLPath
 	invoke lstrcat,addr buffer,addr szBackSlash
 	invoke lstrcat,addr buffer,lpFileName
+	invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr buffer
+	invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szCRLF
 	invoke unzOpen,addr buffer
 	.if eax
 		mov		hz,eax
 		invoke unzGoToFirstFile,hz
 		.while !eax
 			invoke unzGetCurrentFileInfo,hz,addr fi,addr filename_inzip,sizeof filename_inzip,NULL,0,NULL,0
-			invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr filename_inzip
-			invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szCRLF
-			invoke unzOpenCurrentFile,hz
-			invoke GlobalAlloc,GMEM_FIXED,fi.uncompressed_size
-			mov		hMem,eax
-			invoke unzReadCurrentFile,hz,hMem,fi.uncompressed_size
-			invoke CreateTheFile,addr filename_inzip
-			.if eax!=INVALID_HANDLE_VALUE
-				mov		hFile,eax
-				invoke WriteFile,hFile,hMem,fi.uncompressed_size,addr dwwrite,NULL
-				invoke CloseHandle,hFile
+			.if !eax
+				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr filename_inzip
+				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szCRLF
+				invoke unzOpenCurrentFile,hz
+				.if !eax
+					invoke GlobalAlloc,GMEM_FIXED,fi.uncompressed_size
+					mov		hMem,eax
+					invoke unzReadCurrentFile,hz,hMem,fi.uncompressed_size
+					.if eax==fi.uncompressed_size
+						invoke CreateTheFile,addr filename_inzip
+						.if eax!=INVALID_HANDLE_VALUE
+							mov		hFile,eax
+							invoke WriteFile,hFile,hMem,fi.uncompressed_size,addr dwwrite,NULL
+							invoke CloseHandle,hFile
+						.endif
+						invoke GlobalFree,hMem
+						invoke unzCloseCurrentFile,hz
+						invoke unzGoToNextFile,hz
+					.endif
+				.endif
 			.endif
-			invoke GlobalFree,hMem
-			invoke unzCloseCurrentFile,hz
-			invoke unzGoToNextFile,hz
 		.endw
 		invoke unzClose,hz
+		invoke DeleteFile,addr buffer
+		invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szCRLF
 	.endif
 	ret
 
@@ -448,6 +458,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CheckDlgButton,hWin,IDC_CHKGETASM,BST_CHECKED
 		invoke CheckDlgButton,hWin,IDC_CHKGETHLL,BST_CHECKED
 		invoke CheckDlgButton,hWin,IDC_CHKGETLNG,BST_CHECKED
+		invoke CheckDlgButton,hWin,IDC_CHKGETHLP,BST_CHECKED
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -473,6 +484,8 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,IDC_CHKGETHLL
 						call	Enable
 						mov		eax,IDC_CHKGETLNG
+						call	Enable
+						mov		eax,IDC_CHKGETHLP
 						call	Enable
 						mov		eax,IDC_EDTDLPATH
 						call	Enable
@@ -513,6 +526,10 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if eax
 						invoke InternetDownload,hWin,addr szLNGFile
 					.endif
+					invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLP
+					.if eax
+						invoke InternetDownload,hWin,addr szHLPFile
+					.endif
 					.if !nDLErrors
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_HIDE
@@ -525,6 +542,8 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						mov		eax,IDC_CHKGETHLL
 						call	Disable
 						mov		eax,IDC_CHKGETLNG
+						call	Disable
+						mov		eax,IDC_CHKGETHLP
 						call	Disable
 						mov		eax,IDC_EDTDLPATH
 						call	Disable
@@ -550,6 +569,14 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke UnZip,hWin,addr szLNGFile
 				.endif
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLP
+				.if eax
+					invoke UnZip,hWin,addr szHLPFile
+				.endif
+				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
+				invoke GetDlgItem,hWin,IDC_BTNUPDATE
+				invoke ShowWindow,eax,SW_HIDE
+				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

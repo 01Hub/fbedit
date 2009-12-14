@@ -41,6 +41,7 @@ IDC_CHKGETIDE					equ 1002
 IDC_CHKGETASM					equ 1003
 IDC_CHKGETHLL					equ 1004
 IDC_CHKGETLNG					equ 1005
+IDC_CHKGETHLP					equ 1010
 IDC_BTNDOWNLOAD					equ 1008
 IDC_EDTDLPATH					equ 1006
 IDC_BTNDLPATH					equ 1007
@@ -55,10 +56,12 @@ IDC_PGB1						equ 1002
 
 szMenuCheck						db 'Check for Updates',0
 szBackSlash						db '\',0
-szTemp							db '\Temp',0
+szTemp							db '\RadASM_Update',0
 szAllFiles						db '\*.*',0
 szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
+szDone							db 'Done!',13,10,0
+szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
 szINetErr4						db 'Could not find:',13,10
@@ -71,6 +74,7 @@ szIDEFile						db 'RadASMIDE.zip',0
 szASMFile						db 'Assembly.zip',0
 szHLLFile						db 'HighLevel.zip',0
 szLNGFile						db 'Language.zip',0
+szHLPFile						db 'RAHelp.zip',0
 szFmtDownloaded					db 'Downloded %s %s',13,10,0
 szSuccess						db 'successfully.',0
 szFailed						db 'failed.',0

@@ -30,6 +30,7 @@ copy ..\Addins\solParse\solParse.dll Release\Addins
 copy ..\Addins\SourceSafe\SourceSafe.dll Release\Addins
 copy ..\Addins\StyleMana\StyleMana.dll Release\Addins
 copy ..\Addins\TbrCreate\TbrCreate.exe Release\Addins
+copy ..\Addins\UpdateChecker\UpdateChecker.dll Release\Addins
 copy ..\Addins\RadAsm.inc Release\Masm\Inc
 
 rem copy ..\Addins\\.dll Release\Addins
@@ -55,6 +56,8 @@ copy ..\Addins\ReallyRad\ReallyRad.txt Release\Addins\Help
 copy ..\Addins\ResourceID\ResourceID.txt Release\Addins\Help
 copy ..\Addins\SourceSafe\SourceSafe.txt Release\Addins\Help
 copy ..\Addins\StyleMana\StyleMana.txt Release\Addins\Help
+copy ..\Addins\UpdateChecker\UpdateChecker.txt Release\Addins\Help
+
 
 rem copy ..\Addins\\.txt Release\Addins\Help
 
