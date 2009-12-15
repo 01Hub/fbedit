@@ -18,7 +18,6 @@ BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpCBData:DWORD
 	mov eax,uMsg
 	.if eax==BFFM_INITIALIZED
 		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpCBData
-;		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
 	.endif
 	xor eax, eax
 	ret
@@ -30,7 +29,6 @@ BrowseFolder proc hWin:HWND,nID:DWORD
 
 	mov		bri.pidlRoot,0
 	mov		bri.pszDisplayName,0
-;	mov		eax,offset szBrowse
 	xor		eax,eax
 	mov		bri.lpszTitle,eax
 	mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
@@ -65,6 +63,8 @@ InternetDownloadFile proc uses ebx,hWin:HWND
 	LOCAL	hFile:HANDLE
 	LOCAL	nRetry:DWORD
 
+	xor		eax,eax
+	mov		nRetry,0
 	invoke lstrcpy,addr buffer,addr szDLPath
 	invoke lstrcat,addr buffer,addr szBackSlash
 	invoke lstrcat,addr buffer,addr szDLFileName
@@ -81,36 +81,40 @@ InternetDownloadFile proc uses ebx,hWin:HWND
 				mov		hUrl,eax
 				mov		dwread,4
 				invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
-				mov		ebx,dwsize
-				invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
-				invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
-				shr		ebx,8
-				shl		ebx,16
-				invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
-				xor		ebx,ebx
-				.while ebx<dwsize
-					.if fDLCancel
-						dec		fDLCancel
-						mov		eax,-4
-						.break
-					.endif
-					invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
-					.if eax
-						invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
-						mov		eax,dwread
-						add		ebx,eax
-						mov		eax,ebx
-						shr		eax,8
-						invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETPOS,eax,0
-						xor		eax,eax
-					.else
-						inc		nRetry
-						.if nRetry>10
-							mov		eax,-3
+				.if eax
+					mov		ebx,dwsize
+					invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
+					invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
+					shr		ebx,8
+					shl		ebx,16
+					invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
+					xor		ebx,ebx
+					.while ebx<dwsize
+						.if fDLCancel
+							dec		fDLCancel
+							mov		eax,-4
 							.break
 						.endif
-					.endif
-				.endw
+						invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
+						.if eax
+							invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
+							mov		eax,dwread
+							add		ebx,eax
+							mov		eax,ebx
+							shr		eax,8
+							invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETPOS,eax,0
+							xor		eax,eax
+						.else
+							inc		nRetry
+							.if nRetry>10
+								mov		eax,-3
+								.break
+							.endif
+						.endif
+					.endw
+				.else
+					mov		eax,-3
+				.endif
 				push	eax
 				invoke InternetCloseHandle,hUrl
 				pop		eax
@@ -169,6 +173,7 @@ DownloadProc endp
 InternetDownload proc hWin:HWND,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	mov		fDLCancel,0
 	invoke lstrcpy,addr szDLFileName,lpFileName
 	push	0
 	push	offset DownloadProc
