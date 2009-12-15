@@ -64,74 +64,103 @@ InternetDownloadFile proc uses ebx,hWin:HWND
 	LOCAL	nRetry:DWORD
 
 	xor		eax,eax
-	mov		nRetry,0
-	invoke lstrcpy,addr buffer,addr szDLPath
-	invoke lstrcat,addr buffer,addr szBackSlash
-	invoke lstrcat,addr buffer,addr szDLFileName
-	invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		invoke lstrcpy,addr buffer,addr szUrlFile
-		invoke lstrcat,addr buffer,addr szDLFileName
-		invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+	mov		nRetry,eax
+	mov		hFile,eax
+	invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+	.if eax
+		mov		hInternet,eax
+		invoke lstrcpy,addr buffer1,addr szUrlFile
+		invoke lstrcat,addr buffer1,addr szDLFileName
+		invoke InternetOpenUrl,hInternet,addr buffer1,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
 		.if eax
-			mov		hInternet,eax
-			invoke InternetOpenUrl,hInternet,addr buffer,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
+			mov		hUrl,eax
+			mov		dwread,4
+			invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
 			.if eax
-				mov		hUrl,eax
-				mov		dwread,4
-				invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
-				.if eax
-					mov		ebx,dwsize
-					invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
-					invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
-					shr		ebx,8
-					shl		ebx,16
-					invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
-					xor		ebx,ebx
-					.while ebx<dwsize
-						.if fDLCancel
-							dec		fDLCancel
-							mov		eax,-4
-							.break
-						.endif
-						invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
-						.if eax
-							invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
-							mov		eax,dwread
+				mov		ebx,dwsize
+				invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
+				invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
+				shr		ebx,8
+				shl		ebx,16
+				invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
+				xor		ebx,ebx
+				.while ebx<dwsize
+					.if fDLCancel
+						dec		fDLCancel
+						mov		eax,-4
+						.break
+					.endif
+					invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
+					.if eax
+						mov		eax,dwread
+						.if !eax
+							; Reconnect
+							invoke InternetCloseHandle,hUrl
+							mov		hUrl,0
+							invoke InternetCloseHandle,hInternet
+							mov		hInternet,0
+							invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+							.if eax
+								mov		hInternet,eax
+								invoke lstrcpy,addr buffer1,addr szUrlFile
+								invoke lstrcat,addr buffer1,addr szDLFileName
+								invoke InternetOpenUrl,hInternet,addr buffer1,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
+								.if eax
+									mov		hUrl,eax
+								.endif
+							.endif
+						.else
 							add		ebx,eax
+							.if !hFile
+								; Create the file
+								invoke lstrcpy,addr buffer,addr szDLPath
+								invoke lstrcat,addr buffer,addr szBackSlash
+								invoke lstrcat,addr buffer,addr szDLFileName
+								invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+								.if eax!=INVALID_HANDLE_VALUE
+									mov		hFile,eax
+								.else
+									mov		eax,-5
+									.break
+								.endif
+							.endif
+							invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
 							mov		eax,ebx
 							shr		eax,8
 							invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETPOS,eax,0
 							xor		eax,eax
-						.else
-							inc		nRetry
-							.if nRetry>10
-								mov		eax,-3
-								.break
-							.endif
 						.endif
-					.endw
-				.else
-					mov		eax,-3
+					.else
+						inc		nRetry
+						.if nRetry>10
+							mov		eax,-3
+							.break
+						.endif
+					.endif
+				.endw
+				.if hFile
+					push	eax
+					invoke CloseHandle,hFile
+					pop		eax
 				.endif
+			.else
+				mov		eax,-3
+			.endif
+			.if hUrl
 				push	eax
 				invoke InternetCloseHandle,hUrl
 				pop		eax
-			.else
-				mov		eax,-2
 			.endif
+		.else
+			mov		eax,-2
+		.endif
+		.if hInternet
 			push	eax
 			invoke InternetCloseHandle,hInternet
 			pop		eax
-		.else
-			mov		eax,-1
 		.endif
-		push	eax
-		invoke CloseHandle,hFile
-		pop		eax
 	.else
-		mov		eax,-5
+		mov		eax,-1
 	.endif
 	mov		nDLThread,eax
 	invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
