@@ -162,6 +162,14 @@ PRNPOS struct
 	nlinespage	dd ?
 PRNPOS ends
 
+RAUNDO struct
+	rpPrev		dd ?		;Relative pointer to previous
+	undoid		dd ?		;Undo ID
+	cp			dd ?		;Character position
+	cb			dd ?		;Size in bytes
+	fun			db ?		;Function
+RAUNDO ends
+
 .const
 
 tbrbtns					TBBUTTON <20,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -368,4 +376,5 @@ prnfntht				dd ?
 rcPrnPage				RECT <>
 rcPrn					RECT <>
 fUnicode				dd ?
-
+hUndo					HGLOBAL ?
+nUndoSize				dd ?

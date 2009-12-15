@@ -373,3 +373,72 @@ Redo proc uses ebx,hMem:DWORD,hWin:DWORD
 
 Redo endp
 
+GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
+	LOCAL	rpstart:DWORD
+
+	mov		ebx,hMem
+	mov		esi,[ebx].EDIT.hUndo
+	mov		ecx,nSize
+	mov		edx,[ebx].EDIT.rpUndo
+	.while edx!=0 && sdword ptr ecx>0
+		sub		ecx,[esi+edx].RAUNDO.cb
+		sub		ecx,sizeof RAUNDO
+		mov		edx,[esi+edx].RAUNDO.rpPrev
+	.endw
+	mov		rpstart,edx
+	mov		edi,lpMem
+	.while sdword ptr ecx<nSize
+		push	ecx
+		call	GetHeader
+		call	GetData
+		mov		ecx,[esi+edx].RAUNDO.cb
+		lea		edi,[edi+ecx+sizeof RAUNDO]
+		lea		edx,[edx+ecx+sizeof RAUNDO]
+		mov		eax,ecx
+		pop		ecx
+		lea		ecx,[ecx+eax+sizeof RAUNDO]
+	.endw
+	call	GetHeader
+	lea		edi,[edi+sizeof RAUNDO]
+	mov		eax,edi
+	sub		eax,lpMem
+	ret
+
+GetHeader:
+	xor		ecx,ecx
+	.while ecx<sizeof RAUNDO
+		lea		eax,[edx+ecx]
+		mov		al,[esi+eax]
+		mov		[edi+ecx],al
+		inc		ecx
+	.endw
+	mov		eax,[edi].RAUNDO.rpPrev
+	sub		eax,rpstart
+	mov		[edi].RAUNDO.rpPrev,eax
+	retn
+
+GetData:
+	xor		ecx,ecx
+	.while ecx<[esi+edx].RAUNDO.cb
+		lea		eax,[edx+ecx]
+		mov		al,[esi+eax+sizeof RAUNDO]
+		mov		[edi+ecx+sizeof RAUNDO],al
+		inc		ecx
+	.endw
+	retn
+
+GetUndo endp
+
+SetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
+
+	mov		ebx,hMem
+	invoke ExpandUndoMem,ebx,nSize
+	mov		esi,lpMem
+	mov		edi,[ebx].EDIT.hUndo
+	invoke RtlMoveMemory,edi,esi,nSize
+	mov		eax,nSize
+	sub		eax,sizeof RAUNDO
+	mov		[ebx].EDIT.rpUndo,eax
+	ret
+
+SetUndo endp

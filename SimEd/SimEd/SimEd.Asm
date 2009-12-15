@@ -682,6 +682,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_OPEN
 				invoke OpenEdit
+.if hUndo
+	invoke SendMessage,hREd,REM_SETUNDO,nUndoSize,hUndo
+.endif
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_SAVE
 				invoke SaveEdit,hREd,offset FileName
@@ -693,6 +696,31 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FILE_CLOSE
 				invoke WantToSave,hREd,offset FileName
 				.if !eax
+
+invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+mov		hUndo,eax
+mov		edi,eax
+invoke SendMessage,hREd,REM_GETUNDO,10*1024,edi
+mov		ebx,eax
+mov		nUndoSize,eax
+.while sdword ptr ebx>0
+;	mov		eax,[edi].RAUNDO.rpPrev
+;	PrintDec eax
+;	mov		eax,[edi].RAUNDO.undoid
+;	PrintDec eax
+;	mov		eax,[edi].RAUNDO.cp
+;	PrintDec eax
+;	mov		eax,[edi].RAUNDO.cb
+;	PrintDec eax
+;	movzx	eax,[edi].RAUNDO.fun
+;	PrintDec eax
+;	lea		eax,[edi+sizeof RAUNDO]
+;	PrintStringByAddr eax
+	mov		eax,[edi].RAUNDO.cb
+	sub		ebx,eax
+	sub		ebx,sizeof RAUNDO
+	lea		edi,[edi+eax+sizeof RAUNDO]
+.endw
 					invoke DestroyWindow,hREd
 					invoke TabToolDel,hREd
 				.endif

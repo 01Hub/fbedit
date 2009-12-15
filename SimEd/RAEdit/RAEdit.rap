@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.423
-PV=1.2.0.423
+FV=1.2.0.440
+PV=1.2.0.440
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.423
+ProductVersion=1.2.0.440
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.423
+FileVersion=1.2.0.440
 CompanyName=
 
 [Resource]
@@ -102,13 +102,13 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,70426
+1=0,0,0,0,76490
 16=0,0,810,411,26055
 22=0,0,0,0,3164
-23=0,0,0,0,17805
+23=0,0,0,0,31111
 24=0,0,0,0,4001
-19=0,0,0,0,9258
-2=0,0,0,0,5386
+19=0,0,0,0,1816
+2=0,0,0,0,7913
 9=0,0,0,0,10650
 10=0,0,0,0,7772
 11=0,0,0,0,5553
@@ -119,7 +119,8 @@ CompanyName=
 13=0,0,0,0,7028
 26=0,0,0,0,10393
 21=0,0,0,0,9173
-14=0,0,0,0,6368
+14=0,0,0,0,8997
+12=0,0,0,0,2567
 
 [BookMark]
 0=
@@ -149,7 +150,7 @@ CompanyName=
 10="CreateCaret"
 
 [AutoLoad]
-AutoLoad=1,16,26,2,23,10,14
+AutoLoad=1,16,26,2,23,10,14,19,12
 
 [Version-Inc]
 Options=52
@@ -189,7 +190,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -245,10 +246,11 @@ Group=Assembly,Resources,Misc
 13=,
 26=,,,,,
 21=,,
-14=
+14=,
+12=
 
 [PTimer]
-PTimer=159801587
+PTimer=173568909
 
 [Exports]
 1=GetDef
@@ -266,3 +268,7 @@ PTimer=159801587
 10=
 23=
 26=
+14=
+2=
+[GroupExpand]
+GroupExpand=1,0,0,0

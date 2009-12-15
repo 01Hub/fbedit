@@ -1348,6 +1348,14 @@
 			mov		[ebx].EDIT.fhilite,eax
 			invoke HiliteLine,ebx,[ebx].EDIT.line,[ebx].EDIT.fhilite
 			ret
+		align 4
+		_REM_GETUNDO:
+			invoke GetUndo,ebx,wParam,lParam
+			ret
+		align 4
+		_REM_SETUNDO:
+			invoke SetUndo,ebx,wParam,lParam
+			ret
 
 .data
 
@@ -1442,6 +1450,8 @@ _REM_BASE \
 	dd _REM_SETCHANGEDSTATE		;equ REM_BASE+86
 	dd _REM_SETTOOLTIP			;equ REM_BASE+87
 	dd _REM_HILITEACTIVELINE	;equ REM_BASE+88
+	dd _REM_GETUNDO				;equ REM_BASE+89
+	dd _REM_SETUNDO				;equ REM_BASE+90
 
 .code
 align 4
