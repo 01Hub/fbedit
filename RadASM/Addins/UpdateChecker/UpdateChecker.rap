@@ -59,20 +59,20 @@ Menu=1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.0.0.0
-PV=1.0.0.0
+FV=1.0.0.1
+PV=1.0.0.1
 VerOS=0x00000004
-VerFT=0x00000000
+VerFT=0x00000002
 VerLNG=0x00000409
-VerCHS=0x000004B0
-ProductVersion=1.0.0.0
+VerCHS=0x000004E4
+ProductVersion=1.0.0.1
 ProductName=
 OriginalFilename=UpdateChecker.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2009
 InternalName=UpdateChecker.dll
-FileDescription=Update checker addin
-FileVersion=1.0.0.0
+FileDescription=Update checker addin for RadASM
+FileVersion=1.0.0.1
 CompanyName=
 [Group]
 Group=Assembly,Resources,Misc
@@ -130,11 +130,11 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=25011173
+PTimer=29691469
 [Size]
 5=0,0,0,0
-1=0,0,0,0,2966
-2=0,0,0,0,2138
+1=0,0,0,0,4430
+2=0,0,0,0,2576
 7=0,0,0,0
 3=0,0,0,0,22
 8=0,0,0,0,16271

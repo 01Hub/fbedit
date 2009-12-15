@@ -83,7 +83,7 @@ szCanceled						db 'canceled.',0
 szINetErr1						db 'InternetOpen failed.',0
 szINetErr2						db 'InternetOpenUrl failed.',0
 szINetErr3						db 'InternetReadFile failed',0
-szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be deleted.',13,10,13,10,'Continue?',0
+szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
 
 .data?
 

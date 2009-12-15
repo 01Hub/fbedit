@@ -51,12 +51,53 @@ BrowseFolder proc hWin:HWND,nID:DWORD
 
 BrowseFolder endp
 
-InternetDownloadFile proc uses ebx,hWin:HWND
+InetClose proc uses ebx,lphInternet:DWORD,lphUrl:DWORD
+
+	mov		ebx,lphUrl
+	.if dword ptr [ebx]
+		invoke InternetCloseHandle,[ebx]
+		mov		dword ptr [ebx],0
+	.endif
+	mov		ebx,lphInternet
+	.if dword ptr [ebx]
+		invoke InternetCloseHandle,[ebx]
+		mov		dword ptr [ebx],0
+	.endif
+	ret
+
+InetClose endp
+
+InetConnect proc lphInternet:DWORD,lphUrl:DWORD,lpUrl:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	contextid:DWORD
+
+	invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+	.if eax
+		mov		edx,lphInternet
+		mov		[edx],eax
+		.if lpUrl
+			invoke lstrcpy,addr buffer,lpUrl
+		.else
+			invoke lstrcpy,addr buffer,addr szUrlFile
+			invoke lstrcat,addr buffer,addr szDLFileName
+		.endif
+		mov		edx,lphInternet
+		invoke InternetOpenUrl,[edx],addr buffer,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
+		.if eax
+			mov		edx,lphUrl
+			mov		[edx],eax
+			mov		eax,TRUE
+		.endif
+	.endif
+	ret
+
+InetConnect endp
+
+InetDownloadFile proc uses ebx,hWin:HWND
+	LOCAL	filename[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	hInternet:HANDLE
 	LOCAL	hUrl:HANDLE
-	LOCAL	contextid:DWORD
 	LOCAL	dwsize:DWORD
 	LOCAL	dwread:DWORD
 	LOCAL	dwindex:DWORD
@@ -66,107 +107,93 @@ InternetDownloadFile proc uses ebx,hWin:HWND
 	xor		eax,eax
 	mov		nRetry,eax
 	mov		hFile,eax
-	invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+	mov		hInternet,eax
+	mov		hUrl,eax
+	invoke InetConnect,addr hInternet,addr hUrl,0
 	.if eax
-		mov		hInternet,eax
-		invoke lstrcpy,addr buffer1,addr szUrlFile
-		invoke lstrcat,addr buffer1,addr szDLFileName
-		invoke InternetOpenUrl,hInternet,addr buffer1,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
+		mov		dwread,4
+		mov		dwsize,0
+		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
 		.if eax
-			mov		hUrl,eax
-			mov		dwread,4
-			invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
-			.if eax
-				mov		ebx,dwsize
-				invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
-				invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
-				shr		ebx,8
-				shl		ebx,16
-				invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
-				xor		ebx,ebx
-				.while ebx<dwsize
-					.if fDLCancel
-						dec		fDLCancel
-						mov		eax,-4
-						.break
-					.endif
-					invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
-					.if eax
-						mov		eax,dwread
+			mov		ebx,dwsize
+			invoke wsprintf,addr buffer1,addr szFmtFilesize,ebx
+			invoke SetDlgItemText,hWin,IDC_STCFILESIZE,addr buffer1
+			shr		ebx,8
+			shl		ebx,16
+			invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETRANGE,0,ebx
+			xor		ebx,ebx
+			.while ebx<dwsize
+				.if fDLCancel
+					dec		fDLCancel
+					mov		eax,-4
+					.break
+				.endif
+				invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
+				.if eax
+					mov		eax,dwread
+					.if !eax
+						; Reconnect
+						invoke InetClose,addr hInternet,addr hUrl
+						invoke WaitForSingleObject,hDLThread,100
+						invoke InetConnect,addr hInternet,addr hUrl,0
 						.if !eax
-							; Reconnect
-							invoke InternetCloseHandle,hUrl
-							mov		hUrl,0
-							invoke InternetCloseHandle,hInternet
-							mov		hInternet,0
-							invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
-							.if eax
-								mov		hInternet,eax
-								invoke lstrcpy,addr buffer1,addr szUrlFile
-								invoke lstrcat,addr buffer1,addr szDLFileName
-								invoke InternetOpenUrl,hInternet,addr buffer1,0,0,INTERNET_FLAG_RELOAD or INTERNET_FLAG_NO_CACHE_WRITE,addr contextid
-								.if eax
-									mov		hUrl,eax
-								.endif
+							inc		nRetry
+							.if nRetry>100
+								mov		eax,-3
+								.break
 							.endif
-						.else
-							add		ebx,eax
-							.if !hFile
-								; Create the file
-								invoke lstrcpy,addr buffer,addr szDLPath
-								invoke lstrcat,addr buffer,addr szBackSlash
-								invoke lstrcat,addr buffer,addr szDLFileName
-								invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-								.if eax!=INVALID_HANDLE_VALUE
-									mov		hFile,eax
-								.else
-									mov		eax,-5
-									.break
-								.endif
-							.endif
-							invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
-							mov		eax,ebx
-							shr		eax,8
-							invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETPOS,eax,0
-							xor		eax,eax
 						.endif
 					.else
-						inc		nRetry
-						.if nRetry>10
-							mov		eax,-3
-							.break
+						add		ebx,eax
+						.if !hFile
+							; Create the file
+							invoke lstrcpy,addr filename,addr szDLPath
+							invoke lstrcat,addr filename,addr szBackSlash
+							invoke lstrcat,addr filename,addr szDLFileName
+							invoke CreateFile,addr filename,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+							.if eax!=INVALID_HANDLE_VALUE
+								mov		hFile,eax
+							.else
+								mov		eax,-5
+								.break
+							.endif
 						.endif
+						; Write the buffer to the file
+						invoke WriteFile,hFile,addr buffer1,dwread,addr dwread,NULL
+						mov		eax,ebx
+						shr		eax,8
+						invoke SendDlgItemMessage,hWin,IDC_PGB1,PBM_SETPOS,eax,0
+						xor		eax,eax
+						mov		nRetry,eax
 					.endif
-				.endw
-				.if hFile
-					push	eax
-					invoke CloseHandle,hFile
-					pop		eax
+				.else
+					inc		nRetry
+					.if nRetry>10
+						mov		eax,-3
+						.break
+					.endif
 				.endif
-			.else
-				mov		eax,-3
-			.endif
-			.if hUrl
+			.endw
+			.if hFile
 				push	eax
-				invoke InternetCloseHandle,hUrl
+				invoke CloseHandle,hFile
 				pop		eax
 			.endif
 		.else
 			mov		eax,-2
 		.endif
-		.if hInternet
-			push	eax
-			invoke InternetCloseHandle,hInternet
-			pop		eax
-		.endif
 	.else
 		mov		eax,-1
 	.endif
 	mov		nDLThread,eax
+	.if hFile!=0 && eax!=0
+		invoke DeleteFile,addr filename
+	.endif
+	invoke InetClose,addr hInternet,addr hUrl
 	invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 	ret
 
-InternetDownloadFile endp
+InetDownloadFile endp
 
 DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -177,7 +204,7 @@ DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke lstrcpy,addr buffer,addr szDownloading
 		invoke lstrcat,addr buffer,addr szDLFileName
 		invoke SetDlgItemText,hWin,IDC_STCDOWNLOADING,addr buffer
-		invoke CreateThread,NULL,NULL,addr InternetDownloadFile,hWin,NORMAL_PRIORITY_CLASS,addr tid
+		invoke CreateThread,NULL,NULL,addr InetDownloadFile,hWin,NORMAL_PRIORITY_CLASS,addr tid
 		mov		hDLThread,eax
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -199,7 +226,7 @@ DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 DownloadProc endp
 
-InternetDownload proc hWin:HWND,lpFileName:DWORD
+InetDownload proc hWin:HWND,lpFileName:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		fDLCancel,0
@@ -225,43 +252,37 @@ InternetDownload proc hWin:HWND,lpFileName:DWORD
 	invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 	ret
 
-InternetDownload endp
+InetDownload endp
 
-InternetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
+InetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 	LOCAL	hInternet:HANDLE
 	LOCAL	hUrl:HANDLE
-	LOCAL	contextid:DWORD
 	LOCAL	dwread:DWORD
 	LOCAL	dwindex:DWORD
 
-	invoke InternetOpen,addr AppName,INTERNET_OPEN_TYPE_DIRECT,0,0,0
+	invoke InetConnect,addr hInternet,addr hUrl,addr szUrlVersion
 	.if eax
-		mov		hInternet,eax
-		invoke InternetOpenUrl,hInternet,lpUrl,0,0,INTERNET_FLAG_RELOAD,addr contextid
+		mov		dwread,256
+		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,lpBuff,addr dwread,addr dwindex
 		.if eax
-			mov		hUrl,eax
-			mov		dwread,256
-			invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,lpBuff,addr dwread,addr dwindex
 			invoke InternetReadFile,hUrl,lpBuff,nBytes,addr dwread
 			.if eax
-				invoke InternetCloseHandle,hUrl
 				mov		eax,dwread
 			.else
-				invoke InternetCloseHandle,hUrl
-				mov		eax,-3
+				mov		eax,-1
 			.endif
 		.else
-			mov		eax,-2
+			mov		eax,-1
 		.endif
-		push	eax
-		invoke InternetCloseHandle,hInternet
-		pop		eax
 	.else
 		mov		eax,-1
 	.endif
+	push	eax
+	invoke InetClose,addr hInternet,addr hUrl
+	pop		eax
 	ret
 
-InternetGetVersion endp
+InetGetVersion endp
 
 IsFoderEmpty proc
 	LOCAL	wfd:WIN32_FIND_DATA
@@ -293,6 +314,7 @@ DeleteFiles proc hWin:HWND
 	LOCAL	sfo:SHFILEOPSTRUCT
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke RtlZeroMemory,addr buffer,sizeof buffer
 	invoke lstrcpy,addr buffer,addr szDLPath
 	invoke lstrcat,addr buffer,addr szAllFiles
 	mov		eax,hWin
@@ -301,10 +323,10 @@ DeleteFiles proc hWin:HWND
 	lea		eax,buffer
 	mov		sfo.pFrom,eax
 	mov		sfo.pTo,NULL
-	mov		sfo.fFlags,FOF_NOERRORUI or	FOF_SILENT or FOF_ALLOWUNDO
+	mov		sfo.fFlags,FOF_ALLOWUNDO
 	mov		sfo.fAnyOperationsAborted,0
-	mov		sfo.lpszProgressTitle,offset AppName
 	mov		sfo.hNameMappings,NULL
+	mov		sfo.lpszProgressTitle,offset AppName
 	invoke SHFileOperation,ADDR	sfo
 	mov		eax,sfo.fAnyOperationsAborted
 	ret
@@ -499,8 +521,9 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				; Get version
 				invoke RtlZeroMemory,addr tempbuff,sizeof tempbuff
-				invoke InternetGetVersion,addr szUrlVersion,addr tempbuff,1023
+				invoke InetGetVersion,addr szUrlVersion,addr tempbuff,1023
 				.if eax==-1
 					mov		eax,offset szINetErr1
 				.elseif eax==-2
@@ -546,23 +569,23 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
 					.if eax
-						invoke InternetDownload,hWin,addr szIDEFile
+						invoke InetDownload,hWin,addr szIDEFile
 					.endif
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETASM
 					.if eax
-						invoke InternetDownload,hWin,addr szASMFile
+						invoke InetDownload,hWin,addr szASMFile
 					.endif
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLL
 					.if eax
-						invoke InternetDownload,hWin,addr szHLLFile
+						invoke InetDownload,hWin,addr szHLLFile
 					.endif
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETLNG
 					.if eax
-						invoke InternetDownload,hWin,addr szLNGFile
+						invoke InetDownload,hWin,addr szLNGFile
 					.endif
 					invoke IsDlgButtonChecked,hWin,IDC_CHKGETHLP
 					.if eax
-						invoke InternetDownload,hWin,addr szHLPFile
+						invoke InetDownload,hWin,addr szHLPFile
 					.endif
 					.if !nDLErrors
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
