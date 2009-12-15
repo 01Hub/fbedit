@@ -87,7 +87,11 @@ InetConnect proc lphInternet:DWORD,lphUrl:DWORD,lpUrl:DWORD
 			mov		edx,lphUrl
 			mov		[edx],eax
 			mov		eax,TRUE
+		.else
+			mov		eax,-2
 		.endif
+	.else
+		mov		eax,-1
 	.endif
 	ret
 
@@ -110,7 +114,7 @@ InetDownloadFile proc uses ebx,hWin:HWND
 	mov		hInternet,eax
 	mov		hUrl,eax
 	invoke InetConnect,addr hInternet,addr hUrl,0
-	.if eax
+	.if sdword ptr eax>0
 		mov		dwread,4
 		mov		dwsize,0
 		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,addr dwsize,addr dwread,addr dwindex
@@ -124,8 +128,7 @@ InetDownloadFile proc uses ebx,hWin:HWND
 			xor		ebx,ebx
 			.while ebx<dwsize
 				.if fDLCancel
-					dec		fDLCancel
-					mov		eax,-4
+					mov		eax,-6
 					.break
 				.endif
 				invoke InternetReadFile,hUrl,addr buffer1,256,addr dwread
@@ -139,7 +142,7 @@ InetDownloadFile proc uses ebx,hWin:HWND
 						.if !eax
 							inc		nRetry
 							.if nRetry>100
-								mov		eax,-3
+								mov		eax,-4
 								.break
 							.endif
 						.endif
@@ -169,7 +172,7 @@ InetDownloadFile proc uses ebx,hWin:HWND
 				.else
 					inc		nRetry
 					.if nRetry>10
-						mov		eax,-3
+						mov		eax,-4
 						.break
 					.endif
 				.endif
@@ -180,10 +183,8 @@ InetDownloadFile proc uses ebx,hWin:HWND
 				pop		eax
 			.endif
 		.else
-			mov		eax,-2
+			mov		eax,-3
 		.endif
-	.else
-		mov		eax,-1
 	.endif
 	mov		nDLThread,eax
 	.if hFile!=0 && eax!=0
@@ -201,6 +202,7 @@ DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		fDLCancel,0
 		invoke lstrcpy,addr buffer,addr szDownloading
 		invoke lstrcat,addr buffer,addr szDLFileName
 		invoke SetDlgItemText,hWin,IDC_STCDOWNLOADING,addr buffer
@@ -212,7 +214,7 @@ DownloadProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDCANCEL
-				inc		fDLCancel
+				mov		fDLCancel,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
@@ -239,14 +241,27 @@ InetDownload proc hWin:HWND,lpFileName:DWORD
 	mov		edx,lpProc
 	call	[edx].ADDINPROCS.lpModalDialog
 	.if !eax
-		invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,addr szSuccess
-	.elseif eax==-4
-		invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,addr szCanceled
+		mov		eax,offset szSuccess
+	.elseif eax==-1
+		mov		eax,offset szINetErr1
 		inc		nDLErrors
-	.else
-		invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,addr szFailed
+	.elseif eax==-2
+		mov		eax,offset szINetErr2
+		inc		nDLErrors
+	.elseif eax==-3
+		mov		eax,offset szINetErr3
+		inc		nDLErrors
+	.elseif eax==-4
+		mov		eax,offset szINetErr4
+		inc		nDLErrors
+	.elseif eax==-5
+		mov		eax,offset szINetErr5
+		inc		nDLErrors
+	.elseif eax==-6
+		mov		eax,offset szINetErr6
 		inc		nDLErrors
 	.endif
+	invoke wsprintf,addr buffer,addr szFmtDownloaded,lpFileName,eax
 	invoke GetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff,1024
 	invoke lstrcat,addr tempbuff,addr buffer
 	invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
@@ -261,7 +276,7 @@ InetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 	LOCAL	dwindex:DWORD
 
 	invoke InetConnect,addr hInternet,addr hUrl,addr szUrlVersion
-	.if eax
+	.if sdword ptr eax>0
 		mov		dwread,256
 		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,lpBuff,addr dwread,addr dwindex
 		.if eax
@@ -269,13 +284,11 @@ InetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 			.if eax
 				mov		eax,dwread
 			.else
-				mov		eax,-1
+				mov		eax,-4
 			.endif
 		.else
-			mov		eax,-1
+			mov		eax,-3
 		.endif
-	.else
-		mov		eax,-1
 	.endif
 	push	eax
 	invoke InetClose,addr hInternet,addr hUrl
@@ -530,6 +543,8 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,offset szINetErr2
 				.elseif eax==-3
 					mov		eax,offset szINetErr3
+				.elseif eax==-4
+					mov		eax,offset szINetErr4
 				.else
 					.if word ptr tempbuff=='!<'
 						mov		eax,offset szINetErr4

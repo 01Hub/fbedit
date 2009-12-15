@@ -64,7 +64,6 @@ szDone							db 'Done!',13,10,0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
-szINetErr4						db 'Could not find:',13,10
 szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM/ReleaseMake/',0
 
@@ -77,12 +76,13 @@ szLNGFile						db 'Language.zip',0
 szHLPFile						db 'RAHelp.zip',0
 szFmtDownloaded					db 'Downloded %s %s',13,10,0
 szSuccess						db 'successfully.',0
-szFailed						db 'failed.',0
-szCanceled						db 'canceled.',0
 
 szINetErr1						db 'InternetOpen failed.',0
 szINetErr2						db 'InternetOpenUrl failed.',0
-szINetErr3						db 'InternetReadFile failed',0
+szINetErr3						db 'HttpQueryInfo failed',0
+szINetErr4						db 'InternetReadFile failed',0
+szINetErr5						db 'CreateFile failed',0
+szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
 
 .data?
