@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=Update checker addin
+Description=MasmEd Update checker addin
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -130,11 +130,11 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=35854866
+PTimer=37348139
 [Size]
 5=0,0,0,0
-1=0,0,0,0,12382
-2=0,0,0,0,1157
+1=0,0,0,0,15103
+2=0,0,0,0,1460
 7=0,0,0,0
 3=0,0,0,0,55
 8=0,0,0,0,4214

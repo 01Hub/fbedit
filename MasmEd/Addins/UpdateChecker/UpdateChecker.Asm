@@ -571,7 +571,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !nDLErrors
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_HIDE
-						invoke GetDlgItem,hWin,IDC_BTNUPDATE
+						invoke GetDlgItem,hWin,IDC_BTNUNZIP
 						invoke ShowWindow,eax,SW_SHOW
 						mov		eax,IDC_EDTDLPATH
 						call	Disable
@@ -579,13 +579,27 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						call	Disable
 					.endif
 				.endif
-			.elseif eax==IDC_BTNUPDATE
+			.elseif eax==IDC_BTNUNZIP
 				invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 				invoke UnZip,hWin,addr szIDEFile
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
-				invoke GetDlgItem,hWin,IDC_BTNUPDATE
+				invoke GetDlgItem,hWin,IDC_BTNUNZIP
+				invoke ShowWindow,eax,SW_HIDE
+				invoke GetDlgItem,hWin,IDC_BTNTEST
+				invoke ShowWindow,eax,SW_SHOW
+				invoke GetDlgItem,hWin,IDC_BTNVIEW
+				invoke ShowWindow,eax,SW_SHOW
+			.elseif eax==IDC_BTNTEST
+				invoke GetDlgItem,hWin,IDC_BTNTEST
 				invoke ShowWindow,eax,SW_HIDE
 				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
+				invoke lstrcpy,addr tempbuff,addr szDLPath
+				invoke lstrcat,addr tempbuff,addr szMasmEd
+				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
+			.elseif eax==IDC_BTNVIEW
+				invoke lstrcpy,addr tempbuff,addr szDLPath
+				invoke lstrcat,addr tempbuff,addr szWhatsNew
+				invoke ShellExecute,hWin,addr szOpen,addr tempbuff,NULL,NULL,SW_SHOWNORMAL
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE

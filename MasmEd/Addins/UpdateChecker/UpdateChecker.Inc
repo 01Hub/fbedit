@@ -40,7 +40,9 @@ IDC_EDTVERSION					equ 1001
 IDC_BTNDOWNLOAD					equ 1008
 IDC_EDTDLPATH					equ 1006
 IDC_BTNDLPATH					equ 1007
-IDC_BTNUPDATE					equ 1009
+IDC_BTNUNZIP					equ 1009
+IDC_BTNTEST						equ 1002
+IDC_BTNVIEW						equ 1003
 
 IDD_DLGDOWNLOAD					equ 8100
 IDC_STCDOWNLOADING				equ 1001
@@ -56,6 +58,9 @@ szAllFiles						db '\*.*',0
 szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
 szDone							db 'Done!',13,10,0
+szOpen							db 'Open',0
+szWhatsNew						db '\WhatsNew.txt',0
+szMasmEd						db '\MasmEd.exe',0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0

@@ -288,16 +288,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 56=1
 
 [Find]
-1="da.ver"
-2="ADDINDATA"
-3="IDM_EDIT_UNCOMMENT"
-4="IsCharAlphaNumeric"
-5="GetCharTabPtr"
-6="ApiListBox"
-7="IsLineInvoke"
-8="szCCInvoke"
-9="'invoke"
-10="1101"
+1="szOpen"
+2="da.ver"
+3="ADDINDATA"
+4="IDM_EDIT_UNCOMMENT"
+5="IsCharAlphaNumeric"
+6="GetCharTabPtr"
+7="ApiListBox"
+8="IsLineInvoke"
+9="szCCInvoke"
+10="'invoke"
 
 [VersionControl]
 Settings=1246
@@ -344,8 +344,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9503
-1=0,0,0,0,1843
+2=0,0,687,524,9770
+1=0,0,0,0,73348
 11=0,0,0,0,44933
 22=0,0,0,0,748
 10=0,0,0,0,21294
@@ -361,7 +361,7 @@ ProductVer4Range=0
 30=0,0,0,0
 13=0,0,0,0,4980
 21=0,0,0,0,1822
-29=0,0,0,0,907
+29=0,0,0,0,923
 28=0,0,0,0,18622
 26=0,0,665,480
 25=0,0,0,0
@@ -410,7 +410,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,38,37,22,11,46
+AutoLoad=1,2,53,38,37,22,11,46,29
 [Collapse]
 2=
 1=,,,,,,,,,
@@ -446,7 +446,7 @@ AutoLoad=1,2,53,38,37,22,11,46
 54=
 56=
 [PTimer]
-PTimer=1457413157
+PTimer=1457538083
 [RADebugBP]
 1=
 2=
