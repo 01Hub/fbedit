@@ -596,6 +596,9 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrcpy,addr tempbuff,addr szDLPath
 				invoke lstrcat,addr tempbuff,addr szMasmEd
 				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
+				mov		edx,lpData
+				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr [edx].ADDINDATA.AppPath
+				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 			.elseif eax==IDC_BTNVIEW
 				invoke lstrcpy,addr tempbuff,addr szDLPath
 				invoke lstrcat,addr tempbuff,addr szWhatsNew

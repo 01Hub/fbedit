@@ -64,6 +64,8 @@ szMasmEd						db '\MasmEd.exe',0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
+szFmtTest						db 'If the test turns out OK then exit MasmEd and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to MasmEd root:',13,10,'%s',0
+
 szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/MasmEd/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/MasmEd/Release/',0
 

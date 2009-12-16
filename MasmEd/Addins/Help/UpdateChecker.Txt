@@ -11,6 +11,10 @@ The addin lets you:
 4. View the WhatsNew.txt file.
 5. Test the new version.
 
+If the test turns out OK then move all the files from
+the Download folder (C:\MasmEd\MasmEd_Update) to the
+MasmEd root (C:\MasmEd)
+
 How to install.
 ---------------
 1. Copy UpdateChecker.dll To the addins folder (C:\MasmEd\Addins).
