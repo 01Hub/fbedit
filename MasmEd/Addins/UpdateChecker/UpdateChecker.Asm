@@ -552,7 +552,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_SHOW
 						mov		edx,lpData
-;						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,[edx].ADDINDATA.lpszAppName,addr tempbuff
+						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,[edx].ADDINDATA.lpszVersion,addr tempbuff
 						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,addr tempbuff,addr tempbuff
 						lea		eax,tempbuff[1024]
 					.endif

@@ -7,6 +7,7 @@ o Defined $ as a character.
 o Added words in masmApiType.api to syntax highlighter Group#12.
 o Added Uppercase, Lowercase, Tab to Spaces and Spaces to Tab to Edit/Block/Convert menu.
 o Added Trim Trailing Spaces to Edit/Block menu.
+o Added UpdateChecker addin. It lets you check the version at Sourceforge, download and unzip MasmEd.zip.
 
 1.1.0.1 - 2009.11.19
 --------------------

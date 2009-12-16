@@ -72,6 +72,7 @@ start:
 	invoke strcat,offset szMasmEd,edx
 	invoke SetCurrentDirectory,offset da.FileName
 	invoke strcpy,addr da.AppPath,addr da.FileName
+	mov		da.lpszVersion,offset szVersion
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szMasmEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr ha.hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof da.ver

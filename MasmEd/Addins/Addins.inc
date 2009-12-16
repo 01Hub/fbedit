@@ -116,6 +116,7 @@ ADDINDATA struct
 	nBuildOpt				DWORD ?					;Current make option
 	ver						DWORD ?					;MasmEd version
 	lpCharTab				DWORD ?					;Pointer to RAEdit character table
+	lpszVersion				DWORD ?					;Pointer to version string
 ADDINDATA ends
 
 ADDINPROCS struct
