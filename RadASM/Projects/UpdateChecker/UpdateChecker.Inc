@@ -80,8 +80,8 @@ szINetErr5						db 'CreateFile failed',0
 szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
 
-szAppPath						db 'D:\RadASM',0
-szVersion						db 'RadASM Version 2.2.1.8g',0
+szAppPath						db 'C:\RadASM',0
+szVersion						db 'RadASM version 2.2.1.8g',0
 
 .data?
 

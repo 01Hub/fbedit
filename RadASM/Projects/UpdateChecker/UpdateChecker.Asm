@@ -107,6 +107,7 @@ InetDownloadFile proc uses ebx,hWin:HWND
 	mov		hFile,eax
 	mov		hInternet,eax
 	mov		hUrl,eax
+	mov		dwindex,0
 	invoke InetConnect,addr hInternet,addr hUrl,0
 	.if sdword ptr eax>0
 		mov		dwread,4
@@ -265,21 +266,22 @@ InetGetVersion proc lpUrl:DWORD,lpBuff:DWORD,nBytes:DWORD
 
 	xor		eax,eax
 	mov		hInternet,eax
-	mov		hUrl,0
+	mov		hUrl,eax
+	mov		dwindex,eax
 	invoke InetConnect,addr hInternet,addr hUrl,addr szUrlVersion
 	.if sdword ptr eax>0
 		mov		dwread,256
-;		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,lpBuff,addr dwread,addr dwindex
-;		.if eax
+		invoke HttpQueryInfo,hUrl,HTTP_QUERY_CONTENT_LENGTH or HTTP_QUERY_FLAG_NUMBER,lpBuff,addr dwread,addr dwindex
+		.if eax
 			invoke InternetReadFile,hUrl,lpBuff,nBytes,addr dwread
 			.if eax
 				mov		eax,dwread
 			.else
 				mov		eax,-4
 			.endif
-;		.else
-;			mov		eax,-3
-;		.endif
+		.else
+			mov		eax,-3
+		.endif
 	.endif
 	push	eax
 	invoke InetClose,addr hInternet,addr hUrl
