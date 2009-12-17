@@ -391,11 +391,11 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 		mov		edx,[esi+edx].RAUNDO.rpPrev
 	.endw
 	mov		rpstart,edx
+	mov		edi,lpMem
 	mov		eax,[ebx].EDIT.rpUndo
 	sub		eax,rpstart
 	mov		[edi],eax
 	lea		edi,[edi+4]
-	mov		edi,lpMem
 	.while sdword ptr ecx<nSize
 		push	ecx
 		call	GetHeader

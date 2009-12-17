@@ -38,7 +38,7 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
 	; Messages to hook into
-	mov		eax,RAM_EDITOPEN OR RAM_EDITCLOSED
+	mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED
 	; ECX and EDX must be null before we return
 	xor		ecx,ecx
 	xor		edx,edx
@@ -188,6 +188,7 @@ LoadUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 			inc		ebx
 		.endw
 		invoke SendMessage,hREd,REM_SETUNDO,nSize,hMemOut
+		invoke GlobalFree,hMemOut
 	.endif
 	invoke GlobalFree,hMem
 	ret
@@ -205,7 +206,7 @@ DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke LoadUndo,hWin,wParam,eax
 			.endif
 		.endif
-	.elseif eax==AIM_EDITCLOSED
+	.elseif eax==AIM_EDITSAVED
 		mov		eax,lpData
 		.if [eax].ADDINDATA.fProject
 			invoke GetWindowLong,hWin,16
