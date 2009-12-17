@@ -497,7 +497,7 @@ Update proc
 	LOCAL	hFile:HANDLE
 	LOCAL	dwwrite:DWORD
 
-	invoke wsprintf,addr tempbuff,addr szFmtUpdateBat,addr AppPath,addr szResEdexe,addr szDLPath,addr szAllFiles,addr AppPath,addr szPPA,addr szDLPath,addr szAllFiles,addr szPPA,addr szDLPath
+	invoke wsprintf,addr tempbuff,addr szFmtUpdateBat,addr szDLPath,addr szResEdexe,addr AppPath,addr szDLPath,addr szAllFiles,addr AppPath,addr szPPA,addr szDLPath,addr szAllFiles,addr szPPA,addr szDLPath
 	invoke lstrcpy,addr buffer,addr AppPath
 	invoke lstrcat,addr buffer,addr szBackSlash
 	invoke lstrcat,addr buffer,addr szUpdateBat

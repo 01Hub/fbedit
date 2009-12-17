@@ -46,7 +46,13 @@ szINetErr5						db 'CreateFile failed',0
 szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
 szFmtTest						db 'If the test turns out OK then push [Update] to exit ResEd and',13,10,'copy files from:',13,10,'%s',13,10,'to:',13,10,'%s',0
-szFmtUpdateBat					db ':AGAIN',13,10,'del %s%s',13,10,'IF ERRORLEVEL 1 GOTO AGAIN',13,10,'copy %s%s %s',13,10,'FOR %s IN (%s%s) DO DEL %s',13,10,'rd %s',13,10,'del update.bat',13,10,0
+szFmtUpdateBat					db ':AGAIN',13,10
+								db 'copy %s%s %s',13,10
+								db 'IF ERRORLEVEL 1 GOTO AGAIN',13,10
+								db 'copy %s%s %s',13,10
+								db 'FOR %s IN (%s%s) DO DEL %s',13,10
+								db 'rd %s',13,10
+								db 'del update.bat',13,10,0
 szUpdateBat						db 'Update.bat',0
 szPPA							db '%%A',0
 
