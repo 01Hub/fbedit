@@ -492,6 +492,29 @@ UnZip proc uses esi,hWin:HWND,lpFileName:DWORD
 
 UnZip endp
 
+Update proc
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hFile:HANDLE
+	LOCAL	dwwrite:DWORD
+
+	invoke wsprintf,addr tempbuff,addr szFmtUpdateBat,addr szDLPath,addr szAllFiles,addr AppPath,addr szPPA,addr szDLPath,addr szAllFiles,addr szPPA,addr szDLPath
+	invoke lstrcpy,addr buffer,addr AppPath
+	invoke lstrcat,addr buffer,addr szBackSlash
+	invoke lstrcat,addr buffer,addr szUpdateBat
+	invoke CreateFile,addr buffer,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke lstrlen,addr tempbuff
+		mov		edx,eax
+		invoke WriteFile,hFile,addr tempbuff,edx,addr dwwrite,NULL
+		invoke CloseHandle,hFile
+		invoke WinExec,addr buffer,SW_HIDE
+		invoke ExitProcess,NULL
+	.endif
+	ret
+
+Update endp
+
 UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -529,6 +552,14 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_SHOW
 						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,addr szVersion,addr tempbuff
+						.if hResEdSave
+							invoke SendMessage,hResEd,EM_GETMODIFY,0,0
+						.else
+							invoke SendMessage,hResEd,PRO_GETMODIFY,0,0
+						.endif
+						.if eax
+							invoke lstrcat,addr tempbuff[1024],addr szWarning
+						.endif
 						lea		eax,tempbuff[1024]
 					.endif
 				.endif
@@ -571,12 +602,16 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_BTNTEST
 				invoke GetDlgItem,hWin,IDC_BTNTEST
 				invoke ShowWindow,eax,SW_HIDE
-				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
+				invoke GetDlgItem,hWin,IDC_BTNUPDATE
+				invoke ShowWindow,eax,SW_SHOW
+				;invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
 				invoke lstrcpy,addr tempbuff,addr szDLPath
-				invoke lstrcat,addr tempbuff,addr szRadASM
+				invoke lstrcat,addr tempbuff,addr szResEdexe
 				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
 				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr AppPath
 				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
+			.elseif eax==IDC_BTNUPDATE
+				invoke Update
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
