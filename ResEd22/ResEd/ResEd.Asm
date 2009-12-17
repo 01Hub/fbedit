@@ -10,6 +10,7 @@ include Opt\MenuOption.asm
 include Opt\TabOptions.asm
 include Find\Find.asm
 include Compile.asm
+include Update\UpdateChecker.asm
 
 .code
 
@@ -824,6 +825,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke UpdateWindow,eax
 			.endif
+		.elseif eax==IDM_TOOLS_UPDATE
+			invoke DialogBoxParam,hInstance,IDD_DLGCHECK_UPDATE,hWin,offset UpdateCheckerProc,0
 		.elseif eax==IDM_TOOLS_CLEAR
 			invoke MessageBox,hWin,addr szClearMRU,addr szAppName,MB_OKCANCEL or MB_ICONQUESTION
 			.if eax==IDOK

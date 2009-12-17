@@ -7,6 +7,8 @@ include shlwapi.inc
 include comctl32.inc
 include comdlg32.inc
 include advapi32.inc
+include wininet.inc
+include Update\zlib\zlibstat.inc
 
 includelib user32.lib
 includelib kernel32.lib
@@ -16,12 +18,16 @@ includelib shlwapi.lib
 includelib comctl32.lib
 includelib comdlg32.lib
 includelib advapi32.lib
+includelib wininet.lib
+includelib Update\zlib\zlibstat.lib
 
 include ..\RAResEd.inc
 includelib ..\Lib\RAResEd.lib
 
 include ..\RAResEd\RAGrid.Inc
 include ..\RAResEd\RAEdit.Inc
+
+include Update\UpdateChecker.inc
 
 ;include masm32.inc
 ;include \RadASM\Masm\Inc\Debug.Inc
@@ -104,6 +110,7 @@ IDM_OPTION_TOOLS			equ 10036
 IDM_OPTION_HELP				equ 10037
 IDM_OPTION_OPTIONS			equ 10038
 IDM_TOOLS_COMPILE			equ 10058
+IDM_TOOLS_UPDATE			equ 10059
 IDM_TOOLS_CLEAR				equ 10054
 IDM_HELP_ABOUT				equ 10101
 
@@ -221,7 +228,8 @@ ntbrbtns			equ 19
 szDlgClass			db 'DLGCLASS',0
 szAppName			db 'Resource editor',0
 szResEdExe			db 'ResEd',0
-szAboutMsg			db 'Resource editor 2.2.0.5b',13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
+szAboutMsg			db 'Resource editor 2.2.0.5b',0
+					db 13,10,'KetilO © 2009',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1			db 'http://radasm.cherrytree.at/',0
 szAboutUrl2			db 'http://radasm.cherrytree.at/',0
 szOpen				db 'Open',0

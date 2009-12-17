@@ -1,3 +1,5 @@
+#include "Res/UpdateCheckerDlg.rc"
+#include "Res/DownloadDlg.rc"
 #include "Res/SaveUnicodeDlg.rc"
 #include "Res/ResEdMnu.rc"
 #include "Res/FindDlg.rc"

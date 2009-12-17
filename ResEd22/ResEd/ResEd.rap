@@ -78,6 +78,11 @@ MinorFiles=*.res;*.obj;
 31=Find\Find.dlg
 32=Compile.asm
 33=SaveUnicode.dlg
+34=Update\UpdateChecker.Asm
+35=Update\UpdateChecker.Inc
+36=Update\Download.dlg
+37=Update\UpdateChecker.dlg
+38=Update\zlib\zlibstat.inc
 
 
 [Resource]
@@ -109,7 +114,7 @@ Options=52
 3=0,0,0,0,0
 10=0,0,0,0
 11=0,0,0,0,2171
-13=0,0,0,0,24739
+13=0,0,0,0,15950
 14=0,0,0,0
 15=0,0,0,0
 16=0,0,0,0
@@ -127,8 +132,9 @@ Options=52
 29=0,0,0,0,3469
 30=0,0,0,0,739
 31=0,0,0,0
-32=0,0,0,0,5815
+32=0,0,0,0,499
 33=0,0,0,0
+38=0,0,0,0,3788
 
 [BookMark]
 0=
@@ -244,6 +250,11 @@ Group=Assembly,Resources,..RCFile,..Menu,..Dialog,Misc,Include
 31=5
 32=1
 33=5
+34=1
+35=7
+36=5
+37=5
+38=7
 [CodeMake]
 4=0,C:\RadASM\Masm\Templates\DlgToWin.rad,,WndProc
 [Accel]
@@ -288,6 +299,7 @@ ID=105
 29=,,
 30=
 32=
+38=
 [PTimer]
 PTimer=312845555
 [AutoLoad]
@@ -299,3 +311,5 @@ AutoLoad=1,7,21,2
 12=
 13=
 29=
+35=
+34=
