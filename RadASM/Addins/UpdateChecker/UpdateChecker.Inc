@@ -45,7 +45,9 @@ IDC_CHKGETHLP					equ 1010
 IDC_BTNDOWNLOAD					equ 1008
 IDC_EDTDLPATH					equ 1006
 IDC_BTNDLPATH					equ 1007
-IDC_BTNUPDATE					equ 1009
+IDC_BTNUNZIP					equ 1009
+IDC_BTNVIEW						equ 1011
+IDC_BTNTEST						equ 1012
 
 IDD_DLGDOWNLOAD					equ 8100
 IDC_STCDOWNLOADING				equ 1001
@@ -60,6 +62,9 @@ szTemp							db '\RadASM_Update',0
 szAllFiles						db '\*.*',0
 szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
+szOpen							db 'Open',0
+szWhatsNew						db '\WhatsNew.txt',0
+szRadASM						db '\RadASM.exe',0
 szDone							db 'Done!',13,10,0
 szClose							db 'Close',0
 
@@ -84,6 +89,7 @@ szINetErr4						db 'InternetReadFile failed',0
 szINetErr5						db 'CreateFile failed',0
 szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
+szFmtTest						db 'If the test turns out OK then exit RadASM and move all files',13,10,'from Download path:',13,10,'%s',13,10,'to RadASM root:',13,10,'%s',13,10,13,10,'NOTE! You might want to keep your .ini files.',0
 
 .data?
 

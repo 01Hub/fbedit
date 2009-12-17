@@ -610,7 +610,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !nDLErrors
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_HIDE
-						invoke GetDlgItem,hWin,IDC_BTNUPDATE
+						invoke GetDlgItem,hWin,IDC_BTNUNZIP
 						invoke ShowWindow,eax,SW_SHOW
 						mov		eax,IDC_CHKGETIDE
 						call	Disable
@@ -628,11 +628,13 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						call	Disable
 					.endif
 				.endif
-			.elseif eax==IDC_BTNUPDATE
+			.elseif eax==IDC_BTNUNZIP
 				invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
 				.if eax
 					invoke UnZip,hWin,addr szIDEFile
+					invoke GetDlgItem,hWin,IDC_BTNVIEW
+					invoke ShowWindow,eax,SW_SHOW
 				.endif
 				invoke IsDlgButtonChecked,hWin,IDC_CHKGETASM
 				.if eax
@@ -651,9 +653,29 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke UnZip,hWin,addr szHLPFile
 				.endif
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
-				invoke GetDlgItem,hWin,IDC_BTNUPDATE
+				invoke GetDlgItem,hWin,IDC_BTNUNZIP
+				invoke ShowWindow,eax,SW_HIDE
+				invoke IsDlgButtonChecked,hWin,IDC_CHKGETIDE
+				.if eax
+					invoke GetDlgItem,hWin,IDC_BTNTEST
+					invoke ShowWindow,eax,SW_SHOW
+				.else
+					invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
+				.endif
+			.elseif eax==IDC_BTNVIEW
+				invoke lstrcpy,addr tempbuff,addr szDLPath
+				invoke lstrcat,addr tempbuff,addr szWhatsNew
+				invoke ShellExecute,hWin,addr szOpen,addr tempbuff,NULL,NULL,SW_SHOWNORMAL
+			.elseif eax==IDC_BTNTEST
+				invoke GetDlgItem,hWin,IDC_BTNTEST
 				invoke ShowWindow,eax,SW_HIDE
 				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
+				invoke lstrcpy,addr tempbuff,addr szDLPath
+				invoke lstrcat,addr tempbuff,addr szRadASM
+				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
+				mov		edx,lpData
+				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,[edx].ADDINDATA.lpLoadPath
+				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
