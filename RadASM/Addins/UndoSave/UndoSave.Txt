@@ -1,0 +1,1 @@
+This addin saves undo information on files in a project.

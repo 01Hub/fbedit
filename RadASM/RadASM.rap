@@ -179,11 +179,11 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,17122
+2=0,416,869,416,2247
 3=154,154,590,413,0
-4=0,0,590,413,41551
+4=0,0,590,413,40846
 5=132,132,536,413,32142
-6=12,26,869,416,75486
+6=12,26,869,416,131152
 7=132,132,536,413,32661
 8=44,44,536,413,14253
 9=88,88,536,413,45906
@@ -261,7 +261,7 @@ MinorFiles=*.res;*.obj;
 83=133,27,590,413,2528
 84=22,22,536,413
 85=44,44,536,413,0
-86=110,110,590,413,7520
+86=110,110,590,413,8064
 87=154,154,536,413,992
 89=0,0,536,413
 88=22,22,536,413,17120
@@ -272,7 +272,7 @@ MinorFiles=*.res;*.obj;
 94=44,44,536,413
 95=66,66,536,413,1159
 96=88,88,536,413,58717
-97=22,22,536,413,5163
+97=22,22,536,413,1945
 98=154,154,536,413
 99=176,176,536,413,53
 100=110,110,536,413
@@ -299,13 +299,13 @@ MinorFiles=*.res;*.obj;
 122=0,0,0,0,537
 123=0,0,0,0
 124=0,0,0,0
-125=0,0,0,0,0
+125=0,0,0,0,18540
 126=0,0,0,0
 127=0,0,0,0,339
 128=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,119,88,4,2
+AutoLoad=119,88,2,97,86,125,4,6
 
 [BookMark]
 0=
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="AppPath"
-2="iniGetAppPath"
-3="CreateThread"
-4="iniRead"
-5="iniReadPaths"
-6="OpenFileFail"
-7="cannot open the file"
-8="PROGROUP"
-9="groupgrp"
-10="GroupSaveGroups"
+1="EM_EMPTYUNDOBUFFER"
+2="AIM_EDITOPEN"
+3="emp"
+4="dectobin"
+5="asciito"
+6="dwtoascii"
+7="AppPath"
+8="iniGetAppPath"
+9="CreateThread"
+10="iniRead"
 
 [BreakPoint]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=11
+MilestoneOnDateDate=17
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1427402605
+PTimer=1428969152
 [RADebugBP]
 96=
 55=
@@ -792,3 +792,12 @@ PTimer=1427402605
 3=
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,1,0
+[Undo]
+97=17,0000000000000000000000000000000000
+2=17,0000000000000000000000000000000000
+6=17,0000000000000000000000000000000000
+4=17,0000000000000000000000000000000000
+88=17,0000000000000000000000000000000000
+119=17,0000000000000000000000000000000000
+125=17,0000000000000000000000000000000000
+86=17,0000000000000000000000000000000000

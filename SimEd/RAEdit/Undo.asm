@@ -386,6 +386,10 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 		mov		edx,[esi+edx].RAUNDO.rpPrev
 	.endw
 	mov		rpstart,edx
+	mov		eax,[ebx].EDIT.rpUndo
+	sub		eax,rpstart
+	mov		[edi],eax
+	lea		edi,[edi+4]
 	mov		edi,lpMem
 	.while sdword ptr ecx<nSize
 		push	ecx
@@ -435,10 +439,11 @@ SetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 	invoke ExpandUndoMem,ebx,nSize
 	mov		esi,lpMem
 	mov		edi,[ebx].EDIT.hUndo
-	invoke RtlMoveMemory,edi,esi,nSize
-	mov		eax,nSize
-	sub		eax,sizeof RAUNDO
+	mov		eax,[esi]
 	mov		[ebx].EDIT.rpUndo,eax
+	lea		esi,[esi+4]
+	sub		nSize,4
+	invoke RtlMoveMemory,edi,esi,nSize
 	ret
 
 SetUndo endp
