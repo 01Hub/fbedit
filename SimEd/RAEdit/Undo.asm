@@ -380,6 +380,11 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 	mov		esi,[ebx].EDIT.hUndo
 	mov		ecx,nSize
 	mov		edx,[ebx].EDIT.rpUndo
+	; Include redo
+	.while [esi+edx].RAUNDO.cb
+		mov		eax,[esi+edx].RAUNDO.cb
+		lea		edx,[edx+eax+sizeof RAUNDO]
+	.endw
 	.while edx!=0 && sdword ptr ecx>0
 		sub		ecx,[esi+edx].RAUNDO.cb
 		sub		ecx,sizeof RAUNDO
