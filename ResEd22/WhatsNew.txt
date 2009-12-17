@@ -2,7 +2,7 @@ ResEd
 
 2.2.0.6 - 2009-12-17
 --------------------
-o Added Check for Updates to tools menu.
+o Added Check for Update to tools menu.
   - It lets you check the version at Sourceforge and compare it to yours.
   - Download the ResEd.zip file.
   - Unzip ResEd.zip.

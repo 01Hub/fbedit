@@ -1,1 +1,1 @@
-Resource editor 2.2.0.5b
+ResEd version 2.2.0.6

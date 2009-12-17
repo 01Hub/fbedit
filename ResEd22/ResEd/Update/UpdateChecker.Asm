@@ -528,7 +528,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke ShowWindow,eax,SW_HIDE
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_SHOW
-						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,addr szAboutMsg,addr tempbuff
+						invoke wsprintf,addr tempbuff[1024],addr szFmtVersion,addr szVersion,addr tempbuff
 						lea		eax,tempbuff[1024]
 					.endif
 				.endif
