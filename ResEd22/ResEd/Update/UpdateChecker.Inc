@@ -23,10 +23,11 @@ szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
 szWhatsNew						db '\WhatsNew.txt',0
 szResEdexe						db '\ResEd.exe',0
-szDone							db 'Done!',13,10,0
+szUnzip							db 13,10,'Push [Unzip] to continue.',0
+szDone							db 'Done!',13,10,13,10,'Pust [Test Version] to continue.',0
 szClose							db 'Close',0
 
-szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
+szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',13,10,13,10,'Push [Download] to continue.',0
 szWarning						db 13,10,13,10,'WARNING!',13,10,'Changes to your current project will be lost if you update.',13,10,'It is recomended that you close the project.',0
 szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/ResEd22/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/ResEd22/',0
@@ -44,8 +45,8 @@ szINetErr4						db 'InternetReadFile failed',0
 szINetErr5						db 'CreateFile failed',0
 szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
-szFmtTest						db 'If the test turns out OK then exit ResEd and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to ResEd root:',13,10,'%s',0
-szFmtUpdateBat					db ':AGAIN',13,10,'copy %s%s %s',13,10,'IF ERRORLEVEL 1 GOTO AGAIN',13,10,'FOR %s IN (%s%s) DO DEL %s',13,10,'rd %s',13,10,'del update.bat',13,10,0
+szFmtTest						db 'If the test turns out OK then push [Update] to exit ResEd and',13,10,'copy files from:',13,10,'%s',13,10,'to:',13,10,'%s',0
+szFmtUpdateBat					db ':AGAIN',13,10,'del %s%s',13,10,'IF ERRORLEVEL 1 GOTO AGAIN',13,10,'copy %s%s %s',13,10,'FOR %s IN (%s%s) DO DEL %s',13,10,'rd %s',13,10,'del update.bat',13,10,0
 szUpdateBat						db 'Update.bat',0
 szPPA							db '%%A',0
 

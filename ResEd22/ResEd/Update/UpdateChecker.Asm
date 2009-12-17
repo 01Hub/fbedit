@@ -497,7 +497,7 @@ Update proc
 	LOCAL	hFile:HANDLE
 	LOCAL	dwwrite:DWORD
 
-	invoke wsprintf,addr tempbuff,addr szFmtUpdateBat,addr szDLPath,addr szAllFiles,addr AppPath,addr szPPA,addr szDLPath,addr szAllFiles,addr szPPA,addr szDLPath
+	invoke wsprintf,addr tempbuff,addr szFmtUpdateBat,addr AppPath,addr szResEdexe,addr szDLPath,addr szAllFiles,addr AppPath,addr szPPA,addr szDLPath,addr szAllFiles,addr szPPA,addr szDLPath
 	invoke lstrcpy,addr buffer,addr AppPath
 	invoke lstrcat,addr buffer,addr szBackSlash
 	invoke lstrcat,addr buffer,addr szUpdateBat
@@ -575,6 +575,8 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 					invoke InetDownload,hWin,addr szIDEFile
 					.if !nDLErrors
+						invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_SETSEL,1024,1024
+						invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,FALSE,addr szUnzip
 						invoke GetDlgItem,hWin,IDC_BTNDOWNLOAD
 						invoke ShowWindow,eax,SW_HIDE
 						invoke GetDlgItem,hWin,IDC_BTNUNZIP
