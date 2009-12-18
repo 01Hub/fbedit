@@ -383,10 +383,13 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 	; Include redo
 	.while [esi+edx].RAUNDO.cb
 		mov		eax,[esi+edx].RAUNDO.cb
+		.break .if eax>16000
 		lea		edx,[edx+eax+sizeof RAUNDO]
 	.endw
 	.while edx!=0 && sdword ptr ecx>0
-		sub		ecx,[esi+edx].RAUNDO.cb
+		mov		eax,[esi+edx].RAUNDO.cb
+		.break .if eax>16000
+		sub		ecx,eax
 		sub		ecx,sizeof RAUNDO
 		mov		edx,[esi+edx].RAUNDO.rpPrev
 	.endw
@@ -408,6 +411,10 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 		lea		ecx,[ecx+eax+sizeof RAUNDO]
 	.endw
 	call	GetHeader
+	mov		[edi].RAUNDO.undoid,0
+	mov		[edi].RAUNDO.cp,0
+	mov		[edi].RAUNDO.cb,0
+	mov		[edi].RAUNDO.fun,0
 	lea		edi,[edi+sizeof RAUNDO]
 	mov		eax,edi
 	sub		eax,lpMem
@@ -449,6 +456,19 @@ SetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 	lea		esi,[esi+4]
 	sub		nSize,4
 	invoke RtlMoveMemory,edi,esi,nSize
+	mov		ecx,[edi].RAUNDO.undoid
+	mov		edx,nUndoid
+	.while [edi].RAUNDO.cb
+		.if ecx!=[edi].RAUNDO.undoid
+			mov		ecx,[edi].RAUNDO.undoid
+			inc		edx
+		.endif
+		mov		[edi].RAUNDO.undoid,edx
+		mov		eax,[edi].RAUNDO.cb
+		lea		edi,[edi+eax+sizeof RAUNDO]
+	.endw
+	inc		edx
+	mov		nUndoid,edx
 	ret
 
 SetUndo endp

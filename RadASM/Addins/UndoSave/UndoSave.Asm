@@ -88,109 +88,167 @@ SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 	LOCAL	hMem:HGLOBAL
 	LOCAL	hMemOut:HGLOBAL
 	LOCAL	nSize:DWORD
+	LOCAL	app[32]:BYTE
 	LOCAL	key[32]:BYTE
+	LOCAL	hFile:HANDLE
+	LOCAL	ft:FILETIME
+	LOCAL	fat:DWORD
+	LOCAL	ninx:DWORD
 
 	invoke wsprintf,addr key,addr szFmtd,pfid
-	invoke GlobalAlloc,GMEM_FIXED,1024*1024
+	invoke lstrcpy,addr app,addr szUndo
+	invoke lstrcat,addr app,addr key
+	invoke RtlZeroMemory,addr key,sizeof key
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024*1024
 	mov		hMem,eax
-	mov		nSize,10*1024
-	.while nSize
-		invoke SendMessage,hREd,REM_GETUNDO,10*1024,hMem
-		.if eax<16000
-			mov		nSize,eax
-			.break
-		.endif
-		sub		nSize,1024
-	.endw
-	.if nSize
-		invoke GlobalAlloc,GMEM_FIXED,64*1024
+	invoke SendMessage,hREd,REM_GETUNDO,4*1024*1024-256*1024,hMem
+	.if eax
+		mov		nSize,eax
+		invoke GlobalAlloc,GMEM_FIXED,8*1024*1024
 		mov		hMemOut,eax
 		mov		edi,eax
-		invoke wsprintf,edi,addr szFmtd,nSize
-		invoke lstrcat,edi,addr szComma
+		; Get file time
+		mov		eax,lpData
+		invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		mov		hFile,eax
+		invoke GetFileTime,hFile,NULL,NULL,addr ft
+		invoke CloseHandle,hFile
+		invoke FileTimeToDosDateTime,addr ft,addr fat+2,addr fat
+		invoke lstrcpy,edi,addr szFt
+		invoke lstrcat,edi,addr szEqu
+		invoke lstrlen,edi
+		lea		edi,[edi+eax]
+		invoke wsprintf,edi,addr szFmtd,fat
+		invoke lstrlen,edi
+		lea		edi,[edi+eax+1]
+		invoke lstrcpy,edi,addr szRp
+		invoke lstrcat,edi,addr szEqu
 		invoke lstrlen,edi
 		lea		edi,[edi+eax]
 		mov		esi,hMem
-		xor		ebx,ebx
-		.while ebx<nSize
-			mov		al,[esi+ebx]
-			mov		ah,al
-			shr		al,4
-			and		ah,0Fh
-			.if al<=9
-				or		al,30h
-			.else
-				add		al,'A'-10
-			.endif
-			.if ah<=9
-				or		ah,30h
-			.else
-				add		ah,'A'-10
-			.endif
-			mov		[edi+ebx*2],ax
-			inc		ebx
+		mov		eax,[esi]
+		lea		esi,[esi+4]
+		invoke wsprintf,edi,addr szFmtd,eax
+		invoke lstrlen,edi
+		lea		edi,[edi+eax+1]
+		mov		ninx,1
+		.while [esi].RAUNDO.cb
+			call	HexIt
+			mov		eax,[esi].RAUNDO.cb
+			inc		ninx
+			lea		esi,[esi+eax+sizeof RAUNDO]
 		.endw
-		mov		byte ptr [edi+ebx*2],0
+		call	HexIt
+		mov		byte ptr [edi],0
 		mov		eax,lpData
-		invoke WritePrivateProfileString,addr szUndo,addr key,hMemOut,[eax].ADDINDATA.lpProject
+		invoke WritePrivateProfileSection,addr app,hMemOut,[eax].ADDINDATA.lpProject
 		invoke GlobalFree,hMemOut
-	.else
-		mov		eax,lpData
-		invoke WritePrivateProfileString,addr szUndo,addr key,addr szNULL,[eax].ADDINDATA.lpProject
 	.endif
 	invoke GlobalFree,hMem
 	ret
+
+HexByte:
+	mov		al,[esi+ebx]
+	mov		ah,al
+	shr		al,4
+	and		ah,0Fh
+	.if al<=9
+		or		al,30h
+	.else
+		add		al,'A'-10
+	.endif
+	.if ah<=9
+		or		ah,30h
+	.else
+		add		ah,'A'-10
+	.endif
+	mov		[edi+ebx*2],ax
+	retn
+
+HexIt:
+	invoke wsprintf,edi,addr szFmtd,ninx
+	invoke lstrcat,edi,addr szEqu
+	invoke lstrlen,edi
+	lea		edi,[edi+eax]
+	xor		ebx,ebx
+	mov		ecx,[esi].RAUNDO.cb
+	lea		ecx,[ecx+sizeof RAUNDO]
+	.while ebx<ecx
+		call	HexByte
+		inc		ebx
+	.endw
+	mov		byte ptr [edi+ebx*2],0
+	lea		edi,[edi+ebx*2+1]
+	retn
 
 SaveUndo endp
 
 LoadUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 	LOCAL	hMem:HGLOBAL
 	LOCAL	hMemOut:HGLOBAL
-	LOCAL	nSize:DWORD
+	LOCAL	app[32]:BYTE
 	LOCAL	key[32]:BYTE
+	LOCAL	hFile:HANDLE
+	LOCAL	ft:FILETIME
+	LOCAL	fat:DWORD
+	LOCAL	ninx:DWORD
 
 	invoke wsprintf,addr key,addr szFmtd,pfid
-	invoke GlobalAlloc,GMEM_FIXED,1024*1024
-	mov		hMem,eax
-	mov		esi,eax
+	invoke lstrcpy,addr app,addr szUndo
+	invoke lstrcat,addr app,addr key
+	; Check file time
 	mov		eax,lpData
-	invoke GetPrivateProfileString,addr szUndo,addr key,addr szNULL,hMem,32767,[eax].ADDINDATA.lpProject
-	.while byte ptr [esi]
-		.if byte ptr [esi]==','
-			mov		byte ptr [esi],0
-			inc		esi
-			.break
-		.endif
-		inc		esi
-	.endw
-	invoke DecToBin,hMem
-	.if eax
-		mov		nSize,eax
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	mov		hFile,eax
+	invoke GetFileTime,hFile,NULL,NULL,addr ft
+	invoke CloseHandle,hFile
+	invoke FileTimeToDosDateTime,addr ft,addr fat+2,addr fat
+	mov		eax,lpData
+	invoke GetPrivateProfileInt,addr app,addr szFt,0,[eax].ADDINDATA.lpProject
+	.if eax==fat
+		invoke GlobalAlloc,GMEM_FIXED,64*1024
+		mov		hMem,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024*1024
 		mov		hMemOut,eax
 		mov		edi,eax
-		xor		ebx,ebx
-		.while ebx<nSize
-			mov		ax,[esi+ebx*2]
-			.if al>'9'
-				sub		al,'A'-10
-			.else
-				and		al,0Fh
-			.endif
-			.if ah>'9'
-				sub		ah,'A'-10
-			.else
-				and		ah,0Fh
-			.endif
-			shl		al,4
-			or		al,ah
-			mov		[edi+ebx],al
-			inc		ebx
+		mov		eax,lpData
+		invoke GetPrivateProfileInt,addr app,addr szRp,0,[eax].ADDINDATA.lpProject
+		mov		[edi],eax
+		lea		edi,[edi+4]
+		mov		ninx,1
+		.while TRUE
+			invoke wsprintf,addr key,addr szFmtd,ninx
+			mov		eax,lpData
+			invoke GetPrivateProfileString,addr app,addr key,addr szNULL,hMem,32767,[eax].ADDINDATA.lpProject
+			mov		esi,hMem
+			.break .if !byte ptr [esi]
+			xor		ebx,ebx
+			.while byte ptr [esi+ebx*2]
+				mov		ax,[esi+ebx*2]
+				.if al>'9'
+					sub		al,'A'-10
+				.else
+					and		al,0Fh
+				.endif
+				.if ah>'9'
+					sub		ah,'A'-10
+				.else
+					and		ah,0Fh
+				.endif
+				shl		al,4
+				or		al,ah
+				mov		[edi+ebx],al
+				inc		ebx
+			.endw
+			lea		edi,[edi+ebx]
+			inc		ninx
 		.endw
-		invoke SendMessage,hREd,REM_SETUNDO,nSize,hMemOut
+		mov		eax,edi
+		sub		eax,hMemOut
+		invoke SendMessage,hREd,REM_SETUNDO,eax,hMemOut
 		invoke GlobalFree,hMemOut
+		invoke GlobalFree,hMem
 	.endif
-	invoke GlobalFree,hMem
 	ret
 
 LoadUndo endp

@@ -80,10 +80,22 @@ OptProjectSave proc uses ebx edi,hWin:HWND
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[256]:BYTE
 	LOCAL	ID:DWORD
+	LOCAL	fChanged:DWORD
+	LOCAL	tvi:TV_ITEM
 
-	invoke GetDlgItemText,hWin,IDC_EDTPRODESCRIPTION,addr buffer,255
-	invoke WritePrivateProfileString,addr iniProject,addr iniProjectDescription,addr buffer,addr ProjectFile
-
+	mov		fChanged,0
+	invoke GetPrivateProfileString,addr iniProject,addr iniProjectDescription,addr szNULL,addr iniBuffer,128,addr ProjectFile
+	invoke GetDlgItemText,hWin,IDC_EDTPRODESCRIPTION,addr buffer,127
+	invoke lstrcmp,addr iniBuffer,addr buffer
+	.if eax
+		invoke WritePrivateProfileString,addr iniProject,addr iniProjectDescription,addr buffer,addr ProjectFile
+		mov		tvi.imask,TVIF_TEXT
+		mov		eax,hRoot
+		mov		tvi.hItem,eax
+		lea		eax,buffer
+		mov		tvi.pszText,eax
+		invoke SendMessage,hPbrTrv,TVM_SETITEM,0,addr tvi
+	.endif
 	mov		ID,IDC_PROMNU1
 	lea		edi,buffer
 	mov		ebx,16
@@ -151,25 +163,35 @@ OptProjectSave proc uses ebx edi,hWin:HWND
 	mov		dword ptr buffer1,'71'
 	invoke GetDlgItemText,hWin,IDC_EDTDBGD,addr buffer,255
 	invoke WritePrivateProfileString,addr iniMakeDef,addr buffer1,addr buffer,addr ProjectFile
+	invoke GetPrivateProfileInt,addr iniProject,addr iniProjectGroup,0,addr ProjectFile
+	push	eax
 	invoke IsDlgButtonChecked,hWin,IDC_CHKGROUP
-	.if eax
-		mov		dword ptr buffer1,'1'
-		mov		fGroup,TRUE
-	.else
-		mov		dword ptr buffer1,'0'
-		mov		fGroup,FALSE
+	pop		edx
+	.if eax!=edx
+		inc		fChanged
+		.if eax
+			mov		dword ptr buffer1,'1'
+			mov		fGroup,TRUE
+		.else
+			mov		dword ptr buffer1,'0'
+			mov		fGroup,FALSE
+		.endif
+		invoke WritePrivateProfileString,addr iniProject,addr iniProjectGroup,addr buffer1,addr ProjectFile
 	.endif
-	invoke WritePrivateProfileString,addr iniProject,addr iniProjectGroup,addr buffer1,addr ProjectFile
+	invoke GetPrivateProfileInt,addr iniProject,addr iniProjectGroupExpand,0,addr ProjectFile
+	push	eax
 	invoke IsDlgButtonChecked,hWin,IDC_CHKGROUPEXPAND
-	.if eax
-		mov		dword ptr buffer1,'1'
-		mov		fGroupExpand,TRUE
-	.else
-		mov		dword ptr buffer1,'0'
-		mov		fGroupExpand,FALSE
+	pop		edx
+	.if eax!=edx
+		.if eax
+			mov		dword ptr buffer1,'1'
+			mov		fGroupExpand,TRUE
+		.else
+			mov		dword ptr buffer1,'0'
+			mov		fGroupExpand,FALSE
+		.endif
+		invoke WritePrivateProfileString,addr iniProject,addr iniProjectGroupExpand,addr buffer1,addr ProjectFile
 	.endif
-	invoke WritePrivateProfileString,addr iniProject,addr iniProjectGroupExpand,addr buffer1,addr ProjectFile
-
 	invoke SetMakeMenu
 	invoke GetPrivateProfileString,addr	iniProject,addr	iniAssembler,addr szNULL,addr buffer,sizeof	buffer,addr	ProjectFile
 	invoke strlen,addr buffer
@@ -181,8 +203,10 @@ OptProjectSave proc uses ebx edi,hWin:HWND
 		invoke strcat,addr buffer,addr iniRelease
 	.endif
 	invoke SendMessage,hStatus,SB_SETTEXT,2,addr buffer
-	invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,hRoot
-	invoke GetProjectFiles,FALSE
+	.if fChanged
+		invoke SendMessage,hPbrTrv,TVM_DELETEITEM,0,hRoot
+		invoke GetProjectFiles,FALSE
+	.endif
 	ret
 
 OptProjectSave endp
