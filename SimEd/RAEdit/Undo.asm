@@ -373,12 +373,16 @@ Redo proc uses ebx,hMem:DWORD,hWin:DWORD
 
 Redo endp
 
-GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
+GetUndo proc uses ebx esi edi,hMem:DWORD,nCount:DWORD,lpMem:DWORD
 	LOCAL	rpstart:DWORD
+	LOCAL	rpend:DWORD
 
 	mov		ebx,hMem
 	mov		esi,[ebx].EDIT.hUndo
-	mov		ecx,nSize
+	mov		ecx,nCount
+	.if !ecx
+		dec		ecx
+	.endif
 	mov		edx,[ebx].EDIT.rpUndo
 	; Include redo
 	.while [esi+edx].RAUNDO.cb
@@ -386,38 +390,37 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nSize:DWORD,lpMem:DWORD
 		.break .if eax>16000
 		lea		edx,[edx+eax+sizeof RAUNDO]
 	.endw
-	.while edx!=0 && sdword ptr ecx>0
+	mov		rpend,edx
+	; Include undo
+	.while edx!=0 && ecx!=0
 		mov		eax,[esi+edx].RAUNDO.cb
 		.break .if eax>16000
-		sub		ecx,eax
-		sub		ecx,sizeof RAUNDO
 		mov		edx,[esi+edx].RAUNDO.rpPrev
+		dec		ecx
 	.endw
 	mov		rpstart,edx
 	mov		edi,lpMem
-	mov		eax,[ebx].EDIT.rpUndo
-	sub		eax,rpstart
-	mov		[edi],eax
-	lea		edi,[edi+4]
-	.while sdword ptr ecx<nSize
-		push	ecx
+	.if edi
+		mov		eax,[ebx].EDIT.rpUndo
+		sub		eax,rpstart
+		mov		[edi],eax
+		lea		edi,[edi+4]
+		.while edx<rpend
+			call	GetHeader
+			call	GetData
+			mov		ecx,[esi+edx].RAUNDO.cb
+			lea		edi,[edi+ecx+sizeof RAUNDO]
+			lea		edx,[edx+ecx+sizeof RAUNDO]
+		.endw
 		call	GetHeader
-		call	GetData
-		mov		ecx,[esi+edx].RAUNDO.cb
-		lea		edi,[edi+ecx+sizeof RAUNDO]
-		lea		edx,[edx+ecx+sizeof RAUNDO]
-		mov		eax,ecx
-		pop		ecx
-		lea		ecx,[ecx+eax+sizeof RAUNDO]
-	.endw
-	call	GetHeader
-	mov		[edi].RAUNDO.undoid,0
-	mov		[edi].RAUNDO.cp,0
-	mov		[edi].RAUNDO.cb,0
-	mov		[edi].RAUNDO.fun,0
-	lea		edi,[edi+sizeof RAUNDO]
-	mov		eax,edi
-	sub		eax,lpMem
+		mov		[edi].RAUNDO.undoid,0
+		mov		[edi].RAUNDO.cp,0
+		mov		[edi].RAUNDO.cb,0
+		mov		[edi].RAUNDO.fun,0
+	.endif
+	mov		eax,rpend
+	sub		eax,rpstart
+	add		eax,sizeof RAUNDO+4
 	ret
 
 GetHeader:

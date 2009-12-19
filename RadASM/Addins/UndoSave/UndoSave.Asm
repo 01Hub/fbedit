@@ -38,11 +38,11 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
 	; Messages to hook into
-	mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED
-	; ECX and EDX must be null before we return
-	xor		ecx,ecx
+	mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED
+	mov		ecx,RAM_PROJECTOPEN
+	; EDX must be null before we return
 	xor		edx,edx
-	ret 
+	ret
 
 InstallDll Endp
 
@@ -85,173 +85,134 @@ DecToBin proc lpStr:DWORD
 DecToBin endp
 
 SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
-	LOCAL	hMem:HGLOBAL
-	LOCAL	hMemOut:HGLOBAL
-	LOCAL	nSize:DWORD
-	LOCAL	app[32]:BYTE
-	LOCAL	key[32]:BYTE
 	LOCAL	hFile:HANDLE
 	LOCAL	ft:FILETIME
-	LOCAL	fat:DWORD
-	LOCAL	ninx:DWORD
 
-	invoke wsprintf,addr key,addr szFmtd,pfid
-	invoke lstrcpy,addr app,addr szUndo
-	invoke lstrcat,addr app,addr key
-	invoke RtlZeroMemory,addr key,sizeof key
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024*1024
-	mov		hMem,eax
-	invoke SendMessage,hREd,REM_GETUNDO,4*1024*1024-256*1024,hMem
+	mov		eax,pfid
+	mov		edx,sizeof UNDOSAVE
+	mul		edx
+	mov		edi,offset us
+	lea		edi,[edi+eax]
+	.if [edi].UNDOSAVE.hmem
+		invoke GlobalFree,[edi].UNDOSAVE.hmem
+	.endif
+	invoke RtlZeroMemory,edi,sizeof UNDOSAVE
+	invoke SendMessage,hREd,REM_GETUNDO,1000,0
 	.if eax
-		mov		nSize,eax
-		invoke GlobalAlloc,GMEM_FIXED,8*1024*1024
-		mov		hMemOut,eax
-		mov		edi,eax
+		mov		[edi].UNDOSAVE.nsize,eax
+		mov		eax,pfid
+		mov		[edi].UNDOSAVE.pfid,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,[edi].UNDOSAVE.nsize
+		mov		[edi].UNDOSAVE.hmem,eax
+		invoke SendMessage,hREd,REM_GETUNDO,1000,[edi].UNDOSAVE.hmem
 		; Get file time
 		mov		eax,lpData
 		invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 		mov		hFile,eax
 		invoke GetFileTime,hFile,NULL,NULL,addr ft
 		invoke CloseHandle,hFile
-		invoke FileTimeToDosDateTime,addr ft,addr fat+2,addr fat
-		invoke lstrcpy,edi,addr szFt
-		invoke lstrcat,edi,addr szEqu
-		invoke lstrlen,edi
-		lea		edi,[edi+eax]
-		invoke wsprintf,edi,addr szFmtd,fat
-		invoke lstrlen,edi
-		lea		edi,[edi+eax+1]
-		invoke lstrcpy,edi,addr szRp
-		invoke lstrcat,edi,addr szEqu
-		invoke lstrlen,edi
-		lea		edi,[edi+eax]
-		mov		esi,hMem
-		mov		eax,[esi]
-		lea		esi,[esi+4]
-		invoke wsprintf,edi,addr szFmtd,eax
-		invoke lstrlen,edi
-		lea		edi,[edi+eax+1]
-		mov		ninx,1
-		.while [esi].RAUNDO.cb
-			call	HexIt
-			mov		eax,[esi].RAUNDO.cb
-			inc		ninx
-			lea		esi,[esi+eax+sizeof RAUNDO]
-		.endw
-		call	HexIt
-		mov		byte ptr [edi],0
-		mov		eax,lpData
-		invoke WritePrivateProfileSection,addr app,hMemOut,[eax].ADDINDATA.lpProject
-		invoke GlobalFree,hMemOut
+		invoke FileTimeToDosDateTime,addr ft,addr [edi].UNDOSAVE.dft+2,addr [edi].UNDOSAVE.dft
 	.endif
-	invoke GlobalFree,hMem
 	ret
-
-HexByte:
-	mov		al,[esi+ebx]
-	mov		ah,al
-	shr		al,4
-	and		ah,0Fh
-	.if al<=9
-		or		al,30h
-	.else
-		add		al,'A'-10
-	.endif
-	.if ah<=9
-		or		ah,30h
-	.else
-		add		ah,'A'-10
-	.endif
-	mov		[edi+ebx*2],ax
-	retn
-
-HexIt:
-	invoke wsprintf,edi,addr szFmtd,ninx
-	invoke lstrcat,edi,addr szEqu
-	invoke lstrlen,edi
-	lea		edi,[edi+eax]
-	xor		ebx,ebx
-	mov		ecx,[esi].RAUNDO.cb
-	lea		ecx,[ecx+sizeof RAUNDO]
-	.while ebx<ecx
-		call	HexByte
-		inc		ebx
-	.endw
-	mov		byte ptr [edi+ebx*2],0
-	lea		edi,[edi+ebx*2+1]
-	retn
 
 SaveUndo endp
 
 LoadUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
-	LOCAL	hMem:HGLOBAL
-	LOCAL	hMemOut:HGLOBAL
-	LOCAL	app[32]:BYTE
-	LOCAL	key[32]:BYTE
 	LOCAL	hFile:HANDLE
 	LOCAL	ft:FILETIME
-	LOCAL	fat:DWORD
-	LOCAL	ninx:DWORD
+	LOCAL	dft:DWORD
 
-	invoke wsprintf,addr key,addr szFmtd,pfid
-	invoke lstrcpy,addr app,addr szUndo
-	invoke lstrcat,addr app,addr key
-	; Check file time
-	mov		eax,lpData
-	invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-	mov		hFile,eax
-	invoke GetFileTime,hFile,NULL,NULL,addr ft
-	invoke CloseHandle,hFile
-	invoke FileTimeToDosDateTime,addr ft,addr fat+2,addr fat
-	mov		eax,lpData
-	invoke GetPrivateProfileInt,addr app,addr szFt,0,[eax].ADDINDATA.lpProject
-	.if eax==fat
-		invoke GlobalAlloc,GMEM_FIXED,64*1024
-		mov		hMem,eax
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,4*1024*1024
-		mov		hMemOut,eax
-		mov		edi,eax
+
+	mov		eax,pfid
+	mov		edx,sizeof UNDOSAVE
+	mul		edx
+	mov		esi,offset us
+	lea		esi,[esi+eax]
+	.if [esi].UNDOSAVE.hmem
 		mov		eax,lpData
-		invoke GetPrivateProfileInt,addr app,addr szRp,0,[eax].ADDINDATA.lpProject
-		mov		[edi],eax
-		lea		edi,[edi+4]
-		mov		ninx,1
-		.while TRUE
-			invoke wsprintf,addr key,addr szFmtd,ninx
-			mov		eax,lpData
-			invoke GetPrivateProfileString,addr app,addr key,addr szNULL,hMem,32767,[eax].ADDINDATA.lpProject
-			mov		esi,hMem
-			.break .if !byte ptr [esi]
-			xor		ebx,ebx
-			.while byte ptr [esi+ebx*2]
-				mov		ax,[esi+ebx*2]
-				.if al>'9'
-					sub		al,'A'-10
-				.else
-					and		al,0Fh
-				.endif
-				.if ah>'9'
-					sub		ah,'A'-10
-				.else
-					and		ah,0Fh
-				.endif
-				shl		al,4
-				or		al,ah
-				mov		[edi+ebx],al
-				inc		ebx
-			.endw
-			lea		edi,[edi+ebx]
-			inc		ninx
-		.endw
-		mov		eax,edi
-		sub		eax,hMemOut
-		invoke SendMessage,hREd,REM_SETUNDO,eax,hMemOut
-		invoke GlobalFree,hMemOut
-		invoke GlobalFree,hMem
+		invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		mov		hFile,eax
+		invoke GetFileTime,hFile,NULL,NULL,addr ft
+		invoke CloseHandle,hFile
+		invoke FileTimeToDosDateTime,addr ft,addr dft+2,addr dft
+		mov		eax,[esi].UNDOSAVE.dft
+		.if eax==dft
+			invoke SendMessage,hREd,REM_SETUNDO,[esi].UNDOSAVE.nsize,[esi].UNDOSAVE.hmem
+		.endif
+		invoke GlobalFree,[esi].UNDOSAVE.hmem
+		invoke RtlZeroMemory,esi,sizeof UNDOSAVE
 	.endif
 	ret
 
 LoadUndo endp
+
+GetUndo proc uses ebx esi edi
+	LOCAL	hFile:HANDLE
+	LOCAL	nSize:DWORD
+	LOCAL	hMem:HGLOBAL
+	LOCAL	dwread:DWORD
+
+	invoke CreateFile,addr usFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,NULL
+		mov		nSize,eax
+		invoke GlobalAlloc,GMEM_FIXED,nSize
+		mov		hMem,eax
+		invoke ReadFile,hFile,hMem,nSize,addr dwread,NULL
+		invoke CloseHandle,hFile
+		mov		esi,hMem
+		xor		ebx,ebx
+		.while ebx<nSize
+			mov		eax,[esi].UNDOSAVE.pfid
+			mov		edx,sizeof UNDOSAVE
+			mul		edx
+			mov		edi,offset us
+			lea		edi,[edi+eax]
+			mov		eax,[esi].UNDOSAVE.pfid
+			mov		[edi].UNDOSAVE.pfid,eax
+			mov		eax,[esi].UNDOSAVE.dft
+			mov		[edi].UNDOSAVE.dft,eax
+			mov		eax,[esi].UNDOSAVE.nsize
+			mov		[edi].UNDOSAVE.nsize,eax
+			invoke GlobalAlloc,GMEM_FIXED,eax
+			mov		[edi].UNDOSAVE.hmem,eax
+			invoke RtlMoveMemory,[edi].UNDOSAVE.hmem,addr [esi+sizeof UNDOSAVE],[esi].UNDOSAVE.nsize
+			mov		eax,[esi].UNDOSAVE.nsize
+			lea		ebx,[ebx+eax+sizeof UNDOSAVE]
+			lea		esi,[esi+eax+sizeof UNDOSAVE]
+		.endw
+		invoke GlobalFree,hMem
+	.endif
+	ret
+
+GetUndo endp
+
+PutUndo proc uses ebx esi edi
+	LOCAL	hFile:HANDLE
+	LOCAL	nSize:DWORD
+	LOCAL	dwwritten:DWORD
+
+	invoke CreateFile,addr usFileName,GENERIC_READ or GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		xor		ebx,ebx
+		mov		esi,offset us
+		.while ebx<2048
+			.if [esi].UNDOSAVE.hmem
+				invoke WriteFile,hFile,esi,sizeof UNDOSAVE,addr dwwritten,NULL
+				invoke WriteFile,hFile,[esi].UNDOSAVE.hmem,[esi].UNDOSAVE.nsize,addr dwwritten,NULL
+				invoke GlobalFree,[esi].UNDOSAVE.hmem
+			.endif
+			lea		esi,[esi+sizeof UNDOSAVE]
+			inc		ebx
+		.endw
+		invoke CloseHandle,hFile
+		invoke RtlZeroMemory,addr us,sizeof us
+	.endif
+	ret
+
+PutUndo endp
 
 DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
@@ -272,6 +233,13 @@ DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SaveUndo,hWin,wParam,eax
 			.endif
 		.endif
+	.elseif eax==AIM_PROJECTOPEN
+		invoke lstrcpy,addr usFileName,lParam
+		invoke lstrlen,addr usFileName
+		invoke lstrcpy,addr usFileName[eax-3],addr szUndo
+		invoke GetUndo
+	.elseif eax==AIM_PROJECTCLOSED
+		invoke PutUndo
 	.endif
 	mov		eax,FALSE
 	ret

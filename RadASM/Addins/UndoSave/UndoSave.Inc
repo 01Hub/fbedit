@@ -44,14 +44,16 @@ RAUNDO struct
 	fun			db ?		;Function
 RAUNDO ends
 
+UNDOSAVE struct
+	pfid		dd ?		;Project fileid
+	dft			dd ?		;Dos file time
+	nsize		dd ?		;Size of undo memory
+	hmem		dd ?		;Handle of undo memory
+UNDOSAVE ends
+
 .const
 
-szUndo				db 'Undo',0
-szFt				db 'ft',0
-szRp				db 'rp',0
-szEqu				db '=',0
-szFmtd				db '%d',0
-szNULL				db 0
+szUndo				db 'undo',0
 
 .data?
 
@@ -59,4 +61,5 @@ hInstance			dd ?	;Dll's module handle
 lpHandles			dd ?	;Pointer to handles struct
 lpProc				dd ?	;Pointer to proc struct
 lpData				dd ?	;Pointer to data struct
-
+usFileName			db MAX_PATH dup(?)
+us					UNDOSAVE 2048 dup (<>)
