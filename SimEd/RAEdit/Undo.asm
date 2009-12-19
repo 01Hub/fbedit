@@ -379,22 +379,20 @@ GetUndo proc uses ebx esi edi,hMem:DWORD,nCount:DWORD,lpMem:DWORD
 
 	mov		ebx,hMem
 	mov		esi,[ebx].EDIT.hUndo
-	mov		ecx,nCount
-	.if !ecx
-		dec		ecx
-	.endif
 	mov		edx,[ebx].EDIT.rpUndo
 	; Include redo
 	.while [esi+edx].RAUNDO.cb
 		mov		eax,[esi+edx].RAUNDO.cb
-		.break .if eax>16000
 		lea		edx,[edx+eax+sizeof RAUNDO]
 	.endw
 	mov		rpend,edx
+	mov		ecx,nCount
+	.if !ecx
+		dec		ecx
+	.endif
 	; Include undo
 	.while edx!=0 && ecx!=0
 		mov		eax,[esi+edx].RAUNDO.cb
-		.break .if eax>16000
 		mov		edx,[esi+edx].RAUNDO.rpPrev
 		dec		ecx
 	.endw

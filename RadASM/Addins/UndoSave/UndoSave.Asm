@@ -46,44 +46,6 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 
 InstallDll Endp
 
-DecToBin proc lpStr:DWORD
-	LOCAL	fNeg:DWORD
-
-    push    ebx
-    push    esi
-    mov     esi,lpStr
-    mov		fNeg,FALSE
-    mov		al,[esi]
-    .if al=='-'
-		inc		esi
-		mov		fNeg,TRUE
-    .endif
-    xor     eax,eax
-  @@:
-    cmp     byte ptr [esi],30h
-    jb      @f
-    cmp     byte ptr [esi],3Ah
-    jnb     @f
-    mov     ebx,eax
-    shl     eax,2
-    add     eax,ebx
-    shl     eax,1
-    xor     ebx,ebx
-    mov     bl,[esi]
-    sub     bl,30h
-    add     eax,ebx
-    inc     esi
-    jmp     @b
-  @@:
-	.if fNeg
-		neg		eax
-	.endif
-    pop     esi
-    pop     ebx
-    ret
-
-DecToBin endp
-
 SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	ft:FILETIME

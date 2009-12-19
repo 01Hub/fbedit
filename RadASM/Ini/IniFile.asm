@@ -102,6 +102,7 @@ iniDefHdr			db 'Include (*.inc),*.inc,inc',0
 iniDefMod			db 'Module (*.asm),*.asm,asm',0
 
 iniAccept			db 'Accept',0
+iniDontAsk			db 'DontAsk',0
 
 ; Assembler.ini updates
 szMasmCodeData		db '{C},$ db,$ dw,$ dd,$ dq,$ df,$ dt,$ byte,$ word,$ dword,$ qword,$ real4,$ real8,$ tbyte',0

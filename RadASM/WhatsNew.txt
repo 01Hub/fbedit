@@ -1,5 +1,12 @@
 RadASM 2.2.1.8
 --------------
+2.2.1.8h
+o Added a hidden option to disable accept command dialog.
+  In RadASM.ini section [Accept] add the following line:
+  DontAsk=1
+o Added UndoSave addin. It saves and loads undo information on project code files.
+  See Addin Manager help file for more info.
+o Project Options no longer expands project tree.
 2.2.1.8g
 o Better error message / handling if a programming language pack is missing.
 o Added UpdateChecker addin. It lets you check for RadASM updates, download and unzip files.

@@ -1198,11 +1198,14 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	mov		fThreadWait,TRUE
-	invoke GetCommand,addr outbuffer,Param
-	mov		fThreadWait,FALSE
-	or		eax,eax
-	je		Ex
+	invoke GetPrivateProfileInt,addr iniAccept,addr iniDontAsk,0,addr iniFile
+	.if !eax
+		mov		fThreadWait,TRUE
+		invoke GetCommand,addr outbuffer,Param
+		mov		fThreadWait,FALSE
+		or		eax,eax
+		je		Ex
+	.endif
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr outbuffer
 	invoke SendMessage,hOutREd,EM_REPLACESEL,FALSE,addr szCrLf
 	invoke SendMessage,hOutREd,EM_SCROLLCARET,0,0
