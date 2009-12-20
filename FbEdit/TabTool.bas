@@ -1049,8 +1049,8 @@ Function TabToolProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARA
 				ht.pt.y=HiWord(lParam)
 				lret=SendMessage(hWin,TCM_HITTEST,0,Cast(Integer,@ht))
 				If lret<>i And lret>=0 And i>=0 Then
-					SendMessage(hWin,TCM_GETITEMRECT,lret,@hrect)
-					SendMessage(hWin,TCM_GETITEMRECT,i,@mrect)
+					SendMessage(hWin,TCM_GETITEMRECT,lret,Cast(LPARAM,@hrect))
+					SendMessage(hWin,TCM_GETITEMRECT,i,Cast(LPARAM,@mrect))
 					x=hrect.left+(hrect.right-hrect.left)/2
 					If mrect.left>hrect.left Then
 						If ht.pt.x<x Then

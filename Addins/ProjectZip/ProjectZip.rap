@@ -108,7 +108,7 @@ Options=52
 [F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[F[Find]
 1="zipfi"
 [AutoLoad]
-1=1
+AutoLoad=1
 
 [Find]
 1="#define "
@@ -146,7 +146,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=4
@@ -167,7 +167,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 9=2
 10=2
 [PTimer]
-PTimer=1985687
+PTimer=2207910
 [Collapse]
 1=,,
 2=
@@ -180,3 +180,5 @@ PTimer=1985687
 [Exports]
 1=InstallDll
 2=DllFunction
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0

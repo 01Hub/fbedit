@@ -155,7 +155,7 @@ Type ADDINHANDLES
 End Type
 
 Type ADDINDATA
-	version			As Integer						' FbEdit version (currently 1073)
+	version			As Integer						' FbEdit version (currently 1074)
 	AppPath			As ZString*260					' Path where FbEdit.exe is found
 	ProjectPath		As ZString*260					' Path to current project
 	DefProjectPath	As ZString*260					' Default project path
@@ -180,6 +180,7 @@ Type ADDINDATA
 	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
 	smakequickrun	As ZString*260					' Quick Run
 	lpBuff			As ZString Ptr					' Pointer to internal ZString buffer
+	lpszVersion		As ZString Ptr					' Pointer to version string
 End Type
 
 Type ADDINFUNCTIONS
