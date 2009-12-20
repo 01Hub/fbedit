@@ -37,9 +37,15 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
-	; Messages to hook into
-	mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED
-	mov		ecx,RAM_PROJECTOPEN
+	mov		eax,[eax].ADDINDATA.nRadASMVer
+	.if eax>=2219
+		; Messages to hook into
+		mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED
+		mov		ecx,RAM_PROJECTOPEN
+	.else
+		xor		eax,eax
+		xor		ecx,ecx
+	.endif
 	; EDX must be null before we return
 	xor		edx,edx
 	ret
