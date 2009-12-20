@@ -46,7 +46,7 @@ AIM_TBRTOOLTIP			equ WM_USER+117			;hWnd=handle of mdi frame, wParam=ID, lParam=
 AIM_MDIACTIVATE			equ WM_USER+118			;hWnd=handle of mdi child, wParam & lParam=same as for WM_MDIACTIVATE
 AIM_EDITSELCHANGE		equ WM_USER+119			;hWnd=handle of mdi child, wParam=handle of edit, lParam=ID
 AIM_PROJECTADDNEW		equ WM_USER+120			;hWnd=handle of mdi frame, wParam=type, lParam=pointer to filename
-AIM_PROJECTREMOVE		equ WM_USER+121			;hWnd=handle of mdi frame, wParam=0, lParam=pointer to filename
+AIM_PROJECTREMOVE		equ WM_USER+121			;hWnd=handle of mdi frame, wParam=ProjectFileID, lParam=pointer to filename
 AIM_DLGMNUSELECT		equ WM_USER+122			;hWnd=handle of mdi child, wParam=handle of dialog, lParam=pointer to MENUITEM structure
 AIM_RCUPDATE			equ WM_USER+123			;hWnd=handle of dialog,wParam=type,lParam=pointer to memory
 AIM_CREATENEWCTL		equ WM_USER+124			;hWnd=handle of mdi child, wParam=handle of dialog, lParam=pointer to DIALOG structure

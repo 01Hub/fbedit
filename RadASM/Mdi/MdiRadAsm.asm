@@ -2223,6 +2223,7 @@ CmdProject proc hWin:HWND
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer2[MAX_PATH]:BYTE
 	LOCAL	vTmp:DWORD
+	LOCAL	nInx:DWORD
 
 	.if eax==IDM_PROJECT_ADDNEWASM
 		invoke ProAddNew,hWin,0
@@ -2274,8 +2275,11 @@ CmdProject proc hWin:HWND
 	.elseif eax==IDM_PROJECT_REMOVE || eax==IDM_PROMNU_REMOVE
 		.if eax==IDM_PROJECT_REMOVE
 			invoke GetWindowText,hMdiCld,addr FileName,sizeof FileName
+			invoke GetWindowLong,hMdiCld,16
+			mov		nInx,eax
 		.else
 			invoke GetSelected,addr tvi,addr buffer,sizeof buffer
+			mov		nInx,eax
 			invoke strcpy,addr FileName,addr ProjectPath
 			invoke strcat,addr FileName,addr buffer
 			invoke GetFullPathName,addr FileName,sizeof FileName,addr FileName,addr vTmp
@@ -2286,7 +2290,7 @@ CmdProject proc hWin:HWND
 		invoke MessageBox,hWin,addr buffer,addr AppName,MB_YESNO or MB_ICONQUESTION
 		.if eax==IDYES
 			invoke ProRemoveFile,addr FileName
-			invoke DllProc,hWin,AIM_PROJECTREMOVE,0,addr FileName,RAM_PROJECTREMOVE
+			invoke DllProc,hWin,AIM_PROJECTREMOVE,nInx,addr FileName,RAM_PROJECTREMOVE
 		.else
 			.if hEdit
 				invoke SetFocus,hEdit
