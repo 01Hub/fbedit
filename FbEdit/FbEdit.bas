@@ -537,17 +537,19 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			Return FALSE
 			'
 		Case WM_CLOSE
-			KillQuickRun
 			If CallAddins(hWin,AIM_QUERYCLOSE,wParam,lParam,HOOK_QUERYCLOSE) Then
 				Return 0
+			EndIf
+			If fProject Then
+				If CloseProject=FALSE Then
+					Return 0
+				EndIf
 			EndIf
 			If CloseAllTabs(hWin,fProject,0,edtopt.closeonlocks)=FALSE Then
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0
 				EndIf
-				If fProject Then
-					CloseProject
-				EndIf
+				KillQuickRun
 				GetWindowRect(hWin,@rect)
 				If IsIconic(hWin)=FALSE And IsZoomed(hWin)=FALSE Then
 					wpos.x=rect.left
@@ -737,6 +739,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_EDIT_REDO
 							SendMessage(ah.hred,EM_REDO,0,0)
+							'
+						Case IDM_EDIT_EMPTYUNDO
+							SendMessage(ah.hred,EM_EMPTYUNDOBUFFER,0,0)
+							fTimer=1
 							'
 						Case IDM_EDIT_CUT
 							SendMessage(ah.hred,WM_CUT,0,0)

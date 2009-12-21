@@ -195,7 +195,6 @@ InstallDll proc uses ebx,hWin:DWORD,hInst:DWORD
 		; Messages to hook into
 		mov		hook.hook1,HOOK_COMMAND or HOOK_PROJECTCLOSE or HOOK_FILEOPENNEW or HOOK_FILESAVED
 	.endif
-	; EDX must be null before we return
 	mov		eax,offset hook
 	ret
 
@@ -205,25 +204,28 @@ DllFunction proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==AIM_COMMAND
-;		mov		eax,wParam
-;		movzx	edx,ax
-;		shr		eax, 16
-;		.if edx==IDM_EDIT_EMPTY_UNDO && eax==BN_CLICKED
-;			mov		eax,lpHandles
-;			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
-;			.if eax<2048
-;				mov		edx,sizeof UNDOSAVE
-;				mul		edx
-;				mov		edx,offset us
-;				lea		edx,[edx+eax]
-;				.if [edx].UNDOSAVE.hmem
-;					push	edx
-;					invoke GlobalFree,[edx].UNDOSAVE.hmem
-;					pop		edx
-;					invoke RtlZeroMemory,edx,sizeof UNDOSAVE
-;				.endif
-;			.endif
-;		.endif
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax, 16
+		.if edx==IDM_EDIT_EMPTYUNDO && eax==BN_CLICKED
+			mov		eax,lpData
+			.if [eax].ADDINDATA.ProjectFile
+				mov		eax,lpHandles
+				invoke GetProjectFileID,[eax].ADDINHANDLES.hred
+				.if sdword ptr eax>0 && eax<2048
+					mov		edx,sizeof UNDOSAVE
+					mul		edx
+					mov		edx,offset us
+					lea		edx,[edx+eax]
+					.if [edx].UNDOSAVE.hmem
+						push	edx
+						invoke GlobalFree,[edx].UNDOSAVE.hmem
+						pop		edx
+						invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+					.endif
+				.endif
+			.endif
+		.endif
 	.elseif eax==AIM_FILEOPENNEW
 		mov		eax,lpData
 		.if [eax].ADDINDATA.ProjectFile

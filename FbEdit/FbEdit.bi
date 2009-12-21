@@ -93,6 +93,7 @@ Declare Sub HH_Help()
 #Define IDM_EDIT								10021
 #Define IDM_EDIT_UNDO						10022
 #Define IDM_EDIT_REDO						10023
+#Define IDM_EDIT_EMPTYUNDO					10087
 #Define IDM_EDIT_CUT							10024
 #Define IDM_EDIT_COPY						10025
 #Define IDM_EDIT_PASTE						10026
