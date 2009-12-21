@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=RadASM Undo saver addin
+Description=FbEdit Undo saver addin
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -13,7 +13,7 @@ Ver.rc=1
 3=UndoSave.Def
 4=UndoSave.Txt
 5=UndoSave.rc
-6=..\RadAsm.inc
+6=FbEdit.inc
 AutoDelete=1
 AskMe=0
 MinorFiles=*.res;*.obj;*.lib;*.exp;
@@ -90,11 +90,11 @@ AutoLoad=1,2,4,3,6
 3=
 [Size]
 5=0,0,0,0,0
-1=0,0,0,0,1970
+1=0,0,0,0,2650
 4=0,0,0,0,823
-2=0,0,0,0,711
-6=0,0,983,529,3154
-3=0,0,0,0,16
+2=0,0,0,0,556
+6=0,0,0,0,4086
+3=0,0,0,0,50
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -138,7 +138,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=22860297
+PTimer=1104322313
 [GroupExpand]
 GroupExpand=1,1,1,0
 [BookMark]
@@ -158,3 +158,4 @@ GroupExpand=1,1,1,0
 1=
 3=
 2=
+6=

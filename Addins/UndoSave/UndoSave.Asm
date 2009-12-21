@@ -12,7 +12,7 @@ include UndoSave.inc
 
 .code
 
-SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
+SaveUndo proc uses ebx esi edi,hREd:HWND,pfid:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	ft:FILETIME
 
@@ -35,7 +35,7 @@ SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 		invoke SendMessage,hREd,REM_GETUNDO,1000,[edi].UNDOSAVE.hmem
 		; Get file time
 		mov		eax,lpData
-		invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		invoke CreateFile,addr [eax].ADDINDATA.filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 		mov		hFile,eax
 		invoke GetFileTime,hFile,NULL,NULL,addr ft
 		invoke CloseHandle,hFile
@@ -45,7 +45,7 @@ SaveUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 
 SaveUndo endp
 
-LoadUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
+LoadUndo proc uses ebx esi edi,hREd:HWND,pfid:DWORD
 	LOCAL	hFile:HANDLE
 	LOCAL	ft:FILETIME
 	LOCAL	dft:DWORD
@@ -58,7 +58,7 @@ LoadUndo proc uses ebx esi edi,hWin:HWND,hREd:HWND,pfid:DWORD
 	lea		esi,[esi+eax]
 	.if [esi].UNDOSAVE.hmem
 		mov		eax,lpData
-		invoke CreateFile,[eax].ADDINDATA.lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+		invoke CreateFile,addr [eax].ADDINDATA.filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 		mov		hFile,eax
 		invoke GetFileTime,hFile,NULL,NULL,addr ft
 		invoke CloseHandle,hFile
@@ -143,6 +143,28 @@ PutUndo proc uses ebx esi edi
 
 PutUndo endp
 
+GetProjectFileID proc uses ebx esi edi,hREd:HWND
+	LOCAL	tci:TC_ITEM
+
+	mov		ebx,lpHandles
+	mov		ebx,[ebx].ADDINHANDLES.htabtool
+	mov		tci.imask,TCIF_PARAM
+	xor		edi,edi
+	.while TRUE
+		invoke SendMessage,ebx,TCM_GETITEM,edi,addr tci
+		.break .if !eax
+		mov		esi,tci.lParam
+		mov		eax,[esi].TABMEM.hedit
+		.if eax==hREd
+			mov		eax,[esi].TABMEM.profileinx
+			ret
+		.endif
+		inc		edi
+	.endw
+	ret
+
+GetProjectFileID endp
+
 ;#########################################################################
 ;		Common AddIn Procedures
 
@@ -156,103 +178,108 @@ DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 DllEntry Endp
 
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
-InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
+InstallDll proc uses ebx,hWin:DWORD,hInst:DWORD
 
 	mov		ebx,hWin
 	;Get pointer to handles struct
 	invoke SendMessage,ebx,AIM_GETHANDLES,0,0
 	mov		lpHandles,eax
 	;Get pointer to proc struct
-	invoke SendMessage,ebx,AIM_GETPROCS,0,0
+	invoke SendMessage,ebx,AIM_GETFUNCTIONS,0,0
 	mov		lpProc,eax
 	;Get pointer to data struct
 	invoke SendMessage,ebx,AIM_GETDATA,0,0	
 	mov		lpData,eax
-	mov		eax,[eax].ADDINDATA.nRadASMVer
-	.if eax>=2219
+	mov		eax,[eax].ADDINDATA.version
+	.if eax>=1074
 		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED OR RAM_PROJECTREMOVE
-		mov		ecx,RAM_PROJECTOPEN
-	.else
-		xor		eax,eax
-		xor		ecx,ecx
+		mov		hook.hook1,HOOK_COMMAND or HOOK_PROJECTCLOSE or HOOK_FILEOPENNEW or HOOK_FILESAVED
 	.endif
 	; EDX must be null before we return
-	xor		edx,edx
+	mov		eax,offset hook
 	ret
 
 InstallDll Endp
 
-DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+DllFunction proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==AIM_COMMAND
-		mov		eax,wParam
-		movzx	edx,ax
-		shr		eax, 16
-		.if edx==IDM_EDIT_EMPTY_UNDO && eax==BN_CLICKED
-			mov		eax,lpHandles
-			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
-			.if eax<2048
-				mov		edx,sizeof UNDOSAVE
-				mul		edx
-				mov		edx,offset us
-				lea		edx,[edx+eax]
-				.if [edx].UNDOSAVE.hmem
-					push	edx
-					invoke GlobalFree,[edx].UNDOSAVE.hmem
-					pop		edx
-					invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+;		mov		eax,wParam
+;		movzx	edx,ax
+;		shr		eax, 16
+;		.if edx==IDM_EDIT_EMPTY_UNDO && eax==BN_CLICKED
+;			mov		eax,lpHandles
+;			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
+;			.if eax<2048
+;				mov		edx,sizeof UNDOSAVE
+;				mul		edx
+;				mov		edx,offset us
+;				lea		edx,[edx+eax]
+;				.if [edx].UNDOSAVE.hmem
+;					push	edx
+;					invoke GlobalFree,[edx].UNDOSAVE.hmem
+;					pop		edx
+;					invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+;				.endif
+;			.endif
+;		.endif
+	.elseif eax==AIM_FILEOPENNEW
+		mov		eax,lpData
+		.if [eax].ADDINDATA.ProjectFile
+			.if !usFileName
+				; Load undo information from [PROJECTNAME].undo
+				mov		eax,lpData
+				invoke lstrcpy,addr usFileName,addr [eax].ADDINDATA.ProjectFile
+				invoke lstrlen,addr usFileName
+				invoke lstrcpy,addr usFileName[eax-3],addr szUndo
+				invoke GetUndo
+			.endif
+			invoke GetWindowLong,wParam,GWL_ID
+			.if eax==IDC_CODEED
+				invoke GetProjectFileID,wParam
+				.if sdword ptr eax>0
+					; Load undo information from ram
+					invoke LoadUndo,wParam,eax
 				.endif
 			.endif
 		.endif
-	.elseif eax==AIM_EDITOPEN
+	.elseif eax==AIM_FILESAVED
 		mov		eax,lpData
-		.if [eax].ADDINDATA.fProject
-			invoke GetWindowLong,hWin,16
-			.if sdword ptr eax>0
-				; Load undo information from ram
-				invoke LoadUndo,hWin,wParam,eax
+		.if [eax].ADDINDATA.ProjectFile
+			invoke GetWindowLong,wParam,GWL_ID
+			.if eax==IDC_CODEED
+				invoke GetProjectFileID,wParam
+				.if sdword ptr eax>0
+					; Save undo information to ram
+					invoke SaveUndo,wParam,eax
+				.endif
 			.endif
 		.endif
-	.elseif eax==AIM_EDITSAVED
-		mov		eax,lpData
-		.if [eax].ADDINDATA.fProject
-			invoke GetWindowLong,hWin,16
-			.if sdword ptr eax>0
-				; Save undo information to ram
-				invoke SaveUndo,hWin,wParam,eax
-			.endif
-		.endif
-	.elseif eax==AIM_PROJECTOPEN
-		; Load undo information from [PROJECTNAME].undo
-		invoke lstrcpy,addr usFileName,lParam
-		invoke lstrlen,addr usFileName
-		invoke lstrcpy,addr usFileName[eax-3],addr szUndo
-		invoke GetUndo
-	.elseif eax==AIM_PROJECTCLOSED
+	.elseif eax==AIM_PROJECTCLOSE
 		; Save undo information to [PROJECTNAME].undo
 		invoke PutUndo
-	.elseif eax==AIM_PROJECTREMOVE
-		; A project file is removed, delete undo information
-		mov		eax,wParam
-		.if eax<2048
-			mov		edx,sizeof UNDOSAVE
-			mul		edx
-			mov		edx,offset us
-			lea		edx,[edx+eax]
-			.if [edx].UNDOSAVE.hmem
-				push	edx
-				invoke GlobalFree,[edx].UNDOSAVE.hmem
-				pop		edx
-				invoke RtlZeroMemory,edx,sizeof UNDOSAVE
-			.endif
-		.endif
+		mov		usFileName,0
+;	.elseif eax==AIM_PROJECTREMOVE
+;		; A project file is removed, delete undo information
+;		mov		eax,wParam
+;		.if eax<2048
+;			mov		edx,sizeof UNDOSAVE
+;			mul		edx
+;			mov		edx,offset us
+;			lea		edx,[edx+eax]
+;			.if [edx].UNDOSAVE.hmem
+;				push	edx
+;				invoke GlobalFree,[edx].UNDOSAVE.hmem
+;				pop		edx
+;				invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+;			.endif
+;		.endif
 	.endif
 	mov		eax,FALSE
 	ret
 
-DllProc Endp
+DllFunction Endp
 
 ;#########################################################################
 

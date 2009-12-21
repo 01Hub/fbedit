@@ -196,6 +196,7 @@ Type ADDINFUNCTIONS
 	ShowImmediate As Sub(ByVal bShow As Boolean)
 	MakeProjectFileName As Function(ByVal sFile As String) As String
 	HH_Help As Sub()
+	IsProjectFile As Function(ByVal sFile As String) As Integer
 End Type
 
 ' Addin messages you can send to FbEdit main window

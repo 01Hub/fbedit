@@ -545,6 +545,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If CallAddins(hWin,AIM_CLOSE,wParam,lParam,HOOK_CLOSE) Then
 					Return 0
 				EndIf
+				If fProject Then
+					CloseProject
+				EndIf
 				GetWindowRect(hWin,@rect)
 				If IsIconic(hWin)=FALSE And IsZoomed(hWin)=FALSE Then
 					wpos.x=rect.left
