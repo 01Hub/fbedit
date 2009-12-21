@@ -179,7 +179,7 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,33889
+2=0,416,869,416,12389
 3=154,154,590,413,0
 4=0,0,590,413,40846
 5=132,132,536,413,4458
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=20
+MilestoneOnDateDate=21
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1433519953
+PTimer=1433563898
 [RADebugBP]
 96=
 55=

@@ -28,6 +28,8 @@ REM_BASE				equ WM_USER+1000
 REM_GETUNDO				equ REM_BASE+89		;wParam=nSize, lParam=lpMem
 REM_SETUNDO				equ REM_BASE+90		;wParam=nSize, lParam=lpMem
 
+IDM_EDIT_EMPTY_UNDO		equ 41022
+
 RAUNDO struct
 	rpPrev		dd ?						;Relative pointer to previous
 	undoid		dd ?						;Undo ID

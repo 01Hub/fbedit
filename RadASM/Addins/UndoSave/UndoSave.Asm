@@ -170,7 +170,7 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 	mov		eax,[eax].ADDINDATA.nRadASMVer
 	.if eax>=2219
 		; Messages to hook into
-		mov		eax,RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED OR RAM_PROJECTREMOVE
+		mov		eax,RAM_COMMAND OR RAM_EDITOPEN OR RAM_EDITSAVED OR RAM_PROJECTCLOSED OR RAM_PROJECTREMOVE
 		mov		ecx,RAM_PROJECTOPEN
 	.else
 		xor		eax,eax
@@ -185,7 +185,27 @@ InstallDll Endp
 DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
-	.if eax==AIM_EDITOPEN
+	.if eax==AIM_COMMAND
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax, 16
+		.if edx==IDM_EDIT_EMPTY_UNDO && eax==BN_CLICKED
+			mov		eax,lpHandles
+			invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
+			.if eax<2048
+				mov		edx,sizeof UNDOSAVE
+				mul		edx
+				mov		edx,offset us
+				lea		edx,[edx+eax]
+				.if [edx].UNDOSAVE.hmem
+					push	edx
+					invoke GlobalFree,[edx].UNDOSAVE.hmem
+					pop		edx
+					invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+				.endif
+			.endif
+		.endif
+	.elseif eax==AIM_EDITOPEN
 		mov		eax,lpData
 		.if [eax].ADDINDATA.fProject
 			invoke GetWindowLong,hWin,16
