@@ -21,6 +21,7 @@ AddIns\FlipCase.dll
 AddIns\FontBuilder.dll
 AddIns\FpHelp.dll
 AddIns\UpdateChecker.dll
+AddIns\UndoSave.dll
 AddIns\fpu.kwl
 AddIns\GoAsm.kwl
 AddIns\Help\AddAccel.Txt
@@ -62,6 +63,7 @@ AddIns\Help\TxtLnkMan.txt
 AddIns\Help\Version-Inc.Txt
 AddIns\Help\VersionControl.txt
 AddIns\Help\UpdateChecker.txt
+AddIns\Help\UndoSave.txt
 AddIns\Help\WinErr.txt
 AddIns\html.ct
 AddIns\InsertColor.dll
