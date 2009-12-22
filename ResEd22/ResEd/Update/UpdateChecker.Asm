@@ -593,7 +593,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
 				invoke GetDlgItem,hWin,IDC_BTNUNZIP
 				invoke ShowWindow,eax,SW_HIDE
-				invoke GetDlgItem,hWin,IDC_BTNTEST
+				invoke GetDlgItem,hWin,IDC_BTNUPDATE
 				invoke ShowWindow,eax,SW_SHOW
 				invoke GetDlgItem,hWin,IDC_BTNVIEW
 				invoke ShowWindow,eax,SW_SHOW
@@ -601,17 +601,6 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke lstrcpy,addr tempbuff,addr szDLPath
 				invoke lstrcat,addr tempbuff,addr szWhatsNew
 				invoke ShellExecute,hWin,addr szOpen,addr tempbuff,NULL,NULL,SW_SHOWNORMAL
-			.elseif eax==IDC_BTNTEST
-				invoke GetDlgItem,hWin,IDC_BTNTEST
-				invoke ShowWindow,eax,SW_HIDE
-				invoke GetDlgItem,hWin,IDC_BTNUPDATE
-				invoke ShowWindow,eax,SW_SHOW
-				;invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
-				invoke lstrcpy,addr tempbuff,addr szDLPath
-				invoke lstrcat,addr tempbuff,addr szResEdexe
-				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
-				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr AppPath
-				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 			.elseif eax==IDC_BTNUPDATE
 				invoke Update
 			.endif

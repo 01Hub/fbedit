@@ -6,7 +6,6 @@ IDC_EDTDLPATH					equ 1006
 IDC_BTNDLPATH					equ 1007
 IDC_BTNUNZIP					equ 1009
 IDC_BTNVIEW						equ 1011
-IDC_BTNTEST						equ 1012
 IDC_BTNUPDATE					equ 1002
 
 IDD_DLGDOWNLOAD					equ 8100
@@ -24,7 +23,7 @@ AppName							db 'UpdateChecker',0
 szWhatsNew						db '\WhatsNew.txt',0
 szResEdexe						db '\ResEd.exe',0
 szUnzip							db 13,10,'Push [Unzip] to continue.',0
-szDone							db 'Done!',13,10,13,10,'Pust [Test Version] to continue.',0
+szDone							db 'Done!',13,10,13,10,'Pust [Update] to continue.',0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',13,10,13,10,'Push [Download] to continue.',0
@@ -45,7 +44,6 @@ szINetErr4						db 'InternetReadFile failed',0
 szINetErr5						db 'CreateFile failed',0
 szINetErr6						db 'Canceled.',0
 szFmtErrNotEmpty				db 'The folder %s exists and is not empty.',13,10,'All files in the folder will be moved to Recycle Bin.',13,10,13,10,'Continue?',0
-szFmtTest						db 'If the test turns out OK then push [Update] to exit ResEd and',13,10,'copy files from:',13,10,'%s',13,10,'to:',13,10,'%s',0
 szFmtUpdateBat					db ':AGAIN',13,10
 								db 'copy %s%s %s',13,10
 								db 'IF ERRORLEVEL 1 GOTO AGAIN',13,10

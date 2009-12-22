@@ -7,7 +7,6 @@ o Added Check for Update to tools menu.
   - Download the ResEd.zip file.
   - Unzip ResEd.zip.
   - View the WhatsNew.txt file.
-  - Test the new version.
   - Update to the new version.
 
 2.2.0.5b - 2009-10-15
