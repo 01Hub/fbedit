@@ -687,7 +687,8 @@ ItemNameEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM, lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_CHAR
 		invoke IsCharAlphaNumeric,wParam
-		.if !eax && wParam!='_' && wParam!=VK_BACK
+		mov		edx,wParam
+		.if !eax && edx!='_' && edx!=VK_BACK && edx!=01h && edx!=03h && edx!=16h && edx!=1Ah
 			xor		eax,eax
 			jmp		Ex
 		.endif
