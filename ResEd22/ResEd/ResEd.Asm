@@ -1269,6 +1269,12 @@ start:
 		invoke MessageBox,0,addr mnubuff,addr szAppName,edx
 		jmp		Ex
 	.endif
+	invoke lstrcmpi,CommandLine,addr szUpdated
+	.if !eax
+		invoke lstrcpy,addr tmpbuff,addr szUpdatedTo
+		invoke lstrcat,addr tmpbuff,addr szVersion
+		invoke MessageBox,NULL,addr tmpbuff,addr szResEdExe,MB_OK or MB_ICONINFORMATION
+	.endif
 	invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szResEd,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
 	.if lpdwDisp==REG_OPENED_EXISTING_KEY
 		mov		lpcbData,sizeof wpos

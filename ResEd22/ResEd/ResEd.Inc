@@ -249,6 +249,8 @@ szMruProject		db 'MruProject#',0
 szDelete			db '/Delete',0
 szDeleted			db ' Registry key deleted.',0
 szFailed			db ' Registry key delete failed.',0
+szUpdated			db '/Updated',0
+szUpdatedTo			db 'Updated to:',13,10,0
 
 .data
 
