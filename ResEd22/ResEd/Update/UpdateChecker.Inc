@@ -52,6 +52,7 @@ szFmtUpdateBat					db ':AGAIN',13,10
 								db 'copy %s%s %s',13,10
 								db 'FOR %s IN (%s%s) DO DEL %s',13,10
 								db 'rd %s',13,10
+								db 'ResEd.exe',13,10
 								db 'del update.bat',13,10,0
 szUpdateBat						db 'Update.bat',0
 szPPA							db '%%A',0
