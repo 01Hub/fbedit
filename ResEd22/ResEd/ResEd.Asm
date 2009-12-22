@@ -1271,6 +1271,8 @@ start:
 	.endif
 	invoke lstrcmpi,CommandLine,addr szUpdated
 	.if !eax
+		mov		eax,CommandLine
+		mov		byte ptr [eax],0
 		invoke lstrcpy,addr tmpbuff,addr szUpdatedTo
 		invoke lstrcat,addr tmpbuff,addr szVersion
 		invoke MessageBox,NULL,addr tmpbuff,addr szResEdExe,MB_OK or MB_ICONINFORMATION
