@@ -1,5 +1,11 @@
 Whats new:
 ----------
+1.0.7.4
+o Added Edit / Empty Undo Buffer.
+o Added UpdateChecker addin.
+  Lets you check for new version, download and unzip FbEdit.zip.
+o Added UndoSave addin.
+  Saves undo information on project code files.
 1.0.7.3b
 o Some improvement when moving a tab.
 o Fixed bug with Run. The file path was not quoted.

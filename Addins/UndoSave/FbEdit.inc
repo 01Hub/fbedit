@@ -180,6 +180,8 @@ AIM_QUERYCLOSE			equ 15				; wParam and lParam as for WM_CLOSE. Return TRUE to p
 AIM_CONTEXTMEMU			equ 16				; wParam and lParam as for WM_CONTEXTMENU
 AIM_FILESAVED			equ 17				; wParam=hedit lParam=FileName
 AIM_CREATEEDIT			equ 18				; wParam=hWnd, lParam=0
+AIM_PROJECTREMOVE		equ 19				; wParam=ProjectFileID, lParam=FileName
+AIM_PROJECTTOGGLE		equ 20				; wParam=OldProjectFileID, lParam=NewProjectFileID
 
 ; Hookflags are bits set in a 32bit word
 ; Hook flags in hook1
@@ -202,6 +204,8 @@ HOOK_QUERYCLOSE			equ 8000h
 HOOK_CONTEXTMEMU		equ 10000h
 HOOK_FILESAVED			equ 20000h
 HOOK_CREATEEDIT			equ 40000h
+HOOK_PROJECTREMOVE		equ 80000h
+HOOK_PROJECTTOGGLE		equ 100000h
 
 ; Hook flags in hook2, reserved for future use. Set to 0
 

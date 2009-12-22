@@ -345,6 +345,25 @@ DeleteFiles proc hWin:HWND
 
 DeleteFiles endp
 
+CopyIni proc hWin:HWND
+	LOCAL	sfo:SHFILEOPSTRUCT
+
+	mov		eax,hWin
+	mov		sfo.hwnd,eax
+	mov		sfo.wFunc,FO_COPY
+	mov		eax,lpData
+	lea		eax,[eax].ADDINDATA.IniFile
+	mov		sfo.pFrom,eax
+	mov		sfo.pTo,offset szDLPath
+	mov		sfo.fFlags,FOF_SILENT	
+	mov		sfo.fAnyOperationsAborted,0
+	mov		sfo.hNameMappings,NULL
+	mov		sfo.lpszProgressTitle,NULL
+	invoke SHFileOperation,ADDR	sfo
+	mov		eax,sfo.fAnyOperationsAborted
+	ret
+
+CopyIni endp
 
 CreateFolder proc uses ebx esi,hWin:HWND
 
@@ -582,6 +601,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDC_BTNUNZIP
 				invoke SetDlgItemText,hWin,IDC_EDTVERSION,0
 				invoke UnZip,hWin,addr szIDEFile
+				invoke CopyIni,hWin
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
 				invoke GetDlgItem,hWin,IDC_BTNUNZIP
 				invoke ShowWindow,eax,SW_HIDE

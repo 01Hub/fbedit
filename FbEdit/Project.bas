@@ -1099,6 +1099,9 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
 					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+					If fDontAsk=FALSE Then
+						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,@sItem,HOOK_PROJECTREMOVE)
+					EndIf
 					Exit Sub
 				EndIf
 			Else
@@ -1124,6 +1127,9 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 					WritePrivateProfileString(StrPtr("File"),Str(nInx),StrPtr(szNULL),@ad.ProjectFile)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
 					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
+					If fDontAsk=FALSE Then
+						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,@sItem,HOOK_PROJECTREMOVE)
+					EndIf
 					Exit Sub
 				EndIf
 			Else
@@ -1186,6 +1192,7 @@ Sub ToggleProjectFile
 	Dim tci As TCITEM
 	Dim lpTABMEM As TABMEM Ptr
 	Dim i As Integer
+	Dim nOldID As Integer
 	
 	Dim path As String
 	tvi.hItem=Cast(HTREEITEM,SendMessage(ah.hprj,TVM_GETNEXTITEM,TVGN_CARET,0))
@@ -1203,6 +1210,7 @@ Sub ToggleProjectFile
 		
 		If tvi.lParam Then
 			' Remove the file from project
+			nOldID=tvi.lParam
 			RemoveProjectFile(TRUE)
 			If tvi.lParam<1000 Then
 				nInx=1001
@@ -1240,6 +1248,7 @@ Sub ToggleProjectFile
 							tci.iImage=GetFileImg(buff)
 						EndIf
 						SendMessage(ah.htabtool,TCM_SETITEM,i,Cast(Integer,@tci))
+						CallAddins(ah.hwnd,AIM_PROJECTTOGGLE,nOldID,nInx,HOOK_PROJECTTOGGLE)
 						Exit Do
 					EndIf
 				Else

@@ -193,7 +193,7 @@ InstallDll proc uses ebx,hWin:DWORD,hInst:DWORD
 	mov		eax,[eax].ADDINDATA.version
 	.if eax>=1074
 		; Messages to hook into
-		mov		hook.hook1,HOOK_COMMAND or HOOK_PROJECTCLOSE or HOOK_FILEOPENNEW or HOOK_FILESAVED
+		mov		hook.hook1,HOOK_COMMAND or HOOK_PROJECTCLOSE or HOOK_FILEOPENNEW or HOOK_FILESAVED or HOOK_PROJECTREMOVE or HOOK_PROJECTTOGGLE
 	.endif
 	mov		eax,offset hook
 	ret
@@ -262,21 +262,43 @@ DllFunction proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		; Save undo information to [PROJECTNAME].undo
 		invoke PutUndo
 		mov		usFileName,0
-;	.elseif eax==AIM_PROJECTREMOVE
-;		; A project file is removed, delete undo information
-;		mov		eax,wParam
-;		.if eax<2048
-;			mov		edx,sizeof UNDOSAVE
-;			mul		edx
-;			mov		edx,offset us
-;			lea		edx,[edx+eax]
-;			.if [edx].UNDOSAVE.hmem
-;				push	edx
-;				invoke GlobalFree,[edx].UNDOSAVE.hmem
-;				pop		edx
-;				invoke RtlZeroMemory,edx,sizeof UNDOSAVE
-;			.endif
-;		.endif
+	.elseif eax==AIM_PROJECTREMOVE
+		; A project file is removed, delete undo information
+		mov		eax,wParam
+		.if eax<2048
+			mov		edx,sizeof UNDOSAVE
+			mul		edx
+			mov		edx,offset us
+			lea		edx,[edx+eax]
+			.if [edx].UNDOSAVE.hmem
+				push	edx
+				invoke GlobalFree,[edx].UNDOSAVE.hmem
+				pop		edx
+				invoke RtlZeroMemory,edx,sizeof UNDOSAVE
+			.endif
+		.endif
+	.elseif eax==AIM_PROJECTTOGGLE
+		; A project file is toggled, move undo information
+		.if wParam<2048 && lParam<2048
+			push	esi
+			push	edi
+			mov		eax,wParam
+			mov		edx,sizeof UNDOSAVE
+			mul		edx
+			mov		esi,offset us
+			lea		esi,[esi+eax]
+			mov		eax,lParam
+			mov		edx,sizeof UNDOSAVE
+			mul		edx
+			mov		edi,offset us
+			lea		edi,[edi+eax]
+			invoke RtlMoveMemory,edi,esi,sizeof UNDOSAVE
+			invoke RtlZeroMemory,esi,sizeof UNDOSAVE
+			mov		eax,lParam
+			mov		[edi].UNDOSAVE.pfid,eax
+			pop		edi
+			pop		esi
+		.endif
 	.endif
 	mov		eax,FALSE
 	ret

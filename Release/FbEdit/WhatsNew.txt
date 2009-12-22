@@ -1,10 +1,8 @@
 Whats new:
 ----------
-1.0.7.3b
-o Some improvement when moving a tab.
-o Fixed bug with Run. The file path was not quoted.
-o Fixed bug with trim trailing spaces. Line changed state was not updated.
-1.0.7.3
-o Added register window to debug.
-o Fixed bug where the string !"Hello \n\"world\"!!!!!" would not be highlighted correctly.
-o Fixed bug where Loop instruction in an Asm block caused collapse problems.
+1.0.7.4
+o Added Edit / Empty Undo Buffer.
+o Added UpdateChecker addin.
+  Lets you check for new version, download and unzip FbEdit.zip.
+o Added UndoSave addin.
+  Saves undo information on project code files.

@@ -228,6 +228,8 @@ End Type
 #Define AIM_CONTEXTMEMU		16						' wParam and lParam as for WM_CONTEXTMENU
 #Define AIM_FILESAVED		17						' wParam=0 lParam=FileName
 #Define AIM_CREATEEDIT		18						' wParam=hWnd, lParam=0
+#Define AIM_PROJECTREMOVE	19						' wParam=ProjectFileID, lParam=FileName
+#Define AIM_PROJECTTOGGLE	20						' wParam=OldProjectFileID, lParam=NewProjectFileID
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -250,6 +252,8 @@ End Type
 #Define HOOK_CONTEXTMEMU	&H10000
 #Define HOOK_FILESAVED		&H20000
 #Define HOOK_CREATEEDIT		&H40000
+#Define HOOK_PROJECTREMOVE	&H80000
+#Define HOOK_PROJECTTOGGLE	&H100000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 
