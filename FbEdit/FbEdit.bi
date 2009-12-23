@@ -345,7 +345,7 @@ Const CRLF=Chr(13) & Chr(10)
 Const CR=Chr(13)
 
 Const szAppName=!"FreeBASIC editor\0"
-Const szVersion=!"FreeBASIC editor 1.0.7.4"
+Const szVersion=!"FreeBASIC editor 1.0.7.4\0"
 
 Dim Shared hInstance As HINSTANCE
 
@@ -357,6 +357,7 @@ Dim hFbEditDll As HMODULE
 Dim Shared ah As ADDINHANDLES
 Dim Shared ad As ADDINDATA=(1074)
 Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate,@MakeProjectFileName,@HH_Help,@IsProjectFile)
+ad.lpszVersion=@szVersion
 
 ' Custom controls
 Dim Shared hCustDll(32) As HMODULE

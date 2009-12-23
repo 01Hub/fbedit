@@ -1100,7 +1100,7 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
 					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 					If fDontAsk=FALSE Then
-						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,@sItem,HOOK_PROJECTREMOVE)
+						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,Cast(LPARAM,@sItem),HOOK_PROJECTREMOVE)
 					EndIf
 					Exit Sub
 				EndIf
@@ -1128,7 +1128,7 @@ Sub RemoveProjectFile(ByVal fDontAsk As Boolean)
 					SendMessage(ah.hpr,PRM_DELPROPERTY,nInx,0)
 					SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 					If fDontAsk=FALSE Then
-						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,@sItem,HOOK_PROJECTREMOVE)
+						CallAddins(ah.hwnd,AIM_PROJECTREMOVE,nInx,Cast(LPARAM,@sItem),HOOK_PROJECTREMOVE)
 					EndIf
 					Exit Sub
 				EndIf

@@ -1,1 +1,1 @@
-FbEdit version 1.0.7.4
+FreeBASIC editor 1.0.7.4

@@ -517,7 +517,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			OpenMruProjects
 			OpenMruFiles
 			fTimer=1
-			ad.lpszVersion=@szVersion
+			ad.lpBuff=@buff
 			LoadAddins
 			ShowWindow(ah.htabtool,SW_HIDE)
 			hSplashBmp=LoadBitmap(hInstance,Cast(ZString Ptr,103))
@@ -2434,3 +2434,4 @@ Dim CharTab As Function() As Any Ptr
 
 ''' Program end
 '}
+

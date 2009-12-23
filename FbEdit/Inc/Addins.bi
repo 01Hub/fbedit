@@ -176,8 +176,8 @@ Type ADDINDATA
 	hLangMem			As HGLOBAL						' Language translation
 	bExtOutput		As Integer						' External Output
 	HelpPath			As ZString*260					' Path to help files
-	fDebug			As Boolean						' Project is beeing debugged
-	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
+	fDebug			As Integer						' Project is beeing debugged
+	fNoNotify		As Integer						' No handling of RAEdit WM_NOTIFY
 	smakequickrun	As ZString*260					' Quick Run
 	lpBuff			As ZString Ptr					' Pointer to internal ZString buffer
 	lpszVersion		As ZString Ptr					' Pointer to version string
