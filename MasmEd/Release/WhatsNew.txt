@@ -1,5 +1,9 @@
 MasmEd
 
+1.1.0.2b - 2009.12.23
+---------------------
+o Fixed bug where double clicking in code properties caused an error.
+
 1.1.0.2 - 2009.12.16
 --------------------
 o Added Macro to code properties.

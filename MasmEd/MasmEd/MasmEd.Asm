@@ -2746,6 +2746,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,[edi].NMHDR.code
 		mov		ecx,[edi].NMHDR.idFrom
 		.if eax==EN_SELCHANGE && ecx==IDC_RAE
+			;Code editor
 			mov		eax,[edi].RASELCHANGE.chrg.cpMin
 			sub		eax,[edi].RASELCHANGE.cpLine
 			invoke ShowPos,[edi].RASELCHANGE.line,eax
@@ -2872,6 +2873,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		fTimer,2
 		.elseif eax==EN_SELCHANGE && ecx==IDC_HEX
+			;Hex editor
 			.if [edi].HESELCHANGE.fchanged
 				invoke GetWindowLong,ha.hREd,GWL_USERDATA
 				.if ![eax].TABMEM.fchanged
@@ -2880,8 +2882,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			mov		fTimer,2
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
+			;Filebrowser
 			invoke OpenEditFile,[edi].FBNOTIFY.lpfile,0
 		.elseif eax==BN_CLICKED && ecx==IDC_PROPERTY
+			;Property toolbar
 			mov		eax,[edi].RAPNOTIFY.nid
 			.if eax==1
 				invoke SendMessage,ha.hProperty,PRM_SELOWNER,ha.hREd,0
@@ -2895,10 +2899,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 			.endif
 		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
+			;Property list
 			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 			invoke PushGoto,ha.hREd,chrg.cpMin
 			push	[edi].RAPNOTIFY.nline
-			invoke TabToolGetInx,[edx].RAPNOTIFY.nid
+			invoke TabToolGetInx,[edi].RAPNOTIFY.nid
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
 			pop		eax
@@ -2917,6 +2922,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke TabToolActivate
 			invoke SetFocus,ha.hREd
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABOUT
+			;Output tab
 			invoke SendMessage,ha.hTabOut,TCM_GETCURSEL,0,0
 			mov		nOutSel,eax
 			.if wpos.fView & 4
@@ -2931,6 +2937,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABWATCH
+			;Debug watch tab
 			invoke SendMessage,ha.hTabDbg,TCM_GETCURSEL,0,0
 			mov		nDbgSel,eax
 			.if nDbgSel
