@@ -427,7 +427,8 @@ DlgEditProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		hTlt,eax
 		invoke SetWindowLong,hTlt,GWL_WNDPROC,addr ToolTipProc
 		mov		OldToolTipProc,eax
-		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,32767,32767,hWin,0,hInstance,0
+		;invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,32767,32767,hWin,0,hInstance,0
+		invoke CreateWindowEx,WS_EX_TRANSPARENT,addr szDlgEditInvisible,0,WS_CHILD,0,0,16383,16383,hWin,0,hInstance,0
 		mov		hInvisible,eax
 	.elseif eax==WM_MOUSEMOVE
 		.if hStatus

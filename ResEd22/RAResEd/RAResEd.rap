@@ -154,7 +154,7 @@ Options=52
 5=0,0,0,0,4212
 3=0,0,0,0,0
 4=0,0,0,0,8
-1=0,0,718,485,49006
+1=0,0,718,485,10627
 7=0,0,718,485,43382
 6=0,0,0,0,404
 9=0,0,718,485,94558
@@ -219,20 +219,20 @@ AutoLoad=1,9,8,2,10,16,32
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=2.1.0.123
-PV=2.1.0.123
+FV=2.1.0.124
+PV=2.1.0.124
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=2.1.0.123
+ProductVersion=2.1.0.124
 ProductName=
 OriginalFilename=RAResEd.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2003-2007
 InternalName=RAResEd
 FileDescription=Resource editor custom control
-FileVersion=2.1.0.123
+FileVersion=2.1.0.124
 CompanyName=
 
 [VersionControl]
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=336194897
+PTimer=336349619
 
 [Exports]
 1=ResEdInstall

@@ -6,3 +6,5 @@ o Added UpdateChecker addin.
   Lets you check for new version, download and unzip FbEdit.zip.
 o Added UndoSave addin.
   Saves undo information on project code files.
+o Fixed a dialog editor bug that caused it imposible to select
+  controls on win95,98 and me.

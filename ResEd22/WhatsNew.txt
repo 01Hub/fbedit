@@ -8,6 +8,7 @@ o Added Check for Update to tools menu.
   - Unzip ResEd.zip.
   - View the WhatsNew.txt file.
   - Update to the new version.
+o Fixed a dialog editor bug that caused it imposible to select controls on win95,98 and me.
 
 2.2.0.5b - 2009-10-15
 ---------------------
