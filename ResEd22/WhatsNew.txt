@@ -1,6 +1,6 @@
 ResEd
 
-2.2.0.6 - 2009-12-17
+2.2.0.6 - 2009-12-29
 --------------------
 o Added Check for Update to tools menu.
   - It lets you check the version at Sourceforge and compare it to yours.
