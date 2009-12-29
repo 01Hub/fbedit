@@ -182,13 +182,13 @@ DoToolBar proc hInst:DWORD,hToolBar:HWND,pbtn:DWORD,nbtn:DWORD
 	invoke SendMessage,hToolBar,TB_SETUNICODEFORMAT,TRUE,0
 	;Set toolbar struct size
 	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
+	;Set toolbar buttons
+	invoke SendMessage,hToolBar,TB_ADDBUTTONS,nbtn,pbtn
 	;Set toolbar bitmap
 	push	hInst
 	pop		tbab.hInst
 	mov		tbab.nID,IDB_MDITBR
 	invoke SendMessage,hToolBar,TB_ADDBITMAP,nbtn,addr tbab
-	;Set toolbar buttons
-	invoke SendMessage,hToolBar,TB_ADDBUTTONS,nbtn,pbtn
 	mov		eax,hToolBar
 	ret
 
@@ -493,38 +493,73 @@ GetMenuItems:
 
 UpdateMenu endp
 
-TestDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ChildDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
 	LOCAL	bufferW[8]:WORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+ChildDlgProc endp
+
+TestDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	buffer[256]:BYTE
+	LOCAL	bufferW[8]:WORD
+	LOCAL	hCld:HWND
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hLngDlg,eax
-		invoke ConvertID,lParam,addr bufferW
-		invoke FindString,addr bufferW,addr bufferW,offset szText,sizeof szText/2
-		.if eax
-			invoke SendMessageW,hWin,WM_SETTEXT,0,offset szText
-		.endif
-		mov		eax,lParam
-		.if eax==998 || eax==999
-			invoke GetMenu,hWin
+		.if lParam>=151 && lParam<=154
+			invoke ConvertID,150,addr bufferW
+			invoke FindString,addr bufferW,addr bufferW,offset szText,sizeof szText/2
 			.if eax
-				mov		edx,eax
-				invoke UpdateMenu,edx,addr bufferW
-				invoke DrawMenuBar,hWin
+				invoke SendMessageW,hWin,WM_SETTEXT,0,offset szText
 			.endif
-		.elseif eax==997
-			;Set the toolbar buttons
-			invoke GetDlgItem,hWin,IDC_TBR1
-			invoke DoToolBar,hInstance,eax,offset tbrbtns,ntbrbtns
-			invoke GetDlgItem,hWin,IDC_TBR2
-			invoke DoToolBar,hInstance,eax,offset pbrtbrbtns,npbrtbrbtns
-			invoke GetDlgItem,hWin,IDC_TBR3
-			invoke DoToolBar,hInstance,eax,offset prptbrbtns,nprptbrbtns
-		.else
 			invoke GetWinSize,hWin,TRUE
 			invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
+			push	hLngDlg
+			invoke CreateDialogParamW,hInstance,lParam,hWin,offset ChildDlgProc,lParam
+			mov		hCld,eax
+			mov		hLngDlg,eax
+			invoke ConvertID,lParam,addr bufferW
+			invoke GetWinSize,hCld,FALSE
+			invoke ShowWindow,hCld,SW_SHOWNA
+			invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
+			pop		hLngDlg
+		.else
+			mov		eax,lParam
+			.if eax==998 || eax==999
+				invoke GetMenu,hWin
+				.if eax
+					mov		edx,eax
+					invoke UpdateMenu,edx,addr bufferW
+					invoke DrawMenuBar,hWin
+				.endif
+			.elseif eax==997
+				;Set the toolbar buttons
+				invoke GetDlgItem,hWin,IDC_TBR1
+				invoke DoToolBar,hInstance,eax,offset tbrbtns,ntbrbtns
+				invoke GetDlgItem,hWin,IDC_TBR2
+				invoke DoToolBar,hInstance,eax,offset pbrtbrbtns,npbrtbrbtns
+				invoke GetDlgItem,hWin,IDC_TBR3
+				invoke DoToolBar,hInstance,eax,offset prptbrbtns,nprptbrbtns
+			.else
+			invoke ConvertID,lParam,addr bufferW
+			invoke FindString,addr bufferW,addr bufferW,offset szText,sizeof szText/2
+			.if eax
+				invoke SendMessageW,hWin,WM_SETTEXT,0,offset szText
+			.endif
+				invoke GetWinSize,hWin,TRUE
+				invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
+			.endif
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
@@ -987,6 +1022,7 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendDlgItemMessage,hWin,IDC_LST1,LB_GETCURSEL,0,0
 			invoke SendDlgItemMessage,hWin,IDC_LST1,LB_GETITEMDATA,eax,0
 			.if eax>=151 && eax<=154
+				invoke DialogBoxParamW,hInstance,150,hWin,offset TestDlgProc,eax
 			.else
 				invoke DialogBoxParamW,hInstance,eax,hWin,offset TestDlgProc,eax
 			.endif
