@@ -305,7 +305,7 @@ MinorFiles=*.res;*.obj;
 128=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,2,119,88,97,86,125,4,5,8
+AutoLoad=6,2,119,88,97,86,125,4,5,8,123,100,64,63,62,124
 
 [BookMark]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=21
+MilestoneOnDateDate=29
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1433563898
+PTimer=1433861813
 [RADebugBP]
 96=
 55=

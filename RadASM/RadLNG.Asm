@@ -986,7 +986,10 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif edx==LBN_DBLCLK
 			invoke SendDlgItemMessage,hWin,IDC_LST1,LB_GETCURSEL,0,0
 			invoke SendDlgItemMessage,hWin,IDC_LST1,LB_GETITEMDATA,eax,0
-			invoke DialogBoxParamW,hInstance,eax,hWin,offset TestDlgProc,eax
+			.if eax>=151 && eax<=154
+			.else
+				invoke DialogBoxParamW,hInstance,eax,hWin,offset TestDlgProc,eax
+			.endif
 		.endif
 	.elseif eax==WM_HSCROLL
 		invoke SendDlgItemMessage,hWin,IDC_TRBLANGOPT,TBM_GETPOS,0,0
