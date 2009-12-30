@@ -895,13 +895,19 @@ CaptureWin proc
 	invoke GetDC,hInvisible
 	mov		hDC,eax
 	invoke GetClientRect,hDEd,addr rect
+	invoke GetWindowLong,hDEd,DEWM_SCROLLX
+	shl		eax,3
+	mov		rect.left,eax
+	invoke GetWindowLong,hDEd,DEWM_SCROLLY
+	shl		eax,3
+	mov		rect.top,eax
 	invoke CreateCompatibleDC,hDC
 	mov		hMemDC,eax
 	invoke CreateCompatibleBitmap,hDC,rect.right,rect.bottom
 	mov		hWinBmp,eax
 	invoke SelectObject,hMemDC,hWinBmp
 	push	eax
-	invoke BitBlt,hMemDC,0,0,rect.right,rect.bottom,hDC,0,0,SRCCOPY
+	invoke BitBlt,hMemDC,0,0,rect.right,rect.bottom,hDC,rect.left,rect.top,SRCCOPY
 	pop		eax
 	invoke SelectObject,hMemDC,eax
 	invoke DeleteDC,hMemDC
@@ -918,11 +924,19 @@ RestoreWin proc
 	invoke GetDC,hInvisible
 	mov		hDC,eax
 	invoke GetClientRect,hDEd,addr rect
+	invoke GetWindowLong,hDEd,DEWM_SCROLLX
+	shl		eax,3
+	mov		rect.left,eax
+	add		rect.right,eax
+	invoke GetWindowLong,hDEd,DEWM_SCROLLY
+	shl		eax,3
+	mov		rect.top,eax
+	add		rect.bottom,eax
 	invoke CreateCompatibleDC,hDC
 	mov		hMemDC,eax
 	invoke SelectObject,hMemDC,hWinBmp
 	push	eax
-	invoke BitBlt,hDC,0,0,rect.right,rect.bottom,hMemDC,0,0,SRCCOPY
+	invoke BitBlt,hDC,rect.left,rect.top,rect.right,rect.bottom,hMemDC,0,0,SRCCOPY
 	pop		eax
 	invoke SelectObject,hMemDC,eax
 	invoke DeleteDC,hMemDC
