@@ -1,5 +1,8 @@
 Whats new:
 ----------
+1.0.7.4b
+o Fixed a dialog editor paint bug.
+o Fixed a code editor bug that could cause chrash in rare cases.
 1.0.7.4
 o Added Edit / Empty Undo Buffer.
 o Added UpdateChecker addin.
