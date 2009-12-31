@@ -23,7 +23,7 @@ AppName							db 'UpdateChecker',0
 szWhatsNew						db '\WhatsNew.txt',0
 szResEdexe						db '\ResEd.exe',0
 szUnzip							db 13,10,'Push [Unzip] to continue.',0
-szDone							db 'Done!',13,10,13,10,'Pust [Update] to continue.',0
+szDone							db 'Done!',13,10,13,10,'Push [Update] to continue.',0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',13,10,13,10,'Push [Download] to continue.',0
