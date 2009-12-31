@@ -525,7 +525,6 @@ StateProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			mov		hBr,0
 			mov		eax,[ebx].EDIT.br.hBrSelBar
-;			invoke GetStockObject,HOLLOW_BRUSH
 		.endif
 		invoke FillRect,ps.hdc,addr ps.rcPaint,eax
 		.if hBr
@@ -3327,12 +3326,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke RegisterDragDrop,[ebx].EDIT.edta.hwnd,offset pIDropTarget
 			invoke RegisterDragDrop,[ebx].EDIT.edtb.hwnd,offset pIDropTarget
 		.endif
-;	.elseif eax==WM_CLOSE
-;		test	[ebx].EDIT.fLock,TRUE
-;		.if ZERO?
-;			xor	eax,eax
-;			ret
-;		.endif
 	.elseif eax==WM_DESTROY
 		test	[ebx].EDIT.fstyle,STYLE_DRAGDROP
 		.if !ZERO?
@@ -3348,7 +3341,6 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DestroyWindow,[ebx].EDIT.hgrip
 		invoke DestroyWindow,[ebx].EDIT.hnogrip
 		invoke DestroyWindow,[ebx].EDIT.hsta
-;		invoke DestroyWindow,[ebx].EDIT.htlt
 		invoke DestroyWindow,[ebx].EDIT.hlin
 		invoke DestroyWindow,[ebx].EDIT.hexp
 		invoke DestroyWindow,[ebx].EDIT.hcol
@@ -3593,10 +3585,6 @@ SizeIt:
 		add		ecx,BTNHT
 		mov		eax,[ebx].EDIT.rc.bottom
 		sub		eax,ecx
-;		push	eax
-;		push	ecx
-;		pop		ecx
-;		pop		eax
 		invoke MoveWindow,[ebx].EDIT.edtb.hwnd,0,ecx,[ebx].EDIT.rc.right,eax,TRUE
 		invoke MoveWindow,[ebx].EDIT.hsbtn,0,[ebx].EDIT.nsplitt,[ebx].EDIT.rc.right,BTNHT,TRUE
 	.else

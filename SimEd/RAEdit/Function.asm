@@ -1112,20 +1112,6 @@ HideLine proc uses ebx,hMem:DWORD,nLine:DWORD,fHide:DWORD
 				and		[eax].CHARS.state,-1 xor STATE_HIDDEN
 				dec		[ebx].EDIT.nHidden
 				call	SetYP
-;				invoke GetLineFromYp,ebx,[ebx].EDIT.edta.cpy
-;				mov		[ebx].EDIT.edta.topln,eax
-;				mov		eax,[ebx].EDIT.edta.cpy
-;				mov		[ebx].EDIT.edta.topyp,eax
-;				invoke GetCpFromLine,ebx,eax
-;				mov		[ebx].EDIT.edta.topcp,eax
-;
-;				invoke GetLineFromYp,ebx,[ebx].EDIT.edtb.cpy
-;				mov		[ebx].EDIT.edtb.topln,eax
-;				mov		eax,[ebx].EDIT.edtb.cpy
-;				mov		[ebx].EDIT.edtb.topyp,eax
-;				invoke GetCpFromLine,ebx,eax
-;				mov		[ebx].EDIT.edtb.topcp,eax
-;
 				xor		eax,eax
 				inc		eax
 				jmp		Ex

@@ -144,7 +144,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 
 	mov		ebx,hMem
 	invoke ExpandLineMem,ebx
-	invoke ExpandCharMem,ebx,0
+	invoke ExpandCharMem,ebx,1024
 	mov		edx,cp
 	xor		eax,eax
 	.if edx<[ebx].EDIT.edta.topcp
