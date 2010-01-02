@@ -70,7 +70,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=2
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=14
@@ -108,8 +108,8 @@ ProductVer4Range=0
 6=
 7=
 [Size]
-1=0,0,0,0,3817
-2=0,0,0,0,944
+1=0,0,0,0,6385
+2=0,0,0,0,1461
 6=0,0,0,0,0
 4=0,0,0,0
 7=0,0,0,0,227
@@ -127,12 +127,14 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=2,4,6,1,7
+AutoLoad=1,2,4,6,7
 [RADebugBP]
 1=
 2=
 6=
 [PTimer]
-PTimer=27894303
+PTimer=32636561
 [Find]
 1="grafico"
+[GroupExpand]
+GroupExpand=1,1,0

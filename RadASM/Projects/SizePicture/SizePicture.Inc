@@ -37,16 +37,13 @@ IDC_EDTDEST						equ 1005
 IDC_EDTINDEX					equ 1006
 IDC_BTNCONVERT					equ 1007
 IDC_STCSIZE						equ 1008
+IDC_UDNRES						equ 1009
 
 ;SizePicture.mnu
 IDR_MENU						equ 10000
 IDM_FILE_OPEN					equ 10001
 IDM_FILE_SAVE					equ 10002
 IDM_FILE_EXIT					equ 10003
-
-; Size of frame 150x83 mm, 640*354px
-PIXWT							equ 640
-PIXHT							equ 426
 
 .const
 
@@ -60,6 +57,11 @@ szBackSlash						db '\',0
 szJPG							db '*.*',0
 szFmt							db '\Img%d.jpg',0
 szFmtSize						db 'Converted picture size %d x %d',0
+ptsize							POINT <480,234>
+								POINT <640,426>
+								POINT <640,480>
+								POINT <800,600>
+								POINT <0,0>
 
 .data?
 
@@ -70,6 +72,8 @@ SaveFileName					db MAX_PATH dup(?)
 SourcePath						db MAX_PATH dup(?)
 DestPath						db MAX_PATH dup(?)
 Temp							db MAX_PATH dup(?)
+PIXWT							dd ?
+PIXHT							dd ?
 Inx								dd ?
 pidl							dd ?
 bri								BROWSEINFO <?>

@@ -145,7 +145,7 @@ ScanDir proc lpPth:DWORD
 
 ScanDir endp
 
-DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -153,8 +153,15 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hDlg,eax
-		invoke wsprintf,addr buffer,offset szFmtSize,PIXWT,PIXHT
-		invoke SetDlgItemText,hWin,IDC_STCSIZE,addr buffer
+		mov		esi,offset ptsize
+		xor		edx,edx
+		.while [esi+edx*sizeof POINT].POINT.x
+			inc		edx
+		.endw
+		dec		edx
+		invoke SendDlgItemMessage,hWin,IDC_UDNRES,UDM_SETRANGE,0,edx		; Set range
+		invoke SendDlgItemMessage,hWin,IDC_UDNRES,UDM_SETPOS,0,0			; Set default value
+		call	SetSize
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -214,6 +221,8 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke BrowseFolder,hWin,IDC_EDTDEST,offset szBrowseDestination
 			.endif
 		.endif
+	.elseif eax==WM_VSCROLL
+		call	SetSize
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
 	.else
@@ -222,6 +231,17 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
 	mov		eax,TRUE
 	ret
+
+SetSize:
+	invoke SendDlgItemMessage,hWin,IDC_UDNRES,UDM_GETPOS,0,0
+	and		eax,0FFFFh
+	mov		edx,[eax*sizeof POINT+offset ptsize].POINT.x
+	mov		PIXWT,edx
+	mov		edx,[eax*sizeof POINT+offset ptsize].POINT.y
+	mov		PIXHT,edx
+	invoke wsprintf,addr buffer,offset szFmtSize,PIXWT,PIXHT
+	invoke SetDlgItemText,hWin,IDC_STCSIZE,addr buffer
+	retn
 
 DlgProc endp
 

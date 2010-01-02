@@ -174,7 +174,7 @@ MinorFiles=*.res;*.obj;
 124=Dialogs\Wiz.dlg
 125=Addins\RadAsm.inc
 126=Dialogs\Accept.dlg
-127=Opt\UpdateChecker.asm
+127=
 128=
 
 [Size]
@@ -201,7 +201,7 @@ MinorFiles=*.res;*.obj;
 21=66,66,590,413
 22=132,132,536,413,6010
 23=44,44,590,413,0
-24=22,22,590,413,3982
+24=22,22,590,413,5798
 25=44,44,590,413
 27=0,0,0,0
 28=66,66,536,413,6073
@@ -301,11 +301,11 @@ MinorFiles=*.res;*.obj;
 124=0,0,0,0
 125=0,0,0,0,3350
 126=0,0,0,0
-127=0,0,0,0,339
+127=
 128=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,2,119,125,123,100,64,63,62,124,11,113
+AutoLoad=6,2,119,125,24
 
 [BookMark]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=29
+MilestoneOnDateDate=2
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -681,7 +681,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 124=5
 125=7
 126=5
-127=1
+127=
 128=
 [Collapse]
 6=,,,,,,,,,,,,,,,,,,4,,,,
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1442703794
+PTimer=1446599498
 [RADebugBP]
 96=
 55=
