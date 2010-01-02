@@ -22,8 +22,6 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
-DlgProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
-
 ;Res\SizePictureRes.rc
 IDB_BLACK						equ 100
 
@@ -57,7 +55,12 @@ szBackSlash						db '\',0
 szJPG							db '*.*',0
 szFmt							db '\Img%d.jpg',0
 szFmtSize						db 'Converted picture size %d x %d',0
-ptsize							POINT <480,234>
+szConvert						db 'Convert',0
+szPause							db 'Pause',0
+szResume						db 'Resume',0
+szStop							db 'Stop',0
+szExit							db 'Exit',0
+ptsize							POINT <480,270>
 								POINT <640,426>
 								POINT <640,480>
 								POINT <800,600>
@@ -78,5 +81,7 @@ Inx								dd ?
 pidl							dd ?
 bri								BROWSEINFO <?>
 wfd								WIN32_FIND_DATA <?>
+hThread							dd ?
+fCancel							dd ?
 
 ;#########################################################################

@@ -7,16 +7,6 @@ include GdiPluss.asm
 
 .code
 
-start:
-
-	invoke GetModuleHandle,NULL
-	mov		hInstance,eax
-
-    invoke InitCommonControls
-	invoke GdipInit
-	invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
-	invoke ExitProcess,0
-
 ;########################################################################
 
 BrowseFolder proc hWin:HWND,nID:DWORD,lpCaption:DWORD
@@ -134,10 +124,12 @@ ScanDir proc lpPth:DWORD
 				.endif
 			.endif
 		.endif
-		;Any more matches?
-		invoke FindNextFile,hwfd,addr wfd
-		or		eax,eax
-		jne		Next
+		.if !fCancel
+			;Any more matches?
+			invoke FindNextFile,hwfd,addr wfd
+			or		eax,eax
+			jne		Next
+		.endif
 		;No more matches, close find
 		invoke FindClose,hwfd
 	.endif
@@ -145,9 +137,22 @@ ScanDir proc lpPth:DWORD
 
 ScanDir endp
 
+Convert proc lpPth:DWORD
+
+	invoke ScanDir,lpPth
+	xor		eax,eax
+	mov		fCancel,eax
+	mov		hThread,eax
+	invoke SetDlgItemText,hDlg,IDC_BTNCONVERT,offset szConvert
+	invoke SetDlgItemText,hDlg,IDCANCEL,offset szExit
+	ret
+
+Convert endp
+
 DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	tid:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -183,7 +188,9 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke GetImage,offset OpenFileName,PIXWT,PIXHT,0
 					invoke SendDlgItemMessage,hWin,IDC_IMG1,STM_SETIMAGE,IMAGE_BITMAP,eax
-					invoke DeleteObject,eax
+					.if eax
+						invoke DeleteObject,eax
+					.endif
 				.endif
 			.elseif eax==IDM_FILE_SAVE
 				invoke RtlZeroMemory,addr ofn,sizeof ofn
@@ -201,19 +208,38 @@ DlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke GetImage,offset OpenFileName,PIXWT,PIXHT,offset SaveFileName
 					invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,eax
-					invoke DeleteObject,eax
+					.if eax
+						invoke DeleteObject,eax
+					.endif
 				.endif
 			.elseif eax==IDM_FILE_EXIT || eax==IDCANCEL
-				invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,0
-				invoke DeleteObject,eax
-				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				.if hThread
+					mov		fCancel,TRUE
+				.else
+					invoke SendDlgItemMessage,hWin,1001,STM_SETIMAGE,IMAGE_BITMAP,0
+					invoke DeleteObject,eax
+					invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				.endif
 			.elseif eax==IDC_BTNCONVERT
-				invoke GetDlgItemText,hWin,IDC_EDTSOURCE,offset SourcePath,sizeof SourcePath
-				.if SourcePath
-					invoke GetDlgItemText,hWin,IDC_EDTDEST,offset DestPath,sizeof DestPath
-					invoke GetDlgItemInt,hWin,IDC_EDTINDEX,NULL,FALSE
-					mov		Inx,eax
-					invoke ScanDir,offset SourcePath
+				.if hThread
+					invoke ResumeThread,hThread
+					.if !eax
+						invoke SuspendThread,hThread
+						invoke SetDlgItemText,hWin,IDC_BTNCONVERT,offset szResume
+					.else
+						invoke SetDlgItemText,hWin,IDC_BTNCONVERT,offset szPause
+					.endif
+				.else
+					invoke GetDlgItemText,hWin,IDC_EDTSOURCE,offset SourcePath,sizeof SourcePath
+					.if SourcePath
+						invoke GetDlgItemText,hWin,IDC_EDTDEST,offset DestPath,sizeof DestPath
+						invoke GetDlgItemInt,hWin,IDC_EDTINDEX,NULL,FALSE
+						mov		Inx,eax
+						invoke CreateThread,NULL,NULL,addr Convert,offset SourcePath,NORMAL_PRIORITY_CLASS,addr tid
+						mov		hThread,eax
+						invoke SetDlgItemText,hWin,IDC_BTNCONVERT,offset szPause
+						invoke SetDlgItemText,hWin,IDCANCEL,offset szStop
+					.endif
 				.endif
 			.elseif eax==IDC_BTNSOURCE
 				invoke BrowseFolder,hWin,IDC_EDTSOURCE,offset szBrowseSource
@@ -244,5 +270,15 @@ SetSize:
 	retn
 
 DlgProc endp
+
+start:
+
+	invoke GetModuleHandle,NULL
+	mov		hInstance,eax
+
+    invoke InitCommonControls
+	invoke GdipInit
+	invoke DialogBoxParam,hInstance,IDD_DIALOG1,NULL,addr DlgProc,NULL
+	invoke ExitProcess,0
 
 end start
