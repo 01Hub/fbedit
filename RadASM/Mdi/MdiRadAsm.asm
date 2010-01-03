@@ -256,6 +256,7 @@ SplashProc endp
 ;########################################################################
 
 OpenCommandLine proc uses ebx,lpCmnd:DWORD
+	LOCAL	chrg:CHARRANGE
 
 	mov		ebx,lpCmnd
 	.while byte ptr [ebx]
@@ -282,7 +283,26 @@ OpenCommandLine proc uses ebx,lpCmnd:DWORD
 		.endif
 		mov		byte ptr [edx],0
 		.if byte ptr FileName
-			invoke SendMessage,hWnd,WM_USER+998,0,offset FileName
+			mov		edx,offset FileName
+			xor		ecx,ecx
+			.while byte ptr [edx]
+				.if byte ptr [edx]<'0' || byte ptr [edx]>'9'
+					inc		ecx
+				.endif
+				inc		edx
+			.endw
+			.if hEdit && SingleInstance && !ecx
+				invoke DecToBin,offset FileName
+				invoke SendMessage,hEdit,EM_LINEINDEX,eax,0
+				mov		chrg.cpMin,eax
+				mov		chrg.cpMax,eax
+				invoke SendMessage,hEdit,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,hEdit,REM_VCENTER,0,0
+				invoke SetForegroundWindow,hWnd
+				invoke SetFocus,hEdit
+			.else
+				invoke SendMessage,hWnd,WM_USER+998,0,offset FileName
+			.endif
 		.endif
 	.endw
 	ret

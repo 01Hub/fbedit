@@ -1919,7 +1919,9 @@ OpenEditFile proc uses esi
 				invoke SendMessage,hEdt,EM_EMPTYUNDOBUFFER,0,0
 				invoke GetWindowLong,hWin,0
 				invoke DllProc,hWin,AIM_EDITOPEN,hEdt,eax,RAM_EDITOPEN
-				mov		eax,REdPos
+				.if !eax
+					mov		eax,REdPos
+				.endif
 				mov		chrg.cpMin,eax
 				mov		chrg.cpMax,eax
 				invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
