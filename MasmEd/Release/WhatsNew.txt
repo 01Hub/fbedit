@@ -1,5 +1,9 @@
 MasmEd
 
+1.1.0.2d - 2010.01.04
+---------------------
+o Fixed a parser bug that could cause MasmEd to hang.
+
 1.1.0.2c - 2009.12.28
 ---------------------
 o Fixed a dialog editor bug that caused it imposible to

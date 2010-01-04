@@ -221,7 +221,7 @@ ProductVersion=1.1.0.2
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
-LegalCopyright=KetilO (C) 2004 - 2009
+LegalCopyright=KetilO (C) 2004 - 2010
 InternalName=
 FileDescription=Masm code & resource editor
 FileVersion=1.1.0.2
@@ -309,7 +309,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=4
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -344,8 +344,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9543
-1=0,0,0,0,79992
+2=0,0,687,524,9633
+1=0,0,0,0,79905
 11=0,0,0,0,44933
 22=0,0,0,0,748
 10=0,0,0,0,21294
@@ -377,7 +377,7 @@ ProductVer4Range=0
 37=0,0,0,0,9653
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,8
+38=0,0,0,0,106
 39=0,0,0,0
 40=0,0,0,0,5884
 42=0,0,0,0,1576
@@ -446,7 +446,7 @@ AutoLoad=1,2,53,38,37,22,11,46,29
 54=
 56=
 [PTimer]
-PTimer=2689397280
+PTimer=2690806780
 [RADebugBP]
 1=
 2=

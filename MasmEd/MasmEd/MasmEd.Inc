@@ -382,8 +382,8 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 sztooltips_class32		db 'tooltips_class32',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.1.0.2c',0
-szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2009',13,10,'radasmide@hotmail.com',0
+szVersion				db 'MasmEd version 1.1.0.2d',0
+szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2010',13,10,'radasmide@hotmail.com',0
 szAboutUrl1				db 'http://radasm.cherrytree.at/',0
 szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0

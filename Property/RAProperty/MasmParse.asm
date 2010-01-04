@@ -45,6 +45,24 @@ MDestroyCmntBlock proc uses esi,lpMem:DWORD
 				;String
 				invoke MDestroyString,eax
 				mov		esi,eax
+				mov		ecx,dword ptr szMString
+				mov		edx,';'
+				.while byte ptr [esi-1]!=VK_RETURN && byte ptr [eax-1]!=0Ah && byte ptr [eax]
+					.if byte ptr [esi]==cl || byte ptr [esi]==ch
+						;String
+						invoke MDestroyString,eax
+						mov		esi,eax
+						mov		ecx,dword ptr szMString
+						mov		edx,';'
+					.elseif byte ptr [eax]==dl
+						;Comment
+						inc		eax
+						invoke DestroyToEol,eax
+						mov		esi,eax
+					.else
+						inc		esi
+					.endif
+				.endw
 				jmp		@b
 			.elseif byte ptr [eax]==dl
 				;Comment
