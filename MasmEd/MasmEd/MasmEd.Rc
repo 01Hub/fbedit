@@ -1,3 +1,4 @@
+#include "Res/BuildOptionAddDlg.rc"
 #include "Res/AddinManagerDlg.rc"
 #define IDM_HELPF1 500
 #include "Res/MasmEdMnu.rc"

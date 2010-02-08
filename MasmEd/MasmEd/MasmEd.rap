@@ -69,6 +69,7 @@ MinorFiles=*.res;*.obj;
 54=Misc\Addins.asm
 55=Opt\AddinManager.dlg
 56=Opt\AddinManager.asm
+57=Opt\BuildOptionAdd.dlg
 
 [MakeFiles]
 0=MasmEd.rap
@@ -286,6 +287,7 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 54=1
 55=7
 56=1
+57=7
 
 [Find]
 1="szOpen"
@@ -309,7 +311,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=8
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -344,8 +346,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9633
-1=0,0,0,0,79905
+2=0,0,687,524,9543
+1=0,0,0,0,75613
 11=0,0,0,0,44933
 22=0,0,0,0,748
 10=0,0,0,0,21294
@@ -379,7 +381,7 @@ ProductVer4Range=0
 20=0,0,0,0,0
 38=0,0,0,0,106
 39=0,0,0,0
-40=0,0,0,0,5884
+40=0,0,0,0,8341
 42=0,0,0,0,1576
 43=0,0,0,0
 45=0,0,0,0,3724
@@ -390,10 +392,11 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,0,0,7931
+53=0,0,0,0,4369
 54=0,0,0,0,254
 55=0,0,0,0
 56=0,0,0,0,5410
+57=0,0,0,0
 
 [BookMark]
 0=
@@ -410,7 +413,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,38,37,22,11,46,29
+AutoLoad=1,2,53,38,37,22,11,46,29,40,39,57
 [Collapse]
 2=
 1=,,,,,,,,,
@@ -435,7 +438,7 @@ AutoLoad=1,2,53,38,37,22,11,46,29
 12=,
 35=
 38=
-40=
+40=,
 42=
 45=
 46=
@@ -446,7 +449,7 @@ AutoLoad=1,2,53,38,37,22,11,46,29
 54=
 56=
 [PTimer]
-PTimer=2690806780
+PTimer=2698940142
 [RADebugBP]
 1=
 2=

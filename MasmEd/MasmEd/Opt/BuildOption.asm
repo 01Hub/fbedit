@@ -10,9 +10,14 @@ IDC_TABBUILD		equ 1005
 IDC_EDTRES			equ 1001
 IDC_EDTASM			equ 1002
 IDC_EDTLNK			equ 1003
+IDC_BTNADDBUILD		equ 1008
+IDC_BTNDELBUILD		equ 1009
 IDC_BTNRESTORE		equ 1004
 IDC_CBOTYPE			equ 1006
 IDC_CBOOUT			equ 1007
+
+IDD_BUILDOPTIONADD	equ 3490
+IDC_EDTMAKETYPE		equ 1001
 
 .const
 
@@ -38,7 +43,8 @@ szOutputType		db '.exe',0
 hEnv				dd ?
 hEnvMem				dd ?
 pNextVal			dd ?
-makeoptedit			MAKEOPT 16 dup(<>)
+makeoptedit			MAKEOPT 17 dup(<>)
+hMDlg				HWND ?
 
 .code
 
@@ -151,12 +157,46 @@ PathOptionDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 PathOptionDialogProc endp
 
+BuildOptionAddDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SendDlgItemMessage,hWin,IDC_EDTMAKETYPE,EM_LIMITTEXT,32,0
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke GetDlgItemText,hWin,IDC_EDTMAKETYPE,addr tmpbuff,32
+				xor		eax,eax
+				.if tmpbuff
+					inc		eax
+				.endif
+				invoke SendMessage,hWin,WM_CLOSE,NULL,eax
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,lParam
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+BuildOptionAddDialogProc endp
+
 BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tci:TC_ITEM
 	LOCAL	buffer[32]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hMDlg,eax
 		mov		tci.imask,TCIF_TEXT
 		mov		tci.pszText,offset szMakeOption
 		invoke SendDlgItemMessage,hWin,IDC_TABBUILD,TCM_INSERTITEM,999,addr tci
@@ -183,20 +223,66 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 				xor		ebx,ebx
 				.while [esi].MAKEOPT.szType && ebx<16
 					invoke RtlMoveMemory,edi,esi,sizeof MAKEOPT
-					inc		ebx
-					invoke MakeKey,addr szMakeType,ebx,addr buffer
+					lea		edx,[ebx+1]
+					invoke MakeKey,addr szMakeType,edx,addr buffer
 					invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,edi,sizeof MAKEOPT
 					lea		esi,[esi+sizeof MAKEOPT]
 					lea		edi,[edi+sizeof MAKEOPT]
+					inc		ebx
 				.endw
 				.while ebx<16
-					invoke MakeKey,addr szMakeType,ebx,addr buffer
+					lea		edx,[ebx+1]
+					invoke MakeKey,addr szMakeType,edx,addr buffer
 					invoke RegDeleteValue,ha.hReg,addr buffer
 					inc		ebx
 				.endw
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNADDBUILD
+				invoke DialogBoxParam,ha.hInstance,IDD_BUILDOPTIONADD,hWin,offset BuildOptionAddDialogProc,0
+				.if eax
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_ADDSTRING,0,addr tmpbuff
+					mov		ebx,eax
+					mov		edx,sizeof MAKEOPT
+					mul		edx
+					lea		edi,[eax+offset makeoptedit]
+					invoke lstrcpy,addr [edi].MAKEOPT.szType,addr tmpbuff
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_SETITEMDATA,ebx,edi
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_SETCURSEL,ebx,0
+					invoke SendMessage,hWin,WM_COMMAND,CBN_SELCHANGE shl 16 or IDC_CBOTYPE,0
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCOUNT,0,0
+					mov		ebx,eax
+					invoke GetDlgItem,hWin,IDC_BTNADDBUILD
+					xor		edx,edx
+					.if ebx==16
+						invoke EnableWindow,eax,FALSE
+					.endif
+				.endif
+			.elseif eax==IDC_BTNDELBUILD
+				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
+				.if eax!=CB_ERR
+					mov		ebx,eax
+					mov		edx,sizeof MAKEOPT
+					mul		edx
+					lea		edi,[eax+offset makeoptedit]
+					lea		esi,[edi+sizeof MAKEOPT]
+					.while byte ptr [edi]
+						mov		ecx,sizeof MAKEOPT
+						rep movsb
+					.endw
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_DELETESTRING,ebx,0
+					invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_SETCURSEL,ebx,0
+					.if eax==CB_ERR
+						dec		ebx
+						invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_SETCURSEL,ebx,0
+					.endif
+					.if eax!=CB_ERR
+						invoke SendMessage,hWin,WM_COMMAND,CBN_SELCHANGE shl 16 or IDC_CBOTYPE,0
+					.endif
+					invoke GetDlgItem,hWin,IDC_BTNADDBUILD
+					invoke EnableWindow,eax,TRUE
+				.endif
 			.elseif eax==IDC_BTNRESTORE
 				mov		esi,offset makeoptdef
 				call	SetMakeOpt
@@ -217,12 +303,19 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 		.elseif edx==CBN_SELCHANGE
 			.if eax==IDC_CBOTYPE
 				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
+				mov		ebx,eax
 				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
 				mov		esi,eax
 				invoke SetDlgItemText,hWin,IDC_EDTRES,addr [esi].MAKEOPT.szCompileRC
 				invoke SetDlgItemText,hWin,IDC_EDTASM,addr [esi].MAKEOPT.szAssemble
 				invoke SetDlgItemText,hWin,IDC_EDTLNK,addr [esi].MAKEOPT.szLink
 				invoke SendDlgItemMessage,hWin,IDC_CBOOUT,CB_SETCURSEL,[esi].MAKEOPT.OutpuType,0
+				invoke GetDlgItem,hWin,IDC_BTNDELBUILD
+				xor		edx,edx
+				.if ebx>6
+					mov		edx,TRUE
+				.endif
+				invoke EnableWindow,eax,edx
 			.elseif eax==IDC_CBOOUT
 				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOTYPE,CB_GETITEMDATA,eax,0
@@ -258,6 +351,12 @@ SetMakeOpt:
 	invoke SetDlgItemText,hWin,IDC_EDTRES,addr makeoptedit.szCompileRC
 	invoke SetDlgItemText,hWin,IDC_EDTASM,addr makeoptedit.szAssemble
 	invoke SetDlgItemText,hWin,IDC_EDTLNK,addr makeoptedit.szLink
+	invoke GetDlgItem,hWin,IDC_BTNADDBUILD
+	xor		edx,edx
+	.if ebx<16
+		mov		edx,TRUE
+	.endif
+	invoke EnableWindow,eax,edx
 	retn
 
 BuildOptionDialogProc endp

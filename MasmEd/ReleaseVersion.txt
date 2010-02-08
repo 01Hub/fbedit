@@ -1,1 +1,1 @@
-MasmEd version 1.1.0.2d
+MasmEd version 1.1.0.2e
