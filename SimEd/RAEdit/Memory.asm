@@ -101,7 +101,7 @@ ExpandCharMem proc uses ebx,hMem:DWORD,nLen:DWORD
 	mov		eax,nLen
 	and		eax,0FFFFFF00h
 	add		eax,[ebx].EDIT.rpCharsFree
-	add		eax,MAXCHARMEM
+	add		eax,MAXCHARMEM/2
 	.if eax>[ebx].EDIT.cbChars
 		push	esi
 		push	edi
