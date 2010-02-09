@@ -4881,32 +4881,62 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				sub		eax,[edi].RASELCHANGE.cpLine
 				mov		Col,eax
 				.if [edi].RASELCHANGE.seltyp==SEL_OBJECT
-					invoke SendMessage,hEdt,REM_GETBOOKMARK,[edi].RASELCHANGE.line,0
+					mov		esi,[edi].RASELCHANGE.line
+					invoke SendMessage,hEdt,REM_GETBOOKMARK,esi,0
 					.if eax==1
 						;Collapse
-						invoke SendMessage,hEdt,REM_COLLAPSE,[edi].RASELCHANGE.line,0
+						invoke GetKeyState,VK_CONTROL
+						test	eax,80h
+						.if ZERO?
+							invoke SendMessage,hEdt,REM_COLLAPSE,esi,0
+						.else
+							invoke SendMessage,hEdt,REM_GETBLOCKEND,esi,0
+							.if eax!=-1
+								mov		ebx,esi
+								mov		esi,eax
+								.while esi>=ebx
+									invoke SendMessage,hEdt,REM_COLLAPSE,esi,0
+									invoke SendMessage,hEdt,REM_PRVBOOKMARK,esi,1
+									mov		esi,eax
+								.endw
+							.endif
+						.endif
 					.elseif eax==2
 						;Expand
-						invoke SendMessage,hEdt,REM_EXPAND,[edi].RASELCHANGE.line,0
+						invoke GetKeyState,VK_CONTROL
+						test	eax,80h
+						.if ZERO?
+							invoke SendMessage,hEdt,REM_EXPAND,esi,0
+						.else
+							invoke SendMessage,hEdt,REM_GETBLOCKEND,esi,0
+							.if eax!=-1
+								mov		ebx,eax
+								.while esi<ebx
+									invoke SendMessage,hEdt,REM_EXPAND,esi,0
+									invoke SendMessage,hEdt,REM_NXTBOOKMARK,esi,2
+									mov		esi,eax
+								.endw
+							.endif
+						.endif
 					.elseif eax==8
 						;Expand
-						invoke SendMessage,hEdt,REM_EXPAND,[edi].RASELCHANGE.line,0
+						invoke SendMessage,hEdt,REM_EXPAND,esi,0
 						.if eax
 							push	eax
-							invoke SendMessage,hEdt,REM_SETBOOKMARK,[edi].RASELCHANGE.line,9
+							invoke SendMessage,hEdt,REM_SETBOOKMARK,esi,9
 							pop		eax
 							neg		eax
-							invoke SendMessage,hEdt,REM_SETBMID,[edi].RASELCHANGE.line,eax
+							invoke SendMessage,hEdt,REM_SETBMID,esi,eax
 						.endif
 					.elseif eax==9
 						;Collapse
-						invoke SendMessage,hEdt,REM_GETBMID,[edi].RASELCHANGE.line,0
+						invoke SendMessage,hEdt,REM_GETBMID,esi,0
 						push	eax
-						invoke SendMessage,hEdt,REM_SETBOOKMARK,[edi].RASELCHANGE.line,0
+						invoke SendMessage,hEdt,REM_SETBOOKMARK,esi,0
 						pop		eax
 						neg		eax
 						inc		eax
-						invoke SendMessage,hEdt,REM_HIDELINES,[edi].RASELCHANGE.line,eax
+						invoke SendMessage,hEdt,REM_HIDELINES,esi,eax
 					.endif
 				.else
 					invoke SendMessage,hEdt,REM_BRACKETMATCH,0,0
