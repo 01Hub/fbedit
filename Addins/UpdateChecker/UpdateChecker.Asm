@@ -720,7 +720,7 @@ DllFunction proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExRet
 		.endif
 	.elseif eax==AIM_MENUREFRESH
-		invoke UpdateMenu
+		;invoke UpdateMenu
 	.endif
 	mov		eax,FALSE
   ExRet:
