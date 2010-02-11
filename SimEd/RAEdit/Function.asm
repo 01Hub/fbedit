@@ -1816,15 +1816,23 @@ InsertChars:
 		.if CARRY?
 			xor		eax,eax
 		.endif
-		mov		nreminding,eax
-		push	esi
-		push	edi
-		mov		edi,esi
-		add		esi,ecx
-		mov		ecx,eax
-		rep movsb
-		pop		edi
-		pop		esi
+		.if eax==MAXSTREAM
+			mov		fNewLine,0
+			mov		dwRead,eax
+			xor		eax,eax
+			mov		nreminding,0
+			call	InsertTheLine
+		.else
+			mov		nreminding,eax
+			push	esi
+			push	edi
+			mov		edi,esi
+			add		esi,ecx
+			mov		ecx,eax
+			rep movsb
+			pop		edi
+			pop		esi
+		.endif
 	.endif
 	retn
 

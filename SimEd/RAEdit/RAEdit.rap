@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.479
-PV=1.2.0.479
+FV=1.2.0.585
+PV=1.2.0.585
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.479
+ProductVersion=1.2.0.585
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.479
+FileVersion=1.2.0.585
 CompanyName=
 
 [Resource]
@@ -102,25 +102,25 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,10326
-16=0,0,810,411,20159
+1=0,0,0,0,96603
+16=0,0,810,411,30349
 22=0,0,0,0,3164
 23=0,0,0,0,31111
 24=0,0,0,0,4001
-19=0,0,0,0,446
+19=0,0,0,0,1749
 2=0,0,0,0,7913
 9=0,0,0,0,10650
 10=0,0,0,0,7772
 11=0,0,0,0,5553
 20=0,0,0,0,3058
-15=0,0,0,0,6045
+15=0,0,0,0,3933
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,3193
+13=0,0,0,0,4931
 26=0,0,0,0,10393
 21=0,0,0,0,9173
 14=0,0,0,0,9153
-12=0,0,0,0,1886
+12=0,0,0,0,2031
 
 [BookMark]
 0=
@@ -138,19 +138,19 @@ CompanyName=
 0=
 
 [Find]
-1=".while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len"
-2="REM_TRIMSPACE"
-3="REM_ISINBLOCK"
-4="STATE_BLOCKEND"
-5="_REM_SETSTYLEEX"
-6="SetCaret"
-7="WM_SETFOCUS"
-8="HideCaret"
-9="PrintText"
-10="CreateCaret"
+1="nLen"
+2=".CHARS.max"
+3="ExpandLine"
+4="ExpandCharMem"
+5="fNewLine"
+6=".while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len"
+7="REM_TRIMSPACE"
+8="REM_ISINBLOCK"
+9="STATE_BLOCKEND"
+10="_REM_SETSTYLEEX"
 
 [AutoLoad]
-AutoLoad=1,16,26,2,23,10,14,19,12,13
+AutoLoad=16,12,13,19,15,1
 
 [Version-Inc]
 Options=52
@@ -190,7 +190,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=11
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -250,7 +250,7 @@ Group=Assembly,Resources,Misc
 12=
 
 [PTimer]
-PTimer=187980561
+PTimer=222689957
 
 [Exports]
 1=GetDef
@@ -273,5 +273,6 @@ PTimer=187980561
 13=
 19=
 12=
+15=
 [GroupExpand]
 GroupExpand=1,1,1,0

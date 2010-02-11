@@ -3630,9 +3630,9 @@ AllocMem:
 	invoke xHeapAlloc,[ebx].EDIT.hHeap,HEAP_GENERATE_EXCEPTIONS or HEAP_ZERO_MEMORY,MAXCHARMEM*8
 	mov		[ebx].EDIT.hChars,eax
 	xor		eax,eax
-	mov		[ebx].EDIT.cbChars,MAXCHARMEM
+	mov		[ebx].EDIT.cbChars,MAXCHARMEM*8
 	mov		[ebx].EDIT.rpChars,eax
-	mov		[ebx].EDIT.rpCharsFree,MAXFREE
+	mov		[ebx].EDIT.rpCharsFree,MAXFREE+sizeof CHARS
 	mov		edx,[ebx].EDIT.hLine
 	mov		[edx].LINE.rpChars,eax
 	mov		edx,[ebx].EDIT.hChars

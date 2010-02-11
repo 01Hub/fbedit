@@ -99,19 +99,22 @@ ExpandCharMem proc uses ebx,hMem:DWORD,nLen:DWORD
 
 	mov		ebx,hMem
 	mov		eax,nLen
-	and		eax,0FFFFFF00h
+	shr		eax,12
+	inc		eax
+	shl		eax,12
 	add		eax,[ebx].EDIT.rpCharsFree
-	add		eax,MAXCHARMEM/2
+	add		eax,MAXCHARMEM
 	.if eax>[ebx].EDIT.cbChars
 		push	esi
 		push	edi
 		mov		esi,[ebx].EDIT.hChars
 		mov		edi,[ebx].EDIT.cbChars
 		mov		eax,nLen
-		and		eax,0FFFFFF00h
+		shr		eax,12
+		inc		eax
+		shl		eax,12
 		add		eax,MAXCHARMEM
 		add		[ebx].EDIT.cbChars,eax
-		mov		eax,[ebx].EDIT.cbChars
 		invoke HeapAlloc,[ebx].EDIT.hHeap,HEAP_GENERATE_EXCEPTIONS or HEAP_ZERO_MEMORY,[ebx].EDIT.cbChars
 		.if !eax
 			mov		[ebx].EDIT.cbChars,edi

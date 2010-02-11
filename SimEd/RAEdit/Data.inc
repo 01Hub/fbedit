@@ -16,7 +16,8 @@ MAXCHARMEM				equ 24*1024
 ;MAXCHARMEM				equ 32*1024
 MAXUNDOMEM				equ 24*1024
 MAXWORDMEM				equ 8*1024
-MAXFREE					equ 32
+;MAXFREE					equ 32
+MAXFREE					equ 256
 MAXSTREAM				equ 32*1024
 
 BTNWT					equ 14
@@ -72,8 +73,8 @@ LINE struct
 LINE ends
 
 CHARS struct
-	len			dd ?		;String len
-	max			dd ?		;Max size
+	len			dd ?		;Actual String len
+	max			dd ?		;Max String len
 	state		dd ?		;Line state
 	bmid		dd ?		;Bookmark ID
 	errid		dd ?		;Error ID

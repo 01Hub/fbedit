@@ -30,8 +30,9 @@ InsertNewLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 	mov		esi,eax
 	add		esi,[ebx].EDIT.hChars
 	mov		eax,nSize
-	add		[ebx].EDIT.rpCharsFree,eax
 	mov		[esi].CHARS.max,eax
+	add		eax,sizeof CHARS
+	add		[ebx].EDIT.rpCharsFree,eax
 	mov		[esi].CHARS.len,0
 	mov		[esi].CHARS.state,STATE_CHANGED
 	sub		esi,[ebx].EDIT.hChars
@@ -57,11 +58,11 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 	add		edi,edx
 	mov		eax,nSize
 	mov		[edi].CHARS.len,eax
-	add		eax,sizeof CHARS
 	mov		[edi].CHARS.max,eax
 	mov		[edi].CHARS.state,0
 	mov		[edi].CHARS.bmid,0
 	mov		[edi].CHARS.errid,0
+	add		eax,sizeof CHARS
 	add		[ebx].EDIT.rpCharsFree,eax
 	mov		ecx,nSize
 	mov		esi,lpLine
@@ -71,24 +72,30 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 
 AddNewLine endp
 
-ExpandLine proc uses ebx esi edi,hMem:DWORD,nLen:DWORD
+ExpandLine proc uses ebx esi edi,hMem:DWORD
 
 	mov		ebx,hMem
 	mov		esi,[ebx].EDIT.rpChars
 	mov		eax,esi
 	add		esi,[ebx].EDIT.hChars
 	add		eax,[esi].CHARS.max
+	add		eax,sizeof CHARS
 	.if eax==[ebx].EDIT.rpCharsFree
 		;Is at end of chars, just expand
 		add		[esi].CHARS.max,MAXFREE
-		mov		eax,nLen
-		add		eax,MAXFREE
-		add		[ebx].EDIT.rpCharsFree,eax
+		add		[ebx].EDIT.rpCharsFree,MAXFREE
+		mov		eax,[ebx].EDIT.rpCharsFree
 	.else
 		;Move the line to end of buffer
+		mov		eax,[esi].CHARS.max
+		add		eax,MAXFREE+sizeof CHARS
+		invoke ExpandCharMem,ebx,eax
+		mov		esi,[ebx].EDIT.rpChars
+		add		esi,[ebx].EDIT.hChars
 		mov		edi,[ebx].EDIT.rpCharsFree
 		add		edi,[ebx].EDIT.hChars
 		mov		ecx,[esi].CHARS.max
+		add		ecx,sizeof CHARS
 		add		[ebx].EDIT.rpCharsFree,ecx
 		mov		edx,[ebx].EDIT.rpLine
 		add		edx,[ebx].EDIT.hLine
@@ -101,10 +108,8 @@ ExpandLine proc uses ebx esi edi,hMem:DWORD,nLen:DWORD
 		rep movsb
 		pop		edi
 		pop		esi
-		mov		eax,nLen
-		add		eax,MAXFREE
-		add		[edi].CHARS.max,eax
-		add		[ebx].EDIT.rpCharsFree,eax
+		add		[edi].CHARS.max,MAXFREE
+		add		[ebx].EDIT.rpCharsFree,MAXFREE
 		or		[esi].CHARS.state,STATE_GARBAGE
 	.endif
 	ret
@@ -144,7 +149,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 
 	mov		ebx,hMem
 	invoke ExpandLineMem,ebx
-	invoke ExpandCharMem,ebx,1024
+	invoke ExpandCharMem,ebx,64*1024
 	mov		edx,cp
 	xor		eax,eax
 	.if edx<[ebx].EDIT.edta.topcp
@@ -188,21 +193,37 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 			.endif
 		.endif
 	.endif
+	mov		eax,[esi].CHARS.max
 	mov		eax,[esi].CHARS.len
-	add		eax,sizeof CHARS
 	.if eax==[esi].CHARS.max
-		invoke ExpandLine,ebx,1
+		invoke ExpandLine,ebx
 	.endif
 	;Insert char
 	mov		esi,[ebx].EDIT.rpChars
 	add		esi,[ebx].EDIT.hChars
-	mov		ecx,nChr
+	push	esi
 	push	edi
-	.while edi<=[esi].CHARS.len
-		xchg	[esi+edi+sizeof CHARS],cl
-		inc		edi
-	.endw
+	mov		ecx,[esi].CHARS.len
+	sub		ecx,edi
+	.if ecx
+		lea		esi,[esi+ecx+sizeof CHARS-1]
+		lea		esi,[esi+edi]
+		lea		edi,[esi+1]
+		std
+		rep movsb
+		cld
+	.endif
 	pop		edi
+	pop		esi
+	mov		ecx,nChr
+	mov		[esi+edi+sizeof CHARS],cl
+;	mov		ecx,nChr
+;	push	edi
+;	.while edi<=[esi].CHARS.len
+;		xchg	[esi+edi+sizeof CHARS],cl
+;		inc		edi
+;	.endw
+;	pop		edi
 	inc		[esi].CHARS.len
 	mov		ecx,nChr
 	.if ecx==0Dh
