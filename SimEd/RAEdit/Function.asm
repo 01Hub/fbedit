@@ -1655,7 +1655,7 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	fCR:DWORD
 
 	mov		ebx,hMem
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*2
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*3+4096
 	mov     hCMem,eax
 	invoke GlobalLock,hCMem
 	xor		edi,edi
@@ -1842,9 +1842,10 @@ StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	dwWrite:DWORD
 	LOCAL	hCMem:DWORD
 	LOCAL	fFirst:DWORD
+	LOCAL	nChars:DWORD
 
 	mov		ebx,hMem
-	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*2
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*3+4096
 	mov     hCMem,eax
 	invoke GlobalLock,hCMem
 	mov		esi,[ebx].EDIT.hLine
@@ -1855,46 +1856,16 @@ StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 		call	FillCMem
 		or		ecx,ecx
 		je		Ex
-		mov		eax,hCMem
-		add		eax,MAXSTREAM
-		.if fFirst
-			mov		word ptr [eax],0FEFFh
-			add		eax,2
-		.endif
-		invoke MultiByteToWideChar,CP_ACP,0,hCMem,ecx,eax,MAXSTREAM-2
-		shl		eax,1
-		.if fFirst
-			mov		fFirst,FALSE
-			add		eax,2
-		.endif
-		mov		ecx,eax
-		mov		edx,lParam
-		mov		[edx].EDITSTREAM.dwError,0
-		lea		eax,dwWrite
-		push	eax
-		push	ecx
-		mov		eax,hCMem
-		add		eax,MAXSTREAM
-		push	eax
-		mov		eax,[edx].EDITSTREAM.dwCookie
-		push	eax
-		call	[edx].EDITSTREAM.pfnCallback
+		call	StreamUnicode
 		or		eax,eax
 		je		@b
 	.else
+		; Save as ansi
 	  @@:
 		call	FillCMem
 		or		ecx,ecx
 		je		Ex
-		mov		edx,lParam
-		mov		[edx].EDITSTREAM.dwError,0
-		lea		eax,dwWrite
-		push	eax
-		push	ecx
-		push	hCMem
-		mov		eax,[edx].EDITSTREAM.dwCookie
-		push	eax
-		call	[edx].EDITSTREAM.pfnCallback
+		call	StreamAnsi
 		or		eax,eax
 		je		@b
 	.endif
@@ -1903,9 +1874,49 @@ StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	invoke GlobalFree,hCMem
 	ret
 
+StreamUnicode:
+	mov		eax,hCMem
+	add		eax,MAXSTREAM+1024
+	.if fFirst
+		mov		word ptr [eax],0FEFFh
+		add		eax,2
+	.endif
+	invoke MultiByteToWideChar,CP_ACP,0,hCMem,nChars,eax,MAXSTREAM+1024
+	.if fFirst
+		mov		fFirst,FALSE
+		add		nChars,2
+	.endif
+	mov		edx,lParam
+	mov		[edx].EDITSTREAM.dwError,0
+	lea		eax,dwWrite
+	push	eax
+	mov		eax,nChars
+	shl		eax,1
+	push	eax
+	mov		eax,hCMem
+	add		eax,MAXSTREAM+1024
+	push	eax
+	mov		eax,[edx].EDITSTREAM.dwCookie
+	push	eax
+	call	[edx].EDITSTREAM.pfnCallback
+	retn
+
+StreamAnsi:
+	mov		edx,lParam
+	mov		[edx].EDITSTREAM.dwError,0
+	lea		eax,dwWrite
+	push	eax
+	push	nChars
+	push	hCMem
+	mov		eax,[edx].EDITSTREAM.dwCookie
+	push	eax
+	call	[edx].EDITSTREAM.pfnCallback
+	retn
+
 FillCMem:
 	xor		ecx,ecx
 	xor		edx,edx
+	mov		nChars,ecx
 	mov		eax,esi
 	sub		eax,[ebx].EDIT.hLine
 	.if eax<[ebx].EDIT.rpLineFree
@@ -1918,10 +1929,23 @@ FillCMem:
 			mov		[edi],al
 			inc		ecx
 			inc		edi
+			inc		nChars
 			.if al==0Dh
 				mov		byte ptr [edi],0Ah
 				inc		edx
 				inc		edi
+				inc		nChars
+			.endif
+			.if nChars>=MAXSTREAM
+				pushad
+				.if [ebx].EDIT.funicode
+					call	StreamUnicode
+				.else
+					call	StreamAnsi
+				.endif
+				popad
+				mov		edi,hCMem
+				mov		nChars,0
 			.endif
 		.endw
 		pop		esi
