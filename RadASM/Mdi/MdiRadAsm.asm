@@ -4892,9 +4892,10 @@ EditChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						.else
 							invoke SendMessage,hEdt,REM_GETBLOCKEND,esi,0
 							.if eax!=-1
+								dec		eax
 								mov		ebx,esi
 								mov		esi,eax
-								.while esi>=ebx
+								.while esi>=ebx && esi!=-1
 									invoke SendMessage,hEdt,REM_COLLAPSE,esi,0
 									invoke SendMessage,hEdt,REM_PRVBOOKMARK,esi,1
 									mov		esi,eax

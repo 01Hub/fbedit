@@ -2751,19 +2751,50 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,[edi].RASELCHANGE.cpLine
 			invoke ShowPos,[edi].RASELCHANGE.line,eax
 			.if [edi].RASELCHANGE.seltyp==SEL_OBJECT
-				invoke SendMessage,ha.hREd,REM_GETBOOKMARK,[edi].RASELCHANGE.line,0
+				mov		esi,[edi].RASELCHANGE.line
+				invoke SendMessage,ha.hREd,REM_GETBOOKMARK,esi,0
 				.if eax==1
 					;Collapse
-					invoke SendMessage,ha.hREd,REM_COLLAPSE,[edi].RASELCHANGE.line,0
+					invoke GetKeyState,VK_CONTROL
+					test	eax,80h
+					.if ZERO?
+						invoke SendMessage,ha.hREd,REM_COLLAPSE,esi,0
+					.else
+						invoke SendMessage,ha.hREd,REM_GETBLOCKEND,esi,0
+						.if eax!=-1
+							dec		eax
+							mov		ebx,esi
+							mov		esi,eax
+							.while esi>=ebx && esi!=-1
+								invoke SendMessage,ha.hREd,REM_COLLAPSE,esi,0
+								invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,esi,1
+								mov		esi,eax
+							.endw
+						.endif
+					.endif
 				.elseif eax==2
 					;Expand
-					invoke SendMessage,ha.hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
+					invoke GetKeyState,VK_CONTROL
+					test	eax,80h
+					.if ZERO?
+						invoke SendMessage,ha.hREd,REM_EXPAND,esi,0
+					.else
+						invoke SendMessage,ha.hREd,REM_GETBLOCKEND,esi,0
+						.if eax!=-1
+							mov		ebx,eax
+							.while esi<ebx
+								invoke SendMessage,ha.hREd,REM_EXPAND,esi,0
+								invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,esi,2
+								mov		esi,eax
+							.endw
+						.endif
+					.endif
 				.elseif eax==8
 					;Expand hidden lines
-					invoke SendMessage,ha.hREd,REM_EXPAND,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_EXPAND,esi,0
 				.else
 					;Clear bookmark
-					invoke SendMessage,ha.hREd,REM_SETBOOKMARK,[edi].RASELCHANGE.line,0
+					invoke SendMessage,ha.hREd,REM_SETBOOKMARK,esi,0
 				.endif
 			.else
 				invoke SendMessage,ha.hREd,REM_BRACKETMATCH,0,0
