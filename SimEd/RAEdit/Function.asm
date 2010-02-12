@@ -1647,8 +1647,8 @@ GetLineEnd proc uses ebx esi,hMem:DWORD,cp:DWORD
 GetLineEnd endp
 
 StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
-	LOCAL	dwRead:DWORD
 	LOCAL	hCMem:DWORD
+	LOCAL	dwRead:DWORD
 	LOCAL	nreminding:DWORD
 	LOCAL	fUnicode:DWORD
 	LOCAL	fNewLine:DWORD
@@ -1659,27 +1659,36 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	mov     hCMem,eax
 	invoke GlobalLock,hCMem
 	xor		edi,edi
+	mov		dwRead,edi
 	mov		nreminding,edi
+	mov		fNewLine,TRUE
 	mov		fUnicode,edi
+  @@:
 	mov		esi,hCMem
 	add		esi,MAXSTREAM
-	mov		fNewLine,TRUE
-  @@:
 	call	ReadChars
 	or		eax,eax
 	jne		@f
 	xor		ecx,ecx
 	.if !fUnicode
 		movzx	eax,word ptr [esi+ecx]
-		.if eax==0FEFFh
+		.if eax==0FEFFh && dwRead>=2
 			;Unicode
-			mov		fUnicode,2
+			mov		fUnicode,3
 			mov		[ebx].EDIT.funicode,TRUE
-			mov		ecx,2
 		.else
 			mov		fUnicode,1
 			mov		[ebx].EDIT.funicode,FALSE
 		.endif
+	.endif
+	.if fUnicode>=2
+		mov		eax,nreminding
+		mov		edx,dwRead
+		shr		edx,1
+		invoke WideCharToMultiByte,CP_ACP,0,addr [esi+eax],edx,hCMem,MAXSTREAM,NULL,NULL
+		mov		dwRead,eax
+		mov		esi,hCMem
+		xor		ecx,ecx
 	.endif
 	.if dwRead
 		mov		eax,nreminding
@@ -1688,7 +1697,7 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	.elseif nreminding
 		mov		eax,nreminding
 		mov		dwRead,eax
-		call GetLineLen
+		call	GetLineLen
 		xor		eax,eax
 		mov		fNewLine,eax
 		call	InsertTheLine
@@ -1722,89 +1731,52 @@ GetLineLen:
 	xor		edx,edx
 	xor		eax,eax
 	mov		fCR,edx
-	.if fUnicode==2
-		.while word ptr [esi+ecx]!=0Ah && ecx<dwRead
-			.if word ptr [esi+ecx]==0Dh
-				inc		fCR
-			.endif
-			lea		ecx,[ecx+2]
-			lea		edx,[edx+1]
-		.endw
-		.if word ptr [esi+ecx]==0Ah
-			.if !fCR
-				mov		word ptr [esi+ecx],0Dh
-				lea		edx,[edx+1]
-			.endif
-			lea		ecx,[ecx+2]
-			inc		eax
+	.while byte ptr [esi+ecx]!=0Ah && ecx<dwRead
+		.if byte ptr [esi+ecx]==0Dh
+			inc		fCR
 		.endif
-	.else
-		.while byte ptr [esi+ecx]!=0Ah && ecx<dwRead
-			.if byte ptr [esi+ecx]==0Dh
-				inc		fCR
-			.endif
-			lea		ecx,[ecx+1]
+		lea		ecx,[ecx+1]
+		lea		edx,[edx+1]
+	.endw
+	.if byte ptr [esi+ecx]==0Ah
+		.if !fCR
+			mov		byte ptr [esi+ecx],0Dh
 			lea		edx,[edx+1]
-		.endw
-		.if byte ptr [esi+ecx]==0Ah
-			.if !fCR
-				mov		byte ptr [esi+ecx],0Dh
-				lea		edx,[edx+1]
-			.endif
-			lea		ecx,[ecx+1]
-			inc		eax
 		.endif
+		lea		ecx,[ecx+1]
+		inc		eax
 	.endif
 	retn
 
 InsertTheLine:
 	push	ecx
-	.if fUnicode==2
-		invoke WideCharToMultiByte,CP_ACP,0,addr [esi+eax],edx,hCMem,MAXSTREAM,NULL,NULL
-		.if fNewLine
-			add		edi,eax
-			invoke AddNewLine,ebx,hCMem,eax
-		.else
-			mov		edx,eax
-			mov		esi,hCMem
-			xor		ecx,ecx
-			.while edx
-				push	ecx
-				push	edx
-				movzx	eax,byte ptr [esi+ecx]
-				invoke InsertChar,ebx,edi,eax
-				pop		edx
-				pop		ecx
-				inc		edi
-				dec		edx
-				inc		ecx
-			.endw
-		.endif
+	.if fUnicode==3
+		mov		fUnicode,2
+		dec		edx
+		inc		eax
+	.endif
+	.if fNewLine
+		add		edi,edx
+		invoke AddNewLine,ebx,addr [esi+eax],edx
 	.else
-		.if fNewLine
-			add		edi,edx
-			invoke AddNewLine,ebx,addr [esi+eax],edx
-		.else
-			mov		ecx,eax
-			.while edx
-				push	ecx
-				push	edx
-				movzx	eax,byte ptr [esi+ecx]
-				invoke InsertChar,ebx,edi,eax
-				pop		edx
-				pop		ecx
-				inc		edi
-				dec		edx
-				inc		ecx
-			.endw
-		.endif
+		.while edx
+			push	eax
+			push	edx
+			movzx	eax,byte ptr [esi+eax]
+			invoke InsertChar,ebx,edi,eax
+			pop		edx
+			pop		eax
+			inc		edi
+			dec		edx
+			inc		eax
+		.endw
 	.endif
 	pop		ecx
 	retn
 
 InsertChars:
 	push	ecx
-	call GetLineLen
+	call	GetLineLen
 	.if eax
 		pop		eax
 		call	InsertTheLine
@@ -1816,11 +1788,10 @@ InsertChars:
 		.if CARRY?
 			xor		eax,eax
 		.endif
-		.if eax==MAXSTREAM
-			mov		fNewLine,0
-			mov		dwRead,eax
+		.if dwRead==MAXSTREAM || (dwRead==MAXSTREAM/2 && fUnicode>=2)
 			xor		eax,eax
-			mov		nreminding,0
+			mov		fNewLine,eax
+			mov		nreminding,eax
 			call	InsertTheLine
 		.else
 			mov		nreminding,eax
@@ -1841,7 +1812,6 @@ StreamIn endp
 StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	dwWrite:DWORD
 	LOCAL	hCMem:DWORD
-	LOCAL	fFirst:DWORD
 	LOCAL	nChars:DWORD
 
 	mov		ebx,hMem
@@ -1851,7 +1821,10 @@ StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	mov		esi,[ebx].EDIT.hLine
 	.if [ebx].EDIT.funicode
 		; Save as unicode
-		mov		fFirst,TRUE
+		mov		eax,hCMem
+		mov		word ptr [eax],0FEFFh
+		mov		nChars,2
+		call	StreamAnsi
 	  @@:
 		call	FillCMem
 		or		ecx,ecx
@@ -1877,15 +1850,7 @@ StreamOut proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 StreamUnicode:
 	mov		eax,hCMem
 	add		eax,MAXSTREAM+1024
-	.if fFirst
-		mov		word ptr [eax],0FEFFh
-		add		eax,2
-	.endif
 	invoke MultiByteToWideChar,CP_ACP,0,hCMem,nChars,eax,MAXSTREAM+1024
-	.if fFirst
-		mov		fFirst,FALSE
-		add		nChars,2
-	.endif
 	mov		edx,lParam
 	mov		[edx].EDITSTREAM.dwError,0
 	lea		eax,dwWrite
@@ -2375,5 +2340,3 @@ BracketMatch proc uses ebx,hMem:DWORD,nChr:DWORD,cp:DWORD
 	ret
 
 BracketMatch endp
-
-
