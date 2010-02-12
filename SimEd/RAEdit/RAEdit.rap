@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.621
-PV=1.2.0.621
+FV=1.2.0.726
+PV=1.2.0.726
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.621
+ProductVersion=1.2.0.726
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.621
+FileVersion=1.2.0.726
 CompanyName=
 
 [Resource]
@@ -102,7 +102,7 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,96603
+1=0,0,0,0,43172
 16=0,0,810,411,43804
 22=0,0,0,0,3164
 23=0,0,0,0,31111
@@ -116,11 +116,11 @@ CompanyName=
 15=0,0,0,0,3933
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,4931
+13=0,0,0,0,154
 26=0,0,0,0,10393
 21=0,0,0,0,9173
 14=0,0,0,0,9153
-12=0,0,0,0,2031
+12=0,0,0,0,1735
 
 [BookMark]
 0=
@@ -138,16 +138,16 @@ CompanyName=
 0=
 
 [Find]
-1="nLen"
-2=".CHARS.max"
-3="ExpandLine"
-4="ExpandCharMem"
-5="fNewLine"
-6=".while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len"
-7="REM_TRIMSPACE"
-8="REM_ISINBLOCK"
-9="STATE_BLOCKEND"
-10="_REM_SETSTYLEEX"
+1="InsertNewLine"
+2="nLen"
+3=".CHARS.max"
+4="ExpandLine"
+5="ExpandCharMem"
+6="fNewLine"
+7=".while byte ptr [esi+edi]==VK_TAB && edi<[esi].CHARS.len"
+8="REM_TRIMSPACE"
+9="REM_ISINBLOCK"
+10="STATE_BLOCKEND"
 
 [AutoLoad]
 AutoLoad=16,12,13,19,15,1
@@ -250,7 +250,7 @@ Group=Assembly,Resources,Misc
 12=
 
 [PTimer]
-PTimer=244212713
+PTimer=269023627
 
 [Exports]
 1=GetDef

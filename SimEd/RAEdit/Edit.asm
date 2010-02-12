@@ -4,6 +4,10 @@
 InsertNewLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 
 	mov		ebx,hMem
+	mov		eax,nSize
+;	shl		eax,1
+	invoke ExpandCharMem,ebx,eax
+	invoke ExpandLineMem,ebx
 	mov		eax,nLine
 	shl		eax,2
 	mov		esi,[ebx].EDIT.hLine
@@ -30,6 +34,9 @@ InsertNewLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD,nSize:DWORD
 	mov		esi,eax
 	add		esi,[ebx].EDIT.hChars
 	mov		eax,nSize
+	shr		eax,8
+	shl		eax,8
+	add		eax,MAXFREE
 	mov		[esi].CHARS.max,eax
 	add		eax,sizeof CHARS
 	add		[ebx].EDIT.rpCharsFree,eax
@@ -72,7 +79,7 @@ AddNewLine proc uses ebx esi edi,hMem:DWORD,lpLine:DWORD,nSize:DWORD
 
 AddNewLine endp
 
-ExpandLine proc uses ebx esi edi,hMem:DWORD
+ExpandCharLine proc uses ebx esi edi,hMem:DWORD
 
 	mov		ebx,hMem
 	mov		esi,[ebx].EDIT.rpChars
@@ -114,7 +121,7 @@ ExpandLine proc uses ebx esi edi,hMem:DWORD
 	.endif
 	ret
 
-ExpandLine endp
+ExpandCharLine endp
 
 DeleteLine proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
 
@@ -149,7 +156,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 
 	mov		ebx,hMem
 	invoke ExpandLineMem,ebx
-	invoke ExpandCharMem,ebx,64*1024
+	invoke ExpandCharMem,ebx,MAXCHARMEM
 	mov		edx,cp
 	xor		eax,eax
 	.if edx<[ebx].EDIT.edta.topcp
@@ -196,7 +203,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 	mov		eax,[esi].CHARS.max
 	mov		eax,[esi].CHARS.len
 	.if eax==[esi].CHARS.max
-		invoke ExpandLine,ebx
+		invoke ExpandCharLine,ebx
 	.endif
 	;Insert char
 	mov		esi,[ebx].EDIT.rpChars
@@ -217,13 +224,6 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 	pop		esi
 	mov		ecx,nChr
 	mov		[esi+edi+sizeof CHARS],cl
-;	mov		ecx,nChr
-;	push	edi
-;	.while edi<=[esi].CHARS.len
-;		xchg	[esi+edi+sizeof CHARS],cl
-;		inc		edi
-;	.endw
-;	pop		edi
 	inc		[esi].CHARS.len
 	mov		ecx,nChr
 	.if ecx==0Dh
@@ -241,10 +241,12 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 		mov		ecx,MAXFREE
 		add		ecx,[esi].CHARS.len
 		sub		ecx,edi
+		sub		esi,[ebx].EDIT.hChars
 		invoke InsertNewLine,ebx,eax,ecx
 		mov		ecx,edi
 		xor		edx,edx
 		mov		edi,[ebx].EDIT.rpChars
+		add		esi,[ebx].EDIT.hChars
 		add		edi,[ebx].EDIT.hChars
 		.while ecx<[esi].CHARS.len
 			mov		al,[esi+ecx+sizeof CHARS]
@@ -306,50 +308,60 @@ DeleteChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD
 	movzx	eax,byte ptr [esi+edi+sizeof CHARS]
 	push	eax
 	.if al==0Dh
-		dec		[esi].CHARS.len
-		.if ZERO?
+		mov		edi,esi
+		.if [esi].CHARS.len==1
 			invoke DeleteLine,ebx,[ebx].EDIT.line
 		.else
 			push	[ebx].EDIT.fOvr
 			mov		[ebx].EDIT.fOvr,FALSE
-			invoke DeleteLine,ebx,[ebx].EDIT.line
-			.if eax
-				mov		esi,eax
-				mov		eax,[esi].CHARS.len
-				push	[esi].CHARS.bmid
-				push	[esi].CHARS.state
-				sub		cp,eax
-				add		eax,sizeof CHARS
-				push	eax
-				invoke GlobalAlloc,GMEM_FIXED,eax
-				mov		edi,eax
-				pop		ecx
-				push	edi
-				rep		movsb
-				pop		esi
-				xor		edx,edx
-				.while edx<[esi].CHARS.len
-					push	edx
-					movzx	eax,byte ptr [esi+edx+sizeof CHARS]
-					invoke InsertChar,ebx,cp,eax
-					inc		cp
-					pop		edx
-					inc		edx
-				.endw
-				invoke GlobalFree,esi
-				mov		esi,[ebx].EDIT.line
-				shl		esi,2
-				add		esi,[ebx].EDIT.hLine
-				mov		esi,[esi].LINE.rpChars
-				add		esi,[ebx].EDIT.hChars
-				pop		eax
-				and		eax,7FFFFFFFh
-				mov		[esi].CHARS.state,eax
-				pop		[esi].CHARS.bmid
+			mov		eax,cp
+			inc		eax
+			invoke GetCharPtr,ebx,eax
+			mov		esi,[ebx].EDIT.rpChars
+			add		esi,[ebx].EDIT.hChars
+			.if [esi].CHARS.len
+				invoke DeleteLine,ebx,[ebx].EDIT.line
+				.if eax
+					mov		esi,eax
+					mov		eax,[esi].CHARS.len
+					add		eax,sizeof CHARS
+					push	eax
+					invoke GlobalAlloc,GMEM_FIXED,eax
+					mov		edi,eax
+					pop		ecx
+					push	edi
+					rep		movsb
+					pop		esi
+					xor		edi,edi
+					.while edi<[esi].CHARS.len
+						movzx	eax,byte ptr [esi+edi+sizeof CHARS]
+						.break .if eax==VK_RETURN
+						invoke InsertChar,ebx,cp,eax
+						inc		edi
+						inc		cp
+						xor		eax,eax
+					.endw
+					push	eax
+					invoke GlobalFree,esi
+					mov		esi,[ebx].EDIT.line
+					shl		esi,2
+					add		esi,[ebx].EDIT.hLine
+					mov		esi,[esi].LINE.rpChars
+					add		esi,[ebx].EDIT.hChars
+					pop		eax
+					.if !eax
+						dec		[esi].CHARS.len
+					.endif
+				.endif
+			.else
+				dec		[edi].CHARS.len
+				invoke DeleteLine,ebx,[ebx].EDIT.line
+				invoke GetCharPtr,ebx,0
+				mov		esi,edi
 			.endif
-			pop		[ebx].EDIT.fOvr
 			and		[esi].CHARS.state,-1 xor STATE_CHANGESAVED
 			or		[esi].CHARS.state,STATE_CHANGED
+			pop		[ebx].EDIT.fOvr
 		.endif
 		.if ![ebx].EDIT.fChanged
 			mov		[ebx].EDIT.fChanged,TRUE
