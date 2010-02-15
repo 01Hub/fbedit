@@ -290,16 +290,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 57=7
 
 [Find]
-1="szOpen"
-2="da.ver"
-3="ADDINDATA"
-4="IDM_EDIT_UNCOMMENT"
-5="IsCharAlphaNumeric"
-6="GetCharTabPtr"
-7="ApiListBox"
-8="IsLineInvoke"
-9="szCCInvoke"
-10="'invoke"
+1="486"
+2="szOpen"
+3="da.ver"
+4="ADDINDATA"
+5="IDM_EDIT_UNCOMMENT"
+6="IsCharAlphaNumeric"
+7="GetCharTabPtr"
+8="ApiListBox"
+9="IsLineInvoke"
+10="szCCInvoke"
 
 [VersionControl]
 Settings=1246
@@ -347,7 +347,7 @@ ProductVer4Range=0
 
 [Size]
 2=0,0,687,524,9547
-1=0,0,0,0,7919
+1=0,0,0,0,32115
 11=0,0,0,0,44933
 22=0,0,0,0,748
 10=0,0,0,0,19143
@@ -449,7 +449,7 @@ AutoLoad=1,2,53,38,37,22,11,46,29,40,39,57,10
 54=
 56=
 [PTimer]
-PTimer=2702276271
+PTimer=2702673528
 [RADebugBP]
 1=
 2=

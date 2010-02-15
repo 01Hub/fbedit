@@ -1649,10 +1649,7 @@ GetLineEnd endp
 StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	LOCAL	hCMem:DWORD
 	LOCAL	dwRead:DWORD
-	LOCAL	nreminding:DWORD
 	LOCAL	fUnicode:DWORD
-	LOCAL	fNewLine:DWORD
-	LOCAL	fCR:DWORD
 
 	mov		ebx,hMem
 	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXSTREAM*3+4096
@@ -1660,8 +1657,6 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	invoke GlobalLock,hCMem
 	xor		edi,edi
 	mov		dwRead,edi
-	mov		nreminding,edi
-	mov		fNewLine,TRUE
 	mov		fUnicode,edi
   @@:
 	mov		esi,hCMem
@@ -1669,43 +1664,41 @@ StreamIn proc uses ebx esi edi,hMem:DWORD,lParam:DWORD
 	call	ReadChars
 	or		eax,eax
 	jne		@f
-	xor		ecx,ecx
-	.if !fUnicode
-		movzx	eax,word ptr [esi+ecx]
-		.if eax==0FEFFh && dwRead>=2
-			;Unicode
-			mov		fUnicode,3
-			mov		[ebx].EDIT.funicode,TRUE
-		.else
-			mov		fUnicode,1
-			mov		[ebx].EDIT.funicode,FALSE
-		.endif
-	.endif
-	.if fUnicode>=2
-		mov		eax,nreminding
-		mov		edx,dwRead
-		shr		edx,1
-		invoke WideCharToMultiByte,CP_ACP,0,addr [esi+eax],edx,hCMem,MAXSTREAM,NULL,NULL
-		mov		dwRead,eax
-		mov		esi,hCMem
-		xor		ecx,ecx
-	.endif
 	.if dwRead
-		mov		eax,nreminding
-		add		dwRead,eax
-		call	InsertChars
-	.elseif nreminding
-		mov		eax,nreminding
-		mov		dwRead,eax
-		call	GetLineLen
-		xor		eax,eax
-		mov		fNewLine,eax
-		call	InsertTheLine
-		mov		dwRead,0
+		.if !fUnicode
+			movzx	eax,word ptr [esi]
+			.if eax==0FEFFh && dwRead>=2
+				;Unicode
+				mov		eax,2
+				mov		[ebx].EDIT.funicode,TRUE
+				mov		fUnicode,eax
+				add		esi,eax
+				sub		dwRead,eax
+			.else
+				mov		fUnicode,1
+				mov		[ebx].EDIT.funicode,FALSE
+			.endif
+		.endif
+		.if fUnicode==2
+			mov		edx,dwRead
+			shr		edx,1
+			invoke WideCharToMultiByte,CP_ACP,0,esi,edx,hCMem,MAXSTREAM,NULL,NULL
+			mov		dwRead,eax
+			mov		esi,hCMem
+		.endif
+		xor		ecx,ecx
+		.while ecx<dwRead
+			push	ecx
+			movzx	eax,byte ptr [esi+ecx]
+			.if eax!=0Ah
+				invoke InsertChar,ebx,edi,eax
+			.endif
+			pop		ecx
+			inc		edi
+			inc		ecx
+		.endw
+		jmp		@b
 	.endif
-	mov		eax,dwRead
-	or		eax,eax
-	jne		@b
   @@:
 	invoke GlobalUnlock,hCMem
 	invoke GlobalFree,hCMem
@@ -1718,93 +1711,11 @@ ReadChars:
 	lea		eax,dwRead
 	push	eax
 	mov		eax,MAXSTREAM
-	sub		eax,nreminding
 	push	eax
 	mov		eax,esi
-	add		eax,nreminding
 	push	eax
 	push	[edx].EDITSTREAM.dwCookie
 	call	[edx].EDITSTREAM.pfnCallback
-	retn
-
-GetLineLen:
-	xor		edx,edx
-	xor		eax,eax
-	mov		fCR,edx
-	.while byte ptr [esi+ecx]!=0Ah && ecx<dwRead
-		.if byte ptr [esi+ecx]==0Dh
-			inc		fCR
-		.endif
-		lea		ecx,[ecx+1]
-		lea		edx,[edx+1]
-	.endw
-	.if byte ptr [esi+ecx]==0Ah
-		.if !fCR
-			mov		byte ptr [esi+ecx],0Dh
-			lea		edx,[edx+1]
-		.endif
-		lea		ecx,[ecx+1]
-		inc		eax
-	.endif
-	retn
-
-InsertTheLine:
-	push	ecx
-	.if fUnicode==3
-		mov		fUnicode,2
-		dec		edx
-		inc		eax
-	.endif
-	.if fNewLine
-		add		edi,edx
-		invoke AddNewLine,ebx,addr [esi+eax],edx
-	.else
-		.while edx
-			push	eax
-			push	edx
-			movzx	eax,byte ptr [esi+eax]
-			invoke InsertChar,ebx,edi,eax
-			pop		edx
-			pop		eax
-			inc		edi
-			dec		edx
-			inc		eax
-		.endw
-	.endif
-	pop		ecx
-	retn
-
-InsertChars:
-	push	ecx
-	call	GetLineLen
-	.if eax
-		pop		eax
-		call	InsertTheLine
-		jmp		InsertChars
-	.else
-		pop		ecx
-		mov		eax,dwRead
-		sub		eax,ecx
-		.if CARRY?
-			xor		eax,eax
-		.endif
-		.if dwRead==MAXSTREAM || (dwRead==MAXSTREAM/2 && fUnicode>=2)
-			xor		eax,eax
-			mov		fNewLine,eax
-			mov		nreminding,eax
-			call	InsertTheLine
-		.else
-			mov		nreminding,eax
-			push	esi
-			push	edi
-			mov		edi,esi
-			add		esi,ecx
-			mov		ecx,eax
-			rep movsb
-			pop		edi
-			pop		esi
-		.endif
-	.endif
 	retn
 
 StreamIn endp
