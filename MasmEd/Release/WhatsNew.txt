@@ -1,5 +1,11 @@
 MasmEd
 
+1.1.0.2f - 2010.02.15
+---------------------
+o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
+  all child blocks in the parent block.
+o The edit control now supports unlimitted line lenghts.
+
 1.1.0.2e - 2010.02.08
 ---------------------
 o You can now add or delete your own make commabds.

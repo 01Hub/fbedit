@@ -227,6 +227,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 	inc		[esi].CHARS.len
 	mov		ecx,nChr
 	.if ecx==0Dh
+		; Break the line
 		mov		eax,[ebx].EDIT.rpLine
 		shr		eax,2
 		mov		ecx,[esi].CHARS.state
@@ -236,17 +237,24 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 			invoke TestExpand,ebx,eax
 			popad
 		.endif
+		; Save line number
+		push	eax
 		inc		eax
 		inc		edi
 		mov		ecx,MAXFREE
 		add		ecx,[esi].CHARS.len
 		sub		ecx,edi
-		sub		esi,[ebx].EDIT.hChars
+		; Insert a new line and expand the CHAR mem
 		invoke InsertNewLine,ebx,eax,ecx
+		; Find the pointer to old line characters
+		pop		esi
+		shl		esi,2
+		add		esi,[ebx].EDIT.hLine
+		mov		esi,[esi]
+		add		esi,[ebx].EDIT.hChars
 		mov		ecx,edi
 		xor		edx,edx
 		mov		edi,[ebx].EDIT.rpChars
-		add		esi,[ebx].EDIT.hChars
 		add		edi,[ebx].EDIT.hChars
 		.while ecx<[esi].CHARS.len
 			mov		al,[esi+ecx+sizeof CHARS]
@@ -254,6 +262,7 @@ InsertChar proc uses ebx esi edi,hMem:DWORD,cp:DWORD,nChr:DWORD
 			inc		ecx
 			inc		edx
 		.endw
+		; Update lenght of old and new line
 		mov		[edi].CHARS.len,edx
 		sub		[esi].CHARS.len,edx
 		mov		eax,[esi].CHARS.len
