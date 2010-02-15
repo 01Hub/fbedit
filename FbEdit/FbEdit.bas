@@ -1755,10 +1755,29 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					bm=SendMessage(ah.hred,REM_GETBOOKMARK,lpRASELCHANGE->Line,0)
 					If bm=1 Then
 						' Collapse
-						SendMessage(ah.hred,REM_COLLAPSE,lpRASELCHANGE->Line,0)
+						If GetKeyState(VK_CONTROL) And &H80 Then
+							nLine=SendMessage(ah.hred,REM_GETBLOCKEND,lpRASELCHANGE->Line,0)
+							While nLine>lpRASELCHANGE->Line And nLine<>-1
+								nLine=SendMessage(ah.hred,REM_PRVBOOKMARK,nLine,1)
+								SendMessage(ah.hred,REM_COLLAPSE,nLine,0)
+							Wend
+						Else
+							SendMessage(ah.hred,REM_COLLAPSE,lpRASELCHANGE->Line,0)
+						EndIf
 					ElseIf bm=2 Then
 						' Expand
-						SendMessage(ah.hred,REM_EXPAND,lpRASELCHANGE->Line,0)
+						If GetKeyState(VK_CONTROL) And &H80 Then
+							nLine=lpRASELCHANGE->Line
+							i=SendMessage(ah.hred,REM_GETBLOCKEND,nLine,0)
+							If i<>-1 Then
+								While nLine<i And nLine<>-1
+									SendMessage(ah.hred,REM_EXPAND,nLine,0)
+									nLine=SendMessage(ah.hred,REM_NXTBOOKMARK,nLine,2)
+								Wend
+							EndIf
+						Else
+							SendMessage(ah.hred,REM_EXPAND,lpRASELCHANGE->Line,0)
+						EndIf
 					EndIf
 					If edtopt.hiliteline Then
 						SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)

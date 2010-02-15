@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.7.4c
+o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
+  all child blocks in the parent block.
+o The edit control now supports unlimitted line lenghts.
 1.0.7.4b
 o Fixed a dialog editor paint bug.
 o Fixed a code editor bug that could cause chrash in rare cases.
