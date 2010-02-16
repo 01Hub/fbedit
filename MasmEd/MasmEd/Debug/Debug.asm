@@ -14,6 +14,12 @@ szRegs							db 'EAX %08Xh %11d ',0,
 								   '    AV-R NIODIT-SZ A P C',0Dh,
 								   'EFL ',0
 
+szFpu							db 'Reg Dec',0Dh,0
+szFpuReg						db 'ST%d ',0
+szFpuCTW						db '       XRCPC-  PUOZDI',0Dh,
+									'CTW ',0
+szFpuSTW						db '     B3TOP210-ESPUOZDI',0Dh,
+									'STW ',0
 .data?
 
 szContext						db 1024 dup(?)
@@ -21,7 +27,7 @@ LineChanged						dd 32 dup(?)
 
 .code
 
-ShowContext proc uses ebx esi edi
+ShowRegContext proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	decbuff[32]:BYTE
 	LOCAL	nLine:DWORD
@@ -78,7 +84,6 @@ ShowContext proc uses ebx esi edi
 	shl		edi,32-18
 	mov		eax,18
 	call	RegOut
-	invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
 	invoke SetWindowText,hDbgReg,addr szContext
 	invoke SendMessage,hDbgReg,REM_SETHILITELINE,0,1
 	invoke SendMessage,hDbgReg,REM_SETHILITELINE,10,1
@@ -117,7 +122,116 @@ RegOut:
 	inc		nLine
 	retn
 
-ShowContext endp
+ShowRegContext endp
+
+ShowFpuContext proc uses ebx esi edi
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nLine:DWORD
+	LOCAL	szContextPtr:DWORD
+	LOCAL	LineChangedInx:DWORD
+
+	mov		szContextPtr,offset szContext
+	mov		LineChangedInx,0
+	mov		LineChanged,0
+	mov		eax,offset szFpu
+	call	AddText
+	mov		esi,offset dbg.context.FloatSave.RegisterArea
+	mov		edi,offset dbg.prevcontext.FloatSave.RegisterArea
+	xor		ecx,ecx
+	mov		nLine,ecx
+	.while ecx<8
+		inc		nLine
+		push	ecx
+		call	RegOut
+		pop		ecx
+		inc		ecx
+		lea		esi,[esi+10]
+		lea		edi,[edi+10]
+	.endw
+	add		nLine,2
+	invoke strcpy,addr buffer,offset szFpuCTW
+	invoke strlen,addr buffer
+	mov		edx,dbg.context.FloatSave.ControlWord
+	shl		edx,16
+	invoke BinOut,addr buffer[eax],edx,16
+	invoke strcat,addr buffer,addr szCR
+	lea		eax,buffer
+	call	AddText
+	mov		edx,dbg.prevcontext.FloatSave.ControlWord
+	.if edx!=dbg.context.FloatSave.ControlWord
+		mov		edx,LineChangedInx
+		lea		edx,[edx*4+offset LineChanged]
+		mov		eax,nLine
+		mov		[edx],eax
+		mov		dword ptr [edx+4],0
+		inc		LineChangedInx
+	.endif
+	add		nLine,2
+	invoke strcpy,addr buffer,offset szFpuSTW
+	invoke strlen,addr buffer
+	mov		edx,dbg.context.FloatSave.StatusWord
+	shl		edx,16
+	invoke BinOut,addr buffer[eax],edx,16
+	invoke strcat,addr buffer,addr szCR
+	lea		eax,buffer
+	call	AddText
+	mov		edx,dbg.prevcontext.FloatSave.StatusWord
+	.if edx!=dbg.context.FloatSave.StatusWord
+		mov		edx,LineChangedInx
+		lea		edx,[edx*4+offset LineChanged]
+		mov		eax,nLine
+		mov		[edx],eax
+		mov		dword ptr [edx+4],0
+		inc		LineChangedInx
+	.endif
+	invoke SetWindowText,hDbgFpu,addr szContext
+	invoke SendMessage,hDbgFpu,REM_SETHILITELINE,0,1
+	invoke SendMessage,hDbgFpu,REM_SETHILITELINE,9,1
+	invoke SendMessage,hDbgFpu,REM_SETHILITELINE,11,1
+	mov		ebx,offset LineChanged
+	.while dword ptr [ebx]
+		invoke SendMessage,hDbgFpu,REM_LINEREDTEXT,[ebx],TRUE
+		lea		ebx,[ebx+4]
+	.endw
+	ret
+
+AddText:
+	invoke strcpy,szContextPtr,eax
+	invoke strlen,szContextPtr
+	add		szContextPtr,eax
+	retn
+
+RegOut:
+	invoke wsprintf,addr buffer,offset szFpuReg,ecx
+	invoke strlen,addr buffer
+	invoke FpToAscii,esi,addr buffer[eax],TRUE
+;	mov		eax,[esi+6]
+;	mov		ebx,[esi+2]
+;	movzx	edx,word ptr [esi]
+;	invoke wsprintf,addr buffer,offset szFpuReg,ecx,eax,ebx,edx
+	invoke strcat,addr buffer,addr szCR
+	lea		eax,buffer
+	call	AddText
+	mov		eax,[esi+6]
+	sub		eax,[edi+6]
+	jnz		@f
+	mov		eax,[esi+2]
+	sub		eax,[edi+2]
+	jnz		@f
+	mov		ax,[esi]
+	sub		ax,[edi]
+	jnz		@f
+	retn
+  @@:
+	mov		edx,LineChangedInx
+	lea		edx,[edx*4+offset LineChanged]
+	mov		eax,nLine
+	mov		[edx],eax
+	mov		dword ptr [edx+4],0
+	inc		LineChangedInx
+	retn
+
+ShowFpuContext endp
 
 RestoreSourceByte proc uses ebx edi,Address:DWORD
 	
@@ -381,7 +495,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 						mov		edx,de.dwThreadId
 						.if fMainThread && edx!=dbg.thread.threadid && !fOnBP
 							invoke SuspendThread,[ebx].DEBUGTHREAD.htread
-							mov		dbg.tmpcontext.ContextFlags,CONTEXT_FULL
+							mov		dbg.tmpcontext.ContextFlags,CONTEXT_FULL or CONTEXT_FLOATING_POINT
 							invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.tmpcontext
 							mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
 							mov		dbg.tmpcontext.regEip,eax
@@ -399,7 +513,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 								mov		dbg.lpthread,ebx
 								invoke IsInProc,de.u.Exception.pExceptionRecord.ExceptionAddress
 								.if dbg.func==FUNC_STEPOVER && eax!=dbg.lpStepOver && !fOnBP
-									mov		dbg.context.ContextFlags,CONTEXT_FULL
+									mov		dbg.context.ContextFlags,CONTEXT_FULL or CONTEXT_FLOATING_POINT
 									invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 									mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
 									mov		dbg.context.regEip,eax
@@ -423,7 +537,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 									.if eax
 										invoke SelectLine,eax
 									.endif
-									mov		dbg.context.ContextFlags,CONTEXT_FULL
+									mov		dbg.context.ContextFlags,CONTEXT_FULL or CONTEXT_FLOATING_POINT
 									invoke GetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
 									mov		eax,de.u.Exception.pExceptionRecord.ExceptionAddress
 									mov		dbg.context.regEip,eax
@@ -433,7 +547,9 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 									mov		dbg.lpProc,eax
 									pop		eax
 									.if eax
-										invoke ShowContext
+										invoke ShowRegContext
+										invoke ShowFpuContext
+										invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
 									.endif
 									invoke WatchVars
 								.endif

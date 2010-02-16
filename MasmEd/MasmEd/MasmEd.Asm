@@ -1613,6 +1613,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pushad
 			invoke MoveWindow,ha.hDbgReg,ecx,rect.top,eax,edx,TRUE
 			popad
+			pushad
+			invoke MoveWindow,ha.hDbgFpu,ecx,rect.top,eax,edx,TRUE
+			popad
 			invoke MoveWindow,ha.hDbgWatch,ecx,rect.top,eax,edx,TRUE
 			pop		rect.top
 		.endif
@@ -1721,6 +1724,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tci.pszText,offset szRegister
 		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		invoke SendMessage,ha.hTabDbg,TCM_SETCURSEL,eax,0
+		mov		tci.pszText,offset szFloat
+		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		mov		tci.pszText,offset szWatch
 		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		;Window caption
@@ -1753,6 +1758,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hWnd,IDC_DBGREG,ha.hInstance,0
 		mov		ha.hDbgReg,eax
 		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,FALSE
+		;Create debug fpu window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hWnd,IDC_DBGREG,ha.hInstance,0
+		mov		ha.hDbgFpu,eax
+		invoke SendMessage,ha.hDbgFpu,WM_SETFONT,ha.hFont,FALSE
 		;Create debug watch window
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,ha.hWnd,IDC_DBGWATCH,ha.hInstance,0
 		mov		ha.hDbgWatch,eax
@@ -1907,6 +1916,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.hImmOut,eax
 		mov		eax,ha.hDbgReg
 		mov		dbginf.hDbgReg,eax
+		mov		eax,ha.hDbgFpu
+		mov		dbginf.hDbgFpu,eax
 		mov		eax,ha.hDbgWatch
 		mov		dbginf.hDbgWatch,eax
 		mov		eax,ha.hProperty
@@ -2401,8 +2412,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,ha.hProperty,SW_SHOWNA
 					.if fDebugging
 						invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
-						.if nDbgSel
+						.if nDbgSel==2
 							invoke ShowWindow,ha.hDbgWatch,SW_SHOWNA
+						.elseif nDbgSel==1
+							invoke ShowWindow,ha.hDbgFpu,SW_SHOWNA
 						.else
 							invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
 						.endif
@@ -2411,6 +2424,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,ha.hBrowse,SW_HIDE
 					invoke ShowWindow,ha.hProperty,SW_HIDE
 					invoke ShowWindow,ha.hDbgReg,SW_HIDE
+					invoke ShowWindow,ha.hDbgFpu,SW_HIDE
 					invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 					invoke ShowWindow,ha.hTabDbg,SW_HIDE
 				.endif
@@ -2581,6 +2595,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.hImmOut,eax
 					mov		eax,ha.hDbgReg
 					mov		dbginf.hDbgReg,eax
+					mov		eax,ha.hDbgFpu
+					mov		dbginf.hDbgFpu,eax
 					mov		eax,ha.hDbgWatch
 					mov		dbginf.hDbgWatch,eax
 					mov		eax,ha.hProperty
@@ -2971,11 +2987,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Debug watch tab
 			invoke SendMessage,ha.hTabDbg,TCM_GETCURSEL,0,0
 			mov		nDbgSel,eax
-			.if nDbgSel
+			.if nDbgSel==2
 				invoke ShowWindow,ha.hDbgWatch,SW_SHOWNA
 				invoke ShowWindow,ha.hDbgReg,SW_HIDE
+				invoke ShowWindow,ha.hDbgFpu,SW_HIDE
+			.elseif nDbgSel==1
+				invoke ShowWindow,ha.hDbgFpu,SW_SHOWNA
+				invoke ShowWindow,ha.hDbgReg,SW_HIDE
+				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 			.else
 				invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
+				invoke ShowWindow,ha.hDbgFpu,SW_HIDE
 				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 			.endif
 		.endif

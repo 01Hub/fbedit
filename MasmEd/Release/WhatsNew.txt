@@ -1,10 +1,11 @@
 MasmEd
 
-1.1.0.2f - 2010.02.15
+1.1.0.2f - 2010.02.16
 ---------------------
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.
 o The edit control now supports unlimitted line lenghts.
+o The debugger now has a FPU window showing fpu registers.
 
 1.1.0.2e - 2010.02.08
 ---------------------

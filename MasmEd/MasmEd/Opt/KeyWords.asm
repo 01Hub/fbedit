@@ -473,6 +473,7 @@ UpdateToolColors proc
 	invoke SendMessage,ha.hOut,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hImmOut,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hDbgReg,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hDbgFpu,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hDbgWatch,REM_SETCOLOR,0,addr racol
 	;Set tool colors
 	invoke SendMessage,ha.hBrowse,FBM_SETBACKCOLOR,0,col.toolback

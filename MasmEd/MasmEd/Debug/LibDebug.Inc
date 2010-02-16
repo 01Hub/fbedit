@@ -84,6 +84,7 @@ DEBUGINFO struct
 	hOut					HWND ?					; Handle of output window
 	hImmOut					HWND ?					; Handle of immediate window
 	hDbgReg					HWND ?					; Handle of debug register window
+	hDbgFpu					HWND ?					; Handle of debug FPU window
 	hDbgWatch				HWND ?					; Handle of debug watch window
 	hPrp					HWND ?					; Handle of properties window
 	lpNoDebug				DWORD ?					; Pointer to strings containing procs to not debug
@@ -403,6 +404,7 @@ hWnd							HWND ?							; Handle of main window
 hOut							HWND ?							; Handle of output window
 hImmOut							HWND ?							; Handle of immediate window
 hDbgReg							HWND ?							; Handle of debug register window
+hDbgFpu							HWND ?							; Handle of debug FPU window
 hDbgWatch						HWND ?							; Handle of debug watch window
 hPrp							HWND ?							; Handle of properties window
 lpCallBack						dd ?

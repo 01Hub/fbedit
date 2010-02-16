@@ -82,7 +82,7 @@ AskSaveSessionFile		PROTO
 ReadSessionFile			PROTO :DWORD
 OpenEditFile			PROTO :DWORD,:DWORD
 
-HT_DEBUG				equ 206
+HT_DEBUG				equ 224
 
 ; Debug functions
 FUNC_RUN				equ 1
@@ -193,6 +193,7 @@ DEBUGINFO struct
 	hOut				HWND ?					; Handle of output window
 	hImmOut				HWND ?					; Handle of immediate window
 	hDbgReg				HWND ?					; Handle of debug register window
+	hDbgFpu				HWND ?					; Handle of debug FPU window
 	hDbgWatch			HWND ?					; Handle of debug watch window
 	hPrp				HWND ?					; Handle of properties window
 	lpNoDebug			DWORD ?					; Pointer to strings containing procs to not debug
@@ -370,6 +371,7 @@ szOutput				db 'Output',0
 szImmediate				db 'Immediate',0
 
 szRegister				db 'Register',0
+szFloat					db 'FPU',0
 szWatch					db 'Watch',0
 
 szFmtDec				db '%d',0
