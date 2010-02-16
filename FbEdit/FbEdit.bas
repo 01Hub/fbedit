@@ -294,8 +294,22 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Handle of immediate window
 			ah.himm=GetDlgItem(hWin,IDC_IMMEDIATE)
 			lpOldImmediateProc=Cast(Any Ptr,SetWindowLong(ah.himm,GWL_WNDPROC,Cast(Integer,@ImmediateProc)))
+			' Handle of debug tab window
+			ah.hdbgtab=GetDlgItem(hWin,IDC_TABDEBUG)
+			tci.mask=TCIF_TEXT
+			tci.pszText=@szReg
+			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
+			SendMessage(ah.hdbgtab,TCM_SETCURSEL,i,0)
+			tci.pszText=@szFpu
+			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
+			tci.pszText=@szMmx
+			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
 			' Handle of register window
 			ah.hregister=GetDlgItem(hWin,IDC_REGISTER)
+			' Handle of fpu window
+			ah.hfpu=GetDlgItem(hWin,IDC_FPU)
+			' Handle of mmx window
+			ah.hmmx=GetDlgItem(hWin,IDC_MMX)
 			' Handle of font
 			hDlgFnt=Cast(HFONT,SendMessage(ah.htabtool,WM_GETFONT,0,0))
 			LoadFromIni(StrPtr("Edit"),StrPtr("EditOpt"),"44444444444444444444",@edtopt,FALSE)
@@ -328,6 +342,8 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hout,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			SendMessage(ah.himm,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			SendMessage(ah.hregister,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
+			SendMessage(ah.hfpu,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
+			SendMessage(ah.hmmx,WM_SETFONT,Cast(WPARAM,ah.hOutFont),FALSE)
 			' Font for tools
 			LoadFromIni(StrPtr("Edit"),StrPtr("ToolFont"),"44044",@toolfnt,FALSE)
 			lfnt.lfHeight=toolfnt.size
@@ -2142,21 +2158,29 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					prjht=(rect.bottom-tbhgt-rect1.bottom)/2
 					prht=rect.bottom-tbhgt-rect1.bottom-prjht
 					If ad.fDebug Then
-						prht=prht-172
-						MoveWindow(ah.hregister,rect.right-twt+2,tbhgt+prjht+prht,twt-2,172,TRUE)
+						prht=prht-HT_DEBUG
+						MoveWindow(ah.hdbgtab,rect.right-twt+2,tbhgt+prjht+prht,twt-2,20,TRUE)
+						MoveWindow(ah.hregister,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
+						MoveWindow(ah.hfpu,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
+						MoveWindow(ah.hmmx,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
 					EndIf
 				ElseIf (wpos.fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROJECT Then
 					prjht=(rect.bottom-tbhgt-rect1.bottom)
 				ElseIf (wpos.fview And (VIEW_PROJECT Or VIEW_PROPERTY))=VIEW_PROPERTY Then
 					prht=(rect.bottom-tbhgt-rect1.bottom)
 					If ad.fDebug Then
-						prht=prht-172
-						MoveWindow(ah.hregister,rect.right-twt+2,tbhgt+prjht+prht,twt-2,172,TRUE)
+						prht=prht-HT_DEBUG
+						MoveWindow(ah.hdbgtab,rect.right-twt+2,tbhgt+prjht+prht,twt-2,20,TRUE)
+						MoveWindow(ah.hregister,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
+						MoveWindow(ah.hfpu,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
+						MoveWindow(ah.hmmx,rect.right-twt+2,tbhgt+prjht+prht+20,twt-2,HT_DEBUG-20,TRUE)
 					EndIf
 				EndIf
 				If ad.fDebug Then
+					ShowWindow(ah.hdbgtab,SW_SHOWNA)
 					ShowWindow(ah.hregister,SW_SHOWNA)
 				Else
+					ShowWindow(ah.hdbgtab,SW_HIDE)
 					ShowWindow(ah.hregister,SW_HIDE)
 				EndIf
 				' Size the tab

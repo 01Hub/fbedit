@@ -40,6 +40,7 @@ Dim Shared lpData As ADDINDATA Ptr
 Dim Shared nMnuToggle As Integer
 Dim Shared nMnuClear As Integer
 Dim Shared nMnuRun As Integer
+Dim Shared nMnuBreak As Integer
 Dim Shared nMnuStop As Integer
 Dim Shared nMnuRunToCaret As Integer
 Dim Shared nMnuStepInto As Integer

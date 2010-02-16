@@ -69,6 +69,9 @@ Declare Sub HH_Help()
 #Define IDC_CBOBUILD							1016
 #Define IDC_IMGSPLASH						1017
 #Define IDC_REGISTER							1019
+#Define IDC_FPU								1020
+#Define IDC_MMX								1021
+#Define IDC_TABDEBUG							1022
 
 ' Menu and toolbar
 #Define IDR_MENU								10000
@@ -339,6 +342,7 @@ Declare Sub SetProjectFileInfo(ByVal hWin As HWND,ByVal lpPFI As PFI Ptr)
 #Define VIEW_STATUSBAR	32
 #Define VIEW_IMMEDIATE	64
 #Define MAX_MISS			10
+#Define HT_DEBUG			224
 
 Const szNULL=!"\0"
 Const CRLF=Chr(13) & Chr(10)
@@ -346,6 +350,9 @@ Const CR=Chr(13)
 
 Const szAppName=!"FreeBASIC editor\0"
 Const szVersion=!"FreeBASIC editor 1.0.7.4c\0"
+Const szReg=!"REG"
+Const szFpu=!"FPU"
+Const szMmx=!"MMX"
 
 Dim Shared hInstance As HINSTANCE
 

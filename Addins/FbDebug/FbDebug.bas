@@ -855,6 +855,14 @@ Sub CreateDebugMenu()
 	AppendMenu(mii.hSubMenu,MF_STRING,nMnuRun,@buff)
 	AddAccelerator(FVIRTKEY Or FNOINVERT Or FSHIFT,VK_F7,nMnuRun)
 
+	nMnuBreak=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
+	buff=GetString(10008)
+	If buff="" Then
+		buff="&Break	Alt+Ctrl+F7"
+	EndIf
+	AppendMenu(mii.hSubMenu,MF_STRING,nMnuBreak,@buff)
+	AddAccelerator(FVIRTKEY Or FNOINVERT Or FALT Or FCONTROL,VK_F7,nMnuBreak)
+
 	nMnuStop=SendMessage(lpHandles->hwnd,AIM_GETMENUID,0,0)
 	buff=GetString(10003)
 	If buff="" Then
@@ -928,11 +936,12 @@ Sub EnableDebugMenu()
 		EndIf
 	EndIf
 	EnableMenuItem(lpHandles->hmenu,nMnuRunToCaret,st)
-	' Stop, Step Into, Step Over
+	' Break, Stop, Step Into, Step Over
 	st=MF_BYCOMMAND Or MF_GRAYED
 	If hThread Then
 		st=MF_BYCOMMAND Or MF_ENABLED
 	EndIf
+	EnableMenuItem(lpHandles->hmenu,nMnuBreak,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStop,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepInto,st)
 	EnableMenuItem(lpHandles->hmenu,nMnuStepOver,st)
@@ -1308,6 +1317,16 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 							EnableDebugMenu
 						Else
 							MessageBox(lpHandles->hwnd,szTipText,"Debug",MB_OK Or MB_ICONERROR)
+						EndIf
+					EndIf
+					Return TRUE
+					'
+				Case nMnuBreak
+					If hThread Then
+						If nLnDebug=-1 Then
+							SetBreakAll
+							WaitForSingleObject(pinfo.hProcess,10)
+							BringWindowToFront
 						EndIf
 					EndIf
 					Return TRUE

@@ -152,6 +152,9 @@ Type ADDINHANDLES
 	himm				As HWND							' Handle of immediate window
 	hToolFont		As HFONT							' Tool windows font
 	hregister		As HWND							' Debug register window.
+	hfpu				As HWND							' Debug fpu window.
+	hmmx				As HWND							' Debug mmx window.
+	hdbgtab			As HWND							' Debug tab
 End Type
 
 Type ADDINDATA

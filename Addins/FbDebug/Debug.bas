@@ -1145,16 +1145,20 @@ Function RunFile StdCall (ByVal lpFileName As ZString Ptr) As Integer
 							EndIf
 						Case EXCEPTION_ACCESS_VIOLATION
 							sException="EXCEPTION_ACCESS_VIOLATION"
-							fContinue=DBG_EXCEPTION_NOT_HANDLED
+							PutString(sException)
+							WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
 						Case EXCEPTION_FLT_DIVIDE_BY_ZERO
 							sException="EXCEPTION_FLT_DIVIDE_BY_ZERO"
-							fContinue=DBG_EXCEPTION_NOT_HANDLED
+							PutString(sException)
+							WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
 						Case EXCEPTION_INT_DIVIDE_BY_ZERO
 							sException="EXCEPTION_INT_DIVIDE_BY_ZERO"
-							fContinue=DBG_EXCEPTION_NOT_HANDLED
+							PutString(sException)
+							WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
 						Case EXCEPTION_DATATYPE_MISALIGNMENT
 							sException="EXCEPTION_DATATYPE_MISALIGNMENT"
-							fContinue=DBG_EXCEPTION_NOT_HANDLED
+							PutString(sException)
+							WriteProcessMemory(dbghand,de.Exception.ExceptionRecord.ExceptionAddress,@breakvalue,1,0)
 						Case EXCEPTION_SINGLE_STEP
 							sException="EXCEPTION_SINGLE_STEP"
 							fContinue=DBG_EXCEPTION_NOT_HANDLED
