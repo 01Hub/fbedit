@@ -194,6 +194,7 @@ DEBUGINFO struct
 	hImmOut				HWND ?					; Handle of immediate window
 	hDbgReg				HWND ?					; Handle of debug register window
 	hDbgFpu				HWND ?					; Handle of debug FPU window
+	hDbgMMX				HWND ?					; Handle of debug MMX window
 	hDbgWatch			HWND ?					; Handle of debug watch window
 	hPrp				HWND ?					; Handle of properties window
 	lpNoDebug			DWORD ?					; Pointer to strings containing procs to not debug
@@ -372,6 +373,7 @@ szImmediate				db 'Immediate',0
 
 szRegister				db 'Register',0
 szFloat					db 'FPU',0
+szMMX					db 'MMX',0
 szWatch					db 'Watch',0
 
 szFmtDec				db '%d',0

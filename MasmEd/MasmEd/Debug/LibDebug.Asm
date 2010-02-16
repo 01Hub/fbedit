@@ -68,6 +68,8 @@ SetDebugInfo proc public lpDEBUGINFO:DWORD
 	mov		hDbgReg,eax
 	mov		eax,[edx].DEBUGINFO.hDbgFpu
 	mov		hDbgFpu,eax
+	mov		eax,[edx].DEBUGINFO.hDbgMMX
+	mov		hDbgMMX,eax
 	mov		eax,[edx].DEBUGINFO.hDbgWatch
 	mov		hDbgWatch,eax
 	mov		eax,[edx].DEBUGINFO.hPrp

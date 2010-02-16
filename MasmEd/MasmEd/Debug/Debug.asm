@@ -20,6 +20,10 @@ szFpuCTW						db '       XRCPC-  PUOZDI',0Dh,
 									'CTW ',0
 szFpuSTW						db '     B3TOP210-ESPUOZDI',0Dh,
 									'STW ',0
+
+szMMX							db 'Reg  Hex',0Dh,0
+szMMXReg						db 'XMM%d %08X%08Xh',0
+
 .data?
 
 szContext						db 1024 dup(?)
@@ -228,6 +232,69 @@ RegOut:
 	retn
 
 ShowFpuContext endp
+
+ShowMMXContext proc uses ebx esi edi
+	LOCAL	buffer[256]:BYTE
+	LOCAL	decbuff[32]:BYTE
+	LOCAL	nLine:DWORD
+	LOCAL	szContextPtr:DWORD
+	LOCAL	LineChangedInx:DWORD
+
+	mov		szContextPtr,offset szContext
+	mov		LineChangedInx,0
+	mov		LineChanged,0
+	mov		eax,offset szMMX
+	call	AddText
+	mov		nLine,1
+	mov		esi,offset dbg.context.FloatSave.RegisterArea
+	mov		edi,offset dbg.prevcontext.FloatSave.RegisterArea
+	xor		ecx,ecx
+	mov		nLine,ecx
+	.while ecx<8
+		inc		nLine
+		push	ecx
+		call	RegOut
+		pop		ecx
+		inc		ecx
+		lea		esi,[esi+10]
+		lea		edi,[edi+10]
+	.endw
+	invoke SetWindowText,hDbgMMX,addr szContext
+	invoke SendMessage,hDbgMMX,REM_SETHILITELINE,0,1
+	mov		ebx,offset LineChanged
+	.while dword ptr [ebx]
+		invoke SendMessage,hDbgMMX,REM_LINEREDTEXT,[ebx],TRUE
+		lea		ebx,[ebx+4]
+	.endw
+	ret
+
+AddText:
+	invoke strcpy,szContextPtr,eax
+	invoke strlen,szContextPtr
+	add		szContextPtr,eax
+	retn
+
+RegOut:
+	invoke wsprintf,addr buffer,offset szMMXReg,ecx,dword ptr [esi+4],dword ptr [esi]
+	invoke strlen,addr buffer
+	invoke strcat,addr buffer,addr szCR
+	lea		eax,buffer
+	call	AddText
+	mov		eax,[esi+4]
+	sub		eax,[edi+4]
+	mov		eax,[esi]
+	sbb		eax,[edi]
+	.if !ZERO?
+		mov		edx,LineChangedInx
+		lea		edx,[edx*4+offset LineChanged]
+		mov		eax,nLine
+		mov		[edx],eax
+		mov		dword ptr [edx+4],0
+		inc		LineChangedInx
+	.endif
+	retn
+
+ShowMMXContext endp
 
 RestoreSourceByte proc uses ebx edi,Address:DWORD
 	
@@ -545,6 +612,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 									.if eax
 										invoke ShowRegContext
 										invoke ShowFpuContext
+										invoke ShowMMXContext
 										invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
 									.endif
 									invoke WatchVars

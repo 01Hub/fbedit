@@ -91,6 +91,7 @@ ADDINHANDLES struct
 	hMnuFont				HFONT ?					;Handle to menu font.
 	hReg					HKEY ?					;Handle to MasmEd's registry key.
 	hDbgFpu					HWND ?					;Handle to debug FPU window (RAEdit).
+	hDbgMMX					HWND ?					;Handle to debug MMX window (RAEdit).
 ADDINHANDLES ends
 
 MAKEOPT struct

@@ -474,6 +474,7 @@ UpdateToolColors proc
 	invoke SendMessage,ha.hImmOut,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hDbgReg,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hDbgFpu,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hDbgMMX,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hDbgWatch,REM_SETCOLOR,0,addr racol
 	;Set tool colors
 	invoke SendMessage,ha.hBrowse,FBM_SETBACKCOLOR,0,col.toolback
@@ -1112,6 +1113,7 @@ Update:
 		invoke UpdateToolColors
 		invoke SendMessage,ha.hOut,WM_SETFONT,ha.hFont,TRUE
 		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,TRUE
+		invoke SendMessage,ha.hDbgMMX,WM_SETFONT,ha.hFont,TRUE
 		invoke SendMessage,ha.hDbgWatch,WM_SETFONT,ha.hFont,TRUE
 		invoke RegSetValueEx,ha.hReg,addr szEditOpt,0,REG_BINARY,addr edopt,sizeof edopt
 		invoke RegSetValueEx,ha.hReg,addr szColor,0,REG_BINARY,addr col,sizeof col

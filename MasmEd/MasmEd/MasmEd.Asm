@@ -1616,6 +1616,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pushad
 			invoke MoveWindow,ha.hDbgFpu,ecx,rect.top,eax,edx,TRUE
 			popad
+			pushad
+			invoke MoveWindow,ha.hDbgMMX,ecx,rect.top,eax,edx,TRUE
+			popad
 			invoke MoveWindow,ha.hDbgWatch,ecx,rect.top,eax,edx,TRUE
 			pop		rect.top
 		.endif
@@ -1726,6 +1729,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTabDbg,TCM_SETCURSEL,eax,0
 		mov		tci.pszText,offset szFloat
 		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
+		mov		tci.pszText,offset szMMX
+		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		mov		tci.pszText,offset szWatch
 		invoke SendMessage,ha.hTabDbg,TCM_INSERTITEM,999,addr tci
 		;Window caption
@@ -1762,6 +1767,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hWnd,IDC_DBGREG,ha.hInstance,0
 		mov		ha.hDbgFpu,eax
 		invoke SendMessage,ha.hDbgFpu,WM_SETFONT,ha.hFont,FALSE
+		;Create debug MMX window
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hWnd,IDC_DBGREG,ha.hInstance,0
+		mov		ha.hDbgMMX,eax
+		invoke SendMessage,ha.hDbgMMX,WM_SETFONT,ha.hFont,FALSE
 		;Create debug watch window
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,ha.hWnd,IDC_DBGWATCH,ha.hInstance,0
 		mov		ha.hDbgWatch,eax
@@ -1918,6 +1927,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.hDbgReg,eax
 		mov		eax,ha.hDbgFpu
 		mov		dbginf.hDbgFpu,eax
+		mov		eax,ha.hDbgMMX
+		mov		dbginf.hDbgMMX,eax
 		mov		eax,ha.hDbgWatch
 		mov		dbginf.hDbgWatch,eax
 		mov		eax,ha.hProperty
@@ -2597,6 +2608,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.hDbgReg,eax
 					mov		eax,ha.hDbgFpu
 					mov		dbginf.hDbgFpu,eax
+					mov		eax,ha.hDbgMMX
+					mov		dbginf.hDbgMMX,eax
 					mov		eax,ha.hDbgWatch
 					mov		dbginf.hDbgWatch,eax
 					mov		eax,ha.hProperty
@@ -2987,18 +3000,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Debug watch tab
 			invoke SendMessage,ha.hTabDbg,TCM_GETCURSEL,0,0
 			mov		nDbgSel,eax
-			.if nDbgSel==2
+			.if nDbgSel==3
+				; Watch
 				invoke ShowWindow,ha.hDbgWatch,SW_SHOWNA
 				invoke ShowWindow,ha.hDbgReg,SW_HIDE
 				invoke ShowWindow,ha.hDbgFpu,SW_HIDE
+				invoke ShowWindow,ha.hDbgMMX,SW_HIDE
+			.elseif nDbgSel==2
+				; MMX
+				invoke ShowWindow,ha.hDbgMMX,SW_SHOWNA
+				invoke ShowWindow,ha.hDbgReg,SW_HIDE
+				invoke ShowWindow,ha.hDbgFpu,SW_HIDE
+				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 			.elseif nDbgSel==1
+				; FPU
 				invoke ShowWindow,ha.hDbgFpu,SW_SHOWNA
 				invoke ShowWindow,ha.hDbgReg,SW_HIDE
 				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
+				invoke ShowWindow,ha.hDbgMMX,SW_HIDE
 			.else
+				; Register
 				invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
 				invoke ShowWindow,ha.hDbgFpu,SW_HIDE
 				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
+				invoke ShowWindow,ha.hDbgMMX,SW_HIDE
 			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
