@@ -205,10 +205,6 @@ RegOut:
 	invoke wsprintf,addr buffer,offset szFpuReg,ecx
 	invoke strlen,addr buffer
 	invoke FpToAscii,esi,addr buffer[eax],TRUE
-;	mov		eax,[esi+6]
-;	mov		ebx,[esi+2]
-;	movzx	edx,word ptr [esi]
-;	invoke wsprintf,addr buffer,offset szFpuReg,ecx,eax,ebx,edx
 	invoke strcat,addr buffer,addr szCR
 	lea		eax,buffer
 	call	AddText

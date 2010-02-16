@@ -476,7 +476,7 @@ BinOut proc  uses ecx edi,lpBuff:DWORD,Val:DWORD,nSize:DWORD
 	.while ecx<nSize
 		mov		edx,nSize
 		sub		edx,ecx
-		.if edx==8 || edx==16 || edx==24
+		.if (edx==8 || edx==16 || edx==24) && ecx
 			mov		byte ptr [edi+ecx],'-'
 			inc		edi
 		.endif
