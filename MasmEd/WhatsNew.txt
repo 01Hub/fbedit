@@ -6,6 +6,7 @@ o Holding Ctrl key while clicking on expand / collapse bookmark will expand / co
   all child blocks in the parent block.
 o The edit control now supports unlimitted line lenghts.
 o The debugger now has a FPU window showing fpu registers.
+o Fixed bug where make options did not uptate make selection combo.
 
 1.1.0.2e - 2010.02.08
 ---------------------

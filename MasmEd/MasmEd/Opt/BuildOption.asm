@@ -217,6 +217,7 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				invoke SendMessage,ha.hCbo,CB_RESETCONTENT,0,0
 				mov		esi,offset makeoptedit
 				mov		edi,offset da.makeopt
 				invoke RtlZeroMemory,edi,sizeof MAKEOPT*16
@@ -226,6 +227,8 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 					lea		edx,[ebx+1]
 					invoke MakeKey,addr szMakeType,edx,addr buffer
 					invoke RegSetValueEx,ha.hReg,addr buffer,0,REG_BINARY,edi,sizeof MAKEOPT
+					invoke SendMessage,ha.hCbo,CB_ADDSTRING,0,addr [edi].MAKEOPT.szType
+					invoke SendMessage,ha.hCbo,CB_SETITEMDATA,eax,edi
 					lea		esi,[esi+sizeof MAKEOPT]
 					lea		edi,[edi+sizeof MAKEOPT]
 					inc		ebx
@@ -236,6 +239,7 @@ BuildOptionDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 					invoke RegDeleteValue,ha.hReg,addr buffer
 					inc		ebx
 				.endw
+				invoke SendMessage,ha.hCbo,CB_SETCURSEL,da.nBuildOpt,0
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
