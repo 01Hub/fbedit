@@ -1,9 +1,12 @@
 Whats new:
 ----------
-1.0.7.4c
+1.0.7.5
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.
 o The edit control now supports unlimitted line lenghts.
+o Added Debug / Break. Very useful if your program hangs in a loop.
+o The debugger now breaks if there is an exception.
+o Added FPU and MMX register view to debugger.
 1.0.7.4b
 o Fixed a dialog editor paint bug.
 o Fixed a code editor bug that could cause chrash in rare cases.

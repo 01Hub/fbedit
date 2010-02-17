@@ -603,7 +603,7 @@ Sub BinOut(ByVal i As Integer,ByVal reg As Integer,ByVal buff As ZString Ptr)
 	Dim As Integer x
 	
 	For i=i To 31
-		If i=24 Or i=16 Or i=8 Then
+		If (i=24 Or i=16 Or i=8) And x>0 Then
 			buff[x]="-"
 			x+=1
 		EndIf
@@ -622,17 +622,24 @@ Sub seteip(ad As UInteger)
 	Dim i As Integer
 	Dim szptr As ZString Ptr
 	Dim szreg As ZString Ptr
-	Dim reg As Integer
-	Dim oldreg As Integer
+	Dim reg3 As Integer
+	Dim reg2 As Integer
+	Dim reg1 As Integer
+	Dim oldreg3 As Integer
+	Dim oldreg2 As Integer
+	Dim oldreg1 As Integer
 	Dim regptr(9) As Integer Ptr
 	Dim oldregptr(9) As Integer Ptr
-	Dim linered(9) As Integer
+	Dim linered(11) As Integer
 	Dim binbuff As ZString*32
+	Dim dreg As Double
+	Dim qreg As LongInt
 
-	vcontext.contextflags=CONTEXT_FULL
+	vcontext.contextflags=CONTEXT_FULL Or CONTEXT_FLOATING_POINT
 	GetThreadContext(threadcontext,@vcontext)
 	procsk=vcontext.ebp
 	vcontext.Eip=ad
+	vcontext.contextflags=CONTEXT_FULL
 	SetThreadContext(threadcontext,@vcontext)
 	regptr(0)=@vcontext.Eax
 	regptr(1)=@vcontext.Ebx
@@ -659,25 +666,25 @@ Sub seteip(ad As UInteger)
 	szptr+=lstrlen(szptr)
 	szreg=@szRegs
 	For i=0 To 8
-		RtlMoveMemory(@reg,regptr(i),4)
-		RtlMoveMemory(@oldreg,oldregptr(i),4)
-		wsprintf(szptr,szreg,reg,reg)
-		BinOut(0,reg,@binbuff)
+		RtlMoveMemory(@reg1,regptr(i),4)
+		RtlMoveMemory(@oldreg1,oldregptr(i),4)
+		wsprintf(szptr,szreg,reg1,reg1)
+		BinOut(0,reg1,@binbuff)
 		lstrcat(szptr,@binbuff)
 		lstrcat(szptr,@szCR)
 		szptr+=lstrlen(szptr)
 		szreg+=lstrlen(szreg)+1
-		linered(i)=reg<>oldreg
+		linered(i)=reg1<>oldreg1
 	Next
-	RtlMoveMemory(@reg,regptr(i),4)
-	RtlMoveMemory(@oldreg,oldregptr(i),4)
+	RtlMoveMemory(@reg1,regptr(i),4)
+	RtlMoveMemory(@oldreg1,oldregptr(i),4)
 	lstrcat(szptr,szreg)
-	BinOut(14,reg,@binbuff)
+	BinOut(14,reg1,@binbuff)
 	lstrcat(szptr,@binbuff)
 	lstrcat(szptr,@szCR)
 	szptr+=lstrlen(szptr)
 	szreg+=lstrlen(szreg)+1
-	linered(i)=reg<>oldreg
+	linered(i)=reg1<>oldreg1
 	SetWindowText(lpHandles->hregister,@szContext)
 	For i=0 To 8
 		SendMessage(lpHandles->hregister,REM_LINEREDTEXT,i+1,linered(i))
@@ -687,6 +694,77 @@ Sub seteip(ad As UInteger)
 	EndIf
 	SendMessage(lpHandles->hregister,REM_SETHILITELINE,0,1)
 	SendMessage(lpHandles->hregister,REM_SETHILITELINE,10,1)
+	' FPU
+	szptr=@szContext
+	lstrcpy(szptr,@szFpuDump)
+	szptr+=lstrlen(szptr)
+	For i=0 To 7
+		regptr(0)=Cast(Any Ptr,@vcontext.FloatSave.RegisterArea(i*10))
+		oldregptr(0)=Cast(Any Ptr,@oldcontext.FloatSave.RegisterArea(i*10))
+		RtlMoveMemory(@reg1,regptr(0),10)
+		RtlMoveMemory(@oldreg1,oldregptr(0),10)
+		wsprintf(szptr,@szFpuReg,i,reg3,reg2,reg1)
+		Asm
+			mov	eax,[regptr]
+			fld	tbyte Ptr [eax]
+			lea	eax,[dreg]
+			fstp	qword Ptr [eax]
+		End Asm
+		szptr+=lstrlen(szptr)
+		*szptr=Str(dreg)
+		lstrcat(szptr,@szCR)
+		szptr+=lstrlen(szptr)
+		linered(i)=reg1<>oldreg1 Or reg2<>oldreg2 Or reg3<>oldreg3
+	Next
+	linered(8)=0
+	linered(10)=0
+	lstrcpy(szptr,@szFpuCTW)
+	szptr+=lstrlen(szptr)
+	reg1=vcontext.FloatSave.ControlWord And &HFFFF
+	oldreg1=oldcontext.FloatSave.ControlWord And &HFFFF
+	BinOut(16,reg1,@binbuff)
+	lstrcat(szptr,@binbuff)
+	lstrcat(szptr,@szCR)
+	szptr+=lstrlen(szptr)
+	linered(9)=reg1<>oldreg1
+	lstrcpy(szptr,@szFpuSTW)
+	szptr+=lstrlen(szptr)
+	reg1=vcontext.FloatSave.StatusWord And &HFFFF
+	oldreg1=oldcontext.FloatSave.StatusWord And &HFFFF
+	BinOut(16,reg1,@binbuff)
+	lstrcat(szptr,@binbuff)
+	lstrcat(szptr,@szCR)
+	szptr+=lstrlen(szptr)
+	linered(11)=reg1<>oldreg1
+	SetWindowText(lpHandles->hfpu,@szContext)
+	For i=0 To 11
+		SendMessage(lpHandles->hfpu,REM_LINEREDTEXT,i+1,linered(i))
+	Next
+	SendMessage(lpHandles->hfpu,REM_SETHILITELINE,0,1)
+	SendMessage(lpHandles->hfpu,REM_SETHILITELINE,9,1)
+	SendMessage(lpHandles->hfpu,REM_SETHILITELINE,11,1)
+	' MMX
+	szptr=@szContext
+	lstrcpy(szptr,@szMmxDump)
+	szptr+=lstrlen(szptr)
+	For i=0 To 7
+		regptr(0)=Cast(Any Ptr,@vcontext.FloatSave.RegisterArea(i*10))
+		oldregptr(0)=Cast(Any Ptr,@oldcontext.FloatSave.RegisterArea(i*10))
+		RtlMoveMemory(@reg1,regptr(0),8)
+		RtlMoveMemory(@qreg,regptr(0),8)
+		RtlMoveMemory(@oldreg1,oldregptr(0),8)
+		wsprintf(szptr,@szMmxReg,i,reg2,reg1)
+		szptr+=lstrlen(szptr)
+		*szptr=Str(qreg)
+		lstrcat(szptr,@szCR)
+		szptr+=lstrlen(szptr)
+		linered(i)=reg1<>oldreg1 Or reg2<>oldreg2
+	Next
+	SetWindowText(lpHandles->hmmx,@szContext)
+	For i=0 To 7
+		SendMessage(lpHandles->hmmx,REM_LINEREDTEXT,i+1,linered(i))
+	Next
+	SendMessage(lpHandles->hmmx,REM_SETHILITELINE,0,1)
 	RtlMoveMemory(@oldcontext,@vcontext,SizeOf(CONTEXT))
 
 End Sub

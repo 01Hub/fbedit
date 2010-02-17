@@ -229,3 +229,9 @@ Dim Shared oldcontext As CONTEXT
 
 Const szDump	=!"Reg Hex              Dec Bin\13\0"
 Const szRegs	=!"EAX %08X %11d \0EBX %08X %11d \0ECX %08X %11d \0EDX %08X %11d \0ESP %08X %11d \0EBP %08X %11d \0ESI %08X %11d \0EDI %08X %11d \0EIP %08X %11d \0    AV-R NIODIT-SZ A P C\13EFL \0\0"
+Const szFpuDump=!"Reg Hex                  Dec\13\0"
+Const szFpuReg	=!"ST%d %04X%08X%08X \0"
+Const szFpuCTW	=!"       XRCPC-  PUOZDI\13CTW \0"
+Const szFpuSTW	=!"    B3TOP210-ESPUOZDI\13STW \0"
+Const szMmxDump=!"Reg Hex              Dec\13\0"
+Const szMmxReg	=!"MM%d %08X%08X \0"

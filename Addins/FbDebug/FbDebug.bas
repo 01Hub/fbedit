@@ -1293,6 +1293,7 @@ Function DllFunction Cdecl Alias "DllFunction" (ByVal hWin As HWND,ByVal uMsg As
 						tid=ResumeThread(thisthreadcontext)
 						BringWindowToFront
 					Else
+						RtlZeroMemory(@oldcontext,SizeOf(CONTEXT))
 						fExit=0
 						If lstrlen(@lpData->ProjectFile) Then
 							If Len(lpData->smakeoutput) Then

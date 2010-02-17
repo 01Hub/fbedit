@@ -296,14 +296,15 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			lpOldImmediateProc=Cast(Any Ptr,SetWindowLong(ah.himm,GWL_WNDPROC,Cast(Integer,@ImmediateProc)))
 			' Handle of debug tab window
 			ah.hdbgtab=GetDlgItem(hWin,IDC_TABDEBUG)
+			' Create the tabs
 			tci.mask=TCIF_TEXT
 			tci.pszText=@szReg
-			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
-			SendMessage(ah.hdbgtab,TCM_SETCURSEL,i,0)
+			SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,Cast(LPARAM,@tci))
+			'SendMessage(ah.hdbgtab,TCM_SETCURSEL,i,0)
 			tci.pszText=@szFpu
-			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
+			SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,Cast(LPARAM,@tci))
 			tci.pszText=@szMmx
-			i=SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,@tci)
+			SendMessage(ah.hdbgtab,TCM_INSERTITEM,999,Cast(LPARAM,@tci))
 			' Handle of register window
 			ah.hregister=GetDlgItem(hWin,IDC_REGISTER)
 			' Handle of fpu window
@@ -790,8 +791,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								buff=""
 								If chrg.cpMin<>chrg.cpMax Then
 									SendMessage(ah.hred,EM_GETSELTEXT,0,Cast(LPARAM,@buff))
-								Else
-									'SendMessage(ah.hred,REM_GETWORD,260,Cast(LPARAM,@buff))
 								EndIf
 								If Len(buff) Then
 									hexfindbuff=buff
@@ -1822,12 +1821,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						lstpos.fchanged=lpRASELCHANGE->fchanged
 						lstpos.nline=lpRASELCHANGE->Line
 						SendMessage(ah.hred,REM_BRACKETMATCH,0,0)
-						'If ad.fDebug=FALSE Then
-						'	SendMessage(ah.hred,REM_SETHILITELINE,nLastLine,0)
-						'	If edtopt.hiliteline Then
-						'		SendMessage(ah.hred,REM_SETHILITELINE,lpRASELCHANGE->Line,2)
-						'	EndIf
-						'EndIf
 						If lpRASELCHANGE->Line<>nLastLine Then
 							ShowWindow(ah.htt,SW_HIDE)
 							HideList()
@@ -2004,6 +1997,28 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.htab Then
 				' Project tab
 				ShowProjectTab
+				'
+			ElseIf lpRASELCHANGE->nmhdr.code=TCN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.hdbgtab Then
+				' Debug tab
+				ad.nDbgTabSel=SendMessage(ah.hdbgtab,TCM_GETCURSEL,0,0)
+				Select Case ad.nDbgTabSel
+					Case 0
+						' REG
+						ShowWindow(ah.hregister,SW_SHOWNA)
+						ShowWindow(ah.hfpu,SW_HIDE)
+						ShowWindow(ah.hmmx,SW_HIDE)
+					Case 1
+						' FPU
+						ShowWindow(ah.hfpu,SW_SHOWNA)
+						ShowWindow(ah.hregister,SW_HIDE)
+						ShowWindow(ah.hmmx,SW_HIDE)
+					Case 2
+						' MMX
+						ShowWindow(ah.hmmx,SW_SHOWNA)
+						ShowWindow(ah.hregister,SW_HIDE)
+						ShowWindow(ah.hfpu,SW_HIDE)
+				End Select
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=FBN_DBLCLICK  And lpRASELCHANGE->nmhdr.hwndFrom=ah.hfib Then
 				' File dblclicked
 				lpFBNOTIFY=Cast(FBNOTIFY Ptr,lParam)
@@ -2012,6 +2027,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If SendMessage(ah.hpr,PRM_GETSELBUTTON,0,0)=1 Then
 					UpdateFileProperty
 				EndIf
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=BN_CLICKED And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
 				' Property toolbar button
 				lpRAPNOTIFY=Cast(RAPNOTIFY Ptr,lParam)
@@ -2028,6 +2044,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						EndIf
 						SendMessage(ah.hpr,PRM_REFRESHLIST,0,0)
 				End Select
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_DBLCLK And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
 				' Property dbl click
 				If ah.hred<>0 And ah.hred<>ah.hres Then
@@ -2048,9 +2065,11 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 				SendMessage(ah.hred,REM_VCENTER,0,0)
 				SetFocus(ah.hred)
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=LBN_SELCHANGE And lpRASELCHANGE->nmhdr.hwndFrom=ah.hpr Then
 				' Property selchange
 				fTimer=1
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=TVN_BEGINLABELEDIT And lpRASELCHANGE->nmhdr.hwndFrom=ah.hprj Then
 				' Project labeledit
 				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
@@ -2058,6 +2077,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				If lpNMTVDISPINFO->item.lParam=0 Then
 					SendMessage(ah.hprj,TVM_ENDEDITLABELNOW,0,0)
 				EndIf
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=TVN_ENDLABELEDIT And lpRASELCHANGE->nmhdr.hwndFrom=ah.hprj Then
 				' Project labeledit
 				lpNMTVDISPINFO=Cast(NMTVDISPINFO Ptr,lParam)
@@ -2074,6 +2094,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 					RefreshProjectTree
 				EndIf
+				'
 			ElseIf lpRASELCHANGE->nmhdr.code=TTN_NEEDTEXTA Then
 				' ToolBar tooltip
 				lpTOOLTIPTEXT=Cast(TOOLTIPTEXT Ptr,lParam)
@@ -2178,10 +2199,28 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 				EndIf
 				If ad.fDebug Then
 					ShowWindow(ah.hdbgtab,SW_SHOWNA)
-					ShowWindow(ah.hregister,SW_SHOWNA)
+					Select Case ad.nDbgTabSel
+						Case 0
+							' REG
+							ShowWindow(ah.hregister,SW_SHOWNA)
+							ShowWindow(ah.hfpu,SW_HIDE)
+							ShowWindow(ah.hmmx,SW_HIDE)
+						Case 1
+							' FPU
+							ShowWindow(ah.hfpu,SW_SHOWNA)
+							ShowWindow(ah.hregister,SW_HIDE)
+							ShowWindow(ah.hmmx,SW_HIDE)
+						Case 2
+							' MMX
+							ShowWindow(ah.hmmx,SW_SHOWNA)
+							ShowWindow(ah.hregister,SW_HIDE)
+							ShowWindow(ah.hfpu,SW_HIDE)
+					End Select
 				Else
 					ShowWindow(ah.hdbgtab,SW_HIDE)
 					ShowWindow(ah.hregister,SW_HIDE)
+					ShowWindow(ah.hfpu,SW_HIDE)
+					ShowWindow(ah.hmmx,SW_HIDE)
 				EndIf
 				' Size the tab
 				MoveWindow(ah.htab,rect.right-twt+2,tbhgt,twt-2,prjht,TRUE)
