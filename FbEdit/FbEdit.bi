@@ -246,6 +246,7 @@ Declare Sub HH_Help()
 
 #Define IDM_PROPERTY_JUMP					10221
 #Define IDM_PROPERTY_COPY					10222
+#Define IDM_PROPERTY_FINDALL				10229
 #define IDM_PROPERTY_HILIGHT 				10223
 #define IDM_PROPERTY_HILIGHT_UPDATE 	10224
 #define IDM_PROPERTY_HILIGHT_RESET 		10225
@@ -669,6 +670,7 @@ Type FIND
 End Type
 
 Dim Shared f As FIND
+Dim Shared fsave As FIND
 
 Type LASTPOS
 	hwnd		As HWND

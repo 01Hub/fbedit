@@ -811,8 +811,12 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 									f.findbuff=buff
 								EndIf
 								If findvisible Then
-									SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@f.findbuff))
-									SetFocus(findvisible)
+									If GetActiveWindow=findvisible Then
+										SendMessage(findvisible,WM_CLOSE,0,0)
+									Else
+										SendDlgItemMessage(ah.hfind,IDC_FINDTEXT,WM_SETTEXT,0,Cast(LPARAM,@f.findbuff))
+										SetFocus(findvisible)
+									EndIf
 								Else
 									CreateDialogParam(hInstance,Cast(ZString Ptr,IDD_FINDDLG),GetOwner,@FindDlgProc,FALSE)
 								EndIf
@@ -1619,6 +1623,41 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								EndIf
 								SendMessage(ah.hred,EM_REPLACESEL,TRUE,Cast(LPARAM,@buff))
 								SetFocus(ah.hred)
+							EndIf
+							'
+						Case IDM_PROPERTY_FINDALL
+							If SendMessage(ah.hpr,PRM_GETSELTEXT,0,Cast(LPARAM,@buff)) Then
+								SendMessage(ah.hout,WM_SETTEXT,0,Cast(Integer,StrPtr(szNULL)))
+								UpdateAllTabs(6)
+								fsave=f
+								If InStr(buff,"(") Then
+									buff=Left(buff,InStr(buff,"(")-1)
+								ElseIf InStr(buff,":") Then
+									buff=Left(buff,InStr(buff,":")-1)
+								EndIf
+								f.fr=FR_MATCHCASE Or FR_WHOLEWORD
+								f.fdir=0
+								f.fsearch=3
+								f.flogfind=TRUE
+								f.findbuff=buff
+								ResetFind
+								If f.fres=-1 Then
+									Find(hWin,f.fr)
+								EndIf
+								Do While f.fres<>-1
+									SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
+									If f.fdir=2 Then
+										If f.fres<>-1 Then
+											f.ft.chrg.cpMin=chrg.cpMin-1
+										EndIf
+									Else
+										If f.fres<>-1 Then
+											f.ft.chrg.cpMin=chrg.cpMin+chrg.cpMax-chrg.cpMin
+										EndIf
+									EndIf
+									Find(hWin,f.fr)
+								Loop
+								f=fsave
 							EndIf
 							'
 						Case IDM_PROPERTY_HILIGHT_RESET

@@ -4,6 +4,8 @@ Whats new:
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.
 o The edit control now supports unlimitted line lenghts.
+o Added Find All to Property context menu.
+o Ctrl+F now closes the find dialog if it has focus.
 o Added Debug / Break. Very useful if your program hangs in a loop.
 o The debugger now breaks if there is an exception.
 o Added FPU and MMX register view to debugger.
