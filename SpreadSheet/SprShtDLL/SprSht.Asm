@@ -357,6 +357,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
+		mov		CellClick,TRUE
 		mov		fTimer,1
 		mov		eax,lParam
 		and		eax,0FFFFh
@@ -386,11 +387,9 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		edx,eax
 					movzx	eax,ax
 					shr		edx,16
-					mov		CellClick,TRUE
 					.if eax!=[esi].WIN.ccol || edx!=[esi].WIN.crow
 						mov		[esi].WIN.ccol,eax
 						mov		[esi].WIN.crow,edx
-						mov		CellClick,FALSE
 						pushad
 						invoke TestCurPos,ebx,esi
 						invoke TestSync,esi
@@ -433,16 +432,13 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		sprbtn.hdr.code,SPRN_BUTTONCLICK
 								call	ButtonClick
 							.elseif edx==TPE_CHECKBOX
-								;.if CellClick
-									push	eax
-									invoke IsOnCellButton,ebx,esi,addr pt,eax
-									pop		edx
-									.if eax
-										invoke CheckClick,ebx,esi,edx
-									.endif
-								;.endif
+								push	eax
+								invoke IsOnCellButton,ebx,esi,addr pt,eax
+								pop		edx
+								.if eax
+									invoke CheckClick,ebx,esi,edx
+								.endif
 							.elseif edx==TPE_COMBOBOX
-;								.if CellClick && !hCtrl
 								push	eax
 								invoke IsOnCellButton,ebx,esi,addr pt,eax
 								pop		edx
@@ -490,6 +486,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ReleaseCapture
 		mov		fTimer,0
 	.elseif eax==WM_MOUSEMOVE
+		mov		CellClick,TRUE
 		mov		eax,lParam
 		and		eax,0FFFFh
 		cwde
@@ -763,6 +760,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								push	eax
 								push	edx
 								mov		edx,SPRN_SELCHANGE
+								mov		CellClick,TRUE
 								call	SelChange
 								pop		edx
 								pop		eax
@@ -909,6 +907,7 @@ WinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,[ebx].SHEET.hwnd,WM_SIZE,0,0
 		.endif
 	.elseif eax==WM_KEYDOWN
+		mov		CellClick,FALSE
 		.if hCtrl
 			invoke ShowWindow,hCtrl,SW_HIDE
 			mov		hCtrl,0
@@ -1323,6 +1322,8 @@ MoveIt:
 	mov		eax,[esi].WIN.crow
 	mov		sprsc.row,eax
 	mov		sprsc.fcancel,FALSE
+	mov		eax,CellClick
+	mov		sprsc.fclick,eax
 	invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr sprsc
 	.if sprsc.fcancel
 		invoke RtlMoveMemory,addr [esi].WIN.tcol,addr savepos,6*4
@@ -1423,6 +1424,8 @@ SelChange:
 	mov		sprsc.col,eax
 	mov		sprsc.row,edx
 	mov		sprsc.fcancel,FALSE
+	mov		eax,CellClick
+	mov		sprsc.fclick,eax
 	invoke SendMessage,[ebx].SHEET.howner,WM_NOTIFY,[ebx].SHEET.nid,addr sprsc
 	retn
 
@@ -2544,6 +2547,14 @@ SheetProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GlobalFree,[ebx].SHEET.lprowmem
 		invoke GlobalFree,ebx
 		invoke SetWindowLong,hWin,0,0
+	.elseif eax==WM_STYLECHANGED
+		.if wParam==GWL_STYLE
+			mov		eax,lParam
+			mov		eax,[eax].STYLESTRUCT.styleNew
+			mov		[ebx].SHEET.winst,eax
+		.endif
+		invoke InvalidateRect,hWin,NULL,TRUE
+		jmp		Ex
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,SPRM_SETCELLSTRING,TPE_TEXT,addr szToolTip
 		xor		eax,eax

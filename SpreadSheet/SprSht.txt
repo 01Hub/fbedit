@@ -221,6 +221,9 @@ Whats new since 0.0.0.1
   NOTE! A multiline column header must have the FMTA_TOP alignment.
 - Fixed bug with graph global back color.
 - Fixed bug with long column header text.
+0.0.2.3
+- Added SPS_NOFOCUS style. If set current cell selection will not get the cell selected colors.
+- Addrd fclick member to SPR_SELCHANGE struct. If TRUE the selection was done by clicking the left mouse button.
 
 NOTE
 ----

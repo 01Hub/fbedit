@@ -228,6 +228,10 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				shr		ecx,16
 				movzx	eax,ax
 				invoke SendMessage,hSht,SPRM_DELETECELL,eax,ecx
+			.elseif eax==1003
+				invoke GetWindowLong,hSht,GWL_STYLE
+				xor		eax,SPS_NOFOCUS
+				invoke SetWindowLong,hSht,GWL_STYLE,eax
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -237,6 +241,8 @@ DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,[edx].NMHDR.code
 			.if eax==SPRN_SELCHANGE
 				PrintText "SPRN_SELCHANGE"
+				mov		eax,[edx].SPR_SELCHANGE.fclick
+				PrintDec eax
 ;				mov		eax,[edx].SPR_SELCHANGE.col
 ;				PrintDec eax
 				mov		eax,[edx].SPR_SELCHANGE.row

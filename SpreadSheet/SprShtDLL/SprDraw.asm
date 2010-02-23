@@ -1636,23 +1636,26 @@ DrawCellBackColor:
 			mov		edx,[ebx].SHEET.gfmt.lockcol
 		.endif
 	.endif
-	mov		eax,[esi].WIN.nwin
-	.if eax==[ebx].SHEET.nwin
-		mov		eax,nRow
-		.if (eax>=[esi].WIN.crow && eax<=[esi].WIN.mrow) || (eax>=[esi].WIN.mrow && eax<=[esi].WIN.crow)
-			mov		ecx,[ebx].SHEET.winst
-			and		ecx,SPS_ROWSELECT
-			mov		eax,nCol
-			.if ((eax>=[esi].WIN.ccol && eax<=[esi].WIN.mcol) || (eax>=[esi].WIN.mcol && eax<=[esi].WIN.ccol) || ecx) && eax<=[ebx].SHEET.gfmt.ncols
-				invoke GetFocus
-				.if eax==[esi].WIN.hwin
-					mov		edx,[ebx].SHEET.gfmt.bckfocol
-					mov		eax,[ebx].SHEET.gfmt.txtfocol
-					mov		txtcol,eax
-				.else
-					mov		edx,[ebx].SHEET.gfmt.bcknfcol
-					mov		eax,[ebx].SHEET.gfmt.txtnfcol
-					mov		txtcol,eax
+	test	[ebx].SHEET.winst,SPS_NOFOCUS
+	.if ZERO?
+		mov		eax,[esi].WIN.nwin
+		.if eax==[ebx].SHEET.nwin
+			mov		eax,nRow
+			.if (eax>=[esi].WIN.crow && eax<=[esi].WIN.mrow) || (eax>=[esi].WIN.mrow && eax<=[esi].WIN.crow)
+				mov		ecx,[ebx].SHEET.winst
+				and		ecx,SPS_ROWSELECT
+				mov		eax,nCol
+				.if ((eax>=[esi].WIN.ccol && eax<=[esi].WIN.mcol) || (eax>=[esi].WIN.mcol && eax<=[esi].WIN.ccol) || ecx) && eax<=[ebx].SHEET.gfmt.ncols
+					invoke GetFocus
+					.if eax==[esi].WIN.hwin
+						mov		edx,[ebx].SHEET.gfmt.bckfocol
+						mov		eax,[ebx].SHEET.gfmt.txtfocol
+						mov		txtcol,eax
+					.else
+						mov		edx,[ebx].SHEET.gfmt.bcknfcol
+						mov		eax,[ebx].SHEET.gfmt.txtnfcol
+						mov		txtcol,eax
+					.endif
 				.endif
 			.endif
 		.endif

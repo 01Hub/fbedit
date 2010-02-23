@@ -65,6 +65,7 @@ SPS_WINSIZE				equ 0200h			;Allow splitt window sizeing by mouse
 SPS_MULTISELECT			equ 0400h			;Allow multiselect
 SPS_LOCKVSCROLL			equ 0800h			;Vertical scrolling is locked
 SPS_LOCKHSCROLL			equ 1000h			;Horizontal scrolling is locked
+SPS_NOFOCUS				equ 2000h			;The cellfocus is not shown.
 
 ;Cell data types
 TPE_EMPTY				equ 000h			;The cell contains formatting only
@@ -236,6 +237,7 @@ SPR_SELCHANGE struct dword
 	col				dd ?					;Column
 	row				dd ?					;Row
 	fcancel			dd ?					;Set to TRUE to cancel selection change
+	fclick			dd ?					;TRUE if mouse was clicked
 SPR_SELCHANGE ends
 
 ;SPRN_BEFOREEDIT, SPRN_AFTEREDIT, SPRN_BEFOREUPDATE and SPRN_AFTERUPDATE
