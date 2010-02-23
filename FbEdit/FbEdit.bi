@@ -683,3 +683,4 @@ End Type
 Dim Shared lstpos As LASTPOS
 Dim Shared szQuickRun As ZString*MAX_PATH
 Dim Shared fUnicode As Integer
+Dim Shared szLastDir As ZString*MAX_PATH

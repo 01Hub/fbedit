@@ -249,6 +249,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			' Set close button image
 			SendDlgItemMessage(hWin,IDM_FILE_CLOSE,BM_SETIMAGE,IMAGE_BITMAP,Cast(Integer,LoadBitmap(hInstance,Cast(ZString Ptr,101))))
 			' Get from ini
+			GetPrivateProfileString(StrPtr("Win"),StrPtr("Path"),0,@szLastDir,SizeOf(szLastDir),@ad.IniFile)
 			GetPrivateProfileString(StrPtr("Project"),StrPtr("Path"),StrPtr("\"),@ad.DefProjectPath,SizeOf(ad.DefProjectPath),@ad.IniFile)
 			If Asc(ad.DefProjectPath)=Asc("\") Then
 				ad.DefProjectPath=Left(ad.AppPath,2) & ad.DefProjectPath
@@ -606,6 +607,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SaveFindHistory
 			SaveToIni(StrPtr("Win"),StrPtr("Winpos"),"4444444444444444444",@wpos,FALSE)
 			SaveToIni(StrPtr("Win"),StrPtr("ressize"),"444444",@ressize,FALSE)
+			WritePrivateProfileString(StrPtr("Win"),StrPtr("Path"),@szLastDir,@ad.IniFile)
 			DefWindowProc(hWin,uMsg,wParam,lParam)
 			PostQuitMessage(NULL)
 			'

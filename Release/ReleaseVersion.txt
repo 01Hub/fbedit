@@ -1,1 +1,1 @@
-FreeBASIC editor 1.0.7.4c
+FreeBASIC editor 1.0.7.5

@@ -183,5 +183,9 @@ Version 1.0.1.3
 o Debugging now works on FreeBASIC 021
 o Added Files command to immediate window.
   Will show a list of files.
+Version 1.0.1.4
+o Added Debug / Break. Very useful if your program hangs in a loop.
+o Added FPU and MMX register windows.
+o The debugger now breaks on an exception.
 
 KetilO

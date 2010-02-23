@@ -9,6 +9,7 @@ o Ctrl+F now closes the find dialog if it has focus.
 o Added Debug / Break. Very useful if your program hangs in a loop.
 o The debugger now breaks if there is an exception.
 o Added FPU and MMX register view to debugger.
+o The last directory used to open a file or project is now saved.
 1.0.7.4b
 o Fixed a dialog editor paint bug.
 o Fixed a code editor bug that could cause chrash in rare cases.
@@ -834,5 +835,3 @@ Case convert hidden setting.
 	CaseConvert=CWPp
 
 KetilO
-
-

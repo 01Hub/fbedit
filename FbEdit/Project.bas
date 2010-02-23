@@ -706,6 +706,7 @@ Function OpenProject() As Integer
 	NextTab(FALSE)
 	AddMruProject
 	CallAddins(ah.hwnd,AIM_PROJECTOPEN,0,0,HOOK_PROJECTOPEN)
+	szLastDir=ad.ProjectPath
 	Return 0
 
 End Function

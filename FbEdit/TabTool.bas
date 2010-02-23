@@ -435,6 +435,9 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 	ofn.nMaxFile=32*1024
 	ofn.lpstrFilter=StrPtr(ALLFilterString)
 	ofn.Flags=OFN_EXPLORER Or OFN_FILEMUSTEXIST Or OFN_HIDEREADONLY Or OFN_PATHMUSTEXIST Or OFN_ALLOWMULTISELECT Or OFN_EXPLORER
+	If Len(szLastDir) Then
+		ofn.lpstrInitialDir=@szLastDir
+	EndIf
 	If GetOpenFileName(@ofn) Then
 		lstrcpy(@pth,Cast(ZString Ptr,hMem))
 		i=Len(pth)+1
@@ -442,6 +445,15 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 		If Asc(s)=0 Then
 			' Open single file
 			OpenTheFile(pth,fHex)
+			i=0
+			While TRUE
+				If InStr(i+1,pth,"\")=0 Then
+					Exit While
+				EndIf
+				i=InStr(i+1,pth,"\")
+			Wend
+			If i=3 Then i=4
+			pth=Left(pth,i-1)
 		Else
 			' Open multiple files
 			Do While Asc(s)<>0
@@ -453,6 +465,7 @@ Sub OpenAFile(ByVal hWin As HWND,ByVal fHex As Boolean)
 				lstrcpy(@s,Cast(ZString Ptr,hMem+i))
 			Loop
 		EndIf
+		szLastDir=pth
 	EndIf
 	GlobalFree(hMem)
 

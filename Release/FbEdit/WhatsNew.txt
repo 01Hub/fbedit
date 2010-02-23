@@ -1,17 +1,12 @@
 Whats new:
 ----------
-1.0.7.4c
+1.0.7.5
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.
 o The edit control now supports unlimitted line lenghts.
-1.0.7.4b
-o Fixed a dialog editor paint bug.
-o Fixed a code editor bug that could cause chrash in rare cases.
-1.0.7.4
-o Added Edit / Empty Undo Buffer.
-o Added UpdateChecker addin.
-  Lets you check for new version, download and unzip FbEdit.zip.
-o Added UndoSave addin.
-  Saves undo information on project code files.
-o Fixed a dialog editor bug that caused it imposible to select
-  controls on win95,98 and me.
+o Added Find All to Property context menu.
+o Ctrl+F now closes the find dialog if it has focus.
+o Added Debug / Break. Very useful if your program hangs in a loop.
+o The debugger now breaks if there is an exception.
+o Added FPU and MMX register view to debugger.
+o The last directory used to open a file or project is now saved.
