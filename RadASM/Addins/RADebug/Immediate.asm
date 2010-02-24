@@ -489,7 +489,10 @@ Immediate proc uses ebx esi edi,hWin:HWND
 				mov		[edx],eax
 				mov		ebx,dbg.lpthread
 				invoke SetThreadContext,[ebx].DEBUGTHREAD.htread,addr dbg.context
-				invoke ShowContext
+				invoke ShowRegContext
+				invoke ShowFpuContext
+				invoke ShowMmxContext
+				invoke RtlMoveMemory,addr dbg.prevcontext,addr dbg.context,sizeof CONTEXT
 				invoke GetVarVal,addr buffer1,dbg.prevline,TRUE
 				invoke PutStringOut,addr outbuffer,hOut3
 			.else

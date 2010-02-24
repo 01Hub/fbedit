@@ -449,8 +449,121 @@ BringWindowToFront proc
 
 BringWindowToFront endp
 
+AddViewMenu proc ID:DWORD
+	LOCAL	hMenu:DWORD
+	LOCAL	mii:MENUITEMINFO
+
+	mov		edx,2		;View menu
+	;Adjust topmost popup if maximized.
+	mov		eax,lpData
+	.if [eax].ADDINDATA.fMaximized
+		inc		edx
+	.endif
+	;Get handle of menu
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hMenu
+	;Get handle of View popup
+	invoke GetSubMenu,eax,edx
+	mov		hMenu,eax
+	mov		mii.cbSize,sizeof mii
+	mov		mii.fMask,MIIM_ID
+	invoke GetMenuItemInfo,hMenu,ID,FALSE,addr mii
+	.if !eax
+		;The menuitem did not exist. Add our menuitem
+		mov		mii.cbSize,sizeof mii
+		mov		mii.fMask,MIIM_DATA or MIIM_ID or MIIM_TYPE
+		mov		mii.fType,MFT_STRING
+		mov		eax,ID
+		mov		mii.wID,eax
+		mov		mii.dwTypeData,offset szView
+		invoke InsertMenuItem,hMenu,IDM_VIEW_STATUSBAR,FALSE,addr mii
+		xor		eax,eax
+	.endif
+	ret
+
+AddViewMenu endp
+
+ToolProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_SIZE
+		invoke GetClientRect,hWin,addr rect
+		invoke MoveWindow,hDbgTab,0,0,rect.right,20,TRUE
+		sub		rect.bottom,20
+		invoke MoveWindow,hDbgReg,0,20,rect.right,rect.bottom,TRUE
+		invoke MoveWindow,hDbgFpu,0,20,rect.right,rect.bottom,TRUE
+		invoke MoveWindow,hDbgMmx,0,20,rect.right,rect.bottom,TRUE
+		invoke MoveWindow,hDbgWatch,0,20,rect.right,rect.bottom,TRUE
+	.elseif eax==WM_NOTIFY
+		mov		edx,lParam
+		mov		eax,[edx].NMHDR.code
+		mov		ecx,[edx].NMHDR.idFrom
+		.if eax==TCN_SELCHANGE && ecx==IDC_DBGTAB
+			;Debug watch tab
+			invoke SendMessage,hDbgTab,TCM_GETCURSEL,0,0
+			mov		nDbgSel,eax
+			.if nDbgSel==3
+				; Watch
+				invoke ShowWindow,hDbgWatch,SW_SHOWNA
+				invoke ShowWindow,hDbgReg,SW_HIDE
+				invoke ShowWindow,hDbgFpu,SW_HIDE
+				invoke ShowWindow,hDbgMmx,SW_HIDE
+			.elseif nDbgSel==2
+				; MMX
+				invoke ShowWindow,hDbgMmx,SW_SHOWNA
+				invoke ShowWindow,hDbgReg,SW_HIDE
+				invoke ShowWindow,hDbgFpu,SW_HIDE
+				invoke ShowWindow,hDbgWatch,SW_HIDE
+			.elseif nDbgSel==1
+				; Fpu
+				invoke ShowWindow,hDbgFpu,SW_SHOWNA
+				invoke ShowWindow,hDbgReg,SW_HIDE
+				invoke ShowWindow,hDbgWatch,SW_HIDE
+				invoke ShowWindow,hDbgMmx,SW_HIDE
+			.else
+				; Reg
+				invoke ShowWindow,hDbgReg,SW_SHOWNA
+				invoke ShowWindow,hDbgFpu,SW_HIDE
+				invoke ShowWindow,hDbgWatch,SW_HIDE
+				invoke ShowWindow,hDbgMmx,SW_HIDE
+			.endif
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldToolProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+ToolProc endp
+
+SetFonts proc uses ebx
+	LOCAL	racol:RACOLOR
+	LOCAL	rafnt:RAFONT
+
+	mov		ebx,lpHandles
+	invoke SendMessage,hDbgTab,WM_SETFONT,[ebx].ADDINHANDLES.hLBFont,TRUE
+	invoke SendMessage,hOut1,REM_GETCOLOR,0,addr racol
+	invoke SendMessage,hOut1,REM_GETFONT,0,addr rafnt
+	mov		ebx,hDbgReg
+	call	SetIt
+	mov		ebx,hDbgFpu
+	call	SetIt
+	mov		ebx,hDbgMmx
+	call	SetIt
+	mov		ebx,hDbgWatch
+	call	SetIt
+	ret
+
+SetIt:
+	invoke SendMessage,ebx,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ebx,REM_SETFONT,0,addr rafnt
+	retn
+
+SetFonts endp
+
 ; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
+	LOCAL	tci:TC_ITEM
 
 	mov		ebx,hWin
 	mov		eax,fOpt
@@ -467,28 +580,78 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 	mov		eax,[eax].ADDINDATA.nRadASMVer
 	.if eax>=2217
 		mov		nRadASMVer,eax
-		; Get handle to outputwindow #1, #2 and #3
-		mov		eax,lpHandles
-		mov		edx,[eax].ADDINHANDLES.hOut1
-		mov		hOut1,edx
-		mov		edx,[eax].ADDINHANDLES.hOut2
-		mov		hOut2,edx
-		mov		edx,[eax].ADDINHANDLES.hOut3
-		mov		hOut3,edx
-		invoke SendMessage,hOut3,REM_SUBCLASS,0,addr ImmediateProc
-		mov		lpOldOutProc3,eax
-		; Create tooltip
-		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
-		mov		hTip,eax
-		invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
-		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
-		invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
-		invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
-		invoke CreateDebugMenu,hWin
-		invoke UpdateAccelerators
-		; Messages to hook into
-		mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
-		mov		ecx,RAM_EDITMOUSEMOVE
+		mov		nID,IDM_VIEW_TOOL1
+		invoke AddViewMenu,IDM_VIEW_TOOL1
+		mov		edx,lpHandles
+		mov		edx,[edx].ADDINHANDLES.hTl1
+		.if eax
+			;IDM_VIEW_TOOL1 was not free, try IDM_VIEW_TOOL2
+			mov		nID,IDM_VIEW_TOOL2
+			invoke AddViewMenu,IDM_VIEW_TOOL2
+			mov		edx,lpHandles
+			mov		edx,[edx].ADDINHANDLES.hTl2
+		.endif
+		.if !eax
+			;Save handle of tool window
+			mov		hTool,edx
+			;Subclass tool window
+			invoke SetWindowLong,hTool,GWL_WNDPROC,offset ToolProc
+			mov		lpOldToolProc,eax
+			;Create tab window
+			invoke CreateWindowEx,0,addr szTabControl,0,WS_CHILD or WS_VISIBLE,0,0,0,0,hTool,IDC_DBGTAB,hInstance,0
+			mov		hDbgTab,eax
+			;Add tabs
+			mov		tci.imask,TCIF_TEXT
+			push	esi
+			mov		esi,offset szTabs
+			.while byte ptr [esi]
+				mov		tci.pszText,esi
+				invoke SendMessage,hDbgTab,TCM_INSERTITEM,999,addr tci
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+			.endw
+			pop		esi
+			;Create debug register window
+			invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hTool,IDC_DBGREG,hInstance,0
+			mov		hDbgReg,eax
+			;Create debug fpu window
+			invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hTool,IDC_DBGFPU,hInstance,0
+			mov		hDbgFpu,eax
+			;Create debug mmx window
+			invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hTool,IDC_DBGMMX,hInstance,0
+			mov		hDbgMmx,eax
+			;Create debug watch window
+			invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,hTool,IDC_DBGWATCH,hInstance,0
+			mov		hDbgWatch,eax
+			;Size the tool window
+			invoke SendMessage,hTool,WM_SIZE,0,0
+			; Get handle to outputwindow #1, #2 and #3
+			mov		eax,lpHandles
+			mov		edx,[eax].ADDINHANDLES.hOut1
+			mov		hOut1,edx
+			mov		edx,[eax].ADDINHANDLES.hOut2
+			mov		hOut2,edx
+			mov		edx,[eax].ADDINHANDLES.hOut3
+			mov		hOut3,edx
+			invoke SendMessage,hOut3,REM_SUBCLASS,0,addr ImmediateProc
+			mov		lpOldOutProc3,eax
+			; Create tooltip
+			invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,hInstance,0
+			mov		hTip,eax
+			invoke SendMessage,hTip,TTM_ACTIVATE,TRUE,0
+			invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_INITIAL,100
+			invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
+			invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
+			invoke CreateDebugMenu,hWin
+			invoke UpdateAccelerators
+			invoke SetFonts
+			; Messages to hook into
+			mov		eax,RAM_COMMAND OR RAM_CLOSE OR RAM_MENUREBUILD OR RAM_PROJECTOPENED OR RAM_PROJECTCLOSED OR RAM_EDITOPEN or RAM_EDITSELCHANGE or RAM_EDITSAVED
+			mov		ecx,RAM_EDITMOUSEMOVE
+		.else
+			xor		eax,eax
+			xor		ecx,ecx
+		.endif
 	.else
 		xor		eax,eax
 		xor		ecx,ecx
@@ -535,20 +698,18 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[12]
 			;&Run
 			.if dbg.hDbgThread
-				;.if dbg.fHandled
-					mov		dbg.fHandled,FALSE
-					invoke ResetSelectLine
-					mov		dbg.func,FUNC_RUN
-					invoke ClearBreakPointsAll
-					invoke SetBreakPoints
-					mov		ebx,dbg.lpthread
-					.if [ebx].DEBUGTHREAD.suspended
-						invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
-						mov		[ebx].DEBUGTHREAD.suspended,FALSE
-						invoke ResumeThread,[ebx].DEBUGTHREAD.htread
-						invoke BringWindowToFront
-					.endif
-				;.endif
+				mov		dbg.fHandled,FALSE
+				invoke ResetSelectLine
+				mov		dbg.func,FUNC_RUN
+				invoke ClearBreakPointsAll
+				invoke SetBreakPoints
+				mov		ebx,dbg.lpthread
+				.if [ebx].DEBUGTHREAD.suspended
+					invoke RestoreSourceByte,[ebx].DEBUGTHREAD.address
+					mov		[ebx].DEBUGTHREAD.suspended,FALSE
+					invoke ResumeThread,[ebx].DEBUGTHREAD.htread
+					invoke BringWindowToFront
+				.endif
 			.else
 				mov		ebx,lpData
 				.if [ebx].ADDINDATA.fProject
@@ -567,26 +728,33 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 						invoke strcat,addr szTempName,addr szExeName
 						invoke strcpy,addr szExeName,addr szTempName
 						invoke NewerFiles
+						mov		ebx,lpHandles
 						.if sdword ptr eax>0
 							invoke wsprintf,addr buffer,addr szNewerFiles,eax
-							mov		edx,lpHandles
-							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
+							invoke MessageBox,[ebx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.elseif sdword ptr eax<0
 							invoke wsprintf,addr buffer,addr szExeNotFound,addr szExeName
-							mov		edx,lpHandles
-							invoke MessageBox,[edx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
+							invoke MessageBox,[ebx].ADDINHANDLES.hWnd,addr buffer,addr szDebug,MB_OK or MB_ICONERROR
 						.else
 							invoke RtlZeroMemory,addr dbg,sizeof dbg
+							invoke RtlZeroMemory,addr szOldWatch,sizeof szOldWatch
+							mov		ebx,lpProc
+							; Clear output #3
+							push	3
+							call	[ebx].ADDINPROCS.lpOutputSelect
+							call	[ebx].ADDINPROCS.lpClearOut
+							; Clear output #1
+							push	1
+							call	[ebx].ADDINPROCS.lpOutputSelect
+							call	[ebx].ADDINPROCS.lpClearOut
 							.if fOptions & 4
 								; Pin output window
 								push	0
-								push	15						;TLM_GET_STRUCT
+								push	TLM_GET_VISIBLE
 								mov		eax,lpHandles
 								push	[eax].ADDINHANDLES.hOut
-								mov		eax,lpProc
-								call	[eax].ADDINPROCS.lpToolMessage
-								mov		edx,[eax+8]				;.Visible
-								.if !edx
+								call	[ebx].ADDINPROCS.lpToolMessage
+								.if !eax
 									; Show
 									mov		eax,lpHandles
 									mov		eax,[eax].ADDINHANDLES.hWnd
@@ -602,29 +770,23 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 									invoke SendMessage,eax,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,eax
 								.endif
 							.endif
-							; Clear output #3
-							push	3
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpOutputSelect
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpClearOut
-							; Clear output #2
-							push	2
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpOutputSelect
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpClearOut
-							; Clear output #1
+							; Select output window #1
 							push	1
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpOutputSelect
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpClearOut
+							call	[ebx].ADDINPROCS.lpOutputSelect
+							.if fOptions & 8
+								; Show debug tool window
+								push	0
+								push	TLM_GET_VISIBLE
+								push	hTool
+								call	[ebx].ADDINPROCS.lpToolMessage
+								.if !eax
+									; Show
+									mov		eax,lpHandles
+									mov		eax,[eax].ADDINHANDLES.hWnd
+									invoke SendMessage,eax,WM_COMMAND,nID,eax
+								.endif
+							.endif
 							mov		dbg.func,FUNC_RUN
-							; Show debug info window
-							push	1
-							mov		eax,lpProc
-							call	[eax].ADDINPROCS.lpOutputSelect
 							invoke CreateThread,NULL,0,addr Debug,addr szExeName,NULL,addr tid
 							mov		dbg.hDbgThread,eax
 						.endif
@@ -748,12 +910,14 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		mov		eax,lpHandles
 		invoke CreateDebugMenu,[eax].ADDINHANDLES.hWnd
 		invoke UpdateAccelerators
+		invoke SetFonts
 		;
 	.elseif eax==AIM_PROJECTCLOSED
 		invoke EnableMenu
 		;
 	.elseif eax==AIM_PROJECTOPENED
 		invoke UpdateAccelerators
+		invoke SetFonts
 		invoke EnableMenu
 		invoke LoadWatch
 		mov		eax,lpData
@@ -779,6 +943,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		;
 	.elseif eax==AIM_EDITMOUSEMOVE
 		invoke EditProc,hWin,wParam,lParam
+		;
 	.endif
 	mov eax,FALSE
   Ex:

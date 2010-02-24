@@ -55,7 +55,7 @@ szSourceFile					db 'FileName: %s',0
 szSourceLine					db 'FileName: %s Adress: %X Line %u',0
 szSymLoadModuleFailed			db 'SymLoadModule failed.',0
 szSymInitializeFailed			db 'SymInitialize failed.',0
-szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols,',0Dh,0
+szFinal							db 'DbgHelp found %u source files containing %u lines and %u symbols.',0Dh,0
 szDbgHelpFail					db 'Could not find %s.',0
 
 CombSort_Const					REAL4 1.3

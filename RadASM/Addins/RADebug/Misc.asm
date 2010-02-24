@@ -1,6 +1,63 @@
 GetFileIDFromProjectFileID		PROTO	:DWORD
 AnyBreakPoints					PROTO
 
+.const
+
+FP_EQUALTO	equ	40h
+
+ten16		dq	1.0e16
+
+ten			dq	10.0
+
+ten_1		dt	1.0e1
+			dt	1.0e2
+			dt	1.0e3
+			dt	1.0e4
+			dt	1.0e5
+			dt	1.0e6
+			dt	1.0e7
+			dt	1.0e8
+			dt	1.0e9
+			dt	1.0e10
+			dt	1.0e11
+			dt	1.0e12
+			dt	1.0e13
+			dt	1.0e14
+			dt	1.0e15
+ten_16		dt	1.0e16
+			dt	1.0e32
+			dt	1.0e48
+			dt	1.0e64
+			dt	1.0e80
+			dt	1.0e96
+			dt	1.0e112
+			dt	1.0e128
+			dt	1.0e144
+			dt	1.0e160
+			dt	1.0e176
+			dt	1.0e192
+			dt	1.0e208
+			dt	1.0e224
+			dt	1.0e240
+ten_256		dt	1.0e256
+			dt	1.0e512
+			dt	1.0e768
+			dt	1.0e1024
+			dt	1.0e1280
+			dt	1.0e1536
+			dt	1.0e1792
+			dt	1.0e2048
+			dt	1.0e2304
+			dt	1.0e2560
+			dt	1.0e2816
+			dt	1.0e3072
+			dt	1.0e3328
+			dt	1.0e3584
+			dt	1.0e4096
+			dt	1.0e4352
+			dt	1.0e4608
+			dt	1.0e4864
+
 .code
 
 ; String handling
@@ -406,6 +463,247 @@ HexQWORD proc uses ecx ebx edi,lpBuff:DWORD,Val:QWORD
 	ret
 
 HexQWORD endp
+
+FpToAscii proc USES esi edi,lpFpin:PTR TBYTE,lpStr:PTR CHAR,fSci:DWORD
+	LOCAL	iExp:DWORD
+	LOCAL	stat:WORD
+	LOCAL	mystat:WORD
+	LOCAL	sztemp[32]:BYTE
+	LOCAL	temp:TBYTE
+
+	mov		esi,lpFpin
+	mov		edi,lpStr
+	.if	dword ptr [esi]== 0 && dword ptr [esi+4]==0
+		; Special case zero.  fxtract fails for zero.
+		mov		word ptr [edi], '0'
+		ret
+	.endif
+	; Check for a negative number.
+	push	[esi+6]
+	.if	sdword ptr [esi+6]<0
+		and		byte ptr [esi+9],07fh	; change to positive
+		mov		byte ptr [edi],'-'		; store a minus sign
+		inc		edi
+	.endif
+	fld		TBYTE ptr [esi]
+	fld		st(0)
+	; Compute the closest power of 10 below the number.  We can't get an
+	; exact value because of rounding.  We could get close by adding in
+	; log10(mantissa), but it still wouldn't be exact.  Since we'll have to
+	; check the result anyway, it's silly to waste cycles worrying about
+	; the mantissa.
+	;
+	; The exponent is basically log2(lpfpin).  Those of you who remember
+	; algebra realize that log2(lpfpin) x log10(2) = log10(lpfpin), which is
+	; what we want.
+	fxtract					; ST=> mantissa, exponent, [lpfpin]
+	fstp	st(0)			; drop the mantissa
+	fldlg2					; push log10(2)
+	fmulp	st(1),st		; ST = log10([lpfpin]), [lpfpin]
+	fistp 	iExp			; ST = [lpfpin]
+	; A 10-byte double can carry 19.5 digits, but fbstp only stores 18.
+	.IF	iExp<18
+		fld		st(0)		; ST = lpfpin, lpfpin
+		frndint				; ST = int(lpfpin), lpfpin
+		fcomp	st(1)		; ST = lpfpin, status set
+		fstsw	ax
+		.IF ah&FP_EQUALTO && !fSci	; if EQUAL
+			; We have an integer!  Lucky day.  Go convert it into a temp buffer.
+			call FloatToBCD
+			mov		eax,17
+			mov		ecx,iExp
+			sub		eax,ecx
+			inc		ecx
+			lea		esi,[sztemp+eax]
+			; The off-by-one order of magnitude problem below can hit us here.  
+			; We just trim off the possible leading zero.
+			.IF byte ptr [esi]=='0'
+				inc esi
+				dec ecx
+			.ENDIF
+			; Copy the rest of the converted BCD value to our buffer.
+			rep movsb
+			jmp ftsExit
+		.ENDIF
+	.ENDIF
+	; Have fbstp round to 17 places.
+	mov		eax, 17			; experiment
+	sub		eax,iExp		; adjust exponent to 17
+	call PowerOf10
+	; Either we have exactly 17 digits, or we have exactly 16 digits.  We can
+	; detect that condition and adjust now.
+	fcom	ten16
+	; x0xxxx00 means top of stack > ten16
+	; x0xxxx01 means top of stack < ten16
+	; x1xxxx00 means top of stack = ten16
+	fstsw	ax
+	.IF ah & 1
+		fmul	ten
+		dec		iExp
+	.ENDIF
+	; Go convert to BCD.
+	call FloatToBCD
+	lea		esi,sztemp		; point to converted buffer
+	; If the exponent is between -15 and 16, we should express this as a number
+	; without scientific notation.
+	mov ecx, iExp
+	.IF SDWORD PTR ecx>=-15 && SDWORD PTR ecx<=16 && !fSci
+		; If the exponent is less than zero, we insert '0.', then -ecx
+		; leading zeros, then 16 digits of mantissa.  If the exponent is
+		; positive, we copy ecx+1 digits, then a decimal point (maybe), then 
+		; the remaining 16-ecx digits.
+		inc ecx
+		.IF SDWORD PTR ecx<=0
+			mov		word ptr [edi],'.0'
+			add		edi, 2
+			neg		ecx
+			mov		al,'0'
+			rep		stosb
+			mov		ecx,18
+		.ELSE
+			.if byte ptr [esi]=='0' && ecx>1
+				inc		esi
+				dec		ecx
+			.endif
+			rep		movsb
+			mov		byte ptr [edi],'.'
+			inc		edi
+			mov		ecx,17
+			sub		ecx,iExp
+		.ENDIF
+		rep movsb
+		; Trim off trailing zeros.
+		.WHILE byte ptr [edi-1]=='0'
+			dec		edi
+		.ENDW
+		; If we cleared out all the decimal digits, kill the decimal point, too.
+		.IF byte ptr [edi-1]=='.'
+			dec		edi
+		.ENDIF
+		; That's it.
+		jmp		ftsExit
+	.ENDIF
+	; Now convert this to a standard, usable format.  If needed, a minus
+	; sign is already present in the outgoing buffer, and edi already points
+	; past it.
+	mov		ecx,17
+	.if byte ptr [esi]=='0'
+		inc		esi
+		dec		iExp
+		dec		ecx
+	.endif
+	movsb						; copy the first digit
+	mov		byte ptr [edi],'.'	; plop in a decimal point
+	inc		edi
+	rep movsb
+	; The printf %g specified trims off trailing zeros here.  I dislike
+	; this, so I've disabled it.  Comment out the if 0 and endif if you
+	; want this.
+	.WHILE byte ptr [edi-1]=='0'
+		dec		edi
+	.ENDW
+	.if byte ptr [edi-1]=='.'
+		dec		edi
+	.endif
+	; Shove in the exponent.
+	mov		byte ptr [edi],'e'	; start the exponent
+	mov		eax,iExp
+	.IF sdword ptr eax<0		; plop in the exponent sign
+		mov		byte ptr [edi+1],'-'
+		neg		eax
+	.ELSE
+		mov		byte ptr [edi+1],'+'
+	.ENDIF
+	mov		ecx, 10
+	xor		edx,edx
+	div		ecx
+	add		dl,'0'
+	mov		[edi+5],dl		; shove in the ones exponent digit
+	xor		edx,edx
+	div		ecx
+	add		dl,'0'
+	mov		[edi+4],dl		; shove in the tens exponent digit
+	xor		edx,edx
+	div		ecx
+	add		dl,'0'
+	mov		[edi+3],dl		; shove in the hundreds exponent digit
+	xor		edx,edx
+	div		ecx
+	add		dl,'0'
+	mov		[edi+2],dl		; shove in the thousands exponent digit
+	add		edi,6			; point to terminator
+ftsExit:
+	; Clean up and go home.
+	mov		esi,lpFpin
+	pop		[esi+6]
+	mov		byte ptr [edi],0
+	fwait
+	ret
+
+; Convert a floating point register to ASCII.
+; The result always has exactly 18 digits, with zero padding on the
+; left if required.
+;
+; Entry:	ST(0) = a number to convert, 0 <= ST(0) < 1E19.
+;			sztemp = an 18-character buffer.
+;
+; Exit:		sztemp = the converted result.
+FloatToBCD:
+	push	esi
+	push	edi
+    fbstp	temp
+	; Now we need to unpack the BCD to ASCII.
+    lea		esi,[temp]
+    lea		edi,[sztemp]
+    mov		ecx,8
+    .REPEAT
+		movzx	ax,byte ptr [esi+ecx]	; 0000 0000 AAAA BBBB
+		rol		ax,12					; BBBB 0000 0000 AAAA
+		shr		ah,4					; 0000 BBBB 0000 AAAA
+		add		ax,3030h				; 3B3A
+		stosw
+		dec		ecx
+    .UNTIL SIGN?
+	pop		edi
+	pop		esi
+    retn
+
+PowerOf10:
+    mov		ecx,eax
+    .IF	SDWORD PTR eax<0
+		neg		eax
+    .ENDIF
+    fld1
+    mov		dl,al
+    and		edx,0fh
+    .IF	!ZERO?
+		lea		edx,[edx+edx*4]
+		fld		ten_1[edx*2][-10]
+		fmulp	st(1),st
+    .ENDIF
+    mov		dl,al
+    shr		dl,4
+    and		edx,0fh
+    .IF !ZERO?
+		lea		edx,[edx+edx*4]
+		fld		ten_16[edx*2][-10]
+		fmulp	st(1),st
+    .ENDIF
+    mov		dl,ah
+    and		edx,1fh
+    .IF !ZERO?
+		lea		edx,[edx+edx*4]
+		fld		ten_256[edx*2][-10]
+		fmulp	st(1),st
+    .ENDIF
+    .IF SDWORD PTR ecx<0
+		fdivp	st(1),st
+    .ELSE
+		fmulp	st(1),st
+    .ENDIF
+    retn
+
+FpToAscii endp
 
 DumpLineBYTE proc uses ebx esi edi,hWin:HWND,nAdr:DWORD,lpDumpData:DWORD,nBytes:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -1473,12 +1771,19 @@ GetVarAdr proc lpName:DWORD,nLine:DWORD
 
 GetVarAdr endp
 
-WatchVars proc uses esi
+WatchVars proc uses esi edi
 	LOCAL	buffer[256]:BYTE
+	LOCAL	outbuff[4096]:BYTE
+	LOCAL	nLine:DWORD
+	LOCAL	LineChangedInx:DWORD
 
 	mov		esi,offset szWatchList
 	.if byte ptr [esi]
-		invoke SetWindowText,hOut3,addr szNULL
+		mov		outbuff,0
+		mov		LineChangedInx,0
+		mov		LineChanged,-1
+		mov		nLine,0
+		mov		edi,offset szOldWatch
 		.while byte ptr [esi]
 			invoke strcpy,addr buffer,esi
 			.if word ptr buffer==':z' || word ptr buffer==':Z'
@@ -1490,16 +1795,32 @@ WatchVars proc uses esi
 			.else
 				invoke GetVarVal,addr buffer,dbg.prevline,TRUE
 			.endif
-			.if eax
-				invoke PutStringOut,addr outbuffer,hOut3
-			.else
+			.if !eax
 				invoke wsprintf,addr outbuffer,addr szErrVariableNotFound,esi
-				invoke PutStringOut,addr outbuffer,hOut3
 			.endif
+			invoke strcmpn,addr outbuffer,edi,255
+			.if eax
+				mov		edx,LineChangedInx
+				lea		edx,[edx*4+offset LineChanged]
+				mov		eax,nLine
+				mov		[edx],eax
+				mov		dword ptr [edx+4],-1
+				inc		LineChangedInx
+				invoke strcpyn,edi,addr outbuffer,256
+			.endif
+			invoke strcat,addr outbuff,addr outbuffer
+			invoke strcat,addr outbuff,addr szCR
 			invoke strlen,esi
+			inc		nLine
 			lea		esi,[esi+eax+1]
+			lea		edi,[edi+256]
 		.endw
-		invoke ImmPromptOn
+		invoke SetWindowText,hDbgWatch,addr outbuff
+		mov		esi,offset LineChanged
+		.while dword ptr [esi]!=-1
+			invoke SendMessage,hDbgWatch,REM_LINEREDTEXT,[esi],TRUE
+			lea		esi,[esi+4]
+		.endw
 	.endif
 	ret
 

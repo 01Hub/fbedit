@@ -52,6 +52,19 @@ IDC_BTNDEBUGALL					equ 1006
 IDM_EDIT_TOGGLEBP				equ 41013
 IDM_EDIT_CLEARBP				equ 41014
 IDM_VIEW_OUTPUTWINDOW			equ 42003
+IDM_VIEW_TOOL1					equ 42009
+IDM_VIEW_TOOL2					equ 42010
+IDM_VIEW_STATUSBAR				equ 42007
+
+; Debug tabs
+IDC_DBGTAB						equ 1000
+IDC_DBGREG						equ 1001
+IDC_DBGFPU						equ 1002
+IDC_DBGMMX						equ 1003
+IDC_DBGWATCH					equ 1004
+
+TLM_HIDE						equ	5
+TLM_GET_VISIBLE					equ	14
 
 ; Debug functions
 FUNC_RUN						equ 1
@@ -339,6 +352,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
 								   'Step &Over',VK_TAB,'Ctrl+F7',0,
 								   'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0,
 								   'Do not Debug',0,0
+szView							db 'Debug window',0
 
 ; Project file save / load
 szMakeFiles						db 'MakeFiles',0
@@ -359,6 +373,8 @@ AddinOpt						ADDINOPT 5 dup(<offset szShowDbgHelp,1,1>,
 
 ; Tooltip window class
 sztooltips_class32				db 'tooltips_class32',0
+szTabControl					db 'SysTabControl32',0
+szTabs							db 'Reg',0,'Fpu',0,'MMX',0,'Watch',0,0
 
 ; Tooltip / immediate window formatting
 szReg32							db 'REGISTER %s Hex %08Xh Dec %u',0
@@ -434,3 +450,12 @@ szWatchList						db 512 dup(?)					; List of variables to watch
 mFunc							dd ?
 nError							dd ?
 szError							db 256 dup(?)
+nID								dd ?
+hTool							HWND ?							; Handle of debug tool window
+lpOldToolProc					dd ?
+hDbgTab							HWND ?
+nDbgSel							dd ?
+hDbgReg							HWND ?
+hDbgFpu							HWND ?
+hDbgMmx							HWND ?
+hDbgWatch						HWND ?
