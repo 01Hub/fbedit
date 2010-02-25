@@ -517,7 +517,9 @@ TestDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hLngDlg,eax
-		.if lParam>=151 && lParam<=154
+		invoke ConvertID,lParam,addr bufferW
+		mov		eax,lParam
+		.if eax>=151 && eax<=154
 			invoke ConvertID,150,addr bufferW
 			invoke FindString,addr bufferW,addr bufferW,offset szText,sizeof szText/2
 			.if eax
@@ -534,32 +536,28 @@ TestDlgProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowWindow,hCld,SW_SHOWNA
 			invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
 			pop		hLngDlg
+		.elseif eax==998 || eax==999
+			invoke GetMenu,hWin
+			.if eax
+				mov		edx,eax
+				invoke UpdateMenu,edx,addr bufferW
+				invoke DrawMenuBar,hWin
+			.endif
+		.elseif eax==997
+			;Set the toolbar buttons
+			invoke GetDlgItem,hWin,IDC_TBR1
+			invoke DoToolBar,hInstance,eax,offset tbrbtns,ntbrbtns
+			invoke GetDlgItem,hWin,IDC_TBR2
+			invoke DoToolBar,hInstance,eax,offset pbrtbrbtns,npbrtbrbtns
+			invoke GetDlgItem,hWin,IDC_TBR3
+			invoke DoToolBar,hInstance,eax,offset prptbrbtns,nprptbrbtns
 		.else
-			mov		eax,lParam
-			.if eax==998 || eax==999
-				invoke GetMenu,hWin
-				.if eax
-					mov		edx,eax
-					invoke UpdateMenu,edx,addr bufferW
-					invoke DrawMenuBar,hWin
-				.endif
-			.elseif eax==997
-				;Set the toolbar buttons
-				invoke GetDlgItem,hWin,IDC_TBR1
-				invoke DoToolBar,hInstance,eax,offset tbrbtns,ntbrbtns
-				invoke GetDlgItem,hWin,IDC_TBR2
-				invoke DoToolBar,hInstance,eax,offset pbrtbrbtns,npbrtbrbtns
-				invoke GetDlgItem,hWin,IDC_TBR3
-				invoke DoToolBar,hInstance,eax,offset prptbrbtns,nprptbrbtns
-			.else
-			invoke ConvertID,lParam,addr bufferW
 			invoke FindString,addr bufferW,addr bufferW,offset szText,sizeof szText/2
 			.if eax
 				invoke SendMessageW,hWin,WM_SETTEXT,0,offset szText
 			.endif
-				invoke GetWinSize,hWin,TRUE
-				invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
-			.endif
+			invoke GetWinSize,hWin,TRUE
+			invoke EnumChildWindows,hWin,addr DlgEnumProc,addr bufferW
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
