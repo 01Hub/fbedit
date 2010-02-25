@@ -24,7 +24,7 @@ GetFileIDFromProjectFileID proc uses ebx edi,ProjectFileID:DWORD
 			add		ebx,sizeof DEBUGSOURCE
 		.endw
 	.endif
-	xor		eax,eax
+	mov		eax,-1
 	ret
 
 GetFileIDFromProjectFileID endp

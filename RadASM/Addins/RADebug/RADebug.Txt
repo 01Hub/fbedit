@@ -124,6 +124,8 @@ Whats new:
 o Released version 1.0.0.7
   - Added a RadASM tool window to show regsters, fpu registers, mmx registers
     and watch variables.
+  - The addin is now language translateable.
+  - Fixed some bugs.
 o Released version 1.0.0.6
   - Added Break to debug menu.
   - Access violation and division by zero is now handled by the debugger.

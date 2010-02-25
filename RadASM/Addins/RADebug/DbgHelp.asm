@@ -130,7 +130,6 @@ SortLinesByAddress proc uses ebx esi edi
 	mov		ebx,dbg.inxline
 	mov		edi,hMemIndex
 	mov		eax,dbg.hMemLine
-
 	.while ebx
 		mov		[edi],eax
 		lea		eax,[eax+sizeof DEBUGLINE]
@@ -138,7 +137,6 @@ SortLinesByAddress proc uses ebx esi edi
 		dec		ebx
 	.endw
 	invoke CombSort,hMemIndex,dbg.inxline
-
 	mov		ebx,dbg.inxline
 	mov		esi,hMemIndex
 	mov		edi,hMemLinesSorted
@@ -149,6 +147,16 @@ SortLinesByAddress proc uses ebx esi edi
 		lea		esi,[esi+4]
 		dec		ebx
 	.endw
+	lea		esi,[edi-sizeof DEBUGLINE]
+	mov		eax,[esi].DEBUGLINE.Address
+	.if eax<dbg.maxproc
+		invoke RtlMoveMemory,edi,esi,sizeof DEBUGLINE
+		mov		eax,dbg.maxproc
+		inc		eax
+		mov		[edi].DEBUGLINE.Address,eax
+		inc		[edi].DEBUGLINE.LineNumber
+		inc		dbg.inxline
+	.endif
 	invoke GlobalFree,hMemIndex
 	invoke GlobalFree,dbg.hMemLine
 	mov		eax,hMemLinesSorted
@@ -632,6 +640,11 @@ EnumerateSymbolsCallback proc uses ebx esi edi,SymbolName:DWORD,SymbolAddress:DW
 					invoke strlen,esi
 					lea		esi,[esi+eax+1]
 					invoke AddVarList,esi
+					mov		eax,SymbolAddress
+					add		eax,SymbolSize
+					.if eax>dbg.maxproc
+						mov		dbg.maxproc,eax
+					.endif
 				.endif
 			.elseif edx=='d'
 				; Variable

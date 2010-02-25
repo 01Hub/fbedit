@@ -698,6 +698,24 @@ szAddins						db '[AddinMana]',0Dh,0Ah
 								db '1004=&DWORD:',0Dh,0Ah
 								db '1003=Update',0Dh,0Ah
 								db '2=Close',0Dh,0Ah
+								db 0
+								db '[RADebug]',0Dh,0Ah
+								db 'RADebug=Do not debug',0Dh,0Ah
+								db '1007=Do not debug:',0Dh,0Ah
+								db '1008=Debug:',0Dh,0Ah
+								db '1=OK',0Dh,0Ah
+								db '2=Cancel',0Dh,0Ah
+								db '2000=Deb&ug:',0Dh,0Ah
+								db '2001=Toggle &Breakpoint	Ctrl+T',0Dh,0Ah
+								db '2002=&Clear Breakpoints	Ctrl+Shift+T',0Dh,0Ah
+								db '2003=&Run	Shift+F7',0Dh,0Ah
+								db '2004=Brea&k	Ctrl+Alt+F7',0Dh,0Ah
+								db '2005=&Stop	Alt+F7',0Dh,0Ah
+								db '2006=Step &Into	F7',0Dh,0Ah
+								db '2007=Step &Over	Ctrl+F7',0Dh,0Ah
+								db '2008=Run &To Caret	Ctrl+Shift+F7',0Dh,0Ah
+								db '2009=Do not Debug',0Dh,0Ah
+								db '2010=Debug Window',0Dh,0Ah
 								db 0,0
 
 szWiz1							db 'Project Wizard - Type & Name',0

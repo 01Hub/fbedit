@@ -64,7 +64,9 @@ IDC_DBGMMX						equ 1003
 IDC_DBGWATCH					equ 1004
 
 TLM_HIDE						equ	5
+;TLM_CAPTION						equ	12
 TLM_GET_VISIBLE					equ	14
+TLM_GET_STRUCT					equ	15
 
 ; Debug functions
 FUNC_RUN						equ 1
@@ -89,6 +91,29 @@ ERR_SYNTAX						equ 3
 
 ;#########################################################################
 ; Structures
+
+TOOL struct
+	ID						dd ?
+	Caption					dd ?
+	Visible					dd ?
+	Docked					dd ?
+	Position				dd ?
+	IsChild					dd ?
+	dWidth					dd ?
+	dHeight					dd ?	;+28
+	fr						RECT <> ;Floating
+	dr						RECT <> ;Docked
+	wr						RECT <> ;Child window
+	rr						RECT <> ;Resize
+	tr						RECT <> ;Top
+	cr						RECT <> ;Caption
+	br						RECT <> ;Close button
+	dFocus					dd ?
+	dCurFlag				dd ?
+	hWin					dd ?
+	hCld					dd ?
+	lpfnOldCldWndProc		dd ?
+TOOL ends
 
 ; Breakpoints
 BREAKPOINT struct
@@ -179,7 +204,7 @@ DEBUG struct
 	hMemBP					HGLOBAL ?				; Copy of code with all breakpoints set
 	minadr					DWORD ?					; Lowest address
 	maxadr					DWORD ?					; Highest address
-	lastadr					DWORD ?					; Address of last line
+	maxproc					DWORD ?					; Highest proc address
 	lpProc					DWORD ?					; Current proc
 	lpStepOver				DWORD ?					; Proc to return to
 	func					DWORD ?					; Current debug function
@@ -226,6 +251,9 @@ REG ends
 .const
 
 ;#########################################################################
+
+szAppName						db 'RADebug',0
+
 ; Text and predefined structures
 
 ; Registers
@@ -352,7 +380,7 @@ MenuItems						db 'Toggle &Breakpoint',VK_TAB,'Ctrl+T',0,
 								   'Step &Over',VK_TAB,'Ctrl+F7',0,
 								   'Run &To Caret',VK_TAB,'Ctrl+Shift+F7',0,
 								   'Do not Debug',0,0
-szView							db 'Debug window',0
+szView							db 'Debug Window',0
 
 ; Project file save / load
 szMakeFiles						db 'MakeFiles',0
@@ -453,6 +481,7 @@ szError							db 256 dup(?)
 nID								dd ?
 hTool							HWND ?							; Handle of debug tool window
 lpOldToolProc					dd ?
+lpOldToolCaption				dd ?
 hDbgTab							HWND ?
 nDbgSel							dd ?
 hDbgReg							HWND ?

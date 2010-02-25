@@ -942,7 +942,7 @@ EnableMenu proc uses esi edi
 					mov		eax,lpHandles
 					invoke GetWindowLong,[eax].ADDINHANDLES.hMdiCld,16
 					invoke GetFileIDFromProjectFileID,eax
-					.if eax
+					.if eax!=-1
 						mov		edx,nLine
 						inc		edx
 						xor		ecx,ecx
@@ -1162,10 +1162,6 @@ FindLine proc uses ebx esi edi,Address:DWORD
 	LOCAL	lower:DWORD
 	LOCAL	upper:DWORD
 
-	mov		eax,dbg.lastadr
-	.if Address>eax
-		mov		Address,eax
-	.endif
 	mov		eax,dbg.inxline
 	mov		lower,0
 	mov		upper,eax

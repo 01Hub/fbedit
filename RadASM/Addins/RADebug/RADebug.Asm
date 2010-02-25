@@ -132,6 +132,7 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 			mov		[edi+ecx*4],eax
 			inc		ecx
 		.endw
+		mov		dword ptr [edi+ecx*4],IDM_VIEW_TOOL1
 	.endif
 	invoke CreatePopupMenu
 	mov		hMnu,eax
@@ -144,7 +145,7 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 	.endif
 	;Get handle of edit popup
 	mov		eax,[lpHandles]
-	invoke GetSubMenu,[eax].ADDINHANDLES.hMenu,edx		;Edit menu
+	invoke GetSubMenu,[eax].ADDINHANDLES.hMenu,edx		;Make menu
 	push	eax
 	;Add our menuitem
 	invoke AppendMenu,eax,MF_POPUP or MF_STRING,hMnu,addr DebugMenu
@@ -175,6 +176,42 @@ CreateDebugMenu proc uses ebx esi edi,hWin:HWND
 	ret
 
 CreateDebugMenu endp
+
+TranslateDebugMenu proc uses ebx esi edi
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[256]:BYTE
+
+	.if hMnu
+		mov		edi,2000
+		mov		ebx,offset IDAddIn
+		.while dword ptr [ebx]
+			call	Translate
+			lea		ebx,[ebx+4]
+			inc		edi
+		.endw
+	.endif
+	ret
+
+Translate:
+	push	sizeof buffer/2
+	lea		eax,buffer
+	push	eax
+	push	edi
+	push	offset szAppName
+	mov		eax,lpProc
+	call	[eax].ADDINPROCS.lpGetLangString
+	.if eax
+		mov		mii.cbSize,sizeof MENUITEMINFO
+		mov		mii.fMask,MIIM_TYPE
+		mov		mii.fType,MFT_STRING
+		lea		eax,buffer
+		mov		mii.dwTypeData,eax
+		mov		edx,lpHandles
+		invoke SetMenuItemInfoW,[edx].ADDINHANDLES.hMenu,[ebx],FALSE,addr mii
+	.endif
+	retn
+
+TranslateDebugMenu endp
 
 EditProc proc uses ebx esi,hWin:HWND,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ti:TOOLINFO
@@ -284,6 +321,11 @@ DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		push	TRUE
+		push	offset szAppName
+		push	hWin
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpSetLanguage
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536
 		mov		hMem,eax
 		mov		edi,eax
@@ -594,6 +636,16 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 		.if !eax
 			;Save handle of tool window
 			mov		hTool,edx
+			;Set tool caption
+			push	0
+			push	TLM_GET_STRUCT
+			push	hTool
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpToolMessage
+			mov		edx,[eax].TOOL.Caption
+			mov		lpOldToolCaption,edx
+			mov		[eax].TOOL.Caption,offset szView
+			invoke SetWindowText,[eax].TOOL.hWin,offset szView
 			;Subclass tool window
 			invoke SetWindowLong,hTool,GWL_WNDPROC,offset ToolProc
 			mov		lpOldToolProc,eax
@@ -643,6 +695,7 @@ InstallDll proc uses ebx,hWin:DWORD,fOpt:DWORD
 			invoke SendMessage,hTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
 			invoke SendMessage,hTip,TTM_SETMAXTIPWIDTH,0,800
 			invoke CreateDebugMenu,hWin
+			invoke TranslateDebugMenu
 			invoke UpdateAccelerators
 			invoke SetFonts
 			; Messages to hook into
@@ -875,7 +928,13 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		.elseif edx==IDAddIn[36]
 			;Do not Debug
 			mov		eax,lpHandles
-			invoke DialogBoxParam,hInstance,IDD_DLGDONOTDEBUG,[eax].ADDINHANDLES.hWnd,addr DoNotDebugProc,0
+			push	0
+			push	offset DoNotDebugProc
+			push	[eax].ADDINHANDLES.hWnd
+			push	IDD_DLGDONOTDEBUG
+			push	hInstance
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpModalDialog
 		.endif
 		;
 	.elseif eax==AIM_EDITOPEN
@@ -905,10 +964,43 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 			invoke DestroyMenu,hMnu
 			mov		hMnu,0
 		.endif
+		.if nID
+			mov		eax,[lpHandles]
+			invoke RemoveMenu,[eax].ADDINHANDLES.hMenu,nID,MF_BYCOMMAND
+			mov		nID,0
+		.endif
+		.if lpOldToolProc
+			;Unsubclass tool window
+			invoke SetWindowLong,hTool,GWL_WNDPROC,lpOldToolProc
+			mov		lpOldToolProc,0
+			;Restore tool caption
+			push	0
+			push	TLM_GET_STRUCT
+			push	hTool
+			mov		eax,lpProc
+			call	[eax].ADDINPROCS.lpToolMessage
+			mov		edx,lpOldToolCaption
+			mov		[eax].TOOL.Caption,edx
+			invoke SetWindowText,[eax].TOOL.hWin,edx
+		.endif
+		.if hDbgTab
+			;Destroy windows we created
+			invoke DestroyWindow,hDbgTab
+			invoke DestroyWindow,hDbgReg
+			invoke DestroyWindow,hDbgFpu
+			invoke DestroyWindow,hDbgMmx
+			invoke DestroyWindow,hDbgWatch
+			mov		hDbgTab,0
+			mov		hDbgReg,0
+			mov		hDbgFpu,0
+			mov		hDbgMmx,0
+			mov		hDbgWatch,0
+		.endif
 		;
 	.elseif eax==AIM_MENUREBUILD
 		mov		eax,lpHandles
 		invoke CreateDebugMenu,[eax].ADDINHANDLES.hWnd
+		invoke TranslateDebugMenu
 		invoke UpdateAccelerators
 		invoke SetFonts
 		;
@@ -945,7 +1037,7 @@ DllProc proc uses ebx,hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 		invoke EditProc,hWin,wParam,lParam
 		;
 	.endif
-	mov eax,FALSE
+	mov		eax,FALSE
   Ex:
 	ret
 
