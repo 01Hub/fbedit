@@ -1,5 +1,11 @@
 MasmEd
 
+1.1.0.2g - 2010.02.25
+---------------------
+o While debugging the debug menu is the code editors context menu.
+o Fixed a misalignment of text in the Fpu debug window.
+o Fixed a bug where clearing a breakpoint while debugging did not work.
+
 1.1.0.2f - 2010.02.16
 ---------------------
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse

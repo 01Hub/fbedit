@@ -1342,6 +1342,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rarstype:RARSTYPE
 	LOCAL	hFile:HANDLE
 	LOCAL	tci:TC_ITEM
+	LOCAL	mii:MENUITEMINFO
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -3137,8 +3138,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetSubMenu,ha.hContextMnu,4
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			.else
-				invoke GetSubMenu,ha.hMnu,1
-				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+				.if !fDebugging
+					invoke GetSubMenu,ha.hMnu,1
+					invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+				.else
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_SUBMENU
+					invoke GetMenuItemInfo,ha.hMnu,IDM_DEBUG,FALSE,addr mii
+					.if eax
+						mov		eax,mii.hSubMenu
+						invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+					.endif
+				.endif
 			.endif
 		.elseif eax==ha.hTab
 			invoke GetSubMenu,ha.hContextMnu,0

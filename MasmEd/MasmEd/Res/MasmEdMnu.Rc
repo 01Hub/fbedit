@@ -100,6 +100,7 @@
 #define IDM_MAKE_BUILD 10090
 #define IDM_MAKE_RUN 10027
 #define IDM_MAKE_GO 10028
+#define IDM_DEBUG 10113
 #define IDM_DEBUG_TOGGLE 10082
 #define IDM_DEBUG_CLEAR 10083
 #define IDM_DEBUG_RUN 10081
@@ -272,7 +273,7 @@ BEGIN
     MENUITEM "",,0x00000800
     MENUITEM "&Go\tCtrl+F5",IDM_MAKE_GO
     MENUITEM "",,0x00000800
-    POPUP "&Debug"
+    POPUP "&Debug",IDM_DEBUG
     BEGIN
       MENUITEM "&Toggle Breakpoint\tCtrl+T",IDM_DEBUG_TOGGLE
       MENUITEM "&Clear Breakpoints\tCtrl+Shift+T",IDM_DEBUG_CLEAR

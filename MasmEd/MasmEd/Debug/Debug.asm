@@ -17,9 +17,9 @@ szRegs							db 'EAX %08Xh %11d ',0,
 szFpu							db 'Reg Dec',0Dh,0
 szFpuReg						db 'ST%d ',0
 szFpuCTW						db '       XRCPC-  PUOZDI',0Dh,
-									'CTW ',0
-szFpuSTW						db '     B3TOP210-ESPUOZDI',0Dh,
-									'STW ',0
+								   'CTW ',0
+szFpuSTW						db '    B3TOP210-ESPUOZDI',0Dh,
+								   'STW ',0
 
 szMMX							db 'Reg  Hex',0Dh,0
 szMMXReg						db 'XMM%d %08X%08Xh',0

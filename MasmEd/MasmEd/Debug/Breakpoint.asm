@@ -38,6 +38,13 @@ MapBreakPoints proc uses ebx esi edi
 	LOCAL	CountSource:DWORD
 	LOCAL	Unhandled:DWORD
 
+	mov		esi,dbg.hMemLine
+	xor		ecx,ecx
+	.while ecx<dbg.inxline
+		mov		[esi].DEBUGLINE.BreakPoint,FALSE
+		inc		ecx
+		add		esi,sizeof DEBUGLINE
+	.endw
 	mov		Unhandled,0
 	mov		CountBP,512
 	mov		esi,offset breakpoint
