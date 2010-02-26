@@ -416,6 +416,7 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==VK_ESCAPE
 			invoke ShowWindow,ha.hCCLB,SW_HIDE
+			invoke ShowWindow,ha.hCCTT,SW_HIDE
 			mov		cctype,CCTYPE_NONE
 			xor		eax,eax
 			jmp		Ex
