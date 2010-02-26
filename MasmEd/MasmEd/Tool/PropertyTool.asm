@@ -35,6 +35,7 @@ szApiConstFile	db 'masmApiConst.api',0
 szApiStructFile	db 'masmApiStruct.api',0
 szApiTypeFile	db 'masmApiType.api',0
 szApiWordFile	db 'masmApiWord.api',0
+szApiMsgFile	db 'masmApiMsg.api',0
 
 ignorefirstword	db 'option',0,'include',0,'includelib',0,'invoke',0,0
 ignoreparam		db 'private',0,'public',0,'uses',0,'eax',0,'ebx',0,'ecx',0,'edx',0,'esi',0,'edi',0,'ebp',0,'esp',0,0
@@ -121,10 +122,23 @@ SetPropertyDefs proc uses esi
 	call	MakePath
 	mov		edx,2 shl 8 or 'W'
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	mov		esi,offset szApiMsgFile
+	call	MakePath
+	mov		edx,3 shl 8 or 'M'
+	lea eax,buffer
+	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
 	;Set default selection
 	invoke SendMessage,ha.hProperty,PRM_SELECTPROPERTY,'p',0
 	invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
 	invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,nMASM,0
+	;Set message api tooltip
+	mov		ttmsg.szType,'M'
+	mov		ttmsg.lpMsgApi[0*sizeof MSGAPI].nPos,2
+	mov		ttmsg.lpMsgApi[0*sizeof MSGAPI].lpszApi,offset szMsg1
+	mov		ttmsg.lpMsgApi[1*sizeof MSGAPI].nPos,2
+	mov		ttmsg.lpMsgApi[1*sizeof MSGAPI].lpszApi,offset szMsg2
+	mov		ttmsg.lpMsgApi[2*sizeof MSGAPI].nPos,3
+	mov		ttmsg.lpMsgApi[2*sizeof MSGAPI].lpszApi,offset szMsg3
 	ret
 
 MakePath:

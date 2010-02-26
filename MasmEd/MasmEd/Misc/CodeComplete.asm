@@ -679,7 +679,6 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 UpdateApiConstList endp
 
 UpdateApiToolTip proc uses esi edi,lpWord:DWORD
-	LOCAL	tt:TOOLTIP
 
 	mov		eax,lpWord
 	.if byte ptr [eax]
@@ -689,9 +688,8 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 		mov		tt.lpszLine,eax
 		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,FALSE,addr tt
 		.if tt.lpszApi
-			invoke strlen,tt.lpszApi
-			add		eax,tt.lpszApi
-			inc		eax
+			invoke SendMessage,ha.hProperty,PRM_ISTOOLTIPMESSAGE,offset ttmsg,addr tt
+			mov		eax,tt.ovr.lpszParam
 			mov		edx,tt.lpszApi
 			mov		ecx,tt.nPos
 			jmp		Ex
@@ -803,23 +801,23 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 			.else
 				invoke ShowWindow,ha.hCCLB,SW_HIDE
 				mov		cctype,CCTYPE_NONE
-				lea		edx,buffer
-				xor		ecx,ecx
-				push	esi
-				.while byte ptr [esi]
-					mov		al,[esi]
-					.if !ecx || al==','
-						.if al==','
-							inc		ecx
-						.endif
-						mov		[edx],al
-						inc		edx
-					.endif
-					inc		esi
-				.endw
-				pop		esi
-				mov		byte ptr [edx],0
-				invoke UpdateApiToolTip,addr buffer
+;				lea		edx,buffer
+;				xor		ecx,ecx
+;				push	esi
+;				.while byte ptr [esi]
+;					mov		al,[esi]
+;					.if !ecx || al==','
+;						.if al==','
+;							inc		ecx
+;						.endif
+;						mov		[edx],al
+;						inc		edx
+;					.endif
+;					inc		esi
+;				.endw
+;				pop		esi
+;				mov		byte ptr [edx],0
+				invoke UpdateApiToolTip,esi
 				.if eax
 					mov		cctype,CCTYPE_TOOLTIP
 					mov		tti.lpszRetType,0

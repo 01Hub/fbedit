@@ -724,7 +724,7 @@ IsTooltipMessage proc uses ebx esi edi,hWin:HWND,wParam:DWORD,lParam:DWORD
 			mov		byte ptr [edx],0
 			.while byte ptr [edi]
 				mov		al,[edi]
-				.if al=='('
+				.if al=='(' || al==','
 					inc		edi
 					dec		ecx
 					.break

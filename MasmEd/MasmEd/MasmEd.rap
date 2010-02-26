@@ -290,16 +290,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 57=7
 
 [Find]
-1="ha.hDbgReg,WM_SETFONT"
-2="ha.hDbgReg"
-3="SetDebugInfo"
-4="DEBUGINFO"
-5="hDbgReg"
-6="hDbgWatch"
-7="hTabDbg"
-8="IDC_TABWATCH"
-9="486"
-10="szOpen"
+1="1.1.0.2"
+2="'m'"
+3="1102"
+4="UpdateApiToolTip"
+5="PRM_GETTOOLTIP"
+6="PRM_SETLANGUAGE"
+7="PRM_ISTOOLTIPMESSAGE"
+8="MSGAPI"
+9="szApiCallFile"
+10="masmApi"
 
 [VersionControl]
 Settings=1246
@@ -311,7 +311,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=25
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -346,8 +346,8 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9691
-1=0,0,0,0,92669
+2=0,0,687,524,9866
+1=0,0,0,0,3668
 11=0,0,0,0,44933
 22=0,0,0,0,748
 10=0,0,0,0,19143
@@ -363,7 +363,7 @@ ProductVer4Range=0
 30=0,0,0,0
 13=0,0,0,0,4980
 21=0,0,0,0,1822
-29=0,0,0,0,923
+29=0,0,0,0,1545
 28=0,0,0,0,18622
 26=0,0,665,480
 25=0,0,0,0
@@ -376,16 +376,16 @@ ProductVer4Range=0
 33=0,0,0,0,875
 35=0,0,0,0,485
 34=0,0,0,0
-37=0,0,0,0,9653
+37=0,0,0,0,11317
 36=0,0,661,490,157
 20=0,0,0,0,0
-38=0,0,0,0,30
+38=0,0,0,0,193
 39=0,0,0,0
 40=0,0,0,0,6813
 42=0,0,0,0,1576
 43=0,0,0,0
-45=0,0,0,0,3724
-46=0,0,0,0,1920
+45=0,0,0,0,1096
+46=0,0,0,0,5324
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
@@ -413,7 +413,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,53,38,37,22,11,46,29,40,39,57,10,4,15
+AutoLoad=1,2,38,37,46,45,53,29
 [Collapse]
 2=
 1=,,,,,,262178,618,1049632,
@@ -449,7 +449,7 @@ AutoLoad=1,2,53,38,37,22,11,46,29,40,39,57,10,4,15
 54=
 56=
 [PTimer]
-PTimer=2726912855
+PTimer=2738836121
 [RADebugBP]
 1=
 2=

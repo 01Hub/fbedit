@@ -60,7 +60,7 @@ AboutProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SetWindowText,hWin,addr szVersion
 		invoke SendDlgItemMessage,hWin,IDC_EDTABOUT,WM_SETTEXT,0,addr szAboutMsg
 		invoke SendDlgItemMessage,hWin,IDC_URL1,WM_SETTEXT,0,addr szAboutUrl1
-		invoke SendDlgItemMessage,hWin,IDC_URL2,WM_SETTEXT,0,addr szAboutUrl2
+;		invoke SendDlgItemMessage,hWin,IDC_URL2,WM_SETTEXT,0,addr szAboutUrl2
 		invoke GetDlgItem,hWin,IDC_URL1
 		invoke SetWindowLong,eax,GWL_WNDPROC,addr UrlProc
 		mov		OldUrlProc,eax

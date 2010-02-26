@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -141,19 +141,19 @@ ProductVer4Range=0
 13=,
 14=,,,,,
 [Size]
-2=0,0,699,490,4384
+2=0,0,699,490,2379
 <<<<<<< .mine
-1=0,0,699,490,26024
+1=0,0,699,490,15312
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,1019
-9=0,0,0,0,23
+7=0,0,0,0,2696
+9=0,0,0,0,1970
 10=0,0,0,0,33401
-11=0,0,746,498,12890
+11=0,0,746,498,12152
 12=0,0,0,0,2850
 13=0,0,0,0,5874
 14=0,0,0,0,790
@@ -174,18 +174,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
-PTimer=128222773
+PTimer=136351049
 [Find]
-1="MFixUnknown"
-2="PRM_SETCHARTAB"
-3="PRM_GETSTRUCTWORD"
-4="MIsWord"
-5="IsWord"
-6="GetWord"
-7="Compare"
-8="FBSkipLine"
-9="VK_TAB"
-10="btnspro"
+1="PRM_ISTOOLTIPMESSAGE"
+2="PRM_ADDPROPERTYFILE"
+3="MFixUnknown"
+4="PRM_SETCHARTAB"
+5="PRM_GETSTRUCTWORD"
+6="MIsWord"
+7="IsWord"
+8="GetWord"
+9="Compare"
+10="FBSkipLine"
 
 [Exports]
 1=GetDefEx

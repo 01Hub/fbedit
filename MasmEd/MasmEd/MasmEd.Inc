@@ -386,10 +386,10 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 sztooltips_class32		db 'tooltips_class32',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.1.0.2g',0
+szVersion				db 'MasmEd version 1.1.0.3',0
 szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2010',13,10,'radasmide@hotmail.com',0
 szAboutUrl1				db 'http://radasm.cherrytree.at/',0
-szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
+;szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
 szOpen					db 'Open',0
 
 szReplace				db 'Replace ..',0
@@ -556,8 +556,11 @@ szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0
 
 fn						FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 
-szCaseTypes				db 'WPpcm',0
+szCaseTypes				db 'WPMpcm',0
 szGotoTypes				db 'pldcs',0
+szMsg1					db 'SendMessage',0
+szMsg2					db 'PostMessage',0
+szMsg3					db 'SendDlgItemMessage',0
 
 ;Addin procs
 pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged,UpdateFileName,WriteSessionFile>
@@ -637,3 +640,5 @@ ftexe					FILETIME <>
 nNewer					DWORD ?
 dbgpt					POINT <>
 dbginf					DEBUGINFO <>
+ttmsg					MESSAGE <>
+tt						TOOLTIP <>
