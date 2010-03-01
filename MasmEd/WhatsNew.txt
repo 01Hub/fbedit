@@ -1,6 +1,6 @@
 MasmEd
 
-1.1.0.3 - 2010.02.26
+1.1.0.3 - 2010.03.01
 --------------------
 o Added message sensitive tooltip on SendMessage, PostMessage and SendDlgItemMessage api's.
 o Added window messages to auto case convert list.
