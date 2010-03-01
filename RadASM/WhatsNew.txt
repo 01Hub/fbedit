@@ -1,5 +1,9 @@
-RadASM 2.2.1.9
+RadASM 2.2.2.0
 --------------
+2.2.2.0
+o The debug register and watch windows are now in a single a tool window.
+o Added FPU and MMX registers to debug window.
+o The code editor now supports unlimitted line lenghts.
 2.2.1.9b
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.

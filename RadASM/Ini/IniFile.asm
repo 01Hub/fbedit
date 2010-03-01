@@ -109,6 +109,9 @@ szMasmCodeData		db '{C},$ db,$ dw,$ dd,$ dq,$ df,$ dt,$ byte,$ word,$ dword,$ qw
 szMasmApiArray		db 'Masm\masmArray.api',0
 szCppApiArray		db 'Cpp\cppArray.api',0
 
+; RadASM.ini updates
+szTool1Update		db '0,0,3,2,557,239,3,3,531,261',0
+
 .code
 
 UpDateAssemblerIni proc
@@ -1113,6 +1116,8 @@ iniRead proc
 				inc		ebx
 			.endw
 			pop		ebx
+		.elseif eax<2220
+			invoke WritePrivateProfileString,addr iniWindow,addr iniWinTool1,addr szTool1Update,addr iniFile
 		.endif
 		invoke BinToDec,nRadASMVer,addr iniBuffer
 		invoke WritePrivateProfileString,addr iniVersion,addr iniVersion,addr iniBuffer,addr iniFile
