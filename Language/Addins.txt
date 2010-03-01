@@ -148,6 +148,7 @@ FbDebug=Debug
 10000=Togggle &Breakpoint\tCtrl+T
 10001=&Clear Breakpoints\tShift+Ctrl+T
 10002=&Run\tShift+F7
+10008=&Break\tAlt+Ctrl+F7
 10003=&Stop\tAlt+F7
 10004=Step &Into\tF7
 10005=Step &Over\tCtrl+F7

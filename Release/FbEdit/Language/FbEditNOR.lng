@@ -755,6 +755,7 @@ ProjectZip=FbEdit prosjekt zipper
 10000=Togggle &Bruddpunktt\tCtrl+T
 10001=&Blank Bruddpunkt\tShift+Ctrl+T
 10002=&Kjør\tShift+F7
+10008=&Bryt\tAlt+Ctrl+F7
 10003=&Stopp\tAlt+F7
 10004=Stepp &Inn\tF7
 10005=Stepp &Over\tCtrl+F7
