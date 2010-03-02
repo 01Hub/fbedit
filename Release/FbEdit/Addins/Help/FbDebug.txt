@@ -187,5 +187,8 @@ Version 1.0.1.4
 o Added Debug / Break. Very useful if your program hangs in a loop.
 o Added FPU and MMX register windows.
 o The debugger now breaks on an exception.
+Version 1.0.1.5
+o Added CLS, LINES and FILES commands to immediate window.
+o Fixed bug with selecting the correct source file when debugging.
 
 KetilO
