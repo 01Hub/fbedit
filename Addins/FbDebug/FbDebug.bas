@@ -1213,7 +1213,7 @@ Function InstallDll Cdecl Alias "InstallDll" (ByVal hWin As HWND,ByVal hInst As 
 	' Get pointer to ADDINFUNCTIONS
 	lpFunctions=Cast(ADDINFUNCTIONS Ptr,SendMessage(hWin,AIM_GETFUNCTIONS,0,0))
 	lpOldImmediateProc=Cast(Any Ptr,SendMessage(lpHandles->himm,REM_SUBCLASS,0,Cast(LPARAM,@ImmediateProc)))
-	If lpData->version>=1062 Then
+	If lpData->version>=1075 Then
 		CreateToolTip
 		CreateDebugMenu
 		' Messages this addin will hook into

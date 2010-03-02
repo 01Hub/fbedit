@@ -838,7 +838,8 @@ Sub gestbrk(ByVal ad As UInteger,ByVal fRun As Integer)
 		thislinesav=i
 		thisthreadcontext=threadcontext
 		If lstrlen(lpData->ProjectFile) Then
-			szFileName=bp(source(proc(procsv).sr).pInx).sFile
+			'szFileName=bp(source(proc(procsv).sr).pInx).sFile
+			szFileName=source(proc(rline(thislinesav).pr).sr).file
 		Else
 			szFileName=source(proc(procsv).sr).file
 			hwfd=FindFirstFile(@szFileName,@wfd)

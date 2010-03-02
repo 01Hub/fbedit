@@ -1444,6 +1444,18 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf UCase(buff)="LINES" Then
+		If hThread Then
+			' Only in debug mode
+			SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@szCRLF))
+			For x=1 To linenb
+				recup="Line: " & rline(x).nu & " Adr: " & Hex(rline(x).ad) & " (" & Hex(proc(rline(x).pr).db) & "-" & Hex(proc(rline(x).pr).fn) & ") Proc: " & proc(rline(x).pr).nm & " Source: " & source(proc(rline(x).pr).sr).file & szCRLF
+				SendMessage(lpHandles->himm,EM_REPLACESEL,0,Cast(LPARAM,@recup))
+			Next
+		Else
+			nErr=2
+			lret=-1
+		EndIf
 	ElseIf UCase(buff)="STAT" Then
 		If hThread Then
 			' Only in debug mode
@@ -1460,6 +1472,8 @@ Function Immediate() As Integer
 			nErr=2
 			lret=-1
 		EndIf
+	ElseIf UCase(buff)="CLS" Then
+		SendMessage(lpHandles->himm,WM_SETTEXT,0,0)
 	Else
 		nErr=1
 		lret=-1
