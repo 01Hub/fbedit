@@ -1,0 +1,62 @@
+Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
+end function
+Type PFI
+	nGroup			As Integer
+	nPos				As Integer
+	nLoad				As Integer
+	nColl(15)		As Integer
+End Type
+Type RAPROPERTY
+	hwnd				As HWND
+	hpar				As HWND
+	id					As Integer
+	hfont				As HFONT
+	himl				As HIMAGELIST
+	htbr				As HWND
+	hcbo				As HWND
+	hlst				As HWND
+	hmem				As HGLOBAL
+	cbsize			As Integer
+	lpmem				As Integer
+	rpfree			As Integer
+	rpproject		As Integer
+	lpchartab		As Integer
+	defgen			As DEFGEN
+	lpignore			As Integer
+	rpignorefree	As Integer
+	lpisword			As Integer
+	rpiswordfree	As Integer
+	lpdeftype		As Integer
+	rpfreedeftype	As Integer
+	nOwner			As Integer
+	nButton			As Integer
+	szFindTypes		As ZString*64
+	szFindText		As ZString*64
+	rpFindPos		As Integer
+	nfindtype		As Integer
+	nfindowner		As Integer
+	nfindline		As Integer
+	nfindendline	As Integer
+	backcolor		As Integer
+	textcolor		As Integer
+	oprcolor			As Integer
+	hbrback			As HBRUSH
+	topindex			As Integer
+	selindex			As Integer
+	htooltip			As HWND
+	nlanguage		As Integer
+	hMemArray		As HGLOBAL
+End Type
+Type PROPERTIES Field=1
+	nSize				As Integer
+	nOwner			As Integer
+	nLine				As Integer
+	nEnd				As Integer
+	nType				As UByte
+End Type
+#Define IDD_DLGAPI              1000
+#Define IDC_LSTBI               1001
+#Define IDC_BTNADD              1002
+#Define IDC_BTNDEL              1003
+#Define IDC_PRPCODE             1004
+#Define IDC_EDTPREFIX           1006
