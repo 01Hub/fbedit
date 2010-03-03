@@ -1,5 +1,5 @@
 
-#Include "..\FbEdit\Inc\RAProperty.bi"
+#Include "RAProperty.bi"
 
 Type RAPROPERTY
 	hwnd				As HWND
