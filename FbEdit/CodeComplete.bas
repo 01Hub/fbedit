@@ -180,7 +180,7 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 		buff[lret]=NULL
 		SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
 		If flocallist=FALSE Then
-			lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("PpWcSsdTne")),Cast(Integer,@buff))
+			lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("PpWcSsdTnEe")),Cast(Integer,@buff))
 			Do While lret
 				ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
 				Select Case As Const ntype
@@ -209,6 +209,8 @@ Sub UpdateList(ByVal lpProc As ZString Ptr)
 					Case Asc("T")
 						ntype=10
 					Case Asc("e")
+						ntype=14
+					Case Asc("E")
 						ntype=14
 					Case Else
 						ntype=0
@@ -702,7 +704,7 @@ Sub UpdateTypeList()
 		lret=SendMessage(ah.hred,EM_GETLINE,lret,Cast(Integer,@buff))
 		buff[lret]=NULL
 		SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
-		lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("SsTe")),Cast(Integer,@buff))
+		lret=SendMessage(ah.hpr,PRM_FINDFIRST,Cast(Integer,StrPtr("SsTEe")),Cast(Integer,@buff))
 		Do While lret
 			ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
 			Select Case As Const ntype
@@ -713,6 +715,8 @@ Sub UpdateTypeList()
 				Case Asc("T")
 					ntype=10
 				Case Asc("e")
+					ntype=14
+				Case Asc("E")
 					ntype=14
 			End Select
 			SendMessage(ah.hcc,CCM_ADDITEM,ntype,lret)
@@ -755,7 +759,7 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 			If Len(s) Then
 				SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
 			Else
-				lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTe")),Cast(LPARAM,@buff)))
+				lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTEe")),Cast(LPARAM,@buff)))
 				Do While lret
 					ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
 					Select Case As Const ntype
@@ -766,6 +770,8 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 						Case Asc("T")
 							ntype=10
 						Case Asc("e")
+							ntype=14
+						Case Asc("E")
 							ntype=14
 					End Select
 					SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(LPARAM,lret))

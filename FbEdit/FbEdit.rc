@@ -984,8 +984,8 @@ IDB_SPLASH BITMAP DISCARDABLE "Res/FbEdit.bmp"
 IDR_XPMANIFEST MANIFEST "Res/xptheme.xml"
 
 VERINF1 VERSIONINFO
-FILEVERSION 1,0,7,5
-PRODUCTVERSION 1,0,7,5
+FILEVERSION 1,0,7,6
+PRODUCTVERSION 1,0,7,6
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -993,12 +993,12 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "1.0.7.5\0"
+      VALUE "FileVersion", "1.0.7.6\0"
       VALUE "FileDescription", "FreeBASIC code editor\0"
       VALUE "InternalName", "FbEdit\0"
       VALUE "LegalCopyright", "KetilO (C) 2006-2009\0"
       VALUE "OriginalFilename", "FbEdit.exe\0"
-      VALUE "ProductVersion", "1.0.7.5\0"
+      VALUE "ProductVersion", "1.0.7.6\0"
     END
   END
   BLOCK "VarFileInfo"

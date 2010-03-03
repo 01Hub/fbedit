@@ -363,7 +363,7 @@ Dim hFbEditDll As HMODULE
 
 ' Addins
 Dim Shared ah As ADDINHANDLES
-Dim Shared ad As ADDINDATA=(1075)
+Dim Shared ad As ADDINDATA=(1076)
 Dim Shared af As ADDINFUNCTIONS=(@TextToOutput,@SaveToIni,@LoadFromIni,@OpenTheFile,@Compile,@ShowOutput,@TranslateAddinDialog,@FindString,@CallAddins,@ShowImmediate,@MakeProjectFileName,@HH_Help,@IsProjectFile)
 ad.lpszVersion=@szVersion
 

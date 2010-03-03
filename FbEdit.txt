@@ -1,5 +1,8 @@
 Whats new:
 ----------
+1.0.7.6
+o Added api files for fmod sound.
+o Added a api file creator tool to tools menu.
 1.0.7.5
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.

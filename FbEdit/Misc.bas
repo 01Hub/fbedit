@@ -64,6 +64,7 @@ Sub LoadApiFiles
 	AddApiFile("Type",Asc("T")+2*256)
 	AddApiFile("Desc",Asc("D")+2*256)
 	AddApiFile("Msg",Asc("M")+3*256)
+	AddApiFile("Enum",Asc("E")+2*256)
 
 End Sub
 

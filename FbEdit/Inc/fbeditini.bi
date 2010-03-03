@@ -2,7 +2,7 @@ Const szSecWin=			!"[Win]\13\10"_
 								!"Winpos=0,0,0,850,600,127,0,0,162,221,514,107,10,10,0,180,150,10,10\13\10"_
 								!"Colors=16777215,0,8404992,16777215,33587200,0,255,16777215,15393755,15329769,15987699,11184810,0,0,16777215,16777215,16777215,16777215,65535,65280,16777215,0,16777215,0,16777215,0,14024703,0,8404992,128,128\13\10"_
 								!"Ressize=257,170,0,52,100,100\13\10"_
-								!"Version=1075\13\10"
+								!"Version=1076\13\10"
 Const szSecTheme=			!"[Theme]\13\10"_
 								!"Current=8\13\10"_
 								!"1=Default,128,128,128,8421440,8388608,128,128,128,128,16777344,536871040,128,128,10485760,10485760,10485760,65535,65535,65535,285147264,276824319,14024703,268435456,276840448,16777215,4227072,10485760,255,15329769,12632256,12632256,12632256,8421504,8404992,8421504,14024703,14024703,14024703,14024703,65535,65280,14024703,8404992,13828050,8404992,14024703,0,14024703,0,4194432,16711680,210\13\10"_
@@ -138,16 +138,17 @@ Const szSecOpen=			!"[Open]\13\10"_
 								!"1=.bmp.,mspaint.exe\13\10"_
 								!"2=.doc.rtf.,wordpad.exe\13\10"
 Const szSecApi=			!"[Api]\13\10"_
-								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets)\13\10"_
+								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets),fmod (fmod Sound)\13\10"_
 								!"DefApi=fb (FreeBASIC)\13\10"_
-								!"Call=fbCall.api,gdipCall.api,oglCall.api,winCall.api,wxCall.api,svcall.api\13\10"_
+								!"Call=fbCall.api,gdipCall.api,oglCall.api,winCall.api,wxCall.api,svCall.api,fmodCall.api\13\10"_
 								!"Const=fbConst.api,oglConst.api,winConst.api,svConst.api\13\10"_
-								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api\13\10"_
-								!"Word=fbWord.api,winWord.api\13\10"_
+								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api,fmodStruct.api\13\10"_
+								!"Word=fbWord.api,winWord.api,fmodWord.api\13\10"_
 								!"Type=fbType.api,oglType.api,winType.api\13\10"_
 								!"Case=fbCase.api\13\10"_
 								!"Desc=fbDesc.api,winDesc.api\13\10"_
-								!"Msg=winMsg.api\13\10"
+								!"Msg=winMsg.api\13\10"_
+								!"Enum=fmodEnum.api\13\10"
 Const szSecDebug=			!"[Debug]\13\10"_
 								!"Debug=$A\\FBdebugger\\FBdebugger.exe\13\10"
 Const szSecTemplate=		!"[Template]\13\10"_
@@ -351,6 +352,37 @@ Sub CheckIniFile()
 			ElseIf lret<1074 Then
 				'
 			ElseIf lret<1075 Then
+				'
+			ElseIf lret<1076 Then
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="fmod (fmod Sound)"
+				WritePrivateProfileString("Api","Api",@buff,@ad.IniFile)
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Call"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="fmodCall.api"
+				WritePrivateProfileString("Api","Call",@buff,@ad.IniFile)
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Struct"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="fmodStruct.api"
+				WritePrivateProfileString("Api","Struct",@buff,@ad.IniFile)
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Word"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="fmodWord.api"
+				WritePrivateProfileString("Api","Word",@buff,@ad.IniFile)
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Enum"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="fmodEnum.api"
+				WritePrivateProfileString("Api","Enum",@buff,@ad.IniFile)
+				lret=1
+				While TRUE
+					GetPrivateProfileString(StrPtr("Tools"),Str(lret),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+					If Len(buff)=0 Then
+						WritePrivateProfileString("Tools",Str(lret),"Api File Creator,Tools\MakeApi.exe",@ad.IniFile)
+						Exit While
+					EndIf
+					lret+=1
+				Wend
 				'
 			EndIf
 			WritePrivateProfileString("Win","Version",Str(ad.version),@ad.IniFile)
