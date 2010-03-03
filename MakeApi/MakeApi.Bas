@@ -1,5 +1,5 @@
 /'
-	This program creates api files from .bi files
+	This program creates api files from .bi and/or .bas files
 '/
 
 #Include Once "windows.bi"
@@ -153,10 +153,7 @@ End Sub
 Sub MakeApiFile(ByVal hWin As HWND,ByRef szPrefix As ZString,ByVal nType As Integer)
 	Dim szFileName As ZString*260
 	Dim i As Integer
-	Dim szWord As ZString*260
 	Dim lp As ZString Ptr
-	Dim szLine As ZString*16*1024
-	Dim szLastLine As ZString*16*1024
 	Dim hFile As HANDLE
 	Dim dwWrite As Integer
 
@@ -320,7 +317,6 @@ End Function
 '''
 ''' Program start
 '''
-
 	''
 	'' Create the Dialog
 	''
@@ -350,10 +346,7 @@ End Function
 	''
 	'' Program has ended
 	''
-
 	ExitProcess(0)
-	End
-
 '''
 ''' Program end
 '''

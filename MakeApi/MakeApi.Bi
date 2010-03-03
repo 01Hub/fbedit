@@ -1,15 +1,6 @@
 
 #Include "..\FbEdit\Inc\RAProperty.bi"
 
-Declare Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
-
-Type PFI
-	nGroup			As Integer
-	nPos				As Integer
-	nLoad				As Integer
-	nColl(15)		As Integer
-End Type
-
 Type RAPROPERTY
 	hwnd				As HWND
 	hpar				As HWND
@@ -70,6 +61,7 @@ End Type
 ' Filter string for GetOpenFileName
 Const szNULL=!"\0"
 Const ALLFilterString="Code Files (*.bas, *.bi)" & szNULL & "*.bas;*.bi" & szNULL & "All Files (*.*)" & szNULL & "*.*" & szNULL & szNULL
+
 Const szAppName="Make api files"
 Const szCRLF=!"\13\10\0"
 
@@ -125,3 +117,6 @@ Dim Shared lpCharTab As Any Ptr
 Dim Shared SetCharTab As Function(ByVal nChar As Integer,ByVal nVal As Integer) As Any Ptr
 Dim Shared hPrp As HWND
 Dim Shared lpRAPROPERTY As RAPROPERTY Ptr
+Dim Shared szWord As ZString*16384
+Dim Shared szLine As ZString*16384
+Dim Shared szLastLine As ZString*16384
