@@ -8,58 +8,121 @@
 
 #Include "MakeApi.bi"
 
-Sub Convert(byval sInputFile as string,byval sOutputFile as string)
-  Dim sLine As String
-  Dim sApi As String
-  Dim i As Integer
-  Dim iPos As Integer
+Sub TabReplace(ByRef szin As ZString)
 
-  Open sInputFile For Input As #1
-  Open sOutputFile For Output As #2
-  Do While Not EOF(1)
-    Line Input #1, sLine
-    If LCase(Left(sLine, 8)) = "declare " Then
-      sLine=Mid(sLine,9)
-    EndIf
-    If LCase(Left(sLine, 9)) = "function " Or LCase(Left(sLine, 4)) = "sub " Then
-      iPos = InStr(sLine, """")
-      If iPos Then
-        i = InStr(iPos + 1, sLine, """")
-        If i Then
-          sLine = Left(sLine, iPos - 1) & Mid(sLine, i + 1)
-        EndIf
-      EndIf
-      iPos = InStr(LCase(sLine), " alias ")
-      If iPos Then
-        sLine = Left(sLine, iPos - 1) & Mid(sLine, iPos + 7)
-      EndIf
-      iPos = InStr(LCase(sLine), " cdecl")
-      If iPos Then
-        sLine = Left(sLine, iPos - 1) & Mid(sLine, iPos + 6)
-      EndIf
-      If LCase(Left(sLine, 9)) = "function " Then
-        Print #2, sLine
-        Print #2, "end function"
-      ElseIf LCase(Left(sLine, 4)) = "sub " Then
-        Print #2, sLine
-        Print #2, "end sub"
-      End If
-    ElseIf LCase(Left(sLine, 8)) = "#define " Then
-      If InStr(sLine,"__") = 0 Then
-        Print #2, sLine
-      End If
-    ElseIf LCase(Left(sLine, 5)) = "type " Then
-      if InStr(LCase(sLine)," as ") = 0 Then
-        Print #2, sLine
-        Do
-          Line Input #1, sLine
-	       Print #2, sLine
-        Loop Until InStr(LCase(sLine),"end type")
-      End If
-    End If
-  Loop
-  Close #1
-  Close #2
+	Asm
+		push	esi
+		xor	ecx,ecx
+		mov	eax,VK_TAB
+		mov	edx,VK_SPACE
+		mov	esi,[szin]
+		jmp	L3
+	L1:
+		cmp	al,[esi+ecx]
+		jne	L2
+		mov	[esi+ecx],dl
+	L2:
+		inc	ecx
+	L3:
+		cmp	ah,[esi+ecx]
+		jne	L1
+		pop	esi
+	End Asm
+
+End Sub
+
+Sub DblSpaceRemove(ByRef szin As ZString)
+
+	Asm
+		push	esi
+		push	edi
+		mov	edx,VK_SPACE
+		mov	esi,[szin]
+		lea	edi,[esi+1]
+	LL1:
+		inc	esi
+		mov	al,[esi]
+		cmp	al,VK_SPACE
+		je	LL3
+	LL2:
+		mov	[edi],al
+		inc	edi
+		or		al,al
+		jne	LL1
+		jmp	LL4
+	LL3:
+		cmp	al,[edi-1]
+		jne	LL2
+		jmp	LL1
+	LL4:
+		pop	edi
+		pop	esi
+	End Asm
+
+End Sub
+
+Sub Convert(byval sInputFile as string,byval sOutputFile as string)
+	Dim sLine As String
+	Dim sApi As String
+	Dim i As Integer
+	Dim iPos As Integer
+
+	Open sInputFile For Input As #1
+	Open sOutputFile For Output As #2
+	Do While Not EOF(1)
+		Line Input #1, sLine
+		szWord=Trim(sLine)
+		TabReplace(szWord)
+		DblSpaceRemove(szWord)
+		sLine=Trim(szWord)
+		If LCase(Left(sLine, 8)) = "declare " Then
+			sLine=Mid(sLine,9)
+		EndIf
+		If LCase(Left(sLine, 9)) = "function " Or LCase(Left(sLine, 4)) = "sub " Then
+			iPos = InStr(sLine, """")
+			If iPos Then
+				i = InStr(iPos + 1, sLine, """")
+				If i Then
+		 			sLine = Left(sLine, iPos - 1) & Mid(sLine, i + 1)
+				EndIf
+			EndIf
+			iPos = InStr(LCase(sLine), " alias ")
+			If iPos Then
+				sLine = Left(sLine, iPos - 1) & Mid(sLine, iPos + 7)
+			EndIf
+			iPos = InStr(LCase(sLine), " cdecl")
+			If iPos Then
+				sLine = Left(sLine, iPos - 1) & Mid(sLine, iPos + 6)
+			EndIf
+			If LCase(Left(sLine, 9)) = "function " Then
+				Print #2, sLine
+				Print #2, "end function"
+			ElseIf LCase(Left(sLine, 4)) = "sub " Then
+				Print #2, sLine
+			Print #2, "end sub"
+			End If
+		ElseIf LCase(Left(sLine, 8)) = "#define " Then
+			If InStr(sLine,"__") = 0 Then
+				Print #2, sLine
+			End If
+		ElseIf LCase(Left(sLine, 5)) = "type " Then
+			if InStr(LCase(sLine)," as ") = 0 Then
+				Print #2, sLine
+				Do
+		 			Line Input #1, sLine
+		 			Print #2, sLine
+				Loop Until InStr(LCase(sLine),"end type")
+			End If
+		ElseIf LCase(Left(sLine, 5)) = "enum " Then
+			Print #2, sLine
+			Do
+				Line Input #1, sLine
+				Print #2, sLine
+			Loop Until InStr(LCase(sLine),"end enum")
+		End If
+	Loop
+	Close #1
+	Close #2
 
 End Sub
 
@@ -83,7 +146,7 @@ Sub SetupProperty()
 	SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("c"),Cast(Integer,StrPtr(szConst)))
 	'SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("d")+512,Cast(Integer,StrPtr(szData)))
 	SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("s"),Cast(Integer,StrPtr(szStruct)))
-	'SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("e"),Cast(Integer,StrPtr(szEnum)))
+	SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("e"),Cast(Integer,StrPtr(szEnum)))
 	'SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("n"),Cast(Integer,StrPtr(szNamespace)))
 	'SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("m"),Cast(Integer,StrPtr(szMacro)))
 	'SendMessage(hPrp,PRM_ADDPROPERTYTYPE,Asc("x")+256,Cast(Integer,StrPtr(szConstructor)))
@@ -165,6 +228,8 @@ Sub MakeApiFile(ByVal hWin As HWND,ByRef szPrefix As ZString,ByVal nType As Inte
 			szFileName &="Word.api"
 		Case 2
 			szFileName &="Struct.api"
+		Case 3
+			szFileName &="Enum.api"
 	End Select
 	hFile=CreateFile(@szFileName,GENERIC_WRITE Or GENERIC_READ,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL)
 	If hFile<>INVALID_HANDLE_VALUE Then
@@ -182,8 +247,13 @@ Sub MakeApiFile(ByVal hWin As HWND,ByRef szPrefix As ZString,ByVal nType As Inte
 						If Len(*lp) Then
 							szLine &="|" & *lp
 						EndIf
+						'
 					Case 1
+						'
 					Case 2
+						'
+					Case 3
+						'
 				End Select
 				szLine &=szCRLF
 				If szLine<>szLastLine Then
