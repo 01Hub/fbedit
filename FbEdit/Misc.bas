@@ -659,7 +659,7 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		ClientToScreen(hWin,@pt)
 		ttpos=SendMessage(ah.htt,TTM_SETITEM,0,Cast(LPARAM,@tti))
 		pt.x=pt.x-ttpos
-		SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
+		'SendMessage(ah.htt,TTM_SCREENFITS,0,Cast(LPARAM,@pt))
 		If edtopt.tooltip Then
 			SetWindowPos(ah.htt,HWND_TOP,pt.x,pt.y+20,0,0,SWP_NOSIZE Or SWP_NOACTIVATE Or SWP_SHOWWINDOW)
 			InvalidateRect(ah.htt,NULL,TRUE)
