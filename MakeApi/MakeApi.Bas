@@ -5,6 +5,7 @@
 #Include Once "windows.bi"
 #Include Once "win/commctrl.bi"
 #Include Once "win/commdlg.bi"
+#Include Once "win/shlwapi.bi"
 
 #Include "MakeApi.bi"
 
@@ -390,7 +391,13 @@ End Function
 	''
 	'' Create the Dialog
 	''
-	hFbEditDll=LoadLibrary("FbEdit.dll")
+	szWord="FbEdit.dll"
+	CommandLine=GetCommandLine
+	CommandLine=PathGetArgs(CommandLine)
+	If Len(*CommandLine) Then
+		szWord=*CommandLine & "\" & szWord
+	EndIf
+	hFbEditDll=LoadLibrary(szWord)
 	If hFbEditDll Then
 		CharTab=Cast(Any Ptr,GetProcAddress(hFbEditDll,StrPtr("GetCharTabPtr")))
 		lpCharTab=CharTab()
@@ -411,7 +418,7 @@ End Function
 		DialogBoxParam(hInstance, Cast(ZString Ptr,IDD_DLGAPI), NULL, @DlgProc, NULL)
 		FreeLibrary(hFbEditDll)
 	Else
-		MessageBox(NULL,"Could not find FbEdit.dll",@szAppName,MB_OK Or MB_ICONERROR)
+		MessageBox(NULL,"Could not find " & szWord,@szAppName,MB_OK Or MB_ICONERROR)
 	EndIf
 	''
 	'' Program has ended

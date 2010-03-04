@@ -107,7 +107,8 @@ Const szSecTools=			!"[Tools]\13\10"_
 								!"3=Paint,mspaint.exe\13\10"_
 								!"4=Explore Current Path,$\13\10"_
 								!"5=Command prompt,cmd.exe \34/K \34$C\\fbc.exe\34 -version && title FreeBASIC && path $C;%PATH%\34\13\10"_
-								!"6=Compiler Version,cmd.exe \34/k \34$C\\fbc.exe\34 -version\34\13\10"
+								!"6=Compiler Version,cmd.exe \34/k \34$C\\fbc.exe\34 -version\34\13\10"_
+								!"7=ApiFileCreator,$A\Tools\MakeApi.exe \34$A\34\13\10"
 Const szSecHelp=			!"[Help]\13\10"_
 								!"1=Win32,$H\\WIN32.HLP\13\10"_
 								!"2=FreeBASIC,$H\\FB.chm\13\10"_
@@ -378,7 +379,7 @@ Sub CheckIniFile()
 				While TRUE
 					GetPrivateProfileString(StrPtr("Tools"),Str(lret),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 					If Len(buff)=0 Then
-						WritePrivateProfileString("Tools",Str(lret),"Api File Creator,Tools\MakeApi.exe",@ad.IniFile)
+						WritePrivateProfileString("Tools",Str(lret),"Api File Creator,$A\Tools\MakeApi.exe ""$A""",@ad.IniFile)
 						Exit While
 					EndIf
 					lret+=1

@@ -109,6 +109,7 @@ Dim Shared deftypeendproperty As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDPROPERTY,As
 Dim Shared deftypeoperator As DEFTYPE = (TYPE_OPTNAMESECOND,DEFTYPE_OPERATOR,Asc("o"),8,"operator")
 Dim Shared deftypeendoperator As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDOPERATOR,Asc("o"),3,"end" & Chr(8) & "operator")
 
+Dim Shared CommandLine As ZString Ptr
 Dim Shared hInstance As HMODULE
 Dim Shared AppPath As ZString*260
 Dim Shared hFbEditDll As HMODULE

@@ -642,7 +642,7 @@ Function ShowTooltip(ByVal hWin As HWND,ByVal lptt As TOOLTIP Ptr) As Integer
 		tti.nitem=lptt->nPos
 		wp=SendMessage(ah.htt,TTM_GETITEMTYPE,0,Cast(LPARAM,@tti))
 		If Len(*Cast(ZString Ptr,wp)) Then
-			wp=Cast(Integer,FindExact(StrPtr("e"),Cast(ZString Ptr,wp),TRUE))
+			wp=Cast(Integer,FindExact(StrPtr("Ee"),Cast(ZString Ptr,wp),TRUE))
 			If wp Then
 				fenumlist=UpdateEnumList(Cast(ZString Ptr,wp))
 				MoveList
