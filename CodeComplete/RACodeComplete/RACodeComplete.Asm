@@ -566,6 +566,33 @@ SetScroll:
 
 CodeCompleteProc endp
 
+SkipScope proc uses esi,lpszBuff:DWORD
+
+	mov		esi,lpszBuff
+	xor		eax,eax
+	.if byte ptr [esi]=='(' || byte ptr [esi]=='['
+		push	ecx
+		xor		ecx,ecx
+		.while byte ptr [esi]
+			.if byte ptr [esi]=='(' || byte ptr [esi]=='['
+				inc		ecx
+			.elseif byte ptr [esi]==')' || byte ptr [esi]==']'
+				dec		ecx
+				.break .if ZERO?
+			.endif
+			inc		esi
+		.endw
+		.if byte ptr [esi]==')' || byte ptr [esi]==']'
+			inc		esi
+		.endif
+		pop		ecx
+		mov		eax,esi
+		sub		eax,lpszBuff
+	.endif
+	ret
+
+SkipScope endp
+
 ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	rect:RECT
@@ -744,8 +771,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,[ebx].RATT.tti.nitem
 		.if !ecx
 			.while byte ptr [edx]!=',' && byte ptr [edx]
-				call	SkipScope
-				inc		edx
+				invoke SkipScope,edx
+				.if eax
+					lea		edx,[edx+eax]
+				.else
+					inc		edx
+				.endif
 			.endw
 			mov		[ebx].RATT.nleft,0
 			mov		eax,edx
@@ -754,8 +785,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.else
 			.while ecx
 				.while byte ptr [edx]!=',' && byte ptr [edx]
-					call	SkipScope
-					inc		edx
+					invoke SkipScope,edx
+					.if eax
+						lea		edx,[edx+eax]
+					.else
+						inc		edx
+					.endif
 				.endw
 				.if byte ptr [edx]==','
 					inc		edx
@@ -767,8 +802,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,[ebx].RATT.tti.lpszParam
 			mov		[ebx].RATT.nleft,eax
 			.while byte ptr [edx]!=',' && byte ptr [edx]
-				call	SkipScope
-				inc		edx
+				invoke SkipScope,edx
+				.if eax
+					lea		edx,[edx+eax]
+				.else
+					inc		edx
+				.endif
 			.endw
 			mov		eax,edx
 			sub		eax,[ebx].RATT.tti.lpszParam
@@ -894,7 +933,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,[edx].TTITEM.nitem
 		.while ecx
 			.while byte ptr [esi]!=',' && byte ptr [esi]
-				inc		esi
+				invoke SkipScope,esi
+				.if eax
+					lea		esi,[esi+eax]
+				.else
+					inc		esi
+				.endif
 			.endw
 			.if byte ptr [esi]==','
 				inc		esi
@@ -918,7 +962,7 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,offset itembuff
 		.while byte ptr [esi]
 			mov		al,[esi]
-			.break .if al==',' || al==':' || al==' '
+			.break .if al==',' || al==':' || al=='(' || al=='[' || al==' '
 			mov		[ecx],al
 			inc		esi
 			inc		ecx
@@ -935,7 +979,12 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ecx,[edx].TTITEM.nitem
 		.while ecx
 			.while byte ptr [esi]!=',' && byte ptr [esi]
-				inc		esi
+				invoke SkipScope,esi
+				.if eax
+					lea		esi,[esi+eax]
+				.else
+					inc		esi
+				.endif
 			.endw
 			.if byte ptr [esi]==','
 				inc		esi
@@ -957,14 +1006,19 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		esi
 		.endw
 		mov		ecx,offset itembuff
-		.while byte ptr [esi]!=':' && byte ptr [esi]
-			inc		esi
+		.while byte ptr [esi]!=',' && byte ptr [esi]!=':' && byte ptr [esi]
+			invoke SkipScope,esi
+			.if eax
+				lea		esi,[esi+eax]
+			.else
+				inc		esi
+			.endif
 		.endw
 		.if byte ptr [esi]==':'
 			inc		esi
 			.while byte ptr [esi]
 				mov		al,[esi]
-				.break .if al==',' || al==' '
+				.break .if al==',' || al=='(' || al=='[' || al==' '
 				mov		[ecx],al
 				inc		esi
 				inc		ecx
@@ -994,14 +1048,6 @@ ToolTipProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
 	ret
-
-SkipScope:
-	.if byte ptr [edx]=='('
-		.while byte ptr [edx] && byte ptr [edx]!=')'
-			inc		edx
-		.endw
-	.endif
-	retn
 
 ToolTipProc endp
 
