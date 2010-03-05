@@ -30,6 +30,7 @@ deftypemacro	DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_MACRO,'m',5,'macro'>
 deftypeendm		DEFTYPE <TYPE_OPTNAMEFIRST,DEFTYPE_ENDMACRO,'m',4,'endm'>
 
 
+szApiPath		db '\Api\',0
 szApiCallFile	db 'masmApiCall.api',0
 szApiConstFile	db 'masmApiConst.api',0
 szApiStructFile	db 'masmApiStruct.api',0
@@ -143,7 +144,7 @@ SetPropertyDefs proc uses esi
 
 MakePath:
 	invoke strcpy,addr buffer,addr da.AppPath
-	invoke strcat,addr buffer,addr szBackSlash
+	invoke strcat,addr buffer,addr szApiPath
 	invoke strcat,addr buffer,esi
 	retn
 
