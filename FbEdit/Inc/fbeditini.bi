@@ -108,7 +108,7 @@ Const szSecTools=			!"[Tools]\13\10"_
 								!"4=Explore Current Path,$\13\10"_
 								!"5=Command prompt,cmd.exe \34/K \34$C\\fbc.exe\34 -version && title FreeBASIC && path $C;%PATH%\34\13\10"_
 								!"6=Compiler Version,cmd.exe \34/k \34$C\\fbc.exe\34 -version\34\13\10"_
-								!"7=ApiFileCreator,$A\Tools\MakeApi.exe \34$A\34\13\10"
+								!"7=ApiFileCreator,$A\\Tools\\MakeApi.exe \34$A\34\13\10"
 Const szSecHelp=			!"[Help]\13\10"_
 								!"1=Win32,$H\\WIN32.HLP\13\10"_
 								!"2=FreeBASIC,$H\\FB.chm\13\10"_
@@ -139,17 +139,17 @@ Const szSecOpen=			!"[Open]\13\10"_
 								!"1=.bmp.,mspaint.exe\13\10"_
 								!"2=.doc.rtf.,wordpad.exe\13\10"
 Const szSecApi=			!"[Api]\13\10"_
-								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets),fmod (fmod Sound)\13\10"_
+								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets),fmod (fmod Sound),rae (RAEdit)\13\10"_
 								!"DefApi=fb (FreeBASIC)\13\10"_
 								!"Call=fbCall.api,gdipCall.api,oglCall.api,winCall.api,wxCall.api,svCall.api,fmodCall.api\13\10"_
-								!"Const=fbConst.api,oglConst.api,winConst.api,svConst.api\13\10"_
-								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api,fmodStruct.api\13\10"_
-								!"Word=fbWord.api,winWord.api,fmodWord.api\13\10"_
+								!"Const=fbConst.api,oglConst.api,winConst.api,svConst.api,raeConst.api\13\10"_
+								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api,fmodStruct.api,raeStruct.api\13\10"_
+								!"Word=fbWord.api,winWord.api,fmodWord.api,raeWord.api\13\10"_
 								!"Type=fbType.api,oglType.api,winType.api\13\10"_
 								!"Case=fbCase.api\13\10"_
 								!"Desc=fbDesc.api,winDesc.api\13\10"_
-								!"Msg=winMsg.api\13\10"_
-								!"Enum=fmodEnum.api\13\10"
+								!"Msg=winMsg.api,raeMsg.api\13\10"_
+								!"Enum=fmodEnum.api,raeEnum.api\13\10"
 Const szSecDebug=			!"[Debug]\13\10"_
 								!"Debug=$A\\FBdebugger\\FBdebugger.exe\13\10"
 Const szSecTemplate=		!"[Template]\13\10"_
@@ -357,24 +357,39 @@ Sub CheckIniFile()
 			ElseIf lret<1076 Then
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmod (fmod Sound)"
+				buff &="fmod (fmod Sound),rae (RAEdit)"
 				WritePrivateProfileString("Api","Api",@buff,@ad.IniFile)
+				' xxxCall.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Call"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
 				buff &="fmodCall.api"
 				WritePrivateProfileString("Api","Call",@buff,@ad.IniFile)
+				' xxxConst.api
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Const"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="raeConst.api"
+				WritePrivateProfileString("Api","Const",@buff,@ad.IniFile)
+				' xxxStruct.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Struct"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmodStruct.api"
+				buff &="fmodStruct.api,raeStruct.api"
 				WritePrivateProfileString("Api","Struct",@buff,@ad.IniFile)
+				' xxxWord.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Word"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmodWord.api"
+				buff &="fmodWord.api,raeWord.api"
 				WritePrivateProfileString("Api","Word",@buff,@ad.IniFile)
+				' xxxEnum.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Enum"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmodEnum.api"
+				buff &="fmodEnum.api,raeEnum.api"
 				WritePrivateProfileString("Api","Enum",@buff,@ad.IniFile)
+				' xxxMsg.api
+				GetPrivateProfileString(StrPtr("Api"),StrPtr("Msg"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
+				If Len(buff) Then buff &=","
+				buff &="raeMsg.api"
+				WritePrivateProfileString("Api","Msg",@buff,@ad.IniFile)
+				' Add Api File Creator to tools menu
 				lret=1
 				While TRUE
 					GetPrivateProfileString(StrPtr("Tools"),Str(lret),@szNULL,@buff,SizeOf(buff),@ad.IniFile)

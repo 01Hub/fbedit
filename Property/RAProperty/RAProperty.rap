@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=26
+MilestoneOnDateDate=5
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -141,9 +141,9 @@ ProductVer4Range=0
 13=,
 14=,,,,,
 [Size]
-2=0,0,699,490,2379
+2=0,0,699,490,2240
 <<<<<<< .mine
-1=0,0,699,490,15312
+1=0,0,699,490,6317
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -152,8 +152,8 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,2696
 9=0,0,0,0,1970
-10=0,0,0,0,33401
-11=0,0,746,498,12152
+10=0,0,0,0,3947
+11=0,0,746,498,11915
 12=0,0,0,0,2850
 13=0,0,0,0,5874
 14=0,0,0,0,790
@@ -174,18 +174,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
-PTimer=136351049
+PTimer=138935767
 [Find]
-1="PRM_ISTOOLTIPMESSAGE"
-2="PRM_ADDPROPERTYFILE"
-3="MFixUnknown"
-4="PRM_SETCHARTAB"
-5="PRM_GETSTRUCTWORD"
-6="MIsWord"
-7="IsWord"
-8="GetWord"
-9="Compare"
-10="FBSkipLine"
+1="PRM_GETSORTEDLIST"
+2="PRM_ADDISWORD"
+3="PRM_SETLANGUAGE"
+4="1.1.0.2"
+5="'m'"
+6="1102"
+7="UpdateApiToolTip"
+8="PRM_GETTOOLTIP"
+9="PRM_ISTOOLTIPMESSAGE"
+10="MSGAPI"
 
 [Exports]
 1=GetDefEx

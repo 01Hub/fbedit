@@ -6,6 +6,7 @@
 #Include Once "win/commctrl.bi"
 #Include Once "win/commdlg.bi"
 #Include Once "win/shlwapi.bi"
+#include Once "file.bi"
 
 #Include "MakeApi.bi"
 
@@ -301,6 +302,68 @@ Sub ParseFiles(ByVal hWin As HWND)
 
 End Sub
 
+Function MoveApiFiles(ByRef szPrefix As ZString) As Integer
+	Dim n As Integer
+	Dim sFileName As String
+	Dim sKey As String
+	Dim szBuffer As ZString*1024
+
+	sFileName=Dir(AppPath & "\" & szPrefix & "*.api")
+	Do While Len(sFileName)
+		FileCopy(AppPath & "\" & sFileName,FbEditPath & "\Api\" & sFileName)
+		Kill(AppPath & "\" & sFileName)
+		sKey=Mid(sFileName,Len(szPrefix)+1)
+		sKey=Left(sKey,Len(sKey)-4)
+		GetPrivateProfileString("Api",sKey,szNULL,@szBuffer,1024,FbEditPath & "\FbEdit.ini")
+		If InStr(LCase(szBuffer),LCase(sFileName))=0 Then
+			If Len(szBuffer) Then szBuffer &=","
+			szBuffer &=sFileName
+			WritePrivateProfileString("Api",sKey,szBuffer,FbEditPath & "\FbEdit.ini")
+		EndIf
+		sFileName=Dir()
+		n+=1
+	Loop
+	Return n
+
+End Function
+
+Sub UpdateIni(ByVal hWin As HWND)
+	Dim szIni As ZString*260
+	Dim szPrefix As ZString*260
+	Dim szDescription As ZString*260
+	Dim szBuffer As ZString*1024
+	Dim As Integer i,n
+
+	szIni=FbEditPath & "\FbEdit.ini"
+	If GetFileAttributes(@szIni)=INVALID_HANDLE_VALUE Then
+		MessageBox(hWin,"Could not find FbEdit.ini",szAppName,MB_OK Or MB_ICONERROR)
+		Exit Sub
+	EndIf
+	GetDlgItemText(hWin,IDC_EDTPREFIX,@szPrefix,260)
+	If Len(szPrefix) Then
+		GetDlgItemText(hWin,IDC_EDTDESCRIPTION,@szDescription,260)
+		If Len(szDescription) Then
+			n=MoveApiFiles(szPrefix)
+			If n Then
+				GetPrivateProfileString("Api","Api",szNULL,@szBuffer,1024,FbEditPath & "\FbEdit.ini")
+				If InStr(LCase(szBuffer),LCase(szPrefix & " " & szDescription))=0 Then
+					If Len(szBuffer) Then szBuffer &=","
+					szBuffer &=szPrefix & " " & szDescription
+					WritePrivateProfileString("Api","Api",szBuffer,FbEditPath & "\FbEdit.ini")
+				EndIf
+				MessageBox(hWin,"Added " & Str(n) & " api files.",szAppName,MB_OK Or MB_ICONINFORMATION)
+			Else
+				MessageBox(hWin,"No api files found.",szAppName,MB_OK Or MB_ICONERROR)
+			EndIf
+		Else
+			MessageBox(hWin,"No Description given.",szAppName,MB_OK Or MB_ICONERROR)
+		EndIf
+	Else
+		MessageBox(hWin,"No File Prefix given.",szAppName,MB_OK Or MB_ICONERROR)
+	EndIf
+
+End Sub
+
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id,Event,i,x
 	Dim sInp as ZString*260
@@ -339,6 +402,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					'
 				Case IDCANCEL
 					EndDialog(hWin, 0)
+					'
+				Case IDC_BTNUPDATEINI
+					UpdateIni(hWin)
 					'
 				Case IDC_BTNADD
 					ofn.lStructSize=sizeof(OPENFILENAME)
@@ -399,6 +465,10 @@ End Function
 	EndIf
 	hFbEditDll=LoadLibrary(szWord)
 	If hFbEditDll Then
+		FbEditPath=*CommandLine
+		If Len(FbEditPath)=0 Then
+			FbEditPath="C:\FbEdit"
+		EndIf
 		CharTab=Cast(Any Ptr,GetProcAddress(hFbEditDll,StrPtr("GetCharTabPtr")))
 		lpCharTab=CharTab()
 

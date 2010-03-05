@@ -57,6 +57,8 @@ End Type
 #Define IDC_BTNDEL              1003
 #Define IDC_PRPCODE             1004
 #Define IDC_EDTPREFIX           1006
+#Define IDC_BTNUPDATEINI        1005
+#Define IDC_EDTDESCRIPTION      1007
 
 ' Filter string for GetOpenFileName
 Const szNULL=!"\0"
@@ -112,6 +114,7 @@ Dim Shared deftypeendoperator As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDOPERATOR,As
 Dim Shared CommandLine As ZString Ptr
 Dim Shared hInstance As HMODULE
 Dim Shared AppPath As ZString*260
+Dim Shared FbEditPath As ZString*260
 Dim Shared hFbEditDll As HMODULE
 Dim Shared CharTab As Function() As Any Ptr
 Dim Shared lpCharTab As Any Ptr

@@ -492,7 +492,7 @@ Sub UpdateTypeList()
 			SendMessage(ah.hcc,CCM_ADDITEM,ntype,lret)
 			lret=SendMessage(ah.hpr,PRM_FINDNEXT,0,0)
 		Loop
-		SendMessage(ah.hcc,CCM_SORT,0,0)
+		SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 		SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
 		If SendMessage(ah.hcc,CCM_GETCOUNT,0,0) Then
 			ftypelist=TRUE
@@ -515,20 +515,30 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 		SendMessage(ah.hcc,CCM_CLEAR,0,0)
 		SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 		If chrg.cpMin=chrg.cpMax Then
-			lret=lret+Len(buff)+1
 			ln=SendMessage(ah.hred,EM_EXLINEFROMCHAR,0,chrg.cpMax)
 			chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,ln,0)
 			buff=Chr(255) & Chr(1)
 			ln=SendMessage(ah.hred,EM_GETLINE,ln,Cast(Integer,@buff))
 			buff[ln]=NULL
 			SendMessage(ah.hpr,PRM_GETWORD,chrg.cpMax-chrg.cpMin,Cast(Integer,@buff))
-			lstrcpy(@s,lret)
-			ccal.lpszList=@s
-			ccal.lpszFilter=@buff
-			ccal.nType=2
-			If Len(s) Then
+			If lstrlen(lret+lstrlen(lret)+1) Then
+				' Handles 3SendDlgItemMessage,2SendMessage and 2PostMessage
+				s=""
+				ccal.lpszList=@s
+				ccal.lpszFilter=@buff
+				ccal.nType=2
+				While lret
+					If Len(s) Then
+						s &=","
+					EndIf
+					lret+=Len(*lret)+1
+					s &=*lret
+					lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
+				Wend
 				SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
+				SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 			Else
+				' Handles Cast(
 				lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTEe")),Cast(LPARAM,@buff)))
 				Do While lret
 					ntype=SendMessage(ah.hpr,PRM_FINDGETTYPE,0,0)
@@ -547,7 +557,7 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 					SendMessage(ah.hcc,CCM_ADDITEM,ntype,Cast(LPARAM,lret))
 					lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 				Loop
-				SendMessage(ah.hcc,CCM_SORT,0,0)
+				SendMessage(ah.hcc,CCM_SORT,0,TRUE)
 			EndIf
 			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
 			Return TRUE

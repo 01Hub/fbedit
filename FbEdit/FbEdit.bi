@@ -350,7 +350,7 @@ Const CRLF=Chr(13) & Chr(10)
 Const CR=Chr(13)
 
 Const szAppName=!"FreeBASIC editor\0"
-Const szVersion=!"FreeBASIC editor 1.0.7.5\0"
+Const szVersion=!"FreeBASIC editor 1.0.7.6\0"
 Const szReg=!"REG"
 Const szFpu=!"FPU"
 Const szMmx=!"MMX"

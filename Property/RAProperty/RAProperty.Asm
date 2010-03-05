@@ -456,12 +456,13 @@ IsWordType endp
 GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 	LOCAL	npos:DWORD
 
+	mov		edx,lParam
 	.if [ebx].RAPROPERTY.nlanguage==nMASM
 		; Masm
-		invoke MPreParse,lParam
+		invoke MPreParse,[edx].TOOLTIP.lpszLine
 	.else
 		; FreeBASIC
-		invoke FBPreParse,lParam,FALSE
+		invoke FBPreParse,[edx].TOOLTIP.lpszLine,FALSE
 	.endif
 	xor		edi,edi
 	mov		esi,[ebx].RAPROPERTY.lpchartab

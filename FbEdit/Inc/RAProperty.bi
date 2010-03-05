@@ -5,7 +5,7 @@
 #Define PRM_ADDPROPERTYFILE	WM_USER+2		' wParam=dwType, lParam=lpszFile
 #Define PRM_SETGENDEF			WM_USER+3		' wParam=0, lParam=lpGENDEF
 #Define PRM_ADDIGNORE			WM_USER+4		' wParam=IgnoreType, lParam=lpszWord
-#Define PRM_ADDDEFTYPE			WM_USER+5		' wParam=0, lParam=lpTYPEDEF
+#Define PRM_ADDDEFTYPE			WM_USER+5		' wParam=0, lParam=lpDEFTYPE
 #Define PRM_PARSEFILE			WM_USER+6		' wParam=Owner, lParam=lpFileData
 #Define PRM_SETCHARTAB			WM_USER+7		' wParam=0, lParam=lpCharTab
 #Define PRM_DELPROPERTY			WM_USER+8		' wParam=nOwner (0=All), lParam=0
@@ -43,6 +43,10 @@
 #Define PRM_SETLANGUAGE			WM_USER+40		' wParam=nLanguage, lParam=0
 #Define PRM_SETTOOLTIP			WM_USER+41		' wParam=n (1-5), lParam=lpszText
 #Define PRM_PREPARSE				WM_USER+42		' wParam=fKeepStrings, lParam=lpFileData
+
+' Languages
+#Define nFREEBASIC				0
+#Define nMASM						1
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR	1
