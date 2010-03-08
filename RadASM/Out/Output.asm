@@ -133,112 +133,151 @@ OutputDblClick proc uses esi edi,hWin:HWND,fSkipBS:DWORD
 		.endw
 		mov		esi,offset LineTxt
 		lea		edi,buffer
-		dec		esi
-	  @@:
-		inc		esi
-		mov		al,[esi]
-		cmp		al,20h
-		je		@b
-		cmp		al,09h
-		je		@b
-		cmp		al,'"'
-		je		@b
-	  @@:
-		mov		ax,[esi]
-		.if al=='\' && fSkipBS
-			inc		esi
-			lea		edi,buffer
-			jmp		@b
-		.endif
-		mov		[edi],al
-		cmp		al,09h
-		je		@f
-		cmp		al,0Dh
-		je		@f
-		cmp		al,'('
-		je		@f
-		cmp		al,'['
-		je		@f
-		cmp		al,'"'
-		je		@f
-		.if al==':' && ah!='\'
-			jmp		@f
-		.endif
-		inc		esi
-		inc		edi
-		or		al,al
-		jne		@b
-	  @@:
-		mov		al,[edi-1]
-		.if al==' '
-			dec		edi
-			jmp		@b
-		.endif
-		mov		al,0
-		mov		[edi],al
-		invoke lstrcpyn,addr buffer1,esi,31
-		lea		esi,buffer
-		mov		edi,offset szErr1
-		call	TestErr
-		.if eax
-			lea		esi,buffer
-			mov		edi,offset szErr2
-			call	TestErr
-			.if eax
-				lea		esi,buffer
-				mov		edi,offset szErr2b
-				call	TestErr
-				.if eax
-					lea		esi,buffer
-					mov		edi,offset szErr3
-					call	TestErr
-					.if eax
-						lea		esi,buffer
-					.endif
+		invoke GetPrivateProfileInt,addr iniError,addr ininAsm,0,addr iniAsmFile
+		.if eax==98 || eax==99
+			invoke GetPrivateProfileInt,addr iniError,addr iniSkipWords,0,addr iniAsmFile
+			mov		ecx,eax
+			.while byte ptr [esi] && ecx
+				.if byte ptr [esi]==' '
+					.while byte ptr [esi]==' '
+						inc		esi
+					.endw
+					dec		ecx
+				.else
+					inc		esi
 				.endif
+			.endw
+			.while byte ptr [esi] && byte ptr [esi]!='.'
+				mov		al,[esi]
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endw
+			.if byte ptr [esi]=='.'
+				.while byte ptr [esi] && byte ptr [esi]!=' '
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		byte ptr [edi],0
+				lea		edi,buffer1
+				.while byte ptr [esi] && byte ptr [esi]==' '
+					inc		esi
+				.endw
+				invoke lstrcpyn,edi,esi,31
+				lea		esi,buffer
+				jmp		FileFound
 			.endif
-		.endif
-		.if fProject
-			mov		ax,[esi]
-			.if ax=='\.'
-				add		esi,2
-			.endif
-			.if al=='\' || ah==':'
-				mov		FileName,0
-			.else
-				invoke strcpy,addr FileName,addr ProjectPath
-			.endif
-			call	TestFileName
-			invoke strcat,addr FileName,esi
 		.else
-			invoke strcpy,addr FileName,esi
-		.endif
-		.if !fSkipBS
-			invoke OutputError,hWin
-		.endif
-		invoke ProjectOpenFile,fSkipBS
-		.if !eax && hEdit
-			lea		esi,buffer1
 			dec		esi
 		  @@:
 			inc		esi
 			mov		al,[esi]
-			cmp		al,'0'
-			jl		@b
-			cmp		al,'9'
-			jg		@b
-			invoke DecToBin,esi
-			dec		eax
-			invoke SendMessage,hEdit,EM_LINEINDEX,eax,0
-			mov		chrg.cpMin,eax
-			mov		chrg.cpMax,eax
-			invoke SendMessage,hEdit,EM_EXSETSEL,0,addr chrg
-			invoke VerticalCenter,hEdit,REM_VCENTER
-			invoke SetFocus,hEdit
-			xor		eax,eax
-			inc		eax
-		.else
-			xor		eax,eax
+			cmp		al,20h
+			je		@b
+			cmp		al,09h
+			je		@b
+			cmp		al,'"'
+			je		@b
+		  @@:
+			mov		ax,[esi]
+			.if al=='\' && fSkipBS
+				inc		esi
+				lea		edi,buffer
+				jmp		@b
+			.endif
+			mov		[edi],al
+			cmp		al,09h
+			je		@f
+			cmp		al,0Dh
+			je		@f
+			cmp		al,'('
+			je		@f
+			cmp		al,'['
+			je		@f
+			cmp		al,'"'
+			je		@f
+			.if al==':' && ah!='\'
+				jmp		@f
+			.endif
+			inc		esi
+			inc		edi
+			or		al,al
+			jne		@b
+		  @@:
+			mov		al,[edi-1]
+			.if al==' '
+				dec		edi
+				jmp		@b
+			.endif
+			mov		al,0
+			mov		[edi],al
+			invoke lstrcpyn,addr buffer1,esi,31
+			lea		esi,buffer
+			mov		edi,offset szErr1
+			call	TestErr
+			.if eax
+				lea		esi,buffer
+				mov		edi,offset szErr2
+				call	TestErr
+				.if eax
+					lea		esi,buffer
+					mov		edi,offset szErr2b
+					call	TestErr
+					.if eax
+						lea		esi,buffer
+						mov		edi,offset szErr3
+						call	TestErr
+						.if eax
+							lea		esi,buffer
+						.endif
+					.endif
+				.endif
+			.endif
+		  FileFound:
+			.if fProject
+				mov		ax,[esi]
+				.if ax=='\.'
+					add		esi,2
+				.endif
+				.if al=='\' || ah==':'
+					mov		FileName,0
+				.else
+					invoke strcpy,addr FileName,addr ProjectPath
+				.endif
+				call	TestFileName
+				invoke strcat,addr FileName,esi
+			.else
+				invoke strcpy,addr FileName,esi
+			.endif
+			.if !fSkipBS
+				invoke OutputError,hWin
+			.endif
+			invoke ProjectOpenFile,fSkipBS
+			.if !eax && hEdit
+				lea		esi,buffer1
+				dec		esi
+			  @@:
+				inc		esi
+				mov		al,[esi]
+				cmp		al,'0'
+				jl		@b
+				cmp		al,'9'
+				jg		@b
+				invoke DecToBin,esi
+				dec		eax
+				invoke SendMessage,hEdit,EM_LINEINDEX,eax,0
+				mov		chrg.cpMin,eax
+				mov		chrg.cpMax,eax
+				invoke SendMessage,hEdit,EM_EXSETSEL,0,addr chrg
+				invoke VerticalCenter,hEdit,REM_VCENTER
+				invoke SetFocus,hEdit
+				xor		eax,eax
+				inc		eax
+			.else
+				xor		eax,eax
+			.endif
 		.endif
 	.endif
 	ret

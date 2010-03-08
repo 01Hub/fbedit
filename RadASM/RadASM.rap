@@ -179,12 +179,12 @@ MinorFiles=*.res;*.obj;
 
 [Size]
 1=22,22,536,413,1770
-2=0,416,869,416,39238
+2=0,416,869,416,40373
 3=154,154,590,413,0
 4=0,0,590,413,40993
-5=132,132,536,413,33764
-6=12,26,869,416,136343
-7=132,132,536,413,23847
+5=132,132,536,413,1212
+6=12,26,869,416,81408
+7=132,132,536,413,3655
 8=44,44,536,413,52712
 9=88,88,536,413,37518
 10=110,110,536,413,17149
@@ -305,7 +305,7 @@ MinorFiles=*.res;*.obj;
 128=0,0,0,0
 
 [AutoLoad]
-AutoLoad=6,2,119,125,24,97,4,86,5
+AutoLoad=6,2,119,125,24,97,4,86,5,7
 
 [BookMark]
 0=
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="iniVersion"
-2="2219"
-3="WM_COPYDATA"
-4="WM_USER"
-5="AIM_EDITOPEN"
-6="REdPos"
-7="AIM_PROJECTREMOVE"
-8="2218"
-9="GetCommand"
-10="TV_ITEM"
+1="'Skip'"
+2="OutPutMake"
+3="iniVersion"
+4="2219"
+5="WM_COPYDATA"
+6="WM_USER"
+7="AIM_EDITOPEN"
+8="REdPos"
+9="AIM_PROJECTREMOVE"
+10="2218"
 
 [BreakPoint]
 0=
@@ -542,7 +542,7 @@ MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
 <<<<<<< .mine
-MilestoneOnDateDate=1
+MilestoneOnDateDate=8
 =======
 MilestoneOnDateDate=9
 >>>>>>> .r988
@@ -684,7 +684,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 127=
 128=
 [Collapse]
-6=,,,,,268435456,262145,256,,17301504,,,,,163840,4202500,4,,512,16781833,,1074792576,144
+6=,,,,,268435456,262145,256,,17301504,,,,,131072,4202500,4,,512,16781833,,1074792576,144
 2=
 11=,,,,,
 8=,,,,,,,,
@@ -765,7 +765,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1455384197
+PTimer=1457595605
 [RADebugBP]
 96=
 55=
@@ -792,5 +792,6 @@ PTimer=1455384197
 3=
 22=
 125=
+7=
 [GroupExpand]
 GroupExpand=1,1,1,1,1,1,1,0
