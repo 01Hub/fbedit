@@ -353,57 +353,64 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==VK_TAB || eax==VK_RETURN
 			invoke IsWindowVisible,ha.hCCLB
 			.if eax
-				mov		ccinprogress,eax
-				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
-				invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ccchrg
-				mov		eax,ccchrg.cpMin
-				inc		eax
-				mov		trng.chrg.cpMin,eax
-				add		eax,16
-				mov		trng.chrg.cpMax,eax
-				lea		eax,buffer
-				mov		trng.lpstrText,eax
-				invoke SendMessage,ha.hREd,EM_GETTEXTRANGE,0,addr trng
 				invoke SendMessage,ha.hCCLB,CCM_GETCURSEL,0,0
-				invoke SendMessage,ha.hCCLB,CCM_GETITEM,eax,0
-				push	eax
-				invoke strcpy,offset tmpbuff,eax
-				xor		eax,eax
-				.while tmpbuff[eax]
-					.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
-						mov		tmpbuff[eax],0
-						.break
-					.endif
+				.if eax!=LB_ERR
+					mov		ccinprogress,TRUE
+					invoke SendMessage,ha.hREd,REM_LOCKUNDOID,TRUE,0
+					invoke SendMessage,ha.hREd,EM_EXSETSEL,0,addr ccchrg
+					mov		eax,ccchrg.cpMin
 					inc		eax
-				.endw
-				invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
-				pop		eax
-				.if cctype==CCTYPE_PROC
-					lea		edx,buffer
-					.while byte ptr [edx] && byte ptr [edx]!=VK_RETURN
-						.if byte ptr [edx]==','
-							xor		edx,edx
+					mov		trng.chrg.cpMin,eax
+					add		eax,16
+					mov		trng.chrg.cpMax,eax
+					lea		eax,buffer
+					mov		trng.lpstrText,eax
+					invoke SendMessage,ha.hREd,EM_GETTEXTRANGE,0,addr trng
+					invoke SendMessage,ha.hCCLB,CCM_GETCURSEL,0,0
+					invoke SendMessage,ha.hCCLB,CCM_GETITEM,eax,0
+					push	eax
+					invoke strcpy,offset tmpbuff,eax
+					xor		eax,eax
+					.while tmpbuff[eax]
+						.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
+							mov		tmpbuff[eax],0
 							.break
 						.endif
-						inc		edx
+						inc		eax
 					.endw
-					.if edx
-						push	eax
-						invoke strlen,eax
-						pop		edx
-						.if byte ptr [edx+eax+1]
-							mov		ccinprogress,0
-							mov		eax,','
-							invoke SendMessage,ha.hREd,WM_CHAR,eax,0
+					invoke SendMessage,ha.hREd,EM_REPLACESEL,TRUE,offset tmpbuff
+					pop		eax
+					.if cctype==CCTYPE_PROC
+						lea		edx,buffer
+						.while byte ptr [edx] && byte ptr [edx]!=VK_RETURN
+							.if byte ptr [edx]==','
+								xor		edx,edx
+								.break
+							.endif
+							inc		edx
+						.endw
+						.if edx
+							push	eax
+							invoke strlen,eax
+							pop		edx
+							.if byte ptr [edx+eax+1]
+								mov		ccinprogress,0
+								mov		eax,','
+								invoke SendMessage,ha.hREd,WM_CHAR,eax,0
+							.endif
 						.endif
 					.endif
+					invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
+					invoke ShowWindow,ha.hCCLB,SW_HIDE
+					mov		cctype,CCTYPE_NONE
+					xor		eax,eax
+					mov		ccinprogress,eax
+					jmp		Ex
+				.else
+					invoke ShowWindow,ha.hCCLB,SW_HIDE
+					xor		eax,eax
+					jmp		Ex
 				.endif
-				invoke SendMessage,ha.hREd,REM_LOCKUNDOID,FALSE,0
-				invoke ShowWindow,ha.hCCLB,SW_HIDE
-				mov		cctype,CCTYPE_NONE
-				xor		eax,eax
-				mov		ccinprogress,eax
-				jmp		Ex
 			.elseif wParam==VK_RETURN
 				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 				invoke CaseConvertWord,wParam,chrg.cpMin
