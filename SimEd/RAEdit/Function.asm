@@ -2251,3 +2251,26 @@ BracketMatch proc uses ebx,hMem:DWORD,nChr:DWORD,cp:DWORD
 	ret
 
 BracketMatch endp
+
+GetLineBegin proc uses ebx esi edi,hMem:DWORD,nLine:DWORD
+
+	mov		eax,nLine
+	.if eax
+		.while nLine
+			dec		nLine
+			mov		eax,nLine
+			lea		edi,[eax*4]
+			add		edi,[ebx].EDIT.hLine
+			mov		esi,[edi].LINE.rpChars
+			add		esi,[ebx].EDIT.hChars
+			mov		ecx,[esi].CHARS.len
+			.break .if ecx<2
+			mov		al,[esi+ecx+sizeof CHARS-2]
+			.break .if al!=bracketcont && al !=bracketcont[1]
+		.endw
+		mov		eax,nLine
+		inc		eax
+	.endif
+	ret
+
+GetLineBegin endp

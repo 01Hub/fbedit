@@ -1137,9 +1137,10 @@ Function EditProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,B
 							Wend
 							buffer=Mid(buffer,tp+1)
 							ln=SendMessage(hPar,EM_LINEFROMCHAR,chrg.cpMin,0)-1
+							ln=SendMessage(hPar,REM_GETLINEBEGIN,ln,0)
 							If SendMessage(hPar,REM_GETBOOKMARK,ln,0)=1 Then
 								wp=0
-								While wp<32
+								While wp<40
 									If SendMessage(hPar,REM_ISLINE,ln,Cast(LPARAM,@szSt(wp)))>=0 Then
 										lx=ln+1
 										lz=0
@@ -1595,14 +1596,8 @@ End Sub
 Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 	Dim ochrg As CHARRANGE
 	Dim chrg As CHARRANGE
-	Dim LnSt As Integer
-	Dim LnEn As Integer
-	Dim LnCnt As Integer
+	Dim As Integer LnSt,LnEn,LnCnt,tmp,nmin,n,x,bm
 	Dim buffer As String*128
-	Dim tmp As Integer
-	Dim nmin As Integer
-	Dim n As Integer
-	Dim x As Integer
 
 	x=ad.fNoNotify
 	ad.fNoNotify=TRUE
@@ -1713,6 +1708,11 @@ Sub IndentComment(ByVal char As String,ByVal fUn As Boolean)
 				EndIf
 			Else
 				' Comment
+				bm=SendMessage(ah.hred,REM_GETBOOKMARK,LnSt,0)
+				If bm=1 Or bm=2 Then
+					SendMessage(ah.hred,REM_SETBOOKMARK,LnSt,0)
+					SendMessage(ah.hred,REM_SETDIVIDERLINE,LnSt,FALSE)
+				EndIf
 				buffer=Chr(127) & Chr(0)
 				n=SendMessage(ah.hred,EM_GETLINE,LnSt,Cast(LPARAM,@buffer))
 				buffer[n]=0

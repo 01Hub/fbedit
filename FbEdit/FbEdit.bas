@@ -948,11 +948,17 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						Case IDM_EDIT_BLOCKUNCOMMENT
 							If fEditFocus Then
 								IndentComment("'" & szNULL,TRUE)
+								If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
+									SendMessage(ah.hred,REM_SETBLOCKS,0,0)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_BLOCKTRIM
 							If fEditFocus Then
 								TrimTrailingSpaces
+								If GetWindowLong(ah.hred,GWL_ID)=IDC_CODEED Then
+									SendMessage(ah.hred,REM_SETBLOCKS,0,0)
+								EndIf
 							EndIf
 							'
 						Case IDM_EDIT_CONVERTTAB
@@ -1872,9 +1878,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						EndIf
 						If lpRASELCHANGE->fchanged Then
 							If lpRASELCHANGE->Line>=nLastLine And nLastLine>0 Then
-								nLastLine=nLastLine-1
+								nLastLine-=1
+								nLastLine=SendMessage(ah.hred,REM_GETLINEBEGIN,nLastLine,0)
 							ElseIf lpRASELCHANGE->Line<nLastLine Then
-								nLastLine=nLastLine+1
+								nLastLine+=1
 							EndIf
 							If GetWindowLong(ah.hred,GWL_USERDATA)=0 Then
 								SetWindowLong(ah.hred,GWL_USERDATA,1)
@@ -1899,7 +1906,6 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										EndIf
 										SendMessage(ah.hred,REM_SETBOOKMARK,nLastLine,0)
 										SendMessage(ah.hred,REM_SETDIVIDERLINE,nLastLine,FALSE)
-										SendMessage(ah.hred,REM_SETSEGMENTBLOCK,nLastLine,FALSE)
 										SendMessage(ah.hred,REM_REPAINT,0,TRUE)
 									EndIf
 								ElseIf bm=0 Then

@@ -1356,6 +1356,10 @@
 		_REM_SETUNDO:
 			invoke SetUndo,ebx,wParam,lParam
 			ret
+		align 4
+		_REM_GETLINEBEGIN:
+			invoke GetLineBegin,ebx,wParam
+			ret
 
 .data
 
@@ -1452,6 +1456,7 @@ _REM_BASE \
 	dd _REM_HILITEACTIVELINE	;equ REM_BASE+88
 	dd _REM_GETUNDO				;equ REM_BASE+89
 	dd _REM_SETUNDO				;equ REM_BASE+90
+	dd _REM_GETLINEBEGIN		;equ REM_BASE+91
 
 .code
 align 4
