@@ -2,8 +2,12 @@ MasmEd
 
 1.1.0.3 - 2010.03.01
 --------------------
-o Added message sensitive tooltip on SendMessage, PostMessage and SendDlgItemMessage api's.
+o Added message sensitive tooltip and codecomplete on
+  SendMessage, PostMessage and SendDlgItemMessage api's.
 o Added window messages to auto case convert list.
+o Moved api files to Api sub folder.
+o Fixed bug that caused MasmEd to crash if you pressed enter or
+  Tab on an empto codecomplete list.
 
 1.1.0.2g - 2010.02.25
 ---------------------
