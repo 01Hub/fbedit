@@ -366,9 +366,9 @@ End Sub
 
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id,Event,i,x
-	Dim sInp as ZString*260
+	Dim sInp as ZString*8192
 	Dim sPth as ZString*260
-	Dim s as ZString*260
+	Dim s as ZString*8192
 	Dim ofn as OPENFILENAME
 
 	Select Case uMsg
@@ -412,7 +412,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					ofn.hInstance=GetModuleHandle(NULL)
 					sInp=string(260,0)
 					ofn.lpstrFile=@sInp
-					ofn.nMaxFile=260
+					ofn.nMaxFile=8192
 					ofn.lpstrFilter=@ALLFilterString
 					ofn.lpstrTitle=StrPtr("Input File")
 					ofn.Flags=OFN_PATHMUSTEXIST or OFN_HIDEREADONLY or OFN_FILEMUSTEXIST or OFN_EXPLORER Or OFN_ALLOWMULTISELECT
