@@ -46,6 +46,9 @@ PRM_SETLANGUAGE			equ WM_USER+40		;wParam=nLanguage, lParam=0
 PRM_SETTOOLTIP			equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
 PRM_PREPARSE			equ WM_USER+42		;wParam=fKeepStrings, lParam=lpFileData
 PRM_ISINLIST			equ WM_USER+43		;wParam=lpWord, lParam=lpList
+PRM_ADDPROPERTYWORD		equ WM_USER+44		;wParam=dwType, lParam=lpszWord
+PRM_ADDPROPERTYLIST		equ WM_USER+45		;wParam=dwType, lParam=lpszListOfWords
+PRM_COMPACTLIST			equ WM_USER+46		;wParam=fProject, lParam=0
 
 ;Languages
 nFREEBASIC				equ 0

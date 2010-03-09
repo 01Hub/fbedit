@@ -218,16 +218,19 @@ LoadEditFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 			.if eax
 				invoke strcmpi,addr [esi+offset da.FileName-4],offset szFtInc
 				.if eax
-					invoke strcmpi,addr [esi+offset da.FileName-3],offset szFtRc
-					.if !eax
-						;RC File
-						mov		ebx,2
-					.else
-						;Unknown file type
-						mov		ebx,15
-						invoke GetWindowLong,hWin,GWL_STYLE
-						or		eax,STYLE_NOHILITE
-						invoke SetWindowLong,hWin,GWL_STYLE,eax
+					invoke strcmpi,addr [esi+offset da.FileName-4],offset szFtApi
+					.if eax
+						invoke strcmpi,addr [esi+offset da.FileName-3],offset szFtRc
+						.if !eax
+							;RC File
+							mov		ebx,2
+						.else
+							;Unknown file type
+							mov		ebx,15
+							invoke GetWindowLong,hWin,GWL_STYLE
+							or		eax,STYLE_NOHILITE
+							invoke SetWindowLong,hWin,GWL_STYLE,eax
+						.endif
 					.endif
 				.endif
 			.endif

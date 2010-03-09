@@ -290,16 +290,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 57=7
 
 [Find]
-1="UpdateApiToolTip"
-2="szCCC"
-3="PRM_ISTOOLTIPMESSAGE"
-4="PRM_GETTOOLTIP"
-5="1.1.0.2"
-6="'m'"
-7="1102"
-8="PRM_SETLANGUAGE"
-9="MSGAPI"
-10="szApiCallFile"
+1="PRM_FINDFIRST"
+2="szFtAsm"
+3="asm"
+4="UpdateApiToolTip"
+5="szCCC"
+6="PRM_ISTOOLTIPMESSAGE"
+7="PRM_GETTOOLTIP"
+8="1.1.0.2"
+9="'m'"
+10="1102"
 
 [VersionControl]
 Settings=1246
@@ -311,7 +311,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=8
+MilestoneOnDateDate=9
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -346,11 +346,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,21551
-1=0,0,0,0,10764
-11=0,0,0,0,44933
+2=0,0,687,524,20963
+1=0,0,0,0,1700
+11=0,0,0,0,35382
 22=0,0,0,0,748
-10=0,0,0,0,19143
+10=0,0,0,0,5870
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -384,8 +384,8 @@ ProductVer4Range=0
 40=0,0,0,0,387
 42=0,0,0,0,1576
 43=0,0,0,0
-45=0,0,0,0,1096
-46=0,0,0,0,5768
+45=0,0,0,0,2973
+46=0,0,0,0,6465
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
@@ -413,7 +413,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,37,46,45,53,29
+AutoLoad=1,2,38,37,46,45,53,29,10,11
 [Collapse]
 2=
 1=,,,,,,262176,618,2099200,
@@ -449,7 +449,7 @@ AutoLoad=1,2,38,37,46,45,53,29
 54=
 56=
 [PTimer]
-PTimer=2802660965
+PTimer=2821045636
 [RADebugBP]
 1=
 2=

@@ -49,7 +49,36 @@ deftypedata		DEFTYPE <TYPE_NAMEFIRST,DEFTYPE_DATA,'d',2,'db'>
 
 .code
 
-SetPropertyDefs proc uses esi
+DeleteDuplicates proc uses esi edi,lpszType:DWORD
+	LOCAL	nCount:DWORD
+
+	invoke SendMessage,ha.hProperty,PRM_GETSORTEDLIST,lpszType,addr nCount
+	mov		esi,eax
+	push	esi
+	xor		ecx,ecx
+	mov		edi,offset szNULL
+	.while ecx<nCount
+		push	ecx
+		invoke strcmp,edi,[esi]
+		.if !eax
+			mov		eax,[esi]
+			lea		eax,[eax-sizeof PROPERTIES]
+			mov		[eax].PROPERTIES.nType,255
+		.else
+			mov		edi,[esi]
+		.endif
+		pop		ecx
+		inc		ecx
+		lea		esi,[esi+4]
+	.endw
+	pop		esi
+	invoke GlobalFree,esi
+	invoke SendMessage,ha.hProperty,PRM_COMPACTLIST,FALSE,0
+	ret
+
+DeleteDuplicates endp
+
+SetPropertyDefs proc uses esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	; Set character table
@@ -128,6 +157,46 @@ SetPropertyDefs proc uses esi
 	mov		edx,3 shl 8 or 'M'
 	lea eax,buffer
 	invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,edx,addr buffer
+	;Add 'C' list to 'W' list
+	mov		dword ptr buffer,'C'
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[1]
+	.while eax
+		mov		esi,eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		invoke strcpy,offset tmpbuff,esi
+		mov		eax,2 shl 8 or 'W'
+		invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYLIST,eax,offset tmpbuff
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	;Add 'M' list to 'W' list
+	mov		dword ptr buffer,'M'
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[1]
+	.while eax
+		mov		esi,eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		.while byte ptr [esi]
+			.if byte ptr [esi]=='['
+				inc		esi
+				mov		edi,offset tmpbuff
+				.while byte ptr [esi]!=']'
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		byte ptr [edi],0
+				mov		eax,2 shl 8 or 'W'
+				invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYLIST,eax,offset tmpbuff
+			.endif
+			inc		esi
+		.endw
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	;Delete duplicates
+	mov		dword ptr buffer,'W'
+	invoke DeleteDuplicates,addr buffer
 	;Set default selection
 	invoke SendMessage,ha.hProperty,PRM_SELECTPROPERTY,'p',0
 	invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0

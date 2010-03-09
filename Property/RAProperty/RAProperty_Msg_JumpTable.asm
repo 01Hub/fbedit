@@ -98,7 +98,7 @@
 	align 4 
 	_PRM_DELPROPERTY:
 		invoke DeleteProperties,wParam
-		invoke CompactProperties
+		invoke CompactProperties,TRUE
 		xor		eax,eax
 		ret
 	align 4 
@@ -590,6 +590,79 @@
 	_PRM_ISINLIST:
 		invoke SearchMemDown,lParam,wParam,TRUE,TRUE,[ebx].RAPROPERTY.lpchartab
 		ret
+	align 4
+	_PRM_ADDPROPERTYWORD:
+		invoke strcpy,offset szname,lParam
+		mov		edx,offset szname
+		.while byte ptr [edx]
+			.if byte ptr [edx]==',' || byte ptr [edx]=='|'
+				mov		byte ptr [edx],0
+			.endif
+			inc		edx
+		.endw
+		mov		dword ptr [edx],0
+		mov		eax,wParam
+		movzx	edx,ah
+		movzx	eax,al
+		invoke AddWordToWordList,eax,0,0,0,offset szname,edx
+		mov		eax,[ebx].RAPROPERTY.rpfree
+		mov		[ebx].RAPROPERTY.rpproject,eax
+		ret
+	align 4
+	_PRM_ADDPROPERTYLIST:
+		push	esi
+		push	edi
+		mov		eax,[ebx].RAPROPERTY.rpfree
+		sub		eax,[ebx].RAPROPERTY.rpproject
+		push	eax
+		mov		esi,lParam
+		mov		edi,offset szname
+		xor		ecx,ecx
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al==','
+				mov		dword ptr [edi],0
+				.if (szname<'0' || szname>'9') && szname!='-'
+					mov		eax,wParam
+					movzx	edx,ah
+					movzx	eax,al
+					push	ecx
+					invoke AddWordToWordList,eax,0,0,0,offset szname,edx
+					pop		ecx
+					inc		ecx
+				.endif
+				mov		edi,offset szname
+				inc		esi
+			.else
+				mov		[edi],al
+				inc		esi
+				inc		edi
+			.endif
+		.endw
+		mov		dword ptr [edi],0
+		.if szname
+			.if (szname<'0' || szname>'9') && szname!='-'
+				mov		eax,wParam
+				movzx	edx,ah
+				movzx	eax,al
+				push	ecx
+				invoke AddWordToWordList,eax,0,0,0,offset szname,edx
+				pop		ecx
+				inc		ecx
+			.endif
+		.endif
+		pop		eax
+		.if !eax
+			mov		eax,[ebx].RAPROPERTY.rpfree
+			mov		[ebx].RAPROPERTY.rpproject,eax
+		.endif
+		pop		edi
+		pop		esi
+		mov		eax,ecx
+		ret
+	_PRM_COMPACTLIST:
+		invoke CompactProperties,wParam
+		ret
 
 .data
 align 4
@@ -638,6 +711,8 @@ _RAPROPERTY_BASE \
 	dd _PRM_SETTOOLTIP			;equ WM_USER+41		;wParam=n (1-5), lParam=lpszText
 	dd _PRM_PREPARSE			;equ WM_USER+42		;wParam=fKeepStrings, lParam=lpFileData
 	dd _PRM_ISINLIST			;equ WM_USER+43		;wParam=lpWord, lParam=lpList
-
+	dd _PRM_ADDPROPERTYWORD		;equ WM_USER+44		;wParam=dwType, lParam=lpszWord
+	dd _PRM_ADDPROPERTYLIST		;equ WM_USER+45		;wParam=dwType, lParam=lpszLineOfWords
+	dd _PRM_COMPACTLIST			;equ WM_USER+46		;wParam=fProject, lParam=0
 .code
 align 4

@@ -81,6 +81,7 @@ PostAddinMessage		PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD,:DWORD
 AskSaveSessionFile		PROTO
 ReadSessionFile			PROTO :DWORD
 OpenEditFile			PROTO :DWORD,:DWORD
+OutputString			PROTO :DWORD
 
 HT_DEBUG				equ 224
 
@@ -407,6 +408,7 @@ szNewer					db 'There are %d source files newer than the .exe.',0
 
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
+szFtApi					db '.api',0
 szFtRc					db '.rc',0
 szFtMes					db '.mes',0
 szNULL					db 0

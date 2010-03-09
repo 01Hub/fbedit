@@ -113,6 +113,7 @@ OldItem					dd ?
 szname					db 32768 dup(?)
 szstructnest			db 1024 dup(?)
 itemht					dd ?
+;Tooltips
 szCurrentFile			db 64 dup(?)
 szOpenFiles				db 64 dup(?)
 szSelectedProjectFile	db 64 dup(?)

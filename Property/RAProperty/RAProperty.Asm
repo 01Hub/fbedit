@@ -896,7 +896,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	lfnt:LOGFONT
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ISINLIST
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_COMPACTLIST
 		push		eax
 		invoke GetWindowLong,hWin,0
 		.if eax

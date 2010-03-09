@@ -215,31 +215,50 @@ DeleteProperties proc uses esi,nOwner:DWORD
 
 DeleteProperties endp
 
-CompactProperties proc uses esi edi
+CompactProperties proc uses esi edi,fProject:DWORD
 
 	mov		esi,[ebx].RAPROPERTY.lpmem
 	.if esi
-		add		esi,[ebx].RAPROPERTY.rpproject
-		mov		edi,esi
-		.while [esi].PROPERTIES.nSize
-			.if [esi].PROPERTIES.nType==255
-				mov		eax,[esi].PROPERTIES.nSize
-				lea		esi,[esi+eax+sizeof PROPERTIES]
-			.elseif esi!=edi
-				mov		ecx,[esi].PROPERTIES.nSize
-				lea		ecx,[ecx+sizeof PROPERTIES]
-				rep movsb
-			.else
-				mov		eax,[esi].PROPERTIES.nSize
-				lea		esi,[esi+eax+sizeof PROPERTIES]
-				mov		edi,esi
-			.endif
-		.endw
-		mov		[edi].PROPERTIES.nSize,0
-		sub		edi,[ebx].RAPROPERTY.lpmem
-		mov		[ebx].RAPROPERTY.rpfree,edi
+		.if fProject
+			add		esi,[ebx].RAPROPERTY.rpproject
+			mov		edx,[ebx].RAPROPERTY.rpfree
+			mov		edi,esi
+			call	CompactIt
+			mov		[edi].PROPERTIES.nSize,0
+			sub		edi,[ebx].RAPROPERTY.lpmem
+			mov		[ebx].RAPROPERTY.rpfree,edi
+		.else
+			mov		edx,[ebx].RAPROPERTY.rpproject
+			mov		edi,esi
+			call	CompactIt
+			mov		eax,edi
+			sub		eax,[ebx].RAPROPERTY.lpmem
+			mov		[ebx].RAPROPERTY.rpproject,eax
+			mov		edx,[ebx].RAPROPERTY.rpfree
+			call	CompactIt
+			mov		[edi].PROPERTIES.nSize,0
+			sub		edi,[ebx].RAPROPERTY.lpmem
+			mov		[ebx].RAPROPERTY.rpfree,edi
+		.endif
 	.endif
 	ret
 
-CompactProperties endp
+CompactIt:
+	add		edx,[ebx].RAPROPERTY.lpmem
+	.while esi<edx
+		.if [esi].PROPERTIES.nType==255
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+		.elseif esi!=edi
+			mov		ecx,[esi].PROPERTIES.nSize
+			lea		ecx,[ecx+sizeof PROPERTIES]
+			rep movsb
+		.else
+			mov		eax,[esi].PROPERTIES.nSize
+			lea		esi,[esi+eax+sizeof PROPERTIES]
+			mov		edi,esi
+		.endif
+	.endw
+	retn
 
+CompactProperties endp
