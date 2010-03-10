@@ -23,7 +23,7 @@ How to use (the example describes how to create api files from fmod.bi):
 
 Unfortunatly fmod.bi declares enums but does not reference them.
 To fully take advantage of FbEdits codecomplete you must manually
-edit the fmodCall.api and modify the apis that should use the enums.
+edit the fmodCall.api and modify the apis that uses the enums.
 Example:
 FSOUND_SetOutput,outputtype:integer|byte
 Change it to:

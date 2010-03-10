@@ -443,6 +443,41 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					EndIf
 			End Select
 			'
+		Case WM_HELP
+			id=Cast(HELPINFO Ptr,lParam)->dwContextId
+			Select Case id
+				Case IDD_DLGAPI
+					ShellExecute(hWin,NULL,AppPath & "\MakeApi.txt",NULL,NULL,SW_SHOWNORMAL)
+				Case IDC_LSTBI
+					sInp="This listbox shows .bi and/or .bas files you added."
+				Case IDC_BTNADD
+					sInp="This button lets you add a file."
+				Case IDC_BTNDEL
+					sInp="This button removes selected file from the listbox."
+				Case IDC_PRPCODE
+					id=Cast(HELPINFO Ptr,lParam)->iCtrlId
+					Select Case id
+						Case 1004
+							sInp="This tool shows properties parsed from selected files."
+						Case 1002
+							sInp="This combobox lets you select the type of property to show."
+						Case 1003
+							sInp="This listbox contains selected properties parsed from the files."
+					End Select
+				Case IDC_EDTPREFIX
+					sInp="Type in the prefix for the api files."
+				Case IDC_BTNUPDATEINI
+					sInp="Copies the api files to the FbEdits Api folder and updates FbEdit.ini"
+				Case IDC_EDTDESCRIPTION
+					sInp="Type in a description for the api files."
+				Case IDOK
+					sInp="Creates the selected api file."
+				Case IDCANCEL
+					sInp="Exits the tool. Unsaved files will be lost."
+			End Select
+			If Len(sInp) Then
+				MessageBox(hWin,sInp,szAppName,MB_OK)
+			EndIf
 		Case Else
 			Return FALSE
 			'
