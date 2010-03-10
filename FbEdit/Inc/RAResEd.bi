@@ -1,17 +1,19 @@
 
 ' Dialog memory size
-#Define MaxMem		128*1024*3
-#Define MaxCap		256
-#Define MaxName	64
+#Define MaxMem						128*1024*3
+#Define MaxCap						256
+#Define MaxName					64
 
 ' Dialog structures
 Type DLGHEAD
-	changed		As Integer				' Set to FALSE
+	locked		As Integer				' Set to FALSE
 	class			As ZString*32			' Set to Null string
 	menuid		As ZString*MaxName	' Set to Null string
 	font			As ZString*32			' Set to "MS Sans Serif"
 	fontsize		As Integer				' Set to 8
-	fontht		As Integer				' Set to -10
+	charset		As UByte					' Set to NULL
+	italic		As UByte					' Set to NULL
+	weight		As UShort				' Set to NULL
 	lang			As Integer				' Set to NULL
 	sublang		As Integer				' Set to NULL
 	undo			As Integer				' Set to NULL
@@ -20,31 +22,18 @@ Type DLGHEAD
 	lpmnu			As Integer				' Set to NULL
 	htlb			As HWND					' Set to NULL
 	hstb			As HWND					' Set to NULL
-	locked		As Integer				' Set to TRUE or FALSE
-	hfont			As HFONT					' Set to NULL
-	charset		As Byte					' Set to NULL
-	italic		As Byte					' Set to NULL
-	weight		As Word					' Set to NULL
 	hred			As HWND					' Set to NULL
 	ftextmode	As Integer				' Set to NULL
 End Type
 
 Type DIALOG
 	hwnd			As HWND					' Set to TRUE
-	hdmy			As HWND					' Handle of transparent window
-	oldproc		As Any Ptr				' Set to NULL
-	hpar			As HWND					' Set to NULL
-	hcld			As HWND					' Set to NULL
 	style			As Integer				' Set to desired style
 	exstyle		As Integer				' Set to desired ex style
 	dux			As Integer				' X position in dialog units
 	duy			As Integer				' Y position in dialog units
 	duccx			As Integer				' Width in dialog units
 	duccy			As Integer				' Height in dialog units
-	x				As Integer				' X position in pixels
-	y				As Integer				' Y position in pixels
-	ccx			As Integer				' Width in pixels
-	ccy			As Integer				' Height in pixels
 	caption		As ZString*MaxCap		' Caption max 255+1 char
 	class			As ZString*32			' Set to Null string
 	ntype			As Integer				' Follows ToolBox buttons Dialog=0, Edit=1, Static=2, GroupBox=3
@@ -53,36 +42,21 @@ Type DIALOG
 	id				As Integer				' Dialog / Controls ID
 	idname		As ZString*MaxName	' ID Name, max 63+1 chars
 	helpid		As Integer				' Help ID
-	undo			As Integer				' Set to NULL
 	himg			As Integer				' Set to NULL
 End Type
 
-' Control types
-'TYPES struct
-'	ID				dd ?
-'	lpclass			dd ?
-'	partype			dd ?
-'	style			dd ?
-'	typemask		dd ?
-'	exstyle			dd ?
-'	lpidname		dd ?
-'	lpcaption		dd ?
-'	lprc			dd ?
-'	xsize			dd ?
-'	ysize			dd ?
-'	nmethod			dd ?
-'	methods			dd ?
-'	flist			dd 4 dup(?)
-'TYPES ends
-'
+Type LANGUAGEMEM
+	lang			As Integer
+	sublang		As Integer
+End Type
+
 ' Menu structures
 Type MNUHEAD
 	menuname		As ZString*MaxName
 	menuid		As Integer
 	startid		As Integer
 	menuex		As Integer
-	lang			As Integer
-	sublang		As Integer
+	lang			As LANGUAGEMEM
 End Type
 
 Type MNUITEM
@@ -98,48 +72,49 @@ Type MNUITEM
 End Type
 
 Type RARESEDCOLOR
-	back		As Integer
-	text		As Integer
-	styles	As Integer
-	words		As Integer
+	back			As Integer
+	text			As Integer
+	styles		As Integer
+	words			As Integer
 End Type
 
 Type CUSTSTYLE
-	szStyle	As ZString*64
-	nValue	As Integer
-	nMask		As Integer
+	szStyle		As ZString*64
+	nValue		As Integer
+	nMask			As Integer
 End Type
 
 Type RARSTYPE
-	sztype	As ZString*32
-	nid		As Integer
-	szext		As ZString*64	
-	szedit	As ZString*128
+	sztype		As ZString*32
+	nid			As Integer
+	szext			As ZString*64	
+	szedit		As ZString*128
 End Type
 
 ' Resource ID's
 Type RESID
-	startid	As Integer
-	incid		As Integer
+	startid		As Integer
+	incid			As Integer
 End Type
 
 Type INITID
-	dlg		As RESID
-	mnu		As RESID
-	acl		As RESID
-	ver		As RESID
-	man		As RESID
-	rcd		As RESID
-	tbr		As RESID
-	res		As RESID
+	dlg			As RESID
+	mnu			As RESID
+	acl			As RESID
+	ver			As RESID
+	man			As RESID
+	rcd			As RESID
+	tbr			As RESID
+	res			As RESID
+	usr			As RESID
 End Type
 
 Type WINSIZE
-	htpro		As Integer
-	wtpro		As Integer
-	htout		As Integer
-	wttbx		As Integer
-	ptstyle As POINT
+	htpro			As Integer
+	wtpro			As Integer
+	htout			As Integer
+	wttbx			As Integer
+	ptstyle		As POINT
 End Type
 
 ' Dialog editor messages
@@ -173,7 +148,7 @@ End Type
 #Define DEM_SHOWTABINDEX		DEM_BASE+27		' wParam=0, lParam=0
 #Define DEM_EXPORTDLG			DEM_BASE+28		' wParam=0, lParam=lpszFileName
 #Define DEM_AUTOID				DEM_BASE+29		' wParam=0, lParam=0
-#Define DEM_GETBUTTONCOUNT		DEM_BASE+30		' wParam=0, lParam=0
+#Define DEM_GETBUTTONSCOUNT	DEM_BASE+30		' wParam=0, lParam=0
 #Define DEM_GETMEM				DEM_BASE+31		' wParam=DEWM_xxxxx, lParam=0
 #Define DEM_SHOWOUTPUT			DEM_BASE+32		' wParam=TRUE/FALSE, lParam=0
 #Define DEM_GETSIZE				DEM_BASE+33		' wParam=0, lParam=lpWINSIZE
@@ -184,7 +159,8 @@ End Type
 #Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
 #Define DEM_GETSHOWDIALOG		DEM_BASE+39		' wParam=0, lParam=0
 #Define DEM_CLEARCUSTSTYLE		DEM_BASE+40		' wParam=0, lParam=0
-#Define DEM_ADDCUSTSTYLE		DEM_BASE+41		' wParam=0, lParam=0
+#Define DEM_ADDCUSTSTYLE		DEM_BASE+41		' wParam=0, lParam=lpCUSTSTYLE
+#Define DEM_GETOUTPUT			DEM_BASE+42		' wParam=0, lParam=0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -248,98 +224,25 @@ End Type
 #Define TPE_RCDATA				11
 #Define TPE_TOOLBAR				12
 
-'type PROJECT
-'	hmem			dd ?
-'	ntype			dd ?
-'	delete			dd ?
-'	changed			dd ?
-'	lnstart			dd ?
-'	lnend			dd ?
-'end type
-'
-'type NAMEMEM
-'	szname			db MaxName dup(?)
-'	value			dd ?
-'	delete			dd ?
-'end type
-'
-'type INCLUDEMEM
-'	szfile			db MAX_PATH dup(?)
-'end type
-'
-'type RESOURCEMEM
-'	ntype			dd ?
-'	szname			db MaxName dup(?)
-'	value			dd ?
-'	szfile			db MAX_PATH dup(?)
-'end type
-'
-'type STRINGMEM
-'	szname			db MaxName dup(?)
-'	value			dd ?
-'	szstring		db 512 dup(?)
-'	lang			dd ?
-'	sublang			dd ?
-'end type
-'
-'type ACCELMEM
-'	szname			db MaxName dup(?)
-'	value			dd ?
-'	nkey			dd ?
-'	nascii			dd ?
-'	flag			dd ?
-'	lang			dd ?
-'	sublang			dd ?
-'end type
-'
-'type VERSIONMEM
-'	szname			db MaxName dup(?)
-'	value			dd ?
-'	fv				dd ?
-'	fv1				dd ?
-'	fv2				dd ?
-'	fv3				dd ?
-'	pv				dd ?
-'	pv1				dd ?
-'	pv2				dd ?
-'	pv3				dd ?
-'	os				dd ?
-'	ft				dd ?
-'	ff				dd ?
-'	fts				dd ?
-'	lng				dd ?
-'	chs				dd ?
-'end type
-'
-'type VERSIONITEM
-'	szname			db MaxName dup(?)
-'	szvalue			db 256 dup(?)
-'end type
-'
-'type LANGUAGEMEM
-'	lang			dd ?
-'	sublang			dd ?
-'end type
-'
 ' Dialog Edit Window Styles
-#Define DES_GRID				1
-#Define DES_SNAPTOGRID		2
-#Define DES_TOOLTIP			4
-#Define DES_STYLEHEX			8
-#Define DES_SIZETOFONT		16
-#Define DES_NODEFINES		32
-#Define DES_SIMPLEPROPERTY	64
-#Define DES_SIMPLEPROPERTY	64
-#Define DES_DEFIDC_STATIC	128
-#Define DES_BORLAND			256
+#Define DES_GRID					1
+#Define DES_SNAPTOGRID			2
+#Define DES_TOOLTIP				4
+#Define DES_STYLEHEX				8
+#Define DES_SIZETOFONT			16
+#Define DES_NODEFINES			32
+#Define DES_SIMPLEPROPERTY		64
+#Define DES_SIMPLEPROPERTY		64
+#Define DES_DEFIDC_STATIC		128
+#Define DES_BORLAND				256
 
 ' Dialog edit window memory
-#Define DEWM_DIALOG			0
-#Define DEWM_MEMORY			4
-#Define DEWM_READONLY		8
-#Define DEWM_SCROLLX			12
-#Define DEWM_SCROLLY			16
-#Define DEWM_PROJECT			20
+#Define DEWM_DIALOG				0
+#Define DEWM_MEMORY				4
+#Define DEWM_READONLY			8
+#Define DEWM_SCROLLX				12
+#Define DEWM_SCROLLY				16
+#Define DEWM_PROJECT				20
 
 Type CTLDBLCLICK
 	nmhdr			As NMHDR

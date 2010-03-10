@@ -154,17 +154,17 @@ Options=52
 5=0,0,0,0,4212
 3=0,0,0,0,0
 4=0,0,0,0,8
-1=0,0,718,485,20533
+1=0,0,718,485,40185
 7=0,0,718,485,43382
 6=0,0,0,0,404
 9=0,0,718,485,24708
-2=0,0,584,498,850
+2=0,0,584,498,5355
 8=0,0,0,0,19773
 10=0,0,0,0,14502
 16=0,0,718,485,13550
 15=0,0,0,0
 17=0,0,0,0,20777
-18=0,0,0,0,15073
+18=0,0,0,0,32327
 21=0,0,0,0,30103
 23=0,0,0,0
 24=0,0,0,0,3553
@@ -203,19 +203,19 @@ Options=52
 
 
 [Find]
-1="PRP_STR_NAME"
-2="DEM_SHOWOUTPUT"
-3="tmpbuffer"
-4="WM_NCMOUSEMOVE"
-5="szDlgEditDummyClass"
-6="DEM_SHOWTABINDEX"
-7=";//Edit"
-8="SizeY"
-9="SizeX"
-10="DestroyMultiSel"
+1="PRO_SETHIGHLIGHT"
+2="PRO_GETTEXTFONT"
+3="PRO_GETSYSTEMPATH"
+4="PRO_GETSELECTED"
+5="PRO_GETDIALOG"
+6="PRO_DELITEM"
+7="DEM_GETBUTTONCOUNT"
+8="DEM_AUTOID"
+9="DEM_ALIGNSIZE"
+10="DEM_ADDCUSTSTYLE"
 
 [AutoLoad]
-AutoLoad=1,9,8,2,10,16,32
+AutoLoad=1,9,8,2,10,16,32,18
 [VerInf]
 Nme=VERINF1
 ID=1
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=30
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=338465352
+PTimer=347339609
 
 [Exports]
 1=ResEdInstall

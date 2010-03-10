@@ -9,6 +9,7 @@
 #Define GN_BEFOREUPDATE		9				'Sendt before a cell updates grid data
 #Define GN_AFTERUPDATE		10				'Sendt after grid data has been updated
 #Define GN_USERCONVERT		11				'Sendt when user cell needs to be converted.
+#Define GN_EDITCHANGE		12				'Sendt when user types text in the edit control.
 
 'Messages
 #Define GM_ADDCOL				WM_USER+1	'wParam=0, lParam=lpCOLUMN
@@ -55,6 +56,7 @@
 #Define GM_GETROWCOLOR		WM_USER+42	'wParam=nRow, lParam=lpROWCOLOR
 #Define GM_SETROWCOLOR		WM_USER+43	'wParam=nRow, lParam=lpROWCOLOR
 #Define GM_GETCOLDATA		WM_USER+44	'wParam=nCol, lParam=lpCOLUMN
+#Define GM_COMBOFINDSTRING	WM_USER+45	'wParam=nCol, lParam=lpszString
 
 'Column alignment
 #Define GA_ALIGN_LEFT		0
@@ -73,6 +75,7 @@
 #Define TYPE_TIME				8				'Long
 #Define TYPE_USER				9				'0=String, 1 to 512 bytes binary data
 #Define TYPE_EDITBUTTON		10				'String
+#Define TYPE_EDITCOMBOBOX	11				'String
 
 'Column sorting
 #Define SORT_ASCENDING		0

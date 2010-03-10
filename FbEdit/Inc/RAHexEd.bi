@@ -15,10 +15,10 @@
 #Define HEM_BASE					WM_USER+1000
 
 ' Private messages
-#Define HEM_SETFONT				HEM_BASE+1		' wParam=nLineSpacing, lParam=lpRAFONT
-#Define HEM_GETFONT				HEM_BASE+2		' wParam=0, lParam=lpRAFONT
-#Define HEM_SETCOLOR				HEM_BASE+3		' wParam=0, lParam=lpRACOLOR
-#Define HEM_GETCOLOR				HEM_BASE+4		' wParam=0, lParam=lpRACOLOR
+#Define HEM_SETFONT				HEM_BASE+1		' wParam=nLineSpacing, lParam=lpHEFONT
+#Define HEM_GETFONT				HEM_BASE+2		' wParam=0, lParam=lpHEFONT
+#Define HEM_SETCOLOR				HEM_BASE+3		' wParam=0, lParam=lpHECOLOR
+#Define HEM_GETCOLOR				HEM_BASE+4		' wParam=0, lParam=lpHECOLOR
 #Define HEM_VCENTER				HEM_BASE+5		' wParam=0, lParam=0
 #Define HEM_REPAINT				HEM_BASE+6		' wParam=0, lParam=0
 #Define HEM_ANYBOOKMARKS		HEM_BASE+7		' wParam=0, lParam=0

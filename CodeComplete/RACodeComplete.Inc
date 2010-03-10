@@ -21,8 +21,8 @@ CCM_ADDLIST			equ WM_USER+15			;wParam=0, lParam=lpCC_ADDLIST, Returns nothing
 CCM_GETMAXWIDTH		equ WM_USER+16			;wParam=0, lParam=0, Returns length of longest Item
 
 CC_COLOR struct
-	back	dd ?
-	text	dd ?
+	back		dd ?
+	text		dd ?
 CC_COLOR ends
 
 CC_ADDLIST struct
@@ -42,10 +42,10 @@ TTM_SCREENFITS		equ WM_USER+4			;wParam=0, lParam=lpPOINT, Returns nothing
 TTM_GETITEMTYPE		equ WM_USER+5			;wParam=0, lParam=lpTTITEM, Returns pointer to string
 
 TT_COLOR struct
-	back	dd ?
-	text	dd ?
-	api		dd ?
-	hilite	dd ?
+	back		dd ?
+	text		dd ?
+	api			dd ?
+	hilite		dd ?
 TT_COLOR ends
 
 TTITEM struct
