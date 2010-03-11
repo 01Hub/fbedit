@@ -122,7 +122,7 @@ DialogProc proc hDlg:DWORD,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 DialogProc	endp
 
-JournalRecordProc proc uMsg:UINT,wParam:WPARAM,lParam:ptr EVENTMSG
+JournalRecordProc proc uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	local	dwBytes:DWORD
 
 	mov		eax,uMsg

@@ -1031,7 +1031,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 	LOCAL	buffer2[128]:BYTE
 	LOCAL	buffer4[256]:BYTE
 	LOCAL	iNbr:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	invoke GetFileAttributes,addr ProjectFile
 	.if	eax!=-1
@@ -1159,7 +1159,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 GetProjectFiles	 endp
 
 CloseProject proc uses esi edi
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 	LOCAL	nInx:DWORD
 
 	.if	fProject

@@ -81,7 +81,7 @@ OptProjectSave proc uses ebx edi,hWin:HWND
 	LOCAL	buffer1[256]:BYTE
 	LOCAL	ID:DWORD
 	LOCAL	fChanged:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	mov		fChanged,0
 	invoke GetPrivateProfileString,addr iniProject,addr iniProjectDescription,addr szNULL,addr iniBuffer,128,addr ProjectFile

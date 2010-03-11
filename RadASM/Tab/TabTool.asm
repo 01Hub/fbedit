@@ -146,7 +146,7 @@ Do_TabTool endp
 
 TabToolSet proc hWin:HWND
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
@@ -168,7 +168,7 @@ TabToolSet endp
 
 TabToolUpdate proc hWin:HWND,lpText:DWORD
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
@@ -192,7 +192,7 @@ TabToolUpdate proc hWin:HWND,lpText:DWORD
 TabToolUpdate endp
 
 TabToolSel proc hWin:HWND
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	invoke SendMessage,hTab,TCM_GETCURSEL,0,0
 	mov		tci.imask,TCIF_PARAM
@@ -204,7 +204,7 @@ TabToolSel proc hWin:HWND
 TabToolSel endp
 
 TabToolSetSel proc nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	invoke SendMessage,hTab,TCM_SETCURSEL,nInx,0
 	.if eax!=-1
@@ -218,7 +218,7 @@ TabToolSetSel endp
 
 TabToolAdd proc hWin:HWND,lpFileName:DWORD
 	LOCAL	buffer[256]:BYTE
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	invoke strcpy,addr buffer,lpFileName
 	invoke iniRStripStr,addr buffer,'\'
@@ -244,7 +244,7 @@ TabToolAdd endp
 
 TabToolDel proc hWin:HWND
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM

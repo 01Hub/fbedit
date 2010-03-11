@@ -3107,8 +3107,8 @@ CreateCtl proc uses esi edi,lpDlgCtl:DWORD
 	LOCAL	hTmp:DWORD
 	LOCAL	ws:DWORD
 	LOCAL	wsex:DWORD
-	LOCAL	tci:TCITEM
-	LOCAL	lvi:LVITEM
+	LOCAL	tci:TC_ITEM
+	LOCAL	lvi:LV_ITEM
 	LOCAL	tpe:DWORD
 	LOCAL	lpclass:DWORD
 	LOCAL	tbb:TBBUTTON

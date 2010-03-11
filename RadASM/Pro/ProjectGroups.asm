@@ -143,7 +143,7 @@ GroupGetProjectFiles proc uses ebx esi edi
 GroupGetProjectFiles endp
 
 GetGroupState proc hTrv:HWND,hItem:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
 	.while eax
@@ -164,7 +164,7 @@ GetGroupState proc hTrv:HWND,hItem:DWORD
 GetGroupState endp
 
 SetGroupState proc hTrv:HWND,hItem:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
 	.while eax
@@ -386,7 +386,7 @@ GroupGetExpand proc uses ebx esi edi,hTrv:HWND
 GroupGetExpand endp
 
 GroupHasGroupItem proc hTrv:HWND,hItem:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
 	.while eax
@@ -403,7 +403,7 @@ GroupHasGroupItem proc hTrv:HWND,hItem:DWORD
 GroupHasGroupItem endp
 
 GroupHasGroupGroup proc hTrv:HWND,hItem:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
 	.while eax
@@ -420,7 +420,7 @@ GroupHasGroupGroup proc hTrv:HWND,hItem:DWORD
 GroupHasGroupGroup endp
 
 GroupFindItem proc hTrv:HWND,hItem:DWORD,nInx:DWORD,nGroup:DWORD
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
   @@:
 	.if nInx
@@ -456,7 +456,7 @@ GroupFindItem proc hTrv:HWND,hItem:DWORD,nInx:DWORD,nGroup:DWORD
 GroupFindItem endp
 
 GroupGetGroups proc uses ebx esi edi,hTrv:HWND
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	mov		edi,offset szGroupGroupBuff
 	invoke RtlZeroMemory,edi,sizeof szGroupGroupBuff
@@ -652,7 +652,7 @@ GroupTrvEditProc endp
 
 GroupAddGroup proc hTrv:HWND
 	LOCAL	tvis:TV_INSERTSTRUCT
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CARET,0
 	.if eax
@@ -714,7 +714,7 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 	LOCAL	pt:POINT
 	LOCAL	rect:RECT
 	LOCAL	tvis:TV_INSERTSTRUCT
-	LOCAL	tvi:TV_ITEM
+	LOCAL	tvi:TVITEM
 	LOCAL	tvht:TV_HITTESTINFO
 
 	mov		eax,uMsg

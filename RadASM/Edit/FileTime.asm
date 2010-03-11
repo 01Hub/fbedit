@@ -50,7 +50,7 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 	LOCAL	filet1:FILETIME
 	LOCAL	filet2:FILETIME
 	LOCAL	nInx:DWORD
-	LOCAL	tci:TCITEM
+	LOCAL	tci:TC_ITEM
 
 	mov		esi,fn.lpPath
 	mov		edi,fn.lpHandle
