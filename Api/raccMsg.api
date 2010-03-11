@@ -5,7 +5,7 @@ CCM_DELITEM,nIndex:Integer,0
 CCM_FINDSTRING,nStartIndex:Integer,lpszString:ZString Ptr|Integer
 CCM_GETCOLOR,0,lpCC_COLOR:CC_COLOR Ptr
 CCM_GETCOUNT,0,0|Integer
-CCM_GETCURSEL,,0,0|Integer
+CCM_GETCURSEL,0,0|Integer
 CCM_GETITEM,nIndex:Integer,0|ZString Ptr
 CCM_GETITEMRECT,nIndex:Integer,lpRECT:RECT Ptr
 CCM_GETMAXWIDTH,0,0|Integer
