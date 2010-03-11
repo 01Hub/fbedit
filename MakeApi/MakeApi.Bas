@@ -232,43 +232,55 @@ Sub MakeApiFile(ByVal hWin As HWND,ByRef szPrefix As ZString,ByVal nType As Inte
 			szFileName &="Struct.api"
 		Case 3
 			szFileName &="Enum.api"
+		Case 4
+			szFileName &="Const.api"
+		Case 5
+			szFileName &="Msg.api"
 	End Select
 	hFile=CreateFile(@szFileName,GENERIC_WRITE Or GENERIC_READ,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL)
 	If hFile<>INVALID_HANDLE_VALUE Then
-		While TRUE
-			If SendMessage(lpRAPROPERTY->hlst,LB_GETTEXT,i,Cast(LPARAM,@szWord))<>LB_ERR Then
-				lp=Cast(ZString Ptr,SendMessage(lpRAPROPERTY->hlst,LB_GETITEMDATA,i,0))+SizeOf(PROPERTIES)
-				szLine=*lp
-				lp+=lstrlen(lp)+1
-				If Len(*lp) Then
-					szLine &="," & *lp
+		If nType=4 Or nType=5 Then
+			WriteFile(hFile,@szLine,Len(szLine),@dwWrite,NULL)
+		Else
+			While TRUE
+				If SendMessage(lpRAPROPERTY->hlst,LB_GETTEXT,i,Cast(LPARAM,@szWord))<>LB_ERR Then
+					lp=Cast(ZString Ptr,SendMessage(lpRAPROPERTY->hlst,LB_GETITEMDATA,i,0))+SizeOf(PROPERTIES)
+					szLine=*lp
+					lp+=lstrlen(lp)+1
+					If Len(*lp) Then
+						szLine &="," & *lp
+					EndIf
+					Select Case nType
+						Case 0
+							lp+=lstrlen(lp)+1
+							If Len(*lp) Then
+								szLine &="|" & *lp
+							EndIf
+							'
+						Case 1
+							'
+						Case 2
+							'
+						Case 3
+							'
+					End Select
+					szLine &=szCRLF
+					If szLine<>szLastLine Then
+						WriteFile(hFile,@szLine,Len(szLine),@dwWrite,NULL)
+						szLastLine=szLine
+					EndIf
+				Else
+					Exit While
 				EndIf
-				Select Case nType
-					Case 0
-						lp+=lstrlen(lp)+1
-						If Len(*lp) Then
-							szLine &="|" & *lp
-						EndIf
-						'
-					Case 1
-						'
-					Case 2
-						'
-					Case 3
-						'
-				End Select
-				szLine &=szCRLF
-				If szLine<>szLastLine Then
-					WriteFile(hFile,@szLine,Len(szLine),@dwWrite,NULL)
-					szLastLine=szLine
-				EndIf
-			Else
-				Exit While
-			EndIf
-			i+=1
-		Wend
+				i+=1
+			Wend
+		EndIf
 		CloseHandle(hFile)
-		MessageBox(hWin,"Successfylly created" & szCRLF & szFileName,szAppName,MB_OK Or MB_ICONINFORMATION)
+		If nType=5 Then
+			MessageBox(hWin,"Successfylly created" & szCRLF & szFileName & szCRLF & szCRLF & "NOTE! The file might need editing.",szAppName,MB_OK Or MB_ICONINFORMATION)
+		Else
+			MessageBox(hWin,"Successfylly created" & szCRLF & szFileName,szAppName,MB_OK Or MB_ICONINFORMATION)
+		EndIf
 	EndIf
 
 End Sub
@@ -281,14 +293,16 @@ Sub ParseFiles(ByVal hWin As HWND)
 	
 	SendMessage(hPrp,PRM_DELPROPERTY,0,0)
 	i=0
+	szTemp=""
 	While TRUE
 		If SendDlgItemMessage(hWin,IDC_LSTBI,LB_GETTEXT,i,Cast(LPARAM,@sInp))<>LB_ERR Then
 			Convert(sInp,AppPath & "\" & "Temp.txt")
 			sInp=AppPath & "\" & "Temp.txt"
 			hFile=CreateFile(@sInp,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL)
 			If hFile<>INVALID_HANDLE_VALUE Then
-				hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,1024*1024)
+				hMem=GlobalAlloc(GMEM_FIXED Or GMEM_ZEROINIT,GetFileSize(hFile,0)+1)
 				ReadFile(hFile,hMem,GetFileSize(hFile,0),@dwRead,NULL)
+				lstrcat(@szTemp,hMem)
 				SendMessage(hPrp,PRM_PARSEFILE,i+1,Cast(LPARAM,hMem))
 				GlobalFree(hMem)
 				CloseHandle(hFile)
@@ -364,6 +378,155 @@ Sub UpdateIni(ByVal hWin As HWND)
 
 End Sub
 
+Sub GetMessages(ByVal hWin As HWND)
+	Dim lRet As ZString Ptr
+	Dim i As Integer
+
+	szLine=szFilter
+	SendMessage(hWin,LB_RESETCONTENT,0,0)
+	While Len(szLine)
+		i=InStr(szLine,",")
+		If i Then
+			szWord=Left(szLine,i-1)
+			szLine=Mid(szLine,i+1)
+		Else
+			szWord=szLine
+			szLine=""
+		EndIf
+		lRet=Cast(ZString Ptr,SendMessage(hPrp,PRM_FINDFIRST,Cast(WPARAM,StrPtr("c")),Cast(LPARAM,@szWord)))
+		While lret
+			SendMessage(hWin,LB_ADDSTRING,0,Cast(LPARAM,lRet))
+			lRet=Cast(ZString Ptr,SendMessage(hPrp,PRM_FINDNEXT,0,0))
+		Wend
+	Wend
+
+End Sub
+
+Function FindComment(ByRef szFind As ZString) As ZString Ptr
+	Dim ms As MEMSEARCH
+	Static sInp as ZString*260
+	Dim lRet As ZString Ptr
+	Dim i As Integer
+
+	ms.lpMem=Cast(HGLOBAL,@szTemp)
+	ms.lpFind=@szFind
+	ms.lpCharTab=lpCharTab
+	ms.fr=FR_DOWN Or FR_MATCHCASE Or FR_WHOLEWORD
+	lRet=Cast(ZString Ptr,SendMessage(hPrp,PRM_MEMSEARCH,0,Cast(LPARAM,@ms)))
+	If lRet Then
+		sInp=Left(*lRet,260)
+		i=InStr(sInp,Chr(13))
+		If i Then
+			sInp=Left(sInp,i-1)
+			i=InStr(sInp,"'")
+			If i Then
+				sInp=Trim(Mid(sInp,i+1))
+			Else
+				sInp=""
+			EndIf
+		EndIf
+	EndIf
+	Return @sInp
+
+End Function
+
+Function ConstProc(ByVal hWin As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM, ByVal lParam As LPARAM) As Integer
+	Dim As Long id, Event
+	Dim sInp as ZString*260
+
+	Select Case uMsg
+		Case WM_INITDIALOG
+			bMsg=FALSE
+			SetDlgItemText(hWin,IDC_EDTCONST,@szFilter)
+			If lParam Then
+				SetWindowText(hWin,StrPtr("Make xxxMsg.api"))
+				ShowWindow(GetDlgItem(hWin,IDC_BTNEDIT),SW_SHOWNA)
+				bMsg=TRUE
+			EndIf
+		Case WM_COMMAND
+			id=LoWord(wParam)
+			Event=HiWord(wParam)
+			If Event=BN_CLICKED Then
+				Select Case id
+					Case IDOK
+						id=0
+						If bMsg Then
+							szLine=""
+							While TRUE
+								If SendDlgItemMessage(hWin,IDC_LSTCONST,LB_GETTEXT,id,Cast(LPARAM,@sInp))<>LB_ERR Then
+									sInp &="," & *FindComment(sInp)
+									szLine &=sInp & szCRLF
+									id+=1
+								Else
+									Exit While
+								EndIf
+							Wend
+							If Len(szLine) Then
+								GetDlgItemText(hWnd,IDC_EDTPREFIX,@sInp,260)
+								MakeApiFile(hWin,sInp,5)
+							Else
+								MessageBox(hWin,"No Properties.",szAppName,MB_OK Or MB_ICONERROR)
+							EndIf
+						Else
+							szWord=""
+							While TRUE
+								If SendDlgItemMessage(hWin,IDC_LSTCONST,LB_GETTEXT,id,Cast(LPARAM,@sInp))<>LB_ERR Then
+									szWord &="," & sInp
+									id+=1
+								Else
+									Exit While
+								EndIf
+							Wend
+							If Len(szWord) Then
+								szLine=szConst1 & szWord & szCRLF
+								szLine &=szConst2 & szWord & szCRLF
+								szLine &=szConst3 & szWord & szCRLF
+								GetDlgItemText(hWnd,IDC_EDTPREFIX,@sInp,260)
+								MakeApiFile(hWin,sInp,4)
+								EndDialog(hWin, 0)
+							Else
+								MessageBox(hWin,"No Properties.",szAppName,MB_OK Or MB_ICONERROR)
+							EndIf
+						EndIf
+					Case IDCANCEL
+						EndDialog(hWin, 0)
+					Case IDC_BTNEDIT
+						GetDlgItemText(hWnd,IDC_EDTPREFIX,@sInp,260)
+						sInp=AppPath & "\" & sInp & "Msg.api"
+						ShellExecute(hWin,NULL,"notepad.exe",@sInp,NULL,SW_SHOWNORMAL)
+				End Select
+			ElseIf Event=EN_CHANGE Then
+				GetDlgItemText(hWin,IDC_EDTCONST,@szFilter,260)
+				GetMessages(GetDlgItem(hWin,IDC_LSTCONST))
+			EndIf
+		Case WM_CLOSE
+			EndDialog(hWin, 0)
+		Case WM_HELP
+			id=Cast(HELPINFO Ptr,lParam)->dwContextId
+			Select Case id
+				Case IDD_DLGCONST
+					sInp="This tool creates api files intended for custom controls."
+				Case IDC_LSTCONST
+					sInp="This listbox shows the filtered window messages."
+				Case IDC_EDTCONST
+					sInp="Type in the filter string. Separete filters with a ','."
+				Case IDC_BTNEDIT
+					sInp="Lets you edit the api file."
+				Case IDOK
+					sInp="Creates the selected api file."
+				Case IDCANCEL
+					sInp="Exits the tool. Unsaved files will be lost."
+			End Select
+			If Len(sInp) Then
+				MessageBox(hWin,sInp,szAppName,MB_OK)
+			EndIf
+		Case Else
+			Return FALSE
+	End Select
+	Return TRUE
+
+End Function
+
 Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,ByVal lParam As LPARAM) As Integer
 	Dim As Long id,Event,i,x
 	Dim sInp as ZString*8192
@@ -373,16 +536,15 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 
 	Select Case uMsg
 		Case WM_INITDIALOG
+			hWnd=hWin
 			GetModuleFileName(NULL,@AppPath,260)
 			GetFilePath(AppPath)
 			hPrp=GetDlgItem(hWin,IDC_PRPCODE)
 			lpRAPROPERTY=Cast(RAPROPERTY Ptr,GetWindowLong(hPrp,0))
 			ShowWindow(lpRAPROPERTY->htbr,SW_HIDE)
 			SetupProperty
-			'
 		Case WM_CLOSE
 			EndDialog(hWin, 0)
-			'
 		Case WM_COMMAND
 			id=LoWord(wParam)
 			Event=HiWord(wParam)
@@ -399,13 +561,10 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					Else
 						MessageBox(hWin,"No File Prefix given.",szAppName,MB_OK Or MB_ICONERROR)
 					EndIf
-					'
 				Case IDCANCEL
 					EndDialog(hWin, 0)
-					'
 				Case IDC_BTNUPDATEINI
 					UpdateIni(hWin)
-					'
 				Case IDC_BTNADD
 					ofn.lStructSize=sizeof(OPENFILENAME)
 					ofn.hwndOwner=hWin
@@ -441,8 +600,21 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 						SendDlgItemMessage(hWin,IDC_LSTBI,LB_DELETESTRING,id,0)
 						ParseFiles(hWin)
 					EndIf
+				Case IDC_BTNCONST
+					GetDlgItemText(hWin,IDC_EDTPREFIX,@sInp,260)
+					If Len(sInp) Then
+						DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGCONST),hWin,@ConstProc,0)
+					Else
+						MessageBox(hWin,"No File Prefix given.",szAppName,MB_OK Or MB_ICONERROR)
+					EndIf
+				Case IDC_BTNMSG
+					GetDlgItemText(hWin,IDC_EDTPREFIX,@sInp,260)
+					If Len(sInp) Then
+						DialogBoxParam(hInstance,Cast(ZString Ptr,IDD_DLGCONST),hWin,@ConstProc,1)
+					Else
+						MessageBox(hWin,"No File Prefix given.",szAppName,MB_OK Or MB_ICONERROR)
+					EndIf
 			End Select
-			'
 		Case WM_HELP
 			id=Cast(HELPINFO Ptr,lParam)->dwContextId
 			Select Case id
@@ -474,13 +646,16 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 					sInp="Creates the selected api file."
 				Case IDCANCEL
 					sInp="Exits the tool. Unsaved files will be lost."
+				Case IDC_BTNCONST
+					sInp="Creates the xxxConst.api file."
+				Case IDC_BTNMSG
+					sInp="Creates the xxxMsg.api file."
 			End Select
 			If Len(sInp) Then
 				MessageBox(hWin,sInp,szAppName,MB_OK)
 			EndIf
 		Case Else
 			Return FALSE
-			'
 	End Select
 	Return TRUE
 

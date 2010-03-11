@@ -59,6 +59,13 @@ End Type
 #Define IDC_EDTPREFIX           1006
 #Define IDC_BTNUPDATEINI        1005
 #Define IDC_EDTDESCRIPTION      1007
+#Define IDC_BTNCONST            1008
+#Define IDC_BTNMSG              1009
+
+#Define IDD_DLGCONST            1100
+#Define IDC_EDTCONST            1101
+#Define IDC_LSTCONST            1102
+#Define IDC_BTNEDIT             1103
 
 ' Filter string for GetOpenFileName
 Const szNULL=!"\0"
@@ -111,16 +118,25 @@ Dim Shared deftypeendproperty As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDPROPERTY,As
 Dim Shared deftypeoperator As DEFTYPE = (TYPE_OPTNAMESECOND,DEFTYPE_OPERATOR,Asc("o"),8,"operator")
 Dim Shared deftypeendoperator As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDOPERATOR,Asc("o"),3,"end" & Chr(8) & "operator")
 
+' xxxConst.api
+Const szConst1="3SendDlgItemMessage"
+Const szConst2="2SendMessage"
+Const szConst3="2PostMessage"
+
 Dim Shared CommandLine As ZString Ptr
 Dim Shared hInstance As HMODULE
+Dim Shared hWnd As HWND
+Dim Shared hPrp As HWND
 Dim Shared AppPath As ZString*260
 Dim Shared FbEditPath As ZString*260
 Dim Shared hFbEditDll As HMODULE
 Dim Shared CharTab As Function() As Any Ptr
 Dim Shared lpCharTab As Any Ptr
 Dim Shared SetCharTab As Function(ByVal nChar As Integer,ByVal nVal As Integer) As Any Ptr
-Dim Shared hPrp As HWND
 Dim Shared lpRAPROPERTY As RAPROPERTY Ptr
 Dim Shared szWord As ZString*16384
 Dim Shared szLine As ZString*16384
 Dim Shared szLastLine As ZString*16384
+Dim Shared szFilter As ZString*260
+Dim Shared bMsg As Integer
+Dim Shared szTemp As ZString*1048576

@@ -2,23 +2,23 @@
 ' CodeCompleteListBox Styles
 #Define STYLE_USEIMAGELIST		1
 ' CodeCompleteListBox Messages
-#Define CCM_ADDITEM			WM_USER+0			' wParam=Type, lParam=lpString, Returns nothing
-#Define CCM_DELITEM			WM_USER+1			' wParam=Index, lParam=0, Returns nothing
-#Define CCM_GETITEM			WM_USER+2			' wParam=Index, lParam=0, Returns pointer to string or NULL
-#Define CCM_GETCOUNT			WM_USER+3			' wParam=0, lParam=0, Returns count
-#Define CCM_CLEAR				WM_USER+4			' wParam=0, lParam=0, Returns nothing
-#Define CCM_SETCURSEL		WM_USER+5			' wParam=Index, lParam=0, Returns nothing
-#Define CCM_GETCURSEL		WM_USER+6			' wParam=0, lParam=0, Returns Index
-#Define CCM_GETTOPINDEX		WM_USER+7			' wParam=0, lParam=0, Returns TopIndex
-#Define CCM_SETTOPINDEX		WM_USER+8			' wParam=TopIndex, lParam=0, Returns nothing
-#Define CCM_GETITEMRECT		WM_USER+9			' wParam=Index, lParam=lpRECT, Returns nothing
-#Define CCM_SETVISIBLE		WM_USER+10			' wParam=0, lParam=0, Returns nothing
-#Define CCM_FINDSTRING		WM_USER+11			' wParam=Start Index, lParam=lpString, Returns Index or -1
-#Define CCM_SORT				WM_USER+12			' wParam=Descending (TRUE/FALSE), lParam=delete equal (TRUE/FALSE), Returns nothing
-#Define CCM_GETCOLOR			WM_USER+13			' wParam=0, lParam=lpCC_COLOR, Returns nothing
-#Define CCM_SETCOLOR			WM_USER+14			' wParam=0, lParam=lpCC_COLOR, Returns nothing
-#Define CCM_ADDLIST			WM_USER+15			' wParam=0, lParam=lpCC_ADDLIST, Returns nothing
-#Define CCM_GETMAXWIDTH		WM_USER+16			' wParam=0, lParam=0, Returns length of longest Item
+#Define CCM_ADDITEM			WM_USER+0			' nType:Integer,pszString:ZString Ptr
+#Define CCM_DELITEM			WM_USER+1			' nIndex:Integer,0
+#Define CCM_GETITEM			WM_USER+2			' nIndex:Integer,0|ZString Ptr
+#Define CCM_GETCOUNT			WM_USER+3			' 0,0|Integer
+#Define CCM_CLEAR				WM_USER+4			' 0,0
+#Define CCM_SETCURSEL		WM_USER+5			' nIndex:Integer,0
+#Define CCM_GETCURSEL		WM_USER+6			' 0,0|Integer
+#Define CCM_GETTOPINDEX		WM_USER+7			' 0,0|Integer
+#Define CCM_SETTOPINDEX		WM_USER+8			' nIndex:Integer,0
+#Define CCM_GETITEMRECT		WM_USER+9			' nIndex:Integer,lpRECT:RECT Ptr
+#Define CCM_SETVISIBLE		WM_USER+10			' 0,0
+#Define CCM_FINDSTRING		WM_USER+11			' nStartIndex:Integer,lpszString:ZString Ptr|Integer
+#Define CCM_SORT				WM_USER+12			' bDescending[FALSE,TRUE],bDelDup[FALSE,TRUE]
+#Define CCM_GETCOLOR			WM_USER+13			' 0,lpCC_COLOR:CC_COLOR Ptr
+#Define CCM_SETCOLOR			WM_USER+14			' 0,lpCC_COLOR:CC_COLOR Ptr
+#Define CCM_ADDLIST			WM_USER+15			' 0,lpCC_ADDLIST:CC_ADDLIST Ptr
+#Define CCM_GETMAXWIDTH		WM_USER+16			' 0,0|Integer
 
 Type CC_COLOR
 	back As Integer
@@ -34,12 +34,12 @@ End Type
 ' CodeCompleteToolTip Styles
 #Define STYLE_USEPARANTESES	1
 ' CodeCompleteToolTip Messages
-#Define TTM_SETITEM			WM_USER+0			' wParam=0, lParam=lpTTITEM, Returns x-offset
-#Define TTM_GETCOLOR			WM_USER+1			' wParam=0, lParam=lpTT_COLOR, Returns nothing
-#Define TTM_SETCOLOR			WM_USER+2			' wParam=0, lParam=lpTT_COLOR, Returns nothing
-#Define TTM_GETITEMNAME		WM_USER+3			' wParam=0, lParam=lpTTITEM, Returns pointer to item string
-#Define TTM_SCREENFITS		WM_USER+4			' wParam=0, lParam=lpPOINT, Returns nothing
-#Define TTM_GETITEMTYPE		WM_USER+5			' wParam=0, lParam=lpTTITEM, Returns pointer to item string
+#Define TTM_SETITEM			WM_USER+0			' 0,lpTTITEM:TTITEM Ptr|Integer
+#Define TTM_GETCOLOR			WM_USER+1			' 0,lpTT_COLOR:TT_COLOR Ptr
+#Define TTM_SETCOLOR			WM_USER+2			' 0,lpTT_COLOR:TT_COLOR Ptr
+#Define TTM_GETITEMNAME		WM_USER+3			' 0,lpTTITEM:TTITEM Ptr|ZString Ptr
+#Define TTM_SCREENFITS		WM_USER+4			' 0,lpPOINT:Point Ptr
+#Define TTM_GETITEMTYPE		WM_USER+5			' 0,lpTTITEM:TTITEM Ptr|ZString Ptr
 
 Type TT_COLOR
 	back As Integer
