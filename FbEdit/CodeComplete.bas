@@ -501,7 +501,7 @@ Sub UpdateTypeList()
 
 End Sub
 
-Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolean
+Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Integer
 	Dim lret As ZString Ptr
 	Dim chrg As CHARRANGE
 	Dim ln As Integer
@@ -537,6 +537,8 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 				Wend
 				SendMessage(ah.hcc,CCM_ADDLIST,0,Cast(Integer,@ccal))
 				SendMessage(ah.hcc,CCM_SORT,0,TRUE)
+				SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+				Return 1
 			Else
 				' Handles Cast(
 				lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDFIRST,Cast(WPARAM,StrPtr("SsTEe")),Cast(LPARAM,@buff)))
@@ -558,12 +560,14 @@ Function UpdateConstList(ByVal lpszApi As ZString Ptr,npos As Integer) As Boolea
 					lret=Cast(ZString Ptr,SendMessage(ah.hpr,PRM_FINDNEXT,0,0))
 				Loop
 				SendMessage(ah.hcc,CCM_SORT,0,TRUE)
+				SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
+				fconstlist=FALSE
+				ftypelist=TRUE
+				Return 2
 			EndIf
-			SendMessage(ah.hcc,CCM_SETCURSEL,0,0)
-			Return TRUE
 		EndIf
 	EndIf
-	Return FALSE
+	Return 0
 
 End Function
 

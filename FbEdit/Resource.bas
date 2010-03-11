@@ -1,4 +1,4 @@
-#define IDD_DLGRESED            1300
+#Define IDD_DLGRESED            1300
 #define IDC_RARESED             1301
 
 Dim Shared ressize As WINSIZE=(300,170,0,52,100,100)
@@ -112,17 +112,10 @@ Function ResEdProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,
 			'
 		Case WM_NOTIFY
 			lpCTLDBLCLICK=Cast(CTLDBLCLICK Ptr,lParam)
-'			If (GetKeyState(VK_LBUTTON) And &H80)=0 Then
-'				fTimer=1
-'			EndIf
 			If lpCTLDBLCLICK->nmhdr.code=NM_DBLCLK Then
-				'TextToOutput(*lpCTLDBLCLICK->lpCtlName)
-				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
 				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
 			If lpCTLDBLCLICK->nmhdr.code=NM_CLICK Then
-				'TextToOutput(*lpCTLDBLCLICK->lpCtlName)
-				'TextToOutput(*lpCTLDBLCLICK->lpDlgName)
 				CallAddins(hWin,AIM_CTLDBLCLK,0,lParam,HOOK_CTLDBLCLK)
 			EndIf
 			ah.hrareseddlg=Cast(HWND,SendMessage(ah.hraresed,PRO_GETDIALOG,0,0))
