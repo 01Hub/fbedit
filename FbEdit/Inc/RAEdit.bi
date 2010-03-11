@@ -79,8 +79,8 @@
 #Define REM_NXTBOOKMARK						REM_BASE+10		' nLine:Integer,nType:Integer
 #Define REM_PRVBOOKMARK						REM_BASE+11		' nLine:Integer,nType:Integer
 #Define REM_FINDBOOKMARK					REM_BASE+12		' nBmID:Integer,0
-#Define REM_SETBLOCKS						REM_BASE+0,[pLINERANGE:LINERANGE Ptr],0
-#Define REM_ISLINE							REM_BASE+14		' nLine:Integer,pszDef::ZString Ptr
+#Define REM_SETBLOCKS						REM_BASE+13		' pLINERANGE:LINERANGE Ptr,0
+#Define REM_ISLINE							REM_BASE+14		' nLine:Integer,pszDef:ZString Ptr
 #Define REM_GETWORD							REM_BASE+15		' nBuffSize:Integer,pBuff:ZString Ptr
 #Define REM_COLLAPSE							REM_BASE+16		' nLine:Integer,0
 #Define REM_COLLAPSEALL						REM_BASE+17		' 0,0
@@ -100,7 +100,7 @@
 #Define REM_GETSPLIT							REM_BASE+31		' 0,0
 #Define REM_VCENTER							REM_BASE+32		' 0,0
 #Define REM_REPAINT							REM_BASE+33		' 0,bPaintNow:RAE_BOOL
-#Define REM_BMCALLBACK						REM_BASE+34		' 0,pBmProc
+#Define REM_BMCALLBACK						REM_BASE+34		' 0,pBmProc:Any Ptr
 #Define REM_READONLY							REM_BASE+35		' 0,bNewValue:RAE_BOOL
 #Define REM_INVALIDATELINE					REM_BASE+36		' nLine:Integer,0
 #Define REM_SETPAGESIZE						REM_BASE+37		' nLines:Integer,0
@@ -111,7 +111,7 @@
 #Define REM_SETWORDGROUP					REM_BASE+42		' 0,nGroup:Integer
 #Define REM_GETWORDGROUP					REM_BASE+43		' 0,0
 #Define REM_SETBMID							REM_BASE+44		' nLine:Integer,nBmID:Integer
-#Define REM_GETBMID							REM_BASE+45		' ,nLine:Integer,0
+#Define REM_GETBMID							REM_BASE+45		' nLine:Integer,0
 #Define REM_ISCHARPOS						REM_BASE+46		' cp:Integer,0
 #Define REM_HIDELINES						REM_BASE+47		' nLine:Integer,nLines:Integer
 #Define REM_SETDIVIDERLINE					REM_BASE+48		' nLine:Integer,bNewValue:RAE_BOOL
@@ -131,7 +131,7 @@
 #Define REM_CONVERT							REM_BASE+62		' nType:RAE_CONVERT,0
 #Define REM_BRACKETMATCH					REM_BASE+63		' 0,pszBracketMatch:ZString Ptr
 #Define REM_COMMAND							REM_BASE+64		' nCommand:RAE_CMD,0
-#Define REM_CASEWORD							REM_BASE+65		' cp,pszWord:ZString Ptr
+#Define REM_CASEWORD							REM_BASE+65		' cp:Integer,pszWord:ZString Ptr
 #Define REM_GETBLOCKEND						REM_BASE+66		' nLine:Integer,0
 #Define REM_SETLOCK							REM_BASE+67		' bNewValue:RAE_BOOL,0
 #Define REM_GETLOCK							REM_BASE+68		' 0,0
@@ -155,8 +155,8 @@
 #Define REM_SETCHANGEDSTATE				REM_BASE+86		' bNewValue:RAE_BOOL,0
 #Define REM_SETTOOLTIP						REM_BASE+87		' nToolTip:Integer,pszToolTip:ZString Ptr
 #Define REM_HILITEACTIVELINE				REM_BASE+88		' 0,nColor:Integer
-#Define REM_GETUNDO							REM_BASE+89		' nSize:Integer,,pBuff:ZString Ptr
-#Define REM_SETUNDO							REM_BASE+90		' nSize:Integer,,pBuff:ZString Ptr
+#Define REM_GETUNDO							REM_BASE+89		' nSize:Integer,pBuff:ZString Ptr
+#Define REM_SETUNDO							REM_BASE+90		' nSize:Integer,pBuff:ZString Ptr
 #Define REM_GETLINEBEGIN					REM_BASE+91		' nLine:Integer,0
 
 ' Convert types
