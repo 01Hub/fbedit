@@ -1,5 +1,10 @@
 ResEd
 
+2.2.0.6b - 2010-03-11
+---------------------
+o Fixed a parser bug. If a control had an help id and no exstyle
+  the parser would fail.
+
 2.2.0.6 - 2009-12-29
 --------------------
 o Added Check for Update to tools menu.

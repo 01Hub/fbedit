@@ -613,76 +613,80 @@ GetStyle proc uses ebx esi edi,lpRCMem:DWORD,lpStyles:DWORD,fDialog:DWORD
 		xor		ebx,ebx
 	.endif
 	mov		esi,lpRCMem
-	.while !fParseError
-		mov		edi,esi
-		invoke GetWord,offset wordbuff,esi
-		mov		ecx,eax
-		invoke IsBegin,offset wordbuff
-		or		eax,eax
-		jz		Ex
-		invoke IsEnd,offset wordbuff
-		or		eax,eax
-		jz		Ex
-		push	ecx
-		push	edx
-		invoke strcmpi,offset wordbuff,offset szNOT
-		pop		edx
-		pop		ecx
-		.if !eax
-			add		esi,ecx
+	.if byte ptr [esi]==','
+		inc		esi
+	.else
+		.while !fParseError
+			mov		edi,esi
 			invoke GetWord,offset wordbuff,esi
-			add		esi,eax
+			mov		ecx,eax
+			invoke IsBegin,offset wordbuff
+			or		eax,eax
+			jz		Ex
+			invoke IsEnd,offset wordbuff
+			or		eax,eax
+			jz		Ex
+			push	ecx
 			push	edx
-			.if fDialog
-				.if lpStyles
-					invoke FindDlgStyle,offset wordbuff,lpStyles
-				.else
-					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
-					.if !edx
-						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
+			invoke strcmpi,offset wordbuff,offset szNOT
+			pop		edx
+			pop		ecx
+			.if !eax
+				add		esi,ecx
+				invoke GetWord,offset wordbuff,esi
+				add		esi,eax
+				push	edx
+				.if fDialog
+					.if lpStyles
+						invoke FindDlgStyle,offset wordbuff,lpStyles
+					.else
+						invoke FindDlgStyle,offset wordbuff,offset rsstyledef
+						.if !edx
+							invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
+						.endif
 					.endif
-				.endif
-			.else
-				invoke FindStyle,offset wordbuff,lpStyles
-			.endif
-			.if !edx
-				invoke strcpy,addr namebuff+1000,addr szUnknownStyle
-				invoke strcat,addr namebuff+1000,addr namebuff
-				invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
-				inc		fParseError
-				mov		fClose,-1
-				xor		eax,eax
-			.endif
-			xor		eax,-1
-			and		ebx,eax
-		.else
-			add		esi,ecx
-			push	edx
-			.if fDialog
-				.if lpStyles
-					invoke FindDlgStyle,offset wordbuff,lpStyles
 				.else
-					invoke FindDlgStyle,offset wordbuff,offset rsstyledef
-					.if !edx
-						invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
-					.endif
+					invoke FindStyle,offset wordbuff,lpStyles
 				.endif
+				.if !edx
+					invoke strcpy,addr namebuff+1000,addr szUnknownStyle
+					invoke strcat,addr namebuff+1000,addr namebuff
+					invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
+					inc		fParseError
+					mov		fClose,-1
+					xor		eax,eax
+				.endif
+				xor		eax,-1
+				and		ebx,eax
 			.else
-				invoke FindStyle,offset wordbuff,lpStyles
+				add		esi,ecx
+				push	edx
+				.if fDialog
+					.if lpStyles
+						invoke FindDlgStyle,offset wordbuff,lpStyles
+					.else
+						invoke FindDlgStyle,offset wordbuff,offset rsstyledef
+						.if !edx
+							invoke FindDlgStyle,offset wordbuff,offset rsstyledefdlg
+						.endif
+					.endif
+				.else
+					invoke FindStyle,offset wordbuff,lpStyles
+				.endif
+				.if !edx
+					invoke strcpy,addr namebuff+1000,addr szUnknownStyle
+					invoke strcat,addr namebuff+1000,addr namebuff
+					invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
+					inc		fParseError
+					mov		fClose,-1
+					xor		eax,eax
+				.endif
+				or		ebx,eax
 			.endif
-			.if !edx
-				invoke strcpy,addr namebuff+1000,addr szUnknownStyle
-				invoke strcat,addr namebuff+1000,addr namebuff
-				invoke MessageBox,hRes,addr namebuff+1000,addr wordbuff,MB_OK or MB_ICONERROR
-				inc		fParseError
-				mov		fClose,-1
-				xor		eax,eax
-			.endif
-			or		ebx,eax
-		.endif
-		pop		edx
-		.break .if dl==',' || dl==0Dh
-	.endw
+			pop		edx
+			.break .if dl==',' || dl==0Dh
+		.endw
+	.endif
   Ex:
 	mov		edx,ebx
 	mov		eax,esi
