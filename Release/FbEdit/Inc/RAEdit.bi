@@ -66,95 +66,98 @@
 
 ' Private edit messages
 #Define REM_BASE								WM_USER+1000
-#Define REM_SETHILITEWORDS					REM_BASE+0		' wParam=Color, lParam=lpszWords
-#Define REM_SETFONT							REM_BASE+1		' wParam=nLineSpacing, lParam=lpRAFONT
-#Define REM_GETFONT							REM_BASE+2		' wParam=0, lParam=lpRAFONT
-#Define REM_SETCOLOR							REM_BASE+3		' wParam=0, lParam=lpRACOLOR
-#Define REM_GETCOLOR							REM_BASE+4		' wParam=0, lParam=lpRACOLOR
-#Define REM_SETHILITELINE					REM_BASE+5		' wParam=Line, lParam=Color
-#Define REM_GETHILITELINE					REM_BASE+6		' wParam=Line, lParam=0
-#Define REM_SETBOOKMARK						REM_BASE+7		' wParam=Line, lParam=Type
-#Define REM_GETBOOKMARK						REM_BASE+8		' wParam=Line, lParam=0
-#Define REM_CLRBOOKMARKS					REM_BASE+9		' wParam=0, lParam=Type
-#Define REM_NXTBOOKMARK						REM_BASE+10		' wParam=Line, lParam=Type
-#Define REM_PRVBOOKMARK						REM_BASE+11		' wParam=Line, lParam=Type
-#Define REM_FINDBOOKMARK					REM_BASE+12		' wParam=BmID, lParam=0
-#Define REM_SETBLOCKS						REM_BASE+13		' wParam=[lpLINERANGE], lParam=0
-#Define REM_ISLINE							REM_BASE+14		' wParam=Line, lParam=lpszDef
-#Define REM_GETWORD							REM_BASE+15		' wParam=BuffSize, lParam=lpBuff
-#Define REM_COLLAPSE							REM_BASE+16		' wParam=Line, lParam=0
-#Define REM_COLLAPSEALL						REM_BASE+17		' wParam=0, lParam=0
-#Define REM_EXPAND							REM_BASE+18		' wParam=Line, lParam=0
-#Define REM_EXPANDALL						REM_BASE+19		' wParam=0, lParam=0
-#Define REM_LOCKLINE							REM_BASE+20		' wParam=Line, lParam=TRUE/FALSE
-#Define REM_ISLINELOCKED					REM_BASE+21		' wParam=Line, lParam=0
-#Define REM_HIDELINE							REM_BASE+22		' wParam=Line, lParam=TRUE/FALSE
-#Define REM_ISLINEHIDDEN					REM_BASE+23		' wParam=Line, lParam=0
-#Define REM_AUTOINDENT						REM_BASE+24		' wParam=0, lParam=TRUE/FALSE
-#Define REM_TABWIDTH							REM_BASE+25		' wParam=nChars, lParam=TRUE/FALSE (Expand tabs)
-#Define REM_SELBARWIDTH						REM_BASE+26		' wParam=nWidth, lParam=0
-#Define REM_LINENUMBERWIDTH				REM_BASE+27		' wParam=nWidth, lParam=0
-#Define REM_MOUSEWHEEL						REM_BASE+28		' wParam=nLines, lParam=0
-#Define REM_SUBCLASS							REM_BASE+29		' wParam=0, lParam=lpWndProc
-#Define REM_SETSPLIT							REM_BASE+30		' wParam=nSplit, lParam=0
-#Define REM_GETSPLIT							REM_BASE+31		' wParam=0, lParam=0
-#Define REM_VCENTER							REM_BASE+32		' wParam=0, lParam=0
-#Define REM_REPAINT							REM_BASE+33		' wParam=0, lParam=TRUE/FALSE (Paint Now)
-#Define REM_BMCALLBACK						REM_BASE+34		' wParam=0, lParam=lpBmProc
-#Define REM_READONLY							REM_BASE+35		' wParam=0, lParam=TRUE/FALSE
-#Define REM_INVALIDATELINE					REM_BASE+36		' wParam=Line, lParam=0
-#Define REM_SETPAGESIZE						REM_BASE+37		' wParam=nLines, lParam=0
-#Define REM_GETPAGESIZE						REM_BASE+38		' wParam=0, lParam=0
-#Define REM_GETCHARTAB						REM_BASE+39		' wParam=nChar, lParam=0
-#Define REM_SETCHARTAB						REM_BASE+40		' wParam=nChar, lParam=nValue
-#Define REM_SETCOMMENTBLOCKS				REM_BASE+41		' wParam=lpStart, lParam=lpEnd
-#Define REM_SETWORDGROUP					REM_BASE+42		' wParam=0, lParam=nGroup (0-15)
-#Define REM_GETWORDGROUP					REM_BASE+43		' wParam=0, lParam=0
-#Define REM_SETBMID							REM_BASE+44		' wParam=nLine, lParam=nBmID
-#Define REM_GETBMID							REM_BASE+45		' wParam=nLine, lParam=0
-#Define REM_ISCHARPOS						REM_BASE+46		' wParam=CP, lParam=0, returns 1 if comment block, 2 if comment, 3 if string
-#Define REM_HIDELINES						REM_BASE+47		' wParam=nLine, lParam=nLines
-#Define REM_SETDIVIDERLINE					REM_BASE+48		' wParam=nLine, lParam=TRUE/FALSE
-#Define REM_ISINBLOCK						REM_BASE+49		' wParam=nLine, lParam=lpRABLOCKDEF
-#Define REM_TRIMSPACE						REM_BASE+50		' wParam=nLine, lParam=fLeft
-#Define REM_SAVESEL							REM_BASE+51		' wParam=0, lParam=0
-#Define REM_RESTORESEL						REM_BASE+52		' wParam=0, lParam=0
-#Define REM_GETCURSORWORD					REM_BASE+53		' wParam=BuffSize, lParam=lpBuff
-#Define REM_SETSEGMENTBLOCK				REM_BASE+54		' wParam=nLine, lParam=TRUE/FALSE
-#Define REM_GETMODE							REM_BASE+55		' wParam=0, lParam=0
-#Define REM_SETMODE							REM_BASE+56		' wParam=nMode, lParam=0
-#Define REM_GETBLOCK							REM_BASE+57		' wParam=0, lParam=lpBLOCKRANGE
-#Define REM_SETBLOCK							REM_BASE+58		' wParam=0, lParam=lpBLOCKRANGE
-#Define REM_BLOCKINSERT						REM_BASE+59		' wParam=0, lParam=lpText
-#Define REM_LOCKUNDOID						REM_BASE+60		' wParam=TRUE/FALSE, lParam=0
-#Define REM_ADDBLOCKDEF						REM_BASE+61		' wParam=0, lParam=lpRABLOCKDEF
-#Define REM_CONVERT							REM_BASE+62		' wParam=nType, lParam=0
-#Define REM_BRACKETMATCH					REM_BASE+63		' wParam=0, lParam=lpszBracketMatch
-#Define REM_COMMAND							REM_BASE+64		' wParam=nCommand, lParam=0
-#Define REM_CASEWORD							REM_BASE+65		' wParam=cp, lParam=lpWord
-#Define REM_GETBLOCKEND						REM_BASE+66		' wParam=Line, lParam=0
-#Define REM_SETLOCK							REM_BASE+67		' wParam=TRUE/FALSE, lParam=0
-#Define REM_GETLOCK							REM_BASE+68		' wParam=0, lParam=0
-#Define REM_GETWORDFROMPOS					REM_BASE+69		' wParam=cp, lParam=lpBuff
-#Define REM_SETNOBLOCKLINE					REM_BASE+70		' wParam=Line, lParam=TRUE/FALSE
-#Define REM_ISLINENOBLOCK					REM_BASE+71		' wParam=Line, lParam=0
-#Define REM_SETALTHILITELINE				REM_BASE+72		' wParam=Line, lParam=TRUE/FALSE
-#Define REM_ISLINEALTHILITE				REM_BASE+73		' wParam=Line, lParam=0
-#Define REM_SETCURSORWORDTYPE				REM_BASE+74		' wParam=nType, lParam=0
-#Define REM_SETBREAKPOINT					REM_BASE+75		' wParam=nLine, lParam=TRUE/FALSE
-#Define REM_NEXTBREAKPOINT					REM_BASE+76		' wParam=nLine, lParam=0
-#Define REM_GETLINESTATE					REM_BASE+77		' wParam=nLine, lParam=0
-#Define REM_SETERROR							REM_BASE+78		' wParam=nLine, lParam=nErrID
-#Define REM_GETERROR							REM_BASE+79		' wParam=nLine, lParam=0
-#Define REM_NEXTERROR						REM_BASE+80		' wParam=nLine, lParam=0
-#Define REM_CHARTABINIT						REM_BASE+81		' wParam=0, lParam=0
-#Define REM_LINEREDTEXT						REM_BASE+82		' wParam=nLine, lParam=TRUE/FALSE
-#Define REM_SETSTYLEEX						REM_BASE+83		' wParam=nStyleEx, lParam=0
-#Define REM_GETUNICODE						REM_BASE+84		' wParam=0, lParam=0
-#Define REM_SETUNICODE						REM_BASE+85		' wParam=TRUE/FALSE, lParam=0
-#Define REM_SETCHANGEDSTATE				REM_BASE+86		' wParam=TRUE/FALSE, lParam=0
-#Define REM_SETTOOLTIP						REM_BASE+87		' wParam=n (1-6), lParam=lpText
-#Define REM_HILITEACTIVELINE				REM_BASE+88		' wParam=0, lParam=nColor (0-3)
+#Define REM_SETHILITEWORDS					REM_BASE+0		' nColor:Integer,pszWords:ZString Ptr
+#Define REM_SETFONT							REM_BASE+1		' nLineSpacing:Integer,pRAFONT:RAFONT Ptr
+#Define REM_GETFONT							REM_BASE+2		' 0,pRAFONT:RAFONT Ptr
+#Define REM_SETCOLOR							REM_BASE+3		' 0,pRACOLOR:RACOLOR Ptr
+#Define REM_GETCOLOR							REM_BASE+4		' 0,pRACOLOR:RACOLOR Ptr
+#Define REM_SETHILITELINE					REM_BASE+5		' nLine:Integer,nColor:Integer
+#Define REM_GETHILITELINE					REM_BASE+6		' nLine:Integer,0
+#Define REM_SETBOOKMARK						REM_BASE+7		' nLine:Integer,nType:Integer
+#Define REM_GETBOOKMARK						REM_BASE+8		' nLine:Integer,0
+#Define REM_CLRBOOKMARKS					REM_BASE+9		' 0,nType:Integer
+#Define REM_NXTBOOKMARK						REM_BASE+10		' nLine:Integer,nType:Integer
+#Define REM_PRVBOOKMARK						REM_BASE+11		' nLine:Integer,nType:Integer
+#Define REM_FINDBOOKMARK					REM_BASE+12		' nBmID:Integer,0
+#Define REM_SETBLOCKS						REM_BASE+13		' pLINERANGE:LINERANGE Ptr,0
+#Define REM_ISLINE							REM_BASE+14		' nLine:Integer,pszDef:ZString Ptr
+#Define REM_GETWORD							REM_BASE+15		' nBuffSize:Integer,pBuff:ZString Ptr
+#Define REM_COLLAPSE							REM_BASE+16		' nLine:Integer,0
+#Define REM_COLLAPSEALL						REM_BASE+17		' 0,0
+#Define REM_EXPAND							REM_BASE+18		' nLine:Integer,0
+#Define REM_EXPANDALL						REM_BASE+19		' 0,0
+#Define REM_LOCKLINE							REM_BASE+20		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_ISLINELOCKED					REM_BASE+21		' nLine:Integer,0
+#Define REM_HIDELINE							REM_BASE+22		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_ISLINEHIDDEN					REM_BASE+23		' nLine:Integer,0
+#Define REM_AUTOINDENT						REM_BASE+24		' 0,bNewValue:RAE_BOOL
+#Define REM_TABWIDTH							REM_BASE+25		' nChars:Integer,bExpand:RAE_BOOL
+#Define REM_SELBARWIDTH						REM_BASE+26		' nWidth:Integer,0
+#Define REM_LINENUMBERWIDTH				REM_BASE+27		' nWidth:Integer,0
+#Define REM_MOUSEWHEEL						REM_BASE+28		' nLines:Integer,0
+#Define REM_SUBCLASS							REM_BASE+29		' 0,pWndProc
+#Define REM_SETSPLIT							REM_BASE+30		' nSplit:Integer,0
+#Define REM_GETSPLIT							REM_BASE+31		' 0,0
+#Define REM_VCENTER							REM_BASE+32		' 0,0
+#Define REM_REPAINT							REM_BASE+33		' 0,bPaintNow:RAE_BOOL
+#Define REM_BMCALLBACK						REM_BASE+34		' 0,pBmProc:Any Ptr
+#Define REM_READONLY							REM_BASE+35		' 0,bNewValue:RAE_BOOL
+#Define REM_INVALIDATELINE					REM_BASE+36		' nLine:Integer,0
+#Define REM_SETPAGESIZE						REM_BASE+37		' nLines:Integer,0
+#Define REM_GETPAGESIZE						REM_BASE+38		' 0,0
+#Define REM_GETCHARTAB						REM_BASE+39		' nChar:Integer,0|RAE_CT
+#Define REM_SETCHARTAB						REM_BASE+40		' nChar:Integer,nNewValue:RAE_CT
+#Define REM_SETCOMMENTBLOCKS				REM_BASE+41		' pszStart:ZString Ptr,pszEnd:ZString Ptr
+#Define REM_SETWORDGROUP					REM_BASE+42		' 0,nGroup:Integer
+#Define REM_GETWORDGROUP					REM_BASE+43		' 0,0
+#Define REM_SETBMID							REM_BASE+44		' nLine:Integer,nBmID:Integer
+#Define REM_GETBMID							REM_BASE+45		' nLine:Integer,0
+#Define REM_ISCHARPOS						REM_BASE+46		' cp:Integer,0
+#Define REM_HIDELINES						REM_BASE+47		' nLine:Integer,nLines:Integer
+#Define REM_SETDIVIDERLINE					REM_BASE+48		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_ISINBLOCK						REM_BASE+49		' nLine:Integer,pRABLOCKDEF:RABLOCKDEF Ptr
+#Define REM_TRIMSPACE						REM_BASE+50		' nLine:Integer,bLeft:RAE_BOOL
+#Define REM_SAVESEL							REM_BASE+51		' 0,0
+#Define REM_RESTORESEL						REM_BASE+52		' 0,0
+#Define REM_GETCURSORWORD					REM_BASE+53		' nBuffSize:Integer,pBuff:ZString Ptr
+#Define REM_SETSEGMENTBLOCK				REM_BASE+54		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_GETMODE							REM_BASE+55		' 0,0|RAE_MODE
+#Define REM_SETMODE							REM_BASE+56		' nMode:RAE_MODE,0
+#Define REM_GETBLOCK							REM_BASE+57		' 0,pBLOCKRANGE:BLOCKRANGE Ptr
+#Define REM_SETBLOCK							REM_BASE+58		' 0,pBLOCKRANGE:BLOCKRANGE Ptr
+#Define REM_BLOCKINSERT						REM_BASE+59		' 0,pBuff:ZString Ptr
+#Define REM_LOCKUNDOID						REM_BASE+60		' bNewValue:RAE_BOOL,0
+#Define REM_ADDBLOCKDEF						REM_BASE+61		' 0,pRABLOCKDEF:RABLOCKDEF Ptr
+#Define REM_CONVERT							REM_BASE+62		' nType:RAE_CONVERT,0
+#Define REM_BRACKETMATCH					REM_BASE+63		' 0,pszBracketMatch:ZString Ptr
+#Define REM_COMMAND							REM_BASE+64		' nCommand:RAE_CMD,0
+#Define REM_CASEWORD							REM_BASE+65		' cp:Integer,pszWord:ZString Ptr
+#Define REM_GETBLOCKEND						REM_BASE+66		' nLine:Integer,0
+#Define REM_SETLOCK							REM_BASE+67		' bNewValue:RAE_BOOL,0
+#Define REM_GETLOCK							REM_BASE+68		' 0,0
+#Define REM_GETWORDFROMPOS					REM_BASE+69		' cp:Integer,pBuff:ZString Ptr
+#Define REM_SETNOBLOCKLINE					REM_BASE+70		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_ISLINENOBLOCK					REM_BASE+71		' nLine:Integer,0
+#Define REM_SETALTHILITELINE				REM_BASE+72		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_ISLINEALTHILITE				REM_BASE+73		' nLine:Integer,0
+#Define REM_SETCURSORWORDTYPE				REM_BASE+74		' nType:Integer,0
+#Define REM_SETBREAKPOINT					REM_BASE+75		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_NEXTBREAKPOINT					REM_BASE+76		' nLine:Integer,0
+#Define REM_GETLINESTATE					REM_BASE+77		' nLine:Integer,0|RAE_STATE
+#Define REM_SETERROR							REM_BASE+78		' nLine:Integer,nErrID:Integer
+#Define REM_GETERROR							REM_BASE+79		' nLine:Integer,0
+#Define REM_NEXTERROR						REM_BASE+80		' nLine:Integer,0
+#Define REM_CHARTABINIT						REM_BASE+81		' 0,0
+#Define REM_LINEREDTEXT						REM_BASE+82		' nLine:Integer,bNewValue:RAE_BOOL
+#Define REM_SETSTYLEEX						REM_BASE+83		' nStyleEx:RAE_STYLEEX,0
+#Define REM_GETUNICODE						REM_BASE+84		' 0,0
+#Define REM_SETUNICODE						REM_BASE+85		' bNewValue:RAE_BOOL,0
+#Define REM_SETCHANGEDSTATE				REM_BASE+86		' bNewValue:RAE_BOOL,0
+#Define REM_SETTOOLTIP						REM_BASE+87		' nToolTip:Integer,pszToolTip:ZString Ptr
+#Define REM_HILITEACTIVELINE				REM_BASE+88		' 0,nColor:Integer
+#Define REM_GETUNDO							REM_BASE+89		' nSize:Integer,pBuff:ZString Ptr
+#Define REM_SETUNDO							REM_BASE+90		' nSize:Integer,pBuff:ZString Ptr
+#Define REM_GETLINEBEGIN					REM_BASE+91		' nLine:Integer,0
 
 ' Convert types
 #Define CONVERT_TABTOSPACE					0

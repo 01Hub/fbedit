@@ -152,10 +152,13 @@ Type ADDINHANDLES
 	himm				As HWND							' Handle of immediate window
 	hToolFont		As HFONT							' Tool windows font
 	hregister		As HWND							' Debug register window.
+	hfpu				As HWND							' Debug fpu window.
+	hmmx				As HWND							' Debug mmx window.
+	hdbgtab			As HWND							' Debug tab
 End Type
 
 Type ADDINDATA
-	version			As Integer						' FbEdit version (currently 1073)
+	version			As Integer						' FbEdit version (currently 1076)
 	AppPath			As ZString*260					' Path where FbEdit.exe is found
 	ProjectPath		As ZString*260					' Path to current project
 	DefProjectPath	As ZString*260					' Default project path
@@ -176,10 +179,12 @@ Type ADDINDATA
 	hLangMem			As HGLOBAL						' Language translation
 	bExtOutput		As Integer						' External Output
 	HelpPath			As ZString*260					' Path to help files
-	fDebug			As Boolean						' Project is beeing debugged
-	fNoNotify		As Boolean						' No handling of RAEdit WM_NOTIFY
+	fDebug			As Integer						' Project is beeing debugged
+	fNoNotify		As Integer						' No handling of RAEdit WM_NOTIFY
 	smakequickrun	As ZString*260					' Quick Run
 	lpBuff			As ZString Ptr					' Pointer to internal ZString buffer
+	lpszVersion		As ZString Ptr					' Pointer to version string
+	nDbgTabSel		As Integer						' Selected Debug tab
 End Type
 
 Type ADDINFUNCTIONS
@@ -195,6 +200,7 @@ Type ADDINFUNCTIONS
 	ShowImmediate As Sub(ByVal bShow As Boolean)
 	MakeProjectFileName As Function(ByVal sFile As String) As String
 	HH_Help As Sub()
+	IsProjectFile As Function(ByVal sFile As String) As Integer
 End Type
 
 ' Addin messages you can send to FbEdit main window
@@ -226,6 +232,8 @@ End Type
 #Define AIM_CONTEXTMEMU		16						' wParam and lParam as for WM_CONTEXTMENU
 #Define AIM_FILESAVED		17						' wParam=0 lParam=FileName
 #Define AIM_CREATEEDIT		18						' wParam=hWnd, lParam=0
+#Define AIM_PROJECTREMOVE	19						' wParam=ProjectFileID, lParam=FileName
+#Define AIM_PROJECTTOGGLE	20						' wParam=OldProjectFileID, lParam=NewProjectFileID
 
 ' Hookflags are bits set in a 32bit word
 ' Hook flags in hook1
@@ -248,6 +256,8 @@ End Type
 #Define HOOK_CONTEXTMEMU	&H10000
 #Define HOOK_FILESAVED		&H20000
 #Define HOOK_CREATEEDIT		&H40000
+#Define HOOK_PROJECTREMOVE	&H80000
+#Define HOOK_PROJECTTOGGLE	&H100000
 
 ' Hook flags in hook2, reserved for future use. Set to 0
 

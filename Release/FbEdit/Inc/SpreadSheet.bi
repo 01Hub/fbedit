@@ -49,7 +49,6 @@ Const SPRM_SCROLLCELL			= WM_USER+146		'Scrolls current cell into view
 Const SPRM_DELETECELL			= WM_USER+147		'Deletes a cell. wParam=col, lParam=row
 Const SPRM_GETDATEFORMAT		= WM_USER+148		'Returns date format string. wParam=0, lParam=0
 Const SPRM_SETDATEFORMAT		= WM_USER+149		'Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
-Const SPRM_CALCROWHEIGHT		= WM_USER+150		'Calculate row height. wParam=row, lParam=Update TRUE/FALSE. Returns max row height needed.
 
 'Styles
 Const SPS_VSCROLL			  		= &h0001				'Vertical scrollbar
@@ -63,9 +62,6 @@ Const SPS_COLSIZE			  		= &h0080				'Allow col widt sizeing by mouse
 Const SPS_ROWSIZE		      	= &h0100				'Allow row height sizeing by mouse
 Const SPS_WINSIZE			  		= &h0200				'Allow splitt window sizeing by mouse
 Const SPS_MULTISELECT		  	= &h0400				'Allow multiselect
-Const SPS_LOCKVSCROLL			= &h0800				'Vertical scrolling is locked
-Const SPS_LOCKHSCROLL			= &h1000				'Horizontal scrolling is locked
-Const SPS_NOFOCUS					= &h2000				'The cellfocus is not shown.
 
 'Cell data types
 Const TPE_EMPTY					= &h000				'The cell contains formatting only
@@ -221,7 +217,6 @@ Type SPR_SELCHANGE
 	col				As Integer
 	row				As Integer
 	fcancel			As Integer
-	fclick			As Integer							'TRUE if mouse was clicked
 End Type
 
 Type SPR_EDIT

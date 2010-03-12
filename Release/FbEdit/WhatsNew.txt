@@ -1,12 +1,18 @@
 Whats new:
 ----------
-1.0.7.5
-o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
-  all child blocks in the parent block.
-o The edit control now supports unlimitted line lenghts.
-o Added Find All to Property context menu.
-o Ctrl+F now closes the find dialog if it has focus.
-o Added Debug / Break. Very useful if your program hangs in a loop.
-o The debugger now breaks if there is an exception.
-o Added FPU and MMX register view to debugger.
-o The last directory used to open a file or project is now saved.
+1.0.7.6
+o Added support for xxxEnum.api files.
+o Added api files for fmod sound.
+o Added api files for RACodeComplete, RAEdit, RAFile, RAGrid, RAHexEd, RAProperty
+  and RAResEd custom controls.
+o Added api file creator tool to tools menu.
+o Added code complete to windows api's boolean parameters.
+o There can now be more than one xxxConst.api file using the same api.
+o Fixed bug that showed tooltip on wrong screen on a dual screen system.
+o Fixed a bug in tooltip pre parser. Tooltip lines was not pre parsed and
+  could cause wrong tooltip to be shown.
+o Fixed a line continuation in blocks bug.
+o Fixed a line continuation in block complete bug.
+o Fixed bug with block comment / uncomment. Did not set / clear block collapse bookmark.
+o Fixed a resource editor parser bug. If a control had an help id and
+  no exstyle the parser would fail.
