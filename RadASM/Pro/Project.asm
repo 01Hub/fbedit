@@ -2307,14 +2307,15 @@ ProjectOpenFile	proc fErr:DWORD
 	mov		hFound,0
 	invoke UpdateAll,IDM_FILE_OPENFILE
 	.if	!hFound
-		.if	fErr
-			invoke OpenEditFile
-		.else
+;		.if	fErr
+;			invoke OpenEditFile
+;		.else
 			invoke GetFileAttributes,addr FileName
-			.if	eax!=-1
+			test	eax,FILE_ATTRIBUTE_DIRECTORY
+			.if ZERO?
 				invoke OpenEditFile
 			.endif
-		.endif
+;		.endif
 	.else
 		invoke IsIconic,hFound
 		.if	eax

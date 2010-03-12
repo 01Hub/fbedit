@@ -705,6 +705,7 @@ SetErr:
 		invoke SetErrorBookMark,hEdit,iLine
 	.endif
 	invoke SendMessage,hOutREd,REM_SETHILITELINE,nLine,1
+	invoke SendMessage,hOutREd,REM_SETBOOKMARK,nLine,7
 	xor		eax,eax
 	inc		eax
 	retn
@@ -754,7 +755,11 @@ OpenErrFile:
 		dec		eax
 		mov		byte ptr FileName[eax],0
 	.endif
-	invoke ProjectOpenFile,FALSE
+	invoke GetFileAttributes,addr FileName
+	test	eax,FILE_ATTRIBUTE_DIRECTORY
+	.if ZERO?
+		invoke ProjectOpenFile,FALSE
+	.endif
 	pop		edi
 	retn
 
