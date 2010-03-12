@@ -3,8 +3,8 @@ Whats new:
 1.0.7.6
 o Added support for xxxEnum.api files.
 o Added api files for fmod sound.
-o Added api files for RACodeComplete, RAEdit, RAFile, RAGrid, RAHexEd, RAProperty
-  and RAResEd custom controls.
+o Added api files for RACodeComplete, RAEdit, RAFile, RAGrid, RAHexEd, RAProperty, RAResEd
+  and SpreadSheet custom controls.
 o Added api file creator tool to tools menu.
 o Added code complete to windows api's boolean parameters.
 o There can now be more than one xxxConst.api file using the same api.
