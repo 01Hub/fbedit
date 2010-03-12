@@ -181,9 +181,9 @@ MinorFiles=*.res;*.obj;
 1=22,22,536,413,1770
 2=0,416,869,416,31701
 3=154,154,590,413,0
-4=0,0,590,413,17884
+4=0,0,590,413,22047
 5=132,132,536,413,11383
-6=12,26,869,416,140516
+6=12,26,869,416,57932
 7=132,132,536,413,16365
 8=44,44,536,413,59871
 9=88,88,536,413,37826
@@ -491,16 +491,16 @@ ID=105
 44=6,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 76=0,C:\RadASM\Masm\Templates\Dialog.rad,,WndProc
 [Find]
-1="SetErr"
-2="OpenErrFile"
-3="FILE_ATTRIBUTE_DIRECTORY"
-4="ProjectOpenFile"
-5=":ptr"
-6="lParam : ptr"
-7="lParam :ptr"
-8="lParam:ptr"
-9="LVITEM"
-10="TCITEM"
+1="GetParent"
+2="lea ebx, [ eax * 4 + ebx ]"
+3="lea ebx,[eax*4+ebx]"
+4="lea eax,[eax*2+eax]"
+5="SetErr"
+6="OpenErrFile"
+7="FILE_ATTRIBUTE_DIRECTORY"
+8="ProjectOpenFile"
+9=":ptr"
+10="lParam : ptr"
 
 [BreakPoint]
 0=
@@ -684,7 +684,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 127=
 128=
 [Collapse]
-6=,,,,,268435456,262145,256,,17301504,,,,,131072,4202500,4,,512,16781833,,1074792576,144
+6=,,,,,268435456,262145,256,,17301504,,,,,131072,4202500,4,,,33563666,,2101504,289
 2=
 11=,,,,,
 8=,,,,,,,,
@@ -765,13 +765,13 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=1465082857
+PTimer=1467239509
 [RADebugBP]
 96=
 55=
 2=
 5=
-6=2758
+6=2762
 20=
 122=
 8=

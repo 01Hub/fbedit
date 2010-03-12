@@ -1872,6 +1872,10 @@ CmdEdit proc hWin:HWND
 	.elseif eax==IDM_EDIT_ADDVAR
 		invoke ModalDialog,hInstance,IDD_DLGBPVAR,hWin,offset DlgBPVarProc,NULL
 	.elseif eax==IDM_EDIT_NEXTERROR
+		invoke AnyErrorBookMarks
+		.if !eax
+			jmp		Ex
+		.endif
 	  @@:
 		mov		eax,iErrorBookMark
 		and		eax,31
