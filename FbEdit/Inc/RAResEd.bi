@@ -119,48 +119,48 @@ End Type
 
 ' Dialog editor messages
 #Define DEM_BASE					WM_USER+2000
-#Define DEM_OPEN					DEM_BASE+1		' wParam=0, lParam=Handle of memory or NULL
-#Define DEM_DELETECONTROLS		DEM_BASE+2		' wParam=0, lParam=0
-#Define DEM_CANUNDO				DEM_BASE+3		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_UNDO					DEM_BASE+4		' wParam=0, lParam=0
-#Define DEM_CUT					DEM_BASE+5		' wParam=0, lParam=0
-#Define DEM_COPY					DEM_BASE+6		' wParam=0, lParam=0
-#Define DEM_CANPASTE				DEM_BASE+7		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_PASTE					DEM_BASE+8		' wParam=0, lParam=0
-#Define DEM_ISLOCKED				DEM_BASE+9		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_LOCKCONTROLS		DEM_BASE+10		' wParam=0, lParam=TRUE or FALSE
-#Define DEM_ISBACK				DEM_BASE+11		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_SENDTOBACK			DEM_BASE+12		' wParam=0, lParam=0
-#Define DEM_ISFRONT				DEM_BASE+13		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_BRINGTOFRONT		DEM_BASE+14		' wParam=0, lParam=0
-#Define DEM_ISSELECTION			DEM_BASE+15		' wParam=0, lParam=0, Returns 0=Non selected, 1=Singleselect, 2=Multiselect
-#Define DEM_ALIGNSIZE			DEM_BASE+16		' wParam=0, lParam=ALIGN_XX or SIZE_XX
-#Define DEM_GETMODIFY			DEM_BASE+17		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_SETMODIFY			DEM_BASE+18		' wParam=TRUE or FALSE, lParam=0
-#Define DEM_COMPACT				DEM_BASE+19		' wParam=0, lParam=0, Returns memory size of compacted
-#Define DEM_EXPORTTORC			DEM_BASE+20		' wParam=0, lParam=0, Returns memory handle
-#Define DEM_SETPOSSTATUS		DEM_BASE+21		' wParam=Handle of status window, lParam=Pane
-#Define DEM_SETGRIDSIZE			DEM_BASE+22		' wParam=y-size,x-size, lParam=color
-#Define DEM_ADDCONTROL			DEM_BASE+23		' wParam=handle of toolbox, lParam=lpCCDEF
-#Define DEM_GETCOLOR				DEM_BASE+24		' wParam=0, lParam=lpCOLOR
-#Define DEM_SETCOLOR				DEM_BASE+25		' wParam=0, lParam=lpCOLOR
-#Define DEM_SHOWDIALOG			DEM_BASE+26		' wParam=0, lParam=0
-#Define DEM_SHOWTABINDEX		DEM_BASE+27		' wParam=0, lParam=0
-#Define DEM_EXPORTDLG			DEM_BASE+28		' wParam=0, lParam=lpszFileName
-#Define DEM_AUTOID				DEM_BASE+29		' wParam=0, lParam=0
-#Define DEM_GETBUTTONSCOUNT	DEM_BASE+30		' wParam=0, lParam=0
-#Define DEM_GETMEM				DEM_BASE+31		' wParam=DEWM_xxxxx, lParam=0
-#Define DEM_SHOWOUTPUT			DEM_BASE+32		' wParam=TRUE/FALSE, lParam=0
-#Define DEM_GETSIZE				DEM_BASE+33		' wParam=0, lParam=lpWINSIZE
-#Define DEM_SETSIZE				DEM_BASE+34		' wParam=0, lParam=lpWINSIZE
-#Define DEM_GETTEXTMODE			DEM_BASE+35		' wParam=0, lParam=0
-#Define DEM_SETTEXTMODE			DEM_BASE+36		' wParam=TRUE/FALSE, lParam=0
-#Define DEM_CANREDO				DEM_BASE+37		' wParam=0, lParam=0, Returns TRUE or FALSE
-#Define DEM_REDO					DEM_BASE+38		' wParam=0, lParam=0
-#Define DEM_GETSHOWDIALOG		DEM_BASE+39		' wParam=0, lParam=0
-#Define DEM_CLEARCUSTSTYLE		DEM_BASE+40		' wParam=0, lParam=0
-#Define DEM_ADDCUSTSTYLE		DEM_BASE+41		' wParam=0, lParam=lpCUSTSTYLE
-#Define DEM_GETOUTPUT			DEM_BASE+42		' wParam=0, lParam=0
+#Define DEM_OPEN					DEM_BASE+1		' 0,hMem:HGLOBAL
+#Define DEM_DELETECONTROLS		DEM_BASE+2		' 0,0
+#Define DEM_CANUNDO				DEM_BASE+3		' ,0,0|BOOLEAN
+#Define DEM_UNDO					DEM_BASE+4		' 0,0
+#Define DEM_CUT					DEM_BASE+5		' 0,0
+#Define DEM_COPY					DEM_BASE+6		' 0,0
+#Define DEM_CANPASTE				DEM_BASE+7		' 0,0|BOOLEAN
+#Define DEM_PASTE					DEM_BASE+8		' 0,0
+#Define DEM_ISLOCKED				DEM_BASE+9		' 0,0|BOOLEAN
+#Define DEM_LOCKCONTROLS		DEM_BASE+10		' 0,bLock[FALSE,TRUE]
+#Define DEM_ISBACK				DEM_BASE+11		' 0,0|BOOLEAN
+#Define DEM_SENDTOBACK			DEM_BASE+12		' 0,0
+#Define DEM_ISFRONT				DEM_BASE+13		' 0,0|BOOLEAN
+#Define DEM_BRINGTOFRONT		DEM_BASE+14		' 0,0
+#Define DEM_ISSELECTION			DEM_BASE+15		' 0,0|Integer
+#Define DEM_ALIGNSIZE			DEM_BASE+16		' 0,nAlign[ALIGN_BOTTOM,ALIGN_CENTER,ALIGN_DLGHCENTER,ALIGN_DLGVCENTER,ALIGN_LEFT,ALIGN_MIDDLE,ALIGN_RIGHT,ALIGN_TOP]
+#Define DEM_GETMODIFY			DEM_BASE+17		' 0,0
+#Define DEM_SETMODIFY			DEM_BASE+18		' bModify[FALSE,TRUE],0
+#Define DEM_COMPACT				DEM_BASE+19		' 0,0|Integer
+#Define DEM_EXPORTTORC			DEM_BASE+20		' 0,0|HGLOBAL
+#Define DEM_SETPOSSTATUS		DEM_BASE+21		' hSbr:HWND,nPane:Integer
+#Define DEM_SETGRIDSIZE			DEM_BASE+22		' xySize:Integer,nColor:Integer
+#Define DEM_ADDCONTROL			DEM_BASE+23		' hTbx:HWND,lpCCDEF:CCDEF Ptr
+#Define DEM_GETCOLOR				DEM_BASE+24		' 0,lpRARESEDCOLOR:RARESEDCOLOR Ptr
+#Define DEM_SETCOLOR				DEM_BASE+25		' 0,lpRARESEDCOLOR:RARESEDCOLOR Ptr
+#Define DEM_SHOWDIALOG			DEM_BASE+26		' 0,0
+#Define DEM_SHOWTABINDEX		DEM_BASE+27		' 0,0
+#Define DEM_EXPORTDLG			DEM_BASE+28		' 0,lpszFileName:ZString Ptr
+#Define DEM_AUTOID				DEM_BASE+29		' 0,0
+#Define DEM_GETBUTTONSCOUNT	DEM_BASE+30		' 0,0
+#Define DEM_GETMEM				DEM_BASE+31		' nMem[DEWM_DIALOG,DEWM_MEMORY,DEWM_PROJECT,DEWM_READONLY,DEWM_SCROLLX,DEWM_SCROLLY],0
+#Define DEM_SHOWOUTPUT			DEM_BASE+32		' bShow[FALSE,TRUE],0
+#Define DEM_GETSIZE				DEM_BASE+33		' 0,lpWINSIZE:WINSIZE Ptr
+#Define DEM_SETSIZE				DEM_BASE+34		' 0,lpWINSIZE:WINSIZE Ptr
+#Define DEM_GETTEXTMODE			DEM_BASE+35		' 0,0
+#Define DEM_SETTEXTMODE			DEM_BASE+36		' bTextMode[FALSE,TRUE],0
+#Define DEM_CANREDO				DEM_BASE+37		' ,0,0|BOOLEAN
+#Define DEM_REDO					DEM_BASE+38		' 0,0
+#Define DEM_GETSHOWDIALOG		DEM_BASE+39		' 0,0
+#Define DEM_CLEARCUSTSTYLE		DEM_BASE+40		' 0,0
+#Define DEM_ADDCUSTSTYLE		DEM_BASE+41		' 0,lpCUSTSTYLE:CUSTSTYLE Ptr
+#Define DEM_GETOUTPUT			DEM_BASE+42		' 0,0
 
 ' DEM_ALIGNSIZE lParam
 #Define ALIGN_LEFT				1
@@ -177,37 +177,37 @@ End Type
 
 ' Menu editor messages
 #Define MEM_BASE					DEM_BASE+1000
-#Define MEM_OPEN					MEM_BASE+1		' wParam=0, lParam=Handle of memory or NULL
-#Define MEM_GETERR				MEM_BASE+2		' wParam=0, lParam=0
+#Define MEM_OPEN					MEM_BASE+1		' 0,hMem:HGLOBAL
+#Define MEM_GETERR				MEM_BASE+2		' 0,0
 
 ' Project messages
 #Define PRO_BASE					DEM_BASE+2000
-#Define PRO_OPEN					PRO_BASE+1		' wParam=Pointer to project name, lParam=Handle of memory or NULL
-#Define PRO_CLOSE					PRO_BASE+2		' wParam=0, lParam=0
-#Define PRO_EXPORT				PRO_BASE+3		' wParam=0, lParam=Handle of memory
-#Define PRO_GETMODIFY			PRO_BASE+4		' wParam=0, lParam=0
-#Define PRO_SETMODIFY			PRO_BASE+5		' wParam=TRUE or FALSE, lParam=0
-#Define PRO_GETSELECTED			PRO_BASE+6		' wParam=0, lParam=0
-#Define PRO_ADDITEM				PRO_BASE+7		' wParam=nType, lParam=fOpen
-#Define PRO_DELITEM				PRO_BASE+8		' wParam=0, lParam=0
-#Define PRO_CANUNDO				PRO_BASE+9		' wParam=0, lParam=0
-#Define PRO_UNDODELETED			PRO_BASE+10		' wParam=0, lParam=0
-#Define PRO_SETNAME				PRO_BASE+11		' wParam=lpszName, lParam=lpszPath
-#Define PRO_SHOWNAMES			PRO_BASE+12		' wParam=0, lParam=Handle output window
-#Define PRO_SETEXPORT			PRO_BASE+13		' wParam=nType, lParam=lpszDefaultFileName
-#Define PRO_EXPORTNAMES			PRO_BASE+14		' wParam=0, lParam=Handle output window
-#Define PRO_SETINITID			PRO_BASE+17		' wParam=0, lParam=lpINITID
-#Define PRO_GETMEM				PRO_BASE+18		' wParam=0, lParam=0
-#Define PRO_SETTEXTFONT			PRO_BASE+19		' wParam=hFont, lParam=0
-#Define PRO_GETTEXTFONT			PRO_BASE+20		' wParam=0, lParam=0
-#Define PRO_SETSYSTEMPATH		PRO_BASE+21		' wParam=0, lParam=lpPath
-#Define PRO_GETSYSTEMPATH		PRO_BASE+22		' wParam=0, lParam=0
-#Define PRO_SETCUSTOMTYPE		PRO_BASE+23		' wParam=index, lParam=lpRARSTYPE
-#Define PRO_GETCUSTOMTYPE		PRO_BASE+24		' wParam=index, lParam=lpRARSTYPE
-#Define PRO_SETDEFINE			PRO_BASE+25		' wPatam=0, lParam=lpszName
-#Define PRO_GETDIALOG			PRO_BASE+26		' wPatam=0, lParam=0
-#Define PRO_INCVERSION			PRO_BASE+27		' wPatam=0, lParam=0
-#Define PRO_SETHIGHLIGHT		PRO_BASE+28		' wPatam=0, lParam=0
+#Define PRO_OPEN					PRO_BASE+1		' lpszProjectFile:ZStringPtr,hMem:HGLOBAL
+#Define PRO_CLOSE					PRO_BASE+2		' 0,0
+#Define PRO_EXPORT				PRO_BASE+3		' 0,hMem:HGLOBAL
+#Define PRO_GETMODIFY			PRO_BASE+4		' 0,0|BOOLEAN
+#Define PRO_SETMODIFY			PRO_BASE+5		' bModify[FALSE,TRUE],0
+#Define PRO_GETSELECTED			PRO_BASE+6		' 0,0|Integer
+#Define PRO_ADDITEM				PRO_BASE+7		' nType[TPE_ACCEL,TPE_DIALOG,TPE_INCLUDE,TPE_LANGUAGE,TPE_MENU,TPE_NAME,TPE_RCDATA,TPE_RESOURCE,TPE_STRING,TPE_TOOLBAR,TPE_VERSION,TPE_XPMANIFEST],bOpen[FALSE,TRUE]
+#Define PRO_DELITEM				PRO_BASE+8		' 0,0
+#Define PRO_CANUNDO				PRO_BASE+9		' 0,0
+#Define PRO_UNDODELETED			PRO_BASE+10		' 0,0
+#Define PRO_SETNAME				PRO_BASE+11		' lpszName:ZString Ptr,lpszPath:ZString Ptr
+#Define PRO_SHOWNAMES			PRO_BASE+12		' 0,hOut:HWND
+#Define PRO_SETEXPORT			PRO_BASE+13		' nType:Integer,lpszDefaultFileName:ZString Ptr
+#Define PRO_EXPORTNAMES			PRO_BASE+14		' 0,hOut:HWND
+#Define PRO_SETINITID			PRO_BASE+17		' 0,lpINITID:INITID Ptr
+#Define PRO_GETMEM				PRO_BASE+18		' 0,0|HGLOBAL
+#Define PRO_SETTEXTFONT			PRO_BASE+19		' hFont:HFONT,0
+#Define PRO_GETTEXTFONT			PRO_BASE+20		' 0,0|HFONT
+#Define PRO_SETSYSTEMPATH		PRO_BASE+21		' 0,lpszPath:ZString Ptr
+#Define PRO_GETSYSTEMPATH		PRO_BASE+22		' 0,0|ZString Ptr
+#Define PRO_SETCUSTOMTYPE		PRO_BASE+23		' nIndex:Integer,lpRARSTYPE:RARSTYPE Ptr
+#Define PRO_GETCUSTOMTYPE		PRO_BASE+24		' nIndex:Integer,lpRARSTYPE:RARSTYPE Ptr
+#Define PRO_SETDEFINE			PRO_BASE+25		' 0,lpszName:ZString Ptr
+#Define PRO_GETDIALOG			PRO_BASE+26		' 0,0
+#Define PRO_INCVERSION			PRO_BASE+27		' 0,0
+#Define PRO_SETHIGHLIGHT		PRO_BASE+28		' nColorStyles:Integer,nColorWords:Integer
 
 ' Project item types
 #Define TPE_NAME					1

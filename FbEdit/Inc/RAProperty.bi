@@ -1,52 +1,52 @@
 
 ' Messages
-#Define PRM_SELECTPROPERTY				WM_USER+0		' wParam=dwType, lParam=0
-#Define PRM_ADDPROPERTYTYPE			WM_USER+1		' wParam=dwType, lParam=lpszType
-#Define PRM_ADDPROPERTYFILE			WM_USER+2		' wParam=dwType, lParam=lpszFile
-#Define PRM_SETGENDEF					WM_USER+3		' wParam=0, lParam=lpGENDEF
-#Define PRM_ADDIGNORE					WM_USER+4		' wParam=IgnoreType, lParam=lpszWord
-#Define PRM_ADDDEFTYPE					WM_USER+5		' wParam=0, lParam=lpDEFTYPE
-#Define PRM_PARSEFILE					WM_USER+6		' wParam=Owner, lParam=lpFileData
-#Define PRM_SETCHARTAB					WM_USER+7		' wParam=0, lParam=lpCharTab
-#Define PRM_DELPROPERTY					WM_USER+8		' wParam=nOwner (0=All), lParam=0
-#Define PRM_REFRESHLIST					WM_USER+9		' wParam=0, lParam=0
-#Define PRM_SELOWNER						WM_USER+10		' wParam=nOwner, lParam=0
-#Define PRM_GETSELBUTTON				WM_USER+11		' wParam=0, lParam=0
-#Define PRM_SETSELBUTTON				WM_USER+12		' wParam=nButton, lParam=0
-#Define PRM_FINDFIRST					WM_USER+13		' wParam=lpszTypes, lParam=lpszText
-#Define PRM_FINDNEXT						WM_USER+14		' wParam=0, lParam=0
-#Define PRM_FINDGETTYPE					WM_USER+15		' wParam=0, lParam=0
-#Define PRM_GETWORD						WM_USER+16		' wParam=pos, lParam=lpszLine
-#Define PRM_GETTOOLTIP					WM_USER+17		' wParam=0, lParam=lpTOOLTIP
-#Define PRM_SETBACKCOLOR				WM_USER+18		' wParam=0, lParam=nColor
-#Define PRM_GETBACKCOLOR				WM_USER+19		' wParam=0, lParam=0
-#Define PRM_SETTEXTCOLOR				WM_USER+20		' wParam=0, lParam=nColor
-#Define PRM_GETTEXTCOLOR				WM_USER+21		' wParam=0, lParam=0
-#Define PRM_ISINPROC						WM_USER+22		' wParam=0, lParam=lpISINPROC
-#Define PRM_GETSTRUCTWORD				WM_USER+23		' wParam=pos, lParam=lpszLine
-#Define PRM_FINDITEMDATATYPE			WM_USER+24		' wParam=lpszItemName, lParam=lpszItemList
-#Define PRM_MEMSEARCH					WM_USER+25		' wParam=0, lParam=lpMEMSEARCH
-#Define PRM_FINDGETOWNER				WM_USER+26		' wParam=0, lParam=0
-#Define PRM_FINDGETLINE					WM_USER+27		' wParam=0, lParam=0
-#Define PRM_ISINWITHBLOCK				WM_USER+28		' wParam=nOwner, lParam=nLine
-#Define PRM_FINDGETENDLINE				WM_USER+29		' wParam=0, lParam=0
-#Define PRM_ADDISWORD					WM_USER+30		' wParam=nType, lParam=lpszWord
-#Define PRM_SETOPRCOLOR					WM_USER+31		' wParam=0, lParam=nColor
-#Define PRM_GETOPRCOLOR					WM_USER+32		' wParam=0, lParam=0
-#Define PRM_CLEARWORDLIST				WM_USER+33		' wParam=0, lParam=0
-#Define PRM_GETSTRUCTSTART				WM_USER+34		' wParam=pos, lParam=lpszLine
-#Define PRM_GETCURSEL					WM_USER+35		' wParam=0, lParam=0
-#Define PRM_GETSELTEXT					WM_USER+36		' wParam=0, lParam=lpBuff
-#Define PRM_GETSORTEDLIST				WM_USER+37		' wParam=lpTypes, lParam=lpCount
-#Define PRM_FINDINSORTEDLIST			WM_USER+38		' wParam=nCount, lParam=lpMEMSEARCH
-#Define PRM_ISTOOLTIPMESSAGE			WM_USER+39		' wParam=lpMESSAGE, lParam=lpTOOLTIP
-#Define PRM_SETLANGUAGE					WM_USER+40		' wParam=nLanguage, lParam=0
-#Define PRM_SETTOOLTIP					WM_USER+41		' wParam=n (1-5), lParam=lpszText
-#Define PRM_PREPARSE						WM_USER+42		' wParam=fKeepStrings, lParam=lpFileData
-#Define PRM_ISINLIST						WM_USER+43		' wParam=lpWord, lParam=lpList
-#Define PRM_ADDPROPERTYWORD			WM_USER+44		' wParam=dwType, lParam=lpszWord
-#Define PRM_ADDPROPERTYLIST			WM_USER+45		' wParam=dwType, lParam=lpszListOfWords
-#Define PRM_COMPACTLIST					WM_USER+46		' wParam=fProject, lParam=0
+#Define PRM_SELECTPROPERTY				WM_USER+0		' nType:Integer,0
+#Define PRM_ADDPROPERTYTYPE			WM_USER+1		' dwType:Integer,pszType:ZString Ptr
+#Define PRM_ADDPROPERTYFILE			WM_USER+2		' dwType:Integer,pszFile:ZString Ptr
+#Define PRM_SETGENDEF					WM_USER+3		' 0,pGENDEF:GENDEF Ptr
+#Define PRM_ADDIGNORE					WM_USER+4		' nIgnoreType:RAP_IGNORE,pszWord:ZString Ptr
+#Define PRM_ADDDEFTYPE					WM_USER+5		' 0,pDEFTYPE:DEFTYPE Ptr
+#Define PRM_PARSEFILE					WM_USER+6		' nOwner:Integer,pFileData:HGLOBAL
+#Define PRM_SETCHARTAB					WM_USER+7		' 0,pCharTab:Any Ptr
+#Define PRM_DELPROPERTY					WM_USER+8		' nOwner:Integer,0
+#Define PRM_REFRESHLIST					WM_USER+9		' 0,0
+#Define PRM_SELOWNER						WM_USER+10		' nOwner:Integer,0
+#Define PRM_GETSELBUTTON				WM_USER+11		' 0,0
+#Define PRM_SETSELBUTTON				WM_USER+12		' nButton:Integer,0
+#Define PRM_FINDFIRST					WM_USER+13		' pszTypes:ZString Ptr,pszText:ZString Ptr
+#Define PRM_FINDNEXT						WM_USER+14		' 0,0
+#Define PRM_FINDGETTYPE					WM_USER+15		' 0,0
+#Define PRM_GETWORD						WM_USER+16		' nPos:Integer,pszLine:ZString Ptr
+#Define PRM_GETTOOLTIP					WM_USER+17		' 0,pTOOLTIP:TOOLTIP Ptr
+#Define PRM_SETBACKCOLOR				WM_USER+18		' 0,nColor:Integer
+#Define PRM_GETBACKCOLOR				WM_USER+19		' 0,0
+#Define PRM_SETTEXTCOLOR				WM_USER+20		' 0,nColor:Integer
+#Define PRM_GETTEXTCOLOR				WM_USER+21		' 0,0
+#Define PRM_ISINPROC						WM_USER+22		' 0,pISINPROC:ISINPROC Ptr
+#Define PRM_GETSTRUCTWORD				WM_USER+23		' nPos:Integer,pszLine:ZString Ptr
+#Define PRM_FINDITEMDATATYPE			WM_USER+24		' pszItemName:ZString Ptr,pszItemList:ZString Ptr
+#Define PRM_MEMSEARCH					WM_USER+25		' 0,pMEMSEARCH:MEMSEARCH Ptr
+#Define PRM_FINDGETOWNER				WM_USER+26		' 0,0
+#Define PRM_FINDGETLINE					WM_USER+27		' 0,0
+#Define PRM_ISINWITHBLOCK				WM_USER+28		' nOwner:Integer,nLine:Integer
+#Define PRM_FINDGETENDLINE				WM_USER+29		' 0,0
+#Define PRM_ADDISWORD					WM_USER+30		' nType:Integer,pszWord:ZString Ptr
+#Define PRM_SETOPRCOLOR					WM_USER+31		' 0,nColor:Integer
+#Define PRM_GETOPRCOLOR					WM_USER+32		' 0,0
+#Define PRM_CLEARWORDLIST				WM_USER+33		' 0,0
+#Define PRM_GETSTRUCTSTART				WM_USER+34		' nPos:Integer,pszLine:ZString Ptr
+#Define PRM_GETCURSEL					WM_USER+35		' 0,0
+#Define PRM_GETSELTEXT					WM_USER+36		' 0,pBuff:ZString Ptr
+#Define PRM_GETSORTEDLIST				WM_USER+37		' pszTypes:ZString Ptr,pCount:Integer Ptr
+#Define PRM_FINDINSORTEDLIST			WM_USER+38		' nCount:Integer,pMEMSEARCH:MEMSEARCH Ptr
+#Define PRM_ISTOOLTIPMESSAGE			WM_USER+39		' pMESSAGE:MESSAGE Ptr,pTOOLTIP:TOOLTIP Ptr
+#Define PRM_SETLANGUAGE					WM_USER+40		' nLanguage:RAP_LANGUAGE,0
+#Define PRM_SETTOOLTIP					WM_USER+41		' n:Integer,pszText:ZString Ptr
+#Define PRM_PREPARSE						WM_USER+42		' bKeepStrings:RAP_BOOL,pFileData:HGLOBAL
+#Define PRM_ISINLIST						WM_USER+43		' dwType:Integer,pWord:ZString Ptr
+#Define PRM_ADDPROPERTYWORD			WM_USER+44		' dwType:Integer,pszWord:ZString Ptr
+#Define PRM_ADDPROPERTYLIST			WM_USER+45		' dwType:Integer,pszListOfWords:ZString Ptr
+#Define PRM_COMPACTLIST					WM_USER+46		' bProject:RAP_BOOL,0
 
 ' Languages
 #Define nFREEBASIC						0

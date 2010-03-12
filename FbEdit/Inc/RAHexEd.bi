@@ -15,23 +15,23 @@
 #Define HEM_BASE					WM_USER+1000
 
 ' Private messages
-#Define HEM_SETFONT				HEM_BASE+1		' wParam=nLineSpacing, lParam=lpHEFONT
-#Define HEM_GETFONT				HEM_BASE+2		' wParam=0, lParam=lpHEFONT
-#Define HEM_SETCOLOR				HEM_BASE+3		' wParam=0, lParam=lpHECOLOR
-#Define HEM_GETCOLOR				HEM_BASE+4		' wParam=0, lParam=lpHECOLOR
-#Define HEM_VCENTER				HEM_BASE+5		' wParam=0, lParam=0
-#Define HEM_REPAINT				HEM_BASE+6		' wParam=0, lParam=0
-#Define HEM_ANYBOOKMARKS		HEM_BASE+7		' wParam=0, lParam=0
-#Define HEM_TOGGLEBOOKMARK		HEM_BASE+8		' wParam=nLine, lParam=0
-#Define HEM_CLEARBOOKMARKS		HEM_BASE+9		' wParam=0, lParam=0
-#Define HEM_NEXTBOOKMARK		HEM_BASE+10		' wParam=0, lParam=0
-#Define HEM_PREVIOUSBOOKMARK	HEM_BASE+11		' wParam=0, lParam=0
-#Define HEM_SELBARWIDTH			HEM_BASE+12		' wParam=nWidth, lParam=0
-#Define HEM_LINENUMBERWIDTH	HEM_BASE+13		' wParam=nWidth, lParam=0
-#Define HEM_SETSPLIT				HEM_BASE+14		' wParam=nSplitt, lParam=0
-#Define HEM_GETSPLIT				HEM_BASE+15		' wParam=0, lParam=0
-#Define HEM_GETBYTE				HEM_BASE+16		' wParam=cp, lParam=0
-#Define HEM_SETBYTE				HEM_BASE+16		' wParam=cp, lParam=ByteVal
+#Define HEM_SETFONT				HEM_BASE+1		' 0,lpHEFONT:HEFONT Ptr
+#Define HEM_GETFONT				HEM_BASE+2		' 0,lpHEFONT:HEFONT Ptr
+#Define HEM_SETCOLOR				HEM_BASE+3		' 0,lpHECOLOR:HECOLOR Ptr
+#Define HEM_GETCOLOR				HEM_BASE+4		' 0,lpHECOLOR:HECOLOR Ptr
+#Define HEM_VCENTER				HEM_BASE+5		' 0,0
+#Define HEM_REPAINT				HEM_BASE+6		' 0,0
+#Define HEM_ANYBOOKMARKS		HEM_BASE+7		' 0,0
+#Define HEM_TOGGLEBOOKMARK		HEM_BASE+8		' nLine:Integer,0
+#Define HEM_CLEARBOOKMARKS		HEM_BASE+9		' 0,0
+#Define HEM_NEXTBOOKMARK		HEM_BASE+10		' 0,0
+#Define HEM_PREVIOUSBOOKMARK	HEM_BASE+11		' 0,0
+#Define HEM_SELBARWIDTH			HEM_BASE+12		' nWidth:Integer,0
+#Define HEM_LINENUMBERWIDTH	HEM_BASE+13		' nWidth:Integer,0
+#Define HEM_SETSPLIT				HEM_BASE+14		' nSplit:Integer,0
+#Define HEM_GETSPLIT				HEM_BASE+15		' 0,0|Integer
+#Define HEM_GETBYTE				HEM_BASE+16		' cp:Integer,0
+#Define HEM_SETBYTE				HEM_BASE+16		' cp:Integer,nByteVal:Integer
 
 #Define FR_HEX						2
 

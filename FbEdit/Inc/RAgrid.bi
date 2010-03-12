@@ -12,51 +12,51 @@
 #Define GN_EDITCHANGE		12				'Sendt when user types text in the edit control.
 
 'Messages
-#Define GM_ADDCOL				WM_USER+1	'wParam=0, lParam=lpCOLUMN
-#Define GM_ADDROW				WM_USER+2	'wParam=0, lParam=lpROWDATA (can be NULL)
-#Define GM_INSROW				WM_USER+3	'wParam=nRow, lParam=lpROWDATA (can be NULL)
-#Define GM_DELROW				WM_USER+4	'wParam=nRow, lParam=0
-#Define GM_MOVEROW			WM_USER+5	'wParam=nFromRow, lParam=nToRow
-#Define GM_COMBOADDSTRING	WM_USER+6	'wParam=nCol, lParam=lpszString
-#Define GM_COMBOCLEAR		WM_USER+7	'wParam=nCol, lParam=0
-#Define GM_GETCURSEL			WM_USER+8	'wParam=0, lParam=0
-#Define GM_SETCURSEL			WM_USER+9	'wParam=nCol, lParam=nRow
-#Define GM_GETCURCOL			WM_USER+10	'wParam=0, lParam=0
-#Define GM_SETCURCOL			WM_USER+11	'wParam=nCol, lParam=0
-#Define GM_GETCURROW			WM_USER+12	'wParam=0, lParam=0
-#Define GM_SETCURROW			WM_USER+13	'wParam=nRow, lParam=0
-#Define GM_GETCOLCOUNT		WM_USER+14	'wParam=0, lParam=0
-#Define GM_GETROWCOUNT		WM_USER+15	'wParam=0, lParam=0
-#Define GM_GETCELLDATA		WM_USER+16	'wParam=nRowCol, lParam=lpData
-#Define GM_SETCELLDATA		WM_USER+17	'wParam=nRowCol, lParam=lpData
-#Define GM_GETCELLRECT		WM_USER+18	'wParam=nRowCol, lParam=lpRECT
-#Define GM_SCROLLCELL		WM_USER+19	'wParam=0, lParam=0
-#Define GM_GETBACKCOLOR		WM_USER+20	'wParam=0, lParam=0
-#Define GM_SETBACKCOLOR		WM_USER+21	'wParam=nColor, lParam=0
-#Define GM_GETGRIDCOLOR		WM_USER+22	'wParam=0, lParam=0
-#Define GM_SETGRIDCOLOR		WM_USER+23	'wParam=nColor, lParam=0
-#Define GM_GETTEXTCOLOR		WM_USER+24	'wParam=0, lParam=0
-#Define GM_SETTEXTCOLOR		WM_USER+25	'wParam=nColor, lParam=0
-#Define GM_ENTEREDIT			WM_USER+26	'wParam=nCol, lParam=nRow
-#Define GM_ENDEDIT			WM_USER+27	'wParam=nRowCol, lParam=fCancel
-#Define GM_GETCOLWIDTH		WM_USER+28	'wParam=nCol, lParam=0
-#Define GM_SETCOLWIDTH		WM_USER+29	'wParam=nCol, lParam=nWidth
-#Define GM_GETHDRHEIGHT		WM_USER+30	'wParam=0, lParam=0
-#Define GM_SETHDRHEIGHT		WM_USER+31	'wParam=0, lParam=nHeight
-#Define GM_GETROWHEIGHT		WM_USER+32	'wParam=0, lParam=0
-#Define GM_SETROWHEIGHT		WM_USER+33	'wParam=0, lParam=nHeight
-#Define GM_RESETCONTENT		WM_USER+34	'wParam=0, lParam=0
-#Define GM_COLUMNSORT		WM_USER+35	'wParam=nCol, lParam=0=Ascending, 1=Descending, 2=Invert
-#Define GM_GETHDRTEXT		WM_USER+36	'wParam=nCol, lParam=lpBuffer
-#Define GM_SETHDRTEXT		WM_USER+37	'wParam=nCol, lParam=lpszText
-#Define GM_GETCOLFORMAT		WM_USER+38	'wParam=nCol, lParam=lpBuffer
-#Define GM_SETCOLFORMAT		WM_USER+39	'wParam=nCol, lParam=lpszText
-#Define GM_CELLCONVERT		WM_USER+40	'wParam=nRowCol, lParam=lpBuffer
-#Define GM_RESETCOLUMNS		WM_USER+41	'wParam=0, lParam=0
-#Define GM_GETROWCOLOR		WM_USER+42	'wParam=nRow, lParam=lpROWCOLOR
-#Define GM_SETROWCOLOR		WM_USER+43	'wParam=nRow, lParam=lpROWCOLOR
-#Define GM_GETCOLDATA		WM_USER+44	'wParam=nCol, lParam=lpCOLUMN
-#Define GM_COMBOFINDSTRING	WM_USER+45	'wParam=nCol, lParam=lpszString
+#Define GM_ADDCOL				WM_USER+1	'0,lpCOLUMN:COLUMN Ptr
+#Define GM_ADDROW				WM_USER+2	'0,lpROWDATA:Any Ptr
+#Define GM_INSROW				WM_USER+3	'nRow:Integer,lpROWDATA:Any Ptr
+#Define GM_DELROW				WM_USER+4	'nRow:Integer,0
+#Define GM_MOVEROW			WM_USER+5	'nFromRow:Integer,nToRow:Integer
+#Define GM_COMBOADDSTRING	WM_USER+6	'nCol:Integer,lpszString:ZString Ptr
+#Define GM_COMBOCLEAR		WM_USER+7	'nCol:Integer,0
+#Define GM_GETCURSEL			WM_USER+8	'0,0|Integer
+#Define GM_SETCURSEL			WM_USER+9	'nCol:Integer,nRow:Integer
+#Define GM_GETCURCOL			WM_USER+10	'0,0|Integer
+#Define GM_SETCURCOL			WM_USER+11	'nCol:Integer,0
+#Define GM_GETCURROW			WM_USER+12	'0,0|Integer
+#Define GM_SETCURROW			WM_USER+13	'nRow:Integer,0
+#Define GM_GETCOLCOUNT		WM_USER+14	'0,0
+#Define GM_GETROWCOUNT		WM_USER+15	'0,0|Integer
+#Define GM_GETCELLDATA		WM_USER+16	'nRowCol:Integer,lpData:Any Ptr
+#Define GM_SETCELLDATA		WM_USER+17	'nRowCol:Integer,lpData:Any Ptr
+#Define GM_GETCELLRECT		WM_USER+18	'nRowCol:Integer,lpRECT:RECT Ptr
+#Define GM_SCROLLCELL		WM_USER+19	'0,0
+#Define GM_GETBACKCOLOR		WM_USER+20	'0,0
+#Define GM_SETBACKCOLOR		WM_USER+21	'nColor:Integer,0
+#Define GM_GETGRIDCOLOR		WM_USER+22	'0,0|Integer
+#Define GM_SETGRIDCOLOR		WM_USER+23	'nColor:Integer,0
+#Define GM_GETTEXTCOLOR		WM_USER+24	'0,0|Integer
+#Define GM_SETTEXTCOLOR		WM_USER+25	'nColor:Integer,0
+#Define GM_ENTEREDIT			WM_USER+26	'nCol:Integer,nRow:Integer
+#Define GM_ENDEDIT			WM_USER+27	'nRowCol:Integer,bCancel[FALSE,TRUE]
+#Define GM_GETCOLWIDTH		WM_USER+28	'nCol:Integer,0|Integer
+#Define GM_SETCOLWIDTH		WM_USER+29	'nCol:Integer,nWidth:Integer
+#Define GM_GETHDRHEIGHT		WM_USER+30	'0,0|Integer
+#Define GM_SETHDRHEIGHT		WM_USER+31	'0,nHeight:Integer
+#Define GM_GETROWHEIGHT		WM_USER+32	'nRow:Integer,0|Integer
+#Define GM_SETROWHEIGHT		WM_USER+33	'0,nHeight:Integer
+#Define GM_RESETCONTENT		WM_USER+34	'0,0
+#Define GM_COLUMNSORT		WM_USER+35	'nCol:Integer,nSort[SORT_ASCENDING,SORT_DESCENDING,SORT_INVERT]
+#Define GM_GETHDRTEXT		WM_USER+36	'nCol:Integer,lpBuffer:ZString Ptr
+#Define GM_SETHDRTEXT		WM_USER+37	'nCol:Integer,lpszText:ZString Ptr
+#Define GM_GETCOLFORMAT		WM_USER+38	'nCol:Integer,lpBuffer:ZString Ptr
+#Define GM_SETCOLFORMAT		WM_USER+39	'nCol:Integer,lpszText:ZString Ptr
+#Define GM_CELLCONVERT		WM_USER+40	'nRowCol:Integer,lpszBuffer:ZString Ptr
+#Define GM_RESETCOLUMNS		WM_USER+41	'0,0
+#Define GM_GETROWCOLOR		WM_USER+42	'nRow:Integer,lpROWCOLOR:ROWCOLOR Ptr
+#Define GM_SETROWCOLOR		WM_USER+43	'nRow:Integer,lpROWCOLOR:ROWCOLOR Ptr
+#Define GM_GETCOLDATA		WM_USER+44	'nCol:Integer,lpCOLUMN:COLUMN Ptr
+#Define GM_COMBOFINDSTRING	WM_USER+45	'nCol:Integer,lpszString:ZString Ptr
 
 'Column alignment
 #Define GA_ALIGN_LEFT		0
