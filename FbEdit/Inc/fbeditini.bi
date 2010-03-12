@@ -139,16 +139,16 @@ Const szSecOpen=			!"[Open]\13\10"_
 								!"1=.bmp.,mspaint.exe\13\10"_
 								!"2=.doc.rtf.,wordpad.exe\13\10"
 Const szSecApi=			!"[Api]\13\10"_
-								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets),fmod (fmod Sound),rae (RAEdit),rap (RAProperty),racc (RACodeComplete),raf (RAFile),rah (RAHexEd),rag (RAGrid),rar (RAResEd)\13\10"_
+								!"Api=fb (FreeBASIC),gdip (Gdi+),ogl (OpenGL),sv (Showvars),win (Windows),wx (wx Widgets),fmod (fmod Sound),rae (RAEdit),rap (RAProperty),racc (RACodeComplete),raf (RAFile),rah (RAHexEd),rag (RAGrid),rar (RAResEd),spr (SpreadSheet)\13\10"_
 								!"DefApi=fb (FreeBASIC)\13\10"_
 								!"Call=fbCall.api,gdipCall.api,oglCall.api,winCall.api,wxCall.api,svCall.api,fmodCall.api\13\10"_
-								!"Const=fbConst.api,oglConst.api,winConst.api,svConst.api,raeConst.api,rapConst.api,raccConst.api,rafConst.api,rahConst.api,ragConst.api,rarConst.api\13\10"_
-								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api,fmodStruct.api,raeStruct.api,rapStruct.api,raccStruct.api,rafStruct.api,rahStruct.api,ragStruct.api,rarStruct.api\13\10"_
-								!"Word=fbWord.api,winWord.api,fmodWord.api,raeWord.api,rapWord.api,raccWord.api,rafWord.api,rahWord.api,ragWord.api,rarWord.api\13\10"_
+								!"Const=fbConst.api,oglConst.api,winConst.api,svConst.api,raeConst.api,rapConst.api,raccConst.api,rafConst.api,rahConst.api,ragConst.api,rarConst.api,sprConst.api\13\10"_
+								!"Struct=fbStruct.api,gdipStruct.api,winStruct.api,fmodStruct.api,raeStruct.api,rapStruct.api,raccStruct.api,rafStruct.api,rahStruct.api,ragStruct.api,rarStruct.api,sprStruct.api\13\10"_
+								!"Word=fbWord.api,winWord.api,fmodWord.api,raeWord.api,rapWord.api,raccWord.api,rafWord.api,rahWord.api,ragWord.api,rarWord.api,sprWord.api\13\10"_
 								!"Type=fbType.api,oglType.api,winType.api\13\10"_
 								!"Case=fbCase.api\13\10"_
 								!"Desc=fbDesc.api,winDesc.api\13\10"_
-								!"Msg=winMsg.api,raeMsg.api,rapMsg.api,raccMsg.api,rafMsg.api,rahMsg.api,ragMsg.api,rarMsg.api\13\10"_
+								!"Msg=winMsg.api,raeMsg.api,rapMsg.api,raccMsg.api,rafMsg.api,rahMsg.api,ragMsg.api,rarMsg.api,sprMsg.api\13\10"_
 								!"Enum=fmodEnum.api,raeEnum.api,rapEnum.api\13\10"
 Const szSecDebug=			!"[Debug]\13\10"_
 								!"Debug=$A\\FBdebugger\\FBdebugger.exe\13\10"
@@ -357,7 +357,7 @@ Sub CheckIniFile()
 			ElseIf lret<1076 Then
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Api"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmod (fmod Sound),rae (RAEdit),rap (RAProperty),racc (RACodeComplete),raf (RAFile),rah (RAHexEd),rag (RAGrid),rar (RAResEd)"
+				buff &="fmod (fmod Sound),rae (RAEdit),rap (RAProperty),racc (RACodeComplete),raf (RAFile),rah (RAHexEd),rag (RAGrid),rar (RAResEd),spr (SpreadSheet)"
 				WritePrivateProfileString("Api","Api",@buff,@ad.IniFile)
 				' xxxCall.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Call"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
@@ -367,17 +367,17 @@ Sub CheckIniFile()
 				' xxxConst.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Const"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="raeConst.api,rapConst.api,raccConst.api,rafConst.api,rahConst.api,ragConst.api,rarConst.api"
+				buff &="raeConst.api,rapConst.api,raccConst.api,rafConst.api,rahConst.api,ragConst.api,rarConst.api,sprConst.api"
 				WritePrivateProfileString("Api","Const",@buff,@ad.IniFile)
 				' xxxStruct.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Struct"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmodStruct.api,raeStruct.api,rapStruct.api,raccStruct.api,rafStruct.api,rahStruct.api,ragStruct.api,rarStruct.api"
+				buff &="fmodStruct.api,raeStruct.api,rapStruct.api,raccStruct.api,rafStruct.api,rahStruct.api,ragStruct.api,rarStruct.api,sprStruct.api"
 				WritePrivateProfileString("Api","Struct",@buff,@ad.IniFile)
 				' xxxWord.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Word"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="fmodWord.api,raeWord.api,rapWord.api,raccWord.api,rafWord.api,rahWord.api,ragWord.api,rarWord.api"
+				buff &="fmodWord.api,raeWord.api,rapWord.api,raccWord.api,rafWord.api,rahWord.api,ragWord.api,rarWord.api,sprWord.api"
 				WritePrivateProfileString("Api","Word",@buff,@ad.IniFile)
 				' xxxEnum.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Enum"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
@@ -387,7 +387,7 @@ Sub CheckIniFile()
 				' xxxMsg.api
 				GetPrivateProfileString(StrPtr("Api"),StrPtr("Msg"),@szNULL,@buff,SizeOf(buff),@ad.IniFile)
 				If Len(buff) Then buff &=","
-				buff &="raeMsg.api,rapMsg.api,raccMsg.api,rafMsg.api,rahMsg.api,ragMsg.api,rarMsg.api"
+				buff &="raeMsg.api,rapMsg.api,raccMsg.api,rafMsg.api,rahMsg.api,ragMsg.api,rarMsg.api,sprMsg.api"
 				WritePrivateProfileString("Api","Msg",@buff,@ad.IniFile)
 				' Add Api File Creator to tools menu
 				lret=1

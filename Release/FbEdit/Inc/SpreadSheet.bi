@@ -1,123 +1,178 @@
 'Messages
-Const SPRM_SPLITTHOR				= WM_USER+100		'Create horizontal splitt in current splitt at current row. wParam=0, lParam=0
-Const SPRM_SPLITTVER				= WM_USER+101		'Create vertical splitt in current splitt at current col. wParam=0, lParam=0
-Const SPRM_SPLITTCLOSE			= WM_USER+102		'Close the current splitt. wParam=0, lParam=0
-Const SPRM_SPLITTSYNC			= WM_USER+103		'Syncronizez a splitt window witit's parent. wParam=0, lParam=TRUE/FALSE
-Const SPRM_GETSPLITTSTATE		= WM_USER+104		'*Get splitt state. wParam=nWin(0-7), if nWin=-1 active split window, lParam=0
-Const SPRM_GETCELLRECT			= WM_USER+105		'Get the current cells rect in active splitt. wParam=0, lParam=pointer to RECT struct. Returns handle of active splitt window.
-Const SPRM_GETLOCKCOL			= WM_USER+106		'Get lock cols in active splitt. wParam=0, lParam=0
-Const SPRM_SETLOCKCOL			= WM_USER+107		'Lock cols in active splitt. wParam=0, lParam=cols
-Const SPRM_GETLOCKROW			= WM_USER+108		'Get lock rows in active splitt. wParam=0, lParam=0
-Const SPRM_SETLOCKROW			= WM_USER+109		'Lock rows in active splitt. wParam=0, lParam=rows
-Const SPRM_DELETECOL				= WM_USER+110		'Delete col. wParam=col, lParam=0
-Const SPRM_INSERTCOL				= WM_USER+111		'Insert col. wParam=col, lParam=0
-Const SPRM_DELETEROW				= WM_USER+112		'Delete row. wParam=row, lParam=0
-Const SPRM_INSERTROW				= WM_USER+113		'Insert row. wParam=row, lParam=0
-Const SPRM_GETCOLCOUNT			= WM_USER+114		'Get number of columns. wParam=0, lParam=0
-Const SPRM_SETCOLCOUNT			= WM_USER+115		'Set number of columns. wParam=nCols, lParam=0
-Const SPRM_GETROWCOUNT			= WM_USER+116		'Get number of rows. wParam=0, lParam=0
-Const SPRM_SETROWCOUNT			= WM_USER+117		'Set number of rows. wParam=nRows, lParam=0
-Const SPRM_RECALC					= WM_USER+118		'Recalculates the sheet
-Const SPRM_BLANKCELL				= WM_USER+119		'Blank a cell. wParam=col, lParam=row
-Const SPRM_GETCURRENTWIN		= WM_USER+120		'Get active splitt window. wParam=0, lParam=0
-Const SPRM_SETCURRENTWIN		= WM_USER+121		'Set active splitt window. wParam=0, lParam=nWin (0-7)
-Const SPRM_GETCURRENTCELL		= WM_USER+122		'Get current col/row in active window. wParam=0, lParam=0. Returns Hiword=row, Loword=col
-Const SPRM_SETCURRENTCELL		= WM_USER+123		'Set current col/row in active window. wParam=col, lParam=row
-Const SPRM_GETCELLSTRING		= WM_USER+124		'*Get content of current cell. wParam=0, lParam=0. Returns a pointer to a null terminated string.
-Const SPRM_SETCELLSTRING		= WM_USER+125		'Set content of current cell. wParam=type, lParam=pointer to string.
-Const SPRM_GETCOLWIDT		  	= WM_USER+126		'Get column width. wParam=col, lParam=0. Returns column width.
-Const SPRM_SETCOLWIDT		  	= WM_USER+127		'Set column width. wParam=col, lParam=width.
-Const SPRM_GETROWHEIGHT		  	= WM_USER+128		'Get row height. wParam=row, lParam=0. Returns row height.
-Const SPRM_SETROWHEIGHT		  	= WM_USER+129		'Set row height. wParam=row, lParam=height.
-Const SPRM_GETCELLDATA			= WM_USER+130		'Get cell data. wParam=0, lParam=Pointer to SPR_ITEM struct
-Const SPRM_SETCELLDATA			= WM_USER+131		'Set cell data. wParam=0, lParam=Pointer to SPR_ITEM struct
-Const SPRM_GETMULTISEL			= WM_USER+132		'Get multiselection. wParam=0, lParam=pointer to a RECT struct. Returns handle of active split window
-Const SPRM_SETMULTISEL			= WM_USER+133		'Set multiselection. wParam=0, lParam=pointer to a RECT struct. Returns handle of active split window
-Const SPRM_GETFONT				= WM_USER+134		'Get font. wParam=index(0-15), lParam=pointer to FONT struct. Returns font handle
-Const SPRM_SETFONT				= WM_USER+135		'Set font. wParam=index(0-15), lParam=pointer to FONT struct. Returns font handle
-Const SPRM_GETGLOBAL				= WM_USER+136		'Get global. wParam=0, lParam=pointer to GLOBAL struct.
-Const SPRM_SETGLOBAL				= WM_USER+137		'Set global. wParam=0, lParam=pointer to GLOBAL struct.
-Const SPRM_IMPORTLINE			= WM_USER+138		'Import a line of data. wParam=SepChar, lParam=pointer to data line.
-Const SPRM_LOADFILE				= WM_USER+139		'Load a file. wParam=0, lParam=pointer to filename
-Const SPRM_SAVEFILE				= WM_USER+140		'Save a file. wParam=0, lParam=pointer to filename
-Const SPRM_NEWSHEET			  	= WM_USER+141		'Clears the sheet. wParam=0, lParam=0
-Const SPRM_EXPANDCELL			= WM_USER+142		'Expand a cell to cover more than one cell. wParam=0, lParam=pointer to RECT struct
-Const SPRM_GETCELLTYPE			= WM_USER+143		'Get cell data type. wParam=col, lParam=row. Returns cell type.
-Const SPRM_ADJUSTCELLREF		= WM_USER+144		'Adjust cell refs in formula. wParam=pointer to cell, lParam=pointer to RECT.
-Const SPRM_CREATECOMBO			= WM_USER+145		'Creates a ComboBox. wPatam=0, lParam=0
-Const SPRM_SCROLLCELL			= WM_USER+146		'Scrolls current cell into view
-Const SPRM_DELETECELL			= WM_USER+147		'Deletes a cell. wParam=col, lParam=row
-Const SPRM_GETDATEFORMAT		= WM_USER+148		'Returns date format string. wParam=0, lParam=0
-Const SPRM_SETDATEFORMAT		= WM_USER+149		'Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
+		'Create horizontal splitt in current splitt at current row. wParam=0, lParam=0
+#Define SPRM_SPLITTHOR				WM_USER+100		' 0,0
+		'Create vertical splitt in current splitt at current col. wParam=0, lParam=0
+#Define SPRM_SPLITTVER				WM_USER+101		' 0,0
+		'Close the current splitt. wParam=0, lParam=0
+#Define SPRM_SPLITTCLOSE			WM_USER+102		' 0,0
+		'Syncronizez a splitt window witit's parent. wParam=0, lParam=TRUE/FALSE
+#Define SPRM_SPLITTSYNC				WM_USER+103		' 0,bSync[FALSE,TRUE]
+		'*Get splitt state. wParam=nWin(0-7), if nWin=-1 active split window, lParam=0
+#Define SPRM_GETSPLITTSTATE		WM_USER+104		' nWin:Integer,0
+		'Get the current cells rect in active splitt. wParam=0, lParam=pointer to RECT struct. Returns handle of active splitt window.
+#Define SPRM_GETCELLRECT			WM_USER+105		' 0,pRECT:RECT Ptr|HWND
+		'Get lock cols in active splitt. wParam=0, lParam=0
+#Define SPRM_GETLOCKCOL				WM_USER+106		' 0,0
+		'Lock cols in active splitt. wParam=0, lParam=cols
+#Define SPRM_SETLOCKCOL				WM_USER+107		' 0,nCols:Integer
+		'Get lock rows in active splitt. wParam=0, lParam=0
+#Define SPRM_GETLOCKROW				WM_USER+108		' 0,0
+		'Lock rows in active splitt. wParam=0, lParam=rows
+#Define SPRM_SETLOCKROW				WM_USER+109		' 0,nRows:Integer
+		'Delete col. wParam=col, lParam=0
+#Define SPRM_DELETECOL				WM_USER+110		' nCol:Integer,0
+		'Insert col. wParam=col, lParam=0
+#Define SPRM_INSERTCOL				WM_USER+111		' nCol:Integer,0
+		'Delete row. wParam=row, lParam=0
+#Define SPRM_DELETEROW				WM_USER+112		' nRow:Integer,0
+		'Insert row. wParam=row, lParam=0
+#Define SPRM_INSERTROW				WM_USER+113		' nRow:Integer,0
+		'Get number of columns. wParam=0, lParam=0
+#Define SPRM_GETCOLCOUNT			WM_USER+114		' 0,0|Integer
+		'Set number of columns. wParam=nCols, lParam=0
+#Define SPRM_SETCOLCOUNT			WM_USER+115		' nCols:Integer,0
+		'Get number of rows. wParam=0, lParam=0
+#Define SPRM_GETROWCOUNT			WM_USER+116		' 0,0|Integer
+		'Set number of rows. wParam=nRows, lParam=0
+#Define SPRM_SETROWCOUNT			WM_USER+117		' nRows:Integer,0
+		'Recalculates the sheet
+#Define SPRM_RECALC					WM_USER+118		' 0,0
+		'Blank a cell. wParam=col, lParam=row
+#Define SPRM_BLANKCELL				WM_USER+119		' nCol:Integer,nRow:Integer
+		'Get active splitt window. wParam=0, lParam=0
+#Define SPRM_GETCURRENTWIN			WM_USER+120		' 0,0|Integer
+		'Set active splitt window. wParam=0, lParam=nWin (0-7)
+#Define SPRM_SETCURRENTWIN			WM_USER+121		' 0,nWin:Integer
+		'Get current col/row in active window. wParam=0, lParam=0. Returns Hiword=row, Loword=col
+#Define SPRM_GETCURRENTCELL		WM_USER+122		' 0,0|Integer
+		'Set current col/row in active window. wParam=col, lParam=row
+#Define SPRM_SETCURRENTCELL		WM_USER+123		' nCol:Integer,nRow:Integer
+		'*Get content of current cell. wParam=0, lParam=0. Returns a pointer to a null terminated string.
+#Define SPRM_GETCELLSTRING			WM_USER+124		' 0,0|ZString Ptr
+		'Set content of current cell. wParam=type, lParam=pointer to string.
+#Define SPRM_SETCELLSTRING			WM_USER+125		' nType:Integer,pszString:ZString Ptr
+		'Get column width. wParam=col, lParam=0. Returns column width.
+#Define SPRM_GETCOLWIDT		  		WM_USER+126		' nCol:Integer,0|Integer
+		'Set column width. wParam=col, lParam=width.
+#Define SPRM_SETCOLWIDT		  		WM_USER+127		' nCol:Integer,nWidth:Integer
+		'Get row height. wParam=row, lParam=0. Returns row height.
+#Define SPRM_GETROWHEIGHT		  	WM_USER+128		' nRow:Integer,0|Integer
+		'Set row height. wParam=row, lParam=height.
+#Define SPRM_SETROWHEIGHT		  	WM_USER+129		' nRow:Integer,nHeight:Integer
+		'Get cell data. wParam=0, lParam=Pointer to SPR_ITEM struct
+#Define SPRM_GETCELLDATA			WM_USER+130		' 0,pSPR_ITEM:SPR_ITEM Ptr
+		'Set cell data. wParam=0, lParam=Pointer to SPR_ITEM struct
+#Define SPRM_SETCELLDATA			WM_USER+131		' 0,pSPR_ITEM:SPR_ITEM Ptr
+		'Get multiselection. wParam=0, lParam=pointer to a RECT struct. Returns handle of active split window
+#Define SPRM_GETMULTISEL			WM_USER+132		' 0,pRECT:RECT Ptr|HWND
+		'Set multiselection. wParam=0, lParam=pointer to a RECT struct. Returns handle of active split window
+#Define SPRM_SETMULTISEL			WM_USER+133		' 0,pRECT:RECT Ptr|HWND
+		'Get font. wParam=index(0-15), lParam=pointer to FONT struct. Returns font handle
+#Define SPRM_GETFONT					WM_USER+134		' nIndex:Integer,pFONT:FONT Ptr|HFONT
+		'Set font. wParam=index(0-15), lParam=pointer to FONT struct. Returns font handle
+#Define SPRM_SETFONT					WM_USER+135		' nIndex:Integer,pFONT:FONT Ptr|HFONT
+		'Get global. wParam=0, lParam=pointer to GLOBAL struct.
+#Define SPRM_GETGLOBAL				WM_USER+136		' 0,pGLOBAL:GLOBAL Ptr
+		'Set global. wParam=0, lParam=pointer to GLOBAL struct.
+#Define SPRM_SETGLOBAL				WM_USER+137		' 0,pGLOBAL:GLOBAL Ptr
+		'Import a line of data. wParam=SepChar, lParam=pointer to data line.
+#Define SPRM_IMPORTLINE				WM_USER+138		' nSepChar:Integer,pszLine:ZString Ptr
+		'Load a file. wParam=0, lParam=pointer to filename
+#Define SPRM_LOADFILE				WM_USER+139		' 0,pszFileName:ZString Ptr
+		'Save a file. wParam=0, lParam=pointer to filename
+#Define SPRM_SAVEFILE				WM_USER+140		' 0,pszFileName:ZString Ptr
+		'Clears the sheet. wParam=0, lParam=0
+#Define SPRM_NEWSHEET			  	WM_USER+141		' 0,0
+		'Expand a cell to cover more than one cell. wParam=0, lParam=pointer to RECT struct
+#Define SPRM_EXPANDCELL				WM_USER+142		' 0,pRECT:RECT Ptr
+		'Get cell data type. wParam=col, lParam=row. Returns cell type.
+#Define SPRM_GETCELLTYPE			WM_USER+143		' nCol:Integer,nRow:Integer|Integer
+		'Adjust cell refs in formula. wParam=pointer to cell, lParam=pointer to RECT.
+#Define SPRM_ADJUSTCELLREF			WM_USER+144		' pCell,pRECT:RECT Ptr
+		'Creates a ComboBox. wPatam=0, lParam=0
+#Define SPRM_CREATECOMBO			WM_USER+145		' 0,0
+		'Scrolls current cell into view
+#Define SPRM_SCROLLCELL				WM_USER+146		' 0,0
+		'Deletes a cell. wParam=col, lParam=row
+#Define SPRM_DELETECELL				WM_USER+147		' nCol:Integer,nRow:Integer
+		'Returns date format string. wParam=0, lParam=0
+#Define SPRM_GETDATEFORMAT			WM_USER+148		' 0,0|ZString Ptr
+		'Sets date format string. wParam=0, lParam=lpDateFormat (yyyy-MM-dd)
+#Define SPRM_SETDATEFORMAT			WM_USER+149		' 0,pszDateFormat:ZString Ptr
+		'Calculate row height. wParam=row, lParam=Update TRUE/FALSE. Returns max row height needed.
+#Define SPRM_CALCROWHEIGHT			WM_USER+150		' nRow:Integer,bUpdate[FALSE,TRUE]|Integer
 
 'Styles
-Const SPS_VSCROLL			  		= &h0001				'Vertical scrollbar
-Const SPS_HSCROLL			  		= &h0002				'Horizontal scrollbar
-Const SPS_STATUS			  		= &h0004				'Show status window
-Const SPS_GRIDLINES			  	= &h0008				'Show grid lines
-Const SPS_ROWSELECT			  	= &h0010				'Selection by row
-Const SPS_CELLEDIT			  	= &h0020				'Cell editing
-Const SPS_GRIDMODE			  	= &h0040				'Inserting and deleting row/col adjusts max row/col
-Const SPS_COLSIZE			  		= &h0080				'Allow col widt sizeing by mouse
-Const SPS_ROWSIZE		      	= &h0100				'Allow row height sizeing by mouse
-Const SPS_WINSIZE			  		= &h0200				'Allow splitt window sizeing by mouse
-Const SPS_MULTISELECT		  	= &h0400				'Allow multiselect
+#Define SPS_VSCROLL			  		&h0001			'Vertical scrollbar
+#Define SPS_HSCROLL			  		&h0002			'Horizontal scrollbar
+#Define SPS_STATUS			  		&h0004			'Show status window
+#Define SPS_GRIDLINES			  	&h0008			'Show grid lines
+#Define SPS_ROWSELECT			  	&h0010			'Selection by row
+#Define SPS_CELLEDIT			  		&h0020			'Cell editing
+#Define SPS_GRIDMODE			  		&h0040			'Inserting and deleting row/col adjusts max row/col
+#Define SPS_COLSIZE			  		&h0080			'Allow col widt sizeing by mouse
+#Define SPS_ROWSIZE		      	&h0100			'Allow row height sizeing by mouse
+#Define SPS_WINSIZE			  		&h0200			'Allow splitt window sizeing by mouse
+#Define SPS_MULTISELECT		  		&h0400			'Allow multiselect
+#Define SPS_LOCKVSCROLL				&h0800			'Vertical scrolling is locked
+#Define SPS_LOCKHSCROLL				&h1000			'Horizontal scrolling is locked
+#Define SPS_NOFOCUS					&h2000			'The cellfocus is not shown.
 
 'Cell data types
-Const TPE_EMPTY					= &h000				'The cell contains formatting only
-Const TPE_COLHDR					= &h001				'Column header
-Const TPE_ROWHDR					= &h002				'Row header
-Const TPE_WINHDR					= &h003				'Window (splitt) header
-Const TPE_TEXT						= &h004				'Text cell
-Const TPE_TEXTMULTILINE			= &h005				'Text cell, text is multiline
-Const TPE_INTEGER					= &h006				'Double word integer
-Const TPE_FLOAT					= &h007				'80 bit float
-Const TPE_FORMULA					= &h008				'Formula
-Const TPE_GRAP						= &h009				'Graph
-Const TPE_HYPERLINK				= &h00A				'Hyperlink
-Const TPE_CHECKBOX				= &h00B				'Checkbox
-Const TPE_COMBOBOX				= &h00C				'Combobox
-Const TPE_OWNERDRAWBLOB			= &h00D				'Owner drawn blob, first word is lenght of blob
-Const TPE_OWNERDRAWINTEGER		= &h00E				'Owner drawn integer
+#Define TPE_EMPTY						&h000				'The cell contains formatting only
+#Define TPE_COLHDR					&h001				'Column header
+#Define TPE_ROWHDR					&h002				'Row header
+#Define TPE_WINHDR					&h003				'Window (splitt) header
+#Define TPE_TEXT						&h004				'Text cell
+#Define TPE_TEXTMULTILINE			&h005				'Text cell, text is multiline
+#Define TPE_INTEGER					&h006				'Double word integer
+#Define TPE_FLOAT						&h007				'80 bit float
+#Define TPE_FORMULA					&h008				'Formula
+#Define TPE_GRAP						&h009				'Graph
+#Define TPE_HYPERLINK				&h00A				'Hyperlink
+#Define TPE_CHECKBOX					&h00B				'Checkbox
+#Define TPE_COMBOBOX					&h00C				'Combobox
+#Define TPE_OWNERDRAWBLOB			&h00D				'Owner drawn blob, first word is lenght of blob
+#Define TPE_OWNERDRAWINTEGER		&h00E				'Owner drawn integer
 
-Const TPE_EXPANDED				= &h00F				'Part of expanded cell, internally used
+#Define TPE_EXPANDED					&h00F				'Part of expanded cell, internally used
 
-Const TPE_BUTTON					= &h010				'Small button
-Const TPE_WIDEBUTTON				= &h020				'Button, covers the cell
-Const TPE_DATE						= &h030				'Combine with type integer
-Const TPE_FORCETYPE				= &h040				'Forced type
-Const TPE_FIXEDSIZE				= &h080				'Fixed size for CheckBox, ComboBox and Button image
+#Define TPE_BUTTON					&h010				'Small button
+#Define TPE_WIDEBUTTON				&h020				'Button, covers the cell
+#Define TPE_DATE						&h030				'Combine with type integer
+#Define TPE_FORCETYPE				&h040				'Forced type
+#Define TPE_FIXEDSIZE				&h080				'Fixed size for CheckBox, ComboBox and Button image
 
 'Format Alignment & Decimals
-Const FMTA_AUTO					= &h000				'Text left middle, numbers right middle
-Const FMTA_LEFT					= &h010
-Const FMTA_CENTER					= &h020
-Const FMTA_RIGHT					= &h030
-Const FMTA_TOP						= &h000
-Const FMTA_MIDDLE					= &h040
-Const FMTA_BOTTOM					= &h080
-Const FMTA_GLOBAL					= &h0F0
-Const FMTA_MASK					= &h0F0				'Alignment mask
-Const FMTA_XMASK					= &h030				'Alignment x-mask
-Const FMTA_YMASK					= &h0C0				'Alignment y-mask
+#Define FMTA_AUTO						&h000				'Text left middle, numbers right middle
+#Define FMTA_LEFT						&h010
+#Define FMTA_CENTER					&h020
+#Define FMTA_RIGHT					&h030
+#Define FMTA_TOP						&h000
+#Define FMTA_MIDDLE					&h040
+#Define FMTA_BOTTOM					&h080
+#Define FMTA_GLOBAL					&h0F0
+#Define FMTA_MASK						&h0F0				'Alignment mask
+#Define FMTA_XMASK					&h030				'Alignment x-mask
+#Define FMTA_YMASK					&h0C0				'Alignment y-mask
 
-Const FMTD_0						= &h00
-Const FMTD_1						= &h01
-Const FMTD_2						= &h02
-Const FMTD_3						= &h03
-Const FMTD_4						= &h04
-Const FMTD_5						= &h05
-Const FMTD_6						= &h06
-Const FMTD_7						= &h07
-Const FMTD_8						= &h08
-Const FMTD_9						= &h09
-Const FMTD_10						= &h0A
-Const FMTD_11						= &h0B
-Const FMTD_12						= &h0C
-Const FMTD_ALL						= &h0D
-Const FMTD_SCI						= &h0E
-Const FMTD_GLOBAL					= &h0F
-Const FMTD_MASK					= &h0F
+#Define FMTD_0							&h00
+#Define FMTD_1							&h01
+#Define FMTD_2							&h02
+#Define FMTD_3							&h03
+#Define FMTD_4							&h04
+#Define FMTD_5							&h05
+#Define FMTD_6							&h06
+#Define FMTD_7							&h07
+#Define FMTD_8							&h08
+#Define FMTD_9							&h09
+#Define FMTD_10						&h0A
+#Define FMTD_11						&h0B
+#Define FMTD_12						&h0C
+#Define FMTD_ALL						&h0D
+#Define FMTD_SCI						&h0E
+#Define FMTD_GLOBAL					&h0F
+#Define FMTD_MASK						&h0F
 
 Type FORMAT
 	bckcol			As Integer							'Back color
@@ -162,29 +217,30 @@ Type FONT
 	strikeout		As Byte								'Strikeout
 End Type
 
-Const STATE_LOCKED				= &h001				'Cell is locked for editing
-Const STATE_HIDDEN				= &h002				'Cell content is not displayed
-Const STATE_REDRAW				= &h008
-Const STATE_ERROR					= &h010
-Const STATE_DIV0					= &h020
-Const STATE_UNDERFLOW			= &h030
-Const STATE_OVERFLOW				= &h040
-Const STATE_RECALC				= &h080
-Const STATE_ERRMASK				= &h0F0
+#Define STATE_LOCKED					&h001				'Cell is locked for editing
+#Define STATE_HIDDEN					&h002				'Cell content is not displayed
+#Define STATE_AUTOSIZEHEIGHT		&h004				'Cell forces autosize height for the row when data is entered in a multiline cell
+#Define STATE_REDRAW					&h008
+#Define STATE_ERROR					&h010
+#Define STATE_DIV0					&h020
+#Define STATE_UNDERFLOW				&h030
+#Define STATE_OVERFLOW				&h040
+#Define STATE_RECALC					&h080
+#Define STATE_ERRMASK				&h0F0
 
-Const SPRIF_BACKCOLOR			= &h00000001		'Back color is valid
-Const SPRIF_TEXTCOLOR			= &h00000002		'Text color is valid
-Const SPRIF_TEXTALIGN			= &h00000004
-Const SPRIF_IMAGEALIGN			= &h00000008
-Const SPRIF_FONT					= &h00000010
-Const SPRIF_STATE					= &h00000020
-Const SPRIF_TYPE					= &h00000040
-Const SPRIF_WIDTH					= &h00000080
-Const SPRIF_HEIGHT				= &h00000100
-Const SPRIF_DATA					= &h00000200
-Const SPRIF_DOUBLE				= &h00000400		'Converts to / from double
-Const SPRIF_SINGLE				= &h00000800		'Converts to / from single
-Const SPRIF_COMPILE				= &h80000000		'Compile the formula
+#Define SPRIF_BACKCOLOR				&h00000001		'Back color is valid
+#Define SPRIF_TEXTCOLOR				&h00000002		'Text color is valid
+#Define SPRIF_TEXTALIGN				&h00000004
+#Define SPRIF_IMAGEALIGN			&h00000008
+#Define SPRIF_FONT					&h00000010
+#Define SPRIF_STATE					&h00000020
+#Define SPRIF_TYPE					&h00000040
+#Define SPRIF_WIDTH					&h00000080
+#Define SPRIF_HEIGHT					&h00000100
+#Define SPRIF_DATA					&h00000200
+#Define SPRIF_DOUBLE					&h00000400		'Converts to / from double
+#Define SPRIF_SINGLE					&h00000800		'Converts to / from single
+#Define SPRIF_COMPILE				&h80000000		'Compile the formula
 
 Type SPR_ITEM
 	flag				As Integer
@@ -200,15 +256,15 @@ Type SPR_ITEM
 End Type
 
 'Notification messages (WM_NOTIFY)
-Const SPRN_SELCHANGE				= 1					'Splitt, col or row changed.
-Const SPRN_BEFOREEDIT			= 2					'Before the editbox is shown
-Const SPRN_AFTEREDIT				= 3					'After the editbox is closed
-Const SPRN_BEFOREUPDATE			= 4					'Before cell is updated
-Const SPRN_AFTERUPDATE			= 5					'After cell is updated
-Const SPRN_HYPERLINKENTER		= 6					'Hyperlink entered
-Const SPRN_HYPERLINKLEAVE		= 7					'Hyperlink leaved
-Const SPRN_HYPERLINKCLICK		= 8					'Hyperlink clicked
-Const SPRN_BUTTONCLICK			= 9					'Button clicked
+#Define SPRN_SELCHANGE				1					'Splitt, col or row changed.
+#Define SPRN_BEFOREEDIT				2					'Before the editbox is shown
+#Define SPRN_AFTEREDIT				3					'After the editbox is closed
+#Define SPRN_BEFOREUPDATE			4					'Before cell is updated
+#Define SPRN_AFTERUPDATE			5					'After cell is updated
+#Define SPRN_HYPERLINKENTER		6					'Hyperlink entered
+#Define SPRN_HYPERLINKLEAVE		7					'Hyperlink leaved
+#Define SPRN_HYPERLINKCLICK		8					'Hyperlink clicked
+#Define SPRN_BUTTONCLICK			9					'Button clicked
 
 'on structs
 Type SPR_SELCHANGE
@@ -217,6 +273,7 @@ Type SPR_SELCHANGE
 	col				As Integer
 	row				As Integer
 	fcancel			As Integer
+	fclick			As Integer							'TRUE if mouse was clicked
 End Type
 
 Type SPR_EDIT

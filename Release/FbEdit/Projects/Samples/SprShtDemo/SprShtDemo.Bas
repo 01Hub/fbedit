@@ -157,11 +157,11 @@ Function DlgProc(ByVal hDlg As HWND, ByVal uMsg As UINT, ByVal wParam As WPARAM,
 			' Load the icon. The icon ID is the cells integer value.
 			hIcon=LoadIcon(hInst,Cast(ZString ptr,*Cast(Integer ptr,lpSPR_ITEM->lpdta)))
 			' Draw the icon
-			DrawIcon(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left,lpDRAWITEMSTRUCT.->rcItem.top,hIcon)
+			DrawIcon(lpDRAWITEMSTRUCT->hdc,lpDRAWITEMSTRUCT->rcItem.left,lpDRAWITEMSTRUCT->rcItem.top,hIcon)
 			'
 		Case WM_NOTIFY
 			' Get a pointer to the SPR_HYPERLINK
-			lpSPR_HYPERLINK=Cast(SPR_HYPERLINK ptr,lParam)
+			lpSPR_HYPERLINK=Cast(SPR_HYPERLINK Ptr,lParam)
 			' Check if notification is from the spread sheet control.
 			If lpSPR_HYPERLINK->hdr.hwndFrom=hSpr Then
 				' Check if it is a click on a hyperlink.
