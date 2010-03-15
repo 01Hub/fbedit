@@ -488,6 +488,7 @@ UnZip proc uses esi,hWin:HWND,lpFileName:DWORD
 	LOCAL	hMem:HGLOBAL
 	LOCAL	hFile:HANDLE
 	LOCAL	dwwrite:DWORD
+	LOCAL	ft:FILETIME
 
 	mov		esi,offset szDLPath
 	invoke RtlZeroMemory,esi,sizeof szDLPath
@@ -516,6 +517,11 @@ UnZip proc uses esi,hWin:HWND,lpFileName:DWORD
 						.if eax!=INVALID_HANDLE_VALUE
 							mov		hFile,eax
 							invoke WriteFile,hFile,hMem,fi.uncompressed_size,addr dwwrite,NULL
+							mov		ecx,fi.dosDate
+							movzx	edx,cx
+							shr		ecx,16
+							invoke DosDateTimeToFileTime,ecx,edx,addr ft
+							invoke SetFileTime,hFile,addr ft,addr ft,addr ft
 							invoke CloseHandle,hFile
 						.endif
 						invoke GlobalFree,hMem
