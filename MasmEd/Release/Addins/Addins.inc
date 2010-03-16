@@ -90,6 +90,8 @@ ADDINHANDLES struct
 	hMenuBrushB				HBRUSH ?				;Handle to menu background brush.
 	hMnuFont				HFONT ?					;Handle to menu font.
 	hReg					HKEY ?					;Handle to MasmEd's registry key.
+	hDbgFpu					HWND ?					;Handle to debug FPU window (RAEdit).
+	hDbgMMX					HWND ?					;Handle to debug MMX window (RAEdit).
 ADDINHANDLES ends
 
 MAKEOPT struct
@@ -115,6 +117,8 @@ ADDINDATA struct
 	makeopt					MAKEOPT 16 dup(<>)		;Make options
 	nBuildOpt				DWORD ?					;Current make option
 	ver						DWORD ?					;MasmEd version
+	lpCharTab				DWORD ?					;Pointer to RAEdit character table
+	lpszVersion				DWORD ?					;Pointer to version string
 ADDINDATA ends
 
 ADDINPROCS struct
@@ -191,6 +195,12 @@ IDM_EDIT_INDENT				equ 10037
 IDM_EDIT_OUTDENT			equ 10038
 IDM_EDIT_COMMENT			equ 10035
 IDM_EDIT_UNCOMMENT			equ 10036
+IDM_EDIT_BLOCKCONVERT		equ 10096
+IDM_EDIT_BLOCKUPPER			equ 10097
+IDM_EDIT_BLOCKLOWER			equ 10098
+IDM_EDIT_BLOCKTABTOSPC		equ 10099
+IDM_EDIT_BLOCKSPCTOTAB		equ 10100
+IDM_EDIT_BLOCKSPCTRIM		equ 10112
 IDM_EDIT_BLOCKMODE			equ 10061
 IDM_EDIT_BLOCKINSERT		equ 10062
 IDM_EDIT_TOGGLEBM			equ 10018
@@ -253,6 +263,7 @@ IDM_MAKE_LINK				equ 10026
 IDM_MAKE_BUILD				equ 10090
 IDM_MAKE_RUN				equ 10027
 IDM_MAKE_GO					equ 10028
+IDM_DEBUG					equ 10113
 IDM_DEBUG_TOGGLE			equ 10082
 IDM_DEBUG_CLEAR				equ 10083
 IDM_DEBUG_RUN				equ 10081

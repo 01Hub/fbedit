@@ -1,6 +1,6 @@
 MasmEd
 
-1.1.0.3 - 2010.03.11
+1.1.0.3 - 2010.03.16
 --------------------
 o Added message sensitive tooltip and codecomplete on
   SendMessage, PostMessage and SendDlgItemMessage api's.
