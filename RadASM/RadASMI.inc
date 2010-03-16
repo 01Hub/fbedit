@@ -1006,6 +1006,7 @@ LanguagePack					db 0Dh,0Dh,'Yoy need to download and install the appropriate pr
 NoLanguagePack					db 'Yoy need to download and install at least one programming language pack.',0
 OpenFileFail					db 'Cannot open the file',0Dh,0
 SaveFileFail					db 'Cannot save the file',0Dh,0
+ProjectFileFail					db 'Project file corrupted',0Dh,0
 szCopyOf						db 'Copy Of ',0
 szFileExist						db 'File exists.',0Dh,'Overwrite?',0
 szCouldNotCopy					db 'Could not copy file.',0

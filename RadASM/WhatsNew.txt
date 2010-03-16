@@ -5,6 +5,7 @@ o The debug register and watch windows are now in a single tool window.
 o Added FPU and MMX registers to debug window.
 o The code editor now supports unlimitted line lenghts.
 o Fixed a bug when double clicking on errors in output window when using bcc.
+o Fixed a buffer overrun bug on corrupted project files.
 2.2.1.9b
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.

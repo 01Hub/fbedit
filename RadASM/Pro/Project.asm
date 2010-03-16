@@ -772,6 +772,8 @@ DeleteProject endp
 GetProject proc	uses edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[16]:BYTE
+	LOCAL	hMem:HGLOBAL
+	LOCAL	nMax:DWORD
 
 	xor		eax,eax
 	mov		fResChanged,eax
@@ -779,6 +781,25 @@ GetProject proc	uses edi
 	invoke strcpy,addr ProjectFile,addr FileName 
 	invoke GetFileAttributes,addr ProjectFile
 	.if	eax!=-1
+		; Test project files
+		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
+		mov		hMem,eax
+		invoke GetPrivateProfileSection,addr iniProjectFiles,hMem,32*1024-1,addr ProjectFile
+		mov		esi,hMem
+		; Test project files
+		mov		nMax,0
+		.while byte ptr [esi]
+			invoke strlen,esi
+			.if eax>nMax
+				mov		nMax,eax
+			.endif
+			lea		esi,[esi+eax+1]
+		.endw
+		invoke GlobalFree,hMem
+		.if nMax>127
+			invoke strcpy,addr LineTxt,addr ProjectFileFail
+			jmp		Err
+		.endif
 		mov		fProExp,1
 		invoke DllProc,hWnd,AIM_PROJECTOPEN,0,addr ProjectFile,RAM_PROJECTOPEN
 		.if eax
@@ -821,59 +842,64 @@ GetProject proc	uses edi
 		mov		fGroupExpand,eax
 		invoke LoadBookMarks
 		invoke GetProjectFiles,TRUE
-		invoke strlen,addr buffer
-		lea		eax,[buffer+eax]
-		mov		dword ptr [eax],' - '
-		invoke GetPrivateProfileInt,addr iniProject,addr iniDebug,0,addr ProjectFile
-		mov		fDebug,eax
-		.if	eax
-			invoke strcat,addr buffer,addr iniDebug
+		.if !eax
+			invoke strlen,addr buffer
+			lea		eax,[buffer+eax]
+			mov		dword ptr [eax],' - '
+			invoke GetPrivateProfileInt,addr iniProject,addr iniDebug,0,addr ProjectFile
+			mov		fDebug,eax
+			.if	eax
+				invoke strcat,addr buffer,addr iniDebug
+			.else
+				invoke strcat,addr buffer,addr iniRelease
+			.endif
+			invoke SendMessage,hStatus,SB_SETTEXT,2,addr buffer
+			invoke strcpy,addr buffer,addr DisplayName
+			invoke strlen,addr buffer
+			push	edi
+			lea		edi,buffer
+			add		edi,eax
+			mov		eax,00202D20h
+			mov		[edi],eax
+			pop		edi
+			invoke strcat,addr buffer,addr ProjectDescr
+			invoke SetWindowText,hWnd,addr buffer
+			mov		fProject,TRUE
+			invoke SetPath,addr ProjectPath
+			invoke SetMakeMenu
+			invoke RefreshProperty
+			mov		fProperty,4
+			invoke SetProperty,0,0
+			invoke GroupCollapseAll,hPbrTrv,hRoot
+			.if	hMdiCld
+				invoke ProSetTrv,hMdiCld
+			.else
+				invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
+			.endif
+	
+			invoke GetPrivateProfileString,addr iniGroupExpand,addr iniGroupExpand,addr szNULL,addr buffer,sizeof buffer,addr ProjectFile
+			xor		edi,edi
+		  @@:
+			invoke iniGetItem,addr buffer,addr buffer1
+			.if buffer1
+				invoke DecToBin,addr buffer1
+				mov		groupstate[edi*4],eax
+				lea		edi,[edi+1]
+				jmp		@b
+			.endif
+			xor		edi,edi
+			invoke SetGroupState,hPbrTrv,hRoot
+			invoke EnableProjectBrowser,TRUE
+			invoke DllProc,hWnd,AIM_PROJECTOPENED,0,addr ProjectFile,RAM_PROJECTOPENED
+			invoke LoadCursor,0,IDC_ARROW
+			invoke SetCursor,eax
+			mov		eax,FALSE
 		.else
-			invoke strcat,addr buffer,addr iniRelease
+			mov		eax,TRUE
 		.endif
-		invoke SendMessage,hStatus,SB_SETTEXT,2,addr buffer
-		invoke strcpy,addr buffer,addr DisplayName
-		invoke strlen,addr buffer
-		push	edi
-		lea		edi,buffer
-		add		edi,eax
-		mov		eax,00202D20h
-		mov		[edi],eax
-		pop		edi
-		invoke strcat,addr buffer,addr ProjectDescr
-		invoke SetWindowText,hWnd,addr buffer
-		mov		fProject,TRUE
-		invoke SetPath,addr ProjectPath
-		invoke SetMakeMenu
-		invoke RefreshProperty
-		mov		fProperty,4
-		invoke SetProperty,0,0
-		invoke GroupCollapseAll,hPbrTrv,hRoot
-		.if	hMdiCld
-			invoke ProSetTrv,hMdiCld
-		.else
-			invoke SendMessage,hPbrTrv,TVM_SELECTITEM,TVGN_CARET,hRoot
-		.endif
-
-		invoke GetPrivateProfileString,addr iniGroupExpand,addr iniGroupExpand,addr szNULL,addr buffer,sizeof buffer,addr ProjectFile
-		xor		edi,edi
-	  @@:
-		invoke iniGetItem,addr buffer,addr buffer1
-		.if buffer1
-			invoke DecToBin,addr buffer1
-			mov		groupstate[edi*4],eax
-			lea		edi,[edi+1]
-			jmp		@b
-		.endif
-		xor		edi,edi
-		invoke SetGroupState,hPbrTrv,hRoot
-		invoke EnableProjectBrowser,TRUE
-		invoke DllProc,hWnd,AIM_PROJECTOPENED,0,addr ProjectFile,RAM_PROJECTOPENED
-		invoke LoadCursor,0,IDC_ARROW
-		invoke SetCursor,eax
-		mov		eax,FALSE
 	.else
 		invoke strcpy,addr LineTxt,addr OpenFileFail
+Err:
 		invoke strcat,addr LineTxt,addr ProjectFile
 		invoke MessageBox,hWnd,addr	LineTxt,addr AppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
@@ -1028,7 +1054,7 @@ ResFileExist endp
 
 GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 	LOCAL	buffer1[16]:BYTE
-	LOCAL	buffer2[128]:BYTE
+	LOCAL	buffer2[256]:BYTE
 	LOCAL	buffer4[256]:BYTE
 	LOCAL	iNbr:DWORD
 	LOCAL	tci:TC_ITEM
@@ -1089,7 +1115,7 @@ GetProjectFiles	proc uses esi edi,fAutoOpen:DWORD
 			.if	byte ptr [esi] && eax
 				mov		iNbr,eax
 				invoke BinToDec,iNbr,addr buffer1
-				invoke strcpy,addr buffer2,esi
+				invoke lstrcpyn,addr buffer2,esi,128
 				;See if	it is main RC file
 				invoke lstrcmpi,addr buffer2,addr buffer4
 				.if	!eax
