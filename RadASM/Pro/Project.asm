@@ -769,35 +769,52 @@ DeleteProject proc
 
 DeleteProject endp
 
+TestSection proc uses esi edi,lpSection:DWORD,lpdwMax:DWORD
+	LOCAL	hMem:HGLOBAL
+
+	mov		edi,lpdwMax
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
+	mov		hMem,eax
+	invoke GetPrivateProfileSection,lpSection,hMem,32*1024-1,addr ProjectFile
+	mov		esi,hMem
+	.while byte ptr [esi]
+		invoke strlen,esi
+		.if eax>[edi]
+			mov		[edi],eax
+		.endif
+		lea		esi,[esi+eax+1]
+	.endw
+	invoke GlobalFree,hMem
+	ret
+
+TestSection endp
+
 GetProject proc	uses edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[16]:BYTE
-	LOCAL	hMem:HGLOBAL
 	LOCAL	nMax:DWORD
 
 	xor		eax,eax
 	mov		fResChanged,eax
 	mov		fResProject,eax
+	mov		nMax,eax
 	invoke strcpy,addr ProjectFile,addr FileName 
 	invoke GetFileAttributes,addr ProjectFile
+	mov		edx,offset OpenFileFail
 	.if	eax!=-1
-		; Test project files
-		invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32*1024
-		mov		hMem,eax
-		invoke GetPrivateProfileSection,addr iniProjectFiles,hMem,32*1024-1,addr ProjectFile
-		mov		esi,hMem
-		; Test project files
-		mov		nMax,0
-		.while byte ptr [esi]
-			invoke strlen,esi
-			.if eax>nMax
-				mov		nMax,eax
-			.endif
-			lea		esi,[esi+eax+1]
-		.endw
-		invoke GlobalFree,hMem
+		; Test project file
+		invoke TestSection,addr iniProject,addr nMax
+		invoke TestSection,addr iniMakeFile,addr nMax
+		invoke TestSection,addr iniProjectFiles,addr nMax
+		invoke TestSection,addr iniProjectSize,addr nMax
 		.if nMax>127
-			invoke strcpy,addr LineTxt,addr ProjectFileFail
+			mov		edx,offset ProjectFileFail
+			jmp		Err
+		.endif
+		invoke TestSection,addr iniMakeDef,addr nMax
+		invoke TestSection,addr iniWinFind,addr nMax
+		.if nMax>255
+			mov		edx,offset ProjectFileFail
 			jmp		Err
 		.endif
 		mov		fProExp,1
@@ -898,8 +915,8 @@ GetProject proc	uses edi
 			mov		eax,TRUE
 		.endif
 	.else
-		invoke strcpy,addr LineTxt,addr OpenFileFail
 Err:
+		invoke strcpy,addr LineTxt,edx
 		invoke strcat,addr LineTxt,addr ProjectFile
 		invoke MessageBox,hWnd,addr	LineTxt,addr AppName,MB_OK or MB_ICONERROR
 		mov		eax,TRUE
