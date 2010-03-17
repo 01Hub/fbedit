@@ -1,7 +1,7 @@
 
 .code
 
-ApiConstListBox	proc lpList:DWORD
+ApiConstListBox	proc lpMem:DWORD
 	LOCAL	buffer[64]:BYTE
 	LOCAL	buffer1[256]:BYTE
 	LOCAL	chrg:CHARRANGE
@@ -24,9 +24,8 @@ ApiConstListBox	proc lpList:DWORD
 	invoke SendMessage,hEdit,EM_HIDESELECTION,FALSE,FALSE
 	invoke SendMessage,hLB,WM_SETREDRAW,FALSE,0
 	invoke SendMessage,hLB,LB_RESETCONTENT,0,0
-	invoke strcpy,addr	LineTxt,lpList
   @@:
-	invoke iniGetItem,addr LineTxt,addr	buffer
+	invoke iniGetItem,lpMem,addr buffer
 	mov		al,buffer
 	.if	al
 		lea		esi,buffer
@@ -63,8 +62,11 @@ ApiConstListBox	proc lpList:DWORD
 ApiConstListBox	endp
 
 ApiConstSrc	proc lpSrc:DWORD
+	LOCAL	hMem:HGLOBAL
 
 	pushad
+	invoke xGlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	mov		hMem,eax
 	mov		edi,lpWordList
   Nx:
 	.if	[edi].PROPERTIES.nType=='C'
@@ -85,8 +87,13 @@ ApiConstSrc	proc lpSrc:DWORD
 			mov		al,[ecx]
 			.if	!al
 				inc		ecx
-				invoke ApiConstListBox,ecx
-				jmp		Ex
+				mov		eax,hMem
+				.if byte ptr [eax]
+					push	ecx
+					invoke strcat,hMem,addr szComma
+					pop		ecx
+				.endif
+				invoke strcat,hMem,ecx
 			.endif
 		.endif
 	.endif
@@ -95,7 +102,11 @@ ApiConstSrc	proc lpSrc:DWORD
 	mov		eax,[edi].PROPERTIES.nSize
 	or		eax,eax
 	jne		Nx
-  Ex:
+	mov		eax,hMem
+	.if byte ptr [eax]
+		invoke ApiConstListBox,hMem
+	.endif
+	invoke GlobalFree,hMem
 	popad
 	ret
 

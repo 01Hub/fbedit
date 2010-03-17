@@ -3,6 +3,7 @@ RadASM 2.2.2.0
 2.2.2.0
 o The debug register and watch windows are now in a single tool window.
 o Added FPU and MMX registers to debug window.
+o There can now be more than one xxxConst.api file using the same api.
 o The code editor now supports unlimitted line lenghts.
 o Fixed a bug when double clicking on errors in output window when using bcc.
 o Fixed a buffer overrun bug on corrupted project files.
