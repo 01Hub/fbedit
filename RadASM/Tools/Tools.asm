@@ -1496,8 +1496,10 @@ ToolCldProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,lParam
 		mov		eax,(NMHDR ptr [ebx]).code
 		.if eax==TVN_BEGINDRAG
-			.if fGroup
+			.if fGroup && sdword ptr [ebx].NM_TREEVIEW.itemNew.lParam>0
 				invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+			.else
+				invoke SendMessage,[ebx].NMHDR.hwndFrom,TVM_SELECTITEM,TVGN_CARET,[ebx].NM_TREEVIEW.itemNew.hItem
 			.endif
 		.endif
 	.elseif eax==WM_LBUTTONUP
@@ -1982,7 +1984,7 @@ ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			mov		(TOOLTIPTEXT ptr [ebx]).lpszText,eax
 		.elseif eax==TVN_BEGINLABELEDIT
 			.if ecx==hPbrTrv
-				.if [ebx].NMTVDISPINFO.item.lParam
+				.if sdword ptr [ebx].NMTVDISPINFO.item.lParam>0
 					invoke strcpy,offset FileToCopy,[ebx].NMTVDISPINFO.item.pszText
 					xor		eax,eax
 				.else

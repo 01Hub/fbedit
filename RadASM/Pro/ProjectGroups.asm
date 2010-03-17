@@ -539,23 +539,27 @@ GroupTVBeginDrag proc hWin:HWND,hParent:HWND,lParam:LPARAM
 	mov		eax,[edx].NMTREEVIEW.itemNew.hItem
 	mov		TVDragItem,eax
 	mov		tvi.hItem,eax
-	mov		tvi._mask,TVIF_IMAGE
+	mov		tvi._mask,TVIF_IMAGE or TVIF_PARAM
 	invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
-	mov		eax,tvi.iImage
-	cmp		eax,0
-	je		Ex
-	mov		tvi._mask,TVIF_STATE
-	mov		tvi.state,TVIS_DROPHILITED
-	invoke SendMessage,hWin,TVM_SETITEM,0,addr tvi
-	invoke GetCursorPos,addr DragStart
-	invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_DROPHILITE,TVDragItem
-	invoke SendMessage,hWin,TVM_CREATEDRAGIMAGE,0,TVDragItem
-	mov		hDragIml,eax
-	invoke ImageList_BeginDrag,hDragIml,0,-8,-8
-	invoke GetDesktopWindow
-	invoke ImageList_DragEnter,eax,DragStart.x,DragStart.y
-	invoke SetCapture,hParent
-	mov		IsDragging,TRUE
+	.if sdword ptr tvi.lParam>0
+		mov		eax,tvi.iImage
+		cmp		eax,0
+		je		Ex
+		mov		tvi._mask,TVIF_STATE
+		mov		tvi.state,TVIS_DROPHILITED
+		invoke SendMessage,hWin,TVM_SETITEM,0,addr tvi
+		invoke GetCursorPos,addr DragStart
+		invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_DROPHILITE,TVDragItem
+		invoke SendMessage,hWin,TVM_CREATEDRAGIMAGE,0,TVDragItem
+		mov		hDragIml,eax
+		invoke ImageList_BeginDrag,hDragIml,0,-8,-8
+		invoke GetDesktopWindow
+		invoke ImageList_DragEnter,eax,DragStart.x,DragStart.y
+		invoke SetCapture,hParent
+		mov		IsDragging,TRUE
+	.else
+		mov		TVDragItem,0
+	.endif
   Ex:
 	ret
 
@@ -571,9 +575,7 @@ GroupTVEndDrag proc uses ebx esi,hWin:HWND
 
 	invoke ReleaseCapture
 	invoke GetCursorPos,addr pt
-	invoke ScreenToClient,hWin,addr pt
-	invoke GetParent,hWin
-	invoke ChildWindowFromPoint,eax,pt.x,pt.y
+	invoke WindowFromPoint,pt.x,pt.y
 	.if eax==hWin
 		invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
 		invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_DROPHILITE,NULL
@@ -630,6 +632,7 @@ GroupTVEndDrag proc uses ebx esi,hWin:HWND
 		.endif
 		invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
 	.endif
+	invoke ReleaseCapture
 	invoke GetDesktopWindow
 	invoke ImageList_DragLeave,eax
 	invoke ImageList_EndDrag
@@ -873,7 +876,11 @@ ProjectGroupsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		.if eax==hGrpTrv
 			mov		eax,[ebx].NMHDR.code
 			.if eax==TVN_BEGINDRAGW || eax==TVN_BEGINDRAG
-				invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+				.if sdword ptr [ebx].NM_TREEVIEW.itemNew.lParam>0
+					invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+				.else
+					invoke SendMessage,[ebx].NMHDR.hwndFrom,TVM_SELECTITEM,TVGN_CARET,[ebx].NM_TREEVIEW.itemNew.hItem
+				.endif
 			.elseif eax==TVN_BEGINLABELEDITW || eax==TVN_BEGINLABELEDIT
 				invoke SendMessage,hGrpTrv,TVM_GETEDITCONTROL,0,0
 				push	eax

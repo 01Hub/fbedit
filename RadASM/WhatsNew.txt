@@ -7,6 +7,7 @@ o There can now be more than one xxxConst.api file using the same api.
 o The code editor now supports unlimitted line lenghts.
 o Fixed a bug when double clicking on errors in output window when using bcc.
 o Fixed a buffer overrun bug on corrupted project files.
+o Fixed bugs wuth project browser drag to new goroup. Disabled group name editing.
 2.2.1.9b
 o Holding Ctrl key while clicking on expand / collapse bookmark will expand / collapse
   all child blocks in the parent block.
