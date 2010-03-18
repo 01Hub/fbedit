@@ -264,7 +264,7 @@ MinorFiles=*.res;*.obj;
 86=110,110,590,413,7227
 87=154,154,536,413,992
 89=0,0,536,413
-88=22,22,536,413,21466
+88=22,22,536,413,4946
 91=132,132,536,413
 90=154,154,536,413,8168
 93=88,88,590,413,7274
@@ -541,7 +541,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -761,7 +761,7 @@ Group=Assembly,Resources,..RC File,..Menu,..Dialog,Misc,Include
 [SourceSafe]
 Project=$/RadASM
 [PTimer]
-PTimer=2108771310
+PTimer=2119209305
 [RADebugBP]
 96=
 55=
