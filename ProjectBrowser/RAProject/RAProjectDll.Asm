@@ -47,10 +47,10 @@ szToolTip				db 'ProjectBrowser',0
 szCap					db 0
 szName					db 'IDC_PBR',0
 
-PropertyFlat			dd -1 xor PBSTYLE_FLATTOOLBAR,0
-						dd -1 xor PBSTYLE_FLATTOOLBAR,PBSTYLE_FLATTOOLBAR
-PropertyDivider			dd -1 xor PBSTYLE_DIVIDERLINE,0
-						dd -1 xor PBSTYLE_DIVIDERLINE,PBSTYLE_DIVIDERLINE
+PropertyFlat			dd -1 xor RPBS_FLATTOOLBAR,0
+						dd -1 xor RPBS_FLATTOOLBAR,RPBS_FLATTOOLBAR
+PropertyDivider			dd -1 xor RPBS_DIVIDERLINE,0
+						dd -1 xor RPBS_DIVIDERLINE,RPBS_DIVIDERLINE
 
 Methods					dd PROP_STYLETRUEFALSE,offset PropertyFlat
 						dd PROP_STYLETRUEFALSE,offset PropertyDivider
