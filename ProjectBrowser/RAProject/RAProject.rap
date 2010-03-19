@@ -39,7 +39,7 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 15=RAProject.tlb
 16=RAProject.sys
 [MakeDef]
-Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
+Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 1=4,O,$B\RC.EXE /v,1
 2=3,O,$B\ML.EXE /DDLL /c /coff /Cp /nologo /I"$I",2
 3=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /RELEASE /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3,4
@@ -82,7 +82,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=20
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=3
 MilestoneOnDateTimeDate=18
@@ -115,7 +115,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=66079090
+PTimer=68940273
 [Collapse]
 2=
 1=,,
@@ -125,11 +125,11 @@ PTimer=66079090
 9=
 [Size]
 2=0,0,0,0,1021
-1=0,0,0,0,18466
+1=0,0,0,0,18041
 3=0,0,0,0,0
 6=0,0,851,458,568
 7=0,0,0,0,1618
-9=0,0,0,0,4721
+9=0,0,0,0,2925
 [GroupExpand]
 GroupExpand=1,1,1,0
 [BookMark]
@@ -153,6 +153,7 @@ GroupExpand=1,1,1,0
 3=
 9=
 [Find]
-1="8*1024"
-2="64*1024"
-3="PBM_"
+1="ret"
+2="8*1024"
+3="64*1024"
+4="PBM_"

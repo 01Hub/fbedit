@@ -124,13 +124,13 @@ FindParentGroup proc hTrv:HWND,hItem:DWORD,nGroup:DWORD
 	mov		eax,tvi.lParam
 	.if edx==[eax].PBITEM.id
 		mov		eax,hItem
-		ret
+		jmp		Ex
 	.endif
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
 	.if eax
 		invoke FindParentGroup,hTrv,eax,nGroup
 		.if eax
-			ret
+			jmp		Ex
 		.endif
 	.endif
 	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
@@ -139,6 +139,7 @@ FindParentGroup proc hTrv:HWND,hItem:DWORD,nGroup:DWORD
 		jmp		@b
 	.endif
 	xor		eax,eax
+  Ex:
 	ret
 
 FindParentGroup endp
@@ -450,7 +451,6 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
-;PrintText "WM_CREATE"
 		invoke GetProcessHeap
 		invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof PROJECTBROWSER
 		mov		ebx,eax
@@ -491,11 +491,9 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SendMessage,[ebx].PROJECTBROWSER.htbr,TB_ADDBUTTONS,3,addr btns
 		;Set the imagelist
 		invoke SendMessage,[ebx].PROJECTBROWSER.htbr,TB_SETIMAGELIST,0,[ebx].PROJECTBROWSER.himl
-;PrintText "WM_CREATE"
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_COMMAND
-;PrintText "WM_COMMAND"
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		mov		edx,wParam
@@ -523,7 +521,6 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 		.endif
 	.elseif eax==WM_SIZE
-;PrintText "WM_SIZE"
 		push	edi
 		invoke GetWindowLong,hWin,GWL_STYLE
 		mov		edi,28
@@ -544,17 +541,14 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke MoveWindow,[ebx].PROJECTBROWSER.htrv,0,edi,rect.right,edx,TRUE
 		pop		edi
 	.elseif eax==WM_SETFONT
-;PrintText "WM_SETFONT"
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		.if eax
 			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,WM_SETFONT,wParam,TRUE
 		.endif
-;PrintText "WM_SETFONT"
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_DESTROY
-;PrintText "WM_DESTROY"
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		invoke ImageList_Destroy,[ebx].PROJECTBROWSER.himl
@@ -565,7 +559,6 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke GetProcessHeap
 		invoke HeapFree,eax,0,ebx
 	.elseif eax==WM_LBUTTONUP
-;PrintText "WM_LBUTTONUP"
 		.if IsDragging
 			invoke GetWindowLong,hWin,0
 			mov		ebx,eax
@@ -573,7 +566,6 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke TVEndDrag,[ebx].PROJECTBROWSER.htrv
 		.endif
 	.elseif eax==WM_MOUSEMOVE
-;PrintText "WM_MOUSEMOVE"
 		.if IsDragging
 			invoke GetWindowLong,hWin,0
 			mov		ebx,eax
@@ -598,7 +590,6 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
-;PrintText "WM_NOTIFY"
 		invoke GetWindowLong,hWin,0
 		.if eax
 			mov		ebx,eax
@@ -692,20 +683,15 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		lea		eax,[eax+edx]
 		jmp		Ex
 	.elseif eax==RPBM_SETGROUPING
-;PrintText "RPBM_SETGROUPING"
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		mov		eax,lParam
 		mov		[ebx].PROJECTBROWSER.ngrouping,eax
 		.if wParam
 			invoke SortItems,ebx
-;PrintText "SortItems"
 			invoke AddGroups,ebx
-PrintText "AddGroups"
 			invoke AddFiles,ebx
-PrintText "AddFiles"
 			invoke ExpandAll,[ebx].PROJECTBROWSER.htrv,0
-PrintText "ExpandAll"
 		.endif
 		xor		eax,eax
 		jmp		Ex
