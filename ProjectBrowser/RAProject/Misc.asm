@@ -80,12 +80,13 @@ FindFileExt proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,lpszFile:DWORD
 			invoke xInString,addr [edi].PBFILEEXT.szfileext,addr buffer
 			.if eax!=-1
 				mov		eax,[edi].PBFILEEXT.id
-				ret
+				jmp		Ex
 			.endif
 			lea		edi,[edi+sizeof PBFILEEXT]
 		.endw
 	.endif
-	xor		eax,eax
+	mov		eax,5
+  Ex:
 	ret
 
 FindFileExt endp

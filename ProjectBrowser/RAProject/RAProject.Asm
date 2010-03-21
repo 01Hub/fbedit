@@ -76,102 +76,128 @@ IsGroupCollapsed proc hTrv:HWND,hItem:DWORD,lpResult:DWORD
 
 IsGroupCollapsed endp
 
-ExpandAll proc hTrv:HWND,hItem:DWORD
+ExpandAll proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 
-  @@:
-	invoke SendMessage,hTrv,TVM_EXPAND,TVE_EXPAND,hItem
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
-	.if eax
-		invoke ExpandAll,hTrv,eax
-	.endif
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
-	.if eax
-		mov		hItem,eax
-		jmp		@b
-	.endif
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while [esi].PBITEM.id
+		.if sdword ptr [esi].PBITEM.id<0
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EXPAND,TVE_EXPAND,[esi].PBITEM.hitem
+			mov		[esi].PBITEM.expanded,TRUE
+		.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
 	ret
 
 ExpandAll endp
 
-CollapseAll proc hTrv:HWND,hItem:DWORD
+CollapseAll proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 
-  @@:
-	invoke SendMessage,hTrv,TVM_EXPAND,TVE_COLLAPSE,hItem
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
-	.if eax
-		invoke CollapseAll,hTrv,eax
-	.endif
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
-	.if eax
-		mov		hItem,eax
-		jmp		@b
-	.endif
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_ROOT,0
-	invoke SendMessage,hTrv,TVM_EXPAND,TVE_EXPAND,eax
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while [esi].PBITEM.id
+		.if sdword ptr [esi].PBITEM.id==-1
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EXPAND,TVE_EXPAND,[esi].PBITEM.hitem
+			mov		[esi].PBITEM.expanded,TRUE
+		.elseif sdword ptr [esi].PBITEM.id<0
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EXPAND,TVE_COLLAPSE,[esi].PBITEM.hitem
+			mov		[esi].PBITEM.expanded,FALSE
+		.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
 	ret
 
 CollapseAll endp
 
-FindParentGroup proc hTrv:HWND,hItem:DWORD,nGroup:DWORD
-	LOCAL	tvi:TVITEM
+SetExpand proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 
-  @@:
-	mov		tvi._mask,TVIF_PARAM
-	mov		eax,hItem
-	mov		tvi.hItem,eax
-	invoke SendMessage,hTrv,TVM_GETITEM,0,addr tvi
-	mov		edx,nGroup
-	mov		eax,tvi.lParam
-	.if edx==[eax].PBITEM.id
-		mov		eax,hItem
-		jmp		Ex
-	.endif
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_CHILD,hItem
-	.if eax
-		invoke FindParentGroup,hTrv,eax,nGroup
-		.if eax
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while [esi].PBITEM.id
+		.if sdword ptr [esi].PBITEM.id<0
+			.if [esi].PBITEM.expanded
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EXPAND,TVE_EXPAND,[esi].PBITEM.hitem
+			.else
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EXPAND,TVE_COLLAPSE,[esi].PBITEM.hitem
+			.endif
+		.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
+	ret
+
+SetExpand endp
+
+GetExpand proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
+	LOCAL	tvi:TV_ITEM
+
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while [esi].PBITEM.id
+		.if sdword ptr [esi].PBITEM.id<0
+			mov		tvi._mask,TVIF_STATE or TVIF_CHILDREN
+			mov		tvi.stateMask,TVIS_EXPANDED
+			mov		eax,[esi].PBITEM.hitem
+			mov		tvi.hItem,eax
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_GETITEM,0,addr tvi
+			.if tvi.cChildren
+				test	tvi.state,TVIS_EXPANDED
+				.if ZERO?
+					mov		[esi].PBITEM.expanded,FALSE
+				.else
+					mov		[esi].PBITEM.expanded,TRUE
+				.endif
+			.else
+				mov		[esi].PBITEM.expanded,TRUE
+			.endif
+		.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
+	ret
+
+GetExpand endp
+
+FindParentGroup proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,id:DWORD
+
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	mov		eax,id
+	.while [esi].PBITEM.id
+		.if eax==[esi].PBITEM.id
+			mov		eax,[esi].PBITEM.hitem
 			jmp		Ex
 		.endif
-	.endif
-	invoke SendMessage,hTrv,TVM_GETNEXTITEM,TVGN_NEXT,hItem
-	.if eax
-		mov		hItem,eax
-		jmp		@b
-	.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
 	xor		eax,eax
   Ex:
 	ret
 
 FindParentGroup endp
 
-AddGroups proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
+AddGroups proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,idpar:DWORD,hpar:DWORD
 	LOCAL	tvis:TV_INSERTSTRUCT
-	LOCAL	tvi:TV_ITEM
 
 	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
 	invoke RtlZeroMemory,addr tvis,sizeof TV_INSERTSTRUCT
-	invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
 	.if [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
-		xor		edi,edi
-		.while TRUE
-			call	FindGroup
-			.break .if !eax
-			dec		edi
-		.endw
-	.else
-		mov		esi,[ebx].PROJECTBROWSER.hmemitems
 		.while [esi].PBITEM.id
 			.if sdword ptr [esi].PBITEM.id<0
-				.if [ebx].PROJECTBROWSER.ngrouping==RPBG_NONE
-					.if [esi].PBITEM.id==-1
-						call	AddTheGroup
-						.break
-					.endif
-				.elseif  [ebx].PROJECTBROWSER.ngrouping==RPBG_PATH
-					.if [esi].PBITEM.id==-1
-						call	AddTheGroup
-						.break
-					.endif
+				mov		eax,idpar
+				.if eax==[esi].PBITEM.idparent
+					call	AddGroup
+					invoke AddGroups,ebx,[esi].PBITEM.id,[esi].PBITEM.hitem
+				.endif
+			.endif
+			lea		esi,[esi+sizeof PBITEM]
+		.endw
+	.else
+		.while [esi].PBITEM.id
+			.if sdword ptr [esi].PBITEM.id<0
+				mov		eax,idpar
+				.if eax==[esi].PBITEM.idparent
+					call	AddGroup
+					.break
 				.endif
 			.endif
 			lea		esi,[esi+sizeof PBITEM]
@@ -179,26 +205,8 @@ AddGroups proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 	.endif
 	ret
 
-FindGroup:
-	mov		esi,[ebx].PROJECTBROWSER.hmemitems
-	xor		eax,eax
-	.while [esi].PBITEM.id
-		.if sdword ptr [esi].PBITEM.id<0
-			.if edi==[esi].PBITEM.idparent
-				call	AddTheGroup
-				mov		eax,TRUE
-			.endif
-		.endif
-		lea		esi,[esi+sizeof PBITEM]
-	.endw
-	retn
-
-AddTheGroup:
-	.if [esi].PBITEM.idparent
-		invoke FindParentGroup,[ebx].PROJECTBROWSER.htrv,0,[esi].PBITEM.idparent
-	.else
-		xor		eax,eax
-	.endif
+AddGroup:
+	mov		eax,hpar
 	mov		tvis.hParent,eax
 	mov		tvis.hInsertAfter,TVI_SORT
 	mov		tvis.item._mask,TVIF_IMAGE or TVIF_SELECTEDIMAGE or TVIF_PARAM or TVIF_TEXT
@@ -208,6 +216,7 @@ AddTheGroup:
 	mov		tvis.item.iSelectedImage,0
 	mov		tvis.item.lParam,esi
 	invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_INSERTITEM,0,addr tvis
+	mov		[esi].PBITEM.hitem,eax
 	retn
 
 AddGroups endp
@@ -226,10 +235,10 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 				mov		eax,-1
 			.elseif [ebx].PROJECTBROWSER.ngrouping==RPBG_PATH
 				mov		eax,-1
-			.else
+			.elseif [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
 				mov		eax,[esi].PBITEM.idparent
 			.endif
-			invoke FindParentGroup,[ebx].PROJECTBROWSER.htrv,0,eax
+			invoke FindParentGroup,ebx,eax
 			mov		tvis.hParent,eax
 			mov		tvis.hInsertAfter,TVI_LAST
 			mov		tvis.item._mask,TVIF_IMAGE or TVIF_SELECTEDIMAGE or TVIF_PARAM or TVIF_TEXT
@@ -240,6 +249,7 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 			mov		tvis.item.iSelectedImage,eax
 			mov		tvis.item.lParam,esi
 			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_INSERTITEM,0,addr tvis
+			mov		[esi].PBITEM.hitem,eax
 		.endif
 		lea		esi,[esi+sizeof PBITEM]
 	.endw
@@ -371,15 +381,12 @@ ProjectTreeViewProc endp
 
 TVBeginDrag proc hWin:HWND,hParent:HWND,lParam:LPARAM
 	LOCAL	DragStart:POINT
-	LOCAL	tvi:TVITEM
 
+	invoke GetWindowLong,hParent,0
+	invoke GetExpand,eax
 	mov		edx,lParam
 	mov		eax,[edx].NMTREEVIEW.itemNew.hItem
 	mov		TVDragItem,eax
-	mov		tvi.hItem,eax
-	mov		tvi._mask,TVIF_STATE
-	mov		tvi.state,TVIS_DROPHILITED
-	invoke SendMessage,hWin,TVM_SETITEM,0,addr tvi
 	invoke GetCursorPos,addr DragStart
 	invoke SendMessage,hWin,TVM_SELECTITEM,TVGN_DROPHILITE,TVDragItem
 	invoke SendMessage,hWin,TVM_CREATEDRAGIMAGE,0,TVDragItem
@@ -417,21 +424,28 @@ TVEndDrag proc uses ebx esi edi,hWin:HWND
 			mov		edx,tvi.lParam
 			mov		eax,tvi.hItem
 			.if sdword ptr [edx].PBITEM.id>0
+				; The drop item is not a group, get parent
 				invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_PARENT,eax
 			.endif
-			; The group item is here
+			; Get pointer to drop item
 			mov		tvi._mask,TVIF_PARAM
 			mov		tvi.hItem,eax
 			invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
 			mov		esi,tvi.lParam
 			mov		tvi._mask,TVIF_PARAM
+			; Get pointer dragged item
 			mov		eax,TVDragItem
 			mov		tvi.hItem,eax
 			invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
 			mov		edi,tvi.lParam
-			mov		eax,[esi].PBITEM.id
-			mov		[edi].PBITEM.idparent,eax
-			invoke SendMessage,[ebx].PROJECTBROWSER.hwnd,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
+			; Check if the drop item is a child of the dragged item
+			mov		eax,[esi].PBITEM.hitem
+			call	IsParent
+			.if !eax
+				mov		eax,[esi].PBITEM.id
+				mov		[edi].PBITEM.idparent,eax
+				invoke SendMessage,[ebx].PROJECTBROWSER.hwnd,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
+			.endif
 		.endif
 	.endif
 	invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
@@ -441,6 +455,20 @@ TVEndDrag proc uses ebx esi edi,hWin:HWND
 	invoke ImageList_EndDrag
 	invoke ImageList_Destroy,hDragIml
 	ret
+
+IsParent:
+	.while TRUE
+		mov		tvi._mask,TVIF_PARAM
+		mov		tvi.hItem,eax
+		invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
+		.if edi==tvi.lParam
+			mov		eax,TRUE
+			.break
+		.endif
+		invoke SendMessage,hWin,TVM_GETNEXTITEM,TVGN_PARENT,tvi.hItem
+		.break .if !eax
+	.endw
+	retn
 
 TVEndDrag endp
 
@@ -507,16 +535,17 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					mov		eax,1
 				.endif
 				mov		[ebx].PROJECTBROWSER.ngrouping,eax
-				invoke AddGroups,ebx
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
+				invoke AddGroups,ebx,0,0
 				invoke AddFiles,ebx
-				invoke ExpandAll,[ebx].PROJECTBROWSER.htrv,0
+				invoke SetExpand,ebx
 			.elseif eax==2
 				mov		nCollapsed,0
 				invoke IsGroupCollapsed,[ebx].PROJECTBROWSER.htrv,0,addr nCollapsed
 				.if nCollapsed
-					invoke ExpandAll,[ebx].PROJECTBROWSER.htrv,0
+					invoke ExpandAll,ebx
 				.else
-					invoke CollapseAll,[ebx].PROJECTBROWSER.htrv,0
+					invoke CollapseAll,ebx
 				.endif
 			.endif
 		.endif
@@ -573,17 +602,17 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke ImageList_DragMove,pt.x,pt.y
 			invoke GetWindowRect,[ebx].PROJECTBROWSER.htrv,addr rect
 			invoke GetScrollPos,[ebx].PROJECTBROWSER.htrv,SB_VERT
-			mov		ebx,eax
+			mov		edi,eax
 			mov		edx,pt.y
 			.if sdword ptr edx<rect.top
-				dec		ebx
-				mov		eax,ebx
+				dec		edi
+				mov		eax,edi
 				shl		eax,16
 				or		eax,SB_LINEUP
 				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,WM_VSCROLL,eax,0
 			.elseif sdword ptr edx>rect.bottom
-				inc		ebx
-				mov		eax,ebx
+				inc		edi
+				mov		eax,edi
 				shl		eax,16
 				or		eax,SB_LINEDOWN
 				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,WM_VSCROLL,eax,0
@@ -598,8 +627,9 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if eax==[ebx].PROJECTBROWSER.htrv
 				mov		eax,[esi].NMHDR.code
 				.if eax==TVN_BEGINDRAG
+					invoke SetFocus,[esi].NMHDR.hwndFrom
 					mov		edi,[esi].NM_TREEVIEW.itemNew.lParam
-					.if sdword ptr [edi].PBITEM.id!=-1
+					.if sdword ptr [edi].PBITEM.id!=-1 && [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
 						invoke TVBeginDrag,[ebx].PROJECTBROWSER.htrv,hWin,lParam
 					.else
 						invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SELECTITEM,TVGN_CARET,[esi].NM_TREEVIEW.itemNew.hItem
@@ -689,9 +719,10 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		[ebx].PROJECTBROWSER.ngrouping,eax
 		.if wParam
 			invoke SortItems,ebx
-			invoke AddGroups,ebx
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
+			invoke AddGroups,ebx,0,0
 			invoke AddFiles,ebx
-			invoke ExpandAll,[ebx].PROJECTBROWSER.htrv,0
+			invoke SetExpand,ebx
 		.endif
 		xor		eax,eax
 		jmp		Ex

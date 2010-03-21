@@ -24,7 +24,6 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-;PrintText "WM_INITDIALOG"
 		invoke GetDlgItem,hWin,IDC_RAP
 		mov		hPbr,eax
 		invoke SendMessage,hPbr,RPBM_SETPATH,0,addr pbpath
@@ -47,7 +46,6 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			lea		esi,[esi+sizeof PBITEM]
 		.endw
 		invoke SendMessage,hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
-;PrintText "WM_INITDIALOG"
 	.elseif eax==WM_COMMAND
 
 	.elseif eax==WM_NOTIFY

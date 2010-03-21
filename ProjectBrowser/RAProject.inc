@@ -25,6 +25,8 @@ PBITEM struct
 	id			dd ?					;<0 for groups,>0 for files
 	idparent	dd ?					;id of parent group
 	szitem		db MAX_PATH dup(?)		;Group string for groups, path & filename for files
+	expanded	dd ?					;TRUE if expanded
+	hitem		dd ?					;Handle of treview item
 PBITEM ends
 
 ;Notifications
