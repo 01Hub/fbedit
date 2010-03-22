@@ -131,27 +131,31 @@ GetExpand proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 	LOCAL	tvi:TV_ITEM
 
 	mov		ebx,lpPROJECTBROWSER
-	mov		esi,[ebx].PROJECTBROWSER.hmemitems
-	.while [esi].PBITEM.id
-		.if sdword ptr [esi].PBITEM.id<0
-			mov		tvi._mask,TVIF_STATE or TVIF_CHILDREN
-			mov		tvi.stateMask,TVIS_EXPANDED
-			mov		eax,[esi].PBITEM.hitem
-			mov		tvi.hItem,eax
-			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_GETITEM,0,addr tvi
-			.if tvi.cChildren
-				test	tvi.state,TVIS_EXPANDED
-				.if ZERO?
-					mov		[esi].PBITEM.expanded,FALSE
-				.else
-					mov		[esi].PBITEM.expanded,TRUE
+	.if [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
+		mov		esi,[ebx].PROJECTBROWSER.hmemitems
+		.while [esi].PBITEM.id
+			.if sdword ptr [esi].PBITEM.id<0 && [esi].PBITEM.hitem
+				mov		tvi._mask,TVIF_STATE or TVIF_CHILDREN
+				mov		tvi.stateMask,TVIS_EXPANDED
+				mov		eax,[esi].PBITEM.hitem
+				mov		tvi.hItem,eax
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_GETITEM,0,addr tvi
+				.if eax
+					.if tvi.cChildren
+						test	tvi.state,TVIS_EXPANDED
+						.if ZERO?
+							mov		[esi].PBITEM.expanded,FALSE
+						.else
+							mov		[esi].PBITEM.expanded,TRUE
+						.endif
+					.else
+						mov		[esi].PBITEM.expanded,TRUE
+					.endif
 				.endif
-			.else
-				mov		[esi].PBITEM.expanded,TRUE
 			.endif
-		.endif
-		lea		esi,[esi+sizeof PBITEM]
-	.endw
+			lea		esi,[esi+sizeof PBITEM]
+		.endw
+	.endif
 	ret
 
 GetExpand endp
@@ -275,8 +279,6 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 		.if sdword ptr [esi].PBITEM.id>0
 			.if [ebx].PROJECTBROWSER.ngrouping==RPBG_NONE
 				mov		eax,-1
-			.elseif [ebx].PROJECTBROWSER.ngrouping==RPBG_PATH
-				mov		eax,-1
 			.elseif [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
 				mov		eax,[esi].PBITEM.idparent
 			.endif
@@ -298,6 +300,70 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 	ret
 
 AddFiles endp
+
+DeleteItem proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,lpItem:DWORD
+
+	mov		ebx,lpPROJECTBROWSER
+	mov		edi,lpItem
+	.if sdword ptr [edi].PBITEM.id<0
+		mov		eax,[edi].PBITEM.id
+		mov		edx,[edi].PBITEM.idparent
+		call	SetNewidparent
+	.endif
+	lea		esi,[edi+sizeof PBITEM]
+	.while [edi].PBITEM.id
+		mov		ecx,sizeof PBITEM
+		rep movsb
+	.endw
+	ret
+
+SetNewidparent:
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while [esi].PBITEM.id
+		.if eax==[esi].PBITEM.idparent
+			mov		[esi].PBITEM.idparent,edx
+		.endif
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
+	retn
+
+DeleteItem endp
+
+GetFreeid proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,nid:DWORD,ninc:DWORD
+
+	mov		ebx,lpPROJECTBROWSER
+	mov		edi,nid
+	.while TRUE
+		call	Testid
+		.break.if !eax
+		add		edi,ninc
+	.endw
+	mov		eax,edi
+	ret
+
+Testid:
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	.while edi!=[esi].PBITEM.id && [esi].PBITEM.id
+		lea		esi,[esi+sizeof PBITEM]
+	.endw
+	mov		eax,[esi].PBITEM.id
+	retn
+
+GetFreeid endp
+
+GetFreeIndex proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
+
+	mov		ebx,lpPROJECTBROWSER
+	mov		esi,[ebx].PROJECTBROWSER.hmemitems
+	xor		edi,edi
+	.while [esi].PBITEM.id
+		lea		esi,[esi+sizeof PBITEM]
+		inc		edi
+	.endw
+	mov		eax,edi
+	ret
+
+GetFreeIndex endp
 
 NotifyDblClick proc uses ebx,hWin:HWND,lpPBITEM:DWORD
 	LOCAL	pbn:NMPBITEMDBLCLICK
@@ -539,6 +605,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	pt:POINT
 	LOCAL	nCollapsed:DWORD
 	LOCAL	tvi:TV_ITEM
+	LOCAL	pbi:PBITEM
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -594,14 +661,10 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			.if eax==1
 				mov		eax,[ebx].PROJECTBROWSER.ngrouping
 				inc		eax
-				.if eax>3
-					mov		eax,1
+				.if eax>RPBG_GROUPS
+					mov		eax,RPBG_NONE
 				.endif
-				mov		[ebx].PROJECTBROWSER.ngrouping,eax
-				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
-				invoke AddGroups,ebx,0,0
-				invoke AddFiles,ebx
-				invoke SetExpand,ebx
+				invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,eax
 			.elseif eax==2
 				mov		nCollapsed,0
 				invoke IsGroupCollapsed,[ebx].PROJECTBROWSER.htrv,0,addr nCollapsed
@@ -738,6 +801,15 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 						.endif
 					.endif
 				.endif
+			.elseif [esi].NMHDR.code==TTN_NEEDTEXT
+				;Toolbar tooltip
+				mov		eax,offset szGrouping
+				.if [esi].NMHDR.idFrom==2
+					mov		eax,offset szExpand
+				.endif
+				mov		[esi].TOOLTIPTEXT.lpszText,eax
+				xor		eax,eax
+				jmp		Ex
 			.endif
 		.endif
 	.elseif eax==RPBM_SETPATH
@@ -803,7 +875,15 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==RPBM_SETGROUPING
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
+		.if [ebx].PROJECTBROWSER.ngrouping==RPBG_GROUPS
+			invoke GetExpand,ebx
+		.endif
 		mov		eax,lParam
+		.if sdword ptr eax<RPBG_NONE
+			mov		eax,RPBG_NONE
+		.elseif sdword ptr eax>RPBG_GROUPS
+			mov		eax,RPBG_GROUPS
+		.endif
 		mov		[ebx].PROJECTBROWSER.ngrouping,eax
 		.if wParam
 			invoke SortItems,ebx
@@ -835,8 +915,10 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.if eax
 			mov		tvi._mask,TVIF_PARAM
 			mov		tvi.hItem,eax
-			invoke SendMessage,hWin,TVM_GETITEM,0,addr tvi
-			mov		eax,tvi.lParam
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_GETITEM,0,addr tvi
+			.if eax
+				mov		eax,tvi.lParam
+			.endif
 		.endif
 		jmp		Ex
 	.elseif eax==RPBM_SETBACKCOLOR
@@ -870,6 +952,60 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==RPBM_SETTOOLTIP
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
+		mov		eax,wParam
+		.if eax==1
+			invoke lstrcpyn,addr szGrouping,lParam,64
+		.elseif eax==2
+			invoke lstrcpyn,addr szExpand,lParam,64
+		.endif
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==RPBM_ADDNEWGROUP
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke SendMessage,hWin,RPBM_GETSELECTED,0,0
+		.if eax
+			mov		esi,eax
+			invoke RtlZeroMemory,addr pbi,sizeof PBITEM
+			invoke GetFreeid,ebx,-2,-1
+			mov		pbi.id,eax
+			.if sdword ptr [esi].PBITEM.id<0
+				mov		eax,[esi].PBITEM.id
+			.else
+				mov		eax,[esi].PBITEM.idparent
+			.endif
+			mov		pbi.idparent,eax
+			invoke lstrcpy,addr pbi.szitem,addr szNewGroup
+			invoke GetFreeIndex,ebx
+			mov		edx,eax
+			invoke SendMessage,hWin,RPBM_ADDITEM,edx,addr pbi
+			invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
+			invoke FindItemFromid,ebx,pbi.id
+			.if eax
+				mov		esi,eax
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SELECTITEM,TVGN_CARET,[esi].PBITEM.hitem
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EDITLABEL,0,[esi].PBITEM.hitem
+				mov		eax,esi
+			.endif
+		.endif
+		jmp		Ex
+	.elseif eax==RPBM_DELETEITEM
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke SendMessage,hWin,RPBM_GETSELECTED,0,0
+		.if eax
+			invoke DeleteItem,ebx,eax
+			invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
+			mov		eax,TRUE
+		.endif
+		jmp		Ex
+	.elseif eax==RPBM_EDITITEM
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke SendMessage,hWin,RPBM_GETSELECTED,0,0
+		.if eax
+			invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_EDITLABEL,0,[eax].PBITEM.hitem
+		.endif
 		xor		eax,eax
 		jmp		Ex
 	.endif

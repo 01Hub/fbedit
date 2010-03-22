@@ -20,10 +20,16 @@ includelib \RadASM\masm\lib\debug.lib
 
 DlgProc			PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 
-.const
+IDD_DIALOG1						equ 101
+IDC_RAP							equ 1001
 
-IDD_DIALOG1			equ 101
-IDC_RAP				equ 1001
+IDR_MENU						equ 10000
+IDM_PROJECT						equ 10001
+IDM_PROJECT_ADDGROUP			equ 10002
+IDM_PROJECT_DELGROUP			equ 10003
+IDM_PROJECT_EDITGROUP			equ 10004
+
+.const
 
 szRAProject			db 'RAProject.dll',0
 
@@ -50,5 +56,6 @@ pbpath				db 'C:\Assembly\Project\MyProject',0
 hInstance			HINSTANCE ?
 hLib				HMODULE ?
 hPbr				HWND ?
+hMnu				HMENU ?
 
 ;#########################################################################

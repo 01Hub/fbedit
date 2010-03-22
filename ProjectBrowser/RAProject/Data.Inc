@@ -28,7 +28,6 @@ PROJECTBROWSER struct
 	hmemfileext		HGLOBAL ?
 	hmemitems		HGLOBAL ?
 	ngrouping		dd ?
-	expanded		dd 256 dup(?)
 PROJECTBROWSER ends
 
 SORT struct
@@ -47,6 +46,12 @@ btns					TBBUTTON <8,1,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 CombSort_Const			REAL4 1.3
 szBS					db '\',0
+szNewGroup				db 'New Group',0
+
+.data
+
+szGrouping				db 'Grouping',64 dup(0)
+szExpand				db 'Expand / Collapse',64 dup(0)
 
 .data?
 

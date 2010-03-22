@@ -15,6 +15,7 @@ AutoDelete=1
 AskMe=0
 MinorFiles=*.res;*.obj;
 5=..\RAProject.inc
+6=Browse.mnu
 [MakeFiles]
 0=Browse.rap
 1=Browse.rc
@@ -59,6 +60,7 @@ Group=Assembly,Resources
 3=2
 4=2
 5=1
+6=2
 [AutoLoad]
 AutoLoad=1,2,4,5
 [VersionControl]
@@ -71,7 +73,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=22
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=3
 MilestoneOnDateTimeDate=18
@@ -104,7 +106,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=96608689
+PTimer=104529702
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
@@ -129,7 +131,7 @@ GroupExpand=1,1,0
 2=
 1=
 [Size]
-5=0,0,851,458,1767
-2=0,0,0,0,1106
-1=0,0,0,0,1525
+5=0,0,851,458,1366
+2=0,0,0,0,561
+1=0,0,0,0,1543
 4=0,0,0,0
