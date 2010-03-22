@@ -3091,6 +3091,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		nTabInx,-1
 		invoke UpdateAll,WM_CLOSE
 		.if !eax
+			invoke SaveProject,addr da.szSessionFile
 			invoke AskSaveSessionFile
 			.if !eax
 				invoke MakeSession,TRUE

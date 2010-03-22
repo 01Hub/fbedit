@@ -1007,6 +1007,12 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		.endif
 		xor		eax,eax
 		jmp		Ex
+	.elseif eax==RPBM_GETEXPAND
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke GetExpand,ebx
+		xor		eax,eax
+		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:

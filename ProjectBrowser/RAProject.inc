@@ -1,3 +1,6 @@
+InstallProjectBrowser	PROTO :DWORD,:DWORD
+UnInstallProjectBrowser	PROTO
+
 ;Messages
 RPBM_SETPATH			equ WM_USER+1	;wParam=0, lParam=Pointer to path string
 RPBM_GETPATH			equ WM_USER+2	;wParam=0, lParam=0 Returns pointer to path string
@@ -18,6 +21,7 @@ RPBM_SETTOOLTIP			equ WM_USER+16	;wParam=n (1 or 2), lParam=lpszText
 RPBM_ADDNEWGROUP		equ WM_USER+17	;wParam=0, lParam=0 Returns pointer to a PBITEM structure
 RPBM_DELETEITEM			equ WM_USER+18	;wParam=0, lParam=0
 RPBM_EDITITEM			equ WM_USER+19	;wParam=0, lParam=0
+RPBM_GETEXPAND			equ WM_USER+20	;wParam=0, lParam=0
 
 PBFILEEXT struct
 	id			dd ?					;image index
