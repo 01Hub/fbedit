@@ -46,6 +46,7 @@ btns					TBBUTTON <8,1,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 						TBBUTTON <9,2,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 CombSort_Const			REAL4 1.3
+szBS					db '\',0
 
 .data?
 
@@ -54,3 +55,4 @@ lpOldGroupTrvEditProc	dd ?
 IsDragging				dd ?
 TVDragItem				dd ?
 hDragIml				HIMAGELIST ?
+szitemnew				db MAX_PATH dup(?)

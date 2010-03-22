@@ -54,9 +54,11 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==hPbr
 			mov		eax,[esi].NMHDR.code
 			.if eax==RPBN_DBLCLICK
-				mov		esi,[esi].PBNOTIFY.lpPBITEM
+				mov		esi,[esi].NMPBITEMDBLCLICK.lpPBITEM
 lea		eax,[esi].PBITEM.szitem
-PrintStringByAddr eax
+;PrintStringByAddr eax
+			.elseif eax==RPBN_ITEMCHANGE
+				;mov		[esi].NMPBITEMCHANGE.cancel,TRUE
 			.endif
 		.endif
 	.elseif eax==WM_SIZE

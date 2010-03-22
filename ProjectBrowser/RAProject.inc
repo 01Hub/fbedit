@@ -7,8 +7,8 @@ RPBM_ADDITEM			equ WM_USER+5	;wParam=Index, lParam=Pointer to a PBITEM structure
 RPBM_GETITEM			equ WM_USER+6	;wParam=Index, lParam=0 Returns pointer to a PBITEM structure
 RPBM_SETGROUPING		equ WM_USER+7	;wParam=FALSE/TRUE(Refresh), lParam=1,2 or 3
 RPBM_GETGROUPING		equ WM_USER+8	;wParam=0, lParam=0 Returns grouping 1,2 or 3
-RPBM_SETSELECTED		equ WM_USER+9	;wParam=0, lParam=lpFile
-RPBM_GETSELECTED		equ WM_USER+10	;wParam=0, lParam=lpFile
+RPBM_SETSELECTED		equ WM_USER+9	;wParam=0, lParam=lpszItem
+RPBM_GETSELECTED		equ WM_USER+10	;wParam=0, lParam=0 Returns pointer to a PBITEM structure
 RPBM_SETBACKCOLOR		equ WM_USER+11	;wParam=0, lParam=nColor
 RPBM_GETBACKCOLOR		equ WM_USER+12	;wParam=0, lParam=0
 RPBM_SETTEXTCOLOR		equ WM_USER+13	;wParam=0, lParam=nColor
@@ -27,15 +27,24 @@ PBITEM struct
 	szitem		db MAX_PATH dup(?)		;Group string for groups, path & filename for files
 	expanded	dd ?					;TRUE if expanded
 	hitem		dd ?					;Handle of treview item
+	lParam		dd ?					;Application defined 32 bit value
 PBITEM ends
 
 ;Notifications
 RPBN_DBLCLICK			equ 1
+RPBN_ITEMCHANGE			equ 2
 
-PBNOTIFY struct
+NMPBITEMDBLCLICK struct
 	nmhdr		NMHDR <?>
-	lpPBITEM		dd ?
-PBNOTIFY ends
+	lpPBITEM	dd ?
+NMPBITEMDBLCLICK ends
+
+NMPBITEMCHANGE struct
+	nmhdr		NMHDR <?>
+	lpPBITEM	dd ?
+	lpsznew		dd ?
+	cancel		dd ?
+NMPBITEMCHANGE ends
 
 ;Grouping
 RPBG_NONE				equ 1
