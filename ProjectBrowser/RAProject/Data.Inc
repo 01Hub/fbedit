@@ -15,7 +15,7 @@ include \RadASM\masm\inc\debug.inc
 includelib masm32.lib
 includelib \RadASM\masm\lib\debug.lib
 
-IDB_TRV					equ 300
+IDB_TRV					equ 310
 MAXITEMMEM				equ 128*1024
 MAXFIEEXTMEM			equ 8*1024
 

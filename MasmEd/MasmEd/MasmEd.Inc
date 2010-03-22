@@ -31,6 +31,9 @@ includelib ..\Lib\RAResEd.lib
 include Inc\RAHexEd.inc
 includelib ..\Lib\RAHexEd.lib
 
+include Inc\RAProject.inc
+includelib ..\Lib\RAProject.lib
+
 include Inc\RAFile.inc
 includelib ..\Lib\RAFile.lib
 
@@ -169,6 +172,7 @@ IDC_OUT					equ 1006
 IDC_IMMOUT				equ 1022
 IDC_DBGREG				equ 1020
 IDC_DBGWATCH			equ 1024
+IDC_PROJECT				equ 1019
 IDC_FILE				equ 1014
 IDC_PROPERTY			equ 1015
 IDC_BTNTABCLOSE			equ 1002
@@ -177,6 +181,7 @@ IDC_STC					equ 1017
 IDC_CBO					equ 1018
 IDC_TABOUT				equ 1021
 IDC_TABWATCH			equ 1023
+IDC_TABPROJECT			equ 1006
 
 IDC_TOOLBOX				equ 1101
 IDC_DLGEDIT				equ 1102
@@ -377,8 +382,12 @@ szFloat					db 'FPU',0
 szMMX					db 'MMX',0
 szWatch					db 'Watch',0
 
+szFile					db 'File',0
+szProject				db 'Project',0
+
 szFmtDec				db '%d',0
 szPROTO					db ' PROTO',0
+pbfileext				PBFILEEXT 5 dup(<1,'.asm.'>,<2,'.inc.'>,<3,'.rc.'>,<4,'.txt.'>,<0>)
 
 .data
 
@@ -552,6 +561,7 @@ szBuild					db 'Build',0
 
 szFolder				db 'Folder',0
 szSession				db 'Session',0
+szProGroup				db 'Group',0
 szMRUFiles				db 'MRUFiles',0
 szMRUSessions			db 'MRUSessions',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0

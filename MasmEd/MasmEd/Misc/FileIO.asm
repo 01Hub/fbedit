@@ -791,6 +791,209 @@ GetItem:
 
 RestoreSession endp
 
+SetProjectGroups proc uses ebx esi edi
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	pbi:PBITEM
+
+	mov		nInx,0
+	invoke RtlZeroMemory,addr pbi,sizeof PBITEM
+	mov		esi,offset tmpbuff
+	.while byte ptr [esi]
+		call	GetItem
+		.if buffer
+			invoke AsciiToDw,addr buffer
+			mov		pbi.id,eax
+			call	GetItem
+			.if buffer
+				invoke AsciiToDw,addr buffer
+				mov		pbi.idparent,eax
+				call	GetItem
+				.if buffer
+					invoke AsciiToDw,addr buffer
+					mov		pbi.expanded,eax
+					call	GetItem
+					.if buffer
+						invoke lstrcpy,addr pbi.szitem,addr buffer
+						invoke SendMessage,ha.hPbr,RPBM_ADDITEM,nInx,addr pbi
+						inc		nInx
+					.endif
+				.endif
+			.endif
+		.endif
+	.endw
+	mov		eax,nInx
+	ret
+
+GetItem:
+	lea		edi,buffer
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	retn
+
+SetProjectGroups endp
+
+SetProjectFiles proc uses ebx esi edi,nInx:DWORD,lpszFile:DWORD
+	LOCAL	pbi:PBITEM
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke RtlZeroMemory,addr pbi,sizeof PBITEM
+	mov		edi,1
+	.while edi<257
+		invoke wsprintf,addr buffer,addr szFmtDec,edi
+		invoke GetPrivateProfileString,addr szProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
+		.if eax
+			mov		pbi.id,edi
+			mov		esi,offset tmpbuff
+			call	GetItem
+			.if buffer
+				invoke AsciiToDw,addr buffer
+				mov		pbi.idparent,eax
+				call	GetItem
+				.if buffer
+					invoke SendMessage,ha.hPbr,RPBM_GETPATH,0,0
+					invoke lstrcpy,addr tmpbuff,eax
+					invoke lstrcat,addr tmpbuff,addr szBackSlash
+					invoke lstrcat,addr tmpbuff,addr buffer
+					invoke lstrcpy,addr pbi.szitem,addr tmpbuff
+					invoke SendMessage,ha.hPbr,RPBM_ADDITEM,nInx,addr pbi
+					inc		nInx
+				.endif
+			.endif
+		.endif
+		inc		edi
+	.endw
+	mov		eax,nInx
+	ret
+
+GetItem:
+	push	edi
+	lea		edi,buffer
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	pop		edi
+	retn
+
+SetProjectFiles endp
+
+OpenProject proc uses esi edi,lpszFile:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+	invoke SendMessage,ha.hPbr,RPBM_ADDFILEEXT,0,0
+	invoke GetPrivateProfileString,addr szSession,addr szFolder,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
+	.if eax
+		invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr tmpbuff
+		mov		esi,offset pbfileext
+		xor		edi,edi
+		.while [esi].PBFILEEXT.id
+			invoke SendMessage,ha.hPbr,RPBM_ADDFILEEXT,edi,esi
+			inc		edi
+			lea		esi,[esi+sizeof PBFILEEXT]
+		.endw
+		invoke GetPrivateProfileString,addr szProject,addr szProGroup,addr szNULL,addr tmpbuff,sizeof tmpbuff,lpszFile
+		.if eax
+			invoke SetProjectGroups
+			.if eax
+				invoke SetProjectFiles,eax,lpszFile
+				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+			.endif
+		.endif
+	.endif
+	ret
+
+OpenProject endp
+
+SaveProject proc uses ebx esi edi,lpszFile:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	path[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	mov		word ptr tmpbuff,0
+	invoke WritePrivateProfileSection,addr szProject,addr tmpbuff,lpszFile
+	xor		ebx,ebx
+	.while TRUE
+		invoke SendMessage,ha.hPbr,RPBM_GETITEM,ebx,0
+		.if eax
+			mov		esi,eax
+			.break .if ![esi].PBITEM.id
+			.if sdword ptr [esi].PBITEM.id<0
+				lea		edi,buffer
+				invoke wsprintf,edi,addr szFmtDec,[esi].PBITEM.id
+				invoke lstrlen,edi
+				lea		edi,[edi+eax]
+				mov		word ptr [edi],','
+				inc		edi
+				invoke wsprintf,edi,addr szFmtDec,[esi].PBITEM.idparent
+				invoke lstrlen,edi
+				lea		edi,[edi+eax]
+				mov		word ptr [edi],','
+				inc		edi
+				invoke wsprintf,edi,addr szFmtDec,[esi].PBITEM.expanded
+				invoke lstrlen,edi
+				lea		edi,[edi+eax]
+				mov		word ptr [edi],','
+				inc		edi
+				invoke lstrcpy,edi,addr [esi].PBITEM.szitem
+				.if tmpbuff
+					invoke lstrcat,addr tmpbuff,addr szComma
+				.endif
+				invoke lstrcat,addr tmpbuff,addr buffer
+			.endif
+		.else
+			.break
+		.endif
+		inc		ebx
+	.endw
+	.if ebx
+		invoke WritePrivateProfileString,addr szProject,addr szProGroup,addr tmpbuff,lpszFile
+		invoke SendMessage,ha.hPbr,RPBM_GETPATH,0,0
+		invoke lstrcpy,addr path,eax
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendMessage,ha.hPbr,RPBM_GETITEM,ebx,0
+			.if eax
+				mov		esi,eax
+				.break .if ![esi].PBITEM.id
+				.if sdword ptr [esi].PBITEM.id>0
+					mov		edi,offset tmpbuff
+					invoke wsprintf,edi,addr szFmtDec,[esi].PBITEM.idparent
+					invoke lstrlen,edi
+					lea		edi,[edi+eax]
+					mov		word ptr [edi],','
+					inc		edi
+					invoke lstrcpy,addr buffer1,addr [esi].PBITEM.szitem
+					invoke RemovePath,addr [esi].PBITEM.szitem,addr path,addr buffer1
+					invoke lstrcpy,edi,addr [eax+1]
+					invoke wsprintf,addr buffer,addr szFmtDec,[esi].PBITEM.id
+					invoke WritePrivateProfileString,addr szProject,addr buffer,addr tmpbuff,lpszFile
+				.endif
+			.else
+				.break
+			.endif
+			inc		ebx
+		.endw
+	.endif
+	ret
+
+SaveProject endp
+
 ReadSessionFile proc lpszFile:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -813,6 +1016,7 @@ ReadSessionFile proc lpszFile:DWORD
 	.endif
 	invoke GetPrivateProfileInt,addr szSession,addr szBuild,0,lpszFile
 	invoke SendMessage,ha.hCbo,CB_SETCURSEL,eax,0
+	invoke OpenProject,lpszFile
 	ret
 
 ReadSessionFile endp

@@ -196,6 +196,7 @@ start:
 	invoke RAHexEdInstall,ha.hInstance,FALSE
 	invoke GridInstall,ha.hInstance,FALSE
 	invoke ResEdInstall,ha.hInstance,FALSE
+	invoke InstallProjectBrowser,ha.hInstance,FALSE
 	invoke InstallFileBrowser,ha.hInstance,FALSE
 	invoke InstallRACodeComplete,ha.hInstance,FALSE
 	invoke InstallRAProperty,ha.hInstance,FALSE
@@ -205,6 +206,7 @@ start:
 	invoke RAHexEdUnInstall
 	invoke GridUnInstall
 	invoke ResEdUninstall
+	invoke UnInstallProjectBrowser
 	invoke UnInstallFileBrowser
 	invoke UnInstallRACodeComplete
 	invoke UnInstallRAProperty
@@ -289,6 +291,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 				.endif
 			.endif
 			invoke RestoreSession,TRUE
+			.if da.szSessionFile
+				invoke OpenProject,addr da.szSessionFile
+			.endif
 		.endif
 	.endif
 	.while TRUE
@@ -1587,9 +1592,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			sub		eax,RESIZEHT
 			shr		edx,1
 			push	edx
-			invoke MoveWindow,ha.hBrowse,ecx,rect.top,eax,edx,TRUE
+			push	eax
+			push	edx
+			invoke MoveWindow,ha.hTabPbr,ecx,rect.top,eax,edx,TRUE
 			pop		edx
-			;Resize project browser
+			pop		eax
+			sub		eax,6
+			sub		edx,24+3
+			push	eax
+			push	edx
+			invoke MoveWindow,ha.hPbr,3,24,eax,edx,TRUE
+			pop		edx
+			pop		eax
+			invoke MoveWindow,ha.hBrowse,3,24,eax,edx,TRUE
+			pop		edx
+			;Resize property window
 			push	rect.top
 			add		edx,RESIZEHT
 			add		rect.top,edx
@@ -1791,8 +1808,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,ha.hInstance,0
 		mov		ha.hDbgTip,eax
 		invoke SendMessage,ha.hDbgTip,TTM_SETDELAYTIME,TTDT_AUTOPOP,10000
+		;File / Project tab
+		invoke GetDlgItem,hWin,IDC_TABPROJECT
+		mov		ha.hTabPbr,eax
+		mov		tci.imask,TCIF_TEXT
+		mov		tci.pszText,offset szFile
+		invoke SendMessage,ha.hTabPbr,TCM_INSERTITEM,999,addr tci
+		invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,eax,0
+		mov		tci.pszText,offset szProject
+		invoke SendMessage,ha.hTabPbr,TCM_INSERTITEM,999,addr tci
+		;Create project browser
+		invoke CreateWindowEx,0,addr szPBClassName,0,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or RPBS_FLATTOOLBAR,0,0,0,0,ha.hTabPbr,IDC_PROJECT,ha.hInstance,0
+		mov		ha.hPbr,eax
 		;Create file browser
-		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_FILE,ha.hInstance,0
+		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,ha.hTabPbr,IDC_FILE,ha.hInstance,0
 		mov		ha.hBrowse,eax
 		;Create property
 		invoke CreateWindowEx,0,addr szPropertyClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or PRSTYLE_FLATTOOLBAR,0,0,0,0,hWin,IDC_PROPERTY,ha.hInstance,0
@@ -2038,6 +2067,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
+					invoke SaveProject,addr da.szSessionFile
 					invoke AskSaveSessionFile
 					.if !eax
 						mov		da.szSessionFile,0
@@ -2045,6 +2075,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke CloseNotify
 						invoke UpdateAll,CLOSE_ALL
 					.endif
+					invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+					invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -3037,6 +3069,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,ha.hDbgWatch,SW_HIDE
 				invoke ShowWindow,ha.hDbgMMX,SW_HIDE
 			.endif
+		.elseif eax==TCN_SELCHANGE && ecx==IDC_TABPROJECT
+			invoke SendMessage,ha.hTabPbr,TCM_GETCURSEL,0,0
+			.if eax
+				invoke ShowWindow,ha.hPbr,SW_SHOWNA
+				invoke ShowWindow,ha.hBrowse,SW_HIDE
+			.else
+				invoke ShowWindow,ha.hBrowse,SW_SHOWNA
+				invoke ShowWindow,ha.hPbr,SW_HIDE
+			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
 		.if ha.hREd
@@ -3171,12 +3212,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==ha.hImmOut
 			invoke GetSubMenu,ha.hContextMnu,2
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
-		.elseif eax==ha.hBrowse
-			invoke GetSubMenu,ha.hContextMnu,3
-			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 		.elseif eax==ha.hProperty
 			invoke GetSubMenu,ha.hContextMnu,5
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+		.elseif eax==ha.hTabPbr
+			invoke SendMessage,ha.hTabPbr,TCM_GETCURSEL,0,0
+			.if eax
+				;Project browser
+				invoke GetSubMenu,ha.hContextMnu,6
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+			.else
+				;File browser
+				invoke GetSubMenu,ha.hContextMnu,3
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		movzx	eax,word ptr lParam

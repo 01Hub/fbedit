@@ -91,7 +91,7 @@ FindFileExt proc uses ebx esi edi,lpPROJECTBROWSER:DWORD,lpszFile:DWORD
 
 FindFileExt endp
 
-RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
+RemoveThePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 
 	add		lpBuff,21
 	invoke lstrcpy,lpBuff,lpszFileName
@@ -138,7 +138,7 @@ RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 	lea		eax,[edi+1]
 	ret
 
-RemovePath endp
+RemoveThePath endp
 
 CombSort PROC uses ebx esi edi,lpArr:DWORD,count:DWORD
 	LOCAL	Gap:DWORD
@@ -207,7 +207,7 @@ SortItems proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 	.while [esi].PBITEM.id
 		.if sdword ptr [esi].PBITEM.id>0
 			;File
-			invoke RemovePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
 			invoke lstrcpy,addr [edi].SORT.szname,eax
 			mov		[edi].SORT.lpPBITEM,esi
 			inc		nCount

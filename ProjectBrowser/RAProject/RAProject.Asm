@@ -286,7 +286,7 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 			mov		tvis.hParent,eax
 			mov		tvis.hInsertAfter,TVI_LAST
 			mov		tvis.item._mask,TVIF_IMAGE or TVIF_SELECTEDIMAGE or TVIF_PARAM or TVIF_TEXT
-			invoke RemovePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
 			mov		tvis.item.pszText,eax
 			invoke FindFileExt,ebx,eax
 			mov		tvis.item.iImage,eax
@@ -823,8 +823,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==RPBM_GETPATH
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		invoke lstrcpyn,lParam,[ebx].PROJECTBROWSER.projectpath,wParam
-		xor		eax,eax
+		lea		eax,[ebx].PROJECTBROWSER.projectpath
 		jmp		Ex
 	.elseif eax==RPBM_ADDFILEEXT
 		invoke GetWindowLong,hWin,0

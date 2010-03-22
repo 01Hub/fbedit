@@ -92,6 +92,8 @@ ADDINHANDLES struct
 	hReg					HKEY ?					;Handle to MasmEd's registry key.
 	hDbgFpu					HWND ?					;Handle to debug FPU window (RAEdit).
 	hDbgMMX					HWND ?					;Handle to debug MMX window (RAEdit).
+	hTabPbr					HWND ?					;Handle to File / Project tab
+	hPbr					HWND ?					;Handle to project browser
 ADDINHANDLES ends
 
 MAKEOPT struct
@@ -299,4 +301,7 @@ IDM_BROWSER_COPY			equ 21007
 IDM_PROPERTY_GOTODECLARE	equ 21010
 IDM_PROPERTY_COPYTOCODE		equ 21011
 IDM_PROPERTY_COPYPROTO		equ 21014
-
+IDM_PROJECT					equ 21015
+IDM_PROJECT_ADDGROUP		equ 21016
+IDM_PROJECT_REMOVEGROUP		equ 21017
+IDM_PROJECT_EDITGROUP		equ 21018

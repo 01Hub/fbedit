@@ -5,7 +5,7 @@ Description=Project Browser Custom Control
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Res.rc=1
 [Files]
 1=RAProject.Asm
@@ -30,7 +30,7 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 6=RAProject.def
 7=..\RAProject.dll
 8=RAProject.txt
-9=RAProject.lib
+9=..\Lib\RAProject.lib
 10=RAProject.mak
 11=RAProject.hla
 12=RAProject.com
@@ -49,14 +49,14 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 6=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 11=4,O,$B\RC.EXE /v,1
 12=3,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",2
-13=7,O,$B\LINK.EXE /SUBSYSTEM:WINDOWS /DEBUG /DLL /DEF:$6 /LIBPATH:"$L" /OUT:"$7",3
+13=9,O,$B\LIB.EXE /VERBOSE /SUBSYSTEM:WINDOWS /OUT:"$9",3
 14=0,0,,5
 15=rsrc.obj,O,$B\CVTRES.EXE,rsrc.res
 16=*.obj,O,$B\ML.EXE /c /coff /Cp /nologo /I"$I",*.asm
 17=0,0,"$E\OllyDbg",5
 [Resource]
 1=IDB_BMP,100,0,Res\ToolBox.bmp
-2=IDB_TRV,300,0,Res\Project.bmp
+2=IDB_TRV,310,0,Res\Project.bmp
 [StringTable]
 [VerInf]
 [Group]
@@ -115,7 +115,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=115014061
+PTimer=127373458
 [Collapse]
 2=
 1=,,,
@@ -124,12 +124,12 @@ PTimer=115014061
 7=
 9=
 [Size]
-2=0,0,0,0,991
-1=0,0,0,0,26254
+2=0,0,0,0,444
+1=0,0,0,0,21604
 3=0,0,0,0,0
 6=0,0,851,458,1417
 7=0,0,0,0,1618
-9=0,0,0,0,1312
+9=0,0,0,0,3387
 [GroupExpand]
 GroupExpand=1,1,1,0
 [BookMark]
