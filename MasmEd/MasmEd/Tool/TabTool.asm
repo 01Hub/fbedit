@@ -417,7 +417,6 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 		invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
 		.if eax
 			mov		eax,[eax].PBITEM.id
-PrintDec eax
 			mov		[ebx].TABMEM.pid,eax
 		.endif
 	.endif

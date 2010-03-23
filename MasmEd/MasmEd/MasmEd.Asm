@@ -291,9 +291,6 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 				.endif
 			.endif
 			invoke RestoreSession,TRUE
-;			.if da.szSessionFile
-;				invoke OpenProject,addr da.szSessionFile
-;			.endif
 		.endif
 	.endif
 	.while TRUE
@@ -2849,6 +2846,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hPbr,RPBM_EDITITEM,0,0
 			.elseif eax==IDM_PROJECT_ADDFILE
 				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr da.FileName
+				.if eax
+					mov		esi,eax
+					invoke GetWindowLong,ha.hREd,GWL_USERDATA
+					mov		edx,[esi].PBITEM.id
+					mov		[eax].TABMEM.pid,edx
+					invoke ParseEdit,ha.hREd,edx
+				.endif
 			.elseif eax==IDM_PROJECT_ADDALLFILES
 				invoke UpdateAll,ADDTOPROJECT
 			.elseif eax==IDM_PROJECT_REMOVEFILE

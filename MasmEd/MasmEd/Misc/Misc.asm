@@ -1567,6 +1567,11 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 				.endif
 			.elseif eax==ADDTOPROJECT
 				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr [ebx].TABMEM.filename
+				.if eax
+					mov		eax,[eax].PBITEM.id
+					mov		[ebx].TABMEM.pid,eax
+					invoke ParseEdit,[ebx].TABMEM.hwnd,eax
+				.endif
 			.endif
 		.endif
 		xor		eax,eax
