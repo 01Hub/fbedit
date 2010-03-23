@@ -1336,7 +1336,9 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 					mov		esi,eax
 					.if esi==IDC_RAE
 						invoke DeleteGoto,[ebx].TABMEM.hwnd
-						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
+						.if !da.fProject
+							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
+						.endif
 					.endif
 					invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_FILECLOSED,esi,[ebx].TABMEM.filename,0,HOOK_FILECLOSED
 					.if esi!=IDC_RES && esi!=IDC_USER
@@ -1563,6 +1565,8 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 						.endif
 					.endif
 				.endif
+			.elseif eax==ADDTOPROJECT
+				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr [ebx].TABMEM.filename
 			.endif
 		.endif
 		xor		eax,eax
@@ -1923,9 +1927,23 @@ GotoDeclare proc uses esi
 			.if !eax
 				invoke PushGoto,ha.hREd,chrg.cpMin
 				invoke SendMessage,ha.hProperty,PRM_FINDGETOWNER,0,0
-				invoke TabToolGetInx,eax
-				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
-				invoke TabToolActivate
+				.if da.fProject
+					push	eax
+					invoke TabToolGetInxFromPid,eax
+					pop		edx
+					.if eax==-1
+						invoke SendMessage,ha.hPbr,RPBM_FINDITEM,edx,0
+						.if eax
+							invoke OpenEditFile,addr [eax].PBITEM.szitem,IDC_RAE
+						.else
+							jmp		Ex
+						.endif
+					.endif
+				.else
+					invoke TabToolGetInx,eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+					invoke TabToolActivate
+				.endif
 				invoke SendMessage,ha.hProperty,PRM_FINDGETLINE,0,0
 				invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 				mov		chrg.cpMin,eax

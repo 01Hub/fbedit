@@ -126,6 +126,7 @@ UNLOCK_SOURCE_FILES		equ -14
 UNSAVED_SOURCE_FILES	equ -15
 NEWER_SOURCE_FILES		equ -16
 SAVE_SESSIONREGISTRY	equ -17
+ADDTOPROJECT			equ -18
 
 TABHT					equ 23
 CBOWT					equ 175
@@ -387,7 +388,9 @@ szProject				db 'Project',0
 
 szFmtDec				db '%d',0
 szPROTO					db ' PROTO',0
+
 pbfileext				PBFILEEXT 5 dup(<1,'.asm.'>,<2,'.inc.'>,<3,'.rc.'>,<4,'.txt.'>,<0>)
+szDefProGroups			db '-1,0,1,',0,',-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource',0
 
 .data
 

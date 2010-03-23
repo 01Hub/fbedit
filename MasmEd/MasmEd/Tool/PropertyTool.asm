@@ -219,10 +219,18 @@ MakePath:
 
 SetPropertyDefs endp
 
-ParseEdit proc hWin:HWND
+ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 	LOCAL	hMem:HGLOBAL
 
-	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hWin,0
+	.if da.fProject
+		.if !pid
+			jmp		Ex
+		.endif
+		mov		edi,pid
+	.else
+		mov		edi,hWin
+	.endif
+	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,edi,0
 	invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
 	inc		eax
 	push	eax
@@ -232,12 +240,49 @@ ParseEdit proc hWin:HWND
 	mov		hMem,eax
 	pop		eax
 	invoke SendMessage,hWin,WM_GETTEXT,eax,hMem
-	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,hWin,hMem
+	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
 	invoke GlobalFree,hMem
 	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+  Ex:
 	ret
 
 ParseEdit endp
+
+ParseFile proc uses edi,lpFileName:DWORD,pid:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	dwRead:DWORD
+	LOCAL	hMem:HGLOBAL
+
+	.if da.fProject && pid
+		invoke lstrlen,lpFileName
+		.if eax>4
+			add		eax,lpFileName
+			mov		eax,[eax-4]
+			and		eax,5F5F5FFFh
+			.if eax=='MSA.' || eax=='CNI.'
+				invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+				.if eax!=INVALID_HANDLE_VALUE
+					mov		hFile,eax
+					invoke GetFileSize,hFile,NULL
+					push	eax
+					shr		eax,12
+					inc		eax
+					shl		eax,12
+					invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+					mov     hMem,eax
+					pop		edx
+					invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+					invoke CloseHandle,hFile
+					invoke SendMessage,ha.hProperty,PRM_PARSEFILE,pid,hMem
+					invoke GlobalFree,hMem
+					invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+				.endif
+			.endif
+		.endif
+	.endif
+	ret
+
+ParseFile endp
 
 ;DumpStruct proc uses esi
 ;

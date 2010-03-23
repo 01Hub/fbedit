@@ -295,16 +295,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 59=8
 
 [Find]
-1="IDM_FILE_CLOSESESSION"
-2="closese"
-3="%d"
-4="szGroup"
-5="PRM_FINDFIRST"
-6="szFtAsm"
-7="asm"
-8="UpdateApiToolTip"
-9="szCCC"
-10="PRM_ISTOOLTIPMESSAGE"
+1="OpenProject"
+2="CreateFile,"
+3="CreateFile"
+4="ParseEdit"
+5="nchange"
+6="SetWinCaption"
+7="IDM_FILE_CLOSESESSION"
+8="closese"
+9="%d"
+10="szGroup"
 
 [VersionControl]
 Settings=1246
@@ -316,7 +316,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=22
+MilestoneOnDateDate=23
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -351,11 +351,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,9746
-1=0,0,0,0,91111
-11=0,0,0,0,23472
+2=0,0,687,524,19614
+1=0,0,0,0,8027
+11=0,0,0,0,41816
 22=0,0,0,0,748
-10=0,0,0,0,26290
+10=0,0,0,0,25351
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -374,7 +374,7 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,2140
+14=0,0,0,0,9086
 12=0,0,0,0,2434
 31=0,0,0,0,2186
 32=0,0,0,0
@@ -386,23 +386,23 @@ ProductVer4Range=0
 20=0,0,0,0,0
 38=0,0,0,0,28
 39=0,0,0,0
-40=0,0,0,0,387
+40=0,0,0,0,444
 42=0,0,0,0,1576
 43=0,0,0,0
 45=0,0,0,0,2973
-46=0,0,0,0,6465
+46=0,0,0,0,8610
 47=0,0,0,0
 48=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,0,0,13905
+53=0,0,0,0,9495
 54=0,0,0,0,254
 55=0,0,0,0
 56=0,0,0,0,5410
 57=0,0,0,0
-58=0,0,0,0,550
+58=0,0,851,458,1651
 
 [BookMark]
 0=
@@ -419,10 +419,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,45,33,58,53,10,11
+AutoLoad=1,2,38,53,10,11,40,14,45,46,58
 [Collapse]
 2=
-1=,,,,,,2147483616,2147483633,131071,
+1=,,,,,,2146435072,214073344/,2147483647,1,
 31=
 23=
 3=
@@ -456,7 +456,7 @@ AutoLoad=1,2,38,45,33,58,53,10,11
 56=
 58=
 [PTimer]
-PTimer=2837025881
+PTimer=2870965553
 [RADebugBP]
 1=
 2=

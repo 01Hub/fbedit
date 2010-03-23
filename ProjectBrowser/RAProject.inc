@@ -8,8 +8,8 @@ RPBM_ADDFILEEXT			equ WM_USER+3	;wParam=Index, lParam=Pointer to a PBFILEEXT str
 RPBM_GETFILEEXT			equ WM_USER+4	;wParam=Index, lParam=0 Returns pointer to a PBFILEEXT structure
 RPBM_ADDITEM			equ WM_USER+5	;wParam=Index, lParam=Pointer to a PBITEM structure, if NULL array is cleared
 RPBM_GETITEM			equ WM_USER+6	;wParam=Index, lParam=0 Returns pointer to a PBITEM structure
-RPBM_SETGROUPING		equ WM_USER+7	;wParam=FALSE/TRUE(Refresh), lParam=1,2 or 3
-RPBM_GETGROUPING		equ WM_USER+8	;wParam=0, lParam=0 Returns grouping 1,2 or 3
+RPBM_SETGROUPING		equ WM_USER+7	;wParam=FALSE/TRUE(Refresh), lParam=1 or 2
+RPBM_GETGROUPING		equ WM_USER+8	;wParam=0, lParam=0 Returns grouping 1 or 2
 RPBM_SETSELECTED		equ WM_USER+9	;wParam=0, lParam=lpszItem
 RPBM_GETSELECTED		equ WM_USER+10	;wParam=0, lParam=0 Returns pointer to a PBITEM structure
 RPBM_SETBACKCOLOR		equ WM_USER+11	;wParam=0, lParam=nColor
@@ -22,6 +22,8 @@ RPBM_ADDNEWGROUP		equ WM_USER+17	;wParam=0, lParam=0 Returns pointer to a PBITEM
 RPBM_DELETEITEM			equ WM_USER+18	;wParam=0, lParam=0
 RPBM_EDITITEM			equ WM_USER+19	;wParam=0, lParam=0
 RPBM_GETEXPAND			equ WM_USER+20	;wParam=0, lParam=0
+RPBM_ADDNEWFILE			equ WM_USER+21	;wParam=idparent or NULL, lParam=lpszFile Returns pointer to a PBITEM structure
+RPBM_FINDITEM			equ WM_USER+22	;wParam=0 or id, lParam=lpszFile Returns pointer to a PBITEM structure
 
 PBFILEEXT struct
 	id			dd ?					;image index

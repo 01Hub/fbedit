@@ -230,12 +230,37 @@ TabToolGetInx proc uses ebx,hWin:DWORD
 			mov		ebx,tci.lParam
 			mov		eax,[ebx].TABMEM.hwnd
 			.break .if eax==hWin
+		.else
+			mov		nInx,-1
 		.endif
 	.endw
 	mov		eax,nInx
 	ret
 
 TabToolGetInx endp
+
+TabToolGetInxFromPid proc uses ebx,pid:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TC_ITEM
+
+	mov		nInx,-1
+	mov		tci.imask,TCIF_PARAM
+	mov		eax,TRUE
+	.while eax
+		inc		nInx
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
+		.if eax
+			mov		ebx,tci.lParam
+			mov		eax,[ebx].TABMEM.pid
+			.break .if eax==pid
+		.else
+			mov		nInx,-1
+		.endif
+	.endw
+	mov		eax,nInx
+	ret
+
+TabToolGetInxFromPid endp
 
 TabToolSetText proc nInx:DWORD,lpFileName:DWORD
 	LOCAL	tci:TC_ITEM
@@ -325,6 +350,9 @@ TabToolActivate proc uses ebx
 		invoke SendMessage,ha.hREd,WM_GETTEXTLENGTH,0,0
 		mov		nLastSize,eax
 	.endif
+	.if da.fProject
+		invoke SendMessage,ha.hPbr,RPBM_SETSELECTED,0,addr da.FileName
+	.endif
 	ret
 
 TabToolActivate endp
@@ -384,6 +412,14 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	.if eax==IDC_RAE
 		invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
 		mov		nLastSize,eax
+	.endif
+	.if da.fProject
+		invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
+		.if eax
+			mov		eax,[eax].PBITEM.id
+PrintDec eax
+			mov		[ebx].TABMEM.pid,eax
+		.endif
 	.endif
 	ret
 

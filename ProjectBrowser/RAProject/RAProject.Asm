@@ -1013,6 +1013,54 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke GetExpand,ebx
 		xor		eax,eax
 		jmp		Ex
+	.elseif eax==RPBM_ADDNEWFILE
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke FindItemFromString,ebx,lParam
+		.if !eax
+			invoke RtlZeroMemory,addr pbi,sizeof PBITEM
+			invoke GetFreeid,ebx,1,1
+			mov		pbi.id,eax
+			.if sdword ptr wParam<0
+				mov		eax,wParam
+				mov		pbi.idparent,eax
+			.else
+				invoke SendMessage,hWin,RPBM_GETSELECTED,0,0
+				.if eax
+					.if sdword ptr [eax].PBITEM.id<0
+						mov		eax,[eax].PBITEM.id
+					.else
+						mov		eax,[eax].PBITEM.idparent
+					.endif
+					mov		pbi.idparent,eax
+				.else
+					jmp		Ex
+				.endif
+			.endif
+			invoke lstrcpy,addr pbi.szitem,lParam
+			invoke GetFreeIndex,ebx
+			mov		edx,eax
+			invoke SendMessage,hWin,RPBM_ADDITEM,edx,addr pbi
+			invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
+			invoke FindItemFromid,ebx,pbi.id
+			.if eax
+				mov		esi,eax
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SELECTITEM,TVGN_CARET,[esi].PBITEM.hitem
+				mov		eax,esi
+			.endif
+		.else
+			xor		eax,eax
+		.endif
+		jmp		Ex
+	.elseif eax==RPBM_FINDITEM
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		.if wParam
+			invoke FindItemFromid,ebx,wParam
+		.else
+			invoke FindItemFromString,ebx,lParam
+		.endif
+		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:

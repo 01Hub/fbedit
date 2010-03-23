@@ -121,6 +121,7 @@ ADDINDATA struct
 	ver						DWORD ?					;MasmEd version
 	lpCharTab				DWORD ?					;Pointer to RAEdit character table
 	lpszVersion				DWORD ?					;Pointer to version string
+	fProject				DWORD ?					;TRUE if there is a project
 ADDINDATA ends
 
 ADDINPROCS struct
@@ -142,6 +143,7 @@ ADDINPROCS ends
 
 TABMEM struct
 	hwnd					HWND ?					;Handle of the editor window.
+	pid						DWORD ?					;Project id
 	filename				BYTE MAX_PATH dup (?)	;Filename including full path.
 	ft						FILETIME <?>			;Filetime for last write.
 	nchange					DWORD ?
@@ -302,6 +304,10 @@ IDM_PROPERTY_GOTODECLARE	equ 21010
 IDM_PROPERTY_COPYTOCODE		equ 21011
 IDM_PROPERTY_COPYPROTO		equ 21014
 IDM_PROJECT					equ 21015
+IDM_PROJECT_CREATE			equ 21022
 IDM_PROJECT_ADDGROUP		equ 21016
 IDM_PROJECT_REMOVEGROUP		equ 21017
 IDM_PROJECT_EDITGROUP		equ 21018
+IDM_PROJECT_ADDFILE			equ 21019
+IDM_PROJECT_ADDALLFILES		equ 21020
+IDM_PROJECT_REMOVEFILE		equ 21021

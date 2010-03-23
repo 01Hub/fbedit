@@ -291,9 +291,9 @@ WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
 				.endif
 			.endif
 			invoke RestoreSession,TRUE
-			.if da.szSessionFile
-				invoke OpenProject,addr da.szSessionFile
-			.endif
+;			.if da.szSessionFile
+;				invoke OpenProject,addr da.szSessionFile
+;			.endif
 		.endif
 	.endif
 	.while TRUE
@@ -1820,6 +1820,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create project browser
 		invoke CreateWindowEx,0,addr szPBClassName,0,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or RPBS_FLATTOOLBAR,0,0,0,0,ha.hTabPbr,IDC_PROJECT,ha.hInstance,0
 		mov		ha.hPbr,eax
+		invoke SendMessage,ha.hPbr,RPBM_ADDFILEEXT,0,0
+		mov		esi,offset pbfileext
+		xor		edi,edi
+		.while [esi].PBFILEEXT.id
+			invoke SendMessage,ha.hPbr,RPBM_ADDFILEEXT,edi,esi
+			inc		edi
+			lea		esi,[esi+sizeof PBFILEEXT]
+		.endw
 		;Create file browser
 		invoke CreateWindowEx,0,addr szFBClassName,0,WS_CHILD or WS_VISIBLE or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or FBSTYLE_FLATTOOLBAR,0,0,0,0,ha.hTabPbr,IDC_FILE,ha.hInstance,0
 		mov		ha.hBrowse,eax
@@ -2028,8 +2036,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if ebx!=IDC_RES && ebx!=IDC_USER
 							.if ebx==IDC_RAE
 								invoke DeleteGoto,ha.hREd
-								invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
-								invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+								.if !da.fProject
+									invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
+									invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+								.endif
 							.endif
 							invoke DestroyWindow,ha.hREd
 						.endif
@@ -2042,9 +2052,19 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL
+					.if da.fProject
+						invoke SaveProject,addr da.szSessionFile
+						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+						invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+						invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+						mov		da.fProject,FALSE
+					.endif
 					mov		da.szSessionFile,0
 					mov		da.MainFile,0
 					invoke CloseNotify
+					invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,0,0
+					invoke ShowWindow,ha.hBrowse,SW_SHOWNA
+					invoke ShowWindow,ha.hPbr,SW_HIDE
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -2067,16 +2087,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE
 				.if !eax
-					invoke SaveProject,addr da.szSessionFile
 					invoke AskSaveSessionFile
 					.if !eax
+						invoke UpdateAll,CLOSE_ALL
+						.if da.fProject
+							invoke SaveProject,addr da.szSessionFile
+							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+							invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+							invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+							mov		da.fProject,FALSE
+						.endif
 						mov		da.szSessionFile,0
 						mov		da.MainFile,0
 						invoke CloseNotify
-						invoke UpdateAll,CLOSE_ALL
+						invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,0,0
+						invoke ShowWindow,ha.hBrowse,SW_SHOWNA
+						invoke ShowWindow,ha.hPbr,SW_HIDE
 					.endif
-					invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-					invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -2812,6 +2839,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 					.endw
 				.endif
+			.elseif eax==IDM_PROJECT_CREATE
+				invoke CreateProject,addr da.szSessionFile
+			.elseif eax==IDM_PROJECT_ADDGROUP
+				invoke SendMessage,ha.hPbr,RPBM_ADDNEWGROUP,0,0
+			.elseif eax==IDM_PROJECT_REMOVEGROUP
+				invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
+			.elseif eax==IDM_PROJECT_EDITGROUP
+				invoke SendMessage,ha.hPbr,RPBM_EDITITEM,0,0
+			.elseif eax==IDM_PROJECT_ADDFILE
+				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr da.FileName
+			.elseif eax==IDM_PROJECT_ADDALLFILES
+				invoke UpdateAll,ADDTOPROJECT
+			.elseif eax==IDM_PROJECT_REMOVEFILE
+				invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -2966,7 +3007,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetWindowLong,ha.hREd,GWL_USERDATA
 						.if [eax].TABMEM.fupdate
 							mov		[eax].TABMEM.fupdate,FALSE
-							invoke ParseEdit,ha.hREd
+							invoke ParseEdit,ha.hREd,[eax].TABMEM.pid
 						.endif
 					.endif
 				.elseif cctype==CCTYPE_ALL
@@ -2985,6 +3026,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 			mov		fTimer,2
+		.elseif eax==RPBN_DBLCLICK && ecx==IDC_PROJECT
+			;Projectbrowser
+			mov		eax,[edi].NMPBITEMDBLCLICK.lpPBITEM
+			invoke OpenEditFile,addr [eax].PBITEM.szitem,0
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
 			;Filebrowser
 			invoke OpenEditFile,[edi].FBNOTIFY.lpfile,0
@@ -3004,12 +3049,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==LBN_DBLCLK && ecx==IDC_PROPERTY
 			;Property list
-			invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
-			invoke PushGoto,ha.hREd,chrg.cpMin
+			.if ha.hREd
+				invoke GetWindowLong,ha.hREd,GWL_ID
+				.if eax==IDC_RAE
+					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+					invoke PushGoto,ha.hREd,chrg.cpMin
+				.endif
+			.endif
 			push	[edi].RAPNOTIFY.nline
-			invoke TabToolGetInx,[edi].RAPNOTIFY.nid
-			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
-			invoke TabToolActivate
+			.if da.fProject
+				invoke TabToolGetInxFromPid,[edi].RAPNOTIFY.nid
+			.else
+				invoke TabToolGetInx,[edi].RAPNOTIFY.nid
+			.endif
+			.if eax==-1
+				invoke SendMessage,ha.hPbr,RPBM_FINDITEM,[edi].RAPNOTIFY.nid,0
+				.if eax
+					invoke OpenEditFile,addr [eax].PBITEM.szitem,IDC_RAE
+				.else
+					jmp		Ex
+				.endif
+			.else
+				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+				invoke TabToolActivate
+			.endif
 			pop		eax
 			invoke SendMessage,ha.hREd,EM_LINEINDEX,eax,0
 			mov		chrg.cpMin,eax
@@ -3221,7 +3284,68 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				;Project browser
 				invoke GetSubMenu,ha.hContextMnu,6
-				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+				mov		edi,eax
+				push	-1
+				invoke SendMessage,ha.hPbr,RPBM_GETITEM,0,0
+				.if ![eax].PBITEM.id
+					;No project
+					push	IDM_PROJECT_CREATE
+					mov		eax,MF_BYCOMMAND or MF_GRAYED
+					.if da.szSessionFile && da.MainFile
+						mov		eax,MF_BYCOMMAND or MF_ENABLED
+					.endif
+					push	eax
+					mov		eax,MF_BYCOMMAND or MF_GRAYED
+					push	IDM_PROJECT_ADDGROUP
+					push	eax
+					push	IDM_PROJECT_REMOVEGROUP
+					push	eax
+					push	IDM_PROJECT_EDITGROUP
+					push	eax
+					push	IDM_PROJECT_ADDFILE
+					push	eax
+					push	IDM_PROJECT_ADDALLFILES
+					push	eax
+					push	IDM_PROJECT_REMOVEFILE
+					push	eax
+				.else
+					push	IDM_PROJECT_CREATE
+					push	MF_BYCOMMAND or MF_GRAYED
+					push	IDM_PROJECT_ADDGROUP
+					push	MF_BYCOMMAND or MF_ENABLED
+					invoke SendMessage,ha.hPbr,RPBM_GETSELECTED,0,0
+					.if sdword ptr [eax].PBITEM.id<0
+						push	IDM_PROJECT_REMOVEFILE
+						push	MF_BYCOMMAND or MF_GRAYED
+					.endif
+					.if sdword ptr [eax].PBITEM.id<-1
+						mov		eax,MF_BYCOMMAND or MF_ENABLED
+					.else
+						push	IDM_PROJECT_REMOVEFILE
+						push	MF_BYCOMMAND or MF_ENABLED
+						mov		eax,MF_BYCOMMAND or MF_GRAYED
+					.endif
+					push	IDM_PROJECT_REMOVEGROUP
+					push	eax
+					push	IDM_PROJECT_EDITGROUP
+					push	eax
+					.if ha.hREd
+						mov		eax,MF_BYCOMMAND or MF_ENABLED
+					.else
+						mov		eax,MF_BYCOMMAND or MF_GRAYED
+					.endif
+					push	IDM_PROJECT_ADDFILE
+					push	eax
+					push	IDM_PROJECT_ADDALLFILES
+					push	eax
+				.endif
+				pop		eax
+				.while eax!=-1
+					pop		edx
+					invoke EnableMenuItem,edi,edx,eax
+					pop		eax
+				.endw
+				invoke TrackPopupMenu,edi,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
 			.else
 				;File browser
 				invoke GetSubMenu,ha.hContextMnu,3
