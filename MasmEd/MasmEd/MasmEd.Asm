@@ -677,329 +677,369 @@ CreateNewRes proc
 
 CreateNewRes endp
 
-MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+MenuEnable proc uses ebx
 	LOCAL	chrg:CHARRANGE
 
-	.if fTimer
-		dec		fTimer
-		.if ZERO?
-			invoke UpdateAll,IS_RESOURCE_OPEN,0
-			xor		eax,1
-			mov		edx,IDM_FILE_NEW_RES
-			call	EnableDisable
-			mov		eax,ErrID
-			mov		edx,IDM_EDIT_CLEARERRORS
-			call	EnableDisable
-			mov		edx,IDM_EDIT_NEXTERROR
-			call	EnableDisable
-			xor		eax,eax
-			.if da.szSessionFile
-				mov		eax,TRUE
-			.endif
-			mov		edx,IDM_FILE_CLOSESESSION
-			call	EnableDisable
-			.if ha.hREd
-				invoke GetWindowLong,ha.hREd,GWL_ID
-			.else
-				mov		eax,-1
-			.endif
-			.if eax==-1
-				call	DisableRes
-				call	DisableEdit
-				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
-			.elseif eax==IDC_RES
-				call	DisableEdit
-				invoke SendMessage,ha.hResEd,DEM_GETMEM,DEWM_DIALOG,0
-				mov		edx,IDM_VIEW_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_TABINDEX
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_CANUNDO,0,0
-				mov		edx,IDM_EDIT_UNDO
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_CANREDO,0,0
-				mov		edx,IDM_EDIT_REDO
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_ISSELECTION,0,0
-				mov		edx,IDM_EDIT_CUT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COPY
-				call	EnableDisable
-				mov		edx,IDM_EDIT_DELETE
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_CENTER
-				call	EnableDisable
-				.if eax!=2
-					xor		eax,eax
-				.endif
-				mov		edx,IDM_FORMAT_ALIGN
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SIZE
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_CANPASTE,0,0
-				mov		edx,IDM_EDIT_PASTE
-				call	EnableDisable
-				mov		eax,TRUE
-				mov		edx,IDM_FORMAT_LOCK
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_GRID
-				call	EnableDisable
-				mov		edx,IDM_FORMAT_SNAP
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_DIALOG
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MENU
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_ACCEL
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_VERINF
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_MANIFEST
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RCDATA
-				call	EnableDisable
-				mov		edx,22000
-				.while edx<22000+32
-					call	EnableDisable
-					inc		edx
-				.endw
-				mov		edx,IDM_RESOURCE_TOOLBAR
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_LANGUAGE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_INCLUDE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_RESOURCE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_STRING
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_NAME
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_EXPORT
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_REMOVE
-				call	EnableDisable
-				mov		edx,IDM_RESOURCE_UNDO
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_ISBACK,0,0
-				xor		eax,TRUE
-				mov		edx,IDM_FORMAT_BACK
-				call	EnableDisable
-				invoke SendMessage,ha.hResEd,DEM_ISFRONT,0,0
-				xor		eax,TRUE
-				mov		edx,IDM_FORMAT_FRONT
-				call	EnableDisable
-				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
-			.elseif eax==IDC_RAE
-				call	DisableRes
-				mov		eax,TRUE
-				mov		edx,IDM_FILE_PRINT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_SELECTALL
-				call	EnableDisable
-				mov		edx,IDM_EDIT_TOGGLEBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FIND
-				call	EnableDisable
-				mov		edx,IDM_EDIT_REPLACE
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDNEXT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDPREV
-				call	EnableDisable
-				mov		edx,IDM_EDIT_GOTO
-				call	EnableDisable
-				mov		eax,offset gotostack
-				mov		eax,[eax].DECLARE.hWin
-				mov		edx,IDM_EDIT_RETURN
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
-				mov		edx,IDM_EDIT_UNDO
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_CANREDO,0,0
-				mov		edx,IDM_EDIT_REDO
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
-				mov		eax,chrg.cpMax
-				sub		eax,chrg.cpMin
-				mov		edx,IDM_EDIT_CUT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COPY
-				call	EnableDisable
-				mov		edx,IDM_EDIT_DELETE
-				call	EnableDisable
-				mov		edx,IDM_EDIT_INDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_OUTDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COMMENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_UNCOMMENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_BLOCKCONVERT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_BLOCKSPCTRIM
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
-				mov		edx,IDM_EDIT_PASTE
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,REM_GETMODE,0,0
-				and		eax,MODE_BLOCK
-				mov		edx,IDM_EDIT_BLOCKINSERT
-				call	EnableDisable
-				.if !eax
-					mov		eax,MF_BYCOMMAND or MF_UNCHECKED
-				.else
-					mov		eax,MF_BYCOMMAND or MF_CHECKED
-				.endif
-				invoke CheckMenuItem,ha.hMnu,IDM_EDIT_BLOCKMODE,eax
-				mov		eax,TRUE
-				mov		edx,IDM_EDIT_BLOCKMODE
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
-				mov		ebx,eax
-				invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,ebx,3
-				inc		eax
-				mov		edx,IDM_EDIT_NEXTBM
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,ebx,3
-				inc		eax
-				mov		edx,IDM_EDIT_PREVBM
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,-1,3
-				inc		eax
-				mov		edx,IDM_EDIT_CLEARBM
-				call	EnableDisable
-
-				mov		eax,TRUE
-				mov		edx,IDM_DEBUG_TOGGLE
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_CLEAR
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_RUN
-				call	EnableDisable
-				mov		eax,fDebugging
-				mov		edx,IDM_DEBUG_BREAK
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_STOP
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_INTO
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_OVER
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_CARET
-				call	EnableDisable
-
-			.elseif eax==IDC_HEX
-				call	DisableRes
+	invoke UpdateAll,IS_RESOURCE_OPEN,0
+	xor		eax,1
+	mov		edx,IDM_FILE_NEW_RES
+	call	EnableDisable
+	mov		eax,ErrID
+	mov		edx,IDM_EDIT_CLEARERRORS
+	call	EnableDisable
+	mov		edx,IDM_EDIT_NEXTERROR
+	call	EnableDisable
+	xor		eax,eax
+	.if da.szSessionFile
+		mov		eax,TRUE
+	.endif
+	mov		edx,IDM_FILE_CLOSESESSION
+	call	EnableDisable
+	mov		edx,IDM_PROJECT_CREATE
+	.if da.fProject
+		xor		eax,eax
+	.endif
+	call	EnableDisable
+	.if !da.fProject
+		xor		eax,eax
+		mov		edx,IDM_PROJECT_ADDGROUP
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDFILE
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDALLFILES
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDEXISTINGFILE
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_REMOVEGROUP
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_REMOVEFILE
+		call	EnableDisable
+	.else
+		mov		eax,TRUE
+		mov		edx,IDM_PROJECT_ADDGROUP
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDFILE
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDALLFILES
+		call	EnableDisable
+		mov		edx,IDM_PROJECT_ADDEXISTINGFILE
+		call	EnableDisable
+		invoke SendMessage,ha.hPbr,RPBM_GETSELECTED,0,0
+		.if eax
+			.if sdword ptr [eax].PBITEM.id>0
 				xor		eax,eax
-				mov		edx,IDM_FILE_PRINT
+				mov		edx,IDM_PROJECT_REMOVEGROUP
 				call	EnableDisable
-				mov		edx,IDM_EDIT_INDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_OUTDENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COMMENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_UNCOMMENT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_GOTO
-				call	EnableDisable
-				mov		edx,IDM_EDIT_RETURN
-				call	EnableDisable
-
-				mov		eax,TRUE
-				mov		edx,IDM_EDIT_SELECTALL
-				call	EnableDisable
-				mov		edx,IDM_EDIT_TOGGLEBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FIND
-				call	EnableDisable
-				mov		edx,IDM_EDIT_REPLACE
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDNEXT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_FINDPREV
-				call	EnableDisable
-
-				invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
-				mov		edx,IDM_EDIT_UNDO
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_CANREDO,0,0
-				mov		edx,IDM_EDIT_REDO
-				call	EnableDisable
-				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
-				mov		eax,chrg.cpMax
-				sub		eax,chrg.cpMin
-				mov		edx,IDM_EDIT_CUT
-				call	EnableDisable
-				mov		edx,IDM_EDIT_COPY
-				call	EnableDisable
-				mov		edx,IDM_EDIT_DELETE
-				call	EnableDisable
-
-				invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
-				mov		edx,IDM_EDIT_PASTE
-				call	EnableDisable
-
-				xor		eax,eax
-				mov		edx,IDM_EDIT_BLOCKMODE
-				call	EnableDisable
-				mov		edx,IDM_EDIT_BLOCKINSERT
-				call	EnableDisable
-
-				invoke SendMessage,ha.hREd,HEM_ANYBOOKMARKS,0,0
-				mov		edx,IDM_EDIT_NEXTBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_PREVBM
-				call	EnableDisable
-				mov		edx,IDM_EDIT_CLEARBM
-				call	EnableDisable
-
-				mov		eax,FALSE
-				mov		edx,IDM_DEBUG_TOGGLE
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_CLEAR
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_CARET
-				call	EnableDisable
-
-				mov		eax,fDebugging
-				mov		edx,IDM_DEBUG_RUN
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_BREAK
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_STOP
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_INTO
-				call	EnableDisable
-				mov		edx,IDM_DEBUG_OVER
-				call	EnableDisable
-				mov		eax,chrg.cpMin
-				mov		edx,eax
-				shr		edx,5
-				and		eax,31
-				invoke ShowPos,edx,eax
-			.elseif eax==IDC_USER
-				call	DisableRes
-				call	DisableEdit
-				invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
-			.endif
-			xor		eax,eax
-			test	wpos.fView,4
-			.if !ZERO?
 				inc		eax
-			.endif
-			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
-			invoke ShowSession
-			invoke ShowProc,nLastLine
-			invoke GetCapture
-			.if !eax
-				invoke UpdateAll,IS_CHANGED,0
+				mov		edx,IDM_PROJECT_REMOVEFILE
+				call	EnableDisable
+			.elseif sdword ptr [eax].PBITEM.id<-1
+				xor		eax,eax
+				mov		edx,IDM_PROJECT_REMOVEFILE
+				call	EnableDisable
+				inc		eax
+				mov		edx,IDM_PROJECT_REMOVEGROUP
+				call	EnableDisable
 			.else
-				mov		fTimer,1
+				xor		eax,eax
+				mov		edx,IDM_PROJECT_REMOVEGROUP
+				call	EnableDisable
+				mov		edx,IDM_PROJECT_REMOVEFILE
+				call	EnableDisable
 			.endif
+		.else
+			mov		edx,IDM_PROJECT_REMOVEGROUP
+			call	EnableDisable
+			mov		edx,IDM_PROJECT_REMOVEFILE
+			call	EnableDisable
 		.endif
+	.endif
+	.if ha.hREd
+		invoke GetWindowLong,ha.hREd,GWL_ID
+	.else
+		mov		eax,-1
+	.endif
+	.if eax==-1
+		call	DisableRes
+		call	DisableEdit
+		invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
+	.elseif eax==IDC_RES
+		call	DisableEdit
+		invoke SendMessage,ha.hResEd,DEM_GETMEM,DEWM_DIALOG,0
+		mov		edx,IDM_VIEW_DIALOG
+		call	EnableDisable
+		mov		edx,IDM_FORMAT_TABINDEX
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_CANUNDO,0,0
+		mov		edx,IDM_EDIT_UNDO
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_CANREDO,0,0
+		mov		edx,IDM_EDIT_REDO
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_ISSELECTION,0,0
+		mov		edx,IDM_EDIT_CUT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_COPY
+		call	EnableDisable
+		mov		edx,IDM_EDIT_DELETE
+		call	EnableDisable
+		mov		edx,IDM_FORMAT_CENTER
+		call	EnableDisable
+		.if eax!=2
+			xor		eax,eax
+		.endif
+		mov		edx,IDM_FORMAT_ALIGN
+		call	EnableDisable
+		mov		edx,IDM_FORMAT_SIZE
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_CANPASTE,0,0
+		mov		edx,IDM_EDIT_PASTE
+		call	EnableDisable
+		mov		eax,TRUE
+		mov		edx,IDM_FORMAT_LOCK
+		call	EnableDisable
+		mov		edx,IDM_FORMAT_GRID
+		call	EnableDisable
+		mov		edx,IDM_FORMAT_SNAP
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_DIALOG
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_MENU
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_ACCEL
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_VERINF
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_MANIFEST
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_RCDATA
+		call	EnableDisable
+		mov		edx,22000
+		.while edx<22000+32
+			call	EnableDisable
+			inc		edx
+		.endw
+		mov		edx,IDM_RESOURCE_TOOLBAR
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_LANGUAGE
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_INCLUDE
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_RESOURCE
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_STRING
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_NAME
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_EXPORT
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_REMOVE
+		call	EnableDisable
+		mov		edx,IDM_RESOURCE_UNDO
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_ISBACK,0,0
+		xor		eax,TRUE
+		mov		edx,IDM_FORMAT_BACK
+		call	EnableDisable
+		invoke SendMessage,ha.hResEd,DEM_ISFRONT,0,0
+		xor		eax,TRUE
+		mov		edx,IDM_FORMAT_FRONT
+		call	EnableDisable
+		invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
+	.elseif eax==IDC_RAE
+		call	DisableRes
+		mov		eax,TRUE
+		mov		edx,IDM_FILE_PRINT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_SELECTALL
+		call	EnableDisable
+		mov		edx,IDM_EDIT_TOGGLEBM
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FIND
+		call	EnableDisable
+		mov		edx,IDM_EDIT_REPLACE
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FINDNEXT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FINDPREV
+		call	EnableDisable
+		mov		edx,IDM_EDIT_GOTO
+		call	EnableDisable
+		mov		eax,offset gotostack
+		mov		eax,[eax].DECLARE.hWin
+		mov		edx,IDM_EDIT_RETURN
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
+		mov		edx,IDM_EDIT_UNDO
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_CANREDO,0,0
+		mov		edx,IDM_EDIT_REDO
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+		mov		eax,chrg.cpMax
+		sub		eax,chrg.cpMin
+		mov		edx,IDM_EDIT_CUT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_COPY
+		call	EnableDisable
+		mov		edx,IDM_EDIT_DELETE
+		call	EnableDisable
+		mov		edx,IDM_EDIT_INDENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_OUTDENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_COMMENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_UNCOMMENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_BLOCKCONVERT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_BLOCKSPCTRIM
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
+		mov		edx,IDM_EDIT_PASTE
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,REM_GETMODE,0,0
+		and		eax,MODE_BLOCK
+		mov		edx,IDM_EDIT_BLOCKINSERT
+		call	EnableDisable
+		.if !eax
+			mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+		.else
+			mov		eax,MF_BYCOMMAND or MF_CHECKED
+		.endif
+		invoke CheckMenuItem,ha.hMnu,IDM_EDIT_BLOCKMODE,eax
+		mov		eax,TRUE
+		mov		edx,IDM_EDIT_BLOCKMODE
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		mov		ebx,eax
+		invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,ebx,3
+		inc		eax
+		mov		edx,IDM_EDIT_NEXTBM
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,REM_PRVBOOKMARK,ebx,3
+		inc		eax
+		mov		edx,IDM_EDIT_PREVBM
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,REM_NXTBOOKMARK,-1,3
+		inc		eax
+		mov		edx,IDM_EDIT_CLEARBM
+		call	EnableDisable
+
+		mov		eax,TRUE
+		mov		edx,IDM_DEBUG_TOGGLE
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_CLEAR
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_RUN
+		call	EnableDisable
+		mov		eax,fDebugging
+		mov		edx,IDM_DEBUG_BREAK
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_STOP
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_INTO
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_OVER
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_CARET
+		call	EnableDisable
+
+	.elseif eax==IDC_HEX
+		call	DisableRes
+		xor		eax,eax
+		mov		edx,IDM_FILE_PRINT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_INDENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_OUTDENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_COMMENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_UNCOMMENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_GOTO
+		call	EnableDisable
+		mov		edx,IDM_EDIT_RETURN
+		call	EnableDisable
+
+		mov		eax,TRUE
+		mov		edx,IDM_EDIT_SELECTALL
+		call	EnableDisable
+		mov		edx,IDM_EDIT_TOGGLEBM
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FIND
+		call	EnableDisable
+		mov		edx,IDM_EDIT_REPLACE
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FINDNEXT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_FINDPREV
+		call	EnableDisable
+
+		invoke SendMessage,ha.hREd,EM_CANUNDO,0,0
+		mov		edx,IDM_EDIT_UNDO
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_CANREDO,0,0
+		mov		edx,IDM_EDIT_REDO
+		call	EnableDisable
+		invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+		mov		eax,chrg.cpMax
+		sub		eax,chrg.cpMin
+		mov		edx,IDM_EDIT_CUT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_COPY
+		call	EnableDisable
+		mov		edx,IDM_EDIT_DELETE
+		call	EnableDisable
+
+		invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
+		mov		edx,IDM_EDIT_PASTE
+		call	EnableDisable
+
+		xor		eax,eax
+		mov		edx,IDM_EDIT_BLOCKMODE
+		call	EnableDisable
+		mov		edx,IDM_EDIT_BLOCKINSERT
+		call	EnableDisable
+
+		invoke SendMessage,ha.hREd,HEM_ANYBOOKMARKS,0,0
+		mov		edx,IDM_EDIT_NEXTBM
+		call	EnableDisable
+		mov		edx,IDM_EDIT_PREVBM
+		call	EnableDisable
+		mov		edx,IDM_EDIT_CLEARBM
+		call	EnableDisable
+
+		mov		eax,FALSE
+		mov		edx,IDM_DEBUG_TOGGLE
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_CLEAR
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_CARET
+		call	EnableDisable
+
+		mov		eax,fDebugging
+		mov		edx,IDM_DEBUG_RUN
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_BREAK
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_STOP
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_INTO
+		call	EnableDisable
+		mov		edx,IDM_DEBUG_OVER
+		call	EnableDisable
+		mov		eax,chrg.cpMin
+		mov		edx,eax
+		shr		edx,5
+		and		eax,31
+		invoke ShowPos,edx,eax
+	.elseif eax==IDC_USER
+		call	DisableRes
+		call	DisableEdit
+		invoke SendMessage,ha.hSbr,SB_SETTEXT,0,addr szNULL
 	.endif
 	ret
 
@@ -1162,6 +1202,32 @@ EnableDisable:
 	pop		edx
 	pop		eax
 	retn
+
+MenuEnable endp
+
+MyTimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	.if fTimer
+		dec		fTimer
+		.if ZERO?
+			invoke MenuEnable
+			xor		eax,eax
+			test	wpos.fView,4
+			.if !ZERO?
+				inc		eax
+			.endif
+			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+			invoke ShowSession
+			invoke ShowProc,nLastLine
+			invoke GetCapture
+			.if !eax
+				invoke UpdateAll,IS_CHANGED,0
+			.else
+				mov		fTimer,1
+			.endif
+		.endif
+	.endif
+	ret
 
 MyTimerProc endp
 
@@ -3081,6 +3147,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.endif
+		.elseif eax==RPBN_SELCHANGE && ecx==IDC_PROJECT
+			mov		fTimer,1
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
 			;Filebrowser
 			invoke OpenEditFile,[edi].FBNOTIFY.lpfile,0

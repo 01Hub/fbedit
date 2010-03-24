@@ -235,6 +235,23 @@ BEGIN
     END
     MENUITEM "&Set tabindex",IDM_FORMAT_TABINDEX
   END
+  POPUP "&Project",21015
+  BEGIN
+    MENUITEM "Create Project",21022
+    MENUITEM "",,0x00000800
+    POPUP "Add Item",21023
+    BEGIN
+      MENUITEM "Groip",21016
+      MENUITEM "Current File",21019
+      MENUITEM "All Open Files",21020
+      MENUITEM "Existing File",21027
+    END
+    POPUP "Remove Item",21024
+    BEGIN
+      MENUITEM "Group",21017
+      MENUITEM "File",21021
+    END
+  END
   POPUP "&View",IDM_VIEW
   BEGIN
     MENUITEM "&Toolbar",IDM_VIEW_TOOLBAR

@@ -42,11 +42,17 @@ PBITEM ends
 ;Notifications
 RPBN_DBLCLICK			equ 1
 RPBN_ITEMCHANGE			equ 2
+RPBN_SELCHANGE			equ 3
 
 NMPBITEMDBLCLICK struct
 	nmhdr		NMHDR <?>
 	lpPBITEM	dd ?
 NMPBITEMDBLCLICK ends
+
+NMPBSELCHANGE struct
+	nmhdr		NMHDR <?>
+	lpPBITEM	dd ?
+NMPBSELCHANGE ends
 
 NMPBITEMCHANGE struct
 	nmhdr		NMHDR <?>

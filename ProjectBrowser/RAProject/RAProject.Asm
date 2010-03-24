@@ -406,6 +406,25 @@ NotifyItemChange proc uses ebx,hWin:HWND,lpPBITEM:DWORD
 
 NotifyItemChange endp
 
+NotifySelChange proc uses ebx,hWin:HWND,lpPBITEM:DWORD
+	LOCAL	pbn:NMPBSELCHANGE
+
+	invoke GetWindowLong,hWin,0
+	mov		ebx,eax
+	mov		eax,hWin
+	mov		pbn.nmhdr.hwndFrom,eax
+	invoke GetWindowLong,eax,GWL_ID
+	mov		pbn.nmhdr.idFrom,eax
+	mov		pbn.nmhdr.code,RPBN_SELCHANGE
+	mov		eax,lpPBITEM
+	mov		pbn.lpPBITEM,eax
+	invoke GetParent,hWin
+	mov		edx,eax
+	invoke SendMessage,edx,WM_NOTIFY,pbn.nmhdr.idFrom,addr pbn
+	ret
+
+NotifySelChange endp
+
 GroupTrvEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
@@ -803,6 +822,8 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 							.endif
 						.endif
 					.endif
+				.elseif eax==TVN_SELCHANGED
+					invoke NotifySelChange,hWin,[esi].NM_TREEVIEW.itemNew.lParam
 				.endif
 			.elseif [esi].NMHDR.code==TTN_NEEDTEXT
 				;Toolbar tooltip
