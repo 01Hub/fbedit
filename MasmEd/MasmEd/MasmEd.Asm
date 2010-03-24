@@ -144,6 +144,9 @@ start:
 		.if da.ver<1103
 			mov		da.ver,1103
 		.endif
+		.if da.ver<1200
+			mov		da.ver,1200
+		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,ha.hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData
 		mov		lpcbData,sizeof nmeexp
@@ -168,7 +171,7 @@ start:
 		mov		psd.ptPaperSize.y,eax
 		mov		lpcbData,sizeof nmeexp
 	.else
-		mov		da.ver,1103
+		mov		da.ver,1200
 	.endif
 	invoke RegSetValueEx,ha.hReg,addr szVer,0,REG_BINARY,addr da.ver,sizeof da.ver
 	.if wpos.wtfile<50
@@ -680,7 +683,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if fTimer
 		dec		fTimer
 		.if ZERO?
-			invoke UpdateAll,IS_RESOURCE_OPEN
+			invoke UpdateAll,IS_RESOURCE_OPEN,0
 			xor		eax,1
 			mov		edx,IDM_FILE_NEW_RES
 			call	EnableDisable
@@ -992,7 +995,7 @@ MyTimerProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowProc,nLastLine
 			invoke GetCapture
 			.if !eax
-				invoke UpdateAll,IS_CHANGED
+				invoke UpdateAll,IS_CHANGED,0
 			.else
 				mov		fTimer,1
 			.endif
@@ -1297,11 +1300,11 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		fDebugging,eax
 		mov		fTimer,1
 		.if eax
-			invoke UpdateAll,LOCK_SOURCE_FILES
+			invoke UpdateAll,LOCK_SOURCE_FILES,0
 			invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
 			invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
 		.else
-			invoke UpdateAll,UNLOCK_SOURCE_FILES
+			invoke UpdateAll,UNLOCK_SOURCE_FILES,0
 			invoke ShowWindow,ha.hDbgReg,SW_HIDE
 			invoke ShowWindow,ha.hTabDbg,SW_HIDE
 		.endif
@@ -2016,7 +2019,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SetFocus,ha.hREd
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,SAVE_ALL,0
 			.elseif eax==IDM_FILE_SAVEAS
 				.if ha.hREd
 					invoke SaveEditAs,ha.hREd,offset da.FileName
@@ -2046,9 +2049,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_FILE_CLOSE_ALL
 				mov		nTabInx,-1
-				invoke UpdateAll,WM_CLOSE
+				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
-					invoke UpdateAll,CLOSE_ALL
+					invoke UpdateAll,CLOSE_ALL,0
 					.if da.fProject
 						invoke SaveProject,addr da.szSessionFile
 						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
@@ -2068,9 +2071,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_FILE_CLOSE_ALL_BUT
 				invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 				mov		nTabInx,eax
-				invoke UpdateAll,WM_CLOSE
+				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
-					invoke UpdateAll,CLOSE_ALL
+					invoke UpdateAll,CLOSE_ALL,0
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -2082,11 +2085,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		fTimer,1
 			.elseif eax==IDM_FILE_CLOSESESSION
 				mov		nTabInx,-1
-				invoke UpdateAll,WM_CLOSE
+				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
 					invoke AskSaveSessionFile
 					.if !eax
-						invoke UpdateAll,CLOSE_ALL
+						invoke UpdateAll,CLOSE_ALL,0
 						.if da.fProject
 							invoke SaveProject,addr da.szSessionFile
 							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
@@ -2390,7 +2393,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				mov		fTimer,1
 			.elseif eax==IDM_EDIT_CLEARERRORS
-				invoke UpdateAll,CLEAR_ERRORS
+				invoke UpdateAll,CLEAR_ERRORS,0
 			.elseif eax==IDM_EDIT_NEXTERROR
 				mov		eax,nErrID
 				mov		eax,ErrID[eax*4]
@@ -2399,7 +2402,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,ErrID
 				.endif
 				.if eax
-					invoke UpdateAll,FIND_ERROR
+					invoke UpdateAll,FIND_ERROR,0
 					inc		nErrID
 				.endif
 			.elseif eax==IDM_FORMAT_LOCK
@@ -2540,8 +2543,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_RESOURCE_UNDO
 				invoke SendMessage,ha.hResEd,PRO_UNDODELETED,0,0
 			.elseif eax==IDM_MAKE_COMPILE
-				invoke UpdateAll,CLEAR_ERRORS
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,CLEAR_ERRORS,0
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,TRUE
@@ -2550,8 +2553,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_ASSEMBLE
-				invoke UpdateAll,CLEAR_ERRORS
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,CLEAR_ERRORS,0
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_ASSEMBLE,offset da.MainFile,TRUE
@@ -2560,8 +2563,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_ASSEMBLE,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_LINK
-				invoke UpdateAll,CLEAR_ERRORS
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,CLEAR_ERRORS,0
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_LINK,offset da.MainFile,TRUE
@@ -2570,8 +2573,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_LINK,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_BUILD
-				invoke UpdateAll,CLEAR_ERRORS
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,CLEAR_ERRORS,0
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
@@ -2586,7 +2589,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_BUILD,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_RUN
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_RUN,offset da.MainFile,2
@@ -2595,8 +2598,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_RUN,offset da.MainFile,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_GO
-				invoke UpdateAll,CLEAR_ERRORS
-				invoke UpdateAll,SAVE_ALL
+				invoke UpdateAll,CLEAR_ERRORS,0
+				invoke UpdateAll,SAVE_ALL,0
 				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_GO,offset da.MainFile,0,HOOK_MAKEBEGIN
 				.if !eax
 					invoke OutputMake,IDM_MAKE_COMPILE,offset da.MainFile,2
@@ -2628,18 +2631,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax || edi
 						invoke SendMessage,ha.hREd,REM_SETBREAKPOINT,ebx,eax
 						invoke DebugCommand,FUNC_BPCLEARALL,0,0
-						invoke UpdateAll,SET_BREAKPOINTS
+						invoke UpdateAll,SET_BREAKPOINTS,0
 						invoke DebugCommand,FUNC_BPUPDATE,0,0
 					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
-				invoke UpdateAll,CLEAR_BREAKPOINTS
+				invoke UpdateAll,CLEAR_BREAKPOINTS,0
 				invoke DebugCommand,FUNC_BPCLEARALL,0,0
 				invoke DebugCommand,FUNC_BPUPDATE,0,0
 			.elseif eax==IDM_DEBUG_RUN
 				.if !fDebugging
 					mov		nUnsaved,0
-					invoke UpdateAll,UNSAVED_SOURCE_FILES
+					invoke UpdateAll,UNSAVED_SOURCE_FILES,0
 					.if nUnsaved
 						invoke wsprintf,addr buffer,addr szUnsaved,nUnsaved
 						invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
@@ -2654,7 +2657,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke GetFileTime,hFile,NULL,NULL,addr ftexe
 						invoke CloseHandle,hFile
 						mov		nNewer,0
-						invoke UpdateAll,NEWER_SOURCE_FILES
+						invoke UpdateAll,NEWER_SOURCE_FILES,0
 						.if nNewer
 							invoke wsprintf,addr buffer,addr szNewer,nNewer
 							invoke MessageBox,hWin,addr buffer,addr szAppName,MB_OK or MB_ICONERROR
@@ -2688,7 +2691,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.lpCallBack,offset DebugCallback
 					invoke SetDebugInfo,addr dbginf
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
-					invoke UpdateAll,SET_BREAKPOINTS
+					invoke UpdateAll,SET_BREAKPOINTS,0
 				.endif
 				invoke DebugCommand,FUNC_RUN,0,0
 			.elseif eax==IDM_DEBUG_BREAK
@@ -2840,10 +2843,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke CreateProject,addr da.szSessionFile
 			.elseif eax==IDM_PROJECT_ADDGROUP
 				invoke SendMessage,ha.hPbr,RPBM_ADDNEWGROUP,0,0
-			.elseif eax==IDM_PROJECT_REMOVEGROUP
-				invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
-			.elseif eax==IDM_PROJECT_EDITGROUP
-				invoke SendMessage,ha.hPbr,RPBM_EDITITEM,0,0
 			.elseif eax==IDM_PROJECT_ADDFILE
 				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr da.FileName
 				.if eax
@@ -2854,9 +2853,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ParseEdit,ha.hREd,edx
 				.endif
 			.elseif eax==IDM_PROJECT_ADDALLFILES
-				invoke UpdateAll,ADDTOPROJECT
-			.elseif eax==IDM_PROJECT_REMOVEFILE
+				invoke UpdateAll,ADDTOPROJECT,0
+			.elseif eax==IDM_PROJECT_ADDEXISTINGFILE
+				invoke strcpy,addr buffer,addr da.FileName
+				invoke OpenEdit
+				mov		fTimer,1
+				invoke lstrcmpi,addr buffer,addr da.FileName
+				.if eax
+					invoke SendMessage,hWin,WM_COMMAND,IDM_PROJECT_ADDFILE,NULL
+				.endif
+			.elseif eax==IDM_PROJECT_REMOVEGROUP
 				invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
+			.elseif eax==IDM_PROJECT_REMOVEFILE
+				invoke SendMessage,ha.hPbr,RPBM_GETSELECTED,0,0
+				.if eax
+					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[eax].PBITEM.id,0
+					invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
+					invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+				.endif
+			.elseif eax==IDM_PROJECT_EDITGROUP || eax==IDM_PROJECT_EDITFILE
+				invoke SendMessage,ha.hPbr,RPBM_EDITITEM,0,0
 			.endif
 		.endif
 	.elseif eax==WM_NOTIFY
@@ -3034,6 +3050,37 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Projectbrowser
 			mov		eax,[edi].NMPBITEMDBLCLICK.lpPBITEM
 			invoke OpenEditFile,addr [eax].PBITEM.szitem,0
+		.elseif eax==RPBN_ITEMCHANGE && ecx==IDC_PROJECT
+			;Projectbrowser
+			invoke GetFileAttributes,[edi].NMPBITEMCHANGE.lpsznew
+			.if eax!=INVALID_HANDLE_VALUE
+				;File exists
+				mov		[edi].NMPBITEMCHANGE.cancel,TRUE
+				invoke strcpy,offset tmpbuff,offset szFileExists
+				invoke strcat,offset tmpbuff,[edi].NMPBITEMCHANGE.lpsznew
+				invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
+			.else
+				mov		esi,[edi].NMPBITEMCHANGE.lpPBITEM
+				invoke UpdateAll,IS_OPEN,addr [esi].PBITEM.szitem
+				.if eax
+					;File is open
+					invoke UpdateFileName,eax,[edi].NMPBITEMCHANGE.lpsznew
+					.if eax
+						;Probably not a valid filename
+						mov		[edi].NMPBITEMCHANGE.cancel,TRUE
+					.endif
+				.else
+					;File is not open, copy it
+					invoke CopyFile,addr [esi].PBITEM.szitem,[edi].NMPBITEMCHANGE.lpsznew,TRUE
+					.if !eax
+						;Probably not a valid filename
+						mov		[edi].NMPBITEMCHANGE.cancel,TRUE
+						invoke strcpy,offset tmpbuff,offset szSaveFileFail
+						invoke strcat,offset tmpbuff,[edi].NMPBITEMCHANGE.lpsznew
+						invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
+					.endif
+				.endif
+			.endif
 		.elseif eax==FBN_DBLCLICK && ecx==IDC_FILE
 			;Filebrowser
 			invoke OpenEditFile,[edi].FBNOTIFY.lpfile,0
@@ -3156,9 +3203,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		Ex
 		.endif
 		mov		nTabInx,-1
-		invoke UpdateAll,WM_CLOSE
+		invoke UpdateAll,WM_CLOSE,0
 		.if !eax
-			invoke SaveProject,addr da.szSessionFile
 			invoke AskSaveSessionFile
 			.if !eax
 				invoke MakeSession,TRUE
@@ -3220,7 +3266,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		nInx
 		.endw
 		invoke KillTimer,hWin,200
-		invoke UpdateAll,WM_DESTROY
+		invoke UpdateAll,WM_DESTROY,0
 		invoke DeleteObject,ha.hFont
 		invoke DeleteObject,ha.hIFont
 		invoke DeleteObject,ha.hLnrFont
@@ -3302,13 +3348,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,MF_BYCOMMAND or MF_GRAYED
 					push	IDM_PROJECT_ADDGROUP
 					push	eax
-					push	IDM_PROJECT_REMOVEGROUP
-					push	eax
-					push	IDM_PROJECT_EDITGROUP
-					push	eax
 					push	IDM_PROJECT_ADDFILE
 					push	eax
 					push	IDM_PROJECT_ADDALLFILES
+					push	eax
+					push	IDM_PROJECT_ADDEXISTINGFILE
+					push	eax
+					push	IDM_PROJECT_EDITGROUP
+					push	eax
+					push	IDM_PROJECT_EDITFILE
+					push	eax
+					push	IDM_PROJECT_REMOVEGROUP
 					push	eax
 					push	IDM_PROJECT_REMOVEFILE
 					push	eax
@@ -3321,11 +3371,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if sdword ptr [eax].PBITEM.id<0
 						push	IDM_PROJECT_REMOVEFILE
 						push	MF_BYCOMMAND or MF_GRAYED
+						push	IDM_PROJECT_EDITFILE
+						push	MF_BYCOMMAND or MF_GRAYED
 					.endif
 					.if sdword ptr [eax].PBITEM.id<-1
 						mov		eax,MF_BYCOMMAND or MF_ENABLED
 					.else
 						push	IDM_PROJECT_REMOVEFILE
+						push	MF_BYCOMMAND or MF_ENABLED
+						push	IDM_PROJECT_EDITFILE
 						push	MF_BYCOMMAND or MF_ENABLED
 						mov		eax,MF_BYCOMMAND or MF_GRAYED
 					.endif
@@ -3341,6 +3395,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					push	IDM_PROJECT_ADDFILE
 					push	eax
 					push	IDM_PROJECT_ADDALLFILES
+					push	eax
+					mov		eax,MF_BYCOMMAND or MF_ENABLED
+					push	IDM_PROJECT_ADDEXISTINGFILE
 					push	eax
 				.endif
 				pop		eax

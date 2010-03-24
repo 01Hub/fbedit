@@ -1262,7 +1262,7 @@ RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 
 RemovePath endp
 
-UpdateAll proc uses ebx esi,nFunction:DWORD
+UpdateAll proc uses ebx esi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	hefnt:HEFONT
@@ -1352,6 +1352,12 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 				invoke GetProcessHeap
 				invoke HeapFree,eax,NULL,ebx
 			.elseif eax==IS_OPEN
+				invoke lstrcmpi,lParam,addr [ebx].TABMEM.filename
+				.if !eax
+					mov		eax,[ebx].TABMEM.hwnd
+					jmp		Ex
+				.endif
+			.elseif eax==IS_OPEN_ACTIVATE
 				invoke lstrcmpi,offset da.FileName,addr [ebx].TABMEM.filename
 				.if !eax
 					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
@@ -1387,6 +1393,7 @@ UpdateAll proc uses ebx esi,nFunction:DWORD
 					invoke SaveEdit,[ebx].TABMEM.hwnd,addr [ebx].TABMEM.filename
 				.endif
 			.elseif eax==IS_CHANGED
+				mov		[ebx].TABMEM.fnonotify,FALSE
 				.if [ebx].TABMEM.nchange
 					invoke ReleaseCapture
 					mov		[ebx].TABMEM.nchange,0
@@ -1872,7 +1879,12 @@ GotoDeclare proc uses esi
 
 	invoke SendMessage,ha.hREd,REM_GETWORD,sizeof buffer,addr buffer
 	.if buffer
-		mov		eax,ha.hREd
+		.if da.fProject
+			invoke GetWindowLong,ha.hREd,GWL_USERDATA
+			mov		eax,[eax].TABMEM.pid
+		.else
+			mov		eax,ha.hREd
+		.endif
 		mov		isinproc.nOwner,eax
 		mov		isinproc.lpszType,offset szCCp
 		invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
@@ -1937,12 +1949,17 @@ GotoDeclare proc uses esi
 					invoke TabToolGetInxFromPid,eax
 					pop		edx
 					.if eax==-1
+						;The file is not open
 						invoke SendMessage,ha.hPbr,RPBM_FINDITEM,edx,0
 						.if eax
 							invoke OpenEditFile,addr [eax].PBITEM.szitem,IDC_RAE
 						.else
 							jmp		Ex
 						.endif
+					.else
+						;The file is open
+						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+						invoke TabToolActivate
 					.endif
 				.else
 					invoke TabToolGetInx,eax

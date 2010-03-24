@@ -450,7 +450,7 @@ UpdateKeyWords proc uses ebx,hWin:HWND
 	.endw
 	invoke RegSetValueEx,ha.hReg,addr szKeyWordColor,0,REG_BINARY,addr kwcol,sizeof kwcol
 	invoke SetKeyWords
-	invoke UpdateAll,WM_PAINT
+	invoke UpdateAll,WM_PAINT,0
 	ret
 
 UpdateKeyWords endp
@@ -1109,7 +1109,7 @@ Update:
 			invoke RegSetValueEx,ha.hReg,addr szLnrFont,0,REG_BINARY,addr lfntlnr,sizeof lfntlnr
 			mov		hLFnt,0
 		.endif
-		invoke UpdateAll,WM_SETFONT
+		invoke UpdateAll,WM_SETFONT,0
 		invoke UpdateToolColors
 		invoke SendMessage,ha.hOut,WM_SETFONT,ha.hFont,TRUE
 		invoke SendMessage,ha.hDbgReg,WM_SETFONT,ha.hFont,TRUE

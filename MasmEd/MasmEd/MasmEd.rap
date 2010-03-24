@@ -215,20 +215,20 @@ ID=200
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.1.0.2
-PV=1.1.0.2
+FV=1.2.0.0
+PV=1.2.0.0
 VerOS=0x00000004
 VerFT=0x00000001
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.1.0.2
+ProductVersion=1.2.0.0
 ProductName=
 OriginalFilename=MasmEd.exe
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2004 - 2010
 InternalName=
 FileDescription=Masm code & resource editor
-FileVersion=1.1.0.2
+FileVersion=1.2.0.0
 CompanyName=
 
 [Group]
@@ -295,16 +295,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 59=8
 
 [Find]
-1="OpenProject"
-2="CreateFile,"
-3="CreateFile"
-4="ParseEdit"
-5="nchange"
-6="SetWinCaption"
-7="IDM_FILE_CLOSESESSION"
-8="closese"
-9="%d"
-10="szGroup"
+1="1103"
+2="1.1.0.3"
+3="LineTxt"
+4="tmpbuff"
+5="OpenProject"
+6="CreateFile,"
+7="CreateFile"
+8="ParseEdit"
+9="nchange"
+10="SetWinCaption"
 
 [VersionControl]
 Settings=1246
@@ -316,7 +316,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -351,11 +351,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,21312
-1=0,0,0,0,84066
-11=0,0,0,0,34132
+2=0,0,687,524,10117
+1=0,0,0,0,4683
+11=0,0,0,0,27079
 22=0,0,0,0,748
-10=0,0,0,0,22087
+10=0,0,0,0,15317
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -364,7 +364,7 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,713
 18=0,0,0,0
-15=0,0,687,524,30301
+15=0,0,687,524,30203
 30=0,0,0,0
 13=0,0,0,0,4980
 21=0,0,0,0,1822
@@ -374,7 +374,7 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,0,0,9074
+14=0,0,0,0,1921
 12=0,0,0,0,2434
 31=0,0,0,0,2186
 32=0,0,0,0
@@ -397,12 +397,12 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,0,0,9495
+53=0,0,0,0,14388
 54=0,0,0,0,254
 55=0,0,0,0
 56=0,0,0,0,5410
 57=0,0,0,0
-58=0,0,851,458,1538
+58=0,0,851,458,2332
 
 [BookMark]
 0=
@@ -419,10 +419,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,53,10,11,14,45,46,58
+AutoLoad=1,2,38,53,10,11,14,45,46,58,15
 [Collapse]
 2=
-1=,,,,,,2145386496,428146689,2147483646,3,
+1=,,,,,,939524096,188324262/,2147483647,255,
 31=
 23=
 3=
@@ -456,7 +456,7 @@ AutoLoad=1,2,38,53,10,11,14,45,46,58
 56=
 58=
 [PTimer]
-PTimer=2881861567
+PTimer=2899532378
 [RADebugBP]
 1=
 2=

@@ -54,7 +54,7 @@ includelib Debug.lib
 
 WinMain					PROTO :DWORD,:DWORD,:DWORD,:DWORD
 WndProc					PROTO :DWORD,:DWORD,:DWORD,:DWORD
-UpdateAll				PROTO :DWORD
+UpdateAll				PROTO :DWORD,:DWORD
 CreateRAEdit			PROTO
 CreateRAHexEd			PROTO
 TabToolAdd				PROTO :DWORD,:DWORD
@@ -109,7 +109,7 @@ CB_DESELECTLINE			equ 2
 CB_DEBUG				equ 3
 CB_OPENFILE				equ 4
 
-IS_OPEN					equ -1
+IS_OPEN_ACTIVATE		equ -1
 SAVE_ALL				equ -2
 IS_RESOURCE				equ -3
 IS_RESOURCE_OPEN		equ -4
@@ -127,6 +127,7 @@ UNSAVED_SOURCE_FILES	equ -15
 NEWER_SOURCE_FILES		equ -16
 SAVE_SESSIONREGISTRY	equ -17
 ADDTOPROJECT			equ -18
+IS_OPEN					equ -19
 
 TABHT					equ 23
 CBOWT					equ 175
@@ -399,7 +400,7 @@ ClassName				db 'DLGCLASS',0
 szResClassName			db 'RESCLASS',0
 sztooltips_class32		db 'tooltips_class32',0
 szAppName				db 'MasmEd',0
-szVersion				db 'MasmEd version 1.1.0.3',0
+szVersion				db 'MasmEd version 1.2.0.0',0
 szAboutMsg				db 'MasmEd code & resource editor',0Dh,0Ah,0Dh,0Ah,'KetilO (C) 2004-2010',13,10,'radasmide@hotmail.com',0
 szAboutUrl1				db 'http://radasm.cherrytree.at/',0
 ;szAboutUrl2				db 'http://radasm.110mb.com/masmed',0
@@ -409,6 +410,7 @@ szReplace				db 'Replace ..',0
 szRegionSearched		db 'Region searched.',0
 szOpenFileFail        	db 'Cannot open the file.',0Dh,0
 szSaveFileFail			db 'Cannot save the file.',0Dh,0
+szFileExists			db 'The file exists.',0Dh,0
 szWannaSave           	db 'Want to save changes to',0Dh,0
 szNewFile             	db '(Untitled)',0
 szChanged				db 'File is changed outside editor',0Dh,0

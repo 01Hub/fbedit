@@ -774,30 +774,33 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 				.elseif eax==TVN_ENDLABELEDIT
 					mov		edi,[esi].NMTVDISPINFO.item.lParam
 					.if [esi].NMTVDISPINFO.item.pszText
-						mov		edi,[esi].NMTVDISPINFO.item.lParam
-						.if sdword ptr [edi].PBITEM.id<0
-							invoke lstrcpy,addr [edi].PBITEM.szitem,[esi].NMTVDISPINFO.item.pszText
-						.else
-							invoke lstrcpy,addr szitemnew,addr [ebx].PROJECTBROWSER.projectpath
-							invoke lstrcat,addr szitemnew,addr szBS
-							invoke lstrcat,addr szitemnew,[esi].NMTVDISPINFO.item.pszText
-							invoke NotifyItemChange,hWin,edi
-							.if eax
-								xor		eax,eax
-								jmp		Ex
-							.endif
-							invoke lstrcpy,addr [edi].PBITEM.szitem,addr szitemnew
-						.endif
-						mov		edi,[edi].PBITEM.id
-						invoke GetExpand,ebx
-						invoke SortItems,ebx
-						invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
-						invoke AddGroups,ebx,0,0
-						invoke AddFiles,ebx
-						invoke SetExpand,ebx
-						invoke FindItemFromid,ebx,edi
+						invoke lstrlen,[esi].NMTVDISPINFO.item.pszText
 						.if eax
-							invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SELECTITEM,TVGN_CARET,[eax].PBITEM.hitem
+							mov		edi,[esi].NMTVDISPINFO.item.lParam
+							.if sdword ptr [edi].PBITEM.id<0
+								invoke lstrcpy,addr [edi].PBITEM.szitem,[esi].NMTVDISPINFO.item.pszText
+							.else
+								invoke lstrcpy,addr szitemnew,addr [ebx].PROJECTBROWSER.projectpath
+								invoke lstrcat,addr szitemnew,addr szBS
+								invoke lstrcat,addr szitemnew,[esi].NMTVDISPINFO.item.pszText
+								invoke NotifyItemChange,hWin,edi
+								.if eax
+									xor		eax,eax
+									jmp		Ex
+								.endif
+								invoke lstrcpy,addr [edi].PBITEM.szitem,addr szitemnew
+							.endif
+							mov		edi,[edi].PBITEM.id
+							invoke GetExpand,ebx
+							invoke SortItems,ebx
+							invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_DELETEITEM,0,TVI_ROOT
+							invoke AddGroups,ebx,0,0
+							invoke AddFiles,ebx
+							invoke SetExpand,ebx
+							invoke FindItemFromid,ebx,edi
+							.if eax
+								invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SELECTITEM,TVGN_CARET,[eax].PBITEM.hitem
+							.endif
 						.endif
 					.endif
 				.endif

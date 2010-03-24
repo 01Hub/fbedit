@@ -25,6 +25,9 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	invoke GetWindowLong,hWin,GWL_ID
 	invoke PostAddinMessage,hWin,AIM_FILESAVE,eax,lpFileName,0,HOOK_FILESAVE
 	.if !eax
+		invoke TabToolGetMem,hWin
+		mov		ebx,eax
+		mov		[ebx].TABMEM.fnonotify,TRUE
 		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
@@ -55,11 +58,9 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 				.endif
 			.endif
 			invoke CloseHandle,hFile
-			invoke TabToolGetMem,hWin
-			mov		ebx,eax
 			mov		[ebx].TABMEM.nchange,0
 			mov		[ebx].TABMEM.fchanged,0
-			invoke UpdateFileTime,eax
+			invoke UpdateFileTime,ebx
 			invoke TabToolSetChanged,hWin,FALSE
 	   		mov		eax,FALSE
 		.else
@@ -93,10 +94,26 @@ UnicodeProc endp
 
 UpdateFileName proc hWin:DWORD,lpFileName:DWORD
 
-	invoke strcpy,offset da.FileName,lpFileName
-	invoke SetWinCaption,offset da.FileName
-	invoke TabToolGetInx,hWin
-	invoke TabToolSetText,eax,offset da.FileName
+	invoke GetWindowLong,hWin,GWL_ID
+	.if eax!=IDC_RAE
+		invoke SendMessage,hWin,REM_SETUNICODE,fUnicode,0
+	.endif
+	invoke SaveFile,hWin,lpFileName
+	.if !eax
+		;The file was saved
+		.if da.fProject
+			invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,addr da.FileName
+			.if eax
+				invoke lstrcpy,addr [eax].PBITEM.szitem,lpFileName
+				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+			.endif
+		.endif
+		invoke strcpy,offset da.FileName,lpFileName
+		invoke SetWinCaption,offset da.FileName
+		invoke TabToolGetInx,hWin
+		invoke TabToolSetText,eax,offset da.FileName
+		mov		eax,FALSE
+	.endif
 	ret
 
 UpdateFileName endp
@@ -137,16 +154,7 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 	    ;Show save as dialog
 		invoke GetSaveFileName,addr ofn
 		.if eax
-			invoke GetWindowLong,hWin,GWL_ID
-			.if eax!=IDC_RAE
-				invoke SendMessage,hWin,REM_SETUNICODE,fUnicode,0
-			.endif
-			invoke SaveFile,hWin,addr buffer
-			.if !eax
-				;The file was saved
-				invoke UpdateFileName,hWin,addr buffer
-				mov		eax,FALSE
-			.endif
+			invoke UpdateFileName,hWin,addr buffer
 		.else
 			mov		eax,TRUE
 		.endif
@@ -372,7 +380,7 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 	.endif
 	mov		fCtrl,eax
 	invoke strcpy,offset da.FileName,lpFileName
-	invoke UpdateAll,IS_OPEN
+	invoke UpdateAll,IS_OPEN_ACTIVATE,0
 	.if !eax
 		invoke GetFileAttributes,lpFileName
 		.if eax!=-1
@@ -381,7 +389,7 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 				invoke IsFileResource,lpFileName
 			.endif
 			.if eax && !fCtrl
-				invoke UpdateAll,IS_RESOURCE
+				invoke UpdateAll,IS_RESOURCE,0
 				.if eax
 					invoke WantToSave,ha.hREd,offset da.FileName
 					.if !eax
@@ -440,13 +448,13 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 					.if ebx==IDC_MES
 						; Session
 						mov		nTabInx,-1
-						invoke UpdateAll,WM_CLOSE
+						invoke UpdateAll,WM_CLOSE,0
 						.if !eax
 							invoke AskSaveSessionFile
 							.if !eax
 								invoke AddMRU,offset mrusessions,addr buffer
 								invoke CloseNotify
-								invoke UpdateAll,CLOSE_ALL
+								invoke UpdateAll,CLOSE_ALL,0
 								invoke ReadSessionFile,addr buffer
 							.endif
 						.endif
@@ -605,7 +613,7 @@ MakeSession proc fRegistry:DWORD
 	.if fRegistry
 		mov		eax,SAVE_SESSIONREGISTRY
 	.endif
-	invoke UpdateAll,eax
+	invoke UpdateAll,eax,0
 	invoke strlen,addr tmpbuff
 	.if eax
 		mov		byte ptr tmpbuff[eax-1],0
@@ -645,24 +653,6 @@ WriteSessionFile proc lpszFile:DWORD
 	ret
 
 WriteSessionFile endp
-
-AskSaveSessionFile proc
-
-	.if byte ptr da.szSessionFile
-		invoke strcpy,addr tmpbuff,addr szSaveSession
-		invoke strcat,addr tmpbuff,addr da.szSessionFile
-		invoke MessageBox,ha.hWnd,addr tmpbuff,addr szSession,MB_YESNOCANCEL or MB_ICONEXCLAMATION
-		.if eax==IDYES
-			invoke WriteSessionFile,addr da.szSessionFile
-		.elseif eax==IDCANCEL
-			mov		eax,TRUE
-			ret
-		.endif
-	.endif
-	xor		eax,eax
-	ret
-
-AskSaveSessionFile endp
 
 SaveSessionFile proc
 	LOCAL	ofn:OPENFILENAME
@@ -743,19 +733,18 @@ GetItem:
 
 SetProjectGroups endp
 
-SetProjectFiles proc uses ebx esi edi,nInx:DWORD,lpszFile:DWORD
+SetProjectFiles proc uses ebx esi edi,nInx:DWORD,lpszFile:DWORD,lpBuff:DWORD,ccBuff:DWORD
 	LOCAL	pbi:PBITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buff[MAX_PATH*2]:BYTE
 
 	invoke RtlZeroMemory,addr pbi,sizeof PBITEM
 	mov		edi,1
 	.while edi<257
 		invoke wsprintf,addr buffer,addr szFmtDec,edi
-		invoke GetPrivateProfileString,addr szProject,addr buffer,addr szNULL,addr buff,sizeof buff,lpszFile
+		invoke GetPrivateProfileString,addr szProject,addr buffer,addr szNULL,lpBuff,ccBuff,lpszFile
 		.if eax
 			mov		pbi.id,edi
-			lea		esi,buff
+			mov		esi,lpBuff
 			call	GetItem
 			.if buffer
 				invoke AsciiToDw,addr buffer
@@ -763,10 +752,10 @@ SetProjectFiles proc uses ebx esi edi,nInx:DWORD,lpszFile:DWORD
 				call	GetItem
 				.if buffer
 					invoke SendMessage,ha.hPbr,RPBM_GETPATH,0,0
-					invoke lstrcpy,addr buff,eax
-					invoke lstrcat,addr buff,addr szBackSlash
-					invoke lstrcat,addr buff,addr buffer
-					invoke lstrcpy,addr pbi.szitem,addr buff
+					invoke lstrcpy,lpBuff,eax
+					invoke lstrcat,lpBuff,addr szBackSlash
+					invoke lstrcat,lpBuff,addr buffer
+					invoke lstrcpy,addr pbi.szitem,lpBuff
 					invoke SendMessage,ha.hPbr,RPBM_ADDITEM,nInx,addr pbi
 					invoke ParseFile,addr pbi.szitem,pbi.id
 					inc		nInx
@@ -797,27 +786,28 @@ GetItem:
 SetProjectFiles endp
 
 CreateProject proc uses esi edi,lpszFile:DWORD
+	LOCAL	buff[MAX_PATH*3]:BYTE
 
 	invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-	mov		esi,offset tmpbuff
+	lea		esi,buff
 	invoke strcpy,esi,addr da.szSessionFile
 	invoke strlen,esi
 	.while eax && byte ptr [esi+eax]!='\'
 		dec		eax
 	.endw
 	mov		byte ptr [esi+eax],0
-	invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr tmpbuff
+	invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr buff
 	mov		esi,offset szDefProGroups
-	invoke strcpy,addr tmpbuff,esi
+	invoke strcpy,addr buff,esi
 	mov		edi,offset da.szSessionFile
 	invoke strlen,edi
 	.while byte ptr [edi+eax]!='\' && eax
 		dec		eax
 	.endw
-	invoke strcat,addr tmpbuff,addr [edi+eax+1]
+	invoke strcat,addr buff,addr [edi+eax+1]
 	invoke strlen,esi
-	invoke strcat,addr tmpbuff,addr [esi+eax+1]
-	invoke SetProjectGroups,addr tmpbuff
+	invoke strcat,addr buff,addr [esi+eax+1]
+	invoke SetProjectGroups,addr buff
 	.if eax
 		invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 		mov		da.fProject,TRUE
@@ -830,23 +820,25 @@ CreateProject endp
 
 OpenProject proc uses esi edi,lpszFile:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buff[MAX_PATH*3]:BYTE
 
 	mov		da.fProject,FALSE
 	invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-	mov		esi,offset LineTxt
+	lea		esi,buff
 	invoke strcpy,esi,addr da.szSessionFile
 	invoke strlen,esi
 	.while eax && byte ptr [esi+eax]!='\'
 		dec		eax
 	.endw
 	mov		byte ptr [esi+eax],0
-	invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr LineTxt
-	invoke GetPrivateProfileString,addr szProject,addr szProGroup,addr szNULL,addr LineTxt,sizeof LineTxt,lpszFile
+	invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr buff
+	invoke GetPrivateProfileString,addr szProject,addr szProGroup,addr szNULL,addr buff,sizeof buff,lpszFile
 	.if eax
-		invoke SetProjectGroups,addr LineTxt
+		invoke SetProjectGroups,addr buff
 		.if eax
 			mov		da.fProject,TRUE
-			invoke SetProjectFiles,eax,lpszFile
+			mov		edx,eax
+			invoke SetProjectFiles,edx,lpszFile,addr buff,sizeof buff
 			invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 			invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,1,0
 			invoke ShowWindow,ha.hPbr,SW_SHOWNA
@@ -861,11 +853,12 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	path[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	buff[MAX_PATH*3]:BYTE
 
 	mov		eax,lpszFile
 	.if byte ptr [eax]
-		mov		word ptr tmpbuff,0
-		invoke WritePrivateProfileSection,addr szProject,addr tmpbuff,lpszFile
+		mov		word ptr buff,0
+		invoke WritePrivateProfileSection,addr szProject,addr buff,lpszFile
 		invoke SendMessage,ha.hPbr,RPBM_GETEXPAND,0,0
 		xor		ebx,ebx
 		.while TRUE
@@ -891,10 +884,10 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 					mov		word ptr [edi],','
 					inc		edi
 					invoke lstrcpy,edi,addr [esi].PBITEM.szitem
-					.if tmpbuff
-						invoke lstrcat,addr tmpbuff,addr szComma
+					.if buff
+						invoke lstrcat,addr buff,addr szComma
 					.endif
-					invoke lstrcat,addr tmpbuff,addr buffer
+					invoke lstrcat,addr buff,addr buffer
 				.endif
 			.else
 				.break
@@ -902,7 +895,7 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 			inc		ebx
 		.endw
 		.if ebx
-			invoke WritePrivateProfileString,addr szProject,addr szProGroup,addr tmpbuff,lpszFile
+			invoke WritePrivateProfileString,addr szProject,addr szProGroup,addr buff,lpszFile
 			invoke SendMessage,ha.hPbr,RPBM_GETPATH,0,0
 			invoke lstrcpy,addr path,eax
 			xor		ebx,ebx
@@ -912,7 +905,7 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 					mov		esi,eax
 					.break .if ![esi].PBITEM.id
 					.if sdword ptr [esi].PBITEM.id>0
-						mov		edi,offset tmpbuff
+						lea		edi,buff
 						invoke wsprintf,edi,addr szFmtDec,[esi].PBITEM.idparent
 						invoke lstrlen,edi
 						lea		edi,[edi+eax]
@@ -922,7 +915,7 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 						invoke RemovePath,addr [esi].PBITEM.szitem,addr path,addr buffer1
 						invoke lstrcpy,edi,addr [eax+1]
 						invoke wsprintf,addr buffer,addr szFmtDec,[esi].PBITEM.id
-						invoke WritePrivateProfileString,addr szProject,addr buffer,addr tmpbuff,lpszFile
+						invoke WritePrivateProfileString,addr szProject,addr buffer,addr buff,lpszFile
 					.endif
 				.else
 					.break
@@ -934,6 +927,29 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 	ret
 
 SaveProject endp
+
+AskSaveSessionFile proc
+
+	.if byte ptr da.szSessionFile
+		.if da.fProject
+			invoke WriteSessionFile,addr da.szSessionFile
+			invoke SaveProject,addr da.szSessionFile
+		.else
+			invoke strcpy,addr tmpbuff,addr szSaveSession
+			invoke strcat,addr tmpbuff,addr da.szSessionFile
+			invoke MessageBox,ha.hWnd,addr tmpbuff,addr szSession,MB_YESNOCANCEL or MB_ICONEXCLAMATION
+			.if eax==IDYES
+				invoke WriteSessionFile,addr da.szSessionFile
+			.elseif eax==IDCANCEL
+				mov		eax,TRUE
+				ret
+			.endif
+		.endif
+	.endif
+	xor		eax,eax
+	ret
+
+AskSaveSessionFile endp
 
 RestoreSession proc uses esi edi,fReg:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE

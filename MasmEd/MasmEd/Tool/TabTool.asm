@@ -4,7 +4,7 @@ UpdateFileTime proc uses ebx,lpMem:DWORD
 	LOCAL	hFile:DWORD
 
 	mov		ebx,lpMem
-	invoke CreateFile,addr [ebx].TABMEM.filename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	invoke CreateFile,addr [ebx].TABMEM.filename,GENERIC_READ,FILE_SHARE_READ or FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
 		invoke GetFileTime,hFile,NULL,NULL,addr [ebx].TABMEM.ft
@@ -67,7 +67,7 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 					mov		filet.dwHighDateTime,eax
 					invoke UpdateFileTime,ebx
 					invoke CompareFileTime,addr [ebx].TABMEM.ft,addr filet
-					.if sdword ptr eax!=0
+					.if sdword ptr eax!=0 && ![ebx].TABMEM.fnonotify
 						inc		[ebx].TABMEM.nchange
 					.endif
 				.endif
