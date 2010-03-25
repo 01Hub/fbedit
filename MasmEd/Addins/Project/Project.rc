@@ -1,4 +1,5 @@
 #include "Res/SnipletsDlg.rc"
+#include "Res/ProjectVer.rc"
 #include "Res/ProjectOptionDlg.rc"
 #include "Res/NewTemplateDlg.rc"
 #include "Res/NewProject2Dlg.rc"

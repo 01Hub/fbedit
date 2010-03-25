@@ -27,6 +27,48 @@ IDC_STCTEMPLATE					equ 1002
 
 .code
 
+BrowseFolder proc hWin:HWND,nID:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		bri.pidlRoot,0
+	mov		bri.pszDisplayName,0
+;	mov		eax,offset szBrowse
+	xor		eax,eax
+	mov		bri.lpszTitle,eax
+	mov		bri.ulFlags,BIF_RETURNONLYFSDIRS or BIF_STATUSTEXT 
+	mov		bri.lpfn,BrowseCallbackProc
+	; get path   
+	invoke SendDlgItemMessage,hWin,nID,WM_GETTEXT,sizeof buffer,addr buffer
+	lea		eax,buffer
+	mov		bri.lParam,eax 
+	mov		bri.iImage,0
+	invoke SHBrowseForFolder,offset bri
+	.if !eax
+		jmp		GetOut
+	.endif      
+	mov		pidl,eax
+	invoke SHGetPathFromIDList,pidl,addr buffer
+	; set new path back to edit
+	invoke SendDlgItemMessage,hWin,nID,WM_SETTEXT,0,addr buffer
+  GetOut:
+	ret
+
+BrowseFolder endp
+
+;--------------------------------------------------------------------------------
+; set initial folder in browser
+BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpBCData:DWORD
+
+	mov eax,uMsg
+	.if eax==BFFM_INITIALIZED
+		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpBCData
+		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
+	.endif
+	xor eax, eax
+	ret
+
+BrowseCallbackProc endp
+
 Tab1Proc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -219,6 +261,12 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD
 		; Session file
 		mov		edx,lpData
 		invoke lstrcpy,addr [edx].ADDINDATA.szSessionFile,addr buffer
+	.else
+		push	0
+		lea		eax,buffer
+		push	eax
+		mov		eax,lpProc
+		call	[eax].ADDINPROCS.lpOpenEditFile
 	.endif
 	mov		eax,TRUE
 	ret
@@ -646,12 +694,15 @@ NewProjectDialogProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					; Create the project
 					invoke CreateProject,hWin
 					.if eax
+						mov		eax,lpHandles
+						invoke SendMessage,[eax].ADDINHANDLES.hWnd,WM_COMMAND,IDM_PROJECT_CREATE or (BN_CLICKED SHL 16),NULL
 						invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 					.endif
 				.endif
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNPATH
+				invoke BrowseFolder,hWin,IDC_EDTPATH
 			.endif
 		.elseif edx==EN_CHANGE
 			invoke GetDlgItem,hWin,IDOK

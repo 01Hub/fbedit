@@ -7,6 +7,7 @@ include kernel32.inc
 include user32.inc
 include comdlg32.inc
 include advapi32.inc
+include shell32.inc
 
 ;#########################################################################
 ;Libraries
@@ -15,6 +16,7 @@ includelib kernel32.lib
 includelib user32.lib
 includelib comdlg32.lib
 includelib advapi32.lib
+includelib shell32.lib
 
 ;#########################################################################
 ;	MasmEd Addin Include
@@ -35,7 +37,7 @@ FBM_SETPATH			equ WM_USER+1	;wParam=FALSE/TRUE(Refresh), lParam=Pointer to path 
 .const
 
 szMenuItem			db 'Project',0
-szCreateProject		db 'Create Project',0
+szCreateProject		db 'Create New Project',0
 szCreateTemplate	db 'Create Template',0
 szTemplateOptions	db 'Options',0
 szSniplets			db 'Sniplets',VK_TAB,'F11',0
@@ -62,6 +64,7 @@ szMesFile			db 'mes',0
 szSession			db 'Session',0
 szMinorFiles		db 'MinorFiles',0
 szNULL				db 0
+szBrowse			db 'Browse Project Folder:',0
 
 ;Registry
 szBackups			db 'Backups',0
@@ -100,3 +103,5 @@ hDlg1				HWND ?
 hDlg2				HWND ?
 fDeleteMinor		DWORD ?
 wfd					WIN32_FIND_DATA <?>
+pidl				dd ?
+bri					BROWSEINFO <?>

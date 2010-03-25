@@ -772,7 +772,22 @@ CreateProject proc uses esi edi,lpszFile:DWORD
 
 	mov		esi,lpszFile
 	.if !byte ptr [esi]
-		invoke SaveSessionFile
+		.if da.MainFile
+			invoke strcpy,addr buff,addr da.MainFile
+			invoke strlen,addr buff
+			.while eax && buff[eax]!='.'
+				dec		eax
+			.endw
+			.if eax
+				mov		dword ptr buff[eax],'sem.'
+				invoke strcpy,esi,addr buff
+				invoke WriteSessionFile,esi
+			.else
+				invoke SaveSessionFile
+			.endif
+		.else
+			invoke SaveSessionFile
+		.endif
 	.endif
 	.if byte ptr [esi]
 		invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0

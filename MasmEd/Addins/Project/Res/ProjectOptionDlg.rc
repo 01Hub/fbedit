@@ -5,7 +5,7 @@
 #define IDC_UDNBACKUP 1002
 #define IDC_EDTMINOR 1005
 IDD_DLGOPTION DIALOGEX 6,6,196,201
-CAPTION "Template / Backup Options"
+CAPTION "Template / Backup / Minor Files Options"
 FONT 8,"MS Sans Serif",400,0
 STYLE 0x10C80080
 EXSTYLE 0x00000001
