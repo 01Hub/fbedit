@@ -128,6 +128,8 @@ NEWER_SOURCE_FILES		equ -16
 SAVE_SESSIONREGISTRY	equ -17
 ADDTOPROJECT			equ -18
 IS_OPEN					equ -19
+SAVE_BREAKPOINTS		equ -20
+LOAD_BREAKPOINTS		equ -21
 
 TABHT					equ 23
 CBOWT					equ 175
@@ -209,6 +211,7 @@ DEBUGINFO struct
 	fMainThread			DWORD ?					; Only main thread
 	lpCallBack			DWORD ?					; Callback
 	FileName			BYTE MAX_PATH dup(?)	; Filename
+	fProject			DWORD ?					; Project flag
 DEBUGINFO ends
 
 DEBUGTIP struct
@@ -567,6 +570,7 @@ szBuild					db 'Build',0
 szFolder				db 'Folder',0
 szSession				db 'Session',0
 szProGroup				db 'Group',0
+szBreakPoint			db 'BreakPoint',0
 szMRUFiles				db 'MRUFiles',0
 szMRUSessions			db 'MRUSessions',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0

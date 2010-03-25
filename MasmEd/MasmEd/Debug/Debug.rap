@@ -63,7 +63,7 @@ Group=Assembly
 7=1
 8=1
 [AutoLoad]
-AutoLoad=1,2,3,7,5,8
+AutoLoad=1,2,3,7,5,8,4
 [Collapse]
 2=
 1=,
@@ -74,12 +74,12 @@ AutoLoad=1,2,3,7,5,8
 5=,,
 6=,
 [Size]
-2=0,0,0,0,2220
-1=0,0,0,0,2142
-3=0,0,0,0,610
-4=0,0,0,0,9652
+2=0,0,0,0,1177
+1=0,0,0,0,868
+3=0,0,0,0,7624
+4=0,0,0,0,10939
 7=0,0,0,0,6892
-8=0,0,0,0,895
+8=0,0,0,0,184
 5=0,0,0,0,14734
 6=0,0,0,0,2428
 [RADebugBP]
@@ -102,7 +102,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=25
+MilestoneOnDateDate=24
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=24
@@ -148,17 +148,17 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="CONTEXT_EXTENDED_REGISTERS"
-2="ShowFpuContext"
-3="CONTEXT_FULL"
-4="MAXIMUM_SUPPORTED_EXTENSION"
-5="context struct"
-6="CONTEXT_"
-7=".context"
-8="FLOATING_SAVE_AREA"
-9="CONTEXT"
-10="ShowRegContext"
+1="CB_OPENFILE"
+2="fProject"
+3="fDoneOpen"
+4="CONTEXT_EXTENDED_REGISTERS"
+5="ShowFpuContext"
+6="CONTEXT_FULL"
+7="MAXIMUM_SUPPORTED_EXTENSION"
+8="context struct"
+9="CONTEXT_"
+10=".context"
 [PTimer]
-PTimer=31742740
+PTimer=47213890
 [GroupExpand]
 GroupExpand=1,0

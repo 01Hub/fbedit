@@ -461,18 +461,20 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	mov		[edi].DEBUGSOURCE.FileID,eax
 	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
 	inc		dbg.inxsource
-	lea		eax,[edi].DEBUGSOURCE.FileName
-	push	eax
-	push	0
-	push	CB_OPENFILE
-	call	lpCallBack
-	; Let MasmEd do its things
-	xor		ebx,ebx
-	mov		fDoneOpen,ebx
-	.while ebx<10 && !fDoneOpen
-		invoke Sleep,10
-		inc		ebx
-	.endw
+	.if !fProject
+		lea		eax,[edi].DEBUGSOURCE.FileName
+		push	eax
+		push	0
+		push	CB_OPENFILE
+		call	lpCallBack
+		; Let MasmEd do its things
+		xor		ebx,ebx
+		mov		fDoneOpen,ebx
+		.while ebx<10 && !fDoneOpen
+			invoke Sleep,10
+			inc		ebx
+		.endw
+	.endif
 	mov		eax,TRUE
 	ret
 

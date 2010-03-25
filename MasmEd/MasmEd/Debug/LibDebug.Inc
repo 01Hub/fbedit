@@ -92,6 +92,7 @@ DEBUGINFO struct
 	fMainThread				DWORD ?					; Only main thread
 	lpCallBack				DWORD ?					; Callback
 	FileName				BYTE MAX_PATH dup(?)	; Filename
+	fProject				DWORD ?					; Project flag
 DEBUGINFO ends
 
 DEBUGTIP struct
@@ -427,3 +428,4 @@ szError							db 256 dup(?)
 lpNoDebug						dd ?
 fMainThread						dd ?
 fDoneOpen						dd ?
+fProject						dd ?

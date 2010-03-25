@@ -454,6 +454,7 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							.if !eax
 								invoke AddMRU,offset mrusessions,addr buffer
 								invoke CloseNotify
+								invoke UpdateAll,SAVE_BREAKPOINTS,0
 								invoke UpdateAll,CLOSE_ALL,0
 								invoke ReadSessionFile,addr buffer
 							.endif
@@ -471,6 +472,7 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 							.if fDebugging
 								invoke SendMessage,ha.hREd,REM_READONLY,0,TRUE
 							.endif
+							invoke UpdateAll,LOAD_BREAKPOINTS,0
 						.endif
 						mov		eax,edopt.hiliteline
 						.if eax
@@ -1038,6 +1040,7 @@ RestoreSession proc uses esi edi,fReg:DWORD
 			invoke SetFocus,ha.hREd
 		.endif
 	.endif
+	invoke UpdateAll,LOAD_BREAKPOINTS,0
   Ex:
 	ret
 

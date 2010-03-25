@@ -44,13 +44,13 @@ EnumProc endp
 BringWindowToFront proc uses ebx
 
 	xor		ebx,ebx
-	.while ebx<20
+	.while ebx<10
 		invoke EnumWindows,offset EnumProc,0
 		.if dbg.hWnd
 			invoke GetForegroundWindow
 			.break .if eax==dbg.hWnd
 		.endif
-		invoke Sleep,50
+		invoke Sleep,10
 		inc		ebx
 	.endw
 	ret
@@ -80,6 +80,8 @@ SetDebugInfo proc public lpDEBUGINFO:DWORD
 	mov		fMainThread,eax
 	mov		eax,[edx].DEBUGINFO.lpCallBack
 	mov		lpCallBack,eax
+	mov		eax,[edx].DEBUGINFO.fProject
+	mov		fProject,eax
 	invoke strcpy,addr szExeName,addr [edx].DEBUGINFO.FileName
 	ret
 

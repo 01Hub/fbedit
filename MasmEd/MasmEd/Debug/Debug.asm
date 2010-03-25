@@ -348,7 +348,16 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	push	0
 	push	CB_OPENFILE
 	call	lpCallBack
-	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
+	; Let MasmEd do its things
+	xor		edi,edi
+	mov		fDoneOpen,edi
+	.while edi<250 && !fDoneOpen
+		invoke Sleep,15
+		inc		edi
+	.endw
+PrintDec edi
+PrintHex fDoneOpen
+;	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 	push	0
 	mov		eax,[ebx].DEBUGLINE.LineNumber
 	mov		dbg.prevline,eax

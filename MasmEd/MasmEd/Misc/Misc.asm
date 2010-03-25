@@ -1262,7 +1262,7 @@ RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 
 RemovePath endp
 
-UpdateAll proc uses ebx esi,nFunction:DWORD,lParam:DWORD
+UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	hefnt:HEFONT
@@ -1534,6 +1534,42 @@ UpdateAll proc uses ebx esi,nFunction:DWORD,lParam:DWORD
 						pop		eax
 					.endw
 				.endif
+			.elseif eax==SAVE_BREAKPOINTS
+				.if da.fProject && da.szSessionFile && [ebx].TABMEM.pid
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_RAE
+						lea		edi,buffer2
+						mov		word ptr [edi],0
+						mov		esi,-1
+						.while TRUE
+							invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTBREAKPOINT,esi,0
+							.break .if eax==-1
+							mov		esi,eax
+							mov		byte ptr [edi],','
+							invoke DwToAscii,esi,addr [edi+1]
+							invoke strlen,edi
+							lea		edi,[edi+eax]
+						.endw
+						invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+						invoke WritePrivateProfileString,addr szBreakPoint,addr buffer1,addr buffer2[1],addr da.szSessionFile
+					.endif
+				.endif
+			.elseif eax==LOAD_BREAKPOINTS
+				.if da.fProject && da.szSessionFile && [ebx].TABMEM.pid
+					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
+					.if eax==IDC_RAE
+						invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+						invoke GetPrivateProfileString,addr szBreakPoint,addr buffer1,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szSessionFile
+						mov		esi,offset tmpbuff
+						.while byte ptr [esi]
+							call	GetItem
+							.if buffer1
+								invoke AsciiToDw,addr buffer1
+								invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETBREAKPOINT,eax,TRUE
+							.endif
+						.endw
+					.endif
+				.endif
 			.elseif eax==LOCK_SOURCE_FILES
 				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 				.if eax==IDC_RAE
@@ -1585,6 +1621,20 @@ UpdateAll proc uses ebx esi,nFunction:DWORD,lParam:DWORD
 	.endw
   Ex:
 	ret
+
+GetItem:
+	lea		edi,buffer1
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	retn
 
 UpdateAll endp
 

@@ -2050,6 +2050,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dbginf.hPrp,eax
 		mov		eax,offset DebugCallback
 		mov		dbginf.lpCallBack,eax
+		mov		eax,da.fProject
+		mov		dbginf.fProject,eax
 		invoke SetDebugInfo,addr dbginf
 		invoke LoadAddins,hWin
 		invoke LoadMRU,offset szMRUFiles,offset mrufiles
@@ -2117,6 +2119,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
+					invoke UpdateAll,SAVE_BREAKPOINTS,0
 					invoke UpdateAll,CLOSE_ALL,0
 					.if da.fProject
 						invoke SaveProject,addr da.szSessionFile
@@ -2139,6 +2142,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,eax
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
+					invoke UpdateAll,SAVE_BREAKPOINTS,0
 					invoke UpdateAll,CLOSE_ALL,0
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
@@ -2155,6 +2159,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					invoke AskSaveSessionFile
 					.if !eax
+						invoke UpdateAll,SAVE_BREAKPOINTS,0
 						invoke UpdateAll,CLOSE_ALL,0
 						.if da.fProject
 							invoke SaveProject,addr da.szSessionFile
@@ -2696,6 +2701,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					xor		eax,STATE_BREAKPOINT
 					.if !eax || edi
 						invoke SendMessage,ha.hREd,REM_SETBREAKPOINT,ebx,eax
+						invoke UpdateAll,SAVE_BREAKPOINTS,0
 						invoke DebugCommand,FUNC_BPCLEARALL,0,0
 						invoke UpdateAll,SET_BREAKPOINTS,0
 						invoke DebugCommand,FUNC_BPUPDATE,0,0
@@ -2705,6 +2711,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,CLEAR_BREAKPOINTS,0
 				invoke DebugCommand,FUNC_BPCLEARALL,0,0
 				invoke DebugCommand,FUNC_BPUPDATE,0,0
+				.if da.fProject && da.szSessionFile
+					mov		word ptr buffer,0
+					invoke WritePrivateProfileSection,addr szBreakPoint,addr buffer,addr da.szSessionFile
+				.endif
 			.elseif eax==IDM_DEBUG_RUN
 				.if !fDebugging
 					mov		nUnsaved,0
@@ -2757,7 +2767,30 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		dbginf.lpCallBack,offset DebugCallback
 					invoke SetDebugInfo,addr dbginf
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
-					invoke UpdateAll,SET_BREAKPOINTS,0
+					.if da.fProject && da.szSessionFile
+						xor		ebx,ebx
+						.while TRUE
+							invoke SendMessage,ha.hPbr,RPBM_GETITEM,ebx,0
+							.break .if ![eax].PBITEM.id
+							.if sdword ptr [eax].PBITEM.id>0
+								mov		edi,eax
+								invoke wsprintf,addr buffer,addr szFmtDec,[edi].PBITEM.id
+								invoke GetPrivateProfileString,addr szBreakPoint,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szSessionFile
+								mov		esi,offset tmpbuff
+								.while byte ptr [esi]
+									call	GetItem
+									.if buffer
+										invoke AsciiToDw,addr buffer
+										lea		edx,[eax+1]
+										invoke DebugCommand,FUNC_BPADDLINE,edx,addr [edi].PBITEM.szitem
+									.endif
+								.endw
+							.endif
+							inc		ebx
+						.endw
+					.else
+						invoke UpdateAll,SET_BREAKPOINTS,0
+					.endif
 				.endif
 				invoke DebugCommand,FUNC_RUN,0,0
 			.elseif eax==IDM_DEBUG_BREAK
@@ -3731,6 +3764,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
   ExRet:
 	ret
+
+GetItem:
+	push	edi
+	lea		edi,buffer
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	pop		edi
+	retn
 
 WndProc endp
 
