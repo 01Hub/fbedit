@@ -295,16 +295,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 59=8
 
 [Find]
-1="IDM_PROJECT_CREATE"
-2="CreateProject"
-3="SaveCollapse"
-4="LoadCollapse"
-5="SaveBookMarks"
-6="LoadBookMarks"
-7="SAVE_SESSIONFILE"
-8="SaveBreakpoints"
-9="LoadBreakpoints"
-10="LOAD_BREAKPOINTS"
+1="RPBG_GROUPS"
+2="UpdateFileName"
+3="fnonotify"
+4="IDM_PROJECT_CREATE"
+5="CreateProject"
+6="SaveCollapse"
+7="LoadCollapse"
+8="SaveBookMarks"
+9="LoadBookMarks"
+10="SAVE_SESSIONFILE"
 
 [VersionControl]
 Settings=1246
@@ -316,7 +316,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=25
+MilestoneOnDateDate=26
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -351,11 +351,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,2495
-1=0,0,851,458,85896
-11=0,0,960,525,41310
+2=0,0,687,524,20600
+1=0,0,851,458,58582
+11=0,0,960,525,34848
 22=0,0,960,525,2960
-10=0,0,960,525,21321
+10=0,0,960,525,23268
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -374,7 +374,7 @@ ProductVer4Range=0
 25=0,0,0,0
 27=0,0,0,0
 24=0,0,0,0
-14=0,0,960,525,1921
+14=0,0,960,525,1911
 12=0,0,0,0,2434
 31=0,0,0,0,2186
 32=0,0,0,0
@@ -397,12 +397,12 @@ ProductVer4Range=0
 50=0,0,0,0
 51=0,0,0,0,243
 52=0,0,0,0,5186
-53=0,0,960,525,13899
+53=0,0,960,525,9128
 54=0,0,0,0,254
 55=0,0,0,0
 56=0,0,0,0,5410
 57=0,0,0,0
-58=0,0,851,458,550
+58=0,0,851,458,2608
 
 [BookMark]
 0=
@@ -419,10 +419,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,53,10,11,45,58,22
+AutoLoad=1,2,38,53,10,11,45,58,22,14
 [Collapse]
 2=
-1=,,,,,,,603979534,2147483616,8191,
+1=,,,,,,,1207959068,2147483584,16383,
 31=
 23=
 3=
@@ -456,7 +456,7 @@ AutoLoad=1,2,38,53,10,11,45,58,22
 56=
 58=
 [PTimer]
-PTimer=2948154551
+PTimer=2956226168
 [RADebugBP]
 1=
 2=

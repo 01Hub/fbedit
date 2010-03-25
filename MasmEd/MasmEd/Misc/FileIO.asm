@@ -104,17 +104,8 @@ UpdateFileName proc hWin:DWORD,lpFileName:DWORD
 	invoke SaveFile,hWin,lpFileName
 	.if !eax
 		;The file was saved
-		.if da.fProject
-			invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,addr da.FileName
-			.if eax
-				invoke lstrcpy,addr [eax].PBITEM.szitem,lpFileName
-				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
-			.endif
-		.endif
-		invoke strcpy,offset da.FileName,lpFileName
-		invoke SetWinCaption,offset da.FileName
 		invoke TabToolGetInx,hWin
-		invoke TabToolSetText,eax,offset da.FileName
+		invoke TabToolSetText,eax,lpFileName
 		mov		eax,FALSE
 	.endif
 	ret
@@ -158,6 +149,20 @@ SaveEditAs proc hWin:DWORD,lpFileName:DWORD
 		invoke GetSaveFileName,addr ofn
 		.if eax
 			invoke UpdateFileName,hWin,addr buffer
+			.if !eax
+				.if da.fProject
+					invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
+					.if eax
+						invoke lstrcpy,addr [eax].PBITEM.szitem,addr buffer
+						invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+					.endif
+				.endif
+				mov		eax,hWin
+				.if eax==ha.hREd
+					invoke strcpy,offset da.FileName,addr buffer
+					invoke SetWinCaption,addr buffer
+				.endif
+			.endif
 		.else
 			mov		eax,TRUE
 		.endif

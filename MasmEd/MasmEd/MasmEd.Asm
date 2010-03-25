@@ -1885,7 +1885,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		tci.pszText,offset szProject
 		invoke SendMessage,ha.hTabPbr,TCM_INSERTITEM,999,addr tci
 		;Create project browser
-		invoke CreateWindowEx,0,addr szPBClassName,0,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or RPBS_FLATTOOLBAR,0,0,0,0,ha.hTabPbr,IDC_PROJECT,ha.hInstance,0
+		invoke CreateWindowEx,0,addr szPBClassName,0,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or RPBS_FLATTOOLBAR or RPBS_NOPATH,0,0,0,0,ha.hTabPbr,IDC_PROJECT,ha.hInstance,0
 		mov		ha.hPbr,eax
 		invoke SendMessage,ha.hPbr,RPBM_ADDFILEEXT,0,0
 		mov		esi,offset pbfileext
@@ -2127,7 +2127,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SaveProject,addr da.szSessionFile
 						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
 						invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-						invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+						invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
 						mov		da.fProject,FALSE
 					.endif
 					mov		da.szSessionFile,0
@@ -2165,7 +2165,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke SaveProject,addr da.szSessionFile
 							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
 							invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-							invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+							invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
 							mov		da.fProject,FALSE
 						.endif
 						mov		da.szSessionFile,0
@@ -3164,17 +3164,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke MessageBox,ha.hWnd,offset tmpbuff,offset szAppName,MB_OK or MB_ICONERROR
 			.else
 				mov		esi,[edi].NMPBITEMCHANGE.lpPBITEM
+				invoke lstrcpy,addr buffer,addr [esi].PBITEM.szitem
 				invoke UpdateAll,IS_OPEN,addr [esi].PBITEM.szitem
 				.if eax
+					mov		ebx,eax
 					;File is open
 					invoke UpdateFileName,eax,[edi].NMPBITEMCHANGE.lpsznew
 					.if eax
 						;Probably not a valid filename
 						mov		[edi].NMPBITEMCHANGE.cancel,TRUE
+					.else
+						;Delete old file
+						invoke DeleteFile,addr buffer
+						.if ebx==ha.hREd
+							invoke strcpy,offset da.FileName,[edi].NMPBITEMCHANGE.lpsznew
+							invoke SetWinCaption,[edi].NMPBITEMCHANGE.lpsznew
+						.endif
 					.endif
 				.else
-					;File is not open, copy it
-					invoke CopyFile,addr [esi].PBITEM.szitem,[edi].NMPBITEMCHANGE.lpsznew,TRUE
+					;File is not open, move it
+					invoke MoveFile,addr [esi].PBITEM.szitem,[edi].NMPBITEMCHANGE.lpsznew
 					.if !eax
 						;Probably not a valid filename
 						mov		[edi].NMPBITEMCHANGE.cancel,TRUE

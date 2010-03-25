@@ -286,7 +286,17 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 			mov		tvis.hParent,eax
 			mov		tvis.hInsertAfter,TVI_LAST
 			mov		tvis.item._mask,TVIF_IMAGE or TVIF_SELECTEDIMAGE or TVIF_PARAM or TVIF_TEXT
-			invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			test	[ebx].PROJECTBROWSER.style,RPBS_NOPATH
+			.if !ZERO?
+				invoke lstrcpy,addr buffer,addr [esi].PBITEM.szitem
+				invoke lstrlen,addr buffer
+				.while buffer[eax-1]!='\' && eax
+					dec		eax
+				.endw
+				lea		eax,buffer[eax]
+			.else
+				invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			.endif
 			mov		tvis.item.pszText,eax
 			invoke FindFileExt,ebx,eax
 			mov		tvis.item.iImage,eax
@@ -634,6 +644,8 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		invoke SetWindowLong,hWin,0,ebx
 		mov		eax,hWin
 		mov		[ebx].PROJECTBROWSER.hwnd,eax
+		invoke GetWindowLong,hWin,GWL_STYLE
+		mov		[ebx].PROJECTBROWSER.style,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXFIEEXTMEM
 		mov		[ebx].PROJECTBROWSER.hmemfileext,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,MAXITEMMEM
@@ -799,7 +811,17 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 							.if sdword ptr [edi].PBITEM.id<0
 								invoke lstrcpy,addr [edi].PBITEM.szitem,[esi].NMTVDISPINFO.item.pszText
 							.else
-								invoke lstrcpy,addr szitemnew,addr [ebx].PROJECTBROWSER.projectpath
+								test	[ebx].PROJECTBROWSER.style,RPBS_NOPATH
+								.if !ZERO?
+									invoke lstrcpy,addr szitemnew,addr [edi].PBITEM.szitem
+									invoke lstrlen,addr szitemnew
+									.while szitemnew[eax]!='\' && eax
+										dec		eax
+									.endw
+									mov		szitemnew[eax],0
+								.else
+									invoke lstrcpy,addr szitemnew,addr [ebx].PROJECTBROWSER.projectpath
+								.endif
 								invoke lstrcat,addr szitemnew,addr szBS
 								invoke lstrcat,addr szitemnew,[esi].NMTVDISPINFO.item.pszText
 								invoke NotifyItemChange,hWin,edi
@@ -902,7 +924,9 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke GetExpand,ebx
 		.endif
 		mov		eax,lParam
-		.if sdword ptr eax<RPBG_NONE
+		.if eax==RPBG_NOCHANGE
+			mov		eax,[ebx].PROJECTBROWSER.ngrouping
+		.elseif sdword ptr eax<RPBG_NONE
 			mov		eax,RPBG_NONE
 		.elseif sdword ptr eax>RPBG_GROUPS
 			mov		eax,RPBG_GROUPS

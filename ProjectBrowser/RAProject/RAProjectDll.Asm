@@ -37,13 +37,13 @@ PROP_STYLETRUEFALSE		equ 1
 PROP_EXSTYLETRUEFALSE	equ 2
 PROP_STYLEMULTI			equ 3
 
-STYLE					equ WS_CHILD or WS_VISIBLE
-EXSTYLE					equ 0
+DEFSTYLE				equ WS_CHILD or WS_VISIBLE
+DEFEXSTYLE				equ 0
 IDB_BMP					equ 100
 
 .const
 
-szToolTip				db 'ProjectBrowser',0
+ToolTip					db 'ProjectBrowser',0
 szCap					db 0
 szName					db 'IDC_PBR',0
 
@@ -51,16 +51,19 @@ PropertyFlat			dd -1 xor RPBS_FLATTOOLBAR,0
 						dd -1 xor RPBS_FLATTOOLBAR,RPBS_FLATTOOLBAR
 PropertyDivider			dd -1 xor RPBS_DIVIDERLINE,0
 						dd -1 xor RPBS_DIVIDERLINE,RPBS_DIVIDERLINE
+PropertyPath			dd -1 xor RPBS_NOPATH,0
+						dd -1 xor RPBS_NOPATH,RPBS_NOPATH
 
 Methods					dd PROP_STYLETRUEFALSE,offset PropertyFlat
 						dd PROP_STYLETRUEFALSE,offset PropertyDivider
+						dd PROP_STYLETRUEFALSE,offset PropertyPath
 
 .data
 
-szProperty				db 'FlatToolBar,DividerLine',0
-;																													  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
-ccdef					CCDEF <300,offset szToolTip,0,offset szCap,offset szName,offset szPBClassName,STYLE,EXSTYLE,  11111101000110000000000001000000b,00010000000000011000000000000000b,0>
-ccdefex					CCDEFEX <300,offset szToolTip,0,offset szCap,offset szName,offset szPBClassName,STYLE,EXSTYLE,11111101000110000000000001000000b,00010000000000011000000000000000b,00000000000000000000000000000000b,00000000000000000000000000000000b,offset szProperty,offset Methods>
+Property				db 'FlatToolBar,DividerLine,NoPath',0
+;																														  NILTWHCBCMMEVCSDAAMWMTLCSTFMCNAW
+ccdef					CCDEF <300,offset ToolTip,0,offset szCap,offset szName,offset szPBClassName,DEFSTYLE,DEFEXSTYLE,  11111101000110000000000001000000b,00010000000000011000000000000000b,0>
+ccdefex					CCDEFEX <300,offset ToolTip,0,offset szCap,offset szName,offset szPBClassName,DEFSTYLE,DEFEXSTYLE,11111101000110000000000001000000b,00010000000000011000000000000000b,00000000000000000000000000000000b,00000000000000000000000000000000b,offset Property,offset Methods>
 
 .code
 

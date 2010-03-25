@@ -207,7 +207,15 @@ SortItems proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 	.while [esi].PBITEM.id
 		.if sdword ptr [esi].PBITEM.id>0
 			;File
-			invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			.if [ebx].PROJECTBROWSER.style & RPBS_NOPATH
+				invoke lstrlen,addr [esi].PBITEM.szitem
+				.while [esi].PBITEM.szitem[eax-1]!='\' && eax
+					dec		eax
+				.endw
+				lea		eax,[esi].PBITEM.szitem[eax]
+			.else
+				invoke RemoveThePath,addr [esi].PBITEM.szitem,addr [ebx].PROJECTBROWSER.projectpath,addr buffer
+			.endif
 			invoke lstrcpy,addr [edi].SORT.szname,eax
 			mov		[edi].SORT.lpPBITEM,esi
 			inc		nCount

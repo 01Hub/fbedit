@@ -24,6 +24,7 @@ PROJECTBROWSER struct
 	htrv			HWND ?
 	htbr			HWND ?
 	himl			HIMAGELIST ?
+	style			DWORD ?
 	projectpath		db MAX_PATH dup(?)
 	hmemfileext		HGLOBAL ?
 	hmemitems		HGLOBAL ?
