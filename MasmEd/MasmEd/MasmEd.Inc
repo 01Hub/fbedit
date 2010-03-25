@@ -128,8 +128,6 @@ NEWER_SOURCE_FILES		equ -16
 SAVE_SESSIONREGISTRY	equ -17
 ADDTOPROJECT			equ -18
 IS_OPEN					equ -19
-SAVE_BREAKPOINTS		equ -20
-LOAD_BREAKPOINTS		equ -21
 
 TABHT					equ 23
 CBOWT					equ 175
@@ -571,6 +569,8 @@ szFolder				db 'Folder',0
 szSession				db 'Session',0
 szProGroup				db 'Group',0
 szBreakPoint			db 'BreakPoint',0
+szBookMark				db 'BookMark',0
+szCollapse				db 'Collapse',0
 szMRUFiles				db 'MRUFiles',0
 szMRUSessions			db 'MRUSessions',0
 szFilter				db '.asm.inc.txt.def.rc.exe.bat.mes.',0

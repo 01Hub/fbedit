@@ -695,6 +695,7 @@ MenuEnable proc uses ebx
 	.endif
 	mov		edx,IDM_FILE_CLOSESESSION
 	call	EnableDisable
+	mov		eax,TRUE
 	mov		edx,IDM_PROJECT_CREATE
 	.if da.fProject
 		xor		eax,eax
@@ -2107,6 +2108,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								.if !da.fProject
 									invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,ha.hREd,0
 									invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+								.else
+									invoke SaveCollapse,ha.hREd
 								.endif
 							.endif
 							invoke DestroyWindow,ha.hREd
@@ -2119,7 +2122,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,-1
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
-					invoke UpdateAll,SAVE_BREAKPOINTS,0
 					invoke UpdateAll,CLOSE_ALL,0
 					.if da.fProject
 						invoke SaveProject,addr da.szSessionFile
@@ -2142,7 +2144,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		nTabInx,eax
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
-					invoke UpdateAll,SAVE_BREAKPOINTS,0
 					invoke UpdateAll,CLOSE_ALL,0
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
@@ -2159,7 +2160,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if !eax
 					invoke AskSaveSessionFile
 					.if !eax
-						invoke UpdateAll,SAVE_BREAKPOINTS,0
 						invoke UpdateAll,CLOSE_ALL,0
 						.if da.fProject
 							invoke SaveProject,addr da.szSessionFile
@@ -2392,6 +2392,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.elseif eax==3
 						invoke SendMessage,ha.hREd,REM_SETBOOKMARK,ebx,0
 					.endif
+					invoke SaveBookMarks,ha.hREd
 				.elseif eax==IDC_HEX
 					invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
 					mov		eax,chrg.cpMin
@@ -2701,7 +2702,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					xor		eax,STATE_BREAKPOINT
 					.if !eax || edi
 						invoke SendMessage,ha.hREd,REM_SETBREAKPOINT,ebx,eax
-						invoke UpdateAll,SAVE_BREAKPOINTS,0
+						invoke SaveBreakpoints,ha.hREd
 						invoke DebugCommand,FUNC_BPCLEARALL,0,0
 						invoke UpdateAll,SET_BREAKPOINTS,0
 						invoke DebugCommand,FUNC_BPUPDATE,0,0
@@ -2765,6 +2766,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		eax,fMainThread
 					mov		dbginf.fMainThread,eax
 					mov		dbginf.lpCallBack,offset DebugCallback
+					mov		eax,da.fProject
+					mov		dbginf.fProject,eax
 					invoke SetDebugInfo,addr dbginf
 					invoke DebugCommand,FUNC_BPCLEARALL,0,0
 					.if da.fProject && da.szSessionFile
@@ -2778,7 +2781,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								invoke GetPrivateProfileString,addr szBreakPoint,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szSessionFile
 								mov		esi,offset tmpbuff
 								.while byte ptr [esi]
-									call	GetItem
+									invoke strgetitem,esi,addr buffer
+									mov		esi,eax
 									.if buffer
 										invoke AsciiToDw,addr buffer
 										lea		edx,[eax+1]
@@ -3324,6 +3328,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		dword ptr tmpbuff,eax
 				invoke RegSetValueEx,ha.hReg,addr szBuild,0,REG_DWORD,addr tmpbuff,4
 				invoke CloseNotify
+				invoke UpdateAll,CLOSE_ALL,0
 				invoke GetWindowLong,hWin,GWL_STYLE
 				test	eax,WS_MAXIMIZE
 				.if ZERO?
@@ -3439,13 +3444,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	-1
 				invoke SendMessage,ha.hPbr,RPBM_GETITEM,0,0
 				.if ![eax].PBITEM.id
-					;No project
-					push	IDM_PROJECT_CREATE
-					mov		eax,MF_BYCOMMAND or MF_GRAYED
-					.if da.szSessionFile && da.MainFile
-						mov		eax,MF_BYCOMMAND or MF_ENABLED
-					.endif
-					push	eax
 					mov		eax,MF_BYCOMMAND or MF_GRAYED
 					push	IDM_PROJECT_ADDGROUP
 					push	eax
@@ -3464,8 +3462,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					push	IDM_PROJECT_REMOVEFILE
 					push	eax
 				.else
-					push	IDM_PROJECT_CREATE
-					push	MF_BYCOMMAND or MF_GRAYED
 					push	IDM_PROJECT_ADDGROUP
 					push	MF_BYCOMMAND or MF_ENABLED
 					invoke SendMessage,ha.hPbr,RPBM_GETSELECTED,0,0
@@ -3764,22 +3760,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	xor    eax,eax
   ExRet:
 	ret
-
-GetItem:
-	push	edi
-	lea		edi,buffer
-	.while byte ptr [esi] && byte ptr [esi]!=','
-		mov		al,[esi]
-		mov		[edi],al
-		inc		esi
-		inc		edi
-	.endw
-	.if byte ptr [esi]
-		inc		esi
-	.endif
-	mov		byte ptr [edi],0
-	pop		edi
-	retn
 
 WndProc endp
 

@@ -75,9 +75,9 @@ AutoLoad=1,2,3,7,5,8,4
 6=,
 [Size]
 2=0,0,0,0,1177
-1=0,0,0,0,868
-3=0,0,0,0,7624
-4=0,0,0,0,10939
+1=0,0,0,0,1975
+3=0,0,0,0,7643
+4=0,0,0,0,11086
 7=0,0,0,0,6892
 8=0,0,0,0,184
 5=0,0,0,0,14734
@@ -102,7 +102,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=24
@@ -148,17 +148,17 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [Find]
-1="CB_OPENFILE"
-2="fProject"
-3="fDoneOpen"
-4="CONTEXT_EXTENDED_REGISTERS"
-5="ShowFpuContext"
-6="CONTEXT_FULL"
-7="MAXIMUM_SUPPORTED_EXTENSION"
-8="context struct"
-9="CONTEXT_"
-10=".context"
+1="SetDebugInfo"
+2="CB_OPENFILE"
+3="fProject"
+4="fDoneOpen"
+5="CONTEXT_EXTENDED_REGISTERS"
+6="ShowFpuContext"
+7="CONTEXT_FULL"
+8="MAXIMUM_SUPPORTED_EXTENSION"
+9="context struct"
+10="CONTEXT_"
 [PTimer]
-PTimer=47213890
+PTimer=55558290
 [GroupExpand]
 GroupExpand=1,0

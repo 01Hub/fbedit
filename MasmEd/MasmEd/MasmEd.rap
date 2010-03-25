@@ -295,16 +295,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 59=8
 
 [Find]
-1="FUNC_FILEOPEN"
-2="CB_OPENFILE"
-3="CLOSE_ALL"
-4="buffer1"
-5="UpdateAll,CLEAR_BREAKPOINTS"
-6="SET_BREAKPOINTS"
-7="FUNC_BPCLEARALL"
-8="DEBUGINFO"
-9="1103"
-10="1.1.0.3"
+1="IDM_PROJECT_CREATE"
+2="CreateProject"
+3="SaveCollapse"
+4="LoadCollapse"
+5="SaveBookMarks"
+6="LoadBookMarks"
+7="SAVE_SESSIONFILE"
+8="SaveBreakpoints"
+9="LoadBreakpoints"
+10="LOAD_BREAKPOINTS"
 
 [VersionControl]
 Settings=1246
@@ -316,7 +316,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -351,11 +351,11 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,2318
-1=0,0,851,458,104926
-11=0,0,960,525,35769
-22=0,0,960,525,7164
-10=0,0,960,525,9508
+2=0,0,687,524,2495
+1=0,0,851,458,58088
+11=0,0,960,525,41310
+22=0,0,960,525,2960
+10=0,0,960,525,22132
 23=0,0,0,0,6917
 9=0,0,0,0,0
 4=0,0,0,0
@@ -419,16 +419,16 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,53,10,11,14,45,46,15,58,22
+AutoLoad=1,2,38,53,10,11,45,58,22
 [Collapse]
 2=
-1=,,,,,,,536868976,2147483394,65535,
+1=,,,,,,,603979534,2147483616,8191,
 31=
 23=
 3=
 22=
 37=,,,,
-11=,,,,,,,,
+11=,,,,,,,,,
 36=
 10=,,,,
 29=
@@ -456,7 +456,7 @@ AutoLoad=1,2,38,53,10,11,14,45,46,15,58,22
 56=
 58=
 [PTimer]
-PTimer=2924152690
+PTimer=2944879232
 [RADebugBP]
 1=
 2=

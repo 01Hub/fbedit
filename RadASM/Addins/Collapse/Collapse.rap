@@ -85,7 +85,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=17
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=18
@@ -135,7 +135,7 @@ ProductVer4Range=0
 2=InstallDll
 3=DllEntry
 [Size]
-1=0,0,0,0,267
+1=0,0,0,0,5575
 2=0,0,0,0,461
 6=0,0,0,0,11425
 4=0,0,0,0,60
@@ -149,7 +149,7 @@ ProductVer4Range=0
 5=
 4=
 [AutoLoad]
-1=1
+AutoLoad=1
 [Find]
 1="rablkdef"
 2="רזו"
@@ -162,4 +162,8 @@ ProductVer4Range=0
 9="MultEdt"
 10="BS_OWNERDRAW"
 [PTimer]
-PTimer=1351422
+PTimer=7188028
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0
+[RADebugBP]
+1=

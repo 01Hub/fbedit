@@ -1,5 +1,24 @@
 .code
 
+strgetitem proc uses esi edi,lpStrIn:DWORD,lpStrOut:DWORD
+
+	mov		esi,lpStrIn
+	mov		edi,lpStrOut
+	.while byte ptr [esi] && byte ptr [esi]!=','
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]
+		inc		esi
+	.endif
+	mov		byte ptr [edi],0
+	mov		eax,esi
+	ret
+
+strgetitem endp
+
 ; String handling
 strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
@@ -1262,6 +1281,251 @@ RemovePath proc	uses esi edi,lpszFileName:DWORD,lpPath:DWORD,lpBuff:DWORD
 
 RemovePath endp
 
+SaveBreakpoints proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				lea		edi,buffer2
+				mov		word ptr [edi],0
+				mov		esi,-1
+				.while TRUE
+					invoke SendMessage,hWin,REM_NEXTBREAKPOINT,esi,0
+					.break .if eax==-1
+					mov		esi,eax
+					mov		byte ptr [edi],','
+					invoke DwToAscii,esi,addr [edi+1]
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+				.endw
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke WritePrivateProfileString,addr szBreakPoint,addr buffer1,addr buffer2[1],addr da.szSessionFile
+			.endif
+		.endif
+	.endif
+	ret
+
+SaveBreakpoints endp
+
+LoadBreakpoints proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke GetPrivateProfileString,addr szBreakPoint,addr buffer1,addr szNULL,addr buffer2,sizeof buffer2,addr da.szSessionFile
+				lea		esi,buffer2
+				.while byte ptr [esi]
+					invoke strgetitem,esi,addr buffer1
+					mov		esi,eax
+					.if buffer1
+						invoke AsciiToDw,addr buffer1
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETBREAKPOINT,eax,TRUE
+					.endif
+				.endw
+			.endif
+		.endif
+	.endif
+	ret
+
+LoadBreakpoints endp
+
+SaveBookMarks proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				lea		edi,buffer2
+				mov		word ptr [edi],0
+				mov		esi,-1
+				.while TRUE
+					invoke SendMessage,hWin,REM_NXTBOOKMARK,esi,3
+					.break .if eax==-1
+					mov		esi,eax
+					mov		byte ptr [edi],','
+					invoke DwToAscii,esi,addr [edi+1]
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+				.endw
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke WritePrivateProfileString,addr szBookMark,addr buffer1,addr buffer2[1],addr da.szSessionFile
+			.endif
+		.endif
+	.endif
+	ret
+
+SaveBookMarks endp
+
+LoadBookMarks proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke GetPrivateProfileString,addr szBookMark,addr buffer1,addr szNULL,addr buffer2,sizeof buffer2,addr da.szSessionFile
+				lea		esi,buffer2
+				.while byte ptr [esi]
+					invoke strgetitem,esi,addr buffer1
+					mov		esi,eax
+					.if buffer1
+						invoke AsciiToDw,addr buffer1
+						invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETBOOKMARK,eax,3
+					.endif
+				.endw
+			.endif
+		.endif
+	.endif
+	ret
+
+LoadBookMarks endp
+
+SaveCollapse proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+	LOCAL	chrg:CHARRANGE
+	LOCAL	lpBuff:DWORD
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				lea		edi,buffer2
+				invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				invoke DwToAscii,eax,edi
+				invoke strlen,edi
+				lea		edi,[edi+eax]
+				mov		lpBuff,edi
+				push	ebx
+				mov		ebx,-1
+				xor		edi,edi
+			  @@:
+				shl		edi,1
+				and		edi,7FFFFFFFh
+				.if !edi
+					.if ebx!=-1
+						push	edi
+						mov		edi,lpBuff
+						mov		byte ptr [edi],','
+						inc		edi
+						invoke DwToAscii,esi,edi
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+						mov		lpBuff,edi
+						pop		edi
+					.else
+						invoke SendMessage,hWin,EM_GETLINECOUNT,0,0
+						mov		ebx,eax
+					.endif
+					xor		esi,esi
+					inc		edi
+				.endif
+				invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,1
+				push	eax
+				invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,2
+				pop		edx
+				or		esi,edi
+				.if sdword ptr edx>=eax
+					mov		eax,edx
+					xor		esi,edi
+				.endif
+				mov		ebx,eax
+				cmp		ebx,-1
+				jne		@b
+				pop		ebx
+				mov		edi,lpBuff
+				mov		byte ptr [edi],','
+				inc		edi
+				invoke DwToAscii,esi,edi
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke WritePrivateProfileString,addr szCollapse,addr buffer1,addr buffer2,addr da.szSessionFile
+			.endif
+		.endif
+	.endif
+	ret
+
+SaveCollapse endp
+
+LoadCollapse proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer1[32]:BYTE
+	LOCAL	buffer2[MAX_PATH*4]:BYTE
+	LOCAL	chrg:CHARRANGE
+
+	.if da.fProject && da.szSessionFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		ebx,eax
+		.if [ebx].TABMEM.pid
+			invoke GetWindowLong,hWin,GWL_ID
+			.if eax==IDC_RAE
+				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+				invoke GetPrivateProfileString,addr szCollapse,addr buffer1,addr szNULL,addr buffer2,sizeof buffer2,addr da.szSessionFile
+				lea		esi,buffer2
+				invoke strgetitem,esi,addr buffer1
+				mov		esi,eax
+				.if buffer1
+					invoke AsciiToDw,addr buffer1
+					invoke SendMessage,hWin,EM_LINEINDEX,eax,0
+					mov		chrg.cpMin,eax
+					mov		chrg.cpMax,eax
+					invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+					invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+					invoke SendMessage,hWin,REM_VCENTER,0,0
+					invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+					invoke SendMessage,hWin,EM_GETLINECOUNT,0,0
+					invoke SendMessage,hWin,REM_PRVBOOKMARK,eax,1
+					mov		ebx,eax
+					.while byte ptr [esi]
+						invoke strgetitem,esi,addr buffer1
+						mov		esi,eax
+						invoke AsciiToDw,addr buffer1
+						xor		ecx,ecx
+						.while ecx<31
+							shr		eax,1
+							push	eax
+							push	ecx
+							.if CARRY?
+								invoke SendMessage,hWin,REM_COLLAPSE,ebx,0
+							.endif
+							invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,1
+							mov		ebx,eax
+							pop		ecx
+							pop		eax
+							inc		ecx
+							cmp		ebx,-1
+							je		@f
+						.endw
+					.endw
+				  @@:
+				.endif
+			.endif
+		.endif
+	.endif
+	ret
+
+LoadCollapse endp
+
 UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
@@ -1338,6 +1602,8 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						invoke DeleteGoto,[ebx].TABMEM.hwnd
 						.if !da.fProject
 							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,[ebx].TABMEM.hwnd,0
+						.else
+							invoke SaveCollapse,[ebx].TABMEM.hwnd
 						.endif
 					.endif
 					invoke PostAddinMessage,[ebx].TABMEM.hwnd,AIM_FILECLOSED,esi,[ebx].TABMEM.filename,0,HOOK_FILECLOSED
@@ -1534,42 +1800,6 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						pop		eax
 					.endw
 				.endif
-			.elseif eax==SAVE_BREAKPOINTS
-				.if da.fProject && da.szSessionFile && [ebx].TABMEM.pid
-					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-					.if eax==IDC_RAE
-						lea		edi,buffer2
-						mov		word ptr [edi],0
-						mov		esi,-1
-						.while TRUE
-							invoke SendMessage,[ebx].TABMEM.hwnd,REM_NEXTBREAKPOINT,esi,0
-							.break .if eax==-1
-							mov		esi,eax
-							mov		byte ptr [edi],','
-							invoke DwToAscii,esi,addr [edi+1]
-							invoke strlen,edi
-							lea		edi,[edi+eax]
-						.endw
-						invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
-						invoke WritePrivateProfileString,addr szBreakPoint,addr buffer1,addr buffer2[1],addr da.szSessionFile
-					.endif
-				.endif
-			.elseif eax==LOAD_BREAKPOINTS
-				.if da.fProject && da.szSessionFile && [ebx].TABMEM.pid
-					invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
-					.if eax==IDC_RAE
-						invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
-						invoke GetPrivateProfileString,addr szBreakPoint,addr buffer1,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szSessionFile
-						mov		esi,offset tmpbuff
-						.while byte ptr [esi]
-							call	GetItem
-							.if buffer1
-								invoke AsciiToDw,addr buffer1
-								invoke SendMessage,[ebx].TABMEM.hwnd,REM_SETBREAKPOINT,eax,TRUE
-							.endif
-						.endw
-					.endif
-				.endif
 			.elseif eax==LOCK_SOURCE_FILES
 				invoke GetWindowLong,[ebx].TABMEM.hwnd,GWL_ID
 				.if eax==IDC_RAE
@@ -1609,7 +1839,32 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 					.endif
 				.endif
 			.elseif eax==ADDTOPROJECT
-				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr [ebx].TABMEM.filename
+				mov		edx,lParam
+				.if edx
+					invoke strlen,addr [ebx].TABMEM.filename
+					.while eax
+						.if byte ptr [ebx].TABMEM.filename[eax-1]=='.'
+							mov		eax,dword ptr [ebx].TABMEM.filename[eax-1]
+							and		eax,5F5F5FFFh
+							.break
+						.endif
+						dec		eax
+					.endw
+					.if eax=='MSA.'
+						;Assembly
+						mov		edx,-2
+					.elseif eax=='CNI.'
+						;Include
+						mov		edx,-3
+					.elseif eax=='CR.'
+						;Resource
+						mov		edx,-5
+					.else
+						;Misc
+						mov		edx,-4
+					.endif
+				.endif
+				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,edx,addr [ebx].TABMEM.filename
 				.if eax
 					mov		eax,[eax].PBITEM.id
 					mov		[ebx].TABMEM.pid,eax
@@ -1621,20 +1876,6 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	.endw
   Ex:
 	ret
-
-GetItem:
-	lea		edi,buffer1
-	.while byte ptr [esi] && byte ptr [esi]!=','
-		mov		al,[esi]
-		mov		[edi],al
-		inc		esi
-		inc		edi
-	.endw
-	.if byte ptr [esi]
-		inc		esi
-	.endif
-	mov		byte ptr [edi],0
-	retn
 
 UpdateAll endp
 

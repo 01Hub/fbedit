@@ -355,9 +355,6 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 		invoke Sleep,15
 		inc		edi
 	.endw
-PrintDec edi
-PrintHex fDoneOpen
-;	invoke WaitForSingleObject,dbg.pinfo.hProcess,50
 	push	0
 	mov		eax,[ebx].DEBUGLINE.LineNumber
 	mov		dbg.prevline,eax

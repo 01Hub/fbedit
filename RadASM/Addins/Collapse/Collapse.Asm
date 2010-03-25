@@ -289,11 +289,11 @@ DllProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						invoke SendMessage,wParam,REM_PRVBOOKMARK,ebx,1
 						mov		ebx,eax
-						cmp		ebx,-1
-						je		@f
 						pop		ecx
 						pop		eax
 						inc		ecx
+						cmp		ebx,-1
+						je		@f
 					.endw
 				.endw
 			  @@:

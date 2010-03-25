@@ -474,6 +474,7 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 			invoke Sleep,10
 			inc		ebx
 		.endw
+PrintDec ebx
 	.endif
 	mov		eax,TRUE
 	ret
