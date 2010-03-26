@@ -479,6 +479,8 @@ UpdateToolColors proc
 	;Set tool colors
 	invoke SendMessage,ha.hBrowse,FBM_SETBACKCOLOR,0,col.toolback
 	invoke SendMessage,ha.hBrowse,FBM_SETTEXTCOLOR,0,col.tooltext
+	invoke SendMessage,ha.hPbr,RPBM_SETBACKCOLOR,0,col.toolback
+	invoke SendMessage,ha.hPbr,RPBM_SETTEXTCOLOR,0,col.tooltext
 	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,col.toolback
 	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,col.tooltext
 	mov		eax,col.dialogback

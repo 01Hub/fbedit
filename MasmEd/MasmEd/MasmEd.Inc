@@ -420,7 +420,9 @@ szSaveSession			db 'Save current session to?',0Dh,0
 szNoMain				db 'No main file selected.',0Dh,'Use Make / Set Current as Mainfile.',0Dh,0
 szUnsaved				db 'There are %d unsaved source files.',0
 szNewer					db 'There are %d source files newer than the .exe.',0
-
+szNewProject			db 'Would you like to create an empty project?',0Dh,0Dh
+						db 'If you open your source files first, MasmEd',0Dh
+						db 'will automatically add those files.',0
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
 szFtApi					db '.api',0

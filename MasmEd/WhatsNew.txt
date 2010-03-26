@@ -1,5 +1,19 @@
 MasmEd
 
+1.2.0.0 - 2010.03.26
+--------------------
+o Added project handling.
+  - The project browser handles project groups and sub groups.
+    Easy drag and drop to move files or entire groups around.
+    Collapsed states and current grouping selection are saved.
+  - Create a project from existing sources just by opening the source
+    files and select Project / Create Project. If you also select a
+	main file then no questions will be asked.
+  - With a project created, MasmEd can comfortably handle large projects as there
+    is no need to have all source files open to get full code complete and debugging 
+	capabilities. In addition caret positions, bookmarks, breakpoints and collapsed
+    states are saved.
+
 1.1.0.3 - 2010.03.16
 --------------------
 o Added message sensitive tooltip and codecomplete on

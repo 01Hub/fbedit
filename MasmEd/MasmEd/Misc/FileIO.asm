@@ -22,12 +22,12 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	LOCAL	hMem:DWORD
 	LOCAL	nSize:DWORD
 
+	invoke TabToolGetMem,hWin
+	mov		ebx,eax
+	mov		[ebx].TABMEM.fnonotify,TRUE
 	invoke GetWindowLong,hWin,GWL_ID
 	invoke PostAddinMessage,hWin,AIM_FILESAVE,eax,lpFileName,0,HOOK_FILESAVE
 	.if !eax
-		invoke TabToolGetMem,hWin
-		mov		ebx,eax
-		mov		[ebx].TABMEM.fnonotify,TRUE
 		invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
 		.if eax!=INVALID_HANDLE_VALUE
 			mov		hFile,eax
@@ -61,8 +61,6 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 				.endif
 			.endif
 			invoke CloseHandle,hFile
-			mov		[ebx].TABMEM.nchange,0
-			mov		[ebx].TABMEM.fchanged,0
 			invoke UpdateFileTime,ebx
 			invoke TabToolSetChanged,hWin,FALSE
 	   		mov		eax,FALSE
@@ -75,6 +73,8 @@ SaveFile proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	.else
 		xor		eax,eax
 	.endif
+	mov		[ebx].TABMEM.nchange,0
+	mov		[ebx].TABMEM.fchanged,0
 	ret
 
 SaveFile endp
@@ -520,6 +520,44 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 
 OpenEditFile endp
 
+CreateNewFile proc
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+    invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	ha.hWnd
+	pop		ofn.hwndOwner
+	push	ha.hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset ALLFilterString
+	invoke strcpy,addr buffer,addr szNULL
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+    mov		ofn.lpstrDefExt,offset szNULL
+    ;Show save as dialog
+	invoke GetSaveFileName,addr ofn
+	.if eax
+		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			invoke CloseHandle,eax
+			invoke OpenEditFile,addr buffer,0
+			.if da.fProject
+				invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr buffer
+			.endif
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
+		.endif
+	.endif
+	ret
+
+CreateNewFile endp
+
 OpenEdit proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -699,6 +737,7 @@ SetProjectGroups proc uses ebx esi edi,lpBuff:DWORD
 	LOCAL	pbi:PBITEM
 
 	mov		nInx,0
+	invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,FALSE,RPBG_GROUPS
 	invoke RtlZeroMemory,addr pbi,sizeof PBITEM
 	mov		esi,lpBuff
 	.while byte ptr [esi]
@@ -706,6 +745,12 @@ SetProjectGroups proc uses ebx esi edi,lpBuff:DWORD
 		mov		esi,eax
 		.if buffer
 			invoke AsciiToDw,addr buffer
+			.if sdword ptr eax>0
+				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,FALSE,eax
+				invoke strgetitem,esi,addr buffer
+				mov		esi,eax
+				invoke AsciiToDw,addr buffer
+			.endif
 			mov		pbi.id,eax
 			invoke strgetitem,esi,addr buffer
 			mov		esi,eax
@@ -740,7 +785,7 @@ SetProjectFiles proc uses ebx esi edi,nInx:DWORD,lpszFile:DWORD,lpBuff:DWORD,ccB
 
 	invoke RtlZeroMemory,addr pbi,sizeof PBITEM
 	mov		edi,1
-	.while edi<257
+	.while edi<1024+1
 		invoke wsprintf,addr buffer,addr szFmtDec,edi
 		invoke GetPrivateProfileString,addr szProject,addr buffer,addr szNULL,lpBuff,ccBuff,lpszFile
 		.if eax
@@ -816,7 +861,6 @@ CreateProject proc uses esi edi,lpszFile:DWORD
 		invoke strcat,addr buff,addr [esi+eax+1]
 		invoke SetProjectGroups,addr buff
 		.if eax
-			invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 			mov		da.fProject,TRUE
 			invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
 			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
@@ -836,6 +880,7 @@ OpenProject proc uses esi edi,lpszFile:DWORD
 
 	mov		da.fProject,FALSE
 	invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+	;Get path
 	lea		esi,buff
 	invoke strcpy,esi,addr da.szSessionFile
 	invoke strlen,esi
@@ -844,14 +889,16 @@ OpenProject proc uses esi edi,lpszFile:DWORD
 	.endw
 	mov		byte ptr [esi+eax],0
 	invoke SendMessage,ha.hPbr,RPBM_SETPATH,0,addr buff
+	;Get groups
 	invoke GetPrivateProfileString,addr szProject,addr szProGroup,addr szNULL,addr buff,sizeof buff,lpszFile
 	.if eax
 		invoke SetProjectGroups,addr buff
 		.if eax
+			;Get files
 			mov		da.fProject,TRUE
 			mov		edx,eax
 			invoke SetProjectFiles,edx,lpszFile,addr buff,sizeof buff
-			invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+			invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
 			invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,1,0
 			invoke ShowWindow,ha.hPbr,SW_SHOWNA
 			invoke ShowWindow,ha.hBrowse,SW_HIDE
@@ -872,6 +919,8 @@ SaveProject proc uses ebx esi edi,lpszFile:DWORD
 		mov		word ptr buff,0
 		invoke WritePrivateProfileSection,addr szProject,addr buff,lpszFile
 		invoke SendMessage,ha.hPbr,RPBM_GETEXPAND,0,0
+		invoke SendMessage,ha.hPbr,RPBM_GETGROUPING,0,0
+		invoke wsprintf,addr buff,addr szFmtDec,eax
 		xor		ebx,ebx
 		.while TRUE
 			invoke SendMessage,ha.hPbr,RPBM_GETITEM,ebx,0

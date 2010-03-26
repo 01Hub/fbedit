@@ -72,6 +72,8 @@
 #define IDM_FORMAT_CENTER_VERT 10068
 #define IDM_FORMAT_TABINDEX 10069
 #define IDM_PROJECT_CREATE 21022
+#define IDM_PROJECT_OPEN 10114
+#define IDM_PROJECT_CLOSE 10115
 #define IDM_VIEW 11003
 #define IDM_VIEW_TOOLBAR 10008
 #define IDM_VIEW_STATUSBAR 10009
@@ -239,18 +241,23 @@ BEGIN
   POPUP "&Project",21015
   BEGIN
     MENUITEM "Create Project",IDM_PROJECT_CREATE
+    MENUITEM "Open Project",IDM_PROJECT_OPEN
+    MENUITEM "Close Project",IDM_PROJECT_CLOSE
     MENUITEM "",,0x00000800
     POPUP "Add Item",21023
     BEGIN
-      MENUITEM "Groip",21016
-      MENUITEM "Current File",21019
+      MENUITEM "Project Groip",21016
+      MENUITEM "",,0x00000800
+      MENUITEM "Current Open File",21019
       MENUITEM "All Open Files",21020
+      MENUITEM "",,0x00000800
       MENUITEM "Existing File",21027
+      MENUITEM "New File",21028
     END
     POPUP "Remove Item",21024
     BEGIN
-      MENUITEM "Group",21017
-      MENUITEM "File",21021
+      MENUITEM "Selected Group",21017
+      MENUITEM "Selected File",21021
     END
   END
   POPUP "&View",IDM_VIEW
