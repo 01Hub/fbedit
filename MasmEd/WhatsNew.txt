@@ -13,6 +13,8 @@ o Added project handling.
     is no need to have all source files open to get full code complete and debugging 
 	capabilities. In addition caret positions, bookmarks, breakpoints and collapsed
     states are saved.
+o Added View / Next Tab (Ctrl+Tab)
+o Added View / Previous Tab (Ctrl+Shift+Tab)
 
 1.1.0.3 - 2010.03.16
 --------------------

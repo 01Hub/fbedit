@@ -711,6 +711,11 @@ MenuEnable proc uses ebx
 	call	EnableDisable
 	mov		edx,IDM_EDIT_NEXTERROR
 	call	EnableDisable
+	mov		eax,ha.hREd
+	mov		edx,IDM_VIEW_NEXTTAB
+	call	EnableDisable
+	mov		edx,IDM_VIEW_PREVIOUSTAB
+	call	EnableDisable
 	xor		eax,eax
 	.if da.szSessionFile
 		mov		eax,TRUE
@@ -917,10 +922,6 @@ MenuEnable proc uses ebx
 		call	EnableDisable
 		mov		edx,IDM_EDIT_DELETE
 		call	EnableDisable
-		mov		edx,IDM_EDIT_INDENT
-		call	EnableDisable
-		mov		edx,IDM_EDIT_OUTDENT
-		call	EnableDisable
 		mov		edx,IDM_EDIT_COMMENT
 		call	EnableDisable
 		mov		edx,IDM_EDIT_UNCOMMENT
@@ -928,6 +929,11 @@ MenuEnable proc uses ebx
 		mov		edx,IDM_EDIT_BLOCKCONVERT
 		call	EnableDisable
 		mov		edx,IDM_EDIT_BLOCKSPCTRIM
+		call	EnableDisable
+		mov		eax,TRUE
+		mov		edx,IDM_EDIT_INDENT
+		call	EnableDisable
+		mov		edx,IDM_EDIT_OUTDENT
 		call	EnableDisable
 		invoke SendMessage,ha.hREd,EM_CANPASTE,CF_TEXT,0
 		mov		edx,IDM_EDIT_PASTE
@@ -2344,9 +2350,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_EDIT_RETURN
 				invoke ReturnDeclare
 			.elseif eax==IDM_EDIT_INDENT
-				invoke IndentComment,VK_TAB,TRUE
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMax,0
+				push	eax
+				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+				pop		edx
+				sub		eax,edx
+				.if eax
+					invoke IndentComment,VK_TAB,TRUE
+				.else
+					invoke SendMessage,ha.hREd,WM_CHAR,VK_TAB,0
+				.endif
 			.elseif eax==IDM_EDIT_OUTDENT
-				invoke IndentComment,VK_TAB,FALSE
+				invoke SendMessage,ha.hREd,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMax,0
+				push	eax
+				invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,chrg.cpMin,0
+				pop		edx
+				sub		eax,edx
+				.if eax
+					invoke IndentComment,VK_TAB,FALSE
+				.else
+				.endif
 			.elseif eax==IDM_EDIT_COMMENT
 				invoke IndentComment,';',TRUE
 			.elseif eax==IDM_EDIT_UNCOMMENT
@@ -2602,6 +2627,31 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,hWin,WM_SIZE,0,0
 			.elseif eax==IDM_VIEW_DIALOG
 				invoke SendMessage,ha.hResEd,DEM_SHOWDIALOG,0,0
+			.elseif eax==IDM_VIEW_NEXTTAB
+				invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+				.if eax
+					mov		ebx,eax
+					invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
+					inc		eax
+					.if eax>=ebx
+						xor		eax,eax
+					.endif
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+					invoke TabToolActivate
+				.endif
+			.elseif eax==IDM_VIEW_PREVIOUSTAB
+				invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+				.if eax
+					mov		ebx,eax
+					invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
+					.if !eax
+						lea		eax,[ebx-1]
+					.else
+						dec		eax
+					.endif
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+					invoke TabToolActivate
+				.endif
 			.elseif eax==IDM_RESOURCE_DIALOG
 				invoke SendMessage,ha.hResEd,PRO_ADDITEM,TPE_DIALOG,TRUE
 			.elseif eax==IDM_RESOURCE_MENU
