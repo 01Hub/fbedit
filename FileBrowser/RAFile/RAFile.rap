@@ -100,7 +100,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 
 [Size]
 2=0,0,672,551,1006
-6=0,0,672,551,807
+6=0,0,672,551,927
 1=13,41,809,677,21086
 4=0,0,0,0,0
 7=176,155,672,551,2506
@@ -116,7 +116,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=28
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=11
@@ -184,9 +184,13 @@ ProductVer4Range=0
 6=
 3=
 [PTimer]
-PTimer=6031126
+PTimer=6114009
 [Exports]
 1=GetDef
 2=GetDefEx
 [AutoLoad]
-1=1
+AutoLoad=1,6
+[RADebugBP]
+6=
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0

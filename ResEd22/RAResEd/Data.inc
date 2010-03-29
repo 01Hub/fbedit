@@ -505,7 +505,7 @@ nStatus				dd ?
 hExportOut			dd ?
 fEditMode			dd ?
 fNoScroll			dd ?
-color				COLOR <?>
+color				RESCOLOR <?>
 hBrBack				dd ?
 icex				INITCOMMONCONTROLSEX <?>
 strHex				db 16 dup(?)

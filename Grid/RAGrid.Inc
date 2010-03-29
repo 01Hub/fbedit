@@ -1,5 +1,6 @@
 
 GridInstall			PROTO	:DWORD,:DWORD
+GridUnInstall		PROTO
 
 ;Column structure
 COLUMN struct
@@ -129,4 +130,3 @@ ODT_GRID			equ 6
 .const
 
 szRAGridClass	db 'RAGrid',0
-

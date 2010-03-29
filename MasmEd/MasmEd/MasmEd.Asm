@@ -146,6 +146,8 @@ start:
 		.endif
 		.if da.ver<1200
 			mov		da.ver,1200
+			invoke MakeKey,addr szMenuExternal,1,addr tmpbuff
+			invoke RegSetValueEx,ha.hReg,addr tmpbuff,0,REG_BINARY,addr ExternalUpdate,sizeof ExternalUpdate
 		.endif
 		mov		lpcbData,sizeof CustColors
 		invoke RegQueryValueEx,ha.hReg,addr szCustColors,0,addr lpType,addr CustColors,addr lpcbData

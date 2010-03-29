@@ -78,7 +78,7 @@ Options=52
 
 [Size]
 4=0,0,0,0,58
-2=0,0,0,0,2944
+2=0,0,0,0,2883
 1=0,0,0,0,892
 3=0,0,0,0,49
 6=0,0,0,0,4698
@@ -110,7 +110,7 @@ Options=52
 0=
 
 [AutoLoad]
-1=1
+AutoLoad=1,2
 
 [Find]
 1="RAHexEdInstall"
@@ -172,7 +172,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=19
@@ -211,7 +211,11 @@ ProductVer4Range=0
 13=,
 3=
 [PTimer]
-PTimer=7415186
+PTimer=7490082
 [Exports]
 1=GetDef
 2=GetDefEx
+[RADebugBP]
+2=
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0

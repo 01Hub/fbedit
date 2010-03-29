@@ -22,9 +22,6 @@ includelib advapi32.lib
 
 include ..\Addins\Addins.inc
 
-include Inc\RAEdit.inc
-includelib ..\Lib\RAEdit.lib
-
 include Inc\RAResEd.inc
 includelib ..\Lib\RAResEd.lib
 
@@ -46,6 +43,8 @@ includelib ..\Lib\RAProperty.lib
 includelib ..\Lib\Debug.lib
 
 include Inc\RAGrid.Inc
+
+include Inc\RAEdit.inc
 
 include masm32.inc
 include Debug.Inc
@@ -607,6 +606,7 @@ szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 szOptExternal		db 'External Files',0
 szMenuExternal		db 'External#',0
 szStcExternal		db 'Filetypes (note the use of dots):',0
+ExternalUpdate		MENU <'.bmp.ico.','mspaint.exe'>
 
 .data
 

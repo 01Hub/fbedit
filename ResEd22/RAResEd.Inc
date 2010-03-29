@@ -1,9 +1,10 @@
 
 ResEdInstall		PROTO	:DWORD,:DWORD
 ResEdUninstall		PROTO
-GridInstall			PROTO	:DWORD,:DWORD
-InstallRAEdit		PROTO	:DWORD,:DWORD
-UnInstallRAEdit		PROTO
+
+;Hilight colors
+STYLESCOL			equ 804000h
+WORDSCOL			equ 0C00000h
 
 ;Dialog memory size
 MaxMem				equ 128*1024*3
@@ -94,12 +95,12 @@ MNUITEM struct
 	helpid			dd ?
 MNUITEM ends
 
-COLOR struct
+RESCOLOR struct
 	back			dd ?
 	text			dd ?
 	styles			dd ?
 	words			dd ?
-COLOR ends
+RESCOLOR ends
 
 RESID struct
 	startid			dd ?

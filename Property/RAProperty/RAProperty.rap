@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=23
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -141,7 +141,7 @@ ProductVer4Range=0
 13=,
 14=,,,,,
 [Size]
-2=0,0,699,490,2965
+2=0,0,699,490,5775
 <<<<<<< .mine
 1=0,0,699,490,17572
 =======
@@ -174,7 +174,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
-PTimer=169048189
+PTimer=169225141
 [Find]
 1="CompactProperties"
 2="PRM_ADDPROPERTYLIST"

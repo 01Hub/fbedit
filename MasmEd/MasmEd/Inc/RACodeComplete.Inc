@@ -45,6 +45,7 @@ TTM_GETCOLOR		equ WM_USER+1			;wParam=0, lParam=lpTT_COLOR, Returns nothing
 TTM_SETCOLOR		equ WM_USER+2			;wParam=0, lParam=lpTT_COLOR, Returns nothing
 TTM_GETITEMNAME		equ WM_USER+3			;wParam=0, lParam=lpTTITEM, Returns pointer to string
 TTM_SCREENFITS		equ WM_USER+4			;wParam=0, lParam=lpPOINT, Returns nothing
+TTM_GETITEMTYPE		equ WM_USER+5			;wParam=0, lParam=lpTTITEM, Returns pointer to string
 
 TT_COLOR struct
 	back	dd ?

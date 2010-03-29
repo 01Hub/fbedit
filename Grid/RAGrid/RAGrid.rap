@@ -78,8 +78,8 @@ FileDescription=Grid custom control
 FileVersion=2.0.1.6
 CompanyName=
 [Size]
-2=0,0,0,0,2194
-1=0,0,0,0,94268
+2=0,0,0,0,5279
+1=0,0,0,0,99414
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,5861
@@ -136,7 +136,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -175,7 +175,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 11=2
 12=2
 [AutoLoad]
-1=1
+AutoLoad=1,11,2
 
 
 [Collapse]
@@ -191,10 +191,13 @@ Group=Added files,Assembly,Resources,Misc,Modules
 4=
 3=
 [PTimer]
-PTimer=5737219
+PTimer=6263894
 [Exports]
 1=GetDefEx
 2=GetDef
 [RADebugBP]
 1=
 8=
+2=
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0

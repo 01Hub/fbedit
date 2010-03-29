@@ -1957,17 +1957,17 @@ ResEdProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;lParam=lpCOLOR
 		mov		edx,lParam
 		mov		eax,color.back
-		mov		[edx].COLOR.back,eax
+		mov		[edx].RESCOLOR.back,eax
 		mov		eax,color.text
-		mov		[edx].COLOR.text,eax
+		mov		[edx].RESCOLOR.text,eax
 		jmp		Ex
 	.elseif eax==DEM_SETCOLOR
 		;wParam=0
 		;lParam=lpCOLOR
 		mov		edx,lParam
-		mov		eax,[edx].COLOR.back
+		mov		eax,[edx].RESCOLOR.back
 		mov		color.back,eax
-		mov		eax,[edx].COLOR.text
+		mov		eax,[edx].RESCOLOR.text
 		mov		color.text,eax
 		invoke SetColors
 		jmp		Ex

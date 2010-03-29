@@ -1,10 +1,6 @@
 
 ResEdInstall		PROTO	:DWORD,:DWORD
 ResEdUninstall		PROTO
-GridInstall			PROTO	:DWORD,:DWORD
-GridUnInstall		PROTO
-InstallRAEdit		PROTO	:DWORD,:DWORD
-UnInstallRAEdit		PROTO
 
 ;Hilight colors
 STYLESCOL			equ 804000h
@@ -120,6 +116,7 @@ INITID struct
 	rcd				RESID <>
 	tbr				RESID <>
 	res				RESID <>
+	usr				RESID <>
 INITID ends
 
 WINSIZE struct
@@ -179,6 +176,7 @@ DEM_REDO			equ DEM_BASE+38		;wParam=0, lParam=0
 DEM_GETSHOWDIALOG	equ DEM_BASE+39		;wParam=0, lParam=0
 DEM_CLEARCUSTSTYLE	equ DEM_BASE+40		;wParam=0, lParam=0
 DEM_ADDCUSTSTYLE	equ DEM_BASE+41		;wParam=0, lParam=0
+DEM_GETOUTPUT		equ DEM_BASE+42		;wParam=0, lParam=0
 
 ;DEM_ALIGNSIZE lParam
 ALIGN_LEFT			equ 1
@@ -226,6 +224,7 @@ PRO_SETDEFINE		equ PRO_BASE+25		;wPatam=0, lParam=lpszName
 PRO_GETDIALOG		equ PRO_BASE+26		;wPatam=0, lParam=0
 PRO_INCVERSION		equ PRO_BASE+27		;wPatam=0, lParam=0
 PRO_SETHIGHLIGHT	equ PRO_BASE+28		;wPatam=ColorStyles, lParam=ColorWords
+PRO_SETUSERDEFINED	equ PRO_BASE+29		;wPatam=0, lParam=szUserDefined
 
 ;Project item types
 TPE_NAME			equ 1
@@ -240,6 +239,7 @@ TPE_LANGUAGE		equ 9
 TPE_XPMANIFEST		equ 10
 TPE_RCDATA			equ 11
 TPE_TOOLBAR			equ 12
+TPE_USERDATA		equ 32
 
 PROJECT struct
 	hmem			dd ?
@@ -294,7 +294,16 @@ RCDATAMEM struct
 	szname			db MaxName dup(?)
 	value			dd ?
 	hred			dd ?
+	lang			LANGUAGEMEM <?>
 RCDATAMEM ends
+
+USERDATAMEM struct
+	szname			db MaxName dup(?)
+	value			dd ?
+	hred			dd ?
+	sztype			db MaxName dup(?)
+	ntype			dd ?
+USERDATAMEM ends
 
 TOOLBARMEM struct
 	szname			db MaxName dup(?)

@@ -1,5 +1,6 @@
 
-GridInstall			PROTO	:DWORD
+GridInstall			PROTO	:DWORD,:DWORD
+GridUnInstall		PROTO
 
 ;Column structure
 COLUMN struct
@@ -14,6 +15,7 @@ COLUMN struct
 	hdrflag			dd ?			;Header flags. Set to ZERO or if initially sorted set to initial sort direction
 	colxp			dd ?			;Column position. Internally used.
 	edthwnd			dd ?			;Column control handle. Internally used.
+	lParam			dd ?			;User defined 32 bit value.
 COLUMN ends
 
 ROWCOLOR struct
@@ -42,6 +44,7 @@ GN_AFTEREDIT		equ 8			;Sendt when the cell edit control is about to close
 GN_BEFOREUPDATE		equ 9			;Sendt before a cell updates grid data
 GN_AFTERUPDATE		equ 10			;Sendt after grid data has been updated
 GN_USERCONVERT		equ 11			;Sendt when user cell needs to be converted.
+GN_EDITCHANGE		equ 12			;Sendt when user types text in the edit control.
 
 ;Messages
 GM_ADDCOL			equ WM_USER+1	;wParam=0, lParam=lpCOLUMN
@@ -87,6 +90,8 @@ GM_CELLCONVERT		equ WM_USER+40	;wParam=nRowCol, lParam=lpBuffer
 GM_RESETCOLUMNS		equ WM_USER+41	;wParam=0, lParam=0
 GM_GETROWCOLOR		equ WM_USER+42	;wParam=nRow, lParam=lpROWCOLOR
 GM_SETROWCOLOR		equ WM_USER+43	;wParam=nRow, lParam=lpROWCOLOR
+GM_GETCOLDATA		equ WM_USER+44	;wParam=nCol, lParam=lpCOLUMN
+GM_COMBOFINDSTRING	equ WM_USER+45	;wParam=nCol, lParam=lpszString
 
 ;Column alignment
 GA_ALIGN_LEFT		equ 0
@@ -105,6 +110,7 @@ TYPE_DATE			equ 7			;Long
 TYPE_TIME			equ 8			;Long
 TYPE_USER			equ 9			;0=String, 1 to 512 bytes binary data
 TYPE_EDITBUTTON		equ 10			;String
+TYPE_EDITCOMBOBOX	equ 11			;String
 
 ;Column sorting
 SORT_ASCENDING		equ 0
@@ -117,14 +123,10 @@ STYLE_NOFOCUS		equ 02h
 STYLE_HGRIDLINES	equ 04h
 STYLE_VGRIDLINES	equ 08h
 STYLE_GRIDFRAME		equ 10h
+STYLE_NOCOLSIZE		equ 20h
 
 ODT_GRID			equ 6
 
 .const
 
-IFDEF DLL
-	szRAGridClass	db 'RAGrid',0
-ELSE
-	szRAGridClass	db 'MyRAGrid',0
-ENDIF
-
+szRAGridClass		db 'RAGrid',0

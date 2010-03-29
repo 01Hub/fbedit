@@ -1,3 +1,5 @@
+InstallRAProperty		PROTO :DWORD,:DWORD
+UnInstallRAProperty		PROTO
 
 ;Messages
 PRM_SELECTPROPERTY			equ WM_USER+0		;wParam=dwType, lParam=0

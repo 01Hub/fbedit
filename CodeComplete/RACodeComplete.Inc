@@ -1,3 +1,6 @@
+InstallRACodeComplete	PROTO :DWORD,:DWORD
+UnInstallRACodeComplete	PROTO
+
 ;CodeCompleteListBox Styles
 STYLE_USEIMAGELIST	equ 1
 
@@ -25,6 +28,9 @@ CC_COLOR struct
 	text		dd ?
 CC_COLOR ends
 
+CCBCK				equ 0FFFFFFh
+CCTXT				equ 0
+
 CC_ADDLIST struct
 	lpszList	dd ?
 	lpszFilter	dd ?
@@ -47,6 +53,11 @@ TT_COLOR struct
 	api			dd ?
 	hilite		dd ?
 TT_COLOR ends
+
+TTBCK				equ 00C0F0F0h
+TTTXT				equ 0
+TTAPI				equ 00404080h
+TTSEL				equ 00FF8000h
 
 TTITEM struct
 	lpszApi		dd ?						;Pointer to api string
