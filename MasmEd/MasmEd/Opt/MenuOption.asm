@@ -8,22 +8,7 @@ IDC_BTNMEU								equ 3202
 IDC_BTNMED								equ 3204
 IDC_BTNMEADD							equ 3205
 IDC_BTNMEDEL							equ 3206
-
-MENU struct
-	szcap	db 32 dup(?)
-	szcmnd	db 256 dup(?)
-MENU ends
-
-.data
-
-szOptTool			db 'Tools menu',0
-szMenuTool			db 'Tool#',0
-szFilterTools		db 'Commands (*.com, *.exe, *.cmd)',0,'*.com;*.exe;*.cmd',0
-					db 'All Files (*.*)',0,'*.*',0,0
-szOptHelp			db 'Help menu',0
-szMenuHelp			db 'Help#',0
-szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
-					db 'All Files (*.*)',0,'*.*',0,0
+IDC_STCMENU								equ 3209
 
 .data?
 
@@ -225,7 +210,7 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
-		invoke SendDlgItemMessage,hWin,IDC_EDTMEITEM,EM_LIMITTEXT,32,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTMEITEM,EM_LIMITTEXT,31,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTMECMND,EM_LIMITTEXT,128,0
 		mov		nInx,120
 		invoke SendDlgItemMessage,hWin,IDC_LSTME,LB_SETTABSTOPS,1,addr nInx
@@ -234,9 +219,14 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		lpFilter,offset szFilterTools
 			mov		eax,offset szOptTool
 		.elseif lParam==2
-			mov		eax,offset szOptHelp
 			mov		lpAppName,offset szMenuHelp
 			mov		lpFilter,offset szFilterHelp
+			mov		eax,offset szOptHelp
+		.elseif lParam==3
+			mov		lpAppName,offset szMenuExternal
+			mov		lpFilter,offset szFilterTools
+			invoke SetDlgItemText,hWin,IDC_STCMENU,addr szStcExternal
+			mov		eax,offset szOptExternal
 		.endif
 		invoke SendMessage,hWin,WM_SETTEXT,0,eax
 		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL

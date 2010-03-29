@@ -1291,20 +1291,23 @@ SaveBreakpoints proc uses ebx esi edi,hWin:HWND
 		.if [ebx].TABMEM.pid
 			invoke GetWindowLong,hWin,GWL_ID
 			.if eax==IDC_RAE
-				lea		edi,buffer2
-				mov		word ptr [edi],0
-				mov		esi,-1
-				.while TRUE
-					invoke SendMessage,hWin,REM_NEXTBREAKPOINT,esi,0
-					.break .if eax==-1
-					mov		esi,eax
-					mov		byte ptr [edi],','
-					invoke DwToAscii,esi,addr [edi+1]
-					invoke strlen,edi
-					lea		edi,[edi+eax]
-				.endw
-				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
-				invoke WritePrivateProfileString,addr szBreakPoint,addr buffer1,addr buffer2[1],addr da.szSessionFile
+				invoke SendMessage,hWin,EM_GETMODIFY,0,0
+				.if !eax
+					lea		edi,buffer2
+					mov		word ptr [edi],0
+					mov		esi,-1
+					.while TRUE
+						invoke SendMessage,hWin,REM_NEXTBREAKPOINT,esi,0
+						.break .if eax==-1
+						mov		esi,eax
+						mov		byte ptr [edi],','
+						invoke DwToAscii,esi,addr [edi+1]
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+					.endw
+					invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+					invoke WritePrivateProfileString,addr szBreakPoint,addr buffer1,addr buffer2[1],addr da.szSessionFile
+				.endif
 			.endif
 		.endif
 	.endif
@@ -1350,20 +1353,23 @@ SaveBookMarks proc uses ebx esi edi,hWin:HWND
 		.if [ebx].TABMEM.pid
 			invoke GetWindowLong,hWin,GWL_ID
 			.if eax==IDC_RAE
-				lea		edi,buffer2
-				mov		word ptr [edi],0
-				mov		esi,-1
-				.while TRUE
-					invoke SendMessage,hWin,REM_NXTBOOKMARK,esi,3
-					.break .if eax==-1
-					mov		esi,eax
-					mov		byte ptr [edi],','
-					invoke DwToAscii,esi,addr [edi+1]
-					invoke strlen,edi
-					lea		edi,[edi+eax]
-				.endw
-				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
-				invoke WritePrivateProfileString,addr szBookMark,addr buffer1,addr buffer2[1],addr da.szSessionFile
+				invoke SendMessage,hWin,EM_GETMODIFY,0,0
+				.if !eax
+					lea		edi,buffer2
+					mov		word ptr [edi],0
+					mov		esi,-1
+					.while TRUE
+						invoke SendMessage,hWin,REM_NXTBOOKMARK,esi,3
+						.break .if eax==-1
+						mov		esi,eax
+						mov		byte ptr [edi],','
+						invoke DwToAscii,esi,addr [edi+1]
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+					.endw
+					invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+					invoke WritePrivateProfileString,addr szBookMark,addr buffer1,addr buffer2[1],addr da.szSessionFile
+				.endif
 			.endif
 		.endif
 	.endif
@@ -1411,56 +1417,59 @@ SaveCollapse proc uses ebx esi edi,hWin:HWND
 		.if [ebx].TABMEM.pid
 			invoke GetWindowLong,hWin,GWL_ID
 			.if eax==IDC_RAE
-				lea		edi,buffer2
-				invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
-				invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
-				invoke DwToAscii,eax,edi
-				invoke strlen,edi
-				lea		edi,[edi+eax]
-				mov		lpBuff,edi
-				push	ebx
-				mov		ebx,-1
-				xor		edi,edi
-			  @@:
-				shl		edi,1
-				and		edi,7FFFFFFFh
-				.if !edi
-					.if ebx!=-1
-						push	edi
-						mov		edi,lpBuff
-						mov		byte ptr [edi],','
+				invoke SendMessage,hWin,EM_GETMODIFY,0,0
+				.if !eax
+					lea		edi,buffer2
+					invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+					invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
+					invoke DwToAscii,eax,edi
+					invoke strlen,edi
+					lea		edi,[edi+eax]
+					mov		lpBuff,edi
+					push	ebx
+					mov		ebx,-1
+					xor		edi,edi
+				  @@:
+					shl		edi,1
+					and		edi,7FFFFFFFh
+					.if !edi
+						.if ebx!=-1
+							push	edi
+							mov		edi,lpBuff
+							mov		byte ptr [edi],','
+							inc		edi
+							invoke DwToAscii,esi,edi
+							invoke strlen,edi
+							lea		edi,[edi+eax]
+							mov		lpBuff,edi
+							pop		edi
+						.else
+							invoke SendMessage,hWin,EM_GETLINECOUNT,0,0
+							mov		ebx,eax
+						.endif
+						xor		esi,esi
 						inc		edi
-						invoke DwToAscii,esi,edi
-						invoke strlen,edi
-						lea		edi,[edi+eax]
-						mov		lpBuff,edi
-						pop		edi
-					.else
-						invoke SendMessage,hWin,EM_GETLINECOUNT,0,0
-						mov		ebx,eax
 					.endif
-					xor		esi,esi
+					invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,1
+					push	eax
+					invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,2
+					pop		edx
+					or		esi,edi
+					.if sdword ptr edx>=eax
+						mov		eax,edx
+						xor		esi,edi
+					.endif
+					mov		ebx,eax
+					cmp		ebx,-1
+					jne		@b
+					pop		ebx
+					mov		edi,lpBuff
+					mov		byte ptr [edi],','
 					inc		edi
+					invoke DwToAscii,esi,edi
+					invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
+					invoke WritePrivateProfileString,addr szCollapse,addr buffer1,addr buffer2,addr da.szSessionFile
 				.endif
-				invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,1
-				push	eax
-				invoke SendMessage,hWin,REM_PRVBOOKMARK,ebx,2
-				pop		edx
-				or		esi,edi
-				.if sdword ptr edx>=eax
-					mov		eax,edx
-					xor		esi,edi
-				.endif
-				mov		ebx,eax
-				cmp		ebx,-1
-				jne		@b
-				pop		ebx
-				mov		edi,lpBuff
-				mov		byte ptr [edi],','
-				inc		edi
-				invoke DwToAscii,esi,edi
-				invoke wsprintf,addr buffer1,addr szFmtDec,[ebx].TABMEM.pid
-				invoke WritePrivateProfileString,addr szCollapse,addr buffer1,addr buffer2,addr da.szSessionFile
 			.endif
 		.endif
 	.endif

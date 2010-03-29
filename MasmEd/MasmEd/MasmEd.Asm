@@ -716,12 +716,12 @@ MenuEnable proc uses ebx
 	call	EnableDisable
 	mov		edx,IDM_VIEW_PREVIOUSTAB
 	call	EnableDisable
-	xor		eax,eax
-	.if da.szSessionFile
-		mov		eax,TRUE
-	.endif
-	mov		edx,IDM_FILE_CLOSESESSION
-	call	EnableDisable
+;	xor		eax,eax
+;	.if da.szSessionFile
+;		mov		eax,TRUE
+;	.endif
+;	mov		edx,IDM_FILE_CLOSESESSION
+;	call	EnableDisable
 	xor		eax,eax
 	.if da.szSessionFile && da.fProject
 		mov		eax,TRUE
@@ -2134,19 +2134,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL,0
-					.if da.fProject
-						invoke SaveProject,addr da.szSessionFile
-						invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
-						invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-						invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
-						mov		da.fProject,FALSE
-					.endif
-					mov		da.szSessionFile,0
-					mov		da.MainFile,0
-					invoke CloseNotify
-					invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,0,0
-					invoke ShowWindow,ha.hBrowse,SW_SHOWNA
-					invoke ShowWindow,ha.hPbr,SW_HIDE
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -2156,36 +2143,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,WM_CLOSE,0
 				.if !eax
 					invoke UpdateAll,CLOSE_ALL,0
-				.endif
-				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
-				mov		fTimer,1
-			.elseif eax==IDM_FILE_OPENSESSION || eax==IDM_PROJECT_OPEN
-				invoke OpenSessionFile
-				mov		fTimer,1
-			.elseif eax==IDM_FILE_SAVESESSION
-				invoke SaveSessionFile
-				mov		fTimer,1
-			.elseif eax==IDM_FILE_CLOSESESSION || eax==IDM_PROJECT_CLOSE
-				mov		nTabInx,-1
-				invoke UpdateAll,WM_CLOSE,0
-				.if !eax
-					invoke AskSaveSessionFile
-					.if !eax
-						invoke UpdateAll,CLOSE_ALL,0
-						.if da.fProject
-							invoke SaveProject,addr da.szSessionFile
-							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
-							invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
-							invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
-							mov		da.fProject,FALSE
-						.endif
-						mov		da.szSessionFile,0
-						mov		da.MainFile,0
-						invoke CloseNotify
-						invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,0,0
-						invoke ShowWindow,ha.hBrowse,SW_SHOWNA
-						invoke ShowWindow,ha.hPbr,SW_HIDE
-					.endif
 				.endif
 				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				mov		fTimer,1
@@ -2490,6 +2447,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetWindowLong,ha.hREd,GWL_ID
 				.if eax==IDC_RAE
 					invoke SendMessage,ha.hREd,REM_CLRBOOKMARKS,0,3
+					invoke SaveBookMarks,ha.hREd
 				.elseif eax==IDC_HEX
 					invoke SendMessage,ha.hREd,HEM_CLEARBOOKMARKS,0,0
 				.endif
@@ -2904,6 +2862,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,2
 				invoke SetHelpMenu
 				invoke ResetMenu
+			.elseif eax==IDM_OPTION_EXTERNAL
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,3
 			.elseif eax==IDM_HELP_ABOUT
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 			.elseif ax==-3
@@ -3018,6 +2978,38 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 				invoke CreateProject,addr da.szSessionFile
+			.elseif eax==IDM_PROJECT_OPEN
+				invoke OpenSessionFile
+				.if eax
+					.if da.szSessionFile && !da.fProject
+						invoke CreateProject,addr da.szSessionFile
+					.endif
+					mov		fTimer,1
+				.endif
+			.elseif eax==IDM_PROJECT_CLOSE
+				mov		nTabInx,-1
+				invoke UpdateAll,WM_CLOSE,0
+				.if !eax
+					invoke AskSaveSessionFile
+					.if !eax
+						invoke UpdateAll,CLOSE_ALL,0
+						.if da.fProject
+							invoke SaveProject,addr da.szSessionFile
+							invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+							invoke SendMessage,ha.hPbr,RPBM_ADDITEM,0,0
+							invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+							mov		da.fProject,FALSE
+						.endif
+						mov		da.szSessionFile,0
+						mov		da.MainFile,0
+						invoke CloseNotify
+						invoke SendMessage,ha.hTabPbr,TCM_SETCURSEL,0,0
+						invoke ShowWindow,ha.hBrowse,SW_SHOWNA
+						invoke ShowWindow,ha.hPbr,SW_HIDE
+					.endif
+				.endif
+				invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+				mov		fTimer,1
 			.elseif eax==IDM_PROJECT_ADDGROUP
 				invoke SendMessage,ha.hPbr,RPBM_ADDNEWGROUP,0,0
 			.elseif eax==IDM_PROJECT_ADDFILE
@@ -3032,15 +3024,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_PROJECT_ADDALLFILES
 				invoke UpdateAll,ADDTOPROJECT,0
 			.elseif eax==IDM_PROJECT_ADDEXISTINGFILE
-				invoke strcpy,addr buffer,addr da.FileName
-				invoke OpenEdit
-				mov		fTimer,1
-				invoke lstrcmpi,addr buffer,addr da.FileName
-				.if eax
-					invoke SendMessage,hWin,WM_COMMAND,IDM_PROJECT_ADDFILE,NULL
-				.endif
+				invoke ProjectAddExistingFiles
 			.elseif eax==IDM_PROJECT_ADDNEWFILE
-				invoke CreateNewFile
+				invoke CreateNewProjectFile
 			.elseif eax==IDM_PROJECT_REMOVEGROUP
 				invoke SendMessage,ha.hPbr,RPBM_DELETEITEM,0,0
 			.elseif eax==IDM_PROJECT_REMOVEFILE

@@ -5,7 +5,8 @@ MasmEd
 o Added project handling.
   - The project browser handles project groups and sub groups.
     Easy drag and drop to move files or entire groups around.
-    Collapsed states and current grouping selection are saved.
+    Caret positions, bookmarks, breakpoints, collapsed states and current grouping
+    selection are saved.
   - Create a project from existing sources just by opening the source
     files and select Project / Create Project. If you also select a
 	main file then no questions will be asked.
@@ -15,6 +16,7 @@ o Added project handling.
     states are saved.
 o Added View / Next Tab (Ctrl+Tab)
 o Added View / Previous Tab (Ctrl+Shift+Tab)
+o Added Option / External Files. Lets you open files in external tools.
 
 1.1.0.3 - 2010.03.16
 --------------------

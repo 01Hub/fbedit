@@ -361,6 +361,83 @@ LoadRCFile proc lpFileName:DWORD
 
 LoadRCFile endp
 
+IsFileType proc uses ebx esi edi,lpFileType:DWORD,lpFileTypes:DWORD
+
+	mov		esi,lpFileTypes
+	mov		edi,lpFileType
+	.while TRUE
+		xor		ecx,ecx
+		.while byte ptr [edi+ecx]
+			mov		al,[edi+ecx]
+			mov		ah,[esi+ecx]
+			.if al>='a' && al<='z'
+				and		al,5Fh
+			.endif
+			.if ah>='a' && ah<='z'
+				and		ah,5Fh
+			.endif
+			.break .if al!=ah
+			inc		ecx
+		.endw
+		.if !byte ptr [edi+ecx]
+			mov		eax,TRUE
+			jmp		Ex
+		.endif
+		inc		esi
+		.while byte ptr [esi]!='.'
+			inc		esi
+		.endw
+		.break .if !byte ptr [esi+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsFileType endp
+
+LoadExternalFile proc uses esi,lpFileName:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	mnu:MENU
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fileext[32]:BYTE
+
+	mov		esi,lpFileName
+	invoke strlen,esi
+	.while byte ptr [esi+eax]!='.' && eax
+		dec		eax
+	.endw
+	.if eax
+		invoke strcpyn,addr fileext,addr [esi+eax],30
+		invoke strcat,addr fileext,addr szDot
+		mov		nInx,1
+		.while nInx<20
+			mov		mnu.szcap,0
+			mov		mnu.szcmnd,0
+			invoke MakeKey,addr szMenuExternal,nInx,addr buffer
+			mov		lpcbData,sizeof mnu
+			invoke RegQueryValueEx,ha.hReg,addr buffer,0,addr lpType,addr mnu,addr lpcbData
+			.if mnu.szcap
+				invoke IsFileType,addr fileext,addr mnu.szcap
+				.if eax
+					invoke lstrcpy,addr buffer,addr szQuote
+					invoke lstrcat,addr buffer,lpFileName
+					invoke lstrcat,addr buffer,addr szQuote
+					invoke ShellExecute,ha.hWnd,NULL,addr mnu.szcmnd,addr buffer,NULL,SW_SHOWNORMAL
+					mov		eax,TRUE
+					jmp		Ex
+				.endif
+			.else
+				.break
+			.endif
+			inc		nInx
+		.endw
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+LoadExternalFile endp
+
 OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 	LOCAL	buffer[MAX_PATH*2]:BYTE
 	LOCAL	fCtrl:DWORD
@@ -434,6 +511,12 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 					.endif
 				.endif
 			.else
+				.if !fCtrl
+					invoke LoadExternalFile,lpFileName
+					.if eax
+						jmp		Ex
+					.endif
+				.endif
 				invoke strlen,addr buffer
 				mov		eax,dword ptr buffer[eax-4]
 				.if (fType==0 || fType==IDC_RAE) && eax!='EXE.' && eax!='MOC.' && eax!='JBO.' && eax!='SER.' && eax!='BIL.' && eax!='PMB.' && eax!='OCI.' && eax!='GPJ.' && eax!='INA.' && eax!='IVA.' && eax!='GNP.' && eax!='RUC.' && eax!='SEM.'
@@ -516,11 +599,12 @@ OpenEditFile proc uses ebx esi,lpFileName:DWORD,fType:DWORD
 	.if ha.hREd
 		invoke SetFocus,ha.hREd
 	.endif
+  Ex:
 	ret
 
 OpenEditFile endp
 
-CreateNewFile proc
+CreateNewProjectFile proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -539,6 +623,7 @@ CreateNewFile proc
 	mov		ofn.nMaxFile,sizeof buffer
 	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
     mov		ofn.lpstrDefExt,offset szNULL
+    mov		ofn.lpstrTitle,offset szAddNewProjectFile
     ;Show save as dialog
 	invoke GetSaveFileName,addr ofn
 	.if eax
@@ -556,7 +641,7 @@ CreateNewFile proc
 	.endif
 	ret
 
-CreateNewFile endp
+CreateNewProjectFile endp
 
 OpenEdit proc
 	LOCAL	ofn:OPENFILENAME
@@ -622,6 +707,73 @@ OpenHex proc
 
 OpenHex endp
 
+ProjectAddExistingFiles proc uses esi
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+	invoke RtlZeroMemory,addr ofn,sizeof ofn
+	invoke RtlZeroMemory,addr tmpbuff,sizeof tmpbuff
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	ha.hWnd
+	pop		ofn.hwndOwner
+	push	ha.hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset ALLFilterString
+	mov		ofn.lpstrFile,offset tmpbuff
+	mov		ofn.nMaxFile,sizeof tmpbuff
+	mov		ofn.lpstrDefExt,NULL
+	invoke GetCurrentDirectory,sizeof buffer,addr buffer
+	lea		eax,buffer
+	mov		ofn.lpstrInitialDir,eax
+	mov		ofn.lpstrTitle,offset szAddProjectFiles
+	mov		ofn.Flags,OFN_ALLOWMULTISELECT or OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
+	;Show the Open dialog
+	invoke GetOpenFileName,addr ofn
+	.if eax
+		invoke lstrlen,addr tmpbuff
+		.if tmpbuff[eax+1]
+			;Multiple files
+			lea		esi,tmpbuff[eax+1]
+			.while byte ptr [esi]
+				invoke lstrcpy,addr buffer,addr tmpbuff
+				invoke lstrcat,addr buffer,addr szBackSlash
+				invoke lstrcat,addr buffer,esi
+				call	AddFile
+				invoke lstrlen,esi
+				lea		esi,[esi+eax+1]
+			.endw
+		.else
+			;Single file
+			invoke lstrcpy,addr buffer,addr tmpbuff
+			call	AddFile
+		.endif
+	.endif
+	ret
+
+AddFile:
+	invoke OpenEditFile,addr buffer,0
+	invoke SendMessage,ha.hPbr,RPBM_ADDNEWFILE,0,addr buffer
+	.if eax
+		;The file was added
+		mov		edi,eax
+		invoke lstrcmpi,addr buffer,addr da.FileName
+		.if !eax
+			;The file was opened
+			invoke GetWindowLong,ha.hREd,GWL_USERDATA
+			mov		edx,[edi].PBITEM.id
+			mov		[eax].TABMEM.pid,edx
+			invoke GetWindowLong,ha.hREd,GWL_ID
+			.if eax==IDC_RAE
+				invoke ParseEdit,ha.hREd,[edi].PBITEM.id
+			.endif
+		.endif
+	.endif
+	retn
+
+ProjectAddExistingFiles endp
+
 OpenSessionFile proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -649,6 +801,7 @@ OpenSessionFile proc
 	invoke GetOpenFileName,addr ofn
 	.if eax
 		invoke OpenEditFile,addr buffer,IDC_MES
+		mov		eax,TRUE
 	.endif
 	ret
 

@@ -329,6 +329,11 @@ PROPERTIES	struct
 	nType				BYTE ?
 PROPERTIES ends
 
+MENU struct
+	szcap	db 32 dup(?)
+	szcmnd	db 256 dup(?)
+MENU ends
+
 .const
 
 tbrbtns					TBBUTTON <20,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -423,6 +428,8 @@ szNewer					db 'There are %d source files newer than the .exe.',0
 szNewProject			db 'Would you like to create an empty project?',0Dh,0Dh
 						db 'If you open your source files first, MasmEd',0Dh
 						db 'will automatically add those files.',0
+szAddProjectFiles		db 'Add Files to Project',0
+szAddNewProjectFile		db 'Add New File to Project',0
 szFtAsm					db '.asm',0
 szFtInc					db '.inc',0
 szFtApi					db '.api',0
@@ -437,6 +444,7 @@ szQuote					db '"',0
 szBackSlash				db '\',0
 szComma					db ',',0
 szSemi					db ';',0
+szDot					db '.',0
 szError					db ' error ',0
 
 szProc					db '$ proc',0,0
@@ -587,6 +595,18 @@ szMsg3					db 'SendDlgItemMessage',0
 
 ;Addin procs
 pa						ADDINPROCS <OpenEditFile,OutputSelect,OutputShow,OutputString,OutputClear,TabToolAdd,TabToolActivate,TabToolGetMem,UpdateFileTime,TabToolSetChanged,UpdateFileName,WriteSessionFile>
+
+szOptTool			db 'Tools menu',0
+szMenuTool			db 'Tool#',0
+szFilterTools		db 'Commands (*.com, *.exe, *.cmd)',0,'*.com;*.exe;*.cmd',0
+					db 'All Files (*.*)',0,'*.*',0,0
+szOptHelp			db 'Help menu',0
+szMenuHelp			db 'Help#',0
+szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
+					db 'All Files (*.*)',0,'*.*',0,0
+szOptExternal		db 'External Files',0
+szMenuExternal		db 'External#',0
+szStcExternal		db 'Filetypes (note the use of dots):',0
 
 .data
 
