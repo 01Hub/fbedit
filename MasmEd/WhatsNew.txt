@@ -1,6 +1,6 @@
 MasmEd
 
-1.2.0.0 - 2010.03.26
+1.2.0.0 - 2010.03.29
 --------------------
 o Added project handling.
   - The project browser handles project groups and sub groups.
