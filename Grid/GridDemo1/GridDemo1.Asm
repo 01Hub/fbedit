@@ -107,10 +107,16 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				invoke SendMessage,hGrd,GM_ENTEREDIT,1,1
 ;				invoke SendMessage,hGrd,GM_SETHDRTEXT,1,offset szRAGridDLL
 ;				invoke SendMessage,hGrd,GM_RESETCONTENT,0,0
-				invoke SendMessage,hGrd,GM_RESETCOLUMNS,0,0
-				call Setup
-				call AddData
-				xor		eax,eax
+;				invoke SendMessage,hGrd,GM_RESETCOLUMNS,0,0
+;				call Setup
+;				call AddData
+;				xor		eax,eax
+				mov		ecx,(2 shl 16)+2
+invoke SendMessage,hGrd,GM_GETCURSEL,0,0
+mov		ecx,eax
+invoke SendMessage,hGrd,GM_CELLCONVERT,ecx,addr buffer
+invoke MessageBox,hWin,addr buffer,addr buffer,MB_OK
+
 				jmp		Ex
 			.elseif eax==IDC_BTNMOVEDOWN
 				invoke SendMessage,hGrd,GM_GETCURROW,0,0
