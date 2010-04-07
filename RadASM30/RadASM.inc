@@ -36,6 +36,7 @@
 	include Inc\RAProject.inc
 	include Inc\RAProperty.Inc
 	include Inc\RAResEd.Inc
+	include Inc\RATools.Inc
 
 	include masm32.inc
 	include Debug.Inc
@@ -48,6 +49,7 @@
 	includelib Lib\RAProject.lib
 	includelib Lib\RAProperty.lib
 	includelib Lib\RAResEd.lib
+	includelib Lib\RATools.lib
 
 .const
 

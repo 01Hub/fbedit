@@ -31,6 +31,8 @@ Res.rc=1
 AutoDelete=1
 AskMe=0
 MinorFiles=*.res;*.obj;
+22=Inc\RATools.Inc
+23=Lib\RATools.lib
 [MakeFiles]
 0=RadASM30.rap
 1=RadASM.rc
@@ -81,8 +83,10 @@ Group=Assembly,..Lib,..Inc,..Asm,Resources,Misc
 19=4
 20=5
 21=4
+22=3
+23=2
 [AutoLoad]
-AutoLoad=1,2,4,19,21
+AutoLoad=1,2,4,19,21,8,5,9,7,10,11,22,12
 [RADebugBP]
 1=
 2=
@@ -111,6 +115,8 @@ AutoLoad=1,2,4,19,21
 8=
 19=
 21=
+23=
+22=
 [Size]
 6=0,0,851,458,0
 7=0,0,851,458,0
@@ -124,14 +130,16 @@ AutoLoad=1,2,4,19,21
 3=0,0,0,0,42
 19=0,0,0,0,520
 4=0,0,0,0,815
-1=0,0,0,0,11167
-2=0,0,0,0,1265
-12=0,0,0,0,0
+1=0,0,0,0,11070
+2=0,0,0,0,864
+12=0,0,0,0,1
 11=0,0,0,0,0
 10=0,0,0,0,0
 9=0,0,0,0,0
 8=0,0,0,0,0
 21=0,0,0,0,2817
+23=0,0,0,0,0
+22=0,0,0,0,0
 [Resource]
 1=IDI_MDIICO,100,2,Res\RadAsm.ico
 2=IDC_SPLICURV,150,1,Res\SplitV.cur
@@ -146,7 +154,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=6
@@ -179,7 +187,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=15790420
+PTimer=16470272
 [GroupExpand]
 GroupExpand=1,1,1,1,0,1,0
 [BookMark]

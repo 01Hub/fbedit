@@ -398,6 +398,13 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 ;	invoke LoadCursor,NULL,IDC_ARROW
 ;	mov		wc.hCursor,eax
 ;	invoke RegisterClassEx,addr wc
+	invoke InstallRACodeComplete,ha.hInstance,FALSE
+	invoke InstallFileBrowser,ha.hInstance,FALSE
+	invoke RAHexEdInstall,ha.hInstance,FALSE
+	invoke InstallProjectBrowser,ha.hInstance,FALSE
+	invoke InstallRAProperty,ha.hInstance,FALSE
+	invoke ResEdInstall,ha.hInstance,FALSE
+	invoke InstallRATools,ha.hInstance,FALSE
 	invoke GetModuleFileName,ha.hInstance,addr da.szAppPath,sizeof da.szAppPath
 	invoke strlen,addr da.szAppPath
 	.while da.szAppPath[eax]!='\'
