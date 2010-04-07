@@ -2,8 +2,9 @@
 .model flat,stdcall
 option casemap:none
 
-include Data.inc
+include windows.inc
 include ..\RATools.inc
+include Data.inc
 include Tools.asm
 
 .code
@@ -32,8 +33,7 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	invoke LoadCursor,NULL,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
-
-	;Tool windows
+	;Tool floating windows
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW
 	mov		wc.lpfnWndProc,offset ToolWndProc
@@ -55,7 +55,8 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		wc.lpfnWndProc,offset ToolCldProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,NULL
-	m2m		wc.hInstance,hInst
+	mov		eax,hInst
+	mov		wc.hInstance,eax
 	mov		wc.hbrBackground,COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset szToolCldClass
@@ -64,12 +65,20 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	invoke LoadCursor,NULL,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
+	invoke LoadCursor,hInst,IDC_SPLICURV
+	mov		hSplitCurV,eax
+	invoke LoadCursor,hInst,IDC_SPLICURH
+	mov		hSplitCurH,eax
+	invoke CreateWindowEx,WS_EX_TOPMOST,addr szStatic,0,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,NULL,0,hInstance,0
+	mov		hSize,eax
+	mov		fRightCaption,TRUE
 	ret
 
 InstallRATools endp
 
 UnInstallRATools proc public
 
+	invoke DestroyWindow,hSize
 	ret
 
 UnInstallRATools endp
@@ -82,35 +91,52 @@ ControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_CREATE
 	.elseif eax==TLM_INIT
+		mov		eax,wParam
+		mov		hClient,eax
 		mov		eax,lParam
 		mov		hWnd,eax
 		invoke ToolMessage,0,TLM_INIT,0
+		xor		eax,eax
 	.elseif eax==TLM_CREATE
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szToolCldClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
+		invoke CreateWindowEx,0,addr szToolCldClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
 		mov		hTL,eax
 	    invoke ToolMessage,hTL,TLM_CREATE,lParam
     	mov     eax,hTL
-    	jmp		Ex
 	.elseif eax==TLM_DOCKING
 	    invoke ToolMessage,lParam,TLM_DOCKING,0
+		xor		eax,eax
 	.elseif eax==TLM_HIDE
+	    invoke ToolMessage,lParam,TLM_HIDE,0
+		xor		eax,eax
 	.elseif eax==TLM_MOUSEMOVE
+	    invoke ToolMessage,0,TLM_MOUSEMOVE,lParam
+		xor		eax,eax
 	.elseif eax==TLM_LBUTTONDOWN
+	    invoke ToolMessage,0,TLM_LBUTTONDOWN,lParam
+		xor		eax,eax
 	.elseif eax==TLM_LBUTTONUP
+	    invoke ToolMessage,0,TLM_LBUTTONUP,lParam
+		xor		eax,eax
 	.elseif eax==TLM_PAINT
+		invoke ToolMessage,0,TLM_PAINT,0
+		xor		eax,eax
 	.elseif eax==TLM_SIZE
+		invoke CopyRect,offset mdirect,lParam
 		invoke ToolMessage,0,TLM_SIZE,lParam
-	.elseif eax==TLM_REDRAW
+		xor		eax,eax
 	.elseif eax==TLM_CAPTION
 		invoke ToolMsgAll,TLM_CAPTION,0,0
-	.elseif eax==TLM_ADJUSTRECT
-	.elseif eax==TLM_GET_VISIBLE
-	.elseif eax==TLM_GET_STRUCT
-	.elseif eax==TLM_SETTBR
-	.elseif eax==TLM_GET_DOCKED
-	.elseif eax==TLM_MOVETEST
+		xor		eax,eax
+	.elseif eax==TLM_GETVISIBLE
+		invoke ToolMsg,lParam,TLM_GETVISIBLE,0
+	.elseif eax==TLM_GETSTRUCT
+		invoke ToolMsg,lParam,TLM_GETSTRUCT,0
+	.elseif eax==TLM_GETDOCKED
+		invoke ToolMsg,lParam,TLM_GETDOCKED,0
+	.else
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+		ret
 	.endif
-	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
 

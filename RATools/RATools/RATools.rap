@@ -5,7 +5,8 @@ Description=Tool Windows
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
+Res.rc=1
 [Files]
 1=RATools.Asm
 2=..\RATools.Inc
@@ -15,6 +16,9 @@ Debug=0
 6=RAToolsDll.asm
 7=Data.inc
 8=Tools.asm
+AutoDelete=1
+AskMe=0
+MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [MakeFiles]
 0=RATools.rap
 1=RATools.rc
@@ -51,6 +55,8 @@ Menu=1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0
 17=0,0,"$E\OllyDbg",5
 [Resource]
 1=IDB_BMP,100,0,Res\ToolBox.bmp
+2=IDC_SPLICURV,150,1,Res\SplitV.cur
+3=IDC_SPLICURH,151,1,Res\SplitH.cur
 [StringTable]
 [VerInf]
 [Group]
@@ -64,7 +70,7 @@ Group=Assembly,Resources,Misc
 7=1
 8=1
 [AutoLoad]
-AutoLoad=1,2,6,7,4,8
+AutoLoad=1,6,7,4,8,2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -75,7 +81,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=6
@@ -108,7 +114,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=11660903
+PTimer=43710170
 [Collapse]
 2=
 1=
@@ -117,11 +123,11 @@ PTimer=11660903
 6=
 4=
 [Size]
-2=0,0,0,0,129
-1=0,0,0,0,2405
-8=0,0,0,0,18980
-7=0,0,0,0,383
-6=0,0,0,0,1992
+2=0,0,0,0,651
+1=0,0,0,0,66
+8=0,0,0,0,34912
+7=0,0,0,0,1364
+6=0,0,0,0,2687
 4=0,0,0,0,31
 [GroupExpand]
 GroupExpand=1,1,0,0
@@ -146,5 +152,13 @@ GroupExpand=1,1,0,0
 8=
 7=
 [Find]
-1="TLM_DOCKING"
-2="TLM_CAPTION"
+1="Ptr"
+2="TOOL Ptr"
+3="m2m"
+4="ToolHitTest"
+5="[esi]."
+6="TLM_MOUSEMOVE"
+7="ToolPool"
+8="hSize"
+9="hTlt"
+10="TLM_DOCKING"

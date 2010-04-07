@@ -39,7 +39,7 @@ PROP_STYLEMULTI			equ 3
 
 DEFSTYLE				equ WS_CHILD or WS_VISIBLE
 DEFEXSTYLE				equ 0
-IDB_BMP					equ 100
+IDB_TOOLBMP				equ 100
 
 .const
 
@@ -73,7 +73,7 @@ GetDef proc public nInx:DWORD
 	mov		eax,nInx
 	.if !eax
 		;Get the toolbox bitmap
-		invoke LoadBitmap,hInstance,IDB_BMP
+		invoke LoadBitmap,hInstance,IDB_TOOLBMP
 		mov		ccdef.hbmp,eax
 		;Return pointer to inited struct
 		mov		eax,offset ccdef
@@ -90,7 +90,7 @@ GetDefEx proc public nInx:DWORD
 	mov		eax,nInx
 	.if !eax
 		;Get the toolbox bitmap
-		invoke LoadBitmap,hInstance,IDB_BMP
+		invoke LoadBitmap,hInstance,IDB_TOOLBMP
 		mov		ccdefex.hbmp,eax
 		;Return pointer to inited struct
 		mov		eax,offset ccdefex

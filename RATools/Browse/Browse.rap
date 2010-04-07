@@ -62,7 +62,7 @@ Group=Assembly,Resources
 5=1
 6=
 [AutoLoad]
-AutoLoad=1,2,4,5
+AutoLoad=1,2,4,3,5
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -73,7 +73,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=6
+MilestoneOnDateDate=7
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=3
 MilestoneOnDateTimeDate=18
@@ -106,7 +106,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=115505917
+PTimer=147319607
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
@@ -126,13 +126,16 @@ GroupExpand=1,1,0
 1=
 2=
 5=
+3=
 [Collapse]
 5=
 2=
 1=
+3=
 [Size]
-5=0,0,0,0,129
-2=0,0,0,0,639
-1=0,0,0,0,1295
+5=0,0,795,458,473
+2=0,0,0,0,735
+1=0,0,0,0,1885
 4=0,0,0,0
 6=
+3=0,0,0,0,0

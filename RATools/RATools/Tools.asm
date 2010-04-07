@@ -1,95 +1,5 @@
-; ######################################################################
 
-	ToolWndProc			PROTO :DWORD,:DWORD,:DWORD,:DWORD
-	ToolCldWndProc		PROTO :DWORD,:DWORD,:DWORD,:DWORD
-	ToolMessage			PROTO :DWORD,:DWORD,:DWORD
-	ToolMsgAll			PROTO :DWORD,:DWORD,:DWORD
-	ToolMsg				PROTO :DWORD,:DWORD,:DWORD
-	ToolHitTest			PROTO :DWORD,:DWORD
-
-.const
-
-	;Message to Mdi
-	WM_TOOLDBLCLICK	equ	WM_USER+1
-	WM_TOOLSIZE		equ	WM_USER+2
-	WM_TOOLCLICK	equ	WM_USER+3
-	WM_TOOLRCLICK	equ	WM_USER+4
-
-	;Tool cursor flags
-	TL_ONRESIZE		equ	1
-	TL_ONCAPTION	equ	2
-	TL_ONCLOSE		equ	3
-
-	;Caption & resize bar size
-	TOTCAPHT		equ	14
-	CAPHT			equ	12
-	RESIZEBAR		equ	2
-	BUTTONT			equ	1
-	BUTTONR			equ	1
-	BUTTONHT		equ	10
-	BUTTONWT		equ	10
-
-;	DOCKING struct
-;	  ID				dd ?
-;	  Caption			dd ?
-;	  Visible			dd ?
-;	  Docked			dd ?
-;	  Position			dd ?
-;	  IsChild			dd ?
-;	  DockWidth			dd ?
-;	  DockHeight		dd ?
-;	  FloatRect			RECT <>
-;	DOCKING ends
-;
-	TOOL struct
-	  ID				dd ?
-	  Caption			dd ?
-	  Visible			dd ?
-	  Docked			dd ?
-	  Position			dd ?
-	  IsChild			dd ?
-	  dWidth			dd ?
-	  dHeight			dd ?	;+28
-	  fr				RECT <> ;Floating
-	  dr				RECT <> ;Docked
-	  wr				RECT <> ;Child window
-	  rr				RECT <> ;Resize
-	  tr				RECT <> ;Top
-	  cr				RECT <> ;Caption
-	  br				RECT <> ;Close button
-	  dFocus			dd ?
-	  dCurFlag			dd ?
-	  hWin				dd ?
-	  hCld				dd ?
-	  lpfnOldCldWndProc	dd ?
-	TOOL ends
-
-.data
-
-	szToolClass			db "ToolClass",0
-	szToolCldClass		db "ToolCldClass",0
-
-; ######################################################################
-
-.data?
-
-	ToolResize          dd ?
-	ToolMove            dd ?
-	MoveRect            RECT <?>
-	DrawRect            RECT <?>
-	ClientRect          RECT <?>
-	FloatRect			RECT <?>
-	MovePt              POINT <?>
-	MoveCur             dd ?
-	hRect				dd 128*4 dup(?)
-
-	;The order in ToolPool decides the clipping
-	;Max 10 tools
-	ToolPtr				dd ?
-	ToolPool			dd 4*10 dup(?)				;hCld, ptr TOOL data struct
-	ToolData			db sizeof TOOL * 10 dup(?)	;TOOL data structs
-
-; ######################################################################
+ToolCldWndProc			PROTO :DWORD,:DWORD,:DWORD,:DWORD
 
 .code
 
@@ -98,15 +8,15 @@ Do_ToolFloat proc uses esi,lpTool:DWORD
 	LOCAL   tH:DWORD
 
 	mov     esi,lpTool
-	mov     eax,[esi].TOOL.fr.right
-	sub     eax,[esi].TOOL.fr.left
+	mov     eax,[esi].TOOL.dck.fr.right
+	sub     eax,[esi].TOOL.dck.fr.left
 	mov     tW,eax
-	mov     eax,[esi].TOOL.fr.bottom
-	sub     eax,[esi].TOOL.fr.top
+	mov     eax,[esi].TOOL.dck.fr.bottom
+	sub     eax,[esi].TOOL.dck.fr.top
 	mov     tH,eax
-	invoke CreateWindowEx,WS_EX_TOOLWINDOW,addr szToolClass,[esi].TOOL.Caption,
+	invoke CreateWindowEx,WS_EX_TOOLWINDOW,addr szToolClass,[esi].TOOL.dck.Caption,
 			WS_CAPTION or WS_SIZEBOX or WS_SYSMENU or WS_POPUP or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,
-			[esi].TOOL.fr.left,[esi].TOOL.fr.top,tW,tH,hWnd,0,hInstance,esi
+			[esi].TOOL.dck.fr.left,[esi].TOOL.dck.fr.top,tW,tH,hWnd,0,hInstance,esi
 	mov     [esi].TOOL.hWin,eax
 	ret
 
@@ -119,56 +29,55 @@ ToolDrawRect proc uses esi edi,lpRect:DWORD,nFun:DWORD,nInx:DWORD
 
 	invoke CopyRect,addr rect,lpRect
 	lea		esi,rect
-	assume esi:ptr RECT
-	sub		[esi].right,1
-	mov		eax,[esi].right
-	sub		eax,[esi].left
+	sub		[esi].RECT.right,1
+	mov		eax,[esi].RECT.right
+	sub		eax,[esi].RECT.left
 	jns		@f
-	mov		eax,[esi].right
-	xchg	eax,[esi].left
-	mov		[esi].right,eax
-	sub		eax,[esi].left
-	dec		[esi].left
-	inc		[esi].right
+	mov		eax,[esi].RECT.right
+	xchg	eax,[esi].RECT.left
+	mov		[esi].RECT.right,eax
+	sub		eax,[esi].RECT.left
+	dec		[esi].RECT.left
+	inc		[esi].RECT.right
 	inc		eax
   @@:
 	mov		wt,eax
-	sub		[esi].bottom,1
-	mov		eax,[esi].bottom
-	sub		eax,[esi].top
+	sub		[esi].RECT.bottom,1
+	mov		eax,[esi].RECT.bottom
+	sub		eax,[esi].RECT.top
 	jns		@f
-	mov		eax,[esi].bottom
-	xchg	eax,[esi].top
-	mov		[esi].bottom,eax
-	sub		eax,[esi].top
-	dec		[esi].top
-	inc		[esi].bottom
+	mov		eax,[esi].RECT.bottom
+	xchg	eax,[esi].RECT.top
+	mov		[esi].RECT.bottom,eax
+	sub		eax,[esi].RECT.top
+	dec		[esi].RECT.top
+	inc		[esi].RECT.bottom
 	inc		eax
   @@:
 	mov		ht,eax
-	dec		[esi].right
-	dec		[esi].bottom
+	dec		[esi].RECT.right
+	dec		[esi].RECT.bottom
 	mov		edi,nInx
 	shl		edi,4
 	add		edi,offset hRect
 	.if nFun==0
-		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].left,[esi].top,wt,2,hWnd,0,hInstance,0
+		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].RECT.left,[esi].RECT.top,wt,2,hWnd,0,hInstance,0
 		mov		[edi],eax
 		invoke ShowWindow,eax,SW_SHOWNOACTIVATE
-		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].right,[esi].top,2,ht,hWnd,0,hInstance,0
+		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].RECT.right,[esi].RECT.top,2,ht,hWnd,0,hInstance,0
 		mov		[edi+4],eax
 		invoke ShowWindow,eax,SW_SHOWNOACTIVATE
-		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].left,[esi].bottom,wt,2,hWnd,0,hInstance,0
+		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].RECT.left,[esi].RECT.bottom,wt,2,hWnd,0,hInstance,0
 		mov		[edi+8],eax
 		invoke ShowWindow,eax,SW_SHOWNOACTIVATE
-		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].left,[esi].top,2,ht,hWnd,0,hInstance,0
+		invoke CreateWindowEx,0,addr szStatic,0,WS_POPUP or SS_BLACKRECT,[esi].RECT.left,[esi].RECT.top,2,ht,hWnd,0,hInstance,0
 		mov		[edi+12],eax
 		invoke ShowWindow,eax,SW_SHOWNOACTIVATE
 	.elseif nFun==1
-		invoke MoveWindow,[edi],[esi].left,[esi].top,wt,3,TRUE
-		invoke MoveWindow,[edi+4],[esi].right,[esi].top,3,ht,TRUE
-		invoke MoveWindow,[edi+8],[esi].left,[esi].bottom,wt,3,TRUE
-		invoke MoveWindow,[edi+12],[esi].left,[esi].top,3,ht,TRUE
+		invoke MoveWindow,[edi],[esi].RECT.left,[esi].RECT.top,wt,3,TRUE
+		invoke MoveWindow,[edi+4],[esi].RECT.right,[esi].RECT.top,3,ht,TRUE
+		invoke MoveWindow,[edi+8],[esi].RECT.left,[esi].RECT.bottom,wt,3,TRUE
+		invoke MoveWindow,[edi+12],[esi].RECT.left,[esi].RECT.top,3,ht,TRUE
 	.elseif nFun==2
 		invoke DestroyWindow,[edi]
 		mov		dword ptr [edi],0
@@ -179,7 +88,6 @@ ToolDrawRect proc uses esi edi,lpRect:DWORD,nFun:DWORD,nInx:DWORD
 		invoke DestroyWindow,[edi+12]
 		mov		dword ptr [edi+12],0
 	.endif
-	assume esi:nothing
 	ret
 
 ToolDrawRect endp
@@ -287,14 +195,14 @@ Rotate endp
 
 GetToolPtr proc
 
-	mov     edx,offset ToolPool-16
+	mov     edx,offset ToolPool-sizeof TOOLPOOL
   @@:
-	add     edx,16
-	cmp     dword ptr [edx],0
+	add     edx,sizeof TOOLPOOL
+	cmp     [edx].TOOLPOOL.hCld,0
 	jz      @f
-	cmp     eax,dword ptr [edx]
+	cmp     eax,[edx].TOOLPOOL.hCld
 	jnz     @b
-	mov     edx,dword ptr [edx+4]
+	mov     edx,[edx].TOOLPOOL.lpTool
 	ret
   @@:
 	xor     edx,edx
@@ -302,322 +210,37 @@ GetToolPtr proc
 
 GetToolPtr endp
 
-ToolMessage proc hWin:HWND,uMsg:UINT,lParam:LPARAM
-	LOCAl   pt:POINT
-	LOCAL   rect:RECT
-	LOCAL   clW:DWORD
-	LOCAL   clH:DWORD
-	LOCAL	tls[8]:TOOL
-
-	mov		eax,uMsg
-	.if eax==TLM_INIT
-		mov     ToolPtr,0
-	.elseif eax==TLM_SIZE
-		invoke ToolMsgAll,TLM_ADJUSTRECT,lParam,1
-		invoke ToolMsgAll,TLM_ADJUSTRECT,lParam,2
-		invoke CopyRect,addr ClientRect,lParam
-		mov     edx,lParam
-		assume edx:ptr RECT
-		mov     eax,[edx].right
-		sub     eax,[edx].left
-		mov     clW,eax
-		mov     eax,[edx].bottom
-		sub     eax,[edx].top
-		mov     clH,eax
-;		invoke MoveWindow,hClient,[edx].left,[edx].top,clW,clH,TRUE
-		assume edx:nothing
-		invoke ToolMsgAll,TLM_REDRAW,0,1
-		invoke ToolMsgAll,TLM_REDRAW,0,2
-	.elseif eax==TLM_PAINT
-		invoke ToolMsgAll,TLM_CAPTION,0,0
-	.elseif eax==TLM_CREATE
-		push    ecx
-		push    esi
-		push    edi
-		mov     esi,offset ToolPool
-		mov     eax,ToolPtr
-		add     esi,eax
-		add     ToolPtr,16
-		shr     eax,4
-		mov     ecx,sizeof TOOL
-		mul     ecx
-		mov     edi,offset ToolData
-		add     edi,eax
-		push    edi
-		mov     eax,hWin
-		mov     dword ptr [esi],eax
-		mov     dword ptr [esi+4],edi
-		mov     esi,lParam
-		mov     ecx,sizeof DOCKING
-		cld
-		rep movsb
-		mov     ecx,sizeof TOOL - sizeof DOCKING
-		xor     al,al
-		rep stosb
-		pop     edx
-		push    edx
-		invoke Do_ToolFloat,edx
-		pop     edx
-		push    eax
-		assume edx:ptr TOOL
-		mov     [edx].hWin,eax
-		m2m     [edx].hCld,hWin
-		push    edx
-		invoke SetWindowLong,[edx].hCld,GWL_WNDPROC,addr ToolCldWndProc
-		pop     edx
-		mov     [edx].lpfnOldCldWndProc,eax
-		invoke ToolMsg,[edx].hCld,TLM_SETTBR,0
-		pop     eax
-		pop     edi
-		pop     esi
-		pop     ecx
-	.elseif eax==TLM_MOUSEMOVE
-		mov     eax,lParam
-		and     eax,0FFFFh
-		cwde
-		mov     pt.x,eax
-		mov     eax,lParam
-		shr     eax,16
-		cwde
-		mov     pt.y,eax
-		.if ToolResize
-			invoke CopyRect,addr DrawRect,addr MoveRect
-			mov     eax,pt.x
-			cwde
-			.if eax<0
-				mov     pt.x,0
-			.endif
-			mov     eax,pt.y
-			cwde
-			.if eax<0
-				mov     pt.y,0
-			.endif
-			mov     eax,ToolResize
-			call GetToolPtr
-			assume edx:ptr TOOL
-			mov     eax,[edx].Position
-			.if eax==TL_LEFT
-				mov     eax,ClientRect.right
-				sub     eax,RESIZEBAR
-				.if eax<pt.x
-					mov     pt.x,eax
-				.endif
-				mov     eax,[edx].dr.left
-				add     eax,RESIZEBAR+2
-				.if eax>pt.x
-					mov     pt.x,eax
-				.endif
-				mov     eax,pt.x
-				sub     eax,MovePt.x
-				add     DrawRect.right,eax
-				mov		eax,DrawRect.bottom
-				sub		eax,DrawRect.top
-;				invoke MoveWindow,hTlt,DrawRect.right,DrawRect.top,2,eax,TRUE
-			.elseif eax==TL_TOP
-				mov     eax,ClientRect.bottom
-				sub     eax,RESIZEBAR+1
-				.if eax<pt.y
-					mov     pt.y,eax
-				.endif
-				mov     eax,[edx].dr.top
-				add     eax,TOTCAPHT+RESIZEBAR+2
-				.if eax>pt.y
-					mov     pt.y,eax
-				.endif
-				mov     eax,pt.y
-				sub     eax,MovePt.y
-				add     DrawRect.bottom,eax
-				mov		eax,DrawRect.right
-				sub		eax,DrawRect.left
-;				invoke MoveWindow,hTlt,DrawRect.left,DrawRect.bottom,eax,2,TRUE
-			.elseif eax==TL_RIGHT
-				mov     eax,ClientRect.left
-				add     eax,RESIZEBAR
-				.if eax>pt.x
-					mov     pt.x,eax
-				.endif
-				mov     eax,[edx].dr.right
-				sub     eax,RESIZEBAR+2
-				.if eax<pt.x
-					mov     pt.x,eax
-				.endif
-				mov     eax,pt.x
-				sub     eax,MovePt.x
-				add     DrawRect.left,eax
-				mov		eax,DrawRect.bottom
-				sub		eax,DrawRect.top
-;				invoke MoveWindow,hTlt,DrawRect.left,DrawRect.top,2,eax,TRUE
-			.elseif eax==TL_BOTTOM
-				mov     eax,ClientRect.top
-				add     eax,RESIZEBAR+1
-				.if eax>pt.y
-					mov     pt.y,eax
-				.endif
-				mov     eax,[edx].dr.bottom
-				sub     eax,TOTCAPHT+RESIZEBAR+2
-				.if eax<pt.y
-					mov     pt.y,eax
-				.endif
-				mov     eax,pt.y
-				sub     eax,MovePt.y
-				add     DrawRect.top,eax
-				mov		eax,DrawRect.right
-				sub		eax,DrawRect.left
-;				invoke MoveWindow,hTlt,DrawRect.left,DrawRect.top,eax,2,TRUE
-			.endif
-;			invoke ShowWindow,hTlt,SW_SHOWNOACTIVATE
-			assume edx:nothing
-		.elseif ToolMove
-			push	esi
-			push	edi
-			lea		edi,tls
-			mov		esi,offset ToolData
-			mov		ecx,sizeof tls
-			rep movsb
-			pop		edi
-			pop		esi
-
-			invoke CopyRect,addr DrawRect,addr MoveRect
-			mov     eax,pt.x
-			sub     eax,MovePt.x
-			add     DrawRect.left,eax
-			add     DrawRect.right,eax
-			mov     eax,pt.y
-			sub     eax,MovePt.y
-			add     DrawRect.top,eax
-			add     DrawRect.bottom,eax
-
-			invoke ToolMsg,ToolMove,TLM_MOVETEST,addr pt
-;			invoke CopyRect,addr rect,offset mdirect
-			invoke ToolMsgAll,TLM_ADJUSTRECT,addr rect,1
-			invoke ToolMsgAll,TLM_ADJUSTRECT,addr rect,2
-			mov		eax,ToolMove
-			invoke GetToolPtr
-			.if [edx].TOOL.Docked
-				invoke CopyRect,addr rect,addr [edx].TOOL.dr
-;				invoke ClientToScreen,hWnd,addr rect
-;				invoke ClientToScreen,hWnd,addr rect.right
-			.else
-				invoke CopyRect,addr rect,addr [edx].TOOL.fr
-;				invoke ClientToScreen,hWnd,addr pt
-				mov		edx,rect.right
-				sub		edx,rect.left
-				mov		eax,pt.x
-				mov		rect.left,eax
-				add		eax,edx
-				mov		rect.right,eax
-				shr		edx,1
-				sub		rect.left,edx
-				sub		rect.right,edx
-				mov		edx,rect.bottom
-				sub		edx,rect.top
-				mov		eax,pt.y
-				sub		eax,10
-				mov		rect.top,eax
-				add		eax,edx
-				mov		rect.bottom,eax
-				invoke CopyRect,offset FloatRect,addr rect
-			.endif
-			push	esi
-			push	edi
-			lea		esi,tls
-			mov		edi,offset ToolData
-			mov		ecx,sizeof tls
-			rep movsb
-			pop		edi
-			pop		esi
-			invoke ToolDrawRect,addr rect,1,0
-		.else
-			invoke ToolMsgAll,uMsg,addr pt,0
-		.endif
-	.elseif eax==TLM_LBUTTONDOWN
-		mov     eax,lParam
-		and     eax,0FFFFh
-		mov     MovePt.x,eax
-		mov     eax,lParam
-		shr     eax,16
-		mov     MovePt.y,eax
-		invoke ToolMsgAll,uMsg,addr pt,0
-	.elseif eax==TLM_LBUTTONUP
-		mov     eax,lParam
-		and     eax,0FFFFh
-		mov     pt.x,eax
-		mov     eax,lParam
-		shr     eax,16
-		mov     pt.y,eax
-		.if ToolResize
-			invoke ToolMsg,ToolResize,uMsg,addr pt
-			mov     ToolResize,0
-		.elseif ToolMove
-			invoke ToolMsg,ToolMove,uMsg,addr pt
-			mov     ToolMove,0
-		.endif
-;		invoke InvalidateRect,hClient,NULL,TRUE
-	.elseif eax==TLM_HIDE
-		invoke ToolMsg,hWin,uMsg,lParam
-		mov		eax,hWin
-		invoke GetToolPtr
-		invoke ToolMsgAll,uMsg,edx,3
+ToolHitTest proc uses ebx,lpRect:DWORD,lpPoint:DWORD
+	
+	push    edx
+	mov     edx,lpPoint
+	mov     ebx,lpRect
+	mov     eax,[edx].POINT.x
+	mov		edx,[edx].POINT.y
+	.if sdword ptr eax>=[ebx].RECT.left && sdword ptr eax<[ebx].RECT.right && sdword ptr edx>=[ebx].RECT.top && sdword ptr edx<[ebx].RECT.bottom
+		mov     eax,TRUE
 	.else
-		invoke ToolMsg,hWin,uMsg,lParam
+		xor		eax,eax
 	.endif
+	pop     edx
 	ret
 
-ToolMessage endp
-
-ToolMsgAll proc uses ecx esi,uMsg:UINT,lParam:LPARAM,fTpe:DWORD
-
-	mov     ecx,8
-	mov     esi,offset ToolPool
-  Nxt:
-	mov     eax,dword ptr [esi]
-	or      eax,eax
-	je		Ex
-	push    ecx
-	mov		edx,[esi+4]
-	assume edx:ptr TOOL
-	mov		eax,[edx].IsChild
-	.if fTpe==0
-		invoke ToolMsg,[esi],uMsg,lParam
-	.elseif fTpe==1 && !eax
-		invoke ToolMsg,[esi],uMsg,lParam
-	.elseif fTpe==2 && eax
-		invoke ToolMsg,[esi],uMsg,lParam
-	.elseif fTpe==3
-		mov		ecx,lParam
-		.if [edx].Docked && [ecx].TOOL.Docked && eax==[ecx].TOOL.ID
-			mov		eax,[edx].Visible
-			.if eax!=[ecx].TOOL.Visible
-				invoke ToolMsg,[esi],uMsg,lParam
-			.endif
-		.endif
-	.endif
-	assume eax:nothing
-	pop     ecx
-	add     esi,4*4
-	dec		ecx
-	jne		Nxt
-  Ex:
-	ret
-
-ToolMsgAll endp
+ToolHitTest endp
 
 GetToolPtrID proc
 
 	push	edx
-	mov     edx,offset ToolPool-16
+	mov     edx,offset ToolPool-sizeof TOOLPOOL
   @@:
-	add     edx,16
-	cmp     dword ptr [edx],0
+	add     edx,sizeof TOOLPOOL
+	cmp     [edx].TOOLPOOL.hCld,0
 	je      @f
 	push	edx
-	mov     edx,dword ptr [edx+4]
-	assume edx:ptr TOOL
-	cmp     eax,[edx].ID
-	assume edx:nothing
+	mov     edx,dword ptr [edx].TOOLPOOL.lpTool
+	cmp     eax,[edx].TOOL.dck.ID
 	pop		edx
 	jne     @b
-	mov     eax,dword ptr [edx+4]
+	mov     eax,dword ptr [edx].TOOLPOOL.lpTool
 	pop		edx
 	ret
   @@:
@@ -627,28 +250,25 @@ GetToolPtrID proc
 
 GetToolPtrID endp
 
-IsOnTool proc lpPt:DWORD
+IsOnTool proc uses ebx,lpPt:DWORD
 
-	push	ebx
 	push	ecx
 	push	edx
 	mov		ebx,lpPt
-	assume ebx:ptr POINT
 	mov		edx,offset ToolData
-	assume edx:ptr TOOL
   @@:
-	mov		eax,[edx].ID
+	mov		eax,[edx].TOOL.dck.ID
 	.if eax
-		mov		eax,[edx].Visible
-		and		eax,[edx].Docked
+		mov		eax,[edx].TOOL.dck.Visible
+		and		eax,[edx].TOOL.dck.Docked
 		.if eax
-			mov		eax,[edx].IsChild
+			mov		eax,[edx].TOOL.dck.IsChild
 			.if !eax
-				mov		eax,[ebx].x
-				.if eax>[edx].dr.left && eax<[edx].dr.right
-					mov		eax,[ebx].y
-					.if eax>[edx].dr.top && eax<[edx].dr.bottom
-						mov		eax,[edx].ID
+				mov		eax,[ebx].POINT.x
+				.if sdword ptr eax>[edx].TOOL.dr.left && sdword ptr eax<[edx].TOOL.dr.right
+					mov		eax,[ebx].POINT.y
+					.if sdword ptr eax>[edx].TOOL.dr.top && sdword ptr eax<[edx].TOOL.dr.bottom
+						mov		eax,[edx].TOOL.dck.ID
 						jmp		@f
 					.endif
 				.endif
@@ -658,11 +278,8 @@ IsOnTool proc lpPt:DWORD
 		jmp		@b
 	.endif
   @@:
-	assume edx:nothing
-	assume ebx:nothing
 	pop		edx
 	pop		ecx
-	pop		ebx
 	ret
 
 IsOnTool endp
@@ -671,18 +288,17 @@ SetIsChildTo proc nID:DWORD,nToID:DWORD
 
 	push	edx
 	mov		edx,offset ToolData
-	assume edx:ptr TOOL
   @@:
-	mov		eax,[edx].ID
+	mov		eax,[edx].TOOL.dck.ID
 	.if eax
-		mov		eax,[edx].IsChild
+		mov		eax,[edx].TOOL.dck.IsChild
 		.if eax==nID
-			m2m		[edx].IsChild,nToID
+			mov		eax,nToID
+			mov		[edx].TOOL.dck.IsChild,eax
 		.endif
 		add		edx,sizeof TOOL
 		jmp		@b
 	.endif
-	assume edx:nothing
 	pop		edx
 	ret
 
@@ -708,37 +324,37 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 	mov     eax,hCld
 	call    GetToolPtr
 	mov		esi,edx
-	assume esi:ptr TOOL
 	mov     ebx,lpRect
-	assume ebx:ptr RECT
 	mov		eax,uMsg
 	.if eax==TLM_MOUSEMOVE
-		mov     [esi].dCurFlag,0
+		mov     [esi].TOOL.dCurFlag,0
 		mov     hCur,0
-		.if [esi].Visible && [esi].Docked && !ToolResize
+		.if [esi].TOOL.dck.Visible && [esi].TOOL.dck.Docked && !ToolResize
 			;Check if mouse is on this tools caption, close button or sizeing boarder and set cursor
 			mov     hCur,0
-			invoke ToolHitTest,addr [esi].rr,ebx
+			invoke ToolHitTest,addr [esi].TOOL.rr,ebx
 			.if eax
 				;Cursor on resize bar
-				mov     [esi].dCurFlag,TL_ONRESIZE
-				mov     eax,[esi].Position
-;				.if eax==TL_TOP || eax==TL_BOTTOM
-;					m2m     hCur,hSplitCurH;IDC_SIZENS
-;				.else
-;					m2m     hCur,hSplitCurV;IDC_SIZEWE
-;				.endif
+				mov     [esi].TOOL.dCurFlag,TL_ONRESIZE
+				mov     eax,[esi].TOOL.dck.Position
+				.if eax==TL_TOP || eax==TL_BOTTOM
+					mov		eax,hSplitCurH
+					mov     hCur,eax
+				.else
+					mov		eax,hSplitCurV
+					mov     hCur,eax
+				.endif
 			.else
-				invoke ToolHitTest,addr [esi].cr,ebx
+				invoke ToolHitTest,addr [esi].TOOL.cr,ebx
 				.if eax
 					;Cursor on caption
 					mov     hCur,IDC_HAND
-					mov     [esi].dCurFlag,TL_ONCAPTION
-					invoke ToolHitTest,addr [esi].br,ebx
+					mov     [esi].TOOL.dCurFlag,TL_ONCAPTION
+					invoke ToolHitTest,addr [esi].TOOL.br,ebx
 					.if eax
 						;Cursor on close button
 						mov     hCur,IDC_ARROW
-						mov     [esi].dCurFlag,TL_ONCLOSE
+						mov     [esi].TOOL.dCurFlag,TL_ONCLOSE
 					.endif
 					invoke LoadCursor,0,hCur
 					mov		hCur,eax
@@ -755,7 +371,7 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 	.elseif eax==TLM_MOVETEST
 		call ToolMov
 	.elseif eax==TLM_SETTBR
-		mov		eax,[esi].ID
+		mov		eax,[esi].TOOL.dck.ID
 		.if eax==1
 ;			mov		eax,IDM_VIEW_PROJECTBROWSER
 ;		.elseif eax==2
@@ -768,24 +384,24 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 ;			mov		eax,0
 		.endif
 		.if eax
-;			invoke SendMessage,hToolBar,TB_CHECKBUTTON,eax,[esi].Visible
+;			invoke SendMessage,hToolBar,TB_CHECKBUTTON,eax,[esi].TOOL.Visible
 		.endif
 		mov     eax,TRUE
 		ret
 	.elseif eax==TLM_LBUTTONDOWN
-		.if [esi].dCurFlag
-			.if [esi].dCurFlag==TL_ONCLOSE
-				mov     [esi].Visible,FALSE
+		.if [esi].TOOL.dCurFlag
+			.if [esi].TOOL.dCurFlag==TL_ONCLOSE
+				mov     [esi].TOOL.dck.Visible,FALSE
 				invoke ToolMsg,hCld,TLM_SETTBR,0
-;				invoke SendMessage,hWnd,WM_SIZE,0,0
+				invoke SendMessage,hWnd,WM_SIZE,0,0
 				mov     eax,TRUE
 				ret
 			.else
 				invoke SetFocus,hCld
 				mov		pt.x,0
 				mov		pt.y,0
-;				invoke ClientToScreen,hWnd,addr pt
-				invoke CopyRect,addr DrawRect,addr [esi].dr
+				invoke ClientToScreen,hWnd,addr pt
+				invoke CopyRect,addr DrawRect,addr [esi].TOOL.dr
 				mov		eax,pt.x
 				dec		eax
 				add		DrawRect.left,eax
@@ -798,14 +414,14 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 				add		DrawRect.bottom,eax
 				invoke CopyRect,addr MoveRect,addr DrawRect
 				invoke SetCursor,MoveCur
-;				invoke SetCapture,hWnd
-				.if [esi].dCurFlag==TL_ONRESIZE
+				invoke SetCapture,hWnd
+				.if [esi].TOOL.dCurFlag==TL_ONRESIZE
 					mov     eax,hCld
 					mov     ToolResize,eax
-;					invoke ShowWindow,hTlt,SW_SHOWNOACTIVATE
+					invoke ShowWindow,hSize,SW_SHOWNOACTIVATE
 					mov     eax,TRUE
 					ret
-				.elseif [esi].dCurFlag==TL_ONCAPTION
+				.elseif [esi].TOOL.dCurFlag==TL_ONCAPTION
 					mov     eax,hCld
 					mov     ToolMove,eax
 					invoke ToolDrawRect,addr DrawRect,0,0
@@ -817,12 +433,12 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 	.elseif eax==TLM_LBUTTONUP
 		invoke ReleaseCapture
 		.if ToolResize
-			mov     edx,[esi].Position
+			mov     edx,[esi].TOOL.dck.Position
 			.if edx==TL_BOTTOM || edx==TL_TOP
 				mov     eax,DrawRect.bottom
 				sub     eax,DrawRect.top
 				sub		eax,1
-				mov     [esi].dHeight,eax
+				mov     [esi].TOOL.dck.dHeight,eax
 			.elseif edx==TL_LEFT || edx==TL_RIGHT
 				mov     eax,DrawRect.right
 				sub     eax,DrawRect.left
@@ -830,59 +446,55 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 				.if edx==TL_RIGHT
 					dec		eax
 				.endif
-				mov     [esi].dWidth,eax
+				mov     [esi].TOOL.dck.dWidth,eax
 			.endif
-;			invoke ShowWindow,hTlt,SW_HIDE
+			invoke ShowWindow,hSize,SW_HIDE
 		.elseif ToolMove
 			invoke ToolDrawRect,addr DrawRect,2,0
 			call ToolMov
-			.if ![esi].Docked
+			.if ![esi].TOOL.dck.Docked
 				mov		eax,FloatRect.right
 				sub		eax,FloatRect.left
 				mov		edx,FloatRect.bottom
 				sub		edx,FloatRect.top
-				invoke MoveWindow,[esi].hWin,FloatRect.left,FloatRect.top,eax,edx,TRUE
+				invoke MoveWindow,[esi].TOOL.hWin,FloatRect.left,FloatRect.top,eax,edx,TRUE
 			.endif
-			call TestTab
-			assume ebx:ptr RECT
 		.endif
-;		invoke SendMessage,hWnd,WM_SIZE,0,0
+		invoke SendMessage,hWnd,WM_SIZE,0,0
 		invoke SetFocus,hCld
 	.elseif eax==TLM_DOCKING
 		;Docked/floating
-		xor     [esi].Docked,TRUE
-		.if ![esi].Visible
+		xor     [esi].TOOL.dck.Docked,TRUE
+		.if ![esi].TOOL.dck.Visible
 			invoke ToolMsg,hCld,TLM_HIDE,lpRect
 		.else
 			invoke SendMessage,hWnd,WM_SIZE,0,0
 		.endif
-;		call TestTab
 		mov     eax,TRUE
 		ret
 	.elseif eax==TLM_HIDE
 		;Hide/show
-		xor     [esi].Visible,TRUE
+		xor     [esi].TOOL.dck.Visible,TRUE
 		invoke ToolMsg,hCld,TLM_SETTBR,0
-;		invoke SendMessage,hWnd,WM_SIZE,0,0
-;		invoke InvalidateRect,hClient,NULL,TRUE
-;		invoke DllProc,hWin,AIM_TOOLSHOW,[esi].Visible,[esi].ID,RAM_TOOLSHOW
+		invoke SendMessage,hWnd,WM_SIZE,0,0
+		invoke InvalidateRect,hClient,NULL,TRUE
 		mov     eax,TRUE
 		ret
 	.elseif eax==TLM_CAPTION
 		;Draw the tools caption
-		.if [esi].Visible && [esi].Docked
+		.if [esi].TOOL.dck.Visible && [esi].TOOL.dck.Docked
 			;Draw caption background
 			invoke GetDC,hWnd
 			mov     hDC,eax
 			invoke GetStockObject,DEFAULT_GUI_FONT
 			invoke SelectObject,hDC,eax
 			push	eax
-			invoke FillRect,hDC,addr [esi].tr,COLOR_BTNFACE+1
+			invoke FillRect,hDC,addr [esi].TOOL.tr,COLOR_BTNFACE+1
 			invoke SetBkMode,hDC,TRANSPARENT
 			;Draw resizing bar
-			invoke FillRect,hDC,addr [esi].rr,COLOR_BTNFACE+1
+			invoke FillRect,hDC,addr [esi].TOOL.rr,COLOR_BTNFACE+1
 			;Draw Caption
-			.if [esi].dFocus
+			.if [esi].TOOL.dFocus
 				invoke SetTextColor,hDC,0FFFFFFh
 				mov		eax,COLOR_ACTIVECAPTION+1
 			.else
@@ -890,19 +502,19 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 				mov		eax,COLOR_INACTIVECAPTION+1
 			.endif
 			mov		ebx,eax
-			invoke FillRect,hDC,addr [esi].cr,eax
-			mov		eax,[esi].IsChild
+			invoke FillRect,hDC,addr [esi].TOOL.cr,eax
+			mov		eax,[esi].TOOL.dck.IsChild
 			xor		ecx,ecx
 			.if eax
 				invoke GetToolPtrID
 				mov		edx,eax
-				mov		ecx,[edx].TOOL.Visible
-				and		ecx,[edx].TOOL.Docked
+				mov		ecx,[edx].TOOL.dck.Visible
+				and		ecx,[edx].TOOL.dck.Docked
 			.endif
-			mov		eax,[esi].Position
+			mov		eax,[esi].TOOL.dck.Position
 			.if fRightCaption
 				.if ((eax==TL_TOP || eax==TL_BOTTOM) && !ecx) || (eax==TL_RIGHT && ecx)
-					mov		eax,[esi].Caption
+					mov		eax,[esi].TOOL.dck.Caption
 					mov		al,byte ptr [eax]
 					.if al
 						dec		ebx
@@ -921,7 +533,7 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 						mov		rect2.top,0
 						mov		rect2.right,0
 						mov		rect2.bottom,0
-						invoke DrawText,sDC,[esi].Caption,-1,addr rect2,DT_CALCRECT or DT_SINGLELINE or DT_LEFT or DT_TOP
+						invoke DrawText,sDC,[esi].TOOL.dck.Caption,-1,addr rect2,DT_CALCRECT or DT_SINGLELINE or DT_LEFT or DT_TOP
 						;Create a bitmap for the rotated text
 						invoke CreateCompatibleBitmap,hDC,rect2.bottom,rect2.right
 						mov		hBmp1,eax
@@ -933,7 +545,7 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 						push	eax
 						invoke SetBkColor,sDC,ebx
 						;Draw the text
-						invoke DrawText,sDC,[esi].Caption,-1,addr rect2,DT_SINGLELINE or DT_LEFT or DT_TOP
+						invoke DrawText,sDC,[esi].TOOL.dck.Caption,-1,addr rect2,DT_SINGLELINE or DT_LEFT or DT_TOP
 						;Rotate the bitmap
 						invoke Rotate,hBmp1,hBmp2,0,0,1
 						pop		eax
@@ -943,9 +555,9 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 						invoke SelectObject,sDC,hBmp1
 						push	eax
 						;Blit the destination bitmap onto window bitmap
-						mov		eax,[esi].cr.top
+						mov		eax,[esi].TOOL.cr.top
 						inc		eax
-						mov		edx,[esi].cr.left
+						mov		edx,[esi].TOOL.cr.left
 						dec		edx
 						invoke BitBlt,hDC,edx,eax,rect2.bottom,rect2.right,sDC,0,0,SRCCOPY
 						pop		eax
@@ -957,140 +569,147 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 						invoke DeleteDC,sDC
 					.endif
 				.else
-					dec		[esi].cr.top
-					inc		[esi].cr.left
-					invoke DrawText,hDC,[esi].Caption,-1,addr [esi].cr,0
-					inc		[esi].cr.top
-					dec		[esi].cr.left
+					dec		[esi].TOOL.cr.top
+					inc		[esi].TOOL.cr.left
+					invoke DrawText,hDC,[esi].TOOL.dck.Caption,-1,addr [esi].TOOL.cr,0
+					inc		[esi].TOOL.cr.top
+					dec		[esi].TOOL.cr.left
 				.endif
 			.else
-				dec		[esi].cr.top
-				inc		[esi].cr.left
-				invoke DrawText,hDC,[esi].Caption,-1,addr [esi].cr,0
-				inc		[esi].cr.top
-				dec		[esi].cr.left
+				dec		[esi].TOOL.cr.top
+				inc		[esi].TOOL.cr.left
+				invoke DrawText,hDC,[esi].TOOL.dck.Caption,-1,addr [esi].TOOL.cr,0
+				inc		[esi].TOOL.cr.top
+				dec		[esi].TOOL.cr.left
 			.endif
 			;Draw close button
-			invoke DrawFrameControl,hDC,addr [esi].br,DFC_CAPTION,DFCS_CAPTIONCLOSE
+			invoke DrawFrameControl,hDC,addr [esi].TOOL.br,DFC_CAPTION,DFCS_CAPTIONCLOSE
 			invoke ReleaseDC,hWnd,hDC
 			pop		eax
 			invoke SelectObject,hDC,eax
 		.endif
 	.elseif eax==TLM_REDRAW
 		;Hide/Show floating/docked window
-		.if [esi].Visible
-			.if [esi].Docked
+		.if [esi].TOOL.dck.Visible
+			.if [esi].TOOL.dck.Docked
 				;Hide the floating form
-				invoke ShowWindow,[esi].hWin,SW_HIDE
+				invoke ShowWindow,[esi].TOOL.hWin,SW_HIDE
 				;Make the mdi frame the parent
-				invoke SetParent,[esi].hCld,hWnd
-				mov     eax,[esi].wr.right
-				sub     eax,[esi].wr.left
+				invoke SetParent,[esi].TOOL.hCld,hWnd
+				mov     eax,[esi].TOOL.wr.right
+				sub     eax,[esi].TOOL.wr.left
 				mov     dWidth,eax
-				mov     eax,[esi].wr.bottom
-				sub     eax,[esi].wr.top
+				mov     eax,[esi].TOOL.wr.bottom
+				sub     eax,[esi].TOOL.wr.top
 				mov     dHeight,eax
-				invoke MoveWindow,[esi].hCld,[esi].wr.left,[esi].wr.top,dWidth,dHeight,TRUE
-				invoke ShowWindow,[esi].hCld,SW_SHOWNOACTIVATE
+				invoke MoveWindow,[esi].TOOL.hCld,[esi].TOOL.wr.left,[esi].TOOL.wr.top,dWidth,dHeight,TRUE
+				invoke ShowWindow,[esi].TOOL.hCld,SW_SHOWNOACTIVATE
 			.else
 				;Show the floating window
-				invoke SetParent,[esi].hCld,[esi].hWin
-				invoke GetClientRect,[esi].hWin,addr rect
-				invoke MoveWindow,[esi].hCld,rect.left,rect.top,rect.right,rect.bottom,FALSE
-				invoke ShowWindow,[esi].hWin,SW_SHOWNOACTIVATE
-				invoke ShowWindow,[esi].hCld,SW_SHOWNOACTIVATE
+				invoke SetParent,[esi].TOOL.hCld,[esi].TOOL.hWin
+				invoke GetClientRect,[esi].TOOL.hWin,addr rect
+				invoke MoveWindow,[esi].TOOL.hCld,rect.left,rect.top,rect.right,rect.bottom,FALSE
+				invoke ShowWindow,[esi].TOOL.hWin,SW_SHOWNOACTIVATE
+				invoke ShowWindow,[esi].TOOL.hCld,SW_SHOWNOACTIVATE
 			.endif
 		.else
-			.if [esi].Docked
+			.if [esi].TOOL.dck.Docked
 				;Hide the floating form
-				invoke ShowWindow,[esi].hWin,SW_HIDE
+				invoke ShowWindow,[esi].TOOL.hWin,SW_HIDE
 				;Hide docked window
-				invoke ShowWindow,[esi].hCld,SW_HIDE
+				invoke ShowWindow,[esi].TOOL.hCld,SW_HIDE
 			.else
 				;Hide the floating window
-				invoke ShowWindow,[esi].hCld,SW_HIDE
-				invoke ShowWindow,[esi].hWin,SW_HIDE
+				invoke ShowWindow,[esi].TOOL.hCld,SW_HIDE
+				invoke ShowWindow,[esi].TOOL.hWin,SW_HIDE
 			.endif
 		.endif
 	.elseif eax==TLM_ADJUSTRECT
-		.if [esi].Visible && [esi].Docked
+		.if [esi].TOOL.dck.Visible && [esi].TOOL.dck.Docked
 			mov		parPosition,-1
 			mov		parDocked,0
-			mov		eax,[esi].IsChild
+			mov		eax,[esi].TOOL.dck.IsChild
 			.if eax
-				m2m		dWidth,[esi].dWidth
+				mov		eax,[esi].TOOL.dck.dWidth
+				mov		dWidth,eax
 				push	esi
 				;Get parent from ID
-				mov		eax,[esi].IsChild
+				mov		eax,[esi].TOOL.dck.IsChild
 				invoke GetToolPtrID
 				mov		esi,eax
-				m2m		parPosition,[esi].Position
-				m2m		pardWidth,[esi].dWidth
-				m2m		pardHeight,[esi].dHeight
+				mov		eax,[esi].TOOL.dck.Position
+				mov		parPosition,eax
+				mov		eax,[esi].TOOL.dck.dWidth
+				mov		pardWidth,eax
+				mov		eax,[esi].TOOL.dck.dHeight
+				mov		pardHeight,eax
 				;Is parent visible & docked
-				mov		eax,[esi].Visible
-				and		eax,[esi].Docked
+				mov		eax,[esi].TOOL.dck.Visible
+				and		eax,[esi].TOOL.dck.Docked
 				mov		parDocked,eax
 				.if eax
 					.if parPosition==TL_LEFT || parPosition==TL_RIGHT
 						;Resize the tool's client rect instead
-						lea		eax,[esi].wr
+						lea		eax,[esi].TOOL.wr
 						mov		lpRect,eax
 						pop		eax
 						push	eax
-						mov		(TOOL ptr [eax]).Position,TL_BOTTOM
+						mov		[eax].TOOL.dck.Position,TL_BOTTOM
 					.else
 						;Resize the tool's client, top, caption & button rect instead
-						lea		eax,[esi].wr
+						lea		eax,[esi].TOOL.wr
 						mov		lpRect,eax
 						mov		eax,dWidth
 						.if fRightCaption
-							add		[esi].wr.right,TOTCAPHT-1
+							add		[esi].TOOL.wr.right,TOTCAPHT-1
 							inc		eax
-							sub		[esi].cr.left,eax
-							sub		[esi].tr.left,eax
-							sub		[esi].cr.right,eax
-							sub		[esi].tr.right,eax
-							sub		[esi].br.left,eax
-							sub		[esi].br.right,eax
+							sub		[esi].TOOL.cr.left,eax
+							sub		[esi].TOOL.tr.left,eax
+							sub		[esi].TOOL.cr.right,eax
+							sub		[esi].TOOL.tr.right,eax
+							sub		[esi].TOOL.br.left,eax
+							sub		[esi].TOOL.br.right,eax
 						.else
-							sub		[esi].tr.right,eax
-							sub		[esi].cr.right,eax
-							sub		[esi].br.left,eax
-							sub		[esi].br.right,eax
+							sub		[esi].TOOL.tr.right,eax
+							sub		[esi].TOOL.cr.right,eax
+							sub		[esi].TOOL.br.left,eax
+							sub		[esi].TOOL.br.right,eax
 						.endif
 						pop		eax
 						push	eax
-						mov		(TOOL ptr [eax]).Position,TL_RIGHT
+						mov		[eax].TOOL.dck.Position,TL_RIGHT
 					.endif
 				.else
 					pop		esi
 					push	esi
-					m2m		[esi].Position,parPosition
+					mov		eax,parPosition
+					mov		[esi].TOOL.dck.Position,eax
 					.if parPosition==TL_LEFT || parPosition==TL_RIGHT
-						m2m		[esi].dWidth,pardWidth
+						mov		eax,pardWidth
+						mov		[esi].TOOL.dck.dWidth,eax
 					.else
-						m2m		[esi].dHeight,pardHeight
+						mov		eax,pardHeight
+						mov		[esi].TOOL.dck.dHeight,eax
 					.endif
 				.endif
 				pop		esi
 			.endif
 			;Resize mdi client & calculate all the tools RECT's
 			mov     ebx,lpRect
-			invoke CopyRect,addr [esi].dr,ebx
-			mov     eax,[esi].Position
+			invoke CopyRect,addr [esi].TOOL.dr,ebx
+			mov     eax,[esi].TOOL.dck.Position
 			.if eax==TL_LEFT
-				mov     eax,[esi].dWidth
-				add     [ebx].left,eax
-				add		eax,[esi].dr.left
-				mov		[esi].dr.right,eax
+				mov     eax,[esi].TOOL.dck.dWidth
+				add     [ebx].RECT.left,eax
+				add		eax,[esi].TOOL.dr.left
+				mov		[esi].TOOL.dr.right,eax
 				call SizeRight
 				call CaptionTop
 			.elseif eax==TL_TOP
-				mov		eax,[esi].dHeight
-				add		[ebx].top,eax
-				add		eax,[esi].dr.top
-				mov		[esi].dr.bottom,eax
+				mov		eax,[esi].TOOL.dck.dHeight
+				add		[ebx].RECT.top,eax
+				add		eax,[esi].TOOL.dr.top
+				mov		[esi].TOOL.dr.bottom,eax
 				call SizeBottom
 				.if fRightCaption
 					call CaptionRight
@@ -1098,30 +717,30 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 					call CaptionTop
 				.endif
 			.elseif eax==TL_RIGHT
-				mov     eax,[esi].dWidth
-				sub     [ebx].right,eax
+				mov     eax,[esi].TOOL.dck.dWidth
+				sub     [ebx].RECT.right,eax
 				neg		eax
-				add		eax,[esi].dr.right
+				add		eax,[esi].TOOL.dr.right
 ;				dec		eax
-				mov		[esi].dr.left,eax
+				mov		[esi].TOOL.dr.left,eax
 				call SizeLeft
-				.if [esi].IsChild && fRightCaption && parDocked
-					sub     [ebx].right,TOTCAPHT
+				.if [esi].TOOL.dck.IsChild && fRightCaption && parDocked
+					sub     [ebx].RECT.right,TOTCAPHT
 					call CaptionRight
 				.else
-					.if [esi].IsChild && parDocked
-						sub     [esi].dr.top,TOTCAPHT
-						sub     [esi].wr.top,TOTCAPHT
-						sub     [esi].rr.top,TOTCAPHT
+					.if [esi].TOOL.dck.IsChild && parDocked
+						sub     [esi].TOOL.dr.top,TOTCAPHT
+						sub     [esi].TOOL.wr.top,TOTCAPHT
+						sub     [esi].TOOL.rr.top,TOTCAPHT
 					.endif
 					call CaptionTop
 				.endif
 			.elseif eax==TL_BOTTOM
-				mov     eax,[esi].dHeight
-				sub     [ebx].bottom,eax
+				mov     eax,[esi].TOOL.dck.dHeight
+				sub     [ebx].RECT.bottom,eax
 				neg		eax
-				add		eax,[esi].dr.bottom
-				mov		[esi].dr.top,eax
+				add		eax,[esi].TOOL.dr.bottom
+				mov		[esi].TOOL.dr.top,eax
 				call SizeTop
 				.if ((parPosition==TL_LEFT || parPosition==TL_RIGHT) && parDocked) || !fRightCaption
 					call CaptionTop
@@ -1130,162 +749,146 @@ ToolMsg proc uses ebx esi,hCld:DWORD,uMsg:UINT,lpRect:DWORD
 				.endif
 			.endif
 		.endif
-	.elseif eax==TLM_GET_VISIBLE
-		mov		eax,[esi].Visible
+	.elseif eax==TLM_GETVISIBLE
+		mov		eax,[esi].TOOL.dck.Visible
 		ret
-	.elseif eax==TLM_GET_DOCKED
-		mov		eax,[esi].Docked
+	.elseif eax==TLM_GETDOCKED
+		mov		eax,[esi].TOOL.dck.Docked
 		ret
-	.elseif eax==TLM_GET_STRUCT
+	.elseif eax==TLM_GETSTRUCT
 		mov		eax,esi
 		ret
 	.endif
 	mov     eax,FALSE
 	ret
 
-TestTab:
-;	mov		eax,[esi].hCld
-;	.if eax==hTab
-;		mov     eax,[esi].Position
-;		.if eax==TL_TOP || eax==TL_BOTTOM || ![esi].Docked
-;			mov		edx,WS_VISIBLE or WS_CHILD or WS_TABSTOP or TCS_FOCUSNEVER or TCS_BUTTONS
-;		.else
-;			mov		edx,WS_VISIBLE or WS_CHILD or WS_TABSTOP or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_VERTICAL or TCS_RIGHT
-;		.endif
-;		.if fMultiLine
-;			or		edx,TCS_MULTILINE
-;		.endif
-;		invoke SetWindowLong,hTab,GWL_STYLE,edx
-;		invoke SendMessage,hTab,WM_SETFONT,0,TRUE
-;		invoke SendMessage,hTab,WM_SETFONT,hLBFont,TRUE
-;	.endif
-	retn
-
 SizeLeft:
-	invoke CopyRect,addr [esi].wr,addr [esi].dr
-	mov		eax,[esi].wr.left
-	mov		[esi].rr.left,eax
+	invoke CopyRect,addr [esi].TOOL.wr,addr [esi].TOOL.dr
+	mov		eax,[esi].TOOL.wr.left
+	mov		[esi].TOOL.rr.left,eax
 	add		eax,RESIZEBAR
-	mov		[esi].wr.left,eax
-	mov		[esi].rr.right,eax
-	mov		eax,[esi].wr.top
-	mov		[esi].rr.top,eax
-	mov		eax,[esi].wr.bottom
-	mov		[esi].rr.bottom,eax
+	mov		[esi].TOOL.wr.left,eax
+	mov		[esi].TOOL.rr.right,eax
+	mov		eax,[esi].TOOL.wr.top
+	mov		[esi].TOOL.rr.top,eax
+	mov		eax,[esi].TOOL.wr.bottom
+	mov		[esi].TOOL.rr.bottom,eax
 	retn
 
 SizeTop:
-	invoke CopyRect,addr [esi].wr,addr [esi].dr
-	mov		eax,[esi].wr.left
-	mov		[esi].rr.left,eax
-	mov		eax,[esi].wr.right
-	mov		[esi].rr.right,eax
-	mov		eax,[esi].wr.top
-	mov		[esi].rr.top,eax
+	invoke CopyRect,addr [esi].TOOL.wr,addr [esi].TOOL.dr
+	mov		eax,[esi].TOOL.wr.left
+	mov		[esi].TOOL.rr.left,eax
+	mov		eax,[esi].TOOL.wr.right
+	mov		[esi].TOOL.rr.right,eax
+	mov		eax,[esi].TOOL.wr.top
+	mov		[esi].TOOL.rr.top,eax
 	add		eax,RESIZEBAR
-	mov		[esi].wr.top,eax
-	mov		[esi].rr.bottom,eax
+	mov		[esi].TOOL.wr.top,eax
+	mov		[esi].TOOL.rr.bottom,eax
 	retn
 
 SizeRight:
-	invoke CopyRect,addr [esi].wr,addr [esi].dr
-	mov		eax,[esi].wr.right
-	mov		[esi].rr.right,eax
+	invoke CopyRect,addr [esi].TOOL.wr,addr [esi].TOOL.dr
+	mov		eax,[esi].TOOL.wr.right
+	mov		[esi].TOOL.rr.right,eax
 	sub		eax,RESIZEBAR
-	mov		[esi].wr.right,eax
-	mov		[esi].rr.left,eax
-	mov		eax,[esi].wr.top
-	mov		[esi].rr.top,eax
-	mov		eax,[esi].wr.bottom
-	mov		[esi].rr.bottom,eax
+	mov		[esi].TOOL.wr.right,eax
+	mov		[esi].TOOL.rr.left,eax
+	mov		eax,[esi].TOOL.wr.top
+	mov		[esi].TOOL.rr.top,eax
+	mov		eax,[esi].TOOL.wr.bottom
+	mov		[esi].TOOL.rr.bottom,eax
 	retn
 
 SizeBottom:
-	invoke CopyRect,addr [esi].wr,addr [esi].dr
-	mov		eax,[esi].wr.left
-	mov		[esi].rr.left,eax
-	mov		eax,[esi].wr.right
-	mov		[esi].rr.right,eax
-	mov		eax,[esi].wr.bottom
-	mov		[esi].rr.bottom,eax
+	invoke CopyRect,addr [esi].TOOL.wr,addr [esi].TOOL.dr
+	mov		eax,[esi].TOOL.wr.left
+	mov		[esi].TOOL.rr.left,eax
+	mov		eax,[esi].TOOL.wr.right
+	mov		[esi].TOOL.rr.right,eax
+	mov		eax,[esi].TOOL.wr.bottom
+	mov		[esi].TOOL.rr.bottom,eax
 	sub		eax,RESIZEBAR
-	mov		[esi].wr.bottom,eax
-	mov		[esi].rr.top,eax
+	mov		[esi].TOOL.wr.bottom,eax
+	mov		[esi].TOOL.rr.top,eax
 	retn
 
 CaptionTop:
-	mov		eax,[esi].wr.left
-	mov		[esi].tr.left,eax
-	mov		[esi].cr.left,eax
-	mov		eax,[esi].wr.right
-	mov		[esi].tr.right,eax
-	mov		[esi].cr.right,eax
-	mov		eax,[esi].wr.top
-	mov		[esi].tr.top,eax
+	mov		eax,[esi].TOOL.wr.left
+	mov		[esi].TOOL.tr.left,eax
+	mov		[esi].TOOL.cr.left,eax
+	mov		eax,[esi].TOOL.wr.right
+	mov		[esi].TOOL.tr.right,eax
+	mov		[esi].TOOL.cr.right,eax
+	mov		eax,[esi].TOOL.wr.top
+	mov		[esi].TOOL.tr.top,eax
 	inc		eax
-	mov		[esi].cr.top,eax
+	mov		[esi].TOOL.cr.top,eax
 	add		eax,TOTCAPHT-1
-	mov		[esi].wr.top,eax
-	mov		[esi].tr.bottom,eax
+	mov		[esi].TOOL.wr.top,eax
+	mov		[esi].TOOL.tr.bottom,eax
 	dec		eax
-	mov		[esi].cr.bottom,eax
+	mov		[esi].TOOL.cr.bottom,eax
 
-	mov		eax,[esi].cr.top
+	mov		eax,[esi].TOOL.cr.top
 	add		eax,BUTTONT
-	mov		[esi].br.top,eax
+	mov		[esi].TOOL.br.top,eax
 	add		eax,BUTTONHT
-	mov		[esi].br.bottom,eax
-	mov		eax,[esi].cr.right
+	mov		[esi].TOOL.br.bottom,eax
+	mov		eax,[esi].TOOL.cr.right
 	sub		eax,BUTTONR
-	mov		[esi].br.right,eax
+	mov		[esi].TOOL.br.right,eax
 	sub		eax,BUTTONWT
-	mov		[esi].br.left,eax
+	mov		[esi].TOOL.br.left,eax
 	retn
 
 CaptionRight:
-	mov		eax,[esi].wr.right
-	mov		[esi].tr.right,eax
+	mov		eax,[esi].TOOL.wr.right
+	mov		[esi].TOOL.tr.right,eax
 	dec		eax
-	mov		[esi].cr.right,eax
+	mov		[esi].TOOL.cr.right,eax
 	sub		eax,TOTCAPHT-1
-	mov		[esi].tr.left,eax
+	mov		[esi].TOOL.tr.left,eax
 	inc		eax
-	mov		[esi].cr.left,eax
-	mov		[esi].wr.right,eax
-	mov		eax,[esi].wr.top
-	mov		[esi].tr.top,eax
-	mov		[esi].cr.top,eax
-	mov		eax,[esi].wr.bottom
-	mov		[esi].tr.bottom,eax
-	mov		[esi].cr.bottom,eax
+	mov		[esi].TOOL.cr.left,eax
+	mov		[esi].TOOL.wr.right,eax
+	mov		eax,[esi].TOOL.wr.top
+	mov		[esi].TOOL.tr.top,eax
+	mov		[esi].TOOL.cr.top,eax
+	mov		eax,[esi].TOOL.wr.bottom
+	mov		[esi].TOOL.tr.bottom,eax
+	mov		[esi].TOOL.cr.bottom,eax
 
-	mov		eax,[esi].cr.right
+	mov		eax,[esi].TOOL.cr.right
 	sub		eax,BUTTONT
-	mov		[esi].br.right,eax
+	mov		[esi].TOOL.br.right,eax
 	sub		eax,BUTTONHT
-	mov		[esi].br.left,eax
-	mov		eax,[esi].cr.bottom
+	mov		[esi].TOOL.br.left,eax
+	mov		eax,[esi].TOOL.cr.bottom
 	sub		eax,BUTTONR
-	mov		[esi].br.bottom,eax
+	mov		[esi].TOOL.br.bottom,eax
 	sub		eax,BUTTONWT
-	mov		[esi].br.top,eax
+	mov		[esi].TOOL.br.top,eax
 	retn
 
 ToolMov:
 	invoke IsOnTool,ebx
-	.if eax!=0 && eax!=[esi].ID
+	.if eax!=0 && eax!=[esi].TOOL.dck.ID
 		;If Tool has child
-		mov     [esi].IsChild,eax
-		invoke SetIsChildTo,[esi].ID,eax
+		mov     [esi].TOOL.dck.IsChild,eax
+		invoke SetIsChildTo,[esi].TOOL.dck.ID,eax
 	.else
-		.if eax<50 || eax>-50
+		mov     eax,MoveRect.left
+		sub     eax,DrawRect.left
+		.if sdword ptr eax<50 && sdword ptr eax>-50
 			mov     eax,MoveRect.top
 			sub     eax,DrawRect.top
-			.if eax<50 || eax>-50
+			.if sdword ptr eax<50 && sdword ptr eax>-50
 				retn
 			.endif
 		.endif
-;		invoke GetWindowRect,hWnd,addr rect2
+		invoke GetWindowRect,hWnd,addr rect2
 		sub		rect2.left,50
 		sub		rect2.top,50
 		add		rect2.right,50
@@ -1293,46 +896,45 @@ ToolMov:
 		mov     eax,MoveRect.left
 		sub     eax,DrawRect.left
 		mov     ebx,lpRect
-		assume ebx:ptr POINT
-		mov     eax,[ebx].x
+		mov     eax,[ebx].POINT.x
 		cwde
-		mov     [ebx].x,eax
-		.if sdword ptr eax<rect2.left || sdword ptr eax>rect2.right
-			mov     [esi].Docked,FALSE
+		mov     [ebx].POINT.x,eax
+		.if sdword ptr eax<rect2.left && sdword ptr eax>rect2.right
+			mov     [esi].TOOL.dck.Docked,FALSE
 			retn
 		.endif
-		mov     eax,[ebx].y
+		mov     eax,[ebx].POINT.y
 		cwde
-		mov     [ebx].y,eax
-		.if sdword ptr eax<rect2.top || sdword ptr eax>rect2.bottom
-			mov     [esi].Docked,FALSE
+		mov     [ebx].POINT.y,eax
+		.if sdword ptr eax<rect2.top && sdword ptr eax>rect2.bottom
+			mov     [esi].TOOL.dck.Docked,FALSE
 			retn
 		.endif
-		mov     eax,[ebx].x
+		mov     eax,[ebx].POINT.x
 		sub     eax,ClientRect.left
-		.if eax<50 || eax>-50
-			mov     [esi].Position,TL_LEFT
-			mov     [esi].IsChild,0
+		.if sdword ptr eax<50 && sdword ptr eax>-50
+			mov     [esi].TOOL.dck.Position,TL_LEFT
+			mov     [esi].TOOL.dck.IsChild,0
 		.else
-			mov     eax,[ebx].y
+			mov     eax,[ebx].POINT.y
 			sub     eax,ClientRect.top
-			.if eax<50 || eax>-50
-				mov     [esi].Position,TL_TOP
-				mov     [esi].IsChild,0
+			.if sdword ptr eax<50 && sdword ptr eax>-50
+				mov     [esi].TOOL.dck.Position,TL_TOP
+				mov     [esi].TOOL.dck.IsChild,0
 			.else
-				mov     eax,[ebx].x
+				mov     eax,[ebx].POINT.x
 				sub     eax,ClientRect.right
-				.if eax<50 || eax>-50
-					mov     [esi].Position,TL_RIGHT
-					mov     [esi].IsChild,0
+				.if sdword ptr eax<50 && sdword ptr eax>-50
+					mov     [esi].TOOL.dck.Position,TL_RIGHT
+					mov     [esi].TOOL.dck.IsChild,0
 				.else
-					mov     eax,[ebx].y
+					mov     eax,[ebx].POINT.y
 					sub     eax,ClientRect.bottom
-					.if eax<50 || eax>-50
-						mov     [esi].Position,TL_BOTTOM
-						mov     [esi].IsChild,0
+					.if sdword ptr eax<50 && sdword ptr eax>-50
+						mov     [esi].TOOL.dck.Position,TL_BOTTOM
+						mov     [esi].TOOL.dck.IsChild,0
 					.else
-						mov     [esi].Docked,FALSE
+						mov     [esi].TOOL.dck.Docked,FALSE
 					.endif
 				.endif
 			.endif
@@ -1340,36 +942,290 @@ ToolMov:
 	.endif
 	retn
 
-	assume esi:nothing
-	assume ebx:nothing
-
 ToolMsg endp
 
-ToolHitTest proc lpRect:DWORD,lpPoint:DWORD
-	LOCAL fHit:DWORD
-	
-	assume ebx:ptr RECT
-	assume edx:ptr POINT
-	mov     fHit,FALSE
-	push    edx
-	push    ebx
-	mov     edx,lpPoint
-	mov     ebx,lpRect
-	mov     eax,[edx].x
-	.if eax>=[ebx].left && eax<[ebx].right
-		mov     eax,[edx].y
-		.if eax>=[ebx].top && eax<[ebx].bottom
-			mov     fHit,TRUE
+ToolMsgAll proc uses ecx esi,uMsg:UINT,lParam:LPARAM,fTpe:DWORD
+
+	mov     ecx,10
+	mov     esi,offset ToolPool
+  Nxt:
+	mov     eax,[esi].TOOLPOOL.hCld
+	or      eax,eax
+	je		Ex
+	push    ecx
+	mov		edx,[esi].TOOLPOOL.lpTool
+	mov		eax,[edx].TOOL.dck.IsChild
+	.if fTpe==0
+		invoke ToolMsg,[esi].TOOLPOOL.hCld,uMsg,lParam
+	.elseif fTpe==1 && !eax
+		invoke ToolMsg,[esi].TOOLPOOL.hCld,uMsg,lParam
+	.elseif fTpe==2 && eax
+		invoke ToolMsg,[esi].TOOLPOOL.hCld,uMsg,lParam
+	.elseif fTpe==3
+		mov		ecx,lParam
+		.if [edx].TOOL.dck.Docked && [ecx].TOOL.dck.Docked && eax==[ecx].TOOL.dck.ID
+			mov		eax,[edx].TOOL.dck.Visible
+			.if eax!=[ecx].TOOL.dck.Visible
+				invoke ToolMsg,[esi].TOOLPOOL.hCld,uMsg,lParam
+			.endif
 		.endif
 	.endif
-	pop     ebx
-	pop     edx
-	mov     eax,fHit
-	assume ebx:nothing
-	assume edx:nothing
+	pop     ecx
+	add     esi,sizeof TOOLPOOL
+	dec		ecx
+	jne		Nxt
+  Ex:
 	ret
 
-ToolHitTest endp
+ToolMsgAll endp
+
+ToolMessage proc uses ebx esi edi,hWin:HWND,uMsg:UINT,lParam:LPARAM
+	LOCAl   pt:POINT
+	LOCAL   rect:RECT
+	LOCAL   clW:DWORD
+	LOCAL   clH:DWORD
+	LOCAL	tls[10]:TOOL
+
+	mov		eax,uMsg
+	.if eax==TLM_INIT
+		mov     ToolPtr,0
+	.elseif eax==TLM_SIZE
+		invoke ToolMsgAll,TLM_ADJUSTRECT,lParam,1
+		invoke ToolMsgAll,TLM_ADJUSTRECT,lParam,2
+		invoke CopyRect,addr ClientRect,lParam
+		mov     edx,lParam
+		mov     eax,[edx].RECT.right
+		sub     eax,[edx].RECT.left
+		mov     clW,eax
+		mov     eax,[edx].RECT.bottom
+		sub     eax,[edx].RECT.top
+		mov     clH,eax
+		invoke MoveWindow,hClient,[edx].RECT.left,[edx].RECT.top,clW,clH,TRUE
+		invoke ToolMsgAll,TLM_REDRAW,0,1
+		invoke ToolMsgAll,TLM_REDRAW,0,2
+	.elseif eax==TLM_PAINT
+		invoke ToolMsgAll,TLM_CAPTION,0,0
+	.elseif eax==TLM_CREATE
+		push    ecx
+		mov     esi,offset ToolPool
+		mov     eax,ToolPtr
+		add     esi,eax
+		add     ToolPtr,sizeof TOOLPOOL
+		mov		ecx,sizeof TOOLPOOL
+		xor		edx,edx
+		div		ecx
+		mov     ecx,sizeof TOOL
+		mul     ecx
+		mov     edi,offset ToolData
+		add     edi,eax
+		push    edi
+		mov     eax,hWin
+		mov     [esi].TOOLPOOL.hCld,eax
+		mov     [esi].TOOLPOOL.lpTool,edi
+		mov     esi,lParam
+		mov     ecx,sizeof DOCKING
+		cld
+		rep movsb
+		mov     ecx,sizeof TOOL - sizeof DOCKING
+		xor     al,al
+		rep stosb
+		pop     edx
+		push    edx
+		invoke Do_ToolFloat,edx
+		pop     edx
+		push    eax
+		mov     [edx].TOOL.hWin,eax
+		mov		eax,hWin
+		mov     [edx].TOOL.hCld,eax
+		push    edx
+		invoke SetWindowLong,[edx].TOOL.hCld,GWL_WNDPROC,addr ToolCldWndProc
+		pop     edx
+		mov     [edx].TOOL.lpfnOldCldWndProc,eax
+		invoke ToolMsg,[edx].TOOL.hCld,TLM_SETTBR,0
+		pop     eax
+		pop     ecx
+	.elseif eax==TLM_MOUSEMOVE
+		mov     eax,lParam
+		movsx	eax,ax
+		mov     pt.x,eax
+		mov     eax,lParam
+		shr     eax,16
+		movsx	eax,ax
+		mov     pt.y,eax
+		.if ToolResize
+			invoke CopyRect,addr DrawRect,addr MoveRect
+			mov     eax,pt.x
+			cwde
+			.if sdword ptr eax<0
+				mov     pt.x,0
+			.endif
+			mov     eax,pt.y
+			cwde
+			.if sdword ptr eax<0
+				mov     pt.y,0
+			.endif
+			mov     eax,ToolResize
+			call GetToolPtr
+			mov     eax,[edx].TOOL.dck.Position
+			.if eax==TL_LEFT
+				mov     eax,ClientRect.right
+				sub     eax,RESIZEBAR
+				.if eax<pt.x
+					mov     pt.x,eax
+				.endif
+				mov     eax,[edx].TOOL.dr.left
+				add     eax,RESIZEBAR+2
+				.if eax>pt.x
+					mov     pt.x,eax
+				.endif
+				mov     eax,pt.x
+				sub     eax,MovePt.x
+				add     DrawRect.right,eax
+				mov		eax,DrawRect.bottom
+				sub		eax,DrawRect.top
+				invoke MoveWindow,hSize,DrawRect.right,DrawRect.top,2,eax,TRUE
+			.elseif eax==TL_TOP
+				mov     eax,ClientRect.bottom
+				sub     eax,RESIZEBAR+1
+				.if eax<pt.y
+					mov     pt.y,eax
+				.endif
+				mov     eax,[edx].TOOL.dr.top
+				add     eax,TOTCAPHT+RESIZEBAR+2
+				.if eax>pt.y
+					mov     pt.y,eax
+				.endif
+				mov     eax,pt.y
+				sub     eax,MovePt.y
+				add     DrawRect.bottom,eax
+				mov		eax,DrawRect.right
+				sub		eax,DrawRect.left
+				invoke MoveWindow,hSize,DrawRect.left,DrawRect.bottom,eax,2,TRUE
+			.elseif eax==TL_RIGHT
+				mov     eax,ClientRect.left
+				add     eax,RESIZEBAR
+				.if eax>pt.x
+					mov     pt.x,eax
+				.endif
+				mov     eax,[edx].TOOL.dr.right
+				sub     eax,RESIZEBAR+2
+				.if eax<pt.x
+					mov     pt.x,eax
+				.endif
+				mov     eax,pt.x
+				sub     eax,MovePt.x
+				add     DrawRect.left,eax
+				mov		eax,DrawRect.bottom
+				sub		eax,DrawRect.top
+				invoke MoveWindow,hSize,DrawRect.left,DrawRect.top,2,eax,TRUE
+			.elseif eax==TL_BOTTOM
+				mov     eax,ClientRect.top
+				add     eax,RESIZEBAR+1
+				.if eax>pt.y
+					mov     pt.y,eax
+				.endif
+				mov     eax,[edx].TOOL.dr.bottom
+				sub     eax,TOTCAPHT+RESIZEBAR+2
+				.if eax<pt.y
+					mov     pt.y,eax
+				.endif
+				mov     eax,pt.y
+				sub     eax,MovePt.y
+				add     DrawRect.top,eax
+				mov		eax,DrawRect.right
+				sub		eax,DrawRect.left
+				invoke MoveWindow,hSize,DrawRect.left,DrawRect.top,eax,2,TRUE
+			.endif
+			invoke ShowWindow,hSize,SW_SHOWNOACTIVATE
+		.elseif ToolMove
+			lea		edi,tls
+			mov		esi,offset ToolData
+			mov		ecx,sizeof tls
+			rep movsb
+			invoke CopyRect,addr DrawRect,addr MoveRect
+			mov     eax,pt.x
+			sub     eax,MovePt.x
+			add     DrawRect.left,eax
+			add     DrawRect.right,eax
+			mov     eax,pt.y
+			sub     eax,MovePt.y
+			add     DrawRect.top,eax
+			add     DrawRect.bottom,eax
+			invoke ToolMsg,ToolMove,TLM_MOVETEST,addr pt
+			invoke CopyRect,addr rect,offset mdirect
+			invoke ToolMsgAll,TLM_ADJUSTRECT,addr rect,1
+			invoke ToolMsgAll,TLM_ADJUSTRECT,addr rect,2
+			mov		eax,ToolMove
+			invoke GetToolPtr
+			.if [edx].TOOL.dck.Docked
+				invoke CopyRect,addr rect,addr [edx].TOOL.dr
+				invoke ClientToScreen,hWnd,addr rect
+				invoke ClientToScreen,hWnd,addr rect.right
+			.else
+				invoke CopyRect,addr rect,addr [edx].TOOL.dck.fr
+				invoke ClientToScreen,hWnd,addr pt
+				mov		edx,rect.right
+				sub		edx,rect.left
+				mov		eax,pt.x
+				mov		rect.left,eax
+				add		eax,edx
+				mov		rect.right,eax
+				shr		edx,1
+				sub		rect.left,edx
+				sub		rect.right,edx
+				mov		edx,rect.bottom
+				sub		edx,rect.top
+				mov		eax,pt.y
+				sub		eax,10
+				mov		rect.top,eax
+				add		eax,edx
+				mov		rect.bottom,eax
+				invoke CopyRect,offset FloatRect,addr rect
+			.endif
+			lea		esi,tls
+			mov		edi,offset ToolData
+			mov		ecx,sizeof tls
+			rep movsb
+			invoke ToolDrawRect,addr rect,1,0
+		.else
+			invoke ToolMsgAll,uMsg,addr pt,0
+		.endif
+	.elseif eax==TLM_LBUTTONDOWN
+		mov     eax,lParam
+		movsx	eax,ax
+		mov     MovePt.x,eax
+		mov     eax,lParam
+		shr     eax,16
+		movsx	eax,ax
+		mov     MovePt.y,eax
+		invoke ToolMsgAll,uMsg,addr pt,0
+	.elseif eax==TLM_LBUTTONUP
+		mov     eax,lParam
+		movsx	eax,ax
+		mov     pt.x,eax
+		mov     eax,lParam
+		shr     eax,16
+		movsx	eax,ax
+		mov     pt.y,eax
+		.if ToolResize
+			invoke ToolMsg,ToolResize,uMsg,addr pt
+			mov     ToolResize,0
+		.elseif ToolMove
+			invoke ToolMsg,ToolMove,uMsg,addr pt
+			mov     ToolMove,0
+		.endif
+		invoke InvalidateRect,hClient,NULL,TRUE
+	.elseif eax==TLM_HIDE
+		invoke ToolMsg,hWin,uMsg,lParam
+		mov		eax,hWin
+		invoke GetToolPtr
+		invoke ToolMsgAll,uMsg,edx,3
+	.else
+		invoke ToolMsg,hWin,uMsg,lParam
+	.endif
+	ret
+
+ToolMessage endp
 
 ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   rect:RECT
@@ -1386,8 +1242,8 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov     eax,hWin
 		call    GetToolStruct
 		mov		ebx,edx
-		.if [ebx].TOOL.Visible
-			invoke GetWindowRect,hWin,addr [ebx].TOOL.fr
+		.if [ebx].TOOL.dck.Visible
+			invoke GetWindowRect,hWin,addr [ebx].TOOL.dck.fr
 			invoke GetClientRect,hWin,addr rect
 			mov     eax,rect.right
 			sub     eax,rect.left
@@ -1400,14 +1256,14 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_SHOWWINDOW
 		mov     eax,hWin
 		call    GetToolStruct
-		.if ![edx].TOOL.Visible || [edx].TOOL.Docked
+		.if ![edx].TOOL.dck.Visible || [edx].TOOL.dck.Docked
 			xor		eax,eax
 			ret
 		.endif
 	.elseif eax==WM_MOVE
 		mov     eax,hWin
 		call    GetToolStruct
-		invoke GetWindowRect,hWin,addr [edx].TOOL.fr
+		invoke GetWindowRect,hWin,addr [edx].TOOL.dck.fr
 	.elseif eax==WM_NCLBUTTONDOWN
 		.if wParam==HTCAPTION
 			invoke LoadCursor,0,IDC_HAND
@@ -1416,14 +1272,14 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			call    GetToolStruct
 			mov		ebx,edx
 			mov		[ebx].TOOL.dCurFlag,TL_ONCAPTION
-			mov		[ebx].TOOL.Docked,TRUE
-			mov		eax,[ebx].TOOL.fr.top
+			mov		[ebx].TOOL.dck.Docked,TRUE
+			mov		eax,[ebx].TOOL.dck.fr.top
 			add		eax,10
 			mov		pt.y,eax
-			mov		eax,[ebx].TOOL.fr.right
-			sub		eax,[ebx].TOOL.fr.left
+			mov		eax,[ebx].TOOL.dck.fr.right
+			sub		eax,[ebx].TOOL.dck.fr.left
 			shr		eax,1
-			add		eax,[ebx].TOOL.fr.left
+			add		eax,[ebx].TOOL.dck.fr.left
 			mov		pt.x,eax
 			invoke SetCursorPos,pt.x,pt.y
 			invoke ToolMsg,[ebx].TOOL.hCld,TLM_LBUTTONDOWN,addr pt
@@ -1441,7 +1297,7 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call    GetToolStruct
 		mov     eax,[edx].TOOL.hCld
 		invoke ToolMessage,eax,TLM_HIDE,0
-;		invoke InvalidateRect,hClient,NULL,TRUE
+		invoke InvalidateRect,hClient,NULL,TRUE
 		xor		eax,eax
 		ret
 	.endif
@@ -1451,68 +1307,68 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ToolWndProc endp
 
 ToolCldProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	pt:POINT
-	LOCAL	rect:RECT
-	LOCAL	buffer[8]:BYTE
-	LOCAL	buffer1[8]:BYTE
-
-	mov		eax,uMsg
-	.if eax==WM_CTLCOLORSTATIC
-;		invoke SetBkMode,wParam,TRANSPARENT
-;		invoke SetTextColor,wParam,radcol.infotext
-;		mov		eax,hBrInfo
-		ret
-	.elseif eax==WM_NOTIFY
-;		mov		ebx,lParam
-;		mov		eax,(NMHDR ptr [ebx]).code
-;		.if eax==TVN_BEGINDRAG
-;			.if fGroup && sdword ptr [ebx].NM_TREEVIEW.itemNew.lParam>0
-;;				invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
-;			.else
-;				invoke SendMessage,[ebx].NMHDR.hwndFrom,TVM_SELECTITEM,TVGN_CARET,[ebx].NM_TREEVIEW.itemNew.hItem
-;			.endif
-;		.endif
-	.elseif eax==WM_LBUTTONUP
-;		.if IsDragging
-;			mov		IsDragging,FALSE
-;;			invoke GroupTVEndDrag,hPbrTrv
-;			mov		esi,offset profile
-;			.while [esi].PROFILE.lpszFile
-;;				invoke BinToDec,[esi].PROFILE.iNbr,addr buffer
-;;				invoke BinToDec,[esi].PROFILE.nGrp,addr buffer1
-;;				invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer,addr buffer1,addr ProjectFile
-;				lea		esi,[esi+sizeof PROFILE]
-;			.endw
-;		.endif
-		xor		eax,eax
-		jmp		Ex
-	.elseif eax==WM_MOUSEMOVE
-;		.if IsDragging
-;			invoke GetCursorPos,addr pt
+;	LOCAL	pt:POINT
+;	LOCAL	rect:RECT
+;	LOCAL	buffer[8]:BYTE
+;	LOCAL	buffer1[8]:BYTE
+;
+;	mov		eax,uMsg
+;	.if eax==WM_CTLCOLORSTATIC
+;;		invoke SetBkMode,wParam,TRANSPARENT
+;;		invoke SetTextColor,wParam,radcol.infotext
+;;		mov		eax,hBrInfo
+;		ret
+;	.elseif eax==WM_NOTIFY
+;;		mov		ebx,lParam
+;;		mov		eax,(NMHDR ptr [ebx]).code
+;;		.if eax==TVN_BEGINDRAG
+;;			.if fGroup && sdword ptr [ebx].NM_TREEVIEW.itemNew.lParam>0
+;;;				invoke GroupTVBeginDrag,[ebx].NMHDR.hwndFrom,hWin,lParam
+;;			.else
+;;				invoke SendMessage,[ebx].NMHDR.hwndFrom,TVM_SELECTITEM,TVGN_CARET,[ebx].NM_TREEVIEW.itemNew.hItem
+;;			.endif
+;;		.endif
+;	.elseif eax==WM_LBUTTONUP
+;;		.if IsDragging
+;;			mov		IsDragging,FALSE
+;;;			invoke GroupTVEndDrag,hPbrTrv
+;;			mov		esi,offset profile
+;;			.while [esi].PROFILE.lpszFile
+;;;				invoke BinToDec,[esi].PROFILE.iNbr,addr buffer
+;;;				invoke BinToDec,[esi].PROFILE.nGrp,addr buffer1
+;;;				invoke WritePrivateProfileString,addr iniProjectGroup,addr buffer,addr buffer1,addr ProjectFile
+;;				lea		esi,[esi+sizeof PROFILE]
+;;			.endw
+;;		.endif
+;		xor		eax,eax
+;		jmp		Ex
+;	.elseif eax==WM_MOUSEMOVE
+;;		.if IsDragging
+;;			invoke GetCursorPos,addr pt
 ;;			invoke ImageList_DragMove,pt.x,pt.y
 ;;			invoke GetWindowRect,hPbrTrv,addr rect
 ;;			invoke GetScrollPos,hPbrTrv,SB_VERT
-;			mov		ebx,eax
-;			mov		edx,pt.y
-;			.if sdword ptr edx<rect.top
-;				dec		ebx
-;				mov		eax,ebx
-;				shl		eax,16
-;				or		eax,SB_LINEUP
+;;			mov		ebx,eax
+;;			mov		edx,pt.y
+;;			.if sdword ptr edx<rect.top
+;;				dec		ebx
+;;				mov		eax,ebx
+;;				shl		eax,16
+;;				or		eax,SB_LINEUP
 ;;				invoke SendMessage,hPbrTrv,WM_VSCROLL,eax,0
-;			.elseif sdword ptr edx>rect.bottom
-;				inc		ebx
-;				mov		eax,ebx
-;				shl		eax,16
-;				or		eax,SB_LINEDOWN
+;;			.elseif sdword ptr edx>rect.bottom
+;;				inc		ebx
+;;				mov		eax,ebx
+;;				shl		eax,16
+;;				or		eax,SB_LINEDOWN
 ;;				invoke SendMessage,hPbrTrv,WM_VSCROLL,eax,0
-;			.endif
-;		.endif
-		xor		eax,eax
-		jmp		Ex
-	.endif
+;;			.endif
+;;		.endif
+;		xor		eax,eax
+;		jmp		Ex
+;	.endif
 	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
-  Ex:
+;  Ex:
 	ret
 
 ToolCldProc endp
@@ -1525,55 +1381,20 @@ GetToolStruct proc
 
 GetToolStruct endp
 
-EnableProjectBrowser proc fFlag:DWORD
-
-;	.if fFlag
-;		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,11,TRUE
-;		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,18,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,TRUE
-;		invoke ShowWindow,hFileTrv,SW_HIDE
-;		invoke ShowWindow,hPbrTrv,SW_SHOW
-;	.else
-;		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,11,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,11,FALSE
-;		invoke SendMessage,hPbrTbr,TB_CHECKBUTTON,13,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,13,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,12,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,18,TRUE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,14,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,15,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,1,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,16,FALSE
-;		invoke SendMessage,hPbrTbr,TB_HIDEBUTTON,17,FALSE
-;		invoke ShowWindow,hFileTrv,SW_SHOW
-;		invoke ShowWindow,hPbrTrv,SW_HIDE
-;	.endif
-	ret
-
-EnableProjectBrowser endp
-
 ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-;	LOCAL	pt:POINT
-;	LOCAL	rect:RECT
-;	LOCAL	tvi:TV_ITEMEX
-;	LOCAL	buffer[MAX_PATH]:BYTE
-;	LOCAL	buffer1[8]:BYTE
-;	LOCAL	tch:TC_HITTESTINFO
-;
-;	mov		eax,uMsg
-;	.if eax==WM_SETFOCUS
-;		mov     eax,hWin
-;		call    GetToolPtr
-;		mov     (TOOL ptr [edx]).dFocus,TRUE
-;		invoke ToolMsg,hWin,TLM_CAPTION,0
+	LOCAL	pt:POINT
+	LOCAL	rect:RECT
+	LOCAL	tvi:TV_ITEMEX
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[8]:BYTE
+	LOCAL	tch:TC_HITTESTINFO
+
+	mov		eax,uMsg
+	.if eax==WM_SETFOCUS
+		mov     eax,hWin
+		call    GetToolPtr
+		mov     [edx].TOOL.dFocus,TRUE
+		invoke ToolMsg,hWin,TLM_CAPTION,0
 ;	.elseif eax==WM_DRAWITEM
 ;		push	esi
 ;		mov		esi,lParam
@@ -2030,15 +1851,16 @@ ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 ;			.endif
 ;			jmp		Ex
 ;		.endif
-;	.elseif eax==WM_LBUTTONDOWN
-;		invoke SetFocus,hWin
-;		invoke SendMessage,hWnd,WM_TOOLCLICK,hWin,lParam
-;	.elseif eax==WM_RBUTTONDOWN
-;		invoke SetFocus,hWin
-;		invoke SendMessage,hWnd,WM_TOOLRCLICK,hWin,lParam
-;		xor		eax,eax
-;		ret
-;	.elseif eax==WM_LBUTTONDBLCLK
+	.elseif eax==WM_LBUTTONDOWN
+		invoke SetFocus,hWin
+		invoke SendMessage,hWnd,WM_TOOLCLICK,hWin,lParam
+	.elseif eax==WM_RBUTTONDOWN
+		invoke SetFocus,hWin
+		invoke SendMessage,hWnd,WM_TOOLRCLICK,hWin,lParam
+		xor		eax,eax
+		ret
+	.elseif eax==WM_LBUTTONDBLCLK
+		invoke SendMessage,hWnd,WM_TOOLDBLCLICK,hWin,lParam
 ;		mov		eax, hWin
 ;		.if eax==hTab
 ;			mov		tabinx,-1
@@ -2065,15 +1887,11 @@ ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 ;		.endif	
 ;		xor		eax,eax
 ;		ret
-;	.elseif eax==WM_KILLFOCUS
-;		mov     eax, hWin
-;		call    GetToolPtr
-;		mov     (TOOL ptr [edx]).dFocus,FALSE
-;		invoke ToolMsg,hWin,TLM_CAPTION,0
-;	.elseif eax==WM_LBUTTONDBLCLK
-;		invoke SendMessage,hWnd,WM_TOOLDBLCLICK,hWin,lParam
-;		xor		eax,eax
-;		ret
+	.elseif eax==WM_KILLFOCUS
+		mov     eax, hWin
+		call    GetToolPtr
+		mov     [edx].TOOL.dFocus,FALSE
+		invoke ToolMsg,hWin,TLM_CAPTION,0
 ;	.elseif eax==WM_SIZE
 ;		invoke SendMessage,hWnd,WM_TOOLSIZE,hWin,lParam
 ;	.elseif eax==WM_MOUSEWHEEL
@@ -2094,13 +1912,13 @@ ToolCldWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 ;			mov		eax,hBrPrp
 ;			ret
 ;		.endif
-;	.endif
+	.endif
 	mov     eax,hWin
 	call    GetToolPtr
-	mov     eax,(TOOL ptr [edx]).lpfnOldCldWndProc
+	mov     eax,[edx].TOOL.lpfnOldCldWndProc
 	invoke CallWindowProc,eax,hWin,uMsg,wParam,lParam
   Ex:
 	ret
 
 ToolCldWndProc endp
-;
+

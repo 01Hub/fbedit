@@ -22,6 +22,8 @@ DlgProc			PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 
 IDD_DIALOG1						equ 101
 IDC_TOOL						equ 1001
+IDC_CLIENT						equ 1003
+IDC_SBR1						equ 1004
 
 .const
 
@@ -33,7 +35,10 @@ szRATools			db 'RATools.dll',0
 
 hInstance			HINSTANCE ?
 hLib				HMODULE ?
+hClient				HWND ?
 hTool				HWND ?
 hTL1				HWND ?
+hTL2				HWND ?
+hTL3				HWND ?
 
 ;#########################################################################
