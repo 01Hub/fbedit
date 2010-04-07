@@ -18,7 +18,7 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	.if fGlobal
 		mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS or CS_DBLCLKS
 	.endif
-	mov		wc.lpfnWndProc,offset ControlProc
+	mov		wc.lpfnWndProc,offset ToolsControlProc
 	mov		eax,hInst
 	mov		hInstance,eax
 	mov		wc.hInstance,eax
@@ -85,7 +85,7 @@ UnInstallRATools endp
 
 ;--------------------------------------------------------------------------------
 
-ControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ToolsControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hTL:HWND
 
 	mov		eax,uMsg
@@ -140,7 +140,7 @@ ControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
   Ex:
 	ret
 
-ControlProc endp
+ToolsControlProc endp
 
 
 IFDEF DLL
