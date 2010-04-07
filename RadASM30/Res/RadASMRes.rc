@@ -1,6 +1,0 @@
-#define IDI_MDIICO						100
-#define IDC_SPLICURV					150
-#define IDC_SPLICURH					151
-IDI_MDIICO				ICON      DISCARDABLE "Res/RadAsm.ico"
-IDC_SPLICURV			CURSOR    DISCARDABLE "Res/SplitV.cur"
-IDC_SPLICURH			CURSOR    DISCARDABLE "Res/SplitH.cur"
