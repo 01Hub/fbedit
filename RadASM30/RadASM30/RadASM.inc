@@ -43,13 +43,13 @@
 	includelib masm32.lib
 	includelib Debug.lib
 
-	includelib Lib\RACodeComplete.lib
-	includelib Lib\RAFile.lib
-	includelib Lib\RAHexEd.lib
-	includelib Lib\RAProject.lib
-	includelib Lib\RAProperty.lib
-	includelib Lib\RAResEd.lib
-	includelib Lib\RATools.lib
+	includelib ..\Lib\RACodeComplete.lib
+	includelib ..\Lib\RAFile.lib
+	includelib ..\Lib\RAHexEd.lib
+	includelib ..\Lib\RAProject.lib
+	includelib ..\Lib\RAProperty.lib
+	includelib ..\Lib\RAResEd.lib
+	includelib ..\Lib\RATools.lib
 
 .const
 
