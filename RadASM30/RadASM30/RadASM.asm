@@ -5,6 +5,7 @@ option casemap :none  ; case sensitive
 include RadASM.inc
 include Misc.asm
 include IniFile.asm
+include Tools.asm
 
 .code
 
@@ -54,6 +55,8 @@ MakeMdiCldWin endp
 
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
+	LOCAL	rect:RECT
+	LOCAL	ps:PAINTSTRUCT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -71,6 +74,7 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,0
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
+		invoke CreateTools
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
@@ -167,6 +171,27 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;		invoke ImageList_Destroy,hBoxIml
 		invoke PostQuitMessage,NULL
 		jmp		ExDef
+	.elseif eax==WM_MOUSEMOVE
+		invoke SendMessage,ha.hTool,TLM_MOUSEMOVE,0,lParam
+	.elseif eax==WM_LBUTTONDOWN
+		invoke SendMessage,ha.hTool,TLM_LBUTTONDOWN,0,lParam
+	.elseif eax==WM_LBUTTONUP
+		invoke SendMessage,ha.hTool,TLM_LBUTTONUP,0,lParam
+	.elseif eax==WM_PAINT
+		invoke BeginPaint,hWin,addr ps
+		invoke SendMessage,ha.hTool,TLM_PAINT,0,0
+		invoke EndPaint,hWin,addr ps
+	.elseif eax==WM_SIZE
+;		invoke GetDlgItem,hWin,IDC_SBR1
+;		push	eax
+;		invoke MoveWindow,eax,0,0,0,0,FALSE
+;		pop		edx
+;		invoke GetClientRect,edx,addr rect
+;		push	rect.bottom
+		invoke GetClientRect,hWin,addr rect
+;		pop		eax
+;		sub		rect.bottom,eax
+		invoke SendMessage,ha.hTool,TLM_SIZE,0,addr rect
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam

@@ -26,6 +26,7 @@ ADDINHANDLES struct
 	hCursor			HCURSOR ?
 	hSplitCurV		HCURSOR ?
 	hSplitCurH		HCURSOR ?
+	hTool			HWND ?
 ADDINHANDLES ends
 
 WIN struct

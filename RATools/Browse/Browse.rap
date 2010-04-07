@@ -106,7 +106,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=147319607
+PTimer=148161060
 [GroupExpand]
 GroupExpand=1,1,0
 [BookMark]
@@ -135,7 +135,7 @@ GroupExpand=1,1,0
 [Size]
 5=0,0,795,458,473
 2=0,0,0,0,735
-1=0,0,0,0,1885
+1=0,0,0,0,2152
 4=0,0,0,0
 6=
 3=0,0,0,0,0
