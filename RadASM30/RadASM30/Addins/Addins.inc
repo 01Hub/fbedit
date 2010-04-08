@@ -64,6 +64,7 @@ ADDINHANDLES struct
 	hFileBrowser	HWND ?
 	hProjectBrowser	HWND ?
 	hToolProperties	HWND ?
+	hProperties		HWND ?
 	hToolOutput		HWND ?
 	hToolTab		HWND ?
 	hStatus			HWND ?

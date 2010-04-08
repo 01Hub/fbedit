@@ -255,6 +255,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,ha.hFileBrowser,2,22,[esi].RECT.right,[esi].RECT.bottom,TRUE
 			invoke MoveWindow,ha.hProjectBrowser,2,22,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.elseif eax==ha.hToolProperties
+			invoke MoveWindow,ha.hProperties,0,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.endif
 	.else
   ExDef:
