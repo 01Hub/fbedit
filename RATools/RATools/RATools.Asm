@@ -69,8 +69,6 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		hSplitCurV,eax
 	invoke LoadCursor,hInst,IDC_SPLICURH
 	mov		hSplitCurH,eax
-	invoke CreateWindowEx,WS_EX_TOPMOST,addr szStatic,0,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,NULL,0,hInstance,0
-	mov		hSize,eax
 	mov		fRightCaption,TRUE
 	ret
 
@@ -78,7 +76,6 @@ InstallRATools endp
 
 UnInstallRATools proc public
 
-	invoke DestroyWindow,hSize
 	ret
 
 UnInstallRATools endp
@@ -90,12 +87,17 @@ ToolsControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
+	.elseif eax==WM_DESTROY
+		invoke DestroyWindow,hSize
+		jmp		ExDef
 	.elseif eax==TLM_INIT
 		mov		eax,wParam
 		mov		hClient,eax
 		mov		eax,lParam
 		mov		hWnd,eax
 		invoke ToolMessage,0,TLM_INIT,0
+		invoke CreateWindowEx,WS_EX_TOPMOST,addr szStatic,0,WS_POPUP or WS_BORDER or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
+		mov		hSize,eax
 		xor		eax,eax
 	.elseif eax==TLM_CREATE
 		invoke CreateWindowEx,0,addr szToolCldClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWnd,0,hInstance,0
@@ -134,8 +136,8 @@ ToolsControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==TLM_GETDOCKED
 		invoke ToolMsg,lParam,TLM_GETDOCKED,0
 	.else
+  ExDef:
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
-		ret
 	.endif
   Ex:
 	ret

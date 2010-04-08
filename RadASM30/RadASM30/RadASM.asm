@@ -53,7 +53,7 @@ MakeMdiCldWin proc lpClass:DWORD,ID:DWORD
 
 MakeMdiCldWin endp
 
-WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
 	LOCAL	rect:RECT
 	LOCAL	ps:PAINTSTRUCT
@@ -62,10 +62,24 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		ha.hWnd,eax
+		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,4096,2,hWin,NULL,ha.hInstance,addr cc
+		mov		ha.hDiv1,eax
+		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,30,4096,2,hWin,NULL,ha.hInstance,addr cc
+		mov		ha.hDiv2,eax
+		;Create fonts
+		invoke DoFonts
+		;Create image lists
+		invoke DoImageList
+		;ToolBars
+		invoke DoToolBar
+		;ReBar
+		invoke DoReBar
+		;Statusbar
+		invoke DoStatus
 		;Mdi Client
 		mov		cc.hWindowMenu,1
 		mov		cc.idFirstChild,ID_FIRSTCHILD
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr mdiCl,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,addr cc
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szMdiClientClassName,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,addr cc
 		mov     ha.hClient,eax
 		;Menu
 		invoke LoadMenu,ha.hInstance,IDR_MENU
@@ -75,13 +89,14 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
 		invoke CreateTools
+		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szAppPath
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_NEW
-				invoke MakeMdiCldWin,addr EditCldClassName,ID_EDIT
+				invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDIT
 				;invoke SetWindowText,hMdiCld,addr NewFile
 				;invoke TabToolAdd,hMdiCld,offset NewFile-1
 			.elseif eax==IDM_FILE_EXIT
@@ -182,16 +197,65 @@ WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTool,TLM_PAINT,0,0
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_SIZE
-;		invoke GetDlgItem,hWin,IDC_SBR1
-;		push	eax
-;		invoke MoveWindow,eax,0,0,0,0,FALSE
-;		pop		edx
-;		invoke GetClientRect,edx,addr rect
-;		push	rect.bottom
+		;Size rebar
+		.if lParam
+			invoke GetClientRect,hWin,addr rect
+			invoke MoveWindow,ha.hReBar,0,2,rect.right,rect.bottom,TRUE
+;			invoke UpdateWindow,ha.hReBar
+;			invoke UpdateWindow,ha.hTbrFile
+		.endif
+		invoke GetWindowRect,ha.hReBar,addr rect
+		mov		esi,rect.bottom
+		sub		esi,rect.top
+		add		esi,2
+		invoke MoveWindow,ha.hDiv2,0,esi,4096,2,TRUE
+		add		esi,2
+		;Size StatusBar
+		xor		ebx,ebx
+		.if da.win.fSbr
+			invoke MoveWindow,ha.hStatus,0,0,0,0,FALSE
+;			invoke UpdateWindow,ha.hStatus
+			invoke GetWindowRect,ha.hStatus,addr rect
+			mov		ebx,rect.bottom
+			sub		ebx,rect.top
+		.endif
+		;Size tool windows
 		invoke GetClientRect,hWin,addr rect
-;		pop		eax
-;		sub		rect.bottom,eax
+		add		rect.top,esi
+		sub		rect.bottom,ebx
 		invoke SendMessage,ha.hTool,TLM_SIZE,0,addr rect
+		invoke InvalidateRect,ha.hProjectBrowser,NULL,TRUE
+		invoke InvalidateRect,ha.hFileBrowser,NULL,TRUE
+;		invoke UpdateWindow,ha.hClient
+;		invoke UpdateWindow,hWin
+	.elseif eax==WM_NOTIFY
+		mov		esi,lParam
+		.if [esi].NMHDR.code==RBN_HEIGHTCHANGE
+			invoke SendMessage,hWin,WM_SIZE,0,0
+		.elseif [esi].NMHDR.code==TCN_SELCHANGE
+			mov		eax,[esi].NMHDR.hwndFrom
+			.if eax==ha.hTabProject
+				invoke SendMessage,ha.hTabProject,TCM_GETCURSEL,0,0
+				.if eax
+					invoke ShowWindow,ha.hProjectBrowser,SW_SHOWNA
+					invoke ShowWindow,ha.hFileBrowser,SW_HIDE
+				.else
+					invoke ShowWindow,ha.hFileBrowser,SW_SHOWNA
+					invoke ShowWindow,ha.hProjectBrowser,SW_HIDE
+				.endif
+			.endif
+		.endif
+	.elseif eax==WM_TOOLSIZE
+		mov		eax,wParam
+		mov		esi,lParam
+		.if eax==ha.hToolProject
+			invoke MoveWindow,ha.hTabProject,0,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			sub		[esi].RECT.bottom,24
+			sub		[esi].RECT.right,4
+			invoke MoveWindow,ha.hFileBrowser,2,22,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			invoke MoveWindow,ha.hProjectBrowser,2,22,[esi].RECT.right,[esi].RECT.bottom,TRUE
+		.elseif eax==ha.hToolProperties
+		.endif
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
@@ -254,9 +318,9 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	mov		wc.cbWndExtra,NULL
 	mov		eax,hInst
 	mov		wc.hInstance,eax
-	mov		wc.hbrBackground,NULL
+	mov		wc.hbrBackground,NULL;COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,NULL
-	mov		wc.lpszClassName,offset MdiClassName
+	mov		wc.lpszClassName,offset szMdiClassName
 	mov		eax,ha.hIcon
 	mov		wc.hIcon,eax
 	mov		wc.hIconSm,eax
@@ -290,7 +354,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	mov		wc.hInstance,eax
 	mov		wc.hbrBackground,COLOR_BTNFACE+1;NULL
 	mov		wc.lpszMenuName,NULL
-	mov		wc.lpszClassName,offset EditCldClassName
+	mov		wc.lpszClassName,offset szEditCldClassName
 	mov		eax,ha.hIcon
 	mov		wc.hIcon,eax
 	mov		wc.hIconSm,eax
@@ -445,7 +509,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.if da.win.ftopmost
 		or		edx,WS_EX_TOPMOST
 	.endif
-	invoke CreateWindowEx,edx,addr MdiClassName,addr DisplayName,eax,da.win.x,da.win.y,da.win.wt,da.win.ht,NULL,NULL,hInst,NULL
+	invoke CreateWindowEx,edx,addr szMdiClassName,addr DisplayName,eax,da.win.x,da.win.y,da.win.wt,da.win.ht,NULL,NULL,hInst,NULL
 	mov     ha.hWnd,eax
 	mov     eax,SW_SHOWNORMAL
 	.if da.win.fmax

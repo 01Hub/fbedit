@@ -1,6 +1,10 @@
 #define IDI_MDIICO						100
 #define IDC_SPLICURV					150
 #define IDC_SPLICURH					151
+#define IDB_TBRBMP						152
 IDI_MDIICO				ICON      DISCARDABLE "Res/RadAsm.ico"
 IDC_SPLICURV			CURSOR    DISCARDABLE "Res/SplitV.cur"
 IDC_SPLICURH			CURSOR    DISCARDABLE "Res/SplitH.cur"
+IDB_TBRBMP				BITMAP    DISCARDABLE "Res/Toolbar.bmp"
+300						BITMAP    DISCARDABLE "Res/FileDir.bmp"
+310						BITMAP    DISCARDABLE "Res/Project.bmp"
