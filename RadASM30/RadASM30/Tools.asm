@@ -6,8 +6,12 @@ szProject			BYTE 'Project',0
 szFile				BYTE 'File',0
 szProperties		BYTE 'Properties',0
 szOutput			BYTE 'Output',0
+szImmediate			BYTE 'Immediate',0
 
 szTahoma			BYTE 'Tahoma',0
+szCourierNew		BYTE 'Courier New',0
+szTerminal			BYTE 'Terminal',0
+
 
 tbrbtnsfile			TBBUTTON <20,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
@@ -39,7 +43,7 @@ tbrbtnsedit2		TBBUTTON <16,IDM_EDIT_TOGGLEBM,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 
 tbrbtnsview			TBBUTTON <21,IDM_VIEW_OUTPUT,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
-					TBBUTTON <26,IDM_VIEW_DIALOG,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+					TBBUTTON <26,IDM_VIEW_PROJECT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <13,IDM_MAKE_BUILD,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -50,30 +54,41 @@ tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 .data?
 
 OldStatusProc		DWORD ?
-lfnttool			LOGFONT <?>
 
 .code
 
 CreateTools proc
 	LOCAL	dck:DOCKING
 	LOCAL	tci:TC_ITEM
+	LOCAL	buffer[256]:BYTE
 
 	invoke CreateWindowEx,0,addr szToolClassName,NULL,WS_CHILD,0,0,0,0,ha.hWnd,0,ha.hInstance,0
 	mov		ha.hTool,eax
 	invoke SendMessage,ha.hTool,TLM_INIT,ha.hClient,ha.hWnd
 	;Project tool
+	invoke GetPrivateProfileString,addr szIniTool,addr szIniProject,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,1
 	mov		dck.Caption,offset szProject
-	mov		dck.Visible,TRUE
-	mov		dck.Docked,TRUE
-	mov		dck.Position,TL_RIGHT
-	mov		dck.IsChild,FALSE
-	mov		dck.dWidth,150
-	mov		dck.dHeight,200
-	mov		dck.fr.left,0
-	mov		dck.fr.top,0
-	mov		dck.fr.right,200
-	mov		dck.fr.bottom,300
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Visible,eax
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Docked,eax
+	invoke GetItemInt,addr buffer,TL_RIGHT
+	mov		dck.Position,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.IsChild,eax
+	invoke GetItemInt,addr buffer,180
+	mov		dck.dWidth,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.dHeight,eax
+	invoke GetItemInt,addr buffer,10
+	mov		dck.fr.left,eax
+	invoke GetItemInt,addr buffer,10
+	mov		dck.fr.top,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.fr.right,eax
+	invoke GetItemInt,addr buffer,300
+	mov		dck.fr.bottom,eax
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolProject,eax
 	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER,0,0,0,0,ha.hToolProject,0,ha.hInstance,0
@@ -90,56 +105,144 @@ CreateTools proc
 	invoke CreateWindowEx,0,addr szPBClassName,NULL,WS_CHILD or RPBS_FLATTOOLBAR or RPBS_NOPATH,0,0,0,0,ha.hToolProject,0,ha.hInstance,0
 	mov		ha.hProjectBrowser,eax
 	;Properties tool
+	invoke GetPrivateProfileString,addr szIniTool,addr szIniProperty,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,2
 	mov		dck.Caption,offset szProperties
-	mov		dck.Visible,TRUE
-	mov		dck.Docked,TRUE
-	mov		dck.Position,TL_RIGHT
-	mov		dck.IsChild,1
-	mov		dck.dWidth,150
-	mov		dck.dHeight,250
-	mov		dck.fr.left,0
-	mov		dck.fr.top,0
-	mov		dck.fr.right,200
-	mov		dck.fr.bottom,300
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Visible,eax
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Docked,eax
+	invoke GetItemInt,addr buffer,TL_RIGHT
+	mov		dck.Position,eax
+	invoke GetItemInt,addr buffer,1
+	mov		dck.IsChild,eax
+	invoke GetItemInt,addr buffer,150
+	mov		dck.dWidth,eax
+	invoke GetItemInt,addr buffer,250
+	mov		dck.dHeight,eax
+	invoke GetItemInt,addr buffer,20
+	mov		dck.fr.left,eax
+	invoke GetItemInt,addr buffer,20
+	mov		dck.fr.top,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.fr.right,eax
+	invoke GetItemInt,addr buffer,300
+	mov		dck.fr.bottom,eax
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolProperties,eax
 	invoke CreateWindowEx,0,addr szPropertyClassName,NULL,WS_CHILD or WS_VISIBLE or PRSTYLE_FLATTOOLBAR or PRSTYLE_PROJECT,0,0,0,0,ha.hToolProperties,0,ha.hInstance,0
 	mov		ha.hProperties,eax
 	invoke SendMessage,ha.hProperties,WM_SETFONT,ha.hToolFont,FALSE
 	;Output tool
+	invoke GetPrivateProfileString,addr szIniTool,addr szIniOutput,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,3
 	mov		dck.Caption,offset szOutput
-	mov		dck.Visible,TRUE
-	mov		dck.Docked,TRUE
-	mov		dck.Position,TL_BOTTOM
-	mov		dck.IsChild,0
-	mov		dck.dWidth,150
-	mov		dck.dHeight,100
-	mov		dck.fr.left,0
-	mov		dck.fr.top,0
-	mov		dck.fr.right,200
-	mov		dck.fr.bottom,300
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Visible,eax
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Docked,eax
+	invoke GetItemInt,addr buffer,TL_BOTTOM
+	mov		dck.Position,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.IsChild,eax
+	invoke GetItemInt,addr buffer,150
+	mov		dck.dWidth,eax
+	invoke GetItemInt,addr buffer,110
+	mov		dck.dHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.left,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.top,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.fr.right,eax
+	invoke GetItemInt,addr buffer,300
+	mov		dck.fr.bottom,eax
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolOutput,eax
+	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_VERTICAL,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
+	mov		ha.hTabOutput,eax
+	invoke SendMessage,ha.hTabOutput,WM_SETFONT,ha.hToolFont,FALSE
+	mov		tci.imask,TCIF_TEXT
+	mov		tci.pszText,offset szOutput
+	invoke SendMessage,ha.hTabOutput,TCM_INSERTITEM,999,addr tci
+	invoke SendMessage,ha.hTabOutput,TCM_SETCURSEL,eax,0
+	mov		tci.pszText,offset szImmediate
+	invoke SendMessage,ha.hTabOutput,TCM_INSERTITEM,999,addr tci
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
+	mov		ha.hOutput,eax
+	invoke SendMessage,ha.hOutput,REM_SETFONT,0,addr ha.racf
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
+	mov		ha.hImmediate,eax
+	invoke SendMessage,ha.hImmediate,REM_SETFONT,0,addr ha.racf
 	;Tab tool
+	invoke GetPrivateProfileString,addr szIniTool,addr szIniTab,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,4
 	mov		dck.Caption,offset szNULL
-	mov		dck.Visible,TRUE
-	mov		dck.Docked,TRUE
-	mov		dck.Position,TL_TOP
-	mov		dck.IsChild,0
-	mov		dck.dWidth,150
-	mov		dck.dHeight,30
-	mov		dck.fr.left,0
-	mov		dck.fr.top,0
-	mov		dck.fr.right,200
-	mov		dck.fr.bottom,30
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Visible,eax
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Docked,eax
+	invoke GetItemInt,addr buffer,TL_TOP
+	mov		dck.Position,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.IsChild,eax
+	invoke GetItemInt,addr buffer,150
+	mov		dck.dWidth,eax
+	invoke GetItemInt,addr buffer,30
+	mov		dck.dHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.left,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.top,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.fr.right,eax
+	invoke GetItemInt,addr buffer,30
+	mov		dck.fr.bottom,eax
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolTab,eax
+	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_FOCUSNEVER,0,0,0,0,ha.hToolTab,0,ha.hInstance,0
+	mov		ha.hTab,eax
 	ret
 
 CreateTools endp
+
+SaveTools proc uses esi edi
+	LOCAL	buffer[256]:BYTE
+
+	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProject
+	mov		esi,eax
+	mov		edi,offset szIniProject
+	call	SaveIt
+	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProperties
+	mov		esi,eax
+	mov		edi,offset szIniProperty
+	call	SaveIt
+	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
+	mov		esi,eax
+	mov		edi,offset szIniOutput
+	call	SaveIt
+	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolTab
+	mov		esi,eax
+	mov		edi,offset szIniTab
+	call	SaveIt
+	ret
+
+SaveIt:
+	mov		buffer,0
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.Visible
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.Docked
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.Position
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.IsChild
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.dWidth
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.dHeight
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.fr.left
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.fr.top
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.fr.right
+	invoke PutItemInt,addr buffer,[esi].TOOL.dck.fr.bottom
+	invoke WritePrivateProfileString,addr szIniTool,edi,addr buffer[1],addr da.szRadASMIni
+	retn
+
+SaveTools endp
 
 MakeToolBar proc uses ebx,lpBtn:DWORD,nBtn:DWORD
 
@@ -176,68 +279,187 @@ DoToolBar proc
 
 DoToolBar endp
 
-DoReBar proc
+DoReBar proc uses ebx esi edi
 	LOCAL	rbbi:REBARBANDINFO
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nIns:DWORD
 
-	invoke RtlZeroMemory,addr rbbi,sizeof REBARBANDINFO
-	invoke CreateWindowEx,0,addr szReBarClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
+	mov		edx,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
+	test	da.win.fView,VIEW_TOOLBAR
+	.if !ZERO?
+		mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
+	.endif
+	invoke CreateWindowEx,0,addr szReBarClassName,NULL,edx,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
 	mov		ha.hReBar,eax
-	mov		rbbi.cbSize,sizeof REBARBANDINFO
-	mov		rbbi.fMask,RBBIM_STYLE or RBBIM_CHILD or RBBIM_SIZE or RBBIM_CHILDSIZE
-	mov		rbbi.fStyle,RBBS_GRIPPERALWAYS or RBBS_CHILDEDGE
-	;File toolbar
-	mov		rbbi.lx,123
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,123
-	mov		eax,ha.hTbrFile
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,0,addr rbbi
-	;Edit1 toolbar
-	mov		rbbi.lx,199
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,199
-	mov		eax,ha.hTbrEdit1
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,1,addr rbbi
-	;Edit2 toolbar
-	mov		rbbi.lx,193
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,193
-	mov		eax,ha.hTbrEdit2
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,2,addr rbbi
-	;View toolbar
-	mov		rbbi.lx,47
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,47
-	mov		eax,ha.hTbrView
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,3,addr rbbi
-	;Make toolbar
-	mov		rbbi.lx,101
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,101
-	mov		eax,ha.hTbrMake
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,4,addr rbbi
-	;Build combobox
-	mov		rbbi.lx,1024
-	mov		rbbi.cyMinChild,22
-	mov		rbbi.cxMinChild,123
-	invoke CreateWindowEx,0,addr szComboBoxClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
-	mov		ha.hCboBuild,eax
-	mov		rbbi.hwndChild,eax
-	invoke SendMessage,ha.hCboBuild,WM_SETFONT,ha.hToolFont,FALSE
-	invoke SendMessage,ha.hReBar,RB_INSERTBAND,5,addr rbbi
-;	mov		rbbi.lx,1024
-;	mov		rbbi.cyMinChild,22
-;	mov		rbbi.cxMinChild,0
-;	invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
-;	mov		rbbi.hwndChild,eax
-;	invoke SendMessage,ha.hReBar,RB_INSERTBAND,2,addr rbbi
+	invoke GetPrivateProfileString,addr szIniWin,addr szIniReBar,addr szDefReBar,addr buffer,sizeof buffer,addr da.szRadASMIni
+	mov		nIns,0
+	.while buffer
+		invoke RtlZeroMemory,addr rbbi,sizeof REBARBANDINFO
+		mov		rbbi.cbSize,sizeof REBARBANDINFO
+		mov		rbbi.fMask,RBBIM_STYLE or RBBIM_CHILD or RBBIM_SIZE or RBBIM_CHILDSIZE or RBBIM_ID
+		;ID
+		invoke GetItemInt,addr buffer,0
+		mov		ebx,eax
+		;Style
+		invoke GetItemInt,addr buffer,0
+		mov		esi,eax
+		;lx
+		invoke GetItemInt,addr buffer,0
+		mov		edi,eax
+		.if ebx==1
+			;File toolbar
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cyMinChild,22
+			mov		rbbi.cxMinChild,123
+			mov		rbbi.cxIdeal,123
+			mov		eax,ha.hTbrFile
+			mov		rbbi.hwndChild,eax
+			mov		rbbi.wID,1
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.elseif ebx==2
+			;Edit1 toolbar
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cyMinChild,22
+			mov		rbbi.cxMinChild,199
+			mov		rbbi.cxIdeal,199
+			mov		eax,ha.hTbrEdit1
+			mov		rbbi.hwndChild,eax
+			mov		rbbi.wID,2
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.elseif ebx==3
+			;Edit2 toolbar
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cxMinChild,193
+			mov		rbbi.cxIdeal,193
+			mov		eax,ha.hTbrEdit2
+			mov		rbbi.hwndChild,eax
+			mov		rbbi.wID,3
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.elseif ebx==4
+			;View toolbar
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cyMinChild,22
+			mov		rbbi.cxMinChild,47
+			mov		rbbi.cxIdeal,47
+			mov		eax,ha.hTbrView
+			mov		rbbi.hwndChild,eax
+			mov		rbbi.wID,4
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.elseif ebx==5
+			;Make toolbar
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cyMinChild,22
+			mov		rbbi.cxMinChild,101
+			mov		rbbi.cxIdeal,101
+			mov		eax,ha.hTbrMake
+			mov		rbbi.hwndChild,eax
+			mov		rbbi.wID,5
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.elseif ebx==6
+			;Build combobox
+			mov		eax,esi
+			and		eax,-1 xor RBBS_HIDDEN
+			mov		rbbi.fStyle,eax
+			mov		rbbi.lx,edi
+			mov		rbbi.cyMinChild,22
+			mov		rbbi.cxMinChild,123
+			mov		rbbi.cxIdeal,123
+			invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
+			mov		ha.hStcBuild,eax
+			mov		rbbi.hwndChild,eax
+			invoke CreateWindowEx,0,addr szComboBoxClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,123,150,ha.hStcBuild,NULL,ha.hInstance,NULL
+			mov		ha.hCboBuild,eax
+			invoke SendMessage,ha.hCboBuild,WM_SETFONT,ha.hToolFont,FALSE
+			mov		rbbi.wID,6
+			invoke SendMessage,ha.hReBar,RB_INSERTBAND,nIns,addr rbbi
+			mov		rbbi.fMask,RBBIM_STYLE
+			mov		rbbi.fStyle,esi
+			invoke SendMessage,ha.hReBar,RB_SETBANDINFO,nIns,addr rbbi
+		.endif
+		inc		nIns
+	.endw
 	ret
 
 DoReBar endp
+
+SaveReBar proc uses ebx
+	LOCAL	rbbi:REBARBANDINFO
+	LOCAL	buffer[256]:BYTE
+
+	mov		buffer,0
+	mov		ebx,0
+	.while ebx<6
+		call	SaveIt
+		inc		ebx
+	.endw
+	invoke WritePrivateProfileString,addr szIniWin,addr szIniReBar,addr buffer[1],addr da.szRadASMIni
+	ret
+
+SaveIt:
+	invoke RtlZeroMemory,addr rbbi,sizeof REBARBANDINFO
+	mov		rbbi.cbSize,sizeof REBARBANDINFO
+	mov		rbbi.fMask,RBBIM_STYLE or RBBIM_SIZE or RBBIM_ID
+	invoke SendMessage,ha.hReBar,RB_GETBANDINFO,ebx,addr rbbi
+	.if eax
+		invoke PutItemInt,addr buffer,rbbi.wID
+		invoke PutItemInt,addr buffer,rbbi.fStyle
+		invoke PutItemInt,addr buffer,rbbi.lx
+	.endif
+	retn
+
+SaveReBar endp
+
+HideToolBar proc uses ebx,ID:DWORD
+	LOCAL	rbbi:REBARBANDINFO
+
+	mov		ebx,0
+	.while ebx<6
+		mov		rbbi.cbSize,sizeof REBARBANDINFO
+		mov		rbbi.fMask,RBBIM_STYLE or RBBIM_ID
+		invoke SendMessage,ha.hReBar,RB_GETBANDINFO,ebx,addr rbbi
+		.if eax
+			mov		eax,ID
+			.if eax==rbbi.wID
+				xor		rbbi.fStyle,RBBS_HIDDEN
+				invoke SendMessage,ha.hReBar,RB_SETBANDINFO,ebx,addr rbbi
+				.break
+			.endif
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+HideToolBar endp
 
 StatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
@@ -257,7 +479,8 @@ StatusProc endp
 DoStatus proc
 	LOCAL	sbParts[4]:DWORD
 
-	.if da.win.fSbr
+	test	da.win.fView,VIEW_STATUSBAR
+	.if !ZERO?
 		mov		eax,WS_CHILD or WS_VISIBLE or SBS_SIZEGRIP or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 	.else
 		mov		eax,WS_CHILD or SBS_SIZEGRIP or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
@@ -358,11 +581,39 @@ DoImageList proc
 DoImageList endp
 
 DoFonts proc
+	LOCAL	buffer[256]:BYTE
+	LOCAL	lfnt:LOGFONT
 
-	invoke strcpy,addr lfnttool.lfFaceName,addr szTahoma
-	mov 	lfnttool.lfHeight,-10
-	invoke CreateFontIndirect,addr lfnttool
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniTool,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szTahoma,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-10
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
 	mov     ha.hToolFont,eax
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniCode,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-10
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.racf.hFont,eax
+	mov		lfnt.lfItalic,TRUE
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.racf.hIFont,eax
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-7
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.racf.hLnrFont,eax
 	ret
 
 DoFonts endp

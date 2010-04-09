@@ -1,14 +1,11 @@
-ID_EDIT							equ	65501
-ID_DIALOG						equ	65502
-ID_EDITTXT						equ	65503
-ID_EDITHEX						equ	65504
+ID_EDITCODE						equ	65501
+ID_EDITTXT						equ	65502
+ID_EDITHEX						equ	65503
+ID_EDITRES						equ 65004
+ID_EDITUSER						equ 65005
+
 ID_FIRSTCHILD					equ 65001
 ID_LASTCHILD					equ 65499
-
-IDI_MDIICO						equ 100
-IDC_SPLICURV					equ 150
-IDC_SPLICURH					equ 151
-IDB_TBRBMP						equ 152
 
 ;RadASM.mnu
 IDR_MENU						equ 10000
@@ -39,15 +36,28 @@ IDM_EDIT_NEXTBM					equ 10025
 IDM_EDIT_PREVBM					equ 10026
 IDM_EDIT_CLEARBM				equ 10027
 IDM_VIEW						equ 10032
+IDM_VIEW_TOOLBAR				equ 10046
+IDM_VIEW_TBFILE					equ 10049
+IDM_VIEW_TBEDIT					equ 10050
+IDM_VIEW_TBBOOKMARK				equ 10053
+IDM_VIEW_TBVIEW					equ 10051
+IDM_VIEW_TBMAKE					equ 10052
 IDM_VIEW_STATUSBAR				equ 10033
+IDM_VIEW_PROJECT				equ 10047
+IDM_VIEW_PROPERTIES				equ 10048
 IDM_VIEW_OUTPUT					equ 10034
-IDM_VIEW_DIALOG					equ 10035
+IDM_VIEW_TAB					equ 10035
+IDM_FORMAT						equ 10041
+IDM_PROJECT						equ 10042
 IDM_MAKE						equ 10036
 IDM_MAKE_ASSEMBLE				equ 10037
 IDM_MAKE_BUILD					equ 10038
 IDM_MAKE_RUN					equ 10039
 IDM_MAKE_GO						equ 10040
+IDM_TOOLS						equ 10043
 IDM_WINDOW						equ 10005
+IDM_OPTION						equ 10044
+IDM_HELP						equ 10045
 
 ADDINHANDLES struct
 	hWnd			HWND ?
@@ -66,11 +76,19 @@ ADDINHANDLES struct
 	hToolProperties	HWND ?
 	hProperties		HWND ?
 	hToolOutput		HWND ?
+	hTabOutput		HWND ?
+	hOutput			HWND ?
+	hImmediate		HWND ?
 	hToolTab		HWND ?
+	hTab			HWND ?
 	hStatus			HWND ?
 	hReBar			HWND ?
+	hStcBuild		HWND ?
 	hCboBuild		HWND ?
 	hToolFont		HFONT ?
+	racf			RAFONT <>
+	ratf			RAFONT <>
+	rahf			HEFONT <>
 	hImlTbr			HIMAGELIST ?
 	hImlTbrGray		HIMAGELIST ?
 	hTbrFile		HWND ?
@@ -82,6 +100,9 @@ ADDINHANDLES struct
 	hDiv2			HWND ?
 ADDINHANDLES ends
 
+VIEW_TOOLBAR					equ 1
+VIEW_STATUSBAR					equ 2
+
 WIN struct
 	x			DWORD ?
 	y			DWORD ?
@@ -90,7 +111,7 @@ WIN struct
 	fmax		DWORD ?
 	ftopmost	DWORD ?
 	fcldmax		DWORD ?
-	fSbr		DWORD ?
+	fView		DWORD ?
 WIN ends
 
 ADDINDATA struct
@@ -98,4 +119,3 @@ ADDINDATA struct
 	szAppPath		BYTE MAX_PATH dup(?)
 	szRadASMIni		BYTE MAX_PATH dup(?)
 ADDINDATA ends
-

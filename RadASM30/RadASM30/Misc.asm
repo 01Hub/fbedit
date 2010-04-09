@@ -15,6 +15,27 @@ strcpy proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
 strcpy endp
 
+strcpyn proc uses esi edi,lpDest:DWORD,lpSource:DWORD,nLen:DWORD
+
+	mov		esi,lpSource
+	mov		edx,nLen
+	dec		edx
+	xor		ecx,ecx
+	mov		edi,lpDest
+  @@:
+	.if sdword ptr ecx<edx
+		mov		al,[esi+ecx]
+		mov		[edi+ecx],al
+		inc		ecx
+		or		al,al
+		jne		@b
+	.else
+		mov		byte ptr [edi+ecx],0
+	.endif
+	ret
+
+strcpyn endp
+
 strcat proc uses esi edi,lpDest:DWORD,lpSource:DWORD
 
 	xor		eax,eax
@@ -213,4 +234,34 @@ PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
 	ret
 
 PutItemInt endp
+
+GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]
+		mov		edi,esi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			inc		esi
+		.endw
+		inc		esi
+		mov		eax,esi
+		sub		eax,edi
+		invoke strcpyn,lpResult,edi,eax
+		invoke strcpy,edi,esi
+	.else
+		invoke strcpy,lpResult,lpDefVal
+	.endif
+	ret
+
+GetItemStr endp
+
+PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
+
+	mov		esi,lpBuff
+	invoke strlen,esi
+	mov		byte ptr [esi+eax],','
+	invoke strcpy,addr [esi+eax+1],lpStr
+	ret
+
+PutItemStr endp
 

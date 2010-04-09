@@ -18,8 +18,8 @@ GetWinPos proc
 	mov		da.win.ftopmost,eax
 	invoke GetItemInt,addr buffer,0
 	mov		da.win.fcldmax,eax
-	invoke GetItemInt,addr buffer,1
-	mov		da.win.fSbr,eax
+	invoke GetItemInt,addr buffer,VIEW_STATUSBAR
+	mov		da.win.fView,eax
 	ret
 
 GetWinPos endp
@@ -54,7 +54,7 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.win.fmax
 	invoke PutItemInt,addr buffer,da.win.ftopmost
 	invoke PutItemInt,addr buffer,da.win.fcldmax
-	invoke PutItemInt,addr buffer,da.win.fSbr
+	invoke PutItemInt,addr buffer,da.win.fView
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
 	ret
 

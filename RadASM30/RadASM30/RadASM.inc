@@ -25,7 +25,6 @@ includelib ole32.lib
 includelib advapi32.lib
 includelib wininet.lib
 
-include Addins\Addins.inc
 include Inc\RAEdit.inc
 include Inc\RAHexEd.inc
 include Inc\RAGrid.inc
@@ -35,6 +34,7 @@ include Inc\RAProject.inc
 include Inc\RAProperty.Inc
 include Inc\RAResEd.Inc
 include Inc\RATools.Inc
+include Addins\Addins.inc
 
 include masm32.inc
 include Debug.Inc
@@ -48,6 +48,11 @@ includelib ..\Lib\RAProject.lib
 includelib ..\Lib\RAProperty.lib
 includelib ..\Lib\RAResEd.lib
 includelib ..\Lib\RATools.lib
+
+IDI_MDIICO						equ 100
+IDC_SPLICURV					equ 150
+IDC_SPLICURH					equ 151
+IDB_TBRBMP						equ 152
 
 .const
 
@@ -65,10 +70,19 @@ szBS							db '\',0
 szNULL							db 0
 
 ;RadASM.ini
-szIniFile						db 'RadASM.ini',0
+szInifile						db 'RadASM.ini',0
 szIniWin						db 'Win',0
 szIniPos						db 'Pos',0
-
+szIniFont						db 'Font',0
+szIniTool						db 'Tool',0
+szIniCode						db 'Code',0
+szIniLine						db 'Line',0
+szIniProject					db 'Project',0
+szIniProperty					db 'Property',0
+szIniOutput						db 'Output',0
+szIniTab						db 'Tab',0
+szIniReBar						db 'Rebar',0
+szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 
 .data?
 
@@ -77,3 +91,4 @@ fNT								DWORD ?
 CommandLine						DWORD ?
 ha								ADDINHANDLES <>
 da								ADDINDATA <>
+mdiID							DWORD ?
