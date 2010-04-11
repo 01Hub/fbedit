@@ -285,10 +285,7 @@ DoReBar proc uses ebx esi edi
 	LOCAL	nIns:DWORD
 
 	mov		edx,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
-	test	da.win.fView,VIEW_TOOLBAR
-	.if !ZERO?
-		mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
-	.endif
+	mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
 	invoke CreateWindowEx,0,addr szReBarClassName,NULL,edx,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
 	mov		ha.hReBar,eax
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniReBar,addr szDefReBar,addr buffer,sizeof buffer,addr da.szRadASMIni

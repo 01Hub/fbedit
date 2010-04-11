@@ -43,14 +43,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		ha.hWnd,eax
-		mov		edx,WS_CHILD or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
-		test	da.win.fView,VIEW_TOOLBAR
-		.if !ZERO?
-			mov		edx,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
-		.endif
-		invoke CreateWindowEx,0,addr szStaticClassName,NULL,edx,0,0,4096,2,hWin,NULL,ha.hInstance,addr cc
+		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,0
 		mov		ha.hDiv1,eax
-		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,30,4096,2,hWin,NULL,ha.hInstance,addr cc
+		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,0
 		mov		ha.hDiv2,eax
 		;Create fonts
 		invoke DoFonts
@@ -87,16 +82,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;invoke TabToolAdd,hMdiCld,offset NewFile-1
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
-;			.elseif eax==IDM_VIEW_TOOLBAR
-;				xor		da.win.fView,VIEW_TOOLBAR
-;				invoke SendMessage,hWin,WM_SIZE,0,0
-;				mov		ebx,SW_HIDE
-;				test	da.win.fView,VIEW_TOOLBAR
-;				.if !ZERO?
-;					mov		ebx,SW_SHOWNA
-;				.endif
-;				invoke ShowWindow,ha.hReBar,ebx
-;				invoke ShowWindow,ha.hDiv1,ebx
 			.elseif eax==IDM_VIEW_TBFILE
 				invoke HideToolBar,1
 			.elseif eax==IDM_VIEW_TBEDIT
@@ -107,6 +92,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke HideToolBar,4
 			.elseif eax==IDM_VIEW_TBMAKE
 				invoke HideToolBar,5
+			.elseif eax==IDM_VIEW_TBBUILD
+				invoke HideToolBar,6
 			.elseif eax==IDM_VIEW_STATUSBAR
 				xor		da.win.fView,VIEW_STATUSBAR
 				invoke SendMessage,hWin,WM_SIZE,0,0
@@ -119,7 +106,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_VIEW_PROJECT
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProject
 			.elseif eax==IDM_VIEW_OUTPUT
-				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProject
+				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
+			.elseif eax==IDM_VIEW_PROPERTIES
+				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProperties
+			.elseif eax==IDM_VIEW_TAB
+				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolTab
 			.else
 				jmp		ExDef
 			.endif
@@ -218,19 +209,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTool,TLM_PAINT,0,0
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_SIZE
-		xor		esi,esi
-		test	da.win.fView,VIEW_TOOLBAR
-		.if !ZERO?
-			;Size rebar
-			.if lParam
-				invoke GetClientRect,hWin,addr rect
-				invoke MoveWindow,ha.hReBar,0,2,rect.right,rect.bottom,TRUE
-	;			invoke UpdateWindow,ha.hReBar
-	;			invoke UpdateWindow,ha.hTbrFile
-			.endif
-			invoke GetWindowRect,ha.hReBar,addr rect
-			mov		esi,rect.bottom
-			sub		esi,rect.top
+		invoke MoveWindow,ha.hDiv1,0,0,4096,2,TRUE
+		;Size rebar
+		.if lParam
+			invoke GetClientRect,hWin,addr rect
+			invoke MoveWindow,ha.hReBar,0,2,rect.right,rect.bottom,TRUE
+;			invoke UpdateWindow,ha.hReBar
+;			invoke UpdateWindow,ha.hTbrFile
+		.endif
+		invoke GetWindowRect,ha.hReBar,addr rect
+		mov		esi,rect.bottom
+		sub		esi,rect.top
+		.if esi
 			add		esi,2
 		.endif
 		invoke MoveWindow,ha.hDiv2,0,esi,4096,2,TRUE
