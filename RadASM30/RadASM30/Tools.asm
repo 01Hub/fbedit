@@ -202,6 +202,9 @@ CreateTools proc
 	mov		ha.hToolTab,eax
 	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_FOCUSNEVER,0,0,0,0,ha.hToolTab,0,ha.hInstance,0
 	mov		ha.hTab,eax
+	invoke SendMessage,ha.hTab,WM_SETFONT,ha.hToolFont,FALSE
+	invoke SetWindowLong,ha.hTab,GWL_WNDPROC,offset TabProc
+	mov		lpOldTabProc,eax
 	ret
 
 CreateTools endp
@@ -581,6 +584,7 @@ DoFonts proc
 	LOCAL	buffer[256]:BYTE
 	LOCAL	lfnt:LOGFONT
 
+	;Tools font
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniTool,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemStr,addr buffer,addr szTahoma,addr lfnt.lfFaceName
@@ -590,6 +594,7 @@ DoFonts proc
 	mov		lfnt.lfCharSet,al
 	invoke CreateFontIndirect,addr lfnt
 	mov     ha.hToolFont,eax
+	;Code edit fonts
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniCode,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
@@ -611,6 +616,39 @@ DoFonts proc
 	mov		lfnt.lfCharSet,al
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.racf.hLnrFont,eax
+	;Text edit fonts
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniText,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-10
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.ratf.hFont,eax
+	mov		lfnt.lfItalic,TRUE
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.ratf.hIFont,eax
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-7
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.ratf.hLnrFont,eax
+	;Hex edit fonts
+	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
+	invoke GetPrivateProfileString,addr szIniFont,addr szIniHex,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemInt,addr buffer,-10
+	mov 	lfnt.lfHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfCharSet,al
+	invoke CreateFontIndirect,addr lfnt
+	mov		ha.rahf.hFont,eax
+	mov		ha.rahf.hLnrFont,eax
 	ret
 
 DoFonts endp

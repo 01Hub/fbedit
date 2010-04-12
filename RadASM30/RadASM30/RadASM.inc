@@ -1,3 +1,4 @@
+
 ;#########################################################################
 
 ;include files
@@ -49,10 +50,27 @@ includelib ..\Lib\RAProperty.lib
 includelib ..\Lib\RAResEd.lib
 includelib ..\Lib\RATools.lib
 
+TabProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
+TabToolActivate					PROTO
+MakeMdiCldWin					PROTO	:DWORD,:DWORD
+
 IDI_MDIICO						equ 100
 IDC_SPLICURV					equ 150
 IDC_SPLICURH					equ 151
 IDB_TBRBMP						equ 152
+
+FILENOTIFYPATH struct
+	nCount				DWORD ?
+	path				BYTE MAX_PATH dup(?)
+FILENOTIFYPATH ends
+
+FILENOTIFY struct
+	hThread				HANDLE ?
+	lpPath				DWORD ?
+	nCount				DWORD ?
+	lpHandle			DWORD ?
+	lpPtrPth			DWORD ?
+FILENOTIFY ends
 
 .const
 
@@ -67,22 +85,41 @@ szTabControlClassName			db 'SysTabControl32',0
 
 DisplayName						db 'RadASM',0
 szBS							db '\',0
+szDot							db '.',0
 szNULL							db 0
 
 ;RadASM.ini
 szInifile						db 'RadASM.ini',0
 szIniWin						db 'Win',0
 szIniPos						db 'Pos',0
+szIniPosRes						db 'PosRes',0
 szIniFont						db 'Font',0
 szIniTool						db 'Tool',0
 szIniCode						db 'Code',0
 szIniLine						db 'Line',0
+szIniText						db 'Text',0
+szIniHex						db 'Hex',0
 szIniProject					db 'Project',0
 szIniProperty					db 'Property',0
 szIniOutput						db 'Output',0
 szIniTab						db 'Tab',0
 szIniReBar						db 'Rebar',0
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
+szNewFile						db '(Untitled)',0
+
+szOpenFileFail					db 'Cannot open the file.',0Dh,0
+
+.data
+
+fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
+ALLFilterString					db 'Assembly Files (*.asm, *.inc, *.rc)',0,'*.asm;*.inc;*.rc',0
+								db 'Text Files (*.txt)',0,'*.txt',0
+ANYFilterString					db 'All Files (*.*)',0,'*.*',0,0
+
+szCodeFiles						db '.asm.inc.',0
+szTextFiles						db '.txt.ini.',0
+szHexFiles						db '.obj.res.bmp.ico.cur.',0
+szResourceFiles					db '.rc.',0
 
 .data?
 
@@ -92,3 +129,9 @@ CommandLine						DWORD ?
 ha								ADDINHANDLES <>
 da								ADDINDATA <>
 mdiID							DWORD ?
+;File changed notifications
+fnpath							FILENOTIFYPATH MAXIMUM_WAIT_OBJECTS dup(<?>)
+fnhandle						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
+fnptrpth						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
+lpOldTabProc					DWORD ?
+tmpbuff							BYTE 16384 dup(?)

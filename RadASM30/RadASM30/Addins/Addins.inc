@@ -1,5 +1,5 @@
 ID_EDITCODE						equ	65501
-ID_EDITTXT						equ	65502
+ID_EDITTEXT						equ	65502
 ID_EDITHEX						equ	65503
 ID_EDITRES						equ 65004
 ID_EDITUSER						equ 65005
@@ -11,6 +11,7 @@ ID_LASTCHILD					equ 65499
 IDR_MENU						equ 10000
 IDM_FILE						equ 10001
 IDM_FILE_NEW					equ 10002
+IDM_FILE_CLOSE					equ 10055
 IDM_FILE_OPEN					equ 10006
 IDM_FILE_SAVE					equ 10007
 IDM_FILE_SAVEALL				equ 10008
@@ -63,6 +64,8 @@ IDM_HELP						equ 10045
 ADDINHANDLES struct
 	hWnd			HWND ?
 	hClient			HWND ?
+	hMdi			HWND ?
+	hEdt			HWND ?
 	hInstance		HINSTANCE ?
 	hMenu			HMENU ?
 	hIcon			HICON ?
@@ -104,18 +107,40 @@ ADDINHANDLES ends
 VIEW_STATUSBAR					equ 1
 
 WIN struct
-	x			DWORD ?
-	y			DWORD ?
-	wt			DWORD ?
-	ht			DWORD ?
-	fmax		DWORD ?
-	ftopmost	DWORD ?
-	fcldmax		DWORD ?
-	fView		DWORD ?
+	x				DWORD ?
+	y				DWORD ?
+	wt				DWORD ?
+	ht				DWORD ?
+	fmax			DWORD ?
+	ftopmost		DWORD ?
+	fcldmax			DWORD ?
+	fView			DWORD ?
 WIN ends
 
 ADDINDATA struct
 	win				WIN <?>
+	winres			WINSIZE <?>
 	szAppPath		BYTE MAX_PATH dup(?)
 	szRadASMIni		BYTE MAX_PATH dup(?)
+	FileName		BYTE MAX_PATH dup(?)
+	fProject		DWORD ?
+	tabinx			DWORD ?
+	fTimer			DWORD ?
+	nLastSize		DWORD ?
 ADDINDATA ends
+
+TABMEM struct
+	hwnd			HWND ?					;Handle of the mdi child window.
+	hedt			HWND ?					;Handle of the edit window
+	pid				DWORD ?					;Project id
+	filename		BYTE MAX_PATH dup (?)	;Filename including full path.
+	ft				FILETIME <?>			;Filetime for last write.
+	nchange			DWORD ?
+	fchanged		DWORD ?
+	fupdate			DWORD ?
+	fnonotify		DWORD ?
+TABMEM ends
+
+UAM_ISOPEN						equ 1
+UAM_ISOPENACTIVATE				equ 2
+UAM_ISRESOPEN					equ 3

@@ -17,10 +17,10 @@ HEM_RAINIT				equ WM_USER+9999	;wParam=0, lParam=pointer to controls DIALOG stru
 HEM_BASE				equ WM_USER+1000
 
 ;Private messages
-HEM_SETFONT				equ HEM_BASE+1		;wParam=nLineSpacing, lParam=lpRAFONT
-HEM_GETFONT				equ HEM_BASE+2		;wParam=0, lParam=lpRAFONT
-HEM_SETCOLOR			equ HEM_BASE+3		;wParam=0, lParam=lpRACOLOR
-HEM_GETCOLOR			equ HEM_BASE+4		;wParam=0, lParam=lpRACOLOR
+HEM_SETFONT				equ HEM_BASE+1		;wParam=nLineSpacing, lParam=lpHEFONT
+HEM_GETFONT				equ HEM_BASE+2		;wParam=0, lParam=lpHEFONT
+HEM_SETCOLOR			equ HEM_BASE+3		;wParam=0, lParam=lpHECOLOR
+HEM_GETCOLOR			equ HEM_BASE+4		;wParam=0, lParam=lpHECOLOR
 HEM_VCENTER				equ HEM_BASE+5		;wParam=0, lParam=0
 HEM_REPAINT				equ HEM_BASE+6		;wParam=0, lParam=0
 HEM_ANYBOOKMARKS		equ HEM_BASE+7		;wParam=0, lParam=0

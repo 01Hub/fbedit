@@ -265,3 +265,79 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemStr endp
 
+UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
+	LOCAL	nInx:DWORD
+	LOCAL	tci:TC_ITEM
+
+	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+	mov		nInx,eax
+	mov		tci.imask,TCIF_PARAM
+	.while nInx
+		dec		nInx
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
+		.if eax
+			mov		ebx,tci.lParam
+			mov		eax,nFunction
+			.if eax==UAM_ISOPEN
+				invoke lstrcmpi,lParam,addr [ebx].TABMEM.filename
+				.if !eax
+					mov		eax,[ebx].TABMEM.hwnd
+					jmp		Ex
+				.endif
+			.elseif eax==UAM_ISOPENACTIVATE
+				invoke lstrcmpi,lParam,addr [ebx].TABMEM.filename
+				.if !eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
+					invoke TabToolActivate
+					mov		eax,[ebx].TABMEM.hwnd
+					jmp		Ex
+				.endif
+			.elseif eax==UAM_ISRESOPEN
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITRES
+					mov		eax,[ebx].TABMEM.hwnd
+					jmp		Ex
+				.endif
+			.endif
+		.endif
+	.endw
+	mov		eax,-1
+  Ex:
+	ret
+
+UpdateAll endp
+
+IsFileType proc uses ebx esi edi,lpFileType:DWORD,lpFileTypes:DWORD
+
+	mov		esi,lpFileTypes
+	mov		edi,lpFileType
+	.while TRUE
+		xor		ecx,ecx
+		.while byte ptr [edi+ecx]
+			mov		al,[edi+ecx]
+			mov		ah,[esi+ecx]
+			.if al>='a' && al<='z'
+				and		al,5Fh
+			.endif
+			.if ah>='a' && ah<='z'
+				and		ah,5Fh
+			.endif
+			.break .if al!=ah
+			inc		ecx
+		.endw
+		.if !byte ptr [edi+ecx]
+			mov		eax,TRUE
+			jmp		Ex
+		.endif
+		inc		esi
+		.while byte ptr [esi]!='.'
+			inc		esi
+		.endw
+		.break .if !byte ptr [esi+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsFileType endp
+

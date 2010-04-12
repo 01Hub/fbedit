@@ -6,30 +6,30 @@ include RadASM.inc
 include Misc.asm
 include IniFile.asm
 include Tools.asm
+include TabTool.asm
+include FileIO.asm
 
 .code
 
 MakeMdiCldWin proc lpClass:DWORD,ID:DWORD
-	LOCAL	hWin:HWND
-	LOCAL	hEdt:DWORD
-	LOCAL	ws:DWORD
 	LOCAL	rect:RECT
-	LOCAL	iNbr:DWORD
 
 	xor		eax,eax
 	mov		rect.left,eax
 	mov		rect.top,eax
 	mov		rect.right,eax
 	mov		rect.bottom,eax
-	mov		ws,MDIS_ALLCHILDSTYLES or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
-	.if da.win.fcldmax
-		or		ws,WS_MAXIMIZE
-	.endif
 	mov		eax,ID
 	mov		mdiID,eax
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE or WS_EX_MDICHILD,lpClass,NULL,ws,rect.left,rect.top,rect.right,rect.bottom,ha.hClient,NULL,ha.hInstance,NULL
-	mov		hWin,eax
-	mov		eax,hWin
+	mov		eax,MDIS_ALLCHILDSTYLES or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
+	.if da.win.fcldmax
+		or		eax,WS_MAXIMIZE
+	.endif
+	mov		edx,WS_EX_MDICHILD
+	.if ID!=ID_EDITRES
+		mov		edx,WS_EX_CLIENTEDGE or WS_EX_MDICHILD
+	.endif
+	invoke CreateWindowEx,edx,lpClass,NULL,eax,rect.left,rect.top,rect.right,rect.bottom,ha.hClient,NULL,ha.hInstance,NULL
 	ret
 
 MakeMdiCldWin endp
@@ -65,7 +65,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Menu
 		invoke LoadMenu,ha.hInstance,IDR_MENU
 		mov		ha.hMenu,eax
-;		invoke SetMenu,hWin,ha.hMenu
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,0
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
@@ -77,9 +76,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_NEW
+				invoke strcpy,addr da.FileName,addr szNewFile
 				invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
-				;invoke SetWindowText,hMdiCld,addr NewFile
-				;invoke TabToolAdd,hMdiCld,offset NewFile-1
+			.elseif eax==IDM_FILE_OPEN
+				invoke OpenEditFile
+			.elseif eax==IDM_FILE_CLOSE
+				.if ha.hMdi
+					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
+				.endif
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_VIEW_TBFILE
@@ -116,86 +120,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
-;		.if fProject
-;			invoke CloseProject
-;			.if eax
-;				xor eax,eax
-;				ret
-;			.endif
-;		.else
-;			invoke UpdateAll,IDM_FILE_CLOSEFILE
-;			invoke GetActive
-;			.if hMdiCld
-;				xor		eax,eax
-;				ret
-;			.endif
-;		.endif
-;		invoke KillTimer,hWin,200
-;		invoke DllProc,hWin,AIM_CLOSE,wParam,lParam,RAM_CLOSE
-;		.if nF1
-;			invoke WinHelp,hWin,addr F1,HELP_QUIT,NULL
-;		.endif
-;		.if nCF1
-;			invoke WinHelp,hWin,addr CF1,HELP_QUIT,NULL
-;		.endif
-;		.if nSF1
-;			invoke WinHelp,hWin,addr SF1,HELP_QUIT,NULL
-;		.endif
-;		.if nCSF1
-;			invoke WinHelp,hWin,addr CSF1,HELP_QUIT,NULL
-;		.endif
-;		mov		edx,offset MenuData
-;	  @@:
-;		push	edx
-;		mov		al,(MENU ptr [edx]).param
-;		or		al,al
-;		je		@f
-;		.if al=='H'
-;			mov		eax,(MENU ptr [edx]).ncalls
-;			.if eax
-;				invoke WinHelp,hWin,addr (MENU ptr [edx]).cmnd,HELP_QUIT,NULL
-;			.endif
-;		.endif
-;		pop		edx
-;		add		edx,sizeof MENU
-;		jmp		@b
-;	  @@:
-;		invoke SaveRecentFiles
-;		invoke iniWinSavePos
-;		invoke DestroyWindow,hTlt
 		invoke PutWinPos
 		invoke SaveTools
 		invoke SaveReBar
 		jmp		ExDef
 	.elseif eax==WM_DESTROY
-;		invoke DestroyWindow,hDivLine
-;		invoke DestroyWindow,hDivider
-;		invoke DestroyWindow,hOutBtn1
-;		invoke DestroyWindow,hOutBtn2
-;		invoke DestroyWindow,hOutBtn3
-;		invoke DestroyWindow,hToolTip
-;		invoke DestroyWindow,hToolBar
-;		invoke DestroyWindow,hPrpTbrCode
-;		invoke DestroyWindow,hPbrTbr
-;		invoke DestroyWindow,hOut
-;		invoke DestroyWindow,hPbr
-;		invoke DestroyWindow,hPrp
-;		invoke DestroyWindow,hInfEdt
-;		invoke DestroyWindow,hInf
-;		invoke DestroyWindow,hTlb
-;		invoke DestroyWindow,hLBU
-;		invoke DestroyWindow,hLBS
-;		invoke iniDestroySubMenu
-;		invoke DestroyMenu,hMenu
-;		invoke DestroyMenu,hToolMenu
-;		invoke DeleteObject,hBrTlt
-;		invoke DeleteObject,hBrPrp
-;		invoke DeleteObject,hBrInfo
-;		invoke DeleteObject,hBrDlg
-;		invoke DeleteObject,hGridBr
-;		invoke ImageList_Destroy,hTbrIml
-;		invoke ImageList_Destroy,hTypeIml
-;		invoke ImageList_Destroy,hBoxIml
 		invoke PostQuitMessage,NULL
 		jmp		ExDef
 	.elseif eax==WM_MOUSEMOVE
@@ -214,8 +143,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if lParam
 			invoke GetClientRect,hWin,addr rect
 			invoke MoveWindow,ha.hReBar,0,2,rect.right,rect.bottom,TRUE
-;			invoke UpdateWindow,ha.hReBar
-;			invoke UpdateWindow,ha.hTbrFile
 		.endif
 		invoke GetWindowRect,ha.hReBar,addr rect
 		mov		esi,rect.bottom
@@ -230,7 +157,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		test	da.win.fView,VIEW_STATUSBAR
 		.if !ZERO?
 			invoke MoveWindow,ha.hStatus,0,0,0,0,FALSE
-;			invoke UpdateWindow,ha.hStatus
 			invoke GetWindowRect,ha.hStatus,addr rect
 			mov		ebx,rect.bottom
 			sub		ebx,rect.top
@@ -242,14 +168,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTool,TLM_SIZE,0,addr rect
 		invoke InvalidateRect,ha.hProjectBrowser,NULL,TRUE
 		invoke InvalidateRect,ha.hFileBrowser,NULL,TRUE
-;		invoke UpdateWindow,ha.hClient
-;		invoke UpdateWindow,hWin
 	.elseif eax==WM_NOTIFY
 		mov		esi,lParam
-		.if [esi].NMHDR.code==RBN_HEIGHTCHANGE
+		mov		eax,[esi].NMHDR.hwndFrom
+		.if [esi].NMHDR.code==RBN_HEIGHTCHANGE && eax==ha.hReBar
 			invoke SendMessage,hWin,WM_SIZE,0,0
 		.elseif [esi].NMHDR.code==TCN_SELCHANGE
-			mov		eax,[esi].NMHDR.hwndFrom
 			.if eax==ha.hTabProject
 				invoke SendMessage,ha.hTabProject,TCM_GETCURSEL,0,0
 				.if eax
@@ -269,6 +193,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,ha.hImmediate,SW_HIDE
 				.endif
 			.endif
+		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
+			invoke OpenTheFile,[esi].FBNOTIFY.lpfile
 		.endif
 	.elseif eax==WM_TOOLSIZE
 		mov		eax,wParam
@@ -307,15 +233,30 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_CREATE
 		mov		eax,mdiID
 		.if eax==ID_EDITCODE
-			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,lParam,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
-		.elseif eax==ID_EDITTXT
+		.elseif eax==ID_EDITTEXT
+			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOCOLLAPSE or STYLE_NOHILITE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			mov		hEdt,eax
+			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 		.elseif eax==ID_EDITHEX
+			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,mdiID,lParam,ha.hInstance,NULL
+			mov		hEdt,eax
+			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
+
+			invoke CreateWindowEx,0,addr szResEdClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			mov		hEdt,eax
+			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
 		.elseif eax==ID_EDITUSER
+			mov		hEdt,0
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,hEdt
+		invoke SetWindowText,hWin,addr da.FileName
+		invoke TabToolAdd,hWin,addr da.FileName
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_SIZE
 		mov		eax,wParam
 		.if eax==SIZE_MAXIMIZED
@@ -329,7 +270,29 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke MoveWindow,hEdt,0,0,rect.right,rect.bottom,TRUE
 	.elseif eax==WM_WINDOWPOSCHANGED
 	.elseif eax==WM_MDIACTIVATE
+		mov		eax,hWin
+		.if eax==lParam
+			;Activate
+			invoke TabToolGetInx,hWin
+			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+		.else
+			;Deactivate
+			mov		ha.hMdi,0
+			mov		ha.hEdt,0
+			mov		da.FileName,0
+		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		hEdt,eax
+		invoke GetWindowLong,hEdt,GWL_ID
+		.if eax==ID_EDITCODE
+		.elseif eax==ID_EDITTEXT
+		.elseif eax==ID_EDITHEX
+		.elseif eax==ID_EDITRES
+			invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
+		.endif
+		invoke TabToolDel,hWin
 	.elseif eax==WM_NOTIFY
 	.elseif eax==WM_COMMAND
 	.elseif eax==WM_MOVE
@@ -337,6 +300,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.elseif eax==WM_ERASEBKGND
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
+  Ex:
 	ret
 
 MdiChildProc endp
@@ -391,13 +355,10 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	mov		wc.lpfnWndProc,offset MdiChildProc
 	mov		wc.cbClsExtra,NULL
 	;GWL_USERDATA=hEdit,GWL_ID>=ID_FIRSTCHILD
-;	;0=ID_EDIT or ID_EDITTXT, 4=, 8=, 12=Changed since last property update
-;	;16=Project file ID, 20=Overwrite, 28=hRadMem
-;	mov		wc.cbWndExtra,32
 	mov		wc.cbWndExtra,0
 	mov		eax,hInst
 	mov		wc.hInstance,eax
-	mov		wc.hbrBackground,COLOR_BTNFACE+1;NULL
+	mov		wc.hbrBackground,NULL;COLOR_BTNFACE+1
 	mov		wc.lpszMenuName,NULL
 	mov		wc.lpszClassName,offset szEditCldClassName
 	mov		eax,ha.hIcon

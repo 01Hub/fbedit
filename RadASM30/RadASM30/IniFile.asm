@@ -20,6 +20,17 @@ GetWinPos proc
 	mov		da.win.fcldmax,eax
 	invoke GetItemInt,addr buffer,VIEW_STATUSBAR
 	mov		da.win.fView,eax
+	invoke GetPrivateProfileString,addr szIniWin,addr szIniPosRes,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemInt,addr buffer,200
+	mov		da.winres.htpro,eax
+	invoke GetItemInt,addr buffer,200
+	mov		da.winres.wtpro,eax
+	invoke GetItemInt,addr buffer,55
+	mov		da.winres.wttbx,eax
+	invoke GetItemInt,addr buffer,50
+	mov		da.winres.ptstyle.x,eax
+	invoke GetItemInt,addr buffer,50
+	mov		da.winres.ptstyle.y,eax
 	ret
 
 GetWinPos endp
@@ -56,6 +67,13 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.win.fcldmax
 	invoke PutItemInt,addr buffer,da.win.fView
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
+	mov		buffer,0
+	invoke PutItemInt,addr buffer,da.winres.htpro
+	invoke PutItemInt,addr buffer,da.winres.wtpro
+	invoke PutItemInt,addr buffer,da.winres.wttbx
+	invoke PutItemInt,addr buffer,da.winres.ptstyle.x
+	invoke PutItemInt,addr buffer,da.winres.ptstyle.y
+	invoke WritePrivateProfileString,addr szIniWin,addr szIniPosRes,addr buffer[1],addr da.szRadASMIni
 	ret
 
 PutWinPos endp
