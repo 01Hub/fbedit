@@ -123,6 +123,7 @@ ADDINDATA struct
 	szAppPath		BYTE MAX_PATH dup(?)
 	szRadASMIni		BYTE MAX_PATH dup(?)
 	FileName		BYTE MAX_PATH dup(?)
+	fbpath			BYTE MAX_PATH dup(?)
 	fProject		DWORD ?
 	tabinx			DWORD ?
 	fTimer			DWORD ?
@@ -144,3 +145,5 @@ TABMEM ends
 UAM_ISOPEN						equ 1
 UAM_ISOPENACTIVATE				equ 2
 UAM_ISRESOPEN					equ 3
+UAM_SAVEALL						equ 4
+UAM_CLOSEALL					equ 5

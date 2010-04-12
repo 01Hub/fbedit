@@ -298,6 +298,40 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 					mov		eax,[ebx].TABMEM.hwnd
 					jmp		Ex
 				.endif
+			.elseif eax==UAM_SAVEALL
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+				.elseif eax==ID_EDITTEXT
+					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+				.elseif eax==ID_EDITHEX
+					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+				.elseif eax==ID_EDITRES
+					invoke SendMessage,[ebx].TABMEM.hedt,PRO_GETMODIFY,0,0
+				.elseif eax==ID_EDITUSER
+					xor		eax,eax
+				.endif
+				.if eax
+					.if lParam
+						invoke WantToSave,[ebx].TABMEM.hwnd
+						.if eax
+							xor		eax,eax
+							jmp		Ex
+						.endif
+					.else
+						invoke SaveTheFile,[ebx].TABMEM.hwnd
+					.endif
+				.endif
+			.elseif eax==UAM_CLOSEALL
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+					invoke SendMessage,[ebx].TABMEM.hedt,EM_SETMODIFY,FALSE,0
+				.elseif eax==ID_EDITRES
+					invoke SendMessage,[ebx].TABMEM.hedt,PRO_SETMODIFY,FALSE,0
+				.elseif eax==ID_EDITUSER
+					xor		eax,eax
+				.endif
+				invoke SendMessage,[ebx].TABMEM.hwnd,WM_CLOSE,0,0
 			.endif
 		.endif
 	.endw

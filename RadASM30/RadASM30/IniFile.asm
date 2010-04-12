@@ -3,6 +3,7 @@
 GetWinPos proc
 	LOCAL	buffer[256]:BYTE
 
+	;Main window
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniPos,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemInt,addr buffer,10
 	mov		da.win.x,eax
@@ -20,6 +21,7 @@ GetWinPos proc
 	mov		da.win.fcldmax,eax
 	invoke GetItemInt,addr buffer,VIEW_STATUSBAR
 	mov		da.win.fView,eax
+	;Resource editor
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniPosRes,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemInt,addr buffer,200
 	mov		da.winres.htpro,eax
@@ -31,6 +33,8 @@ GetWinPos proc
 	mov		da.winres.ptstyle.x,eax
 	invoke GetItemInt,addr buffer,50
 	mov		da.winres.ptstyle.y,eax
+	;File browser path
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniPath,addr da.szAppPath,addr da.fbpath,sizeof da.fbpath,addr da.szRadASMIni
 	ret
 
 GetWinPos endp
@@ -39,6 +43,7 @@ PutWinPos proc
 	LOCAL	buffer[256]:BYTE
 	LOCAL	rect:RECT
 
+	;Main window
 	mov		buffer,0
 	invoke IsZoomed,ha.hWnd
 	mov 	da.win.fmax,eax
@@ -67,6 +72,7 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.win.fcldmax
 	invoke PutItemInt,addr buffer,da.win.fView
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
+	;Resource editor
 	mov		buffer,0
 	invoke PutItemInt,addr buffer,da.winres.htpro
 	invoke PutItemInt,addr buffer,da.winres.wtpro
@@ -74,6 +80,8 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.x
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.y
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPosRes,addr buffer[1],addr da.szRadASMIni
+	;File browser path
+	invoke WritePrivateProfileString,addr szIniFile,addr szIniPath,addr da.fbpath,addr da.szRadASMIni
 	ret
 
 PutWinPos endp

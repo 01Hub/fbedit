@@ -171,10 +171,15 @@ OpenTheFile proc lpFileName:DWORD
 			invoke LoadResFile,ha.hEdt,lpFileName
 		.else
 			invoke TabToolGetInx,eax
+			push	eax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
 			invoke SendMessage,ha.hEdt,PRO_CLOSE,0,0
 			invoke LoadResFile,ha.hEdt,lpFileName
+			pop		eax
+			invoke TabToolSetText,eax,lpFileName
+			invoke SetWindowText,ha.hMdi,lpFileName
+			invoke TabToolActivate
 		.endif
 	.endif
 	invoke TabToolSetChanged,ha.hMdi,FALSE
@@ -229,6 +234,7 @@ SaveTextFile proc hWin:DWORD,lpFileName:DWORD
 		mov		editstream.dwCookie,eax
 		mov		editstream.pfnCallback,offset StreamOutProc
 		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+		invoke CloseHandle,hFile
 		;Set the modify state to false
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
 		invoke GetWindowLong,hWin,GWL_ID
@@ -238,8 +244,8 @@ SaveTextFile proc hWin:DWORD,lpFileName:DWORD
 ;			invoke SaveCollapse,hWin
 		.endif
 		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
-		invoke CloseHandle,hFile
-		invoke TabToolSetChanged,hWin,FALSE
+		invoke GetParent,hWin
+		invoke TabToolSetChanged,eax,FALSE
    		mov		eax,FALSE
 	.endif
 	ret
@@ -258,10 +264,11 @@ SaveHexFile proc hWin:DWORD,lpFileName:DWORD
 		mov		editstream.dwCookie,eax
 		mov		editstream.pfnCallback,offset StreamOutProc
 		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+		invoke CloseHandle,hFile
 		;Set the modify state to false
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
-		invoke CloseHandle,hFile
-		invoke TabToolSetChanged,hWin,FALSE
+		invoke GetParent,hWin
+		invoke TabToolSetChanged,eax,FALSE
    		mov		eax,FALSE
 	.endif
 	ret
@@ -269,27 +276,46 @@ SaveHexFile proc hWin:DWORD,lpFileName:DWORD
 SaveHexFile endp
 
 SaveResFile proc hWin:DWORD,lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	hMem:HGLOBAL
+	LOCAL	nSize:DWORD
 
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		hMem,eax
+		invoke SendMessage,hWin,PRO_EXPORT,0,hMem
+		invoke strlen,hMem
+		mov		nSize,eax
+		invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
+		invoke CloseHandle,hFile
+		invoke SendMessage,hWin,PRO_SETMODIFY,FALSE,0
+		invoke GlobalFree,hMem
+		invoke GetParent,hWin
+		invoke TabToolSetChanged,eax,FALSE
+   		mov		eax,FALSE
+	.endif
 	ret
 
 SaveResFile endp
 
-SaveTheFile proc hWin:HWND
+SaveTheFile proc uses ebx,hWin:HWND
 	LOCAL	hEdt:HWND
-	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke GetWindowText,hWin,addr buffer,sizeof buffer
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		hEdt,eax
+	invoke GetWindowLong,hEdt,GWL_USERDATA
+	mov		ebx,eax
 	invoke GetWindowLong,hEdt,GWL_ID
 	.if eax==ID_EDITCODE
-		invoke SaveTextFile,hEdt,addr buffer
+		invoke SaveTextFile,hEdt,addr [ebx].TABMEM.filename
 	.elseif eax==ID_EDITTEXT
-		invoke SaveTextFile,hEdt,addr buffer
+		invoke SaveTextFile,hEdt,addr [ebx].TABMEM.filename
 	.elseif eax==ID_EDITHEX
-		invoke SaveHexFile,hEdt,addr buffer
+		invoke SaveHexFile,hEdt,addr [ebx].TABMEM.filename
 	.elseif eax==ID_EDITRES
-		invoke SaveResFile,hEdt,addr buffer
+		invoke SaveResFile,hEdt,addr [ebx].TABMEM.filename
 	.elseif eax==ID_EDITUSER
 		xor		eax,eax
 	.endif
@@ -297,12 +323,13 @@ SaveTheFile proc hWin:HWND
 
 SaveTheFile endp
 
-WantToSave proc hWin:HWND
+WantToSave proc uses ebx,hWin:HWND
 	LOCAL	hEdt:HWND
-	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		hEdt,eax
+	invoke GetWindowLong,hEdt,GWL_USERDATA
+	mov		ebx,eax
 	invoke GetWindowLong,hEdt,GWL_ID
 	.if eax==ID_EDITCODE
 		invoke SendMessage,hEdt,EM_GETMODIFY,0,0
@@ -317,8 +344,7 @@ WantToSave proc hWin:HWND
 	.endif
 	.if eax
 		invoke strcpy,addr tmpbuff,offset szWannaSave
-		invoke GetWindowText,hWin,addr buffer,sizeof buffer
-		invoke strcat,addr tmpbuff,addr buffer
+		invoke strcat,addr tmpbuff,addr [ebx].TABMEM.filename
 		invoke strlen,addr tmpbuff
 		mov		word ptr tmpbuff[eax],'?'
 		invoke MessageBox,ha.hWnd,addr tmpbuff,offset DisplayName,MB_YESNOCANCEL or MB_ICONQUESTION

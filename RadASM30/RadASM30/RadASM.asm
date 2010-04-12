@@ -68,8 +68,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,0
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
+		;Create tool windows
 		invoke CreateTools
-		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szAppPath
+		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.fbpath
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
@@ -88,6 +89,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke SaveTheFile,ha.hMdi
 				.endif
+			.elseif eax==IDM_FILE_SAVEALL
+				invoke UpdateAll,UAM_SAVEALL,FALSE
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_VIEW_TBFILE
@@ -124,10 +127,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke PutWinPos
-		invoke SaveTools
-		invoke SaveReBar
-		jmp		ExDef
+		invoke UpdateAll,UAM_SAVEALL,TRUE
+		.if eax
+			invoke SendMessage,ha.hFileBrowser,FBM_GETPATH,0,addr da.fbpath
+			invoke PutWinPos
+			invoke SaveTools
+			invoke SaveReBar
+			invoke UpdateAll,UAM_CLOSEALL,0
+			jmp		ExDef
+		.else
+			jmp		Ex
+		.endif
 	.elseif eax==WM_DESTROY
 		invoke PostQuitMessage,NULL
 		jmp		ExDef
@@ -262,11 +272,14 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_SIZE
-		mov		eax,wParam
-		.if eax==SIZE_MAXIMIZED
-			mov		da.win.fcldmax,TRUE
-		.elseif eax==SIZE_RESTORED || eax==SIZE_MINIMIZED
-			mov		da.win.fcldmax,FALSE
+		mov		eax,hWin
+		.if eax==ha.hMdi
+			mov		eax,wParam
+			.if eax==SIZE_MAXIMIZED
+				mov		da.win.fcldmax,TRUE
+			.elseif eax==SIZE_RESTORED || eax==SIZE_MINIMIZED
+				mov		da.win.fcldmax,FALSE
+			.endif
 		.endif
 		invoke GetWindowLong,hWin,GWL_USERDATA
 		mov		hEdt,eax
@@ -280,7 +293,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke TabToolGetInx,hWin
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
-		.else
+		.elseif eax==wParam
 			;Deactivate
 			mov		ha.hMdi,0
 			mov		ha.hEdt,0
@@ -306,26 +319,50 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endif
 	.elseif eax==WM_NOTIFY
 		mov		esi,lParam
+		;Get TABMEM
+		invoke GetWindowLong,[esi].NMHDR.hwndFrom,GWL_USERDATA
+		mov		ebx,eax
 		mov		eax,wParam
 		.if eax==ID_EDITCODE
 			.if [esi].NMHDR.code==EN_SELCHANGE
 				.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
-					;Get TABMEM
-					invoke GetWindowLong,[esi].NMHDR.hwndFrom,GWL_USERDATA
-					mov		ebx,eax
 					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
-						invoke GetParent,[esi].NMHDR.hwndFrom
-						invoke TabToolSetChanged,eax,TRUE
+						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 					.endif
 				.endif
 			.endif
 		.elseif eax==ID_EDITTEXT
+			.if [esi].NMHDR.code==EN_SELCHANGE
+				.if[esi].RASELCHANGE.seltyp==SEL_TEXT
+					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
+						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+					.endif
+				.endif
+			.endif
 		.elseif eax==ID_EDITHEX
+			.if [esi].NMHDR.code==EN_SELCHANGE
+				.if[esi].HESELCHANGE.seltyp==SEL_TEXT
+					.if [esi].HESELCHANGE.fchanged && ![ebx].TABMEM.fchanged
+						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+					.endif
+				.endif
+			.endif
 		.elseif eax==ID_EDITRES
+			invoke SendMessage,[esi].NMHDR.hwndFrom,PRO_GETMODIFY,0,0
+			.if eax && ![ebx].TABMEM.fchanged
+				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+			.endif
 		.elseif eax==ID_EDITUSER
 		.endif
 	.elseif eax==WM_COMMAND
+		mov		eax,wParam
+		movsx	eax,ax
+		.if eax==-3
+			;Expand All
+		.elseif eax==-4
+			;Collapse All
+		.endif
 	.elseif eax==WM_MOVE
 	.elseif eax==WM_DESTROY
 	.elseif eax==WM_ERASEBKGND

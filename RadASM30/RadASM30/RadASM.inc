@@ -53,6 +53,8 @@ includelib ..\Lib\RATools.lib
 TabProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 TabToolActivate					PROTO
 MakeMdiCldWin					PROTO	:DWORD,:DWORD
+SaveTheFile						PROTO	:HWND
+WantToSave						PROTO	:HWND
 
 IDI_MDIICO						equ 100
 IDC_SPLICURV					equ 150
@@ -104,6 +106,9 @@ szIniProperty					db 'Property',0
 szIniOutput						db 'Output',0
 szIniTab						db 'Tab',0
 szIniReBar						db 'Rebar',0
+szIniFile						db 'File',0
+szIniPath						db 'Path',0
+
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
 
