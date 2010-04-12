@@ -69,7 +69,7 @@ RAHexEdInstall proc C public hInst:HINSTANCE,fGlobal:DWORD
 	invoke LoadCursor,NULL,IDC_ARROW
 	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
-
+	push	eax
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_DBLCLKS or CS_HREDRAW or CS_VREDRAW
 	mov		wc.lpfnWndProc,offset RAHexEdProc
@@ -100,6 +100,7 @@ RAHexEdInstall proc C public hInst:HINSTANCE,fGlobal:DWORD
 	mov		hBmpLnr,eax
 	invoke SetTimer,NULL,0,50,offset TimerProc
 	mov		TimerID,eax
+	pop		eax
 	ret
 
 RAHexEdInstall endp

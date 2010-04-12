@@ -57,7 +57,7 @@ GetTheFileType proc uses esi,lpFileName:DWORD
 GetTheFileType endp
 
 LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
-    LOCAL   hFile:DWORD
+    LOCAL   hFile:HANDLE
 	LOCAL	editstream:EDITSTREAM
 	LOCAL	chrg:CHARRANGE
 
@@ -89,7 +89,7 @@ LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 LoadTextFile endp
 
 LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
-    LOCAL   hFile:DWORD
+    LOCAL   hFile:HANDLE
 	LOCAL	editstream:EDITSTREAM
 	LOCAL	chrg:CHARRANGE
 
@@ -119,8 +119,8 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 LoadHexFile endp
 
 LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
-    LOCAL   hFile:DWORD
-	LOCAL	hMem:DWORD
+    LOCAL   hFile:HANDLE
+	LOCAL	hMem:HGLOBAL
 	LOCAL	dwRead:DWORD
 
 	;Open the file
@@ -177,6 +177,7 @@ OpenTheFile proc lpFileName:DWORD
 			invoke LoadResFile,ha.hEdt,lpFileName
 		.endif
 	.endif
+	invoke TabToolSetChanged,ha.hMdi,FALSE
 	ret
 
 OpenTheFile endp
@@ -216,3 +217,119 @@ OpenEditFile proc
 
 OpenEditFile endp
 
+SaveTextFile proc hWin:DWORD,lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	editstream:EDITSTREAM
+
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		;stream the text to the file
+		mov		eax,hFile
+		mov		editstream.dwCookie,eax
+		mov		editstream.pfnCallback,offset StreamOutProc
+		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+		;Set the modify state to false
+		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		invoke GetWindowLong,hWin,GWL_ID
+		.if eax==ID_EDITCODE
+;			invoke SaveBreakpoints,hWin
+;			invoke SaveBookMarks,hWin
+;			invoke SaveCollapse,hWin
+		.endif
+		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
+		invoke CloseHandle,hFile
+		invoke TabToolSetChanged,hWin,FALSE
+   		mov		eax,FALSE
+	.endif
+	ret
+
+SaveTextFile endp
+
+SaveHexFile proc hWin:DWORD,lpFileName:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	editstream:EDITSTREAM
+
+	invoke CreateFile,lpFileName,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		;stream the text to the file
+		mov		eax,hFile
+		mov		editstream.dwCookie,eax
+		mov		editstream.pfnCallback,offset StreamOutProc
+		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
+		;Set the modify state to false
+		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		invoke CloseHandle,hFile
+		invoke TabToolSetChanged,hWin,FALSE
+   		mov		eax,FALSE
+	.endif
+	ret
+
+SaveHexFile endp
+
+SaveResFile proc hWin:DWORD,lpFileName:DWORD
+
+	ret
+
+SaveResFile endp
+
+SaveTheFile proc hWin:HWND
+	LOCAL	hEdt:HWND
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke GetWindowText,hWin,addr buffer,sizeof buffer
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		hEdt,eax
+	invoke GetWindowLong,hEdt,GWL_ID
+	.if eax==ID_EDITCODE
+		invoke SaveTextFile,hEdt,addr buffer
+	.elseif eax==ID_EDITTEXT
+		invoke SaveTextFile,hEdt,addr buffer
+	.elseif eax==ID_EDITHEX
+		invoke SaveHexFile,hEdt,addr buffer
+	.elseif eax==ID_EDITRES
+		invoke SaveResFile,hEdt,addr buffer
+	.elseif eax==ID_EDITUSER
+		xor		eax,eax
+	.endif
+	ret
+
+SaveTheFile endp
+
+WantToSave proc hWin:HWND
+	LOCAL	hEdt:HWND
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		hEdt,eax
+	invoke GetWindowLong,hEdt,GWL_ID
+	.if eax==ID_EDITCODE
+		invoke SendMessage,hEdt,EM_GETMODIFY,0,0
+	.elseif eax==ID_EDITTEXT
+		invoke SendMessage,hEdt,EM_GETMODIFY,0,0
+	.elseif eax==ID_EDITHEX
+		invoke SendMessage,hEdt,EM_GETMODIFY,0,0
+	.elseif eax==ID_EDITRES
+		invoke SendMessage,hEdt,PRO_GETMODIFY,0,0
+	.elseif eax==ID_EDITUSER
+		xor		eax,eax
+	.endif
+	.if eax
+		invoke strcpy,addr tmpbuff,offset szWannaSave
+		invoke GetWindowText,hWin,addr buffer,sizeof buffer
+		invoke strcat,addr tmpbuff,addr buffer
+		invoke strlen,addr tmpbuff
+		mov		word ptr tmpbuff[eax],'?'
+		invoke MessageBox,ha.hWnd,addr tmpbuff,offset DisplayName,MB_YESNOCANCEL or MB_ICONQUESTION
+		.if eax==IDYES
+			invoke SaveTheFile,hWin
+		.elseif eax==IDNO
+		    mov		eax,FALSE
+		.else
+		    mov		eax,TRUE
+		.endif
+	.endif
+	ret
+
+WantToSave endp

@@ -108,6 +108,7 @@ szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024'
 szNewFile						db '(Untitled)',0
 
 szOpenFileFail					db 'Cannot open the file.',0Dh,0
+szWannaSave           			db 'Want to save changes to',0Dh,0
 
 .data
 

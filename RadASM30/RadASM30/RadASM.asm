@@ -84,6 +84,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
 				.endif
+			.elseif eax==IDM_FILE_SAVE
+				.if ha.hMdi
+					invoke SaveTheFile,ha.hMdi
+				.endif
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_VIEW_TBFILE
@@ -241,14 +245,14 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 		.elseif eax==ID_EDITHEX
-			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,mdiID,lParam,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
-
 			invoke CreateWindowEx,0,addr szResEdClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
+			invoke SendMessage,hEdt,WM_SETFONT,ha.hToolFont,FALSE
 		.elseif eax==ID_EDITUSER
 			mov		hEdt,0
 		.endif
@@ -283,17 +287,44 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		da.FileName,0
 		.endif
 	.elseif eax==WM_CLOSE
-		invoke GetWindowLong,hWin,GWL_USERDATA
-		mov		hEdt,eax
-		invoke GetWindowLong,hEdt,GWL_ID
+		invoke WantToSave,hWin
+		.if !eax
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			mov		hEdt,eax
+			invoke GetWindowLong,hEdt,GWL_ID
+			.if eax==ID_EDITCODE
+			.elseif eax==ID_EDITTEXT
+			.elseif eax==ID_EDITHEX
+			.elseif eax==ID_EDITRES
+				invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
+				invoke SendMessage,hEdt,PRO_CLOSE,0,0
+			.endif
+			invoke TabToolDel,hWin
+		.else
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.elseif eax==WM_NOTIFY
+		mov		esi,lParam
+		mov		eax,wParam
 		.if eax==ID_EDITCODE
+			.if [esi].NMHDR.code==EN_SELCHANGE
+				.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
+				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
+					;Get TABMEM
+					invoke GetWindowLong,[esi].NMHDR.hwndFrom,GWL_USERDATA
+					mov		ebx,eax
+					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
+						invoke GetParent,[esi].NMHDR.hwndFrom
+						invoke TabToolSetChanged,eax,TRUE
+					.endif
+				.endif
+			.endif
 		.elseif eax==ID_EDITTEXT
 		.elseif eax==ID_EDITHEX
 		.elseif eax==ID_EDITRES
-			invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
+		.elseif eax==ID_EDITUSER
 		.endif
-		invoke TabToolDel,hWin
-	.elseif eax==WM_NOTIFY
 	.elseif eax==WM_COMMAND
 	.elseif eax==WM_MOVE
 	.elseif eax==WM_DESTROY
@@ -385,12 +416,13 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 ;	invoke RegisterClassEx,addr wc
 	invoke InstallRACodeComplete,ha.hInstance,FALSE
 	invoke InstallFileBrowser,ha.hInstance,FALSE
-	invoke RAHexEdInstall,ha.hInstance,FALSE
 	invoke InstallProjectBrowser,ha.hInstance,FALSE
 	invoke InstallRAProperty,ha.hInstance,FALSE
-	invoke ResEdInstall,ha.hInstance,FALSE
 	invoke InstallRATools,ha.hInstance,FALSE
 	invoke InstallRAEdit,ha.hInstance,FALSE
+	invoke RAHexEdInstall,ha.hInstance,FALSE
+	invoke ResEdInstall,ha.hInstance,FALSE
+	invoke GridInstall,ha.hInstance,FALSE
 	invoke GetModuleFileName,ha.hInstance,addr da.szAppPath,sizeof da.szAppPath
 	invoke strlen,addr da.szAppPath
 	.while da.szAppPath[eax]!='\'
