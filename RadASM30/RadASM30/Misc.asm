@@ -157,6 +157,11 @@ DecToBin proc lpStr:DWORD
 DecToBin endp
 
 BinToDec proc dwVal:DWORD,lpAscii:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		dword ptr buffer,'d%'
+	invoke wsprintf,lpAscii,addr buffer,dwVal
+	ret
 
     push    ebx
     push    ecx

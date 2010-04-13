@@ -336,7 +336,7 @@ TabToolActivate proc uses ebx
 	mov		ha.hMdi,eax
 	mov		eax,[ebx].TABMEM.hedt
 	mov		ha.hEdt,eax
-	invoke strcpy,offset da.FileName,addr [ebx].TABMEM.filename
+	invoke strcpy,offset da.szFileName,addr [ebx].TABMEM.filename
 	mov		da.fTimer,1
 	invoke SendMessage,ha.hFileBrowser,FBM_SETSELECTED,0,addr [ebx].TABMEM.filename
 	invoke GetWindowLong,ha.hEdt,GWL_ID
@@ -345,7 +345,7 @@ TabToolActivate proc uses ebx
 		mov		da.nLastSize,eax
 	.endif
 	.if da.fProject
-		invoke SendMessage,ha.hToolProject,RPBM_SETSELECTED,0,addr da.FileName
+		invoke SendMessage,ha.hToolProject,RPBM_SETSELECTED,0,addr da.szFileName
 	.endif
 	invoke SendMessage,ha.hClient,WM_MDIACTIVATE,ha.hMdi,0
 	invoke SetFocus,ha.hEdt
@@ -369,7 +369,7 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	mov		[ebx].TABMEM.hedt,eax
 	mov		ha.hEdt,eax
 	invoke strcpy,addr [ebx].TABMEM.filename,lpFileName
-	invoke strcpy,addr da.FileName,lpFileName
+	invoke strcpy,addr da.szFileName,lpFileName
 	invoke strlen,lpFileName
 	mov		ecx,eax
 	mov		edx,lpFileName

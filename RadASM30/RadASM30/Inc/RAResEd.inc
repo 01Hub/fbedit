@@ -158,8 +158,8 @@ DEM_EXPORTTORC		equ DEM_BASE+20		;wParam=0, lParam=0, Returns memory handle
 DEM_SETPOSSTATUS	equ DEM_BASE+21		;wParam=Handle of status window, lParam=Pane
 DEM_SETGRIDSIZE		equ DEM_BASE+22		;wParam=y-size,x-size, lParam=color
 DEM_ADDCONTROL		equ DEM_BASE+23		;wParam=handle of toolbox, lParam=lpCCDEF
-DEM_GETCOLOR		equ DEM_BASE+24		;wParam=0, lParam=lpCOLOR
-DEM_SETCOLOR		equ DEM_BASE+25		;wParam=0, lParam=lpCOLOR
+DEM_GETCOLOR		equ DEM_BASE+24		;wParam=0, lParam=lpRESCOLOR
+DEM_SETCOLOR		equ DEM_BASE+25		;wParam=0, lParam=lpRESCOLOR
 DEM_SHOWDIALOG		equ DEM_BASE+26		;wParam=0, lParam=0
 DEM_SHOWTABINDEX	equ DEM_BASE+27		;wParam=0, lParam=0
 DEM_EXPORTDLG		equ DEM_BASE+28		;wParam=0, lParam=lpszFileName

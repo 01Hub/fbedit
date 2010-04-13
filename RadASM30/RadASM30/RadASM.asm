@@ -11,10 +11,41 @@ include FileIO.asm
 
 .code
 
+CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		mov		eax,wParam
+		.if eax==VK_TAB || eax==VK_RETURN
+			invoke SendMessage,ha.hEdt,WM_CHAR,VK_TAB,0
+			jmp		Ex
+		.elseif eax==VK_ESCAPE
+			invoke ShowWindow,hWin,SW_HIDE
+			jmp		Ex
+		.endif
+	.elseif eax==WM_LBUTTONDBLCLK
+		invoke SendMessage,ha.hEdt,WM_CHAR,VK_TAB,0
+		jmp		Ex
+	.elseif eax==WM_SIZE
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.right
+		sub		eax,rect.left
+		mov		edx,rect.bottom
+		sub		edx,rect.top
+		mov		da.win.ccwt,eax
+		mov		da.win.ccht,edx
+	.endif
+	invoke CallWindowProc,lpOldCCProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+CodeCompleteProc endp
+
 MakeMdiCldWin proc lpClass:DWORD,ID:DWORD
 	LOCAL	rect:RECT
 
-	xor		eax,eax
+	mov		eax,CW_USEDEFAULT
 	mov		rect.left,eax
 	mov		rect.top,eax
 	mov		rect.right,eax
@@ -43,6 +74,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_CREATE
 		mov		eax,hWin
 		mov		ha.hWnd,eax
+		;Load accelerators
+		invoke LoadAccelerators,ha.hInstance,IDA_ACCEL
+		mov		ha.hAccel,eax
+		;Create divider lines
 		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,0
 		mov		ha.hDiv1,eax
 		invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or SS_ETCHEDHORZ or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,0
@@ -68,16 +103,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,0
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
+		;Create code complete
+		invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+		mov		ha.hCC,eax
+;		invoke SetWindowLong,ha.hCC,GWL_WNDPROC,offset CodeCompleteProc
+;		mov		lpOldCCProc,eax
+		invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+		mov		ha.hTT,eax
+		invoke SendMessage,ha.hCC,WM_SETFONT,ha.hToolFont,FALSE
+		invoke SendMessage,ha.hTT,WM_SETFONT,ha.hToolFont,FALSE
 		;Create tool windows
 		invoke CreateTools
-		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.fbpath
+		invoke GetSession
+		invoke GetAssembler
+		invoke GetColors
+		invoke GetKeywords
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
 		shr		edx,16
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_NEW
-				invoke strcpy,addr da.FileName,addr szNewFile
+				invoke strcpy,addr da.szFileName,addr szNewFile
 				invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
 			.elseif eax==IDM_FILE_OPEN
 				invoke OpenEditFile
@@ -129,11 +176,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke UpdateAll,UAM_SAVEALL,TRUE
 		.if eax
-			invoke SendMessage,ha.hFileBrowser,FBM_GETPATH,0,addr da.fbpath
-			invoke PutWinPos
+			invoke SendMessage,ha.hFileBrowser,FBM_GETPATH,0,addr da.szFBPath
 			invoke SaveTools
 			invoke SaveReBar
+			invoke PutSession
 			invoke UpdateAll,UAM_CLOSEALL,0
+			invoke PutWinPos
 			jmp		ExDef
 		.else
 			jmp		Ex
@@ -250,16 +298,18 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
+			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 		.elseif eax==ID_EDITTEXT
 			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOCOLLAPSE or STYLE_NOHILITE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
+			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 		.elseif eax==ID_EDITHEX
 			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
-			invoke CreateWindowEx,0,addr szResEdClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szResEdClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
 			invoke SendMessage,hEdt,WM_SETFONT,ha.hToolFont,FALSE
@@ -267,8 +317,8 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,0
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,hEdt
-		invoke SetWindowText,hWin,addr da.FileName
-		invoke TabToolAdd,hWin,addr da.FileName
+		invoke SetWindowText,hWin,addr da.szFileName
+		invoke TabToolAdd,hWin,addr da.szFileName
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==WM_SIZE
@@ -297,7 +347,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			;Deactivate
 			mov		ha.hMdi,0
 			mov		ha.hEdt,0
-			mov		da.FileName,0
+			mov		da.szFileName,0
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke WantToSave,hWin
@@ -469,6 +519,17 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	invoke strcpy,addr da.szRadASMIni,addr da.szAppPath
 	invoke strcat,addr da.szRadASMIni,addr szBS
 	invoke strcat,addr da.szRadASMIni,addr szInifile
+	invoke GetPrivateProfileString,addr szIniWin,addr szIniAppPath,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+	.if eax
+		xor		eax,eax
+		.if tmpbuff=='\'
+			mov		eax,2
+		.endif
+		invoke strcpy,addr da.szAppPath[eax],addr tmpbuff
+		invoke strcpy,addr da.szRadASMIni,addr da.szAppPath
+		invoke strcat,addr da.szRadASMIni,addr szBS
+		invoke strcat,addr da.szRadASMIni,addr szInifile
+	.endif
 	invoke GetWinPos
 	mov     eax,WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 	mov		edx,WS_EX_LEFT or WS_EX_ACCEPTFILES
@@ -483,6 +544,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.endif
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
+	invoke GetSessionFiles
 ;	invoke ShowSplash
 ;	;Get command line filename
 ;	mov		eax,CommandLine
@@ -500,11 +562,11 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 ;			.if !eax
 ;				invoke IsDialogMessage,hSniplet,addr msg
 ;				.if !eax
-;					invoke TranslateAccelerator,hWnd,hAccel,addr msg
-;					.if !eax
+					invoke TranslateAccelerator,ha.hWnd,ha.hAccel,addr msg
+					.if !eax
 						invoke TranslateMessage,addr msg
 						invoke DispatchMessage,addr msg
-;					.endif
+					.endif
 ;				.endif
 ;			.endif
 ;		.endif

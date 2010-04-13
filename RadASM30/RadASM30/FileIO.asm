@@ -122,6 +122,7 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
     LOCAL   hFile:HANDLE
 	LOCAL	hMem:HGLOBAL
 	LOCAL	dwRead:DWORD
+	LOCAL	rescolor:RESCOLOR
 
 	;Open the file
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
@@ -137,6 +138,17 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,PRO_OPEN,lpFileName,hMem
+		mov		eax,da.radcolor.dialogback
+		mov		rescolor.back,eax
+		mov		eax,da.radcolor.dialogtext
+		mov		rescolor.text,eax
+		mov		eax,da.radcolor.styles
+		mov		rescolor.styles,eax
+		mov		eax,da.radcolor.words
+		mov		rescolor.words,eax
+		invoke SendMessage,hWin,DEM_SETCOLOR,0,addr rescolor
+		mov		eax,00030003h
+		invoke SendMessage,hWin,DEM_SETGRIDSIZE,eax,0
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -152,21 +164,21 @@ OpenTheFile proc lpFileName:DWORD
 
 	invoke GetTheFileType,lpFileName
 	.if eax==ID_EDITCODE
-		invoke strcpy,addr da.FileName,lpFileName
+		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
 		invoke LoadTextFile,ha.hEdt,lpFileName
 	.elseif eax==ID_EDITTEXT
-		invoke strcpy,addr da.FileName,lpFileName
+		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITTEXT
 		invoke LoadTextFile,ha.hEdt,lpFileName
 	.elseif eax==ID_EDITHEX
-		invoke strcpy,addr da.FileName,lpFileName
+		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITHEX
 		invoke LoadHexFile,ha.hEdt,lpFileName
 	.elseif eax==ID_EDITRES
 		invoke UpdateAll,UAM_ISRESOPEN,0
 		.if eax==-1
-			invoke strcpy,addr da.FileName,lpFileName
+			invoke strcpy,addr da.szFileName,lpFileName
 			invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITRES
 			invoke LoadResFile,ha.hEdt,lpFileName
 		.else
@@ -343,6 +355,9 @@ WantToSave proc uses ebx,hWin:HWND
 		xor		eax,eax
 	.endif
 	.if eax
+		invoke TabToolGetInx,[ebx].TABMEM.hwnd
+		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+		invoke TabToolActivate
 		invoke strcpy,addr tmpbuff,offset szWannaSave
 		invoke strcat,addr tmpbuff,addr [ebx].TABMEM.filename
 		invoke strlen,addr tmpbuff

@@ -7,6 +7,9 @@ ID_EDITUSER						equ 65005
 ID_FIRSTCHILD					equ 65001
 ID_LASTCHILD					equ 65499
 
+;Res\RadASMAcl.rc
+IDA_ACCEL						equ 100
+
 ;RadASM.mnu
 IDR_MENU						equ 10000
 IDM_FILE						equ 10001
@@ -68,6 +71,7 @@ ADDINHANDLES struct
 	hEdt			HWND ?
 	hInstance		HINSTANCE ?
 	hMenu			HMENU ?
+	hAccel			HACCEL ?
 	hIcon			HICON ?
 	hCursor			HCURSOR ?
 	hSplitCurV		HCURSOR ?
@@ -102,6 +106,8 @@ ADDINHANDLES struct
 	hTbrMake		HWND ?
 	hDiv1			HWND ?
 	hDiv2			HWND ?
+	hCC				HWND ?
+	hTT				HWND ?
 ADDINHANDLES ends
 
 VIEW_STATUSBAR					equ 1
@@ -115,15 +121,40 @@ WIN struct
 	ftopmost		DWORD ?
 	fcldmax			DWORD ?
 	fView			DWORD ?
+	ccwt			DWORD ?
+	ccht			DWORD ?
 WIN ends
+
+;16+20+12=48
+RADCOLOR struct
+	kwcol				DWORD 16 dup(?)		;Keywords
+	racol				RACOLOR <?>			;RAEdit
+	toolback			DWORD ?
+	tooltext			DWORD ?
+	dialogback			DWORD ?
+	dialogtext			DWORD ?
+	styles				DWORD ?
+	words				DWORD ?
+	ccback				DWORD ?
+	cctext				DWORD ?
+	ttback				DWORD ?
+	tttext				DWORD ?
+	ttapi				DWORD ?
+	ttsel				DWORD ?
+RADCOLOR ends
 
 ADDINDATA struct
 	win				WIN <?>
 	winres			WINSIZE <?>
+	radcolor		RADCOLOR <>
 	szAppPath		BYTE MAX_PATH dup(?)
 	szRadASMIni		BYTE MAX_PATH dup(?)
-	FileName		BYTE MAX_PATH dup(?)
-	fbpath			BYTE MAX_PATH dup(?)
+	szAssemblerIni	BYTE MAX_PATH dup(?)
+	szProject		BYTE MAX_PATH dup(?)
+	szProjectPath	BYTE MAX_PATH dup(?)
+	szAssembler		BYTE 32 dup(?)
+	szFileName		BYTE MAX_PATH dup(?)
+	szFBPath		BYTE MAX_PATH dup(?)
 	fProject		DWORD ?
 	tabinx			DWORD ?
 	fTimer			DWORD ?
