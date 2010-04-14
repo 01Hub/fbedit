@@ -381,6 +381,21 @@ GetBlockDef proc uses ebx esi edi
 	invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 	invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
 	invoke SendMessage,ha.hOutput,REM_BRACKETMATCH,0,offset da.szBraceMatch
+	invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+	invoke GetItemInt,addr tmpbuff,4
+	mov		da.edtopt.tabsize,eax
+	invoke GetItemInt,addr tmpbuff,0
+	mov		da.edtopt.exptabs,eax
+	invoke GetItemInt,addr tmpbuff,1
+	mov		da.edtopt.indent,eax
+	invoke GetItemInt,addr tmpbuff,0
+	mov		da.edtopt.hiliteline,eax
+	invoke GetItemInt,addr tmpbuff,0
+	mov		da.edtopt.hilitecmnt,eax
+	invoke GetItemInt,addr tmpbuff,1
+	mov		da.edtopt.session,eax
+	invoke GetItemInt,addr tmpbuff,1
+	mov		da.edtopt.linenumber,eax
 	ret
 
 TestIt:

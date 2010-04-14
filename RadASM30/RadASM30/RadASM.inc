@@ -127,6 +127,7 @@ szIniCodeBlock					db 'CodeBlock',0
 szIniCmnt						db 'Cmnt',0
 szIniEdit						db 'Edit',0
 szIniBraceMatch					db 'BraceMatch',0
+szIniOption						db 'Option',0
 szIniParse						db 'Parse',0
 szIniType						db 'Type',0
 szIniIgnore						db 'Ignore',0

@@ -297,16 +297,16 @@ Group=Assembly,Resources,..Theme,..RCFile,..Bitmap,..Menu,..Dialog,Misc,Include
 59=8
 
 [Find]
-1="1200"
-2="'.'"
-3="IDM_OPTION_HELP"
-4="SaveBreakpoints"
-5="IDM_EDIT_INDENT"
-6="IDM_FILE_CLOSESESSION"
-7="21022"
-8="IDM_PROJECT_ADDEXISTINGFILE"
-9="WM_SIZE,0,"
-10="==IDM_VI"
+1="ha.hTab"
+2="1200"
+3="'.'"
+4="IDM_OPTION_HELP"
+5="SaveBreakpoints"
+6="IDM_EDIT_INDENT"
+7="IDM_FILE_CLOSESESSION"
+8="21022"
+9="IDM_PROJECT_ADDEXISTINGFILE"
+10="WM_SIZE,0,"
 
 [VersionControl]
 Settings=1246
@@ -318,7 +318,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=14
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=11
 MilestoneOnDateTimeDate=28
@@ -353,9 +353,9 @@ ProductVer4Range=0
 7=00FFFFFF
 
 [Size]
-2=0,0,687,524,454
-1=0,0,851,458,5528
-11=0,0,960,525,35023
+2=0,0,687,524,5410
+1=0,0,851,458,50625
+11=0,0,960,525,12864
 22=0,0,960,525,10335
 10=0,0,960,525,11113
 23=0,0,0,0,9912
@@ -366,7 +366,7 @@ ProductVer4Range=0
 6=0,0,0,0
 3=0,0,0,0,713
 18=0,0,0,0
-15=0,0,687,524,0
+15=0,0,687,524,30310
 30=0,0,0,0
 13=0,0,0,0,4980
 21=0,0,0,0,1822
@@ -421,10 +421,10 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [AutoLoad]
-AutoLoad=1,2,38,53,10,11,36,33,22,31,58,45,23
+AutoLoad=1,2,38,53,10,11,4
 [Collapse]
 2=
-1=,,,,,,,2130644480,214627130,2097151,,
+1=,,,,,,,2130644480,213971770,2097151,,
 31=
 23=
 3=
@@ -458,7 +458,7 @@ AutoLoad=1,2,38,53,10,11,36,33,22,31,58,45,23
 56=
 58=
 [PTimer]
-PTimer=2993159219
+PTimer=2996909451
 [RADebugBP]
 1=
 2=

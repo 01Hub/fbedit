@@ -11,24 +11,6 @@ include FileIO.asm
 
 .code
 
-ShowPos proc nLine:DWORD,nPos:DWORD
-	LOCAL	buffer[64]:BYTE
-
-	mov		edx,nLine
-	inc		edx
-	invoke BinToDec,edx,addr buffer[4]
-	mov		dword ptr buffer,' :nL'
-	invoke strlen,addr buffer
-	mov		dword ptr buffer[eax],'soP '
-	mov		dword ptr buffer[eax+4],' :'
-	mov		edx,nPos
-	inc		edx
-	invoke BinToDec,edx,addr buffer[eax+6]
-	invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr buffer
-	ret
-
-ShowPos endp
-
 TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	.if da.fTimer
@@ -164,6 +146,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetKeywords
 		invoke GetBlockDef
 		invoke GetParesDef
+		invoke SendMessage,ha.hFileBrowser,FBM_GETIMAGELIST,0,0
+		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.fTimer,1
 	.elseif eax==WM_COMMAND
@@ -348,11 +332,19 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
+			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,da.edtopt.exptabs
+			invoke SendMessage,hEdt,REM_AUTOINDENT,0,da.edtopt.indent
+			.if da.edtopt.linenumber
+				invoke CheckDlgButton,hEdt,-2,TRUE
+				invoke SendMessage,hEdt,WM_COMMAND,-2,0
+			.endif
 		.elseif eax==ID_EDITTEXT
 			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_AUTOSIZELINENUM,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
+			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,da.edtopt.exptabs
+			invoke SendMessage,hEdt,REM_AUTOINDENT,0,0
 		.elseif eax==ID_EDITHEX
 			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
@@ -362,6 +354,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
 			invoke SendMessage,hEdt,WM_SETFONT,ha.hToolFont,FALSE
+			invoke SendMessage,hEdt,DEM_SETPOSSTATUS,ha.hStatus,0
 		.elseif eax==ID_EDITUSER
 			mov		hEdt,0
 		.endif
@@ -389,6 +382,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,hWin
 		.if eax==lParam
 			;Activate
+			invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr szNULL
 			invoke TabToolGetInx,hWin
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
@@ -405,6 +399,10 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,eax
 			invoke GetWindowLong,hEdt,GWL_ID
 			.if eax==ID_EDITCODE
+				.if !da.fProject
+					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hEdt,0
+					invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+				.endif
 			.elseif eax==ID_EDITTEXT
 			.elseif eax==ID_EDITHEX
 			.elseif eax==ID_EDITRES

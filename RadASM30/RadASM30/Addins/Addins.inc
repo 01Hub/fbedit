@@ -128,25 +128,35 @@ WIN ends
 
 ;16+20+12=48
 RADCOLOR struct
-	kwcol				DWORD 16 dup(?)		;Keywords
-	racol				RACOLOR <?>			;RAEdit
-	toolback			DWORD ?
-	tooltext			DWORD ?
-	dialogback			DWORD ?
-	dialogtext			DWORD ?
-	styles				DWORD ?
-	words				DWORD ?
-	ccback				DWORD ?
-	cctext				DWORD ?
-	ttback				DWORD ?
-	tttext				DWORD ?
-	ttapi				DWORD ?
-	ttsel				DWORD ?
+	kwcol			DWORD 16 dup(?)		;Keywords
+	racol			RACOLOR <?>			;RAEdit
+	toolback		DWORD ?
+	tooltext		DWORD ?
+	dialogback		DWORD ?
+	dialogtext		DWORD ?
+	styles			DWORD ?
+	words			DWORD ?
+	ccback			DWORD ?
+	cctext			DWORD ?
+	ttback			DWORD ?
+	tttext			DWORD ?
+	ttapi			DWORD ?
+	ttsel			DWORD ?
 RADCOLOR ends
 
+EDTOPT struct
+	tabsize			DWORD ?
+	exptabs			DWORD ?
+	indent			DWORD ?
+	hiliteline		DWORD ?
+	hilitecmnt		DWORD ?
+	session			DWORD ?
+	linenumber		DWORD ?
+EDTOPT ends
+
 ADDINDATA struct
-	win				WIN <?>
-	winres			WINSIZE <?>
+	win				WIN <>
+	winres			WINSIZE <>
 	radcolor		RADCOLOR <>
 	szAppPath		BYTE MAX_PATH dup(?)
 	szRadASMIni		BYTE MAX_PATH dup(?)
@@ -171,6 +181,7 @@ ADDINDATA struct
 	cctype			DWORD ?
 	ccinprogress	DWORD ?
 	lpCharTab		DWORD ?
+	edtopt			EDTOPT <>
 ADDINDATA ends
 
 TABMEM struct

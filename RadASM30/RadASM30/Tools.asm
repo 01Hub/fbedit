@@ -610,7 +610,7 @@ DoFonts proc
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
-	invoke GetItemInt,addr buffer,-7
+	invoke GetItemInt,addr buffer,-9
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
@@ -632,7 +632,7 @@ DoFonts proc
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
-	invoke GetItemInt,addr buffer,-7
+	invoke GetItemInt,addr buffer,-9
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al

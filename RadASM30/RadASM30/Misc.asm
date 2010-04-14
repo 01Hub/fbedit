@@ -411,3 +411,103 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 
 ParseEdit endp
 
+ShowPos proc nLine:DWORD,nPos:DWORD
+	LOCAL	buffer[64]:BYTE
+
+	mov		edx,nLine
+	inc		edx
+	invoke BinToDec,edx,addr buffer[4]
+	mov		dword ptr buffer,' :nL'
+	invoke strlen,addr buffer
+	mov		dword ptr buffer[eax],'soP '
+	mov		dword ptr buffer[eax+4],' :'
+	mov		edx,nPos
+	inc		edx
+	invoke BinToDec,edx,addr buffer[eax+6]
+	invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr buffer
+	ret
+
+ShowPos endp
+
+IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
+	LOCAL	ochr:CHARRANGE
+	LOCAL	chr:CHARRANGE
+	LOCAL	LnSt:DWORD
+	LOCAL	LnEn:DWORD
+	LOCAL	buffer[32]:BYTE
+
+	invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
+	invoke SendMessage,hWin,REM_LOCKUNDOID,TRUE,0
+	.if fN
+		mov		eax,nChr
+		mov		dword ptr buffer[0],eax
+	.endif
+	invoke SendMessage,hWin,EM_EXGETSEL,0,addr ochr
+	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chr
+	invoke SendMessage,hWin,EM_HIDESELECTION,TRUE,0
+	invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chr.cpMin
+	mov		LnSt,eax
+	mov		eax,chr.cpMax
+	dec		eax
+	invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,eax
+	mov		LnEn,eax
+  nxt:
+	mov		eax,LnSt
+	.if eax<=LnEn
+		invoke SendMessage,hWin,EM_LINEINDEX,LnSt,0
+		mov		chr.cpMin,eax
+		inc		LnSt
+		.if fN
+			; Indent / Comment
+			mov		chr.cpMax,eax
+			invoke SendMessage,hWin,EM_EXSETSEL,0,addr chr
+			invoke SendMessage,hWin,EM_REPLACESEL,TRUE,addr buffer
+			invoke strlen,addr buffer
+			add		ochr.cpMax,eax
+			jmp		nxt
+		.else
+			; Outdent / Uncomment
+			invoke SendMessage,hWin,EM_LINEINDEX,LnSt,0
+			mov		chr.cpMax,eax
+			invoke SendMessage,hWin,EM_EXSETSEL,0,addr chr
+			invoke SendMessage,hWin,EM_GETSELTEXT,0,addr tmpbuff
+			mov		esi,offset tmpbuff
+			xor		eax,eax
+			mov		al,[esi]
+			.if eax==nChr
+				inc		esi
+				invoke SendMessage,hWin,EM_REPLACESEL,TRUE,esi
+				dec		ochr.cpMax
+			.elseif nChr==09h
+				mov		ecx,da.edtopt.tabsize
+				dec		esi
+			  @@:
+				inc		esi
+				mov		al,[esi]
+				cmp		al,' '
+				jne		@f
+				loop	@b
+				inc		esi
+			  @@:
+				.if al==09h
+					inc		esi
+					dec		ecx
+				.endif
+				mov		eax,da.edtopt.tabsize
+				sub		eax,ecx
+				sub		ochr.cpMax,eax
+				invoke SendMessage,hWin,EM_REPLACESEL,TRUE,esi
+			.endif
+			jmp		nxt
+		.endif
+	.endif
+	invoke SendMessage,hWin,EM_EXSETSEL,0,addr ochr
+	invoke SendMessage,hWin,EM_HIDESELECTION,FALSE,0
+	invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+	invoke SendMessage,hWin,REM_LOCKUNDOID,FALSE,0
+	invoke SendMessage,hWin,WM_SETREDRAW,TRUE,0
+	invoke SendMessage,hWin,REM_REPAINT,0,0
+	ret
+
+IndentComment endp
+

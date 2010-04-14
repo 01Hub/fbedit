@@ -74,6 +74,7 @@ LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
 		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
+		mov		da.nLastPropLine,-1
 		mov		chrg.cpMin,0
 		mov		chrg.cpMax,0
 		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
@@ -161,6 +162,7 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 LoadResFile endp
 
 OpenTheFile proc lpFileName:DWORD,ID:DWORD
+	LOCAL	chrg:CHARRANGE
 
 	.if ID
 		mov		eax,ID
