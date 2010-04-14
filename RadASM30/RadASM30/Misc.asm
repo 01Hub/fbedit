@@ -163,48 +163,48 @@ BinToDec proc dwVal:DWORD,lpAscii:DWORD
 	invoke wsprintf,lpAscii,addr buffer,dwVal
 	ret
 
-    push    ebx
-    push    ecx
-    push    edx
-    push    esi
-    push    edi
-	mov		eax,dwVal
-	mov		edi,lpAscii
-	or		eax,eax
-	jns		pos
-	mov		byte ptr [edi],'-'
-	neg		eax
-	inc		edi
-  pos:      
-	mov		ecx,429496730
-	mov		esi,edi
-  @@:
-	mov		ebx,eax
-	mul		ecx
-	mov		eax,edx
-	lea		edx,[edx*4+edx]
-	add		edx,edx
-	sub		ebx,edx
-	add		bl,'0'
-	mov		[edi],bl
-	inc		edi
-	or		eax,eax
-	jne		@b
-	mov		byte ptr [edi],al
-	.while esi<edi
-		dec		edi
-		mov		al,[esi]
-		mov		ah,[edi]
-		mov		[edi],al
-		mov		[esi],ah
-		inc		esi
-	.endw
-    pop     edi
-    pop     esi
-    pop     edx
-    pop     ecx
-    pop     ebx
-    ret
+;    push    ebx
+;    push    ecx
+;    push    edx
+;    push    esi
+;    push    edi
+;	mov		eax,dwVal
+;	mov		edi,lpAscii
+;	or		eax,eax
+;	jns		pos
+;	mov		byte ptr [edi],'-'
+;	neg		eax
+;	inc		edi
+;  pos:      
+;	mov		ecx,429496730
+;	mov		esi,edi
+;  @@:
+;	mov		ebx,eax
+;	mul		ecx
+;	mov		eax,edx
+;	lea		edx,[edx*4+edx]
+;	add		edx,edx
+;	sub		ebx,edx
+;	add		bl,'0'
+;	mov		[edi],bl
+;	inc		edi
+;	or		eax,eax
+;	jne		@b
+;	mov		byte ptr [edi],al
+;	.while esi<edi
+;		dec		edi
+;		mov		al,[esi]
+;		mov		ah,[edi]
+;		mov		[edi],al
+;		mov		[esi],ah
+;		inc		esi
+;	.endw
+;    pop     edi
+;    pop     esi
+;    pop     edx
+;    pop     ecx
+;    pop     ebx
+;    ret
 
 BinToDec endp
 
@@ -248,10 +248,12 @@ GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
 		.while byte ptr [esi] && byte ptr [esi]!=','
 			inc		esi
 		.endw
-		inc		esi
-		mov		eax,esi
+		lea		eax,[esi+1]
 		sub		eax,edi
 		invoke strcpyn,lpResult,edi,eax
+		.if byte ptr [esi]
+			inc		esi
+		.endif
 		invoke strcpy,edi,esi
 	.else
 		invoke strcpy,lpResult,lpDefVal
@@ -379,4 +381,33 @@ IsFileType proc uses ebx esi edi,lpFileType:DWORD,lpFileTypes:DWORD
 	ret
 
 IsFileType endp
+
+ParseEdit proc uses edi,hWin:HWND,pid:DWORD
+	LOCAL	hMem:HGLOBAL
+
+	.if da.fProject
+		.if !pid
+			jmp		Ex
+		.endif
+		mov		edi,pid
+	.else
+		mov		edi,hWin
+	.endif
+	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,edi,0
+	invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
+	inc		eax
+	push	eax
+	add		eax,64
+	and		eax,0FFFFFFE0h
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+	mov		hMem,eax
+	pop		eax
+	invoke SendMessage,hWin,WM_GETTEXT,eax,hMem
+	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
+	invoke GlobalFree,hMem
+	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+  Ex:
+	ret
+
+ParseEdit endp
 

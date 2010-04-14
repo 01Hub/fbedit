@@ -56,7 +56,14 @@ MakeMdiCldWin					PROTO	:DWORD,:DWORD
 SaveTheFile						PROTO	:HWND
 WantToSave						PROTO	:HWND
 SetHiliteWords					PROTO	:DWORD,:DWORD
-OpenTheFile						PROTO	:DWORD
+OpenTheFile						PROTO	:DWORD,:DWORD
+
+CCTYPE_NONE						equ 0
+CCTYPE_PROC						equ 1
+CCTYPE_TOOLTIP					equ 2
+CCTYPE_CONST					equ 3
+CCTYPE_ALL						equ 4
+CCTYPE_STRUCT					equ 5
 
 IDI_MDIICO						equ 100
 IDC_SPLICURV					equ 150
@@ -86,6 +93,7 @@ szComboBoxClassName				db 'ComboBox',0
 szToolBarClassName				db 'ToolbarWindow32',0
 szStaticClassName				db 'Static',0
 szTabControlClassName			db 'SysTabControl32',0
+szRichEdit						db 'riched20.dll',0
 
 DisplayName						db 'RadASM',0
 szBS							db '\',0
@@ -115,6 +123,14 @@ szIniPath						db 'Path',0
 szIniAssembler					db 'Assembler',0
 szIniKeywords					db 'Keywords',0
 szIniColors						db 'Colors',0
+szIniCodeBlock					db 'CodeBlock',0
+szIniCmnt						db 'Cmnt',0
+szIniEdit						db 'Edit',0
+szIniBraceMatch					db 'BraceMatch',0
+szIniParse						db 'Parse',0
+szIniType						db 'Type',0
+szIniIgnore						db 'Ignore',0
+szIniDef						db 'Def',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -141,9 +157,10 @@ szResourceFiles					db '.rc.',0
 
 .data?
 
-osvi							OSVERSIONINFO <?>
+osvi							OSVERSIONINFO <>
 fNT								DWORD ?
 CommandLine						DWORD ?
+icex							INITCOMMONCONTROLSEX <>
 ha								ADDINHANDLES <>
 da								ADDINDATA <>
 mdiID							DWORD ?
@@ -154,3 +171,4 @@ fnptrpth						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 lpOldTabProc					DWORD ?
 tmpbuff							BYTE 16384 dup(?)
 lpOldCCProc						DWORD ?
+hRichEd							DWORD ?

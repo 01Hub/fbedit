@@ -131,8 +131,8 @@ CreateTools proc
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolProperties,eax
 	invoke CreateWindowEx,0,addr szPropertyClassName,NULL,WS_CHILD or WS_VISIBLE or PRSTYLE_FLATTOOLBAR or PRSTYLE_PROJECT,0,0,0,0,ha.hToolProperties,0,ha.hInstance,0
-	mov		ha.hProperties,eax
-	invoke SendMessage,ha.hProperties,WM_SETFONT,ha.hToolFont,FALSE
+	mov		ha.hProperty,eax
+	invoke SendMessage,ha.hProperty,WM_SETFONT,ha.hToolFont,FALSE
 	;Output tool
 	invoke GetPrivateProfileString,addr szIniTool,addr szIniOutput,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,3

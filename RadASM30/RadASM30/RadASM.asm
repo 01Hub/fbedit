@@ -11,6 +11,50 @@ include FileIO.asm
 
 .code
 
+ShowPos proc nLine:DWORD,nPos:DWORD
+	LOCAL	buffer[64]:BYTE
+
+	mov		edx,nLine
+	inc		edx
+	invoke BinToDec,edx,addr buffer[4]
+	mov		dword ptr buffer,' :nL'
+	invoke strlen,addr buffer
+	mov		dword ptr buffer[eax],'soP '
+	mov		dword ptr buffer[eax+4],' :'
+	mov		edx,nPos
+	inc		edx
+	invoke BinToDec,edx,addr buffer[eax+6]
+	invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr buffer
+	ret
+
+ShowPos endp
+
+TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	.if da.fTimer
+		dec		da.fTimer
+		.if ZERO?
+;			invoke MenuEnable
+;			xor		eax,eax
+;			test	wpos.fView,4
+;			.if !ZERO?
+;				inc		eax
+;			.endif
+;			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+;			invoke ShowSession
+;			invoke ShowProc,nLastLine
+;			invoke GetCapture
+;			.if !eax
+;				invoke UpdateAll,IS_CHANGED,0
+;			.else
+;				mov		fTimer,1
+;			.endif
+		.endif
+	.endif
+	ret
+
+TimerProc endp
+
 CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 
@@ -118,6 +162,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetAssembler
 		invoke GetColors
 		invoke GetKeywords
+		invoke GetBlockDef
+		invoke GetParesDef
+		invoke SetTimer,hWin,200,200,addr TimerProc
+		mov		da.fTimer,1
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
@@ -256,7 +304,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
-			invoke OpenTheFile,[esi].FBNOTIFY.lpfile
+			invoke OpenTheFile,[esi].FBNOTIFY.lpfile,0
 		.endif
 	.elseif eax==WM_TOOLSIZE
 		mov		eax,wParam
@@ -267,7 +315,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,ha.hFileBrowser,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
 			invoke MoveWindow,ha.hProjectBrowser,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.elseif eax==ha.hToolProperties
-			invoke MoveWindow,ha.hProperties,0,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			invoke MoveWindow,ha.hProperty,0,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.elseif eax==ha.hToolOutput
 			invoke MoveWindow,ha.hTabOutput,0,0,20,[esi].RECT.bottom,TRUE
 			sub		[esi].RECT.right,20
@@ -295,17 +343,18 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_CREATE
 		mov		eax,mdiID
 		.if eax==ID_EDITCODE
-			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
 		.elseif eax==ID_EDITTEXT
-			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or STYLE_NOCOLLAPSE or STYLE_NOHILITE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_AUTOSIZELINENUM,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 		.elseif eax==ID_EDITHEX
-			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
@@ -375,15 +424,164 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,wParam
 		.if eax==ID_EDITCODE
 			.if [esi].NMHDR.code==EN_SELCHANGE
+				mov		eax,[esi].RASELCHANGE.chrg.cpMin
+				sub		eax,[esi].RASELCHANGE.cpLine
+				invoke ShowPos,[esi].RASELCHANGE.line,eax
 				.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
+					mov		edi,[esi].RASELCHANGE.line
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBOOKMARK,edi,0
+					.if eax==1
+						;Collapse
+						invoke GetKeyState,VK_CONTROL
+						test	eax,80h
+						.if ZERO?
+							invoke SendMessage,[ebx].TABMEM.hedt,REM_COLLAPSE,edi,0
+						.else
+							invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBLOCKEND,edi,0
+							.if eax!=-1
+								push	esi
+								dec		eax
+								mov		esi,edi
+								mov		edi,eax
+								.while edi>=esi && edi!=-1
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_COLLAPSE,edi,0
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_PRVBOOKMARK,edi,1
+									mov		edi,eax
+								.endw
+								pop		esi
+							.endif
+						.endif
+					.elseif eax==2
+						;Expand
+						invoke GetKeyState,VK_CONTROL
+						test	eax,80h
+						.if ZERO?
+							invoke SendMessage,[ebx].TABMEM.hedt,REM_EXPAND,edi,0
+						.else
+							invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBLOCKEND,edi,0
+							.if eax!=-1
+								push	esi
+								mov		esi,eax
+								.while edi<esi
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_EXPAND,edi,0
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_NXTBOOKMARK,edi,2
+									mov		edi,eax
+								.endw
+								pop		esi
+							.endif
+						.endif
+					.elseif eax==8
+						;Expand hidden lines
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_EXPAND,edi,0
+					.else
+						;Clear bookmark
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,edi,0
+					.endif
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
-					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
-						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
+					.if [esi].RASELCHANGE.fchanged
+						.if ![ebx].TABMEM.fchanged
+							invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+						.endif
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
+
+						invoke SendMessage,[ebx].TABMEM.hedt,WM_GETTEXTLENGTH,0,0
+						.if eax!=da.nLastSize
+							push	eax
+							sub		eax,da.nLastSize
+;							invoke UpdateGoto,ha.hREd,[esi].RASELCHANGE.chrg.cpMin,eax
+							pop		da.nLastSize
+						.endif
+					  OnceMore:
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBOOKMARK,da.nLastLine,0
+						push	eax
+						mov		edi,offset da.rabd
+						or		eax,-1
+						.while [edi].RABLOCKDEF.lpszStart
+							mov		edx,[edi].RABLOCKDEF.flag
+							shr		edx,16
+							.if edx==[esi].RASELCHANGE.nWordGroup
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_ISLINE,da.nLastLine,[edi].RABLOCKDEF.lpszStart
+								.break .if eax!=-1
+							.endif
+							lea		edi,[edi+sizeof RABLOCKDEF]
+						.endw
+						pop		edx
+						.if eax==-1
+							.if edx==1 || edx==2
+								;Clear bookmark
+								.if edx==2
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_EXPAND,da.nLastLine,0
+								.endif
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,da.nLastLine,0
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETDIVIDERLINE,da.nLastLine,FALSE
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETSEGMENTBLOCK,da.nLastLine,FALSE
+							.endif
+						.else
+							xor		eax,eax
+							test	[edi].RABLOCKDEF.flag,BD_NONESTING
+							.if !ZERO?
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_ISINBLOCK,da.nLastLine,edi
+							.endif
+							.if !eax
+								;Set bookmark
+								mov		edx,da.nLastLine
+								inc		edx
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_ISLINEHIDDEN,edx,0
+								.if eax
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,da.nLastLine,2
+								.else
+									invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,da.nLastLine,1
+								.endif
+								mov		edx,[edi].RABLOCKDEF.flag
+								and		edx,BD_DIVIDERLINE
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETDIVIDERLINE,da.nLastLine,edx
+								mov		edx,[edi].RABLOCKDEF.flag
+								and		edx,BD_SEGMENTBLOCK
+								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETSEGMENTBLOCK,da.nLastLine,edx
+							.endif
+						.endif
+						mov		eax,[esi].RASELCHANGE.line
+						.if eax>da.nLastLine
+							inc		da.nLastLine
+							jmp		OnceMore
+						.elseif eax<da.nLastLine
+							dec		da.nLastLine
+							jmp		OnceMore
+						.endif
+						.if ![esi].RASELCHANGE.nWordGroup
+							.if !da.ccinprogress
+;								invoke ApiListBox,esi
+							.endif
+							mov		[ebx].TABMEM.fupdate,TRUE
+						.endif
+					.endif
+					mov		eax,[esi].RASELCHANGE.line
+					mov		da.nLastLine,eax
+					.if eax!=da.nLastPropLine
+						mov		da.nLastPropLine,eax
+						invoke ShowWindow,ha.hCC,SW_HIDE
+						invoke ShowWindow,ha.hTT,SW_HIDE
+						mov		da.cctype,CCTYPE_NONE
+						.if ![esi].RASELCHANGE.nWordGroup
+							.if [ebx].TABMEM.fupdate
+								mov		[ebx].TABMEM.fupdate,FALSE
+								invoke ParseEdit,[ebx].TABMEM.hedt,[ebx].TABMEM.pid
+							.endif
+						.endif
+					.elseif da.cctype==CCTYPE_ALL
+						.if !da.ccinprogress
+;							invoke ApiListBox,esi
+						.endif
 					.endif
 				.endif
+				mov		da.fTimer,2
 			.endif
 		.elseif eax==ID_EDITTEXT
 			.if [esi].NMHDR.code==EN_SELCHANGE
+				mov		eax,[esi].RASELCHANGE.chrg.cpMin
+				sub		eax,[esi].RASELCHANGE.cpLine
+				invoke ShowPos,[esi].RASELCHANGE.line,eax
 				.if[esi].RASELCHANGE.seltyp==SEL_TEXT
 					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
@@ -392,17 +590,23 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.endif
 		.elseif eax==ID_EDITHEX
 			.if [esi].NMHDR.code==EN_SELCHANGE
+				invoke SendMessage,[ebx].TABMEM.hedt,EM_LINEINDEX,[esi].HESELCHANGE.line,0
+				mov		edx,[esi].HESELCHANGE.chrg.cpMin
+				sub		edx,eax
+				invoke ShowPos,[esi].HESELCHANGE.line,edx
 				.if[esi].HESELCHANGE.seltyp==SEL_TEXT
 					.if [esi].HESELCHANGE.fchanged && ![ebx].TABMEM.fchanged
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 					.endif
 				.endif
+				mov		da.fTimer,2
 			.endif
 		.elseif eax==ID_EDITRES
 			invoke SendMessage,[esi].NMHDR.hwndFrom,PRO_GETMODIFY,0,0
 			.if eax && ![ebx].TABMEM.fchanged
 				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 			.endif
+			mov		da.fTimer,2
 		.elseif eax==ID_EDITUSER
 		.endif
 	.elseif eax==WM_COMMAND
@@ -410,8 +614,14 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		movsx	eax,ax
 		.if eax==-3
 			;Expand All
+			invoke SendMessage,ha.hEdt,REM_EXPANDALL,0,0
+			invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+			invoke SendMessage,ha.hEdt,REM_REPAINT,0,0
 		.elseif eax==-4
 			;Collapse All
+			invoke SendMessage,ha.hEdt,REM_COLLAPSEALL,0,0
+			invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+			invoke SendMessage,ha.hEdt,REM_REPAINT,0,0
 		.endif
 	.elseif eax==WM_MOVE
 	.elseif eax==WM_DESTROY
@@ -501,15 +711,6 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 ;	invoke LoadCursor,NULL,IDC_ARROW
 ;	mov		wc.hCursor,eax
 ;	invoke RegisterClassEx,addr wc
-	invoke InstallRACodeComplete,ha.hInstance,FALSE
-	invoke InstallFileBrowser,ha.hInstance,FALSE
-	invoke InstallProjectBrowser,ha.hInstance,FALSE
-	invoke InstallRAProperty,ha.hInstance,FALSE
-	invoke InstallRATools,ha.hInstance,FALSE
-	invoke InstallRAEdit,ha.hInstance,FALSE
-	invoke RAHexEdInstall,ha.hInstance,FALSE
-	invoke ResEdInstall,ha.hInstance,FALSE
-	invoke GridInstall,ha.hInstance,FALSE
 	invoke GetModuleFileName,ha.hInstance,addr da.szAppPath,sizeof da.szAppPath
 	invoke strlen,addr da.szAppPath
 	.while da.szAppPath[eax]!='\'
@@ -589,8 +790,41 @@ start:
 	;Get command line filename
 	invoke PathGetArgs,CommandLine
 	mov		CommandLine,eax
+	invoke InitCommonControls
+	;prepare common control structure
+	mov		icex.dwSize,sizeof INITCOMMONCONTROLSEX
+	mov		icex.dwICC,ICC_DATE_CLASSES or ICC_USEREX_CLASSES or ICC_INTERNET_CLASSES or ICC_ANIMATE_CLASS or ICC_HOTKEY_CLASS or ICC_PAGESCROLLER_CLASS or ICC_COOL_CLASSES
+	invoke InitCommonControlsEx,addr icex
+	invoke OleInitialize,NULL
+	invoke LoadLibrary,offset szRichEdit
+	mov		hRichEd,eax
+	;Install custom controls
+	invoke InstallRACodeComplete,ha.hInstance,FALSE
+	invoke InstallFileBrowser,ha.hInstance,FALSE
+	invoke InstallProjectBrowser,ha.hInstance,FALSE
+	invoke InstallRAProperty,ha.hInstance,FALSE
+	invoke InstallRATools,ha.hInstance,FALSE
+	invoke InstallRAEdit,ha.hInstance,FALSE
+	invoke RAHexEdInstall,ha.hInstance,FALSE
+	invoke ResEdInstall,ha.hInstance,FALSE
+	invoke GridInstall,ha.hInstance,FALSE
+	invoke GetCharTabPtr
+	mov		da.lpCharTab,eax
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
-
+	;Uninstall custom controls
+	invoke GridUnInstall
+	invoke ResEdUninstall
+	invoke RAHexEdUnInstall
+	invoke UnInstallRAEdit
+	invoke UnInstallRATools
+	invoke UnInstallRAProperty
+	invoke UnInstallProjectBrowser
+	invoke UnInstallFileBrowser
+	invoke UnInstallRACodeComplete
+	.if hRichEd
+		invoke FreeLibrary,hRichEd
+	.endif
+	invoke OleUninitialize
 	invoke ExitProcess,0
 
 end start

@@ -14,10 +14,11 @@ IDA_ACCEL						equ 100
 IDR_MENU						equ 10000
 IDM_FILE						equ 10001
 IDM_FILE_NEW					equ 10002
-IDM_FILE_CLOSE					equ 10055
 IDM_FILE_OPEN					equ 10006
+IDM_FILE_CLOSE					equ 10055
 IDM_FILE_SAVE					equ 10007
 IDM_FILE_SAVEALL				equ 10008
+IDM_FILE_PAGESETUP				equ 10056
 IDM_FILE_PRINT					equ 10010
 IDM_FILE_EXIT					equ 10004
 IDM_EDIT						equ 10011
@@ -82,7 +83,7 @@ ADDINHANDLES struct
 	hFileBrowser	HWND ?
 	hProjectBrowser	HWND ?
 	hToolProperties	HWND ?
-	hProperties		HWND ?
+	hProperty		HWND ?
 	hToolOutput		HWND ?
 	hTabOutput		HWND ?
 	hOutput			HWND ?
@@ -153,12 +154,23 @@ ADDINDATA struct
 	szProject		BYTE MAX_PATH dup(?)
 	szProjectPath	BYTE MAX_PATH dup(?)
 	szAssembler		BYTE 32 dup(?)
+	nAsm			DWORD ?
 	szFileName		BYTE MAX_PATH dup(?)
 	szFBPath		BYTE MAX_PATH dup(?)
 	fProject		DWORD ?
 	tabinx			DWORD ?
 	fTimer			DWORD ?
+	nLastLine		DWORD ?
+	nLastPropLine	DWORD ?
 	nLastSize		DWORD ?
+	rabdstr			BYTE 2048 dup(?)
+	rabd			RABLOCKDEF 32 dup(<>)
+	szCmntStart		BYTE 64 dup(?)
+	szCmntEnd		BYTE 64 dup(?)
+	szBraceMatch	BYTE 64 dup(?)
+	cctype			DWORD ?
+	ccinprogress	DWORD ?
+	lpCharTab		DWORD ?
 ADDINDATA ends
 
 TABMEM struct

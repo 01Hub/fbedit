@@ -421,6 +421,7 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 			mov		[ebx].TABMEM.pid,eax
 		.endif
 	.endif
+	mov		eax,ebx
 	ret
 
 TabToolAdd endp

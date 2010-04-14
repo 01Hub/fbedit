@@ -160,13 +160,19 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 
 LoadResFile endp
 
-OpenTheFile proc lpFileName:DWORD
+OpenTheFile proc lpFileName:DWORD,ID:DWORD
 
-	invoke GetTheFileType,lpFileName
+	.if ID
+		mov		eax,ID
+	.else
+		invoke GetTheFileType,lpFileName
+	.endif
 	.if eax==ID_EDITCODE
 		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
 		invoke LoadTextFile,ha.hEdt,lpFileName
+		invoke SendMessage,ha.hEdt,REM_SETBLOCKS,0,0
+		invoke SendMessage,ha.hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 	.elseif eax==ID_EDITTEXT
 		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITTEXT
@@ -227,7 +233,7 @@ OpenEditFile proc
 	.if eax
 		invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
 		.if eax==-1
-			invoke OpenTheFile,addr buffer
+			invoke OpenTheFile,addr buffer,0
 		.endif
 	.endif
 	ret

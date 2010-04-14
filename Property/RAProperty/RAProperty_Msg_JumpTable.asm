@@ -663,6 +663,42 @@
 	_PRM_COMPACTLIST:
 		invoke CompactProperties,wParam
 		ret
+	_PRM_RESET:
+		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_RESETCONTENT,0,0
+		.if [ebx].RAPROPERTY.hmem
+			invoke GlobalFree,[ebx].RAPROPERTY.hmem
+		.endif
+		xor		eax,eax
+		mov		[ebx].RAPROPERTY.hmem,eax
+		mov		[ebx].RAPROPERTY.cbsize,eax
+		mov		[ebx].RAPROPERTY.lpmem,eax
+		mov		[ebx].RAPROPERTY.rpfree,eax
+		mov		[ebx].RAPROPERTY.rpproject,eax
+		invoke RtlZeroMemory,addr [ebx].RAPROPERTY.defgen,sizeof DEFGEN
+		.if [ebx].RAPROPERTY.lpignore
+			invoke GlobalFree,[ebx].RAPROPERTY.lpignore
+		.endif
+		xor		eax,eax
+		mov		[ebx].RAPROPERTY.lpignore,eax
+		mov		[ebx].RAPROPERTY.rpignorefree,eax
+		.if [ebx].RAPROPERTY.lpisword
+			invoke GlobalFree,[ebx].RAPROPERTY.lpisword
+		.endif
+		xor		eax,eax
+		mov		[ebx].RAPROPERTY.lpisword,eax
+		mov		[ebx].RAPROPERTY.rpiswordfree,eax
+		.if [ebx].RAPROPERTY.lpdeftype
+			invoke GlobalFree,[ebx].RAPROPERTY.lpdeftype
+		.endif
+		xor		eax,eax
+		mov		[ebx].RAPROPERTY.lpdeftype,eax
+		mov		[ebx].RAPROPERTY.rpfreedeftype,eax
+		.if [ebx].RAPROPERTY.hMemArray
+			invoke GlobalFree,[ebx].RAPROPERTY.hMemArray
+		.endif
+		xor		eax,eax
+		mov		[ebx].RAPROPERTY.hMemArray,eax
+		ret
 
 .data
 align 4
@@ -714,5 +750,7 @@ _RAPROPERTY_BASE \
 	dd _PRM_ADDPROPERTYWORD		;equ WM_USER+44		;wParam=dwType, lParam=lpszWord
 	dd _PRM_ADDPROPERTYLIST		;equ WM_USER+45		;wParam=dwType, lParam=lpszLineOfWords
 	dd _PRM_COMPACTLIST			;equ WM_USER+46		;wParam=fProject, lParam=0
+	dd _PRM_RESET				;equ WM_USER+47		;wParam=0, lParam=0
+
 .code
 align 4

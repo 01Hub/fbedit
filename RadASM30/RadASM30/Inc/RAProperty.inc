@@ -7,7 +7,7 @@ PRM_ADDPROPERTYTYPE		equ WM_USER+1		;wParam=dwType, lParam=lpszType
 PRM_ADDPROPERTYFILE		equ WM_USER+2		;wParam=dwType, lParam=lpszFile
 PRM_SETGENDEF			equ WM_USER+3		;wParam=0, lParam=lpGENDEF
 PRM_ADDIGNORE			equ WM_USER+4		;wParam=IgnoreType, lParam=lpszWord
-PRM_ADDDEFTYPE			equ WM_USER+5		;wParam=0, lParam=lpTYPEDEF
+PRM_ADDDEFTYPE			equ WM_USER+5		;wParam=0, lParam=lpDEFTYPE
 PRM_PARSEFILE			equ WM_USER+6		;wParam=nOwner, lParam=lpFileData
 PRM_SETCHARTAB			equ WM_USER+7		;wParam=0, lParam=lpCharTab
 PRM_DELPROPERTY			equ WM_USER+8		;wParam=nOwner, lParam=0
@@ -49,6 +49,7 @@ PRM_ISINLIST			equ WM_USER+43		;wParam=lpWord, lParam=lpList
 PRM_ADDPROPERTYWORD		equ WM_USER+44		;wParam=dwType, lParam=lpszWord
 PRM_ADDPROPERTYLIST		equ WM_USER+45		;wParam=dwType, lParam=lpszListOfWords
 PRM_COMPACTLIST			equ WM_USER+46		;wParam=fProject, lParam=0
+PRM_RESET				equ WM_USER+47		;wParam=0, lParam=0
 
 ;Languages
 nFREEBASIC				equ 0
