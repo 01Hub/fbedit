@@ -262,9 +262,37 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_EDIT_FIND
 			.elseif eax==IDM_EDIT_REPLACE
 			.elseif eax==IDM_EDIT_INDENT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke IndentComment,ha.hEdt,VK_TAB,TRUE
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_EDIT_OUTDENT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke IndentComment,ha.hEdt,VK_TAB,FALSE
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_EDIT_COMMENT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke IndentComment,ha.hEdt,';',TRUE
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_EDIT_UNCOMMENT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke IndentComment,ha.hEdt,';',FALSE
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_EDIT_TOGGLEBM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID

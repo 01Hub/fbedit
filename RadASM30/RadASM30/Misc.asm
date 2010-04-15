@@ -685,14 +685,16 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	.elseif eax==4
 		;Project
 	.elseif eax==5
-		;Make
-	.elseif eax==5
-		;Tools
+		;Resource
 	.elseif eax==6
-		;Window
+		;Make
 	.elseif eax==7
-		;Option
+		;Tools
 	.elseif eax==8
+		;Window
+	.elseif eax==9
+		;Option
+	.elseif eax==10
 		;Help
 	.endif
 	.while TRUE
