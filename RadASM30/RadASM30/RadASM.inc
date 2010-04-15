@@ -118,6 +118,7 @@ szIniProperty					db 'Property',0
 szIniOutput						db 'Output',0
 szIniTab						db 'Tab',0
 szIniReBar						db 'Rebar',0
+szIniLock						db 'Lock',0
 szIniSession					db 'Session',0
 szIniPath						db 'Path',0
 szIniAssembler					db 'Assembler',0

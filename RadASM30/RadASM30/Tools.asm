@@ -282,6 +282,26 @@ DoToolBar proc
 
 DoToolBar endp
 
+LockToolbars proc uses ebx
+	LOCAL	rbbi:REBARBANDINFO
+
+	xor		ebx,ebx
+	mov		rbbi.cbSize,sizeof REBARBANDINFO
+	.while ebx<6
+		mov		rbbi.fMask,RBBIM_STYLE
+		invoke SendMessage,ha.hReBar,RB_GETBANDINFO,ebx,addr rbbi
+		.if da.fLockToolbar
+			or		rbbi.fStyle,RBBS_NOGRIPPER
+		.else
+			and		rbbi.fStyle,-1 xor RBBS_NOGRIPPER
+		.endif
+		invoke SendMessage,ha.hReBar,RB_SETBANDINFO,ebx,addr rbbi
+		inc		ebx
+	.endw
+	ret
+
+LockToolbars endp
+
 DoReBar proc uses ebx esi edi
 	LOCAL	rbbi:REBARBANDINFO
 	LOCAL	buffer[256]:BYTE
@@ -291,6 +311,8 @@ DoReBar proc uses ebx esi edi
 	mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
 	invoke CreateWindowEx,0,addr szReBarClassName,NULL,edx,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
 	mov		ha.hReBar,eax
+	invoke GetPrivateProfileInt,addr szIniWin,addr szIniLock,0,addr da.szRadASMIni
+	mov		da.fLockToolbar,eax
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniReBar,addr szDefReBar,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		nIns,0
 	.while buffer
@@ -302,6 +324,7 @@ DoReBar proc uses ebx esi edi
 		mov		ebx,eax
 		;Style
 		invoke GetItemInt,addr buffer,0
+		and		eax,-1 xor RBBS_NOGRIPPER
 		mov		esi,eax
 		;lx
 		invoke GetItemInt,addr buffer,0
@@ -408,6 +431,7 @@ DoReBar proc uses ebx esi edi
 		.endif
 		inc		nIns
 	.endw
+	invoke LockToolbars
 	ret
 
 DoReBar endp
@@ -423,6 +447,11 @@ SaveReBar proc uses ebx
 		inc		ebx
 	.endw
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniReBar,addr buffer[1],addr da.szRadASMIni
+	mov		word ptr buffer,'0'
+	.if da.fLockToolbar
+		mov		word ptr buffer,'1'
+	.endif
+	invoke WritePrivateProfileString,addr szIniWin,addr szIniLock,addr buffer,addr da.szRadASMIni
 	ret
 
 SaveIt:
@@ -432,6 +461,7 @@ SaveIt:
 	invoke SendMessage,ha.hReBar,RB_GETBANDINFO,ebx,addr rbbi
 	.if eax
 		invoke PutItemInt,addr buffer,rbbi.wID
+		and		rbbi.fStyle,-1 xor RBBS_FIXEDSIZE
 		invoke PutItemInt,addr buffer,rbbi.fStyle
 		invoke PutItemInt,addr buffer,rbbi.lx
 	.endif

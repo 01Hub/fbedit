@@ -168,6 +168,15 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 		mov		eax,ID
 	.else
 		invoke GetTheFileType,lpFileName
+		.if eax==ID_EDITRES
+			invoke GetKeyState,VK_CONTROL
+			test	eax,80h
+			.if !ZERO?
+				mov		eax,ID_EDITCODE
+			.else
+				mov		eax,ID_EDITRES
+			.endif
+		.endif
 	.endif
 	.if eax==ID_EDITCODE
 		invoke strcpy,addr da.szFileName,lpFileName
@@ -207,7 +216,7 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 
 OpenTheFile endp
 
-OpenEditFile proc
+OpenEditFile proc ID:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
@@ -220,7 +229,11 @@ OpenEditFile proc
 	pop		ofn.hwndOwner
 	push	ha.hInstance
 	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset ALLFilterString
+	.if ID==ID_EDITHEX
+		mov		ofn.lpstrFilter,offset ANYFilterString
+	.else
+		mov		ofn.lpstrFilter,offset ALLFilterString
+	.endif
 	mov		buffer[0],0
 	lea		eax,buffer
 	mov		ofn.lpstrFile,eax
@@ -235,7 +248,7 @@ OpenEditFile proc
 	.if eax
 		invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
 		.if eax==-1
-			invoke OpenTheFile,addr buffer,0
+			invoke OpenTheFile,addr buffer,ID
 		.endif
 	.endif
 	ret

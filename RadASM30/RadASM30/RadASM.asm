@@ -16,6 +16,7 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if da.fTimer
 		dec		da.fTimer
 		.if ZERO?
+			invoke EnableToolBar
 ;			invoke MenuEnable
 ;			xor		eax,eax
 ;			test	wpos.fView,4
@@ -95,6 +96,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
 	LOCAL	rect:RECT
 	LOCAL	ps:PAINTSTRUCT
+	LOCAL	chrg:CHARRANGE
+	LOCAL	hebmk:HEBMK
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -145,6 +148,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetColors
 		invoke GetKeywords
 		invoke GetBlockDef
+		invoke GetOption
 		invoke GetParesDef
 		invoke SendMessage,ha.hFileBrowser,FBM_GETIMAGELIST,0,0
 		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
@@ -159,7 +163,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke strcpy,addr da.szFileName,addr szNewFile
 				invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
 			.elseif eax==IDM_FILE_OPEN
-				invoke OpenEditFile
+				invoke OpenEditFile,0
+			.elseif eax==IDM_FILE_OPENHEX
+				invoke OpenEditFile,ID_EDITHEX
+			.elseif eax==IDM_FILE_REOPEN
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke LoadTextFile,ha.hEdt,addr da.szFileName
+						invoke TabToolSetChanged,ha.hMdi,FALSE
+					.elseif eax==ID_EDITHEX
+						invoke LoadHexFile,ha.hEdt,addr da.szFileName
+						invoke TabToolSetChanged,ha.hMdi,FALSE
+					.elseif eax==ID_EDITRES
+						invoke LoadResFile,ha.hEdt,addr da.szFileName
+						invoke TabToolSetChanged,ha.hMdi,FALSE
+					.elseif eax==ID_EDITUSER
+					.endif
+				.endif
 			.elseif eax==IDM_FILE_CLOSE
 				.if ha.hMdi
 					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
@@ -168,10 +189,190 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke SaveTheFile,ha.hMdi
 				.endif
+			.elseif eax==IDM_FILE_SAVEAS
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
+			.elseif eax==IDM_EDIT_UNDO
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,EM_UNDO,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_UNDO,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_REDO
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,EM_REDO,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_REDO,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_CUT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,WM_CUT,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_CUT,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_COPY
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,WM_COPY,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_COPY,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_PASTE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,WM_PASTE,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_PASTE,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_DELETE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,WM_CLEAR,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_DELETECONTROLS,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_SELECTALL
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						mov		chrg.cpMin,0
+						mov		chrg.cpMax,-1
+						invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+					.elseif eax==ID_EDITRES
+						;invoke SendMessage,ha.hEdt,DEM_DELETECONTROLS,0,0
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_FIND
+			.elseif eax==IDM_EDIT_REPLACE
+			.elseif eax==IDM_EDIT_INDENT
+			.elseif eax==IDM_EDIT_OUTDENT
+			.elseif eax==IDM_EDIT_COMMENT
+			.elseif eax==IDM_EDIT_UNCOMMENT
+			.elseif eax==IDM_EDIT_TOGGLEBM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						mov		ebx,eax
+						invoke SendMessage,ha.hEdt,REM_GETBOOKMARK,ebx,0
+						.if eax==3
+							invoke SendMessage,ha.hEdt,REM_SETBOOKMARK,ebx,0
+						.elseif eax==0
+							invoke SendMessage,ha.hEdt,REM_SETBOOKMARK,ebx,3
+						.endif
+					.elseif eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						mov		eax,chrg.cpMin
+						shr		eax,5
+						invoke SendMessage,ha.hEdt,HEM_TOGGLEBOOKMARK,eax,0
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_EDIT_NEXTBM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						mov		ebx,eax
+						invoke SendMessage,ha.hEdt,REM_NXTBOOKMARK,ebx,3
+						.if eax==-1
+							invoke SendMessage,ha.hEdt,REM_NXTBOOKMARK,eax,3
+						.endif
+						.if eax!=-1
+							invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+							invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+						.endif
+					.elseif eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,HEM_NEXTBOOKMARK,0,addr hebmk
+						.if eax
+							invoke GetParent,hebmk.hWin
+							invoke TabToolGetInx,eax
+							invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+							invoke TabToolActivate
+							mov		eax,hebmk.nLine
+							shl		eax,5
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hEdt,HEM_VCENTER,0,0
+							invoke SetFocus,ha.hEdt
+						.endif
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_PREVBM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						mov		ebx,eax
+						invoke SendMessage,ha.hEdt,REM_PRVBOOKMARK,ebx,3
+						.if eax==-1
+							invoke SendMessage,ha.hEdt,EM_GETLINECOUNT,0,0
+							inc		eax
+							invoke SendMessage,ha.hEdt,REM_PRVBOOKMARK,eax,3
+						.endif
+						.if eax!=-1
+							invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+							invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+						.endif
+					.elseif eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,HEM_PREVIOUSBOOKMARK,0,addr hebmk
+						.if eax
+							invoke GetParent,hebmk.hWin
+							invoke TabToolGetInx,eax
+							invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+							invoke TabToolActivate
+							mov		eax,hebmk.nLine
+							shl		eax,5
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hEdt,HEM_VCENTER,0,0
+							invoke SetFocus,ha.hEdt
+						.endif
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_CLEARBM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_CLRBOOKMARKS,0,3
+					.elseif eax==ID_EDITHEX
+						invoke SendMessage,ha.hEdt,HEM_CLEARBOOKMARKS,0,0
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_VIEW_LOCK
+				xor		da.fLockToolbar,TRUE
+				invoke LockToolbars
 			.elseif eax==IDM_VIEW_TBFILE
 				invoke HideToolBar,1
 			.elseif eax==IDM_VIEW_TBEDIT
@@ -212,8 +413,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SaveTools
 			invoke SaveReBar
 			invoke PutSession
-			invoke UpdateAll,UAM_CLOSEALL,0
 			invoke PutWinPos
+			invoke UpdateAll,UAM_CLOSEALL,0
 			jmp		ExDef
 		.else
 			jmp		Ex
@@ -288,7 +489,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
-			invoke OpenTheFile,[esi].FBNOTIFY.lpfile,0
+			invoke UpdateAll,UAM_ISOPENACTIVATE,[esi].FBNOTIFY.lpfile
+			.if eax==-1
+				invoke OpenTheFile,[esi].FBNOTIFY.lpfile,0
+			.endif
+		.endif
+	.elseif eax==WM_INITMENUPOPUP
+		mov		eax,lParam
+		mov		edx,eax
+		shr		eax,16
+		.if !eax
+			.if da.win.fcldmax && ha.hEdt
+				dec		edx
+			.endif
+			invoke EnableMenu,wParam,edx
 		.endif
 	.elseif eax==WM_TOOLSIZE
 		mov		eax,wParam
@@ -409,6 +623,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
 				invoke SendMessage,hEdt,PRO_CLOSE,0,0
 			.endif
+			invoke DestroyWindow,hEdt
 			invoke TabToolDel,hWin
 		.else
 			xor		eax,eax
@@ -573,7 +788,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 					.endif
 				.endif
-				mov		da.fTimer,2
+				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
 			.if [esi].NMHDR.code==EN_SELCHANGE
@@ -585,6 +800,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 					.endif
 				.endif
+				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITHEX
 			.if [esi].NMHDR.code==EN_SELCHANGE
@@ -597,14 +813,14 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 					.endif
 				.endif
-				mov		da.fTimer,2
+				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITRES
 			invoke SendMessage,[esi].NMHDR.hwndFrom,PRO_GETMODIFY,0,0
 			.if eax && ![ebx].TABMEM.fchanged
 				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 			.endif
-			mov		da.fTimer,2
+			mov		da.fTimer,1
 		.elseif eax==ID_EDITUSER
 		.endif
 	.elseif eax==WM_COMMAND

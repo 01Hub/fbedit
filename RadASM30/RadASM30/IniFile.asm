@@ -379,6 +379,24 @@ GetBlockDef proc uses ebx esi edi
 	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntStart
 	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntEnd
 	invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
+	ret
+
+TestIt:
+	.if eax
+		.while byte ptr [eax]
+			.if byte ptr [eax]=='|'
+				mov		byte ptr [eax],0
+			.endif
+			inc		eax
+		.endw
+	.endif
+	retn
+	ret
+
+GetBlockDef endp
+
+GetOption proc
+
 	invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
 	invoke SendMessage,ha.hOutput,REM_BRACKETMATCH,0,offset da.szBraceMatch
 	invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
@@ -398,19 +416,7 @@ GetBlockDef proc uses ebx esi edi
 	mov		da.edtopt.linenumber,eax
 	ret
 
-TestIt:
-	.if eax
-		.while byte ptr [eax]
-			.if byte ptr [eax]=='|'
-				mov		byte ptr [eax],0
-			.endif
-			inc		eax
-		.endw
-	.endif
-	retn
-	ret
-
-GetBlockDef endp
+GetOption endp
 
 GetParesDef proc
 	LOCAL	buffcbo[128]:BYTE

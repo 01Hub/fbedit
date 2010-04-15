@@ -511,3 +511,449 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 
 IndentComment endp
 
+EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	mov		ebx,ha.hEdt
+	xor		esi,esi
+	.if ebx
+		invoke GetWindowLong,ebx,GWL_ID
+		mov		esi,eax
+	.endif
+	push	0
+	push	0
+	mov		eax,nPos
+	.if eax==0
+		;File
+		push	ebx
+		push	IDM_FILE_REOPEN
+		push	ebx
+		push	IDM_FILE_CLOSE
+		push	ebx
+		push	IDM_FILE_SAVE
+		push	ebx
+		push	IDM_FILE_SAVEAS
+		push	ebx
+		push	IDM_FILE_SAVEALL
+		.if esi==ID_EDITCODE || esi==ID_EDITTEXT
+			push	TRUE
+		.else
+			push	FALSE
+		.endif
+		push	IDM_FILE_PRINT
+	.elseif eax==1
+		;Edit
+		.if !ebx
+			;No edit window open
+			xor		eax,eax
+			push	eax
+			push	IDM_EDIT_UNDO
+			push	eax
+			push	IDM_EDIT_REDO
+			push	eax
+			push	IDM_EDIT_PASTE
+			push	eax
+			push	IDM_EDIT_CUT
+			push	eax
+			push	IDM_EDIT_COPY
+			push	eax
+			push	IDM_EDIT_DELETE
+			push	eax
+			push	IDM_EDIT_SELECTALL
+			push	eax
+			push	IDM_EDIT_FIND
+			push	eax
+			push	IDM_EDIT_REPLACE
+			push	eax
+			push	IDM_EDIT_INDENT
+			push	eax
+			push	IDM_EDIT_OUTDENT
+			push	eax
+			push	IDM_EDIT_COMMENT
+			push	eax
+			push	IDM_EDIT_UNCOMMENT
+			push	eax
+			push	IDM_EDIT_TOGGLEBM
+			push	eax
+			push	IDM_EDIT_NEXTBM
+			push	eax
+			push	IDM_EDIT_PREVBM
+			push	eax
+			push	IDM_EDIT_CLEARBM
+		.else
+			.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
+				invoke SendMessage,ebx,EM_CANUNDO,0,0
+				push	eax
+				push	IDM_EDIT_UNDO
+				invoke SendMessage,ebx,EM_CANREDO,0,0
+				push	eax
+				push	IDM_EDIT_REDO
+				invoke SendMessage,ebx,EM_CANPASTE,CF_TEXT,0
+				push	eax
+				push	IDM_EDIT_PASTE
+				invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+				mov		eax,chrg.cpMax
+				sub		eax,chrg.cpMin
+				push	eax
+				push	IDM_EDIT_CUT
+				push	eax
+				push	IDM_EDIT_COPY
+				push	eax
+				push	IDM_EDIT_DELETE
+				push	TRUE
+				push	IDM_EDIT_SELECTALL
+				push	TRUE
+				push	IDM_EDIT_FIND
+				push	TRUE
+				push	IDM_EDIT_REPLACE
+				push	eax
+				push	IDM_EDIT_INDENT
+				push	eax
+				push	IDM_EDIT_OUTDENT
+				push	eax
+				push	IDM_EDIT_COMMENT
+				push	eax
+				push	IDM_EDIT_UNCOMMENT
+				push	TRUE
+				push	IDM_EDIT_TOGGLEBM
+				.if esi==ID_EDITHEX
+					invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
+				.else
+					invoke SendMessage,ebx,REM_NXTBOOKMARK,-1,3
+					inc		eax
+				.endif
+				push	eax
+				push	IDM_EDIT_NEXTBM
+				push	eax
+				push	IDM_EDIT_PREVBM
+				push	eax
+				push	IDM_EDIT_CLEARBM
+			.elseif esi==ID_EDITRES
+				invoke SendMessage,ebx,DEM_CANUNDO,0,0
+				push	eax
+				push	IDM_EDIT_UNDO
+				invoke SendMessage,ebx,DEM_CANREDO,0,0
+				push	eax
+				push	IDM_EDIT_REDO
+				invoke SendMessage,ebx,DEM_CANPASTE,CF_TEXT,0
+				push	eax
+				push	IDM_EDIT_PASTE
+				invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+				push	eax
+				push	IDM_EDIT_CUT
+				push	eax
+				push	IDM_EDIT_COPY
+				push	eax
+				push	IDM_EDIT_DELETE
+				invoke SendMessage,ebx,PRO_GETSELECTED,0,0
+				.if eax==TPE_DIALOG
+					mov		eax,TRUE
+					xor		eax,eax
+				.else
+					xor		eax,eax
+				.endif
+				push	eax
+				push	IDM_EDIT_SELECTALL
+				xor		eax,eax
+				push	eax
+				push	IDM_EDIT_FIND
+				push	eax
+				push	IDM_EDIT_REPLACE
+				push	eax
+				push	IDM_EDIT_INDENT
+				push	eax
+				push	IDM_EDIT_OUTDENT
+				push	eax
+				push	IDM_EDIT_COMMENT
+				push	eax
+				push	IDM_EDIT_UNCOMMENT
+				push	eax
+				push	IDM_EDIT_TOGGLEBM
+				push	eax
+				push	IDM_EDIT_NEXTBM
+				push	eax
+				push	IDM_EDIT_PREVBM
+				push	eax
+				push	IDM_EDIT_CLEARBM
+			.elseif esi==ID_EDITUSER
+			.endif
+		.endif
+	.elseif eax==2
+		;View
+	.elseif eax==3
+		;Format
+	.elseif eax==4
+		;Project
+	.elseif eax==5
+		;Make
+	.elseif eax==5
+		;Tools
+	.elseif eax==6
+		;Window
+	.elseif eax==7
+		;Option
+	.elseif eax==8
+		;Help
+	.endif
+	.while TRUE
+		pop		edx
+		pop		eax
+		.break .if !edx
+		.if eax
+			mov		eax,MF_BYCOMMAND or MF_ENABLED
+		.else
+			mov		eax,MF_BYCOMMAND or MF_GRAYED
+		.endif
+		invoke EnableMenuItem,hMnu,edx,eax
+	.endw
+	ret
+
+EnableMenu endp
+
+EnableToolBar proc uses ebx esi edi
+	LOCAL	chrg:CHARRANGE
+
+	mov		ebx,ha.hEdt
+	xor		esi,esi
+	.if ebx
+		invoke GetWindowLong,ebx,GWL_ID
+		mov		esi,eax
+	.endif
+	push	0
+	push	0
+	push	0
+	.if !ebx
+		;No edit window open
+		xor		eax,eax
+		;File toolbar
+		mov		edi,ha.hTbrFile
+		push	eax
+		push	IDM_FILE_SAVE
+		push	edi
+		push	eax
+		push	IDM_FILE_SAVEALL
+		push	edi
+		push	eax
+		push	IDM_FILE_PRINT
+		push	edi
+		;Edit1 toolbar
+		mov		edi,ha.hTbrEdit1
+		push	eax
+		push	IDM_EDIT_UNDO
+		push	edi
+		push	eax
+		push	IDM_EDIT_REDO
+		push	edi
+		push	eax
+		push	IDM_EDIT_PASTE
+		push	edi
+		push	eax
+		push	IDM_EDIT_CUT
+		push	edi
+		push	eax
+		push	IDM_EDIT_COPY
+		push	edi
+		push	eax
+		push	IDM_EDIT_DELETE
+		push	edi
+		push	eax
+		push	IDM_EDIT_FIND
+		push	edi
+		push	eax
+		push	IDM_EDIT_REPLACE
+		push	edi
+		;Edit2 toolbar
+		mov		edi,ha.hTbrEdit2
+		push	eax
+		push	IDM_EDIT_INDENT
+		push	edi
+		push	eax
+		push	IDM_EDIT_OUTDENT
+		push	edi
+		push	eax
+		push	IDM_EDIT_COMMENT
+		push	edi
+		push	eax
+		push	IDM_EDIT_UNCOMMENT
+		push	edi
+		push	eax
+		push	IDM_EDIT_TOGGLEBM
+		push	edi
+		push	eax
+		push	IDM_EDIT_NEXTBM
+		push	edi
+		push	eax
+		push	IDM_EDIT_PREVBM
+		push	edi
+		push	eax
+		push	IDM_EDIT_CLEARBM
+		push	edi
+	.elseif
+		mov		eax,TRUE
+		;File toolbar
+		mov		edi,ha.hTbrFile
+		push	eax
+		push	IDM_FILE_SAVE
+		push	edi
+		push	eax
+		push	IDM_FILE_SAVEALL
+		push	edi
+		.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
+			;File toolbar
+			mov		edi,ha.hTbrFile
+			mov		eax,TRUE
+			.if esi==ID_EDITHEX
+				xor		eax,eax
+			.endif
+			push	eax
+			push	IDM_FILE_PRINT
+			push	edi
+			;Edit1 toolbar
+			mov		edi,ha.hTbrEdit1
+			invoke SendMessage,ebx,EM_CANUNDO,0,0
+			push	eax
+			push	IDM_EDIT_UNDO
+			push	edi
+			invoke SendMessage,ebx,EM_CANREDO,0,0
+			push	eax
+			push	IDM_EDIT_REDO
+			push	edi
+			invoke SendMessage,ebx,EM_CANPASTE,CF_TEXT,0
+			push	eax
+			push	IDM_EDIT_PASTE
+			push	edi
+			invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+			mov		eax,chrg.cpMax
+			sub		eax,chrg.cpMin
+			push	eax
+			push	IDM_EDIT_CUT
+			push	edi
+			push	eax
+			push	IDM_EDIT_COPY
+			push	edi
+			push	eax
+			push	IDM_EDIT_DELETE
+			push	edi
+			mov		eax,TRUE
+			push	eax
+			push	IDM_EDIT_FIND
+			push	edi
+			push	eax
+			push	IDM_EDIT_REPLACE
+			push	edi
+			;Edit2 toolbar
+			mov		edi,ha.hTbrEdit2
+			push	TRUE
+			push	IDM_EDIT_TOGGLEBM
+			push	edi
+			.if esi==ID_EDITHEX
+				invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
+			.else
+				invoke SendMessage,ebx,REM_NXTBOOKMARK,-1,3
+				inc		eax
+			.endif
+			push	eax
+			push	IDM_EDIT_NEXTBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_PREVBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_CLEARBM
+			push	edi
+			.if esi==ID_EDITHEX
+				xor		eax,eax
+			.else
+				invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+				mov		eax,chrg.cpMax
+				sub		eax,chrg.cpMin
+			.endif
+			push	eax
+			push	IDM_EDIT_INDENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_OUTDENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_COMMENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_UNCOMMENT
+			push	edi
+		.elseif esi==ID_EDITRES
+			;File toolbar
+			mov		edi,ha.hTbrFile
+			push	FALSE
+			push	IDM_FILE_PRINT
+			push	edi
+			;Edit1 toolbar
+			mov		edi,ha.hTbrEdit1
+			invoke SendMessage,ebx,DEM_CANUNDO,0,0
+			push	eax
+			push	IDM_EDIT_UNDO
+			push	edi
+			invoke SendMessage,ebx,DEM_CANREDO,0,0
+			push	eax
+			push	IDM_EDIT_REDO
+			push	edi
+			invoke SendMessage,ebx,DEM_CANPASTE,0,0
+			push	eax
+			push	IDM_EDIT_PASTE
+			push	edi
+			invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+			push	eax
+			push	IDM_EDIT_CUT
+			push	edi
+			push	eax
+			push	IDM_EDIT_COPY
+			push	edi
+			push	eax
+			push	IDM_EDIT_DELETE
+			push	edi
+			xor		eax,eax
+			push	eax
+			push	IDM_EDIT_FIND
+			push	edi
+			push	eax
+			push	IDM_EDIT_REPLACE
+			push	edi
+			;Edit2 toolbar
+			xor		eax,eax
+			mov		edi,ha.hTbrEdit2
+			push	eax
+			push	IDM_EDIT_TOGGLEBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_NEXTBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_PREVBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_CLEARBM
+			push	edi
+			push	eax
+			push	IDM_EDIT_INDENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_OUTDENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_COMMENT
+			push	edi
+			push	eax
+			push	IDM_EDIT_UNCOMMENT
+			push	edi
+		.endif
+	.endif
+	.while TRUE
+		pop		ecx
+		pop		edx
+		pop		eax
+		.break .if !edx
+		invoke SendMessage,ecx,TB_ENABLEBUTTON,edx,eax
+	.endw
+	ret
+
+EnableToolBar endp
+
