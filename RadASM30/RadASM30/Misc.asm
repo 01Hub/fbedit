@@ -306,39 +306,45 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 					jmp		Ex
 				.endif
 			.elseif eax==UAM_SAVEALL
-				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
-				.if eax==ID_EDITCODE
-					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-				.elseif eax==ID_EDITTEXT
-					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-				.elseif eax==ID_EDITHEX
-					invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-				.elseif eax==ID_EDITRES
-					invoke SendMessage,[ebx].TABMEM.hedt,PRO_GETMODIFY,0,0
-				.elseif eax==ID_EDITUSER
-					xor		eax,eax
-				.endif
-				.if eax
-					.if lParam
-						invoke WantToSave,[ebx].TABMEM.hwnd
-						.if eax
-							xor		eax,eax
-							jmp		Ex
+				mov		eax,[ebx].TABMEM.hwnd
+				.if eax!=lParam
+					invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+					.elseif eax==ID_EDITTEXT
+						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+					.elseif eax==ID_EDITHEX
+						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,[ebx].TABMEM.hedt,PRO_GETMODIFY,0,0
+					.elseif eax==ID_EDITUSER
+						xor		eax,eax
+					.endif
+					.if eax
+						.if lParam
+							invoke WantToSave,[ebx].TABMEM.hwnd
+							.if eax
+								xor		eax,eax
+								jmp		Ex
+							.endif
+						.else
+							invoke SaveTheFile,[ebx].TABMEM.hwnd
 						.endif
-					.else
-						invoke SaveTheFile,[ebx].TABMEM.hwnd
 					.endif
 				.endif
 			.elseif eax==UAM_CLOSEALL
-				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
-				.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
-					invoke SendMessage,[ebx].TABMEM.hedt,EM_SETMODIFY,FALSE,0
-				.elseif eax==ID_EDITRES
-					invoke SendMessage,[ebx].TABMEM.hedt,PRO_SETMODIFY,FALSE,0
-				.elseif eax==ID_EDITUSER
-					xor		eax,eax
+				mov		eax,[ebx].TABMEM.hwnd
+				.if eax!=lParam
+					invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+						invoke SendMessage,[ebx].TABMEM.hedt,EM_SETMODIFY,FALSE,0
+					.elseif eax==ID_EDITRES
+						invoke SendMessage,[ebx].TABMEM.hedt,PRO_SETMODIFY,FALSE,0
+					.elseif eax==ID_EDITUSER
+						xor		eax,eax
+					.endif
+					invoke SendMessage,[ebx].TABMEM.hwnd,WM_CLOSE,0,0
 				.endif
-				invoke SendMessage,[ebx].TABMEM.hwnd,WM_CLOSE,0,0
 			.endif
 		.endif
 	.endw
@@ -682,19 +688,190 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		;View
 	.elseif eax==3
 		;Format
+		.if esi==ID_EDITRES
+			mov		eax,TRUE
+			push	eax
+			push	IDM_FORMAT_LOCK
+			push	eax
+			push	IDM_FORMAT_SHOW
+			push	eax
+			push	IDM_FORMAT_SNAP
+			invoke SendMessage,ebx,DEM_GETMEM,DEWM_DIALOG,0
+			push	eax
+			push	IDM_FORMAT_INDEX
+			invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+			push	eax
+			push	IDM_FORMAT_CENTERHORIZONTAL
+			push	eax
+			push	IDM_FORMAT_CENTERVERTICAL
+			.if eax!=2
+				xor		eax,eax
+			.endif
+			push	eax
+			push	IDM_FORMAT_ALIGNLEFT
+			push	eax
+			push	IDM_FORMAT_ALIGNCENTER
+			push	eax
+			push	IDM_FORMAT_ALIGNRIGHT
+			push	eax
+			push	IDM_FORMAT_ALIGNTOP
+			push	eax
+			push	IDM_FORMAT_ALIGNMIDDLE
+			push	eax
+			push	IDM_FORMAT_ALIGNBOTTOM
+			push	eax
+			push	IDM_FORMAT_SIZEWIDTH
+			push	eax
+			push	IDM_FORMAT_SIZEHEIGHT
+			push	eax
+			push	IDM_FORMAT_SIZEBOTH
+			invoke SendMessage,ebx,DEM_ISFRONT,0,0
+			xor		eax,TRUE
+			push	eax
+			push	IDM_FORMAT_FRONT
+			invoke SendMessage,ebx,DEM_ISBACK,0,0
+			xor		eax,TRUE
+			push	eax
+			push	IDM_FORMAT_BACK
+		.else
+			xor		eax,eax
+			push	eax
+			push	IDM_FORMAT_LOCK
+			push	eax
+			push	IDM_FORMAT_FRONT
+			push	eax
+			push	IDM_FORMAT_BACK
+			push	eax
+			push	IDM_FORMAT_SHOW
+			push	eax
+			push	IDM_FORMAT_SNAP
+			push	eax
+			push	IDM_FORMAT_ALIGNLEFT
+			push	eax
+			push	IDM_FORMAT_ALIGNCENTER
+			push	eax
+			push	IDM_FORMAT_ALIGNRIGHT
+			push	eax
+			push	IDM_FORMAT_ALIGNTOP
+			push	eax
+			push	IDM_FORMAT_ALIGNMIDDLE
+			push	eax
+			push	IDM_FORMAT_ALIGNBOTTOM
+			push	eax
+			push	IDM_FORMAT_SIZEWIDTH
+			push	eax
+			push	IDM_FORMAT_SIZEHEIGHT
+			push	eax
+			push	IDM_FORMAT_SIZEBOTH
+			push	eax
+			push	IDM_FORMAT_CENTERHORIZONTAL
+			push	eax
+			push	IDM_FORMAT_CENTERVERTICAL
+			push	eax
+			push	IDM_FORMAT_INDEX
+		.endif
 	.elseif eax==4
 		;Project
+		mov		eax,TRUE
+		push	eax
+		push	IDM_PROJECT_NEW
+		push	eax
+		push	IDM_PROJECT_OPEN
+		mov		eax,da.fProject
+		push	eax
+		push	IDM_PROJECT_CLOSE
+		push	eax
+		push	IDM_PROJECT_ADDFILE
+		push	eax
+		push	IDM_PROJET_ADDEXISTING
+		push	eax
+		push	IDM_PROJECT_ADDOPEN
+		push	eax
+		push	IDM_PROJECT_ADDALLOPEN
+		push	eax
+		push	IDM_PROJECT_ADDGROUP
+		push	eax
+		push	IDM_PROJECT_REMOVEFILE
+		push	eax
+		push	IDM_PROJECT_REMOVEGROUP
+		push	eax
+		push	IDM_PROJECT_OPTION
 	.elseif eax==5
 		;Resource
+		xor		eax,eax
+		.if esi==ID_EDITRES
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_RESOURCE_ADDDIALOG
+		push	eax
+		push	IDM_RESOURCE_ADDMENU
+		push	eax
+		push	IDM_RESOURCE_ADDACCELERATOR
+		push	eax
+		push	IDM_RESOURCE_ADDVERSION
+		push	eax
+		push	IDM_RESOURCE_ADDSTRING
+		push	eax
+		push	IDM_RESOURCE_ADDMANIFEST
+		push	eax
+		push	IDM_RESOURCE_ADDRCDATA
+		push	eax
+		push	IDM_RESOURCE_ADDTOLBAR
+		push	eax
+		push	IDM_RESOURCE_LANGUAGE
+		push	eax
+		push	IDM_RESOURCE_INCLUDE
+		push	eax
+		push	IDM_RESOURCE_RESOURCE
+		push	eax
+		push	IDM_RESOURCE_NAMES
+		push	eax
+		push	IDM_RESOURCE_EXPORT
+		invoke SendMessage,ebx,PRO_GETSELECTED,0,0
+		.if eax<=1
+			xor		eax,eax
+		.endif
+		push	eax
+		push	IDM_RESOURCE_REMOVE
+		invoke SendMessage,ebx,PRO_CANUNDO,0,0
+		push	eax
+		push	IDM_RESOURCE_UNDO
 	.elseif eax==6
 		;Make
 	.elseif eax==7
-		;Tools
+		;Debug
 	.elseif eax==8
-		;Window
+		;Tools
 	.elseif eax==9
-		;Option
+		;Window
+		xor		eax,eax
+		.if ebx
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_WINDOW_CLOSE
+		push	eax
+		push	IDM_WINDOW_CLOSEALL
+		push	eax
+		push	IDM_WINDOW_CLOSEALLBUT
+		push	eax
+		push	IDM_WINDOW_HORIZONTAL
+		push	eax
+		push	IDM_WINDOW_VERTICAL
+		push	eax
+		push	IDM_WIDDOW_CASCADE
+		push	eax
+		push	IDM_WINDOW_ICONS
+		push	eax
+		push	IDM_WINDOW_MAXIMIZE
+		push	eax
+		push	IDM_WINDOW_RESTORE
+		push	eax
+		push	IDM_WINDOW_MINIMIZE
 	.elseif eax==10
+		;Option
+	.elseif eax==11
 		;Help
 	.endif
 	.while TRUE

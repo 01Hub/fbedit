@@ -190,6 +190,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SaveTheFile,ha.hMdi
 				.endif
 			.elseif eax==IDM_FILE_SAVEAS
+				.if ha.hMdi
+					invoke SaveFileAs,ha.hMdi,addr da.szFileName
+				.endif
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 			.elseif eax==IDM_FILE_EXIT
@@ -430,6 +433,257 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProperties
 			.elseif eax==IDM_VIEW_TAB
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolTab
+			.elseif eax==IDM_FORMAT_LOCK
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ISLOCKED,0,0
+						xor		eax,TRUE
+						invoke SendMessage,ha.hEdt,DEM_LOCKCONTROLS,0,eax
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_FRONT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_BRINGTOFRONT,0,0
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_BACK
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_SENDTOBACK,0,0
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_SHOW
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke GetWindowLong,ha.hEdt,GWL_STYLE
+						xor		eax,DES_GRID
+						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_SNAP
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke GetWindowLong,ha.hEdt,GWL_STYLE
+						xor		eax,DES_SNAPTOGRID
+						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNLEFT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_LEFT
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNCENTER
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_CENTER
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNRIGHT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_RIGHT
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNTOP
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_TOP
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNMIDDLE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_MIDDLE
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_ALIGNBOTTOM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_BOTTOM
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_SIZEWIDTH
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,SIZE_WIDTH
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_SIZEHEIGHT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,SIZE_HEIGHT
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_SIZEBOTH
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,SIZE_BOTH
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_CENTERHORIZONTAL
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_DLGHCENTER
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_CENTERVERTICAL
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_ALIGNSIZE,0,ALIGN_DLGVCENTER
+					.endif
+					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_FORMAT_INDEX
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITRES
+						invoke SendMessage,ha.hEdt,DEM_SHOWTABINDEX,0,0
+					.endif
+					mov		da.fTimer,1
+				.endif
+
+			.elseif eax==IDM_PROJECT_NEW
+			.elseif eax==IDM_PROJECT_OPEN
+			.elseif eax==IDM_PROJECT_CLOSE
+			.elseif eax==IDM_PROJECT_ADDFILE
+			.elseif eax==IDM_PROJET_ADDEXISTING
+			.elseif eax==IDM_PROJECT_ADDOPEN
+			.elseif eax==IDM_PROJECT_ADDALLOPEN
+			.elseif eax==IDM_PROJECT_ADDGROUP
+			.elseif eax==IDM_PROJECT_REMOVEFILE
+			.elseif eax==IDM_PROJECT_REMOVEGROUP
+			.elseif eax==IDM_PROJECT_OPTION
+
+			.elseif eax==IDM_RESOURCE_ADDDIALOG
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_DIALOG,TRUE
+			.elseif eax==IDM_RESOURCE_ADDMENU
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_MENU,TRUE
+			.elseif eax==IDM_RESOURCE_ADDACCELERATOR
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_ACCEL,TRUE
+			.elseif eax==IDM_RESOURCE_ADDVERSION
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_VERSION,TRUE
+			.elseif eax==IDM_RESOURCE_ADDSTRING
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_STRING,TRUE
+			.elseif eax==IDM_RESOURCE_ADDMANIFEST
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_XPMANIFEST,TRUE
+			.elseif eax==IDM_RESOURCE_ADDRCDATA
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_RCDATA,TRUE
+			.elseif eax==IDM_RESOURCE_ADDTOLBAR
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_TOOLBAR,TRUE
+			.elseif eax==IDM_RESOURCE_LANGUAGE
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_LANGUAGE,TRUE
+			.elseif eax==IDM_RESOURCE_INCLUDE
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_INCLUDE,TRUE
+			.elseif eax==IDM_RESOURCE_RESOURCE
+				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_RESOURCE,TRUE
+			.elseif eax==IDM_RESOURCE_NAMES
+				invoke SendMessage,ha.hEdt,PRO_SHOWNAMES,0,ha.hOutput
+			.elseif eax==IDM_RESOURCE_EXPORT
+				invoke SendMessage,ha.hEdt,PRO_EXPORTNAMES,0,ha.hOutput
+			.elseif eax==IDM_RESOURCE_REMOVE
+				invoke SendMessage,ha.hEdt,PRO_DELITEM,0,0
+			.elseif eax==IDM_RESOURCE_UNDO
+				invoke SendMessage,ha.hEdt,PRO_UNDODELETED,0,0
+
+			.elseif eax==IDM_MAKE_COMPILE
+			.elseif eax==IDM_MAKE_ASSEMBLE
+			.elseif eax==IDM_MAKE_MODULES
+			.elseif eax==IDM_MAKE_LINK
+			.elseif eax==IDM_MAKE_BUILD
+			.elseif eax==IDM_MAKE_GO
+			.elseif eax==IDM_MAKE_RUN
+			.elseif eax==IDM_MAKE_DEBUG
+
+			.elseif eax==IDM_DEBUG_TOGGLE
+			.elseif eax==IDM_DEBUG_CLEAR
+			.elseif eax==IDM_DEBUG_RUN
+			.elseif eax==IDM_DEBUG_BREAK
+			.elseif eax==IDM_DEBUG_STOP
+			.elseif eax==IDM_DEBUG_INTO
+			.elseif eax==IDM_DEBUG_OVER
+			.elseif eax==IDM_DEBUG_CARET
+			.elseif eax==IDM_DEBUG_NODEBUG
+
+			.elseif eax==IDM_WINDOW_CLOSE
+				.if ha.hMdi
+					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
+				.endif
+			.elseif eax==IDM_WINDOW_CLOSEALL
+				.if ha.hMdi
+					invoke UpdateAll,UAM_SAVEALL,TRUE
+					.if eax
+						invoke UpdateAll,UAM_CLOSEALL,0
+					.endif
+				.endif
+			.elseif eax==IDM_WINDOW_CLOSEALLBUT
+				.if ha.hMdi
+					invoke UpdateAll,UAM_SAVEALL,ha.hMdi
+					.if eax
+						invoke UpdateAll,UAM_CLOSEALL,ha.hMdi
+					.endif
+				.endif
+			.elseif eax==IDM_WINDOW_HORIZONTAL
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDITILE,MDITILE_HORIZONTAL,0
+				.endif
+			.elseif eax==IDM_WINDOW_VERTICAL
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDITILE,MDITILE_VERTICAL,0
+				.endif
+			.elseif eax==IDM_WIDDOW_CASCADE
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDICASCADE,0,0
+				.endif
+			.elseif eax==IDM_WINDOW_ICONS
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDIICONARRANGE,0,0
+				.endif
+			.elseif eax==IDM_WINDOW_MAXIMIZE
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
+				.endif
+			.elseif eax==IDM_WINDOW_RESTORE
+				.if ha.hMdi
+					invoke SendMessage,ha.hClient,WM_MDIRESTORE,ha.hMdi,0
+				.endif
+			.elseif eax==IDM_WINDOW_MINIMIZE
+				.if ha.hMdi
+					invoke ShowWindow,ha.hMdi,SW_MINIMIZE
+				.endif
 			.else
 				jmp		ExDef
 			.endif
@@ -564,6 +818,7 @@ WndProc endp
 MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hEdt:HWND
 	LOCAL	rect:RECT
+	LOCAL	nBP:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -735,7 +990,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 					  OnceMore:
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBOOKMARK,da.nLastLine,0
-						push	eax
+						mov		nBP,eax
 						mov		edi,offset da.rabd
 						or		eax,-1
 						.while [edi].RABLOCKDEF.lpszStart
@@ -747,18 +1002,17 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							.endif
 							lea		edi,[edi+sizeof RABLOCKDEF]
 						.endw
-						pop		edx
 						.if eax==-1
-							.if edx==1 || edx==2
+							.if nBP==1 || nBP==2
 								;Clear bookmark
-								.if edx==2
+								.if nBP==2
 									invoke SendMessage,[ebx].TABMEM.hedt,REM_EXPAND,da.nLastLine,0
 								.endif
 								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,da.nLastLine,0
 								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETDIVIDERLINE,da.nLastLine,FALSE
 								invoke SendMessage,[ebx].TABMEM.hedt,REM_SETSEGMENTBLOCK,da.nLastLine,FALSE
 							.endif
-						.else
+						.elseif [edi].RABLOCKDEF.lpszStart
 							xor		eax,eax
 							test	[edi].RABLOCKDEF.flag,BD_NONESTING
 							.if !ZERO?
@@ -791,7 +1045,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							jmp		OnceMore
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
-							.if !da.ccinprogress
+							.if !da.inprogress
 ;								invoke ApiListBox,esi
 							.endif
 							mov		[ebx].TABMEM.fupdate,TRUE
@@ -811,7 +1065,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							.endif
 						.endif
 					.elseif da.cctype==CCTYPE_ALL
-						.if !da.ccinprogress
+						.if !da.inprogress
 ;							invoke ApiListBox,esi
 						.endif
 					.endif
@@ -844,11 +1098,15 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITRES
-			invoke SendMessage,[esi].NMHDR.hwndFrom,PRO_GETMODIFY,0,0
-			.if eax && ![ebx].TABMEM.fchanged
-				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+			.if !da.inprogress
+				mov		da.inprogress,TRUE
+				invoke SendMessage,[esi].NMHDR.hwndFrom,PRO_GETMODIFY,0,0
+				.if eax && ![ebx].TABMEM.fchanged
+					invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+				.endif
+				mov		da.fTimer,1
+				mov		da.inprogress,FALSE
 			.endif
-			mov		da.fTimer,1
 		.elseif eax==ID_EDITUSER
 		.endif
 	.elseif eax==WM_COMMAND

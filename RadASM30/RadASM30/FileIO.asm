@@ -27,22 +27,22 @@ GetTheFileType proc uses esi,lpFileName:DWORD
 	.if byte ptr [esi+eax]=='.'
 		invoke strcpy,addr ftpe,addr [esi+eax]
 		invoke strcat,addr ftpe,addr szDot
-		invoke IsFileType,addr ftpe,addr szCodeFiles
+		invoke IsFileType,addr ftpe,addr da.szCodeFiles
 		.if eax
 			mov		eax,ID_EDITCODE
 			jmp		Ex
 		.endif
-		invoke IsFileType,addr ftpe,addr szTextFiles
+		invoke IsFileType,addr ftpe,addr da.szTextFiles
 		.if eax
 			mov		eax,ID_EDITTEXT
 			jmp		Ex
 		.endif
-		invoke IsFileType,addr ftpe,addr szHexFiles
+		invoke IsFileType,addr ftpe,addr da.szHexFiles
 		.if eax
 			mov		eax,ID_EDITHEX
 			jmp		Ex
 		.endif
-		invoke IsFileType,addr ftpe,addr szResourceFiles
+		invoke IsFileType,addr ftpe,addr da.szResourceFiles
 		.if eax
 			mov		eax,ID_EDITRES
 			jmp		Ex
@@ -172,6 +172,7 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 			invoke GetKeyState,VK_CONTROL
 			test	eax,80h
 			.if !ZERO?
+				;Open resource file as code file
 				mov		eax,ID_EDITCODE
 			.else
 				mov		eax,ID_EDITRES
@@ -181,6 +182,11 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 	.if eax==ID_EDITCODE
 		invoke strcpy,addr da.szFileName,lpFileName
 		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
+		invoke GetTheFileType,lpFileName
+		.if eax==ID_EDITRES
+			;Resource file as code file
+			invoke SendMessage,ha.hEdt,REM_SETWORDGROUP,0,1
+		.endif
 		invoke LoadTextFile,ha.hEdt,lpFileName
 		invoke SendMessage,ha.hEdt,REM_SETBLOCKS,0,0
 		invoke SendMessage,ha.hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
@@ -211,6 +217,7 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 			invoke TabToolActivate
 		.endif
 	.endif
+  Ex:
 	invoke TabToolSetChanged,ha.hMdi,FALSE
 	ret
 
@@ -395,3 +402,84 @@ WantToSave proc uses ebx,hWin:HWND
 	ret
 
 WantToSave endp
+
+UpdateFileName proc hWin:DWORD,lpFileName:DWORD
+	LOCAL	hEdt:HWND
+
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		hEdt,eax
+	invoke GetWindowLong,hEdt,GWL_USERDATA
+	mov		ebx,eax
+	invoke GetWindowLong,hEdt,GWL_ID
+	.if eax==ID_EDITCODE
+		invoke SaveTextFile,hEdt,lpFileName
+	.elseif eax==ID_EDITTEXT
+		invoke SaveTextFile,hEdt,lpFileName
+	.elseif eax==ID_EDITHEX
+		invoke SaveHexFile,hEdt,lpFileName
+	.elseif eax==ID_EDITRES
+		invoke SaveResFile,hEdt,lpFileName
+	.elseif eax==ID_EDITUSER
+		xor		eax,eax
+	.endif
+	.if !eax
+		;The file was saved
+		invoke TabToolGetInx,hWin
+		invoke TabToolSetText,eax,lpFileName
+		invoke SetWindowText,hWin,lpFileName
+;		.if da.fProject
+;			invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
+;			.if eax
+;				invoke lstrcpy,addr [eax].PBITEM.szitem,addr buffer
+;				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+;			.endif
+;		.endif
+		mov		eax,FALSE
+	.endif
+	ret
+
+UpdateFileName endp
+
+SaveFileAs proc hWin:DWORD,lpFileName:DWORD
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+    invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	hWin
+	pop		ofn.hwndOwner
+	push	ha.hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,NULL
+	invoke strcpy,addr buffer,lpFileName
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	invoke GetWindowLong,eax,GWL_ID
+	.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+;		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
+		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
+;		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
+;		mov		ofn.lpfnHook,offset UnicodeProc
+;		invoke SendMessage,hWin,REM_GETUNICODE,0,0
+;		mov		fUnicode,eax
+	.else
+;		xor		eax,eax
+;		mov		fUnicode,eax
+		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
+	.endif
+    mov		ofn.lpstrDefExt,NULL
+    ;Show save as dialog
+	invoke GetSaveFileName,addr ofn
+	.if eax
+		invoke UpdateFileName,hWin,addr buffer
+	.else
+		mov		eax,TRUE
+	.endif
+	ret
+
+SaveFileAs endp
+

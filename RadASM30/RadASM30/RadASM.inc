@@ -133,6 +133,8 @@ szIniParse						db 'Parse',0
 szIniType						db 'Type',0
 szIniIgnore						db 'Ignore',0
 szIniDef						db 'Def',0
+szIniFile						db 'File',0
+szIniResource					db 'Resource',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -151,11 +153,6 @@ ALLFilterString					db 'Assembly Files (*.asm, *.inc)',0,'*.asm;*.inc',0
 								db 'Resource Files (*.rc)',0,'*.rc',0
 								db 'Text Files (*.txt)',0,'*.txt',0
 ANYFilterString					db 'All Files (*.*)',0,'*.*',0,0
-
-szCodeFiles						db '.asm.inc.',0
-szTextFiles						db '.txt.ini.',0
-szHexFiles						db '.obj.res.bmp.ico.cur.',0
-szResourceFiles					db '.rc.',0
 
 .data?
 

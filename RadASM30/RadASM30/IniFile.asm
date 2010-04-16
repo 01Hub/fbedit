@@ -154,6 +154,8 @@ GetSessionFiles proc uses ebx
 				mov		chrg.cpMin,eax
 				mov		chrg.cpMax,eax
 				invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+				invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
 			.endif
 			.if !da.win.fcldmax
 				invoke MoveWindow,ha.hMdi,rect.left,rect.top,rect.right,rect.bottom,TRUE
@@ -320,6 +322,10 @@ GetAssembler proc
 	invoke strcat,addr da.szAssemblerIni,addr da.szAssembler
 	invoke strcat,addr da.szAssemblerIni,addr szDotIni
 	invoke SendMessage,ha.hStatus,SB_SETTEXT,2,addr da.szAssembler
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniCode,NULL,addr da.szCodeFiles,sizeof da.szCodeFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniText,NULL,addr da.szTextFiles,sizeof da.szTextFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniHex,NULL,addr da.szHexFiles,sizeof da.szHexFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniResource,NULL,addr da.szResourceFiles,sizeof da.szResourceFiles,addr da.szAssemblerIni
 	ret
 
 GetAssembler endp
@@ -339,27 +345,32 @@ GetBlockDef proc uses ebx esi edi
 		.if byte ptr [esi]
 			mov		[edi].RABLOCKDEF.lpszStart,esi
 			invoke strlen,esi
-			lea		esi,[esi+eax+1]
+			lea		esi,[esi+eax+2]
 		.endif 
 		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
 		.if byte ptr [esi]
 			mov		[edi].RABLOCKDEF.lpszEnd,esi
 			invoke strlen,esi
-			lea		esi,[esi+eax+1]
+			lea		esi,[esi+eax+2]
 		.endif 
 		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
 		.if byte ptr [esi]
 			mov		[edi].RABLOCKDEF.lpszNot1,esi
 			invoke strlen,esi
-			lea		esi,[esi+eax+1]
+			lea		esi,[esi+eax+2]
 		.endif 
 		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
 		.if byte ptr [esi]
 			mov		[edi].RABLOCKDEF.lpszNot2,esi
 			invoke strlen,esi
-			lea		esi,[esi+eax+1]
+			lea		esi,[esi+eax+2]
 		.endif 
 		invoke GetItemInt,addr tmpbuff,0
+		push	eax
+		invoke GetItemInt,addr tmpbuff,0
+		pop		edx
+		shl		eax,16
+		or		eax,edx
 		mov		[edi].RABLOCKDEF.flag,eax
 		inc		ebx
 		lea		edi,[edi+sizeof RABLOCKDEF]
