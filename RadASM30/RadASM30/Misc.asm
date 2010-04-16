@@ -612,6 +612,9 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_FIND
 				push	TRUE
 				push	IDM_EDIT_REPLACE
+				.if esi==ID_EDITHEX
+					xor		eax,eax
+				.endif
 				push	eax
 				push	IDM_EDIT_INDENT
 				push	eax
@@ -888,6 +891,92 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	ret
 
 EnableMenu endp
+
+EnableContextMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
+
+	push	0
+	push	0
+	mov		eax,nPos
+	mov		ebx,ha.hEdt
+	.if eax==0
+		;Resource
+		;Edit
+		invoke SendMessage,ebx,DEM_CANUNDO,0,0
+		push	eax
+		push	IDM_EDIT_UNDO
+		invoke SendMessage,ebx,DEM_CANREDO,0,0
+		push	eax
+		push	IDM_EDIT_REDO
+		invoke SendMessage,ebx,DEM_CANPASTE,CF_TEXT,0
+		push	eax
+		push	IDM_EDIT_PASTE
+		invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+		push	eax
+		push	IDM_EDIT_CUT
+		push	eax
+		push	IDM_EDIT_COPY
+		push	eax
+		push	IDM_EDIT_DELETE
+		;Format
+		mov		eax,TRUE
+		push	eax
+		push	IDM_FORMAT_LOCK
+		push	eax
+		push	IDM_FORMAT_SHOW
+		push	eax
+		push	IDM_FORMAT_SNAP
+		invoke SendMessage,ebx,DEM_GETMEM,DEWM_DIALOG,0
+		push	eax
+		push	IDM_FORMAT_INDEX
+		invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+		push	eax
+		push	IDM_FORMAT_CENTERHORIZONTAL
+		push	eax
+		push	IDM_FORMAT_CENTERVERTICAL
+		.if eax!=2
+			xor		eax,eax
+		.endif
+		push	eax
+		push	IDM_FORMAT_ALIGNLEFT
+		push	eax
+		push	IDM_FORMAT_ALIGNCENTER
+		push	eax
+		push	IDM_FORMAT_ALIGNRIGHT
+		push	eax
+		push	IDM_FORMAT_ALIGNTOP
+		push	eax
+		push	IDM_FORMAT_ALIGNMIDDLE
+		push	eax
+		push	IDM_FORMAT_ALIGNBOTTOM
+		push	eax
+		push	IDM_FORMAT_SIZEWIDTH
+		push	eax
+		push	IDM_FORMAT_SIZEHEIGHT
+		push	eax
+		push	IDM_FORMAT_SIZEBOTH
+		invoke SendMessage,ebx,DEM_ISFRONT,0,0
+		xor		eax,TRUE
+		push	eax
+		push	IDM_FORMAT_FRONT
+		invoke SendMessage,ebx,DEM_ISBACK,0,0
+		xor		eax,TRUE
+		push	eax
+		push	IDM_FORMAT_BACK
+	.endif
+	.while TRUE
+		pop		edx
+		pop		eax
+		.break .if !edx
+		.if eax
+			mov		eax,MF_BYCOMMAND or MF_ENABLED
+		.else
+			mov		eax,MF_BYCOMMAND or MF_GRAYED
+		.endif
+		invoke EnableMenuItem,hMnu,edx,eax
+	.endw
+	ret
+
+EnableContextMenu endp
 
 EnableToolBar proc uses ebx esi edi
 	LOCAL	chrg:CHARRANGE

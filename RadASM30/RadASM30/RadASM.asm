@@ -95,6 +95,7 @@ MakeMdiCldWin endp
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
 	LOCAL	rect:RECT
+	LOCAL	pt:POINT
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hebmk:HEBMK
@@ -122,14 +123,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Statusbar
 		invoke DoStatus
 		;Mdi Client
-		mov		cc.hWindowMenu,1
+		mov		cc.hWindowMenu,0
 		mov		cc.idFirstChild,ID_FIRSTCHILD
 		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szMdiClientClassName,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,addr cc
 		mov     ha.hClient,eax
 		;Menu
 		invoke LoadMenu,ha.hInstance,IDR_MENU
 		mov		ha.hMenu,eax
-		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,0
+		invoke LoadMenu,ha.hInstance,IDR_CONTEXTMENU
+		mov		ha.hContextMenu,eax
+		invoke GetSubMenu,ha.hMenu,9
+		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,eax
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
 		;Create code complete
@@ -638,10 +642,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_CARET
 			.elseif eax==IDM_DEBUG_NODEBUG
 
-			.elseif eax==IDM_WINDOW_CLOSE
-				.if ha.hMdi
-					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
-				.endif
+;			.elseif eax==IDM_WINDOW_CLOSE
+;				.if ha.hMdi
+;					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
+;				.endif
 			.elseif eax==IDM_WINDOW_CLOSEALL
 				.if ha.hMdi
 					invoke UpdateAll,UAM_SAVEALL,TRUE
@@ -786,6 +790,51 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke EnableMenu,wParam,edx
 		.endif
+	.elseif eax==WM_CONTEXTMENU
+		mov		eax,lParam
+		.if eax!=-1
+			movsx	eax,ax
+			mov		pt.x,eax
+			mov		eax,lParam
+			shr		eax,16
+			movsx	eax,ax
+			mov		pt.y,eax
+		.else
+			invoke GetWindowRect,ha.hClient,addr rect
+			mov		eax,rect.left
+			add		eax,10
+			mov		pt.x,eax
+			mov		eax,rect.top
+			add		eax,10
+			mov		pt.y,eax
+		.endif
+		mov		eax,wParam
+		.if eax==ha.hToolProject
+PrintText "Pro"
+		.elseif eax==ha.hToolProperties
+PrintText "Prp"
+		.elseif eax==ha.hToolOutput
+PrintText "Out"
+		.elseif eax==ha.hToolTab
+PrintText "Tab"
+		.elseif eax==ha.hReBar
+PrintText "Rab"
+		.else
+PrintText "???"
+		.endif
+
+;mov eax,ha.hEdt
+;PrintHex eax
+;mov eax,ha.hClient
+;PrintHex eax
+;		mov		eax,wParam
+;PrintHex wParam
+;		.if eax==ha.hEdt
+;			mov		eax,1
+;			add		eax,da.win.fcldmax
+;			invoke GetSubMenu,ha.hMenu,eax
+;			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,hWin,0
+;		.endif
 	.elseif eax==WM_TOOLSIZE
 		mov		eax,wParam
 		mov		esi,lParam
@@ -818,6 +867,7 @@ WndProc endp
 MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hEdt:HWND
 	LOCAL	rect:RECT
+	LOCAL	pt:POINT
 	LOCAL	nBP:DWORD
 
 	mov		eax,uMsg
@@ -1123,6 +1173,46 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
 			invoke SendMessage,ha.hEdt,REM_REPAINT,0,0
 		.endif
+	.elseif eax==WM_CONTEXTMENU
+		mov		eax,lParam
+		.if eax!=-1
+			movsx	eax,ax
+			mov		pt.x,eax
+			mov		eax,lParam
+			shr		eax,16
+			movsx	eax,ax
+			mov		pt.y,eax
+		.else
+			invoke GetWindowRect,ha.hClient,addr rect
+			mov		eax,rect.left
+			add		eax,10
+			mov		pt.x,eax
+			mov		eax,rect.top
+			add		eax,10
+			mov		pt.y,eax
+		.endif
+		mov		eax,wParam
+		.if eax!=ha.hEdt
+			invoke GetParent,eax
+		.endif
+		.if eax==ha.hEdt
+			invoke GetWindowLong,ha.hEdt,GWL_ID
+			.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
+				;Edit menu
+				mov		ebx,1
+				invoke EnableMenu,ha.hMenu,ebx
+				add		ebx,da.win.fcldmax
+				invoke GetSubMenu,ha.hMenu,ebx
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
+			.elseif eax==ID_EDITRES
+				;Resource contextmenu
+				invoke EnableContextMenu,ha.hContextMenu,0
+				invoke GetSubMenu,ha.hContextMenu,0
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
+			.endif
+		.endif
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_MOVE
 	.elseif eax==WM_DESTROY
 	.elseif eax==WM_ERASEBKGND

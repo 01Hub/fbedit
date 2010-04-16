@@ -1,5 +1,6 @@
 #include "Res/RadASMRes.rc"
 #include "Res/RadASMMnu.Rc"
+#include "Res/ContextMnu.rc"
 #include "Res/RadASMAcl.rc"
 #include "Res/MenuEditDlg.rc"
 #include "Res/IncludeEditDlg.rc"
