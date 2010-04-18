@@ -43,7 +43,7 @@ tbrbtnsedit2		TBBUTTON <16,IDM_EDIT_TOGGLEBM,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 
 tbrbtnsview			TBBUTTON <21,IDM_VIEW_OUTPUT,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
-					TBBUTTON <26,IDM_VIEW_PROJECT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+					TBBUTTON <26,IDM_VIEW_PROJECT,TBSTATE_ENABLED,TBSTYLE_BUTTON or TBSTYLE_CHECK,0,0>
 
 tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 					TBBUTTON <13,IDM_MAKE_BUILD,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -104,6 +104,7 @@ CreateTools proc
 	mov		ha.hFileBrowser,eax
 	invoke CreateWindowEx,0,addr szPBClassName,NULL,WS_CHILD or RPBS_FLATTOOLBAR or RPBS_NOPATH,0,0,0,0,ha.hToolProject,0,ha.hInstance,0
 	mov		ha.hProjectBrowser,eax
+	invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_PROJECT,dck.Visible
 	;Properties tool
 	invoke GetPrivateProfileString,addr szIniTool,addr szIniProperty,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,2
@@ -174,6 +175,7 @@ CreateTools proc
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
 	mov		ha.hImmediate,eax
 	invoke SendMessage,ha.hImmediate,REM_SETFONT,0,addr ha.racf
+	invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,dck.Visible
 	;Tab tool
 	invoke GetPrivateProfileString,addr szIniTool,addr szIniTab,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,4

@@ -92,6 +92,12 @@ IDM_PROJECT_ADDGROUP			equ 10098
 IDM_PROJECT_REMOVE				equ 10093
 IDM_PROJECT_REMOVEFILE			equ 10101
 IDM_PROJECT_REMOVEGROUP			equ 10102
+IDM_PROJECT_EDIT				equ 10150
+IDM_PROJECT_EDITFILE			equ 10165
+IDM_PROJECT_EDITGROUP			equ 10164
+IDM_PROJECT_OPENITEM			equ 10166
+IDM_PROJECT_OPENITEMFILE		equ 10167
+IDM_PROJECT_OPENITEMGROUP		equ 10168
 IDM_PROJECT_OPTION				equ 10103
 IDM_RESOURCE					equ 10065
 IDM_RESOURCE_ADD				equ 10108
@@ -155,13 +161,32 @@ IDM_HELP_ABOUT					equ 10162
 ;Context.mnu
 IDR_CONTEXTMENU					equ 11000
 IDCM_RESOURCE					equ 11001
+IDCM_FILE						equ 11005
+IDCM_FILE_OPEN					equ 11014
+IDCM_FILE_RENAME				equ 11015
+IDCM_FILE_EXPLORE				equ 11019
+IDCM_FILE_CUT					equ 11010
+IDCM_FILE_COPY					equ 11011
+IDCM_FILE_PASTE					equ 11012
+IDCM_FILE_DELETE				equ 11013
+IDCM_FILE_TOCODE				equ 11018
+IDCM_PROJECT					equ 11006
+IDCM_PROPERTY					equ 11008
+IDM_PROPERTY_GOTO				equ 11025
+IDM_PROPERTY_COPY				equ 11026
+IDM_PROPERTY_PROTO				equ 11027
+IDCM_OUTPUT						equ 11009
+IDM_OUTPUT_HIDE					equ 11020
+IDM_OUTPUT_CLEAR				equ 11024
+IDM_OUTPUT_CUT					equ 11023
+IDM_OUTPUT_COPY					equ 11022
 
 ADDINHANDLES struct
+	hInstance		HINSTANCE ?
 	hWnd			HWND ?
 	hClient			HWND ?
 	hMdi			HWND ?
 	hEdt			HWND ?
-	hInstance		HINSTANCE ?
 	hMenu			HMENU ?
 	hContextMenu	HMENU ?
 	hAccel			HACCEL ?
@@ -201,6 +226,7 @@ ADDINHANDLES struct
 	hDiv2			HWND ?
 	hCC				HWND ?
 	hTT				HWND ?
+	hModeless		HWND ?
 ADDINHANDLES ends
 
 VIEW_STATUSBAR					equ 1
@@ -236,15 +262,28 @@ RADCOLOR struct
 	ttsel			DWORD ?
 RADCOLOR ends
 
+EDTOPT_EXPTAB			equ 1
+EDTOPT_INDENT			equ 2
+EDTOPT_LINEHI			equ 4
+EDTOPT_CMNTHI			equ 8
+EDTOPT_LINENR			equ 16
+EDTOPT_SESSION			equ 32
+
 EDTOPT struct
 	tabsize			DWORD ?
-	exptabs			DWORD ?
-	indent			DWORD ?
-	hiliteline		DWORD ?
-	hilitecmnt		DWORD ?
-	session			DWORD ?
-	linenumber		DWORD ?
+	fopt			DWORD ?
 EDTOPT ends
+
+RESOPT_LOCK				equ 1
+RESOPT_GRID				equ 2
+RESOPT_SNAP				equ 4
+RESOPT_HEX				equ 8
+
+RESOPT struct
+	gridx			DWORD ?
+	gridy			DWORD ?
+	fopt			DWORD ?
+RESOPT ends
 
 ADDINDATA struct
 	win				WIN <>
@@ -274,11 +313,15 @@ ADDINDATA struct
 	inprogress		DWORD ?
 	lpCharTab		DWORD ?
 	edtopt			EDTOPT <>
+	resopt			RESOPT <>
 	fLockToolbar	DWORD ?
 	szCodeFiles		BYTE 32 dup(?)
 	szTextFiles		BYTE 32 dup(?)
 	szHexFiles		BYTE 32 dup(?)
 	szResourceFiles	BYTE 32 dup(?)
+	szCCTrig		BYTE 128 dup(?)
+	szCCInc			BYTE 32 dup(?)
+	szCCLib			BYTE 32 dup(?)
 ADDINDATA ends
 
 TABMEM struct

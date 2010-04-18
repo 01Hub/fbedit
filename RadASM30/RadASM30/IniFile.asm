@@ -22,8 +22,14 @@ GetWinPos proc
 	invoke GetItemInt,addr buffer,VIEW_STATUSBAR
 	mov		da.win.fView,eax
 	invoke GetItemInt,addr buffer,200
+	.if eax<100
+		mov		eax,100
+	.endif
 	mov		da.win.ccwt,eax
 	invoke GetItemInt,addr buffer,150
+	.if eax<100
+		mov		eax,100
+	.endif
 	mov		da.win.ccht,eax
 	;Resource editor
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniPosRes,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
@@ -37,6 +43,13 @@ GetWinPos proc
 	mov		da.winres.ptstyle.x,eax
 	invoke GetItemInt,addr buffer,50
 	mov		da.winres.ptstyle.y,eax
+	invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemInt,addr buffer,3
+	mov		da.resopt.gridx,eax
+	invoke GetItemInt,addr buffer,3
+	mov		da.resopt.gridy,eax
+	invoke GetItemInt,addr buffer,RESOPT_GRID or RESOPT_SNAP
+	mov		da.resopt.fopt,eax
 	ret
 
 GetWinPos endp
@@ -73,9 +86,18 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.win.ftopmost
 	invoke PutItemInt,addr buffer,da.win.fcldmax
 	invoke PutItemInt,addr buffer,da.win.fView
-	invoke PutItemInt,addr buffer,da.win.ccwt
-	invoke PutItemInt,addr buffer,da.win.ccht
-	invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
+	invoke GetWindowRect,ha.hCC,addr rect
+	mov		eax,rect.right
+	sub		eax,rect.left
+	mov		edx,rect.bottom
+	sub		edx,rect.top
+	.if eax>10 && edx>10
+		mov		da.win.ccwt,eax
+		mov		da.win.ccht,edx
+		invoke PutItemInt,addr buffer,da.win.ccwt
+		invoke PutItemInt,addr buffer,da.win.ccht
+		invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
+	.endif
 	;Resource editor
 	mov		buffer,0
 	invoke PutItemInt,addr buffer,da.winres.htpro
@@ -84,6 +106,11 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.x
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.y
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPosRes,addr buffer[1],addr da.szRadASMIni
+	mov		buffer,0
+	invoke PutItemInt,addr buffer,da.resopt.gridx
+	invoke PutItemInt,addr buffer,da.resopt.gridy
+	invoke PutItemInt,addr buffer,da.resopt.fopt
+	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr buffer[1],addr da.szRadASMIni
 	ret
 
 PutWinPos endp
@@ -305,27 +332,6 @@ PutColors proc uses ebx
 
 PutColors endp
 
-GetKeywords proc
-	LOCAL	buffer[16]:BYTE
-	LOCAL	nInx:DWORD
-
-	invoke SetHiliteWords,0,0
-	mov		buffer,'C'
-	mov		nInx,0
-	.while nInx<16
-		invoke BinToDec,nInx,addr buffer[1]
-		invoke GetPrivateProfileString,addr szIniKeywords,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-		.if eax
-			mov		eax,nInx
-			mov		eax,dword ptr da.radcolor[eax*4]
-			invoke SetHiliteWords,eax,addr tmpbuff
-		.endif
-		inc		nInx
-	.endw
-	ret
-
-GetKeywords endp
-
 GetAssembler proc
 
 	invoke strcpy,addr da.szAssemblerIni,addr da.szAppPath
@@ -423,18 +429,8 @@ GetOption proc
 	invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 	invoke GetItemInt,addr tmpbuff,4
 	mov		da.edtopt.tabsize,eax
-	invoke GetItemInt,addr tmpbuff,0
-	mov		da.edtopt.exptabs,eax
-	invoke GetItemInt,addr tmpbuff,1
-	mov		da.edtopt.indent,eax
-	invoke GetItemInt,addr tmpbuff,0
-	mov		da.edtopt.hiliteline,eax
-	invoke GetItemInt,addr tmpbuff,0
-	mov		da.edtopt.hilitecmnt,eax
-	invoke GetItemInt,addr tmpbuff,1
-	mov		da.edtopt.session,eax
-	invoke GetItemInt,addr tmpbuff,1
-	mov		da.edtopt.linenumber,eax
+	invoke GetItemInt,addr tmpbuff,EDTOPT_INDENT or EDTOPT_LINENR
+	mov		da.edtopt.fopt,eax
 	ret
 
 GetOption endp
@@ -494,4 +490,223 @@ GetParesDef proc
 	ret
 
 GetParesDef endp
+
+DeleteDuplicates proc uses esi edi,lpszType:DWORD
+	LOCAL	nCount:DWORD
+
+	invoke SendMessage,ha.hProperty,PRM_GETSORTEDLIST,lpszType,addr nCount
+	mov		esi,eax
+	push	esi
+	xor		ecx,ecx
+	mov		edi,offset szNULL
+	.while ecx<nCount
+		push	ecx
+		invoke strcmp,edi,[esi]
+		.if !eax
+			mov		eax,[esi]
+			lea		eax,[eax-sizeof PROPERTIES]
+			mov		[eax].PROPERTIES.nType,255
+		.else
+			mov		edi,[esi]
+		.endif
+		pop		ecx
+		inc		ecx
+		lea		esi,[esi+4]
+	.endw
+	pop		esi
+	invoke GlobalFree,esi
+	invoke SendMessage,ha.hProperty,PRM_COMPACTLIST,FALSE,0
+	ret
+
+DeleteDuplicates endp
+
+GetCodeComplete proc uses ebx
+	LOCAL	buffer[256]:BYTE
+	LOCAL	apifile[MAX_PATH]:BYTE
+
+	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniTrig,NULL,addr da.szCCTrig,sizeof da.szCCTrig,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniInc,NULL,addr da.szCCInc,sizeof da.szCCInc,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
+
+	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniApi,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+	.while tmpbuff
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
+		movzx	ebx,buffer
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
+		.if ebx && buffer
+			invoke strcpy,addr apifile,addr da.szAppPath
+			invoke strcat,addr apifile,addr szBSApiBS
+			invoke strcat,addr apifile,addr buffer
+			invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,ebx,addr apifile
+		.endif
+	.endw
+	;Add 'C' list to 'W' list
+	mov		dword ptr buffer,'C'
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[1]
+	.while eax
+		mov		esi,eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		invoke strcpy,offset tmpbuff,esi
+		mov		eax,2 shl 8 or 'W'
+		invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYLIST,eax,offset tmpbuff
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	;Add 'M' list to 'W' list
+	mov		dword ptr buffer,'M'
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[1]
+	.while eax
+		mov		esi,eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		.while byte ptr [esi]
+			.if byte ptr [esi]=='['
+				inc		esi
+				mov		edi,offset tmpbuff
+				.while byte ptr [esi]!=']'
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		byte ptr [edi],0
+				mov		eax,2 shl 8 or 'W'
+				invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYLIST,eax,offset tmpbuff
+			.endif
+			inc		esi
+		.endw
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	;Delete duplicates
+	mov		dword ptr buffer,'W'
+	invoke DeleteDuplicates,addr buffer
+	ret
+
+GetCodeComplete endp
+
+GetKeywords proc
+	LOCAL	hMem:HGLOBAL
+	LOCAL	buffer[16]:BYTE
+	LOCAL	nInx:DWORD
+
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,65536*8
+	mov		hMem,eax
+	invoke SetHiliteWords,0,0
+	mov		buffer,'C'
+	mov		nInx,0
+	.while nInx<16
+		invoke BinToDec,nInx,addr buffer[1]
+		invoke GetPrivateProfileString,addr szIniKeywords,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			mov		eax,nInx
+			mov		eax,dword ptr da.radcolor[eax*4]
+			invoke SetHiliteWords,eax,addr tmpbuff
+		.endif
+		inc		nInx
+	.endw
+	;Add api calls to Group#15
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'P'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[15*4],hMem
+	;Add api constants to Group#14
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'C'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	mov		esi,eax
+	.while esi
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		mov		byte ptr [edi],'^'
+		inc		edi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			.if al==','
+				mov		byte ptr [edi],' '
+				inc		edi
+				mov		al,'^'
+			.endif
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+		mov		esi,eax
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[14*4],hMem
+	;Add api words to Group#14
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'W'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[14*4],hMem
+	;Add api structs to Group#13
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'S'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		byte ptr [edi],'^'
+		inc		edi
+		invoke strcpy,edi,eax
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[13*4],hMem
+	;Add api types to Group#12
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'T'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		cl,[eax]
+		mov		ch,cl
+		and		cl,5Fh
+		.if cl==ch
+			;Case sensitive
+			mov		byte ptr [edi],'^'
+			inc		edi
+		.endif
+		invoke strcpy,edi,eax
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[12*4],hMem
+	invoke GlobalFree,hMem
+	ret
+
+GetKeywords endp
 

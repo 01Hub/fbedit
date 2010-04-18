@@ -98,7 +98,9 @@ szRichEdit						db 'riched20.dll',0
 DisplayName						db 'RadASM',0
 szBS							db '\',0
 szDot							db '.',0
+szComma							db ',',0
 szDotIni						db '.ini',0
+szBSApiBS						db '\Api\',0
 szNULL							db 0
 
 ;RadASM.ini
@@ -135,6 +137,11 @@ szIniIgnore						db 'Ignore',0
 szIniDef						db 'Def',0
 szIniFile						db 'File',0
 szIniResource					db 'Resource',0
+szIniCodeComplete				db 'CodeComplete',0
+szIniTrig						db 'Trig',0
+szIniInc						db 'Inc',0
+szIniLib						db 'Lib',0
+szIniApi						db 'Api',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -169,8 +176,9 @@ fnhandle						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 fnptrpth						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 lpOldTabProc					DWORD ?
 tmpbuff							BYTE 16384 dup(?)
-lpOldCCProc						DWORD ?
+LineTxt							BYTE 16384 dup(?)
 lpOldClientProc					DWORD ?
 lpOldRAEditCodeProc				DWORD ?
 hRichEd							DWORD ?
-
+ttmsg							MESSAGE <>
+tt								TOOLTIP <>

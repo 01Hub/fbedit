@@ -118,6 +118,15 @@ strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 strcmpi endp
 
+GetCharType proc nChar:DWORD
+	
+	mov		eax,nChar
+	add		eax,da.lpCharTab
+	movzx	eax,byte ptr [eax]
+	ret
+
+GetCharType endp
+
 DecToBin proc lpStr:DWORD
 	LOCAL	fNeg:DWORD
 
@@ -797,6 +806,14 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_PROJECT_REMOVEFILE
 		push	eax
 		push	IDM_PROJECT_REMOVEGROUP
+		push	eax
+		push	IDM_PROJECT_EDITFILE
+		push	eax
+		push	IDM_PROJECT_EDITGROUP
+		push	eax
+		push	IDM_PROJECT_OPENITEMFILE
+		push	eax
+		push	IDM_PROJECT_OPENITEMGROUP
 		push	eax
 		push	IDM_PROJECT_OPTION
 	.elseif eax==5

@@ -8,6 +8,7 @@ include IniFile.asm
 include Tools.asm
 include TabTool.asm
 include FileIO.asm
+include CodeComplete.asm
 
 .code
 
@@ -37,37 +38,6 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 TimerProc endp
-
-CodeCompleteProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL	rect:RECT
-
-	mov		eax,uMsg
-	.if eax==WM_CHAR
-		mov		eax,wParam
-		.if eax==VK_TAB || eax==VK_RETURN
-			invoke SendMessage,ha.hEdt,WM_CHAR,VK_TAB,0
-			jmp		Ex
-		.elseif eax==VK_ESCAPE
-			invoke ShowWindow,hWin,SW_HIDE
-			jmp		Ex
-		.endif
-	.elseif eax==WM_LBUTTONDBLCLK
-		invoke SendMessage,ha.hEdt,WM_CHAR,VK_TAB,0
-		jmp		Ex
-	.elseif eax==WM_SIZE
-		invoke GetWindowRect,hWin,addr rect
-		mov		eax,rect.right
-		sub		eax,rect.left
-		mov		edx,rect.bottom
-		sub		edx,rect.top
-		mov		da.win.ccwt,eax
-		mov		da.win.ccht,edx
-	.endif
-	invoke CallWindowProc,lpOldCCProc,hWin,uMsg,wParam,lParam
-  Ex:
-	ret
-
-CodeCompleteProc endp
 
 MakeMdiCldWin proc ID:DWORD
 
@@ -144,26 +114,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,eax
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
-		;Create code complete
-		invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
-		mov		ha.hCC,eax
-;		invoke SetWindowLong,ha.hCC,GWL_WNDPROC,offset CodeCompleteProc
-;		mov		lpOldCCProc,eax
-		invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
-		mov		ha.hTT,eax
-		invoke SendMessage,ha.hCC,WM_SETFONT,ha.hToolFont,FALSE
-		invoke SendMessage,ha.hTT,WM_SETFONT,ha.hToolFont,FALSE
+;		;Create code complete
+;		invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+;		mov		ha.hCC,eax
+;;		invoke SetWindowLong,ha.hCC,GWL_WNDPROC,offset CodeCompleteProc
+;;		mov		lpOldCCProc,eax
+;		invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
+;		mov		ha.hTT,eax
+;		invoke SendMessage,ha.hCC,WM_SETFONT,ha.hToolFont,FALSE
+;		invoke SendMessage,ha.hTT,WM_SETFONT,ha.hToolFont,FALSE
 		;Create tool windows
 		invoke CreateTools
 		invoke SendMessage,ha.hFileBrowser,FBM_GETIMAGELIST,0,0
 		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
+		;Create code complete
+		invoke CreateCodeComplete
 		invoke GetSession
 		invoke GetAssembler
 		invoke GetColors
-		invoke GetKeywords
 		invoke GetBlockDef
 		invoke GetOption
 		invoke GetParesDef
+		invoke GetCodeComplete
+		invoke GetKeywords
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.fTimer,1
 	.elseif eax==WM_COMMAND
@@ -439,8 +412,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,ha.hStatus,ebx
 			.elseif eax==IDM_VIEW_PROJECT
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProject
+				invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolProject
+				invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_PROJECT,eax
 			.elseif eax==IDM_VIEW_OUTPUT
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
+				invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolOutput
+				invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
 			.elseif eax==IDM_VIEW_PROPERTIES
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolProperties
 			.elseif eax==IDM_VIEW_TAB
@@ -696,6 +673,25 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke ShowWindow,ha.hMdi,SW_MINIMIZE
 				.endif
+			.elseif eax==IDCM_FILE_OPEN
+			.elseif eax==IDCM_FILE_RENAME
+			.elseif eax==IDCM_FILE_EXPLORE
+			.elseif eax==IDCM_FILE_CUT
+			.elseif eax==IDCM_FILE_COPY
+			.elseif eax==IDCM_FILE_PASTE
+			.elseif eax==IDCM_FILE_DELETE
+			.elseif eax==IDCM_FILE_TOCODE
+			.elseif eax==IDM_PROPERTY_GOTO
+			.elseif eax==IDM_PROPERTY_COPY
+			.elseif eax==IDM_PROPERTY_PROTO
+
+			.elseif eax==IDM_OUTPUT_HIDE
+				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
+				invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolOutput
+				invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
+			.elseif eax==IDM_OUTPUT_CLEAR
+			.elseif eax==IDM_OUTPUT_CUT
+			.elseif eax==IDM_OUTPUT_COPY
 			.else
 				jmp		ExDef
 			.endif
@@ -818,11 +814,32 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		mov		eax,wParam
 		.if eax==ha.hToolProject
-			PrintText "Pro"
+			invoke SendMessage,ha.hTabProject,TCM_GETCURSEL,0,0
+			.if !eax
+				;File contextmenu
+				invoke EnableContextMenu,ha.hContextMenu,1
+				invoke GetSubMenu,ha.hContextMenu,1
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
+			.else
+				;Project menu
+				mov		ebx,4
+				invoke EnableMenu,ha.hMenu,ebx
+				.if ha.hMdi
+					add		ebx,da.win.fcldmax
+				.endif
+				invoke GetSubMenu,ha.hMenu,ebx
+				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
+			.endif
 		.elseif eax==ha.hToolProperties
-			PrintText "Prp"
+			;Property contextmenu
+			invoke EnableContextMenu,ha.hContextMenu,3
+			invoke GetSubMenu,ha.hContextMenu,3
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 		.elseif eax==ha.hToolOutput
-			PrintText "Out"
+			;Output contextmenu
+			invoke EnableContextMenu,ha.hContextMenu,4
+			invoke GetSubMenu,ha.hContextMenu,4
+			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 		.elseif eax==ha.hToolTab || eax==ha.hWnd || eax==ha.hClient
 			;Window menu
 			mov		ebx,9
@@ -866,6 +883,160 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if ha.hMdi
 			invoke SetFocus,ha.hEdt
 		.endif
+	.elseif eax==WM_MEASUREITEM
+		mov		ebx,lParam
+		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
+;			mov		edx,[ebx].MEASUREITEMSTRUCT.itemData
+;			.if edx
+;				push	esi
+;				mov		esi,edx
+;				.if ![esi].MENUDATA.tpe
+;					lea		esi,[esi+sizeof MENUDATA]
+;					invoke GetDC,NULL
+;					push	eax
+;					invoke CreateCompatibleDC,eax
+;					mov		mDC,eax
+;					pop		eax
+;					invoke ReleaseDC,NULL,eax
+;					invoke SelectObject,mDC,ha.hMnuFont
+;					push	eax
+;					mov		rect.left,0
+;					mov		rect.top,0
+;					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
+;					mov		eax,rect.right
+;					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
+;					invoke strlen,esi
+;					lea		esi,[esi+eax+1]
+;					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
+;					pop		eax
+;					invoke SelectObject,mDC,eax
+;					invoke DeleteDC,mDC
+;					mov		eax,rect.right
+;					add		eax,25
+;					add		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
+;					mov		eax,20
+;					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
+;				.else
+;					mov		eax,10
+;					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
+;				.endif
+;				pop		esi
+;			.endif
+			mov		eax,TRUE
+			jmp		ExRet
+		.endif
+	.elseif eax==WM_DRAWITEM
+		mov		ebx,lParam
+		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
+;			push	esi
+;			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
+;			.if esi
+;				invoke CreateCompatibleDC,[ebx].DRAWITEMSTRUCT.hdc
+;				mov		mDC,eax
+;				mov		rect.left,0
+;				mov		rect.top,0
+;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+;				mov		rect.right,eax
+;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.top
+;				mov		rect.bottom,eax
+;				invoke CreateCompatibleBitmap,[ebx].DRAWITEMSTRUCT.hdc,rect.right,rect.bottom
+;				invoke SelectObject,mDC,eax
+;				push	eax
+;				invoke SelectObject,mDC,ha.hMnuFont
+;				push	eax
+;				invoke GetStockObject,WHITE_BRUSH
+;				invoke FillRect,mDC,addr rect,eax
+;				invoke FillRect,mDC,addr rect,ha.hMenuBrushB
+;				.if ![esi].MENUDATA.tpe
+;					invoke SetBkMode,mDC,TRANSPARENT
+;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
+;					.if !ZERO?
+;						invoke CreateSolidBrush,0F5BE9Fh
+;						mov		hBr,eax
+;						invoke FillRect,mDC,addr rect,hBr
+;						invoke DeleteObject,hBr
+;						invoke CreateSolidBrush,800000h
+;						mov		hBr,eax
+;						invoke FrameRect,mDC,addr rect,hBr
+;						invoke DeleteObject,hBr
+;					.endif
+;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
+;					.if !ZERO?
+;						; Check mark
+;						mov		edx,rect.bottom
+;						sub		edx,16
+;						shr		edx,1
+;						invoke ImageList_Draw,ha.hImlTbr,27,mDC,2,edx,ILD_TRANSPARENT
+;					.else
+;						; Image
+;						mov		eax,[esi].MENUDATA.img
+;						.if eax
+;							mov		edx,rect.bottom
+;							sub		edx,16
+;							shr		edx,1
+;							dec		eax
+;							test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+;							.if ZERO?
+;								invoke ImageList_Draw,ha.hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
+;							.else
+;								invoke ImageList_Draw,ha.hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
+;							.endif
+;						.endif
+;					.endif
+;					; Text
+;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+;					.if ZERO?
+;						invoke GetSysColor,COLOR_MENUTEXT
+;					.else
+;						invoke GetSysColor,COLOR_GRAYTEXT
+;					.endif
+;					invoke SetTextColor,mDC,eax
+;					lea		esi,[esi+sizeof MENUDATA]
+;					invoke strlen,esi
+;					push	eax
+;					add		rect.left,22
+;					add		rect.top,2
+;					sub		rect.right,2
+;					invoke DrawText,mDC,esi,-1,addr rect,DT_LEFT or DT_VCENTER
+;					pop		eax
+;					lea		esi,[esi+eax+1]
+;					; Accelerator
+;					invoke DrawText,mDC,esi,-1,addr rect,DT_RIGHT or DT_VCENTER
+;					sub		rect.left,22
+;					sub		rect.top,2
+;					add		rect.right,2
+;				.else
+;					invoke CreatePen,PS_SOLID,1,0F5BE9Fh
+;					invoke SelectObject,mDC,eax
+;					push	eax
+;					add		rect.left,21
+;					add		rect.top,5
+;					invoke MoveToEx,mDC,rect.left,rect.top,NULL
+;					invoke LineTo,mDC,rect.right,rect.top
+;					sub		rect.left,21
+;					sub		rect.top,5
+;					pop		eax
+;					invoke SelectObject,mDC,eax
+;					invoke DeleteObject,eax
+;				.endif
+;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+;				mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+;				sub		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
+;				invoke BitBlt,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,eax,edx,mDC,0,0,SRCCOPY
+;				pop		eax
+;				invoke SelectObject,mDC,eax
+;				pop		eax
+;				invoke SelectObject,mDC,eax
+;				invoke DeleteObject,eax
+;				invoke DeleteDC,mDC
+;			.endif
+;			pop		esi
+			mov		eax,TRUE
+			jmp		ExRet
+		.endif
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
@@ -873,18 +1044,260 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.endif
   Ex:
 	xor     eax,eax
+  ExRet:
 	ret
 
 WndProc endp
 
-RAEditCodeProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	chrg:CHARRANGE
+	LOCAL	ti:TOOLINFO
+	LOCAL	buffer[256]:BYTE
+	LOCAL	pt:POINT
+;	LOCAL	dbgtip:DEBUGTIP
+	LOCAL	isinproc:ISINPROC
+	LOCAL	trng:TEXTRANGE
 
 	mov		eax,uMsg
-	.if eax==WM_KILLFOCUS
-	.elseif eax==WM_SETFOCUS
+	.if eax==WM_CHAR
+		mov		eax,wParam
+		.if eax==VK_TAB || eax==VK_RETURN
+			invoke IsWindowVisible,ha.hCC
+			.if eax
+				invoke SendMessage,ha.hCC,CCM_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					mov		da.inprogress,TRUE
+					invoke SendMessage,ha.hEdt,REM_LOCKUNDOID,TRUE,0
+					invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr ccchrg
+					mov		eax,ccchrg.cpMin
+					inc		eax
+					mov		trng.chrg.cpMin,eax
+					add		eax,16
+					mov		trng.chrg.cpMax,eax
+					lea		eax,buffer
+					mov		trng.lpstrText,eax
+					invoke SendMessage,ha.hEdt,EM_GETTEXTRANGE,0,addr trng
+					invoke SendMessage,ha.hCC,CCM_GETCURSEL,0,0
+					invoke SendMessage,ha.hCC,CCM_GETITEM,eax,0
+					push	eax
+					invoke strcpy,offset tmpbuff,eax
+					xor		eax,eax
+					.while tmpbuff[eax]
+						.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
+							mov		tmpbuff[eax],0
+							.break
+						.endif
+						inc		eax
+					.endw
+					invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,offset tmpbuff
+					pop		eax
+					.if da.cctype==CCTYPE_PROC
+						lea		edx,buffer
+						.while byte ptr [edx] && byte ptr [edx]!=VK_RETURN
+							.if byte ptr [edx]==','
+								xor		edx,edx
+								.break
+							.endif
+							inc		edx
+						.endw
+						.if edx
+							push	eax
+							invoke strlen,eax
+							pop		edx
+							.if byte ptr [edx+eax+1]
+								mov		da.inprogress,0
+								mov		eax,','
+								invoke SendMessage,ha.hEdt,WM_CHAR,eax,0
+							.endif
+						.endif
+					.endif
+					invoke SendMessage,ha.hEdt,REM_LOCKUNDOID,FALSE,0
+					invoke ShowWindow,ha.hCC,SW_HIDE
+					mov		da.cctype,CCTYPE_NONE
+					xor		eax,eax
+					mov		da.inprogress,eax
+					jmp		Ex
+				.else
+					invoke ShowWindow,ha.hCC,SW_HIDE
+					xor		eax,eax
+					jmp		Ex
+				.endif
+			.elseif wParam==VK_RETURN
+				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+				invoke CaseConvertWord,wParam,chrg.cpMin
+				;Block complete
+				invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+				push	eax
+				invoke BlockComplete,hWin
+				pop		eax
+				jmp		Ex
+			.endif
+		.elseif eax==VK_ESCAPE
+			invoke ShowWindow,ha.hCC,SW_HIDE
+			invoke ShowWindow,ha.hCC,SW_HIDE
+			mov		da.cctype,CCTYPE_NONE
+			xor		eax,eax
+			jmp		Ex
+		.elseif eax==VK_SPACE
+			invoke GetKeyState,VK_CONTROL
+			test		eax,80h
+			.if !ZERO?
+				mov		da.cctype,CCTYPE_ALL
+				; Force a WM_NOTIFY
+				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+				xor		eax,eax
+				jmp		Ex
+			.endif
+		.elseif eax=='.'
+			mov		da.cctype,CCTYPE_STRUCT
+			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+			jmp		Ex
+		.elseif da.cctype==CCTYPE_ALL || da.cctype==CCTYPE_STRUCT
+			push	eax
+			invoke GetCharType,eax
+			pop		edx
+			.if eax==1 || edx==VK_BACK
+				invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+				push	eax
+				; Force a WM_NOTIFY
+				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+				pop		eax
+				jmp		Ex
+			.else
+				mov		da.cctype,CCTYPE_NONE
+				invoke ShowWindow,ha.hCC,SW_HIDE
+			.endif
+		.endif
+		invoke GetCharType,wParam
+		.if eax!=1
+			invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+			mov		eax,chrg.cpMin
+			.if eax==chrg.cpMax && wParam!=VK_BACK
+				invoke CaseConvertWord,wParam,chrg.cpMin
+			.endif
+		.endif
+	.elseif eax==WM_KEYDOWN
+		mov		edx,wParam
+		mov		eax,lParam
+		shr		eax,16
+		and		eax,3FFh
+		.if (edx==28h && (eax==150h || eax==50h)) || (edx==26h && (eax==148h || eax==48h)) || (edx==21h && (eax==149h || eax==49h)) || (edx==22h && (eax==151h || eax==51h))
+			;Down / Up /PgUp / PgDn
+			invoke IsWindowVisible,ha.hCC
+			.if eax
+				invoke PostMessage,ha.hCC,uMsg,wParam,lParam
+				xor		eax,eax
+				jmp		Ex
+			.endif
+		.elseif (edx==25h && eax==14Bh) || (edx==27h && eax==14Dh)
+			;Left / Right
+			invoke IsWindowVisible,ha.hCC
+			.if eax
+				invoke ShowWindow,ha.hCC,SW_HIDE
+			.endif
+			invoke IsWindowVisible,ha.hCC
+			.if eax
+				invoke ShowWindow,ha.hCC,SW_HIDE
+			.endif
+			mov		da.cctype,CCTYPE_NONE
+		.endif
+	.elseif eax==WM_KILLFOCUS
+		invoke ShowWindow,ha.hTT,SW_HIDE
+	.elseif eax==WM_MOUSEMOVE
+;		mov		ti.cbSize,SizeOf TOOLINFO
+;		mov		ti.uFlags,TTF_IDISHWND
+;		mov		eax,hWin
+;		mov		ti.hWnd,eax
+;		mov		ti.uId,eax
+;		mov		ti.lpszText,0
+;		invoke SendMessage,ha.hDbgTip,TTM_GETTOOLINFO,0,addr ti
+;		.if fDebugging
+;			.if !eax
+;				;Add the tooltip
+;				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+;				mov		eax,hWin
+;				mov		ti.hWnd,eax
+;				mov		ti.uId,eax
+;				mov		eax,ha.hInstance
+;				mov		ti.hInst,eax
+;				invoke SendMessage,ha.hDbgTip,TTM_ADDTOOL,0,addr ti
+;			.endif
+;			mov		eax,lParam
+;			mov		edx,eax
+;			shr		edx,16
+;			movsx	edx,dx
+;			movsx	eax,ax
+;			mov		pt.x,eax
+;			mov		pt.y,edx
+;			sub		eax,dbgpt.x
+;			.if CARRY?
+;				neg		eax
+;			.endif
+;			sub		edx,dbgpt.y
+;			.if CARRY?
+;				neg		edx
+;			.endif
+;			.if eax>5 || edx>5
+;				mov		eax,pt.x
+;				mov		dbgpt.x,eax
+;				mov		eax,pt.y
+;				mov		dbgpt.y,eax
+;				invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
+;				invoke SendMessage,ha.hREd,REM_ISCHARPOS,eax,0
+;				.if !eax
+;					invoke SendMessage,ha.hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
+;					.if buffer
+;						lea		eax,buffer
+;						mov		dbgtip.lpWord,eax
+;						invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
+;						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,eax,0
+;						mov		isinproc.nLine,eax
+;						inc		eax
+;						mov		dbgtip.nLine,eax
+;						mov		eax,ha.hREd
+;						mov		isinproc.nOwner,eax
+;						mov		isinproc.lpszType,offset szCCp
+;						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+;						mov		dbgtip.lpProc,eax
+;						mov		dbgtip.lpFileName,offset da.FileName
+;						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hREd,addr dbgtip
+;						.if eax
+;							; Show tooltip
+;							mov		ti.lpszText,eax
+;							call	Activate
+;						.else
+;							; Hide tooltip
+;							call	DeActivate
+;						.endif
+;					.else
+;						; Hide tooltip
+;						call	DeActivate
+;					.endif
+;				.else
+;					; Hide tooltip
+;					call	DeActivate
+;				.endif
+;			.endif
+;		.elseif eax
+;			; Delete the tool
+;			invoke SendMessage,ha.hDbgTip,TTM_DELTOOL,0,addr ti
+;		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+  Ex:
 	ret
+
+Activate:
+;	invoke SendMessage,ha.hDbgTip,TTM_SETTOOLINFO,0,addr ti
+;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
+;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,TRUE,0
+	retn
+
+DeActivate:
+;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
+	retn
 
 RAEditCodeProc endp
 
@@ -905,9 +1318,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
-			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,da.edtopt.exptabs
-			invoke SendMessage,hEdt,REM_AUTOINDENT,0,da.edtopt.indent
-			.if da.edtopt.linenumber
+			mov		eax,da.edtopt.fopt
+			and		eax,EDTOPT_EXPTAB
+			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,eax
+			test	da.edtopt.fopt,EDTOPT_INDENT
+			.if !ZERO?
+				invoke SendMessage,hEdt,REM_AUTOINDENT,0,TRUE
 				invoke CheckDlgButton,hEdt,-2,TRUE
 				invoke SendMessage,hEdt,WM_COMMAND,-2,0
 			.endif
@@ -916,14 +1332,29 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
-			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,da.edtopt.exptabs
+			mov		eax,da.edtopt.fopt
+			and		eax,EDTOPT_EXPTAB
+			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,eax
 			invoke SendMessage,hEdt,REM_AUTOINDENT,0,0
 		.elseif eax==ID_EDITHEX
 			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
-			invoke CreateWindowEx,0,addr szResEdClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or DES_TOOLTIP
+			test	da.resopt.fopt,RESOPT_GRID
+			.if !ZERO?
+				or		eax,DES_GRID
+			.endif
+			test	da.resopt.fopt,RESOPT_SNAP
+			.if !ZERO?
+				or		eax,DES_SNAPTOGRID
+			.endif
+			test	da.resopt.fopt,RESOPT_HEX
+			.if !ZERO?
+				or		eax,DES_STYLEHEX
+			.endif
+			invoke CreateWindowEx,0,addr szResEdClass,NULL,eax,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
 			invoke SendMessage,hEdt,WM_SETFONT,ha.hToolFont,FALSE
@@ -1124,7 +1555,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
 							.if !da.inprogress
-;								invoke ApiListBox,esi
+								invoke ApiListBox,esi
 							.endif
 							mov		[ebx].TABMEM.fupdate,TRUE
 						.endif
@@ -1144,7 +1575,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 					.elseif da.cctype==CCTYPE_ALL
 						.if !da.inprogress
-;							invoke ApiListBox,esi
+							invoke ApiListBox,esi
 						.endif
 					.endif
 				.endif
@@ -1384,20 +1815,14 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.while TRUE
 		invoke GetMessage,addr msg,0,0,0
 	  .break .if !eax
-;		invoke IsDialogMessage,hSearch,addr msg
-;		.if !eax
-;			invoke IsDialogMessage,hGoTo,addr msg
-;			.if !eax
-;				invoke IsDialogMessage,hSniplet,addr msg
-;				.if !eax
-					invoke TranslateAccelerator,ha.hWnd,ha.hAccel,addr msg
-					.if !eax
-						invoke TranslateMessage,addr msg
-						invoke DispatchMessage,addr msg
-					.endif
-;				.endif
-;			.endif
-;		.endif
+		invoke IsDialogMessage,ha.hModeless,addr msg
+		.if !eax
+			invoke TranslateAccelerator,ha.hWnd,ha.hAccel,addr msg
+			.if !eax
+				invoke TranslateMessage,addr msg
+				invoke DispatchMessage,addr msg
+			.endif
+		.endif
 	.endw
 	mov   eax,msg.wParam
 	ret
