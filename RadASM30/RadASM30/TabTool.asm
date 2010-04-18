@@ -348,7 +348,6 @@ TabToolActivate proc uses ebx
 		invoke SendMessage,ha.hToolProject,RPBM_SETSELECTED,0,addr da.szFileName
 	.endif
 	invoke SendMessage,ha.hClient,WM_MDIACTIVATE,ha.hMdi,0
-	invoke SetFocus,ha.hEdt
 	ret
 
 TabToolActivate endp
@@ -364,12 +363,10 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	mov		ebx,eax
 	mov		eax,hWin
 	mov		[ebx].TABMEM.hwnd,eax
-	mov		ha.hMdi,eax
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		[ebx].TABMEM.hedt,eax
-	mov		ha.hEdt,eax
+	invoke SetWindowLong,[ebx].TABMEM.hedt,GWL_USERDATA,ebx
 	invoke strcpy,addr [ebx].TABMEM.filename,lpFileName
-	invoke strcpy,addr da.szFileName,lpFileName
 	invoke strlen,lpFileName
 	mov		ecx,eax
 	mov		edx,lpFileName
@@ -407,13 +404,6 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 	invoke UpdateFileTime,ebx
 	invoke AddPath,lpFileName
-	invoke SendMessage,ha.hFileBrowser,FBM_SETSELECTED,0,lpFileName
-	invoke SetWindowLong,[ebx].TABMEM.hedt,GWL_USERDATA,ebx
-	invoke GetWindowLong,hWin,GWL_ID
-	.if eax==ID_EDITCODE
-		invoke SendMessage,[ebx].TABMEM.hedt,WM_GETTEXTLENGTH,0,0
-		mov		da.nLastSize,eax
-	.endif
 	.if da.fProject
 		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,lpFileName
 		.if eax

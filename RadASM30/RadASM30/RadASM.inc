@@ -52,7 +52,7 @@ includelib ..\Lib\RATools.lib
 
 TabProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 TabToolActivate					PROTO
-MakeMdiCldWin					PROTO	:DWORD,:DWORD
+MakeMdiCldWin					PROTO	:DWORD
 SaveTheFile						PROTO	:HWND
 WantToSave						PROTO	:HWND
 SetHiliteWords					PROTO	:DWORD,:DWORD
@@ -170,4 +170,7 @@ fnptrpth						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 lpOldTabProc					DWORD ?
 tmpbuff							BYTE 16384 dup(?)
 lpOldCCProc						DWORD ?
+lpOldClientProc					DWORD ?
+lpOldRAEditCodeProc				DWORD ?
 hRichEd							DWORD ?
+

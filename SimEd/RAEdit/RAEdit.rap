@@ -5,7 +5,7 @@ Description=RadASM edit control II
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
-Debug=0
+Debug=1
 Ver.rc=1
 Res.rc=1
 
@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.752
-PV=1.2.0.752
+FV=1.2.0.753
+PV=1.2.0.753
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.752
+ProductVersion=1.2.0.753
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.752
+FileVersion=1.2.0.753
 CompanyName=
 
 [Resource]
@@ -102,12 +102,12 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,76436
+1=0,0,0,0,66221
 16=0,0,810,411,42731
 22=0,0,0,0,3164
 23=0,0,0,0,6845
 24=0,0,0,0,4001
-19=0,0,0,0,9369
+19=0,0,0,0,4137
 2=0,0,0,0,10671
 9=0,0,0,0,10650
 10=0,0,0,0,7772
@@ -190,7 +190,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -250,7 +250,7 @@ Group=Assembly,Resources,Misc
 12=
 
 [PTimer]
-PTimer=286734247
+PTimer=292477002
 
 [Exports]
 1=GetDef

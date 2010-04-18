@@ -53,7 +53,7 @@ tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 .data?
 
-OldStatusProc		DWORD ?
+lpOldStatusProc		DWORD ?
 
 .code
 
@@ -501,7 +501,7 @@ StatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;			invoke SendMessage,hWnd,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,0
 		.endif
 	.endif
-	invoke CallWindowProc,OldStatusProc,hWin,uMsg,wParam,lParam
+	invoke CallWindowProc,lpOldStatusProc,hWin,uMsg,wParam,lParam
 	ret
 
 StatusProc endp
@@ -518,7 +518,7 @@ DoStatus proc
 	invoke CreateStatusWindow,eax,NULL,ha.hWnd,200
 	mov		ha.hStatus,eax
 	invoke SetWindowLong,ha.hStatus,GWL_WNDPROC,offset StatusProc
-	mov		OldStatusProc,eax
+	mov		lpOldStatusProc,eax
 	mov [sbParts+0],225				; pixels from left
 	mov [sbParts+4],250				; pixels from left
 	mov [sbParts+8],SBLASTPANE		; pixels from left

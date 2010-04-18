@@ -2533,6 +2533,10 @@ RAEditProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,WM_LBUTTONDOWN,wParam,lParam
 			invoke SendMessage,hWin,WM_LBUTTONUP,wParam,lParam
 		.endif
+		invoke GetParent,hWin
+		invoke GetParent,eax
+		invoke SetFocus,eax
+		invoke SetFocus,hWin
 		xor		eax,eax
 		ret
 	.elseif eax==WM_MOUSEWHEEL

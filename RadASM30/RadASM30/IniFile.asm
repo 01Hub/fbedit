@@ -119,20 +119,24 @@ GetSession proc
 
 GetSession endp
 
-GetSessionFiles proc uses ebx
+GetSessionFiles proc uses ebx edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
+	LOCAL	ID:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	hEdt:HWND
 
 	mov		ebx,1
+	push	da.win.fcldmax
+	mov		da.win.fcldmax,FALSE
 	.while ebx<100
 		mov		buffer,'F'
 		invoke BinToDec,ebx,addr buffer[1]
 		invoke GetPrivateProfileString,addr szIniSession,addr buffer,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 		.break .if !eax
 		invoke GetItemInt,addr buffer,0
-		push	eax
+		mov		ID,eax
 		invoke GetItemInt,addr buffer,0
 		mov		rect.left,eax
 		invoke GetItemInt,addr buffer,0
@@ -144,25 +148,25 @@ GetSessionFiles proc uses ebx
 		invoke GetItemInt,addr buffer,0
 		mov		nLine,eax
 		invoke GetFileAttributes,addr buffer
-		pop		edx
 		.if eax!=INVALID_HANDLE_VALUE
-			push	edx
-			invoke OpenTheFile,addr buffer,edx
-			pop		edx
-			.if edx==ID_EDITCODE || edx==ID_EDITTEXT
-				invoke SendMessage,ha.hEdt,EM_LINEINDEX,nLine,0
+			invoke OpenTheFile,addr buffer,ID
+			mov		edi,eax
+			invoke GetWindowLong,edi,GWL_USERDATA
+			mov		hEdt,eax
+			invoke MoveWindow,edi,rect.left,rect.top,rect.right,rect.bottom,TRUE
+			invoke UpdateWindow,edi
+			.if ID==ID_EDITCODE || ID==ID_EDITTEXT
+				invoke SendMessage,hEdt,EM_LINEINDEX,nLine,0
 				mov		chrg.cpMin,eax
 				mov		chrg.cpMax,eax
-				invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-				invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
-				invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
-			.endif
-			.if !da.win.fcldmax
-				invoke MoveWindow,ha.hMdi,rect.left,rect.top,rect.right,rect.bottom,TRUE
+				invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,hEdt,REM_VCENTER,0,0
+				invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
 			.endif
 		.endif
 		inc		ebx
 	.endw
+	pop		da.win.fcldmax
 	.if ebx>1
 		mov		dword ptr buffer,'0F'
 		invoke GetPrivateProfileInt,addr szIniSession,addr buffer,0,addr da.szRadASMIni
@@ -171,8 +175,16 @@ GetSessionFiles proc uses ebx
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,0,0
 		.endif
 		.if eax!=-1
-			invoke TabToolActivate
+;			invoke TabToolActivate
+;			.if da.win.fcldmax
+;				invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
+;			.endif
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
 		.endif
+	.else
+		xor		eax,eax
 	.endif
 	ret
 
@@ -193,6 +205,7 @@ PutSession proc uses ebx esi
 	;File browser path
 	invoke WritePrivateProfileString,addr szIniSession,addr szIniPath,addr da.szFBPath,addr da.szRadASMIni
 	.if ha.hMdi
+		invoke ShowWindow,ha.hClient,SW_HIDE
 		;Current tab
 		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		mov		edx,eax
@@ -200,28 +213,25 @@ PutSession proc uses ebx esi
 		mov		dword ptr buffer1,'0F'
 		invoke WritePrivateProfileString,addr szIniSession,addr buffer1,addr buffer,addr da.szRadASMIni
 		;Open files
+		mov		eax,da.win.fcldmax
+		push	eax
+		.if eax
+			invoke SendMessage,ha.hClient,WM_MDIRESTORE,ha.hMdi,0
+		.endif
 		xor		ebx,ebx
 		mov		tci.imask,TCIF_PARAM
 		.while ebx<100
 			invoke SendMessage,ha.hTab,TCM_GETITEM,ebx,addr tci
 			.break .if !eax
 			mov		esi,tci.lParam
-			.if !da.win.fcldmax
-				invoke GetWindowRect,[esi].TABMEM.hwnd,addr rect
-				mov		eax,rect.right
-				sub		eax,rect.left
-				mov		rect.right,eax
-				mov		eax,rect.bottom
-				sub		eax,rect.top
-				mov		rect.bottom,eax
-				invoke ScreenToClient,ha.hClient,addr rect
-			.else
-				mov		eax,CW_USEDEFAULT
-				mov		rect.left,eax
-				mov		rect.top,eax
-				mov		rect.right,eax
-				mov		rect.bottom,eax
-			.endif
+			invoke GetWindowRect,[esi].TABMEM.hwnd,addr rect
+			mov		eax,rect.right
+			sub		eax,rect.left
+			mov		rect.right,eax
+			mov		eax,rect.bottom
+			sub		eax,rect.top
+			mov		rect.bottom,eax
+			invoke ScreenToClient,ha.hClient,addr rect
 			mov		buffer,0
 			mov		nLine,0
 			invoke GetWindowLong,[esi].TABMEM.hedt,GWL_ID
@@ -244,6 +254,7 @@ PutSession proc uses ebx esi
 			invoke BinToDec,ebx,addr buffer1[1]
 			invoke WritePrivateProfileString,addr szIniSession,addr buffer1,addr buffer[1],addr da.szRadASMIni
 		.endw
+		pop		da.win.fcldmax
 	.endif
 	ret
 
@@ -402,7 +413,6 @@ TestIt:
 		.endw
 	.endif
 	retn
-	ret
 
 GetBlockDef endp
 

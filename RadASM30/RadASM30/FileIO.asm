@@ -75,9 +75,6 @@ LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
 		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
 		mov		da.nLastPropLine,-1
-		mov		chrg.cpMin,0
-		mov		chrg.cpMax,0
-		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -105,9 +102,6 @@ LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke SendMessage,hWin,EM_STREAMIN,SF_TEXT,addr editstream
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
-		mov		chrg.cpMin,0
-		mov		chrg.cpMax,0
-		invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -161,9 +155,11 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 
 LoadResFile endp
 
-OpenTheFile proc lpFileName:DWORD,ID:DWORD
+OpenTheFile proc uses edi,lpFileName:DWORD,ID:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	hEdt:HWND
 
+	xor		edi,edi
 	.if ID
 		mov		eax,ID
 	.else
@@ -181,44 +177,59 @@ OpenTheFile proc lpFileName:DWORD,ID:DWORD
 	.endif
 	.if eax==ID_EDITCODE
 		invoke strcpy,addr da.szFileName,lpFileName
-		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITCODE
+		invoke MakeMdiCldWin,ID_EDITCODE
+		mov		edi,eax
+		invoke GetWindowLong,edi,GWL_USERDATA
+		mov		hEdt,eax
 		invoke GetTheFileType,lpFileName
 		.if eax==ID_EDITRES
 			;Resource file as code file
-			invoke SendMessage,ha.hEdt,REM_SETWORDGROUP,0,1
+			invoke SendMessage,hEdt,REM_SETWORDGROUP,0,1
 		.endif
-		invoke LoadTextFile,ha.hEdt,lpFileName
-		invoke SendMessage,ha.hEdt,REM_SETBLOCKS,0,0
-		invoke SendMessage,ha.hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
+		invoke LoadTextFile,hEdt,lpFileName
+		invoke SendMessage,hEdt,REM_SETBLOCKS,0,0
+		invoke SendMessage,hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 	.elseif eax==ID_EDITTEXT
 		invoke strcpy,addr da.szFileName,lpFileName
-		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITTEXT
-		invoke LoadTextFile,ha.hEdt,lpFileName
+		invoke MakeMdiCldWin,ID_EDITTEXT
+		mov		edi,eax
+		invoke GetWindowLong,edi,GWL_USERDATA
+		mov		hEdt,eax
+		invoke LoadTextFile,hEdt,lpFileName
 	.elseif eax==ID_EDITHEX
 		invoke strcpy,addr da.szFileName,lpFileName
-		invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITHEX
-		invoke LoadHexFile,ha.hEdt,lpFileName
+		invoke MakeMdiCldWin,ID_EDITHEX
+		mov		edi,eax
+		invoke GetWindowLong,edi,GWL_USERDATA
+		mov		hEdt,eax
+		invoke LoadHexFile,hEdt,lpFileName
 	.elseif eax==ID_EDITRES
 		invoke UpdateAll,UAM_ISRESOPEN,0
 		.if eax==-1
 			invoke strcpy,addr da.szFileName,lpFileName
-			invoke MakeMdiCldWin,addr szEditCldClassName,ID_EDITRES
-			invoke LoadResFile,ha.hEdt,lpFileName
+			invoke MakeMdiCldWin,ID_EDITRES
+			mov		edi,eax
+			invoke GetWindowLong,edi,GWL_USERDATA
+			mov		hEdt,eax
+			invoke LoadResFile,hEdt,lpFileName
 		.else
 			invoke TabToolGetInx,eax
 			push	eax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
+			mov		edi,ha.hMdi
 			invoke SendMessage,ha.hEdt,PRO_CLOSE,0,0
 			invoke LoadResFile,ha.hEdt,lpFileName
 			pop		eax
 			invoke TabToolSetText,eax,lpFileName
-			invoke SetWindowText,ha.hMdi,lpFileName
+			invoke SetWindowText,edi,lpFileName
 			invoke TabToolActivate
 		.endif
 	.endif
-  Ex:
-	invoke TabToolSetChanged,ha.hMdi,FALSE
+	.if edi
+		invoke TabToolSetChanged,edi,FALSE
+	.endif
+	mov		eax,edi
 	ret
 
 OpenTheFile endp
