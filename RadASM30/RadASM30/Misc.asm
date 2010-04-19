@@ -1242,3 +1242,150 @@ EnableToolBar proc uses ebx esi edi
 
 EnableToolBar endp
 
+GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO:Ptr FILEINFO
+	LOCAL	buffer[8]:BYTE
+
+	mov		edi,lpFILEINFO
+	mov		buffer,'F'
+	invoke BinToDec,nInx,addr buffer[1]
+	invoke GetPrivateProfileString,lpSection,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,lpFileName
+	.if eax
+		.if da.fProject
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].FILEINFO.fopen,eax
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].FILEINFO.idparent,eax
+		.endif
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.ID,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.left,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.top,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.right,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.bottom,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.nline,eax
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].FILEINFO.filename
+		.if da.fProject
+			invoke strcpy,addr tmpbuff,addr da.szProjectPath
+			invoke strcat,addr tmpbuff,addr szBS
+			invoke strcat,addr tmpbuff,addr [edi].FILEINFO.filename
+			invoke strcpy,addr [edi].FILEINFO.filename,addr tmpbuff
+		.endif
+		mov		eax,TRUE
+	.endif
+	ret
+
+GetFileInfo endp
+
+RemovePath proc	uses ebx esi edi,lpFileName:DWORD,lpPath:DWORD,lpOut:DWORD
+
+	mov		esi,lpFileName
+	mov		ebx,lpPath
+	mov		edi,lpOut
+	or		ecx,-1
+	xor		edx,edx
+  @@:
+	inc		ecx
+	mov		al,[esi+ecx]
+	.if	al>='a'	&& al<='z'
+		and		al,5Fh
+	.endif
+	mov		ah,[ebx+ecx]
+	.if	ah>='a'	&& ah<='z'
+		and		ah,5Fh
+	.endif
+	.if al=='\' && ah=='\'
+		mov		edx,ecx
+	.endif
+	cmp		al,ah
+	je		@b
+	.if al=='\' && ah==0
+		invoke lstrcpy,edi,addr [esi+ecx+1]
+	.else
+		push	edx
+		.while byte ptr [ebx+edx]
+			.if byte ptr [ebx+edx]=='\'
+				mov		dword ptr [edi],'\..'
+				lea		edi,[edi+3]
+			.endif
+			inc		edx
+		.endw
+		pop		ecx
+		invoke lstrcpy,edi,addr [esi+ecx+1]
+	.endif
+	ret
+
+RemovePath endp
+
+SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
+	LOCAL	tci:TC_ITEM
+	LOCAL	chrg:CHARRANGE
+
+	mov		edi,lpFILEINFO
+	invoke RtlZeroMemory,edi,sizeof FILEINFO
+	.if da.fProject
+		invoke SendMessage,ha.hProjectBrowser,RPBM_GETITEM,nInx,0
+		.if eax
+			mov		esi,eax
+			.if sdword ptr [esi].PBITEM.id<=0
+				;Item is a group
+				xor		eax,eax
+				jmp		Ex
+			.endif
+			invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProject,lpFILEINFO
+			mov		[edi].FILEINFO.fopen,TRUE
+			mov		eax,[esi].PBITEM.id
+			mov		[edi].FILEINFO.pid,eax
+			mov		eax,[esi].PBITEM.idparent
+			mov		[edi].FILEINFO.idparent,eax
+			invoke RemovePath,addr [esi].PBITEM.szitem,addr da.szProjectPath,addr [edi].FILEINFO.filename
+			invoke UpdateAll,UAM_ISOPEN,addr [esi].PBITEM.szitem
+			.if eax==-1
+				mov		[edi].FILEINFO.fopen,FALSE
+				mov		eax,TRUE
+				jmp		Ex
+			.endif
+			invoke GetWindowLong,eax,GWL_USERDATA
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		ebx,eax
+		.else
+			;Item does not exist
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.else
+		mov		tci.imask,TCIF_PARAM
+		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci
+		.if !eax
+			;Tab does not exist
+			xor		eax,eax
+			jmp		Ex
+		.endif
+		mov		ebx,tci.lParam
+		invoke strcpy,addr [edi].FILEINFO.filename,addr [ebx].TABMEM.filename
+	.endif
+	invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+	mov		[edi].FILEINFO.ID,eax
+	invoke GetWindowRect,[ebx].TABMEM.hwnd,addr [edi].FILEINFO.rect
+	mov		eax,[edi].FILEINFO.rect.right
+	sub		eax,[edi].FILEINFO.rect.left
+	mov		[edi].FILEINFO.rect.right,eax
+	mov		eax,[edi].FILEINFO.rect.bottom
+	sub		eax,[edi].FILEINFO.rect.top
+	mov		[edi].FILEINFO.rect.bottom,eax
+	invoke ScreenToClient,ha.hClient,addr [edi].FILEINFO.rect
+	mov		eax,[edi].FILEINFO.ID
+	.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+		invoke SendMessage,[ebx].TABMEM.hedt,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,[ebx].TABMEM.hedt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		mov		[edi].FILEINFO.nline,eax
+	.endif
+	mov		eax,TRUE
+  Ex:
+	ret
+
+SetFileInfo endp

@@ -202,6 +202,7 @@ TabToolGetMem proc uses ebx,hWin:DWORD
 	mov		nInx,-1
 	mov		tci.imask,TCIF_PARAM
 	mov		eax,TRUE
+	xor		ebx,ebx
 	.while eax
 		inc		nInx
 		invoke SendMessage,ha.hTab,TCM_GETITEM,nInx,addr tci

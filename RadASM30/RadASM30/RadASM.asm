@@ -129,14 +129,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
 		;Create code complete
 		invoke CreateCodeComplete
-		invoke GetSession
-		invoke GetAssembler
-		invoke GetColors
-		invoke GetBlockDef
-		invoke GetOption
-		invoke GetParesDef
-		invoke GetCodeComplete
-		invoke GetKeywords
+		invoke Init
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.fTimer,1
 	.elseif eax==WM_COMMAND
@@ -699,10 +692,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_CLOSE
 		invoke UpdateAll,UAM_SAVEALL,TRUE
 		.if eax
-			invoke SendMessage,ha.hFileBrowser,FBM_GETPATH,0,addr da.szFBPath
 			invoke SaveTools
 			invoke SaveReBar
-			invoke PutSession
+			.if da.fProject
+				invoke PutProject
+			.else
+				invoke PutSession
+			.endif
 			invoke PutWinPos
 			invoke UpdateAll,UAM_CLOSEALL,0
 			jmp		ExDef
@@ -783,6 +779,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==-1
 				invoke OpenTheFile,[esi].FBNOTIFY.lpfile,0
 			.endif
+		.elseif [esi].NMHDR.code==FBN_PATHCHANGE && eax==ha.hFileBrowser
+			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
@@ -1797,13 +1795,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.endif
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
-	invoke GetSessionFiles
-	.if eax
-		invoke TabToolActivate
-		.if da.win.fcldmax
-			invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
-		.endif
-	.endif
+	invoke OpenFiles
 ;	invoke ShowSplash
 ;	;Get command line filename
 ;	mov		eax,CommandLine
@@ -1862,6 +1854,7 @@ start:
 	invoke GridInstall,ha.hInstance,FALSE
 	invoke GetCharTabPtr
 	mov		da.lpCharTab,eax
+	invoke strcpy,addr da.szProjectFiles,addr szDotRapDot
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
 	invoke GridUnInstall

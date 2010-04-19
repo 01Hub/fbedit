@@ -3,6 +3,8 @@ ID_EDITTEXT						equ	65502
 ID_EDITHEX						equ	65503
 ID_EDITRES						equ 65004
 ID_EDITUSER						equ 65005
+ID_PROJECT						equ 65506
+ID_EXTERNAL						equ 65507
 
 ID_FIRSTCHILD					equ 65001
 ID_LASTCHILD					equ 65499
@@ -285,6 +287,11 @@ RESOPT struct
 	fopt			DWORD ?
 RESOPT ends
 
+EXTERNAL struct
+	szprog			BYTE MAX_PATH dup(?)
+	szfiles			BYTE 32 dup(?)
+EXTERNAL ends
+
 ADDINDATA struct
 	win				WIN <>
 	winres			WINSIZE <>
@@ -315,14 +322,27 @@ ADDINDATA struct
 	edtopt			EDTOPT <>
 	resopt			RESOPT <>
 	fLockToolbar	DWORD ?
+	szFilter		BYTE 32 dup(?)
 	szCodeFiles		BYTE 32 dup(?)
 	szTextFiles		BYTE 32 dup(?)
 	szHexFiles		BYTE 32 dup(?)
 	szResourceFiles	BYTE 32 dup(?)
+	szProjectFiles	BYTE 32 dup(?)
 	szCCTrig		BYTE 128 dup(?)
 	szCCInc			BYTE 32 dup(?)
 	szCCLib			BYTE 32 dup(?)
+	external		EXTERNAL 16 dup(<>)
 ADDINDATA ends
+
+FILEINFO struct
+	fopen			DWORD ?
+	pid				DWORD ?
+	idparent		DWORD ?
+	ID				DWORD ?
+	rect			RECT <>
+	nline			DWORD ?
+	filename		BYTE MAX_PATH dup(?)
+FILEINFO ends
 
 TABMEM struct
 	hwnd			HWND ?					;Handle of the mdi child window.

@@ -100,8 +100,10 @@ szBS							db '\',0
 szDot							db '.',0
 szComma							db ',',0
 szDotIni						db '.ini',0
+szDotRapDot						db '.rap.',0
 szBSApiBS						db '\Api\',0
 szNULL							db 0
+szDefFilter						db '.asm.inc.rc.rap.',0
 
 ;RadASM.ini
 szInifile						db 'RadASM.ini',0
@@ -142,6 +144,8 @@ szIniTrig						db 'Trig',0
 szIniInc						db 'Inc',0
 szIniLib						db 'Lib',0
 szIniApi						db 'Api',0
+szIniFilter						db 'Filter',0
+szIniGroup						db 'Group',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

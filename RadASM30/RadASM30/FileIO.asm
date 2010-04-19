@@ -47,6 +47,11 @@ GetTheFileType proc uses esi,lpFileName:DWORD
 			mov		eax,ID_EDITRES
 			jmp		Ex
 		.endif
+		invoke IsFileType,addr ftpe,addr da.szProjectFiles
+		.if eax
+			mov		eax,ID_PROJECT
+			jmp		Ex
+		.endif
 		mov		eax,ID_EDITTEXT
 	.else
 		mov		eax,ID_EDITTEXT
@@ -494,3 +499,78 @@ SaveFileAs proc hWin:DWORD,lpFileName:DWORD
 
 SaveFileAs endp
 
+OpenFiles proc
+
+	.if !da.fProject
+		invoke GetSessionFiles
+	.else
+		invoke GetProjectFiles
+	.endif
+	.if eax
+		invoke TabToolActivate
+		.if da.win.fcldmax
+			invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
+		.endif
+	.endif
+	ret
+
+OpenFiles endp
+
+OpenAssembler proc
+
+	invoke GetAssembler
+	invoke GetColors
+	invoke GetBlockDef
+	invoke GetOption
+	invoke GetParesDef
+	invoke GetCodeComplete
+	invoke GetKeywords
+	ret
+
+OpenAssembler endp
+
+OpenProject proc
+
+	invoke GetProjectAssembler
+	invoke OpenAssembler
+	ret
+
+OpenProject endp
+
+OpenSession proc
+	
+	invoke GetSessionAssembler
+	invoke OpenAssembler
+	ret
+
+OpenSession endp
+
+Init proc
+
+	;Project
+	invoke GetPrivateProfileString,addr szIniSession,addr szIniProject,NULL,addr da.szProject,sizeof da.szProject,addr da.szRadASMIni
+	.if eax
+		;Check if project file exists
+		invoke GetFileAttributes,addr da.szProject
+		.if eax==INVALID_HANDLE_VALUE
+			mov		da.szProject,0
+			xor		eax,eax
+		.else
+			mov		eax,TRUE
+		.endif
+	.endif
+	.if eax
+		invoke strcpy,addr da.szProjectPath,addr da.szProject
+		invoke strlen,addr da.szProjectPath
+		.while da.szProjectPath[eax]!='\' && eax
+			dec		eax
+		.endw
+		mov		da.szProjectPath[eax],0
+		mov		da.fProject,TRUE
+		invoke OpenProject
+	.else
+		invoke OpenSession
+	.endif
+	ret
+
+Init endp
