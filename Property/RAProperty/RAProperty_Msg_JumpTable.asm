@@ -660,9 +660,11 @@
 		pop		esi
 		mov		eax,ecx
 		ret
+	align 4
 	_PRM_COMPACTLIST:
 		invoke CompactProperties,wParam
 		ret
+	align 4
 	_PRM_RESET:
 		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_RESETCONTENT,0,0
 		.if [ebx].RAPROPERTY.hmem
@@ -698,6 +700,15 @@
 		.endif
 		xor		eax,eax
 		mov		[ebx].RAPROPERTY.hMemArray,eax
+		ret
+	align 4
+	_PRM_GETSELTYP:
+		invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETCURSEL,0,0
+		.if eax!=CB_ERR
+			invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETITEMDATA,eax,0
+		.else
+			xor		eax,eax
+		.endif
 		ret
 
 .data
@@ -751,6 +762,7 @@ _RAPROPERTY_BASE \
 	dd _PRM_ADDPROPERTYLIST		;equ WM_USER+45		;wParam=dwType, lParam=lpszLineOfWords
 	dd _PRM_COMPACTLIST			;equ WM_USER+46		;wParam=fProject, lParam=0
 	dd _PRM_RESET				;equ WM_USER+47		;wParam=0, lParam=0
+	dd _PRM_GETSELTYP			;equ WM_USER+48		;wParam=0, lParam=0
 
 .code
 align 4

@@ -6,21 +6,6 @@ CCTYPE_CONST			equ 3
 CCTYPE_ALL				equ 4
 CCTYPE_STRUCT			equ 5
 
-.const
-
-szCCPp					db 'Pp',0
-szCCp					db 'p',0
-szCCC					db 'C',0
-szCCAll					db 'WScdsm',0
-szCCSs					db 'Ss',0
-szCCd					db 'd',0
-szCCAssume				db 'assume ',0
-szCaseTypes				db 'WPMpcm',0
-szGotoTypes				db 'pldcs',0
-szMsg1					db 'SendMessage',0
-szMsg2					db 'PostMessage',0
-szMsg3					db 'SendDlgItemMessage',0
-
 .data?
 
 lpOldCCProc				dd ?

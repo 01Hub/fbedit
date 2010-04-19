@@ -57,6 +57,8 @@ SaveTheFile						PROTO	:HWND
 WantToSave						PROTO	:HWND
 SetHiliteWords					PROTO	:DWORD,:DWORD
 OpenTheFile						PROTO	:DWORD,:DWORD
+TabToolGetInx					PROTO	:DWORD
+TabToolGetInxFromPid			PROTO	:DWORD
 
 CCTYPE_NONE						equ 0
 CCTYPE_PROC						equ 1
@@ -83,6 +85,11 @@ FILENOTIFY struct
 	lpPtrPth			DWORD ?
 FILENOTIFY ends
 
+DECLARE struct
+	hWin				HWND ?
+	cp					DWORD ?
+DECLARE ends
+
 .const
 
 szMdiClassName					db 'RadASMClass',0
@@ -102,8 +109,26 @@ szComma							db ',',0
 szDotIni						db '.ini',0
 szDotRapDot						db '.rap.',0
 szBSApiBS						db '\Api\',0
+szSpc							db ' ',0
+szCr							db VK_RETURN,0
 szNULL							db 0
 szDefFilter						db '.asm.inc.rc.rap.',0
+szOpen							db 'Open',0
+szPROTO							db ' PROTO',0
+
+;Code properties
+szCCPp							db 'Pp',0
+szCCp							db 'p',0
+szCCC							db 'C',0
+szCCAll							db 'WScdsm',0
+szCCSs							db 'Ss',0
+szCCd							db 'd',0
+szCCAssume						db 'assume ',0
+szCaseTypes						db 'WPMpcm',0
+szGotoTypes						db 'pldcs',0
+szMsg1							db 'SendMessage',0
+szMsg2							db 'PostMessage',0
+szMsg3							db 'SendDlgItemMessage',0
 
 ;RadASM.ini
 szInifile						db 'RadASM.ini',0
@@ -186,3 +211,4 @@ lpOldRAEditCodeProc				DWORD ?
 hRichEd							DWORD ?
 ttmsg							MESSAGE <>
 tt								TOOLTIP <>
+gotostack						DECLARE 32 dup(<?>)

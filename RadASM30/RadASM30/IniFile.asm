@@ -258,6 +258,7 @@ GetSessionFiles proc uses ebx edi
 	mov		da.win.fcldmax,FALSE
 	.while ebx<100
 		invoke GetFileInfo,ebx,addr szIniSession,addr da.szRadASMIni,addr fi
+		.break .if !eax
 		invoke GetFileAttributes,addr fi.filename
 		.if eax!=INVALID_HANDLE_VALUE
 			invoke OpenTheFile,addr fi.filename,fi.ID

@@ -398,6 +398,7 @@ IsFileType proc uses ebx esi edi,lpFileType:DWORD,lpFileTypes:DWORD
 IsFileType endp
 
 ParseEdit proc uses edi,hWin:HWND,pid:DWORD
+	LOCAL	hEdt:HWND
 	LOCAL	hMem:HGLOBAL
 
 	.if da.fProject
@@ -408,8 +409,10 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 	.else
 		mov		edi,hWin
 	.endif
+	invoke GetWindowLong,hWin,GWL_USERDATA
+	mov		hEdt,eax
 	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,edi,0
-	invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
+	invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
 	inc		eax
 	push	eax
 	add		eax,64
@@ -417,7 +420,7 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
 	mov		hMem,eax
 	pop		eax
-	invoke SendMessage,hWin,WM_GETTEXT,eax,hMem
+	invoke SendMessage,hEdt,WM_GETTEXT,eax,hMem
 	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
 	invoke GlobalFree,hMem
 	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
@@ -1389,3 +1392,284 @@ SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
 	ret
 
 SetFileInfo endp
+
+PushGoto proc uses esi edi,hWin:HWND,cp:DWORD
+
+	mov		ecx,31
+	mov		esi,offset gotostack+30*sizeof DECLARE
+	mov		edi,offset gotostack+31*sizeof DECLARE
+	.repeat
+		mov		eax,[esi].DECLARE.hWin
+		mov		[edi].DECLARE.hWin,eax
+		mov		eax,[esi].DECLARE.cp
+		mov		[edi].DECLARE.cp,eax
+		lea		esi,[esi-sizeof DECLARE]
+		lea		edi,[edi-sizeof DECLARE]
+	.untilcxz
+	mov		edi,offset gotostack
+	mov		eax,hWin
+	mov		[edi].DECLARE.hWin,eax
+	mov		eax,cp
+	mov		[edi].DECLARE.cp,eax
+	ret
+
+PushGoto endp
+
+PopGoto proc uses esi edi
+
+	mov		ecx,31
+	mov		esi,offset gotostack+sizeof DECLARE
+	mov		edi,offset gotostack
+	.repeat
+		mov		eax,[esi].DECLARE.hWin
+		mov		[edi].DECLARE.hWin,eax
+		mov		eax,[esi].DECLARE.cp
+		mov		[edi].DECLARE.cp,eax
+		lea		esi,[esi+sizeof DECLARE]
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	mov		edi,offset gotostack+31*sizeof DECLARE
+	xor		eax,eax
+	mov		[edi].DECLARE.hWin,eax
+	mov		[edi].DECLARE.cp,eax
+	ret
+
+PopGoto endp
+
+DeleteGoto proc uses esi edi,hWin:HWND
+
+	mov		ecx,32
+	mov		edi,offset gotostack
+	xor		edx,edx
+	mov		eax,hWin
+	.repeat
+		.if eax==[edi].DECLARE.hWin
+			mov		[edi].DECLARE.hWin,0
+			mov		[edi].DECLARE.cp,0
+			inc		edx
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	.if edx
+		mov		ecx,32
+		mov		esi,offset gotostack
+		mov		edi,offset gotostack
+		.repeat
+			.if [esi].DECLARE.hWin
+				.if esi!=edi
+					mov		eax,[esi].DECLARE.hWin
+					mov		[edi].DECLARE.hWin,eax
+					mov		eax,[esi].DECLARE.cp
+					mov		[edi].DECLARE.cp,eax
+					mov		[esi].DECLARE.hWin,0
+					mov		[esi].DECLARE.cp,0
+				.endif
+				lea		edi,[edi+sizeof DECLARE]
+			.endif
+			lea		esi,[esi+sizeof DECLARE]
+		.untilcxz
+	.endif
+	ret
+
+DeleteGoto endp
+
+UpdateGoto proc uses ebx edi,hWin:HWND,cp:DWORD,n:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	;Delete
+	mov		eax,cp
+	mov		chrg.cpMin,eax
+	mov		chrg.cpMax,eax
+	add		eax,n
+	.if eax<chrg.cpMin
+		mov		chrg.cpMin,eax
+	.else
+		mov		chrg.cpMax,eax
+	.endif
+	mov		ecx,32
+	mov		edi,offset gotostack
+	mov		edx,hWin
+	xor		ebx,ebx
+	.repeat
+		.if edx==[edi].DECLARE.hWin
+			mov		eax,[edi].DECLARE.cp
+			.if eax>chrg.cpMin && eax<chrg.cpMax
+				mov		[edi].DECLARE.hWin,0
+				mov		[edi].DECLARE.cp,0
+				inc		ebx
+			.endif
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	.if ebx
+		mov		esi,offset gotostack
+		mov		edi,offset gotostack
+		.repeat
+			.if [esi].DECLARE.hWin
+				.if esi!=edi
+					mov		eax,[esi].DECLARE.hWin
+					mov		[edi].DECLARE.hWin,eax
+					mov		eax,[esi].DECLARE.cp
+					mov		[edi].DECLARE.cp,eax
+					mov		[esi].DECLARE.hWin,0
+					mov		[esi].DECLARE.cp,0
+				.endif
+				lea		edi,[edi+sizeof DECLARE]
+			.endif
+			lea		esi,[esi+sizeof DECLARE]
+		.untilcxz
+	.endif
+	;Update
+	mov		ecx,32
+	mov		edi,offset gotostack
+	mov		edx,hWin
+	.repeat
+		.if edx==[edi].DECLARE.hWin
+			mov		eax,cp
+			.if eax<[edi].DECLARE.cp
+				mov		eax,n
+				add		[edi].DECLARE.cp,eax
+			.endif
+			
+		.endif
+		lea		edi,[edi+sizeof DECLARE]
+	.untilcxz
+	ret
+
+UpdateGoto endp
+
+GotoDeclare proc uses esi
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
+	LOCAL	chrg:CHARRANGE
+	LOCAL	isinproc:ISINPROC
+	LOCAL	nln:DWORD
+	LOCAL	ftxt:FINDTEXTEX
+
+	invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
+	.if buffer
+		.if da.fProject
+			invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+			mov		eax,[eax].TABMEM.pid
+		.else
+			mov		eax,ha.hEdt
+		.endif
+		mov		isinproc.nOwner,eax
+		mov		isinproc.lpszType,offset szCCp
+		invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,chrg.cpMin,0
+		mov		isinproc.nLine,eax
+		invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+		.if eax
+			mov		esi,eax
+			mov		eax,[eax-sizeof PROPERTIES].PROPERTIES.nLine
+			mov		nln,eax
+			;Skip proc name and point to params
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke SendMessage,ha.hProperty,PRM_ISINLIST,addr buffer,esi
+			.if !eax
+				;Skip params and point to locals
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke SendMessage,ha.hProperty,PRM_ISINLIST,addr buffer,esi
+			.endif
+			.if eax
+				.if byte ptr [eax-1]!=':'
+					lea		eax,buffer
+					mov		ftxt.lpstrText,eax
+					invoke SendMessage,ha.hEdt,EM_LINEINDEX,nln,0
+					mov		ftxt.chrgText.cpMin,eax
+					mov		ftxt.chrgText.cpMax,-1
+					mov		ftxt.chrg.cpMin,eax
+					mov		ftxt.chrg.cpMax,-1
+					invoke SendMessage,ha.hEdt,EM_FINDTEXTEX,FR_WHOLEWORD or FR_MATCHCASE or FR_DOWN,addr ftxt
+					.if eax!=-1
+						mov		ftxt.chrg.cpMin,eax
+						mov		ftxt.chrg.cpMax,eax
+						invoke PushGoto,ha.hEdt,chrg.cpMin
+						invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr ftxt.chrg
+						invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+						invoke SetFocus,ha.hEdt
+						jmp		Ex
+					.endif
+				.endif
+			.endif
+		.endif
+		invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szGotoTypes,addr buffer
+		.while eax
+			invoke strcpy,addr buffer1,eax
+			xor		ecx,ecx
+			.while buffer1[ecx]
+				.if buffer1[ecx]==':' || buffer1[ecx]=='['
+					mov		buffer1[ecx],0
+					.break
+				.endif
+				inc		ecx
+			.endw
+			invoke strcmp,addr buffer1,addr buffer
+			.if !eax
+				invoke PushGoto,ha.hEdt,chrg.cpMin
+				invoke SendMessage,ha.hProperty,PRM_FINDGETOWNER,0,0
+				.if da.fProject
+					push	eax
+					invoke TabToolGetInxFromPid,eax
+					pop		edx
+					.if eax==-1
+						;The file is not open
+						invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,edx,0
+						.if eax
+							invoke OpenTheFile,addr [eax].PBITEM.szitem,ID_EDITCODE
+						.else
+							jmp		Ex
+						.endif
+					.else
+						;The file is open
+						invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+						invoke TabToolActivate
+					.endif
+				.else
+					invoke TabToolGetInx,eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+					invoke TabToolActivate
+				.endif
+				invoke SendMessage,ha.hProperty,PRM_FINDGETLINE,0,0
+				invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
+				mov		chrg.cpMin,eax
+				mov		chrg.cpMax,eax
+				invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+				invoke SetFocus,ha.hEdt
+				.break
+			.endif
+			invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+		.endw
+	.endif
+  Ex:
+	ret
+
+GotoDeclare endp
+
+ReturnDeclare proc
+	LOCAL	chrg:CHARRANGE
+
+	mov		edx,offset gotostack
+	.if [edx].DECLARE.hWin
+		invoke TabToolGetInx,[edx].DECLARE.hWin
+		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+		invoke TabToolActivate
+		mov		edx,offset gotostack
+		mov		eax,[edx].DECLARE.cp
+		mov		chrg.cpMin,eax
+		mov		chrg.cpMax,eax
+		invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+		invoke SetFocus,ha.hEdt
+		invoke PopGoto
+	.endif
+	ret
+
+ReturnDeclare endp
+

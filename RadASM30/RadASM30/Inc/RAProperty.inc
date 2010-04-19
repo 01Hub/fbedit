@@ -50,6 +50,7 @@ PRM_ADDPROPERTYWORD			equ WM_USER+44		;wParam=dwType, lParam=lpszWord
 PRM_ADDPROPERTYLIST			equ WM_USER+45		;wParam=dwType, lParam=lpszListOfWords
 PRM_COMPACTLIST				equ WM_USER+46		;wParam=fProject, lParam=0
 PRM_RESET					equ WM_USER+47		;wParam=0, lParam=0
+PRM_GETSELTYP				equ WM_USER+48		;wParam=0, lParam=0
 
 ;Languages
 nFREEBASIC					equ 0

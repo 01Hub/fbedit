@@ -75,6 +75,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hebmk:HEBMK
 	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -241,7 +242,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FIND
+			.elseif eax==IDM_EDIT_FINDNEXT
+			.elseif eax==IDM_EDIT_FINDPREV
 			.elseif eax==IDM_EDIT_REPLACE
+			.elseif eax==IDM_EDIT_GOTODECLARE
+			.elseif eax==IDM_EDIT_RETURN
 			.elseif eax==IDM_EDIT_INDENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
@@ -667,24 +672,120 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke ShowWindow,ha.hMdi,SW_MINIMIZE
 				.endif
 			.elseif eax==IDCM_FILE_OPEN
+				invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
+				invoke GetFileAttributes,addr buffer
+				.if eax!=INVALID_HANDLE_VALUE
+					test	eax,FILE_ATTRIBUTE_DIRECTORY
+					.if !ZERO?
+						invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr buffer
+					.else
+						invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+						.if eax==-1
+							invoke OpenTheFile,addr buffer,0
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDCM_FILE_RENAME
 			.elseif eax==IDCM_FILE_EXPLORE
+				invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
+				invoke GetFileAttributes,addr buffer
+				.if eax!=INVALID_HANDLE_VALUE
+					test	eax,FILE_ATTRIBUTE_DIRECTORY
+					.if ZERO?
+						invoke strlen,addr buffer
+						.while buffer[eax]!='\' && eax
+							dec		eax
+						.endw
+						mov		buffer[eax],0
+					.endif
+					invoke ShellExecute,hWin,addr szOpen,addr buffer,0,0,SW_SHOWDEFAULT
+				.endif
 			.elseif eax==IDCM_FILE_CUT
 			.elseif eax==IDCM_FILE_COPY
 			.elseif eax==IDCM_FILE_PASTE
 			.elseif eax==IDCM_FILE_DELETE
 			.elseif eax==IDCM_FILE_TOCODE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
+						invoke SetFocus,ha.hEdt
+						invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,addr buffer
+					.endif
+				.endif
 			.elseif eax==IDM_PROPERTY_GOTO
+				invoke SendMessage,ha.hProperty,WM_COMMAND,(LBN_DBLCLK shl 16) or 1003,0
 			.elseif eax==IDM_PROPERTY_COPY
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hProperty,PRM_GETSELTEXT,0,addr buffer
+						invoke SetFocus,ha.hEdt
+						invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,addr buffer
+					.endif
+				.endif
 			.elseif eax==IDM_PROPERTY_PROTO
-
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hProperty,PRM_GETSELTYP,0,0
+						.if eax=='p'
+							invoke SendMessage,ha.hProperty,PRM_GETSELTEXT,0,offset tmpbuff
+							.if eax
+								invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCp,offset tmpbuff
+								.while eax
+									mov		ebx,eax
+									invoke strcmp,offset tmpbuff,ebx
+									.if !eax
+										invoke strcat,offset tmpbuff,offset szPROTO
+										invoke strlen,ebx
+										lea		ebx,[ebx+eax+1]
+										.if byte ptr [ebx]
+											invoke strcat,offset tmpbuff,offset szSpc
+											invoke strcat,offset tmpbuff,ebx
+										.endif
+										invoke strcat,offset tmpbuff,offset szCr
+										invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,offset tmpbuff
+										invoke SetFocus,ha.hEdt
+										.break
+									.endif
+									invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+								.endw
+							.endif
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_OUTPUT_HIDE
 				invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
 				invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolOutput
 				invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
 			.elseif eax==IDM_OUTPUT_CLEAR
+				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
+				mov		ebx,ha.hOutput
+				.if eax
+					mov		ebx,ha.hImmediate
+				.endif
+				invoke SendMessage,ebx,WM_SETTEXT,0,0
 			.elseif eax==IDM_OUTPUT_CUT
+				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
+				mov		ebx,ha.hOutput
+				.if eax
+					mov		ebx,ha.hImmediate
+				.endif
+				mov		chrg.cpMin,0
+				mov		chrg.cpMax,-1
+				invoke SendMessage,ebx,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ebx,WM_CUT,0,0
 			.elseif eax==IDM_OUTPUT_COPY
+				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
+				mov		ebx,ha.hOutput
+				.if eax
+					mov		ebx,ha.hImmediate
+				.endif
+				mov		chrg.cpMin,0
+				mov		chrg.cpMax,-1
+				invoke SendMessage,ebx,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,ebx,WM_COPY,0,0
 			.else
 				jmp		ExDef
 			.endif
@@ -781,6 +882,37 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif [esi].NMHDR.code==FBN_PATHCHANGE && eax==ha.hFileBrowser
 			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
+		.elseif [esi].NMHDR.code==LBN_DBLCLK && eax==ha.hProperty
+			;Property list
+			.if ha.hMdi
+				invoke GetWindowLong,ha.hEdt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+					invoke PushGoto,ha.hEdt,chrg.cpMin
+				.endif
+			.endif
+			.if da.fProject
+				invoke TabToolGetInxFromPid,[esi].RAPNOTIFY.nid
+			.else
+				invoke TabToolGetInx,[esi].RAPNOTIFY.nid
+			.endif
+			.if eax==-1
+				invoke SendMessage,ha.hProperty,RPBM_FINDITEM,[esi].RAPNOTIFY.nid,0
+				.if eax
+					invoke OpenTheFile,addr [eax].PBITEM.szitem,ID_EDITCODE
+				.else
+					jmp		Ex
+				.endif
+			.else
+				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+				invoke TabToolActivate
+			.endif
+			invoke SendMessage,ha.hEdt,EM_LINEINDEX,[esi].RAPNOTIFY.nline,0
+			mov		chrg.cpMin,eax
+			mov		chrg.cpMax,eax
+			invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+			invoke SetFocus,ha.hEdt
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
@@ -1492,7 +1624,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.if eax!=da.nLastSize
 							push	eax
 							sub		eax,da.nLastSize
-;							invoke UpdateGoto,ha.hREd,[esi].RASELCHANGE.chrg.cpMin,eax
+							invoke UpdateGoto,[ebx].TABMEM.hedt,[esi].RASELCHANGE.chrg.cpMin,eax
 							pop		da.nLastSize
 						.endif
 					  OnceMore:
@@ -1568,7 +1700,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.if ![esi].RASELCHANGE.nWordGroup
 							.if [ebx].TABMEM.fupdate
 								mov		[ebx].TABMEM.fupdate,FALSE
-								invoke ParseEdit,[ebx].TABMEM.hedt,[ebx].TABMEM.pid
+								invoke ParseEdit,[ebx].TABMEM.hwnd,[ebx].TABMEM.pid
 							.endif
 						.endif
 					.elseif da.cctype==CCTYPE_ALL
