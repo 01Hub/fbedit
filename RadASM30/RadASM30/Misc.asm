@@ -812,6 +812,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==4
 		;Project
+		xor		edi,edi
 		mov		eax,TRUE
 		push	eax
 		push	IDM_PROJECT_NEW
@@ -820,6 +821,15 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		mov		eax,da.fProject
 		push	eax
 		push	IDM_PROJECT_CLOSE
+		push	eax
+		push	IDM_PROJECT_OPTION
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
+			mov		edi,eax
+			.if edi
+				mov		edi,[edi].PBITEM.id
+			.endif
+		.endif
 		push	eax
 		push	IDM_PROJECT_ADDNEWFILE
 		push	eax
@@ -830,20 +840,31 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_PROJECT_ADDALLOPEN
 		push	eax
 		push	IDM_PROJECT_ADDGROUP
+		.if sdword ptr edi<0
+			mov		edi,TRUE
+			xor		eax,eax
+		.elseif sdword ptr edi>0
+			mov		eax,TRUE
+			xor		edi,edi
+		.else
+			xor		edi,edi
+			xor		eax,eax
+		.endif
 		push	eax
 		push	IDM_PROJECT_REMOVEFILE
 		push	eax
-		push	IDM_PROJECT_REMOVEGROUP
-		push	eax
 		push	IDM_PROJECT_EDITFILE
 		push	eax
-		push	IDM_PROJECT_EDITGROUP
-		push	eax
 		push	IDM_PROJECT_OPENITEMFILE
-		push	eax
+		push	edi
+		push	IDM_PROJECT_EDITGROUP
+		push	edi
 		push	IDM_PROJECT_OPENITEMGROUP
-		push	eax
-		push	IDM_PROJECT_OPTION
+		.if edi==-1
+			xor		edi,edi
+		.endif
+		push	edi
+		push	IDM_PROJECT_REMOVEGROUP
 	.elseif eax==5
 		;Resource
 		xor		eax,eax

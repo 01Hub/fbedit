@@ -557,55 +557,276 @@ OpenFiles proc
 
 OpenFiles endp
 
-OpenAssembler proc
+OpenAssembler proc uses ebx esi edi
+	LOCAL	pbfe:PBFILEEXT
+	LOCAL	racolor:RACOLOR
+	LOCAL	buffer[256]:BYTE
+	LOCAL	buffcbo[128]:BYTE
+	LOCAL	bufftype[128]:BYTE
+	LOCAL	deftype:DEFTYPE
+	LOCAL	defgen:DEFGEN
 
-	invoke GetAssembler
-	invoke GetColors
-	invoke GetBlockDef
-	invoke GetOption
-	invoke GetParesDef
+
+	;Assembler.ini
+	invoke strcpy,addr da.szAssemblerIni,addr da.szAppPath
+	invoke strcat,addr da.szAssemblerIni,addr szBS
+	invoke strcat,addr da.szAssemblerIni,addr da.szAssembler
+	invoke strcat,addr da.szAssemblerIni,addr szDotIni
+	invoke SendMessage,ha.hStatus,SB_SETTEXT,2,addr da.szAssembler
+	;Get file types
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniCode,NULL,addr da.szCodeFiles,sizeof da.szCodeFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniText,NULL,addr da.szTextFiles,sizeof da.szTextFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniHex,NULL,addr da.szHexFiles,sizeof da.szHexFiles,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniResource,NULL,addr da.szResourceFiles,sizeof da.szResourceFiles,addr da.szAssemblerIni
+	;Get project browser file types
+	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,0
+	mov		pbfe.id,1
+	invoke strcpy,addr pbfe.szfileext,addr da.szCodeFiles
+	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,addr pbfe
+	;Get colors
+	invoke GetPrivateProfileString,addr szIniColors,addr szIniColors,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+	.if eax
+		xor		ebx,ebx
+		.while ebx<sizeof RADCOLOR/4
+			invoke GetItemInt,addr tmpbuff,0
+			mov		dword ptr da.radcolor[ebx*4],eax
+			inc		ebx
+		.endw
+	.else
+		invoke RtlMoveMemory,addr da.radcolor,addr defcol,sizeof RADCOLOR
+	.endif
+	invoke SendMessage,ha.hOutput,REM_GETCOLOR,0,addr racolor
+	mov		eax,da.radcolor.toolback
+	mov		racolor.bckcol,eax
+	mov		eax,da.radcolor.tooltext
+	mov		racolor.txtcol,eax
+	invoke SendMessage,ha.hOutput,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hImmediate,REM_SETCOLOR,0,addr racolor
+	invoke SendMessage,ha.hFileBrowser,FBM_SETBACKCOLOR,0,da.radcolor.toolback
+	invoke SendMessage,ha.hFileBrowser,FBM_SETTEXTCOLOR,0,da.radcolor.tooltext
+	invoke SendMessage,ha.hProjectBrowser,RPBM_SETBACKCOLOR,0,da.radcolor.toolback
+	invoke SendMessage,ha.hProjectBrowser,RPBM_SETTEXTCOLOR,0,da.radcolor.tooltext
+	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,da.radcolor.toolback
+	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,da.radcolor.tooltext
+	;Get code blocks
+	mov		esi,offset da.rabdstr
+	mov		edi,offset da.rabd
+	invoke RtlZeroMemory,edi,sizeof da.rabd
+	mov		ebx,1
+	.while ebx<33
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniCodeBlock,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.break .if !eax
+		invoke GetItemStr,addr tmpbuff,addr szNULL,esi
+		.if byte ptr [esi]
+			mov		[edi].RABLOCKDEF.lpszStart,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+2]
+		.endif 
+		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+		.if byte ptr [esi]
+			mov		[edi].RABLOCKDEF.lpszEnd,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+2]
+		.endif 
+		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+		.if byte ptr [esi]
+			mov		[edi].RABLOCKDEF.lpszNot1,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+2]
+		.endif 
+		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+		.if byte ptr [esi]
+			mov		[edi].RABLOCKDEF.lpszNot2,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+2]
+		.endif 
+		invoke GetItemInt,addr tmpbuff,0
+		push	eax
+		invoke GetItemInt,addr tmpbuff,0
+		pop		edx
+		shl		eax,16
+		or		eax,edx
+		mov		[edi].RABLOCKDEF.flag,eax
+		inc		ebx
+		lea		edi,[edi+sizeof RABLOCKDEF]
+	.endw
+	;Reset block defs
+	invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,0
+	mov		esi,offset da.rabd
+	.while [esi].RABLOCKDEF.lpszStart
+		invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,esi
+		mov		eax,[esi].RABLOCKDEF.lpszStart
+		call	TestIt
+		mov		eax,[esi].RABLOCKDEF.lpszEnd
+		call	TestIt
+		lea		esi,[esi+sizeof RABLOCKDEF]
+	.endw
+	invoke GetPrivateProfileString,addr szIniCodeBlock,addr szIniCmnt,NULL,addr tmpbuff,64,addr da.szAssemblerIni
+	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntStart
+	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntEnd
+	invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
+	;Get options
+	invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
+	invoke SendMessage,ha.hOutput,REM_BRACKETMATCH,0,offset da.szBraceMatch
+	invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+	invoke GetItemInt,addr tmpbuff,4
+	mov		da.edtopt.tabsize,eax
+	invoke GetItemInt,addr tmpbuff,EDTOPT_INDENT or EDTOPT_LINENR
+	mov		da.edtopt.fopt,eax
+	invoke GetPrivateProfileString,addr szIniFile,addr szIniFilter,NULL,addr tmpbuff,sizeof da.szFilter+2,addr da.szAssemblerIni
+	invoke GetItemInt,addr tmpbuff,1
+	invoke SendMessage,ha.hFileBrowser,FBM_SETFILTER,TRUE,eax
+	invoke GetItemStr,addr tmpbuff,addr szDefFilter,addr da.szFilter
+	invoke SendMessage,ha.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr da.szFilter
+	;Get parser
+	invoke SendMessage,ha.hProperty,PRM_RESET,0,0
+	invoke GetPrivateProfileInt,addr szIniParse,addr szIniAssembler,0,addr da.szAssemblerIni
+	mov		da.nAsm,eax
+	invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,da.nAsm,0
+	invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,da.lpCharTab
+	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockSt
+	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockEn
+	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntChar
+	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szString
+	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szLineCont
+	invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
+	invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+	invoke GetPrivateProfileString,addr szIniParse,addr szIniType,NULL,addr buffcbo,sizeof buffcbo,addr da.szAssemblerIni
+	.if eax
+		.while buffcbo
+			invoke GetItemStr,addr buffcbo,addr szNULL,addr bufftype
+			.if bufftype
+				invoke GetPrivateProfileString,addr szIniParse,addr bufftype,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+				.while buffer
+					invoke GetItemInt,addr buffer,0
+					mov		deftype.nType,al
+					invoke GetItemInt,addr buffer,0
+					mov		deftype.nDefType,al
+					invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def
+					invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord
+					invoke strlen,addr deftype.szWord
+					mov		deftype.len,al
+					invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+				.endw
+				movzx	edx,deftype.Def
+				invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
+			.endif
+		.endw
+		invoke GetPrivateProfileString,addr szIniParse,addr szIniIgnore,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+		.while buffer
+			invoke GetItemInt,addr buffer,0
+			push	eax
+			invoke GetItemStr,addr buffer,addr szNULL,addr bufftype
+			pop		edx
+			.if bufftype
+				invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,edx,addr bufftype
+			.endif
+		.endw
+		invoke SendMessage,ha.hProperty,PRM_SELECTPROPERTY,'p',0
+	.endif
 	invoke GetCodeComplete
 	invoke GetKeywords
 	ret
 
+TestIt:
+	.if eax
+		.while byte ptr [eax]
+			.if byte ptr [eax]=='|'
+				mov		byte ptr [eax],0
+			.endif
+			inc		eax
+		.endw
+	.endif
+	retn
+
 OpenAssembler endp
 
-CreateNewProjectFile proc
+AddNewProjectFile proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	;Zero out the ofn struct
-    invoke RtlZeroMemory,addr ofn,sizeof ofn
-	;Setup the ofn struct
-	mov		ofn.lStructSize,sizeof ofn
-	push	ha.hWnd
-	pop		ofn.hwndOwner
-	push	ha.hInstance
-	pop		ofn.hInstance
-	mov		ofn.lpstrFilter,offset ALLFilterString
-	invoke strcpy,addr buffer,addr szNULL
-	lea		eax,buffer
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buffer
-	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
-    mov		ofn.lpstrDefExt,offset szNULL
-;    mov		ofn.lpstrTitle,offset szAddNewProjectFile
-    ;Show save as dialog
-	invoke GetSaveFileName,addr ofn
+	invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
 	.if eax
-		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
-		.if eax!=INVALID_HANDLE_VALUE
-			invoke CloseHandle,eax
-			invoke OpenTheFile,addr buffer,0
-			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
-			mov		eax,TRUE
-		.else
-			xor		eax,eax
+		;Zero out the ofn struct
+	    invoke RtlZeroMemory,addr ofn,sizeof ofn
+		;Setup the ofn struct
+		mov		ofn.lStructSize,sizeof ofn
+		push	ha.hWnd
+		pop		ofn.hwndOwner
+		push	ha.hInstance
+		pop		ofn.hInstance
+		mov		ofn.lpstrFilter,offset ALLFilterString
+		invoke strcpy,addr buffer,addr szNULL
+		lea		eax,buffer
+		mov		ofn.lpstrFile,eax
+		mov		ofn.nMaxFile,sizeof buffer
+		mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+	    mov		ofn.lpstrDefExt,offset szNULL
+	;    mov		ofn.lpstrTitle,offset szAddNewProjectFile
+	    ;Show save as dialog
+		invoke GetSaveFileName,addr ofn
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,addr buffer
+			.if !eax
+				invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+				.if eax==-1
+					invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+					.if eax!=INVALID_HANDLE_VALUE
+						invoke CloseHandle,eax
+						invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+						invoke OpenTheFile,addr buffer,0
+					.endif
+				.endif
+			.endif
 		.endif
 	.endif
 	ret
 
-CreateNewProjectFile endp
+AddNewProjectFile endp
+
+AddExistingProjectFile proc
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+
+	invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
+	.if eax
+		;Zero out the ofn struct
+		invoke RtlZeroMemory,addr ofn,sizeof ofn
+		;Setup the ofn struct
+		mov		ofn.lStructSize,sizeof ofn
+		push	ha.hWnd
+		pop		ofn.hwndOwner
+		push	ha.hInstance
+		pop		ofn.hInstance
+		mov		ofn.lpstrFilter,offset ALLFilterString
+		mov		buffer[0],0
+		lea		eax,buffer
+		mov		ofn.lpstrFile,eax
+		mov		ofn.nMaxFile,sizeof buffer
+		mov		ofn.lpstrDefExt,NULL
+		invoke GetCurrentDirectory,sizeof buffer1,addr buffer1
+		lea		eax,buffer1
+		mov		ofn.lpstrInitialDir,eax
+		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST
+	;    mov		ofn.lpstrTitle,offset szAddExistingProjectFile
+		;Show the Open dialog
+		invoke GetOpenFileName,addr ofn
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,addr buffer
+			.if !eax
+				invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+				.if eax==-1
+					invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+					invoke OpenTheFile,addr buffer,0
+				.endif
+			.endif
+		.endif
+	.endif
+	ret
+
+AddExistingProjectFile endp
 
 OpenProject proc
 
@@ -676,3 +897,4 @@ CloseProject proc
 	ret
 
 CloseProject endp
+

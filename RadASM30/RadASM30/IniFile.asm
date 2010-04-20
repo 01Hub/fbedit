@@ -200,6 +200,7 @@ GetProjectFiles proc uses ebx esi edi
 		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr da.szProject
 		.if eax
 			push	da.win.fcldmax
+			mov		da.win.fcldmax,FALSE
 			;Selected tab
 			invoke GetItemInt,addr buffer,0
 			push	eax
@@ -345,7 +346,7 @@ PutProject proc uses ebx esi edi
 		inc		ebx
 	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniGroup,addr tmpbuff[1],addr da.szProject
-	;Save open project files
+	;Get open project files
 	mov		dword ptr tmpbuff,0
 	.if ha.hMdi
 		invoke ShowWindow,ha.hClient,SW_HIDE
@@ -425,37 +426,6 @@ PutSession proc uses ebx
 
 PutSession endp
 
-GetColors proc uses ebx
-	LOCAL	racolor:RACOLOR
-
-	invoke GetPrivateProfileString,addr szIniColors,addr szIniColors,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-	.if eax
-		xor		ebx,ebx
-		.while ebx<sizeof RADCOLOR/4
-			invoke GetItemInt,addr tmpbuff,0
-			mov		dword ptr da.radcolor[ebx*4],eax
-			inc		ebx
-		.endw
-	.else
-		invoke RtlMoveMemory,addr da.radcolor,addr defcol,sizeof RADCOLOR
-	.endif
-	invoke SendMessage,ha.hOutput,REM_GETCOLOR,0,addr racolor
-	mov		eax,da.radcolor.toolback
-	mov		racolor.bckcol,eax
-	mov		eax,da.radcolor.tooltext
-	mov		racolor.txtcol,eax
-	invoke SendMessage,ha.hOutput,REM_SETCOLOR,0,addr racolor
-	invoke SendMessage,ha.hImmediate,REM_SETCOLOR,0,addr racolor
-	invoke SendMessage,ha.hFileBrowser,FBM_SETBACKCOLOR,0,da.radcolor.toolback
-	invoke SendMessage,ha.hFileBrowser,FBM_SETTEXTCOLOR,0,da.radcolor.tooltext
-	invoke SendMessage,ha.hProjectBrowser,RPBM_SETBACKCOLOR,0,da.radcolor.toolback
-	invoke SendMessage,ha.hProjectBrowser,RPBM_SETTEXTCOLOR,0,da.radcolor.tooltext
-	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,da.radcolor.toolback
-	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,da.radcolor.tooltext
-	ret
-
-GetColors endp
-
 PutColors proc uses ebx
 
 	mov		tmpbuff,0
@@ -469,175 +439,6 @@ PutColors proc uses ebx
 	ret
 
 PutColors endp
-
-GetAssembler proc
-	LOCAL	pbfe:PBFILEEXT
-
-	invoke strcpy,addr da.szAssemblerIni,addr da.szAppPath
-	invoke strcat,addr da.szAssemblerIni,addr szBS
-	invoke strcat,addr da.szAssemblerIni,addr da.szAssembler
-	invoke strcat,addr da.szAssemblerIni,addr szDotIni
-	invoke SendMessage,ha.hStatus,SB_SETTEXT,2,addr da.szAssembler
-	invoke GetPrivateProfileString,addr szIniFile,addr szIniCode,NULL,addr da.szCodeFiles,sizeof da.szCodeFiles,addr da.szAssemblerIni
-	invoke GetPrivateProfileString,addr szIniFile,addr szIniText,NULL,addr da.szTextFiles,sizeof da.szTextFiles,addr da.szAssemblerIni
-	invoke GetPrivateProfileString,addr szIniFile,addr szIniHex,NULL,addr da.szHexFiles,sizeof da.szHexFiles,addr da.szAssemblerIni
-	invoke GetPrivateProfileString,addr szIniFile,addr szIniResource,NULL,addr da.szResourceFiles,sizeof da.szResourceFiles,addr da.szAssemblerIni
-	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,0
-	mov		pbfe.id,1
-	invoke strcpy,addr pbfe.szfileext,addr da.szCodeFiles
-	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,addr pbfe
-	ret
-
-GetAssembler endp
-
-GetBlockDef proc uses ebx esi edi
-	LOCAL	buffer[16]:BYTE
-
-	mov		esi,offset da.rabdstr
-	mov		edi,offset da.rabd
-	invoke RtlZeroMemory,edi,sizeof da.rabd
-	mov		ebx,1
-	.while ebx<33
-		invoke BinToDec,ebx,addr buffer
-		invoke GetPrivateProfileString,addr szIniCodeBlock,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-		.break .if !eax
-		invoke GetItemStr,addr tmpbuff,addr szNULL,esi
-		.if byte ptr [esi]
-			mov		[edi].RABLOCKDEF.lpszStart,esi
-			invoke strlen,esi
-			lea		esi,[esi+eax+2]
-		.endif 
-		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
-		.if byte ptr [esi]
-			mov		[edi].RABLOCKDEF.lpszEnd,esi
-			invoke strlen,esi
-			lea		esi,[esi+eax+2]
-		.endif 
-		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
-		.if byte ptr [esi]
-			mov		[edi].RABLOCKDEF.lpszNot1,esi
-			invoke strlen,esi
-			lea		esi,[esi+eax+2]
-		.endif 
-		invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
-		.if byte ptr [esi]
-			mov		[edi].RABLOCKDEF.lpszNot2,esi
-			invoke strlen,esi
-			lea		esi,[esi+eax+2]
-		.endif 
-		invoke GetItemInt,addr tmpbuff,0
-		push	eax
-		invoke GetItemInt,addr tmpbuff,0
-		pop		edx
-		shl		eax,16
-		or		eax,edx
-		mov		[edi].RABLOCKDEF.flag,eax
-		inc		ebx
-		lea		edi,[edi+sizeof RABLOCKDEF]
-	.endw
-	;Reset block defs
-	invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,0
-	mov		esi,offset da.rabd
-	.while [esi].RABLOCKDEF.lpszStart
-		invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,esi
-		mov		eax,[esi].RABLOCKDEF.lpszStart
-		call	TestIt
-		mov		eax,[esi].RABLOCKDEF.lpszEnd
-		call	TestIt
-		lea		esi,[esi+sizeof RABLOCKDEF]
-	.endw
-	invoke GetPrivateProfileString,addr szIniCodeBlock,addr szIniCmnt,NULL,addr tmpbuff,64,addr da.szAssemblerIni
-	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntStart
-	invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntEnd
-	invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
-	ret
-
-TestIt:
-	.if eax
-		.while byte ptr [eax]
-			.if byte ptr [eax]=='|'
-				mov		byte ptr [eax],0
-			.endif
-			inc		eax
-		.endw
-	.endif
-	retn
-
-GetBlockDef endp
-
-GetOption proc
-
-	invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
-	invoke SendMessage,ha.hOutput,REM_BRACKETMATCH,0,offset da.szBraceMatch
-	invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-	invoke GetItemInt,addr tmpbuff,4
-	mov		da.edtopt.tabsize,eax
-	invoke GetItemInt,addr tmpbuff,EDTOPT_INDENT or EDTOPT_LINENR
-	mov		da.edtopt.fopt,eax
-	invoke GetPrivateProfileString,addr szIniFile,addr szIniFilter,NULL,addr tmpbuff,sizeof da.szFilter+2,addr da.szAssemblerIni
-	invoke GetItemInt,addr tmpbuff,1
-	invoke SendMessage,ha.hFileBrowser,FBM_SETFILTER,TRUE,eax
-	invoke GetItemStr,addr tmpbuff,addr szDefFilter,addr da.szFilter
-	invoke SendMessage,ha.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr da.szFilter
-	ret
-
-GetOption endp
-
-GetParesDef proc
-	LOCAL	buffcbo[128]:BYTE
-	LOCAL	bufftype[128]:BYTE
-	LOCAL	deftype:DEFTYPE
-	LOCAL	buffer[256]:BYTE
-	LOCAL	defgen:DEFGEN
-
-	invoke SendMessage,ha.hProperty,PRM_RESET,0,0
-	invoke GetPrivateProfileInt,addr szIniParse,addr szIniAssembler,0,addr da.szAssemblerIni
-	mov		da.nAsm,eax
-	invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,da.nAsm,0
-	invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,da.lpCharTab
-	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockSt
-	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockEn
-	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntChar
-	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szString
-	invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szLineCont
-	invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
-	invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
-	invoke GetPrivateProfileString,addr szIniParse,addr szIniType,NULL,addr buffcbo,sizeof buffcbo,addr da.szAssemblerIni
-	.if eax
-		.while buffcbo
-			invoke GetItemStr,addr buffcbo,addr szNULL,addr bufftype
-			.if bufftype
-				invoke GetPrivateProfileString,addr szIniParse,addr bufftype,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
-				.while buffer
-					invoke GetItemInt,addr buffer,0
-					mov		deftype.nType,al
-					invoke GetItemInt,addr buffer,0
-					mov		deftype.nDefType,al
-					invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def
-					invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord
-					invoke strlen,addr deftype.szWord
-					mov		deftype.len,al
-					invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
-				.endw
-				movzx	edx,deftype.Def
-				invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
-			.endif
-		.endw
-		invoke GetPrivateProfileString,addr szIniParse,addr szIniIgnore,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
-		.while buffer
-			invoke GetItemInt,addr buffer,0
-			push	eax
-			invoke GetItemStr,addr buffer,addr szNULL,addr bufftype
-			pop		edx
-			.if bufftype
-				invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,edx,addr bufftype
-			.endif
-		.endw
-		invoke SendMessage,ha.hProperty,PRM_SELECTPROPERTY,'p',0
-	.endif
-	ret
-
-GetParesDef endp
 
 DeleteDuplicates proc uses esi edi,lpszType:DWORD
 	LOCAL	nCount:DWORD

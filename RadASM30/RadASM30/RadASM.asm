@@ -115,15 +115,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,eax
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
-;		;Create code complete
-;		invoke CreateWindowEx,NULL,addr szCCLBClassName,NULL,WS_CHILD or WS_SIZEBOX or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_USEIMAGELIST,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
-;		mov		ha.hCC,eax
-;;		invoke SetWindowLong,ha.hCC,GWL_WNDPROC,offset CodeCompleteProc
-;;		mov		lpOldCCProc,eax
-;		invoke CreateWindowEx,NULL,addr szCCTTClassName,NULL,WS_POPUP or WS_BORDER or WS_CLIPSIBLINGS or WS_CLIPCHILDREN,0,0,0,0,ha.hWnd,NULL,ha.hInstance,0
-;		mov		ha.hTT,eax
-;		invoke SendMessage,ha.hCC,WM_SETFONT,ha.hToolFont,FALSE
-;		invoke SendMessage,ha.hTT,WM_SETFONT,ha.hToolFont,FALSE
 		;Create tool windows
 		invoke CreateTools
 		invoke SendMessage,ha.hFileBrowser,FBM_GETIMAGELIST,0,0
@@ -590,15 +581,34 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_PROJECT_ADDNEWFILE
 				.if da.fProject
-					invoke CreateNewProjectFile
+					invoke AddNewProjectFile
 				.endif
 			.elseif eax==IDM_PROJET_ADDEXISTING
+				.if da.fProject
+					invoke AddExistingProjectFile
+				.endif
 			.elseif eax==IDM_PROJECT_ADDOPEN
 			.elseif eax==IDM_PROJECT_ADDALLOPEN
 			.elseif eax==IDM_PROJECT_ADDGROUP
 				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWGROUP,0,0
 			.elseif eax==IDM_PROJECT_REMOVEFILE
+				invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
 			.elseif eax==IDM_PROJECT_REMOVEGROUP
+				invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
+			.elseif eax==IDM_PROJECT_EDITFILE
+				invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+			.elseif eax==IDM_PROJECT_EDITGROUP
+				invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+			.elseif eax==IDM_PROJECT_OPENITEMFILE
+				invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
+				.if eax
+					mov		ebx,eax
+					invoke UpdateAll,UAM_ISOPENACTIVATE,addr [ebx].PBITEM.szitem
+					.if eax==-1
+						invoke OpenTheFile,addr [ebx].PBITEM.szitem,0
+					.endif
+				.endif
+			.elseif eax==IDM_PROJECT_OPENITEMGROUP
 			.elseif eax==IDM_PROJECT_OPTION
 
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
@@ -904,9 +914,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;File browser path
 			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
 		.elseif [esi].NMHDR.code==RPBN_DBLCLICK && eax==ha.hProjectBrowser
-			;Projectbrowser
-			mov		eax,[esi].NMPBITEMDBLCLICK.lpPBITEM
-			invoke OpenTheFile,addr [eax].PBITEM.szitem,0
+			;Project browser
+			mov		ebx,[esi].NMPBITEMDBLCLICK.lpPBITEM
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr [ebx].PBITEM.szitem
+			.if eax==-1
+				invoke OpenTheFile,addr [ebx].PBITEM.szitem,0
+			.endif
 		.elseif [esi].NMHDR.code==LBN_DBLCLK && eax==ha.hProperty
 			;Property list
 			.if ha.hMdi
