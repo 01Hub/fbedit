@@ -23,7 +23,8 @@ RPBM_DELETEITEM			equ WM_USER+18	;wParam=0, lParam=0
 RPBM_EDITITEM			equ WM_USER+19	;wParam=0, lParam=0
 RPBM_GETEXPAND			equ WM_USER+20	;wParam=0, lParam=0
 RPBM_ADDNEWFILE			equ WM_USER+21	;wParam=idparent or NULL, lParam=lpszFile Returns pointer to a PBITEM structure
-RPBM_FINDITEM			equ WM_USER+22	;wParam=0 or id, lParam=lpszFile Returns pointer to a PBITEM structure
+RPBM_FINDITEM			equ WM_USER+22	;wParam=0 or id, lParam=lpszFile or NULL Returns pointer to a PBITEM structure
+RPBM_FINDITEMINDEX		equ WM_USER+23	;wParam=0 or id, lParam=lpszFile or NULL Returns index, -1 if not found
 
 PBFILEEXT struct
 	id			dd ?					;image index

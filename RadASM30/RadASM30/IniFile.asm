@@ -141,7 +141,6 @@ GetProjectFiles proc uses ebx esi edi
 	LOCAL	fi:FILEINFO
 	LOCAL	pbi:PBITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	nopen:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hEdt:HWND
 
@@ -176,9 +175,6 @@ GetProjectFiles proc uses ebx esi edi
 		.endw
 		;Get files
 		mov		esi,1
-		push	da.win.fcldmax
-		mov		da.win.fcldmax,FALSE
-		mov		nopen,0
 		.while esi<100
 			invoke GetFileInfo,esi,addr szIniProject,addr da.szProject,addr fi
 			.if eax
@@ -187,35 +183,36 @@ GetProjectFiles proc uses ebx esi edi
 				mov		eax,fi.idparent
 				mov		pbi.idparent,eax
 				invoke strcpy,addr pbi.szitem,addr fi.filename
+				mov		eax,fi.ID
+				mov		pbi.lParam,eax
 				invoke GetFileAttributes,addr pbi.szitem
 				.if eax!=INVALID_HANDLE_VALUE
 					invoke SendMessage,ha.hProjectBrowser,RPBM_ADDITEM,ebx,addr pbi
-					.if fi.fopen
-						invoke OpenTheFile,addr pbi.szitem,fi.ID
-						mov		edi,eax
-						invoke GetWindowLong,edi,GWL_USERDATA
-						mov		hEdt,eax
-						invoke MoveWindow,edi,fi.rect.left,fi.rect.top,fi.rect.right,fi.rect.bottom,TRUE
-						invoke UpdateWindow,edi
-						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
-							invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
-							mov		chrg.cpMin,eax
-							mov		chrg.cpMax,eax
-							invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
-							invoke SendMessage,hEdt,REM_VCENTER,0,0
-							invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
-						.endif
-						inc		nopen
-					.endif
 					inc		ebx
 				.endif
 			.endif
 			inc		esi
 		.endw
-		pop		da.win.fcldmax
-		.if nopen
-			mov		dword ptr buffer,'0F'
-			invoke GetPrivateProfileInt,addr szIniProject,addr buffer,0,addr da.szProject
+		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
+		invoke SetProjectTab,1
+		;Get open files
+		mov		dword ptr buffer,'0F'
+		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr da.szProject
+		.if eax
+			push	da.win.fcldmax
+			;Selected tab
+			invoke GetItemInt,addr buffer,0
+			push	eax
+			.while buffer
+				invoke GetItemInt,addr buffer,0
+				.if eax
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,eax,0
+					.if eax
+						invoke OpenTheFile,addr [eax].PBITEM.szitem,[eax].PBITEM.lParam
+					.endif
+				.endif
+			.endw
+			pop		eax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			.if eax==-1
 				invoke SendMessage,ha.hTab,TCM_SETCURSEL,0,0
@@ -225,15 +222,8 @@ GetProjectFiles proc uses ebx esi edi
 			.else
 				xor		eax,eax
 			.endif
-		.else
-			xor		eax,eax
+			pop		da.win.fcldmax
 		.endif
-		push	eax
-		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
-		invoke SendMessage,ha.hTabProject,TCM_SETCURSEL,1,0
-		invoke ShowWindow,ha.hProjectBrowser,SW_SHOWNA
-		invoke ShowWindow,ha.hFileBrowser,SW_HIDE
-		pop		eax
 	.endif
 	ret
 
@@ -298,7 +288,31 @@ GetSessionFiles proc uses ebx edi
 
 GetSessionFiles endp
 
-PutProject proc uses ebx esi
+SaveProjectItem proc nInx:DWORD
+	LOCAL	fi:FILEINFO
+	LOCAL	buffer[8]:BYTE
+
+	invoke SetFileInfo,nInx,addr fi
+	.if eax
+		mov		tmpbuff,0
+		invoke PutItemInt,addr tmpbuff,fi.idparent
+		invoke PutItemInt,addr tmpbuff,fi.ID
+		invoke PutItemInt,addr tmpbuff,fi.rect.left
+		invoke PutItemInt,addr tmpbuff,fi.rect.top
+		invoke PutItemInt,addr tmpbuff,fi.rect.right
+		invoke PutItemInt,addr tmpbuff,fi.rect.bottom
+		invoke PutItemInt,addr tmpbuff,fi.nline
+		invoke PutItemStr,addr tmpbuff,addr fi.filename
+		mov		buffer,'F'
+		invoke BinToDec,fi.pid,addr buffer[1]
+		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProject
+	.endif
+	ret
+
+SaveProjectItem endp
+
+PutProject proc uses ebx esi edi
+	LOCAL	tci:TC_ITEM
 	LOCAL	fi:FILEINFO
 	LOCAL	buffer[8]:BYTE
 
@@ -319,42 +333,46 @@ PutProject proc uses ebx esi
 	xor		ebx,ebx
 	.while TRUE
 		invoke SendMessage,ha.hProjectBrowser,RPBM_GETITEM,ebx,0
-		.if eax
-			mov		esi,eax
-			.break .if ![esi].PBITEM.id
-			.if sdword ptr [esi].PBITEM.id<0
-				invoke PutItemInt,addr tmpbuff,[esi].PBITEM.id
-				invoke PutItemInt,addr tmpbuff,[esi].PBITEM.idparent
-				invoke PutItemInt,addr tmpbuff,[esi].PBITEM.expanded
-				invoke PutItemStr,addr tmpbuff,addr [esi].PBITEM.szitem
-			.endif
-		.else
-			.break
+		.break .if !eax
+		mov		esi,eax
+		.break .if ![esi].PBITEM.id
+		.if sdword ptr [esi].PBITEM.id<0
+			invoke PutItemInt,addr tmpbuff,[esi].PBITEM.id
+			invoke PutItemInt,addr tmpbuff,[esi].PBITEM.idparent
+			invoke PutItemInt,addr tmpbuff,[esi].PBITEM.expanded
+			invoke PutItemStr,addr tmpbuff,addr [esi].PBITEM.szitem
 		.endif
 		inc		ebx
 	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniGroup,addr tmpbuff[1],addr da.szProject
-	;Get files
-	xor		ebx,ebx
-	.while ebx<100
-		invoke SetFileInfo,ebx,addr fi
+	;Save open project files
+	mov		dword ptr tmpbuff,0
+	.if ha.hMdi
+		invoke ShowWindow,ha.hClient,SW_HIDE
+		mov		eax,da.win.fcldmax
+		push	eax
 		.if eax
-			mov		tmpbuff,0
-			invoke PutItemInt,addr tmpbuff,fi.fopen
-			invoke PutItemInt,addr tmpbuff,fi.idparent
-			invoke PutItemInt,addr tmpbuff,fi.ID
-			invoke PutItemInt,addr tmpbuff,fi.rect.left
-			invoke PutItemInt,addr tmpbuff,fi.rect.top
-			invoke PutItemInt,addr tmpbuff,fi.rect.right
-			invoke PutItemInt,addr tmpbuff,fi.rect.bottom
-			invoke PutItemInt,addr tmpbuff,fi.nline
-			invoke PutItemStr,addr tmpbuff,addr fi.filename
-			mov		buffer,'F'
-			invoke BinToDec,fi.pid,addr buffer[1]
-			invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProject
+			invoke SendMessage,ha.hClient,WM_MDIRESTORE,ha.hMdi,0
 		.endif
-		inc		ebx
-	.endw
+		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
+		invoke PutItemInt,addr tmpbuff,eax
+		xor		ebx,ebx
+		.while TRUE
+			mov		tci.imask,TCIF_PARAM
+			invoke SendMessage,ha.hTab,TCM_GETITEM,ebx,addr tci
+			.break .if !eax
+			mov		esi,tci.lParam
+			mov		eax,[esi].TABMEM.pid
+			.if eax
+				invoke PutItemInt,addr tmpbuff,eax
+			.endif
+			inc		ebx
+		.endw
+		pop		da.win.fcldmax
+		invoke ShowWindow,ha.hClient,SW_SHOWNA
+	.endif
+	mov		dword ptr buffer,'0F'
+	invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProject
 	ret
 
 PutProject endp
@@ -401,6 +419,7 @@ PutSession proc uses ebx
 			invoke WritePrivateProfileString,addr szIniSession,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
 		.endw
 		pop		da.win.fcldmax
+		invoke ShowWindow,ha.hClient,SW_SHOWNA
 	.endif
 	ret
 
@@ -452,6 +471,7 @@ PutColors proc uses ebx
 PutColors endp
 
 GetAssembler proc
+	LOCAL	pbfe:PBFILEEXT
 
 	invoke strcpy,addr da.szAssemblerIni,addr da.szAppPath
 	invoke strcat,addr da.szAssemblerIni,addr szBS
@@ -462,6 +482,10 @@ GetAssembler proc
 	invoke GetPrivateProfileString,addr szIniFile,addr szIniText,NULL,addr da.szTextFiles,sizeof da.szTextFiles,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniFile,addr szIniHex,NULL,addr da.szHexFiles,sizeof da.szHexFiles,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniFile,addr szIniResource,NULL,addr da.szResourceFiles,sizeof da.szResourceFiles,addr da.szAssemblerIni
+	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,0
+	mov		pbfe.id,1
+	invoke strcpy,addr pbfe.szfileext,addr da.szCodeFiles
+	invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,0,addr pbfe
 	ret
 
 GetAssembler endp
@@ -644,7 +668,7 @@ DeleteDuplicates proc uses esi edi,lpszType:DWORD
 
 DeleteDuplicates endp
 
-GetCodeComplete proc uses ebx
+GetCodeComplete proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	apifile[MAX_PATH]:BYTE
 
@@ -708,7 +732,7 @@ GetCodeComplete proc uses ebx
 
 GetCodeComplete endp
 
-GetKeywords proc
+GetKeywords proc uses esi edi
 	LOCAL	hMem:HGLOBAL
 	LOCAL	buffer[16]:BYTE
 	LOCAL	nInx:DWORD

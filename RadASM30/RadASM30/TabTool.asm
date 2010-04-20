@@ -346,7 +346,7 @@ TabToolActivate proc uses ebx
 		mov		da.nLastSize,eax
 	.endif
 	.if da.fProject
-		invoke SendMessage,ha.hToolProject,RPBM_SETSELECTED,0,addr da.szFileName
+		invoke SendMessage,ha.hProjectBrowser,RPBM_SETSELECTED,0,addr da.szFileName
 	.endif
 	invoke SendMessage,ha.hClient,WM_MDIACTIVATE,ha.hMdi,0
 	ret

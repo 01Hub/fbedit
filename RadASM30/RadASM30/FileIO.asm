@@ -160,9 +160,10 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 
 LoadResFile endp
 
-OpenTheFile proc uses edi,lpFileName:DWORD,ID:DWORD
+OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hEdt:HWND
+	LOCAL	fi:FILEINFO
 
 	xor		edi,edi
 	.if ID
@@ -230,9 +231,47 @@ OpenTheFile proc uses edi,lpFileName:DWORD,ID:DWORD
 			invoke SetWindowText,edi,lpFileName
 			invoke TabToolActivate
 		.endif
+	.elseif eax==ID_EDITUSER
+	.elseif eax==ID_PROJECT
+		invoke CloseProject
+		.if eax
+			invoke strcpy,addr da.szProject,lpFileName
+			invoke OpenProject
+			invoke GetProjectFiles
+			.if eax
+				invoke TabToolActivate
+				.if da.win.fcldmax
+					invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
+				.endif
+			.endif
+		.endif
+	.elseif eax==ID_EXTERNAL
 	.endif
 	.if edi
 		invoke TabToolSetChanged,edi,FALSE
+		.if da.fProject
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,lpFileName
+			.if eax
+				mov		esi,eax
+				invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProject,addr fi
+				.if eax
+					invoke GetWindowLong,hEdt,GWL_USERDATA
+					mov		ebx,eax
+					mov		eax,fi.pid
+					mov		[ebx].TABMEM.pid,eax
+					invoke MoveWindow,edi,fi.rect.left,fi.rect.top,fi.rect.right,fi.rect.bottom,TRUE
+					invoke UpdateWindow,edi
+					.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
+						invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
+						mov		chrg.cpMin,eax
+						mov		chrg.cpMax,eax
+						invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
+						invoke SendMessage,hEdt,REM_VCENTER,0,0
+						invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
+					.endif
+				.endif
+			.endif
+		.endif
 	.endif
 	mov		eax,edi
 	ret
@@ -254,6 +293,8 @@ OpenEditFile proc ID:DWORD
 	pop		ofn.hInstance
 	.if ID==ID_EDITHEX
 		mov		ofn.lpstrFilter,offset ANYFilterString
+	.elseif ID==ID_PROJECT
+		mov		ofn.lpstrFilter,offset PROFilterString
 	.else
 		mov		ofn.lpstrFilter,offset ALLFilterString
 	.endif
@@ -501,10 +542,10 @@ SaveFileAs endp
 
 OpenFiles proc
 
-	.if !da.fProject
-		invoke GetSessionFiles
-	.else
+	.if da.fProject
 		invoke GetProjectFiles
+	.else
+		invoke GetSessionFiles
 	.endif
 	.if eax
 		invoke TabToolActivate
@@ -529,8 +570,52 @@ OpenAssembler proc
 
 OpenAssembler endp
 
+CreateNewProjectFile proc
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	;Zero out the ofn struct
+    invoke RtlZeroMemory,addr ofn,sizeof ofn
+	;Setup the ofn struct
+	mov		ofn.lStructSize,sizeof ofn
+	push	ha.hWnd
+	pop		ofn.hwndOwner
+	push	ha.hInstance
+	pop		ofn.hInstance
+	mov		ofn.lpstrFilter,offset ALLFilterString
+	invoke strcpy,addr buffer,addr szNULL
+	lea		eax,buffer
+	mov		ofn.lpstrFile,eax
+	mov		ofn.nMaxFile,sizeof buffer
+	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+    mov		ofn.lpstrDefExt,offset szNULL
+;    mov		ofn.lpstrTitle,offset szAddNewProjectFile
+    ;Show save as dialog
+	invoke GetSaveFileName,addr ofn
+	.if eax
+		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			invoke CloseHandle,eax
+			invoke OpenTheFile,addr buffer,0
+			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
+		.endif
+	.endif
+	ret
+
+CreateNewProjectFile endp
+
 OpenProject proc
 
+	invoke strcpy,addr da.szProjectPath,addr da.szProject
+	invoke strlen,addr da.szProjectPath
+	.while da.szProjectPath[eax]!='\' && eax
+		dec		eax
+	.endw
+	mov		da.szProjectPath[eax],0
+	mov		da.fProject,TRUE
 	invoke GetProjectAssembler
 	invoke OpenAssembler
 	ret
@@ -560,13 +645,6 @@ Init proc
 		.endif
 	.endif
 	.if eax
-		invoke strcpy,addr da.szProjectPath,addr da.szProject
-		invoke strlen,addr da.szProjectPath
-		.while da.szProjectPath[eax]!='\' && eax
-			dec		eax
-		.endw
-		mov		da.szProjectPath[eax],0
-		mov		da.fProject,TRUE
 		invoke OpenProject
 	.else
 		invoke OpenSession
@@ -574,3 +652,27 @@ Init proc
 	ret
 
 Init endp
+
+CloseProject proc
+
+	invoke UpdateAll,UAM_SAVEALL,TRUE
+	.if eax
+		.if da.fProject
+			invoke PutProject
+		.endif
+		invoke UpdateAll,UAM_CLOSEALL,0
+		invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+		invoke SendMessage,ha.hProjectBrowser,RPBM_ADDITEM,0,0
+		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+		invoke SetProjectTab,0
+		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+		mov		da.fProject,0
+		mov		da.szProject,0
+		mov		da.szProjectPath,0
+		mov		eax,TRUE
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+CloseProject endp

@@ -1109,6 +1109,23 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke FindItemFromString,ebx,lParam
 		.endif
 		jmp		Ex
+	.elseif eax==RPBM_FINDITEMINDEX
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		.if wParam
+			invoke FindItemFromid,ebx,wParam
+		.else
+			invoke FindItemFromString,ebx,lParam
+		.endif
+		.if eax
+			sub		eax,[ebx].PROJECTBROWSER.hmemitems
+			mov		ecx,sizeof PBITEM
+			xor		edx,edx
+			div		ecx
+		.else
+			or		eax,-1
+		.endif
+		jmp		Ex
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:

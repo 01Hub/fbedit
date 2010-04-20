@@ -147,6 +147,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke OpenEditFile,ID_EDITHEX
 			.elseif eax==IDM_FILE_REOPEN
 				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+					mov		ebx,eax
+					.if [ebx].TABMEM.fchanged
+						invoke strcpy,addr tmpbuff,addr szFileChanged
+						invoke strcat,addr tmpbuff,addr [ebx].TABMEM.filename
+						invoke MessageBox,hWin,addr tmpbuff,addr DisplayName,MB_YESNO or MB_ICONQUESTION
+						.if eax==IDNO
+							jmp		Ex
+						.endif
+					.endif
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 						invoke LoadTextFile,ha.hEdt,addr da.szFileName
@@ -246,7 +256,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_EDIT_FINDPREV
 			.elseif eax==IDM_EDIT_REPLACE
 			.elseif eax==IDM_EDIT_GOTODECLARE
+				invoke GotoDeclare
 			.elseif eax==IDM_EDIT_RETURN
+				invoke ReturnDeclare
 			.elseif eax==IDM_EDIT_INDENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
@@ -565,12 +577,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 			.elseif eax==IDM_PROJECT_NEW
 			.elseif eax==IDM_PROJECT_OPEN
+				.if da.fProject
+					invoke CloseProject
+					.if !eax
+						jmp		Ex
+					.endif
+				.endif
+				invoke OpenEditFile,ID_PROJECT
 			.elseif eax==IDM_PROJECT_CLOSE
-			.elseif eax==IDM_PROJECT_ADDFILE
+				.if da.fProject
+					invoke CloseProject
+				.endif
+			.elseif eax==IDM_PROJECT_ADDNEWFILE
+				.if da.fProject
+					invoke CreateNewProjectFile
+				.endif
 			.elseif eax==IDM_PROJET_ADDEXISTING
 			.elseif eax==IDM_PROJECT_ADDOPEN
 			.elseif eax==IDM_PROJECT_ADDALLOPEN
 			.elseif eax==IDM_PROJECT_ADDGROUP
+				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWGROUP,0,0
 			.elseif eax==IDM_PROJECT_REMOVEFILE
 			.elseif eax==IDM_PROJECT_REMOVEGROUP
 			.elseif eax==IDM_PROJECT_OPTION
@@ -685,7 +711,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 					.endif
 				.endif
-			.elseif eax==IDCM_FILE_RENAME
 			.elseif eax==IDCM_FILE_EXPLORE
 				invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
 				invoke GetFileAttributes,addr buffer
@@ -698,12 +723,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endw
 						mov		buffer[eax],0
 					.endif
-					invoke ShellExecute,hWin,addr szOpen,addr buffer,0,0,SW_SHOWDEFAULT
+					invoke ShellExecute,hWin,addr szIniOpen,addr buffer,0,0,SW_SHOWDEFAULT
 				.endif
-			.elseif eax==IDCM_FILE_CUT
-			.elseif eax==IDCM_FILE_COPY
-			.elseif eax==IDCM_FILE_PASTE
-			.elseif eax==IDCM_FILE_DELETE
 			.elseif eax==IDCM_FILE_TOCODE
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
@@ -854,18 +875,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		esi,lParam
 		mov		eax,[esi].NMHDR.hwndFrom
 		.if [esi].NMHDR.code==RBN_HEIGHTCHANGE && eax==ha.hReBar
+			;Rebar
 			invoke SendMessage,hWin,WM_SIZE,0,0
 		.elseif [esi].NMHDR.code==TCN_SELCHANGE
+			;Tab control
 			.if eax==ha.hTabProject
+				;Project tab
 				invoke SendMessage,ha.hTabProject,TCM_GETCURSEL,0,0
-				.if eax
-					invoke ShowWindow,ha.hProjectBrowser,SW_SHOWNA
-					invoke ShowWindow,ha.hFileBrowser,SW_HIDE
-				.else
-					invoke ShowWindow,ha.hFileBrowser,SW_SHOWNA
-					invoke ShowWindow,ha.hProjectBrowser,SW_HIDE
-				.endif
+				invoke SetProjectTab,eax
 			.elseif eax==ha.hTabOutput
+				;Output tab
 				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
 				.if eax
 					invoke ShowWindow,ha.hImmediate,SW_SHOWNA
@@ -876,12 +895,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
+			;File browser file
 			invoke UpdateAll,UAM_ISOPENACTIVATE,[esi].FBNOTIFY.lpfile
 			.if eax==-1
 				invoke OpenTheFile,[esi].FBNOTIFY.lpfile,0
 			.endif
 		.elseif [esi].NMHDR.code==FBN_PATHCHANGE && eax==ha.hFileBrowser
+			;File browser path
 			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
+		.elseif [esi].NMHDR.code==RPBN_DBLCLICK && eax==ha.hProjectBrowser
+			;Projectbrowser
+			mov		eax,[esi].NMPBITEMDBLCLICK.lpPBITEM
+			invoke OpenTheFile,addr [eax].PBITEM.szitem,0
 		.elseif [esi].NMHDR.code==LBN_DBLCLK && eax==ha.hProperty
 			;Property list
 			.if ha.hMdi
@@ -1544,6 +1569,16 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.elseif eax==ID_EDITRES
 				invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
 				invoke SendMessage,hEdt,PRO_CLOSE,0,0
+			.endif
+			.if da.fProject
+				invoke GetWindowLong,hEdt,GWL_USERDATA
+				mov		ebx,eax
+				.if [ebx].TABMEM.pid
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEMINDEX,[ebx].TABMEM.pid,0
+					.if eax!=-1
+						invoke SaveProjectItem,eax
+					.endif
+				.endif
 			.endif
 			invoke DestroyWindow,hEdt
 			invoke TabToolDel,hWin

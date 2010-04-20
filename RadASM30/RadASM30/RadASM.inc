@@ -59,6 +59,8 @@ SetHiliteWords					PROTO	:DWORD,:DWORD
 OpenTheFile						PROTO	:DWORD,:DWORD
 TabToolGetInx					PROTO	:DWORD
 TabToolGetInxFromPid			PROTO	:DWORD
+OpenProject						PROTO
+CloseProject					PROTO
 
 CCTYPE_NONE						equ 0
 CCTYPE_PROC						equ 1
@@ -113,7 +115,6 @@ szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
 szDefFilter						db '.asm.inc.rc.rap.',0
-szOpen							db 'Open',0
 szPROTO							db ' PROTO',0
 
 ;Code properties
@@ -171,12 +172,14 @@ szIniLib						db 'Lib',0
 szIniApi						db 'Api',0
 szIniFilter						db 'Filter',0
 szIniGroup						db 'Group',0
+szIniOpen						db 'Open',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
 
 szOpenFileFail					db 'Cannot open the file.',0Dh,0
 szWannaSave           			db 'Want to save changes to',0Dh,0
+szFileChanged					db 'The file is changed. Continue?',0Dh,0
 
 defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h
@@ -189,6 +192,7 @@ ALLFilterString					db 'Assembly Files (*.asm, *.inc)',0,'*.asm;*.inc',0
 								db 'Resource Files (*.rc)',0,'*.rc',0
 								db 'Text Files (*.txt)',0,'*.txt',0
 ANYFilterString					db 'All Files (*.*)',0,'*.*',0,0
+PROFilterString					db 'Project Files (*.rap)',0,'*.rap',0,0
 
 .data?
 

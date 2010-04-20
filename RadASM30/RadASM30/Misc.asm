@@ -581,7 +581,15 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_EDIT_FIND
 			push	eax
+			push	IDM_EDIT_FINDNEXT
+			push	eax
+			push	IDM_EDIT_FINDPREV
+			push	eax
 			push	IDM_EDIT_REPLACE
+			push	eax
+			push	IDM_EDIT_GOTODECLARE
+			push	eax
+			push	IDM_EDIT_RETURN
 			push	eax
 			push	IDM_EDIT_INDENT
 			push	eax
@@ -618,15 +626,24 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_COPY
 				push	eax
 				push	IDM_EDIT_DELETE
-				push	TRUE
+				mov		eax,TRUE
+				push	eax
 				push	IDM_EDIT_SELECTALL
-				push	TRUE
+				push	eax
 				push	IDM_EDIT_FIND
-				push	TRUE
+				push	eax
+				push	IDM_EDIT_FINDNEXT
+				push	eax
+				push	IDM_EDIT_FINDPREV
+				push	eax
 				push	IDM_EDIT_REPLACE
 				.if esi==ID_EDITHEX
 					xor		eax,eax
 				.endif
+				push	eax
+				push	IDM_EDIT_GOTODECLARE
+				push	eax
+				push	IDM_EDIT_RETURN
 				push	eax
 				push	IDM_EDIT_INDENT
 				push	eax
@@ -679,7 +696,15 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_FIND
 				push	eax
+				push	IDM_EDIT_FINDNEXT
+				push	eax
+				push	IDM_EDIT_FINDPREV
+				push	eax
 				push	IDM_EDIT_REPLACE
+				push	eax
+				push	IDM_EDIT_GOTODECLARE
+				push	eax
+				push	IDM_EDIT_RETURN
 				push	eax
 				push	IDM_EDIT_INDENT
 				push	eax
@@ -796,7 +821,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	eax
 		push	IDM_PROJECT_CLOSE
 		push	eax
-		push	IDM_PROJECT_ADDFILE
+		push	IDM_PROJECT_ADDNEWFILE
 		push	eax
 		push	IDM_PROJET_ADDEXISTING
 		push	eax
@@ -1255,9 +1280,9 @@ GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO
 	.if eax
 		.if da.fProject
 			invoke GetItemInt,addr tmpbuff,0
-			mov		[edi].FILEINFO.fopen,eax
-			invoke GetItemInt,addr tmpbuff,0
 			mov		[edi].FILEINFO.idparent,eax
+			mov		eax,nInx
+			mov		[edi].FILEINFO.pid,eax
 		.endif
 		invoke GetItemInt,addr tmpbuff,0
 		mov		[edi].FILEINFO.ID,eax
@@ -1340,7 +1365,6 @@ SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
 				jmp		Ex
 			.endif
 			invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProject,lpFILEINFO
-			mov		[edi].FILEINFO.fopen,TRUE
 			mov		eax,[esi].PBITEM.id
 			mov		[edi].FILEINFO.pid,eax
 			mov		eax,[esi].PBITEM.idparent
@@ -1348,7 +1372,6 @@ SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
 			invoke RemovePath,addr [esi].PBITEM.szitem,addr da.szProjectPath,addr [edi].FILEINFO.filename
 			invoke UpdateAll,UAM_ISOPEN,addr [esi].PBITEM.szitem
 			.if eax==-1
-				mov		[edi].FILEINFO.fopen,FALSE
 				mov		eax,TRUE
 				jmp		Ex
 			.endif
@@ -1652,24 +1675,41 @@ GotoDeclare proc uses esi
 
 GotoDeclare endp
 
-ReturnDeclare proc
+ReturnDeclare proc uses esi
 	LOCAL	chrg:CHARRANGE
 
-	mov		edx,offset gotostack
-	.if [edx].DECLARE.hWin
-		invoke TabToolGetInx,[edx].DECLARE.hWin
-		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
-		invoke TabToolActivate
-		mov		edx,offset gotostack
-		mov		eax,[edx].DECLARE.cp
-		mov		chrg.cpMin,eax
-		mov		chrg.cpMax,eax
-		invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-		invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
-		invoke SetFocus,ha.hEdt
-		invoke PopGoto
+	mov		esi,offset gotostack
+	.if [esi].DECLARE.hWin
+		invoke GetParent,[esi].DECLARE.hWin
+		invoke TabToolGetInx,eax
+		.if eax!=-1
+			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+			invoke TabToolActivate
+			mov		eax,[esi].DECLARE.cp
+			mov		chrg.cpMin,eax
+			mov		chrg.cpMax,eax
+			invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+			invoke SetFocus,ha.hEdt
+			invoke PopGoto
+		.endif
 	.endif
 	ret
 
 ReturnDeclare endp
+
+SetProjectTab proc fProject:DWORD
+
+	.if fProject
+		invoke SendMessage,ha.hTabProject,TCM_SETCURSEL,1,0
+		invoke ShowWindow,ha.hProjectBrowser,SW_SHOWNA
+		invoke ShowWindow,ha.hFileBrowser,SW_HIDE
+	.else
+		invoke SendMessage,ha.hTabProject,TCM_SETCURSEL,0,0
+		invoke ShowWindow,ha.hFileBrowser,SW_SHOWNA
+		invoke ShowWindow,ha.hProjectBrowser,SW_HIDE
+	.endif
+	ret
+
+SetProjectTab endp
 
