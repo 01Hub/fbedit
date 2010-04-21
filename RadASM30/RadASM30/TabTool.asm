@@ -353,11 +353,13 @@ TabToolActivate proc uses ebx
 
 TabToolActivate endp
 
-TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
+TabToolAdd proc uses ebx esi,hWin:HWND,lpFileName:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	ThreadID:DWORD
 	LOCAL	msg:MSG
-	LOCAL	buffer[32]:BYTE
+	LOCAL	tpe[32]:BYTE
+	LOCAL	buffer[64*4]:BYTE
+	LOCAL	types[64]:BYTE
 
 	invoke GetProcessHeap
 	invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof TABMEM
@@ -367,39 +369,57 @@ TabToolAdd proc uses ebx,hWin:HWND,lpFileName:DWORD
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		[ebx].TABMEM.hedt,eax
 	invoke SetWindowLong,[ebx].TABMEM.hedt,GWL_USERDATA,ebx
-	invoke strcpy,addr [ebx].TABMEM.filename,lpFileName
-	invoke strlen,lpFileName
-	mov		ecx,eax
-	mov		edx,lpFileName
-	.while ecx
-		mov		al,[edx+ecx-1]
-		.break .if al=='\'
-		dec		ecx
+	mov		esi,lpFileName
+	invoke strcpy,addr [ebx].TABMEM.filename,esi
+	;Get filename
+	invoke strlen,esi
+	.while eax && byte ptr [esi+eax-1]!='\'
+		dec		eax
 	.endw
 	mov		tci.imask,TCIF_TEXT or TCIF_PARAM or TCIF_IMAGE
-	lea		eax,[edx+ecx]
-	mov		tci.pszText,eax
+	lea		esi,[esi+eax]
+	mov		tci.pszText,esi
 	mov		tci.cchTextMax,20
-	invoke strlen,lpFileName
-	add		eax,lpFileName
-	sub		eax,4
-	mov		eax,[eax]
-	mov		dword ptr buffer,eax
-	mov		byte ptr buffer[5],0
-	invoke CharUpper,addr buffer
-	mov		eax,dword ptr buffer
-	mov		edx,5
-	.if eax=='MSA.'
-		mov		edx,2
-	.elseif eax=='CNI.'
-		mov		edx,3
-	.else
-		shr		eax,8
-		.if eax=='CR.'
-			mov		edx,4
+	;Get filetype
+	invoke strlen,esi
+	.while eax && byte ptr [esi+eax]!='.'
+		dec		eax
+	.endw
+	.if byte ptr [esi+eax]=='.'
+		invoke strcpy,addr tpe,addr [esi+eax]
+		invoke strcat,addr tpe,addr szDot
+		invoke strcpy,addr buffer,addr da.szTypes
+		xor		esi,esi
+		.while buffer
+			invoke GetItemStr,addr buffer,addr szNULL,addr types
+			invoke IsFileType,addr tpe,addr types
+			.break .if eax
+			inc		esi
+		.endw
+		.if !esi
+			;asm
+			mov		esi,2
+		.elseif esi==1
+			;inc
+			mov		esi,3
+		.elseif esi==2
+			;rc
+			mov		esi,4
+		.elseif esi==3
+			;exe
+			mov		esi,6
+		.elseif esi==4
+			;bat
+			mov		esi,7
+		.else
+			;txt
+			mov		esi,5
 		.endif
+	.else
+		;txt
+		mov		esi,5
 	.endif
-	mov		tci.iImage,edx
+	mov		tci.iImage,esi
 	mov		tci.lParam,ebx
 	invoke SendMessage,ha.hTab,TCM_INSERTITEM,999,addr tci
 	invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0

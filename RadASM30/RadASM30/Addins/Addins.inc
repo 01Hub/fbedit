@@ -1,10 +1,10 @@
-ID_EDITCODE						equ	65501
-ID_EDITTEXT						equ	65502
-ID_EDITHEX						equ	65503
-ID_EDITRES						equ 65004
-ID_EDITUSER						equ 65005
-ID_PROJECT						equ 65506
-ID_EXTERNAL						equ 65507
+ID_EDITCODE						equ	1
+ID_EDITTEXT						equ	2
+ID_EDITHEX						equ	3
+ID_EDITRES						equ 4
+ID_EDITUSER						equ 5
+ID_PROJECT						equ 6
+ID_EXTERNAL						equ 7
 
 ID_FIRSTCHILD					equ 65001
 ID_LASTCHILD					equ 65499
@@ -321,7 +321,7 @@ ADDINDATA struct
 	edtopt			EDTOPT <>
 	resopt			RESOPT <>
 	fLockToolbar	DWORD ?
-	szFilter		BYTE 32 dup(?)
+	szFilter		BYTE 64 dup(?)
 	szCodeFiles		BYTE 32 dup(?)
 	szTextFiles		BYTE 32 dup(?)
 	szHexFiles		BYTE 32 dup(?)
@@ -331,6 +331,12 @@ ADDINDATA struct
 	szCCInc			BYTE 32 dup(?)
 	szCCLib			BYTE 32 dup(?)
 	external		EXTERNAL 16 dup(<>)
+	szCODEString	BYTE 64 dup(?)
+	szRESString		BYTE 64 dup(?)
+	szTXTString		BYTE 64 dup(?)
+	szANYString		BYTE 64 dup(?)
+	szALLString		BYTE 64*4 dup(?)
+	szTypes			BYTE 256 dup(?)
 ADDINDATA ends
 
 FILEINFO struct

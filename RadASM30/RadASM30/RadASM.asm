@@ -7,6 +7,8 @@ include Misc.asm
 include IniFile.asm
 include Tools.asm
 include TabTool.asm
+include Assembler.asm
+include Project.asm
 include FileIO.asm
 include CodeComplete.asm
 
@@ -121,9 +123,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
 		;Create code complete
 		invoke CreateCodeComplete
-		invoke Init
+		;Get default assembler
+		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler
+		invoke OpenAssembler
+		invoke strcpy,addr da.szFBPath,addr da.szAppPath
+		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
 		invoke SetTimer,hWin,200,200,addr TimerProc
-		mov		da.fTimer,1
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
@@ -171,6 +177,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_FILE_SAVEAS
 				.if ha.hMdi
+;####
 					invoke SaveFileAs,ha.hMdi,addr da.szFileName
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
@@ -243,9 +250,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FIND
+;####
 			.elseif eax==IDM_EDIT_FINDNEXT
+;####
 			.elseif eax==IDM_EDIT_FINDPREV
+;####
 			.elseif eax==IDM_EDIT_REPLACE
+;####
 			.elseif eax==IDM_EDIT_GOTODECLARE
 				invoke GotoDeclare
 			.elseif eax==IDM_EDIT_RETURN
@@ -565,8 +576,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					mov		da.fTimer,1
 				.endif
-
 			.elseif eax==IDM_PROJECT_NEW
+;####
 			.elseif eax==IDM_PROJECT_OPEN
 				.if da.fProject
 					invoke CloseProject
@@ -585,32 +596,49 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_PROJET_ADDEXISTING
 				.if da.fProject
-					invoke AddExistingProjectFile
+					invoke AddExistingProjectFiles
 				.endif
 			.elseif eax==IDM_PROJECT_ADDOPEN
+				.if da.fProject && ha.hMdi
+					invoke AddOpenProjectFile
+				.endif
 			.elseif eax==IDM_PROJECT_ADDALLOPEN
+				.if da.fProject && ha.hMdi
+					invoke AddAllOpenProjectFiles
+				.endif
 			.elseif eax==IDM_PROJECT_ADDGROUP
-				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWGROUP,0,0
+				.if da.fProject
+					invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWGROUP,0,0
+				.endif
 			.elseif eax==IDM_PROJECT_REMOVEFILE
-				invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
+				.if da.fProject
+					invoke RemoveProjectFile
+				.endif
 			.elseif eax==IDM_PROJECT_REMOVEGROUP
-				invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
+				.if da.fProject
+					invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
+				.endif
 			.elseif eax==IDM_PROJECT_EDITFILE
-				invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+;####
+				.if da.fProject
+					invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+				.endif
 			.elseif eax==IDM_PROJECT_EDITGROUP
-				invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+				.if da.fProject
+					invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
+				.endif
 			.elseif eax==IDM_PROJECT_OPENITEMFILE
-				invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
-				.if eax
-					mov		ebx,eax
-					invoke UpdateAll,UAM_ISOPENACTIVATE,addr [ebx].PBITEM.szitem
-					.if eax==-1
-						invoke OpenTheFile,addr [ebx].PBITEM.szitem,0
-					.endif
+				.if da.fProject
+					invoke OpenProjectItemFile
 				.endif
 			.elseif eax==IDM_PROJECT_OPENITEMGROUP
+				.if da.fProject
+					invoke OpenProjectItemGroup
+				.endif
 			.elseif eax==IDM_PROJECT_OPTION
-
+;####
+				.if da.fProject
+				.endif
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
 				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_DIALOG,TRUE
 			.elseif eax==IDM_RESOURCE_ADDMENU
@@ -641,8 +669,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hEdt,PRO_DELITEM,0,0
 			.elseif eax==IDM_RESOURCE_UNDO
 				invoke SendMessage,ha.hEdt,PRO_UNDODELETED,0,0
-
 			.elseif eax==IDM_MAKE_COMPILE
+;####
 			.elseif eax==IDM_MAKE_ASSEMBLE
 			.elseif eax==IDM_MAKE_MODULES
 			.elseif eax==IDM_MAKE_LINK
@@ -650,7 +678,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_MAKE_GO
 			.elseif eax==IDM_MAKE_RUN
 			.elseif eax==IDM_MAKE_DEBUG
-
 			.elseif eax==IDM_DEBUG_TOGGLE
 			.elseif eax==IDM_DEBUG_CLEAR
 			.elseif eax==IDM_DEBUG_RUN
@@ -660,11 +687,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_OVER
 			.elseif eax==IDM_DEBUG_CARET
 			.elseif eax==IDM_DEBUG_NODEBUG
-
-;			.elseif eax==IDM_WINDOW_CLOSE
-;				.if ha.hMdi
-;					invoke SendMessage,ha.hMdi,WM_CLOSE,0,0
-;				.endif
+;####
 			.elseif eax==IDM_WINDOW_CLOSEALL
 				.if ha.hMdi
 					invoke UpdateAll,UAM_SAVEALL,TRUE
@@ -1593,6 +1616,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					.endif
 				.endif
 			.endif
+			invoke DeleteGoto,hEdt
 			invoke DestroyWindow,hEdt
 			invoke TabToolDel,hWin
 		.else
@@ -1961,6 +1985,11 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 		invoke strcat,addr da.szRadASMIni,addr szBS
 		invoke strcat,addr da.szRadASMIni,addr szInifile
 	.endif
+	invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr da.szRadASMIni
+	.if eax<3000
+		invoke MessageBox,NULL,addr szRadASMVersion,addr DisplayName,MB_OK or MB_ICONERROR
+		jmp		Ex
+	.endif
 	invoke GetWinPos
 	mov     eax,WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 	mov		edx,WS_EX_LEFT or WS_EX_ACCEPTFILES
@@ -1968,14 +1997,15 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 		or		edx,WS_EX_TOPMOST
 	.endif
 	invoke CreateWindowEx,edx,addr szMdiClassName,addr DisplayName,eax,da.win.x,da.win.y,da.win.wt,da.win.ht,NULL,NULL,hInst,NULL
-	mov     ha.hWnd,eax
 	mov     eax,SW_SHOWNORMAL
 	.if da.win.fmax
 		mov     eax,SW_SHOWMAXIMIZED
 	.endif
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
-	invoke OpenFiles
+	invoke Init
+	mov		da.fTimer,1
+;	invoke OpenFiles
 ;	invoke ShowSplash
 ;	;Get command line filename
 ;	mov		eax,CommandLine
@@ -1997,6 +2027,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 		.endif
 	.endw
 	mov   eax,msg.wParam
+  Ex:
 	ret
 
 WinMain endp
@@ -2034,7 +2065,7 @@ start:
 	invoke GridInstall,ha.hInstance,FALSE
 	invoke GetCharTabPtr
 	mov		da.lpCharTab,eax
-	invoke strcpy,addr da.szProjectFiles,addr szDotRapDot
+	invoke strcpy,addr da.szProjectFiles,addr szDotRaprDot
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
 	invoke GridUnInstall

@@ -106,16 +106,18 @@ szRichEdit						db 'riched20.dll',0
 
 DisplayName						db 'RadASM',0
 szBS							db '\',0
+szPipe							db '|',0
 szDot							db '.',0
 szComma							db ',',0
 szDotIni						db '.ini',0
-szDotRapDot						db '.rap.',0
+szDotRaprDot					db '.rapr.',0
 szBSApiBS						db '\Api\',0
 szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
-szDefFilter						db '.asm.inc.rc.rap.',0
+szDefFilter						db '.asm.inc.rc.rapr.',0
 szPROTO							db ' PROTO',0
+szMasm							db 'masm',0
 
 ;Code properties
 szCCPp							db 'Pp',0
@@ -173,6 +175,7 @@ szIniApi						db 'Api',0
 szIniFilter						db 'Filter',0
 szIniGroup						db 'Group',0
 szIniOpen						db 'Open',0
+szIniVersion					db 'Version',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -180,19 +183,26 @@ szNewFile						db '(Untitled)',0
 szOpenFileFail					db 'Cannot open the file.',0Dh,0
 szWannaSave           			db 'Want to save changes to',0Dh,0
 szFileChanged					db 'The file is changed. Continue?',0Dh,0
+szRadASMVersion					db 'The RadASM.ini file is an older version or is missing.',0Dh,0
+szProjectVersion				db 'The project file is an older version.',0
+szAssemblerVersion				db 'The Assembler.ini file is an older version or is missing.',0Dh,0
+
+szAddNewProjectFile				db 'Add New File To Project',0
+szAddExistingProjectFiles		db 'Add Existing Files To Project',0
 
 defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h
 								dd 00FFFFFFh,00000000h,00FFFFFFh,00000000h,00804000h,00C00000h,00FFFFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
 
+szDefCODEString					db 'Assembly Files (*.asm; *.inc),*.asm;*.inc',0
+szDefRESString					db 'Resource Files (*.rc),*.rc',0
+szDefTXTString					db 'Text Files (*.txt),*.txt',0
+szDefANYString					db 'All Files (*.*),*.*',0
+szDefPROString					db 'Project Files (*.rapr),*.rapr',0
+
 .data
 
 fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
-ALLFilterString					db 'Assembly Files (*.asm, *.inc)',0,'*.asm;*.inc',0
-								db 'Resource Files (*.rc)',0,'*.rc',0
-								db 'Text Files (*.txt)',0,'*.txt',0
-ANYFilterString					db 'All Files (*.*)',0,'*.*',0,0
-PROFilterString					db 'Project Files (*.rap)',0,'*.rap',0,0
 
 .data?
 
