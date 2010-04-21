@@ -224,8 +224,6 @@ GetProjectFiles proc uses ebx esi edi
 	LOCAL	fi:FILEINFO
 	LOCAL	pbi:PBITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	chrg:CHARRANGE
-	LOCAL	hEdt:HWND
 
 	;File browser path
 	invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr da.szAppPath,addr da.szFBPath,sizeof da.szFBPath,addr da.szProject
@@ -339,7 +337,6 @@ SaveProjectItem endp
 
 PutProject proc uses ebx esi edi
 	LOCAL	tci:TC_ITEM
-	LOCAL	fi:FILEINFO
 	LOCAL	buffer[8]:BYTE
 
 	mov		dword ptr buffer,0

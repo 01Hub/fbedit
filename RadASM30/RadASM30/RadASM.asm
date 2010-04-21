@@ -20,21 +20,7 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		dec		da.fTimer
 		.if ZERO?
 			invoke EnableToolBar
-;			invoke MenuEnable
-;			xor		eax,eax
-;			test	wpos.fView,4
-;			.if !ZERO?
-;				inc		eax
-;			.endif
-;			invoke SendMessage,ha.hTbr,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,eax
-;			invoke ShowSession
-;			invoke ShowProc,nLastLine
-;			invoke GetCapture
-;			.if !eax
-;				invoke UpdateAll,IS_CHANGED,0
-;			.else
-;				mov		fTimer,1
-;			.endif
+			invoke ShowProc,da.nLastLine
 		.endif
 	.endif
 	ret
@@ -1242,11 +1228,11 @@ WndProc endp
 
 RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
-	LOCAL	ti:TOOLINFO
+;	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
-	LOCAL	pt:POINT
+;	LOCAL	pt:POINT
 ;	LOCAL	dbgtip:DEBUGTIP
-	LOCAL	isinproc:ISINPROC
+;	LOCAL	isinproc:ISINPROC
 	LOCAL	trng:TEXTRANGE
 
 	mov		eax,uMsg
@@ -2005,7 +1991,6 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	invoke UpdateWindow,ha.hWnd
 	invoke Init
 	mov		da.fTimer,1
-;	invoke OpenFiles
 ;	invoke ShowSplash
 ;	;Get command line filename
 ;	mov		eax,CommandLine

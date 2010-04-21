@@ -64,7 +64,6 @@ GetTheFileType endp
 LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
     LOCAL   hFile:HANDLE
 	LOCAL	editstream:EDITSTREAM
-	LOCAL	chrg:CHARRANGE
 
 	;Open the file
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
@@ -94,7 +93,6 @@ LoadTextFile endp
 LoadHexFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
     LOCAL   hFile:HANDLE
 	LOCAL	editstream:EDITSTREAM
-	LOCAL	chrg:CHARRANGE
 
 	;Open the file
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0

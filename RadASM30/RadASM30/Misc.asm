@@ -447,6 +447,41 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 
 ShowPos endp
 
+ShowProc proc uses esi,nLine:DWORD
+	LOCAL	isinproc:ISINPROC
+	LOCAL	buffer[512]:BYTE
+
+	mov		buffer,0
+	.if ha.hEdt
+		invoke GetWindowLong,ha.hEdt,GWL_ID
+		.if eax==ID_EDITCODE
+			mov		eax,nLine
+			mov		isinproc.nLine,eax
+			mov		eax,ha.hEdt
+			.if da.fProject
+				invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+				mov		eax,[eax].TABMEM.pid
+			.endif
+			mov		isinproc.nOwner,eax
+			mov		isinproc.lpszType,offset szCCp
+			invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+			.if eax
+				mov		esi,eax
+				invoke strcpy,addr buffer,esi
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				.if byte ptr [esi]
+					invoke strcat,addr buffer,addr szComma
+					invoke strcat,addr buffer,esi
+				.endif
+			.endif
+		.endif
+	.endif
+	invoke SendMessage,ha.hStatus,SB_SETTEXT,3,addr buffer
+	ret
+
+ShowProc endp
+
 IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 	LOCAL	ochr:CHARRANGE
 	LOCAL	chr:CHARRANGE

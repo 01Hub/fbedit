@@ -355,8 +355,6 @@ TabToolActivate endp
 
 TabToolAdd proc uses ebx esi,hWin:HWND,lpFileName:DWORD
 	LOCAL	tci:TC_ITEM
-	LOCAL	ThreadID:DWORD
-	LOCAL	msg:MSG
 	LOCAL	tpe[32]:BYTE
 	LOCAL	buffer[64*4]:BYTE
 	LOCAL	types[64]:BYTE
