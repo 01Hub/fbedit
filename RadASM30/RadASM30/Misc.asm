@@ -284,6 +284,8 @@ PutItemStr endp
 UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
+	LOCAL	hexcol:HECOLOR
+	LOCAL	rescol:RESCOLOR
 
 	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
 	mov		nInx,eax
@@ -353,6 +355,81 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						xor		eax,eax
 					.endif
 					invoke SendMessage,[ebx].TABMEM.hwnd,WM_CLOSE,0,0
+				.endif
+			.elseif eax==UAM_SETCOLORS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_SETCOLOR,0,addr da.radcolor.racol
+				.elseif eax==ID_EDITTEXT
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_SETCOLOR,0,addr da.radcolor.racol
+				.elseif eax==ID_EDITHEX
+					mov		eax,da.radcolor.racol.bckcol
+					mov		hexcol.bckcol,eax
+					mov		eax,da.radcolor.racol.txtcol
+					mov		hexcol.adrtxtcol,eax
+					mov		hexcol.dtatxtcol,eax
+					mov		hexcol.asctxtcol,eax
+					mov		eax,da.radcolor.racol.selbckcol
+					mov		hexcol.selbckcol,eax
+					mov		hexcol.selascbckcol,eax
+					mov		eax,da.radcolor.racol.seltxtcol
+					mov		hexcol.seltxtcol,eax
+					mov		eax,da.radcolor.racol.selbarbck
+					mov		hexcol.selbarbck,eax
+					mov		eax,da.radcolor.racol.selbarpen
+					mov		hexcol.selbarpen,eax
+					mov		eax,da.radcolor.racol.lnrcol
+					mov		hexcol.lnrcol,eax
+					invoke SendMessage,[ebx].TABMEM.hedt,HEM_SETCOLOR,0,addr hexcol
+				.elseif eax==ID_EDITRES
+					mov		eax,da.radcolor.dialogback
+					mov		rescol.back,eax
+					mov		eax,da.radcolor.dialogtext
+					mov		rescol.text,eax
+					mov		eax,da.radcolor.styles
+					mov		rescol.styles,eax
+					mov		eax,da.radcolor.words
+					mov		rescol.words,eax
+					invoke SendMessage,[ebx].TABMEM.hedt,DEM_SETCOLOR,0,addr rescol
+				.elseif eax==ID_EDITUSER
+				.endif
+			.elseif eax==UAM_SETFONTS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_SETFONT,0,addr ha.racf
+					invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_STYLE
+					test	da.edtopt.fopt,EDTOPT_CMNTHI
+					.if !ZERO?
+						or		eax,STYLE_HILITECOMMENT
+					.else
+						and		eax,-1 xor STYLE_HILITECOMMENT
+					.endif
+					invoke SetWindowLong,[ebx].TABMEM.hedt,GWL_STYLE,eax
+					xor		eax,eax
+					test	da.edtopt.fopt,EDTOPT_EXPTAB
+					.if !ZERO?
+						mov		eax,TRUE
+					.endif
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_TABWIDTH,da.edtopt.tabsize,eax
+					;Set autoindent
+					xor		eax,eax
+					test	da.edtopt.fopt,EDTOPT_INDENT
+					.if !ZERO?
+						mov		eax,TRUE
+					.endif
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_AUTOINDENT,0,eax
+					xor		eax,eax
+					test	da.edtopt.fopt,EDTOPT_LINEHI
+					.if !ZERO?
+						mov		eax,2
+					.endif
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_HILITEACTIVELINE,0,eax
+				.elseif eax==ID_EDITTEXT
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_SETFONT,0,addr ha.ratf
+				.elseif eax==ID_EDITHEX
+					invoke SendMessage,[ebx].TABMEM.hedt,HEM_SETFONT,0,addr ha.rahf
+				.elseif eax==ID_EDITRES
+				.elseif eax==ID_EDITUSER
 				.endif
 			.endif
 		.endif

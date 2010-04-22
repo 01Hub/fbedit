@@ -263,6 +263,11 @@ RADCOLOR struct
 	ttsel			DWORD ?
 RADCOLOR ends
 
+THEME struct
+	szname				BYTE 32 dup(?)
+	radcol				RADCOLOR <>
+THEME ends
+
 EDTOPT_EXPTAB			equ 1
 EDTOPT_INDENT			equ 2
 EDTOPT_LINEHI			equ 4
@@ -365,3 +370,5 @@ UAM_ISOPENACTIVATE				equ 2
 UAM_ISRESOPEN					equ 3
 UAM_SAVEALL						equ 4
 UAM_CLOSEALL					equ 5
+UAM_SETCOLORS					equ 6
+UAM_SETFONTS					equ 7

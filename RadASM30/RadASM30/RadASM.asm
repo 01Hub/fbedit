@@ -11,6 +11,7 @@ include Assembler.asm
 include Project.asm
 include FileIO.asm
 include CodeComplete.asm
+include KeyWords.asm
 
 .code
 
@@ -716,6 +717,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke ShowWindow,ha.hMdi,SW_MINIMIZE
 				.endif
+			.elseif eax==IDM_OPTION_CODE
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
+			.elseif eax==IDM_OPTION_RESOURCE
+			.elseif eax==IDM_OPTION_PATH
+			.elseif eax==IDM_OPTION_EXTERNAL
+			.elseif eax==IDM_OPTION_ADDIN
+			.elseif eax==IDM_OPTION_TOOLS
+			.elseif eax==IDM_OPTION_HELP
 			.elseif eax==IDCM_FILE_OPEN
 				invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
 				invoke GetFileAttributes,addr buffer
@@ -1488,19 +1497,35 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	.if eax==WM_CREATE
 		mov		eax,mdiID
 		.if eax==ID_EDITCODE
-			invoke CreateWindowEx,0,addr szRAEditClass,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_HILITECOMMENT or STYLE_AUTOSIZELINENUM,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
+			mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or STYLE_DRAGDROP or STYLE_SCROLLTIP or STYLE_AUTOSIZELINENUM
+			.if da.edtopt.fopt & EDTOPT_CMNTHI
+				or		eax,STYLE_HILITECOMMENT
+			.endif
+			invoke CreateWindowEx,0,addr szRAEditClass,NULL,eax,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SUBCLASS,0,offset RAEditCodeProc
 			mov		lpOldRAEditCodeProc,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.racf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
 			invoke SendMessage,hEdt,REM_SETSTYLEEX,STYLEEX_BLOCKGUIDE or STILEEX_LINECHANGED,0
-			mov		eax,da.edtopt.fopt
-			and		eax,EDTOPT_EXPTAB
+			;Set expand tabs and tabsize
+			xor		eax,eax
+			.if da.edtopt.fopt & EDTOPT_EXPTAB
+				mov		eax,TRUE
+			.endif
 			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,eax
-			test	da.edtopt.fopt,EDTOPT_INDENT
-			.if !ZERO?
-				invoke SendMessage,hEdt,REM_AUTOINDENT,0,TRUE
+			;Set autoindent
+			.if !(da.edtopt.fopt & EDTOPT_INDENT)
+				invoke SendMessage,hEdt,REM_AUTOINDENT,0,FALSE
+			.endif
+			;Set highlight active line
+			xor		eax,eax
+			.if da.edtopt.fopt & EDTOPT_LINEHI
+				mov		eax,2
+			.endif
+			invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,eax
+			;Line numbers
+			.if da.edtopt.fopt & EDTOPT_LINENR
 				invoke CheckDlgButton,hEdt,-2,TRUE
 				invoke SendMessage,hEdt,WM_COMMAND,-2,0
 			.endif
@@ -1509,10 +1534,23 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,REM_SETFONT,0,addr ha.ratf
 			invoke SendMessage,hEdt,REM_SETCOLOR,0,addr da.radcolor.racol
-			mov		eax,da.edtopt.fopt
-			and		eax,EDTOPT_EXPTAB
+			invoke SendMessage,hEdt,REM_SETSTYLEEX,STILEEX_LINECHANGED,0
+			;Set expand tabs and tabsize
+			xor		eax,eax
+			.if da.edtopt.fopt & EDTOPT_EXPTAB
+				mov		eax,TRUE
+			.endif
 			invoke SendMessage,hEdt,REM_TABWIDTH,da.edtopt.tabsize,eax
-			invoke SendMessage,hEdt,REM_AUTOINDENT,0,0
+			;Set autoindent
+			.if !(da.edtopt.fopt & EDTOPT_INDENT)
+				invoke SendMessage,hEdt,REM_AUTOINDENT,0,FALSE
+			.endif
+			;Set highlight active line
+			xor		eax,eax
+			.if da.edtopt.fopt & EDTOPT_LINEHI
+				mov		eax,2
+			.endif
+			invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,eax
 		.elseif eax==ID_EDITHEX
 			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax

@@ -32,20 +32,6 @@ GetColors proc
 
 GetColors endp
 
-PutColors proc uses ebx
-
-	mov		tmpbuff,0
-	xor		ebx,ebx
-	.while ebx<sizeof RADCOLOR/4
-		mov		eax,dword ptr da.radcolor[ebx*4]
-		invoke PutItemInt,addr tmpbuff,eax
-		inc		ebx
-	.endw
-	invoke WritePrivateProfileString,addr szIniColors,addr szIniColors,addr tmpbuff[1],addr da.szAssemblerIni
-	ret
-
-PutColors endp
-
 DeleteDuplicates proc uses esi edi,lpszType:DWORD
 	LOCAL	nCount:DWORD
 

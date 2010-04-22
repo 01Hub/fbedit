@@ -176,6 +176,7 @@ szIniFilter						db 'Filter',0
 szIniGroup						db 'Group',0
 szIniOpen						db 'Open',0
 szIniVersion					db 'Version',0
+szIniTheme						db 'Theme',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

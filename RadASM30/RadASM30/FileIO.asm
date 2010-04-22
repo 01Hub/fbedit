@@ -557,31 +557,34 @@ SaveFileAs endp
 Init proc
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	;Check Session Project
-	invoke GetPrivateProfileString,addr szIniSession,addr szIniProject,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	.if eax
-		;Check if project file exists
-		invoke GetFileAttributes,addr buffer
-		.if eax==INVALID_HANDLE_VALUE
-			xor		eax,eax
-		.else
-			;Check version
-			invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
-			.if eax<3000
-				invoke MessageBox,ha.hWnd,addr szProjectVersion,addr DisplayName,MB_OK or MB_ICONERROR
+	xor		eax,eax
+	.if da.edtopt.fopt & EDTOPT_SESSION
+		;Check Session Project
+		invoke GetPrivateProfileString,addr szIniSession,addr szIniProject,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+		.if eax
+			;Check if project file exists
+			invoke GetFileAttributes,addr buffer
+			.if eax==INVALID_HANDLE_VALUE
+				xor		eax,eax
 			.else
-				invoke OpenTheFile,addr buffer,ID_PROJECT
+				;Check version
+				invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
+				.if eax<3000
+					invoke MessageBox,ha.hWnd,addr szProjectVersion,addr DisplayName,MB_OK or MB_ICONERROR
+				.else
+					invoke OpenTheFile,addr buffer,ID_PROJECT
+				.endif
 			.endif
+		.else
+			;Session Assembler
+			invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szRadASMIni
+			.if !eax
+				mov		dword ptr da.szAssembler,'msam'
+				mov		dword ptr da.szAssembler[4],0
+			.endif
+			invoke OpenAssembler
+			invoke GetSessionFiles
 		.endif
-	.else
-		;Session Assembler
-		invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szRadASMIni
-		.if !eax
-			mov		dword ptr da.szAssembler,'msam'
-			mov		dword ptr da.szAssembler[4],0
-		.endif
-		invoke OpenAssembler
-		invoke GetSessionFiles
 	.endif
 	ret
 

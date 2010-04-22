@@ -1,3 +1,4 @@
+#include "Res/KeyWordsDlg.rc"
 #include "Res/RadASMRes.rc"
 #include "Res/RadASMMnu.Rc"
 #include "Res/ContextMnu.rc"
