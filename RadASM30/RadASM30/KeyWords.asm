@@ -449,6 +449,18 @@ UpdateToolColors proc
 
 UpdateToolColors endp
 
+UpdateToolFont proc
+
+	invoke SendMessage,ha.hTabProject,WM_SETFONT,ha.hToolFont,TRUE
+	invoke SendMessage,ha.hProperty,WM_SETFONT,ha.hToolFont,TRUE
+	invoke SendMessage,ha.hTabOutput,WM_SETFONT,ha.hToolFont,TRUE
+	invoke SendMessage,ha.hTab,WM_SETFONT,ha.hToolFont,TRUE
+	invoke SendMessage,ha.hCboBuild,WM_SETFONT,ha.hToolFont,TRUE
+	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+	ret
+
+UpdateToolFont endp
+
 KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[256]:BYTE
@@ -1232,6 +1244,7 @@ Update:
 		invoke UpdateToolColors
 		invoke UpdateAll,UAM_SETCOLORS,0
 		invoke UpdateAll,UAM_SETFONTS,0
+		invoke UpdateToolFont
 	.endif
 	retn
 

@@ -429,6 +429,7 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 				.elseif eax==ID_EDITHEX
 					invoke SendMessage,[ebx].TABMEM.hedt,HEM_SETFONT,0,addr ha.rahf
 				.elseif eax==ID_EDITRES
+					invoke SendMessage,[ebx].TABMEM.hedt,WM_SETFONT,ha.hToolFont,TRUE
 				.elseif eax==ID_EDITUSER
 				.endif
 			.endif
