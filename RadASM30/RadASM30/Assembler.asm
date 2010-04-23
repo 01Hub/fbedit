@@ -68,7 +68,6 @@ GetCodeComplete proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniTrig,NULL,addr da.szCCTrig,sizeof da.szCCTrig,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniInc,NULL,addr da.szCCInc,sizeof da.szCCInc,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
-
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniApi,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 	.while tmpbuff
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
@@ -276,6 +275,21 @@ OpenAssembler proc uses ebx esi edi
 	.else
 		invoke strcpy,addr da.szAssemblerIni,addr buffer
 		invoke SendMessage,ha.hStatus,SB_SETTEXT,2,addr da.szAssembler
+		;Get resource options
+		invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr tmpbuff,sizeof buffer,addr da.szAssemblerIni
+		invoke GetItemInt,addr tmpbuff,3
+		mov		da.resopt.gridx,eax
+		invoke GetItemInt,addr tmpbuff,3
+		mov		da.resopt.gridy,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		da.resopt.color,eax
+		invoke GetItemInt,addr tmpbuff,RESOPT_GRID or RESOPT_SNAP
+		mov		da.resopt.fopt,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		da.resopt.nExport,eax
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.resopt.szExport
+		invoke GetItemInt,addr tmpbuff,0
+		mov		da.resopt.nOutput,eax
 		;Get file filters
 		invoke RtlZeroMemory,addr da.szCODEString,sizeof da.szCODEString
 		invoke RtlZeroMemory,addr da.szRESString,sizeof da.szRESString

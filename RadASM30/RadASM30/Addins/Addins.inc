@@ -297,13 +297,13 @@ CUSTCTRL struct
 CUSTCTRL ends
 
 RESOPT struct
-	gridx			DWORD ?
-	gridy			DWORD ?
-	color			DWORD ?
-	fopt			DWORD ?
-	nExport			DWORD ?
-	szExport		BYTE 64 dup(?)
-	nOutput			DWORD ?
+	gridx			DWORD ?						;Assembler.ini
+	gridy			DWORD ?						;Assembler.ini
+	color			DWORD ?						;Assembler.ini
+	fopt			DWORD ?						;Assembler.ini
+	nExport			DWORD ?						;Assembler.ini
+	szExport		BYTE 64 dup(?)				;Assembler.ini
+	nOutput			DWORD ?						;Assembler.ini
 	custctrl		CUSTCTRL 32 dup(<>)
 	custstyle		CUSTSTYLE 64 dup(<>)
 	custtype		RARSTYPE 32 dup(<>)

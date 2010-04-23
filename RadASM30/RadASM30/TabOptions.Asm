@@ -98,8 +98,7 @@ TabOpt1Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		add		eax,IDC_RBNEXPORTFILE
 		invoke CheckRadioButton,hWin,IDC_RBNEXPORTFILE,IDC_RBNEXPORTOUT,eax
 		invoke SetDlgItemText,hWin,IDC_EDTEXPOPT,addr resopt.szExport
-		invoke SendDlgItemMessage,hWin,IDC_EDTEXPOPT,EM_LIMITTEXT,MAX_PATH,0
-		invoke SendDlgItemMessage,hWin,IDC_EDTEXPOPT,EM_LIMITTEXT,MAX_PATH,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTEXPOPT,EM_LIMITTEXT,sizeof resopt.szExport-1,0
 		.if resopt.fopt & RESOPT_AUTO
 			mov		eax,BST_CHECKED
 		.else
@@ -660,156 +659,96 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					or		resopt.fopt,RESOPT_HEX
 				.endif
-
 				; Custom controls
 				invoke GetDlgItem,hTabDlg[8],IDC_GRDCUST
 				push	eax
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
-
-;				mov		nInx,0
-;				.while nInx<32
-;					invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETROWCOUNT,0,0
-;					.if eax>nInx
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer
-;						invoke strcat,addr buffer,addr szComma
-;						invoke strlen,addr buffer
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						or		ecx,1
-;						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr buffer[eax]
-;						inc		nInx
-;						invoke MakeKey,addr szCust,nInx,addr buffer1
-;						invoke strlen,addr buffer
-;						inc		eax
-;						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_SZ,addr buffer,eax
-;					.else
-;						inc		nInx
-;						invoke MakeKey,addr szCust,nInx,addr buffer1
-;						invoke RegDeleteValue,ha.hReg,addr buffer1
-;					.endif
-;				.endw
+				mov		nInx,0
+				mov		esi,offset resopt.custctrl
+				invoke RtlZeroMemory,esi,sizeof resopt.custctrl
+				.while nInx<32
+					invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr [esi].CUSTCTRL.szFileName
+						mov		ecx,nInx
+						shl		ecx,16
+						or		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[8],IDC_GRDCUST,GM_GETCELLDATA,ecx,addr [esi].CUSTCTRL.szStyleMask
+					.endif
+					lea		esi,[esi+sizeof CUSTCTRL]
+					inc		nInx
+				.endw
 				; Custom styles
 				invoke GetDlgItem,hTabDlg[12],IDC_GRDCUSTSTYLE
 				push	eax
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
-;				invoke SendMessage,ha.hResEd,DEM_CLEARCUSTSTYLE,0,0
-;				mov		nInx,0
-;				.while nInx<64
-;					invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETROWCOUNT,0,0
-;					.if eax>nInx
-;						invoke RtlZeroMemory,addr cust,sizeof CUSTSTYLE
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke strcpy,addr cust.szStyle,addr buffer
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						add		ecx,1
-;						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke HexToDw,addr buffer
-;						mov		cust.nValue,eax
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						add		ecx,2
-;						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke HexToDw,addr buffer
-;						mov		cust.nMask,eax
-;						inc		nInx
-;						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
-;						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_BINARY,addr cust,sizeof CUSTSTYLE
-;						invoke SendMessage,ha.hResEd,DEM_ADDCUSTSTYLE,0,addr cust
-;					.else
-;						inc		nInx
-;						invoke MakeKey,addr szCustStyle,nInx,addr buffer1
-;						invoke RegDeleteValue,ha.hReg,addr buffer1
-;					.endif
-;				.endw
+				mov		nInx,0
+				mov		esi,offset resopt.custstyle
+				invoke RtlZeroMemory,esi,sizeof resopt.custstyle
+				.while nInx<64
+					invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr [esi].CUSTSTYLE.szStyle
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
+						invoke HexToBin,addr buffer
+						mov		[esi].CUSTSTYLE.nValue,eax
+						mov		buffer,0
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,2
+						invoke SendDlgItemMessage,hTabDlg[12],IDC_GRDCUSTSTYLE,GM_GETCELLDATA,ecx,addr buffer
+						invoke HexToBin,addr buffer
+						mov		[esi].CUSTSTYLE.nMask,eax
+					.endif
+					lea		esi,[esi+sizeof CUSTSTYLE]
+					inc		nInx
+				.endw
 				; Custom types
 				invoke GetDlgItem,hTabDlg[16],IDC_GRDRESTYPE
 				push	eax
 				invoke SendMessage,eax,GM_GETCURSEL,0,0
 				pop		edx
 				invoke SendMessage,edx,GM_ENDEDIT,eax,FALSE
-;				invoke SendMessage,ha.hResEd,DEM_CLEARCUSTSTYLE,0,0
-;				mov		nInx,0
-;				.while nInx<32
-;					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETROWCOUNT,0,0
-;					.if eax>nInx
-;						invoke RtlZeroMemory,addr rarstype,sizeof RARSTYPE
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke lstrcpy,addr rarstype.sztype,addr buffer
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						add		ecx,1
-;						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
-;						mov		eax,dword ptr buffer
-;						mov		rarstype.nid,eax
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						add		ecx,2
-;						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke lstrcpy,addr rarstype.szext,addr buffer
-;						mov		buffer,0
-;						mov		ecx,nInx
-;						shl		ecx,16
-;						add		ecx,3
-;						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr buffer
-;						invoke lstrcpy,addr rarstype.szedit,addr buffer
-;						invoke SendMessage,ha.hResEd,PRO_SETCUSTOMTYPE,nInx,addr rarstype
-;						inc		nInx
-;						invoke MakeKey,addr szCustType,nInx,addr buffer1
-;						invoke RegSetValueEx,ha.hReg,addr buffer1,0,REG_BINARY,addr rarstype,sizeof RARSTYPE
-;					.else
-;						inc		nInx
-;						invoke MakeKey,addr szCustType,nInx,addr buffer1
-;						invoke RegDeleteValue,ha.hReg,addr buffer1
-;					.endif
-;				.endw
-;				mov		eax,color
-;				mov		grdsize.color,eax
-;				invoke RegSetValueEx,ha.hReg,addr szGrid,0,REG_BINARY,addr grdsize,sizeof grdsize
-;				mov		eax,grdsize.y
-;				shl		eax,16
-;				add		eax,grdsize.x
-;				mov		edx,grdsize.line
-;				shl		edx,24
-;				add		edx,grdsize.color
-;				invoke SendMessage,ha.hResEd,DEM_SETGRIDSIZE,eax,edx
-;				invoke GetWindowLong,ha.hResEd,GWL_STYLE
-;				and		eax,-1 xor (DES_GRID or DES_SNAPTOGRID or DES_TOOLTIP or DES_STYLEHEX)
-;				.if grdsize.show
-;					or		eax,DES_GRID
-;				.endif
-;				.if grdsize.snap
-;					or		eax,DES_SNAPTOGRID
-;				.endif
-;				.if grdsize.tips
-;					or		eax,DES_TOOLTIP
-;				.endif
-;				.if grdsize.stylehex
-;					or		eax,DES_STYLEHEX
-;				.endif
-;				invoke SetWindowLong,ha.hResEd,GWL_STYLE,eax
-
-;				mov		edx,nmeexp.nOutput
-;				shl		edx,16
-;				add		edx,nmeexp.nType
-;				invoke SendMessage,ha.hResEd,PRO_SETEXPORT,edx,addr nmeexp.szFileName
+				mov		nInx,0
+				mov		nInx,0
+				mov		esi,offset resopt.custtype
+				invoke RtlZeroMemory,esi,sizeof resopt.custtype
+				.while nInx<32
+					invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETROWCOUNT,0,0
+					.if eax>nInx
+						mov		ecx,nInx
+						shl		ecx,16
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr [esi].RARSTYPE.sztype
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,1
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr [esi].RARSTYPE.nid
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,2
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr [esi].RARSTYPE.szext
+						mov		ecx,nInx
+						shl		ecx,16
+						add		ecx,3
+						invoke SendDlgItemMessage,hTabDlg[16],IDC_GRDRESTYPE,GM_GETCELLDATA,ecx,addr [esi].RARSTYPE.szedit
+					.endif
+					lea		esi,[esi+sizeof RARSTYPE]
+					inc		nInx
+				.endw
+				invoke RtlMoveMemory,addr da.resopt,addr resopt,sizeof RESOPT
+				invoke PutResource
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif

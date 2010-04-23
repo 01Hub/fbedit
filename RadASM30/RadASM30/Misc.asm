@@ -245,8 +245,35 @@ BinToHex proc uses edi,dwVal:DWORD,lpAscii:DWORD
 	pop     eax
 	shr     eax,4
 	retn
-	
+
 BinToHex endp
+
+HexToBin proc uses esi,lpAscii:DWORD
+
+	mov		esi,lpAscii
+	xor		edx,edx
+	xor		ecx,ecx
+	xor		eax,eax
+	.while ecx<8
+		shl		edx,4
+		mov		al,[esi+ecx]
+		.if al<='9'
+			and		al,0Fh
+		.elseif al>='A' && al<="F"
+			sub		al,41h-10
+		.elseif al>='a' && al<="f"
+			and		al,5Fh
+			sub		al,41h-10
+		.else
+			xor		eax,eax
+		.endif
+		or		edx,eax
+		inc		ecx
+	.endw
+	mov		eax,edx
+	ret
+
+HexToBin endp
 
 GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
 

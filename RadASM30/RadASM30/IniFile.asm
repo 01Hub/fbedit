@@ -106,13 +106,6 @@ PutWinPos endp
 GetResource proc uses ebx esi edi
 	LOCAL	buffer[32]:BYTE
 
-	invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemInt,addr buffer,3
-	mov		da.resopt.gridx,eax
-	invoke GetItemInt,addr buffer,3
-	mov		da.resopt.gridy,eax
-	invoke GetItemInt,addr buffer,RESOPT_GRID or RESOPT_SNAP
-	mov		da.resopt.fopt,eax
 	;Custom controls
 	xor		ebx,ebx
 	mov		edi,offset da.resopt.custctrl
@@ -162,13 +155,70 @@ GetResource proc uses ebx esi edi
 
 GetResource endp
 
-PutResource proc
+PutResource proc uses ebx esi
+	LOCAL	buffer[32]:BYTE
 
+	;Resource options
 	mov		tmpbuff,0
 	invoke PutItemInt,addr tmpbuff,da.resopt.gridx
 	invoke PutItemInt,addr tmpbuff,da.resopt.gridy
+	invoke PutItemInt,addr tmpbuff,da.resopt.color
 	invoke PutItemInt,addr tmpbuff,da.resopt.fopt
-	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr tmpbuff[1],addr da.szRadASMIni
+	invoke PutItemInt,addr tmpbuff,da.resopt.nExport
+	invoke PutItemStr,addr tmpbuff,addr da.resopt.szExport
+	invoke PutItemInt,addr tmpbuff,da.resopt.nOutput
+	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr tmpbuff[1],addr da.szAssemblerIni
+	;Custom controls
+	mov		word ptr tmpbuff,0
+	invoke WritePrivateProfileSection,addr szIniCustCtrl,addr tmpbuff,addr da.szRadASMIni
+	xor		ebx,ebx
+	mov		esi,offset da.resopt.custctrl
+	.while ebx<32
+		.if [esi].CUSTCTRL.szFileName
+			invoke BinToDec,ebx,addr buffer
+			mov		tmpbuff,0
+			invoke PutItemStr,addr tmpbuff,addr [esi].CUSTCTRL.szFileName
+			invoke PutItemQuotedStr,addr tmpbuff,addr [esi].CUSTCTRL.szStyleMask
+			invoke WritePrivateProfileString,addr szIniCustCtrl,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
+		.endif
+		lea		esi,[esi+sizeof CUSTCTRL]
+		inc		ebx
+	.endw
+	;Custom resource types
+	mov		word ptr tmpbuff,0
+	invoke WritePrivateProfileSection,addr szIniCustType,addr tmpbuff,addr da.szRadASMIni
+	xor		ebx,ebx
+	mov		esi,offset da.resopt.custtype
+	.while ebx<32
+		.if [esi].RARSTYPE.sztype || [esi].RARSTYPE.nid
+			invoke BinToDec,ebx,addr buffer
+			mov		tmpbuff,0
+			invoke PutItemStr,addr tmpbuff,addr [esi].RARSTYPE.sztype
+			invoke PutItemInt,addr tmpbuff,[esi].RARSTYPE.nid
+			invoke PutItemQuotedStr,addr tmpbuff,addr [esi].RARSTYPE.szext
+			invoke PutItemStr,addr tmpbuff,addr [esi].RARSTYPE.szedit
+			invoke WritePrivateProfileString,addr szIniCustType,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
+		.endif
+		lea		esi,[esi+sizeof RARSTYPE]
+		inc		ebx
+	.endw
+	;Custom styles
+	mov		word ptr tmpbuff,0
+	invoke WritePrivateProfileSection,addr szIniCustStyle,addr tmpbuff,addr da.szRadASMIni
+	xor		ebx,ebx
+	mov		esi,offset da.resopt.custstyle
+	.while ebx<64
+		.if [esi].CUSTSTYLE.szStyle
+			invoke BinToDec,ebx,addr buffer
+			mov		tmpbuff,0
+			invoke PutItemStr,addr tmpbuff,addr [esi].CUSTSTYLE.szStyle
+			invoke PutItemInt,addr tmpbuff,[esi].CUSTSTYLE.nValue
+			invoke PutItemInt,addr tmpbuff,[esi].CUSTSTYLE.nMask
+			invoke WritePrivateProfileString,addr szIniCustStyle,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
+		.endif
+		lea		esi,[esi+sizeof CUSTSTYLE]
+		inc		ebx
+	.endw
 	ret
 
 PutResource endp
