@@ -12,6 +12,7 @@ include Project.asm
 include FileIO.asm
 include CodeComplete.asm
 include KeyWords.asm
+include TabOptions.asm
 
 .code
 
@@ -720,6 +721,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_OPTION_CODE
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_RESOURCE
+				invoke DialogBoxParam,ha.hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
 			.elseif eax==IDM_OPTION_PATH
 			.elseif eax==IDM_OPTION_EXTERNAL
 			.elseif eax==IDM_OPTION_ADDIN
@@ -2014,6 +2016,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 		invoke MessageBox,NULL,addr szRadASMVersion,addr DisplayName,MB_OK or MB_ICONERROR
 		jmp		Ex
 	.endif
+	invoke GetResource
 	invoke GetWinPos
 	mov     eax,WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 	mov		edx,WS_EX_LEFT or WS_EX_ACCEPTFILES

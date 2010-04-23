@@ -217,6 +217,37 @@ BinToDec proc dwVal:DWORD,lpAscii:DWORD
 
 BinToDec endp
 
+BinToHex proc uses edi,dwVal:DWORD,lpAscii:DWORD
+
+	mov		edi,lpAscii
+	add		edi,7
+	mov		eax,dwVal
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	call    hexNibble
+	ret
+
+  hexNibble:
+	push    eax
+	and     eax,0fh
+	cmp     eax,0ah
+	jb      hexNibble1
+	add     eax,07h
+  hexNibble1:
+	add     eax,30h
+	mov     [edi],al
+	dec     edi
+	pop     eax
+	shr     eax,4
+	retn
+	
+BinToHex endp
+
 GetItemInt proc uses esi edi,lpBuff:DWORD,nDefVal:DWORD
 
 	mov		esi,lpBuff
@@ -280,6 +311,48 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 	ret
 
 PutItemStr endp
+
+;'"Str,Str","Str",1,2','Str',1
+GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
+
+	mov		esi,lpBuff
+	.if byte ptr [esi]=="'"
+		mov		edi,esi
+		inc		esi
+		.while byte ptr [esi] && byte ptr [esi]!="'"
+			inc		esi
+		.endw
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		lea		eax,[esi+1]
+		sub		eax,edi
+		invoke strcpyn,lpResult,addr [edi+1],addr [eax-2]
+		.if byte ptr [esi]
+			inc		esi
+		.endif
+		invoke strcpy,edi,esi
+	.elseif byte ptr [esi]
+		invoke GetItemStr,lpBuff,lpDefVal,lpResult
+	.else
+		invoke strcpy,lpResult,lpDefVal
+	.endif
+	ret
+
+GetItemQuotedStr endp
+
+PutItemQuotedStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
+
+	mov		esi,lpBuff
+	invoke strlen,esi
+	lea		esi,[esi+eax]
+	mov		word ptr [esi],"',"
+	invoke strcpy,addr [esi+2],lpStr
+	invoke strlen,esi
+	mov		word ptr [esi+eax],"'"
+	ret
+
+PutItemQuotedStr endp
 
 UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
@@ -1846,4 +1919,25 @@ SetProjectTab proc fProject:DWORD
 	ret
 
 SetProjectTab endp
+
+ConvertDpiSize proc nPix:DWORD
+	LOCAL	lpx:DWORD
+
+	invoke GetDC,NULL
+	push	eax
+	invoke GetDeviceCaps,eax,LOGPIXELSX
+	mov		lpx,eax
+	pop		eax
+	invoke ReleaseDC,NULL,eax
+	mov		eax,nPix
+	shl		eax,16
+	cdq
+	mov		ecx,96
+	div		ecx
+	mov		ecx,lpx
+	mul		ecx
+	shr		eax,16
+	ret
+
+ConvertDpiSize endp
 

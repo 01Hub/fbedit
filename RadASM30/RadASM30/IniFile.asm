@@ -43,13 +43,6 @@ GetWinPos proc
 	mov		da.winres.ptstyle.x,eax
 	invoke GetItemInt,addr buffer,50
 	mov		da.winres.ptstyle.y,eax
-	invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemInt,addr buffer,3
-	mov		da.resopt.gridx,eax
-	invoke GetItemInt,addr buffer,3
-	mov		da.resopt.gridy,eax
-	invoke GetItemInt,addr buffer,RESOPT_GRID or RESOPT_SNAP
-	mov		da.resopt.fopt,eax
 	ret
 
 GetWinPos endp
@@ -106,14 +99,79 @@ PutWinPos proc
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.x
 	invoke PutItemInt,addr buffer,da.winres.ptstyle.y
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPosRes,addr buffer[1],addr da.szRadASMIni
-	mov		buffer,0
-	invoke PutItemInt,addr buffer,da.resopt.gridx
-	invoke PutItemInt,addr buffer,da.resopt.gridy
-	invoke PutItemInt,addr buffer,da.resopt.fopt
-	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr buffer[1],addr da.szRadASMIni
 	ret
 
 PutWinPos endp
+
+GetResource proc uses ebx esi edi
+	LOCAL	buffer[32]:BYTE
+
+	invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	invoke GetItemInt,addr buffer,3
+	mov		da.resopt.gridx,eax
+	invoke GetItemInt,addr buffer,3
+	mov		da.resopt.gridy,eax
+	invoke GetItemInt,addr buffer,RESOPT_GRID or RESOPT_SNAP
+	mov		da.resopt.fopt,eax
+	;Custom controls
+	xor		ebx,ebx
+	mov		edi,offset da.resopt.custctrl
+	.while ebx<32
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniCustCtrl,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szFileName
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szStyleMask
+			lea		edi,[edi+sizeof CUSTCTRL]
+		.endif
+		inc		ebx
+	.endw
+	;Custom resource types
+	xor		ebx,ebx
+	mov		edi,offset da.resopt.custtype
+	.while ebx<32
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniCustType,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.sztype
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].RARSTYPE.nid,eax
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szext
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szedit
+			lea		edi,[edi+sizeof RARSTYPE]
+		.endif
+		inc		ebx
+	.endw
+	;Custom styles
+	xor		ebx,ebx
+	mov		edi,offset da.resopt.custstyle
+	.while ebx<64
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniCustStyle,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTSTYLE.szStyle
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].CUSTSTYLE.nValue,eax
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].CUSTSTYLE.nMask,eax
+			lea		edi,[edi+sizeof CUSTSTYLE]
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+GetResource endp
+
+PutResource proc
+
+	mov		tmpbuff,0
+	invoke PutItemInt,addr tmpbuff,da.resopt.gridx
+	invoke PutItemInt,addr tmpbuff,da.resopt.gridy
+	invoke PutItemInt,addr tmpbuff,da.resopt.fopt
+	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr tmpbuff[1],addr da.szRadASMIni
+	ret
+
+PutResource endp
 
 GetSessionFiles proc uses ebx edi
 	LOCAL	fi:FILEINFO

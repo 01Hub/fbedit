@@ -142,6 +142,7 @@ IDM_DEBUG_OVER					equ 10136
 IDM_DEBUG_CARET					equ 10137
 IDM_DEBUG_NODEBUG				equ 10139
 IDM_TOOLS						equ 10043
+IDM_TOOLS_SNIPLETS				equ 10174
 IDM_WINDOW						equ 10005
 IDM_WINDOW_CLOSE				equ 10055
 IDM_WINDOW_CLOSEALL				equ 10151
@@ -283,12 +284,29 @@ EDTOPT ends
 RESOPT_LOCK				equ 1
 RESOPT_GRID				equ 2
 RESOPT_SNAP				equ 4
-RESOPT_HEX				equ 8
+RESOPT_LINE				equ 8
+RESOPT_HEX				equ 16
+RESOPT_AUTO				equ 32
+RESOPT_TIP				equ 64
+
+CUSTCTRL struct
+	hDll			HMODULE ?
+	lpCCDEF			DWORD ?
+	szFileName		BYTE 128 dup(?)
+	szStyleMask		BYTE 16 dup(?)
+CUSTCTRL ends
 
 RESOPT struct
 	gridx			DWORD ?
 	gridy			DWORD ?
+	color			DWORD ?
 	fopt			DWORD ?
+	nExport			DWORD ?
+	szExport		BYTE 64 dup(?)
+	nOutput			DWORD ?
+	custctrl		CUSTCTRL 32 dup(<>)
+	custstyle		CUSTSTYLE 64 dup(<>)
+	custtype		RARSTYPE 32 dup(<>)
 RESOPT ends
 
 EXTERNAL struct
