@@ -13,6 +13,7 @@ include FileIO.asm
 include CodeComplete.asm
 include KeyWords.asm
 include TabOptions.asm
+include Make.asm
 
 .code
 
@@ -111,8 +112,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTab,TCM_SETIMAGELIST,0,eax
 		;Create code complete
 		invoke CreateCodeComplete
+		;Get assemblers
+		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr da.szAssemblers,sizeof da.szAssemblers,addr da.szRadASMIni
 		;Get default assembler
-		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		invoke strcpy,addr tmpbuff,addr da.szAssemblers
 		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler
 		invoke OpenAssembler
 		invoke strcpy,addr da.szFBPath,addr da.szAppPath
@@ -565,7 +568,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_PROJECT_NEW
-;####
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGNEWPROJECT,hWin,offset NewProjectProc,0
 			.elseif eax==IDM_PROJECT_OPEN
 				.if da.fProject
 					invoke CloseProject
@@ -658,14 +661,113 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_RESOURCE_UNDO
 				invoke SendMessage,ha.hEdt,PRO_UNDODELETED,0,0
 			.elseif eax==IDM_MAKE_COMPILE
-;####
+				invoke UpdateAll,UAM_CLEARERRORS,0
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				invoke OutputMake,IDM_MAKE_COMPILE,1
 			.elseif eax==IDM_MAKE_ASSEMBLE
+				invoke UpdateAll,UAM_CLEARERRORS,0
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				invoke OutputMake,IDM_MAKE_ASSEMBLE,1
 			.elseif eax==IDM_MAKE_MODULES
+				.if da.fProject
+					invoke UpdateAll,UAM_CLEARERRORS,0
+					invoke UpdateAll,UAM_SAVEALL,FALSE
+					invoke OutputMake,IDM_MAKE_MODULES,1
+				.endif
 			.elseif eax==IDM_MAKE_LINK
+				invoke UpdateAll,UAM_CLEARERRORS,0
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				invoke OutputMake,IDM_MAKE_LINK,1
 			.elseif eax==IDM_MAKE_BUILD
+				invoke UpdateAll,UAM_CLEARERRORS,0
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				.if da.szMainRC
+					invoke OutputMake,IDM_MAKE_COMPILE,2
+					.if !eax
+						invoke OutputMake,IDM_MAKE_ASSEMBLE,0
+						.if !eax
+							invoke OutputMake,IDM_MAKE_LINK,3
+						.endif
+					.endif
+				.else
+					invoke OutputMake,IDM_MAKE_ASSEMBLE,2
+					.if !eax
+						invoke OutputMake,IDM_MAKE_LINK,3
+					.endif
+				.endif
 			.elseif eax==IDM_MAKE_GO
+				invoke UpdateAll,UAM_CLEARERRORS,0
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				.if da.szMainRC
+					invoke OutputMake,IDM_MAKE_COMPILE,2
+					.if !eax
+						invoke OutputMake,IDM_MAKE_ASSEMBLE,0
+						.if !eax
+							invoke OutputMake,IDM_MAKE_LINK,3
+							.if !eax
+								invoke OutputMake,IDM_MAKE_RUN,0
+							.endif
+						.endif
+					.endif
+				.else
+					invoke OutputMake,IDM_MAKE_ASSEMBLE,2
+					.if !eax
+						invoke OutputMake,IDM_MAKE_LINK,3
+						.if !eax
+							invoke OutputMake,IDM_MAKE_RUN,0
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_MAKE_RUN
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+				invoke OutputMake,IDM_MAKE_RUN,1
 			.elseif eax==IDM_MAKE_DEBUG
+				invoke UpdateAll,UAM_SAVEALL,FALSE
+			.elseif eax==IDM_MAKE_SETMAIN
+				.if ha.hMdi
+					invoke strcpy,addr buffer,addr da.szFileName
+					.if da.fProject
+						invoke RemovePath,addr buffer,addr da.szProjectPath,addr buffer
+					.else
+						invoke strcpy,addr buffer,addr da.szFileName
+					.endif
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						.if da.fProject
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							.if [eax].TABMEM.pid
+								invoke SetMain,[eax].TABMEM.pid,ID_EDITCODE
+								.if eax
+									invoke strcpy,addr da.szMainAsm,addr buffer
+								.endif
+							.endif
+						.else
+							invoke strcpy,addr da.szMainAsm,addr buffer
+						.endif
+					.elseif eax==ID_EDITRES
+						.if da.fProject
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							.if [eax].TABMEM.pid
+								invoke SetMain,[eax].TABMEM.pid,ID_EDITRES
+								.if eax
+									invoke strcpy,addr da.szMainAsm,addr buffer
+								.endif
+							.endif
+						.else
+							invoke strcpy,addr da.szMainRC,addr buffer
+						.endif
+					.endif
+				.endif
+			.elseif eax==IDM_MAKE_TOGGLEMODULE
+				.if da.fProject
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						.if [eax].TABMEM.pid
+							invoke ToggleModule,[eax].TABMEM.pid
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
 			.elseif eax==IDM_DEBUG_CLEAR
 			.elseif eax==IDM_DEBUG_RUN
@@ -916,13 +1018,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==ha.hTabOutput
 				;Output tab
 				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
-				.if eax
-					invoke ShowWindow,ha.hImmediate,SW_SHOWNA
-					invoke ShowWindow,ha.hOutput,SW_HIDE
-				.else
-					invoke ShowWindow,ha.hOutput,SW_SHOWNA
-					invoke ShowWindow,ha.hImmediate,SW_HIDE
-				.endif
+				invoke SetOutputTab,eax
 			.endif
 		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
 			;File browser file
@@ -1494,6 +1590,8 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 	LOCAL	rect:RECT
 	LOCAL	pt:POINT
 	LOCAL	nBP:DWORD
+	LOCAL	rescolor:RESCOLOR
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -1521,11 +1619,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SendMessage,hEdt,REM_AUTOINDENT,0,FALSE
 			.endif
 			;Set highlight active line
-			xor		eax,eax
 			.if da.edtopt.fopt & EDTOPT_LINEHI
-				mov		eax,2
+				invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,2
 			.endif
-			invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,eax
 			;Line numbers
 			.if da.edtopt.fopt & EDTOPT_LINENR
 				invoke CheckDlgButton,hEdt,-2,TRUE
@@ -1548,16 +1644,15 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SendMessage,hEdt,REM_AUTOINDENT,0,FALSE
 			.endif
 			;Set highlight active line
-			xor		eax,eax
 			.if da.edtopt.fopt & EDTOPT_LINEHI
-				mov		eax,2
+				invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,2
 			.endif
-			invoke SendMessage,hEdt,REM_HILITEACTIVELINE,0,eax
 		.elseif eax==ID_EDITHEX
 			invoke CreateWindowEx,0,addr szRAHexEdClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
 			invoke SendMessage,hEdt,HEM_SETFONT,0,addr ha.rahf
 		.elseif eax==ID_EDITRES
+			;Set style options
 			mov		eax,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or DES_TOOLTIP
 			test	da.resopt.fopt,RESOPT_GRID
 			.if !ZERO?
@@ -1573,14 +1668,83 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.endif
 			invoke CreateWindowEx,0,addr szResEdClass,NULL,eax,0,0,0,0,hWin,mdiID,ha.hInstance,NULL
 			mov		hEdt,eax
-			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
+			;Set font
 			invoke SendMessage,hEdt,WM_SETFONT,ha.hToolFont,FALSE
+			;Set sizes
+			invoke SendMessage,hEdt,DEM_SETSIZE,0,addr da.winres
+			;Set colors
+			mov		eax,da.radcolor.dialogback
+			mov		rescolor.back,eax
+			mov		eax,da.radcolor.dialogtext
+			mov		rescolor.text,eax
+			mov		eax,da.radcolor.styles
+			mov		rescolor.styles,eax
+			mov		eax,da.radcolor.words
+			mov		rescolor.words,eax
+			invoke SendMessage,hEdt,DEM_SETCOLOR,0,addr rescolor
+			;Set status window
 			invoke SendMessage,hEdt,DEM_SETPOSSTATUS,ha.hStatus,0
+			;Set grid
+			mov		eax,da.resopt.gridy
+			shl		eax,16
+			or		eax,da.resopt.gridy
+			xor		edx,edx
+			.if da.resopt.fopt & RESOPT_LINE
+				mov		edx,1 shl 24
+			.endif
+			or		edx,da.resopt.color
+			invoke SendMessage,hEdt,DEM_SETGRIDSIZE,eax,edx
+			;Add custom controls
+			xor		ebx,ebx
+			mov		esi,offset da.resopt.custctrl
+			.while ebx<32
+				.if [esi].CUSTCTRL.szFileName
+					invoke strcpy,addr buffer,addr [esi].CUSTCTRL.szFileName
+					.if [esi].CUSTCTRL.szStyleMask
+						invoke strcat,addr buffer,addr szComma
+						invoke strcat,addr buffer,addr [esi].CUSTCTRL.szStyleMask
+					.endif
+					invoke SendMessage,hEdt,DEM_ADDCONTROL,0,addr buffer
+					.if eax
+						mov		[esi].CUSTCTRL.hDll,eax
+					.endif
+				.endif
+				inc		ebx
+				lea		esi,[esi+sizeof CUSTCTRL]
+			.endw
+			;Add custom styles
+			xor		ebx,ebx
+			mov		esi,offset da.resopt.custstyle
+			.while ebx<64
+				.if [esi].CUSTSTYLE.szStyle
+					invoke SendMessage,hEdt,DEM_ADDCUSTSTYLE,0,esi
+				.endif
+				inc		ebx
+				lea		esi,[esi+sizeof CUSTSTYLE]
+			.endw
+			;Add custom types
+			xor		ebx,ebx
+			mov		esi,offset da.resopt.custtype
+			.while ebx<32
+				.if [esi].RARSTYPE.sztype || [esi].RARSTYPE.nid
+					invoke SendMessage,hEdt,PRO_SETCUSTOMTYPE,ebx,esi
+					;Update menu
+;					.if ![esi].RARSTYPE.szext && [esi].RARSTYPE.sztype && ebx>10
+;						invoke lstrcpy,addr buffer,addr szAdd
+;						invoke lstrcat,addr buffer,addr rarstype.sztype
+;						mov		edx,nInx
+;						lea		edx,[edx+22000-12]
+;						invoke InsertMenu,ha.hMnu,IDM_RESOURCE_TOOLBAR,MF_BYCOMMAND,edx,addr buffer
+;					.endif
+				.endif
+				inc		ebx
+				lea		esi,[esi+sizeof RARSTYPE]
+			.endw
 		.elseif eax==ID_EDITUSER
 			mov		hEdt,0
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,hEdt
-		invoke SetWindowText,hWin,addr da.szFileName
+		invoke SetWinCaption,hWin,addr da.szFileName
 		invoke TabToolAdd,hWin,addr da.szFileName
 		xor		eax,eax
 		jmp		Ex
@@ -1631,6 +1795,15 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.elseif eax==ID_EDITRES
 				invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
 				invoke SendMessage,hEdt,PRO_CLOSE,0,0
+				xor		ebx,ebx
+				mov		esi,offset da.resopt.custctrl
+				.while ebx<32
+					.if [esi].CUSTCTRL.hDll
+						invoke FreeLibrary,[esi].CUSTCTRL.hDll
+						mov		[esi].CUSTCTRL.hDll,0
+					.endif
+					inc		ebx
+				.endw
 			.endif
 			.if da.fProject
 				invoke GetWindowLong,hEdt,GWL_USERDATA
@@ -2087,15 +2260,15 @@ start:
 	invoke InstallRATools,ha.hInstance,FALSE
 	invoke InstallRAEdit,ha.hInstance,FALSE
 	invoke RAHexEdInstall,ha.hInstance,FALSE
-	invoke ResEdInstall,ha.hInstance,FALSE
 	invoke GridInstall,ha.hInstance,FALSE
+	invoke ResEdInstall,ha.hInstance,FALSE
 	invoke GetCharTabPtr
 	mov		da.lpCharTab,eax
 	invoke strcpy,addr da.szProjectFiles,addr szDotRaprDot
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
-	invoke GridUnInstall
 	invoke ResEdUninstall
+	invoke GridUnInstall
 	invoke RAHexEdUnInstall
 	invoke UnInstallRAEdit
 	invoke UnInstallRATools

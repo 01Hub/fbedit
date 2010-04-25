@@ -1,3 +1,7 @@
+#include "Res/NewProjectTab2Dlg.rc"
+#include "Res/NewProjectTab3Dlg.rc"
+#include "Res/NewProjectTab1Dlg.rc"
+#include "Res/NewProjectDlg.rc"
 #include "Res/TabOptionsDlg.rc"
 #include "Res/TabOpt5Dlg.rc"
 #include "Res/TabOpt4Dlg.rc"

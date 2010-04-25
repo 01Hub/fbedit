@@ -120,7 +120,6 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
     LOCAL   hFile:HANDLE
 	LOCAL	hMem:HGLOBAL
 	LOCAL	dwRead:DWORD
-	LOCAL	rescolor:RESCOLOR
 
 	;Open the file
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
@@ -136,17 +135,6 @@ LoadResFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,PRO_OPEN,lpFileName,hMem
-		mov		eax,da.radcolor.dialogback
-		mov		rescolor.back,eax
-		mov		eax,da.radcolor.dialogtext
-		mov		rescolor.text,eax
-		mov		eax,da.radcolor.styles
-		mov		rescolor.styles,eax
-		mov		eax,da.radcolor.words
-		mov		rescolor.words,eax
-		invoke SendMessage,hWin,DEM_SETCOLOR,0,addr rescolor
-		mov		eax,00030003h
-		invoke SendMessage,hWin,DEM_SETGRIDSIZE,eax,0
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -228,7 +216,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 				invoke LoadResFile,ha.hEdt,lpFileName
 				pop		eax
 				invoke TabToolSetText,eax,lpFileName
-				invoke SetWindowText,edi,lpFileName
+				invoke SetWinCaption,edi,lpFileName
 				invoke TabToolActivate
 			.endif
 		.elseif eax==ID_EDITUSER
@@ -497,7 +485,7 @@ UpdateFileName proc hWin:DWORD,lpFileName:DWORD
 		;The file was saved
 		invoke TabToolGetInx,hWin
 		invoke TabToolSetText,eax,lpFileName
-		invoke SetWindowText,hWin,lpFileName
+		invoke SetWinCaption,hWin,lpFileName
 ;		.if da.fProject
 ;			invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
 ;			.if eax

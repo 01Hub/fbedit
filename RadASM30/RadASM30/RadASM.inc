@@ -61,6 +61,7 @@ TabToolGetInx					PROTO	:DWORD
 TabToolGetInxFromPid			PROTO	:DWORD
 OpenProject						PROTO
 CloseProject					PROTO
+GetTheFileType					PROTO	:DWORD
 
 CCTYPE_NONE						equ 0
 CCTYPE_PROC						equ 1
@@ -73,6 +74,10 @@ IDI_MDIICO						equ 100
 IDC_SPLICURV					equ 150
 IDC_SPLICURH					equ 151
 IDB_TBRBMP						equ 152
+
+MAX_MISS						equ 10
+START_FILES						equ 1
+MAX_FILES						equ 1000
 
 FILENOTIFYPATH struct
 	nCount				DWORD ?
@@ -109,6 +114,8 @@ szBS							db '\',0
 szPipe							db '|',0
 szDot							db '.',0
 szComma							db ',',0
+szQuote							db '"',0
+szSemi							db ';',0
 szDotIni						db '.ini',0
 szDotRaprDot					db '.rapr.',0
 szBSApiBS						db '\Api\',0
@@ -118,6 +125,7 @@ szNULL							db 0
 szDefFilter						db '.asm.inc.rc.rapr.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
+szError							db ': error ',0
 
 ;Code properties
 szCCPp							db 'Pp',0
@@ -180,6 +188,9 @@ szIniTheme						db 'Theme',0
 szIniCustCtrl					db 'CustCtrl',0
 szIniCustStyle					db 'CustStyle',0
 szIniCustType					db 'CustType',0
+szIniMake						db 'Make',0
+szIniHelp						db 'Help',0
+szIniEnvironment				db 'Environment',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -190,6 +201,7 @@ szFileChanged					db 'The file is changed. Continue?',0Dh,0
 szRadASMVersion					db 'The RadASM.ini file is an older version or is missing.',0Dh,0
 szProjectVersion				db 'The project file is an older version.',0
 szAssemblerVersion				db 'The Assembler.ini file is an older version or is missing.',0Dh,0
+szNoMain						db 'No main file selected.',0Dh,0
 
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
@@ -222,11 +234,12 @@ fnpath							FILENOTIFYPATH MAXIMUM_WAIT_OBJECTS dup(<?>)
 fnhandle						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 fnptrpth						DWORD MAXIMUM_WAIT_OBJECTS dup(?)
 lpOldTabProc					DWORD ?
-tmpbuff							BYTE 16384 dup(?)
-LineTxt							BYTE 16384 dup(?)
+tmpbuff							BYTE 24*1024 dup(?)
+LineTxt							BYTE 24*1024 dup(?)
 lpOldClientProc					DWORD ?
 lpOldRAEditCodeProc				DWORD ?
 hRichEd							DWORD ?
 ttmsg							MESSAGE <>
 tt								TOOLTIP <>
 gotostack						DECLARE 32 dup(<?>)
+hEnv							HGLOBAL ?

@@ -260,6 +260,9 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if resopt.fopt & RESOPT_LINE
 			invoke CheckDlgButton,hWin,IDC_CHKGRIDLINE,BST_CHECKED
 		.endif
+		.if resopt.fopt & RESOPT_HEX
+			invoke CheckDlgButton,hWin,IDC_CHKSTYLEHEX,BST_CHECKED
+		.endif
 	.elseif eax==WM_DRAWITEM
 		mov		edx,lParam
 		invoke FillRect,[edx].DRAWITEMSTRUCT.hdc,addr [edx].DRAWITEMSTRUCT.rcItem,hBr

@@ -15,8 +15,8 @@ IDC_BTNKWAPPLY		equ 4002
 IDC_BTNHOLD			equ 4009
 IDC_BTNACTIVE		equ 4008
 IDC_EDTKW			equ 4012
-IDC_BTNADD			equ 4011
-IDC_BTNDEL			equ 4010
+IDC_BTNADDKW		equ 4011
+IDC_BTNDELKW		equ 4010
 
 IDC_CHKBOLD			equ 4004
 IDC_CHKITALIC		equ 4003
@@ -613,7 +613,7 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		eax,IDC_BTNHOLD
 				xor		edx,edx
 				call	EnButton
-				mov		eax,IDC_BTNDEL
+				mov		eax,IDC_BTNDELKW
 				xor		edx,edx
 				call	EnButton
 				mov		eax,IDC_BTNKWAPPLY
@@ -627,7 +627,7 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
-			.elseif eax==IDC_BTNADD
+			.elseif eax==IDC_BTNADDKW
 				invoke GetDlgItemText,hWin,IDC_EDTKW,addr buffer,64
 				invoke SendDlgItemMessage,hWin,IDC_LSTKWACTIVE,LB_ADDSTRING,0,addr buffer
 				mov		buffer,0
@@ -635,12 +635,12 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
-			.elseif eax==IDC_BTNDEL
+			.elseif eax==IDC_BTNDELKW
 				invoke DeleteKeyWords,hWin,IDC_LSTKWACTIVE
 				mov		eax,IDC_BTNHOLD
 				xor		edx,edx
 				call	EnButton
-				mov		eax,IDC_BTNDEL
+				mov		eax,IDC_BTNDELKW
 				xor		edx,edx
 				call	EnButton
 				mov		eax,IDC_BTNKWAPPLY
@@ -795,7 +795,7 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					mov		eax,TRUE
 				.endif
 				mov		edx,eax
-				mov		eax,IDC_BTNADD
+				mov		eax,IDC_BTNADDKW
 				call	EnButton
 			.elseif eax==IDC_EDTTABSIZE
 				mov		eax,IDC_BTNKWAPPLY
@@ -809,7 +809,7 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SetKeyWordList,hWin,IDC_LSTKWACTIVE,eax
 				invoke GetDlgItem,hWin,IDC_BTNHOLD
 				invoke EnableWindow,eax,FALSE
-				invoke GetDlgItem,hWin,IDC_BTNDEL
+				invoke GetDlgItem,hWin,IDC_BTNDELKW
 				invoke EnableWindow,eax,FALSE
 			.elseif eax==IDC_LSTKWACTIVE
 				invoke SendDlgItemMessage,hWin,IDC_LSTKWACTIVE,LB_GETSELCOUNT,0,0
@@ -821,7 +821,7 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		eax,IDC_BTNHOLD
 				call	EnButton
 				pop		edx
-				mov		eax,IDC_BTNDEL
+				mov		eax,IDC_BTNDELKW
 				call	EnButton
 			.elseif eax==IDC_LSTKWHOLD
 				invoke SendDlgItemMessage,hWin,IDC_LSTKWHOLD,LB_GETSELCOUNT,0,0

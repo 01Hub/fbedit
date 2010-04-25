@@ -1,6 +1,73 @@
 
 .code
 
+ResetEnvironment proc uses esi edi
+
+	mov		edi,hEnv
+	.if	edi
+		.while byte	ptr	[edi]
+			mov		esi,edi
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			invoke SetEnvironmentVariable,edi,esi
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			mov		edi,esi
+		.endw
+		invoke GlobalFree,hEnv
+		xor		eax,eax
+		mov		hEnv,eax
+	.endif
+	ret
+
+ResetEnvironment endp
+
+SetVar proc uses edi,lpSave:DWORD,lpName:DWORD,lpValue:DWORD
+
+	mov		edi,lpSave
+	mov		byte ptr tmpbuff[4096],0
+	invoke GetEnvironmentVariable,lpName,addr tmpbuff[4096],1024
+	invoke strcpy,edi,lpName
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	invoke strcpy,edi,addr tmpbuff[4096]
+	invoke strlen,edi
+	lea		edi,[edi+eax+1]
+	invoke strcpy,addr tmpbuff,lpValue
+	.if byte ptr tmpbuff[4096]
+		invoke strcat,addr tmpbuff,addr szSemi
+		invoke strcat,addr tmpbuff,addr tmpbuff[4096]
+	.endif
+	invoke SetEnvironmentVariable,lpName,addr tmpbuff
+	mov		eax,edi
+	ret
+
+SetVar endp
+
+SetEnvironment proc uses ebx edi
+	LOCAL	buffer[512]:BYTE
+	LOCAL	buffname[64]:BYTE
+
+	;Environment
+	invoke ResetEnvironment
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,16384
+	mov		hEnv,eax
+	mov		edi,eax
+	xor		ebx,ebx
+	.while ebx<8
+		invoke BinToDec,ebx,addr buffname
+		invoke GetPrivateProfileString,addr szIniEnvironment,addr buffname,addr szNULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr buffer,addr szNULL,addr buffname
+			invoke SetVar,edi,addr buffname,addr buffer
+			mov		edi,eax
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+SetEnvironment endp
+
 GetColors proc
 	LOCAL	racolor:RACOLOR
 
@@ -334,7 +401,8 @@ OpenAssembler proc uses ebx esi edi
 		.while tmpbuff
 			inc		ebx
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
-			mov		pbfe.id,ebx
+			lea		eax,[ebx+2]
+			mov		pbfe.id,eax
 			invoke strcpy,addr pbfe.szfileext,addr buffer
 			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,addr [ebx-1],addr pbfe
 		.endw
@@ -344,8 +412,8 @@ OpenAssembler proc uses ebx esi edi
 		mov		esi,offset da.rabdstr
 		mov		edi,offset da.rabd
 		invoke RtlZeroMemory,edi,sizeof da.rabd
-		mov		ebx,1
-		.while ebx<33
+		mov		ebx,0
+		.while ebx<32
 			invoke BinToDec,ebx,addr buffer
 			invoke GetPrivateProfileString,addr szIniCodeBlock,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 			.break .if !eax
@@ -459,6 +527,47 @@ OpenAssembler proc uses ebx esi edi
 		.endif
 		invoke GetCodeComplete
 		invoke GetKeywords
+		;Get make exe's
+		invoke GetPrivateProfileString,addr szIniMake,addr szIniMake,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRC
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssemble
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLink
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLib
+		.endif
+		;Get make help
+		invoke GetPrivateProfileString,addr szIniMake,addr szIniHelp,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp
+		.endif
+		;Get make command lines
+		xor		ebx,ebx
+		mov		edi,offset da.make
+		invoke RtlZeroMemory,edi,sizeof da.make
+		invoke SendMessage,ha.hCboBuild,CB_RESETCONTENT,0,0
+		.while ebx<32
+			invoke BinToDec,ebx,addr buffer
+			invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+			.if eax
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szType
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szCompileRC
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutCompileRC
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szAssemble
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutAssemble
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLink
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLink
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLib
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLib
+				invoke SendMessage,ha.hCboBuild,CB_ADDSTRING,0,addr [edi].MAKE.szType
+				lea		edi,[edi+sizeof MAKE]
+			.endif
+			inc		ebx
+		.endw
+		invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
+		invoke SetEnvironment
 		mov		eax,TRUE
 	.endif
 	ret

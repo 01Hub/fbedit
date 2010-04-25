@@ -118,6 +118,66 @@ strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 strcmpi endp
 
+iniInStr proc lpStr:DWORD,lpSrc:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	push	esi
+	push	edi
+	mov		esi,lpSrc
+	lea		edi,buffer
+iniInStr0:
+	mov		al,[esi]
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	mov		[edi],al
+	inc		esi
+	inc		edi
+	or		al,al
+	jne		iniInStr0
+	mov		edi,lpStr
+	dec		edi
+iniInStr1:
+	inc		edi
+	push	edi
+	lea		esi,buffer
+iniInStr2:
+	mov		ah,[esi]
+	or		ah,ah
+	je		iniInStr8;Found
+	mov		al,[edi]
+	or		al,al
+	je		iniInStr9;Not found
+	cmp		al,'a'
+	jl		@f
+	cmp		al,'z'
+	jg		@f
+	and		al,5Fh
+  @@:
+	inc		esi
+	inc		edi
+	cmp		al,ah
+	jz		iniInStr2
+	pop		edi
+	jmp		iniInStr1
+iniInStr8:
+	pop		eax
+	sub		eax,lpStr
+	pop		edi
+	pop		esi
+	ret
+iniInStr9:
+	pop		edi
+	mov		eax,-1
+	pop		edi
+	pop		esi
+	ret
+
+iniInStr endp
+
 GetCharType proc nChar:DWORD
 	
 	mov		eax,nChar
@@ -381,6 +441,34 @@ PutItemQuotedStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemQuotedStr endp
 
+RemoveFileExt proc uses esi,lpFileName:DWORD
+
+	mov		esi,lpFileName
+	invoke strlen,esi
+	.while byte ptr [esi+eax]!='.' && eax
+		dec		eax
+	.endw
+	.if byte ptr [esi+eax]=='.'
+		mov		byte ptr [esi+eax],0
+	.endif
+	ret
+
+RemoveFileExt endp
+
+RemoveFileName proc uses esi,lpFileName:DWORD
+
+	mov		esi,lpFileName
+	invoke strlen,esi
+	.while byte ptr [esi+eax]!='\' && eax
+		dec		eax
+	.endw
+	.if byte ptr [esi+eax]=='\'
+		mov		byte ptr [esi+eax],0
+	.endif
+	ret
+
+RemoveFileName endp
+
 UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	nInx:DWORD
 	LOCAL	tci:TC_ITEM
@@ -531,6 +619,19 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 				.elseif eax==ID_EDITRES
 					invoke SendMessage,[ebx].TABMEM.hedt,WM_SETFONT,ha.hToolFont,TRUE
 				.elseif eax==ID_EDITUSER
+				.endif
+			.elseif eax==UAM_CLEARERRORS
+				mov		ErrID,0
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTERROR,eax,0
+						.break .if eax==-1
+						push	eax
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETERROR,eax,FALSE
+						pop		eax
+					.endw
 				.endif
 			.endif
 		.endif
@@ -1121,6 +1222,24 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_RESOURCE_UNDO
 	.elseif eax==6
 		;Make
+		.if esi==ID_EDITCODE
+			mov		eax,TRUE
+			push	eax
+			push	IDM_MAKE_SETMAIN
+			push	da.fProject
+			push	IDM_MAKE_TOGGLEMODULE
+		.elseif esi==ID_EDITRES
+			push	TRUE
+			push	IDM_MAKE_SETMAIN
+			push	FALSE
+			push	IDM_MAKE_TOGGLEMODULE
+		.else
+			xor		eax,eax
+			push	eax
+			push	IDM_MAKE_SETMAIN
+			push	eax
+			push	IDM_MAKE_TOGGLEMODULE
+		.endif
 	.elseif eax==7
 		;Debug
 	.elseif eax==8
@@ -1515,6 +1634,8 @@ GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO
 		.if da.fProject
 			invoke GetItemInt,addr tmpbuff,0
 			mov		[edi].FILEINFO.idparent,eax
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].FILEINFO.flag,eax
 			mov		eax,nInx
 			mov		[edi].FILEINFO.pid,eax
 		.endif
@@ -1603,6 +1724,8 @@ SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
 			mov		[edi].FILEINFO.pid,eax
 			mov		eax,[esi].PBITEM.idparent
 			mov		[edi].FILEINFO.idparent,eax
+			mov		eax,[esi].PBITEM.flag
+			mov		[edi].FILEINFO.flag,eax
 			invoke RemovePath,addr [esi].PBITEM.szitem,addr da.szProjectPath,addr [edi].FILEINFO.filename
 			invoke UpdateAll,UAM_ISOPEN,addr [esi].PBITEM.szitem
 			.if eax==-1
@@ -1932,9 +2055,9 @@ ReturnDeclare proc uses esi
 
 ReturnDeclare endp
 
-SetProjectTab proc fProject:DWORD
+SetProjectTab proc nTab:DWORD
 
-	.if fProject
+	.if nTab
 		invoke SendMessage,ha.hTabProject,TCM_SETCURSEL,1,0
 		invoke ShowWindow,ha.hProjectBrowser,SW_SHOWNA
 		invoke ShowWindow,ha.hFileBrowser,SW_HIDE
@@ -1946,6 +2069,21 @@ SetProjectTab proc fProject:DWORD
 	ret
 
 SetProjectTab endp
+
+SetOutputTab proc nTab:DWORD
+
+	.if nTab
+		invoke SendMessage,ha.hTabOutput,TCM_SETCURSEL,1,0
+		invoke ShowWindow,ha.hImmediate,SW_SHOWNA
+		invoke ShowWindow,ha.hOutput,SW_HIDE
+	.else
+		invoke SendMessage,ha.hTabOutput,TCM_SETCURSEL,0,0
+		invoke ShowWindow,ha.hOutput,SW_SHOWNA
+		invoke ShowWindow,ha.hImmediate,SW_HIDE
+	.endif
+	ret
+
+SetOutputTab endp
 
 ConvertDpiSize proc nPix:DWORD
 	LOCAL	lpx:DWORD
@@ -1968,3 +2106,11 @@ ConvertDpiSize proc nPix:DWORD
 
 ConvertDpiSize endp
 
+SetWinCaption proc hWin:HWND,lpFileName:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke GetFullPathName,lpFileName,sizeof buffer,addr buffer,NULL
+	invoke SetWindowText,hWin,addr buffer
+	ret
+
+SetWinCaption endp

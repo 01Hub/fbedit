@@ -131,6 +131,8 @@ IDM_MAKE_BUILD					equ 10038
 IDM_MAKE_GO						equ 10040
 IDM_MAKE_RUN					equ 10039
 IDM_MAKE_DEBUG					equ 10140
+IDM_MAKE_SETMAIN				equ 10177
+IDM_MAKE_TOGGLEMODULE			equ 10178
 IDM_DEBUG						equ 10125
 IDM_DEBUG_TOGGLE				equ 10128
 IDM_DEBUG_CLEAR					equ 10129
@@ -291,7 +293,6 @@ RESOPT_TIP				equ 64
 
 CUSTCTRL struct
 	hDll			HMODULE ?
-	lpCCDEF			DWORD ?
 	szFileName		BYTE 128 dup(?)
 	szStyleMask		BYTE 16 dup(?)
 CUSTCTRL ends
@@ -314,6 +315,18 @@ EXTERNAL struct
 	szfiles			BYTE 32 dup(?)
 EXTERNAL ends
 
+MAKE struct
+	szType			BYTE 128 dup(?)
+	szCompileRC		BYTE 128 dup(?)
+	szOutCompileRC	BYTE 32 dup(?)
+	szAssemble		BYTE 128 dup(?)
+	szOutAssemble	BYTE 32 dup(?)
+	szLink			BYTE 128 dup(?)
+	szOutLink		BYTE 32 dup(?)
+	szLib			BYTE 128 dup(?)
+	szOutLib		BYTE 32 dup(?)
+MAKE ends
+
 ADDINDATA struct
 	win				WIN <>
 	winres			WINSIZE <>
@@ -323,6 +336,7 @@ ADDINDATA struct
 	szAssemblerIni	BYTE MAX_PATH dup(?)
 	szProject		BYTE MAX_PATH dup(?)
 	szProjectPath	BYTE MAX_PATH dup(?)
+	szAssemblers	BYTE 256 dup(?)
 	szAssembler		BYTE 32 dup(?)
 	nAsm			DWORD ?
 	szFileName		BYTE MAX_PATH dup(?)
@@ -360,11 +374,23 @@ ADDINDATA struct
 	szANYString		BYTE 64 dup(?)
 	szALLString		BYTE 64*4 dup(?)
 	szTypes			BYTE 256 dup(?)
+	szCompileRC		BYTE 128 dup(?)
+	szCompileRCHelp	BYTE 128 dup(?)
+	szAssemble		BYTE 128 dup(?)
+	szAssembleHelp	BYTE 128 dup(?)
+	szLink			BYTE 128 dup(?)
+	szLinkHelp		BYTE 128 dup(?)
+	szLib			BYTE 128 dup(?)
+	szLibHelp		BYTE 128 dup(?)
+	make			MAKE 32 dup(<>)
+	szMainRC		BYTE 128 dup(?)
+	szMainAsm		BYTE 128 dup(?)
 ADDINDATA ends
 
 FILEINFO struct
 	pid				DWORD ?
 	idparent		DWORD ?
+	flag			DWORD ?
 	ID				DWORD ?
 	rect			RECT <>
 	nline			DWORD ?
@@ -390,3 +416,4 @@ UAM_SAVEALL						equ 4
 UAM_CLOSEALL					equ 5
 UAM_SETCOLORS					equ 6
 UAM_SETFONTS					equ 7
+UAM_CLEARERRORS					equ 8

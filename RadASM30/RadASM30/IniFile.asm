@@ -237,10 +237,10 @@ GetSessionFiles proc uses ebx edi
 		invoke strcpy,addr da.szFBPath,addr da.szAppPath
 	.endif
 	invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
-	mov		ebx,1
+	mov		ebx,START_FILES
 	push	da.win.fcldmax
 	mov		da.win.fcldmax,FALSE
-	.while ebx<100
+	.while ebx<MAX_FILES
 		invoke GetFileInfo,ebx,addr szIniSession,addr da.szRadASMIni,addr fi
 		.break .if !eax
 		invoke GetFileAttributes,addr fi.filename
@@ -264,8 +264,7 @@ GetSessionFiles proc uses ebx edi
 	.endw
 	pop		da.win.fcldmax
 	.if ebx>1
-		mov		dword ptr buffer,'0F'
-		invoke GetPrivateProfileInt,addr szIniSession,addr buffer,0,addr da.szRadASMIni
+		invoke GetPrivateProfileInt,addr szIniSession,addr szIniOpen,0,addr da.szRadASMIni
 		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 		.if eax==-1
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,0,0
@@ -301,8 +300,7 @@ PutSession proc uses ebx
 		;Current tab
 		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		invoke BinToDec,eax,addr tmpbuff
-		mov		dword ptr buffer,'0F'
-		invoke WritePrivateProfileString,addr szIniSession,addr buffer,addr tmpbuff,addr da.szRadASMIni
+		invoke WritePrivateProfileString,addr szIniSession,addr szIniOpen,addr tmpbuff,addr da.szRadASMIni
 		;Open files
 		mov		eax,da.win.fcldmax
 		push	eax
@@ -310,7 +308,7 @@ PutSession proc uses ebx
 			invoke SendMessage,ha.hClient,WM_MDIRESTORE,ha.hMdi,0
 		.endif
 		xor		ebx,ebx
-		.while ebx<100
+		.while ebx<MAX_FILES
 			mov		tmpbuff,0
 			invoke SetFileInfo,ebx,addr fi
 			.break .if !eax
