@@ -4,9 +4,9 @@ ButtonSize		equ	26
 .data
 
 nButtons			dd NoOfButtons
-szToolBoxTlt		db 'Pointer,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,'
-					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header,Syslink',0
-					db 512 dup(?)
+szDefToolBoxTlt		db 'Pointer,EditText,Static,GroupBox,Button,CheckBox,RadioButton,ComboBox,ListBox,HScroll,VScroll,TabStrip,ProgressBar,TreeView,'
+					db 'ListView,TrackBar,UpDown,Image,ToolBar,StatusBar,DatePicker,MonthView,RichEdit,UserDefinedControl,ImageCombo,Shape,IPAddress,Animate,HotKey,HPager,VPager,ReBar,Header,Syslink'
+
 .data?
 
 hButtons			dd NoOfButtons+32 dup(?)
@@ -16,6 +16,7 @@ hBoxIml				dd ?
 ToolBoxID			dd ?
 strofs				dd ?
 strbuff				db 512 dup(?)
+szToolBoxTlt		db 1024 dup (?)
 
 .code
 

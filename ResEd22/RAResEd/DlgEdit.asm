@@ -34,6 +34,8 @@ MODE_SELECT			equ 6
 MODE_MOVINIT		equ 7
 MODE_MULTISELMOVEINIT	equ 8
 
+INIT_NPR			equ 32+32+8
+
 .data
 
 szPos				db 'Pos: ',32 dup(0)
@@ -80,12 +82,12 @@ LnkID				db 'IDC_LNK',0
 LnkCAP				db '<a></a>',0
 
 szMnu				db '  &File  ,	&Edit  ,  &Help  ',0
-nPr					dd 32+32+8
+nPr					dd INIT_NPR
 PrAll				db '(Name),(ID),Left,Top,Width,Height,Caption,Border,SysMenu,MaxButton,MinButton,Enabled,Visible,Clipping,ScrollBar,Default,Auto,Alignment,Mnemonic,WordWrap,MultiLine,Type,Locked,Child,SizeBorder,TabStop,Font,Menu,Class,Notify,AutoScroll,WantCr,'
 					db 'Sort,Flat,(StartID),TabIndex,Format,SizeGrip,Group,Icon,UseTabs,StartupPos,Orientation,SetBuddy,MultiSelect,HideSel,TopMost,xExStyle,xStyle,IntegralHgt,Image,Buttons,PopUp,OwnerDraw,Transp,Timer,AutoPlay,WeekNum,AviClip,AutoSize,ToolTip,Wrap,'
 					db 'Divider,DragDrop,'
 					db 'Smooth,Ellipsis,Language,HasStrings,(HelpID),File,MenuEx,SaveSel'
-					db 512 dup(0)
+PrCust				db 512 dup(0)
 
 				;0-Dialog
 ctltypes			dd 0

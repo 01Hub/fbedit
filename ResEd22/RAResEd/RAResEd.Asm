@@ -327,13 +327,14 @@ SetColors proc uses ebx
 
 SetColors endp
 
-ToolBoxProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ToolBoxProc	proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
 		push	hWin
 		pop		hTlb
+		invoke strcpy,addr szToolBoxTlt,addr szDefToolBoxTlt
 		invoke Do_ToolBox,hWin
 	.elseif eax==WM_MOUSEMOVE
 		.if hStatus
@@ -346,6 +347,24 @@ ToolBoxProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		pt.x,edx
 		mov		pt.y,eax
 		invoke ToolBoxSize,pt.x
+	.elseif eax==WM_DESTROY
+		mov		esi,offset hButtons+NoOfButtons*4
+		xor		ebx,ebx
+		.while ebx<32
+			.if dword ptr [esi]
+				invoke SendMessage,[esi],BM_SETIMAGE,IMAGE_BITMAP,0
+				mov		dword ptr [esi],0
+			.endif
+			lea		esi,[esi+4]
+			inc		ebx
+		.endw
+		invoke RtlZeroMemory,addr PrCust,sizeof PrCust
+		invoke RtlZeroMemory,addr custtypes,sizeof custtypes
+		invoke RtlZeroMemory,addr rscuststyledef,sizeof rscuststyledef
+		invoke RtlZeroMemory,addr custrstypes,sizeof custrstypes
+		mov		eax,NoOfButtons
+		mov		nButtons,eax
+		mov		nPr,INIT_NPR
 	.endif
 	invoke DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:
