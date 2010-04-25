@@ -258,8 +258,8 @@ AddGroup:
 	mov		tvis.item._mask,TVIF_IMAGE or TVIF_SELECTEDIMAGE or TVIF_PARAM or TVIF_TEXT
 	lea		eax,[esi].PBITEM.szitem
 	mov		tvis.item.pszText,eax
-	mov		tvis.item.iImage,0
-	mov		tvis.item.iSelectedImage,0
+	mov		tvis.item.iImage,2
+	mov		tvis.item.iSelectedImage,2
 	mov		tvis.item.lParam,esi
 	invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_INSERTITEM,0,addr tvis
 	mov		[esi].PBITEM.hitem,eax
@@ -299,6 +299,11 @@ AddFiles proc uses ebx esi edi,lpPROJECTBROWSER:DWORD
 			.endif
 			mov		tvis.item.pszText,eax
 			invoke FindFileExt,ebx,eax
+			.if [esi].PBITEM.flag==FLAG_MODULE
+				lea		eax,[eax+7]
+			.elseif [esi].PBITEM.flag==FLAG_MAIN
+				lea		eax,[eax+14]
+			.endif
 			mov		tvis.item.iImage,eax
 			mov		tvis.item.iSelectedImage,eax
 			mov		tvis.item.lParam,esi
@@ -654,7 +659,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		[ebx].PROJECTBROWSER.htrv,eax
 		invoke SetWindowLong,[ebx].PROJECTBROWSER.htrv,GWL_WNDPROC,offset ProjectTreeViewProc
 		invoke SetWindowLong,[ebx].PROJECTBROWSER.htrv,GWL_USERDATA,eax
-		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,10,0
+		invoke ImageList_Create,16,16,ILC_COLOR24 or ILC_MASK,17,0
 		mov		[ebx].PROJECTBROWSER.himl,eax
 		invoke LoadBitmap,hInstance,IDB_TRV
 		push	eax
@@ -893,7 +898,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 		mov		edx,[ebx].PROJECTBROWSER.hmemfileext
 		lea		eax,[eax+edx]
 		jmp		Ex
-	.elseif eax==RPBM_ADDITEM
+	.elseif eax==RPBM_SETITEM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		mov		esi,lParam
@@ -1025,7 +1030,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke lstrcpy,addr pbi.szitem,addr szNewGroup
 			invoke GetFreeIndex,ebx
 			mov		edx,eax
-			invoke SendMessage,hWin,RPBM_ADDITEM,edx,addr pbi
+			invoke SendMessage,hWin,RPBM_SETITEM,edx,addr pbi
 			invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
 			invoke FindItemFromid,ebx,pbi.id
 			.if eax
@@ -1088,7 +1093,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			invoke lstrcpy,addr pbi.szitem,lParam
 			invoke GetFreeIndex,ebx
 			mov		edx,eax
-			invoke SendMessage,hWin,RPBM_ADDITEM,edx,addr pbi
+			invoke SendMessage,hWin,RPBM_SETITEM,edx,addr pbi
 			invoke SendMessage,hWin,RPBM_SETGROUPING,TRUE,[ebx].PROJECTBROWSER.ngrouping
 			invoke FindItemFromid,ebx,pbi.id
 			.if eax
@@ -1124,6 +1129,56 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 			div		ecx
 		.else
 			or		eax,-1
+		.endif
+		jmp		Ex
+	.elseif eax==PBRM_FINDNEXTITEM
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		esi,[ebx].PROJECTBROWSER.hmemitems
+		mov		edx,wParam
+		mov		ecx,32768
+		xor		edi,edi
+		.while [esi].PBITEM.id
+			mov		eax,[esi].PBITEM.id
+			.if eax>edx && eax<ecx
+				mov		edi,esi
+				mov		ecx,eax
+			.endif
+			lea		esi,[esi+sizeof PBITEM]
+		.endw
+		mov		eax,edi
+		jmp		Ex
+	.elseif eax==PBRM_SETFLAG
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		eax,wParam
+		.if eax
+			invoke FindItemFromid,ebx,eax
+			.if eax
+				mov		esi,eax
+				mov		eax,[esi].PBITEM.hitem
+				mov		tvi._mask,TVIF_PARAM or TVIF_IMAGE or TVIF_SELECTEDIMAGE
+				mov		tvi.hItem,eax
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_GETITEM,0,addr tvi
+				mov		eax,[esi].PBITEM.flag
+				mov		edx,tvi.iImage
+				.if eax==FLAG_MODULE
+					sub		edx,7
+				.elseif eax==FLAG_MAIN
+					sub		edx,14
+				.endif
+				mov		eax,lParam
+				mov		[esi].PBITEM.flag,eax
+				.if eax==FLAG_MODULE
+					add		edx,7
+				.elseif eax==FLAG_MAIN
+					add		edx,14
+				.endif
+				mov		tvi.iImage,edx
+				mov		tvi.iSelectedImage,edx
+				invoke SendMessage,[ebx].PROJECTBROWSER.htrv,TVM_SETITEM,0,addr tvi
+				mov		eax,esi
+			.endif
 		.endif
 		jmp		Ex
 	.endif
