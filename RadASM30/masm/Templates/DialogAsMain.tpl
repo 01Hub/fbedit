@@ -1,7 +1,21 @@
 Dialog As Main Window
-[*MAKE*]=0
 [*BEGINTXT*]
-[*PROJECTNAME*].Asm
+[*PROJECTNAME*].rapr
+[Version]
+Version=3000
+[Project]
+Assembler=masm
+Group=2,-1,0,1,[*PROJECTNAME*],-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
+F1=-2,2,1,22,22,600,400,0,[*PROJECTNAME*].asm
+F2=-3,0,1,44,44,600,400,0,[*PROJECTNAME*].inc
+F3=-5,2,4,66,66,600,400,0,[*PROJECTNAME*].rc
+[Make]
+Make=0
+0=Window Release,'/v',.res,'/c /coff /Cp',.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',.exe,'',
+1=Window Debug,'/v',.res,'/c /coff /Cp /Zi /Zd',.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',.exe,'',
+[*ENDTXT*]
+[*BEGINTXT*]
+[*PROJECTNAME*].asm
 .386
 .model flat,stdcall
 option casemap:none
@@ -85,7 +99,7 @@ WndProc endp
 end start
 [*ENDTXT*]
 [*BEGINTXT*]
-[*PROJECTNAME*].Inc
+[*PROJECTNAME*].inc
 include windows.inc
 include user32.inc
 include kernel32.inc
@@ -121,7 +135,7 @@ CommandLine			dd ?
 hWnd				dd ?
 [*ENDTXT*]
 [*BEGINTXT*]
-[*PROJECTNAME*].Rc
+[*PROJECTNAME*].rc
 #define IDD_DIALOG 1000
 #define IDM_MENU 10000
 #define IDM_FILE_EXIT 10001

@@ -218,7 +218,7 @@ defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,0080
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h
 								dd 00FFFFFFh,00000000h,00FFFFFFh,00000000h,00804000h,00C00000h,00FFFFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
 
-szDefCODEString					db 'Assembly Files (*.asm; *.inc)|*.asm;*.inc',0
+szDefCODEString					db 'Assembly Files (*.asm, *.inc)|*.asm;*.inc',0
 szDefRESString					db 'Resource Files (*.rc)|*.rc',0
 szDefTXTString					db 'Text Files (*.txt)|*.txt',0
 szDefANYString					db 'All Files (*.*)|*.*',0

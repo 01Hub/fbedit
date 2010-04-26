@@ -1076,10 +1076,8 @@ GetProjectFiles proc uses ebx esi edi
 				mov		pbi.idparent,eax
 				mov		eax,fi.flag
 				mov		pbi.flag,eax
-PrintDec eax
 				invoke strcpy,addr pbi.szitem,addr fi.filename
 				mov		eax,fi.ID
-PrintDec eax
 				mov		pbi.lParam,eax
 				invoke GetFileAttributes,addr pbi.szitem
 				.if eax!=INVALID_HANDLE_VALUE
@@ -1092,8 +1090,6 @@ PrintDec eax
 						.elseif pbi.lParam==ID_EDITRES
 							invoke strcpy,addr da.szMainRC,addr buffer
 						.endif
-PrintStringByAddr offset da.szMainAsm
-PrintStringByAddr offset da.szMainRC
 					.endif
 					inc		ebx
 				.endif
