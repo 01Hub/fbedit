@@ -58,7 +58,7 @@ SetEnvironment proc uses ebx edi
 		invoke BinToDec,ebx,addr buffname
 		invoke GetPrivateProfileString,addr szIniEnvironment,addr buffname,addr szNULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		.if eax
-			invoke GetItemStr,addr buffer,addr szNULL,addr buffname
+			invoke GetItemStr,addr buffer,addr szNULL,addr buffname,sizeof buffname
 			invoke SetVar,edi,addr buffname,addr buffer
 			mov		edi,eax
 		.endif
@@ -137,9 +137,9 @@ GetCodeComplete proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniApi,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 	.while tmpbuff
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		movzx	ebx,buffer
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		.if ebx && buffer
 			invoke strcpy,addr apifile,addr da.szAppPath
 			invoke strcat,addr apifile,addr szBSApiBS
@@ -342,6 +342,10 @@ OpenAssembler proc uses ebx esi edi
 	.else
 		invoke strcpy,addr da.szAssemblerIni,addr buffer
 		invoke SendMessage,ha.hStatus,SB_SETTEXT,2,addr da.szAssembler
+		;Get assembler path
+		invoke strcpy,addr da.szAssemblerPath,addr da.szAppPath
+		invoke strcat,addr da.szAssemblerPath,addr szBS
+		invoke strcat,addr da.szAssemblerPath,addr da.szAssembler
 		;Get resource options
 		invoke GetPrivateProfileString,addr szIniResource,addr szIniOption,NULL,addr tmpbuff,sizeof buffer,addr da.szAssemblerIni
 		invoke GetItemInt,addr tmpbuff,3
@@ -354,7 +358,7 @@ OpenAssembler proc uses ebx esi edi
 		mov		da.resopt.fopt,eax
 		invoke GetItemInt,addr tmpbuff,0
 		mov		da.resopt.nExport,eax
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.resopt.szExport
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.resopt.szExport,sizeof da.resopt.szExport
 		invoke GetItemInt,addr tmpbuff,0
 		mov		da.resopt.nOutput,eax
 		;Get file filters
@@ -363,6 +367,8 @@ OpenAssembler proc uses ebx esi edi
 		invoke RtlZeroMemory,addr da.szTXTString,sizeof da.szTXTString
 		invoke RtlZeroMemory,addr da.szANYString,sizeof da.szANYString
 		invoke RtlZeroMemory,addr da.szALLString,sizeof da.szALLString
+		invoke RtlZeroMemory,addr da.szPROString,sizeof da.szPROString
+		invoke strcpy,addr da.szPROString,addr szDefPROString
 		mov		word ptr bufftype,'0'
 		invoke GetPrivateProfileString,addr szIniFile,addr bufftype,addr szDefCODEString,addr da.szCODEString,sizeof da.szCODEString-1,addr da.szAssemblerIni
 		mov		word ptr bufftype,'1'
@@ -377,6 +383,8 @@ OpenAssembler proc uses ebx esi edi
 		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szTXTString
 		invoke strcat,addr da.szALLString,addr szPipe
+		invoke strcat,addr da.szALLString,addr da.szPROString
+		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szANYString
 		mov		eax,offset da.szCODEString
 		call	FixString
@@ -387,6 +395,8 @@ OpenAssembler proc uses ebx esi edi
 		mov		eax,offset da.szANYString
 		call	FixString
 		mov		eax,offset da.szALLString
+		call	FixString
+		mov		eax,offset da.szPROString
 		call	FixString
 		;Get file types
 		invoke GetPrivateProfileString,addr szIniFile,addr szIniCode,NULL,addr da.szCodeFiles,sizeof da.szCodeFiles,addr da.szAssemblerIni
@@ -400,7 +410,7 @@ OpenAssembler proc uses ebx esi edi
 		xor ebx,ebx
 		.while tmpbuff
 			inc		ebx
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 			lea		eax,[ebx+2]
 			mov		pbfe.id,eax
 			invoke strcpy,addr pbfe.szfileext,addr buffer
@@ -417,25 +427,25 @@ OpenAssembler proc uses ebx esi edi
 			invoke BinToDec,ebx,addr buffer
 			invoke GetPrivateProfileString,addr szIniCodeBlock,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 			.break .if !eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,esi
+			invoke GetItemStr,addr tmpbuff,addr szNULL,esi,32
 			.if byte ptr [esi]
 				mov		[edi].RABLOCKDEF.lpszStart,esi
 				invoke strlen,esi
 				lea		esi,[esi+eax+2]
 			.endif 
-			invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+			invoke GetItemStr,addr tmpbuff,addr szNULL,esi,32
 			.if byte ptr [esi]
 				mov		[edi].RABLOCKDEF.lpszEnd,esi
 				invoke strlen,esi
 				lea		esi,[esi+eax+2]
 			.endif 
-			invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+			invoke GetItemStr,addr tmpbuff,addr szNULL,esi,32
 			.if byte ptr [esi]
 				mov		[edi].RABLOCKDEF.lpszNot1,esi
 				invoke strlen,esi
 				lea		esi,[esi+eax+2]
 			.endif 
-			invoke GetItemStr,addr tmpbuff,addr szNULL,esi 
+			invoke GetItemStr,addr tmpbuff,addr szNULL,esi,32
 			.if byte ptr [esi]
 				mov		[edi].RABLOCKDEF.lpszNot2,esi
 				invoke strlen,esi
@@ -463,8 +473,8 @@ OpenAssembler proc uses ebx esi edi
 			lea		esi,[esi+sizeof RABLOCKDEF]
 		.endw
 		invoke GetPrivateProfileString,addr szIniCodeBlock,addr szIniCmnt,NULL,addr tmpbuff,64,addr da.szAssemblerIni
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntStart
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntEnd
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntStart,sizeof da.szCmntStart
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCmntEnd,sizeof da.szCmntEnd
 		invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 		;Get options
 		invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
@@ -477,7 +487,7 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetPrivateProfileString,addr szIniFile,addr szIniFilter,NULL,addr tmpbuff,sizeof da.szFilter+2,addr da.szAssemblerIni
 		invoke GetItemInt,addr tmpbuff,1
 		invoke SendMessage,ha.hFileBrowser,FBM_SETFILTER,TRUE,eax
-		invoke GetItemStr,addr tmpbuff,addr szDefFilter,addr da.szFilter
+		invoke GetItemStr,addr tmpbuff,addr szDefFilter,addr da.szFilter,sizeof da.szFilter
 		invoke SendMessage,ha.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr da.szFilter
 		;Get parser
 		invoke SendMessage,ha.hProperty,PRM_RESET,0,0
@@ -485,17 +495,17 @@ OpenAssembler proc uses ebx esi edi
 		mov		da.nAsm,eax
 		invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,da.nAsm,0
 		invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,da.lpCharTab
-		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockSt
-		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockEn
-		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntChar
-		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szString
-		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szLineCont
+		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockSt,sizeof defgen.szCmntBlockSt
+		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockEn,sizeof defgen.szCmntBlockEn
+		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntChar,sizeof defgen.szCmntChar
+		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szString,sizeof defgen.szString
+		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szLineCont,sizeof defgen.szLineCont
 		invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
 		invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		invoke GetPrivateProfileString,addr szIniParse,addr szIniType,NULL,addr buffcbo,sizeof buffcbo,addr da.szAssemblerIni
 		.if eax
 			.while buffcbo
-				invoke GetItemStr,addr buffcbo,addr szNULL,addr bufftype
+				invoke GetItemStr,addr buffcbo,addr szNULL,addr bufftype,sizeof bufftype
 				.if bufftype
 					invoke GetPrivateProfileString,addr szIniParse,addr bufftype,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 					.while buffer
@@ -503,8 +513,8 @@ OpenAssembler proc uses ebx esi edi
 						mov		deftype.nType,al
 						invoke GetItemInt,addr buffer,0
 						mov		deftype.nDefType,al
-						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def
-						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord
+						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def,sizeof deftype.Def
+						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
 						invoke strlen,addr deftype.szWord
 						mov		deftype.len,al
 						invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
@@ -517,7 +527,7 @@ OpenAssembler proc uses ebx esi edi
 			.while buffer
 				invoke GetItemInt,addr buffer,0
 				push	eax
-				invoke GetItemStr,addr buffer,addr szNULL,addr bufftype
+				invoke GetItemStr,addr buffer,addr szNULL,addr bufftype,sizeof bufftype
 				pop		edx
 				.if bufftype
 					invoke SendMessage,ha.hProperty,PRM_ADDIGNORE,edx,addr bufftype
@@ -530,18 +540,18 @@ OpenAssembler proc uses ebx esi edi
 		;Get make exe's
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniMake,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRC
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssemble
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLink
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLib
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRC,sizeof da.szCompileRC
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssemble,sizeof da.szAssemble
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLink,sizeof da.szLink
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLib,sizeof da.szLib
 		.endif
 		;Get make help
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniHelp,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp,sizeof da.szCompileRCHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp,sizeof da.szAssembleHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp,sizeof da.szLinkHelp
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
 		.endif
 		;Get make command lines
 		xor		ebx,ebx
@@ -552,21 +562,24 @@ OpenAssembler proc uses ebx esi edi
 			invoke BinToDec,ebx,addr buffer
 			invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 			.if eax
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szType
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szCompileRC
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutCompileRC
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szAssemble
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutAssemble
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLink
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLink
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLib
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLib
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szType,sizeof MAKE.szType
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szCompileRC,sizeof MAKE.szCompileRC
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutCompileRC,sizeof MAKE.szOutCompileRC
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szAssemble,sizeof MAKE.szAssemble
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutAssemble,sizeof MAKE.szOutAssemble
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLink,sizeof MAKE.szLink
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLink,sizeof MAKE.szOutLink
+				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLib,sizeof MAKE.szLib
+				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLib,sizeof MAKE.szOutLib
 				invoke SendMessage,ha.hCboBuild,CB_ADDSTRING,0,addr [edi].MAKE.szType
 				lea		edi,[edi+sizeof MAKE]
 			.endif
 			inc		ebx
 		.endw
 		invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
+		;Get default projrct path
+		invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr szNULL,addr da.szDefProjectPath,sizeof da.szDefProjectPath,addr da.szAssemblerIni
+		;Setup environment
 		invoke SetEnvironment
 		mov		eax,TRUE
 	.endif

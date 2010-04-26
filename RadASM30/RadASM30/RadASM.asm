@@ -116,7 +116,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr da.szAssemblers,sizeof da.szAssemblers,addr da.szRadASMIni
 		;Get default assembler
 		invoke strcpy,addr tmpbuff,addr da.szAssemblers
-		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler
+		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler,sizeof da.szAssembler
 		invoke OpenAssembler
 		invoke strcpy,addr da.szFBPath,addr da.szAppPath
 		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
@@ -2265,6 +2265,7 @@ start:
 	invoke GetCharTabPtr
 	mov		da.lpCharTab,eax
 	invoke strcpy,addr da.szProjectFiles,addr szDotRaprDot
+	mov		da.Version,RadASMVersion
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
 	invoke ResEdUninstall

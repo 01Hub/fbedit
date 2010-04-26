@@ -186,84 +186,84 @@ IDM_OUTPUT_CUT					equ 11023
 IDM_OUTPUT_COPY					equ 11022
 
 ADDINHANDLES struct
-	hInstance		HINSTANCE ?
-	hWnd			HWND ?
-	hClient			HWND ?
-	hMdi			HWND ?
-	hEdt			HWND ?
-	hMenu			HMENU ?
-	hContextMenu	HMENU ?
-	hAccel			HACCEL ?
-	hIcon			HICON ?
-	hCursor			HCURSOR ?
-	hSplitCurV		HCURSOR ?
-	hSplitCurH		HCURSOR ?
-	hTool			HWND ?
-	hToolProject	HWND ?
-	hTabProject		HWND ?
-	hFileBrowser	HWND ?
-	hProjectBrowser	HWND ?
-	hToolProperties	HWND ?
-	hProperty		HWND ?
-	hToolOutput		HWND ?
-	hTabOutput		HWND ?
-	hOutput			HWND ?
-	hImmediate		HWND ?
-	hToolTab		HWND ?
-	hTab			HWND ?
-	hStatus			HWND ?
-	hReBar			HWND ?
-	hStcBuild		HWND ?
-	hCboBuild		HWND ?
-	hToolFont		HFONT ?
-	racf			RAFONT <>
-	ratf			RAFONT <>
-	rahf			HEFONT <>
-	hImlTbr			HIMAGELIST ?
-	hImlTbrGray		HIMAGELIST ?
-	hTbrFile		HWND ?
-	hTbrEdit1		HWND ?
-	hTbrEdit2		HWND ?
-	hTbrView		HWND ?
-	hTbrMake		HWND ?
-	hDiv1			HWND ?
-	hDiv2			HWND ?
-	hCC				HWND ?
-	hTT				HWND ?
-	hModeless		HWND ?
+	hInstance			HINSTANCE ?
+	hWnd				HWND ?
+	hClient				HWND ?
+	hMdi				HWND ?
+	hEdt				HWND ?
+	hMenu				HMENU ?
+	hContextMenu		HMENU ?
+	hAccel				HACCEL ?
+	hIcon				HICON ?
+	hCursor				HCURSOR ?
+	hSplitCurV			HCURSOR ?
+	hSplitCurH			HCURSOR ?
+	hTool				HWND ?
+	hToolProject		HWND ?
+	hTabProject			HWND ?
+	hFileBrowser		HWND ?
+	hProjectBrowser		HWND ?
+	hToolProperties		HWND ?
+	hProperty			HWND ?
+	hToolOutput			HWND ?
+	hTabOutput			HWND ?
+	hOutput				HWND ?
+	hImmediate			HWND ?
+	hToolTab			HWND ?
+	hTab				HWND ?
+	hStatus				HWND ?
+	hReBar				HWND ?
+	hStcBuild			HWND ?
+	hCboBuild			HWND ?
+	hToolFont			HFONT ?
+	racf				RAFONT <>
+	ratf				RAFONT <>
+	rahf				HEFONT <>
+	hImlTbr				HIMAGELIST ?
+	hImlTbrGray			HIMAGELIST ?
+	hTbrFile			HWND ?
+	hTbrEdit1			HWND ?
+	hTbrEdit2			HWND ?
+	hTbrView			HWND ?
+	hTbrMake			HWND ?
+	hDiv1				HWND ?
+	hDiv2				HWND ?
+	hCC					HWND ?
+	hTT					HWND ?
+	hModeless			HWND ?
 ADDINHANDLES ends
 
 VIEW_STATUSBAR					equ 1
 
 WIN struct
-	x				DWORD ?
-	y				DWORD ?
-	wt				DWORD ?
-	ht				DWORD ?
-	fmax			DWORD ?
-	ftopmost		DWORD ?
-	fcldmax			DWORD ?
-	fView			DWORD ?
-	ccwt			DWORD ?
-	ccht			DWORD ?
+	x					DWORD ?
+	y					DWORD ?
+	wt					DWORD ?
+	ht					DWORD ?
+	fmax				DWORD ?
+	ftopmost			DWORD ?
+	fcldmax				DWORD ?
+	fView				DWORD ?
+	ccwt				DWORD ?
+	ccht				DWORD ?
 WIN ends
 
 ;16+20+12=48
 RADCOLOR struct
-	kwcol			DWORD 16 dup(?)		;Keywords
-	racol			RACOLOR <?>			;RAEdit
-	toolback		DWORD ?
-	tooltext		DWORD ?
-	dialogback		DWORD ?
-	dialogtext		DWORD ?
-	styles			DWORD ?
-	words			DWORD ?
-	ccback			DWORD ?
-	cctext			DWORD ?
-	ttback			DWORD ?
-	tttext			DWORD ?
-	ttapi			DWORD ?
-	ttsel			DWORD ?
+	kwcol				DWORD 16 dup(?)		;Keywords
+	racol				RACOLOR <?>			;RAEdit
+	toolback			DWORD ?
+	tooltext			DWORD ?
+	dialogback			DWORD ?
+	dialogtext			DWORD ?
+	styles				DWORD ?
+	words				DWORD ?
+	ccback				DWORD ?
+	cctext				DWORD ?
+	ttback				DWORD ?
+	tttext				DWORD ?
+	ttapi				DWORD ?
+	ttsel				DWORD ?
 RADCOLOR ends
 
 THEME struct
@@ -271,142 +271,146 @@ THEME struct
 	radcol				RADCOLOR <>
 THEME ends
 
-EDTOPT_EXPTAB			equ 1
-EDTOPT_INDENT			equ 2
-EDTOPT_LINEHI			equ 4
-EDTOPT_CMNTHI			equ 8
-EDTOPT_LINENR			equ 16
-EDTOPT_SESSION			equ 32
+EDTOPT_EXPTAB					equ 1
+EDTOPT_INDENT					equ 2
+EDTOPT_LINEHI					equ 4
+EDTOPT_CMNTHI					equ 8
+EDTOPT_LINENR					equ 16
+EDTOPT_SESSION					equ 32
 
 EDTOPT struct
-	tabsize			DWORD ?
-	fopt			DWORD ?
+	tabsize				DWORD ?
+	fopt				DWORD ?
 EDTOPT ends
 
-RESOPT_LOCK				equ 1
-RESOPT_GRID				equ 2
-RESOPT_SNAP				equ 4
-RESOPT_LINE				equ 8
-RESOPT_HEX				equ 16
-RESOPT_AUTO				equ 32
-RESOPT_TIP				equ 64
+RESOPT_LOCK						equ 1
+RESOPT_GRID						equ 2
+RESOPT_SNAP						equ 4
+RESOPT_LINE						equ 8
+RESOPT_HEX						equ 16
+RESOPT_AUTO						equ 32
+RESOPT_TIP						equ 64
 
 CUSTCTRL struct
-	hDll			HMODULE ?
-	szFileName		BYTE 128 dup(?)
-	szStyleMask		BYTE 16 dup(?)
+	hDll				HMODULE ?
+	szFileName			BYTE 128 dup(?)
+	szStyleMask			BYTE 16 dup(?)
 CUSTCTRL ends
 
 RESOPT struct
-	gridx			DWORD ?						;Assembler.ini
-	gridy			DWORD ?						;Assembler.ini
-	color			DWORD ?						;Assembler.ini
-	fopt			DWORD ?						;Assembler.ini
-	nExport			DWORD ?						;Assembler.ini
-	szExport		BYTE 64 dup(?)				;Assembler.ini
-	nOutput			DWORD ?						;Assembler.ini
-	custctrl		CUSTCTRL 32 dup(<>)
-	custstyle		CUSTSTYLE 64 dup(<>)
-	custtype		RARSTYPE 32 dup(<>)
+	gridx				DWORD ?						;Assembler.ini
+	gridy				DWORD ?						;Assembler.ini
+	color				DWORD ?						;Assembler.ini
+	fopt				DWORD ?						;Assembler.ini
+	nExport				DWORD ?						;Assembler.ini
+	szExport			BYTE 64 dup(?)				;Assembler.ini
+	nOutput				DWORD ?						;Assembler.ini
+	custctrl			CUSTCTRL 32 dup(<>)
+	custstyle			CUSTSTYLE 64 dup(<>)
+	custtype			RARSTYPE 32 dup(<>)
 RESOPT ends
 
 EXTERNAL struct
-	szprog			BYTE MAX_PATH dup(?)
-	szfiles			BYTE 32 dup(?)
+	szprog				BYTE MAX_PATH dup(?)
+	szfiles				BYTE 32 dup(?)
 EXTERNAL ends
 
 MAKE struct
-	szType			BYTE 128 dup(?)
-	szCompileRC		BYTE 128 dup(?)
-	szOutCompileRC	BYTE 32 dup(?)
-	szAssemble		BYTE 128 dup(?)
-	szOutAssemble	BYTE 32 dup(?)
-	szLink			BYTE 128 dup(?)
-	szOutLink		BYTE 32 dup(?)
-	szLib			BYTE 128 dup(?)
-	szOutLib		BYTE 32 dup(?)
+	szType				BYTE 128 dup(?)
+	szCompileRC			BYTE 128 dup(?)
+	szOutCompileRC		BYTE 32 dup(?)
+	szAssemble			BYTE 128 dup(?)
+	szOutAssemble		BYTE 32 dup(?)
+	szLink				BYTE 128 dup(?)
+	szOutLink			BYTE 32 dup(?)
+	szLib				BYTE 128 dup(?)
+	szOutLib			BYTE 32 dup(?)
 MAKE ends
 
 ADDINDATA struct
-	win				WIN <>
-	winres			WINSIZE <>
-	radcolor		RADCOLOR <>
-	szAppPath		BYTE MAX_PATH dup(?)
-	szRadASMIni		BYTE MAX_PATH dup(?)
-	szAssemblerIni	BYTE MAX_PATH dup(?)
-	szProject		BYTE MAX_PATH dup(?)
-	szProjectPath	BYTE MAX_PATH dup(?)
-	szAssemblers	BYTE 256 dup(?)
-	szAssembler		BYTE 32 dup(?)
-	nAsm			DWORD ?
-	szFileName		BYTE MAX_PATH dup(?)
-	szFBPath		BYTE MAX_PATH dup(?)
-	fProject		DWORD ?
-	tabinx			DWORD ?
-	fTimer			DWORD ?
-	nLastLine		DWORD ?
-	nLastPropLine	DWORD ?
-	nLastSize		DWORD ?
-	rabdstr			BYTE 2048 dup(?)
-	rabd			RABLOCKDEF 32 dup(<>)
-	szCmntStart		BYTE 64 dup(?)
-	szCmntEnd		BYTE 64 dup(?)
-	szBraceMatch	BYTE 64 dup(?)
-	cctype			DWORD ?
-	inprogress		DWORD ?
-	lpCharTab		DWORD ?
-	edtopt			EDTOPT <>
-	resopt			RESOPT <>
-	fLockToolbar	DWORD ?
-	szFilter		BYTE 64 dup(?)
-	szCodeFiles		BYTE 32 dup(?)
-	szTextFiles		BYTE 32 dup(?)
-	szHexFiles		BYTE 32 dup(?)
-	szResourceFiles	BYTE 32 dup(?)
-	szProjectFiles	BYTE 32 dup(?)
-	szCCTrig		BYTE 128 dup(?)
-	szCCInc			BYTE 32 dup(?)
-	szCCLib			BYTE 32 dup(?)
-	external		EXTERNAL 16 dup(<>)
-	szCODEString	BYTE 64 dup(?)
-	szRESString		BYTE 64 dup(?)
-	szTXTString		BYTE 64 dup(?)
-	szANYString		BYTE 64 dup(?)
-	szALLString		BYTE 64*4 dup(?)
-	szTypes			BYTE 256 dup(?)
-	szCompileRC		BYTE 128 dup(?)
-	szCompileRCHelp	BYTE 128 dup(?)
-	szAssemble		BYTE 128 dup(?)
-	szAssembleHelp	BYTE 128 dup(?)
-	szLink			BYTE 128 dup(?)
-	szLinkHelp		BYTE 128 dup(?)
-	szLib			BYTE 128 dup(?)
-	szLibHelp		BYTE 128 dup(?)
-	make			MAKE 32 dup(<>)
-	szMainRC		BYTE 128 dup(?)
-	szMainAsm		BYTE 128 dup(?)
+	Version				DWORD ?
+	win					WIN <>
+	winres				WINSIZE <>
+	radcolor			RADCOLOR <>
+	szAppPath			BYTE MAX_PATH dup(?)
+	szRadASMIni			BYTE MAX_PATH dup(?)
+	szAssemblerIni		BYTE MAX_PATH dup(?)
+	szAssemblerPath		BYTE MAX_PATH dup(?)
+	szProjectFile		BYTE MAX_PATH dup(?)
+	szProjectPath		BYTE MAX_PATH dup(?)
+	szDefProjectPath	BYTE MAX_PATH dup(?)
+	szAssemblers		BYTE 256 dup(?)
+	szAssembler			BYTE 32 dup(?)
+	nAsm				DWORD ?
+	szFileName			BYTE MAX_PATH dup(?)
+	szFBPath			BYTE MAX_PATH dup(?)
+	fProject			DWORD ?
+	tabinx				DWORD ?
+	fTimer				DWORD ?
+	nLastLine			DWORD ?
+	nLastPropLine		DWORD ?
+	nLastSize			DWORD ?
+	rabdstr				BYTE 2048 dup(?)
+	rabd				RABLOCKDEF 32 dup(<>)
+	szCmntStart			BYTE 64 dup(?)
+	szCmntEnd			BYTE 64 dup(?)
+	szBraceMatch		BYTE 64 dup(?)
+	cctype				DWORD ?
+	inprogress			DWORD ?
+	lpCharTab			DWORD ?
+	edtopt				EDTOPT <>
+	resopt				RESOPT <>
+	fLockToolbar		DWORD ?
+	szFilter			BYTE 64 dup(?)
+	szCodeFiles			BYTE 32 dup(?)
+	szTextFiles			BYTE 32 dup(?)
+	szHexFiles			BYTE 32 dup(?)
+	szResourceFiles		BYTE 32 dup(?)
+	szProjectFiles		BYTE 32 dup(?)
+	szCCTrig			BYTE 128 dup(?)
+	szCCInc				BYTE 32 dup(?)
+	szCCLib				BYTE 32 dup(?)
+	external			EXTERNAL 16 dup(<>)
+	szCODEString		BYTE 64 dup(?)
+	szRESString			BYTE 64 dup(?)
+	szTXTString			BYTE 64 dup(?)
+	szANYString			BYTE 64 dup(?)
+	szPROString			BYTE 64 dup(?)
+	szALLString			BYTE 64*4 dup(?)
+	szTypes				BYTE 256 dup(?)
+	szCompileRC			BYTE 128 dup(?)
+	szCompileRCHelp		BYTE 128 dup(?)
+	szAssemble			BYTE 128 dup(?)
+	szAssembleHelp		BYTE 128 dup(?)
+	szLink				BYTE 128 dup(?)
+	szLinkHelp			BYTE 128 dup(?)
+	szLib				BYTE 128 dup(?)
+	szLibHelp			BYTE 128 dup(?)
+	make				MAKE 32 dup(<>)
+	szMainRC			BYTE 128 dup(?)
+	szMainAsm			BYTE 128 dup(?)
 ADDINDATA ends
 
 FILEINFO struct
-	pid				DWORD ?
-	idparent		DWORD ?
-	flag			DWORD ?
-	ID				DWORD ?
-	rect			RECT <>
-	nline			DWORD ?
-	filename		BYTE MAX_PATH dup(?)
+	pid					DWORD ?
+	idparent			DWORD ?
+	flag				DWORD ?
+	ID					DWORD ?
+	rect				RECT <>
+	nline				DWORD ?
+	filename			BYTE MAX_PATH dup(?)
 FILEINFO ends
 
 TABMEM struct
-	hwnd			HWND ?					;Handle of the mdi child window.
-	hedt			HWND ?					;Handle of the edit window
-	pid				DWORD ?					;Project id
-	filename		BYTE MAX_PATH dup (?)	;Filename including full path.
-	ft				FILETIME <?>			;Filetime for last write.
-	nchange			DWORD ?
-	fchanged		DWORD ?
-	fupdate			DWORD ?
-	fnonotify		DWORD ?
+	hwnd				HWND ?					;Handle of the mdi child window.
+	hedt				HWND ?					;Handle of the edit window
+	pid					DWORD ?					;Project id
+	filename			BYTE MAX_PATH dup (?)	;Filename including full path.
+	ft					FILETIME <?>			;Filetime for last write.
+	nchange				DWORD ?
+	fchanged			DWORD ?
+	fupdate				DWORD ?
+	fnonotify			DWORD ?
 TABMEM ends
 
 UAM_ISOPEN						equ 1

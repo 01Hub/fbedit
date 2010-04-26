@@ -128,7 +128,7 @@ GetThemes proc uses ebx esi edi
 		invoke BinToDec,nInx,addr buffer
 		invoke GetPrivateProfileString,addr szIniTheme,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].THEME.szname
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].THEME.szname,sizeof THEME.szname
 			xor		ebx,ebx
 			.while ebx<sizeof RADCOLOR/4
 				invoke GetItemInt,addr tmpbuff,0

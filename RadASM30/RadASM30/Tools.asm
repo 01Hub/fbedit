@@ -619,7 +619,7 @@ DoFonts proc
 	;Tools font
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniTool,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szTahoma,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szTahoma,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-11
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
@@ -629,7 +629,7 @@ DoFonts proc
 	;Code edit fonts
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniCode,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-12
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
@@ -641,7 +641,7 @@ DoFonts proc
 	mov		ha.racf.hIFont,eax
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-9
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
@@ -651,7 +651,7 @@ DoFonts proc
 	;Text edit fonts
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniText,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-12
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
@@ -663,7 +663,7 @@ DoFonts proc
 	mov		ha.ratf.hIFont,eax
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniLine,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szTerminal,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-9
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
@@ -673,7 +673,7 @@ DoFonts proc
 	;Hex edit fonts
 	invoke RtlZeroMemory,addr lfnt,sizeof LOGFONT
 	invoke GetPrivateProfileString,addr szIniFont,addr szIniHex,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName
+	invoke GetItemStr,addr buffer,addr szCourierNew,addr lfnt.lfFaceName,sizeof lfnt.lfFaceName
 	invoke GetItemInt,addr buffer,-12
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0

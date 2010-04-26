@@ -113,8 +113,8 @@ GetResource proc uses ebx esi edi
 		invoke BinToDec,ebx,addr buffer
 		invoke GetPrivateProfileString,addr szIniCustCtrl,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szFileName
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szStyleMask
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szFileName,sizeof CUSTCTRL.szFileName
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szStyleMask,sizeof CUSTCTRL.szStyleMask
 			lea		edi,[edi+sizeof CUSTCTRL]
 		.endif
 		inc		ebx
@@ -126,11 +126,11 @@ GetResource proc uses ebx esi edi
 		invoke BinToDec,ebx,addr buffer
 		invoke GetPrivateProfileString,addr szIniCustType,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.sztype
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.sztype,sizeof RARSTYPE.sztype
 			invoke GetItemInt,addr tmpbuff,0
 			mov		[edi].RARSTYPE.nid,eax
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szext
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szedit
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szext,sizeof RARSTYPE.szext
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].RARSTYPE.szedit,sizeof RARSTYPE.szedit
 			lea		edi,[edi+sizeof RARSTYPE]
 		.endif
 		inc		ebx
@@ -142,7 +142,7 @@ GetResource proc uses ebx esi edi
 		invoke BinToDec,ebx,addr buffer
 		invoke GetPrivateProfileString,addr szIniCustStyle,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTSTYLE.szStyle
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTSTYLE.szStyle,sizeof CUSTSTYLE.szStyle
 			invoke GetItemInt,addr tmpbuff,0
 			mov		[edi].CUSTSTYLE.nValue,eax
 			invoke GetItemInt,addr tmpbuff,0

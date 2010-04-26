@@ -389,7 +389,7 @@ TabToolAdd proc uses ebx esi,hWin:HWND,lpFileName:DWORD
 		invoke strcpy,addr buffer,addr da.szTypes
 		xor		esi,esi
 		.while buffer
-			invoke GetItemStr,addr buffer,addr szNULL,addr types
+			invoke GetItemStr,addr buffer,addr szNULL,addr types,sizeof types
 			invoke IsFileType,addr tpe,addr types
 			.break .if eax
 			inc		esi

@@ -228,8 +228,8 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			.else
 				invoke CloseProject
 				.if eax
-					invoke strcpy,addr da.szProject,lpFileName
-					invoke strcpy,addr da.szProjectPath,addr da.szProject
+					invoke strcpy,addr da.szProjectFile,lpFileName
+					invoke strcpy,addr da.szProjectPath,addr da.szProjectFile
 					invoke strlen,addr da.szProjectPath
 					.while da.szProjectPath[eax]!='\' && eax
 						dec		eax
@@ -237,7 +237,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					mov		da.szProjectPath[eax],0
 					mov		da.fProject,TRUE
 					;Assembler
-					invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProject
+					invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProjectFile
 					.if !eax
 						mov		dword ptr da.szAssembler,'msam'
 						mov		dword ptr da.szAssembler[4],0
@@ -254,7 +254,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,lpFileName
 				.if eax
 					mov		esi,eax
-					invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProject,addr fi
+					invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProjectFile,addr fi
 					.if eax
 						invoke GetWindowLong,hEdt,GWL_USERDATA
 						mov		ebx,eax
@@ -296,7 +296,7 @@ OpenEditFile proc ID:DWORD
 	.if ID==ID_EDITHEX
 		mov		ofn.lpstrFilter,offset da.szANYString
 	.elseif ID==ID_PROJECT
-		mov		ofn.lpstrFilter,offset szDefPROString
+		mov		ofn.lpstrFilter,offset da.szPROString
 	.else
 		mov		ofn.lpstrFilter,offset da.szALLString
 	.endif

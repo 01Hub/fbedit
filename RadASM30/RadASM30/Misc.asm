@@ -367,7 +367,7 @@ PutItemInt proc uses esi edi,lpBuff:DWORD,nVal:DWORD
 
 PutItemInt endp
 
-GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
+GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
 
 	mov		esi,lpBuff
 	.if byte ptr [esi]
@@ -377,13 +377,16 @@ GetItemStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
 		.endw
 		lea		eax,[esi+1]
 		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+		.endif
 		invoke strcpyn,lpResult,edi,eax
 		.if byte ptr [esi]
 			inc		esi
 		.endif
 		invoke strcpy,edi,esi
 	.else
-		invoke strcpy,lpResult,lpDefVal
+		invoke strcpyn,lpResult,lpDefVal,ccMax
 	.endif
 	ret
 
@@ -400,7 +403,7 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 PutItemStr endp
 
 ;'"Str,Str","Str",1,2','Str',1
-GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
+GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,ccMax:DWORD
 
 	mov		esi,lpBuff
 	.if byte ptr [esi]=="'"
@@ -414,15 +417,19 @@ GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult
 		.endif
 		lea		eax,[esi+1]
 		sub		eax,edi
+		.if eax>ccMax
+			mov		eax,ccMax
+			lea		eax,[eax+2]
+		.endif
 		invoke strcpyn,lpResult,addr [edi+1],addr [eax-2]
 		.if byte ptr [esi]
 			inc		esi
 		.endif
 		invoke strcpy,edi,esi
 	.elseif byte ptr [esi]
-		invoke GetItemStr,lpBuff,lpDefVal,lpResult
+		invoke GetItemStr,lpBuff,lpDefVal,lpResult,ccMax
 	.else
-		invoke strcpy,lpResult,lpDefVal
+		invoke strcpyn,lpResult,lpDefVal,ccMax
 	.endif
 	ret
 
@@ -1651,7 +1658,7 @@ GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO
 		mov		[edi].FILEINFO.rect.bottom,eax
 		invoke GetItemInt,addr tmpbuff,0
 		mov		[edi].FILEINFO.nline,eax
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].FILEINFO.filename
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].FILEINFO.filename,sizeof FILEINFO.filename
 		.if da.fProject
 			invoke strcpy,addr tmpbuff,addr da.szProjectPath
 			invoke strcat,addr tmpbuff,addr szBS
@@ -1719,7 +1726,7 @@ SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
 				xor		eax,eax
 				jmp		Ex
 			.endif
-			invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProject,lpFILEINFO
+			invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProjectFile,lpFILEINFO
 			mov		eax,[esi].PBITEM.id
 			mov		[edi].FILEINFO.pid,eax
 			mov		eax,[esi].PBITEM.idparent
@@ -2114,3 +2121,46 @@ SetWinCaption proc hWin:HWND,lpFileName:DWORD
 	ret
 
 SetWinCaption endp
+
+BrowseFolder proc hWin:HWND,nID:DWORD,lpTitle:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	bri:BROWSEINFO
+	LOCAL	pidl:DWORD
+
+	invoke RtlZeroMemory,addr bri,sizeof BROWSEINFO
+	mov		eax,lpTitle
+	mov		bri.lpszTitle,eax
+	mov		bri.ulFlags,BIF_RETURNONLYFSDIRS; or BIF_STATUSTEXT 
+	mov		bri.lpfn,BrowseCallbackProc
+	; get path   
+	invoke SendDlgItemMessage,hWin,nID,WM_GETTEXT,sizeof buffer,addr buffer
+	lea		eax,buffer
+	mov		bri.lParam,eax 
+	mov		bri.iImage,0
+	invoke SHBrowseForFolder,addr bri
+	.if !eax
+		jmp		GetOut
+	.endif      
+	mov		pidl,eax
+	invoke SHGetPathFromIDList,pidl,addr buffer
+	; set new path back to edit
+	invoke SendDlgItemMessage,hWin,nID,WM_SETTEXT,0,addr buffer
+  GetOut:
+	ret
+
+BrowseFolder endp
+
+;--------------------------------------------------------------------------------
+; set initial folder in browser
+BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpBCData:DWORD
+
+	mov eax,uMsg
+	.if eax==BFFM_INITIALIZED
+		invoke PostMessage,hwnd,BFFM_SETSELECTION,TRUE,lpBCData
+;		invoke PostMessage,hwnd,BFFM_SETSTATUSTEXT,0,addr szBrowse
+	.endif
+	xor eax, eax
+	ret
+
+BrowseCallbackProc endp
+

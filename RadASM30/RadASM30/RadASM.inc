@@ -63,6 +63,8 @@ OpenProject						PROTO
 CloseProject					PROTO
 GetTheFileType					PROTO	:DWORD
 
+RadASMVersion					equ 3000
+
 CCTYPE_NONE						equ 0
 CCTYPE_PROC						equ 1
 CCTYPE_TOOLTIP					equ 2
@@ -117,6 +119,7 @@ szComma							db ',',0
 szQuote							db '"',0
 szSemi							db ';',0
 szDotIni						db '.ini',0
+szDotRapr						db '.rapr',0
 szDotRaprDot					db '.rapr.',0
 szBSApiBS						db '\Api\',0
 szSpc							db ' ',0
@@ -191,6 +194,7 @@ szIniCustType					db 'CustType',0
 szIniMake						db 'Make',0
 szIniHelp						db 'Help',0
 szIniEnvironment				db 'Environment',0
+szIniHeader						db 'Header',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -202,6 +206,10 @@ szRadASMVersion					db 'The RadASM.ini file is an older version or is missing.',
 szProjectVersion				db 'The project file is an older version.',0
 szAssemblerVersion				db 'The Assembler.ini file is an older version or is missing.',0Dh,0
 szNoMain						db 'No main file selected.',0Dh,0
+szErrDir						db 'Could not create directory!',0Dh,0
+szErrOpenDir					db 'Could not open directory!',0Dh,0
+szErrOverwrite					db 'Overwrite existing file?',0Dh,0
+szErrCreate						db 'Could not create the file!',0Dh,0
 
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
@@ -210,11 +218,11 @@ defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,0080
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h
 								dd 00FFFFFFh,00000000h,00FFFFFFh,00000000h,00804000h,00C00000h,00FFFFFFh,00000000h,00C0F0F0h,00000000h,00404080h,00FF0000h
 
-szDefCODEString					db 'Assembly Files (*.asm; *.inc),*.asm;*.inc',0
-szDefRESString					db 'Resource Files (*.rc),*.rc',0
-szDefTXTString					db 'Text Files (*.txt),*.txt',0
-szDefANYString					db 'All Files (*.*),*.*',0
-szDefPROString					db 'Project Files (*.rapr),*.rapr',0
+szDefCODEString					db 'Assembly Files (*.asm; *.inc)|*.asm;*.inc',0
+szDefRESString					db 'Resource Files (*.rc)|*.rc',0
+szDefTXTString					db 'Text Files (*.txt)|*.txt',0
+szDefANYString					db 'All Files (*.*)|*.*',0
+szDefPROString					db 'Project Files (*.rapr)|*.rapr',0
 
 .data
 
