@@ -564,10 +564,9 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke SendDlgItemMessage,hWin,IDC_STCCODEFONT,WM_SETFONT,ha.racf.hFont,FALSE
 		invoke SendDlgItemMessage,hWin,IDC_STCLNRFONT,WM_SETFONT,ha.racf.hLnrFont,FALSE
 	.elseif eax==WM_COMMAND
-		mov		eax,wParam
-		mov		edx,eax
+		mov		edx,wParam
+		movzx	eax,dx
 		shr		edx,16
-		and		eax,0FFFFh
 		.if edx==BN_CLICKED
 			.if eax==IDOK
 				call	Update
@@ -1077,6 +1076,7 @@ Update:
 		;Save themes
 		invoke SaveThemes
 		;Save keywords
+		invoke GetKeyWordList,hWin,IDC_LSTKWACTIVE,nKWInx
 		mov		esi,hMemKW
 		xor		ebx,ebx
 		.while ebx<17

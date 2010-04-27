@@ -16,7 +16,7 @@ StreamOutProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesWritten:DWORD
 
 StreamOutProc endp
 
-GetTheFileType proc uses esi,lpFileName:DWORD
+GetTheFileType proc uses ebx esi edi,lpFileName:DWORD
 	LOCAL	ftpe[256]:BYTE
 
 	mov		esi,lpFileName
@@ -27,6 +27,18 @@ GetTheFileType proc uses esi,lpFileName:DWORD
 	.if byte ptr [esi+eax]=='.'
 		invoke strcpy,addr ftpe,addr [esi+eax]
 		invoke strcat,addr ftpe,addr szDot
+		mov		edi,offset da.external
+		xor		ebx,ebx
+		.while ebx<20
+			.break .if ![edi].EXTERNAL.szfiles
+			invoke IsFileType,addr ftpe,addr [edi].EXTERNAL.szfiles
+			.if eax
+				mov		eax,edi
+				jmp		Ex
+			.endif
+			lea		edi,[edi+sizeof EXTERNAL]
+			inc		ebx
+		.endw
 		invoke IsFileType,addr ftpe,addr da.szCodeFiles
 		.if eax
 			mov		eax,ID_EDITCODE
@@ -244,9 +256,18 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					.endif
 					invoke OpenAssembler
 					invoke GetProjectFiles
+					invoke AddMRU,addr da.mruprojects,addr da.szProjectFile
+					invoke UpdateMRUMenu,addr da.mruprojects
+					invoke SetMainWinCaption
 				.endif
 			.endif
 		.elseif eax==ID_EXTERNAL
+		.else
+			;External
+			mov		esi,eax
+			invoke ShellExecute,ha.hWnd,NULL,addr [esi].EXTERNAL.szprog,lpFileName,NULL,SW_SHOWNORMAL
+			xor		eax,eax
+			jmp		Ex
 		.endif
 		.if edi
 			invoke TabToolSetChanged,edi,FALSE
@@ -276,6 +297,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 		.endif
 	.endif
 	mov		eax,edi
+  Ex:
 	ret
 
 OpenTheFile endp

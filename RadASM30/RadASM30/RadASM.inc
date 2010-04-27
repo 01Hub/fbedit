@@ -99,6 +99,21 @@ DECLARE struct
 	cp					DWORD ?
 DECLARE ends
 
+;Help
+HH_AKLINK struct
+	cbStruct		dd ?	;As Integer
+	fReserved		dd ?	;As Boolean
+	pszKeywords		dd ?	;As ZString Ptr
+	pszUrl			dd ?	;As ZString Ptr
+	pszMsgText		dd ?	;As ZString Ptr
+	pszMsgTitle		dd ?	;As ZString Ptr
+	pszWindow		dd ?	;As ZString Ptr
+	fIndexOnFail	dd ?	;As Boolean
+HH_AKLINK ends
+
+HH_DISPLAY_TOPIC	equ 0000h
+HH_KEYWORD_LOOKUP	equ 000Dh
+
 .const
 
 szMdiClassName					db 'RadASMClass',0
@@ -111,6 +126,9 @@ szStaticClassName				db 'Static',0
 szTabControlClassName			db 'SysTabControl32',0
 szRichEdit						db 'riched20.dll',0
 
+szhhctrl						db 'hhctrl.ocx',0
+szHtmlHelpA						db 'HtmlHelpA',0
+
 DisplayName						db 'RadASM',0
 szBS							db '\',0
 szPipe							db '|',0
@@ -118,6 +136,7 @@ szDot							db '.',0
 szComma							db ',',0
 szQuote							db '"',0
 szSemi							db ';',0
+szMinus							db '-',0
 szDotIni						db '.ini',0
 szDotRapr						db '.rapr',0
 szDotRaprDot					db '.rapr.',0
@@ -195,6 +214,8 @@ szIniMake						db 'Make',0
 szIniHelp						db 'Help',0
 szIniEnvironment				db 'Environment',0
 szIniHeader						db 'Header',0
+szIniMru						db 'Mru',0
+szIniExternal					db 'External',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

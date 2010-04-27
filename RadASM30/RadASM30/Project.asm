@@ -895,10 +895,14 @@ AddExistingProjectFiles proc
 					.if eax==-1
 						invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
 						invoke OpenTheFile,addr buffer,0
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.if eax
+							.if ha.hMdi
+								invoke GetWindowLong,ha.hEdt,GWL_ID
+								.if eax==ID_EDITCODE
+									invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+									invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+								.endif
+							.endif
 						.endif
 						inc		nOpen
 					.endif
@@ -913,10 +917,14 @@ AddExistingProjectFiles proc
 					.if eax==-1
 						invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
 						invoke OpenTheFile,esi,0
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.if eax
+							.if ha.hMdi
+								invoke GetWindowLong,ha.hEdt,GWL_ID
+								.if eax==ID_EDITCODE
+									invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+									invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+								.endif
+							.endif
 						.endif
 						mov		nOpen,1
 					.endif
@@ -1272,6 +1280,15 @@ PutProject proc uses ebx esi edi
 		pop		da.win.fcldmax
 		invoke ShowWindow,ha.hClient,SW_SHOWNA
 	.endif
+;	;Get external project files
+;	.while TRUE
+;		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+;		.break .if !eax
+;		mov		esi,eax
+;		mov		ebx,[esi].PBITEM.id
+;		.if [esi].PBITEM.lParam==ID_EXTERNAL
+;		.endif
+;	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniOpen,addr tmpbuff[1],addr da.szProjectFile
 	;Project.rapr [Make]
 	mov		word ptr buffer,0
@@ -1326,6 +1343,7 @@ CloseProject proc
 		mov		da.szProjectFile,0
 		mov		da.szProjectPath,0
 		invoke OpenAssembler
+		invoke SetMainWinCaption
 		mov		eax,TRUE
 	.else
 		xor		eax,eax

@@ -2122,6 +2122,25 @@ SetWinCaption proc hWin:HWND,lpFileName:DWORD
 
 SetWinCaption endp
 
+SetMainWinCaption proc
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke strcpy,addr buffer,addr DisplayName
+	.if da.fProject
+		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,-1,0
+		.if eax
+			mov		esi,eax
+			invoke strcat,addr buffer,addr szSpc
+			invoke strcat,addr buffer,addr szMinus
+			invoke strcat,addr buffer,addr szSpc
+			invoke strcat,addr buffer,addr [esi].PBITEM.szitem
+		.endif
+	.endif
+	invoke SetWindowText,ha.hWnd,addr buffer
+	ret
+
+SetMainWinCaption endp
+
 BrowseFolder proc hWin:HWND,nID:DWORD,lpTitle:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	bri:BROWSEINFO
@@ -2150,8 +2169,7 @@ BrowseFolder proc hWin:HWND,nID:DWORD,lpTitle:DWORD
 
 BrowseFolder endp
 
-;--------------------------------------------------------------------------------
-; set initial folder in browser
+;Set initial folder in browser
 BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpBCData:DWORD
 
 	mov eax,uMsg
@@ -2164,3 +2182,378 @@ BrowseCallbackProc proc hwnd:DWORD,uMsg:UINT,lParam:LPARAM,lpBCData:DWORD
 
 BrowseCallbackProc endp
 
+;Mru files/projects
+UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
+	LOCAL	mii:MENUITEMINFO
+
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	mov		esi,lpMRU
+	.if esi==offset da.mrufiles
+		invoke GetMenuItemInfo,ha.hMenu,IDM_FILE_RECENTFILES,FALSE,addr mii
+		mov		edi,12000
+	.else
+		invoke GetMenuItemInfo,ha.hMenu,IDM_FILE_RECENTPROJECTS,FALSE,addr mii
+		mov		edi,12100
+	.endif
+	.while TRUE
+		invoke DeleteMenu,mii.hSubMenu,0,MF_BYPOSITION
+		.break .if !eax
+	.endw
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_ID or MIIM_TYPE
+	mov		mii.fType,MFT_STRING
+	mov		ebx,10
+	.while byte ptr [esi] && ebx
+		mov		mii.wID,edi
+		mov		mii.dwTypeData,esi
+		invoke InsertMenuItem,mii.hSubMenu,edi,FALSE,addr mii
+		lea		esi,[esi+MAX_PATH]
+		inc		edi
+		dec		ebx
+	.endw
+	ret
+
+UpdateMRUMenu endp
+
+DelMRU proc uses ebx esi edi,lpMRU:DWORD,lpFileName:DWORD
+
+	mov		esi,lpMRU
+	xor		ebx,ebx
+	.while ebx<10
+		.break .if !byte ptr [esi]
+		invoke strcmpi,esi,lpFileName
+		.if !eax
+			call	DelIt
+		.else
+			lea		esi,[esi+MAX_PATH]
+			inc		ebx
+		.endif
+	.endw
+	ret
+
+DelIt:
+	push	ebx
+	push	esi
+	mov		ebx,lpMRU
+	lea		ebx,[ebx+MAX_PATH*10]
+	mov		edi,esi
+	lea		esi,[esi+MAX_PATH]
+	.while esi<ebx
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	xor		eax,eax
+	.while edi<ebx
+		mov		[edi],al
+		inc		edi
+	.endw
+	pop		esi
+	pop		ebx
+	retn
+
+DelMRU endp
+
+AddMRU proc uses ebx esi edi,lpMRU:DWORD,lpFileName:DWORD
+
+	invoke DelMRU,lpMRU,lpFileName
+	mov		ebx,lpMRU
+	lea		esi,[ebx+MAX_PATH*9-1]
+	lea		edi,[ebx+MAX_PATH*10-1]
+	.while esi>=ebx
+		mov		al,[esi]
+		mov		[edi],al
+		dec		esi
+		dec		edi
+	.endw
+	invoke strcpy,ebx,lpFileName
+	ret
+
+AddMRU endp
+
+OpenMRU proc uses ebx esi edi,nID:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		ebx,nID
+	.if ebx<12100
+		sub		ebx,12000
+		mov		esi,offset da.mrufiles
+	.else
+		sub		ebx,12100
+		mov		esi,offset da.mruprojects
+	.endif
+	mov		eax,MAX_PATH
+	mul		ebx
+	lea		esi,[esi+eax]
+	invoke strcpy,addr buffer,esi
+	invoke OpenTheFile,addr buffer,0
+	ret
+
+OpenMRU endp
+
+LoadMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
+
+	invoke GetPrivateProfileString,addr szIniMru,lpKey,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+	mov		edi,lpMRU
+	mov		esi,offset tmpbuff
+	.while byte ptr [esi]
+		push	edi
+		.while byte ptr [esi] && byte ptr [esi]!=','
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		.if byte ptr [esi]==','
+			inc		esi
+		.endif
+		pop		edi
+		invoke GetFileAttributes,edi
+		.if eax==INVALID_HANDLE_VALUE
+			mov byte ptr [edi],0
+		.else
+			lea		edi,[edi+MAX_PATH]
+		.endif
+	.endw
+	ret
+
+LoadMRU endp
+
+SaveMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
+
+	invoke RtlZeroMemory,offset tmpbuff,sizeof tmpbuff
+	mov		edi,offset tmpbuff
+	mov		esi,lpMRU
+	.while byte ptr [esi]
+		push	esi
+		.while byte ptr [esi]
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		mov		byte ptr [edi],','
+		inc		edi
+		pop		esi
+		lea		esi,[esi+MAX_PATH]
+	.endw
+	mov		byte ptr [edi-1],0
+	invoke WritePrivateProfileString,addr szIniMru,lpKey,addr tmpbuff,addr da.szRadASMIni
+	ret
+
+SaveMRU endp
+
+ParseCmnd proc uses esi edi,lpStr:DWORD,lpCmnd:DWORD,lpParam:DWORD
+
+	mov		esi,lpStr
+	call	SkipSpc
+	mov		edi,lpCmnd
+	mov		al,[esi]
+	.if al=='"'
+		inc		esi
+		call	CopyQuoted
+	.else
+		call	CopyToSpace
+	.endif
+	call	SkipSpc
+	mov		edi,lpParam
+	mov		al,[esi]
+	.if al=='"'
+		inc		esi
+		call	CopyQuoted
+	.else
+		call	CopyAll
+	.endif
+	ret
+
+SkipSpc:
+	.while byte ptr [esi]==' '
+		inc		esi
+	.endw
+	retn
+
+CopyQuoted:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		.if al!='"'
+			.if al=='$'
+				call	CopyPro
+			.else
+				mov		[edi],al
+				inc		edi
+				jmp		CopyQuoted
+			.endif
+		.endif
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+CopyToSpace:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		.if al!=' '
+			.if al=='$'
+				call	CopyPro
+			.else
+				mov		[edi],al
+				inc		edi
+				jmp		CopyToSpace
+			.endif
+		.endif
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+CopyAll:
+	mov		al,[esi]
+	.if al
+		inc		esi
+		.if al=='$'
+			call	CopyPro
+		.else
+			mov		[edi],al
+			inc		edi
+			jmp		CopyAll
+		.endif
+		xor		al,al
+	.endif
+	mov		[edi],al
+	retn
+
+CopyPro:
+	push	esi
+	mov		esi,offset da.szFileName
+	.while al!='.' && al
+		mov		al,[esi]
+		.if al!='.' && al
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endif
+	.endw
+	pop		esi
+	.while byte ptr [esi]
+		mov		al,[esi]
+		.if al!='"'
+			mov		[edi],al
+		.endif
+		inc		esi
+		inc		edi
+	.endw
+	xor		al,al
+	mov		[edi],al
+	retn
+
+ParseCmnd endp
+
+DoHelp proc lpszHelpFile:DWORD,lpszWord:DWORD
+	LOCAL	hhaklink:HH_AKLINK
+	LOCAL	hHHwin:HWND
+
+	invoke RtlZeroMemory,addr hhaklink,sizeof HH_AKLINK
+	mov		eax,lpszHelpFile
+	.if dword ptr [eax]=='ptth'
+		;URL
+		invoke ShellExecute,ha.hWnd,addr szIniOpen,lpszHelpFile,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+	.else
+		invoke strlen,lpszHelpFile
+		mov		edx,lpszHelpFile
+		mov		edx,[edx+eax-4]
+		and		edx,5F5F5FFFh
+		.if edx=='MHC.'
+			;Chm file
+			.if !ha.hHtmlOcx
+				invoke LoadLibrary,offset szhhctrl
+				mov		ha.hHtmlOcx,eax
+				invoke GetProcAddress,ha.hHtmlOcx,offset szHtmlHelpA
+				mov		da.pHtmlHelpProc,eax
+			.endif
+			.if ha.hHtmlOcx
+				mov		hhaklink.cbStruct,SizeOf HH_AKLINK
+				mov		hhaklink.fReserved,FALSE
+				mov		eax,lpszWord
+				mov		hhaklink.pszKeywords,eax
+				mov		hhaklink.pszUrl,NULL
+				mov		hhaklink.pszMsgText,NULL
+				mov		hhaklink.pszMsgTitle,NULL
+				mov		hhaklink.pszWindow,NULL
+				mov		hhaklink.fIndexOnFail,TRUE
+				push	0
+				push	HH_DISPLAY_TOPIC
+				push	lpszHelpFile
+				push	0
+				Call	[da.pHtmlHelpProc]
+				mov		hHHwin,eax
+				lea		eax,hhaklink
+				push	eax
+				push	HH_KEYWORD_LOOKUP
+				push	lpszHelpFile
+				push	0
+				Call	[da.pHtmlHelpProc]
+			.endif
+		.elseif edx=='PLH.'
+			;Hlp file
+			invoke WinHelp,ha.hWnd,lpszHelpFile,HELP_KEY,lpszWord
+		.else
+			;Other
+			invoke ShellExecute,ha.hWnd,addr szIniOpen,lpszHelpFile,NULL,NULL,SW_SHOWNORMAL
+		.endif
+	.endif
+	ret
+
+DoHelp endp
+
+IsWordKeyWord proc uses ebx,lpWord:DWORD,fDot:DWORD
+	LOCAL	buffer[32]:BYTE
+	LOCAL	buffword[MAX_PATH]:BYTE
+	LOCAL	ms:MEMSEARCH
+
+	.if fDot
+		mov		buffword,'.'
+		invoke strcpyn,addr buffword[1],lpWord,sizeof buffword-1
+		call	TestWord
+		.if !eax
+			invoke strcpyn,addr buffword,lpWord,sizeof buffword
+			call	TestWord
+		.endif
+	.else
+		invoke strcpyn,addr buffword,lpWord,sizeof buffword
+		call	TestWord
+	.endif
+	.if eax
+		invoke strcpy,lpWord,addr buffword
+	.endif
+	ret
+
+TestWord:
+	xor		ebx,ebx
+	mov		buffer,'C'
+	mov		tmpbuff,VK_SPACE
+	.while ebx<16
+		invoke BinToDec,ebx,addr buffer[1]
+		invoke GetPrivateProfileString,addr szIniKeywords,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			mov		ms.lpMem,offset tmpbuff
+			lea		eax,buffword
+			mov		ms.lpFind,eax
+			mov		eax,da.lpCharTab
+			mov		ms.lpCharTab,eax
+			mov		ms.fr,FR_DOWN or FR_WHOLEWORD
+			invoke SendMessage,ha.hProperty,PRM_MEMSEARCH,0,addr ms
+			.if eax
+				jmp		Ex
+			.endif
+		.endif
+		inc		ebx
+	.endw
+	xor		eax,eax
+  Ex:
+	retn
+
+IsWordKeyWord endp

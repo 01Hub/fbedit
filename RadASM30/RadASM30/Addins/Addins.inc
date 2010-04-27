@@ -25,6 +25,8 @@ IDM_FILE_SAVEAS					equ 10061
 IDM_FILE_SAVEALL				equ 10008
 IDM_FILE_PAGESETUP				equ 10056
 IDM_FILE_PRINT					equ 10010
+IDM_FILE_RECENTFILES			equ 10179
+IDM_FILE_RECENTPROJECTS			equ 10180
 IDM_FILE_EXIT					equ 10004
 IDM_EDIT						equ 10011
 IDM_EDIT_UNDO					equ 10019
@@ -159,13 +161,19 @@ IDM_WINDOW_MINIMIZE				equ 10149
 IDM_OPTION						equ 10044
 IDM_OPTION_CODE					equ 10154
 IDM_OPTION_RESOURCE				equ 10155
-IDM_OPTION_PATH					equ 10156
+IDM_OPTION_ENVIRONMENT			equ 10156
 IDM_OPTION_EXTERNAL				equ 10158
 IDM_OPTION_ADDIN				equ 10157
 IDM_OPTION_TOOLS				equ 10160
 IDM_OPTION_HELP					equ 10161
 IDM_HELP						equ 10045
 IDM_HELP_ABOUT					equ 10162
+
+IDM_FILE_RECENTFILESSTART		equ 12000
+IDM_FILE_RECENTPROJECTSSTART	equ 12100
+IDM_TOOLS_START					equ 12200
+IDM_HELP_START					equ 12300
+IDM_HELPF1						equ 12400
 
 ;Context.mnu
 IDR_CONTEXTMENU					equ 11000
@@ -231,6 +239,7 @@ ADDINHANDLES struct
 	hCC					HWND ?
 	hTT					HWND ?
 	hModeless			HWND ?
+	hHtmlOcx			HANDLE ?
 ADDINHANDLES ends
 
 VIEW_STATUSBAR					equ 1
@@ -312,7 +321,7 @@ RESOPT ends
 
 EXTERNAL struct
 	szprog				BYTE MAX_PATH dup(?)
-	szfiles				BYTE 32 dup(?)
+	szfiles				BYTE 64 dup(?)
 EXTERNAL ends
 
 MAKE struct
@@ -370,7 +379,7 @@ ADDINDATA struct
 	szCCTrig			BYTE 128 dup(?)
 	szCCInc				BYTE 32 dup(?)
 	szCCLib				BYTE 32 dup(?)
-	external			EXTERNAL 16 dup(<>)
+	external			EXTERNAL 20 dup(<>)
 	szCODEString		BYTE 64 dup(?)
 	szRESString			BYTE 64 dup(?)
 	szTXTString			BYTE 64 dup(?)
@@ -389,6 +398,9 @@ ADDINDATA struct
 	make				MAKE 32 dup(<>)
 	szMainRC			BYTE 128 dup(?)
 	szMainAsm			BYTE 128 dup(?)
+	mrufiles			BYTE 10*MAX_PATH dup(?)
+	mruprojects			BYTE 10*MAX_PATH dup(?)
+	pHtmlHelpProc		DWORD ?
 ADDINDATA ends
 
 FILEINFO struct

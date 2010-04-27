@@ -14,6 +14,8 @@ include CodeComplete.asm
 include KeyWords.asm
 include TabOptions.asm
 include Make.asm
+include Option.asm
+include Environment.asm
 
 .code
 
@@ -64,9 +66,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	pt:POINT
 	LOCAL	ps:PAINTSTRUCT
 	LOCAL	chrg:CHARRANGE
+	LOCAL	trng:TEXTRANGE
 	LOCAL	hebmk:HEBMK
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -173,6 +177,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,UAM_SAVEALL,FALSE
+			.elseif (eax>=IDM_FILE_RECENTFILESSTART && eax<IDM_FILE_RECENTFILESSTART+10) || (eax>=IDM_FILE_RECENTPROJECTSSTART && eax<IDM_FILE_RECENTPROJECTSSTART+10)
+				invoke OpenMRU,eax
 			.elseif eax==IDM_FILE_EXIT
 				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.elseif eax==IDM_EDIT_UNDO
@@ -570,12 +576,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_PROJECT_NEW
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGNEWPROJECT,hWin,offset NewProjectProc,0
 			.elseif eax==IDM_PROJECT_OPEN
-				.if da.fProject
-					invoke CloseProject
-					.if !eax
-						jmp		Ex
-					.endif
-				.endif
 				invoke OpenEditFile,ID_PROJECT
 			.elseif eax==IDM_PROJECT_CLOSE
 				.if da.fProject
@@ -769,6 +769,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
+;####
 			.elseif eax==IDM_DEBUG_CLEAR
 			.elseif eax==IDM_DEBUG_RUN
 			.elseif eax==IDM_DEBUG_BREAK
@@ -778,6 +779,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_CARET
 			.elseif eax==IDM_DEBUG_NODEBUG
 ;####
+			.elseif eax>=IDM_TOOLS_START && eax<IDM_TOOLS_START+20
+				;Help
+				mov		edx,eax
+				sub		edx,IDM_TOOLS_START
+				invoke BinToDec,edx,addr buffer
+				invoke GetPrivateProfileString,addr szIniTool,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+				.if eax
+					invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+					invoke ParseCmnd,addr tmpbuff,addr buffer,addr buffer1
+					invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				.endif
 			.elseif eax==IDM_WINDOW_CLOSEALL
 				.if ha.hMdi
 					invoke UpdateAll,UAM_SAVEALL,TRUE
@@ -824,11 +836,78 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_RESOURCE
 				invoke DialogBoxParam,ha.hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
-			.elseif eax==IDM_OPTION_PATH
+			.elseif eax==IDM_OPTION_ENVIRONMENT
+				invoke DialogBoxParam,ha.hInstance,IDD_ENVIRONMENTOPTION,hWin,offset EnvironmentOptionsProc,0
 			.elseif eax==IDM_OPTION_EXTERNAL
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
+				.if eax
+					invoke GetExternalFiles
+				.endif
 			.elseif eax==IDM_OPTION_ADDIN
+;####
 			.elseif eax==IDM_OPTION_TOOLS
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
+				.if eax
+					invoke SetToolMenu
+				.endif
 			.elseif eax==IDM_OPTION_HELP
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
+				.if eax
+					invoke SetHelpMenu
+				.endif
+			.elseif eax==IDM_HELP_ABOUT
+;####
+			.elseif eax>=IDM_HELP_START && eax<IDM_HELP_START+20
+				;Help
+				mov		edx,eax
+				sub		edx,IDM_HELP_START
+				invoke BinToDec,edx,addr buffer
+				invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+				.if eax
+					invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+					invoke ParseCmnd,addr tmpbuff,addr buffer,addr buffer1
+					invoke ShellExecute,hWin,addr szIniOpen,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+				.endif
+			.elseif eax==IDM_HELPF1
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						xor		ebx,ebx
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_FINDWORDBREAK,WB_MOVEWORDLEFT,chrg.cpMin
+						.if eax
+							mov		trng.chrg.cpMax,eax
+							dec		eax
+							mov		trng.chrg.cpMin,eax
+							lea		eax,buffer1
+							mov		trng.lpstrText,eax
+							invoke SendMessage,ha.hEdt,EM_GETTEXTRANGE,0,addr trng
+							.if buffer1=='.'
+								mov		ebx,TRUE
+							.endif
+						.endif
+						invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer1-1,addr buffer1
+						invoke IsWordKeyWord,addr buffer1,ebx
+						.if eax
+							;Programming language help
+							invoke BinToDec,1,addr buffer
+							invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+							.if eax
+								invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+								invoke DoHelp,addr tmpbuff,addr buffer1
+							.endif
+						.else
+							;Win32 api help
+							invoke BinToDec,0,addr buffer
+							invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+							.if eax
+								invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+								invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
+								invoke DoHelp,addr tmpbuff,addr buffer
+							.endif
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDCM_FILE_OPEN
 				invoke SendMessage,ha.hFileBrowser,FBM_GETSELECTED,0,addr buffer
 				invoke GetFileAttributes,addr buffer
@@ -2204,6 +2283,12 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
 	invoke Init
+	invoke LoadMRU,addr szIniFile,addr da.mrufiles
+	invoke UpdateMRUMenu,addr da.mrufiles
+	invoke LoadMRU,addr szIniProject,addr da.mruprojects
+	invoke UpdateMRUMenu,addr da.mruprojects
+	invoke SetHelpMenu
+	invoke SetToolMenu
 	mov		da.fTimer,1
 ;	invoke ShowSplash
 ;	;Get command line filename
@@ -2225,6 +2310,8 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 			.endif
 		.endif
 	.endw
+	invoke SaveMRU,addr szIniFile,addr da.mrufiles
+	invoke SaveMRU,addr szIniProject,addr da.mruprojects
 	mov   eax,msg.wParam
   Ex:
 	ret

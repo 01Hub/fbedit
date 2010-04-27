@@ -1,3 +1,5 @@
+#include "Res/EnvironmentDlg.rc"
+#include "Res/OptionDlg.rc"
 #include "Res/NewProjectTab2Dlg.rc"
 #include "Res/NewProjectTab3Dlg.rc"
 #include "Res/NewProjectTab1Dlg.rc"

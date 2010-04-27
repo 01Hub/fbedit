@@ -317,6 +317,26 @@ GetKeywords proc uses esi edi
 
 GetKeywords endp
 
+GetExternalFiles proc uses ebx edi
+	LOCAL	buffer[32]:BYTE
+
+	xor		ebx,ebx
+	mov		edi,offset da.external
+	invoke RtlZeroMemory,edi,sizeof da.external
+	.while ebx<20
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniExternal,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].EXTERNAL.szfiles,sizeof EXTERNAL.szfiles
+			invoke strcpyn,addr [edi].EXTERNAL.szprog,addr tmpbuff,sizeof EXTERNAL.szprog
+			lea		edi,[edi+sizeof EXTERNAL]
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+GetExternalFiles endp
+
 OpenAssembler proc uses ebx esi edi
 	LOCAL	pbfe:PBFILEEXT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -334,7 +354,7 @@ OpenAssembler proc uses ebx esi edi
 	invoke strcat,addr buffer,addr szDotIni
 	invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
 	.if eax<3000
-		invoke GetColors
+;		invoke GetColors
 		invoke strcpy,addr tmpbuff,addr szAssemblerVersion
 		invoke strcat,addr tmpbuff,addr buffer
 		invoke MessageBox,ha.hWnd,addr tmpbuff,addr DisplayName,MB_OK or MB_ICONERROR
@@ -383,8 +403,8 @@ OpenAssembler proc uses ebx esi edi
 		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szTXTString
 		invoke strcat,addr da.szALLString,addr szPipe
-		invoke strcat,addr da.szALLString,addr da.szPROString
-		invoke strcat,addr da.szALLString,addr szPipe
+;		invoke strcat,addr da.szALLString,addr da.szPROString
+;		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szANYString
 		mov		eax,offset da.szCODEString
 		call	FixString
@@ -416,6 +436,8 @@ OpenAssembler proc uses ebx esi edi
 			invoke strcpy,addr pbfe.szfileext,addr buffer
 			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDFILEEXT,addr [ebx-1],addr pbfe
 		.endw
+		;Get external file types
+		invoke GetExternalFiles
 		;Get colors
 		invoke GetColors
 		;Get code blocks
