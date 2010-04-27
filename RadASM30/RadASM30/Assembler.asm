@@ -517,13 +517,13 @@ OpenAssembler proc uses ebx esi edi
 		mov		da.nAsm,eax
 		invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,da.nAsm,0
 		invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,da.lpCharTab
+		invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockSt,sizeof defgen.szCmntBlockSt
 		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntBlockEn,sizeof defgen.szCmntBlockEn
 		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szCmntChar,sizeof defgen.szCmntChar
 		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szString,sizeof defgen.szString
 		invoke GetItemStr,addr buffer,addr szNULL,addr defgen.szLineCont,sizeof defgen.szLineCont
 		invoke SendMessage,ha.hProperty,PRM_SETGENDEF,0,addr defgen
-		invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		invoke GetPrivateProfileString,addr szIniParse,addr szIniType,NULL,addr buffcbo,sizeof buffcbo,addr da.szAssemblerIni
 		.if eax
 			.while buffcbo

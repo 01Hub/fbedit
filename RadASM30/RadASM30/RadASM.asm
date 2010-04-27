@@ -124,6 +124,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke OpenAssembler
 		invoke strcpy,addr da.szFBPath,addr da.szAppPath
 		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
+		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,4,0
+		mov     ha.hMnuIml,eax
+		invoke LoadBitmap,ha.hInstance,IDB_MNUARROW
+		push	eax
+		invoke ImageList_AddMasked,ha.hMnuIml,eax,0C0C0C0h
+		pop		eax
+		invoke DeleteObject,eax
 		invoke SetTimer,hWin,200,200,addr TimerProc
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam

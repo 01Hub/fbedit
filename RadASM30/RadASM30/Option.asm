@@ -246,11 +246,10 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,offset szOptExternal
 		.endif
 		invoke SendMessage,hWin,WM_SETTEXT,0,eax
-;		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL
-;		invoke SendDlgItemMessage,hWin,IDC_BTNMEU,BM_SETIMAGE,IMAGE_ICON,eax
-;		invoke ImageList_GetIcon,ha.hMnuIml,3,ILD_NORMAL
-;		invoke SendDlgItemMessage,hWin,IDC_BTNMED,BM_SETIMAGE,IMAGE_ICON,eax
-
+		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL
+		invoke SendDlgItemMessage,hWin,IDC_BTNMEU,BM_SETIMAGE,IMAGE_ICON,eax
+		invoke ImageList_GetIcon,ha.hMnuIml,3,ILD_NORMAL
+		invoke SendDlgItemMessage,hWin,IDC_BTNMED,BM_SETIMAGE,IMAGE_ICON,eax
 		mov		nInx,0
 		.while nInx<20
 			invoke BinToDec,nInx,addr buffer0

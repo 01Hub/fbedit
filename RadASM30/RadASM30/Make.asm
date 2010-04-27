@@ -337,8 +337,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		.endif
 	.elseif eax==IDM_MAKE_RUN
 		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Exec
-		invoke GetCurrentDirectory,sizeof makeexe.buffer,addr makeexe.buffer
-		invoke strcat,addr makeexe.buffer,addr szBS
+		mov		makeexe.buffer,0
+		.if da.fProject
+			invoke GetCurrentDirectory,sizeof makeexe.buffer,addr makeexe.buffer
+			invoke strcat,addr makeexe.buffer,addr szBS
+		.endif
 		invoke strcat,addr makeexe.buffer,addr da.szMainAsm
 		invoke RemoveFileExt,addr makeexe.buffer
 		invoke strcat,addr makeexe.buffer,addr da.make.szOutLink[esi]
