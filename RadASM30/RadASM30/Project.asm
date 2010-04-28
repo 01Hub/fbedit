@@ -774,6 +774,7 @@ NewProjectProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke GetProjectTemplates,eax,addr templatepath
 				;Default project path
 				invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr szNULL,addr tmpbuff,MAX_PATH,addr buffer
+				invoke FixPath,addr tmpbuff,addr da.szAppPath,addr szDollarA
 				invoke SetDlgItemText,hWin,IDC_EDTPROJECTPATH,addr tmpbuff
 			.endif
 			invoke GetDlgItem,hWin,IDOK
@@ -1093,9 +1094,10 @@ GetProjectFiles proc uses ebx esi edi
 					.if pbi.flag==FLAG_MAIN
 						;Main file
 						invoke RemovePath,addr pbi.szitem,addr da.szProjectPath,addr buffer
-						.if pbi.lParam==ID_EDITCODE
+						invoke GetTheFileType,addr pbi.szitem
+						.if eax==ID_EDITCODE
 							invoke strcpy,addr da.szMainAsm,addr buffer
-						.elseif pbi.lParam==ID_EDITRES
+						.elseif eax==ID_EDITRES
 							invoke strcpy,addr da.szMainRC,addr buffer
 						.endif
 					.endif
@@ -1168,6 +1170,11 @@ GetProjectFiles proc uses ebx esi edi
 		.if eax==CB_ERR
 			invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
 		.endif
+		invoke GetPrivateProfileString,addr szIniMake,addr szIniRun,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+		invoke GetItemInt,addr tmpbuff,0
+		mov		da.fCmdExe,eax
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCmdExe,sizeof da.szCmdExe
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCommandLine,sizeof da.szCommandLine
 	.endif
 	ret
 
@@ -1322,6 +1329,11 @@ PutProject proc uses ebx esi edi
 		lea		esi,[esi+sizeof MAKE]
 		inc		ebx
 	.endw
+	mov		tmpbuff,0
+	invoke PutItemInt,addr tmpbuff,da.fCmdExe
+	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCmdExe
+	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCommandLine
+	invoke WritePrivateProfileString,addr szIniMake,addr szIniRun,addr tmpbuff[1],addr da.szProjectFile
 	ret
 
 PutProject endp

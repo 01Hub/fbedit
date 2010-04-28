@@ -462,6 +462,51 @@ RemoveFileExt proc uses esi,lpFileName:DWORD
 
 RemoveFileExt endp
 
+FixPath proc lpStr:DWORD,lpPth:DWORD,lpSrc:DWORD
+	LOCAL	buffer[256]:BYTE
+
+	pushad
+  FixPath1:
+	invoke iniInStr,lpStr,lpSrc
+	.if eax!=-1
+		push	eax
+		invoke strcpy,addr buffer,lpStr
+		lea		esi,buffer
+		mov		edi,lpStr
+		pop		eax
+		.if eax!=0
+		  @@:
+			movsb
+			dec		eax
+			jne		@b
+		.endif
+		invoke strlen,lpSrc
+		add		esi,eax
+		push	esi
+		mov		esi,lpPth
+	  @@:
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+		or		al,al
+		jne		@b
+		dec		edi
+		pop		esi
+	  @@:
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+		or		al,al
+		jne		@b
+		jmp		FixPath1
+	.endif
+	popad
+	ret
+
+FixPath endp
+
 RemoveFileName proc uses esi,lpFileName:DWORD
 
 	mov		esi,lpFileName
@@ -1230,10 +1275,15 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	.elseif eax==6
 		;Make
 		.if esi==ID_EDITCODE
-			mov		eax,TRUE
-			push	eax
+			push	TRUE
 			push	IDM_MAKE_SETMAIN
-			push	da.fProject
+			invoke GetTheFileType,addr da.szFileName
+			.if eax==ID_EDITRES
+				xor		eax,eax
+			.else
+				mov		eax,da.fProject
+			.endif
+			push	eax
 			push	IDM_MAKE_TOGGLEMODULE
 		.elseif esi==ID_EDITRES
 			push	TRUE
@@ -2189,7 +2239,7 @@ UpdateMRUMenu proc uses ebx esi edi,lpMRU:DWORD
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		esi,lpMRU
-	.if esi==offset da.mrufiles
+	.if esi==offset da.szMruFiles
 		invoke GetMenuItemInfo,ha.hMenu,IDM_FILE_RECENTFILES,FALSE,addr mii
 		mov		edi,12000
 	.else
@@ -2279,10 +2329,10 @@ OpenMRU proc uses ebx esi edi,nID:DWORD
 	mov		ebx,nID
 	.if ebx<12100
 		sub		ebx,12000
-		mov		esi,offset da.mrufiles
+		mov		esi,offset da.szMruFiles
 	.else
 		sub		ebx,12100
-		mov		esi,offset da.mruprojects
+		mov		esi,offset da.szMruProjects
 	.endif
 	mov		eax,MAX_PATH
 	mul		ebx
@@ -2455,54 +2505,61 @@ ParseCmnd endp
 DoHelp proc lpszHelpFile:DWORD,lpszWord:DWORD
 	LOCAL	hhaklink:HH_AKLINK
 	LOCAL	hHHwin:HWND
+	LOCAL	buffer[MAX_PATH]:BYTE
 
-	invoke RtlZeroMemory,addr hhaklink,sizeof HH_AKLINK
 	mov		eax,lpszHelpFile
-	.if dword ptr [eax]=='ptth'
-		;URL
-		invoke ShellExecute,ha.hWnd,addr szIniOpen,lpszHelpFile,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
-	.else
-		invoke strlen,lpszHelpFile
-		mov		edx,lpszHelpFile
-		mov		edx,[edx+eax-4]
-		and		edx,5F5F5FFFh
-		.if edx=='MHC.'
-			;Chm file
-			.if !ha.hHtmlOcx
-				invoke LoadLibrary,offset szhhctrl
-				mov		ha.hHtmlOcx,eax
-				invoke GetProcAddress,ha.hHtmlOcx,offset szHtmlHelpA
-				mov		da.pHtmlHelpProc,eax
-			.endif
-			.if ha.hHtmlOcx
-				mov		hhaklink.cbStruct,SizeOf HH_AKLINK
-				mov		hhaklink.fReserved,FALSE
-				mov		eax,lpszWord
-				mov		hhaklink.pszKeywords,eax
-				mov		hhaklink.pszUrl,NULL
-				mov		hhaklink.pszMsgText,NULL
-				mov		hhaklink.pszMsgTitle,NULL
-				mov		hhaklink.pszWindow,NULL
-				mov		hhaklink.fIndexOnFail,TRUE
-				push	0
-				push	HH_DISPLAY_TOPIC
-				push	lpszHelpFile
-				push	0
-				Call	[da.pHtmlHelpProc]
-				mov		hHHwin,eax
-				lea		eax,hhaklink
-				push	eax
-				push	HH_KEYWORD_LOOKUP
-				push	lpszHelpFile
-				push	0
-				Call	[da.pHtmlHelpProc]
-			.endif
-		.elseif edx=='PLH.'
-			;Hlp file
-			invoke WinHelp,ha.hWnd,lpszHelpFile,HELP_KEY,lpszWord
+	.if byte ptr [eax]
+		.if dword ptr [eax]=='ptth'
+			;URL
+			invoke ShellExecute,ha.hWnd,addr szIniOpen,lpszHelpFile,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
 		.else
-			;Other
-			invoke ShellExecute,ha.hWnd,addr szIniOpen,lpszHelpFile,NULL,NULL,SW_SHOWNORMAL
+			invoke strcpy,addr buffer,lpszHelpFile
+			invoke FixPath,addr buffer,addr da.szAppPath,addr szDollarA
+			invoke strlen,addr buffer
+			lea		edx,buffer
+			mov		edx,[edx+eax-4]
+			and		edx,5F5F5FFFh
+			.if edx=='MHC.'
+				;Chm file
+				invoke RtlZeroMemory,addr hhaklink,sizeof HH_AKLINK
+				.if !ha.hHtmlOcx
+					invoke LoadLibrary,offset szhhctrl
+					mov		ha.hHtmlOcx,eax
+					invoke GetProcAddress,ha.hHtmlOcx,offset szHtmlHelpA
+					mov		da.pHtmlHelpProc,eax
+				.endif
+				.if ha.hHtmlOcx
+					mov		hhaklink.cbStruct,SizeOf HH_AKLINK
+					mov		hhaklink.fReserved,FALSE
+					mov		eax,lpszWord
+					mov		hhaklink.pszKeywords,eax
+					mov		hhaklink.pszUrl,NULL
+					mov		hhaklink.pszMsgText,NULL
+					mov		hhaklink.pszMsgTitle,NULL
+					mov		hhaklink.pszWindow,NULL
+					mov		hhaklink.fIndexOnFail,TRUE
+					push	0
+					push	HH_DISPLAY_TOPIC
+					lea		eax,buffer
+					push	eax
+					push	0
+					Call	[da.pHtmlHelpProc]
+					mov		hHHwin,eax
+					lea		eax,hhaklink
+					push	eax
+					push	HH_KEYWORD_LOOKUP
+					lea		eax,buffer
+					push	eax
+					push	0
+					Call	[da.pHtmlHelpProc]
+				.endif
+			.elseif edx=='PLH.'
+				;Hlp file
+				invoke WinHelp,ha.hWnd,addr buffer,HELP_KEY,lpszWord
+			.else
+				;Other
+				invoke ShellExecute,ha.hWnd,addr szIniOpen,addr buffer,NULL,NULL,SW_SHOWNORMAL
+			.endif
 		.endif
 	.endif
 	ret
@@ -2527,7 +2584,9 @@ IsWordKeyWord proc uses ebx,lpWord:DWORD,fDot:DWORD
 		call	TestWord
 	.endif
 	.if eax
+		push	eax
 		invoke strcpy,lpWord,addr buffword
+		pop		eax
 	.endif
 	ret
 
@@ -2547,6 +2606,13 @@ TestWord:
 			mov		ms.fr,FR_DOWN or FR_WHOLEWORD
 			invoke SendMessage,ha.hProperty,PRM_MEMSEARCH,0,addr ms
 			.if eax
+				mov		eax,da.radcolor.kwcol[ebx*4]
+				shr		eax,28
+				.if !eax
+					mov		eax,1
+				.else
+					mov		eax,2
+				.endif
 				jmp		Ex
 			.endif
 		.endif
@@ -2557,3 +2623,4 @@ TestWord:
 	retn
 
 IsWordKeyWord endp
+

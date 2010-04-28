@@ -16,6 +16,8 @@ include TabOptions.asm
 include Make.asm
 include Option.asm
 include Environment.asm
+include About.asm
+include ProjectOption.asm
 
 .code
 
@@ -634,8 +636,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke OpenProjectItemGroup
 				.endif
 			.elseif eax==IDM_PROJECT_OPTION
-;####
 				.if da.fProject
+					invoke DialogBoxParam,ha.hInstance,IDD_DLGPO,hWin,offset ProjectOptionProc,0
 				.endif
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
 				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_DIALOG,TRUE
@@ -738,7 +740,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.else
 						invoke strcpy,addr buffer,addr da.szFileName
 					.endif
-					invoke GetWindowLong,ha.hEdt,GWL_ID
+					invoke GetTheFileType,addr da.szFileName
 					.if eax==ID_EDITCODE
 						.if da.fProject
 							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
@@ -757,7 +759,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.if [eax].TABMEM.pid
 								invoke SetMain,[eax].TABMEM.pid,ID_EDITRES
 								.if eax
-									invoke strcpy,addr da.szMainAsm,addr buffer
+									invoke strcpy,addr da.szMainRC,addr buffer
 								.endif
 							.endif
 						.else
@@ -767,7 +769,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_MAKE_TOGGLEMODULE
 				.if da.fProject
-					invoke GetWindowLong,ha.hEdt,GWL_ID
+					invoke GetTheFileType,addr da.szFileName
 					.if eax==ID_EDITCODE
 						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
 						.if [eax].TABMEM.pid
@@ -794,6 +796,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetPrivateProfileString,addr szIniTool,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 				.if eax
 					invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+					invoke FixPath,addr tmpbuff,addr da.szAppPath,addr szDollarA
 					invoke ParseCmnd,addr tmpbuff,addr buffer,addr buffer1
 					invoke ShellExecute,hWin,NULL,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
 				.endif
@@ -862,8 +865,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if eax
 					invoke SetHelpMenu
 				.endif
+			.elseif eax==IDM_OPTION_F1
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
+				.if eax
+					invoke SetF1Help
+				.endif
 			.elseif eax==IDM_HELP_ABOUT
-;####
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGABOUT,hWin,offset AboutProc,0
 			.elseif eax>=IDM_HELP_START && eax<IDM_HELP_START+20
 				;Help
 				mov		edx,eax
@@ -872,8 +880,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 				.if eax
 					invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
-					invoke ParseCmnd,addr tmpbuff,addr buffer,addr buffer1
-					invoke ShellExecute,hWin,addr szIniOpen,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+					mov		eax,dword ptr tmpbuff
+					and		eax,5F5F5F5Fh
+					.if eax=='PTTH'
+						;Show internet browser
+						invoke ShellExecute,hWin,addr szIniOpen,addr tmpbuff,NULL,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+					.else
+						;Show help file
+						invoke FixPath,addr tmpbuff,addr da.szAppPath,addr szDollarA
+						invoke ParseCmnd,addr tmpbuff,addr buffer,addr buffer1
+						invoke ShellExecute,hWin,addr szIniOpen,addr buffer,addr buffer1,NULL,SW_SHOWNORMAL;SW_SHOWDEFAULT
+					.endif
 				.endif
 			.elseif eax==IDM_HELPF1
 				.if ha.hMdi
@@ -895,23 +912,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 						invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer1-1,addr buffer1
 						invoke IsWordKeyWord,addr buffer1,ebx
-						.if eax
+						.if eax==1
 							;Programming language help
-							invoke BinToDec,1,addr buffer
-							invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-							.if eax
-								invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
-								invoke DoHelp,addr tmpbuff,addr buffer1
-							.endif
-						.else
+							invoke DoHelp,addr da.szHelpF1[MAX_PATH*0],addr buffer1
+						.elseif eax==2
+							;RC help
+							invoke DoHelp,addr da.szHelpF1[MAX_PATH*1],addr buffer1
+						.elseif !eax
 							;Win32 api help
-							invoke BinToDec,0,addr buffer
-							invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-							.if eax
-								invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
-								invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
-								invoke DoHelp,addr tmpbuff,addr buffer
-							.endif
+							invoke DoHelp,addr da.szHelpF1[MAX_PATH*2],addr buffer1
 						.endif
 					.endif
 				.endif
@@ -2290,12 +2299,10 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
 	invoke Init
-	invoke LoadMRU,addr szIniFile,addr da.mrufiles
-	invoke UpdateMRUMenu,addr da.mrufiles
-	invoke LoadMRU,addr szIniProject,addr da.mruprojects
-	invoke UpdateMRUMenu,addr da.mruprojects
-	invoke SetHelpMenu
-	invoke SetToolMenu
+	invoke LoadMRU,addr szIniFile,addr da.szMruFiles
+	invoke UpdateMRUMenu,addr da.szMruFiles
+	invoke LoadMRU,addr szIniProject,addr da.szMruProjects
+	invoke UpdateMRUMenu,addr da.szMruProjects
 	mov		da.fTimer,1
 ;	invoke ShowSplash
 ;	;Get command line filename
@@ -2317,8 +2324,8 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 			.endif
 		.endif
 	.endw
-	invoke SaveMRU,addr szIniFile,addr da.mrufiles
-	invoke SaveMRU,addr szIniProject,addr da.mruprojects
+	invoke SaveMRU,addr szIniFile,addr da.szMruFiles
+	invoke SaveMRU,addr szIniProject,addr da.szMruProjects
 	mov   eax,msg.wParam
   Ex:
 	ret

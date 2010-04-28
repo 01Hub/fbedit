@@ -25,6 +25,10 @@ szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 					db 'All Files (*.*)',0,'*.*',0,0
 szOptExternal		db 'External Files',0
 szStcExternal		db 'Filetypes (note the use of dots):',0
+szOptHelpF1			db 'F1-Help',0
+szStcHelpF1			db 'Keyword: Api, RC or ',0
+szApi				db 'Api',0
+szRC				db 'RC',0
 
 .data?
 
@@ -126,6 +130,45 @@ SetHelpMenu proc
 	ret
 
 SetHelpMenu endp
+
+SetF1Help proc
+	LOCAL	buffer[256]:BYTE
+	LOCAL	nInx:DWORD
+	LOCAL	mnu:MENU
+
+	mov		nInx,0
+	invoke RtlZeroMemory,addr da.szHelpF1,sizeof da.szHelpF1
+	.while nInx<3
+		invoke BinToDec,nInx,addr buffer
+		invoke GetPrivateProfileString,addr szIniHelpF1,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr mnu.szcap,sizeof mnu.szcap
+			invoke strcpyn,addr mnu.szcmnd,addr tmpbuff,sizeof mnu.szcmnd
+			.if mnu.szcap
+				invoke strcmpi,addr mnu.szcap,addr da.szAssembler
+				.if !eax
+					;Assembler help
+					invoke strcpy,addr da.szHelpF1[MAX_PATH*0],addr mnu.szcmnd
+				.else
+					invoke strcmpi,addr mnu.szcap,addr szRC
+					.if !eax
+						;RC help
+						invoke strcpy,addr da.szHelpF1[MAX_PATH*1],addr mnu.szcmnd
+					.else
+						invoke strcmpi,addr mnu.szcap,addr szApi
+						.if !eax
+							;Api help
+							invoke strcpy,addr da.szHelpF1[MAX_PATH*2],addr mnu.szcmnd
+						.endif
+					.endif
+				.endif
+			.endif
+		.endif
+		inc		nInx
+	.endw
+	ret
+
+SetF1Help endp
 
 EditGet proc hWin:HWND
 	LOCAL	buffer[256]:BYTE
@@ -231,19 +274,27 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendDlgItemMessage,hWin,IDC_EDTMECMND,EM_LIMITTEXT,127,0
 		mov		nInx,120
 		invoke SendDlgItemMessage,hWin,IDC_LSTME,LB_SETTABSTOPS,1,addr nInx
-		.if lParam==IDM_OPTION_TOOLS
+		mov		eax,lParam
+		.if eax==IDM_OPTION_TOOLS
 			mov		lpAppName,offset szIniTool
 			mov		lpFilter,offset szFilterTools
 			mov		eax,offset szOptTool
-		.elseif lParam==IDM_OPTION_HELP
+		.elseif eax==IDM_OPTION_HELP
 			mov		lpAppName,offset szIniHelp
 			mov		lpFilter,offset szFilterHelp
 			mov		eax,offset szOptHelp
-		.elseif lParam==IDM_OPTION_EXTERNAL
+		.elseif eax==IDM_OPTION_EXTERNAL
 			mov		lpAppName,offset szIniExternal
 			mov		lpFilter,offset szFilterTools
 			invoke SetDlgItemText,hWin,IDC_STCMENU,addr szStcExternal
 			mov		eax,offset szOptExternal
+		.elseif eax==IDM_OPTION_F1
+			mov		lpAppName,offset szIniHelpF1
+			mov		lpFilter,offset szFilterHelp
+			invoke strcpy,addr buffer0,addr szStcHelpF1
+			invoke strcat,addr buffer0,addr da.szAssembler
+			invoke SetDlgItemText,hWin,IDC_STCMENU,addr buffer0
+			mov		eax,offset szOptHelpF1
 		.endif
 		invoke SendMessage,hWin,WM_SETTEXT,0,eax
 		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL

@@ -168,6 +168,7 @@ IDM_OPTION_EXTERNAL				equ 10158
 IDM_OPTION_ADDIN				equ 10157
 IDM_OPTION_TOOLS				equ 10160
 IDM_OPTION_HELP					equ 10161
+IDM_OPTION_F1					equ 10183
 IDM_HELP						equ 10045
 IDM_HELP_ABOUT					equ 10162
 
@@ -401,9 +402,13 @@ ADDINDATA struct
 	make				MAKE 32 dup(<>)
 	szMainRC			BYTE 128 dup(?)
 	szMainAsm			BYTE 128 dup(?)
-	mrufiles			BYTE 10*MAX_PATH dup(?)
-	mruprojects			BYTE 10*MAX_PATH dup(?)
+	szMruFiles			BYTE 10*MAX_PATH dup(?)
+	szMruProjects		BYTE 10*MAX_PATH dup(?)
 	pHtmlHelpProc		DWORD ?
+	szHelpF1			BYTE 3*MAX_PATH dup(?)
+	szCommandLine		BYTE 128 dup(?)
+	fCmdExe				DWORD ?
+	szCmdExe			BYTE 64 dup(?)
 ADDINDATA ends
 
 FILEINFO struct

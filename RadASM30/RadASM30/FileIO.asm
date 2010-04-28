@@ -256,8 +256,8 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					.endif
 					invoke OpenAssembler
 					invoke GetProjectFiles
-					invoke AddMRU,addr da.mruprojects,addr da.szProjectFile
-					invoke UpdateMRUMenu,addr da.mruprojects
+					invoke AddMRU,addr da.szMruProjects,addr da.szProjectFile
+					invoke UpdateMRUMenu,addr da.szMruProjects
 					invoke SetMainWinCaption
 				.endif
 			.endif

@@ -59,6 +59,7 @@ SetEnvironment proc uses ebx edi
 		invoke GetPrivateProfileString,addr szIniEnvironment,addr buffname,addr szNULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 		.if eax
 			invoke GetItemStr,addr buffer,addr szNULL,addr buffname,sizeof buffname
+			invoke FixPath,addr buffer,addr da.szAppPath,addr szDollarA
 			invoke SetVar,edi,addr buffname,addr buffer
 			mov		edi,eax
 		.endif
@@ -354,7 +355,6 @@ OpenAssembler proc uses ebx esi edi
 	invoke strcat,addr buffer,addr szDotIni
 	invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
 	.if eax<3000
-;		invoke GetColors
 		invoke strcpy,addr tmpbuff,addr szAssemblerVersion
 		invoke strcat,addr tmpbuff,addr buffer
 		invoke MessageBox,ha.hWnd,addr tmpbuff,addr DisplayName,MB_OK or MB_ICONERROR
@@ -403,8 +403,6 @@ OpenAssembler proc uses ebx esi edi
 		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szTXTString
 		invoke strcat,addr da.szALLString,addr szPipe
-;		invoke strcat,addr da.szALLString,addr da.szPROString
-;		invoke strcat,addr da.szALLString,addr szPipe
 		invoke strcat,addr da.szALLString,addr da.szANYString
 		mov		eax,offset da.szCODEString
 		call	FixString
@@ -535,7 +533,7 @@ OpenAssembler proc uses ebx esi edi
 						mov		deftype.nType,al
 						invoke GetItemInt,addr buffer,0
 						mov		deftype.nDefType,al
-						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def,sizeof deftype.Def
+						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def,sizeof deftype.Def+1
 						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
 						invoke strlen,addr deftype.szWord
 						mov		deftype.len,al
@@ -545,6 +543,7 @@ OpenAssembler proc uses ebx esi edi
 					invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
 				.endif
 			.endw
+			;Ignore
 			invoke GetPrivateProfileString,addr szIniParse,addr szIniIgnore,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 			.while buffer
 				invoke GetItemInt,addr buffer,0
@@ -599,10 +598,20 @@ OpenAssembler proc uses ebx esi edi
 			inc		ebx
 		.endw
 		invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
+		;Get run options
+		invoke GetPrivateProfileString,addr szIniMake,addr szIniRun,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		invoke GetItemInt,addr tmpbuff,0
+		mov		da.fCmdExe,eax
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCmdExe,sizeof da.szCmdExe
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCommandLine,sizeof da.szCommandLine
 		;Get default projrct path
 		invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr szNULL,addr da.szDefProjectPath,sizeof da.szDefProjectPath,addr da.szAssemblerIni
 		;Setup environment
 		invoke SetEnvironment
+		;Menus
+		invoke SetHelpMenu
+		invoke SetToolMenu
+		invoke SetF1Help
 		mov		eax,TRUE
 	.endif
 	ret

@@ -429,12 +429,12 @@ TabToolAdd proc uses ebx esi,hWin:HWND,lpFileName:DWORD
 			mov		eax,[eax].PBITEM.id
 			mov		[ebx].TABMEM.pid,eax
 		.else
-			invoke AddMRU,addr da.mrufiles,lpFileName
-			invoke UpdateMRUMenu,addr da.mrufiles
+			invoke AddMRU,addr da.szMruFiles,lpFileName
+			invoke UpdateMRUMenu,addr da.szMruFiles
 		.endif
 	.else
-		invoke AddMRU,addr da.mrufiles,lpFileName
-		invoke UpdateMRUMenu,addr da.mrufiles
+		invoke AddMRU,addr da.szMruFiles,lpFileName
+		invoke UpdateMRUMenu,addr da.szMruFiles
 	.endif
 	mov		eax,ebx
 	ret

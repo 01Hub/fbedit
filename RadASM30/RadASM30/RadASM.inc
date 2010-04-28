@@ -62,6 +62,9 @@ TabToolGetInxFromPid			PROTO	:DWORD
 OpenProject						PROTO
 CloseProject					PROTO
 GetTheFileType					PROTO	:DWORD
+SetF1Help						PROTO
+SetHelpMenu						PROTO
+SetToolMenu						PROTO
 
 RadASMVersion					equ 3000
 
@@ -130,6 +133,9 @@ szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
+szVersion						db 'RadASM 3.0',0
+szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
+szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
 szPipe							db '|',0
 szDot							db '.',0
@@ -137,6 +143,7 @@ szComma							db ',',0
 szQuote							db '"',0
 szSemi							db ';',0
 szMinus							db '-',0
+szTab							db VK_TAB,0
 szDotIni						db '.ini',0
 szDotRapr						db '.rapr',0
 szDotRaprDot					db '.rapr.',0
@@ -144,6 +151,7 @@ szBSApiBS						db '\Api\',0
 szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
+szDollarA						db '$A',0
 szDefFilter						db '.asm.inc.rc.rapr.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
@@ -163,7 +171,7 @@ szMsg1							db 'SendMessage',0
 szMsg2							db 'PostMessage',0
 szMsg3							db 'SendDlgItemMessage',0
 
-;RadASM.ini
+;RadASM.ini, assembler.ini and project.rapr
 szInifile						db 'RadASM.ini',0
 szIniAppPath					db 'AppPath',0
 szIniWin						db 'Win',0
@@ -216,6 +224,8 @@ szIniEnvironment				db 'Environment',0
 szIniHeader						db 'Header',0
 szIniMru						db 'Mru',0
 szIniExternal					db 'External',0
+szIniHelpF1						db 'HelpF1',0
+szIniRun						db 'Run',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
