@@ -1501,6 +1501,17 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 					xor		eax,eax
 					jmp		Ex
 				.endif
+			.elseif wParam==VK_TAB
+				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+				mov		eax,chrg.cpMin
+				.if eax!=chrg.cpMax
+					invoke GetKeyState,VK_SHIFT
+					and		eax,80h
+					xor		eax,80h
+					invoke IndentComment,ha.hEdt,VK_TAB,eax
+					xor		eax,eax
+					jmp		Ex
+				.endif
 			.elseif wParam==VK_RETURN
 				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
 				invoke CaseConvertWord,wParam,chrg.cpMin

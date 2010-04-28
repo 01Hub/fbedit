@@ -94,6 +94,8 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke SetDlgItemText,hWin,IDC_EDTPOCMDEXE,addr da.szCmdExe
 		invoke SetDlgItemText,hWin,IDC_EDTPOCOMMANDLINE,addr da.szCommandLine
 		call	UpdateBtnDelete
+		invoke GetDlgItem,hWin,IDOK
+		invoke EnableWindow,eax,FALSE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -180,6 +182,9 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					invoke SendDlgItemMessage,hWin,IDC_LSTPO,LB_SETCURSEL,ebx,0
 				.endif
 				call	UpdateBtnDelete
+				invoke GetDlgItem,hWin,IDOK
+				invoke EnableWindow,eax,TRUE
+			.elseif eax==IDC_CHKPOCMDEXE
 				invoke GetDlgItem,hWin,IDOK
 				invoke EnableWindow,eax,TRUE
 			.endif

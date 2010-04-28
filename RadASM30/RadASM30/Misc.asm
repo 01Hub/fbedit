@@ -2142,6 +2142,26 @@ SetOutputTab proc nTab:DWORD
 
 SetOutputTab endp
 
+ShowOutput proc fShow:DWORD
+
+	invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolOutput
+	.if fShow
+		mov		fShow,FALSE
+		.if !eax
+			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
+			mov		fShow,TRUE
+		.endif
+	.else
+		.if eax
+			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolOutput
+			mov		fShow,TRUE
+		.endif
+	.endif
+	mov		eax,fShow
+	ret
+
+ShowOutput endp
+
 ConvertDpiSize proc nPix:DWORD
 	LOCAL	lpx:DWORD
 

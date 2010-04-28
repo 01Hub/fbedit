@@ -1,29 +1,31 @@
 
 MAKEEXE struct
-	hThread		dd ?
-	hRead		dd ?
-	hWrite		dd ?
+	hThread		DWORD ?
+	hRead		DWORD ?
+	hWrite		DWORD ?
 	pInfo		PROCESS_INFORMATION <?>
-	uExit		dd ?
-	buffer		db 512 dup(?)
+	uExit		DWORD ?
+	buffer		BYTE MAX_PATH*2 dup(?)
+	cmd			BYTE MAX_PATH dup(?)
+	cmdline		BYTE MAX_PATH dup(?)
 MAKEEXE ends
 
 .data
 
-MakeDone				db 0Dh,'Make done.',0Dh,0
-Errors					db 0Dh,'Error(s) occured.',0Dh,0
-Terminated				db 0Dh,'Terminated by user.',0
-NoRC					db 0Dh,'No .rc file found.',0Dh,0
-Exec					db 0Dh,'Executing:',0
-NoDel					db 0Dh,'Could not delete:',0Dh,0
+MakeDone				BYTE 0Dh,'Make done.',0Dh,0
+Errors					BYTE 0Dh,'Error(s) occured.',0Dh,0
+Terminated				BYTE 0Dh,'Terminated by user.',0
+NoRC					BYTE 0Dh,'No .rc file found.',0Dh,0
+Exec					BYTE 0Dh,'Executing:',0
+NoDel					BYTE 0Dh,'Could not delete:',0Dh,0
 
-CreatePipeError			db 'Error during pipe creation',0
-CreateProcessError		db 'Error during process creation',0Dh,0Ah,0
+CreatePipeError			BYTE 'Error during pipe creation',0
+CreateProcessError		BYTE 'Error during process creation',0Dh,0Ah,0
 
 .data?
 
 makeexe					MAKEEXE <>
-nErrID					dd ?
+nErrID					DWORD ?
 ErrID					DWORD 128 dup(?)
 
 .code
@@ -35,11 +37,19 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	buffer[256]:BYTE
 
 	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
-	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.buffer
+	.if Param==IDM_MAKE_RUN
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.cmd
+		.if makeexe.cmdline
+			invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr szSpc
+			invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.cmdline
+		.endif
+	.else
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.buffer
+	.endif
 	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
 	invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
 	.if Param==IDM_MAKE_RUN
-		invoke WinExec,addr makeexe.buffer,SW_SHOWNORMAL
+		invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmd,addr makeexe.cmdline,NULL,SW_SHOWNORMAL
 		.if eax>=32
 			xor		eax,eax
 		.endif
@@ -190,14 +200,17 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 	LOCAL	fExitCode:DWORD
 	LOCAL	ThreadID:DWORD
 	LOCAL	msg:MSG
+	LOCAL	fHide:DWORD
 
+	invoke RtlZeroMemory,addr makeexe,sizeof MAKEEXE
 	;Get relative pointer to selected build command
 	invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
 	mov		edx,sizeof MAKE
 	mul		edx
 	mov		esi,eax
 	invoke SetOutputTab,0
-;	invoke OutputShow,TRUE
+	invoke ShowOutput,TRUE
+	mov		fHide,eax
 	.if da.fProject
 		invoke SetCurrentDirectory,addr da.szProjectPath
 	.else
@@ -208,7 +221,6 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 	mov		fExitCode,0
 	mov		ThreadID,0
 	invoke SetFocus,ha.hOutput
-	mov		makeexe.buffer,0
 	.if fClear==1 || fClear==2
 		invoke SendMessage,ha.hOutput,WM_SETTEXT,0,addr makeexe.buffer
 		invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
@@ -337,16 +349,32 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		.endif
 	.elseif eax==IDM_MAKE_RUN
 		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Exec
-		mov		makeexe.buffer,0
 		.if da.fCmdExe
-			invoke strcpy,addr makeexe.buffer,addr da.szCmdExe
-			invoke strcat,addr makeexe.buffer,addr szSpc
+			invoke strcpy,addr makeexe.cmd,addr da.szCmdExe
+			invoke strcat,addr makeexe.cmd,addr szSpc
+			xor		eax,eax
+			.while makeexe.cmd[eax]!=' '
+				inc		eax
+			.endw
+			mov		makeexe.cmd[eax],0
+			invoke strcat,addr makeexe.cmdline,addr makeexe.cmd[eax+1]
+			invoke strcat,addr makeexe.cmdline,addr szQuote
+			invoke strcat,addr makeexe.cmdline,addr da.szMainAsm
+			invoke RemoveFileExt,addr makeexe.cmdline
+			invoke strcat,addr makeexe.cmdline,addr da.make.szOutLink[esi]
+			.if da.szCommandLine
+				invoke strcat,addr makeexe.cmdline,addr szSpc
+				invoke strcat,addr makeexe.cmdline,addr da.szCommandLine
+			.endif
+			invoke strcat,addr makeexe.cmdline,addr szQuote
+		.else
+			invoke strcpy,addr makeexe.cmd,addr da.szMainAsm
+			invoke RemoveFileExt,addr makeexe.cmd
+			invoke strcat,addr makeexe.cmd,addr da.make.szOutLink[esi]
+			.if da.szCommandLine
+				invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
+			.endif
 		.endif
-		invoke strcat,addr makeexe.buffer,addr szQuote
-		invoke strcat,addr makeexe.buffer,addr da.szMainAsm
-		invoke RemoveFileExt,addr makeexe.buffer
-		invoke strcat,addr makeexe.buffer,addr da.make.szOutLink[esi]
-		invoke strcat,addr makeexe.buffer,addr szQuote
 		xor		eax,eax
 		call	MakeIt
 	.else
@@ -376,6 +404,9 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		.endif
 	.endif
   Ex:
+	.if !fExitCode && fHide
+		invoke ShowOutput,FALSE
+	.endif
 	mov		eax,fExitCode
 	ret
 
