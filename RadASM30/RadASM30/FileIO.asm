@@ -302,6 +302,65 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 
 OpenTheFile endp
 
+OpenFiles proc uses esi edi,lpFileNames:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	nOpen:DWORD
+
+	mov		esi,lpFileNames
+	mov		nOpen,0
+	invoke strlen,esi
+	.if byte ptr [esi+eax+1]
+		;Multiselect
+		mov		edi,esi
+		lea		esi,[esi+eax+1]
+		.while byte ptr [esi]
+			invoke strcpy,addr buffer,edi
+			invoke strcat,addr buffer,addr szBS
+			invoke strcat,addr buffer,esi
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+			.if eax==-1
+				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+				invoke OpenTheFile,addr buffer,0
+				.if eax
+					.if ha.hMdi
+						invoke GetWindowLong,ha.hEdt,GWL_ID
+						.if eax==ID_EDITCODE
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.endif
+					.endif
+				.endif
+				inc		nOpen
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.else
+		;Single file
+		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+		.if !eax
+			invoke UpdateAll,UAM_ISOPENACTIVATE,esi
+			.if eax==-1
+				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
+				invoke OpenTheFile,esi,0
+				.if eax
+					.if ha.hMdi
+						invoke GetWindowLong,ha.hEdt,GWL_ID
+						.if eax==ID_EDITCODE
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.endif
+					.endif
+				.endif
+				mov		nOpen,1
+			.endif
+		.endif
+	.endif
+	mov		eax,nOpen
+	ret
+
+OpenFiles endp
+
 OpenEditFile proc ID:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -564,36 +623,88 @@ SaveFileAs proc hWin:DWORD,lpFileName:DWORD
 
 SaveFileAs endp
 
-Init proc
+OpenCommandLine proc uses esi edi,lpCmdLine:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
-	xor		eax,eax
-	.if da.edtopt.fopt & EDTOPT_SESSION
-		;Check Session Project
-		invoke GetPrivateProfileString,addr szIniSession,addr szIniProject,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
-		.if eax
-			;Check if project file exists
-			invoke GetFileAttributes,addr buffer
-			.if eax==INVALID_HANDLE_VALUE
-				xor		eax,eax
-			.else
-				;Check version
-				invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
-				.if eax<3000
-					invoke MessageBox,ha.hWnd,addr szProjectVersion,addr DisplayName,MB_OK or MB_ICONERROR
-				.else
-					invoke OpenTheFile,addr buffer,ID_PROJECT
-				.endif
-			.endif
+	mov		esi,lpCmdLine
+	.while byte ptr [esi]
+		.if byte ptr [esi]=='"'
+			call	CopyQuoted
+			invoke OpenTheFile,addr buffer,0
 		.else
-			;Session Assembler
-			invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szRadASMIni
-			.if !eax
-				mov		dword ptr da.szAssembler,'msam'
-				mov		dword ptr da.szAssembler[4],0
+			call	CopyUnQuoted
+			invoke OpenTheFile,addr buffer,0
+		.endif
+	.endw
+	ret
+
+CopyQuoted:
+	lea		edi,buffer
+	inc		esi
+	.while byte ptr [esi]!='"' && byte ptr [esi]
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	inc		esi
+	.if byte ptr [esi]==' '
+		inc		esi
+	.endif
+	retn
+
+CopyUnQuoted:
+	lea		edi,buffer
+	.while byte ptr [esi]!=' ' && byte ptr [esi]
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	.if byte ptr [esi]==' '
+		inc		esi
+	.endif
+	retn
+
+OpenCommandLine endp
+
+Init proc lpCmdLine:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	mov		eax,lpCmdLine
+	.if byte ptr [eax]
+		invoke OpenCommandLine,lpCmdLine
+	.else
+		xor		eax,eax
+		.if da.edtopt.fopt & EDTOPT_SESSION
+			;Check Session Project
+			invoke GetPrivateProfileString,addr szIniSession,addr szIniProject,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+			.if eax
+				;Check if project file exists
+				invoke GetFileAttributes,addr buffer
+				.if eax==INVALID_HANDLE_VALUE
+					xor		eax,eax
+				.else
+					;Check version
+					invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr buffer
+					.if eax<3000
+						invoke MessageBox,ha.hWnd,addr szProjectVersion,addr DisplayName,MB_OK or MB_ICONERROR
+					.else
+						invoke OpenTheFile,addr buffer,ID_PROJECT
+					.endif
+				.endif
+			.else
+				;Session Assembler
+				invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szRadASMIni
+				.if !eax
+					mov		dword ptr da.szAssembler,'msam'
+					mov		dword ptr da.szAssembler[4],0
+				.endif
+				invoke OpenAssembler
+				invoke GetSessionFiles
 			.endif
-			invoke OpenAssembler
-			invoke GetSessionFiles
 		.endif
 	.endif
 	ret

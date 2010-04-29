@@ -856,10 +856,7 @@ AddNewProjectFile endp
 AddExistingProjectFiles proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	hMem:HGLOBAL
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	nOpen:DWORD
 
-	mov		nOpen,0
 	invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
 	.if eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,8192
@@ -883,58 +880,12 @@ AddExistingProjectFiles proc
 		;Show the Open dialog
 		invoke GetOpenFileName,addr ofn
 		.if eax
-			invoke strlen,esi
-			.if byte ptr [esi+eax+1]
-				;Multiselect
-				mov		edi,esi
-				lea		esi,[esi+eax+1]
-				.while byte ptr [esi]
-					invoke strcpy,addr buffer,edi
-					invoke strcat,addr buffer,addr szBS
-					invoke strcat,addr buffer,esi
-					invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
-					.if eax==-1
-						invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
-						invoke OpenTheFile,addr buffer,0
-						.if eax
-							.if ha.hMdi
-								invoke GetWindowLong,ha.hEdt,GWL_ID
-								.if eax==ID_EDITCODE
-									invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-									invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-								.endif
-							.endif
-						.endif
-						inc		nOpen
-					.endif
-					invoke strlen,esi
-					lea		esi,[esi+eax+1]
-				.endw
-			.else
-				;Single file
-				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
-				.if !eax
-					invoke UpdateAll,UAM_ISOPENACTIVATE,esi
-					.if eax==-1
-						invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
-						invoke OpenTheFile,esi,0
-						.if eax
-							.if ha.hMdi
-								invoke GetWindowLong,ha.hEdt,GWL_ID
-								.if eax==ID_EDITCODE
-									invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-									invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-								.endif
-							.endif
-						.endif
-						mov		nOpen,1
-					.endif
-				.endif
-			.endif
+			invoke OpenFiles,hMem
 		.endif
+		push	eax
 		invoke GlobalFree,hMem
+		pop		eax
 	.endif
-	mov		eax,nOpen
 	ret
 
 AddExistingProjectFiles endp

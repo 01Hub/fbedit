@@ -65,6 +65,7 @@ GetTheFileType					PROTO	:DWORD
 SetF1Help						PROTO
 SetHelpMenu						PROTO
 SetToolMenu						PROTO
+OpenFiles						PROTO	:DWORD
 
 RadASMVersion					equ 3000
 

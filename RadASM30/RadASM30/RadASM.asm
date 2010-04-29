@@ -1262,6 +1262,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if ha.hMdi
 			invoke SetFocus,ha.hEdt
 		.endif
+	.elseif eax==WM_DROPFILES
+		xor		ebx,ebx
+	  @@:
+		invoke DragQueryFile,wParam,ebx,addr buffer,sizeof buffer
+		.if eax
+			invoke OpenTheFile,addr buffer,0
+			inc		ebx
+			jmp		@b
+		.endif
 	.elseif eax==WM_MEASUREITEM
 		mov		ebx,lParam
 		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
@@ -2309,20 +2318,13 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.endif
 	invoke ShowWindow,ha.hWnd,eax
 	invoke UpdateWindow,ha.hWnd
-	invoke Init
 	invoke LoadMRU,addr szIniFile,addr da.szMruFiles
 	invoke UpdateMRUMenu,addr da.szMruFiles
 	invoke LoadMRU,addr szIniProject,addr da.szMruProjects
 	invoke UpdateMRUMenu,addr da.szMruProjects
+	invoke Init,CmdLine
 	mov		da.fTimer,1
 ;	invoke ShowSplash
-;	;Get command line filename
-;	mov		eax,CommandLine
-;	.if byte ptr [eax]
-;		invoke OpenCommandLine,CommandLine
-;	.elseif ProMenuID && fAutoLoadPro
-;		invoke SendMessage,hWnd,WM_COMMAND,ProMenuID,0
-;	.endif
 	.while TRUE
 		invoke GetMessage,addr msg,0,0,0
 	  .break .if !eax
@@ -2356,6 +2358,7 @@ start:
 	;Get command line filename
 	invoke PathGetArgs,CommandLine
 	mov		CommandLine,eax
+;	invoke PathUnquoteSpaces,CommandLine
 	invoke InitCommonControls
 	;prepare common control structure
 	mov		icex.dwSize,sizeof INITCOMMONCONTROLSEX
