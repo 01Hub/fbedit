@@ -243,7 +243,7 @@ MenuOptionSave proc uses esi edi,hWin:HWND
 			inc		esi
 			.if al==09h
 				mov		byte ptr [esi-1],0
-			.else
+			.elseif al
 				jmp		@b
 			.endif
 			invoke strcpyn,addr mnu.szcap,addr buffer,sizeof mnu.szcap

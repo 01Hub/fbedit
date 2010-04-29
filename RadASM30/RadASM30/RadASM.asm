@@ -1146,9 +1146,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke TabToolGetInx,[esi].RAPNOTIFY.nid
 			.endif
 			.if eax==-1
-				invoke SendMessage,ha.hProperty,RPBM_FINDITEM,[esi].RAPNOTIFY.nid,0
+				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,[esi].RAPNOTIFY.nid,0
 				.if eax
-					invoke OpenTheFile,addr [eax].PBITEM.szitem,ID_EDITCODE
+					invoke OpenTheFile,addr [eax].PBITEM.szitem,0
 				.else
 					jmp		Ex
 				.endif
@@ -1267,7 +1267,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	  @@:
 		invoke DragQueryFile,wParam,ebx,addr buffer,sizeof buffer
 		.if eax
-			invoke OpenTheFile,addr buffer,0
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+			.if eax==-1
+				invoke OpenTheFile,addr buffer,0
+			.endif
 			inc		ebx
 			jmp		@b
 		.endif
@@ -1902,7 +1905,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke GetWindowLong,hEdt,GWL_ID
 			.if eax==ID_EDITCODE
 				.if !da.fProject
-					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hEdt,0
+					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hWin,0
 					invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				.endif
 			.elseif eax==ID_EDITTEXT
@@ -1917,6 +1920,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke FreeLibrary,[esi].CUSTCTRL.hDll
 						mov		[esi].CUSTCTRL.hDll,0
 					.endif
+					lea		esi,[esi+sizeof CUSTCTRL]
 					inc		ebx
 				.endw
 			.endif

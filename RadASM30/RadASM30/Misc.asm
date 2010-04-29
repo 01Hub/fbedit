@@ -760,6 +760,34 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 
 ParseEdit endp
 
+ParseFile proc lpFileName:DWORD,pid:DWORD
+    LOCAL   hFile:HANDLE
+	LOCAL	hMem:HGLOBAL
+	LOCAL	dwRead:DWORD
+
+	invoke GetTheFileType,lpFileName
+	.if eax==ID_EDITCODE
+		;Open the file
+		invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			invoke GetFileSize,hFile,NULL
+			push	eax
+			inc		eax
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+			mov     hMem,eax
+			pop		edx
+			invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
+			invoke CloseHandle,hFile
+			invoke SendMessage,ha.hProperty,PRM_PARSEFILE,pid,hMem
+			invoke GlobalFree,hMem
+			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+		.endif
+	.endif
+	ret
+
+ParseFile endp
+
 ShowPos proc nLine:DWORD,nPos:DWORD
 	LOCAL	buffer[64]:BYTE
 

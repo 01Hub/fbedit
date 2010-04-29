@@ -404,9 +404,12 @@ TabToolAdd proc uses ebx esi,hWin:HWND,lpFileName:DWORD
 			;rc
 			mov		esi,4
 		.elseif esi==3
+			;txt
+			mov		esi,5
+		.elseif eax==4
 			;exe
 			mov		esi,6
-		.elseif esi==4
+		.elseif esi==5
 			;bat
 			mov		esi,7
 		.else

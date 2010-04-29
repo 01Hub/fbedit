@@ -853,6 +853,65 @@ AddNewProjectFile proc
 
 AddNewProjectFile endp
 
+AddProjectFiles proc uses esi edi,lpFileNames:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	nOpen:DWORD
+
+	mov		esi,lpFileNames
+	mov		nOpen,0
+	invoke strlen,esi
+	.if byte ptr [esi+eax+1]
+		;Multiselect
+		mov		edi,esi
+		lea		esi,[esi+eax+1]
+		.while byte ptr [esi]
+			invoke strcpy,addr buffer,edi
+			invoke strcat,addr buffer,addr szBS
+			invoke strcat,addr buffer,esi
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+			.if eax==-1
+				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+				invoke OpenTheFile,addr buffer,0
+				.if eax
+					.if ha.hMdi
+						invoke GetWindowLong,ha.hEdt,GWL_ID
+						.if eax==ID_EDITCODE
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.endif
+					.endif
+				.endif
+				inc		nOpen
+			.endif
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.endw
+	.else
+		;Single file
+		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+		.if !eax
+			invoke UpdateAll,UAM_ISOPENACTIVATE,esi
+			.if eax==-1
+				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
+				invoke OpenTheFile,esi,0
+				.if eax
+					.if ha.hMdi
+						invoke GetWindowLong,ha.hEdt,GWL_ID
+						.if eax==ID_EDITCODE
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						.endif
+					.endif
+				.endif
+				mov		nOpen,1
+			.endif
+		.endif
+	.endif
+	mov		eax,nOpen
+	ret
+
+AddProjectFiles endp
+
 AddExistingProjectFiles proc
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	hMem:HGLOBAL
@@ -880,7 +939,7 @@ AddExistingProjectFiles proc
 		;Show the Open dialog
 		invoke GetOpenFileName,addr ofn
 		.if eax
-			invoke OpenFiles,hMem
+			invoke AddProjectFiles,hMem
 		.endif
 		push	eax
 		invoke GlobalFree,hMem
@@ -1041,6 +1100,7 @@ GetProjectFiles proc uses ebx esi edi
 				mov		pbi.lParam,eax
 				invoke GetFileAttributes,addr pbi.szitem
 				.if eax!=INVALID_HANDLE_VALUE
+					invoke ParseFile,addr pbi.szitem,pbi.id
 					invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,ebx,addr pbi
 					.if pbi.flag==FLAG_MAIN
 						;Main file

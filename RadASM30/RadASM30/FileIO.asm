@@ -224,8 +224,10 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 				invoke TabToolActivate
 				mov		edi,ha.hMdi
-				invoke SendMessage,ha.hEdt,PRO_CLOSE,0,0
-				invoke LoadResFile,ha.hEdt,lpFileName
+				mov		eax,ha.hEdt
+				mov		hEdt,eax
+				invoke SendMessage,hEdt,PRO_CLOSE,0,0
+				invoke LoadResFile,hEdt,lpFileName
 				pop		eax
 				invoke TabToolSetText,eax,lpFileName
 				invoke SetWinCaption,edi,lpFileName
@@ -279,7 +281,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					.if eax
 						invoke GetWindowLong,hEdt,GWL_USERDATA
 						mov		ebx,eax
-						mov		eax,fi.pid
+						mov		eax,[esi].PBITEM.id
 						mov		[ebx].TABMEM.pid,eax
 						invoke MoveWindow,edi,fi.rect.left,fi.rect.top,fi.rect.right,fi.rect.bottom,TRUE
 						invoke UpdateWindow,edi
@@ -293,6 +295,11 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 						.endif
 					.endif
 				.endif
+			.else
+				invoke GetWindowLong,hEdt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke ParseEdit,edi,0
+				.endif
 			.endif
 		.endif
 	.endif
@@ -301,65 +308,6 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 	ret
 
 OpenTheFile endp
-
-OpenFiles proc uses esi edi,lpFileNames:DWORD
-	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	nOpen:DWORD
-
-	mov		esi,lpFileNames
-	mov		nOpen,0
-	invoke strlen,esi
-	.if byte ptr [esi+eax+1]
-		;Multiselect
-		mov		edi,esi
-		lea		esi,[esi+eax+1]
-		.while byte ptr [esi]
-			invoke strcpy,addr buffer,edi
-			invoke strcat,addr buffer,addr szBS
-			invoke strcat,addr buffer,esi
-			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
-			.if eax==-1
-				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
-				invoke OpenTheFile,addr buffer,0
-				.if eax
-					.if ha.hMdi
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-						.endif
-					.endif
-				.endif
-				inc		nOpen
-			.endif
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-		.endw
-	.else
-		;Single file
-		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
-		.if !eax
-			invoke UpdateAll,UAM_ISOPENACTIVATE,esi
-			.if eax==-1
-				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
-				invoke OpenTheFile,esi,0
-				.if eax
-					.if ha.hMdi
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-						.endif
-					.endif
-				.endif
-				mov		nOpen,1
-			.endif
-		.endif
-	.endif
-	mov		eax,nOpen
-	ret
-
-OpenFiles endp
 
 OpenEditFile proc ID:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -630,13 +578,19 @@ OpenCommandLine proc uses esi edi,lpCmdLine:DWORD
 	.while byte ptr [esi]
 		.if byte ptr [esi]=='"'
 			call	CopyQuoted
-			invoke OpenTheFile,addr buffer,0
+			call	CmdOpenFile
 		.else
 			call	CopyUnQuoted
-			invoke OpenTheFile,addr buffer,0
 		.endif
 	.endw
 	ret
+
+CmdOpenFile:
+	invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+	.if eax==-1
+		invoke OpenTheFile,addr buffer,0
+	.endif
+	retn
 
 CopyQuoted:
 	lea		edi,buffer
