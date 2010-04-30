@@ -6,6 +6,7 @@ Backup=$P\Bak\
 Group=1
 GroupExpand=1
 Res.rc=1
+Ver.rc=1
 [Files]
 1=RadASM.asm
 2=RadASM.inc
@@ -298,7 +299,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=1847590319
+PTimer=1847779657
 [GroupExpand]
 GroupExpand=1,1,1,0,0,0
 [BookMark]
@@ -347,3 +348,21 @@ ID=100
 17=IDM_EDIT_RETURN,0,113,8
 18=IDM_TOOLS_SNIPLETS,0,122,0
 19=IDM_HELPF1,12400,112,0
+[VerInf]
+Nme=VERINF1
+ID=1
+FV=3.0.0.0
+PV=3.0.0.0
+VerOS=0x00000004
+VerFT=0x00000001
+VerLNG=0x00000409
+VerCHS=0x000004E4
+ProductVersion=3.0.0.0
+ProductName=RadASM
+OriginalFilename=RadASM.exe
+LegalTrademarks=
+LegalCopyright=KetilO (C) 2010
+InternalName=RadASM 3.0
+FileDescription=Assembly programming IDE
+FileVersion=3.0.0.0
+CompanyName=
