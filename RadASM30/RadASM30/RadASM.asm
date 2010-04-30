@@ -1125,11 +1125,55 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;File browser path
 			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
 		.elseif [esi].NMHDR.code==RPBN_DBLCLICK && eax==ha.hProjectBrowser
-			;Project browser
+			;Project browser dblclick
 			mov		ebx,[esi].NMPBITEMDBLCLICK.lpPBITEM
 			invoke UpdateAll,UAM_ISOPENACTIVATE,addr [ebx].PBITEM.szitem
 			.if eax==-1
 				invoke OpenTheFile,addr [ebx].PBITEM.szitem,0
+			.endif
+		.elseif [esi].NMHDR.code==RPBN_ITEMCHANGE && eax==ha.hProjectBrowser
+			;Project browser item change
+			invoke GetFileAttributes,[esi].NMPBITEMCHANGE.lpsznew
+			.if eax!=INVALID_HANDLE_VALUE
+				;File exists
+				mov		[esi].NMPBITEMCHANGE.cancel,TRUE
+				invoke strcpy,offset tmpbuff,offset szErrFileExists
+				invoke strcat,offset tmpbuff,[esi].NMPBITEMCHANGE.lpsznew
+				invoke MessageBox,ha.hWnd,offset tmpbuff,offset DisplayName,MB_OK or MB_ICONERROR
+			.else
+				mov		edi,[esi].NMPBITEMCHANGE.lpPBITEM
+				invoke strcpy,addr buffer,addr [edi].PBITEM.szitem
+				invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
+				.if eax
+					mov		ebx,eax
+					;File is open
+					invoke MoveFile,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew
+					.if eax
+						invoke TabToolGetInx,ebx
+						invoke TabToolSetText,eax,[esi].NMPBITEMCHANGE.lpsznew
+						invoke SetWindowText,ebx,[esi].NMPBITEMCHANGE.lpsznew
+						.if ebx==ha.hMdi
+							;and is the current window
+							invoke strcpy,offset da.szFileName,[esi].NMPBITEMCHANGE.lpsznew
+						.endif
+					.else
+						;Probably not a valid filename
+						mov		[esi].NMPBITEMCHANGE.cancel,TRUE
+						invoke strcpy,offset tmpbuff,offset szErrCreate
+						invoke strcat,offset tmpbuff,[esi].NMPBITEMCHANGE.lpsznew
+						invoke MessageBox,ha.hWnd,offset tmpbuff,offset DisplayName,MB_OK or MB_ICONERROR
+					.endif
+				.else
+					;File is not open, move it
+					invoke MoveFile,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew
+					.if !eax
+						;Probably not a valid filename
+						mov		[esi].NMPBITEMCHANGE.cancel,TRUE
+						invoke strcpy,offset tmpbuff,offset szErrCreate
+						invoke strcat,offset tmpbuff,[esi].NMPBITEMCHANGE.lpsznew
+						invoke MessageBox,ha.hWnd,offset tmpbuff,offset DisplayName,MB_OK or MB_ICONERROR
+					.endif
+				.endif
 			.endif
 		.elseif [esi].NMHDR.code==LBN_DBLCLK && eax==ha.hProperty
 			;Property list
@@ -2383,7 +2427,7 @@ start:
 	invoke ResEdInstall,ha.hInstance,FALSE
 	invoke GetCharTabPtr
 	mov		da.lpCharTab,eax
-	invoke strcpy,addr da.szProjectFiles,addr szDotRaprDot
+	invoke strcpy,addr da.szProjectFiles,addr szDotPrraDot
 	mov		da.Version,RadASMVersion
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls

@@ -146,14 +146,14 @@ szSemi							db ';',0
 szMinus							db '-',0
 szTab							db VK_TAB,0
 szDotIni						db '.ini',0
-szDotRapr						db '.rapr',0
-szDotRaprDot					db '.rapr.',0
+szDotPrra						db '.prra',0
+szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
 szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
 szDollarA						db '$A',0
-szDefFilter						db '.asm.inc.rc.rapr.',0
+szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
 szError							db ': error ',0
@@ -172,7 +172,7 @@ szMsg1							db 'SendMessage',0
 szMsg2							db 'PostMessage',0
 szMsg3							db 'SendDlgItemMessage',0
 
-;RadASM.ini, assembler.ini and project.rapr
+;RadASM.ini, assembler.ini and project.prra
 szInifile						db 'RadASM.ini',0
 szIniAppPath					db 'AppPath',0
 szIniWin						db 'Win',0
@@ -242,6 +242,7 @@ szErrDir						db 'Could not create directory!',0Dh,0
 szErrOpenDir					db 'Could not open directory!',0Dh,0
 szErrOverwrite					db 'Overwrite existing file?',0Dh,0
 szErrCreate						db 'Could not create the file!',0Dh,0
+szErrFileExists					db 'The file exists!',0Dh,0
 
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
@@ -254,7 +255,7 @@ szDefCODEString					db 'Assembly Files (*.asm, *.inc)|*.asm;*.inc',0
 szDefRESString					db 'Resource Files (*.rc)|*.rc',0
 szDefTXTString					db 'Text Files (*.txt)|*.txt',0
 szDefANYString					db 'All Files (*.*)|*.*',0
-szDefPROString					db 'Project Files (*.rapr)|*.rapr',0
+szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
 .data
 

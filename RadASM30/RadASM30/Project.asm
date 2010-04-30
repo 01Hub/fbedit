@@ -390,7 +390,7 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 	invoke strcpy,addr projectfile,addr projectpath
 	invoke strcat,addr projectfile,addr szBS
 	invoke strcat,addr projectfile,addr projectname
-	invoke strcat,addr projectfile,addr szDotRapr
+	invoke strcat,addr projectfile,addr szDotPrra
 	;Create folders
 	invoke IsDlgButtonChecked,hWin,IDC_CHKPROJECTBAK
 	.if eax
@@ -1224,7 +1224,7 @@ PutProject proc uses ebx esi edi
 	mov		word ptr buffer,0
 	invoke WritePrivateProfileSection,addr szIniSession,addr buffer,addr da.szRadASMIni
 	invoke WritePrivateProfileString,addr szIniSession,addr szIniProject,addr da.szProjectFile,addr da.szRadASMIni
-	;Project.rapr [Project]
+	;Project.prra [Project]
 	;Assembler
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniAssembler,addr da.szAssembler,addr da.szProjectFile
 	;File browser path
@@ -1308,7 +1308,7 @@ PutProject proc uses ebx esi edi
 ;		.endif
 ;	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniOpen,addr tmpbuff[1],addr da.szProjectFile
-	;Project.rapr [Make]
+	;Project.prra [Make]
 	mov		word ptr buffer,0
 	invoke WritePrivateProfileSection,addr szIniMake,addr buffer,addr da.szProjectFile
 	;Selected make option

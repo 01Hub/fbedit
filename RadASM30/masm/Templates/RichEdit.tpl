@@ -1,6 +1,6 @@
 Ricch edit editor
 [*BEGINTXT*]
-[*PROJECTNAME*].rapr
+[*PROJECTNAME*].prra
 [Version]
 Version=3000
 [Project]

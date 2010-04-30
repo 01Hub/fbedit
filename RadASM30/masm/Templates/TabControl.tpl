@@ -1,6 +1,6 @@
 Tab Control
 [*BEGINTXT*]
-[*PROJECTNAME*].rapr
+[*PROJECTNAME*].prra
 [Version]
 Version=3000
 [Project]

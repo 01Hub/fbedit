@@ -78,7 +78,7 @@ SetToolMenu proc
 			movzx	eax,mnu.szcap
 			.if eax
 				.if eax=='-'
-					invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+					invoke AppendMenu,hSubMnu,MF_SEPARATOR,nID,addr szNULL
 				.else
 					invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
 				.endif
@@ -118,7 +118,7 @@ SetHelpMenu proc
 			movzx	eax,mnu.szcap
 			.if eax
 				.if eax=='-'
-					invoke AppendMenu,hSubMnu,MF_SEPARATOR,0,addr szNULL
+					invoke AppendMenu,hSubMnu,MF_SEPARATOR,nID,addr szNULL
 				.else
 					invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
 				.endif
@@ -232,7 +232,7 @@ MenuOptionSave proc uses esi edi,hWin:HWND
 	mov		nIni,0
 	mov		word ptr buffer,0
 	invoke WritePrivateProfileSection,lpAppName,addr buffer,addr da.szAssemblerIni
-	.while TRUE
+	.while nIni<20
 		invoke SendDlgItemMessage,hWin,IDC_LSTME,LB_GETTEXT,nInx,addr buffer
 	  .break .if eax==LB_ERR
 		mov		al,buffer[1]

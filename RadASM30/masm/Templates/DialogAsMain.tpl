@@ -1,6 +1,6 @@
 Dialog As Main Window
 [*BEGINTXT*]
-[*PROJECTNAME*].rapr
+[*PROJECTNAME*].prra
 [Version]
 Version=3000
 [Project]
