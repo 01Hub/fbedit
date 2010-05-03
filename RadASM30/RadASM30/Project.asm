@@ -1126,8 +1126,8 @@ GetProjectFiles proc uses ebx esi edi
 		;Get open files
 		invoke GetPrivateProfileString,addr szIniProject,addr szIniOpen,addr szNULL,addr buffer,sizeof buffer,addr da.szProjectFile
 		.if eax
-			push	da.win.fcldmax
-			mov		da.win.fcldmax,FALSE
+;			push	da.win.fcldmax
+;			mov		da.win.fcldmax,FALSE
 			;Selected tab
 			invoke GetItemInt,addr buffer,0
 			push	eax
@@ -1141,16 +1141,16 @@ GetProjectFiles proc uses ebx esi edi
 				.endif
 			.endw
 			pop		eax
-			pop		da.win.fcldmax
+;			pop		da.win.fcldmax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			.if eax==-1
 				invoke SendMessage,ha.hTab,TCM_SETCURSEL,0,0
 			.endif
 			.if eax!=-1
 				invoke TabToolActivate
-				.if da.win.fcldmax
-					invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
-				.endif
+;				.if da.win.fcldmax
+;					invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
+;				.endif
 			.endif
 		.endif
 		;Get make command lines
@@ -1365,6 +1365,8 @@ CloseProject proc
 		mov		da.fProject,0
 		mov		da.szProjectFile,0
 		mov		da.szProjectPath,0
+		mov		da.szMainRC,0
+		mov		da.szMainAsm,0
 		invoke OpenAssembler
 		invoke SetMainWinCaption
 		mov		eax,TRUE

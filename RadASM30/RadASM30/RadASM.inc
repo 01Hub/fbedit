@@ -52,7 +52,7 @@ includelib ..\Lib\RATools.lib
 
 TabProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 TabToolActivate					PROTO
-MakeMdiCldWin					PROTO	:DWORD
+MakeMdiCldWin					PROTO	:DWORD,:DWORD
 SaveTheFile						PROTO	:HWND
 WantToSave						PROTO	:HWND
 SetHiliteWords					PROTO	:DWORD,:DWORD
@@ -243,6 +243,7 @@ szErrOpenDir					db 'Could not open directory!',0Dh,0
 szErrOverwrite					db 'Overwrite existing file?',0Dh,0
 szErrCreate						db 'Could not create the file!',0Dh,0
 szErrFileExists					db 'The file exists!',0Dh,0
+szRegionSearched				db 'Region searced.',0
 
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0

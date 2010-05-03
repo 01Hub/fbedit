@@ -238,8 +238,6 @@ GetSessionFiles proc uses ebx edi
 	.endif
 	invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
 	mov		ebx,START_FILES
-	push	da.win.fcldmax
-	mov		da.win.fcldmax,FALSE
 	.while ebx<MAX_FILES
 		invoke GetFileInfo,ebx,addr szIniSession,addr da.szRadASMIni,addr fi
 		.break .if !eax
@@ -249,8 +247,6 @@ GetSessionFiles proc uses ebx edi
 			mov		edi,eax
 			invoke GetWindowLong,edi,GWL_USERDATA
 			mov		hEdt,eax
-			invoke MoveWindow,edi,fi.rect.left,fi.rect.top,fi.rect.right,fi.rect.bottom,TRUE
-			invoke UpdateWindow,edi
 			.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
 				invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
 				mov		chrg.cpMin,eax
@@ -262,7 +258,6 @@ GetSessionFiles proc uses ebx edi
 		.endif
 		inc		ebx
 	.endw
-	pop		da.win.fcldmax
 	.if ebx>1
 		invoke GetPrivateProfileInt,addr szIniSession,addr szIniOpen,0,addr da.szRadASMIni
 		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
@@ -271,9 +266,6 @@ GetSessionFiles proc uses ebx edi
 		.endif
 		.if eax!=-1
 			invoke TabToolActivate
-			.if da.win.fcldmax
-				invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
-			.endif
 		.else
 			xor		eax,eax
 		.endif
@@ -296,7 +288,6 @@ PutSession proc uses ebx
 	invoke WritePrivateProfileString,addr szIniSession,addr szIniPath,addr da.szFBPath,addr da.szRadASMIni
 	.if ha.hMdi
 		;Files
-		invoke ShowWindow,ha.hClient,SW_HIDE
 		;Current tab
 		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		invoke BinToDec,eax,addr tmpbuff
@@ -325,7 +316,6 @@ PutSession proc uses ebx
 			invoke WritePrivateProfileString,addr szIniSession,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
 		.endw
 		pop		da.win.fcldmax
-		invoke ShowWindow,ha.hClient,SW_SHOWNA
 	.endif
 	ret
 

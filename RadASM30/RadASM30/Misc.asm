@@ -732,29 +732,35 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 	LOCAL	hEdt:HWND
 	LOCAL	hMem:HGLOBAL
 
-	.if da.fProject
-		.if !pid
-			jmp		Ex
-		.endif
-		mov		edi,pid
-	.else
-		mov		edi,hWin
-	.endif
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	mov		hEdt,eax
-	invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,edi,0
-	invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
-	inc		eax
-	push	eax
-	add		eax,64
-	and		eax,0FFFFFFE0h
-	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-	mov		hMem,eax
-	pop		eax
-	invoke SendMessage,hEdt,WM_GETTEXT,eax,hMem
-	invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
-	invoke GlobalFree,hMem
-	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+	invoke GetWindowLong,hEdt,GWL_ID
+	.if eax==ID_EDITCODE
+		invoke SendMessage,hEdt,REM_GETWORDGROUP,0,0
+		.if !eax
+			.if da.fProject
+				.if !pid
+					jmp		Ex
+				.endif
+				mov		edi,pid
+			.else
+				mov		edi,hWin
+			.endif
+			invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,edi,0
+			invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
+			inc		eax
+			push	eax
+			add		eax,64
+			and		eax,0FFFFFFE0h
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+			mov		hMem,eax
+			pop		eax
+			invoke SendMessage,hEdt,WM_GETTEXT,eax,hMem
+			invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
+			invoke GlobalFree,hMem
+			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+		.endif
+	.endif
   Ex:
 	ret
 
@@ -1302,6 +1308,43 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_RESOURCE_UNDO
 	.elseif eax==6
 		;Make
+		xor		eax,eax
+		.if da.szMainRC
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_MAKE_COMPILE
+		xor		eax,eax
+		.if da.szMainAsm
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_MAKE_ASSEMBLE
+		push	eax
+		push	IDM_MAKE_BUILD
+		push	eax
+		push	IDM_MAKE_DEBUG
+		push	eax
+		push	IDM_MAKE_GO
+		push	eax
+		push	IDM_MAKE_LINK
+		push	eax
+		push	IDM_MAKE_RUN
+		;Any modules
+		push	ebx
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+			.break .if!eax
+			mov		ebx,[eax].PBITEM.id
+			.if [eax].PBITEM.flag==FLAG_MODULE
+				mov		eax,TRUE
+				.break
+			.endif
+		.endw
+		pop		ebx
+		push	eax
+		push	IDM_MAKE_MODULES
 		.if esi==ID_EDITCODE
 			push	TRUE
 			push	IDM_MAKE_SETMAIN

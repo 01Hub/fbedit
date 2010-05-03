@@ -18,6 +18,7 @@ include Option.asm
 include Environment.asm
 include About.asm
 include ProjectOption.asm
+include Find.asm
 
 .code
 
@@ -34,8 +35,39 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TimerProc endp
 
-MakeMdiCldWin proc ID:DWORD
+MakeMdiCldWin proc ID:DWORD,pid:DWORD
+	LOCAL	fi:FILEINFO
+	LOCAL	rect:RECT
 
+	.if pid
+		.if da.fProject
+			invoke GetFileInfo,pid,addr szIniProject,addr da.szProjectFile,addr fi
+		.else
+			invoke GetFileInfo,pid,addr szIniSession,addr da.szRadASMIni,addr fi
+		.endif
+		.if eax
+			mov		eax,fi.rect.left
+			mov		rect.left,eax
+			mov		eax,fi.rect.top
+			mov		rect.top,eax
+			mov		eax,fi.rect.right
+			mov		rect.right,eax
+			mov		eax,fi.rect.bottom
+			mov		rect.bottom,eax
+		.else
+			mov		eax,CW_USEDEFAULT
+			mov		rect.left,eax
+			mov		rect.top,eax
+			mov		rect.right,eax
+			mov		rect.bottom,eax
+		.endif
+	.else
+		mov		eax,CW_USEDEFAULT
+		mov		rect.left,eax
+		mov		rect.top,eax
+		mov		rect.right,eax
+		mov		rect.bottom,eax
+	.endif
 	mov		eax,ID
 	mov		mdiID,eax
 	mov		edx,WS_EX_MDICHILD
@@ -46,7 +78,7 @@ MakeMdiCldWin proc ID:DWORD
 	.if da.win.fcldmax
 		or		eax,WS_MAXIMIZE
 	.endif
-	invoke CreateWindowEx,edx,addr szEditCldClassName,NULL,eax,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,ha.hClient,NULL,ha.hInstance,NULL
+	invoke CreateWindowEx,edx,addr szEditCldClassName,NULL,eax,rect.left,rect.top,rect.right,rect.bottom,ha.hClient,NULL,ha.hInstance,NULL
 	ret
 
 MakeMdiCldWin endp
@@ -141,7 +173,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if edx==BN_CLICKED || edx==1
 			.if eax==IDM_FILE_NEW
 				invoke strcpy,addr da.szFileName,addr szNewFile
-				invoke MakeMdiCldWin,ID_EDITCODE
+				invoke MakeMdiCldWin,ID_EDITCODE,0
 			.elseif eax==IDM_FILE_OPEN
 				invoke OpenEditFile,0
 			.elseif eax==IDM_FILE_OPENHEX
@@ -181,7 +213,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_FILE_SAVEAS
 				.if ha.hMdi
-;####
 					invoke SaveFileAs,ha.hMdi,addr da.szFileName
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
@@ -256,13 +287,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FIND
-;####
+				invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
 			.elseif eax==IDM_EDIT_FINDNEXT
 ;####
 			.elseif eax==IDM_EDIT_FINDPREV
 ;####
 			.elseif eax==IDM_EDIT_REPLACE
-;####
+				invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,TRUE
 			.elseif eax==IDM_EDIT_GOTODECLARE
 				invoke GotoDeclare
 			.elseif eax==IDM_EDIT_RETURN
@@ -619,7 +650,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke SendMessage,ha.hProjectBrowser,RPBM_DELETEITEM,0,0
 				.endif
 			.elseif eax==IDM_PROJECT_EDITFILE
-;####
 				.if da.fProject
 					invoke SendMessage,ha.hProjectBrowser,RPBM_EDITITEM,0,0
 				.endif
@@ -1048,8 +1078,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.else
 				invoke PutSession
 			.endif
-			invoke PutWinPos
 			invoke UpdateAll,UAM_CLOSEALL,0
+			invoke PutWinPos
 			jmp		ExDef
 		.else
 			jmp		Ex

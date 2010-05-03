@@ -244,6 +244,7 @@ ADDINHANDLES struct
 	hTT					HWND ?
 	hModeless			HWND ?
 	hHtmlOcx			HANDLE ?
+	hFind				HWND ?
 ADDINHANDLES ends
 
 VIEW_STATUSBAR					equ 1
@@ -340,6 +341,19 @@ MAKE struct
 	szOutLib			BYTE 32 dup(?)
 MAKE ends
 
+FIND struct
+	fr					DWORD ?
+	fdir				DWORD ?
+	fscope				DWORD ?
+	firstchrg			CHARRANGE <>
+	fres				DWORD ?
+	nfound				DWORD ?
+	findchrg			CHARRANGE <>
+	ft					FINDTEXTEX <>
+	szfindbuff			BYTE MAX_PATH dup(?)
+	szreplacebuff		BYTE MAX_PATH dup(?)
+FIND ends
+
 ADDINDATA struct
 	Version				DWORD ?
 	win					WIN <>
@@ -409,6 +423,7 @@ ADDINDATA struct
 	szCommandLine		BYTE 128 dup(?)
 	fCmdExe				DWORD ?
 	szCmdExe			BYTE 64 dup(?)
+	find				FIND <>
 ADDINDATA ends
 
 FILEINFO struct

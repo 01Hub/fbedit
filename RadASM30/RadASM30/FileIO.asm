@@ -162,10 +162,19 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hEdt:HWND
 	LOCAL	fi:FILEINFO
+	LOCAL	pid:DWORD
 
 	xor		edi,edi
+	mov		pid,edi
 	invoke GetFileAttributes,lpFileName
 	.if eax!=INVALID_HANDLE_VALUE
+		.if da.fProject
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,lpFileName
+			.if eax
+				mov		eax,[eax].PBITEM.id
+				mov		pid,eax
+			.endif
+		.endif
 		.if ID
 			mov		eax,ID
 		.else
@@ -183,7 +192,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 		.endif
 		.if eax==ID_EDITCODE
 			invoke strcpy,addr da.szFileName,lpFileName
-			invoke MakeMdiCldWin,ID_EDITCODE
+			invoke MakeMdiCldWin,ID_EDITCODE,pid
 			mov		edi,eax
 			invoke GetWindowLong,edi,GWL_USERDATA
 			mov		hEdt,eax
@@ -197,14 +206,14 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			invoke SendMessage,hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 		.elseif eax==ID_EDITTEXT
 			invoke strcpy,addr da.szFileName,lpFileName
-			invoke MakeMdiCldWin,ID_EDITTEXT
+			invoke MakeMdiCldWin,ID_EDITTEXT,pid
 			mov		edi,eax
 			invoke GetWindowLong,edi,GWL_USERDATA
 			mov		hEdt,eax
 			invoke LoadTextFile,hEdt,lpFileName
 		.elseif eax==ID_EDITHEX
 			invoke strcpy,addr da.szFileName,lpFileName
-			invoke MakeMdiCldWin,ID_EDITHEX
+			invoke MakeMdiCldWin,ID_EDITHEX,pid
 			mov		edi,eax
 			invoke GetWindowLong,edi,GWL_USERDATA
 			mov		hEdt,eax
@@ -213,7 +222,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			invoke UpdateAll,UAM_ISRESOPEN,0
 			.if eax==-1
 				invoke strcpy,addr da.szFileName,lpFileName
-				invoke MakeMdiCldWin,ID_EDITRES
+				invoke MakeMdiCldWin,ID_EDITRES,pid
 				mov		edi,eax
 				invoke GetWindowLong,edi,GWL_USERDATA
 				mov		hEdt,eax
@@ -283,8 +292,6 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 						mov		ebx,eax
 						mov		eax,[esi].PBITEM.id
 						mov		[ebx].TABMEM.pid,eax
-						invoke MoveWindow,edi,fi.rect.left,fi.rect.top,fi.rect.right,fi.rect.bottom,TRUE
-						invoke UpdateWindow,edi
 						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
 							invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
 							mov		chrg.cpMin,eax
@@ -491,7 +498,7 @@ WantToSave proc uses ebx,hWin:HWND
 
 WantToSave endp
 
-UpdateFileName proc hWin:DWORD,lpFileName:DWORD
+UpdateFileName proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	LOCAL	hEdt:HWND
 
 	invoke GetWindowLong,hWin,GWL_USERDATA
@@ -512,16 +519,19 @@ UpdateFileName proc hWin:DWORD,lpFileName:DWORD
 	.endif
 	.if !eax
 		;The file was saved
+		.if da.fProject
+			;Update project browser
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,addr [ebx].TABMEM.filename
+			.if eax
+				invoke strcpy,addr [eax].PBITEM.szitem,lpFileName
+				invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+			.endif
+		.endif
+		;Update tab
 		invoke TabToolGetInx,hWin
 		invoke TabToolSetText,eax,lpFileName
-		invoke SetWinCaption,hWin,lpFileName
-;		.if da.fProject
-;			invoke SendMessage,ha.hPbr,RPBM_FINDITEM,0,lpFileName
-;			.if eax
-;				invoke lstrcpy,addr [eax].PBITEM.szitem,addr buffer
-;				invoke SendMessage,ha.hPbr,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
-;			.endif
-;		.endif
+		;Update mdi child caption
+		invoke SetWindowText,hWin,lpFileName
 		mov		eax,FALSE
 	.endif
 	ret
@@ -548,15 +558,8 @@ SaveFileAs proc hWin:DWORD,lpFileName:DWORD
 	invoke GetWindowLong,hWin,GWL_USERDATA
 	invoke GetWindowLong,eax,GWL_ID
 	.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-;		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER or OFN_ENABLETEMPLATE or OFN_ENABLEHOOK
 		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
-;		mov		ofn.lpTemplateName,IDD_DLGSAVEUNICODE
-;		mov		ofn.lpfnHook,offset UnicodeProc
-;		invoke SendMessage,hWin,REM_GETUNICODE,0,0
-;		mov		fUnicode,eax
 	.else
-;		xor		eax,eax
-;		mov		fUnicode,eax
 		mov		ofn.Flags,OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT or OFN_EXPLORER
 	.endif
     mov		ofn.lpstrDefExt,NULL
