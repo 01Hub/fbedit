@@ -32,10 +32,13 @@ FindInit proc uses ebx esi edi,hWin:HWND,fallfiles:DWORD
 
 	mov		da.find.fres,-1
 	mov		da.find.nfound,0
-	invoke SendMessage,hWin,EM_EXGETSEL,0,offset da.find.findchrg
-	invoke SendMessage,hWin,EM_EXGETSEL,0,offset da.find.firstchrg
-	mov		da.find.findchrg.cpMax,-2
+	invoke SendMessage,hWin,EM_EXGETSEL,0,offset da.find.initchrg
+	invoke SendMessage,hWin,EM_EXGETSEL,0,offset da.find.ft.chrgText
+	mov		da.find.ft.lpstrText,offset da.find.szfindbuff
+
+	mov		da.find.ft.chrg.cpMax,-2
 	.if fallfiles==3
+		;All open files
 		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
 		mov		esi,eax
 		mov		nInx,eax
@@ -58,6 +61,8 @@ FindInit proc uses ebx esi edi,hWin:HWND,fallfiles:DWORD
 		xor		eax,eax
 		mov		dword ptr [edi],eax
 		mov		ntab,eax
+	.elseif fallfiles==4
+		;All project files
 	.endif
 	ret
 
@@ -73,57 +78,33 @@ AddCodeFile:
 
 FindInit endp
 
-FindSetup proc hWin:HWND
-
-	;Get current selection
-	invoke SendMessage,hWin,EM_EXGETSEL,0,offset da.find.ft.chrg
-	;Setup find
-	mov		eax,da.find.fdir
-	.if eax==0
-		;All
-		.if da.find.fres!=-1
-			mov		eax,da.find.ft.chrgText.cpMax
-			mov		da.find.ft.chrg.cpMin,eax
-		.else
-			mov		eax,da.find.findchrg.cpMax
-			.if eax!=-2
-				mov		da.find.ft.chrg.cpMin,0
-			.endif
-		.endif
-		mov		eax,da.find.findchrg.cpMax
-		mov		da.find.ft.chrg.cpMax,eax
-	.elseif eax==1
-		;Down
-		.if da.find.fres!=-1
-			mov		eax,da.find.ft.chrgText.cpMax
-			mov		da.find.ft.chrg.cpMin,eax
-		.endif
-		mov		da.find.ft.chrg.cpMax,-2
-	.else
-		;Up
-		.if da.find.fres!=-1
-			dec		da.find.ft.chrg.cpMin
-		.endif
-		mov		da.find.ft.chrg.cpMax,0
-	.endif
-	mov		da.find.ft.lpstrText,offset da.find.szfindbuff
-	ret
-
-FindSetup endp
-
 Find proc hWin:HWND,frType:DWORD
 
 FindNext:
-	invoke FindSetup,hWin
+	mov		eax,da.find.fdir
+	.if !eax
+		;All
+		mov		eax,da.find.ft.chrgText.cpMax
+		mov		da.find.ft.chrg.cpMin,eax
+	.elseif eax==1
+		;Down
+		mov		eax,da.find.ft.chrgText.cpMax
+		mov		da.find.ft.chrg.cpMin,eax
+	.else
+		;Up
+		mov		eax,da.find.ft.chrgText.cpMin
+		dec		eax
+		mov		da.find.ft.chrg.cpMin,eax
+		mov		da.find.ft.chrg.cpMax,0
+	.endif
 	;Do the find
 	invoke SendMessage,hWin,EM_FINDTEXTEX,da.find.fr,offset da.find.ft
 	mov		da.find.fres,eax
 	.if eax==-1
-		mov		eax,da.find.findchrg.cpMin
-		.if da.find.fdir==0 && eax
-			dec		eax
-			mov		da.find.findchrg.cpMax,eax
-			mov		da.find.findchrg.cpMin,0
+		.if da.find.fdir==0 && da.find.ft.chrg.cpMax==-2 && da.find.initchrg.cpMin
+			mov		eax,da.find.initchrg.cpMin
+			mov		da.find.ft.chrg.cpMax,eax
+			mov		da.find.ft.chrgText.cpMax,0
 			jmp		FindNext
 		.endif
 		.if da.find.fscope==3
@@ -138,24 +119,19 @@ FindNext:
 			.endif
 		.endif
 		;Region searched
-		invoke SendMessage,hWin,EM_EXSETSEL,0,offset da.find.firstchrg
-		invoke SendMessage,hWin,REM_VCENTER,0,0
-		invoke SendMessage,hWin,EM_SCROLLCARET,0,0
 		invoke MessageBox,ha.hFind,addr szRegionSearched,addr DisplayName,MB_OK or MB_ICONINFORMATION
 	.else
-		.if !da.find.nfound
-			mov		eax,da.find.ft.chrgText.cpMin
-			mov		da.find.firstchrg.cpMin,eax
-			mov		eax,da.find.ft.chrgText.cpMax
-			mov		da.find.firstchrg.cpMax,eax
-		.endif
 		mov		eax,hWin
 		.if eax!=ha.hEdt
-			invoke TabToolGetInx,hWin
+			mov		da.inprogress,TRUE
+			invoke GetParent,hWin
+			invoke TabToolGetInx,eax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			invoke TabToolActivate
+			invoke SetFocus,ha.hFind
+			mov		da.inprogress,FALSE
 		.endif
-		;Mark the foud text
+		;Mark the found text
 		invoke SendMessage,hWin,EM_EXSETSEL,0,offset da.find.ft.chrgText
 		invoke SendMessage,hWin,REM_VCENTER,0,0
 		invoke SendMessage,hWin,EM_SCROLLCARET,0,0
@@ -261,6 +237,7 @@ FindDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					call	ShowReplace
 				.else
 				.endif
+			.elseif eax==IDC_BTNREPLACEALL
 			.elseif eax==IDC_RBNDIRECTIONALL
 				;Set find direction to down
 				or		da.find.fr,FR_DOWN
@@ -310,6 +287,21 @@ FindDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					and		da.find.fr,-1 xor FR_IGNORECOMMENTS
 				.endif
 				invoke FindInit,ha.hEdt,da.find.fscope
+			.elseif eax==IDC_RBNCURRENTSELECTION
+				mov		da.find.fscope,0
+				invoke FindInit,ha.hEdt,da.find.fscope
+			.elseif eax==IDC_RBNCURRENTPROCEDURE
+				mov		da.find.fscope,1
+				invoke FindInit,ha.hEdt,da.find.fscope
+			.elseif eax==IDC_RBNCURRENTMODULE
+				mov		da.find.fscope,2
+				invoke FindInit,ha.hEdt,da.find.fscope
+			.elseif eax==IDC_RBNALLOPENFILES
+				mov		da.find.fscope,3
+				invoke FindInit,ha.hEdt,da.find.fscope
+			.elseif eax==IDC_RBNALLPROJECTFILES
+				mov		da.find.fscope,4
+				invoke FindInit,ha.hEdt,da.find.fscope
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTREPLACE
@@ -331,7 +323,9 @@ FindDialogProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,hWin
 			mov		ha.hModeless,eax
 			mov		ha.hFind,eax
-			invoke FindInit,ha.hEdt,da.find.fscope
+			.if !da.inprogress
+				invoke FindInit,ha.hEdt,da.find.fscope
+			.endif
 		.endif
 	.elseif eax==WM_CLOSE
 		invoke SetFocus,ha.hEdt

@@ -345,10 +345,9 @@ FIND struct
 	fr					DWORD ?
 	fdir				DWORD ?
 	fscope				DWORD ?
-	firstchrg			CHARRANGE <>
 	fres				DWORD ?
 	nfound				DWORD ?
-	findchrg			CHARRANGE <>
+	initchrg			CHARRANGE <>
 	ft					FINDTEXTEX <>
 	szfindbuff			BYTE MAX_PATH dup(?)
 	szreplacebuff		BYTE MAX_PATH dup(?)
