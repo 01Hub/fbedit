@@ -2715,3 +2715,22 @@ TestWord:
 
 IsWordKeyWord endp
 
+PropertyFindExact proc uses ebx,lpType:DWORD,lpWord:DWORD,fMatchCase:DWORD
+
+	xor		ebx,ebx
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,lpType,lpWord
+	.while eax
+		mov		ebx,eax
+		.if fMatchCase
+			invoke strcmp,ebx,lpWord
+		.else
+			invoke strcmpi,ebx,lpWord
+		.endif
+		.break .if !eax
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		eax,ebx
+	ret
+
+PropertyFindExact endp
+

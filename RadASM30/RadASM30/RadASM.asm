@@ -287,13 +287,21 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FIND
-				invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+				.if ha.hFind
+					invoke SetFocus,ha.hFind
+				.else
+					invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+				.endif
 			.elseif eax==IDM_EDIT_FINDNEXT
 ;####
 			.elseif eax==IDM_EDIT_FINDPREV
 ;####
 			.elseif eax==IDM_EDIT_REPLACE
-				invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,TRUE
+				.if ha.hFind
+					invoke SetFocus,ha.hFind
+				.else
+					invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,TRUE
+				.endif
 			.elseif eax==IDM_EDIT_GOTODECLARE
 				invoke GotoDeclare
 			.elseif eax==IDM_EDIT_RETURN

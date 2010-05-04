@@ -243,8 +243,9 @@ szErrOpenDir					db 'Could not open directory!',0Dh,0
 szErrOverwrite					db 'Overwrite existing file?',0Dh,0
 szErrCreate						db 'Could not create the file!',0Dh,0
 szErrFileExists					db 'The file exists!',0Dh,0
+szReplace						db 'Replace...',0
 szRegionSearched				db 'Region searced.',0
-
+szReplaceDone					db 'Region searced.',0Dh,'%d replacements done.',0
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
 

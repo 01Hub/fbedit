@@ -31,6 +31,10 @@ GetWinPos proc
 		mov		eax,100
 	.endif
 	mov		da.win.ccht,eax
+	invoke GetItemInt,addr buffer,da.win.x
+	mov		da.win.ptfind.x,eax
+	invoke GetItemInt,addr buffer,da.win.y
+	mov		da.win.ptfind.y,eax
 	;Resource editor
 	invoke GetPrivateProfileString,addr szIniWin,addr szIniPosRes,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	invoke GetItemInt,addr buffer,200
@@ -87,9 +91,11 @@ PutWinPos proc
 	.if eax>10 && edx>10
 		mov		da.win.ccwt,eax
 		mov		da.win.ccht,edx
-		invoke PutItemInt,addr buffer,da.win.ccwt
-		invoke PutItemInt,addr buffer,da.win.ccht
 	.endif
+	invoke PutItemInt,addr buffer,da.win.ccwt
+	invoke PutItemInt,addr buffer,da.win.ccht
+	invoke PutItemInt,addr buffer,da.win.ptfind.x
+	invoke PutItemInt,addr buffer,da.win.ptfind.y
 	invoke WritePrivateProfileString,addr szIniWin,addr szIniPos,addr buffer[1],addr da.szRadASMIni
 	;Resource editor
 	mov		buffer,0

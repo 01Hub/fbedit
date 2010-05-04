@@ -260,6 +260,7 @@ WIN struct
 	fView				DWORD ?
 	ccwt				DWORD ?
 	ccht				DWORD ?
+	ptfind				POINT <>
 WIN ends
 
 ;16+20+12=48
@@ -346,11 +347,16 @@ FIND struct
 	fdir				DWORD ?
 	fscope				DWORD ?
 	fres				DWORD ?
+	fproc				DWORD ?
 	nfound				DWORD ?
+	nreplace			DWORD ?
 	initchrg			CHARRANGE <>
+	scopechrg			CHARRANGE <>
 	ft					FINDTEXTEX <>
 	szfindbuff			BYTE MAX_PATH dup(?)
 	szreplacebuff		BYTE MAX_PATH dup(?)
+	repdiff				DWORD ?
+	szfindhistory		BYTE 10*256 dup(?)
 FIND ends
 
 ADDINDATA struct
