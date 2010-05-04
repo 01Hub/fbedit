@@ -109,6 +109,38 @@ PutWinPos proc
 
 PutWinPos endp
 
+GetFindHistory proc uses ebx esi
+	LOCAL	buffer[16]:BYTE
+
+	mov		esi,offset da.find.szfindhistory
+	xor		ebx,ebx
+	.while ebx<10
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniFind,addr buffer,addr szNULL,esi,256,addr da.szRadASMIni
+		.break .if !eax
+		lea		esi,[esi+256]
+		inc		ebx
+	.endw
+	ret
+
+GetFindHistory endp
+
+PutFindHistory proc uses ebx esi
+	LOCAL	buffer[16]:BYTE
+
+	mov		esi,offset da.find.szfindhistory
+	xor		ebx,ebx
+	.while ebx<10
+		.break .if !byte ptr [esi]
+		invoke BinToDec,ebx,addr buffer
+		invoke WritePrivateProfileString,addr szIniFind,addr buffer,esi,addr da.szRadASMIni
+		lea		esi,[esi+256]
+		inc		ebx
+	.endw
+	ret
+
+PutFindHistory endp
+
 GetResource proc uses ebx esi edi
 	LOCAL	buffer[32]:BYTE
 

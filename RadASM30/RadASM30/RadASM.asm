@@ -1088,6 +1088,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke UpdateAll,UAM_CLOSEALL,0
 			invoke PutWinPos
+			invoke PutFindHistory
 			jmp		ExDef
 		.else
 			jmp		Ex
@@ -2392,6 +2393,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	.endif
 	invoke GetResource
 	invoke GetWinPos
+	invoke GetFindHistory
 	mov     eax,WS_OVERLAPPEDWINDOW or WS_CLIPCHILDREN or WS_CLIPSIBLINGS
 	mov		edx,WS_EX_LEFT or WS_EX_ACCEPTFILES
 	.if da.win.ftopmost

@@ -2734,3 +2734,25 @@ PropertyFindExact proc uses ebx,lpType:DWORD,lpWord:DWORD,fMatchCase:DWORD
 
 PropertyFindExact endp
 
+ConvertToFind proc uses esi edi,lpszIn:DWORD,lpszOut:DWORD
+
+	mov		esi,lpszIn
+	mov		edi,lpszOut
+	.while byte ptr [esi]
+		mov		ax,[esi]
+		.if ax=='I^'
+			mov		al,VK_TAB
+			inc		esi
+		.elseif ax=='M^'
+			mov		al,VK_RETURN
+			inc		esi
+		.endif
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+ConvertToFind endp
+

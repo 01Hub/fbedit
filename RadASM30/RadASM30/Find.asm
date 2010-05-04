@@ -33,6 +33,8 @@ ID_ALLPROJECTFILES				equ 4
 
 ntab			DWORD ?
 findtabs		HWND 1024 dup(?)
+szfind			BYTE 256 dup(?)
+szreplace		BYTE 256 dup(?)
 
 .code
 
@@ -45,6 +47,14 @@ FindInit proc uses ebx esi edi,hWin:HWND,fallfiles:DWORD
 	LOCAL	dwRead:DWORD
 	LOCAL	ms:MEMSEARCH
 
+	invoke ConvertToFind,addr da.find.szfindbuff,addr szfind
+	invoke ConvertToFind,addr da.find.szreplacebuff,addr szreplace
+	invoke strlen,addr szfind
+	push	eax
+	invoke strlen,addr szreplace
+	pop		edx
+	sub		eax,edx
+	mov		da.find.repdiff,eax
 	mov		da.find.fres,-1
 	mov		da.find.fproc,FALSE
 	.if fallfiles!=-1
@@ -379,6 +389,9 @@ FindDialogProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
 				invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof da.find.szfindbuff,addr da.find.szfindbuff
+				.if !da.find.szfindbuff
+					invoke SendDlgItemMessage,hWin,IDC_CBOFIND,CB_GETLBTEXT,0,addr da.find.szfindbuff
+				.endif
 			.endif
 		.endif
 		invoke SendDlgItemMessage,hWin,IDC_CBOFIND,EM_LIMITTEXT,255,0
@@ -451,7 +464,7 @@ FindDialogProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 		invoke CheckDlgButton,hWin,eax,BST_CHECKED
 		invoke SetWindowPos,hWin,0,da.win.ptfind.x,da.win.ptfind.y,0,0,SWP_NOSIZE or SWP_NOZORDER
-		mov		da.find.ft.lpstrText,offset da.find.szfindbuff
+		mov		da.find.ft.lpstrText,offset szfind;da.find.szfindbuff
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movzx	eax,dx
@@ -570,35 +583,17 @@ FindDialogProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDC_EDTREPLACE
 				invoke GetDlgItemText,hWin,IDC_EDTREPLACE,addr da.find.szreplacebuff,sizeof da.find.szreplacebuff
 				invoke FindInit,ha.hEdt,da.find.fscope
-				invoke strlen,addr da.find.szfindbuff
-				push	eax
-				invoke strlen,addr da.find.szreplacebuff
-				pop		edx
-				sub		eax,edx
-				mov		da.find.repdiff,eax
 			.endif
 		.elseif edx==CBN_EDITCHANGE
 			.if eax==IDC_CBOFIND
 				invoke GetDlgItemText,hWin,IDC_CBOFIND,addr da.find.szfindbuff,sizeof da.find.szfindbuff
 				invoke FindInit,ha.hEdt,da.find.fscope
-				invoke strlen,addr da.find.szfindbuff
-				push	eax
-				invoke strlen,addr da.find.szreplacebuff
-				pop		edx
-				sub		eax,edx
-				mov		da.find.repdiff,eax
 			.endif
 		.elseif edx==CBN_SELCHANGE
 			.if eax==IDC_CBOFIND
 				invoke SendDlgItemMessage,hWin,IDC_CBOFIND,CB_GETCURSEL,0,0
 				invoke SendDlgItemMessage,hWin,IDC_CBOFIND,CB_GETLBTEXT,eax,addr da.find.szfindbuff
 				invoke FindInit,ha.hEdt,da.find.fscope
-				invoke strlen,addr da.find.szfindbuff
-				push	eax
-				invoke strlen,addr da.find.szreplacebuff
-				pop		edx
-				sub		eax,edx
-				mov		da.find.repdiff,eax
 			.endif
 		.endif
 	.elseif eax==WM_ACTIVATE
@@ -619,7 +614,7 @@ FindDialogProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		esi,offset da.find.szfindhistory
 		invoke RtlZeroMemory,esi,sizeof da.find.szfindhistory
 		xor		ebx,ebx
-		.while TRUE
+		.while ebx<10
 			invoke SendDlgItemMessage,hWin,IDC_CBOFIND,CB_GETLBTEXT,ebx,esi
 			.break .if eax==CB_ERR
 			lea		esi,[esi+256]
@@ -647,9 +642,6 @@ UpdateFindHistory:
 			invoke SendDlgItemMessage,hWin,IDC_CBOFIND,CB_INSERTSTRING,0,addr da.find.szfindbuff
 		.endif
 	.endif
-;	If Len(f.findbuff) And SendMessage(hWin,CB_FINDSTRINGEXACT,-1,Cast(LPARAM,@f.findbuff))=CB_ERR Then
-;		SendMessage(hWin,CB_INSERTSTRING,0,Cast(LPARAM,@f.findbuff))
-;	EndIf
 	retn
 
 ShowReplace:
