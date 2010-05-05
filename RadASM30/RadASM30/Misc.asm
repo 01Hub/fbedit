@@ -822,7 +822,7 @@ ShowProc proc uses esi,nLine:DWORD
 		.if eax==ID_EDITCODE
 			mov		eax,nLine
 			mov		isinproc.nLine,eax
-			mov		eax,ha.hEdt
+			mov		eax,ha.hMdi
 			.if da.fProject
 				invoke GetWindowLong,ha.hEdt,GWL_USERDATA
 				mov		eax,[eax].TABMEM.pid
@@ -2128,11 +2128,10 @@ GotoDeclare proc uses esi
 
 	invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
 	.if buffer
+		mov		eax,ha.hMdi
 		.if da.fProject
 			invoke GetWindowLong,ha.hEdt,GWL_USERDATA
 			mov		eax,[eax].TABMEM.pid
-		.else
-			mov		eax,ha.hEdt
 		.endif
 		mov		isinproc.nOwner,eax
 		mov		isinproc.lpszType,offset szCCp

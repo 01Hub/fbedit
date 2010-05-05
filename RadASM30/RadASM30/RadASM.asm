@@ -109,8 +109,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
+		mov da.inprogress,TRUE
 		mov		eax,hWin
 		mov		ha.hWnd,eax
+		;Mdi Client
+		mov		cc.hWindowMenu,0
+		mov		cc.idFirstChild,ID_FIRSTCHILD
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szMdiClientClassName,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,addr cc
+		mov     ha.hClient,eax
+		invoke SetWindowLong,ha.hClient,GWL_WNDPROC,offset ClientProc
+		mov		lpOldClientProc,eax
 		;Load accelerators
 		invoke LoadAccelerators,ha.hInstance,IDA_ACCEL
 		mov		ha.hAccel,eax
@@ -129,13 +137,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DoReBar
 		;Statusbar
 		invoke DoStatus
-		;Mdi Client
-		mov		cc.hWindowMenu,0
-		mov		cc.idFirstChild,ID_FIRSTCHILD
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szMdiClientClassName,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_HSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,hWin,NULL,ha.hInstance,addr cc
-		mov     ha.hClient,eax
-		invoke SetWindowLong,ha.hClient,GWL_WNDPROC,offset ClientProc
-		mov		lpOldClientProc,eax
 		;Menu
 		invoke LoadMenu,ha.hInstance,IDR_MENU
 		mov		ha.hMenu,eax
@@ -167,6 +168,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		invoke DeleteObject,eax
 		invoke SetTimer,hWin,200,200,addr TimerProc
+		mov da.inprogress,FALSE
 	.elseif eax==WM_COMMAND
 		mov		edx,wParam
 		movsx	eax,dx
@@ -1196,6 +1198,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hTool,TLM_PAINT,0,0
 		invoke EndPaint,hWin,addr ps
 	.elseif eax==WM_SIZE
+		.if da.inprogress
+			jmp		Ex
+		.endif
 		invoke MoveWindow,ha.hDiv1,0,0,4096,2,TRUE
 		;Size rebar
 		.if lParam

@@ -38,12 +38,12 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dck.Docked,TRUE
 		mov		dck.Position,TL_RIGHT
 		mov		dck.IsChild,FALSE
-		mov		dck.DockWidth,150
-		mov		dck.DockHeight,100
-		mov		dck.FloatRect.left,0
-		mov		dck.FloatRect.top,0
-		mov		dck.FloatRect.right,200
-		mov		dck.FloatRect.bottom,300
+		mov		dck.dWidth,150
+		mov		dck.dHeight,100
+		mov		dck.fr.left,0
+		mov		dck.fr.top,0
+		mov		dck.fr.right,200
+		mov		dck.fr.bottom,300
 		invoke SendMessage,hTool,TLM_CREATE,0,addr dck
 		mov		hTL1,eax
 		mov		dck.ID,2
@@ -52,12 +52,12 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dck.Docked,TRUE
 		mov		dck.Position,TL_BOTTOM
 		mov		dck.IsChild,FALSE
-		mov		dck.DockWidth,150
-		mov		dck.DockHeight,100
-		mov		dck.FloatRect.left,0
-		mov		dck.FloatRect.top,0
-		mov		dck.FloatRect.right,200
-		mov		dck.FloatRect.bottom,300
+		mov		dck.dWidth,150
+		mov		dck.dHeight,100
+		mov		dck.fr.left,0
+		mov		dck.fr.top,0
+		mov		dck.fr.right,200
+		mov		dck.fr.bottom,300
 		invoke SendMessage,hTool,TLM_CREATE,0,addr dck
 		mov		hTL2,eax
 		mov		dck.ID,3
@@ -66,12 +66,12 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		dck.Docked,TRUE
 		mov		dck.Position,TL_LEFT
 		mov		dck.IsChild,FALSE
-		mov		dck.DockWidth,150
-		mov		dck.DockHeight,100
-		mov		dck.FloatRect.left,0
-		mov		dck.FloatRect.top,0
-		mov		dck.FloatRect.right,200
-		mov		dck.FloatRect.bottom,300
+		mov		dck.dWidth,150
+		mov		dck.dHeight,100
+		mov		dck.fr.left,0
+		mov		dck.fr.top,0
+		mov		dck.fr.right,200
+		mov		dck.fr.bottom,300
 		invoke SendMessage,hTool,TLM_CREATE,0,addr dck
 		mov		hTL3,eax
 	.elseif eax==WM_COMMAND
@@ -105,6 +105,8 @@ DlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		pop		eax
 		sub		rect.bottom,eax
 		invoke SendMessage,hTool,TLM_SIZE,0,addr rect
+	.elseif eax==WM_TOOLSIZE
+PrintHex eax
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
 	.else

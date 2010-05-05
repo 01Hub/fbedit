@@ -12,6 +12,7 @@ include Tools.asm
 InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	LOCAL	wc:WNDCLASSEX
 
+	invoke RtlZeroMemory,addr wc,sizeof WNDCLASSEX
 	;Create a windowclass for the user control
 	mov		wc.cbSize,sizeof WNDCLASSEX
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS
@@ -25,7 +26,7 @@ InstallRATools proc public hInst:HINSTANCE,fGlobal:DWORD
 	mov		eax,NULL
 	mov		wc.cbClsExtra,eax
 	mov		wc.cbWndExtra,4
-	mov		wc.hbrBackground,eax
+	mov		wc.hbrBackground,COLOR_BTNFACE+1;eax
 	mov		wc.lpszMenuName,eax
 	mov		wc.lpszClassName,offset szToolClassName
 	mov		wc.hIcon,eax
@@ -82,11 +83,12 @@ UnInstallRATools endp
 
 ;--------------------------------------------------------------------------------
 
-ToolsControlProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ToolsControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hTL:HWND
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
+		jmp		ExDef
 	.elseif eax==WM_DESTROY
 		invoke DestroyWindow,hSize
 		jmp		ExDef

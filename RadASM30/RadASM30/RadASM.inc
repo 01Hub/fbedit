@@ -204,6 +204,7 @@ szIniBraceMatch					db 'BraceMatch',0
 szIniOption						db 'Option',0
 szIniParse						db 'Parse',0
 szIniType						db 'Type',0
+szIniLocal						db 'Local',0
 szIniIgnore						db 'Ignore',0
 szIniDef						db 'Def',0
 szIniFile						db 'File',0

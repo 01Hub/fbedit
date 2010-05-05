@@ -1260,7 +1260,6 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call    GetToolStruct
 		.if ![edx].TOOL.dck.Visible || [edx].TOOL.dck.Docked
 			xor		eax,eax
-			ret
 		.endif
 	.elseif eax==WM_MOVE
 		mov     eax,hWin
@@ -1286,9 +1285,8 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SetCursorPos,pt.x,pt.y
 			invoke ToolMsg,[ebx].TOOL.hCld,TLM_LBUTTONDOWN,addr pt
 			xor		eax,eax
-			ret
 		.endif
-	.elseif eax==WM_NOTIFY
+;	.elseif eax==WM_NOTIFY
 ;		mov		ebx,lParam
 ;		mov		eax,[ebx].NMHDR.hwndFrom
 ;		.if eax==hTab && [ebx].NMHDR.code==TCN_SELCHANGE
@@ -1301,9 +1299,9 @@ ToolWndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ToolMessage,eax,TLM_HIDE,0
 		invoke InvalidateRect,hClient,NULL,TRUE
 		xor		eax,eax
-		ret
+	.else
+		invoke  DefWindowProc,hWin,uMsg,wParam,lParam
 	.endif
-	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
 	ret
 
 ToolWndProc endp

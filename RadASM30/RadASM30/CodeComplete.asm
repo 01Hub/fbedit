@@ -206,12 +206,21 @@ IsWordLocalStruct proc uses esi edi,lpLocal:DWORD,lpWord:DWORD,lpBuff:DWORD
 IsWordLocalStruct endp
 
 IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
+	LOCAL	buffer[256]:BYTE
 
 	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCd,lpWord
 	.while TRUE
 		.break .if !eax
 		mov		esi,eax
-		invoke strcmp,esi,lpWord
+		lea		edi,buffer
+		xor		ecx,ecx
+		.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=':' && ecx<256
+			mov		al,[esi+ecx]
+			mov		[edi+ecx],al
+			inc		ecx
+		.endw
+		mov		byte ptr [edi+ecx],0
+		invoke strcmp,edi,lpWord
 		.if !eax
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
@@ -379,7 +388,11 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		edi,lpLineWord
 				mov		eax,da.nLastLine
 				mov		isinproc.nLine,eax
-				mov		eax,ha.hEdt
+				mov		eax,ha.hMdi
+				.if da.fProject
+					invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+					mov		eax,[eax].TABMEM.pid
+				.endif
 				mov		isinproc.nOwner,eax
 				mov		isinproc.lpszType,offset szCCp
 				invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
@@ -532,7 +545,11 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 		.if da.cctype==CCTYPE_ALL
 			mov		eax,da.nLastLine
 			mov		isinproc.nLine,eax
-			mov		eax,ha.hEdt
+			mov		eax,ha.hMdi
+			.if da.fProject
+				invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+				mov		eax,[eax].TABMEM.pid
+			.endif
 			mov		isinproc.nOwner,eax
 			mov		isinproc.lpszType,offset szCCp
 			invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc

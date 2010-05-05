@@ -63,7 +63,7 @@ CreateTools proc
 	LOCAL	tci:TC_ITEM
 	LOCAL	buffer[256]:BYTE
 
-	invoke CreateWindowEx,0,addr szToolClassName,NULL,WS_CHILD,0,0,0,0,ha.hWnd,0,ha.hInstance,0
+	invoke CreateWindowEx,0,addr szToolClassName,NULL,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,0,ha.hInstance,0
 	mov		ha.hTool,eax
 	invoke SendMessage,ha.hTool,TLM_INIT,ha.hClient,ha.hWnd
 	;Project tool
