@@ -48,6 +48,8 @@ IDM_EDIT_INDENT					equ 10028
 IDM_EDIT_OUTDENT				equ 10029
 IDM_EDIT_COMMENT				equ 10030
 IDM_EDIT_UNCOMMENT				equ 10031
+IDM_EDIT_BLOCKMODE				equ 10185
+IDM_EDIT_BLOCKINSERT			equ 10186
 IDM_EDIT_BOKKMARK				equ 10023
 IDM_EDIT_TOGGLEBM				equ 10024
 IDM_EDIT_NEXTBM					equ 10025
@@ -421,6 +423,7 @@ ADDINDATA struct
 	make				MAKE 32 dup(<>)
 	szMainRC			BYTE 128 dup(?)
 	szMainAsm			BYTE 128 dup(?)
+	szDebug				BYTE 128 dup(?)
 	szMruFiles			BYTE 10*MAX_PATH dup(?)
 	szMruProjects		BYTE 10*MAX_PATH dup(?)
 	pHtmlHelpProc		DWORD ?

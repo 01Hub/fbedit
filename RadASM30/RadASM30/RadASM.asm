@@ -19,6 +19,7 @@ include Environment.asm
 include About.asm
 include ProjectOption.asm
 include Find.asm
+include Block.asm
 
 .code
 
@@ -287,15 +288,73 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FIND
-				.if ha.hFind
-					invoke SetFocus,ha.hFind
-				.else
-					invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						.if ha.hFind
+							invoke SetFocus,ha.hFind
+						.else
+							invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+						.endif
+					.endif
 				.endif
 			.elseif eax==IDM_EDIT_FINDNEXT
-;####
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						.if !szfind
+							.if ha.hFind
+								invoke SetFocus,ha.hFind
+							.else
+								invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+							.endif
+						.else
+							invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr da.find.ft.chrg
+							mov		eax,da.find.ft.chrg.cpMax
+							mov		da.find.ft.chrg.cpMin,eax
+							mov		da.find.ft.chrg.cpMax,-1
+							mov		eax,da.find.fr
+							or		eax,FR_DOWN
+							invoke SendMessage,ha.hEdt,EM_FINDTEXTEX,eax,offset da.find.ft
+							.if eax!=-1
+								invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,offset da.find.ft.chrgText
+								invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+								invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+								invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr da.find.ft.chrgText
+							.endif
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_EDIT_FINDPREV
-;####
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						.if !szfind
+							.if ha.hFind
+								invoke SetFocus,ha.hFind
+							.else
+								invoke CreateDialogParam,ha.hInstance,IDD_DLGFIND,hWin,offset FindDialogProc,FALSE
+							.endif
+						.else
+							invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr da.find.ft.chrg
+							mov		eax,da.find.ft.chrg.cpMin
+							.if eax
+								dec		eax
+							.endif
+							mov		da.find.ft.chrg.cpMin,eax
+							mov		da.find.ft.chrg.cpMax,0
+							mov		eax,da.find.fr
+							and		eax,-1 xor FR_DOWN
+							invoke SendMessage,ha.hEdt,EM_FINDTEXTEX,eax,offset da.find.ft
+							.if eax!=-1
+								invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,offset da.find.ft.chrgText
+								invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+								invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+								invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr da.find.ft.chrgText
+							.endif
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_EDIT_REPLACE
 				.if ha.hFind
 					invoke SetFocus,ha.hFind
@@ -337,6 +396,28 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke IndentComment,ha.hEdt,';',FALSE
 					.endif
 					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_EDIT_BLOCKMODE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_GETMODE,0,0
+						xor		eax,MODE_BLOCK
+						invoke SendMessage,ha.hEdt,REM_SETMODE,eax,0
+						mov		da.fTimer,1
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_BLOCKINSERT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_GETMODE,0,0
+						test	eax,MODE_BLOCK
+						.if !ZERO?
+							invoke DialogBoxParam,ha.hInstance,IDD_BLOCKDLG,hWin,offset BlockInsertProc,0
+							mov		da.fTimer,1
+						.endif
+					.endif
 				.endif
 			.elseif eax==IDM_EDIT_TOGGLEBM
 				.if ha.hMdi
@@ -728,7 +809,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_MAKE_BUILD
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
-				.if da.szMainRC
+				;Get relative pointer to selected build command
+				invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+				mov		edx,sizeof MAKE
+				mul		edx
+				mov		edi,eax
+				.if da.szMainRC && da.make.szCompileRC[edi]
 					invoke OutputMake,IDM_MAKE_COMPILE,2
 					.if !eax
 						invoke OutputMake,IDM_MAKE_ASSEMBLE,0
@@ -804,6 +890,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke strcpy,addr da.szMainRC,addr buffer
 						.endif
 					.endif
+					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_MAKE_TOGGLEMODULE
 				.if da.fProject
@@ -1072,6 +1159,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		chrg.cpMax,-1
 				invoke SendMessage,ebx,EM_EXSETSEL,0,addr chrg
 				invoke SendMessage,ebx,WM_COPY,0,0
+			.elseif eax==19999
+				mov		da.fTimer,1
 			.else
 				jmp		ExDef
 			.endif

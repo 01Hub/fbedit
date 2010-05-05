@@ -146,6 +146,7 @@ szSemi							db ';',0
 szMinus							db '-',0
 szTab							db VK_TAB,0
 szDotIni						db '.ini',0
+szDotDef						db '.def',0
 szDotPrra						db '.prra',0
 szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
@@ -153,6 +154,7 @@ szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
 szDollarA						db '$A',0
+szDollarD						db '$D',0
 szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
@@ -228,6 +230,7 @@ szIniExternal					db 'External',0
 szIniHelpF1						db 'HelpF1',0
 szIniRun						db 'Run',0
 szIniFind						db 'Find',0
+szIniCharTab					db 'CharTab',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

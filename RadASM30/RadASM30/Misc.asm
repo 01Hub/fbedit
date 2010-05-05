@@ -999,6 +999,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_EDIT_UNCOMMENT
 			push	eax
+			push	IDM_EDIT_BLOCKMODE
+			push	eax
+			push	IDM_EDIT_BLOCKINSERT
+			push	eax
 			push	IDM_EDIT_TOGGLEBM
 			push	eax
 			push	IDM_EDIT_NEXTBM
@@ -1052,11 +1056,19 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_COMMENT
 				push	eax
 				push	IDM_EDIT_UNCOMMENT
+				push	eax
+				push	IDM_EDIT_BLOCKMODE
 				push	TRUE
 				push	IDM_EDIT_TOGGLEBM
 				.if esi==ID_EDITHEX
+					push	FALSE
+					push	IDM_EDIT_BLOCKINSERT
 					invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
 				.else
+					invoke SendMessage,ebx,REM_GETMODE,0,0
+					and		eax,MODE_BLOCK
+					push	eax
+					push	IDM_EDIT_BLOCKINSERT
 					invoke SendMessage,ebx,REM_NXTBOOKMARK,-1,3
 					inc		eax
 				.endif
@@ -1113,6 +1125,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_COMMENT
 				push	eax
 				push	IDM_EDIT_UNCOMMENT
+				push	eax
+				push	IDM_EDIT_BLOCKMODE
+				push	eax
+				push	IDM_EDIT_BLOCKINSERT
 				push	eax
 				push	IDM_EDIT_TOGGLEBM
 				push	eax
@@ -1308,41 +1324,68 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_RESOURCE_UNDO
 	.elseif eax==6
 		;Make
+		;Get relative pointer to selected build command
+		invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+		mov		edx,sizeof MAKE
+		mul		edx
+		mov		edi,eax
 		xor		eax,eax
-		.if da.szMainRC
+		.if da.szMainRC && da.make.szCompileRC[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_COMPILE
 		xor		eax,eax
-		.if da.szMainAsm
+		.if da.szMainAsm && da.make.szAssemble[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_ASSEMBLE
+		xor		eax,eax
+		.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+			mov		eax,TRUE
+		.endif
 		push	eax
 		push	IDM_MAKE_BUILD
-		push	eax
-		push	IDM_MAKE_DEBUG
+		xor		eax,eax
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
+			mov		eax,TRUE
+		.endif
 		push	eax
 		push	IDM_MAKE_GO
+		xor		eax,eax
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+			mov		eax,TRUE
+		.endif
 		push	eax
 		push	IDM_MAKE_LINK
+		xor		eax,eax
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
+			mov		eax,TRUE
+		.endif
 		push	eax
 		push	IDM_MAKE_RUN
+		.if !da.szDebug
+			xor		eax,eax
+		.endif
+		push	eax
+		push	IDM_MAKE_DEBUG
 		;Any modules
-		push	ebx
-		xor		ebx,ebx
-		.while TRUE
-			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-			.break .if!eax
-			mov		ebx,[eax].PBITEM.id
-			.if [eax].PBITEM.flag==FLAG_MODULE
-				mov		eax,TRUE
-				.break
-			.endif
-		.endw
-		pop		ebx
+		xor		eax,eax
+		.if da.make.szAssemble[edi]
+			push	ebx
+			xor		ebx,ebx
+			.while TRUE
+				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+				.break .if!eax
+				mov		ebx,[eax].PBITEM.id
+				.if [eax].PBITEM.flag==FLAG_MODULE
+					mov		eax,TRUE
+					.break
+				.endif
+			.endw
+			pop		ebx
+		.endif
 		push	eax
 		push	IDM_MAKE_MODULES
 		.if esi==ID_EDITCODE
@@ -1582,7 +1625,7 @@ EnableToolBar proc uses ebx esi edi
 		push	eax
 		push	IDM_EDIT_CLEARBM
 		push	edi
-	.elseif
+	.else
 		mov		eax,TRUE
 		;File toolbar
 		mov		edi,ha.hTbrFile
@@ -1740,6 +1783,35 @@ EnableToolBar proc uses ebx esi edi
 			push	edi
 		.endif
 	.endif
+	;Make toolbar
+	invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+	mov		edx,sizeof MAKE
+	mul		edx
+	mov		edi,eax
+	xor		eax,eax
+	.if da.szMainAsm && da.make.szAssemble[edi]
+		mov		eax,TRUE
+	.endif
+	push	eax
+	push	IDM_MAKE_ASSEMBLE
+	push	ha.hTbrMake
+	xor		eax,eax
+	.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+		mov		eax,TRUE
+	.endif
+	push	eax
+	push	IDM_MAKE_BUILD
+	push	ha.hTbrMake
+	xor		eax,eax
+	.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
+		mov		eax,TRUE
+	.endif
+	push	eax
+	push	IDM_MAKE_RUN
+	push	ha.hTbrMake
+	push	eax
+	push	IDM_MAKE_GO
+	push	ha.hTbrMake
 	.while TRUE
 		pop		ecx
 		pop		edx

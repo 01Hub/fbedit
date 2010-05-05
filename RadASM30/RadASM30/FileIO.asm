@@ -281,6 +281,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			jmp		Ex
 		.endif
 		.if edi
+			invoke SetFocus,hEdt
 			invoke TabToolSetChanged,edi,FALSE
 			.if da.fProject
 				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,lpFileName

@@ -831,6 +831,7 @@ AddNewProjectFile proc
 		mov		ofn.nMaxFile,sizeof buffer
 		mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
 	    mov		ofn.lpstrDefExt,offset szNULL
+		mov		ofn.lpstrInitialDir,offset da.szProjectPath
 	    mov		ofn.lpstrTitle,offset szAddNewProjectFile
 	    ;Show save as dialog
 		invoke GetSaveFileName,addr ofn

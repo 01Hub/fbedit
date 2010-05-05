@@ -338,6 +338,37 @@ GetExternalFiles proc uses ebx edi
 
 GetExternalFiles endp
 
+GetCharTab proc uses ebx
+	LOCAL buffer[32]:BYTE
+
+	invoke SendMessage,ha.hOutput,REM_CHARTABINIT,0,0
+	xor		ebx,ebx
+	.while ebx<16
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniCharTab,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+		.if eax
+			xor		eax,eax
+			.while eax<16
+				push	eax
+				mov		edx,ebx
+				shl		edx,4
+				or		edx,eax
+				mov		al,buffer[eax]
+				.if al>='0' && al<='9'
+					and		eax,0Fh
+					add		edx,da.lpCharTab
+					mov		[edx],al
+				.endif
+				pop		eax
+				inc		eax
+			.endw
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+GetCharTab endp
+
 OpenAssembler proc uses ebx esi edi
 	LOCAL	pbfe:PBFILEEXT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -345,7 +376,6 @@ OpenAssembler proc uses ebx esi edi
 	LOCAL	bufftype[128]:BYTE
 	LOCAL	deftype:DEFTYPE
 	LOCAL	defgen:DEFGEN
-
 
 	;Assembler.ini
 	;Check version
@@ -608,6 +638,7 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr szNULL,addr da.szDefProjectPath,sizeof da.szDefProjectPath,addr da.szAssemblerIni
 		;Setup environment
 		invoke SetEnvironment
+		invoke GetCharTab
 		;Menus
 		invoke SetHelpMenu
 		invoke SetToolMenu

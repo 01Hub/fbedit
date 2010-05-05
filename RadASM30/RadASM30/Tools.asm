@@ -54,6 +54,7 @@ tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 .data?
 
 lpOldStatusProc		DWORD ?
+lpOldStaticProc		DWORD ?
 
 .code
 
@@ -304,12 +305,30 @@ LockToolbars proc uses ebx
 
 LockToolbars endp
 
+StaticProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==CBN_SELCHANGE && eax==19999
+			invoke SendMessage,ha.hWnd,uMsg,wParam,lParam
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldStaticProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+StaticProc endp
+
 DoReBar proc uses ebx esi edi
 	LOCAL	rbbi:REBARBANDINFO
 	LOCAL	buffer[256]:BYTE
 	LOCAL	nIns:DWORD
 
-	mov		edx,WS_CHILD or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
 	mov		edx,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or CCS_NODIVIDER or CCS_NOPARENTALIGN
 	invoke CreateWindowEx,0,addr szReBarClassName,NULL,edx,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
 	mov		ha.hReBar,eax
@@ -419,10 +438,13 @@ DoReBar proc uses ebx esi edi
 			mov		rbbi.cyMinChild,22
 			mov		rbbi.cxMinChild,123
 			mov		rbbi.cxIdeal,123
-			invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szStaticClassName,NULL,WS_CHILD or WS_VISIBLE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,0,0,ha.hWnd,NULL,ha.hInstance,NULL
 			mov		ha.hStcBuild,eax
+			invoke SetWindowLong,ha.hStcBuild,GWL_WNDPROC,offset StaticProc
+			mov		lpOldStaticProc,eax
+			mov		eax,ha.hStcBuild
 			mov		rbbi.hwndChild,eax
-			invoke CreateWindowEx,0,addr szComboBoxClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,123,150,ha.hStcBuild,NULL,ha.hInstance,NULL
+			invoke CreateWindowEx,0,addr szComboBoxClassName,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,123,150,ha.hStcBuild,19999,ha.hInstance,NULL
 			mov		ha.hCboBuild,eax
 			invoke SendMessage,ha.hCboBuild,WM_SETFONT,ha.hToolFont,FALSE
 			mov		rbbi.wID,6

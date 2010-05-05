@@ -1,3 +1,4 @@
+#include "Res/BlockDlg.rc"
 #include "Res/FindDlg.rc"
 #include "Res/ProjectOptionDlg.rc"
 #include "Res/RadASMVer.rc"

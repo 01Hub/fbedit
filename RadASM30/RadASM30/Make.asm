@@ -287,6 +287,49 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			invoke strcpy,addr makeexe.buffer,addr da.szLink
 			invoke strcat,addr makeexe.buffer,addr szSpc
 			invoke strcat,addr makeexe.buffer,addr da.make.szLink[esi]
+			invoke iniInStr,addr makeexe.buffer,addr szDollarD
+			.if eax!=-1
+				;Add .def file
+				.if da.fProject
+					xor		ebx,ebx
+					.while TRUE
+						invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+						.break .if !eax
+						mov		edi,eax
+						mov		ebx,[edi].PBITEM.id
+						invoke strlen,addr [edi].PBITEM.szitem
+						.if eax>4
+							mov		eax,dword ptr [edi].PBITEM.szitem[eax-4]
+							and		eax,5F5F5FFFh
+							.if eax=='FED.'
+								invoke strcpy,addr buffer,addr [edi].PBITEM.szitem
+								invoke RemovePath,addr buffer,addr da.szProjectPath,addr tmpbuff[512]
+								invoke iniInStr,addr makeexe.buffer,addr szDollarD
+								mov		edi,eax
+								invoke strcpyn,addr tmpbuff,addr makeexe.buffer,addr [edi+1]
+								invoke strcat,addr tmpbuff,offset szQuote
+								invoke strcat,addr tmpbuff,addr tmpbuff[512]
+								invoke strcat,addr tmpbuff,offset szQuote
+								invoke strcat,addr tmpbuff,addr makeexe.buffer[edi+2]
+								invoke strcpy,addr makeexe.buffer,addr tmpbuff
+								.break
+							.endif
+						.endif
+					.endw
+				.else
+					invoke strcpy,addr buffer,addr da.szMainAsm
+					invoke RemoveFileExt,addr buffer
+					invoke strcat,addr buffer,addr szDotDef
+					invoke iniInStr,addr makeexe.buffer,addr szDollarD
+					mov		edi,eax
+					invoke strcpyn,addr tmpbuff,addr makeexe.buffer,addr [edi+1]
+					invoke strcat,addr tmpbuff,offset szQuote
+					invoke strcat,addr tmpbuff,addr buffer
+					invoke strcat,addr tmpbuff,offset szQuote
+					invoke strcat,addr tmpbuff,addr makeexe.buffer[edi+2]
+					invoke strcpy,addr makeexe.buffer,addr tmpbuff
+				.endif
+			.endif
 			.if da.szMainAsm
 				invoke strcat,addr makeexe.buffer,addr szSpc
 				invoke strcat,addr makeexe.buffer,offset szQuote
@@ -341,7 +384,12 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			invoke strcat,addr makeexe.buffer,addr da.make.szLib[esi]
 			invoke strcat,addr makeexe.buffer,addr szSpc
 			invoke strcat,addr makeexe.buffer,offset szQuote
-			invoke strcat,addr makeexe.buffer,addr da.szMainAsm
+
+			invoke strcpy,addr buffer,addr da.szMainAsm
+			invoke RemoveFileExt,addr buffer
+			invoke strcat,addr buffer,addr da.make.szOutAssemble[esi]
+
+			invoke strcat,addr makeexe.buffer,addr buffer
 			invoke strcat,addr makeexe.buffer,offset szQuote
 			mov		edi,offset da.szMainAsm
 			lea		eax,da.make.szOutLib[esi]
