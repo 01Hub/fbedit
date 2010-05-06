@@ -2107,7 +2107,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.if [ebx].TABMEM.pid
 					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEMINDEX,[ebx].TABMEM.pid,0
 					.if eax!=-1
-						invoke SaveProjectItem,eax
+						invoke SaveProjectItem,eax,hWin
 					.endif
 				.endif
 			.endif

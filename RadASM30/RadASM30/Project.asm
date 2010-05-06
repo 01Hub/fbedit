@@ -1192,13 +1192,15 @@ GetProjectFiles proc uses ebx esi edi
 
 GetProjectFiles endp
 
-SaveProjectItem proc nInx:DWORD
+SaveProjectItem proc uses ebx esi edi,nInx:DWORD,hWin:HWND
 	LOCAL	fi:FILEINFO
 	LOCAL	buffer[8]:BYTE
+	LOCAL	hEdt:HWND
 
 	invoke SetFileInfo,nInx,addr fi
 	.if eax
-		mov		tmpbuff,0
+		;Save file info
+		mov		word ptr tmpbuff,0
 		invoke PutItemInt,addr tmpbuff,fi.idparent
 		invoke PutItemInt,addr tmpbuff,fi.flag
 		invoke PutItemInt,addr tmpbuff,fi.ID
@@ -1209,6 +1211,38 @@ SaveProjectItem proc nInx:DWORD
 		invoke PutItemInt,addr tmpbuff,fi.nline
 		invoke PutItemStr,addr tmpbuff,addr fi.filename
 		mov		buffer,'F'
+		invoke BinToDec,fi.pid,addr buffer[1]
+		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		hEdt,eax
+		invoke GetWindowLong,hEdt,GWL_ID
+		mov		edi,eax
+		;Save collapse info
+		mov		word ptr tmpbuff,0
+		.if edi==ID_EDITCODE
+		.endif
+		mov		buffer,'C'
+		invoke BinToDec,fi.pid,addr buffer[1]
+		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
+		;Save breakpoints
+		mov		word ptr tmpbuff,0
+		.if edi==ID_EDITCODE
+		.endif
+		mov		buffer,'B'
+		invoke BinToDec,fi.pid,addr buffer[1]
+		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
+		;Save bookmarks
+		mov		word ptr tmpbuff,0
+		.if edi==ID_EDITCODE || edi==ID_EDITTEXT
+			mov		ebx,-1
+			.while TRUE
+				invoke SendMessage,hEdt,REM_NXTBOOKMARK,ebx,3
+				.break .if eax==-1
+				mov		ebx,eax
+				invoke PutItemInt,addr tmpbuff,ebx
+			.endw
+		.endif
+		mov		buffer,'M'
 		invoke BinToDec,fi.pid,addr buffer[1]
 		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
 	.endif
@@ -1258,6 +1292,66 @@ PutProject proc uses ebx esi edi
 	mov		nMiss,0
 	.while ebx<MAX_FILES
 		mov		buffer,'F'
+		invoke BinToDec,ebx,addr buffer[1]
+		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,ebx,0
+			.if !eax
+				;Remove it from project file
+				invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr da.szProjectFile
+			.endif
+			mov		nMiss,0
+		.else
+			inc		nMiss
+			.break .if nMiss>MAX_MISS
+		.endif
+		inc		ebx
+	.endw
+	;Remove breakpoints not longer in project
+	mov		ebx,START_FILES
+	mov		nMiss,0
+	.while ebx<MAX_FILES
+		mov		buffer,'B'
+		invoke BinToDec,ebx,addr buffer[1]
+		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,ebx,0
+			.if !eax
+				;Remove it from project file
+				invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr da.szProjectFile
+			.endif
+			mov		nMiss,0
+		.else
+			inc		nMiss
+			.break .if nMiss>MAX_MISS
+		.endif
+		inc		ebx
+	.endw
+	;Remove collapse not longer in project
+	mov		ebx,START_FILES
+	mov		nMiss,0
+	.while ebx<MAX_FILES
+		mov		buffer,'C'
+		invoke BinToDec,ebx,addr buffer[1]
+		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+		.if eax
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,ebx,0
+			.if !eax
+				;Remove it from project file
+				invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr da.szProjectFile
+			.endif
+			mov		nMiss,0
+		.else
+			inc		nMiss
+			.break .if nMiss>MAX_MISS
+		.endif
+		inc		ebx
+	.endw
+	;Remove bookmarks not longer in project
+	mov		ebx,START_FILES
+	mov		nMiss,0
+	.while ebx<MAX_FILES
+		mov		buffer,'M'
 		invoke BinToDec,ebx,addr buffer[1]
 		invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 		.if eax
