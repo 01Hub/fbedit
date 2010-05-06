@@ -141,7 +141,7 @@ Group=Misc,Assembly,..Inc,..Asm,Resources
 49=5
 50=4
 [AutoLoad]
-AutoLoad=1,2,4,17,11,21,48,23
+AutoLoad=1,2,4,17,11,21,48,23,47
 [RADebugBP]
 1=
 2=
@@ -190,7 +190,7 @@ AutoLoad=1,2,4,17,11,21,48,23
 9=
 8=
 19=,
-21=,,,,,,,,,
+21=,,,,,,,,
 23=,,
 22=
 25=,,,
@@ -207,7 +207,7 @@ AutoLoad=1,2,4,17,11,21,48,23
 7=0,0,851,458,2229
 5=0,0,851,458,1986
 18=0,0,0,0,22762
-17=0,0,0,0,3865
+17=0,0,0,0,10429
 16=
 15=0,0,0,0,7711
 14=0,0,0,0,5496
@@ -247,7 +247,7 @@ AutoLoad=1,2,4,17,11,21,48,23
 43=0,0,0,0,21
 45=0,0,0,0,7730
 44=0,0,0,0
-48=0,0,0,0,8817
+48=0,0,0,0,33
 47=0,0,0,0
 49=0,0,0,0
 50=0,0,0,0,396
@@ -283,7 +283,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=5
+MilestoneOnDateDate=6
 MilestoneOnDateTimeYear=2010
 MilestoneOnDateTimeMonth=4
 MilestoneOnDateTimeDate=6
@@ -316,7 +316,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=1965932055
+PTimer=1970484149
 [GroupExpand]
 GroupExpand=1,1,1,0,1,0
 [BookMark]
@@ -333,8 +333,8 @@ GroupExpand=1,1,1,0,1,0
 [BreakPoint]
 0=
 [Find]
-1="PRM_ISINPROC"
-2="IsWordLocalStruct"
+1="IsWordLocalStruct"
+2="PRM_ISINPROC"
 3="WM_"
 4="04E"
 5="0000004E"

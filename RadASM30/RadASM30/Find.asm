@@ -1,6 +1,6 @@
 
 ;Find.dlg
-IDD_DLGFIND						equ 2800
+IDD_DLGFIND						equ 3800
 IDC_CBOFIND						equ 1002
 IDC_BTNREPLACEALL				equ 1003
 IDC_BTNREPLACE					equ 1004

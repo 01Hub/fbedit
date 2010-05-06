@@ -297,6 +297,21 @@
 				.endw
 				mov		byte ptr [ecx],0
 				ret
+			.elseif byte ptr [edx]=='['
+				.while byte ptr [edx] && byte ptr [edx-1]!=']'
+					inc		edx
+				.endw
+				.if byte ptr [edx]==':'
+					inc		edx
+					.while byte ptr [edx] && byte ptr [edx]!=',' && byte ptr [edx]!=' '
+						mov		al,[edx]
+						mov		[ecx],al
+						inc		ecx
+						inc		edx
+					.endw
+					mov		byte ptr [ecx],0
+					ret
+				.endif
 			.endif
 		  @@:
 			mov		edx,ebx
