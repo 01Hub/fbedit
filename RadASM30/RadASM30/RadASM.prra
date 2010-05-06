@@ -30,13 +30,13 @@ F7=-2,0,1,-6,-25,769,508,0,TabTool.asm
 F6=-2,0,1,-6,-25,769,508,0,TabOptions.Asm
 F2=-2,0,1,-6,-25,769,508,0,ProjectOption.asm
 F1=-2,0,1,-6,-25,769,508,0,Project.asm
-Open=4,3,4,21,5
+Open=0,3,4,21,5
 F5=-5,2,4,-6,-25,769,508,29,RadASM30.rc
 F21=-3,0,1,110,110,603,323,0,Addins\Addins.inc
 F4=-3,0,1,88,88,603,323,0,RadASM.inc
 F3=-2,2,1,66,66,603,323,0,RadASM.asm
 [Make]
 Make=0
-0=Window Release,'/v',.res,'/c /coff /Cp',.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',.exe,'',
-1=Window Debug,'/v',.res,'/c /coff /Cp /Zi /Zd',.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',.exe,'',
+0=Window Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /OUT:$O',..\$A.exe,'',
+1=Window Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /OUT:$O',..\$A.exe,'',
 Run=0,'',''

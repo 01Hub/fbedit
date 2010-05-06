@@ -1348,8 +1348,9 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	eax
 		push	IDM_MAKE_BUILD
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
-			mov		eax,TRUE
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+			inc		eax
 		.endif
 		push	eax
 		push	IDM_MAKE_GO
@@ -1360,8 +1361,9 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	eax
 		push	IDM_MAKE_LINK
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
-			mov		eax,TRUE
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+			inc		eax
 		.endif
 		push	eax
 		push	IDM_MAKE_RUN
@@ -1803,8 +1805,9 @@ EnableToolBar proc uses ebx esi edi
 	push	IDM_MAKE_BUILD
 	push	ha.hTbrMake
 	xor		eax,eax
-	.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi] && dword ptr da.make.szOutLink[edi]=='exe.'
-		mov		eax,TRUE
+	.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+		invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+		inc		eax
 	.endif
 	push	eax
 	push	IDM_MAKE_RUN

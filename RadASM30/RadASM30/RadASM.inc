@@ -147,6 +147,7 @@ szMinus							db '-',0
 szTab							db VK_TAB,0
 szDotIni						db '.ini',0
 szDotDef						db '.def',0
+szDotExe						db '.exe',0
 szDotPrra						db '.prra',0
 szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
@@ -155,6 +156,8 @@ szCr							db VK_RETURN,0
 szNULL							db 0
 szDollarA						db '$A',0
 szDollarD						db '$D',0
+szDollarO						db '$O',0
+szDollarR						db '$R',0
 szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0

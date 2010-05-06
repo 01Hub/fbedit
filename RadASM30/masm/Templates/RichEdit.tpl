@@ -11,8 +11,8 @@ F2=-3,0,1,44,44,600,400,0,[*PROJECTNAME*].inc
 F3=-5,2,4,66,66,600,400,0,[*PROJECTNAME*].rc
 [Make]
 Make=0
-0=Window Release,'/v',.res,'/c /coff /Cp',.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',.exe,'',
-1=Window Debug,'/v',.res,'/c /coff /Cp /Zi /Zd',.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',.exe,'',
+0=Window Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /OUT:$O',$A.exe,'',
+1=Window Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /OUT:$O',$A.exe,'',
 [*ENDTXT*]
 [*BEGINTXT*]
 [*PROJECTNAME*].asm

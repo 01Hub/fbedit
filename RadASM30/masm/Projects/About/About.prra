@@ -5,14 +5,14 @@ Version=3000
 Assembler=masm
 Path=C:\RadASM30\Masm\Projects\About
 Group=2,-1,0,1,About,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,0,0,602,323,25,About.Asm
-F4=-4,0,2,44,44,877,392,0,Abut.txt
-F3=-5,2,4,66,66,877,392,0,About.rc
-F2=-3,0,1,22,22,602,323,6,About.Inc
-F5=-4,0,3,-6,-25,1065,599,0,About.exe
-Open=0,1,2
+F1=-2,2,1,86,54,626,526,36,About.Asm
+F4=-4,0,2,-6,-25,769,508,0,Abut.txt
+F3=-5,2,4,-4,-23,765,504,0,About.rc
+F2=-3,0,1,-6,-25,769,508,21,About.Inc
+Open=0,1,2,4,3
 
 [Make]
 Make=0
-0=Window Release,'/v',.res,'/c /coff /Cp',.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0',.exe,'',
-1=Window Debug,'/v',.res,'/c /coff /Cp /Zi /Zd',.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0',.exe,'',
+0=Window Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /OUT:$O',$A.exe,'',
+1=Window Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /OUT:$O',$A.exe,'',
+Run=0,'Cmd /k',''

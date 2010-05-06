@@ -8,6 +8,7 @@ MAKEEXE struct
 	buffer		BYTE MAX_PATH*2 dup(?)
 	cmd			BYTE MAX_PATH dup(?)
 	cmdline		BYTE MAX_PATH dup(?)
+	output		BYTE MAX_PATH dup(?)
 MAKEEXE ends
 
 .data
@@ -239,8 +240,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,offset szQuote
 		invoke strcat,addr makeexe.buffer,addr da.szMainRC
 		invoke strcat,addr makeexe.buffer,offset szQuote
-		mov		edi,offset da.szMainRC
-		lea		eax,da.make.szOutCompileRC[esi]
+		lea		edi,da.make.szOutCompileRC[esi]
+		mov		ebx,offset da.szMainRC
+		call	SetOutputFile
+		mov		eax,TRUE
 		call	MakeIt
 	.elseif eax==IDM_MAKE_ASSEMBLE
 		invoke strcpy,addr makeexe.buffer,addr da.szAssemble
@@ -250,8 +253,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,offset szQuote
 		invoke strcat,addr makeexe.buffer,addr da.szMainAsm
 		invoke strcat,addr makeexe.buffer,offset szQuote
-		mov		edi,offset da.szMainAsm
-		lea		eax,da.make.szOutAssemble[esi]
+		lea		edi,da.make.szOutAssemble[esi]
+		mov		ebx,offset da.szMainAsm
+		call	SetOutputFile
+		mov		eax,TRUE
 		call	MakeIt
 	.elseif eax==IDM_MAKE_MODULES
 		xor		ebx,ebx
@@ -277,8 +282,13 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				.if byte ptr [edi+eax]=='\'
 					lea		edi,[edi+eax+1]
 				.endif
-				lea		eax,da.make.szOutAssemble[esi]
+				push	ebx
+				mov		ebx,edi
+				lea		edi,da.make.szOutAssemble[esi]
+				call	SetOutputFile
+				mov		eax,TRUE
 				call	MakeIt
+				pop		ebx
 				.break .if fExitCode
 			.endif
 		.endw
@@ -330,15 +340,13 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 					invoke strcpy,addr makeexe.buffer,addr tmpbuff
 				.endif
 			.endif
-			.if da.szMainAsm
-				invoke strcat,addr makeexe.buffer,addr szSpc
-				invoke strcat,addr makeexe.buffer,offset szQuote
-				invoke strcpy,addr buffer,addr da.szMainAsm
-				invoke RemoveFileExt,addr buffer
-				invoke strcat,addr buffer,addr da.make.szOutAssemble[esi]
-				invoke strcat,addr makeexe.buffer,addr buffer
-				invoke strcat,addr makeexe.buffer,offset szQuote
-			.endif
+			invoke strcat,addr makeexe.buffer,addr szSpc
+			invoke strcat,addr makeexe.buffer,offset szQuote
+			lea		edi,da.make.szOutAssemble[esi]
+			mov		ebx,offset da.szMainAsm
+			call	SetOutputFile
+			invoke strcat,addr makeexe.buffer,addr makeexe.output
+			invoke strcat,addr makeexe.buffer,offset szQuote
 			.if da.fProject
 				;Add modules
 				xor		ebx,ebx
@@ -347,36 +355,49 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 					.break .if !eax
 					mov		ebx,[eax].PBITEM.id
 					.if [eax].PBITEM.flag==FLAG_MODULE
+						push	ebx
 						mov		edi,eax
 						invoke strcat,addr makeexe.buffer,addr szSpc
 						invoke strcat,addr makeexe.buffer,offset szQuote
-						invoke RemovePath,addr [edi].PBITEM.szitem,addr da.szProjectPath,addr buffer2
-						invoke RemoveFileExt,addr buffer2
-						invoke strlen,addr buffer2
-						.while buffer2[eax]!='\' && eax
+						invoke strlen,addr [edi].PBITEM.szitem
+						.while [edi].PBITEM.szitem[eax]!='\' && eax
 							dec		eax
 						.endw
-						lea		edi,buffer2
-						.if buffer2[eax]=='\'
-							lea		edi,buffer2[eax+1]
+						.if [edi].PBITEM.szitem[eax]=='\'
+							inc		eax
 						.endif
-						invoke strcat,edi,addr da.make.szOutAssemble[esi]
-						invoke strcat,addr makeexe.buffer,edi
+						lea		ebx,[edi].PBITEM.szitem[eax]
+						lea		edi,da.make.szOutAssemble[esi]
+						call	SetOutputFile
+						invoke strcat,addr makeexe.buffer,addr makeexe.output
 						invoke strcat,addr makeexe.buffer,offset szQuote
+						pop		ebx
 					.endif
 				.endw
 			.endif
 			.if da.szMainRC
 				invoke strcat,addr makeexe.buffer,addr szSpc
 				invoke strcat,addr makeexe.buffer,offset szQuote
-				invoke strcpy,addr buffer,addr da.szMainRC
-				invoke RemoveFileExt,addr buffer
-				invoke strcat,addr buffer,addr da.make.szOutCompileRC[esi]
-				invoke strcat,addr makeexe.buffer,addr buffer
+				lea		edi,da.make.szOutCompileRC[esi]
+				mov		ebx,offset da.szMainRC
+				call	SetOutputFile
+				invoke strcat,addr makeexe.buffer,addr makeexe.output
 				invoke strcat,addr makeexe.buffer,offset szQuote
 			.endif
-			mov		edi,offset da.szMainAsm
-			lea		eax,da.make.szOutLink[esi]
+			lea		edi,da.make.szOutLink[esi]
+			mov		ebx,offset da.szMainAsm
+			call	SetOutputFile
+			invoke iniInStr,addr makeexe.buffer,addr szDollarO
+			.if eax!=-1
+				mov		edi,eax
+				invoke strcpyn,addr tmpbuff,addr makeexe.buffer,addr [edi+1]
+				invoke strcat,addr tmpbuff,offset szQuote
+				invoke strcat,addr tmpbuff,addr makeexe.output
+				invoke strcat,addr tmpbuff,offset szQuote
+				invoke strcat,addr tmpbuff,addr makeexe.buffer[edi+2]
+				invoke strcpy,addr makeexe.buffer,addr tmpbuff
+			.endif
+			mov		eax,TRUE
 			call	MakeIt
 		.elseif da.make.szLib[esi]
 			invoke strcpy,addr makeexe.buffer,addr da.szLib
@@ -384,15 +405,15 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			invoke strcat,addr makeexe.buffer,addr da.make.szLib[esi]
 			invoke strcat,addr makeexe.buffer,addr szSpc
 			invoke strcat,addr makeexe.buffer,offset szQuote
-
-			invoke strcpy,addr buffer,addr da.szMainAsm
-			invoke RemoveFileExt,addr buffer
-			invoke strcat,addr buffer,addr da.make.szOutAssemble[esi]
-
-			invoke strcat,addr makeexe.buffer,addr buffer
+			lea		edi,da.make.szOutAssemble[esi]
+			mov		ebx,offset da.szMainAsm
+			call	SetOutputFile
+			invoke strcat,addr makeexe.buffer,addr makeexe.output
 			invoke strcat,addr makeexe.buffer,offset szQuote
-			mov		edi,offset da.szMainAsm
-			lea		eax,da.make.szOutLib[esi]
+			lea		edi,da.make.szOutLib[esi]
+			mov		ebx,offset da.szMainAsm
+			call	SetOutputFile
+			mov		eax,TRUE
 			call	MakeIt
 		.endif
 	.elseif eax==IDM_MAKE_RUN
@@ -416,9 +437,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.endif
 			invoke strcat,addr makeexe.cmdline,addr szQuote
 		.else
-			invoke strcpy,addr makeexe.cmd,addr da.szMainAsm
-			invoke RemoveFileExt,addr makeexe.cmd
-			invoke strcat,addr makeexe.cmd,addr da.make.szOutLink[esi]
+			lea		edi,da.make.szOutLink[esi]
+			mov		ebx,offset da.szMainAsm
+			call	SetOutputFile
+			invoke strcpy,addr makeexe.cmd,addr makeexe.output
 			.if da.szCommandLine
 				invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
 			.endif
@@ -462,18 +484,13 @@ MakeIt:
 	mov		fExitCode,0
 	.if eax
 		;Delete old file
-		push	eax
-		invoke strcpy,addr buffer,edi
-		invoke RemoveFileExt,addr buffer
-		pop		eax
-		invoke strcat,addr buffer,eax
-		invoke GetFileAttributes,addr buffer
+		invoke GetFileAttributes,addr makeexe.output
 		.if eax!=INVALID_HANDLE_VALUE
-			invoke DeleteFile,addr buffer
+			invoke DeleteFile,addr makeexe.output
 			.if !eax
 				mov		fExitCode,-1
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset NoDel
-				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr buffer
+				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.output
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Errors
 				jmp		Ex
@@ -500,9 +517,27 @@ MakeIt:
 	.endw
 	invoke CloseHandle,makeexe.hThread
 	;Check if output file exists
-	invoke GetFileAttributes,addr buffer
+	invoke GetFileAttributes,addr makeexe.output
 	.if eax==INVALID_HANDLE_VALUE
 		mov		fExitCode,eax
+	.endif
+	retn
+
+SetOutputFile:
+	invoke iniInStr,edi,addr szDollarA
+	.if eax==-1
+		invoke iniInStr,edi,addr szDollarR
+	.endif
+	.if eax==-1
+			invoke strcpy,addr makeexe.output,edi
+	.else
+		push	esi
+		mov		esi,eax
+		invoke strcpyn,addr makeexe.output,edi,addr [esi+1]
+		invoke strcat,addr makeexe.output,ebx
+		invoke RemoveFileExt,addr makeexe.output
+		invoke strcat,addr makeexe.output,addr [edi+esi+2]
+		pop		esi
 	.endif
 	retn
 

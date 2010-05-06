@@ -1,7 +1,7 @@
 
 .386
-.model flat, stdcall  ;32 bit memory model
-option casemap :none  ;case sensitive
+.model flat, stdcall  ;32 bit memory model eax
+option casemap :none  ;case sensitive eax
 
 include About.inc
 
@@ -16,34 +16,32 @@ start:
 
 ;########################################################################
 
-DlgProc	proc	hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL rc[4]:RECT
+DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
-	mov	eax,uMsg
+	mov		eax,uMsg
 	.IF	eax==WM_INITDIALOG
 		;initialization here
 	.ELSEIF	eax==WM_COMMAND
-		mov edx,wParam
-		movzx eax,dx
-		shr edx,16
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
 		.IF edx==BN_CLICKED
 			.IF eax==IDOK
 
 			.ELSEIF eax==IDCANCEL
-				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.ENDIF
 		.ENDIF
 	.ELSEIF	eax==WM_CLOSE
-		invoke	EndDialog,hWin,0
+		invoke EndDialog,hWin,0
 	.ELSE
 		mov		eax,FALSE
 		ret
 	.ENDIF
-	mov	eax,TRUE
+	mov		eax,TRUE
 	ret
 
 DlgProc endp
 
 end start
-
 
