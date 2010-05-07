@@ -341,7 +341,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 								.while TRUE
 									invoke GetItemInt,addr tmpbuff,-1
 									.break .if eax==-1
-									invoke SendMessage,hEdt,REM_SETBOOKMARK,eax,3
+									invoke SendMessage,hEdt,REM_SETBREAKPOINT,eax,TRUE
 								.endw
 							.endif
 						.endif

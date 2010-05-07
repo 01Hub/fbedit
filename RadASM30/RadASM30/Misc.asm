@@ -706,6 +706,28 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 				.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_CLRBOOKMARKS,0,3
 				.endif
+			.elseif eax==UAM_ANYBREAKPOINTS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTBREAKPOINT,-1,0
+						.break .if eax==-1
+						mov		eax,TRUE
+						jmp		Ex
+					.endw
+				.endif
+			.elseif eax==UAM_CLEARBREAKPOINTS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					mov		edi,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTBREAKPOINT,edi,0
+						.break .if eax==-1
+						mov		edi,eax
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBREAKPOINT,edi,FALSE
+					.endw
+				.endif
 			.endif
 		.endif
 	.endw
@@ -1436,6 +1458,19 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==7
 		;Debug
+		xor		eax,eax
+		.if esi==ID_EDITCODE
+			invoke UpdateAll,UAM_ANYBREAKPOINTS,0
+			inc		eax
+		.endif
+		push	eax
+		push	IDM_DEBUG_CLEAR
+		xor		eax,eax
+		.if esi==ID_EDITCODE
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_DEBUG_TOGGLE
 	.elseif eax==8
 		;Tools
 	.elseif eax==9

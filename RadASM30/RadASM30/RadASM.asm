@@ -876,9 +876,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 				.endif
 			.elseif eax==IDM_DEBUG_TOGGLE
-;####
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						mov		ebx,eax
+						invoke SendMessage,ha.hEdt,REM_GETLINESTATE,ebx,0
+						and		eax,STATE_BREAKPOINT
+						xor		eax,STATE_BREAKPOINT
+						invoke SendMessage,ha.hEdt,REM_SETBREAKPOINT,ebx,eax
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_DEBUG_CLEAR
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke UpdateAll,UAM_CLEARBREAKPOINTS,0
+					.endif
+					mov		da.fTimer,1
+				.endif
 			.elseif eax==IDM_DEBUG_RUN
+;####
 			.elseif eax==IDM_DEBUG_BREAK
 			.elseif eax==IDM_DEBUG_STOP
 			.elseif eax==IDM_DEBUG_INTO
