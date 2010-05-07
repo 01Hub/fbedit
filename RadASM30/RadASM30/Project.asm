@@ -1127,8 +1127,6 @@ GetProjectFiles proc uses ebx esi edi
 		;Get open files
 		invoke GetPrivateProfileString,addr szIniProject,addr szIniOpen,addr szNULL,addr buffer,sizeof buffer,addr da.szProjectFile
 		.if eax
-;			push	da.win.fcldmax
-;			mov		da.win.fcldmax,FALSE
 			;Selected tab
 			invoke GetItemInt,addr buffer,0
 			push	eax
@@ -1142,16 +1140,12 @@ GetProjectFiles proc uses ebx esi edi
 				.endif
 			.endw
 			pop		eax
-;			pop		da.win.fcldmax
 			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 			.if eax==-1
 				invoke SendMessage,ha.hTab,TCM_SETCURSEL,0,0
 			.endif
 			.if eax!=-1
 				invoke TabToolActivate
-;				.if da.win.fcldmax
-;					invoke SendMessage,ha.hClient,WM_MDIMAXIMIZE,ha.hMdi,0
-;				.endif
 			.endif
 		.endif
 		;Get make command lines
@@ -1220,6 +1214,39 @@ SaveProjectItem proc uses ebx esi edi,nInx:DWORD,hWin:HWND
 		;Save collapse info
 		mov		word ptr tmpbuff,0
 		.if edi==ID_EDITCODE
+			invoke SendMessage,hEdt,EM_GETMODIFY,0,0
+			.if !eax
+				push	edi
+				mov		ebx,-1
+				xor		edi,edi
+			  @@:
+				shl		edi,1
+				and		edi,7FFFFFFFh
+				.if !edi
+					.if ebx!=-1
+						invoke PutItemInt,addr tmpbuff,esi
+					.else
+						invoke SendMessage,hEdt,EM_GETLINECOUNT,0,0
+						mov		ebx,eax
+					.endif
+					xor		esi,esi
+					inc		edi
+				.endif
+				invoke SendMessage,hEdt,REM_PRVBOOKMARK,ebx,1
+				push	eax
+				invoke SendMessage,hEdt,REM_PRVBOOKMARK,ebx,2
+				pop		edx
+				or		esi,edi
+				.if sdword ptr edx>=eax
+					mov		eax,edx
+					xor		esi,edi
+				.endif
+				mov		ebx,eax
+				cmp		ebx,-1
+				jne		@b
+				invoke PutItemInt,addr tmpbuff,esi
+				pop		edi
+			.endif
 		.endif
 		mov		buffer,'C'
 		invoke BinToDec,fi.pid,addr buffer[1]
@@ -1227,6 +1254,13 @@ SaveProjectItem proc uses ebx esi edi,nInx:DWORD,hWin:HWND
 		;Save breakpoints
 		mov		word ptr tmpbuff,0
 		.if edi==ID_EDITCODE
+			mov		ebx,-1
+			.while TRUE
+				invoke SendMessage,hEdt,REM_NEXTBREAKPOINT,ebx,0
+				.break .if eax==-1
+				mov		ebx,eax
+				invoke PutItemInt,addr tmpbuff,ebx
+			.endw
 		.endif
 		mov		buffer,'B'
 		invoke BinToDec,fi.pid,addr buffer[1]

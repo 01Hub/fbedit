@@ -685,6 +685,27 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						pop		eax
 					.endw
 				.endif
+			.elseif eax==UAM_PARSE
+				.if [ebx].TABMEM.fupdate
+					mov		[ebx].TABMEM.fupdate,FALSE
+					invoke ParseEdit,[ebx].TABMEM.hwnd,[ebx].TABMEM.pid
+				.endif
+			.elseif eax==UAM_ANYBOOKMARKS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NXTBOOKMARK,eax,3
+						.break .if eax==-1
+						mov		eax,TRUE
+						jmp		Ex
+					.endw
+				.endif
+			.elseif eax==UAM_CLEARBOOKMARKS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_CLRBOOKMARKS,0,3
+				.endif
 			.endif
 		.endif
 	.endw
@@ -1069,7 +1090,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 					and		eax,MODE_BLOCK
 					push	eax
 					push	IDM_EDIT_BLOCKINSERT
-					invoke SendMessage,ebx,REM_NXTBOOKMARK,-1,3
+					invoke UpdateAll,UAM_ANYBOOKMARKS,0
 					inc		eax
 				.endif
 				push	eax
@@ -1688,7 +1709,7 @@ EnableToolBar proc uses ebx esi edi
 			.if esi==ID_EDITHEX
 				invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
 			.else
-				invoke SendMessage,ebx,REM_NXTBOOKMARK,-1,3
+				invoke UpdateAll,UAM_ANYBOOKMARKS,0
 				inc		eax
 			.endif
 			push	eax
@@ -2830,3 +2851,202 @@ ConvertToFind proc uses esi edi,lpszIn:DWORD,lpszOut:DWORD
 
 ConvertToFind endp
 
+SelectBookmark proc hWin:HWND,nLine:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	invoke SendMessage,hWin,EM_LINEINDEX,eax,0
+	mov		chrg.cpMin,eax
+	mov		chrg.cpMax,eax
+	invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,hWin,REM_VCENTER,0,0
+	invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+	ret
+
+SelectBookmark endp
+
+NextBookmark proc uses ebx esi edi
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nTab:DWORD
+	LOCAL	nTabs:DWORD
+	LOCAL	tci:TC_ITEM
+
+	invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+	mov		edi,eax
+	invoke SendMessage,ha.hEdt,REM_NXTBOOKMARK,edi,3
+	.if eax!=-1
+		invoke SelectBookmark,ha.hEdt,eax
+	.else
+		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
+		mov		nTab,eax
+		invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+		mov		nTabs,eax
+		mov		edi,nTab
+		inc		edi
+		mov		tci.imask,TCIF_PARAM
+		.while edi<nTabs
+			invoke SendMessage,ha.hTab,TCM_GETITEM,edi,addr tci
+			mov		ebx,tci.lParam
+			invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+			.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+				invoke SendMessage,[ebx].TABMEM.hedt,REM_NXTBOOKMARK,-1,3
+				.if eax!=-1
+					push	eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,edi,0
+					invoke TabToolActivate
+					pop		eax
+					invoke SelectBookmark,[ebx].TABMEM.hedt,eax
+					jmp		Ex
+				.endif
+			.endif
+			inc		edi
+		.endw
+		xor		edi,edi
+		mov		tci.imask,TCIF_PARAM
+		.while edi<=nTab
+			invoke SendMessage,ha.hTab,TCM_GETITEM,edi,addr tci
+			mov		ebx,tci.lParam
+			invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+			.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+				invoke SendMessage,[ebx].TABMEM.hedt,REM_NXTBOOKMARK,-1,3
+				.if eax!=-1
+					push	eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,edi,0
+					invoke TabToolActivate
+					pop		eax
+					invoke SelectBookmark,[ebx].TABMEM.hedt,eax
+					jmp		Ex
+				.endif
+			.endif
+			inc		edi
+		.endw
+	.endif
+  Ex:
+	ret
+
+NextBookmark endp
+
+PreviousBookmark proc uses ebx esi edi
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nTab:DWORD
+	LOCAL	nTabs:DWORD
+	LOCAL	tci:TC_ITEM
+
+	invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+	mov		edi,eax
+	invoke SendMessage,ha.hEdt,REM_PRVBOOKMARK,edi,3
+	.if eax!=-1
+		invoke SelectBookmark,ha.hEdt,eax
+	.else
+		invoke SendMessage,ha.hTab,TCM_GETCURSEL,0,0
+		mov		nTab,eax
+		invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+		mov		nTabs,eax
+		mov		edi,nTab
+		dec		edi
+		mov		tci.imask,TCIF_PARAM
+		.while sdword ptr edi>=0
+			invoke SendMessage,ha.hTab,TCM_GETITEM,edi,addr tci
+			mov		ebx,tci.lParam
+			invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+			.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+				invoke SendMessage,[ebx].TABMEM.hedt,EM_GETLINECOUNT,0,0
+				invoke SendMessage,[ebx].TABMEM.hedt,REM_PRVBOOKMARK,eax,3
+				.if eax!=-1
+					push	eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,edi,0
+					invoke TabToolActivate
+					pop		eax
+					invoke SelectBookmark,[ebx].TABMEM.hedt,eax
+					jmp		Ex
+				.endif
+			.endif
+			dec		edi
+		.endw
+		mov		edi,nTabs
+		dec		edi
+		mov		tci.imask,TCIF_PARAM
+		.while sdword ptr edi>=nTab
+			invoke SendMessage,ha.hTab,TCM_GETITEM,edi,addr tci
+			mov		ebx,tci.lParam
+			invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+			.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+				invoke SendMessage,[ebx].TABMEM.hedt,EM_GETLINECOUNT,0,0
+				invoke SendMessage,[ebx].TABMEM.hedt,REM_PRVBOOKMARK,eax,3
+				.if eax!=-1
+					push	eax
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,edi,0
+					invoke TabToolActivate
+					pop		eax
+					invoke SelectBookmark,[ebx].TABMEM.hedt,eax
+					jmp		Ex
+				.endif
+			.endif
+			dec		edi
+		.endw
+	.endif
+  Ex:
+	ret
+
+PreviousBookmark endp
+
+AutoBrace proc uses ebx esi edi,hWin:HWND,nChar:DWORD
+	LOCAL	chrg:CHARRANGE
+	LOCAL	hMem:HGLOBAL
+
+	.if da.edtopt.fopt & EDTOPT_BRACE
+		invoke SendMessage,hWin,WM_GETTEXTLENGTH,0,0
+		shr		eax,12
+		inc		eax
+		shl		eax,12
+		push	eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+		mov		hMem,eax
+		mov		esi,eax
+		pop		eax
+		invoke SendMessage,hWin,WM_GETTEXT,eax,esi
+		mov		eax,nChar
+		.if eax=='[' || eax==']'
+			mov		ebx,']['
+		.endif
+		xor		edi,edi
+		.while byte ptr [esi]
+			.if bl==[esi]
+				mov		eax,esi
+				sub		eax,hMem
+				invoke SendMessage,hWin,REM_ISCHARPOS,0,0
+				.if !eax
+					inc		edi
+				.endif
+			.elseif bh==[esi]
+				mov		eax,esi
+				sub		eax,hMem
+				invoke SendMessage,hWin,REM_ISCHARPOS,0,0
+				.if !eax
+					dec		edi
+				.endif
+			.endif
+			lea		esi,[esi+1]
+		.endw
+		invoke GlobalFree,hMem
+		.if edi
+			invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+			mov		eax,nChar
+			.if eax==']' && sdword ptr edi>0
+				invoke SendMessage,hWin,EM_REPLACESEL,TRUE,addr nChar
+				invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,hWin,EM_SCROLLCARET,0,0
+			.elseif eax=='[' && sdword ptr edi<0
+				mov		eax,chrg.cpMin
+				dec		eax
+				mov		chrg.cpMin,eax
+				mov		chrg.cpMax,eax
+				invoke SendMessage,hWin,EM_EXSETSEL,0,addr chrg
+				invoke SendMessage,hWin,EM_REPLACESEL,TRUE,addr nChar
+			.endif
+		.endif
+	.endif
+	ret
+
+AutoBrace endp

@@ -30,6 +30,7 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if ZERO?
 			invoke EnableToolBar
 			invoke ShowProc,da.nLastLine
+			invoke UpdateAll,UAM_PARSE,0
 		.endif
 	.endif
 	ret
@@ -446,21 +447,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
-						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
-						mov		ebx,eax
-						invoke SendMessage,ha.hEdt,REM_NXTBOOKMARK,ebx,3
-						.if eax==-1
-							invoke SendMessage,ha.hEdt,REM_NXTBOOKMARK,eax,3
-						.endif
-						.if eax!=-1
-							invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
-							mov		chrg.cpMin,eax
-							mov		chrg.cpMax,eax
-							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-							invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
-							invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
-						.endif
+						invoke NextBookmark
 					.elseif eax==ID_EDITHEX
 						invoke SendMessage,ha.hEdt,HEM_NEXTBOOKMARK,0,addr hebmk
 						.if eax
@@ -482,23 +469,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
-						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
-						mov		ebx,eax
-						invoke SendMessage,ha.hEdt,REM_PRVBOOKMARK,ebx,3
-						.if eax==-1
-							invoke SendMessage,ha.hEdt,EM_GETLINECOUNT,0,0
-							inc		eax
-							invoke SendMessage,ha.hEdt,REM_PRVBOOKMARK,eax,3
-						.endif
-						.if eax!=-1
-							invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
-							mov		chrg.cpMin,eax
-							mov		chrg.cpMax,eax
-							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-							invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
-							invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
-						.endif
+						invoke PreviousBookmark
 					.elseif eax==ID_EDITHEX
 						invoke SendMessage,ha.hEdt,HEM_PREVIOUSBOOKMARK,0,addr hebmk
 						.if eax
@@ -520,7 +491,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-						invoke SendMessage,ha.hEdt,REM_CLRBOOKMARKS,0,3
+						invoke UpdateAll,UAM_CLEARBOOKMARKS,0
 					.elseif eax==ID_EDITHEX
 						invoke SendMessage,ha.hEdt,HEM_CLEARBOOKMARKS,0,0
 					.endif
@@ -1713,7 +1684,7 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 		.elseif eax==VK_ESCAPE
 			invoke ShowWindow,ha.hCC,SW_HIDE
-			invoke ShowWindow,ha.hCC,SW_HIDE
+			invoke ShowWindow,ha.hTT,SW_HIDE
 			mov		da.cctype,CCTYPE_NONE
 			xor		eax,eax
 			jmp		Ex
@@ -1731,6 +1702,16 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.elseif eax=='.'
 			mov		da.cctype,CCTYPE_STRUCT
 			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+			jmp		Ex
+		.elseif eax=='['
+			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+			invoke AutoBrace,ha.hEdt,']'
+			xor		eax,eax
+			jmp		Ex
+		.elseif eax==']' && da.edtopt.fopt & EDTOPT_BRACE
+			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+			invoke AutoBrace,ha.hEdt,'['
+			xor		eax,eax
 			jmp		Ex
 		.elseif da.cctype==CCTYPE_ALL || da.cctype==CCTYPE_STRUCT
 			push	eax
@@ -2070,6 +2051,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SetFocus,ha.hEdt
 		.elseif eax==wParam
 			;Deactivate
+			.if da.fChanged
+				mov		da.fChanged,FALSE
+				invoke GetWindowLong,wParam,GWL_USERDATA
+				invoke GetWindowLong,eax,GWL_USERDATA
+				invoke ParseEdit,wParam,[eax].TABMEM.pid
+			.endif
 			mov		ha.hMdi,0
 			mov		ha.hEdt,0
 			mov		da.szFileName,0
@@ -2181,7 +2168,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 					.endif
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
-					.if [esi].RASELCHANGE.fchanged
+					mov		eax,[esi].RASELCHANGE.fchanged
+					mov		da.fChanged,eax
+					.if eax
 						.if ![ebx].TABMEM.fchanged
 							invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 						.endif
@@ -2254,7 +2243,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							.if !da.inprogress
 								invoke ApiListBox,esi
 							.endif
-							mov		[ebx].TABMEM.fupdate,TRUE
 						.endif
 					.endif
 					mov		eax,[esi].RASELCHANGE.line
@@ -2264,11 +2252,8 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke ShowWindow,ha.hCC,SW_HIDE
 						invoke ShowWindow,ha.hTT,SW_HIDE
 						mov		da.cctype,CCTYPE_NONE
-						.if ![esi].RASELCHANGE.nWordGroup
-							.if [ebx].TABMEM.fupdate
-								mov		[ebx].TABMEM.fupdate,FALSE
-								invoke ParseEdit,[ebx].TABMEM.hwnd,[ebx].TABMEM.pid
-							.endif
+						.if ![esi].RASELCHANGE.nWordGroup && [esi].RASELCHANGE.fchanged
+							mov		[ebx].TABMEM.fupdate,TRUE
 						.endif
 					.elseif da.cctype==CCTYPE_ALL
 						.if !da.inprogress

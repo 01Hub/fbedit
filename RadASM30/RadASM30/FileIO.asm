@@ -163,6 +163,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 	LOCAL	hEdt:HWND
 	LOCAL	fi:FILEINFO
 	LOCAL	pid:DWORD
+	LOCAL	buffer[32]:BYTE
 
 	xor		edi,edi
 	mov		pid,edi
@@ -300,6 +301,62 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 							invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
 							invoke SendMessage,hEdt,REM_VCENTER,0,0
 							invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
+						.endif
+						;Restore collapse
+						.if fi.ID==ID_EDITCODE
+							mov		buffer,'C'
+							invoke BinToDec,fi.pid,addr buffer[1]
+							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+							.if eax
+								invoke SendMessage,hEdt,EM_GETLINECOUNT,0,0
+								invoke SendMessage,hEdt,REM_PRVBOOKMARK,eax,1
+								mov		ebx,eax
+								.while TRUE
+									invoke GetItemInt,addr tmpbuff,-1
+									.break .if eax==-1
+									xor		esi,esi
+									.while esi<31
+										shr		eax,1
+										push	eax
+										.if CARRY?
+											invoke SendMessage,hEdt,REM_COLLAPSE,ebx,0
+										.endif
+										invoke SendMessage,hEdt,REM_PRVBOOKMARK,ebx,1
+										mov		ebx,eax
+										pop		eax
+										inc		esi
+										cmp		ebx,-1
+										je		@f
+									.endw
+								.endw
+							  @@:
+							.endif
+						.endif
+						;Restore breakpoints
+						.if fi.ID==ID_EDITCODE
+							mov		buffer,'B'
+							invoke BinToDec,fi.pid,addr buffer[1]
+							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+							.if eax
+								.while TRUE
+									invoke GetItemInt,addr tmpbuff,-1
+									.break .if eax==-1
+									invoke SendMessage,hEdt,REM_SETBOOKMARK,eax,3
+								.endw
+							.endif
+						.endif
+						;Restore bookmarks
+						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
+							mov		buffer,'M'
+							invoke BinToDec,fi.pid,addr buffer[1]
+							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+							.if eax
+								.while TRUE
+									invoke GetItemInt,addr tmpbuff,-1
+									.break .if eax==-1
+									invoke SendMessage,hEdt,REM_SETBOOKMARK,eax,3
+								.endw
+							.endif
 						.endif
 					.endif
 				.endif

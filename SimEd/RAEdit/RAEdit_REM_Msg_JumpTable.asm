@@ -1102,6 +1102,7 @@
 					.endw
 				.endif
 				mov		byte ptr [ecx],0FFh
+				xor		eax,eax
 			.else
 				mov		eax,[ebx].EDIT.cpMin
 				.if eax==[ebx].EDIT.cpMax
@@ -1109,7 +1110,6 @@
 					invoke BracketMatch,ebx,eax,[ebx].EDIT.cpMin
 				.endif
 			.endif
-			xor		eax,eax
 			ret
 		align 4
 		_REM_COMMAND:

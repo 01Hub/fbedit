@@ -66,6 +66,7 @@ SetF1Help						PROTO
 SetHelpMenu						PROTO
 SetToolMenu						PROTO
 OpenFiles						PROTO	:DWORD
+ParseEdit						PROTO	:HWND,:DWORD
 
 RadASMVersion					equ 3000
 

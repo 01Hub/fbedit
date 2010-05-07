@@ -294,6 +294,7 @@ EDTOPT_LINEHI					equ 4
 EDTOPT_CMNTHI					equ 8
 EDTOPT_LINENR					equ 16
 EDTOPT_SESSION					equ 32
+EDTOPT_BRACE					equ 64
 
 EDTOPT struct
 	tabsize				DWORD ?
@@ -384,6 +385,7 @@ ADDINDATA struct
 	nLastLine			DWORD ?
 	nLastPropLine		DWORD ?
 	nLastSize			DWORD ?
+	fChanged			DWORD ?
 	rabdstr				BYTE 2048 dup(?)
 	rabd				RABLOCKDEF 32 dup(<>)
 	szCmntStart			BYTE 64 dup(?)
@@ -464,3 +466,6 @@ UAM_CLOSEALL					equ 5
 UAM_SETCOLORS					equ 6
 UAM_SETFONTS					equ 7
 UAM_CLEARERRORS					equ 8
+UAM_PARSE						equ 9
+UAM_ANYBOOKMARKS				equ 10
+UAM_CLEARBOOKMARKS				equ 11

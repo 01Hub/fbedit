@@ -2224,6 +2224,7 @@ BracketMatch proc uses ebx,hMem:DWORD,nChr:DWORD,cp:DWORD
 			mov		[ebx].EDIT.cpbrst,eax
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
+			mov		eax,[ebx].EDIT.cpbren
 			jmp		Ex
 		.endif
 		inc		ecx
@@ -2243,10 +2244,12 @@ BracketMatch proc uses ebx,hMem:DWORD,nChr:DWORD,cp:DWORD
 			mov		[ebx].EDIT.cpbren,eax
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edta.hwnd
 			invoke InvalidateEdit,ebx,[ebx].EDIT.edtb.hwnd
+			mov		eax,[ebx].EDIT.cpbrst
 			jmp		Ex
 		.endif
 		inc		ecx
 	.endw
+	mov		eax,-1
   Ex:
 	ret
 
