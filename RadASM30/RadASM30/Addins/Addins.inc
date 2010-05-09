@@ -431,6 +431,7 @@ ADDINDATA struct
 	pHtmlHelpProc		DWORD ?
 	szHelpF1			BYTE 3*MAX_PATH dup(?)
 	szCommandLine		BYTE 128 dup(?)
+	fDelMinor			DWORD ?
 	fCmdExe				DWORD ?
 	szCmdExe			BYTE 64 dup(?)
 	find				FIND <>

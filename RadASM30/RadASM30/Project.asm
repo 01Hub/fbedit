@@ -1063,6 +1063,7 @@ GetProjectFiles proc uses ebx esi edi
 		invoke strcpy,addr da.szFBPath,addr da.szProjectPath
 	.endif
 	invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
+	invoke SetCurrentDirectory,addr da.szProjectPath
 	;Get groups
 	invoke GetPrivateProfileString,addr szIniProject,addr szIniGroup,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 	.if eax
@@ -1176,6 +1177,8 @@ GetProjectFiles proc uses ebx esi edi
 		.if eax==CB_ERR
 			invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
 		.endif
+		invoke GetPrivateProfileInt,addr szIniMake,addr szIniDelete,0,addr da.szProjectFile
+		mov		da.fDelMinor,eax
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniRun,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 		invoke GetItemInt,addr tmpbuff,0
 		mov		da.fCmdExe,eax
@@ -1469,6 +1472,8 @@ PutProject proc uses ebx esi edi
 		lea		esi,[esi+sizeof MAKE]
 		inc		ebx
 	.endw
+	invoke BinToDec,da.fDelMinor,addr tmpbuff
+	invoke WritePrivateProfileString,addr szIniMake,addr szIniDelete,addr tmpbuff,addr da.szProjectFile
 	mov		tmpbuff,0
 	invoke PutItemInt,addr tmpbuff,da.fCmdExe
 	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCmdExe

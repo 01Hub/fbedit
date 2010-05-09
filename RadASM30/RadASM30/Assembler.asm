@@ -536,7 +536,7 @@ OpenAssembler proc uses ebx esi edi
 		mov		da.edtopt.fopt,eax
 		invoke GetPrivateProfileString,addr szIniFile,addr szIniFilter,NULL,addr tmpbuff,sizeof da.szFilter+2,addr da.szAssemblerIni
 		invoke GetItemInt,addr tmpbuff,1
-		invoke SendMessage,ha.hFileBrowser,FBM_SETFILTER,TRUE,eax
+		invoke SendMessage,ha.hFileBrowser,FBM_SETFILTER,FALSE,eax
 		invoke GetItemStr,addr tmpbuff,addr szDefFilter,addr da.szFilter,sizeof da.szFilter
 		invoke SendMessage,ha.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr da.szFilter
 		;Get parser

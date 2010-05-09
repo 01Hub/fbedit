@@ -537,8 +537,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
-						invoke SendMessage,ha.hEdt,DEM_ISLOCKED,0,0
-						xor		eax,TRUE
+;						invoke SendMessage,ha.hEdt,DEM_ISLOCKED,0,0
+;						xor		eax,TRUE
+						xor		da.resopt.fopt,RESOPT_LOCK
+						mov		eax,da.resopt.fopt
+						and		eax,RESOPT_LOCK
 						invoke SendMessage,ha.hEdt,DEM_LOCKCONTROLS,0,eax
 					.endif
 					mov		da.fTimer,1
@@ -564,7 +567,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
 						invoke GetWindowLong,ha.hEdt,GWL_STYLE
-						xor		eax,DES_GRID
+						xor		da.resopt.fopt,RESOPT_GRID
+						mov		edx,da.resopt.fopt
+						and		edx,RESOPT_GRID
+						.if edx
+							or		eax,DES_GRID
+						.else
+							and		eax,-1 xor DES_GRID
+						.endif
 						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
 					.endif
 					mov		da.fTimer,1
@@ -574,7 +584,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
 						invoke GetWindowLong,ha.hEdt,GWL_STYLE
-						xor		eax,DES_SNAPTOGRID
+						xor		da.resopt.fopt,RESOPT_SNAP
+						mov		edx,da.resopt.fopt
+						and		edx,RESOPT_SNAP
+						.if edx
+							or		eax,DES_SNAPTOGRID
+						.else
+							and		eax,-1 xor DES_SNAPTOGRID
+						.endif
 						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
 					.endif
 					mov		da.fTimer,1
@@ -793,12 +810,18 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke OutputMake,IDM_MAKE_ASSEMBLE,0
 						.if !eax
 							invoke OutputMake,IDM_MAKE_LINK,3
+							.if !eax
+								invoke DeleteMinorFiles
+							.endif
 						.endif
 					.endif
 				.else
 					invoke OutputMake,IDM_MAKE_ASSEMBLE,2
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
+						.if !eax
+							invoke DeleteMinorFiles
+						.endif
 					.endif
 				.endif
 			.elseif eax==IDM_MAKE_GO
@@ -811,6 +834,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if !eax
 							invoke OutputMake,IDM_MAKE_LINK,3
 							.if !eax
+								invoke DeleteMinorFiles
 								invoke OutputMake,IDM_MAKE_RUN,0
 							.endif
 						.endif
@@ -820,6 +844,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
 						.if !eax
+							invoke DeleteMinorFiles
 							invoke OutputMake,IDM_MAKE_RUN,0
 						.endif
 					.endif
@@ -966,6 +991,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke DialogBoxParam,ha.hInstance,IDD_TABOPTIONS,hWin,offset TabOptionsProc,0
 			.elseif eax==IDM_OPTION_ENVIRONMENT
 				invoke DialogBoxParam,ha.hInstance,IDD_ENVIRONMENTOPTION,hWin,offset EnvironmentOptionsProc,0
+			.elseif eax==IDM_OPTION_MAKE
+;####
 			.elseif eax==IDM_OPTION_EXTERNAL
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
 				.if eax
@@ -1171,11 +1198,65 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke UpdateAll,UAM_CLOSEALL,0
 			invoke PutWinPos
 			invoke PutFindHistory
+			invoke SaveMRU,addr szIniFile,offset da.szMruFiles
+			invoke SaveMRU,addr szIniProject,offset da.szMruProjects
 			jmp		ExDef
 		.else
 			jmp		Ex
 		.endif
 	.elseif eax==WM_DESTROY
+		;Windows
+		invoke DestroyWindow,ha.hTab
+		invoke DestroyWindow,ha.hToolTab
+		invoke DestroyWindow,ha.hTabProject
+		invoke DestroyWindow,ha.hFileBrowser
+		invoke DestroyWindow,ha.hProjectBrowser
+		invoke DestroyWindow,ha.hToolProject
+		;invoke DestroyWindow,ha.hTT
+		invoke DestroyWindow,ha.hCC
+		invoke DestroyWindow,ha.hProperty
+		invoke DestroyWindow,ha.hToolProperties
+		invoke DestroyWindow,ha.hTabOutput
+		invoke DestroyWindow,ha.hOutput
+		invoke DestroyWindow,ha.hImmediate
+		invoke DestroyWindow,ha.hToolOutput
+		;invoke DestroyWindow,ha.hTool
+		invoke DestroyWindow,ha.hDiv1
+		invoke DestroyWindow,ha.hDiv2
+		invoke DestroyWindow,ha.hClient
+		invoke DestroyWindow,ha.hTbrFile
+		invoke DestroyWindow,ha.hTbrEdit1
+		invoke DestroyWindow,ha.hTbrEdit2
+		invoke DestroyWindow,ha.hTbrView
+		invoke DestroyWindow,ha.hTbrMake
+		invoke DestroyWindow,ha.hCboBuild
+		invoke DestroyWindow,ha.hStcBuild
+		;invoke DestroyWindow,ha.hReBar
+		;invoke DestroyWindow,ha.hStatus
+		invoke DestroyMenu,ha.hContextMenu
+		invoke DestroyMenu,ha.hMenu
+		;Imagelists
+		invoke ImageList_Destroy,ha.hImlTbr
+		invoke ImageList_Destroy,ha.hImlTbrGray
+		invoke ImageList_Destroy,ha.hMnuIml
+		;Cursors
+		invoke DestroyCursor,ha.hCursor
+		invoke DestroyCursor,ha.hSplitCurV
+		invoke DestroyCursor,ha.hSplitCurH
+		;Icons
+		invoke DestroyIcon,ha.hIcon
+		;Accelerators
+		invoke DestroyAcceleratorTable,ha.hAccel
+		;Fonts
+		invoke DeleteObject,ha.hToolFont
+		invoke DeleteObject,ha.racf.hFont
+		invoke DeleteObject,ha.racf.hIFont
+		invoke DeleteObject,ha.racf.hLnrFont
+		invoke DeleteObject,ha.ratf.hFont
+		invoke DeleteObject,ha.ratf.hIFont
+		invoke DeleteObject,ha.ratf.hLnrFont
+		invoke DeleteObject,ha.rahf.hFont
+		invoke DeleteObject,ha.rahf.hLnrFont
 		invoke PostQuitMessage,NULL
 		jmp		ExDef
 	.elseif eax==WM_MOUSEMOVE
@@ -2524,8 +2605,6 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 			.endif
 		.endif
 	.endw
-	invoke SaveMRU,addr szIniFile,addr da.szMruFiles
-	invoke SaveMRU,addr szIniProject,addr da.szMruProjects
 	mov   eax,msg.wParam
   Ex:
 	ret

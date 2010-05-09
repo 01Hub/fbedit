@@ -145,6 +145,7 @@ szComma							db ',',0
 szQuote							db '"',0
 szSemi							db ';',0
 szMinus							db '-',0
+szCR							db VK_RETURN,0
 szTab							db VK_TAB,0
 szDotIni						db '.ini',0
 szDotDef						db '.def',0
@@ -227,6 +228,7 @@ szIniCustCtrl					db 'CustCtrl',0
 szIniCustStyle					db 'CustStyle',0
 szIniCustType					db 'CustType',0
 szIniMake						db 'Make',0
+szIniDelete						db 'Delete',0
 szIniHelp						db 'Help',0
 szIniEnvironment				db 'Environment',0
 szIniHeader						db 'Header',0
@@ -257,6 +259,7 @@ szRegionSearched				db 'Region searced.',0
 szReplaceDone					db 'Region searced.',0Dh,'%d replacements done.',0
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
+szDeleted						db 'Deleted: ',0
 
 defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h

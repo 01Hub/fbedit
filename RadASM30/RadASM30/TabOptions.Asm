@@ -253,8 +253,10 @@ TabOpt3Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if resopt.fopt & RESOPT_GRID
 			invoke CheckDlgButton,hWin,IDC_CHKSHOWGRID,BST_CHECKED
 		.endif
-		invoke CheckDlgButton,hWin,IDC_CHKSNAPGRID,BST_CHECKED
 		.if resopt.fopt & RESOPT_SNAP
+			invoke CheckDlgButton,hWin,IDC_CHKSNAPGRID,BST_CHECKED
+		.endif
+		.if resopt.fopt & RESOPT_TIP
 			invoke CheckDlgButton,hWin,IDC_CHKSHOWTIP,BST_CHECKED
 		.endif
 		.if resopt.fopt & RESOPT_LINE

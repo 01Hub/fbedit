@@ -972,6 +972,89 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 
 IndentComment endp
 
+CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
+
+	push	0
+	push	0
+	mov		eax,nPos
+	.if eax==2
+		;View
+		push	da.fLockToolbar
+		push	IDM_VIEW_LOCK
+		invoke IsWindowVisible,ha.hTbrFile
+		push	eax
+		push	IDM_VIEW_TBFILE
+		invoke IsWindowVisible,ha.hTbrEdit1
+		push	eax
+		push	IDM_VIEW_TBEDIT
+		invoke IsWindowVisible,ha.hTbrEdit2
+		push	eax
+		push	IDM_VIEW_TBBOOKMARK
+		invoke IsWindowVisible,ha.hTbrView
+		push	eax
+		push	IDM_VIEW_TBVIEW
+		invoke IsWindowVisible,ha.hTbrMake
+		push	eax
+		push	IDM_VIEW_TBMAKE
+		invoke IsWindowVisible,ha.hStcBuild
+		push	eax
+		push	IDM_VIEW_TBBUILD
+		mov		eax,da.win.fView
+		and		eax,VIEW_STATUSBAR
+		push	eax
+		push	IDM_VIEW_STATUSBAR
+		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolProject
+		push	eax
+		push	IDM_VIEW_PROJECT
+		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolProperties
+		push	eax
+		push	IDM_VIEW_PROPERTIES
+		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolOutput
+		push	eax
+		push	IDM_VIEW_OUTPUT
+		invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolTab
+		push	eax
+		push	IDM_VIEW_TAB
+	.elseif eax==3
+		;Format
+		xor		eax,eax
+		test	da.resopt.fopt,RESOPT_LOCK
+		.if !ZERO?
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_FORMAT_LOCK
+		xor		eax,eax
+		test	da.resopt.fopt,RESOPT_GRID
+		.if !ZERO?
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_FORMAT_SHOW
+		xor		eax,eax
+		test	da.resopt.fopt,RESOPT_SNAP
+		.if !ZERO?
+			mov		eax,TRUE
+		.endif
+		push	eax
+		push	IDM_FORMAT_SNAP
+	.endif
+	.while TRUE
+		pop		edx
+		pop		eax
+		.break .if !edx
+		.if eax
+			mov		eax,MF_BYCOMMAND or MF_CHECKED
+		.else
+			mov		eax,MF_BYCOMMAND or MF_UNCHECKED
+		.endif
+		invoke CheckMenuItem,hMnu,edx,eax
+		invoke EnableMenuItem,hMnu,edx,eax
+	.endw
+	ret
+
+CheckMenu endp
+
 EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	chrg:CHARRANGE
 
@@ -1185,8 +1268,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==2
 		;View
+		invoke CheckMenu,hMnu,nPos
 	.elseif eax==3
 		;Format
+		invoke CheckMenu,hMnu,nPos
 		.if esi==ID_EDITRES
 			mov		eax,TRUE
 			push	eax
@@ -2597,7 +2682,11 @@ SaveMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
 	invoke RtlZeroMemory,offset tmpbuff,sizeof tmpbuff
 	mov		edi,offset tmpbuff
 	mov		esi,lpMRU
-	.while byte ptr [esi]
+	xor		ebx,ebx
+	.while ebx<10
+		.break .if !byte ptr [esi]
+		mov		byte ptr [edi],','
+		inc		edi
 		push	esi
 		.while byte ptr [esi]
 			mov		al,[esi]
@@ -2605,13 +2694,11 @@ SaveMRU proc uses ebx esi edi,lpKey:DWORD,lpMRU:DWORD
 			inc		esi
 			inc		edi
 		.endw
-		mov		byte ptr [edi],','
-		inc		edi
 		pop		esi
 		lea		esi,[esi+MAX_PATH]
+		inc		ebx
 	.endw
-	mov		byte ptr [edi-1],0
-	invoke WritePrivateProfileString,addr szIniMru,lpKey,addr tmpbuff,addr da.szRadASMIni
+	invoke WritePrivateProfileString,addr szIniMru,lpKey,addr tmpbuff[1],addr da.szRadASMIni
 	ret
 
 SaveMRU endp

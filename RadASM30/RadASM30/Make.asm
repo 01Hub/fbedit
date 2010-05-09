@@ -476,6 +476,9 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
   Ex:
 	.if !fExitCode && fHide
 		invoke ShowOutput,FALSE
+		.if ha.hMdi
+			invoke SetFocus,ha.hEdt
+		.endif
 	.endif
 	mov		eax,fExitCode
 	ret
@@ -529,7 +532,7 @@ SetOutputFile:
 		invoke iniInStr,edi,addr szDollarR
 	.endif
 	.if eax==-1
-			invoke strcpy,addr makeexe.output,edi
+		invoke strcpy,addr makeexe.output,edi
 	.else
 		push	esi
 		mov		esi,eax
@@ -543,3 +546,56 @@ SetOutputFile:
 
 OutputMake endp
 
+DeleteMinorFiles proc uses ebx esi edi
+
+	.if da.fDelMinor
+		;Get relative pointer to selected build command
+		invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+		mov		edx,sizeof MAKE
+		mul		edx
+		mov		esi,eax
+		lea		edi,da.make.szOutAssemble[esi]
+		mov		ebx,offset da.szMainAsm
+		invoke iniInStr,edi,addr szDollarA
+		.if eax==-1
+			invoke strcpy,addr makeexe.output,edi
+		.else
+			push	esi
+			mov		esi,eax
+			invoke strcpyn,addr makeexe.output,edi,addr [esi+1]
+			invoke strcat,addr makeexe.output,ebx
+			invoke RemoveFileExt,addr makeexe.output
+			invoke strcat,addr makeexe.output,addr [edi+esi+2]
+			pop		esi
+		.endif
+		call	DeleteIt
+		.if da.szMainRC
+			lea		edi,da.make.szOutCompileRC[esi]
+			mov		ebx,offset da.szMainRC
+			invoke iniInStr,edi,addr szDollarR
+			.if eax==-1
+				invoke strcpy,addr makeexe.output,edi
+			.else
+				push	esi
+				mov		esi,eax
+				invoke strcpyn,addr makeexe.output,edi,addr [esi+1]
+				invoke strcat,addr makeexe.output,ebx
+				invoke RemoveFileExt,addr makeexe.output
+				invoke strcat,addr makeexe.output,addr [edi+esi+2]
+				pop		esi
+			.endif
+			call	DeleteIt
+		.endif
+	.endif
+	ret
+
+DeleteIt:
+	invoke DeleteFile,addr makeexe.output
+	.if eax
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szDeleted
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset makeexe.output
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCR
+	.endif
+	retn
+
+DeleteMinorFiles endp

@@ -43,15 +43,6 @@ DOCKING struct
 DOCKING ends
 
 TOOL struct
-;	ID					dd ?
-;	Caption				dd ?
-;	Visible				dd ?
-;	Docked				dd ?
-;	Position			dd ?
-;	IsChild				dd ?
-;	dWidth				dd ?
-;	dHeight				dd ?	;+28
-;	fr					RECT <> ;Floating
 	dck					DOCKING <>
 	dr					RECT <> ;Docked
 	wr					RECT <> ;Child window
