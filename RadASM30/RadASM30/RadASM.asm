@@ -2715,7 +2715,6 @@ start:
 	;Get command line filename
 	invoke PathGetArgs,CommandLine
 	mov		CommandLine,eax
-;	invoke PathUnquoteSpaces,CommandLine
 	invoke InitCommonControls
 	;prepare common control structure
 	mov		icex.dwSize,sizeof INITCOMMONCONTROLSEX
@@ -2738,6 +2737,7 @@ start:
 	mov		da.lpCharTab,eax
 	invoke strcpy,addr da.szProjectFiles,addr szDotPrraDot
 	mov		da.Version,RadASMVersion
+	mov		da.lpszVersion,offset szVersion
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
 	invoke ResEdUninstall

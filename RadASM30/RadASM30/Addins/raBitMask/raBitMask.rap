@@ -96,7 +96,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=24
@@ -155,7 +155,7 @@ ProductVer4Range=0
 3=0,0,0,0,60
 6=0,0,0,0
 2=0,0,0,0,8
-1=0,0,0,0,2473
+1=0,0,0,0,515
 4=0,0,0,0,48
 9=
 5=0,0,0,0,1230
@@ -169,9 +169,9 @@ ProductVer4Range=0
 7="cadd"
 8="ResetValues"
 [AutoLoad]
-AutoLoad=6,7,8,1,2,5
+AutoLoad=1,2,7,5,8,6
 [PTimer]
-PTimer=4111032
+PTimer=4230576
 [RADebugBP]
 1=
 2=
@@ -180,3 +180,5 @@ PTimer=4111032
 3=
 [Exports]
 1=AddinProc
+[GroupExpand]
+GroupExpand=1,0,1,0

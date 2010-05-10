@@ -1,7 +1,7 @@
 [Project]
 Assembler=masm
 Type=Dll Project
-Description=MasmEd Update checker addin
+Description=RadASM 3.0 Update checker addin
 Backup=$P\Bak\
 Group=1
 GroupExpand=1
@@ -86,7 +86,7 @@ Group=Assembly,Resources,Misc
 8=1
 9=1
 [AutoLoad]
-AutoLoad=1,2,5,7,3,8,6,4
+AutoLoad=1,2,5,7,3,6,4,8
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -97,7 +97,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=12
 MilestoneOnDateTimeDate=11
@@ -130,14 +130,14 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [PTimer]
-PTimer=39166065
+PTimer=40502744
 [Size]
 5=0,0,0,0
-1=0,0,0,0,11935
-2=0,0,0,0,1818
+1=0,0,0,0,15042
+2=0,0,0,0,2119
 7=0,0,0,0
 3=0,0,0,0,55
-8=0,0,0,0,4214
+8=0,0,878,429,4996
 6=0,0,0,0,64
 9=0,0,0,0,0
 4=0,0,0,0,418

@@ -24,7 +24,7 @@ UpdateMenu proc hMnu:HMENU
 	mov		eax,MenuIDAddin
 	mov		mii.wID,eax
 	mov		mii.dwTypeData,offset szMenuItem
-	invoke InsertMenuItem,hMnu,IDM_FILE_NEW_RES,FALSE,addr mii
+	invoke InsertMenuItem,hMnu,IDM_FILE_NEW,FALSE,addr mii
 	ret
 
 UpdateMenu endp
@@ -33,11 +33,11 @@ OutputString proc uses ebx,lpString:DWORD
 
 	mov		ebx,lpProc
 	push	0
-	call	[ebx].ADDINPROCS.lpOutputSelect
+	call	[ebx].ADDINPROCS.lpSetOutputTab
 	push	TRUE
-	call	[ebx].ADDINPROCS.lpOutputShow
+	call	[ebx].ADDINPROCS.lpShowOutput
 	push	lpString
-	call	[ebx].ADDINPROCS.lpOutputString
+	call	[ebx].ADDINPROCS.lpTextOutput
 	ret
 
 OutputString endp

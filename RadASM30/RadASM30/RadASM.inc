@@ -274,7 +274,7 @@ szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
 .data
 
-pa								ADDINPROCS <OpenTheFile>
+pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput>
 fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 MenuIDAddins					DWORD 40000
 

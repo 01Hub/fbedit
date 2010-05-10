@@ -18,11 +18,11 @@ OutputString proc uses ebx,lpString:DWORD
 
 	mov		ebx,lpProc
 	push	0
-	call	[ebx].ADDINPROCS.lpOutputSelect
+	call	[ebx].ADDINPROCS.lpSetOutputTab
 	push	TRUE
-	call	[ebx].ADDINPROCS.lpOutputShow
+	call	[ebx].ADDINPROCS.lpShowOutput
 	push	lpString
-	call	[ebx].ADDINPROCS.lpOutputString
+	call	[ebx].ADDINPROCS.lpTextOutput
 	ret
 
 OutputString endp
@@ -40,7 +40,7 @@ UpdateMenu proc hMnu:HMENU
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
-	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMnu,IDM_TOOLS,FALSE,addr mii
+	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMenu,IDM_TOOLS,FALSE,addr mii
 	invoke AddMenuItem,mii.hSubMenu,IDAddIn,offset szMenuName
 	ret
 

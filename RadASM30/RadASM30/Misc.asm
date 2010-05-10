@@ -2540,6 +2540,18 @@ ShowOutput proc fShow:DWORD
 
 ShowOutput endp
 
+TextOutput proc lpText:DWORD
+	LOCAL	chrg:CHARRANGE
+
+	mov		chrg.cpMin,-1
+	mov		chrg.cpMax,-1
+	invoke SendMessage,ha.hOutput,EM_EXSETSEL,0,addr chrg
+	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,lpText
+	invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
+	ret
+
+TextOutput endp
+
 ConvertDpiSize proc nPix:DWORD
 	LOCAL	lpx:DWORD
 

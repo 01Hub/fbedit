@@ -15,13 +15,13 @@ include ASCII.asm
 
 OutputString proc uses ebx,lpString:DWORD
 
-;	mov		ebx,lpProc
-;	push	0
-;	call	[ebx].ADDINPROCS.lpOutputSelect
-;	push	TRUE
-;	call	[ebx].ADDINPROCS.lpOutputShow
-;	push	lpString
-;	call	[ebx].ADDINPROCS.lpOutputString
+	mov		ebx,lpProc
+	push	0
+	call	[ebx].ADDINPROCS.lpSetOutputTab
+	push	TRUE
+	call	[ebx].ADDINPROCS.lpShowOutput
+	push	lpString
+	call	[ebx].ADDINPROCS.lpTextOutput
 	ret
 
 OutputString endp
@@ -81,7 +81,6 @@ InstallAddin proc uses ebx hWin:DWORD
 	mov		hook.hook3,eax
 	mov		hook.hook4,eax
 	mov		eax,offset hook
-PrintHex eax
 	ret 
 
 InstallAddin Endp
@@ -92,7 +91,6 @@ AddinProc proc hWin:HWND, uMsg:UINT, wParam:WPARAM, lParam:LPARAM
 	; Return TRUE to prevent RadASM and other DLL's from
 
 	mov	eax, uMsg
-PrintHex eax
 	.if eax == AIM_COMMAND
 		mov eax,wParam
 		movzx edx,ax
@@ -105,7 +103,6 @@ PrintHex eax
 			ret
 		.ENDIF
 	.elseif eax==AIM_MENUUPDATE
-PrintHex eax
 		invoke UpdateMenu,wParam
 	.endif
 	mov eax,FALSE

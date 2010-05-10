@@ -525,7 +525,7 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
 		mov		eax,lpData
-		invoke lstrcpy,addr szDLPath,addr [eax].ADDINDATA.AppPath
+		invoke lstrcpy,addr szDLPath,addr [eax].ADDINDATA.szAppPath
 		invoke lstrcat,addr szDLPath,addr szTemp
 		invoke SetDlgItemText,hWin,IDC_EDTDLPATH,addr szDLPath
 	.elseif eax==WM_COMMAND
@@ -599,10 +599,10 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke ShowWindow,eax,SW_HIDE
 				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
 				invoke lstrcpy,addr tempbuff,addr szDLPath
-				invoke lstrcat,addr tempbuff,addr szMasmEd
+				invoke lstrcat,addr tempbuff,addr szRadASM
 				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
 				mov		edx,lpData
-				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr [edx].ADDINDATA.AppPath
+				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr [edx].ADDINDATA.szAppPath
 				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
 			.elseif eax==IDC_BTNVIEW
 				invoke lstrcpy,addr tempbuff,addr szDLPath
@@ -647,7 +647,7 @@ UpdateMenu proc hMnu:HMENU
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
-	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMnu,IDM_TOOLS,FALSE,addr mii
+	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMenu,IDM_TOOLS,FALSE,addr mii
 	invoke AddMenuItem,mii.hSubMenu,[MenuIDAddin],offset szMenuCheck
 	ret
 

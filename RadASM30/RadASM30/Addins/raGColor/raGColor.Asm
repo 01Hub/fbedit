@@ -30,7 +30,7 @@ UpdateMenu proc hMnu:HMENU
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
-	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMnu,IDM_TOOLS,FALSE,addr mii
+	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMenu,IDM_TOOLS,FALSE,addr mii
 	invoke AddMenuItem,mii.hSubMenu,IDAddIn,offset szGColorMenu
 	ret
 

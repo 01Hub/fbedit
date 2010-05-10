@@ -53,25 +53,25 @@ IDC_PGB1						equ 1002
 
 szMenuCheck						db 'Check for Updates',0
 szBackSlash						db '\',0
-szTemp							db '\MasmEd_Update',0
+szTemp							db '\RadASM_Update',0
 szAllFiles						db '\*.*',0
 szCRLF							db 13,10,0
 AppName							db 'UpdateChecker',0
 szDone							db 'Done!',13,10,0
 szOpen							db 'Open',0
 szWhatsNew						db '\WhatsNew.txt',0
-szMasmEd						db '\MasmEd.exe',0
+szRadASM						db '\RadASM.exe',0
 szClose							db 'Close',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
-szFmtTest						db 'If the test turns out OK then exit MasmEd and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to MasmEd root:',13,10,'%s',0
+szFmtTest						db 'If the test turns out OK then exit RadASM and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to RadASM root:',13,10,'%s',0
 
-szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/MasmEd/ReleaseVersion.txt',0
-szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/MasmEd/Release/',0
+szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/ReleaseVersion.txt',0
+szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/',0
 
 szDownloading					db 'Downloading: ',0
 szFmtFilesize					db 'Filesize: %d bytes',0
-szIDEFile						db 'MasmEd.zip',0
+szIDEFile						db 'RadASM.zip',0
 szFmtDownloaded					db 'Downloded %s %s',13,10,0
 szSuccess						db 'successfully.',0
 

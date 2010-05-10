@@ -298,6 +298,9 @@ ADDINHANDLES ends
 
 ADDINPROCS struct
 	lpOpenTheFile		DWORD ?
+	lpSetOutputTab		DWORD ?
+	lpShowOutput		DWORD ?
+	lpTextOutput		DWORD ?
 ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
@@ -415,6 +418,7 @@ FIND ends
 
 ADDINDATA struct
 	Version				DWORD ?
+	lpszVersion			DWORD ?
 	win					WIN <>
 	winres				WINSIZE <>
 	radcolor			RADCOLOR <>

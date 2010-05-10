@@ -64,7 +64,7 @@ Group=Resource,Assembly,Misc
 6=1
 7=1
 [AutoLoad]
-AutoLoad=2,3,6,1,4,5,7
+AutoLoad=1,2,4,3,7,6,5
 [RADebugBP]
 2=
 1=
@@ -79,8 +79,8 @@ AutoLoad=2,3,6,1,4,5,7
 4=
 7=
 [Size]
-5=0,0,799,526,7336
-1=0,0,0,0,6238
+5=0,0,799,526,9424
+1=0,0,0,0,884
 2=0,0,0,0,2778
 3=0,0,0,0,25
 4=0,0,0,0,27
@@ -96,7 +96,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=22
@@ -142,7 +142,7 @@ ProductVer4Range=0
 [BreakPoint]
 0=
 [PTimer]
-PTimer=69354142
+PTimer=70847290
 [Find]
 1="szNewFile"
 2="2 shl"
@@ -150,3 +150,5 @@ PTimer=69354142
 [Exports]
 1=AddinProc
 2=InstallAddin
+[GroupExpand]
+GroupExpand=1,1,1,0
