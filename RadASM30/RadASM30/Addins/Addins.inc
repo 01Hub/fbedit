@@ -1,3 +1,15 @@
+ifndef RA
+	include ..\..\Inc\RAEdit.inc
+	include ..\..\Inc\RAHexEd.inc
+	include ..\..\Inc\RAGrid.inc
+	include ..\..\Inc\RACodeComplete.Inc
+	include ..\..\Inc\RAFile.Inc
+	include ..\..\Inc\RAProject.inc
+	include ..\..\Inc\RAProperty.Inc
+	include ..\..\Inc\RAResEd.Inc
+	include ..\..\Inc\RATools.Inc
+endif
+
 ID_EDITCODE						equ	1
 ID_EDITTEXT						equ	2
 ID_EDITHEX						equ	3
@@ -48,6 +60,11 @@ IDM_EDIT_INDENT					equ 10028
 IDM_EDIT_OUTDENT				equ 10029
 IDM_EDIT_COMMENT				equ 10030
 IDM_EDIT_UNCOMMENT				equ 10031
+IDM_EDIT_UPPERCASE				equ 10188
+IDM_EDIT_LOWERCASE				equ 10189
+IDM_EDIT_TOSPACES				equ 10191
+IDM_EDIT_TOTABS					equ 10192
+IDM_EDIT_TRIM					equ 10190
 IDM_EDIT_BLOCKMODE				equ 10185
 IDM_EDIT_BLOCKINSERT			equ 10186
 IDM_EDIT_BOKKMARK				equ 10023
@@ -55,6 +72,9 @@ IDM_EDIT_TOGGLEBM				equ 10024
 IDM_EDIT_NEXTBM					equ 10025
 IDM_EDIT_PREVBM					equ 10026
 IDM_EDIT_CLEARBM				equ 10027
+IDM_EDIT_ERROR					equ 10193
+IDM_EDIT_NEXTERROR				equ 10194
+IDM_EDIT_CLEARERRORS			equ 10195
 IDM_VIEW						equ 10032
 IDM_VIEW_TOOLBAR				equ 10046
 IDM_VIEW_LOCK					equ 10063
@@ -198,6 +218,33 @@ IDM_OUTPUT_CLEAR				equ 11024
 IDM_OUTPUT_CUT					equ 11023
 IDM_OUTPUT_COPY					equ 11022
 
+;Messages to MasmEd's main window
+AIM_GETHANDLES					equ WM_USER+50			;Returns a poiner to a struct containing all useful handles. See ADDINHANDLES structure below.
+AIM_GETPROCS					equ WM_USER+51			;Returns a poiner to a struct containing some procs in MasmEd. See ADDINPROCS structure below.
+AIM_GETDATA						equ WM_USER+52			;Returns a poiner to a struct comtaining data pointers. See ADDINDATA structure below.
+AIM_GETMENUID					equ WM_USER+53			;Returns a free menu id. If you need more than one, wParam contains the number of id's to reserve.
+
+;Messages sendt to addins
+AIM_ADDINSLOADED				equ WM_USER+100			;This message is sendt to the addins after all addins are loaded. hWin=Main window, wParam=0, lParam=0
+AIM_COMMAND						equ WM_USER+101			;This message is sendt to the addins when user makes a menu selection or clicks a toolbar button. hWin=Main window, wParam and lParam as for WM_COMMAND
+AIM_CLOSE						equ WM_USER+102			;RadASM requests closing. Return TRUE to prevent RadASM from closing. hWin=Main window, wParam and lParam as for WM_CLOSE
+AIM_DESTROY						equ WM_USER+103			;RadASM is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. hWin=Main window, wParam and lParam as for WM_DESTROY
+AIM_MENUUPDATE					equ WM_USER+104			;RadASM has updated menues. Now is the time to add menu items. Always return FALSE. hWin=Main window, wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here
+
+;HOOK flags returned in hook1 of HOOK structure
+HOOK_ADDINSLOADED				equ 0001h
+HOOK_COMMAND					equ 0002h
+HOOK_CLOSE						equ 0004h
+HOOK_DESTROY					equ 0008h
+HOOK_MENUUPDATE					equ 0010h
+
+HOOK struct
+	hook1				DWORD ?				;Combinations of HOOK_ flags
+	hook2				DWORD ?				;Not used must be zero
+	hook3				DWORD ?				;Not used must be zero
+	hook4				DWORD ?				;Not used must be zero
+HOOK ends
+
 ADDINHANDLES struct
 	hInstance			HINSTANCE ?
 	hWnd				HWND ?
@@ -248,6 +295,10 @@ ADDINHANDLES struct
 	hHtmlOcx			HANDLE ?
 	hFind				HWND ?
 ADDINHANDLES ends
+
+ADDINPROCS struct
+	lpOpenTheFile		DWORD ?
+ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
 
@@ -466,9 +517,10 @@ UAM_SAVEALL						equ 4
 UAM_CLOSEALL					equ 5
 UAM_SETCOLORS					equ 6
 UAM_SETFONTS					equ 7
-UAM_CLEARERRORS					equ 8
-UAM_PARSE						equ 9
-UAM_ANYBOOKMARKS				equ 10
-UAM_CLEARBOOKMARKS				equ 11
-UAM_ANYBREAKPOINTS				equ 12
-UAM_CLEARBREAKPOINTS			equ 13
+UAM_PARSE						equ 8
+UAM_ANYBOOKMARKS				equ 9
+UAM_CLEARBOOKMARKS				equ 10
+UAM_ANYBREAKPOINTS				equ 11
+UAM_CLEARBREAKPOINTS			equ 12
+UAM_CLEARERRORS					equ 13
+UAM_FINDERROR					equ 14

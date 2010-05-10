@@ -238,6 +238,7 @@ szIniHelpF1						db 'HelpF1',0
 szIniRun						db 'Run',0
 szIniFind						db 'Find',0
 szIniCharTab					db 'CharTab',0
+szIniAddins						db 'Addins',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -273,7 +274,9 @@ szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
 .data
 
+pa								ADDINPROCS <OpenTheFile>
 fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
+MenuIDAddins					DWORD 40000
 
 .data?
 

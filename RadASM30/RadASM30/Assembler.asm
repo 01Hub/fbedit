@@ -369,6 +369,37 @@ GetCharTab proc uses ebx
 
 GetCharTab endp
 
+GetMakeCommands proc uses ebx esi edi
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	;Get make command lines
+	xor		ebx,ebx
+	mov		edi,offset da.make
+	invoke RtlZeroMemory,edi,sizeof da.make
+	invoke SendMessage,ha.hCboBuild,CB_RESETCONTENT,0,0
+	.while ebx<32
+		invoke BinToDec,ebx,addr buffer
+		invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+		.if eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szType,sizeof MAKE.szType
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szCompileRC,sizeof MAKE.szCompileRC
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutCompileRC,sizeof MAKE.szOutCompileRC
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szAssemble,sizeof MAKE.szAssemble
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutAssemble,sizeof MAKE.szOutAssemble
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLink,sizeof MAKE.szLink
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLink,sizeof MAKE.szOutLink
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLib,sizeof MAKE.szLib
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLib,sizeof MAKE.szOutLib
+			invoke SendMessage,ha.hCboBuild,CB_ADDSTRING,0,addr [edi].MAKE.szType
+			lea		edi,[edi+sizeof MAKE]
+		.endif
+		inc		ebx
+	.endw
+	invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
+	ret
+
+GetMakeCommands endp
+
 OpenAssembler proc uses ebx esi edi
 	LOCAL	pbfe:PBFILEEXT
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -618,29 +649,7 @@ OpenAssembler proc uses ebx esi edi
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
 		.endif
 		;Get make command lines
-		xor		ebx,ebx
-		mov		edi,offset da.make
-		invoke RtlZeroMemory,edi,sizeof da.make
-		invoke SendMessage,ha.hCboBuild,CB_RESETCONTENT,0,0
-		.while ebx<32
-			invoke BinToDec,ebx,addr buffer
-			invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-			.if eax
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szType,sizeof MAKE.szType
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szCompileRC,sizeof MAKE.szCompileRC
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutCompileRC,sizeof MAKE.szOutCompileRC
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szAssemble,sizeof MAKE.szAssemble
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutAssemble,sizeof MAKE.szOutAssemble
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLink,sizeof MAKE.szLink
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLink,sizeof MAKE.szOutLink
-				invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szLib,sizeof MAKE.szLib
-				invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].MAKE.szOutLib,sizeof MAKE.szOutLib
-				invoke SendMessage,ha.hCboBuild,CB_ADDSTRING,0,addr [edi].MAKE.szType
-				lea		edi,[edi+sizeof MAKE]
-			.endif
-			inc		ebx
-		.endw
-		invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
+		invoke GetMakeCommands
 		;Get run options
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniRun,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 		invoke GetItemInt,addr tmpbuff,0

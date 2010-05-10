@@ -526,6 +526,8 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	hexcol:HECOLOR
 	LOCAL	rescol:RESCOLOR
+	LOCAL	nLn:DWORD
+	LOCAL	chrg:CHARRANGE
 
 	invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
 	mov		nInx,eax
@@ -672,19 +674,6 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 					invoke SendMessage,[ebx].TABMEM.hedt,WM_SETFONT,ha.hToolFont,TRUE
 				.elseif eax==ID_EDITUSER
 				.endif
-			.elseif eax==UAM_CLEARERRORS
-				mov		ErrID,0
-				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
-				.if eax==ID_EDITCODE
-					mov		eax,-1
-					.while TRUE
-						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTERROR,eax,0
-						.break .if eax==-1
-						push	eax
-						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETERROR,eax,FALSE
-						pop		eax
-					.endw
-				.endif
 			.elseif eax==UAM_PARSE
 				.if [ebx].TABMEM.fupdate
 					mov		[ebx].TABMEM.fupdate,FALSE
@@ -726,6 +715,44 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						.break .if eax==-1
 						mov		edi,eax
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBREAKPOINT,edi,FALSE
+					.endw
+				.endif
+			.elseif eax==UAM_CLEARERRORS
+				mov		ErrID,0
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTERROR,eax,0
+						.break .if eax==-1
+						push	eax
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETERROR,eax,FALSE
+						pop		eax
+					.endw
+				.endif
+			.elseif eax==UAM_FINDERROR
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					mov		nLn,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTERROR,nLn,0
+						.break .if eax==-1
+						mov		nLn,eax
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_GETERROR,nLn,0
+						mov		edx,lParam
+						.if eax==edx
+							invoke TabToolGetInx,[ebx].TABMEM.hwnd
+							invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+							invoke TabToolActivate
+							invoke SendMessage,[ebx].TABMEM.hedt,EM_LINEINDEX,nLn,0
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,[ebx].TABMEM.hedt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,[ebx].TABMEM.hedt,EM_SCROLLCARET,0,0
+							invoke SetFocus,[ebx].TABMEM.hedt
+							mov		eax,TRUE
+							jmp		Ex
+						.endif
 					.endw
 				.endif
 			.endif
@@ -1017,27 +1044,44 @@ CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_VIEW_TAB
 	.elseif eax==3
 		;Format
-		xor		eax,eax
-		test	da.resopt.fopt,RESOPT_LOCK
-		.if !ZERO?
-			mov		eax,TRUE
+		invoke UpdateAll,UAM_ISRESOPEN,0
+		.if eax==-1
+			xor		eax,eax
+			test	da.resopt.fopt,RESOPT_LOCK
+			.if !ZERO?
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_FORMAT_LOCK
+			xor		eax,eax
+			test	da.resopt.fopt,RESOPT_GRID
+			.if !ZERO?
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_FORMAT_SHOW
+			xor		eax,eax
+			test	da.resopt.fopt,RESOPT_SNAP
+			.if !ZERO?
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_FORMAT_SNAP
+		.else
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		ebx,eax
+			invoke SendMessage,ebx,DEM_ISLOCKED,0,0
+			push	eax
+			push	IDM_FORMAT_LOCK
+			invoke GetWindowLong,ebx,GWL_STYLE
+			and		eax,DES_GRID
+			push	eax
+			push	IDM_FORMAT_SHOW
+			invoke GetWindowLong,ebx,GWL_STYLE
+			and		eax,DES_SNAPTOGRID
+			push	eax
+			push	IDM_FORMAT_SNAP
 		.endif
-		push	eax
-		push	IDM_FORMAT_LOCK
-		xor		eax,eax
-		test	da.resopt.fopt,RESOPT_GRID
-		.if !ZERO?
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_FORMAT_SHOW
-		xor		eax,eax
-		test	da.resopt.fopt,RESOPT_SNAP
-		.if !ZERO?
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_FORMAT_SNAP
 	.endif
 	.while TRUE
 		pop		edx
@@ -1125,6 +1169,16 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_EDIT_UNCOMMENT
 			push	eax
+			push	IDM_EDIT_UPPERCASE
+			push	eax
+			push	IDM_EDIT_LOWERCASE
+			push	eax
+			push	IDM_EDIT_TOSPACES
+			push	eax
+			push	IDM_EDIT_TOTABS
+			push	eax
+			push	IDM_EDIT_TRIM
+			push	eax
 			push	IDM_EDIT_BLOCKMODE
 			push	eax
 			push	IDM_EDIT_BLOCKINSERT
@@ -1136,6 +1190,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	IDM_EDIT_PREVBM
 			push	eax
 			push	IDM_EDIT_CLEARBM
+			push	eax
+			push	IDM_EDIT_NEXTERROR
+			push	eax
+			push	IDM_EDIT_CLEARERRORS
 		.else
 			.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
 				invoke SendMessage,ebx,EM_CANUNDO,0,0
@@ -1175,6 +1233,13 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_RETURN
 				push	eax
+				push	IDM_EDIT_BLOCKMODE
+				.if eax
+					invoke SendMessage,ha.hReBar,EM_EXGETSEL,0,addr chrg
+					mov		eax,chrg.cpMax
+					sub		eax,chrg.cpMin
+				.endif
+				push	eax
 				push	IDM_EDIT_INDENT
 				push	eax
 				push	IDM_EDIT_OUTDENT
@@ -1183,7 +1248,15 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_UNCOMMENT
 				push	eax
-				push	IDM_EDIT_BLOCKMODE
+				push	IDM_EDIT_UPPERCASE
+				push	eax
+				push	IDM_EDIT_LOWERCASE
+				push	eax
+				push	IDM_EDIT_TOSPACES
+				push	eax
+				push	IDM_EDIT_TOTABS
+				push	eax
+				push	IDM_EDIT_TRIM
 				push	TRUE
 				push	IDM_EDIT_TOGGLEBM
 				.if esi==ID_EDITHEX
@@ -1204,6 +1277,11 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_PREVBM
 				push	eax
 				push	IDM_EDIT_CLEARBM
+				mov		eax,ErrID
+				push	eax
+				push	IDM_EDIT_NEXTERROR
+				push	eax
+				push	IDM_EDIT_CLEARERRORS
 			.elseif esi==ID_EDITRES
 				invoke SendMessage,ebx,DEM_CANUNDO,0,0
 				push	eax
@@ -1252,6 +1330,16 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_UNCOMMENT
 				push	eax
+				push	IDM_EDIT_UPPERCASE
+				push	eax
+				push	IDM_EDIT_LOWERCASE
+				push	eax
+				push	IDM_EDIT_TOSPACES
+				push	eax
+				push	IDM_EDIT_TOTABS
+				push	eax
+				push	IDM_EDIT_TRIM
+				push	eax
 				push	IDM_EDIT_BLOCKMODE
 				push	eax
 				push	IDM_EDIT_BLOCKINSERT
@@ -1263,6 +1351,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_PREVBM
 				push	eax
 				push	IDM_EDIT_CLEARBM
+				push	eax
+				push	IDM_EDIT_NEXTERROR
+				push	eax
+				push	IDM_EDIT_CLEARERRORS
 			.elseif esi==ID_EDITUSER
 			.endif
 		.endif

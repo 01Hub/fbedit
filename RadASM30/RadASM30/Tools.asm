@@ -55,8 +55,30 @@ tbrbtnsmake			TBBUTTON <12,IDM_MAKE_ASSEMBLE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 
 lpOldStatusProc		DWORD ?
 lpOldStaticProc		DWORD ?
+lpOldOutputProc		DWORD ?
 
 .code
+
+OutputProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	chrg:CHARRANGE
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDBLCLK
+		invoke GetParent,hWin
+		mov		ebx,eax
+		invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+		invoke SendMessage,ebx,EM_EXLINEFROMCHAR,0,chrg.cpMin
+		invoke SendMessage,ebx,REM_GETBMID,eax,0
+		.if eax
+			invoke UpdateAll,UAM_FINDERROR,eax
+		.endif
+		xor		eax,eax
+	.else
+		invoke CallWindowProc,lpOldOutputProc,hWin,uMsg,wParam,lParam
+	.endif
+	ret
+
+OutputProc endp
 
 CreateTools proc
 	LOCAL	dck:DOCKING
@@ -170,8 +192,10 @@ CreateTools proc
 	invoke SendMessage,ha.hTabOutput,TCM_SETCURSEL,eax,0
 	mov		tci.pszText,offset szImmediate
 	invoke SendMessage,ha.hTabOutput,TCM_INSERTITEM,999,addr tci
-	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP or STYLE_NOHILITE,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP or STYLE_NOHILITE or STYLE_NODBLCLICK,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
 	mov		ha.hOutput,eax
+	invoke SendMessage,ha.hOutput,REM_SUBCLASS,0,offset OutputProc
+	mov		lpOldOutputProc,eax
 	invoke SendMessage,ha.hOutput,REM_SETFONT,0,addr ha.racf
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP or STYLE_NOHILITE,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
 	mov		ha.hImmediate,eax

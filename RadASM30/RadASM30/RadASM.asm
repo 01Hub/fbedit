@@ -20,6 +20,8 @@ include About.asm
 include ProjectOption.asm
 include Find.asm
 include Block.asm
+include AddinManager.asm
+include MakeOptions.asm
 
 .code
 
@@ -168,9 +170,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_AddMasked,ha.hMnuIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
+		invoke LoadAddins,hWin
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov da.inprogress,FALSE
 	.elseif eax==WM_COMMAND
+		invoke PostAddinMessage,hWin,AIM_COMMAND,wParam,lParam,0,HOOK_COMMAND
+		.if eax
+			jmp		Ex
+		.endif
 		mov		edx,wParam
 		movsx	eax,dx
 		shr		edx,16
@@ -373,32 +380,88 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 						invoke IndentComment,ha.hEdt,VK_TAB,TRUE
+						mov		da.fTimer,1
 					.endif
-					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_EDIT_OUTDENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 						invoke IndentComment,ha.hEdt,VK_TAB,FALSE
+						mov		da.fTimer,1
 					.endif
-					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_EDIT_COMMENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 						invoke IndentComment,ha.hEdt,';',TRUE
+						mov		da.fTimer,1
 					.endif
-					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_EDIT_UNCOMMENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
 						invoke IndentComment,ha.hEdt,';',FALSE
+						mov		da.fTimer,1
 					.endif
-					mov		da.fTimer,1
+				.endif
+			.elseif eax==IDM_EDIT_UPPERCASE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_CONVERT,CONVERT_UPPERCASE,0
+						mov		da.fTimer,1
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_LOWERCASE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_CONVERT,CONVERT_LOWERCASE,0
+						mov		da.fTimer,1
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_TOSPACES
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_CONVERT,CONVERT_TABTOSPACE,0
+						mov		da.fTimer,1
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_TOTABS
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,REM_CONVERT,CONVERT_SPACETOTAB,0
+						mov		da.fTimer,1
+					.endif
+				.endif
+			.elseif eax==IDM_EDIT_TRIM
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+						mov		ebx,eax
+						invoke SendMessage,ha.hEdt,EM_LINEINDEX,ebx,0
+						mov		chrg.cpMin,eax
+						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMax
+						mov		edi,eax
+						invoke SendMessage,ha.hEdt,EM_LINEINDEX,edi,0
+						mov		chrg.cpMax,eax
+						xor		esi,esi
+						.while ebx<edi
+							invoke SendMessage,ha.hEdt,REM_TRIMSPACE,ebx,0
+							lea		esi,[esi+eax]
+							inc		ebx
+						.endw
+						add		esi,chrg.cpMin
+						mov		chrg.cpMax,esi
+						mov		da.fTimer,1
+					.endif
 				.endif
 			.elseif eax==IDM_EDIT_BLOCKMODE
 				.if ha.hMdi
@@ -497,6 +560,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.endif
 					mov		da.fTimer,1
 				.endif
+			.elseif eax==IDM_EDIT_NEXTERROR
+				mov		eax,nErrID
+				mov		eax,ErrID[eax*4]
+				.if !eax
+					mov		nErrID,0
+					mov		eax,ErrID
+				.endif
+				.if eax
+					mov		eax,nErrID
+					invoke UpdateAll,UAM_FINDERROR,ErrID[eax*4]
+					inc		nErrID
+				.endif
+			.elseif eax==IDM_EDIT_CLEARERRORS
+				invoke UpdateAll,UAM_CLEARERRORS,0
 			.elseif eax==IDM_VIEW_LOCK
 				xor		da.fLockToolbar,TRUE
 				invoke LockToolbars
@@ -537,11 +614,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
-;						invoke SendMessage,ha.hEdt,DEM_ISLOCKED,0,0
-;						xor		eax,TRUE
-						xor		da.resopt.fopt,RESOPT_LOCK
-						mov		eax,da.resopt.fopt
-						and		eax,RESOPT_LOCK
+						invoke SendMessage,ha.hEdt,DEM_ISLOCKED,0,0
+						xor		eax,TRUE
 						invoke SendMessage,ha.hEdt,DEM_LOCKCONTROLS,0,eax
 					.endif
 					mov		da.fTimer,1
@@ -567,14 +641,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
 						invoke GetWindowLong,ha.hEdt,GWL_STYLE
-						xor		da.resopt.fopt,RESOPT_GRID
-						mov		edx,da.resopt.fopt
-						and		edx,RESOPT_GRID
-						.if edx
-							or		eax,DES_GRID
-						.else
-							and		eax,-1 xor DES_GRID
-						.endif
+						xor		eax,DES_GRID
 						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
 					.endif
 					mov		da.fTimer,1
@@ -584,14 +651,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITRES
 						invoke GetWindowLong,ha.hEdt,GWL_STYLE
-						xor		da.resopt.fopt,RESOPT_SNAP
-						mov		edx,da.resopt.fopt
-						and		edx,RESOPT_SNAP
-						.if edx
-							or		eax,DES_SNAPTOGRID
-						.else
-							and		eax,-1 xor DES_SNAPTOGRID
-						.endif
+						xor		eax,DES_SNAPTOGRID
 						invoke SetWindowLong,ha.hEdt,GWL_STYLE,eax
 					.endif
 					mov		da.fTimer,1
@@ -992,14 +1052,17 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_OPTION_ENVIRONMENT
 				invoke DialogBoxParam,ha.hInstance,IDD_ENVIRONMENTOPTION,hWin,offset EnvironmentOptionsProc,0
 			.elseif eax==IDM_OPTION_MAKE
-;####
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGMAKEOPTIONS,hWin,offset MakeOptionsProc,0
+				.if eax && !da.fProject
+					invoke GetMakeCommands
+				.endif
 			.elseif eax==IDM_OPTION_EXTERNAL
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
 				.if eax
 					invoke GetExternalFiles
 				.endif
 			.elseif eax==IDM_OPTION_ADDIN
-;####
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGADDINMANAGER,hWin,offset AddinManagerProc,0
 			.elseif eax==IDM_OPTION_TOOLS
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGOPTMNU,hWin,offset MenuOptionProc,eax
 				.if eax
@@ -1186,6 +1249,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke PostAddinMessage,hWin,AIM_CLOSE,wParam,lParam,0,HOOK_CLOSE
+		.if eax
+			jmp		Ex
+		.endif
 		invoke UpdateAll,UAM_SAVEALL,TRUE
 		.if eax
 			invoke SaveTools
@@ -1205,6 +1272,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		Ex
 		.endif
 	.elseif eax==WM_DESTROY
+		invoke PostAddinMessage,hWin,AIM_DESTROY,wParam,lParam,0,HOOK_DESTROY
 		;Windows
 		invoke DestroyWindow,ha.hTab
 		invoke DestroyWindow,ha.hToolTab
@@ -1411,6 +1479,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
 			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
 			invoke SetFocus,ha.hEdt
+		.elseif [esi].NMHDR.code==EN_SELCHANGE && eax==ha.hOutput
+			.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
+				invoke SendMessage,ha.hOutput,REM_GETBMID,[esi].RASELCHANGE.line,0
+				invoke UpdateAll,UAM_FINDERROR,eax
+			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
@@ -1677,6 +1750,23 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif
+	.elseif eax==AIM_GETHANDLES
+		mov		eax,offset ha
+		jmp		ExRet
+	.elseif eax==AIM_GETPROCS
+		mov		eax,offset pa
+		jmp		ExRet
+	.elseif eax==AIM_GETDATA
+		mov		eax,offset da
+		jmp		ExRet
+	.elseif eax==AIM_GETMENUID
+		mov		edx,wParam
+		.if !edx
+			inc		edx
+		.endif
+		mov		eax,MenuIDAddins
+		add		MenuIDAddins,edx
+		jmp		ExRet
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
@@ -2591,6 +2681,7 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 	invoke LoadMRU,addr szIniProject,addr da.szMruProjects
 	invoke UpdateMRUMenu,addr da.szMruProjects
 	invoke Init,CmdLine
+	invoke PostAddinMessage,ha.hWnd,AIM_MENUUPDATE,ha.hMenu,ha.hContextMenu,0,HOOK_MENUUPDATE
 	mov		da.fTimer,1
 ;	invoke ShowSplash
 	.while TRUE

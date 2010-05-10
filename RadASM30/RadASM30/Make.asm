@@ -467,7 +467,7 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.endif
 		.endif
 		.if dword ptr [ErrID]
-;			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
+			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
 		.else
 			invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
 			invoke SetFocus,ha.hOutput
