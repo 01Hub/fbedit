@@ -67,6 +67,8 @@ SetHelpMenu						PROTO
 SetToolMenu						PROTO
 OpenFiles						PROTO	:DWORD
 ParseEdit						PROTO	:HWND,:DWORD
+PostAddinMessage				PROTO	:HWND,:UINT,:WPARAM,:LPARAM,:DWORD,:DWORD
+GetModify						PROTO	:HWND
 
 RadASMVersion					equ 3000
 

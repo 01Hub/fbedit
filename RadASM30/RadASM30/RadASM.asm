@@ -2209,7 +2209,8 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				lea		esi,[esi+sizeof RARSTYPE]
 			.endw
 		.elseif eax==ID_EDITUSER
-			mov		hEdt,0
+			invoke PostAddinMessage,hWin,AIM_FILEOPEN,ID_EDITUSER,addr da.szFileName,0,HOOK_FILEOPEN
+			mov		hEdt,eax
 		.endif
 		invoke SetWindowLong,hWin,GWL_USERDATA,hEdt
 		invoke SetWinCaption,hWin,addr da.szFileName
@@ -2435,19 +2436,19 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							.if !da.inprogress
 								invoke ApiListBox,esi
 							.endif
+							mov		eax,[esi].RASELCHANGE.line
+							.if eax!=da.nLastPropLine
+								mov		da.nLastPropLine,eax
+								invoke ShowWindow,ha.hCC,SW_HIDE
+								invoke ShowWindow,ha.hTT,SW_HIDE
+								mov		da.cctype,CCTYPE_NONE
+								mov		[ebx].TABMEM.fupdate,TRUE
+							.endif
 						.endif
 					.endif
 					mov		eax,[esi].RASELCHANGE.line
 					mov		da.nLastLine,eax
-					.if eax!=da.nLastPropLine
-						mov		da.nLastPropLine,eax
-						invoke ShowWindow,ha.hCC,SW_HIDE
-						invoke ShowWindow,ha.hTT,SW_HIDE
-						mov		da.cctype,CCTYPE_NONE
-						.if ![esi].RASELCHANGE.nWordGroup && [esi].RASELCHANGE.fchanged
-							mov		[ebx].TABMEM.fupdate,TRUE
-						.endif
-					.elseif da.cctype==CCTYPE_ALL
+					.if da.cctype==CCTYPE_ALL
 						.if !da.inprogress
 							invoke ApiListBox,esi
 						.endif
@@ -2491,6 +2492,11 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		da.inprogress,FALSE
 			.endif
 		.elseif eax==ID_EDITUSER
+;			invoke PostAddinMessage,ha.hWnd,AIM_GETMODIFY,ID_EDITUSER,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
+;			.if eax && ![ebx].TABMEM.fchanged
+;				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+;			.endif
+;			mov		da.fTimer,1
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam

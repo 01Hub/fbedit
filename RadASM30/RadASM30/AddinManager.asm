@@ -104,6 +104,8 @@ AddinManagerProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:
 		shr		edx,16
 		.if edx==BN_CLICKED
 			.if eax==IDOK
+				mov		word ptr buff,0
+				invoke WritePrivateProfileSection,addr szIniAddins,addr buff,addr da.szRadASMIni
 				mov		nInx,0
 				.While TRUE
 					invoke SendDlgItemMessage,hWin,IDC_LSTADDINS,LB_GETTEXT,nInx,addr szItem

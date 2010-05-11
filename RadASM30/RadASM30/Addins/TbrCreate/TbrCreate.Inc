@@ -137,6 +137,8 @@ szCODE				db '.code',0Dh,0Dh
 					db '	ret',0Dh,0Dh
 					db 'DoToolBar endp',0Dh,0Dh,0
 
+szTbrClassName		db 'TbrEditClass',0
+
 .data?
 
 hInstance			dd ?	;Dll's module handle

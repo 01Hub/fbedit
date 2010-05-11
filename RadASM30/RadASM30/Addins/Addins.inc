@@ -233,35 +233,37 @@ AIM_COMMAND						equ WM_USER+101			;This message is sendt to the addins when use
 AIM_CLOSE						equ WM_USER+102			;RadASM requests closing. Return TRUE to prevent RadASM from closing. hWin=Main window, wParam and lParam as for WM_CLOSE
 AIM_DESTROY						equ WM_USER+103			;RadASM is about to be destroyed. Now is the time to free memory and resources that your addin allocated. Always return FALSE. hWin=Main window, wParam and lParam as for WM_DESTROY
 AIM_MENUUPDATE					equ WM_USER+104			;RadASM has updated menues. Now is the time to add menu items. Always return FALSE. hWin=Main window, wParam=hMnu, lParam=hContextMnu. NOTE: This command can be sendt more than once. Do not allocate MenuID's here
-AIM_NEWFILE						equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent RadASM from creating the file. hWin=Main window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
+;AIM_NEWFILE						equ WM_USER+105			;A new file is about to be created. Return TRUE to prevent RadASM from creating the file. hWin=Main window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
 AIM_FILEOPEN					equ WM_USER+106			;A file is about to be opened. Return TRUE to prevent RadASM from opening the file. hWin=Main window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX, ID_EDITRES or ID_PROJECT, lParam=lpFileName
 AIM_FILEOPENED					equ WM_USER+107			;A file has ben opened.. Always return FALSE. hWin=Main window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX, ID_EDITRES or ID_PROJECT, lParam=lpFileName
 AIM_FILECLOSE					equ WM_USER+108			;A file is about to be closed.. Return TRUE to prevent RadASM from closing the file. hWin=Editor window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
 AIM_FILECLOSED					equ WM_USER+109			;A file has been closed.. Always return FALSE. hWin=Mdi child window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
 AIM_FILESAVE					equ WM_USER+110			;A file is about to be saved. Return TRUE to prevent RadASM from saving the file. hWin=Editor window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
 AIM_FILESAVEAS					equ WM_USER+111			;A file is about to be saved with a new name. Return TRUE to prevent RadASM from saving the file. hWin=Editor window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
-AIM_FILESAVEED					equ WM_USER+112			;A file has been saved. Always return FALSE. hWin=Editor window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
+AIM_FILESAVED					equ WM_USER+112			;A file has been saved. Always return FALSE. hWin=Editor window, wParam=ID_EDITCODE, ID_EDITTEXT, ID_EDITHEX or ID_EDITRES, lParam=lpFileName
 AIM_GETMODIFY					equ WM_USER+113			;RadASM requests if a file is changed. Return TRUE if it is your file and it has changed. hWin=Mdi child window, wParam=ID_EDIT_USER, lParam=lpFileName
 AIM_MAKEBEGIN					equ WM_USER+114			;RadASM starts a make process. Return TRUE to prevent RadASM from running the make process. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
 AIM_MAKEDONE					equ WM_USER+115			;RadASM finished the make process. Always return FALSE. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
+AIM_GETFILETYPE					equ WM_USER+116			;RadASM requests a filetype. Return ID_EDITUSER if your addin handles the file, else return FALSE. hWin=Main window,wParam=0, lParam=lpFileName
 
 ;HOOK flags returned in hook1 of HOOK structure
-HOOK_ADDINSLOADED				equ 0001h
-HOOK_COMMAND					equ 0002h
-HOOK_CLOSE						equ 0004h
-HOOK_DESTROY					equ 0008h
-HOOK_MENUUPDATE					equ 0010h
-HOOK_NEWFILE					equ 0020h
-HOOK_FILEOPEN					equ 0040h
-HOOK_FILEOPENED					equ 0080h
-HOOK_FILECLOSE					equ 0100h
-HOOK_FILECLOSED					equ 0200h
-HOOK_FILESAVE					equ 0400h
-HOOK_FILESAVEAS					equ 0800h
-HOOK_FILESAVEED					equ 1000h
-HOOK_GETMODIFY					equ 2000h
-HOOK_MAKEBEGIN					equ 4000h
-HOOK_MAKEDONE					equ 8000h
+HOOK_ADDINSLOADED				equ 00001h
+HOOK_COMMAND					equ 00002h
+HOOK_CLOSE						equ 00004h
+HOOK_DESTROY					equ 00008h
+HOOK_MENUUPDATE					equ 00010h
+;HOOK_NEWFILE					equ 00020h
+HOOK_FILEOPEN					equ 00040h
+HOOK_FILEOPENED					equ 00080h
+HOOK_FILECLOSE					equ 00100h
+HOOK_FILECLOSED					equ 00200h
+HOOK_FILESAVE					equ 00400h
+HOOK_FILESAVEAS					equ 00800h
+HOOK_FILESAVED					equ 01000h
+HOOK_GETMODIFY					equ 02000h
+HOOK_MAKEBEGIN					equ 04000h
+HOOK_MAKEDONE					equ 08000h
+HOOK_GETFILETYPE				equ 10000h
 
 HOOK struct
 	hook1				DWORD ?				;Combinations of HOOK_ flags

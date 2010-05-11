@@ -561,18 +561,7 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 			.elseif eax==UAM_SAVEALL
 				mov		eax,[ebx].TABMEM.hwnd
 				.if eax!=lParam
-					invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
-					.if eax==ID_EDITCODE
-						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-					.elseif eax==ID_EDITTEXT
-						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-					.elseif eax==ID_EDITHEX
-						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
-					.elseif eax==ID_EDITRES
-						invoke SendMessage,[ebx].TABMEM.hedt,PRO_GETMODIFY,0,0
-					.elseif eax==ID_EDITUSER
-						xor		eax,eax
-					.endif
+					invoke GetModify,eax
 					.if eax
 						.if lParam
 							invoke WantToSave,[ebx].TABMEM.hwnd
