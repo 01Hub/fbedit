@@ -21,13 +21,13 @@ F2=-2,0,2,0,0,1036,444,0,TbrCreate.Def
 C2=
 B2=
 M2=
-F1=-2,2,1,220,220,1036,444,0,TbrCreate.Asm
+F1=-2,2,1,220,220,1036,444,979,TbrCreate.Asm
 C1=0,0,0
 B1=
 M1=
 [Make]
 Make=0
-0=Dll Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O',$A.dll,'',
+0=Dll Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O',..\$A.dll,'',
 1=Dll Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:$D /OUT:$O',$A.dll,'',
-Delete=0
+Delete=1
 Run=0,'',''

@@ -2447,7 +2447,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 					.endif
 					mov		eax,[esi].RASELCHANGE.line
-					mov		da.nLastLine,eax
+					.if eax!=da.nLastLine
+						mov		da.nLastLine,eax
+						invoke ShowWindow,ha.hCC,SW_HIDE
+						invoke ShowWindow,ha.hTT,SW_HIDE
+						mov		da.cctype,CCTYPE_NONE
+					.endif
 					.if da.cctype==CCTYPE_ALL
 						.if !da.inprogress
 							invoke ApiListBox,esi
@@ -2492,11 +2497,11 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		da.inprogress,FALSE
 			.endif
 		.elseif eax==ID_EDITUSER
-;			invoke PostAddinMessage,ha.hWnd,AIM_GETMODIFY,ID_EDITUSER,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
-;			.if eax && ![ebx].TABMEM.fchanged
-;				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
-;			.endif
-;			mov		da.fTimer,1
+			invoke PostAddinMessage,hWin,AIM_GETMODIFY,ID_EDITUSER,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
+			.if eax && ![ebx].TABMEM.fchanged
+				invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
+			.endif
+			mov		da.fTimer,1
 		.endif
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam

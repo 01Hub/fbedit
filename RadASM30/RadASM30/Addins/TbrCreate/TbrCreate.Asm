@@ -169,7 +169,7 @@ NewToolbar proc uses ebx,hWin:HWND
 	.if !ZERO?
 		or		tbs,TBSTYLE_LIST
 	.endif
-	INVOKE DestroyWindow,hTbr
+	invoke DestroyWindow,hTbr
 	invoke CreateWindowEx,0,offset szToolbarWindow32,0,tbs,0,0,0,0,hWin,IDC_TBR1,hInstance,0
 	mov		hTbr,eax
 	invoke SetImageList,hWin
@@ -178,15 +178,19 @@ NewToolbar proc uses ebx,hWin:HWND
 
 NewToolbar endp
 
-SetChanged proc uses ebx,hWin:HWND,fChanged:DWORD
+NotifyParent proc uses ebx,hWin:HWND
+	LOCAL	nmhdr:NMHDR
 
-	push	fChanged
-	push	hWin
-	mov		eax,lpProc
-	call	[eax].ADDINPROCS.lpTabToolSetChanged
+	mov		nmhdr.idFrom,ID_EDITUSER
+	mov		nmhdr.code,EN_SELCHANGE
+	invoke GetParent,hWin
+	mov		nmhdr.hwndFrom,eax
+	invoke GetParent,eax
+	mov		edx,eax
+	invoke SendMessage,edx,WM_NOTIFY,ID_EDITUSER,addr nmhdr
 	ret
 
-SetChanged endp
+NotifyParent endp
 
 SaveToolbar proc uses ebx esi edi,hWin:HWND
 	LOCAL	hFile:HANDLE
@@ -228,14 +232,14 @@ SaveToolbar proc uses ebx esi edi,hWin:HWND
 		invoke WriteFile,hFile,ecx,edx,addr nSize,NULL
 		invoke CloseHandle,hFile
 		mov		[ebx].TBRMEM.tbrdef.fChanged,FALSE
-		mov		ebx,lpProc
-		push	hWin
-		call	[ebx].ADDINPROCS.lpTabToolGetMem
-		mov		[eax].TABMEM.nchange,0
-		mov		[eax].TABMEM.fchanged,0
-		push	eax
-		call	[ebx].ADDINPROCS.lpUpdateFileTime
-		invoke SetChanged,hWin,FALSE
+;		mov		ebx,lpProc
+;		push	hWin
+;		call	[ebx].ADDINPROCS.lpTabToolGetMem
+;		mov		[eax].TABMEM.nchange,0
+;		mov		[eax].TABMEM.fchanged,0
+;		push	eax
+;		call	[ebx].ADDINPROCS.lpUpdateFileTime
+		invoke NotifyParent,hWin
 	.endif
 	ret
 
@@ -245,32 +249,32 @@ SaveToolbarAs proc uses ebx,hWin:HWND
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buff[MAX_PATH]:BYTE
 
-	invoke GetDlgItem,hWin,IDC_HMEM
-	invoke GetWindowLong,eax,GWL_USERDATA
-	mov		ebx,eax
-	invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
-	mov		ofn.lStructSize,sizeof OPENFILENAME
-	mov		eax,hWin
-	mov		ofn.hwndOwner,eax
-	mov		eax,hInstance
-	mov		ofn.hInstance,eax
-	invoke lstrcpy,addr buff,addr [ebx].TBRMEM.tbrdef.FileName
-	lea		eax,buff
-	mov		ofn.lpstrFile,eax
-	mov		ofn.nMaxFile,sizeof buff
-	mov		ofn.lpstrFilter,offset szTBRFilterString
-    mov		ofn.lpstrDefExt,offset szTbr
-	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
-	invoke GetSaveFileName,addr ofn
-	.if eax
-		invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,addr buff
-		lea		eax,buff
-		push	eax
-		push	hWin
-		mov		eax,lpProc
-		call	[eax].ADDINPROCS.lpUpdateFileName
-		invoke SaveToolbar,hWin
-	.endif
+;	invoke GetDlgItem,hWin,IDC_HMEM
+;	invoke GetWindowLong,eax,GWL_USERDATA
+;	mov		ebx,eax
+;	invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
+;	mov		ofn.lStructSize,sizeof OPENFILENAME
+;	mov		eax,hWin
+;	mov		ofn.hwndOwner,eax
+;	mov		eax,hInstance
+;	mov		ofn.hInstance,eax
+;	invoke lstrcpy,addr buff,addr [ebx].TBRMEM.tbrdef.FileName
+;	lea		eax,buff
+;	mov		ofn.lpstrFile,eax
+;	mov		ofn.nMaxFile,sizeof buff
+;	mov		ofn.lpstrFilter,offset szTBRFilterString
+;    mov		ofn.lpstrDefExt,offset szTbr
+;	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
+;	invoke GetSaveFileName,addr ofn
+;	.if eax
+;		invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,addr buff
+;		lea		eax,buff
+;		push	eax
+;		push	hWin
+;		mov		eax,lpProc
+;		call	[eax].ADDINPROCS.lpUpdateFileName
+;		invoke SaveToolbar,hWin
+;	.endif
 	ret
 
 SaveToolbarAs endp
@@ -498,7 +502,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_BTNDN
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -518,7 +522,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 							invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
 							invoke ShowToolbar,hWin
 							mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-							invoke SetChanged,hWin,TRUE
+							invoke NotifyParent,hWin
 						.endif
 					.endif
 				.elseif eax==IDC_BTNADDBTN
@@ -530,7 +534,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					inc		[ebx].TBRMEM.tbr.nBtn
 					invoke ShowToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_BTNINSBTN
 					invoke lstrcpy,addr buff,offset szIDC_TBB
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -542,7 +546,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						inc		[ebx].TBRMEM.tbr.nBtn
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_BTNADDSEP
 					invoke lstrcpy,addr buff,offset szSEP
@@ -553,7 +557,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					inc		[ebx].TBRMEM.tbr.nBtn
 					invoke ShowToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_BTNINSSEP
 					invoke lstrcpy,addr buff,offset szSEP
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -565,7 +569,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						inc		[ebx].TBRMEM.tbr.nBtn
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_BTNDEL
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -580,7 +584,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke SendMessage,hWin,WM_COMMAND,(LBN_SELCHANGE shl 16) or IDC_LSTBTN,0
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_CHKTBRFLAT
 					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRFLAT
@@ -593,7 +597,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		[ebx].TBRMEM.tbr.nStyle,edx
 					invoke NewToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_CHKTBRWRAP
 					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRWRAP
 					.if eax
@@ -605,7 +609,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		[ebx].TBRMEM.tbr.nStyle,edx
 					invoke NewToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_CHKTBRDIVIDER
 					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRDIVIDER
 					.if eax
@@ -617,7 +621,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		[ebx].TBRMEM.tbr.nStyle,edx
 					invoke NewToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_CHKTBRTIP
 					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRTIP
 					.if eax
@@ -629,7 +633,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		[ebx].TBRMEM.tbr.nStyle,edx
 					invoke NewToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_CHKTBRLIST
 					invoke IsDlgButtonChecked,hWin,IDC_CHKTBRLIST
 					.if eax
@@ -641,7 +645,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 					mov		[ebx].TBRMEM.tbr.nStyle,edx
 					invoke NewToolbar,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_CHKBTNCHECK
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
 					mov		edi,eax
@@ -656,7 +660,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_CHKBTNGROUP
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -672,7 +676,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
 						invoke ShowToolbar,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_BTNBMP
 					invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
@@ -693,7 +697,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke lstrcpy,addr [ebx].TBRMEM.tbr.szBmpFile,addr buff
 						invoke SetImageList,hWin
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.else
 					.if sdword ptr eax>=4000
@@ -714,7 +718,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 							invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
 							invoke ShowToolbar,hWin
 							mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-							invoke SetChanged,hWin,TRUE
+							invoke NotifyParent,hWin
 						.endif
 					.endif
 				.endif
@@ -722,25 +726,25 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 				.if eax==IDC_EDTTBRNAME
 					invoke GetDlgItemText,hWin,IDC_EDTTBRNAME,addr [ebx].TBRMEM.tbr.szTbrName,32
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_EDTTBRID
 					invoke GetDlgItemInt,hWin,IDC_EDTTBRID,NULL,FALSE
 					mov		[ebx].TBRMEM.tbr.nTbrID,eax
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_EDTBMPFILE
 					invoke GetDlgItemText,hWin,IDC_EDTBMPFILE,addr [ebx].TBRMEM.tbr.szBmpFile,260
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_EDTBMPNAME
 					invoke GetDlgItemText,hWin,IDC_EDTBMPNAME,addr [ebx].TBRMEM.tbr.szBmpName,32
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_EDTBMPNBR
 					invoke GetDlgItemInt,hWin,IDC_EDTBMPNBR,NULL,FALSE
 					mov		[ebx].TBRMEM.tbr.nBmp,eax
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.elseif eax==IDC_EDTBTNNAME
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
 					mov		edi,eax
@@ -753,7 +757,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETCURSEL,edi,0
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_EDTBTNID
 					invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -766,14 +770,14 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 						or		nval,eax
 						invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_SETITEMDATA,edi,nval
 						mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-						invoke SetChanged,hWin,TRUE
+						invoke NotifyParent,hWin
 					.endif
 				.elseif eax==IDC_EDTSIZE
 					invoke GetDlgItemInt,hWin,IDC_EDTSIZE,NULL,FALSE
 					mov		[ebx].TBRMEM.tbr.nBtnSize,eax
 					invoke SetImageList,hWin
 					mov		[ebx].TBRMEM.tbrdef.fChanged,TRUE
-					invoke SetChanged,hWin,TRUE
+					invoke NotifyParent,hWin
 				.endif
 			.elseif edx==LBN_SELCHANGE
 				invoke SendDlgItemMessage,hWin,IDC_LSTBTN,LB_GETCURSEL,0,0
@@ -856,7 +860,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
 	mov		wc.lpfnWndProc,offset WndProc
 	mov		wc.cbClsExtra,NULL
-	mov		wc.cbWndExtra,NULL
+	mov		wc.cbWndExtra,4
 	mov		eax,hInstance
 	mov		wc.hInstance,eax
 	mov		wc.hbrBackground,COLOR_BTNFACE+1
@@ -931,29 +935,33 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof TBRMEM
 			mov		ebx,eax
 			invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,lParam
-			invoke CreateWindowEx,0,addr szTbrClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,1000,1000,hWin,ID_EDITUSER,hInstance,0
+			invoke CreateWindowEx,0,addr szTbrClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,ID_EDITUSER,hInstance,0
 			mov		edi,eax
 			invoke CreateDialogParam,hInstance,IDD_TBRCREATE,edi,offset TbrCreateProc,ebx
+			invoke SetWindowLong,edi,0,eax
 			mov		eax,edi
 			jmp		ExRet
 		.endif
-;	.elseif eax==AIM_FILESAVE
-;		.if wParam==ID_EDITUSER
-;			invoke GetDlgItem,hWin,IDC_HMEM
-;			.if eax
-;				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
-;				.if dword ptr buffer=='CRBT'
-;					invoke lstrcmpi,offset szNewFile,addr [ebx].TBRMEM.tbrdef.FileName
-;					.if !eax
-;						invoke SaveToolbarAs,hWin
-;					.else
-;						invoke SaveToolbar,hWin
-;					.endif
-;					mov		eax,TRUE
-;					jmp		ExRet
-;				.endif
-;			.endif
-;		.endif
+	.elseif eax==AIM_FILESAVE
+		.if wParam==ID_EDITUSER
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			invoke GetWindowLong,eax,0
+			mov		edi,eax
+			invoke GetDlgItem,edi,IDC_HMEM
+			.if eax
+				invoke GetDlgItemText,edi,IDC_HMEM,addr buffer,sizeof buffer
+				.if dword ptr buffer=='CRBT'
+					invoke lstrcmpi,offset szNewFile,addr [ebx].TBRMEM.tbrdef.FileName
+					.if !eax
+						invoke SaveToolbarAs,edi
+					.else
+						invoke SaveToolbar,edi
+					.endif
+					mov		eax,TRUE
+					jmp		ExRet
+				.endif
+			.endif
+		.endif
 ;	.elseif eax==AIM_FILESAVEAS
 ;		.if wParam==ID_EDITUSER
 ;			invoke GetDlgItem,hWin,IDC_HMEM
@@ -976,20 +984,23 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				.endif
 ;			.endif
 ;		.endif
-;	.elseif eax==AIM_GETMODIFY
-;		.if wParam==ID_EDITUSER
-;			invoke GetDlgItem,hWin,IDC_HMEM
-;			.if eax
-;				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
-;				.if dword ptr buffer=='CRBT'
-;					invoke GetDlgItem,hWin,IDC_HMEM
-;					invoke GetWindowLong,eax,GWL_USERDATA
-;					mov		ebx,eax
-;					mov		eax,[ebx].TBRMEM.tbrdef.fChanged
-;					jmp		ExRet
-;				.endif
-;			.endif
-;		.endif
+	.elseif eax==AIM_GETMODIFY
+		.if wParam==ID_EDITUSER
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			invoke GetWindowLong,eax,0
+			mov		edi,eax
+			invoke GetDlgItem,edi,IDC_HMEM
+			.if eax
+				invoke GetDlgItemText,edi,IDC_HMEM,addr buffer,sizeof buffer
+				.if dword ptr buffer=='CRBT'
+					invoke GetDlgItem,edi,IDC_HMEM
+					invoke GetWindowLong,eax,GWL_USERDATA
+					mov		ebx,eax
+					mov		eax,[ebx].TBRMEM.tbrdef.fChanged
+					jmp		ExRet
+				.endif
+			.endif
+		.endif
 	.elseif eax==AIM_GETFILETYPE
 		invoke lstrlen,lParam
 		mov		edx,lParam

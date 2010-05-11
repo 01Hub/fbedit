@@ -87,7 +87,7 @@ GetModify proc uses ebx,hWin:HWND
 	mov		ebx,eax
 	invoke GetWindowLong,hEdt,GWL_ID
 	mov		ID,eax
-	invoke PostAddinMessage,ha.hWnd,AIM_GETMODIFY,ID,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
+	invoke PostAddinMessage,hWin,AIM_GETMODIFY,ID,addr [ebx].TABMEM.filename,0,HOOK_GETMODIFY
 	.if !eax
 		mov		edx,ID
 		.if edx==ID_EDITCODE || edx==ID_EDITTEXT || edx==ID_EDITHEX
@@ -623,7 +623,7 @@ SaveTheFile proc uses ebx,hWin:HWND
 	mov		ebx,eax
 	invoke GetWindowLong,hEdt,GWL_ID
 	mov		ID,eax
-	invoke PostAddinMessage,ha.hWnd,AIM_FILESAVE,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVE
+	invoke PostAddinMessage,hWin,AIM_FILESAVE,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVE
 	.if eax
 		xor		eax,eax
 	.else
@@ -641,7 +641,7 @@ SaveTheFile proc uses ebx,hWin:HWND
 			xor		eax,eax
 		.endif
 		push	eax
-		invoke PostAddinMessage,ha.hWnd,AIM_FILESAVED,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVED
+		invoke PostAddinMessage,hWin,AIM_FILESAVED,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVED
 		pop		eax
 	.endif
 	ret
