@@ -22,6 +22,7 @@ include Find.asm
 include Block.asm
 include AddinManager.asm
 include MakeOptions.asm
+include ExceptionHandler.asm
 
 .code
 
@@ -2710,6 +2711,8 @@ start:
 	.if osvi.dwPlatformId == VER_PLATFORM_WIN32_NT
 		mov		fNT,TRUE
 	.endif
+	invoke SetUnhandledExceptionFilter,OFFSET FinalHandler
+	invoke InitHyperLinkClass
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
@@ -2738,6 +2741,7 @@ start:
 	invoke strcpy,addr da.szProjectFiles,addr szDotPrraDot
 	mov		da.Version,RadASMVersion
 	mov		da.lpszVersion,offset szVersion
+	mov		da.nBackup,3
 	invoke WinMain,ha.hInstance,NULL,CommandLine,SW_SHOWDEFAULT
 	;Uninstall custom controls
 	invoke ResEdUninstall

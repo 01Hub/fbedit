@@ -153,6 +153,7 @@ szDotExe						db '.exe',0
 szDotPrra						db '.prra',0
 szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
+szBSBakBS						db '\Bak\',0
 szSpc							db ' ',0
 szCr							db VK_RETURN,0
 szNULL							db 0
@@ -274,7 +275,7 @@ szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
 .data
 
-pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput>
+pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime>
 fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 MenuIDAddins					DWORD 40000
 

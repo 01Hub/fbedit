@@ -283,11 +283,11 @@ ExportToolbar proc uses ebx esi edi,hWin:HWND
 
 	mov		ebx,lpProc
 	push	0
-	call	[ebx].ADDINPROCS.lpOutputSelect
+	call	[ebx].ADDINPROCS.lpSetOutputTab
 	push	TRUE
-	call	[ebx].ADDINPROCS.lpOutputShow
+	call	[ebx].ADDINPROCS.lpShowOutput
 	mov		eax,lpHandles
-	invoke SendMessage,[eax].ADDINHANDLES.hOut,WM_SETTEXT,0,0
+	invoke SendMessage,[eax].ADDINHANDLES.hOutput,WM_SETTEXT,0,0
 	invoke GetDlgItem,hWin,IDC_HMEM
 	invoke GetWindowLong,eax,GWL_USERDATA
 	mov		ebx,eax
@@ -364,7 +364,7 @@ ExportToolbar proc uses ebx esi edi,hWin:HWND
 
 TextOutput:
 	mov		eax,lpHandles
-	invoke SendMessage,[eax].ADDINHANDLES.hOut,EM_REPLACESEL,FALSE,edx
+	invoke SendMessage,[eax].ADDINHANDLES.hOutput,EM_REPLACESEL,FALSE,edx
 	retn
 
 ExportToolbar endp
@@ -382,7 +382,7 @@ TbrCreateProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPA
 	.if eax==WM_INITDIALOG
 		invoke GetDlgItem,hWin,IDC_HMEM
 		invoke SetWindowLong,eax,GWL_USERDATA,lParam
-		invoke SetWindowLong,hWin,GWL_ID,IDC_USER
+		invoke SetWindowLong,hWin,GWL_ID,ID_EDITUSER
 		invoke SendDlgItemMessage,hWin,IDC_EDTTBRNAME,EM_LIMITTEXT,31,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTTBRID,EM_LIMITTEXT,5,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTBTNNAME,EM_LIMITTEXT,31,0
@@ -856,9 +856,9 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		MenuIDAddin,eax
 	mov		ebx,lpHandles
 	;Update the file browser filter string to include .tbr files
-	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_GETFILTERSTRING,0,addr buffer
+	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_GETFILTERSTRING,0,addr buffer
 	invoke lstrcat,addr buffer,offset szTbrFilter
-	invoke SendMessage,[ebx].ADDINHANDLES.hBrowse,FBM_SETFILTERSTRING,TRUE,addr buffer
+	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr buffer
 	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_FILESAVEAS or HOOK_FILECLOSED or HOOK_GETMODIFY
 	xor		eax,eax
 	mov		hook.hook2,eax
@@ -916,7 +916,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		ExRet
 		.endif
 	.elseif eax==AIM_FILESAVE
-		.if wParam==IDC_USER
+		.if wParam==ID_EDITUSER
 			invoke GetDlgItem,hWin,IDC_HMEM
 			.if eax
 				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
@@ -933,7 +933,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==AIM_FILESAVEAS
-		.if wParam==IDC_USER
+		.if wParam==ID_EDITUSER
 			invoke GetDlgItem,hWin,IDC_HMEM
 			.if eax
 				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
@@ -945,7 +945,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==AIM_FILECLOSED
-		.if wParam==IDC_USER
+		.if wParam==ID_EDITUSER
 			invoke GetDlgItem,hWin,IDC_HMEM
 			.if eax
 				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
@@ -955,7 +955,7 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==AIM_GETMODIFY
-		.if wParam==IDC_USER
+		.if wParam==ID_EDITUSER
 			invoke GetDlgItem,hWin,IDC_HMEM
 			.if eax
 				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer

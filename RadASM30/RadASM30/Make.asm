@@ -474,8 +474,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		.endif
 	.endif
   Ex:
-	.if !fExitCode && fHide
-		invoke ShowOutput,FALSE
+	.if !fExitCode
+		.if fHide
+			invoke ShowOutput,FALSE
+		.endif
 		.if ha.hMdi
 			invoke SetFocus,ha.hEdt
 		.endif
