@@ -99,7 +99,7 @@ TBRMEM ends
 .const
 
 szMenuItem			db 'New Toolbar file',0
-szNewFile			db '(Untitled)',0
+szNewFile			db '(Untitled).tbr',0
 szTbr				db '.tbr',0
 szTbrFilter			db '.tbr.',0
 szSTD				db 'IDB_STD_SMALL_COLOR',0

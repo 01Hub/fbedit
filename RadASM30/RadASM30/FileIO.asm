@@ -548,15 +548,11 @@ SaveTextFile proc hWin:DWORD,lpFileName:DWORD
 		mov		editstream.pfnCallback,offset StreamOutProc
 		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
 		invoke CloseHandle,hFile
-		;Set the modify state to false
+		;Set the modified state to false
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
-		invoke GetWindowLong,hWin,GWL_ID
-		.if eax==ID_EDITCODE
-;			invoke SaveBreakpoints,hWin
-;			invoke SaveBookMarks,hWin
-;			invoke SaveCollapse,hWin
-		.endif
+		;Update the line changed state
 		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,TRUE,0
+		;Update the tabs changed state
 		invoke GetParent,hWin
 		invoke TabToolSetChanged,eax,FALSE
    		mov		eax,FALSE
@@ -578,8 +574,9 @@ SaveHexFile proc hWin:DWORD,lpFileName:DWORD
 		mov		editstream.pfnCallback,offset StreamOutProc
 		invoke SendMessage,hWin,EM_STREAMOUT,SF_TEXT,addr editstream
 		invoke CloseHandle,hFile
-		;Set the modify state to false
+		;Set the modified state to false
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
+		;Update the tabs changed state
 		invoke GetParent,hWin
 		invoke TabToolSetChanged,eax,FALSE
    		mov		eax,FALSE
@@ -603,8 +600,10 @@ SaveResFile proc hWin:DWORD,lpFileName:DWORD
 		mov		nSize,eax
 		invoke WriteFile,hFile,hMem,nSize,addr nSize,NULL
 		invoke CloseHandle,hFile
+		;Set the modified state to false
 		invoke SendMessage,hWin,PRO_SETMODIFY,FALSE,0
 		invoke GlobalFree,hMem
+		;Update the tabs changed state
 		invoke GetParent,hWin
 		invoke TabToolSetChanged,eax,FALSE
    		mov		eax,FALSE
@@ -625,6 +624,8 @@ SaveTheFile proc uses ebx,hWin:HWND
 	mov		ID,eax
 	invoke PostAddinMessage,hWin,AIM_FILESAVE,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVE
 	.if eax
+		;Update the tabs changed state
+		invoke TabToolSetChanged,hWin,FALSE
 		xor		eax,eax
 	.else
 		invoke BackupFile,addr [ebx].TABMEM.filename,1
@@ -689,7 +690,8 @@ UpdateFileName proc uses ebx,hWin:DWORD,lpFileName:DWORD
 	.elseif eax==ID_EDITRES
 		invoke SaveResFile,hEdt,lpFileName
 	.elseif eax==ID_EDITUSER
-		xor		eax,eax
+		invoke PostAddinMessage,hWin,AIM_FILENAMECHANGED,addr [ebx].TABMEM.filename,lpFileName,0,HOOK_FILENAMECHANGED
+		xor		eax,TRUE
 	.endif
 	.if !eax
 		;The file was saved

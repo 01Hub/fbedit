@@ -136,10 +136,14 @@ GetCodeComplete proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniTrig,NULL,addr da.szCCTrig,sizeof da.szCCTrig,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniInc,NULL,addr da.szCCInc,sizeof da.szCCInc,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
+	;Load api files
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniApi,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 	.while tmpbuff
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		movzx	ebx,buffer
+		invoke GetItemInt,addr tmpbuff,2
+		shl		eax,8
+		or		ebx,eax
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		.if ebx && buffer
 			invoke strcpy,addr apifile,addr da.szAppPath
@@ -188,6 +192,14 @@ GetCodeComplete proc uses ebx esi edi
 	;Delete duplicates
 	mov		dword ptr buffer,'W'
 	invoke DeleteDuplicates,addr buffer
+	;Set message api tooltip
+	mov		ttmsg.szType,'M'
+	mov		ttmsg.lpMsgApi[0*sizeof MSGAPI].nPos,2
+	mov		ttmsg.lpMsgApi[0*sizeof MSGAPI].lpszApi,offset szMsg1
+	mov		ttmsg.lpMsgApi[1*sizeof MSGAPI].nPos,2
+	mov		ttmsg.lpMsgApi[1*sizeof MSGAPI].lpszApi,offset szMsg2
+	mov		ttmsg.lpMsgApi[2*sizeof MSGAPI].nPos,3
+	mov		ttmsg.lpMsgApi[2*sizeof MSGAPI].lpszApi,offset szMsg3
 	ret
 
 GetCodeComplete endp

@@ -232,52 +232,11 @@ SaveToolbar proc uses ebx esi edi,hWin:HWND
 		invoke WriteFile,hFile,ecx,edx,addr nSize,NULL
 		invoke CloseHandle,hFile
 		mov		[ebx].TBRMEM.tbrdef.fChanged,FALSE
-;		mov		ebx,lpProc
-;		push	hWin
-;		call	[ebx].ADDINPROCS.lpTabToolGetMem
-;		mov		[eax].TABMEM.nchange,0
-;		mov		[eax].TABMEM.fchanged,0
-;		push	eax
-;		call	[ebx].ADDINPROCS.lpUpdateFileTime
 		invoke NotifyParent,hWin
 	.endif
 	ret
 
 SaveToolbar endp
-
-SaveToolbarAs proc uses ebx,hWin:HWND
-	LOCAL	ofn:OPENFILENAME
-	LOCAL	buff[MAX_PATH]:BYTE
-
-;	invoke GetDlgItem,hWin,IDC_HMEM
-;	invoke GetWindowLong,eax,GWL_USERDATA
-;	mov		ebx,eax
-;	invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
-;	mov		ofn.lStructSize,sizeof OPENFILENAME
-;	mov		eax,hWin
-;	mov		ofn.hwndOwner,eax
-;	mov		eax,hInstance
-;	mov		ofn.hInstance,eax
-;	invoke lstrcpy,addr buff,addr [ebx].TBRMEM.tbrdef.FileName
-;	lea		eax,buff
-;	mov		ofn.lpstrFile,eax
-;	mov		ofn.nMaxFile,sizeof buff
-;	mov		ofn.lpstrFilter,offset szTBRFilterString
-;    mov		ofn.lpstrDefExt,offset szTbr
-;	mov		ofn.Flags,OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_EXPLORER
-;	invoke GetSaveFileName,addr ofn
-;	.if eax
-;		invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,addr buff
-;		lea		eax,buff
-;		push	eax
-;		push	hWin
-;		mov		eax,lpProc
-;		call	[eax].ADDINPROCS.lpUpdateFileName
-;		invoke SaveToolbar,hWin
-;	.endif
-	ret
-
-SaveToolbarAs endp
 
 ExportToolbar proc uses ebx esi edi,hWin:HWND
 	LOCAL	szLine[1024]:BYTE
@@ -844,7 +803,12 @@ DllEntry Endp
 
 WndProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
-	invoke DefWindowProc,hWin,uMsg,wParam,lParam
+	mov		eax,uMsg
+	.if eax==WM_SIZE
+		xor		eax,eax
+	.else
+		invoke DefWindowProc,hWin,uMsg,wParam,lParam
+	.endif
 	ret
 
 WndProc endp
@@ -857,7 +821,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke RtlZeroMemory,addr wc,sizeof WNDCLASSEX
 	;Mdi Frame
 	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW or CS_GLOBALCLASS
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW; or CS_GLOBALCLASS
 	mov		wc.lpfnWndProc,offset WndProc
 	mov		wc.cbClsExtra,NULL
 	mov		wc.cbWndExtra,4
@@ -868,7 +832,8 @@ InstallAddin proc uses ebx,hWin:DWORD
 	mov		wc.lpszClassName,offset szTbrClassName
 	mov		wc.hIcon,NULL
 	mov		wc.hIconSm,NULL
-	mov		wc.hCursor,NULL
+	invoke LoadCursor,0,IDC_ARROW
+	mov		wc.hCursor,eax
 	invoke RegisterClassEx,addr wc
 	mov		ebx,hWin
 	;Get pointer to handles struct
@@ -887,7 +852,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_GETFILTERSTRING,0,addr buffer
 	invoke lstrcat,addr buffer,offset szTbrFilter
 	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr buffer
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_FILESAVEAS or HOOK_FILECLOSED or HOOK_GETMODIFY or HOOK_GETFILETYPE
+	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_GETMODIFY or HOOK_GETFILETYPE or HOOK_FILENAMECHANGED
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -898,26 +863,26 @@ InstallAddin proc uses ebx,hWin:DWORD
 InstallAddin endp
 
 ; Export this proc
+; This proc handles messages sent from RadASM to our addin
+; Return TRUE to prevent RadASM and other addins from executing the command.
 AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	; This proc handles messages sent from MasmEd to our addin
-	; Return TRUE to prevent MasmEd and other addins from executing the command.
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	mov		eax,uMsg
 	.if eax==AIM_COMMAND
 		mov		eax,wParam
 		.if eax==MenuIDAddin
-;			invoke GetProcessHeap
-;			invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof TBRMEM
-;			mov		ebx,eax
-;			invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,offset szNewFile
-;			invoke CreateWindowEx,0,addr szTbrClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,ID_EDITUSER,hInstance,0
-;			invoke CreateDialogParam,hInstance,IDD_TBRCREATE,eax,offset TbrCreateProc,ebx
-;			push	offset szNewFile
-;			push	eax
-;			mov		ebx,lpProc
-;			call	[ebx].ADDINPROCS.lpTabToolAdd
-;			call	[ebx].ADDINPROCS.lpTabToolActivate
+			invoke GetProcessHeap
+			invoke HeapAlloc,eax,HEAP_ZERO_MEMORY,sizeof TBRMEM
+			mov		ebx,eax
+			invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,offset szNewFile
+			invoke CreateWindowEx,0,addr szTbrClassName,NULL,WS_CHILD or WS_VISIBLE,0,0,0,0,hWin,ID_EDITUSER,hInstance,0
+			invoke CreateDialogParam,hInstance,IDD_TBRCREATE,eax,offset TbrCreateProc,ebx
+			push	offset szNewFile
+			push	eax
+			mov		ebx,lpProc
+			call	[ebx].ADDINPROCS.lpTabToolAdd
+			call	[ebx].ADDINPROCS.lpTabToolActivate
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif
@@ -951,39 +916,12 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax
 				invoke GetDlgItemText,edi,IDC_HMEM,addr buffer,sizeof buffer
 				.if dword ptr buffer=='CRBT'
-					invoke lstrcmpi,offset szNewFile,addr [ebx].TBRMEM.tbrdef.FileName
-					.if !eax
-						invoke SaveToolbarAs,edi
-					.else
-						invoke SaveToolbar,edi
-					.endif
+					invoke SaveToolbar,edi
 					mov		eax,TRUE
 					jmp		ExRet
 				.endif
 			.endif
 		.endif
-;	.elseif eax==AIM_FILESAVEAS
-;		.if wParam==ID_EDITUSER
-;			invoke GetDlgItem,hWin,IDC_HMEM
-;			.if eax
-;				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
-;				.if dword ptr buffer=='CRBT'
-;					invoke SaveToolbarAs,hWin
-;					mov		eax,TRUE
-;					jmp		ExRet
-;				.endif
-;			.endif
-;		.endif
-;	.elseif eax==AIM_FILECLOSED
-;		.if wParam==ID_EDITUSER
-;			invoke GetDlgItem,hWin,IDC_HMEM
-;			.if eax
-;				invoke GetDlgItemText,hWin,IDC_HMEM,addr buffer,sizeof buffer
-;				.if dword ptr buffer=='CRBT'
-;					invoke DestroyWindow,hWin
-;				.endif
-;			.endif
-;		.endif
 	.elseif eax==AIM_GETMODIFY
 		.if wParam==ID_EDITUSER
 			invoke GetWindowLong,hWin,GWL_USERDATA
@@ -1011,6 +949,25 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if !eax
 			mov		eax,ID_EDITUSER
 			jmp		ExRet
+		.endif
+	.elseif eax==AIM_FILENAMECHANGED
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		invoke GetWindowLong,eax,0
+		mov		edi,eax
+		invoke GetDlgItem,edi,IDC_HMEM
+		.if eax
+			invoke GetDlgItemText,edi,IDC_HMEM,addr buffer,sizeof buffer
+			.if dword ptr buffer=='CRBT'
+				invoke GetDlgItem,edi,IDC_HMEM
+				invoke GetWindowLong,eax,GWL_USERDATA
+				mov		ebx,eax
+				invoke lstrcmpi,wParam,addr [ebx].TBRMEM.tbrdef.FileName
+				.if !eax
+					invoke lstrcpy,addr [ebx].TBRMEM.tbrdef.FileName,lParam
+					mov		eax,TRUE
+					jmp		ExRet
+				.endif
+			.endif
 		.endif
 	.endif
 	mov		eax,FALSE

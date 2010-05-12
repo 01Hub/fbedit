@@ -152,6 +152,9 @@ szTab							db VK_TAB,0
 szDotIni						db '.ini',0
 szDotDef						db '.def',0
 szDotExe						db '.exe',0
+szDotDll						db '.dll',0
+szDotExp						db '.exp',0
+szDotLib						db '.lib',0
 szDotPrra						db '.prra',0
 szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0

@@ -244,7 +244,8 @@ AIM_FILESAVED					equ WM_USER+112			;A file has been saved. Always return FALSE.
 AIM_GETMODIFY					equ WM_USER+113			;RadASM requests if a file is changed. Return TRUE if it is your file and it has changed. hWin=Mdi child window, wParam=ID_EDITUSER, lParam=lpFileName
 AIM_MAKEBEGIN					equ WM_USER+114			;RadASM starts a make process. Return TRUE to prevent RadASM from running the make process. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
 AIM_MAKEDONE					equ WM_USER+115			;RadASM finished the make process. Always return FALSE. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
-AIM_GETFILETYPE					equ WM_USER+116			;RadASM requests a filetype. Return ID_EDITUSER if your addin handles the file, else return FALSE. hWin=Main window,wParam=0, lParam=lpFileName
+AIM_GETFILETYPE					equ WM_USER+116			;RadASM requests a filetype. Return ID_EDITUSER if your addin handles the filetype, else return FALSE. hWin=Main window,wParam=0, lParam=lpFileName
+AIM_FILENAMECHANGED				equ WM_USER+117			;RadASM has changed a filename. Return TRUE if this is your file, else return FALSE. hWin=Mdi child window,wParam=Old filename, lParam=New filename
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED				equ 00001h
@@ -264,6 +265,7 @@ HOOK_GETMODIFY					equ 02000h
 HOOK_MAKEBEGIN					equ 04000h
 HOOK_MAKEDONE					equ 08000h
 HOOK_GETFILETYPE				equ 10000h
+HOOK_FILENAMECHANGED			equ 20000h
 
 HOOK struct
 	hook1				DWORD ?				;Combinations of HOOK_ flags

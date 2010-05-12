@@ -881,7 +881,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
 						.if !eax
-							invoke DeleteMinorFiles
+;							invoke DeleteMinorFiles
 						.endif
 					.endif
 				.endif
@@ -895,7 +895,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if !eax
 							invoke OutputMake,IDM_MAKE_LINK,3
 							.if !eax
-								invoke DeleteMinorFiles
+;								invoke DeleteMinorFiles
 								invoke OutputMake,IDM_MAKE_RUN,0
 							.endif
 						.endif
@@ -905,7 +905,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
 						.if !eax
-							invoke DeleteMinorFiles
+;							invoke DeleteMinorFiles
 							invoke OutputMake,IDM_MAKE_RUN,0
 						.endif
 					.endif
@@ -1419,16 +1419,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke strcpy,addr buffer,addr [edi].PBITEM.szitem
 				invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
 				.if eax
-					mov		ebx,eax
 					;File is open
+					mov		ebx,eax
 					invoke MoveFile,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew
 					.if eax
-						invoke TabToolGetInx,ebx
-						invoke TabToolSetText,eax,[esi].NMPBITEMCHANGE.lpsznew
-						invoke SetWindowText,ebx,[esi].NMPBITEMCHANGE.lpsznew
-						.if ebx==ha.hMdi
-							;and is the current window
-							invoke strcpy,offset da.szFileName,[esi].NMPBITEMCHANGE.lpsznew
+						invoke GetTheFileType,addr [edi].PBITEM.szitem
+						.if eax==ID_EDITUSER
+							invoke PostAddinMessage,ebx,AIM_FILENAMECHANGED,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew,0,HOOK_FILENAMECHANGED
+						.else
+							mov		eax,TRUE
+						.endif
+						.if eax
+							invoke TabToolGetInx,ebx
+							invoke TabToolSetText,eax,[esi].NMPBITEMCHANGE.lpsznew
+							invoke SetWindowText,ebx,[esi].NMPBITEMCHANGE.lpsznew
+							.if ebx==ha.hMdi
+								;and is the current window
+								invoke strcpy,offset da.szFileName,[esi].NMPBITEMCHANGE.lpsznew
+							.endif
+						.else
+							mov		[esi].NMPBITEMCHANGE.cancel,TRUE
 						.endif
 					.else
 						;Probably not a valid filename
@@ -1438,7 +1448,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke MessageBox,ha.hWnd,offset tmpbuff,offset DisplayName,MB_OK or MB_ICONERROR
 					.endif
 				.else
-					;File is not open, move it
+					;File is not open, just move it
 					invoke MoveFile,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew
 					.if !eax
 						;Probably not a valid filename
