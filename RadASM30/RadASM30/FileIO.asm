@@ -298,6 +298,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 						mov		dword ptr da.szAssembler,'msam'
 						mov		dword ptr da.szAssembler[4],0
 					.endif
+					invoke GetPrivateProfileString,addr szIniProject,addr szIniApi,NULL,addr da.szPOApiFiles,sizeof da.szPOApiFiles,addr da.szProjectFile
 					invoke OpenAssembler
 					invoke GetProjectFiles
 					invoke AddMRU,addr da.szMruProjects,addr da.szProjectFile

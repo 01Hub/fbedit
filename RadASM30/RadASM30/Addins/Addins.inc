@@ -516,14 +516,15 @@ ADDINDATA struct
 	szMainRC			BYTE 128 dup(?)
 	szMainAsm			BYTE 128 dup(?)
 	szDebug				BYTE 128 dup(?)
+	szCommandLine		BYTE 128 dup(?)
+	fCmdExe				DWORD ?
+	szCmdExe			BYTE 64 dup(?)
+	szPOApiFiles		BYTE 256 dup(?)
+	fDelMinor			DWORD ?
 	szMruFiles			BYTE 10*MAX_PATH dup(?)
 	szMruProjects		BYTE 10*MAX_PATH dup(?)
 	pHtmlHelpProc		DWORD ?
 	szHelpF1			BYTE 3*MAX_PATH dup(?)
-	szCommandLine		BYTE 128 dup(?)
-	fDelMinor			DWORD ?
-	fCmdExe				DWORD ?
-	szCmdExe			BYTE 64 dup(?)
 	find				FIND <>
 	nBackup				DWORD ?
 ADDINDATA ends

@@ -1479,6 +1479,7 @@ PutProject proc uses ebx esi edi
 	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCmdExe
 	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCommandLine
 	invoke WritePrivateProfileString,addr szIniMake,addr szIniRun,addr tmpbuff[1],addr da.szProjectFile
+	invoke WritePrivateProfileString,addr szIniProject,addr szIniApi,addr da.szPOApiFiles,addr da.szProjectFile
 	ret
 
 PutProject endp
@@ -1501,6 +1502,7 @@ CloseProject proc
 		mov		da.szProjectPath,0
 		mov		da.szMainRC,0
 		mov		da.szMainAsm,0
+		mov		da.szPOApiFiles,0
 		invoke OpenAssembler
 		invoke SetMainWinCaption
 		mov		eax,TRUE

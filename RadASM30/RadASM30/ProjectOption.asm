@@ -20,6 +20,7 @@ IDC_CHKDELETEMINOR				equ 3502
 IDC_EDTPOCMDEXE					equ 1025
 IDC_EDTPOCOMMANDLINE			equ 1027
 IDC_CHKPOCMDEXE					equ 1026
+IDC_EDTPOAPI					equ 3505
 
 .data?
 
@@ -46,6 +47,7 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke SendDlgItemMessage,hWin,IDC_EDTPOOUTLIB,EM_LIMITTEXT,sizeof MAKE.szOutLib-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTPOCOMMANDLINE,EM_LIMITTEXT,sizeof da.szCommandLine-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTPOCMDEXE,EM_LIMITTEXT,sizeof da.szCmdExe-1,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTPOAPI,EM_LIMITTEXT,255,0
 		lea		esi,da.make
 		xor		ebx,ebx
 		.while ebx<32
@@ -99,6 +101,10 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke CheckDlgButton,hWin,IDC_CHKPOCMDEXE,eax
 		invoke SetDlgItemText,hWin,IDC_EDTPOCMDEXE,addr da.szCmdExe
 		invoke SetDlgItemText,hWin,IDC_EDTPOCOMMANDLINE,addr da.szCommandLine
+		invoke GetPrivateProfileString,addr szIniProject,addr szIniApi,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+		.if eax
+			invoke SetDlgItemText,hWin,IDC_EDTPOAPI,addr tmpbuff
+		.endif
 		call	UpdateBtnDelete
 		invoke GetDlgItem,hWin,IDOK
 		invoke EnableWindow,eax,FALSE
@@ -210,6 +216,9 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke GetDlgItem,hWin,IDOK
 				invoke EnableWindow,eax,TRUE
 			.elseif eax==IDC_EDTPOCMDEXE
+				invoke GetDlgItem,hWin,IDOK
+				invoke EnableWindow,eax,TRUE
+			.elseif eax==IDC_EDTPOAPI
 				invoke GetDlgItem,hWin,IDOK
 				invoke EnableWindow,eax,TRUE
 			.elseif !fNoUpdate

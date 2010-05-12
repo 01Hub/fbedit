@@ -647,33 +647,45 @@ UpdateApiList endp
 
 UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 
+	mov		eax,lpWord
+  @@:
+	.while (byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB) && eax<lpCPos
+		inc		eax
+	.endw
+	mov		lpWord,eax
+	.while byte ptr [eax] && byte ptr [eax]!=',' && eax<lpCPos
+		.if byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
+			jmp		@b
+		.endif
+		inc		eax
+	.endw
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+	mov		edi,eax
 	invoke SendMessage,ha.hCC,CCM_CLEAR,0,0
 	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCCC,lpApi
-	.if eax
+	.while eax
 		mov		esi,eax
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
-		mov		eax,lpWord
-	  @@:
-		.while (byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB) && eax<lpCPos
-			inc		eax
-		.endw
-		mov		lpWord,eax
-		.while byte ptr [eax] && byte ptr [eax]!=',' && eax<lpCPos
-			.if byte ptr [eax]==VK_SPACE || byte ptr [eax]==VK_TAB
-				jmp		@b
-			.endif
-			inc		eax
-		.endw
-		invoke AddList,esi,lpWord,2
+		.if byte ptr [edi]
+			invoke strcat,edi,addr szComma
+		.endif
+		invoke strcat,edi,esi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCCC,lpApi
+	.endw
+	.if byte ptr [edi]
+		invoke AddList,edi,lpWord,2
 		.if eax
 			invoke SendMessage,ha.hCC,CCM_SORT,FALSE,0
 			invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
 			mov		eax,lpWord
 		.endif
-		ret
+	.else
+		xor		eax,eax
 	.endif
-	xor		eax,eax
+	push	eax
+	invoke GlobalFree,edi
+	pop		eax
 	ret
 
 UpdateApiConstList endp

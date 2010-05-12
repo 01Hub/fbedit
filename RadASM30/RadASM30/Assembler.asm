@@ -138,6 +138,10 @@ GetCodeComplete proc uses ebx esi edi
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
 	;Load api files
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniApi,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+	.if da.szPOApiFiles
+		invoke strcat,addr tmpbuff,addr szComma
+		invoke strcat,addr tmpbuff,addr da.szPOApiFiles
+	.endif
 	.while tmpbuff
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		movzx	ebx,buffer
