@@ -880,9 +880,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke OutputMake,IDM_MAKE_ASSEMBLE,2
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
-						.if !eax
-;							invoke DeleteMinorFiles
-						.endif
 					.endif
 				.endif
 			.elseif eax==IDM_MAKE_GO
@@ -895,7 +892,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.if !eax
 							invoke OutputMake,IDM_MAKE_LINK,3
 							.if !eax
-;								invoke DeleteMinorFiles
 								invoke OutputMake,IDM_MAKE_RUN,0
 							.endif
 						.endif
@@ -905,7 +901,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					.if !eax
 						invoke OutputMake,IDM_MAKE_LINK,3
 						.if !eax
-;							invoke DeleteMinorFiles
 							invoke OutputMake,IDM_MAKE_RUN,0
 						.endif
 					.endif
