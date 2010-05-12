@@ -840,24 +840,48 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_RESOURCE_UNDO
 				invoke SendMessage,ha.hEdt,PRO_UNDODELETED,0,0
 			.elseif eax==IDM_MAKE_COMPILE
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_COMPILE,addr da.szMainRC,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				invoke OutputMake,IDM_MAKE_COMPILE,1
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_COMPILE,addr da.szMainRC,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_ASSEMBLE
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_ASSEMBLE,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				invoke OutputMake,IDM_MAKE_ASSEMBLE,1
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_ASSEMBLE,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_MODULES
 				.if da.fProject
+					invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_MODULES,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+					.if eax
+						jmp		Ex
+					.endif
 					invoke UpdateAll,UAM_CLEARERRORS,0
 					invoke UpdateAll,UAM_SAVEALL,FALSE
 					invoke OutputMake,IDM_MAKE_MODULES,1
+					invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_MODULES,addr da.szMainAsm,0,HOOK_MAKEDONE
 				.endif
 			.elseif eax==IDM_MAKE_LINK
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_LINK,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				invoke OutputMake,IDM_MAKE_LINK,1
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_LINK,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_BUILD
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_BUILD,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				;Get relative pointer to selected build command
@@ -882,7 +906,12 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke OutputMake,IDM_MAKE_LINK,3
 					.endif
 				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_BUILD,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_GO
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_GO,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				.if da.szMainRC
@@ -905,11 +934,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						.endif
 					.endif
 				.endif
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_GO,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_RUN
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_RUN,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				invoke OutputMake,IDM_MAKE_RUN,1
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_RUN,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_DEBUG
+				invoke PostAddinMessage,hWin,AIM_MAKEBEGIN,IDM_MAKE_DEBUG,addr da.szMainAsm,0,HOOK_MAKEBEGIN
+				.if eax
+					jmp		Ex
+				.endif
 				invoke UpdateAll,UAM_SAVEALL,FALSE
+				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_DEBUG,addr da.szMainAsm,0,HOOK_MAKEDONE
 			.elseif eax==IDM_MAKE_SETMAIN
 				.if ha.hMdi
 					invoke strcpy,addr buffer,addr da.szFileName
@@ -2260,6 +2300,17 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			mov		da.szFileName,0
 		.endif
 	.elseif eax==WM_CLOSE
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov		hEdt,eax
+		invoke GetWindowLong,hEdt,GWL_USERDATA
+		mov		ebx,eax
+		invoke GetWindowLong,hEdt,GWL_ID
+		mov		edx,eax
+		invoke PostAddinMessage,hWin,AIM_FILECLOSE,edx,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSE
+		.if eax
+			xor		eax,eax
+			jmp		Ex
+		.endif
 		invoke WantToSave,hWin
 		.if !eax
 			invoke GetWindowLong,hWin,GWL_USERDATA
@@ -2299,6 +2350,11 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke DeleteGoto,hEdt
 			invoke DestroyWindow,hEdt
 			invoke TabToolDel,hWin
+			invoke GetWindowLong,hEdt,GWL_USERDATA
+			mov		ebx,eax
+			invoke GetWindowLong,hEdt,GWL_ID
+			mov		edx,eax
+			invoke PostAddinMessage,hWin,AIM_FILECLOSED,edx,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSED
 		.else
 			xor		eax,eax
 			jmp		Ex

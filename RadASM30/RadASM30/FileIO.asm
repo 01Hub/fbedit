@@ -719,6 +719,11 @@ SaveFileAs proc hWin:DWORD,lpFileName:DWORD
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	buffer[MAX_PATH]:BYTE
 
+	invoke GetWindowLong,ha.hEdt,GWL_ID
+	invoke PostAddinMessage,ha.hMdi,AIM_FILESAVEAS,eax,addr da.szFileName,0,HOOK_FILESAVEAS
+	.if eax
+		jmp		Ex
+	.endif
 	;Zero out the ofn struct
     invoke RtlZeroMemory,addr ofn,sizeof ofn
 	;Setup the ofn struct
@@ -747,6 +752,7 @@ SaveFileAs proc hWin:DWORD,lpFileName:DWORD
 	.else
 		mov		eax,TRUE
 	.endif
+  Ex:
 	ret
 
 SaveFileAs endp

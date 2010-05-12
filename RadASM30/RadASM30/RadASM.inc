@@ -280,7 +280,7 @@ szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
 .data
 
-pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime>
+pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime,UpdateAll>
 fn								FILENOTIFY <0,fnpath,0,fnhandle,fnptrpth>
 MenuIDAddins					DWORD 40000
 
