@@ -160,7 +160,6 @@ szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
 szBSBakBS						db '\Bak\',0
 szSpc							db ' ',0
-szCr							db VK_RETURN,0
 szNULL							db 0
 szDollarA						db '$A',0
 szDollarD						db '$D',0
@@ -245,6 +244,8 @@ szIniRun						db 'Run',0
 szIniFind						db 'Find',0
 szIniCharTab					db 'CharTab',0
 szIniAddins						db 'Addins',0
+szIniTplTxt						db 'TplTxt',0
+szIniTplBin						db 'TplBin',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

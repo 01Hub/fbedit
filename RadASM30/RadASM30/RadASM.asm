@@ -809,6 +809,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if da.fProject
 					invoke DialogBoxParam,ha.hInstance,IDD_DLGPO,hWin,offset ProjectOptionProc,0
 				.endif
+			.elseif eax==IDM_PROJECTTEMPLATE
+				.if da.fProject
+					invoke DialogBoxParam,ha.hInstance,IDD_DLGNEWTEMPLATE,hWin,offset NewTemplateDialogProc,0
+				.endif
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
 				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_DIALOG,TRUE
 			.elseif eax==IDM_RESOURCE_ADDMENU
@@ -1236,7 +1240,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 											invoke strcat,offset tmpbuff,offset szSpc
 											invoke strcat,offset tmpbuff,ebx
 										.endif
-										invoke strcat,offset tmpbuff,offset szCr
+										invoke strcat,offset tmpbuff,offset szCR
 										invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,offset tmpbuff
 										invoke SetFocus,ha.hEdt
 										.break

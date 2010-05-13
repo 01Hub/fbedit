@@ -133,6 +133,7 @@ IDM_PROJECT_OPENITEM			equ 10166
 IDM_PROJECT_OPENITEMFILE		equ 10167
 IDM_PROJECT_OPENITEMGROUP		equ 10168
 IDM_PROJECT_OPTION				equ 10103
+IDM_PROJECTTEMPLATE				equ 10196
 IDM_RESOURCE					equ 10065
 IDM_RESOURCE_ADD				equ 10108
 IDM_RESOURCE_ADDDIALOG			equ 10109
@@ -492,6 +493,8 @@ ADDINDATA struct
 	szHexFiles			BYTE 32 dup(?)
 	szResourceFiles		BYTE 32 dup(?)
 	szProjectFiles		BYTE 32 dup(?)
+	szTplTxt			BYTE 256 dup(?)
+	szTplBin			BYTE 256 dup(?)
 	szCCTrig			BYTE 128 dup(?)
 	szCCInc				BYTE 32 dup(?)
 	szCCLib				BYTE 32 dup(?)

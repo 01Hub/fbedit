@@ -30,6 +30,16 @@ IDD_DLGNEWPROJECTTAB3			equ 3030
 IDC_LSTPROJECTTEMPLATE			equ 1002
 IDC_STCPROJECTTEMPLATE			equ 1001
 
+;NewTemplate.dlg
+IDD_DLGNEWTEMPLATE				equ 3700
+IDC_EDTDESCRIPTION				equ 1001
+IDC_LSTFILES					equ 1002
+IDC_BTNADD						equ 1003
+IDC_BTNDEL						equ 1004
+IDC_EDTFILENAME					equ 1005
+IDC_BTNFILENAME					equ 1006
+IDC_CBOTBLBUILD					equ 1008
+
 .const
 
 szTabFiles						db 'Files',0
@@ -39,6 +49,8 @@ szTemplateNone					db '(None)',0
 szBrowseProjectPath				db 'Browse For Project Path',0
 szDefGroup1						db '2,-1,0,1,',0
 szDefGroup2						db ',-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource',0
+
+;Template
 szBSAllDotTpl					db '\*.tpl',0
 szBSTemplates					db '\Templates',0
 szPROJECTNAME					db '[*PROJECTNAME*]',0
@@ -46,15 +58,558 @@ szBEGINTXT						db '[*BEGINTXT*]',0
 szENDTXT						db '[*ENDTXT*]',0
 szBEGINBIN						db '[*BEGINBIN*]',0
 szENDBIN						db '[*ENDBIN*]',0
+TPLFilterString					db 'Template (*.tpl)',0,'*.tpl',0,0
+szTplFile						db 'tpl',0
+ALLFilterString					db 'All files (*.*)',0,'*.*',0,0
+szDefTxt						db '.asm.inc.rc.def.txt.xml.',0
+szDefBin						db '.tbr.obj.lib.res.bmp.ico.cur.',0
+
+szErrNoMain						db 'No main file is selected or the selected file is not a .asm file.',0
+szErrNotInPath					db 'The file(s) is not in the project path:',0Dh,0Ah,0
+szErrUnknownType				db 'The file type is unknown.',0Dh,0Ah,0
+szInclude						db 'include',0
+szLibrary						db 'library',0
 
 .data?
 
 hTabNewProject					HWND 4 dup(?)
 projectfile						BYTE MAX_PATH dup(?)
 templatepath					BYTE MAX_PATH dup(?)
+szTemplateTxt					BYTE MAX_PATH dup(?)
+szTemplateBin					BYTE MAX_PATH dup(?)
 
 .code
 
+IsTemplateFileType proc uses ebx esi edi,lpFileName:DWORD,lpFileTypes:DWORD
+	LOCAL	filetype[MAX_PATH]:BYTE
+
+	mov		filetype,0
+	mov		esi,lpFileName
+	invoke lstrlen,esi
+	.while eax
+		.if byte ptr [esi+eax]=='.'
+			invoke lstrcpy,addr filetype,addr [esi+eax]
+			invoke lstrcat,addr filetype,offset szDot
+			.break
+		.endif
+		dec		eax
+	.endw
+	.if filetype
+		mov		esi,lpFileTypes
+		lea		edi,filetype
+		.while TRUE
+			xor		ecx,ecx
+			.while byte ptr [edi+ecx]
+				mov		al,[edi+ecx]
+				mov		ah,[esi+ecx]
+				.if al>='a' && al<='z'
+					and		al,5Fh
+				.endif
+				.if ah>='a' && ah<='z'
+					and		ah,5Fh
+				.endif
+				.break .if al!=ah
+				inc		ecx
+			.endw
+			.if !byte ptr [edi+ecx]
+				mov		eax,TRUE
+				jmp		Ex
+			.endif
+			inc		esi
+			.while byte ptr [esi]!='.'
+				inc		esi
+			.endw
+			.break .if !byte ptr [esi+1]
+		.endw
+	.endif
+	xor		eax,eax
+  Ex:
+	ret
+
+IsTemplateFileType endp
+
+
+IsLine proc uses ebx esi edi,lpLine:DWORD,lpWord:DWORD,fIgnore:DWORD
+
+	mov		esi,lpWord
+	mov		edi,lpLine
+	mov		ebx,TRUE
+	.while byte ptr [esi]
+		mov		al,[esi]
+		mov		ah,[edi]
+		.if fIgnore
+			.if al>='a' && al<='z'
+				and		al,5Fh
+			.endif
+			.if ah>='a' && ah<='z'
+				and		ah,5Fh
+			.endif
+		.endif
+		.if al!=ah
+			xor		eax,eax
+			jmp		Ex
+		.endif
+		inc		esi
+		inc		edi
+	.endw
+	mov		eax,edi
+	sub		eax,lpLine
+  Ex:
+	ret
+
+IsLine endp
+
+;New Template
+CreateTemplate proc uses ebx esi edi,hWin:HWND
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+;	LOCAL	path[MAX_PATH]:BYTE
+	LOCAL	main[MAX_PATH]:BYTE
+	LOCAL	hTplMem:HGLOBAL
+	LOCAL	hFile:HANDLE
+	LOCAL	bytes:DWORD
+	LOCAL	fProjectFile:DWORD
+
+	invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETCOUNT,0,0
+	.if eax
+		invoke SetCurrentDirectory,addr da.szProjectPath
+		;Check if all files is of a known file type
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETTEXT,ebx,addr buffer
+			.break .if eax==LB_ERR
+			invoke IsTemplateFileType,addr buffer,offset da.szTplTxt
+			.if !eax
+				invoke IsTemplateFileType,addr buffer,offset da.szTplBin
+			.endif
+			.if !eax
+				invoke lstrcpy,offset tmpbuff,offset szErrUnknownType
+				invoke lstrcat,offset tmpbuff,addr buffer
+				invoke MessageBox,hWin,offset tmpbuff,offset DisplayName,MB_OK or MB_ICONERROR
+				xor		eax,eax
+				jmp		Ex
+			.endif
+			inc		ebx
+		.endw
+		;Get the projec filename
+		invoke strcpy,addr buffer,addr da.szProjectFile
+		invoke RemovePath,addr buffer,addr da.szProjectPath,addr main
+		invoke RemoveFileExt,addr main
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+		mov		hTplMem,eax
+		; Add description
+		mov		edi,hTplMem
+		invoke GetDlgItemText,hWin,IDC_EDTDESCRIPTION,edi,1024
+		lea		edi,[edi+eax]
+		mov		word ptr [edi],0A0Dh
+		lea		edi,[edi+2]
+		; Add the project file
+		invoke strcpy,addr buffer1,addr da.szProjectFile
+		invoke RemovePath,addr buffer,addr da.szProjectPath,addr buffer
+		mov		fProjectFile,TRUE
+		call	AddTxtFile
+		mov		fProjectFile,FALSE
+		; Add the files
+		xor		ebx,ebx
+		.while TRUE
+			invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETTEXT,ebx,addr buffer
+			.break .if eax==LB_ERR
+			invoke IsTemplateFileType,addr buffer,offset da.szTplTxt
+			.if eax
+				call	AddTxtFile
+			.else
+				call	AddBinFile
+			.endif
+			inc		ebx
+		.endw
+		invoke GetDlgItemText,hWin,IDC_EDTFILENAME,addr buffer,sizeof buffer
+		invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hFile,eax
+			sub		edi,hTplMem
+			invoke WriteFile,hFile,hTplMem,edi,addr bytes,NULL
+			invoke CloseHandle,hFile
+		.endif
+		invoke GlobalFree,hTplMem
+		mov		eax,TRUE
+	.else
+		xor		eax,eax
+		jmp		Ex
+	.endif
+  Ex:
+	ret
+
+AddFileName:
+	push	ebx
+	push	esi
+	invoke lstrlen,addr buffer
+	.while buffer[eax-1]!='\' && buffer[eax-1]!=',' && eax
+		dec		eax
+	.endw
+	mov		ebx,eax
+	lea		esi,buffer[eax]
+	invoke IsLine,esi,addr main,TRUE
+	.if eax
+		invoke lstrcpyn,edi,addr buffer,addr [ebx+1]
+		invoke lstrcat,edi,offset szPROJECTNAME
+		invoke lstrlen,addr main
+		lea		esi,[esi+eax]
+		invoke lstrcat,edi,esi
+	.else
+		invoke lstrcpy,edi,esi
+	.endif
+	invoke lstrlen,edi
+	lea		edi,[edi+eax]
+	mov		word ptr [edi],0A0Dh
+	lea		edi,[edi+2]
+	pop		esi
+	pop		ebx
+	retn
+
+AddWhiteSpace:
+	.while byte ptr [esi]==VK_TAB || byte ptr [esi]==VK_SPACE
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	retn
+
+AddWord:
+	.while byte ptr [esi]!=VK_TAB && byte ptr [esi]!=VK_SPACE
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	retn
+
+AddLine:
+	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endw
+	.if byte ptr [esi]==VK_RETURN
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endif
+	.if byte ptr [esi]==0Ah
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+	.endif
+	retn
+
+SkipLine:
+	.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+		inc		esi
+	.endw
+	.if byte ptr [esi]==VK_RETURN
+		inc		esi
+	.endif
+	.if byte ptr [esi]==0Ah
+		inc		esi
+	.endif
+	retn
+
+AddTxtLine:
+	.if fProjectFile
+		invoke IsLine,esi,offset szIniPath,TRUE
+		.if !eax
+			mov		ax,[esi]
+			.if al=='F' && ah>='0' && ah<='9'
+				push	edi
+				lea		edi,buffer
+				.while byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+					mov		al,[esi]
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.endw
+				mov		byte ptr [edi],0
+				pop		edi
+				.while byte ptr [esi]==VK_RETURN || byte ptr [esi]==0Ah
+					inc		esi
+				.endw
+				call	AddFileName
+			.elseif al=='C' && ah>='0' && ah<='9'
+				Call	SkipLine
+			.elseif al=='B' && ah>='0' && ah<='9'
+				Call	SkipLine
+			.elseif al=='M' && ah>='0' && ah<='9'
+				Call	SkipLine
+			.else
+				Call	AddLine
+			.endif
+		.else
+			Call	SkipLine
+		.endif
+	.else
+		call	AddWhiteSpace
+		invoke IsLine,esi,offset szInclude,TRUE
+		.if eax
+		  @@:
+			call	AddWord
+			call	AddWhiteSpace
+			invoke IsLine,esi,addr main,TRUE
+			.if eax
+				invoke lstrcpy,edi,offset szPROJECTNAME
+				lea		edi,[edi+15]
+				invoke lstrlen,addr main
+				lea		esi,[esi+eax]
+			.endif
+		.else
+			invoke IsLine,esi,offset szLibrary,TRUE
+			or		eax,eax
+			jne		@b
+		.endif
+		call	AddLine
+	.endif
+	retn
+
+AddTxtFile:
+	invoke lstrcpy,edi,offset szBEGINTXT
+	lea		edi,[edi+12]
+	mov		word ptr [edi],0A0Dh
+	lea		edi,[edi+2]
+	call	AddFileName
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+	mov		esi,eax
+	push	eax
+	invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,NULL
+		mov		edx,eax
+		invoke ReadFile,hFile,esi,edx,addr bytes,NULL
+		invoke CloseHandle,hFile
+		.while byte ptr [esi]
+			call	AddTxtLine
+		.endw
+		.if byte ptr [edi-1]!=0Ah
+			mov		word ptr [edi],0A0Dh
+			lea		edi,[edi+2]
+		.endif
+	.endif
+	pop		eax
+	invoke GlobalFree,eax
+	invoke lstrcpy,edi,offset szENDTXT
+	lea		edi,[edi+10]
+	mov		word ptr [edi],0A0Dh
+	lea		edi,[edi+2]
+	retn
+
+AddBinFile:
+	invoke lstrcpy,edi,offset szBEGINBIN
+	lea		edi,[edi+12]
+	mov		word ptr [edi],0A0Dh
+	lea		edi,[edi+2]
+	call	AddFileName
+	invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*1024
+	mov		esi,eax
+	push	eax
+	invoke CreateFile,addr buffer,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,NULL
+		mov		edx,eax
+		invoke ReadFile,hFile,esi,edx,addr bytes,NULL
+		invoke CloseHandle,hFile
+		xor		ecx,ecx
+		.while ecx<bytes
+			.if ecx
+				test	ecx,0Fh
+				.if ZERO?
+					mov		word ptr [edi],0A0Dh
+					lea		edi,[edi+2]
+				.endif
+			.endif
+			mov		al,[esi+ecx]
+			mov		ah,al
+			shr		al,4
+			and		ah,0Fh
+			.if al<=9
+				or		al,30h
+			.else
+				add		al,'A'-10
+			.endif
+			.if ah<=9
+				or		ah,30h
+			.else
+				add		ah,'A'-10
+			.endif
+			mov		[edi],ax
+			lea		edi,[edi+2]
+			inc		ecx
+		.endw
+		mov		word ptr [edi],0A0Dh
+		lea		edi,[edi+2]
+	.endif
+	pop		eax
+	invoke GlobalFree,eax
+	invoke lstrcpy,edi,offset szENDBIN
+	lea		edi,[edi+10]
+	mov		word ptr [edi],0A0Dh
+	lea		edi,[edi+2]
+	retn
+
+CreateTemplate endp
+
+NewTemplateDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	ofn:OPENFILENAME
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	path[MAX_PATH]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		xor		edi,edi
+		xor		esi,esi
+		invoke strcpy,addr tmpbuff,addr szErrNotInPath
+		.while TRUE
+			invoke SendMessage,ha.hProjectBrowser,RPBM_GETITEM,edi,0
+			.break .if ![eax].PBITEM.id
+			.if sdword ptr [eax].PBITEM.id>0
+				mov		ebx,eax
+				invoke strcpy,addr buffer1,addr [ebx].PBITEM.szitem
+				invoke RemovePath,addr buffer1,addr da.szProjectPath,addr buffer
+				.if buffer!='.'
+					invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_ADDSTRING,0,addr buffer
+				.else
+					invoke strcpy,addr tmpbuff,addr [ebx].PBITEM.szitem
+					invoke strcat,addr tmpbuff,addr szCR
+				.endif
+			.endif
+			inc		edi
+		.endw
+		.if esi
+			invoke MessageBox,ha.hWnd,addr tmpbuff,addr DisplayName,MB_OK
+		.endif
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke CreateTemplate,hWin
+				.if eax
+					invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+				.endif
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNFILENAME
+				invoke RtlZeroMemory,addr ofn,SizeOf OPENFILENAME
+				mov		ofn.lStructSize,SizeOf OPENFILENAME
+				mov		eax,hWin
+				mov		ofn.hwndOwner,eax
+				mov		eax,ha.hInstance
+				mov		ofn.hInstance,eax
+				invoke lstrcpy,offset tmpbuff,addr da.szAssemblerPath
+				invoke lstrcat,offset tmpbuff,offset szBSTemplates
+				mov		ofn.lpstrInitialDir,offset tmpbuff
+				mov		ofn.lpstrFilter,offset TPLFilterString
+				mov		ofn.lpstrDefExt,offset szTplFile
+				mov		buffer,0
+				lea		eax,buffer
+				mov		ofn.lpstrFile,eax
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.Flags,OFN_EXPLORER or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_OVERWRITEPROMPT
+				invoke GetSaveFileName,addr ofn
+				.if eax
+					invoke SetDlgItemText,hWin,IDC_EDTFILENAME,addr buffer
+				.endif
+			.elseif eax==IDC_BTNADD
+				invoke RtlZeroMemory,addr ofn,SizeOf OPENFILENAME
+				mov		ofn.lStructSize,SizeOf OPENFILENAME
+				mov		eax,hWin
+				mov		ofn.hwndOwner,eax
+				mov		eax,ha.hInstance
+				mov		ofn.hInstance,eax
+				mov		ofn.lpstrInitialDir,offset da.szProjectPath
+				mov		ofn.lpstrFilter,offset da.szANYString
+				mov		tmpbuff,0
+				mov		ofn.lpstrFile,offset tmpbuff
+				mov		ofn.nMaxFile,sizeof buffer
+				mov		ofn.Flags,OFN_EXPLORER or OFN_FILEMUSTEXIST or OFN_HIDEREADONLY or OFN_PATHMUSTEXIST or OFN_ALLOWMULTISELECT or OFN_EXPLORER
+				invoke GetOpenFileName,addr ofn
+				.if eax
+					mov		esi,offset tmpbuff
+					invoke lstrlen,esi
+					lea		eax,[esi+eax+1]
+					.if byte ptr [eax]
+						push	eax
+						invoke lstrcpy,addr path,esi
+						pop		esi
+						.while byte ptr [esi]
+							invoke lstrcpy,addr buffer,addr path
+							invoke lstrcat,addr buffer,offset szBS
+							invoke lstrcat,addr buffer,esi
+							call	IsFileAdded
+							.if !eax
+								invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_ADDSTRING,0,addr buffer
+							.endif
+							invoke lstrlen,esi
+							lea		esi,[esi+eax+1]
+						.endw
+					.else
+						invoke lstrcpy,addr buffer,esi
+						call	IsFileAdded
+						.if !eax
+							invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_ADDSTRING,0,addr buffer
+						.endif
+					.endif
+				.endif
+			.elseif eax==IDC_BTNDEL
+				invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETCURSEL,0,0
+				.if eax!=LB_ERR
+					invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_DELETESTRING,eax,0
+				.endif
+			.endif
+		.elseif edx==EN_CHANGE
+			.if eax==IDC_EDTFILENAME
+				invoke GetDlgItem,hWin,IDOK
+				push	eax
+				invoke GetDlgItemText,hWin,IDC_EDTFILENAME,addr buffer,sizeof buffer
+				movzx	eax,buffer
+				pop		edx
+				invoke EnableWindow,edx,eax
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,NULL
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+IsFileAdded:
+	xor		ebx,ebx
+	.while TRUE
+		invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETTEXT,ebx,addr buffer1
+		.if eax!=LB_ERR
+			invoke lstrcmp,addr buffer,addr buffer1
+			.if !eax
+				mov		eax,TRUE
+				.break
+			.endif
+		.else
+			xor		eax,eax
+			.break
+		.endif
+		inc		ebx
+	.endw
+	retn
+
+NewTemplateDialogProc endp
+
+;Project
 FolderCreate proc hWin:HWND,lpPath:DWORD,lpFolder:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 
@@ -146,36 +701,6 @@ FileCreate proc hWin:HWND,lpPath:DWORD,lpFile:DWORD,lpExt:DWORD,lpFileData:DWORD
 	ret
 
 FileCreate endp
-
-IsLine proc uses ebx esi edi,lpLine:DWORD,lpWord:DWORD,fIgnore:DWORD
-
-	mov		esi,lpWord
-	mov		edi,lpLine
-	mov		ebx,TRUE
-	.while byte ptr [esi]
-		mov		al,[esi]
-		mov		ah,[edi]
-		.if fIgnore
-			.if al>='a' && al<='z'
-				and		al,5Fh
-			.endif
-			.if ah>='a' && ah<='z'
-				and		ah,5Fh
-			.endif
-		.endif
-		.if al!=ah
-			xor		eax,eax
-			jmp		Ex
-		.endif
-		inc		esi
-		inc		edi
-	.endw
-	mov		eax,edi
-	sub		eax,lpLine
-  Ex:
-	ret
-
-IsLine endp
 
 TemplateCreate proc uses ebx esi edi,hWin:HWND,nTemplate:DWORD,lpPath:DWORD,lpFile:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -1015,7 +1540,7 @@ OpenProjectItemGroup proc uses ebx esi edi
 		xor		esi,esi
 		.while TRUE
 			invoke SendMessage,ha.hProjectBrowser,RPBM_GETITEM,esi,0
-			.break .if !eax
+			.break .if ![eax].PBITEM.id
 			.if sdword ptr [eax].PBITEM.id>0 && edi==[eax].PBITEM.idparent
 				mov		ebx,eax
 				invoke UpdateAll,UAM_ISOPENACTIVATE,addr [ebx].PBITEM.szitem

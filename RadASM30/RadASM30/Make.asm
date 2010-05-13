@@ -37,7 +37,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	LOCAL	bytesRead:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
+	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCR
 	.if Param==IDM_MAKE_RUN
 		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.cmd
 		.if makeexe.cmdline
@@ -47,7 +47,7 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	.else
 		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.buffer
 	.endif
-	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
+	invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCR
 	invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
 	.if Param==IDM_MAKE_RUN
 		invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmd,addr makeexe.cmdline,NULL,SW_SHOWNORMAL
@@ -573,7 +573,7 @@ MakeIt:
 				mov		fExitCode,-1
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset NoDel
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,addr makeexe.output
-				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCr
+				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset szCR
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Errors
 				jmp		Ex
 			.endif

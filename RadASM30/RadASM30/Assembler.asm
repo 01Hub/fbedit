@@ -513,6 +513,9 @@ OpenAssembler proc uses ebx esi edi
 		.endw
 		;Get external file types
 		invoke GetExternalFiles
+		;Get template file types
+		invoke GetPrivateProfileString,addr szIniFile,addr szIniTplTxt,NULL,addr da.szTplTxt,sizeof da.szTplTxt,addr da.szAssemblerIni
+		invoke GetPrivateProfileString,addr szIniFile,addr szIniTplBin,NULL,addr da.szTplBin,sizeof da.szTplBin,addr da.szAssemblerIni
 		;Get colors
 		invoke GetColors
 		;Get code blocks
