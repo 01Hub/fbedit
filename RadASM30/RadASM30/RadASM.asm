@@ -23,6 +23,7 @@ include Block.asm
 include AddinManager.asm
 include MakeOptions.asm
 include ExceptionHandler.asm
+include Sniplets.asm
 
 .code
 
@@ -1031,6 +1032,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_CARET
 			.elseif eax==IDM_DEBUG_NODEBUG
 ;####
+			.elseif eax==IDM_TOOLS_SNIPLETS
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			.elseif eax>=IDM_TOOLS_START && eax<IDM_TOOLS_START+20
 				;Help
 				mov		edx,eax
@@ -2433,7 +2436,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
 						.endif
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
-
 						invoke SendMessage,[ebx].TABMEM.hedt,WM_GETTEXTLENGTH,0,0
 						.if eax!=da.nLastSize
 							push	eax

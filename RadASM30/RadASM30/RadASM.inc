@@ -159,6 +159,7 @@ szDotPrra						db '.prra',0
 szDotPrraDot					db '.prra.',0
 szBSApiBS						db '\Api\',0
 szBSBakBS						db '\Bak\',0
+szBSSniplets					db '\Sniplets',0
 szSpc							db ' ',0
 szNULL							db 0
 szDollarA						db '$A',0
@@ -169,6 +170,7 @@ szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
 szError							db ': error ',0
+szADotA							db '*.*',0
 
 ;Code properties
 szCCPp							db 'Pp',0
