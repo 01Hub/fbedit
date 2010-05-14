@@ -481,8 +481,6 @@ ADDINDATA struct
 	tabinx				DWORD ?
 	fTimer				DWORD ?
 	nLastLine			DWORD ?
-	nLastPropLine		DWORD ?
-	nLastSize			DWORD ?
 	fChanged			DWORD ?
 	rabdstr				BYTE 2048 dup(?)
 	rabd				RABLOCKDEF 32 dup(<>)
@@ -561,6 +559,8 @@ TABMEM struct
 	fchanged			DWORD ?
 	fupdate				DWORD ?
 	fnonotify			DWORD ?
+	nlastsize			DWORD ?
+	nlastpropline		DWORD ?
 TABMEM ends
 
 UAM_ISOPEN						equ 1

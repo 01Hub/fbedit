@@ -23,7 +23,7 @@ include Block.asm
 include AddinManager.asm
 include MakeOptions.asm
 include ExceptionHandler.asm
-;include Sniplets.asm
+include Sniplets.asm
 include Print.asm
 
 .code
@@ -1146,7 +1146,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_NODEBUG
 ;####
 			.elseif eax==IDM_TOOLS_SNIPLETS
-;				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			.elseif eax>=IDM_TOOLS_START && eax<IDM_TOOLS_START+20
 				;Help
 				mov		edx,eax
@@ -2123,8 +2123,8 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		;Add the tooltip
 		mov		eax,hWin
 		.if eax!=da.ti.hWnd
-			mov		da.ti.cbSize,SizeOf TOOLINFO
-			mov		da.ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+			mov		da.ti.cbSize,sizeof TOOLINFO
+			mov		da.ti.uFlags,TTF_IDISHWND or TTF_SUBCLASS
 			mov		eax,hWin
 			mov		da.ti.hWnd,eax
 			mov		da.ti.uId,eax
@@ -2138,7 +2138,7 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		mov		eax,hWin
 		.if eax==da.ti.hWnd
 			; Delete the tooltip
-			mov		da.ti.cbSize,SizeOf TOOLINFO
+			mov		da.ti.cbSize,sizeof TOOLINFO
 			mov		da.ti.uFlags,TTF_IDISHWND
 			mov		eax,hWin
 			mov		da.ti.hWnd,eax
@@ -2170,106 +2170,173 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			mov		dbgpt.x,eax
 			mov		eax,pt.y
 			mov		dbgpt.y,eax
-			.if da.fDebugging
-;				invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
-;				invoke SendMessage,ha.hEdt,REM_ISCHARPOS,eax,0
-;				.if !eax
-;					invoke SendMessage,ha.hEdt,REM_GETCURSORWORD,sizeof buffer,addr buffer
-;					.if buffer
-;						lea		eax,buffer
-;						mov		dbgtip.lpWord,eax
-;						invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
-;						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,eax,0
-;						mov		isinproc.nLine,eax
-;						inc		eax
-;						mov		dbgtip.nLine,eax
-;						mov		eax,ha.hEdt
-;						mov		isinproc.nOwner,eax
-;						mov		isinproc.lpszType,offset szCCp
-;						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
-;						mov		dbgtip.lpProc,eax
-;						mov		dbgtip.lpFileName,offset da.szFileName
-;						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hEdt,addr dbgtip
-;						.if eax
-;							; Show tooltip
-;							mov		ti.lpszText,eax
-;							call	Activate
-;						.else
-;							; Hide tooltip
-;							call	DeActivate
-;						.endif
-;					.else
-;						; Hide tooltip
-;						call	DeActivate
-;					.endif
-;				.else
-;					; Hide tooltip
-;					call	DeActivate
-;				.endif
-			.elseif da.edtopt.fopt & EDTOPT_SHOWTIP
+			invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
+			mov		edi,eax
+			invoke SendMessage,ha.hEdt,REM_ISCHARPOS,edi,0
+			.if !eax
 				mov		buffer,0
-				invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
-				invoke SendMessage,ha.hEdt,REM_ISCHARPOS,eax,0
-				.if !eax
-					invoke SendMessage,ha.hEdt,REM_GETCURSORWORD,sizeof buffer,addr buffer
-				.endif
-				.if buffer
-					invoke PropertyFindExact,addr szCCTip,addr buffer,TRUE
-					mov		buffer,0
-					.if eax
-						mov		ebx,eax
-						invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
-						mov		edi,eax
-						mov		eax,offset szNULL
-						.if edi=='P'
-							mov		eax,offset szWINAPI
-						.elseif edi=='p'
-							mov		eax,offset szPROC
-						.elseif edi=='S' || edi=='s'
-							mov		eax,offset szSTRUCT
-						.elseif edi=='d'
-							mov		eax,offset szGLOBAL
-						.elseif edi=='T'
-							mov		eax,offset szTYPE
-						.elseif edi=='c'
-							mov		eax,offset szCONST
-						.elseif edi=='M'
-							mov		eax,offset szMESSAGE
+				invoke SendMessage,ha.hEdt,REM_GETCURSORWORD,sizeof buffer,addr buffer
+				.if da.fDebugging
+					.if buffer
+						lea		eax,buffer
+						mov		dbgtip.lpWord,eax
+						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,edi,0
+						mov		isinproc.nLine,eax
+						inc		eax
+						mov		dbgtip.nLine,eax
+						mov		eax,ha.hEdt
+						mov		isinproc.nOwner,eax
+						mov		isinproc.lpszType,offset szCCp
+						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+						mov		dbgtip.lpProc,eax
+						mov		dbgtip.lpFileName,offset da.szFileName
+;#####					invoke DebugCommand,FUNC_GETTOOLTIP,ha.hEdt,addr dbgtip
+						.if eax
+							; Show tooltip
+							mov		da.ti.lpszText,eax
+							call	Activate
 						.else
-							PrintHex edi
+							; Hide tooltip
+							call	DeActivate
 						.endif
-						invoke strcpy,addr buffer,eax
-						invoke strcat,addr buffer,ebx
-						.if edi!='d' && edi!='l'
-							invoke strlen,ebx
-							lea		ebx,[ebx+eax+1]
-							.if byte ptr [ebx]
-								invoke strcat,addr buffer,addr szComma
-								invoke strlen,addr buffer
-								lea		edi,buffer[eax]
-								sub		eax,256
-								neg		eax
-								invoke strcpyn,edi,ebx,eax
+					.else
+						; Hide tooltip
+						call	DeActivate
+					.endif
+				.elseif da.edtopt.fopt & EDTOPT_SHOWTIP
+					.if buffer
+						invoke PropertyFindExact,addr szCCTip,addr buffer,TRUE
+						.if eax
+							mov		buffer,0
+							mov		ebx,eax
+							invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
+							mov		edi,eax
+							mov		eax,offset szNULL
+							.if edi=='P'
+								mov		eax,offset szWINAPI
+							.elseif edi=='p'
+								mov		eax,offset szPROC
+							.elseif edi=='S' || edi=='s'
+								mov		eax,offset szSTRUCT
+							.elseif edi=='d'
+								mov		eax,offset szGLOBAL
+							.elseif edi=='T'
+								mov		eax,offset szTYPE
+							.elseif edi=='c' || edi=='W'
+								mov		eax,offset szCONST
+							.elseif edi=='M'
+								mov		eax,offset szMESSAGE
+							.elseif edi=='l'
+								mov		eax,offset szLABEL
+							.else
+;								PrintHex edi
+							.endif
+							invoke strcpy,addr buffer,eax
+							invoke strcat,addr buffer,ebx
+							.if edi!='d' && edi!='l'
+								invoke strlen,ebx
+								lea		ebx,[ebx+eax+1]
+								.if byte ptr [ebx]
+									invoke strcat,addr buffer,addr szComma
+									invoke strlen,addr buffer
+									lea		edi,buffer[eax]
+									sub		eax,256
+									neg		eax
+									invoke strcpyn,edi,ebx,eax
+								.endif
+							.endif
+						.else
+							invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,edi,0
+							mov		isinproc.nLine,eax
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							mov		eax,[eax].TABMEM.pid
+							.if !eax
+								mov		eax,ha.hEdt
+							.endif
+							mov		isinproc.nOwner,eax
+							mov		isinproc.lpszType,offset szCCp
+							invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+							.if eax
+								mov		ebx,eax
+								;Skip proc name
+								invoke strlen,ebx
+								lea		ebx,[ebx+eax+1]
+								xor		eax,eax
+								.if byte ptr [ebx]
+									invoke PropertyIsInList,addr buffer,ebx
+									.if eax!=-1
+										lea		ebx,[ebx+eax]
+										invoke strcpy,addr buffer,addr szPARAM
+										invoke strlen,addr buffer
+										lea		edi,buffer[eax]
+										.while byte ptr [ebx] && byte ptr [ebx]!=','
+											mov		al,[ebx]
+											mov		[edi],al
+											inc		ebx
+											inc		edi
+										.endw
+										mov		byte ptr [edi],0
+										mov		eax,TRUE
+									.else
+										xor		eax,eax
+									.endif
+								.endif
+								.if !eax
+									;Skip parameters
+									invoke strlen,ebx
+									lea		ebx,[ebx+eax+1]
+									;Skip return type
+									invoke strlen,ebx
+									lea		ebx,[ebx+eax+1]
+									.if byte ptr [ebx]
+										invoke PropertyIsInList,addr buffer,ebx
+										.if eax!=-1
+											lea		ebx,[ebx+eax]
+											invoke strcpy,addr buffer,addr szLOCAL
+											invoke strlen,addr buffer
+											lea		edi,buffer[eax]
+											.while byte ptr [ebx] && byte ptr [ebx]!=','
+												mov		al,[ebx]
+												mov		[edi],al
+												inc		ebx
+												inc		edi
+											.endw
+											mov		byte ptr [edi],0
+										.else
+											mov		buffer,0
+										.endif
+									.else
+										mov		buffer,0
+									.endif
+								.endif
+							.else
+								mov		buffer,0
 							.endif
 						.endif
+						.if buffer
+							invoke strlen,addr buffer
+							.if eax==sizeof buffer-1
+								sub		eax,3
+								.while buffer[eax]!=',' && eax
+									dec		eax
+								.endw
+							.endif
+							.if buffer[eax]==','
+								mov		dword ptr buffer[eax+1],'...'
+							.endif
+							invoke strcmp,addr buffer,addr szOldTip
+							.if eax
+								invoke strcpy,addr szOldTip,addr buffer
+								lea		eax,buffer
+								mov		da.ti.lpszText,eax
+								call	Activate
+							.endif
+						.else
+							call	DeActivate
+						.endif
+					.else
+						call	DeActivate
 					.endif
-				.endif
-				.if buffer
-					invoke strlen,addr buffer
-					.if eax==sizeof buffer-1
-						sub		eax,3
-						.while buffer[eax]!=',' && eax
-							dec		eax
-						.endw
-					.endif
-					.if buffer[eax]==','
-						mov		dword ptr buffer[eax+1],'...'
-					.endif
-					lea		eax,buffer
-					mov		da.ti.lpszText,eax
-					call	Activate
-				.else
-					call	DeActivate
 				.endif
 			.endif
 		.endif
@@ -2285,6 +2352,7 @@ Activate:
 	retn
 
 DeActivate:
+	mov		szOldTip,0
 	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
 	retn
 
@@ -2622,11 +2690,11 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 						invoke SendMessage,[ebx].TABMEM.hedt,WM_GETTEXTLENGTH,0,0
-						.if eax!=da.nLastSize
+						.if eax!=[ebx].TABMEM.nlastsize
 							push	eax
-							sub		eax,da.nLastSize
+							sub		eax,[ebx].TABMEM.nlastsize
 							invoke UpdateGoto,[ebx].TABMEM.hedt,[esi].RASELCHANGE.chrg.cpMin,eax
-							pop		da.nLastSize
+							pop		[ebx].TABMEM.nlastsize
 						.endif
 					  OnceMore:
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBOOKMARK,da.nLastLine,0
@@ -2685,25 +2753,23 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 							jmp		OnceMore
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
+							mov		[ebx].TABMEM.fupdate,1
 							.if !da.inprogress
 								invoke ApiListBox,esi
 							.endif
-							mov		eax,[esi].RASELCHANGE.line
-							.if eax!=da.nLastPropLine
-								mov		da.nLastPropLine,eax
-								invoke ShowWindow,ha.hCC,SW_HIDE
-								invoke ShowWindow,ha.hTT,SW_HIDE
-								mov		da.cctype,CCTYPE_NONE
-								mov		[ebx].TABMEM.fupdate,TRUE
-							.endif
 						.endif
 					.endif
-					mov		eax,[esi].RASELCHANGE.line
-					.if eax!=da.nLastLine
-						mov		da.nLastLine,eax
-						invoke ShowWindow,ha.hCC,SW_HIDE
-						invoke ShowWindow,ha.hTT,SW_HIDE
-						mov		da.cctype,CCTYPE_NONE
+					.if ![esi].RASELCHANGE.nWordGroup
+						mov		eax,[esi].RASELCHANGE.line
+						.if eax!=[ebx].TABMEM.nlastpropline
+							mov		[ebx].TABMEM.nlastpropline,eax
+							invoke ShowWindow,ha.hCC,SW_HIDE
+							invoke ShowWindow,ha.hTT,SW_HIDE
+							mov		da.cctype,CCTYPE_NONE
+							.if  [ebx].TABMEM.fupdate
+								mov		[ebx].TABMEM.fupdate,2
+							.endif
+						.endif
 					.endif
 					.if da.cctype==CCTYPE_ALL
 						.if !da.inprogress

@@ -117,7 +117,6 @@ LoadTextFile proc uses ebx esi,hWin:DWORD,lpFileName:DWORD
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,EM_SETMODIFY,FALSE,0
 		invoke SendMessage,hWin,REM_SETCHANGEDSTATE,FALSE,0
-		mov		da.nLastPropLine,-1
 		mov		eax,FALSE
 	.else
 		invoke strcpy,offset tmpbuff,offset szOpenFileFail
@@ -327,6 +326,11 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 						mov		eax,[esi].PBITEM.id
 						mov		[ebx].TABMEM.pid,eax
 						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
+							mov		eax,fi.nline
+							mov		[ebx].TABMEM.nlastpropline,eax
+							invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
+							mov		[ebx].TABMEM.nlastsize,eax
+							mov		[ebx].TABMEM.fupdate,0
 							invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
 							mov		chrg.cpMin,eax
 							mov		chrg.cpMax,eax

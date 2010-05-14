@@ -75,20 +75,20 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [VerInf]
 Nme=VERINF1
 ID=1
-FV=1.2.0.754
-PV=1.2.0.754
+FV=1.2.0.756
+PV=1.2.0.756
 VerOS=0x00000004
 VerFT=0x00000002
 VerLNG=0x00000409
 VerCHS=0x000004E4
-ProductVersion=1.2.0.754
+ProductVersion=1.2.0.756
 ProductName=
 OriginalFilename=RAEdit.dll
 LegalTrademarks=
 LegalCopyright=KetilO (C) 2002 - 2008
 InternalName=RAEdit
 FileDescription=Code edit control
-FileVersion=1.2.0.754
+FileVersion=1.2.0.756
 CompanyName=
 
 [Resource]
@@ -102,7 +102,7 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,66221
+1=0,0,0,0,33713
 16=0,0,810,411,41921
 22=0,0,0,0,3164
 23=0,0,0,0,26290
@@ -116,7 +116,7 @@ CompanyName=
 15=0,0,0,0,3933
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,5916
+13=0,0,0,0,9962
 26=0,0,0,0,5013
 21=0,0,0,0,9173
 14=0,0,0,0,9996
@@ -138,19 +138,19 @@ CompanyName=
 0=
 
 [Find]
-1="REM_SETUNDO"
-2="bracketcont"
-3="REM_BRACKETMATCH"
-4="cont"
-5="REM_ISINBLOCK"
-6="InsertNewLine"
-7="nLen"
-8=".CHARS.max"
-9="ExpandLine"
-10="ExpandCharMem"
+1="DeleteSelection"
+2="REM_SETUNDO"
+3="bracketcont"
+4="REM_BRACKETMATCH"
+5="cont"
+6="REM_ISINBLOCK"
+7="InsertNewLine"
+8="nLen"
+9=".CHARS.max"
+10="ExpandLine"
 
 [AutoLoad]
-AutoLoad=16,12,13,19,15,1,2,23,26
+AutoLoad=1,16,12,13,19,15,2,23,26
 
 [Version-Inc]
 Options=52
@@ -190,7 +190,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=7
+MilestoneOnDateDate=15
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -250,7 +250,7 @@ Group=Assembly,Resources,Misc
 12=
 
 [PTimer]
-PTimer=292961931
+PTimer=295137396
 
 [Exports]
 1=GetDef

@@ -664,8 +664,8 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 				.elseif eax==ID_EDITUSER
 				.endif
 			.elseif eax==UAM_PARSE
-				.if [ebx].TABMEM.fupdate
-					mov		[ebx].TABMEM.fupdate,FALSE
+				.if [ebx].TABMEM.fupdate==2
+					mov		[ebx].TABMEM.fupdate,0
 					invoke ParseEdit,[ebx].TABMEM.hwnd,[ebx].TABMEM.pid
 				.endif
 			.elseif eax==UAM_ANYBOOKMARKS
@@ -3024,6 +3024,38 @@ TestWord:
 	retn
 
 IsWordKeyWord endp
+
+PropertyIsInList proc uses ebx esi edi,lpWord:DWORD,lpList:DWORD
+
+	mov		esi,lpWord
+	mov		edi,lpList
+	.while byte ptr [edi]
+		mov		ebx,edi
+		xor		ecx,ecx
+		.while byte ptr [esi+ecx]
+			mov		al,[edi]
+			mov		ah,[esi+ecx]
+			.break.if al!=ah
+			inc		ecx
+			inc		edi
+		.endw
+		.if !byte ptr [esi+ecx] && (byte ptr [edi]==':' || byte ptr [edi]==',' || byte ptr [edi]=='[')
+			sub		ebx,lpList
+			mov		eax,ebx
+			jmp		Ex
+		.endif
+		.while byte ptr [edi] && byte ptr [edi]!=','
+			inc		edi
+		.endw
+		.if byte ptr [edi]==','
+			inc		edi
+		.endif
+	.endw
+	mov		eax,-1
+  Ex:
+	ret
+
+PropertyIsInList endp
 
 PropertyFindExact proc uses ebx,lpType:DWORD,lpWord:DWORD,fMatchCase:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE

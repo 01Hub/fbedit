@@ -190,7 +190,7 @@ szCCd							db 'd',0
 szCCAssume						db 'assume ',0
 szCaseTypes						db 'WPMpcm',0
 szGotoTypes						db 'pldcs',0
-szCCTip							db 'PMSTpcsdml',0
+szCCTip							db 'PMSTWpcsdml',0
 szMsg1							db 'SendMessage',0
 szMsg2							db 'PostMessage',0
 szMsg3							db 'SendDlgItemMessage',0
@@ -298,6 +298,9 @@ szGLOBAL						db 'GLOBAL: ',0
 szTYPE							db 'TYPE: ',0
 szCONST							db 'CONST: ',0
 szMESSAGE						db 'MESSAGE: ',0
+szPARAM							db 'PARAM: ',0
+szLOCAL							db 'LOCAL: ',0
+szLABEL							db 'LABEL: ',0
 
 .data
 
@@ -329,3 +332,4 @@ tt								TOOLTIP <>
 gotostack						DECLARE 32 dup(<?>)
 hEnv							HGLOBAL ?
 dbgpt							POINT <>
+szOldTip						BYTE 256 dup(?)

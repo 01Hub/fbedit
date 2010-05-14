@@ -341,10 +341,6 @@ TabToolActivate proc uses ebx
 	mov		da.fTimer,1
 	invoke SendMessage,ha.hFileBrowser,FBM_SETSELECTED,0,addr [ebx].TABMEM.filename
 	invoke GetWindowLong,ha.hEdt,GWL_ID
-	.if eax==ID_EDITCODE
-		invoke SendMessage,ha.hEdt,WM_GETTEXTLENGTH,0,0
-		mov		da.nLastSize,eax
-	.endif
 	.if da.fProject
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETSELECTED,0,addr da.szFileName
 	.endif
