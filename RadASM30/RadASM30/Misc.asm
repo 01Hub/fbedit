@@ -3026,20 +3026,43 @@ TestWord:
 IsWordKeyWord endp
 
 PropertyFindExact proc uses ebx,lpType:DWORD,lpWord:DWORD,fMatchCase:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
 
 	xor		ebx,ebx
 	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,lpType,lpWord
 	.while eax
 		mov		ebx,eax
-		.if fMatchCase
-			invoke strcmp,ebx,lpWord
+		invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
+		.if eax=='d'
+			invoke strcpy,addr buffer,ebx
+			xor		eax,eax
+			.while buffer[eax] && buffer[eax]!=':' && buffer[eax]!='['
+				inc		eax
+			.endw
+			mov		buffer[eax],0
+			.if fMatchCase
+				invoke strcmp,addr buffer,lpWord
+			.else
+				invoke strcmpi,addr buffer,lpWord
+			.endif
+			.if !eax
+				mov		eax,ebx
+				jmp		Ex
+			.endif
 		.else
-			invoke strcmpi,ebx,lpWord
+			.if fMatchCase
+				invoke strcmp,ebx,lpWord
+			.else
+				invoke strcmpi,ebx,lpWord
+			.endif
+			.if !eax
+				mov		eax,ebx
+				jmp		Ex
+			.endif
 		.endif
-		.break .if !eax
 		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 	.endw
-	mov		eax,ebx
+  Ex:
 	ret
 
 PropertyFindExact endp

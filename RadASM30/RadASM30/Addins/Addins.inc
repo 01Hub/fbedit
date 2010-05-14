@@ -322,6 +322,7 @@ ADDINHANDLES struct
 	hModeless			HWND ?
 	hHtmlOcx			HANDLE ?
 	hFind				HWND ?
+	hDbgTip				HWND ?
 ADDINHANDLES ends
 
 ADDINPROCS struct
@@ -339,6 +340,12 @@ ADDINPROCS struct
 ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
+
+PRNPOS struct
+	margins				RECT <?>
+	pagesize			POINT <?>
+	nlinespage			DWORD ?
+PRNPOS ends
 
 WIN struct
 	x					DWORD ?
@@ -384,6 +391,7 @@ EDTOPT_CMNTHI					equ 8
 EDTOPT_LINENR					equ 16
 EDTOPT_SESSION					equ 32
 EDTOPT_BRACE					equ 64
+EDTOPT_SHOWTIP					equ 128
 
 EDTOPT struct
 	tabsize				DWORD ?
@@ -529,6 +537,8 @@ ADDINDATA struct
 	szHelpF1			BYTE 3*MAX_PATH dup(?)
 	find				FIND <>
 	nBackup				DWORD ?
+	fDebugging			DWORD ?
+	ti					TOOLINFO <>
 ADDINDATA ends
 
 FILEINFO struct

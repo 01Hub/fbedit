@@ -23,7 +23,8 @@ include Block.asm
 include AddinManager.asm
 include MakeOptions.asm
 include ExceptionHandler.asm
-include Sniplets.asm
+;include Sniplets.asm
+include Print.asm
 
 .code
 
@@ -151,6 +152,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,eax
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
 		invoke DrawMenuBar,hWin
+		; Create debug tooltip
+		invoke CreateWindowEx,0,addr sztooltips_class32,NULL,TTS_NOPREFIX,0,0,0,0,NULL,0,ha.hInstance,0
+		mov		ha.hDbgTip,eax
 		;Create tool windows
 		invoke CreateTools
 		invoke SendMessage,ha.hFileBrowser,FBM_GETIMAGELIST,0,0
@@ -163,6 +167,26 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke strcpy,addr tmpbuff,addr da.szAssemblers
 		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler,sizeof da.szAssembler
 		invoke OpenAssembler
+		;Get printer page setup
+		invoke GetPrivateProfileString,addr szIniWin,addr szIniPrint,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
+		invoke GetItemInt,addr tmpbuff,1000
+		mov		ppos.margins.left,eax
+		mov		psd.rtMargin.left,eax
+		invoke GetItemInt,addr tmpbuff,1000
+		mov		ppos.margins.top,eax
+		mov		psd.rtMargin.top,eax
+		invoke GetItemInt,addr tmpbuff,1000
+		mov		ppos.margins.right,eax
+		mov		psd.rtMargin.right,eax
+		invoke GetItemInt,addr tmpbuff,1000
+		mov		ppos.margins.bottom,eax
+		mov		psd.rtMargin.bottom,eax
+		invoke GetItemInt,addr tmpbuff,21000
+		mov		ppos.pagesize.x,eax
+		mov		psd.ptPaperSize.x,eax
+		invoke GetItemInt,addr tmpbuff,29700
+		mov		ppos.pagesize.y,eax
+		mov		psd.ptPaperSize.y,eax
 		invoke strcpy,addr da.szFBPath,addr da.szAppPath
 		invoke SendMessage,ha.hFileBrowser,FBM_SETPATH,TRUE,addr da.szFBPath
 		invoke ImageList_Create,16,16,ILC_COLOR4 or ILC_MASK,4,0
@@ -174,7 +198,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke DeleteObject,eax
 		invoke LoadAddins,hWin
 		invoke SetTimer,hWin,200,200,addr TimerProc
-		mov da.inprogress,FALSE
+		mov		da.inprogress,FALSE
 	.elseif eax==WM_COMMAND
 		invoke PostAddinMessage,hWin,AIM_COMMAND,wParam,lParam,0,HOOK_COMMAND
 		.if eax
@@ -230,6 +254,95 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax==IDM_FILE_SAVEALL
 				invoke UpdateAll,UAM_SAVEALL,FALSE
+			.elseif eax==IDM_FILE_PAGESETUP
+				mov		eax,ppos.margins.left
+				mov		psd.rtMargin.left,eax
+				mov		eax,ppos.margins.top
+				mov		psd.rtMargin.top,eax
+				mov		eax,ppos.margins.right
+				mov		psd.rtMargin.right,eax
+				mov		eax,ppos.margins.bottom
+				mov		psd.rtMargin.bottom,eax
+				mov		eax,ppos.pagesize.x
+				mov		psd.ptPaperSize.x,eax
+				mov		eax,ppos.pagesize.y
+				mov		psd.ptPaperSize.y,eax
+				invoke GetPrnCaps
+				mov		psd.lStructSize,sizeof psd
+				mov		eax,hWin
+				mov		psd.hwndOwner,eax
+				mov		eax,ha.hInstance
+				mov		psd.hInstance,eax
+				.if prnInches
+					mov		eax,PSD_MARGINS or PSD_INTHOUSANDTHSOFINCHES
+				.else
+					mov		eax,PSD_MARGINS or PSD_INHUNDREDTHSOFMILLIMETERS
+				.endif
+				mov		psd.Flags,eax
+				invoke PageSetupDlg,addr psd
+				.if eax
+					mov		eax,psd.rtMargin.left
+					mov		ppos.margins.left,eax
+					mov		eax,psd.rtMargin.top
+					mov		ppos.margins.top,eax
+					mov		eax,psd.rtMargin.right
+					mov		ppos.margins.right,eax
+					mov		eax,psd.rtMargin.bottom
+					mov		ppos.margins.bottom,eax
+					mov		eax,psd.ptPaperSize.x
+					mov		ppos.pagesize.x,eax
+					mov		eax,psd.ptPaperSize.y
+					mov		ppos.pagesize.y,eax
+					mov		tmpbuff,0
+					invoke PutItemInt,addr tmpbuff,ppos.margins.left
+					invoke PutItemInt,addr tmpbuff,ppos.margins.top
+					invoke PutItemInt,addr tmpbuff,ppos.margins.right
+					invoke PutItemInt,addr tmpbuff,ppos.margins.bottom
+					invoke PutItemInt,addr tmpbuff,ppos.pagesize.x
+					invoke PutItemInt,addr tmpbuff,ppos.pagesize.y
+					invoke WritePrivateProfileString,addr szIniWin,addr szIniPrint,addr tmpbuff[1],addr da.szRadASMIni
+				.endif
+			.elseif eax==IDM_FILE_PRINT
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						mov		pd.lStructSize,sizeof pd
+						mov		eax,hWin
+						mov		pd.hwndOwner,eax
+						mov		eax,ha.hInstance
+						mov		pd.hInstance,eax
+						mov		pd.nMinPage,1
+						mov		pd.nMaxPage,1
+						mov		pd.nFromPage,1
+						mov		pd.nToPage,1
+						mov		eax,PD_RETURNDC or PD_NOSELECTION or PD_RETURNDEFAULT
+						mov		pd.Flags,eax
+						invoke PrintDlg,addr pd
+						invoke PrintGetLinesPage
+						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+						mov		eax,chrg.cpMin
+						.if eax!=chrg.cpMax
+							mov		eax,PD_RETURNDC or PD_SELECTION
+						.else
+							invoke SendMessage,ha.hEdt,EM_GETLINECOUNT,0,0
+							inc		eax
+							mov		ecx,ppos.nlinespage
+							xor		edx,edx
+							div		ecx
+							.if edx
+								inc		eax
+							.endif
+							mov		pd.nMaxPage,ax
+							mov		pd.nToPage,ax
+							mov		eax,PD_RETURNDC or PD_NOSELECTION
+						.endif
+						mov		pd.Flags,eax
+						invoke PrintDlg,addr pd
+						.if eax
+							invoke Print
+						.endif
+					.endif
+				.endif
 			.elseif (eax>=IDM_FILE_RECENTFILESSTART && eax<IDM_FILE_RECENTFILESSTART+10) || (eax>=IDM_FILE_RECENTPROJECTSSTART && eax<IDM_FILE_RECENTPROJECTSSTART+10)
 				invoke OpenMRU,eax
 			.elseif eax==IDM_FILE_EXIT
@@ -1033,7 +1146,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_DEBUG_NODEBUG
 ;####
 			.elseif eax==IDM_TOOLS_SNIPLETS
-				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
+;				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			.elseif eax>=IDM_TOOLS_START && eax<IDM_TOOLS_START+20
 				;Help
 				mov		edx,eax
@@ -1834,11 +1947,10 @@ WndProc endp
 
 RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
-;	LOCAL	ti:TOOLINFO
 	LOCAL	buffer[256]:BYTE
-;	LOCAL	pt:POINT
-;	LOCAL	dbgtip:DEBUGTIP
-;	LOCAL	isinproc:ISINPROC
+	LOCAL	pt:POINT
+	LOCAL	dbgtip:DEBUGTIP
+	LOCAL	isinproc:ISINPROC
 	LOCAL	trng:TEXTRANGE
 
 	mov		eax,uMsg
@@ -2007,66 +2119,77 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.endif
 			mov		da.cctype,CCTYPE_NONE
 		.endif
+	.elseif eax==WM_SETFOCUS
+		;Add the tooltip
+		mov		eax,hWin
+		.if eax!=da.ti.hWnd
+			mov		da.ti.cbSize,SizeOf TOOLINFO
+			mov		da.ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
+			mov		eax,hWin
+			mov		da.ti.hWnd,eax
+			mov		da.ti.uId,eax
+			mov		eax,ha.hInstance
+			mov		da.ti.hInst,eax
+			mov		da.ti.lpszText,0
+			invoke SendMessage,ha.hDbgTip,TTM_ADDTOOL,0,addr da.ti
+		.endif
 	.elseif eax==WM_KILLFOCUS
 		invoke ShowWindow,ha.hTT,SW_HIDE
+		mov		eax,hWin
+		.if eax==da.ti.hWnd
+			; Delete the tooltip
+			mov		da.ti.cbSize,SizeOf TOOLINFO
+			mov		da.ti.uFlags,TTF_IDISHWND
+			mov		eax,hWin
+			mov		da.ti.hWnd,eax
+			mov		da.ti.uId,eax
+			mov		eax,ha.hInstance
+			mov		da.ti.hInst,eax
+			mov		da.ti.lpszText,0
+			invoke SendMessage,ha.hDbgTip,TTM_DELTOOL,0,addr da.ti
+			mov		da.ti.hWnd,-1
+		.endif
 	.elseif eax==WM_MOUSEMOVE
-;		mov		ti.cbSize,SizeOf TOOLINFO
-;		mov		ti.uFlags,TTF_IDISHWND
-;		mov		eax,hWin
-;		mov		ti.hWnd,eax
-;		mov		ti.uId,eax
-;		mov		ti.lpszText,0
-;		invoke SendMessage,ha.hDbgTip,TTM_GETTOOLINFO,0,addr ti
-;		.if fDebugging
-;			.if !eax
-;				;Add the tooltip
-;				mov		ti.uFlags,TTF_IDISHWND Or TTF_SUBCLASS
-;				mov		eax,hWin
-;				mov		ti.hWnd,eax
-;				mov		ti.uId,eax
-;				mov		eax,ha.hInstance
-;				mov		ti.hInst,eax
-;				invoke SendMessage,ha.hDbgTip,TTM_ADDTOOL,0,addr ti
-;			.endif
-;			mov		eax,lParam
-;			mov		edx,eax
-;			shr		edx,16
-;			movsx	edx,dx
-;			movsx	eax,ax
-;			mov		pt.x,eax
-;			mov		pt.y,edx
-;			sub		eax,dbgpt.x
-;			.if CARRY?
-;				neg		eax
-;			.endif
-;			sub		edx,dbgpt.y
-;			.if CARRY?
-;				neg		edx
-;			.endif
-;			.if eax>5 || edx>5
-;				mov		eax,pt.x
-;				mov		dbgpt.x,eax
-;				mov		eax,pt.y
-;				mov		dbgpt.y,eax
-;				invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
-;				invoke SendMessage,ha.hREd,REM_ISCHARPOS,eax,0
+		mov		eax,lParam
+		mov		edx,eax
+		shr		edx,16
+		movsx	edx,dx
+		movsx	eax,ax
+		mov		pt.x,eax
+		mov		pt.y,edx
+		sub		eax,dbgpt.x
+		.if CARRY?
+			neg		eax
+		.endif
+		sub		edx,dbgpt.y
+		.if CARRY?
+			neg		edx
+		.endif
+		.if eax>5 || edx>5
+			mov		eax,pt.x
+			mov		dbgpt.x,eax
+			mov		eax,pt.y
+			mov		dbgpt.y,eax
+			.if da.fDebugging
+;				invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
+;				invoke SendMessage,ha.hEdt,REM_ISCHARPOS,eax,0
 ;				.if !eax
-;					invoke SendMessage,ha.hREd,REM_GETCURSORWORD,sizeof buffer,addr buffer
+;					invoke SendMessage,ha.hEdt,REM_GETCURSORWORD,sizeof buffer,addr buffer
 ;					.if buffer
 ;						lea		eax,buffer
 ;						mov		dbgtip.lpWord,eax
-;						invoke SendMessage,ha.hREd,EM_CHARFROMPOS,0,addr pt
-;						invoke SendMessage,ha.hREd,EM_LINEFROMCHAR,eax,0
+;						invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
+;						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,eax,0
 ;						mov		isinproc.nLine,eax
 ;						inc		eax
 ;						mov		dbgtip.nLine,eax
-;						mov		eax,ha.hREd
+;						mov		eax,ha.hEdt
 ;						mov		isinproc.nOwner,eax
 ;						mov		isinproc.lpszType,offset szCCp
 ;						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 ;						mov		dbgtip.lpProc,eax
-;						mov		dbgtip.lpFileName,offset da.FileName
-;						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hREd,addr dbgtip
+;						mov		dbgtip.lpFileName,offset da.szFileName
+;						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hEdt,addr dbgtip
 ;						.if eax
 ;							; Show tooltip
 ;							mov		ti.lpszText,eax
@@ -2083,24 +2206,86 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 ;					; Hide tooltip
 ;					call	DeActivate
 ;				.endif
-;			.endif
-;		.elseif eax
-;			; Delete the tool
-;			invoke SendMessage,ha.hDbgTip,TTM_DELTOOL,0,addr ti
-;		.endif
+			.elseif da.edtopt.fopt & EDTOPT_SHOWTIP
+				mov		buffer,0
+				invoke SendMessage,ha.hEdt,EM_CHARFROMPOS,0,addr pt
+				invoke SendMessage,ha.hEdt,REM_ISCHARPOS,eax,0
+				.if !eax
+					invoke SendMessage,ha.hEdt,REM_GETCURSORWORD,sizeof buffer,addr buffer
+				.endif
+				.if buffer
+					invoke PropertyFindExact,addr szCCTip,addr buffer,TRUE
+					mov		buffer,0
+					.if eax
+						mov		ebx,eax
+						invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
+						mov		edi,eax
+						mov		eax,offset szNULL
+						.if edi=='P'
+							mov		eax,offset szWINAPI
+						.elseif edi=='p'
+							mov		eax,offset szPROC
+						.elseif edi=='S' || edi=='s'
+							mov		eax,offset szSTRUCT
+						.elseif edi=='d'
+							mov		eax,offset szGLOBAL
+						.elseif edi=='T'
+							mov		eax,offset szTYPE
+						.elseif edi=='c'
+							mov		eax,offset szCONST
+						.elseif edi=='M'
+							mov		eax,offset szMESSAGE
+						.else
+							PrintHex edi
+						.endif
+						invoke strcpy,addr buffer,eax
+						invoke strcat,addr buffer,ebx
+						.if edi!='d' && edi!='l'
+							invoke strlen,ebx
+							lea		ebx,[ebx+eax+1]
+							.if byte ptr [ebx]
+								invoke strcat,addr buffer,addr szComma
+								invoke strlen,addr buffer
+								lea		edi,buffer[eax]
+								sub		eax,256
+								neg		eax
+								invoke strcpyn,edi,ebx,eax
+							.endif
+						.endif
+					.endif
+				.endif
+				.if buffer
+					invoke strlen,addr buffer
+					.if eax==sizeof buffer-1
+						sub		eax,3
+						.while buffer[eax]!=',' && eax
+							dec		eax
+						.endw
+					.endif
+					.if buffer[eax]==','
+						mov		dword ptr buffer[eax+1],'...'
+					.endif
+					lea		eax,buffer
+					mov		da.ti.lpszText,eax
+					call	Activate
+				.else
+					call	DeActivate
+				.endif
+			.endif
+		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
   Ex:
 	ret
 
 Activate:
-;	invoke SendMessage,ha.hDbgTip,TTM_SETTOOLINFO,0,addr ti
-;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
-;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,TRUE,0
+	invoke SendMessage,ha.hDbgTip,TTM_SETTOOLINFO,0,addr da.ti
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,TRUE,0
 	retn
 
 DeActivate:
-;	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
+	invoke SendMessage,ha.hDbgTip,TTM_ACTIVATE ,FALSE,0
 	retn
 
 RAEditCodeProc endp

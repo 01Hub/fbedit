@@ -30,6 +30,7 @@ IDC_CHKHILITELINE	equ 4021
 IDC_CHKHILITECMNT	equ 4026
 IDC_CHKSESSION		equ 4006
 IDC_CHKAUTOBRACE	equ 4034
+IDC_CHKCODETIP		equ 4035
 
 IDC_BTNCODEFONT		equ 4024
 IDC_STCCODEFONT		equ 4022
@@ -516,6 +517,9 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,da.edtopt.fopt
 		and		eax,EDTOPT_BRACE
 		invoke CheckDlgButton,hWin,IDC_CHKAUTOBRACE,eax
+		mov		eax,da.edtopt.fopt
+		and		eax,EDTOPT_SHOWTIP
+		invoke CheckDlgButton,hWin,IDC_CHKCODETIP,eax
 		mov		esi,offset szColors
 		mov		edi,offset da.radcolor.racol
 		xor		ecx,ecx
@@ -704,6 +708,10 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		edx,TRUE
 				call	EnButton
 			.elseif eax==IDC_CHKAUTOBRACE
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
+				call	EnButton
+			.elseif eax==IDC_CHKCODETIP
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
@@ -1162,6 +1170,10 @@ Update:
 		invoke IsDlgButtonChecked,hWin,IDC_CHKAUTOBRACE
 		.if eax
 			or		da.edtopt.fopt,EDTOPT_BRACE
+		.endif
+		invoke IsDlgButtonChecked,hWin,IDC_CHKCODETIP
+		.if eax
+			or		da.edtopt.fopt,EDTOPT_SHOWTIP
 		.endif
 		;Save edit options
 		mov		tmpbuff,0

@@ -106,6 +106,13 @@ DECLARE struct
 	cp					DWORD ?
 DECLARE ends
 
+DEBUGTIP struct
+	lpWord				DWORD ?
+	lpProc				DWORD ?
+	lpFileName			DWORD ?
+	nLine				DWORD ?
+DEBUGTIP ends
+
 ;Help
 HH_AKLINK struct
 	cbStruct		dd ?	;As Integer
@@ -132,6 +139,7 @@ szToolBarClassName				db 'ToolbarWindow32',0
 szStaticClassName				db 'Static',0
 szTabControlClassName			db 'SysTabControl32',0
 szRichEdit						db 'riched20.dll',0
+sztooltips_class32				db 'tooltips_class32',0
 
 szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
@@ -182,6 +190,7 @@ szCCd							db 'd',0
 szCCAssume						db 'assume ',0
 szCaseTypes						db 'WPMpcm',0
 szGotoTypes						db 'pldcs',0
+szCCTip							db 'PMSTpcsdml',0
 szMsg1							db 'SendMessage',0
 szMsg2							db 'PostMessage',0
 szMsg3							db 'SendDlgItemMessage',0
@@ -248,6 +257,7 @@ szIniCharTab					db 'CharTab',0
 szIniAddins						db 'Addins',0
 szIniTplTxt						db 'TplTxt',0
 szIniTplBin						db 'TplBin',0
+szIniPrint						db 'Print',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -281,6 +291,14 @@ szDefTXTString					db 'Text Files (*.txt)|*.txt',0
 szDefANYString					db 'All Files (*.*)|*.*',0
 szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
+szWINAPI						db 'WINAPI: ',0
+szPROC							db 'PROC: ',0
+szSTRUCT						db 'STRUCT: ',0
+szGLOBAL						db 'GLOBAL: ',0
+szTYPE							db 'TYPE: ',0
+szCONST							db 'CONST: ',0
+szMESSAGE						db 'MESSAGE: ',0
+
 .data
 
 pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime,UpdateAll>
@@ -310,3 +328,4 @@ ttmsg							MESSAGE <>
 tt								TOOLTIP <>
 gotostack						DECLARE 32 dup(<?>)
 hEnv							HGLOBAL ?
+dbgpt							POINT <>
