@@ -7,6 +7,11 @@ szFile				BYTE 'File',0
 szProperties		BYTE 'Properties',0
 szOutput			BYTE 'Output',0
 szImmediate			BYTE 'Immediate',0
+szDebug				BYTE 'Debug',0
+szREG				BYTE 'Register',0
+szFPU				BYTE 'FPU',0
+szMMX				BYTE 'MMX',0
+szWATCH				BYTE 'Watch',0
 
 szTahoma			BYTE 'Tahoma',0
 szCourierNew		BYTE 'Courier New',0
@@ -61,6 +66,7 @@ tbrbtnsmake			TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 lpOldStatusProc		DWORD ?
 lpOldStaticProc		DWORD ?
 lpOldOutputProc		DWORD ?
+lpOldImmediateProc	DWORD ?
 
 .code
 
@@ -84,6 +90,23 @@ OutputProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 OutputProc endp
+
+ImmediateProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_CHAR
+		mov		eax,wParam
+		.if eax==VK_RETURN
+			invoke DebugCommand,FUNC_IMMEDIATE,ha.hImmediate,0
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.endif
+	invoke CallWindowProc,lpOldImmediateProc,hWin,uMsg,wParam,lParam
+  Ex:
+	ret
+
+ImmediateProc endp
 
 CreateTools proc
 	LOCAL	dck:DOCKING
@@ -133,6 +156,61 @@ CreateTools proc
 	invoke CreateWindowEx,0,addr szPBClassName,NULL,WS_CHILD or RPBS_FLATTOOLBAR or RPBS_NOPATH,0,0,0,0,ha.hToolProject,0,ha.hInstance,0
 	mov		ha.hProjectBrowser,eax
 	invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_PROJECT,dck.Visible
+	;Debug tool
+	invoke GetPrivateProfileString,addr szIniTool,addr szIniDebug,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
+	mov		dck.ID,5
+	mov		dck.Caption,offset szDebug
+	invoke GetItemInt,addr buffer,FALSE
+	mov		dck.Visible,eax
+	invoke GetItemInt,addr buffer,TRUE
+	mov		dck.Docked,eax
+	invoke GetItemInt,addr buffer,TL_RIGHT
+	mov		dck.Position,eax
+	invoke GetItemInt,addr buffer,1
+	mov		dck.IsChild,eax
+	invoke GetItemInt,addr buffer,150
+	mov		dck.dWidth,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.dHeight,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.left,eax
+	invoke GetItemInt,addr buffer,0
+	mov		dck.fr.top,eax
+	invoke GetItemInt,addr buffer,200
+	mov		dck.fr.right,eax
+	invoke GetItemInt,addr buffer,300
+	mov		dck.fr.bottom,eax
+	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
+	mov		ha.hToolDebug,eax
+	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER,0,0,0,0,ha.hToolDebug,0,ha.hInstance,0
+	mov		ha.hTabDebug,eax
+	invoke SendMessage,ha.hTabDebug,WM_SETFONT,ha.hToolFont,FALSE
+	mov		tci.imask,TCIF_TEXT
+	mov		tci.pszText,offset szREG
+	invoke SendMessage,ha.hTabDebug,TCM_INSERTITEM,999,addr tci
+	invoke SendMessage,ha.hTabDebug,TCM_SETCURSEL,eax,0
+	mov		tci.pszText,offset szFPU
+	invoke SendMessage,ha.hTabDebug,TCM_INSERTITEM,999,addr tci
+	mov		tci.pszText,offset szMMX
+	invoke SendMessage,ha.hTabDebug,TCM_INSERTITEM,999,addr tci
+	mov		tci.pszText,offset szWATCH
+	invoke SendMessage,ha.hTabDebug,TCM_INSERTITEM,999,addr tci
+	;Create debug register window
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or WS_VISIBLE or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hToolDebug,0,ha.hInstance,0
+	mov		ha.hREGDebug,eax
+	invoke SendMessage,ha.hREGDebug,WM_SETFONT,ha.racf.hFont,FALSE
+	;Create debug fpu window
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hToolDebug,0,ha.hInstance,0
+	mov		ha.hFPUDebug,eax
+	invoke SendMessage,ha.hFPUDebug,WM_SETFONT,ha.racf.hFont,FALSE
+	;Create debug MMX window
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL or STYLE_READONLY,0,0,0,0,ha.hToolDebug,0,ha.hInstance,0
+	mov		ha.hMMXDebug,eax
+	invoke SendMessage,ha.hMMXDebug,WM_SETFONT,ha.racf.hFont,FALSE
+	;Create debug watch window
+	invoke CreateWindowEx,WS_EX_CLIENTEDGE,offset szRAEditClass,NULL,WS_DISABLED or WS_CHILD or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOHILITE or STYLE_NOBACKBUFFER or STYLE_NOSTATE or STYLE_NOHSCROLL or STYLE_NOVSCROLL,0,0,0,0,ha.hToolDebug,0,ha.hInstance,0
+	mov		ha.hWATCHDebug,eax
+	invoke SendMessage,ha.hWATCHDebug,WM_SETFONT,ha.racf.hFont,FALSE
 	;Properties tool
 	invoke GetPrivateProfileString,addr szIniTool,addr szIniProperty,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
 	mov		dck.ID,2
@@ -205,6 +283,8 @@ CreateTools proc
 	invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szRAEditClass,NULL,WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or STYLE_NOSPLITT or STYLE_NOLINENUMBER or STYLE_NOCOLLAPSE or STYLE_NOSTATE or STYLE_NOSIZEGRIP or STYLE_NOHILITE,0,0,0,0,ha.hToolOutput,0,ha.hInstance,0
 	mov		ha.hImmediate,eax
 	invoke SendMessage,ha.hImmediate,REM_SETFONT,0,addr ha.racf
+	invoke SendMessage,ha.hImmediate,REM_SUBCLASS,0,offset ImmediateProc
+	mov		lpOldImmediateProc,eax
 	invoke SendMessage,ha.hTbrView,TB_CHECKBUTTON,IDM_VIEW_OUTPUT,dck.Visible
 	;Tab tool
 	invoke GetPrivateProfileString,addr szIniTool,addr szIniTab,NULL,addr buffer,sizeof buffer,addr da.szRadASMIni
@@ -251,6 +331,10 @@ SaveTools proc uses esi edi
 	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProperties
 	mov		esi,eax
 	mov		edi,offset szIniProperty
+	call	SaveIt
+	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolDebug
+	mov		esi,eax
+	mov		edi,offset szIniDebug
 	call	SaveIt
 	invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
 	mov		esi,eax

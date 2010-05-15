@@ -303,6 +303,12 @@ ADDINHANDLES struct
 	hReBar				HWND ?
 	hStcBuild			HWND ?
 	hCboBuild			HWND ?
+	hToolDebug			HWND ?
+	hTabDebug			HWND ?
+	hREGDebug			HWND ?
+	hFPUDebug			HWND ?
+	hMMXDebug			HWND ?
+	hWATCHDebug			HWND ?
 	hToolFont			HFONT ?
 	racf				RAFONT <>
 	ratf				RAFONT <>
@@ -537,6 +543,7 @@ ADDINDATA struct
 	nBackup				DWORD ?
 	fDebugging			DWORD ?
 	ti					TOOLINFO <>
+	szDbgFileName		BYTE MAX_PATH dup(?)
 ADDINDATA ends
 
 FILEINFO struct
@@ -577,3 +584,6 @@ UAM_ANYBREAKPOINTS				equ 11
 UAM_CLEARBREAKPOINTS			equ 12
 UAM_CLEARERRORS					equ 13
 UAM_FINDERROR					equ 14
+UAM_UNSAVED_SOURCE_FILES		equ 15
+UAM_NEWER_SOURCE_FILES			equ 16
+UAM_SET_BREAKPOINTS				equ 17

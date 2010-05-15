@@ -744,6 +744,39 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						.endif
 					.endw
 				.endif
+			.elseif eax==UAM_UNSAVED_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					.if eax
+						invoke SendMessage,[ebx].TABMEM.hedt,EM_GETMODIFY,0,0
+						.if eax
+							inc		nUnsaved
+						.endif
+					.endif
+				.endif
+			.elseif eax==UAM_NEWER_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke CompareFileTime,addr [ebx].TABMEM.ft,addr ftexe
+					.if sdword ptr eax>0
+						inc		nNewer
+					.endif
+				.endif
+			.elseif eax==UAM_SET_BREAKPOINTS
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+;					invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff[1000]
+;					invoke RemovePath,addr [ebx].TABMEM.filename,addr tmpbuff[1000],addr tmpbuff
+					mov		eax,-1
+					.while TRUE
+						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTBREAKPOINT,eax,0
+						.break .if eax==-1
+						push	eax
+						lea		edx,[eax+1]
+						invoke DebugCommand,FUNC_BPADDLINE,edx,addr [ebx].TABMEM.filename;tmpbuff
+						pop		eax
+					.endw
+				.endif
 			.endif
 		.endif
 	.endw
@@ -2508,6 +2541,38 @@ SetOutputTab proc nTab:DWORD
 	ret
 
 SetOutputTab endp
+
+SetDebugTab proc nTab:DWORD
+
+	invoke SendMessage,ha.hTabOutput,TCM_SETCURSEL,nTab,0
+	.if nTab==0
+		;Register
+		invoke ShowWindow,ha.hREGDebug,SW_SHOWNA
+		invoke ShowWindow,ha.hFPUDebug,SW_HIDE
+		invoke ShowWindow,ha.hMMXDebug,SW_HIDE
+		invoke ShowWindow,ha.hWATCHDebug,SW_HIDE
+	.elseif nTab==1
+		;FPU
+		invoke ShowWindow,ha.hFPUDebug,SW_SHOWNA
+		invoke ShowWindow,ha.hREGDebug,SW_HIDE
+		invoke ShowWindow,ha.hMMXDebug,SW_HIDE
+		invoke ShowWindow,ha.hWATCHDebug,SW_HIDE
+	.elseif nTab==2
+		;MMX
+		invoke ShowWindow,ha.hMMXDebug,SW_SHOWNA
+		invoke ShowWindow,ha.hREGDebug,SW_HIDE
+		invoke ShowWindow,ha.hFPUDebug,SW_HIDE
+		invoke ShowWindow,ha.hWATCHDebug,SW_HIDE
+	.elseif nTab==3
+		;Watch
+		invoke ShowWindow,ha.hWATCHDebug,SW_SHOWNA
+		invoke ShowWindow,ha.hREGDebug,SW_HIDE
+		invoke ShowWindow,ha.hFPUDebug,SW_HIDE
+		invoke ShowWindow,ha.hMMXDebug,SW_HIDE
+	.endif
+	ret
+
+SetDebugTab endp
 
 ShowOutput proc fShow:DWORD
 

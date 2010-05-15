@@ -101,6 +101,62 @@ ClientProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 ClientProc endp
 
+DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
+	LOCAL	chrg:CHARRANGE
+	LOCAL	nFirst:DWORD
+
+	mov		eax,nFunc
+	.if eax==CB_SELECTLINE
+		invoke SendMessage,ha.hEdt,EM_GETFIRSTVISIBLELINE,0,0
+		mov		nFirst,eax
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,ha.hEdt,REM_SETHILITELINE,eax,2
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
+		mov		chrg.cpMin,eax
+		mov		chrg.cpMax,eax
+		invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+		invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+		invoke SendMessage,ha.hEdt,EM_GETFIRSTVISIBLELINE,0,0
+		.if eax!=nFirst
+			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+			invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+		.endif
+		invoke SetForegroundWindow,ha.hWnd
+		invoke SetFocus,ha.hEdt
+	.elseif eax==CB_DESELECTLINE
+		mov		eax,wParam
+		dec		eax
+		invoke SendMessage,lParam,REM_SETHILITELINE,eax,0
+	.elseif eax==CB_DEBUG
+		mov		eax,wParam
+		mov		da.fDebugging,eax
+		mov		da.fTimer,1
+		.if eax
+;			invoke UpdateAll,LOCK_SOURCE_FILES,0
+;			invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
+;			invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
+		.else
+;			invoke UpdateAll,UNLOCK_SOURCE_FILES,0
+;			invoke ShowWindow,ha.hDbgReg,SW_HIDE
+;			invoke ShowWindow,ha.hTabDbg,SW_HIDE
+		.endif
+		invoke SetOutputTab,0
+;		or		wpos.fView,4
+;		invoke ShowWindow,ha.hOut,SW_SHOWNA
+;		invoke ShowWindow,ha.hImmOut,SW_HIDE
+;		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
+	.elseif eax==CB_OPENFILE
+		invoke strcpy,offset da.szDbgFileName,lParam
+		invoke PostMessage,ha.hWnd,WM_USER+998,0,offset da.szDbgFileName
+	.endif
+	mov		eax,ha.hEdt
+	ret
+
+DebugCallback endp
+
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
 	LOCAL	rect:RECT
@@ -112,6 +168,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	hFile:HANDLE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -196,6 +253,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke ImageList_AddMasked,ha.hMnuIml,eax,0C0C0C0h
 		pop		eax
 		invoke DeleteObject,eax
+		;Debug
+		mov		eax,hWin
+		mov		dbginf.hWnd,eax
+		mov		eax,ha.hOutput
+		mov		dbginf.hOut,eax
+		mov		eax,ha.hImmediate
+		mov		dbginf.hImmOut,eax
+		mov		eax,ha.hREGDebug
+		mov		dbginf.hDbgReg,eax
+		mov		eax,ha.hFPUDebug
+		mov		dbginf.hDbgFpu,eax
+		mov		eax,ha.hMMXDebug
+		mov		dbginf.hDbgMMX,eax
+		mov		eax,ha.hWATCHDebug
+		mov		dbginf.hDbgWatch,eax
+		mov		eax,ha.hProperty
+		mov		dbginf.hPrp,eax
+		mov		eax,offset DebugCallback
+		mov		dbginf.lpCallBack,eax
+		mov		eax,da.fProject
+		mov		dbginf.fProject,eax
+		invoke SetDebugInfo,addr dbginf
+		;Addins
 		invoke LoadAddins,hWin
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.inprogress,FALSE
@@ -1137,12 +1217,125 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_DEBUG_RUN
-;####
+				.if !da.fDebugging
+					mov		nUnsaved,0
+					invoke UpdateAll,UAM_UNSAVED_SOURCE_FILES,0
+					.if nUnsaved
+						invoke wsprintf,addr buffer,addr szUnsaved,nUnsaved
+						invoke MessageBox,hWin,addr buffer,addr DisplayName,MB_OK or MB_ICONERROR
+						jmp		Ex
+					.endif
+					invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+					mov		edx,sizeof MAKE
+					mul		edx
+					invoke SetOutputFile,addr da.make.szOutLink[eax],offset da.szMainAsm
+					.if da.fProject
+						invoke strcpy,addr dbginf.FileName,offset da.szProjectPath
+						invoke strcat,addr dbginf.FileName,offset szBS
+						invoke strcat,addr dbginf.FileName,offset makeexe.output
+					.else
+						invoke strcpy,addr dbginf.FileName,offset makeexe.output
+					.endif
+					invoke CreateFile,addr dbginf.FileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+					.if eax!=INVALID_HANDLE_VALUE
+						mov		hFile,eax
+						invoke GetFileTime,hFile,NULL,NULL,addr ftexe
+						invoke CloseHandle,hFile
+						mov		nNewer,0
+						invoke UpdateAll,UAM_NEWER_SOURCE_FILES,0
+						.if nNewer
+							invoke wsprintf,addr buffer,addr szNewer,nNewer
+							invoke MessageBox,hWin,addr buffer,addr DisplayName,MB_OK or MB_ICONERROR
+							jmp		Ex
+						.endif
+					.else
+						invoke strcpy,addr buffer,addr szOpenFileFail
+						invoke strcat,addr buffer,addr dbginf.FileName
+						invoke MessageBox,hWin,addr buffer,addr DisplayName,MB_OK or MB_ICONERROR
+						jmp		Ex
+					.endif
+					mov		eax,hWin
+					mov		dbginf.hWnd,eax
+					mov		eax,ha.hOutput
+					mov		dbginf.hOut,eax
+					mov		eax,ha.hImmediate
+					mov		dbginf.hImmOut,eax
+					mov		eax,ha.hREGDebug
+					mov		dbginf.hDbgReg,eax
+					mov		eax,ha.hFPUDebug
+					mov		dbginf.hDbgFpu,eax
+					mov		eax,ha.hMMXDebug
+					mov		dbginf.hDbgMMX,eax
+					mov		eax,ha.hWATCHDebug
+					mov		dbginf.hDbgWatch,eax
+					mov		eax,ha.hProperty
+					mov		dbginf.hPrp,eax
+					mov		eax,offset DebugCallback
+					mov		dbginf.lpCallBack,eax
+					mov		eax,da.fProject
+					mov		dbginf.fProject,eax
+					invoke SetDebugInfo,addr dbginf
+					invoke DebugCommand,FUNC_BPCLEARALL,0,0
+					.if da.fProject
+						;Get breakpoints
+						xor		ebx,ebx
+						.while TRUE
+							invoke SendMessage,ha.hProjectBrowser,RPBM_GETITEM,ebx,0
+							.break .if ![eax].PBITEM.id
+							.if sdword ptr [eax].PBITEM.id>0
+								mov		edi,eax
+								invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
+								.if eax==-1
+									mov		buffer,'B'
+									invoke wsprintf,addr buffer[1],addr szFmtDec,[edi].PBITEM.id
+									invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+									.while byte ptr tmpbuff
+										invoke GetItemInt,addr tmpbuff,0
+										lea		edx,[eax+1]
+										invoke DebugCommand,FUNC_BPADDLINE,edx,addr [edi].PBITEM.szitem
+									.endw
+								.else
+									invoke GetWindowLong,eax,GWL_USERDATA
+									invoke GetWindowLong,eax,GWL_USERDATA
+									mov		esi,eax
+									invoke GetWindowLong,[esi].TABMEM.hedt,GWL_ID
+									.if eax==ID_EDITCODE
+										invoke strcpy,addr buffer1,addr [esi].TABMEM.filename
+										invoke RemovePath,addr buffer1,addr da.szProjectPath,addr buffer
+										mov		edi,-1
+										.while TRUE
+											invoke SendMessage,[esi].TABMEM.hedt,REM_NEXTBREAKPOINT,edi,0
+											.break .if eax==-1
+											mov		edi,eax
+											lea		edx,[eax+1]
+											invoke DebugCommand,FUNC_BPADDLINE,edx,addr buffer;[esi].TABMEM.filename
+										.endw
+									.endif
+								.endif
+							.endif
+							inc		ebx
+						.endw
+					.else
+						invoke UpdateAll,UAM_SET_BREAKPOINTS,0
+					.endif
+				.endif
+				invoke DebugCommand,FUNC_RUN,0,0
 			.elseif eax==IDM_DEBUG_BREAK
+				invoke DebugCommand,FUNC_BREAK,0,0
 			.elseif eax==IDM_DEBUG_STOP
+				invoke DebugCommand,FUNC_STOP,0,0
 			.elseif eax==IDM_DEBUG_INTO
+				invoke DebugCommand,FUNC_STEPINTO,0,0
 			.elseif eax==IDM_DEBUG_OVER
+				invoke DebugCommand,FUNC_STEPOVER,0,0
 			.elseif eax==IDM_DEBUG_CARET
+				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
+				invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
+				lea		ebx,[eax+1]
+				invoke DebugCommand,FUNC_ISCODELINE,ebx,offset da.szFileName
+				.if eax
+					invoke DebugCommand,FUNC_RUNTOCARET,ebx,offset da.szFileName
+				.endif
 			.elseif eax==IDM_DEBUG_NODEBUG
 ;####
 			.elseif eax==IDM_TOOLS_SNIPLETS
@@ -1534,7 +1727,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Rebar
 			invoke SendMessage,hWin,WM_SIZE,0,0
 		.elseif [esi].NMHDR.code==TCN_SELCHANGE
-			;Tab control
+			;Tab controls
 			.if eax==ha.hTabProject
 				;Project tab
 				invoke SendMessage,ha.hTabProject,TCM_GETCURSEL,0,0
@@ -1543,6 +1736,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				;Output tab
 				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
 				invoke SetOutputTab,eax
+			.elseif eax==ha.hTabDebug
+				;Debug tab
+				invoke SendMessage,ha.hTabDebug,TCM_GETCURSEL,0,0
+				invoke SetDebugTab,eax
 			.endif
 		.elseif [esi].NMHDR.code==FBN_DBLCLICK && eax==ha.hFileBrowser
 			;File browser file
@@ -1646,6 +1843,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
 			invoke SetFocus,ha.hEdt
 		.elseif [esi].NMHDR.code==EN_SELCHANGE && eax==ha.hOutput
+			;Output window
 			.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
 				invoke SendMessage,ha.hOutput,REM_GETBMID,[esi].RASELCHANGE.line,0
 				invoke UpdateAll,UAM_FINDERROR,eax
@@ -1745,6 +1943,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke MoveWindow,ha.hImmediate,20,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.elseif eax==ha.hToolTab
 			invoke MoveWindow,ha.hTab,0,0,[esi].RECT.right,[esi].RECT.bottom,TRUE
+		.elseif eax==ha.hToolDebug
+			invoke MoveWindow,ha.hTabDebug,0,0,[esi].RECT.right,20,TRUE
+			sub		[esi].RECT.bottom,20
+			invoke MoveWindow,ha.hREGDebug,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			invoke MoveWindow,ha.hFPUDebug,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			invoke MoveWindow,ha.hMMXDebug,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
+			invoke MoveWindow,ha.hWATCHDebug,0,20,[esi].RECT.right,[esi].RECT.bottom,TRUE
 		.endif
 	.elseif eax==WM_ACTIVATE
 		.if ha.hMdi
@@ -1762,6 +1967,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			inc		ebx
 			jmp		@b
 		.endif
+	.elseif eax==WM_USER+998
+		invoke strcpy,addr buffer,addr da.szProjectPath
+		invoke strcat,addr buffer,addr szBS
+		invoke strcat,addr buffer,lParam
+		invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+		.if eax==-1
+			invoke OpenTheFile,addr buffer,0
+		.endif
+		invoke DebugCommand,FUNC_FILEOPEN,0,0
 	.elseif eax==WM_MEASUREITEM
 		mov		ebx,lParam
 		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU

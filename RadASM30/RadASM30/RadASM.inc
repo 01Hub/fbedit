@@ -49,6 +49,7 @@ includelib ..\Lib\RAProject.lib
 includelib ..\Lib\RAProperty.lib
 includelib ..\Lib\RAResEd.lib
 includelib ..\Lib\RATools.lib
+includelib ..\Lib\Debug.lib
 
 TabProc							PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 TabToolActivate					PROTO
@@ -67,8 +68,14 @@ SetHelpMenu						PROTO
 SetToolMenu						PROTO
 OpenFiles						PROTO	:DWORD
 ParseEdit						PROTO	:HWND,:DWORD
+RemovePath						PROTO	:DWORD,:DWORD,:DWORD
+
 PostAddinMessage				PROTO	:HWND,:UINT,:WPARAM,:LPARAM,:DWORD,:DWORD
 GetModify						PROTO	:HWND
+
+; Debug proto
+SetDebugInfo					PROTO :DWORD
+DebugCommand					PROTO :DWORD,:DWORD,:DWORD
 
 RadASMVersion					equ 3000
 
@@ -88,6 +95,27 @@ MAX_MISS						equ 10
 START_FILES						equ 1
 MAX_FILES						equ 1000
 
+; Debug functions
+FUNC_RUN						equ 1
+FUNC_STEPINTO					equ 2
+FUNC_STEPOVER					equ 3
+FUNC_RUNTOCARET					equ 4
+FUNC_STOP						equ 5
+FUNC_BPCLEARALL					equ 6
+FUNC_BPADDLINE					equ 7
+FUNC_BPUPDATE					equ 8
+FUNC_GETTOOLTIP					equ 9
+FUNC_IMMEDIATE					equ 10
+FUNC_BREAK						equ 11
+FUNC_FILEOPEN					equ 12
+FUNC_ISCODELINE					equ 13
+
+; Debug callback functions
+CB_SELECTLINE					equ 1
+CB_DESELECTLINE					equ 2
+CB_DEBUG						equ 3
+CB_OPENFILE						equ 4
+
 FILENOTIFYPATH struct
 	nCount				DWORD ?
 	path				BYTE MAX_PATH dup(?)
@@ -105,6 +133,22 @@ DECLARE struct
 	hWin				HWND ?
 	cp					DWORD ?
 DECLARE ends
+
+DEBUGINFO struct
+	hWnd				HWND ?					; Handle of main window
+	hOut				HWND ?					; Handle of output window
+	hImmOut				HWND ?					; Handle of immediate window
+	hDbgReg				HWND ?					; Handle of debug register window
+	hDbgFpu				HWND ?					; Handle of debug FPU window
+	hDbgMMX				HWND ?					; Handle of debug MMX window
+	hDbgWatch			HWND ?					; Handle of debug watch window
+	hPrp				HWND ?					; Handle of properties window
+	lpNoDebug			DWORD ?					; Pointer to strings containing procs to not debug
+	fMainThread			DWORD ?					; Only main thread
+	lpCallBack			DWORD ?					; Callback
+	FileName			BYTE MAX_PATH dup(?)	; Filename
+	fProject			DWORD ?					; Project flag
+DEBUGINFO ends
 
 DEBUGTIP struct
 	lpWord				DWORD ?
@@ -258,6 +302,7 @@ szIniAddins						db 'Addins',0
 szIniTplTxt						db 'TplTxt',0
 szIniTplBin						db 'TplBin',0
 szIniPrint						db 'Print',0
+szIniDebug						db 'Debug',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0
@@ -280,6 +325,8 @@ szReplaceDone					db 'Region searced.',0Dh,'%d replacements done.',0
 szAddNewProjectFile				db 'Add New File To Project',0
 szAddExistingProjectFiles		db 'Add Existing Files To Project',0
 szDeleted						db 'Deleted: ',0
+szUnsaved						db 'There are %d unsaved source files.',0
+szNewer							db 'There are %d source files newer than the .exe.',0
 
 defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h
@@ -301,6 +348,7 @@ szMESSAGE						db 'MESSAGE: ',0
 szPARAM							db 'PARAM: ',0
 szLOCAL							db 'LOCAL: ',0
 szLABEL							db 'LABEL: ',0
+szFmtDec						db '%d',0
 
 .data
 
@@ -333,3 +381,7 @@ gotostack						DECLARE 32 dup(<?>)
 hEnv							HGLOBAL ?
 dbgpt							POINT <>
 szOldTip						BYTE 256 dup(?)
+dbginf							DEBUGINFO <>
+nUnsaved						DWORD ?
+ftexe							FILETIME <>
+nNewer							DWORD ?
