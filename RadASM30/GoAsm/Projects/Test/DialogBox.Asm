@@ -4,22 +4,8 @@
 
 #include "DialogBox.Inc"
 
-;##################################################################
-; BREAKPOINT INCLUDE
-
-#include "\RadASM\GoAsm\inc\RadDbg.a"
-
-;##################################################################
-; VKIM INCLUDE
-
-#include "\RadASM\GoAsm\inc\debug.a"
-
 .DATA
 	hInst				DD 	0
-
-;##################################################################
-
-.CONST
 
 ;##################################################################
 
@@ -42,6 +28,10 @@ DlgProc FRAME hwnd,uMsg,wParam,lParam
 	.WMCOMMAND
 		CMP EAX,WM_COMMAND
 		JNE >.WMCLOSE
+		MOV EAX,[wParam]
+		CMP EAX,1001
+		JNE >.EXIT
+		INVOKE ModuleProc,[hwnd]
 		JMP >.EXIT
 
 	.WMCLOSE

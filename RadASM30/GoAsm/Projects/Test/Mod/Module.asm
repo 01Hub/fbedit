@@ -1,11 +1,13 @@
 
-#include "C:\GoASM\IncludeA\Windows.inc"
-#include "C:\GoASM\IncludeA\user32.inc"
-#include "C:\GoASM\IncludeA\kernel32.inc"
+#include "Windows.h"
+
+.CONST
+
+szTest			DB "Test",0
 
 .CODE
 
 ModuleProc FRAME hwnd
-	invoke MessageBeep,0FFFFFFFFh
+	invoke MessageBox,[hwnd],OFFSET szTest,OFFSET szTest,MB_OK
 	RET
 ModuleProc ENDF
