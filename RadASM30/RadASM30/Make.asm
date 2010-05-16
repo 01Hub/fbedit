@@ -128,14 +128,12 @@ FindErrors proc uses ebx
 	LOCAL	buffer[512]:BYTE
 	LOCAL	nLn:DWORD
 	LOCAL	nLnErr:DWORD
-	LOCAL	nLastLnErr:DWORD
 	LOCAL	nErr:DWORD
 
 	invoke SendMessage,ha.hOutput,EM_GETLINECOUNT,0,0
 	xor		ebx,ebx
 	mov		nErrID,ebx
 	mov		nLn,ebx
-	mov		nLastLnErr,-1
 	.while nLn<eax
 		push	eax
 		call	TestLine
@@ -157,35 +155,44 @@ TestLine:
 		mov		byte ptr buffer[eax],0
 		invoke DecToBin,addr buffer[eax+1]
 		dec		eax
-		.if eax!=nLastLnErr
-			mov		nLnErr,eax
-			mov		nLastLnErr,eax
-			invoke strlen,addr buffer
-			.while eax && word ptr buffer[eax+1]!='\:'
-				dec		eax
-			.endw
-			invoke strcpy,addr buffer,addr buffer[eax]
-			invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff
-			invoke strcat,addr tmpbuff,addr szBS
-			invoke strcat,addr tmpbuff,addr buffer
-			invoke strcpy,addr buffer,addr tmpbuff
-;			invoke GetFullPathName,addr tmpbuff,sizeof buffer,addr buffer,NULL
-			invoke GetFileAttributes,addr buffer
-			.if eax!=INVALID_HANDLE_VALUE && !(eax & FILE_ATTRIBUTE_DIRECTORY)
-				invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
-				.if eax==-1
-					invoke OpenTheFile,addr buffer,0
-				.endif
-				.if ha.hMdi
-					invoke GetWindowLong,ha.hEdt,GWL_ID
-					.if eax==ID_EDITCODE
-						invoke SendMessage,ha.hOutput,REM_SETBOOKMARK,nLn,6
-						invoke SendMessage,ha.hOutput,REM_GETBMID,nLn,0
-						mov		nErr,eax
+		mov		nLnErr,eax
+		invoke strlen,addr buffer
+		.while eax && word ptr buffer[eax+1]!='\:'
+			dec		eax
+		.endw
+		invoke strcpy,addr buffer,addr buffer[eax]
+		invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff
+		invoke strcat,addr tmpbuff,addr szBS
+		invoke strcat,addr tmpbuff,addr buffer
+		invoke strcpy,addr buffer,addr tmpbuff
+;		invoke GetFullPathName,addr tmpbuff,sizeof buffer,addr buffer,NULL
+		invoke GetFileAttributes,addr buffer
+		.if eax!=INVALID_HANDLE_VALUE && !(eax & FILE_ATTRIBUTE_DIRECTORY)
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+			.if eax==-1
+				;File is not open, open it
+				invoke OpenTheFile,addr buffer,0
+			.endif
+			.if ha.hMdi
+				invoke GetWindowLong,ha.hEdt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,ha.hOutput,REM_SETBOOKMARK,nLn,6
+					invoke SendMessage,ha.hOutput,REM_LINEREDTEXT,nLn,TRUE
+					invoke SendMessage,ha.hOutput,REM_GETBMID,nLn,0
+					mov		nErr,eax
+					invoke SendMessage,ha.hEdt,REM_GETERROR,nLnErr,0
+					.if !eax
+						;Create an error bookmark.
 						invoke SendMessage,ha.hEdt,REM_SETERROR,nLnErr,nErr
-						mov		eax,nErr
-						mov		ErrID[ebx*4],eax
-						inc		ebx
+						;Save the error id in an array
+						.if ebx<127
+							mov		eax,nErr
+							mov		ErrID[ebx*4],eax
+							inc		ebx
+						.endif
+					.else
+						;Line already has an error bookmark, just update bookmark id in output window
+						invoke SendMessage,ha.hOutput,REM_SETBMID,nLn,eax
 					.endif
 				.endif
 			.endif
@@ -537,11 +544,15 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 	.if ThreadID
 		.if makeexe.uExit==1234
 			invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Terminated
-			invoke FindErrors
+			.if nCommand==IDM_MAKE_ASSEMBLE
+				invoke FindErrors
+			.endif
 		.else
 			.if fExitCode
 				invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Errors
-				invoke FindErrors
+				.if nCommand==IDM_MAKE_ASSEMBLE
+					invoke FindErrors
+				.endif
 			.else
 				.if fClear==1 || fClear==3
 					.if fClear==3
