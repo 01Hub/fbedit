@@ -8,6 +8,7 @@ include Misc.asm
 include WordList.asm
 include FBParse.asm
 include MasmParse.asm
+include GoAsmParse.asm
 include Sort.asm
 
 .code

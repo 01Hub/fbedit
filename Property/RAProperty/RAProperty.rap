@@ -25,6 +25,7 @@ AutoDelete=1
 AskMe=0
 MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 14=MasmParse.asm
+15=GoAsmParse.asm
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -85,6 +86,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 12=2
 13=2
 14=2
+15=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -95,7 +97,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=16
+MilestoneOnDateDate=17
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -140,23 +142,25 @@ ProductVer4Range=0
 12=
 13=,
 14=,,,,,
+15=,,,,
 [Size]
-2=0,0,699,490,207
+2=0,0,699,490,3133
 <<<<<<< .mine
-1=0,0,699,490,17583
+1=0,0,699,490,203
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,1003
+7=0,0,0,0,2611
 9=0,0,0,0,2917
-10=0,0,0,0,16574
-11=0,0,746,498,649
+10=0,0,0,0,489
+11=0,0,746,498,14082
 12=0,0,0,0,2850
 13=0,0,0,0,5874
-14=0,0,0,0,6994
+14=0,0,0,0,146
+15=0,0,0,0,15746
 [BookMark]
 0=
 1=
@@ -172,20 +176,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,10,14,11,13,2,7,4,9
+AutoLoad=1,10,14,11,13,2,7,4,9,15
 [PTimer]
-PTimer=172500305
+PTimer=186377811
 [Find]
-1="PRM_ADDPROPERTYFILE"
-2="hMemArray"
-3="lpignore"
-4="cbsize"
-5="hmem"
-6="rpfreedeftype"
-7="CompactProperties"
-8="PRM_ADDPROPERTYLIST"
-9="_PRM_ADDPROPERTYLIST"
-10="DeleteProperties"
+1="[ebx].RAPROPERTY.nlanguage"
+2="M"
+3="invoke M"
+4="SaveParam"
+5="PRM_ADDPROPERTYFILE"
+6="hMemArray"
+7="lpignore"
+8="cbsize"
+9="hmem"
+10="rpfreedeftype"
 
 [Exports]
 1=GetDefEx
@@ -198,5 +202,6 @@ PTimer=172500305
 14=
 11=
 2=
+15=
 [GroupExpand]
 GroupExpand=0,1,1,1,0,0,0

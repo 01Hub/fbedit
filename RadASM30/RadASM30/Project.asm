@@ -889,6 +889,7 @@ TemplateCreate endp
 
 ProjectCreate proc uses ebx esi edi,hWin:HWND
 	LOCAL	projectpath[MAX_PATH]:BYTE
+	LOCAL	assemblerini[MAX_PATH]:BYTE
 	LOCAL	projectname[64]:BYTE
 	LOCAL	projectdesc[64]:BYTE
 	LOCAL	fileext[64]:BYTE
@@ -955,6 +956,10 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 		mov		edx,eax
 		invoke SendDlgItemMessage,hWin,IDC_CBOASSEMBLER,CB_GETLBTEXT,edx,addr tmpbuff
 		invoke WritePrivateProfileString,addr szIniProject,addr szIniAssembler,addr tmpbuff,addr projectfile
+		invoke strcpy,addr assemblerini,addr da.szAppPath
+		invoke strcat,addr assemblerini,addr szBS
+		invoke strcat,addr assemblerini,addr szBS
+		invoke strcat,addr assemblerini,addr szDotIni
 		;Filebrowser path
 		invoke WritePrivateProfileString,addr szIniProject,addr szIniPath,addr projectpath,addr projectfile
 		;Project groups
@@ -971,7 +976,7 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 		invoke IsDlgButtonChecked,hTabNewProject[4],IDC_CHKCODE
 		.if eax
 			;Create main code (asm) file
-			invoke GetPrivateProfileString,addr szIniProject,addr szIniCode,addr szNULL,addr fileext,sizeof fileext,addr da.szAssemblerIni
+			invoke GetPrivateProfileString,addr szIniProject,addr szIniCode,addr szNULL,addr fileext,sizeof fileext,addr assemblerini
 			invoke FileCreate,hWin,addr projectpath,addr projectname,addr fileext,NULL,0
 			.if eax
 				invoke strcpy,addr filename,eax
@@ -984,7 +989,7 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 		invoke IsDlgButtonChecked,hTabNewProject[4],IDC_CHKHEADER
 		.if eax
 			;Create header (inc) file
-			invoke GetPrivateProfileString,addr szIniProject,addr szIniHeader,addr szNULL,addr fileext,sizeof fileext,addr da.szAssemblerIni
+			invoke GetPrivateProfileString,addr szIniProject,addr szIniHeader,addr szNULL,addr fileext,sizeof fileext,addr assemblerini
 			invoke FileCreate,hWin,addr projectpath,addr projectname,addr fileext,NULL,0
 			.if eax
 				invoke strcpy,addr filename,eax
@@ -1032,7 +1037,7 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 			.break .if eax==LB_ERR
 			.if eax
 				invoke BinToDec,ebx,addr buffer
-				invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+				invoke GetPrivateProfileString,addr szIniMake,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr assemblerini
 				invoke BinToDec,edi,addr buffer
 				invoke WritePrivateProfileString,addr szIniMake,addr buffer,addr tmpbuff,addr projectfile
 				inc		edi
@@ -1053,7 +1058,7 @@ AddFile:
 	;Main
 	invoke PutItemInt,addr tmpbuff,edi
 	;Type
-	invoke PutItemInt,addr tmpbuff,edi
+	invoke PutItemInt,addr tmpbuff,esi
 	;Left
 	mov		eax,22
 	mul		ebx

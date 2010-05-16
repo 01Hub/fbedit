@@ -78,14 +78,26 @@
 		ret
 	align 4 
 	_PRM_PARSEFILE:
-		.if [ebx].RAPROPERTY.nlanguage==nMASM
+		mov		eax,[ebx].RAPROPERTY.nlanguage
+		.if eax==nMASM
 			; Masm
 			invoke MPreParse,lParam
 			invoke MParseFile,wParam,lParam
-		.else
+		.elseif eax==nTASM
+		.elseif eax==nFASM
+		.elseif eax==nGOASM
+			; GoAsm
+			invoke GoPreParse,lParam
+			invoke GoParseFile,wParam,lParam
+		.elseif eax==nNASM
+		.elseif eax==nHLA
+		.elseif eax==nCPP
+		.elseif eax==nFREEBASIC || !eax
 			; FreeBASIC
 			invoke FBPreParse,lParam,FALSE
 			invoke FBParseFile,wParam,lParam
+		.elseif eax==nFREEPASCAL
+		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax
 		ret
@@ -179,10 +191,23 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTWORD:
-		.if [ebx].RAPROPERTY.nlanguage==nMASM
+		mov		eax,[ebx].RAPROPERTY.nlanguage
+		.if eax==nMASM
+			; Masm
 			invoke MDestroyCommentsStrings,lParam
-		.else
+		.elseif eax==nTASM
+		.elseif eax==nFASM
+		.elseif eax==nGOASM
+			; GoAsm
+			invoke GoDestroyCommentsStrings,lParam
+		.elseif eax==nNASM
+		.elseif eax==nHLA
+		.elseif eax==nCPP
+		.elseif eax==nFREEBASIC || !eax
+			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
+		.elseif eax==nFREEPASCAL
+		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -483,10 +508,23 @@
 		ret
 	align 4 
 	_PRM_GETSTRUCTSTART:
-		.if [ebx].RAPROPERTY.nlanguage==nMASM
+		mov		eax,[ebx].RAPROPERTY.nlanguage
+		.if eax==nMASM
+			; Masm
 			invoke MDestroyCommentsStrings,lParam
-		.else
+		.elseif eax==nTASM
+		.elseif eax==nFASM
+		.elseif eax==nGOASM
+			; GoAsm
+			invoke GoDestroyCommentsStrings,lParam
+		.elseif eax==nNASM
+		.elseif eax==nHLA
+		.elseif eax==nCPP
+		.elseif eax==nFREEBASIC || !eax
+			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
+		.elseif eax==nFREEPASCAL
+		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
 		mov		ecx,wParam
@@ -592,12 +630,23 @@
 		ret
 	align 4
 	_PRM_PREPARSE:
-		.if [ebx].RAPROPERTY.nlanguage==nMASM
+		mov		eax,[ebx].RAPROPERTY.nlanguage
+		.if eax==nMASM
 			; Masm
 			invoke MPreParse,lParam
-		.else
+		.elseif eax==nTASM
+		.elseif eax==nFASM
+		.elseif eax==nGOASM
+			; GoAsm
+			invoke GoPreParse,lParam
+		.elseif eax==nNASM
+		.elseif eax==nHLA
+		.elseif eax==nCPP
+		.elseif eax==nFREEBASIC || !eax
 			; FreeBASIC
 			invoke FBPreParse,lParam,wParam
+		.elseif eax==nFREEPASCAL
+		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax
 		ret

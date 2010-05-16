@@ -53,8 +53,16 @@ PRM_RESET					equ WM_USER+47		;wParam=0, lParam=0
 PRM_GETSELTYP				equ WM_USER+48		;wParam=0, lParam=0
 
 ;Languages
-nFREEBASIC					equ 0
 nMASM						equ 1
+nTASM						equ 2
+nFASM						equ 3
+nGOASM						equ 4
+nNASM						equ 5
+nHLA						equ 6
+nCPP						equ 7
+nFREEBASIC					equ 8
+nFREEPASCAL					equ 9
+nOTHER						equ 99
 
 ;Styles
 PRSTYLE_FLATTOOLBAR			equ 1
