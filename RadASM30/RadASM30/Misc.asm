@@ -777,6 +777,16 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 						pop		eax
 					.endw
 				.endif
+			.elseif eax==UAM_LOCK_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_READONLY,0,TRUE
+				.endif
+			.elseif eax==UAM_UNLOCK_SOURCE_FILES
+				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
+				.if eax==ID_EDITCODE
+					invoke SendMessage,[ebx].TABMEM.hedt,REM_READONLY,0,FALSE
+				.endif
 			.endif
 		.endif
 	.endw
@@ -2605,6 +2615,26 @@ TextOutput proc lpText:DWORD
 	ret
 
 TextOutput endp
+
+ShowDebug proc fShow:DWORD
+
+	invoke SendMessage,ha.hTool,TLM_GETVISIBLE,0,ha.hToolDebug
+	.if fShow
+		mov		fShow,FALSE
+		.if !eax
+			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolDebug
+			mov		fShow,TRUE
+		.endif
+	.else
+		.if eax
+			invoke SendMessage,ha.hTool,TLM_HIDE,0,ha.hToolDebug
+			mov		fShow,TRUE
+		.endif
+	.endif
+	mov		eax,fShow
+	ret
+
+ShowDebug endp
 
 ConvertDpiSize proc nPix:DWORD
 	LOCAL	lpx:DWORD

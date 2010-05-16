@@ -95,7 +95,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=19
+MilestoneOnDateDate=16
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -141,7 +141,7 @@ ProductVer4Range=0
 13=,
 14=,,,,,
 [Size]
-2=0,0,699,490,3081
+2=0,0,699,490,207
 <<<<<<< .mine
 1=0,0,699,490,17583
 =======
@@ -151,9 +151,9 @@ ProductVer4Range=0
 3=0,0,0,0,0
 8=0,0,0,0,1542
 7=0,0,0,0,1003
-9=0,0,0,0,177
+9=0,0,0,0,2917
 10=0,0,0,0,16574
-11=0,0,746,498,15599
+11=0,0,746,498,649
 12=0,0,0,0,2850
 13=0,0,0,0,5874
 14=0,0,0,0,6994
@@ -174,18 +174,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9
 [PTimer]
-PTimer=171832979
+PTimer=172500305
 [Find]
-1="hMemArray"
-2="lpignore"
-3="cbsize"
-4="hmem"
-5="rpfreedeftype"
-6="CompactProperties"
-7="PRM_ADDPROPERTYLIST"
-8="_PRM_ADDPROPERTYLIST"
-9="DeleteProperties"
-10="PRM_GETSORTEDLIST"
+1="PRM_ADDPROPERTYFILE"
+2="hMemArray"
+3="lpignore"
+4="cbsize"
+5="hmem"
+6="rpfreedeftype"
+7="CompactProperties"
+8="PRM_ADDPROPERTYLIST"
+9="_PRM_ADDPROPERTYLIST"
+10="DeleteProperties"
 
 [Exports]
 1=GetDefEx

@@ -105,16 +105,18 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		mov		hFile,eax
 		invoke GetFileSize,hFile,addr nBytes
 		mov		nBytes,eax
-		add		eax,32
+		shr		eax,12
+		inc		eax
+		shl		eax,12
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
 		mov		hList,eax
 		invoke ReadFile,hFile,hList,nBytes,addr	nBytes,FALSE
 		invoke CloseHandle,hFile
-		invoke strcat,hList,addr szCRLF
 		mov		esi,hList
 		mov		al,[esi]
 		or		al,al
 		je		Ex
+		invoke strcat,esi,addr szCRLF
 		dec		esi
 	  Nx:
 		inc		esi
@@ -130,6 +132,15 @@ AddFileToWordList proc uses	esi,nType:DWORD,lpFileName:DWORD,nParts:DWORD
 		cmp		al,0Ah
 		je		Nx
 		.if	al
+			.if !nType
+				movzx	eax,byte ptr [esi]
+				mov		nType,eax
+				movzx	eax,byte ptr [esi+1]
+				and		eax,0Fh
+				mov		nParts,eax
+				inc		esi
+				jmp		Nx
+			.endif
 			.if	nParts>1
 				call	ZeroTerminateParts
 			.endif

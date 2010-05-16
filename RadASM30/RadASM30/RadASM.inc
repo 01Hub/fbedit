@@ -338,17 +338,16 @@ szDefTXTString					db 'Text Files (*.txt)|*.txt',0
 szDefANYString					db 'All Files (*.*)|*.*',0
 szDefPROString					db 'Project Files (*.prra)|*.prra',0
 
-szWINAPI						db 'WINAPI: ',0
-szPROC							db 'PROC: ',0
-szSTRUCT						db 'STRUCT: ',0
-szGLOBAL						db 'GLOBAL: ',0
-szTYPE							db 'TYPE: ',0
-szCONST							db 'CONST: ',0
-szMESSAGE						db 'MESSAGE: ',0
-szPARAM							db 'PARAM: ',0
-szLOCAL							db 'LOCAL: ',0
-szLABEL							db 'LABEL: ',0
-szFmtDec						db '%d',0
+szWINAPI						db 'WINAPI ',0
+szPROC							db 'PROC ',0
+szSTRUCT						db 'STRUCT ',0
+szGLOBAL						db 'GLOBAL ',0
+szTYPE							db 'TYPE ',0
+szCONST							db 'CONST ',0
+szMESSAGE						db 'MESSAGE ',0
+szPARAM							db 'PARAM ',0
+szLOCAL							db 'LOCAL ',0
+szLABEL							db 'LABEL ',0
 
 .data
 

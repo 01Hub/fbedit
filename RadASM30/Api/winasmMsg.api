@@ -1,3 +1,4 @@
+M2
 BCM_GETIDEALSIZE,0,pSize|bSuccess
 BCM_GETIMAGELIST,0,pbuttonimagelist|bSuccess
 BCM_GETTEXTMARGIN,0,pmargin|bSuccess
@@ -455,7 +456,6 @@ TVM_SETUNICODEFORMAT,dwFormat,0|dwPrevFormat
 TVM_SORTCHILDREN,bRecursive[FALSE,TRUE],hItem|bSuccess
 TVM_SORTCHILDRENCB,0,pTVSORTCB|bSuccess
 WM_CHAR,nKeyCode,dwFlags
-WM_CLOSE,0,0
 WM_COMMAND,MAKEWPARAM(nCtrlID,nCode),hControl
 WM_DROPFILES,hDrop,0
 WM_ENABLE,bEnable[FALSE,TRUE],0|bProcessed

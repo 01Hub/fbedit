@@ -135,19 +135,14 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 		mov		da.fDebugging,eax
 		mov		da.fTimer,1
 		.if eax
-;			invoke UpdateAll,LOCK_SOURCE_FILES,0
-;			invoke ShowWindow,ha.hDbgReg,SW_SHOWNA
-;			invoke ShowWindow,ha.hTabDbg,SW_SHOWNA
+			invoke UpdateAll,UAM_LOCK_SOURCE_FILES,0
+			invoke ShowOutput,TRUE
+			invoke ShowDebug,TRUE
 		.else
-;			invoke UpdateAll,UNLOCK_SOURCE_FILES,0
-;			invoke ShowWindow,ha.hDbgReg,SW_HIDE
-;			invoke ShowWindow,ha.hTabDbg,SW_HIDE
+			invoke UpdateAll,UAM_UNLOCK_SOURCE_FILES,0
+			invoke ShowDebug,FALSE
 		.endif
 		invoke SetOutputTab,0
-;		or		wpos.fView,4
-;		invoke ShowWindow,ha.hOut,SW_SHOWNA
-;		invoke ShowWindow,ha.hImmOut,SW_HIDE
-;		invoke SendMessage,ha.hWnd,WM_SIZE,0,0
 	.elseif eax==CB_OPENFILE
 		invoke strcpy,offset da.szDbgFileName,lParam
 		invoke PostMessage,ha.hWnd,WM_USER+998,0,offset da.szDbgFileName
@@ -1286,29 +1281,29 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 								mov		edi,eax
 								invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
 								.if eax==-1
-									mov		buffer,'B'
-									invoke wsprintf,addr buffer[1],addr szFmtDec,[edi].PBITEM.id
-									invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+									;File is not open
+									mov		buffer1,'B'
+									invoke BinToDec,[edi].PBITEM.id,addr buffer1[1]
+									invoke GetPrivateProfileString,addr szIniProject,addr buffer1,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 									.while byte ptr tmpbuff
 										invoke GetItemInt,addr tmpbuff,0
 										lea		edx,[eax+1]
 										invoke DebugCommand,FUNC_BPADDLINE,edx,addr [edi].PBITEM.szitem
 									.endw
 								.else
+									;File is open
 									invoke GetWindowLong,eax,GWL_USERDATA
 									invoke GetWindowLong,eax,GWL_USERDATA
 									mov		esi,eax
 									invoke GetWindowLong,[esi].TABMEM.hedt,GWL_ID
 									.if eax==ID_EDITCODE
-										invoke strcpy,addr buffer1,addr [esi].TABMEM.filename
-										invoke RemovePath,addr buffer1,addr da.szProjectPath,addr buffer
 										mov		edi,-1
 										.while TRUE
 											invoke SendMessage,[esi].TABMEM.hedt,REM_NEXTBREAKPOINT,edi,0
 											.break .if eax==-1
 											mov		edi,eax
 											lea		edx,[eax+1]
-											invoke DebugCommand,FUNC_BPADDLINE,edx,addr buffer;[esi].TABMEM.filename
+											invoke DebugCommand,FUNC_BPADDLINE,edx,addr [esi].TABMEM.filename
 										.endw
 									.endif
 								.endif
@@ -1968,12 +1963,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			jmp		@b
 		.endif
 	.elseif eax==WM_USER+998
-		invoke strcpy,addr buffer,addr da.szProjectPath
-		invoke strcat,addr buffer,addr szBS
-		invoke strcat,addr buffer,lParam
-		invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+		invoke UpdateAll,UAM_ISOPENACTIVATE,lParam
 		.if eax==-1
-			invoke OpenTheFile,addr buffer,0
+			invoke OpenTheFile,lParam,0
 		.endif
 		invoke DebugCommand,FUNC_FILEOPEN,0,0
 	.elseif eax==WM_MEASUREITEM
@@ -2158,6 +2150,135 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 WndProc endp
+
+GetCodeTip proc uses ebx esi edi,lpBuff:DWORD
+	LOCAL	isinproc:ISINPROC
+
+	mov		esi,lpBuff
+	invoke PropertyFindExact,addr szCCTip,esi,TRUE
+	.if eax
+		;Property found
+		mov		byte ptr [esi],0
+		mov		ebx,eax
+		invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
+		mov		edi,eax
+		mov		eax,offset szNULL
+		.if edi=='P'
+			mov		eax,offset szWINAPI
+		.elseif edi=='p'
+			mov		eax,offset szPROC
+		.elseif edi=='S' || edi=='s'
+			mov		eax,offset szSTRUCT
+		.elseif edi=='d'
+			mov		eax,offset szGLOBAL
+		.elseif edi=='T'
+			mov		eax,offset szTYPE
+		.elseif edi=='c' || edi=='W'
+			mov		eax,offset szCONST
+		.elseif edi=='M'
+			mov		eax,offset szMESSAGE
+		.elseif edi=='l'
+			mov		eax,offset szLABEL
+		.else
+;			PrintHex edi
+		.endif
+		invoke strcpy,esi,eax
+		invoke strcat,esi,ebx
+		.if edi!='d' && edi!='l'
+			invoke strlen,ebx
+			lea		ebx,[ebx+eax+1]
+			.if byte ptr [ebx]
+				invoke strcat,esi,addr szComma
+				invoke strlen,esi
+				lea		edi,[esi+eax]
+				sub		eax,256
+				neg		eax
+				invoke strcpyn,edi,ebx,eax
+			.endif
+		.endif
+	.else
+		invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,edi,0
+		mov		isinproc.nLine,eax
+		invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+		mov		eax,[eax].TABMEM.pid
+		.if !eax
+			mov		eax,ha.hEdt
+		.endif
+		mov		isinproc.nOwner,eax
+		mov		isinproc.lpszType,offset szCCp
+		invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+		.if eax
+			mov		ebx,eax
+			;Skip proc name
+			invoke strlen,ebx
+			lea		ebx,[ebx+eax+1]
+			xor		eax,eax
+			.if byte ptr [ebx]
+				invoke PropertyIsInList,esi,ebx
+				.if eax!=-1
+					lea		ebx,[ebx+eax]
+					invoke strcpy,esi,addr szPARAM
+					invoke strlen,esi
+					lea		edi,[esi+eax]
+					.while byte ptr [ebx] && byte ptr [ebx]!=','
+						mov		al,[ebx]
+						mov		[edi],al
+						inc		ebx
+						inc		edi
+					.endw
+					mov		byte ptr [edi],0
+					mov		eax,TRUE
+				.else
+					xor		eax,eax
+				.endif
+			.endif
+			.if !eax
+				;Skip parameters
+				invoke strlen,ebx
+				lea		ebx,[ebx+eax+1]
+				;Skip return type
+				invoke strlen,ebx
+				lea		ebx,[ebx+eax+1]
+				.if byte ptr [ebx]
+					invoke PropertyIsInList,esi,ebx
+					.if eax!=-1
+						lea		ebx,[ebx+eax]
+						invoke strcpy,esi,addr szLOCAL
+						invoke strlen,esi
+						lea		edi,[esi+eax]
+						.while byte ptr [ebx] && byte ptr [ebx]!=','
+							mov		al,[ebx]
+							mov		[edi],al
+							inc		ebx
+							inc		edi
+						.endw
+						mov		byte ptr [edi],0
+					.else
+						mov		byte ptr [esi],0
+					.endif
+				.else
+					mov		byte ptr [esi],0
+				.endif
+			.endif
+		.else
+			mov		byte ptr [esi],0
+		.endif
+	.endif
+	.if byte ptr [esi]
+		invoke strlen,esi
+		.if eax==255
+			sub		eax,3
+			.while byte ptr [esi+eax]!=',' && eax
+				dec		eax
+			.endw
+		.endif
+		.if byte ptr [esi+eax]==','
+			mov		dword ptr [esi+eax+1],'...'
+		.endif
+	.endif
+	ret
+
+GetCodeTip endp
 
 RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	chrg:CHARRANGE
@@ -2404,140 +2525,35 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
 						mov		dbgtip.lpProc,eax
 						mov		dbgtip.lpFileName,offset da.szFileName
-;#####					invoke DebugCommand,FUNC_GETTOOLTIP,ha.hEdt,addr dbgtip
-						.if eax
-							; Show tooltip
-							mov		da.ti.lpszText,eax
-							call	Activate
-						.else
-							; Hide tooltip
-							call	DeActivate
+						invoke DebugCommand,FUNC_GETTOOLTIP,ha.hEdt,addr dbgtip
+						.if !eax
+							invoke GetCodeTip,addr buffer
+							xor		eax,eax
+							.if buffer
+								lea		eax,buffer
+							.endif
 						.endif
-					.else
-						; Hide tooltip
-						call	DeActivate
+						.if eax
+							;Show tooltip
+							mov		da.ti.lpszText,eax
+							invoke strcmp,da.ti.lpszText,addr szOldTip
+							.if eax
+								invoke strcpy,addr szOldTip,da.ti.lpszText
+								call	Activate
+							.endif
+							xor		eax,eax
+							jmp		Ex
+						.endif
 					.endif
+					;Hide tooltip
+					call	DeActivate
+					xor		eax,eax
+					jmp		Ex
 				.elseif da.edtopt.fopt & EDTOPT_SHOWTIP
 					.if buffer
-						invoke PropertyFindExact,addr szCCTip,addr buffer,TRUE
-						.if eax
-							mov		buffer,0
-							mov		ebx,eax
-							invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
-							mov		edi,eax
-							mov		eax,offset szNULL
-							.if edi=='P'
-								mov		eax,offset szWINAPI
-							.elseif edi=='p'
-								mov		eax,offset szPROC
-							.elseif edi=='S' || edi=='s'
-								mov		eax,offset szSTRUCT
-							.elseif edi=='d'
-								mov		eax,offset szGLOBAL
-							.elseif edi=='T'
-								mov		eax,offset szTYPE
-							.elseif edi=='c' || edi=='W'
-								mov		eax,offset szCONST
-							.elseif edi=='M'
-								mov		eax,offset szMESSAGE
-							.elseif edi=='l'
-								mov		eax,offset szLABEL
-							.else
-;								PrintHex edi
-							.endif
-							invoke strcpy,addr buffer,eax
-							invoke strcat,addr buffer,ebx
-							.if edi!='d' && edi!='l'
-								invoke strlen,ebx
-								lea		ebx,[ebx+eax+1]
-								.if byte ptr [ebx]
-									invoke strcat,addr buffer,addr szComma
-									invoke strlen,addr buffer
-									lea		edi,buffer[eax]
-									sub		eax,256
-									neg		eax
-									invoke strcpyn,edi,ebx,eax
-								.endif
-							.endif
-						.else
-							invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,edi,0
-							mov		isinproc.nLine,eax
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							mov		eax,[eax].TABMEM.pid
-							.if !eax
-								mov		eax,ha.hEdt
-							.endif
-							mov		isinproc.nOwner,eax
-							mov		isinproc.lpszType,offset szCCp
-							invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
-							.if eax
-								mov		ebx,eax
-								;Skip proc name
-								invoke strlen,ebx
-								lea		ebx,[ebx+eax+1]
-								xor		eax,eax
-								.if byte ptr [ebx]
-									invoke PropertyIsInList,addr buffer,ebx
-									.if eax!=-1
-										lea		ebx,[ebx+eax]
-										invoke strcpy,addr buffer,addr szPARAM
-										invoke strlen,addr buffer
-										lea		edi,buffer[eax]
-										.while byte ptr [ebx] && byte ptr [ebx]!=','
-											mov		al,[ebx]
-											mov		[edi],al
-											inc		ebx
-											inc		edi
-										.endw
-										mov		byte ptr [edi],0
-										mov		eax,TRUE
-									.else
-										xor		eax,eax
-									.endif
-								.endif
-								.if !eax
-									;Skip parameters
-									invoke strlen,ebx
-									lea		ebx,[ebx+eax+1]
-									;Skip return type
-									invoke strlen,ebx
-									lea		ebx,[ebx+eax+1]
-									.if byte ptr [ebx]
-										invoke PropertyIsInList,addr buffer,ebx
-										.if eax!=-1
-											lea		ebx,[ebx+eax]
-											invoke strcpy,addr buffer,addr szLOCAL
-											invoke strlen,addr buffer
-											lea		edi,buffer[eax]
-											.while byte ptr [ebx] && byte ptr [ebx]!=','
-												mov		al,[ebx]
-												mov		[edi],al
-												inc		ebx
-												inc		edi
-											.endw
-											mov		byte ptr [edi],0
-										.else
-											mov		buffer,0
-										.endif
-									.else
-										mov		buffer,0
-									.endif
-								.endif
-							.else
-								mov		buffer,0
-							.endif
-						.endif
+						invoke GetCodeTip,addr buffer
 						.if buffer
-							invoke strlen,addr buffer
-							.if eax==sizeof buffer-1
-								sub		eax,3
-								.while buffer[eax]!=',' && eax
-									dec		eax
-								.endw
-							.endif
-							.if buffer[eax]==','
-								mov		dword ptr buffer[eax+1],'...'
-							.endif
+							;Show tooltip
 							invoke strcmp,addr buffer,addr szOldTip
 							.if eax
 								invoke strcpy,addr szOldTip,addr buffer
@@ -2545,12 +2561,14 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 								mov		da.ti.lpszText,eax
 								call	Activate
 							.endif
-						.else
-							call	DeActivate
+							xor		eax,eax
+							jmp		Ex
 						.endif
-					.else
-						call	DeActivate
 					.endif
+					;Hide tooltip
+					call	DeActivate
+					xor		eax,eax
+					jmp		Ex
 				.endif
 			.endif
 		.endif

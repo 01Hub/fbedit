@@ -450,6 +450,7 @@ EnumerateSymbolsCallback endp
 
 EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
+	LOCAL	fptr:DWORD
 
 	mov		ebx,pSourceFile
 	mov		eax,dbg.inxsource
@@ -459,10 +460,8 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	lea		edi,[edi+eax]
 	mov		eax,dbg.inxsource
 	mov		[edi].DEBUGSOURCE.FileID,eax
-;	invoke GetCurrentDirectory,sizeof DEBUGSOURCE.FileName,addr [edi].DEBUGSOURCE.FileName
-;	invoke strcat,addr [edi].DEBUGSOURCE.FileName,addr szBS
-;	invoke strcat,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
-	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
+	invoke GetFullPathName,[ebx].SOURCEFILE.FileName,MAX_PATH,addr buffer,addr fptr
+	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,addr buffer
 	inc		dbg.inxsource
 	.if !fProject
 		lea		eax,[edi].DEBUGSOURCE.FileName
@@ -486,6 +485,7 @@ EnumSourceFilesCallback endp
 
 EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
+	LOCAL	fptr:DWORD
 
 	mov		ebx,pLineInfo
 	; Find source file
@@ -497,7 +497,8 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 		mul		edx
 		mov		esi,dbg.hMemSource
 		lea		esi,[esi+eax]
-		invoke strcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
+		invoke GetFullPathName,addr [ebx].SRCCODEINFO.FileName,MAX_PATH,addr buffer,addr fptr
+		invoke strcmpi,addr [esi].DEBUGSOURCE.FileName,addr buffer
 		.if !eax
 			mov		eax,dbg.inxline
 			mov		edx,sizeof DEBUGLINE

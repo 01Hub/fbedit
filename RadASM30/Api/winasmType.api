@@ -1,4 +1,5 @@
-ABORTPROC,4|Pointer to an application-defined callback function that the operating system calls when a print job is to be cancelled during spooling. See AbortProc for information on functions of this type.
+T3
+AbortProc,4|Pointer to an application-defined callback function that the operating system calls when a print job is to be cancelled during spooling. See AbortProc for information on functions of this type.
 ACMDRIVERENUMCB,4|Pointer to an application-defined callback function that is used with the acmDriverEnum function. See acmDriverEnumCallback for information on functions of this type.
 ACMDRIVERPROC,4|Pointer to an application-defined callback function that is used with an installable audio compression manager (ACM) driver. See acmDriverProc for information on functions of this type.
 ACMFILTERCHOOSEHOOKPROC,4|Pointer to an application-defined function that hooks the acmFilterChoose dialog box. See acmFilterChooseHookProc for information on functions of this type.

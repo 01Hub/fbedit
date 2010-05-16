@@ -101,10 +101,7 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		invoke CheckDlgButton,hWin,IDC_CHKPOCMDEXE,eax
 		invoke SetDlgItemText,hWin,IDC_EDTPOCMDEXE,addr da.szCmdExe
 		invoke SetDlgItemText,hWin,IDC_EDTPOCOMMANDLINE,addr da.szCommandLine
-		invoke GetPrivateProfileString,addr szIniProject,addr szIniApi,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
-		.if eax
-			invoke SetDlgItemText,hWin,IDC_EDTPOAPI,addr tmpbuff
-		.endif
+		invoke SetDlgItemText,hWin,IDC_EDTPOAPI,addr da.szPOApiFiles
 		call	UpdateBtnDelete
 		invoke GetDlgItem,hWin,IDOK
 		invoke EnableWindow,eax,FALSE
@@ -147,6 +144,7 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke GetDlgItemText,hWin,IDC_EDTPOCMDEXE,addr da.szCmdExe,sizeof da.szCmdExe
 				invoke IsDlgButtonChecked,hWin,IDC_CHKPOCMDEXE
 				mov		da.fCmdExe,eax
+				invoke GetDlgItemText,hWin,IDC_EDTPOAPI,addr da.szPOApiFiles,sizeof da.szPOApiFiles
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL

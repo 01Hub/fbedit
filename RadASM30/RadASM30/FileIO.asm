@@ -231,6 +231,9 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			invoke LoadTextFile,hEdt,lpFileName
 			invoke SendMessage,hEdt,REM_SETBLOCKS,0,0
 			invoke SendMessage,hEdt,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
+			.if da.fDebugging
+				invoke SendMessage,hEdt,REM_READONLY,0,TRUE
+			.endif
 		.elseif eax==ID_EDITTEXT
 			invoke strcpy,addr da.szFileName,lpFileName
 			invoke MakeMdiCldWin,ID_EDITTEXT,pid
@@ -285,14 +288,10 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 				.if eax
 					invoke strcpy,addr da.szProjectFile,lpFileName
 					invoke strcpy,addr da.szProjectPath,addr da.szProjectFile
-					invoke strlen,addr da.szProjectPath
-					.while da.szProjectPath[eax]!='\' && eax
-						dec		eax
-					.endw
-					mov		da.szProjectPath[eax],0
+					invoke RemoveFileName,addr da.szProjectPath
 					mov		da.fProject,TRUE
 					;Assembler
-					invoke GetPrivateProfileString,addr szIniSession,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProjectFile
+					invoke GetPrivateProfileString,addr szIniProject,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProjectFile
 					.if !eax
 						mov		dword ptr da.szAssembler,'msam'
 						mov		dword ptr da.szAssembler[4],0

@@ -144,16 +144,11 @@ GetCodeComplete proc uses ebx esi edi
 	.endif
 	.while tmpbuff
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
-		movzx	ebx,buffer
-		invoke GetItemInt,addr tmpbuff,2
-		shl		eax,8
-		or		ebx,eax
-		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
 		.if ebx && buffer
 			invoke strcpy,addr apifile,addr da.szAppPath
 			invoke strcat,addr apifile,addr szBSApiBS
 			invoke strcat,addr apifile,addr buffer
-			invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,ebx,addr apifile
+			invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYFILE,0,addr apifile
 		.endif
 	.endw
 	;Add 'C' list to 'W' list
