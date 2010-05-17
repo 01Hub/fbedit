@@ -1031,6 +1031,8 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 IndentComment endp
 
 CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[32]:BYTE
 
 	push	0
 	push	0
@@ -1113,6 +1115,33 @@ CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_FORMAT_SNAP
 		.endif
+	.elseif eax==4
+		;Project
+		mov		mii.cbSize,sizeof MENUITEMINFO
+		mov		mii.fMask,MIIM_SUBMENU
+		invoke GetMenuItemInfo,ha.hMenu,IDM_PROJECT_LANGUAGE,FALSE,addr mii
+		mov		eax,mii.hSubMenu
+		mov		hMnu,eax
+		xor		edi,edi
+		.while edi<20
+			mov		mii.cbSize,sizeof MENUITEMINFO
+			mov		mii.fMask,MIIM_TYPE
+			lea		eax,buffer
+			mov		mii.dwTypeData,eax
+			mov		mii.cch,sizeof buffer
+			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
+			invoke GetMenuItemInfo,hMnu,edx,FALSE,addr mii
+			.break .if !eax
+			invoke strcmp,addr buffer,addr da.szAssembler
+			.if !eax
+				push	TRUE
+			.else
+				push	FALSE
+			.endif
+			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
+			push	edx
+			inc		edi
+		.endw
 	.endif
 	.while TRUE
 		pop		edx
@@ -1532,6 +1561,18 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 		push	edi
 		push	IDM_PROJECT_REMOVEGROUP
+		mov		eax,TRUE
+		.if da.fProject
+			xor		eax,eax
+		.endif
+		xor		edi,edi
+		.while edi<20
+			push	eax
+			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
+			push	edx
+			inc		edi
+		.endw
+		invoke CheckMenu,hMnu,nPos
 	.elseif eax==5
 		;Resource
 		xor		eax,eax

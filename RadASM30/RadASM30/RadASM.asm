@@ -215,6 +215,24 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateCodeComplete
 		;Get assemblers
 		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr da.szAssemblers,sizeof da.szAssemblers,addr da.szRadASMIni
+		mov		mii.cbSize,sizeof MENUITEMINFO
+		mov		mii.fMask,MIIM_SUBMENU
+		invoke GetMenuItemInfo,ha.hMenu,IDM_PROJECT_LANGUAGE,FALSE,addr mii
+		mov		edi,mii.hSubMenu
+		xor		ebx,ebx
+		.while ebx<20
+			lea		eax,[ebx+IDM_PROJECT_LANGUAGE_START]
+			invoke DeleteMenu,edi,eax,MF_BYCOMMAND
+			inc		ebx
+		.endw
+		invoke strcpy,addr tmpbuff,addr da.szAssemblers
+		xor		ebx,ebx
+		.while tmpbuff && ebx<20
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+			lea		edx,[ebx+IDM_PROJECT_LANGUAGE_START]
+			invoke AppendMenu,edi,MF_STRING,edx,addr buffer
+			inc		ebx
+		.endw
 		;Get default assembler
 		invoke strcpy,addr tmpbuff,addr da.szAssemblers
 		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler,sizeof da.szAssembler
@@ -1001,6 +1019,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.elseif eax==IDM_PROJECTTEMPLATE
 				.if da.fProject
 					invoke DialogBoxParam,ha.hInstance,IDD_DLGNEWTEMPLATE,hWin,offset NewTemplateDialogProc,0
+				.endif
+			.elseif eax>=IDM_PROJECT_LANGUAGE_START && eax<IDM_PROJECT_LANGUAGE_START+20
+				.if !da.fProject && !ha.hMdi
+					mov		edx,eax
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_TYPE
+					mov		mii.dwTypeData,offset da.szAssembler
+					mov		mii.cch,sizeof buffer
+					invoke GetMenuItemInfo,ha.hMenu,edx,FALSE,addr mii
+					invoke OpenAssembler
 				.endif
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
 				invoke SendMessage,ha.hEdt,PRO_ADDITEM,TPE_DIALOG,TRUE
