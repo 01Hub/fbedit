@@ -889,7 +889,6 @@ ParseFile proc lpFileName:DWORD,pid:DWORD
 			invoke CloseHandle,hFile
 			invoke SendMessage,ha.hProperty,PRM_PARSEFILE,pid,hMem
 			invoke GlobalFree,hMem
-			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 		.endif
 	.endif
 	ret

@@ -133,7 +133,16 @@ GetCodeComplete proc uses ebx esi edi
 	LOCAL	buffer[256]:BYTE
 	LOCAL	apifile[MAX_PATH]:BYTE
 
-	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniTrig,NULL,addr da.szCCTrig,sizeof da.szCCTrig,addr da.szAssemblerIni
+	;Get invoke
+	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniTrig,NULL,addr da.szCCTrig,sizeof da.szCCTrig-1,addr da.szAssemblerIni
+	mov		edi,offset da.szCCTrig
+	.while byte ptr [edi]
+		.if byte ptr [edi]==','
+			mov		byte ptr [edi],0
+		.endif
+		inc		edi
+	.endw
+	mov		byte ptr [edi+1],0
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniInc,NULL,addr da.szCCInc,sizeof da.szCCInc,addr da.szAssemblerIni
 	invoke GetPrivateProfileString,addr szIniCodeComplete,addr szIniLib,NULL,addr da.szCCLib,sizeof da.szCCLib,addr da.szAssemblerIni
 	;Load api files
@@ -558,6 +567,7 @@ OpenAssembler proc uses ebx esi edi
 		.endw
 		;Reset block defs
 		invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,0
+		;Set code blocks
 		mov		esi,offset da.rabd
 		.while [esi].RABLOCKDEF.lpszStart
 			invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,esi

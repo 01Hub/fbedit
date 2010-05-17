@@ -1653,6 +1653,8 @@ GetProjectFiles proc uses ebx esi edi
 			.endif
 			inc		esi
 		.endw
+		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+		invoke UpdateWindow,ha.hProperty
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
 		invoke SetProjectTab,1
 		;Get open files
@@ -2023,10 +2025,11 @@ CloseProject proc
 		.endif
 		invoke UpdateAll,UAM_CLOSEALL,0
 		invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+		invoke UpdateWindow,ha.hProperty
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,0,0
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
 		invoke SetProjectTab,0
-		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 		mov		da.fProject,0
 		mov		da.szProjectFile,0
 		mov		da.szProjectPath,0

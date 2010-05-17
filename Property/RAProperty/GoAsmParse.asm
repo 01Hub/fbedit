@@ -767,6 +767,9 @@ SaveParam1:
 		call	SaveName
 		mov		byte ptr [edi-1],','
 		jmp		SaveParam1
+	.elseif byte ptr [esi]==','
+		inc		esi
+		jmp		SaveParam1
 	.endif
 	.if byte ptr [edi-1]==','
 		dec		edi

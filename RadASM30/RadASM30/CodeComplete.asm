@@ -709,6 +709,32 @@ IsLineInvoke proc uses ebx,cpline:DWORD
 	mov		ebx,cpline
 	call	SkipWhiteSpace
 	mov		ecx,offset da.szCCTrig
+	.while byte ptr [ecx]
+		push	ecx
+		push	edx
+		push	ebx
+		call	TestWord
+		pop		ebx
+		pop		edx
+		pop		ecx
+		.break .if eax
+		;Next szCCTrig
+		.while byte ptr [ecx]
+			inc		ecx
+		.endw
+		inc		ecx
+		.break .if !byte ptr [ecx]
+	.endw
+	ret
+
+SkipWhiteSpace:
+	.while (byte ptr [edx]==VK_TAB || byte ptr [edx]==VK_SPACE) && ebx
+		inc		edx
+		dec		ebx
+	.endw
+	retn
+
+TestWord:
 	dec		ecx
 	dec		edx
 	inc		ebx
@@ -732,19 +758,16 @@ IsLineInvoke proc uses ebx,cpline:DWORD
 	movsx	eax,al
 	.if !eax
 		call	SkipWhiteSpace
+		.if byte ptr [edx]=='('
+			inc		edx
+		.endif
+		call	SkipWhiteSpace
 		mov		eax,edx
 		sub		eax,offset LineTxt
 	.else
   @@:
 		xor		eax,eax
 	.endif
-	ret
-
-SkipWhiteSpace:
-	.while (byte ptr [edx]==VK_TAB || byte ptr [edx]==VK_SPACE) && ebx
-		inc		edx
-		dec		ebx
-	.endw
 	retn
 
 IsLineInvoke endp

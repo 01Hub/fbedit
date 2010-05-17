@@ -2781,7 +2781,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke SetFocus,ha.hEdt
 		.elseif eax==wParam
 			;Deactivate
-			.if da.fChanged
+			.if da.fChanged && wParam
 				mov		da.fChanged,FALSE
 				invoke GetWindowLong,wParam,GWL_USERDATA
 				invoke GetWindowLong,eax,GWL_USERDATA

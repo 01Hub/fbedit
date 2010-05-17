@@ -160,7 +160,7 @@ ProductVer4Range=0
 12=0,0,0,0,2850
 13=0,0,0,0,5874
 14=0,0,0,0,146
-15=0,0,0,0,15746
+15=0,0,0,0,15465
 [BookMark]
 0=
 1=
@@ -178,7 +178,7 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,11,13,2,7,4,9,15
 [PTimer]
-PTimer=186377811
+PTimer=186570254
 [Find]
 1="[ebx].RAPROPERTY.nlanguage"
 2="M"
