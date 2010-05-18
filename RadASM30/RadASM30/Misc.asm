@@ -3174,7 +3174,7 @@ PropertyIsInList proc uses ebx esi edi,lpWord:DWORD,lpList:DWORD
 			inc		ecx
 			inc		edi
 		.endw
-		.if !byte ptr [esi+ecx] && (byte ptr [edi]==':' || byte ptr [edi]==',' || byte ptr [edi]=='[')
+		.if !byte ptr [esi+ecx] && (byte ptr [edi]==':' || byte ptr [edi]==',' || byte ptr [edi]=='[' || !byte ptr [edi])
 			sub		ebx,lpList
 			mov		eax,ebx
 			jmp		Ex

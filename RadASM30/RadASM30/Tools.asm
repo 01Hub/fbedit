@@ -470,7 +470,7 @@ DoReBar proc uses ebx esi edi
 			mov		rbbi.fStyle,eax
 			mov		rbbi.lx,edi
 			mov		rbbi.cyMinChild,22
-			mov		rbbi.cxMinChild,123
+			mov		rbbi.cxMinChild,132
 			mov		rbbi.cxIdeal,123
 			mov		eax,ha.hTbrFile
 			mov		rbbi.hwndChild,eax
@@ -486,7 +486,7 @@ DoReBar proc uses ebx esi edi
 			mov		rbbi.fStyle,eax
 			mov		rbbi.lx,edi
 			mov		rbbi.cyMinChild,22
-			mov		rbbi.cxMinChild,199
+			mov		rbbi.cxMinChild,209
 			mov		rbbi.cxIdeal,199
 			mov		eax,ha.hTbrEdit1
 			mov		rbbi.hwndChild,eax
@@ -501,7 +501,7 @@ DoReBar proc uses ebx esi edi
 			and		eax,-1 xor RBBS_HIDDEN
 			mov		rbbi.fStyle,eax
 			mov		rbbi.lx,edi
-			mov		rbbi.cxMinChild,193
+			mov		rbbi.cxMinChild,200
 			mov		rbbi.cxIdeal,193
 			mov		eax,ha.hTbrEdit2
 			mov		rbbi.hwndChild,eax
@@ -517,7 +517,7 @@ DoReBar proc uses ebx esi edi
 			mov		rbbi.fStyle,eax
 			mov		rbbi.lx,edi
 			mov		rbbi.cyMinChild,22
-			mov		rbbi.cxMinChild,47
+			mov		rbbi.cxMinChild,55
 			mov		rbbi.cxIdeal,47
 			mov		eax,ha.hTbrView
 			mov		rbbi.hwndChild,eax
@@ -533,7 +533,7 @@ DoReBar proc uses ebx esi edi
 			mov		rbbi.fStyle,eax
 			mov		rbbi.lx,edi
 			mov		rbbi.cyMinChild,22
-			mov		rbbi.cxMinChild,101
+			mov		rbbi.cxMinChild,109
 			mov		rbbi.cxIdeal,101
 			mov		eax,ha.hTbrMake
 			mov		rbbi.hwndChild,eax

@@ -264,253 +264,287 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
 	LOCAL	nWords:DWORD
 	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer1[256]:BYTE
 	LOCAL	isinproc:ISINPROC
 	LOCAL	lpLineWord:DWORD
 	LOCAL	lpReg:DWORD
 	LOCAL	ccft:FINDTEXTEX
 
 	mov		nCount,0
-	mov		edi,ha.hCC
-	invoke SendMessage,edi,CCM_CLEAR,0,0
-	invoke SendMessage,edi,WM_SETREDRAW,FALSE,0
+	invoke SendMessage,ha.hCC,CCM_CLEAR,0,0
+	invoke SendMessage,ha.hCC,WM_SETREDRAW,FALSE,0
 	mov		eax,lpWord
 	mov		edx,lpApiType
 	.if da.cctype==CCTYPE_STRUCT
-		; rect.left
-		; [edx].RECT.left
-		; RECT.left[edx]
-		; [edx][RECT.left]
-		; [edx + RECT.left]
-		; [edx.RECT.left]
-		; (RECT ptr [edx]).left
-		; assume edx:ptr RECT
-		; [edx].left
-		mov		esi,offset LineTxt
-		mov		edi,esi
-		xor		edx,edx
-		mov		nWords,edx
-		mov		lpReg,edx
-		.while byte ptr [esi]
-			mov		al,[esi]
-			.if al==VK_SPACE || al==VK_TAB || al==','
-				.if !edx
-					mov		edi,offset LineTxt
-					mov		nWords,0
-				.elseif byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
+		mov		eax,da.nAsm
+		.if eax==nMASM
+			; Find start
+		  NxMASM0:
+			mov		esi,offset LineTxt
+			mov		edi,esi
+			invoke strlen,esi
+			.while eax
+				.if byte ptr [esi+eax]==')'
+					lea		edx,[esi+eax]
+					push	edx
+					.while byte ptr [esi+eax-1]!='(' && eax
+						dec		eax
+					.endw
+					.while byte ptr [esi+eax]==' ' || byte ptr [esi+eax]==VK_TAB
+						inc		eax
+					.endw
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=VK_TAB
+						mov		dl,[esi+eax]
+						mov		[edi],dl
+						inc		eax
+						inc		edi
+					.endw
+					pop		esi
+					invoke strcpy,edi,addr [esi+1]
+					jmp		NxMASM0
+				.elseif byte ptr [esi+eax]==']'
+					lea		edx,[esi+eax]
+					push	edx
+					.while byte ptr [esi+eax-1]!='['
+						dec		eax
+					.endw
+					.while byte ptr [esi+eax]==' ' || byte ptr [esi+eax]==VK_TAB
+						inc		eax
+					.endw
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=VK_TAB && byte ptr [esi+eax]!=']'
+						mov		dl,[esi+eax]
+						mov		[edi],dl
+						inc		eax
+						inc		edi
+					.endw
+					pop		esi
+					invoke strcpy,edi,addr [esi+1]
+					jmp		NxMASM0
 				.endif
-			.elseif al=='('
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al==')'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='['
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al==']'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='+'
-				inc		edx
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.elseif al=='.'
-				.if byte ptr [edi-1]
-					inc		nWords
-					mov		byte ptr [edi],0
-					inc		edi
-				.endif
-			.else
-				mov		[edi],al
-				inc		edi
-			.endif
-			inc		esi
-		.endw
-		mov		word ptr [edi],0
-		.if byte ptr [edi-1]
-			inc		nWords
-		.endif
-		.if nWords
-			mov		lpLineWord,0
-			mov		buffer,0
-			mov		edi,offset LineTxt
-			.while byte ptr [edi]
-				invoke IsWordReg,edi
-				.if eax==1
-					; reg
-					mov		lpReg,edi
-				.elseif eax==2
-					; ptr
-				.else
-					.if !lpLineWord
-						mov		lpLineWord,edi
-					.endif
-					invoke IsWordStruct,edi
-					.break .if eax
-				.endif
-				invoke strlen,edi
-				lea		edi,[edi+eax+1]
-				xor		eax,eax
+				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]==VK_TAB
+				dec		eax
 			.endw
-			.if eax
-				; [edx].RECT.left
-				; RECT.left[edx]
-				; [edx][RECT.left]
-				; [edx + RECT.left]
-				; [edx.RECT.left]
-				; (RECT ptr [edx]).left
-				invoke strcpy,addr buffer,edi
-			.elseif lpLineWord && !lpReg
-				;LOCAL rect:RECT
-				; rect.left
-				mov		edi,lpLineWord
-				mov		eax,da.nLastLine
-				mov		isinproc.nLine,eax
-				mov		eax,ha.hMdi
-				.if da.fProject
-					invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-					mov		eax,[eax].TABMEM.pid
+			lea		esi,[esi+eax]
+			; Parse elements into zero terminated parts
+			xor		ecx,ecx
+			.while byte ptr [esi+ecx]
+				mov		al,[esi+ecx]
+				.if al=='.'
+					mov		al,0
 				.endif
-				mov		isinproc.nOwner,eax
-				mov		isinproc.lpszType,offset szCCp
-				invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+				mov		[edi+ecx],al
+				inc		ecx
+			.endw
+			mov		word ptr [edi+ecx],0
+			.if LineTxt
+				mov		esi,offset LineTxt
+				invoke strcpy,addr buffer,esi
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke IsWordReg,addr buffer
 				.if eax
-					mov		edx,eax
-					invoke IsWordLocalStruct,edx,edi,addr buffer
-				.endif
-				.if !eax
-					; rect	RECT <>
-					; rect.left
-					invoke IsWordDataStruct,edi,addr buffer
-				.endif
-			.elseif lpReg
-				; assume edx:ptr RECT
-				; [edx].left
-				invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr ccft.chrg
-				mov		ccft.chrg.cpMax,0
-				invoke strcpy,addr buffer,offset szCCAssume
-				invoke strcat,addr buffer,lpReg
-				lea		eax,buffer
-				mov		ccft.lpstrText,eax
-			  @@:
-				invoke SendMessage,ha.hEdt,EM_FINDTEXTEX,FR_IGNOREWHITESPACE,addr ccft
-				.if eax!=-1
-					invoke SendMessage,ha.hEdt,REM_ISCHARPOS,ccft.chrgText.cpMax,0
-					.if eax
+					; assume edx:ptr RECT
+					; [edx].left
+					invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr ccft.chrg
+					mov		ccft.chrg.cpMax,0
+					invoke strcpy,addr buffer1,offset szCCAssume
+					invoke strcat,addr buffer1,addr buffer
+					lea		eax,buffer1
+					mov		ccft.lpstrText,eax
+				  NxMASM2:
+					invoke SendMessage,ha.hEdt,EM_FINDTEXTEX,FR_IGNOREWHITESPACE,addr ccft
+					.if eax!=-1
 						mov		eax,ccft.chrgText.cpMin
 						dec		eax
 						mov		ccft.chrg.cpMin,eax
-						jmp		@b
-					.endif
-					invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,ccft.chrgText.cpMin,0
-					mov		edx,eax
-					invoke SendMessage,ha.hEdt,EM_GETLINE,edx,addr buffer
-					mov		buffer[eax],0
-					xor		eax,eax
-					.while buffer[eax] && buffer[eax]!=':'
-						inc		eax
-					.endw
-					.if buffer[eax]!=':'
-						jmp		@b
-					.endif
-					inc		eax
-					.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
-						inc		eax
-					.endw
-					.if !buffer[eax]
-						jmp		@b
-					.endif
-					mov		edx,dword ptr buffer[eax]
-					and		edx,5F5F5Fh
-					.if edx!='RTP'
-						jmp		@b
-					.endif
-					add		eax,3
-					.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
-						inc		eax
-					.endw
-					lea		esi,buffer[eax]
-					lea		edi,buffer
-					.while TRUE
-						movzx	eax,byte ptr [esi]
-						invoke GetCharType,eax
-						.break .if eax!=1
-						mov		al,[esi]
-						mov		[edi],al
-						inc		esi
-						inc		edi
-					.endw
-					mov		byte ptr [edi],0
-					mov		edi,lpReg
-				.else
-					; [edx].RECT
-					mov		buffer,0
-					mov		edi,ha.hCC
-					invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
-					.while TRUE
-						.break .if !eax
-						push	eax
-						invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
-						.if eax=='S'
-							mov		ecx,4
-						.else
-							mov		ecx,5
+						invoke SendMessage,ha.hEdt,REM_ISCHARPOS,ccft.chrgText.cpMax,0
+						.if eax
+							jmp		NxMASM2
 						.endif
-						pop		edx
-						invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
-						inc		nCount
-						invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
-					.endw
+						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,ccft.chrgText.cpMin,0
+						mov		edx,eax
+						mov		word ptr buffer,250
+						invoke SendMessage,ha.hEdt,EM_GETLINE,edx,addr buffer
+						mov		buffer[eax],0
+						xor		eax,eax
+						.while buffer[eax] && buffer[eax]!=':'
+							inc		eax
+						.endw
+						.if buffer[eax]!=':'
+							jmp		NxMASM2
+						.endif
+						inc		eax
+						.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+							inc		eax
+						.endw
+						.if !buffer[eax]
+							jmp		NxMASM2
+						.endif
+						mov		edx,dword ptr buffer[eax]
+						and		edx,5F5F5Fh
+						.if edx!='RTP'
+							jmp		NxMASM2
+						.endif
+						add		eax,3
+						.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+							inc		eax
+						.endw
+						push	esi
+						lea		esi,buffer[eax]
+						lea		edi,buffer
+						.while TRUE
+							movzx	eax,byte ptr [esi]
+							invoke GetCharType,eax
+							.break .if eax!=1
+							mov		al,[esi]
+							mov		[edi],al
+							inc		esi
+							inc		edi
+						.endw
+						mov		byte ptr [edi],0
+						pop		esi
+						jmp		NxMASM4
+					.else
+						; [edx].RECT
+						.if !byte ptr [esi]
+							mov		buffer,0
+							invoke SendMessage,ha.hProperty,PRM_FINDFIRST,offset szCCSs,lpWord
+							.while TRUE
+								.break .if !eax
+								push	eax
+								invoke SendMessage,ha.hProperty,PRM_FINDGETTYPE,0,0
+								.if eax=='S'
+									mov		ecx,4
+								.else
+									mov		ecx,5
+								.endif
+								pop		edx
+								invoke SendMessage,ha.hCC,CCM_ADDITEM,ecx,edx
+								inc		nCount
+								invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+							.endw
+						.else
+							invoke strcpy,addr buffer,esi
+							invoke strlen,esi
+							lea		esi,[esi+eax+1]
+							jmp		NxMASM4
+						.endif
+					.endif
+				.else
+					invoke IsWordDataStruct,addr buffer,addr buffer1
+					.if eax
+						invoke strcpy,addr buffer,addr buffer1
+						jmp		NxMASM4
+					.else
+						mov		eax,da.nLastLine
+						mov		isinproc.nLine,eax
+						mov		eax,ha.hMdi
+						.if da.fProject
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							mov		eax,[eax].TABMEM.pid
+						.endif
+						mov		isinproc.nOwner,eax
+						mov		isinproc.lpszType,offset szCCp
+						invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+						.if eax
+							mov		edx,eax
+							invoke IsWordLocalStruct,edx,addr buffer,addr buffer1
+							.if eax
+								invoke strcpy,addr buffer,addr buffer1
+							.endif
+						.endif
+					  NxMASM4:
+						invoke IsWordStruct,addr buffer
+						.if eax
+							.if byte ptr [esi]
+								invoke IsStructItemStruct,addr buffer,esi
+								.if eax
+									invoke strlen,esi
+									lea		esi,[esi+eax+1]
+									jmp		NxMASM4
+								.endif
+							.else
+								push	eax
+								invoke strlen,eax
+								pop		edx
+								lea		edx,[edx+eax+1]
+								invoke AddList,edx,lpWord,15
+								mov		nCount,eax
+							.endif
+						.endif
+					.endif
 				.endif
 			.endif
-			.if buffer
-				invoke strlen,edi
-				inc		eax
-				lea		edi,[edi+eax]
-				.while byte ptr [edi]
-					invoke IsWordReg,edi
-					.if !eax
-						invoke IsStructItemStruct,addr buffer,edi
-						.break .if eax
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-						xor		eax,eax
-					.else
-						invoke strlen,edi
-						lea		edi,[edi+eax+1]
-					.endif
-				.endw
+		.elseif eax==nGOASM
+			; Find start
+			mov		esi,offset LineTxt
+			mov		edi,esi
+			invoke strlen,esi
+			.while byte ptr [esi+eax-1]!='[' && byte ptr [esi+eax-1]!='+' && byte ptr [esi+eax-1]!=',' && byte ptr [esi+eax-1]!=' ' && byte ptr [esi+eax-1]!=VK_TAB && eax
+				dec		eax
+			.endw
+			lea		esi,[esi+eax]
+			; Parse elements into zero terminated parts
+			xor		ecx,ecx
+			.while byte ptr [esi+ecx]
+				mov		al,[esi+ecx]
+				.if al=='.'
+					mov		al,0
+				.endif
+				mov		[edi+ecx],al
+				inc		ecx
+			.endw
+			mov		word ptr [edi+ecx],0
+			.if LineTxt
+				; LOCAL ms:MYSTRUCT
+				; mov D[ms.aa],0
+				; lea eax,ms
+				; mov D[eax+MYSTRUCT.aa],0
+				; mov eax,RECT.left
+				mov		esi,offset LineTxt
+				invoke strcpy,addr buffer,esi
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke IsWordDataStruct,addr buffer,addr buffer1
 				.if eax
+					invoke strcpy,addr buffer,addr buffer1
+					jmp		@f
+				.else
+					mov		eax,da.nLastLine
+					mov		isinproc.nLine,eax
+					mov		eax,ha.hMdi
+					.if da.fProject
+						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						mov		eax,[eax].TABMEM.pid
+					.endif
+					mov		isinproc.nOwner,eax
+					mov		isinproc.lpszType,offset szCCp
+					invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+					.if eax
+						mov		edx,eax
+						invoke IsWordLocalStruct,edx,addr buffer,addr buffer1
+						.if eax
+							invoke strcpy,addr buffer,addr buffer1
+						.endif
+					.endif
+				  @@:
 					invoke IsWordStruct,addr buffer
 					.if eax
-						push	eax
-						invoke strlen,eax
-						pop		edx
-						lea		edx,[edx+eax+1]
-						invoke AddList,edx,lpWord,15
-						mov		nCount,eax
+						.if byte ptr [esi]
+							invoke IsStructItemStruct,addr buffer,esi
+							.if eax
+								invoke strlen,esi
+								lea		esi,[esi+eax+1]
+								jmp		@b
+							.endif
+						.else
+							push	eax
+							invoke strlen,eax
+							pop		edx
+							lea		edx,[edx+eax+1]
+							invoke AddList,edx,lpWord,15
+							mov		nCount,eax
+						.endif
 					.endif
 				.endif
 			.endif
@@ -538,7 +572,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				mov		ecx,6
 			.endif
 			pop		edx
-			invoke SendMessage,edi,CCM_ADDITEM,ecx,edx
+			invoke SendMessage,ha.hCC,CCM_ADDITEM,ecx,edx
 			inc		nCount
 			invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 		.endw
@@ -571,7 +605,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 							call Filter
 							.if !eax
 								invoke strcpy,ebx,edx
-								invoke SendMessage,edi,CCM_ADDITEM,8,ebx
+								invoke SendMessage,ha.hCC,CCM_ADDITEM,8,ebx
 								invoke strlen,ebx
 								lea		ebx,[ebx+eax+1]
 								inc		nCount
@@ -598,7 +632,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 						call Filter
 						.if !eax
 							invoke strcpy,ebx,edx
-							invoke SendMessage,edi,CCM_ADDITEM,9,ebx
+							invoke SendMessage,ha.hCC,CCM_ADDITEM,9,ebx
 							invoke strlen,ebx
 							lea		ebx,[ebx+eax+1]
 							inc		nCount
@@ -610,14 +644,13 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			.endif
 		.endif
 	.endif
-	mov		edi,ha.hCC
 	.if nCount
 		.if da.cctype!=CCTYPE_STRUCT
-			invoke SendMessage,edi,CCM_SORT,FALSE,0
+			invoke SendMessage,ha.hCC,CCM_SORT,FALSE,0
 		.endif
-		invoke SendMessage,edi,CCM_SETCURSEL,0,0
+		invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
 	.endif
-	invoke SendMessage,edi,WM_SETREDRAW,TRUE,0
+	invoke SendMessage,ha.hCC,WM_SETREDRAW,TRUE,0
 	mov		eax,nCount
 	ret
 
@@ -787,9 +820,11 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	sub		eax,edx
 	mov		cpline,eax
 	inc		eax
+	inc		eax
 	mov		edx,[esi].RASELCHANGE.lpLine
 	lea		edx,[edx+sizeof CHARS]
 	invoke strcpyn,offset LineTxt,edx,eax
+;PrintStringByAddr offset LineTxt
 	.if da.cctype==CCTYPE_ALL
 		invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
 		invoke strlen,addr buffer

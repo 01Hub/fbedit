@@ -765,11 +765,61 @@ SaveParam1:
 		lea		esi,[esi+ecx]
 		mov		eax,TYPE_NAMEFIRST
 		call	SaveName
-		mov		byte ptr [edi-1],','
-		jmp		SaveParam1
-	.elseif byte ptr [esi]==','
-		inc		esi
-		jmp		SaveParam1
+		dec		edi
+SaveParam2:
+		invoke GoGetWord,esi,addr npos
+		mov		esi,edx
+		.if !ecx
+			.if byte ptr [esi]==','
+				inc		esi
+				mov		byte ptr [edi],','
+				inc		edi
+				jmp		SaveParam1
+			.elseif byte ptr [esi]==VK_RETURN
+				mov		byte ptr [edi],','
+				inc		edi
+			.elseif byte ptr [esi]=='['
+				push	esi
+				.while byte ptr [esi] && byte ptr [esi-1]!=']'
+					mov		al,[esi]
+					.if al!=VK_SPACE
+						mov		[edi],al
+						inc		edi
+					.elseif byte ptr [edi-1]!=VK_SPACE
+						mov		[edi],al
+						inc		edi
+					.endif
+					inc		esi
+				.endw
+				pop		esi
+				call	SkipBrace
+				jmp		SaveParam2
+			.elseif byte ptr [esi]==':'
+				inc		esi
+				mov		byte ptr [edi],':'
+				inc		edi
+			  @@:
+				invoke GoGetWord,esi,addr npos
+				mov		esi,edx
+				mov		lpdatatype,esi
+				mov		lendatatype,ecx
+				lea		esi,[esi+ecx]
+				call	ConvDataType
+				mov		edx,edi
+				mov		eax,lendatatype
+				lea		edi,[edi+eax]
+				inc		eax
+				invoke strcpyn,edx,lpdatatype,eax
+				mov		byte ptr [edi],','
+				inc		edi
+				invoke GoGetWord,esi,addr npos
+				mov		esi,edx
+				.if byte ptr [esi]==','
+					inc		esi
+					jmp		SaveParam1
+				.endif
+			.endif
+		.endif
 	.endif
 	.if byte ptr [edi-1]==','
 		dec		edi

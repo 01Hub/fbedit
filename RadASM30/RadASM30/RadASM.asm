@@ -1871,6 +1871,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ha.hOutput,REM_GETBMID,[esi].RASELCHANGE.line,0
 				invoke UpdateAll,UAM_FINDERROR,eax
 			.endif
+		.elseif  [esi].NMHDR.code==TTN_NEEDTEXT
+			invoke LoadString,ha.hInstance,[esi].NMHDR.idFrom,addr buffer,sizeof buffer
+			lea		eax,buffer
+			mov		[esi].TOOLTIPTEXT.lpszText,eax
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
@@ -3018,6 +3022,17 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 								invoke ApiListBox,esi
 							.endif
 						.endif
+;	mov		eax,[esi].RASELCHANGE.chrg.cpMin
+;	mov		edx,[esi].RASELCHANGE.cpLine
+;	sub		eax,edx
+;	inc		eax
+;	inc		eax
+;	mov		edx,[esi].RASELCHANGE.lpLine
+;	lea		edx,[edx+sizeof CHARS]
+;	invoke strcpyn,offset LineTxt,edx,eax
+;PrintStringByAddr offset LineTxt
+
+
 					.endif
 					.if ![esi].RASELCHANGE.nWordGroup
 						mov		eax,[esi].RASELCHANGE.line

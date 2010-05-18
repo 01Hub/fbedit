@@ -102,8 +102,8 @@ CompanyName=
 8=IDB_LOCK,107,0,Res\Lock.bmp
 
 [Size]
-1=0,0,0,0,33713
-16=0,0,810,411,41921
+1=0,0,0,0,39658
+16=0,0,810,411,34785
 22=0,0,0,0,3164
 23=0,0,0,0,26290
 24=0,0,0,0,4001
@@ -116,7 +116,7 @@ CompanyName=
 15=0,0,0,0,3933
 18=0,0,0,0,1314
 4=0,0,0,0,0
-13=0,0,0,0,9962
+13=0,0,0,0,9952
 26=0,0,0,0,5013
 21=0,0,0,0,9173
 14=0,0,0,0,9996
@@ -138,16 +138,16 @@ CompanyName=
 0=
 
 [Find]
-1="DeleteSelection"
-2="REM_SETUNDO"
-3="bracketcont"
-4="REM_BRACKETMATCH"
-5="cont"
-6="REM_ISINBLOCK"
-7="InsertNewLine"
-8="nLen"
-9=".CHARS.max"
-10="ExpandLine"
+1="EditFunc"
+2="DeleteSelection"
+3="REM_SETUNDO"
+4="bracketcont"
+5="REM_BRACKETMATCH"
+6="cont"
+7="REM_ISINBLOCK"
+8="InsertNewLine"
+9="nLen"
+10=".CHARS.max"
 
 [AutoLoad]
 AutoLoad=1,16,12,13,19,15,2,23,26
@@ -190,7 +190,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=15
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=8
 MilestoneOnDateTimeDate=27
@@ -250,7 +250,7 @@ Group=Assembly,Resources,Misc
 12=
 
 [PTimer]
-PTimer=295137396
+PTimer=296543261
 
 [Exports]
 1=GetDef
