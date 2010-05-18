@@ -370,10 +370,6 @@ Paste proc uses ebx esi edi,hMem:DWORD,hWin:DWORD,hData:DWORD
 	.else
 		invoke GetBlockRange,addr [ebx].EDIT.blrg,addr blrg
 		invoke DeleteSelectionBlock,ebx,blrg.lnMin,blrg.clMin,blrg.lnMax,blrg.clMax
-;		mov		eax,[ebx].EDIT.blrg.clMin
-;		mov		edx,[ebx].EDIT.blrg.lnMin
-;;		mov		[ebx].EDIT.blrg.clMax,eax
-;;		mov		[ebx].EDIT.blrg.lnMax,edx
 		invoke GetBlockCp,ebx,blrg.lnMin,blrg.clMin
 		mov		[ebx].EDIT.cpMin,eax
 		mov		[ebx].EDIT.cpMax,eax

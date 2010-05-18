@@ -447,9 +447,6 @@ DeleteSelection proc uses ebx edi,hMem:DWORD,cpMin:DWORD,cpMax:DWORD
 		mov		eax,cpMin
 		mov		[ebx].EDIT.cpMin,eax
 		mov		[ebx].EDIT.cpMax,eax
-		push	eax
-;		invoke SelChange,ebx,SEL_TEXT
-		pop		eax
 	.endif
 	ret
 

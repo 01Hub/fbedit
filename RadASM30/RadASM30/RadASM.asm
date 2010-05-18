@@ -3022,17 +3022,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 								invoke ApiListBox,esi
 							.endif
 						.endif
-;	mov		eax,[esi].RASELCHANGE.chrg.cpMin
-;	mov		edx,[esi].RASELCHANGE.cpLine
-;	sub		eax,edx
-;	inc		eax
-;	inc		eax
-;	mov		edx,[esi].RASELCHANGE.lpLine
-;	lea		edx,[edx+sizeof CHARS]
-;	invoke strcpyn,offset LineTxt,edx,eax
-;PrintStringByAddr offset LineTxt
-
-
 					.endif
 					.if ![esi].RASELCHANGE.nWordGroup
 						mov		eax,[esi].RASELCHANGE.line

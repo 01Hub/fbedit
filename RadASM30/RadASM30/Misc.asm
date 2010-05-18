@@ -1720,6 +1720,17 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 		push	eax
 		push	IDM_DEBUG_TOGGLE
+		mov		eax,da.fDebugging
+		push	eax
+		push	IDM_DEBUG_BREAK
+		push	eax
+		push	IDM_DEBUG_STOP
+		push	eax
+		push	IDM_DEBUG_INTO
+		push	eax
+		push	IDM_DEBUG_OVER
+		push	eax
+		push	IDM_DEBUG_CARET
 	.elseif eax==8
 		;Tools
 	.elseif eax==9

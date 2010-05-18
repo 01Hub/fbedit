@@ -824,7 +824,6 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	mov		edx,[esi].RASELCHANGE.lpLine
 	lea		edx,[edx+sizeof CHARS]
 	invoke strcpyn,offset LineTxt,edx,eax
-;PrintStringByAddr offset LineTxt
 	.if da.cctype==CCTYPE_ALL
 		invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
 		invoke strlen,addr buffer
