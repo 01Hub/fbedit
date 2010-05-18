@@ -1225,10 +1225,15 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
 						invoke SendMessage,ha.hEdt,EM_EXLINEFROMCHAR,0,chrg.cpMin
 						mov		ebx,eax
+						inc		eax
+						invoke DebugCommand,FUNC_ISCODELINE,eax,addr da.szFileName
+						mov		edi,eax
 						invoke SendMessage,ha.hEdt,REM_GETLINESTATE,ebx,0
 						and		eax,STATE_BREAKPOINT
 						xor		eax,STATE_BREAKPOINT
-						invoke SendMessage,ha.hEdt,REM_SETBREAKPOINT,ebx,eax
+						.if !eax || edi
+							invoke SendMessage,ha.hEdt,REM_SETBREAKPOINT,ebx,eax
+						.endif
 					.endif
 					mov		da.fTimer,1
 				.endif
