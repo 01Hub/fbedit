@@ -25,6 +25,7 @@ include MakeOptions.asm
 include ExceptionHandler.asm
 include Sniplets.asm
 include Print.asm
+include Debug.asm
 
 .code
 
@@ -1360,7 +1361,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					invoke DebugCommand,FUNC_RUNTOCARET,ebx,offset da.szFileName
 				.endif
 			.elseif eax==IDM_DEBUG_NODEBUG
-;####
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGDONOTDEBUG,hWin,offset DoNotDebugProc,0
 			.elseif eax==IDM_TOOLS_SNIPLETS
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGSNIPLETS,hWin,offset SnipletsProc,0
 			.elseif eax>=IDM_TOOLS_START && eax<IDM_TOOLS_START+20
