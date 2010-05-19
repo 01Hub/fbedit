@@ -2,10 +2,10 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\Unreferenced
+Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\Unreferenced
 Group=2,-1,0,1,Find unreferenced,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,326,Unreferenced.asm
-F2=-3,0,1,44,44,600,400,64,Unreferenced.inc
+F1=-2,2,1,22,22,600,400,508,Unreferenced.asm
+F2=-3,0,1,44,44,600,400,60,Unreferenced.inc
 F3=-5,2,4,66,66,600,400,0,Unreferenced.rc
 Open=0,1,2,3,4,5
 Api=
@@ -13,7 +13,7 @@ F5=-4,0,2,242,242,1213,550,4,Unreferenced.def
 C5=
 B5=
 M5=
-F4=-3,0,1,176,176,1213,550,589,..\Addins.inc
+F4=-3,0,1,176,176,1213,550,175,..\Addins.inc
 C4=0
 B4=
 M4=

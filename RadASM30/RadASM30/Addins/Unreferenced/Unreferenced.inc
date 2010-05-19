@@ -39,7 +39,7 @@ FILES ends
 
 .const
 
-szMenuName			db 'Find Unreferenced',0
+szMenuName			db 'Unreferenced Variables',0
 szGlobal			db 'Found %d unreferenced global variable(s).',0
 szLocal				db 'Found %d unreferenced local variable(s).',0
 szCR				db 0Dh,0

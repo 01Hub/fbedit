@@ -113,7 +113,6 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
-	LOCAL	hFile:HANDLE
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -719,16 +718,16 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 					mov		da.fTimer,1
 				.endif
 			.elseif eax==IDM_EDIT_NEXTERROR
-				mov		eax,nErrID
-				mov		eax,ErrID[eax*4]
+				mov		eax,da.nErrID
+				mov		eax,da.ErrID[eax*4]
 				.if !eax
-					mov		nErrID,0
-					mov		eax,ErrID
+					mov		da.nErrID,0
+					mov		eax,da.ErrID
 				.endif
 				.if eax
-					mov		eax,nErrID
-					invoke UpdateAll,UAM_FINDERROR,ErrID[eax*4]
-					inc		nErrID
+					mov		eax,da.nErrID
+					invoke UpdateAll,UAM_FINDERROR,da.ErrID[eax*4]
+					inc		da.nErrID
 				.endif
 			.elseif eax==IDM_EDIT_CLEARERRORS
 				invoke UpdateAll,UAM_CLEARERRORS,0

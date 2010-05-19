@@ -63,7 +63,6 @@ DebugCallback endp
 
 DebugSetBreakpoints proc
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
 
 	invoke DebugCommand,FUNC_BPCLEARALL,0,0
 	.if da.fProject
@@ -77,9 +76,9 @@ DebugSetBreakpoints proc
 				invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
 				.if eax==-1
 					;File is not open
-					mov		buffer1,'B'
-					invoke BinToDec,[edi].PBITEM.id,addr buffer1[1]
-					invoke GetPrivateProfileString,addr szIniProject,addr buffer1,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+					mov		buffer,'B'
+					invoke BinToDec,[edi].PBITEM.id,addr buffer[1]
+					invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 					.while byte ptr tmpbuff
 						invoke GetItemInt,addr tmpbuff,0
 						lea		edx,[eax+1]
@@ -205,9 +204,7 @@ DebugStart endp
 
 DoNotDebugProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
-	LOCAL	buffer1[8]:BYTE
 	LOCAL	nInx:DWORD
-	LOCAL	hMem:HGLOBAL
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG

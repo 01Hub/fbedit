@@ -26,8 +26,8 @@ CreateProcessError		BYTE 'Error during process creation',0Dh,0Ah,0
 .data?
 
 makeexe					MAKEEXE <>
-nErrID					DWORD ?
-ErrID					DWORD 128 dup(?)
+;nErrID					DWORD ?
+;ErrID					DWORD 128 dup(?)
 
 .code
 
@@ -132,7 +132,7 @@ FindErrors proc uses ebx
 
 	invoke SendMessage,ha.hOutput,EM_GETLINECOUNT,0,0
 	xor		ebx,ebx
-	mov		nErrID,ebx
+	mov		da.nErrID,ebx
 	mov		nLn,ebx
 	.while nLn<eax
 		push	eax
@@ -140,7 +140,7 @@ FindErrors proc uses ebx
 		pop		eax
 		inc		nLn
 	.endw
-	mov		ErrID[ebx*4],0
+	mov		da.ErrID[ebx*4],0
 	ret
 
 TestLine:
@@ -165,7 +165,6 @@ TestLine:
 		invoke strcat,addr tmpbuff,addr szBS
 		invoke strcat,addr tmpbuff,addr buffer
 		invoke strcpy,addr buffer,addr tmpbuff
-;		invoke GetFullPathName,addr tmpbuff,sizeof buffer,addr buffer,NULL
 		invoke GetFileAttributes,addr buffer
 		.if eax!=INVALID_HANDLE_VALUE && !(eax & FILE_ATTRIBUTE_DIRECTORY)
 			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
@@ -185,9 +184,9 @@ TestLine:
 						;Create an error bookmark.
 						invoke SendMessage,ha.hEdt,REM_SETERROR,nLnErr,nErr
 						;Save the error id in an array
-						.if ebx<127
+						.if ebx<255
 							mov		eax,nErr
-							mov		ErrID[ebx*4],eax
+							mov		da.ErrID[ebx*4],eax
 							inc		ebx
 						.endif
 					.else
@@ -562,7 +561,7 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				.endif
 			.endif
 		.endif
-		.if dword ptr [ErrID]
+		.if dword ptr da.ErrID
 			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
 		.else
 			invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0

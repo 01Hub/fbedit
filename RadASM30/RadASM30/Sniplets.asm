@@ -60,7 +60,6 @@ TrvDir proc hTrv:HWND,hPar:DWORD,lpPth:DWORD
 	LOCAL	wfd:WIN32_FIND_DATA
 	LOCAL	hwfd:DWORD
 	LOCAL	hpar:DWORD
-	LOCAL	ftp:DWORD
 
 	;Make the path local
 	invoke lstrcpy,addr buffer,lpPth

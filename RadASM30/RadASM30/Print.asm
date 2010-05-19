@@ -107,7 +107,6 @@ Print proc uses ebx
 	LOCAL	hPrFont:DWORD
 	LOCAL	nLine:DWORD
 	LOCAL	nPageno:DWORD
-	LOCAL	nMPage:DWORD
 	LOCAL	nMLine:DWORD
 	LOCAL	ptX:DWORD
 	LOCAL	ptY:DWORD

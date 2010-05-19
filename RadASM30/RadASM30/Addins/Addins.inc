@@ -248,6 +248,7 @@ AIM_MAKEBEGIN					equ WM_USER+113			;RadASM starts a make process. Return TRUE t
 AIM_MAKEDONE					equ WM_USER+114			;RadASM finished the make process. Always return FALSE. hWin=Main window, wParam=IDM_MAKE_COMPILE, IDM_MAKE_ASSEMBLE, IDM_MAKE_LINK, IDM_MAKE_BUILD, IDM_MAKE_RUN or IDM_MAKE_GO, lParam=Main file
 AIM_GETFILETYPE					equ WM_USER+115			;RadASM requests a filetype. Return ID_EDITUSER if your addin handles the filetype, else return FALSE. hWin=Main window,wParam=0, lParam=lpFileName
 AIM_FILENAMECHANGED				equ WM_USER+116			;RadASM has changed a filename. Return TRUE if this is your file, else return FALSE. hWin=Mdi child window,wParam=Old filename, lParam=New filename
+AIM_MENUENABLE					equ WM_USER+117			;RadASM requests you to enable / disable your menu items. Always return FALSE. hWin=Main window,wParam=IDM_FILE,IDM_EDIT,IDM_VIEW,IDM_FORMAT,IDM_PROJECT,IDM_RESOURCE,IDM_MAKE,IDM_DEBUG,IDM_TOOLS,IDM_WINDOW,IDM_OPTION or IDM_HELP, lParam=0
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED				equ 00001h
@@ -267,6 +268,7 @@ HOOK_MAKEBEGIN					equ 02000h
 HOOK_MAKEDONE					equ 04000h
 HOOK_GETFILETYPE				equ 08000h
 HOOK_FILENAMECHANGED			equ 10000h
+HOOK_MENUENABLE					equ 20000h
 
 HOOK struct
 	hook1				DWORD ?				;Combinations of HOOK_ flags
@@ -549,6 +551,8 @@ ADDINDATA struct
 	szDbgFileName		BYTE MAX_PATH dup(?)
 	szNoDebug			BYTE 1024*8 dup(?)
 	fMainThread			DWORD ?
+	nErrID				DWORD ?
+	ErrID				DWORD 256 dup(?)
 ADDINDATA ends
 
 FILEINFO struct

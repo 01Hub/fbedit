@@ -35,6 +35,9 @@ LoadFiles proc uses ebx esi edi
 	push	UAM_CLEARERRORS
 	mov		eax,lpProc
 	call	[eax].ADDINPROCS.lpUpdateAll
+	mov		ebx,lpData
+	mov		[ebx].ADDINDATA.nErrID,0
+	mov		[ebx].ADDINDATA.ErrID,0
 	mov		ebx,lpHandles
 	mov		eax,[ebx].ADDINHANDLES.hProjectBrowser
 	mov		hProject,eax
@@ -224,6 +227,7 @@ FixFiles endp
 
 SetError proc uses ebx esi edi,hMemFiles:HGLOBAL,nOwner:DWORD,nLn:DWORD,lpErr:DWORD,lpName:DWORD,fLocal:DWORD
 	LOCAL	ft:FINDTEXTEX
+	LOCAL	nErr:DWORD
 
 	mov		ebx,lpHandles
 	invoke OutputString,lpErr
@@ -252,11 +256,21 @@ SetError proc uses ebx esi edi,hMemFiles:HGLOBAL,nOwner:DWORD,nLn:DWORD,lpErr:DW
 			invoke SendMessage,[ebx].ADDINHANDLES.hOutput,REM_SETBOOKMARK,esi,6
 			invoke SendMessage,[ebx].ADDINHANDLES.hEdt,REM_GETERROR,nLn,0
 			.if eax
-				invoke SendMessage,[ebx].ADDINHANDLES.hOutput,REM_SETBMID,esi,eax
+				mov		nErr,eax
+				invoke SendMessage,[ebx].ADDINHANDLES.hOutput,REM_SETBMID,esi,nErr
 			.else
 				invoke SendMessage,[ebx].ADDINHANDLES.hOutput,REM_GETBMID,esi,0
-				mov		esi,eax
-				invoke SendMessage,[ebx].ADDINHANDLES.hEdt,REM_SETERROR,nLn,esi
+				mov		nErr,eax
+				invoke SendMessage,[ebx].ADDINHANDLES.hEdt,REM_SETERROR,nLn,nErr
+			.endif
+			mov		esi,lpData
+			mov		edx,[esi].ADDINDATA.nErrID
+			.if edx<255
+				mov		eax,nErr
+				mov		[esi].ADDINDATA.ErrID[edx*4],eax
+				inc		edx
+				mov		[esi].ADDINDATA.ErrID[edx*4],0
+				mov		[esi].ADDINDATA.nErrID,edx
 			.endif
 			.break
 		.endif
@@ -444,7 +458,7 @@ InstallAddin proc uses ebx hWin:DWORD
 	; Allocate a new menu id
 	invoke SendMessage,ebx,AIM_GETMENUID,0,0
 	mov		IDAddIn,eax
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE
+	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_MENUENABLE
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -478,11 +492,26 @@ AddinProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			pop		eax
 			invoke GlobalFree,eax
 			invoke ShowResult
+			mov		eax,lpData
+			.if [eax].ADDINDATA.ErrID
+				mov		eax,lpHandles
+				invoke SendMessage,[eax].ADDINHANDLES.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
+			.endif
 			mov		eax,TRUE
 			ret
 		.endif
 	.elseif eax==AIM_MENUUPDATE
 		invoke UpdateMenu,wParam
+	.elseif eax==AIM_MENUENABLE
+		.if wParam==IDM_TOOLS
+			mov		edx,lpData
+			mov		eax,MF_BYCOMMAND or MF_GRAYED
+			.if [edx].ADDINDATA.fProject
+				mov		eax,MF_BYCOMMAND or MF_ENABLED
+			.endif
+			mov		edx,lpHandles
+			invoke EnableMenuItem,[edx].ADDINHANDLES.hMenu,IDAddIn,eax
+		.endif
 	.endif
 	mov		eax,FALSE
 	ret

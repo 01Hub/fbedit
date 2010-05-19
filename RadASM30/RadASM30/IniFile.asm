@@ -263,7 +263,6 @@ PutResource endp
 
 GetSessionFiles proc uses ebx edi
 	LOCAL	fi:FILEINFO
-	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	chrg:CHARRANGE
 	LOCAL	hEdt:HWND
 

@@ -707,7 +707,7 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 					.endw
 				.endif
 			.elseif eax==UAM_CLEARERRORS
-				mov		ErrID,0
+				mov		da.ErrID,0
 				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
 				.if eax==ID_EDITCODE
 					mov		eax,-1
@@ -738,6 +738,7 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 							mov		chrg.cpMax,eax
 							invoke SendMessage,[ebx].TABMEM.hedt,EM_EXSETSEL,0,addr chrg
 							invoke SendMessage,[ebx].TABMEM.hedt,EM_SCROLLCARET,0,0
+							invoke SendMessage,[ebx].TABMEM.hedt,REM_VCENTER,0,0
 							invoke SetFocus,[ebx].TABMEM.hedt
 							mov		eax,TRUE
 							jmp		Ex
@@ -1159,6 +1160,7 @@ CheckMenu endp
 
 EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	ID:DWORD
 
 	mov		ebx,ha.hEdt
 	xor		esi,esi
@@ -1171,6 +1173,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	mov		eax,nPos
 	.if eax==0
 		;File
+		mov		ID,IDM_FILE
 		push	ebx
 		push	IDM_FILE_REOPEN
 		push	ebx
@@ -1189,6 +1192,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_FILE_PRINT
 	.elseif eax==1
 		;Edit
+		mov		ID,IDM_EDIT
 		.if !ebx
 			;No edit window open
 			xor		eax,eax
@@ -1335,7 +1339,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_PREVBM
 				push	eax
 				push	IDM_EDIT_CLEARBM
-				mov		eax,ErrID
+				mov		eax,da.ErrID
 				push	eax
 				push	IDM_EDIT_NEXTERROR
 				push	eax
@@ -1418,9 +1422,11 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==2
 		;View
+		mov		ID,IDM_VIEW
 		invoke CheckMenu,hMnu,nPos
 	.elseif eax==3
 		;Format
+		mov		ID,IDM_FORMAT
 		invoke CheckMenu,hMnu,nPos
 		.if esi==ID_EDITRES
 			mov		eax,TRUE
@@ -1506,6 +1512,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==4
 		;Project
+		mov		ID,IDM_PROJECT
 		xor		edi,edi
 		mov		eax,TRUE
 		push	eax
@@ -1573,6 +1580,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		invoke CheckMenu,hMnu,nPos
 	.elseif eax==5
 		;Resource
+		mov		ID,IDM_RESOURCE
 		xor		eax,eax
 		.if esi==ID_EDITRES
 			mov		eax,TRUE
@@ -1614,6 +1622,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_RESOURCE_UNDO
 	.elseif eax==6
 		;Make
+		mov		ID,IDM_MAKE
 		;Get relative pointer to selected build command
 		invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
 		mov		edx,sizeof MAKE
@@ -1705,6 +1714,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==7
 		;Debug
+		mov		ID,IDM_DEBUG
 		xor		eax,eax
 		.if da.fCanDebug
 			.if esi==ID_EDITCODE
@@ -1757,8 +1767,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 	.elseif eax==8
 		;Tools
+		mov		ID,IDM_TOOLS
 	.elseif eax==9
 		;Window
+		mov		ID,IDM_WINDOW
 		xor		eax,eax
 		.if ebx
 			mov		eax,TRUE
@@ -1785,8 +1797,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_WINDOW_MINIMIZE
 	.elseif eax==10
 		;Option
+		mov		ID,IDM_OPTION
 	.elseif eax==11
 		;Help
+		mov		ID,IDM_HELP
 	.endif
 	.while TRUE
 		pop		edx
@@ -1799,6 +1813,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		.endif
 		invoke EnableMenuItem,hMnu,edx,eax
 	.endw
+	invoke PostAddinMessage,ha.hWnd,AIM_MENUENABLE,ID,0,0,HOOK_MENUENABLE
 	ret
 
 EnableMenu endp

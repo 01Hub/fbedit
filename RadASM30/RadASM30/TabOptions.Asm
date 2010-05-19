@@ -43,10 +43,8 @@ IDC_BTNRESTYPEADD	equ 2502
 
 .const
 
-szCust				db 'Cust#',0
 szFilterDLL			db 'Dll (*.dll)',0,'*.dll',0,0
 szFilterEXE			db 'Exe (*.exe)',0,'*.exe',0,0
-szCustStyle			db 'Style#',0
 
 TabTitle1			db 'Exports',0
 TabTitle2			db 'Custom controls',0
@@ -64,17 +62,17 @@ szHdrMask			db 'Mask',0
 szHdrName			db 'Name',0
 szHdrFiles			db 'Files',0
 szHdrEdit			db 'Editor',0
-szDefResTypes		db "BITMAP,0,'Bitmap (*.bmp)|*.bmp',",0
-					db "CURSOR,0,'Cursor (*.cur)|*.cur',",0
-					db "ICON,0,'Icon (*.ico)|*.ico',",0
-					db "AVI,0,'Avi (*.avi)|*.avi',",0
-					db "RCDATA,0,'All Files (*.*)|*.*',",0
-					db "WAWE,0,'Wave (*.wav)|*.wav',",0
-					db "IMAGE,0,'Image (*.jpg,*.gif)|*.jpg;*.gif',",0
-					db "MANIFEST,24,'Manifest (*.xml)|*.xml',",0
-					db "ANICURSOR,0,'Ani Cursor (*.ani)|*.ani',",0
-					db "FONT,0,'Font (*.fon,*.ttc,*.ttf)|*.fon;*.ttc;*.ttf',",0
-					db "MESSAGETABLE,0,'Messagetable (*.bin)|*.bin',",0
+;szDefResTypes		db "BITMAP,0,'Bitmap (*.bmp)|*.bmp',",0
+;					db "CURSOR,0,'Cursor (*.cur)|*.cur',",0
+;					db "ICON,0,'Icon (*.ico)|*.ico',",0
+;					db "AVI,0,'Avi (*.avi)|*.avi',",0
+;					db "RCDATA,0,'All Files (*.*)|*.*',",0
+;					db "WAWE,0,'Wave (*.wav)|*.wav',",0
+;					db "IMAGE,0,'Image (*.jpg,*.gif)|*.jpg;*.gif',",0
+;					db "MANIFEST,24,'Manifest (*.xml)|*.xml',",0
+;					db "ANICURSOR,0,'Ani Cursor (*.ani)|*.ani',",0
+;					db "FONT,0,'Font (*.fon,*.ttc,*.ttf)|*.fon;*.ttc;*.ttf',",0
+;					db "MESSAGETABLE,0,'Messagetable (*.bin)|*.bin',",0
 
 .data?
 
@@ -118,7 +116,6 @@ TabOpt1Proc endp
 TabOpt2Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[MAX_PATH]:BYTE
 	LOCAL	ofn:OPENFILENAME
 	LOCAL	hGrd:HWND
 	LOCAL	clmn:COLUMN
@@ -307,7 +304,7 @@ TabOpt4Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hGrd:HWND
 	LOCAL	clmn:COLUMN
 	LOCAL	nInx:DWORD
-	LOCAL	cust:CUSTSTYLE
+;	LOCAL	cust:CUSTSTYLE
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	row[3]:DWORD
 
@@ -422,7 +419,7 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	row[4]:DWORD
-	LOCAL	rarstype:RARSTYPE
+;	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -584,9 +581,9 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TC_ITEM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-	LOCAL	buffer1[64]:BYTE
-	LOCAL	cust:CUSTSTYLE
-	LOCAL	rarstype:RARSTYPE
+;	LOCAL	buffer1[64]:BYTE
+;	LOCAL	cust:CUSTSTYLE
+;	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_COMMAND

@@ -74,7 +74,6 @@ szColors			db 'Back',0
 szGroup				db 'Group#%d',0
 
 szNewTheme			db 'New Theme',0
-szTheme				db 'Theme',0
 deftheme			db 'Default',0
 					dd 00804000h,00808000h,00FF0000h,00FF0000h,00FF0000h,10FF0000h,000040FFh,00FF0000h,01FF0000h,00FF0000h,00A00000h,00A00000h,00A00000h,00A00000h,00A00000h,00A00000h
 					dd 00C0F0F0h,00000000h,00800000h,00FFFFFFh,02808040h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00C0C0C0h,00808080h,00800000h,00808080h,00C0F0F0h,00C0F0F0h,00C0F0F0h,00C0F0F0h,0000F0F0h,0000F000h
@@ -399,7 +398,6 @@ MoveKeyWords endp
 
 UpdateToolColors proc
 	LOCAL	racol:RACOLOR
-	LOCAL	rescol:RESCOLOR
 	LOCAL	cccol:CC_COLOR
 	LOCAL	ttcol:TT_COLOR
 
@@ -414,10 +412,10 @@ UpdateToolColors proc
 	mov		racol.txtcol,eax
 	invoke SendMessage,ha.hOutput,REM_SETCOLOR,0,addr racol
 	invoke SendMessage,ha.hImmediate,REM_SETCOLOR,0,addr racol
-;	invoke SendMessage,ha.hDbgReg,REM_SETCOLOR,0,addr racol
-;	invoke SendMessage,ha.hDbgFpu,REM_SETCOLOR,0,addr racol
-;	invoke SendMessage,ha.hDbgMMX,REM_SETCOLOR,0,addr racol
-;	invoke SendMessage,ha.hDbgWatch,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hREGDebug,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hFPUDebug,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hMMXDebug,REM_SETCOLOR,0,addr racol
+	invoke SendMessage,ha.hWATCHDebug,REM_SETCOLOR,0,addr racol
 	;Set tool colors
 	invoke SendMessage,ha.hFileBrowser,FBM_SETBACKCOLOR,0,da.radcolor.toolback
 	invoke SendMessage,ha.hFileBrowser,FBM_SETTEXTCOLOR,0,da.radcolor.tooltext
@@ -425,13 +423,6 @@ UpdateToolColors proc
 	invoke SendMessage,ha.hProjectBrowser,RPBM_SETTEXTCOLOR,0,da.radcolor.tooltext
 	invoke SendMessage,ha.hProperty,PRM_SETBACKCOLOR,0,da.radcolor.toolback
 	invoke SendMessage,ha.hProperty,PRM_SETTEXTCOLOR,0,da.radcolor.tooltext
-
-;	.if ha.hBrBack
-;		invoke DeleteObject,ha.hBrBack
-;	.endif
-;	invoke CreateSolidBrush,col.toolback
-;	mov		ha.hBrBack,eax
-
 	;Code complete
 	mov		eax,da.radcolor.ccback
 	mov		cccol.back,eax

@@ -262,12 +262,9 @@ IsStructItemStruct endp
 
 UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
-	LOCAL	nWords:DWORD
 	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer1[256]:BYTE
 	LOCAL	isinproc:ISINPROC
-	LOCAL	lpLineWord:DWORD
-	LOCAL	lpReg:DWORD
 	LOCAL	ccft:FINDTEXTEX
 
 	mov		nCount,0

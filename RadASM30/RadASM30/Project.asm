@@ -60,11 +60,11 @@ szBEGINBIN						db '[*BEGINBIN*]',0
 szENDBIN						db '[*ENDBIN*]',0
 TPLFilterString					db 'Template (*.tpl)',0,'*.tpl',0,0
 szTplFile						db 'tpl',0
-ALLFilterString					db 'All files (*.*)',0,'*.*',0,0
-szDefTxt						db '.asm.inc.rc.def.txt.xml.',0
-szDefBin						db '.tbr.obj.lib.res.bmp.ico.cur.',0
+;ALLFilterString					db 'All files (*.*)',0,'*.*',0,0
+;szDefTxt						db '.asm.inc.rc.def.txt.xml.',0
+;szDefBin						db '.tbr.obj.lib.res.bmp.ico.cur.',0
 
-szErrNoMain						db 'No main file is selected or the selected file is not a .asm file.',0
+;szErrNoMain						db 'No main file is selected or the selected file is not a .asm file.',0
 szErrNotInPath					db 'The file(s) is not in the project path:',0Dh,0Ah,0
 szErrUnknownType				db 'The file type is unknown.',0Dh,0Ah,0
 szInclude						db 'include',0
@@ -75,8 +75,8 @@ szLibrary						db 'library',0
 hTabNewProject					HWND 4 dup(?)
 projectfile						BYTE MAX_PATH dup(?)
 templatepath					BYTE MAX_PATH dup(?)
-szTemplateTxt					BYTE MAX_PATH dup(?)
-szTemplateBin					BYTE MAX_PATH dup(?)
+;szTemplateTxt					BYTE MAX_PATH dup(?)
+;szTemplateBin					BYTE MAX_PATH dup(?)
 
 .code
 
@@ -956,9 +956,10 @@ ProjectCreate proc uses ebx esi edi,hWin:HWND
 		mov		edx,eax
 		invoke SendDlgItemMessage,hWin,IDC_CBOASSEMBLER,CB_GETLBTEXT,edx,addr tmpbuff
 		invoke WritePrivateProfileString,addr szIniProject,addr szIniAssembler,addr tmpbuff,addr projectfile
+		;Assembler.ini
 		invoke strcpy,addr assemblerini,addr da.szAppPath
 		invoke strcat,addr assemblerini,addr szBS
-		invoke strcat,addr assemblerini,addr szBS
+		invoke strcat,addr assemblerini,addr tmpbuff
 		invoke strcat,addr assemblerini,addr szDotIni
 		;Filebrowser path
 		invoke WritePrivateProfileString,addr szIniProject,addr szIniPath,addr projectpath,addr projectfile

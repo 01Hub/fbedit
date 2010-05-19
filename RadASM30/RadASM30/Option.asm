@@ -263,10 +263,8 @@ MenuOptionSave endp
 
 MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer0[256]:BYTE
-	LOCAL	buffer1[256]:BYTE
 	LOCAL	nInx:DWORD
 	LOCAL	ofn:OPENFILENAME
-	LOCAL	mnu:MENU
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
