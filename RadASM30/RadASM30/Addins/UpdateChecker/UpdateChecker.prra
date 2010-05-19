@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\UpdateChecker
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\UpdateChecker
 Group=2,-1,0,1,Update Checker addin,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F4=-5,2,4,-6,-25,1268,695,65,UpdateChecker.rc
 C4=
@@ -22,7 +22,7 @@ F3=-3,0,1,176,176,1036,444,0,UpdateChecker.Inc
 C3=0
 B3=
 M3=
-F1=-2,2,1,132,132,1036,444,0,UpdateChecker.Asm
+F1=-2,2,1,132,132,1036,444,636,UpdateChecker.Asm
 C1=0,0,0
 B1=
 M1=

@@ -29,14 +29,15 @@ xHeapAlloc proc h:DWORD,t:DWORD,s:DWORD
 
 xHeapAlloc endp
 
-ExpandLineMem proc uses ebx,hMem:DWORD
+ExpandLineMem proc uses ebx esi edi,hMem:DWORD
 
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.rpLineFree
-	add		eax,MAXLINEMEM/2
+	add		eax,MAXLINEMEM
+	shr		eax,12
+	inc		eax
+	shl		eax,12
 	.if eax>[ebx].EDIT.cbLine
-		push	esi
-		push	edi
 		mov		esi,[ebx].EDIT.hLine
 		mov		edi,[ebx].EDIT.cbLine
 		add		[ebx].EDIT.cbLine,MAXLINEMEM
@@ -55,8 +56,6 @@ ExpandLineMem proc uses ebx,hMem:DWORD
 			pop		esi
 			invoke HeapFree,[ebx].EDIT.hHeap,0,esi
 		.endif
-		pop		edi
-		pop		esi
 	.endif
 	ret
 
@@ -139,7 +138,10 @@ ExpandUndoMem proc uses ebx,hMem:DWORD,cb:DWORD
 	mov		ebx,hMem
 	mov		eax,[ebx].EDIT.rpUndo
 	add		eax,cb
-	add		eax,1024
+	add		eax,8*1024
+	shr		eax,12
+	inc		eax
+	shl		eax,12
 	.if eax>[ebx].EDIT.cbUndo
 		push	esi
 		push	edi

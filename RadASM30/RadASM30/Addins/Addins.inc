@@ -545,6 +545,7 @@ ADDINDATA struct
 	nBackup				DWORD ?
 	fDebugging			DWORD ?
 	ti					TOOLINFO <>
+	fCanDebug			DWORD ?
 	szDbgFileName		BYTE MAX_PATH dup(?)
 	szNoDebug			BYTE 1024*8 dup(?)
 	fMainThread			DWORD ?

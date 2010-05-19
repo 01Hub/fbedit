@@ -433,6 +433,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.else
 					invoke IsWordDataStruct,addr buffer,addr buffer1
 					.if eax
+						; rc RECT <>
+						; rc.left
 						invoke strcpy,addr buffer,addr buffer1
 						jmp		NxMASM4
 					.else
@@ -450,6 +452,8 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 							mov		edx,eax
 							invoke IsWordLocalStruct,edx,addr buffer,addr buffer1
 							.if eax
+								; LOCAL rc:RECT
+								; rc.left
 								invoke strcpy,addr buffer,addr buffer1
 							.endif
 						.endif
@@ -819,7 +823,6 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	mov		ccchrg.cpMax,eax
 	sub		eax,edx
 	mov		cpline,eax
-	inc		eax
 	inc		eax
 	mov		edx,[esi].RASELCHANGE.lpLine
 	lea		edx,[edx+sizeof CHARS]

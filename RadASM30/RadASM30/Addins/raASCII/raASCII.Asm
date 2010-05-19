@@ -26,13 +26,6 @@ OutputString proc uses ebx,lpString:DWORD
 
 OutputString endp
 
-AddMenuItem proc hMnu:HMENU,nID:DWORD,lpszMenuItem:DWORD
-
-	invoke AppendMenu,hMnu,MF_STRING,nID,lpszMenuItem
-	ret
-
-AddMenuItem endp
-
 UpdateMenu proc hMnu:HMENU
 	LOCAL	mii:MENUITEMINFO
 
@@ -40,7 +33,7 @@ UpdateMenu proc hMnu:HMENU
 	mov		mii.fMask,MIIM_SUBMENU
 	mov		edx,lpHandles
 	invoke GetMenuItemInfo,[edx].ADDINHANDLES.hMenu,IDM_TOOLS,FALSE,addr mii
-	invoke AddMenuItem,mii.hSubMenu,[IDAddIn],offset szMenuName
+	invoke AppendMenu,mii.hSubMenu,MF_STRING,[IDAddIn],offset szMenuName
 	ret
 
 UpdateMenu endp

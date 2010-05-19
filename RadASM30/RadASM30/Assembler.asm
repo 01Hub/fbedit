@@ -672,6 +672,11 @@ OpenAssembler proc uses ebx esi edi
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp,sizeof da.szLinkHelp
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
 		.endif
+		;Can debug
+		invoke GetPrivateProfileInt,addr szIniMake,addr szIniDebug,0,addr da.szAssemblerIni
+		mov		da.fCanDebug,eax
+		invoke RtlZeroMemory,offset da.szNoDebug,sizeof da.szNoDebug
+		mov		da.fMainThread,0
 		;Get make command lines
 		invoke GetMakeCommands
 		;Get run options

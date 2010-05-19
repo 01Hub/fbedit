@@ -765,15 +765,13 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 			.elseif eax==UAM_SET_BREAKPOINTS
 				invoke GetWindowLong,[ebx].TABMEM.hedt,GWL_ID
 				.if eax==ID_EDITCODE
-;					invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff[1000]
-;					invoke RemovePath,addr [ebx].TABMEM.filename,addr tmpbuff[1000],addr tmpbuff
 					mov		eax,-1
 					.while TRUE
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_NEXTBREAKPOINT,eax,0
 						.break .if eax==-1
 						push	eax
 						lea		edx,[eax+1]
-						invoke DebugCommand,FUNC_BPADDLINE,edx,addr [ebx].TABMEM.filename;tmpbuff
+						invoke DebugCommand,FUNC_BPADDLINE,edx,addr [ebx].TABMEM.filename
 						pop		eax
 					.endw
 				.endif
@@ -1708,29 +1706,55 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	.elseif eax==7
 		;Debug
 		xor		eax,eax
-		.if esi==ID_EDITCODE
-			invoke UpdateAll,UAM_ANYBREAKPOINTS,0
-			inc		eax
+		.if da.fCanDebug
+			.if esi==ID_EDITCODE
+				invoke UpdateAll,UAM_ANYBREAKPOINTS,0
+				inc		eax
+			.endif
+			push	eax
+			push	IDM_DEBUG_CLEAR
+			xor		eax,eax
+			.if esi==ID_EDITCODE
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_DEBUG_TOGGLE
+			push	TRUE
+			push	IDM_DEBUG_RUN
+			mov		eax,da.fDebugging
+			push	eax
+			push	IDM_DEBUG_BREAK
+			push	eax
+			push	IDM_DEBUG_STOP
+			push	eax
+			push	IDM_DEBUG_INTO
+			push	eax
+			push	IDM_DEBUG_OVER
+			push	eax
+			push	IDM_DEBUG_CARET
+			xor		eax,TRUE
+			push	eax
+			push	IDM_DEBUG_NODEBUG
+		.else
+			push	eax
+			push	IDM_DEBUG_CLEAR
+			push	eax
+			push	IDM_DEBUG_TOGGLE
+			push	eax
+			push	IDM_DEBUG_RUN
+			push	eax
+			push	IDM_DEBUG_BREAK
+			push	eax
+			push	IDM_DEBUG_STOP
+			push	eax
+			push	IDM_DEBUG_INTO
+			push	eax
+			push	IDM_DEBUG_OVER
+			push	eax
+			push	IDM_DEBUG_CARET
+			push	eax
+			push	IDM_DEBUG_NODEBUG
 		.endif
-		push	eax
-		push	IDM_DEBUG_CLEAR
-		xor		eax,eax
-		.if esi==ID_EDITCODE
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_DEBUG_TOGGLE
-		mov		eax,da.fDebugging
-		push	eax
-		push	IDM_DEBUG_BREAK
-		push	eax
-		push	IDM_DEBUG_STOP
-		push	eax
-		push	IDM_DEBUG_INTO
-		push	eax
-		push	IDM_DEBUG_OVER
-		push	eax
-		push	IDM_DEBUG_CARET
 	.elseif eax==8
 		;Tools
 	.elseif eax==9

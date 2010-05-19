@@ -15,20 +15,20 @@ include TbrCreate.inc
 
 .code
 
-UpdateMenu proc hMnu:HMENU
-	LOCAL	mii:MENUITEMINFO
-
-	mov		mii.cbSize,sizeof MENUITEMINFO
-	mov		mii.fMask,MIIM_ID or MIIM_TYPE
-	mov		mii.fType,MFT_STRING
-	mov		eax,MenuIDAddin
-	mov		mii.wID,eax
-	mov		mii.dwTypeData,offset szMenuItem
-	invoke InsertMenuItem,hMnu,IDM_FILE_NEW,FALSE,addr mii
-	ret
-
-UpdateMenu endp
-
+;UpdateMenu proc hMnu:HMENU
+;	LOCAL	mii:MENUITEMINFO
+;
+;	mov		mii.cbSize,sizeof MENUITEMINFO
+;	mov		mii.fMask,MIIM_ID or MIIM_TYPE
+;	mov		mii.fType,MFT_STRING
+;	mov		eax,MenuIDAddin
+;	mov		mii.wID,eax
+;	mov		mii.dwTypeData,offset szMenuItem
+;	invoke InsertMenuItem,hMnu,IDM_FILE_NEW,FALSE,addr mii
+;	ret
+;
+;UpdateMenu endp
+;
 OutputString proc uses ebx,lpString:DWORD
 
 	mov		ebx,lpProc
@@ -852,7 +852,7 @@ InstallAddin proc uses ebx,hWin:DWORD
 	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_GETFILTERSTRING,0,addr buffer
 	invoke lstrcat,addr buffer,offset szTbrFilter
 	invoke SendMessage,[ebx].ADDINHANDLES.hFileBrowser,FBM_SETFILTERSTRING,TRUE,addr buffer
-	mov		hook.hook1,HOOK_COMMAND or HOOK_MENUUPDATE or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_GETMODIFY or HOOK_GETFILETYPE or HOOK_FILENAMECHANGED
+	mov		hook.hook1,HOOK_COMMAND or HOOK_FILEOPEN or HOOK_FILESAVE or HOOK_GETMODIFY or HOOK_GETFILETYPE or HOOK_FILENAMECHANGED; or HOOK_MENUUPDATE
 	xor		eax,eax
 	mov		hook.hook2,eax
 	mov		hook.hook3,eax
@@ -886,8 +886,8 @@ AddinProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,TRUE
 			jmp		ExRet
 		.endif
-	.elseif eax==AIM_MENUUPDATE
-		invoke UpdateMenu,wParam
+;	.elseif eax==AIM_MENUUPDATE
+;		invoke UpdateMenu,wParam
 	.elseif eax==AIM_FILEOPEN
 		invoke lstrlen,lParam
 		mov		edx,lParam
