@@ -329,6 +329,8 @@ szAddExistingProjectFiles		db 'Add Existing Files To Project',0
 szDeleted						db 'Deleted: ',0
 szUnsaved						db 'There are %d unsaved source files.',0
 szNewer							db 'There are %d source files newer than the .exe.',0
+szChanged						db 'File is changed outside editor',0Dh,0
+szReopen						db 0Dh,0Dh,'Reopen the file?',0
 
 defcol							dd 00800040h,00800040h,00800040h,00800040h,00800040h,10800040h,00800040h,00800040h,01800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h,00800040h
 								dd 00FFFFFFh,00000000h,00800000h,00FFFFFFh,02008000h,00A00000h,000000A0h,00F0C0C0h,00C0F0C0h,00C0C0F0h,00E0E0E0h,00808080h,00800000h,00808080h,00FFFFFFh,00FFFFFFh,00FFFFFFh,00FFFFFFh,0000F0F0h,0000F000h

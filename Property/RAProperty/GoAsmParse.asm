@@ -1008,42 +1008,43 @@ ParseStruct:
 				.endif
 			.else
 	  		  ParseStruct3:
-				.if byte ptr [edi]==','
+	  			.if edi<offset szname+3200
+					.if byte ptr [edi]==','
+						inc		edi
+					.endif
+					.if byte ptr szstructnest
+						invoke strcpy,edi,offset szstructnest
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+					.endif
+					mov		eax,len1
+					inc		eax
+					invoke strcpyn,edi,lpword1,eax
+					add		edi,len1
+					call	ArraySize
+					.if byte ptr szname[8192]
+						mov		byte ptr [edi],'['
+						inc		edi
+						invoke strcpy,edi,addr szname[8192]
+						invoke strlen,edi
+						lea		edi,[edi+eax]
+						mov		byte ptr [edi],']'
+						inc		edi
+					.endif
+					mov		word ptr [edi],':'
 					inc		edi
-				.endif
-				.if byte ptr szstructnest
-					invoke strcpy,edi,offset szstructnest
-					invoke strlen,edi
+					mov		eax,lpword2
+					mov		lpdatatype,eax
+					mov		eax,len2
+					mov		lendatatype,eax
+					call	ConvDataType
+					mov		edx,edi
+					mov		eax,lendatatype
 					lea		edi,[edi+eax]
+					inc		eax
+					invoke strcpyn,edx,lpdatatype,eax
+					mov		word ptr [edi],','
 				.endif
-				mov		eax,len1
-				inc		eax
-				invoke strcpyn,edi,lpword1,eax
-				add		edi,len1
-
-				call	ArraySize
-				.if byte ptr szname[8192]
-					mov		byte ptr [edi],'['
-					inc		edi
-					invoke strcpy,edi,addr szname[8192]
-					invoke strlen,edi
-					lea		edi,[edi+eax]
-					mov		byte ptr [edi],']'
-					inc		edi
-				.endif
-				mov		word ptr [edi],':'
-				inc		edi
-				mov		eax,lpword2
-				mov		lpdatatype,eax
-				mov		eax,len2
-				mov		lendatatype,eax
-				call	ConvDataType
-				mov		edx,edi
-				mov		eax,lendatatype
-				lea		edi,[edi+eax]
-				inc		eax
-				invoke strcpyn,edx,lpdatatype,eax
-				mov		word ptr [edi],','
 			.endif
 		.endif
 	.endw

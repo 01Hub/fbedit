@@ -26,6 +26,7 @@ include ExceptionHandler.asm
 include Sniplets.asm
 include Print.asm
 include Debug.asm
+include Test.asm
 
 .code
 
@@ -37,6 +38,7 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke EnableToolBar
 			invoke ShowProc,da.nLastLine
 			invoke UpdateAll,UAM_PARSE,0
+			invoke UpdateAll,UAM_IS_CHANGED,0
 		.endif
 	.endif
 	ret
@@ -1466,6 +1468,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,ebx,EM_EXSETSEL,0,addr chrg
 				invoke SendMessage,ebx,WM_CUT,0,0
 			.elseif eax==IDM_OUTPUT_COPY
+invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 				invoke SendMessage,ha.hTabOutput,TCM_GETCURSEL,0,0
 				mov		ebx,ha.hOutput
 				.if eax

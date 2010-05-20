@@ -97,7 +97,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=20
+MilestoneOnDateDate=21
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -153,14 +153,14 @@ ProductVer4Range=0
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2611
-9=0,0,0,0,2917
+7=0,0,0,0,2859
+9=0,0,0,0,676
 10=0,0,0,0,489
 11=0,0,746,498,14082
 12=0,0,0,0,2850
-13=0,0,0,0,5874
-14=0,0,0,0,15880
-15=0,0,0,0,11980
+13=0,0,0,0,669
+14=0,0,0,0,21415
+15=0,0,0,0,19129
 [BookMark]
 0=
 1=
@@ -178,18 +178,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,10,14,15,11,13,2,7,4,9
 [PTimer]
-PTimer=190040137
+PTimer=191161878
 [Find]
-1="[ebx].RAPROPERTY.nlanguage"
-2="M"
-3="invoke M"
-4="SaveParam"
-5="PRM_ADDPROPERTYFILE"
-6="hMemArray"
-7="lpignore"
-8="cbsize"
-9="hmem"
-10="rpfreedeftype"
+1="xor ecx,ecx"
+2="globall"
+3=" mov ebx^M mov edx"
+4="mov ebx^Mmov edx^Mxor ecx"
+5="[ebx].RAPROPERTY.nlanguage"
+6="M"
+7="invoke M"
+8="SaveParam"
+9="PRM_ADDPROPERTYFILE"
+10="hMemArray"
 
 [Exports]
 1=GetDefEx

@@ -786,6 +786,27 @@ UpdateAll proc uses ebx esi edi,nFunction:DWORD,lParam:DWORD
 				.if eax==ID_EDITCODE
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_READONLY,0,FALSE
 				.endif
+			.elseif eax==UAM_IS_CHANGED && !da.fNoChangeNotify
+				mov		[ebx].TABMEM.fnonotify,FALSE
+				.if [ebx].TABMEM.nchange
+;					invoke ReleaseCapture
+					mov		da.fNoChangeNotify,TRUE
+					invoke SendMessage,ha.hTab,TCM_SETCURSEL,nInx,0
+					invoke TabToolActivate
+					mov		[ebx].TABMEM.nchange,0
+					invoke strcpy,addr LineTxt,addr szChanged
+					invoke strcat,addr LineTxt,addr [ebx].TABMEM.filename
+					invoke strcat,addr LineTxt,addr szReopen
+					invoke MessageBox,ha.hWnd,addr LineTxt,addr DisplayName,MB_YESNO or MB_ICONQUESTION
+					.if eax==IDYES
+						invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_FILE_REOPEN,0
+					.endif
+					mov		da.fNoChangeNotify,FALSE
+				.endif
+			.elseif eax==UAM_CLEAR_CHANGED
+				.if [ebx].TABMEM.nchange
+					mov		[ebx].TABMEM.nchange,0
+				.endif
 			.endif
 		.endif
 	.endw

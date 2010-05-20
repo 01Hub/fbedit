@@ -646,6 +646,7 @@ SaveTheFile proc uses ebx,hWin:HWND
 			xor		eax,eax
 		.endif
 		push	eax
+		invoke UpdateFileTime,ebx
 		invoke PostAddinMessage,hWin,AIM_FILESAVED,ID,addr [ebx].TABMEM.filename,0,HOOK_FILESAVED
 		pop		eax
 	.endif
