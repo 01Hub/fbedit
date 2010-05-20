@@ -135,18 +135,58 @@ FindErrors proc uses ebx
 	mov		nLn,ebx
 	.while nLn<eax
 		push	eax
-		call	TestLine
+		mov		eax,da.nAsm
+		.if eax==nMASM
+			call	TestLineMasm
+		.elseif eax==nGOASM
+			call	TestLineGoAsm
+		.endif
 		pop		eax
 		inc		nLn
 	.endw
 	mov		da.ErrID[ebx*4],0
 	ret
 
-TestLine:
+TestLineGoAsm:
 	mov		word ptr buffer,sizeof buffer-1
 	invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
 	mov		byte ptr buffer[eax],0
-	invoke iniInStr,addr buffer,addr szError
+	invoke iniInStr,addr buffer,addr szErrorGoAsm
+	.if eax!=-1
+		;Get next line
+		mov		word ptr buffer,sizeof buffer-1
+		mov		edx,nLn
+		invoke SendMessage,ha.hOutput,EM_GETLINE,addr [edx+1],addr buffer
+		mov		byte ptr buffer[eax],0
+		;Get the filename
+		.while eax && byte ptr buffer[eax]!='('
+			dec		eax
+		.endw
+		mov		byte ptr buffer[eax],0
+		invoke strcpy,addr tmpbuff,addr buffer[eax+1]
+		invoke strlen,addr tmpbuff
+		.while eax && tmpbuff[eax]!=')'
+			dec		eax
+		.endw
+		mov		tmpbuff[eax],0
+		xor		eax,eax
+		.while buffer[eax] && (buffer[eax]<'0' || buffer[eax]>'9')
+			inc		eax
+		.endw
+		invoke DecToBin,addr buffer[eax]
+		dec		eax
+		mov		nLnErr,eax
+		invoke strcpy,addr buffer,addr tmpbuff
+		inc		nLn
+		call	SetError
+	.endif
+	retn
+
+TestLineMasm:
+	mov		word ptr buffer,sizeof buffer-1
+	invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
+	mov		byte ptr buffer[eax],0
+	invoke iniInStr,addr buffer,addr szErrorMasm
 	.if eax!=-1
 		.while eax && byte ptr buffer[eax]!='('
 			dec		eax
@@ -160,38 +200,42 @@ TestLine:
 			dec		eax
 		.endw
 		invoke strcpy,addr buffer,addr buffer[eax]
-		invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff
-		invoke strcat,addr tmpbuff,addr szBS
-		invoke strcat,addr tmpbuff,addr buffer
-		invoke strcpy,addr buffer,addr tmpbuff
-		invoke GetFileAttributes,addr buffer
-		.if eax!=INVALID_HANDLE_VALUE && !(eax & FILE_ATTRIBUTE_DIRECTORY)
-			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
-			.if eax==-1
-				;File is not open, open it
-				invoke OpenTheFile,addr buffer,0
-			.endif
-			.if ha.hMdi
-				invoke GetWindowLong,ha.hEdt,GWL_ID
-				.if eax==ID_EDITCODE
-					invoke SendMessage,ha.hOutput,REM_SETBOOKMARK,nLn,6
-					invoke SendMessage,ha.hOutput,REM_LINEREDTEXT,nLn,TRUE
-					invoke SendMessage,ha.hOutput,REM_GETBMID,nLn,0
-					mov		nErr,eax
-					invoke SendMessage,ha.hEdt,REM_GETERROR,nLnErr,0
-					.if !eax
-						;Create an error bookmark.
-						invoke SendMessage,ha.hEdt,REM_SETERROR,nLnErr,nErr
-						;Save the error id in an array
-						.if ebx<255
-							mov		eax,nErr
-							mov		da.ErrID[ebx*4],eax
-							inc		ebx
-						.endif
-					.else
-						;Line already has an error bookmark, just update bookmark id in output window
-						invoke SendMessage,ha.hOutput,REM_SETBMID,nLn,eax
+		call	SetError
+	.endif
+	retn
+
+SetError:
+	invoke GetCurrentDirectory,MAX_PATH,addr tmpbuff
+	invoke strcat,addr tmpbuff,addr szBS
+	invoke strcat,addr tmpbuff,addr buffer
+	invoke strcpy,addr buffer,addr tmpbuff
+	invoke GetFileAttributes,addr buffer
+	.if eax!=INVALID_HANDLE_VALUE && !(eax & FILE_ATTRIBUTE_DIRECTORY)
+		invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+		.if eax==-1
+			;File is not open, open it
+			invoke OpenTheFile,addr buffer,0
+		.endif
+		.if ha.hMdi
+			invoke GetWindowLong,ha.hEdt,GWL_ID
+			.if eax==ID_EDITCODE
+				invoke SendMessage,ha.hOutput,REM_SETBOOKMARK,nLn,6
+				invoke SendMessage,ha.hOutput,REM_LINEREDTEXT,nLn,TRUE
+				invoke SendMessage,ha.hOutput,REM_GETBMID,nLn,0
+				mov		nErr,eax
+				invoke SendMessage,ha.hEdt,REM_GETERROR,nLnErr,0
+				.if !eax
+					;Create an error bookmark.
+					invoke SendMessage,ha.hEdt,REM_SETERROR,nLnErr,nErr
+					;Save the error id in an array
+					.if ebx<255
+						mov		eax,nErr
+						mov		da.ErrID[ebx*4],eax
+						inc		ebx
 					.endif
+				.else
+					;Line already has an error bookmark, just update bookmark id in output window
+					invoke SendMessage,ha.hOutput,REM_SETBMID,nLn,eax
 				.endif
 			.endif
 		.endif

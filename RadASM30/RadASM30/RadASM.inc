@@ -224,7 +224,8 @@ szDollarM						db '$M',0						;Modules file
 szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
-szError							db ': error ',0
+szErrorMasm						db ': error ',0
+szErrorGoAsm					db 'Error!',0
 szADotA							db '*.*',0
 
 ;Code properties
