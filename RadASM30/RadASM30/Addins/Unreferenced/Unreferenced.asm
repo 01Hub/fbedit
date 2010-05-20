@@ -1,12 +1,12 @@
 ;#########################################################################
-;		Assembler directives
+;Assembler directives
 
 .486
 .model flat,stdcall
 option casemap:none
 
 ;#########################################################################
-;		Include file
+;Include file
 
 include Unreferenced.inc
 
@@ -442,7 +442,6 @@ DllEntry proc hInst:HINSTANCE,reason:DWORD,reserved1:DWORD
 
 DllEntry Endp
 
-; Export this proc (it is autoexported if MakeDef is enabled with option 2)
 InstallAddin proc uses ebx hWin:DWORD
 
 	mov		ebx,hWin
@@ -468,10 +467,9 @@ InstallAddin proc uses ebx hWin:DWORD
 
 InstallAddin Endp
 
-; Export this proc (it is autoexported if MakeDef is enabled with option 2)
+; This proc handles messages sent from RadASM to our dll
+; Return TRUE to prevent RadASM and other DLL's from further processing
 AddinProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	; This proc handles messages sent from RadASM to our dll
-	; Return TRUE to prevent RadASM and other DLL's from
 
 	mov		eax,uMsg
 	.if eax==AIM_COMMAND
@@ -479,31 +477,51 @@ AddinProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	edx,ax
 		shr		eax,16
 		.if edx==IDAddIn && eax==BN_CLICKED
+			;Define . as a character
+			mov		edi,lpData
+			mov		edi,[edi].ADDINDATA.lpCharTab
+			movzx	eax,byte ptr [edi+2Eh]
+			push	eax
+			mov		byte ptr [edi+2Eh],CT_CHAR
+			;Load all code files in the project
 			invoke LoadFiles
 			mov		edi,eax
 			push	eax
+			;Remove unwanted things from the files
 			invoke FixFiles,edi
+			;Find unreferenced global variables
 			invoke FindGlobals,edi
+			;Find unreferenced local variables
 			invoke FindLocals,edi
+			;Free the memory
 			.while [edi].FILES.hMem
 				invoke GlobalFree,[edi].FILES.hMem
 				lea		edi,[edi+sizeof FILES]
 			.endw
 			pop		eax
 			invoke GlobalFree,eax
+			;Show result
 			invoke ShowResult
+			;Goto first error
 			mov		eax,lpData
 			.if [eax].ADDINDATA.ErrID
 				mov		eax,lpHandles
 				invoke SendMessage,[eax].ADDINHANDLES.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
 			.endif
+			;Restore .
+			mov		edi,lpData
+			mov		edi,[edi].ADDINDATA.lpCharTab
+			pop		eax
+			mov		[edi+2Eh],al
 			mov		eax,TRUE
 			ret
 		.endif
 	.elseif eax==AIM_MENUUPDATE
+		;Add our menu item
 		invoke UpdateMenu,wParam
 	.elseif eax==AIM_MENUENABLE
 		.if wParam==IDM_TOOLS
+			;Enable menu if a project is loaded
 			mov		edx,lpData
 			mov		eax,MF_BYCOMMAND or MF_GRAYED
 			.if [edx].ADDINDATA.fProject
