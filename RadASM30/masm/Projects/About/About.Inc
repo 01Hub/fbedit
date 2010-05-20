@@ -15,6 +15,12 @@ DlgProc			PROTO	:HWND,:UINT,:WPARAM,:LPARAM
 
 IDD_MAIN		equ 101
 
+MYSTRUCT struct
+	aa		dd ?
+	bb		dd ?
+	rc		RECT <>
+MYSTRUCT ends
+
 ;#########################################################################
 
 .data?
@@ -22,6 +28,7 @@ IDD_MAIN		equ 101
 hInstance		dd		?
 x				dd		?
 rect			RECT <>
+ms				MYSTRUCT <>
 
 ;#########################################################################
 

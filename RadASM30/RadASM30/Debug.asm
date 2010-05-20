@@ -144,6 +144,7 @@ DebugStart proc
 	mov		edx,sizeof MAKE
 	mul		edx
 	invoke SetOutputFile,addr da.make.szOutLink[eax],offset da.szMainAsm
+	invoke Unquote,offset makeexe.output
 	.if da.fProject
 		invoke strcpy,addr dbginf.FileName,offset da.szProjectPath
 		invoke strcat,addr dbginf.FileName,offset szBS

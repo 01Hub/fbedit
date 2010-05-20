@@ -44,6 +44,7 @@ ClearMenu proc hSubMenu:DWORD,nID:DWORD
 	mov		nInx,20
 	.while nInx
 		invoke DeleteMenu,hSubMenu,nID,MF_BYCOMMAND
+		.break .if !eax
 		inc		nID
 		dec		nInx
 	.endw
@@ -61,9 +62,7 @@ SetToolMenu proc
 
 	mov		mii.cbSize,sizeof MENUITEMINFO
 	mov		mii.fMask,MIIM_SUBMENU
-	invoke GetMenu,ha.hWnd
-	mov		edx,eax
-	invoke GetMenuItemInfo,edx,IDM_TOOLS,FALSE,addr mii
+	invoke GetMenuItemInfo,ha.hMenu,IDM_TOOLS,FALSE,addr mii
 	mov		eax,mii.hSubMenu
 	mov		hSubMnu,eax
 	mov		nID,IDM_TOOLS_START
@@ -78,9 +77,23 @@ SetToolMenu proc
 			movzx	eax,mnu.szcap
 			.if eax
 				.if eax=='-'
-					invoke AppendMenu,hSubMnu,MF_SEPARATOR,nID,addr szNULL
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_TYPE or MIIM_ID
+					mov		mii.fType,MFT_SEPARATOR
+					mov		eax,nID
+					mov		mii.wID,eax
+					mov		edx,nInx
+					invoke InsertMenuItem,hSubMnu,addr [edx+2],TRUE,addr mii
 				.else
-					invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_TYPE or MIIM_ID
+					mov		mii.fType,MFT_STRING
+					mov		eax,nID
+					mov		mii.wID,eax
+					lea		eax,mnu.szcap
+					mov		mii.dwTypeData,eax
+					mov		edx,nInx
+					invoke InsertMenuItem,hSubMnu,addr [edx+2],TRUE,addr mii
 				.endif
 				inc		nID
 			.endif
@@ -118,9 +131,23 @@ SetHelpMenu proc
 			movzx	eax,mnu.szcap
 			.if eax
 				.if eax=='-'
-					invoke AppendMenu,hSubMnu,MF_SEPARATOR,nID,addr szNULL
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_TYPE or MIIM_ID
+					mov		mii.fType,MFT_SEPARATOR
+					mov		eax,nID
+					mov		mii.wID,eax
+					mov		edx,nInx
+					invoke InsertMenuItem,hSubMnu,addr [edx+2],TRUE,addr mii
 				.else
-					invoke AppendMenu,hSubMnu,MF_STRING,nID,addr mnu.szcap
+					mov		mii.cbSize,sizeof MENUITEMINFO
+					mov		mii.fMask,MIIM_TYPE or MIIM_ID
+					mov		mii.fType,MFT_STRING
+					mov		eax,nID
+					mov		mii.wID,eax
+					lea		eax,mnu.szcap
+					mov		mii.dwTypeData,eax
+					mov		edx,nInx
+					invoke InsertMenuItem,hSubMnu,addr [edx+2],TRUE,addr mii
 				.endif
 				inc		nID
 			.endif

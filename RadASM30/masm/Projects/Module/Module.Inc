@@ -16,7 +16,6 @@ Module2			PROTO	:HWND
 Module3			PROTO	:HWND
 Module4			PROTO	:HWND
 
-
 .const
 
 IDD_DIALOG1		equ 101

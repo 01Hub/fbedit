@@ -17,9 +17,21 @@ start:
 ;########################################################################
 
 DlgProc	proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	mys:MYSTRUCT
 
 	mov		eax,uMsg
 	.IF	eax==WM_INITDIALOG
+		mov		eax,mys.rc.left
+		mov		eax,ms.rc.right
+		lea		eax,mys
+		mov		eax,[eax].MYSTRUCT.rc.left
+		lea		eax,mys
+		mov		eax,(MYSTRUCT ptr [eax]).rc.top
+
+		assume	edx:ptr MYSTRUCT
+		lea		edx,mys
+		mov		eax,[edx].rc.left
+		assume	edx:nothing
 		;initialization here
 	.ELSEIF	eax==WM_COMMAND
 		mov		edx,wParam

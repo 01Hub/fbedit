@@ -6,6 +6,8 @@
 
 .DATA
 	hInst				DD 	0
+	mys					MYSTRUCT <>
+	frect				RECT <>
 
 ;##################################################################
 
@@ -18,13 +20,21 @@ Start:
 	INVOKE ExitProcess,0
 
 DlgProc FRAME hwnd,uMsg,wParam,lParam
-	MOV EAX,[uMsg]
+	LOCAL	buffer[256]	:B
+	LOCAL	ms			:MYSTRUCT
 
+mov D[mys.rc.left],0
+mov [frect.top],eax
+mov D[ms.rc.top],0
+lea eax,ms
+mov D[eax+MYSTRUCT.rc.left],0
+mov eax,RECT.bottom
+
+	MOV EAX,[uMsg]
 	.WMINITDIALOG
 		CMP EAX,WM_INITDIALOG
 		JNE >.WMCOMMAND
 		JMP >.EXIT
-
 	.WMCOMMAND
 		CMP EAX,WM_COMMAND
 		JNE >.WMCLOSE

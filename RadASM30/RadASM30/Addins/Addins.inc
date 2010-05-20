@@ -579,6 +579,7 @@ TABMEM struct
 	nlastpropline		DWORD ?
 TABMEM ends
 
+;Messages to the UpdateAll proc
 UAM_ISOPEN						equ 1
 UAM_ISOPENACTIVATE				equ 2
 UAM_ISRESOPEN					equ 3

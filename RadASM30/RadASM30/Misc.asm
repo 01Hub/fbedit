@@ -1629,38 +1629,38 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		mul		edx
 		mov		edi,eax
 		xor		eax,eax
-		.if da.szMainRC && da.make.szCompileRC[edi]
+		.if da.szMainRC && da.make.szOutCompileRC[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_COMPILE
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi]
+		.if da.szMainAsm && da.make.szOutAssemble[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_ASSEMBLE
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+		.if da.szMainAsm && da.make.szOutAssemble[edi] && (da.make.szOutLink[edi] || da.make.szOutLib[edi])
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_BUILD
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
 			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
 			inc		eax
 		.endif
 		push	eax
 		push	IDM_MAKE_GO
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_LINK
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
 			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
 			inc		eax
 		.endif

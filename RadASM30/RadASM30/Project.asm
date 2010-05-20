@@ -34,8 +34,8 @@ IDC_STCPROJECTTEMPLATE			equ 1001
 IDD_DLGNEWTEMPLATE				equ 3700
 IDC_EDTDESCRIPTION				equ 1001
 IDC_LSTFILES					equ 1002
-IDC_BTNADD						equ 1003
-IDC_BTNDEL						equ 1004
+IDC_BTNTPLADD					equ 1003
+IDC_BTNTPLDEL					equ 1004
 IDC_EDTFILENAME					equ 1005
 IDC_BTNFILENAME					equ 1006
 IDC_CBOTBLBUILD					equ 1008
@@ -60,11 +60,7 @@ szBEGINBIN						db '[*BEGINBIN*]',0
 szENDBIN						db '[*ENDBIN*]',0
 TPLFilterString					db 'Template (*.tpl)',0,'*.tpl',0,0
 szTplFile						db 'tpl',0
-;ALLFilterString					db 'All files (*.*)',0,'*.*',0,0
-;szDefTxt						db '.asm.inc.rc.def.txt.xml.',0
-;szDefBin						db '.tbr.obj.lib.res.bmp.ico.cur.',0
 
-;szErrNoMain						db 'No main file is selected or the selected file is not a .asm file.',0
 szErrNotInPath					db 'The file(s) is not in the project path:',0Dh,0Ah,0
 szErrUnknownType				db 'The file type is unknown.',0Dh,0Ah,0
 szInclude						db 'include',0
@@ -75,8 +71,6 @@ szLibrary						db 'library',0
 hTabNewProject					HWND 4 dup(?)
 projectfile						BYTE MAX_PATH dup(?)
 templatepath					BYTE MAX_PATH dup(?)
-;szTemplateTxt					BYTE MAX_PATH dup(?)
-;szTemplateBin					BYTE MAX_PATH dup(?)
 
 .code
 
@@ -163,7 +157,6 @@ IsLine endp
 CreateTemplate proc uses ebx esi edi,hWin:HWND
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
-;	LOCAL	path[MAX_PATH]:BYTE
 	LOCAL	main[MAX_PATH]:BYTE
 	LOCAL	hTplMem:HGLOBAL
 	LOCAL	hFile:HANDLE
@@ -523,7 +516,7 @@ NewTemplateDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 				.if eax
 					invoke SetDlgItemText,hWin,IDC_EDTFILENAME,addr buffer
 				.endif
-			.elseif eax==IDC_BTNADD
+			.elseif eax==IDC_BTNTPLADD
 				invoke RtlZeroMemory,addr ofn,SizeOf OPENFILENAME
 				mov		ofn.lStructSize,SizeOf OPENFILENAME
 				mov		eax,hWin
@@ -564,7 +557,7 @@ NewTemplateDialogProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lP
 						.endif
 					.endif
 				.endif
-			.elseif eax==IDC_BTNDEL
+			.elseif eax==IDC_BTNTPLDEL
 				invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_GETCURSEL,0,0
 				.if eax!=LB_ERR
 					invoke SendDlgItemMessage,hWin,IDC_LSTFILES,LB_DELETESTRING,eax,0

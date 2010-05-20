@@ -214,10 +214,13 @@ szBSBakBS						db '\Bak\',0
 szBSSniplets					db '\Sniplets',0
 szSpc							db ' ',0
 szNULL							db 0
-szDollarA						db '$A',0
-szDollarD						db '$D',0
-szDollarO						db '$O',0
-szDollarR						db '$R',0
+szDollarA						db '$A',0						;App path
+szDollarC						db '$C',0						;Main code file without extention
+szDollarR						db '$R',0						;Main resource script file without extention
+szDollarD						db '$D',0						;def file
+szDollarO						db '$O',0						;Output file
+szDollarM						db '$M',0						;Modules file
+
 szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
@@ -313,9 +316,7 @@ szFileChanged					db 'The file is changed. Continue?',0Dh,0
 szRadASMVersion					db 'The RadASM.ini file is an older version or is missing.',0Dh,0
 szProjectVersion				db 'The project file is an older version.',0
 szAssemblerVersion				db 'The Assembler.ini file is an older version or is missing.',0Dh,0
-;szNoMain						db 'No main file selected.',0Dh,0
 szErrDir						db 'Could not create directory!',0Dh,0
-;szErrOpenDir					db 'Could not open directory!',0Dh,0
 szErrOverwrite					db 'Overwrite existing file?',0Dh,0
 szErrCreate						db 'Could not create the file!',0Dh,0
 szErrFileExists					db 'The file exists!',0Dh,0

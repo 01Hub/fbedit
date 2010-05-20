@@ -40,6 +40,6 @@ B5=
 M5=
 [Make]
 Make=0
-0=Library,'',,'/c /coff /Cp',$A.obj,'',,'/VERBOSE /SUBSYSTEM:WINDOWS /OUT:$O',..\..\Lib\Debug.lib
+0=Library,'',,'/c /coff /Cp "$C"',"$C.obj",'',,'/VERBOSE /SUBSYSTEM:WINDOWS /OUT:$O $C',"..\..\Lib\Debug.lib"
 Delete=1
 Run=0,'',''

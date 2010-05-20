@@ -1,7 +1,6 @@
 BUGS / TODO
 -----------
 - External files in project does not work.
-- Updating tools and help menu should keep its positions.
 - File changed notification not implemented.
 - Language translation not implemented.
 - Programming language selection tool not implemented.

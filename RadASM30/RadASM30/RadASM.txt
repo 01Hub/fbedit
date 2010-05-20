@@ -1,0 +1,37 @@
+SETUP
+-----
+RadASM must be configured to reflect your installation of RadASM, assembler / compiler  and help files.
+
+Option / Environment
+--------------------
+The environment must be set up for each assembler / compiler.
+By default the environment is configured to assume:
+- RadASM is installed in DRIVE:\RadASM
+- Masm is installed to DRIVE:\Masm32 with the binaries in bin folder, include files in include
+  folder and libraries in lib folder.
+- GoAsm is installed to DRIVE:\GoAsm with the binaries in bin folder and include files in headers.
+
+The environment has been made relative to the RadASM folder so you can have everything on a
+memory stick where the drive letter can change.
+
+Option / Make
+-------------
+Here you specify make types and assembler / linker / compiler commandline switches and the
+resulting output file. There can be max 32 make types. To help protect your computer the
+actual exe to run is specified in Assembler.ini, not in the project file.
+
+Option / Tools Menu
+------------------
+Here you can add tools that you often use.
+The menu is specific to each assembler / compiler.
+
+Option / Help Menu
+------------------
+Here you can add help files and links to web sites.
+The menu is specific to each assembler / compiler.
+
+Option / F1-Help
+----------------
+Here you must specify help files for api, rc and assembler / compiler.
+The F1-Help is specific to each assembler / compiler.
+The Option / Code Editor / Syntax words is used to select wich help file to show.

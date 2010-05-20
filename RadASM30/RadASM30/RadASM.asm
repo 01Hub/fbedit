@@ -2906,6 +2906,8 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						.endif
 					.endif
 				.endif
+				mov		eax,[esi].RASELCHANGE.line
+				mov		da.nLastLine,eax
 				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
@@ -3007,9 +3009,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endif
 		xor		eax,eax
 		jmp		Ex
-	.elseif eax==WM_MOVE
-	.elseif eax==WM_DESTROY
-	.elseif eax==WM_ERASEBKGND
+;	.elseif eax==WM_MOVE
+;	.elseif eax==WM_DESTROY
+;	.elseif eax==WM_ERASEBKGND
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
   Ex:

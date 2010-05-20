@@ -26,13 +26,12 @@ F5=-3,0,1,220,220,1036,444,0,raASCII.Inc
 C5=0
 B5=
 M5=
-F3=-2,2,1,176,176,1036,444,28,raASCII.Asm
+F3=-2,2,1,176,176,1036,444,11,raASCII.Asm
 C3=0
 B3=
 M3=
 [Make]
 Make=0
-0=Dll Release,'/v',$R.res,'/c /coff /Cp',$A.obj,'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O',..\$A.dll,'',
-1=Dll Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:$D /OUT:$O',$A.dll,'',
+0=Dll Release,'/v "$R"',"$R.res",'/c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O $C $R',"..\$C.dll",'',
 Delete=1
 Run=0,'',''

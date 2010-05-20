@@ -18,6 +18,7 @@ start:
 ;########################################################################
 
 DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
 
 	mov		eax,uMsg
 	.if eax==WM_COMMAND
@@ -33,8 +34,14 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke Module3,hWin
 			.elseif eax==1004
 				invoke Module4,hWin
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,0,0
 			.endif
 		.endif
+		mov		eax,rect.left
+		lea		eax,rect
+		mov		[eax].RECT.left,1
+		mov		eax,[eax].RECT.left
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,0
 	.else
