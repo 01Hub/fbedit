@@ -584,6 +584,8 @@ ArraySize:
 						call	SkipSpc
 						.if byte ptr [esi]=='('
 							call	SkipBrace
+						.elseif byte ptr [esi]
+							call	SkipToComma
 						.endif
 						call	SkipSpc
 						.if byte ptr szname[8192]
@@ -881,11 +883,11 @@ ParseData1:
 	; Check for mov	dword ptr [eax],1
 	invoke GoGetWord,esi,addr npos
 	mov		esi,edx
-	invoke GoIsIgnore,IGNORE_PTR,ecx,esi
-	.if eax
-		xor		eax,eax
-		retn
-	.endif
+;	invoke GoIsIgnore,IGNORE_PTR,ecx,esi
+;	.if eax
+;		xor		eax,eax
+;		retn
+;	.endif
 	call	ConvDataType
 	call	ArraySize
 	.if byte ptr szname[8192]
