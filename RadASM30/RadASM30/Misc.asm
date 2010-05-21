@@ -3543,3 +3543,16 @@ AutoBrace proc uses ebx esi edi,hWin:HWND,nChar:DWORD
 	ret
 
 AutoBrace endp
+
+GetTimeString proc lpStr:DWORD,cpMin:DWORD,cpMax:DWORD
+	LOCAL	systime:SYSTEMTIME
+
+	invoke GetSystemTime,addr systime
+	movzx	eax,systime.wHour
+	movzx	ecx,systime.wMinute
+	movzx	edx,systime.wSecond
+	invoke wsprintf,addr tmpbuff,addr szFmtTime,lpStr,eax,ecx,edx,cpMin,cpMax
+	PrintStringByAddr offset tmpbuff
+	ret
+
+GetTimeString endp

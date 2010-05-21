@@ -135,9 +135,15 @@ FindErrors proc uses ebx
 	mov		nLn,ebx
 	.while nLn<eax
 		push	eax
+		;Get the line
+		mov		word ptr buffer,sizeof buffer-1
+		invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
+		mov		buffer[eax],0
 		mov		eax,da.nAsm
 		.if eax==nMASM
 			call	TestLineMasm
+		.elseif eax==nFASM
+			call	TestLineFasm
 		.elseif eax==nGOASM
 			call	TestLineGoAsm
 		.endif
@@ -147,10 +153,26 @@ FindErrors proc uses ebx
 	mov		da.ErrID[ebx*4],0
 	ret
 
+TestLineFasm:
+	invoke iniInStr,addr buffer,addr szErrorFasm
+	.if eax!=-1
+		.while eax && buffer[eax]!='['
+			dec		eax
+		.endw
+		mov		buffer[eax],0
+		invoke DecToBin,addr buffer[eax+1]
+		dec		eax
+		mov		nLnErr,eax
+		invoke strlen,addr buffer
+		.while eax && buffer[eax-1]==' '
+			dec		eax
+			mov		buffer[eax],0
+		.endw
+		call	SetError
+	.endif
+	retn
+
 TestLineGoAsm:
-	mov		word ptr buffer,sizeof buffer-1
-	invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
-	mov		byte ptr buffer[eax],0
 	invoke iniInStr,addr buffer,addr szErrorGoAsm
 	.if eax!=-1
 		;Get next line
@@ -183,9 +205,6 @@ TestLineGoAsm:
 	retn
 
 TestLineMasm:
-	mov		word ptr buffer,sizeof buffer-1
-	invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
-	mov		byte ptr buffer[eax],0
 	invoke iniInStr,addr buffer,addr szErrorMasm
 	.if eax!=-1
 		.while eax && byte ptr buffer[eax]!='('

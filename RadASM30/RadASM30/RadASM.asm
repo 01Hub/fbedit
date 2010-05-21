@@ -39,6 +39,7 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowProc,da.nLastLine
 			invoke UpdateAll,UAM_PARSE,0
 			invoke UpdateAll,UAM_IS_CHANGED,0
+			mov		fCutPaste,0
 		.endif
 	.endif
 	ret
@@ -2353,6 +2354,13 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke ShowWindow,ha.hCC,SW_HIDE
 			.endif
 			mov		da.cctype,CCTYPE_NONE
+		.elseif edx=='X' || edx=='V'
+			invoke GetKeyState,VK_CONTROL
+			test		eax,80h
+			.if !ZERO?
+				mov		eax,wParam
+				mov		fCutPaste,eax
+			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
 		;Add the tooltip
@@ -2759,6 +2767,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,wParam
 		.if eax==ID_EDITCODE
 			.if [esi].NMHDR.code==EN_SELCHANGE
+				mov		da.fTimer,1
 				mov		eax,[esi].RASELCHANGE.chrg.cpMin
 				sub		eax,[esi].RASELCHANGE.cpLine
 				invoke ShowPos,[esi].RASELCHANGE.line,eax
@@ -2813,6 +2822,13 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,edi,0
 					.endif
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
+					mov		eax,fCutPaste
+					.if eax=='X'
+						invoke GetTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+					.elseif eax=='V'
+						invoke GetTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+					.endif
+					mov		fCutPaste,0
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
 					mov		eax,[esi].RASELCHANGE.fchanged
 					mov		da.fChanged,eax
@@ -2911,7 +2927,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 				mov		eax,[esi].RASELCHANGE.line
 				mov		da.nLastLine,eax
-				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
 			.if [esi].NMHDR.code==EN_SELCHANGE

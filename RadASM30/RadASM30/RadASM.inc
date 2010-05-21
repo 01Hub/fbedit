@@ -225,6 +225,7 @@ szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
 szErrorMasm						db ': error ',0
+szErrorFasm						db ']:',0
 szErrorGoAsm					db 'Error!',0
 szADotA							db '*.*',0
 
@@ -353,6 +354,10 @@ szPARAM							db 'PARAM ',0
 szLOCAL							db 'LOCAL ',0
 szLABEL							db 'LABEL ',0
 
+szFmtTime						db '%s: %02d:%02d:%02d (%d,%d)',0
+szCUT							db 'CUT',0
+szPASTE							db 'PASTE',0
+
 .data
 
 pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime,UpdateAll>
@@ -388,3 +393,4 @@ dbginf							DEBUGINFO <>
 nUnsaved						DWORD ?
 ftexe							FILETIME <>
 nNewer							DWORD ?
+fCutPaste						DWORD ?
