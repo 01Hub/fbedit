@@ -1,4 +1,31 @@
 
+;MOUSEINPUT struct
+;	x			DWORD ?
+;	y			DWORD ?
+;	mouseData	DWORD ?
+;	dwFlags		DWORD ?
+;	time		DWORD ?
+;	dwExtraInfo	DWORD ?
+;MOUSEINPUT ends
+;
+;KEYBDINPUT struct
+;	wVk			WORD ?
+;	wScan		WORD ?
+;	dwFlags		DWORD ?
+;	time		DWORD ?
+;	dwExtraInfo	DWORD ?
+;KEYBDINPUT ends
+
+INPUT struct
+	ntype		DWORD ?
+	wVk			DWORD ?
+	dwFlags		DWORD ?
+	time		DWORD ?
+	dwExtraInfo	DWORD ? 
+	zx			DWORD ?
+	zy			DWORD ?
+INPUT ends
+
 .const
 
 szFmtTime						db '%s:',VK_TAB,'%02d:%02d:%02d (%d,%d)',0
@@ -9,9 +36,27 @@ szRadASMLog						db 'C:\RadASM.log',0
 szCRLF							db 0Dh,0Ah,0
 szCTRLX							db 'Ctrl+X',0
 szCTRLV							db 'Ctrl+V',0
-szRAE							db 'RAE:',0
-szMAIN							db 'MAIN:',0
+szRAE							db 'RAE',0
+szMAIN							db 'MAIN',0
 szMDI							db 'MDI',0
+szTIMER							db 'TIMER',0
+
+.data
+
+keycut							INPUT <INPUT_KEYBOARD,VK_CONTROL,0,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_X,0,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_X,KEYEVENTF_KEYUP,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_CONTROL,KEYEVENTF_KEYUP,0,0,0,0>
+
+keycopy							INPUT <INPUT_KEYBOARD,VK_CONTROL,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_C,0,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_C,KEYEVENTF_KEYUP,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_CONTROL,KEYEVENTF_KEYUP,0,0,0,0>
+
+keypaste						INPUT <INPUT_KEYBOARD,VK_CONTROL,0,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_V,0,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_V,KEYEVENTF_KEYUP,0,0,0,0>
+								INPUT <INPUT_KEYBOARD,VK_CONTROL,KEYEVENTF_KEYUP,0,0,0,0>
 
 .data?
 
@@ -43,19 +88,25 @@ TestProc proc uses ebx esi edi,Param:DWORD
 	LOCAL	nLnStart:DWORD
 	LOCAL	nLnEnd:DWORD
 	LOCAL	chrg:CHARRANGE
+	LOCAL	key:INPUT
 
 ;	invoke GetTickCount
 ;	mov		rseed,eax
-	.while ebx<100000
+	.while ebx<200
+		invoke SetFocus,ha.hEdt
 		invoke Random,10
 		.if eax<=6
 			call	Copy
+			invoke Sleep,20
 			call	Paste
 		.else
 			call	Cut
+			invoke Sleep,20
 			call	Paste
 		.endif
-		invoke Sleep,200
+		invoke Random,50
+		add		eax,200
+		invoke Sleep,eax
 		inc		ebx
 	.endw
 	ret
@@ -74,7 +125,13 @@ Cut:
 	invoke SendMessage,ha.hEdt,EM_LINEINDEX,nLnEnd,0
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-	invoke SendMessage,ha.hEdt,WM_CUT,0,0
+	invoke SendInput,4,addr keycut,sizeof INPUT
+	.while !fCutPaste
+		invoke Sleep,10
+	.endw
+	.while fCutPaste
+		invoke Sleep,10
+	.endw
 	retn
 
 Copy:
@@ -90,7 +147,7 @@ Copy:
 	invoke SendMessage,ha.hEdt,EM_LINEINDEX,nLnEnd,0
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-	invoke SendMessage,ha.hEdt,WM_COPY,0,0
+	invoke SendInput,4,addr keycopy,sizeof INPUT
 	retn
 
 Paste:
@@ -102,7 +159,13 @@ Paste:
 	mov		chrg.cpMin,eax
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
-	invoke SendMessage,ha.hEdt,WM_PASTE,0,0
+	invoke SendInput,4,addr keypaste,sizeof INPUT
+	.while !fCutPaste
+		invoke Sleep,10
+	.endw
+	.while fCutPaste
+		invoke Sleep,10
+	.endw
 	retn
 
 TestProc ENDP
@@ -121,7 +184,6 @@ WriteToLog proc lpStr:DWORD
 		mov		edx,eax
 		invoke WriteFile,hFile,lpStr,edx,addr dwWrite,NULL
 		invoke CloseHandle,hFile
-;PrintStringByAddr lpStr
 	.endif
 	popad
 	ret
