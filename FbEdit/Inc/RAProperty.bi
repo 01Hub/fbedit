@@ -49,8 +49,7 @@
 #Define PRM_COMPACTLIST					WM_USER+46		' bProject:RAP_BOOL,0
 
 ' Languages
-#Define nFREEBASIC						0
-#Define nMASM								1
+#Define nFREEBASIC						8
 
 ' Styles
 #Define PRSTYLE_FLATTOOLBAR			1

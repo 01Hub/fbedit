@@ -440,6 +440,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 			SendMessage(ah.hfib,FBM_SETTOOLTIP,2,Cast(LPARAM,@buff))
 			' Property definitions
 			ah.hpr=GetDlgItem(hWin,IDC_PROPERTY)
+			SendMessage(ah.hPr,PRM_SETLANGUAGE,nFREEBASIC,0)
 			buff=GetInternalString(IS_RAPROPERTY1)
 			SendMessage(ah.hpr,PRM_SETTOOLTIP,1,Cast(LPARAM,@buff))
 			buff=GetInternalString(IS_RAPROPERTY2)
@@ -1171,7 +1172,9 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 							'
 						Case IDM_FORMAT_CASECONVERT
 							If fEditFocus Then
-								CaseConvert(ah.hred)
+								If edtopt.autocase Then
+									CaseConvert(ah.hred)
+								EndIf
 							EndIf
 							'
 						Case IDM_FORMAT_INDENT

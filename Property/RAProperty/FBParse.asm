@@ -595,6 +595,10 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 						call	SkipToComma
+						.if byte ptr [esi]=='='
+							inc		esi
+							call	SkipToComma
+						.endif
 						.if byte ptr [esi]==','
 							inc		esi
 							jmp		Nxtwrd1

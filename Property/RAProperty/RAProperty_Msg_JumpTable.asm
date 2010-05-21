@@ -95,7 +95,7 @@
 		.elseif eax==nNASM
 		.elseif eax==nHLA
 		.elseif eax==nCPP
-		.elseif eax==nFREEBASIC || !eax
+		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBPreParse,lParam,FALSE
 			invoke FBParseFile,wParam,lParam
@@ -208,7 +208,7 @@
 		.elseif eax==nNASM
 		.elseif eax==nHLA
 		.elseif eax==nCPP
-		.elseif eax==nFREEBASIC || !eax
+		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
@@ -527,7 +527,7 @@
 		.elseif eax==nNASM
 		.elseif eax==nHLA
 		.elseif eax==nCPP
-		.elseif eax==nFREEBASIC || !eax
+		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
@@ -651,7 +651,7 @@
 		.elseif eax==nNASM
 		.elseif eax==nHLA
 		.elseif eax==nCPP
-		.elseif eax==nFREEBASIC || !eax
+		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBPreParse,lParam,wParam
 		.elseif eax==nFREEPASCAL

@@ -475,6 +475,7 @@ Sub FormatIndent(ByVal hWin As HWND)
 	Dim lnst As Integer
 	Dim lntop As Integer
 	Dim hCur As HCURSOR
+	Dim fAsm As Integer
 
 	' Indent / Outdent
 	lstpos.fnohandling=1
@@ -490,9 +491,17 @@ Sub FormatIndent(ByVal hWin As HWND)
 	buff=""
 	While ln<=lm
 		wp=0
+		If fAsm Then
+			wp=fAsm
+		EndIf
 		While wp<32
 			If szIndent(wp)<>szNULL Then
 				If SendMessage(hWin,REM_ISLINE,ln,Cast(LPARAM,@szIndent(wp)))>=0 Then
+					If UCase(szIndent(wp))="ASM" Then
+						fAsm=wp
+					ElseIf UCase(szIndent(wp))="END ASM" Then
+						fAsm=0
+					EndIf
 					' Get current indent
 					lz=0
 					s=buff
