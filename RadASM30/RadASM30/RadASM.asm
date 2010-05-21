@@ -2039,6 +2039,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
+		.if fCutPaste
+			invoke LogTimeMessage,addr szMAIN,hWin,uMsg,wParam,lParam
+		.endif
 		ret
 	.endif
   Ex:
@@ -2360,6 +2363,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.if !ZERO?
 				mov		eax,wParam
 				mov		fCutPaste,eax
+				.if eax=='X'
+					invoke LogTimeString,addr szCTRLX,0,0
+				.else
+					invoke LogTimeString,addr szCTRLV,0,0
+				.endif
 			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
@@ -2482,6 +2490,9 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
+	.if fCutPaste
+		invoke LogTimeMessage,addr szRAE,hWin,uMsg,wParam,lParam
+	.endif
   Ex:
 	ret
 
@@ -2824,11 +2835,10 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
 					mov		eax,fCutPaste
 					.if eax=='X'
-						invoke GetTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+						invoke LogTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
 					.elseif eax=='V'
-						invoke GetTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+						invoke LogTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
 					.endif
-					mov		fCutPaste,0
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
 					mov		eax,[esi].RASELCHANGE.fchanged
 					mov		da.fChanged,eax
@@ -3032,6 +3042,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 ;	.elseif eax==WM_ERASEBKGND
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
+	.if fCutPaste
+		invoke LogTimeMessage,addr szMDI,hWin,uMsg,wParam,lParam
+	.endif
   Ex:
 	ret
 

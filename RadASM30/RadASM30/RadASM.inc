@@ -354,10 +354,6 @@ szPARAM							db 'PARAM ',0
 szLOCAL							db 'LOCAL ',0
 szLABEL							db 'LABEL ',0
 
-szFmtTime						db '%s: %02d:%02d:%02d (%d,%d)',0
-szCUT							db 'CUT',0
-szPASTE							db 'PASTE',0
-
 .data
 
 pa								ADDINPROCS <OpenTheFile,SetOutputTab,ShowOutput,TextOutput,TabToolSetChanged,TabToolGetMem,TabToolAdd,TabToolActivate,UpdateFileName,UpdateFileTime,UpdateAll>
@@ -393,4 +389,3 @@ dbginf							DEBUGINFO <>
 nUnsaved						DWORD ?
 ftexe							FILETIME <>
 nNewer							DWORD ?
-fCutPaste						DWORD ?
