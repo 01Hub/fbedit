@@ -85,6 +85,9 @@
 			invoke MParseFile,wParam,lParam
 		.elseif eax==nTASM
 		.elseif eax==nFASM
+			;Fasm
+			invoke FasmPreParse,lParam
+			invoke FasmParseFile,wParam,lParam
 		.elseif eax==nGOASM
 			; GoAsm
 			invoke GoPreParse,lParam
@@ -197,6 +200,8 @@
 			invoke MDestroyCommentsStrings,lParam
 		.elseif eax==nTASM
 		.elseif eax==nFASM
+			; Fasm
+			invoke FasmDestroyCommentsStrings,lParam
 		.elseif eax==nGOASM
 			; GoAsm
 			invoke GoDestroyCommentsStrings,lParam
@@ -514,6 +519,8 @@
 			invoke MDestroyCommentsStrings,lParam
 		.elseif eax==nTASM
 		.elseif eax==nFASM
+			; Fasm
+			invoke FasmDestroyCommentsStrings,lParam
 		.elseif eax==nGOASM
 			; GoAsm
 			invoke GoDestroyCommentsStrings,lParam
@@ -636,6 +643,8 @@
 			invoke MPreParse,lParam
 		.elseif eax==nTASM
 		.elseif eax==nFASM
+			; Fasm
+			invoke FasmPreParse,lParam
 		.elseif eax==nGOASM
 			; GoAsm
 			invoke GoPreParse,lParam

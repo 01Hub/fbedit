@@ -318,7 +318,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					invoke strcpy,edi,addr [esi+1]
 					jmp		NxMASM0
 				.endif
-				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]==VK_TAB
+				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]==VK_TAB || byte ptr [esi+eax-1]=='('
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
@@ -476,7 +476,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.endif
 				.endif
 			.endif
-		.elseif eax==nGOASM
+		.elseif eax==nGOASM || eax==nFASM
 			; Find start
 			mov		esi,offset LineTxt
 			mov		edi,esi

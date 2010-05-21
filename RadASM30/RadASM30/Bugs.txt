@@ -5,6 +5,7 @@ BUGS / TODO
 - Language translation not implemented.
 - Programming language selection tool not implemented.
 - Run with debug not implemented.
+- Caret position might be wrong when opening a project.
 
 SEVERE BUGS
 -----------

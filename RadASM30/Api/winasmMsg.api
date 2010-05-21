@@ -1,4 +1,4 @@
-M2
+M3
 BCM_GETIDEALSIZE,0,pSize|bSuccess
 BCM_GETIMAGELIST,0,pbuttonimagelist|bSuccess
 BCM_GETTEXTMARGIN,0,pmargin|bSuccess

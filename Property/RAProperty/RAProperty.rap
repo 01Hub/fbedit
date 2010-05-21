@@ -26,6 +26,7 @@ AskMe=0
 MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 14=MasmParse.asm
 15=GoAsmParse.asm
+16=FasmParse.asm
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -87,6 +88,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 13=2
 14=2
 15=2
+16=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -143,24 +145,26 @@ ProductVer4Range=0
 13=,
 14=,,,,,
 15=,,,,
+16=,,,,
 [Size]
-2=0,0,699,490,3133
+2=0,0,699,490,3197
 <<<<<<< .mine
-1=0,0,699,490,203
+1=0,0,699,490,198
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2859
+7=0,0,0,0,2810
 9=0,0,0,0,676
 10=0,0,0,0,489
-11=0,0,746,498,14082
+11=0,0,746,498,14289
 12=0,0,0,0,2850
 13=0,0,0,0,669
 14=0,0,0,0,21415
-15=0,0,0,0,19129
+15=0,0,0,0,0
+16=0,0,0,0,17281
 [BookMark]
 0=
 1=
@@ -176,20 +180,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,10,14,15,11,13,2,7,4,9
+AutoLoad=1,10,14,15,11,13,2,7,4,16
 [PTimer]
-PTimer=191161878
+PTimer=199303820
 [Find]
-1="xor ecx,ecx"
-2="globall"
-3=" mov ebx^M mov edx"
-4="mov ebx^Mmov edx^Mxor ecx"
-5="[ebx].RAPROPERTY.nlanguage"
-6="M"
-7="invoke M"
-8="SaveParam"
-9="PRM_ADDPROPERTYFILE"
-10="hMemArray"
+1="nGOASM"
+2="Go"
+3="xor ecx,ecx"
+4="globall"
+5=" mov ebx^M mov edx"
+6="mov ebx^Mmov edx^Mxor ecx"
+7="[ebx].RAPROPERTY.nlanguage"
+8="M"
+9="invoke M"
+10="SaveParam"
 
 [Exports]
 1=GetDefEx
@@ -203,5 +207,6 @@ PTimer=191161878
 11=
 2=
 15=
+16=
 [GroupExpand]
 GroupExpand=0,1,1,1,0,0,0

@@ -1182,9 +1182,11 @@ CheckMenu endp
 EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	ID:DWORD
+	LOCAL	fNoLink:DWORD
 
 	mov		ebx,ha.hEdt
 	xor		esi,esi
+	mov		fNoLink,esi
 	.if ebx
 		invoke GetWindowLong,ebx,GWL_ID
 		mov		esi,eax
@@ -1649,6 +1651,9 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		mov		edx,sizeof MAKE
 		mul		edx
 		mov		edi,eax
+		invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
+		inc		eax
+		mov		fNoLink,eax
 		xor		eax,eax
 		.if da.szMainRC && da.make.szOutCompileRC[edi]
 			mov		eax,TRUE
@@ -1662,28 +1667,34 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	eax
 		push	IDM_MAKE_ASSEMBLE
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szOutAssemble[edi] && (da.make.szOutLink[edi] || da.make.szOutLib[edi])
+		.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_BUILD
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
+		.if fNoLink && da.szMainAsm
+			inc		eax
+		.elseif da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
 			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
 			inc		eax
 		.endif
 		push	eax
 		push	IDM_MAKE_GO
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
+		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
 			mov		eax,TRUE
 		.endif
 		push	eax
 		push	IDM_MAKE_LINK
 		xor		eax,eax
-		.if da.szMainAsm && da.make.szOutAssemble[edi] && da.make.szOutLink[edi]
-			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+		.if fNoLink && da.szMainAsm
 			inc		eax
+		.else
+			.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+				invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+				inc		eax
+			.endif
 		.endif
 		push	eax
 		push	IDM_MAKE_RUN
@@ -1927,6 +1938,7 @@ EnableContextMenu endp
 
 EnableToolBar proc uses ebx esi edi
 	LOCAL	chrg:CHARRANGE
+	LOCAL	fNoLink:DWORD
 
 	mov		ebx,ha.hEdt
 	xor		esi,esi
@@ -2166,6 +2178,9 @@ EnableToolBar proc uses ebx esi edi
 	mov		edx,sizeof MAKE
 	mul		edx
 	mov		edi,eax
+	invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
+	inc		eax
+	mov		fNoLink,eax
 	xor		eax,eax
 	.if da.szMainAsm && da.make.szAssemble[edi]
 		mov		eax,TRUE
@@ -2181,7 +2196,9 @@ EnableToolBar proc uses ebx esi edi
 	push	IDM_MAKE_BUILD
 	push	ha.hTbrMake
 	xor		eax,eax
-	.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+	.if fNoLink && da.szMainAsm
+		inc		eax
+	.elseif da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
 		invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
 		inc		eax
 	.endif

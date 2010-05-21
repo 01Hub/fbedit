@@ -110,6 +110,13 @@ szGoAsmDataConv			db 'DB',0,'DB',0
 						db 'DT',0,'DT',0
 						db 'DO',0,'DO',0
 						db 0,0
+szFasmDataConv			db 'DB',0,'DB',0
+						db 'DW',0,'DW',0
+						db 'DD',0,'DD',0
+						db 'DQ',0,'DQ',0
+						db 'DT',0,'DT',0
+						db 'DO',0,'DO',0
+						db 0,0
 szAdd					db '+',0
 
 .data?
