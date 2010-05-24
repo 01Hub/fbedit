@@ -1859,9 +1859,9 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 			invoke OpenTheFile,lParam,0
 		.endif
 		invoke DebugCommand,FUNC_FILEOPEN,0,0
-	.elseif eax==WM_MEASUREITEM
-		mov		ebx,lParam
-		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
+;	.elseif eax==WM_MEASUREITEM
+;		mov		ebx,lParam
+;		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
 ;			mov		edx,[ebx].MEASUREITEMSTRUCT.itemData
 ;			.if edx
 ;				push	esi
@@ -1898,12 +1898,12 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 ;				.endif
 ;				pop		esi
 ;			.endif
-			mov		eax,TRUE
-			jmp		ExRet
-		.endif
-	.elseif eax==WM_DRAWITEM
-		mov		ebx,lParam
-		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
+;			mov		eax,TRUE
+;			jmp		ExRet
+;		.endif
+;	.elseif eax==WM_DRAWITEM
+;		mov		ebx,lParam
+;		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
 ;			push	esi
 ;			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
 ;			.if esi
@@ -2010,9 +2010,9 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 ;				invoke DeleteDC,mDC
 ;			.endif
 ;			pop		esi
-			mov		eax,TRUE
-			jmp		ExRet
-		.endif
+;			mov		eax,TRUE
+;			jmp		ExRet
+;		.endif
 	.elseif eax==AIM_GETHANDLES
 		mov		eax,offset ha
 		jmp		ExRet
@@ -2682,7 +2682,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke GetClientRect,hWin,addr rect
 		invoke MoveWindow,hEdt,0,0,rect.right,rect.bottom,TRUE
 		invoke UpdateWindow,hEdt
-	.elseif eax==WM_WINDOWPOSCHANGED
 	.elseif eax==WM_MDIACTIVATE
 		mov		eax,hWin
 		.if eax==lParam
@@ -2753,13 +2752,13 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 			.endif
 			invoke DeleteGoto,hEdt
-			invoke DestroyWindow,hEdt
 			invoke TabToolDel,hWin
 			invoke GetWindowLong,hEdt,GWL_USERDATA
 			mov		ebx,eax
 			invoke GetWindowLong,hEdt,GWL_ID
 			mov		edx,eax
 			invoke PostAddinMessage,hWin,AIM_FILECLOSED,edx,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSED
+;			invoke DestroyWindow,hEdt
 		.else
 			xor		eax,eax
 			jmp		Ex
@@ -3031,6 +3030,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.endif
 		xor		eax,eax
 		jmp		Ex
+;	.elseif eax==WM_WINDOWPOSCHANGED
 ;	.elseif eax==WM_MOVE
 ;	.elseif eax==WM_DESTROY
 ;	.elseif eax==WM_ERASEBKGND
