@@ -196,7 +196,6 @@ szBS							db '\',0
 szPipe							db '|',0
 szDot							db '.',0
 szComma							db ',',0
-szQuote							db '"',0
 szSemi							db ';',0
 szMinus							db '-',0
 szCR							db VK_RETURN,0
@@ -308,6 +307,7 @@ szIniTplTxt						db 'TplTxt',0
 szIniTplBin						db 'TplBin',0
 szIniPrint						db 'Print',0
 szIniDebug						db 'Debug',0
+szIniDescription				db 'Description',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

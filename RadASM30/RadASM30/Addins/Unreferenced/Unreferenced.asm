@@ -153,6 +153,45 @@ DestroyRegion proc uses esi edi,hMemFile:HGLOBAL,nLnStart:DWORD,nLnEnd:DWORD
 
 DestroyRegion endp
 
+DestroyGlobal proc uses esi edi,hMemFile:HGLOBAL,nLnStart:DWORD,lpWord:DWORD
+	LOCAL	buffer[256]:BYTE
+	LOCAL	hProperty:HWND
+	LOCAL	ms:MEMSEARCH
+
+	invoke lstrcpyn,addr buffer,lpWord,sizeof buffer
+	xor		eax,eax
+	.while buffer[eax]
+		.if buffer[eax]=='[' || buffer[eax]==':'
+			mov		buffer[eax],0
+			.break
+		.endif
+		inc		eax
+	.endw
+	mov		eax,lpHandles
+	mov		eax,[eax].ADDINHANDLES.hProperty
+	mov		hProperty,eax
+	invoke GetLinePtr,hMemFile,nLnStart
+	mov		ms.lpMem,eax
+	lea		eax,buffer
+	mov		ms.lpFind,eax
+	mov		eax,lpData
+	mov		eax,[eax].ADDINDATA.lpCharTab
+	mov		ms.lpCharTab,eax
+	mov		ms.fr,FR_DOWN or FR_WHOLEWORD or FR_MATCHCASE
+	invoke SendMessage,hProperty,PRM_MEMSEARCH,0,addr ms
+	.if eax
+		mov		edi,eax
+		invoke lstrlen,lpWord
+		.while eax
+			mov		byte ptr [edi],' '
+			inc		edi
+			dec		eax
+		.endw
+	.endif
+	ret
+
+DestroyGlobal endp
+
 FixFiles proc uses ebx esi edi,hMemFiles:HGLOBAL
 	LOCAL	hProperty:HWND
 	LOCAL	nOwner:DWORD
@@ -188,15 +227,14 @@ FixFiles proc uses ebx esi edi,hMemFiles:HGLOBAL
 	;Destroy globals
 	invoke SendMessage,hProperty,PRM_FINDFIRST,addr szCCd,addr szNULL
 	.while eax
+		mov		esi,eax
 		invoke SendMessage,hProperty,PRM_FINDGETOWNER,0,0
 		mov		nOwner,eax
 		invoke SendMessage,hProperty,PRM_FINDGETLINE,0,0
 		mov		nLnStart,eax
-		inc		eax
-		mov		nLnEnd,eax
 		invoke GetFileMemFromPid,hMemFiles,nOwner
 		.if eax
-			invoke DestroyRegion,eax,nLnStart,nLnEnd
+			invoke DestroyGlobal,eax,nLnStart,esi
 		.endif
 		invoke SendMessage,hProperty,PRM_FINDNEXT,0,0
 	.endw
@@ -477,12 +515,6 @@ AddinProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		movzx	edx,ax
 		shr		eax,16
 		.if edx==IDAddIn && eax==BN_CLICKED
-			;Define . as a character
-			mov		edi,lpData
-			mov		edi,[edi].ADDINDATA.lpCharTab
-			movzx	eax,byte ptr [edi+2Eh]
-			push	eax
-			mov		byte ptr [edi+2Eh],CT_CHAR
 			;Load all code files in the project
 			invoke LoadFiles
 			mov		edi,eax
@@ -508,11 +540,6 @@ AddinProc proc uses edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,lpHandles
 				invoke SendMessage,[eax].ADDINHANDLES.hWnd,WM_COMMAND,IDM_EDIT_NEXTERROR,0
 			.endif
-			;Restore .
-			mov		edi,lpData
-			mov		edi,[edi].ADDINDATA.lpCharTab
-			pop		eax
-			mov		[edi+2Eh],al
 			mov		eax,TRUE
 			ret
 		.endif

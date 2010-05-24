@@ -1,5 +1,252 @@
 
+IDD_DLGPROGLANGUAGE			equ 4100
+IDC_LSTPL					equ 1009
+IDC_BTNPLUP					equ 1008
+IDC_BTNPLDN					equ 1007
+IDC_BTNPLDEL				equ 1003
+IDC_EDTPLDESC				equ 1005
+
+.const
+
+szAllIni					db '\*.ini',0
+
+.data?
+
+lpOldProgLangListProc		DWORD ?
+
 .code
+
+ProgLangListProc proc  hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+
+	mov		eax,uMsg
+	.if eax==WM_LBUTTONDOWN
+		invoke SetCapture,hWin
+	.elseif eax==WM_LBUTTONUP
+		mov		eax,lParam
+		movsx	eax,ax
+		.if sdword ptr eax>=1 && sdword ptr eax<=14
+			invoke SendMessage,hWin,LB_GETCURSEL,0,0
+			push	eax
+			invoke SendMessage,hWin,LB_GETITEMDATA,eax,0
+			xor		eax,1
+			pop		edx
+			invoke SendMessage,hWin,LB_SETITEMDATA,edx,eax
+			invoke InvalidateRect,hWin,NULL,TRUE
+		.endif
+		invoke ReleaseCapture
+		invoke GetParent,hWin
+		invoke SendMessage,eax,WM_COMMAND,LBN_SELCHANGE shl 16 or IDC_LSTPL,hWin
+	.endif
+	invoke CallWindowProc,lpOldProgLangListProc,hWin,uMsg,wParam,lParam
+	ret
+
+ProgLangListProc endp
+
+ProgLangProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	hLst:HWND
+	LOCAL	wfd:WIN32_FIND_DATA
+	LOCAL	hwfd:HANDLE
+	LOCAL	nInx:DWORD
+	LOCAL	rect:RECT
+	LOCAL	szItem[MAX_PATH]:BYTE
+	LOCAL	buff[MAX_PATH]:BYTE
+	LOCAL	proglangfile[MAX_PATH]:BYTE
+	LOCAL	proglang[MAX_PATH]:BYTE
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke GetDlgItem,hWin,IDC_LSTPL
+		mov		hLst,eax
+		invoke SetWindowLong,hLst,GWL_WNDPROC,offset ProgLangListProc
+		mov		lpOldProgLangListProc,eax
+		invoke RtlZeroMemory,addr proglang,sizeof proglang
+		invoke strcpy,addr buff,addr da.szAssemblers
+		.while buff
+			invoke GetItemStr,addr buff,addr szNULL,addr wfd.cFileName,sizeof wfd.cFileName
+			invoke strcat,addr wfd.cFileName,addr szDotIni
+			invoke strcpy,addr proglangfile,addr da.szAppPath
+			invoke strcat,addr proglangfile,addr szBS
+			invoke strcat,addr proglangfile,addr wfd.cFileName
+			call	IsProgLang
+			.if eax
+				invoke SendMessage,hLst,LB_ADDSTRING,0,addr wfd.cFileName
+				mov		nInx,eax
+				invoke SendMessage,hLst,LB_SETITEMDATA,nInx,TRUE
+			.endif
+		.endw
+		invoke strcpy,addr buff,addr da.szAppPath
+		invoke strcat,addr buff,addr szAllIni
+		invoke FindFirstFile,addr buff,addr wfd
+		.if eax!=INVALID_HANDLE_VALUE
+			mov		hwfd,eax
+			.while TRUE
+				invoke strcpy,addr proglangfile,addr da.szAppPath
+				invoke strcat,addr proglangfile,addr szBS
+				invoke strcat,addr proglangfile,addr wfd.cFileName
+				call	IsProgLang
+				.if eax
+					invoke SendMessage,hLst,LB_ADDSTRING,0,addr wfd.cFileName
+					mov		nInx,eax
+					invoke SendMessage,hLst,LB_SETITEMDATA,nInx,FALSE
+				.endif
+				invoke FindNextFile,hwfd,addr wfd
+				.break .if !eax
+			.endw
+			invoke FindClose,hwfd
+		.endif
+		invoke SendMessage,hLst,LB_SETCURSEL,0,0
+		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL
+		invoke SendDlgItemMessage,hWin,IDC_BTNPLUP,BM_SETIMAGE,IMAGE_ICON,eax
+		invoke ImageList_GetIcon,ha.hMnuIml,3,ILD_NORMAL
+		invoke SendDlgItemMessage,hWin,IDC_BTNPLDN,BM_SETIMAGE,IMAGE_ICON,eax
+		invoke SendMessage,hWin,WM_COMMAND,LBN_SELCHANGE shl 16 or IDC_LSTPL,hLst
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				mov		word ptr buff,0
+				mov		nInx,0
+				.while TRUE
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETTEXT,nInx,addr wfd.cFileName
+					.break.if eax==LB_ERR
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETITEMDATA,nInx,0
+					.if eax
+						invoke RemoveFileExt,addr wfd.cFileName
+						invoke PutItemStr,addr buff,addr wfd.cFileName
+					.endif
+					inc		nInx
+				.endw
+				invoke strcpy,addr da.szAssemblers,addr buff[1]
+				invoke WritePrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr da.szAssemblers,addr da.szRadASMIni
+				invoke SetAssemblers
+				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.elseif eax==IDC_BTNPLUP
+				invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETCURSEL,0,0
+				.if eax
+					mov		nInx,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETTEXT,nInx,addr buff
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETITEMDATA,nInx,0
+					push	eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_DELETESTRING,nInx,0
+					dec		nInx
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_INSERTSTRING,nInx,addr buff
+					pop		eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_SETITEMDATA,nInx,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_SETCURSEL,nInx,0
+				.endif
+			.elseif eax==IDC_BTNPLDN
+				invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETCURSEL,0,0
+				mov		nInx,eax
+				invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETCOUNT,0,0
+				dec		eax
+				.if eax!=nInx
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETTEXT,nInx,addr buff
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETITEMDATA,nInx,0
+					push	eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_DELETESTRING,nInx,0
+					inc		nInx
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_INSERTSTRING,nInx,addr buff
+					pop		eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_SETITEMDATA,nInx,eax
+					invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_SETCURSEL,nInx,0
+				.endif
+			.endif
+		.elseif edx==LBN_SELCHANGE
+			;Get description
+			invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETCURSEL,0,0
+			mov		edx,eax
+			invoke SendDlgItemMessage,hWin,IDC_LSTPL,LB_GETTEXT,edx,addr wfd.cFileName
+			invoke strcpy,addr proglangfile,addr da.szAppPath
+			invoke strcat,addr proglangfile,addr szBS
+			invoke strcat,addr proglangfile,addr wfd.cFileName
+			invoke GetPrivateProfileString,addr szIniVersion,addr szIniDescription,addr szNULL,addr tmpbuff,256,addr proglangfile
+			invoke ConvertCaption,addr buff,addr tmpbuff
+			invoke SetDlgItemText,hWin,IDC_EDTPLDESC,addr buff
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,lParam
+	.elseif eax==WM_DRAWITEM
+		mov		esi,lParam
+		; Select back and text colors
+		mov		eax,[esi].DRAWITEMSTRUCT.itemState
+		test	eax,ODS_SELECTED
+		.If !ZERO?
+			invoke GetSysColor,COLOR_HIGHLIGHTTEXT
+			invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,eax
+			invoke GetSysColor,COLOR_HIGHLIGHT
+			invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,eax
+		.else
+			invoke GetSysColor,COLOR_WINDOWTEXT
+			invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,eax
+			invoke GetSysColor,COLOR_WINDOW
+			invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,eax
+		.endif
+		; Draw selected / unselected back color
+		invoke ExtTextOut,[esi].DRAWITEMSTRUCT.hdc,0,0,ETO_OPAQUE,addr [esi].DRAWITEMSTRUCT.rcItem,NULL,0,NULL
+		; Draw the checkbox
+		mov		eax,[esi].DRAWITEMSTRUCT.rcItem.left
+		inc		eax
+		mov		rect.left,eax
+		add		eax,13
+		mov		rect.right,eax
+		mov		eax,[esi].DRAWITEMSTRUCT.rcItem.top
+		inc		eax
+		mov		rect.top,eax
+		add		eax,13
+		mov		rect.bottom,eax
+		mov		eax,DFCS_BUTTONCHECK Or DFCS_FLAT
+		.If [esi].DRAWITEMSTRUCT.itemData
+			or		eax,DFCS_CHECKED
+		.endif
+		invoke DrawFrameControl,[esi].DRAWITEMSTRUCT.hdc,addr rect,DFC_BUTTON,eax
+		; Draw the text
+		invoke SendMessage,[esi].DRAWITEMSTRUCT.hwndItem,LB_GETTEXT,[esi].DRAWITEMSTRUCT.itemID,addr szItem
+		mov		edx,[esi].DRAWITEMSTRUCT.rcItem.left
+		add		edx,18
+		invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,edx,[esi].DRAWITEMSTRUCT.rcItem.top,addr szItem,eax
+		invoke GetFocus
+		.if eax==[esi].DRAWITEMSTRUCT.hwndItem
+			; Let windows draw the focus rectangle
+			xor		eax,eax
+			jmp		Ex
+		.endif
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+  Ex:
+	ret
+
+IsProgLang:
+	;Check if it is added
+	lea		esi,proglang
+	.while byte ptr [esi]
+		invoke strcmpi,esi,addr wfd.cFileName
+		.if !eax
+			retn
+		.endif
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	;Check if it is a programming language file
+	invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr proglangfile
+	.if eax>=3000
+		invoke GetPrivateProfileString,addr szIniVersion,addr szIniDescription,addr szNULL,addr tmpbuff,256,addr proglangfile
+		.if eax
+			invoke strcpy,esi,addr wfd.cFileName
+			mov		eax,TRUE
+		.endif
+	.else
+		xor		eax,eax
+	.endif
+	retn
+
+ProgLangProc endp
 
 ResetEnvironment proc uses esi edi
 

@@ -1,13 +1,14 @@
-BUGS / TODO
+TODO
 -----------
-- External files in project does not work.
-- File changed notification not implemented.
 - Language translation not implemented.
-- Programming language selection tool not implemented.
 - Run with debug not implemented.
+
+BUGS
+-----------
 - Caret position might be wrong when opening a project.
+- External files in project does not work.
 
 SEVERE BUGS
 -----------
-- Paste can in rare cases close RadASM, no error reported. (Possibly already fixed).
+- Paste can in rare cases close RadASM, no error reported.
 - Cut can in rare cases close RadASM, no error reported.

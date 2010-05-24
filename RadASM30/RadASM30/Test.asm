@@ -88,7 +88,6 @@ TestProc proc uses ebx esi edi,Param:DWORD
 	LOCAL	nLnStart:DWORD
 	LOCAL	nLnEnd:DWORD
 	LOCAL	chrg:CHARRANGE
-	LOCAL	key:INPUT
 
 ;	invoke GetTickCount
 ;	mov		rseed,eax

@@ -169,25 +169,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;Create code complete
 		invoke CreateCodeComplete
 		;Get assemblers
-		invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr da.szAssemblers,sizeof da.szAssemblers,addr da.szRadASMIni
-		mov		mii.cbSize,sizeof MENUITEMINFO
-		mov		mii.fMask,MIIM_SUBMENU
-		invoke GetMenuItemInfo,ha.hMenu,IDM_PROJECT_LANGUAGE,FALSE,addr mii
-		mov		edi,mii.hSubMenu
-		xor		ebx,ebx
-		.while ebx<20
-			lea		eax,[ebx+IDM_PROJECT_LANGUAGE_START]
-			invoke DeleteMenu,edi,eax,MF_BYCOMMAND
-			inc		ebx
-		.endw
-		invoke strcpy,addr tmpbuff,addr da.szAssemblers
-		xor		ebx,ebx
-		.while tmpbuff && ebx<20
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
-			lea		edx,[ebx+IDM_PROJECT_LANGUAGE_START]
-			invoke AppendMenu,edi,MF_STRING,edx,addr buffer
-			inc		ebx
-		.endw
+		invoke SetAssemblers
 		;Get default assembler
 		invoke strcpy,addr tmpbuff,addr da.szAssemblers
 		invoke GetItemStr,addr tmpbuff,addr szMasm,addr da.szAssembler,sizeof da.szAssembler
@@ -1292,6 +1274,8 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 				.if ha.hMdi
 					invoke ShowWindow,ha.hMdi,SW_MINIMIZE
 				.endif
+			.elseif eax==IDM_OPTION_PROGLANG
+				invoke DialogBoxParam,ha.hInstance,IDD_DLGPROGLANGUAGE,hWin,offset ProgLangProc,0
 			.elseif eax==IDM_OPTION_CODE
 				invoke DialogBoxParam,ha.hInstance,IDD_DLGKEYWORDS,hWin,offset KeyWordsProc,0
 			.elseif eax==IDM_OPTION_RESOURCE

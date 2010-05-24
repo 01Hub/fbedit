@@ -5,11 +5,12 @@ RadASM must be configured to reflect your installation of RadASM, assembler / co
 Option / Environment
 --------------------
 The environment must be set up for each assembler / compiler.
-By default the environment is configured to assume:
+By default the environment is configured to assume (DRIVE Is C:, D: or any valid drive):
 - RadASM is installed in DRIVE:\RadASM
 - Masm is installed to DRIVE:\Masm32 with the binaries in bin folder, include files in include
   folder and libraries in lib folder.
 - GoAsm is installed to DRIVE:\GoAsm with the binaries in bin folder and include files in headers.
+- Fasm is installed to DRIVE:\Fasm with binaries in bin folder and include files in include.
 
 The environment has been made relative to the RadASM folder so you can have everything on a
 memory stick where the drive letter can change.

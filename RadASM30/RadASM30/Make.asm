@@ -373,7 +373,7 @@ SetOutputFile proc uses ebx esi edi,lpOut:DWORD,lpMain:DWORD
 SetOutputFile endp
 
 InsertMain proc uses esi edi,lpMain:DWORD,lpSearch:DWORD
-	LOCAL	buffer[sizeof MAKEEXE.buffer]:BYTE
+	LOCAL	buffer[MAX_PATH*2]:BYTE
 
 	mov		edi,offset makeexe.buffer
 	invoke iniInStr,edi,lpSearch

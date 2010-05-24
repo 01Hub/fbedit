@@ -2219,7 +2219,7 @@ EnableToolBar proc uses ebx esi edi
 
 EnableToolBar endp
 
-GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO:Ptr FILEINFO
+GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO:DWORD
 	LOCAL	buffer[8]:BYTE
 
 	mov		edi,lpFILEINFO
@@ -2300,7 +2300,7 @@ RemovePath proc	uses ebx esi edi,lpFileName:DWORD,lpPath:DWORD,lpOut:DWORD
 
 RemovePath endp
 
-SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:Ptr FILEINFO
+SetFileInfo proc uses ebx esi edi,nInx:DWORD,lpFILEINFO:DWORD
 	LOCAL	tci:TC_ITEM
 	LOCAL	chrg:CHARRANGE
 
@@ -3544,3 +3544,66 @@ AutoBrace proc uses ebx esi edi,hWin:HWND,nChar:DWORD
 
 AutoBrace endp
 
+ConvertCaption proc uses esi edi,lpDest:DWORD,lpSource:DWORD
+
+	mov		edi,lpDest
+	mov		esi,lpSource
+	.while byte ptr [esi]
+		mov		ax,[esi]
+		.if ax=='a\'
+			add		esi,2
+			mov		byte ptr [edi],08h
+			inc		edi
+		.elseif ax=='n\'
+			add		esi,2
+			mov		byte ptr [edi],0Ah
+			inc		edi
+		.elseif ax=='r\'
+			add		esi,2
+			mov		byte ptr [edi],VK_RETURN
+			inc		edi
+		.elseif ax=='t\'
+			add		esi,2
+			mov		byte ptr [edi],VK_TAB
+			inc		edi
+		.elseif ax=='x\'
+			add		esi,2
+			mov		byte ptr [edi],0
+			inc		edi
+		.else
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endif
+	.endw
+	mov		byte ptr [edi],0
+	ret
+
+ConvertCaption endp
+
+SetAssemblers proc uses ebx esi edi
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[MAX_PATH]:BYTE
+
+	invoke GetPrivateProfileString,addr szIniAssembler,addr szIniAssembler,addr szMasm,addr da.szAssemblers,sizeof da.szAssemblers,addr da.szRadASMIni
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	invoke GetMenuItemInfo,ha.hMenu,IDM_PROJECT_LANGUAGE,FALSE,addr mii
+	mov		edi,mii.hSubMenu
+	xor		ebx,ebx
+	.while ebx<20
+		lea		eax,[ebx+IDM_PROJECT_LANGUAGE_START]
+		invoke DeleteMenu,edi,eax,MF_BYCOMMAND
+		inc		ebx
+	.endw
+	invoke strcpy,addr tmpbuff,addr da.szAssemblers
+	xor		ebx,ebx
+	.while tmpbuff && ebx<20
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr buffer,sizeof buffer
+		lea		edx,[ebx+IDM_PROJECT_LANGUAGE_START]
+		invoke AppendMenu,edi,MF_STRING,edx,addr buffer
+		inc		ebx
+	.endw
+	ret
+
+SetAssemblers endp
