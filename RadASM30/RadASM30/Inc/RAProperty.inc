@@ -61,8 +61,9 @@ nGOASM						equ 4
 nNASM						equ 5
 nHLA						equ 6
 nCPP						equ 7
-nBCET						equ 8
-nFP							equ 9
+nFREEBASIC					equ 8
+nFREEPASCAL					equ 9
+nBCC						equ 10
 nOTHER						equ 99
 
 

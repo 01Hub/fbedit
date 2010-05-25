@@ -97,7 +97,10 @@
 			invoke GoParseFile,wParam,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP
+		.elseif eax==nCPP || eax==nBCC
+			;VC6, BCC
+			invoke CppPreParse,lParam
+			invoke CppParseFile,wParam,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBPreParse,lParam,FALSE
@@ -212,7 +215,9 @@
 			invoke GoDestroyCommentsStrings,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP
+		.elseif eax==nCPP || eax==nBCC
+			;VC6, BCC
+			invoke CppDestroyCommentsStrings,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
@@ -533,7 +538,9 @@
 			invoke GoDestroyCommentsStrings,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP
+		.elseif eax==nCPP || eax==nBCC
+			;VC6, BCC
+			invoke CppDestroyCommentsStrings,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
@@ -659,7 +666,9 @@
 			invoke GoPreParse,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP
+		.elseif eax==nCPP || eax==nBCC
+			;VC6, BCC
+			invoke CppPreParse,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
 			invoke FBPreParse,lParam,wParam

@@ -11,7 +11,7 @@ MAKEEXE struct
 	output		BYTE MAX_PATH dup(?)
 MAKEEXE ends
 
-.data
+.const
 
 MakeDone				BYTE 0Dh,'Make done.',0Dh,0
 Errors					BYTE 0Dh,'Error(s) occured.',0Dh,0
@@ -21,6 +21,7 @@ NoDel					BYTE 0Dh,'Could not delete:',0Dh,0
 
 CreatePipeError			BYTE 'Error during pipe creation',0
 CreateProcessError		BYTE 'Error during process creation',0Dh,0Ah,0
+szAtModDotTxt			BYTE '@Mod.txt',0
 
 .data?
 
@@ -354,6 +355,8 @@ DeleteMinorFiles proc uses ebx esi edi
 			.endif
 			call	DeleteIt
 		.endif
+		invoke strcpy,addr makeexe.output,addr szAtModDotTxt[1]
+		call	DeleteIt
 	.endif
 	ret
 
@@ -413,6 +416,8 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 	LOCAL	msg:MSG
 	LOCAL	fHide:DWORD
 	LOCAL	fModule:DWORD
+	LOCAL	hFile:HANDLE
+	LOCAL	dwWrite:DWORD
 
 	mov		fModule,0
 	invoke RtlZeroMemory,addr makeexe,sizeof MAKEEXE
@@ -560,7 +565,13 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 							pop		ebx
 						.endif
 					.endw
-					invoke InsertMain,addr tmpbuff,addr szDollarM
+					invoke CreateFile,addr szAtModDotTxt[1],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+					mov		hFile,eax
+					invoke strlen,addr tmpbuff
+					mov		edx,eax
+					invoke WriteFile,hFile,addr tmpbuff,edx,addr dwWrite,NULL
+					invoke CloseHandle,hFile
+					invoke InsertMain,addr szAtModDotTxt,addr szDollarM
 				.endif
 			.endif
 			invoke iniInStr,addr makeexe.buffer,addr szDollarR
