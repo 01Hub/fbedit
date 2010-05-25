@@ -391,13 +391,14 @@ CppParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		fTypedef,0
 		call	GetWrd
 		.if len
+;invoke PrintWord,esi,len
 			mov		lpRet,esi
 			call	_Skip
 			or		eax,eax
 			jne		Nxt
-			call	_Include
-			or		eax,eax
-			jne		Nxt
+;			call	_Include
+;			or		eax,eax
+;			jne		Nxt
 			call	_Constant
 			or		eax,eax
 			jne		Nxt
@@ -422,10 +423,10 @@ CppParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 				inc		esi
 			.endif
 		.endif
+;		invoke CppSkipLine,esi,addr npos
+;		inc		npos
+;		mov		esi,eax
 	  Nxt:
-		invoke CppSkipLine,esi,addr npos
-		inc		npos
-		mov		esi,eax
 	.endw
 	pop		ebx
 	invoke CppFixUnknown
@@ -521,6 +522,9 @@ _Skip:
 	or		eax,eax
 	jne		SkipSc
 _SkipDf:
+	invoke IsWord,esi,len,offset szInclude,lpCharTab
+	or		eax,eax
+	jne		SkipLn
 	invoke IsWord,esi,len,offset szExtern,lpCharTab
 	or		eax,eax
 	jne		SkipLn
@@ -753,33 +757,32 @@ _Constant:
 		add		esi,len
 		mov		edx,'c'
 		invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
-PrintStringByAddr offset cppbuff
 		mov		eax,TRUE
 	.endif
 	retn
 
-_Include:
-;PrintText "#include"
-	; Include
-	; #include <windows.h>
-	; #include "MyInclude.h"
-	invoke IsWord,esi,len,offset szInclude,lpCharTab
-	.if eax
-		add		esi,len
-		call	SkipSpc
-		.if byte ptr [esi]=='"'
-			invoke CppSkipScope,addr npos
-		.elseif byte ptr [esi]=='<'
-			.while byte ptr [esi]!='>' && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
-				inc		esi
-			.endw
-			.if byte ptr [esi]=='>'
-				inc		esi
-			.endif
-		.endif
-		mov		eax,TRUE
-	.endif
-	retn
+;_Include:
+;;PrintText "#include"
+;	; Include
+;	; #include <windows.h>
+;	; #include "MyInclude.h"
+;	invoke IsWord,esi,len,offset szInclude,lpCharTab
+;	.if eax
+;		add		esi,len
+;		call	SkipSpc
+;		.if byte ptr [esi]=='"'
+;			invoke CppSkipScope,addr npos
+;		.elseif byte ptr [esi]=='<'
+;			.while byte ptr [esi]!='>' && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
+;				inc		esi
+;			.endw
+;			.if byte ptr [esi]=='>'
+;				inc		esi
+;			.endif
+;		.endif
+;		mov		eax,TRUE
+;	.endif
+;	retn
 
 _Function:
 ;PrintText "Function"
@@ -811,6 +814,9 @@ _Function:
 			.if byte ptr [esi]==VK_RETURN
 				inc		esi
 				inc		dword ptr npos
+				.if byte ptr [esi]==0Ah
+					inc		esi
+				.endif
 			.else
 				jmp		@f
 			.endif
@@ -986,7 +992,9 @@ _Function:
 		mov		dword ptr [edi],0
 		pop		esi
 		mov		edx,'p'
-		invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
+		invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,4
+
+
 		xor		ecx,ecx
 		mov		edx,lpBegin
 		inc		edx
@@ -1001,6 +1009,10 @@ _Function:
 			inc		edx
 		.endw
 		mov		lpEnd,edx
+mov		esi,lpEnd
+mov eax,TRUE
+retn
+
 		mov		edi,offset cppbuff
 		invoke strlen,edi
 		lea		edi,[edi+eax+1]
@@ -1074,7 +1086,8 @@ _Unknown1:
 			mov		byte ptr [edi],0
 			inc		edi
 			invoke strcpy,edi,offset cppbuff1
-			mov		edx,'u'
+			mov		edx,'U'
+			invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
 			.if byte ptr [esi]=='='
 				inc		esi
 			.endif
@@ -1089,7 +1102,6 @@ _Unknown1:
 		.while byte ptr [esi]!=';' && byte ptr [esi]
 			inc		esi
 		.endw
-PrintStringByAddr offset cppbuff
 		mov		eax,TRUE
 		retn
 	.endif

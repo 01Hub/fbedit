@@ -450,17 +450,17 @@ Compare proc uses esi,lpWord1:DWORD,lpWord2:DWORD,len:DWORD
 
 Compare endp
 
-;PrintWord proc lpWord,len
-;	
-;	pushad
-;	mov		edx,lpWord
-;	mov		ecx,len
-;	mov		al,[edx+ecx]
-;	mov		byte ptr [edx+ecx],0
-;	PrintStringByAddr edx
-;	mov		[edx+ecx],al
-;	popad
-;	ret
-;
-;PrintWord endp
-;
+PrintWord proc lpWord,len
+	
+	pushad
+	mov		edx,lpWord
+	mov		ecx,len
+	mov		al,[edx+ecx]
+	mov		byte ptr [edx+ecx],0
+	PrintStringByAddr edx
+	mov		[edx+ecx],al
+	popad
+	ret
+
+PrintWord endp
+
