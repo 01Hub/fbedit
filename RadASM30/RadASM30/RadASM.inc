@@ -74,8 +74,8 @@ PostAddinMessage				PROTO	:HWND,:UINT,:WPARAM,:LPARAM,:DWORD,:DWORD
 GetModify						PROTO	:HWND
 
 ; Debug proto
-SetDebugInfo					PROTO :DWORD
-DebugCommand					PROTO :DWORD,:DWORD,:DWORD
+SetDebugInfo					PROTO	:DWORD
+DebugCommand					PROTO	:DWORD,:DWORD,:DWORD
 
 RadASMVersion					equ 3000
 
@@ -159,14 +159,14 @@ DEBUGTIP ends
 
 ;Help
 HH_AKLINK struct
-	cbStruct		dd ?	;As Integer
-	fReserved		dd ?	;As Boolean
-	pszKeywords		dd ?	;As ZString Ptr
-	pszUrl			dd ?	;As ZString Ptr
-	pszMsgText		dd ?	;As ZString Ptr
-	pszMsgTitle		dd ?	;As ZString Ptr
-	pszWindow		dd ?	;As ZString Ptr
-	fIndexOnFail	dd ?	;As Boolean
+	cbStruct		dd ?						;As Integer
+	fReserved		dd ?						;As Boolean
+	pszKeywords		dd ?						;As ZString Ptr
+	pszUrl			dd ?						;As ZString Ptr
+	pszMsgText		dd ?						;As ZString Ptr
+	pszMsgTitle		dd ?						;As ZString Ptr
+	pszWindow		dd ?						;As ZString Ptr
+	fIndexOnFail	dd ?						;As Boolean
 HH_AKLINK ends
 
 HH_DISPLAY_TOPIC	equ 0000h
@@ -224,6 +224,7 @@ szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0
 szErrorMasm						db ': error ',0
+szErrorTasm						db '**Error**',0
 szErrorFasm						db ']:',0
 szErrorGoAsm					db 'Error!',0
 szADotA							db '*.*',0
@@ -273,6 +274,7 @@ szIniBraceMatch					db 'BraceMatch',0
 szIniOption						db 'Option',0
 szIniParse						db 'Parse',0
 szIniType						db 'Type',0
+szIniArg						db 'Arg',0
 szIniLocal						db 'Local',0
 szIniIgnore						db 'Ignore',0
 szIniDef						db 'Def',0

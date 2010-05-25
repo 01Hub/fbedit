@@ -125,12 +125,12 @@ Cut:
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
 	invoke SendInput,4,addr keycut,sizeof INPUT
-	.while !fCutPaste
-		invoke Sleep,10
-	.endw
-	.while fCutPaste
-		invoke Sleep,10
-	.endw
+;	.while !fCutPaste
+;		invoke Sleep,10
+;	.endw
+;	.while fCutPaste
+;		invoke Sleep,10
+;	.endw
 	retn
 
 Copy:
@@ -159,12 +159,12 @@ Paste:
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
 	invoke SendInput,4,addr keypaste,sizeof INPUT
-	.while !fCutPaste
-		invoke Sleep,10
-	.endw
-	.while fCutPaste
-		invoke Sleep,10
-	.endw
+;	.while !fCutPaste
+;		invoke Sleep,10
+;	.endw
+;	.while fCutPaste
+;		invoke Sleep,10
+;	.endw
 	retn
 
 TestProc ENDP

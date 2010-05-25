@@ -27,6 +27,7 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 14=MasmParse.asm
 15=GoAsmParse.asm
 16=FasmParse.asm
+17=TasmParse.asm
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -89,6 +90,7 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 14=2
 15=2
 16=2
+17=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -99,7 +101,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=21
+MilestoneOnDateDate=25
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -146,25 +148,27 @@ ProductVer4Range=0
 14=,,,,,
 15=,,,,
 16=,,,,
+17=,,,,,
 [Size]
-2=0,0,699,490,3205
+2=0,0,699,490,4363
 <<<<<<< .mine
-1=0,0,699,490,140
+1=0,0,699,490,247
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,2810
+7=0,0,0,0,2132
 9=0,0,0,0,676
 10=0,0,0,0,13712
-11=0,0,746,498,14458
+11=0,0,746,498,14429
 12=0,0,0,0,2850
 13=0,0,0,0,669
-14=0,0,0,0,21415
-15=0,0,0,0,0
-16=0,0,0,0,17281
+14=0,0,0,0,19641
+15=0,0,0,0,18474
+16=0,0,0,0,18624
+17=0,0,0,0,16152
 [BookMark]
 0=
 1=
@@ -180,20 +184,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,10,14,15,11,13,2,7,4,16
+AutoLoad=1,10,14,15,16,17,11,13,2,7
 [PTimer]
-PTimer=204307879
+PTimer=210864445
 [Find]
-1="ParseData"
-2="eax==nFREE"
-3="nAsm==nFREE"
-4="nAsm==0"
-5="nAsm=nFREEBASIC"
-6="nAsm=0"
-7="nGOASM"
-8="Go"
-9="xor ecx,ecx"
-10="globall"
+1="nFASM"
+2="FasmPreParse"
+3="M"
+4="ParseData"
+5="eax==nFREE"
+6="nAsm==nFREE"
+7="nAsm==0"
+8="nAsm=nFREEBASIC"
+9="nAsm=0"
+10="nGOASM"
 
 [Exports]
 1=GetDefEx
@@ -208,5 +212,6 @@ PTimer=204307879
 2=
 15=
 16=
+17=
 [GroupExpand]
 GroupExpand=0,1,1,1,0,0,0

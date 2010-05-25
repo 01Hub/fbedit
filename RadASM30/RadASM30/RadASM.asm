@@ -39,10 +39,10 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowProc,da.nLastLine
 			invoke UpdateAll,UAM_PARSE,0
 			invoke UpdateAll,UAM_IS_CHANGED,0
-			.if fCutPaste
-				invoke LogTimeString,addr szTIMER,0,0
-			.endif
-			mov		fCutPaste,0
+;			.if fCutPaste
+;				invoke LogTimeString,addr szTIMER,0,0
+;			.endif
+;			mov		fCutPaste,0
 		.endif
 	.endif
 	ret
@@ -2033,9 +2033,9 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 	.else
   ExDef:
 		invoke DefFrameProc,hWin,ha.hClient,uMsg,wParam,lParam
-		.if fCutPaste
-			invoke LogTimeMessage,addr szMAIN,hWin,uMsg,wParam,lParam
-		.endif
+;		.if fCutPaste
+;			invoke LogTimeMessage,addr szMAIN,hWin,uMsg,wParam,lParam
+;		.endif
 		ret
 	.endif
   Ex:
@@ -2351,18 +2351,18 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke ShowWindow,ha.hCC,SW_HIDE
 			.endif
 			mov		da.cctype,CCTYPE_NONE
-		.elseif edx=='X' || edx=='V'
-			invoke GetKeyState,VK_CONTROL
-			test		eax,80h
-			.if !ZERO?
-				mov		eax,wParam
-				mov		fCutPaste,eax
-				.if eax=='X'
-					invoke LogTimeString,addr szCTRLX,0,0
-				.else
-					invoke LogTimeString,addr szCTRLV,0,0
-				.endif
-			.endif
+;		.elseif edx=='X' || edx=='V'
+;			invoke GetKeyState,VK_CONTROL
+;			test		eax,80h
+;			.if !ZERO?
+;				mov		eax,wParam
+;				mov		fCutPaste,eax
+;				.if eax=='X'
+;					invoke LogTimeString,addr szCTRLX,0,0
+;				.else
+;					invoke LogTimeString,addr szCTRLV,0,0
+;				.endif
+;			.endif
 		.endif
 	.elseif eax==WM_SETFOCUS
 		;Add the tooltip
@@ -2484,9 +2484,9 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
-	.if fCutPaste
-		invoke LogTimeMessage,addr szRAE,hWin,uMsg,wParam,lParam
-	.endif
+;	.if fCutPaste
+;		invoke LogTimeMessage,addr szRAE,hWin,uMsg,wParam,lParam
+;	.endif
   Ex:
 	ret
 
@@ -2826,12 +2826,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,edi,0
 					.endif
 				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
-					mov		eax,fCutPaste
-					.if eax=='X'
-						invoke LogTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
-					.elseif eax=='V'
-						invoke LogTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
-					.endif
+;					mov		eax,fCutPaste
+;					.if eax=='X'
+;						invoke LogTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+;					.elseif eax=='V'
+;						invoke LogTimeString,addr szPASTE,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax
+;					.endif
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_BRACKETMATCH,0,0
 					mov		eax,[esi].RASELCHANGE.fchanged
 					mov		da.fChanged,eax
@@ -3036,9 +3036,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 ;	.elseif eax==WM_ERASEBKGND
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
-	.if fCutPaste
-		invoke LogTimeMessage,addr szMDI,hWin,uMsg,wParam,lParam
-	.endif
+;	.if fCutPaste
+;		invoke LogTimeMessage,addr szMDI,hWin,uMsg,wParam,lParam
+;	.endif
   Ex:
 	ret
 

@@ -1,12 +1,12 @@
 
 .const
 
-szMComment			db 'comment',0
-szMString			db '"',"'",0,0
+szTasmComment			db 'comment',0
+szTasmString			db '"',"'",0,0
 
 .code
 
-MDestroyString proc lpMem:DWORD
+TasmDestroyString proc lpMem:DWORD
 
 	mov		eax,lpMem
 	movzx	ecx,byte ptr [eax]
@@ -25,34 +25,34 @@ MDestroyString proc lpMem:DWORD
 	.endw
 	ret
 
-MDestroyString endp
+TasmDestroyString endp
 
-MDestroyCmntBlock proc uses esi,lpMem:DWORD
+TasmDestroyCmntBlock proc uses esi,lpMem:DWORD
 
 	mov		esi,lpMem
   @@:
-	invoke SearchMemDown,esi,addr szMComment,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
+	invoke SearchMemDown,esi,addr szTasmComment,FALSE,TRUE,[ebx].RAPROPERTY.lpchartab
 	.if eax
 		mov		esi,eax
 		.while eax>lpMem
 			.break .if byte ptr [eax-1]==VK_RETURN || byte ptr [eax-1]==0Ah
 			dec		eax
 		.endw
-		mov		ecx,dword ptr szMString
+		mov		ecx,dword ptr szTasmString
 		mov		edx,';'
 		.while eax<esi
 			.if byte ptr [eax]==cl || byte ptr [eax]==ch
 				;String
-				invoke MDestroyString,eax
+				invoke TasmDestroyString,eax
 				mov		esi,eax
-				mov		ecx,dword ptr szMString
+				mov		ecx,dword ptr szTasmString
 				mov		edx,';'
 				.while byte ptr [esi-1]!=VK_RETURN && byte ptr [eax-1]!=0Ah && byte ptr [eax]
 					.if byte ptr [esi]==cl || byte ptr [esi]==ch
 						;String
-						invoke MDestroyString,eax
+						invoke TasmDestroyString,eax
 						mov		esi,eax
-						mov		ecx,dword ptr szMString
+						mov		ecx,dword ptr szTasmString
 						mov		edx,';'
 					.elseif byte ptr [eax]==dl
 						;Comment
@@ -97,22 +97,22 @@ MDestroyCmntBlock proc uses esi,lpMem:DWORD
 	.endif
 	ret
 
-MDestroyCmntBlock endp
+TasmDestroyCmntBlock endp
 
-MDestroyCommentsStrings proc uses esi,lpMem:DWORD
+TasmDestroyCommentsStrings proc uses esi,lpMem:DWORD
 
 	mov		esi,lpMem
 	mov		ecx,';'
-	mov		edx,dword ptr szMString
+	mov		edx,dword ptr szTasmString
 	.while byte ptr [esi]
 		.if byte ptr [esi]==cl
 			invoke DestroyToEol,esi
 			mov		esi,eax
 		.elseif byte ptr [esi]==dl || byte ptr [esi]==dh
-			invoke MDestroyString,esi
+			invoke TasmDestroyString,esi
 			mov		esi,eax
 			mov		ecx,';'
-			mov		edx,dword ptr szMString
+			mov		edx,dword ptr szTasmString
 		.elseif byte ptr [esi]==VK_TAB
 			mov		byte ptr [esi],VK_SPACE
 		.else
@@ -121,17 +121,17 @@ MDestroyCommentsStrings proc uses esi,lpMem:DWORD
 	.endw
 	ret
 
-MDestroyCommentsStrings endp
+TasmDestroyCommentsStrings endp
 
-MPreParse proc uses esi,lpMem:DWORD
+TasmPreParse proc uses esi,lpMem:DWORD
 
-	invoke MDestroyCmntBlock,lpMem
-	invoke MDestroyCommentsStrings,lpMem
+	invoke TasmDestroyCmntBlock,lpMem
+	invoke TasmDestroyCommentsStrings,lpMem
 	ret
 
-MPreParse endp
+TasmPreParse endp
 
-MSkipLine proc uses esi,lpMem:DWORD,lpnpos:DWORD
+TasmSkipLine proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		eax,lpMem
 	mov 	ecx,'\'
@@ -160,9 +160,9 @@ MSkipLine proc uses esi,lpMem:DWORD,lpnpos:DWORD
 	.endif
 	ret
 
-MSkipLine endp
+TasmSkipLine endp
 
-MGetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
+TasmGetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		edx,lpMem
 	mov		ecx,'\'
@@ -191,9 +191,9 @@ MGetWord proc uses esi,lpMem:DWORD,lpnpos:DWORD
 	.endif
 	ret
 
-MGetWord endp
+TasmGetWord endp
 
-MGetWordSkip proc uses esi,lpMem:DWORD,lpnpos:DWORD
+TasmGetWordSkip proc uses esi,lpMem:DWORD,lpnpos:DWORD
 
 	mov		edx,lpMem
 	mov		ecx,'\'
@@ -230,9 +230,9 @@ MGetWordSkip proc uses esi,lpMem:DWORD,lpnpos:DWORD
 	.endif
 	ret
 
-MGetWordSkip endp
+TasmGetWordSkip endp
 
-MWhatIsIt proc uses esi,lpWord1:DWORD,len1:DWORD,lpWord2:DWORD,len2:DWORD
+TasmWhatIsIt proc uses esi,lpWord1:DWORD,len1:DWORD,lpWord2:DWORD,len2:DWORD
 
 	mov		esi,[ebx].RAPROPERTY.lpdeftype
   @@:
@@ -277,9 +277,9 @@ MWhatIsIt proc uses esi,lpWord1:DWORD,len1:DWORD,lpWord2:DWORD,len2:DWORD
 	mov		eax,esi
 	ret
 
-MWhatIsIt endp
+TasmWhatIsIt endp
 
-MIsIgnore proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
+TasmIsIgnore proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
 
 	mov		esi,[ebx].RAPROPERTY.lpignore
 	.if esi
@@ -305,9 +305,9 @@ MIsIgnore proc uses ecx esi,nType:DWORD,len:DWORD,lpWord:DWORD
   Ex:
 	ret
 
-MIsIgnore endp
+TasmIsIgnore endp
 
-MFixUnknown proc uses ebx esi edi
+TasmFixUnknown proc uses ebx esi edi
 
 	mov		esi,[ebx].RAPROPERTY.lpmem
 	.if esi
@@ -368,9 +368,9 @@ MFixUnknown proc uses ebx esi edi
 	.endif
 	ret
 
-MFixUnknown endp
+TasmFixUnknown endp
 
-MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
+TasmParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpword1:DWORD
 	LOCAL	len1:DWORD
 	LOCAL	lpword2:DWORD
@@ -384,6 +384,8 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	narray:DWORD
 	LOCAL	nmacropos:DWORD
 	LOCAL	lpmacro:DWORD
+	LOCAL	lpparam:DWORD
+	LOCAL	lplocal:DWORD
 
 	mov		npos,0
 	mov		esi,lpMem
@@ -392,10 +394,10 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 		mov		nline,eax
 		mov		lpdatatype,0
 	  Nxtwrd:
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
-			invoke MIsIgnore,IGNORE_LINEFIRSTWORD,ecx,esi
+			invoke TasmIsIgnore,IGNORE_LINEFIRSTWORD,ecx,esi
 			.if eax
 				jmp		Nxt
 			.endif
@@ -403,7 +405,7 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 			mov		len1,ecx
 			lea		esi,[esi+ecx]
 			mov		lpdatatype,0
-			invoke MGetWord,esi,addr npos
+			invoke TasmGetWord,esi,addr npos
 			mov		esi,edx
 			.if byte ptr [esi]==':'
 				inc		ecx
@@ -411,7 +413,7 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
-			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			invoke TasmWhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
 				mov		lpdef,eax
 				movzx	edx,[eax].DEFTYPE.nDefType
@@ -471,11 +473,11 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 			.endif
 		.endif
 	  Nxt:
-		invoke MSkipLine,esi,addr npos
+		invoke TasmSkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
 	.endw
-	invoke MFixUnknown
+	invoke TasmFixUnknown
 	ret
 
 SaveName:
@@ -557,7 +559,7 @@ SkipSpc:
 
 ConvDataType:
 	push	esi
-	mov		esi,offset szMasmDataConv
+	mov		esi,offset szTasmDataConv
 	.if lendatatype==2
 		.while byte ptr [esi]
 			invoke strcmpin,esi,lpdatatype,2
@@ -671,7 +673,7 @@ ArraySize:
 ParseMacro:
 	call	SaveName
   @@:
-	invoke MGetWord,esi,addr npos
+	invoke TasmGetWord,esi,addr npos
 	mov		esi,edx
 	.if !ecx
 		.if byte ptr [esi]==',' || byte ptr [esi]=='('
@@ -703,10 +705,10 @@ ParseMacro:
 	mov		nmacropos,eax
 	mov		lpmacro,esi
 	.while byte ptr [esi]
-		invoke MSkipLine,esi,addr npos
+		invoke TasmSkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
 			mov		lpword1,esi
@@ -714,13 +716,13 @@ ParseMacro:
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
-			invoke MGetWord,esi,addr npos
+			invoke TasmGetWord,esi,addr npos
 			mov		esi,edx
 			.if ecx
 				mov		lpword2,esi
 				mov		len2,ecx
 			.endif
-			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			invoke TasmWhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
 				mov		edx,npos
 				sub		edx,nmacropos
@@ -743,7 +745,7 @@ ParseMacro:
 ParseUnknown:
 	mov		szname,0
 	.if len1 && len2
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		xor		eax,eax
 		.if byte ptr [esi] && byte ptr [esi]!=VK_RETURN
@@ -780,18 +782,31 @@ ParseLabel:
 
 ParseProc:
 	call	SaveName
+	mov		lpparam,edi
+	mov		lplocal,offset szname[512]
 	call	SaveParam
-	; Return type
-	mov		byte ptr [edi],0
-	inc		edi
+	mov		lpparam,edi
 	call	SaveLocal
+	.if eax
+		; Return type
+		mov		edi,lpparam
+		mov		byte ptr [edi],0
+		inc		edi
+		; Local
+		invoke strlen,offset szname[512]
+		.if szname[eax+512-1]==','
+			mov		szname[eax+512-1],0
+		.endif
+		invoke strcpy,edi,offset szname[512]
+		mov		eax,TRUE
+	.endif
 	retn
 
 SaveParam:
-	invoke MGetWord,esi,addr npos
+	invoke TasmGetWord,esi,addr npos
 	mov		esi,edx
 	.if ecx
-		invoke MIsIgnore,IGNORE_PROCPARAM,ecx,esi
+		invoke TasmIsIgnore,IGNORE_PROCPARAM,ecx,esi
 		.if eax
 			lea		esi,[esi+ecx]
 			jmp		SaveParam
@@ -801,11 +816,10 @@ SaveParam:
 		jmp		SaveParam
 	.elseif byte ptr [esi]==VK_RETURN
 		mov		dword ptr [edi],0
-		inc		edi
 		retn
 	.endif
 SaveParam1:
-	invoke MGetWord,esi,addr npos
+	invoke TasmGetWord,esi,addr npos
 	mov		esi,edx
 	.if ecx
 		mov		lpword1,esi
@@ -815,7 +829,7 @@ SaveParam1:
 		call	SaveName
 		dec		edi
 SaveParam2:
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		.if !ecx
 			.if byte ptr [esi]==','
@@ -851,9 +865,9 @@ SaveParam2:
 				mov		byte ptr [edi],':'
 				inc		edi
 			  @@:
-				invoke MGetWord,esi,addr npos
+				invoke TasmGetWord,esi,addr npos
 				mov		esi,edx
-				invoke MIsIgnore,IGNORE_PTR,ecx,esi
+				invoke TasmIsIgnore,IGNORE_PTR,ecx,esi
 				.if eax
 					lea		esi,[esi+ecx]
 					invoke strcpy,edi,addr szPtr
@@ -873,7 +887,7 @@ SaveParam2:
 				invoke strcpyn,edx,lpdatatype,eax
 				mov		byte ptr [edi],','
 				inc		edi
-				invoke MGetWord,esi,addr npos
+				invoke TasmGetWord,esi,addr npos
 				mov		esi,edx
 				.if byte ptr [esi]==','
 					inc		esi
@@ -882,30 +896,25 @@ SaveParam2:
 			.endif
 		.endif
 	.endif
-	.if byte ptr [edi-1]==','
-		dec		edi
-	.endif
-	mov		byte ptr [edi],0
-	inc		edi
 	retn
 
 SaveLocal:
 	.while byte ptr [esi]
-		invoke MSkipLine,esi,addr npos
+		invoke TasmSkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
 			mov		lpword1,esi
 			mov		len1,ecx
 			lea		esi,[esi+ecx]
-			invoke MGetWord,esi,addr npos
+			invoke TasmGetWord,esi,addr npos
 			mov		esi,edx
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
-			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			invoke TasmWhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
 				movzx	edx,[eax].DEFTYPE.nDefType
 				.if edx==DEFTYPE_ENDPROC
@@ -917,9 +926,17 @@ SaveLocal:
 					inc		eax
 					retn
 				.elseif edx==DEFTYPE_LOCALDATA
+					mov		edi,lplocal
 					mov		esi,lpword2
 					call	SaveParam1
 					mov		byte ptr [edi-1],','
+					mov		lplocal,edi
+				.elseif edx==DEFTYPE_ARG
+					mov		edi,lpparam
+					mov		esi,lpword2
+					call	SaveParam1
+					mov		byte ptr [edi-1],','
+					mov		lpparam,edi
 				.endif
 			.endif
 		.endif
@@ -935,9 +952,9 @@ ParseData1:
 	mov		eax,len2
 	mov		lendatatype,eax
 	; Check for mov	dword ptr [eax],1
-	invoke MGetWord,esi,addr npos
+	invoke TasmGetWord,esi,addr npos
 	mov		esi,edx
-	invoke MIsIgnore,IGNORE_PTR,ecx,esi
+	invoke TasmIsIgnore,IGNORE_PTR,ecx,esi
 	.if eax
 		xor		eax,eax
 		retn
@@ -982,7 +999,7 @@ ParseData1:
 
 ParseConst:
 	call	SaveName
-	invoke MGetWord,esi,addr npos
+	invoke TasmGetWord,esi,addr npos
 	mov		esi,edx
 	.if ecx
 		.while TRUE
@@ -1021,23 +1038,23 @@ ParseStruct:
 	call	SaveName
 	mov		byte ptr [edi],0
 	.while byte ptr [esi]
-		invoke MSkipLine,esi,addr npos
+		invoke TasmSkipLine,esi,addr npos
 		inc		npos
 		mov		esi,eax
 	  ParseStruct1:
-		invoke MGetWord,esi,addr npos
+		invoke TasmGetWord,esi,addr npos
 		mov		esi,edx
 		.if ecx
 			mov		lpword1,esi
 			mov		len1,ecx
 			lea		esi,[esi+ecx]
 		  ParseStruct2:
-			invoke MGetWord,esi,addr npos
+			invoke TasmGetWord,esi,addr npos
 			mov		esi,edx
 			mov		lpword2,esi
 			mov		len2,ecx
 			lea		esi,[esi+ecx]
-			invoke MWhatIsIt,lpword1,len1,lpword2,len2
+			invoke TasmWhatIsIt,lpword1,len1,lpword2,len2
 			.if eax
 				movzx	eax,[eax].DEFTYPE.nDefType
 				.if eax==DEFTYPE_ENDSTRUCT
@@ -1105,4 +1122,4 @@ ParseStruct:
 	xor		eax,eax
 	retn
 
-MParseFile endp
+TasmParseFile endp

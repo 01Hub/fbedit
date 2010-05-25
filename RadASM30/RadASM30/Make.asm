@@ -25,8 +25,6 @@ CreateProcessError		BYTE 'Error during process creation',0Dh,0Ah,0
 .data?
 
 makeexe					MAKEEXE <>
-;nErrID					DWORD ?
-;ErrID					DWORD 128 dup(?)
 
 .code
 
@@ -142,6 +140,8 @@ FindErrors proc uses ebx
 		mov		eax,da.nAsm
 		.if eax==nMASM
 			call	TestLineMasm
+		.elseif eax==nTASM
+			call	TestLineTasm
 		.elseif eax==nFASM
 			call	TestLineFasm
 		.elseif eax==nGOASM
@@ -152,6 +152,23 @@ FindErrors proc uses ebx
 	.endw
 	mov		da.ErrID[ebx*4],0
 	ret
+
+TestLineTasm:
+	invoke iniInStr,addr buffer,addr szErrorTasm
+	.if eax!=-1
+		xor		eax,eax
+		.while buffer[eax]!='(' && buffer[eax]
+			inc		eax
+		.endw
+		mov		byte ptr buffer[eax],0
+		invoke DecToBin,addr buffer[eax+1]
+		dec		eax
+		mov		nLnErr,eax
+		invoke strlen,addr buffer
+		invoke strcpy,addr buffer,addr buffer[10]
+		call	SetError
+	.endif
+	retn
 
 TestLineFasm:
 	invoke iniInStr,addr buffer,addr szErrorFasm

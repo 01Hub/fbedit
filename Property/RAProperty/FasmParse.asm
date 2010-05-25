@@ -921,8 +921,8 @@ ParseData1:
 		lea		edi,[edi+sizeof szDword]
 		mov		byte ptr [edi],0
 		inc		edi
-		invoke strcpy,edi,addr szDword
-		lea		edi,[edi+sizeof szDword]
+		invoke strcpy,edi,addr szDword[1]
+		lea		edi,[edi+sizeof szDword-1]
 	.endif
 	mov		byte ptr [edi],0
 	xor		eax,eax

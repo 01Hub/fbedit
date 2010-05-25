@@ -10,6 +10,7 @@ include FBParse.asm
 include MasmParse.asm
 include GoAsmParse.asm
 include FasmParse.asm
+include TasmParse.asm
 include Sort.asm
 
 .code

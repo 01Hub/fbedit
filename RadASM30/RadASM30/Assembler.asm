@@ -875,6 +875,19 @@ OpenAssembler proc uses ebx esi edi
 					invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
 				.endif
 			.endw
+			;Arguments
+			invoke GetPrivateProfileString,addr szIniParse,addr szIniArg,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
+			.while buffer
+				invoke GetItemInt,addr buffer,0
+				mov		deftype.nType,al
+				invoke GetItemInt,addr buffer,0
+				mov		deftype.nDefType,al
+				invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def,sizeof deftype.Def+1
+				invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
+				invoke strlen,addr deftype.szWord
+				mov		deftype.len,al
+				invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+			.endw
 			;Locals
 			invoke GetPrivateProfileString,addr szIniParse,addr szIniLocal,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
 			.while buffer
