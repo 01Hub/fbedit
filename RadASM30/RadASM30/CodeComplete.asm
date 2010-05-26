@@ -731,7 +731,11 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 	.if byte ptr [eax]
 		mov		tt.lpszType,offset szCCPp
 		mov		tt.lpszLine,eax
-		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,FALSE,addr tt
+		xor		edx,edx
+		.if da.nAsm==nBCC
+			mov		eax,TT_PARANTESES
+		.endif
+		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,edx,addr tt
 	.endif
 	ret
 
@@ -851,138 +855,46 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		.else
 			call	HideAll
 		.endif
+	.elseif da.nAsm==nBCC
+		mov		esi,offset LineTxt
+PrintStringByAddr esi
+		xor		eax,eax
+		call	DoIt
+;		invoke strlen,esi
+;		mov		edi,eax
+;		.while edi && byte ptr [esi+edi]!='('
+;			.if byte ptr [esi+edi]==')'
+;				call	SkipScope
+;			.else
+;				dec		edi
+;			.endif
+;		.endw
+;		.if byte ptr [esi+edi]=='(' && edi>1
+;			push	edi
+;			mov		ebx,da.lpCharTab
+;			dec		edi
+;			.while edi
+;				movzx	eax,byte ptr [esi+edi-1]
+;				.break .if byte ptr [ebx+eax]!=CT_CHAR
+;				dec		edi
+;			.endw
+;			pop		edx
+;			.if byte ptr [ebx+eax]!=CT_CHAR || !edi
+;				sub		edx,edi
+;				invoke strcpyn,addr buffer,addr [esi+edi],addr [edx+1]
+;				invoke PropertyFindExact,addr szCCPp,addr buffer,TRUE
+;				.if eax
+;					mov		eax,edi
+;					call		DoIt
+;				.endif
+;			.endif
+;		.endif
 	.else
 		invoke IsLineInvoke,cpline
 		.if eax
-DoIt:
-			add		ccchrg.cpMin,eax
-			lea		esi,LineTxt[eax]
-			invoke UpdateApiList,esi,offset szCCPp
-			.if eax
-				mov		da.cctype,CCTYPE_PROC
-				call	ShowList
-			.else
-				invoke ShowWindow,ha.hCC,SW_HIDE
-				mov		da.cctype,CCTYPE_NONE
-				invoke UpdateApiToolTip,esi
-				.if tt.lpszApi
-					mov		eax,cpline
-					add		eax,offset LineTxt
-					sub		eax,esi
-					xor		ecx,ecx
-					xor		edx,edx
-					.while edx<eax
-						.if byte ptr [esi+edx]=="'"
-							inc		edx
-							.while edx<eax && byte ptr [esi+edx]!="'"
-								inc		edx
-							.endw
-						.elseif byte ptr [esi+edx]=='"'
-							inc		edx
-							.while edx<eax && byte ptr [esi+edx]!='"'
-								inc		edx
-							.endw
-						.elseif byte ptr [esi+edx]==',' || byte ptr [esi+edx]=='('
-							inc		ecx
-							lea		edi,[esi+edx+1]
-						.endif
-						inc		edx
-					.endw
-					invoke SendMessage,ha.hProperty,PRM_ISTOOLTIPMESSAGE,offset ttmsg,addr tt
-					.if eax
-						invoke AddList,eax,edi,2
-						sub		edi,offset LineTxt
-						mov		esi,lpRASELCHANGE
-						add		edi,[esi].RASELCHANGE.cpLine
-						mov		ccchrg.cpMin,edi
-						mov		da.cctype,CCTYPE_CONST
-						;invoke SendMessage,ha.hCC,CCM_SORT,FALSE,0
-						invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
-						call	ShowList
-					.else
-						mov		da.cctype,CCTYPE_TOOLTIP
-						mov		tti.lpszRetType,0
-						mov		tti.lpszDesc,0
-						mov		tti.novr,0
-						mov		tti.nsel,0
-						mov		tti.nwidth,0
-						mov		eax,tt.ovr.lpszParam
-						mov		edx,tt.lpszApi
-						mov		ecx,tt.nPos
-						mov		tti.lpszApi,edx
-						mov		tti.lpszParam,eax
-						mov		tti.nitem,ecx
-						inc		ecx
-						invoke BinToDec,ecx,addr buffer
-						invoke strcat,addr buffer,tti.lpszApi
-						mov		eax,cpline
-						add		eax,offset LineTxt
-						invoke UpdateApiConstList,addr buffer,edi,eax
-						.if eax
-							mov		da.cctype,CCTYPE_CONST
-							mov		edi,eax
-							sub		edi,offset LineTxt
-							mov		esi,lpRASELCHANGE
-							add		edi,[esi].RASELCHANGE.cpLine
-							mov		ccchrg.cpMin,edi
-							mov		eax,[esi].RASELCHANGE.chrg.cpMin
-							sub		eax,[esi].RASELCHANGE.cpLine
-							.while byte ptr LineTxt[eax] && byte ptr LineTxt[eax]!=VK_SPACE && byte ptr LineTxt[eax]!=VK_TAB && byte ptr LineTxt[eax]!=','
-								inc		eax
-							.endw
-							add		eax,[esi].RASELCHANGE.cpLine
-							mov		ccchrg.cpMax,eax
-							call	ShowList
-						.else
-							call	ShowTooltip
-						.endif
-					.endif
-				.else
-					call	HideAll
-				.endif
-			.endif
+			call	DoIt
 		.else
-			.if da.nAsm==nBCC
-				mov		esi,offset LineTxt
-				invoke strlen,esi
-				mov		edi,eax
-				.while edi && byte ptr [esi+edi]!='('
-					.if byte ptr [esi+edi]==')'
-						call	SkipScope
-					.else
-						dec		edi
-					.endif
-				.endw
-				.if byte ptr [esi+edi]=='(' && edi>1
-					push	edi
-					mov		ebx,da.lpCharTab
-					dec		edi
-					.while edi
-						movzx	eax,byte ptr [esi+edi-1]
-						.break .if byte ptr [ebx+eax]!=CT_CHAR
-						dec		edi
-					.endw
-					pop		edx
-					.if byte ptr [ebx+eax]!=CT_CHAR
-						sub		edx,edi
-						invoke strcpyn,addr buffer,addr [esi+edi],addr [edx+1]
-						invoke PropertyFindExact,addr szCCPp,addr buffer,TRUE
-						.if eax
-							mov		eax,edi
-							jmp		DoIt
-;							mov		da.cctype,CCTYPE_NONE
-;							invoke UpdateApiToolTip,addr [esi+edi]
-;							.if tt.lpszApi
-;							call	ShowTooltip
-;								
-;							.endif
-;
-						.endif
-					.endif
-				.endif
-			.else
-				call	HideAll
-			.endif
+			call	HideAll
 		.endif
 	.endif
 	ret
@@ -1033,6 +945,95 @@ SkipScope1:
 	or		ecx,ecx
 	jne		SkipScope1
   @@:
+	retn
+
+DoIt:
+	add		ccchrg.cpMin,eax
+	lea		esi,LineTxt[eax]
+	invoke UpdateApiList,esi,offset szCCPp
+	.if eax
+		mov		da.cctype,CCTYPE_PROC
+		call	ShowList
+	.else
+		invoke ShowWindow,ha.hCC,SW_HIDE
+		mov		da.cctype,CCTYPE_NONE
+		invoke UpdateApiToolTip,esi
+		.if tt.lpszApi
+			mov		eax,cpline
+			add		eax,offset LineTxt
+			sub		eax,esi
+			xor		ecx,ecx
+			xor		edx,edx
+			.while edx<eax
+				.if byte ptr [esi+edx]=="'"
+					inc		edx
+					.while edx<eax && byte ptr [esi+edx]!="'"
+						inc		edx
+					.endw
+				.elseif byte ptr [esi+edx]=='"'
+					inc		edx
+					.while edx<eax && byte ptr [esi+edx]!='"'
+						inc		edx
+					.endw
+				.elseif byte ptr [esi+edx]==',' || byte ptr [esi+edx]=='('
+					inc		ecx
+					lea		edi,[esi+edx+1]
+				.endif
+				inc		edx
+			.endw
+			invoke SendMessage,ha.hProperty,PRM_ISTOOLTIPMESSAGE,offset ttmsg,addr tt
+			.if eax
+				invoke AddList,eax,edi,2
+				sub		edi,offset LineTxt
+				mov		esi,lpRASELCHANGE
+				add		edi,[esi].RASELCHANGE.cpLine
+				mov		ccchrg.cpMin,edi
+				mov		da.cctype,CCTYPE_CONST
+				;invoke SendMessage,ha.hCC,CCM_SORT,FALSE,0
+				invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
+				call	ShowList
+			.else
+				mov		da.cctype,CCTYPE_TOOLTIP
+				mov		tti.lpszRetType,0
+				mov		tti.lpszDesc,0
+				mov		tti.novr,0
+				mov		tti.nsel,0
+				mov		tti.nwidth,0
+				mov		eax,tt.ovr.lpszParam
+				mov		edx,tt.lpszApi
+				mov		ecx,tt.nPos
+				mov		tti.lpszApi,edx
+				mov		tti.lpszParam,eax
+				mov		tti.nitem,ecx
+				inc		ecx
+				invoke BinToDec,ecx,addr buffer
+				invoke strcat,addr buffer,tti.lpszApi
+				mov		eax,cpline
+				add		eax,offset LineTxt
+				invoke UpdateApiConstList,addr buffer,edi,eax
+				.if eax
+					mov		da.cctype,CCTYPE_CONST
+					mov		edi,eax
+					sub		edi,offset LineTxt
+					mov		esi,lpRASELCHANGE
+					add		edi,[esi].RASELCHANGE.cpLine
+					mov		ccchrg.cpMin,edi
+					mov		eax,[esi].RASELCHANGE.chrg.cpMin
+					sub		eax,[esi].RASELCHANGE.cpLine
+					.while byte ptr LineTxt[eax] && byte ptr LineTxt[eax]!=VK_SPACE && byte ptr LineTxt[eax]!=VK_TAB && byte ptr LineTxt[eax]!=','
+						inc		eax
+					.endw
+					add		eax,[esi].RASELCHANGE.cpLine
+					mov		ccchrg.cpMax,eax
+					call	ShowList
+				.else
+					call	ShowTooltip
+				.endif
+			.endif
+		.else
+			call	HideAll
+		.endif
+	.endif
 	retn
 
 HideAll:

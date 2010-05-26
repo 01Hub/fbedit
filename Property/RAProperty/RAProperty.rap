@@ -153,9 +153,9 @@ ProductVer4Range=0
 17=,,,,,
 18=,,,,
 [Size]
-2=0,0,699,490,3248
+2=0,0,699,490,1113
 <<<<<<< .mine
-1=0,0,699,490,13780
+1=0,0,699,490,9360
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
@@ -165,7 +165,7 @@ ProductVer4Range=0
 7=0,0,0,0,3357
 9=0,0,0,0,373
 10=0,0,0,0,13712
-11=0,0,746,498,12264
+11=0,0,746,498,14529
 12=0,0,0,0,2850
 13=0,0,0,0,5874
 14=0,0,0,0,8593
@@ -190,18 +190,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,14,15,11,13,2,7,18,9
 [PTimer]
-PTimer=239928382
+PTimer=245104667
 [Find]
-1="CppSkipScope"
-2="inc^I^Idword ptr"
-3="nCPP"
-4="==0Ah"
-5="buffer"
-6="SkipScope"
-7="Go"
-8="nFASM"
-9="FasmPreParse"
-10="M"
+1="PRM_GETTOOLTIP"
+2="CppSkipScope"
+3="inc^I^Idword ptr"
+4="nCPP"
+5="==0Ah"
+6="buffer"
+7="SkipScope"
+8="Go"
+9="nFASM"
+10="FasmPreParse"
 
 [Exports]
 1=GetDefEx

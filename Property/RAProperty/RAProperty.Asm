@@ -460,13 +460,29 @@ IsWordType endp
 GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 	LOCAL	npos:DWORD
 
-	mov		edx,lParam
-	.if [ebx].RAPROPERTY.nlanguage==nMASM
+	mov		eax,[ebx].RAPROPERTY.nlanguage
+	.if eax==nMASM
 		; Masm
-		invoke MPreParse,[edx].TOOLTIP.lpszLine
-	.else
+		invoke MPreParse,lParam
+	.elseif eax==nTASM
+		; Tasm
+		invoke TasmPreParse,lParam
+	.elseif eax==nFASM
+		; Fasm
+		invoke FasmPreParse,lParam
+	.elseif eax==nGOASM
+		; GoAsm
+		invoke GoPreParse,lParam
+	.elseif eax==nNASM
+	.elseif eax==nHLA
+	.elseif eax==nCPP || eax==nBCC
+		;VC6, BCC
+		invoke CppPreParse,lParam
+	.elseif eax==nFREEBASIC
 		; FreeBASIC
-		invoke FBPreParse,[edx].TOOLTIP.lpszLine,FALSE
+		invoke FBPreParse,lParam,wParam
+	.elseif eax==nFREEPASCAL
+	.elseif eax==nOTHER
 	.endif
 	xor		edi,edi
 	mov		esi,[ebx].RAPROPERTY.lpchartab
