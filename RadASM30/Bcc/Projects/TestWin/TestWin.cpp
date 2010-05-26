@@ -1,8 +1,10 @@
 #include "windows.h"
 #include "TestWin.h"
+
+HINSTANCE abc;
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-int abc;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
