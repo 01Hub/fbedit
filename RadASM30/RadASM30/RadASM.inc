@@ -233,7 +233,7 @@ szADotA							db '*.*',0
 szCCPp							db 'Pp',0
 szCCp							db 'p',0
 szCCC							db 'C',0
-szCCAll							db 'WScdsm',0
+szCCAll							db 'WSPpcdsm',0
 szCCSs							db 'Ss',0
 szCCd							db 'd',0
 szCCAssume						db 'assume ',0

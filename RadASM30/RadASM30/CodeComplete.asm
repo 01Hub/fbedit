@@ -743,22 +743,24 @@ IsLineInvoke proc uses ebx,cpline:DWORD
 	mov		ebx,cpline
 	call	SkipWhiteSpace
 	mov		ecx,offset da.szCCTrig
-	.while byte ptr [ecx]
-		push	ecx
-		push	edx
-		push	ebx
-		call	TestWord
-		pop		ebx
-		pop		edx
-		pop		ecx
-		.break .if eax
-		;Next szCCTrig
+	.if byte ptr [ecx]
 		.while byte ptr [ecx]
+			push	ecx
+			push	edx
+			push	ebx
+			call	TestWord
+			pop		ebx
+			pop		edx
+			pop		ecx
+			.break .if eax
+			;Next szCCTrig
+			.while byte ptr [ecx]
+				inc		ecx
+			.endw
 			inc		ecx
+			.break .if !byte ptr [ecx]
 		.endw
-		inc		ecx
-		.break .if !byte ptr [ecx]
-	.endw
+	.endif
 	ret
 
 SkipWhiteSpace:
@@ -806,7 +808,7 @@ TestWord:
 
 IsLineInvoke endp
 
-ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
+ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	LOCAL	rect:RECT
 	LOCAL	pt:POINT
 	LOCAL	tti:TTITEM
@@ -852,6 +854,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 	.else
 		invoke IsLineInvoke,cpline
 		.if eax
+DoIt:
 			add		ccchrg.cpMin,eax
 			lea		esi,LineTxt[eax]
 			invoke UpdateApiList,esi,offset szCCPp
@@ -879,7 +882,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 							.while edx<eax && byte ptr [esi+edx]!='"'
 								inc		edx
 							.endw
-						.elseif byte ptr [esi+edx]==','
+						.elseif byte ptr [esi+edx]==',' || byte ptr [esi+edx]=='('
 							inc		ecx
 							lea		edi,[esi+edx+1]
 						.endif
@@ -931,16 +934,7 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 							mov		ccchrg.cpMax,eax
 							call	ShowList
 						.else
-							mov		da.cctype,CCTYPE_TOOLTIP
-							invoke ShowWindow,ha.hCC,SW_HIDE
-							invoke GetCaretPos,addr pt
-							invoke ClientToScreen,ha.hEdt,addr pt
-							add		pt.y,20
-							invoke SendMessage,ha.hTT,TTM_SETITEM,0,addr tti
-							sub		pt.x,eax
-							invoke SetWindowPos,ha.hTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
-							invoke ShowWindow,ha.hTT,SW_SHOWNA
-							invoke InvalidateRect,ha.hTT,NULL,TRUE
+							call	ShowTooltip
 						.endif
 					.endif
 				.else
@@ -948,10 +942,98 @@ ApiListBox proc uses esi edi,lpRASELCHANGE:DWORD
 				.endif
 			.endif
 		.else
-			call	HideAll
+			.if da.nAsm==nBCC
+				mov		esi,offset LineTxt
+				invoke strlen,esi
+				mov		edi,eax
+				.while edi && byte ptr [esi+edi]!='('
+					.if byte ptr [esi+edi]==')'
+						call	SkipScope
+					.else
+						dec		edi
+					.endif
+				.endw
+				.if byte ptr [esi+edi]=='(' && edi>1
+					push	edi
+					mov		ebx,da.lpCharTab
+					dec		edi
+					.while edi
+						movzx	eax,byte ptr [esi+edi-1]
+						.break .if byte ptr [ebx+eax]!=CT_CHAR
+						dec		edi
+					.endw
+					pop		edx
+					.if byte ptr [ebx+eax]!=CT_CHAR
+						sub		edx,edi
+						invoke strcpyn,addr buffer,addr [esi+edi],addr [edx+1]
+						invoke PropertyFindExact,addr szCCPp,addr buffer,TRUE
+						.if eax
+							mov		eax,edi
+							jmp		DoIt
+;							mov		da.cctype,CCTYPE_NONE
+;							invoke UpdateApiToolTip,addr [esi+edi]
+;							.if tt.lpszApi
+;							call	ShowTooltip
+;								
+;							.endif
+;
+						.endif
+					.endif
+				.endif
+			.else
+				call	HideAll
+			.endif
 		.endif
 	.endif
 	ret
+
+SkipScope:
+	xor		eax,eax
+	xor		ecx,ecx
+	call	SkipScope1
+	retn
+
+SkipScope1:
+	or		edi,edi
+	je		@f
+	dec		edi
+	.if al==ah
+		dec		ecx
+		retn
+	.elseif al==']'
+		push	eax
+		inc		ecx
+		mov		ah,'['
+		call	SkipScope1
+		pop		eax
+	.elseif al==')'
+		push	eax
+		inc		ecx
+		mov		ah,'('
+		call	SkipScope1
+		pop		eax
+	.elseif al=='}'
+		; Begin / End
+		push	eax
+		inc		ecx
+		mov		ah,'{'
+		call	SkipScope1
+		pop		eax
+	.elseif al=='"' || al=="'"
+		; String
+		inc		ecx
+		.while al!=[esi+edi] && edi
+			dec		edi
+		.endw
+		.if al==[esi+edi]
+			dec		edi
+			dec		ecx
+		.endif
+	.endif
+	or		ecx,ecx
+	jne		SkipScope1
+  @@:
+	retn
 
 HideAll:
 	mov		da.cctype,CCTYPE_NONE
@@ -977,6 +1059,19 @@ ShowList:
 	.endif
 	invoke SetWindowPos,ha.hCC,HWND_TOP,pt.x,pt.y,da.win.ccwt,da.win.ccht,SWP_SHOWWINDOW or SWP_NOACTIVATE
 	invoke ShowWindow,ha.hCC,SW_SHOWNA
+	retn
+
+ShowTooltip:
+	mov		da.cctype,CCTYPE_TOOLTIP
+	invoke ShowWindow,ha.hCC,SW_HIDE
+	invoke GetCaretPos,addr pt
+	invoke ClientToScreen,ha.hEdt,addr pt
+	add		pt.y,20
+	invoke SendMessage,ha.hTT,TTM_SETITEM,0,addr tti
+	sub		pt.x,eax
+	invoke SetWindowPos,ha.hTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
+	invoke ShowWindow,ha.hTT,SW_SHOWNA
+	invoke InvalidateRect,ha.hTT,NULL,TRUE
 	retn
 
 ApiListBox endp
