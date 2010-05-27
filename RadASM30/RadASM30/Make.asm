@@ -452,6 +452,9 @@ SetOutputFile proc uses ebx esi edi,lpOut:DWORD,lpMain:DWORD
 	invoke iniInStr,edi,addr szDollarC
 	.if eax==-1
 		invoke iniInStr,edi,addr szDollarR
+		.if eax==-1
+			invoke iniInStr,edi,addr szDollarA
+		.endif
 	.endif
 	.if eax==-1
 		invoke strcpy,addr makeexe.output,edi
@@ -639,13 +642,17 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 							pop		ebx
 						.endif
 					.endw
-					invoke CreateFile,addr szAtModDotTxt[1],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-					mov		hFile,eax
-					invoke strlen,addr tmpbuff
-					mov		edx,eax
-					invoke WriteFile,hFile,addr tmpbuff,edx,addr dwWrite,NULL
-					invoke CloseHandle,hFile
-					invoke InsertMain,addr szAtModDotTxt,addr szDollarM
+					.if tmpbuff
+						invoke CreateFile,addr szAtModDotTxt[1],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+						mov		hFile,eax
+						invoke strlen,addr tmpbuff
+						mov		edx,eax
+						invoke WriteFile,hFile,addr tmpbuff,edx,addr dwWrite,NULL
+						invoke CloseHandle,hFile
+						invoke InsertMain,addr szAtModDotTxt,addr szDollarM
+					.else
+						invoke InsertMain,addr szNULL,addr szDollarM
+					.endif
 				.endif
 			.endif
 			invoke iniInStr,addr makeexe.buffer,addr szDollarR
@@ -661,6 +668,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			invoke iniInStr,addr makeexe.buffer,addr szDollarO
 			.if eax!=-1
 				invoke InsertMain,addr makeexe.output,addr szDollarO
+			.endif
+			invoke iniInStr,addr makeexe.buffer,addr szDollarA
+			.if eax!=-1
+				invoke InsertMain,addr da.szAppPath,addr szDollarA
 			.endif
 			mov		eax,TRUE
 			call	MakeIt
