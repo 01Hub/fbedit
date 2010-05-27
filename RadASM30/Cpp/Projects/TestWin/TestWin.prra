@@ -10,12 +10,12 @@ F1=-3,0,1,66,66,1235,542,0,TestWin.h
 C1=0
 B1=
 M1=
-F2=-2,2,1,88,88,1235,542,0,TestWin.cpp
+F2=-2,2,1,88,88,1235,542,7,TestWin.cpp
 C2=0
 B2=
 M2=
 [Make]
 Make=0
-0=Window Release,'/v "$R"',"$R.res",'/c /O1 /GA /GB /w /TC /nologo /Fo "$C"',"$C.obj",'kernel32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib shell32.lib winmm.lib /SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 $C',"$C.exe",'',
+0=Window Release,'/v "$R"',"$R.res",'/c /O1 /GA /GB /w /TC /nologo /Fo "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /OUT:$O @"$A\Cpp\GFL.txt" $C  $M $R',"$C.exe",'',
 Delete=0
 Run=0,'',''

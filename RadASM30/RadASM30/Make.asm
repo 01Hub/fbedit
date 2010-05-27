@@ -185,7 +185,7 @@ FindErrors proc uses ebx esi edi
 			.endif
 		.else
 			mov		eax,da.nAsm
-			.if eax==nMASM
+			.if eax==nMASM || eax==nCPP
 				call	TestLineMasm
 			.elseif eax==nTASM
 				call	TestLineTasm
