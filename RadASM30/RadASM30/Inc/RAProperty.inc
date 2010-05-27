@@ -63,7 +63,6 @@ nHLA						equ 6
 nCPP						equ 7
 nFREEBASIC					equ 8
 nFREEPASCAL					equ 9
-nBCC						equ 10
 nOTHER						equ 99
 
 

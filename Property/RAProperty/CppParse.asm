@@ -662,7 +662,9 @@ _Struct:
 			call	_Begin
 			.if eax
 				push	esi
+				push	npos
 				invoke CppSkipScope,addr npos
+				pop		npos
 				mov		edx,esi
 				pop		esi
 				.if !ecx
@@ -744,6 +746,8 @@ _Struct:
 				.endif
 			.endif
 		.endif
+		call	GetLineNo
+		mov		npos,eax
 		mov		eax,TRUE
 		retn
 	.endif
@@ -759,20 +763,20 @@ _Constant:
 		add		esi,len
 		call	GetWrd
 		inc		ecx
-		invoke strcpyn,offset cppbuff,esi,ecx
+		invoke strcpyn,offset szname,esi,ecx
 		invoke IsWord,esi,len,offset szNew,lpCharTab
 		.if eax
 			jmp		SkipLn
 		.endif
 		add		esi,len
 		call	GetWrd
-		invoke strlen,offset cppbuff
+		invoke strlen,offset szname
 		mov		ecx,len
 		inc		ecx
-		invoke strcpyn,addr cppbuff[eax+1],esi,ecx
+		invoke strcpyn,addr szname[eax+1],esi,ecx
 		add		esi,len
 		mov		edx,'c'
-		invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
+		invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 		mov		eax,TRUE
 	.endif
 	retn
@@ -1087,6 +1091,16 @@ GetWrd:
 		jmp		@b
 	.endif
 	mov		len,ecx
+	retn
+GetLineNo:
+	xor		eax,eax
+	mov		edx,lpMem
+	.while edx<esi
+		.if byte ptr [edx]==VK_RETURN
+			inc		eax
+		.endif
+		inc		edx
+	.endw
 	retn
 
 CppParseFile endp

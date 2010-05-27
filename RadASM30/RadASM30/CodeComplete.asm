@@ -732,7 +732,7 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 		mov		tt.lpszType,offset szCCPp
 		mov		tt.lpszLine,eax
 		xor		edx,edx
-		.if da.nAsm==nBCC
+		.if da.nAsm==nCPP
 			mov		eax,TT_PARANTESES
 		.endif
 		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,edx,addr tt
@@ -855,40 +855,10 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		.else
 			call	HideAll
 		.endif
-	.elseif da.nAsm==nBCC
+	.elseif da.nAsm==nCPP
 		mov		esi,offset LineTxt
-PrintStringByAddr esi
 		xor		eax,eax
 		call	DoIt
-;		invoke strlen,esi
-;		mov		edi,eax
-;		.while edi && byte ptr [esi+edi]!='('
-;			.if byte ptr [esi+edi]==')'
-;				call	SkipScope
-;			.else
-;				dec		edi
-;			.endif
-;		.endw
-;		.if byte ptr [esi+edi]=='(' && edi>1
-;			push	edi
-;			mov		ebx,da.lpCharTab
-;			dec		edi
-;			.while edi
-;				movzx	eax,byte ptr [esi+edi-1]
-;				.break .if byte ptr [ebx+eax]!=CT_CHAR
-;				dec		edi
-;			.endw
-;			pop		edx
-;			.if byte ptr [ebx+eax]!=CT_CHAR || !edi
-;				sub		edx,edi
-;				invoke strcpyn,addr buffer,addr [esi+edi],addr [edx+1]
-;				invoke PropertyFindExact,addr szCCPp,addr buffer,TRUE
-;				.if eax
-;					mov		eax,edi
-;					call		DoIt
-;				.endif
-;			.endif
-;		.endif
 	.else
 		invoke IsLineInvoke,cpline
 		.if eax

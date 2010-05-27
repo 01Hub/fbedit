@@ -475,12 +475,12 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 		invoke GoPreParse,lParam
 	.elseif eax==nNASM
 	.elseif eax==nHLA
-	.elseif eax==nCPP || eax==nBCC
-		;VC6, BCC
+	.elseif eax==nCPP
+		;C/C++
 		invoke CppPreParse,lParam
 	.elseif eax==nFREEBASIC
 		; FreeBASIC
-		invoke FBPreParse,lParam,wParam
+		invoke FBPreParse,lParam,fNoCase
 	.elseif eax==nFREEPASCAL
 	.elseif eax==nOTHER
 	.endif

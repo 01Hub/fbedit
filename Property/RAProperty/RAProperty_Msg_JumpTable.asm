@@ -97,8 +97,8 @@
 			invoke GoParseFile,wParam,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP || eax==nBCC
-			;VC6, BCC
+		.elseif eax==nCPP
+			;C/C++
 			invoke CppPreParse,lParam
 			invoke CppParseFile,wParam,lParam
 		.elseif eax==nFREEBASIC
@@ -215,8 +215,8 @@
 			invoke GoDestroyCommentsStrings,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP || eax==nBCC
-			;VC6, BCC
+		.elseif eax==nCPP
+			;C/C++
 			invoke CppDestroyCommentsStrings,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
@@ -538,8 +538,8 @@
 			invoke GoDestroyCommentsStrings,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP || eax==nBCC
-			;VC6, BCC
+		.elseif eax==nCPP
+			;C/C++
 			invoke CppDestroyCommentsStrings,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC
@@ -666,8 +666,8 @@
 			invoke GoPreParse,lParam
 		.elseif eax==nNASM
 		.elseif eax==nHLA
-		.elseif eax==nCPP || eax==nBCC
-			;VC6, BCC
+		.elseif eax==nCPP
+			;C/C++
 			invoke CppPreParse,lParam
 		.elseif eax==nFREEBASIC
 			; FreeBASIC

@@ -265,6 +265,7 @@ szIniLock						db 'Lock',0
 szIniSession					db 'Session',0
 szIniPath						db 'Path',0
 szIniAssembler					db 'Assembler',0
+szIniError						db 'Error',0
 szIniKeywords					db 'Keywords',0
 szIniColors						db 'Colors',0
 szIniCodeBlock					db 'CodeBlock',0

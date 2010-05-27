@@ -8,7 +8,7 @@ IDC_EDTPLDESC				equ 1005
 
 .const
 
-szAllIni					db '\*.ini',0
+szAllIni					BYTE '\*.ini',0
 
 .data?
 
@@ -771,6 +771,7 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetColors
 		;Get code blocks
 		mov		esi,offset da.rabdstr
+		invoke RtlZeroMemory,esi,sizeof da.rabdstr
 		mov		edi,offset da.rabd
 		invoke RtlZeroMemory,edi,sizeof da.rabd
 		mov		ebx,0
@@ -783,7 +784,7 @@ OpenAssembler proc uses ebx esi edi
 				mov		[edi].RABLOCKDEF.lpszStart,esi
 				invoke strlen,esi
 				lea		esi,[esi+eax+2]
-			.endif 
+			.endif
 			invoke GetItemStr,addr tmpbuff,addr szNULL,esi,32
 			.if byte ptr [esi]
 				mov		[edi].RABLOCKDEF.lpszEnd,esi
@@ -814,7 +815,7 @@ OpenAssembler proc uses ebx esi edi
 		.endw
 		;Reset block defs
 		invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,0
-		;Set code blocks
+		;Get code blocks
 		mov		esi,offset da.rabd
 		.while [esi].RABLOCKDEF.lpszStart
 			invoke SendMessage,ha.hOutput,REM_ADDBLOCKDEF,0,esi
@@ -830,6 +831,11 @@ OpenAssembler proc uses ebx esi edi
 		invoke SendMessage,ha.hOutput,REM_SETCOMMENTBLOCKS,addr da.szCmntStart,addr da.szCmntEnd
 		;Get options
 		invoke GetPrivateProfileString,addr szIniEdit,addr szIniBraceMatch,NULL,addr da.szBraceMatch,sizeof da.szBraceMatch,addr da.szAssemblerIni
+		invoke strlen,addr da.szBraceMatch
+		mov		edx,dword ptr da.szBraceMatch[eax-3]
+		.if edx=='}C{'
+			mov		dword ptr da.szBraceMatch[eax-3],0Dh
+		.endif
 		invoke SendMessage,ha.hOutput,REM_BRACKETMATCH,0,offset da.szBraceMatch
 		invoke GetPrivateProfileString,addr szIniEdit,addr szIniOption,NULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 		invoke GetItemInt,addr tmpbuff,4
@@ -845,6 +851,7 @@ OpenAssembler proc uses ebx esi edi
 		invoke SendMessage,ha.hProperty,PRM_RESET,0,0
 		invoke GetPrivateProfileInt,addr szIniParse,addr szIniAssembler,0,addr da.szAssemblerIni
 		mov		da.nAsm,eax
+		invoke GetPrivateProfileString,addr szIniParse,addr szIniError,NULL,addr da.szError,sizeof da.szError,addr da.szAssemblerIni
 		invoke SendMessage,ha.hProperty,PRM_SETLANGUAGE,da.nAsm,0
 		invoke SendMessage,ha.hProperty,PRM_SETCHARTAB,0,da.lpCharTab
 		invoke GetPrivateProfileString,addr szIniParse,addr szIniDef,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
@@ -869,7 +876,9 @@ OpenAssembler proc uses ebx esi edi
 						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
 						invoke strlen,addr deftype.szWord
 						mov		deftype.len,al
-						invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+						.if eax
+							invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+						.endif
 					.endw
 					movzx	edx,deftype.Def
 					invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
@@ -886,7 +895,9 @@ OpenAssembler proc uses ebx esi edi
 				invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
 				invoke strlen,addr deftype.szWord
 				mov		deftype.len,al
-				invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+				.if eax
+					invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+				.endif
 			.endw
 			;Locals
 			invoke GetPrivateProfileString,addr szIniParse,addr szIniLocal,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni
@@ -899,7 +910,9 @@ OpenAssembler proc uses ebx esi edi
 				invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
 				invoke strlen,addr deftype.szWord
 				mov		deftype.len,al
-				invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+				.if eax
+					invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
+				.endif
 			.endw
 			;Ignore
 			invoke GetPrivateProfileString,addr szIniParse,addr szIniIgnore,NULL,addr buffer,sizeof buffer,addr da.szAssemblerIni

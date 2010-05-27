@@ -122,8 +122,9 @@ OutputText:
 
 MakeThreadProc endp
 
-FindErrors proc uses ebx
+FindErrors proc uses ebx esi edi
 	LOCAL	buffer[512]:BYTE
+	LOCAL	szWord[64]:BYTE
 	LOCAL	nLn:DWORD
 	LOCAL	nLnErr:DWORD
 	LOCAL	nErr:DWORD
@@ -138,21 +139,94 @@ FindErrors proc uses ebx
 		mov		word ptr buffer,sizeof buffer-1
 		invoke SendMessage,ha.hOutput,EM_GETLINE,nLn,addr buffer
 		mov		buffer[eax],0
-		mov		eax,da.nAsm
-		.if eax==nMASM
-			call	TestLineMasm
-		.elseif eax==nTASM
-			call	TestLineTasm
-		.elseif eax==nFASM
-			call	TestLineFasm
-		.elseif eax==nGOASM
-			call	TestLineGoAsm
+		.if da.szError
+			lea		esi,buffer
+			invoke strcpy,addr tmpbuff,addr da.szError
+			invoke GetItemInt,addr tmpbuff,1
+			push	eax
+			invoke GetItemStr,addr tmpbuff,addr szNULL,addr tmpbuff[256],256
+			pop		eax
+			.if !eax
+				invoke iniInStr,addr buffer,addr tmpbuff[256]
+				.if eax!=-1
+					xor		eax,eax
+				.endif
+			.else
+				.while eax
+					push	eax
+					call	GetWord
+					pop		eax
+					dec		eax
+				.endw
+				invoke strcmp,addr szWord,addr tmpbuff[256]
+			.endif
+			.if !eax
+				lea		esi,buffer
+				invoke GetItemInt,addr tmpbuff,1
+				.while eax
+					push	eax
+					call	GetWord
+					pop		eax
+					dec		eax
+				.endw
+				invoke GetFileAttributes,addr szWord
+				.if eax!=INVALID_HANDLE_VALUE
+					.while (byte ptr [esi]<'0' || byte ptr [esi]>'9') && byte ptr [esi]
+						inc		esi
+					.endw
+					invoke DecToBin,esi
+					.if eax
+						dec		eax
+						mov		nLnErr,eax
+						invoke strcpy,addr buffer,addr szWord
+						call	SetError
+					.endif
+				.endif
+			.endif
+		.else
+			mov		eax,da.nAsm
+			.if eax==nMASM
+				call	TestLineMasm
+			.elseif eax==nTASM
+				call	TestLineTasm
+			.elseif eax==nFASM
+				call	TestLineFasm
+			.elseif eax==nGOASM
+				call	TestLineGoAsm
+			.endif
 		.endif
 		pop		eax
 		inc		nLn
 	.endw
 	mov		da.ErrID[ebx*4],0
 	ret
+
+GetWord:
+	lea		edi,szWord
+	.while byte ptr [esi]==VK_SPACE && byte ptr [esi]
+		inc		esi
+	.endw
+	xor		ecx,ecx
+	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi] && ecx<64
+		mov		al,[esi]
+		mov		[edi],al
+		inc		esi
+		inc		edi
+		inc		ecx
+	.endw
+	mov		byte ptr [edi],0
+	retn
+
+SkipWord:
+	mov		edi,da.lpCharTab
+	.while byte ptr [esi]==VK_SPACE && byte ptr [esi]
+		inc		esi
+	.endw
+	.while byte ptr [esi]!=VK_SPACE && byte ptr [esi]
+		movzx	eax,byte ptr [esi]
+		inc		esi
+	.endw
+	retn
 
 TestLineTasm:
 	invoke iniInStr,addr buffer,addr szErrorTasm
