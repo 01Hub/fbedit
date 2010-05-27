@@ -274,7 +274,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	mov		edx,lpApiType
 	.if da.cctype==CCTYPE_STRUCT
 		mov		eax,da.nAsm
-		.if eax==nMASM
+		.if eax==nMASM || eax==nTASM
 			; Find start
 		  NxMASM0:
 			mov		esi,offset LineTxt
@@ -502,6 +502,84 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				; lea eax,ms
 				; mov D[eax+MYSTRUCT.aa],0
 				; mov eax,RECT.left
+				mov		esi,offset LineTxt
+				invoke strcpy,addr buffer,esi
+				invoke strlen,esi
+				lea		esi,[esi+eax+1]
+				invoke IsWordDataStruct,addr buffer,addr buffer1
+				.if eax
+					invoke strcpy,addr buffer,addr buffer1
+					jmp		@f
+				.else
+					mov		eax,da.nLastLine
+					mov		isinproc.nLine,eax
+					mov		eax,ha.hMdi
+					.if da.fProject
+						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						mov		eax,[eax].TABMEM.pid
+					.endif
+					mov		isinproc.nOwner,eax
+					mov		isinproc.lpszType,offset szCCp
+					invoke SendMessage,ha.hProperty,PRM_ISINPROC,0,addr isinproc
+					.if eax
+						mov		edx,eax
+						invoke IsWordLocalStruct,edx,addr buffer,addr buffer1
+						.if eax
+							invoke strcpy,addr buffer,addr buffer1
+						.endif
+					.endif
+				  @@:
+					invoke IsWordStruct,addr buffer
+					.if eax
+						.if byte ptr [esi]
+							invoke IsStructItemStruct,addr buffer,esi
+							.if eax
+								invoke strlen,esi
+								lea		esi,[esi+eax+1]
+								jmp		@b
+							.endif
+						.else
+							push	eax
+							invoke strlen,eax
+							pop		edx
+							lea		edx,[edx+eax+1]
+							invoke AddList,edx,lpWord,15
+							mov		nCount,eax
+						.endif
+					.endif
+				.endif
+			.endif
+		.elseif eax==nCPP
+			; Find start
+			mov		esi,offset LineTxt
+PrintStringByAddr esi
+			mov		edi,esi
+			invoke strlen,esi
+			.while byte ptr [esi+eax-1]!='+' && byte ptr [esi+eax-1]!='-' && byte ptr [esi+eax-1]!=',' && byte ptr [esi+eax-1]!=' ' && byte ptr [esi+eax-1]!=VK_TAB && eax
+				dec		eax
+			.endw
+			lea		esi,[esi+eax]
+			; Parse elements into zero terminated parts
+			xor		ecx,ecx
+			.while byte ptr [esi+ecx]
+				mov		ax,[esi+ecx]
+				.if al=='.'
+					mov		al,0
+					mov		[edi+ecx],al
+				.elseif ax=='>-'
+					mov		al,0
+					mov		[edi+ecx],al
+					inc		ecx
+					dec		edi
+				.else
+					mov		[edi+ecx],al
+				.endif
+				inc		ecx
+			.endw
+			mov		word ptr [edi+ecx],0
+			.if LineTxt
+				;Global or local
+				;MYSTRUCT ms;
 				mov		esi,offset LineTxt
 				invoke strcpy,addr buffer,esi
 				invoke strlen,esi
