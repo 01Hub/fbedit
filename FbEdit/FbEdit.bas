@@ -889,6 +889,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 								SendMessage(ah.hred,REM_GETWORD,260,Cast(Integer,@buff))
 								lret=Cast(Integer,FindExact(StrPtr("pdcs"),@buff,TRUE))
 								If lret Then
+									i=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
 									hCtl=ah.hred
 									SendMessage(ah.hred,EM_EXGETSEL,0,Cast(Integer,@chrg))
 									nLine=chrg.cpMin
@@ -899,8 +900,7 @@ Function DlgProc(ByVal hWin As HWND,ByVal uMsg As UINT,ByVal wParam As WPARAM,By
 										SelectTab(hWin,Cast(HWND,lret),0)
 										SetFocus(ah.hred)
 									EndIf
-									lret=SendMessage(ah.hpr,PRM_FINDGETLINE,0,0)
-									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,lret,0)
+									chrg.cpMin=SendMessage(ah.hred,EM_LINEINDEX,i,0)
 									chrg.cpMax=chrg.cpMin
 									SendMessage(ah.hred,EM_EXSETSEL,0,Cast(Integer,@chrg))
 									SendMessage(ah.hred,EM_SCROLLCARET,0,0)
