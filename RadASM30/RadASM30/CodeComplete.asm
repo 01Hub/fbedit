@@ -224,7 +224,17 @@ IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 		.if !eax
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-			invoke strcpy,lpBuff,esi
+			xor		ecx,ecx
+			mov		edi,lpBuff
+			.while byte ptr [esi+ecx]
+				mov		al,[esi+ecx]
+				.if al=='*'
+					.break
+				.endif
+				mov		[edi+ecx],al
+				inc		ecx
+			.endw
+			mov		byte ptr [edi+ecx],0
 			mov		eax,esi
 			.break
 		.endif
@@ -273,6 +283,9 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	mov		eax,lpWord
 	mov		edx,lpApiType
 	.if da.cctype==CCTYPE_STRUCT
+PrintStringByAddr lpWord
+PrintStringByAddr offset LineTxt
+		call	PreParse
 		mov		eax,da.nAsm
 		.if eax==nMASM || eax==nTASM
 			; Find start
@@ -287,10 +300,10 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.while byte ptr [esi+eax-1]!='(' && eax
 						dec		eax
 					.endw
-					.while byte ptr [esi+eax]==' ' || byte ptr [esi+eax]==VK_TAB
+					.while byte ptr [esi+eax]==' '
 						inc		eax
 					.endw
-					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=VK_TAB
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]
 						mov		dl,[esi+eax]
 						mov		[edi],dl
 						inc		eax
@@ -305,10 +318,10 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.while byte ptr [esi+eax-1]!='['
 						dec		eax
 					.endw
-					.while byte ptr [esi+eax]==' ' || byte ptr [esi+eax]==VK_TAB
+					.while byte ptr [esi+eax]==' '
 						inc		eax
 					.endw
-					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=VK_TAB && byte ptr [esi+eax]!=']'
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=']'
 						mov		dl,[esi+eax]
 						mov		[edi],dl
 						inc		eax
@@ -318,7 +331,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					invoke strcpy,edi,addr [esi+1]
 					jmp		NxMASM0
 				.endif
-				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]==VK_TAB || byte ptr [esi+eax-1]=='('
+				.break .if byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]=='(' || byte ptr [esi+eax-1]=='=' || byte ptr [esi+eax-1]=='>' || byte ptr [esi+eax-1]=='<'
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
@@ -371,7 +384,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 							jmp		NxMASM2
 						.endif
 						inc		eax
-						.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+						.while buffer[eax] && buffer[eax]==VK_SPACE
 							inc		eax
 						.endw
 						.if !buffer[eax]
@@ -383,7 +396,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 							jmp		NxMASM2
 						.endif
 						add		eax,3
-						.while buffer[eax] && (buffer[eax]==VK_SPACE || buffer[eax]==VK_TAB)
+						.while buffer[eax] && buffer[eax]==VK_SPACE
 							inc		eax
 						.endw
 						push	esi
@@ -481,7 +494,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			mov		esi,offset LineTxt
 			mov		edi,esi
 			invoke strlen,esi
-			.while byte ptr [esi+eax-1]!='[' && byte ptr [esi+eax-1]!='+' && byte ptr [esi+eax-1]!=',' && byte ptr [esi+eax-1]!=' ' && byte ptr [esi+eax-1]!=VK_TAB && eax
+			.while byte ptr [esi+eax-1]!='[' && byte ptr [esi+eax-1]!='+' && byte ptr [esi+eax-1]!=',' && byte ptr [esi+eax-1]!=' ' && eax
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
@@ -550,15 +563,25 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				.endif
 			.endif
 		.elseif eax==nCPP
-			; Find start
+;			call	PreParse
 			mov		esi,offset LineTxt
-PrintStringByAddr esi
-			mov		edi,esi
+			; Find start
 			invoke strlen,esi
-			.while byte ptr [esi+eax-1]!='+' && byte ptr [esi+eax-1]!='-' && byte ptr [esi+eax-1]!=',' && byte ptr [esi+eax-1]!=' ' && byte ptr [esi+eax-1]!=VK_TAB && eax
+			.if byte ptr [esi+eax-1]=='-'
+				mov		byte ptr [esi+eax-1],0
+				dec		eax
+			.endif
+			.while eax
+				.break .if byte ptr [esi+eax-1]=='+' || byte ptr [esi+eax-1]=='-' || byte ptr [esi+eax-1]==',' || byte ptr [esi+eax-1]==' ' || byte ptr [esi+eax-1]==VK_TAB || !eax
+				.if eax>=2
+					.if word ptr [esi+eax-2]=='>-'
+						dec		eax
+					.endif
+				.endif
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
+			mov		edi,offset LineTxt
 			; Parse elements into zero terminated parts
 			xor		ecx,ecx
 			.while byte ptr [esi+ecx]
@@ -733,6 +756,50 @@ PrintStringByAddr esi
 	mov		eax,nCount
 	ret
 
+PreParse:
+	mov		esi,offset LineTxt
+	mov		edi,esi
+	;Skip white space
+	.while (byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB) && byte ptr [esi]
+		mov		byte ptr [esi],VK_SPACE
+		inc		esi
+	.endw
+	push	esi
+	.while byte ptr [esi]
+		.if byte ptr [esi]==VK_TAB
+			mov		byte ptr [esi],VK_SPACE
+		.endif
+		inc		esi
+	.endw
+	pop		esi
+	mov		ebx,da.lpCharTab
+	.while byte ptr [esi]
+		movzx	eax,byte ptr [esi]
+		.if byte ptr [ebx+eax]==CT_CHAR
+			mov		[edi],al
+			inc		edi
+		.elseif edi>offset LineTxt
+			movzx	edx,byte ptr [edi-1]
+			.if byte ptr [ebx+edx]==CT_CHAR
+				mov		[edi],al
+				inc		edi
+			.elseif eax!=VK_SPACE
+				.if edx==VK_SPACE
+					mov		[edi-1],al
+				.else
+					mov		[edi],al
+					inc		edi
+				.endif
+			.endif
+		.elseif eax!=VK_SPACE
+			mov		[edi],al
+			inc		edi
+		.endif
+		inc		esi
+	.endw
+	mov		byte ptr [edi],0
+	retn
+
 Filter:
 	push	edx
 	mov		ecx,lpWord
@@ -811,7 +878,7 @@ UpdateApiToolTip proc uses esi edi,lpWord:DWORD
 		mov		tt.lpszLine,eax
 		xor		edx,edx
 		.if da.nAsm==nCPP
-			mov		eax,TT_PARANTESES
+			mov		edx,TT_PARANTESES
 		.endif
 		invoke SendMessage,ha.hProperty,PRM_GETTOOLTIP,edx,addr tt
 	.endif
@@ -909,7 +976,7 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	lea		edx,[edx+sizeof CHARS]
 	invoke strcpyn,offset LineTxt,edx,eax
 	.if da.cctype==CCTYPE_ALL
-		invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
+		call	GetWordLeft
 		invoke strlen,addr buffer
 		mov		edx,ccchrg.cpMax
 		sub		edx,eax
@@ -919,7 +986,7 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 			call	ShowList
 		.endif
 	.elseif da.cctype==CCTYPE_STRUCT
-		invoke SendMessage,ha.hEdt,REM_GETWORD,sizeof buffer,addr buffer
+		call	GetWordLeft
 		invoke strlen,addr buffer
 		mov		edx,cpline
 		sub		edx,eax
@@ -935,17 +1002,54 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		.endif
 	.elseif da.nAsm==nCPP
 		mov		esi,offset LineTxt
+		add		ccchrg.cpMin,eax
 		xor		eax,eax
-		call	DoIt
+		.while byte ptr [esi+eax]==VK_SPACE || byte ptr [esi+eax]==VK_TAB
+			inc		eax
+		.endw
+		lea		esi,LineTxt[eax]
+		call	DoItCpp
 	.else
 		invoke IsLineInvoke,cpline
 		.if eax
+			add		ccchrg.cpMin,eax
+			lea		esi,LineTxt[eax]
 			call	DoIt
 		.else
 			call	HideAll
 		.endif
 	.endif
 	ret
+
+GetWordLeft:
+	mov		esi,offset LineTxt
+	mov		ebx,da.lpCharTab
+	invoke strlen,esi
+	lea		edi,buffer
+	.while eax
+		dec		eax
+		movzx	edx,byte ptr [esi+eax]
+		.if byte ptr [ebx+edx]!=CT_CHAR
+			inc		eax
+			.while byte ptr [esi+eax]
+				mov		dl,[esi+eax]
+				mov		[edi],dl
+				inc		eax
+				inc		edi
+			.endw
+			.break
+		.elseif !eax
+			.while byte ptr [esi+eax]
+				mov		dl,[esi+eax]
+				mov		[edi],dl
+				inc		eax
+				inc		edi
+			.endw
+			.break
+		.endif
+	.endw
+	mov		byte ptr [edi],0
+	retn
 
 SkipScope:
 	xor		eax,eax
@@ -996,13 +1100,12 @@ SkipScope1:
 	retn
 
 DoIt:
-	add		ccchrg.cpMin,eax
-	lea		esi,LineTxt[eax]
 	invoke UpdateApiList,esi,offset szCCPp
 	.if eax
 		mov		da.cctype,CCTYPE_PROC
 		call	ShowList
 	.else
+DoItCpp:
 		invoke ShowWindow,ha.hCC,SW_HIDE
 		mov		da.cctype,CCTYPE_NONE
 		invoke UpdateApiToolTip,esi

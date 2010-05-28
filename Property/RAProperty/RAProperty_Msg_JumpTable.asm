@@ -329,7 +329,7 @@
 			mov		ecx,wParam
 			.if byte ptr [edx]==':'
 				inc		edx
-				.while byte ptr [edx] && byte ptr [edx]!=',' && byte ptr [edx]!=' '
+				.while byte ptr [edx] && byte ptr [edx]!=',' && byte ptr [edx]!='*' && byte ptr [edx]!=' '
 					mov		al,[edx]
 					mov		[ecx],al
 					inc		ecx
@@ -343,7 +343,7 @@
 				.endw
 				.if byte ptr [edx]==':'
 					inc		edx
-					.while byte ptr [edx] && byte ptr [edx]!=',' && byte ptr [edx]!=' '
+					.while byte ptr [edx] && byte ptr [edx]!=',' && byte ptr [edx]!='*' && byte ptr [edx]!=' '
 						mov		al,[edx]
 						mov		[ecx],al
 						inc		ecx

@@ -461,26 +461,28 @@ GetToolTip proc uses esi edi,lParam:DWORD,fNoCase:DWORD
 	LOCAL	npos:DWORD
 
 	mov		eax,[ebx].RAPROPERTY.nlanguage
+	mov		edi,lParam
+	mov		edi,[edi].TOOLTIP.lpszLine
 	.if eax==nMASM
 		; Masm
-		invoke MPreParse,lParam
+		invoke MPreParse,edi
 	.elseif eax==nTASM
 		; Tasm
-		invoke TasmPreParse,lParam
+		invoke TasmPreParse,edi
 	.elseif eax==nFASM
 		; Fasm
-		invoke FasmPreParse,lParam
+		invoke FasmPreParse,edi
 	.elseif eax==nGOASM
 		; GoAsm
-		invoke GoPreParse,lParam
+		invoke GoPreParse,edi
 	.elseif eax==nNASM
 	.elseif eax==nHLA
 	.elseif eax==nCPP
 		;C/C++
-		invoke CppPreParse,lParam
+		invoke CppPreParse,edi
 	.elseif eax==nFREEBASIC
 		; FreeBASIC
-		invoke FBPreParse,lParam,fNoCase
+		invoke FBPreParse,edi,fNoCase
 	.elseif eax==nFREEPASCAL
 	.elseif eax==nOTHER
 	.endif

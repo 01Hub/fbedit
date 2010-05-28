@@ -343,6 +343,9 @@ CppFixUnknown proc uses ebx esi edi
 					xor		edx,edx
 				  @@:
 					mov		al,[ecx+edx]
+					.if al=='*'
+						xor		al,al
+					.endif
 					mov		ah,[edi+edx+sizeof PROPERTIES]
 					or		ah,ah
 					je		@f
@@ -369,7 +372,6 @@ CppFixUnknown endp
 CppParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpCharTab
 	LOCAL	len:DWORD
-
 	LOCAL	lpRet:DWORD
 	LOCAL	lenRet:DWORD
 	LOCAL	lpFun:DWORD
@@ -378,13 +380,12 @@ CppParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpParamEn:DWORD
 	LOCAL	lpBegin:DWORD
 	LOCAL	lpEnd:DWORD
-
-
 	LOCAL	nNest:DWORD
 	LOCAL	lpTemp:DWORD
 	LOCAL	fTypedef:DWORD
 	LOCAL	npos:DWORD
 	LOCAL	nline:DWORD
+	LOCAL	nptr:DWORD
 
 	push	ebx
 	mov		eax,[ebx].RAPROPERTY.lpchartab
@@ -784,6 +785,7 @@ _Constant:
 GetParam:
 	push	ebx
 	.while esi<lpParamEn
+		mov		nptr,0
 		call	GetWrd
 		mov		ebx,esi
 		add		esi,len
@@ -799,18 +801,14 @@ GetParam:
 			call	GetWrd
 		.endif
 		.if !len
-			push	esi
+;			push	esi
 			xor		edx,edx
 			.while byte ptr [esi]=='*'
-				inc		edx
+				inc		nptr
 				inc		esi
 			.endw
-			push	edx
 			call	GetWrd
-			pop		edx
-			pop		esi
-			add		len,edx
-			add		ecx,edx
+;			pop		esi
 		.endif
 		pop		edx
 		.if edx && len
@@ -832,6 +830,11 @@ GetParam:
 				inc		ebx
 				inc		edi
 				dec		edx
+			.endw
+			.while nptr
+				mov		byte ptr[edi],'*'
+				inc		edi
+				dec		nptr
 			.endw
 			call	GetWrd
 			.if byte ptr [esi]==','
@@ -986,6 +989,7 @@ _Unknown:
 	invoke strcpyn,offset cppbuff1,esi,ecx
 	add		esi,len
 	mov		lpTemp,esi
+	push	npos
 _Unknown1:
 	.if byte ptr [esi]==VK_RETURN
 		inc		esi
@@ -1043,9 +1047,16 @@ _Unknown1:
 		.while byte ptr [esi]!=';' && byte ptr [esi]
 			inc		esi
 		.endw
+		pop		eax
 		mov		eax,TRUE
 		retn
+	.elseif byte ptr [esi]=='*'
+		inc		esi
+		invoke strlen,addr cppbuff1
+		mov		word ptr cppbuff1[eax],'*'
+		jmp		_Unknown1
 	.endif
+	pop		npos
 	mov		esi,lpTemp
 	xor		eax,eax
 	retn

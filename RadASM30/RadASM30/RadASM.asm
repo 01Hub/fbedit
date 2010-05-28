@@ -2293,10 +2293,16 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
 			jmp		Ex
 		.elseif eax=='>'
-			invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr chrg
-			invoke SendMessage,ha.hEdt,REM_ISCHARPOS,chrg.cpMin,0
+			invoke SendMessage,ha.hEdt,EM_EXGETSEL,0,addr trng.chrg
+			invoke SendMessage,ha.hEdt,REM_ISCHARPOS,trng.chrg.cpMin,0
 			.if !eax
-				mov		da.cctype,CCTYPE_STRUCT
+				dec		trng.chrg.cpMin
+				lea		eax,buffer
+				mov		trng.lpstrText,eax
+				invoke SendMessage,ha.hEdt,EM_GETTEXTRANGE,0,addr trng
+				.if buffer=='-'
+					mov		da.cctype,CCTYPE_STRUCT
+				.endif
 			.endif
 			invoke CallWindowProc,lpOldRAEditCodeProc,hWin,uMsg,wParam,lParam
 			jmp		Ex
