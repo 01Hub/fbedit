@@ -283,8 +283,6 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	mov		eax,lpWord
 	mov		edx,lpApiType
 	.if da.cctype==CCTYPE_STRUCT
-PrintStringByAddr lpWord
-PrintStringByAddr offset LineTxt
 		call	PreParse
 		mov		eax,da.nAsm
 		.if eax==nMASM || eax==nTASM

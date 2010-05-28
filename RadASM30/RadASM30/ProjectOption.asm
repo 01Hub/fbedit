@@ -256,6 +256,18 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke EnableWindow,eax,TRUE
 			.endif
 		.endif
+	.elseif eax==WM_HELP
+		mov		esi,lParam
+		mov		eax,[esi].HELPINFO.iCtrlId
+		.if eax==IDC_EDTPORC || eax==IDC_EDTPOOUTRC
+			invoke DoHelp,addr da.szCompileRCHelp,addr da.szCompileRCHelpKw
+		.elseif eax==IDC_EDTPOASSEMBLE || eax==IDC_EDTPOOUTASSEMBLE
+			invoke DoHelp,addr da.szAssembleHelp,addr da.szAssembleHelpKw
+		.elseif eax==IDC_EDTPOLINK || eax==IDC_EDTPOOUTLINK
+			invoke DoHelp,addr da.szLinkHelp,addr da.szLinkHelpKw
+		.elseif eax==IDC_EDTPOLIB || eax==IDC_EDTPOOUTLIB
+			invoke DoHelp,addr da.szLibHelp,addr da.szLibHelpKw
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
 	.else

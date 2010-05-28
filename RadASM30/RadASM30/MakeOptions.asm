@@ -164,6 +164,18 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 				.endif
 			.endif
 		.endif
+	.elseif eax==WM_HELP
+		mov		esi,lParam
+		mov		eax,[esi].HELPINFO.iCtrlId
+		.if eax==IDC_EDTMAKEOPTRC || eax==IDC_EDTMAKEOPTRCOUT
+			invoke DoHelp,addr da.szCompileRCHelp,addr da.szCompileRCHelpKw
+		.elseif eax==IDC_EDTMAKEOPTASM || eax==IDC_EDTMAKEOPTASMOUT
+			invoke DoHelp,addr da.szAssembleHelp,addr da.szAssembleHelpKw
+		.elseif eax==IDC_EDTMAKEOPTLINK || eax==IDC_EDTMAKEOPTLINKOUT
+			invoke DoHelp,addr da.szLinkHelp,addr da.szLinkHelpKw
+		.elseif eax==IDC_EDTMAKEOPTLIB || eax==IDC_EDTMAKEOPTLIBOUT
+			invoke DoHelp,addr da.szLibHelp,addr da.szLibHelpKw
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,lParam
 	.else

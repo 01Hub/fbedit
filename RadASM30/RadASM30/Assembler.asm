@@ -941,9 +941,13 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniHelp,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
 		.if eax
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp,sizeof da.szCompileRCHelp
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelpKw,sizeof da.szCompileRCHelpKw
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp,sizeof da.szAssembleHelp
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelpKw,sizeof da.szAssembleHelpKw
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp,sizeof da.szLinkHelp
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLinkHelpKw,sizeof da.szLinkHelpKw
 			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLibHelpKw,sizeof da.szLibHelpKw
 		.endif
 		;Can debug
 		invoke GetPrivateProfileInt,addr szIniMake,addr szIniDebug,0,addr da.szAssemblerIni
