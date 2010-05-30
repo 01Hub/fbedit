@@ -771,6 +771,7 @@ OpenCommandLine proc uses esi edi,lpCmdLine:DWORD
 			call	CmdOpenFile
 		.else
 			call	CopyUnQuoted
+			call	CmdOpenFile
 		.endif
 	.endw
 	ret

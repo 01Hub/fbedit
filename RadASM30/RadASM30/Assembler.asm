@@ -931,24 +931,20 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetKeywords
 		;Get make exe's
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniMake,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRC,sizeof da.szCompileRC
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssemble,sizeof da.szAssemble
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLink,sizeof da.szLink
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLib,sizeof da.szLib
-		.endif
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRC,sizeof da.szCompileRC
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssemble,sizeof da.szAssemble
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLink,sizeof da.szLink
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLib,sizeof da.szLib
 		;Get make help
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniHelp,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
-		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp,sizeof da.szCompileRCHelp
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelpKw,sizeof da.szCompileRCHelpKw
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp,sizeof da.szAssembleHelp
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelpKw,sizeof da.szAssembleHelpKw
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp,sizeof da.szLinkHelp
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLinkHelpKw,sizeof da.szLinkHelpKw
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
-			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLibHelpKw,sizeof da.szLibHelpKw
-		.endif
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelp,sizeof da.szCompileRCHelp
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szCompileRCHelpKw,sizeof da.szCompileRCHelpKw
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelp,sizeof da.szAssembleHelp
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szAssembleHelpKw,sizeof da.szAssembleHelpKw
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLinkHelp,sizeof da.szLinkHelp
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLinkHelpKw,sizeof da.szLinkHelpKw
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.szLibHelp,sizeof da.szLibHelp
+		invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr da.szLibHelpKw,sizeof da.szLibHelpKw
 		;Can debug
 		invoke GetPrivateProfileInt,addr szIniMake,addr szIniDebug,0,addr da.szAssemblerIni
 		mov		da.fCanDebug,eax

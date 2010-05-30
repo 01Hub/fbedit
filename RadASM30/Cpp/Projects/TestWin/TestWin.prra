@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=Cpp
-Path=C:\RadASM30\Cpp\Projects\TestWin
+Path=D:\RadASM30\Cpp\Projects\TestWin
 Group=2,-1,0,1,TestWin,-2,-1,1,Assembly,-3,-1,1,Include
 Open=0,2,1
 Api=

@@ -20,15 +20,6 @@ Start:
 	INVOKE ExitProcess,0
 
 DlgProc FRAME hwnd,uMsg,wParam,lParam
-	LOCAL	buffer[256]	:B
-	LOCAL	ms			:MYSTRUCT
-
-mov D[mys.rc.left],0
-mov [frect.top],eax
-mov D[ms.rc.top],0
-lea eax,ms
-mov D[eax+MYSTRUCT.rc.left],0
-mov eax,RECT.bottom
 
 	MOV EAX,[uMsg]
 	.WMINITDIALOG
