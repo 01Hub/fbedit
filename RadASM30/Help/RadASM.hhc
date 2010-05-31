@@ -16,6 +16,19 @@
 			<param name="Name" value="Introduction">
 			<param name="Local" value="Intro.htm">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Options">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Programming Languages">
+				<param name="Local" value="ProgrammingLanguage.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Code Editor Options">
+				<param name="Local" value="CodeEditorOptions.htm">
+				</OBJECT>
+		</UL>
 	</UL>
 </UL>
 </BODY></HTML>
