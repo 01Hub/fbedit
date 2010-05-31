@@ -3,7 +3,7 @@ Version=3000
 [Project]
 Assembler=masm
 Api=winraeMsg.api,winraeConst.api
-Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30
 Group=2,-1,0,1,RadASM 3.0,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F30=-3,0,1,-6,-25,1249,694,131,Inc\RAGrid.inc
 F29=-3,0,1,-6,-25,769,508,0,Inc\RAFile.inc
@@ -31,7 +31,7 @@ F7=-2,0,1,-6,-25,1249,694,67,TabTool.asm
 F6=-2,0,1,-6,-25,1249,694,583,TabOptions.Asm
 F2=-2,0,1,-6,-25,1249,694,269,ProjectOption.asm
 F1=-2,0,1,176,176,1017,443,2032,Project.asm
-Open=10,3,4,21,5,38,37,18,10,17,1,13,32
+Open=0,3,4,21,5,38,37,18,10,17,1,13,32
 F5=-5,2,4,44,44,1017,443,474,RadASM30.rc
 F21=-3,0,1,22,22,1017,443,536,Addins\Addins.inc
 F4=-3,0,1,0,0,1017,443,232,RadASM.inc

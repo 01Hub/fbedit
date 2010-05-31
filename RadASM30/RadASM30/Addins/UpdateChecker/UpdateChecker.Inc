@@ -32,9 +32,6 @@ include debug.inc
 includelib debug.lib
 include masm32.inc
 
-DBGWIN_DEBUG_ON = 1			; include debug info into the program
-DBGWIN_EXT_INFO = 0			; include extra debug info into the program
-
 IDD_DLGCHECK_UPDATE				equ 8000
 IDC_EDTVERSION					equ 1001
 IDC_BTNDOWNLOAD					equ 1008
@@ -66,7 +63,7 @@ szClose							db 'Close',0
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
 szFmtTest						db 'If the test turns out OK then exit RadASM and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to RadASM root:',13,10,'%s',0
 
-szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/ReleaseVersion.txt',0
+szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/',0
 
 szDownloading					db 'Downloading: ',0

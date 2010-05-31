@@ -703,6 +703,8 @@ Function CloseAllTabs(ByVal hWin As HWND,ByVal fProjectClose As Boolean,ByVal hW
 	EndIf
 	tci.mask=TCIF_PARAM
 	i=0
+TextToOutput(Str(hWinDontClose))
+TextToOutput(Str(fCloseLocked))
 	While TRUE
 		If SendMessage(ah.htabtool,TCM_GETITEM,i,Cast(Integer,@tci)) Then
 			lpTABMEM=Cast(TABMEM Ptr,tci.lParam)
