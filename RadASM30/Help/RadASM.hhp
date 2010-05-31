@@ -1,0 +1,15 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=RadASM.chm
+Contents file=RadASM.hhc
+Default topic=Intro.htm
+Display compile progress=No
+Index file=RadASM.hhk
+Language=0x414 Norsk, bokmål (Norge)
+
+
+[FILES]
+Intro.htm
+
+[INFOTYPES]
+
