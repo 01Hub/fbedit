@@ -527,6 +527,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,addr da.make.szCompileRC[esi]
 		invoke InsertMain,addr da.szMainRC,addr szDollarR
 		invoke SetOutputFile,addr da.make.szOutCompileRC[esi],offset da.szMainRC
+		.while TRUE
+			invoke iniInStr,addr makeexe.buffer,addr szDollarA
+			.break .if eax==-1
+			invoke InsertMain,addr da.szAppPath,addr szDollarA
+		.endw
 		mov		eax,TRUE
 		call	MakeIt
 	.elseif eax==IDM_MAKE_ASSEMBLE
@@ -535,6 +540,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,addr da.make.szAssemble[esi]
 		invoke InsertMain,addr da.szMainAsm,addr szDollarC
 		invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+		.while TRUE
+			invoke iniInStr,addr makeexe.buffer,addr szDollarA
+			.break .if eax==-1
+			invoke InsertMain,addr da.szAppPath,addr szDollarA
+		.endw
 		mov		eax,TRUE
 		call	MakeIt
 	.elseif eax==IDM_MAKE_MODULES
@@ -560,6 +570,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 					lea		edi,[edi+eax+1]
 				.endif
 				invoke SetOutputFile,addr da.make.szOutAssemble[esi],edi
+				.while TRUE
+					invoke iniInStr,addr makeexe.buffer,addr szDollarA
+					.break .if eax==-1
+					invoke InsertMain,addr da.szAppPath,addr szDollarA
+				.endw
 				mov		eax,TRUE
 				call	MakeIt
 				.break .if fExitCode
@@ -669,10 +684,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.if eax!=-1
 				invoke InsertMain,addr makeexe.output,addr szDollarO
 			.endif
-			invoke iniInStr,addr makeexe.buffer,addr szDollarA
-			.if eax!=-1
+			.while TRUE
+				invoke iniInStr,addr makeexe.buffer,addr szDollarA
+				.break .if eax==-1
 				invoke InsertMain,addr da.szAppPath,addr szDollarA
-			.endif
+			.endw
 			mov		eax,TRUE
 			call	MakeIt
 		.elseif da.make.szLib[esi]
@@ -689,6 +705,11 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.if eax!=-1
 				invoke InsertMain,addr makeexe.output,addr szDollarO
 			.endif
+			.while TRUE
+				invoke iniInStr,addr makeexe.buffer,addr szDollarA
+				.break .if eax==-1
+				invoke InsertMain,addr da.szAppPath,addr szDollarA
+			.endw
 			mov		eax,TRUE
 			call	MakeIt
 		.endif

@@ -1,6 +1,6 @@
 RadASM 3.0 is a complete rewrite of RadASM.
 It is in no way compatible with older versions of RadASM.
-Ini files, project files and addins are all incompatible.
+Ini files, project files, api files and addins are all incompatible.
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 

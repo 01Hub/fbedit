@@ -1,4 +1,4 @@
-.486p                                             
+.486p
 .MODEL FLAT,STDCALL
 locals
 jumps
@@ -11,7 +11,7 @@ ttt
 
 .code
 
-Start:
+start:
 
 	call	Create_Label,1,2,3,4,5,6
 	call	ExitProcess,0
@@ -25,9 +25,11 @@ Create_Label PROC STDCALL	USES	ecx ebx esi edi, tst2:DWORD
 	mov		eax,0
 
 	call	MessageBoxA,NULL,offset szText,offset szText,0
+	call	Module1,NULL
 	ret
 
 Create_Label ENDP
 
 ends
-end Start
+
+end start

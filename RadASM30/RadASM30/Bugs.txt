@@ -7,8 +7,3 @@ BUGS
 -----------
 - Caret position might be wrong when opening a project.
 - External files in project does not work.
-
-SEVERE BUGS
------------
-- Paste can in rare cases close RadASM, no error reported.
-- Cut can in rare cases close RadASM, no error reported.

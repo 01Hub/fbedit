@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=Bcc
-Path=D:\RadASM30\Bcc\Projects\TestWin
+Path=C:\RadASM30\Bcc\Projects\TestWin
 Group=2,-1,0,1,TestWin,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 Open=0,1,2,3
 Api=
@@ -20,6 +20,6 @@ B1=
 M1=
 [Make]
 Make=0
-0=Window Release,'/v /32 "$R"',"$R.res",'/c /tW /I"\Borland\Bcc55\Include" "$C"',"$C.obj",'/aa /c /x /Gn /Tpe /L"\Borland\Bcc55\Lib" c0w32.obj $C $M,$O,,@$A\Bcc\GFL.txt,,$R',"$C.exe",'',
+0=Window Release,'/v /32 "$R"',"$R.res",'/c /tW "$C"',"$C.obj",'/aa /c /x /Gn /Tpe c0w32.obj $C $M,$O,,@$A\Bcc\GFL.txt,,$R',"$C.exe",'',
 Delete=0
 Run=0,'',''

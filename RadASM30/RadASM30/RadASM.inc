@@ -189,7 +189,7 @@ szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
-szVersion						db 'RadASM 3.0.0.0',0
+szVersion						db 'RadASM version 3.0.0.0',0
 szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
