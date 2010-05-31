@@ -1405,6 +1405,9 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 						.endif
 					.endif
+				.elseif da.fExternal
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+					mov		[eax].PBITEM.lParam,ID_EXTERNAL
 				.endif
 				inc		nOpen
 			.endif
@@ -1427,6 +1430,9 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 						.endif
 					.endif
+				.elseif da.fExternal
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+					mov		[eax].PBITEM.lParam,ID_EXTERNAL
 				.endif
 				mov		nOpen,1
 			.endif
@@ -1956,16 +1962,30 @@ PutProject proc uses ebx esi edi
 		pop		da.win.fcldmax
 		invoke ShowWindow,ha.hClient,SW_SHOWNA
 	.endif
-;	;Get external project files
-;	.while TRUE
-;		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-;		.break .if !eax
-;		mov		esi,eax
-;		mov		ebx,[esi].PBITEM.id
-;		.if [esi].PBITEM.lParam==ID_EXTERNAL
-;		.endif
-;	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniOpen,addr tmpbuff[1],addr da.szProjectFile
+	;Get external project files
+	.while TRUE
+		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+		.break .if !eax
+		mov		esi,eax
+		mov		ebx,[esi].PBITEM.id
+		mov		word ptr tmpbuff,0
+		.if [esi].PBITEM.lParam==ID_EXTERNAL
+			invoke PutItemInt,addr tmpbuff,[esi].PBITEM.idparent
+			invoke PutItemInt,addr tmpbuff,0
+			invoke PutItemInt,addr tmpbuff,ID_EXTERNAL
+			invoke PutItemInt,addr tmpbuff,0
+			invoke PutItemInt,addr tmpbuff,0
+			invoke PutItemInt,addr tmpbuff,0
+			invoke PutItemInt,addr tmpbuff,0
+			invoke PutItemInt,addr tmpbuff,0
+			invoke RemovePath,addr [esi].PBITEM.szitem,addr da.szProjectPath,addr buffer
+			invoke PutItemStr,addr tmpbuff,addr buffer
+			mov		buffer,'F'
+			invoke BinToDec,ebx,addr buffer[1]
+			invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
+		.endif
+	.endw
 	;Project.prra [Make]
 	mov		word ptr buffer,0
 	invoke WritePrivateProfileSection,addr szIniMake,addr buffer,addr da.szProjectFile

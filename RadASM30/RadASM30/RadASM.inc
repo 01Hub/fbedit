@@ -72,6 +72,7 @@ RemovePath						PROTO	:DWORD,:DWORD,:DWORD
 
 PostAddinMessage				PROTO	:HWND,:UINT,:WPARAM,:LPARAM,:DWORD,:DWORD
 GetModify						PROTO	:HWND
+TextOutput						PROTO	:DWORD
 
 ; Debug proto
 SetDebugInfo					PROTO	:DWORD

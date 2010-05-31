@@ -560,6 +560,7 @@ ADDINDATA struct
 	ErrID				DWORD 256 dup(?)
 	fNoChangeNotify		DWORD ?
 	szError				BYTE 64 dup(?)
+	fExternal			DWORD ?
 ADDINDATA ends
 
 FILEINFO struct

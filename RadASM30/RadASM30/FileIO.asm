@@ -192,6 +192,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	xor		edi,edi
+	mov		da.fExternal,edi
 	mov		pid,edi
 	invoke GetFileAttributes,lpFileName
 	.if eax!=INVALID_HANDLE_VALUE
@@ -308,6 +309,7 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 		.else
 			;External
 			invoke ShellExecute,ha.hWnd,NULL,addr [eax].EXTERNAL.szprog,lpFileName,NULL,SW_SHOWNORMAL
+			mov		da.fExternal,TRUE
 			xor		eax,eax
 			jmp		Ex
 		.endif

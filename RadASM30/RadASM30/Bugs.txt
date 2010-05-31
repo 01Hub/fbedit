@@ -6,4 +6,3 @@ TODO
 BUGS
 -----------
 - Caret position might be wrong when opening a project.
-- External files in project does not work.
