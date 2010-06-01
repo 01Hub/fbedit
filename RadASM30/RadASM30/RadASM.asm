@@ -2786,6 +2786,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		.if eax==ID_EDITCODE
 			.if [esi].NMHDR.code==EN_SELCHANGE
 				mov		da.fTimer,1
+				invoke PostAddinMessage,ha.hMdi,AIM_RASELCHANGE,ebx,esi,0,HOOK_RASELCHANGE
 				mov		eax,[esi].RASELCHANGE.chrg.cpMin
 				sub		eax,[esi].RASELCHANGE.cpLine
 				invoke ShowPos,[esi].RASELCHANGE.line,eax

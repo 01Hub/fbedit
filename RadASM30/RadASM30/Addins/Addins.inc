@@ -250,6 +250,7 @@ AIM_MAKEDONE					equ WM_USER+114			;RadASM finished the make process. Always ret
 AIM_GETFILETYPE					equ WM_USER+115			;RadASM requests a filetype. Return ID_EDITUSER if your addin handles the filetype, else return FALSE. hWin=Main window,wParam=0, lParam=lpFileName
 AIM_FILENAMECHANGED				equ WM_USER+116			;RadASM has changed a filename. Return TRUE if this is your file, else return FALSE. hWin=Mdi child window,wParam=Old filename, lParam=New filename
 AIM_MENUENABLE					equ WM_USER+117			;RadASM requests you to enable / disable your menu items. Always return FALSE. hWin=Main window,wParam=IDM_FILE,IDM_EDIT,IDM_VIEW,IDM_FORMAT,IDM_PROJECT,IDM_RESOURCE,IDM_MAKE,IDM_DEBUG,IDM_TOOLS,IDM_WINDOW,IDM_OPTION or IDM_HELP, lParam=0
+AIM_RASELCHANGE					equ WM_USER+118			;This message is sendt when a ID_EDITCODE window has a selection change. Always return FALSE. hWin=Mdi child window,wParam=lpTABMEM,lParam=lpRASELCHANE
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED				equ 00001h
@@ -270,6 +271,8 @@ HOOK_MAKEDONE					equ 04000h
 HOOK_GETFILETYPE				equ 08000h
 HOOK_FILENAMECHANGED			equ 10000h
 HOOK_MENUENABLE					equ 20000h
+HOOK_RASELCHANGE				equ 40000h
+
 
 HOOK struct
 	hook1				DWORD ?				;Combinations of HOOK_ flags
