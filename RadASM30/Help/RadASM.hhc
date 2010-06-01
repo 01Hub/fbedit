@@ -28,6 +28,38 @@
 				<param name="Name" value="Code Editor Options">
 				<param name="Local" value="CodeEditorOptions.htm">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Resource Editor Options">
+				<param name="Local" value="ResourceEditorOptions.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Environment">
+				<param name="Local" value="Environment.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Make Options">
+				<param name="Local" value="MakeOptions.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="External Files">
+				<param name="Local" value="ExternalFile.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Addin Manager">
+				<param name="Local" value="AddinManager.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Tools Menu">
+				<param name="Local" value="ToolsMenu.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Help Menu">
+				<param name="Local" value="HelpMenu.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="F1-Help">
+				<param name="Local" value="F1Help.htm">
+				</OBJECT>
 		</UL>
 	</UL>
 </UL>

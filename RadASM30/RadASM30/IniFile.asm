@@ -205,6 +205,7 @@ PutResource proc uses ebx esi
 	invoke PutItemInt,addr tmpbuff,da.resopt.nExport
 	invoke PutItemStr,addr tmpbuff,addr da.resopt.szExport
 	invoke PutItemInt,addr tmpbuff,da.resopt.nOutput
+	invoke PutItemStr,addr tmpbuff,addr da.resopt.szUserExport
 	invoke WritePrivateProfileString,addr szIniResource,addr szIniOption,addr tmpbuff[1],addr da.szAssemblerIni
 	;Custom controls
 	mov		word ptr tmpbuff,0

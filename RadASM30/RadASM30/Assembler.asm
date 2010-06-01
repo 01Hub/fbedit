@@ -709,6 +709,7 @@ OpenAssembler proc uses ebx esi edi
 		invoke GetItemStr,addr tmpbuff,addr szNULL,addr da.resopt.szExport,sizeof da.resopt.szExport
 		invoke GetItemInt,addr tmpbuff,0
 		mov		da.resopt.nOutput,eax
+		invoke GetItemStr,addr tmpbuff,addr szDefUserExport,addr da.resopt.szUserExport,sizeof da.resopt.szUserExport
 		;Get file filters
 		invoke RtlZeroMemory,addr da.szCODEString,sizeof da.szCODEString
 		invoke RtlZeroMemory,addr da.szRESString,sizeof da.szRESString

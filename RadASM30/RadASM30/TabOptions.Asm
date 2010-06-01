@@ -8,6 +8,8 @@ IDC_RBNEXPOPT2		equ 2102
 IDC_RBNEXPOPT3		equ 2103
 IDC_RBNEXPOPT4		equ 2104
 IDC_RBNEXPOPT5		equ 2105
+IDC_RBNEXPORT6		equ 2106
+IDC_EDTEXPORTUSER	equ 2107
 IDC_RBNEXPORTFILE	equ 2110
 IDC_RBNEXPORTCLIP	equ 2111
 IDC_RBNEXPORTOUT	equ 2112
@@ -62,17 +64,6 @@ szHdrMask			db 'Mask',0
 szHdrName			db 'Name',0
 szHdrFiles			db 'Files',0
 szHdrEdit			db 'Editor',0
-;szDefResTypes		db "BITMAP,0,'Bitmap (*.bmp)|*.bmp',",0
-;					db "CURSOR,0,'Cursor (*.cur)|*.cur',",0
-;					db "ICON,0,'Icon (*.ico)|*.ico',",0
-;					db "AVI,0,'Avi (*.avi)|*.avi',",0
-;					db "RCDATA,0,'All Files (*.*)|*.*',",0
-;					db "WAWE,0,'Wave (*.wav)|*.wav',",0
-;					db "IMAGE,0,'Image (*.jpg,*.gif)|*.jpg;*.gif',",0
-;					db "MANIFEST,24,'Manifest (*.xml)|*.xml',",0
-;					db "ANICURSOR,0,'Ani Cursor (*.ani)|*.ani',",0
-;					db "FONT,0,'Font (*.fon,*.ttc,*.ttf)|*.fon;*.ttc;*.ttf',",0
-;					db "MESSAGETABLE,0,'Messagetable (*.bin)|*.bin',",0
 
 .data?
 
@@ -91,10 +82,12 @@ TabOpt1Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,resopt.nExport
 		add		eax,IDC_RBNEXPOPT1
-		invoke CheckRadioButton,hWin,IDC_RBNEXPOPT1,IDC_RBNEXPOPT5,eax
+		invoke CheckRadioButton,hWin,IDC_RBNEXPOPT1,IDC_RBNEXPORT6,eax
 		mov		eax,resopt.nOutput
 		add		eax,IDC_RBNEXPORTFILE
 		invoke CheckRadioButton,hWin,IDC_RBNEXPORTFILE,IDC_RBNEXPORTOUT,eax
+		invoke SetDlgItemText,hWin,IDC_EDTEXPORTUSER,addr resopt.szUserExport
+		invoke SendDlgItemMessage,hWin,IDC_EDTEXPORTUSER,EM_LIMITTEXT,sizeof resopt.szUserExport-1,0
 		invoke SetDlgItemText,hWin,IDC_EDTEXPOPT,addr resopt.szExport
 		invoke SendDlgItemMessage,hWin,IDC_EDTEXPOPT,EM_LIMITTEXT,sizeof resopt.szExport-1,0
 		.if resopt.fopt & RESOPT_AUTO
@@ -103,12 +96,28 @@ TabOpt1Proc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		eax,BST_UNCHECKED
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKAUTOEXPORT,eax
+		call	EnableUser
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			call	EnableUser
+		.endif
 	.else
 		mov		eax,FALSE
 		ret
 	.endif
 	mov		eax,TRUE
 	ret
+
+EnableUser:
+	invoke GetDlgItem,hWin,IDC_EDTEXPORTUSER
+	push	eax
+	invoke IsDlgButtonChecked,hWin,IDC_RBNEXPORT6
+	pop		edx
+	invoke EnableWindow,edx,eax
+	retn
 
 TabOpt1Proc endp
 
@@ -419,7 +428,6 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	row[4]:DWORD
-;	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -581,9 +589,6 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TC_ITEM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
-;	LOCAL	buffer1[64]:BYTE
-;	LOCAL	cust:CUSTSTYLE
-;	LOCAL	rarstype:RARSTYPE
 
 	mov		eax,uMsg
 	.if eax==WM_COMMAND
@@ -610,11 +615,17 @@ TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							.if eax
 								mov		resopt.nExport,3
 							.else
-								mov		resopt.nExport,4
+								invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPOPT4
+								.if eax
+									mov		resopt.nExport,4
+								.else
+									mov		resopt.nExport,5
+								.endif
 							.endif
 						.endif
 					.endif
 				.endif
+				invoke GetDlgItemText,hTabDlg,IDC_EDTEXPORTUSER,addr resopt.szUserExport,sizeof resopt.szUserExport
 				invoke IsDlgButtonChecked,hTabDlg,IDC_RBNEXPORTFILE
 				.if eax
 					mov		resopt.nOutput,0

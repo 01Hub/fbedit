@@ -4,4 +4,11 @@ Ini files, project files, api files and addins are all incompatible.
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+2010-06-01
+----------
+o Added user defined resource names export.
+o Rebuildt all addins since there is a change in RESOPT / ADDINDATA.resopt
+o Updated programming language ini files. Debug=0 on all except masm.ini
+o Added support for Objects and Methods to Masm.
+
 KetilO

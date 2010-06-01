@@ -221,6 +221,7 @@ szDollarD						db '$D',0						;def file
 szDollarO						db '$O',0						;Output file
 szDollarM						db '$M',0						;Modules file
 
+szDefUserExport					db '%name %id',0
 szDefFilter						db '.asm.inc.rc.prra.',0
 szPROTO							db ' PROTO',0
 szMasm							db 'masm',0

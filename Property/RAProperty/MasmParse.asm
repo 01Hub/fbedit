@@ -424,6 +424,20 @@ MParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						movzx	edx,[edx].DEFTYPE.Def
 						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
 					.endif
+				.elseif edx==DEFTYPE_OBJECT
+					call	ParseObject
+					.if eax
+						mov		edx,lpdef
+						movzx	edx,[edx].DEFTYPE.Def
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
+					.endif
+				.elseif edx==DEFTYPE_METHOD
+					call	ParseMethod
+					.if eax
+						mov		edx,lpdef
+						movzx	edx,[edx].DEFTYPE.Def
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
+					.endif
 				.elseif edx==DEFTYPE_LABEL
 					call	ParseLabel
 					.if eax
@@ -785,6 +799,66 @@ ParseProc:
 	mov		byte ptr [edi],0
 	inc		edi
 	call	SaveLocal
+	retn
+
+ParseObject:
+	call	SaveName
+	call	SaveParam
+  @@:
+	invoke MSkipLine,esi,addr npos
+	inc		npos
+	mov		esi,eax
+	invoke MGetWord,esi,addr npos
+	mov		esi,edx
+	.if ecx
+		invoke MWhatIsIt,esi,ecx,0,0
+		.if eax
+			movzx	edx,[eax].DEFTYPE.nDefType
+			.if edx==DEFTYPE_ENDOBJECT
+				.if byte ptr [edi-1]==','
+					dec		edi
+				.endif
+				mov		byte ptr [edi],0
+				xor		eax,eax
+				inc		eax
+				retn
+			.endif
+		.endif
+		jmp		@b
+	.elseif byte ptr [esi]
+		jmp		@b
+	.endif
+	xor		eax,eax
+	retn
+
+ParseMethod:
+	call	SaveName
+	call	SaveParam
+  @@:
+	invoke MSkipLine,esi,addr npos
+	inc		npos
+	mov		esi,eax
+	invoke MGetWord,esi,addr npos
+	mov		esi,edx
+	.if ecx
+		invoke MWhatIsIt,esi,ecx,0,0
+		.if eax
+			movzx	edx,[eax].DEFTYPE.nDefType
+			.if edx==DEFTYPE_ENDMETHOD
+				.if byte ptr [edi-1]==','
+					dec		edi
+				.endif
+				mov		byte ptr [edi],0
+				xor		eax,eax
+				inc		eax
+				retn
+			.endif
+		.endif
+		jmp		@b
+	.elseif byte ptr [esi]
+		jmp		@b
+	.endif
+	xor		eax,eax
 	retn
 
 SaveParam:

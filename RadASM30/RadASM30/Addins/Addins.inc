@@ -429,6 +429,7 @@ RESOPT struct
 	color				DWORD ?						;Assembler.ini
 	fopt				DWORD ?						;Assembler.ini
 	nExport				DWORD ?						;Assembler.ini
+	szUserExport		BYTE 64 dup(?)				;Assembler.ini
 	szExport			BYTE 64 dup(?)				;Assembler.ini
 	nOutput				DWORD ?						;Assembler.ini
 	custctrl			CUSTCTRL 32 dup(<>)
