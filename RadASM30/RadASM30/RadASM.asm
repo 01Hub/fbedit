@@ -2700,11 +2700,14 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,hWin
 		.if eax==lParam
 			;Activate
-			invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr szNULL
-			invoke TabToolGetInx,hWin
-			invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
-			invoke TabToolActivate
-			invoke SetFocus,ha.hEdt
+			invoke GetWindowLong,hWin,GWL_USERDATA
+			.if eax
+				invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr szNULL
+				invoke TabToolGetInx,hWin
+				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+				invoke TabToolActivate
+				invoke SetFocus,ha.hEdt
+			.endif
 		.elseif eax==wParam
 			;Deactivate
 			.if da.fChanged && wParam
@@ -2723,41 +2726,38 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		invoke GetWindowLong,hEdt,GWL_USERDATA
 		mov		ebx,eax
 		invoke GetWindowLong,hEdt,GWL_ID
-		mov		edx,eax
-		invoke PostAddinMessage,hWin,AIM_FILECLOSE,edx,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSE
+		mov		edi,eax
+		invoke PostAddinMessage,hWin,AIM_FILECLOSE,edi,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSE
 		.if eax
 			xor		eax,eax
 			jmp		Ex
 		.endif
 		invoke WantToSave,hWin
 		.if !eax
-			invoke GetWindowLong,hWin,GWL_USERDATA
-			mov		hEdt,eax
-			invoke GetWindowLong,hEdt,GWL_ID
-			.if eax==ID_EDITCODE
+			.if edi==ID_EDITCODE
 				.if !da.fProject
 					invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,hWin,0
 					invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 				.endif
-			.elseif eax==ID_EDITTEXT
-			.elseif eax==ID_EDITHEX
-			.elseif eax==ID_EDITRES
+			.elseif edi==ID_EDITTEXT
+			.elseif edi==ID_EDITHEX
+			.elseif edi==ID_EDITRES
 				invoke SendMessage,hEdt,DEM_GETSIZE,0,addr da.winres
 				invoke SendMessage,hEdt,PRO_CLOSE,0,0
-				xor		ebx,ebx
+				xor		ecx,ecx
 				mov		esi,offset da.resopt.custctrl
-				.while ebx<32
+				.while ecx<32
+					push	ecx
 					.if [esi].CUSTCTRL.hDll
 						invoke FreeLibrary,[esi].CUSTCTRL.hDll
 						mov		[esi].CUSTCTRL.hDll,0
 					.endif
+					pop		ecx
 					lea		esi,[esi+sizeof CUSTCTRL]
-					inc		ebx
+					inc		ecx
 				.endw
 			.endif
 			.if da.fProject
-				invoke GetWindowLong,hEdt,GWL_USERDATA
-				mov		ebx,eax
 				.if [ebx].TABMEM.pid
 					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEMINDEX,[ebx].TABMEM.pid,0
 					.if eax!=-1
@@ -2766,12 +2766,9 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				.endif
 			.endif
 			invoke DeleteGoto,hEdt
+			invoke PostAddinMessage,hWin,AIM_FILECLOSED,edi,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSED
+			invoke SetWindowLong,hWin,GWL_USERDATA,0
 			invoke TabToolDel,hWin
-			invoke GetWindowLong,hEdt,GWL_USERDATA
-			mov		ebx,eax
-			invoke GetWindowLong,hEdt,GWL_ID
-			mov		edx,eax
-			invoke PostAddinMessage,hWin,AIM_FILECLOSED,edx,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSED
 ;			invoke DestroyWindow,hEdt
 		.else
 			xor		eax,eax
@@ -2840,7 +2837,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 						;Clear bookmark
 						invoke SendMessage,[ebx].TABMEM.hedt,REM_SETBOOKMARK,edi,0
 					.endif
-				.elseif[esi].RASELCHANGE.seltyp==SEL_TEXT
+				.elseif [esi].RASELCHANGE.seltyp==SEL_TEXT
 ;					mov		eax,fCutPaste
 ;					.if eax=='X'
 ;						invoke LogTimeString,addr szCUT,[esi].RASELCHANGE.chrg.cpMin,[esi].RASELCHANGE.chrg.cpMax

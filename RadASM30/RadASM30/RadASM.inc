@@ -175,7 +175,7 @@ HH_KEYWORD_LOOKUP	equ 000Dh
 
 .const
 
-szMdiClassName					db 'RadASMClass',0
+szMdiClassName					db 'RadASM30Class',0
 szMdiClientClassName			db 'MDICLIENT',0
 szEditCldClassName				db 'MdiEditChild',0
 szReBarClassName				db 'ReBarWindow32',0
