@@ -155,15 +155,15 @@ Options=52
 3=0,0,0,0,0
 4=0,0,0,0,8
 1=0,0,718,485,9159
-7=0,0,718,485,88761
+7=0,0,718,485,39891
 6=0,0,0,0,591
-9=0,0,718,485,22615
+9=0,0,718,485,87692
 2=0,0,584,498,4244
-8=0,0,0,0,19773
-10=0,0,0,0,13921
-16=0,0,718,485,13550
+8=0,0,0,0,26701
+10=0,0,0,0,11789
+16=0,0,718,485,14069
 15=0,0,0,0
-17=0,0,0,0,28845
+17=0,0,0,0,3394
 18=0,0,0,0,3936
 21=0,0,0,0,42911
 23=0,0,0,0
@@ -191,7 +191,7 @@ Options=52
 45=0,0,0,0
 44=0,0,0,0,3612
 19=0,0,0,0
-13=0,0,0,0,3717
+13=0,0,0,0,5106
 46=0,0,0,0
 47=0,0,0,0
 48=0,0,0,0
@@ -203,19 +203,19 @@ Options=52
 
 
 [Find]
-1="nPr"
-2="DEM_ADDCONTROL"
-3="PRO_SETHIGHLIGHT"
-4="PRO_GETTEXTFONT"
-5="PRO_GETSYSTEMPATH"
-6="PRO_GETSELECTED"
-7="PRO_GETDIALOG"
-8="PRO_DELITEM"
-9="DEM_GETBUTTONCOUNT"
-10="DEM_AUTOID"
+1="lpPtr"
+2="SetWindowLong,hPrpLstDlgCld"
+3="GetWindowLong,hPrpLstDlgCld"
+4="szIDCANCEL"
+5="IDCANCEL"
+6="nPr"
+7="DEM_ADDCONTROL"
+8="PRO_SETHIGHLIGHT"
+9="PRO_GETTEXTFONT"
+10="PRO_GETSYSTEMPATH"
 
 [AutoLoad]
-AutoLoad=1,8,2,10,18,6,9,21
+AutoLoad=1,8,2,10,18,6,9,21,7,13,16,17
 [VerInf]
 Nme=VERINF1
 ID=1
@@ -260,7 +260,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=24
+MilestoneOnDateDate=2
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=16
@@ -359,7 +359,7 @@ Group=Assembly,Resources,Misc,Include
 36=
 51=,,
 [PTimer]
-PTimer=356449528
+PTimer=364555340
 
 [Exports]
 1=ResEdInstall

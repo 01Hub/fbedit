@@ -799,11 +799,12 @@ TxtLstMulti proc uses esi,CtlValSt:DWORD,CtlValExSt:DWORD,lpVal:DWORD
 
 TxtLstMulti endp
 
-PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
+PropTxtLst proc uses ebx esi edi,hCtl:DWORD,lbid:DWORD
 	LOCAL	nType:DWORD
 	LOCAL	buffer[32]:BYTE
 
 	invoke SetWindowLong,hPrpLstDlgCld,GWL_USERDATA,hCtl
+;	invoke SetWindowLong,hPrpLstDlgCld,GWL_ID,lbid
 	.if hCtl==-7
 		.if lbid==PRP_BOOL_MENUEX
 			mov		eax,lpResMenuEx
@@ -1116,20 +1117,39 @@ PropTxtLst proc uses esi edi,hCtl:DWORD,lbid:DWORD
 			;(Name)
 			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDOK
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDOK
 			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCANCEL
-			invoke strcmpi,addr [esi].idname,addr szIDOK
-			.if !eax
-				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
-			.else
-				invoke strcmpi,addr [esi].idname,addr szIDCANCEL
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDCANCEL
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDABORT
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDABORT
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDRETRY
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDRETRY
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDIGNORE
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDIGNORE
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDYES
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDYES
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDNO
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDNO
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDCLOSE
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDCLOSE
+			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDHELP
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,IDHELP
+			xor		ebx,ebx
+			.while TRUE
+				invoke SendMessage,hPrpLstDlgCld,LB_GETTEXT,ebx,addr buffer
+				.break .if eax==LB_ERR
+				invoke strcmpi,addr [esi].idname,addr buffer
 				.if !eax
-					invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,1,0
+					invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,ebx,0
+					.break
 				.endif
-			.endif
+				inc		ebx
+			.endw
 		.elseif eax==PRP_STR_NAMESTC
 			;(Name)
 			invoke SendMessage,hPrpLstDlgCld,LB_RESETCONTENT,0,0
 			invoke SendMessage,hPrpLstDlgCld,LB_ADDSTRING,0,addr szIDC_STATIC
+			invoke SendMessage,hPrpLstDlgCld,LB_SETITEMDATA,eax,-1;IDC_STATIC
 			invoke strcmpi,addr [esi].idname,addr szIDC_STATIC
 			.if !eax
 				invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,0,0
@@ -1182,6 +1202,10 @@ SetTxtLstPos proc lpRect:DWORD
 	.endif
 	invoke SetWindowPos,hPrpLstDlgCld,HWND_TOP,rect.left,rect.top,rect.right,lbht,0
 	invoke ShowWindow,hPrpLstDlgCld,SW_SHOWNOACTIVATE
+	invoke SendMessage,hPrpLstDlgCld,LB_GETCURSEL,0,0
+	.if eax!=LB_ERR
+		invoke SendMessage,hPrpLstDlgCld,LB_SETCURSEL,eax,0
+	.endif
 	ret
 
 SetTxtLstPos endp
@@ -1330,6 +1354,12 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					.else
 						call SetCtrlData
+						.if lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC
+							mov		eax,lpPtr
+							mov		val,eax
+							mov		lbid,PRP_NUM_ID
+							call SetCtrlData
+						.endif
 						invoke GetCtrlMem,hCtl
 						invoke GetCtrlID,eax
 						push	eax
@@ -3164,7 +3194,6 @@ PrpEdtDlgCldMultiProc endp
 
 PrpLstDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nInx:DWORD
-	LOCAL	lbid:DWORD
 	LOCAL	buffer[512]:BYTE
 
 	mov		eax,uMsg
@@ -3177,8 +3206,7 @@ PrpLstDlgCldProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hWin,LB_GETTEXT,nInx,addr buffer
 			invoke SetWindowText,hPrpEdtDlgCld,addr buffer
 			invoke SendMessage,hWin,LB_GETITEMDATA,nInx,0
-			mov		lbid,eax
-			invoke PropEditUpdList,lbid
+			invoke PropEditUpdList,eax
 			pop		nInx
 			invoke SendMessage,hPrpLstDlg,LB_SETCURSEL,nInx,0
 			invoke PropListSetPos

@@ -440,6 +440,13 @@ szCourierNew		db 'Courier New',0
 
 szIDOK				db 'IDOK',0
 szIDCANCEL			db 'IDCANCEL',0
+szIDABORT			db 'IDABORT',0
+szIDRETRY			db 'IDRETRY',0
+szIDIGNORE			db 'IDIGNORE',0
+szIDYES				db 'IDYES',0
+szIDNO				db 'IDNO',0
+szIDCLOSE			db 'IDCLOSE',0
+szIDHELP			db 'IDHELP',0
 szIDC_STATIC		db 'IDC_STATIC',0
 szIDC_STATICValue	db '-1',0
 

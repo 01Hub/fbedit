@@ -257,7 +257,7 @@ szUpdatedTo			db 'Updated to:',13,10,0
 wpos				WINPOS <0,3,10,10,620,460,100,150,200,100,100,52>
 nmeexp				NAMEEXPORT <0,'rsrc.inc',0,0,'%name %id'>
 grdsize				GRIDSIZE <3,3,TRUE,TRUE,TRUE,0,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE>
-col					COLOR <0FFFFFFh,0,804000h,0C00000h>
+col					RESCOLOR <0FFFFFFh,0,804000h,0C00000h>
 initid				INITID <<1000,100>,<10000,1000>,<1,1>,<1,1>,<1,1>,<1,1>,<1,1>,<100,1>,<100,1>>
 textfont			TEXTFONT <'Courier New',-12,0,0,0>
 szResEd				db 'Software\ResEd1000\'
