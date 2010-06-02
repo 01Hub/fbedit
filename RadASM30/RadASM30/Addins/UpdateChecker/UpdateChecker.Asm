@@ -590,20 +590,15 @@ UpdateCheckerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendDlgItemMessage,hWin,IDC_EDTVERSION,EM_REPLACESEL,0,addr szDone
 				invoke GetDlgItem,hWin,IDC_BTNUNZIP
 				invoke ShowWindow,eax,SW_HIDE
-				invoke GetDlgItem,hWin,IDC_BTNTEST
+				invoke GetDlgItem,hWin,IDC_BTNUPDATE
 				invoke ShowWindow,eax,SW_SHOW
 				invoke GetDlgItem,hWin,IDC_BTNVIEW
 				invoke ShowWindow,eax,SW_SHOW
-			.elseif eax==IDC_BTNTEST
-				invoke GetDlgItem,hWin,IDC_BTNTEST
-				invoke ShowWindow,eax,SW_HIDE
-				invoke SetDlgItemText,hWin,IDCANCEL,addr szClose
+			.elseif eax==IDC_BTNUPDATE
 				invoke lstrcpy,addr tempbuff,addr szDLPath
-				invoke lstrcat,addr tempbuff,addr szRadASM
+				invoke lstrcat,addr tempbuff,addr szUpdateRadASM
 				invoke WinExec,addr tempbuff,SW_SHOWDEFAULT
-				mov		edx,lpData
-				invoke wsprintf,addr tempbuff,addr szFmtTest,addr szDLPath,addr [edx].ADDINDATA.szAppPath
-				invoke SetDlgItemText,hWin,IDC_EDTVERSION,addr tempbuff
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
 			.elseif eax==IDC_BTNVIEW
 				invoke lstrcpy,addr tempbuff,addr szDLPath
 				invoke lstrcat,addr tempbuff,addr szWhatsNew

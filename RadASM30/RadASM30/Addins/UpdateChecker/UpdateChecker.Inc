@@ -38,7 +38,7 @@ IDC_BTNDOWNLOAD					equ 1008
 IDC_EDTDLPATH					equ 1006
 IDC_BTNDLPATH					equ 1007
 IDC_BTNUNZIP					equ 1009
-IDC_BTNTEST						equ 1002
+IDC_BTNUPDATE					equ 1002
 IDC_BTNVIEW						equ 1003
 
 IDD_DLGDOWNLOAD					equ 8100
@@ -57,11 +57,9 @@ AppName							db 'UpdateChecker',0
 szDone							db 'Done!',13,10,0
 szOpen							db 'Open',0
 szWhatsNew						db '\WhatsNew.txt',0
-szRadASM						db '\RadASM.exe',0
-szClose							db 'Close',0
+szUpdateRadASM					db '\UpdateRadASM.exe',0
 
 szFmtVersion					db 'Your current version:',9,'%s',13,10,'Version at sourceforge:',9,'%s',0
-szFmtTest						db 'If the test turns out OK then exit RadASM and move all files',13,10,'from Download path:',13,10,'%s',13,10,13,10,'to RadASM root:',13,10,'%s',0
 
 szUrlVersion					db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/ReleaseVersion.txt',0
 szUrlFile						db 'https://fbedit.svn.sourceforge.net/svnroot/fbedit/RadASM30/Release/',0
