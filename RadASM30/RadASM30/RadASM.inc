@@ -78,8 +78,6 @@ TextOutput						PROTO	:DWORD
 SetDebugInfo					PROTO	:DWORD
 DebugCommand					PROTO	:DWORD,:DWORD,:DWORD
 
-RadASMVersion					equ 3000
-
 CCTYPE_NONE						equ 0
 CCTYPE_PROC						equ 1
 CCTYPE_TOOLTIP					equ 2
@@ -190,7 +188,8 @@ szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
-szVersion						db 'RadASM version 3.0.0.0',0
+RadASMVersion					equ 3001
+szVersion						db 'RadASM version 3.0.0.1',0
 szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
