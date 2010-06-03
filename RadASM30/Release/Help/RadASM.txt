@@ -1,3 +1,15 @@
+LANGUAGES
+---------
+Assembly:
+- Masm
+- GoAsm
+- Fasm
+- Tasm
+- jWasm
+High level:
+- VC6 C/C++
+- BCC 5.5 C/C++
+
 SETUP
 -----
 RadASM must be configured to reflect your installation of RadASM, assembler / compiler  and help files.
@@ -20,6 +32,10 @@ By default the environment is configured to assume (DRIVE: Is C:, D: or any vali
   folder and libraries in lib folder.
   NOTE: You must create TASM.CFG and TLINK32.CFG files in the bin directory to reference the include
   and lib paths.
+- jWasm (jWasm.ini)
+  jWasm is installed to DRIVE:\jWasm with the binaries in bin folder, include files in include
+  folder and libraries in lib folder.
+  NOTE: This jWasm configuration uses GoRC, polink and polib.
 - VC6 C/C++ (Cpp.ini)
   VC6 is installed to DRIVE:\Program Files\Microsoft Visual Studio\VC98 with binaries in bin folder,
   include files in include folder and libraries in lib folder.
