@@ -340,10 +340,10 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke GetParent,hWin
 			invoke GetWindowLong,eax,4
 			mov		edi,eax
-			invoke SendMessage,edi,LB_GETCURSEL,0,0
-			mov		edx,eax
+			;invoke SendMessage,edi,LB_GETCURSEL,0,0
+			;mov		edx,eax
 			;invoke SendMessage,edi,LB_FINDSTRINGEXACT,edx,addr buffer
-			invoke SendMessage,edi,LB_FINDSTRING,edx,addr buffer
+			invoke SendMessage,edi,LB_FINDSTRING,-1,addr buffer
 			push	eax
 			.if eax==LB_ERR
 				invoke ShowWindow,edi,SW_HIDE

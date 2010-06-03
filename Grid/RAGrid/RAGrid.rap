@@ -54,6 +54,9 @@ Menu=1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0
 10=Sort.asm
 11=dll.asm
 12=lib.asm
+AutoDelete=1
+AskMe=0
+MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 [Resource]
 1=IDB_RAGRIDBUTTON,100,0,Res\Button.bmp
 2=IDC_VSIZE,102,1,Res\SplitV.cur
@@ -79,7 +82,7 @@ FileVersion=2.0.1.6
 CompanyName=
 [Size]
 2=0,0,0,0,1908
-1=0,0,0,0,7986
+1=0,0,0,0,7868
 3=0,0,0,0,45
 4=0,0,0,0,51
 8=0,0,0,0,5861
@@ -191,7 +194,7 @@ AutoLoad=1,11,2
 4=
 3=
 [PTimer]
-PTimer=13745936
+PTimer=13969376
 [Exports]
 1=GetDefEx
 2=GetDef
