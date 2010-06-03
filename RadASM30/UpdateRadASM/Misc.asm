@@ -177,7 +177,11 @@ UpdateRadASMIni proc hWin:HWND
 	invoke lstrcat,addr szto,addr szRadASMIni
 	invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr szto
 	mov		verold,eax
-	.if eax<vernew
+	.if eax<vernew && eax>=3000
+		.if eax==3000
+			;3000 --> 3001, no update needed
+			mov		eax,3001
+		.endif
 		invoke wsprintf,addr buffer,addr szDecFormat,vernew
 		invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 		invoke wsprintf,addr buffer,addr szUpdated,addr szto
@@ -224,7 +228,20 @@ UpdateLanguageIni proc hWin:HWND
 				invoke lstrcat,addr szto,addr wfd.cFileName
 				invoke GetPrivateProfileInt,addr szIniVersion,addr szIniVersion,0,addr szto
 				mov		verold,eax
-				.if eax<vernew
+				.if eax<vernew && eax>=3000
+					.if eax==3000
+						;3000 --> 3001
+						invoke GetPrivateProfileInt,addr szIniParse,addr szIniAssembler,0,addr szto
+						.if eax==1
+							;Masm, jWasm
+							mov		word ptr buffer,'1'
+						.else
+							;All others
+							mov		word ptr buffer,'0'
+						.endif
+						invoke WritePrivateProfileString,addr szIniParse,addr szIniDebug,addr buffer,addr szto
+						mov		eax,3001
+					.endif
 					invoke wsprintf,addr buffer,addr szDecFormat,vernew
 					invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 					invoke wsprintf,addr buffer,addr szUpdated,addr szto

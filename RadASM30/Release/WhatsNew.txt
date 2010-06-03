@@ -4,11 +4,15 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-2010-06-01
-----------
+Version 3.0.0.1 2010-06-03
+--------------------------
+o Added JWasm programming language. Thanks to PauloH.
 o Added user defined resource names export.
 o Rebuildt all addins since there is a change in RESOPT / ADDINDATA.resopt
-o Updated programming language ini files. Debug=0 on all except masm.ini
+o Updated programming language ini files. Debug=0 on all except masm.ini and jWasm.ini.
 o Added support for Objects and Methods to Masm.
+o Automated updating when using Tools / Check for Updates.
+o Fixed some minor resource editor bugs.
+o Fixed a bug where RadASM could crash on exit.
 
 KetilO

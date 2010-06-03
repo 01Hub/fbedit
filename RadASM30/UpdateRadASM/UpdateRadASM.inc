@@ -55,9 +55,12 @@ szVarTrans				BYTE '\VarFileInfo\Translation',0
 szFileVersion			BYTE 'FileVersion',0
 szFileStringFormat		BYTE '\StringFileInfo\%04x%04x\%s',0
 szVersionFormat			BYTE 'Updater version: %s',0Dh,0Ah,'Your version: %s',0Dh,0Ah,'New version: %s',0Dh,0Ah,0
-;Language check
+;Ini files
 szIniVersion			BYTE 'Version',0
 szIniDescription		BYTE 'Description',0
+szIniParse				BYTE 'Parse',0
+szIniAssembler			BYTE 'Assembler',0
+szIniDebug				BYTE 'Debug',0
 ;Format
 szDecFormat				BYTE '%d',0
 

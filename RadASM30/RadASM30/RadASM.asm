@@ -2672,6 +2672,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				inc		ebx
 				lea		esi,[esi+sizeof RARSTYPE]
 			.endw
+			;Set export options
+			mov		edx,da.resopt.nOutput
+			shl		edx,16
+			add		edx,da.resopt.nExport
+			invoke SendMessage,hEdt,PRO_SETEXPORT,edx,addr da.resopt.szExport
+			invoke SendMessage,hEdt,PRO_SETUSERDEFINED,0,addr da.resopt.szUserExport
 		.elseif eax==ID_EDITUSER
 			invoke PostAddinMessage,hWin,AIM_FILEOPEN,ID_EDITUSER,addr da.szFileName,0,HOOK_FILEOPEN
 			mov		hEdt,eax
