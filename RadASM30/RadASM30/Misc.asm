@@ -3607,3 +3607,15 @@ SetAssemblers proc uses ebx esi edi
 	ret
 
 SetAssemblers endp
+
+RTrim proc uses esi,lpBuff:DWORD
+
+	mov		esi,lpBuff
+	invoke strlen,esi
+	.while byte ptr [esi+eax-1]==' ' && eax
+		dec		eax
+	.endw
+	mov		byte ptr [esi+eax],0
+	ret
+
+RTrim endp

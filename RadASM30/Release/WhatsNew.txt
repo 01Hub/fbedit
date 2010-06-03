@@ -13,6 +13,7 @@ o Updated programming language ini files. Debug=0 on all except masm.ini and jWa
 o Added support for Objects and Methods to Masm.
 o Automated updating when using Tools / Check for Updates.
 o Fixed some minor resource editor bugs.
+o Fixed a bug when building a library. Thanks to madprgmr.
 o Fixed a bug where RadASM could crash on exit.
 
 KetilO
