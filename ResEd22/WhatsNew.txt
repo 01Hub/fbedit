@@ -1,5 +1,12 @@
 ResEd
 
+2.2.0.6c - 2010-07-03
+---------------------
+o Fixed accelerator table bug. The editcombo control in the grid
+  did not behave as it should.
+o Fixed bug in names export. IDOK, IDCANCEL, ... and IDC_STATIC is no longer exported.
+o Added IDABORT, IDRETRY, IDIGNORE, IDYES, IDNO, IDCLOSE and IDHELP to button names.
+
 2.2.0.6b - 2010-03-11
 ---------------------
 o Fixed a parser bug. If a control had an help id and no exstyle

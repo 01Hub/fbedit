@@ -107,7 +107,7 @@ Options=52
 4=0,0,0,0
 1=580,0,290,688,39743
 6=
-2=0,0,0,0,7020
+2=0,0,0,0,6340
 7=0,0,699,490,2195
 9=
 8=
@@ -156,16 +156,16 @@ Options=52
 0=
 
 [Find]
-1="ft"
-2="szAboutMsg"
-3="2205"
-4="PRO_GETDIALOG"
-5="addr nmeexp.szFileName"
-6="nmeexp"
-7="2204"
-8="IDM_FILE_NEW"
-9="PRO_SETINITID"
-10="SystemPath"
+1="IsNameDefault"
+2="PRO_EXPORTNAMES"
+3="szIDC_ST"
+4="szIDOK"
+5="lpPtr"
+6="SetWindowLong,hPrpLstDlgCld"
+7="GetWindowLong,hPrpLstDlgCld"
+8="szIDCANCEL"
+9="IDCANCEL"
+10="nPr"
 
 [VersionControl]
 Settings=1278
@@ -192,7 +192,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=2
+MilestoneOnDateDate=3
 MilestoneOnDateTimeYear=2003
 MilestoneOnDateTimeMonth=10
 MilestoneOnDateTimeDate=18
@@ -307,7 +307,7 @@ ID=105
 34=,,
 35=
 [PTimer]
-PTimer=334631470
+PTimer=344204160
 [AutoLoad]
 AutoLoad=1,7,2,21,34,35,30,13,29,28
 [RADebugBP]

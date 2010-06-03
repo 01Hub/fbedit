@@ -361,6 +361,30 @@ GetStrItem proc	lpSource:DWORD,lpDest:DWORD
 
 GetStrItem endp
 
+IsNameDefault proc uses ebx esi,lpName:DWORD
+
+	mov		esi,offset szIDOK
+	xor		ebx,ebx
+	.while byte ptr [esi]
+		inc		ebx
+		invoke strcmp,esi,lpName
+		.if !eax
+			invoke strcmp,addr szIDC_STATIC,lpName
+			.if !eax
+				mov		ebx,-1
+			.endif
+			mov		eax,ebx
+			jmp		Ex
+		.endif
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+	.endw
+	xor		eax,eax
+  Ex:
+	ret
+
+IsNameDefault endp
+
 ResEdDo_ImageList proc phInst:HINSTANCE,pidBmp:DWORD,nSize:DWORD,nImg:DWORD,fMap:DWORD,fBack:DWORD,fFore:DWORD
 	LOCAL	lhIml:DWORD
 	LOCAL	cm[2]:COLORMAP
@@ -1600,14 +1624,8 @@ ExportName proc uses ebx esi edi,lpName:DWORD,nID:DWORD,lpExport:DWORD
 
 Export:
 	mov		fIFNDEF,FALSE
-	invoke strcmp,lpName,offset szIDOK
+	invoke IsNameDefault,lpName
 	.if eax
-		invoke strcmp,lpName,offset szIDCANCEL
-		.if eax
-			invoke strcmp,lpName,offset szIDC_STATIC
-		.endif
-	.endif
-	.if !eax
 		mov		fIFNDEF,TRUE
 		invoke SaveStr,ebx,offset szIFNDEF
 		add		ebx,eax

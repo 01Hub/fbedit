@@ -203,154 +203,157 @@ SaveNamesToFile proc uses ebx esi edi,hWin:HWND,fNoSaveDialog:DWORD
 			add		ecx,3
 			invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr buffer
 			.if buffer
-				;ID
-				mov		ecx,ebx
-				shl		ecx,16
-				add		ecx,4
-				invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr val
-				.if val
-					mov		esi,hMem
-					.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
-						mov		eax,val
-						.if eax==[esi].NAMEMEM.value
-							invoke strcmp,addr buffer,addr [esi].NAMEMEM.szname
-							.if !eax
-								jmp		Nxt
+				invoke IsNameDefault,addr buffer
+				.if !eax
+					;ID
+					mov		ecx,ebx
+					shl		ecx,16
+					add		ecx,4
+					invoke SendMessage,hGrd,GM_GETCELLDATA,ecx,addr val
+					.if val
+						mov		esi,hMem
+						.while byte ptr [esi].NAMEMEM.szname || [esi].NAMEMEM.value
+							mov		eax,val
+							.if eax==[esi].NAMEMEM.value
+								invoke strcmp,addr buffer,addr [esi].NAMEMEM.szname
+								.if !eax
+									jmp		Nxt
+								.endif
 							.endif
-						.endif
-						add		esi,sizeof NAMEMEM
-					.endw
-					invoke strcpy,addr [esi].NAMEMEM.szname,addr buffer
-					mov		eax,val
-					mov		[esi].NAMEMEM.value,eax
-					movzx	eax,word ptr nExportType
-					.if eax==0
-						;Asm
-						invoke SaveStr,edi,addr buffer
-						add		edi,eax
-						.if eax<23
-							mov		ecx,23
-							sub		ecx,eax
+							add		esi,sizeof NAMEMEM
+						.endw
+						invoke strcpy,addr [esi].NAMEMEM.szname,addr buffer
+						mov		eax,val
+						mov		[esi].NAMEMEM.value,eax
+						movzx	eax,word ptr nExportType
+						.if eax==0
+							;Asm
+							invoke SaveStr,edi,addr buffer
+							add		edi,eax
+							.if eax<23
+								mov		ecx,23
+								sub		ecx,eax
+								mov		al,' '
+								rep stosb
+							.endif
 							mov		al,' '
-							rep stosb
-						.endif
-						mov		al,' '
-						stosb
-						mov		eax,' uqe'
-						stosd
-						invoke SaveVal,val,FALSE
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
-					.elseif eax==1
-						;C
-						invoke SaveStr,edi,offset szDEFINE
-						add		edi,eax
-						mov		al,' '
-						stosb
-						invoke SaveStr,edi,addr buffer
-						add		edi,eax
-						.if eax<23
-							mov		ecx,23
-							sub		ecx,eax
+							stosb
+							mov		eax,' uqe'
+							stosd
+							invoke SaveVal,val,FALSE
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.elseif eax==1
+							;C
+							invoke SaveStr,edi,offset szDEFINE
+							add		edi,eax
 							mov		al,' '
-							rep stosb
-						.endif
-						mov		al,' '
-						stosb
-						invoke SaveVal,val,FALSE
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
-					.elseif eax==2
-						;Hla
-						invoke SaveStr,edi,addr buffer
-						add		edi,eax
-						.if eax<23
-							mov		ecx,23
-							sub		ecx,eax
+							stosb
+							invoke SaveStr,edi,addr buffer
+							add		edi,eax
+							.if eax<23
+								mov		ecx,23
+								sub		ecx,eax
+								mov		al,' '
+								rep stosb
+							.endif
 							mov		al,' '
-							rep stosb
-						.endif
-						mov		eax,' =: '
-						stosd
-						invoke SaveVal,val,FALSE
-						mov		al,';'
-						stosb
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
-					.elseif eax==3
-						;PureBasic
-						mov		al,'#'
-						stosb
-						invoke SaveStr,edi,addr buffer
-						add		edi,eax
-						mov		eax,' = '
-						stosd
-						dec		edi
-						invoke SaveVal,val,FALSE
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
-					.elseif eax==4
-						;PowerBasic
-						mov		al,'%'
-						stosb
-						invoke SaveStr,edi,addr buffer
-						add		edi,eax
-						mov		eax,' = '
-						stosd
-						dec		edi
-						invoke SaveVal,val,FALSE
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
-					.elseif eax==5
-						;User defined
-						push	esi
-						push	edi
-						mov		esi,offset szUserDefined
-						lea		edi,tmpbuffer
-						.while byte ptr [esi]
-							mov		al,[esi]
-							.if al=='%'
-								mov		edx,dword ptr [esi+1]
-								and		edx,5F5F5F5Fh
-								.if edx=='EMAN'
-									;Name
-									add		esi,5
-									invoke SaveStr,edi,addr buffer
-									add		edi,eax
-								.elseif dx=='DI'
-									;ID
-									add		esi,3
-									invoke SaveVal,val,FALSE
+							stosb
+							invoke SaveVal,val,FALSE
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.elseif eax==2
+							;Hla
+							invoke SaveStr,edi,addr buffer
+							add		edi,eax
+							.if eax<23
+								mov		ecx,23
+								sub		ecx,eax
+								mov		al,' '
+								rep stosb
+							.endif
+							mov		eax,' =: '
+							stosd
+							invoke SaveVal,val,FALSE
+							mov		al,';'
+							stosb
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.elseif eax==3
+							;PureBasic
+							mov		al,'#'
+							stosb
+							invoke SaveStr,edi,addr buffer
+							add		edi,eax
+							mov		eax,' = '
+							stosd
+							dec		edi
+							invoke SaveVal,val,FALSE
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.elseif eax==4
+							;PowerBasic
+							mov		al,'%'
+							stosb
+							invoke SaveStr,edi,addr buffer
+							add		edi,eax
+							mov		eax,' = '
+							stosd
+							dec		edi
+							invoke SaveVal,val,FALSE
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.elseif eax==5
+							;User defined
+							push	esi
+							push	edi
+							mov		esi,offset szUserDefined
+							lea		edi,tmpbuffer
+							.while byte ptr [esi]
+								mov		al,[esi]
+								.if al=='%'
+									mov		edx,dword ptr [esi+1]
+									and		edx,5F5F5F5Fh
+									.if edx=='EMAN'
+										;Name
+										add		esi,5
+										invoke SaveStr,edi,addr buffer
+										add		edi,eax
+									.elseif dx=='DI'
+										;ID
+										add		esi,3
+										invoke SaveVal,val,FALSE
+									.else
+										mov		[edi],al
+										inc		esi
+										inc		edi
+									.endif
 								.else
 									mov		[edi],al
 									inc		esi
 									inc		edi
 								.endif
-							.else
-								mov		[edi],al
-								inc		esi
-								inc		edi
-							.endif
-						.endw
-						mov		byte ptr [edi],0
-						pop		edi
-						pop		esi
-						invoke SaveStr,edi,addr tmpbuffer
-						add		edi,eax
-						mov		al,0Dh
-						stosb
-						mov		al,0Ah
-						stosb
+							.endw
+							mov		byte ptr [edi],0
+							pop		edi
+							pop		esi
+							invoke SaveStr,edi,addr tmpbuffer
+							add		edi,eax
+							mov		al,0Dh
+							stosb
+							mov		al,0Ah
+							stosb
+						.endif
 					.endif
 				.endif
 			.endif

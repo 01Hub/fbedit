@@ -1382,14 +1382,8 @@ SetCtrlData:
 	;What is changed
 	mov		eax,lbid
 	.if eax==PRP_STR_NAME || eax==PRP_STR_NAMEBTN || eax==PRP_STR_NAMESTC
-		invoke strcmpi,addr buffer1,addr szIDOK
-		.if eax
-			invoke strcmpi,addr buffer1,addr szIDCANCEL
-			.if eax
-				invoke strcmpi,addr buffer1,addr szIDC_STATIC
-			.endif
-		.endif
-		.if eax
+		invoke IsNameDefault,addr buffer1
+		.if !eax
 			invoke NameExists,addr buffer1,esi
 		.endif
 		.if eax

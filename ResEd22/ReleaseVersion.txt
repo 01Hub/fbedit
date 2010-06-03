@@ -1,1 +1,1 @@
-ResEd version 2.2.0.6b
+ResEd version 2.2.0.6c

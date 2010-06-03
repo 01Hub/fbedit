@@ -155,7 +155,7 @@ IsEnd proc lpWord:DWORD
 
 IsEnd endp
 
-GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
+GetName proc uses ebx,lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 
 	mov		eax,lpBuff
 	mov		al,[eax]
@@ -173,52 +173,21 @@ GetName proc lpProMem:DWORD,lpBuff:DWORD,lpName:DWORD,lpID:DWORD
 		invoke FindName,lpProMem,lpName,TRUE
 		.if eax
 			mov		[eax].NAMEMEM.delete,TRUE
-			mov		eax,[eax].NAMEMEM.value
-			push	eax
-			invoke strcmpi,lpName,addr szIDOK
+			mov		ebx,[eax].NAMEMEM.value
+			invoke IsNameDefault,lpName
 			.if eax
-				invoke strcmpi,lpName,addr szIDCANCEL
-				.if eax
-					invoke strcmpi,lpName,addr szIDC_STATIC
-					.if eax
-						pop		ecx
-					.else
-						pop		ecx
-						mov		ecx,-1
-					.endif
-				.else
-					pop		ecx
-					mov		ecx,2
-				.endif
-			.else
-				pop		ecx
-				mov		ecx,1
+				mov		ebx,eax
 			.endif
 			mov		edx,lpID
-			mov		[edx],ecx
+			mov		[edx],ebx
 		.else
-			push	0
-			invoke strcmpi,lpName,addr szIDOK
+			xor		ebx,ebx
+			invoke IsNameDefault,lpName
 			.if eax
-				invoke strcmpi,lpName,addr szIDCANCEL
-				.if eax
-					invoke strcmpi,lpName,addr szIDC_STATIC
-					.if eax
-						pop		ecx
-					.else
-						pop		ecx
-						mov		ecx,-1
-					.endif
-				.else
-					pop		ecx
-					mov		ecx,2
-				.endif
-			.else
-				pop		ecx
-				mov		ecx,1
+				mov		ebx,eax
 			.endif
 			mov		edx,lpID
-			mov		[edx],ecx
+			mov		[edx],ebx
 		.endif
 	.endif
 	mov		edx,lpID
