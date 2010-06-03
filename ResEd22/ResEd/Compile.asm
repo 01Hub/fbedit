@@ -119,8 +119,6 @@ OutputMake proc uses ebx esi edi,lpCommand:DWORD,lpFileName:DWORD
 	.endw
 	mov		buffer[eax],0
 	invoke SetCurrentDirectory,addr buffer
-
-
 	mov		esi,lpFileName
 	lea		edi,buffer
 	invoke lstrlen,esi
@@ -141,7 +139,6 @@ OutputMake proc uses ebx esi edi,lpCommand:DWORD,lpFileName:DWORD
 		dec		ecx
 	.endw
 	mov		byte ptr [edi],0
-
 	mov		fExitCode,0
 	invoke LoadCursor,0,IDC_WAIT
 	invoke SetCursor,eax
@@ -149,14 +146,13 @@ OutputMake proc uses ebx esi edi,lpCommand:DWORD,lpFileName:DWORD
 	mov		make.buffer,0
 	invoke SendMessage,hOut,WM_SETTEXT,0,addr make.buffer
 	invoke SendMessage,hOut,EM_SCROLLCARET,0,0
-
 	mov		esi,lpCommand
 	lea		edi,make.buffer
 	.while byte ptr [esi]
 		mov		al,[esi]
 		.if al=='$'
 			invoke lstrcpy,edi,addr buffer
-			invoke lstrlen,addr buffer
+			invoke lstrlen,edi
 			lea		edi,[edi+eax]
 		.else
 			mov		[edi],al

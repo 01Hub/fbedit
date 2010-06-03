@@ -1385,6 +1385,8 @@ SetCtrlData:
 		invoke IsNameDefault,addr buffer1
 		.if !eax
 			invoke NameExists,addr buffer1,esi
+		.else
+			xor		eax,eax
 		.endif
 		.if eax
 			invoke strcpy,addr buffer,addr szNameExist
