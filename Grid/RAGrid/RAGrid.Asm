@@ -342,7 +342,15 @@ EdtCboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		edi,eax
 			invoke SendMessage,edi,LB_GETCURSEL,0,0
 			mov		edx,eax
-			invoke SendMessage,edi,LB_FINDSTRINGEXACT,edx,addr buffer
+			;invoke SendMessage,edi,LB_FINDSTRINGEXACT,edx,addr buffer
+			invoke SendMessage,edi,LB_FINDSTRING,edx,addr buffer
+			push	eax
+			.if eax==LB_ERR
+				invoke ShowWindow,edi,SW_HIDE
+			.else
+				invoke ShowWindow,edi,SW_SHOWNA
+			.endif
+			pop		eax
 			invoke SendMessage,edi,LB_SETCURSEL,eax,0
 			xor		eax,eax
 			jmp		Ex
@@ -500,6 +508,11 @@ RAComboProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	.elseif eax==WM_SETFOCUS
 		invoke GetWindowLong,hWin,0
 		invoke SetFocus,eax
+		jmp		Ex
+	.elseif eax==WM_CHAR
+		invoke GetWindowLong,hWin,0
+		invoke SendMessage,eax,WM_CHAR,wParam,lParam
+		jmp		Ex
 	.elseif eax==WM_SETFONT
 		invoke GetWindowLong,hWin,0
 		invoke SendMessage,eax,WM_SETFONT,wParam,FALSE
@@ -3083,9 +3096,24 @@ RAGridProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 							invoke ShowWindow,eax,SW_SHOWNA
 						.endif
 					.endif
-					invoke ShowWindow,[edi].COLUMN.edthwnd,SW_SHOW
-					invoke SetFocus,[edi].COLUMN.edthwnd
-					mov		eax,[edi].COLUMN.edthwnd
+					.if [edi].COLUMN.ctype==TYPE_EDITCOMBOBOX
+						invoke ShowWindow,[edi].COLUMN.edthwnd,SW_SHOW
+						invoke SetFocus,[edi].COLUMN.edthwnd
+
+;						invoke GetWindowLong,[edi].COLUMN.edthwnd,0
+;						invoke ShowWindow,eax,SW_SHOW
+;
+;						invoke GetWindowLong,[edi].COLUMN.edthwnd,0
+;						invoke SetFocus,eax
+;						;Get the edit window handle
+;						invoke GetWindowLong,[edi].COLUMN.edthwnd,0
+						mov		eax,[edi].COLUMN.edthwnd
+					.else
+						invoke ShowWindow,[edi].COLUMN.edthwnd,SW_SHOW
+						invoke SetFocus,[edi].COLUMN.edthwnd
+						;Get the edit window handle
+						mov		eax,[edi].COLUMN.edthwnd
+					.endif
 				.else
 					xor		esi,esi
 					mov		eax,[edi].COLUMN.ctype
