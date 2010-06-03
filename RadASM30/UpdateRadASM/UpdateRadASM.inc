@@ -27,6 +27,7 @@ IDC_RBNOWRA				equ 104
 IDC_RBNUPLANG			equ 105
 IDC_RBNOWLANG			equ 106
 IDC_CHKOWTEMPLATES		equ 102
+IDC_CHKOWSNIPLETS		equ 108
 IDC_EDTLOG				equ 107
 
 ;#########################################################################
@@ -50,6 +51,7 @@ szAllTpl				BYTE '*.tpl',0
 szBS					BYTE '\',0
 szAddins				BYTE 'Addins',0
 szTemplates				BYTE 'Templates',0
+szSniplets				BYTE 'Sniplets',0
 ;Versions
 szVarTrans				BYTE '\VarFileInfo\Translation',0
 szFileVersion			BYTE 'FileVersion',0

@@ -5,6 +5,7 @@ szOK			BYTE 'OK',0Dh,0Ah,0
 szFailed		BYTE 'Failed',0Dh,0Ah,0
 szUpdated		BYTE 'Updating: %s ... ',0
 szUpToDate		BYTE 'Same version',0Dh,0Ah,0
+szDone			BYTE 0Dh,0Ah,'Done updating.',0Dh,0Ah,0
 
 .code
 
@@ -334,6 +335,75 @@ CopyTemplates proc hWin:HWND,fNewOnly:DWORD
 
 CopyTemplates endp
 
+CopySniplets proc hWin:HWND,fNewOnly:DWORD
+	LOCAL	wfd:WIN32_FIND_DATA
+	LOCAL	hWfd:HANDLE
+	LOCAL	hWfd2:HANDLE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	buffer2[MAX_PATH]:BYTE
+	LOCAL	szfrom[MAX_PATH]:BYTE
+	LOCAL	szto[MAX_PATH]:BYTE
+
+	invoke lstrcpy,addr buffer,addr szAppPath
+	invoke lstrcat,addr buffer,addr szBS
+	invoke lstrcat,addr buffer,addr szAllIni
+	invoke FindFirstFile,addr buffer,addr wfd
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hWfd,eax
+		.while eax
+			invoke lstrcpy,addr buffer,addr szAppPath
+			invoke lstrcat,addr buffer,addr szBS
+			invoke lstrcat,addr buffer,addr wfd.cFileName
+			invoke GetPrivateProfileString,addr szIniVersion,addr szIniDescription,addr szNULL,addr buffer,sizeof buffer,addr buffer
+			.if eax
+				invoke lstrcpy,addr buffer,addr wfd.cFileName
+				invoke lstrlen,addr buffer
+				.while buffer[eax]!='.' && eax
+					dec		eax
+				.endw
+				mov		buffer[eax],0
+				invoke lstrcpy,addr szfrom,addr szAppPath
+				invoke lstrcat,addr szfrom,addr szBS
+				invoke lstrcat,addr szfrom,addr buffer
+				invoke lstrcat,addr szfrom,addr szBS
+				invoke lstrcat,addr szfrom,addr szSniplets
+				invoke lstrcpy,addr szto,addr szRadASMPath
+				invoke lstrcat,addr szto,addr szBS
+				invoke lstrcat,addr szto,addr buffer
+				invoke lstrcat,addr szto,addr szBS
+				invoke lstrcat,addr szto,addr szSniplets
+				.if fNewOnly
+					invoke lstrcpy,addr buffer2,addr szfrom
+					invoke lstrcat,addr buffer2,addr szBS
+					invoke lstrcat,addr buffer2,addr szAllFiles
+					invoke FindFirstFile,addr buffer2,addr wfd
+					.if eax!=INVALID_HANDLE_VALUE
+						mov		hWfd2,eax
+						.while eax
+							;Check if it exists
+							invoke lstrcpy,addr buffer2,addr szto
+							invoke lstrcat,addr buffer2,addr szBS
+							invoke lstrcat,addr buffer2,addr wfd.cFileName
+							invoke GetFileAttributes,addr buffer2
+							.if eax==INVALID_HANDLE_VALUE
+								invoke CopyTheFiles,hWin,addr szfrom,addr szto,addr wfd.cFileName,FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR
+							.endif
+							invoke FindNextFile,hWfd2,addr wfd
+						.endw
+						invoke FindClose,hWfd2
+					.endif
+				.else
+					invoke CopyTheFiles,hWin,addr szfrom,addr szto,addr szAllFiles,FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR
+				.endif
+			.endif
+			invoke FindNextFile,hWfd,addr wfd
+		.endw
+		invoke FindClose,hWfd
+	.endif
+	ret
+
+CopySniplets endp
+
 CopyLanguageIni proc hWin:HWND
 	LOCAL	wfd:WIN32_FIND_DATA
 	LOCAL	hWfd:HANDLE
@@ -361,7 +431,7 @@ CopyLanguageIni proc hWin:HWND
 
 CopyLanguageIni endp
 
-CopyFiles proc hWin:HWND
+Update proc hWin:HWND
 	LOCAL	szfrom[MAX_PATH]:BYTE
 	LOCAL	szto[MAX_PATH]:BYTE
 
@@ -404,9 +474,17 @@ CopyFiles proc hWin:HWND
 		;Add new templates
 		invoke CopyTemplates,hWin,TRUE
 	.endif
-
+	invoke IsDlgButtonChecked,hWin,IDC_CHKOWSNIPLETS
+	.if eax
+		;Copy all sniplets
+		invoke CopySniplets,hWin,FALSE
+	.else
+		;Add new sniplets
+		invoke CopySniplets,hWin,TRUE
+	.endif
 	invoke GetDlgItem,hWin,IDOK
 	invoke EnableWindow,eax,FALSE
+	invoke SendDlgItemMessage,hWin,IDC_EDTLOG,EM_REPLACESEL,FALSE,addr szDone
 	ret
 
-CopyFiles endp
+Update endp

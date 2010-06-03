@@ -22,7 +22,6 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		vernew,0
 		invoke CheckDlgButton,hWin,IDC_RBNUPRA,BST_CHECKED
 		invoke CheckDlgButton,hWin,IDC_RBNUPLANG,BST_CHECKED
-;		invoke CheckDlgButton,hWin,IDC_CHKOWTEMPLATES,BST_CHECKED
 		invoke GetModuleFileName,hInstance,addr szAppPath,sizeof szAppPath
 		invoke lstrlen,addr szAppPath
 		.while szAppPath[eax]!='\' && eax
@@ -40,8 +39,6 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endw
 			mov		szRadASMPath[eax],0
 		.endif
-;PrintStringByAddr offset szRadASMPath
-;PrintStringByAddr offset szAppPath
 		invoke lstrcpy,addr buffer,addr szAppPath
 		invoke lstrcat,addr buffer,addr szBS
 		invoke lstrcat,addr buffer,addr szUpdateRadASMExe
@@ -78,7 +75,7 @@ DlgProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.if eax==IDOK
 				invoke IsRadASMRunning,hWin
 				.if !eax
-					invoke CopyFiles,hWin
+					invoke Update,hWin
 				.endif
 			.elseif eax==IDCANCEL
 				invoke	SendMessage,hWin,WM_CLOSE,NULL,NULL
