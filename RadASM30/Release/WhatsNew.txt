@@ -4,6 +4,12 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.2 2010-06-04
+--------------------------
+o Implemented Make / Run With Debug.
+  Use Option / Environment to add the path to the debugger.
+  Use Option / Make Options to add the debugger exe file.
+
 Version 3.0.0.1 2010-06-03
 --------------------------
 o Added JWasm programming language. Thanks to PauloH.

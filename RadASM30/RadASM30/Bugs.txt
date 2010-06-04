@@ -1,7 +1,6 @@
 TODO
 -----------
 - Language translation not implemented.
-- Run with debug not implemented.
 
 BUGS
 -----------

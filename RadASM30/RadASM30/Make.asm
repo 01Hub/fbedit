@@ -17,6 +17,7 @@ MakeDone				BYTE 0Dh,'Make done.',0Dh,0
 Errors					BYTE 0Dh,'Error(s) occured.',0Dh,0
 Terminated				BYTE 0Dh,'Terminated by user.',0
 Exec					BYTE 0Dh,'Executing:',0
+Debug					BYTE 0Dh,'Debuging:',0
 NoDel					BYTE 0Dh,'Could not delete:',0Dh,0
 
 CreatePipeError			BYTE 'Error during pipe creation',0
@@ -49,6 +50,11 @@ MakeThreadProc proc uses ebx,Param:DWORD
 	invoke SendMessage,ha.hOutput,EM_SCROLLCARET,0,0
 	.if Param==IDM_MAKE_RUN
 		invoke ShellExecute,ha.hWnd,NULL,addr makeexe.cmd,addr makeexe.cmdline,NULL,SW_SHOWNORMAL
+		.if eax>=32
+			xor		eax,eax
+		.endif
+	.elseif Param==IDM_MAKE_DEBUG
+		invoke ShellExecute,ha.hWnd,NULL,addr da.szDebug,addr makeexe.buffer,NULL,SW_SHOWNORMAL
 		.if eax>=32
 			xor		eax,eax
 		.endif
@@ -779,6 +785,20 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.if da.szCommandLine
 				invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
 			.endif
+		.endif
+		xor		eax,eax
+		call	MakeIt
+	.elseif eax==IDM_MAKE_DEBUG
+		invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset Debug
+		invoke SetOutputFile,addr da.make.szOutLink[esi],offset da.szMainAsm
+		invoke strcpy,addr makeexe.cmd,addr makeexe.output
+		.if da.szCommandLine
+			invoke strcpy,addr makeexe.cmdline,addr da.szCommandLine
+		.endif
+		invoke strcpy,addr makeexe.buffer,addr makeexe.cmd
+		.if makeexe.cmdline
+			invoke strcat,addr makeexe.buffer,addr szSpc
+			invoke strcat,addr makeexe.buffer,addr makeexe.cmdline
 		.endif
 		xor		eax,eax
 		call	MakeIt

@@ -662,6 +662,7 @@ GetMakeCommands proc uses ebx esi edi
 		.endif
 		inc		ebx
 	.endw
+	invoke GetPrivateProfileString,addr szIniMake,addr szIniExtDebug,addr szNULL,addr da.szDebug,sizeof da.szDebug,addr da.szAssemblerIni
 	invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
 	ret
 

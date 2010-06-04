@@ -13,6 +13,8 @@ IDC_EDTMAKEOPTLINK			equ 3108
 IDC_EDTMAKEOPTLINKOUT		equ 3106
 IDC_EDTMAKEOPTLIB			equ 3104
 IDC_EDTMAKEOPTLIBOUT		equ 3102
+IDC_EDTEXTDEBUG				equ 3121
+IDC_BTNEXTDEBUG				equ 3122
 
 .data?
 
@@ -37,6 +39,7 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 		invoke SendDlgItemMessage,hWin,IDC_EDTMAKEOPTLINKOUT,EM_LIMITTEXT,sizeof MAKE.szOutLink-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTMAKEOPTLIB,EM_LIMITTEXT,sizeof MAKE.szLib-1,0
 		invoke SendDlgItemMessage,hWin,IDC_EDTMAKEOPTLIBOUT,EM_LIMITTEXT,sizeof MAKE.szOutLib-1,0
+		invoke SendDlgItemMessage,hWin,IDC_EDTEXTDEBUG,EM_LIMITTEXT,sizeof da.szDebug-1,0
 		xor		ebx,ebx
 		mov		edi,offset tmpmake
 		invoke RtlZeroMemory,edi,sizeof tmpmake
@@ -58,6 +61,7 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 			.endif
 			inc		ebx
 		.endw
+		invoke SetDlgItemText,hWin,IDC_EDTEXTDEBUG,addr da.szDebug
 		invoke SendDlgItemMessage,hWin,IDC_LSTMAKEOPT,LB_SETCURSEL,0,0
 		.if eax!=LB_ERR
 			invoke SendMessage,hWin,WM_COMMAND,LBN_SELCHANGE shl 16 or IDC_LSTMAKEOPT,hWin
@@ -89,6 +93,8 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 					lea		esi,[esi+sizeof MAKE]
 					inc		ebx
 				.endw
+				invoke GetDlgItemText,hWin,IDC_EDTEXTDEBUG,addr da.szDebug,sizeof da.szDebug
+				invoke WritePrivateProfileString,addr szIniMake,addr szIniExtDebug,addr da.szDebug,addr da.szAssemblerIni
 				invoke SendMessage,hWin,WM_CLOSE,NULL,TRUE
 			.elseif eax==IDCANCEL
 				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
@@ -133,6 +139,7 @@ MakeOptionsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:L
 						invoke EnableWindow,eax,FALSE
 					.endif
 				.endif
+			.elseif eax==IDC_BTNEXTDEBUG
 			.endif
 		.elseif edx==EN_CHANGE
 			.if eax==IDC_EDTMAKEOPTNEW
