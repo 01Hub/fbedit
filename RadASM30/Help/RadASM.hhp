@@ -20,6 +20,17 @@ AddinManager.htm
 ToolsMenu.htm
 HelpMenu.htm
 F1Help.htm
+ResEdDialog.htm
+ResEdStyleManager.htm
+ResEdMenu.htm
+ResEdString.htm
+ResEdManifest.htm
+ResEdRCData.htm
+ResEdToolbar.htm
+ResEdLanguage.htm
+ResEdInclude.htm
+ResEdResource.htm
+ResEdName.htm
 
 [INFOTYPES]
 

@@ -17,6 +17,55 @@
 			<param name="Local" value="Intro.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Resource editor">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Dialog Editor">
+				<param name="Local" value="ResEdDialog.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Style Manager">
+				<param name="Local" value="ResEdStyleManager.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Menu Editor">
+				<param name="Local" value="ResEdMenu.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Strintable Editor">
+				<param name="Local" value="ResEdString.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="ManifestEditor">
+				<param name="Local" value="ResEdManifest.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="RCData Editor">
+				<param name="Local" value="ResEdRCData.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Toolbar Editor">
+				<param name="Local" value="ResEdToolbar.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Language Editor">
+				<param name="Local" value="ResEdLanguage.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Include Editor">
+				<param name="Local" value="ResEdInclude.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Resource Files">
+				<param name="Local" value="ResEdResource.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Name Editor">
+				<param name="Local" value="ResEdName.htm">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Options">
 			</OBJECT>
 		<UL>
