@@ -950,7 +950,7 @@ IsLineInvoke endp
 ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	LOCAL	rect:RECT
 	LOCAL	pt:POINT
-	LOCAL	tti:TTITEM
+;	LOCAL	tti:TTITEM
 	LOCAL	cpline:DWORD
 	LOCAL	buffer[256]:BYTE
 
@@ -998,6 +998,8 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		mov		da.ccchrg.cpMin,edx
 		invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
 		call	ShowList
+	.elseif da.cctype==CCTYPE_TOOLTIP
+		call	ShowTooltip
 	.elseif da.nAsm==nCPP
 		mov		esi,offset LineTxt
 		add		da.ccchrg.cpMin,eax
@@ -1143,20 +1145,20 @@ DoItCpp:
 				call	ShowList
 			.else
 				mov		da.cctype,CCTYPE_TOOLTIP
-				mov		tti.lpszRetType,0
-				mov		tti.lpszDesc,0
-				mov		tti.novr,0
-				mov		tti.nsel,0
-				mov		tti.nwidth,0
+				mov		da.tti.lpszRetType,0
+				mov		da.tti.lpszDesc,0
+				mov		da.tti.novr,0
+				mov		da.tti.nsel,0
+				mov		da.tti.nwidth,0
 				mov		eax,tt.ovr.lpszParam
 				mov		edx,tt.lpszApi
 				mov		ecx,tt.nPos
-				mov		tti.lpszApi,edx
-				mov		tti.lpszParam,eax
-				mov		tti.nitem,ecx
+				mov		da.tti.lpszApi,edx
+				mov		da.tti.lpszParam,eax
+				mov		da.tti.nitem,ecx
 				inc		ecx
 				invoke BinToDec,ecx,addr buffer
-				invoke strcat,addr buffer,tti.lpszApi
+				invoke strcat,addr buffer,da.tti.lpszApi
 				mov		eax,cpline
 				add		eax,offset LineTxt
 				invoke UpdateApiConstList,addr buffer,edi,eax
@@ -1217,7 +1219,7 @@ ShowTooltip:
 	invoke GetCaretPos,addr pt
 	invoke ClientToScreen,ha.hEdt,addr pt
 	add		pt.y,20
-	invoke SendMessage,ha.hTT,TTM_SETITEM,0,addr tti
+	invoke SendMessage,ha.hTT,TTM_SETITEM,0,addr da.tti
 	sub		pt.x,eax
 	invoke SetWindowPos,ha.hTT,HWND_TOP,pt.x,pt.y,0,0,SWP_NOACTIVATE or SWP_NOSIZE
 	invoke ShowWindow,ha.hTT,SW_SHOWNA

@@ -578,6 +578,7 @@ ADDINDATA struct
 	szError				BYTE 64 dup(?)
 	fExternal			DWORD ?
 	ccchrg				CHARRANGE <?>
+	tti					TTITEM <>
 ADDINDATA ends
 
 FILEINFO struct

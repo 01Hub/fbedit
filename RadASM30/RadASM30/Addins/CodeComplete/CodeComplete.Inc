@@ -32,7 +32,6 @@ include ..\Addins.inc
 .const
 
 szCoInvoke		db 'CoInvoke',0
-szComma			db ',',0
 
 szSomeText		db 'aaitemA',0,'paramA0,paramA1,paramA2',0
 				db 'aaitemB',0,'paramB0,paramB1,paramB2,paramB3',0
@@ -153,22 +152,13 @@ hInstance			dd ?	;Dll's module handle
 lpHandles			dd ?	;Pointer to handles struct
 lpProc				dd ?	;Pointer to proc struct
 lpData				dd ?	;Pointer to data struct
-hMdi				dd ?	;Mdi child
-OldMdiChildProc		dd ?
 
 hCC					dd ?
-fTT					dd ?
 hTT					dd ?
 hProperty			dd ?
 
-fLB					dd ?
-hLB					dd ?
-fTlt				dd ?
-hTlt				dd ?
-nLine				dd ?
 nPos				dd ?
 linebuff			db 16384 dup(?)
-fDoIt				dd ?
 hook				HOOK <>
 
 .code
