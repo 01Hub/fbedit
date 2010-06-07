@@ -78,13 +78,6 @@ TextOutput						PROTO	:DWORD
 SetDebugInfo					PROTO	:DWORD
 DebugCommand					PROTO	:DWORD,:DWORD,:DWORD
 
-CCTYPE_NONE						equ 0
-CCTYPE_PROC						equ 1
-CCTYPE_TOOLTIP					equ 2
-CCTYPE_CONST					equ 3
-CCTYPE_ALL						equ 4
-CCTYPE_STRUCT					equ 5
-
 IDI_MDIICO						equ 100
 IDC_SPLICURV					equ 150
 IDC_SPLICURH					equ 151

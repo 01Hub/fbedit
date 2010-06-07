@@ -23,6 +23,15 @@ ID_EXTERNAL						equ 7
 ID_FIRSTCHILD					equ 65001
 ID_LASTCHILD					equ 65499
 
+;Code complete types
+CCTYPE_NONE						equ 0
+CCTYPE_PROC						equ 1
+CCTYPE_TOOLTIP					equ 2
+CCTYPE_CONST					equ 3
+CCTYPE_ALL						equ 4
+CCTYPE_STRUCT					equ 5
+CCTYPE_USER						equ 6
+
 ;RadASM resource ID's
 ;Res\RadASMAcl.rc
 IDA_ACCEL						equ 100
@@ -251,34 +260,37 @@ AIM_GETFILETYPE					equ WM_USER+115			;RadASM requests a filetype. Return ID_EDI
 AIM_FILENAMECHANGED				equ WM_USER+116			;RadASM has changed a filename. Return TRUE if this is your file, else return FALSE. hWin=Mdi child window,wParam=Old filename, lParam=New filename
 AIM_MENUENABLE					equ WM_USER+117			;RadASM requests you to enable / disable your menu items. Always return FALSE. hWin=Main window,wParam=IDM_FILE,IDM_EDIT,IDM_VIEW,IDM_FORMAT,IDM_PROJECT,IDM_RESOURCE,IDM_MAKE,IDM_DEBUG,IDM_TOOLS,IDM_WINDOW,IDM_OPTION or IDM_HELP, lParam=0
 AIM_RASELCHANGE					equ WM_USER+118			;This message is sendt when a ID_EDITCODE window has a selection change. Always return FALSE. hWin=Mdi child window,wParam=lpTABMEM,lParam=lpRASELCHANE
+AIM_MDIACTIVATE					equ WM_USER+119			;This message is sendt when a mdi child is activated or deactivated. Always return FALSE. hWin=Mdi child window,wParam and lParam as M_MDIACIVATE
+AIM_PARSEFILE					equ WM_USER+120			;This message is sendt when RadASM is done parsing a file. Always return FALSE. hWin=Mdi child window or NULL if it is a file.,wParam=nOwner, lParam=Pointer to file data.
 
 ;HOOK flags returned in hook1 of HOOK structure
-HOOK_ADDINSLOADED				equ 00001h
-HOOK_COMMAND					equ 00002h
-HOOK_CLOSE						equ 00004h
-HOOK_DESTROY					equ 00008h
-HOOK_MENUUPDATE					equ 00010h
-HOOK_FILEOPEN					equ 00020h
-HOOK_FILEOPENED					equ 00040h
-HOOK_FILECLOSE					equ 00080h
-HOOK_FILECLOSED					equ 00100h
-HOOK_FILESAVE					equ 00200h
-HOOK_FILESAVEAS					equ 00300h
-HOOK_FILESAVED					equ 00800h
-HOOK_GETMODIFY					equ 01000h
-HOOK_MAKEBEGIN					equ 02000h
-HOOK_MAKEDONE					equ 04000h
-HOOK_GETFILETYPE				equ 08000h
-HOOK_FILENAMECHANGED			equ 10000h
-HOOK_MENUENABLE					equ 20000h
-HOOK_RASELCHANGE				equ 40000h
-
+HOOK_ADDINSLOADED				equ 000001h
+HOOK_COMMAND					equ 000002h
+HOOK_CLOSE						equ 000004h
+HOOK_DESTROY					equ 000008h
+HOOK_MENUUPDATE					equ 000010h
+HOOK_FILEOPEN					equ 000020h
+HOOK_FILEOPENED					equ 000040h
+HOOK_FILECLOSE					equ 000080h
+HOOK_FILECLOSED					equ 000100h
+HOOK_FILESAVE					equ 000200h
+HOOK_FILESAVEAS					equ 000300h
+HOOK_FILESAVED					equ 000800h
+HOOK_GETMODIFY					equ 001000h
+HOOK_MAKEBEGIN					equ 002000h
+HOOK_MAKEDONE					equ 004000h
+HOOK_GETFILETYPE				equ 008000h
+HOOK_FILENAMECHANGED			equ 010000h
+HOOK_MENUENABLE					equ 020000h
+HOOK_RASELCHANGE				equ 040000h
+HOOK_MDIACTIVATE				equ 080000h
+HOOK_PARSEFILE					equ 100000h
 
 HOOK struct
-	hook1				DWORD ?				;Combinations of HOOK_ flags
-	hook2				DWORD ?				;Not used must be zero
-	hook3				DWORD ?				;Not used must be zero
-	hook4				DWORD ?				;Not used must be zero
+	hook1				DWORD ?							;Combinations of HOOK_ flags
+	hook2				DWORD ?							;Not used must be zero
+	hook3				DWORD ?							;Not used must be zero
+	hook4				DWORD ?							;Not used must be zero
 HOOK ends
 
 ADDINHANDLES struct
@@ -340,17 +352,17 @@ ADDINHANDLES struct
 ADDINHANDLES ends
 
 ADDINPROCS struct
-	lpOpenTheFile		DWORD ?					;Opens a file. lpFileName:DWORD,fType:DWORD
-	lpSetOutputTab		DWORD ?					;Selects Output or Immediate. nSel:DWORD (0 or 1)
-	lpShowOutput		DWORD ?					;Shows or hides the output tool. fShow:DWORD (TRUE or FALSE)
-	lpTextOutput		DWORD ?					;Outputs a text string to selected output. lpString:DWORD
-	lpTabToolSetChanged	DWORD ?					;Sets the tabs changed state. hWin:HWND,fChanged:DWORD (TRUE or FALSE)
-	lpTabToolGetMem		DWORD ?					;Gets a pointer to TABMEM. hWin:DWORD
-	lpTabToolAdd		DWORD ?					;Adds a new tab. hWin:HWND,lpFileName:DWORD
-	lpTabToolActivate	DWORD ?					;Activates the current tab.
-	lpUpdateFileName	DWORD ?					;Changes the filename for current selected tab. hWin:HWND,lpFileName:DWORD
-	lpUpdateFileTime	DWORD ?					;Updates the filetime. lpTABMEM:DWORD
-	lpUpdateAll			DWORD ?					;Loops through all tabs performing selected UAM_ message. lParam:DWORD depends on message.
+	lpOpenTheFile		DWORD ?							;Opens a file. lpFileName:DWORD,fType:DWORD
+	lpSetOutputTab		DWORD ?							;Selects Output or Immediate. nSel:DWORD (0 or 1)
+	lpShowOutput		DWORD ?							;Shows or hides the output tool. fShow:DWORD (TRUE or FALSE)
+	lpTextOutput		DWORD ?							;Outputs a text string to selected output. lpString:DWORD
+	lpTabToolSetChanged	DWORD ?							;Sets the tabs changed state. hWin:HWND,fChanged:DWORD (TRUE or FALSE)
+	lpTabToolGetMem		DWORD ?							;Gets a pointer to TABMEM. hWin:HWND
+	lpTabToolAdd		DWORD ?							;Adds a new tab. hWin:HWND,lpFileName:DWORD
+	lpTabToolActivate	DWORD ?							;Activates the current tab.
+	lpUpdateFileName	DWORD ?							;Changes the filename for current selected tab. hWin:HWND,lpFileName:DWORD
+	lpUpdateFileTime	DWORD ?							;Updates the filetime. lpTABMEM:DWORD
+	lpUpdateAll			DWORD ?							;Loops through all tabs performing selected UAM_ message. lParam:DWORD depends on message.
 ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
@@ -377,8 +389,8 @@ WIN ends
 
 ;16+20+12=48
 RADCOLOR struct
-	kwcol				DWORD 16 dup(?)			;Keywords
-	racol				RACOLOR <?>				;RAEdit
+	kwcol				DWORD 16 dup(?)					;Keywords
+	racol				RACOLOR <?>						;RAEdit
 	toolback			DWORD ?
 	tooltext			DWORD ?
 	dialogback			DWORD ?
@@ -427,14 +439,14 @@ CUSTCTRL struct
 CUSTCTRL ends
 
 RESOPT struct
-	gridx				DWORD ?						;Assembler.ini
-	gridy				DWORD ?						;Assembler.ini
-	color				DWORD ?						;Assembler.ini
-	fopt				DWORD ?						;Assembler.ini
-	nExport				DWORD ?						;Assembler.ini
-	szUserExport		BYTE 64 dup(?)				;Assembler.ini
-	szExport			BYTE 64 dup(?)				;Assembler.ini
-	nOutput				DWORD ?						;Assembler.ini
+	gridx				DWORD ?							;Assembler.ini
+	gridy				DWORD ?							;Assembler.ini
+	color				DWORD ?							;Assembler.ini
+	fopt				DWORD ?							;Assembler.ini
+	nExport				DWORD ?							;Assembler.ini
+	szUserExport		BYTE 64 dup(?)					;Assembler.ini
+	szExport			BYTE 64 dup(?)					;Assembler.ini
+	nOutput				DWORD ?							;Assembler.ini
 	custctrl			CUSTCTRL 32 dup(<>)
 	custstyle			CUSTSTYLE 64 dup(<>)
 	custtype			RARSTYPE 32 dup(<>)
@@ -565,6 +577,7 @@ ADDINDATA struct
 	fNoChangeNotify		DWORD ?
 	szError				BYTE 64 dup(?)
 	fExternal			DWORD ?
+	ccchrg				CHARRANGE <?>
 ADDINDATA ends
 
 FILEINFO struct
@@ -578,11 +591,11 @@ FILEINFO struct
 FILEINFO ends
 
 TABMEM struct
-	hwnd				HWND ?					;Handle of the mdi child window.
-	hedt				HWND ?					;Handle of the edit window
-	pid					DWORD ?					;Project id
-	filename			BYTE MAX_PATH dup (?)	;Filename including full path.
-	ft					FILETIME <?>			;Filetime for last write.
+	hwnd				HWND ?							;Handle of the mdi child window.
+	hedt				HWND ?							;Handle of the edit window
+	pid					DWORD ?							;Project id
+	filename			BYTE MAX_PATH dup (?)			;Filename including full path.
+	ft					FILETIME <?>					;Filetime for last write.
 	nchange				DWORD ?
 	fchanged			DWORD ?
 	fupdate				DWORD ?

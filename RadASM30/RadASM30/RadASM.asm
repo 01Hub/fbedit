@@ -2193,8 +2193,8 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				.if eax!=LB_ERR
 					mov		da.inprogress,TRUE
 					invoke SendMessage,ha.hEdt,REM_LOCKUNDOID,TRUE,0
-					invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr ccchrg
-					mov		eax,ccchrg.cpMin
+					invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr da.ccchrg
+					mov		eax,da.ccchrg.cpMin
 					inc		eax
 					mov		trng.chrg.cpMin,eax
 					add		eax,16
@@ -2714,14 +2714,18 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
 				invoke TabToolActivate
 				invoke SetFocus,ha.hEdt
+				invoke PostAddinMessage,hWin,AIM_MDIACTIVATE,wParam,lParam,0,HOOK_MDIACTIVATE
 			.endif
 		.elseif eax==wParam
 			;Deactivate
-			.if da.fChanged && wParam
-				mov		da.fChanged,FALSE
-				invoke GetWindowLong,wParam,GWL_USERDATA
-				invoke GetWindowLong,eax,GWL_USERDATA
-				invoke ParseEdit,wParam,[eax].TABMEM.pid
+			invoke GetWindowLong,wParam,GWL_USERDATA
+			.if eax
+				.if da.fChanged && wParam
+					invoke GetWindowLong,eax,GWL_USERDATA
+					invoke ParseEdit,wParam,[eax].TABMEM.pid
+					mov		da.fChanged,FALSE
+				.endif
+				invoke PostAddinMessage,hWin,AIM_MDIACTIVATE,wParam,lParam,0,HOOK_MDIACTIVATE
 			.endif
 			mov		ha.hMdi,0
 			mov		ha.hEdt,0

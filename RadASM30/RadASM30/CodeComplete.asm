@@ -1,15 +1,7 @@
 
-CCTYPE_NONE				equ 0
-CCTYPE_PROC				equ 1
-CCTYPE_TOOLTIP			equ 2
-CCTYPE_CONST			equ 3
-CCTYPE_ALL				equ 4
-CCTYPE_STRUCT			equ 5
-
 .data?
 
 lpOldCCProc				dd ?
-ccchrg					CHARRANGE <?>
 cclist					db 16384 dup(?)
 
 .code
@@ -965,8 +957,8 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	mov		esi,lpRASELCHANGE
 	mov		eax,[esi].RASELCHANGE.chrg.cpMin
 	mov		edx,[esi].RASELCHANGE.cpLine
-	mov		ccchrg.cpMin,edx
-	mov		ccchrg.cpMax,eax
+	mov		da.ccchrg.cpMin,edx
+	mov		da.ccchrg.cpMax,eax
 	sub		eax,edx
 	mov		cpline,eax
 	inc		eax
@@ -976,9 +968,9 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	.if da.cctype==CCTYPE_ALL
 		call	GetWordLeft
 		invoke strlen,addr buffer
-		mov		edx,ccchrg.cpMax
+		mov		edx,da.ccchrg.cpMax
 		sub		edx,eax
-		mov		ccchrg.cpMin,edx
+		mov		da.ccchrg.cpMin,edx
 		invoke UpdateApiList,addr buffer,offset szCCAll
 		.if eax
 			call	ShowList
@@ -989,18 +981,26 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		mov		edx,cpline
 		sub		edx,eax
 		mov		byte ptr LineTxt[edx-1],0
-		mov		edx,ccchrg.cpMax
+		mov		edx,da.ccchrg.cpMax
 		sub		edx,eax
-		mov		ccchrg.cpMin,edx
+		mov		da.ccchrg.cpMin,edx
 		invoke UpdateApiList,addr buffer,offset szCCSs
 		.if eax
 			call	ShowList
 		.else
 			call	HideAll
 		.endif
+	.elseif da.cctype==CCTYPE_USER
+		call	GetWordLeft
+		invoke strlen,addr buffer
+		mov		edx,da.ccchrg.cpMax
+		sub		edx,eax
+		mov		da.ccchrg.cpMin,edx
+		invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
+		call	ShowList
 	.elseif da.nAsm==nCPP
 		mov		esi,offset LineTxt
-		add		ccchrg.cpMin,eax
+		add		da.ccchrg.cpMin,eax
 		xor		eax,eax
 		.while byte ptr [esi+eax]==VK_SPACE || byte ptr [esi+eax]==VK_TAB
 			inc		eax
@@ -1010,7 +1010,7 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	.else
 		invoke IsLineInvoke,cpline
 		.if eax
-			add		ccchrg.cpMin,eax
+			add		da.ccchrg.cpMin,eax
 			lea		esi,LineTxt[eax]
 			call	DoIt
 		.else
@@ -1136,7 +1136,7 @@ DoItCpp:
 				sub		edi,offset LineTxt
 				mov		esi,lpRASELCHANGE
 				add		edi,[esi].RASELCHANGE.cpLine
-				mov		ccchrg.cpMin,edi
+				mov		da.ccchrg.cpMin,edi
 				mov		da.cctype,CCTYPE_CONST
 				;invoke SendMessage,ha.hCC,CCM_SORT,FALSE,0
 				invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
@@ -1166,14 +1166,14 @@ DoItCpp:
 					sub		edi,offset LineTxt
 					mov		esi,lpRASELCHANGE
 					add		edi,[esi].RASELCHANGE.cpLine
-					mov		ccchrg.cpMin,edi
+					mov		da.ccchrg.cpMin,edi
 					mov		eax,[esi].RASELCHANGE.chrg.cpMin
 					sub		eax,[esi].RASELCHANGE.cpLine
 					.while byte ptr LineTxt[eax] && byte ptr LineTxt[eax]!=VK_SPACE && byte ptr LineTxt[eax]!=VK_TAB && byte ptr LineTxt[eax]!=','
 						inc		eax
 					.endw
 					add		eax,[esi].RASELCHANGE.cpLine
-					mov		ccchrg.cpMax,eax
+					mov		da.ccchrg.cpMax,eax
 					call	ShowList
 				.else
 					call	ShowTooltip

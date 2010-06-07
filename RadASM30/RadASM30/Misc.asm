@@ -879,6 +879,7 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 			pop		eax
 			invoke SendMessage,hEdt,WM_GETTEXT,eax,hMem
 			invoke SendMessage,ha.hProperty,PRM_PARSEFILE,edi,hMem
+			invoke PostAddinMessage,hWin,AIM_PARSEFILE,edi,hMem,0,HOOK_PARSEFILE
 			invoke GlobalFree,hMem
 			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 		.endif
@@ -908,6 +909,7 @@ ParseFile proc lpFileName:DWORD,pid:DWORD
 			invoke ReadFile,hFile,hMem,edx,addr dwRead,NULL
 			invoke CloseHandle,hFile
 			invoke SendMessage,ha.hProperty,PRM_PARSEFILE,pid,hMem
+			invoke PostAddinMessage,NULL,AIM_PARSEFILE,pid,hMem,0,HOOK_PARSEFILE
 			invoke GlobalFree,hMem
 		.endif
 	.endif
