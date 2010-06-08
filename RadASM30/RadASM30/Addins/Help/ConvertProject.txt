@@ -10,6 +10,8 @@ NOTE!
 - You need RadASM 3.0.0.1 or higher for the addin to work.
 
 HOW TO INSTALL
-- Copy the ConvertProject.dll to the Addins folder and restart RadASM.
+- Copy the ConvertProject.dll to the Addins folder.
+- Copy the ConvertProject.txt to the Addins/Help folder.
+- Restart RadASM if it is running.
 
 KetilO
