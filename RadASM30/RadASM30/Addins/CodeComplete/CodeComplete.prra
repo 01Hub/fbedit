@@ -2,9 +2,9 @@
 Version=3000
 [Project]
 Assembler=Masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\CodeComplete
+Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\CodeComplete
 Group=2,-1,0,1,CodeComplete,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc
-Open=2,1,2,3,4,5,6,7
+Open=0,1,2,3,4,5,6,7
 Api=
 F9=
 C9=
@@ -34,7 +34,7 @@ F2=-4,0,2,66,66,1213,550,0,CodeComplete.Def
 C2=
 B2=
 M2=
-F3=-3,0,1,44,44,1213,550,159,CodeComplete.Inc
+F3=-3,0,1,44,44,1213,550,40,CodeComplete.Inc
 C3=0
 B3=
 M3=
