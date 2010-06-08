@@ -144,78 +144,81 @@ AddinProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,lParam
 		.if [ebx].RASELCHANGE.seltyp==SEL_TEXT && [ebx].RASELCHANGE.fchanged
 			mov		eax,lpData
-			.if [eax].ADDINDATA.cctype==CCTYPE_NONE || [eax].ADDINDATA.cctype==CCTYPE_USER || [eax].ADDINDATA.cctype==CCTYPE_TOOLTIP
-				;Get the line text
-				mov		esi,[ebx].RASELCHANGE.lpLine
-				mov		ecx,[esi].CHARS.len
-				.if ecx>=sizeof linebuff
-					mov		ecx,sizeof linebuff-1
-				.endif
-				lea		esi,[esi+sizeof CHARS]
-				mov		edi,offset linebuff
-				rep movsb
-				;Zero terminate line
-				mov		byte ptr [edi],0
-				.if byte ptr [edi-1]==VK_RETURN
-					;Dont want CR
-					mov		byte ptr [edi-1],0
-				.endif
-				mov		eax,[ebx].RASELCHANGE.chrg.cpMin
-				sub		eax,[ebx].RASELCHANGE.cpLine
-				invoke IsLineCoInvoke,eax
-				.if eax
-					mov		edi,eax
-					sub		eax,offset linebuff
-					mov		nPos,eax
-					invoke SendMessage,hCC,CCM_CLEAR,0,0
-					;put some text into listbox
-					mov		esi,offset szSomeText
-					.while byte ptr [esi]
-						invoke Filter,esi,edi
-						.if eax
-							mov		lpFun,esi
-							movzx	eax,byte ptr [eax-1]
-							mov		nFilter,eax
-							invoke SendMessage,hCC,CCM_ADDITEM,1,esi
-						.endif
-						invoke lstrlen,esi
-						lea		esi,[esi+eax+1]
-						invoke lstrlen,esi
-						lea		esi,[esi+eax+1]
-					.endw
-					invoke SendMessage,hCC,CCM_GETCOUNT,0,0
-					.if eax==1 && nFilter==','
-						;Count commas
-						mov		edx,[ebx].RASELCHANGE.chrg.cpMin
-						sub		edx,[ebx].RASELCHANGE.cpLine
-						xor		ecx,ecx
-						xor		eax,eax
-						.while ecx<edx
-							.if linebuff[ecx]==','
-								inc		eax
+			.if [eax].ADDINDATA.nAsm==nMASM
+				.if [eax].ADDINDATA.cctype==CCTYPE_NONE || [eax].ADDINDATA.cctype==CCTYPE_USER || [eax].ADDINDATA.cctype==CCTYPE_USERTOOLTIP
+					;Get the line text
+					mov		esi,[ebx].RASELCHANGE.lpLine
+					mov		ecx,[esi].CHARS.len
+					.if ecx>=sizeof linebuff
+						mov		ecx,sizeof linebuff-1
+					.endif
+					lea		esi,[esi+sizeof CHARS]
+					mov		edi,offset linebuff
+					rep movsb
+					;Zero terminate line
+					mov		byte ptr [edi],0
+					.if byte ptr [edi-1]==VK_RETURN
+						;Dont want CR
+						mov		byte ptr [edi-1],0
+					.endif
+					mov		eax,[ebx].RASELCHANGE.chrg.cpMin
+					sub		eax,[ebx].RASELCHANGE.cpLine
+					invoke IsLineCoInvoke,eax
+					.if eax
+						mov		edi,eax
+						sub		eax,offset linebuff
+						mov		nPos,eax
+						invoke SendMessage,hCC,CCM_CLEAR,0,0
+						;put some text into listbox
+						mov		esi,offset szSomeText
+						.while byte ptr [esi]
+							invoke Filter,esi,edi
+							.if eax
+								mov		lpFun,esi
+								movzx	eax,byte ptr [eax-1]
+								mov		nFilter,eax
+								invoke SendMessage,hCC,CCM_ADDITEM,1,esi
 							.endif
-							inc		ecx
+							invoke lstrlen,esi
+							lea		esi,[esi+eax+1]
+							invoke lstrlen,esi
+							lea		esi,[esi+eax+1]
 						.endw
-						.if eax
-							dec		eax
+						invoke SendMessage,hCC,CCM_GETCOUNT,0,0
+						.if eax==1 && nFilter==','
+							;Let RadASM show the tooltip
+							;Count commas
+							mov		edx,[ebx].RASELCHANGE.chrg.cpMin
+							sub		edx,[ebx].RASELCHANGE.cpLine
+							xor		ecx,ecx
+							xor		eax,eax
+							.while ecx<edx
+								.if linebuff[ecx]==','
+									inc		eax
+								.endif
+								inc		ecx
+							.endw
+							.if eax
+								dec		eax
+							.endif
+							mov		edi,lpData
+							mov		[edi].ADDINDATA.tti.nitem,eax
+							mov		esi,lpFun
+							mov		[edi].ADDINDATA.tti.lpszApi,esi
+							invoke lstrlen,esi
+							lea		esi,[esi+eax+1]
+							mov		[edi].ADDINDATA.tti.lpszParam,esi
+							mov		[edi].ADDINDATA.tti.lpszRetType,0
+							mov		[edi].ADDINDATA.tti.lpszDesc,0
+							mov		[edi].ADDINDATA.tti.novr,0
+							mov		[edi].ADDINDATA.tti.nsel,0
+							mov		[edi].ADDINDATA.tti.nwidth,0
+							mov		[edi].ADDINDATA.cctype,CCTYPE_USERTOOLTIP
+						.elseif eax
+							;Let RadASM show the listbox
+							mov		eax,lpData
+							mov		[eax].ADDINDATA.cctype,CCTYPE_USER
 						.endif
-						mov		edi,lpData
-						mov		[edi].ADDINDATA.tti.nitem,eax
-						mov		esi,lpFun
-						mov		[edi].ADDINDATA.tti.lpszApi,esi
-						invoke lstrlen,esi
-						lea		esi,[esi+eax+1]
-						mov		[edi].ADDINDATA.tti.lpszParam,esi
-						mov		[edi].ADDINDATA.tti.lpszRetType,0
-						mov		[edi].ADDINDATA.tti.lpszDesc,0
-						mov		[edi].ADDINDATA.tti.novr,0
-						mov		[edi].ADDINDATA.tti.nsel,0
-						mov		[edi].ADDINDATA.tti.nwidth,0
-						mov		[edi].ADDINDATA.cctype,CCTYPE_TOOLTIP
-					.elseif eax
-						;Let RadASM show the listbox
-						mov		eax,lpData
-						mov		[eax].ADDINDATA.cctype,CCTYPE_USER
 					.endif
 				.endif
 			.endif
@@ -233,6 +236,3 @@ AddinProc Endp
 ;#########################################################################
 
 End DllEntry
-
-	CoInvoke abitemD,a
-	invoke GetPrivateProfileString,a,a,a,a,a,a,a

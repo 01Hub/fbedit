@@ -31,6 +31,7 @@ CCTYPE_CONST					equ 3
 CCTYPE_ALL						equ 4
 CCTYPE_STRUCT					equ 5
 CCTYPE_USER						equ 6
+CCTYPE_USERTOOLTIP				equ 7
 
 ;RadASM resource ID's
 ;Res\RadASMAcl.rc

@@ -950,7 +950,6 @@ IsLineInvoke endp
 ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	LOCAL	rect:RECT
 	LOCAL	pt:POINT
-;	LOCAL	tti:TTITEM
 	LOCAL	cpline:DWORD
 	LOCAL	buffer[256]:BYTE
 
@@ -998,7 +997,7 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 		mov		da.ccchrg.cpMin,edx
 		invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
 		call	ShowList
-	.elseif da.cctype==CCTYPE_TOOLTIP
+	.elseif da.cctype==CCTYPE_USERTOOLTIP
 		call	ShowTooltip
 	.elseif da.nAsm==nCPP
 		mov		esi,offset LineTxt
@@ -1178,6 +1177,7 @@ DoItCpp:
 					mov		da.ccchrg.cpMax,eax
 					call	ShowList
 				.else
+					mov		da.cctype,CCTYPE_TOOLTIP
 					call	ShowTooltip
 				.endif
 			.endif
@@ -1214,7 +1214,6 @@ ShowList:
 	retn
 
 ShowTooltip:
-	mov		da.cctype,CCTYPE_TOOLTIP
 	invoke ShowWindow,ha.hCC,SW_HIDE
 	invoke GetCaretPos,addr pt
 	invoke ClientToScreen,ha.hEdt,addr pt
