@@ -1711,6 +1711,8 @@ GetProjectFiles proc uses ebx esi edi
 		.endif
 		invoke GetPrivateProfileInt,addr szIniMake,addr szIniDelete,0,addr da.szProjectFile
 		mov		da.fDelMinor,eax
+		invoke GetPrivateProfileInt,addr szIniMake,addr szIniIncBuild,0,addr da.szProjectFile
+		mov		da.fIncBuild,eax
 		invoke GetPrivateProfileString,addr szIniMake,addr szIniRun,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
 		invoke GetItemInt,addr tmpbuff,0
 		mov		da.fCmdExe,eax
@@ -2020,6 +2022,8 @@ PutProject proc uses ebx esi edi
 	.endw
 	invoke BinToDec,da.fDelMinor,addr tmpbuff
 	invoke WritePrivateProfileString,addr szIniMake,addr szIniDelete,addr tmpbuff,addr da.szProjectFile
+	invoke BinToDec,da.fIncBuild,addr tmpbuff
+	invoke WritePrivateProfileString,addr szIniMake,addr szIniIncBuild,addr tmpbuff,addr da.szProjectFile
 	mov		tmpbuff,0
 	invoke PutItemInt,addr tmpbuff,da.fCmdExe
 	invoke PutItemQuotedStr,addr tmpbuff,addr da.szCmdExe

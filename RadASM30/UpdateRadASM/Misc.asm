@@ -243,6 +243,9 @@ UpdateLanguageIni proc hWin:HWND
 						invoke WritePrivateProfileString,addr szIniParse,addr szIniDebug,addr buffer,addr szto
 						mov		eax,3001
 					.endif
+					.if eax==3001
+						;3001 --> 3002
+					.endif
 					invoke wsprintf,addr buffer,addr szDecFormat,vernew
 					invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 					invoke wsprintf,addr buffer,addr szUpdated,addr szto

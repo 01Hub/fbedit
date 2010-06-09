@@ -5,5 +5,4 @@ TODO
 BUGS
 -----------
 - Caret position might be wrong when opening a project.
-- Resource button / static looses ID if name is changed.
 - Code complete list of constants (GlobalAlloc).

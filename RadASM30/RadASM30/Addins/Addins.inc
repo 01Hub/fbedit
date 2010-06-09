@@ -580,6 +580,7 @@ ADDINDATA struct
 	fExternal			DWORD ?
 	ccchrg				CHARRANGE <?>
 	tti					TTITEM <>
+	fIncBuild			DWORD ?
 ADDINDATA ends
 
 FILEINFO struct

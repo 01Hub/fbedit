@@ -452,6 +452,21 @@ DeleteIt:
 
 DeleteMinorFiles endp
 
+IncrementBuild proc uses edi
+
+	.if da.fIncBuild
+		invoke UpdateAll,UAM_ISRESOPEN,0
+		.if eax!=-1
+			invoke GetWindowLong,eax,GWL_USERDATA
+			mov		edi,eax
+			invoke SendMessage,edi,PRO_INCVERSION,0,0
+			invoke UpdateAll,UAM_SAVEALL,0
+		.endif
+	.endif
+	ret
+
+IncrementBuild endp
+
 SetOutputFile proc uses ebx esi edi,lpOut:DWORD,lpMain:DWORD
 
 	mov		edi,lpOut
@@ -823,6 +838,7 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 				.if fClear==1 || fClear==3
 					.if fClear==3
 						invoke DeleteMinorFiles
+						invoke IncrementBuild
 					.endif
 					invoke SendMessage,ha.hOutput,EM_REPLACESEL,FALSE,offset MakeDone
 				.endif

@@ -17,6 +17,7 @@ IDC_BTNPOHELP					equ 1024
 IDC_CBOPOADDEXISTING			equ 1022
 IDC_BTNPODELETE					equ 1023
 IDC_CHKDELETEMINOR				equ 3502
+IDC_CHKPOINCBUILD				equ 3506
 IDC_EDTPOCMDEXE					equ 1025
 IDC_EDTPOCOMMANDLINE			equ 1027
 IDC_CHKPOCMDEXE					equ 1026
@@ -95,6 +96,11 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 		.endif
 		invoke CheckDlgButton,hWin,IDC_CHKDELETEMINOR,eax
 		mov		eax,BST_UNCHECKED
+		.if da.fIncBuild
+			mov		eax,BST_CHECKED
+		.endif
+		invoke CheckDlgButton,hWin,IDC_CHKPOINCBUILD,eax
+		mov		eax,BST_UNCHECKED
 		.if da.fCmdExe
 			mov		eax,BST_CHECKED
 		.endif
@@ -140,6 +146,8 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 				invoke SendMessage,ha.hCboBuild,CB_SETCURSEL,0,0
 				invoke IsDlgButtonChecked,hWin,IDC_CHKDELETEMINOR
 				mov		da.fDelMinor,eax
+				invoke IsDlgButtonChecked,hWin,IDC_CHKPOINCBUILD
+				mov		da.fIncBuild,eax
 				invoke GetDlgItemText,hWin,IDC_EDTPOCOMMANDLINE,addr da.szCommandLine,sizeof da.szCommandLine
 				invoke GetDlgItemText,hWin,IDC_EDTPOCMDEXE,addr da.szCmdExe,sizeof da.szCmdExe
 				invoke IsDlgButtonChecked,hWin,IDC_CHKPOCMDEXE
@@ -193,10 +201,14 @@ ProjectOptionProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam
 					dec		ebx
 					invoke SendDlgItemMessage,hWin,IDC_LSTPO,LB_SETCURSEL,ebx,0
 				.endif
+				invoke SendMessage,hWin,WM_COMMAND,LBN_SELCHANGE shl 16 or IDC_LSTPO,hWin
 				call	UpdateBtnDelete
 				invoke GetDlgItem,hWin,IDOK
 				invoke EnableWindow,eax,TRUE
 			.elseif eax==IDC_CHKDELETEMINOR
+				invoke GetDlgItem,hWin,IDOK
+				invoke EnableWindow,eax,TRUE
+			.elseif eax==IDC_CHKPOINCBUILD
 				invoke GetDlgItem,hWin,IDOK
 				invoke EnableWindow,eax,TRUE
 			.elseif eax==IDC_CHKPOCMDEXE

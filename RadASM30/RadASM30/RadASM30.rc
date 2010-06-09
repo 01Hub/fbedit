@@ -198,6 +198,7 @@
 #define IDC_EDTPOLIB 1010
 #define IDC_EDTPOOUTLIB 1017
 #define IDC_CHKDELETEMINOR 3502
+#define IDC_CHKPOINCBUILD 3506
 #define IDC_EDTPOCOMMANDLINE 1027
 #define IDC_CHKPOCMDEXE 1026
 #define IDC_EDTPOCMDEXE 1025
@@ -869,6 +870,7 @@ BEGIN
   CONTROL "Output:",1018,"Static",0x50000000,198,188,69,9
   CONTROL "",IDC_EDTPOOUTLIB,"Edit",0x50010080,196,199,69,13,0x00000200
   CONTROL "Delete Minor Files After Successfull Build",IDC_CHKDELETEMINOR,"Button",0x50010003,6,216,183,9
+  CONTROL "Increment build",IDC_CHKPOINCBUILD,"Button",0x50010003,195,216,69,9
   CONTROL "Run Options",3503,"Button",0x50000007,3,231,267,42
   CONTROL "Run Command Line Parameter:",1028,"Static",0x50000000,6,243,184,9
   CONTROL "",IDC_EDTPOCOMMANDLINE,"Edit",0x50010080,6,255,186,13,0x00000200
@@ -1203,8 +1205,8 @@ IDB_TBRBMP BITMAP DISCARDABLE "Res/Toolbar.bmp"
 110 BITMAP DISCARDABLE "Res/Types.bmp"
 
 VERINF1 VERSIONINFO
-FILEVERSION 3,0,0,1
-PRODUCTVERSION 3,0,0,1
+FILEVERSION 3,0,0,2
+PRODUCTVERSION 3,0,0,2
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -1212,13 +1214,13 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.1\0"
+      VALUE "FileVersion", "3.0.0.2\0"
       VALUE "FileDescription", "Assembly programming IDE\0"
       VALUE "InternalName", "RadASM 3.0\0"
       VALUE "LegalCopyright", "KetilO (C) 2010\0"
       VALUE "OriginalFilename", "RadASM.exe\0"
       VALUE "ProductName", "RadASM\0"
-      VALUE "ProductVersion", "3.0.0.1\0"
+      VALUE "ProductVersion", "3.0.0.2\0"
     END
   END
   BLOCK "VarFileInfo"

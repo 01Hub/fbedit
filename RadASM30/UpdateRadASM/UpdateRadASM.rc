@@ -3,9 +3,9 @@
 #define IDC_RBNOWRA 104
 #define IDC_RBNUPLANG 105
 #define IDC_RBNOWLANG 106
-#define IDC_EDTLOG 107
 #define IDC_CHKOWTEMPLATES 102
 #define IDC_CHKOWSNIPLETS 108
+#define IDC_EDTLOG 107
 #define IDR_VERSION1 1
 
 IDD_MAIN DIALOGEX 6,6,285,177
@@ -27,8 +27,8 @@ BEGIN
 END
 
 IDR_VERSION1 VERSIONINFO
-FILEVERSION 3,0,0,1
-PRODUCTVERSION 3,0,0,1
+FILEVERSION 3,0,0,2
+PRODUCTVERSION 3,0,0,2
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -36,8 +36,8 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.1\0"
-      VALUE "ProductVersion", "3.0.0.1\0"
+      VALUE "FileVersion", "3.0.0.2\0"
+      VALUE "ProductVersion", "3.0.0.2\0"
       VALUE "FileDescription", "RadASM 3.0 Updater\0"
       VALUE "InternalName", "UpdateRadASM.exe\0"
       VALUE "LegalCopyright", "KetilO (C) 2010\0"

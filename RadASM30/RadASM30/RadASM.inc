@@ -181,8 +181,8 @@ szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
-RadASMVersion					equ 3001
-szVersion						db 'RadASM version 3.0.0.1',0
+RadASMVersion					equ 3002
+szVersion						db 'RadASM version 3.0.0.2',0
 szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
@@ -290,6 +290,7 @@ szIniCustStyle					db 'CustStyle',0
 szIniCustType					db 'CustType',0
 szIniMake						db 'Make',0
 szIniDelete						db 'Delete',0
+szIniIncBuild					db 'IncBuild',0
 szIniHelp						db 'Help',0
 szIniEnvironment				db 'Environment',0
 szIniHeader						db 'Header',0

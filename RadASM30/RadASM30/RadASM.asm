@@ -1053,9 +1053,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke OutputMake,IDM_MAKE_ASSEMBLE,0
 						.if !eax
 							invoke OutputMake,IDM_MAKE_LINK,3
-							.if !eax
-								invoke DeleteMinorFiles
-							.endif
+;							.if !eax
+;								invoke DeleteMinorFiles
+;							.endif
 						.endif
 					.endif
 				.else

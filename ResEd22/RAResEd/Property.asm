@@ -1240,8 +1240,10 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 	LOCAL	lbid:DWORD
 	LOCAL	val:DWORD
 	LOCAL	hMem:DWORD
+	LOCAL	nDefault:DWORD
 
 	mov		fErr,FALSE
+	mov		nDefault,0
 	invoke SendMessage,hPrpLstDlg,LB_GETCURSEL,0,0
 	.if eax!=LB_ERR
 		mov		nInx,eax
@@ -1354,8 +1356,8 @@ PropEditUpdList proc uses ebx esi edi,lpPtr:DWORD
 						invoke SendMessage,hRes,PRO_SETMODIFY,TRUE,0
 					.else
 						call SetCtrlData
-						.if lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC
-							mov		eax,lpPtr
+						.if (lbid==PRP_STR_NAMEBTN || lbid==PRP_STR_NAMESTC) && nDefault
+							mov		eax,nDefault
 							mov		val,eax
 							mov		lbid,PRP_NUM_ID
 							call SetCtrlData
@@ -1386,6 +1388,7 @@ SetCtrlData:
 		.if !eax
 			invoke NameExists,addr buffer1,esi
 		.else
+			mov		nDefault,eax
 			xor		eax,eax
 		.endif
 		.if eax
