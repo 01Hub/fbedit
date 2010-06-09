@@ -1679,6 +1679,7 @@ GetProjectFiles proc uses ebx esi edi
 			.endif
 			.if eax!=-1
 				invoke TabToolActivate
+				mov		da.fTimer,100
 			.endif
 		.endif
 		;Get make command lines

@@ -108,6 +108,9 @@ CB_DESELECTLINE					equ 2
 CB_DEBUG						equ 3
 CB_OPENFILE						equ 4
 
+IDD_GOTODLG						equ 4200
+IDC_LINENO						equ 1008
+
 FILENOTIFYPATH struct
 	nCount				DWORD ?
 	path				BYTE MAX_PATH dup(?)

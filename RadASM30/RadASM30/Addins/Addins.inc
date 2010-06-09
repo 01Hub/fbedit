@@ -68,6 +68,7 @@ IDM_EDIT_FINDPREV				equ 10170
 IDM_EDIT_REPLACE				equ 10018
 IDM_EDIT_GOTODECLARE			equ 10172
 IDM_EDIT_RETURN					equ 10173
+IDM_EDIT_GOTOLINE				equ 10199
 IDM_EDIT_BLOCK					equ 10022
 IDM_EDIT_INDENT					equ 10028
 IDM_EDIT_OUTDENT				equ 10029
@@ -386,6 +387,7 @@ WIN struct
 	ccwt				DWORD ?
 	ccht				DWORD ?
 	ptfind				POINT <>
+	ptgoto				POINT <>
 WIN ends
 
 ;16+20+12=48

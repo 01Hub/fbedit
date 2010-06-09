@@ -43,6 +43,14 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 ;				invoke LogTimeString,addr szTIMER,0,0
 ;			.endif
 ;			mov		fCutPaste,0
+		.elseif da.fTimer==98
+			.if ha.hMdi
+				invoke GetWindowLong,ha.hMdi,GWL_USERDATA
+				.if eax
+					invoke SendMessage,eax,EM_SCROLLCARET,0,0
+				.endif
+			.endif
+			mov		da.fTimer,1
 		.endif
 	.endif
 	ret
@@ -107,6 +115,41 @@ ClientProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	ret
 
 ClientProc endp
+
+GotoProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	rect:RECT
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		invoke SetWindowPos,hWin,0,da.win.ptgoto.x,da.win.ptgoto.y,0,0,SWP_NOSIZE or SWP_NOZORDER
+		invoke SendDlgItemMessage,hWin,IDC_LINENO,EM_LIMITTEXT,6,0
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if edx==BN_CLICKED
+			.if eax==IDOK
+				invoke GetDlgItemInt,hWin,IDC_LINENO,NULL,FALSE
+				invoke SendMessage,hWin,WM_CLOSE,NULL,eax
+			.elseif eax==IDCANCEL
+				invoke SendMessage,hWin,WM_CLOSE,NULL,NULL
+			.endif
+		.endif
+	.elseif eax==WM_CLOSE
+		invoke GetWindowRect,hWin,addr rect
+		mov		eax,rect.left
+		mov		da.win.ptgoto.x,eax
+		mov		eax,rect.top
+		mov		da.win.ptgoto.y,eax
+		invoke EndDialog,hWin,lParam
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+GotoProc endp
 
 WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL   cc:CLIENTCREATESTRUCT
@@ -520,6 +563,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke GotoDeclare
 			.elseif eax==IDM_EDIT_RETURN
 				invoke ReturnDeclare
+			.elseif eax==IDM_EDIT_GOTOLINE
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke DialogBoxParam,ha.hInstance,IDD_GOTODLG,hWin,offset GotoProc,0
+						.if eax
+							dec		eax
+							invoke SendMessage,ha.hEdt,EM_LINEINDEX,eax,0
+							mov		chrg.cpMin,eax
+							mov		chrg.cpMax,eax
+							invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
+							invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
+							invoke SendMessage,ha.hEdt,EM_SCROLLCARET,0,0
+						.endif
+					.endif
+				.endif
 			.elseif eax==IDM_EDIT_INDENT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID

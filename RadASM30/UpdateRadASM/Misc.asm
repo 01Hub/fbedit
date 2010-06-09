@@ -183,6 +183,10 @@ UpdateRadASMIni proc hWin:HWND
 			;3000 --> 3001, no update needed
 			mov		eax,3001
 		.endif
+		.if eax==3001
+			;3001 --> 3002, no update needed
+			mov		eax,3002
+		.endif
 		invoke wsprintf,addr buffer,addr szDecFormat,vernew
 		invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 		invoke wsprintf,addr buffer,addr szUpdated,addr szto
@@ -446,6 +450,14 @@ Update proc hWin:HWND
 	invoke lstrcpy,addr szto,addr szRadASMPath
 	invoke lstrcat,addr szto,addr szBS
 	invoke lstrcat,addr szto,addr szAddins
+	invoke CopyTheFiles,hWin,addr szfrom,addr szto,addr szAllFiles,FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR
+	;Copy help files
+	invoke lstrcpy,addr szfrom,addr szAppPath
+	invoke lstrcat,addr szfrom,addr szBS
+	invoke lstrcat,addr szfrom,addr szHelp
+	invoke lstrcpy,addr szto,addr szRadASMPath
+	invoke lstrcat,addr szto,addr szBS
+	invoke lstrcat,addr szto,addr szHelp
 	invoke CopyTheFiles,hWin,addr szfrom,addr szto,addr szAllFiles,FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR
 	;Copy RadASM.exe
 	invoke CopyTheFiles,hWin,addr szAppPath,addr szRadASMPath,addr szRadASMExe,FOF_SILENT or FOF_NOCONFIRMATION or FOF_NOCONFIRMMKDIR

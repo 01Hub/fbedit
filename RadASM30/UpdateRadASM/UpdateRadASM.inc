@@ -52,6 +52,7 @@ szBS					BYTE '\',0
 szAddins				BYTE 'Addins',0
 szTemplates				BYTE 'Templates',0
 szSniplets				BYTE 'Sniplets',0
+szHelp					BYTE 'Help',0
 ;Versions
 szVarTrans				BYTE '\VarFileInfo\Translation',0
 szFileVersion			BYTE 'FileVersion',0

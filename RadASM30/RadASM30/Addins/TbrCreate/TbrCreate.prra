@@ -2,7 +2,7 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\TbrCreate
+Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\RadASM30\Addins\TbrCreate
 Group=2,-1,0,1,Toolbar creator,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F4=-5,2,4,-6,-25,1268,695,78,TbrCreate.rc
 C4=
@@ -35,4 +35,5 @@ Make=0
 0=Dll Release,'/v "$R"',"$R.res",'/c /coff /Cp "$C"',"$C.obj",'/SUBSYSTEM:WINDOWS /RELEASE /VERSION:4.0 /DLL /DEF:$D /OUT:$O $C $R',"..\$C.dll",'',
 1=Dll Debug,'/v',$R.res,'/c /coff /Cp /Zi /Zd',$A.obj,'/SUBSYSTEM:WINDOWS /DEBUG /VERSION:4.0 /DLL /DEF:$D /OUT:$O',$A.dll,'',
 Delete=1
+IncBuild=0
 Run=0,'',''
