@@ -2182,9 +2182,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 	LOCAL	dbgtip:DEBUGTIP
 	LOCAL	isinproc:ISINPROC
 	LOCAL	trng:TEXTRANGE
+	LOCAL	fComma:DWORD
 
 	mov		eax,uMsg
 	.if eax==WM_CHAR
+		mov		fComma,0
 		mov		eax,wParam
 		.if eax==VK_TAB || eax==VK_RETURN
 			invoke IsWindowVisible,ha.hCC
@@ -2230,9 +2232,7 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 							invoke strlen,eax
 							pop		edx
 							.if byte ptr [edx+eax+1]
-								mov		da.inprogress,0
-								mov		eax,','
-								invoke SendMessage,ha.hEdt,WM_CHAR,eax,0
+								mov		fComma,TRUE
 							.endif
 						.endif
 					.endif
@@ -2241,6 +2241,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 					mov		da.cctype,CCTYPE_NONE
 					xor		eax,eax
 					mov		da.inprogress,eax
+					.if fComma
+						mov		eax,','
+						invoke SendMessage,ha.hEdt,WM_CHAR,eax,0
+						xor		eax,eax
+					.endif
 					jmp		Ex
 				.else
 					invoke ShowWindow,ha.hCC,SW_HIDE
@@ -2780,7 +2785,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			invoke PostAddinMessage,hWin,AIM_FILECLOSED,edi,addr [ebx].TABMEM.filename,0,HOOK_FILECLOSED
 			invoke SetWindowLong,hWin,GWL_USERDATA,0
 			invoke TabToolDel,hWin
-;			invoke DestroyWindow,hEdt
 		.else
 			xor		eax,eax
 			jmp		Ex
