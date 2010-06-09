@@ -17,6 +17,19 @@
 			<param name="Local" value="Intro.htm">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Projects">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="New Project">
+				<param name="Local" value="NewProject.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Project Options">
+				<param name="Local" value="ProjectOptions.htm">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Resource editor">
 			</OBJECT>
 		<UL>
