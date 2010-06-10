@@ -708,6 +708,14 @@ FBParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 						mov		rpwithblock[8],eax
 						mov		rpwithblock[12],-1
 					.endif
+				.elseif edx==DEFTYPE_IGNORE
+					mov		endtype,DEFTYPE_ENDIGNORE
+					call	ParseIgnore
+;					.if eax
+;						mov		edx,lpdef
+;						movzx	edx,[edx].DEFTYPE.Def
+;						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,4
+;					.endif
 				.endif
 			.endif
 		.endif
@@ -1666,6 +1674,33 @@ ParseStruct:
 		.endif
 	.endw
 	xor		eax,eax
+	retn
+
+ParseIgnore:
+	.while byte ptr [esi]
+		invoke FBSkipLine,esi,addr npos
+		inc		npos
+		mov		esi,eax
+		invoke FBGetWord,esi,addr npos
+		mov		esi,edx
+		.if ecx
+			mov		lpword1,esi
+			mov		len1,ecx
+			lea		esi,[esi+ecx]
+			invoke FBGetWord,esi,addr npos
+			mov		esi,edx
+			.if ecx
+				mov		lpword2,esi
+				mov		len2,ecx
+				lea		esi,[esi+ecx]
+				invoke FBWhatIsIt,lpword1,len1,lpword2,len2
+				.if eax
+					movzx	eax,[eax].DEFTYPE.nDefType
+					.break .if eax==DEFTYPE_ENDIGNORE
+				.endif
+			.endif
+		.endif
+	.endw
 	retn
 
 FBParseFile endp

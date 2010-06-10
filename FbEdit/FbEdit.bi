@@ -545,6 +545,8 @@ Dim Shared deftypeproperty As DEFTYPE = (TYPE_NAMESECOND,DEFTYPE_PROPERTY,Asc("z
 Dim Shared deftypeendproperty As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDPROPERTY,Asc("z"),3,"end" & Chr(8) & "property")
 Dim Shared deftypeoperator As DEFTYPE = (TYPE_OPTNAMESECOND,DEFTYPE_OPERATOR,Asc("o"),8,"operator")
 Dim Shared deftypeendoperator As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDOPERATOR,Asc("o"),3,"end" & Chr(8) & "operator")
+Dim Shared deftypeignore As DEFTYPE = (TYPE_OPTNAMESECOND,DEFTYPE_IGNORE,Asc("i"),3,"asm")
+Dim Shared deftypeendignore As DEFTYPE = (TYPE_TWOWORDS,DEFTYPE_ENDIGNORE,Asc("i"),3,"end" & Chr(3) & "asm")
 
 ' HTML help
 Type HH_AKLINK

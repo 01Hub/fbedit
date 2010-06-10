@@ -67,6 +67,8 @@ Sub SetupProperty()
 	SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendproperty))
 	SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeoperator))
 	SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendoperator))
+	SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeignore))
+	SendMessage(ah.hpr,PRM_ADDDEFTYPE,0,Cast(Integer,@deftypeendignore))
 	' Set cbo selection
 	SendMessage(ah.hpr,PRM_SELECTPROPERTY,Asc("p")+256,0)
 	' Set button 'Open files'

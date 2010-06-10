@@ -103,7 +103,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=1
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -164,7 +164,7 @@ ProductVer4Range=0
 8=0,0,0,0,1542
 7=0,0,0,0,3357
 9=0,0,0,0,373
-10=0,0,0,0,13712
+10=0,0,0,0,35710
 11=0,0,746,498,7742
 12=0,0,0,0,2850
 13=0,0,0,0,5874
@@ -188,20 +188,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,14,15,11,13,2,7,18,9
+AutoLoad=1,11,13,2,7,9,10
 [PTimer]
-PTimer=284111206
+PTimer=286415278
 [Find]
-1="ParseObject"
-2="ParseProc"
-3="PRM_GETTOOLTIP"
-4="CppSkipScope"
-5="inc^I^Idword ptr"
-6="nCPP"
-7="==0Ah"
-8="buffer"
-9="SkipScope"
-10="Go"
+1="FBSkipLine"
+2="ParseObject"
+3="ParseProc"
+4="PRM_GETTOOLTIP"
+5="CppSkipScope"
+6="inc^I^Idword ptr"
+7="nCPP"
+8="==0Ah"
+9="buffer"
+10="SkipScope"
 
 [Exports]
 1=GetDefEx
