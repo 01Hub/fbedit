@@ -14,6 +14,7 @@ o Added Increment build to project options.
 o Added ConvertProject addin.
   It converts a project from RadASM 2.x to RadASM 3.0
 o Added Edit / Goto Line.
+o Added RadASM help file. Not complete yet.
  
 Version 3.0.0.1 2010-06-03
 --------------------------

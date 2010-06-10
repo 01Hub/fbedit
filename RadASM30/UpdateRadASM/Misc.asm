@@ -205,7 +205,7 @@ UpdateRadASMIni proc hWin:HWND
 
 UpdateRadASMIni endp
 
-UpdateLanguageIni proc hWin:HWND
+UpdateLanguageIni proc uses ebx,hWin:HWND
 	LOCAL	wfd:WIN32_FIND_DATA
 	LOCAL	hWfd:HANDLE
 	LOCAL	buffer[MAX_PATH]:BYTE
@@ -249,6 +249,18 @@ UpdateLanguageIni proc hWin:HWND
 					.endif
 					.if eax==3001
 						;3001 --> 3002
+						;Add RadASM help file to help menu
+						xor		ebx,ebx
+						.while TRUE
+							invoke wsprintf,addr buffer,addr szDecFormat,ebx
+							invoke GetPrivateProfileString,addr szIniHelp,addr buffer,addr szNULL,addr buffer,sizeof buffer,addr szto
+							.if !eax
+								invoke wsprintf,addr buffer,addr szDecFormat,ebx
+								invoke WritePrivateProfileString,addr szIniHelp,addr buffer,addr szRadASMHelp,addr szto
+								.break
+							.endif
+							inc		ebx
+						.endw
 					.endif
 					invoke wsprintf,addr buffer,addr szDecFormat,vernew
 					invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto

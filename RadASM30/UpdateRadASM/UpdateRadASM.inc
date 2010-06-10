@@ -64,8 +64,11 @@ szIniDescription		BYTE 'Description',0
 szIniParse				BYTE 'Parse',0
 szIniAssembler			BYTE 'Assembler',0
 szIniDebug				BYTE 'Debug',0
+szIniHelp				BYTE 'Help',0
 ;Format
 szDecFormat				BYTE '%d',0
+;Update
+szRadASMHelp			BYTE 'RadASM,$A\Help\RadASM.chm',0
 
 .data?
 
