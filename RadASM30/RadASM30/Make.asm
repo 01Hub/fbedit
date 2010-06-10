@@ -193,7 +193,7 @@ FindErrors proc uses ebx esi edi
 			mov		eax,da.nAsm
 			.if eax==nMASM || eax==nCPP
 				call	TestLineMasm
-			.elseif eax==nTASM
+			.elseif eax==nTASM || eax==nSOLASM
 				call	TestLineTasm
 			.elseif eax==nFASM
 				call	TestLineFasm
@@ -561,6 +561,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,addr da.make.szAssemble[esi]
 		invoke InsertMain,addr da.szMainAsm,addr szDollarC
 		invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
+		invoke iniInStr,addr makeexe.buffer,addr szDollarO
+		.if eax!=-1
+			invoke InsertMain,addr makeexe.output,addr szDollarO
+		.endif
 		.while TRUE
 			invoke iniInStr,addr makeexe.buffer,addr szDollarA
 			.break .if eax==-1

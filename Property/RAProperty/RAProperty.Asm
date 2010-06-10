@@ -12,6 +12,8 @@ include GoAsmParse.asm
 include FasmParse.asm
 include TasmParse.asm
 include CppParse.asm
+include SolParse.asm
+include FpParse.asm
 include Sort.asm
 
 .code

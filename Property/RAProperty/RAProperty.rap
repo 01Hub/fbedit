@@ -29,6 +29,8 @@ MinorFiles=..\*.lib;..\*.exp;*.res;*.obj;
 16=FasmParse.asm
 17=TasmParse.asm
 18=CppParse.asm
+19=SolParse.asm
+20=FpParse.asm
 [MakeFiles]
 0=RAProperty.rap
 1=RAProperty.rc
@@ -93,6 +95,8 @@ Group=Added files,Assembly,Resources,Misc,Modules,Include
 16=2
 17=2
 18=6
+19=2
+20=2
 [VersionControl]
 Settings=1246
 Milestones=129
@@ -152,27 +156,31 @@ ProductVer4Range=0
 16=,,,,
 17=,,,,,
 18=,,,,
+19=,,,
+20=
 [Size]
-2=0,0,699,490,5037
+2=0,0,699,490,3346
 <<<<<<< .mine
-1=0,0,699,490,8425
+1=0,0,699,490,282
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,3357
+7=0,0,0,0,3683
 9=0,0,0,0,373
-10=0,0,0,0,35710
-11=0,0,746,498,7742
+10=0,0,0,0,35333
+11=0,0,746,498,15304
 12=0,0,0,0,2850
-13=0,0,0,0,5874
-14=0,0,0,0,8927
+13=0,0,0,0,4214
+14=0,0,0,0,7863
 15=0,0,0,0,5431
 16=0,0,0,0,18624
 17=0,0,0,0,16152
-18=0,0,0,0,15299
+18=0,0,0,0,19182
+19=0,0,0,0,17396
+20=0,0,0,0,324
 [BookMark]
 0=
 1=
@@ -188,20 +196,20 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,11,13,2,7,9,10
+AutoLoad=1,11,13,2,7,9,10,19,18,14,20
 [PTimer]
-PTimer=286415278
+PTimer=298220123
 [Find]
-1="FBSkipLine"
-2="ParseObject"
-3="ParseProc"
-4="PRM_GETTOOLTIP"
-5="CppSkipScope"
-6="inc^I^Idword ptr"
-7="nCPP"
-8="==0Ah"
-9="buffer"
-10="SkipScope"
+1="szsoldword"
+2="buff"
+3="solbuffer"
+4="cppbuff"
+5="szdatatypes"
+6="szinenum"
+7="szinmacro"
+8="szinstruct"
+9="szinproc"
+10="szword2"
 
 [Exports]
 1=GetDefEx
@@ -218,5 +226,7 @@ PTimer=286415278
 16=
 17=
 18=
+19=
+20=
 [GroupExpand]
 GroupExpand=0,1,1,1,0,0,0

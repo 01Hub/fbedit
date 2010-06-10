@@ -62,6 +62,7 @@ nHLA						equ 6
 nCPP						equ 7
 nFREEBASIC					equ 8
 nFREEPASCAL					equ 9
+nSOLASM						equ 10
 nOTHER						equ 99
 
 ;Styles

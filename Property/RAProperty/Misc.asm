@@ -157,6 +157,29 @@ strcmp proc uses esi edi,lpword1:DWORD,lpword2:DWORD
 
 strcmp endp
 
+strcmpn proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	cmp		ecx,nCount
+	je		@f
+	mov		al,[esi+ecx]
+	mov		ah,[edi+ecx]
+	sub		al,ah
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpn endp
+
 ;strcmpi proc uses esi edi,lpword1:DWORD,lpword2:DWORD
 ;
 ;	mov		esi,lpword1

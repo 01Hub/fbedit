@@ -106,6 +106,10 @@
 			invoke FBPreParse,lParam,FALSE
 			invoke FBParseFile,wParam,lParam
 		.elseif eax==nFREEPASCAL
+		.elseif eax==nSOLASM
+			;SolAsm
+			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
+			invoke SolParseFile,wParam,lParam
 		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax
@@ -222,6 +226,8 @@
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
+		.elseif eax==nSOLASM
+			invoke SolDestroyCommentsStrings,lParam
 		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
@@ -545,6 +551,8 @@
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
+		.elseif eax==nSOLASM
+			invoke SolDestroyCommentsStrings,lParam
 		.elseif eax==nOTHER
 		.endif
 		mov		edx,lParam
@@ -673,6 +681,8 @@
 			; FreeBASIC
 			invoke FBPreParse,lParam,wParam
 		.elseif eax==nFREEPASCAL
+		.elseif eax==nSOLASM
+			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
 		.elseif eax==nOTHER
 		.endif
 		xor		eax,eax

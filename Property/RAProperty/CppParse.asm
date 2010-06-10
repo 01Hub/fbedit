@@ -33,9 +33,6 @@ szCppString					db '"',"'",0,0
 
 .data?
 
-cppbuff						db 16384 dup(?)
-cppbuff1					db 16384 dup(?)
-cppbuff2					db 16384 dup(?)
 lpFunSt						dd ?
 lpFunEn						dd ?
 lpFunPos					dd ?
@@ -612,7 +609,7 @@ _Typedef:
 		.if !eax
 			mov		ecx,len
 			inc		ecx
-			invoke strcpyn,offset cppbuff,esi,ecx
+			invoke strcpyn,offset szname,esi,ecx
 			add		esi,len
 			call	GetWrd
 			.if !ecx && byte ptr [esi]=='('
@@ -620,12 +617,12 @@ _Typedef:
 				call	GetWrd
 				.if ecx
 					inc		ecx
-					invoke strcpyn,offset cppbuff1,esi,ecx
+					invoke strcpyn,offset buff1,esi,ecx
 					add		esi,len
-					invoke strlen,offset cppbuff
-					invoke strcpy,addr cppbuff[eax+1],offset cppbuff1
+					invoke strlen,offset szname
+					invoke strcpy,addr szname[eax+1],offset buff1
 					mov		edx,'t'
-					invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
+					invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 				.endif
 			.endif
 		.endif
@@ -657,7 +654,7 @@ _Struct:
 		.if ecx
 			.if !fTypedef
 				inc		ecx
-				invoke strcpyn,offset cppbuff,esi,ecx
+				invoke strcpyn,offset szname,esi,ecx
 			.endif
 			add		esi,len
 			call	_Begin
@@ -673,7 +670,7 @@ _Struct:
 					push	eax
 					push	edx
 					mov		byte ptr [edx],0
-					mov		edi,offset cppbuff1
+					mov		edi,offset buff1
 					mov		byte ptr [edi],0
 					.while byte ptr [esi]
 					  @@:
@@ -681,7 +678,7 @@ _Struct:
 						mov		ecx,len
 						.if ecx
 							inc		ecx
-							invoke strcpyn,offset cppbuff2,esi,ecx
+							invoke strcpyn,offset buff2,esi,ecx
 							add		esi,len
 							call	GetWrd
 							.if ecx
@@ -693,8 +690,8 @@ _Struct:
 								mov		word ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
-								.while cppbuff2[ecx]
-									mov		al,cppbuff2[ecx]
+								.while buff2[ecx]
+									mov		al,buff2[ecx]
 									.if al>='a' && al<='z'
 										and		al,5Fh
 									.endif
@@ -734,14 +731,14 @@ _Struct:
 							call	GetWrd
 							.if ecx
 								inc		ecx
-								invoke strcpyn,offset cppbuff,esi,ecx
+								invoke strcpyn,offset szname,esi,ecx
 								add		esi,len
 							.endif
 						.endif
-						invoke strlen,offset cppbuff
-						invoke strcpy,addr cppbuff[eax+1],offset cppbuff1
+						invoke strlen,offset szname
+						invoke strcpy,addr szname[eax+1],offset buff1
 						mov		edx,'s'
-						invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 						mov		eax,TRUE
 					.endif
 				.endif
@@ -920,11 +917,11 @@ _Function:
 				mov		ecx,len
 				.if ecx
 					inc		ecx
-					invoke strcpyn,offset cppbuff2,esi,ecx
+					invoke strcpyn,offset buff2,esi,ecx
 					add		esi,len
 					call	GetWrd
 					.if ecx
-						invoke SearchType,offset cppbuff2
+						invoke SearchType,offset buff2
 						.if !eax
 						  NxtLocal:
 							call	GetWrd
@@ -937,8 +934,8 @@ _Function:
 								mov		byte ptr [edi],':'
 								inc		edi
 								xor		ecx,ecx
-								.while cppbuff2[ecx]
-									mov		al,cppbuff2[ecx]
+								.while buff2[ecx]
+									mov		al,buff2[ecx]
 									.if al>='a' && al<='z'
 										and		al,5Fh
 									.endif
@@ -986,7 +983,7 @@ _Unknown:
 	; Datatype
 	mov		ecx,len
 	inc		ecx
-	invoke strcpyn,offset cppbuff1,esi,ecx
+	invoke strcpyn,offset buff1,esi,ecx
 	add		esi,len
 	mov		lpTemp,esi
 	push	npos
@@ -1003,7 +1000,7 @@ _Unknown1:
 		; Unknown (might be global data)
 		; Name
 		inc		ecx
-		mov		edi,offset cppbuff
+		mov		edi,offset szname
 		invoke strcpyn,edi,esi,ecx
 		add		esi,len
 		add		edi,len
@@ -1019,8 +1016,8 @@ _Unknown1:
 			mov		byte ptr [edi],':'
 			inc		edi
 			xor		ecx,ecx
-			.while cppbuff1[ecx]
-				mov		al,cppbuff1[ecx]
+			.while buff1[ecx]
+				mov		al,buff1[ecx]
 				.if al>='a' && al<='z'
 					and		al,5Fh
 				.endif
@@ -1030,9 +1027,9 @@ _Unknown1:
 			.endw
 			mov		byte ptr [edi],0
 			inc		edi
-			invoke strcpy,edi,offset cppbuff1
+			invoke strcpy,edi,offset buff1
 			mov		edx,'U'
-			invoke AddWordToWordList,edx,nOwner,nline,npos,addr cppbuff,2
+			invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 			.if byte ptr [esi]=='='
 				inc		esi
 			.endif
@@ -1052,8 +1049,8 @@ _Unknown1:
 		retn
 	.elseif byte ptr [esi]=='*'
 		inc		esi
-		invoke strlen,addr cppbuff1
-		mov		word ptr cppbuff1[eax],'*'
+		invoke strlen,addr buff1
+		mov		word ptr buff1[eax],'*'
 		jmp		_Unknown1
 	.endif
 	pop		npos
