@@ -66,8 +66,8 @@ szsoldatatypes				db	10,2,'DB'
 							db	12,2,'RS'
 							db	0,0,0
 
-szcomment					db '/*',0
-szstring					db '"',"'",0,0
+szsolcomment				db '/*',0
+szsolstring					db '"',"'",0,0
 
 .code
 
@@ -96,14 +96,14 @@ SolDestroyCmntBlock proc uses esi,lpMem:DWORD,lpCharTab:DWORD
 
 	mov		esi,lpMem
   @@:
-	invoke SearchMemDown,esi,addr szcomment,FALSE,FALSE,lpCharTab
+	invoke SearchMemDown,esi,addr szsolcomment,FALSE,FALSE,lpCharTab
 	.if eax
 		mov		esi,eax
 		.while eax>lpMem
 			.break .if byte ptr [eax-1]==VK_RETURN || byte ptr [eax-1]==0Ah
 			dec		eax
 		.endw
-		mov		ecx,dword ptr szstring
+		mov		ecx,dword ptr szsolstring
 		mov		edx,';'
 		.while eax<esi
 			.if byte ptr [eax]==cl || byte ptr [eax]==ch
@@ -140,7 +140,7 @@ SolDestroyCommentsStrings proc uses esi,lpMem:DWORD
 
 	mov		esi,lpMem
 	mov		ecx,';'
-	mov		edx,dword ptr szstring
+	mov		edx,dword ptr szsolstring
 	.while byte ptr [esi]
 		.if byte ptr [esi]==cl
 			invoke DestroyToEol,esi
@@ -149,7 +149,7 @@ SolDestroyCommentsStrings proc uses esi,lpMem:DWORD
 			invoke SolDestroyString,esi
 			mov		esi,eax
 			mov		ecx,';'
-			mov		edx,dword ptr szstring
+			mov		edx,dword ptr szsolstring
 		.elseif byte ptr [esi]==VK_TAB
 			mov		byte ptr [esi],VK_SPACE
 		.else

@@ -4,6 +4,14 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.3 2010-06-11
+--------------------------
+o Added support for sol_asm.
+o Added support for FreePASCAL.
+o Changed Make / Set Current As Main to Make / Toggle Current As Main
+o Fixed bug when using Option / Code Editor. The output and immediate windows did
+  not have its font updated.
+
 Version 3.0.0.2 2010-06-10
 --------------------------
 o Implemented Make / Run With Debug.

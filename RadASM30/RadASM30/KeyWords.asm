@@ -450,6 +450,8 @@ UpdateToolFont proc
 	invoke SendMessage,ha.hTab,WM_SETFONT,ha.hToolFont,TRUE
 	invoke SendMessage,ha.hCboBuild,WM_SETFONT,ha.hToolFont,TRUE
 	invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+	invoke SendMessage,ha.hOutput,REM_SETFONT,0,addr ha.racf
+	invoke SendMessage,ha.hImmediate,REM_SETFONT,0,addr ha.racf
 	ret
 
 UpdateToolFont endp

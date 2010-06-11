@@ -1725,7 +1725,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		push	IDM_MAKE_MODULES
 		.if esi==ID_EDITCODE
 			push	TRUE
-			push	IDM_MAKE_SETMAIN
+			push	IDM_MAKE_TOGGLEMAIN
 			invoke GetTheFileType,addr da.szFileName
 			.if eax==ID_EDITRES
 				xor		eax,eax
@@ -1736,13 +1736,13 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	IDM_MAKE_TOGGLEMODULE
 		.elseif esi==ID_EDITRES
 			push	TRUE
-			push	IDM_MAKE_SETMAIN
+			push	IDM_MAKE_TOGGLEMAIN
 			push	FALSE
 			push	IDM_MAKE_TOGGLEMODULE
 		.else
 			xor		eax,eax
 			push	eax
-			push	IDM_MAKE_SETMAIN
+			push	IDM_MAKE_TOGGLEMAIN
 			push	eax
 			push	IDM_MAKE_TOGGLEMODULE
 		.endif

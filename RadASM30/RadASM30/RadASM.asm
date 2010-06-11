@@ -1168,7 +1168,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke UpdateAll,UAM_SAVEALL,FALSE
 				invoke OutputMake,IDM_MAKE_DEBUG,1
 				invoke PostAddinMessage,hWin,AIM_MAKEDONE,IDM_MAKE_DEBUG,addr da.szMainAsm,0,HOOK_MAKEDONE
-			.elseif eax==IDM_MAKE_SETMAIN
+			.elseif eax==IDM_MAKE_TOGGLEMAIN
 				.if ha.hMdi
 					invoke strcpy,addr buffer,addr da.szFileName
 					.if da.fProject

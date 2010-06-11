@@ -325,7 +325,7 @@
 #define IDM_MAKE_GO 10040
 #define IDM_MAKE_RUN 10039
 #define IDM_MAKE_DEBUG 10140
-#define IDM_MAKE_SETMAIN 10177
+#define IDM_MAKE_TOGGLEMAIN 10177
 #define IDM_MAKE_TOGGLEMODULE 10178
 #define IDM_DEBUG 10125
 #define IDM_DEBUG_NODEBUG 10139
@@ -1128,7 +1128,7 @@ BEGIN
     MENUITEM "&Run\tShift+Ctrl+F5",IDM_MAKE_RUN
     MENUITEM "Run With Debug\tCtrl+D",IDM_MAKE_DEBUG
     MENUITEM "",10176,0x00000800
-    MENUITEM "Set Current As Main File",IDM_MAKE_SETMAIN
+    MENUITEM "Toggle Current As Main File",IDM_MAKE_TOGGLEMAIN
     MENUITEM "Toggle Current As Module",IDM_MAKE_TOGGLEMODULE
   END
   POPUP "&Debug",IDM_DEBUG
@@ -1210,8 +1210,8 @@ IDB_TBRBMP BITMAP DISCARDABLE "Res/Toolbar.bmp"
 110 BITMAP DISCARDABLE "Res/Types.bmp"
 
 VERINF1 VERSIONINFO
-FILEVERSION 3,0,0,2
-PRODUCTVERSION 3,0,0,2
+FILEVERSION 3,0,0,3
+PRODUCTVERSION 3,0,0,3
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -1219,13 +1219,13 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.2\0"
+      VALUE "FileVersion", "3.0.0.3\0"
       VALUE "FileDescription", "Assembly programming IDE\0"
       VALUE "InternalName", "RadASM 3.0\0"
       VALUE "LegalCopyright", "KetilO (C) 2010\0"
       VALUE "OriginalFilename", "RadASM.exe\0"
       VALUE "ProductName", "RadASM\0"
-      VALUE "ProductVersion", "3.0.0.2\0"
+      VALUE "ProductVersion", "3.0.0.3\0"
     END
   END
   BLOCK "VarFileInfo"

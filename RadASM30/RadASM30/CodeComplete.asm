@@ -479,7 +479,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.endif
 				.endif
 			.endif
-		.elseif eax==nGOASM || eax==nFASM
+		.elseif eax==nGOASM || eax==nFASM || eax==nSOLASM
 			; Find start
 			mov		esi,offset LineTxt
 			mov		edi,esi

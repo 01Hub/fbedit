@@ -107,7 +107,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=11
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -157,9 +157,9 @@ ProductVer4Range=0
 17=,,,,,
 18=,,,,
 19=,,,
-20=
+20=,
 [Size]
-2=0,0,699,490,3346
+2=0,0,699,490,3307
 <<<<<<< .mine
 1=0,0,699,490,282
 =======
@@ -171,7 +171,7 @@ ProductVer4Range=0
 7=0,0,0,0,3683
 9=0,0,0,0,373
 10=0,0,0,0,35333
-11=0,0,746,498,15304
+11=0,0,746,498,15555
 12=0,0,0,0,2850
 13=0,0,0,0,4214
 14=0,0,0,0,7863
@@ -179,8 +179,8 @@ ProductVer4Range=0
 16=0,0,0,0,18624
 17=0,0,0,0,16152
 18=0,0,0,0,19182
-19=0,0,0,0,17396
-20=0,0,0,0,324
+19=0,0,0,0,1305
+20=0,0,0,0,5519
 [BookMark]
 0=
 1=
@@ -198,18 +198,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,11,13,2,7,9,10,19,18,14,20
 [PTimer]
-PTimer=298220123
+PTimer=315412447
 [Find]
-1="szsoldword"
-2="buff"
-3="solbuffer"
-4="cppbuff"
-5="szdatatypes"
-6="szinenum"
-7="szinmacro"
-8="szinstruct"
-9="szinproc"
-10="szword2"
+1="nSOLASM"
+2="szsol"
+3="Sol"
+4="szsoldword"
+5="buff"
+6="solbuffer"
+7="cppbuff"
+8="szdatatypes"
+9="szinenum"
+10="szinmacro"
 
 [Exports]
 1=GetDefEx

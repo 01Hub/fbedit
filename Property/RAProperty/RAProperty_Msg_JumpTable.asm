@@ -106,6 +106,9 @@
 			invoke FBPreParse,lParam,FALSE
 			invoke FBParseFile,wParam,lParam
 		.elseif eax==nFREEPASCAL
+			;FreePASCAL
+			invoke FpPreParse,lParam,[ebx].RAPROPERTY.lpchartab
+			invoke FpParseFile,wParam,lParam
 		.elseif eax==nSOLASM
 			;SolAsm
 			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
@@ -226,7 +229,10 @@
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
+			;FreePASCAL
+			invoke FpDestroyCommentsStrings,lParam
 		.elseif eax==nSOLASM
+			;sol_asm
 			invoke SolDestroyCommentsStrings,lParam
 		.elseif eax==nOTHER
 		.endif
@@ -551,7 +557,10 @@
 			; FreeBASIC
 			invoke FBDestroyCommentsStrings,lParam,FALSE
 		.elseif eax==nFREEPASCAL
+			;FreePASCAL
+			invoke FpDestroyCommentsStrings,lParam
 		.elseif eax==nSOLASM
+			;sol_asm
 			invoke SolDestroyCommentsStrings,lParam
 		.elseif eax==nOTHER
 		.endif
@@ -681,7 +690,10 @@
 			; FreeBASIC
 			invoke FBPreParse,lParam,wParam
 		.elseif eax==nFREEPASCAL
+			;FreePASCAL
+			invoke FpPreParse,lParam,[ebx].RAPROPERTY.lpchartab
 		.elseif eax==nSOLASM
+			;sol_asm
 			invoke SolPreParse,lParam,[ebx].RAPROPERTY.lpchartab
 		.elseif eax==nOTHER
 		.endif

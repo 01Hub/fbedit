@@ -2067,6 +2067,18 @@ CloseProject endp
 
 SetMain proc uses ebx edi,pid:DWORD,ID:DWORD
 
+	invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,pid,0
+	.if eax
+		mov		edi,eax
+		.if [edi].PBITEM.flag==FLAG_MAIN
+			mov		[edi].PBITEM.flag,FLAG_NORMAL
+			invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEMINDEX,pid,0
+			invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,eax,edi
+			invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+			mov		eax,TRUE
+			jmp		Ex
+		.endif
+	.endif
 	;Remove old main
 	xor		ebx,ebx
 	.while TRUE
@@ -2097,6 +2109,7 @@ SetMain proc uses ebx edi,pid:DWORD,ID:DWORD
 	.else
 		xor		eax,eax
 	.endif
+  Ex:
 	ret
 
 SetMain endp
