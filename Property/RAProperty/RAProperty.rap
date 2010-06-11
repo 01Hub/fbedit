@@ -107,7 +107,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=11
+MilestoneOnDateDate=12
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -157,7 +157,7 @@ ProductVer4Range=0
 17=,,,,,
 18=,,,,
 19=,,,
-20=,
+20=,,
 [Size]
 2=0,0,699,490,3307
 <<<<<<< .mine
@@ -180,7 +180,7 @@ ProductVer4Range=0
 17=0,0,0,0,16152
 18=0,0,0,0,19182
 19=0,0,0,0,1305
-20=0,0,0,0,4645
+20=0,0,0,0,8701
 [BookMark]
 0=
 1=
@@ -196,9 +196,9 @@ ProductVer4Range=0
 0=
 
 [AutoLoad]
-AutoLoad=1,11,13,2,7,9,10,19,18,14,20
+AutoLoad=1,11,13,2,7,9,20
 [PTimer]
-PTimer=318319963
+PTimer=327569184
 [Find]
 1="nSOLASM"
 2="szsol"
