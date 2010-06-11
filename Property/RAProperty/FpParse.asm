@@ -120,7 +120,7 @@ FpPreParse proc uses esi,lpMem:DWORD,lpCharTab:DWORD
 
 FpPreParse endp
 
-FpIsWord proc uses ebx esi edi,lpWord:DWORD,lenWord:DWORD,lpList:DWORD
+FpIsWord proc uses ecx ebx esi edi,lpWord:DWORD,lenWord:DWORD,lpList:DWORD
 
 	mov		esi,lpList
 	mov		edi,lenWord
@@ -148,6 +148,8 @@ FpParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	LOCAL	lpword2:DWORD
 	LOCAL	lendt:DWORD
 	LOCAL	lpdt:DWORD
+	LOCAL	lenar:DWORD
+	LOCAL	lpar:DWORD
 	LOCAL	nnest:DWORD
 	LOCAL	lenname[8]:DWORD
 	LOCAL	lpname[8]:DWORD
@@ -164,9 +166,9 @@ FpParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 	mov		npos,0
 	mov		ntype,0
 	.while byte ptr [esi]
+		call	GetWord
 		mov		eax,npos
 		mov		nline,eax
-		call	GetWord
 		.if ecx
 			mov		len1,ecx
 			mov		lpword1,esi
@@ -215,53 +217,31 @@ FpParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 					.if !ecx
 						.if byte ptr [esi]==':'
 							call	_DataType
-							Call	_Data
+							.if eax
+								call	_Data
+							.endif
+							.while byte ptr [esi] && byte ptr [esi]!=';'
+								.if byte ptr [esi]==VK_RETURN
+									inc		esi
+									.if byte ptr [esi]==0Ah
+										inc		esi
+									.endif
+									inc		npos
+								.else
+									inc		esi
+								.endif
+							.endw
 						.elseif byte ptr [esi]==','
 							call	_DataType
-							call	_Data
+							.if eax
+								call	_Data
+							.endif
 							inc		esi
 							jmp		Nxt
 						.endif
 					.endif
 				.endif
 			.endif
-;			call	GetWord
-;			.if ecx
-;				mov		len2,ecx
-;				mov		lpword2,esi
-;				lea		esi,[esi+ecx]
-;				invoke FpIsWord,lpword1,len1,offset szfpword1
-;				.if eax
-;					.if eax==10
-;						; Proc
-;						call	_Proc
-;						jmp		Nxt
-;					.elseif eax==11
-;						; Struc, Union
-;						call	_Struct
-;						jmp		Nxt
-;					.endif
-;				.endif
-;				invoke FpIsWord,lpword2,len2,offset szfpword2
-;				.if eax
-;					.if eax==10
-;						; const equ 10
-;						call	_Const
-;						jmp		Nxt
-;					.endif
-;				.endif
-;				invoke FpIsWord,lpword2,len2,offset szfpdatatypes
-;				.if eax
-;					.if eax>=10 && eax<=12
-;						; data db ?, data byte ?, data rb 10, data rs RECT,10
-;						call	_Data
-;						jmp		Nxt
-;					.endif
-;				.endif
-;			.elseif byte ptr [esi]==':'
-;				; label:
-;				call	_Label
-;			.endif
 		.endif
 	  NxtLine:
 		call	SkipLine
@@ -296,6 +276,7 @@ GetWord:
 		.if byte ptr [esi]==0Ah
 			inc		esi
 		.endif
+		inc		npos
 	.endif
 	mov		edx,lpCharTab
 	xor		ecx,ecx
@@ -749,6 +730,7 @@ _Const:
 ;	retn
 ;
 _DataType:
+	mov		lpar,0
 	push	esi
 	push	npos
 	.while byte ptr [esi] && byte ptr [esi]!=':'
@@ -756,14 +738,36 @@ _DataType:
 	.endw
 	.if byte ptr [esi]==':'
 		inc		esi
+_DataType1:
 		call	GetWord
 		.if ecx
-			mov		lpdt,esi
-			mov		lendt,ecx
-			pop		npos
-			pop		esi
-			mov		eax,TRUE
-			retn
+			invoke FpIsWord,esi,ecx,addr szfpword2
+			.if eax==11
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if byte ptr [esi]=='['
+					xor		ecx,ecx
+					.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=']'
+						inc		ecx
+					.endw
+					.if byte ptr [esi+ecx]==']'
+						inc		ecx
+					.endif
+					mov		lenar,ecx
+					mov		lpar,esi
+					lea		esi,[esi+ecx]
+					call	GetWord
+					lea		esi,[esi+ecx]
+					jmp		_DataType1
+				.endif
+			.elseif !eax
+				mov		lpdt,esi
+				mov		lendt,ecx
+				pop		npos
+				pop		esi
+				mov		eax,TRUE
+				retn
+			.endif
 		.endif
 	.endif
 	pop		npos
@@ -774,9 +778,18 @@ _DataType:
 _Data:
 	mov		edi,offset szname
 	call	SaveWord1
-	mov		byte ptr [edi-1],':'
+	dec		edi
+	.if lpar
+		mov		eax,lenar
+		invoke strcpyn,edi,lpar,addr [eax+1]
+		add		edi,lenar
+	.endif
+	mov		byte ptr [edi],':'
+	inc		edi
 	mov		eax,lendt
 	invoke strcpyn,edi,lpdt,addr [eax+1]
+	add		edi,lendt
+	mov		word ptr [edi],0
 	mov		edx,'d'
 	invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 	retn
