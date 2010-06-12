@@ -15,8 +15,9 @@ szfpword1					db	10,8,'function'
 							db	0,0,0
 
 szfpword2					db	10,6,'record'
-							db	11,5,'array'
-							db	12,2,'to'
+							db	11,3,'end'
+							db	12,5,'array'
+							db	13,2,'to'
 							db	0,0,0
 
 szfpcomment					db '{',0
@@ -212,6 +213,7 @@ FpParseFile proc uses ebx esi edi,nOwner:DWORD,lpMem:DWORD
 				mov		eax,ntype
 				.if eax==12
 					;Type
+					call	_Struct
 				.elseif eax==13
 					;Const
 					call	GetWord
@@ -333,143 +335,71 @@ SaveWord2:
 	pop		ebx
 	retn
 
-;SkipBrace:
-;	xor		eax,eax
-;	dec		eax
-;SkipBrace1:
-;	.while byte ptr [esi]==VK_SPACE
-;		inc		esi
-;	.endw
-;	mov		al,[esi]
-;	inc		esi
-;	.if al=='('
-;		push	eax
-;		mov		ah,')'
-;		jmp		SkipBrace1
-;	.elseif al=='{'
-;		push	eax
-;		mov		ah,'}'
-;		jmp		SkipBrace1
-;	.elseif al=='['
-;		push	eax
-;		mov		ah,']'
-;		jmp		SkipBrace1
-;	.elseif al=='<'
-;		push	eax
-;		mov		ah,'>'
-;		jmp		SkipBrace1
-;	.elseif al=='"'
-;		push	eax
-;		mov		ah,'"'
-;		jmp		SkipBrace1
-;	.elseif al=="'"
-;		push	eax
-;		mov		ah,"'"
-;		jmp		SkipBrace1
-;	.elseif al==ah
-;		pop		eax
-;	.elseif ah==0FFh
-;		dec		esi
-;		retn
-;	.elseif al==VK_RETURN || al==0
-;		dec		esi
-;		pop		eax
-;	.endif
-;	jmp		SkipBrace1
-;
-;;ConvDataType:
-;;	push	esi
-;;	mov		esi,offset szFpDataConv
-;;	.if lendt==2
-;;		.while byte ptr [esi]
-;;			invoke strcmpin,esi,lpdt,2
-;;			.if !eax
-;;				lea		esi,[esi+3]
-;;				mov		lpdt,esi
-;;				invoke strlen,esi
-;;				mov		lendt,eax
-;;				jmp		ExConvDataType
-;;			.endif
-;;			invoke strlen,esi
-;;			lea		esi,[esi+eax+1]
-;;			invoke strlen,esi
-;;			lea		esi,[esi+eax+1]
-;;		.endw
-;;	.elseif lendt==4 || lendt==5 || lendt==6
-;;		.while byte ptr [esi]
-;;			lea		esi,[esi+3]
-;;			invoke strcmpin,esi,lpdt,lendt
-;;			.if !eax
-;;				mov		lpdt,esi
-;;				jmp		ExConvDataType
-;;			.endif
-;;			invoke strlen,esi
-;;			lea		esi,[esi+eax+1]
-;;		.endw
-;;	.endif
-;;  ExConvDataType:
-;;	pop		esi
-;;	retn
-;
-;ArraySize:
-;	call	SkipSpc
-;	push	ebx
-;	mov		ebx,offset buff1[8192]
-;	mov		word ptr [ebx-1],0
-;	mov		word ptr buff1[4096-1],0
-;	mov		narray,0
-;	.while TRUE
-;		mov		al,[esi]
-;		.if al=='"' || al=="'"
-;			inc		esi
-;			.while al!=[esi] && byte ptr [esi]!=VK_RETURN && byte ptr [esi]
-;				inc		esi
-;				inc		narray
-;			.endw
-;			.if al==[esi]
-;				inc		esi
-;			.endif
-;			mov		al,[esi]
-;		.elseif al=='<'
-;			call	SkipBrace
-;			inc		narray
-;		.endif
-;		mov		ah,[ebx-1]
-;		.if al==' ' || al=='+' || al=='-' || al=='*' || al=='/' || al=='(' || al==')' || al==','
-;			.if ah==' ' || (al==',' && ah==',')
-;				dec		ebx
-;			.endif
-;		.endif
-;		.if al==' '
-;			.if ah=='+' || ah=='-' || ah=='*' || ah=='/' || ah=='(' || ah==')' || ah==','
-;				mov		al,ah
-;				dec		ebx
-;			.endif
-;		.endif
-;		.if al==',' || al==VK_RETURN || !al
-;			.if byte ptr [ebx-1]
-;				inc		narray
-;			.endif
-;			mov		ebx,offset buff1[8192]
-;			mov		byte ptr [ebx],0
-;		  .break .if al==VK_RETURN || !al
-;		.else
-;			mov		[ebx],al
-;			inc		ebx
-;		.endif
-;		inc		esi
-;	.endw
-;	mov		byte ptr [ebx],0
-;	pop		ebx
-;	.if narray>1 || (byte ptr buff1[4096] && narray)
-;		.if byte ptr buff1[4096]
-;			invoke strcat,addr buff1[4096],addr szAdd
-;		.endif
-;		invoke DwToAscii,narray,addr buff1[8192+1024]
-;		invoke strcat,addr buff1[4096],addr buff1[8192+1024]
-;	.endif
-;	retn
-;
+_DataType:
+	mov		lpar,0
+	push	esi
+	push	npos
+	.while byte ptr [esi] && byte ptr [esi]!=':'
+		inc		esi
+	.endw
+	.if byte ptr [esi]==':'
+		inc		esi
+_DataType1:
+		call	GetWord
+		.if ecx
+			invoke FpIsWord,esi,ecx,addr szfpword2
+			.if eax==12;array
+				lea		esi,[esi+ecx]
+				call	GetWord
+				.if byte ptr [esi]=='['
+					xor		ecx,ecx
+					.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=']'
+						inc		ecx
+					.endw
+					.if byte ptr [esi+ecx]==']'
+						inc		ecx
+					.endif
+					mov		lenar,ecx
+					mov		lpar,esi
+					lea		esi,[esi+ecx]
+					call	GetWord
+					lea		esi,[esi+ecx]
+					jmp		_DataType1
+				.endif
+			.elseif !eax
+				mov		lpdt,esi
+				mov		lendt,ecx
+				pop		npos
+				pop		esi
+				mov		eax,TRUE
+				retn
+			.endif
+		.endif
+	.endif
+	pop		npos
+	pop		esi
+	xor		eax,eax
+	retn
+
+_Data:
+	mov		edi,offset szname
+	call	SaveWord1
+	dec		edi
+	.if lpar
+		mov		eax,lenar
+		invoke strcpyn,edi,lpar,addr [eax+1]
+		add		edi,lenar
+	.endif
+	mov		byte ptr [edi],':'
+	inc		edi
+	mov		eax,lendt
+	invoke strcpyn,edi,lpdt,addr [eax+1]
+	add		edi,lendt
+	mov		word ptr [edi],0
+	mov		edx,'d'
+	invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
+	retn
+
 _Local:
 	mov		eax,len1
 	invoke strcpyn,edi,lpword1,addr [eax+1]
@@ -587,7 +517,6 @@ _Proc:
 			.endif
 		.endif
 	.endw
-PrintStringByAddr offset buff1
 	.if buff1
 		.if byte ptr [edi-1]==','
 			mov		byte ptr [edi-1],0
@@ -622,208 +551,42 @@ _Const:
 	invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 	retn
 
-;SaveStructNest:
-;	push	ebx
-;	xor		ebx,ebx
-;	.while ebx<nnest
-;		.if lpname[ebx*4]
-;			mov		eax,lenname[ebx*4]
-;			invoke strcpyn,edi,lpname[ebx*4],addr [eax+1]
-;			add		edi,lenname[ebx*4]
-;			mov		byte ptr [edi],'.'
-;			inc		edi
-;		.endif
-;		inc		ebx
-;	.endw
-;	pop		ebx
-;	retn
-;
-;SaveStructItems:
-;	xor		eax,eax
-;	xor		ecx,ecx
-;	mov		nnest,eax
-;	.while ecx<8
-;		mov		lenname[ecx*4],eax
-;		mov		lpname[ecx*4],eax
-;		inc		ecx
-;	.endw
-;	.while byte ptr [esi]
-;		call	SkipLine
-;		call	GetWord
-;		.if ecx
-;			mov		len1,ecx
-;			mov		lpword1,esi
-;			lea		esi,[esi+ecx]
-;			invoke FpIsWord,lpword1,len1,addr szfpinstruct
-;			.if eax
-;				.if eax==10
-;					; union, struc, struct
-;					call	GetWord
-;					.if ecx
-;						; named
-;						mov		edx,nnest
-;						mov		lenname[edx*4],ecx
-;						mov		lpname[edx*4],esi
-;						lea		esi,[esi+ecx]
-;					.endif
-;					inc		nnest
-;				.elseif eax==11
-;					; endu, ends
-;					dec		nnest
-;					.if SIGN?
-;						.break
-;					.endif
-;					mov		ecx,nnest
-;					mov		lenname[ecx*4],0
-;					mov		lpname[ecx*4],0
-;				.endif
-;			.else
-;				; struct item
-;				call	SaveStructNest
-;				; item name
-;				call	SaveWord1
-;				dec		edi
-;				call	GetWord
-;				mov		lendt,ecx
-;				mov		lpdt,esi
-;				lea		esi,[esi+ecx]
-;				invoke FpIsWord,lpdt,lendt,addr szfpinstructitem
-;				.if eax==10
-;					; item rs RECT,2
-;					call	GetWord
-;					mov		lendt,ecx
-;					mov		lpdt,esi
-;					lea		esi,[esi+ecx]
-;					call	SkipSpc
-;					.if byte ptr [esi]==','
-;						inc		esi
-;						call	GetWord
-;						mov		len1,ecx
-;						mov		lpword1,esi
-;						lea		esi,[esi+ecx]
-;						mov		byte ptr [edi],'['
-;						inc		edi
-;						call	SaveWord1
-;						mov		byte ptr [edi-1],']'
-;					.endif
-;					; item datatype
-;					mov		byte ptr [edi],':'
-;					inc		edi
-;;					call	ConvDataType
-;					mov		eax,lendt
-;					invoke strcpyn,edi,lpdt,addr [eax+1]
-;					add		edi,lendt
-;					mov		byte ptr [edi],','
-;					inc		edi
-;				.elseif eax==11
-;					; item RB 10
-;					call	GetWord
-;					mov		len1,ecx
-;					mov		lpword1,esi
-;					lea		esi,[esi+ecx]
-;					mov		byte ptr [edi],'['
-;					inc		edi
-;					call	SaveWord1
-;					mov		byte ptr [edi-1],']'
-;					mov		byte ptr [edi],':'
-;					inc		edi
-;;					call	ConvDataType
-;					mov		eax,lendt
-;					invoke strcpyn,edi,lpdt,addr [eax+1]
-;					add		edi,lendt
-;					mov		byte ptr [edi],','
-;					inc		edi
-;				.elseif !eax
-;					; item datatype ?
-;					mov		byte ptr [edi],':'
-;					inc		edi
-;;					call	ConvDataType
-;					mov		eax,lendt
-;					invoke strcpyn,edi,lpdt,addr [eax+1]
-;					add		edi,lendt
-;					mov		byte ptr [edi],','
-;					inc		edi
-;				.endif
-;			.endif
-;		.endif
-;	.endw
-;	.if byte ptr [edi-1]==','
-;		dec		edi
-;	.endif
-;	mov		byte ptr [edi],0
-;	retn
-;
-;_Struct:
-;	mov		edi,offset szname
-;	call	SaveWord2
-;	call	SaveStructItems
-;	mov		edx,'s'
-;	invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
-;	retn
-;
-_DataType:
-	mov		lpar,0
-	push	esi
-	push	npos
-	.while byte ptr [esi] && byte ptr [esi]!=':'
-		inc		esi
-	.endw
-	.if byte ptr [esi]==':'
-		inc		esi
-_DataType1:
-		call	GetWord
-		.if ecx
-			invoke FpIsWord,esi,ecx,addr szfpword2
-			.if eax==11
-				lea		esi,[esi+ecx]
-				call	GetWord
-				.if byte ptr [esi]=='['
-					xor		ecx,ecx
-					.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=']'
-						inc		ecx
-					.endw
-					.if byte ptr [esi+ecx]==']'
-						inc		ecx
-					.endif
-					mov		lenar,ecx
-					mov		lpar,esi
-					lea		esi,[esi+ecx]
-					call	GetWord
-					lea		esi,[esi+ecx]
-					jmp		_DataType1
-				.endif
-			.elseif !eax
-				mov		lpdt,esi
-				mov		lendt,ecx
-				pop		npos
-				pop		esi
-				mov		eax,TRUE
-				retn
-			.endif
-		.endif
-	.endif
-	pop		npos
-	pop		esi
-	xor		eax,eax
-	retn
-
-_Data:
+_Struct:
 	mov		edi,offset szname
 	call	SaveWord1
-	dec		edi
-	.if lpar
-		mov		eax,lenar
-		invoke strcpyn,edi,lpar,addr [eax+1]
-		add		edi,lenar
+	call	GetWord
+	.if !ecx
+		inc		esi
+		call	GetWord
+		mov		lpword1,esi
+		mov		len1,ecx
+		invoke FpIsWord,lpword1,len1,offset szfpword2
+		.if eax==10;record
+			.while byte ptr [esi]
+				call	GetWord
+				.if ecx
+					mov		lpword1,esi
+					mov		len1,ecx
+					lea		esi,[esi+ecx]
+					invoke FpIsWord,lpword1,len1,offset szfpword2
+					.if eax==11;end
+						mov		edx,'s'
+						invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
+						.break
+					.else
+						call	GetWord
+						.if !ecx
+							.if byte ptr [esi]==':'
+								call	_Local
+							.endif
+						.endif
+					.endif
+				.else
+					inc		esi
+				.endif
+			.endw
+		.endif
 	.endif
-	mov		byte ptr [edi],':'
-	inc		edi
-	mov		eax,lendt
-	invoke strcpyn,edi,lpdt,addr [eax+1]
-	add		edi,lendt
-	mov		word ptr [edi],0
-	mov		edx,'d'
-	invoke AddWordToWordList,edx,nOwner,nline,npos,addr szname,2
 	retn
 
 FpParseFile endp

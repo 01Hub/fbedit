@@ -98,7 +98,12 @@ LoadFiles proc uses ebx esi edi
 				pop		eax
 				invoke SendMessage,hEdt,WM_GETTEXT,eax,[edi].FILES.hMem
 			.endif
-			lea		edi,[edi+sizeof FILES]
+			.if ![edi].FILES.hMem
+				mov		[edi].FILES.pid,0
+				mov		[edi].FILES.lpFileName,0
+			.else
+				lea		edi,[edi+sizeof FILES]
+			.endif
 		.endif
 	.endw
 	invoke OutputString,offset szCR

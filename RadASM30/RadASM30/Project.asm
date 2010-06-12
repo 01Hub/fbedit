@@ -1395,22 +1395,22 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 			invoke strcat,addr buffer,esi
 			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
 			.if eax==-1
-				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
 				invoke OpenTheFile,addr buffer,0
-				.if eax
-					.if ha.hMdi
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-						.endif
-					.endif
-				.elseif da.fExternal
-					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
-					mov		[eax].PBITEM.lParam,ID_EXTERNAL
-				.endif
-				inc		nOpen
 			.endif
+			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
+			.if eax
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+					.endif
+				.endif
+			.elseif da.fExternal
+				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+				mov		[eax].PBITEM.lParam,ID_EXTERNAL
+			.endif
+			inc		nOpen
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
 		.endw
@@ -1420,22 +1420,22 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 		.if !eax
 			invoke UpdateAll,UAM_ISOPENACTIVATE,esi
 			.if eax==-1
-				invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
 				invoke OpenTheFile,esi,0
-				.if eax
-					.if ha.hMdi
-						invoke GetWindowLong,ha.hEdt,GWL_ID
-						.if eax==ID_EDITCODE
-							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-							invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
-						.endif
-					.endif
-				.elseif da.fExternal
-					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
-					mov		[eax].PBITEM.lParam,ID_EXTERNAL
-				.endif
-				mov		nOpen,1
 			.endif
+			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
+			.if eax
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+					.endif
+				.endif
+			.elseif da.fExternal
+				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDITEM,0,esi
+				mov		[eax].PBITEM.lParam,ID_EXTERNAL
+			.endif
+			mov		nOpen,1
 		.endif
 	.endif
 	mov		eax,nOpen
