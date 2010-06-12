@@ -548,6 +548,10 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcat,addr makeexe.buffer,addr da.make.szCompileRC[esi]
 		invoke InsertMain,addr da.szMainRC,addr szDollarR
 		invoke SetOutputFile,addr da.make.szOutCompileRC[esi],offset da.szMainRC
+		invoke iniInStr,addr makeexe.buffer,addr szDollarO
+		.if eax!=-1
+			invoke InsertMain,addr makeexe.output,addr szDollarO
+		.endif
 		.while TRUE
 			invoke iniInStr,addr makeexe.buffer,addr szDollarA
 			.break .if eax==-1
@@ -767,7 +771,6 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 					.endif
 				.endif
 			.endif
-
 			invoke SetOutputFile,addr da.make.szOutLib[esi],offset da.szMainAsm
 			invoke iniInStr,addr makeexe.buffer,addr szDollarO
 			.if eax!=-1

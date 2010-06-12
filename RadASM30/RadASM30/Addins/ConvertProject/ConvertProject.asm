@@ -70,7 +70,6 @@ IsFile proc uses esi,lpFileName:DWORD
 		dec		eax
 	.endw
 	.if byte ptr [esi+eax]=='.'
-		dec		eax
 		invoke lstrcpy,addr tpe,addr [esi+eax]
 		invoke lstrcat,addr tpe,addr szDot
 	.endif

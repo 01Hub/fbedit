@@ -187,6 +187,10 @@ UpdateRadASMIni proc hWin:HWND
 			;3001 --> 3002, no update needed
 			mov		eax,3002
 		.endif
+		.if eax==3002
+			;3002 --> 3003, no update needed
+			mov		eax,3003
+		.endif
 		invoke wsprintf,addr buffer,addr szDecFormat,vernew
 		invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
 		invoke wsprintf,addr buffer,addr szUpdated,addr szto
@@ -261,6 +265,10 @@ UpdateLanguageIni proc uses ebx,hWin:HWND
 							.endif
 							inc		ebx
 						.endw
+					.endif
+					.if eax==3002
+						;3002 --> 3003
+						;No update needed
 					.endif
 					invoke wsprintf,addr buffer,addr szDecFormat,vernew
 					invoke WritePrivateProfileString,addr szIniVersion,addr szIniVersion,addr buffer,addr szto
