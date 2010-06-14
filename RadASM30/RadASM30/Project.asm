@@ -1826,6 +1826,7 @@ PutProject proc uses ebx esi edi
 	LOCAL	tci:TC_ITEM
 	LOCAL	buffer[8]:BYTE
 	LOCAL	nMiss:DWORD
+	LOCAL	fi:FILEINFO
 
 	;RadASM.ini [Session]
 	mov		word ptr buffer,0
@@ -1859,6 +1860,36 @@ PutProject proc uses ebx esi edi
 		inc		ebx
 	.endw
 	invoke WritePrivateProfileString,addr szIniProject,addr szIniGroup,addr tmpbuff[1],addr da.szProjectFile
+	xor		ebx,ebx
+	.while TRUE
+		invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+		.break .if !eax
+		mov		esi,eax
+		mov		ebx,[esi].PBITEM.id
+		invoke RtlZeroMemory,addr fi,sizeof FILEINFO
+		invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProjectFile,addr fi
+		mov		eax,[esi].PBITEM.id
+		mov		fi.pid,eax
+		mov		eax,[esi].PBITEM.idparent
+		mov		fi.idparent,eax
+		mov		eax,[esi].PBITEM.flag
+		mov		fi.flag,eax
+		invoke RemovePath,addr [esi].PBITEM.szitem,addr da.szProjectPath,addr fi.filename
+		;Save file info
+		mov		word ptr tmpbuff,0
+		invoke PutItemInt,addr tmpbuff,fi.idparent
+		invoke PutItemInt,addr tmpbuff,fi.flag
+		invoke PutItemInt,addr tmpbuff,fi.ID
+		invoke PutItemInt,addr tmpbuff,fi.rect.left
+		invoke PutItemInt,addr tmpbuff,fi.rect.top
+		invoke PutItemInt,addr tmpbuff,fi.rect.right
+		invoke PutItemInt,addr tmpbuff,fi.rect.bottom
+		invoke PutItemInt,addr tmpbuff,fi.nline
+		invoke PutItemStr,addr tmpbuff,addr fi.filename
+		mov		buffer,'F'
+		invoke BinToDec,fi.pid,addr buffer[1]
+		invoke WritePrivateProfileString,addr szIniProject,addr buffer,addr tmpbuff[1],addr da.szProjectFile
+	.endw
 	;Remove files not longer in project
 	mov		ebx,START_FILES
 	mov		nMiss,0
