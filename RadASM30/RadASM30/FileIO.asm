@@ -858,3 +858,121 @@ Init proc lpCmdLine:DWORD
 
 Init endp
 
+OpenInclude proc uses ebx esi edi,hWin:HWND
+	LOCAL	chrg:CHARRANGE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	szinc[32]:BYTE
+
+	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chrg
+	invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
+	mov		word ptr LineTxt,512
+	invoke SendMessage,hWin,EM_GETLINE,eax,addr LineTxt
+	invoke strcpy,addr buffer,addr da.szCCInc
+	invoke GetItemStr,addr buffer,addr szNULL,addr szinc,sizeof szinc
+	;RTrim
+	invoke RTrim,addr LineTxt
+	mov		esi,offset LineTxt
+	mov		edi,esi
+	.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+		inc		esi
+	.endw
+	lea		edx,szinc
+	.while byte ptr [edx]
+		mov		al,[edx]
+		mov		ah,[esi]
+		.if al>='a' && al<='z'
+			and		al,5Fh
+		.endif
+		.if ah>='a' && ah<='z'
+			and		ah,5Fh
+		.endif
+		sub		al,ah
+		.break .if !ZERO?
+		inc		esi
+		inc		edx
+	.endw
+	.if !al
+		.while byte ptr [esi]==VK_SPACE || byte ptr [esi]==VK_TAB
+			inc		esi
+		.endw
+		.if byte ptr [esi]=="'"
+			mov		ah,"'"
+			inc		esi
+		.elseif byte ptr [esi]=='"'
+			mov		ah,'"'
+			inc		esi
+		.elseif byte ptr [esi]=='<'
+			mov		ah,'>'
+			inc		esi
+		.else
+			mov		ah,0
+		.endif
+		.while ah!=byte ptr [esi] && byte ptr [esi]
+			mov		al,[esi]
+			mov		[edi],al
+			inc		esi
+			inc		edi
+		.endw
+		mov		byte ptr [edi],0
+		mov		buffer,0
+		.if da.fProject
+			;Project path
+			invoke strcpy,addr buffer,addr da.szProjectPath
+			invoke strcat,addr buffer,addr szBS
+		.endif
+		invoke strcat,addr buffer,addr LineTxt
+		invoke GetFileAttributes,addr buffer
+		.if eax!=INVALID_HANDLE_VALUE
+			invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+			.if eax==-1
+				invoke OpenTheFile,addr buffer,0
+			.endif
+		.else
+			xor		ebx,ebx
+			.while ebx<8
+				invoke RtlZeroMemory,addr tmpbuff,sizeof tmpbuff
+				invoke BinToDec,ebx,addr szinc
+				invoke GetPrivateProfileString,addr szIniEnvironment,addr szinc,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni
+				.if eax
+					invoke GetItemStr,addr tmpbuff,addr szNULL,addr szinc,sizeof szinc
+					invoke FixPath,addr tmpbuff,addr da.szAppPath,addr szDollarA
+					mov		esi,offset tmpbuff
+					.while byte ptr [esi]
+						.if byte ptr [esi]==';'
+							mov		byte ptr [esi],0
+						.endif
+						inc		esi
+					.endw
+					mov		esi,offset tmpbuff
+					.while byte ptr [esi]
+						invoke strcpy,addr buffer,esi
+						invoke strcat,addr buffer,addr szBS
+						invoke strcat,addr buffer,addr LineTxt
+						invoke GetFileAttributes,addr buffer
+						.if eax!=INVALID_HANDLE_VALUE
+							invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+							.if eax==-1
+								invoke OpenTheFile,addr buffer,0
+							.endif
+							jmp		Ex
+						.endif
+						invoke strlen,esi
+						lea		esi,[esi+eax+1]
+					.endw
+				.endif
+				inc		ebx
+			.endw
+			invoke strcpy,addr buffer,addr LineTxt
+			invoke GetFileAttributes,addr buffer
+			.if eax!=INVALID_HANDLE_VALUE
+				invoke UpdateAll,UAM_ISOPENACTIVATE,addr buffer
+				.if eax==-1
+					invoke OpenTheFile,addr buffer,0
+				.endif
+			.endif
+		.endif
+	.endif
+  Ex:
+	ret
+
+OpenInclude endp

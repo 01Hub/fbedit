@@ -3614,10 +3614,12 @@ RTrim proc uses esi,lpBuff:DWORD
 
 	mov		esi,lpBuff
 	invoke strlen,esi
-	.while byte ptr [esi+eax-1]==' ' && eax
-		dec		eax
-	.endw
-	mov		byte ptr [esi+eax],0
+	.if eax
+		.while (byte ptr [esi+eax-1]==VK_SPACE || byte ptr [esi+eax-1]==VK_TAB) && eax
+			dec		eax
+		.endw
+		mov		byte ptr [esi+eax],0
+	.endif
 	ret
 
 RTrim endp

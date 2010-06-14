@@ -210,11 +210,12 @@ szBSSniplets					db '\Sniplets',0
 szSpc							db ' ',0
 szNULL							db 0
 szDollarA						db '$A',0						;App path
-szDollarC						db '$C',0						;Main code file without extention
-szDollarR						db '$R',0						;Main resource script file without extention
+szDollarC						db '$C',0						;Main code file
 szDollarD						db '$D',0						;def file
-szDollarO						db '$O',0						;Output file
+szDollarF						db '$F',0						;Main code file without extention
 szDollarM						db '$M',0						;Modules file
+szDollarO						db '$O',0						;Output file
+szDollarR						db '$R',0						;Main resource script file without extention
 
 szDefUserExport					db '%name %id',0
 szDefFilter						db '.asm.inc.rc.prra.',0

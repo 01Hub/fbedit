@@ -17,15 +17,15 @@ IDC_STCMENU								equ 3209
 
 .const
 
-szOptTool			db 'Tools menu',0
+szOptTool			db 'Tools menu - ',0
 szFilterTools		db 'Commands (*.com, *.exe, *.cmd)',0,'*.com;*.exe;*.cmd',0
 					db 'All Files (*.*)',0,'*.*',0,0
-szOptHelp			db 'Help menu',0
+szOptHelp			db 'Help menu - ',0
 szFilterHelp		db 'Help (*.hlp, *.chm)',0,'*.hlp;*.chm',0
 					db 'All Files (*.*)',0,'*.*',0,0
-szOptExternal		db 'External Files',0
+szOptExternal		db 'External Files - ',0
 szStcExternal		db 'Filetypes (note the use of dots):',0
-szOptHelpF1			db 'F1-Help',0
+szOptHelpF1			db 'F1-Help - ',0
 szStcHelpF1			db 'Keyword: Api, RC or ',0
 szApi				db 'Api',0
 szRC				db 'RC',0
@@ -289,6 +289,7 @@ MenuOptionSave proc uses esi edi,hWin:HWND
 MenuOptionSave endp
 
 MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	buffer[256]:BYTE
 	LOCAL	buffer0[256]:BYTE
 	LOCAL	nInx:DWORD
 	LOCAL	ofn:OPENFILENAME
@@ -303,23 +304,31 @@ MenuOptionProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.if eax==IDM_OPTION_TOOLS
 			mov		lpAppName,offset szIniTool
 			mov		lpFilter,offset szFilterTools
-			mov		eax,offset szOptTool
+			invoke strcpy,addr buffer,addr szOptTool
+			invoke strcat,addr buffer,addr da.szAssembler
+			lea		eax,buffer
 		.elseif eax==IDM_OPTION_HELP
 			mov		lpAppName,offset szIniHelp
 			mov		lpFilter,offset szFilterHelp
-			mov		eax,offset szOptHelp
+			invoke strcpy,addr buffer,addr szOptHelp
+			invoke strcat,addr buffer,addr da.szAssembler
+			lea		eax,buffer
 		.elseif eax==IDM_OPTION_EXTERNAL
 			mov		lpAppName,offset szIniExternal
 			mov		lpFilter,offset szFilterTools
 			invoke SetDlgItemText,hWin,IDC_STCMENU,addr szStcExternal
-			mov		eax,offset szOptExternal
+			invoke strcpy,addr buffer,addr szOptExternal
+			invoke strcat,addr buffer,addr da.szAssembler
+			lea		eax,buffer
 		.elseif eax==IDM_OPTION_F1
 			mov		lpAppName,offset szIniHelpF1
 			mov		lpFilter,offset szFilterHelp
 			invoke strcpy,addr buffer0,addr szStcHelpF1
 			invoke strcat,addr buffer0,addr da.szAssembler
 			invoke SetDlgItemText,hWin,IDC_STCMENU,addr buffer0
-			mov		eax,offset szOptHelpF1
+			invoke strcpy,addr buffer,addr szOptHelpF1
+			invoke strcat,addr buffer,addr da.szAssembler
+			lea		eax,buffer
 		.endif
 		invoke SendMessage,hWin,WM_SETTEXT,0,eax
 		invoke ImageList_GetIcon,ha.hMnuIml,2,ILD_NORMAL

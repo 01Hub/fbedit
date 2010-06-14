@@ -468,6 +468,9 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke GetWindowText,hWin,addr buffer,sizeof buffer
+		invoke strcat,addr buffer,addr da.szAssembler
+		invoke SetWindowText,hWin,addr buffer
 		;Get Keywords
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,32768*17
 		mov		hMemKW,eax

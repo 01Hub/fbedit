@@ -10,6 +10,8 @@ o Added support for sol_asm.
 o Added support for FreePASCAL.
 o Added support for MinGW.
 o Changed Make / Set Current As Main to Make / Toggle Current As Main
+o Ctrl+Alt+O now opens the included file. Note that the environment setup must include
+  the path to the file.
 o Fixed bug when using Option / Code Editor. The output and immediate windows did
   not have its font updated.
 o Fixed bug in ProjectConvert addin.

@@ -286,6 +286,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke MakeMdiCldWin,ID_EDITCODE,0
 			.elseif eax==IDM_FILE_OPEN
 				invoke OpenEditFile,0
+			.elseif eax==IDCM_FILE_OPEN_CARET
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						invoke OpenInclude,ha.hEdt
+					.endif
+				.endif
 			.elseif eax==IDM_FILE_OPENHEX
 				invoke OpenEditFile,ID_EDITHEX
 			.elseif eax==IDM_FILE_REOPEN

@@ -18,6 +18,9 @@ EnvironmentOptionsProc proc uses ebx edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lPara
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
+		invoke GetWindowText,hWin,addr buffer,sizeof buffer
+		invoke strcat,addr buffer,addr da.szAssembler
+		invoke SetWindowText,hWin,addr buffer
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
 		mov		hEnvMem,eax
 		mov		edi,eax
