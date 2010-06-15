@@ -165,7 +165,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
-		mov da.inprogress,TRUE
+		mov		da.inprogress,TRUE
 		mov		eax,hWin
 		mov		ha.hWnd,eax
 		;Mdi Client
@@ -268,6 +268,10 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,da.fProject
 		mov		dbginf.fProject,eax
 		invoke SetDebugInfo,addr dbginf
+		invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
+		invoke SendMessage,ha.hProperty,PRM_SETTOOLTIP,1,addr szCurrentFile
+		invoke SendMessage,ha.hProperty,PRM_SETTOOLTIP,2,addr szAllFiles
+		invoke SendMessage,ha.hProperty,PRM_SETTOOLTIP,5,addr szRefresh
 		;Addins
 		invoke LoadAddins,hWin
 		invoke SetTimer,hWin,200,200,addr TimerProc
@@ -1798,9 +1802,27 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 				invoke UpdateAll,UAM_FINDERROR,eax
 			.endif
 		.elseif  [esi].NMHDR.code==TTN_NEEDTEXT
+		mov eax,[esi].NMHDR.idFrom
 			invoke LoadString,ha.hInstance,[esi].NMHDR.idFrom,addr buffer,sizeof buffer
 			lea		eax,buffer
 			mov		[esi].TOOLTIPTEXT.lpszText,eax
+		.elseif [esi].NMHDR.code==BN_CLICKED && eax==ha.hProperty
+			invoke SendMessage,ha.hProperty,PRM_GETSELBUTTON,0,0
+			.if eax==1
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE
+						.if da.fProject
+							invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+							invoke SendMessage,ha.hProperty,PRM_SELOWNER,[eax].TABMEM.pid,0
+						.else
+							invoke SendMessage,ha.hProperty,PRM_SELOWNER,ha.hMdi,0
+						.endif
+					.endif
+				.endif
+			.elseif eax==2
+				invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
+			.endif
 		.endif
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam

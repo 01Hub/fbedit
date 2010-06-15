@@ -6,9 +6,12 @@ Assembly:
 - Fasm
 - Tasm
 - jWasm
+- sol_asm
 High level:
 - VC6 C/C++
 - BCC 5.5 C/C++
+- FreePASCAL
+- MinGW C/C++
 
 SETUP
 -----
@@ -61,6 +64,7 @@ The menu is specific to each assembler / compiler.
 Acronyms:
 $A=Application path.
 $C=Main code file.
+$F=Main file without extention.
 $M=Modules (a temporary Mod.txt file is created when linking. This file will contain modules if any).
 $O=Resulting output when linking.
 $R=Main resource script (.rc file).

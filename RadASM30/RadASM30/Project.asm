@@ -1585,6 +1585,8 @@ GetProjectFiles proc uses ebx esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	nMiss:DWORD
 
+	invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
+	invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
 	;File browser path
 	invoke GetPrivateProfileString,addr szIniProject,addr szIniPath,addr da.szAppPath,addr da.szFBPath,sizeof da.szFBPath,addr da.szProjectFile
 	;Check if path exist
@@ -2088,6 +2090,8 @@ CloseProject proc
 		mov		da.szPOApiFiles,0
 		invoke OpenAssembler
 		invoke SetMainWinCaption
+		invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
+		invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
 		mov		eax,TRUE
 	.else
 		xor		eax,eax

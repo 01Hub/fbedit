@@ -4,6 +4,12 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.4 2010-06-15
+--------------------------
+o The properties toolbar now works.
+o Fixed a project bug. Changes to the project was not always saved.
+o Fixed bug in the tasm parser. Locals could be inherited from previous proc.
+
 Version 3.0.0.3 2010-06-14
 --------------------------
 o Added support for sol_asm.

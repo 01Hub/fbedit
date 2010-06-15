@@ -184,8 +184,8 @@ szhhctrl						db 'hhctrl.ocx',0
 szHtmlHelpA						db 'HtmlHelpA',0
 
 DisplayName						db 'RadASM',0
-RadASMVersion					equ 3003
-szVersion						db 'RadASM version 3.0.0.3',0
+RadASMVersion					equ 3004
+szVersion						db 'RadASM version 3.0.0.4',0
 szAboutMsg						db 'RadASM (C) KetilO 2010',13,10,13,10,'radasmide@hotmail.com',0
 szAboutUrl1						db 'http://radasm.cherrytree.at/',0
 szBS							db '\',0
@@ -241,6 +241,9 @@ szCCTip							db 'PMSTWpcsdml',0
 szMsg1							db 'SendMessage',0
 szMsg2							db 'PostMessage',0
 szMsg3							db 'SendDlgItemMessage',0
+szCurrentFile					db 'Current file',0
+szAllFiles						db 'All files',0
+szRefresh						db 'Refresh',0
 
 ;RadASM.ini, assembler.ini and project.prra
 szInifile						db 'RadASM.ini',0

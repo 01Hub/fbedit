@@ -784,6 +784,7 @@ ParseProc:
 	call	SaveName
 	mov		lpparam,edi
 	mov		lplocal,offset szname[512]
+	mov		szname[512],0
 	call	SaveParam
 	mov		lpparam,edi
 	call	SaveLocal
@@ -921,7 +922,7 @@ SaveLocal:
 					.if byte ptr [edi-1]==','
 						dec		edi
 					.endif
-					mov		byte ptr [edi],0
+					mov		word ptr [edi],0
 					xor		eax,eax
 					inc		eax
 					retn
@@ -929,13 +930,13 @@ SaveLocal:
 					mov		edi,lplocal
 					mov		esi,lpword2
 					call	SaveParam1
-					mov		byte ptr [edi-1],','
+					mov		word ptr [edi-1],','
 					mov		lplocal,edi
 				.elseif edx==DEFTYPE_ARG
 					mov		edi,lpparam
 					mov		esi,lpword2
 					call	SaveParam1
-					mov		byte ptr [edi-1],','
+					mov		word ptr [edi-1],','
 					mov		lpparam,edi
 				.endif
 			.endif

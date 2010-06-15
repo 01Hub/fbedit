@@ -4,5 +4,3 @@ TODO
 
 BUGS
 -----------
-- Caret position might be wrong when opening a project.
-- Code complete list of constants (GlobalAlloc).
