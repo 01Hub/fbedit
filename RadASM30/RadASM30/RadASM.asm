@@ -1723,7 +1723,7 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 				mov		edi,[esi].NMPBITEMCHANGE.lpPBITEM
 				invoke strcpy,addr buffer,addr [edi].PBITEM.szitem
 				invoke UpdateAll,UAM_ISOPEN,addr [edi].PBITEM.szitem
-				.if eax
+				.if eax!=-1
 					;File is open
 					mov		ebx,eax
 					invoke MoveFile,addr [edi].PBITEM.szitem,[esi].NMPBITEMCHANGE.lpsznew
