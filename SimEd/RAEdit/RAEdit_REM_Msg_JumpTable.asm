@@ -883,9 +883,9 @@
 			;wParam=0
 			;lParam=0
 			mov		eax,[ebx].EDIT.nMode
-			.if [ebx].EDIT.fOvr
-				or		eax,MODE_OVERWRITE
-			.endif
+;			.if [ebx].EDIT.fOvr
+;				or		eax,MODE_OVERWRITE
+;			.endif
 			ret
 		align 4
 		_REM_SETMODE:

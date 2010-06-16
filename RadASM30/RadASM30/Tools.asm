@@ -657,7 +657,7 @@ DoStatus proc
 	invoke SetWindowLong,ha.hStatus,GWL_WNDPROC,offset StatusProc
 	mov		lpOldStatusProc,eax
 	mov [sbParts+0],225				; pixels from left
-	mov [sbParts+4],250				; pixels from left
+	mov [sbParts+4],270				; pixels from left
 	mov [sbParts+8],SBLASTPANE		; pixels from left
 	mov [sbParts+12],-1				; last part
 	invoke SendMessage,ha.hStatus,SB_SETPARTS,4,addr sbParts

@@ -39,6 +39,27 @@ TimerProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowProc,da.nLastLine
 			invoke UpdateAll,UAM_PARSE,0
 			invoke UpdateAll,UAM_IS_CHANGED,0
+			.if ha.hMdi
+				invoke GetWindowLong,ha.hEdt,GWL_ID
+				.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+					invoke SendMessage,ha.hEdt,REM_GETMODE,0,0
+					.if !eax
+						;Insert mode
+						invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szINS
+					.elseif eax==1
+						;Block mode
+						invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szBLKINS
+					.elseif eax==2
+						;Overweite
+						invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szOVR
+					.elseif eax==3
+						;Overweite, Block mode
+						invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szBLKOVR
+					.endif
+				.else
+					invoke SendMessage,ha.hStatus,SB_SETTEXT,1,addr szNULL
+				.endif
+			.endif
 ;			.if fCutPaste
 ;				invoke LogTimeString,addr szTIMER,0,0
 ;			.endif

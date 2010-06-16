@@ -209,6 +209,10 @@ szBSBakBS						db '\Bak\',0
 szBSSniplets					db '\Sniplets',0
 szSpc							db ' ',0
 szNULL							db 0
+szINS							db 'INS',0
+szOVR							db 'OVR',0
+szBLKINS						db 'BLKINS',0
+szBLKOVR						db 'BLKOVR',0
 szDollarA						db '$A',0						;App path
 szDollarC						db '$C',0						;Main code file
 szDollarD						db '$D',0						;def file

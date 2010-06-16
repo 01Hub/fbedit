@@ -1320,6 +1320,12 @@ EditFunc proc  uses ebx esi edi,hWin:HWND,uMsg:UINT,fAlt:DWORD,fShift:DWORD,fCon
 			.if !fShift && !fControl
 				;Insert
 				xor		[ebx].EDIT.fOvr,1
+				.if [ebx].EDIT.fOvr
+					or		[ebx].EDIT.nMode,MODE_OVERWRITE
+				.else
+					and		[ebx].EDIT.nMode,-1 xor MODE_OVERWRITE
+				.endif
+				invoke SelChange,ebx,SEL_TEXT
 			.elseif fShift && !fControl
 				;Shift+Insert, Paste
 				inc		nUndoid
