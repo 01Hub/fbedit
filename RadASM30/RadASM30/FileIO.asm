@@ -867,6 +867,7 @@ OpenInclude proc uses ebx esi edi,hWin:HWND
 	invoke SendMessage,hWin,EM_EXLINEFROMCHAR,0,chrg.cpMin
 	mov		word ptr LineTxt,512
 	invoke SendMessage,hWin,EM_GETLINE,eax,addr LineTxt
+	mov		LineTxt[eax],0
 	invoke strcpy,addr buffer,addr da.szCCInc
 	invoke GetItemStr,addr buffer,addr szNULL,addr szinc,sizeof szinc
 	;RTrim

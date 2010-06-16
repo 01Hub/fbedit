@@ -89,6 +89,7 @@ IDM_EDIT_CLEARBM				equ 10027
 IDM_EDIT_ERROR					equ 10193
 IDM_EDIT_NEXTERROR				equ 10194
 IDM_EDIT_CLEARERRORS			equ 10195
+IDM_EDIT_OPENINCLUE				equ 10200
 IDM_VIEW						equ 10032
 IDM_VIEW_TOOLBAR				equ 10046
 IDM_VIEW_LOCK					equ 10063
@@ -235,7 +236,6 @@ IDM_OUTPUT_HIDE					equ 11020
 IDM_OUTPUT_CLEAR				equ 11024
 IDM_OUTPUT_CUT					equ 11023
 IDM_OUTPUT_COPY					equ 11022
-IDCM_FILE_OPEN_CARET			equ 13000
 
 ;Messages to RadASM's main window
 AIM_GETHANDLES					equ WM_USER+50			;Returns a poiner to a struct containing all useful handles. See ADDINHANDLES structure below.
