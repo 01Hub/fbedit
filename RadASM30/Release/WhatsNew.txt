@@ -10,6 +10,7 @@ o The properties toolbar now works.
 o Changed dialogs font to Tahoma.
 o The second pane of the statusbar now shows current edit mode.
 o Added Open Include (Ctrl+Alt+O) to edit menu.
+o Added accelerators to make menu.
 o Fixed a project bug. Changes to the project was not always saved.
 o Fixed bug in the tasm parser. Locals could be inherited from previous proc.
 o Fixed a bug where changing a filename in project browser crashed RadASM.
