@@ -1057,7 +1057,8 @@ UpdateSubMenu proc uses ebx esi edi,hMnu:HMENU
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	rect:RECT
 
-PrintText "UpdateSubMenu"
+	invoke SelectObject,ha.hDCMnu,ha.hFontMnu
+	push	eax
 	xor		ebx,ebx
 	mov		rect.left,ebx
 	mov		rect.top,ebx
@@ -1103,7 +1104,7 @@ PrintText "UpdateSubMenu"
 				mov		edx,eax
 				invoke DrawText,ha.hDCMnu,addr [esi].RAMNUITEM.caption,edx,addr rect,DT_CALCRECT Or DT_SINGLELINE
 				mov		eax,rect.right
-				add		eax,22
+				add		eax,32
 				mov		[esi].RAMNUITEM.wdt,eax
 				.if [esi].RAMNUITEM.accel
 					invoke strlen,addr [esi].RAMNUITEM.accel
@@ -1140,9 +1141,6 @@ PrintText "UpdateSubMenu"
 				mov		mii.dwItemData,esi
 				mov		[esi].RAMNUITEM.hgt,20
 				invoke SetMenuItemInfo,hMnu,ebx,TRUE,addr mii
-				.if mii.hSubMenu
-					invoke UpdateSubMenu,mii.hSubMenu
-				.endif
 			.else
 				mov		[esi].RAMNUITEM.ntype,2
 				mov		[esi].RAMNUITEM.hgt,10
@@ -1151,8 +1149,13 @@ PrintText "UpdateSubMenu"
 				invoke SetMenuItemInfo,hMnu,ebx,TRUE,addr mii
 			.endif
 		.endif
+		.if mii.hSubMenu
+			invoke UpdateSubMenu,mii.hSubMenu
+		.endif
 		inc		ebx
 	.endw
+	pop		eax
+	invoke SelectObject,ha.hDCMnu,eax
 	ret
 
 UpdateSubMenu endp
@@ -1196,46 +1199,6 @@ MakeBitMap proc uses ebx esi edi,barwidth:DWORD,barcolor:DWORD,bodycolor:DWORD
 	ret
 
 MakeBitMap endp
-
-UpdateMenu proc uses ebx,nPos:DWORD
-	LOCAL	mii:MENUITEMINFO
-	LOCAL	ncm:NONCLIENTMETRICS
-	LOCAL	MInfo:MENUINFO
-
-	invoke SelectObject,ha.hDCMnu,ha.hFontMnu
-	push	eax
-	mov		eax,ha.hBrMnu
-	mov		MInfo.hbrBack,eax
-	mov		MInfo.cbSize,sizeof MENUINFO
-	mov		MInfo.fMask,MIM_BACKGROUND Or MIM_APPLYTOSUBMENUS
-;	xor		ebx,ebx
-;	.if da.win.fcldmax && ha.hMdi
-;;		inc		ebx
-;	.endif
-;PrintDec nPos
-	mov		mii.cbSize,sizeof MENUITEMINFO
-	mov		mii.fMask,MIIM_SUBMENU
-	invoke GetMenuItemInfo,ha.hMenu,nPos,TRUE,addr mii
-	.if eax
-		.if mii.hSubMenu
-			invoke SetMenuInfo,mii.hSubMenu,addr MInfo
-			invoke UpdateSubMenu,mii.hSubMenu
-		.endif
-	.endif
-;	.while TRUE
-;		invoke GetMenuItemInfo,ha.hMenu,ebx,TRUE,addr mii
-;		.break .if !eax
-;		.if mii.hSubMenu
-;			invoke SetMenuInfo,mii.hSubMenu,addr MInfo
-;			invoke UpdateSubMenu,mii.hSubMenu
-;		.endif
-;		inc		ebx
-;	.endw
-	pop		eax
-	invoke SelectObject,ha.hDCMnu,eax
-	ret
-
-UpdateMenu endp
 
 CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	mii:MENUITEMINFO
@@ -1332,14 +1295,18 @@ CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 		xor		edi,edi
 		.while edi<20
 			mov		mii.cbSize,sizeof MENUITEMINFO
-			mov		mii.fMask,MIIM_TYPE
-			lea		eax,buffer
-			mov		mii.dwTypeData,eax
-			mov		mii.cch,sizeof buffer
-			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
-			invoke GetMenuItemInfo,hMnu,edx,FALSE,addr mii
+			mov		mii.fMask,MIIM_ID
+			invoke GetMenuItemInfo,hMnu,addr [edi+IDM_PROJECT_LANGUAGE_START],FALSE,addr mii
 			.break .if !eax
-			invoke strcmp,addr buffer,addr da.szAssembler
+			mov		esi,ha.hMemMnu
+			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
+			.while [esi].RAMNUITEM.hMnu
+				.if edx==[esi].RAMNUITEM.wid
+					invoke strcmp,addr [esi].RAMNUITEM.caption,addr da.szAssembler
+					.break
+				.endif
+				lea		esi,[esi+sizeof RAMNUITEM]
+			.endw
 			.if !eax
 				push	TRUE
 			.else
@@ -1377,7 +1344,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	invoke GetMenuItemInfo,ha.hMenu,nPos,TRUE,addr mii
 	mov		eax,hMnu
 	.if eax==mii.hSubMenu
-		invoke UpdateMenu,nPos
+		invoke UpdateSubMenu,mii.hSubMenu
 		mov		ebx,ha.hEdt
 		xor		esi,esi
 		mov		fNoLink,esi
@@ -2062,6 +2029,7 @@ EnableMenu endp
 
 EnableContextMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 
+	invoke UpdateSubMenu,hMnu
 	push	0
 	push	0
 	mov		eax,nPos

@@ -186,6 +186,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mDC:HDC
 	LOCAL	hBrMnu:HBRUSH
 	LOCAL	ncm:NONCLIENTMETRICS
+	LOCAL	MInfo:MENUINFO
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -316,6 +317,20 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
 		invoke CreateFontIndirect,addr ncm.lfMenuFont
 		mov		ha.hFontMnu,eax
+		mov		eax,ha.hBrMnu
+		mov		MInfo.hbrBack,eax
+		mov		MInfo.cbSize,sizeof MENUINFO
+		mov		MInfo.fMask,MIM_BACKGROUND Or MIM_APPLYTOSUBMENUS
+		mov		mii.cbSize,sizeof MENUITEMINFO
+		mov		mii.fMask,MIIM_SUBMENU
+		xor		ebx,ebx
+		.while TRUE
+			invoke GetMenuItemInfo,ha.hMenu,ebx,TRUE,addr mii
+			.break .if !eax
+			invoke SetMenuInfo,mii.hSubMenu,addr MInfo
+			inc		ebx
+		.endw
+		invoke SetMenuInfo,ha.hContextMenu,addr MInfo
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.inprogress,FALSE
 	.elseif eax==WM_COMMAND
@@ -1071,12 +1086,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.elseif eax>=IDM_PROJECT_LANGUAGE_START && eax<IDM_PROJECT_LANGUAGE_START+20
 				.if !da.fProject && !ha.hMdi
-					mov		edx,eax
-					mov		mii.cbSize,sizeof MENUITEMINFO
-					mov		mii.fMask,MIIM_TYPE
-					mov		mii.dwTypeData,offset da.szAssembler
-					mov		mii.cch,sizeof buffer
-					invoke GetMenuItemInfo,ha.hMenu,edx,FALSE,addr mii
+					mov		esi,ha.hMemMnu
+					.while [esi].RAMNUITEM.hMnu
+						.if eax==[esi].RAMNUITEM.wid
+							invoke strcpy,addr da.szAssembler,addr [esi].RAMNUITEM.caption
+							.break
+						.endif
+						lea		esi,[esi+sizeof RAMNUITEM]
+					.endw
 					invoke OpenAssembler
 				.endif
 			.elseif eax==IDM_RESOURCE_ADDDIALOG
@@ -1875,9 +1892,6 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 		mov		edx,eax
 		shr		eax,16
 		.if !eax
-;			.if da.win.fcldmax && ha.hEdt
-;				dec		edx
-;			.endif
 			invoke EnableMenu,wParam,edx
 		.endif
 	.elseif eax==WM_CONTEXTMENU
@@ -1909,11 +1923,13 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 			.else
 				;Project menu
 				mov		ebx,4
-				invoke EnableMenu,ha.hMenu,ebx
 				.if ha.hMdi
 					add		ebx,da.win.fcldmax
 				.endif
 				invoke GetSubMenu,ha.hMenu,ebx
+				push	eax
+				invoke EnableMenu,eax,ebx
+				pop		eax
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 			.endif
 		.elseif eax==ha.hToolProperties
@@ -1929,23 +1945,30 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 		.elseif eax==ha.hToolTab || eax==ha.hWnd || eax==ha.hClient
 			;Window menu
 			mov		ebx,9
-			invoke EnableMenu,ha.hMenu,ebx
 			.if ha.hMdi
 				add		ebx,da.win.fcldmax
 			.endif
 			invoke GetSubMenu,ha.hMenu,ebx
+			push	eax
+			invoke EnableMenu,eax,ebx
+			pop		eax
 			invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 		.elseif eax==ha.hReBar
 			;View / Toolbar menu
-			invoke EnableMenu,ha.hMenu,2
+			mov		ebx,2
+			.if ha.hMdi
+				add		ebx,da.win.fcldmax
+			.endif
+			invoke GetSubMenu,ha.hMenu,ebx
+			invoke EnableMenu,eax,ebx
 			mov		mii.cbSize,sizeof MENUITEMINFO
 			mov		mii.fMask,MIIM_SUBMENU
 			invoke GetMenuItemInfo,ha.hMenu,IDM_VIEW_TOOLBAR,FALSE,addr mii
 			invoke TrackPopupMenu,mii.hSubMenu,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 		.elseif eax==ha.hStatus
-			PrintText "Sta"
+			;PrintText "Sta"
 		.else
-			PrintText "???"
+			;PrintText "???"
 		.endif
 	.elseif eax==WM_TOOLSIZE
 		mov		eax,wParam
@@ -3140,9 +3163,12 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.if eax==ID_EDITCODE || eax==ID_EDITTEXT || eax==ID_EDITHEX
 				;Edit menu
 				mov		ebx,1
-				invoke EnableMenu,ha.hMenu,ebx
 				add		ebx,da.win.fcldmax
+				invoke EnableMenu,ha.hMenu,ebx
 				invoke GetSubMenu,ha.hMenu,ebx
+				push	eax
+				invoke EnableMenu,eax,ebx
+				pop		eax
 				invoke TrackPopupMenu,eax,TPM_LEFTALIGN or TPM_RIGHTBUTTON,pt.x,pt.y,0,ha.hWnd,0
 			.elseif eax==ID_EDITRES
 				;Resource contextmenu
