@@ -1248,6 +1248,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	eax
 			push	IDM_EDIT_RETURN
 			push	eax
+			push	IDM_EDIT_GOTOLINE
+			push	eax
 			push	IDM_EDIT_INDENT
 			push	eax
 			push	IDM_EDIT_OUTDENT
@@ -1281,6 +1283,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			push	IDM_EDIT_NEXTERROR
 			push	eax
 			push	IDM_EDIT_CLEARERRORS
+			push	eax
+			push	IDM_EDIT_OPENINCLUE
 		.else
 			.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
 				invoke SendMessage,ebx,EM_CANUNDO,0,0
@@ -1319,6 +1323,10 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_GOTODECLARE
 				push	eax
 				push	IDM_EDIT_RETURN
+				push	eax
+				push	IDM_EDIT_GOTOLINE
+				push	eax
+				push	IDM_EDIT_OPENINCLUE
 				push	eax
 				push	IDM_EDIT_BLOCKMODE
 				.if eax
@@ -1409,6 +1417,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_RETURN
 				push	eax
+				push	IDM_EDIT_GOTOLINE
+				push	eax
 				push	IDM_EDIT_INDENT
 				push	eax
 				push	IDM_EDIT_OUTDENT
@@ -1442,6 +1452,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_NEXTERROR
 				push	eax
 				push	IDM_EDIT_CLEARERRORS
+				push	eax
+				push	IDM_EDIT_OPENINCLUE
 			.elseif esi==ID_EDITUSER
 			.endif
 		.endif
