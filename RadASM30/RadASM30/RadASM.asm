@@ -183,6 +183,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	buffer1[MAX_PATH]:BYTE
+	LOCAL	mDC:HDC
+	LOCAL	hBrMnu:HBRUSH
+	LOCAL	ncm:NONCLIENTMETRICS
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -219,6 +222,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ha.hMenu,eax
 		invoke LoadMenu,ha.hInstance,IDR_CONTEXTMENU
 		mov		ha.hContextMenu,eax
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,512*sizeof RAMNUITEM
+		mov		ha.hMemMnu,eax
 		invoke GetSubMenu,ha.hMenu,9
 		invoke SendMessage,ha.hClient,WM_MDISETMENU,ha.hMenu,eax
 		invoke SendMessage,ha.hClient,WM_MDIREFRESHMENU,0,0
@@ -295,6 +300,22 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,ha.hProperty,PRM_SETTOOLTIP,5,addr szRefresh
 		;Addins
 		invoke LoadAddins,hWin
+		invoke MakeBitMap,19,0FFCEBEh,0FFFFFFh
+		push	eax
+		invoke CreatePatternBrush,eax
+		mov		ha.hBrMnu,eax
+		pop		eax
+		invoke DeleteObject,eax
+		invoke GetDC,NULL
+		push	eax
+		invoke CreateCompatibleDC,eax
+		mov		ha.hDCMnu,eax
+		pop		eax
+		invoke ReleaseDC,NULL,eax
+		mov		ncm.cbSize,sizeof NONCLIENTMETRICS
+		invoke SystemParametersInfo,SPI_GETNONCLIENTMETRICS,sizeof NONCLIENTMETRICS,addr ncm,0
+		invoke CreateFontIndirect,addr ncm.lfMenuFont
+		mov		ha.hFontMnu,eax
 		invoke SetTimer,hWin,200,200,addr TimerProc
 		mov		da.inprogress,FALSE
 	.elseif eax==WM_COMMAND
@@ -1648,6 +1669,10 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 		invoke DeleteObject,ha.ratf.hLnrFont
 		invoke DeleteObject,ha.rahf.hFont
 		invoke DeleteObject,ha.rahf.hLnrFont
+		invoke DeleteObject,ha.hBrMnu
+		invoke DeleteObject,ha.hFontMnu
+		invoke DeleteDC,ha.hDCMnu
+		invoke GlobalFree,ha.hMemMnu
 		invoke PostQuitMessage,NULL
 		jmp		ExDef
 	.elseif eax==WM_MOUSEMOVE
@@ -1850,9 +1875,9 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 		mov		edx,eax
 		shr		eax,16
 		.if !eax
-			.if da.win.fcldmax && ha.hEdt
-				dec		edx
-			.endif
+;			.if da.win.fcldmax && ha.hEdt
+;				dec		edx
+;			.endif
 			invoke EnableMenu,wParam,edx
 		.endif
 	.elseif eax==WM_CONTEXTMENU
@@ -1969,160 +1994,122 @@ invoke CreateThread,NULL,NULL,addr TestProc,0,NORMAL_PRIORITY_CLASS,addr nNewer
 			invoke OpenTheFile,lParam,0
 		.endif
 		invoke DebugCommand,FUNC_FILEOPEN,0,0
-;	.elseif eax==WM_MEASUREITEM
-;		mov		ebx,lParam
-;		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
-;			mov		edx,[ebx].MEASUREITEMSTRUCT.itemData
-;			.if edx
-;				push	esi
-;				mov		esi,edx
-;				.if ![esi].MENUDATA.tpe
-;					lea		esi,[esi+sizeof MENUDATA]
-;					invoke GetDC,NULL
-;					push	eax
-;					invoke CreateCompatibleDC,eax
-;					mov		mDC,eax
-;					pop		eax
-;					invoke ReleaseDC,NULL,eax
-;					invoke SelectObject,mDC,ha.hMnuFont
-;					push	eax
-;					mov		rect.left,0
-;					mov		rect.top,0
-;					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
-;					mov		eax,rect.right
-;					mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
-;					invoke strlen,esi
-;					lea		esi,[esi+eax+1]
-;					invoke DrawText,mDC,esi,-1,addr rect,DT_CALCRECT or DT_SINGLELINE
-;					pop		eax
-;					invoke SelectObject,mDC,eax
-;					invoke DeleteDC,mDC
-;					mov		eax,rect.right
-;					add		eax,25
-;					add		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
-;					mov		eax,20
-;					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
-;				.else
-;					mov		eax,10
-;					mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
-;				.endif
-;				pop		esi
-;			.endif
-;			mov		eax,TRUE
-;			jmp		ExRet
-;		.endif
-;	.elseif eax==WM_DRAWITEM
-;		mov		ebx,lParam
-;		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
-;			push	esi
-;			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
-;			.if esi
-;				invoke CreateCompatibleDC,[ebx].DRAWITEMSTRUCT.hdc
-;				mov		mDC,eax
-;				mov		rect.left,0
-;				mov		rect.top,0
-;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
-;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
-;				mov		rect.right,eax
-;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.bottom
-;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.top
-;				mov		rect.bottom,eax
-;				invoke CreateCompatibleBitmap,[ebx].DRAWITEMSTRUCT.hdc,rect.right,rect.bottom
-;				invoke SelectObject,mDC,eax
-;				push	eax
-;				invoke SelectObject,mDC,ha.hMnuFont
-;				push	eax
-;				invoke GetStockObject,WHITE_BRUSH
-;				invoke FillRect,mDC,addr rect,eax
-;				invoke FillRect,mDC,addr rect,ha.hMenuBrushB
-;				.if ![esi].MENUDATA.tpe
-;					invoke SetBkMode,mDC,TRANSPARENT
-;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
-;					.if !ZERO?
-;						invoke CreateSolidBrush,0F5BE9Fh
-;						mov		hBr,eax
-;						invoke FillRect,mDC,addr rect,hBr
-;						invoke DeleteObject,hBr
-;						invoke CreateSolidBrush,800000h
-;						mov		hBr,eax
-;						invoke FrameRect,mDC,addr rect,hBr
-;						invoke DeleteObject,hBr
-;					.endif
-;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
-;					.if !ZERO?
-;						; Check mark
-;						mov		edx,rect.bottom
-;						sub		edx,16
-;						shr		edx,1
-;						invoke ImageList_Draw,ha.hImlTbr,27,mDC,2,edx,ILD_TRANSPARENT
-;					.else
-;						; Image
-;						mov		eax,[esi].MENUDATA.img
-;						.if eax
-;							mov		edx,rect.bottom
-;							sub		edx,16
-;							shr		edx,1
-;							dec		eax
-;							test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
-;							.if ZERO?
-;								invoke ImageList_Draw,ha.hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
-;							.else
-;								invoke ImageList_Draw,ha.hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
-;							.endif
-;						.endif
-;					.endif
-;					; Text
-;					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
-;					.if ZERO?
-;						invoke GetSysColor,COLOR_MENUTEXT
-;					.else
-;						invoke GetSysColor,COLOR_GRAYTEXT
-;					.endif
-;					invoke SetTextColor,mDC,eax
-;					lea		esi,[esi+sizeof MENUDATA]
-;					invoke strlen,esi
-;					push	eax
-;					add		rect.left,22
-;					add		rect.top,2
-;					sub		rect.right,2
-;					invoke DrawText,mDC,esi,-1,addr rect,DT_LEFT or DT_VCENTER
-;					pop		eax
-;					lea		esi,[esi+eax+1]
-;					; Accelerator
-;					invoke DrawText,mDC,esi,-1,addr rect,DT_RIGHT or DT_VCENTER
-;					sub		rect.left,22
-;					sub		rect.top,2
-;					add		rect.right,2
-;				.else
-;					invoke CreatePen,PS_SOLID,1,0F5BE9Fh
-;					invoke SelectObject,mDC,eax
-;					push	eax
-;					add		rect.left,21
-;					add		rect.top,5
-;					invoke MoveToEx,mDC,rect.left,rect.top,NULL
-;					invoke LineTo,mDC,rect.right,rect.top
-;					sub		rect.left,21
-;					sub		rect.top,5
-;					pop		eax
-;					invoke SelectObject,mDC,eax
-;					invoke DeleteObject,eax
-;				.endif
-;				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
-;				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
-;				mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.bottom
-;				sub		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
-;				invoke BitBlt,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,eax,edx,mDC,0,0,SRCCOPY
-;				pop		eax
-;				invoke SelectObject,mDC,eax
-;				pop		eax
-;				invoke SelectObject,mDC,eax
-;				invoke DeleteObject,eax
-;				invoke DeleteDC,mDC
-;			.endif
-;			pop		esi
-;			mov		eax,TRUE
-;			jmp		ExRet
-;		.endif
+	.elseif eax==WM_MEASUREITEM
+		mov		ebx,lParam
+		.if [ebx].MEASUREITEMSTRUCT.CtlType==ODT_MENU
+			mov		esi,[ebx].MEASUREITEMSTRUCT.itemData
+			.if esi
+				mov		eax,[esi].RAMNUITEM.wdt
+				mov		[ebx].MEASUREITEMSTRUCT.itemWidth,eax
+				mov		eax,[esi].RAMNUITEM.hgt
+				mov		[ebx].MEASUREITEMSTRUCT.itemHeight,eax
+			.endif
+			mov		eax,TRUE
+			jmp		ExRet
+		.endif
+	.elseif eax==WM_DRAWITEM
+		mov		ebx,lParam
+		.if [ebx].DRAWITEMSTRUCT.CtlType==ODT_MENU
+			mov		esi,[ebx].DRAWITEMSTRUCT.itemData
+			.if esi
+				invoke CreateCompatibleDC,[ebx].DRAWITEMSTRUCT.hdc
+				mov		mDC,eax
+				mov		rect.left,0
+				mov		rect.top,0
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+				mov		rect.right,eax
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.top
+				mov		rect.bottom,eax
+				invoke CreateCompatibleBitmap,[ebx].DRAWITEMSTRUCT.hdc,rect.right,rect.bottom
+				invoke SelectObject,mDC,eax
+				push	eax
+				invoke SelectObject,mDC,ha.hFontMnu
+				push	eax
+				invoke FillRect,mDC,addr rect,ha.hBrMnu
+				.if [esi].RAMNUITEM.ntype==1
+					invoke SetBkMode,mDC,TRANSPARENT
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_SELECTED
+					.if !ZERO?
+						invoke CreateSolidBrush,0F5BE9Fh
+						mov		hBrMnu,eax
+						invoke FillRect,mDC,addr rect,hBrMnu
+						invoke DeleteObject,hBrMnu
+						invoke CreateSolidBrush,800000h
+						mov		hBrMnu,eax
+						invoke FrameRect,mDC,addr rect,hBrMnu
+						invoke DeleteObject,hBrMnu
+					.endif
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_CHECKED
+					.if !ZERO?
+						; Check mark
+						mov		edx,rect.bottom
+						sub		edx,16
+						shr		edx,1
+						invoke ImageList_Draw,ha.hImlTbr,27,mDC,2,edx,ILD_TRANSPARENT
+					.else
+						; Image
+						mov		eax,[esi].RAMNUITEM.img
+						.if eax
+							mov		edx,rect.bottom
+							sub		edx,16
+							shr		edx,1
+							dec		eax
+							test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+							.if ZERO?
+								invoke ImageList_Draw,ha.hImlTbr,eax,mDC,2,edx,ILD_TRANSPARENT
+							.else
+								invoke ImageList_Draw,ha.hImlTbrGray,eax,mDC,2,edx,ILD_TRANSPARENT
+							.endif
+						.endif
+					.endif
+					; Text
+					test	[ebx].DRAWITEMSTRUCT.itemState,ODS_GRAYED
+					.if ZERO?
+						invoke GetSysColor,COLOR_MENUTEXT
+					.else
+						invoke GetSysColor,COLOR_GRAYTEXT
+					.endif
+					invoke SetTextColor,mDC,eax
+					add		rect.left,22
+					add		rect.top,2
+					sub		rect.right,2
+					invoke DrawText,mDC,addr [esi].RAMNUITEM.caption,-1,addr rect,DT_LEFT or DT_VCENTER
+					; Accelerator
+					invoke DrawText,mDC,addr [esi].RAMNUITEM.accel,-1,addr rect,DT_RIGHT or DT_VCENTER
+					sub		rect.left,22
+					sub		rect.top,2
+					add		rect.right,2
+				.else
+					invoke CreatePen,PS_SOLID,1,0F5BE9Fh
+					invoke SelectObject,mDC,eax
+					push	eax
+					add		rect.left,21
+					add		rect.top,5
+					invoke MoveToEx,mDC,rect.left,rect.top,NULL
+					invoke LineTo,mDC,rect.right,rect.top
+					sub		rect.left,21
+					sub		rect.top,5
+					pop		eax
+					invoke SelectObject,mDC,eax
+					invoke DeleteObject,eax
+				.endif
+				mov		eax,[ebx].DRAWITEMSTRUCT.rcItem.right
+				sub		eax,[ebx].DRAWITEMSTRUCT.rcItem.left
+				mov		edx,[ebx].DRAWITEMSTRUCT.rcItem.bottom
+				sub		edx,[ebx].DRAWITEMSTRUCT.rcItem.top
+				invoke BitBlt,[ebx].DRAWITEMSTRUCT.hdc,[ebx].DRAWITEMSTRUCT.rcItem.left,[ebx].DRAWITEMSTRUCT.rcItem.top,eax,edx,mDC,0,0,SRCCOPY
+				pop		eax
+				invoke SelectObject,mDC,eax
+				pop		eax
+				invoke SelectObject,mDC,eax
+				invoke DeleteObject,eax
+				invoke DeleteDC,mDC
+			.endif
+			mov		eax,TRUE
+			jmp		ExRet
+		.endif
 	.elseif eax==AIM_GETHANDLES
 		mov		eax,offset ha
 		jmp		ExRet

@@ -1052,6 +1052,191 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 
 IndentComment endp
 
+UpdateSubMenu proc uses ebx esi edi,hMnu:HMENU
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	rect:RECT
+
+PrintText "UpdateSubMenu"
+	xor		ebx,ebx
+	mov		rect.left,ebx
+	mov		rect.top,ebx
+	.while TRUE
+		mov		mii.cbSize,sizeof MENUITEMINFO
+		mov		mii.fMask,MIIM_DATA or MIIM_ID or MIIM_SUBMENU or MIIM_TYPE
+		lea		eax,buffer
+		mov		mii.dwTypeData,eax
+		mov		mii.cch,sizeof buffer
+		invoke GetMenuItemInfo,hMnu,ebx,TRUE,addr mii
+		.break.if !eax
+		test	mii.fType,MFT_OWNERDRAW
+		.if ZERO?
+			mov		esi,ha.hMemMnu
+			mov		eax,mii.wID
+			.while TRUE
+				.break .if eax==[esi].RAMNUITEM.wid || ![esi].RAMNUITEM.hMnu
+				lea		esi,[esi+sizeof RAMNUITEM]
+			.endw
+			mov		eax,hMnu
+			mov		[esi].RAMNUITEM.hMnu,eax
+			mov		eax,mii.wID
+			mov		[esi].RAMNUITEM.wid,eax
+			test	mii.fType,MFT_SEPARATOR
+			.if ZERO?
+				mov		[esi].RAMNUITEM.ntype,1
+				lea		edx,buffer
+				.while byte ptr [edx]
+					.break .if byte ptr [edx]==VK_TAB
+					inc		edx
+				.endw
+				.if byte ptr [edx]==VK_TAB
+					mov		byte ptr [edx],0
+					push	edx
+					invoke strcpyn,addr [esi].RAMNUITEM.caption,addr buffer,sizeof RAMNUITEM.caption
+					pop		edx
+					invoke strcpyn,addr [esi].RAMNUITEM.accel,addr [edx+1],sizeof RAMNUITEM.accel
+				.else
+					invoke strcpyn,addr [esi].RAMNUITEM.caption,addr buffer,sizeof RAMNUITEM.caption
+					mov		[esi].RAMNUITEM.accel,0
+				.endif
+				invoke strlen,addr [esi].RAMNUITEM.caption
+				mov		edx,eax
+				invoke DrawText,ha.hDCMnu,addr [esi].RAMNUITEM.caption,edx,addr rect,DT_CALCRECT Or DT_SINGLELINE
+				mov		eax,rect.right
+				add		eax,22
+				mov		[esi].RAMNUITEM.wdt,eax
+				.if [esi].RAMNUITEM.accel
+					invoke strlen,addr [esi].RAMNUITEM.accel
+					mov		edx,eax
+					invoke DrawText,ha.hDCMnu,addr [esi].RAMNUITEM.accel,edx,addr rect,DT_CALCRECT Or DT_SINGLELINE
+					mov		eax,rect.right
+					add		eax,8
+					add		[esi].RAMNUITEM.wdt,eax
+				.endif
+				invoke SendMessage,ha.hTbrFile,TB_COMMANDTOINDEX,mii.wID,0
+				mov		edx,ha.hTbrFile
+				.if sdword ptr eax<0
+					invoke SendMessage,ha.hTbrEdit1,TB_COMMANDTOINDEX,mii.wID,0
+					mov		edx,ha.hTbrEdit1
+					.if sdword ptr eax<0
+						invoke SendMessage,ha.hTbrEdit2,TB_COMMANDTOINDEX,mii.wID,0
+						mov		edx,ha.hTbrEdit2
+						.if sdword ptr eax<0
+							invoke SendMessage,ha.hTbrView,TB_COMMANDTOINDEX,mii.wID,0
+							mov		edx,ha.hTbrView
+							.if sdword ptr eax<0
+								invoke SendMessage,ha.hTbrMake,TB_COMMANDTOINDEX,mii.wID,0
+								mov		edx,ha.hTbrMake
+							.endif
+						.endif
+					.endif
+				.endif
+				.if sdword ptr eax>=0
+					invoke SendMessage,edx,TB_GETBITMAP,mii.wID,0
+					inc		eax
+					mov		[esi].RAMNUITEM.img,eax
+				.endif
+				or		mii.fType,MFT_OWNERDRAW
+				mov		mii.dwItemData,esi
+				mov		[esi].RAMNUITEM.hgt,20
+				invoke SetMenuItemInfo,hMnu,ebx,TRUE,addr mii
+				.if mii.hSubMenu
+					invoke UpdateSubMenu,mii.hSubMenu
+				.endif
+			.else
+				mov		[esi].RAMNUITEM.ntype,2
+				mov		[esi].RAMNUITEM.hgt,10
+				or		mii.fType,MFT_OWNERDRAW
+				mov		mii.dwItemData,esi
+				invoke SetMenuItemInfo,hMnu,ebx,TRUE,addr mii
+			.endif
+		.endif
+		inc		ebx
+	.endw
+	ret
+
+UpdateSubMenu endp
+
+; Create a bitmap for the menu back brush
+MakeBitMap proc uses ebx esi edi,barwidth:DWORD,barcolor:DWORD,bodycolor:DWORD
+	LOCAL	hDC:HDC
+	LOCAL	hBmp:HBITMAP
+
+	invoke GetDC,NULL
+	push	eax
+	push	eax
+	invoke CreateCompatibleDC,eax
+	mov		hDC,eax
+	pop		eax
+	invoke CreateCompatibleBitmap,eax,1200,8
+	mov		hBmp,eax
+	pop		eax
+	invoke ReleaseDC,NULL,eax
+	invoke SelectObject,hDC,hBmp
+	push	eax
+	xor		edi,edi
+	.while edi<8
+		xor		esi,esi
+		mov		ebx,barcolor
+		.while esi<barwidth
+			invoke SetPixel,hDC,esi,edi,ebx
+			sub		ebx,040404h
+			inc		esi
+		.endw
+		.while esi<1200
+			invoke SetPixel,hDC,esi,edi,bodycolor
+			inc		esi
+		.endw
+		inc		edi
+	.endw
+	pop		eax
+	invoke SelectObject,hDC,eax
+	invoke DeleteDC,hDC
+	mov		eax,hBmp
+	ret
+
+MakeBitMap endp
+
+UpdateMenu proc uses ebx,nPos:DWORD
+	LOCAL	mii:MENUITEMINFO
+	LOCAL	ncm:NONCLIENTMETRICS
+	LOCAL	MInfo:MENUINFO
+
+	invoke SelectObject,ha.hDCMnu,ha.hFontMnu
+	push	eax
+	mov		eax,ha.hBrMnu
+	mov		MInfo.hbrBack,eax
+	mov		MInfo.cbSize,sizeof MENUINFO
+	mov		MInfo.fMask,MIM_BACKGROUND Or MIM_APPLYTOSUBMENUS
+;	xor		ebx,ebx
+;	.if da.win.fcldmax && ha.hMdi
+;;		inc		ebx
+;	.endif
+;PrintDec nPos
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	invoke GetMenuItemInfo,ha.hMenu,nPos,TRUE,addr mii
+	.if eax
+		.if mii.hSubMenu
+			invoke SetMenuInfo,mii.hSubMenu,addr MInfo
+			invoke UpdateSubMenu,mii.hSubMenu
+		.endif
+	.endif
+;	.while TRUE
+;		invoke GetMenuItemInfo,ha.hMenu,ebx,TRUE,addr mii
+;		.break .if !eax
+;		.if mii.hSubMenu
+;			invoke SetMenuInfo,mii.hSubMenu,addr MInfo
+;			invoke UpdateSubMenu,mii.hSubMenu
+;		.endif
+;		inc		ebx
+;	.endw
+	pop		eax
+	invoke SelectObject,ha.hDCMnu,eax
+	ret
+
+UpdateMenu endp
+
 CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	mii:MENUITEMINFO
 	LOCAL	buffer[32]:BYTE
@@ -1185,225 +1370,66 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 	LOCAL	chrg:CHARRANGE
 	LOCAL	ID:DWORD
 	LOCAL	fNoLink:DWORD
+	LOCAL	mii:MENUITEMINFO
 
-	mov		ebx,ha.hEdt
-	xor		esi,esi
-	mov		fNoLink,esi
-	.if ebx
-		invoke GetWindowLong,ebx,GWL_ID
-		mov		esi,eax
-	.endif
-	push	0
-	push	0
-	mov		eax,nPos
-	.if eax==0
-		;File
-		mov		ID,IDM_FILE
-		push	ebx
-		push	IDM_FILE_REOPEN
-		push	ebx
-		push	IDM_FILE_CLOSE
-		push	ebx
-		push	IDM_FILE_SAVE
-		push	ebx
-		push	IDM_FILE_SAVEAS
-		push	ebx
-		push	IDM_FILE_SAVEALL
-		.if esi==ID_EDITCODE || esi==ID_EDITTEXT
-			push	TRUE
-		.else
-			push	FALSE
+	mov		mii.cbSize,sizeof MENUITEMINFO
+	mov		mii.fMask,MIIM_SUBMENU
+	invoke GetMenuItemInfo,ha.hMenu,nPos,TRUE,addr mii
+	mov		eax,hMnu
+	.if eax==mii.hSubMenu
+		invoke UpdateMenu,nPos
+		mov		ebx,ha.hEdt
+		xor		esi,esi
+		mov		fNoLink,esi
+		.if ebx
+			invoke GetWindowLong,ebx,GWL_ID
+			mov		esi,eax
 		.endif
-		push	IDM_FILE_PRINT
-	.elseif eax==1
-		;Edit
-		mov		ID,IDM_EDIT
-		.if !ebx
-			;No edit window open
-			xor		eax,eax
-			push	eax
-			push	IDM_EDIT_UNDO
-			push	eax
-			push	IDM_EDIT_REDO
-			push	eax
-			push	IDM_EDIT_PASTE
-			push	eax
-			push	IDM_EDIT_CUT
-			push	eax
-			push	IDM_EDIT_COPY
-			push	eax
-			push	IDM_EDIT_DELETE
-			push	eax
-			push	IDM_EDIT_SELECTALL
-			push	eax
-			push	IDM_EDIT_FIND
-			push	eax
-			push	IDM_EDIT_FINDNEXT
-			push	eax
-			push	IDM_EDIT_FINDPREV
-			push	eax
-			push	IDM_EDIT_REPLACE
-			push	eax
-			push	IDM_EDIT_GOTODECLARE
-			push	eax
-			push	IDM_EDIT_RETURN
-			push	eax
-			push	IDM_EDIT_GOTOLINE
-			push	eax
-			push	IDM_EDIT_INDENT
-			push	eax
-			push	IDM_EDIT_OUTDENT
-			push	eax
-			push	IDM_EDIT_COMMENT
-			push	eax
-			push	IDM_EDIT_UNCOMMENT
-			push	eax
-			push	IDM_EDIT_UPPERCASE
-			push	eax
-			push	IDM_EDIT_LOWERCASE
-			push	eax
-			push	IDM_EDIT_TOSPACES
-			push	eax
-			push	IDM_EDIT_TOTABS
-			push	eax
-			push	IDM_EDIT_TRIM
-			push	eax
-			push	IDM_EDIT_BLOCKMODE
-			push	eax
-			push	IDM_EDIT_BLOCKINSERT
-			push	eax
-			push	IDM_EDIT_TOGGLEBM
-			push	eax
-			push	IDM_EDIT_NEXTBM
-			push	eax
-			push	IDM_EDIT_PREVBM
-			push	eax
-			push	IDM_EDIT_CLEARBM
-			push	eax
-			push	IDM_EDIT_NEXTERROR
-			push	eax
-			push	IDM_EDIT_CLEARERRORS
-			push	eax
-			push	IDM_EDIT_OPENINCLUE
-		.else
-			.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
-				invoke SendMessage,ebx,EM_CANUNDO,0,0
-				push	eax
-				push	IDM_EDIT_UNDO
-				invoke SendMessage,ebx,EM_CANREDO,0,0
-				push	eax
-				push	IDM_EDIT_REDO
-				invoke SendMessage,ebx,EM_CANPASTE,CF_TEXT,0
-				push	eax
-				push	IDM_EDIT_PASTE
-				invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
-				mov		eax,chrg.cpMax
-				sub		eax,chrg.cpMin
-				push	eax
-				push	IDM_EDIT_CUT
-				push	eax
-				push	IDM_EDIT_COPY
-				push	eax
-				push	IDM_EDIT_DELETE
-				mov		eax,TRUE
-				push	eax
-				push	IDM_EDIT_SELECTALL
-				push	eax
-				push	IDM_EDIT_FIND
-				push	eax
-				push	IDM_EDIT_FINDNEXT
-				push	eax
-				push	IDM_EDIT_FINDPREV
-				push	eax
-				push	IDM_EDIT_REPLACE
-				.if esi==ID_EDITHEX
-					xor		eax,eax
-				.endif
-				push	eax
-				push	IDM_EDIT_GOTODECLARE
-				push	eax
-				push	IDM_EDIT_RETURN
-				push	eax
-				push	IDM_EDIT_GOTOLINE
-				push	eax
-				push	IDM_EDIT_OPENINCLUE
-				push	eax
-				push	IDM_EDIT_BLOCKMODE
-				.if eax
-					invoke SendMessage,ha.hReBar,EM_EXGETSEL,0,addr chrg
-					mov		eax,chrg.cpMax
-					sub		eax,chrg.cpMin
-				.endif
-				push	eax
-				push	IDM_EDIT_INDENT
-				push	eax
-				push	IDM_EDIT_OUTDENT
-				push	eax
-				push	IDM_EDIT_COMMENT
-				push	eax
-				push	IDM_EDIT_UNCOMMENT
-				push	eax
-				push	IDM_EDIT_UPPERCASE
-				push	eax
-				push	IDM_EDIT_LOWERCASE
-				push	eax
-				push	IDM_EDIT_TOSPACES
-				push	eax
-				push	IDM_EDIT_TOTABS
-				push	eax
-				push	IDM_EDIT_TRIM
+		push	0
+		push	0
+		.if da.win.fcldmax && ha.hEdt
+			dec		nPos
+		.endif
+		mov		eax,nPos
+		.if eax==0
+			;File
+			mov		ID,IDM_FILE
+			push	ebx
+			push	IDM_FILE_REOPEN
+			push	ebx
+			push	IDM_FILE_CLOSE
+			push	ebx
+			push	IDM_FILE_SAVE
+			push	ebx
+			push	IDM_FILE_SAVEAS
+			push	ebx
+			push	IDM_FILE_SAVEALL
+			.if esi==ID_EDITCODE || esi==ID_EDITTEXT
 				push	TRUE
-				push	IDM_EDIT_TOGGLEBM
-				.if esi==ID_EDITHEX
-					push	FALSE
-					push	IDM_EDIT_BLOCKINSERT
-					invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
-				.else
-					invoke SendMessage,ebx,REM_GETMODE,0,0
-					and		eax,MODE_BLOCK
-					push	eax
-					push	IDM_EDIT_BLOCKINSERT
-					invoke UpdateAll,UAM_ANYBOOKMARKS,0
-					inc		eax
-				.endif
-				push	eax
-				push	IDM_EDIT_NEXTBM
-				push	eax
-				push	IDM_EDIT_PREVBM
-				push	eax
-				push	IDM_EDIT_CLEARBM
-				mov		eax,da.ErrID
-				push	eax
-				push	IDM_EDIT_NEXTERROR
-				push	eax
-				push	IDM_EDIT_CLEARERRORS
-			.elseif esi==ID_EDITRES
-				invoke SendMessage,ebx,DEM_CANUNDO,0,0
+			.else
+				push	FALSE
+			.endif
+			push	IDM_FILE_PRINT
+		.elseif eax==1
+			;Edit
+			mov		ID,IDM_EDIT
+			.if !ebx
+				;No edit window open
+				xor		eax,eax
 				push	eax
 				push	IDM_EDIT_UNDO
-				invoke SendMessage,ebx,DEM_CANREDO,0,0
 				push	eax
 				push	IDM_EDIT_REDO
-				invoke SendMessage,ebx,DEM_CANPASTE,CF_TEXT,0
 				push	eax
 				push	IDM_EDIT_PASTE
-				invoke SendMessage,ebx,DEM_ISSELECTION,0,0
 				push	eax
 				push	IDM_EDIT_CUT
 				push	eax
 				push	IDM_EDIT_COPY
 				push	eax
 				push	IDM_EDIT_DELETE
-				invoke SendMessage,ebx,PRO_GETSELECTED,0,0
-				.if eax==TPE_DIALOG
-					mov		eax,TRUE
-					xor		eax,eax
-				.else
-					xor		eax,eax
-				.endif
 				push	eax
 				push	IDM_EDIT_SELECTALL
-				xor		eax,eax
 				push	eax
 				push	IDM_EDIT_FIND
 				push	eax
@@ -1454,412 +1480,582 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	IDM_EDIT_CLEARERRORS
 				push	eax
 				push	IDM_EDIT_OPENINCLUE
-			.elseif esi==ID_EDITUSER
-			.endif
-		.endif
-	.elseif eax==2
-		;View
-		mov		ID,IDM_VIEW
-		invoke CheckMenu,hMnu,nPos
-	.elseif eax==3
-		;Format
-		mov		ID,IDM_FORMAT
-		invoke CheckMenu,hMnu,nPos
-		.if esi==ID_EDITRES
-			mov		eax,TRUE
-			push	eax
-			push	IDM_FORMAT_LOCK
-			push	eax
-			push	IDM_FORMAT_SHOW
-			push	eax
-			push	IDM_FORMAT_SNAP
-			invoke SendMessage,ebx,DEM_GETMEM,DEWM_DIALOG,0
-			push	eax
-			push	IDM_FORMAT_INDEX
-			invoke SendMessage,ebx,DEM_ISSELECTION,0,0
-			push	eax
-			push	IDM_FORMAT_CENTERHORIZONTAL
-			push	eax
-			push	IDM_FORMAT_CENTERVERTICAL
-			.if eax!=2
-				xor		eax,eax
-			.endif
-			push	eax
-			push	IDM_FORMAT_ALIGNLEFT
-			push	eax
-			push	IDM_FORMAT_ALIGNCENTER
-			push	eax
-			push	IDM_FORMAT_ALIGNRIGHT
-			push	eax
-			push	IDM_FORMAT_ALIGNTOP
-			push	eax
-			push	IDM_FORMAT_ALIGNMIDDLE
-			push	eax
-			push	IDM_FORMAT_ALIGNBOTTOM
-			push	eax
-			push	IDM_FORMAT_SIZEWIDTH
-			push	eax
-			push	IDM_FORMAT_SIZEHEIGHT
-			push	eax
-			push	IDM_FORMAT_SIZEBOTH
-			invoke SendMessage,ebx,DEM_ISFRONT,0,0
-			xor		eax,TRUE
-			push	eax
-			push	IDM_FORMAT_FRONT
-			invoke SendMessage,ebx,DEM_ISBACK,0,0
-			xor		eax,TRUE
-			push	eax
-			push	IDM_FORMAT_BACK
-		.else
-			xor		eax,eax
-			push	eax
-			push	IDM_FORMAT_LOCK
-			push	eax
-			push	IDM_FORMAT_FRONT
-			push	eax
-			push	IDM_FORMAT_BACK
-			push	eax
-			push	IDM_FORMAT_SHOW
-			push	eax
-			push	IDM_FORMAT_SNAP
-			push	eax
-			push	IDM_FORMAT_ALIGNLEFT
-			push	eax
-			push	IDM_FORMAT_ALIGNCENTER
-			push	eax
-			push	IDM_FORMAT_ALIGNRIGHT
-			push	eax
-			push	IDM_FORMAT_ALIGNTOP
-			push	eax
-			push	IDM_FORMAT_ALIGNMIDDLE
-			push	eax
-			push	IDM_FORMAT_ALIGNBOTTOM
-			push	eax
-			push	IDM_FORMAT_SIZEWIDTH
-			push	eax
-			push	IDM_FORMAT_SIZEHEIGHT
-			push	eax
-			push	IDM_FORMAT_SIZEBOTH
-			push	eax
-			push	IDM_FORMAT_CENTERHORIZONTAL
-			push	eax
-			push	IDM_FORMAT_CENTERVERTICAL
-			push	eax
-			push	IDM_FORMAT_INDEX
-		.endif
-	.elseif eax==4
-		;Project
-		mov		ID,IDM_PROJECT
-		xor		edi,edi
-		mov		eax,TRUE
-		push	eax
-		push	IDM_PROJECT_NEW
-		push	eax
-		push	IDM_PROJECT_OPEN
-		mov		eax,da.fProject
-		push	eax
-		push	IDM_PROJECT_CLOSE
-		push	eax
-		push	IDM_PROJECT_OPTION
-		.if eax
-			invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
-			mov		edi,eax
-			.if edi
-				mov		edi,[edi].PBITEM.id
-			.endif
-		.endif
-		push	eax
-		push	IDM_PROJECT_ADDNEWFILE
-		push	eax
-		push	IDM_PROJET_ADDEXISTING
-		push	eax
-		push	IDM_PROJECT_ADDOPEN
-		push	eax
-		push	IDM_PROJECT_ADDALLOPEN
-		push	eax
-		push	IDM_PROJECT_ADDGROUP
-		.if sdword ptr edi<0
-			mov		edi,TRUE
-			xor		eax,eax
-		.elseif sdword ptr edi>0
-			mov		eax,TRUE
-			xor		edi,edi
-		.else
-			xor		edi,edi
-			xor		eax,eax
-		.endif
-		push	eax
-		push	IDM_PROJECT_REMOVEFILE
-		push	eax
-		push	IDM_PROJECT_EDITFILE
-		push	eax
-		push	IDM_PROJECT_OPENITEMFILE
-		push	edi
-		push	IDM_PROJECT_EDITGROUP
-		push	edi
-		push	IDM_PROJECT_OPENITEMGROUP
-		.if edi==-1
-			xor		edi,edi
-		.endif
-		push	edi
-		push	IDM_PROJECT_REMOVEGROUP
-		mov		eax,TRUE
-		.if da.fProject
-			xor		eax,eax
-		.endif
-		xor		edi,edi
-		.while edi<20
-			push	eax
-			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
-			push	edx
-			inc		edi
-		.endw
-		invoke CheckMenu,hMnu,nPos
-	.elseif eax==5
-		;Resource
-		mov		ID,IDM_RESOURCE
-		xor		eax,eax
-		.if esi==ID_EDITRES
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_RESOURCE_ADDDIALOG
-		push	eax
-		push	IDM_RESOURCE_ADDMENU
-		push	eax
-		push	IDM_RESOURCE_ADDACCELERATOR
-		push	eax
-		push	IDM_RESOURCE_ADDVERSION
-		push	eax
-		push	IDM_RESOURCE_ADDSTRING
-		push	eax
-		push	IDM_RESOURCE_ADDMANIFEST
-		push	eax
-		push	IDM_RESOURCE_ADDRCDATA
-		push	eax
-		push	IDM_RESOURCE_ADDTOLBAR
-		push	eax
-		push	IDM_RESOURCE_LANGUAGE
-		push	eax
-		push	IDM_RESOURCE_INCLUDE
-		push	eax
-		push	IDM_RESOURCE_RESOURCE
-		push	eax
-		push	IDM_RESOURCE_NAMES
-		push	eax
-		push	IDM_RESOURCE_EXPORT
-		invoke SendMessage,ebx,PRO_GETSELECTED,0,0
-		.if eax<=1
-			xor		eax,eax
-		.endif
-		push	eax
-		push	IDM_RESOURCE_REMOVE
-		invoke SendMessage,ebx,PRO_CANUNDO,0,0
-		push	eax
-		push	IDM_RESOURCE_UNDO
-	.elseif eax==6
-		;Make
-		mov		ID,IDM_MAKE
-		;Get relative pointer to selected build command
-		invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
-		mov		edx,sizeof MAKE
-		mul		edx
-		mov		edi,eax
-		invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
-		inc		eax
-		mov		fNoLink,eax
-		xor		eax,eax
-		.if da.szMainRC && da.make.szOutCompileRC[edi]
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_MAKE_COMPILE
-		xor		eax,eax
-		.if da.szMainAsm && da.make.szOutAssemble[edi]
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_MAKE_ASSEMBLE
-		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_MAKE_BUILD
-		xor		eax,eax
-		.if fNoLink && da.szMainAsm
-			inc		eax
-		.elseif da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
-			invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
-			inc		eax
-		.endif
-		push	eax
-		push	IDM_MAKE_GO
-		xor		eax,eax
-		.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_MAKE_LINK
-		xor		eax,eax
-		.if fNoLink && da.szMainAsm
-			inc		eax
-		.else
-			.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
-				invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
-				inc		eax
-			.endif
-		.endif
-		push	eax
-		push	IDM_MAKE_RUN
-		.if !da.szDebug
-			xor		eax,eax
-		.endif
-		push	eax
-		push	IDM_MAKE_DEBUG
-		;Any modules
-		xor		eax,eax
-		.if da.make.szAssemble[edi]
-			push	ebx
-			xor		ebx,ebx
-			.while TRUE
-				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-				.break .if!eax
-				mov		ebx,[eax].PBITEM.id
-				.if [eax].PBITEM.flag==FLAG_MODULE
-					mov		eax,TRUE
-					.break
-				.endif
-			.endw
-			pop		ebx
-		.endif
-		push	eax
-		push	IDM_MAKE_MODULES
-		.if esi==ID_EDITCODE
-			push	TRUE
-			push	IDM_MAKE_TOGGLEMAIN
-			invoke GetTheFileType,addr da.szFileName
-			.if eax==ID_EDITRES
-				xor		eax,eax
 			.else
-				mov		eax,da.fProject
+				.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
+					invoke SendMessage,ebx,EM_CANUNDO,0,0
+					push	eax
+					push	IDM_EDIT_UNDO
+					invoke SendMessage,ebx,EM_CANREDO,0,0
+					push	eax
+					push	IDM_EDIT_REDO
+					invoke SendMessage,ebx,EM_CANPASTE,CF_TEXT,0
+					push	eax
+					push	IDM_EDIT_PASTE
+					invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+					mov		eax,chrg.cpMax
+					sub		eax,chrg.cpMin
+					push	eax
+					push	IDM_EDIT_CUT
+					push	eax
+					push	IDM_EDIT_COPY
+					push	eax
+					push	IDM_EDIT_DELETE
+					mov		eax,TRUE
+					push	eax
+					push	IDM_EDIT_SELECTALL
+					push	eax
+					push	IDM_EDIT_FIND
+					push	eax
+					push	IDM_EDIT_FINDNEXT
+					push	eax
+					push	IDM_EDIT_FINDPREV
+					push	eax
+					push	IDM_EDIT_REPLACE
+					.if esi==ID_EDITHEX
+						xor		eax,eax
+					.endif
+					push	eax
+					push	IDM_EDIT_GOTODECLARE
+					push	eax
+					push	IDM_EDIT_RETURN
+					push	eax
+					push	IDM_EDIT_GOTOLINE
+					push	eax
+					push	IDM_EDIT_OPENINCLUE
+					push	eax
+					push	IDM_EDIT_BLOCKMODE
+					.if eax
+						invoke SendMessage,ha.hReBar,EM_EXGETSEL,0,addr chrg
+						mov		eax,chrg.cpMax
+						sub		eax,chrg.cpMin
+					.endif
+					push	eax
+					push	IDM_EDIT_INDENT
+					push	eax
+					push	IDM_EDIT_OUTDENT
+					push	eax
+					push	IDM_EDIT_COMMENT
+					push	eax
+					push	IDM_EDIT_UNCOMMENT
+					push	eax
+					push	IDM_EDIT_UPPERCASE
+					push	eax
+					push	IDM_EDIT_LOWERCASE
+					push	eax
+					push	IDM_EDIT_TOSPACES
+					push	eax
+					push	IDM_EDIT_TOTABS
+					push	eax
+					push	IDM_EDIT_TRIM
+					push	TRUE
+					push	IDM_EDIT_TOGGLEBM
+					.if esi==ID_EDITHEX
+						push	FALSE
+						push	IDM_EDIT_BLOCKINSERT
+						invoke SendMessage,ebx,HEM_ANYBOOKMARKS,0,0
+					.else
+						invoke SendMessage,ebx,REM_GETMODE,0,0
+						and		eax,MODE_BLOCK
+						push	eax
+						push	IDM_EDIT_BLOCKINSERT
+						invoke UpdateAll,UAM_ANYBOOKMARKS,0
+						inc		eax
+					.endif
+					push	eax
+					push	IDM_EDIT_NEXTBM
+					push	eax
+					push	IDM_EDIT_PREVBM
+					push	eax
+					push	IDM_EDIT_CLEARBM
+					mov		eax,da.ErrID
+					push	eax
+					push	IDM_EDIT_NEXTERROR
+					push	eax
+					push	IDM_EDIT_CLEARERRORS
+				.elseif esi==ID_EDITRES
+					invoke SendMessage,ebx,DEM_CANUNDO,0,0
+					push	eax
+					push	IDM_EDIT_UNDO
+					invoke SendMessage,ebx,DEM_CANREDO,0,0
+					push	eax
+					push	IDM_EDIT_REDO
+					invoke SendMessage,ebx,DEM_CANPASTE,CF_TEXT,0
+					push	eax
+					push	IDM_EDIT_PASTE
+					invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+					push	eax
+					push	IDM_EDIT_CUT
+					push	eax
+					push	IDM_EDIT_COPY
+					push	eax
+					push	IDM_EDIT_DELETE
+					invoke SendMessage,ebx,PRO_GETSELECTED,0,0
+					.if eax==TPE_DIALOG
+						mov		eax,TRUE
+						xor		eax,eax
+					.else
+						xor		eax,eax
+					.endif
+					push	eax
+					push	IDM_EDIT_SELECTALL
+					xor		eax,eax
+					push	eax
+					push	IDM_EDIT_FIND
+					push	eax
+					push	IDM_EDIT_FINDNEXT
+					push	eax
+					push	IDM_EDIT_FINDPREV
+					push	eax
+					push	IDM_EDIT_REPLACE
+					push	eax
+					push	IDM_EDIT_GOTODECLARE
+					push	eax
+					push	IDM_EDIT_RETURN
+					push	eax
+					push	IDM_EDIT_GOTOLINE
+					push	eax
+					push	IDM_EDIT_INDENT
+					push	eax
+					push	IDM_EDIT_OUTDENT
+					push	eax
+					push	IDM_EDIT_COMMENT
+					push	eax
+					push	IDM_EDIT_UNCOMMENT
+					push	eax
+					push	IDM_EDIT_UPPERCASE
+					push	eax
+					push	IDM_EDIT_LOWERCASE
+					push	eax
+					push	IDM_EDIT_TOSPACES
+					push	eax
+					push	IDM_EDIT_TOTABS
+					push	eax
+					push	IDM_EDIT_TRIM
+					push	eax
+					push	IDM_EDIT_BLOCKMODE
+					push	eax
+					push	IDM_EDIT_BLOCKINSERT
+					push	eax
+					push	IDM_EDIT_TOGGLEBM
+					push	eax
+					push	IDM_EDIT_NEXTBM
+					push	eax
+					push	IDM_EDIT_PREVBM
+					push	eax
+					push	IDM_EDIT_CLEARBM
+					push	eax
+					push	IDM_EDIT_NEXTERROR
+					push	eax
+					push	IDM_EDIT_CLEARERRORS
+					push	eax
+					push	IDM_EDIT_OPENINCLUE
+				.elseif esi==ID_EDITUSER
+				.endif
+			.endif
+		.elseif eax==2
+			;View
+			mov		ID,IDM_VIEW
+			invoke CheckMenu,hMnu,nPos
+		.elseif eax==3
+			;Format
+			mov		ID,IDM_FORMAT
+			invoke CheckMenu,hMnu,nPos
+			.if esi==ID_EDITRES
+				mov		eax,TRUE
+				push	eax
+				push	IDM_FORMAT_LOCK
+				push	eax
+				push	IDM_FORMAT_SHOW
+				push	eax
+				push	IDM_FORMAT_SNAP
+				invoke SendMessage,ebx,DEM_GETMEM,DEWM_DIALOG,0
+				push	eax
+				push	IDM_FORMAT_INDEX
+				invoke SendMessage,ebx,DEM_ISSELECTION,0,0
+				push	eax
+				push	IDM_FORMAT_CENTERHORIZONTAL
+				push	eax
+				push	IDM_FORMAT_CENTERVERTICAL
+				.if eax!=2
+					xor		eax,eax
+				.endif
+				push	eax
+				push	IDM_FORMAT_ALIGNLEFT
+				push	eax
+				push	IDM_FORMAT_ALIGNCENTER
+				push	eax
+				push	IDM_FORMAT_ALIGNRIGHT
+				push	eax
+				push	IDM_FORMAT_ALIGNTOP
+				push	eax
+				push	IDM_FORMAT_ALIGNMIDDLE
+				push	eax
+				push	IDM_FORMAT_ALIGNBOTTOM
+				push	eax
+				push	IDM_FORMAT_SIZEWIDTH
+				push	eax
+				push	IDM_FORMAT_SIZEHEIGHT
+				push	eax
+				push	IDM_FORMAT_SIZEBOTH
+				invoke SendMessage,ebx,DEM_ISFRONT,0,0
+				xor		eax,TRUE
+				push	eax
+				push	IDM_FORMAT_FRONT
+				invoke SendMessage,ebx,DEM_ISBACK,0,0
+				xor		eax,TRUE
+				push	eax
+				push	IDM_FORMAT_BACK
+			.else
+				xor		eax,eax
+				push	eax
+				push	IDM_FORMAT_LOCK
+				push	eax
+				push	IDM_FORMAT_FRONT
+				push	eax
+				push	IDM_FORMAT_BACK
+				push	eax
+				push	IDM_FORMAT_SHOW
+				push	eax
+				push	IDM_FORMAT_SNAP
+				push	eax
+				push	IDM_FORMAT_ALIGNLEFT
+				push	eax
+				push	IDM_FORMAT_ALIGNCENTER
+				push	eax
+				push	IDM_FORMAT_ALIGNRIGHT
+				push	eax
+				push	IDM_FORMAT_ALIGNTOP
+				push	eax
+				push	IDM_FORMAT_ALIGNMIDDLE
+				push	eax
+				push	IDM_FORMAT_ALIGNBOTTOM
+				push	eax
+				push	IDM_FORMAT_SIZEWIDTH
+				push	eax
+				push	IDM_FORMAT_SIZEHEIGHT
+				push	eax
+				push	IDM_FORMAT_SIZEBOTH
+				push	eax
+				push	IDM_FORMAT_CENTERHORIZONTAL
+				push	eax
+				push	IDM_FORMAT_CENTERVERTICAL
+				push	eax
+				push	IDM_FORMAT_INDEX
+			.endif
+		.elseif eax==4
+			;Project
+			mov		ID,IDM_PROJECT
+			xor		edi,edi
+			mov		eax,TRUE
+			push	eax
+			push	IDM_PROJECT_NEW
+			push	eax
+			push	IDM_PROJECT_OPEN
+			mov		eax,da.fProject
+			push	eax
+			push	IDM_PROJECT_CLOSE
+			push	eax
+			push	IDM_PROJECT_OPTION
+			.if eax
+				invoke SendMessage,ha.hProjectBrowser,RPBM_GETSELECTED,0,0
+				mov		edi,eax
+				.if edi
+					mov		edi,[edi].PBITEM.id
+				.endif
 			.endif
 			push	eax
-			push	IDM_MAKE_TOGGLEMODULE
-		.elseif esi==ID_EDITRES
-			push	TRUE
-			push	IDM_MAKE_TOGGLEMAIN
-			push	FALSE
-			push	IDM_MAKE_TOGGLEMODULE
-		.else
-			xor		eax,eax
+			push	IDM_PROJECT_ADDNEWFILE
 			push	eax
-			push	IDM_MAKE_TOGGLEMAIN
+			push	IDM_PROJET_ADDEXISTING
 			push	eax
-			push	IDM_MAKE_TOGGLEMODULE
-		.endif
-	.elseif eax==7
-		;Debug
-		mov		ID,IDM_DEBUG
-		xor		eax,eax
-		.if da.fCanDebug
-			.if esi==ID_EDITCODE
-				invoke UpdateAll,UAM_ANYBREAKPOINTS,0
-				inc		eax
+			push	IDM_PROJECT_ADDOPEN
+			push	eax
+			push	IDM_PROJECT_ADDALLOPEN
+			push	eax
+			push	IDM_PROJECT_ADDGROUP
+			.if sdword ptr edi<0
+				mov		edi,TRUE
+				xor		eax,eax
+			.elseif sdword ptr edi>0
+				mov		eax,TRUE
+				xor		edi,edi
+			.else
+				xor		edi,edi
+				xor		eax,eax
 			.endif
 			push	eax
-			push	IDM_DEBUG_CLEAR
+			push	IDM_PROJECT_REMOVEFILE
+			push	eax
+			push	IDM_PROJECT_EDITFILE
+			push	eax
+			push	IDM_PROJECT_OPENITEMFILE
+			push	edi
+			push	IDM_PROJECT_EDITGROUP
+			push	edi
+			push	IDM_PROJECT_OPENITEMGROUP
+			.if edi==-1
+				xor		edi,edi
+			.endif
+			push	edi
+			push	IDM_PROJECT_REMOVEGROUP
+			mov		eax,TRUE
+			.if da.fProject
+				xor		eax,eax
+			.endif
+			xor		edi,edi
+			.while edi<20
+				push	eax
+				lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
+				push	edx
+				inc		edi
+			.endw
+			invoke CheckMenu,hMnu,nPos
+		.elseif eax==5
+			;Resource
+			mov		ID,IDM_RESOURCE
 			xor		eax,eax
-			.if esi==ID_EDITCODE
+			.if esi==ID_EDITRES
 				mov		eax,TRUE
 			.endif
 			push	eax
-			push	IDM_DEBUG_TOGGLE
-			push	TRUE
-			push	IDM_DEBUG_RUN
-			mov		eax,da.fDebugging
+			push	IDM_RESOURCE_ADDDIALOG
 			push	eax
-			push	IDM_DEBUG_BREAK
+			push	IDM_RESOURCE_ADDMENU
 			push	eax
-			push	IDM_DEBUG_STOP
+			push	IDM_RESOURCE_ADDACCELERATOR
 			push	eax
-			push	IDM_DEBUG_INTO
+			push	IDM_RESOURCE_ADDVERSION
 			push	eax
-			push	IDM_DEBUG_OVER
+			push	IDM_RESOURCE_ADDSTRING
 			push	eax
-			push	IDM_DEBUG_CARET
-			xor		eax,TRUE
+			push	IDM_RESOURCE_ADDMANIFEST
 			push	eax
-			push	IDM_DEBUG_NODEBUG
-		.else
+			push	IDM_RESOURCE_ADDRCDATA
 			push	eax
-			push	IDM_DEBUG_CLEAR
+			push	IDM_RESOURCE_ADDTOLBAR
 			push	eax
-			push	IDM_DEBUG_TOGGLE
+			push	IDM_RESOURCE_LANGUAGE
 			push	eax
-			push	IDM_DEBUG_RUN
+			push	IDM_RESOURCE_INCLUDE
 			push	eax
-			push	IDM_DEBUG_BREAK
+			push	IDM_RESOURCE_RESOURCE
 			push	eax
-			push	IDM_DEBUG_STOP
+			push	IDM_RESOURCE_NAMES
 			push	eax
-			push	IDM_DEBUG_INTO
+			push	IDM_RESOURCE_EXPORT
+			invoke SendMessage,ebx,PRO_GETSELECTED,0,0
+			.if eax<=1
+				xor		eax,eax
+			.endif
 			push	eax
-			push	IDM_DEBUG_OVER
+			push	IDM_RESOURCE_REMOVE
+			invoke SendMessage,ebx,PRO_CANUNDO,0,0
 			push	eax
-			push	IDM_DEBUG_CARET
+			push	IDM_RESOURCE_UNDO
+		.elseif eax==6
+			;Make
+			mov		ID,IDM_MAKE
+			;Get relative pointer to selected build command
+			invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+			mov		edx,sizeof MAKE
+			mul		edx
+			mov		edi,eax
+			invoke iniInStr,addr da.make.szOutAssemble[edi],addr szDotExe
+			inc		eax
+			mov		fNoLink,eax
+			xor		eax,eax
+			.if da.szMainRC && da.make.szOutCompileRC[edi]
+				mov		eax,TRUE
+			.endif
 			push	eax
-			push	IDM_DEBUG_NODEBUG
+			push	IDM_MAKE_COMPILE
+			xor		eax,eax
+			.if da.szMainAsm && da.make.szOutAssemble[edi]
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_MAKE_ASSEMBLE
+			xor		eax,eax
+			.if da.szMainAsm && da.make.szAssemble[edi] && (da.make.szLink[edi] || da.make.szLib[edi])
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_MAKE_BUILD
+			xor		eax,eax
+			.if fNoLink && da.szMainAsm
+				inc		eax
+			.elseif da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+				invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+				inc		eax
+			.endif
+			push	eax
+			push	IDM_MAKE_GO
+			xor		eax,eax
+			.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_MAKE_LINK
+			xor		eax,eax
+			.if fNoLink && da.szMainAsm
+				inc		eax
+			.else
+				.if da.szMainAsm && da.make.szAssemble[edi] && da.make.szLink[edi]
+					invoke iniInStr,addr da.make.szOutLink[edi],addr szDotExe
+					inc		eax
+				.endif
+			.endif
+			push	eax
+			push	IDM_MAKE_RUN
+			.if !da.szDebug
+				xor		eax,eax
+			.endif
+			push	eax
+			push	IDM_MAKE_DEBUG
+			;Any modules
+			xor		eax,eax
+			.if da.make.szAssemble[edi]
+				push	ebx
+				xor		ebx,ebx
+				.while TRUE
+					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+					.break .if!eax
+					mov		ebx,[eax].PBITEM.id
+					.if [eax].PBITEM.flag==FLAG_MODULE
+						mov		eax,TRUE
+						.break
+					.endif
+				.endw
+				pop		ebx
+			.endif
+			push	eax
+			push	IDM_MAKE_MODULES
+			.if esi==ID_EDITCODE
+				push	TRUE
+				push	IDM_MAKE_TOGGLEMAIN
+				invoke GetTheFileType,addr da.szFileName
+				.if eax==ID_EDITRES
+					xor		eax,eax
+				.else
+					mov		eax,da.fProject
+				.endif
+				push	eax
+				push	IDM_MAKE_TOGGLEMODULE
+			.elseif esi==ID_EDITRES
+				push	TRUE
+				push	IDM_MAKE_TOGGLEMAIN
+				push	FALSE
+				push	IDM_MAKE_TOGGLEMODULE
+			.else
+				xor		eax,eax
+				push	eax
+				push	IDM_MAKE_TOGGLEMAIN
+				push	eax
+				push	IDM_MAKE_TOGGLEMODULE
+			.endif
+		.elseif eax==7
+			;Debug
+			mov		ID,IDM_DEBUG
+			xor		eax,eax
+			.if da.fCanDebug
+				.if esi==ID_EDITCODE
+					invoke UpdateAll,UAM_ANYBREAKPOINTS,0
+					inc		eax
+				.endif
+				push	eax
+				push	IDM_DEBUG_CLEAR
+				xor		eax,eax
+				.if esi==ID_EDITCODE
+					mov		eax,TRUE
+				.endif
+				push	eax
+				push	IDM_DEBUG_TOGGLE
+				push	TRUE
+				push	IDM_DEBUG_RUN
+				mov		eax,da.fDebugging
+				push	eax
+				push	IDM_DEBUG_BREAK
+				push	eax
+				push	IDM_DEBUG_STOP
+				push	eax
+				push	IDM_DEBUG_INTO
+				push	eax
+				push	IDM_DEBUG_OVER
+				push	eax
+				push	IDM_DEBUG_CARET
+				xor		eax,TRUE
+				push	eax
+				push	IDM_DEBUG_NODEBUG
+			.else
+				push	eax
+				push	IDM_DEBUG_CLEAR
+				push	eax
+				push	IDM_DEBUG_TOGGLE
+				push	eax
+				push	IDM_DEBUG_RUN
+				push	eax
+				push	IDM_DEBUG_BREAK
+				push	eax
+				push	IDM_DEBUG_STOP
+				push	eax
+				push	IDM_DEBUG_INTO
+				push	eax
+				push	IDM_DEBUG_OVER
+				push	eax
+				push	IDM_DEBUG_CARET
+				push	eax
+				push	IDM_DEBUG_NODEBUG
+			.endif
+		.elseif eax==8
+			;Tools
+			mov		ID,IDM_TOOLS
+		.elseif eax==9
+			;Window
+			mov		ID,IDM_WINDOW
+			xor		eax,eax
+			.if ebx
+				mov		eax,TRUE
+			.endif
+			push	eax
+			push	IDM_WINDOW_CLOSE
+			push	eax
+			push	IDM_WINDOW_CLOSEALL
+			push	eax
+			push	IDM_WINDOW_CLOSEALLBUT
+			push	eax
+			push	IDM_WINDOW_HORIZONTAL
+			push	eax
+			push	IDM_WINDOW_VERTICAL
+			push	eax
+			push	IDM_WIDDOW_CASCADE
+			push	eax
+			push	IDM_WINDOW_ICONS
+			push	eax
+			push	IDM_WINDOW_MAXIMIZE
+			push	eax
+			push	IDM_WINDOW_RESTORE
+			push	eax
+			push	IDM_WINDOW_MINIMIZE
+		.elseif eax==10
+			;Option
+			mov		ID,IDM_OPTION
+		.elseif eax==11
+			;Help
+			mov		ID,IDM_HELP
 		.endif
-	.elseif eax==8
-		;Tools
-		mov		ID,IDM_TOOLS
-	.elseif eax==9
-		;Window
-		mov		ID,IDM_WINDOW
-		xor		eax,eax
-		.if ebx
-			mov		eax,TRUE
-		.endif
-		push	eax
-		push	IDM_WINDOW_CLOSE
-		push	eax
-		push	IDM_WINDOW_CLOSEALL
-		push	eax
-		push	IDM_WINDOW_CLOSEALLBUT
-		push	eax
-		push	IDM_WINDOW_HORIZONTAL
-		push	eax
-		push	IDM_WINDOW_VERTICAL
-		push	eax
-		push	IDM_WIDDOW_CASCADE
-		push	eax
-		push	IDM_WINDOW_ICONS
-		push	eax
-		push	IDM_WINDOW_MAXIMIZE
-		push	eax
-		push	IDM_WINDOW_RESTORE
-		push	eax
-		push	IDM_WINDOW_MINIMIZE
-	.elseif eax==10
-		;Option
-		mov		ID,IDM_OPTION
-	.elseif eax==11
-		;Help
-		mov		ID,IDM_HELP
+		.while TRUE
+			pop		edx
+			pop		eax
+			.break .if !edx
+			.if eax
+				mov		eax,MF_BYCOMMAND or MF_ENABLED
+			.else
+				mov		eax,MF_BYCOMMAND or MF_GRAYED
+			.endif
+			invoke EnableMenuItem,hMnu,edx,eax
+		.endw
+		invoke PostAddinMessage,ha.hWnd,AIM_MENUENABLE,ID,0,0,HOOK_MENUENABLE
 	.endif
-	.while TRUE
-		pop		edx
-		pop		eax
-		.break .if !edx
-		.if eax
-			mov		eax,MF_BYCOMMAND or MF_ENABLED
-		.else
-			mov		eax,MF_BYCOMMAND or MF_GRAYED
-		.endif
-		invoke EnableMenuItem,hMnu,edx,eax
-	.endw
-	invoke PostAddinMessage,ha.hWnd,AIM_MENUENABLE,ID,0,0,HOOK_MENUENABLE
 	ret
 
 EnableMenu endp

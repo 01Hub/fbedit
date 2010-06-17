@@ -352,6 +352,10 @@ ADDINHANDLES struct
 	hHtmlOcx			HANDLE ?
 	hFind				HWND ?
 	hDbgTip				HWND ?
+	hMemMnu				HGLOBAL ?
+	hDCMnu				HDC ?
+	hFontMnu			HFONT ?
+	hBrMnu				HBRUSH ?
 ADDINHANDLES ends
 
 ADDINPROCS struct
@@ -490,6 +494,17 @@ FIND struct
 	szfindhistory		BYTE 10*256 dup(?)
 FIND ends
 
+RAMNUITEM struct
+	hMnu				HMENU ?
+	wid					DWORD ?
+	ntype				DWORD ?
+	caption				BYTE MAX_PATH dup(?)
+	accel				BYTE 32 dup(?)
+	img					DWORD ?
+	wdt					DWORD ?
+	hgt					DWORD ?
+RAMNUITEM ends
+
 ADDINDATA struct
 	Version				DWORD ?
 	lpszVersion			DWORD ?
@@ -584,6 +599,7 @@ ADDINDATA struct
 	ccchrg				CHARRANGE <?>
 	tti					TTITEM <>
 	fIncBuild			DWORD ?
+	rpFreeMnu			DWORD ?
 ADDINDATA ends
 
 FILEINFO struct
