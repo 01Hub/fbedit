@@ -1584,6 +1584,7 @@ GetProjectFiles proc uses ebx esi edi
 	LOCAL	pbi:PBITEM
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	nMiss:DWORD
+	LOCAL	hMem:HGLOBAL
 
 	invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
 	invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
@@ -1618,10 +1619,14 @@ GetProjectFiles proc uses ebx esi edi
 			inc		ebx
 		.endw
 		;Get files
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+		mov		hMem,eax
+		invoke GetPrivateProfileSection,addr szIniProject,hMem,256*1024,addr da.szProjectFile
 		mov		nMiss,0
 		mov		esi,START_FILES
 		.while esi<MAX_FILES
-			invoke GetFileInfo,esi,addr szIniProject,addr da.szProjectFile,addr fi
+;			invoke GetFileInfo,esi,addr szIniProject,addr da.szProjectFile,addr fi
+			invoke MemGetFileInfo,hMem,esi,addr fi
 			.if eax
 				invoke RtlZeroMemory,addr pbi,sizeof PBITEM
 				mov		pbi.id,esi
@@ -1655,6 +1660,7 @@ GetProjectFiles proc uses ebx esi edi
 			.endif
 			inc		esi
 		.endw
+		invoke GlobalFree,hMem
 		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 		invoke UpdateWindow,ha.hProperty
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
@@ -2092,6 +2098,7 @@ CloseProject proc
 		invoke SetMainWinCaption
 		invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
 		invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
+		invoke UpdateWindow,ha.hWnd
 		mov		eax,TRUE
 	.else
 		xor		eax,eax

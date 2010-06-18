@@ -80,8 +80,10 @@ CreateToolTip endp
 ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	hDC:HDC
 	LOCAL	rect:RECT
+	LOCAL	nMin:DWORD
+	LOCAL	nMax:DWORD
 
-		mov		eax,uMsg
+	mov		eax,uMsg
 	.if eax==WM_NOTIFY
 		mov		ebx,lParam
 		.if [ebx].NMHDR.code==TTN_NEEDTEXT
@@ -117,6 +119,29 @@ ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,FALSE,0
 			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,TRUE,0
 		.endif
+	.elseif eax==WM_MOUSEWHEEL
+		invoke GetScrollRange,hWin,SB_VERT,addr nMin,addr nMax
+		invoke GetScrollPos,hWin,SB_VERT
+		mov		edx,wParam
+		shr		edx,16
+		movsx	edx,dx
+		.if sdword ptr edx<0
+			add		eax,3
+			.if eax>nMax
+				mov		eax,nMax
+			.endif
+		.else
+			sub		eax,3
+			.if CARRY?
+				xor		eax,eax
+			.endif
+		.endif
+		push	eax
+		invoke SendMessage,hWin,LB_SETTOPINDEX,eax,0
+		pop		eax
+		invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
+		xor		eax,eax
+		jmp		Ex
 	.endif
 	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
   Ex:

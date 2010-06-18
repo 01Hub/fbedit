@@ -287,6 +287,8 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			.else
 				invoke CloseProject
 				.if eax
+					invoke LoadCursor,0,IDC_WAIT
+					invoke SetCursor,eax
 					invoke strcpy,addr da.szProjectFile,lpFileName
 					invoke strcpy,addr da.szProjectPath,addr da.szProjectFile
 					invoke RemoveFileName,addr da.szProjectPath
@@ -303,6 +305,8 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					invoke AddMRU,addr da.szMruProjects,addr da.szProjectFile
 					invoke UpdateMRUMenu,addr da.szMruProjects
 					invoke SetMainWinCaption
+					invoke LoadCursor,0,IDC_ARROW
+					invoke SetCursor,eax
 				.endif
 			.endif
 		.elseif eax==ID_EXTERNAL

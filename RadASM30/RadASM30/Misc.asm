@@ -91,6 +91,29 @@ strcmp proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 strcmp endp
 
+strcmpn proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD,nCount:DWORD
+
+	mov		esi,lpStr1
+	mov		edi,lpStr2
+	xor		ecx,ecx
+	dec		ecx
+  @@:
+	inc		ecx
+	cmp		ecx,nCount
+	je		@f
+	mov		al,[esi+ecx]
+	mov		ah,[edi+ecx]
+	sub		al,ah
+	jne		@f
+	cmp		al,[esi+ecx]
+	jne		@b
+  @@:
+	cbw
+	cwde
+	ret
+
+strcmpn endp
+
 strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 	mov		esi,lpStr1
@@ -447,6 +470,45 @@ PutItemQuotedStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 	ret
 
 PutItemQuotedStr endp
+
+MemGetPrivateProfileString proc uses ebx esi edi,lpKeyName:DWORD,lpDefault:DWORD,lpReturnedString:DWORD,nSize:DWORD,hMem:HGLOBAL
+
+	mov		edi,lpKeyName
+	mov		esi,hMem
+	invoke strlen,edi
+	mov		ebx,eax
+	call	FindKey
+	.if eax
+		invoke strcpyn,lpReturnedString,esi,nSize
+	.else
+		.if lpDefault
+			invoke strcpyn,lpReturnedString,lpDefault,nSize
+		.else
+			invoke strcpyn,lpReturnedString,addr szNULL,nSize
+		.endif
+	.endif
+	invoke strlen,lpReturnedString
+	ret
+
+FindKey:
+	invoke strcmpn,esi,edi,ebx
+	.if eax
+		invoke strlen,esi
+		lea		esi,[esi+eax+1]
+		.if byte ptr [esi]
+			jmp		FindKey
+		.endif
+		xor		eax,eax
+		jmp		Ex
+	.endif
+	.while byte ptr [esi-1]!='=' && byte ptr [esi]
+		inc		esi
+	.endw
+	mov		eax,TRUE
+  Ex:
+	retn
+
+MemGetPrivateProfileString endp
 
 RemoveFileExt proc uses esi,lpFileName:DWORD
 
@@ -917,7 +979,7 @@ ParseFile proc lpFileName:DWORD,pid:DWORD
 
 ParseFile endp
 
-ShowPos proc nLine:DWORD,nPos:DWORD
+ShowPos proc nLine:DWORD,nPos:DWORD,nChars:DWORD
 	LOCAL	buffer[64]:BYTE
 
 	mov		edx,nLine
@@ -930,6 +992,12 @@ ShowPos proc nLine:DWORD,nPos:DWORD
 	mov		edx,nPos
 	inc		edx
 	invoke BinToDec,edx,addr buffer[eax+6]
+	.if nChars
+		invoke strlen,addr buffer
+		mov		dword ptr buffer[eax],'neL '
+		mov		dword ptr buffer[eax+4],' :'
+		invoke BinToDec,nChars,addr buffer[eax+6]
+	.endif
 	invoke SendMessage,ha.hStatus,SB_SETTEXT,0,addr buffer
 	ret
 
@@ -2397,6 +2465,47 @@ EnableToolBar proc uses ebx esi edi
 
 EnableToolBar endp
 
+MemGetFileInfo proc uses edi,hMem:HGLOBAL,nInx:DWORD,lpFILEINFO:DWORD
+	LOCAL	buffer[8]:BYTE
+
+	mov		edi,lpFILEINFO
+	mov		buffer,'F'
+	invoke BinToDec,nInx,addr buffer[1]
+	invoke MemGetPrivateProfileString,addr buffer,NULL,addr tmpbuff,sizeof tmpbuff,hMem
+	.if eax
+		.if da.fProject
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].FILEINFO.idparent,eax
+			invoke GetItemInt,addr tmpbuff,0
+			mov		[edi].FILEINFO.flag,eax
+			mov		eax,nInx
+			mov		[edi].FILEINFO.pid,eax
+		.endif
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.ID,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.left,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.top,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.right,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.rect.bottom,eax
+		invoke GetItemInt,addr tmpbuff,0
+		mov		[edi].FILEINFO.nline,eax
+		invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].FILEINFO.filename,sizeof FILEINFO.filename
+		.if da.fProject
+			invoke strcpy,addr tmpbuff,addr da.szProjectPath
+			invoke strcat,addr tmpbuff,addr szBS
+			invoke strcat,addr tmpbuff,addr [edi].FILEINFO.filename
+			invoke strcpy,addr [edi].FILEINFO.filename,addr tmpbuff
+		.endif
+		mov		eax,TRUE
+	.endif
+	ret
+
+MemGetFileInfo endp
+
 GetFileInfo proc uses edi,nInx:DWORD,lpSection:DWORD,lpFileName:DWORD,lpFILEINFO:DWORD
 	LOCAL	buffer[8]:BYTE
 
@@ -3799,3 +3908,4 @@ RTrim proc uses esi,lpBuff:DWORD
 	ret
 
 RTrim endp
+

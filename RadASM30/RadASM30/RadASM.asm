@@ -2920,7 +2920,13 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke PostAddinMessage,ha.hMdi,AIM_RASELCHANGE,ebx,esi,0,HOOK_RASELCHANGE
 				mov		eax,[esi].RASELCHANGE.chrg.cpMin
 				sub		eax,[esi].RASELCHANGE.cpLine
-				invoke ShowPos,[esi].RASELCHANGE.line,eax
+				mov		ecx,[esi].RASELCHANGE.chrg.cpMin
+				mov		edx,[esi].RASELCHANGE.chrg.cpMax
+				.if ecx>edx
+					xchg	ecx,edx
+				.endif
+				sub		edx,ecx
+				invoke ShowPos,[esi].RASELCHANGE.line,eax,edx
 				.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
 					mov		edi,[esi].RASELCHANGE.line
 					invoke SendMessage,[ebx].TABMEM.hedt,REM_GETBOOKMARK,edi,0
@@ -3081,7 +3087,13 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			.if [esi].NMHDR.code==EN_SELCHANGE
 				mov		eax,[esi].RASELCHANGE.chrg.cpMin
 				sub		eax,[esi].RASELCHANGE.cpLine
-				invoke ShowPos,[esi].RASELCHANGE.line,eax
+				mov		ecx,[esi].RASELCHANGE.chrg.cpMin
+				mov		edx,[esi].RASELCHANGE.chrg.cpMax
+				.if ecx>edx
+					xchg	ecx,edx
+				.endif
+				sub		edx,ecx
+				invoke ShowPos,[esi].RASELCHANGE.line,eax,edx
 				.if[esi].RASELCHANGE.seltyp==SEL_TEXT
 					.if [esi].RASELCHANGE.fchanged && ![ebx].TABMEM.fchanged
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
@@ -3094,7 +3106,7 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				invoke SendMessage,[ebx].TABMEM.hedt,EM_LINEINDEX,[esi].HESELCHANGE.line,0
 				mov		edx,[esi].HESELCHANGE.chrg.cpMin
 				sub		edx,eax
-				invoke ShowPos,[esi].HESELCHANGE.line,edx
+				invoke ShowPos,[esi].HESELCHANGE.line,edx,0
 				.if[esi].HESELCHANGE.seltyp==SEL_TEXT
 					.if [esi].HESELCHANGE.fchanged && ![ebx].TABMEM.fchanged
 						invoke TabToolSetChanged,[ebx].TABMEM.hwnd,TRUE
