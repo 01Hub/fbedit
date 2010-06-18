@@ -119,29 +119,6 @@ ListBoxProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,FALSE,0
 			invoke SendMessage,[ebx].RAPROPERTY.htooltip,TTM_ACTIVATE,TRUE,0
 		.endif
-	.elseif eax==WM_MOUSEWHEEL
-		invoke GetScrollRange,hWin,SB_VERT,addr nMin,addr nMax
-		invoke GetScrollPos,hWin,SB_VERT
-		mov		edx,wParam
-		shr		edx,16
-		movsx	edx,dx
-		.if sdword ptr edx<0
-			add		eax,3
-			.if eax>nMax
-				mov		eax,nMax
-			.endif
-		.else
-			sub		eax,3
-			.if CARRY?
-				xor		eax,eax
-			.endif
-		.endif
-		push	eax
-		invoke SendMessage,hWin,LB_SETTOPINDEX,eax,0
-		pop		eax
-		invoke SetScrollPos,hWin,SB_VERT,eax,TRUE
-		xor		eax,eax
-		jmp		Ex
 	.endif
 	invoke CallWindowProc,OldListBoxProc,hWin,uMsg,wParam,lParam
   Ex:
@@ -1005,7 +982,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateWindowEx,0,addr szComboBox,NULL,WS_CHILD or WS_VISIBLE or CBS_DROPDOWNLIST or CBS_HASSTRINGS,0,0,0,0,hWin,1002,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hcbo,eax
 		;Create ListBox
-		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWVARIABLE,0,0,0,0,hWin,1003,hInstance,NULL
+		invoke CreateWindowEx,WS_EX_CLIENTEDGE,addr szListBox,NULL,WS_CHILD or WS_VISIBLE or WS_VSCROLL or WS_CLIPCHILDREN or WS_CLIPSIBLINGS or LBS_SORT or LBS_NOINTEGRALHEIGHT or LBS_HASSTRINGS or LBS_NOTIFY or LBS_OWNERDRAWFIXED,0,0,0,0,hWin,1003,hInstance,NULL
 		mov		[ebx].RAPROPERTY.hlst,eax
 		invoke SetWindowLong,[ebx].RAPROPERTY.hlst,GWL_WNDPROC,offset ListBoxProc
 		mov		OldListBoxProc,eax
@@ -1028,12 +1005,11 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		mov		esi,lParam
-		assume esi:ptr DRAWITEMSTRUCT
-		invoke SendMessage,[esi].hwndItem,LB_GETTEXT,[esi].itemID,addr szname
+		invoke SendMessage,[esi].DRAWITEMSTRUCT.hwndItem,LB_GETTEXT,[esi].DRAWITEMSTRUCT.itemID,addr szname
 		.if eax!=LB_ERR
 			invoke strlen,addr szname
 			mov		len,eax
-			test	[esi].itemState,ODS_SELECTED
+			test	[esi].DRAWITEMSTRUCT.itemState,ODS_SELECTED
 			.if ZERO?
 				push	1
 				push	[ebx].RAPROPERTY.backcolor
@@ -1044,13 +1020,13 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				push	eax
 				invoke GetSysColor,COLOR_HIGHLIGHTTEXT
 			.endif
-			invoke SetTextColor,[esi].hdc,eax
+			invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,eax
 			pop		eax
-			invoke SetBkColor,[esi].hdc,eax
-			invoke ExtTextOut,[esi].hdc,0,0,ETO_OPAQUE,addr [esi].rcItem,NULL,0,NULL
+			invoke SetBkColor,[esi].DRAWITEMSTRUCT.hdc,eax
+			invoke ExtTextOut,[esi].DRAWITEMSTRUCT.hdc,0,0,ETO_OPAQUE,addr [esi].DRAWITEMSTRUCT.rcItem,NULL,0,NULL
 			pop		eax
-			push	[esi].rcItem.left
-			add		[esi].rcItem.left,3
+			push	[esi].DRAWITEMSTRUCT.rcItem.left
+			add		[esi].DRAWITEMSTRUCT.rcItem.left,3
 			.if eax
 				push	edi
 				mov		edi,offset szname
@@ -1065,33 +1041,32 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						push	ecx
 						mov		rect.left,0
 						mov		rect.top,0
-						invoke DrawText,[esi].hdc,edi,ecx,addr rect,DT_CALCRECT or DT_SINGLELINE
+						invoke DrawText,[esi].DRAWITEMSTRUCT.hdc,edi,ecx,addr rect,DT_CALCRECT or DT_SINGLELINE
 						pop		ecx
-						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,ecx
+						invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,[esi].DRAWITEMSTRUCT.rcItem.left,[esi].DRAWITEMSTRUCT.rcItem.top,edi,ecx
 						mov		eax,rect.right
 						inc		eax
-						add		[esi].rcItem.left,eax
+						add		[esi].DRAWITEMSTRUCT.rcItem.left,eax
 						pop		ecx
 						lea		edi,[edi+ecx]
 					.elseif byte ptr [edi]
 						mov		rect.left,0
 						mov		rect.top,0
-						invoke DrawText,[esi].hdc,edi,1,addr rect,DT_CALCRECT or DT_SINGLELINE
-						invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.oprcolor
-						invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,edi,1
-						invoke SetTextColor,[esi].hdc,[ebx].RAPROPERTY.textcolor
+						invoke DrawText,[esi].DRAWITEMSTRUCT.hdc,edi,1,addr rect,DT_CALCRECT or DT_SINGLELINE
+						invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,[ebx].RAPROPERTY.oprcolor
+						invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,[esi].DRAWITEMSTRUCT.rcItem.left,[esi].DRAWITEMSTRUCT.rcItem.top,edi,1
+						invoke SetTextColor,[esi].DRAWITEMSTRUCT.hdc,[ebx].RAPROPERTY.textcolor
 						mov		eax,rect.right
 						inc		eax
-						add		[esi].rcItem.left,eax
+						add		[esi].DRAWITEMSTRUCT.rcItem.left,eax
 						inc		edi
 					.endif
 				.endw
 				pop		edi
 			.else
-				invoke TextOut,[esi].hdc,[esi].rcItem.left,[esi].rcItem.top,offset szname,len
+				invoke TextOut,[esi].DRAWITEMSTRUCT.hdc,[esi].DRAWITEMSTRUCT.rcItem.left,[esi].DRAWITEMSTRUCT.rcItem.top,offset szname,len
 			.endif
-			pop		[esi].rcItem.left
-			assume esi:nothing
+			pop		[esi].DRAWITEMSTRUCT.rcItem.left
 			pop		esi
 		.else
 			pop		esi

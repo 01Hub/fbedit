@@ -141,7 +141,7 @@ ProductVer4Range=0
 7=00FFFFFF
 [Collapse]
 2=
-1=,,,,,
+1=,,,,
 4=
 3=
 8=
@@ -161,14 +161,14 @@ ProductVer4Range=0
 [Size]
 2=0,0,699,490,591
 <<<<<<< .mine
-1=0,0,699,490,3538
+1=0,0,699,490,20932
 =======
 1=0,0,699,490,13346
 >>>>>>> .r101
 4=0,0,0,0,41
 3=0,0,0,0,0
 8=0,0,0,0,1542
-7=0,0,0,0,3683
+7=0,0,0,0,15
 9=0,0,0,0,1944
 10=0,0,0,0,35333
 11=0,0,746,498,3247
@@ -198,18 +198,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,11,13,2,7,9,20,17
 [PTimer]
-PTimer=339254548
+PTimer=341491259
 [Find]
-1="szfpword2"
-2="nSOLASM"
-3="szsol"
-4="Sol"
-5="szsoldword"
-6="buff"
-7="solbuffer"
-8="cppbuff"
-9="szdatatypes"
-10="szinenum"
+1="[esi]."
+2="assume"
+3="szfpword2"
+4="nSOLASM"
+5="szsol"
+6="Sol"
+7="szsoldword"
+8="buff"
+9="solbuffer"
+10="cppbuff"
 
 [Exports]
 1=GetDefEx

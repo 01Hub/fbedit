@@ -66,7 +66,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=5
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -113,8 +113,8 @@ ProductVer4Range=0
 0=
 [Size]
 4=0,0,0,0
-1=0,0,0,0,626
-2=0,0,728,518,683
+1=0,0,0,0,2752
+2=0,0,728,518,652
 5=0,0,728,518,2452
 3=0,0,0,0,0
 [Collapse]
@@ -123,7 +123,7 @@ ProductVer4Range=0
 5=
 3=
 [PTimer]
-PTimer=2020204
+PTimer=2361925
 [Find]
 1="PRM_ADDPROPERTYFILE"
 2="PRM_MEMSEARCH"
@@ -136,6 +136,9 @@ PTimer=2020204
 9="PRM_GETSTRUCTWORD"
 10="PRM_CLEARWORDLIST"
 [AutoLoad]
-1=1
+AutoLoad=1,2
 [RADebugBP]
 2=
+0=
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0

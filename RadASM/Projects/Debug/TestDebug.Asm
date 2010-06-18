@@ -99,6 +99,78 @@ MyProc3 proc uses esi,Param:DWORD
 
 MyProc3 endp
 
+MyProc4 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc4 endp
+
+MyProc5 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc5 endp
+
+MyProc6 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc6 endp
+
+MyProc7 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc7 endp
+
+MyProc8 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc8 endp
+
+MyProc9 proc uses esi,Param:DWORD
+
+	ret
+
+MyProc9 endp
+
+MyProcA proc uses esi,Param:DWORD
+
+	ret
+
+MyProcA endp
+
+MyProcB proc uses esi,Param:DWORD
+
+	ret
+
+MyProcB endp
+
+MyProcC proc uses esi,Param:DWORD
+
+	ret
+
+MyProcC endp
+
+MyProcD proc uses esi,Param:DWORD
+
+	ret
+
+MyProcD endp
+
+MyProcE proc uses esi,Param:DWORD
+
+	ret
+
+MyProcE endp
+
+MyProcF proc uses esi,Param:DWORD
+
+	ret
+
+MyProcF endp
+
 ThreadProc1 proc Param:DWORD
 
 	mov		eax,'abcd'
