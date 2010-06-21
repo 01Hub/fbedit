@@ -4,6 +4,12 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.5 2010-06-21
+--------------------------
+o Nicer looking menu.
+o Fixed a property tool bug. Scrolling behaved weird when using the mouse wheel
+  to scroll the list.
+
 Version 3.0.0.4 2010-06-18
 --------------------------
 o The properties toolbar now works.
