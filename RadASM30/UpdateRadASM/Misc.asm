@@ -196,7 +196,10 @@ UpdateRadASMIni proc hWin:HWND
 			mov		eax,3004
 		.endif
 		.if eax==3004
-			;3004 --> 3005, no update needed
+			;3004 --> 3005
+			;PrijectZip
+			invoke GetPrivateProfileSection,addr szIniProjectZip,addr szTmpBuff,sizeof szTmpBuff,addr szfrom
+			invoke WritePrivateProfileSection,addr szIniProjectZip,addr szTmpBuff,addr szto
 			mov		eax,3005
 		.endif
 		invoke wsprintf,addr buffer,addr szDecFormat,vernew

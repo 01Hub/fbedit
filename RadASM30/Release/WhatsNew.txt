@@ -7,6 +7,7 @@ Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 Version 3.0.0.5 2010-06-21
 --------------------------
 o Nicer looking menu.
+o Added ProjectZip addin.
 o Fixed a property tool bug. Scrolling behaved weird when using the mouse wheel
   to scroll the list.
 

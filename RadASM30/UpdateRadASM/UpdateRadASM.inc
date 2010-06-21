@@ -65,6 +65,7 @@ szIniParse				BYTE 'Parse',0
 szIniAssembler			BYTE 'Assembler',0
 szIniDebug				BYTE 'Debug',0
 szIniHelp				BYTE 'Help',0
+szIniProjectZip			BYTE 'ProjectZip',0
 ;Format
 szDecFormat				BYTE '%d',0
 ;Update
@@ -75,5 +76,6 @@ szRadASMHelp			BYTE 'RadASM,$A\Help\RadASM.chm',0
 hInstance				HINSTANCE ?
 szAppPath				BYTE MAX_PATH dup(?)
 szRadASMPath			BYTE MAX_PATH dup(?)
+szTmpBuff				BYTE 1024 dup(?)
 
 ;#########################################################################
