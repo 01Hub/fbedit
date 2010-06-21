@@ -1370,7 +1370,7 @@ CheckMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			lea		edx,[edi+IDM_PROJECT_LANGUAGE_START]
 			.while [esi].RAMNUITEM.hMnu
 				.if edx==[esi].RAMNUITEM.wid
-					invoke strcmp,addr [esi].RAMNUITEM.caption,addr da.szAssembler
+					invoke strcmpi,addr [esi].RAMNUITEM.caption,addr da.szAssembler
 					.break
 				.endif
 				lea		esi,[esi+sizeof RAMNUITEM]
@@ -1833,6 +1833,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			.endif
 			push	edi
 			push	IDM_PROJECT_REMOVEGROUP
+			push	eax
+			push	IDM_PROJECT_TEMPLATE
 			mov		eax,TRUE
 			.if da.fProject
 				xor		eax,eax

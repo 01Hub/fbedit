@@ -1080,7 +1080,7 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if da.fProject
 					invoke DialogBoxParam,ha.hInstance,IDD_DLGPO,hWin,offset ProjectOptionProc,0
 				.endif
-			.elseif eax==IDM_PROJECTTEMPLATE
+			.elseif eax==IDM_PROJECT_TEMPLATE
 				.if da.fProject
 					invoke DialogBoxParam,ha.hInstance,IDD_DLGNEWTEMPLATE,hWin,offset NewTemplateDialogProc,0
 				.endif
