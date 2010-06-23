@@ -1235,19 +1235,19 @@ CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
 		invoke SendMessage,ha.hEdt,REM_ISCHARPOS,cp,0
 		.if !eax
 			invoke SendMessage,ha.hEdt,REM_SETCHARTAB,'.',CT_CHAR
-			invoke SendMessage,ha.hEdt,REM_GETWORDFROMPOS,cp,addr buffer
+			invoke SendMessage,ha.hEdt,REM_GETWORDFROMPOS,cp,addr tmpbuff
 			.if eax
-				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr buffer
+				invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCaseTypes,addr tmpbuff
 				mov		ebx,eax
 				.while ebx
-					invoke strcmpi,ebx,addr buffer
+					invoke strcmpi,ebx,addr tmpbuff
 					.if !eax
 						invoke SendMessage,ha.hEdt,REM_CASEWORD,cp,ebx
 						invoke SendMessage,ha.hEdt,EM_LINEFROMCHAR,cp,0
 						invoke SendMessage,ha.hEdt,REM_INVALIDATELINE,eax,0
 						.break
 					.endif
-					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCaseTypes,addr buffer
+					invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
 					mov		ebx,eax
 				.endw
 			.endif

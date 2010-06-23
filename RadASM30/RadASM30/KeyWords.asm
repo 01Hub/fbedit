@@ -21,6 +21,7 @@ IDC_BTNDELKW		equ 4010
 IDC_CHKBOLD			equ 4004
 IDC_CHKITALIC		equ 4003
 IDC_CHKRCFILE		equ 4005
+IDC_EDTCODEFILES	equ 4036
 IDC_SPNTABSIZE		equ 4017
 IDC_EDTTABSIZE		equ 4018
 IDC_CHKEXPAND		equ 4019
@@ -561,6 +562,8 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 			add		esi,sizeof THEME
 			inc		nInx
 		.endw
+		invoke SendDlgItemMessage,hWin,IDC_EDTCODEFILES,EM_LIMITTEXT,sizeof da.szCodeFiles-1,0
+		invoke SetDlgItemText,hWin,IDC_EDTCODEFILES,addr da.szCodeFiles
 		invoke SendDlgItemMessage,hWin,IDC_CBOTHEME,CB_SETCURSEL,0,0
 		mov		eax,IDC_BTNKWAPPLY
 		xor		edx,edx
@@ -809,6 +812,10 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		eax,IDC_BTNADDKW
 				call	EnButton
 			.elseif eax==IDC_EDTTABSIZE
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
+				call	EnButton
+			.elseif eax==IDC_EDTCODEFILES
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
@@ -1259,6 +1266,8 @@ Update:
 			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniLine,addr tmpbuff[1],addr da.szRadASMIni
 		.endif
+		invoke GetDlgItemText,hWin,IDC_EDTCODEFILES,addr da.szCodeFiles,sizeof da.szCodeFiles
+		invoke WritePrivateProfileString,addr szIniFile,addr szIniCode,addr da.szCodeFiles,addr da.szAssemblerIni
 		;Set tool colors
 		invoke GetKeywords
 		invoke UpdateToolColors

@@ -522,7 +522,7 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 			invoke ReadProcessMemory,dbg.hdbghand,dbg.minadr,dbg.hMemBP,ebx,0
 			invoke MapBreakPoints
 			.if eax
-				invoke wsprintf,addr buffer,addr szUnhanfledBreakpoints,eax
+				invoke wsprintf,addr buffer,addr szUnhandledBreakpoints,eax
 				invoke MessageBox,hOut,addr buffer,addr szDebug,MB_OK or MB_ICONEXCLAMATION
 			.endif
 			mov		ebx,dbg.hMemLine
@@ -631,6 +631,11 @@ Debug proc uses ebx esi edi,lpFileName:DWORD
 					invoke wsprintf,addr outbuffer,addr szEXCEPTION_ACCESS_VIOLATION,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
 					invoke PutString,addr outbuffer,hOut,TRUE
 					invoke WriteProcessMemory,dbg.hdbghand,de.u.Exception.pExceptionRecord.ExceptionAddress,addr szBP,1,0
+					.if !eax
+						invoke ResetSelectLine
+						mov		dbg.func,FUNC_STOP
+						invoke TerminateProcess,dbg.pinfo.hProcess,0
+					.endif
 				.elseif eax==EXCEPTION_FLT_DIVIDE_BY_ZERO
 					invoke wsprintf,addr outbuffer,addr szEXCEPTION_FLT_DIVIDE_BY_ZERO,de.u.Exception.pExceptionRecord.ExceptionAddress,de.dwThreadId
 					invoke PutString,addr outbuffer,hOut,TRUE

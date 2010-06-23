@@ -63,6 +63,8 @@ keypaste						INPUT <INPUT_KEYBOARD,VK_CONTROL,0,0,0,0,0>
 rseed							DWORD ?
 fCutPaste						DWORD ?
 logbuff							BYTE 1024 dup(?)
+fTest							DWORD ?
+fBreak							DWORD ?
 
 .code
 
@@ -91,22 +93,37 @@ TestProc proc uses ebx esi edi,Param:DWORD
 
 ;	invoke GetTickCount
 ;	mov		rseed,eax
-	.while ebx<200
-		invoke SetFocus,ha.hEdt
-		invoke Random,10
-		.if eax<=6
-			call	Copy
-			invoke Sleep,20
-			call	Paste
-		.else
-			call	Cut
-			invoke Sleep,20
-			call	Paste
+	xor		ebx,ebx
+	.while ebx<20000
+		invoke SendMessage,ha.hTab,TCM_GETITEMCOUNT,0,0
+		dec		eax
+		invoke Random,eax
+		invoke SendMessage,ha.hTab,TCM_SETCURSEL,eax,0
+		.if eax!=-1
+			invoke TabToolActivate
+			.if ha.hMdi
+				invoke GetWindowLong,ha.hEdt,GWL_ID
+				.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+					invoke SetFocus,ha.hEdt
+					call	Paste
+;					invoke Random,10
+;					.if eax<=6
+;						call	Copy
+;						invoke Sleep,20
+;						call	Paste
+;					.else
+;						call	Cut
+;						invoke Sleep,20
+;						call	Paste
+;					.endif
+				.endif
+			.endif
 		.endif
 		invoke Random,50
 		add		eax,200
 		invoke Sleep,eax
 		inc		ebx
+		.break.if fBreak
 	.endw
 	ret
 
@@ -125,12 +142,12 @@ Cut:
 	mov		chrg.cpMax,eax
 	invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
 	invoke SendInput,4,addr keycut,sizeof INPUT
-;	.while !fCutPaste
-;		invoke Sleep,10
-;	.endw
-;	.while fCutPaste
-;		invoke Sleep,10
-;	.endw
+	.while !fCutPaste
+		invoke Sleep,10
+	.endw
+	.while fCutPaste
+		invoke Sleep,10
+	.endw
 	retn
 
 Copy:

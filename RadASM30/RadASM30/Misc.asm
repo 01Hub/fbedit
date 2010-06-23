@@ -492,7 +492,7 @@ MemGetPrivateProfileString proc uses ebx esi edi,lpKeyName:DWORD,lpDefault:DWORD
 
 FindKey:
 	invoke strcmpn,esi,edi,ebx
-	.if eax
+	.if eax || byte ptr [esi+ebx]!='='
 		invoke strlen,esi
 		lea		esi,[esi+eax+1]
 		.if byte ptr [esi]
@@ -501,9 +501,12 @@ FindKey:
 		xor		eax,eax
 		jmp		Ex
 	.endif
-	.while byte ptr [esi-1]!='=' && byte ptr [esi]
+	.while byte ptr [esi]!='=' && byte ptr [esi]
 		inc		esi
 	.endw
+	.if byte ptr [esi]=='='
+		inc		esi
+	.endif
 	mov		eax,TRUE
   Ex:
 	retn

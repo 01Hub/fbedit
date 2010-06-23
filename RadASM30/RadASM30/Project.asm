@@ -1378,7 +1378,7 @@ AddNewProjectFile proc
 
 AddNewProjectFile endp
 
-AddProjectFiles proc uses esi edi,lpFileNames:DWORD
+AddProjectFiles proc uses ebx esi edi,lpFileNames:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	nOpen:DWORD
 
@@ -1400,9 +1400,11 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,addr buffer
 			.if eax
 				.if ha.hMdi
+					mov		ebx,[eax].PBITEM.id
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
 						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						mov		[eax].TABMEM.pid,ebx
 						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 					.endif
 				.endif
@@ -1425,9 +1427,11 @@ AddProjectFiles proc uses esi edi,lpFileNames:DWORD
 			invoke SendMessage,ha.hProjectBrowser,RPBM_ADDNEWFILE,0,esi
 			.if eax
 				.if ha.hMdi
+					mov		ebx,[eax].PBITEM.id
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
 						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+						mov		[eax].TABMEM.pid,ebx
 						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 					.endif
 				.endif
