@@ -13,6 +13,7 @@ o Added Multiline tabtool to Option / Code Editor.
 o Fixed a property tool bug. Scrolling behaved weird when using the mouse wheel
   to scroll the list.
 O Fixed a project bug introduced in 3.0.0.5
+o Fixed a buffer ovverrun bug. Might fix the cut / paste bug.
 
 Version 3.0.0.4 2010-06-18
 --------------------------
