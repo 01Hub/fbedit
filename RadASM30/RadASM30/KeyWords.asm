@@ -32,6 +32,7 @@ IDC_CHKHILITECMNT	equ 4026
 IDC_CHKSESSION		equ 4006
 IDC_CHKAUTOBRACE	equ 4034
 IDC_CHKCODETIP		equ 4035
+IDC_CHKMULTITAB		equ 4037
 
 IDC_BTNCODEFONT		equ 4024
 IDC_STCCODEFONT		equ 4022
@@ -517,6 +518,9 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,da.edtopt.fopt
 		and		eax,EDTOPT_SHOWTIP
 		invoke CheckDlgButton,hWin,IDC_CHKCODETIP,eax
+		mov		eax,da.win.fView
+		and		eax,VIEW_MULTITAB
+		invoke CheckDlgButton,hWin,IDC_CHKMULTITAB,eax
 		mov		esi,offset szColors
 		mov		edi,offset da.radcolor.racol
 		xor		ecx,ecx
@@ -711,6 +715,10 @@ KeyWordsProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 				mov		edx,TRUE
 				call	EnButton
 			.elseif eax==IDC_CHKCODETIP
+				mov		eax,IDC_BTNKWAPPLY
+				mov		edx,TRUE
+				call	EnButton
+			.elseif eax==IDC_CHKMULTITAB
 				mov		eax,IDC_BTNKWAPPLY
 				mov		edx,TRUE
 				call	EnButton
@@ -1178,6 +1186,11 @@ Update:
 		.if eax
 			or		da.edtopt.fopt,EDTOPT_SHOWTIP
 		.endif
+		and		da.win.fView,-1 xor VIEW_MULTITAB
+		invoke IsDlgButtonChecked,hWin,IDC_CHKMULTITAB
+		.if eax
+			or		da.win.fView,VIEW_MULTITAB
+		.endif
 		;Save edit options
 		mov		tmpbuff,0
 		invoke PutItemInt,addr tmpbuff,da.edtopt.tabsize
@@ -1274,6 +1287,13 @@ Update:
 		invoke UpdateAll,UAM_SETCOLORS,0
 		invoke UpdateAll,UAM_SETFONTS,0
 		invoke UpdateToolFont
+		test	da.win.fView,VIEW_MULTITAB
+		.if ZERO?
+			mov		edx,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS
+		.else
+			mov		edx,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_MULTILINE
+		.endif
+		invoke SetWindowLong,ha.hTab,GWL_STYLE,edx
 	.endif
 	retn
 

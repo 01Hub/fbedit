@@ -923,6 +923,7 @@ ParseEdit proc uses edi,hWin:HWND,pid:DWORD
 	mov		hEdt,eax
 	invoke GetWindowLong,hEdt,GWL_ID
 	.if eax==ID_EDITCODE
+;PrintText "ParseEdit"
 		invoke SendMessage,hEdt,REM_GETWORDGROUP,0,0
 		.if !eax
 			.if da.fProject

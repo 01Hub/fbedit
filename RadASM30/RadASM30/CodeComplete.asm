@@ -206,7 +206,7 @@ IsWordDataStruct proc uses esi edi,lpWord:DWORD,lpBuff:DWORD
 		mov		esi,eax
 		lea		edi,buffer
 		xor		ecx,ecx
-		.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=':' && ecx<256
+		.while byte ptr [esi+ecx] && byte ptr [esi+ecx]!=':' && ecx<255
 			mov		al,[esi+ecx]
 			mov		[edi+ecx],al
 			inc		ecx
@@ -248,7 +248,7 @@ IsStructItemStruct proc uses esi edi,lpStruct:DWORD,lpItem:DWORD
 		.if !eax
 			invoke strlen,esi
 			lea		esi,[esi+eax+1]
-			invoke strcpy,addr buffer,lpItem
+			invoke strcpyn,addr buffer,lpItem,sizeof buffer
 			invoke SendMessage,ha.hProperty,PRM_FINDITEMDATATYPE,addr buffer,esi
 			.if buffer
 				invoke strcpy,lpStruct,addr buffer
@@ -264,8 +264,8 @@ IsStructItemStruct endp
 
 UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 	LOCAL	nCount:DWORD
-	LOCAL	buffer[256]:BYTE
-	LOCAL	buffer1[256]:BYTE
+	LOCAL	buffer[1024]:BYTE
+	LOCAL	buffer1[1024]:BYTE
 	LOCAL	isinproc:ISINPROC
 	LOCAL	ccft:FINDTEXTEX
 
@@ -961,62 +961,66 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 	sub		eax,edx
 	mov		cpline,eax
 	inc		eax
-	mov		edx,[esi].RASELCHANGE.lpLine
-	lea		edx,[edx+sizeof CHARS]
-	invoke strcpyn,offset LineTxt,edx,eax
-	.if da.cctype==CCTYPE_ALL
-		call	GetWordLeft
-		invoke strlen,addr buffer
-		mov		edx,da.ccchrg.cpMax
-		sub		edx,eax
-		mov		da.ccchrg.cpMin,edx
-		invoke UpdateApiList,addr buffer,offset szCCAll
-		.if eax
+	.if eax<256
+		mov		edx,[esi].RASELCHANGE.lpLine
+		lea		edx,[edx+sizeof CHARS]
+		invoke strcpyn,offset LineTxt,edx,eax
+		.if da.cctype==CCTYPE_ALL
+			call	GetWordLeft
+			invoke strlen,addr buffer
+			mov		edx,da.ccchrg.cpMax
+			sub		edx,eax
+			mov		da.ccchrg.cpMin,edx
+			invoke UpdateApiList,addr buffer,offset szCCAll
+			.if eax
+				call	ShowList
+			.endif
+		.elseif da.cctype==CCTYPE_STRUCT
+			call	GetWordLeft
+			invoke strlen,addr buffer
+			mov		edx,cpline
+			sub		edx,eax
+			mov		byte ptr LineTxt[edx-1],0
+			mov		edx,da.ccchrg.cpMax
+			sub		edx,eax
+			mov		da.ccchrg.cpMin,edx
+			invoke UpdateApiList,addr buffer,offset szCCSs
+			.if eax
+				call	ShowList
+			.else
+				call	HideAll
+			.endif
+		.elseif da.cctype==CCTYPE_USER
+			call	GetWordLeft
+			invoke strlen,addr buffer
+			mov		edx,da.ccchrg.cpMax
+			sub		edx,eax
+			mov		da.ccchrg.cpMin,edx
+			invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
 			call	ShowList
-		.endif
-	.elseif da.cctype==CCTYPE_STRUCT
-		call	GetWordLeft
-		invoke strlen,addr buffer
-		mov		edx,cpline
-		sub		edx,eax
-		mov		byte ptr LineTxt[edx-1],0
-		mov		edx,da.ccchrg.cpMax
-		sub		edx,eax
-		mov		da.ccchrg.cpMin,edx
-		invoke UpdateApiList,addr buffer,offset szCCSs
-		.if eax
-			call	ShowList
-		.else
-			call	HideAll
-		.endif
-	.elseif da.cctype==CCTYPE_USER
-		call	GetWordLeft
-		invoke strlen,addr buffer
-		mov		edx,da.ccchrg.cpMax
-		sub		edx,eax
-		mov		da.ccchrg.cpMin,edx
-		invoke SendMessage,ha.hCC,CCM_SETCURSEL,0,0
-		call	ShowList
-	.elseif da.cctype==CCTYPE_USERTOOLTIP
-		call	ShowTooltip
-	.elseif da.nAsm==nCPP
-		mov		esi,offset LineTxt
-		add		da.ccchrg.cpMin,eax
-		xor		eax,eax
-		.while byte ptr [esi+eax]==VK_SPACE || byte ptr [esi+eax]==VK_TAB
-			inc		eax
-		.endw
-		lea		esi,LineTxt[eax]
-		call	DoItCpp
-	.else
-		invoke IsLineInvoke,cpline
-		.if eax
+		.elseif da.cctype==CCTYPE_USERTOOLTIP
+			call	ShowTooltip
+		.elseif da.nAsm==nCPP
+			mov		esi,offset LineTxt
 			add		da.ccchrg.cpMin,eax
+			xor		eax,eax
+			.while byte ptr [esi+eax]==VK_SPACE || byte ptr [esi+eax]==VK_TAB
+				inc		eax
+			.endw
 			lea		esi,LineTxt[eax]
-			call	DoIt
+			call	DoItCpp
 		.else
-			call	HideAll
+			invoke IsLineInvoke,cpline
+			.if eax
+				add		da.ccchrg.cpMin,eax
+				lea		esi,LineTxt[eax]
+				call	DoIt
+			.else
+				call	HideAll
+			.endif
 		.endif
+	.else
+		call	HideAll
 	.endif
 	ret
 
@@ -1025,24 +1029,27 @@ GetWordLeft:
 	mov		ebx,da.lpCharTab
 	invoke strlen,esi
 	lea		edi,buffer
+	xor		ecx,ecx
 	.while eax
 		dec		eax
 		movzx	edx,byte ptr [esi+eax]
 		.if byte ptr [ebx+edx]!=CT_CHAR
 			inc		eax
-			.while byte ptr [esi+eax]
+			.while byte ptr [esi+eax] && ecx<255
 				mov		dl,[esi+eax]
 				mov		[edi],dl
 				inc		eax
 				inc		edi
+				inc		ecx
 			.endw
 			.break
 		.elseif !eax
-			.while byte ptr [esi+eax]
+			.while byte ptr [esi+eax] && ecx<255
 				mov		dl,[esi+eax]
 				mov		[edi],dl
 				inc		eax
 				inc		edi
+				inc		ecx
 			.endw
 			.break
 		.endif
@@ -1228,7 +1235,6 @@ ShowTooltip:
 ApiListBox endp
 
 CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
-	LOCAL	buffer[256]:BYTE
 
 	invoke GetCharType,wParam
 	.if eax!=1

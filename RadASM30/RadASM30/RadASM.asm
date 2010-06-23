@@ -2498,9 +2498,9 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			.if eax
 				invoke ShowWindow,ha.hCC,SW_HIDE
 			.endif
-			invoke IsWindowVisible,ha.hCC
+			invoke IsWindowVisible,ha.hTT
 			.if eax
-				invoke ShowWindow,ha.hCC,SW_HIDE
+				invoke ShowWindow,ha.hTT,SW_HIDE
 			.endif
 			mov		da.cctype,CCTYPE_NONE
 ifdef DBG
@@ -2933,7 +2933,6 @@ MdiChildProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPAR
 		mov		eax,wParam
 		.if eax==ID_EDITCODE
 			.if [esi].NMHDR.code==EN_SELCHANGE
-				mov		da.fTimer,1
 				invoke PostAddinMessage,ha.hMdi,AIM_RASELCHANGE,ebx,esi,0,HOOK_RASELCHANGE
 				mov		eax,[esi].RASELCHANGE.chrg.cpMin
 				sub		eax,[esi].RASELCHANGE.cpLine
@@ -3076,7 +3075,7 @@ endif
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
 							mov		[ebx].TABMEM.fupdate,1
-							.if !da.inprogress
+							.if !da.inprogress && da.cctype!=CCTYPE_ALL
 								invoke ApiListBox,esi
 							.endif
 						.endif
@@ -3101,6 +3100,7 @@ endif
 				.endif
 				mov		eax,[esi].RASELCHANGE.line
 				mov		da.nLastLine,eax
+				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
 			.if [esi].NMHDR.code==EN_SELCHANGE

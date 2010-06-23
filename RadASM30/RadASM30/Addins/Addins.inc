@@ -373,6 +373,7 @@ ADDINPROCS struct
 ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
+VIEW_MULTITAB					equ 2
 
 PRNPOS struct
 	margins				RECT <?>

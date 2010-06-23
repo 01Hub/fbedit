@@ -312,7 +312,13 @@ CreateTools proc
 	mov		dck.fr.bottom,eax
 	invoke SendMessage,ha.hTool,TLM_CREATE,0,addr dck
 	mov		ha.hToolTab,eax
-	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_FOCUSNEVER,0,0,0,0,ha.hToolTab,0,ha.hInstance,0
+	test	da.win.fView,VIEW_MULTITAB
+	.if ZERO?
+		mov		edx,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS
+	.else
+		mov		edx,WS_VISIBLE or WS_CHILD or WS_CLIPSIBLINGS or WS_CLIPCHILDREN or TCS_FOCUSNEVER or TCS_BUTTONS or TCS_MULTILINE
+	.endif
+	invoke CreateWindowEx,0,addr szTabControlClassName,NULL,edx,0,0,0,0,ha.hToolTab,0,ha.hInstance,0
 	mov		ha.hTab,eax
 	invoke SendMessage,ha.hTab,WM_SETFONT,ha.hToolFont,FALSE
 	invoke SetWindowLong,ha.hTab,GWL_WNDPROC,offset TabProc
