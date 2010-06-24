@@ -585,7 +585,7 @@ TabOpt5Proc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 TabOpt5Proc endp
 
-TabOptionsProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+TabOptionsProc proc uses esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ts:TC_ITEM
 	LOCAL	nInx:DWORD
 	LOCAL	buffer[MAX_PATH]:BYTE

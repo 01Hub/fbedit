@@ -1264,7 +1264,7 @@ CaseConvertWord proc uses ebx,wParam:DWORD,cp:DWORD
 
 CaseConvertWord endp
 
-BlockComplete proc uses esi edi,hWin:HWND
+BlockComplete proc uses ebx esi edi,hWin:HWND
 	LOCAL	chrg:CHARRANGE
 	LOCAL	chrg1:CHARRANGE
 	LOCAL	ln:DWORD

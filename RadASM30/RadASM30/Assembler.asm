@@ -16,7 +16,7 @@ lpOldProgLangListProc		DWORD ?
 
 .code
 
-ProgLangListProc proc  hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+ProgLangListProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 	mov		eax,uMsg
 	.if eax==WM_LBUTTONDOWN
@@ -316,7 +316,7 @@ SetEnvironment proc uses ebx edi
 
 SetEnvironment endp
 
-GetColors proc
+GetColors proc uses ebx
 	LOCAL	racolor:RACOLOR
 
 	invoke GetPrivateProfileString,addr szIniColors,addr szIniColors,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szAssemblerIni

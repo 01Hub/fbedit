@@ -568,28 +568,6 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 			ret
 		.endif
-;		test	wParam,MK_LBUTTON
-;		.if !ZERO?
-;			mov		eax,lParam
-;			movzx	edx,ax
-;			shr		eax,16
-;			mov		ht.pt.x,edx
-;			mov		ht.pt.y,eax
-;			invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
-;			.if eax!=da.tabinx && sdword ptr eax>=0 && sdword ptr da.tabinx>=0
-;				push	eax
-;				mov		tci.imask,TCIF_TEXT Or TCIF_IMAGE Or TCIF_PARAM
-;				lea		eax,buffer
-;				mov		tci.pszText,eax
-;				mov		tci.cchTextMax,MAX_PATH
-;				invoke SendMessage,hWin,TCM_GETITEM,da.tabinx,addr tci
-;				invoke SendMessage,hWin,TCM_DELETEITEM,da.tabinx,0
-;				pop		da.tabinx
-;				invoke SendMessage,hWin,TCM_INSERTITEM,da.tabinx,addr tci
-;			.endif
-;			xor		eax,eax
-;			jmp		Ex
-;		.endif
 	.endif
 	invoke CallWindowProc,lpOldTabProc,hWin,uMsg,wParam,lParam
   Ex:

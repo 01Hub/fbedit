@@ -141,11 +141,9 @@ strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 strcmpi endp
 
-iniInStr proc lpStr:DWORD,lpSrc:DWORD
+iniInStr proc uses esi edi,lpStr:DWORD,lpSrc:DWORD
 	LOCAL	buffer[256]:BYTE
 
-	push	esi
-	push	edi
 	mov		esi,lpSrc
 	lea		edi,buffer
 iniInStr0:
@@ -195,8 +193,6 @@ iniInStr8:
 iniInStr9:
 	pop		edi
 	mov		eax,-1
-	pop		edi
-	pop		esi
 	ret
 
 iniInStr endp
@@ -210,11 +206,9 @@ GetCharType proc nChar:DWORD
 
 GetCharType endp
 
-DecToBin proc lpStr:DWORD
+DecToBin proc uses ebx esi,lpStr:DWORD
 	LOCAL	fNeg:DWORD
 
-    push    ebx
-    push    esi
     mov     esi,lpStr
     mov		fNeg,FALSE
     mov		al,[esi]
@@ -242,8 +236,6 @@ DecToBin proc lpStr:DWORD
 	.if fNeg
 		neg		eax
 	.endif
-    pop     esi
-    pop     ebx
     ret
 
 DecToBin endp
@@ -2742,7 +2734,7 @@ DeleteGoto proc uses esi edi,hWin:HWND
 
 DeleteGoto endp
 
-UpdateGoto proc uses ebx edi,hWin:HWND,cp:DWORD,n:DWORD
+UpdateGoto proc uses ebx esi edi,hWin:HWND,cp:DWORD,n:DWORD
 	LOCAL	chrg:CHARRANGE
 
 	;Delete
@@ -3087,7 +3079,7 @@ SetWinCaption proc hWin:HWND,lpFileName:DWORD
 
 SetWinCaption endp
 
-SetMainWinCaption proc
+SetMainWinCaption proc uses esi
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke strcpy,addr buffer,addr DisplayName

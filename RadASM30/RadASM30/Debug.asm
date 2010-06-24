@@ -61,7 +61,7 @@ DebugCallback proc nFunc:DWORD,wParam:DWORD,lParam:DWORD
 
 DebugCallback endp
 
-DebugSetBreakpoints proc
+DebugSetBreakpoints proc uses ebx esi edi
 	LOCAL	buffer[MAX_PATH]:BYTE
 
 	invoke DebugCommand,FUNC_BPCLEARALL,0,0
@@ -203,7 +203,7 @@ DebugStart proc
 
 DebugStart endp
 
-DoNotDebugProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+DoNotDebugProc proc uses esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	buffer[256]:BYTE
 	LOCAL	nInx:DWORD
 

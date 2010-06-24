@@ -373,10 +373,6 @@ MakeToolBar proc uses ebx,lpBtn:DWORD,nBtn:DWORD
 
 	invoke CreateWindowEx,0,addr szToolBarClassName,0,WS_CHILD or WS_VISIBLE or TBSTYLE_FLAT or TBSTYLE_TOOLTIPS or CCS_NODIVIDER or CCS_NORESIZE or WS_CLIPCHILDREN or WS_CLIPSIBLINGS,0,0,100,22,ha.hWnd,0,ha.hInstance,0
 	mov		ebx,eax
-;	.if fNT
-;		;Unicode
-;		invoke SendMessage,ebx,TB_SETUNICODEFORMAT,TRUE,0
-;	.endif
 	;Set toolbar struct size
 	invoke SendMessage,ebx,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
 	;Set toolbar buttons
