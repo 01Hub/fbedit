@@ -133,11 +133,53 @@ SetSection proc uses ebx esi edi
 
 SetSection endp
 
-DumpSymbols proc uses ebx esi edi
+DumpSymbol proc
 	LOCAL	SectionNumber:DWORD
 	LOCAL	nType:DWORD
 	LOCAL	StorageClass:DWORD
 	LOCAL	NumberOfAuxSymbols:DWORD
+
+	movzx	eax,[esi].COFFSYMBOL.SectionNumber
+	mov		SectionNumber,eax
+	movzx	eax,[esi].COFFSYMBOL.nType
+	mov		nType,eax
+	movzx	eax,[esi].COFFSYMBOL.StorageClass
+	mov		StorageClass,eax
+	movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
+	mov		NumberOfAuxSymbols,eax
+	mov		eax,[esi].COFFSYMBOL.Zeroes
+	.if !eax
+		mov		ecx,hMemFile
+		mov		eax,[ecx].COFFHEADER.NumberOfSymbols
+		mov		edx,sizeof COFFSYMBOL
+		mul		edx
+		add		eax,[ecx].COFFHEADER.PointerToSymbolTable
+		add		eax,[esi].COFFSYMBOL.nOffset[4]
+		add		eax,ecx
+	.else
+		invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
+		mov		eax,offset szSection
+	.endif
+	invoke wsprintf,addr szOutput,addr szCoffSymbol,eax,[esi].COFFSYMBOL.Value,SectionNumber,nType,StorageClass,NumberOfAuxSymbols
+	invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+	lea		esi,[esi+sizeof COFFSYMBOL]
+	inc		ebx
+	.if NumberOfAuxSymbols
+		.if word ptr SectionNumber==IMAGE_SYM_DEBUG
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr [esi].COFFSYMBOL.szShortName
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCrLf
+		.endif
+		mov		eax,NumberOfAuxSymbols
+		add		ebx,eax
+		mov		edx,sizeof COFFSYMBOL
+		mul		edx
+		lea		esi,[esi+eax]
+	.endif
+	ret
+
+DumpSymbol endp
+
+DumpSymbols proc uses ebx esi edi
 
 	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
 	mov		eax,hMemFile
@@ -146,14 +188,28 @@ DumpSymbols proc uses ebx esi edi
 	add		esi,eax
 	xor		ebx,ebx
 	.while ebx<edi
-		movzx	eax,[esi].COFFSYMBOL.SectionNumber
-		mov		SectionNumber,eax
-		movzx	eax,[esi].COFFSYMBOL.nType
-		mov		nType,eax
-		movzx	eax,[esi].COFFSYMBOL.StorageClass
-		mov		StorageClass,eax
-		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
-		mov		NumberOfAuxSymbols,eax
+		invoke DumpSymbol
+	.endw
+	ret
+
+DumpSymbols endp
+
+DumpProc proc
+	LOCAL	SectionNumber:DWORD
+	LOCAL	nType:DWORD
+	LOCAL	StorageClass:DWORD
+	LOCAL	NumberOfAuxSymbols:DWORD
+	LOCAL	dbgproc:DBGPROC
+
+	movzx	eax,[esi].COFFSYMBOL.SectionNumber
+	mov		SectionNumber,eax
+	movzx	eax,[esi].COFFSYMBOL.nType
+	mov		nType,eax
+	movzx	eax,[esi].COFFSYMBOL.StorageClass
+	mov		StorageClass,eax
+	movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
+	mov		NumberOfAuxSymbols,eax
+	.if StorageClass==EXTERNAL && nType==20h && SectionNumber>0
 		mov		eax,[esi].COFFSYMBOL.Zeroes
 		.if !eax
 			mov		ecx,hMemFile
@@ -162,37 +218,74 @@ DumpSymbols proc uses ebx esi edi
 			mul		edx
 			add		eax,[ecx].COFFHEADER.PointerToSymbolTable
 			add		eax,[esi].COFFSYMBOL.nOffset[4]
-			add		eax,ecx
+			add		eax,hMemFile
 		.else
 			invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
 			mov		eax,offset szSection
 		.endif
-		invoke wsprintf,addr szOutput,addr szCoffSymbol,eax,[esi].COFFSYMBOL.Value,SectionNumber,nType,StorageClass,NumberOfAuxSymbols
-		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-		lea		esi,[esi+sizeof COFFSYMBOL]
-		inc		ebx
-		.if NumberOfAuxSymbols
-			.if word ptr SectionNumber==IMAGE_SYM_DEBUG
-				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr [esi].COFFSYMBOL.szShortName
-				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szCrLf
-			.endif
-			mov		eax,NumberOfAuxSymbols
-			add		ebx,eax
+		invoke lstrcpy,addr dbgproc.szName,eax
+		.while NumberOfAuxSymbols
+			lea		esi,[esi+sizeof COFFSYMBOL]
+			inc		ebx
+			dec		NumberOfAuxSymbols
+		.endw
+	.elseif StorageClass==FUNCTION || StorageClass==EXTERNAL
+		;.bf, .lf and .ef Symbols
+		;StorageClass=101 (.bf and .ef)
+		mov		eax,[esi].COFFSYMBOL.Zeroes
+		.if !eax
+			mov		ecx,hMemFile
+			mov		eax,[ecx].COFFHEADER.NumberOfSymbols
 			mov		edx,sizeof COFFSYMBOL
 			mul		edx
-			lea		esi,[esi+eax]
+			add		eax,[ecx].COFFHEADER.PointerToSymbolTable
+			add		eax,[esi].COFFSYMBOL.nOffset[4]
+			add		eax,hMemFile
+		.else
+			invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
+			mov		eax,offset szSection
 		.endif
-	.endw
+		mov		edx,[esi].COFFSYMBOL.Value
+		mov		eax,dword ptr szSection
+		and		eax,0FFFFFFh
+		.if eax=='fb.'
+			mov		dbgproc.bfad,edx
+		.elseif eax=='fl.'
+			mov		dbgproc.lfad,edx
+		.elseif eax=='fe.'
+			mov		dbgproc.efad,edx
+		.endif
+		.if NumberOfAuxSymbols
+			lea		esi,[esi+sizeof COFFSYMBOL]
+			inc		ebx
+			movzx	edx,[esi].COFFAUX2.Linenumber
+			mov		eax,dword ptr szSection
+			and		eax,0FFFFFFh
+			.if eax=='fb.'
+				mov		dbgproc.bfln,edx
+			.elseif eax=='fe.'
+				mov		dbgproc.efln,edx
+				invoke wsprintf,addr szOutput,addr szCoffProc,addr dbgproc.szFile,addr dbgproc.szName,dbgproc.bfad,dbgproc.bfln,dbgproc.efad,dbgproc.efln
+				invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+				mov		dbgproc.szName,0
+			.endif
+		.endif
+	.elseif NumberOfAuxSymbols
+		.if word ptr SectionNumber==IMAGE_SYM_DEBUG
+			; File name
+			invoke lstrcpy,addr dbgproc.szFile,addr [esi+sizeof COFFSYMBOL]
+		.endif
+		mov		eax,NumberOfAuxSymbols
+		add		ebx,eax
+		mov		edx,sizeof COFFSYMBOL
+		mul		edx
+		lea		esi,[esi+eax]
+	.endif
 	ret
 
-DumpSymbols endp
+DumpProc endp
 
 DumpProcs proc uses ebx esi edi
-	LOCAL	SectionNumber:DWORD
-	LOCAL	nType:DWORD
-	LOCAL	StorageClass:DWORD
-	LOCAL	NumberOfAuxSymbols:DWORD
-	LOCAL	dbgproc:DBGPROC
 
 	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
 	mov		eax,hMemFile
@@ -201,86 +294,7 @@ DumpProcs proc uses ebx esi edi
 	add		esi,eax
 	xor		ebx,ebx
 	.while ebx<edi
-		movzx	eax,[esi].COFFSYMBOL.SectionNumber
-		mov		SectionNumber,eax
-		movzx	eax,[esi].COFFSYMBOL.nType
-		mov		nType,eax
-		movzx	eax,[esi].COFFSYMBOL.StorageClass
-		mov		StorageClass,eax
-		movzx	eax,[esi].COFFSYMBOL.NumberOfAuxSymbols
-		mov		NumberOfAuxSymbols,eax
-		.if StorageClass==EXTERNAL && nType==20h && SectionNumber>0
-			mov		eax,[esi].COFFSYMBOL.Zeroes
-			.if !eax
-				mov		ecx,hMemFile
-				mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-				mov		edx,sizeof COFFSYMBOL
-				mul		edx
-				add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-				add		eax,[esi].COFFSYMBOL.nOffset[4]
-				add		eax,hMemFile
-			.else
-				invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
-				mov		eax,offset szSection
-			.endif
-			invoke lstrcpy,addr dbgproc.szName,eax
-			.while NumberOfAuxSymbols
-				lea		esi,[esi+sizeof COFFSYMBOL]
-				inc		ebx
-				dec		NumberOfAuxSymbols
-			.endw
-		.elseif StorageClass==FUNCTION || StorageClass==EXTERNAL
-			;.bf, .lf and .ef Symbols
-			;StorageClass=101 (.bf and .ef)
-			mov		eax,[esi].COFFSYMBOL.Zeroes
-			.if !eax
-				mov		ecx,hMemFile
-				mov		eax,[ecx].COFFHEADER.NumberOfSymbols
-				mov		edx,sizeof COFFSYMBOL
-				mul		edx
-				add		eax,[ecx].COFFHEADER.PointerToSymbolTable
-				add		eax,[esi].COFFSYMBOL.nOffset[4]
-				add		eax,hMemFile
-			.else
-				invoke lstrcpyn,addr szSection,addr [esi].COFFSYMBOL.szShortName,9
-				mov		eax,offset szSection
-			.endif
-			mov		edx,[esi].COFFSYMBOL.Value
-			mov		eax,dword ptr szSection
-			and		eax,0FFFFFFh
-			.if eax=='fb.'
-				mov		dbgproc.bfad,edx
-			.elseif eax=='fl.'
-				mov		dbgproc.lfad,edx
-			.elseif eax=='fe.'
-				mov		dbgproc.efad,edx
-			.endif
-			.if NumberOfAuxSymbols
-				lea		esi,[esi+sizeof COFFSYMBOL]
-				inc		ebx
-				movzx	edx,[esi].COFFAUX2.Linenumber
-				mov		eax,dword ptr szSection
-				and		eax,0FFFFFFh
-				.if eax=='fb.'
-					mov		dbgproc.bfln,edx
-				.elseif eax=='fe.'
-					mov		dbgproc.efln,edx
-					invoke wsprintf,addr szOutput,addr szCoffProc,addr dbgproc.szFile,addr dbgproc.szName,dbgproc.bfad,dbgproc.bfln,dbgproc.efad,dbgproc.efln
-					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
-					mov		dbgproc.szName,0
-				.endif
-			.endif
-		.elseif NumberOfAuxSymbols
-			.if word ptr SectionNumber==IMAGE_SYM_DEBUG
-				; File name
-				invoke lstrcpy,addr dbgproc.szFile,addr [esi+sizeof COFFSYMBOL]
-			.endif
-			mov		eax,NumberOfAuxSymbols
-			add		ebx,eax
-			mov		edx,sizeof COFFSYMBOL
-			mul		edx
-			lea		esi,[esi+eax]
-		.endif
+		invoke DumpProc
 		lea		esi,[esi+sizeof COFFSYMBOL]
 		inc		ebx
 	.endw
@@ -353,12 +367,29 @@ DumpLinenumbers proc uses ebx esi edi
 	movzx	edi,[ebx].COFFSECTIONHEADER.NumberOfLinenumbers
 	mov		esi,[ebx].COFFSECTIONHEADER.PointerToLinenumbers
 	add		esi,ebx
+	sub		esi,2
+	sub		esi,18
 	xor		ebx,ebx
 	.while ebx<edi
 		mov		eax,[esi].COFFLINENUMBERS.VirtualAddress
 		movzx	edx,[esi].COFFLINENUMBERS.Linenumber
-		invoke wsprintf,addr szOutput,addr szCoffLinenumber,edx,eax
-		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+		.if !edx
+			push	ebx
+			push	esi
+			mov		ebx,eax
+			mov		edx,hMemFile
+			mov		esi,[edx].COFFHEADER.PointerToSymbolTable
+			add		esi,edx
+			mov		edx,sizeof COFFSYMBOL
+			mul		edx
+			lea		esi,[esi+eax]
+			invoke DumpSymbol
+			pop		esi
+			pop		ebx
+		.else
+			invoke wsprintf,addr szOutput,addr szCoffLinenumber,eax,edx
+			invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+		.endif
 		lea		esi,[esi+sizeof COFFLINENUMBERS]
 		inc		ebx
 	.endw
