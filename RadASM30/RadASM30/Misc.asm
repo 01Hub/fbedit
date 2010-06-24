@@ -141,9 +141,11 @@ strcmpi proc uses esi edi,lpStr1:DWORD,lpStr2:DWORD
 
 strcmpi endp
 
-iniInStr proc uses esi edi,lpStr:DWORD,lpSrc:DWORD
+iniInStr proc lpStr:DWORD,lpSrc:DWORD
 	LOCAL	buffer[256]:BYTE
 
+	push	esi
+	push	edi
 	mov		esi,lpSrc
 	lea		edi,buffer
 iniInStr0:
@@ -193,6 +195,8 @@ iniInStr8:
 iniInStr9:
 	pop		edi
 	mov		eax,-1
+	pop		edi
+	pop		esi
 	ret
 
 iniInStr endp
@@ -1952,7 +1956,7 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				xor		ebx,ebx
 				.while TRUE
 					invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-					.break .if!eax
+					.break .if !eax
 					mov		ebx,[eax].PBITEM.id
 					.if [eax].PBITEM.flag==FLAG_MODULE
 						mov		eax,TRUE
