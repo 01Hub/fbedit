@@ -267,6 +267,7 @@ DumpProcs proc uses ebx esi edi
 					mov		dbgproc.efln,edx
 					invoke wsprintf,addr szOutput,addr szCoffProc,addr dbgproc.szFile,addr dbgproc.szName,dbgproc.bfad,dbgproc.bfln,dbgproc.efad,dbgproc.efln
 					invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+					mov		dbgproc.szName,0
 				.endif
 			.endif
 		.elseif NumberOfAuxSymbols
@@ -337,6 +338,33 @@ DumpGlobals proc uses ebx esi edi
 	ret
 
 DumpGlobals endp
+
+DumpLinenumbers proc uses ebx esi edi
+
+	invoke SendMessage,hEdt,WM_SETTEXT,0,addr szNULL
+	mov		ebx,hMemFile
+	movzx	eax,[ebx].COFFHEADER.SizeOfOptionalHeader
+	lea		ebx,[ebx+eax+sizeof COFFHEADER]
+	mov		eax,nCoffHeader
+	mov		edx,sizeof COFFSECTIONHEADER
+	mul		edx
+	lea		ebx,[ebx+eax]
+
+	movzx	edi,[ebx].COFFSECTIONHEADER.NumberOfLinenumbers
+	mov		esi,[ebx].COFFSECTIONHEADER.PointerToLinenumbers
+	add		esi,ebx
+	xor		ebx,ebx
+	.while ebx<edi
+		mov		eax,[esi].COFFLINENUMBERS.VirtualAddress
+		movzx	edx,[esi].COFFLINENUMBERS.Linenumber
+		invoke wsprintf,addr szOutput,addr szCoffLinenumber,edx,eax
+		invoke SendMessage,hEdt,EM_REPLACESEL,FALSE,addr szOutput
+		lea		esi,[esi+sizeof COFFLINENUMBERS]
+		inc		ebx
+	.endw
+	ret
+
+DumpLinenumbers endp
 
 ShowCoffHeader proc uses esi
 	LOCAL	Machine:DWORD

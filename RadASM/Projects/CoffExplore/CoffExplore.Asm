@@ -82,6 +82,10 @@ CldDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if nCoffHeaders
 					invoke DumpGlobals
 				.endif
+			.elseif eax==IDC_BTNDUMPLINE
+				.if nCoffHeaders
+					invoke DumpLinenumbers
+				.endif
 			.endif
 		.endif
 	.else

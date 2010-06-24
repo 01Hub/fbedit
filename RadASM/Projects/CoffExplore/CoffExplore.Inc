@@ -37,6 +37,7 @@ IDC_BTNDUMPSECTION				equ 1006
 IDC_BTNDUMPSYMBOLS				equ 1007
 IDC_BTNDUMPPROCS				equ 1008
 IDC_BTNDUMPGLOBALS				equ 1009
+IDC_BTNDUMPLINE					equ 1010
 
 IMAGE_SYM_UNDEFINED				equ 0
 IMAGE_SYM_ABSOLUTE				equ -1
@@ -183,6 +184,7 @@ szSectionHeader			db 'Section Header:',0Dh,0Ah
 szCoffSymbol			db 'Name:%s Value:%08Xh SectionNumber:%04Xh Type:%04Xh StorageClass:%02Xh NumberOfAuxSymbols:%02Xh',0Dh,0Ah,0
 szCoffProc				db 'File:%s Name:%s bfad:%08Xh  bfln:%u efad:%08Xh  efln:%u',0Dh,0Ah,0
 szCoffGlobal			db 'Name:%s Address:%08Xh',0Dh,0Ah,0
+szCoffLinenumber		db 'Address:%08Xh Line:%u',0Dh,0Ah,0
 
 ;#########################################################################
 
