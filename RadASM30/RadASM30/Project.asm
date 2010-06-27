@@ -1401,10 +1401,10 @@ AddProjectFiles proc uses ebx esi edi,lpFileNames:DWORD
 			.if eax
 				.if ha.hMdi
 					mov		ebx,[eax].PBITEM.id
+					invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+					mov		[eax].TABMEM.pid,ebx
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
-						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-						mov		[eax].TABMEM.pid,ebx
 						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 					.endif
 				.endif
@@ -1428,10 +1428,10 @@ AddProjectFiles proc uses ebx esi edi,lpFileNames:DWORD
 			.if eax
 				.if ha.hMdi
 					mov		ebx,[eax].PBITEM.id
+					invoke GetWindowLong,ha.hEdt,GWL_USERDATA
+					mov		[eax].TABMEM.pid,ebx
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
-						invoke GetWindowLong,ha.hEdt,GWL_USERDATA
-						mov		[eax].TABMEM.pid,ebx
 						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
 					.endif
 				.endif
@@ -1623,14 +1623,14 @@ GetProjectFiles proc uses ebx esi edi
 			inc		ebx
 		.endw
 		;Get files
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
-		mov		hMem,eax
-		invoke GetPrivateProfileSection,addr szIniProject,hMem,256*1024,addr da.szProjectFile
+;		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,256*1024
+;		mov		hMem,eax
+;		invoke GetPrivateProfileSection,addr szIniProject,hMem,256*1024,addr da.szProjectFile
 		mov		nMiss,0
 		mov		esi,START_FILES
 		.while esi<MAX_FILES
-;			invoke GetFileInfo,esi,addr szIniProject,addr da.szProjectFile,addr fi
-			invoke MemGetFileInfo,hMem,esi,addr fi
+			invoke GetFileInfo,esi,addr szIniProject,addr da.szProjectFile,addr fi
+;			invoke MemGetFileInfo,hMem,esi,addr fi
 			.if eax
 				invoke RtlZeroMemory,addr pbi,sizeof PBITEM
 				mov		pbi.id,esi
@@ -1664,7 +1664,7 @@ GetProjectFiles proc uses ebx esi edi
 			.endif
 			inc		esi
 		.endw
-		invoke GlobalFree,hMem
+;		invoke GlobalFree,hMem
 		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
 		invoke UpdateWindow,ha.hProperty
 		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_GROUPS
