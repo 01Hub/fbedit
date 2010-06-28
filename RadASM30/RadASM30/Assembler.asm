@@ -496,6 +496,29 @@ GetKeywords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,da.radcolor.kwcol[15*4],hMem
+	;Add api types to Group#12
+	invoke RtlZeroMemory,hMem,65536*8
+	mov		dword ptr buffer,'T'
+	mov		edi,hMem
+	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
+	.while eax
+		mov		cl,[eax]
+		mov		ch,cl
+		and		cl,5Fh
+		.if cl==ch
+			;Case sensitive
+			mov		byte ptr [edi],'^'
+			inc		edi
+		.endif
+		invoke strcpy,edi,eax
+		invoke strlen,edi
+		lea		edi,[edi+eax]
+		mov		byte ptr [edi],' '
+		inc		edi
+		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
+	.endw
+	mov		byte ptr [edi],0
+	invoke SetHiliteWords,da.radcolor.kwcol[12*4],hMem
 	;Add api constants to Group#14
 	invoke RtlZeroMemory,hMem,65536*8
 	mov		dword ptr buffer,'C'
@@ -557,29 +580,6 @@ GetKeywords proc uses esi edi
 	.endw
 	mov		byte ptr [edi],0
 	invoke SetHiliteWords,da.radcolor.kwcol[13*4],hMem
-	;Add api types to Group#12
-	invoke RtlZeroMemory,hMem,65536*8
-	mov		dword ptr buffer,'T'
-	mov		edi,hMem
-	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr buffer,addr buffer[2]
-	.while eax
-		mov		cl,[eax]
-		mov		ch,cl
-		and		cl,5Fh
-		.if cl==ch
-			;Case sensitive
-			mov		byte ptr [edi],'^'
-			inc		edi
-		.endif
-		invoke strcpy,edi,eax
-		invoke strlen,edi
-		lea		edi,[edi+eax]
-		mov		byte ptr [edi],' '
-		inc		edi
-		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,0,0
-	.endw
-	mov		byte ptr [edi],0
-	invoke SetHiliteWords,da.radcolor.kwcol[12*4],hMem
 	invoke GlobalFree,hMem
 	ret
 
