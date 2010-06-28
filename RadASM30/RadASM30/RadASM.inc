@@ -194,6 +194,7 @@ szDot							db '.',0
 szComma							db ',',0
 szSemi							db ';',0
 szMinus							db '-',0
+szQuote							db '"',0
 szCR							db VK_RETURN,0
 szTab							db VK_TAB,0
 szDotIni						db '.ini',0

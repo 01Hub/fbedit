@@ -157,7 +157,7 @@ GetResource proc uses ebx esi edi
 		invoke BinToDec,ebx,addr buffer
 		invoke GetPrivateProfileString,addr szIniCustCtrl,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szRadASMIni
 		.if eax
-			invoke GetItemStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szFileName,sizeof CUSTCTRL.szFileName
+			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szFileName,sizeof CUSTCTRL.szFileName
 			invoke GetItemQuotedStr,addr tmpbuff,addr szNULL,addr [edi].CUSTCTRL.szStyleMask,sizeof CUSTCTRL.szStyleMask
 			lea		edi,[edi+sizeof CUSTCTRL]
 		.endif
@@ -222,9 +222,11 @@ PutResource proc uses ebx esi
 		.if [esi].CUSTCTRL.szFileName
 			invoke BinToDec,ebx,addr buffer
 			mov		tmpbuff,0
-			invoke PutItemStr,addr tmpbuff,addr [esi].CUSTCTRL.szFileName
+			invoke PutItemQuotedStr,addr tmpbuff,addr [esi].CUSTCTRL.szFileName
 			invoke PutItemQuotedStr,addr tmpbuff,addr [esi].CUSTCTRL.szStyleMask
-			invoke WritePrivateProfileString,addr szIniCustCtrl,addr buffer,addr tmpbuff[1],addr da.szRadASMIni
+			mov		tmpbuff,'"'
+			invoke strcat,addr tmpbuff,addr szQuote
+			invoke WritePrivateProfileString,addr szIniCustCtrl,addr buffer,addr tmpbuff,addr da.szRadASMIni
 		.endif
 		lea		esi,[esi+sizeof CUSTCTRL]
 		inc		ebx

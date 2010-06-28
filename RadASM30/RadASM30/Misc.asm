@@ -431,7 +431,7 @@ GetItemQuotedStr proc uses esi edi,lpBuff:DWORD,lpDefVal:DWORD,lpResult:DWORD,cc
 		.while byte ptr [esi] && byte ptr [esi]!="'"
 			inc		esi
 		.endw
-		.if byte ptr [esi]
+		.if byte ptr [esi]=="'"
 			inc		esi
 		.endif
 		lea		eax,[esi+1]
