@@ -1,5 +1,9 @@
 Whats new:
 ----------
+1.0.7.6c
+o Fixed bugs.
+1.0.7.6b
+o Fixed bugs.
 1.0.7.6
 o Added support for xxxEnum.api files.
 o Added api files for fmod sound.
