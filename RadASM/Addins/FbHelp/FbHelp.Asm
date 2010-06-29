@@ -299,6 +299,13 @@ SourceExist proc uses esi,lpName:DWORD
 		lea		esi,[esi+eax+1]
 	.endw
 	invoke strcpy,esi,lpName
+;	xor		eax,eax
+;	.while byte ptr [esi+eax]
+;		.if byte ptr [esi+eax]=='/'
+;			mov		byte ptr [esi+eax],'\'
+;		.endif
+;		inc		eax
+;	.endw
 	mov		eax,esi
   Ex:
 	ret
@@ -709,6 +716,7 @@ SymEnumSourceFiles proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,pMask
 		.if (eax==100 || eax==130) && byte ptr [edi]
 			invoke SourceExist,edi
 			.if eax
+				mov		edi,eax
 				mov		eax,dword ptr BaseOfDll
 				mov		dword ptr src.ModBase,eax
 				mov		eax,dword ptr BaseOfDll[4]

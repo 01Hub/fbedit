@@ -79,8 +79,7 @@ Group=Added files,Assembly,Resources,Misc,Modules
 5=1
 6=4
 [AutoLoad]
-1=1
-2=1
+AutoLoad=1,2
 [Collapse]
 3=
 2=
@@ -89,9 +88,9 @@ Group=Added files,Assembly,Resources,Misc,Modules
 5=
 [Size]
 3=0,0,0,0,0
-2=0,0,0,0,1510
+2=0,0,0,0,1674
 4=0,0,0,0,0
-1=0,0,0,0,11045
+1=0,0,0,0,4744
 5=0,0,0,0,7
 [VersionControl]
 Settings=1246
@@ -103,7 +102,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=29
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=7
@@ -152,3 +151,11 @@ ProductVer4Range=0
 1=
 2=
 0=
+[Find]
+1="source"
+2="szSecStabstr"
+3="SECTIONHEADER"
+[PTimer]
+PTimer=1446331
+[GroupExpand]
+GroupExpand=0,1,0,0,0,0
