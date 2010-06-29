@@ -1405,7 +1405,7 @@ AddProjectFiles proc uses ebx esi edi,lpFileNames:DWORD
 					mov		[eax].TABMEM.pid,ebx
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
-						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						invoke ParseEdit,ha.hMdi,ebx
 					.endif
 				.endif
 			.elseif da.fExternal
@@ -1432,7 +1432,7 @@ AddProjectFiles proc uses ebx esi edi,lpFileNames:DWORD
 					mov		[eax].TABMEM.pid,ebx
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE
-						invoke ParseEdit,ha.hMdi,[eax].TABMEM.pid
+						invoke ParseEdit,ha.hMdi,ebx
 					.endif
 				.endif
 			.elseif da.fExternal
