@@ -3115,13 +3115,14 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		;wParam=cbBuff
 		;lParam=lpBuff
 		mov		eax,wParam
+		mov		edi,lParam
 		.if eax
 			mov		chrg.cpMin,0
+			dec		eax
 			mov		chrg.cpMax,eax
 			mov		edx,[ebx].EDIT.hLine
 			mov		eax,edx
 			add		eax,[ebx].EDIT.rpLineFree
-			mov		edi,lParam
 			.while edx<eax
 				mov		esi,[edx].LINE.rpChars
 				add		esi,[ebx].EDIT.hChars
@@ -3129,8 +3130,8 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				add		esi,sizeof CHARS
 				sub		chrg.cpMax,ecx
 				.if CARRY?
+					add		chrg.cpMax,ecx
 					mov		ecx,chrg.cpMax
-					neg		ecx
 					add		chrg.cpMin,ecx
 					rep movsb
 					.break
@@ -3139,6 +3140,7 @@ RAWndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				rep movsb
 				add		edx,sizeof LINE
 			.endw
+			mov		byte ptr [edi],0
 			mov		eax,chrg.cpMin
 		.endif
 		jmp		Ex
