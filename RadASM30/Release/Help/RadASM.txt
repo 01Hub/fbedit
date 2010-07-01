@@ -12,6 +12,7 @@ High level:
 - BCC 5.5 C/C++
 - FreePASCAL
 - MinGW C/C++
+- FreeBASIC
 
 SETUP
 -----
@@ -76,6 +77,10 @@ The menu is specific to each assembler / compiler.
 
 Acronyms:
 $A=Application path.
+$=Current open file without extention
+$C=Main code file.
+$R=Main resource file.
+$P=Project file.
 
 Option / Help Menu
 ------------------
