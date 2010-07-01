@@ -2,13 +2,13 @@
 Version=3000
 [Project]
 Assembler=masm
-Path=C:\RadASM30\Masm\Projects\CoffExplore
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Masm\Projects\CoffExplore
 Group=2,-1,0,1,Coff explorer,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
 F1=-2,2,1,22,22,600,400,146,CoffExplore.Asm
 F2=-3,0,1,22,22,600,400,194,CoffExplore.Inc
 F3=-5,2,4,22,22,600,400,0,CoffExplore.Rc
 F4=-2,0,1,22,22,600,400,344,Misc.asm
-F5=-4,0,2,-6,-25,1004,648,0,pecoff_v8.docx
+F5=
 C5=
 B5=
 M5=

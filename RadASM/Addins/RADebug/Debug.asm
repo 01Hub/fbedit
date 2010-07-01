@@ -375,6 +375,8 @@ MapBreakPoints proc uses ebx esi edi
 	LOCAL	CountBP:DWORD
 	LOCAL	CountSource:DWORD
 	LOCAL	Unhandled:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fn:DWORD
 
 	mov		esi,dbg.hMemLine
 	xor		ecx,ecx
@@ -404,6 +406,8 @@ MapBreakPoints proc uses ebx esi edi
 
 MatchIt:
 	mov		edi,eax
+	invoke GetFullPathName,edi,sizeof buffer,addr buffer,addr fn
+	lea		edi,buffer
 	mov		eax,dbg.inxsource
 	mov		CountSource,eax
 	mov		ebx,dbg.hMemSource
@@ -651,8 +655,8 @@ SelectLine proc uses ebx esi edi,lpDEBUGLINE:DWORD
 	mov		esi,dbg.hMemSource
 	lea		esi,[esi+eax]
 	mov		edx,lpData
-	invoke strcpy,addr szSourceName,[edx].ADDINDATA.lpProjectPath
-	invoke strcat,addr szSourceName,addr [esi].DEBUGSOURCE.FileName
+;	invoke strcpy,addr szSourceName,[edx].ADDINDATA.lpProjectPath
+	invoke strcpy,addr szSourceName,addr [esi].DEBUGSOURCE.FileName
 	invoke PostMessage,[edi].ADDINHANDLES.hWnd,WM_USER+998,0,addr szSourceName
 	invoke WaitForSingleObject,dbg.pinfo.hProcess,100
 	mov		eax,[edi].ADDINHANDLES.hEdit

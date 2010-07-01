@@ -698,12 +698,14 @@ EnumerateSymbolsCallback endp
 
 EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
+	LOCAL	fn:DWORD
 
 	mov		ebx,pSourceFile
 	.if fOptions & 1
 		invoke wsprintf,addr buffer,addr szSourceFile,[ebx].SOURCEFILE.FileName
 		invoke PutString,addr buffer
 	.endif
+	invoke GetFullPathName,[ebx].SOURCEFILE.FileName,sizeof buffer,addr buffer,addr fn
 	mov		eax,dbg.inxsource
 	mov		edx,sizeof DEBUGSOURCE
 	mul		edx
@@ -711,7 +713,7 @@ EnumSourceFilesCallback proc uses ebx esi edi,pSourceFile:DWORD,UserContext:DWOR
 	lea		edi,[edi+eax]
 	mov		eax,dbg.inxsource
 	mov		[edi].DEBUGSOURCE.FileID,ax
-	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,[ebx].SOURCEFILE.FileName
+	invoke strcpy,addr [edi].DEBUGSOURCE.FileName,addr buffer
 	inc		dbg.inxsource
 	mov		eax,TRUE
 	ret
@@ -720,12 +722,14 @@ EnumSourceFilesCallback endp
 
 EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 	LOCAL	buffer[512]:BYTE
+	LOCAL	fn:DWORD
 
 	mov		ebx,pLineInfo
 	.if fOptions & 1
 		invoke wsprintf,addr buffer,addr szSourceLine,addr [ebx].SRCCODEINFO.FileName,[ebx].SRCCODEINFO.Address,[ebx].SRCCODEINFO.LineNumber
 		invoke PutString,addr buffer
 	.endif
+	invoke GetFullPathName,addr [ebx].SRCCODEINFO.FileName,sizeof buffer,addr buffer,addr fn
 	; Find source file
 	xor		ecx,ecx
 	.while ecx<dbg.inxsource
@@ -735,7 +739,7 @@ EnumLinesCallback proc uses ebx esi edi,pLineInfo:DWORD,UserContext:DWORD
 		mul		edx
 		mov		esi,dbg.hMemSource
 		lea		esi,[esi+eax]
-		invoke strcmpi,addr [esi].DEBUGSOURCE.FileName,addr [ebx].SRCCODEINFO.FileName
+		invoke strcmpi,addr [esi].DEBUGSOURCE.FileName,addr buffer
 		.if !eax
 			mov		eax,dbg.inxline
 			mov		edx,sizeof DEBUGLINE

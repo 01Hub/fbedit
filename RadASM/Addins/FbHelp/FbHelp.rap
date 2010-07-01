@@ -71,12 +71,12 @@ FileDescription=FreeBASIC dbghelp emulator
 FileVersion=1.0.0.0
 CompanyName=
 [Group]
-Group=Added files,Assembly,Resources,Misc,Modules
-1=2
-2=2
-3=4
-4=4
-5=1
+Group=Assembly,Resources,Misc,Modules
+1=1
+2=1
+3=3
+4=2
+5=3
 6=4
 [AutoLoad]
 AutoLoad=1,2
@@ -84,13 +84,13 @@ AutoLoad=1,2
 3=
 2=
 4=
-1=,,
+1=,,,
 5=
 [Size]
 3=0,0,0,0,0
 2=0,0,0,0,1674
 4=0,0,0,0,0
-1=0,0,0,0,4744
+1=0,0,0,0,15574
 5=0,0,0,0,7
 [VersionControl]
 Settings=1246
@@ -102,7 +102,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=29
+MilestoneOnDateDate=30
 MilestoneOnDateTimeYear=2009
 MilestoneOnDateTimeMonth=7
 MilestoneOnDateTimeDate=7
@@ -156,6 +156,6 @@ ProductVer4Range=0
 2="szSecStabstr"
 3="SECTIONHEADER"
 [PTimer]
-PTimer=1446331
+PTimer=18175784
 [GroupExpand]
-GroupExpand=0,1,0,0,0,0
+GroupExpand=1,1,0,1,0

@@ -381,7 +381,7 @@ SymEnumTypes proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,EnumTypesCa
 				mov		edi,rpstabs
 				add		edi,hMemFile
 				add		edi,[esi].STAB.stabs
-				invoke lstrcpy,addr szname,edi
+				invoke strcpy,addr szname,edi
 				mov		edi,offset szname
 				.while byte ptr [edi]
 					.if byte ptr [edi]==':'
@@ -702,6 +702,8 @@ SymEnumerateSymbols endp
 
 SymEnumSourceFiles proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,pMask:DWORD,EnumSourcesCallback:DWORD,UserContext:DWORD
 	LOCAL	src:SOURCEFILE
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fp:DWORD
 
 	mov		esi,rpstab
 	add		esi,hMemFile
@@ -714,7 +716,8 @@ SymEnumSourceFiles proc uses ebx esi edi,hProcess:HANDLE,BaseOfDll:ULONG64,pMask
 		add		edi,hMemFile
 		add		edi,[esi].STAB.stabs
 		.if (eax==100 || eax==130) && byte ptr [edi]
-			invoke SourceExist,edi
+			invoke GetFullPathName,edi,sizeof buffer,addr buffer,addr fp
+			invoke SourceExist,addr buffer
 			.if eax
 				mov		edi,eax
 				mov		eax,dword ptr BaseOfDll
@@ -739,19 +742,34 @@ SymEnumSourceFiles endp
 SymEnumSourceLines proc hProcess:HANDLE,BaseOfDll:ULONG64,Obj:DWORD,File:DWORD,Line:DWORD,Flags:DWORD,EnumLinesCallback:DWORD,UserContext:DWORD
 	LOCAL	src:SRCCODEINFO
 	LOCAL	procad:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	fp:DWORD
+	LOCAL	nsrc:DWORD
+	LOCAL	nsrcinx:DWORD
 
+	mov		nsrcinx,0
 	mov		esi,rpstab
 	add		esi,hMemFile
 	movzx	ebx,[esi].STAB.nline
 	.while ebx
 		movzx	eax,[esi].STAB.code
-		.if eax==130
+		.if eax==100 || eax==132
+			;Filename
 			mov		edi,rpstabs
 			add		edi,hMemFile
 			add		edi,[esi].STAB.stabs
+			invoke strlen,edi
+			.if byte ptr [edi+eax-1]!='/' && byte ptr [edi+eax-1]!='\'
+				inc		nsrcinx
+				mov		eax,nsrcinx
+				mov		nsrc,eax
+			.endif
+		.elseif eax==162
+			mov		nsrc,1
 		.elseif eax==36
 			mov		eax,[esi].STAB.ad
 			mov		procad,eax
+			invoke GetFullPathName,edi,sizeof buffer,addr buffer,addr fp
 		.elseif eax==68
 			mov		src.SizeOfStruct,sizeof SRCCODEINFO
 			mov		src.Key,0
@@ -760,6 +778,15 @@ SymEnumSourceLines proc hProcess:HANDLE,BaseOfDll:ULONG64,Obj:DWORD,File:DWORD,L
 			mov		eax,dword ptr BaseOfDll[4]
 			mov		dword ptr src.ModBase[4],eax
 			mov		src.Obj,0
+			mov		edi,offset source
+			mov		ecx,nsrc
+			.while ecx>1
+				push	ecx
+				invoke strlen,edi
+				lea		edi,[edi+eax+1]
+				pop		ecx
+				dec		ecx
+			.endw
 			invoke strcpy,addr src.FileName,edi
 			movzx	eax,[esi].STAB.nline
 			mov		src.LineNumber,eax
