@@ -565,6 +565,13 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 		invoke strcpy,addr buffer,addr da.szMainAsm
 		invoke RemoveFileExt,addr buffer
 		invoke InsertMain,addr buffer,addr szDollarF
+		call	AddModules
+		.if da.szMainRC
+			invoke SetOutputFile,addr da.make.szOutCompileRC[esi],offset da.szMainRC
+			invoke InsertMain,addr makeexe.output,addr szDollarR
+		.else
+			invoke InsertMain,addr szNULL,addr szDollarR
+		.endif
 		invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
 		invoke InsertMain,addr makeexe.output,addr szDollarO
 		invoke InsertMain,addr da.szAppPath,addr szDollarA
@@ -638,47 +645,7 @@ OutputMake proc uses ebx esi edi,nCommand:DWORD,fClear:DWORD
 			.endif
 			invoke SetOutputFile,addr da.make.szOutAssemble[esi],offset da.szMainAsm
 			invoke InsertMain,addr makeexe.output,addr szDollarC
-			.if da.fProject
-				invoke iniInStr,addr makeexe.buffer,addr szDollarM
-				.if eax!=-1
-					;Add modules
-					mov		tmpbuff,0
-					xor		ebx,ebx
-					.while TRUE
-						invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
-						.break .if !eax
-						mov		ebx,[eax].PBITEM.id
-						.if [eax].PBITEM.flag==FLAG_MODULE
-							push	ebx
-							mov		edi,eax
-							.if tmpbuff
-								invoke strcat,addr tmpbuff,addr szSpc
-							.endif
-							invoke strlen,addr [edi].PBITEM.szitem
-							.while [edi].PBITEM.szitem[eax]!='\' && eax
-								dec		eax
-							.endw
-							.if [edi].PBITEM.szitem[eax]=='\'
-								inc		eax
-							.endif
-							invoke SetOutputFile,addr da.make.szOutAssemble[esi],addr [edi].PBITEM.szitem[eax]
-							invoke strcat,addr tmpbuff,addr makeexe.output
-							pop		ebx
-						.endif
-					.endw
-					.if tmpbuff
-						invoke CreateFile,addr szAtModDotTxt[1],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
-						mov		hFile,eax
-						invoke strlen,addr tmpbuff
-						mov		edx,eax
-						invoke WriteFile,hFile,addr tmpbuff,edx,addr dwWrite,NULL
-						invoke CloseHandle,hFile
-						invoke InsertMain,addr szAtModDotTxt,addr szDollarM
-					.else
-						invoke InsertMain,addr szNULL,addr szDollarM
-					.endif
-				.endif
-			.endif
+			call	AddModules
 			.if da.szMainRC
 				invoke SetOutputFile,addr da.make.szOutCompileRC[esi],offset da.szMainRC
 				invoke InsertMain,addr makeexe.output,addr szDollarR
@@ -876,6 +843,50 @@ MakeIt:
 	invoke GetFileAttributes,addr makeexe.output
 	.if eax==INVALID_HANDLE_VALUE
 		mov		fExitCode,eax
+	.endif
+	retn
+
+AddModules:
+	.if da.fProject
+		invoke iniInStr,addr makeexe.buffer,addr szDollarM
+		.if eax!=-1
+			;Add modules
+			mov		tmpbuff,0
+			xor		ebx,ebx
+			.while TRUE
+				invoke SendMessage,ha.hProjectBrowser,RPBM_FINDNEXTITEM,ebx,0
+				.break .if !eax
+				mov		ebx,[eax].PBITEM.id
+				.if [eax].PBITEM.flag==FLAG_MODULE
+					push	ebx
+					mov		edi,eax
+					.if tmpbuff
+						invoke strcat,addr tmpbuff,addr szSpc
+					.endif
+					invoke strlen,addr [edi].PBITEM.szitem
+					.while [edi].PBITEM.szitem[eax]!='\' && eax
+						dec		eax
+					.endw
+					.if [edi].PBITEM.szitem[eax]=='\'
+						inc		eax
+					.endif
+					invoke SetOutputFile,addr da.make.szOutAssemble[esi],addr [edi].PBITEM.szitem[eax]
+					invoke strcat,addr tmpbuff,addr makeexe.output
+					pop		ebx
+				.endif
+			.endw
+			.if tmpbuff
+				invoke CreateFile,addr szAtModDotTxt[1],GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+				mov		hFile,eax
+				invoke strlen,addr tmpbuff
+				mov		edx,eax
+				invoke WriteFile,hFile,addr tmpbuff,edx,addr dwWrite,NULL
+				invoke CloseHandle,hFile
+				invoke InsertMain,addr szAtModDotTxt,addr szDollarM
+			.else
+				invoke InsertMain,addr szNULL,addr szDollarM
+			.endif
+		.endif
 	.endif
 	retn
 

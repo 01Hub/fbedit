@@ -1000,7 +1000,7 @@ ApiListBox proc uses ebx esi edi,lpRASELCHANGE:DWORD
 			call	ShowList
 		.elseif da.cctype==CCTYPE_USERTOOLTIP
 			call	ShowTooltip
-		.elseif da.nAsm==nCPP
+		.elseif da.nAsm==nCPP || da.nAsm==nFREEBASIC || da.nAsm==nFREEPASCAL
 			mov		esi,offset LineTxt
 			add		da.ccchrg.cpMin,eax
 			xor		eax,eax

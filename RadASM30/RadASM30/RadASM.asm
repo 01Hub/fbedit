@@ -1203,7 +1203,11 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 				invoke UpdateAll,UAM_CLEARERRORS,0
 				invoke UpdateAll,UAM_SAVEALL,FALSE
-				.if da.szMainRC
+				invoke SendMessage,ha.hCboBuild,CB_GETCURSEL,0,0
+				mov		edx,sizeof MAKE
+				mul		edx
+				mov		edi,eax
+				.if da.szMainRC && da.make.szCompileRC[edi]
 					invoke OutputMake,IDM_MAKE_COMPILE,2
 					.if !eax
 						invoke OutputMake,IDM_MAKE_ASSEMBLE,0

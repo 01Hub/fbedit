@@ -876,13 +876,42 @@ OpenAssembler proc uses ebx esi edi
 						mov		deftype.nDefType,al
 						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.Def,sizeof deftype.Def+1
 						invoke GetItemStr,addr buffer,addr szNULL,addr deftype.szWord,sizeof deftype.szWord
-						invoke strlen,addr deftype.szWord
-						mov		deftype.len,al
+;PrintDec deftype.nType
+;PrintDec deftype.nDefType
+;lea eax,deftype.Def
+;PrintStringByAddr eax
+;lea eax,deftype.szWord
+;PrintStringByAddr eax
+						.if deftype.nType==TYPE_TWOWORDS
+							lea		esi,deftype.szWord
+							xor		edi,edi
+							xor		ecx,ecx
+							.while byte ptr [esi]
+								.if byte ptr [esi]==' '
+									mov		deftype.len,cl
+									mov		eax,ecx
+									xor		ecx,ecx
+									mov		edi,esi
+									inc		esi
+								.endif
+								inc		ecx
+								inc		esi
+							.endw
+							.if edi
+								mov		[edi],cl
+							.endif
+						.else
+							invoke strlen,addr deftype.szWord
+							mov		deftype.len,al
+						.endif
 						.if eax
 							invoke SendMessage,ha.hProperty,PRM_ADDDEFTYPE,0,addr deftype
 						.endif
 					.endw
 					movzx	edx,deftype.Def
+					.if edx=='d' && da.nAsm==nFREEBASIC
+						add		edx,512
+					.endif
 					invoke SendMessage,ha.hProperty,PRM_ADDPROPERTYTYPE,edx,addr bufftype
 				.endif
 			.endw
