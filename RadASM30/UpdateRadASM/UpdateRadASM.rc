@@ -27,8 +27,8 @@ BEGIN
 END
 
 IDR_VERSION1 VERSIONINFO
-FILEVERSION 3,0,0,5
-PRODUCTVERSION 3,0,0,5
+FILEVERSION 3,0,0,6
+PRODUCTVERSION 3,0,0,6
 FILEOS 0x00000004
 FILETYPE 0x00000001
 BEGIN
@@ -36,8 +36,8 @@ BEGIN
   BEGIN
     BLOCK "040904E4"
     BEGIN
-      VALUE "FileVersion", "3.0.0.5\0"
-      VALUE "ProductVersion", "3.0.0.5\0"
+      VALUE "FileVersion", "3.0.0.6\0"
+      VALUE "ProductVersion", "3.0.0.6\0"
       VALUE "FileDescription", "RadASM 3.0 Updater\0"
       VALUE "InternalName", "UpdateRadASM.exe\0"
       VALUE "LegalCopyright", "KetilO (C) 2010\0"
