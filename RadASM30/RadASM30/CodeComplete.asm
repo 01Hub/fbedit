@@ -285,7 +285,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 			invoke strlen,esi
 			.while eax
 				.if byte ptr [esi+eax]==')'
-					lea		edx,[esi+eax]
+					lea		edx,[esi+eax+1]
 					push	edx
 					.while byte ptr [esi+eax-1]!='(' && eax
 						dec		eax
@@ -293,14 +293,14 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.while byte ptr [esi+eax]==' '
 						inc		eax
 					.endw
-					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=')' && byte ptr [esi+eax]
 						mov		dl,[esi+eax]
 						mov		[edi],dl
 						inc		eax
 						inc		edi
 					.endw
 					pop		esi
-					invoke strcpy,edi,addr [esi+1]
+					invoke strcpy,edi,esi
 					jmp		NxMASM0
 				.elseif byte ptr [esi+eax]==']'
 					lea		edx,[esi+eax]
@@ -311,7 +311,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 					.while byte ptr [esi+eax]==' '
 						inc		eax
 					.endw
-					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=']'
+					.while byte ptr [esi+eax]!=' ' && byte ptr [esi+eax]!=']' && byte ptr [esi+eax]
 						mov		dl,[esi+eax]
 						mov		[edi],dl
 						inc		eax
@@ -325,6 +325,7 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
+PrintStringByAddr esi
 			; Parse elements into zero terminated parts
 			xor		ecx,ecx
 			.while byte ptr [esi+ecx]
@@ -1066,6 +1067,7 @@ SkipScope:
 SkipScope1:
 	or		edi,edi
 	je		@f
+	mov		al,[esi+edi]
 	dec		edi
 	.if al==ah
 		dec		ecx
