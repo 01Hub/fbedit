@@ -4,9 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-Version 3.0.0.6 2010-07-02
+Version 3.0.0.6 2010-07-05
 --------------------------
 o Added support for FreeBASIC.
+o Added AIM_OUTPUTDBLCLK addin message.
+o Toolwindows now gets an active caktion when they get focus.
 o Fixed bugs.
 
 Version 3.0.0.5 2010-06-28

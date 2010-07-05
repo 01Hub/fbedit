@@ -1781,6 +1781,16 @@ endif
 		.elseif [esi].NMHDR.code==FBN_PATHCHANGE && eax==ha.hFileBrowser
 			;File browser path
 			invoke strcpy,addr da.szFBPath,[esi].FBNOTIFY.lpfile
+		.elseif [esi].NMHDR.code==NM_SETFOCUS && eax==ha.hFileBrowser
+			;File browser focus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProject
+			mov		[eax].TOOL.dFocus,TRUE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
+		.elseif [esi].NMHDR.code==NM_KILLFOCUS && eax==ha.hFileBrowser
+			;File browser killfocus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProject
+			mov		[eax].TOOL.dFocus,FALSE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
 		.elseif [esi].NMHDR.code==RPBN_DBLCLICK && eax==ha.hProjectBrowser
 			;Project browser dblclick
 			mov		ebx,[esi].NMPBITEMDBLCLICK.lpPBITEM
@@ -1842,6 +1852,16 @@ endif
 					.endif
 				.endif
 			.endif
+		.elseif [esi].NMHDR.code==NM_SETFOCUS && eax==ha.hProjectBrowser
+			;Project browser focus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProject
+			mov		[eax].TOOL.dFocus,TRUE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
+		.elseif [esi].NMHDR.code==NM_KILLFOCUS && eax==ha.hProjectBrowser
+			;Project browser killfocus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProject
+			mov		[eax].TOOL.dFocus,FALSE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
 		.elseif [esi].NMHDR.code==LBN_DBLCLK && eax==ha.hProperty
 			;Property list
 			.if ha.hMdi
@@ -1873,6 +1893,16 @@ endif
 			invoke SendMessage,ha.hEdt,EM_EXSETSEL,0,addr chrg
 			invoke SendMessage,ha.hEdt,REM_VCENTER,0,0
 			invoke SetFocus,ha.hEdt
+		.elseif [esi].NMHDR.code==NM_SETFOCUS && eax==ha.hProperty
+			;Property focus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProperties
+			mov		[eax].TOOL.dFocus,TRUE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
+		.elseif [esi].NMHDR.code==NM_KILLFOCUS && eax==ha.hProperty
+			;Property killfocus
+			invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolProperties
+			mov		[eax].TOOL.dFocus,FALSE
+			invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
 		.elseif [esi].NMHDR.code==EN_SELCHANGE && eax==ha.hOutput
 			;Output window
 			.if [esi].RASELCHANGE.seltyp==SEL_OBJECT
@@ -1880,7 +1910,6 @@ endif
 				invoke UpdateAll,UAM_FINDERROR,eax
 			.endif
 		.elseif  [esi].NMHDR.code==TTN_NEEDTEXT
-		mov eax,[esi].NMHDR.idFrom
 			invoke LoadString,ha.hInstance,[esi].NMHDR.idFrom,addr buffer,sizeof buffer
 			lea		eax,buffer
 			mov		[esi].TOOLTIPTEXT.lpszText,eax

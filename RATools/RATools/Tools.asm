@@ -1037,10 +1037,9 @@ ToolMessage proc uses ebx esi edi,hWin:HWND,uMsg:UINT,lParam:LPARAM
 		mov     [edx].TOOL.hWin,eax
 		mov		eax,hWin
 		mov     [edx].TOOL.hCld,eax
-;		push    edx
-;		invoke SetWindowLong,[edx].TOOL.hCld,GWL_WNDPROC,addr ToolCldWndProc
-;		pop     edx
-;		mov     [edx].TOOL.lpfnOldCldWndProc,eax
+		push    edx
+		invoke SetWindowLong,[edx].TOOL.hCld,GWL_USERDATA,edx
+		pop     edx
 		invoke ToolMsg,[edx].TOOL.hCld,TLM_SETTBR,0
 		pop     eax
 		pop     ecx
@@ -1317,6 +1316,14 @@ ToolCldProc proc uses ebx esi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SendMessage,hWnd,WM_NOTIFY,wParam,lParam
 	.elseif eax==WM_COMMAND
 		invoke SendMessage,hWnd,WM_TOOLCOMMAND,wParam,lParam
+	.elseif eax==WM_SETFOCUS
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov     [eax].TOOL.dFocus,TRUE
+		invoke ToolMsgAll,TLM_CAPTION,0,0
+	.elseif eax==WM_KILLFOCUS
+		invoke GetWindowLong,hWin,GWL_USERDATA
+		mov     [eax].TOOL.dFocus,FALSE
+		invoke ToolMsgAll,TLM_CAPTION,0,0
 	.endif
 	invoke  DefWindowProc,hWin,uMsg,wParam,lParam
   Ex:

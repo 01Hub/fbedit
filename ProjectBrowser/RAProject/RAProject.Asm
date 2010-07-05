@@ -640,6 +640,7 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 	LOCAL	nCollapsed:DWORD
 	LOCAL	tvi:TV_ITEM
 	LOCAL	pbi:PBITEM
+	LOCAL	nmhdr:NMHDR
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -851,6 +852,24 @@ ControlProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARA
 					.endif
 				.elseif eax==TVN_SELCHANGED
 					invoke NotifySelChange,hWin,[esi].NM_TREEVIEW.itemNew.lParam
+				.elseif eax==NM_SETFOCUS
+					mov		eax,hWin
+					mov		nmhdr.hwndFrom,eax
+					invoke GetWindowLong,hWin,GWL_ID
+					mov		nmhdr.idFrom,eax
+					mov		nmhdr.code,NM_SETFOCUS
+					invoke GetParent,hWin
+					mov		ebx,eax
+					invoke SendMessage,ebx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
+				.elseif eax==NM_KILLFOCUS
+					mov		eax,hWin
+					mov		nmhdr.hwndFrom,eax
+					invoke GetWindowLong,hWin,GWL_ID
+					mov		nmhdr.idFrom,eax
+					mov		nmhdr.code,NM_KILLFOCUS
+					invoke GetParent,hWin
+					mov		ebx,eax
+					invoke SendMessage,ebx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
 				.endif
 			.elseif [esi].NMHDR.code==TTN_NEEDTEXT
 				;Toolbar tooltip

@@ -265,6 +265,7 @@ AIM_MENUENABLE					equ WM_USER+117			;RadASM requests you to enable / disable yo
 AIM_RASELCHANGE					equ WM_USER+118			;This message is sendt when a ID_EDITCODE window has a selection change. Always return FALSE. hWin=Mdi child window,wParam=lpTABMEM,lParam=lpRASELCHANE
 AIM_MDIACTIVATE					equ WM_USER+119			;This message is sendt when a mdi child is activated or deactivated. Always return FALSE. hWin=Mdi child window,wParam and lParam as M_MDIACIVATE
 AIM_PARSEFILE					equ WM_USER+120			;This message is sendt when RadASM is done parsing a file. Always return FALSE. hWin=Mdi child window or NULL if it is a file.,wParam=nOwner, lParam=Pointer to file data.
+AIM_OUTPUTDBLCLK				equ WM_USER+121			;hWnd=handle of output, wParam & lParam=same as for WM_LBUTTONDBLCLK
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED				equ 000001h
@@ -288,6 +289,7 @@ HOOK_MENUENABLE					equ 020000h
 HOOK_RASELCHANGE				equ 040000h
 HOOK_MDIACTIVATE				equ 080000h
 HOOK_PARSEFILE					equ 100000h
+HOOK_OUTPUTDBLCLK				equ 200000h
 
 HOOK struct
 	hook1				DWORD ?							;Combinations of HOOK_ flags

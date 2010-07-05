@@ -89,6 +89,7 @@ IDM_EDIT_CLEARBM				equ 10027
 IDM_EDIT_ERROR					equ 10193
 IDM_EDIT_NEXTERROR				equ 10194
 IDM_EDIT_CLEARERRORS			equ 10195
+IDM_EDIT_OPENINCLUE				equ 10200
 IDM_VIEW						equ 10032
 IDM_VIEW_TOOLBAR				equ 10046
 IDM_VIEW_LOCK					equ 10063
@@ -144,7 +145,7 @@ IDM_PROJECT_OPENITEM			equ 10166
 IDM_PROJECT_OPENITEMFILE		equ 10167
 IDM_PROJECT_OPENITEMGROUP		equ 10168
 IDM_PROJECT_OPTION				equ 10103
-IDM_PROJECTTEMPLATE				equ 10196
+IDM_PROJECT_TEMPLATE			equ 10196
 IDM_PROJECT_LANGUAGE			equ 10197
 IDM_RESOURCE					equ 10065
 IDM_RESOURCE_ADD				equ 10108
@@ -235,7 +236,6 @@ IDM_OUTPUT_HIDE					equ 11020
 IDM_OUTPUT_CLEAR				equ 11024
 IDM_OUTPUT_CUT					equ 11023
 IDM_OUTPUT_COPY					equ 11022
-IDCM_FILE_OPEN_CARET			equ 13000
 
 ;Messages to RadASM's main window
 AIM_GETHANDLES					equ WM_USER+50			;Returns a poiner to a struct containing all useful handles. See ADDINHANDLES structure below.
@@ -265,6 +265,7 @@ AIM_MENUENABLE					equ WM_USER+117			;RadASM requests you to enable / disable yo
 AIM_RASELCHANGE					equ WM_USER+118			;This message is sendt when a ID_EDITCODE window has a selection change. Always return FALSE. hWin=Mdi child window,wParam=lpTABMEM,lParam=lpRASELCHANE
 AIM_MDIACTIVATE					equ WM_USER+119			;This message is sendt when a mdi child is activated or deactivated. Always return FALSE. hWin=Mdi child window,wParam and lParam as M_MDIACIVATE
 AIM_PARSEFILE					equ WM_USER+120			;This message is sendt when RadASM is done parsing a file. Always return FALSE. hWin=Mdi child window or NULL if it is a file.,wParam=nOwner, lParam=Pointer to file data.
+AIM_OUTPUTDBLCLK				equ WM_USER+121			;hWnd=handle of output, wParam & lParam=same as for WM_LBUTTONDBLCLK
 
 ;HOOK flags returned in hook1 of HOOK structure
 HOOK_ADDINSLOADED				equ 000001h
@@ -288,6 +289,7 @@ HOOK_MENUENABLE					equ 020000h
 HOOK_RASELCHANGE				equ 040000h
 HOOK_MDIACTIVATE				equ 080000h
 HOOK_PARSEFILE					equ 100000h
+HOOK_OUTPUTDBLCLK				equ 200000h
 
 HOOK struct
 	hook1				DWORD ?							;Combinations of HOOK_ flags
@@ -352,6 +354,10 @@ ADDINHANDLES struct
 	hHtmlOcx			HANDLE ?
 	hFind				HWND ?
 	hDbgTip				HWND ?
+	hMemMnu				HGLOBAL ?
+	hDCMnu				HDC ?
+	hFontMnu			HFONT ?
+	hBrMnu				HBRUSH ?
 ADDINHANDLES ends
 
 ADDINPROCS struct
@@ -369,6 +375,7 @@ ADDINPROCS struct
 ADDINPROCS ends
 
 VIEW_STATUSBAR					equ 1
+VIEW_MULTITAB					equ 2
 
 PRNPOS struct
 	margins				RECT <?>
@@ -490,6 +497,17 @@ FIND struct
 	szfindhistory		BYTE 10*256 dup(?)
 FIND ends
 
+RAMNUITEM struct
+	hMnu				HMENU ?
+	wid					DWORD ?
+	ntype				DWORD ?
+	caption				BYTE MAX_PATH dup(?)
+	accel				BYTE 32 dup(?)
+	img					DWORD ?
+	wdt					DWORD ?
+	hgt					DWORD ?
+RAMNUITEM ends
+
 ADDINDATA struct
 	Version				DWORD ?
 	lpszVersion			DWORD ?
@@ -584,6 +602,7 @@ ADDINDATA struct
 	ccchrg				CHARRANGE <?>
 	tti					TTITEM <>
 	fIncBuild			DWORD ?
+	rpFreeMnu			DWORD ?
 ADDINDATA ends
 
 FILEINFO struct

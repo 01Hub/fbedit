@@ -920,6 +920,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rapn:RAPNOTIFY
 	LOCAL	pt:POINT
 	LOCAL	lfnt:LOGFONT
+	LOCAL	nmhdr:NMHDR
 
 	mov		eax,uMsg
 	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_GETSELTYP
@@ -1103,6 +1104,24 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke SendMessage,[ebx].RAPROPERTY.hcbo,CB_GETITEMDATA,eax,0
 				invoke UpdateList,eax
 				invoke SetFocus,[ebx].RAPROPERTY.hlst
+			.elseif edx==CBN_SETFOCUS || edx==LBN_SETFOCUS
+				mov		eax,hWin
+				mov		nmhdr.hwndFrom,eax
+				invoke GetWindowLong,hWin,GWL_ID
+				mov		nmhdr.idFrom,eax
+				mov		nmhdr.code,NM_SETFOCUS
+				invoke GetParent,hWin
+				mov		edx,eax
+				invoke SendMessage,edx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
+			.elseif edx==CBN_KILLFOCUS || edx==LBN_KILLFOCUS
+				mov		eax,hWin
+				mov		nmhdr.hwndFrom,eax
+				invoke GetWindowLong,hWin,GWL_ID
+				mov		nmhdr.idFrom,eax
+				mov		nmhdr.code,NM_KILLFOCUS
+				invoke GetParent,hWin
+				mov		edx,eax
+				invoke SendMessage,edx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
 			.elseif edx==LBN_SELCHANGE && eax==1003
 				;Selchange
 				invoke SendMessage,[ebx].RAPROPERTY.hlst,LB_GETCURSEL,0,0

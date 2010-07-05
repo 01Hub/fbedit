@@ -610,6 +610,7 @@ TimerProc endp
 ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	buffer[64]:BYTE
+	LOCAL	nmhdr:NMHDR
 
 	mov		eax,uMsg
 	.if eax==WM_CREATE
@@ -834,6 +835,24 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		(TOOLTIPTEXT ptr [ebx]).lpszText,eax
 			xor		eax,eax
 			jmp		Ex
+		.elseif [ebx].NMHDR.code==NM_SETFOCUS
+			mov		eax,hWin
+			mov		nmhdr.hwndFrom,eax
+			invoke GetWindowLong,hWin,GWL_ID
+			mov		nmhdr.idFrom,eax
+			mov		nmhdr.code,NM_SETFOCUS
+			invoke GetParent,hWin
+			mov		ebx,eax
+			invoke SendMessage,ebx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
+		.elseif [ebx].NMHDR.code==NM_KILLFOCUS
+			mov		eax,hWin
+			mov		nmhdr.hwndFrom,eax
+			invoke GetWindowLong,hWin,GWL_ID
+			mov		nmhdr.idFrom,eax
+			mov		nmhdr.code,NM_KILLFOCUS
+			invoke GetParent,hWin
+			mov		ebx,eax
+			invoke SendMessage,ebx,WM_NOTIFY,nmhdr.idFrom,addr nmhdr
 		.endif
 	.elseif eax==WM_SETFOCUS
 		invoke GetWindowLong,hWin,0

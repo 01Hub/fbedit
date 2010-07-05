@@ -77,16 +77,28 @@ OutputProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_LBUTTONDBLCLK
 		invoke GetParent,hWin
 		mov		ebx,eax
-		invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
-		invoke SendMessage,ebx,EM_EXLINEFROMCHAR,0,chrg.cpMin
-		invoke SendMessage,ebx,REM_GETBMID,eax,0
-		.if eax
-			invoke UpdateAll,UAM_FINDERROR,eax
+		invoke PostAddinMessage,ebx,AIM_OUTPUTDBLCLK,wParam,lParam,0,HOOK_OUTPUTDBLCLK
+		.if !eax
+			invoke SendMessage,ebx,EM_EXGETSEL,0,addr chrg
+			invoke SendMessage,ebx,EM_EXLINEFROMCHAR,0,chrg.cpMin
+			invoke SendMessage,ebx,REM_GETBMID,eax,0
+			.if eax
+				invoke UpdateAll,UAM_FINDERROR,eax
+			.endif
 		.endif
 		xor		eax,eax
-	.else
-		invoke CallWindowProc,lpOldOutputProc,hWin,uMsg,wParam,lParam
+		jmp		Ex
+	.elseif eax==WM_SETFOCUS
+		invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
+		mov		[eax].TOOL.dFocus,TRUE
+		invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
+	.elseif eax==WM_KILLFOCUS
+		invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
+		mov		[eax].TOOL.dFocus,FALSE
+		invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
 	.endif
+	invoke CallWindowProc,lpOldOutputProc,hWin,uMsg,wParam,lParam
+  Ex:
 	ret
 
 OutputProc endp
@@ -101,6 +113,14 @@ ImmediateProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 			jmp		Ex
 		.endif
+	.elseif eax==WM_SETFOCUS
+		invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
+		mov		[eax].TOOL.dFocus,TRUE
+		invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
+	.elseif eax==WM_KILLFOCUS
+		invoke SendMessage,ha.hTool,TLM_GETSTRUCT,0,ha.hToolOutput
+		mov		[eax].TOOL.dFocus,FALSE
+		invoke SendMessage,ha.hTool,TLM_CAPTION,0,0
 	.endif
 	invoke CallWindowProc,lpOldImmediateProc,hWin,uMsg,wParam,lParam
   Ex:
