@@ -2080,7 +2080,7 @@ JournalPlaybackProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 JournalRecordProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
 keybd_event,bVk:BYTE,bScan:BYTE,dwFlags:DWORD,dwExtraInfo:PTR
 KeyboardProc,code:Integer,wParam:WPARAM,lParam:LPARAM|LRESULT
-KillTimer,dwTimerId:DWORD|HRESULT
+KillTimer,hWnd:HWND,dwTimerId:DWORD|HRESULT
 LCMapString,Locale:LCID,dwMapFlags:DWORD,lpSrcStr:LPCTSTR,cchSrc:Integer,lpDestStr:LPTSTR,cchDest:Integer|Integer
 LeaveCriticalSection,lpCriticalSection:LPCRITICAL_SECTION
 LeaveCriticalSectionWhenCallbackReturns,pci:PTP_CALLBACK_INSTANCE,pcs:PCRITICAL_SECTION
@@ -3136,7 +3136,7 @@ WaitForMultipleObjects,nCount:DWORD,lpHandles:HANDLE Ptr,bWaitAll:BOOL,dwMillise
 WaitForMultipleObjectsEx,nCount:DWORD,lpHandles:HANDLE Ptr,bWaitAll:BOOL,dwMilliseconds:DWORD,bAlertable:BOOL|DWORD
 WaitForNtmsNotification,hNotification:HANDLE,lpNotificationInformation:LPNTMS_NOTIFICATIONINFORMATION,dwTimeout:DWORD|DWORD
 WaitForNtmsOperatorRequest,hSession:HANDLE,lpRequestId:LPNTMS_GUID,dwTimeout:DWORD|DWORD
-WaitForSingleObject,,hHandle:HANDLE,dwMilliseconds:DWORD|DWORD
+WaitForSingleObject,hHandle:HANDLE,dwMilliseconds:DWORD|DWORD
 WaitForSingleObjectEx,hHandle:HANDLE,dwMilliseconds:DWORD,bAlertable:BOOL|DWORD
 WaitForThreadpoolIoCallbacks,pio:PTP_IO,fCancelPendingCallbacks:BOOL
 WaitForThreadpoolTimerCallbacks,pti:PTP_TIMER,fCancelPendingCallbacks:BOOL

@@ -133,6 +133,7 @@ Sub MenuOptionSave(ByVal hWin As HWND)
 		WritePrivateProfileSection(StrPtr("Tools"),@buff,@ad.IniFile)
 	ElseIf nType=2 Then
 		WritePrivateProfileSection(StrPtr("Help"),@buff,@ad.IniFile)
+		WritePrivateProfileString(Strptr("Help"),Strptr("Path"),@ad.HelpPath,@ad.IniFile)
 	ElseIf nType=3 Then
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("fbcPath"),@szNULL,@sItem,SizeOf(sItem),@ad.IniFile)
 		GetPrivateProfileString(StrPtr("Make"),StrPtr("Module"),StrPtr("Module Build,fbc -c"),@sItem2,SizeOf(sItem2),@ad.IniFile)
