@@ -325,7 +325,6 @@ UpdateApiList proc uses ebx esi edi,lpWord:DWORD,lpApiType:DWORD
 				dec		eax
 			.endw
 			lea		esi,[esi+eax]
-PrintStringByAddr esi
 			; Parse elements into zero terminated parts
 			xor		ecx,ecx
 			.while byte ptr [esi+ecx]
