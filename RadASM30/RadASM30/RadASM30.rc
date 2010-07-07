@@ -1000,7 +1000,7 @@ BEGIN
       MENUITEM "Convert Uppercase\tCtrl+U",IDM_EDIT_UPPERCASE
       MENUITEM "Convert Lowercase\tCtrl+L",IDM_EDIT_LOWERCASE
       MENUITEM "Indent To Spaces",IDM_EDIT_TOSPACES
-      MENUITEM "Indent To Taps",IDM_EDIT_TOTABS
+      MENUITEM "Indent To Tabs",IDM_EDIT_TOTABS
       MENUITEM "Trim Trailing Spaces",IDM_EDIT_TRIM
       MENUITEM "",10184,0x00000800
       MENUITEM "Block ( Column Mode\tCtrl+B",IDM_EDIT_BLOCKMODE
@@ -1136,7 +1136,7 @@ BEGIN
     MENUITEM "Compile Resource\tShift+F5",IDM_MAKE_COMPILE
     MENUITEM "",10105,0x00000800
     MENUITEM "&Assemble\tF5",IDM_MAKE_ASSEMBLE
-    MENUITEM "Assamble &Modules\tCtrl+M",IDM_MAKE_MODULES
+    MENUITEM "Assemble &Modules\tCtrl+M",IDM_MAKE_MODULES
     MENUITEM "&Link\tCtrl+Alt+F5",IDM_MAKE_LINK
     MENUITEM "&Build\tShift+Alt+F5",IDM_MAKE_BUILD
     MENUITEM "",10106,0x00000800
