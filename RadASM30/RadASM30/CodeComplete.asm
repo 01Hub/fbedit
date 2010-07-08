@@ -834,12 +834,15 @@ UpdateApiConstList proc uses esi edi,lpApi:DWORD,lpWord:DWORD,lpCPos:DWORD
 	invoke SendMessage,ha.hProperty,PRM_FINDFIRST,addr szCCC,lpApi
 	.while eax
 		mov		esi,eax
-		invoke strlen,esi
-		lea		esi,[esi+eax+1]
-		.if byte ptr [edi]
-			invoke strcat,edi,addr szComma
+		invoke strcmpi,esi,lpApi
+		.if !eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+			.if byte ptr [edi]
+				invoke strcat,edi,addr szComma
+			.endif
+			invoke strcat,edi,esi
 		.endif
-		invoke strcat,edi,esi
 		invoke SendMessage,ha.hProperty,PRM_FINDNEXT,addr szCCC,lpApi
 	.endw
 	.if byte ptr [edi]
