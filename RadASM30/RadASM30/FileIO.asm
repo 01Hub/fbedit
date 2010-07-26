@@ -326,77 +326,80 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 					mov		esi,eax
 					invoke GetFileInfo,[esi].PBITEM.id,addr szIniProject,addr da.szProjectFile,addr fi
 					.if eax
-						invoke GetWindowLong,hEdt,GWL_USERDATA
-						mov		ebx,eax
-						mov		eax,[esi].PBITEM.id
-						mov		[ebx].TABMEM.pid,eax
-						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
-							mov		eax,fi.nline
-							mov		[ebx].TABMEM.nlastpropline,eax
-							invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
-							mov		[ebx].TABMEM.nlastsize,eax
-							mov		[ebx].TABMEM.fupdate,0
-							invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
-							mov		chrg.cpMin,eax
-							mov		chrg.cpMax,eax
-							invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
-							invoke SendMessage,hEdt,REM_VCENTER,0,0
-							invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
-						.endif
-						;Restore collapse
-						.if fi.ID==ID_EDITCODE
-							mov		buffer,'C'
-							invoke BinToDec,fi.pid,addr buffer[1]
-							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
-							.if eax
-								invoke SendMessage,hEdt,EM_GETLINECOUNT,0,0
-								invoke SendMessage,hEdt,REM_PRVBOOKMARK,eax,1
-								mov		ebx,eax
-								.while TRUE
-									invoke GetItemInt,addr tmpbuff,-1
-									.break .if eax==-1
-									xor		esi,esi
-									.while esi<31
-										shr		eax,1
-										push	eax
-										.if CARRY?
-											invoke SendMessage,hEdt,REM_COLLAPSE,ebx,0
-										.endif
-										invoke SendMessage,hEdt,REM_PRVBOOKMARK,ebx,1
-										mov		ebx,eax
-										pop		eax
-										inc		esi
-										cmp		ebx,-1
-										je		@f
+						mov		eax,ID
+						.if ID!=3 || eax==fi.ID
+							invoke GetWindowLong,hEdt,GWL_USERDATA
+							mov		ebx,eax
+							mov		eax,[esi].PBITEM.id
+							mov		[ebx].TABMEM.pid,eax
+							.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
+								mov		eax,fi.nline
+								mov		[ebx].TABMEM.nlastpropline,eax
+								invoke SendMessage,hEdt,WM_GETTEXTLENGTH,0,0
+								mov		[ebx].TABMEM.nlastsize,eax
+								mov		[ebx].TABMEM.fupdate,0
+								invoke SendMessage,hEdt,EM_LINEINDEX,fi.nline,0
+								mov		chrg.cpMin,eax
+								mov		chrg.cpMax,eax
+								invoke SendMessage,hEdt,EM_EXSETSEL,0,addr chrg
+								invoke SendMessage,hEdt,REM_VCENTER,0,0
+								invoke SendMessage,hEdt,EM_SCROLLCARET,0,0
+							.endif
+							;Restore collapse
+							.if fi.ID==ID_EDITCODE
+								mov		buffer,'C'
+								invoke BinToDec,fi.pid,addr buffer[1]
+								invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+								.if eax
+									invoke SendMessage,hEdt,EM_GETLINECOUNT,0,0
+									invoke SendMessage,hEdt,REM_PRVBOOKMARK,eax,1
+									mov		ebx,eax
+									.while TRUE
+										invoke GetItemInt,addr tmpbuff,-1
+										.break .if eax==-1
+										xor		esi,esi
+										.while esi<31
+											shr		eax,1
+											push	eax
+											.if CARRY?
+												invoke SendMessage,hEdt,REM_COLLAPSE,ebx,0
+											.endif
+											invoke SendMessage,hEdt,REM_PRVBOOKMARK,ebx,1
+											mov		ebx,eax
+											pop		eax
+											inc		esi
+											cmp		ebx,-1
+											je		@f
+										.endw
 									.endw
-								.endw
-							  @@:
+								  @@:
+								.endif
 							.endif
-						.endif
-						;Restore breakpoints
-						.if fi.ID==ID_EDITCODE
-							mov		buffer,'B'
-							invoke BinToDec,fi.pid,addr buffer[1]
-							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
-							.if eax
-								.while TRUE
-									invoke GetItemInt,addr tmpbuff,-1
-									.break .if eax==-1
-									invoke SendMessage,hEdt,REM_SETBREAKPOINT,eax,TRUE
-								.endw
+							;Restore breakpoints
+							.if fi.ID==ID_EDITCODE
+								mov		buffer,'B'
+								invoke BinToDec,fi.pid,addr buffer[1]
+								invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+								.if eax
+									.while TRUE
+										invoke GetItemInt,addr tmpbuff,-1
+										.break .if eax==-1
+										invoke SendMessage,hEdt,REM_SETBREAKPOINT,eax,TRUE
+									.endw
+								.endif
 							.endif
-						.endif
-						;Restore bookmarks
-						.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
-							mov		buffer,'M'
-							invoke BinToDec,fi.pid,addr buffer[1]
-							invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
-							.if eax
-								.while TRUE
-									invoke GetItemInt,addr tmpbuff,-1
-									.break .if eax==-1
-									invoke SendMessage,hEdt,REM_SETBOOKMARK,eax,3
-								.endw
+							;Restore bookmarks
+							.if fi.ID==ID_EDITCODE || fi.ID==ID_EDITTEXT
+								mov		buffer,'M'
+								invoke BinToDec,fi.pid,addr buffer[1]
+								invoke GetPrivateProfileString,addr szIniProject,addr buffer,addr szNULL,addr tmpbuff,sizeof tmpbuff,addr da.szProjectFile
+								.if eax
+									.while TRUE
+										invoke GetItemInt,addr tmpbuff,-1
+										.break .if eax==-1
+										invoke SendMessage,hEdt,REM_SETBOOKMARK,eax,3
+									.endw
+								.endif
 							.endif
 						.endif
 					.endif
