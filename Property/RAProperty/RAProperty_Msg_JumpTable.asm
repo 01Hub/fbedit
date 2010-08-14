@@ -823,6 +823,10 @@
 			xor		eax,eax
 		.endif
 		ret
+	_PRM_ADDPROPERTYITEM:
+		mov		edx,lParam
+		invoke AddWordToWordList,[edx].PROPERTYITEM.nType,[edx].PROPERTYITEM.nOwner,[edx].PROPERTYITEM.nLine,[edx].PROPERTYITEM.nEndLine,[edx].PROPERTYITEM.lpszStr,[edx].PROPERTYITEM.nParts
+		ret
 
 .data
 align 4
@@ -876,6 +880,7 @@ _RAPROPERTY_BASE \
 	dd _PRM_COMPACTLIST			;equ WM_USER+46		;wParam=fProject, lParam=0
 	dd _PRM_RESET				;equ WM_USER+47		;wParam=0, lParam=0
 	dd _PRM_GETSELTYP			;equ WM_USER+48		;wParam=0, lParam=0
+	dd _PRM_ADDPROPERTYITEM		;equ WM_USER+48		;wParam=0, lParam=lpPROPERTYITEM
 
 .code
 align 4

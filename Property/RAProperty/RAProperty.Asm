@@ -923,7 +923,7 @@ ControlProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	nmhdr:NMHDR
 
 	mov		eax,uMsg
-	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_GETSELTYP
+	.if eax>=PRM_SELECTPROPERTY && eax<=PRM_ADDPROPERTYITEM
 		push		eax
 		invoke GetWindowLong,hWin,0
 		.if eax

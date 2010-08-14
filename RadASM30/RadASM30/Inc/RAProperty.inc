@@ -51,6 +51,7 @@ PRM_ADDPROPERTYLIST			equ WM_USER+45		;wParam=dwType, lParam=lpszListOfWords
 PRM_COMPACTLIST				equ WM_USER+46		;wParam=fProject, lParam=0
 PRM_RESET					equ WM_USER+47		;wParam=0, lParam=0
 PRM_GETSELTYP				equ WM_USER+48		;wParam=0, lParam=0
+PRM_ADDPROPERTYITEM			equ WM_USER+49		;wParam=0, lParam=lpPROPERTYITEM
 
 ;Languages
 ;Assemblers / Compilers
@@ -215,6 +216,15 @@ PROPERTIES struct
 	nEnd			DWORD ?
 	nType			BYTE ?
 PROPERTIES ends
+
+PROPERTYITEM struct
+	nType			DWORD ?				;Type 1 to 255
+	nOwner			DWORD ?				;Project file ID
+	nLine			DWORD ?				;Line number
+	nEndLine		DWORD ?				;Line number
+	lpszStr			DWORD ?				;Pointer to one or more zero terminated strings
+	nParts			DWORD ?				;Number of zero terminated strings
+PROPERTYITEM ends
 
 .const
 

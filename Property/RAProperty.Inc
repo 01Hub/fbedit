@@ -51,6 +51,7 @@ PRM_ADDPROPERTYLIST			equ WM_USER+45		;wParam=dwType, lParam=lpszListOfWords
 PRM_COMPACTLIST				equ WM_USER+46		;wParam=fProject, lParam=0
 PRM_RESET					equ WM_USER+47		;wParam=0, lParam=0
 PRM_GETSELTYP				equ WM_USER+48		;wParam=0, lParam=0
+PRM_ADDPROPERTYITEM			equ WM_USER+49		;wParam=0, lParam=lpPROPERTYITEM
 
 ;Languages
 nMASM						equ 1
@@ -207,6 +208,15 @@ MEMSEARCH struct
 	lpCharTab		dd ?
 	fr				dd ?
 MEMSEARCH ends
+
+PROPERTYITEM struct
+	nType			dd ?				;Type 1 to 255
+	nOwner			dd ?				;Project file ID
+	nLine			dd ?				;Line number
+	nEndLine		dd ?				;Line number
+	lpszStr			dd ?				;Pointer to one or more zero terminated strings
+	nParts			dd ?				;Number of zero terminated strings
+PROPERTYITEM ends
 
 .const
 
