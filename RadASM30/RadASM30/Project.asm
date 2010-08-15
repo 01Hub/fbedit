@@ -2080,30 +2080,36 @@ PutProject endp
 
 CloseProject proc
 
-	invoke UpdateAll,UAM_SAVEALL,TRUE
-	.if eax
-		.if da.fProject
-			invoke PutProject
+	invoke PostAddinMessage,ha.hWnd,AIM_PROJECTCLOSE,0,addr da.szProjectFile,0,HOOK_PROJECTCLOSE
+	.if !eax
+		invoke UpdateAll,UAM_SAVEALL,TRUE
+		.if eax
+			.if da.fProject
+				invoke PutProject
+			.endif
+			invoke UpdateAll,UAM_CLOSEALL,0
+			invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
+			invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
+			invoke UpdateWindow,ha.hProperty
+			invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,0,0
+			invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
+			invoke SetProjectTab,0
+			mov		da.fProject,0
+			mov		da.szProjectFile,0
+			mov		da.szProjectPath,0
+			mov		da.szMainRC,0
+			mov		da.szMainAsm,0
+			mov		da.szPOApiFiles,0
+			invoke OpenAssembler
+			invoke SetMainWinCaption
+			invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
+			invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
+			invoke UpdateWindow,ha.hWnd
+			invoke PostAddinMessage,ha.hWnd,AIM_PROJECTCLOSED,0,0,0,HOOK_PROJECTCLOSED
+			mov		eax,TRUE
+		.else
+			xor		eax,eax
 		.endif
-		invoke UpdateAll,UAM_CLOSEALL,0
-		invoke SendMessage,ha.hProperty,PRM_DELPROPERTY,0,0
-		invoke SendMessage,ha.hProperty,PRM_REFRESHLIST,0,0
-		invoke UpdateWindow,ha.hProperty
-		invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,0,0
-		invoke SendMessage,ha.hProjectBrowser,RPBM_SETGROUPING,TRUE,RPBG_NOCHANGE
-		invoke SetProjectTab,0
-		mov		da.fProject,0
-		mov		da.szProjectFile,0
-		mov		da.szProjectPath,0
-		mov		da.szMainRC,0
-		mov		da.szMainAsm,0
-		mov		da.szPOApiFiles,0
-		invoke OpenAssembler
-		invoke SetMainWinCaption
-		invoke SendMessage,ha.hProperty,PRM_SETSELBUTTON,2,0
-		invoke SendMessage,ha.hProperty,PRM_SELOWNER,0,0
-		invoke UpdateWindow,ha.hWnd
-		mov		eax,TRUE
 	.else
 		xor		eax,eax
 	.endif

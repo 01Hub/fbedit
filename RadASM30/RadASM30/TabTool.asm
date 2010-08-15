@@ -529,6 +529,19 @@ TabProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			xor		eax,eax
 			jmp		Ex
 		.endif
+	.elseif eax==WM_LBUTTONDBLCLK
+		mov		eax,lParam
+		movzx	edx,ax
+		shr		eax,16
+		mov		ht.pt.x,edx
+		mov		ht.pt.y,eax
+		invoke SendMessage,hWin,TCM_HITTEST,0,addr ht
+		.if eax==da.tabinx
+			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_FILE_CLOSE,0
+		.endif
+		mov		da.tabinx,-2
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_MOUSEMOVE
 		test	wParam,MK_LBUTTON
 		.if !ZERO?

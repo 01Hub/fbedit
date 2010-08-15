@@ -287,26 +287,30 @@ OpenTheFile proc uses ebx esi edi,lpFileName:DWORD,ID:DWORD
 			.else
 				invoke CloseProject
 				.if eax
-					invoke LoadCursor,0,IDC_WAIT
-					invoke SetCursor,eax
-					invoke strcpy,addr da.szProjectFile,lpFileName
-					invoke strcpy,addr da.szProjectPath,addr da.szProjectFile
-					invoke RemoveFileName,addr da.szProjectPath
-					mov		da.fProject,TRUE
-					;Assembler
-					invoke GetPrivateProfileString,addr szIniProject,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProjectFile
+					invoke PostAddinMessage,ha.hWnd,AIM_PROJECTOPEN,0,lpFileName,0,HOOK_PROJECTOPEN
 					.if !eax
-						mov		dword ptr da.szAssembler,'msam'
-						mov		dword ptr da.szAssembler[4],0
+						invoke LoadCursor,0,IDC_WAIT
+						invoke SetCursor,eax
+						invoke strcpy,addr da.szProjectFile,lpFileName
+						invoke strcpy,addr da.szProjectPath,addr da.szProjectFile
+						invoke RemoveFileName,addr da.szProjectPath
+						mov		da.fProject,TRUE
+						;Assembler
+						invoke GetPrivateProfileString,addr szIniProject,addr szIniAssembler,NULL,addr da.szAssembler,sizeof da.szAssembler,addr da.szProjectFile
+						.if !eax
+							mov		dword ptr da.szAssembler,'msam'
+							mov		dword ptr da.szAssembler[4],0
+						.endif
+						invoke GetPrivateProfileString,addr szIniProject,addr szIniApi,NULL,addr da.szPOApiFiles,sizeof da.szPOApiFiles,addr da.szProjectFile
+						invoke OpenAssembler
+						invoke GetProjectFiles
+						invoke AddMRU,addr da.szMruProjects,addr da.szProjectFile
+						invoke UpdateMRUMenu,addr da.szMruProjects
+						invoke SetMainWinCaption
+						invoke LoadCursor,0,IDC_ARROW
+						invoke SetCursor,eax
+						invoke PostAddinMessage,ha.hWnd,AIM_PROJECTOPENED,0,addr da.szProjectFile,0,HOOK_PROJECTOPENED
 					.endif
-					invoke GetPrivateProfileString,addr szIniProject,addr szIniApi,NULL,addr da.szPOApiFiles,sizeof da.szPOApiFiles,addr da.szProjectFile
-					invoke OpenAssembler
-					invoke GetProjectFiles
-					invoke AddMRU,addr da.szMruProjects,addr da.szProjectFile
-					invoke UpdateMRUMenu,addr da.szMruProjects
-					invoke SetMainWinCaption
-					invoke LoadCursor,0,IDC_ARROW
-					invoke SetCursor,eax
 				.endif
 			.endif
 		.elseif eax==ID_EXTERNAL

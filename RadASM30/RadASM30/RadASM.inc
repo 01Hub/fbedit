@@ -319,6 +319,7 @@ szIniPrint						db 'Print',0
 szIniDebug						db 'Debug',0
 szIniDescription				db 'Description',0
 szIniExtDebug					db 'ExtDebug',0
+szIniNoSEH						db 'NoSEH',0
 
 szDefReBar						db '1,132,123,2,132,199,3,132,193,4,132,47,5,132,101,6,132,1024',0
 szNewFile						db '(Untitled)',0

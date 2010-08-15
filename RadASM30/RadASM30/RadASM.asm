@@ -3362,6 +3362,11 @@ WinMain proc hInst:DWORD,hPrevInst:DWORD,CmdLine:DWORD,CmdShow:DWORD
 		invoke MessageBox,NULL,addr szRadASMVersion,addr DisplayName,MB_OK or MB_ICONERROR
 		jmp		Ex
 	.endif
+	invoke GetPrivateProfileInt,addr szIniWin,addr szIniNoSEH,0,addr da.szRadASMIni
+	.if !eax
+		invoke SetUnhandledExceptionFilter,OFFSET FinalHandler
+		invoke InitHyperLinkClass
+	.endif
 	invoke GetResource
 	invoke GetWinPos
 	invoke GetFindHistory
@@ -3411,8 +3416,6 @@ start:
 	.if osvi.dwPlatformId == VER_PLATFORM_WIN32_NT
 		mov		fNT,TRUE
 	.endif
-	invoke SetUnhandledExceptionFilter,OFFSET FinalHandler
-	invoke InitHyperLinkClass
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
