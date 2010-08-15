@@ -1643,7 +1643,6 @@ GetProjectFiles proc uses ebx esi edi
 				mov		pbi.lParam,eax
 				invoke GetFileAttributes,addr pbi.szitem
 				.if eax!=INVALID_HANDLE_VALUE
-					invoke ParseFile,addr pbi.szitem,pbi.id
 					invoke SendMessage,ha.hProjectBrowser,RPBM_SETITEM,ebx,addr pbi
 					.if pbi.flag==FLAG_MAIN
 						;Main file
@@ -1655,6 +1654,7 @@ GetProjectFiles proc uses ebx esi edi
 							invoke strcpy,addr da.szMainRC,addr buffer
 						.endif
 					.endif
+					invoke ParseFile,addr pbi.szitem,pbi.id
 					inc		ebx
 				.endif
 				mov		nMiss,0
