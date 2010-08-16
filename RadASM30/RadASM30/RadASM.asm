@@ -662,7 +662,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-						invoke IndentComment,ha.hEdt,';',TRUE
+						mov		eax,dword ptr defgen.szCmntChar
+						invoke IndentComment,ha.hEdt,eax,TRUE
 						mov		da.fTimer,1
 					.endif
 				.endif
@@ -670,7 +671,8 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID
 					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
-						invoke IndentComment,ha.hEdt,';',FALSE
+						mov		eax,dword ptr defgen.szCmntChar
+						invoke IndentComment,ha.hEdt,eax,FALSE
 						mov		da.fTimer,1
 					.endif
 				.endif
@@ -2536,20 +2538,25 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				invoke ShowWindow,ha.hTT,SW_HIDE
 			.endif
 			mov		da.cctype,CCTYPE_NONE
-ifdef DBG
-		.elseif edx=='X' || edx=='V'
+		.elseif edx=='X' || edx=='V' || edx=='Z' || edx=='Y'
 			invoke GetKeyState,VK_CONTROL
 			test		eax,80h
 			.if !ZERO?
+				;Cut, Paste. Undo, Redo
 				mov		eax,wParam
 				mov		fCutPaste,eax
+ifdef DBG
 				.if eax=='X'
 					invoke LogTimeString,addr szCTRLX,0,0
 				.else
 					invoke LogTimeString,addr szCTRLV,0,0
 				.endif
-			.endif
 endif
+			.endif
+		.elseif edx==2Eh && eax==153h
+			;Delete
+			mov		eax,wParam
+			mov		fCutPaste,eax
 		.endif
 	.elseif eax==WM_SETFOCUS
 		;Add the tooltip
@@ -3108,7 +3115,7 @@ endif
 						.endif
 						.if ![esi].RASELCHANGE.nWordGroup
 							mov		[ebx].TABMEM.fupdate,1
-							.if !da.inprogress && da.cctype!=CCTYPE_ALL
+							.if !da.inprogress && da.cctype!=CCTYPE_ALL && !fCutPaste
 								invoke ApiListBox,esi
 							.endif
 						.endif
@@ -3125,7 +3132,7 @@ endif
 							.endif
 						.endif
 					.endif
-					.if da.cctype==CCTYPE_ALL
+					.if da.cctype==CCTYPE_ALL && !fCutPaste
 						.if !da.inprogress
 							invoke ApiListBox,esi
 						.endif
@@ -3133,6 +3140,7 @@ endif
 				.endif
 				mov		eax,[esi].RASELCHANGE.line
 				mov		da.nLastLine,eax
+				mov		fCutPaste,0
 				mov		da.fTimer,1
 			.endif
 		.elseif eax==ID_EDITTEXT
@@ -3183,6 +3191,8 @@ endif
 			.endif
 			mov		da.fTimer,1
 		.endif
+		xor		eax,eax
+		jmp		Ex
 	.elseif eax==WM_COMMAND
 		mov		eax,wParam
 		movsx	eax,ax
@@ -3243,10 +3253,6 @@ endif
 		.endif
 		xor		eax,eax
 		jmp		Ex
-;	.elseif eax==WM_WINDOWPOSCHANGED
-;	.elseif eax==WM_MOVE
-;	.elseif eax==WM_DESTROY
-;	.elseif eax==WM_ERASEBKGND
 	.endif
 	invoke DefMDIChildProc,hWin,uMsg,wParam,lParam
 ifdef DBG

@@ -401,3 +401,5 @@ dbginf							DEBUGINFO <>
 nUnsaved						DWORD ?
 ftexe							FILETIME <>
 nNewer							DWORD ?
+defgen							DEFGEN <>
+

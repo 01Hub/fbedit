@@ -10,6 +10,7 @@ Version 3.0.0.7 2010-08-15
 o Added AIM_PROJECTCLOSE, AIM_PROJECTCLOSED, AIM_PROJECTOPEN and AIM_PROJECTOPENED addin messages.
 o Added hidden option to disable SEH handling. Section [Win], NoSEH=1
   Uesful when debugging addins.
+o Fixed bug with Comment / Uncomment. Did not work as it should for languages other than assembly.
 
 Version 3.0.0.6 2010-07-26
 --------------------------

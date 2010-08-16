@@ -674,7 +674,6 @@ OpenAssembler proc uses ebx esi edi
 	LOCAL	buffcbo[128]:BYTE
 	LOCAL	bufftype[128]:BYTE
 	LOCAL	deftype:DEFTYPE
-	LOCAL	defgen:DEFGEN
 
 	;Assembler.ini
 	;Check version

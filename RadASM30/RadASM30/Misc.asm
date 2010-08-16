@@ -1043,13 +1043,14 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 	LOCAL	LnSt:DWORD
 	LOCAL	LnEn:DWORD
 	LOCAL	buffer[32]:BYTE
+	LOCAL	len:DWORD
 
 	invoke SendMessage,hWin,WM_SETREDRAW,FALSE,0
 	invoke SendMessage,hWin,REM_LOCKUNDOID,TRUE,0
-	.if fN
-		mov		eax,nChr
-		mov		dword ptr buffer[0],eax
-	.endif
+	mov		eax,nChr
+	mov		dword ptr buffer[0],eax
+	invoke strlen,addr buffer
+	mov		len,eax
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr ochr
 	invoke SendMessage,hWin,EM_EXGETSEL,0,addr chr
 	invoke SendMessage,hWin,EM_HIDESELECTION,TRUE,0
@@ -1070,7 +1071,7 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 			mov		chr.cpMax,eax
 			invoke SendMessage,hWin,EM_EXSETSEL,0,addr chr
 			invoke SendMessage,hWin,EM_REPLACESEL,TRUE,addr buffer
-			invoke strlen,addr buffer
+			mov		eax,len
 			add		ochr.cpMax,eax
 			jmp		nxt
 		.else
@@ -1081,11 +1082,16 @@ IndentComment proc uses esi,hWin:HWND,nChr:DWORD,fN:DWORD
 			invoke SendMessage,hWin,EM_GETSELTEXT,0,addr tmpbuff
 			mov		esi,offset tmpbuff
 			xor		eax,eax
-			mov		al,[esi]
+			.if len==1
+				mov		al,[esi]
+			.elseif len==2
+				mov		ax,[esi]
+			.endif
 			.if eax==nChr
-				inc		esi
+				add		esi,len
 				invoke SendMessage,hWin,EM_REPLACESEL,TRUE,esi
-				dec		ochr.cpMax
+				mov		eax,len
+				sub		ochr.cpMax,eax
 			.elseif nChr==09h
 				mov		ecx,da.edtopt.tabsize
 				dec		esi
