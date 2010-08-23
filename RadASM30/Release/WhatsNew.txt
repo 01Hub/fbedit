@@ -4,12 +4,14 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
-Version 3.0.0.7 2010-08-15
+Version 3.0.0.7 2010-08-23
 --------------------------
 0 Added double click on a tab to close it.
 o Added AIM_PROJECTCLOSE, AIM_PROJECTCLOSED, AIM_PROJECTOPEN and AIM_PROJECTOPENED addin messages.
 o Added hidden option to disable SEH handling. Section [Win], NoSEH=1
   Uesful when debugging addins.
+o Added click on statusbar to shopw / hide output window.
+o Added Empty Undo Buffer to Edit menu.
 o Fixed bug with Comment / Uncomment. Did not work as it should for languages other than assembly.
 
 Version 3.0.0.6 2010-07-26

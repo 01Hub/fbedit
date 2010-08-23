@@ -1461,6 +1461,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 				push	eax
 				push	IDM_EDIT_REDO
 				push	eax
+				push	IDM_EDIT_EMPTYUNDO
+				push	eax
 				push	IDM_EDIT_PASTE
 				push	eax
 				push	IDM_EDIT_CUT
@@ -1523,11 +1525,18 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 			.else
 				.if esi==ID_EDITCODE || esi==ID_EDITTEXT || esi==ID_EDITHEX
 					invoke SendMessage,ebx,EM_CANUNDO,0,0
+					mov		edi,eax
 					push	eax
 					push	IDM_EDIT_UNDO
 					invoke SendMessage,ebx,EM_CANREDO,0,0
+					or		edi,eax
 					push	eax
 					push	IDM_EDIT_REDO
+					.if esi==ID_EDITHEX
+						xor		edi,edi
+					.endif
+					push	edi
+					push	IDM_EDIT_EMPTYUNDO
 					invoke SendMessage,ebx,EM_CANPASTE,CF_TEXT,0
 					push	eax
 					push	IDM_EDIT_PASTE
@@ -1619,6 +1628,8 @@ EnableMenu proc uses ebx esi edi,hMnu:HMENU,nPos:DWORD
 					invoke SendMessage,ebx,DEM_CANREDO,0,0
 					push	eax
 					push	IDM_EDIT_REDO
+					push	FALSE
+					push	IDM_EDIT_EMPTYUNDO
 					invoke SendMessage,ebx,DEM_CANPASTE,CF_TEXT,0
 					push	eax
 					push	IDM_EDIT_PASTE

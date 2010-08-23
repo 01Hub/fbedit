@@ -501,6 +501,14 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 						invoke SendMessage,ha.hEdt,DEM_REDO,0,0
 					.endif
 				.endif
+			.elseif eax==IDM_EDIT_EMPTYUNDO
+				.if ha.hMdi
+					invoke GetWindowLong,ha.hEdt,GWL_ID
+					.if eax==ID_EDITCODE || eax==ID_EDITTEXT
+						invoke SendMessage,ha.hEdt,EM_EMPTYUNDOBUFFER,0,0
+						mov		da.fTimer,1
+					.endif
+				.endif
 			.elseif eax==IDM_EDIT_CUT
 				.if ha.hMdi
 					invoke GetWindowLong,ha.hEdt,GWL_ID

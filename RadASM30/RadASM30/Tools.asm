@@ -657,7 +657,7 @@ StatusProc proc hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		eax,lParam
 		and		eax,0FFFFh
 		.if eax>SBLASTPANE
-;			invoke SendMessage,hWnd,WM_COMMAND,IDM_VIEW_OUTPUTWINDOW,0
+			invoke SendMessage,ha.hWnd,WM_COMMAND,IDM_VIEW_OUTPUT,0
 		.endif
 	.endif
 	invoke CallWindowProc,lpOldStatusProc,hWin,uMsg,wParam,lParam
