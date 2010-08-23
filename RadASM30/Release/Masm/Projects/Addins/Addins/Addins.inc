@@ -57,6 +57,7 @@ IDM_FILE_EXIT					equ 10004
 IDM_EDIT						equ 10011
 IDM_EDIT_UNDO					equ 10019
 IDM_EDIT_REDO					equ 10020
+IDM_EDIT_EMPTYUNDO				equ 10201
 IDM_EDIT_CUT					equ 10012
 IDM_EDIT_COPY					equ 10013
 IDM_EDIT_PASTE					equ 10014
@@ -266,30 +267,38 @@ AIM_RASELCHANGE					equ WM_USER+118			;This message is sendt when a ID_EDITCODE 
 AIM_MDIACTIVATE					equ WM_USER+119			;This message is sendt when a mdi child is activated or deactivated. Always return FALSE. hWin=Mdi child window,wParam and lParam as M_MDIACIVATE
 AIM_PARSEFILE					equ WM_USER+120			;This message is sendt when RadASM is done parsing a file. Always return FALSE. hWin=Mdi child window or NULL if it is a file.,wParam=nOwner, lParam=Pointer to file data.
 AIM_OUTPUTDBLCLK				equ WM_USER+121			;hWnd=handle of output, wParam & lParam=same as for WM_LBUTTONDBLCLK
+AIM_PROJECTCLOSE				equ WM_USER+122			;RadASM requestst closing a project. Return TRUE to prevent RadASM from closing the project. hWin=Main window, wParam=0, lParam=lpProjectFileName
+AIM_PROJECTCLOSED				equ WM_USER+123			;RadASM has closed a project. Always retirn FALSE. hWin=Main window, wParam=0, lParam=0
+AIM_PROJECTOPEN					equ WM_USER+124			;RadASM requestst opening a project. Return TRUE to prevent RadASM from opening the project. hWin=Main window, wParam=0, lParam=lpProjectFileName
+AIM_PROJECTOPENED				equ WM_USER+125			;RadASM has opened a project. Always return FALSE. hWin=Main window, wParam=0, lParam=lpProjectFileName
 
 ;HOOK flags returned in hook1 of HOOK structure
-HOOK_ADDINSLOADED				equ 000001h
-HOOK_COMMAND					equ 000002h
-HOOK_CLOSE						equ 000004h
-HOOK_DESTROY					equ 000008h
-HOOK_MENUUPDATE					equ 000010h
-HOOK_FILEOPEN					equ 000020h
-HOOK_FILEOPENED					equ 000040h
-HOOK_FILECLOSE					equ 000080h
-HOOK_FILECLOSED					equ 000100h
-HOOK_FILESAVE					equ 000200h
-HOOK_FILESAVEAS					equ 000300h
-HOOK_FILESAVED					equ 000800h
-HOOK_GETMODIFY					equ 001000h
-HOOK_MAKEBEGIN					equ 002000h
-HOOK_MAKEDONE					equ 004000h
-HOOK_GETFILETYPE				equ 008000h
-HOOK_FILENAMECHANGED			equ 010000h
-HOOK_MENUENABLE					equ 020000h
-HOOK_RASELCHANGE				equ 040000h
-HOOK_MDIACTIVATE				equ 080000h
-HOOK_PARSEFILE					equ 100000h
-HOOK_OUTPUTDBLCLK				equ 200000h
+HOOK_ADDINSLOADED				equ 00000001h
+HOOK_COMMAND					equ 00000002h
+HOOK_CLOSE						equ 00000004h
+HOOK_DESTROY					equ 00000008h
+HOOK_MENUUPDATE					equ 00000010h
+HOOK_FILEOPEN					equ 00000020h
+HOOK_FILEOPENED					equ 00000040h
+HOOK_FILECLOSE					equ 00000080h
+HOOK_FILECLOSED					equ 00000100h
+HOOK_FILESAVE					equ 00000200h
+HOOK_FILESAVEAS					equ 00000300h
+HOOK_FILESAVED					equ 00000800h
+HOOK_GETMODIFY					equ 00001000h
+HOOK_MAKEBEGIN					equ 00002000h
+HOOK_MAKEDONE					equ 00004000h
+HOOK_GETFILETYPE				equ 00008000h
+HOOK_FILENAMECHANGED			equ 00010000h
+HOOK_MENUENABLE					equ 00020000h
+HOOK_RASELCHANGE				equ 00040000h
+HOOK_MDIACTIVATE				equ 00080000h
+HOOK_PARSEFILE					equ 00100000h
+HOOK_OUTPUTDBLCLK				equ 00200000h
+HOOK_PROJECTCLOSE				equ 00400000h
+HOOK_PROJECTCLOSED				equ 00800000h
+HOOK_PROJECTOPEN				equ 01000000h
+HOOK_PROJECTOPENED				equ 02000000h
 
 HOOK struct
 	hook1				DWORD ?							;Combinations of HOOK_ flags
