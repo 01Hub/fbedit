@@ -2510,6 +2510,7 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CadAdjustObject,hWin,eax
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
+		invoke SetFocus,hWin
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		invoke CadSetCursorPos,hWin
@@ -2569,6 +2570,25 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_RBUTTONDOWN
 		.if !rpsize
 			invoke CadNotify,hWin,CN_SELRCLICK,-1
+		.endif
+	.elseif eax==WM_MOUSEWHEEL
+		mov		eax,wParam
+		movzx	edx,ax
+		shr		eax,16
+		movsx	eax,ax
+		test	edx,MK_CONTROL
+		.if ZERO?
+			.if sdword ptr eax<0
+				invoke SendMessage,hWin,WM_VSCROLL,SB_LINEDOWN,0
+			.else
+				invoke SendMessage,hWin,WM_VSCROLL,SB_LINEUP,0
+			.endif
+		.else
+			.if sdword ptr eax<0
+				invoke SendMessage,hWin,WM_HSCROLL,SB_LINERIGHT,0
+			.else
+				invoke SendMessage,hWin,WM_HSCROLL,SB_LINELEFT,0
+			.endif
 		.endif
 	.elseif eax==WM_CONTEXTMENU
 		.if rpsize
