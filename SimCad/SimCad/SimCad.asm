@@ -14,6 +14,7 @@ start:
 	mov		CommandLine,eax
 	;Get command line filename
 	invoke PathGetArgs,CommandLine
+	mov		CommandLine,eax
   @@:
 	mov		dl,[eax]
 	.IF dl==VK_SPACE
@@ -22,7 +23,6 @@ start:
 	.ELSEIF dl=='"'
 		invoke PathUnquoteSpaces,eax
 	.ENDIF
-	mov		CommandLine,eax
 	invoke InitCommonControls
 	invoke LoadLibrary,addr RACad
 	.if eax
@@ -384,6 +384,32 @@ OpenCad proc
 
 OpenCad endp
 
+SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+	LOCAL	y:DWORD
+
+	mov		eax,uMsg
+	.if eax==WM_INITDIALOG
+		mov		eax,hWin
+		mov		hSymDlg,eax
+		mov		y,32*3
+		xor		ebx,ebx
+		.while ebx<16
+			invoke CreateWindowEx,0,addr CadClass,NULL,WS_CHILD or WS_VISIBLE or WS_DISABLED or WS_BORDER,0,y,32,32,hWin,NULL,hInstance,0
+			mov		hSym[ebx*4],eax
+			add		y,32
+			inc		ebx
+		.endw
+	.elseif eax==WM_CLOSE
+		invoke EndDialog,hWin,NULL
+	.else
+		mov		eax,FALSE
+		ret
+	.endif
+	mov		eax,TRUE
+	ret
+
+SymDlgProc endp
+
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ht:DWORD
 	LOCAL	rect:RECT
@@ -394,6 +420,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
+		invoke CreateDialogParam,hInstance,IDD_DLGSYM,hWin,addr SymDlgProc,0
 		invoke GetDlgItem,hWin,IDC_SHP1
 		mov		hShp1,eax
 		invoke GetDlgItem,hWin,IDC_TBR1
@@ -789,10 +816,12 @@ SizeIt:
 	mov		eax,rect.bottom
 	sub		eax,rect.top
 	mov		ht,eax
-	mov		eax,25
+	mov		eax,25+36
 	sub		rect.right,eax
 	;Resize Cad window
 	invoke MoveWindow,hCad,eax,rect.top,rect.right,ht,TRUE
+	;Resize Sym window
+	invoke MoveWindow,hSymDlg,25,rect.top,36,ht,TRUE
 	retn
 
 WndProc endp

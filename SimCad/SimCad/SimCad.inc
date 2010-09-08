@@ -41,6 +41,11 @@ IDC_CBO1						equ 1006
 IDC_EDT1						equ 1007
 IDC_STC1						equ 1008
 
+IDD_DLGSYM						equ 2000
+IDC_BTNSEL						equ 1003
+IDC_BTNROTATE					equ 1001
+IDC_BTNFLIP						equ 1002
+
 ;SimCad.mnu
 IDM_MAIN						equ 10000
 IDM_FILE_NEW					equ 10107
@@ -157,6 +162,8 @@ CommandLine			dd ?
 hRACad				dd ?
 hAccel				dd ?
 hWnd				dd ?
+hSymDlg				dd ?
+hSym				dd 16 dup(?)
 hCad				dd ?
 hShp1				dd ?
 hTbr1				dd ?

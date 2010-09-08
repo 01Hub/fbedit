@@ -15,7 +15,7 @@ CADMEM struct
 	color		dd ?
 	zoom		dd ?
 
-	dummy1		dd ?
+	style		dd ?
 	dummy2		dd ?
 CADMEM ends
 

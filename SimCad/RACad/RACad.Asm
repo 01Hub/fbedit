@@ -2409,6 +2409,10 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		call	SetScroll
 	.elseif eax==WM_CREATE
 		invoke CadClear,hWin
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke GetWindowLong,hWin,GWL_STYLE
+		mov		[ebx].CADMEM.style,eax
 	.elseif eax==WM_PAINT
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -2995,11 +2999,17 @@ SetScroll:
 	mov		eax,rect.bottom
 	call	ZoomDiv
 	mov		sinf.nPage,eax
-	invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+	test	[ebx].CADMEM.style,WS_VSCROLL
+	.if !ZERO?
+		invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+	.endif
 	mov		eax,rect.right
 	call	ZoomDiv
 	mov		sinf.nPage,eax
-	invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+	test	[ebx].CADMEM.style,WS_HSCROLL
+	.if !ZERO?
+		invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+	.endif
 	retn
 
 UpdateScrollPos:
@@ -3008,11 +3018,17 @@ UpdateScrollPos:
 	mov		eax,[ebx].CADMEM.scroll.x
 	invoke ZoomDiv
 	mov		sinf.nPos,eax
-	invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+	test	[ebx].CADMEM.style,WS_HSCROLL
+	.if !ZERO?
+		invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+	.endif
 	mov		eax,[ebx].CADMEM.scroll.y
 	invoke ZoomDiv
 	mov		sinf.nPos,eax
-	invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+	test	[ebx].CADMEM.style,WS_VSCROLL
+	.if !ZERO?
+		invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+	.endif
 	retn
 
 DrawSelRect:
