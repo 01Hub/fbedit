@@ -10,6 +10,11 @@ start:
 
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
+	invoke GetModuleFileName,hInstance,addr AppPath,sizeof AppPath
+	.while AppPath[eax]!='\'
+		dec		eax
+	.endw
+	mov		AppPath[eax],0
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
@@ -384,6 +389,117 @@ OpenCad proc
 
 OpenCad endp
 
+ScanDir proc lpPth:DWORD
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hwfd:DWORD
+
+	;Make the path local
+	invoke lstrcpy,addr buffer,lpPth
+	;Check if path ends with '\'. If not add.
+	invoke lstrlen,addr buffer
+	dec		eax
+	mov		al,buffer[eax]
+	.if al!='\'
+		invoke lstrcat,addr buffer,addr szBackSlash
+	.endif
+	;Add '*.*'
+	invoke lstrcat,addr buffer,addr szALL
+	;Find first match, if any
+	invoke FindFirstFile,addr buffer,addr wfd
+	.if eax!=INVALID_HANDLE_VALUE
+		;Save returned handle
+		mov		hwfd,eax
+	  Next:
+		;Check if found is a dir
+		mov		eax,wfd.dwFileAttributes
+		and		eax,FILE_ATTRIBUTE_DIRECTORY
+		.if eax
+			;Do not include '.' and '..'
+			mov		al,wfd.cFileName
+			.if al!='.'
+				.if !ebx
+					mov		ebx,offset sym
+				.else
+					lea		ebx,[ebx+sizeof SYMBOLS]
+				.endif
+				invoke lstrlen,addr buffer
+				mov		edx,eax
+				push	edx
+				sub		edx,3
+				;Do not remove the '\'
+				mov		al,buffer[edx]
+				.if al=='\'
+					inc		edx
+				.endif
+				mov		[ebx].SYMBOLS.lpPath,esi
+				;Add new dir to path
+				invoke lstrcpy,addr buffer[edx],addr wfd.cFileName
+				invoke lstrcpy,esi,addr wfd.cFileName
+PrintStringByAddr esi
+				invoke lstrlen,esi
+				lea		esi,[esi+1]
+				;Call myself again, thats recursive!
+				invoke ScanDir,addr buffer
+				pop		edx
+				;Remove what was added
+				mov		buffer[edx],0
+			.endif
+		.else
+			invoke lstrlen,addr wfd.cFileName
+			.if eax>4
+				invoke lstrcmpi,addr wfd.cFileName[eax-4],offset szCAD
+				.if !eax
+					;Add file
+					invoke lstrcpy,offset FileName,addr buffer
+					invoke lstrlen,offset FileName
+					.while eax && FileName[eax-1]!='\'
+						dec		eax
+					.endw
+					mov		FileName[eax],0
+					invoke lstrcat,offset FileName,addr wfd.cFileName
+					mov		[ebx].SYMBOLS.lpFiles,edi
+					invoke lstrcpy,edi,offset FileName
+					invoke lstrlen,edi
+PrintStringByAddr edi
+					lea		edi,[edi+1]
+				.endif
+			.endif
+		.endif
+		;Any more matches?
+		invoke FindNextFile,hwfd,addr wfd
+		or		eax,eax
+		jne		Next
+		;No more matches, close find
+		invoke FindClose,hwfd
+	.endif
+	ret
+
+ScanDir endp
+
+ShowSym proc
+	
+	mov		eax,inxsym
+	shl		eax,3
+	lea		esi,sym[eax]
+	mov		esi,[esi].SYMBOLS.lpFiles
+	xor		ebx,ebx
+	.if esi
+		.while byte ptr [esi] && ebx<16
+			invoke OpenCadFile,hSym[ebx*4],esi
+			invoke SendMessage,hSym[ebx*4],CM_ZOOMFIT,0,0
+			invoke lstrlen,esi
+			inc		ebx
+			lea		esi,[esi+eax+1]
+		.endw
+	.endif
+	.while ebx<16
+		invoke SendMessage,hSym[ebx*4],CM_CLEAR,0,0
+		inc		ebx
+	.endw
+	ret
+
+ShowSym endp
+
 SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	y:DWORD
 
@@ -410,10 +526,10 @@ SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 
 SymDlgProc endp
 
-WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	ht:DWORD
 	LOCAL	rect:RECT
-	LOCAL	buffer[256]:BYTE
+	LOCAL	buffer[MAX_PATH]:BYTE
 	LOCAL	cc:CHOOSECOLOR
 
 	mov		eax,uMsg
@@ -463,6 +579,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke lstrcpy,offset FileName,offset NewFile
 			invoke SetWinCaption,offset FileName
 		.endif
+		invoke lstrcpy,addr buffer,addr AppPath
+		invoke lstrcat,addr buffer,addr szSymbols
+		mov		esi,offset pthsym
+		mov		edi,offset symfiles
+		xor		ebx,ebx
+		invoke ScanDir,addr buffer
+		invoke ShowSym
 	.elseif eax==WM_INITMENUPOPUP
 		mov		eax,lParam
 		.if eax==0

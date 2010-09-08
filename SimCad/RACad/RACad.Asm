@@ -2603,92 +2603,98 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_HSCROLL
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		mov		eax,wParam
-		movzx	eax,ax
-		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-			mov		sinf.cbSize,sizeof sinf
-			mov		sinf.fMask,SIF_POS
+		test	[ebx].CADMEM.style,WS_HSCROLL
+		.if !ZERO?
 			mov		eax,wParam
-			shr		eax,16
-			mov		sinf.nPos,eax
-			invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
-			mov		eax,sinf.nPos
-			call	ZoomMul
-			mov		edx,eax
-			mov		eax,[ebx].CADMEM.scroll.x
-			sub		eax,edx
-			mov		[ebx].CADMEM.scroll.x,edx
-			invoke ScrollWindow,hWin,eax,0,NULL,NULL
-			invoke UpdateWindow,hWin
-		.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
-			mov		sinf.cbSize,sizeof sinf
-			mov		sinf.fMask,SIF_POS
-			invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
-			mov		ecx,sinf.nPos
-			mov		eax,wParam
-			.if eax==SB_LINERIGHT
-				inc		ecx
-			.elseif eax==SB_LINELEFT
-				.if ecx
-					dec		ecx
+			movzx	eax,ax
+			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+				mov		sinf.cbSize,sizeof sinf
+				mov		sinf.fMask,SIF_POS
+				mov		eax,wParam
+				shr		eax,16
+				mov		sinf.nPos,eax
+				invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+				mov		eax,sinf.nPos
+				call	ZoomMul
+				mov		edx,eax
+				mov		eax,[ebx].CADMEM.scroll.x
+				sub		eax,edx
+				mov		[ebx].CADMEM.scroll.x,edx
+				invoke ScrollWindow,hWin,eax,0,NULL,NULL
+				invoke UpdateWindow,hWin
+			.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
+				mov		sinf.cbSize,sizeof sinf
+				mov		sinf.fMask,SIF_POS
+				invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
+				mov		ecx,sinf.nPos
+				mov		eax,wParam
+				.if eax==SB_LINERIGHT
+					inc		ecx
+				.elseif eax==SB_LINELEFT
+					.if ecx
+						dec		ecx
+					.endif
+				.elseif eax==SB_PAGERIGHT
+					add		ecx,64
+				.elseif eax==SB_PAGELEFT
+					.if ecx>64
+						sub		ecx,64
+					.else
+						mov		ecx,0
+					.endif
 				.endif
-			.elseif eax==SB_PAGERIGHT
-				add		ecx,64
-			.elseif eax==SB_PAGELEFT
-				.if ecx>64
-					sub		ecx,64
-				.else
-					mov		ecx,0
-				.endif
+				shl		ecx,16
+				or		ecx,SB_THUMBPOSITION
+				invoke SendMessage,hWin,WM_HSCROLL,ecx,0
 			.endif
-			shl		ecx,16
-			or		ecx,SB_THUMBPOSITION
-			invoke SendMessage,hWin,WM_HSCROLL,ecx,0
 		.endif
 	.elseif eax==WM_VSCROLL
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		mov		eax,wParam
-		movzx	eax,ax
-		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-			mov		sinf.cbSize,sizeof sinf
-			mov		sinf.fMask,SIF_POS
+		test	[ebx].CADMEM.style,WS_VSCROLL
+		.if !ZERO?
 			mov		eax,wParam
-			shr		eax,16
-			mov		sinf.nPos,eax
-			invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
-			mov		eax,sinf.nPos
-			call	ZoomMul
-			mov		edx,eax
-			mov		eax,[ebx].CADMEM.scroll.y
-			sub		eax,edx
-			mov		[ebx].CADMEM.scroll.y,edx
-			invoke ScrollWindow,hWin,0,eax,NULL,NULL
-			invoke UpdateWindow,hWin
-		.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
-			mov		sinf.cbSize,sizeof sinf
-			mov		sinf.fMask,SIF_POS
-			invoke GetScrollInfo,hWin,SB_VERT,addr sinf
-			mov		ecx,sinf.nPos
-			mov		eax,wParam
-			.if eax==SB_LINEDOWN
-				inc		ecx
-			.elseif eax==SB_LINEUP
-				.if ecx
-					dec		ecx
+			movzx	eax,ax
+			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+				mov		sinf.cbSize,sizeof sinf
+				mov		sinf.fMask,SIF_POS
+				mov		eax,wParam
+				shr		eax,16
+				mov		sinf.nPos,eax
+				invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+				mov		eax,sinf.nPos
+				call	ZoomMul
+				mov		edx,eax
+				mov		eax,[ebx].CADMEM.scroll.y
+				sub		eax,edx
+				mov		[ebx].CADMEM.scroll.y,edx
+				invoke ScrollWindow,hWin,0,eax,NULL,NULL
+				invoke UpdateWindow,hWin
+			.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
+				mov		sinf.cbSize,sizeof sinf
+				mov		sinf.fMask,SIF_POS
+				invoke GetScrollInfo,hWin,SB_VERT,addr sinf
+				mov		ecx,sinf.nPos
+				mov		eax,wParam
+				.if eax==SB_LINEDOWN
+					inc		ecx
+				.elseif eax==SB_LINEUP
+					.if ecx
+						dec		ecx
+					.endif
+				.elseif eax==SB_PAGEDOWN
+					add		ecx,64
+				.elseif eax==SB_PAGEUP
+					.if ecx>64
+						sub		ecx,64
+					.else
+						mov		ecx,0
+					.endif
 				.endif
-			.elseif eax==SB_PAGEDOWN
-				add		ecx,64
-			.elseif eax==SB_PAGEUP
-				.if ecx>64
-					sub		ecx,64
-				.else
-					mov		ecx,0
-				.endif
+				shl		ecx,16
+				or		ecx,SB_THUMBPOSITION
+				invoke SendMessage,hWin,WM_VSCROLL,ecx,0
 			.endif
-			shl		ecx,16
-			or		ecx,SB_THUMBPOSITION
-			invoke SendMessage,hWin,WM_VSCROLL,ecx,0
 		.endif
 	.elseif eax==WM_DESTROY
 		invoke GetWindowLong,hWin,0

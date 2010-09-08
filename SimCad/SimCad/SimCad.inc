@@ -94,6 +94,11 @@ WINPOS struct
 	dummy		dd 4 dup(?)
 WINPOS ends
 
+SYMBOLS struct
+	lpPath		dd ?
+	lpFiles		dd ?
+SYMBOLS ends
+
 PRNPOS struct
 	margins		RECT <?>
 	pagesize	POINT <?>
@@ -103,6 +108,10 @@ PRNPOS ends
 
 RACad				db 'RACad.dll',0
 DlgClass			db 'DLGCLASS',0
+szALL				db '*.*',0
+szCAD				db '.cad',0
+szBackSlash			db '\',0
+szSymbols			db '\Symbols',0
 
 tbrbtns				TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 					TBBUTTON <14,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
@@ -179,7 +188,13 @@ hReg				dd ?
 lpdwDisp			dd ?
 lpType				dd ?
 lpcbData			dd ?
+AppPath				db MAX_PATH dup(?)
 FileName			db MAX_PATH dup(?)
 psd					PAGESETUPDLG <?>
 pd					PRINTDLG <?>
 rpobj				dd ?
+wfd					WIN32_FIND_DATA <?>
+pthsym				db MAX_PATH*32 dup(?)
+symfiles			db MAX_PATH*32*16 dup(?)
+inxsym				dd ?
+sym					SYMBOLS 32 dup(<>)
