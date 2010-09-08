@@ -3019,20 +3019,22 @@ SetScroll:
 	retn
 
 UpdateScrollPos:
-	mov		sinf.cbSize,sizeof sinf
-	mov		sinf.fMask,SIF_POS
-	mov		eax,[ebx].CADMEM.scroll.x
-	invoke ZoomDiv
-	mov		sinf.nPos,eax
 	test	[ebx].CADMEM.style,WS_HSCROLL
 	.if !ZERO?
+		mov		sinf.cbSize,sizeof sinf
+		mov		sinf.fMask,SIF_POS
+		mov		eax,[ebx].CADMEM.scroll.x
+		invoke ZoomDiv
+		mov		sinf.nPos,eax
 		invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
 	.endif
-	mov		eax,[ebx].CADMEM.scroll.y
-	invoke ZoomDiv
-	mov		sinf.nPos,eax
 	test	[ebx].CADMEM.style,WS_VSCROLL
 	.if !ZERO?
+		mov		sinf.cbSize,sizeof sinf
+		mov		sinf.fMask,SIF_POS
+		mov		eax,[ebx].CADMEM.scroll.y
+		invoke ZoomDiv
+		mov		sinf.nPos,eax
 		invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
 	.endif
 	retn

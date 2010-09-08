@@ -421,7 +421,10 @@ ScanDir proc lpPth:DWORD
 					mov		ebx,offset sym
 				.else
 					lea		ebx,[ebx+sizeof SYMBOLS]
+					inc		edi
 				.endif
+				mov		[ebx].SYMBOLS.lpPath,esi
+				mov		[ebx].SYMBOLS.lpFiles,edi
 				invoke lstrlen,addr buffer
 				mov		edx,eax
 				push	edx
@@ -431,13 +434,12 @@ ScanDir proc lpPth:DWORD
 				.if al=='\'
 					inc		edx
 				.endif
-				mov		[ebx].SYMBOLS.lpPath,esi
 				;Add new dir to path
 				invoke lstrcpy,addr buffer[edx],addr wfd.cFileName
 				invoke lstrcpy,esi,addr wfd.cFileName
 PrintStringByAddr esi
 				invoke lstrlen,esi
-				lea		esi,[esi+1]
+				lea		esi,[esi+eax+1]
 				;Call myself again, thats recursive!
 				invoke ScanDir,addr buffer
 				pop		edx
@@ -457,11 +459,9 @@ PrintStringByAddr esi
 					.endw
 					mov		FileName[eax],0
 					invoke lstrcat,offset FileName,addr wfd.cFileName
-					mov		[ebx].SYMBOLS.lpFiles,edi
 					invoke lstrcpy,edi,offset FileName
 					invoke lstrlen,edi
-PrintStringByAddr edi
-					lea		edi,[edi+1]
+					lea		edi,[edi+eax+1]
 				.endif
 			.endif
 		.endif
@@ -510,7 +510,7 @@ SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		y,32*3
 		xor		ebx,ebx
 		.while ebx<16
-			invoke CreateWindowEx,0,addr CadClass,NULL,WS_CHILD or WS_VISIBLE or WS_DISABLED or WS_BORDER,0,y,32,32,hWin,NULL,hInstance,0
+			invoke CreateWindowEx,0,addr CadClass,NULL,WS_CHILD or WS_VISIBLE or WS_DISABLED or WS_BORDER,0,y,32+17,32+17,hWin,NULL,hInstance,0
 			mov		hSym[ebx*4],eax
 			add		y,32
 			inc		ebx

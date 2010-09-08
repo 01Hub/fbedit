@@ -67,10 +67,10 @@ Group=Assembly,Resources,Misc
 10=2
 11=
 [VerInf]
-FV=0.7.3.8
-FileVersion=0.7.3.8
-PV=0.7.3.8
-ProductVersion=0.7.3.8
+FV=0.7.6.8
+FileVersion=0.7.6.8
+PV=0.7.6.8
+ProductVersion=0.7.6.8
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -141,7 +141,7 @@ ProductVer4Range=0
 0=
 
 [Size]
-1=0,0,0,0,11384
+1=0,0,0,0,10464
 6=0,0,0,0,0
 2=0,0,0,0,5332
 4=0,0,0,0
@@ -179,7 +179,7 @@ ID=100
 10=IDM_EDIT_DELETE,0,46,0
 11=IDM_EDIT_SELECTALL,0,65,8
 [PTimer]
-PTimer=108641150
+PTimer=113341804
 [Collapse]
 2=
 1=,,
