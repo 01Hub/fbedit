@@ -198,3 +198,4 @@ pthsym				db MAX_PATH*32 dup(?)
 symfiles			db MAX_PATH*32*16 dup(?)
 inxsym				dd ?
 sym					SYMBOLS 32 dup(<>)
+hSymSel				dd ?

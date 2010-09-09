@@ -16,7 +16,7 @@ CADMEM struct
 	zoom		dd ?
 
 	style		dd ?
-	dummy2		dd ?
+	backcolor	dd ?
 CADMEM ends
 
 UNDO struct
@@ -51,6 +51,7 @@ TPE_POLYLINE		equ 4
 TPE_HTEXT			equ 5
 TPE_VTEXT			equ 6
 TPE_DIMENSION		equ 7
+TPE_SYMBOL			equ 8
 
 ;Messages
 CM_START			equ WM_USER
@@ -89,6 +90,9 @@ CM_SELSETCOLOR		equ CM_START+31
 CM_SELSETWIDTH		equ CM_START+32
 CM_GETTEXT			equ CM_START+33
 CM_SETTEXT			equ CM_START+34
+CM_GETBACKCOLOR		equ CM_START+35
+CM_SETBACKCOLOR		equ CM_START+36
+CM_ADDOBJECTS		equ CM_START+37
 
 ;Notification messages
 CN_CHANGE			equ 1

@@ -368,6 +368,28 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 		call	DrawVText
 	.elseif eax==TPE_DIMENSION
 		call	DrawDimension
+	.elseif eax==TPE_SYMBOL
+		mov		ecx,[esi].OBJECT.npt
+		mov		edi,esi
+;PrintDec xofs
+;PrintDec yofs
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+mov		eax,[esi].OBJECT.rc.left
+PrintDec eax
+mov		eax,[esi].OBJECT.rc.top
+PrintDec eax
+mov		eax,[esi].OBJECT.rc.right
+PrintDec eax
+mov		eax,[esi].OBJECT.rc.right
+PrintDec eax
+			push	ecx
+			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
+			pop		ecx
+			dec		ecx
+		.endw
 	.endif
 	ret
 
@@ -1195,6 +1217,7 @@ Update:
 		mov		eax,cpt.y
 		sub		eax,lastmov.y
 		add		[esi].OBJECT.rc.top[edi],eax
+;	.elseif [esi].OBJECT.tpe==TPE_SYMBOL
 	.endif
 	retn
 
@@ -1230,6 +1253,9 @@ CadSelect proc uses ebx esi,hWin:HWND,lpObject:DWORD,fSel:DWORD
 			call	CreateSel
 		.elseif eax==TPE_DIMENSION
 			mov		ecx,[esi].OBJECT.npt
+			call	CreateSel
+		.elseif eax==TPE_SYMBOL
+			mov		ecx,1
 			call	CreateSel
 		.endif
 		invoke CadInvalidateObject,hWin,esi
@@ -1635,60 +1661,49 @@ CadCopy proc uses ebx esi edi,hWin:HWND
 
 CadCopy endp
 
-CadPaste proc uses ebx esi edi,hWin:HWND
+CadAddObjects proc uses ebx esi edi,hWin:HWND,lpObjects:DWORD
 	LOCAL	xmin:DWORD
 	LOCAL	ymin:DWORD
+	LOCAL	pt:POINT
 
-	invoke CadSelectAll,hWin,FALSE
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
-	invoke OpenClipboard,hWin
-	.if eax
-		invoke GetClipboardData,hClip
-		.if eax
-			push	eax
-			invoke GlobalLock,eax
-			mov		esi,eax
-			push	esi
-			mov		xmin,07FFFFFFFh
-			mov		ymin,07FFFFFFFh
-			.while [esi].OBJECT.tpe
-				mov		ecx,[esi].OBJECT.npt
-				.while ecx
-					dec		ecx
-					mov		eax,[esi].OBJECT.rc.left[ecx*8]
-					.if eax<xmin
-						mov		xmin,eax
-					.endif
-					mov		eax,[esi].OBJECT.rc.top[ecx*8]
-					.if eax<ymin
-						mov		ymin,eax
-					.endif
-				.endw
-				mov		eax,[esi].OBJECT.cbsize
-				lea		esi,[esi+eax]
-			.endw
-			pop		esi
-			.while [esi].OBJECT.tpe
-				push	esi
-				mov		ecx,[esi].OBJECT.npt
-				.while ecx
-					dec		ecx
-					mov		eax,xmin
-					sub		[esi].OBJECT.rc.left[ecx*8],eax
-					mov		eax,ymin
-					sub		[esi].OBJECT.rc.top[ecx*8],eax
-				.endw
-				call	CopyObject
-				pop		esi
-				mov		eax,[esi].OBJECT.cbsize
-				lea		esi,[esi+eax]
-			.endw
-			pop		eax
-			invoke GlobalUnlock,eax
-		.endif
-		invoke CloseClipboard
-	.endif
+	mov		esi,lpObjects
+	push	esi
+	mov		xmin,07FFFFFFFh
+	mov		ymin,07FFFFFFFh
+	.while [esi].OBJECT.tpe
+		mov		ecx,[esi].OBJECT.npt
+		.while ecx
+			dec		ecx
+			mov		eax,[esi].OBJECT.rc.left[ecx*8]
+			.if eax<xmin
+				mov		xmin,eax
+			.endif
+			mov		eax,[esi].OBJECT.rc.top[ecx*8]
+			.if eax<ymin
+				mov		ymin,eax
+			.endif
+		.endw
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
+	pop		esi
+	.while [esi].OBJECT.tpe
+		push	esi
+		mov		ecx,[esi].OBJECT.npt
+		.while ecx
+			dec		ecx
+			mov		eax,xmin
+			sub		[esi].OBJECT.rc.left[ecx*8],eax
+			mov		eax,ymin
+			sub		[esi].OBJECT.rc.top[ecx*8],eax
+		.endw
+		call	CopyObject
+		pop		esi
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
 	ret
 
 CopyObject:
@@ -1703,6 +1718,31 @@ CopyObject:
 	invoke CadSelect,hWin,edi,TRUE
 	invoke CadInvalidateObject,hWin,edi
 	retn
+
+CadAddObjects endp
+
+CadPaste proc uses ebx esi edi,hWin:HWND
+	LOCAL	xmin:DWORD
+	LOCAL	ymin:DWORD
+	LOCAL	pt:POINT
+
+	invoke CadSelectAll,hWin,FALSE
+	invoke GetWindowLong,hWin,0
+	mov		ebx,eax
+	invoke OpenClipboard,hWin
+	.if eax
+		invoke GetClipboardData,hClip
+		.if eax
+			push	eax
+			invoke GlobalLock,eax
+			mov		esi,eax
+			invoke CadAddObjects,hWin,esi
+			pop		eax
+			invoke GlobalUnlock,eax
+		.endif
+		invoke CloseClipboard
+	.endif
+	ret
 
 CadPaste endp
 
@@ -1943,6 +1983,7 @@ CadClear proc uses ebx,hWin:HWND
 	mov		[ebx].CADMEM.wdt,1
 	mov		[ebx].CADMEM.color,0h
 	mov		[ebx].CADMEM.zoom,ZOOM_INIT
+	mov		[ebx].CADMEM.backcolor,0FFFFFFh
 	invoke InvalidateRect,hWin,NULL,TRUE
 	mov		eax,ebx
 	ret
@@ -2395,7 +2436,7 @@ CadSelSetWidth proc uses ebx esi,hWin:HWND,nWidth:DWORD
 
 CadSelSetWidth endp
 
-CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	rectout:RECT
 	LOCAL	ps:PAINTSTRUCT
@@ -2413,6 +2454,7 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		ebx,eax
 		invoke GetWindowLong,hWin,GWL_STYLE
 		mov		[ebx].CADMEM.style,eax
+		mov		[ebx].CADMEM.backcolor,0FFFFFFh
 	.elseif eax==WM_PAINT
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
@@ -2430,8 +2472,11 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CreateCompatibleBitmap,ps.hdc,rect.right,rect.bottom
 		invoke SelectObject,mDC,eax
 		push	eax
-		invoke GetStockObject,WHITE_BRUSH
+		invoke CreateSolidBrush,[ebx].CADMEM.backcolor
+		push	eax
 		invoke FillRect,mDC,addr rect,eax
+		pop		eax
+		invoke DeleteObject,eax
 		mov		eax,ps.rcPaint.left
 		add		eax,[ebx].CADMEM.scroll.x
 		mov		edx,ps.rcPaint.top
@@ -2603,98 +2648,92 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==WM_HSCROLL
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		test	[ebx].CADMEM.style,WS_HSCROLL
-		.if !ZERO?
+		mov		eax,wParam
+		movzx	eax,ax
+		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_POS
 			mov		eax,wParam
-			movzx	eax,ax
-			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-				mov		sinf.cbSize,sizeof sinf
-				mov		sinf.fMask,SIF_POS
-				mov		eax,wParam
-				shr		eax,16
-				mov		sinf.nPos,eax
-				invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
-				mov		eax,sinf.nPos
-				call	ZoomMul
-				mov		edx,eax
-				mov		eax,[ebx].CADMEM.scroll.x
-				sub		eax,edx
-				mov		[ebx].CADMEM.scroll.x,edx
-				invoke ScrollWindow,hWin,eax,0,NULL,NULL
-				invoke UpdateWindow,hWin
-			.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
-				mov		sinf.cbSize,sizeof sinf
-				mov		sinf.fMask,SIF_POS
-				invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
-				mov		ecx,sinf.nPos
-				mov		eax,wParam
-				.if eax==SB_LINERIGHT
-					inc		ecx
-				.elseif eax==SB_LINELEFT
-					.if ecx
-						dec		ecx
-					.endif
-				.elseif eax==SB_PAGERIGHT
-					add		ecx,64
-				.elseif eax==SB_PAGELEFT
-					.if ecx>64
-						sub		ecx,64
-					.else
-						mov		ecx,0
-					.endif
+			shr		eax,16
+			mov		sinf.nPos,eax
+			invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+			mov		eax,sinf.nPos
+			call	ZoomMul
+			mov		edx,eax
+			mov		eax,[ebx].CADMEM.scroll.x
+			sub		eax,edx
+			mov		[ebx].CADMEM.scroll.x,edx
+			invoke ScrollWindow,hWin,eax,0,NULL,NULL
+			invoke UpdateWindow,hWin
+		.elseif eax==SB_LINELEFT || eax==SB_LINERIGHT || eax==SB_PAGELEFT || eax==SB_PAGERIGHT
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_POS
+			invoke GetScrollInfo,hWin,SB_HORZ,addr sinf
+			mov		ecx,sinf.nPos
+			mov		eax,wParam
+			.if eax==SB_LINERIGHT
+				inc		ecx
+			.elseif eax==SB_LINELEFT
+				.if ecx
+					dec		ecx
 				.endif
-				shl		ecx,16
-				or		ecx,SB_THUMBPOSITION
-				invoke SendMessage,hWin,WM_HSCROLL,ecx,0
+			.elseif eax==SB_PAGERIGHT
+				add		ecx,64
+			.elseif eax==SB_PAGELEFT
+				.if ecx>64
+					sub		ecx,64
+				.else
+					mov		ecx,0
+				.endif
 			.endif
+			shl		ecx,16
+			or		ecx,SB_THUMBPOSITION
+			invoke SendMessage,hWin,WM_HSCROLL,ecx,0
 		.endif
 	.elseif eax==WM_VSCROLL
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
-		test	[ebx].CADMEM.style,WS_VSCROLL
-		.if !ZERO?
+		mov		eax,wParam
+		movzx	eax,ax
+		.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_POS
 			mov		eax,wParam
-			movzx	eax,ax
-			.if eax==SB_THUMBTRACK || eax==SB_THUMBPOSITION
-				mov		sinf.cbSize,sizeof sinf
-				mov		sinf.fMask,SIF_POS
-				mov		eax,wParam
-				shr		eax,16
-				mov		sinf.nPos,eax
-				invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
-				mov		eax,sinf.nPos
-				call	ZoomMul
-				mov		edx,eax
-				mov		eax,[ebx].CADMEM.scroll.y
-				sub		eax,edx
-				mov		[ebx].CADMEM.scroll.y,edx
-				invoke ScrollWindow,hWin,0,eax,NULL,NULL
-				invoke UpdateWindow,hWin
-			.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
-				mov		sinf.cbSize,sizeof sinf
-				mov		sinf.fMask,SIF_POS
-				invoke GetScrollInfo,hWin,SB_VERT,addr sinf
-				mov		ecx,sinf.nPos
-				mov		eax,wParam
-				.if eax==SB_LINEDOWN
-					inc		ecx
-				.elseif eax==SB_LINEUP
-					.if ecx
-						dec		ecx
-					.endif
-				.elseif eax==SB_PAGEDOWN
-					add		ecx,64
-				.elseif eax==SB_PAGEUP
-					.if ecx>64
-						sub		ecx,64
-					.else
-						mov		ecx,0
-					.endif
+			shr		eax,16
+			mov		sinf.nPos,eax
+			invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
+			mov		eax,sinf.nPos
+			call	ZoomMul
+			mov		edx,eax
+			mov		eax,[ebx].CADMEM.scroll.y
+			sub		eax,edx
+			mov		[ebx].CADMEM.scroll.y,edx
+			invoke ScrollWindow,hWin,0,eax,NULL,NULL
+			invoke UpdateWindow,hWin
+		.elseif eax==SB_LINEDOWN || eax==SB_LINEUP || eax==SB_PAGEDOWN || eax==SB_PAGEUP
+			mov		sinf.cbSize,sizeof sinf
+			mov		sinf.fMask,SIF_POS
+			invoke GetScrollInfo,hWin,SB_VERT,addr sinf
+			mov		ecx,sinf.nPos
+			mov		eax,wParam
+			.if eax==SB_LINEDOWN
+				inc		ecx
+			.elseif eax==SB_LINEUP
+				.if ecx
+					dec		ecx
 				.endif
-				shl		ecx,16
-				or		ecx,SB_THUMBPOSITION
-				invoke SendMessage,hWin,WM_VSCROLL,ecx,0
+			.elseif eax==SB_PAGEDOWN
+				add		ecx,64
+			.elseif eax==SB_PAGEUP
+				.if ecx>64
+					sub		ecx,64
+				.else
+					mov		ecx,0
+				.endif
 			.endif
+			shl		ecx,16
+			or		ecx,SB_THUMBPOSITION
+			invoke SendMessage,hWin,WM_VSCROLL,ecx,0
 		.endif
 	.elseif eax==WM_DESTROY
 		invoke GetWindowLong,hWin,0
@@ -2921,6 +2960,7 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CadClear,hWin
 		mov		ebx,eax
 		invoke CadStreamIn,ebx,lParam
+		mov		[ebx].CADMEM.backcolor,0FFFFFFh
 		call	SetScroll
 		call	UpdateScrollPos
 		pop		eax
@@ -2969,6 +3009,23 @@ CadProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		[ebx+ecx],al
 		mov		eax,TRUE
 		jmp		Ex
+	.elseif eax==CM_GETBACKCOLOR
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		eax,[ebx].CADMEM.backcolor
+		jmp		Ex
+	.elseif eax==CM_SETBACKCOLOR
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		mov		eax,lParam
+		mov		[ebx].CADMEM.backcolor,eax
+		invoke InvalidateRect,hWin,NULL,TRUE
+		xor		eax,eax
+		jmp		Ex
+	.elseif eax==CM_ADDOBJECTS
+		invoke GetWindowLong,hWin,0
+		mov		ebx,eax
+		invoke CadAddObjects,hWin,lParam
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
 		mov		ncadbox,TPE_HTEXT
@@ -3005,38 +3062,26 @@ SetScroll:
 	mov		eax,rect.bottom
 	call	ZoomDiv
 	mov		sinf.nPage,eax
-	test	[ebx].CADMEM.style,WS_VSCROLL
-	.if !ZERO?
-		invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
-	.endif
+	invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
 	mov		eax,rect.right
 	call	ZoomDiv
 	mov		sinf.nPage,eax
-	test	[ebx].CADMEM.style,WS_HSCROLL
-	.if !ZERO?
-		invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
-	.endif
+	invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
 	retn
 
 UpdateScrollPos:
-	test	[ebx].CADMEM.style,WS_HSCROLL
-	.if !ZERO?
-		mov		sinf.cbSize,sizeof sinf
-		mov		sinf.fMask,SIF_POS
-		mov		eax,[ebx].CADMEM.scroll.x
-		invoke ZoomDiv
-		mov		sinf.nPos,eax
-		invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
-	.endif
-	test	[ebx].CADMEM.style,WS_VSCROLL
-	.if !ZERO?
-		mov		sinf.cbSize,sizeof sinf
-		mov		sinf.fMask,SIF_POS
-		mov		eax,[ebx].CADMEM.scroll.y
-		invoke ZoomDiv
-		mov		sinf.nPos,eax
-		invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
-	.endif
+	mov		sinf.cbSize,sizeof sinf
+	mov		sinf.fMask,SIF_POS
+	mov		eax,[ebx].CADMEM.scroll.x
+	invoke ZoomDiv
+	mov		sinf.nPos,eax
+	invoke SetScrollInfo,hWin,SB_HORZ,addr sinf,TRUE
+	mov		sinf.cbSize,sizeof sinf
+	mov		sinf.fMask,SIF_POS
+	mov		eax,[ebx].CADMEM.scroll.y
+	invoke ZoomDiv
+	mov		sinf.nPos,eax
+	invoke SetScrollInfo,hWin,SB_VERT,addr sinf,TRUE
 	retn
 
 DrawSelRect:

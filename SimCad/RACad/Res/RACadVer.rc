@@ -1,7 +1,7 @@
 #define VERINF1 1
 VERINF1 VERSIONINFO
-FILEVERSION 1,4,0,0
-PRODUCTVERSION 1,4,0,0
+FILEVERSION 1,4,5,8
+PRODUCTVERSION 1,4,5,8
 FILEOS 0x00000004
 FILETYPE 0x00000002
 BEGIN
@@ -9,10 +9,10 @@ BEGIN
   BEGIN
     BLOCK "040904B0"
     BEGIN
-      VALUE "FileVersion", "1.4.0.0\0"
+      VALUE "FileVersion", "1.4.5.8\0"
       VALUE "LegalCopyright", "KetilO ()C 2004\0"
       VALUE "OriginalFilename", "RACad.dll\0"
-      VALUE "ProductVersion", "1.4.0.0\0"
+      VALUE "ProductVersion", "1.4.5.8\0"
     END
   END
   BLOCK "VarFileInfo"

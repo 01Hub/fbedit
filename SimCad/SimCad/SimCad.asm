@@ -437,7 +437,6 @@ ScanDir proc lpPth:DWORD
 				;Add new dir to path
 				invoke lstrcpy,addr buffer[edx],addr wfd.cFileName
 				invoke lstrcpy,esi,addr wfd.cFileName
-PrintStringByAddr esi
 				invoke lstrlen,esi
 				lea		esi,[esi+eax+1]
 				;Call myself again, thats recursive!
@@ -476,7 +475,7 @@ PrintStringByAddr esi
 
 ScanDir endp
 
-ShowSym proc
+ShowSym proc uses ebx esi
 	
 	mov		eax,inxsym
 	shl		eax,3
@@ -500,8 +499,9 @@ ShowSym proc
 
 ShowSym endp
 
-SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	y:DWORD
+	LOCAL	pt:POINT
 
 	mov		eax,uMsg
 	.if eax==WM_INITDIALOG
@@ -515,6 +515,87 @@ SymDlgProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			add		y,32
 			inc		ebx
 		.endw
+	.elseif eax==WM_COMMAND
+		mov		edx,wParam
+		movzx	eax,dx
+		shr		edx,16
+		.if eax==IDC_BTNSEL
+			inc		inxsym
+			and		inxsym,0Fh
+			mov		eax,inxsym
+			shl		eax,3
+			lea		eax,sym[eax]
+			mov		eax,[eax].SYMBOLS.lpFiles
+			.if !eax
+				mov		inxsym,eax
+			.endif
+			invoke ShowSym
+			mov		hSymSel,0
+		.elseif eax==IDC_BTNROTATE
+		.elseif eax==IDC_BTNFLIP
+		.endif
+	.elseif eax==WM_LBUTTONDOWN
+		mov		edx,lParam
+		movzx	eax,dx
+		shr		edx,16
+		mov		pt.x,eax
+		mov		pt.y,edx
+		sub		edx,32*3
+		shr		edx,5		
+		.if edx<16
+			.if hSymSel
+				push	edx
+				invoke SendMessage,hSymSel,CM_SETBACKCOLOR,0,0FFFFFFh
+				pop		edx
+			.endif
+			mov		eax,hSym[edx*4]
+			mov		hSymSel,eax
+			invoke SendMessage,hSymSel,CM_SETBACKCOLOR,0,80FFFFh
+		.endif
+	.elseif eax==WM_LBUTTONDBLCLK
+		mov		edx,lParam
+		movzx	eax,dx
+		shr		edx,16
+		mov		pt.x,eax
+		mov		pt.y,edx
+		sub		edx,32*3
+		shr		edx,5		
+		.if edx<16
+			invoke GetWindowLong,hSymSel,0
+			lea		esi,[eax+sizeof CADMEM]
+			invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,64*1024
+			push	eax
+			push	eax
+			mov		edi,eax
+			mov		ebx,eax
+			lea		edi,[edi+sizeof OBJECT]
+			mov		[ebx].OBJECT.cbsize,sizeof OBJECT
+			mov		[ebx].OBJECT.tpe,TPE_SYMBOL
+			mov		[ebx].OBJECT.layer,0
+			mov		[ebx].OBJECT.wdt,1
+			mov		[ebx].OBJECT.rc.right,0
+			mov		[ebx].OBJECT.rc.bottom,0
+
+			.while sbyte ptr [esi].OBJECT.tpe>0
+;				mov		eax,[esi].OBJECT.rc.left
+;				add		eax,[esi].OBJECT.rc.right
+;				.if eax>[ebx].OBJECT.rc.right
+;					mov		[ebx].OBJECT.rc.right,eax
+;				.endif
+;				mov		eax,[esi].OBJECT.rc.bottom
+;				.if eax>[ebx].OBJECT.rc.right
+;					mov		[ebx].OBJECT.rc.bottom,eax
+;				.endif
+				mov		ecx,[esi].OBJECT.cbsize
+				add		[ebx].OBJECT.cbsize,ecx
+				inc		[ebx].OBJECT.npt
+				rep movsb
+			.endw
+			pop		edi
+			invoke SendMessage,hCad,CM_ADDOBJECTS,0,edi 
+			pop		eax
+			invoke GlobalFree,eax
+		.endif
 	.elseif eax==WM_CLOSE
 		invoke EndDialog,hWin,NULL
 	.else
