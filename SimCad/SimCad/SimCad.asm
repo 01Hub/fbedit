@@ -332,8 +332,6 @@ OpenCadFile proc hWin:DWORD,lpFileName:DWORD
 	invoke CreateFile,lpFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
 	.if eax!=INVALID_HANDLE_VALUE
 		mov		hFile,eax
-		;Copy buffer to FileName
-		invoke lstrcpy,offset FileName,lpFileName
 		;stream the text into the cad control
 		push	hFile
 		pop		editstream.dwCookie
@@ -341,14 +339,8 @@ OpenCadFile proc hWin:DWORD,lpFileName:DWORD
 		invoke SendMessage,hWin,CM_STREAMIN,0,addr editstream
 		invoke CloseHandle,hFile
 		invoke SendMessage,hWin,CM_SETMODIFY,FALSE,0
-		invoke SetWinCaption,offset FileName
 		invoke LoadCursor,0,IDC_ARROW
 		invoke SetCursor,eax
-		invoke InvalidateRect,hStc,NULL,TRUE
-		invoke SendMessage,hCad,CM_GETWIDTH,0,0
-		dec		eax
-		invoke SendMessage,hCbo,CB_SETCURSEL,eax,0
-		invoke SetToolBar
 		mov		eax,FALSE
 	.else
 		invoke MessageBox,hWnd,offset OpenFileFail,offset AppName,MB_OK or MB_ICONERROR
@@ -384,6 +376,16 @@ OpenCad proc
 		invoke SetCursor,eax
 		invoke lstrcpy,offset FileName,addr buffer
 		invoke OpenCadFile,hCad,offset FileName
+		.if !eax
+			;Copy buffer to FileName
+			invoke lstrcpy,offset FileName,addr buffer
+			invoke SetWinCaption,offset FileName
+			invoke InvalidateRect,hStc,NULL,TRUE
+			invoke SendMessage,hCad,CM_GETWIDTH,0,0
+			dec		eax
+			invoke SendMessage,hCbo,CB_SETCURSEL,eax,0
+			invoke SetToolBar
+		.endif
 	.endif
 	ret
 
@@ -507,7 +509,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		mov		eax,hWin
 		mov		hSymDlg,eax
-		mov		y,32*3
+		mov		y,32
 		xor		ebx,ebx
 		.while ebx<16
 			invoke CreateWindowEx,0,addr CadClass,NULL,WS_CHILD or WS_VISIBLE or WS_DISABLED or WS_BORDER,0,y,32+17,32+17,hWin,NULL,hInstance,0
@@ -519,7 +521,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		edx,wParam
 		movzx	eax,dx
 		shr		edx,16
-		.if eax==IDC_BTNSEL
+		.if eax==IDC_BTNNEXT
 			inc		inxsym
 			and		inxsym,0Fh
 			mov		eax,inxsym
@@ -531,8 +533,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke ShowSym
 			mov		hSymSel,0
-		.elseif eax==IDC_BTNROTATE
-		.elseif eax==IDC_BTNFLIP
+		.elseif eax==IDC_BTNPREV
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
 		mov		edx,lParam
@@ -540,7 +541,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		mov		pt.x,eax
 		mov		pt.y,edx
-		sub		edx,32*3
+		sub		edx,32
 		shr		edx,5		
 		.if edx<16
 			.if hSymSel
@@ -558,7 +559,7 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		shr		edx,16
 		mov		pt.x,eax
 		mov		pt.y,edx
-		sub		edx,32*3
+		sub		edx,32
 		shr		edx,5		
 		.if edx<16
 			invoke GetWindowLong,hSymSel,0
@@ -575,17 +576,17 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[ebx].OBJECT.wdt,1
 			mov		[ebx].OBJECT.rc.right,0
 			mov		[ebx].OBJECT.rc.bottom,0
-
 			.while sbyte ptr [esi].OBJECT.tpe>0
-;				mov		eax,[esi].OBJECT.rc.left
-;				add		eax,[esi].OBJECT.rc.right
-;				.if eax>[ebx].OBJECT.rc.right
-;					mov		[ebx].OBJECT.rc.right,eax
-;				.endif
-;				mov		eax,[esi].OBJECT.rc.bottom
-;				.if eax>[ebx].OBJECT.rc.right
-;					mov		[ebx].OBJECT.rc.bottom,eax
-;				.endif
+				mov		eax,[esi].OBJECT.rc.left
+				add		eax,[esi].OBJECT.rc.right
+				.if eax>[ebx].OBJECT.rc.right
+					mov		[ebx].OBJECT.rc.right,eax
+				.endif
+				mov		eax,[esi].OBJECT.rc.top
+				add		eax,[esi].OBJECT.rc.bottom
+				.if eax>[ebx].OBJECT.rc.bottom
+					mov		[ebx].OBJECT.rc.bottom,eax
+				.endif
 				mov		ecx,[esi].OBJECT.cbsize
 				add		[ebx].OBJECT.cbsize,ecx
 				inc		[ebx].OBJECT.npt
@@ -837,11 +838,13 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hCad,CM_ZOOMFIT,0,0
 		.elseif eax==IDM_HELP_ABOUT
 			invoke ShellAbout,hWin,addr AppName,addr AboutMsg,NULL
-		.elseif eax>=20000
+		.elseif eax>=20000 && eax<20100
 			sub		eax,20000
 			mov		nObj,eax
 			invoke SendMessage,hCad,CM_SETOBJECT,eax,0
 			call	SizeIt
+		.elseif eax==IDC_FLIP
+		.elseif eax==IDC_ROTATE
 		.elseif edx==CBN_SELCHANGE && eax==IDC_CBO1
 			invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 			inc		eax

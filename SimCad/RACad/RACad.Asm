@@ -375,14 +375,14 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 ;PrintDec yofs
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
-mov		eax,[esi].OBJECT.rc.left
-PrintDec eax
-mov		eax,[esi].OBJECT.rc.top
-PrintDec eax
-mov		eax,[esi].OBJECT.rc.right
-PrintDec eax
-mov		eax,[esi].OBJECT.rc.right
-PrintDec eax
+;mov		eax,[esi].OBJECT.rc.left
+;PrintDec eax
+;mov		eax,[esi].OBJECT.rc.top
+;PrintDec eax
+;mov		eax,[esi].OBJECT.rc.right
+;PrintDec eax
+;mov		eax,[esi].OBJECT.rc.right
+;PrintDec eax
 			push	ecx
 			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy
 			mov		eax,[esi].OBJECT.cbsize
@@ -1159,7 +1159,7 @@ CadSelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				mov		eax,esi
 				sub		eax,ebx
 				sub		eax,sizeof CADMEM
-				invoke CadNotify,hcad,CN_SIZE,eax
+;				invoke CadNotify,hcad,CN_SIZE,eax
 			.else
 				lea		esi,[ebx+sizeof CADMEM]
 				.while [esi].OBJECT.tpe
@@ -1217,7 +1217,36 @@ Update:
 		mov		eax,cpt.y
 		sub		eax,lastmov.y
 		add		[esi].OBJECT.rc.top[edi],eax
-;	.elseif [esi].OBJECT.tpe==TPE_SYMBOL
+	.elseif [esi].OBJECT.tpe==TPE_SYMBOL
+		push	esi
+		mov		eax,cpt.x
+		sub		eax,lastmov.x
+		add		[esi].OBJECT.rc.right,eax
+		mov		eax,cpt.y
+		sub		eax,lastmov.y
+		add		[esi].OBJECT.rc.bottom,eax
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+			mov		eax,cpt.x
+			sub		eax,lastmov.x
+			add		[esi].OBJECT.rc.left,eax
+			mov		eax,cpt.y
+			sub		eax,lastmov.y
+			add		[esi].OBJECT.rc.top,eax
+			movzx	eax,[esi].OBJECT.tpe
+			.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE
+				mov		eax,cpt.x
+				sub		eax,lastmov.x
+				add		[esi].OBJECT.rc.right,eax
+				mov		eax,cpt.y
+				sub		eax,lastmov.y
+				add		[esi].OBJECT.rc.bottom,eax
+			.endif
+			lea		esi,[esi+sizeof OBJECT]
+			dec		ecx
+		.endw
+		pop		esi
 	.endif
 	retn
 

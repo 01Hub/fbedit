@@ -67,10 +67,10 @@ Group=Assembly,Resources,Misc
 10=2
 11=
 [VerInf]
-FV=0.7.9.5
-FileVersion=0.7.9.5
-PV=0.7.9.5
-ProductVersion=0.7.9.5
+FV=0.8.0.7
+FileVersion=0.8.0.7
+PV=0.8.0.7
+ProductVersion=0.8.0.7
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -94,7 +94,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=9
+MilestoneOnDateDate=10
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=6
@@ -141,9 +141,9 @@ ProductVer4Range=0
 0=
 
 [Size]
-1=0,0,0,0,13375
+1=0,0,0,0,13436
 6=0,0,0,0,0
-2=0,0,0,0,5348
+2=0,0,0,0,1955
 4=0,0,0,0
 8=
 11=
@@ -179,13 +179,13 @@ ID=100
 10=IDM_EDIT_DELETE,0,46,0
 11=IDM_EDIT_SELECTALL,0,65,8
 [PTimer]
-PTimer=125504298
+PTimer=128816527
 [Collapse]
 2=
 1=,,
 9=
 [AutoLoad]
-AutoLoad=1,2,4,10,9
+AutoLoad=1,2,4,9,10
 [GroupExpand]
 GroupExpand=1,1,1,0
 [RADebugBP]
