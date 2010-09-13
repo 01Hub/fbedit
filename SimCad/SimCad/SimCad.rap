@@ -67,10 +67,10 @@ Group=Assembly,Resources,Misc
 10=2
 11=
 [VerInf]
-FV=0.8.0.7
-FileVersion=0.8.0.7
-PV=0.8.0.7
-ProductVersion=0.8.0.7
+FV=0.8.0.8
+FileVersion=0.8.0.8
+PV=0.8.0.8
+ProductVersion=0.8.0.8
 Nme=VERINF1
 ID=1
 VerOS=0x00000004
@@ -94,7 +94,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=10
+MilestoneOnDateDate=13
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=6
@@ -141,14 +141,14 @@ ProductVer4Range=0
 0=
 
 [Size]
-1=0,0,0,0,13436
+1=0,0,0,0,21057
 6=0,0,0,0,0
 2=0,0,0,0,1955
 4=0,0,0,0
 8=
 11=
 10=0,0,0,0
-9=0,0,1014,459,1787
+9=0,0,1014,459,1849
 3=0,0,0,0,0
 [Find]
 1="CM_GETOBJECT"
@@ -179,7 +179,7 @@ ID=100
 10=IDM_EDIT_DELETE,0,46,0
 11=IDM_EDIT_SELECTALL,0,65,8
 [PTimer]
-PTimer=128816527
+PTimer=129063493
 [Collapse]
 2=
 1=,,

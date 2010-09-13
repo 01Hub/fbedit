@@ -279,66 +279,82 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 	call	ZoomMul
 	sub		eax,[ebx].CADMEM.scroll.y
 	mov		pt.y,eax
-	mov		ecx,[esi].OBJECT.npt
-	dec		ecx
-	mov		edi,esi
-	.while ecx
-		push	ecx
+	.if [esi].OBJECT.tpe==TPE_SYMBOL || [esi].OBJECT.tpe==-TPE_SYMBOL
 		mov		eax,pt.x
 		mov		rect.left,eax
 		mov		eax,pt.y
 		mov		rect.top,eax
-		mov		eax,[edi].OBJECT.rc.right
-		.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
-			sub		eax,[edi].OBJECT.rc.left
-			movzx	ecx,[esi].OBJECT.wdt
-			mul		ecx
-			shr		eax,1
-			add		eax,[edi].OBJECT.rc.left
-		.endif
+		mov		eax,[esi].OBJECT.rc.right
 		call	ZoomMul
 		sub		eax,[ebx].CADMEM.scroll.x
-		mov		pt.x,eax
 		mov		rect.right,eax
-		mov		eax,[edi].OBJECT.rc.bottom
-		.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
-			sub		eax,[edi].OBJECT.rc.top
-			movzx	ecx,[esi].OBJECT.wdt
-			mul		ecx
-			shr		eax,1
-			add		eax,[edi].OBJECT.rc.top
-		.endif
+		mov		eax,[esi].OBJECT.rc.bottom
 		call	ZoomMul
 		sub		eax,[ebx].CADMEM.scroll.y
-		mov		pt.y,eax
 		mov		rect.bottom,eax
-		mov		eax,rect.right
-		.if sdword ptr eax<rect.left
-			xchg	eax,rect.left
-		.endif
-		mov		rect.right,eax
-		mov		eax,rect.bottom
-		.if sdword ptr eax<rect.top
-			xchg	eax,rect.top
-		.endif
-		mov		rect.bottom,eax
-		movzx	eax,[esi].OBJECT.wdt
-		.if [esi].OBJECT.tpe==TPE_DIMENSION
-			add		eax,6
-		.endif
-		call	ZoomMul
-		inc		eax
-		shr		eax,1
-		sub		rect.left,eax
-		sub		rect.top,eax
-		inc		eax
-		add		rect.right,eax
-		add		rect.bottom,eax
 		invoke InvalidateRect,hWin,addr rect,TRUE
-		add		edi,8
-		pop		ecx
+	.else
+		mov		ecx,[esi].OBJECT.npt
 		dec		ecx
-	.endw
+		mov		edi,esi
+		.while ecx
+			push	ecx
+			mov		eax,pt.x
+			mov		rect.left,eax
+			mov		eax,pt.y
+			mov		rect.top,eax
+			mov		eax,[edi].OBJECT.rc.right
+			.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+				sub		eax,[edi].OBJECT.rc.left
+				movzx	ecx,[esi].OBJECT.wdt
+				mul		ecx
+				shr		eax,1
+				add		eax,[edi].OBJECT.rc.left
+			.endif
+			call	ZoomMul
+			sub		eax,[ebx].CADMEM.scroll.x
+			mov		pt.x,eax
+			mov		rect.right,eax
+			mov		eax,[edi].OBJECT.rc.bottom
+			.if [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+				sub		eax,[edi].OBJECT.rc.top
+				movzx	ecx,[esi].OBJECT.wdt
+				mul		ecx
+				shr		eax,1
+				add		eax,[edi].OBJECT.rc.top
+			.endif
+			call	ZoomMul
+			sub		eax,[ebx].CADMEM.scroll.y
+			mov		pt.y,eax
+			mov		rect.bottom,eax
+			mov		eax,rect.right
+			.if sdword ptr eax<rect.left
+				xchg	eax,rect.left
+			.endif
+			mov		rect.right,eax
+			mov		eax,rect.bottom
+			.if sdword ptr eax<rect.top
+				xchg	eax,rect.top
+			.endif
+			mov		rect.bottom,eax
+			movzx	eax,[esi].OBJECT.wdt
+			.if [esi].OBJECT.tpe==TPE_DIMENSION
+				add		eax,6
+			.endif
+			call	ZoomMul
+			inc		eax
+			shr		eax,1
+			sub		rect.left,eax
+			sub		rect.top,eax
+			inc		eax
+			add		rect.right,eax
+			add		rect.bottom,eax
+			invoke InvalidateRect,hWin,addr rect,TRUE
+			add		edi,8
+			pop		ecx
+			dec		ecx
+		.endw
+	.endif
 	ret
 
 CadInvalidateObject endp
@@ -371,18 +387,8 @@ CadDrawObject proc uses ebx esi edi,hDC:HDC,xofs:DWORD,yofs:DWORD,hMem:DWORD,lpO
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		mov		edi,esi
-;PrintDec xofs
-;PrintDec yofs
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
-;mov		eax,[esi].OBJECT.rc.left
-;PrintDec eax
-;mov		eax,[esi].OBJECT.rc.top
-;PrintDec eax
-;mov		eax,[esi].OBJECT.rc.right
-;PrintDec eax
-;mov		eax,[esi].OBJECT.rc.right
-;PrintDec eax
 			push	ecx
 			invoke CadDrawObject,hDC,xofs,yofs,hMem,esi,fSwapxy
 			mov		eax,[esi].OBJECT.cbsize
@@ -2465,6 +2471,109 @@ CadSelSetWidth proc uses ebx esi,hWin:HWND,nWidth:DWORD
 
 CadSelSetWidth endp
 
+CadFlip proc uses ebx esi edi,hWin:HWND
+	LOCAL	left:DWORD
+	LOCAL	right:DWORD
+
+	invoke GetWindowLong,hWin,0
+	mov		ebx,eax
+	lea		esi,[ebx+sizeof CADMEM]
+	.while [esi].OBJECT.tpe
+		.if [esi].OBJECT.hsel
+			invoke CadInvalidateObject,hWin,esi
+			mov		left,7FFFFFFFh
+			mov		right,0
+			call	GetRect
+			call	Flip
+			invoke CadInvalidateObject,hWin,esi
+			mov		[ebx].CADMEM.changed,TRUE
+		.endif
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
+	ret
+
+GetRect:
+	push	ecx
+	push	esi
+	movzx	eax,[esi].OBJECT.tpe
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION; || eax==TPE_HTEXT || eax==TPE_VTEXT
+		mov		eax,[esi].OBJECT.rc.left
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.right
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+	.elseif eax==TPE_POLYLINE
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi].OBJECT.rc
+		.while ecx
+			mov		eax,[esi].POINT.x
+			.if sdword ptr eax<left
+				mov		left,eax
+			.endif
+			.if sdword ptr eax>right
+				mov		right,eax
+			.endif
+			lea		esi,[esi+sizeof POINT]
+			dec		ecx
+		.endw
+	.elseif eax==TPE_SYMBOL
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+			call	GetRect
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
+			dec		ecx
+		.endw
+	.endif
+	pop		esi
+	pop		ecx
+	retn
+
+Flip:
+	push	ecx
+	push	esi
+	movzx	eax,[esi].OBJECT.tpe
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION; || eax==TPE_HTEXT || eax==TPE_VTEXT
+		mov		eax,left
+		sub		eax,[esi].OBJECT.rc.left
+		add		eax,right
+		mov		edx,right
+		sub		edx,[esi].OBJECT.rc.right
+		add		edx,left
+		mov		[esi].OBJECT.rc.left,eax
+		mov		[esi].OBJECT.rc.right,edx
+	.elseif eax==TPE_POLYLINE
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi].OBJECT.rc
+		.while ecx
+			mov		eax,right
+			sub		eax,[esi].POINT.x
+			add		eax,left
+			mov		[esi].POINT.x,eax
+			lea		esi,[esi+sizeof POINT]
+			dec		ecx
+		.endw
+	.elseif eax==TPE_SYMBOL
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+			call	Flip
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
+			dec		ecx
+		.endw
+	.endif
+	pop		esi
+	pop		ecx
+	retn
+
+CadFlip endp
+
 CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
 	LOCAL	rectout:RECT
@@ -3055,6 +3164,15 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke GetWindowLong,hWin,0
 		mov		ebx,eax
 		invoke CadAddObjects,hWin,lParam
+	.elseif eax==CM_FLIPOBJECT
+		invoke CadGetSelCount,hWin
+		.if eax==1
+			invoke CadFlip,hWin
+		.endif
+	.elseif eax==CM_ROTATEOBJECT
+		invoke CadGetSelCount,hWin
+		.if eax==1
+		.endif
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
 		mov		ncadbox,TPE_HTEXT

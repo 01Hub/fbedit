@@ -844,7 +844,9 @@ WndProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke SendMessage,hCad,CM_SETOBJECT,eax,0
 			call	SizeIt
 		.elseif eax==IDC_FLIP
+			invoke SendMessage,hCad,CM_FLIPOBJECT,0,0
 		.elseif eax==IDC_ROTATE
+			invoke SendMessage,hCad,CM_ROTATEOBJECT,0,0
 		.elseif edx==CBN_SELCHANGE && eax==IDC_CBO1
 			invoke SendMessage,hCbo,CB_GETCURSEL,0,0
 			inc		eax
