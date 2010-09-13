@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7b 2010-09-13
+---------------------------
+o Fixed dialogs where labels was too small to show all text.
+o Fixed a menu bug if a large menu font was used.
+
 Version 3.0.0.7 2010-08-23
 --------------------------
 0 Added double click on a tab to close it.

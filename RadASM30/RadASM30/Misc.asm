@@ -1212,7 +1212,9 @@ UpdateSubMenu proc uses ebx esi edi,hMnu:HMENU
 				.endif
 				or		mii.fType,MFT_OWNERDRAW
 				mov		mii.dwItemData,esi
-				mov		[esi].RAMNUITEM.hgt,20
+				mov		eax,rect.bottom
+				add		eax,6
+				mov		[esi].RAMNUITEM.hgt,eax
 				invoke SetMenuItemInfo,hMnu,ebx,TRUE,addr mii
 			.else
 				mov		[esi].RAMNUITEM.ntype,2
