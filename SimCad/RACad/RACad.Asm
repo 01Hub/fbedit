@@ -2497,12 +2497,18 @@ GetRect:
 	push	ecx
 	push	esi
 	movzx	eax,[esi].OBJECT.tpe
-	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION; || eax==TPE_HTEXT || eax==TPE_VTEXT
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
 		mov		eax,[esi].OBJECT.rc.left
 		.if sdword ptr eax<left
 			mov		left,eax
 		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
 		mov		eax,[esi].OBJECT.rc.right
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
 		.if sdword ptr eax>right
 			mov		right,eax
 		.endif
@@ -2520,6 +2526,21 @@ GetRect:
 			lea		esi,[esi+sizeof POINT]
 			dec		ecx
 		.endw
+	.elseif  eax==TPE_HTEXT || eax==TPE_VTEXT
+;		mov		eax,[esi].OBJECT.rc.left
+;		.if sdword ptr eax<left
+;			mov		left,eax
+;		.endif
+;		.if sdword ptr eax>right
+;			mov		right,eax
+;		.endif
+;		mov		eax,[esi].OBJECT.rc.right
+;		.if sdword ptr eax<left
+;			mov		left,eax
+;		.endif
+;		.if sdword ptr eax>right
+;			mov		right,eax
+;		.endif
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
@@ -2538,7 +2559,7 @@ Flip:
 	push	ecx
 	push	esi
 	movzx	eax,[esi].OBJECT.tpe
-	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION; || eax==TPE_HTEXT || eax==TPE_VTEXT
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
 		mov		eax,left
 		sub		eax,[esi].OBJECT.rc.left
 		add		eax,right
@@ -2558,6 +2579,15 @@ Flip:
 			lea		esi,[esi+sizeof POINT]
 			dec		ecx
 		.endw
+	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
+;		mov		ecx,[esi].OBJECT.rc.right
+;		sub		ecx,[esi].OBJECT.rc.left
+;		mov		eax,right
+;		sub		eax,ecx
+;		sub		eax,[esi].OBJECT.rc.left
+;		mov		[esi].OBJECT.rc.left,eax
+;;		add		eax,ecx
+;		mov		[esi].OBJECT.rc.right,eax
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
@@ -2573,6 +2603,199 @@ Flip:
 	retn
 
 CadFlip endp
+
+CadRotate proc uses ebx esi edi,hWin:HWND
+	LOCAL	left:DWORD
+	LOCAL	top:DWORD
+	LOCAL	right:DWORD
+	LOCAL	bottom:DWORD
+	LOCAL	ofsleft:DWORD
+	LOCAL	ofstop:DWORD
+
+	invoke GetWindowLong,hWin,0
+	mov		ebx,eax
+	lea		esi,[ebx+sizeof CADMEM]
+	.while [esi].OBJECT.tpe
+		.if [esi].OBJECT.hsel
+			invoke CadInvalidateObject,hWin,esi
+			mov		left,7FFFFFFFh
+			mov		top,7FFFFFFFh
+			mov		right,0
+			mov		bottom,0
+			call	GetRect
+			mov		eax,left
+			mov		ofsleft,eax
+			mov		eax,top
+			mov		ofstop,eax
+			mov		eax,right
+			sub		eax,left
+			mov		right,eax
+			mov		left,0
+			mov		eax,bottom
+			sub		eax,top
+			mov		bottom,eax
+			mov		top,0
+			call	Rotate
+			invoke CadInvalidateObject,hWin,esi
+			mov		[ebx].CADMEM.changed,TRUE
+		.endif
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
+	ret
+
+GetRect:
+	push	ecx
+	push	esi
+	movzx	eax,[esi].OBJECT.tpe
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
+		mov		eax,[esi].OBJECT.rc.left
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.right
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.top
+		.if sdword ptr eax<top
+			mov		top,eax
+		.endif
+		.if sdword ptr eax>bottom
+			mov		bottom,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.bottom
+		.if sdword ptr eax<top
+			mov		top,eax
+		.endif
+		.if sdword ptr eax>bottom
+			mov		bottom,eax
+		.endif
+	.elseif eax==TPE_POLYLINE
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi].OBJECT.rc
+		.while ecx
+			mov		eax,[esi].POINT.x
+			.if sdword ptr eax<left
+				mov		left,eax
+			.endif
+			.if sdword ptr eax>right
+				mov		right,eax
+			.endif
+			mov		eax,[esi].POINT.y
+			.if sdword ptr eax<top
+				mov		top,eax
+			.endif
+			.if sdword ptr eax>bottom
+				mov		bottom,eax
+			.endif
+			lea		esi,[esi+sizeof POINT]
+			dec		ecx
+		.endw
+	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
+	.elseif eax==TPE_SYMBOL
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+			call	GetRect
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
+			dec		ecx
+		.endw
+	.endif
+	pop		esi
+	pop		ecx
+	retn
+
+Rotate:
+	push	ecx
+	push	esi
+	movzx	eax,[esi].OBJECT.tpe
+	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
+		mov		eax,left
+		sub		eax,[esi].OBJECT.rc.left
+		add		eax,right
+		mov		edx,right
+		sub		edx,[esi].OBJECT.rc.right
+		add		edx,left
+		push	eax
+		push	edx
+		mov		eax,top
+		sub		eax,[esi].OBJECT.rc.top
+		add		eax,bottom
+		mov		edx,bottom
+		sub		edx,[esi].OBJECT.rc.bottom
+		add		edx,top
+		mov		[esi].OBJECT.rc.left,eax
+		mov		[esi].OBJECT.rc.right,edx
+		pop		edx
+		pop		eax
+		mov		[esi].OBJECT.rc.top,eax
+		mov		[esi].OBJECT.rc.bottom,edx
+		mov		eax,ofstop
+		add		[esi].OBJECT.rc.left,eax
+		add		[esi].OBJECT.rc.right,eax
+		add		[esi].OBJECT.rc.top,eax
+		add		[esi].OBJECT.rc.bottom,eax
+		mov		eax,ofsleft
+		add		[esi].OBJECT.rc.left,eax
+		add		[esi].OBJECT.rc.right,eax
+		add		[esi].OBJECT.rc.top,eax
+		add		[esi].OBJECT.rc.bottom,eax
+	.elseif eax==TPE_POLYLINE
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi].OBJECT.rc
+		.while ecx
+			mov		eax,right
+			sub		eax,[esi].POINT.x
+			add		eax,left
+			mov		edx,bottom
+			sub		edx,[esi].POINT.y
+			add		edx,top
+			mov		[esi].POINT.y,eax
+			mov		[esi].POINT.x,edx
+			mov		eax,ofstop
+			add		[esi].POINT.x,eax
+			add		[esi].POINT.y,eax
+			mov		eax,ofsleft
+			add		[esi].POINT.x,eax
+			add		[esi].POINT.y,eax
+			lea		esi,[esi+sizeof POINT]
+			dec		ecx
+		.endw
+	.elseif  eax==TPE_HTEXT || eax==TPE_VTEXT
+;		mov		[esi].OBJECT.tpe,TPE_VTEXT
+;
+;		mov		eax,[esi].OBJECT.rc.left
+;		mov		edx,[esi].OBJECT.rc.top
+;		mov		[esi].OBJECT.rc.top,eax
+;		mov		[esi].OBJECT.rc.left,edx
+;
+;		mov		eax,[esi].OBJECT.rc.right
+;		mov		edx,[esi].OBJECT.rc.bottom
+;		mov		[esi].OBJECT.rc.bottom,eax
+;		mov		[esi].OBJECT.rc.right,edx
+	.elseif eax==TPE_SYMBOL
+		mov		ecx,[esi].OBJECT.npt
+		lea		esi,[esi+sizeof OBJECT]
+		.while ecx
+			call	Rotate
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
+			dec		ecx
+		.endw
+	.endif
+	pop		esi
+	pop		ecx
+	retn
+
+CadRotate endp
 
 CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	rect:RECT
@@ -3172,6 +3395,8 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==CM_ROTATEOBJECT
 		invoke CadGetSelCount,hWin
 		.if eax==1
+			invoke CadFlip,hWin
+			invoke CadRotate,hWin
 		.endif
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
