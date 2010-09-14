@@ -44,13 +44,19 @@ BinToDec proc uses ebx ecx edx esi edi,dwVal:DWORD,lpAscii:DWORD
 BinToDec endp
 
 PrintLineNumber proc nLine:DWORD
-	LOCAL	buffer[32]:BYTE
+	LOCAL	buffer[64]:BYTE
 
-	invoke BinToDec,nLine,addr buffer
+	invoke lstrlen,addr InpFile
+	invoke WriteFile,hOut,addr InpFile,eax,offset dwTemp,NULL
+	mov		dword ptr buffer,'('
+	invoke BinToDec,nLine,addr buffer[1]
 	invoke lstrlen,addr buffer
-	mov		word ptr buffer[eax],' '
+	mov		dword ptr buffer[eax],' )'
+	inc		eax
 	inc		eax
 	invoke WriteFile,hOut,addr buffer,eax,offset dwTemp,NULL
+	invoke lstrlen,addr szError
+	invoke WriteFile,hOut,addr szError,eax,offset dwTemp,NULL
 	ret
 
 PrintLineNumber endp
@@ -139,8 +145,12 @@ AsmLinePass0 endp
 
 A_ERROR:
 	invoke PrintLineNumber,LINE_NUMBER
-	invoke PrintStringz,offset TEXT_LINE
 	call PrintStringz
+	mov		eax,offset TEXT_LINE
+	.while byte ptr [eax] && (byte ptr [eax]==20h || byte ptr [eax]==09h)
+		inc		eax
+	.endw
+	invoke PrintStringz,eax
 	mov		eax,1
 	jmp		Exit
 
@@ -344,7 +354,7 @@ FindString proc
 			ret
 		.elseif al==0Dh
 			call	A_ERROR
-			db		'MISSING END QUOTE.',00H
+			db		'MISSING END QUOTE : ',00H
 		.endif
 		mov		[edi],al
 		inc		esi
@@ -423,7 +433,7 @@ AsmLinePass1 proc uses ebx esi edi,lpLine:DWORD
 	jnb		@b
   @@:
 	call	A_ERROR
-	db		'PASS 1 SYNTAX ERROR.',00H
+	db		'PASS 1 SYNTAX ERROR : ',00H
 
 AsmLinePass1 endp
 
@@ -617,7 +627,7 @@ PASS2_OP_CODE5:
 		ret
 PASS2_OP_CODE6:
 		call	A_ERROR
-		db		'PASS2 ILLEGAL ADRESSING MODE',00H
+		db		'PASS2 ILLEGAL ADRESSING MODE : ',00H
 
 PASS2_IMM_DATA:
 		cmp		al,80H			;#
@@ -714,10 +724,10 @@ PASS2_IMM_DATA8:
 		ret
 PASS2_IMM_DATA9:
 		call	A_ERROR
-		db		'PASS2 EXPECTED IMMEDIATE DATA OR LABEL',00H
+		db		'PASS2 EXPECTED IMMEDIATE DATA OR LABEL : ',00H
 PASS2_IMM_DATA10:
 		call	A_ERROR
-		db		'PASS2 DATA NOT BIT ADRESSABLE',00H
+		db		'PASS2 DATA NOT BIT ADRESSABLE : ',00H
 
 PASS2_LABEL:
 		mov		ebx,PRG_ADR
@@ -761,7 +771,7 @@ PASS2_GET_HEX1:
 		ret
 PASS2_GET_HEX_ERR:
 		call	A_ERROR
-		db		'EXPECTED HEX',00H
+		db		'EXPECTED HEX : ',00H
 
 
 ;01,DEF ADR WORD,PROG/DATA_LABEL_NAME,00
@@ -825,7 +835,7 @@ PASS2_DEF_LABEL_TEST2:
 		or		al,al
 		jnz		PASS2_DEF_LABEL_TEST2
 		call	A_ERROR
-		db		'DOUBLE DEFINED LABEL.',00H
+		db		'DOUBLE DEFINED LABEL : ',00H
 PASS2_DEF_LABEL_TEST3:
 		pop		esi
 PASS2_DEF_LABEL_TEST4:
@@ -988,10 +998,10 @@ PASS2_ORG_ERR:
 		db		'ORG ???',00H
 PASS2_ORG_ERR1:
 		call	A_ERROR
-		db		'NEW ORG LESS THAN FIRST ORG.',00H
+		db		'NEW ORG LESS THAN FIRST ORG : ',00H
 PASS2_ORG_ERR2:
 		call	A_ERROR
-		db		'ORG LESS THAN PROG ADRESS.',00H
+		db		'ORG LESS THAN PROG ADRESS : ',00H
 
 PASS2_PUT_LST:
 		mov		ebx,LST_LIN_ADR
@@ -1023,7 +1033,7 @@ AsmLinePass2 proc uses ebx esi edi,lpLine:DWORD
 			call	PASS2_DEF_LABEL
 		.else
 			call	A_ERROR
-			db		'PASS 2 SYNTAX ERROR.',00H
+			db		'PASS 2 SYNTAX ERROR : ',00H
 		.endif
 	.endw
 	ret

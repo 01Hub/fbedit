@@ -446,6 +446,7 @@ ADRMODE		DB	01CH,000H,000H,000H,000H	;00 NOP
 			DB	018H,095H,085H,000H,000H	;FF MOV		R7,A
 
 szTitle		db '8051 Assembler',0Dh,0Ah,0Ah,0
+szError		db ': error ',0
 
 .data?
 
