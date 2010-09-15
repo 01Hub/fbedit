@@ -1248,6 +1248,13 @@ Update:
 				mov		eax,cpt.y
 				sub		eax,lastmov.y
 				add		[esi].OBJECT.rc.bottom,eax
+			.elseif [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+				mov		eax,cpt.x
+				sub		eax,lastmov.x
+				add		[esi].OBJECT.rc.right,eax
+				mov		eax,cpt.y
+				sub		eax,lastmov.y
+				add		[esi].OBJECT.rc.bottom,eax
 			.endif
 			lea		esi,[esi+sizeof OBJECT]
 			dec		ecx
@@ -2527,20 +2534,20 @@ GetRect:
 			dec		ecx
 		.endw
 	.elseif  eax==TPE_HTEXT || eax==TPE_VTEXT
-;		mov		eax,[esi].OBJECT.rc.left
-;		.if sdword ptr eax<left
-;			mov		left,eax
-;		.endif
-;		.if sdword ptr eax>right
-;			mov		right,eax
-;		.endif
-;		mov		eax,[esi].OBJECT.rc.right
-;		.if sdword ptr eax<left
-;			mov		left,eax
-;		.endif
-;		.if sdword ptr eax>right
-;			mov		right,eax
-;		.endif
+		mov		eax,[esi].OBJECT.rc.left
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.right
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
@@ -2580,14 +2587,46 @@ Flip:
 			dec		ecx
 		.endw
 	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
+		mov		eax,[esi].OBJECT.rc.left
+;		sub		eax,[esi].OBJECT.rc.right
+
+
+;		mov		edx,[esi].OBJECT.rc.right
+;		sub		edx,[esi].OBJECT.rc.left
+;PrintDec edx
+;		mov		eax,[esi].OBJECT.rc.left
+;		sub		eax,[esi].OBJECT.rc.right
+;		add		eax,right
+;		mov		[esi].OBJECT.rc.left,eax
+;		add		eax,edx
+;		mov		[esi].OBJECT.rc.right,eax
+;		mov		eax,right
+;		sub		eax,[esi].OBJECT.rc.right
+;		add		eax,[esi].OBJECT.rc.left
+;		mov		[esi].OBJECT.rc.right,eax
+;		sub		eax,[esi].OBJECT.rc.right
+;		add		eax,[esi].OBJECT.rc.left
+;		mov		[esi].OBJECT.rc.left,eax
+		
+
 ;		mov		ecx,[esi].OBJECT.rc.right
 ;		sub		ecx,[esi].OBJECT.rc.left
+;
 ;		mov		eax,right
+;		sub		eax,[esi].OBJECT.rc.right
+;		mov		edx,[esi].OBJECT.rc.left
+;		sub		edx,left
+;;		sub		eax,edx
 ;		sub		eax,ecx
-;		sub		eax,[esi].OBJECT.rc.left
-;		mov		[esi].OBJECT.rc.left,eax
-;;		add		eax,ecx
 ;		mov		[esi].OBJECT.rc.right,eax
+;		sub		eax,ecx
+;		mov		[esi].OBJECT.rc.left,eax
+;		
+;;;		sub		eax,ecx
+;;		sub		eax,[esi].OBJECT.rc.left
+;;		mov		[esi].OBJECT.rc.left,eax
+;;		add		eax,ecx
+;;		mov		[esi].OBJECT.rc.right,eax
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
