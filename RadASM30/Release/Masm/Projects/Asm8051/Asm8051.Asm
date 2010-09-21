@@ -154,8 +154,31 @@ A_ERROR:
 	mov		eax,1
 	jmp		Exit
 
-FindOpCode proc
+IsHex proc uses esi
 
+	.while TRUE
+		mov		ax,[esi]
+		.if al>='a' && al<='z'
+			and		al,5Fh
+		.endif
+		.break .if al=='H' && (ah==0Dh || ah==',' || ah=='.' || !ah)
+		.if al==0Dh || !al
+			mov		al,'D'
+			.break
+		.endif
+		mov		ah,al
+		xor		al,al
+		.break .if ah<'0' || ah>'F' || (ah>'9' && ah<'A')
+		inc		esi
+	.endw
+	ret
+
+IsHex endp
+
+FindOpCode proc
+	LOCAL	edisave:DWORD
+
+	mov		edisave,edi
 	mov		ax,[esi]
 	.if al=='#'
 		mov		ax,8001H		;#
@@ -163,14 +186,24 @@ FindOpCode proc
 		inc		edi
 		inc		edi
 		inc		esi
-		clc
+		invoke IsHex
+		.if al!='D' && al!='H'
+			invoke FindAskLabel
+		.else
+			clc
+		.endif
 	.elseif al=='$'
 		mov		ax,8101H		;$
 		mov		[edi],ax
 		inc		edi
 		inc		edi
 		inc		esi
-		clc
+		invoke IsHex
+		.if al!='D' && al!='H'
+			invoke FindAskLabel
+		.else
+			clc
+		.endif
 	.elseif ax=='$/'
 		mov		ax,8D01H		;/$
 		mov		[edi],ax
@@ -178,13 +211,27 @@ FindOpCode proc
 		inc		edi
 		inc		esi
 		inc		esi
-		clc
+		invoke IsHex
+		.if al!='D' && al!='H'
+			invoke FindAskLabel
+		.else
+			clc
+		.endif
 	.elseif (al>='@' && al<='Z') || (al>='a' && al<='z')
 		mov		ebx,offset OP_CODES
 	  FIND_OP_CODE1:
 		mov		ah,[ebx]
 		.if !ah
-			stc
+			.if esi==offset PASS0_LINE
+				stc
+			.else
+				mov		edi,edisave
+				mov		ax,8101H		;$
+				mov		[edi],ax
+				inc		edi
+				inc		edi
+				invoke FindAskLabel
+			.endif
 			ret
 		.endif
 		inc		ebx
@@ -252,6 +299,13 @@ FindDefLabel proc
 			pop		eax
 			clc
 			ret
+		.elseif !al
+			mov		byte ptr [edi],00H
+			inc		edi
+			pop		eax
+			pop		eax
+			clc
+			ret
 		.elseif (al>='A' && al<='Z') || (al>='a' && al<='z') || (al>='0' && al<='9') || al=='_'
 			mov		[edi],al
 			inc		esi
@@ -291,49 +345,101 @@ FindAskLabel proc
 FindAskLabel endp
 
 FindImmData proc
+	LOCAL	fNeg:DWORD
 
 	xor		cl,cl
 	xor		ebx,ebx
 	mov		al,[esi]
 	.if al>='0' && al<='9'
-	  FIND_IMM_DATA1:
-		mov		al,[esi]
-		.if (al>='0' && al<='9') || (al>='A' && al<='F')
-			sub		al,'0'
-			cmp		al,0AH
-			jb		@f
-			sub		al,07H
-		  @@:
-			shl		bx,1
-			shl		bx,1
-			shl		bx,1
-			shl		bx,1
-			add		bl,al
-			inc		cl
-			inc		esi
-			jmp		FIND_IMM_DATA1
-		.endif
-		.if byte ptr [edi-1]=='-'
-			dec		edi
-			xor		bx,0FFFFH
-			inc		bx
-		.endif
-		.if cl<4
-			mov		byte ptr [edi],08H		;BYTE
-			inc		edi
-			mov		[edi],bl
-			inc		edi
+		invoke IsHex
+		.if al=='H'
+		  FIND_IMM_DATA1:
+			mov		al,[esi]
+			.if al>='a' && al<='z'
+				and		al,5Fh
+			.endif
+			.if (al>='0' && al<='9') || (al>='A' && al<='F')
+				sub		al,'0'
+				cmp		al,0AH
+				jb		@f
+				sub		al,07H
+			  @@:
+				shl		bx,1
+				shl		bx,1
+				shl		bx,1
+				shl		bx,1
+				add		bl,al
+				inc		cl
+				inc		esi
+				jmp		FIND_IMM_DATA1
+			.endif
+			.if al=='H'
+				inc		esi
+			.endif
+			.if byte ptr [edi-1]=='-'
+				dec		edi
+				xor		bx,0FFFFH
+				inc		bx
+			.endif
+			.if cl<4
+				mov		byte ptr [edi],08H		;BYTE
+				inc		edi
+				mov		[edi],bl
+				inc		edi
+			.else
+				mov		byte ptr [edi],09H		;WORD
+				inc		edi
+				mov		[edi],bx
+				inc		edi
+				inc		edi
+			.endif
 		.else
-			mov		byte ptr [edi],09H		;WORD
-			inc		edi
-			mov		[edi],bx
-			inc		edi
-			inc		edi
+		    mov		fNeg,FALSE
+		    mov		al,[esi]
+		    .if al=='-'
+				inc		esi
+				mov		fNeg,TRUE
+		    .endif
+		    xor     eax,eax
+		  @@:
+		    cmp     byte ptr [esi],30h
+		    jb      @f
+		    cmp     byte ptr [esi],3Ah
+		    jnb     @f
+		    mov     ebx,eax
+		    shl     eax,2
+		    add     eax,ebx
+		    shl     eax,1
+		    xor     ebx,ebx
+		    mov     bl,[esi]
+		    sub     bl,30h
+		    add     eax,ebx
+		    inc     esi
+		    jmp     @b
+		  @@:
+			.if !ah
+				.if fNeg
+					neg		eax
+				.endif
+				mov		byte ptr [edi],08H		;BYTE
+				inc		edi
+				mov		[edi],al
+				inc		edi
+			.else
+				.if fNeg
+					neg		eax
+				.endif
+				mov		byte ptr [edi],09H		;WORD
+				inc		edi
+				mov		[edi],ax
+				inc		edi
+				inc		edi
+			.endif
 		.endif
 		clc
-		ret
+	.else
+		stc
 	.endif
-	stc
 	ret
 
 FindImmData endp
@@ -379,12 +485,12 @@ SkipZero endp
 ;00 EOL
 ;01 OP CODE
 ;02 DEF PROG LABEL			PROG_LABLE:
-;02 DEF BYTE LABEL			CRLF:		EQU	0D
-;02 DEF WORD LABEL			SCRN_ADR:	EQU	0C000
-;02 DEF DATA LABEL			PRINT_DATA:	DB	'ABCDEFGH',0D,0A
-;							ADR_DATA:	DW	0C000,0D000
-;08 DEF IMMEDIATE BYTE		0D
-;09 DEF IMMEDIATE WORD		0C000
+;02 DEF BYTE LABEL			CRLF:		EQU	0DH,123
+;02 DEF WORD LABEL			SCRN_ADR:	EQU	0C000H,12345
+;02 DEF DATA LABEL			PRINT_DATA:	DB	'ABCDEFGH',0DH,0AH
+;							ADR_DATA:	DW	0C000H,0D000H
+;08 DEF IMMEDIATE BYTE		0DH,123
+;09 DEF IMMEDIATE WORD		0C000H,12345
 ;0A DEF IMMEDIATE DATA		'ABCDEFGH',0DH
 
 ;10 ASK PROG LABEL			JNZ	PROG_LABLE
@@ -795,6 +901,8 @@ PASS2_DEF_LABEL1:
 		mov		ax,[esi]
 		cmp		ax,0F001H			;EQU LABEL
 		jz		PASS2_DEF_LABEL2
+		cmp		ax,0FA01H			;BIT LABEL
+		jz		PASS2_DEF_LABEL3
 		pop		esi
 		mov		cl,01H				;PRG/DATA ADR LABEL
 		mov		ebx,PRG_ADR
@@ -807,6 +915,26 @@ PASS2_DEF_LABEL2:
 		inc		esi
 		inc		esi
 		call	PASS2_EQU
+		inc		cl					;BYTE=2, WORD=3
+		mov		edi,esi
+		pop		esi
+		push	edi
+		mov		edi,DEF_LBL_ADR
+		call	PASS2_PUT_LABEL
+		mov		DEF_LBL_ADR,edi
+		pop		esi
+		ret
+PASS2_DEF_LABEL3:
+		inc		esi
+		inc		esi
+		call	PASS2_EQU
+		.if cl==1 && byte ptr [esi]=='.'
+			movzx	eax,byte ptr [esi+1]
+			and		eax,0Fh
+			shl		ebx,3
+			or		ebx,eax
+			add		esi,2
+		.endif
 		inc		cl					;BYTE=2, WORD=3
 		mov		edi,esi
 		pop		esi

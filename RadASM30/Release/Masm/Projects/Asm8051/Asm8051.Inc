@@ -15,6 +15,7 @@ include Debug.Inc
 includelib masm32.lib
 includelib Debug.lib
 
+FindAskLabel	PROTO
 
 .const
 
@@ -114,6 +115,7 @@ OP_CODES	DB	01H,'ACALL',00H
 			DB	0F3H,'ORG',00H
 			DB	0F8H,'BYTE',00H
 			DB	0F9H,'WORD',00H
+			DB	0FAH,'BIT',00H
 			DB	00H,00H,00H,00H,00H
 
 SFR_MEM		DB	0F0H	;B

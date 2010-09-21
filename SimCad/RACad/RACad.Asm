@@ -292,6 +292,7 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 		call	ZoomMul
 		sub		eax,[ebx].CADMEM.scroll.y
 		mov		rect.bottom,eax
+		dec		rect.top
 		invoke InvalidateRect,hWin,addr rect,TRUE
 	.else
 		mov		ecx,[esi].OBJECT.npt
@@ -1241,14 +1242,14 @@ Update:
 			sub		eax,lastmov.y
 			add		[esi].OBJECT.rc.top,eax
 			movzx	eax,[esi].OBJECT.tpe
-			.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE
+			.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
 				mov		eax,cpt.x
 				sub		eax,lastmov.x
 				add		[esi].OBJECT.rc.right,eax
 				mov		eax,cpt.y
 				sub		eax,lastmov.y
 				add		[esi].OBJECT.rc.bottom,eax
-			.elseif [esi].OBJECT.tpe==TPE_HTEXT || [esi].OBJECT.tpe==TPE_VTEXT
+			.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
 				mov		eax,cpt.x
 				sub		eax,lastmov.x
 				add		[esi].OBJECT.rc.right,eax
@@ -1256,7 +1257,8 @@ Update:
 				sub		eax,lastmov.y
 				add		[esi].OBJECT.rc.bottom,eax
 			.endif
-			lea		esi,[esi+sizeof OBJECT]
+			mov		eax,[esi].OBJECT.cbsize
+			lea		esi,[esi+eax]
 			dec		ecx
 		.endw
 		pop		esi
@@ -1734,6 +1736,7 @@ CadAddObjects proc uses ebx esi edi,hWin:HWND,lpObjects:DWORD
 	.while [esi].OBJECT.tpe
 		push	esi
 		mov		ecx,[esi].OBJECT.npt
+		inc		ecx
 		.while ecx
 			dec		ecx
 			mov		eax,xmin
@@ -2491,7 +2494,12 @@ CadFlip proc uses ebx esi edi,hWin:HWND
 			mov		left,7FFFFFFFh
 			mov		right,0
 			call	GetRect
+PrintDec left
+PrintDec right
 			call	Flip
+			call	GetRect
+PrintDec left
+PrintDec right
 			invoke CadInvalidateObject,hWin,esi
 			mov		[ebx].CADMEM.changed,TRUE
 		.endif
@@ -2587,46 +2595,85 @@ Flip:
 			dec		ecx
 		.endw
 	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
-		mov		eax,[esi].OBJECT.rc.left
-;		sub		eax,[esi].OBJECT.rc.right
+		push	ebx
 
+		mov		ebx,[esi].OBJECT.rc.right
+		sub		ebx,[esi].OBJECT.rc.left
 
+		mov		ecx,[esi].OBJECT.rc.left
+		mov		edx,[esi].OBJECT.rc.right
+		mov		[esi].OBJECT.rc.left,edx
+		mov		[esi].OBJECT.rc.right,ecx
+PrintDec ecx
+PrintDec edx
+
+;		sub		ecx,left
+;
+;		mov		edx,right
 ;		mov		edx,[esi].OBJECT.rc.right
-;		sub		edx,[esi].OBJECT.rc.left
-;PrintDec edx
-;		mov		eax,[esi].OBJECT.rc.left
-;		sub		eax,[esi].OBJECT.rc.right
-;		add		eax,right
-;		mov		[esi].OBJECT.rc.left,eax
-;		add		eax,edx
-;		mov		[esi].OBJECT.rc.right,eax
-;		mov		eax,right
-;		sub		eax,[esi].OBJECT.rc.right
-;		add		eax,[esi].OBJECT.rc.left
-;		mov		[esi].OBJECT.rc.right,eax
-;		sub		eax,[esi].OBJECT.rc.right
-;		add		eax,[esi].OBJECT.rc.left
-;		mov		[esi].OBJECT.rc.left,eax
-		
-
-;		mov		ecx,[esi].OBJECT.rc.right
-;		sub		ecx,[esi].OBJECT.rc.left
 ;
 ;		mov		eax,right
-;		sub		eax,[esi].OBJECT.rc.right
+;		sub		eax,ecx
+;;		sub		eax,ebx
+;		mov		[esi].OBJECT.rc.left,eax
+;
+;		mov		edx,right
+;		sub		edx,[esi].OBJECT.rc.right
+;		add		edx,ebx
+;		mov		eax,right
+;		sub		eax,ecx
+;		mov		[esi].OBJECT.rc.right,eax
+;		mov		eax,left
+;		add		eax,edx
+;		sub		eax,ebx
+;		mov		[esi].OBJECT.rc.left,eax
+		
+;		mov		ebx,[esi].OBJECT.rc.right
+;		sub		ebx,[esi].OBJECT.rc.left
+;;PrintDec ebx
+;;		shr		ebx,1
+;
+;		mov		ecx,right
+;		sub		ecx,[esi].OBJECT.rc.right
+;
 ;		mov		edx,[esi].OBJECT.rc.left
 ;		sub		edx,left
+;
+;		mov		eax,left
+;		add		eax,ecx
+;		shr		ebx,1
+;		add		eax,ebx
+;		shl		ebx,1
+;		mov		[esi].OBJECT.rc.left,eax
+;
+;		add		eax,ebx
+;;		add		eax,ebx
+;;		mov		eax,right
 ;;		sub		eax,edx
-;		sub		eax,ecx
+;;		add		eax,ebx
+;		mov		[esi].OBJECT.rc.right,eax
+;		mov		ebx,[esi].OBJECT.rc.right
+;		sub		ebx,[esi].OBJECT.rc.left
+;PrintDec ebx
+		pop		ebx
+
+;PrintDec eax
+;sub		eax,ecx
 ;		mov		[esi].OBJECT.rc.right,eax
 ;		sub		eax,ecx
 ;		mov		[esi].OBJECT.rc.left,eax
-;		
-;;;		sub		eax,ecx
-;;		sub		eax,[esi].OBJECT.rc.left
-;;		mov		[esi].OBJECT.rc.left,eax
+;		mov		ecx,[esi].OBJECT.rc.right
+;		sub		ecx,[esi].OBJECT.rc.left
+;		mov		eax,[esi].OBJECT.rc.left
 ;;		add		eax,ecx
-;;		mov		[esi].OBJECT.rc.right,eax
+;		sub		eax,left
+;		mov		edx,right
+;		sub		edx,eax
+;		add		edx,ecx
+;		sub		edx,5
+;		mov		[esi].OBJECT.rc.right,edx
+;		sub		edx,ecx
+;		mov		[esi].OBJECT.rc.left,edx
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
