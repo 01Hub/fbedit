@@ -485,11 +485,11 @@ SkipZero endp
 ;00 EOL
 ;01 OP CODE
 ;02 DEF PROG LABEL			PROG_LABLE:
-;02 DEF BYTE LABEL			CRLF:		EQU	0DH,123
-;02 DEF WORD LABEL			SCRN_ADR:	EQU	0C000H,12345
-;02 DEF DATA LABEL			PRINT_DATA:	DB	'ABCDEFGH',0DH,0AH
-;							ADR_DATA:	DW	0C000H,0D000H
-;08 DEF IMMEDIATE BYTE		0DH,123
+;02 DEF BYTE LABEL			CRLF		EQU	0DH,13
+;02 DEF WORD LABEL			SCRN_ADR	EQU	0C000H,12345
+;02 DEF DATA LABEL			PRINT_DATA	DB	'ABCDEFGH',0DH,0AH
+;							ADR_DATA	DW	0C000H,0D000H
+;08 DEF IMMEDIATE BYTE		0DH,13
 ;09 DEF IMMEDIATE WORD		0C000H,12345
 ;0A DEF IMMEDIATE DATA		'ABCDEFGH',0DH
 
@@ -1018,7 +1018,7 @@ PASS2_EQU1:
 		ret
 PASS2_EQU2:
 		cmp		al,0AH
-		jnz		PASS2_EQU_ERR
+		jnz		PASS2_EQU4
 		mov		cl,01H
 		mov		bx,[esi]
 		inc		esi
@@ -1033,6 +1033,30 @@ PASS2_EQU3:
 		inc		esi
 		clc
 		ret
+PASS2_EQU4:
+		cmp		al,01H
+		jnz		PASS2_EQU_ERR
+		.while byte ptr [esi]
+			inc		esi
+		.endw
+		inc		esi
+		.if byte ptr [esi]=='+' || byte ptr [esi]=='-'
+			.while byte ptr [esi]
+				inc		esi
+			.endw
+			inc		esi
+		.endif
+		clc
+		ret
+mov		eax,[esi]
+PrintHex eax
+mov		eax,[esi+4]
+PrintHex eax
+mov		eax,[esi+8]
+PrintHex eax
+mov		eax,[esi+12]
+PrintHex eax
+
 PASS2_EQU_ERR:
 		call	A_ERROR
 		db		'EQU ???',00H
