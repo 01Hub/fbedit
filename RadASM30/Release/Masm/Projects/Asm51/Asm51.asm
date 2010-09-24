@@ -11,7 +11,7 @@ HexLine proc uses eax ecx edx esi edi,lpLine:DWORD
 
 	mov		esi,lpLine
 	mov		edi,offset hexbuff
-	mov		ecx,16
+	mov		ecx,32
 	.while ecx
 		call	hexbyte
 		mov		byte ptr [edi],20h
@@ -58,9 +58,10 @@ AsmLinePass0 proc uses ebx esi edi,lpLine:DWORD
 	mov		[edi],al
 	inc		esi
 	inc		edi
-	.if al==0Dh || al==0Ah
-		;End of line
-		mov		dword ptr [edi],0A0Dh
+	.if al==0Dh
+		;End of line, skip LF
+		inc		esi
+		mov		dword ptr [edi],00h
 		inc		ebx
 		mov		byte ptr [ebx],00h
 		inc		ebx
@@ -68,9 +69,10 @@ AsmLinePass0 proc uses ebx esi edi,lpLine:DWORD
 		mov		eax,esi
 		clc
 		ret
-	.elseif al==1Ah || al==00h
+	.elseif al==00h
 		;End of file
-		mov		dword ptr [edi],0A0Dh
+		inc		ebx
+		mov		byte ptr [ebx],00h
 		inc		ebx
 		mov		byte ptr [ebx],0Dh
 		mov		eax,esi
@@ -91,6 +93,12 @@ AsmLinePass0 proc uses ebx esi edi,lpLine:DWORD
 			xor		al,al
 			cmp		al,[ebx]
 			jz		@b
+		.elseif al==',' || al=='#' || al=='$' || al=='+' || al=='-'
+			inc		ebx
+			mov		byte ptr [ebx],0
+			inc		ebx
+			mov		byte ptr [ebx],al
+			mov		al,00h
 		.elseif al==';'
 			mov		al,00h
 			inc		cl				;REMARK FLAG
@@ -109,11 +117,10 @@ AsmLinePass0 endp
 ;02 LABEL					PROG_LABLE:
 ;03 CONSTANT NAME			MYCONST		EQU 2
 ;04 HEX or DEC NUMBER		04H or 123
-;23 #
-;24 $
 ;2B +
 ;2C ,
 ;2D -
+;2E .
 
 IsNumber proc uses esi,lpLine:DWORD
 
@@ -123,7 +130,7 @@ IsNumber proc uses esi,lpLine:DWORD
 			mov		ax,[esi]
 			.if (al>='0' && al<='9') || (al>='A' && al<='F') || (al>='a' && al<='f') 
 				inc		esi
-			.elseif (al=='H' || al=='h' || !al) && (ah=='+' || ah=='-' || ah==',' || ah==0Dh || !ah)
+			.elseif (al=='H' || al=='h' || !al) && (ah=='+' || ah=='-' || ah==',' || ah=='.' || ah==0Dh || !ah)
 				clc
 				ret
 			.else
@@ -162,11 +169,13 @@ GetDecimal endp
 GetHex proc uses ebx
 
 	xor		ebx,ebx
-	.while byte ptr [esi]!='H' && byte ptr [esi]!='h'
+	.while TRUE
 		mov		al,[esi]
+		inc		esi
 		.if al>='a' && al<='z'
 			and		al,5Fh
 		.endif
+		.break .if al=='H'
 		sub		al,'0'
 		cmp		al,0AH
 		jb		@f
@@ -174,10 +183,7 @@ GetHex proc uses ebx
 	  @@:
 		shl		ebx,4
 		add		bl,al
-		inc		esi
-		inc		esi
 	.endw
-	inc		esi
 	mov		eax,ebx
 	ret
 
@@ -216,16 +222,37 @@ AsmLinePass1 proc uses ebx esi edi
 
 	mov		esi,offset Pass0_line
 	mov		edi,offset Pass1_line
-	mov		dword ptr [edi],0
-	.while byte ptr [esi]
+	.while TRUE
 		invoke SkipZero
 		mov		al,[esi]
-		.if al=='-' || al=='+' || al==','
+		.if al=='-' || al=='+' || al==',' || al=='.'
 			mov		[edi],al
 			inc		esi
 			inc		edi
+		.elseif al=="'"
+			mov		[edi],al
+			inc		esi
+			inc		edi
+			.while TRUE
+				mov		al,[esi]
+				.if al=="'"
+					mov		[edi],al
+					inc		esi
+					inc		edi
+					mov		byte ptr [edi],0
+					inc		edi
+					.break
+				.elseif al
+					mov		[edi],al
+					inc		esi
+					inc		edi
+				.else
+					call Err
+					db	'PASS 1 MISSING END QUOTE : ',0
+				.endif
+			.endw
 		.elseif al==0Dh
-			mov		byte ptr [edi],00h
+			mov		dword ptr [edi],00h
 			clc
 			ret
 		.else
@@ -311,6 +338,7 @@ AsmLinePass1 proc uses ebx esi edi
 			.endif
 		.endif
 	.endw
+	mov		dword ptr [edi],0
 	stc
 	ret
 
@@ -318,62 +346,384 @@ AsmLinePass1 endp
 
 ;PASS 2 ******************************************************
 
-AddLabel proc uses ebx esi edi,lpname:DWORD,ntype:DWORD
-
-	ret
-
-AddLabel endp
-
 AsmLinePass2 proc uses ebx esi edi
-	LOCAL deflbl:DEFLBL
+	LOCAL	deflbl:DEFLBL
+	LOCAL	definst:DEFINST
 
 	mov		esi,offset Pass1_line
-	.while byte ptr [esi] && byte ptr [esi]!=0Dh
+  @@:
+	movzx	eax,byte ptr [esi]
+	inc		esi
+	.if eax==PASS1_OPCODE
+		movzx	eax,byte ptr [esi]
+		inc		esi
+		.if eax==OP_ORG
+			;ORG
+			call	GetEquValue
+		.elseif eax==OP_DB
+			;DB
+			call	GetDBValue
+		.elseif eax==OP_DW
+			;DW
+			call	GetDWValue
+		.elseif eax>=01h && eax<=2Ch
+			;Instruction
+			call	GetInstruction
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.elseif eax==PASS1_LABEL
+		mov		deflbl.tpe,eax
+		mov		eax,Name_adr
+		mov		deflbl.txtptr,eax
+		mov		eax,Prg_adr
+		mov		deflbl.value,eax
+		mov		eax,Line_number
+		mov		deflbl.lineno,eax
+		invoke lstrcpy,Name_adr,esi
+		invoke strlen,esi
+		inc		eax
+		add		Name_adr,eax
+		lea		esi,[esi+eax]
+		invoke RtlMoveMemory,Def_lbl_adr,addr deflbl,sizeof DEFLBL
+		add		Def_lbl_adr,sizeof DEFLBL
+		jmp		@b
+	.elseif eax==PASS1_CONST
+		mov		eax,Name_adr
+		mov		deflbl.txtptr,eax
+		mov		eax,Prg_adr
+		mov		deflbl.value,eax
+		mov		eax,Line_number
+		mov		deflbl.lineno,eax
+		invoke lstrcpy,Name_adr,esi
+		invoke strlen,esi
+		inc		eax
+		add		Name_adr,eax
+		lea		esi,[esi+eax]
 		movzx	eax,byte ptr [esi]
 		inc		esi
 		.if eax==PASS1_OPCODE
-PrintText "PASS1_OPCODE"
+			movzx	eax,byte ptr [esi]
 			inc		esi
-		.elseif eax==PASS1_LABEL
-PrintText "PASS1_LABEL"
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-		.elseif eax==PASS1_CONST
-PrintText "PASS1_CONST"
-			mov		ebx,esi
-			invoke strlen,esi
-			lea		esi,[esi+eax+1]
-			.if byte ptr [esi]==PASS1_OPCODE
-				inc		esi
-				movzx	eax,byte ptr [esi]
-				inc		esi
-				.if eax==0F0h
-					;EQU
-					movzx	eax,byte ptr [esi]
-					inc		esi
-					.if eax==PASS1_CONST
-					.elseif eax==PASS1_NUMBER
+			.if eax==OP_EQU
+				;EQU
+				mov		deflbl.tpe,eax
+				xor		ebx,ebx
+				call	GetEquValue
+				mov		deflbl.value,ebx
+				call	CopyLabel
+			.elseif eax==OP_BIT
+				;BIT
+				mov		deflbl.tpe,eax
+				xor		ebx,ebx
+				call	GetBitValue
+				mov		deflbl.value,ebx
+				call	CopyLabel
+			.elseif eax==OP_DB
+				;DB
+				mov		deflbl.tpe,eax
+				;Write byte data
+				.while TRUE
+					xor		ebx,ebx
+					call	GetDBValue
+					mov		edi,Cmd_adr
+					mov		[edi],bl
+					inc		Cmd_adr
+					inc		Prg_adr
+					.break .if !eax
+					.if eax!=','
+						call	Err
+						db	'PASS 2 SYNTAX ERROR : ',0
 					.endif
-				.elseif eax==0F1h
-					;DB
-				.elseif eax==0F2h
-					;DW
-				.elseif eax==0FAh
-					;BIT
-				.else
-					call Err
-					db	'PASS 2 SYNTAX ERROR : ',0
-				.endif
+					inc		esi
+				.endw
+				call	CopyLabel
+			.elseif eax==OP_DW
+				;DW
+				;Write word data
+				.while TRUE
+					xor		ebx,ebx
+					call	GetDBValue
+					mov		edi,Cmd_adr
+					mov		[edi],bx
+					inc		Cmd_adr
+					inc		Cmd_adr
+					inc		Prg_adr
+					inc		Prg_adr
+					.break .if !eax
+					.if eax!=','
+						call	Err
+						db	'PASS 2 SYNTAX ERROR : ',0
+					.endif
+					inc		esi
+				.endw
+				mov		deflbl.tpe,eax
+				call	CopyLabel
 			.else
-				call Err
+				call	Err
 				db	'PASS 2 SYNTAX ERROR : ',0
 			.endif
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.elseif eax
+		call	Err
+		db	'PASS 2 SYNTAX ERROR : ',0
+	.endif
+	ret
+
+FindLabel:
+	mov		edi,hDefMem
+	.while [edi].DEFLBL.tpe
+		invoke strcmp,esi,[edi].DEFLBL.txtptr
+		.if !eax
+			mov		eax,[edi].DEFLBL.value
+			clc
+			retn
+		.endif
+		lea		edi,[edi+sizeof DEFLBL]
+	.endw
+	stc
+	retn
+
+CopyLabel:
+	invoke RtlMoveMemory,Def_lbl_adr,addr deflbl,sizeof DEFLBL
+	add		Def_lbl_adr,sizeof DEFLBL
+	retn
+
+GetInstruction:
+	mov		definst.opcode,al
+	mov		definst.op[0],0
+	mov		definst.op[1],0
+	mov		definst.op[2],0
+	mov		definst.rel,0
+	movzx	eax,byte ptr [esi]
+	inc		esi
+	.if !eax
+		dec		esi
+		retn
+	.elseif eax==PASS1_OPCODE
+		movzx	eax,byte ptr [esi]
+		inc		esi
+		.if eax>=80h && eax<=86h
+		.elseif eax>=88h && eax<=95h
+		.elseif eax>=0D0h && eax<=0E4h
+		.elseif eax==OP_@F
+		.elseif eax==OP_@B
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.elseif eax==PASS1_CONST
+	.endif
+	retn
+
+GetEquValue:
+	.while TRUE
+		movzx	eax,byte ptr [esi]
+		inc		esi
+		.break .if !eax
+		.if eax==PASS1_CONST
+			call	FindLabel
+			.if CARRY?
+				call	Err
+				db	'PASS 2 LABEL NOT FOUND : ',0
+			.endif
+			mov		ebx,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
 		.elseif eax==PASS1_NUMBER
-PrintText "PASS1_NUMBER"
+			movzx	ebx,word ptr [esi]
 			add		esi,2
+		.elseif eax=='+'
+			push	ebx
+			xor		ebx,ebx
+			call	GetEquValue
+			mov		eax,ebx
+			pop		ebx
+			add		ebx,eax
+		.elseif eax=='-'
+			push	ebx
+			xor		ebx,ebx
+			call	GetEquValue
+			mov		eax,ebx
+			pop		ebx
+			sub		ebx,eax
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
 		.endif
 	.endw
-	ret
+	retn
+
+GetBitValue:
+	.while TRUE
+		movzx	eax,byte ptr [esi]
+		inc		esi
+		.break .if !eax
+		.if eax==PASS1_CONST
+			call	FindLabel
+			.if CARRY?
+				call	Err
+				db	'PASS 2 LABEL NOT FOUND : ',0
+			.endif
+			mov		ebx,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.elseif eax==PASS1_NUMBER
+			movzx	ebx,word ptr [esi]
+			add		esi,2
+		.elseif eax=='+'
+			push	ebx
+			xor		ebx,ebx
+			call	GetBitValue
+			mov		eax,ebx
+			pop		ebx
+			add		ebx,eax
+		.elseif eax=='-'
+			push	ebx
+			xor		ebx,ebx
+			call	GetBitValue
+			mov		eax,ebx
+			pop		ebx
+			sub		ebx,eax
+		.elseif eax=='.'
+			.if ebx>=10h && ebx<=1Fh
+				sub		ebx,10h
+			.elseif ebx>=80h && ebx<=0FFh
+				test	ebx,07h
+				.if !ZERO?
+					call	Err
+					db	'NOT BITADRESSABLE : ',0
+				.endif
+				shr		ebx,3
+			.else
+				call	Err
+				db	'NOT BITADRESSABLE : ',0
+			.endif
+			push	ebx
+			xor		ebx,ebx
+			call	GetBitValue
+			mov		eax,ebx
+			pop		ebx
+			shl		ebx,3
+			add		ebx,eax
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.endw
+	retn
+
+GetDBValue:
+	.while TRUE
+		movzx	eax,byte ptr [esi]
+		.break .if eax==','
+		inc		esi
+		.break .if !eax
+		.if eax==PASS1_CONST
+			call	FindLabel
+			.if CARRY?
+				call	Err
+				db	'PASS 2 LABEL NOT FOUND : ',0
+			.endif
+			mov		ebx,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.elseif eax==PASS1_NUMBER
+			movzx	ebx,word ptr [esi]
+			add		esi,2
+		.elseif eax=='+'
+			push	ebx
+			xor		ebx,ebx
+			call	GetDBValue
+			mov		eax,ebx
+			pop		ebx
+			add		ebx,eax
+		.elseif eax=='-'
+			push	ebx
+			xor		ebx,ebx
+			call	GetDBValue
+			mov		eax,ebx
+			pop		ebx
+			sub		ebx,eax
+		.elseif eax=="'"
+			inc		esi
+			.while byte ptr [esi+1]!="'"
+				mov		al,[esi]
+				mov		edi,Cmd_adr
+				mov		[edi],al
+				inc		Cmd_adr
+				inc		Prg_adr
+				inc		esi
+			.endw
+			movzx	ebx,byte ptr [esi]
+			inc		esi
+			inc		esi
+			inc		esi
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.endw
+	retn
+
+GetDWValue:
+	.while TRUE
+		movzx	eax,byte ptr [esi]
+		.break .if eax==','
+		inc		esi
+		.break .if !eax
+		.if eax==PASS1_CONST
+			call	FindLabel
+			.if CARRY?
+				call	Err
+				db	'PASS 2 LABEL NOT FOUND : ',0
+			.endif
+			mov		ebx,eax
+			invoke strlen,esi
+			lea		esi,[esi+eax+1]
+		.elseif eax==PASS1_NUMBER
+			movzx	ebx,word ptr [esi]
+			add		esi,2
+		.elseif eax=='+'
+			push	ebx
+			xor		ebx,ebx
+			call	GetDWValue
+			mov		eax,ebx
+			pop		ebx
+			add		ebx,eax
+		.elseif eax=='-'
+			push	ebx
+			xor		ebx,ebx
+			call	GetDWValue
+			mov		eax,ebx
+			pop		ebx
+			sub		ebx,eax
+		.elseif eax=="'"
+			inc		esi
+			.while byte ptr [esi+1]!="'"
+				movzx	eax,byte ptr [esi]
+				mov		edi,Cmd_adr
+				mov		[edi],ax
+				inc		Cmd_adr
+				inc		Cmd_adr
+				inc		Prg_adr
+				inc		Prg_adr
+				inc		esi
+			.endw
+			movzx	ebx,byte ptr [esi]
+			inc		esi
+			inc		esi
+			inc		esi
+		.else
+			call	Err
+			db	'PASS 2 SYNTAX ERROR : ',0
+		.endif
+	.endw
+	retn
 
 AsmLinePass2 endp
 
@@ -420,6 +770,7 @@ invoke lstrcpy,offset InpFile,offset szTestFile
 		mov		hAsmMem,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*64
 		mov		hCmdMem,eax
+		mov		Cmd_adr,eax
 		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,1024*128
 		mov		hDefMem,eax
 		mov		Def_lbl_adr,eax
@@ -470,13 +821,13 @@ Exit:
 		.endw
 		dec		ecx
 	.endw
-;	mov		ecx,2000000000
-;	.while ecx
-;		.while edx
-;			dec		edx
-;		.endw
-;		dec		ecx
-;	.endw
+	mov		ecx,2000000000
+	.while ecx
+		.while edx
+			dec		edx
+		.endw
+		dec		ecx
+	.endw
 	invoke ExitProcess,eax
 
 end start

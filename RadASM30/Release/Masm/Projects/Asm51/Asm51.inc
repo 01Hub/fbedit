@@ -17,15 +17,29 @@ includelib Debug.lib
 
 DEFLBL struct
 	tpe			dd ?
-	prgadr		dd ?
-	lineno		dd ?
 	txtptr		dd ?
+	value		dd ?
+	lineno		dd ?
 DEFLBL ends
+
+DEFINST struct
+	opcode		db ?
+	op			db 3 dup(?)
+	rel			db ?
+DEFINST ends
 
 PASS1_OPCODE	equ 01h
 PASS1_LABEL		equ 02h
 PASS1_CONST		equ 03h
 PASS1_NUMBER	equ 04h
+
+OP_ORG			equ 0F0h
+OP_EQU			equ 0F1h
+OP_BIT			equ 0F2h
+OP_DB			equ 0F3h
+OP_DW			equ 0F4h
+OP_@B			equ 0F5h
+OP_@F			equ 0F6h
 
 .const
 
@@ -122,15 +136,13 @@ Op_codes		db	01h,'ACALL',00h
 				db	0E3h,'TMOD',00h				;89
 				db	0E4h,'ACC',00h				;E0
 
-				db	0F0h,'EQU',00h
-				db	0F1h,'DB',00h
-				db	0F2h,'DW',00h
-				db	0F3h,'ORG',00h
-				db	0F8h,'BYTE',00h
-				db	0F9h,'WORD',00h
-				db	0FAh,'BIT',00h
-				db	0FBh,'@B',00h
-				db	0FCh,'@F',00h
+				db	OP_ORG,'ORG',00h
+				db	OP_EQU,'EQU',00h
+				db	OP_BIT,'BIT',00h
+				db	OP_DB,'DB',00h
+				db	OP_DW,'DW',00h
+				db	OP_@B,'@B',00h
+				db	OP_@F,'@F',00h
 				db	00h,00h,00h,00h,00h
 
 Sfr_mem			db	0F0h						;B
@@ -157,7 +169,7 @@ Sfr_mem			db	0F0h						;B
 
 ;*************************************************************
 
-
+				;	OP,ADR,ADR,ADR,REL
 				;00-0F
 
 Adrmode			db	01Ch,000h,000h,000h,000h	;00 NOP
@@ -472,6 +484,7 @@ hInstance		dd ?
 CommandLine		dd ?
 hOut			dd ?
 InpFile			db MAX_PATH dup(?)
+
 hAsmMem			dd ?
 hCmdMem			dd ?
 hDefMem			dd ?
@@ -480,28 +493,25 @@ hNameMem		dd ?
 hLinMem			dd ?
 dwTemp			dd ?
 
-Text_line		db 256 dup(?)
+Text_line		db 512 dup(?)
 				db ?
-Pass0_line		db 256 dup(?)
-Pass1_line		db 256 dup(?)
+Pass0_line		db 512 dup(?)
+Pass1_line		db 512 dup(?)
 Line_number		dd ?
-Line_no			dd ?
+;Line_no			dd ?
 
 hexbuff			db 256 dup(?)
 
 Prg_adr			dd ?
-Swap_prg_adr	dd ?
-Org_adr			dd ?
-No_of_bytes		dd ?
+Cmd_adr			dd ?
+;Swap_prg_adr	dd ?
+;Org_adr			dd ?
+;No_of_bytes		dd ?
 
 Def_lbl_adr		dd ?
 Ask_lbl_adr		dd ?
 Name_adr		dd ?
 Lst_lin_adr		dd ?
 
-Op_code			db 4 dup(?)
-No_of_ops		db ?
-Code			db ?
-Rel_mode		db ?
 ntmplbl			dd ?
 tmplbl			db 16 dup(?)

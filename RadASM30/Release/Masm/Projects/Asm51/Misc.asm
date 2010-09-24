@@ -1,28 +1,5 @@
 .code
 
-ReadAsmFile proc uses esi,lpFile:DWORD
-	LOCAL	hFile:DWORD
-	LOCAL	nBytes:DWORD
-
-	invoke CreateFile,lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-	.if eax!=INVALID_HANDLE_VALUE
-		mov		hFile,eax
-		invoke GetFileSize,hFile,addr nBytes
-		push	eax
-		inc		eax
-		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
-		mov		esi,eax
-		pop		edx
-		invoke ReadFile,hFile,esi,edx,addr nBytes,NULL
-		invoke CloseHandle,hFile
-		mov		eax,esi
-	.else
-		xor		eax,eax
-	.endif
-	ret
-
-ReadAsmFile endp
-
 strlen proc uses esi,lpSource:DWORD
 
 	xor		eax,eax
@@ -119,6 +96,36 @@ BinToDec proc uses ebx ecx edx esi edi,dwVal:DWORD,lpAscii:DWORD
     ret
 
 BinToDec endp
+
+ReadAsmFile proc uses esi,lpFile:DWORD
+	LOCAL	hFile:DWORD
+	LOCAL	nBytes:DWORD
+
+	invoke CreateFile,lpFile,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke GetFileSize,hFile,addr nBytes
+		push	eax
+		shr		eax,12
+		inc		eax
+		shl		eax,12
+		invoke GlobalAlloc,GMEM_FIXED or GMEM_ZEROINIT,eax
+		mov		esi,eax
+		pop		edx
+		invoke ReadFile,hFile,esi,edx,addr nBytes,NULL
+		invoke CloseHandle,hFile
+		invoke strlen,esi
+		.if byte ptr [esi+eax-1]==1Ah
+			dec		eax
+		.endif
+		mov		word ptr [esi+eax],0A0Dh
+		mov		eax,esi
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+ReadAsmFile endp
 
 PrintLineNumber proc nLine:DWORD
 	LOCAL	buffer[64]:BYTE
