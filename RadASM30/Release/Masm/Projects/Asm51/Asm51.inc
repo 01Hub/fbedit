@@ -504,9 +504,6 @@ hexbuff			db 256 dup(?)
 
 Prg_adr			dd ?
 Cmd_adr			dd ?
-;Swap_prg_adr	dd ?
-;Org_adr			dd ?
-;No_of_bytes		dd ?
 
 Def_lbl_adr		dd ?
 Ask_lbl_adr		dd ?

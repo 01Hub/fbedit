@@ -493,31 +493,70 @@ CopyLabel:
 	add		Def_lbl_adr,sizeof DEFLBL
 	retn
 
+FindInstruction:
+	mov		edi,offset Adrmode
+	xor		ebx,ebx
+	mov		eax,dword ptr definst
+	.while TRUE
+		.if eax==[edi]
+			retn
+		.endif
+		inc		ebx
+		.break .if !bl
+		lea		edi,[edi+sizeof DEFINST]
+	.endw
+	retn
+
 GetInstruction:
 	mov		definst.opcode,al
 	mov		definst.op[0],0
 	mov		definst.op[1],0
 	mov		definst.op[2],0
 	mov		definst.rel,0
-	movzx	eax,byte ptr [esi]
-	inc		esi
-	.if !eax
-		dec		esi
-		retn
-	.elseif eax==PASS1_OPCODE
+	xor		ebx,ebx
+	.while ebx<3
 		movzx	eax,byte ptr [esi]
 		inc		esi
-		.if eax>=80h && eax<=86h
-		.elseif eax>=88h && eax<=95h
-		.elseif eax>=0D0h && eax<=0E4h
-		.elseif eax==OP_@F
-		.elseif eax==OP_@B
-		.else
-			call	Err
-			db	'PASS 2 SYNTAX ERROR : ',0
+		.if !eax
+			dec		esi
+			retn
+		.elseif eax==','
+			inc		ebx
+		.elseif eax==PASS1_OPCODE
+			movzx	eax,byte ptr [esi]
+			inc		esi
+			mov		definst.op[ebx],al
+			.if eax==80h
+				;#
+				movzx	eax,byte ptr [esi]
+				inc		esi
+				.if eax==PASS1_NUMBER
+					add		esi,2
+				.elseif eax==PASS1_CONST
+					invoke strlen,esi
+					lea		esi,[esi+eax+1]
+				.else
+					call	Err
+					db	'PASS 2 SYNTAX ERROR : ',0
+				.endif
+			.elseif eax==81h
+				;$
+			.elseif eax>=82h && eax<=86h
+				movzx	eax,byte ptr [esi]
+				inc		esi
+			.elseif eax>=88h && eax<=95h
+			.elseif eax>=0D0h && eax<=0E4h
+			.elseif eax==OP_@F
+			.elseif eax==OP_@B
+			.else
+				call	Err
+				db	'PASS 2 SYNTAX ERROR : ',0
+			.endif
+		.elseif eax==PASS1_CONST
 		.endif
-	.elseif eax==PASS1_CONST
-	.endif
+	.endw
+	call	Err
+	db	'PASS 2 SYNTAX ERROR : ',0
 	retn
 
 GetEquValue:
