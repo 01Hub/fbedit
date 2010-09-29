@@ -349,7 +349,10 @@ AsmLinePass1 endp
 AsmLinePass2 proc uses ebx esi edi
 	LOCAL	deflbl:DEFLBL
 	LOCAL	definst:DEFINST
+	LOCAL	val:DWORD
+	LOCAL	firstorg:DWORD
 
+	mov		firstorg,0
 	mov		esi,offset Pass1_line
   @@:
 	movzx	eax,byte ptr [esi]
@@ -360,6 +363,23 @@ AsmLinePass2 proc uses ebx esi edi
 		.if eax==OP_ORG
 			;ORG
 			call	GetEquValue
+			.if !firstorg
+				mov		firstorg,TRUE
+				mov		Prg_adr,ebx
+			.else
+				mov		ecx,ebx
+				sub		ecx,Prg_adr
+				.if CARRY?
+					call	Err
+					db	'ORG LESS THAN PREVIOUS : ',0
+				.endif
+				;Fill with 0FFh
+				mov		edi,Cmd_adr
+				mov		eax,0FFh
+				rep		stosb
+				mov		Prg_adr,ebx
+				mov		Cmd_adr,edi
+			.endif
 		.elseif eax==OP_DB
 			;DB
 			call	GetDBValue
@@ -369,6 +389,27 @@ AsmLinePass2 proc uses ebx esi edi
 		.elseif eax>=01h && eax<=2Ch
 			;Instruction
 			call	GetInstruction
+			call	FindInstruction
+			mov		edx,Cmd_adr
+			mov		[edx],bl
+			inc		Cmd_adr
+			inc		Prg_adr
+			.if dword ptr [edi]==00808918h
+				;MOV	DPTR,#1234
+				mov		eax,val
+				mov		[edx+1],ax
+				add		Cmd_adr,2
+				add		Prg_adr,2
+			.elseif byte ptr [edi+1]==80h || byte ptr [edi+2]==80h || byte ptr [edi+3]==80h
+				mov		eax,val
+				.if sdword ptr eax>255 || sdword ptr eax<-128
+					call	Err
+					db	'IMMEDIATE VALUE ONLY ONE BYTE : ',0
+				.endif
+				mov		[edx+1],al
+				inc		Cmd_adr
+				inc		Prg_adr
+			.endif
 		.else
 			call	Err
 			db	'PASS 2 SYNTAX ERROR : ',0
@@ -505,6 +546,8 @@ FindInstruction:
 		.break .if !bl
 		lea		edi,[edi+sizeof DEFINST]
 	.endw
+	call	Err
+	db	'ILLEGAL INSTRUCTION OPERAND : ',0
 	retn
 
 GetInstruction:
@@ -531,8 +574,19 @@ GetInstruction:
 				movzx	eax,byte ptr [esi]
 				inc		esi
 				.if eax==PASS1_NUMBER
-					add		esi,2
+					;Immediate number
+					movsx	eax,word ptr [esi]
+					mov		val,eax
+					inc		esi
+					inc		esi
 				.elseif eax==PASS1_CONST
+					;Immediate label
+					call	FindLabel
+					.if CARRY?
+						call	Err
+						db	'PASS 2 LABEL NOT FOUND : ',0
+					.endif
+					mov		val,eax
 					invoke strlen,esi
 					lea		esi,[esi+eax+1]
 				.else
@@ -541,9 +595,17 @@ GetInstruction:
 				.endif
 			.elseif eax==81h
 				;$
-			.elseif eax>=82h && eax<=86h
 				movzx	eax,byte ptr [esi]
 				inc		esi
+				.if eax==PASS1_NUMBER
+					movsx	eax,word ptr [esi-1]
+					mov		val,eax
+					inc		esi
+				.else
+					call	Err
+					db	'PASS 2 SYNTAX ERROR : ',0
+				.endif
+			.elseif eax>=82h && eax<=86h
 			.elseif eax>=88h && eax<=95h
 			.elseif eax>=0D0h && eax<=0E4h
 			.elseif eax==OP_@F
@@ -781,6 +843,31 @@ Err:
 	mov		eax,1
 	jmp		Exit
 
+SaveCmdFile proc
+	LOCAL	buffer[MAX_PATH]:BYTE
+	LOCAL	hFile:DWORD
+	LOCAL	nBytes:DWORD
+
+	mov		ecx,offset InpFile
+	lea		edx,buffer
+	.while byte ptr [ecx] && byte ptr [ecx]!='.'
+		mov		al,[ecx]
+		mov		[edx],al
+		inc		ecx
+		inc		edx
+	.endw
+	mov		dword ptr [edx],'dmc.'
+	mov		byte ptr [edx+4],0
+	invoke CreateFile,addr buffer,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+	mov		hFile,eax
+	mov		ecx,Cmd_adr
+	sub		ecx,hCmdMem
+	invoke WriteFile,hFile,hCmdMem,ecx,addr nBytes,NULL
+	invoke CloseHandle,hFile
+	ret
+
+SaveCmdFile endp
+
 start:
 
 	invoke GetStdHandle,STD_OUTPUT_HANDLE
@@ -837,7 +924,7 @@ invoke lstrcpy,offset InpFile,offset szTestFile
 		.endw
 ;		call	PASS2_PUT_LST
 ;		invoke AsmPass3
-;		invoke SaveCmdFile
+		invoke SaveCmdFile
 ;		invoke AsmListFile
 ;		invoke AsmHexFile
 	.endif

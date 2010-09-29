@@ -5,7 +5,7 @@ TSTBIT			BIT 0F8h.7
 
 				ORG		2000h
 
-START:			MOV		A,#00
+START:			MOV		A,#01h
 				MOV		A,#TEST
 				MOV		A,#TEST1
 ;				JZ		@F
