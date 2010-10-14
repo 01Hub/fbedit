@@ -54,7 +54,7 @@ ZOOM_MIN			equ 40
 ZOOM_MAX			equ 4000
 MAXSIZE				equ 20000
 MAXSTREAM			equ 32*1024
-CHARWIDTH			equ 10
+CHARWIDTH			equ 5;10
 CHARHEIGHT			equ 15
 
 .const
@@ -274,10 +274,12 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 	mov		eax,[esi].OBJECT.rc.left
 	call	ZoomMul
 	sub		eax,[ebx].CADMEM.scroll.x
+	dec		eax
 	mov		pt.x,eax
 	mov		eax,[esi].OBJECT.rc.top
 	call	ZoomMul
 	sub		eax,[ebx].CADMEM.scroll.y
+	dec		eax
 	mov		pt.y,eax
 	.if [esi].OBJECT.tpe==TPE_SYMBOL || [esi].OBJECT.tpe==-TPE_SYMBOL
 		mov		eax,pt.x
@@ -309,7 +311,7 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 				sub		eax,[edi].OBJECT.rc.left
 				movzx	ecx,[esi].OBJECT.wdt
 				mul		ecx
-				shr		eax,1
+				;shr		eax,1
 				add		eax,[edi].OBJECT.rc.left
 			.endif
 			call	ZoomMul
@@ -664,7 +666,7 @@ DrawHText:
 		mov		eax,CHARWIDTH
 		movzx	ecx,[esi].OBJECT.wdt
 		mul		ecx
-		shr		eax,1
+		;shr		eax,1
 		invoke ZoomMul
 		add		pt1.x,eax
 		pop		edx
@@ -750,7 +752,7 @@ DrawVText:
 		mov		eax,CHARWIDTH
 		movzx	ecx,[esi].OBJECT.wdt
 		mul		ecx
-		shr		eax,1
+		;shr		eax,1
 		invoke ZoomMul
 		add		pt1.x,eax
 		pop		edx
@@ -2494,12 +2496,8 @@ CadFlip proc uses ebx esi edi,hWin:HWND
 			mov		left,7FFFFFFFh
 			mov		right,0
 			call	GetRect
-PrintDec left
-PrintDec right
 			call	Flip
 			call	GetRect
-PrintDec left
-PrintDec right
 			invoke CadInvalidateObject,hWin,esi
 			mov		[ebx].CADMEM.changed,TRUE
 		.endif
@@ -2595,85 +2593,16 @@ Flip:
 			dec		ecx
 		.endw
 	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
-		push	ebx
-
-		mov		ebx,[esi].OBJECT.rc.right
-		sub		ebx,[esi].OBJECT.rc.left
-
-		mov		ecx,[esi].OBJECT.rc.left
 		mov		edx,[esi].OBJECT.rc.right
-		mov		[esi].OBJECT.rc.left,edx
-		mov		[esi].OBJECT.rc.right,ecx
-PrintDec ecx
-PrintDec edx
-
-;		sub		ecx,left
-;
-;		mov		edx,right
-;		mov		edx,[esi].OBJECT.rc.right
-;
-;		mov		eax,right
-;		sub		eax,ecx
-;;		sub		eax,ebx
-;		mov		[esi].OBJECT.rc.left,eax
-;
-;		mov		edx,right
-;		sub		edx,[esi].OBJECT.rc.right
-;		add		edx,ebx
-;		mov		eax,right
-;		sub		eax,ecx
-;		mov		[esi].OBJECT.rc.right,eax
-;		mov		eax,left
-;		add		eax,edx
-;		sub		eax,ebx
-;		mov		[esi].OBJECT.rc.left,eax
-		
-;		mov		ebx,[esi].OBJECT.rc.right
-;		sub		ebx,[esi].OBJECT.rc.left
-;;PrintDec ebx
-;;		shr		ebx,1
-;
-;		mov		ecx,right
-;		sub		ecx,[esi].OBJECT.rc.right
-;
-;		mov		edx,[esi].OBJECT.rc.left
-;		sub		edx,left
-;
-;		mov		eax,left
-;		add		eax,ecx
-;		shr		ebx,1
-;		add		eax,ebx
-;		shl		ebx,1
-;		mov		[esi].OBJECT.rc.left,eax
-;
-;		add		eax,ebx
-;;		add		eax,ebx
-;;		mov		eax,right
-;;		sub		eax,edx
-;;		add		eax,ebx
-;		mov		[esi].OBJECT.rc.right,eax
-;		mov		ebx,[esi].OBJECT.rc.right
-;		sub		ebx,[esi].OBJECT.rc.left
-;PrintDec ebx
-		pop		ebx
-
-;PrintDec eax
-;sub		eax,ecx
-;		mov		[esi].OBJECT.rc.right,eax
-;		sub		eax,ecx
-;		mov		[esi].OBJECT.rc.left,eax
-;		mov		ecx,[esi].OBJECT.rc.right
-;		sub		ecx,[esi].OBJECT.rc.left
-;		mov		eax,[esi].OBJECT.rc.left
-;;		add		eax,ecx
-;		sub		eax,left
-;		mov		edx,right
-;		sub		edx,eax
-;		add		edx,ecx
-;		sub		edx,5
-;		mov		[esi].OBJECT.rc.right,edx
-;		sub		edx,ecx
-;		mov		[esi].OBJECT.rc.left,edx
+		sub		edx,[esi].OBJECT.rc.left
+		mov		ecx,[esi].OBJECT.rc.left
+		sub		ecx,left
+		mov		eax,right
+		sub		eax,ecx
+		sub		eax,edx
+		mov		[esi].OBJECT.rc.left,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.right,eax
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
