@@ -54,7 +54,7 @@ ZOOM_MIN			equ 40
 ZOOM_MAX			equ 4000
 MAXSIZE				equ 20000
 MAXSTREAM			equ 32*1024
-CHARWIDTH			equ 5;10
+CHARWIDTH			equ 5
 CHARHEIGHT			equ 15
 
 .const
@@ -2714,6 +2714,34 @@ GetRect:
 			dec		ecx
 		.endw
 	.elseif eax==TPE_HTEXT || eax==TPE_VTEXT
+		mov		eax,[esi].OBJECT.rc.left
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.right
+		.if sdword ptr eax<left
+			mov		left,eax
+		.endif
+		.if sdword ptr eax>right
+			mov		right,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.top
+		.if sdword ptr eax<top
+			mov		top,eax
+		.endif
+		.if sdword ptr eax>bottom
+			mov		bottom,eax
+		.endif
+		mov		eax,[esi].OBJECT.rc.bottom
+		.if sdword ptr eax<top
+			mov		top,eax
+		.endif
+		.if sdword ptr eax>bottom
+			mov		bottom,eax
+		.endif
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
@@ -2784,23 +2812,87 @@ Rotate:
 			lea		esi,[esi+sizeof POINT]
 			dec		ecx
 		.endw
-	.elseif  eax==TPE_HTEXT || eax==TPE_VTEXT
-;		mov		[esi].OBJECT.tpe,TPE_VTEXT
-;
-;		mov		eax,[esi].OBJECT.rc.left
-;		mov		edx,[esi].OBJECT.rc.top
-;		mov		[esi].OBJECT.rc.top,eax
-;		mov		[esi].OBJECT.rc.left,edx
-;
-;		mov		eax,[esi].OBJECT.rc.right
-;		mov		edx,[esi].OBJECT.rc.bottom
-;		mov		[esi].OBJECT.rc.bottom,eax
-;		mov		[esi].OBJECT.rc.right,edx
+	.elseif  eax==TPE_HTEXT
+		mov		[esi].OBJECT.tpe,TPE_VTEXT
+		;Get left offset
+		mov		eax,[esi].OBJECT.rc.left
+		sub		eax,ofsleft
+		push	eax
+		;Get width
+		mov		eax,[esi].OBJECT.rc.right
+		sub		eax,[esi].OBJECT.rc.left
+		push	eax
+
+		;Get top offset
+		mov		eax,[esi].OBJECT.rc.top
+		sub		eax,ofstop
+		push	eax
+		;Get height
+		mov		eax,[esi].OBJECT.rc.bottom
+		sub		eax,[esi].OBJECT.rc.top
+		push	eax
+
+		pop		edx		;height
+		pop		ecx		;offset from top
+		mov		eax,ofstop
+		add		eax,bottom
+		sub		eax,ecx
+		sub		eax,10
+		mov		[esi].OBJECT.rc.left,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.right,eax
+
+		pop		edx		;width
+		pop		ecx		;offset from left
+		mov		eax,ofsleft
+		add		eax,right
+		sub		eax,ecx
+		sub		eax,edx
+		mov		[esi].OBJECT.rc.top,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.bottom,eax
+
+	.elseif  eax==TPE_VTEXT
+		mov		[esi].OBJECT.tpe,TPE_HTEXT
+		;Get right offset
+		mov		eax,ofsleft
+		add		eax,right
+		sub		eax,[esi].OBJECT.rc.right
+		push	eax
+		;Get width
+		mov		eax,[esi].OBJECT.rc.right
+		sub		eax,[esi].OBJECT.rc.left
+		push	eax
+		;Get top offset
+		mov		eax,[esi].OBJECT.rc.top
+		sub		eax,ofstop
+		push	eax
+		;Get height
+		mov		eax,[esi].OBJECT.rc.bottom
+		sub		eax,[esi].OBJECT.rc.top
+		push	eax
+
+		pop		edx		;height
+		pop		eax		;offset from top
+		add		eax,ofsleft
+		mov		[esi].OBJECT.rc.left,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.right,eax
+
+		pop		edx		;width
+		pop		eax		;offset from right
+		add		eax,ofstop
+		mov		[esi].OBJECT.rc.top,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.bottom,eax
+
 	.elseif eax==TPE_SYMBOL
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
+			push	ecx
 			call	Rotate
+			pop		ecx
 			mov		eax,[esi].OBJECT.cbsize
 			lea		esi,[esi+eax]
 			dec		ecx

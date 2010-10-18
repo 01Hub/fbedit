@@ -94,7 +94,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=13
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2004
 MilestoneOnDateTimeMonth=5
 MilestoneOnDateTimeDate=6
@@ -179,7 +179,7 @@ ID=100
 10=IDM_EDIT_DELETE,0,46,0
 11=IDM_EDIT_SELECTALL,0,65,8
 [PTimer]
-PTimer=129063493
+PTimer=129091667
 [Collapse]
 2=
 1=,,
