@@ -296,7 +296,10 @@ CodeCompleteProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke SelectObject,ps.hdc,eax
 		invoke ReleaseDC,hWin,ps.hdc
 		mov		eax,pt.y
-		inc		eax
+		add		eax,2
+		.if eax<17
+			mov		eax,17
+		.endif
 		mov		[ebx].RACC.itemheight,eax
 		.if lParam
 			invoke InvalidateRect,hWin,NULL,TRUE

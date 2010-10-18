@@ -2412,7 +2412,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 						.endif
 					.endif
 					invoke SendMessage,ha.hEdt,REM_LOCKUNDOID,FALSE,0
-					invoke ShowWindow,ha.hCC,SW_HIDE
+					invoke IsWindowVisible,ha.hCC
+					.if eax
+						invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+						invoke ShowWindow,ha.hCC,SW_HIDE
+					.endif
 					mov		da.cctype,CCTYPE_NONE
 					xor		eax,eax
 					mov		da.inprogress,eax
@@ -2423,7 +2427,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 					.endif
 					jmp		Ex
 				.else
-					invoke ShowWindow,ha.hCC,SW_HIDE
+					invoke IsWindowVisible,ha.hCC
+					.if eax
+						invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+						invoke ShowWindow,ha.hCC,SW_HIDE
+					.endif
 					xor		eax,eax
 					jmp		Ex
 				.endif
@@ -2449,7 +2457,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				jmp		Ex
 			.endif
 		.elseif eax==VK_ESCAPE
-			invoke ShowWindow,ha.hCC,SW_HIDE
+			invoke IsWindowVisible,ha.hCC
+			.if eax
+				invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+				invoke ShowWindow,ha.hCC,SW_HIDE
+			.endif
 			invoke ShowWindow,ha.hTT,SW_HIDE
 			mov		da.cctype,CCTYPE_NONE
 			xor		eax,eax
@@ -2511,7 +2523,11 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 				jmp		Ex
 			.else
 				mov		da.cctype,CCTYPE_NONE
-				invoke ShowWindow,ha.hCC,SW_HIDE
+				invoke IsWindowVisible,ha.hCC
+				.if eax
+					invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+					invoke ShowWindow,ha.hCC,SW_HIDE
+				.endif
 			.endif
 		.endif
 		invoke GetCharType,wParam
@@ -2539,6 +2555,7 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 			;Left / Right
 			invoke IsWindowVisible,ha.hCC
 			.if eax
+				invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
 				invoke ShowWindow,ha.hCC,SW_HIDE
 			.endif
 			invoke IsWindowVisible,ha.hTT
@@ -3132,7 +3149,11 @@ endif
 						mov		eax,[esi].RASELCHANGE.line
 						.if eax!=[ebx].TABMEM.nlastpropline
 							mov		[ebx].TABMEM.nlastpropline,eax
-							invoke ShowWindow,ha.hCC,SW_HIDE
+							invoke IsWindowVisible,ha.hCC
+							.if eax
+								invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+								invoke ShowWindow,ha.hCC,SW_HIDE
+							.endif
 							invoke ShowWindow,ha.hTT,SW_HIDE
 							mov		da.cctype,CCTYPE_NONE
 							.if  [ebx].TABMEM.fupdate

@@ -96,7 +96,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=4
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2005
 MilestoneOnDateTimeMonth=1
 MilestoneOnDateTimeDate=6
@@ -129,7 +129,7 @@ ProductVer4Range=0
 6=00FFFFFF
 7=00FFFFFF
 [Size]
-1=0,0,0,0,26020
+1=0,0,0,0,6510
 3=0,0,0,0,53
 2=0,0,0,0,1852
 4=0,0,0,0,23
@@ -171,13 +171,13 @@ ProductVer4Range=0
 10=,
 4=
 [PTimer]
-PTimer=8295104
+PTimer=8558012
 [Exports]
 1=GetDef
 2=GetDefEx
 [AutoLoad]
-AutoLoad=1
+AutoLoad=1,6,2
 [RADebugBP]
 1=
 [GroupExpand]
-GroupExpand=0,1,0,0,0,0
+GroupExpand=0,1,1,0,0,0

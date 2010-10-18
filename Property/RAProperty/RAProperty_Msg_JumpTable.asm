@@ -415,25 +415,27 @@
 	align 4 
 	_PRM_ISINPROC:
 		mov		edx,[ebx].RAPROPERTY.lpmem
-		add		edx,[ebx].RAPROPERTY.rpproject
-		mov		ecx,lParam
-		.while [edx].PROPERTIES.nSize
-			mov		eax,[ecx].ISINPROC.nOwner
-			.if eax==[edx].PROPERTIES.nOwner
-				movzx	eax,[edx].PROPERTIES.nType
-				invoke IsType,[ecx].ISINPROC.lpszType,eax
-				.if eax
-					mov		eax,[ecx].ISINPROC.nLine
-					.if eax>=[edx].PROPERTIES.nLine && eax<=[edx].PROPERTIES.nEnd
-						; Found
-						lea		eax,[edx+sizeof PROPERTIES]
-						ret
+		.if edx
+			add		edx,[ebx].RAPROPERTY.rpproject
+			mov		ecx,lParam
+			.while [edx].PROPERTIES.nSize
+				mov		eax,[ecx].ISINPROC.nOwner
+				.if eax==[edx].PROPERTIES.nOwner
+					movzx	eax,[edx].PROPERTIES.nType
+					invoke IsType,[ecx].ISINPROC.lpszType,eax
+					.if eax
+						mov		eax,[ecx].ISINPROC.nLine
+						.if eax>=[edx].PROPERTIES.nLine && eax<=[edx].PROPERTIES.nEnd
+							; Found
+							lea		eax,[edx+sizeof PROPERTIES]
+							ret
+						.endif
 					.endif
 				.endif
-			.endif
-			mov		eax,[edx].PROPERTIES.nSize
-			lea		edx,[edx+eax+sizeof PROPERTIES]
-		.endw
+				mov		eax,[edx].PROPERTIES.nSize
+				lea		edx,[edx+eax+sizeof PROPERTIES]
+			.endw
+		.endif
 		xor		eax,eax
 		ret
 	align 4 

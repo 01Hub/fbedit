@@ -107,7 +107,7 @@ MilestoneOnTime=2
 MilestoneOnDate=0
 MilestoneOnDateWhen=1
 MilestoneOnDateStatus=0
-MilestoneOnDateDate=14
+MilestoneOnDateDate=18
 MilestoneOnDateTimeYear=2006
 MilestoneOnDateTimeMonth=6
 MilestoneOnDateTimeDate=23
@@ -171,7 +171,7 @@ ProductVer4Range=0
 7=0,0,0,0,1035
 9=0,0,0,0,352
 10=0,0,0,0,35333
-11=0,0,746,498,18850
+11=0,0,746,498,9962
 12=0,0,0,0,2850
 13=0,0,0,0,2137
 14=0,0,0,0,8617
@@ -198,18 +198,18 @@ ProductVer4Range=0
 [AutoLoad]
 AutoLoad=1,11,13,2,7,9,20,17,14
 [PTimer]
-PTimer=343716177
+PTimer=344663773
 [Find]
-1="[esi]."
-2="assume"
-3="szfpword2"
-4="nSOLASM"
-5="szsol"
-6="Sol"
-7="szsoldword"
-8="buff"
-9="solbuffer"
-10="cppbuff"
+1="createsolidbrush"
+2="[esi]."
+3="assume"
+4="szfpword2"
+5="nSOLASM"
+6="szsol"
+7="Sol"
+8="szsoldword"
+9="buff"
+10="solbuffer"
 
 [Exports]
 1=GetDefEx
