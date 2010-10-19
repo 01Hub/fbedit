@@ -1118,7 +1118,7 @@ DoIt:
 DoItCpp:
 		invoke IsWindowVisible,ha.hCC
 		.if eax
-			invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+			invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,-1,ha.hCC,0,HOOK_CODECOMPLETESHOW
 			invoke ShowWindow,ha.hCC,SW_HIDE
 		.endif
 		mov		da.cctype,CCTYPE_NONE
@@ -1207,7 +1207,7 @@ HideAll:
 	invoke ShowWindow,ha.hTT,SW_HIDE
 	invoke IsWindowVisible,ha.hCC
 	.if eax
-		invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+		invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,-1,ha.hCC,0,HOOK_CODECOMPLETESHOW
 		invoke ShowWindow,ha.hCC,SW_HIDE
 	.endif
 	retn
@@ -1229,14 +1229,14 @@ ShowList:
 		add		pt.y,20
 	.endif
 	invoke SetWindowPos,ha.hCC,HWND_TOP,pt.x,pt.y,da.win.ccwt,da.win.ccht,SWP_SHOWWINDOW or SWP_NOACTIVATE
-	invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,TRUE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+	invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,-2,ha.hCC,0,HOOK_CODECOMPLETESHOW
 	invoke ShowWindow,ha.hCC,SW_SHOWNA
 	retn
 
 ShowTooltip:
 	invoke IsWindowVisible,ha.hCC
 	.if eax
-		invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,FALSE,ha.hCC,0,HOOK_CODECOMPLETESHOW
+		invoke PostAddinMessage,ha.hWnd,AIM_CODECOMPLETESHOW,-1,ha.hCC,0,HOOK_CODECOMPLETESHOW
 		invoke ShowWindow,ha.hCC,SW_HIDE
 	.endif
 	invoke GetCaretPos,addr pt
