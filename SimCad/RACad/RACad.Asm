@@ -294,7 +294,8 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 		call	ZoomMul
 		sub		eax,[ebx].CADMEM.scroll.y
 		mov		rect.bottom,eax
-		dec		rect.top
+		sub		rect.left,8
+		sub		rect.top,8
 		invoke InvalidateRect,hWin,addr rect,TRUE
 	.else
 		mov		ecx,[esi].OBJECT.npt
@@ -2757,142 +2758,101 @@ GetRect:
 	retn
 
 Rotate:
+	push	ebx
 	push	ecx
 	push	esi
 	movzx	eax,[esi].OBJECT.tpe
 	.if eax==TPE_LINE || eax==TPE_RECT || eax==TPE_CIRCLE || eax==TPE_DIMENSION
-		mov		eax,left
-		sub		eax,[esi].OBJECT.rc.left
-		add		eax,right
-		mov		edx,right
-		sub		edx,[esi].OBJECT.rc.right
-		add		edx,left
-		push	eax
-		push	edx
-		mov		eax,top
-		sub		eax,[esi].OBJECT.rc.top
-		add		eax,bottom
-		mov		edx,bottom
-		sub		edx,[esi].OBJECT.rc.bottom
-		add		edx,top
-		mov		[esi].OBJECT.rc.left,eax
-		mov		[esi].OBJECT.rc.right,edx
-		pop		edx
-		pop		eax
+		mov		eax,[esi].OBJECT.rc.left
+		sub		eax,ofsleft
+		mov		ebx,[esi].OBJECT.rc.top
+		sub		ebx,ofstop
+		mov		ecx,[esi].OBJECT.rc.right
+		sub		ecx,ofsleft
+		mov		edx,[esi].OBJECT.rc.bottom
+		sub		edx,ofstop
+		add		ebx,ofsleft
+		mov		[esi].OBJECT.rc.left,ebx
+		add		eax,ofstop
 		mov		[esi].OBJECT.rc.top,eax
-		mov		[esi].OBJECT.rc.bottom,edx
-		mov		eax,ofstop
-		add		[esi].OBJECT.rc.left,eax
-		add		[esi].OBJECT.rc.right,eax
-		add		[esi].OBJECT.rc.top,eax
-		add		[esi].OBJECT.rc.bottom,eax
-		mov		eax,ofsleft
-		add		[esi].OBJECT.rc.left,eax
-		add		[esi].OBJECT.rc.right,eax
-		add		[esi].OBJECT.rc.top,eax
-		add		[esi].OBJECT.rc.bottom,eax
+		add		edx,ofsleft
+		mov		[esi].OBJECT.rc.right,edx
+		add		ecx,ofstop
+		mov		[esi].OBJECT.rc.bottom,ecx
 	.elseif eax==TPE_POLYLINE
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi].OBJECT.rc
 		.while ecx
-			mov		eax,right
-			sub		eax,[esi].POINT.x
-			add		eax,left
-			mov		edx,bottom
-			sub		edx,[esi].POINT.y
-			add		edx,top
+			mov		eax,[esi].POINT.x
+			sub		eax,ofsleft
+			mov		edx,[esi].POINT.y
+			sub		edx,ofstop
+			add		eax,ofstop
 			mov		[esi].POINT.y,eax
+			add		edx,ofsleft
 			mov		[esi].POINT.x,edx
-			mov		eax,ofstop
-			add		[esi].POINT.x,eax
-			add		[esi].POINT.y,eax
-			mov		eax,ofsleft
-			add		[esi].POINT.x,eax
-			add		[esi].POINT.y,eax
 			lea		esi,[esi+sizeof POINT]
 			dec		ecx
 		.endw
-	.elseif  eax==TPE_HTEXT
+	.elseif eax==TPE_HTEXT
 		mov		[esi].OBJECT.tpe,TPE_VTEXT
-		;Get left offset
 		mov		eax,[esi].OBJECT.rc.left
 		sub		eax,ofsleft
-		push	eax
-		;Get width
-		mov		eax,[esi].OBJECT.rc.right
-		sub		eax,[esi].OBJECT.rc.left
-		push	eax
-
-		;Get top offset
-		mov		eax,[esi].OBJECT.rc.top
-		sub		eax,ofstop
-		push	eax
-		;Get height
-		mov		eax,[esi].OBJECT.rc.bottom
-		sub		eax,[esi].OBJECT.rc.top
-		push	eax
-
-		pop		edx		;height
-		pop		ecx		;offset from top
-		mov		eax,ofstop
-		add		eax,bottom
-		sub		eax,ecx
-		sub		eax,10
-		mov		[esi].OBJECT.rc.left,eax
-		add		eax,edx
-		mov		[esi].OBJECT.rc.right,eax
-
-		pop		edx		;width
-		pop		ecx		;offset from left
-		mov		eax,ofsleft
-		add		eax,right
-		sub		eax,ecx
-		sub		eax,edx
-		mov		[esi].OBJECT.rc.top,eax
-		add		eax,edx
-		mov		[esi].OBJECT.rc.bottom,eax
-
-	.elseif  eax==TPE_VTEXT
-		mov		[esi].OBJECT.tpe,TPE_HTEXT
-		;Get right offset
-		mov		eax,ofsleft
-		add		eax,right
-		sub		eax,[esi].OBJECT.rc.right
-		push	eax
-		;Get width
-		mov		eax,[esi].OBJECT.rc.right
-		sub		eax,[esi].OBJECT.rc.left
-		push	eax
-		;Get top offset
-		mov		eax,[esi].OBJECT.rc.top
-		sub		eax,ofstop
-		push	eax
-		;Get height
-		mov		eax,[esi].OBJECT.rc.bottom
-		sub		eax,[esi].OBJECT.rc.top
-		push	eax
-
-		pop		edx		;height
-		pop		eax		;offset from top
-		add		eax,ofsleft
-		mov		[esi].OBJECT.rc.left,eax
-		add		eax,edx
-		mov		[esi].OBJECT.rc.right,eax
-
-		pop		edx		;width
-		pop		eax		;offset from right
+		mov		ebx,[esi].OBJECT.rc.top
+		sub		ebx,ofstop
+		mov		ecx,[esi].OBJECT.rc.right
+		sub		ecx,ofsleft
+		mov		edx,[esi].OBJECT.rc.bottom
+		sub		edx,ofstop
+		add		ebx,ofsleft
+		sub		ebx,CHARWIDTH
+		mov		[esi].OBJECT.rc.left,ebx
 		add		eax,ofstop
 		mov		[esi].OBJECT.rc.top,eax
-		add		eax,edx
-		mov		[esi].OBJECT.rc.bottom,eax
-
+		add		edx,ofsleft
+		sub		edx,CHARWIDTH
+		mov		[esi].OBJECT.rc.right,edx
+		add		ecx,ofstop
+		mov		[esi].OBJECT.rc.bottom,ecx
+	.elseif eax==TPE_VTEXT
+		mov		[esi].OBJECT.tpe,TPE_HTEXT
+		mov		eax,[esi].OBJECT.rc.left
+		sub		eax,ofsleft
+		mov		ebx,[esi].OBJECT.rc.top
+		sub		ebx,ofstop
+		mov		ecx,[esi].OBJECT.rc.right
+		sub		ecx,ofsleft
+		mov		edx,[esi].OBJECT.rc.bottom
+		sub		edx,ofstop
+		add		ebx,ofsleft
+		mov		[esi].OBJECT.rc.left,ebx
+		add		eax,ofstop
+		mov		[esi].OBJECT.rc.top,eax
+		add		edx,ofsleft
+		mov		[esi].OBJECT.rc.right,edx
+		add		ecx,ofstop
+		mov		[esi].OBJECT.rc.bottom,ecx
 	.elseif eax==TPE_SYMBOL
+		mov		eax,[esi].OBJECT.rc.left
+		sub		eax,ofsleft
+		mov		ebx,[esi].OBJECT.rc.top
+		sub		ebx,ofstop
+		mov		ecx,[esi].OBJECT.rc.right
+		sub		ecx,ofsleft
+		mov		edx,[esi].OBJECT.rc.bottom
+		sub		edx,ofstop
+		add		ebx,ofsleft
+		mov		[esi].OBJECT.rc.left,ebx
+		add		eax,ofstop
+		mov		[esi].OBJECT.rc.top,eax
+		add		edx,ofsleft
+		mov		[esi].OBJECT.rc.right,edx
+		add		ecx,ofstop
+		mov		[esi].OBJECT.rc.bottom,ecx
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
-			push	ecx
 			call	Rotate
-			pop		ecx
 			mov		eax,[esi].OBJECT.cbsize
 			lea		esi,[esi+eax]
 			dec		ecx
@@ -2900,6 +2860,7 @@ Rotate:
 	.endif
 	pop		esi
 	pop		ecx
+	pop		ebx
 	retn
 
 CadRotate endp
@@ -3491,8 +3452,7 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor		eax,eax
 		jmp		Ex
 	.elseif eax==CM_ADDOBJECTS
-		invoke GetWindowLong,hWin,0
-		mov		ebx,eax
+		invoke CadSelectAll,hWin,FALSE
 		invoke CadAddObjects,hWin,lParam
 	.elseif eax==CM_FLIPOBJECT
 		invoke CadGetSelCount,hWin
@@ -3502,8 +3462,8 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.elseif eax==CM_ROTATEOBJECT
 		invoke CadGetSelCount,hWin
 		.if eax==1
-			invoke CadFlip,hWin
 			invoke CadRotate,hWin
+			invoke CadFlip,hWin
 		.endif
 	.elseif eax==WM_USER+9999
 		invoke SendMessage,hWin,CM_SETWIDTH,2,0
