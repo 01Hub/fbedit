@@ -25,9 +25,6 @@ includelib \RadASM\Masm\Lib\Debug.lib
 
 include ..\RACad.inc
 
-WinMain							PROTO :DWORD,:DWORD,:DWORD,:DWORD
-WndProc							PROTO :DWORD,:DWORD,:DWORD,:DWORD
-
 IDB_CADBOX						equ 100
 IDR_ACCEL						equ 100
 

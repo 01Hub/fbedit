@@ -6,61 +6,6 @@ include SimCad.inc
 
 .code
 
-start:
-
-	invoke GetModuleHandle,NULL
-	mov    hInstance,eax
-	invoke GetModuleFileName,hInstance,addr AppPath,sizeof AppPath
-	.while AppPath[eax]!='\'
-		dec		eax
-	.endw
-	mov		AppPath[eax],0
-	invoke GetCommandLine
-	mov		CommandLine,eax
-	;Get command line filename
-	invoke PathGetArgs,CommandLine
-	mov		CommandLine,eax
-  @@:
-	mov		dl,[eax]
-	.IF dl==VK_SPACE
-		inc		eax
-		jmp		@b
-	.ELSEIF dl=='"'
-		invoke PathUnquoteSpaces,eax
-	.ENDIF
-	invoke InitCommonControls
-	invoke LoadLibrary,addr RACad
-	.if eax
-		mov		hRACad,eax
-		invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimCad,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
-		.if lpdwDisp==REG_OPENED_EXISTING_KEY
-			mov		lpcbData,sizeof wpos
-			invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
-			mov		lpcbData,sizeof ppos
-			invoke RegQueryValueEx,hReg,addr szPrnPos,0,addr lpType,addr ppos,addr lpcbData
-			mov		eax,ppos.margins.left
-			mov		psd.rtMargin.left,eax
-			mov		eax,ppos.margins.top
-			mov		psd.rtMargin.top,eax
-			mov		eax,ppos.margins.right
-			mov		psd.rtMargin.right,eax
-			mov		eax,ppos.margins.bottom
-			mov		psd.rtMargin.bottom,eax
-			mov		eax,ppos.pagesize.x
-			mov		psd.ptPaperSize.x,eax
-			mov		eax,ppos.pagesize.y
-			mov		psd.ptPaperSize.y,eax
-		.endif
-		invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
-		invoke FreeLibrary,hRACad
-		invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
-		invoke RegCloseKey,hReg
-		xor		eax,eax
-	.else
-		mov		eax,1
-	.endif
-	invoke ExitProcess,eax
-
 DwToAscii proc uses ebx esi edi,dwVal:DWORD,lpAscii:DWORD
 
 	mov		eax,dwVal
@@ -97,44 +42,6 @@ DwToAscii proc uses ebx esi edi,dwVal:DWORD,lpAscii:DWORD
 	ret
 
 DwToAscii endp
-
-WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
-	LOCAL	wc:WNDCLASSEX
-	LOCAL	msg:MSG
-
-	mov		wc.cbSize,sizeof WNDCLASSEX
-	mov		wc.style,CS_HREDRAW or CS_VREDRAW
-	mov		wc.lpfnWndProc,offset WndProc
-	mov		wc.cbClsExtra,NULL
-	mov		wc.cbWndExtra,DLGWINDOWEXTRA
-	push	hInst
-	pop		wc.hInstance
-	mov		wc.hbrBackground,COLOR_BTNFACE+1
-	mov		wc.lpszMenuName,IDM_MAIN
-	mov		wc.lpszClassName,offset DlgClass
-	invoke LoadIcon,NULL,IDI_APPLICATION
-	mov		wc.hIcon,eax
-	mov		wc.hIconSm,eax
-	invoke LoadCursor,NULL,IDC_ARROW
-	mov		wc.hCursor,eax
-	invoke RegisterClassEx,addr wc
-	invoke CreateDialogParam,hInstance,IDD_MAIN,NULL,addr WndProc,NULL
-	invoke LoadAccelerators,hInstance,IDR_ACCEL
-	mov		hAccel,eax
-	.while TRUE
-		invoke GetMessage,addr msg,NULL,0,0
-	  .BREAK .if !eax
-		invoke TranslateAccelerator,hWnd,hAccel,addr msg
-		.if !eax
-			invoke TranslateMessage,addr msg
-			invoke DispatchMessage,addr msg
-		.endif
-	.endw
-	invoke DestroyAcceleratorTable,hAccel
-	mov		eax,msg.wParam
-	ret
-
-WinMain endp
 
 DoToolBar proc hToolBar:HWND
 	LOCAL	tbab:TBADDBITMAP
@@ -534,6 +441,18 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke ShowSym
 			mov		hSymSel,0
 		.elseif eax==IDC_BTNPREV
+		  @@:
+			dec		inxsym
+			and		inxsym,0Fh
+			mov		eax,inxsym
+			shl		eax,3
+			lea		eax,sym[eax]
+			mov		eax,[eax].SYMBOLS.lpFiles
+			.if !eax
+				jmp		@b
+			.endif
+			invoke ShowSym
+			mov		hSymSel,0
 		.endif
 	.elseif eax==WM_LBUTTONDOWN
 		mov		edx,lParam
@@ -577,13 +496,11 @@ SymDlgProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		[ebx].OBJECT.rc.right,0
 			mov		[ebx].OBJECT.rc.bottom,0
 			.while sbyte ptr [esi].OBJECT.tpe>0
-				mov		eax,[esi].OBJECT.rc.left
-				add		eax,[esi].OBJECT.rc.right
+				mov		eax,[esi].OBJECT.rc.right
 				.if eax>[ebx].OBJECT.rc.right
 					mov		[ebx].OBJECT.rc.right,eax
 				.endif
-				mov		eax,[esi].OBJECT.rc.top
-				add		eax,[esi].OBJECT.rc.bottom
+				mov		eax,[esi].OBJECT.rc.bottom
 				.if eax>[ebx].OBJECT.rc.bottom
 					mov		[ebx].OBJECT.rc.bottom,eax
 				.endif
@@ -1034,5 +951,98 @@ SizeIt:
 	retn
 
 WndProc endp
+
+WinMain proc hInst:HINSTANCE,hPrevInst:HINSTANCE,CmdLine:LPSTR,CmdShow:DWORD
+	LOCAL	wc:WNDCLASSEX
+	LOCAL	msg:MSG
+
+	mov		wc.cbSize,sizeof WNDCLASSEX
+	mov		wc.style,CS_HREDRAW or CS_VREDRAW
+	mov		wc.lpfnWndProc,offset WndProc
+	mov		wc.cbClsExtra,NULL
+	mov		wc.cbWndExtra,DLGWINDOWEXTRA
+	push	hInst
+	pop		wc.hInstance
+	mov		wc.hbrBackground,COLOR_BTNFACE+1
+	mov		wc.lpszMenuName,IDM_MAIN
+	mov		wc.lpszClassName,offset DlgClass
+	invoke LoadIcon,NULL,IDI_APPLICATION
+	mov		wc.hIcon,eax
+	mov		wc.hIconSm,eax
+	invoke LoadCursor,NULL,IDC_ARROW
+	mov		wc.hCursor,eax
+	invoke RegisterClassEx,addr wc
+	invoke CreateDialogParam,hInstance,IDD_MAIN,NULL,addr WndProc,NULL
+	invoke LoadAccelerators,hInstance,IDR_ACCEL
+	mov		hAccel,eax
+	.while TRUE
+		invoke GetMessage,addr msg,NULL,0,0
+	  .BREAK .if !eax
+		invoke TranslateAccelerator,hWnd,hAccel,addr msg
+		.if !eax
+			invoke TranslateMessage,addr msg
+			invoke DispatchMessage,addr msg
+		.endif
+	.endw
+	invoke DestroyAcceleratorTable,hAccel
+	mov		eax,msg.wParam
+	ret
+
+WinMain endp
+
+start:
+
+	invoke GetModuleHandle,NULL
+	mov    hInstance,eax
+	invoke GetModuleFileName,hInstance,addr AppPath,sizeof AppPath
+	.while AppPath[eax]!='\'
+		dec		eax
+	.endw
+	mov		AppPath[eax],0
+	invoke GetCommandLine
+	mov		CommandLine,eax
+	;Get command line filename
+	invoke PathGetArgs,CommandLine
+	mov		CommandLine,eax
+  @@:
+	mov		dl,[eax]
+	.IF dl==VK_SPACE
+		inc		eax
+		jmp		@b
+	.ELSEIF dl=='"'
+		invoke PathUnquoteSpaces,eax
+	.ENDIF
+	invoke InitCommonControls
+	invoke LoadLibrary,addr RACad
+	.if eax
+		mov		hRACad,eax
+		invoke RegCreateKeyEx,HKEY_CURRENT_USER,addr szSimCad,0,addr szREG_SZ,0,KEY_WRITE or KEY_READ,0,addr hReg,addr lpdwDisp
+		.if lpdwDisp==REG_OPENED_EXISTING_KEY
+			mov		lpcbData,sizeof wpos
+			invoke RegQueryValueEx,hReg,addr szWinPos,0,addr lpType,addr wpos,addr lpcbData
+			mov		lpcbData,sizeof ppos
+			invoke RegQueryValueEx,hReg,addr szPrnPos,0,addr lpType,addr ppos,addr lpcbData
+			mov		eax,ppos.margins.left
+			mov		psd.rtMargin.left,eax
+			mov		eax,ppos.margins.top
+			mov		psd.rtMargin.top,eax
+			mov		eax,ppos.margins.right
+			mov		psd.rtMargin.right,eax
+			mov		eax,ppos.margins.bottom
+			mov		psd.rtMargin.bottom,eax
+			mov		eax,ppos.pagesize.x
+			mov		psd.ptPaperSize.x,eax
+			mov		eax,ppos.pagesize.y
+			mov		psd.ptPaperSize.y,eax
+		.endif
+		invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+		invoke FreeLibrary,hRACad
+		invoke RegSetValueEx,hReg,addr szWinPos,0,REG_BINARY,addr wpos,sizeof wpos
+		invoke RegCloseKey,hReg
+		xor		eax,eax
+	.else
+		mov		eax,1
+	.endif
+	invoke ExitProcess,eax
 
 end start

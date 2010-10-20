@@ -296,6 +296,8 @@ CadInvalidateObject proc uses ebx esi edi,hWin:HWND,lpObject:DWORD
 		mov		rect.bottom,eax
 		sub		rect.left,8
 		sub		rect.top,8
+		add		rect.right,8
+		add		rect.bottom,8
 		invoke InvalidateRect,hWin,addr rect,TRUE
 	.else
 		mov		ecx,[esi].OBJECT.npt
@@ -1134,8 +1136,11 @@ CadSelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		mov		lastmov.x,0
 		mov		lastmov.y,0
 	.elseif eax==WM_LBUTTONUP
-		invoke ReleaseCapture
-		invoke ShowWindow,hWin,SW_SHOW
+		invoke GetCapture
+		.if eax==hWin
+			invoke ReleaseCapture
+			invoke ShowWindow,hWin,SW_SHOW
+		.endif
 	.elseif eax==WM_MOUSEMOVE
 		invoke GetCapture
 		.if eax==hWin
@@ -1166,9 +1171,9 @@ CadSelProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				call	Update
 				invoke CadInvalidateObject,hcad,esi
 				mov		[ebx].CADMEM.changed,TRUE
-				mov		eax,esi
-				sub		eax,ebx
-				sub		eax,sizeof CADMEM
+;				mov		eax,esi
+;				sub		eax,ebx
+;				sub		eax,sizeof CADMEM
 ;				invoke CadNotify,hcad,CN_SIZE,eax
 			.else
 				lea		esi,[ebx+sizeof CADMEM]
@@ -1709,46 +1714,12 @@ CadCopy proc uses ebx esi edi,hWin:HWND
 CadCopy endp
 
 CadAddObjects proc uses ebx esi edi,hWin:HWND,lpObjects:DWORD
-	LOCAL	xmin:DWORD
-	LOCAL	ymin:DWORD
-	LOCAL	pt:POINT
 
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
 	mov		esi,lpObjects
-	push	esi
-	mov		xmin,07FFFFFFFh
-	mov		ymin,07FFFFFFFh
 	.while [esi].OBJECT.tpe
-		mov		ecx,[esi].OBJECT.npt
-		.while ecx
-			dec		ecx
-			mov		eax,[esi].OBJECT.rc.left[ecx*8]
-			.if eax<xmin
-				mov		xmin,eax
-			.endif
-			mov		eax,[esi].OBJECT.rc.top[ecx*8]
-			.if eax<ymin
-				mov		ymin,eax
-			.endif
-		.endw
-		mov		eax,[esi].OBJECT.cbsize
-		lea		esi,[esi+eax]
-	.endw
-	pop		esi
-	.while [esi].OBJECT.tpe
-		push	esi
-		mov		ecx,[esi].OBJECT.npt
-		inc		ecx
-		.while ecx
-			dec		ecx
-			mov		eax,xmin
-			sub		[esi].OBJECT.rc.left[ecx*8],eax
-			mov		eax,ymin
-			sub		[esi].OBJECT.rc.top[ecx*8],eax
-		.endw
 		call	CopyObject
-		pop		esi
 		mov		eax,[esi].OBJECT.cbsize
 		lea		esi,[esi+eax]
 	.endw
@@ -1757,11 +1728,13 @@ CadAddObjects proc uses ebx esi edi,hWin:HWND,lpObjects:DWORD
 CopyObject:
 	mov		eax,[ebx].CADMEM.rpFree
 	lea		edi,[ebx+eax+sizeof CADMEM]
+	push	esi
 	push	edi
 	mov		ecx,[esi].OBJECT.cbsize
 	add		[ebx].CADMEM.rpFree,ecx
 	rep movsb
 	pop		edi
+	pop		esi
 	mov		[edi].OBJECT.hsel,0
 	invoke CadSelect,hWin,edi,TRUE
 	invoke CadInvalidateObject,hWin,edi
@@ -2431,7 +2404,6 @@ CadPrint proc uses ebx esi edi,hWin:HWND,lppd:DWORD,lppsd:DWORD
 	neg		ecx
 	mov		edx,pMT
 	neg		edx
-;	xor		eax,eax
 	invoke CadDraw,hWin,[esi].PRINTDLG.hDC,ecx,edx,pX,pY,TRUE,eax
 	invoke EndPage,[esi].PRINTDLG.hDC
 	invoke EndDoc,[esi].PRINTDLG.hDC
@@ -2490,15 +2462,21 @@ CadFlip proc uses ebx esi edi,hWin:HWND
 
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
+	mov		left,7FFFFFFFh
+	mov		right,0
+	lea		esi,[ebx+sizeof CADMEM]
+	.while [esi].OBJECT.tpe
+		.if [esi].OBJECT.hsel
+			call	GetRect
+		.endif
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
 	lea		esi,[ebx+sizeof CADMEM]
 	.while [esi].OBJECT.tpe
 		.if [esi].OBJECT.hsel
 			invoke CadInvalidateObject,hWin,esi
-			mov		left,7FFFFFFFh
-			mov		right,0
-			call	GetRect
 			call	Flip
-			call	GetRect
 			invoke CadInvalidateObject,hWin,esi
 			mov		[ebx].CADMEM.changed,TRUE
 		.endif
@@ -2605,6 +2583,16 @@ Flip:
 		add		eax,edx
 		mov		[esi].OBJECT.rc.right,eax
 	.elseif eax==TPE_SYMBOL
+		mov		edx,[esi].OBJECT.rc.right
+		sub		edx,[esi].OBJECT.rc.left
+		mov		ecx,[esi].OBJECT.rc.left
+		sub		ecx,left
+		mov		eax,right
+		sub		eax,ecx
+		sub		eax,edx
+		mov		[esi].OBJECT.rc.left,eax
+		add		eax,edx
+		mov		[esi].OBJECT.rc.right,eax
 		mov		ecx,[esi].OBJECT.npt
 		lea		esi,[esi+sizeof OBJECT]
 		.while ecx
@@ -2630,27 +2618,34 @@ CadRotate proc uses ebx esi edi,hWin:HWND
 
 	invoke GetWindowLong,hWin,0
 	mov		ebx,eax
+	mov		left,7FFFFFFFh
+	mov		top,7FFFFFFFh
+	mov		right,0
+	mov		bottom,0
+	lea		esi,[ebx+sizeof CADMEM]
+	.while [esi].OBJECT.tpe
+		.if [esi].OBJECT.hsel
+			call	GetRect
+		.endif
+		mov		eax,[esi].OBJECT.cbsize
+		lea		esi,[esi+eax]
+	.endw
+	mov		eax,left
+	mov		ofsleft,eax
+	mov		eax,top
+	mov		ofstop,eax
+	mov		eax,right
+	sub		eax,left
+	mov		right,eax
+	mov		left,0
+	mov		eax,bottom
+	sub		eax,top
+	mov		bottom,eax
+	mov		top,0
 	lea		esi,[ebx+sizeof CADMEM]
 	.while [esi].OBJECT.tpe
 		.if [esi].OBJECT.hsel
 			invoke CadInvalidateObject,hWin,esi
-			mov		left,7FFFFFFFh
-			mov		top,7FFFFFFFh
-			mov		right,0
-			mov		bottom,0
-			call	GetRect
-			mov		eax,left
-			mov		ofsleft,eax
-			mov		eax,top
-			mov		ofstop,eax
-			mov		eax,right
-			sub		eax,left
-			mov		right,eax
-			mov		left,0
-			mov		eax,bottom
-			sub		eax,top
-			mov		bottom,eax
-			mov		top,0
 			call	Rotate
 			invoke CadInvalidateObject,hWin,esi
 			mov		[ebx].CADMEM.changed,TRUE
@@ -3456,12 +3451,12 @@ CadProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		invoke CadAddObjects,hWin,lParam
 	.elseif eax==CM_FLIPOBJECT
 		invoke CadGetSelCount,hWin
-		.if eax==1
+		.if eax;==1
 			invoke CadFlip,hWin
 		.endif
 	.elseif eax==CM_ROTATEOBJECT
 		invoke CadGetSelCount,hWin
-		.if eax==1
+		.if eax;==1
 			invoke CadRotate,hWin
 			invoke CadFlip,hWin
 		.endif
