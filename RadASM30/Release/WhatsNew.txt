@@ -4,6 +4,11 @@ Ini files, project files, template files, api files and addins are all incompati
 
 Do NOT install RadASM 3.0 in the same directory as an older version of RadASM.
 
+Version 3.0.0.7d 2010-10-25
+---------------------------
+o Fixed the bug where RadASM could terminate if a block of text was inserted or deleted.
+  Thanks to WillASM for helping me track down this bug.
+
 Version 3.0.0.7c 2010-10-18
 ---------------------------
 o Adjusted height of listbox items in codecomplete listbox.

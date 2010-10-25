@@ -82,11 +82,10 @@ ThreadProc proc uses ebx esi edi,Param:DWORD
 	.endw
 	ret
 
-ThreadProc ENDP
+ThreadProc endp
 
 CloseNotify proc uses esi
 
-	mov		esi,fn.lpHandle
 	.while fn.nCount
 		invoke FindCloseChangeNotification,[esi]
 		mov		dword ptr [esi],0

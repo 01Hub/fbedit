@@ -2384,14 +2384,16 @@ RAEditCodeProc proc uses ebx esi edi,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LP
 					invoke SendMessage,ha.hCC,CCM_GETITEM,eax,0
 					push	eax
 					invoke strcpy,offset tmpbuff,eax
-					xor		eax,eax
-					.while tmpbuff[eax]
-						.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
-							mov		tmpbuff[eax],0
-							.break
-						.endif
-						inc		eax
-					.endw
+					.if da.cctype!=CCTYPE_USER
+						xor		eax,eax
+						.while tmpbuff[eax]
+							.if tmpbuff[eax]==':' || tmpbuff[eax]=='['
+								mov		tmpbuff[eax],0
+								.break
+							.endif
+							inc		eax
+						.endw
+					.endif
 					invoke SendMessage,ha.hEdt,EM_REPLACESEL,TRUE,offset tmpbuff
 					pop		eax
 					.if da.cctype==CCTYPE_PROC

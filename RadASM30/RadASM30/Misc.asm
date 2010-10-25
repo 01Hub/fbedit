@@ -2761,14 +2761,14 @@ UpdateGoto proc uses ebx esi edi,hWin:HWND,cp:DWORD,n:DWORD
 
 	;Delete
 	mov		eax,cp
-	mov		chrg.cpMin,eax
-	mov		chrg.cpMax,eax
-	add		eax,n
-	.if eax<chrg.cpMin
-		mov		chrg.cpMin,eax
-	.else
-		mov		chrg.cpMax,eax
+	mov		edx,n
+	.if sdword ptr edx<0
+		neg		edx
 	.endif
+	mov		chrg.cpMin,eax
+	add		eax,edx
+	mov		chrg.cpMax,eax
+	;Delete
 	mov		ecx,32
 	mov		edi,offset gotostack
 	mov		edx,hWin
@@ -2785,6 +2785,8 @@ UpdateGoto proc uses ebx esi edi,hWin:HWND,cp:DWORD,n:DWORD
 		lea		edi,[edi+sizeof DECLARE]
 	.untilcxz
 	.if ebx
+		;Compress
+		mov		ecx,32
 		mov		esi,offset gotostack
 		mov		edi,offset gotostack
 		.repeat
@@ -2813,7 +2815,6 @@ UpdateGoto proc uses ebx esi edi,hWin:HWND,cp:DWORD,n:DWORD
 				mov		eax,n
 				add		[edi].DECLARE.cp,eax
 			.endif
-			
 		.endif
 		lea		edi,[edi+sizeof DECLARE]
 	.untilcxz
