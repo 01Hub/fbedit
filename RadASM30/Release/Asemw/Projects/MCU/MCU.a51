@@ -64,6 +64,11 @@
 ;0F				MODE
 ;10				START SEND CMDFILE.CMD FILE
 ;-----------------------------------------------------
+T2CON			EQU 0C8h
+RCAP2L			EQU 0CAh
+RCAP2H			EQU 0CBh
+
+;-----------------------------------------------------
 ;RESET:***********************************************
 				ORG		0000h
 				AJMP	START
@@ -103,13 +108,18 @@
 
 START:			MOV		PSW,#00h
 				MOV		IE,#00h					;Disable all int's
-				MOV		SP,#4Fh					;Init stack pointer. The stack is 48 bytes
-				MOV		TMOD,#22h				;T0/T1=8 Bit auto reload
-				MOV		TH0,#1Ah				;256-230
-				MOV		TL0,#1Ah
-				MOV		TH1,#0FAh				;256-22118400/(384*9600) (#0FF=57600)
-				MOV		TL1,#0FAh
-				MOV		PCON,#80h				;Double baudrate
+				MOV		SP,#0DFh				;Init stack pointer. The stack is 48 bytes
+				MOV		RCAP2L,#0EEh
+				MOV		RCAP2H,#0FFh
+				SETB	T2CON.5					;RCLK
+				SETB	T2CON.4					;TCLK
+				SETB	T2CON.2					;TR2
+;				MOV		TMOD,#22h				;T0/T1=8 Bit auto reload
+;				MOV		TH0,#1Ah				;256-230
+;				MOV		TL0,#1Ah
+;				MOV		TH1,#0FAh				;256-22118400/(384*9600) (#0FF=57600)
+;				MOV		TL1,#0FAh
+;				MOV		PCON,#80h				;Double baudrate
 				MOV		SCON,#76h				;SM0=l
 												;SM1=h
 												;SM2=h
@@ -118,11 +128,11 @@ START:			MOV		PSW,#00h
 												;RB8=l
 												;TI=h
 												;RI=l
+;				MOV		TCON,#50h				;T0/T1=On
 				MOV		20h,#00h				;RAM int routines (00-05,20.0-20.5)
 				MOV		27h,#01h				;Action
 				MOV		28h,#01h				;Size
 				MOV		29h,#01h				;Mode
-				MOV		TCON,#50h				;T0/T1=On
 				MOV		R0,#00h
 				MOV		DPTR,#2000h
 				MOV		R1,#00h
@@ -382,14 +392,10 @@ MEMDUMP2:		MOV		A,@R0
 				POP		00h
 				RET
 
-LOAD:			PUSH	DPL
-				PUSH	DPH
-				PUSH	00h
-				PUSH	03h
-				MOV		R3,#80h
-LOAD1:			ACALL	RX16BYTES				;Read 16 bytes from cmd file
+LOAD4K:			MOV		R3,#00h
+LOAD4K1:		ACALL	RX16BYTES				;Read 16 bytes from cmd file
 				ACALL	HEXDPTR
-LOAD2:			MOV		A,@R0
+LOAD4K2:		MOV		A,@R0
 				MOVX	@DPTR,A
 				ACALL	HEXOUT
 				MOV		A,#20h
@@ -398,9 +404,17 @@ LOAD2:			MOV		A,@R0
 				INC		R0
 				MOV		A,R0
 				XRL		A,#50h
-				JNZ		LOAD2					;Not 16 bytes yet
+				JNZ		LOAD4K2					;Not 16 bytes yet
 				ACALL	PRNTCRLF
-				DJNZ	R3,LOAD1				;Not 2K yet
+				DJNZ	R3,LOAD4K1				;Not 4K yet
+				RET
+
+LOAD:			PUSH	DPL
+				PUSH	DPH
+				PUSH	00h
+				PUSH	03h
+				ACALL	LOAD4K
+				ACALL	LOAD4K
 				MOV		A,#06h
 				ACALL	TXBYTE					;End read 16 bytes from cmd file
 				POP		03h
@@ -2522,7 +2536,7 @@ CASB:				ACALL	HEXSCAN				;SEE IF HEX NUMBER
 CASB2:				INC		DPTR 
 					MOV		R0B0,R1				;SAVE THE PRESENT CONVERTED VALUE 
 					MOV		R0B0+2,R3			;IN R2:R0 
-					ACALL	GET_DIGIT_CHECK 
+					LCALL	GET_DIGIT_CHECK 
 					JC		CASB5 
 					JNB		ADD_IN,RCASB		;CONVERSION COMPLETE 
 					LCALL	HEX_CHECK			;SEE IF HEX NUMBER 
