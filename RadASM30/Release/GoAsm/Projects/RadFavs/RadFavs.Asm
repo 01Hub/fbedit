@@ -201,7 +201,7 @@ FreeMenuBuffers FRAME hmenu
 		invoke GetMenuItemID,[hFavMenu],ebx
 		mov [ItemID],eax
 		or eax,eax
-		jz >.EXIT
+		js >.EXIT
 		sub eax,[FirstID]
 		mov ecx,offset IndexTable
 		mov eax,[ecx+eax*4]
@@ -638,7 +638,7 @@ ManageDlgProc FRAME hwnd,uMsg,wParam,lParam
 		mov ebx,eax
 		invoke AppendMenu,ebx,MF_ENABLED + MF_STRING,10000,"Delete"
 		invoke TrackPopupMenuEx,ebx,TPM_RETURNCMD,[pt.x],[pt.y],[hwnd],NULL
-		;
+
 		cmp eax,10000
 		jne >
 			invoke SendMessage,edi,LB_DELETESTRING,esi,0

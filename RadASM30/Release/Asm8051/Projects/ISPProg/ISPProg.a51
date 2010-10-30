@@ -69,7 +69,7 @@
 RESET:			AJMP	$START
 ;*****************************************************
 				ORG		0003h
-IE0IRQ:			JB		$00,$01h				;$20.0
+IE0IRQ:			JB		$00h,$01h				;$20.0
 				RETI
 				LJMP	$2003h
 ;*****************************************************
@@ -107,8 +107,8 @@ START:			MOV		PSW,#00h
 				MOV		TMOD,#22h				;T0/T1=8 Bit auto reload
 				MOV		TH0,#1Ah				;256-230
 				MOV		TL0,#1Ah
-				MOV		TH1,#0FAh				;256-22118400/(384*9600) (#0FF=57600)
-				MOV		TL1,#0FAh
+				MOV		TH1,#0FDh				;256-22118400/(384*9600) (#0FF=57600)
+				MOV		TL1,#0FDh
 				MOV		PCON,#80h				;Double baudrate
 				MOV		SCON,#76h				;SM0=l
 												;SM1=h
@@ -441,9 +441,9 @@ EPROM2:			DEC		A
 				MOV		A,$29h
 				DEC		A
 				JNZ		$EPROM21
-				ACALL	$BM_ROMDUMPF
+				ACALL	$ROMERASE
 				SJMP	$EPROM
-EPROM21:		ACALL	$PM_ROMDUMPF
+EPROM21:		ACALL	$ROMERASE
 				SJMP	$EPROM
 EPROM3:			DEC		A
 				JNZ		$EPROM4
@@ -453,7 +453,7 @@ EPROM3:			DEC		A
 				JNZ		$EPROM31
 				ACALL	$BM_ROMDUMPS
 				SJMP	$EPROM
-EPROM31:		ACALL	$PM_ROMDUMPS
+EPROM31:		LCALL	$PM_ROMDUMPS
 				SJMP	$EPROM
 EPROM4:			DEC		A
 				JNZ		$EPROM5
@@ -471,7 +471,7 @@ EPROM5:			;Program
 				MOV		A,$29h
 				DEC		A
 				JNZ		$EPROM51
-				ACALL	$BM_ROMPROG
+				LCALL	$PM_ROMPROG
 				SJMP	$EPROM
 EPROM51:		LCALL	$PM_ROMPROG
 				SJMP	$EPROM
@@ -483,7 +483,7 @@ ROMMENU:		ACALL	$PRNTSTR
 				DB		'   ³  Action       ³  ³  EEPROM size  ³  ³  Mode         ³',0Dh,0Ah
 				DB		'   ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´  ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´',0Dh,0Ah
 				DB		'   ³  Test erased  ³  ³  4K           ³  ³  Byte         ³',0Dh,0Ah
-				DB		'   ³  Filedump     ³  ³  8K           ³  ³  Page         ³',0Dh,0Ah
+				DB		'   ³  Erase        ³  ³  8K           ³  ³  Page         ³',0Dh,0Ah
 				DB		'   ³  Screendump   ³  ³  16K          ³  ³               ³',0Dh,0Ah
 				DB		'   ³  Verify       ³  ³  32K          ³  ³               ³',0Dh,0Ah
 				DB		'   ³  Program      ³  ³  64K          ³  ³               ³',0Dh,0Ah
@@ -592,6 +592,30 @@ ROMINSERT6:		ACALL	$PRNTSTR
 				CLR		C
 				RET
 
+ROMERASE:		MOV		A,#0ACh
+				LCALL	$ISPCOMM				;Init chip erase byte 1
+				MOV		A,#80h
+				LCALL	$ISPCOMM				;Init chip erase byte 2
+				CLR		A
+				LCALL	$ISPCOMM				;Init chip erase byte 3
+				CLR		A
+				LCALL	$ISPCOMM				;Init chip erase byte 4
+				CLR		A
+				LCALL	$WAIT					;Wait 256 ms
+				CLR		A
+				LCALL	$WAIT					;Wait 256 ms
+				CLR		A
+				LCALL	$WAIT					;Wait 256 ms
+				LCALL	$PM_ISERASED
+				JNC		$ROMERASE1
+				LCALL	$ROMOFF					;Set RST low and turn off VCC
+				LCALL	$PRNTSTR
+				DB		0Bh,2Ah,23h,'Could not erase chip <Enter> ',00h
+				LCALL	$RXBYTE					;Wait for keypress
+				RET
+ROMERASE1:		LCALL	$ROMOFF					;Set RST low and turn off VCC
+				RET
+
 ROMWAIT:		ACALL	$PRNTSTR
 				DB		0Bh,2Ah,23h,'Wait ...',00h
 				RET
@@ -690,9 +714,6 @@ BM_ROMVERIFY4:	LCALL	$ROMVERIFYERR
 				POP		$00h					;Restore R0
 				RET
 
-BM_ROMPROG:
-				RET
-
 ;Page mode
 ;------------------------------------------------------------------
 
@@ -707,7 +728,7 @@ PM_ROMERASED1:	CLR		A
 				MOV		A,DPL
 				JNZ		$PM_ROMERASED1			;Jump if more bytes on this page
 				MOV		A,DPH
-				CJNE	A,$26h,$PM_ROMERASED		;Jump if more pagees
+				CJNE	A,$26h,$PM_ROMERASED	;Jump if more pagees
 				LCALL	$ROMOFF					;Set RST low and turn off VCC
 				RET
 PM_ROMERASED2:	LCALL	$ROMOFF					;Set RST low and turn off VCC
@@ -737,13 +758,13 @@ PM_ROMDUMPF2:	CLR		A
 				MOV		A,DPL
 				ANL		A,#0Fh
 				CJNE	A,#00h,$PM_ROMDUMPF3	;Jump if more bytes in this line
-				ACALL	$PRNTCRLF				;Output CRLF
+				LCALL	$PRNTCRLF				;Output CRLF
 				MOV		A,DPL
 				JNZ		$PM_ROMDUMPF2			;Jump if more bytes in this page
 PM_ROMDUMPF3:	MOV		A,DPH
 				CJNE	A,$26h,$PM_ROMDUMPF1	;Jump if more pages
 				MOV		A,#04h
-				ACALL	$TXBYTE					;End Output to hex file
+				LCALL	$TXBYTE					;End Output to hex file
 				LCALL	$ROMOFF					;Set RST low and turn off VCC
 				RET
 
@@ -753,18 +774,18 @@ PM_ROMDUMPS:	MOV		A,#30h
 				LCALL	$ISPCOMM				;Send high address
 PM_ROMDUMPS1:	CLR		A
 				LCALL	$ISPCOMM				;Get byte from ROM
-				ACALL	$HEXOUT					;Output as hex
+				LCALL	$HEXOUT					;Output as hex
 				MOV		A,#20h
-				ACALL	$TXBYTE					;Output a space
+				LCALL	$TXBYTE					;Output a space
 				INC		DPTR
 				MOV		A,DPL
 				ANL		A,#0Fh
 				JNZ		$PM_ROMDUMPS2			;Jump if still on same line
-				ACALL	$PRNTCRLF				;Output CRLF
+				LCALL	$PRNTCRLF				;Output CRLF
 				MOV		A,DPL
 				JNZ		$PM_ROMDUMPS1			;Jump if more bytes on this page
-				ACALL	$PRNTCRLF				;Output CRLF
-				ACALL	$RXBYTE					;Wait for a keypress
+				LCALL	$PRNTCRLF				;Output CRLF
+				LCALL	$RXBYTE					;Wait for a keypress
 				CJNE	A,#9Fh,$PM_ROMDUMPS2
 				SJMP	$PM_ROMDUMPS3			;Esc pressed
 PM_ROMDUMPS2:	MOV		A,DPH
@@ -864,8 +885,8 @@ PM_ROMPROG2:	MOV		A,#40h
 				MOV		A,@R0
 				MOV		$25h,A					;Get byte from buffer
 				LCALL	$ISPCOMM				;Send byte to be programmed
-				MOV		A,#10h
-				LCALL	$WAIT					;Wait 1mS
+				MOV		A,#1Eh
+				LCALL	$WAIT					;Wait 3mS
 				LCALL	$BM_ROMRDBYTE			;Read a byte from ROM
 				CJNE	A,$25h,$PM_ROMPROG4		;Compare and jump if not equal
 				INC		R0
@@ -930,11 +951,15 @@ ISPCOMM:		PUSH	$07h
 				MOV		R2,#08h
 ISPCOMM1:		RLC		A
 				MOV		P1.3,C					;MISO
+				NOP
 				MOV		C,P1.4					;MOSI
 				XCH		A,R7
 				RLC		A
 				XCH		A,R7
 				SETB	P1.2					;SCK H
+				NOP
+				NOP
+				NOP
 				NOP
 				CLR		P1.2					;SCK L
 				DJNZ	R2,$ISPCOMM1
@@ -944,19 +969,25 @@ ISPCOMM1:		RLC		A
 				RET
 
 ROMON:			SETB	P1.0					;+5V On
-				MOV		A,#0Ah
-				ACALL	$WAIT					;Wait 1mS
+				CLR		A
+				ACALL	$WAIT					;Wait 25mS
+				CLR		A
+				ACALL	$WAIT					;Wait 25mS
+				CLR		A
+				ACALL	$WAIT					;Wait 25mS
+				CLR		A
+				ACALL	$WAIT					;Wait 25mS
 				SETB	P1.1					;RST H
-				MOV		A,#0Ah
-				ACALL	$WAIT					;Wait 1mS
+				CLR		A
+				ACALL	$WAIT					;Wait 25mS
 				RET
 
 ROMOFF:			CLR		P1.1					;RST L
-				MOV		A,#01h
-				ACALL	$WAIT					;Wait 100uS
+				CLR		A
+				ACALL	$WAIT					;Wait 25Ms
 				MOV		P1,#10h					;+5V Off, P1.4 As Input
-				MOV		A,#0Ah
-				LCALL	$WAIT					;Wait 1mS
+				CLR		A
+				LCALL	$WAIT					;Wait 25mS
 				RET
 
 ROMINITPGM:		MOV		A,#0ACh
@@ -1017,4 +1048,4 @@ ROMVERIFYERR:	PUSH	ACC
 
 ;------------------------------------------------------------------
 
-;				ORG		2000h					;Fill up 2764
+				ORG		2000h					;Fill up 2764

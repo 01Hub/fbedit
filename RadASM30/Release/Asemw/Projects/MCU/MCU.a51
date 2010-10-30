@@ -67,6 +67,8 @@
 T2CON			EQU 0C8h
 RCAP2L			EQU 0CAh
 RCAP2H			EQU 0CBh
+TL2				EQU 0CCh
+TH2				EQU 0CDh
 
 ;-----------------------------------------------------
 ;RESET:***********************************************
@@ -106,39 +108,36 @@ RCAP2H			EQU 0CBh
 
 				ORG		0040h
 
-START:			MOV		PSW,#00h
-				MOV		IE,#00h					;Disable all int's
-				MOV		SP,#0DFh				;Init stack pointer. The stack is 48 bytes
-				MOV		RCAP2L,#0EEh
+START:			MOV		SP,#0DFh				;Init stack pointer. The stack is 48 bytes
+				MOV		RCAP2L,#0D9h			;19200bps with 24MHz OSC
 				MOV		RCAP2H,#0FFh
-				SETB	T2CON.5					;RCLK
-				SETB	T2CON.4					;TCLK
-				SETB	T2CON.2					;TR2
-;				MOV		TMOD,#22h				;T0/T1=8 Bit auto reload
-;				MOV		TH0,#1Ah				;256-230
-;				MOV		TL0,#1Ah
-;				MOV		TH1,#0FAh				;256-22118400/(384*9600) (#0FF=57600)
-;				MOV		TL1,#0FAh
-;				MOV		PCON,#80h				;Double baudrate
-				MOV		SCON,#76h				;SM0=l
+				MOV		TL2,#0D9h
+				MOV		TH2,#0FFh
+				MOV		T2CON,#34h				;TF2=l
+												;EXF2=l
+												;RCLK=h
+												;TCLK=h
+												;EXEN2=l
+												;TR2=h
+												;C/T2#=l
+												;CP/RL2#=l
+				MOV		SCON,#50h				;SM0=l
 												;SM1=h
-												;SM2=h
+												;SM2=l
 												;REN=h
-												;TB8=h
+												;TB8=l
 												;RB8=l
-												;TI=h
+												;TI=l
 												;RI=l
-;				MOV		TCON,#50h				;T0/T1=On
 				MOV		20h,#00h				;RAM int routines (00-05,20.0-20.5)
 				MOV		27h,#01h				;Action
-				MOV		28h,#01h				;Size
+				MOV		28h,#02h				;Size
 				MOV		29h,#01h				;Mode
-				MOV		R0,#00h
 				MOV		DPTR,#2000h
+				MOV		R0,#00h
 				MOV		R1,#00h
 START1:			DJNZ	R0,START1
 				DJNZ	R1,START1
-				CLR		SCON.0
 START2:			ACALL	HELPMENU
 START3:			ACALL	PRNTCRLF
 				MOV		A,#3Eh
@@ -308,9 +307,9 @@ RXBYTE:			JNB		SCON.0,RXBYTE
 				MOV		A,SBUF
 				RET
 
-TXBYTE:			JNB		SCON.1,TXBYTE
+TXBYTE:			MOV		SBUF,A
+TXBYTE1:		JNB		SCON.1,TXBYTE1
 				CLR		SCON.1
-				MOV		SBUF,A
 				RET
 
 ;Functions
@@ -387,7 +386,6 @@ MEMDUMP2:		MOV		A,@R0
 				JNZ		MEMDUMP2
 				ACALL	PRNTCRLF
 				MOV		A,R0
-				XRL		A,#80h
 				JNZ		MEMDUMP1
 				POP		00h
 				RET
@@ -485,7 +483,7 @@ EPROM5:			;Program
 				MOV		A,29h
 				DEC		A
 				JNZ		EPROM51
-				ACALL	BM_ROMPROG
+				LCALL	PM_ROMPROG
 				SJMP	EPROM
 EPROM51:		LCALL	PM_ROMPROG
 				SJMP	EPROM
@@ -702,9 +700,6 @@ BM_ROMVERIFY4:	LCALL	ROMVERIFYERR
 				ACALL	TXBYTE					;End read 16 bytes from cmd file
 				ACALL	RXBYTE					;Wait for a keypress
 				POP		00h						;Restore R0
-				RET
-
-BM_ROMPROG:
 				RET
 
 ;Page mode
@@ -924,7 +919,7 @@ PM_ROMPROG4:	PUSH	ACC
 ;------------------------------------------------------------------
 
 WAIT100:		PUSH	07h						;Save R7
-				MOV		R7,#5Ch
+				MOV		R7,#64h
 WAIT1001:		DJNZ	R7,WAIT1001				;Wait loop, 100uS
 				POP		07h						;Restore R7
 				RET
@@ -1762,7 +1757,7 @@ STORE_ALIGN_TEST_AND_EXIT:						;Save the number align carry and exit
 	; 
 	; Now load the numbers 
 	; 
-STORE2:	MOV	A,@R0 
+STORE2:			MOV		A,@R0 
 				MOVX	@R1,A				;SAVE THE NUMBER 
 				DEC		R0 
 				DEC		R1 
