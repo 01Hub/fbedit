@@ -40,9 +40,10 @@
 ;2D				DPL save
 ;2E				DPH save
 ;2F				Number of verify errors
-;30-3F
+;30-33			32 Bit binary result from frequency counter
+;34-3F			Decimal result from frequency counter
 ;40-4F			Buffer
-;50-7F			Stack
+;E0-FF			32 Byte stack
 ;-----------------------------------------------------
 ;*****************************************************
 ;SCREEN DRIVER
@@ -63,6 +64,57 @@
 ;0E				CLS
 ;0F				MODE
 ;10				START SEND CMDFILE.CMD FILE
+;-----------------------------------------------------
+;*****************************************************
+;Memory mapped I/O
+;-----------------------------------------------------
+;8000h Output
+;-----------------------------------------------------
+;D0		LCD DB4
+;D1		LCD DB5
+;D2		LCD DB6
+;D3		LCD DB7
+;D4		LCD RS
+;D5		LCD E
+;D6
+;D7
+;-----------------------------------------------------
+;8001h Output
+;-----------------------------------------------------
+;D0		FRQ SEL A
+;D1		FRQ SEL B
+;D2		FRQ GATE
+;D3		FRQ	RESET
+;D4		ADC CS
+;D5		ADC CLK
+;D6		ADC DIN
+;D7
+;-----------------------------------------------------
+;8000h Input
+;-----------------------------------------------------
+;D0		FRQ LSB
+;D1
+;D2
+;D3
+;D4
+;D5
+;D6
+;D7		FRQ MSB
+;-----------------------------------------------------
+;8001h Input
+;-----------------------------------------------------
+;D0		ADC DOUT
+;D1
+;D2
+;D3
+;D4
+;D5
+;D6
+;D7
+
+;-----------------------------------------------------
+;*****************************************************
+;Equates
 ;-----------------------------------------------------
 T2CON			EQU 0C8h
 RCAP2L			EQU 0CAh
@@ -1024,95 +1076,331 @@ ROMVERIFYERR:	PUSH	ACC
 ROMVERIFYERR1:	CPL		C
 				RET
 
+;Frequency counter. A holds channel 0 to 3.
+;32 Bit result in 30-33
 ;------------------------------------------------------------------
-
-BIN2DEC:		PUSH		DPL
-				PUSH		DPH
-				PUSH		PSW
-				MOV			A,@R0
-				MOV			R7,A
-				INC			R0
-				MOV			A,@R0
-				MOV			R6,A
-				INC			R0
-				MOV			A,@R0
-				MOV			R5,A
-				INC			R0
-				MOV			A,@R0
-				MOV			R4,A
-				INC			R0
-				MOV			DPTR,#BINDEC
-				MOV			R2,#0Ah
-BIN2DEC1:		MOV			R3,#2Fh
-BIN2DEC2:		INC			R3
-				ACALL		SUBIT
-				JNC			BIN2DEC2
-				ACALL		ADDIT
-				MOV			A,R3
-				MOV			@R0,A
-				INC			R0
-				MOV			A,DPL
-				ADD			A,#04h
-				MOV			DPL,A
-				DJNZ		R2,BIN2DEC1
-				CLR			A
-				MOV			@R0,A
-				POP			PSW
-				POP			DPH
-				POP			DPL
+FRQCOUNT:		PUSH	ACC
+				PUSH	DPL
+				PUSH	DPH
+				PUSH	05h
+				PUSH	06h
+				PUSH	07h
+				SETB	ACC.2					;D2		FRQ GATE ACTIVE LOW
+				SETB	ACC.3					;D3		FRQ	RESET ACTIVE HIGH
+				SETB	ACC.4					;D4		ADC CS ACTIVE LOW
+				SETB	ACC.5					;D5		ADC CLK HIGH TO LOW TRANSITION
+				SETB	ACC.6					;D6		ADC DIN
+				SETB	ACC.7	;D7
+				MOV		DPTR,#8001h
+				MOVX	@DPTR,A					;RESET AND GATE OFF
+				PUSH	ACC
+				MOV		TL0,#00h
+				MOV		TH0,#00h
+				MOV		A,TMOD
+				SETB	ACC.0					;M00
+				CLR		ACC.1					;M01
+				SETB	ACC.2					;C/T0#
+				CLR		ACC.3					;GATE0
+				MOV		TMOD,A
+				MOV		A,TCON
+				SETB	ACC.4					;TR0
+				CLR		ACC.5					;TF0
+				MOV		TCON,A
+				POP		ACC
+				CLR		ACC.2					;D2		FRQ GATE ACTIVE LOW
+				CLR		ACC.3					;D3		FRQ	RESET ACTIVE HIGH
+				MOV		R7,#0FCh
+				MOV		R6,#51
+				MOV		R5,#16
+				MOVX	@DPTR,A					;SELECT INTERNAL ALE,GATE ON(LOW),RESET INACTIVE
+FRQCOUNT1:		DJNZ	R7,FRQCOUNT1			;252+256*50+51=13103
+				DJNZ	R6,FRQCOUNT1			;(256*256)+256)*15+16=986896
+				DJNZ	R5,FRQCOUNT1			;13103+986896=999999
+				SETB	ACC.2					;D2		FRQ GATE ACTIVE LOW
+				MOVX	@DPTR,A					;STOP COUNTING
+				MOVX	A,@DPTR
+				MOV		30h,A
+				MOV		A,TL0
+				MOV		31h,A
+				MOV		A,TH0
+				MOV		32h,A
+				MOV		33h,#00h
+				POP		07h
+				POP		06h
+				POP		05h
+				POP		DPH
+				POP		DPL
+				POP		ACC
 				RET
 
-SUBIT:			MOV			A,#00h
-				MOVC		A,@A+DPTR
-				XCH			A,R4
-				CLR			C
-				SUBB		A,R4
-				MOV			R4,A
-				MOV			A,#01h
-				MOVC		A,@A+DPTR
-				XCH			A,R5
-				SUBB		A,R5
-				MOV			R5,A
-				MOV			A,#02h
-				MOVC		A,@A+DPTR
-				XCH			A,R6
-				SUBB		A,R6
-				MOV			R6,A
-				MOV			A,#03h
-				MOVC		A,@A+DPTR
-				XCH			A,R7
-				SUBB		A,R7
-				MOV			R7,A
+;AD Converter. A holds channel 0 to 7.
+;32 Bit result in 30-33
+;-----------------------------------------------------
+ADCONVERT:		PUSH	ACC
+				PUSH	DPL
+				PUSH	DPH
+				PUSH	07h
+				PUSH	06h
+				SETB	ACC.4	;START
+				SETB	ACC.3	;SINGLE ENDED
+				RL		A
+				RL		A
+				RL		A
+				XCH		A,R7
+				CLR		ACC.0	;FRQ SEL
+				CLR		ACC.1	;FRQ SEL
+				SETB	ACC.2	;D2		FRQ GATE ACTIVE LOW
+				SETB	ACC.3	;D3		FRQ	RESET ACTIVE HIGH
+				SETB	ACC.4	;D4		ADC CS ACTIVE LOW
+				SETB	ACC.5	;D5		ADC CLK HIGH TO LOW TRANSITION
+				SETB	ACC.6	;D6		ADC DIN
+				SETB	ACC.7	;D7
+				MOV		DPTR,#8001h
+				MOVX	@DPTR,A
+				;CS low
+				CLR		ACC.4	;D4		ADC CS ACTIVE LOW
+				MOVX	@DPTR,A
+				;Clock in channel select and Single/Diff+2 clocks for sample
+				MOV		R6,#07h
+ADCONVERT1:		XCH		A,R7
+				RLC		A
+				XCH		A,R7
+				MOV		ACC.6,C	;ADC DIN
+				CLR		ACC.5
+				MOVX	@DPTR,A
+				SETB	ACC.5
+				MOVX	@DPTR,A
+				DJNZ	R6,ADCONVERT1
+				MOV		R7,#00h
+				;Clock in 5 bits, including null bit
+				MOV		R6,#05h
+ADCONVERT2:		PUSH	ACC
+				MOV		DPTR,#8000h
+				MOVX	A,@DPTR
+				RRC		A
+				XCH		A,R7
+				RLC		A
+				XCH		A,R7
+				MOV		DPTR,#8001h
+				POP		ACC
+				CLR		ACC.5
+				MOVX	@DPTR,A
+				SETB	ACC.5
+				MOVX	@DPTR,A
+				DJNZ	R6,ADCONVERT2
+				MOV		31h,R7
+				MOV		R7,#00h
+				;Clock in 8 bits
+				MOV		R6,#08h
+ADCONVERT3:		MOVX	@DPTR,A
+				PUSH	ACC
+				MOV		DPTR,#8000h
+				MOVX	A,@DPTR
+				RRC		A
+				XCH		A,R7
+				RLC		A
+				XCH		A,R7
+				MOV		DPTR,#8001h
+				POP		ACC
+				CLR		ACC.5
+				MOVX	@DPTR,A
+				SETB	ACC.5
+				DJNZ	R6,ADCONVERT3
+				MOV		30h,R7
+				POP		06h
+				POP		07h
+				POP		DPH
+				POP		DPL
+				POP		ACC
 				RET
 
-ADDIT:			MOV			A,#00h
-				MOVC		A,@A+DPTR
-				ADD			A,R4
-				MOV			R4,A
-				MOV			A,#01h
-				MOVC		A,@A+DPTR
-				ADDC		A,R5
-				MOV			R5,A
-				MOV			A,#02h
-				MOVC		A,@A+DPTR
-				ADDC		A,R6
-				MOV			R6,A
-				MOV			A,#03h
-				MOVC		A,@A+DPTR
-				ADDC		A,R7
-				MOV			R7,A
+;LCD Output.
+;-----------------------------------------------------
+LCDDELAY:		PUSH	07h
+				MOV		R7,#00h
+				DJNZ	R7,$
+				POP		07h
 				RET
 
-BINDEC:			DB 000h,0CAh,09Ah,03Bh		;1000000000
-				DB 000h,0E1h,0F5h,005h		; 100000000
-				DB 080h,096h,098h,000h		;  10000000
-				DB 040h,042h,0Fh,0000h		;   1000000
-				DB 0A0h,086h,001h,000h		;    100000
-				DB 010h,027h,000h,000h		;     10000
-				DB 0E8h,003h,000h,000h		;      1000
-				DB 064h,000h,000h,000h		;       100
-				DB 00Ah,000h,000h,000h		;        10
-				DB 001h,000h,000h,000h		;         1
+;A contains nibble
+LCDNIBOUT:		CLR		ACC.5				; | negative edge on E
+				MOVX	@DPTR,A				; |
+				SETB	ACC.5				; | E
+				MOVX	@DPTR,A				; |
+				CLR		ACC.5				; | negative edge on E
+				MOVX	@DPTR,A				; |
+				RET
+
+;A contains byte
+LCDCMDOUT:		PUSH	ACC
+				SWAP	A					;High nibble first
+				ANL		A,#0Fh
+				CLR		ACC.4				;RS
+				ACALL	LCDNIBOUT
+				POP		ACC
+				ANL		A,#0Fh
+				CLR		ACC.4				;RS
+				ACALL	LCDNIBOUT
+				ACALL	LCDDELAY			; wait for BF to clear
+				RET
+
+;A contains byte
+LCDCHROUT:		PUSH	DPL
+				PUSH	DPH
+				MOV		DPTR,#8000h
+				PUSH	ACC
+				SWAP	A					;High nibble first
+				ANL		A,#0Fh
+				SETB	ACC.4				;RS
+				ACALL	LCDNIBOUT
+				POP		ACC
+				ANL		A,#0Fh
+				SETB	ACC.4				;RS
+				ACALL	LCDNIBOUT
+				ACALL	LCDDELAY			; wait for BF to clear
+				POP		DPH
+				POP		DPL
+				RET
+
+LCDINIT:		PUSH	DPL
+				PUSH	DPH
+				MOV		DPTR,#8000h
+
+				;Function set
+				MOV		A,#00000010b
+				ACALL	LCDNIBOUT
+				ACALL	LCDDELAY			; wait for BF to clear
+
+				;Function set
+						  ;0010NFXX
+				MOV		A,#00101000b
+				CLR		C
+				ACALL	LCDCMDOUT
+
+				;Function set
+						  ;0010NFXX
+				MOV		A,#00100000b
+				CLR		C
+				ACALL	LCDCMDOUT
+
+				;Display ON/OFF
+						  ;00001DCB
+				MOV		A,#00001110b
+				CLR		C
+				ACALL	LCDCMDOUT
+
+				;Cursor direction
+						  ;00000010
+				MOV		A,#00000110b
+				CLR		C
+				ACALL	LCDCMDOUT
+
+				POP		DPH
+				POP		DPL
+				RET
+
+;Binary to decimal converter
+;------------------------------------------------------------------
+BIN2DEC:		PUSH	DPL
+				PUSH	DPH
+				PUSH	00h
+				PUSH	02h
+				PUSH	03h
+				PUSH	04h
+				PUSH	05h
+				PUSH	06h
+				PUSH	07h
+				MOV		R0,#30h				;32 Bit binary
+				MOV		A,@R0
+				MOV		R7,A
+				INC		R0
+				MOV		A,@R0
+				MOV		R6,A
+				INC		R0
+				MOV		A,@R0
+				MOV		R5,A
+				INC		R0
+				MOV		A,@R0
+				MOV		R4,A
+				MOV		R0,#34h				;Decimal buffer
+				MOV		DPTR,#BINDEC
+				MOV		R2,#0Ah
+BIN2DEC1:		MOV		R3,#2Fh
+BIN2DEC2:		INC		R3
+				ACALL	SUBIT
+				JNC		BIN2DEC2
+				ACALL	ADDIT
+				MOV		A,R3
+				MOV		@R0,A
+				INC		R0
+				MOV		A,DPL
+				ADD		A,#04h
+				MOV		DPL,A
+				DJNZ	R2,BIN2DEC1
+				CLR		A
+				MOV		@R0,A
+				POP		07h
+				POP		06h
+				POP		05h
+				POP		04h
+				POP		03h
+				POP		02h
+				POP		00h
+				POP		DPH
+				POP		DPL
+				RET
+
+SUBIT:			MOV		A,#00h
+				MOVC	A,@A+DPTR
+				XCH		A,R4
+				CLR		C
+				SUBB	A,R4
+				MOV		R4,A
+				MOV		A,#01h
+				MOVC	A,@A+DPTR
+				XCH		A,R5
+				SUBB	A,R5
+				MOV		R5,A
+				MOV		A,#02h
+				MOVC	A,@A+DPTR
+				XCH		A,R6
+				SUBB	A,R6
+				MOV		R6,A
+				MOV		A,#03h
+				MOVC	A,@A+DPTR
+				XCH		A,R7
+				SUBB	A,R7
+				MOV		R7,A
+				RET
+
+ADDIT:			MOV		A,#00h
+				MOVC	A,@A+DPTR
+				ADD		A,R4
+				MOV		R4,A
+				MOV		A,#01h
+				MOVC	A,@A+DPTR
+				ADDC	A,R5
+				MOV		R5,A
+				MOV		A,#02h
+				MOVC	A,@A+DPTR
+				ADDC	A,R6
+				MOV		R6,A
+				MOV		A,#03h
+				MOVC	A,@A+DPTR
+				ADDC	A,R7
+				MOV		R7,A
+				RET
+
+BINDEC:			DB 000h,0CAh,09Ah,03Bh			;1000000000
+				DB 000h,0E1h,0F5h,005h			; 100000000
+				DB 080h,096h,098h,000h			;  10000000
+				DB 040h,042h,0Fh,0000h			;   1000000
+				DB 0A0h,086h,001h,000h			;    100000
+				DB 010h,027h,000h,000h			;     10000
+				DB 0E8h,003h,000h,000h			;      1000
+				DB 064h,000h,000h,000h			;       100
+				DB 00Ah,000h,000h,000h			;        10
+				DB 001h,000h,000h,000h			;         1
 
 ; This is a complete BCD floating point package for the 8051 micro- 
 ; controller. It provides 8 digits of accuracy with exponents that 
@@ -1276,9 +1564,9 @@ FP_BASE			EQU	$
 				AJMP	FLOATING_DIV 
 				AJMP	HEXSCAN 
 				AJMP	FLOATING_POINT_INPUT 
-				AJMP	FLOATING_POINT_OUTPUT 
+				LJMP	FLOATING_POINT_OUTPUT 
 				LJMP	CONVERT_BINARY_TO_ASCII_STRING 
-				AJMP	CONVERT_ASCII_STRING_TO_BINARY 
+				LJMP	CONVERT_ASCII_STRING_TO_BINARY 
 				LJMP	MULNUM10 
 				LJMP	HEXOUT 
 ; 
@@ -2080,7 +2368,7 @@ HEXSCAN:	; Scan a string to determine if it is a hex number
 	; 
 	;*************************************************************** 
 	; 
-				ACALL	GET_DPTR_CHARACTER 
+				LCALL	GET_DPTR_CHARACTER 
 				PUSH	DPH 
 				PUSH	DPL					;SAVE THE POINTER 
 	; 
@@ -2135,8 +2423,8 @@ FLOATING_POINT_INPUT:	; Input a floating point number pointed to by
 	;*************************************************************** 
 	; 
 				ACALL	FP_CLEAR			;CLEAR EVERYTHING 
-				ACALL	GET_DPTR_CHARACTER 
-				ACALL	PLUS_MINUS_TEST 
+				LCALL	GET_DPTR_CHARACTER 
+				LCALL	PLUS_MINUS_TEST 
 				MOV		MSIGN,C				;SAVE THE MANTISSA SIGN 
 	; 
 	; Now, set up for input loop 
@@ -2164,8 +2452,8 @@ GT1:			JB		F0,INERR			;ERROR IF NOT CLEARED
 				CJNE	A,#'e',$+5			;CHECK FOR LOWER CASE 
 				SJMP	$+5 
 				CJNE	A,#'E',FINISH_UP 
-				ACALL	INC_AND_GET_DPTR_CHARACTER 
-				ACALL	PLUS_MINUS_TEST 
+				LCALL	INC_AND_GET_DPTR_CHARACTER 
+				LCALL	PLUS_MINUS_TEST 
 				MOV		XSIGN,C				;SAVE SIGN STATUS 
 				LCALL	GET_DIGIT_CHECK 
 				JNC		INERR 
@@ -2287,17 +2575,19 @@ FLOATING_POINT_OUTPUT:	; Output the number, format is in location 25
 	; 
 	;*************************************************************** 
 	; 
-					ACALL	MDES1				;GET THE NUMBER TO OUTPUT, R0 IS POINTER 
-					ACALL	POP_AND_EXIT		;OUTPUT POPS THE STACK 
+					LCALL	MDES1				;GET THE NUMBER TO OUTPUT, R0 IS POINTER 
+					LCALL	POP_AND_EXIT		;OUTPUT POPS THE STACK 
 					MOV		A,R7 
 					MOV		R6,A				;PUT THE EXPONENT IN R6 
-					ACALL	UNPACK_R0			;UNPACK THE NUMBER 
+					LCALL	UNPACK_R0			;UNPACK THE NUMBER 
 					MOV		R0,#FP_NIB1			;POINT AT THE NUMBER 
 					MOV		A,FORMAT			;GET THE FORMAT 
 					MOV		R3,A				;SAVE IN CASE OF EXP FORMAT 
 					JZ		FREE				;FREE FLOATING? 
 					CJNE	A,#0F0H,$+3			;SEE IF EXPONENTIAL 
-					JNC		EXPOUT 
+					JC		USING00 
+					LJMP	EXPOUT 
+USING00:
 	; 
 	; If here, must be integer USING format 
 	; 
@@ -2308,36 +2598,36 @@ FLOATING_POINT_OUTPUT:	; Output the number, format is in location 25
 					SWAP	A					;SPLIT INTEGER AND FRACTION 
 					ANL		A,#0FH 
 					MOV		R2,A				;SAVE INTEGER 
-					ACALL	NUM_LT				;GET THE NUMBER OF INTEGERS 
+					LCALL	NUM_LT				;GET THE NUMBER OF INTEGERS 
 					XCH		A,R2				;FLIP FOR SUBB 
 					CLR		C 
 					SUBB	A,R2 
 					MOV		R7,A 
 					JNC		$+8 
 					MOV		R5,#'?'				;OUTPUT A QUESTION MARK 
-					ACALL	SOUT1				;NUMBER IS TOO LARGE FOR FORMAT 
-					AJMP	FREE 
+					LCALL	SOUT1				;NUMBER IS TOO LARGE FOR FORMAT 
+					LJMP	FREE 
 					CJNE	R2,#00,USING0		;SEE IF ZERO 
 					DEC		R7 
-					ACALL	SS7 
-					ACALL	ZOUT				;OUTPUT A ZERO 
+					LCALL	SS7 
+					LCALL	ZOUT				;OUTPUT A ZERO 
 					SJMP	USING1 
 	; 
-USING0:				ACALL	SS7					;OUTPUT SPACES, IF NEED TO 
+USING0:				LCALL	SS7					;OUTPUT SPACES, IF NEED TO 
 					MOV		A,R2				;OUTPUT DIGITS 
 					MOV		R7,A 
-					ACALL	OUTR0 
+					LCALL	OUTR0 
 	; 
 USING1:				MOV		A,R3 
 					ANL		A,#0FH				;GET THE NUMBER RIGHT OF DP 
 					MOV		R2,A				;SAVE IT 
 					JZ		PMT1				;EXIT IF ZERO 
-					ACALL	ROUT				;OUTPUT DP 
-					ACALL	NUM_RT 
+					LCALL	ROUT				;OUTPUT DP 
+					LCALL	NUM_RT 
 					CJNE	A,2,USINGX			;COMPARE A TO R2 
 	; 
 USINGY:				MOV		A,R2 
-					AJMP	Z7R7 
+					LJMP	Z7R7 
 	; 
 USINGX:				JNC	USINGY 
 	; 
@@ -2345,17 +2635,17 @@ USING2:				XCH		A,R2
 					CLR	C 
 					SUBB	A,R2 
 					XCH		A,R2 
-					ACALL	Z7R7				;OUTPUT ZEROS IF NEED TO 
+					LCALL	Z7R7				;OUTPUT ZEROS IF NEED TO 
 					MOV		A,R2 
 					MOV		R7,A 
-					AJMP	OUTR0 
+					LJMP	OUTR0 
 	; 
 	; First, force exponential output, if need to 
 	; 
 FREE:				MOV		A,R6				;GET THE EXPONENT 
 					JNZ		FREE1				;IF ZERO, PRINT IT 
-					ACALL	SOUT 
-					AJMP	ZOUT 
+					LCALL	SOUT 
+					LJMP	ZOUT 
 	; 
 FREE1:				MOV		R3,#0F0H			;IN CASE EXP NEEDED 
 					MOV		A,#80H-DIGIT-DIGIT-1 
@@ -2366,39 +2656,39 @@ FREE1:				MOV		R3,#0F0H			;IN CASE EXP NEEDED
 	; 
 	; Now, just print the number 
 	; 
-					ACALL	SINOUT				;PRINT THE SIGN OF THE NUMBER 
-					ACALL	NUM_LT				;GET THE NUMBER LEFT OF DP 
+					LCALL	SINOUT				;PRINT THE SIGN OF THE NUMBER 
+					LCALL	NUM_LT				;GET THE NUMBER LEFT OF DP 
 					CJNE	A,#8,FREE4 
-					AJMP	OUTR0 
+					LJMP	OUTR0 
 	; 
-FREE4:				ACALL	OUTR0 
-					ACALL	ZTEST				;TEST FOR TRAILING ZEROS 
+FREE4:				LCALL	OUTR0 
+					LCALL	ZTEST				;TEST FOR TRAILING ZEROS 
 					JZ		U_RET				;DONE IF ALL TRAILING ZEROS 
-					ACALL	ROUT				;OUTPUT RADIX 
+					LCALL	ROUT				;OUTPUT RADIX 
 	; 
 FREE2:				MOV		R7,#1				;OUTPUT ONE DIGIT 
-					ACALL	OUTR0 
+					LCALL	OUTR0 
 					JNZ		U_RET 
-					ACALL	ZTEST 
+					LCALL	ZTEST 
 					JZ		U_RET 
 					SJMP	FREE2				;LOOP 
 	; 
-EXPOUT:				ACALL	SINOUT				;PRINT THE SIGN 
+EXPOUT:				LCALL	SINOUT				;PRINT THE SIGN 
 					MOV		R7,#1				;OUTPUT ONE CHARACTER 
-					ACALL	OUTR0 
-					ACALL	ROUT				;OUTPUT RADIX 
+					LCALL	OUTR0 
+					LCALL	ROUT				;OUTPUT RADIX 
 					MOV		A,R3				;GET FORMAT 
 					ANL		A,#0FH				;STRIP INDICATOR 
 					JZ		EXPOTX 
 	; 
 					MOV		R7,A				;OUTPUT THE NUMBER OF DIGITS 
 					DEC		R7					;ADJUST BECAUSE ONE CHAR ALREADY OUT 
-					ACALL	OUTR0 
+					LCALL	OUTR0 
 					SJMP	EXPOT4 
 	; 
 EXPOTX:				ACALL	FREE2				;OUTPUT UNTIL TRAILING ZEROS 
 	; 
-EXPOT4:				ACALL	SOUT				;OUTPUT A SPACE 
+EXPOT4:				LCALL	SOUT				;OUTPUT A SPACE 
 					MOV		R5,#'E' 
 					ACALL	SOUT1				;OUTPUT AN E 
 					MOV		A,R6				;GET THE EXPONENT 
@@ -2519,7 +2809,7 @@ CONVERT_ASCII_STRING_TO_BINARY:
 	; 
 	;*************************************************************** 
 	; 
-CASB:				ACALL	HEXSCAN				;SEE IF HEX NUMBER 
+CASB:				LCALL	HEXSCAN				;SEE IF HEX NUMBER 
 					MOV		ADD_IN,C			;IF ADD_IN IS SET, THE NUMBER IS HEX 
 					LCALL	GET_DIGIT_CHECK 
 					CPL		C					;FLIP FOR EXIT 
