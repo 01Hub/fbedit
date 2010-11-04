@@ -4,12 +4,12 @@ Version=3000
 Assembler=asemw
 Path=D:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\Asemw\Projects\Monitor
 Group=2,-1,0,1,Monitor,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,2,1,22,22,600,400,345,Monitor.a51
+F1=-2,2,1,22,22,600,400,436,Monitor.a51
 Open=0,1
 Api=
 C1=0
 B1=
-M1=
+M1=444
 [Make]
 Make=0
 0=Release,'',,'"$C"',"$C.hex",'"$C" "$O"',"$C.cmd",'',
