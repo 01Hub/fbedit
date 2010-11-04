@@ -1214,6 +1214,8 @@ Update:
 			invoke PutItemInt,addr tmpbuff,eax
 			movzx	eax,lf.lfCharSet
 			invoke PutItemInt,addr tmpbuff,eax
+			mov		eax,lf.lfWeight
+			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniCode,addr tmpbuff[1],addr da.szRadASMIni
 		.endif
 		.if hTFnt
@@ -1233,6 +1235,8 @@ Update:
 			invoke PutItemInt,addr tmpbuff,eax
 			movzx	eax,lf.lfCharSet
 			invoke PutItemInt,addr tmpbuff,eax
+			mov		eax,lf.lfWeight
+			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniText,addr tmpbuff[1],addr da.szRadASMIni
 		.endif
 		.if hHFnt
@@ -1247,6 +1251,8 @@ Update:
 			invoke PutItemInt,addr tmpbuff,eax
 			movzx	eax,lf.lfCharSet
 			invoke PutItemInt,addr tmpbuff,eax
+			mov		eax,lf.lfWeight
+			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniHex,addr tmpbuff[1],addr da.szRadASMIni
 		.endif
 		.if hTLFnt
@@ -1260,6 +1266,8 @@ Update:
 			mov		eax,lf.lfHeight
 			invoke PutItemInt,addr tmpbuff,eax
 			movzx	eax,lf.lfCharSet
+			invoke PutItemInt,addr tmpbuff,eax
+			mov		eax,lf.lfWeight
 			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniTool,addr tmpbuff[1],addr da.szRadASMIni
 		.endif
@@ -1276,6 +1284,8 @@ Update:
 			mov		eax,lf.lfHeight
 			invoke PutItemInt,addr tmpbuff,eax
 			movzx	eax,lf.lfCharSet
+			invoke PutItemInt,addr tmpbuff,eax
+			mov		eax,lf.lfWeight
 			invoke PutItemInt,addr tmpbuff,eax
 			invoke WritePrivateProfileString,addr szIniFont,addr szIniLine,addr tmpbuff[1],addr da.szRadASMIni
 		.endif

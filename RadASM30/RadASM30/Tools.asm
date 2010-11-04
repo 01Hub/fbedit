@@ -781,6 +781,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov     ha.hToolFont,eax
 	;Code edit fonts
@@ -791,6 +793,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.racf.hFont,eax
 	mov		lfnt.lfItalic,TRUE
@@ -803,6 +807,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.racf.hLnrFont,eax
 	;Text edit fonts
@@ -813,6 +819,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.ratf.hFont,eax
 	mov		lfnt.lfItalic,TRUE
@@ -825,6 +833,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.ratf.hLnrFont,eax
 	;Hex edit fonts
@@ -835,6 +845,8 @@ DoFonts proc
 	mov 	lfnt.lfHeight,eax
 	invoke GetItemInt,addr buffer,0
 	mov		lfnt.lfCharSet,al
+	invoke GetItemInt,addr buffer,0
+	mov		lfnt.lfWeight,eax
 	invoke CreateFontIndirect,addr lfnt
 	mov		ha.rahf.hFont,eax
 	mov		ha.rahf.hLnrFont,eax
