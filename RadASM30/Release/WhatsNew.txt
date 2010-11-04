@@ -43,13 +43,13 @@ o Fixed bug with Comment / Uncomment. Did not work as it should for languages ot
 
 Version 3.0.0.6 2010-07-26
 --------------------------
-o Fixed bug where opening a project asm file as hes would crash RadASM.
+o Fixed bug where opening a project asm file as hex would crash RadASM.
 
 Version 3.0.0.6 2010-07-05
 --------------------------
 o Added support for FreeBASIC.
 o Added AIM_OUTPUTDBLCLK addin message.
-o Toolwindows now gets an active caktion when they get focus.
+o Toolwindows now gets an active caption when they get focus.
 o Fixed bugs.
 
 Version 3.0.0.5 2010-06-28
