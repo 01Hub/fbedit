@@ -1,3 +1,28 @@
+
+;*****************************************************
+;SCREEN DRIVER
+;-----------------------------------------------------
+;01				START SEND ROMDATA.HEX FILE
+;02				STOP SEND FILE
+;03				START RECIEVE ROMDATA.HEX FILE
+;04				STOP RECIEVE FILE
+;05				START RECIEVE FILE IN 16 BYTE BLOCKS
+;06				STOP RECIEVE FILE IN 16 BYTE BLOCKS
+;07				BELL, if from MCU then next 2
+;				binary characters is the single step
+;				address to be executed.
+;08				BACK SPACE
+;09				TAB
+;0A				LF
+;0B				LOCATE
+;0C				HOME
+;0D				CR
+;0E				CLS
+;0F				MODE
+;10				START SEND CMDFILE.CMD FILE
+;-----------------------------------------------------
+;*****************************************************
+
 BOXWT				equ 9
 BOXHT				equ 17
 
@@ -6,6 +31,8 @@ BOXHT				equ 17
 nLine				DWORD ?
 nPos				DWORD ?
 nLocate				DWORD ?
+nDebug				DWORD ?
+SingleStepAdr		DWORD ?
 
 scrn				WORD 80 dup(?)
 					WORD 80 dup(?)
@@ -129,6 +156,39 @@ ScreenOut proc nChar:DWORD
 			mov		nPos,eax
 		.endif
 		mov		nLocate,0
+	.elseif nDebug==1
+		mov		eax,nChar
+		mov		SingleStepAdr,eax
+		mov		nDebug,2
+	.elseif nDebug==2
+		mov		eax,nChar
+		xchg	al,ah
+		or		SingleStepAdr,eax
+		mov		eax,SingleStepAdr
+		push	eax
+		call	ToHex
+		mov		buffer[3],al
+		pop		eax
+		shr		eax,4
+		push	eax
+		call	ToHex
+		mov		buffer[2],al
+		pop		eax
+		shr		eax,4
+		push	eax
+		call	ToHex
+		mov		buffer[1],al
+		pop		eax
+		shr		eax,4
+		call	ToHex
+		mov		buffer[0],al
+		mov		buffer[4],0
+		invoke Find,addr buffer
+		.if !eax
+			;Addrss not found
+			invoke WriteCom,0Dh
+		.endif
+		mov		nDebug,0
 	.elseif hwrfile && eax!=04h
 		mov		buffer,al
 		invoke WriteFile,hwrfile,addr buffer,1,addr nWrite,NULL
@@ -201,6 +261,9 @@ ScreenOut proc nChar:DWORD
 			mov		fblockmode,FALSE
 			invoke CloseHandle,hrdblock
 			mov		hrdblock,0
+		.elseif al==07h
+			;Single step, next 2 characters is binary address of next instruction
+			mov		nDebug,1
 		.elseif al==10h
 			;Send cmd file to emulator
 			mov		fprogrom,FALSE
@@ -213,6 +276,15 @@ ScreenOut proc nChar:DWORD
 		.endif
 	.endif
 	ret
+
+ToHex:
+	and     eax,0fh
+	cmp     eax,0ah
+	jb      ToHex1
+	add     eax,07h
+ToHex1:
+	add     eax,30h
+	retn
 
 ScreenOut endp
 

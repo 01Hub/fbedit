@@ -23,7 +23,7 @@
 ;04				STOP RECIEVE FILE
 ;05				START RECIEVE FILE IN 16 BYTE BLOCKS
 ;06				STOP RECIEVE FILE IN 16 BYTE BLOCKS
-;07				BELL
+;07				BELL, if from MCU then next 2 characters is the single step binary address
 ;08				BACK SPACE
 ;09				TAB
 ;0A				LF
@@ -94,8 +94,16 @@ FPCHR_OUT		EQU 24h
 ;*****************************************************
 
 				ORG		2000H
+				
+				SJMP	START
+				
+				ORG		2003H
+				LJMP	SINGLESTEP
 
-START:			MOV		SP,#0CFh
+				ORG		2040H
+
+START:			SETB	20h.0
+				MOV		SP,#0CFh
 				CLR		A
 				MOV		DPL,A
 				MOV		DPH,#ARG_STACK_PAGE
@@ -2404,5 +2412,29 @@ ADCMUL:			DB 7Eh,00h,79h,07h,03h,16h		;CH0	1.6030779e-3
 				DB 7Eh,00h,79h,07h,03h,16h		;CH1	1.6030779e-3
 				DB 7Eh,00h,79h,07h,03h,16h		;CH2	1.6030779e-3
 				DB 7Eh,00h,79h,07h,03h,16h		;CH3	1.6030779e-3
+
+SINGLESTEP:		PUSH	PSW
+				PUSH	ACC
+				CLR		RS0
+				CLR		RS1
+				PUSH	00h
+				MOV		R0,SP
+				DEC		R0
+				MOV		A,@R0
+				MOV		SBUF,A					;Send LSB
+				JNB		TI,$
+				CLR		TI
+				DEC		R0
+				MOV		A,@R0
+				MOV		SBUF,A					;Send MSB
+				JNB		SCON.1,$
+				CLR		SCON.1
+				JNB		RI,$
+				CLR		RI
+				MOV		A,SBUF
+				POP		00h
+				POP		ACC
+				POP		PSW
+				RETI
 
 				END

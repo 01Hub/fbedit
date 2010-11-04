@@ -149,3 +149,61 @@ PutItemStr proc uses esi,lpBuff:DWORD,lpStr:DWORD
 
 PutItemStr endp
 
+StreamInProc proc hFile:DWORD,pBuffer:DWORD,NumBytes:DWORD,pBytesRead:DWORD
+
+	invoke ReadFile,hFile,pBuffer,NumBytes,pBytesRead,0
+	xor		eax,1
+	ret
+
+StreamInProc endp
+
+LoadLstFile proc uses ebx esi
+    LOCAL   hFile:HANDLE
+	LOCAL	editstream:EDITSTREAM
+
+	;Open the file
+	invoke CreateFile,offset szlstfilename,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0
+	.if eax!=INVALID_HANDLE_VALUE
+		mov		hFile,eax
+		invoke SendMessage,hREd,WM_SETTEXT,0,addr szNULL
+		;stream the text into the RAEdit control
+		mov		eax,hFile
+		mov		editstream.dwCookie,eax
+		mov		editstream.pfnCallback,offset StreamInProc
+		invoke SendMessage,hREd,EM_STREAMIN,SF_TEXT,addr editstream
+		invoke CloseHandle,hFile
+		invoke SendMessage,hREd,EM_SETMODIFY,FALSE,0
+		invoke SendMessage,hREd,REM_SETCHANGEDSTATE,FALSE,0
+		mov		eax,FALSE
+	.else
+		mov		eax,TRUE
+	.endif
+	ret
+
+LoadLstFile endp
+
+Find proc lpText:DWORD
+	LOCAL	buffer[16]:BYTE
+	LOCAL	ft:FINDTEXTEX
+
+	mov		eax,202009h
+	mov		dword ptr buffer,eax
+	invoke lstrcat,addr buffer,lpText
+	mov		word ptr buffer[7],09h
+	mov		ft.chrg.cpMin,0
+	mov		ft.chrg.cpMax,-1
+	lea		eax,buffer
+	mov		ft.lpstrText,eax
+	invoke SendMessage,hREd,EM_FINDTEXTEX,FR_DOWN,addr ft
+	.if eax!=-1
+		invoke SendMessage,hREd,EM_EXSETSEL,0,addr ft.chrgText
+		invoke SendMessage,hREd,REM_VCENTER,0,0
+		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
+		invoke SendMessage,hREd,EM_EXSETSEL,0,addr ft.chrgText
+		mov		eax,TRUE
+	.else
+		xor		eax,eax
+	.endif
+	ret
+
+Find endp

@@ -38,16 +38,18 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	hWin
 		pop		hWnd
 		invoke GetDlgItem,hWin,IDC_TBR1
-		invoke MakeToolBar,eax,offset tbrbtnsfile,6
+		invoke MakeToolBar,eax,offset tbrbtnsfile,ntbrbtns
 		invoke GetDlgItem,hWin,IDC_SCREEN
 		mov		hScrn,eax
+		invoke GetDlgItem,hWin,IDC_RAE1
+		mov		hREd,eax
 		invoke CreateFontIndirect,addr Courier_New_12
 		mov		hFont,eax
 		invoke SendMessage,hScrn,WM_SETFONT,hFont,FALSE
 		invoke SetWindowLong,hScrn,GWL_WNDPROC,addr ScreenProc
 		mov		lpOldScreenProc,eax
-		invoke SendMessage,hScrn,WM_GETFONT,0,0
-		mov		hFont,eax
+		invoke SendMessage,hREd,WM_SETFONT,hFont,FALSE
+		invoke SendMessage,hREd,REM_READONLY,0,TRUE
 		invoke ScreenCls
 		invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 		invoke ShowCaret,hScrn
@@ -98,7 +100,11 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			push	hInstance
 			pop		ofn.hInstance
 			mov		ofn.lpstrFilter,offset szANYString
-			invoke lstrcpy,addr buffer,addr szcmdfilename
+			.if !fDebug
+				invoke lstrcpy,addr buffer,addr szcmdfilename
+			.else
+				invoke lstrcpy,addr buffer,addr szlstfilename
+			.endif
 			lea		eax,buffer
 			mov		ofn.lpstrFile,eax
 			mov		ofn.nMaxFile,sizeof buffer
@@ -108,14 +114,23 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			;Show the Open dialog
 			invoke GetOpenFileName,addr ofn
 			.if eax
-				invoke lstrcpy,addr szcmdfilename,addr buffer
-				movzx	eax,ofn.nFileOffset
-				invoke SendDlgItemMessage,hWin,IDC_SBR1,SB_SETTEXT,0,addr szcmdfilename[eax]
+				.if !fDebug
+					invoke lstrcpy,addr szcmdfilename,addr buffer
+					movzx	eax,ofn.nFileOffset
+					invoke SendDlgItemMessage,hWin,IDC_SBR1,SB_SETTEXT,0,addr szcmdfilename[eax]
+				.else
+					invoke lstrcpy,addr szlstfilename,addr buffer
+				.endif
 			.endif
-			invoke SetFocus,hWin
-			invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
-			invoke ScreenCaret
-			invoke ShowCaret,hScrn
+			.if !fDebug
+				invoke SetFocus,hWin
+				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
+				invoke ScreenCaret
+				invoke ShowCaret,hScrn
+			.else
+				invoke LoadLstFile
+				invoke SetFocus,hREd
+			.endif
 		.elseif eax==IDM_FILE_SAVE
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
@@ -181,9 +196,22 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==IDM_OPTION_COMPORT
 			invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
+		.elseif eax==IDM_FILE_DEBUG
+			.if fDebug
+				invoke ShowWindow,hScrn,SW_SHOW
+				invoke ShowWindow,hREd,SW_HIDE
+				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
+				invoke ShowCaret,hScrn
+			.else
+				invoke HideCaret,hScrn
+				invoke ShowWindow,hREd,SW_SHOW
+				invoke ShowWindow,hScrn,SW_HIDE
+				invoke SetFocus,hREd
+			.endif
+			xor		fDebug,1
 		.endif
 	.elseif eax==WM_CHAR
-		.if hCom && !hrdfile
+		.if hCom && !hrdfile && !fDebug
 			mov		eax,wParam
 			.if eax==1Bh
 				;Esc
@@ -192,7 +220,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke WriteCom,eax
 		.endif
 	.elseif eax==WM_KEYDOWN
-		.if hCom && !hrdfile
+		.if hCom && !hrdfile && !fDebug
 			mov		eax,wParam
 			.if eax==VK_RIGHT
 				invoke WriteCom,9Ch
@@ -208,6 +236,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endif
 	.elseif eax==WM_SIZE
 		invoke MoveWindow,hScrn,0,28,80*BOXWT+4,24*BOXHT+4,TRUE
+		invoke MoveWindow,hREd,0,28,80*BOXWT+4,24*BOXHT+4,TRUE
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY
@@ -268,6 +297,7 @@ start:
 	invoke GetModuleHandle,NULL
 	mov    hInstance,eax
 	invoke InitCommonControls
+	invoke InstallRAEdit,hInstance,FALSE
 	invoke GetCommandLine
 	mov		CommandLine,eax
 	;Get command line filename
@@ -287,6 +317,7 @@ start:
 	invoke lstrcpy,addr szinifile,addr szapppath
 	invoke lstrcat,addr szinifile,addr szIniFile
 	invoke WinMain,hInstance,NULL,CommandLine,SW_SHOWDEFAULT
+	invoke UnInstallRAEdit
 	invoke ExitProcess,eax
 
 end start

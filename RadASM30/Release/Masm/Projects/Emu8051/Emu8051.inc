@@ -6,6 +6,7 @@ include comctl32.inc
 include comdlg32.inc
 include gdi32.inc
 include shlwapi.inc
+include RAEdit.inc
 
 includelib user32.lib
 includelib kernel32.lib
@@ -14,6 +15,7 @@ includelib comctl32.lib
 includelib comdlg32.lib
 includelib gdi32.lib
 includelib shlwapi.lib
+includelib RAEdit.lib
 
 ;#########################################################################
 ;VKim's Debug
@@ -29,6 +31,7 @@ IDD_DIALOG              equ 1000
 IDC_SCREEN              equ 1001
 IDC_SBR1                equ 1002
 IDC_TBR1                equ 1003
+IDC_RAE1				equ 1004
 
 IDD_DLGCOMPORT          equ 1400
 IDC_CHKCOMACTIVE        equ 1401
@@ -45,12 +48,13 @@ IDM_FILE_OPEN           equ 10003
 IDM_FILE_SAVE           equ 10004
 IDM_FILE_PRINT          equ 10005
 IDM_FILE_GO             equ 10006
+IDM_FILE_DEBUG			equ 10010
 IDM_OPTION_COMPORT      equ 10007
 IDM_HELP_INSTRUCTIONSET equ 10008
 IDM_HELP_HARDWARE		equ 10098
 
 COM struct
-	active		DWORD ?								;Communication with GPS is active if TRUE
+	active		DWORD ?								;Communication with MCU is active if TRUE
 	szcom		BYTE 16 dup(?)						;Com port (COM1, COM2 ...)
 	nbaud		DWORD ?								;Baudrate (4800 to 38400)
 	nbits		DWORD ?								;Data bits (7 or 8)
@@ -73,6 +77,10 @@ tbrbtnsfile				TBBUTTON <14,IDM_FILE_PRINT,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 						TBBUTTON <8,IDM_FILE_SAVE,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
 						TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
 						TBBUTTON <10,IDM_FILE_GO,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+						TBBUTTON <0,0,TBSTATE_ENABLED,TBSTYLE_SEP,0,0>
+						TBBUTTON <9,IDM_FILE_DEBUG,TBSTATE_ENABLED,TBSTYLE_BUTTON,0,0>
+
+ntbrbtns				equ 8
 
 szANYString				db 'All Files (*.*)',0,'*.*',0,0
 szIniFile				db '\Emu8051.ini',0
@@ -87,16 +95,17 @@ hInstance				HINSTANCE ?
 CommandLine				DWORD ?
 hWnd					HWND ?
 hScrn					HWND ?
+hREd					HWND ?
 hFont					HFONT ?
 dcb						DCB <>
 hCom					HANDLE ?
 to						COMMTIMEOUTS <>
 lpOldScreenProc			DWORD ?
-;hFont					HFONT ?
 szapppath				BYTE MAX_PATH dup(?)
 szinifile				BYTE MAX_PATH dup(?)
 szcmdfilename			BYTE MAX_PATH dup(?)
 szromfilename			BYTE MAX_PATH dup(?)
+szlstfilename			BYTE MAX_PATH dup(?)
 fExit					DWORD ?
 fprogrom				DWORD ?
 fblockmode				DWORD ?
@@ -104,3 +113,4 @@ hrdfile					HANDLE ?
 hrdblock				HANDLE ?
 hwrfile					HANDLE ?
 comopt					COM <>
+fDebug					DWORD ?

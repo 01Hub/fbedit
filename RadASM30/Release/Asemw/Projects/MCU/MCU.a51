@@ -130,9 +130,11 @@ MODE			EQU 2Ah
 				AJMP	START0
 ;IE0IRQ:**********************************************
 				ORG		0003h
+				JB		00h,IE0IRQ				;$20.0
 				INC		MODE
 				ANL		MODE,#07h
 				AJMP	START
+IE0IRQ:			LJMP	2003h
 ;TF0IRQ:**********************************************
 				ORG		000Bh
 				JB		01h,$+4					;$20.1
