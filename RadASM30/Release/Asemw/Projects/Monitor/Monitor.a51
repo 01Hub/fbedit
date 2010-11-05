@@ -10,64 +10,64 @@ $NOPAGING
 ;*****************************************************
 ;RAM Locations
 ;-----------------------------------------------------
-;20				Interrupt flags
-;21				ARG_STACK		ARGUMENT STACK POINTER 
-;22				FORMAT			LOCATION OF OUTPUT FORMAT BYTE 
-;23.1			INTGRC			BIT SET IF INTEGER ERROR 
-;23.3			ADD_IN			DCMPXZ IN BASIC BACKAGE 
-;23.6			ZSURP			ZERO SUPRESSION FOR HEX PRINT 
-;24				FPCHR_OUT		CHARACTER POSITION
+;20	Interrupt flags
+;21	ARG_STACK	ARGUMENT STACK POINTER 
+;22	FORMAT		LOCATION OF OUTPUT FORMAT BYTE 
+;23.1	INTGRC		BIT SET IF INTEGER ERROR 
+;23.3	ADD_IN		DCMPXZ IN BASIC BACKAGE 
+;23.6	ZSURP		ZERO SUPRESSION FOR HEX PRINT 
+;24	FPCHR_OUT	CHARACTER POSITION
 
-;E0-FF			Stack
+;D0-FF	Stack
 ;-----------------------------------------------------
 ;*****************************************************
 ;SCREEN DRIVER
 ;-----------------------------------------------------
-;01				START SEND ROMDATA.HEX FILE
-;02				STOP SEND FILE
-;03				START RECIEVE ROMDATA.HEX FILE
-;04				STOP RECIEVE FILE
-;05				START RECIEVE FILE IN 16 BYTE BLOCKS
-;06				STOP RECIEVE FILE IN 16 BYTE BLOCKS
-;07				BELL, if from MCU then next 2 characters is the single step binary address
-;08				BACK SPACE
-;09				TAB
-;0A				LF
-;0B				LOCATE
-;0C				HOME
-;0D				CR
-;0E				CLS
-;0F				MODE
-;10				START SEND CMDFILE.CMD FILE
+;01	START SEND ROMDATA.HEX FILE
+;02	STOP SEND FILE
+;03	START RECIEVE ROMDATA.HEX FILE
+;04	STOP RECIEVE FILE
+;05	START RECIEVE FILE IN 16 BYTE BLOCKS
+;06	STOP RECIEVE FILE IN 16 BYTE BLOCKS
+;07	BELL, if from MCU then next 2 characters is the single step binary address
+;08	BACK SPACE
+;09	TAB
+;0A	LF
+;0B	LOCATE
+;0C	HOME
+;0D	CR
+;0E	CLS
+;0F	MODE
+;10	START SEND CMDFILE.CMD FILE
 ;-----------------------------------------------------
 ;*****************************************************
 ;Memory mapped I/O
 ;-----------------------------------------------------
 ;8000h Output
 ;-----------------------------------------------------
-;D0		LCD DB4
-;D1		LCD DB5
-;D2		LCD DB6
-;D3		LCD DB7
-;D4		LCD RS
-;D5		LCD E
+;D0	LCD DB4
+;D1	LCD DB5
+;D2	LCD DB6
+;D3	LCD DB7
+;D4	LCD RS
+;D5	LCD E
 ;D6
 ;D7
 ;-----------------------------------------------------
 ;8001h Output
 ;-----------------------------------------------------
-;D0		FRQ SEL A | 00 FREQENCY COUNER 01 FUNCTION GEN 
-;D1		FRQ SEL B | 10 L/C METER 11 ITERNAL ALE
-;D2		FRQ GATE ACTIVE LOW
-;D3		FRQ	RESET ACTIVE HIGH
-;D4		ADC CS ACTIVE LOW
-;D5		ADC CLK HIGH TO LOW TRANSITION
-;D6		ADC DIN
+;D0	FRQ SEL A | 00 FREQENCY COUNER 01 FUNCTION GEN 
+;D1	FRQ SEL B | 10 L/C METER 11 ITERNAL ALE
+;D2	FRQ GATE ACTIVE LOW
+;D3	FRQ	RESET ACTIVE HIGH
+;D4	ADC CS ACTIVE LOW
+;D5	ADC CLK HIGH TO LOW TRANSITION
+;D6	ADC DIN
 ;D7
 ;-----------------------------------------------------
 ;8000h Input
 ;-----------------------------------------------------
-;D0		ADC DOUT
+;D0	ADC DOUT
 ;D1
 ;D2
 ;D3
@@ -78,514 +78,514 @@ $NOPAGING
 ;-----------------------------------------------------
 ;8001h Input
 ;-----------------------------------------------------
-;D0		FRQ LSB
+;D0	FRQ LSB
 ;D1
 ;D2
 ;D3
 ;D4
 ;D5
 ;D6
-;D7		FRQ MSB
+;D7	FRQ MSB
 ;-----------------------------------------------------
 ;*****************************************************
 ;Equates
 ;-----------------------------------------------------
-T2CON			EQU 0C8h
-RCAP2L			EQU 0CAh
-RCAP2H			EQU 0CBh
-TL2				EQU 0CCh
-TH2				EQU 0CDh
-FPCHR_OUT		EQU 24h
+T2CON		EQU 0C8h
+RCAP2L		EQU 0CAh
+RCAP2H		EQU 0CBh
+TL2		EQU 0CCh
+TH2		EQU 0CDh
+FPCHR_OUT	EQU 24h
 ;-----------------------------------------------------
 ;*****************************************************
 
-				ORG		2000H
-				
-				SJMP	START
-				
-				ORG		2013H
-				LJMP	SINGLESTEP
+		ORG	2000H
+		
+		SJMP	START
+		
+		ORG	2013H
+		LJMP	SINGLESTEP
 
-				ORG		2040H
+		ORG	2040H
 
-START:			SETB	20h.2
-				SETB	20h.7
-				CLR		IT1						;Level triggered
-				SETB	EX1						;Enable external interrupt 0, INT0 #
-				MOV		SP,#0CFh
-				CLR		A
-				MOV		DPL,A
-				MOV		DPH,#ARG_STACK_PAGE
-				MOV		R7,A
-START0:			MOVX	@DPTR,A
-				INC		DPTR
-				DJNZ	R7,START0
+START:		SETB	20h.2
+		SETB	20h.7
+		CLR	IT1						;Level triggered
+		SETB	EX1						;Enable external interrupt 0, INT0 #
+		MOV	SP,#0CFh
+		CLR	A
+		MOV	DPL,A
+		MOV	DPH,#ARG_STACK_PAGE
+		MOV	R7,A
+START0:		MOVX	@DPTR,A
+		INC	DPTR
+		DJNZ	R7,START0
 CLR		P3.3
 SETB	EA
 
-				MOV		ARG_STACK,#0C0h
-				MOV		FORMAT,#00h
-;				ACALL	LCDINIT
-;				MOV		A,#41h
-;				ACALL	LCDCHROUT
-;				MOV		A,#42h
-;				ACALL	LCDCHROUT
-;				MOV		A,#43h
-;				ACALL	LCDCHROUT
-;				MOV		A,#44h
-;				ACALL	LCDCHROUT
-START1:			MOV		A,#03h
-				ACALL	FRQCOUNT
-				ACALL	FRQFORMAT
-				MOV		R0,#30h
-				LCALL	PRINTSTR
-				MOV		A,#0Dh
-				LCALL	TXBYTE
-				MOV		A,#0Ah
-				LCALL	TXBYTE
+		MOV	ARG_STACK,#0C0h
+		MOV	FORMAT,#00h
+;		ACALL	LCDINIT
+;		MOV	A,#41h
+;		ACALL	LCDCHROUT
+;		MOV	A,#42h
+;		ACALL	LCDCHROUT
+;		MOV	A,#43h
+;		ACALL	LCDCHROUT
+;		MOV	A,#44h
+;		ACALL	LCDCHROUT
+START1:		MOV	A,#03h
+		ACALL	FRQCOUNT
+		ACALL	FRQFORMAT
+		MOV	R0,#30h
+		LCALL	PRINTSTR
+		MOV	A,#0Dh
+		LCALL	TXBYTE
+		MOV	A,#0Ah
+		LCALL	TXBYTE
 ;
-;				MOV		FPCHR_OUT,#34h
-;				MOV		ARG_STACK,#0C0h
-;				MOV		A,#03h
-;				ACALL	ADCONVERT
+;		MOV	FPCHR_OUT,#34h
+;		MOV	ARG_STACK,#0C0h
+;		MOV	A,#03h
+;		ACALL	ADCONVERT
 ;
-;				MOV		30h,#'I'
-;				MOV		31h,#'N'
-;				MOV		32h,#'T'
-;				MOV		33h,#' '
-;				MOV		34h,#00h
+;		MOV	30h,#'I'
+;		MOV	31h,#'N'
+;		MOV	32h,#'T'
+;		MOV	33h,#' '
+;		MOV	34h,#00h
 ;
-;				MOV		FPCHR_OUT,#3Ah
-;				MOV		ARG_STACK,#0C0h
-;				MOV		A,#02h
-;				ACALL	ADCONVERT
+;		MOV	FPCHR_OUT,#3Ah
+;		MOV	ARG_STACK,#0C0h
+;		MOV	A,#02h
+;		ACALL	ADCONVERT
 
-;				MOV		R0,#30h
-;				LCALL	PRINTSTR
-;				MOV		A,#0Dh
-;				LCALL	TXBYTE
-;				MOV		A,#0Ah
-;				LCALL	TXBYTE
-				JNB		SCON.0,START1
-				LCALL	RXBYTE
-				MOV		DPTR,#2000h
-				CLR		EA
-				LJMP	0000H
+;		MOV	R0,#30h
+;		LCALL	PRINTSTR
+;		MOV	A,#0Dh
+;		LCALL	TXBYTE
+;		MOV	A,#0Ah
+;		LCALL	TXBYTE
+		JNB	SCON.0,START1
+		LCALL	RXBYTE
+		MOV	DPTR,#2000h
+		CLR	EA
+		LJMP	0000H
 
 ;AD Converter.
 ;IN:	A holds channel (0 to 7).
 ;-----------------------------------------------------
-ADCONVERT:		PUSH	ACC
-				SETB	ACC.4	;START
-				SETB	ACC.3	;SINGLE ENDED
-				RL		A
-				RL		A
-				RL		A
-				MOV		R2,A
-				CLR		ACC.0	;FRQ SEL
-				CLR		ACC.1	;FRQ SEL
-				SETB	ACC.2	;D2		FRQ GATE ACTIVE LOW
-				SETB	ACC.3	;D3		FRQ	RESET ACTIVE HIGH
-				SETB	ACC.4	;D4		ADC CS ACTIVE LOW
-				SETB	ACC.5	;D5		ADC CLK HIGH TO LOW TRANSITION
-				SETB	ACC.6	;D6		ADC DIN
-				SETB	ACC.7	;D7
-				MOV		DPTR,#8001h
-				MOVX	@DPTR,A
-				;CS low
-				CLR		ACC.4	;D4		ADC CS ACTIVE LOW
-				MOVX	@DPTR,A
-				;Clock in channel select and Single/Diff+2 clocks for sample
-				MOV		R7,#07h
-ADCONVERT1:		XCH		A,R2
-				RLC		A
-				XCH		A,R2
-				MOV		ACC.6,C	;ADC DIN
-				CLR		ACC.5
-				MOVX	@DPTR,A
-				SETB	ACC.5
-				MOVX	@DPTR,A
-				DJNZ	R7,ADCONVERT1
-				MOV		R2,#00h
-				;Clock in 5 bits, including null bit
-				MOV		R7,#05h
-ADCONVERT2:		PUSH	ACC
-				MOV		DPTR,#8000h
-				MOVX	A,@DPTR
-				RRC		A
-				XCH		A,R2
-				RLC		A
-				XCH		A,R2
-				MOV		DPTR,#8001h
-				POP		ACC
-				CLR		ACC.5
-				MOVX	@DPTR,A
-				SETB	ACC.5
-				MOVX	@DPTR,A
-				DJNZ	R7,ADCONVERT2
-				MOV		R0,#00h
-				;Clock in 8 bits
-				MOV		R7,#08h
-ADCONVERT3:		MOVX	@DPTR,A
-				PUSH	ACC
-				MOV		DPTR,#8000h
-				MOVX	A,@DPTR
-				RRC		A
-				XCH		A,R0
-				RLC		A
-				XCH		A,R0
-				MOV		DPTR,#8001h
-				POP		ACC
-				CLR		ACC.5
-				MOVX	@DPTR,A
-				SETB	ACC.5
-				DJNZ	R7,ADCONVERT3
-				;Convert 16 bit integer in R2:R0 to float and push it to fp arg stack
-				LCALL	PUSHR2R0
-				;Push the channelS constant to fp arg stack
-				MOV		DPTR,#ADCMUL
-				POP		ACC
-				MOV		B,#FP_NUMBER_SIZE
-				MUL		AB
-				ADD		A,DPL
-				MOV		DPL,A
-				CLR		A
-				ADDC	A,DPH
-				MOV		DPH,A
-				LCALL	PUSHC
-				;Multiply
-				LCALL	FLOATING_MUL
-				MOV		FORMAT,#22h
-				MOV		A,ARG_STACK
-				CLR		C
-				SUBB	A,#05h
-				MOV		R0,A
-				LCALL	FLOATING_POINT_OUTPUT
-				RET
+ADCONVERT:	PUSH	ACC
+		SETB	ACC.4			;START
+		SETB	ACC.3			;SINGLE ENDED
+		RL	A
+		RL	A
+		RL	A
+		MOV	R2,A
+		CLR	ACC.0			;FRQ SEL
+		CLR	ACC.1			;FRQ SEL
+		SETB	ACC.2			;D2	FRQ GATE ACTIVE LOW
+		SETB	ACC.3			;D3	FRQ	RESET ACTIVE HIGH
+		SETB	ACC.4			;D4	ADC CS ACTIVE LOW
+		SETB	ACC.5			;D5	ADC CLK HIGH TO LOW TRANSITION
+		SETB	ACC.6			;D6	ADC DIN
+		SETB	ACC.7	;D7
+		MOV	DPTR,#8001h
+		MOVX	@DPTR,A
+		;CS low
+		CLR	ACC.4	;D4		ADC CS ACTIVE LOW
+		MOVX	@DPTR,A
+		;Clock in channel select and Single/Diff+2 clocks for sample
+		MOV	R7,#07h
+ADCONVERT1:	XCH	A,R2
+		RLC	A
+		XCH	A,R2
+		MOV	ACC.6,C	;ADC DIN
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		MOVX	@DPTR,A
+		DJNZ	R7,ADCONVERT1
+		MOV	R2,#00h
+		;Clock in 5 bits, including null bit
+		MOV	R7,#05h
+ADCONVERT2:	PUSH	ACC
+		MOV	DPTR,#8000h
+		MOVX	A,@DPTR
+		RRC	A
+		XCH	A,R2
+		RLC	A
+		XCH	A,R2
+		MOV	DPTR,#8001h
+		POP	ACC
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		MOVX	@DPTR,A
+		DJNZ	R7,ADCONVERT2
+		MOV	R0,#00h
+		;Clock in 8 bits
+		MOV	R7,#08h
+ADCONVERT3:	MOVX	@DPTR,A
+		PUSH	ACC
+		MOV	DPTR,#8000h
+		MOVX	A,@DPTR
+		RRC	A
+		XCH	A,R0
+		RLC	A
+		XCH	A,R0
+		MOV	DPTR,#8001h
+		POP	ACC
+		CLR	ACC.5
+		MOVX	@DPTR,A
+		SETB	ACC.5
+		DJNZ	R7,ADCONVERT3
+		;Convert 16 bit integer in R2:R0 to float and push it to fp arg stack
+		LCALL	PUSHR2R0
+		;Push the channelS constant to fp arg stack
+		MOV	DPTR,#ADCMUL
+		POP	ACC
+		MOV	B,#FP_NUMBER_SIZE
+		MUL	AB
+		ADD	A,DPL
+		MOV	DPL,A
+		CLR	A
+		ADDC	A,DPH
+		MOV	DPH,A
+		LCALL	PUSHC
+		;Multiply
+		LCALL	FLOATING_MUL
+		MOV	FORMAT,#22h
+		MOV	A,ARG_STACK
+		CLR	C
+		SUBB	A,#05h
+		MOV	R0,A
+		LCALL	FLOATING_POINT_OUTPUT
+		RET
 
 ;Wait loop
 ;-----------------------------------------------------
-WAITASEC:		MOV		R7,#0F8h
-				MOV		R6,#51
-				MOV		R5,#16
-WAITASEC1:		DJNZ	R7,WAITASEC1
-				DJNZ	R6,WAITASEC1
-				DJNZ	R5,WAITASEC1
-				NOP
-				RET
+WAITASEC:	MOV	R7,#0F8h
+		MOV	R6,#51
+		MOV	R5,#16
+WAITASEC1:	DJNZ	R7,WAITASEC1
+		DJNZ	R6,WAITASEC1
+		DJNZ	R5,WAITASEC1
+		NOP
+		RET
 
 ;Frequency counter.
 ;IN;	A holds channel (0 to 3).
 ;OUT:	32 Bit result at 30-33
-;		LSB from 74LS393 read at 8001h, TL0, TH0, TF0 bit. 25 bits
+;	LSB from 74LS393 read at 8001h, TL0, TH0, TF0 bit. 25 bits
 ;------------------------------------------------------------------
 FRQCOUNT:
-				PUSH	ACC
-				SETB	ACC.2					;D2		FRQ Gate active low
-				SETB	ACC.3					;D3		FRQ	Reset active high
-				SETB	ACC.4					;D4		ADC CS Active low
-				SETB	ACC.5					;D5		ADC CLK High to low transition
-				SETB	ACC.6					;D6		ADC DIN
-				SETB	ACC.7	;D7
-				MOV		DPTR,#8001h
-				MOVX	@DPTR,A					;Reset and gate off
-				PUSH	ACC
-				MOV		TL0,#00h
-				MOV		TH0,#00h
-				MOV		A,TMOD
-				SETB	ACC.0					;M00
-				CLR		ACC.1					;M01
-				SETB	ACC.2					;C/T0#
-				CLR		ACC.3					;GATE0
-				MOV		TMOD,A
-				MOV		A,TCON
-				SETB	ACC.4					;TR0
-				CLR		ACC.5					;TF0
-				MOV		TCON,A
-				POP		ACC
-				CLR		ACC.2					;D2		FRQ Gate active low
-				CLR		ACC.3					;D3		FRQ	Reset active high
-CLR		EX1
-				MOVX	@DPTR,A					;Select internal ALE,Gate on(low),Reset inactive
-				ACALL	WAITASEC
-				SETB	ACC.2					;D2		FRQ Gate active low
-				MOVX	@DPTR,A					;Stop counting
+		PUSH	ACC
+		SETB	ACC.2			;D2	FRQ Gate active low
+		SETB	ACC.3			;D3	FRQ	Reset active high
+		SETB	ACC.4			;D4	ADC CS Active low
+		SETB	ACC.5			;D5	ADC CLK High to low transition
+		SETB	ACC.6			;D6	ADC DIN
+		SETB	ACC.7	;D7
+		MOV	DPTR,#8001h
+		MOVX	@DPTR,A			;Reset and gate off
+		PUSH	ACC
+		MOV	TL0,#00h
+		MOV	TH0,#00h
+		MOV	A,TMOD
+		SETB	ACC.0			;M00
+		CLR	ACC.1			;M01
+		SETB	ACC.2			;C/T0#
+		CLR	ACC.3			;GATE0
+		MOV	TMOD,A
+		MOV	A,TCON
+		SETB	ACC.4			;TR0
+		CLR	ACC.5			;TF0
+		MOV	TCON,A
+		POP	ACC
+		CLR	ACC.2			;D2	FRQ Gate active low
+		CLR	ACC.3			;D3	FRQ	Reset active high
+CLR	EX1
+		MOVX	@DPTR,A			;Select internal ALE,Gate on(low),Reset inactive
+		ACALL	WAITASEC
+		SETB	ACC.2			;D2	FRQ Gate active low
+		MOVX	@DPTR,A			;Stop counting
 
 SETB	EX1
 
-				MOVX	A,@DPTR
-				MOV		30h,A
-				MOV		A,TL0
-				MOV		31h,A
-				MOV		A,TH0
-				MOV		32h,A
-				CLR		A						;TF0 Is the 25th bit
-				MOV		C,TF0
-				MOV		ACC.0,C
-				MOV		33h,A
-				POP		ACC
-				RET
+		MOVX	A,@DPTR
+		MOV	30h,A
+		MOV	A,TL0
+		MOV	31h,A
+		MOV	A,TH0
+		MOV	32h,A
+		CLR	A			;TF0 Is the 25th bit
+		MOV	C,TF0
+		MOV	ACC.0,C
+		MOV	33h,A
+		POP	ACC
+		RET
 
-FRQFORMAT:		PUSH	ACC
-				MOV		A,#0Eh					;CLS
-				LCALL	TXBYTE
-				ACALL	BIN2DEC
-				MOV		R7,A					;Number of digits
-				POP		ACC
-				MOV		30h,#'C'
-				MOV		31h,#'H'
-				ORL		A,#30h
-				MOV		32h,A
-				MOV		33h,#' '
-				MOV		R0,#34h
-				MOV		R1,#36h
-				CJNE	R7,#07h,$+3
-				JC		FRQFORMATKHZ
-				;MHz
-				MOV		R7,#08h
-FRQFORMATMHZ1:	MOV		A,@R1
-				CJNE	R7,#06h,FRQFORMATMHZ2
-				MOV		@R0,#'.'
-				INC		R0
-FRQFORMATMHZ2:	MOV		@R0,A
-				INC		R0
-				INC		R1
-				DJNZ	R7,FRQFORMATMHZ1
-				MOV		3Dh,#'M'
-				MOV		3Eh,#'H'
-				MOV		3Fh,#'z'
-				MOV		40h,#00h
-				SJMP	FRQFORMATDONE
+FRQFORMAT:	PUSH	ACC
+		MOV	A,#0Eh			;CLS
+		LCALL	TXBYTE
+		ACALL	BIN2DEC
+		MOV	R7,A			;Number of digits
+		POP	ACC
+		MOV	30h,#'C'
+		MOV	31h,#'H'
+		ORL	A,#30h
+		MOV	32h,A
+		MOV	33h,#' '
+		MOV	R0,#34h
+		MOV	R1,#36h
+		CJNE	R7,#07h,$+3
+		JC	FRQFORMATKHZ
+		;MHz
+		MOV	R7,#08h
+FRQFORMATMHZ1:	MOV	A,@R1
+		CJNE	R7,#06h,FRQFORMATMHZ2
+		MOV	@R0,#'.'
+		INC	R0
+FRQFORMATMHZ2:	MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATMHZ1
+		MOV	3Dh,#'M'
+		MOV	3Eh,#'H'
+		MOV	3Fh,#'z'
+		MOV	40h,#00h
+		SJMP	FRQFORMATDONE
 FRQFORMATKHZ:	CJNE	R7,#04h,$+3
-				JC		FRQFORMATHZ
-				;KHz
-				MOV		R7,#08h
-FRQFORMATKHZ1:	MOV		A,@R1
-				CJNE	R7,#03h,FRQFORMATKHZ2
-				MOV		@R0,#'.'
-				INC		R0
-FRQFORMATKHZ2:	MOV		@R0,A
-				INC		R0
-				INC		R1
-				DJNZ	R7,FRQFORMATKHZ1
-				MOV		3Dh,#'K'
-				MOV		3Eh,#'H'
-				MOV		3Fh,#'z'
-				MOV		40h,#00h
-				SJMP	FRQFORMATDONE
+		JC	FRQFORMATHZ
+		;KHz
+		MOV	R7,#08h
+FRQFORMATKHZ1:	MOV	A,@R1
+		CJNE	R7,#03h,FRQFORMATKHZ2
+		MOV	@R0,#'.'
+		INC	R0
+FRQFORMATKHZ2:	MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATKHZ1
+		MOV	3Dh,#'K'
+		MOV	3Eh,#'H'
+		MOV	3Fh,#'z'
+		MOV	40h,#00h
+		SJMP	FRQFORMATDONE
 FRQFORMATHZ:	;Hz
-				MOV		34h,#' '
-				INC		R0
-				MOV		R7,#08h
-FRQFORMATHZ1:	MOV		A,@R1
-				MOV		@R0,A
-				INC		R0
-				INC		R1
-				DJNZ	R7,FRQFORMATHZ1
-				MOV		3Dh,#'H'
-				MOV		3Eh,#'z'
-				MOV		3Fh,#' '
-				MOV		40h,#00h
+		MOV	34h,#' '
+		INC	R0
+		MOV	R7,#08h
+FRQFORMATHZ1:	MOV	A,@R1
+		MOV	@R0,A
+		INC	R0
+		INC	R1
+		DJNZ	R7,FRQFORMATHZ1
+		MOV	3Dh,#'H'
+		MOV	3Eh,#'z'
+		MOV	3Fh,#' '
+		MOV	40h,#00h
 FRQFORMATDONE:	RET
 
 ;LCD Output.
 ;-----------------------------------------------------
-LCDDELAY:		PUSH	07h
-				MOV		R7,#00h
-				DJNZ	R7,$
-				POP		07h
-				RET
+LCDDELAY:	PUSH	07h
+		MOV	R7,#00h
+		DJNZ	R7,$
+		POP	07h
+		RET
 
 ;A CONTAINS NIBBLE
-LCDNIBOUT:		CLR		ACC.5				; | negative edge on E
-				MOVX	@DPTR,A				; |
-				SETB	ACC.5				; | E
-				MOVX	@DPTR,A				; |
-				CLR		ACC.5				; | negative edge on E
-				MOVX	@DPTR,A				; |
-				RET
+LCDNIBOUT:	CLR	ACC.5			; | negative edge on E
+		MOVX	@DPTR,A			; |
+		SETB	ACC.5			; | E
+		MOVX	@DPTR,A			; |
+		CLR	ACC.5			; | negative edge on E
+		MOVX	@DPTR,A			; |
+		RET
 
 ;A CONTAINS BYTE
-LCDCMDOUT:		PUSH	ACC
-				SWAP	A					;High nibble first
-				ANL		A,#0Fh
-				CLR		ACC.4				;RS
-				ACALL	LCDNIBOUT
-				POP		ACC
-				ANL		A,#0Fh
-				CLR		ACC.4				;RS
-				ACALL	LCDNIBOUT
-				ACALL	LCDDELAY			; wait for BF to clear
-				RET
+LCDCMDOUT:	PUSH	ACC
+		SWAP	A			;High nibble first
+		ANL	A,#0Fh
+		CLR	ACC.4			;RS
+		ACALL	LCDNIBOUT
+		POP	ACC
+		ANL	A,#0Fh
+		CLR	ACC.4			;RS
+		ACALL	LCDNIBOUT
+		ACALL	LCDDELAY		; wait for BF to clear
+		RET
 
 ;A CONTAINS BYTE
-LCDCHROUT:		PUSH	DPL
-				PUSH	DPH
-				MOV		DPTR,#8000h
-				PUSH	ACC
-				SWAP	A					;High nibble first
-				ANL		A,#0Fh
-				SETB	ACC.4				;RS
-				ACALL	LCDNIBOUT
-				POP		ACC
-				ANL		A,#0Fh
-				SETB	ACC.4				;RS
-				ACALL	LCDNIBOUT
-				ACALL	LCDDELAY			; wait for BF to clear
-				POP		DPH
-				POP		DPL
-				RET
+LCDCHROUT:	PUSH	DPL
+		PUSH	DPH
+		MOV	DPTR,#8000h
+		PUSH	ACC
+		SWAP	A			;High nibble first
+		ANL	A,#0Fh
+		SETB	ACC.4			;RS
+		ACALL	LCDNIBOUT
+		POP	ACC
+		ANL	A,#0Fh
+		SETB	ACC.4			;RS
+		ACALL	LCDNIBOUT
+		ACALL	LCDDELAY		; wait for BF to clear
+		POP	DPH
+		POP	DPL
+		RET
 
-LCDINIT:		PUSH	DPL
-				PUSH	DPH
-				MOV		DPTR,#8000h
+LCDINIT:	PUSH	DPL
+		PUSH	DPH
+		MOV	DPTR,#8000h
 
-				;Function set
-				MOV		A,#00000010b
-				ACALL	LCDNIBOUT
-				ACALL	LCDDELAY			; wait for BF to clear
+		;Function set
+		MOV	A,#00000010b
+		ACALL	LCDNIBOUT
+		ACALL	LCDDELAY		; wait for BF to clear
 
-				;Function set
-						  ;0010NFXX
-				MOV		A,#00101000b
-				CLR		C
-				ACALL	LCDCMDOUT
+		;Function set
+			  ;0010NFXX
+		MOV	A,#00101000b
+		CLR	C
+		ACALL	LCDCMDOUT
 
-				;Function set
-						  ;0010NFXX
-				MOV		A,#00100000b
-				CLR		C
-				ACALL	LCDCMDOUT
+		;Function set
+			  ;0010NFXX
+		MOV	A,#00100000b
+		CLR	C
+		ACALL	LCDCMDOUT
 
-				;Display ON/OFF
-						  ;00001DCB
-				MOV		A,#00001110b
-				CLR		C
-				ACALL	LCDCMDOUT
+		;Display ON/OFF
+			  ;00001DCB
+		MOV	A,#00001110b
+		CLR	C
+		ACALL	LCDCMDOUT
 
-				;Cursor direction
-						  ;00000010
-				MOV		A,#00000110b
-				CLR		C
-				ACALL	LCDCMDOUT
+		;Cursor direction
+			  ;00000010
+		MOV	A,#00000110b
+		CLR	C
+		ACALL	LCDCMDOUT
 
-				POP		DPH
-				POP		DPL
-				RET
+		POP	DPH
+		POP	DPL
+		RET
 
 ;Binary to decimal converter
 ;Returns with number of digits in A
 ;------------------------------------------------------------------
-BIN2DEC:		PUSH	DPL
-				PUSH	DPH
-				PUSH	00h
-				PUSH	02h
-				PUSH	03h
-				PUSH	04h
-				PUSH	05h
-				PUSH	06h
-				PUSH	07h
-				MOV		R0,#30h				;32 Bit binary
-				MOV		A,@R0
-				MOV		R4,A
-				INC		R0
-				MOV		A,@R0
-				MOV		R5,A
-				INC		R0
-				MOV		A,@R0
-				MOV		R6,A
-				INC		R0
-				MOV		A,@R0
-				MOV		R7,A
-				MOV		R0,#34h				;Decimal buffer
-				MOV		DPTR,#BINDEC
-				MOV		R2,#0Ah
-BIN2DEC1:		MOV		R3,#2Fh
-BIN2DEC2:		INC		R3
-				ACALL	SUBIT
-				JNC		BIN2DEC2
-				ACALL	ADDIT
-				MOV		A,R3
-				MOV		@R0,A
-				INC		R0
-				MOV		A,DPL
-				ADD		A,#04h
-				MOV		DPL,A
-				DJNZ	R2,BIN2DEC1
-				CLR		A
-				MOV		@R0,A
-				;Remove leading zeroes
-				MOV		R0,#34h
-				MOV		R2,#09h
-BIN2DEC3:		MOV		A,@R0
-				CJNE	A,#30h,BIN2DEC4
-				MOV		@R0,#20h
-				INC		R0
-				DJNZ	R2,BIN2DEC3
-BIN2DEC4:		INC		R2
-				MOV		A,R2
-				POP		07h
-				POP		06h
-				POP		05h
-				POP		04h
-				POP		03h
-				POP		02h
-				POP		00h
-				POP		DPH
-				POP		DPL
-				RET
+BIN2DEC:	PUSH	DPL
+		PUSH	DPH
+		PUSH	00h
+		PUSH	02h
+		PUSH	03h
+		PUSH	04h
+		PUSH	05h
+		PUSH	06h
+		PUSH	07h
+		MOV	R0,#30h			;32 Bit binary
+		MOV	A,@R0
+		MOV	R4,A
+		INC	R0
+		MOV	A,@R0
+		MOV	R5,A
+		INC	R0
+		MOV	A,@R0
+		MOV	R6,A
+		INC	R0
+		MOV	A,@R0
+		MOV	R7,A
+		MOV	R0,#34h			;Decimal buffer
+		MOV	DPTR,#BINDEC
+		MOV	R2,#0Ah
+BIN2DEC1:	MOV	R3,#2Fh
+BIN2DEC2:	INC	R3
+		ACALL	SUBIT
+		JNC	BIN2DEC2
+		ACALL	ADDIT
+		MOV	A,R3
+		MOV	@R0,A
+		INC	R0
+		MOV	A,DPL
+		ADD	A,#04h
+		MOV	DPL,A
+		DJNZ	R2,BIN2DEC1
+		CLR	A
+		MOV	@R0,A
+		;Remove leading zeroes
+		MOV	R0,#34h
+		MOV	R2,#09h
+BIN2DEC3:	MOV	A,@R0
+		CJNE	A,#30h,BIN2DEC4
+		MOV	@R0,#20h
+		INC	R0
+		DJNZ	R2,BIN2DEC3
+BIN2DEC4:	INC	R2
+		MOV	A,R2
+		POP	07h
+		POP	06h
+		POP	05h
+		POP	04h
+		POP	03h
+		POP	02h
+		POP	00h
+		POP	DPH
+		POP	DPL
+		RET
 
-SUBIT:			MOV		A,#00h
-				MOVC	A,@A+DPTR
-				XCH		A,R4
-				CLR		C
-				SUBB	A,R4
-				MOV		R4,A
-				MOV		A,#01h
-				MOVC	A,@A+DPTR
-				XCH		A,R5
-				SUBB	A,R5
-				MOV		R5,A
-				MOV		A,#02h
-				MOVC	A,@A+DPTR
-				XCH		A,R6
-				SUBB	A,R6
-				MOV		R6,A
-				MOV		A,#03h
-				MOVC	A,@A+DPTR
-				XCH		A,R7
-				SUBB	A,R7
-				MOV		R7,A
-				RET
+SUBIT:		MOV	A,#00h
+		MOVC	A,@A+DPTR
+		XCH	A,R4
+		CLR	C
+		SUBB	A,R4
+		MOV	R4,A
+		MOV	A,#01h
+		MOVC	A,@A+DPTR
+		XCH	A,R5
+		SUBB	A,R5
+		MOV	R5,A
+		MOV	A,#02h
+		MOVC	A,@A+DPTR
+		XCH	A,R6
+		SUBB	A,R6
+		MOV	R6,A
+		MOV	A,#03h
+		MOVC	A,@A+DPTR
+		XCH	A,R7
+		SUBB	A,R7
+		MOV	R7,A
+		RET
 
-ADDIT:			MOV		A,#00h
-				MOVC	A,@A+DPTR
-				ADD		A,R4
-				MOV		R4,A
-				MOV		A,#01h
-				MOVC	A,@A+DPTR
-				ADDC	A,R5
-				MOV		R5,A
-				MOV		A,#02h
-				MOVC	A,@A+DPTR
-				ADDC	A,R6
-				MOV		R6,A
-				MOV		A,#03h
-				MOVC	A,@A+DPTR
-				ADDC	A,R7
-				MOV		R7,A
-				RET
+ADDIT:		MOV	A,#00h
+		MOVC	A,@A+DPTR
+		ADD	A,R4
+		MOV	R4,A
+		MOV	A,#01h
+		MOVC	A,@A+DPTR
+		ADDC	A,R5
+		MOV	R5,A
+		MOV	A,#02h
+		MOVC	A,@A+DPTR
+		ADDC	A,R6
+		MOV	R6,A
+		MOV	A,#03h
+		MOVC	A,@A+DPTR
+		ADDC	A,R7
+		MOV	R7,A
+		RET
 
-BINDEC:			DB 000h,0CAh,09Ah,03Bh			;1000000000
-				DB 000h,0E1h,0F5h,005h			; 100000000
-				DB 080h,096h,098h,000h			;  10000000
-				DB 040h,042h,0Fh,0000h			;   1000000
-				DB 0A0h,086h,001h,000h			;    100000
-				DB 010h,027h,000h,000h			;     10000
-				DB 0E8h,003h,000h,000h			;      1000
-				DB 064h,000h,000h,000h			;       100
-				DB 00Ah,000h,000h,000h			;        10
-				DB 001h,000h,000h,000h			;         1
+BINDEC:		DB 000h,0CAh,09Ah,03Bh		;1000000000
+		DB 000h,0E1h,0F5h,005h		; 100000000
+		DB 080h,096h,098h,000h		;  10000000
+		DB 040h,042h,0Fh,0000h		;   1000000
+		DB 0A0h,086h,001h,000h		;    100000
+		DB 010h,027h,000h,000h		;     10000
+		DB 0E8h,003h,000h,000h		;      1000
+		DB 064h,000h,000h,000h		;       100
+		DB 00Ah,000h,000h,000h		;        10
+		DB 001h,000h,000h,000h		;         1
 
 ; This is a complete BCD floating point package for the 8051 micro- 
 ; controller. It provides 8 digits of accuracy with exponents that 
@@ -2351,136 +2351,148 @@ EXA:				DB		'A-STACK',0
 ;RS232 Output / Input
 ;-----------------------------------------------------
 RXBYTE:
-CLR		EA
-				JNB		SCON.0,$
-				CLR		SCON.0
-				MOV		A,SBUF
+CLR	EA
+		JNB	SCON.0,$
+		CLR	SCON.0
+		MOV	A,SBUF
 SETB	EA
-				RET
+		RET
 
 TXBYTE:
-CLR		EA
-				MOV		SBUF,A
-				JNB		SCON.1,$
-				CLR		SCON.1
+CLR	EA
+		MOV	SBUF,A
+		JNB	SCON.1,$
+		CLR	SCON.1
 SETB	EA
-				RET
+		RET
 
-PRINTSTR:		MOV		A,@R0
-				JZ		PRINTSTR1
-				CJNE	A,#20h,$+3
-				JNC		PRINTSTR0
-				MOV		A,#'?'
-PRINTSTR0:		ACALL	TXBYTE
-				INC		R0
-				SJMP	PRINTSTR
-PRINTSTR1:		RET
+PRINTSTR:	MOV	A,@R0
+		JZ	PRINTSTR1
+		CJNE	A,#20h,$+3
+		JNC	PRINTSTR0
+		MOV		A,#'?'
+PRINTSTR0:	ACALL	TXBYTE
+		INC	R0
+		SJMP	PRINTSTR
+PRINTSTR1:	RET
 
 PRINTDPTRSTR:	MOVX	A,@DPTR
-				ACALL	TXBYTE
-				INC		DPTR
-				CJNE	A,#0Dh,PRINTDPTRSTR
-				MOV		A,#0Ah
-				ACALL	TXBYTE
-				RET
+		ACALL	TXBYTE
+		INC	DPTR
+		CJNE	A,#0Dh,PRINTDPTRSTR
+		MOV	A,#0Ah
+		ACALL	TXBYTE
+		RET
 
-HEXOUT:			PUSH	ACC
-				SWAP	A
-				ACALL	HEXOUT1
-				POP		ACC
-HEXOUT1:		ANL		A,#0Fh
-				CLR		C
-				SUBB	A,#0Ah
-				JC		HEXOUT2
-				ADD		A,#07h
-HEXOUT2:		ADD		A,#3Ah
-				ACALL	TXBYTE
-				RET
+HEXOUT:		PUSH	ACC
+		SWAP	A
+		ACALL	HEXOUT1
+		POP	ACC
+HEXOUT1:	ANL	A,#0Fh
+		CLR	C
+		SUBB	A,#0Ah
+		JC	HEXOUT2
+		ADD	A,#07h
+HEXOUT2:	ADD	A,#3Ah
+		ACALL	TXBYTE
+		RET
 
-HEXDUMPFP:		MOV		A,ARG_STACK
-				CLR		C
-				SUBB	A,#05h
-				MOV		DPL,A
-				MOV		DPH,#ARG_STACK_PAGE
-				MOV		R7,#06h
-HEXDUMPFP1:		MOVX	A,@DPTR
-				ACALL	HEXOUT
-				INC		DPL
-				DJNZ	R7,HEXDUMPFP1
-				MOV		A,#0Dh
-				ACALL	TXBYTE
-				MOV		A,#0Ah
-				ACALL	TXBYTE
-				RET
+HEXDUMPFP:	MOV	A,ARG_STACK
+		CLR	C
+		SUBB	A,#05h
+		MOV	DPL,A
+		MOV	DPH,#ARG_STACK_PAGE
+		MOV	R7,#06h
+HEXDUMPFP1:	MOVX	A,@DPTR
+		ACALL	HEXOUT
+		INC	DPL
+		DJNZ	R7,HEXDUMPFP1
+		MOV	A,#0Dh
+		ACALL	TXBYTE
+		MOV	A,#0Ah
+		ACALL	TXBYTE
+		RET
 
 ;In		DPTR Points to DMEM location
 ;		R2:R0 Points to CMEM location
 ;		R3 is the number of bytes to move
-CMEM2DMEM:		PUSH	DPL
-				PUSH	DPH
-				MOV		DPL,R0
-				MOV		DPH,R2
-				CLR		A
-				MOVC	A,@A+DPTR
-				INC		DPTR
-				MOV		R0,DPL
-				MOV		R2,DPH
-				POP		DPH
-				POP		DPL
-				MOVX	@DPTR,A
-				INC		DPTR
-				DJNZ	R3,CMEM2DMEM
-				RET
+CMEM2DMEM:	PUSH	DPL
+		PUSH	DPH
+		MOV	DPL,R0
+		MOV	DPH,R2
+		CLR	A
+		MOVC	A,@A+DPTR
+		INC	DPTR
+		MOV	R0,DPL
+		MOV	R2,DPH
+		POP	DPH
+		POP	DPL
+		MOVX	@DPTR,A
+		INC	DPTR
+		DJNZ	R3,CMEM2DMEM
+		RET
 
 
-ADCMUL:			DB 7Eh,00h,79h,07h,03h,16h		;CH0	1.6030779e-3
-				DB 7Eh,00h,79h,07h,03h,16h		;CH1	1.6030779e-3
-				DB 7Eh,00h,79h,07h,03h,16h		;CH2	1.6030779e-3
-				DB 7Eh,00h,79h,07h,03h,16h		;CH3	1.6030779e-3
+ADCMUL:		DB 7Eh,00h,79h,07h,03h,16h	;CH0	1.6030779e-3
+		DB 7Eh,00h,79h,07h,03h,16h	;CH1	1.6030779e-3
+		DB 7Eh,00h,79h,07h,03h,16h	;CH2	1.6030779e-3
+		DB 7Eh,00h,79h,07h,03h,16h	;CH3	1.6030779e-3
 
-SINGLESTEP:		PUSH	PSW
+SINGLESTEP:	PUSH	PSW
                 PUSH	ACC
-                CLR		RS0
-                CLR		RS1
+                CLR	RS0
+                CLR	RS1
                 PUSH	00h
-                MOV		A,#07h
+                MOV	A,#07h
                 LCALL	TXBYTE
-                MOV		R0,SP
-                DEC		R0
-                DEC		R0
-                DEC		R0
-                MOV		A,@R0				;MSB adress
+                MOV	R0,SP
+                DEC	R0
+                DEC	R0
+                DEC	R0
+                MOV	A,@R0			;MSB adress
                 LCALL	TXBYTE
-                DEC		R0
-                MOV		A,@R0				;LSB adress
+                DEC	R0
+                MOV	A,@R0			;LSB adress
                 LCALL	TXBYTE
-                INC		R0					;MSB adress
-                INC		R0					;PSW
-                MOV		A,@R0				;PSW
+                INC	R0			;MSB adress
+                INC	R0			;PSW
+                MOV	A,@R0			;PSW
                 LCALL	TXBYTE
-                INC		R0					;ACC
-                MOV		A,@R0				;ACC
+                INC	R0			;ACC
+                MOV	A,@R0			;ACC
                 LCALL	TXBYTE
-                MOV		A,B					;B
+                MOV	A,B			;B
                 LCALL	TXBYTE
-                INC		R0					;R0
-                MOV		A,@R0				;R0
+                MOV	A,SP			;SP
                 LCALL	TXBYTE
-                MOV		R0,#01h
-SINGLESTEP1:	MOV		A,@R0				;31 Bytes
+                MOV	A,DPL			;DPL
                 LCALL	TXBYTE
-                INC		R0
+                MOV	A,DPH			;DPH
+                LCALL	TXBYTE
+                INC	R0			;R0
+                MOV	A,@R0			;R0
+                LCALL	TXBYTE
+                MOV	R0,#01h
+SINGLESTEP1:	MOV	A,@R0			;31 Bytes
+                LCALL	TXBYTE
+                INC	R0
                 CJNE	R0,#20h,SINGLESTEP1
-SINGLESTEP2:	LCALL	RXBYTE
-                CJNE	A,#'R',SINGLESTEP3	;R Run
-                CLR		EX1
-SINGLESTEP3:	CJNE	A,#'S',SINGLESTEP4	;S Stop
-                CLR		EX1
+		MOV	R0,14h			;20 Bytes
+SINGLESTEP2:	MOVX	A,@DPTR
+                LCALL	TXBYTE
+                INC	DPTR
+                DJNZ	R0,SINGLESTEP2
+		
+SINGLESTEP3:	LCALL	RXBYTE
+                CJNE	A,#'R',SINGLESTEP4	;R Run
+                CLR	EX1
+SINGLESTEP4:	CJNE	A,#'S',SINGLESTEP5	;S Stop
+                CLR	EX1
                 LJMP	0000h
-SINGLESTEP4:	CJNE	A,#'I',SINGLESTEP2	;I Step Into
-                POP		00h
-                POP		ACC
-                POP		PSW
+SINGLESTEP5:	CJNE	A,#'I',SINGLESTEP3	;I Step Into
+                POP	00h
+                POP	ACC
+                POP	PSW
                 RETI
 
-				END
+		END

@@ -26,6 +26,32 @@
 BOXWT				equ 9
 BOXHT				equ 17
 
+.const
+
+REGS				db 'PSW  ##',0Dh
+					db 'ACC  ##',0Dh
+					db 'B    ##',0Dh
+					db 'SP   ##',0Dh
+					db 'DPTR ####',0Dh
+					db '---------------',0Dh
+					db 'BANK 0  1  2  3',0Dh
+					db '---------------',0Dh
+					db 'R0: ## ## ## ##',0Dh
+					db 'R1: ## ## ## ##',0Dh
+					db 'R2: ## ## ## ##',0Dh
+					db 'R3: ## ## ## ##',0Dh
+					db 'R4: ## ## ## ##',0Dh
+					db 'R5: ## ## ## ##',0Dh
+					db 'R6: ## ## ## ##',0Dh
+					db 'R7: ## ## ## ##',0Dh
+					db '---------------',0Dh
+					db '@DPTR',0Dh
+					db '---------------',0Dh
+					db ' ## ## ## ## ##',0Dh
+					db ' ## ## ## ## ##',0Dh
+					db ' ## ## ## ## ##',0Dh
+					db ' ## ## ## ## ##',0Dh,0
+
 .data?
 
 nLine				DWORD ?
@@ -58,6 +84,7 @@ scrn				WORD 80 dup(?)
 					WORD 80 dup(?)
 					WORD 80 dup(?)
 					WORD 80 dup(?)
+					WORD 80 dup(?)
 
 DEBUG struct
 	msb		db ?
@@ -65,7 +92,12 @@ DEBUG struct
 	psw		db ?
 	acc		db ?
 	b		db ?
+	spt		db ?
+	dpl		db ?
+	dph		db ?
 	reg		db 32 dup(?)
+	dptr	db 20 dup(?)
+	txt		db 512 dup(?)
 DEBUG ends
 
 dbg					DEBUG <>
@@ -76,7 +108,7 @@ ScreenCls proc
 
 	mov		ax,20h
 	mov		edx,offset scrn
-	mov		ecx,80*24
+	mov		ecx,80*25
 	.while ecx
 		mov		[edx],ax
 		inc		edx
@@ -94,7 +126,7 @@ ScreenScroll proc uses ebx esi edi
 
 	mov		edi,offset scrn
 	mov		esi,offset scrn+80*2
-	mov		ecx,23*80
+	mov		ecx,24*80
 	rep		movsw
 	mov		ecx,80
 	mov		ax,20h
@@ -138,15 +170,88 @@ ScreenChar proc nChar:DWORD
 	.if nPos==80
 		mov		nPos,0
 		inc		nLine
-		.if nLine==24
+		.if nLine==25
 			invoke ScreenScroll
-			mov		nLine,23
+			mov		nLine,24
 		.endif
 	.endif
 	invoke InvalidateRect,hScrn,NULL,TRUE
 	ret
 
 ScreenChar endp
+
+SetDbgHex proc uses edi,nByte:DWORD
+	LOCAL	buffer[4]:BYTE
+
+	mov		eax,nByte
+	push	eax
+	call	ToHex
+	mov		buffer[1],al
+	pop		eax
+	shr		eax,4
+	call	ToHex
+	mov		buffer[0],al
+	.while byte ptr [edi]!='#'
+		inc		edi
+	.endw
+	mov		al,buffer
+	mov		[edi],al
+	mov		al,buffer[1]
+	mov		[edi+1],al
+	ret
+
+ToHex:
+	and     eax,0fh
+	cmp     eax,0ah
+	jb      ToHex1
+	add     eax,07h
+ToHex1:
+	add     eax,30h
+	retn
+
+SetDbgHex endp
+
+SetDbgInfo proc uses esi edi
+
+	mov		esi,offset dbg
+	mov		edi,offset dbg.txt
+	invoke lstrcpy,edi,offset REGS
+	movzx	eax,[esi].DEBUG.psw
+	invoke SetDbgHex,eax
+	movzx	eax,[esi].DEBUG.acc
+	invoke SetDbgHex,eax
+	movzx	eax,[esi].DEBUG.b
+	invoke SetDbgHex,eax
+	movzx	eax,[esi].DEBUG.spt
+	invoke SetDbgHex,eax
+	movzx	eax,[esi].DEBUG.dph
+	invoke SetDbgHex,eax
+	movzx	eax,[esi].DEBUG.dpl
+	invoke SetDbgHex,eax
+	mov		esi,offset dbg.reg
+	xor		ecx,ecx
+	.while ecx<8
+		movzx	eax,byte ptr [esi+ecx]				;Bank 0
+		invoke SetDbgHex,eax
+		movzx	eax,byte ptr [esi+ecx+8]			;Bank 1
+		invoke SetDbgHex,eax
+		movzx	eax,byte ptr [esi+ecx+16]			;Bank 2
+		invoke SetDbgHex,eax
+		movzx	eax,byte ptr [esi+ecx+24]			;Bank 3
+		invoke SetDbgHex,eax
+		inc		ecx
+	.endw
+	mov		esi,offset dbg.dptr
+	xor		ecx,ecx
+	.while ecx<20
+		movzx	eax,byte ptr [esi+ecx]				;Bank 0
+		invoke SetDbgHex,eax
+		inc		ecx
+	.endw
+	invoke SetWindowText,hDbg,edi
+	ret
+
+SetDbgInfo endp
 
 ScreenOut proc nChar:DWORD
 	LOCAL	tid:DWORD
@@ -157,7 +262,7 @@ ScreenOut proc nChar:DWORD
 	mov		eax,nChar
 	.if nLocate==1
 		sub		eax,20h
-		.if eax<24
+		.if eax<25
 			mov		nLine,eax
 		.endif
 		inc		nLocate
@@ -169,10 +274,10 @@ ScreenOut proc nChar:DWORD
 		mov		nLocate,0
 	.elseif nDebug
 		mov		eax,nChar
-PrintHex eax
+;PrintHex eax
 		mov		edx,nDebug
 		mov		dbg[edx-1],al
-		.if edx==37
+		.if edx==40
 			movzx	eax,dbg.lsb
 			push	eax
 			call	ToHex
@@ -195,6 +300,7 @@ PrintHex eax
 				;Addrss not found
 				invoke WriteCom,'I'
 			.endif
+			invoke SetDbgInfo
 			mov		nDebug,0
 		.else
 			inc		nDebug
@@ -222,9 +328,9 @@ PrintHex eax
 		.elseif al==0Ah
 			;Lf
 			inc		nLine
-			.if nLine>23
+			.if nLine>24
 				invoke ScreenScroll
-				mov		nLine,23
+				mov		nLine,24
 			.endif
 		.elseif al==08h
 			;BS
@@ -304,7 +410,7 @@ ScreenDraw proc uses ebx esi,hDC:HDC
 	mov		rect.top,0
 	xor		ebx,ebx
 	mov		esi,offset scrn
-	.while ebx<24
+	.while ebx<25
 		mov		rect.left,0
 		call	DrawLine
 		add		rect.top,BOXHT

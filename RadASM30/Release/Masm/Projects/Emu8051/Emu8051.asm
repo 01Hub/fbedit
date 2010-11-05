@@ -9,22 +9,33 @@ include RS232.asm
 
 .code
 
-MakeToolBar proc uses ebx,hTbr:HWND,lpBtn:DWORD,nBtn:DWORD
+DoToolBar proc hToolBar:HWND
 	LOCAL	tbab:TBADDBITMAP
 
-	mov		ebx,hTbr
+	;Create toolbar imagelist
+	invoke ImageList_LoadImage,hInstance,IDB_TOOLBAR,16,11,0FF00FFh,IMAGE_BITMAP,LR_CREATEDIBSECTION
+	mov		hImlTbr,eax
 	;Set toolbar struct size
-	invoke SendMessage,ebx,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
-	;Set toolbar bitmap
-	mov		tbab.hInst,HINST_COMMCTRL
-	mov		tbab.nID,IDB_STD_SMALL_COLOR
-	invoke SendMessage,ebx,TB_ADDBITMAP,15,addr tbab
+	invoke SendMessage,hToolBar,TB_BUTTONSTRUCTSIZE,sizeof TBBUTTON,0
 	;Set toolbar buttons
-	invoke SendMessage,ebx,TB_ADDBUTTONS,nBtn,lpBtn
-	mov		eax,ebx
+	invoke SendMessage,hToolBar,TB_ADDBUTTONS,ntbrbtns,addr tbrbtns
+	;Set the imagelist
+	invoke SendMessage,hToolBar,TB_SETIMAGELIST,0,hImlTbr
 	ret
 
-MakeToolBar endp
+DoToolBar endp
+
+SetHighlightWords proc hWin:HWND
+
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,8388672,offset C0
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,25165888,offset C1
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,8388672,offset C2
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,8388672,offset C3
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,8388672,offset C4
+	invoke SendMessage,hWin,REM_SETHILITEWORDS,8388672,offset C5
+	ret
+
+SetHighlightWords endp
 
 WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL	tid:DWORD
@@ -38,18 +49,22 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		push	hWin
 		pop		hWnd
 		invoke GetDlgItem,hWin,IDC_TBR1
-		invoke MakeToolBar,eax,offset tbrbtnsfile,ntbrbtns
+		invoke DoToolBar,eax
 		invoke GetDlgItem,hWin,IDC_SCREEN
 		mov		hScrn,eax
 		invoke GetDlgItem,hWin,IDC_RAE1
 		mov		hREd,eax
+		invoke GetDlgItem,hWin,IDC_RAE2
+		mov		hDbg,eax
 		invoke CreateFontIndirect,addr Courier_New_12
 		mov		hFont,eax
+		invoke CreateFontIndirect,addr Courier_New_10
+		mov		hDbgFont,eax
 		invoke SendMessage,hScrn,WM_SETFONT,hFont,FALSE
 		invoke SetWindowLong,hScrn,GWL_WNDPROC,addr ScreenProc
 		mov		lpOldScreenProc,eax
-		invoke SendMessage,hREd,WM_SETFONT,hFont,FALSE
-		invoke SendMessage,hREd,REM_READONLY,0,TRUE
+		invoke SendMessage,hREd,WM_SETFONT,hDbgFont,FALSE
+		invoke SendMessage,hDbg,WM_SETFONT,hFont,FALSE
 		invoke ScreenCls
 		invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 		invoke ShowCaret,hScrn
@@ -76,6 +91,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			dec		eax
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_SBR1,SB_SETTEXT,1,addr szromfilename[eax+1]
+		invoke SetHighlightWords,hREd
+		invoke SetHighlightWords,hDbg
+		invoke LoadLstFile
+		invoke SetDbgInfo
 	.elseif eax==WM_TIMER
 		.while TRUE
 			mov		edx,rdtail
@@ -158,43 +177,10 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 			invoke ScreenCaret
 			invoke ShowCaret,hScrn
-		.elseif eax==IDM_FILE_PRINT
-		.elseif eax==IDM_FILE_GO
+		.elseif eax==IDM_FILE_UPLOAD
 			invoke WriteCom,'L'
-			invoke WriteCom,0Dh
-			mov		ebx,100
-			.while ebx
-				invoke GetMessage,addr msg,NULL,0,0
-			  .break .if !eax
-				invoke TranslateMessage,addr msg
-				invoke DispatchMessage,addr msg
-				dec		ebx
-			.endw
-			.while TRUE
-				mov		ebx,100
-				.while ebx
-					invoke GetMessage,addr msg,NULL,0,0
-				  .break .if !eax
-					invoke TranslateMessage,addr msg
-					invoke DispatchMessage,addr msg
-					dec		ebx
-				.endw
-				mov		edx,wrtail
-			  .break .if edx==wrhead
-			.endw
+		.elseif eax==IDM_FILE_GO
 			invoke WriteCom,'G'
-		.elseif eax==IDM_FILE_INITCOM
-			.if hCom
-				invoke CloseHandle,hCom
-				mov		hCom,0
-			.endif
-			invoke OpenCom
-			.if hCom
-				invoke ScreenCls
-				invoke WriteCom,0Dh
-			.endif
-		.elseif eax==IDM_OPTION_COMPORT
-			invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
 		.elseif eax==IDM_FILE_DEBUG
 			.if fDebug
 				invoke ShowWindow,hScrn,SW_SHOW
@@ -208,6 +194,28 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 			invoke SetFocus,hWin
 			xor		fDebug,1
+		.elseif eax==IDM_FILE_REFRESH
+			invoke LoadLstFile
+		.elseif eax==IDM_DEBUG_RUN
+			invoke WriteCom,'R'
+		.elseif eax==IDM_DEBUG_STOP
+			invoke WriteCom,'S'
+		.elseif eax==IDM_DEBUG_INTO
+			invoke WriteCom,'I'
+		.elseif eax==IDM_DEBUG_OVER
+		.elseif eax==IDM_DEBUG_CARET
+		.elseif eax==IDM_FILE_INITCOM
+			.if hCom
+				invoke CloseHandle,hCom
+				mov		hCom,0
+			.endif
+			invoke OpenCom
+			.if hCom
+				invoke ScreenCls
+				invoke WriteCom,0Dh
+			.endif
+		.elseif eax==IDM_OPTION_COMPORT
+			invoke DialogBoxParam,hInstance,IDD_DLGCOMPORT,hWin,addr ComOptionProc,0
 		.endif
 	.elseif eax==WM_CHAR
 		.if hCom && !hrdfile
@@ -234,8 +242,9 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.endif
 	.elseif eax==WM_SIZE
-		invoke MoveWindow,hScrn,0,28,80*BOXWT+4,24*BOXHT+4,TRUE
-		invoke MoveWindow,hREd,0,28,80*BOXWT+4,24*BOXHT+4,TRUE
+		invoke MoveWindow,hScrn,0,28,80*BOXWT+4,25*BOXHT+4,TRUE
+		invoke MoveWindow,hREd,0,28,80*BOXWT+4,25*BOXHT+4,TRUE
+		invoke MoveWindow,hDbg,80*BOXWT+4,28,186,25*BOXHT+4,TRUE
 	.elseif eax==WM_CLOSE
 		invoke DestroyWindow,hWin
 	.elseif uMsg==WM_DESTROY
@@ -247,7 +256,16 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			mov		hCom,0
 		.endif
 		invoke DeleteObject,hFont
+		invoke DeleteObject,hDbgFont
+		invoke ImageList_Destroy,hImlTbr
 		invoke PostQuitMessage,NULL
+	.elseif eax==WM_NOTIFY
+		mov		ebx,lParam
+		.if  [ebx].NMHDR.code==TTN_NEEDTEXT
+			invoke LoadString,hInstance,[ebx].NMHDR.idFrom,addr buffer,sizeof buffer
+			lea		eax,buffer
+			mov		[ebx].TOOLTIPTEXT.lpszText,eax
+		.endif
 	.else
 		invoke DefWindowProc,hWin,uMsg,wParam,lParam
 		ret
@@ -304,8 +322,12 @@ start:
 	mov		CommandLine,eax
 	.if byte ptr [eax]
 		invoke lstrcpy,addr szcmdfilename,CommandLine
+		invoke lstrcpy,addr szlstfilename,CommandLine
+		invoke lstrlen,addr szlstfilename
+		mov		dword ptr szlstfilename[eax-4],'tsl.'
 	.else
 		invoke lstrcpy,addr szcmdfilename,addr szDefCmdData
+		invoke lstrcpy,addr szlstfilename,addr szDefLstData
 	.endif
 	invoke lstrcpy,addr szromfilename,addr szDefRomData
 	invoke GetModuleFileName,hInstance,addr szapppath,sizeof szapppath
