@@ -59,6 +59,17 @@ scrn				WORD 80 dup(?)
 					WORD 80 dup(?)
 					WORD 80 dup(?)
 
+DEBUG struct
+	msb		db ?
+	lsb		db ?
+	psw		db ?
+	acc		db ?
+	b		db ?
+	reg		db 32 dup(?)
+DEBUG ends
+
+dbg					DEBUG <>
+
 .code
 
 ScreenCls proc
@@ -156,39 +167,38 @@ ScreenOut proc nChar:DWORD
 			mov		nPos,eax
 		.endif
 		mov		nLocate,0
-	.elseif nDebug==1
+	.elseif nDebug
 		mov		eax,nChar
-		mov		SingleStepAdr,eax
-		mov		nDebug,2
-	.elseif nDebug==2
-		mov		eax,nChar
-		xchg	al,ah
-		or		SingleStepAdr,eax
-		mov		eax,SingleStepAdr
-		push	eax
-		call	ToHex
-		mov		buffer[3],al
-		pop		eax
-		shr		eax,4
-		push	eax
-		call	ToHex
-		mov		buffer[2],al
-		pop		eax
-		shr		eax,4
-		push	eax
-		call	ToHex
-		mov		buffer[1],al
-		pop		eax
-		shr		eax,4
-		call	ToHex
-		mov		buffer[0],al
-		mov		buffer[4],0
-		invoke Find,addr buffer
-		.if !eax
-			;Addrss not found
-			invoke WriteCom,0Dh
+PrintHex eax
+		mov		edx,nDebug
+		mov		dbg[edx-1],al
+		.if edx==37
+			movzx	eax,dbg.lsb
+			push	eax
+			call	ToHex
+			mov		buffer[3],al
+			pop		eax
+			shr		eax,4
+			call	ToHex
+			mov		buffer[2],al
+			movzx	eax,dbg.msb
+			push	eax
+			call	ToHex
+			mov		buffer[1],al
+			pop		eax
+			shr		eax,4
+			call	ToHex
+			mov		buffer[0],al
+			mov		buffer[4],0
+			invoke Find,addr buffer
+			.if !eax
+				;Addrss not found
+				invoke WriteCom,'I'
+			.endif
+			mov		nDebug,0
+		.else
+			inc		nDebug
 		.endif
-		mov		nDebug,0
 	.elseif hwrfile && eax!=04h
 		mov		buffer,al
 		invoke WriteFile,hwrfile,addr buffer,1,addr nWrite,NULL

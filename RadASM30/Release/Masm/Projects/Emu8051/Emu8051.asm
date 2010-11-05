@@ -123,14 +123,13 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				.endif
 			.endif
 			.if !fDebug
-				invoke SetFocus,hWin
 				invoke CreateCaret,hScrn,NULL,BOXWT,BOXHT
 				invoke ScreenCaret
 				invoke ShowCaret,hScrn
 			.else
 				invoke LoadLstFile
-				invoke SetFocus,hREd
 			.endif
+			invoke SetFocus,hWin
 		.elseif eax==IDM_FILE_SAVE
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
 			invoke RtlZeroMemory,addr ofn,sizeof OPENFILENAME
@@ -206,12 +205,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 				invoke HideCaret,hScrn
 				invoke ShowWindow,hREd,SW_SHOW
 				invoke ShowWindow,hScrn,SW_HIDE
-				invoke SetFocus,hREd
 			.endif
+			invoke SetFocus,hWin
 			xor		fDebug,1
 		.endif
 	.elseif eax==WM_CHAR
-		.if hCom && !hrdfile && !fDebug
+		.if hCom && !hrdfile
 			mov		eax,wParam
 			.if eax==1Bh
 				;Esc
