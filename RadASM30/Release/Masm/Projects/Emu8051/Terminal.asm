@@ -33,9 +33,7 @@ REGS				db 'PSW  ##',0Dh
 					db 'B    ##',0Dh
 					db 'SP   ##',0Dh
 					db 'DPTR ####',0Dh
-					db '---------------',0Dh
 					db 'BANK 0  1  2  3',0Dh
-					db '---------------',0Dh
 					db 'R0: ## ## ## ##',0Dh
 					db 'R1: ## ## ## ##',0Dh
 					db 'R2: ## ## ## ##',0Dh
@@ -44,13 +42,15 @@ REGS				db 'PSW  ##',0Dh
 					db 'R5: ## ## ## ##',0Dh
 					db 'R6: ## ## ## ##',0Dh
 					db 'R7: ## ## ## ##',0Dh
-					db '---------------',0Dh
 					db '@DPTR',0Dh
-					db '---------------',0Dh
-					db ' ## ## ## ## ##',0Dh
-					db ' ## ## ## ## ##',0Dh
-					db ' ## ## ## ## ##',0Dh
-					db ' ## ## ## ## ##',0Dh,0
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh
+					db '    ## ## ## ##',0Dh,0
 
 .data?
 
@@ -96,7 +96,7 @@ DEBUG struct
 	dpl		db ?
 	dph		db ?
 	reg		db 32 dup(?)
-	dptr	db 20 dup(?)
+	dptr	db 32 dup(?)
 	txt		db 512 dup(?)
 DEBUG ends
 
@@ -243,12 +243,14 @@ SetDbgInfo proc uses esi edi
 	.endw
 	mov		esi,offset dbg.dptr
 	xor		ecx,ecx
-	.while ecx<20
+	.while ecx<32
 		movzx	eax,byte ptr [esi+ecx]				;Bank 0
 		invoke SetDbgHex,eax
 		inc		ecx
 	.endw
 	invoke SetWindowText,hDbg,edi
+	invoke SendMessage,hDbg,REM_SETHILITELINE,5,1
+	invoke SendMessage,hDbg,REM_SETHILITELINE,14,1
 	ret
 
 SetDbgInfo endp
@@ -274,10 +276,9 @@ ScreenOut proc nChar:DWORD
 		mov		nLocate,0
 	.elseif nDebug
 		mov		eax,nChar
-;PrintHex eax
 		mov		edx,nDebug
 		mov		dbg[edx-1],al
-		.if edx==40
+		.if edx==72
 			movzx	eax,dbg.lsb
 			push	eax
 			call	ToHex
@@ -298,7 +299,7 @@ ScreenOut proc nChar:DWORD
 			invoke Find,addr buffer
 			.if !eax
 				;Addrss not found
-				invoke WriteCom,'I'
+				invoke WriteCom,'i'
 			.endif
 			invoke SetDbgInfo
 			mov		nDebug,0

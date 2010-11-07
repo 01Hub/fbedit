@@ -92,7 +92,6 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.endw
 		invoke SendDlgItemMessage,hWin,IDC_SBR1,SB_SETTEXT,1,addr szromfilename[eax+1]
 		invoke SetHighlightWords,hREd
-		invoke SetHighlightWords,hDbg
 		invoke LoadLstFile
 		invoke SetDbgInfo
 	.elseif eax==WM_TIMER
@@ -201,7 +200,7 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_DEBUG_STOP
 			invoke WriteCom,'S'
 		.elseif eax==IDM_DEBUG_INTO
-			invoke WriteCom,'I'
+			invoke WriteCom,'i'
 		.elseif eax==IDM_DEBUG_OVER
 		.elseif eax==IDM_DEBUG_CARET
 		.elseif eax==IDM_FILE_INITCOM

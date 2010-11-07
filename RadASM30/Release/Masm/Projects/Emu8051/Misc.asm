@@ -186,10 +186,10 @@ Find proc lpText:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	ft:FINDTEXTEX
 
-	mov		eax,202020h
+	mov		eax,20202020h
 	mov		dword ptr buffer,eax
-	invoke lstrcat,addr buffer,lpText
-	mov		word ptr buffer[7],20h
+	invoke lstrcpy,addr buffer[4],lpText
+	mov		word ptr buffer[8],20h
 	mov		ft.chrg.cpMin,0
 	mov		ft.chrg.cpMax,-1
 	lea		eax,buffer
