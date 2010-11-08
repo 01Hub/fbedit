@@ -149,3 +149,5 @@ hrdblock				HANDLE ?
 hwrfile					HANDLE ?
 comopt					COM <>
 fDebug					DWORD ?
+SingleStepAdr			DWORD ?
+SingleStepLine			DWORD ?

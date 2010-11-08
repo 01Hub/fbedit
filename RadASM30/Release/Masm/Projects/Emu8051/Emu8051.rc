@@ -105,7 +105,7 @@ BEGIN
   IDM_FILE_GO "Upload cmd file and run"
   IDM_FILE_DEBUG "Toggle debug window"
   IDM_FILE_REFRESH "Refresh debug window with lst file"
-  IDM_DEBUG_RUN "Debug Run"
+  IDM_DEBUG_RUN "Run"
   IDM_DEBUG_STOP "Debug Stop"
   IDM_DEBUG_INTO "Debug Step Into"
   IDM_DEBUG_OVER "Debug Step Over"

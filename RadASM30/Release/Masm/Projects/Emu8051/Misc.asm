@@ -182,9 +182,22 @@ LoadLstFile proc uses ebx esi
 
 LoadLstFile endp
 
+SetDbgLine proc nDbgLine:DWORD
+
+	;Remove previous line
+	invoke SendMessage,hREd,REM_SETHILITELINE,SingleStepLine,0
+	;Set new line
+	mov		eax,nDbgLine
+	mov		SingleStepLine,eax
+	invoke SendMessage,hREd,REM_SETHILITELINE,SingleStepLine,2
+	ret
+
+SetDbgLine endp
+
 Find proc lpText:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	ft:FINDTEXTEX
+	LOCAL	ft2:FINDTEXTEX
 
 	mov		eax,20202020h
 	mov		dword ptr buffer,eax
@@ -192,12 +205,31 @@ Find proc lpText:DWORD
 	mov		word ptr buffer[8],20h
 	mov		ft.chrg.cpMin,0
 	mov		ft.chrg.cpMax,-1
+	mov		ft2.chrg.cpMax,-1
 	lea		eax,buffer
 	mov		ft.lpstrText,eax
+	mov		ft2.lpstrText,eax
 	invoke SendMessage,hREd,EM_FINDTEXTEX,FR_DOWN,addr ft
 	.if eax!=-1
+		;Check for next occurance
+		mov		eax,ft.chrgText.cpMax
+		mov		ft2.chrgText.cpMin,eax
+		invoke SendMessage,hREd,EM_FINDTEXTEX,FR_DOWN,addr ft
+		.if eax!=-1
+			mov		eax,ft2.chrgText.cpMin
+			mov		ft.chrgText.cpMin,eax
+			mov		eax,ft2.chrgText.cpMax
+			mov		ft.chrgText.cpMax,eax
+		.endif
+		invoke SendMessage,hREd,EM_EXLINEFROMCHAR,0,addr ft.chrgText.cpMin
+		push	eax
+		invoke SetDbgLine,eax
+		pop		eax
+		invoke SendMessage,hREd,EM_LINEINDEX,eax,0
+		mov		ft.chrgText.cpMin,eax
+		mov		ft.chrgText.cpMax,eax
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr ft.chrgText
-		invoke SendMessage,hREd,REM_VCENTER,0,0
+;		invoke SendMessage,hREd,REM_VCENTER,0,0
 		invoke SendMessage,hREd,EM_SCROLLCARET,0,0
 		invoke SendMessage,hREd,EM_EXSETSEL,0,addr ft.chrgText
 		mov		eax,TRUE

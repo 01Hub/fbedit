@@ -22,4 +22,5 @@ M1=
 Make=0
 0=Window Release,'/v /32 "$R"',"$R.res",'/c /tW "$C"',"$C.obj",'/aa /c /x /Gn /Tpe c0w32.obj $C $M,$O,,@$A\Bcc\GFL.txt,,$R',"$C.exe",'',
 Delete=0
+IncBuild=0
 Run=0,'',''

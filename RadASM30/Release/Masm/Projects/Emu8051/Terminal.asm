@@ -58,7 +58,6 @@ nLine				DWORD ?
 nPos				DWORD ?
 nLocate				DWORD ?
 nDebug				DWORD ?
-SingleStepAdr		DWORD ?
 
 scrn				WORD 80 dup(?)
 					WORD 80 dup(?)

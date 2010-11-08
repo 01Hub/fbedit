@@ -48,6 +48,8 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.if eax==WM_INITDIALOG
 		push	hWin
 		pop		hWnd
+		mov		SingleStepAdr,-1
+		mov		SingleStepLine,-1
 		invoke GetDlgItem,hWin,IDC_TBR1
 		invoke DoToolBar,eax
 		invoke GetDlgItem,hWin,IDC_SCREEN
@@ -196,13 +198,33 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		.elseif eax==IDM_FILE_REFRESH
 			invoke LoadLstFile
 		.elseif eax==IDM_DEBUG_RUN
+			mov		SingleStepAdr,-1
+			invoke SetDbgLine,-1
 			invoke WriteCom,'R'
 		.elseif eax==IDM_DEBUG_STOP
-			invoke WriteCom,'S'
+			.if SingleStepLine!=-1
+				mov		SingleStepAdr,-1
+				invoke SetDbgLine,-1
+				invoke WriteCom,'S'
+			.endif
 		.elseif eax==IDM_DEBUG_INTO
-			invoke WriteCom,'i'
+			.if SingleStepLine!=-1
+				mov		SingleStepAdr,-1
+				invoke SetDbgLine,-1
+				invoke WriteCom,'i'
+			.endif
 		.elseif eax==IDM_DEBUG_OVER
+			.if SingleStepLine!=-1
+				mov		SingleStepAdr,-1
+				invoke SetDbgLine,-1
+				invoke WriteCom,'i'
+			.endif
 		.elseif eax==IDM_DEBUG_CARET
+			.if SingleStepLine!=-1
+				mov		SingleStepAdr,-1
+				invoke SetDbgLine,-1
+				invoke WriteCom,'i'
+			.endif
 		.elseif eax==IDM_FILE_INITCOM
 			.if hCom
 				invoke CloseHandle,hCom

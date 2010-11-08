@@ -2,12 +2,12 @@
 Version=3000
 [Project]
 Assembler=MinGW
-Path=D:\RadASM30\MinGW\Projects\Project
+Path=C:\FbEdit\Projects\Applications\FbEdit\RadASM30\Release\MinGW\Projects\Project
 Group=2,-1,0,1,Project,-2,-1,1,Assembly,-3,-1,1,Include,-4,-1,1,Misc,-5,-1,1,Resource
-F1=-2,0,1,22,22,600,400,0,Project.cpp
+F1=-2,2,1,22,22,600,400,0,Project.cpp
 F2=-3,0,1,22,22,600,400,0,Project.h
 F3=-5,2,4,22,22,600,400,0,Project.Rc
-Open=2,1,2,3
+Open=0,1,2,3
 Api=
 C3=
 B3=
