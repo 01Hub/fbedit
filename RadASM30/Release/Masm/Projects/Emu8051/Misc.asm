@@ -194,6 +194,19 @@ SetDbgLine proc nDbgLine:DWORD
 
 SetDbgLine endp
 
+;If current line is ACALL, return 2
+;If current line is LCALL, return 3
+IsLCALLACALL proc
+	LOCAL	buffer[256]:BYTE
+
+	mov		word ptr buffer,255
+	invoke SendMessage,hREd,EM_GETLINE,SingleStepLine,addr buffer
+	mov		buffer[eax],0
+	xor		eax,eax
+	ret
+
+IsLCALLACALL endp
+
 Find proc lpText:DWORD
 	LOCAL	buffer[16]:BYTE
 	LOCAL	ft:FINDTEXTEX

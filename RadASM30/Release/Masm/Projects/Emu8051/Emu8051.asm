@@ -215,7 +215,12 @@ WndProc proc uses ebx,hWin:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 			.endif
 		.elseif eax==IDM_DEBUG_OVER
 			.if SingleStepLine!=-1
-				mov		SingleStepAdr,-1
+				invoke IsLCALLACALL
+				.if eax
+					add		SingleStepAdr,eax
+				.else
+					mov		SingleStepAdr,-1
+				.endif
 				invoke SetDbgLine,-1
 				invoke WriteCom,'i'
 			.endif
