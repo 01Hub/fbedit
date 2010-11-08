@@ -629,6 +629,7 @@ ManageDlgProc FRAME hwnd,uMsg,wParam,lParam
 		invoke GetDlgItem,[hwnd],2004
 		pop ecx
 		invoke GetRAPInfo,ecx,eax
+		mov D[buffer],0
 		invoke SendMessage,edi,LB_GETTEXT,esi,offset buffer
 		invoke GetDlgItem,[hwnd],2006
 		invoke SendMessage,eax,WM_SETTEXT,0,offset buffer
@@ -662,6 +663,7 @@ ManageDlgProc FRAME hwnd,uMsg,wParam,lParam
 ENDF
 
 GetRAPInfo FRAME pRAPFile,hOutput
+	uses edi,esi,ebx
 	LOCAL outstring[1024]		:%CHAR
 	LOCAL hFile					:%HANDLE
 	LOCAL lwt					:FILETIME
